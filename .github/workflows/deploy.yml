@@ -63,6 +63,37 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      # Un secreto con un carácter tipográfico (guion largo en vez de guion,
+      # comilla curva) compila sin quejarse y rompe el sitio solo al intentar
+      # entrar: fetch rechaza cabeceras con caracteres fuera de ISO-8859-1.
+      # Vale más parar aquí que publicar un sitio sin login.
+      #
+      # Solo se imprime la longitud, nunca el valor.
+      - name: Revisar los secretos del build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+        run: |
+          fallo=0
+          for nombre in VITE_SUPABASE_URL VITE_SUPABASE_ANON_KEY VITE_GOOGLE_CLIENT_ID; do
+            valor="${!nombre}"
+            if [ -z "$valor" ]; then
+              echo "FALTA    $nombre: el secreto no existe o está vacío"
+              fallo=1
+              continue
+            fi
+            # Todo lo que va en una cabecera HTTP tiene que ser ASCII imprimible.
+            if printf '%s' "$valor" | LC_ALL=C grep -q '[^ -~]'; then
+              echo "INVÁLIDO $nombre: tiene caracteres no ASCII (${#valor} caracteres)"
+              echo "         Suele ser un guion largo o una comilla curva al copiar y pegar."
+              fallo=1
+            else
+              echo "OK       $nombre: ${#valor} caracteres, ASCII limpio"
+            fi
+          done
+          exit $fallo
+
       - name: Compilar
         run: npm run build
         env:
