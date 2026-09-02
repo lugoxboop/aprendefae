@@ -314,7 +314,7 @@ export default function App() {
   if (view === "politica-economica") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <PoliticaEconomicaView onBack={() => setView("macroeconomia")} />
+        <PoliticaEconomicaView modo={modoTema} onBack={() => setView("macroeconomia")} />
       </Suspense>
     );
   }

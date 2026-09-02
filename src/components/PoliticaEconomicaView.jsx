@@ -6,7 +6,7 @@ import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import CadenaPolitica from "./mecanicas/CadenaPolitica.jsx";
 import DashboardEconomico from "./mecanicas/DashboardEconomico.jsx";
-import { clasificacionDe } from "../data/subjects.js";
+import { clasificacionDe, APRENDER, HACER } from "../data/subjects.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 
@@ -44,7 +44,13 @@ const h2 = {
 
 const lead = { fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 20px" };
 
-export default function PoliticaEconomicaView({ onBack }) {
+export default function PoliticaEconomicaView({ modo = null, onBack }) {
+  /*
+   * Con qué mitad se entró desde la tarjeta partida. Sin modo se ve entera.
+   */
+  const muestraAprender = modo !== HACER;
+  const muestraHacer = modo !== APRENDER;
+
   const { pedirCuenta } = useAuth();
   const inicioCadena = useRef(Date.now());
 
@@ -91,8 +97,12 @@ export default function PoliticaEconomicaView({ onBack }) {
           <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1 }}>
             Política Económica
           </h1>
+          {/* Sin modo, ActivityBadge no dibuja nada: la página entera se ve igual. */}
+          <ActivityBadge tipo={modo} size="sm" />
         </div>
 
+        {muestraAprender && (
+        <>
         {/* ---------------- T3 ---------------- */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
           <p style={sectionLabel}>MECÁNICA 1</p>
@@ -104,10 +114,14 @@ export default function PoliticaEconomicaView({ onBack }) {
           cadena y míralo. Arrastra el cabezal o deja que se reproduzca solo.
         </p>
         <CadenaPolitica />
+        </>
+        )}
 
+        {muestraHacer && (
+        <>
         {/* ---------------- J3 ---------------- */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
-          <p style={sectionLabel}>MECÁNICA 2</p>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
+          <p style={sectionLabel}>MECÁNICA {muestraAprender ? 2 : 1}</p>
           <ActivityBadge tipo={CLAS_DASHBOARD?.tipo} size="sm" />
         </div>
         <h2 style={h2}>Dashboard económico en vivo</h2>
@@ -116,6 +130,8 @@ export default function PoliticaEconomicaView({ onBack }) {
           instrumento mágico: cada decisión empuja varias cosas, y no todas en la dirección que quieres.
         </p>
         <DashboardEconomico onCompletar={completarDashboard} />
+        </>
+        )}
       </div>
     </div>
     </FondoMateria>

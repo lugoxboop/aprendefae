@@ -62,6 +62,7 @@ export const SUBJECTS = {
       {
         id: "politica-economica",
         title: "Política Económica",
+        modosFiltrados: true,
         actividades: [
           {
             id: "cadena-desempleo",
