@@ -33,7 +33,11 @@ create temporary table resultado_prueba (
   detalle  text
 ) on commit drop;
 
-/* El chequeo 8 corre suplantando a un estudiante; necesita poder escribir aquí. */
+/*
+ * El chequeo 8 corre suplantando a un estudiante con el rol `authenticated`,
+ * que no es dueño de estas tablas temporales. Sin estos permisos, Postgres lo
+ * para en seco antes de llegar a probar nada de ligas.
+ */
 grant all on resultado_prueba to authenticated;
 
 -- ---------------------------------------------------------------------------
@@ -56,6 +60,7 @@ select 1, 'Tamaños de liga según activos',
 -- Escenario: 30 estudiantes de mentira en la materia de prueba
 -- ---------------------------------------------------------------------------
 create temporary table ids (n integer, uid uuid) on commit drop;
+grant select on ids to authenticated;
 insert into ids (n, uid) select g, gen_random_uuid() from generate_series(1, 30) g;
 
 insert into auth.users (id, instance_id, aud, role, email, encrypted_password, created_at, updated_at)
@@ -174,9 +179,16 @@ select 7, 'Empate en el 3.º puesto: se mueven los dos empatados',
 -- ---------------------------------------------------------------------------
 -- 8. El tablero: corte del podio y qué se devuelve
 -- ---------------------------------------------------------------------------
-set local role authenticated;
+/*
+ * El orden importa: primero se lee el uid de la tabla temporal, y DESPUÉS se
+ * cambia de rol. Al revés, la lectura de `ids` ya corre como `authenticated`,
+ * que no es dueño de esa tabla, y Postgres la rechaza con "permission denied
+ * for table ids" antes de llegar a probar nada de ligas.
+ */
 select set_config('request.jwt.claims',
   json_build_object('sub', (select uid::text from ids where n = 1), 'role', 'authenticated')::text, true);
+
+set local role authenticated;
 
 insert into resultado_prueba
 select 8, 'Tablero: corta al 28% y solo devuelve podio + tu fila',
