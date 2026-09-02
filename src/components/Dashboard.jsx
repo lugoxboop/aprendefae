@@ -37,10 +37,11 @@ function EtapaChip({ n, accent }) {
   );
 }
 
-export default function Dashboard({ studentName, completed, correctCount, totalPreguntas, badges, allFourDone, finalDone, progress, onOpenTopic, onOpenFinal, onRanking, onExitTopic }) {
+export default function Dashboard({ apodo, completed, correctCount, totalPreguntas, allFourDone, finalDone, progress, onOpenTopic, onOpenFinal, onExitTopic }) {
   return (
     <div>
-      <TopBar title={`Hola, ${studentName}`} onBack={onExitTopic} onRanking={onRanking} />
+      {/* El apodo viene del perfil del sitio. Sin cuenta, el tema se presenta por su nombre. */}
+      <TopBar title={apodo ? `Hola, ${apodo}` : "Demanda Agregada"} onBack={onExitTopic} />
       <div className="mb-3">
         <ActivityBadge tipo={CLAS_SIMULADOR?.tipo} size="sm" />
       </div>
@@ -59,9 +60,6 @@ export default function Dashboard({ studentName, completed, correctCount, totalP
         <span className="text-xs font-semibold" style={{ color: COLORS.textLight }}>
           {correctCount} de {totalPreguntas} respuestas
         </span>
-        {badges.length > 0 && (
-          <span className="text-xs" style={{ color: COLORS.textMuted }}>· {badges.length} insignia{badges.length > 1 ? "s" : ""}</span>
-        )}
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
@@ -95,19 +93,14 @@ export default function Dashboard({ studentName, completed, correctCount, totalP
       )}
 
       {/*
-        Antes había aquí un top 5 con compañeros inventados. Se eliminó: el
-        ranking real vive en su propia pantalla y sale de la tabla de FP.
+        Aquí ya no hay ranking. El de la materia vive un nivel arriba, en el
+        índice de Macroeconomía, y sale de la tabla de FP: tener otro dentro de
+        la actividad era la misma información contada dos veces.
       */}
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold" style={{ color: COLORS.textLight, fontFamily: "Sora, sans-serif" }}>Ranking</h2>
-        <button onClick={onRanking} className="text-xs font-semibold" style={{ color: COLORS.orange }}>Ver todo</button>
-      </div>
-      <div className="rounded-2xl p-3 mb-4" style={{ backgroundColor: COLORS.bgPanel }}>
-        <p className="text-xs leading-relaxed" style={{ color: COLORS.textMuted }}>
-          El ranking de Macroeconomía se arma con los FP de la materia. Completar el simulador
-          entero —los 4 canales y la Ronda Final— suma 50 FP, una sola vez.
-        </p>
-      </div>
+      <p className="text-xs leading-relaxed mb-4" style={{ color: COLORS.textMuted }}>
+        Completar el simulador entero —los 4 canales y la Ronda Final— suma 50 FP al ranking
+        de Macroeconomía, una sola vez.
+      </p>
     </div>
   );
 }

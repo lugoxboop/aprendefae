@@ -24,14 +24,16 @@ const PoliticaEconomicaView = lazy(() => import("./components/PoliticaEconomicaV
  * DA-Learn se carga bajo demanda. Recharts pesa la mayor parte del bundle y solo lo
  * necesitan las cuatro vistas de canal, así que la entrada no lo descarga nunca.
  */
-const NameGate = lazy(() => import("./components/NameGate.jsx"));
 const Dashboard = lazy(() => import("./components/Dashboard.jsx"));
 const ConsumoView = lazy(() => import("./components/ConsumoView.jsx"));
 const InversionView = lazy(() => import("./components/InversionView.jsx"));
 const GastoView = lazy(() => import("./components/GastoView.jsx"));
 const XNView = lazy(() => import("./components/XNView.jsx"));
 const FinalView = lazy(() => import("./components/FinalView.jsx"));
-const RankingView = lazy(() => import("./components/RankingView.jsx"));
+
+/* Fondo de DA-Learn: el mismo del índice de Macroeconomía, cargado aparte. */
+const SupplyDemandBackground = lazy(() => import("./components/backgrounds/SupplyDemandBackground.jsx"));
+const BackgroundVeil = lazy(() => import("./components/shared/BackgroundVeil.jsx"));
 
 /*
  * DA-Learn como actividad del sistema de FP.
@@ -52,8 +54,13 @@ const ACTIVIDAD = "simulador-da";
 const CLAS_SIMULADOR = clasificacionDe(MATERIA, TEMA, ACTIVIDAD);
 
 export default function App() {
-  const { pedirCuenta } = useAuth();
-  const [studentName, setStudentName] = useState("");
+  /*
+   * El apodo sale del perfil, que se elige una sola vez al entrar con Google y
+   * vale para todo el sitio. DA-Learn ya no pide un nombre propio: aquel
+   * NameGate existía cuando el simulador no tenía forma de saber quién era el
+   * estudiante, y hoy sí la tiene.
+   */
+  const { pedirCuenta, perfil } = useAuth();
   const [view, setView] = useState("home");
   const [prevView, setPrevView] = useState("dashboard");
   /*
@@ -158,10 +165,12 @@ export default function App() {
     (finalCompleted.finalQ1 ? 1 : 0) +
     (finalCompleted.finalQ2 ? 1 : 0);
 
-  const badges = [];
-  if (correctCount >= 5) badges.push("maestro-consumo");
-  if (completed.inversion) badges.push("inversor-audaz");
-  if (completed.xn) badges.push("domador-dolar");
+  /*
+   * Las insignias ("Maestro del Consumo", etc.) se fueron con la pantalla de
+   * ranking de DA-Learn: eran premios inventados por el simulador y su único
+   * lugar de aparición era esa pantalla. El reconocimiento del sitio son los
+   * FP y el ranking de la materia, un nivel más arriba.
+   */
 
   const totalPreguntas =
     Object.values(topicProgress).reduce((n, canal) => n + canal.length, 0) +
@@ -213,12 +222,6 @@ export default function App() {
   }, [allFourDone, finalDone, aciertosPrimerIntento, totalPreguntas, pedirCuenta]);
 
   const goDashboard = () => setView("dashboard");
-  /* El ranking es dato propio frente a otros: aquí también se pide la cuenta. */
-  const openRanking = () => {
-    pedirCuenta("ver el ranking");
-    setPrevView(view);
-    setView("ranking");
-  };
   const goHome = () => setView("home");
   /* Salir de DA-Learn sube un nivel, al índice de temas de Macroeconomía. */
   const goMacroIndex = () => setView("macroeconomia");
@@ -249,8 +252,17 @@ export default function App() {
       <Suspense fallback={siteFallback}>
         <MacroTopicIndex
           onOpenTopic={(topicId, modo) => {
-            /* Demanda Agregada entra por el NameGate de DA-Learn; el resto es directo. */
-            abrirTema(topicId === "demanda-agregada" ? "name" : topicId, modo);
+            /*
+             * Demanda Agregada entra directo al simulador. El reloj de la
+             * actividad arranca aquí, que es el momento en que el estudiante
+             * empieza de verdad.
+             */
+            if (topicId === "demanda-agregada") {
+              if (!inicioSimulador.current) inicioSimulador.current = Date.now();
+              abrirTema("dashboard", modo);
+              return;
+            }
+            abrirTema(topicId, modo);
           }}
         />
       </Suspense>
@@ -307,34 +319,41 @@ export default function App() {
   }
 
   return wrap(
-    <div style={{ backgroundColor: COLORS.bg, minHeight: "100vh", fontFamily: "Inter, sans-serif", backgroundImage: "radial-gradient(circle at 50% -10%, rgba(61,127,255,0.18), transparent 55%)" }}>
+    <div
+      style={{
+        position: "relative",
+        backgroundColor: COLORS.bg,
+        minHeight: "100vh",
+        fontFamily: "Inter, sans-serif",
+        overflow: "hidden",
+      }}
+    >
+      {/*
+        El mismo fondo de curvas del índice de Macroeconomía. DA-Learn es un
+        tema de esa materia, así que comparte su fondo en vez de tener uno
+        propio: entrar al tema no debería sentirse como cambiar de sitio.
+        Llega aparte para no entrar en la carga inicial de la portada.
+      */}
+      <Suspense fallback={null}>
+        <SupplyDemandBackground />
+        <BackgroundVeil centerAlpha={0.42} />
+      </Suspense>
+
       {/* Fondo vacío mientras llega el chunk: evita un destello claro sobre el tema oscuro. */}
       <Suspense fallback={<div style={{ minHeight: "100vh" }} />}>
-      {view === "name" ? (
-        <NameGate
-          onStart={(name) => {
-            setStudentName(name);
-            /* El reloj de la actividad arranca aquí, al entrar de verdad. */
-            if (!inicioSimulador.current) inicioSimulador.current = Date.now();
-            setView("dashboard");
-          }}
-          onBack={goMacroIndex}
-        />
-      ) : (
-        <div className="max-w-md mx-auto px-4 py-6">
+        <div className="max-w-md mx-auto px-4 py-6" style={{ position: "relative", zIndex: 2 }}>
           {view === "dashboard" && (
             <Dashboard
-              studentName={studentName}
+              apodo={perfil?.nickname}
               completed={completed}
               correctCount={correctCount}
               totalPreguntas={totalPreguntas}
-              badges={badges}
               allFourDone={allFourDone}
               finalDone={finalDone}
               progress={progress}
               onOpenTopic={(key) => setView(key)}
               onOpenFinal={() => setView("final")}
-              onRanking={openRanking}
+             
               onExitTopic={goMacroIndex}
             />
           )}
@@ -342,28 +361,28 @@ export default function App() {
             <ConsumoView
               state={consumoState} setState={setConsumoState}
               quizProgress={topicProgress.consumo} onAnswerCorrect={(idx) => markTopicCorrect("consumo", idx)} onFirstAttempt={(idx, a) => markFirstAttempt("consumo", idx, a)}
-              onBack={goDashboard} onNext={() => setView("inversion")} onRanking={openRanking}
+              onBack={goDashboard} onNext={() => setView("inversion")}
             />
           )}
           {view === "inversion" && (
             <InversionView
               state={inversionState} setState={setInversionState}
               quizProgress={topicProgress.inversion} onAnswerCorrect={(idx) => markTopicCorrect("inversion", idx)} onFirstAttempt={(idx, a) => markFirstAttempt("inversion", idx, a)}
-              onBack={goDashboard} onNext={() => setView("gasto")} onRanking={openRanking}
+              onBack={goDashboard} onNext={() => setView("gasto")}
             />
           )}
           {view === "gasto" && (
             <GastoView
               state={gastoState} setState={setGastoState}
               quizProgress={topicProgress.gasto} onAnswerCorrect={(idx) => markTopicCorrect("gasto", idx)} onFirstAttempt={(idx, a) => markFirstAttempt("gasto", idx, a)}
-              onBack={goDashboard} onNext={() => setView("xn")} onRanking={openRanking}
+              onBack={goDashboard} onNext={() => setView("xn")}
             />
           )}
           {view === "xn" && (
             <XNView
               state={xnState} setState={setXnState}
               quizProgress={topicProgress.xn} onAnswerCorrect={(idx) => markTopicCorrect("xn", idx)} onFirstAttempt={(idx, a) => markFirstAttempt("xn", idx, a)}
-              onBack={goDashboard} onNext={() => setView(allFourDone ? "final" : "dashboard")} onRanking={openRanking}
+              onBack={goDashboard} onNext={() => setView(allFourDone ? "final" : "dashboard")}
             />
           )}
           {view === "final" && (
@@ -373,14 +392,9 @@ export default function App() {
               onCorrectQ2={() => markFinalCorrect("finalQ2")}
               onFirstAttempt={markFinalFirstAttempt}
               onBack={goDashboard}
-              onRanking={openRanking}
             />
           )}
-          {view === "ranking" && (
-            <RankingView materiaId={MATERIA} badges={badges} onBack={() => setView(prevView)} />
-          )}
         </div>
-      )}
       </Suspense>
     </div>
   );

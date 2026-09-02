@@ -38,8 +38,14 @@ Las mecánicas evaluativas calculan su desempeño como **porcentaje (0–100)** 
 **DA-Learn también pasa por aquí.** El simulador de Demanda Agregada llevaba su propio
 puntaje (10 puntos por respuesta, 50 por pregunta final) y un ranking contra compañeros
 inventados. Los dos se eliminaron. Ahora el simulador llama al mismo camino central al
-completarse —los 4 canales más la Ronda Final— y su pantalla de ranking usa el mismo
-`RankingFP` que el índice de materia y el perfil.
+completarse —los 4 canales más la Ronda Final— y el ranking de la materia vive un nivel
+arriba, en el índice de Macroeconomía: dentro de la actividad no hay ninguno.
+
+DA-Learn se construyó antes que el resto del sitio, así que arrastraba piezas que dejaron
+de tener sentido al quedar dentro de él: pedía un nombre propio al entrar (hoy el apodo se
+elige una vez, al entrar con Google, y vale para todo), tenía su propio ranking, y su
+fondo era plano. Las tres se alinearon: el apodo sale del perfil, el ranking se eliminó de
+aquí, y el fondo es el mismo de curvas de oferta y demanda del índice de la materia.
 
 Gen lo clasificó **Hacer · exploratoria · difícil**: 50 FP por terminarlo, sin escalar por
 aciertos. Exploratoria y no evaluativa porque el quiz deja reintentar hasta acertar: un
@@ -150,8 +156,8 @@ admite FTPS explícito en el mismo puerto 21: cambiar `protocol: ftp` a
 ```
 HomeScreen (entrada)
 ├── Macroeconomía  →  índice de temas
-│                     └── Demanda Agregada → NameGate → Dashboard DA-Learn
-│                                                        → temas / ronda final / ranking
+│                     └── Demanda Agregada → Dashboard DA-Learn
+│                                                        → canales / Ronda Final
 └── Pensamiento Estratégico  →  índice de temas
                                 ├── Pensamiento Sistémico → comparador lineal / sistémico
                                 ├── Modelo del Iceberg    → buceo por niveles + decisión comparada
@@ -191,7 +197,7 @@ La pantalla de entrada es lo primero que ve el estudiante, así que se carga de 
 | Abrir el sitio | Solo el chunk de entrada (~160 kB / 53 kB gzip) |
 | Índice de Macroeconomía | Índice + curvas de oferta/demanda (~5 kB) |
 | Índice de Pensamiento Estratégico | Índice + Three.js y la escena (~552 kB / 143 kB gzip) |
-| Entrar a Demanda Agregada | NameGate, luego Dashboard + TopBar (~27 kB) |
+| Entrar a Demanda Agregada | Dashboard, TopBar y el fondo de curvas (~32 kB) |
 | Abrir un tema con gráfica (DA-Learn o Fuerzas de Porter) | Núcleo de Recharts (~360 kB / 101 kB gzip), una sola vez |
 
 Las dos dependencias pesadas —Recharts y Three.js— viven en chunks separados y ninguna entra en la carga inicial. Three.js solo se descarga si el estudiante abre Pensamiento Estratégico; quien vaya directo a Macroeconomía nunca lo pide.
@@ -270,14 +276,13 @@ En la escena de ajedrez, el fallback es una imagen y no un fotograma renderizado
 │   │   │   ├── ChessBackground.jsx        # escena Three.js del tablero en juego
 │   │   │   └── chessPieces.js             # geometría de las piezas y texturas, generadas por código
 │   │   │  # --- DA-Learn (tema: Demanda Agregada) ---
-│   │   ├── NameGate.jsx        # pide el nombre del estudiante antes de entrar al simulador
-│   │   ├── Dashboard.jsx       # 4 tarjetas de canales, progreso y ranking resumido
-│   │   ├── ConsumoView.jsx     # vista del canal Consumo (fórmula, gráfica, faders, quiz)
-│   │   ├── InversionView.jsx   # vista del canal Inversión
-│   │   ├── GastoView.jsx       # vista del canal Gasto Público
-│   │   ├── XNView.jsx          # vista del canal Exportaciones Netas
+│   │   ├── Dashboard.jsx       # 4 tarjetas de canales y progreso
+│   │   ├── ConsumoView.jsx     # vista del canal Consumo (fórmula, gráfica, canasta, faders, quiz)
+│   │   ├── InversionView.jsx   # vista del canal Inversión (con la pila de billetes)
+│   │   ├── GastoView.jsx       # vista del canal Gasto Público (con la carretera)
+│   │   ├── XNView.jsx          # vista del canal Exportaciones Netas (con la balanza)
 │   │   ├── FinalView.jsx       # Ronda Final (se desbloquea al completar los 4 canales)
-│   │   ├── RankingView.jsx     # ranking real de la materia (RankingFP) + insignias locales
+│   │   ├── mecanicas/visuales/ # los cuatro dibujos que responden a los faders
 │   │   └── shared/             # piezas de UI reutilizadas entre vistas
 │   │       ├── FaeLogo.jsx         # marca AprendeFAE (barras + wordmark)
 │   │       ├── BackgroundVeil.jsx  # velo radial sobre el fondo animado, para contraste del texto
@@ -313,5 +318,6 @@ En la escena de ajedrez, el fallback es una imagen y no un fotograma renderizado
 - **Titular rotativo.** `Hero.jsx` guarda el índice elegido en `sessionStorage`, así que no cambia al recargar dentro de la misma sesión, y usa `localStorage` para no repetir el titular de la sesión anterior. Si el almacenamiento falla, cae a un sorteo simple.
 - **Fondo de nodos.** `NodeNetworkBackground.jsx` es un port 1:1 del export de Claude Design: misma semilla determinista, mismas frecuencias de oscilación, cap de ~30 fps y los mismos umbrales de conexión y pulso. Detecta `prefers-reduced-motion`, `hardwareConcurrency <= 4` y `deviceMemory < 4` para dibujar un único fotograma estático en gama baja, sin `requestAnimationFrame`.
 - **Estilos.** El diseño se traslada como estilos inline (igual que el export) más `home.css` para los estados `:hover`/`:active`, que no se pueden expresar inline. Cada tarjeta pasa su color de acento por las variables CSS `--fae-card-hover-bg` y `--fae-card-hover-border`.
+- **Los faders de DA-Learn tienen un dibujo, no solo una cifra.** "$3.120.000" no significa nada a los 19 años. Cada canal trae una figura que responde al valor en tiempo real y en los dos sentidos: una canasta que se llena y se vacía (Consumo), una pila de billetes que sube y baja (Inversión), una carretera que se pavimenta y se despavimenta (Gasto), y una balanza de dos platos que se inclina hacia lo que Colombia vende o compra afuera (Exportaciones netas). Viven en `components/mecanicas/visuales/`, uno por archivo. Las tres primeras funcionan igual por dentro: cada elemento tiene sitio fijo y solo cambia si está encendido, así que deshacer es el mismo cálculo al revés y no necesita lógica aparte. La balanza no la necesita siquiera: inclinarse a los dos lados es lo que hace una balanza.
 - **Los dos icebergs comparten el mismo arreglo de layout.** El corte del iceberg es alto y se comía la pantalla: había que hacer scroll para ver el dibujo o el control, nunca los dos. Se resuelve limitando el alto del SVG desde `home.css` (`.ice-grafico`), no encogiendo el dibujo en el componente. El buceo (`.ice-buceo`) lo apila con su fila de botones; el constructor (`.ice-constructor`) va con una tarjeta de pregunta mucho más alta, así que en pantalla ancha se reparten en dos columnas y en angosta el dibujo queda fijo arriba mientras la pregunta pasa por debajo. Al terminar la mecánica no hay pregunta y el dibujo recupera el ancho completo.
 - **Tailwind.** DA-Learn usa clases utilitarias de Tailwind, que en el prototipo original venían preconfiguradas por el entorno de artifacts. Por eso el proyecto incluye Tailwind CSS v4 vía `@tailwindcss/vite`.

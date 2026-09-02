@@ -12,8 +12,10 @@ import ChartBox from "./shared/ChartBox.jsx";
 import QuizBlock from "./shared/QuizBlock.jsx";
 import NextBackRow from "./shared/NextBackRow.jsx";
 import { V } from "./shared/FormulaTokens.jsx";
+import PanelVisual from "./mecanicas/visuales/PanelVisual.jsx";
+import BalanzaComercial from "./mecanicas/visuales/BalanzaComercial.jsx";
 
-export default function XNView({ state, setState, quizProgress, onAnswerCorrect, onFirstAttempt, onBack, onNext, onRanking }) {
+export default function XNView({ state, setState, quizProgress, onAnswerCorrect, onFirstAttempt, onBack, onNext }) {
   const accent = COLORS.gold;
   const { tc } = state;
   const X0 = 3000000, M0 = 3000000, k = 300, tcMid = 4000;
@@ -26,7 +28,7 @@ export default function XNView({ state, setState, quizProgress, onAnswerCorrect,
   ];
   return (
     <div>
-      <TopBar title="Exportaciones Netas" onBack={onBack} onRanking={onRanking} />
+      <TopBar title="Exportaciones Netas" onBack={onBack} />
       <p className="text-sm mb-4" style={{ color: COLORS.textMuted }}>XN = lo que vendemos afuera menos lo que compramos afuera</p>
       <FormulaCard
         accent={accent}
@@ -49,6 +51,14 @@ export default function XNView({ state, setState, quizProgress, onAnswerCorrect,
           </BarChart>
         </ResponsiveContainer>
       </ChartBox>
+      {/*
+        La inclinación se normaliza contra el desbalance máximo que alcanza el
+        fader (600.000 en cada extremo del rango 2000–6000), así que los topes
+        del slider corresponden a los topes del ladeo.
+      */}
+      <PanelVisual pie="La balanza se inclina hacia el lado que pesa más">
+        <BalanzaComercial inclinacion={XN / (k * (6000 - tcMid))} accent={accent} teal={COLORS.teal} coral={COLORS.red} />
+      </PanelVisual>
       <BigNumberDisplay
         label="Exportaciones netas (XN)"
         value={formatCOP(XN)}
@@ -61,7 +71,7 @@ export default function XNView({ state, setState, quizProgress, onAnswerCorrect,
       </p>
       <Fader label="Tipo de cambio (TRM)" value={tc} min={2000} max={6000} step={50} accent={accent} format={(v) => formatCOP(v) + "/USD"} onChange={(v) => setState({ tc: v })} />
       <QuizBlock questions={QUIZZES.xn} accent={accent} progress={quizProgress} onAnswerCorrect={onAnswerCorrect} onFirstAttempt={onFirstAttempt} />
-      <NextBackRow onBack={onBack} onNext={onNext} accent={accent} />
+      <NextBackRow onBack={onBack} onNext={onNext} accent={accent} pendientes={quizProgress.filter((v) => !v).length} />
     </div>
   );
 }

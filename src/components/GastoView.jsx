@@ -10,14 +10,16 @@ import ChartBox from "./shared/ChartBox.jsx";
 import QuizBlock from "./shared/QuizBlock.jsx";
 import NextBackRow from "./shared/NextBackRow.jsx";
 import { V, Overline } from "./shared/FormulaTokens.jsx";
+import PanelVisual from "./mecanicas/visuales/PanelVisual.jsx";
+import CarreteraGasto from "./mecanicas/visuales/CarreteraGasto.jsx";
 
-export default function GastoView({ state, setState, quizProgress, onAnswerCorrect, onFirstAttempt, onBack, onNext, onRanking }) {
+export default function GastoView({ state, setState, quizProgress, onAnswerCorrect, onFirstAttempt, onBack, onNext }) {
   const accent = COLORS.teal;
   const { G } = state;
   const chartData = [{ name: "Gasto Público (G)", value: Math.round(G) }];
   return (
     <div>
-      <TopBar title="Gasto Público" onBack={onBack} onRanking={onRanking} />
+      <TopBar title="Gasto Público" onBack={onBack} />
       <p className="text-sm mb-4" style={{ color: COLORS.textMuted }}>El Estado decide cuánto gasta — no depende de si recauda más o menos</p>
       <FormulaCard
         accent={accent}
@@ -36,13 +38,17 @@ export default function GastoView({ state, setState, quizProgress, onAnswerCorre
           </BarChart>
         </ResponsiveContainer>
       </ChartBox>
+      {/* Mismo rango que el fader de G: 0 a 8.000.000. */}
+      <PanelVisual pie="Hasta dónde llega la obra con ese presupuesto">
+        <CarreteraGasto valor={G} min={0} max={8000000} accent={accent} />
+      </PanelVisual>
       <BigNumberDisplay label="Presupuesto de gasto público" value={formatCOP(G)} accent={accent} />
       <p className="text-sm mb-5 leading-relaxed" style={{ color: COLORS.textLight }}>
         El Congreso aprobó un gasto de {formatCOP(G)} para este año. Así la economía esté floja o los impuestos no alcancen, el Estado puede seguir gastando — se financia con deuda si es necesario.
       </p>
       <Fader label="Gasto público (G)" value={G} min={0} max={8000000} step={100000} accent={accent} format={formatCOP} onChange={(v) => setState({ G: v })} />
       <QuizBlock questions={QUIZZES.gasto} accent={accent} progress={quizProgress} onAnswerCorrect={onAnswerCorrect} onFirstAttempt={onFirstAttempt} />
-      <NextBackRow onBack={onBack} onNext={onNext} accent={accent} />
+      <NextBackRow onBack={onBack} onNext={onNext} accent={accent} pendientes={quizProgress.filter((v) => !v).length} />
     </div>
   );
 }

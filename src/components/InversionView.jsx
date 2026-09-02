@@ -12,8 +12,10 @@ import ChartBox from "./shared/ChartBox.jsx";
 import QuizBlock from "./shared/QuizBlock.jsx";
 import NextBackRow from "./shared/NextBackRow.jsx";
 import { V, Overline } from "./shared/FormulaTokens.jsx";
+import PanelVisual from "./mecanicas/visuales/PanelVisual.jsx";
+import PilaBilletes from "./mecanicas/visuales/PilaBilletes.jsx";
 
-export default function InversionView({ state, setState, quizProgress, onAnswerCorrect, onFirstAttempt, onBack, onNext, onRanking }) {
+export default function InversionView({ state, setState, quizProgress, onAnswerCorrect, onFirstAttempt, onBack, onNext }) {
   const accent = COLORS.orange;
   const { Ibar, b, i } = state;
   const I = Math.max(0, Ibar - b * i);
@@ -21,7 +23,7 @@ export default function InversionView({ state, setState, quizProgress, onAnswerC
   for (let iv = 1; iv <= 30; iv++) curveData.push({ i: iv, I: Math.max(0, Ibar - b * iv) });
   return (
     <div>
-      <TopBar title="Inversión" onBack={onBack} onRanking={onRanking} />
+      <TopBar title="Inversión" onBack={onBack} />
       <p className="text-sm mb-4" style={{ color: COLORS.textMuted }}>Inversión = confianza de los empresarios + qué tan cara está pedir prestado</p>
       <FormulaCard
         accent={accent}
@@ -50,6 +52,10 @@ export default function InversionView({ state, setState, quizProgress, onAnswerC
           </LineChart>
         </ResponsiveContainer>
       </ChartBox>
+      {/* Escala hasta 5.000.000: el tope del fader de inversión autónoma. */}
+      <PanelVisual pie="Cuánta plata se pone a trabajar">
+        <PilaBilletes valor={I} min={0} max={5000000} accent={accent} />
+      </PanelVisual>
       <BigNumberDisplay label="Tu inversión total" value={formatCOP(I)} accent={accent} />
       <p className="text-sm mb-5 leading-relaxed" style={{ color: COLORS.textLight }}>
         Con una tasa de interés del {i}%, tu inversión es {formatCOP(I)}. Si el Banco de la República sube la tasa, pedir crédito se encarece y inviertes menos — pero tu confianza en el negocio ({formatCOP(Ibar)} de inversión autónoma) no desaparece.
@@ -58,7 +64,7 @@ export default function InversionView({ state, setState, quizProgress, onAnswerC
       <Fader label="Sensibilidad a la tasa (b)" value={b} min={0} max={200000} step={5000} accent={accent} format={formatCOP} onChange={(v) => setState((s) => ({ ...s, b: v }))} />
       <Fader label="Tasa de interés (i)" value={i} min={1} max={30} step={1} accent={accent} format={(v) => v + "%"} onChange={(v) => setState((s) => ({ ...s, i: v }))} />
       <QuizBlock questions={QUIZZES.inversion} accent={accent} progress={quizProgress} onAnswerCorrect={onAnswerCorrect} onFirstAttempt={onFirstAttempt} />
-      <NextBackRow onBack={onBack} onNext={onNext} accent={accent} />
+      <NextBackRow onBack={onBack} onNext={onNext} accent={accent} pendientes={quizProgress.filter((v) => !v).length} />
     </div>
   );
 }
