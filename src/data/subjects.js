@@ -94,6 +94,16 @@ export const SUBJECTS = {
       {
         id: "modelo-iceberg",
         title: "Modelo del Iceberg",
+        /*
+         * ANDAMIO TEMPORAL. Marca que la vista de este tema ya sabe mostrarse
+         * filtrada por modo (solo Aprender o solo Hacer), así que su tarjeta
+         * puede ofrecer la elección en vez de entrar directo.
+         *
+         * Existe solo mientras la separación se despliega tema por tema: en
+         * cuanto los cinco temas la tengan, el campo se borra de todos y la
+         * tarjeta partida pasa a ser el comportamiento único.
+         */
+        modosFiltrados: true,
         actividades: [
           {
             id: "buceo-progresivo",
@@ -144,6 +154,20 @@ export const SUBJECTS = {
     ],
   },
 };
+
+/* Las actividades de un tema que son de un tipo (APRENDER u HACER). */
+export function actividadesDeTipo(topic, tipo) {
+  return (topic?.actividades ?? []).filter((a) => a.clasificacion?.tipo === tipo);
+}
+
+/*
+ * Si un tema tiene contenido de ese tipo. Es lo que decide si la opción se
+ * ofrece o se muestra como "aún no disponible": la respuesta sale del dato, no
+ * de una lista de excepciones por tema.
+ */
+export function tieneContenidoDe(topic, tipo) {
+  return actividadesDeTipo(topic, tipo).length > 0;
+}
 
 /* Busca la clasificación de una actividad concreta dentro de un tema. */
 export function clasificacionDe(subjectId, topicId, actividadId) {

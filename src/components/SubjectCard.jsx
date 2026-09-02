@@ -1,6 +1,26 @@
 import { FAE } from "../theme.js";
 
 /*
+ * Aspecto de tarjeta, compartido por la tarjeta simple y por la partida
+ * (TopicSplitCard). Vive aquí y no duplicado en cada una para que las dos se
+ * vean como la misma pieza: la partida es la misma tarjeta en otro estado, no
+ * otro componente que se le parece.
+ */
+export const CARD_SHELL = {
+  minHeight: "clamp(150px, 22vh, 230px)",
+  padding: "clamp(18px, 2.4vh, 26px)",
+  borderRadius: "18px",
+  background: "rgba(248,249,250,0.055)",
+  border: "1px solid rgba(248,249,250,0.14)",
+  backdropFilter: "blur(10px)",
+  WebkitBackdropFilter: "blur(10px)",
+  color: FAE.text,
+  font: "inherit",
+  textAlign: "left",
+  width: "100%",
+};
+
+/*
  * Tarjeta de materia de la pantalla de entrada.
  * `icon` es el bloque gráfico propio de cada materia; `accent` tiñe la flecha y
  * el estado hover, que vive en home.css y lee las variables --fae-card-hover-*.
@@ -13,22 +33,12 @@ export default function SubjectCard({ icon, title, accent, hoverBg, hoverBorder,
       aria-label={label || title}
       className="fae-card"
       style={{
+        ...CARD_SHELL,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         gap: "clamp(20px, 3.5vh, 40px)",
-        minHeight: "clamp(150px, 22vh, 230px)",
-        padding: "clamp(18px, 2.4vh, 26px)",
-        borderRadius: "18px",
-        background: "rgba(248,249,250,0.055)",
-        border: "1px solid rgba(248,249,250,0.14)",
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
-        color: FAE.text,
         cursor: "pointer",
-        font: "inherit",
-        textAlign: "left",
-        width: "100%",
         "--fae-card-hover-bg": hoverBg,
         "--fae-card-hover-border": hoverBorder,
       }}

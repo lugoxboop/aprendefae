@@ -57,6 +57,18 @@ export default function App() {
   const [studentName, setStudentName] = useState("");
   const [view, setView] = useState("home");
   const [prevView, setPrevView] = useState("dashboard");
+  /*
+   * Con qué mitad del tema se entró: "aprender", "hacer", o null para las
+   * vistas que todavía se muestran enteras. Lo elige la tarjeta partida del
+   * índice y lo consume la vista del tema para filtrar sus mecánicas.
+   */
+  const [modoTema, setModoTema] = useState(null);
+
+  /* Entrar a un tema, con o sin mitad elegida. */
+  const abrirTema = (topicId, modo = null) => {
+    setModoTema(modo);
+    setView(topicId);
+  };
 
   const [consumoState, setConsumoState] = useState({ Y: 5000000, TR: 500000, T: 300000, c: 0.6 });
   const [inversionState, setInversionState] = useState({ Ibar: 2000000, b: 50000, i: 10 });
@@ -197,9 +209,9 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <MacroTopicIndex
-          onOpenTopic={(topicId) => {
+          onOpenTopic={(topicId, modo) => {
             /* Demanda Agregada entra por el NameGate de DA-Learn; el resto es directo. */
-            setView(topicId === "demanda-agregada" ? "name" : topicId);
+            abrirTema(topicId === "demanda-agregada" ? "name" : topicId, modo);
           }}
         />
       </Suspense>
@@ -209,7 +221,7 @@ export default function App() {
   if (view === "pensamiento-estrategico") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <EstrategiaTopicIndex onOpenTopic={(topicId) => setView(topicId)} />
+        <EstrategiaTopicIndex onOpenTopic={abrirTema} />
       </Suspense>
     );
   }
@@ -225,7 +237,7 @@ export default function App() {
   if (view === "modelo-iceberg") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <IcebergView onBack={() => setView("pensamiento-estrategico")} />
+        <IcebergView modo={modoTema} onBack={() => setView("pensamiento-estrategico")} />
       </Suspense>
     );
   }

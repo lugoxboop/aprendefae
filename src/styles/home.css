@@ -21,6 +21,93 @@
 }
 
 /*
+ * Tarjeta de tema partida en "Aprender" / "Hacer".
+ *
+ * Las dos caras ocupan la misma celda del grid y se cruzan con un fundido: la
+ * cerrada se va hacia arriba mientras la abierta entra desde abajo. Al estar
+ * superpuestas la tarjeta no cambia de tamaño ni empuja al resto de la rejilla,
+ * que es lo que hace que se lea como la misma tarjeta cambiando de estado y no
+ * como algo nuevo que aparece encima.
+ */
+.fae-split > .fae-split__cara {
+  grid-area: 1 / 1;
+  transition: opacity 200ms ease, transform 280ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.fae-split__cara[data-visible="false"] {
+  opacity: 0;
+  /* Sin visibility, las caras ocultas seguirían recibiendo foco y clics. */
+  visibility: hidden;
+  pointer-events: none;
+  transition-duration: 150ms, 200ms;
+}
+
+/* La cerrada sale hacia arriba; la abierta llega desde abajo. */
+.fae-split > .fae-split__cara:first-child[data-visible="false"] {
+  transform: translateY(-8px);
+}
+.fae-split > .fae-split__cara:last-child[data-visible="false"] {
+  transform: translateY(10px);
+}
+
+/*
+ * Abierta, la tarjeta deja de levantarse con el puntero: el hover invita a
+ * entrar, y aquí ya se entró. Lo que responde ahora son las dos opciones.
+ */
+.fae-split[data-abierta="true"]:hover {
+  transform: none;
+}
+
+.fae-modo {
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+.fae-modo:hover:not(:disabled) {
+  background: var(--fae-modo-hover-bg);
+  border-color: var(--fae-modo-hover-border);
+  transform: translateY(-2px);
+}
+.fae-modo:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/*
+ * En tarjeta estrecha, la descripción larga envolvía a tres líneas y hacía la
+ * cara abierta más alta que la cerrada: al abrirse, la tarjeta crecía y movía
+ * a las de abajo. Con solo el conteo cabe en una línea y la tarjeta no cambia
+ * de tamaño, que es lo que sostiene la idea de "se transforma en su sitio".
+ */
+@media (max-width: 520px) {
+  .fae-modo__desc {
+    display: none;
+  }
+}
+
+.fae-split__cerrar {
+  transition: color 180ms ease, border-color 180ms ease;
+}
+.fae-split__cerrar:hover {
+  color: #f8f9fa;
+  border-color: rgba(248, 249, 250, 0.5);
+}
+
+/*
+ * Con movimiento reducido el cambio sigue existiendo —hay que poder ver que la
+ * tarjeta cambió— pero sin desplazamiento y casi instantáneo.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .fae-split > .fae-split__cara,
+  .fae-modo {
+    transition-duration: 1ms;
+  }
+  .fae-split > .fae-split__cara[data-visible="false"] {
+    transform: none;
+  }
+  .fae-modo:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/*
  * Buceo progresivo: el gráfico y el nivel actual tienen que verse a la vez, sin
  * desplazar. Es lo que da sentido a la mecánica —percibir la profundidad y el
  * contenido juntos—, así que el alto del dibujo se ajusta al hueco disponible.

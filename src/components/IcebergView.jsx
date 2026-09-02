@@ -6,7 +6,7 @@ import ActivityBadge from "./shared/ActivityBadge.jsx";
 import IcebergDiagram from "./mecanicas/IcebergDiagram.jsx";
 import IcebergArribaAbajo from "./mecanicas/IcebergArribaAbajo.jsx";
 import CasoBlockbuster from "./mecanicas/CasoBlockbuster.jsx";
-import { clasificacionDe } from "../data/subjects.js";
+import { clasificacionDe, APRENDER, HACER } from "../data/subjects.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 
@@ -88,8 +88,28 @@ const h2 = {
   margin: "0 0 10px",
 };
 
-export default function IcebergView({ onBack }) {
+export default function IcebergView({ modo = null, onBack }) {
   const { pedirCuenta } = useAuth();
+
+  /*
+   * Con qué mitad del tema se entró desde la tarjeta partida. Sin modo (null)
+   * la página se muestra entera, que es como se veía antes de la separación y
+   * como sigue llegándose si alguien entra por otro camino.
+   */
+  const muestraAprender = modo !== HACER;
+  const muestraHacer = modo !== APRENDER;
+
+  /*
+   * Las mecánicas se numeran dentro de lo que se está viendo: entrar por
+   * "Hacer" y encontrarse con que la primera es la "MECÁNICA 2" delataría un
+   * filtro sobre una lista pensada para otra cosa.
+   */
+  const orden = [
+    ...(muestraAprender ? ["buceo"] : []),
+    ...(muestraHacer ? ["decision", "arriba-abajo", "blockbuster"] : []),
+  ];
+  const numero = (clave) => orden.indexOf(clave) + 1;
+
   /* Mecánica 1: hasta qué nivel se ha bajado (0 = solo el evento). */
   const [depth, setDepth] = useState(0);
   /* Mecánica 2: decisión tomada con un solo dato, y si ya se reveló el resto. */
@@ -166,11 +186,18 @@ export default function IcebergView({ onBack }) {
           <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1 }}>
             Modelo del Iceberg
           </h1>
+          {/*
+            Con qué mitad se entró. Sin modo, ActivityBadge no dibuja nada, así
+            que la página completa se ve igual que antes sin condicional aquí.
+          */}
+          <ActivityBadge tipo={modo} size="sm" />
         </div>
 
+        {muestraAprender && (
+        <>
         {/* ---------------- Mecánica 1 ---------------- */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-          <p style={{ ...sectionLabel, margin: 0 }}>MECÁNICA 1</p>
+          <p style={{ ...sectionLabel, margin: 0 }}>MECÁNICA {numero("buceo")}</p>
           <ActivityBadge tipo={CLAS_BUCEO?.tipo} size="sm" />
         </div>
         <h2 style={h2}>Bucea el iceberg</h2>
@@ -238,10 +265,14 @@ export default function IcebergView({ onBack }) {
           </p>
         </div>
         </div>
+        </>
+        )}
 
+        {muestraHacer && (
+        <>
         {/* ---------------- Mecánica 2 ---------------- */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-          <p style={{ ...sectionLabel, margin: 0 }}>MECÁNICA 2</p>
+          <p style={{ ...sectionLabel, margin: 0 }}>MECÁNICA {numero("decision")}</p>
           <ActivityBadge tipo={CLAS_DECISION?.tipo} size="sm" />
         </div>
         <h2 style={h2}>Decidir con la punta vs. con el iceberg completo</h2>
@@ -370,7 +401,7 @@ export default function IcebergView({ onBack }) {
 
         {/* ---------------- Mecánica 3 ---------------- */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
-          <p style={{ ...sectionLabel, margin: 0 }}>MECÁNICA 3</p>
+          <p style={{ ...sectionLabel, margin: 0 }}>MECÁNICA {numero("arriba-abajo")}</p>
           <ActivityBadge tipo={CLAS_ARRIBA_ABAJO?.tipo} size="sm" />
         </div>
         <h2 style={h2}>De arriba hacia abajo</h2>
@@ -386,7 +417,7 @@ export default function IcebergView({ onBack }) {
 
         {/* ---------------- Mecánica 4 ---------------- */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
-          <p style={{ ...sectionLabel, margin: 0 }}>MECÁNICA 4</p>
+          <p style={{ ...sectionLabel, margin: 0 }}>MECÁNICA {numero("blockbuster")}</p>
           <ActivityBadge tipo={CLAS_BLOCKBUSTER?.tipo} size="sm" />
         </div>
         <h2 style={h2}>Caso real: Blockbuster</h2>
@@ -399,6 +430,8 @@ export default function IcebergView({ onBack }) {
             completarEvaluativa(CLAS_BLOCKBUSTER, "caso-blockbuster", inicioBlockbuster, pct)
           }
         />
+        </>
+        )}
       </div>
     </div>
   );

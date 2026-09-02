@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { FAE } from "../theme.js";
 import { EMPTY_TOPICS_MESSAGE, tiposDeTema } from "../data/subjects.js";
 import SubjectCard from "./SubjectCard.jsx";
+import TopicSplitCard from "./TopicSplitCard.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import BackgroundVeil from "./shared/BackgroundVeil.jsx";
 import Logo from "./Logo.jsx";
@@ -23,6 +25,12 @@ export default function TopicIndexView({
   veilCenterAlpha,
   onOpenTopic,
 }) {
+  /*
+   * Qué tarjeta está mostrando su elección. Solo una a la vez: dos tarjetas
+   * abiertas en la misma rejilla convierten una decisión en un formulario.
+   */
+  const [abierta, setAbierta] = useState(null);
+
   return (
     <div
       style={{
@@ -92,26 +100,49 @@ export default function TopicIndexView({
                 maxWidth: "760px",
               }}
             >
-              {topics.map((topic) => (
-                <SubjectCard
-                  key={topic.id}
-                  icon={renderTopicIcon(topic)}
-                  title={topic.title}
-                  label={`Tema ${topic.title}`}
-                  /*
-                   * Un tema con actividades de los dos tipos muestra las dos
-                   * insignias; uno sin clasificar no muestra ninguna. Sale del
-                   * dato, sin lógica por tema.
-                   */
-                  badges={tiposDeTema(topic).map((tipo) => (
-                    <ActivityBadge key={tipo} tipo={tipo} size="sm" />
-                  ))}
-                  accent={accent}
-                  hoverBg={hoverBg}
-                  hoverBorder={hoverBorder}
-                  onClick={() => onOpenTopic(topic.id)}
-                />
-              ))}
+              {topics.map((topic) => {
+                /*
+                 * Un tema con actividades de los dos tipos muestra las dos
+                 * insignias; uno sin clasificar no muestra ninguna. Sale del
+                 * dato, sin lógica por tema.
+                 */
+                const badges = tiposDeTema(topic).map((tipo) => (
+                  <ActivityBadge key={tipo} tipo={tipo} size="sm" />
+                ));
+                const comun = {
+                  icon: renderTopicIcon(topic),
+                  badges,
+                  accent,
+                  hoverBg,
+                  hoverBorder,
+                };
+
+                /*
+                 * Los temas cuya vista ya sabe filtrarse por modo ofrecen la
+                 * elección en la propia tarjeta; el resto entra directo, como
+                 * siempre. El campo `modosFiltrados` es el andamio que marca
+                 * ese avance mientras la separación se despliega tema a tema.
+                 */
+                return topic.modosFiltrados ? (
+                  <TopicSplitCard
+                    key={topic.id}
+                    topic={topic}
+                    {...comun}
+                    abierta={abierta === topic.id}
+                    onAbrir={() => setAbierta(topic.id)}
+                    onCerrar={() => setAbierta(null)}
+                    onElegirModo={onOpenTopic}
+                  />
+                ) : (
+                  <SubjectCard
+                    key={topic.id}
+                    {...comun}
+                    title={topic.title}
+                    label={`Tema ${topic.title}`}
+                    onClick={() => onOpenTopic(topic.id)}
+                  />
+                );
+              })}
             </div>
           ) : (
             <p
