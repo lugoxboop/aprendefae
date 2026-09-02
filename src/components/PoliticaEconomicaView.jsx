@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { ChevronLeft } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
+import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import CadenaPolitica from "./mecanicas/CadenaPolitica.jsx";
 import DashboardEconomico from "./mecanicas/DashboardEconomico.jsx";
@@ -59,10 +60,12 @@ export default function PoliticaEconomicaView({ onBack }) {
   };
 
   return (
+    <FondoMateria materiaId="macroeconomia">
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: FAE.bg,
+        /* El color de fondo lo pone FondoMateria; aquí sería una tapa opaca. */
+        backgroundColor: "transparent",
         fontFamily: "Inter, sans-serif",
         color: FAE.text,
         backgroundImage: "radial-gradient(circle at 50% -10%, rgba(231,111,81,0.14), transparent 55%)",
@@ -115,5 +118,6 @@ export default function PoliticaEconomicaView({ onBack }) {
         <DashboardEconomico onCompletar={completarDashboard} />
       </div>
     </div>
+    </FondoMateria>
   );
 }

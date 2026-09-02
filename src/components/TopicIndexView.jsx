@@ -119,12 +119,16 @@ export default function TopicIndexView({
                 };
 
                 /*
-                 * Los temas cuya vista ya sabe filtrarse por modo ofrecen la
-                 * elección en la propia tarjeta; el resto entra directo, como
-                 * siempre. El campo `modosFiltrados` es el andamio que marca
-                 * ese avance mientras la separación se despliega tema a tema.
+                 * Se parte la tarjeta si la vista del tema sabe filtrarse Y hay
+                 * algo que elegir. Un tema sin ninguna actividad clasificada
+                 * —hoy, Fuerzas de Porter— se abriría con las dos opciones
+                 * deshabilitadas: dos clics para llegar a lo mismo. Ese entra
+                 * directo hasta que Gen clasifique sus mecánicas, y entonces se
+                 * parte solo, sin tocar código.
                  */
-                return topic.modosFiltrados ? (
+                const hayQueElegir = tiposDeTema(topic).length > 0;
+
+                return topic.modosFiltrados && hayQueElegir ? (
                   <TopicSplitCard
                     key={topic.id}
                     topic={topic}

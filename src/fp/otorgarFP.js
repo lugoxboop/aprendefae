@@ -1,6 +1,7 @@
 import { supabase } from "../lib/supabase.js";
 import { calcularFP } from "./motor.js";
 import { asegurarEntrada } from "../ligas/ligas.js";
+import { emitirFP } from "./aviso.js";
 
 /*
  * Orquestación del otorgamiento de FP.
@@ -83,6 +84,13 @@ export async function otorgarFP({
    * llamada lo resuelve; por eso no se espera al resultado ni se propaga.
    */
   asegurarEntrada(materiaId);
+
+  /*
+   * El aviso sale de aquí, con el número que de verdad se guardó. Si el motor
+   * recortó por tiempo o por repetición, el estudiante ve el número recortado
+   * y no el de la primera vez.
+   */
+  emitirFP({ fp, desglose, actividadId, materiaId });
 
   return { ok: true, fp, desglose, registro: data };
 }

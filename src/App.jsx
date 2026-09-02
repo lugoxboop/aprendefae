@@ -16,6 +16,7 @@ import HomeScreen from "./components/HomeScreen.jsx";
  */
 import AccountControl from "./components/auth/AccountControl.jsx";
 import AuthDialog from "./components/auth/AuthDialog.jsx";
+import AvisoFP from "./components/shared/AvisoFP.jsx";
 
 /*
  * Cada índice de materia trae su propio fondo animado, así que se cargan aparte:
@@ -251,6 +252,8 @@ export default function App() {
       {node}
       <AccountControl />
       <AuthDialog />
+      {/* Escucha al motor de FP y confirma en pantalla. Se monta una sola vez. */}
+      <AvisoFP />
     </NavigationContext.Provider>
   );
 
@@ -295,7 +298,7 @@ export default function App() {
   if (view === "pensamiento-sistemico") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <PensamientoSistemicoView onBack={() => setView("pensamiento-estrategico")} />
+        <PensamientoSistemicoView modo={modoTema} onBack={() => setView("pensamiento-estrategico")} />
       </Suspense>
     );
   }

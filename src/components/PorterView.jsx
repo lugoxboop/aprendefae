@@ -5,6 +5,7 @@ import {
 } from "recharts";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
+import FondoMateria from "./shared/FondoMateria.jsx";
 
 /*
  * Tema "Fuerzas de Porter" — dos mecánicas sobre la misma página.
@@ -301,10 +302,12 @@ export default function PorterView({ onBack }) {
     });
 
   return (
+    <FondoMateria materiaId="pensamiento-estrategico">
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: FAE.bg,
+        /* El color de fondo lo pone FondoMateria; aquí sería una tapa opaca. */
+        backgroundColor: "transparent",
         fontFamily: "Inter, sans-serif",
         color: FAE.text,
         backgroundImage: "radial-gradient(circle at 50% -10%, rgba(42,157,143,0.16), transparent 55%)",
@@ -460,5 +463,6 @@ export default function PorterView({ onBack }) {
         )}
       </div>
     </div>
+    </FondoMateria>
   );
 }

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useContext } from "react";
 import { FAE } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { NavigationContext } from "../../navigation.js";
+import { rachaVigente } from "../../fp/racha.js";
 import GoogleSignInButton from "./GoogleSignInButton.jsx";
 
 /*
@@ -99,7 +100,7 @@ export default function AccountControl() {
             <div style={{ padding: "8px 10px 10px", borderBottom: "1px solid rgba(248,249,250,0.08)", marginBottom: "6px" }}>
               <p style={{ fontSize: "12px", color: "rgba(248,249,250,0.45)", margin: "0 0 3px" }}>Tu progreso</p>
               <p style={{ fontSize: "13px", color: FAE.text, margin: 0 }}>
-                {perfil.points} pts · racha {perfil.streak}
+                {perfil.points} pts · racha {rachaVigente(perfil)}
               </p>
             </div>
           )}

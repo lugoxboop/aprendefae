@@ -89,6 +89,7 @@ export const SUBJECTS = {
       {
         id: "pensamiento-sistemico",
         title: "Pensamiento Sistémico",
+        modosFiltrados: true,
         actividades: [
           {
             id: "comparador-cadena-red",

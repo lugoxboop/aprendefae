@@ -6,6 +6,7 @@ import { useAuth } from "../auth/AuthProvider.jsx";
 import { useContext, useEffect, useState } from "react";
 import { NavigationContext } from "../navigation.js";
 import { accesoDocente } from "../docente/datos.js";
+import { rachaVigente, proximoHito, enRiesgoHoy } from "../fp/racha.js";
 
 /*
  * Perfil del estudiante. Se llega desde el indicador de cuenta de la cabecera.
@@ -31,6 +32,10 @@ export default function PerfilView({ onBack }) {
   useEffect(() => { accesoDocente().then((a) => setEsDocente(a.esDocente)); }, []);
 
   const { perfil, session, pedirCuenta } = useAuth();
+
+  const racha = rachaVigente(perfil);
+  const siguiente = proximoHito(racha);
+  const enRiesgo = enRiesgoHoy(perfil);
 
   return (
     <div
@@ -102,13 +107,35 @@ export default function PerfilView({ onBack }) {
                   {perfil?.points ?? 0}
                 </p>
               </div>
+              {/*
+                La racha que se enseña es la vigente, no la guardada: si pasó un
+                día entero sin entrar, se acabó, y mostrar el número viejo sería
+                el mismo dato falso que había antes.
+              */}
               <div style={dato}>
                 <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>Racha</p>
                 <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "24px", margin: 0, color: FAE.text, fontVariantNumeric: "tabular-nums" }}>
-                  {perfil?.streak ?? 0}
+                  {racha} {racha === 1 ? "día" : "días"}
+                </p>
+                {siguiente && (
+                  <p style={{ fontSize: "11.5px", color: FAE.teal, margin: "4px 0 0" }}>
+                    {siguiente - racha === 1 ? "1 día" : `${siguiente - racha} días`} para el bono de {siguiente}
+                  </p>
+                )}
+              </div>
+              <div style={dato}>
+                <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>Récord de racha</p>
+                <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "24px", margin: 0, color: FAE.text, fontVariantNumeric: "tabular-nums" }}>
+                  {perfil?.best_streak ?? 0} {(perfil?.best_streak ?? 0) === 1 ? "día" : "días"}
                 </p>
               </div>
             </div>
+
+            {enRiesgo && (
+              <p style={{ fontSize: "13px", lineHeight: 1.5, color: FAE.ambar, margin: "-14px 0 26px" }}>
+                Tu racha de {racha} {racha === 1 ? "día" : "días"} se corta si hoy no completas nada.
+              </p>
+            )}
           </>
         )}
 

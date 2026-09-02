@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { ChevronLeft } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
+import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import MapaCausal from "./mecanicas/MapaCausal.jsx";
-import { clasificacionDe } from "../data/subjects.js";
+import { clasificacionDe, APRENDER, HACER } from "../data/subjects.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 
@@ -163,7 +164,14 @@ function DiagramNode({ node, nodeW, nodeH }) {
   );
 }
 
-export default function PensamientoSistemicoView({ onBack }) {
+export default function PensamientoSistemicoView({ modo = null, onBack }) {
+  /*
+   * Con qué mitad se entró desde la tarjeta partida. Sin modo se ve entera,
+   * igual que antes de la separación.
+   */
+  const muestraAprender = modo !== HACER;
+  const muestraHacer = modo !== APRENDER;
+
   const { pedirCuenta } = useAuth();
   const [systemic, setSystemic] = useState(false);
   const layout = useLayout();
@@ -182,10 +190,12 @@ export default function PensamientoSistemicoView({ onBack }) {
   };
 
   return (
+    <FondoMateria materiaId="pensamiento-estrategico">
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: FAE.bg,
+        /* El color de fondo lo pone FondoMateria; aquí sería una tapa opaca. */
+        backgroundColor: "transparent",
         fontFamily: "Inter, sans-serif",
         color: FAE.text,
         backgroundImage:
@@ -231,6 +241,8 @@ export default function PensamientoSistemicoView({ onBack }) {
           </h1>
         </div>
 
+        {muestraAprender && (
+        <>
         <div style={{ marginBottom: "10px" }}>
           <ActivityBadge tipo={CLASIFICACION?.tipo} />
         </div>
@@ -433,10 +445,15 @@ export default function PensamientoSistemicoView({ onBack }) {
           </div>
         )}
 
+        </>
+        )}
+
+        {muestraHacer && (
+        <>
         {/* ---------------- Mecánica 2: constructor de mapa causal ---------------- */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
           <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.teal, margin: 0 }}>
-            MECÁNICA 2
+            MECÁNICA {muestraAprender ? 2 : 1}
           </p>
           <ActivityBadge tipo={CLAS_MAPA?.tipo} size="sm" />
         </div>
@@ -462,7 +479,10 @@ export default function PensamientoSistemicoView({ onBack }) {
         </p>
 
         <MapaCausal onCompletar={completarMapa} />
+        </>
+        )}
       </div>
     </div>
+    </FondoMateria>
   );
 }

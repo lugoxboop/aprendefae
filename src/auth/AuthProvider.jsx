@@ -41,7 +41,7 @@ export function AuthProvider({ children }) {
     if (!supabase || !userId) return { perfil: null, error: null };
     const { data, error } = await supabase
       .from("profiles")
-      .select("user_id, nickname, full_name, points, streak, created_at")
+      .select("user_id, nickname, full_name, points, streak, best_streak, last_activity_day, created_at")
       .eq("user_id", userId)
       .maybeSingle();
     if (error) {
@@ -120,7 +120,7 @@ export function AuthProvider({ children }) {
       const { data, error } = await supabase
         .from("profiles")
         .insert({ user_id: session.user.id, nickname: limpio, full_name: nombre })
-        .select("user_id, nickname, full_name, points, streak, created_at")
+        .select("user_id, nickname, full_name, points, streak, best_streak, last_activity_day, created_at")
         .single();
 
       if (error) {

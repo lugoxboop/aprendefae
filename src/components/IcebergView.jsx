@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { ChevronLeft, ArrowDown, RotateCcw } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
+import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import IcebergDiagram from "./mecanicas/IcebergDiagram.jsx";
 import IcebergArribaAbajo from "./mecanicas/IcebergArribaAbajo.jsx";
@@ -157,10 +158,12 @@ export default function IcebergView({ modo = null, onBack }) {
   };
 
   return (
+    <FondoMateria materiaId="pensamiento-estrategico">
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: FAE.bg,
+        /* El color de fondo lo pone FondoMateria; aquí sería una tapa opaca. */
+        backgroundColor: "transparent",
         fontFamily: "Inter, sans-serif",
         color: FAE.text,
         backgroundImage: "radial-gradient(circle at 50% -10%, rgba(42,157,143,0.16), transparent 55%)",
@@ -434,5 +437,6 @@ export default function IcebergView({ modo = null, onBack }) {
         )}
       </div>
     </div>
+    </FondoMateria>
   );
 }
