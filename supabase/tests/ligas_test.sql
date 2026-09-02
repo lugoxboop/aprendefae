@@ -2,7 +2,20 @@
 --
 -- Se pega entero en el SQL Editor de Supabase y se corre de una vez. Crea sus
 -- propios usuarios y datos de mentira, comprueba las reglas y termina en
--- ROLLBACK: no deja rastro y no toca los datos reales de nadie.
+-- ROLLBACK: no deja rastro.
+--
+-- EL ESCENARIO VIVE EN SU PROPIA MATERIA INVENTADA, 'zzz-prueba-ligas', y no
+-- en una real. Dos motivos, y los dos importan:
+--
+--   1. Nada de lo que hace aquí puede tocar el historial de un estudiante de
+--      verdad, ni siquiera si alguien ejecutara un trozo suelto del archivo
+--      fuera de la transacción.
+--   2. Los conteos salen deterministas. Sembrando sobre una materia con uso
+--      real, los 30 estudiantes de mentira se mezclarían con los reales y
+--      "3 ligas de 10" fallaría sin que nada estuviera roto.
+--
+-- La lógica de ligas es genérica por materia, así que probarla en una materia
+-- de mentira la prueba igual de bien.
 --
 -- Los nueve chequeos se van guardando en una tabla temporal y se muestran
 -- juntos al final, en un único resultado. Es a propósito: el editor de Supabase
@@ -40,7 +53,7 @@ select 1, 'Tamaños de liga según activos',
     public.ligas_para(59), public.ligas_para(60), public.ligas_para(100));
 
 -- ---------------------------------------------------------------------------
--- Escenario: 30 estudiantes de mentira en Pensamiento Estratégico
+-- Escenario: 30 estudiantes de mentira en la materia de prueba
 -- ---------------------------------------------------------------------------
 create temporary table ids (n integer, uid uuid) on commit drop;
 insert into ids (n, uid) select g, gen_random_uuid() from generate_series(1, 30) g;
@@ -55,11 +68,11 @@ select uid, 'liga_' || lpad(n::text, 2, '0') from ids;
 
 /* FP de una semana anterior: el estudiante n tiene n*10 FP. */
 insert into public.fp_history (user_id, activity_id, subject_id, fp_awarded, difficulty, modality, created_at)
-select uid, 'act-previa', 'pensamiento-estrategico', n * 10, 'medio', 'evaluativa',
+select uid, 'act-previa', 'zzz-prueba-ligas', n * 10, 'medio', 'evaluativa',
        (public.ciclo_actual() - 3)::timestamp at time zone 'America/Bogota'
   from ids;
 
-select public.ligas_sembrar('pensamiento-estrategico');
+select public.ligas_sembrar('zzz-prueba-ligas');
 
 -- ---------------------------------------------------------------------------
 -- 2 y 3. Reparto inicial
@@ -70,7 +83,7 @@ select 2, '30 activos se reparten en 3 ligas de 10',
   'reparto → ' || string_agg('liga ' || liga || ': ' || c, ' | ' order by liga)
 from (
   select liga, count(*) as c from public.liga_membresia
-   where subject_id = 'pensamiento-estrategico' and ciclo = public.ciclo_actual()
+   where subject_id = 'zzz-prueba-ligas' and ciclo = public.ciclo_actual()
    group by liga
 ) x;
 
@@ -92,13 +105,15 @@ from (
 -- ---------------------------------------------------------------------------
 update public.liga_membresia
    set ciclo = public.ciclo_actual() - 7
- where subject_id = 'pensamiento-estrategico' and ciclo = public.ciclo_actual();
+ where subject_id = 'zzz-prueba-ligas' and ciclo = public.ciclo_actual();
 
-delete from public.fp_history where subject_id = 'pensamiento-estrategico';
+delete from public.fp_history
+ where subject_id = 'zzz-prueba-ligas'
+   and user_id in (select uid from ids);
 
 /* Liga 2 (estudiantes 11..20). El 11 se queda SIN actividad a propósito. */
 insert into public.fp_history (user_id, activity_id, subject_id, fp_awarded, difficulty, modality, created_at)
-select uid, 'act-semana', 'pensamiento-estrategico',
+select uid, 'act-semana', 'zzz-prueba-ligas',
        case n when 20 then 100 when 19 then 90 when 18 then 80
               when 12 then 5   when 13 then 6  when 14 then 7
               else 50 end,
@@ -108,11 +123,11 @@ select uid, 'act-semana', 'pensamiento-estrategico',
 
 /* Liga 1 (21..30) y liga 3 (1..10) compiten normal. */
 insert into public.fp_history (user_id, activity_id, subject_id, fp_awarded, difficulty, modality, created_at)
-select uid, 'act-semana', 'pensamiento-estrategico', n * 3, 'medio', 'evaluativa',
+select uid, 'act-semana', 'zzz-prueba-ligas', n * 3, 'medio', 'evaluativa',
        (public.ciclo_actual() - 5)::timestamp at time zone 'America/Bogota'
   from ids where n between 21 and 30 or n between 1 and 10;
 
-select public.ligas_sembrar('pensamiento-estrategico');
+select public.ligas_sembrar('zzz-prueba-ligas');
 
 -- ---------------------------------------------------------------------------
 -- 4, 5 y 6. Ascenso, descenso y la regla del inactivo
@@ -145,7 +160,7 @@ from (
 -- ---------------------------------------------------------------------------
 update public.fp_history
    set fp_awarded = 80
- where subject_id = 'pensamiento-estrategico'
+ where subject_id = 'zzz-prueba-ligas'
    and user_id in (select uid from ids where n in (17, 18));
 
 insert into resultado_prueba
@@ -173,19 +188,21 @@ select 8, 'Tablero: corta al 28% y solo devuelve podio + tu fila',
 from (
   select max(tam_liga) as tam, max(corte_podio) as corte,
          count(*) as filas, count(*) filter (where es_tuyo) as tuyas
-    from public.liga_tablero('pensamiento-estrategico')
+    from public.liga_tablero('zzz-prueba-ligas')
 ) t;
 
 reset role;
 
 -- ---------------------------------------------------------------------------
--- 9. Macroeconomía no queda sembrada
+-- 9. Ninguna materia real quedó tocada
 -- ---------------------------------------------------------------------------
 insert into resultado_prueba
-select 9, 'Macroeconomía sigue sin ligas',
-  case when not exists (select 1 from public.liga_membresia where subject_id = 'macroeconomia')
-       then 'PASA' else 'FALLA' end,
-  'el lanzamiento es solo para Pensamiento Estratégico';
+select 9, 'Ninguna materia real quedó tocada',
+  case when not exists (
+    select 1 from public.liga_membresia
+     where subject_id in ('macroeconomia', 'pensamiento-estrategico')
+  ) then 'PASA' else 'FALLA' end,
+  'el escenario vivió entero en la materia de prueba';
 
 -- ---------------------------------------------------------------------------
 -- RESULTADO
