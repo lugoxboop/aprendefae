@@ -2,194 +2,123 @@ import { useEffect, useRef } from "react";
 import { shouldRenderStatic, isNarrowViewport } from "../../utils/device.js";
 
 /*
- * Fondo de la portada: un colibrí libando entre flores.
+ * Fondo de la portada: un colibrí en silueta, acercándose y alejándose.
  *
- * Es lo primero que ve cualquiera, así que se dibuja en canvas 2D y no con
- * vídeo ni con Three.js. Un loop de vídeo presentable son megas, y esta
- * pantalla es justo donde el peso más duele: hoy la portada entera son 53 kB
- * comprimidos. Esto no añade ni una dependencia.
+ * SEGUNDA DIRECCIÓN. La primera buscaba realismo —plumaje, iridiscencia,
+ * barrido del ala— y a tamaño de fondo no se leía como un colibrí: se leía como
+ * un insecto. El detalle fino no sobrevive a 40 px. Aquí no hay detalle: hay
+ * una silueta grande y limpia, y la profundidad la da el TAMAÑO, no la textura.
  *
- * DÓNDE ESTÁ EL REALISMO, que es lo que se pidió y no es lo mismo que detalle:
+ * LO QUE HACE QUE SE LEA COMO COLIBRÍ, en orden de importancia:
  *
- *   · El ala no se anima batiendo. Un colibrí bate a 50 Hz y el ojo no ve un
- *     ala: ve un huso borroso. Se dibuja ese huso —varias siluetas
- *     superpuestas con alfa bajo— y se le modula la amplitud. Intentar animar
- *     el batido a 30 fps daría un aleteo de dibujo animado, justo lo contrario.
- *   · El vuelo estacionario nunca está quieto: dos senos de periodos primos
- *     entre sí desplazan el cuerpo unos pocos píxeles, así que la posición no
- *     se repite de forma reconocible.
- *   · Al libar, el pico entra en la corola y el cuerpo retrocede un poco: un
- *     colibrí se sostiene contra la flor, no la empuja.
- *   · Los traslados van por una Bézier con salida y entrada suaves, y el cuerpo
- *     se inclina hacia donde va. Nunca hay tirones.
+ *   1. EL PICO. Es el rasgo que decide, y era lo que fallaba antes: iba corto y
+ *      recto. Aquí es largo —más de medio cuerpo—, fino y curvado. Sin eso,
+ *      cualquier pájaro pequeño en silueta con las alas abiertas se lee como
+ *      una mosca.
+ *   2. La cola en abanico con la muesca central. Un insecto no tiene cola; esa
+ *      horquilla descarta la lectura de insecto de un vistazo.
+ *   3. El cuerpo compacto y sin cuello: la proporción del colibrí.
+ *   4. Las alas como dos barridos curvos hacia atrás, no como aspas. Sugieren
+ *      el aleteo sin animarlo: animar un batido de 50 Hz a 30 fps daría un
+ *      aleteo de dibujo animado.
  *
- * PALETA: el navy de la marca al fondo; coral y teal en los pétalos y en la
- * iridiscencia de la garganta, que es donde un colibrí de verdad los tendría.
- *
- * COMPOSICIÓN: las flores viven en la banda baja y en los laterales. La franja
- * central alta, donde va el titular rotativo, se deja despejada a propósito.
+ * La silueta se traza en coordenadas de cuerpo (1 = largo del cuerpo) y se
+ * escala entera, así que la forma es idéntica de cerca y de lejos — que es
+ * justo lo que se busca con la perspectiva por tamaño.
  */
 
 const BG = "#0E1B2E";
-const CORAL = "#E76F51";
-const TEAL = "#2A9D8F";
-const CLARO = "#CBDCF2";
 
-/* Cap de fotogramas, igual que los otros fondos del sitio. */
 const FPS = 30;
 
-/* Posiciones en fracción del lienzo. Ninguna cae en el centro alto. */
-const FLORES_ANCHO = [
-  { x: 0.09, y: 0.82, escala: 1.0, tono: CORAL, giro: -0.25 },
-  { x: 0.91, y: 0.79, escala: 0.9, tono: TEAL, giro: 0.3 },
-  { x: 0.66, y: 0.9, escala: 0.8, tono: CORAL, giro: 0.1 },
-  { x: 0.34, y: 0.93, escala: 0.72, tono: TEAL, giro: -0.15 },
-];
+/* Ciclo de acercarse y alejarse. Lento a propósito. */
+const CICLO_MS = 26000;
 
-/* En vertical caben menos y más abajo: el titular ocupa más proporción. */
-const FLORES_ANGOSTO = [
-  { x: 0.12, y: 0.86, escala: 0.92, tono: CORAL, giro: -0.2 },
-  { x: 0.87, y: 0.83, escala: 0.82, tono: TEAL, giro: 0.28 },
-  { x: 0.5, y: 0.95, escala: 0.74, tono: CORAL, giro: 0.05 },
-];
-
-const lerp = (a, b, t) => a + (b - a) * t;
-/* Suavizado en los dos extremos: ni arranca de golpe ni frena en seco. */
 const suave = (t) => t * t * (3 - 2 * t);
 
-function dibujarFlor(g, f, w, h, t) {
-  const x = f.x * w;
-  const y = f.y * h;
-  const s = f.escala * Math.min(w, h) * 0.075;
-  /* Vaivén lentísimo, como de aire quieto. Cada flor con su propia fase. */
-  const mecer = Math.sin(t * 0.0004 + f.x * 9) * 0.05;
-
-  g.save();
-  g.translate(x, y);
-  g.rotate(f.giro + mecer);
-
-  /* Tallo: una curva, no una línea recta. */
-  g.beginPath();
-  g.moveTo(0, s * 0.6);
-  g.quadraticCurveTo(s * 0.35, s * 2.4, s * 0.1, s * 4.6);
-  g.strokeStyle = "rgba(203,220,242,0.16)";
-  g.lineWidth = Math.max(1.2, s * 0.075);
-  g.stroke();
-
-  /* Dos hojas lanceoladas. */
-  for (const [dy, lado] of [[s * 1.9, 1], [s * 3.1, -1]]) {
-    g.beginPath();
-    g.ellipse(lado * s * 0.5, dy, s * 0.62, s * 0.2, lado * 0.5, 0, Math.PI * 2);
-    g.fillStyle = "rgba(42,157,143,0.13)";
-    g.fill();
-  }
-
-  /* Corola: cinco pétalos abiertos. */
-  const petalos = 5;
-  for (let i = 0; i < petalos; i++) {
-    const a = (i / petalos) * Math.PI * 2 + mecer * 2;
-    g.save();
-    g.rotate(a);
-    const grad = g.createLinearGradient(0, 0, 0, -s * 1.15);
-    grad.addColorStop(0, f.tono + "20");
-    grad.addColorStop(0.55, f.tono + "6e");
-    grad.addColorStop(1, f.tono + "12");
-    g.beginPath();
-    g.ellipse(0, -s * 0.62, s * 0.3, s * 0.62, 0, 0, Math.PI * 2);
-    g.fillStyle = grad;
-    g.fill();
-    g.restore();
-  }
-
-  /* Centro, con un halo tenue que le da profundidad a la corola. */
-  const halo = g.createRadialGradient(0, 0, 0, 0, 0, s * 0.55);
-  halo.addColorStop(0, "rgba(248,249,250,0.5)");
-  halo.addColorStop(1, "rgba(248,249,250,0)");
-  g.beginPath();
-  g.arc(0, 0, s * 0.55, 0, Math.PI * 2);
-  g.fillStyle = halo;
-  g.fill();
-
-  g.restore();
-}
-
 /*
- * El colibrí. `dir` es 1 mirando a la derecha y -1 a la izquierda; `inclina` lo
- * ladea hacia donde viaja; `libando` mete el pico y abre la cola.
+ * La silueta, en coordenadas de cuerpo, mirando a la derecha.
+ *
+ * El orden de dibujo importa: alas y cola primero, cuerpo y cabeza encima. Así
+ * las alas nacen por detrás del cuerpo y no hay que recortar nada.
  */
-function dibujarColibri(g, x, y, escala, dir, inclina, libando, t) {
-  const s = escala;
-
-  g.save();
-  g.translate(x, y);
-  g.rotate(inclina);
-  g.scale(dir, 1);
-
-  /* ---------- alas: el huso borroso, no un ala dibujada ---------- */
-  const barrido = 0.34 + Math.sin(t * 0.02) * 0.06;
-  for (let i = 0; i < 5; i++) {
-    const k = i / 4;
-    const ang = lerp(-barrido, barrido, k) - 0.15;
+function trazarColibri(g, apertura) {
+  /*
+   * ---------- alas ----------
+   * Elipses alargadas, no curvas cerradas. Se probaron las dos formas: con
+   * curvas de Bézier los dos bordes se juntaban cerca de la punta y el ala
+   * salía como una púa —de ahí venía la lectura de insecto—. Una elipse tiene
+   * ancho en el centro por construcción, que es lo que hace que se lea como ala.
+   */
+  const ala = (ang, largo, ancho) => {
     g.save();
-    g.translate(-s * 0.1, -s * 0.05);
+    g.translate(-0.06, -0.16);
     g.rotate(ang);
     g.beginPath();
-    g.ellipse(-s * 0.95, 0, s * 1.0, s * 0.19, 0, 0, Math.PI * 2);
-    /* Los extremos del barrido pesan menos: así el borrón tiene volumen. */
-    g.fillStyle = `rgba(203,220,242,${0.07 + 0.075 * Math.sin(k * Math.PI)})`;
+    g.ellipse(-largo * 0.86, 0, largo, ancho, 0, 0, Math.PI * 2);
     g.fill();
     g.restore();
-  }
+  };
+  ala(0.62, 0.86 * apertura, 0.2);   // la de atrás, más baja
+  ala(1.02, 0.98 * apertura, 0.26);  // la principal, más alta y ancha
 
-  /* ---------- cola ---------- */
-  const abanico = libando ? 0.32 : 0.14;
-  for (let i = -2; i <= 2; i++) {
-    g.save();
-    g.rotate(i * abanico * 0.5);
-    g.beginPath();
-    g.ellipse(-s * 1.35, 0, s * 0.5, s * 0.075, 0, 0, Math.PI * 2);
-    g.fillStyle = "rgba(203,220,242,0.3)";
-    g.fill();
-    g.restore();
-  }
-
-  /* ---------- cuerpo: el dorso lleva la iridiscencia teal→coral ---------- */
-  const cuerpo = g.createLinearGradient(-s * 0.9, -s * 0.3, s * 0.6, s * 0.3);
-  cuerpo.addColorStop(0, TEAL);
-  cuerpo.addColorStop(0.55, "#3f7d86");
-  cuerpo.addColorStop(1, "#2b4a63");
+  /* ---------- cola: corta, ancha y ahorquillada ---------- */
   g.beginPath();
-  g.ellipse(-s * 0.15, 0, s * 0.82, s * 0.36, 0, 0, Math.PI * 2);
-  g.fillStyle = cuerpo;
-  g.fill();
-
-  /* Garganta: el destello coral que un colibrí enseña al girar. */
-  const gorguera = g.createRadialGradient(s * 0.42, s * 0.1, 0, s * 0.42, s * 0.1, s * 0.36);
-  const brillo = 0.45 + 0.3 * Math.sin(t * 0.0012);
-  gorguera.addColorStop(0, `rgba(231,111,81,${brillo})`);
-  gorguera.addColorStop(1, "rgba(231,111,81,0)");
-  g.beginPath();
-  g.ellipse(s * 0.42, s * 0.1, s * 0.36, s * 0.26, 0, 0, Math.PI * 2);
-  g.fillStyle = gorguera;
-  g.fill();
-
-  /* ---------- cabeza y pico ---------- */
-  g.beginPath();
-  g.arc(s * 0.62, -s * 0.1, s * 0.29, 0, Math.PI * 2);
-  g.fillStyle = "#2f5a6b";
-  g.fill();
-
-  g.beginPath();
-  g.arc(s * 0.72, -s * 0.16, s * 0.055, 0, Math.PI * 2);
-  g.fillStyle = "rgba(14,27,46,0.9)";
-  g.fill();
-
-  g.beginPath();
-  g.moveTo(s * 0.86, -s * 0.12);
-  g.lineTo(s * 1.95, -s * 0.02);
-  g.lineTo(s * 0.86, s * 0.02);
+  g.moveTo(-0.34, -0.14);
+  g.lineTo(-1.05, -0.34);
+  g.quadraticCurveTo(-0.84, -0.02, -1.02, 0.28);
+  g.lineTo(-0.34, 0.22);
   g.closePath();
-  g.fillStyle = "rgba(203,220,242,0.72)";
+  g.fill();
+
+  /* ---------- cuerpo: compacto, sin cuello ---------- */
+  g.beginPath();
+  g.ellipse(0.02, 0, 0.5, 0.4, -0.14, 0, Math.PI * 2);
+  g.fill();
+
+  /* ---------- cabeza, fundida con el cuerpo ---------- */
+  g.beginPath();
+  g.arc(0.55, -0.24, 0.28, 0, Math.PI * 2);
+  g.fill();
+
+  /*
+   * ---------- pico ----------
+   * Sale de la CABEZA, no del cuerpo, y mide más que el cuerpo entero. Va por
+   * el borde superior hasta la punta y vuelve por el inferior, así que se
+   * estrecha de forma continua en vez de ser un triángulo.
+   */
+  g.beginPath();
+  g.moveTo(0.78, -0.35);
+  g.bezierCurveTo(1.3, -0.5, 1.9, -0.58, 2.32, -0.56);
+  g.bezierCurveTo(1.9, -0.45, 1.3, -0.33, 0.8, -0.2);
+  g.closePath();
+  g.fill();
+}
+
+/* Flor en silueta: presente, pero claramente por detrás en importancia. */
+function trazarFlor(g, s, t) {
+  g.save();
+  g.rotate(Math.sin(t * 0.0004) * 0.04);
+
+  g.beginPath();
+  g.moveTo(0, s * 0.5);
+  g.quadraticCurveTo(s * 0.4, s * 2.2, s * 0.15, s * 4.2);
+  g.strokeStyle = "rgba(42,157,143,0.22)";
+  g.lineWidth = Math.max(1.5, s * 0.09);
+  g.stroke();
+
+  g.fillStyle = "rgba(231,111,81,0.24)";
+  for (let i = 0; i < 5; i++) {
+    g.save();
+    g.rotate((i / 5) * Math.PI * 2);
+    g.beginPath();
+    g.ellipse(0, -s * 0.66, s * 0.3, s * 0.66, 0, 0, Math.PI * 2);
+    g.fill();
+    g.restore();
+  }
+  g.beginPath();
+  g.arc(0, 0, s * 0.24, 0, Math.PI * 2);
+  g.fillStyle = "rgba(231,111,81,0.38)";
   g.fill();
 
   g.restore();
@@ -208,7 +137,7 @@ export default function HummingbirdBackground({ animation = true }) {
     const quieto = shouldRenderStatic(animation);
     let w = 0;
     let h = 0;
-    let flores = FLORES_ANCHO;
+    let angosto = false;
 
     const medir = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -219,94 +148,67 @@ export default function HummingbirdBackground({ animation = true }) {
       cv.style.width = `${w}px`;
       cv.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      flores = isNarrowViewport() ? FLORES_ANGOSTO : FLORES_ANCHO;
-    };
-
-    /*
-     * El recorrido: de flor en flor, en orden, sin repetir la anterior. Cada
-     * visita son dos tramos —viaje y libado— y el ciclo no se reinicia nunca,
-     * así que no hay costura visible.
-     */
-    const VIAJE = 5200;
-    const LIBAR = 4200;
-    const CICLO = VIAJE + LIBAR;
-
-    const posicionColibri = (t) => {
-      const n = flores.length;
-      const paso = Math.floor(t / CICLO);
-      const fase = (t % CICLO) / CICLO;
-      const desde = flores[paso % n];
-      const hasta = flores[(paso + 1) % n];
-
-      /* Punto de libado: justo al lado de la corola, a la altura del pico. */
-      const puntoDe = (f) => ({
-        x: f.x * w - (f.x > 0.5 ? 1 : -1) * Math.min(w, h) * 0.075,
-        y: f.y * h - Math.min(w, h) * 0.012,
-      });
-      const a = puntoDe(desde);
-      const b = puntoDe(hasta);
-
-      const tViaje = VIAJE / CICLO;
-      let x;
-      let y;
-      let libando = false;
-      let avance = 0;
-
-      if (fase < tViaje) {
-        const k = suave(fase / tViaje);
-        /* Bézier con un control alto: el colibrí sube antes de cruzar. */
-        const cx = (a.x + b.x) / 2;
-        const cy = Math.min(a.y, b.y) - h * 0.075;
-        const u = 1 - k;
-        x = u * u * a.x + 2 * u * k * cx + k * k * b.x;
-        y = u * u * a.y + 2 * u * k * cy + k * k * b.y;
-        avance = (b.x - a.x) * 0.001;
-      } else {
-        libando = true;
-        const k = (fase - tViaje) / (1 - tViaje);
-        /* Se acerca, bebe y se separa: un solo gesto de ida y vuelta. */
-        const entrada = Math.sin(Math.min(1, k * 1.35) * Math.PI) * Math.min(w, h) * 0.022;
-        const dir = hasta.x > 0.5 ? 1 : -1;
-        x = b.x + dir * entrada;
-        y = b.y;
-      }
-
-      /* Vuelo estacionario: dos senos de periodo distinto, nunca se repiten igual. */
-      x += Math.sin(t * 0.0011) * 3.5;
-      y += Math.sin(t * 0.0017 + 1.1) * 4.5 + Math.sin(t * 0.0006) * 2;
-
-      const mira = libando ? (hasta.x > 0.5 ? 1 : -1) : b.x >= a.x ? 1 : -1;
-      const inclina = libando ? Math.sin(t * 0.0009) * 0.05 : Math.max(-0.3, Math.min(0.3, avance)) * -mira;
-
-      return { x, y, mira, inclina, libando };
+      angosto = isNarrowViewport();
     };
 
     const pintar = (t) => {
       ctx.fillStyle = BG;
       ctx.fillRect(0, 0, w, h);
 
-      /* Un rescoldo cálido abajo, para que el navy no quede plano. */
-      const suelo = ctx.createRadialGradient(w * 0.5, h * 1.02, 0, w * 0.5, h * 1.02, h * 0.72);
-      suelo.addColorStop(0, "rgba(42,157,143,0.11)");
-      suelo.addColorStop(1, "rgba(42,157,143,0)");
-      ctx.fillStyle = suelo;
-      ctx.fillRect(0, 0, w, h);
+      const base = Math.min(w, h);
 
-      for (const f of flores) dibujarFlor(ctx, f, w, h, t);
+      /*
+       * La flor vive en la banda baja, del lado contrario al colibrí. La franja
+       * del titular queda despejada, igual que en la versión anterior: es lo
+       * que sostiene el contraste medido.
+       */
+      ctx.save();
+      ctx.translate(w * (angosto ? 0.84 : 0.93), h * (angosto ? 0.9 : 0.9));
+      trazarFlor(ctx, base * (angosto ? 0.055 : 0.062), t);
+      ctx.restore();
 
-      const p = posicionColibri(t);
-      dibujarColibri(ctx, p.x, p.y, Math.min(w, h) * 0.052, p.mira, p.inclina, p.libando, t);
+      /*
+       * Perspectiva por tamaño: un ciclo lento de acercarse y alejarse, con
+       * suavizado en los dos extremos para que no haya un instante de rebote.
+       */
+      const fase = (t % CICLO_MS) / CICLO_MS;
+      const cerca = suave(1 - Math.abs(fase * 2 - 1));
+      const escala = base * (angosto ? 0.085 : 0.11) * (0.5 + cerca * 0.5);
+
+      /* Al acercarse baja y deriva hacia la flor: refuerza la profundidad. */
+      const x = w * (angosto ? 0.32 : 0.58) + cerca * w * (angosto ? 0.26 : 0.2);
+      const y = h * (angosto ? 0.88 : 0.895) + Math.sin(t * 0.0013) * base * 0.012;
+
+      /* Vuelo estacionario: la silueta nunca queda perfectamente quieta. */
+      const cabeceo = Math.sin(t * 0.0009) * 0.06 + Math.sin(t * 0.0021) * 0.02;
+      const apertura = 0.92 + Math.sin(t * 0.0016) * 0.08;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(escala, escala);
+      ctx.rotate(cabeceo);
+
+      /*
+       * Un tono con degradado sutil de teal a coral a lo largo del cuerpo. No
+       * es plumaje: es que la silueta pertenezca a la marca.
+       */
+      const tinte = ctx.createLinearGradient(-1.5, 0, 2.2, 0);
+      tinte.addColorStop(0, "rgba(42,157,143,0.38)");
+      tinte.addColorStop(0.55, "rgba(58,150,152,0.62)");
+      tinte.addColorStop(1, "rgba(231,111,81,0.74)");
+      ctx.fillStyle = tinte;
+
+      trazarColibri(ctx, apertura);
+      ctx.restore();
     };
 
     medir();
 
     if (quieto) {
-      /*
-       * Gama baja o movimiento reducido: un solo fotograma, con el colibrí ya
-       * libando en la primera flor. No se pide requestAnimationFrame ni una vez.
-       */
-      pintar(VIAJE + LIBAR * 0.5);
-      onResize = () => { medir(); pintar(VIAJE + LIBAR * 0.5); };
+      /* Gama baja: un fotograma con el colibrí ya cerca. Sin rAF ni una vez. */
+      const congelado = CICLO_MS * 0.5;
+      pintar(congelado);
+      onResize = () => { medir(); pintar(congelado); };
       window.addEventListener("resize", onResize);
       return () => window.removeEventListener("resize", onResize);
     }
