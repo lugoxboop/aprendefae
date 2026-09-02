@@ -3,27 +3,40 @@ import { FAE } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 
 /*
- * Paso de apodo del primer ingreso. Es parte del login, no una pantalla que se
- * pueda saltar: mientras no exista fila de perfil, este paso sigue en pantalla.
+ * Paso del primer ingreso. Es parte del login, no una pantalla que se pueda
+ * saltar: mientras no exista fila de perfil, este paso sigue en pantalla.
  *
- * El apodo es lo que ven los demás en los rankings; el nombre real de Google no
- * se muestra nunca.
+ * Se piden dos cosas distintas y conviene no confundirlas:
+ *
+ *   apodo        lo público. Es lo único que ven los demás estudiantes en los
+ *                rankings, y sigue siendo así.
+ *   nombre real  privado. Solo lo ve el docente autorizado del curso, en su
+ *                panel, para saber a quién corresponde cada avance — un apodo
+ *                no le sirve para eso. No aparece en ningún ranking.
+ *
+ * La pantalla lo dice con esas palabras: pedir el nombre real sin explicar a
+ * dónde va sería recoger un dato personal a espaldas de quien lo entrega.
  */
 
 const MIN = 3;
 const MAX = 20;
+const MAX_NOMBRE = 80;
 
 export default function NicknameStep() {
   const { crearPerfil, apodoDisponible, cerrarSesion } = useAuth();
   const [valor, setValor] = useState("");
+  const [nombre, setNombre] = useState("");
   const [error, setError] = useState(null);
   const [enviando, setEnviando] = useState(false);
 
   const limpio = valor.trim();
+  const nombreLimpio = nombre.trim();
   const largoOk = limpio.length >= MIN && limpio.length <= MAX;
+  const nombreOk = nombreLimpio.length >= MIN && nombreLimpio.length <= MAX_NOMBRE;
+  const listo = largoOk && nombreOk;
 
   const enviar = async () => {
-    if (!largoOk || enviando) return;
+    if (!listo || enviando) return;
     setEnviando(true);
     setError(null);
 
@@ -34,7 +47,7 @@ export default function NicknameStep() {
       return;
     }
 
-    const { error: err } = await crearPerfil(limpio);
+    const { error: err } = await crearPerfil(limpio, nombreLimpio);
     if (err) setError(err);
     setEnviando(false);
   };
@@ -51,19 +64,50 @@ export default function NicknameStep() {
           color: FAE.text,
         }}
       >
-        Elige tu apodo
+        Antes de entrar
       </h2>
       <p style={{ fontSize: "14.5px", lineHeight: 1.55, color: "rgba(248,249,250,0.65)", margin: "0 0 18px" }}>
-        Es lo que verán los demás en los rankings. Tu nombre real de Google no se muestra nunca.
+        Dos datos y listo. El apodo es lo público; tu nombre es privado.
       </p>
 
+      <label htmlFor="paso-nombre" style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "rgba(248,249,250,0.8)", margin: "0 0 6px" }}>
+        ¿Cómo te llamas?
+      </label>
       <input
+        id="paso-nombre"
+        value={nombre}
+        onChange={(e) => { setNombre(e.target.value); setError(null); }}
+        onKeyDown={(e) => e.key === "Enter" && enviar()}
+        placeholder="Tu nombre y apellido"
+        maxLength={MAX_NOMBRE}
+        autoFocus
+        autoComplete="name"
+        style={{
+          width: "100%",
+          padding: "13px 16px",
+          borderRadius: "14px",
+          fontFamily: "Inter, sans-serif",
+          fontSize: "15px",
+          color: FAE.text,
+          background: "rgba(248,249,250,0.05)",
+          border: "1px solid rgba(248,249,250,0.18)",
+          outline: "none",
+        }}
+      />
+      <p style={{ fontSize: "12.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.45)", margin: "6px 2px 18px" }}>
+        Solo lo ve el profesor de tu curso, para saber cómo vas. No aparece en los rankings.
+      </p>
+
+      <label htmlFor="paso-apodo" style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "rgba(248,249,250,0.8)", margin: "0 0 6px" }}>
+        Tu apodo
+      </label>
+      <input
+        id="paso-apodo"
         value={valor}
         onChange={(e) => { setValor(e.target.value); setError(null); }}
         onKeyDown={(e) => e.key === "Enter" && enviar()}
         placeholder="Tu apodo"
         maxLength={MAX}
-        autoFocus
         aria-label="Tu apodo"
         style={{
           width: "100%",
@@ -80,7 +124,7 @@ export default function NicknameStep() {
 
       <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", margin: "8px 2px 18px" }}>
         <span style={{ fontSize: "12.5px", color: error ? FAE.coral : "rgba(248,249,250,0.45)" }}>
-          {error || `Entre ${MIN} y ${MAX} caracteres.`}
+          {error || `Es lo que verán los demás. Entre ${MIN} y ${MAX} caracteres.`}
         </span>
         <span style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.35)" }}>
           {limpio.length}/{MAX}
@@ -90,7 +134,7 @@ export default function NicknameStep() {
       <button
         type="button"
         onClick={enviar}
-        disabled={!largoOk || enviando}
+        disabled={!listo || enviando}
         style={{
           width: "100%",
           fontFamily: "Sora, sans-serif",
@@ -99,9 +143,9 @@ export default function NicknameStep() {
           padding: "13px",
           borderRadius: "999px",
           border: "none",
-          cursor: largoOk && !enviando ? "pointer" : "default",
-          backgroundColor: largoOk && !enviando ? FAE.teal : "rgba(248,249,250,0.08)",
-          color: largoOk && !enviando ? FAE.bg : "rgba(248,249,250,0.4)",
+          cursor: listo && !enviando ? "pointer" : "default",
+          backgroundColor: listo && !enviando ? FAE.teal : "rgba(248,249,250,0.08)",
+          color: listo && !enviando ? FAE.bg : "rgba(248,249,250,0.4)",
         }}
       >
         {enviando ? "Guardando…" : "Continuar"}

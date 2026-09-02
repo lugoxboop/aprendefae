@@ -15,6 +15,7 @@ const SECTIONS = [
     heading: "Qué información recopilamos",
     paragraphs: [
       "Cuando inicias sesión con tu cuenta de Google, recopilamos tu nombre y correo electrónico para identificar tu perfil. Además, guardamos la información de tu actividad dentro de la plataforma: tu progreso en los temas, tus puntos, tu racha diaria y tu posición en los rankings.",
+      "En tu primer ingreso te pedimos dos datos: un apodo, que es el único que ven los demás estudiantes, y tu nombre real. El nombre real se usa exclusivamente para que el profesor autorizado de tu curso pueda identificar tu avance en su panel, tal como se explica más abajo.",
     ],
   },
   {
@@ -24,6 +25,7 @@ const SECTIONS = [
       "Guardar tu progreso y permitir que lo retomes desde cualquier dispositivo.",
       "Mostrar tu racha, tus puntos y tu posición en los rankings dentro de la plataforma.",
       "Generar reportes agregados (no individuales) sobre el uso general de la herramienta, que pueden compartirse con la facultad para evaluar su efectividad.",
+      "Permitir que el profesor autorizado de tu curso vea tu avance identificado con tu nombre real, con fines de acompañamiento académico.",
     ],
   },
   {
@@ -35,7 +37,23 @@ const SECTIONS = [
   {
     heading: "Con quién compartimos tu información",
     paragraphs: [
-      "No vendemos ni compartimos tu información personal con terceros. Los únicos datos que la facultad puede recibir son reportes agregados y anónimos sobre el uso de la herramienta (por ejemplo, número de estudiantes activos, temas más usados), nunca tu actividad individual identificada, salvo que tú lo autorices expresamente.",
+      "No vendemos tu información personal ni la compartimos con terceros ajenos a tu institución.",
+      "La facultad, como institución, recibe únicamente reportes agregados sobre el uso de la herramienta (por ejemplo, número de estudiantes activos o temas más usados), nunca tu actividad individual identificada.",
+      "La excepción es el profesor autorizado de tu propio curso, que sí puede ver tu avance identificado con tu nombre. Esto se explica en detalle en la siguiente sección.",
+    ],
+  },
+  {
+    heading: "Acceso del profesor de tu curso",
+    paragraphs: [
+      "El profesor de un curso puede acceder a un panel donde ve el avance de sus estudiantes identificado por nombre real. Este acceso existe para el acompañamiento académico: detectar a tiempo a quien se está quedando atrás y saber qué temas conviene reforzar en clase.",
+      "Este acceso está limitado de las siguientes formas:",
+    ],
+    bullets: [
+      "Solo los correos que el equipo de AprendeFAE autoriza expresamente y uno por uno tienen acceso al panel. No es posible solicitarlo ni activarlo desde la plataforma.",
+      "Cada profesor autorizado solo puede ver las materias que tiene asignadas.",
+      "El profesor ve tu nombre, tu apodo, tu progreso, tus puntos, tu porcentaje de aciertos y la fecha de tu última actividad. No ve tu correo electrónico ni ningún otro dato de tu cuenta de Google.",
+      "El profesor no puede modificar tu progreso, tus puntos ni ningún dato de tu perfil: el acceso es solo de lectura.",
+      "El profesor puede exportar un informe con esta misma información para su seguimiento del curso.",
     ],
   },
   {

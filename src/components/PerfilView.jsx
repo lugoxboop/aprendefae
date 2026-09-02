@@ -3,6 +3,9 @@ import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import RankingFP from "./ranking/RankingFP.jsx";
 import { useAuth } from "../auth/AuthProvider.jsx";
+import { useContext, useEffect, useState } from "react";
+import { NavigationContext } from "../navigation.js";
+import { accesoDocente } from "../docente/datos.js";
 
 /*
  * Perfil del estudiante. Se llega desde el indicador de cuenta de la cabecera.
@@ -18,6 +21,15 @@ const dato = {
 };
 
 export default function PerfilView({ onBack }) {
+  /*
+   * El acceso al panel docente aparece solo si la cuenta está en la lista
+   * blanca. Para un estudiante no existe: ni el enlace ni la pista de que haya
+   * algo detrás.
+   */
+  const nav = useContext(NavigationContext);
+  const [esDocente, setEsDocente] = useState(false);
+  useEffect(() => { accesoDocente().then((a) => setEsDocente(a.esDocente)); }, []);
+
   const { perfil, session, pedirCuenta } = useAuth();
 
   return (
@@ -98,6 +110,25 @@ export default function PerfilView({ onBack }) {
               </div>
             </div>
           </>
+        )}
+
+        {esDocente && (
+          <button
+            type="button"
+            onClick={() => nav?.irAPanelDocente?.()}
+            style={{
+              width: "100%", marginBottom: "18px", padding: "14px 18px", borderRadius: "16px",
+              display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
+              cursor: "pointer", textAlign: "left",
+              background: "rgba(42,157,143,0.10)", border: `1px solid ${FAE.teal}`, color: FAE.text,
+            }}
+          >
+            <span>
+              <span style={{ display: "block", fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "15px" }}>Panel docente</span>
+              <span style={{ display: "block", fontSize: "12.5px", color: "rgba(248,249,250,0.6)", marginTop: "2px" }}>El avance de tus estudiantes</span>
+            </span>
+            <span style={{ fontSize: "20px", color: FAE.teal }}>→</span>
+          </button>
         )}
 
         <RankingFP titulo="Ranking general" nota="Todas las materias" />

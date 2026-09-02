@@ -19,6 +19,7 @@ const IcebergView = lazy(() => import("./components/IcebergView.jsx"));
 const PorterView = lazy(() => import("./components/PorterView.jsx"));
 const PerfilView = lazy(() => import("./components/PerfilView.jsx"));
 const PoliticaEconomicaView = lazy(() => import("./components/PoliticaEconomicaView.jsx"));
+const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"));
 
 /*
  * DA-Learn se carga bajo demanda. Recharts pesa la mayor parte del bundle y solo lo
@@ -233,6 +234,7 @@ export default function App() {
   const navigation = {
     goHome,
     irAPerfil: () => { setPrevView(view); setView("perfil"); },
+    irAPanelDocente: () => { setPrevView(view); setView("docente"); },
   };
   const siteFallback = <div style={{ minHeight: "100vh", backgroundColor: FAE.bg }} />;
   const wrap = (node) => (
@@ -297,6 +299,14 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <PoliticaEconomicaView onBack={() => setView("macroeconomia")} />
+      </Suspense>
+    );
+  }
+
+  if (view === "docente") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <PanelDocente onBack={() => setView(prevView === "docente" ? "home" : prevView)} />
       </Suspense>
     );
   }

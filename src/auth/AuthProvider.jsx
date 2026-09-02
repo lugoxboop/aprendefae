@@ -41,7 +41,7 @@ export function AuthProvider({ children }) {
     if (!supabase || !userId) return { perfil: null, error: null };
     const { data, error } = await supabase
       .from("profiles")
-      .select("user_id, nickname, points, streak, created_at")
+      .select("user_id, nickname, full_name, points, streak, created_at")
       .eq("user_id", userId)
       .maybeSingle();
     if (error) {
@@ -108,13 +108,19 @@ export function AuthProvider({ children }) {
   const cerrarDialogo = useCallback(() => setMotivoLogin(null), []);
 
   const crearPerfil = useCallback(
-    async (nickname) => {
+    async (nickname, nombreReal) => {
       if (!supabase || !session) return { error: "Sin sesión activa." };
       const limpio = nickname.trim();
+      /*
+       * El nombre real se guarda para que un docente autorizado reconozca a
+       * quién ve en su panel. No sale en ningún ranking ni lo ve otro
+       * estudiante: lo público sigue siendo solo el apodo.
+       */
+      const nombre = (nombreReal ?? "").trim() || null;
       const { data, error } = await supabase
         .from("profiles")
-        .insert({ user_id: session.user.id, nickname: limpio })
-        .select("user_id, nickname, points, streak, created_at")
+        .insert({ user_id: session.user.id, nickname: limpio, full_name: nombre })
+        .select("user_id, nickname, full_name, points, streak, created_at")
         .single();
 
       if (error) {

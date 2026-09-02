@@ -6,6 +6,13 @@ export const FAE = {
   coral: "#E76F51",
   teal: "#2A9D8F",
   node: "#CBDCF2",
+  /*
+   * Ámbar. Se añade para el nivel intermedio de alertas del panel docente: el
+   * kit tenía coral (alarma) y teal (normal), dos niveles, y el sistema de
+   * alertas necesita tres. Es el tono medio que no se confunde con ninguno de
+   * los dos. Fuera de ese uso, no se emplea como acento general.
+   */
+  ambar: "#E9C46A",
 };
 
 /* Paleta de DA-Learn (tema de Macroeconomía). */
