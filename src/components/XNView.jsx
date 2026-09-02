@@ -13,7 +13,7 @@ import QuizBlock from "./shared/QuizBlock.jsx";
 import NextBackRow from "./shared/NextBackRow.jsx";
 import { V } from "./shared/FormulaTokens.jsx";
 
-export default function XNView({ state, setState, quizProgress, onAnswerCorrect, onBack, onNext, onRanking }) {
+export default function XNView({ state, setState, quizProgress, onAnswerCorrect, onFirstAttempt, onBack, onNext, onRanking }) {
   const accent = COLORS.gold;
   const { tc } = state;
   const X0 = 3000000, M0 = 3000000, k = 300, tcMid = 4000;
@@ -60,7 +60,7 @@ export default function XNView({ state, setState, quizProgress, onAnswerCorrect,
         {tc > tcMid ? "Un dólar caro favorece a quien exporta y encarece lo que se trae de afuera." : tc < tcMid ? "Un dólar barato favorece a quien importa, pero le pega a quien exporta." : "Estás en el punto de equilibrio cambiario."}
       </p>
       <Fader label="Tipo de cambio (TRM)" value={tc} min={2000} max={6000} step={50} accent={accent} format={(v) => formatCOP(v) + "/USD"} onChange={(v) => setState({ tc: v })} />
-      <QuizBlock questions={QUIZZES.xn} accent={accent} progress={quizProgress} onAnswerCorrect={onAnswerCorrect} />
+      <QuizBlock questions={QUIZZES.xn} accent={accent} progress={quizProgress} onAnswerCorrect={onAnswerCorrect} onFirstAttempt={onFirstAttempt} />
       <NextBackRow onBack={onBack} onNext={onNext} accent={accent} />
     </div>
   );

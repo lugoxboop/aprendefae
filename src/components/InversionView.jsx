@@ -13,7 +13,7 @@ import QuizBlock from "./shared/QuizBlock.jsx";
 import NextBackRow from "./shared/NextBackRow.jsx";
 import { V, Overline } from "./shared/FormulaTokens.jsx";
 
-export default function InversionView({ state, setState, quizProgress, onAnswerCorrect, onBack, onNext, onRanking }) {
+export default function InversionView({ state, setState, quizProgress, onAnswerCorrect, onFirstAttempt, onBack, onNext, onRanking }) {
   const accent = COLORS.orange;
   const { Ibar, b, i } = state;
   const I = Math.max(0, Ibar - b * i);
@@ -57,7 +57,7 @@ export default function InversionView({ state, setState, quizProgress, onAnswerC
       <Fader label="Inversión autónoma (Ī)" value={Ibar} min={0} max={5000000} step={100000} accent={accent} format={formatCOP} onChange={(v) => setState((s) => ({ ...s, Ibar: v }))} />
       <Fader label="Sensibilidad a la tasa (b)" value={b} min={0} max={200000} step={5000} accent={accent} format={formatCOP} onChange={(v) => setState((s) => ({ ...s, b: v }))} />
       <Fader label="Tasa de interés (i)" value={i} min={1} max={30} step={1} accent={accent} format={(v) => v + "%"} onChange={(v) => setState((s) => ({ ...s, i: v }))} />
-      <QuizBlock questions={QUIZZES.inversion} accent={accent} progress={quizProgress} onAnswerCorrect={onAnswerCorrect} />
+      <QuizBlock questions={QUIZZES.inversion} accent={accent} progress={quizProgress} onAnswerCorrect={onAnswerCorrect} onFirstAttempt={onFirstAttempt} />
       <NextBackRow onBack={onBack} onNext={onNext} accent={accent} />
     </div>
   );

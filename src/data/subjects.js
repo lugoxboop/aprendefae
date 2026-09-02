@@ -38,9 +38,25 @@ export const SUBJECTS = {
       {
         id: "demanda-agregada",
         title: "Demanda Agregada",
-        /* Pendiente de clasificar por Gen: sin insignia y sin conexión a FP. */
         actividades: [
-          { id: "simulador-da", nombre: "Simulador de los 4 canales" },
+          {
+            id: "simulador-da",
+            nombre: "Simulador de los 4 canales",
+            /*
+             * Exploratoria y no evaluativa por decisión de Gen: el quiz deja
+             * reintentar hasta acertar, así que el porcentaje final siempre
+             * sería 100 y mediría constancia, no desempeño. Llamarla
+             * evaluativa sería ponerle una etiqueta que el dato no sostiene.
+             *
+             * No es una rebaja temporal: describe lo que la actividad hace hoy.
+             */
+            clasificacion: {
+              tipo: HACER,
+              modalidad: "exploratoria",
+              dificultad: "dificil",
+              fpBase: 50,
+            },
+          },
         ],
       },
       {

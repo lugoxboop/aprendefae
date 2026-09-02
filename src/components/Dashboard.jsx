@@ -3,6 +3,11 @@ import { COLORS } from "../theme.js";
 import ProgressBar from "./shared/ProgressBar.jsx";
 import ChannelCard from "./shared/ChannelCard.jsx";
 import TopBar from "./shared/TopBar.jsx";
+import ActivityBadge from "./shared/ActivityBadge.jsx";
+import { clasificacionDe } from "../data/subjects.js";
+
+/* La insignia sale de la clasificación de Gen, igual que en el resto del sitio. */
+const CLAS_SIMULADOR = clasificacionDe("macroeconomia", "demanda-agregada", "simulador-da");
 
 /*
  * Chip numérico de etapa. Misma gramática que usa el ranking real para marcar
@@ -36,6 +41,9 @@ export default function Dashboard({ studentName, completed, correctCount, totalP
   return (
     <div>
       <TopBar title={`Hola, ${studentName}`} onBack={onExitTopic} onRanking={onRanking} />
+      <div className="mb-3">
+        <ActivityBadge tipo={CLAS_SIMULADOR?.tipo} size="sm" />
+      </div>
       <p className="text-sm mb-4 leading-relaxed" style={{ color: COLORS.textMuted }}>
         La Demanda Agregada es la suma de 4 "canales" de gasto en la economía — como armar una canción mezclando 4 pistas de audio.
       </p>
@@ -96,8 +104,8 @@ export default function Dashboard({ studentName, completed, correctCount, totalP
       </div>
       <div className="rounded-2xl p-3 mb-4" style={{ backgroundColor: COLORS.bgPanel }}>
         <p className="text-xs leading-relaxed" style={{ color: COLORS.textMuted }}>
-          El ranking de Macroeconomía se arma con los FP de la materia. Este simulador todavía
-          no otorga FP, así que lo que hagas aquí no cambia tu posición.
+          El ranking de Macroeconomía se arma con los FP de la materia. Completar el simulador
+          entero —los 4 canales y la Ronda Final— suma 50 FP, una sola vez.
         </p>
       </div>
     </div>

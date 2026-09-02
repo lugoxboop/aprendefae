@@ -3,14 +3,14 @@ import { QUIZZES } from "../data/quizzes.js";
 import TopBar from "./shared/TopBar.jsx";
 import FinalQuizBlock from "./shared/FinalQuizBlock.jsx";
 
-export default function FinalView({ completed, onCorrectQ1, onCorrectQ2, onBack, onRanking }) {
+export default function FinalView({ completed, onCorrectQ1, onCorrectQ2, onFirstAttempt, onBack, onRanking }) {
   const bothDone = completed.finalQ1 && completed.finalQ2;
   return (
     <div>
       <TopBar title="Ronda Final" onBack={onBack} onRanking={onRanking} />
       <p className="text-sm mb-5" style={{ color: COLORS.textMuted }}>Mezclaste los 4 canales. Ahora conecta las ideas.</p>
-      <FinalQuizBlock question={QUIZZES.finalQ1.question} options={QUIZZES.finalQ1.options} accent={COLORS.gold} completed={completed.finalQ1} onCorrect={onCorrectQ1} />
-      <FinalQuizBlock question={QUIZZES.finalQ2.question} options={QUIZZES.finalQ2.options} accent={COLORS.gold} completed={completed.finalQ2} onCorrect={onCorrectQ2} />
+      <FinalQuizBlock question={QUIZZES.finalQ1.question} options={QUIZZES.finalQ1.options} accent={COLORS.gold} completed={completed.finalQ1} onCorrect={onCorrectQ1} onFirstAttempt={(a) => onFirstAttempt("finalQ1", a)} />
+      <FinalQuizBlock question={QUIZZES.finalQ2.question} options={QUIZZES.finalQ2.options} accent={COLORS.gold} completed={completed.finalQ2} onCorrect={onCorrectQ2} onFirstAttempt={(a) => onFirstAttempt("finalQ2", a)} />
       {/* Cierre sin trofeo: el texto ya dice lo que hay que decir. */}
       {bothDone && (
         <div className="mt-6 p-4 rounded-2xl text-center" style={{ backgroundColor: "rgba(255,200,87,0.1)", border: `1px solid ${COLORS.gold}` }}>

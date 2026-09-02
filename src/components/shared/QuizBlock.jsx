@@ -8,7 +8,7 @@ import { COLORS } from "../../theme.js";
  * No anuncia puntos por pregunta: los FP se otorgan al completar la actividad
  * entera y los calcula el motor central, no esta pieza de interfaz.
  */
-export default function QuizBlock({ questions, accent, progress, onAnswerCorrect }) {
+export default function QuizBlock({ questions, accent, progress, onAnswerCorrect, onFirstAttempt }) {
   const total = questions.length;
   const firstIncomplete = progress.findIndex((v) => !v);
   const startIndex = firstIncomplete === -1 ? total - 1 : firstIncomplete;
@@ -17,6 +17,13 @@ export default function QuizBlock({ questions, accent, progress, onAnswerCorrect
     progress[startIndex] ? questions[startIndex].options.find((o) => o.correct).id : null
   );
   const scoredRef = useRef(progress[startIndex]);
+  /*
+   * Si la respuesta que se está eligiendo es el primer intento de esta
+   * pregunta. Solo sirve para avisar una vez por pregunta dentro de este
+   * montaje; quien decide si el dato ya estaba guardado es el estado de arriba,
+   * que sí sobrevive a entrar y salir de la vista.
+   */
+  const sinIntentarRef = useRef(!progress[startIndex]);
 
   const currentQuestion = questions[currentIndex];
   const isLocked = progress[currentIndex];
@@ -27,6 +34,17 @@ export default function QuizBlock({ questions, accent, progress, onAnswerCorrect
     if (isLocked) return;
     setSelectedId(id);
     const opt = currentQuestion.options.find((o) => o.id === id);
+
+    /*
+     * Acierto al primer intento: se anota lo que pasó la PRIMERA vez que se
+     * tocó esta pregunta, acierte o falle. Es solo captura de dato — el
+     * reintentar hasta acertar sigue funcionando exactamente igual debajo.
+     */
+    if (sinIntentarRef.current) {
+      sinIntentarRef.current = false;
+      onFirstAttempt?.(currentIndex, !!opt.correct);
+    }
+
     if (opt.correct && !scoredRef.current) {
       scoredRef.current = true;
       onAnswerCorrect(currentIndex);
@@ -38,6 +56,7 @@ export default function QuizBlock({ questions, accent, progress, onAnswerCorrect
     setCurrentIndex(nextIndex);
     setSelectedId(progress[nextIndex] ? questions[nextIndex].options.find((o) => o.correct).id : null);
     scoredRef.current = progress[nextIndex];
+    sinIntentarRef.current = !progress[nextIndex];
   };
 
   return (

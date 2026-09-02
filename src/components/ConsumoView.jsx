@@ -13,7 +13,7 @@ import QuizBlock from "./shared/QuizBlock.jsx";
 import NextBackRow from "./shared/NextBackRow.jsx";
 import { V, Overline } from "./shared/FormulaTokens.jsx";
 
-export default function ConsumoView({ state, setState, quizProgress, onAnswerCorrect, onBack, onNext, onRanking }) {
+export default function ConsumoView({ state, setState, quizProgress, onAnswerCorrect, onFirstAttempt, onBack, onNext, onRanking }) {
   const accent = COLORS.blue;
   const { Y, TR, T, c } = state;
   const dispo = Y - T + TR;
@@ -61,7 +61,7 @@ export default function ConsumoView({ state, setState, quizProgress, onAnswerCor
       <Fader label="Transferencias (TR)" value={TR} min={0} max={2000000} step={50000} accent={accent} format={formatCOP} onChange={(v) => setState((s) => ({ ...s, TR: v }))} />
       <Fader label="Impuestos (T)" value={T} min={0} max={1000000} step={25000} accent={accent} format={formatCOP} onChange={(v) => setState((s) => ({ ...s, T: v }))} />
       <Fader label="Propensión marginal a consumir (c)" value={c} min={0.3} max={0.9} step={0.05} accent={accent} format={(v) => v.toFixed(2)} onChange={(v) => setState((s) => ({ ...s, c: v }))} />
-      <QuizBlock questions={QUIZZES.consumo} accent={accent} progress={quizProgress} onAnswerCorrect={onAnswerCorrect} />
+      <QuizBlock questions={QUIZZES.consumo} accent={accent} progress={quizProgress} onAnswerCorrect={onAnswerCorrect} onFirstAttempt={onFirstAttempt} />
       <NextBackRow onBack={onBack} onNext={onNext} accent={accent} />
     </div>
   );

@@ -6,9 +6,11 @@ import { COLORS } from "../../theme.js";
  * Quiz de una sola pregunta, usado solo por la Ronda Final.
  * Sin anuncio de puntos: los FP los calcula el motor al terminar la actividad.
  */
-export default function FinalQuizBlock({ question, options, accent, completed, onCorrect }) {
+export default function FinalQuizBlock({ question, options, accent, completed, onCorrect, onFirstAttempt }) {
   const [selectedId, setSelectedId] = useState(() => (completed ? options.find((o) => o.correct).id : null));
   const scoredRef = useRef(completed);
+  /* Ver QuizBlock: se avisa una sola vez, en el primer intento de la pregunta. */
+  const sinIntentarRef = useRef(!completed);
   const selected = options.find((o) => o.id === selectedId) || null;
   const isCorrect = !!selected?.correct;
 
@@ -16,6 +18,12 @@ export default function FinalQuizBlock({ question, options, accent, completed, o
     if (completed) return;
     setSelectedId(id);
     const opt = options.find((o) => o.id === id);
+
+    if (sinIntentarRef.current) {
+      sinIntentarRef.current = false;
+      onFirstAttempt?.(!!opt.correct);
+    }
+
     if (opt.correct && !scoredRef.current) {
       scoredRef.current = true;
       onCorrect();

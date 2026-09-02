@@ -41,11 +41,10 @@ const RankingView = lazy(() => import("./components/RankingView.jsx"));
  * calcularFP → rpc registrar_fp—, con la clasificación que salga de
  * subjects.js.
  *
- * Hoy `simulador-da` NO está clasificado (Gen todavía no le asignó tipo,
- * modalidad ni dificultad), así que clasificacionDe devuelve null y la llamada
- * sale por la primera guarda sin otorgar nada ni tocar la red. Es el mismo
- * estado "pendiente de clasificar" que tienen las dos mecánicas de Porter.
- * Cuando Gen lo clasifique, los FP empiezan a contar sin tocar este archivo.
+ * Gen la clasificó como Hacer · exploratoria · difícil: 50 FP por completarla,
+ * sin escalar por aciertos. Exploratoria y no evaluativa porque el quiz deja
+ * reintentar hasta acertar, así que un porcentaje de aciertos final mediría
+ * constancia y no desempeño.
  */
 const MATERIA = "macroeconomia";
 const TEMA = "demanda-agregada";
@@ -84,6 +83,24 @@ export default function App() {
   const [finalCompleted, setFinalCompleted] = useState({ finalQ1: false, finalQ2: false });
 
   /*
+   * Acierto al PRIMER intento, por pregunta: true, false, o null si todavía no
+   * se ha intentado. Va aparte del progreso porque mide otra cosa: el progreso
+   * dice si acabó acertando —siempre acaba acertando, el quiz deja reintentar—
+   * y esto dice si lo sabía de entrada.
+   *
+   * Vive junto al progreso, con la misma vida que él, y sale de aquí hacia
+   * fp_history.correct_pct al completar la actividad. Ahí queda consultable
+   * sin necesidad de tocar la mecánica ni el esquema más adelante.
+   */
+  const [firstTry, setFirstTry] = useState({
+    consumo: [null, null, null, null, null],
+    inversion: [null, null, null, null, null],
+    gasto: [null, null, null, null, null],
+    xn: [null, null, null, null, null],
+  });
+  const [finalFirstTry, setFinalFirstTry] = useState({ finalQ1: null, finalQ2: null });
+
+  /*
    * El avance se guarda en local y no depende de tener cuenta. Acertar una
    * pregunta suelta ya no pide la cuenta: no hay nada que guardar todavía,
    * porque los FP se otorgan al completar la actividad entera, no por
@@ -102,6 +119,24 @@ export default function App() {
     setFinalCompleted((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
   };
 
+  /*
+   * El primer intento se anota una sola vez por pregunta. La guarda vive aquí y
+   * no en el quiz porque este estado sí sobrevive a salir del canal y volver:
+   * si el quiz se remonta, el intento de esa pregunta ya no es el primero.
+   */
+  const markFirstAttempt = (topicKey, index, acerto) => {
+    setFirstTry((prev) => {
+      if (prev[topicKey][index] !== null) return prev;
+      const updated = [...prev[topicKey]];
+      updated[index] = acerto;
+      return { ...prev, [topicKey]: updated };
+    });
+  };
+
+  const markFinalFirstAttempt = (key, acerto) => {
+    setFinalFirstTry((prev) => (prev[key] !== null ? prev : { ...prev, [key]: acerto }));
+  };
+
   const completed = {
     consumo: topicProgress.consumo.every(Boolean),
     inversion: topicProgress.inversion.every(Boolean),
@@ -112,9 +147,8 @@ export default function App() {
   };
 
   /*
-   * Respuestas acertadas. NO es un puntaje: es la entrada de desempeño que se
-   * le pasa al motor de FP y lo que se muestra como avance. La conversión a
-   * puntos la hace el motor con la dificultad que asigne Gen, no este archivo.
+   * Respuestas resueltas. NO es un puntaje: es lo que se muestra como avance.
+   * Los FP los calcula el motor con la clasificación de Gen, no este archivo.
    */
   const correctCount =
     topicProgress.consumo.filter(Boolean).length +
@@ -132,6 +166,11 @@ export default function App() {
   const totalPreguntas =
     Object.values(topicProgress).reduce((n, canal) => n + canal.length, 0) +
     Object.keys(finalCompleted).length;
+
+  /* Cuántas salieron bien de una: la medida honesta de desempeño de esta actividad. */
+  const aciertosPrimerIntento =
+    Object.values(firstTry).flat().filter(Boolean).length +
+    Object.values(finalFirstTry).filter(Boolean).length;
 
   const allFourDone = completed.consumo && completed.inversion && completed.gasto && completed.xn;
   const finalDone = completed.finalQ1 && completed.finalQ2;
@@ -151,11 +190,11 @@ export default function App() {
    * DA-Learn entrega FP, y lo hace por el camino central como cualquier otra
    * mecánica del sitio.
    *
-   * LIMITACIÓN CONOCIDA: QuizBlock deja reintentar hasta acertar y solo
-   * registra los aciertos, así que al completar el simulador el porcentaje
-   * siempre es 100. Si Gen clasifica esta actividad como *evaluativa*, hay que
-   * registrar antes los intentos fallados en QuizBlock; si la clasifica como
-   * exploratoria, el motor ignora este dato y no hace falta tocar nada.
+   * Al ser exploratoria, el motor paga la base completa por terminar y NO mira
+   * el porcentaje. Aun así se envía, y se envía el del primer intento: es el
+   * único número que dice algo real de esta actividad —terminarla siempre da
+   * 100% de aciertos finales— y viaja a fp_history.correct_pct, donde queda
+   * disponible para calcular la métrica más adelante sin volver a tocar nada.
    */
   useEffect(() => {
     if (!allFourDone || !finalDone || yaRegistrado.current) return;
@@ -166,12 +205,12 @@ export default function App() {
         materiaId: MATERIA,
         temaId: TEMA,
         actividadId: ACTIVIDAD,
-        porcentajeAciertos: (correctCount / totalPreguntas) * 100,
+        porcentajeAciertos: (aciertosPrimerIntento / totalPreguntas) * 100,
         duracionMs: inicioSimulador.current ? Date.now() - inicioSimulador.current : null,
       });
       if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
     })();
-  }, [allFourDone, finalDone, correctCount, totalPreguntas, pedirCuenta]);
+  }, [allFourDone, finalDone, aciertosPrimerIntento, totalPreguntas, pedirCuenta]);
 
   const goDashboard = () => setView("dashboard");
   /* El ranking es dato propio frente a otros: aquí también se pide la cuenta. */
@@ -302,28 +341,28 @@ export default function App() {
           {view === "consumo" && (
             <ConsumoView
               state={consumoState} setState={setConsumoState}
-              quizProgress={topicProgress.consumo} onAnswerCorrect={(idx) => markTopicCorrect("consumo", idx)}
+              quizProgress={topicProgress.consumo} onAnswerCorrect={(idx) => markTopicCorrect("consumo", idx)} onFirstAttempt={(idx, a) => markFirstAttempt("consumo", idx, a)}
               onBack={goDashboard} onNext={() => setView("inversion")} onRanking={openRanking}
             />
           )}
           {view === "inversion" && (
             <InversionView
               state={inversionState} setState={setInversionState}
-              quizProgress={topicProgress.inversion} onAnswerCorrect={(idx) => markTopicCorrect("inversion", idx)}
+              quizProgress={topicProgress.inversion} onAnswerCorrect={(idx) => markTopicCorrect("inversion", idx)} onFirstAttempt={(idx, a) => markFirstAttempt("inversion", idx, a)}
               onBack={goDashboard} onNext={() => setView("gasto")} onRanking={openRanking}
             />
           )}
           {view === "gasto" && (
             <GastoView
               state={gastoState} setState={setGastoState}
-              quizProgress={topicProgress.gasto} onAnswerCorrect={(idx) => markTopicCorrect("gasto", idx)}
+              quizProgress={topicProgress.gasto} onAnswerCorrect={(idx) => markTopicCorrect("gasto", idx)} onFirstAttempt={(idx, a) => markFirstAttempt("gasto", idx, a)}
               onBack={goDashboard} onNext={() => setView("xn")} onRanking={openRanking}
             />
           )}
           {view === "xn" && (
             <XNView
               state={xnState} setState={setXnState}
-              quizProgress={topicProgress.xn} onAnswerCorrect={(idx) => markTopicCorrect("xn", idx)}
+              quizProgress={topicProgress.xn} onAnswerCorrect={(idx) => markTopicCorrect("xn", idx)} onFirstAttempt={(idx, a) => markFirstAttempt("xn", idx, a)}
               onBack={goDashboard} onNext={() => setView(allFourDone ? "final" : "dashboard")} onRanking={openRanking}
             />
           )}
@@ -332,6 +371,7 @@ export default function App() {
               completed={completed}
               onCorrectQ1={() => markFinalCorrect("finalQ1")}
               onCorrectQ2={() => markFinalCorrect("finalQ2")}
+              onFirstAttempt={markFinalFirstAttempt}
               onBack={goDashboard}
               onRanking={openRanking}
             />

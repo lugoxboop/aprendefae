@@ -32,10 +32,9 @@ export default function RankingView({ materiaId, badges, onBack }) {
         nota="Solo esta materia"
       />
 
-      {/* Estado honesto: mientras la actividad no esté clasificada, no da FP. */}
       <p className="text-xs leading-relaxed mt-3 mb-6" style={{ color: COLORS.textMuted }}>
-        El simulador de Demanda Agregada todavía no otorga FP: está pendiente de clasificación.
-        Los FP de esta materia salen, por ahora, de las actividades de Política Económica.
+        Terminar el simulador de Demanda Agregada completo suma 50 FP a esta materia. Se
+        cuentan una sola vez: repetirlo después da bastante menos.
       </p>
 
       <h2 className="text-sm font-semibold mb-3 mt-2" style={{ color: COLORS.textLight, fontFamily: "Sora, sans-serif" }}>Insignias</h2>

@@ -41,16 +41,21 @@ inventados. Los dos se eliminaron. Ahora el simulador llama al mismo camino cent
 completarse —los 4 canales más la Ronda Final— y su pantalla de ranking usa el mismo
 `RankingFP` que el índice de materia y el perfil.
 
-Como `simulador-da` **todavía no está clasificado**, `clasificacionDe` devuelve `null`, la
-llamada sale por la primera guarda y no otorga nada: es el mismo estado "pendiente de Gen"
-que tienen las dos mecánicas de Porter, y la interfaz lo dice en voz alta en vez de mostrar
-puntos que no existen. Cuando llegue la clasificación, los FP empiezan a contar sin tocar
-`App.jsx`.
+Gen lo clasificó **Hacer · exploratoria · difícil**: 50 FP por terminarlo, sin escalar por
+aciertos. Exploratoria y no evaluativa porque el quiz deja reintentar hasta acertar: un
+porcentaje de aciertos final siempre daría 100 y mediría constancia, no desempeño. No es
+una rebaja temporal, es la descripción de lo que la actividad hace.
 
-Un detalle a resolver **antes** de clasificarla como *evaluativa*: `QuizBlock` deja
-reintentar hasta acertar y solo registra los aciertos, así que al terminar el porcentaje
-siempre es 100. Si Gen la clasifica como exploratoria, el motor ignora ese dato y no hay
-nada que hacer.
+**Acierto al primer intento.** Para que esa métrica exista el día que haga falta, cada
+pregunta anota si se acertó *de una*, aparte del progreso normal. El reintentar hasta
+acertar no cambió: es solo captura de dato. `QuizBlock` y `FinalQuizBlock` avisan del
+primer intento; la guarda de "solo una vez por pregunta" vive en `App.jsx`, porque su
+estado sobrevive a salir del canal y volver, y el del quiz no.
+
+Ese porcentaje es el que viaja como `porcentajeAciertos` y queda en
+`fp_history.correct_pct`. Al ser exploratoria el motor lo ignora para calcular FP, así que
+no afecta a los puntos: se guarda para poder consultarlo después sin volver a tocar la
+mecánica ni migrar el esquema.
 
 **El cálculo ocurre en el navegador.** Un estudiante con conocimientos técnicos podría llamar a `registrar_fp` con un valor arbitrario. RLS impide tocar filas ajenas, pero no impide inflarse las propias. Conviene resolverlo antes de que los rankings sean públicos: la vía natural es mover el cálculo dentro de la función SQL, que ya recibe todas las entradas.
 

@@ -11,7 +11,7 @@ import QuizBlock from "./shared/QuizBlock.jsx";
 import NextBackRow from "./shared/NextBackRow.jsx";
 import { V, Overline } from "./shared/FormulaTokens.jsx";
 
-export default function GastoView({ state, setState, quizProgress, onAnswerCorrect, onBack, onNext, onRanking }) {
+export default function GastoView({ state, setState, quizProgress, onAnswerCorrect, onFirstAttempt, onBack, onNext, onRanking }) {
   const accent = COLORS.teal;
   const { G } = state;
   const chartData = [{ name: "Gasto Público (G)", value: Math.round(G) }];
@@ -41,7 +41,7 @@ export default function GastoView({ state, setState, quizProgress, onAnswerCorre
         El Congreso aprobó un gasto de {formatCOP(G)} para este año. Así la economía esté floja o los impuestos no alcancen, el Estado puede seguir gastando — se financia con deuda si es necesario.
       </p>
       <Fader label="Gasto público (G)" value={G} min={0} max={8000000} step={100000} accent={accent} format={formatCOP} onChange={(v) => setState({ G: v })} />
-      <QuizBlock questions={QUIZZES.gasto} accent={accent} progress={quizProgress} onAnswerCorrect={onAnswerCorrect} />
+      <QuizBlock questions={QUIZZES.gasto} accent={accent} progress={quizProgress} onAnswerCorrect={onAnswerCorrect} onFirstAttempt={onFirstAttempt} />
       <NextBackRow onBack={onBack} onNext={onNext} accent={accent} />
     </div>
   );
