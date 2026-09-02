@@ -1,0 +1,24 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "aprendefae-dev",
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "runtimeArgs": ["node_modules/vite/bin/vite.js", "--port", "5173", "--strictPort"],
+      "port": 5173
+    },
+    {
+      "name": "aprendefae-preview",
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "runtimeArgs": ["node_modules/vite/bin/vite.js", "preview", "--port", "4173", "--strictPort"],
+      "port": 4173
+    },
+    {
+      "_comment": "Servidor de desarrollo alterno, para verificar cambios sin ocupar el 5173 (que es el puerto registrado en el callback de Google OAuth).",
+      "name": "aprendefae-dev-alt",
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "runtimeArgs": ["node_modules/vite/bin/vite.js"],
+      "autoPort": true
+    }
+  ]
+}

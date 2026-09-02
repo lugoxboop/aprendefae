@@ -1,0 +1,161 @@
+/*
+ * Pantalla de entrada AprendeFAE.
+ * Los estados :hover / :active vienen de los atributos style-hover / style-active
+ * del export de Claude Design, que no se pueden expresar como estilos inline en React.
+ * Cada tarjeta pasa su color de acento por las variables --fae-card-hover-*.
+ */
+
+.fae-card {
+  transition: transform 220ms ease, background 220ms ease, border-color 220ms ease;
+}
+
+.fae-card:hover {
+  transform: translateY(-4px);
+  background: var(--fae-card-hover-bg);
+  border-color: var(--fae-card-hover-border);
+  color: #f8f9fa;
+}
+
+.fae-card:active {
+  transform: translateY(-1px);
+}
+
+/*
+ * Buceo progresivo: el gráfico y el nivel actual tienen que verse a la vez, sin
+ * desplazar. Es lo que da sentido a la mecánica —percibir la profundidad y el
+ * contenido juntos—, así que el alto del dibujo se ajusta al hueco disponible.
+ */
+.ice-buceo {
+  display: flex;
+  flex-direction: column;
+}
+.ice-buceo > .ice-grafico { order: 1; }
+.ice-buceo > .ice-controles { order: 2; }
+.ice-buceo > .ice-pista { order: 3; }
+
+.ice-grafico svg {
+  margin: 0 auto;
+  max-height: min(54vh, 430px);
+}
+
+@media (max-width: 699px) {
+  /*
+   * En pantallas angostas los controles suben por encima del gráfico: si
+   * quedan debajo, en teléfonos cortos caen fuera del pliegue.
+   */
+  .ice-buceo > .ice-controles { order: 1; }
+  .ice-buceo > .ice-grafico { order: 2; }
+
+  /*
+   * El dibujo toma el alto que sobra tras la cabecera, el título, la bajada y
+   * los controles (~380px medidos). El piso evita que se aplaste del todo en
+   * pantallas muy cortas, a costa de un texto más pequeño.
+   */
+  .ice-grafico svg {
+    max-height: max(240px, calc(100vh - 380px));
+  }
+}
+
+/*
+ * Constructor "de arriba hacia abajo": el mismo problema que tenía el buceo
+ * —el dibujo se comía la pantalla— y la misma solución de fondo: limitar el
+ * alto del SVG con .ice-grafico.
+ *
+ * Lo que cambia es el acompañante. En el buceo el dibujo va con una fila de
+ * botones baja; aquí va con una tarjeta de pregunta de cuatro opciones, que es
+ * casi tan alta como el propio dibujo. Apilados a tamaño completo no caben los
+ * dos, así que en pantalla ancha se ponen en dos columnas y el dibujo se queda
+ * fijo mientras se recorren las opciones y la retroalimentación.
+ */
+.ice-constructor {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+}
+
+/*
+ * El dibujo acompaña a la pregunta: se queda fijo mientras se recorren las
+ * opciones, así que nunca hay que elegir entre mirar el iceberg o leer la
+ * pregunta. Al terminar la rejilla, el dibujo se va con el resto.
+ */
+.ice-constructor > .ice-grafico {
+  position: sticky;
+  top: 12px;
+}
+
+@media (min-width: 820px) {
+  .ice-constructor {
+    grid-template-columns: minmax(250px, 320px) 1fr;
+  }
+  .ice-constructor .ice-grafico svg {
+    max-height: min(58vh, 460px);
+  }
+}
+
+@media (max-width: 819px) {
+  /*
+   * Apilados: el dibujo arriba, fijo, y la pregunta pasando por debajo. Se le
+   * deja algo menos de la mitad del alto de pantalla —recortarlo más dejaba
+   * las etiquetas de los niveles ilegibles, que es justo lo que hay que mirar
+   * mientras se responde— y la tarjeta se compacta un poco para que el resto
+   * entre en el hueco que queda.
+   *
+   * Al ser fijo, el fondo tiene que ser opaco: es el mismo color del panel ya
+   * compuesto sobre el fondo del tema, para que no se note el cambio.
+   */
+  .ice-constructor {
+    gap: 10px;
+  }
+  .ice-constructor .ice-grafico svg {
+    max-height: min(40vh, 330px);
+  }
+  .ice-constructor > .ice-grafico {
+    background: #152234;
+  }
+  /*
+   * !important porque estas tres medidas viven como estilos en línea en el
+   * componente (como el resto del diseño trasladado) y una regla de hoja no
+   * los gana. Es el mismo caso de :hover: lo que la línea no puede expresar
+   * —aquí, depender del ancho— se resuelve desde aquí.
+   */
+  .ice-constructor .ice-pregunta {
+    padding: 15px 16px !important;
+  }
+  .ice-constructor .ice-pregunta > div {
+    gap: 8px !important;
+  }
+  .ice-constructor .ice-pregunta button {
+    padding: 10px 13px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* Cadena de política: la corriente recorre el tramo ya energizado. */
+@keyframes cadena-fluir {
+  to { stroke-dashoffset: -16; }
+}
+.cadena-corriente {
+  animation: cadena-fluir 0.75s linear infinite;
+}
+
+@keyframes cadena-latido {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(42, 157, 143, 0.55); }
+  50% { box-shadow: 0 0 0 7px rgba(42, 157, 143, 0); }
+}
+.cadena-nodo-activo {
+  animation: cadena-latido 1.6s ease-out infinite;
+}
+
+/* En pantallas angostas los seis rótulos no caben: los nombra el panel. */
+@media (max-width: 620px) {
+  .cadena-etiqueta { display: none; }
+}
+
+.fae-back {
+  transition: color 220ms ease, border-color 220ms ease;
+}
+
+.fae-back:hover {
+  color: #f8f9fa;
+  border-color: rgba(248, 249, 250, 0.55);
+}

@@ -1,0 +1,8 @@
+# Los archivos del proyecto están en LF y así se quedan, en el repositorio y en
+# el disco. Sin esto, Git for Windows los reescribe a CRLF al tocarlos y todo
+# el árbol aparece "modificado" sin que nadie haya cambiado una línea.
+* text=auto eol=lf
+
+# Binarios: que Git no intente normalizar finales de línea dentro de ellos.
+*.png binary
+*.jpg binary
