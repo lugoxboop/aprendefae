@@ -212,7 +212,7 @@ Cada nivel del sitio tiene su propio fondo, y los tres siguen la misma estrategi
 
 | Página | Fondo | Fallback estático |
 |---|---|---|
-| Inicio | Red de nodos 3D en canvas 2D | Un fotograma compuesto, sin bucle |
+| Inicio | Colibrí libando entre flores, en canvas 2D | Un fotograma con el colibrí ya en la flor |
 | Índice de Macroeconomía | Curvas de oferta y demanda que derivan y se cruzan, con destello coral en el equilibrio | Un fotograma con el equilibrio ya encendido |
 | Índice de Pensamiento Estratégico | Escena Three.js: partida en curso, cámara en órbita lenta, pieza en juego resaltada en teal | Imagen JPEG (`src/assets/chess-fallback.jpg`) |
 
@@ -271,7 +271,7 @@ En la escena de ajedrez, el fallback es una imagen y no un fotograma renderizado
 │   │   ├── PorterView.jsx      # tema: radares de dos industrias + termómetro de las 5 fuerzas
 │   │   ├── PrivacidadView.jsx  # política de privacidad (texto literal, no reescribir)
 │   │   ├── backgrounds/
-│   │   │   ├── NodeNetworkBackground.jsx  # red de nodos del inicio
+│   │   │   ├── HummingbirdBackground.jsx # colibrí y flores del inicio
 │   │   │   ├── SupplyDemandBackground.jsx # curvas de oferta y demanda
 │   │   │   ├── ChessBackground.jsx        # escena Three.js del tablero en juego
 │   │   │   └── chessPieces.js             # geometría de las piezas y texturas, generadas por código
@@ -316,7 +316,11 @@ En la escena de ajedrez, el fallback es una imagen y no un fotograma renderizado
 ## Notas de implementación
 
 - **Titular rotativo.** `Hero.jsx` guarda el índice elegido en `sessionStorage`, así que no cambia al recargar dentro de la misma sesión, y usa `localStorage` para no repetir el titular de la sesión anterior. Si el almacenamiento falla, cae a un sorteo simple.
-- **Fondo de nodos.** `NodeNetworkBackground.jsx` es un port 1:1 del export de Claude Design: misma semilla determinista, mismas frecuencias de oscilación, cap de ~30 fps y los mismos umbrales de conexión y pulso. Detecta `prefers-reduced-motion`, `hardwareConcurrency <= 4` y `deviceMemory < 4` para dibujar un único fotograma estático en gama baja, sin `requestAnimationFrame`.
+- **Fondo del inicio: el colibrí.** `HummingbirdBackground.jsx`, canvas 2D y cero dependencias. Sustituyó a la red de nodos, que era un port del export de Claude Design (sigue en el historial de git).
+
+  Se descartó la ruta de vídeo justamente por ser la portada: un loop presentable son megas, y aquí es donde el peso más duele. El realismo se busca en el comportamiento, no en el detalle. **El ala no se anima batiendo**: un colibrí bate a 50 Hz y el ojo no ve un ala, ve un huso borroso, así que se dibuja el barrido con siluetas superpuestas de alfa bajo. Animar el batido a 30 fps daría un aleteo de dibujo animado. El vuelo estacionario usa dos senos de periodo distinto para que la posición no se repita de forma reconocible, y los traslados van por una Bézier con salida y entrada suaves.
+
+  Las flores viven en la banda baja y los laterales, nunca en la franja del titular: medido, el contraste detrás del titular es de **19,9:1** en todo su ancho, muy por encima del 7:1 que pide WCAG AAA. Comparte los mismos umbrales de gama baja que el resto (`shouldRenderStatic`): en ese caso dibuja un fotograma y no pide `requestAnimationFrame` ni una vez.
 - **Estilos.** El diseño se traslada como estilos inline (igual que el export) más `home.css` para los estados `:hover`/`:active`, que no se pueden expresar inline. Cada tarjeta pasa su color de acento por las variables CSS `--fae-card-hover-bg` y `--fae-card-hover-border`.
 - **Los faders de DA-Learn tienen un dibujo, no solo una cifra.** "$3.120.000" no significa nada a los 19 años. Cada canal trae una figura que responde al valor en tiempo real y en los dos sentidos: una canasta que se llena y se vacía (Consumo), una pila de billetes que sube y baja (Inversión), una carretera que se pavimenta y se despavimenta (Gasto), y una balanza de dos platos que se inclina hacia lo que Colombia vende o compra afuera (Exportaciones netas). Viven en `components/mecanicas/visuales/`, uno por archivo. Las tres primeras funcionan igual por dentro: cada elemento tiene sitio fijo y solo cambia si está encendido, así que deshacer es el mismo cálculo al revés y no necesita lógica aparte. La balanza no la necesita siquiera: inclinarse a los dos lados es lo que hace una balanza.
 - **Los dos icebergs comparten el mismo arreglo de layout.** El corte del iceberg es alto y se comía la pantalla: había que hacer scroll para ver el dibujo o el control, nunca los dos. Se resuelve limitando el alto del SVG desde `home.css` (`.ice-grafico`), no encogiendo el dibujo en el componente. El buceo (`.ice-buceo`) lo apila con su fila de botones; el constructor (`.ice-constructor`) va con una tarjeta de pregunta mucho más alta, así que en pantalla ancha se reparten en dos columnas y en angosta el dibujo queda fijo arriba mientras la pregunta pasa por debajo. Al terminar la mecánica no hay pregunta y el dibujo recupera el ancho completo.

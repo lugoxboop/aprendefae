@@ -1,12 +1,12 @@
 import { FAE } from "../theme.js";
-import NodeNetworkBackground from "./backgrounds/NodeNetworkBackground.jsx";
+import HummingbirdBackground from "./backgrounds/HummingbirdBackground.jsx";
 import BackgroundVeil from "./shared/BackgroundVeil.jsx";
 import Hero from "./Hero.jsx";
 import SubjectCard, { MacroIcon, EstrategiaIcon } from "./SubjectCard.jsx";
 import Logo from "./Logo.jsx";
 import Footer from "./shared/Footer.jsx";
 
-/* Pantalla de entrada: fondo de nodos + titular rotativo + las dos materias. */
+/* Pantalla de entrada: colibrí libando + titular rotativo + las dos materias. */
 export default function HomeScreen({ onSelectSubject }) {
   return (
     <div
@@ -19,7 +19,7 @@ export default function HomeScreen({ onSelectSubject }) {
         overflow: "hidden",
       }}
     >
-      <NodeNetworkBackground />
+      <HummingbirdBackground />
       <BackgroundVeil />
 
       <div
