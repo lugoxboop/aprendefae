@@ -7,6 +7,7 @@ import ActivityBadge from "./shared/ActivityBadge.jsx";
 import BackgroundVeil from "./shared/BackgroundVeil.jsx";
 import Logo from "./Logo.jsx";
 import RankingFP from "./ranking/RankingFP.jsx";
+import LigaBoard from "./ligas/LigaBoard.jsx";
 
 /*
  * Plantilla del índice de temas, compartida por las dos materias.
@@ -161,8 +162,13 @@ export default function TopicIndexView({
             </p>
           )}
 
-          {/* Ranking de esta materia: vive aquí, no en el inicio. */}
-          <div style={{ width: "100%", maxWidth: "560px" }}>
+          {/*
+            Liga y ranking conviven: la liga te compara con un grupo de tu
+            tamaño, el ranking con toda la materia. La liga va primero porque
+            es la que cambia cada semana.
+          */}
+          <div style={{ width: "100%", maxWidth: "560px", display: "flex", flexDirection: "column", gap: "16px" }}>
+            <LigaBoard subjectId={subjectId} />
             <RankingFP
               subjectId={subjectId}
               titulo={`Ranking de ${name}`}

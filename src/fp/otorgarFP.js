@@ -1,5 +1,6 @@
 import { supabase } from "../lib/supabase.js";
 import { calcularFP } from "./motor.js";
+import { asegurarEntrada } from "../ligas/ligas.js";
 
 /*
  * Orquestación del otorgamiento de FP.
@@ -74,6 +75,14 @@ export async function otorgarFP({
     console.error("[aprendeFAE] No se pudo registrar FP:", error.message);
     return { ok: false, motivo: "escritura-fallida", detalle: error.message };
   }
+
+  /*
+   * Entrar a la liga en el mismo momento de ganar el FP, no al abrir el
+   * tablero: quien empieza a mitad de semana compite por lo que queda de esa
+   * semana desde ya. Si falla, no se toca el FP —ya está escrito— y la próxima
+   * llamada lo resuelve; por eso no se espera al resultado ni se propaga.
+   */
+  asegurarEntrada(materiaId);
 
   return { ok: true, fp, desglose, registro: data };
 }
