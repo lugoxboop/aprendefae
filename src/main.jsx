@@ -3,8 +3,8 @@ import App from "./App.jsx";
 import PrivacidadView from "./components/PrivacidadView.jsx";
 import { NavigationContext } from "./navigation.js";
 import { AuthProvider } from "./auth/AuthProvider.jsx";
-import AccountControl from "./components/auth/AccountControl.jsx";
-import AuthDialog from "./components/auth/AuthDialog.jsx";
+
+
 import "./styles/global.css";
 import "./styles/home.css";
 
@@ -28,13 +28,16 @@ createRoot(document.getElementById("root")).render(
     </NavigationContext.Provider>
   ) : (
     /*
-     * El control de cuenta y el diálogo viven fuera de <App /> para que estén en
-     * todas las vistas sin que cada una tenga que montarlos.
+     * El control de cuenta y el diálogo los monta App dentro de su proveedor de
+     * navegación, no este archivo.
+     *
+     * Estuvieron aquí, como hermanos de <App />, y por eso "Ver mi perfil" no
+     * hacía nada: NavigationContext se crea DENTRO de App, así que desde aquí
+     * el contexto llegaba en null y `nav?.irAPerfil?.()` se resolvía en un
+     * encogimiento de hombros — sin navegar y sin error que lo delatara.
      */
     <AuthProvider>
       <App />
-      <AccountControl />
-      <AuthDialog />
     </AuthProvider>
   )
 );

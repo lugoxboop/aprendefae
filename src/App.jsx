@@ -9,6 +9,15 @@ import { registrarActividadCompletada } from "./fp/registrarActividad.js";
 import HomeScreen from "./components/HomeScreen.jsx";
 
 /*
+ * El indicador de cuenta y el diálogo de login acompañan a todas las vistas, y
+ * los monta `wrap` para que queden DENTRO del proveedor de navegación. Si se
+ * montan fuera —como estaban, desde main.jsx— el contexto les llega en null y
+ * sus acciones de navegación no hacen nada, en silencio.
+ */
+import AccountControl from "./components/auth/AccountControl.jsx";
+import AuthDialog from "./components/auth/AuthDialog.jsx";
+
+/*
  * Cada índice de materia trae su propio fondo animado, así que se cargan aparte:
  * la escena 3D de ajedrez solo se descarga si el estudiante abre esa materia.
  */
@@ -238,7 +247,11 @@ export default function App() {
   };
   const siteFallback = <div style={{ minHeight: "100vh", backgroundColor: FAE.bg }} />;
   const wrap = (node) => (
-    <NavigationContext.Provider value={navigation}>{node}</NavigationContext.Provider>
+    <NavigationContext.Provider value={navigation}>
+      {node}
+      <AccountControl />
+      <AuthDialog />
+    </NavigationContext.Provider>
   );
 
   /*
