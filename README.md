@@ -104,6 +104,34 @@ Para previsualizar ese build localmente antes de desplegar:
 npm run preview
 ```
 
+## Despliegue automático
+
+`.github/workflows/deploy.yml` publica el sitio en Hostinger en cada push a
+`main`: compila con `npm ci && npm run build` y sube `dist/` por FTP a
+`/public_html/`. También se puede lanzar a mano desde la pestaña **Actions** de
+GitHub (*Run workflow*), sin inventar un commit.
+
+Nadie sube archivos por el gestor de Hostinger. Lo que está en vivo es siempre
+el build que sale de este repositorio, y por eso `dist/` sigue en `.gitignore`:
+si se versionara, la versión publicada dependería de quién compiló de último en
+su computador.
+
+**Seis secretos del repositorio**, en *Settings → Secrets and variables →
+Actions*:
+
+| Secreto | Para qué |
+|---|---|
+| `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD` | La conexión a Hostinger (puerto 21) |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_GOOGLE_CLIENT_ID` | Las mismas tres de `.env.local` |
+
+Las tres `VITE_*` no son opcionales aunque el build funcione sin ellas: Vite las
+incrusta **dentro** del bundle al compilar, no las lee del servidor. Sin ellas
+el sitio se publica sin inicio de sesión, sin ranking y sin FP.
+
+La subida usa FTP simple, así que la contraseña viaja sin cifrar. Hostinger
+admite FTPS explícito en el mismo puerto 21: cambiar `protocol: ftp` a
+`protocol: ftps` en el workflow es toda la migración.
+
 ## Flujo de navegación
 
 ```

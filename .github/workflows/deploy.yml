@@ -1,0 +1,93 @@
+# Despliegue automático de AprendeFAE a Hostinger.
+#
+# Cada push a main compila el sitio y sube el resultado por FTP a public_html.
+# Lo que se publica es SIEMPRE el build recién hecho aquí, no una carpeta dist
+# del computador de nadie: dist/ está en .gitignore justamente para que la
+# versión en vivo no dependa de quién subió el último build a mano.
+#
+# Las credenciales vienen de los secretos del repositorio y nunca aparecen en
+# este archivo. GitHub las oculta también en los registros de ejecución.
+
+name: Desplegar a producción
+
+on:
+  push:
+    branches: [main]
+  # Permite lanzarlo a mano desde la pestaña Actions, sin tener que inventar un
+  # commit para reintentar un despliegue.
+  workflow_dispatch:
+
+# Solo un despliegue a la vez. Dos subidas por FTP simultáneas se pisan y dejan
+# public_html a medias; `cancel-in-progress: false` deja terminar la que ya
+# empezó en vez de abortarla con archivos a medio subir.
+concurrency:
+  group: despliegue-produccion
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  desplegar:
+    name: Compilar y publicar
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Traer el código
+        uses: actions/checkout@v7
+
+      - name: Preparar Node
+        uses: actions/setup-node@v7
+        with:
+          # La misma versión mayor que se usa en desarrollo.
+          node-version: "24"
+          cache: npm
+
+      # `npm ci` y no `npm install`: instala exactamente lo que fija
+      # package-lock.json, así el build de producción no cambia solo porque una
+      # dependencia publicó una versión nueva.
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar
+        run: npm run build
+        env:
+          # Vite incrusta estas variables DENTRO del build: tienen que existir
+          # en este momento, no en el servidor. Sin ellas el sitio compila
+          # igual, pero sale sin inicio de sesión, sin ranking y sin FP.
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+
+      # Red de seguridad: si el build no produjo lo esperado, es mejor parar
+      # aquí que subir un sitio incompleto encima del que está funcionando.
+      - name: Comprobar que el build salió completo
+        run: |
+          test -f dist/index.html || { echo "Falta dist/index.html"; exit 1; }
+          test -f dist/privacidad/index.html || { echo "Falta dist/privacidad/index.html"; exit 1; }
+          echo "Build correcto. Contenido de dist/:"
+          ls -la dist
+
+      - name: Subir a Hostinger por FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          # `ftp` es FTP a secas: la contraseña viaja sin cifrar. Hostinger
+          # admite FTPS explícito en este mismo puerto 21; en cuanto el primer
+          # despliegue funcione, cambiar esta línea a `ftps` es la mejora de
+          # seguridad más barata que tiene este archivo.
+          protocol: ftp
+          # Solo el resultado del build. Al apuntar a dist/, el código fuente,
+          # node_modules y .git quedan fuera por construcción, no por filtro.
+          local-dir: ./dist/
+          server-dir: /public_html/
+          # Exclusiones explícitas, por si alguna herramienta deja rastros
+          # dentro de dist/ en el futuro.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.DS_Store
