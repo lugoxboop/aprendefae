@@ -112,9 +112,17 @@ npm run preview
 ## Despliegue automático
 
 `.github/workflows/deploy.yml` publica el sitio en Hostinger en cada push a
-`main`: compila con `npm ci && npm run build` y sube `dist/` por FTP a
-`/public_html/`. También se puede lanzar a mano desde la pestaña **Actions** de
-GitHub (*Run workflow*), sin inventar un commit.
+`main`: compila con `npm ci && npm run build` y sube `dist/` por FTP. También se
+puede lanzar a mano desde la pestaña **Actions** de GitHub (*Run workflow*), sin
+inventar un commit.
+
+**La ruta de destino es `/domains/aprendefae.com/public_html/`, no
+`/public_html/`.** aprendefae.com es un dominio adicional de la cuenta, así que
+cuelga de `domains/`; `/public_html/` es la raíz del dominio principal. El
+primer despliegue fue ahí y salió **en verde con el sitio sin cambiar**: FTP
+crea la carpeta que le pidan y no tiene forma de saber que nadie la sirve. Por
+eso el workflow imprime su destino en cada ejecución, en el paso *Destino de
+este despliegue*.
 
 Nadie sube archivos por el gestor de Hostinger. Lo que está en vivo es siempre
 el build que sale de este repositorio, y por eso `dist/` sigue en `.gitignore`:

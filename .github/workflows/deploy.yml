@@ -32,6 +32,20 @@ jobs:
     name: Compilar y publicar
     runs-on: ubuntu-latest
 
+    env:
+      # Raíz de aprendefae.com dentro de la cuenta FTP.
+      #
+      # NO es /public_html/. Esa es la del dominio principal de la cuenta;
+      # aprendefae.com es un dominio adicional y cuelga de domains/. La ruta
+      # absoluta en el servidor es
+      # /home/u448249998/domains/aprendefae.com/public_html, y como el usuario
+      # FTP entra enjaulado en su home, aquí se escribe relativa a él.
+      #
+      # Subir a la carpeta equivocada NO da error: FTP crea lo que le pidan y
+      # la ejecución sale en verde con el sitio intacto. Por eso el destino
+      # está en una variable y se imprime abajo.
+      RUTA_DESTINO: /domains/aprendefae.com/public_html/
+
     steps:
       - name: Traer el código
         uses: actions/checkout@v7
@@ -68,6 +82,15 @@ jobs:
           echo "Build correcto. Contenido de dist/:"
           ls -la dist
 
+      # Un despliegue a la ruta equivocada sale en verde. Dejar el destino
+      # escrito en el registro convierte "¿a dónde subió?" en una línea que se
+      # lee, en vez de una investigación.
+      - name: Destino de este despliegue
+        run: |
+          echo "Ruta remota : $RUTA_DESTINO"
+          echo "Contenido local que se envía:"
+          find dist -type f | sort
+
       - name: Subir a Hostinger por FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
@@ -83,7 +106,7 @@ jobs:
           # Solo el resultado del build. Al apuntar a dist/, el código fuente,
           # node_modules y .git quedan fuera por construcción, no por filtro.
           local-dir: ./dist/
-          server-dir: /public_html/
+          server-dir: ${{ env.RUTA_DESTINO }}
           # Exclusiones explícitas, por si alguna herramienta deja rastros
           # dentro de dist/ en el futuro.
           exclude: |
