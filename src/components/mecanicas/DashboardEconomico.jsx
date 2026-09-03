@@ -50,6 +50,10 @@ export function simular({ impuesto, tasa, aranceles }) {
    * del espacio. Por eso el mensaje del 100% habla de llevar los instrumentos
    * al límite — el margen es apretado de verdad, no por decoración.
    *
+   * El 0.3 quedó decidido, no pendiente. La alternativa evaluada era 0.35, que
+   * ensancha la ventana a 443 combinaciones (1.1%), y se descartó justamente
+   * por eso: aflojarla contradiría el mensaje que el estudiante lee al ganar.
+   *
    * Cualquier cambio a estos números tiene que volver a pasar por
    * `npm run barrido`: mover uno solo puede dejar un nivel inalcanzable.
    */
