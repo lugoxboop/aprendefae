@@ -1,91 +1,94 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
 import { simular, evaluar } from "../DashboardEconomico.jsx";
 
 /*
- * Barrido exhaustivo del espacio de decisión: recorre las tres palancas en
- * toda su amplitud, con su propio paso, y reporta qué niveles de resultado son
- * alcanzables. Sirve para saber si la meta oficial se puede cumplir.
+ * El porcentaje que devuelve `evaluar` va directo al motor de FP, así que un
+ * cambio accidental en los umbrales altera las notas de estudiantes reales.
+ * Estas pruebas fijan los cuatro niveles y los límites del simulador.
+ *
+ * Meta oficial: desempleo <= 12, inflación <= 6, PIB >= 0.
+ *
+ * El barrido exploratorio del espacio completo de decisión vive aparte, en
+ * scripts/barrido-dashboard.mjs (`npm run barrido`): imprime tablas, no afirma
+ * nada, y es para decidir diseño, no para detectar regresiones.
  */
 
-const RANGOS = [
-  { id: "impuesto", min: 20, max: 35, paso: 0.5 },
-  { id: "tasa", min: 4, max: 12, paso: 0.25 },
-  { id: "aranceles", min: 0, max: 20, paso: 0.5 },
-];
+test("evaluar: ambas metas sin recesión da 100", () => {
+  const r = evaluar({ desempleo: 12, inflacion: 6, pib: 0 });
+  assert.equal(r.porcentaje, 100);
+  assert.match(r.feedback, /^✅/);
+});
 
-const conteo = { 100: 0, 60: 0, 30: 0, 10: 0 };
-/*
- * Escenarios que la tabla de niveles no cubre explícitamente. Se cuentan
- * aparte para saber si son alcanzables y si su texto de feedback encaja.
- */
-const huecos = { unaMetaConRecesion: 0, ningunaMetaConRecesion: 0 };
-let total = 0;
-let mejorInflacionConEmpleoOk = Infinity;
-let mejorCaso = null;
-let ejemploCien = null;
-let ejemploTreinta = null;
-let ejemploUnaMetaRecesion = null;
+test("evaluar: ambas metas pero con recesión da 30", () => {
+  const r = evaluar({ desempleo: 10, inflacion: 4, pib: -0.1 });
+  assert.equal(r.porcentaje, 30);
+  assert.match(r.feedback, /^🟡/);
+});
 
-for (let i = RANGOS[0].min; i <= RANGOS[0].max; i += RANGOS[0].paso) {
-  for (let t = RANGOS[1].min; t <= RANGOS[1].max; t += RANGOS[1].paso) {
-    for (let a = RANGOS[2].min; a <= RANGOS[2].max; a += RANGOS[2].paso) {
-      const v = { impuesto: i, tasa: t, aranceles: a };
-      const ind = simular(v);
-      const { porcentaje } = evaluar(ind);
-      conteo[porcentaje]++;
-      total++;
+test("evaluar: una sola meta, sin recesión, da 60", () => {
+  assert.equal(evaluar({ desempleo: 10, inflacion: 9, pib: 2 }).porcentaje, 60);
+  assert.equal(evaluar({ desempleo: 15, inflacion: 4, pib: 2 }).porcentaje, 60);
+});
 
-      const okD = ind.desempleo <= 12;
-      const okI = ind.inflacion <= 6;
-      const recesion = ind.pib < 0;
-      if ((okD !== okI) && recesion) {
-        huecos.unaMetaConRecesion++;
-        ejemploUnaMetaRecesion ??= { ...v, ...ind, porcentaje };
-      }
-      if (!okD && !okI && recesion) huecos.ningunaMetaConRecesion++;
-      if (porcentaje === 100) ejemploCien ??= { ...v, ...ind };
-      if (porcentaje === 30) ejemploTreinta ??= { ...v, ...ind };
-      if (ind.desempleo <= 12 && ind.inflacion < mejorInflacionConEmpleoOk) {
-        mejorInflacionConEmpleoOk = ind.inflacion;
-        mejorCaso = { ...v, ...ind };
-      }
-    }
+test("evaluar: ninguna meta da 10", () => {
+  const r = evaluar({ desempleo: 20, inflacion: 12, pib: 2 });
+  assert.equal(r.porcentaje, 10);
+  assert.match(r.feedback, /^❌/);
+});
+
+test("evaluar: los umbrales son inclusivos, justo en la meta cuenta como cumplida", () => {
+  assert.equal(evaluar({ desempleo: 12, inflacion: 6, pib: 0 }).porcentaje, 100);
+  assert.equal(evaluar({ desempleo: 12.01, inflacion: 6, pib: 0 }).porcentaje, 60);
+  assert.equal(evaluar({ desempleo: 12, inflacion: 6.01, pib: 0 }).porcentaje, 60);
+});
+
+test("simular: los tres indicadores quedan dentro de sus límites en los extremos", () => {
+  const extremos = [
+    { impuesto: 20, tasa: 4, aranceles: 0 },
+    { impuesto: 20, tasa: 4, aranceles: 20 },
+    { impuesto: 35, tasa: 12, aranceles: 0 },
+    { impuesto: 35, tasa: 12, aranceles: 20 },
+  ];
+  for (const v of extremos) {
+    const { desempleo, inflacion, pib } = simular(v);
+    assert.ok(desempleo >= 3 && desempleo <= 25, `desempleo fuera de rango: ${desempleo}`);
+    assert.ok(inflacion >= 0 && inflacion <= 30, `inflación fuera de rango: ${inflacion}`);
+    assert.ok(pib >= -5 && pib <= 10, `PIB fuera de rango: ${pib}`);
   }
-}
+});
 
-console.log(`Combinaciones evaluadas: ${total}\n`);
-console.table(
-  Object.entries(conteo).map(([nivel, n]) => ({
-    nivel: `${nivel}%`,
-    combinaciones: n,
-    alcanzable: n > 0 ? "SÍ" : "NO",
-  }))
-);
+test("simular: bajar impuesto y tasa reduce el desempleo y sube la inflación", () => {
+  const base = simular({ impuesto: 32, tasa: 8, aranceles: 10 });
+  const suelto = simular({ impuesto: 20, tasa: 4, aranceles: 10 });
+  assert.ok(suelto.desempleo < base.desempleo, "el desempleo debería bajar");
+  assert.ok(suelto.inflacion > base.inflacion, "la inflación debería subir");
+});
 
-console.log("\nMejor intento de cumplir AMBAS metas:");
-console.log("  Con desempleo ya en meta (<=12%), la inflación más baja posible es",
-  mejorInflacionConEmpleoOk.toFixed(2) + "% (meta: <=6%)");
-if (mejorCaso) {
-  console.log("  Con impuesto", mejorCaso.impuesto + "%, tasa", mejorCaso.tasa + "%, aranceles", mejorCaso.aranceles + "%");
-  console.log("  ->  desempleo", mejorCaso.desempleo.toFixed(2) + "%, inflación", mejorCaso.inflacion.toFixed(2) + "%, PIB", mejorCaso.pib.toFixed(2) + "%");
-}
+/*
+ * PENDIENTE, y falla a propósito hasta que alguien decida qué hacer.
+ *
+ * Hoy el 100% no se puede alcanzar: con el desempleo justo en meta (11.98%),
+ * la inflación más baja posible es 6.53%, y la meta pide <=6%. Se queda corta
+ * por medio punto. El techo real de la actividad es 60%, y el nivel de 30%
+ * —ambas metas con recesión— tampoco ocurre nunca.
+ *
+ * Consecuencia: ningún estudiante puede sacar el FP completo de este juego, y
+ * el mensaje de "lo lograste" no se le muestra jamás a nadie.
+ *
+ * Arreglarlo es mover coeficientes o mover la meta, y eso lo decide Gen: no es
+ * algo que se corrija de paso al configurar las pruebas. Queda marcado como
+ * `todo` para que salga en cada corrida sin tumbar el build.
+ *
+ * Verificado con `npm run barrido`: 41.943 combinaciones, 0 llegan al 100%.
+ */
+test("el 100% es alcanzable con alguna combinación real de los instrumentos", { todo: "inalcanzable hoy: la inflación mínima con empleo en meta es 6.53% y la meta es 6%" }, () => {
+  let alcanzado = null;
+  for (let i = 20; i <= 35 && !alcanzado; i += 0.5)
+    for (let t = 4; t <= 12 && !alcanzado; t += 0.25)
+      for (let a = 0; a <= 20 && !alcanzado; a += 0.5)
+        if (evaluar(simular({ impuesto: i, tasa: t, aranceles: a })).porcentaje === 100)
+          alcanzado = { impuesto: i, tasa: t, aranceles: a };
 
-const cien = conteo[100] > 0;
-console.log(`\n${cien ? "La meta oficial ES alcanzable." : "La meta oficial NO es alcanzable con estos rangos y coeficientes."}`);
-
-const muestra = (nombre, c) =>
-  c
-    ? `  ${nombre}: impuesto ${c.impuesto}%, tasa ${c.tasa}%, aranceles ${c.aranceles}% -> desempleo ${c.desempleo.toFixed(1)}%, inflación ${c.inflacion.toFixed(1)}%, PIB ${c.pib.toFixed(1)}%`
-    : `  ${nombre}: sin ejemplo (no alcanzable)`;
-
-console.log("\nEjemplos concretos:");
-console.log(muestra("100%", ejemploCien));
-console.log(muestra("30% (ambas metas con recesión)", ejemploTreinta));
-
-console.log("\nEscenarios fuera de la tabla de niveles:");
-console.table([
-  { escenario: "una meta cumplida + recesión", combinaciones: huecos.unaMetaConRecesion, alcanzable: huecos.unaMetaConRecesion > 0 ? "SÍ" : "NO" },
-  { escenario: "ninguna meta + recesión", combinaciones: huecos.ningunaMetaConRecesion, alcanzable: huecos.ningunaMetaConRecesion > 0 ? "SÍ" : "NO" },
-]);
-if (ejemploUnaMetaRecesion) {
-  console.log(muestra(`una meta + recesión (hoy cae en ${ejemploUnaMetaRecesion.porcentaje}%)`, ejemploUnaMetaRecesion));
-}
+  assert.ok(alcanzado, "ninguna combinación alcanza la meta oficial");
+});

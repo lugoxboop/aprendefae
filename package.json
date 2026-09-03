@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --import ./scripts/cargador-jsx.mjs --test \"src/**/*.test.mjs\"",
+    "barrido": "node --import ./scripts/cargador-jsx.mjs scripts/barrido-dashboard.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",
