@@ -62,7 +62,6 @@ export const SUBJECTS = {
       {
         id: "politica-economica",
         title: "Política Económica",
-        modosFiltrados: true,
         actividades: [
           {
             id: "cadena-desempleo",
@@ -90,7 +89,6 @@ export const SUBJECTS = {
       {
         id: "pensamiento-sistemico",
         title: "Pensamiento Sistémico",
-        modosFiltrados: true,
         actividades: [
           {
             id: "comparador-cadena-red",
@@ -112,16 +110,6 @@ export const SUBJECTS = {
       {
         id: "modelo-iceberg",
         title: "Modelo del Iceberg",
-        /*
-         * ANDAMIO TEMPORAL. Marca que la vista de este tema ya sabe mostrarse
-         * filtrada por modo (solo Aprender o solo Hacer), así que su tarjeta
-         * puede ofrecer la elección en vez de entrar directo.
-         *
-         * Existe solo mientras la separación se despliega tema por tema: en
-         * cuanto los cinco temas la tengan, el campo se borra de todos y la
-         * tarjeta partida pasa a ser el comportamiento único.
-         */
-        modosFiltrados: true,
         actividades: [
           {
             id: "buceo-progresivo",
@@ -163,7 +151,6 @@ export const SUBJECTS = {
       {
         id: "fuerzas-porter",
         title: "Fuerzas de Porter",
-        modosFiltrados: true,
         actividades: [
           {
             id: "batalla-industrias",

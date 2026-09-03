@@ -75,9 +75,9 @@ export default function App() {
   const [view, setView] = useState("home");
   const [prevView, setPrevView] = useState("dashboard");
   /*
-   * Con qué mitad del tema se entró: "aprender", "hacer", o null para las
-   * vistas que todavía se muestran enteras. Lo elige la tarjeta partida del
-   * índice y lo consume la vista del tema para filtrar sus mecánicas.
+   * Con qué mitad del tema se entró: "aprender", "hacer", o null cuando el tema
+   * no tiene las dos y se entra directo. Lo elige la tarjeta partida del índice
+   * y lo consume la vista del tema para filtrar sus mecánicas.
    */
   const [modoTema, setModoTema] = useState(null);
 

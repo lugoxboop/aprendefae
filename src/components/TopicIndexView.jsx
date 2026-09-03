@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FAE } from "../theme.js";
-import { EMPTY_TOPICS_MESSAGE, tiposDeTema } from "../data/subjects.js";
+import { APRENDER, EMPTY_TOPICS_MESSAGE, HACER, tieneContenidoDe, tiposDeTema } from "../data/subjects.js";
 import SubjectCard from "./SubjectCard.jsx";
 import TopicSplitCard from "./TopicSplitCard.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
@@ -119,16 +119,20 @@ export default function TopicIndexView({
                 };
 
                 /*
-                 * Se parte la tarjeta si la vista del tema sabe filtrarse Y hay
-                 * algo que elegir. Un tema sin ninguna actividad clasificada
-                 * —hoy, Fuerzas de Porter— se abriría con las dos opciones
-                 * deshabilitadas: dos clics para llegar a lo mismo. Ese entra
-                 * directo hasta que Gen clasifique sus mecánicas, y entonces se
-                 * parte solo, sin tocar código.
+                 * La tarjeta se parte cuando hay algo que elegir de verdad: las
+                 * dos mitades con contenido. Con una sola llena —hoy, Demanda
+                 * Agregada, que no tiene material— la elección sería un clic de
+                 * más hacia el único destino que existe, con la otra opción
+                 * apagada al lado.
+                 *
+                 * La respuesta sale del contenido, no de una marca por tema: en
+                 * cuanto Gen clasifique la mitad que falta, ese tema se parte
+                 * solo, sin tocar código.
                  */
-                const hayQueElegir = tiposDeTema(topic).length > 0;
+                const hayQueElegir =
+                  tieneContenidoDe(topic, APRENDER) && tieneContenidoDe(topic, HACER);
 
-                return topic.modosFiltrados && hayQueElegir ? (
+                return hayQueElegir ? (
                   <TopicSplitCard
                     key={topic.id}
                     topic={topic}
