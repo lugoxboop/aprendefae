@@ -32,22 +32,22 @@ const PREGUNTAS = [
       {
         id: "a", correcta: true,
         texto: "Cada diciembre, desde hace 3 años, las ventas de la tienda bajan mientras el sector sube",
-        feedback: "✅ Correcto. Un patrón es algo que se repite en el tiempo — no es un hecho aislado, es una tendencia.",
+        feedback: "✅ Exacto. Un patrón es algo que se repite — no pasó una vez, pasa siempre.",
       },
       {
         id: "b",
         texto: "La tienda no tiene un sistema de inventario que anticipe la temporada",
-        feedback: "❌ Eso es una estructura (algo que sostiene el comportamiento), no un patrón. Piensa en “¿qué se repite?”, no en “¿qué falta?”.",
+        feedback: "❌ Eso es lo que sostiene el problema por debajo (estructura), no lo que se repite (patrón).",
       },
       {
         id: "c",
         texto: "El dueño cree que en diciembre la gente solo compra regalos, no ropa para sí misma",
-        feedback: "❌ Eso es un modelo mental — una creencia del dueño, no un dato observable repetido.",
+        feedback: "❌ Eso es una creencia de alguien (modelo mental), no algo que puedas contar repitiéndose (patrón).",
       },
       {
         id: "d",
         texto: "Este diciembre las ventas bajaron un 15%",
-        feedback: "❌ Eso es solo el evento de este año. Un patrón necesita repetirse varias veces para contar como tal.",
+        feedback: "❌ Eso pasó una sola vez — un patrón necesita repetirse, no ser solo un hecho aislado.",
       },
     ],
   },
@@ -58,7 +58,7 @@ const PREGUNTAS = [
       {
         id: "a", correcta: true,
         texto: "La tienda no ajusta su inventario ni sus horarios para fin de año, a diferencia de otras tiendas del sector",
-        feedback: "✅ Correcto. La estructura es lo que sostiene el patrón — reglas, procesos o recursos (o su ausencia).",
+        feedback: "✅ Exacto. La estructura es lo que sostiene el problema por debajo — reglas, costumbres, o algo que falta.",
       },
       {
         id: "b",
@@ -84,7 +84,7 @@ const PREGUNTAS = [
       {
         id: "a", correcta: true,
         texto: "El dueño cree que su negocio no depende de la temporada, que sus clientes leales compran igual todo el año",
-        feedback: "✅ Correcto. El modelo mental es la creencia de fondo que explica por qué nadie cambió la estructura — es la raíz de todo lo demás.",
+        feedback: "✅ Exacto. El modelo mental es la creencia de fondo — lo que alguien piensa que es cierto, aunque nadie lo diga en voz alta. Ahí está la raíz de todo lo demás.",
       },
       {
         id: "b",

@@ -77,13 +77,13 @@ function evaluar(conexion) {
         estado: "loop",
         puntos: 3,
         mensaje:
-          "🎯 ¡Esta es la conexión clave! Cerraste el loop: la baja en ventas que provocó tu propia decisión termina afectando lo primero que buscabas mejorar. Esto es pensamiento sistémico: los efectos no terminan, regresan.",
+          "🎯 Esta es la conexión que casi nadie ve. Le diste la vuelta completa: lo que empezó como una idea para vender más terminó mordiéndose la cola. Así es el pensamiento sistémico — las cosas no se quedan quietas, regresan.",
       };
     }
     return {
       estado: "correcta",
       puntos: 1,
-      mensaje: `✅ Correcto. ${TEXTO[de]} efectivamente lleva a ${TEXTO[a]}.`,
+      mensaje: "✅ Bien visto — de ahí sí sale eso.",
     };
   }
 
@@ -92,7 +92,7 @@ function evaluar(conexion) {
       estado: "senuelo",
       puntos: -0.5,
       mensaje:
-        "❌ Esto no tiene una relación causal directa con el caso — está fuera de la frontera del sistema que estamos analizando.",
+        "❌ Esa ficha ni siquiera está en la fila — no tiene nada que ver con este caso.",
     };
   }
 
@@ -100,14 +100,14 @@ function evaluar(conexion) {
     return {
       estado: "invertida",
       puntos: -0.5,
-      mensaje: `❌ Revisa el sentido de la flecha: ¿${TEXTO[de]} realmente causa a ${TEXTO[a]}, o es al revés?`,
+      mensaje: `❌ Pusiste la ficha al revés: ¿${TEXTO[de]} empuja a ${TEXTO[a]}, o es ${TEXTO[a]} quien empuja a ${TEXTO[de]}?`,
     };
   }
 
   return {
     estado: "sin-relacion",
     puntos: -0.5,
-    mensaje: "❌ No encontramos una relación causal clara aquí. Piénsalo de nuevo.",
+    mensaje: "❌ Ahí no vemos que una ficha empuje a la otra. Piénsalo de nuevo.",
   };
 }
 

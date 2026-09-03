@@ -37,7 +37,7 @@ const OPCIONES = [
   {
     id: "a", porcentaje: 0,
     texto: "Evento — bajar el precio de las rentas para competir",
-    feedback: "❌ Bajar precios ataca el síntoma, no la causa. Genera ventas a corto plazo pero no cambia la trayectoria de fondo — es la reacción más común y la menos efectiva.",
+    feedback: "❌ Bajar precios calma el dolor un rato, pero no cambia nada de fondo. Es la reacción más común — y la que menos funciona.",
   },
   {
     id: "b", porcentaje: 0,
@@ -47,12 +47,12 @@ const OPCIONES = [
   {
     id: "c", porcentaje: 50,
     texto: "Estructura — invertir en una plataforma de distribución digital propia",
-    feedback: "🟡 Cerca, pero no es la de mayor apalancamiento. Invertir en digital ayuda, pero si la empresa sigue creyendo que la tienda física es el corazón del negocio, la inversión será tibia y tardía — la estructura nueva choca con la creencia vieja.",
+    feedback: "🟡 Vas bien encaminado, pero no es la jugada que más cambia las cosas. Invertir en digital ayuda, pero si la empresa sigue creyendo que la tienda física es el corazón del negocio, esa inversión queda a medias — la estructura nueva choca con la creencia vieja.",
   },
   {
     id: "d", porcentaje: 100,
     texto: "Modelo mental — cuestionar la creencia de que el negocio siempre dependerá de la tienda física",
-    feedback: "✅ Correcto. Cambiar la creencia de fondo es lo que permite rediseñar la estructura con convicción real, no como parche. Es la intervención de mayor apalancamiento en cualquier iceberg.",
+    feedback: "✅ Correcto. Cambiar la creencia de fondo es lo que permite reconstruir todo lo demás con convicción real, no como parche. Es el movimiento que más cambia un iceberg completo.",
   },
 ];
 

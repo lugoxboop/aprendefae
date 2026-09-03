@@ -473,6 +473,12 @@ export default function PensamientoSistemicoView({ modo = null, onBack }) {
           Caso: <strong style={{ color: FAE.text, fontWeight: 600 }}>un local de comida rápida en Bogotá baja el
           precio de sus hamburguesas un 20% para vender más.</strong>
         </p>
+        <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 12px" }}>
+          Cuando tumbas una ficha de dominó, no cae solo esa — empuja a la siguiente, y a la siguiente. Aquí es
+          igual: baja el precio de las hamburguesas y ese primer empujón tiene que llegar hasta el final de la
+          fila. Conecta cada ficha con la que realmente empuja. Y ojo: a veces la fila da la vuelta completa y la
+          última ficha empuja otra vez a la primera.
+        </p>
         <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 20px" }}>
           Arma la red completa: toca un nodo y luego otro para conectarlos. No todos los nodos pertenecen al
           sistema. Tienes una sola verificación.

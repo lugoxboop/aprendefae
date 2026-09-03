@@ -409,8 +409,10 @@ export default function IcebergView({ modo = null, onBack }) {
         </div>
         <h2 style={h2}>De arriba hacia abajo</h2>
         <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 20px" }}>
-          Otro caso: una tienda de ropa en Bogotá pierde clientes cada diciembre, mientras el resto del sector
-          vive su temporada más fuerte del año. Cada nivel se destapa al identificarlo.
+          Lo que se ve en la superficie nunca es la historia completa. Aquí tienes un problema que parece simple
+          — una tienda que pierde clientes en diciembre — y tu trabajo es bajar, nivel por nivel, hasta encontrar
+          qué hay realmente debajo del agua. Ojo: en cada nivel hay opciones que suenan bien pero en realidad son
+          de OTRO nivel — ahí es donde más se equivoca la gente.
         </p>
         <IcebergArribaAbajo
           onCompletar={(pct) =>

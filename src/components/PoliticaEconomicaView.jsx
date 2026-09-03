@@ -110,8 +110,8 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
         </div>
         <h2 style={h2}>Desempleo: la cadena en vivo</h2>
         <p style={lead}>
-          Las seis casillas del recuadro no son seis listas sueltas: son un mismo grupo lógico. Recorre la
-          cadena y míralo. Arrastra el cabezal o deja que se reproduzca solo.
+          Desliza esto de un lado a otro y mira cómo un problema se convierte, paso a paso, en una meta con
+          número. No son 6 casillas sueltas — es una sola fila de fichas de dominó.
         </p>
         <CadenaPolitica />
         </>

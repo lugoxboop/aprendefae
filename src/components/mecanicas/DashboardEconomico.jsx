@@ -76,7 +76,7 @@ export function evaluar({ desempleo, inflacion, pib }) {
   if (okDesempleo && okInflacion && !recesion) {
     return {
       porcentaje: 100,
-      feedback: "✅ Lograste ambas metas sin sacrificar crecimiento. Así se ve una política económica bien calibrada: ningún instrumento actúa solo.",
+      feedback: "✅ Lo lograste. Para lograrlo tuviste que llevar casi todos los instrumentos al límite — así de apretado es el margen cuando dos metas jalan para lados distintos. Ningún instrumento actúa solo, siempre hay un precio en otro lado.",
     };
   }
   if (okDesempleo && okInflacion && recesion) {
@@ -88,12 +88,12 @@ export function evaluar({ desempleo, inflacion, pib }) {
   if ((okDesempleo || okInflacion) && !recesion) {
     return {
       porcentaje: 60,
-      feedback: "🟡 Lograste una meta, pero no la otra. Este es el trade-off clásico — bajar impuestos y tasas ayuda al empleo, pero presiona los precios. Prueba un balance distinto entre los tres instrumentos.",
+      feedback: "🟡 Lograste una meta, pero la otra se te fue. Este es el dilema de siempre — bajar impuestos y tasas ayuda al empleo, pero le mete presión a los precios. Prueba un balance distinto entre los tres instrumentos.",
     };
   }
   return {
     porcentaje: 10,
-    feedback: "❌ Ni el desempleo ni la inflación llegaron a la meta. Recuerda: bajar impuestos y tasas empuja el desempleo hacia abajo, pero también sube la inflación — necesitas balance, no un extremo.",
+    feedback: "❌ Ni el desempleo ni la inflación llegaron a la meta esta vez. Bajar impuestos y tasas sí ayuda al empleo, pero también infla los precios — necesitas un punto medio, no ir al extremo.",
   };
 }
 
@@ -289,7 +289,7 @@ export default function DashboardEconomico({ onCompletar }) {
           <p style={{ fontSize: "12.5px", lineHeight: 1.55, color: "rgba(248,249,250,0.6)", margin: "8px 0 0" }}>
             Es una simplificación pedagógica, no un modelo econométrico. Los efectos son lineales y se suman
             entre sí; la economía real tiene rezagos, expectativas e interacciones que aquí no están. Sirve para
-            sentir el trade-off entre instrumentos, no para predecir.
+            sentir cómo cada instrumento se paga en otro lado, no para predecir.
           </p>
         )}
       </div>
