@@ -40,6 +40,15 @@ export const SUBJECTS = {
         title: "Demanda Agregada",
         actividades: [
           {
+            /*
+             * Exploración libre: no hay preguntas ni condición de término, así
+             * que no hay nada que puntuar. Material, no juego.
+             */
+            id: "grifos-da",
+            nombre: "Los grifos de la Demanda Agregada",
+            clasificacion: { tipo: APRENDER },
+          },
+          {
             id: "simulador-da",
             nombre: "Simulador de los 4 canales",
             /*

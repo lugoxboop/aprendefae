@@ -17,7 +17,13 @@ import CanastaConsumo from "./mecanicas/visuales/CanastaConsumo.jsx";
 
 export default function ConsumoView({ state, setState, quizProgress, onAnswerCorrect, onFirstAttempt, onBack, onNext }) {
   const accent = COLORS.blue;
-  const { Y, TR, T, c } = state;
+  const { Y, TR, t, c } = state;
+  /*
+   * T es un resultado, no un dato: sale de la tasa aplicada a la renta, que es
+   * lo que dice la formula del profesor. Antes el deslizador daba un monto
+   * suelto y se podia llegar a pagar mas impuesto que renta.
+   */
+  const T = t * Y;
   const dispo = Y - T + TR;
   const C = Math.max(0, c * dispo);
   const chartData = [
@@ -65,11 +71,13 @@ export default function ConsumoView({ state, setState, quizProgress, onAnswerCor
       </PanelVisual>
       <BigNumberDisplay label="Tu consumo total" value={formatCOP(C)} accent={accent} />
       <p className="text-sm mb-5 leading-relaxed" style={{ color: COLORS.textLight }}>
-        Tu renta disponible es {formatCOP(dispo)}. Como tu MPC es {c.toFixed(2)}, terminas consumiendo {formatCOP(C)} — el resto ({formatCOP(dispo - C)}) lo ahorras.
+        Con una tasa del {(t * 100).toFixed(0)}% pagas {formatCOP(Math.round(T))} de impuestos, así que tu renta
+        disponible es {formatCOP(dispo)}. Como tu MPC es {c.toFixed(2)}, terminas consumiendo {formatCOP(C)} — el
+        resto ({formatCOP(dispo - C)}) lo ahorras.
       </p>
       <Fader label="Renta (Y)" value={Y} min={0} max={10000000} step={100000} accent={accent} format={formatCOP} onChange={(v) => setState((s) => ({ ...s, Y: v }))} />
       <Fader label="Transferencias (TR)" value={TR} min={0} max={2000000} step={50000} accent={accent} format={formatCOP} onChange={(v) => setState((s) => ({ ...s, TR: v }))} />
-      <Fader label="Impuestos (T)" value={T} min={0} max={1000000} step={25000} accent={accent} format={formatCOP} onChange={(v) => setState((s) => ({ ...s, T: v }))} />
+      <Fader label="Tasa impositiva (t)" value={t} min={0} max={0.4} step={0.01} accent={accent} format={(v) => `${(v * 100).toFixed(0)}% · ${formatCOP(Math.round(v * Y))}`} onChange={(v) => setState((s) => ({ ...s, t: v }))} />
       <Fader label="Propensión marginal a consumir (c)" value={c} min={0.3} max={0.9} step={0.05} accent={accent} format={(v) => v.toFixed(2)} onChange={(v) => setState((s) => ({ ...s, c: v }))} />
       <QuizBlock questions={QUIZZES.consumo} accent={accent} progress={quizProgress} onAnswerCorrect={onAnswerCorrect} onFirstAttempt={onFirstAttempt} />
       <NextBackRow onBack={onBack} onNext={onNext} accent={accent} pendientes={quizProgress.filter((v) => !v).length} />

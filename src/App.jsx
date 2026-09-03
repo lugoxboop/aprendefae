@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, lazy, Suspense } from "react";
 import { COLORS, FAE } from "./theme.js";
 import { NavigationContext } from "./navigation.js";
 import { useAuth } from "./auth/AuthProvider.jsx";
-import { clasificacionDe } from "./data/subjects.js";
+import { APRENDER, clasificacionDe } from "./data/subjects.js";
 import { registrarActividadCompletada } from "./fp/registrarActividad.js";
 
 /* La pantalla de entrada se carga de forma estática: es lo primero que ve el estudiante. */
@@ -37,6 +37,7 @@ const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"))
  */
 const Dashboard = lazy(() => import("./components/Dashboard.jsx"));
 const ConsumoView = lazy(() => import("./components/ConsumoView.jsx"));
+const DemandaAgregadaAprenderView = lazy(() => import("./components/DemandaAgregadaAprenderView.jsx"));
 const InversionView = lazy(() => import("./components/InversionView.jsx"));
 const GastoView = lazy(() => import("./components/GastoView.jsx"));
 const XNView = lazy(() => import("./components/XNView.jsx"));
@@ -87,7 +88,7 @@ export default function App() {
     setView(topicId);
   };
 
-  const [consumoState, setConsumoState] = useState({ Y: 5000000, TR: 500000, T: 300000, c: 0.6 });
+  const [consumoState, setConsumoState] = useState({ Y: 5000000, TR: 500000, t: 0.06, c: 0.6 });
   const [inversionState, setInversionState] = useState({ Ibar: 2000000, b: 50000, i: 10 });
   const [gastoState, setGastoState] = useState({ G: 3000000 });
   const [xnState, setXnState] = useState({ tc: 4000 });
@@ -276,6 +277,16 @@ export default function App() {
              * empieza de verdad.
              */
             if (topicId === "demanda-agregada") {
+              /*
+               * El tema tiene las dos mitades y cada una va a un sitio
+               * distinto: "Aprender" a los grifos, "Hacer" al simulador. Sin
+               * modo (nadie debería llegar así hoy) se entra al simulador,
+               * que es como se comportaba antes.
+               */
+              if (modo === APRENDER) {
+                abrirTema("grifos-da", modo);
+                return;
+              }
               if (!inicioSimulador.current) inicioSimulador.current = Date.now();
               abrirTema("dashboard", modo);
               return;
@@ -283,6 +294,14 @@ export default function App() {
             abrirTema(topicId, modo);
           }}
         />
+      </Suspense>
+    );
+  }
+
+  if (view === "grifos-da") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <DemandaAgregadaAprenderView onBack={() => setView("macroeconomia")} />
       </Suspense>
     );
   }
