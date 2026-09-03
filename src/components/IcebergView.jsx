@@ -4,6 +4,7 @@ import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
+import VideoYouTube from "./shared/VideoYouTube.jsx";
 import IcebergDiagram from "./mecanicas/IcebergDiagram.jsx";
 import IcebergArribaAbajo from "./mecanicas/IcebergArribaAbajo.jsx";
 import CasoBlockbuster from "./mecanicas/CasoBlockbuster.jsx";
@@ -268,6 +269,12 @@ export default function IcebergView({ modo = null, onBack }) {
           </p>
         </div>
         </div>
+
+        <VideoYouTube
+          videoId="3MpsEHLUcj0"
+          titulo="Analiza tu Empresa con el MODELO DEL ICEBERG"
+          canal="Felipe Administrador"
+        />
         </>
         )}
 

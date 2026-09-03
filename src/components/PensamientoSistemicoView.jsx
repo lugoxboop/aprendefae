@@ -4,6 +4,7 @@ import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
+import VideoYouTube from "./shared/VideoYouTube.jsx";
 import MapaCausal from "./mecanicas/MapaCausal.jsx";
 import { clasificacionDe, APRENDER, HACER } from "../data/subjects.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
@@ -445,6 +446,12 @@ export default function PensamientoSistemicoView({ modo = null, onBack }) {
           </div>
         )}
 
+
+        <VideoYouTube
+          videoId="vzQTgu7Ca4o"
+          titulo="Pensamiento lineal vs complejo"
+          canal="Fundación General de la Universidad de La Laguna"
+        />
         </>
         )}
 

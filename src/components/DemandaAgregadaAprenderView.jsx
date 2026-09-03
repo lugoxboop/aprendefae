@@ -4,6 +4,7 @@ import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import GrifosDA from "./mecanicas/GrifosDA.jsx";
+import VideoYouTube from "./shared/VideoYouTube.jsx";
 import { APRENDER } from "../data/subjects.js";
 
 /*
@@ -71,6 +72,12 @@ export default function DemandaAgregadaAprenderView({ onBack }) {
           </p>
 
           <GrifosDA />
+
+          <VideoYouTube
+            videoId="bYH1klgRk2E"
+            titulo="¿Qué es la demanda agregada? Descúbrelo fácil y rápido | Concepto, Componentes"
+            canal="En Minutos • Educación"
+          />
 
           <p style={{ fontSize: "13px", lineHeight: 1.6, color: "rgba(248,249,250,0.45)", margin: "18px 0 0" }}>
             Aquí no hay preguntas ni puntaje: es para trastear. Los FP de este tema se ganan en el simulador,

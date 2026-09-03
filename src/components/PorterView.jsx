@@ -7,6 +7,7 @@ import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
+import VideoYouTube from "./shared/VideoYouTube.jsx";
 import AsedioEstrategico from "./mecanicas/AsedioEstrategico.jsx";
 import { APRENDER, HACER, clasificacionDe } from "../data/subjects.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
@@ -506,6 +507,12 @@ export default function PorterView({ modo = null, onBack }) {
             </div>
           </div>
         )}
+
+        <VideoYouTube
+          videoId="pBSQ7Am8yAk"
+          titulo="5 Fuerzas de Porter | CASO Aerolíneas | Explicado Ejemplos Sencillos"
+          canal="ANUOR AGUILAR"
+        />
         </>
         )}
 
