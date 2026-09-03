@@ -163,17 +163,24 @@ export const SUBJECTS = {
       {
         id: "fuerzas-porter",
         title: "Fuerzas de Porter",
-        /*
-         * Sigue entrando directo, sin tarjeta partida, aunque ya tenga una
-         * actividad clasificada: "Aprender" no tiene ninguna, así que partir la
-         * tarjeta solo añadiría un clic hacia el único destino que existe. La
-         * regla de TopicIndexView es que la elección aparece cuando hay algo
-         * que elegir; en cuanto Gen clasifique las dos primeras mecánicas,
-         * bastará con marcar el tema.
-         */
+        modosFiltrados: true,
         actividades: [
-          { id: "batalla-industrias", nombre: "Batalla de industrias" },
-          { id: "termometro-fuerza", nombre: "Termómetro por fuerza" },
+          {
+            id: "batalla-industrias",
+            nombre: "Batalla de industrias",
+            clasificacion: { tipo: APRENDER },
+          },
+          {
+            /*
+             * Material, no juego: el termómetro promedia los pesos fijos de las
+             * opciones que el estudiante elige y pinta el resultado. No hay un
+             * perfil del gimnasio contra el cual validar, así que no existe
+             * respuesta incorrecta que puntuar.
+             */
+            id: "termometro-fuerza",
+            nombre: "Termómetro por fuerza",
+            clasificacion: { tipo: APRENDER },
+          },
           {
             id: "asedio-estrategico",
             nombre: "Asedio Estratégico — Defiende tu Margen",

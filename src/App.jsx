@@ -339,7 +339,7 @@ export default function App() {
   if (view === "fuerzas-porter") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <PorterView onBack={() => setView("pensamiento-estrategico")} />
+        <PorterView modo={modoTema} onBack={() => setView("pensamiento-estrategico")} />
       </Suspense>
     );
   }

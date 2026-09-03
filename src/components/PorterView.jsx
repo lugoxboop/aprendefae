@@ -8,21 +8,27 @@ import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import AsedioEstrategico from "./mecanicas/AsedioEstrategico.jsx";
-import { clasificacionDe } from "../data/subjects.js";
+import { APRENDER, HACER, clasificacionDe } from "../data/subjects.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 
 const MATERIA = "pensamiento-estrategico";
 const TEMA = "fuerzas-porter";
+const CLAS_BATALLA = clasificacionDe(MATERIA, TEMA, "batalla-industrias");
+const CLAS_TERMOMETRO = clasificacionDe(MATERIA, TEMA, "termometro-fuerza");
 const CLAS_ASEDIO = clasificacionDe(MATERIA, TEMA, "asedio-estrategico");
 
 /*
- * Tema "Fuerzas de Porter" — dos mecánicas sobre la misma página.
+ * Tema "Fuerzas de Porter" — tres mecánicas sobre la misma página.
  *
  * 1. Batalla de industrias: dos radares lado a lado. Lo que enseña no es la
  *    definición de cada fuerza sino el contraste entre las dos siluetas.
  * 2. Termómetro por fuerza: el estudiante contesta sobre una situación concreta
  *    y ve subir la intensidad, en vez de que se la den resuelta.
+ * 3. Asedio Estratégico: la única que evalúa, y la única que otorga FP.
+ *
+ * Las dos primeras son material: ninguna compara la respuesta contra nada, así
+ * que caen del lado "Aprender" de la tarjeta partida.
  */
 
 /* ------------------------- Mecánica 1: datos ------------------------- */
@@ -295,7 +301,13 @@ function Gauge({ gauge, answers, onAnswer }) {
 const emptyAnswers = () =>
   GAUGES.reduce((acc, g) => ({ ...acc, [g.key]: [null, null] }), {});
 
-export default function PorterView({ onBack }) {
+export default function PorterView({ modo = null, onBack }) {
+  /*
+   * Con qué mitad se entró desde la tarjeta partida. Sin modo se ve entera.
+   */
+  const muestraAprender = modo !== HACER;
+  const muestraHacer = modo !== APRENDER;
+
   const { pedirCuenta } = useAuth();
 
   /* Única mecánica del tema conectada al motor de FP, por ahora. */
@@ -356,10 +368,17 @@ export default function PorterView({ onBack }) {
           <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1 }}>
             Fuerzas de Porter
           </h1>
+          {/* Sin modo, ActivityBadge no dibuja nada: la página entera se ve igual. */}
+          <ActivityBadge tipo={modo} size="sm" />
         </div>
 
+        {muestraAprender && (
+        <>
         {/* ---------------- Mecánica 1 ---------------- */}
-        <p style={sectionLabel}>MECÁNICA 1</p>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+          <p style={sectionLabel}>MECÁNICA 1</p>
+          <ActivityBadge tipo={CLAS_BATALLA?.tipo} size="sm" />
+        </div>
         <h2 style={h2}>Batalla de industrias</h2>
         <p style={lead}>
           Las mismas cinco fuerzas, dos sectores opuestos. Compara las siluetas: no hace falta la definición de
@@ -423,7 +442,10 @@ export default function PorterView({ onBack }) {
         </div>
 
         {/* ---------------- Mecánica 2 ---------------- */}
-        <p style={sectionLabel}>MECÁNICA 2</p>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+          <p style={sectionLabel}>MECÁNICA 2</p>
+          <ActivityBadge tipo={CLAS_TERMOMETRO?.tipo} size="sm" />
+        </div>
         <h2 style={h2}>Termómetro por fuerza</h2>
         <p style={lead}>
           Estás evaluando abrir un gimnasio boutique de clases grupales (spinning/HIIT) en Bogotá. Responde sobre
@@ -484,9 +506,14 @@ export default function PorterView({ onBack }) {
             </div>
           </div>
         )}
+        </>
+        )}
+
+        {muestraHacer && (
+        <>
         {/* ---------------- Mecánica 3: Asedio Estratégico ---------------- */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
-          <p style={sectionLabel}>MECÁNICA 3</p>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
+          <p style={sectionLabel}>MECÁNICA {muestraAprender ? 3 : 1}</p>
           <ActivityBadge tipo={CLAS_ASEDIO?.tipo} size="sm" />
         </div>
         <h2 style={h2}>Asedio Estratégico — Defiende tu Margen</h2>
@@ -496,6 +523,8 @@ export default function PorterView({ onBack }) {
           plantilla siempre.
         </p>
         <AsedioEstrategico onCompletar={completarAsedio} />
+        </>
+        )}
       </div>
     </div>
     </FondoMateria>
