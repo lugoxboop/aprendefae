@@ -163,10 +163,27 @@ export const SUBJECTS = {
       {
         id: "fuerzas-porter",
         title: "Fuerzas de Porter",
-        /* Pendientes de clasificar por Gen: sin insignia y sin conexión a FP. */
+        /*
+         * Sigue entrando directo, sin tarjeta partida, aunque ya tenga una
+         * actividad clasificada: "Aprender" no tiene ninguna, así que partir la
+         * tarjeta solo añadiría un clic hacia el único destino que existe. La
+         * regla de TopicIndexView es que la elección aparece cuando hay algo
+         * que elegir; en cuanto Gen clasifique las dos primeras mecánicas,
+         * bastará con marcar el tema.
+         */
         actividades: [
           { id: "batalla-industrias", nombre: "Batalla de industrias" },
           { id: "termometro-fuerza", nombre: "Termómetro por fuerza" },
+          {
+            id: "asedio-estrategico",
+            nombre: "Asedio Estratégico — Defiende tu Margen",
+            clasificacion: {
+              tipo: HACER,
+              modalidad: "evaluativa",
+              dificultad: "dificil",
+              fpBase: 50,
+            },
+          },
         ],
       },
     ],

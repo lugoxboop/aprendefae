@@ -6,6 +6,15 @@ import {
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
+import ActivityBadge from "./shared/ActivityBadge.jsx";
+import AsedioEstrategico from "./mecanicas/AsedioEstrategico.jsx";
+import { clasificacionDe } from "../data/subjects.js";
+import { registrarActividadCompletada } from "../fp/registrarActividad.js";
+import { useAuth } from "../auth/AuthProvider.jsx";
+
+const MATERIA = "pensamiento-estrategico";
+const TEMA = "fuerzas-porter";
+const CLAS_ASEDIO = clasificacionDe(MATERIA, TEMA, "asedio-estrategico");
 
 /*
  * Tema "Fuerzas de Porter" — dos mecánicas sobre la misma página.
@@ -287,6 +296,20 @@ const emptyAnswers = () =>
   GAUGES.reduce((acc, g) => ({ ...acc, [g.key]: [null, null] }), {});
 
 export default function PorterView({ onBack }) {
+  const { pedirCuenta } = useAuth();
+
+  /* Única mecánica del tema conectada al motor de FP, por ahora. */
+  const completarAsedio = async (porcentajeAciertos, duracionMs) => {
+    const resultado = await registrarActividadCompletada(CLAS_ASEDIO, {
+      materiaId: MATERIA,
+      temaId: TEMA,
+      actividadId: "asedio-estrategico",
+      porcentajeAciertos,
+      duracionMs,
+    });
+    if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
+  };
+
   const [caseIndex, setCaseIndex] = useState(0);
   const [answers, setAnswers] = useState(emptyAnswers);
 
@@ -461,6 +484,18 @@ export default function PorterView({ onBack }) {
             </div>
           </div>
         )}
+        {/* ---------------- Mecánica 3: Asedio Estratégico ---------------- */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
+          <p style={sectionLabel}>MECÁNICA 3</p>
+          <ActivityBadge tipo={CLAS_ASEDIO?.tipo} size="sm" />
+        </div>
+        <h2 style={h2}>Asedio Estratégico — Defiende tu Margen</h2>
+        <p style={lead}>
+          Tres casos, diez puntos de defensa en cada uno y cinco flancos que proteger. Repartes
+          antes de saber por dónde viene la presión: acertar es leer el caso, no aplicar la misma
+          plantilla siempre.
+        </p>
+        <AsedioEstrategico onCompletar={completarAsedio} />
       </div>
     </div>
     </FondoMateria>
