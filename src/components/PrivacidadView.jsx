@@ -43,6 +43,14 @@ const SECTIONS = [
     ],
   },
   {
+    heading: "Videos de YouTube dentro de la plataforma",
+    paragraphs: [
+      "Algunos temas incluyen videos alojados en YouTube que se reproducen dentro de AprendeFAE. Ese material no es nuestro: lo produce el canal que se indica junto a cada video, y lo señalamos siempre para que sepas cuándo estás viendo contenido externo.",
+      "Usamos el reproductor de YouTube en modo de privacidad mejorada (dominio youtube-nocookie.com), que evita que Google escriba cookies publicitarias en tu navegador mientras no reproduzcas nada. El video tampoco se carga al abrir la página: solo cuando bajas hasta él.",
+      "Cuando el video se carga y cuando le das play, Google recibe datos técnicos de tu conexión, como tu dirección IP, el tipo de dispositivo y el navegador que usas. Ese intercambio ocurre entre tu navegador y Google, y se rige por la política de privacidad de Google, no por esta. AprendeFAE no recibe ni guarda información sobre qué videos ves ni cuánto los ves.",
+    ],
+  },
+  {
     heading: "Acceso del profesor de tu curso",
     paragraphs: [
       "El profesor de un curso puede acceder a un panel donde ve el avance de sus estudiantes identificado por nombre real. Este acceso existe para el acompañamiento académico: detectar a tiempo a quien se está quedando atrás y saber qué temas conviene reforzar en clase.",
@@ -121,7 +129,7 @@ export default function PrivacidadView() {
           Política de privacidad de aprendeFAE
         </h1>
         <p style={{ fontSize: "14px", color: "rgba(248,249,250,0.5)", margin: "0 0 40px" }}>
-          Última actualización: 1 de septiembre de 2026
+          Última actualización: 3 de septiembre de 2026
         </p>
 
         {SECTIONS.map((section) => (
