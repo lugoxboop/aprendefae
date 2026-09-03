@@ -20,10 +20,14 @@ test("evaluar: ambas metas sin recesión da 100", () => {
   assert.match(r.feedback, /^✅/);
 });
 
-test("evaluar: ambas metas pero con recesión da 30", () => {
-  const r = evaluar({ desempleo: 10, inflacion: 4, pib: -0.1 });
-  assert.equal(r.porcentaje, 30);
-  assert.match(r.feedback, /^🟡/);
+test("evaluar: ambas metas con recesión ya no es un nivel aparte", () => {
+  /*
+   * Valía 30 y se quitó por imposible: el barrido no encuentra ni una
+   * combinación que llegue a las dos metas con el PIB en negativo. Si el
+   * modelo cambiara y volviera a ocurrir, cae en el 10 y hay que reabrir la
+   * discusión, no dejarlo pasar callado.
+   */
+  assert.equal(evaluar({ desempleo: 10, inflacion: 4, pib: -0.1 }).porcentaje, 10);
 });
 
 test("evaluar: una sola meta, sin recesión, da 60", () => {
@@ -66,29 +70,40 @@ test("simular: bajar impuesto y tasa reduce el desempleo y sube la inflación", 
 });
 
 /*
- * PENDIENTE, y falla a propósito hasta que alguien decida qué hacer.
+ * La prueba que protege la calibración. Con la inflación base en 8% el 100%
+ * era inalcanzable y nadie se enteró durante meses: ningún estudiante podía
+ * sacar el FP completo y el mensaje de "lo lograste" no se mostraba jamás.
  *
- * Hoy el 100% no se puede alcanzar: con el desempleo justo en meta (11.98%),
- * la inflación más baja posible es 6.53%, y la meta pide <=6%. Se queda corta
- * por medio punto. El techo real de la actividad es 60%, y el nivel de 30%
- * —ambas metas con recesión— tampoco ocurre nunca.
- *
- * Consecuencia: ningún estudiante puede sacar el FP completo de este juego, y
- * el mensaje de "lo lograste" no se le muestra jamás a nadie.
- *
- * Arreglarlo es mover coeficientes o mover la meta, y eso lo decide Gen: no es
- * algo que se corrija de paso al configurar las pruebas. Queda marcado como
- * `todo` para que salga en cada corrida sin tumbar el build.
- *
- * Verificado con `npm run barrido`: 41.943 combinaciones, 0 llegan al 100%.
+ * Barre el espacio entero, no una combinación de referencia. Una combinación
+ * suelta puede seguir dando 100% mientras el resto del tablero se rompe.
  */
-test("el 100% es alcanzable con alguna combinación real de los instrumentos", { todo: "inalcanzable hoy: la inflación mínima con empleo en meta es 6.53% y la meta es 6%" }, () => {
-  let alcanzado = null;
-  for (let i = 20; i <= 35 && !alcanzado; i += 0.5)
-    for (let t = 4; t <= 12 && !alcanzado; t += 0.25)
-      for (let a = 0; a <= 20 && !alcanzado; a += 0.5)
-        if (evaluar(simular({ impuesto: i, tasa: t, aranceles: a })).porcentaje === 100)
-          alcanzado = { impuesto: i, tasa: t, aranceles: a };
+test("ningún nivel queda inalcanzable en las 41.943 combinaciones", () => {
+  const conteo = { 100: 0, 60: 0, 10: 0 };
+  let ejemplo100 = null;
 
-  assert.ok(alcanzado, "ninguna combinación alcanza la meta oficial");
+  for (let i = 20; i <= 35; i += 0.5)
+    for (let t = 4; t <= 12; t += 0.25)
+      for (let a = 0; a <= 20; a += 0.5) {
+        const v = { impuesto: i, tasa: t, aranceles: a };
+        const pct = evaluar(simular(v)).porcentaje;
+        assert.ok(pct in conteo, `nivel inesperado: ${pct}`);
+        conteo[pct]++;
+        if (pct === 100 && !ejemplo100) ejemplo100 = v;
+      }
+
+  const total = Object.values(conteo).reduce((s, n) => s + n, 0);
+  assert.equal(total, 41943, "el espacio de decisión cambió de tamaño");
+
+  for (const [nivel, n] of Object.entries(conteo)) {
+    assert.ok(n > 0, `el nivel ${nivel}% es inalcanzable: 0 de ${total} combinaciones`);
+  }
+  assert.ok(ejemplo100, "el 100% no se alcanza con ninguna combinación");
+});
+
+test("la combinación de referencia (impuesto 20, tasa 10, aranceles 0) da 100", () => {
+  const ind = simular({ impuesto: 20, tasa: 10, aranceles: 0 });
+  assert.equal(evaluar(ind).porcentaje, 100);
+  assert.ok(ind.desempleo <= 12, `desempleo ${ind.desempleo}`);
+  assert.ok(ind.inflacion <= 6, `inflación ${ind.inflacion}`);
+  assert.ok(ind.pib >= 0, `PIB ${ind.pib}`);
 });

@@ -14,7 +14,7 @@ import { FAE } from "../../theme.js";
  * no una predicción económica. Se advierte en la interfaz.
  */
 
-const BASE = { desempleo: 14, inflacion: 8, pib: 1.5 };
+const BASE = { desempleo: 14, inflacion: 6.5, pib: 1.5 };
 const META = { desempleo: 12, inflacion: 6, pib: 0 };
 
 const INSTRUMENTOS = [
@@ -41,22 +41,19 @@ export function simular({ impuesto, tasa, aranceles }) {
   const dAranceles = aranceles - 10; // positivo si los aranceles suben
 
   /*
-   * OJO: coeficiente 0.35 en vez del 0.2 de la especificación.
+   * Los coeficientes están calibrados, no elegidos a ojo: con la inflación
+   * base en 8% el 100% era inalcanzable en las 41.943 combinaciones del
+   * espacio de decisión, porque todo instrumento que baja el desempleo sube
+   * la inflación. Bajar la base a 6.5% abre la ventana.
    *
-   * Con 0.2, cumplir las dos metas a la vez era imposible en las 41.943
-   * combinaciones del espacio de decisión. Con 0.35 mejora —la inflación
-   * mínima con el desempleo en meta baja de 8.55% a 6.53%— pero el 100%
-   * SIGUE SIENDO INALCANZABLE, igual que el nivel 30%.
+   * Es una ventana estrecha a propósito: 70 de 41.943 combinaciones, el 0.2%
+   * del espacio. Por eso el mensaje del 100% habla de llevar los instrumentos
+   * al límite — el margen es apretado de verdad, no por decoración.
    *
-   * El problema es estructural y no se arregla tocando este número: todo
-   * instrumento que baja el desempleo sube la inflación, y llegar a ambas
-   * metas exige una rebaja de impuesto grande que empuja el PIB hacia arriba,
-   * así que la recesión del nivel 30% no puede coexistir con ellas.
-   *
-   * Pendiente de decisión de producto. Ver el barrido en
-   * src/components/mecanicas/__tests__/dashboard.test.mjs
+   * Cualquier cambio a estos números tiene que volver a pasar por
+   * `npm run barrido`: mover uno solo puede dejar un nivel inalcanzable.
    */
-  const desempleo = BASE.desempleo - 0.35 * dImpuesto - 0.25 * dTasa - 0.1 * dAranceles;
+  const desempleo = BASE.desempleo - 0.3 * dImpuesto - 0.25 * dTasa - 0.1 * dAranceles;
   const inflacion = BASE.inflacion + 0.15 * dImpuesto + 0.3 * dTasa + 0.2 * dAranceles;
   const pib = BASE.pib + 0.1 * dImpuesto + 0.15 * dTasa - 0.05 * dAranceles;
 
@@ -67,7 +64,14 @@ export function simular({ impuesto, tasa, aranceles }) {
   };
 }
 
-/* Cuatro niveles de resultado; el porcentaje va tal cual al motor de FP. */
+/*
+ * Tres niveles de resultado; el porcentaje va tal cual al motor de FP.
+ *
+ * Hubo un cuarto —ambas metas cumplidas pero con recesión, que valía 30%— y
+ * se quitó porque no puede ocurrir: llegar a las dos metas exige una rebaja de
+ * impuesto que empuja el PIB hacia arriba, así que la recesión y el doble
+ * acierto no coexisten. Era una rama muerta que sugería un caso inexistente.
+ */
 export function evaluar({ desempleo, inflacion, pib }) {
   const okDesempleo = desempleo <= META.desempleo;
   const okInflacion = inflacion <= META.inflacion;
@@ -77,12 +81,6 @@ export function evaluar({ desempleo, inflacion, pib }) {
     return {
       porcentaje: 100,
       feedback: "✅ Lo lograste. Para lograrlo tuviste que llevar casi todos los instrumentos al límite — así de apretado es el margen cuando dos metas jalan para lados distintos. Ningún instrumento actúa solo, siempre hay un precio en otro lado.",
-    };
-  }
-  if (okDesempleo && okInflacion && recesion) {
-    return {
-      porcentaje: 30,
-      feedback: "🟡 Cumpliste desempleo e inflación, pero el PIB entró en terreno negativo. Ganar en el papel no sirve si la economía se contrae — revisa qué tanto ajustaste la tasa de interés y los aranceles.",
     };
   }
   if ((okDesempleo || okInflacion) && !recesion) {
