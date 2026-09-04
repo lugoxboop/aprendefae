@@ -1,12 +1,12 @@
 import { FAE } from "../theme.js";
-import HummingbirdBackground from "./backgrounds/HummingbirdBackground.jsx";
+import MeshGradientBackground from "./backgrounds/MeshGradientBackground.jsx";
 import BackgroundVeil from "./shared/BackgroundVeil.jsx";
 import Hero from "./Hero.jsx";
 import SubjectCard, { MacroIcon, EstrategiaIcon } from "./SubjectCard.jsx";
 import Logo from "./Logo.jsx";
 import Footer from "./shared/Footer.jsx";
 
-/* Pantalla de entrada: colibrí libando + titular rotativo + las dos materias. */
+/* Pantalla de entrada: degradado en malla + titular rotativo + las dos materias. */
 export default function HomeScreen({ onSelectSubject }) {
   return (
     <div
@@ -19,7 +19,13 @@ export default function HomeScreen({ onSelectSubject }) {
         overflow: "hidden",
       }}
     >
-      <HummingbirdBackground />
+      <MeshGradientBackground />
+      {/*
+        * Velo por defecto, sin subirle el centro. Medido sobre el ciclo completo,
+        * el peor contraste del titular es 8.62:1 incluso con el velo en cero: las
+        * manchas van tan desenfocadas y tan sobre navy que no necesitan tapa
+        * extra, y bajarla deja ver el color, que es de lo que va este fondo.
+        */}
       <BackgroundVeil />
 
       <div
