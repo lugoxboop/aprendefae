@@ -125,6 +125,7 @@ security definer
 set search_path = public
 stable
 as $$
+#variable_conflict use_column
 declare
   v_uid   uuid := auth.uid();
   v_ciclo date := public.ciclo_actual();
@@ -232,6 +233,7 @@ security definer
 set search_path = public
 stable
 as $$
+#variable_conflict use_column
 declare
   v_uid    uuid := auth.uid();
   v_ciclo  date := public.ciclo_actual();
@@ -282,7 +284,7 @@ begin
   rachas_alta as (
     select subject_id, max(largo)::integer as largo from (
       select subject_id, count(*) as largo
-        from (select subject_id, ciclo, (ciclo - (fila * 7)) as grupo from en_alta) g
+        from (select subject_id, ciclo, (ciclo - (fila * 7)::integer) as grupo from en_alta) g
        group by subject_id, grupo
     ) s group by subject_id
   ),
@@ -300,8 +302,7 @@ begin
        and h.modality = 'evaluativa'
        and h.difficulty in ('dificil', 'experto')
        and h.correct_pct >= 100
-  ),
-  ultimo as (select 1)
+  )
 
   -- 1. Primer podio (global)
   select 'primer-podio', 'podio', 'Primer podio',
@@ -339,7 +340,6 @@ begin
     from (select distinct subject_id from public.liga_membresia) s
     left join primeros pr on pr.subject_id = s.subject_id
 
-  union all
   /*
    * La 5 (Materia completa) NO se calcula aquí. Cuántas actividades tiene cada
    * materia vive en subjects.js, que es la única fuente de verdad del catálogo;
@@ -377,11 +377,11 @@ language sql
 security definer
 set search_path = public
 stable
-as $
+as $$
   select distinct h.subject_id, h.activity_id
     from public.fp_history h
    where h.user_id = auth.uid();
-$;
+$$;
 
 -- ---------------------------------------------------------------------------
 -- RESUMEN DE SEMESTRE
@@ -408,6 +408,7 @@ security definer
 set search_path = public
 stable
 as $$
+#variable_conflict use_column
 declare
   v_uid    uuid := auth.uid();
   v_inicio date := public.ajuste_fecha('semestre_inicio', '2026-08-01');
