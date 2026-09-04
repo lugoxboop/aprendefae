@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { FAE } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { tableroDe, repartir, nombreLiga, tieneLigas } from "../../ligas/ligas.js";
+import BotonAnimo from "../social/BotonAnimo.jsx";
+import { estadoDeAnimos } from "../../social/animo.js";
 
 /*
  * Tablero de liga de una materia.
@@ -58,12 +60,15 @@ function Puesto({ n, destacado }) {
 export default function LigaBoard({ subjectId }) {
   const { session, pedirCuenta } = useAuth();
   const [estado, setEstado] = useState({ cargando: true, filas: [], error: null });
+  const [animos, setAnimos] = useState({});
 
   const cargar = useCallback(async () => {
     if (!tieneLigas(subjectId)) return;
     setEstado((e) => ({ ...e, cargando: true }));
     const { filas, error } = await tableroDe(subjectId);
     setEstado({ cargando: false, filas, error });
+    /* Aparte de liga_tablero, para no tocar una función ya asegurada. */
+    setAnimos(await estadoDeAnimos((filas ?? []).filter((f) => !f.es_tuyo).map((f) => f.nickname)));
   }, [subjectId]);
 
   useEffect(() => {
@@ -141,6 +146,10 @@ export default function LigaBoard({ subjectId }) {
                 <span style={{ fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: FAE.teal }}>
                   {f.fp} FP
                 </span>
+                {/* Nunca en la fila propia. */}
+                {!f.es_tuyo && animos[f.nickname] && (
+                  <BotonAnimo apodo={f.nickname} recibidos={animos[f.nickname].recibidos} yaLeDi={animos[f.nickname].yaLeDi} />
+                )}
               </li>
             ))}
           </ol>

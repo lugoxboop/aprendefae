@@ -7,6 +7,9 @@ import { useContext, useEffect, useState } from "react";
 import { NavigationContext } from "../navigation.js";
 import { accesoDocente } from "../docente/datos.js";
 import { rachaVigente, proximoHito, enRiesgoHoy } from "../fp/racha.js";
+import { animosRecibidos } from "../social/animo.js";
+import Medallas from "./perfil/Medallas.jsx";
+import ResumenSemestre from "./perfil/ResumenSemestre.jsx";
 
 /*
  * Perfil del estudiante. Se llega desde el indicador de cuenta de la cabecera.
@@ -29,9 +32,17 @@ export default function PerfilView({ onBack }) {
    */
   const nav = useContext(NavigationContext);
   const [esDocente, setEsDocente] = useState(false);
+  const [animos, setAnimos] = useState(null);
   useEffect(() => { accesoDocente().then((a) => setEsDocente(a.esDocente)); }, []);
 
   const { perfil, session, pedirCuenta } = useAuth();
+
+  useEffect(() => {
+    if (!session) return;
+    let vivo = true;
+    animosRecibidos().then((n) => vivo && setAnimos(n));
+    return () => { vivo = false; };
+  }, [session]);
 
   const racha = rachaVigente(perfil);
   const siguiente = proximoHito(racha);
@@ -129,6 +140,24 @@ export default function PerfilView({ onBack }) {
                   {perfil?.best_streak ?? 0} {(perfil?.best_streak ?? 0) === 1 ? "día" : "días"}
                 </p>
               </div>
+              {/*
+                * Ánimos recibidos: el número y nada más. Quién los dio no se
+                * guarda para mostrarse, y ninguna consulta lo devuelve.
+                */}
+              <div style={dato}>
+                <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>Ánimos recibidos</p>
+                <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "24px", margin: 0, color: FAE.coral, fontVariantNumeric: "tabular-nums" }}>
+                  {animos ?? "—"}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: "26px" }}>
+              <Medallas />
+            </div>
+
+            <div style={{ marginBottom: "26px" }}>
+              <ResumenSemestre apodo={perfil?.nickname} />
             </div>
 
             {enRiesgo && (

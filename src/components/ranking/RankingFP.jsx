@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { FAE } from "../../theme.js";
 import { supabase } from "../../lib/supabase.js";
+import BotonAnimo from "../social/BotonAnimo.jsx";
+import { estadoDeAnimos } from "../../social/animo.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 
 /*
@@ -56,7 +58,7 @@ function Posicion({ n }) {
   );
 }
 
-function Fila({ entrada, destacada }) {
+function Fila({ entrada, destacada, animo }) {
   return (
     <div
       style={{
@@ -85,6 +87,10 @@ function Fila({ entrada, destacada }) {
         {entrada.nickname}
         {destacada && <span style={{ color: FAE.teal, fontWeight: 400 }}> · tú</span>}
       </span>
+      {/* Nunca en la fila propia: no se puede dar ánimo a uno mismo. */}
+      {!destacada && animo && (
+        <BotonAnimo apodo={entrada.nickname} recibidos={animo.recibidos} yaLeDi={animo.yaLeDi} />
+      )}
       <span
         style={{
           fontFamily: "Sora, sans-serif",
@@ -105,6 +111,7 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota }
   const { session, perfil, pedirCuenta } = useAuth();
   const [periodo, setPeriodo] = useState("semestre");
   const [estado, setEstado] = useState({ cargando: false, filas: null, error: null });
+  const [animos, setAnimos] = useState({});
 
   const consultar = useCallback(async () => {
     if (!supabase || !session) return;
@@ -118,6 +125,14 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota }
       return;
     }
     setEstado({ cargando: false, filas: data ?? [], error: null });
+
+    /*
+     * Los ánimos van en una segunda consulta, no dentro de ranking_fp: esa
+     * función ya está cerrada y verificada, y meterle mano por una insignia
+     * social sería reabrir algo que costó asegurar.
+     */
+    const ajenos = (data ?? []).filter((f) => !f.es_tuyo).map((f) => f.nickname);
+    setAnimos(await estadoDeAnimos(ajenos));
   }, [subjectId, periodo, session]);
 
   /* Se consulta al entrar y cada vez que cambia la pestaña. */
@@ -208,7 +223,7 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota }
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
           {top.map((f) => (
-            <Fila key={`${f.posicion}-${f.nickname}`} entrada={f} destacada={f.es_tuyo} />
+            <Fila key={`${f.posicion}-${f.nickname}`} entrada={f} destacada={f.es_tuyo} animo={animos[f.nickname]} />
           ))}
 
           {propiaFueraDelTop && (
