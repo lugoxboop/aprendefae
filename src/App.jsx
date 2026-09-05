@@ -38,6 +38,7 @@ const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"))
 const Dashboard = lazy(() => import("./components/Dashboard.jsx"));
 const ConsumoView = lazy(() => import("./components/ConsumoView.jsx"));
 const DemandaAgregadaAprenderView = lazy(() => import("./components/DemandaAgregadaAprenderView.jsx"));
+const CaminoDemandaAgregadaView = lazy(() => import("./components/CaminoDemandaAgregadaView.jsx"));
 const InversionView = lazy(() => import("./components/InversionView.jsx"));
 const GastoView = lazy(() => import("./components/GastoView.jsx"));
 const XNView = lazy(() => import("./components/XNView.jsx"));
@@ -287,12 +288,30 @@ export default function App() {
                 abrirTema("grifos-da", modo);
                 return;
               }
-              if (!inicioSimulador.current) inicioSimulador.current = Date.now();
-              abrirTema("dashboard", modo);
+              /*
+               * "Hacer" ya no entra directo al simulador: pasa por el camino,
+               * como todos los demás temas. El reloj de la actividad arranca al
+               * abrir el nodo, no aquí.
+               */
+              abrirTema("camino-da", modo);
               return;
             }
             abrirTema(topicId, modo);
           }}
+        />
+      </Suspense>
+    );
+  }
+
+  if (view === "camino-da") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <CaminoDemandaAgregadaView
+          onAbrir={() => {
+            if (!inicioSimulador.current) inicioSimulador.current = Date.now();
+            setView("dashboard");
+          }}
+          onBack={() => setView("macroeconomia")}
         />
       </Suspense>
     );
@@ -399,7 +418,7 @@ export default function App() {
               onOpenTopic={(key) => setView(key)}
               onOpenFinal={() => setView("final")}
              
-              onExitTopic={goMacroIndex}
+              onExitTopic={() => setView("camino-da")}
             />
           )}
           {view === "consumo" && (

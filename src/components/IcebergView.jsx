@@ -8,7 +8,9 @@ import VideoYouTube from "./shared/VideoYouTube.jsx";
 import InmersionDoble from "./mecanicas/InmersionDoble.jsx";
 import IcebergArribaAbajo from "./mecanicas/IcebergArribaAbajo.jsx";
 import CasoBlockbuster from "./mecanicas/CasoBlockbuster.jsx";
-import { clasificacionDe, APRENDER, HACER } from "../data/subjects.js";
+import { clasificacionDe, actividadesDeTipo, SUBJECTS, APRENDER, HACER } from "../data/subjects.js";
+import CaminoHacer from "./shared/CaminoHacer.jsx";
+import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 
@@ -108,6 +110,16 @@ export default function IcebergView({ modo = null, onBack }) {
    */
   const inicioMecanica2 = useRef(Date.now());
 
+  /*
+   * Qué nodo del camino está abierto. null = se ve el camino. Ningún nodo se
+   * bloquea: esto solo dice cuál se está mirando, no cuál se puede mirar.
+   */
+  const [nodoAbierto, setNodoAbierto] = useState(null);
+  const hechas = useCompletadas();
+  const tema = SUBJECTS["pensamiento-estrategico"].topics.find((t) => t.id === "modelo-iceberg");
+  const nodos = nodosDe(actividadesDeTipo(tema, HACER), hechas);
+  const enNodo = (id) => nodoAbierto === id;
+
   const pickedLabel = QUICK_OPTIONS.find((o) => o.id === pick)?.label;
 
   /*
@@ -204,6 +216,35 @@ export default function IcebergView({ modo = null, onBack }) {
         )}
 
         {muestraHacer && (
+        <>
+        {!nodoAbierto && (
+          <>
+            <h2 style={h2}>El camino de este tema</h2>
+            <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 24px" }}>
+              Toca el juego que quieras. No hay orden obligatorio: el camino sugiere uno, no lo impone.
+            </p>
+            <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} />
+          </>
+        )}
+
+        {nodoAbierto && (
+          <button
+            type="button"
+            onClick={() => setNodoAbierto(null)}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: "18px",
+              fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
+              padding: "9px 15px", borderRadius: "999px", cursor: "pointer",
+              background: "transparent", border: "1px solid rgba(248,249,250,0.22)",
+              color: "rgba(248,249,250,0.7)",
+            }}
+          >
+            <ChevronLeft size={15} />
+            Volver al camino
+          </button>
+        )}
+
+        {enNodo("decision-punta-vs-completo") && (
         <>
         {/* ---------------- Mecánica 2 ---------------- */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
@@ -334,8 +375,13 @@ export default function IcebergView({ modo = null, onBack }) {
           </>
         )}
 
+        </>
+        )}
+
+        {enNodo("iceberg-arriba-abajo") && (
+        <>
         {/* ---------------- Mecánica 3 ---------------- */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "0 0 8px" }}>
           <p style={{ ...sectionLabel, margin: 0 }}>MECÁNICA {numero("arriba-abajo")}</p>
           <ActivityBadge tipo={CLAS_ARRIBA_ABAJO?.tipo} size="sm" />
         </div>
@@ -352,8 +398,13 @@ export default function IcebergView({ modo = null, onBack }) {
           }
         />
 
+        </>
+        )}
+
+        {enNodo("caso-blockbuster") && (
+        <>
         {/* ---------------- Mecánica 4 ---------------- */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "0 0 8px" }}>
           <p style={{ ...sectionLabel, margin: 0 }}>MECÁNICA {numero("blockbuster")}</p>
           <ActivityBadge tipo={CLAS_BLOCKBUSTER?.tipo} size="sm" />
         </div>
@@ -367,6 +418,8 @@ export default function IcebergView({ modo = null, onBack }) {
             completarEvaluativa(CLAS_BLOCKBUSTER, "caso-blockbuster", inicioBlockbuster, pct)
           }
         />
+        </>
+        )}
         </>
         )}
       </div>

@@ -9,7 +9,9 @@ import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import VideoYouTube from "./shared/VideoYouTube.jsx";
 import AsedioEstrategico from "./mecanicas/AsedioEstrategico.jsx";
-import { APRENDER, HACER, clasificacionDe } from "../data/subjects.js";
+import { APRENDER, HACER, clasificacionDe, actividadesDeTipo, SUBJECTS } from "../data/subjects.js";
+import CaminoHacer from "./shared/CaminoHacer.jsx";
+import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 
@@ -309,6 +311,15 @@ export default function PorterView({ modo = null, onBack }) {
   const muestraAprender = modo !== HACER;
   const muestraHacer = modo !== APRENDER;
 
+  /*
+   * Qué nodo del camino está abierto. null = se ve el camino. Ningún nodo se
+   * bloquea nunca: esto dice cuál se está mirando, no cuál se deja mirar.
+   */
+  const [nodoAbierto, setNodoAbierto] = useState(null);
+  const hechas = useCompletadas();
+  const temaActual = SUBJECTS["pensamiento-estrategico"].topics.find((t) => t.id === "fuerzas-porter");
+  const nodos = nodosDe(actividadesDeTipo(temaActual, HACER), hechas);
+
   const { pedirCuenta } = useAuth();
 
   /* Única mecánica del tema conectada al motor de FP, por ahora. */
@@ -518,6 +529,32 @@ export default function PorterView({ modo = null, onBack }) {
 
         {muestraHacer && (
         <>
+        {!nodoAbierto && (
+          <>
+            <h2 style={h2}>El camino de este tema</h2>
+            <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 24px" }}>
+              Toca el juego que quieras. No hay orden obligatorio: el camino sugiere uno, no lo impone.
+            </p>
+            <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} />
+          </>
+        )}
+
+        {nodoAbierto && (
+        <>
+        <button
+          type="button"
+          onClick={() => setNodoAbierto(null)}
+          style={{
+            display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: "18px",
+            fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
+            padding: "9px 15px", borderRadius: "999px", cursor: "pointer",
+            background: "transparent", border: "1px solid rgba(248,249,250,0.22)",
+            color: "rgba(248,249,250,0.7)",
+          }}
+        >
+          <ChevronLeft size={15} />
+          Volver al camino
+        </button>
         {/* ---------------- Mecánica 3: Asedio Estratégico ---------------- */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
           <p style={sectionLabel}>MECÁNICA {muestraAprender ? 3 : 1}</p>
@@ -530,6 +567,8 @@ export default function PorterView({ modo = null, onBack }) {
           plantilla siempre.
         </p>
         <AsedioEstrategico onCompletar={completarAsedio} />
+        </>
+        )}
         </>
         )}
       </div>

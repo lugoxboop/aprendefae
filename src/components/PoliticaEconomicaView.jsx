@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
@@ -6,7 +6,9 @@ import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import CadenaPolitica from "./mecanicas/CadenaPolitica.jsx";
 import DashboardEconomico from "./mecanicas/DashboardEconomico.jsx";
-import { clasificacionDe, APRENDER, HACER } from "../data/subjects.js";
+import { clasificacionDe, APRENDER, HACER, actividadesDeTipo, SUBJECTS } from "../data/subjects.js";
+import CaminoHacer from "./shared/CaminoHacer.jsx";
+import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 
@@ -50,6 +52,15 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
    */
   const muestraAprender = modo !== HACER;
   const muestraHacer = modo !== APRENDER;
+
+  /*
+   * Qué nodo del camino está abierto. null = se ve el camino. Ningún nodo se
+   * bloquea nunca: esto dice cuál se está mirando, no cuál se deja mirar.
+   */
+  const [nodoAbierto, setNodoAbierto] = useState(null);
+  const hechas = useCompletadas();
+  const temaActual = SUBJECTS["macroeconomia"].topics.find((t) => t.id === "politica-economica");
+  const nodos = nodosDe(actividadesDeTipo(temaActual, HACER), hechas);
 
   const { pedirCuenta } = useAuth();
   const inicioCadena = useRef(Date.now());
@@ -119,6 +130,32 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
 
         {muestraHacer && (
         <>
+        {!nodoAbierto && (
+          <>
+            <h2 style={h2}>El camino de este tema</h2>
+            <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 24px" }}>
+              Toca el juego que quieras. No hay orden obligatorio: el camino sugiere uno, no lo impone.
+            </p>
+            <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} />
+          </>
+        )}
+
+        {nodoAbierto && (
+        <>
+        <button
+          type="button"
+          onClick={() => setNodoAbierto(null)}
+          style={{
+            display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: "18px",
+            fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
+            padding: "9px 15px", borderRadius: "999px", cursor: "pointer",
+            background: "transparent", border: "1px solid rgba(248,249,250,0.22)",
+            color: "rgba(248,249,250,0.7)",
+          }}
+        >
+          <ChevronLeft size={15} />
+          Volver al camino
+        </button>
         {/* ---------------- J3 ---------------- */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
           <p style={sectionLabel}>MECÁNICA {muestraAprender ? 2 : 1}</p>
@@ -130,6 +167,8 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
           instrumento mágico: cada decisión empuja varias cosas, y no todas en la dirección que quieres.
         </p>
         <DashboardEconomico onCompletar={completarDashboard} />
+        </>
+        )}
         </>
         )}
       </div>
