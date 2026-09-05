@@ -1,103 +1,78 @@
 import { useEffect, useState } from "react";
 import { FAE } from "../../theme.js";
-import { cargarMedallas, RAREZAS } from "../../medallas/medallas.js";
+import Medalla, { NIVELES, ETIQUETA_NIVEL } from "../shared/Medalla.jsx";
+import { cargarLogros, conEstado } from "../../medallas/logros.js";
 
 /*
- * Rejilla de medallas del perfil.
+ * Las medallas del perfil, ordenadas por nivel.
  *
- * Las no ganadas se ven apagadas, nunca escondidas: saber qué falta es la mitad
- * de para qué sirven. Cuando la medalla tiene meta se muestra el avance, así la
- * apagada dice "vas 2 de 3" en vez de solo "no la tienes".
+ * La sección se diseñó en su día para los cuatro hitos de racha; ahora sostiene
+ * las 24, en cuatro bloques. El criterio de siempre no cambia: las que faltan
+ * salen atenuadas, nunca escondidas.
  *
- * Las formas son geométricas y del kit: nada de trofeos, coronas ni cintas.
+ * El bloque de élite va sobre navy oscuro, como en el kit: es lo que lo reserva
+ * visualmente para lo de arriba sin necesidad de decirlo.
  */
 
-const COLOR_RAREZA = {
-  "baja-media": "rgba(248,249,250,0.55)",
-  media: FAE.teal,
-  alta: FAE.ambar,
-  "muy-alta": FAE.coral,
-};
-
-/* Marca de rareza: un rombo, la misma familia de formas que las válvulas. */
-function Marca({ rareza, apagada }) {
-  const color = apagada ? "rgba(248,249,250,0.22)" : COLOR_RAREZA[rareza] ?? FAE.teal;
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true" style={{ display: "block", flexShrink: 0 }}>
-      <polygon points="12,2 22,12 12,22 2,12" fill="none" stroke={color} strokeWidth="1.8" />
-      {!apagada && <polygon points="12,7 17,12 12,17 7,12" fill={color} />}
-    </svg>
-  );
-}
-
-function Medalla({ m }) {
-  const apagada = !m.obtenida;
-  const conMeta = m.meta > 0 && !m.obtenida;
+function Bloque({ nivel, medallas }) {
+  const esElite = nivel === "elite";
+  const ganadas = medallas.filter((m) => m.obtenida).length;
 
   return (
-    <div
+    <section
       style={{
-        display: "flex",
-        gap: "12px",
-        padding: "13px 14px",
-        borderRadius: "14px",
-        background: apagada ? "rgba(248,249,250,0.03)" : "rgba(248,249,250,0.06)",
-        border: `1px solid ${apagada ? "rgba(248,249,250,0.08)" : "rgba(248,249,250,0.16)"}`,
+        borderRadius: "18px",
+        padding: "clamp(14px, 2.2vw, 20px)",
+        marginBottom: "12px",
+        background: esElite ? "rgba(10,20,34,0.72)" : "rgba(248,249,250,0.035)",
+        border: `1px solid ${esElite ? "rgba(42,157,143,0.35)" : "rgba(248,249,250,0.1)"}`,
       }}
     >
-      <Marca rareza={m.rareza} apagada={apagada} />
-      <div style={{ minWidth: 0, flex: 1 }}>
-        <p
-          style={{
-            fontFamily: "Sora, sans-serif",
-            fontWeight: 700,
-            fontSize: "13.5px",
-            margin: "0 0 3px",
-            color: apagada ? "rgba(248,249,250,0.45)" : FAE.text,
-          }}
-        >
-          {m.titulo}
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", marginBottom: "14px" }}>
+        <p style={{ fontFamily: "Sora, sans-serif", fontSize: "11.5px", fontWeight: 700, letterSpacing: "0.12em", color: esElite ? FAE.teal : "rgba(248,249,250,0.55)", margin: 0 }}>
+          {ETIQUETA_NIVEL[nivel].toUpperCase()}
         </p>
-        <p style={{ fontSize: "12px", lineHeight: 1.5, margin: 0, color: apagada ? "rgba(248,249,250,0.32)" : "rgba(248,249,250,0.6)" }}>
-          {m.descripcion}
-        </p>
+        <span style={{ fontSize: "12px", color: "rgba(248,249,250,0.4)", fontVariantNumeric: "tabular-nums" }}>
+          {ganadas} de {medallas.length}
+        </span>
+      </div>
 
-        {conMeta && (
-          <div style={{ marginTop: "8px" }}>
-            <div style={{ height: "4px", borderRadius: "999px", background: "rgba(248,249,250,0.1)", overflow: "hidden" }}>
-              <div
-                style={{
-                  width: `${Math.min(100, (m.progreso / m.meta) * 100)}%`,
-                  height: "100%",
-                  background: COLOR_RAREZA[m.rareza] ?? FAE.teal,
-                  opacity: 0.6,
-                  borderRadius: "999px",
-                }}
-              />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(104px, 1fr))", gap: "14px" }}>
+        {medallas.map((m) => (
+          <div key={m.id} style={{ textAlign: "center" }}>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "8px" }}>
+              <Medalla nivel={m.nivel} icono={m.icono} numero={m.numero} obtenida={m.obtenida} tamano={72} />
             </div>
-            <p style={{ fontSize: "11px", color: "rgba(248,249,250,0.4)", margin: "5px 0 0", fontVariantNumeric: "tabular-nums" }}>
-              {m.progreso} de {m.meta}
+            <p
+              style={{
+                fontFamily: "Sora, sans-serif", fontSize: "11.5px", fontWeight: 700, lineHeight: 1.3,
+                color: m.obtenida ? FAE.text : "rgba(248,249,250,0.42)", margin: "0 0 3px",
+              }}
+            >
+              {m.titulo}
+            </p>
+            {/*
+              Las que no tienen condición definida lo dicen. Es preferible a
+              dejar al estudiante intentando ganar algo que nadie ha decidido
+              todavía cómo se gana.
+            */}
+            <p style={{ fontSize: "10.5px", lineHeight: 1.4, color: m.ganable ? "rgba(248,249,250,0.35)" : FAE.ambar, margin: 0, opacity: m.ganable ? 1 : 0.75 }}>
+              {m.ganable ? (m.obtenida ? "Conseguida" : "Por conseguir") : "Aún no disponible"}
             </p>
           </div>
-        )}
-
-        {m.obtenida && (
-          <p style={{ fontSize: "11px", color: COLOR_RAREZA[m.rareza] ?? FAE.teal, margin: "7px 0 0", fontWeight: 600 }}>
-            Rareza {RAREZAS[m.rareza]?.etiqueta ?? m.rareza}
-          </p>
-        )}
+        ))}
       </div>
-    </div>
+    </section>
   );
 }
 
 export default function Medallas() {
-  const [estado, setEstado] = useState({ cargando: true, medallas: [], error: null });
+  const [estado, setEstado] = useState({ cargando: true, medallas: [], disponible: false });
 
   useEffect(() => {
     let vivo = true;
-    cargarMedallas().then((r) => {
-      if (vivo) setEstado({ cargando: false, medallas: r.medallas, error: r.error });
+    cargarLogros().then(({ ganadas, disponible }) => {
+      if (vivo) setEstado({ cargando: false, medallas: conEstado(ganadas), disponible });
     });
     return () => { vivo = false; };
   }, []);
@@ -105,28 +80,28 @@ export default function Medallas() {
   if (estado.cargando) {
     return <p style={{ fontSize: "13.5px", color: "rgba(248,249,250,0.45)", margin: 0 }}>Cargando medallas…</p>;
   }
-  if (estado.error) {
-    return <p style={{ fontSize: "13.5px", color: FAE.coral, margin: 0 }}>No se pudieron cargar las medallas.</p>;
-  }
 
   const ganadas = estado.medallas.filter((m) => m.obtenida).length;
+  const ganables = estado.medallas.filter((m) => m.ganable).length;
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "12px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: "6px" }}>
         <h3 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "16px", margin: 0, color: FAE.text }}>
           Medallas
         </h3>
         <span style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.45)", fontVariantNumeric: "tabular-nums" }}>
-          {ganadas} de {estado.medallas.length}
+          {ganadas} de {ganables} que se pueden ganar hoy
         </span>
       </div>
+      <p style={{ fontSize: "12.5px", lineHeight: 1.55, color: "rgba(248,249,250,0.4)", margin: "0 0 14px" }}>
+        Las {estado.medallas.length} están diseñadas; {estado.medallas.length - ganables} esperan a que se defina
+        su condición y por eso todavía no se pueden conseguir.
+      </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "10px" }}>
-        {estado.medallas.map((m) => (
-          <Medalla key={m.codigo} m={m} />
-        ))}
-      </div>
+      {NIVELES.map((n) => (
+        <Bloque key={n} nivel={n} medallas={estado.medallas.filter((m) => m.nivel === n)} />
+      ))}
     </div>
   );
 }
