@@ -199,10 +199,10 @@ export default function IcebergView({ modo = null, onBack }) {
           <p style={{ ...sectionLabel, margin: 0 }}>MECÁNICA {numero("buceo")}</p>
           <ActivityBadge tipo={CLAS_BUCEO?.tipo} size="sm" />
         </div>
-        <h2 style={h2}>Inmersión doble</h2>
+        <h2 style={h2}>Inmersión</h2>
         <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 18px" }}>
-          Dos icebergs sobre el mismo mar: una tienda de ropa y un canal de YouTube. Toca el agua y el
-          sonar baja en los dos a la vez — no los recorres por separado, los comparas mientras bajas.
+          Una tienda de ropa que vende menos este mes. Toca el agua: el sonar baja un nivel cada vez, y lo
+          que encuentres se va anotando al lado.
         </p>
 
         <InmersionDoble />

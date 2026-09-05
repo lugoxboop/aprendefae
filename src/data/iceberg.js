@@ -18,6 +18,18 @@ export const CASO_TIENDA = {
   ],
 };
 
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * EN PAUSA, NO DESCARTADO.
+ *
+ * El caso del canal de YouTube salió de la inmersión cuando se redujo a un
+ * solo iceberg. El contenido se queda aquí a propósito: sus cuatro niveles
+ * están escritos y verificados, y lo más probable es que vuelvan como pieza
+ * aparte. Borrarlo obligaría a reescribirlo, que es trabajo ya hecho.
+ *
+ * Hoy no lo importa nadie. Eso es esperado: no es código muerto por descuido.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
 export const CASO_CANAL = {
   id: "canal",
   rotulo: "El canal",
@@ -49,9 +61,22 @@ export const CASO_CANAL = {
   ],
 };
 
-/* La pregunta no se califica: es para pensar, o para que el profesor la haga en voz alta. */
-export const PREGUNTA_INMERSION =
-  "¿Qué tienen en común estos dos, aunque se vean tan distintos por fuera?";
-
+/*
+ * El cierre, para un solo caso. Conserva el ritmo y el remate de la versión
+ * comparativa —"y hasta que esa creencia no cambia, la estructura tampoco"—
+ * porque esa frase es lo que la sostenía; lo que cambia es que ya no habla de
+ * dos casos, sino del que el estudiante acaba de bucear.
+ *
+ * La pregunta comparativa que había aquí se fue con el segundo iceberg: sin
+ * dos casos no hay nada que comparar. El momento de pensar sigue estando, y
+ * está donde de verdad importa: en la pausa antes del modelo mental.
+ */
 export const SINTESIS_INMERSION =
+  "Lo que se ve —las ventas de este mes— es solo el síntoma. Lo que de verdad sostiene el problema es una creencia que nadie cuestiona: que el cliente solo vuelve por precio. Y hasta que esa creencia no cambia, la estructura tampoco.";
+
+/*
+ * Texto del cierre comparativo, en pausa junto a CASO_CANAL. Vuelve el día que
+ * la pieza de los dos icebergs se retome.
+ */
+export const SINTESIS_COMPARATIVA_EN_PAUSA =
   "En los dos, lo que se ve (menos clientes, menos suscriptores) es solo el síntoma. Lo que de verdad sostiene el problema es una creencia que nadie cuestiona — y hasta que esa creencia no cambia, la estructura tampoco.";
