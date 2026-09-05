@@ -126,34 +126,32 @@ export const SUBJECTS = {
             clasificacion: { tipo: APRENDER },
           },
           {
-            id: "decision-punta-vs-completo",
-            nombre: "Decisión punta vs. completo",
-            clasificacion: {
-              tipo: HACER,
-              modalidad: "exploratoria",
-              dificultad: "facil",
-              fpBase: 10,
-            },
+            /*
+             * Recordar. La dificultad que se declara aquí es la del modo fácil;
+             * el modo experto la sube a "dificil" al completar, porque pide
+             * sacar el término de memoria en vez de reconocerlo entre cuatro.
+             */
+            id: "camara-presion",
+            nombre: "Cámara de presión",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
           },
           {
-            id: "iceberg-arriba-abajo",
-            nombre: "Constructor de arriba hacia abajo",
-            clasificacion: {
-              tipo: HACER,
-              modalidad: "evaluativa",
-              dificultad: "medio",
-              fpBase: 25,
-            },
+            /* Aplicar: clasificar frases de un caso nuevo, con trampas. */
+            id: "radar-profundidad",
+            nombre: "Radar de profundidad",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
           },
           {
-            id: "caso-blockbuster",
-            nombre: "Caso real en línea de tiempo",
-            clasificacion: {
-              tipo: HACER,
-              modalidad: "evaluativa",
-              dificultad: "dificil",
-              fpBase: 50,
-            },
+            /* Analizar: el caso Blockbuster entero, y dónde valía intervenir. */
+            id: "expediente-rescate",
+            nombre: "Expediente de rescate",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+          {
+            /* Crear: armar un iceberg desde cero, con un banco lleno de ruido. */
+            id: "arquitecto-profundidades",
+            nombre: "Arquitecto de las profundidades",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
           },
         ],
       },
