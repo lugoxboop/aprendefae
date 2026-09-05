@@ -1,30 +1,20 @@
 import { supabase } from "../lib/supabase.js";
-import { calcularFP } from "./motor.js";
 import { asegurarEntrada } from "../ligas/ligas.js";
 import { emitirFP } from "./aviso.js";
 
 /*
  * Orquestación del otorgamiento de FP.
  *
- * Es el único camino por el que una actividad convierte una finalización en
- * puntos: cuenta repeticiones previas, llama al motor y escribe.
+ * EL CLIENTE YA NO CALCULA NADA. Antes esta función llamaba al motor, sacaba un
+ * número y se lo pasaba a la base, que se lo creía. Con el ranking dando puntos
+ * de parcial, eso era una puerta abierta: bastaba con llamar a la RPC desde la
+ * consola con el número que uno quisiera.
  *
- * La escritura va por la función registrar_fp, que inserta en fp_history y
- * suma a profiles.points dentro de la misma transacción.
+ * Ahora se manda lo que pasó —qué actividad, cuánto tardó, qué porcentaje
+ * acertó— y registrar_fp decide los puntos con su propio catálogo. Cuántas
+ * veces se ha completado antes también lo cuenta el servidor: preguntárselo al
+ * cliente era otra forma de dejarle decidir.
  */
-
-/** Cuántas veces completó ya este estudiante esta actividad. */
-async function contarRepeticionesPrevias(activityId) {
-  const { count, error } = await supabase
-    .from("fp_history")
-    .select("id", { count: "exact", head: true })
-    .eq("activity_id", activityId);
-  if (error) {
-    console.error("[aprendeFAE] No se pudo contar repeticiones:", error.message);
-    return { previas: 0, error: error.message };
-  }
-  return { previas: count ?? 0, error: null };
-}
 
 /**
  * @param {object} p
@@ -50,26 +40,11 @@ export async function otorgarFP({
   /* Sin sesión no hay dónde guardar. El aviso de cuenta lo dispara quien llama. */
   if (!sesion?.session) return { ok: false, motivo: "sin-sesion" };
 
-  const { previas, error: errorConteo } = await contarRepeticionesPrevias(actividadId);
-  if (errorConteo) return { ok: false, motivo: "conteo-fallido", detalle: errorConteo };
-
-  const { fp, desglose } = calcularFP({
-    dificultad,
-    modalidad,
-    duracionMs,
-    aciertos,
-    repeticionesPrevias: previas,
-  });
-
   const { data, error } = await supabase.rpc("registrar_fp", {
     p_activity_id: actividadId,
-    p_subject_id: materiaId,
-    p_fp: fp,
-    p_difficulty: dificultad,
-    p_modality: modalidad,
     p_duration_ms: duracionMs === null ? null : Math.round(duracionMs),
-    p_correct_pct: aciertos,
-    p_repeat_index: previas,
+    /* El motor del servidor trabaja en porcentaje, no en proporción. */
+    p_correct_pct: aciertos === null ? null : Math.round(aciertos * 100),
   });
 
   if (error) {
@@ -86,11 +61,13 @@ export async function otorgarFP({
   asegurarEntrada(materiaId);
 
   /*
-   * El aviso sale de aquí, con el número que de verdad se guardó. Si el motor
-   * recortó por tiempo o por repetición, el estudiante ve el número recortado
-   * y no el de la primera vez.
+   * El aviso sale con lo que la base DEVOLVIÓ, no con lo que el cliente
+   * esperaba: así el número en pantalla es el que quedó guardado, siempre.
    */
-  emitirFP({ fp, desglose, actividadId, materiaId });
+  const fp = data?.fp_awarded ?? 0;
+  const repetida = (data?.repeat_index ?? 0) > 0;
 
-  return { ok: true, fp, desglose, registro: data };
+  emitirFP({ fp, repetida, actividadId, materiaId });
+
+  return { ok: true, fp, repetida, registro: data };
 }

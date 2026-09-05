@@ -41,11 +41,11 @@ export function escucharFP(fn) {
  * trae los factores que aplicó el motor; esto los traduce a una frase corta.
  * Sin esto, el aviso honesto parecería un error.
  */
-export function motivoDelRecorte(desglose) {
-  if (!desglose) return null;
-  if (desglose.factorRepeticion === 0) return "Ya habías completado esta actividad varias veces";
-  if (desglose.factorRepeticion < 1) return "Por repetir una actividad ya completada";
-  if (desglose.demasiadoRapido) return "Por resolverla más rápido de lo esperado";
-  if (desglose.factorRendimiento < 1) return "Según tu porcentaje de aciertos";
+export function motivoDelRecorte({ repetida }) {
+  /*
+   * Repetir no es hacer nada mal: es repasar. El mensaje lo dice sin regañar,
+   * y sin prometer puntos que ya no van a llegar.
+   */
+  if (repetida) return "Ya completaste esta actividad — no se otorgan FP adicionales por repetirla.";
   return null;
 }

@@ -27,7 +27,7 @@ export default function AvisoFP() {
     return escucharFP((datos) => {
       /* Cero FP no se celebra: repetir por cuarta vez no da nada y decirlo con
          un "+0 FP" sería ruido. El motivo se enseña igual, que es lo útil. */
-      setAviso({ ...datos, motivo: motivoDelRecorte(datos.desglose) });
+      setAviso({ ...datos, motivo: motivoDelRecorte(datos) });
       setVisible(true);
     });
   }, []);
@@ -40,6 +40,11 @@ export default function AvisoFP() {
 
   if (!aviso) return null;
 
+  /*
+   * Repetir tiene su propio tono: ni "+0 FP" ni "Sin FP", que suenan a castigo
+   * por repasar. Se dice que ya estaba hecha y ya.
+   */
+  const repetida = !!aviso.repetida;
   const cero = aviso.fp === 0;
 
   return (
@@ -79,7 +84,7 @@ export default function AvisoFP() {
           whiteSpace: "nowrap",
         }}
       >
-        {cero ? "Sin FP" : `+${aviso.fp} FP`}
+        {repetida ? "Ya completada" : cero ? "Sin FP" : `+${aviso.fp} FP`}
       </span>
       {aviso.motivo && (
         <span style={{ fontSize: "12px", lineHeight: 1.35, color: "rgba(248,249,250,0.6)" }}>

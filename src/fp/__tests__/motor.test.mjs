@@ -40,17 +40,21 @@ check("experto rápido -> 60% de 90", 54,
   calcularFP({ dificultad: "experto", modalidad: "exploratoria", duracionMs: 1000 }).fp);
 
 // --- Repeticiones: 1ª completa, siguientes 3 al 20%, de la 4ª en adelante 0 ---
+/* Regla nueva: la primera vez paga completo, cualquier repetición paga 0. */
 check("1ª vez (0 previas) -> 100%", 50, fp({ dificultad: "dificil", modalidad: "exploratoria", repeticionesPrevias: 0 }));
-check("repetición 1 -> 20%",        10, fp({ dificultad: "dificil", modalidad: "exploratoria", repeticionesPrevias: 1 }));
-check("repetición 2 -> 20%",        10, fp({ dificultad: "dificil", modalidad: "exploratoria", repeticionesPrevias: 2 }));
-check("repetición 3 -> 20%",        10, fp({ dificultad: "dificil", modalidad: "exploratoria", repeticionesPrevias: 3 }));
+check("repetición 1 -> 0",           0, fp({ dificultad: "dificil", modalidad: "exploratoria", repeticionesPrevias: 1 }));
+check("repetición 2 -> 0",           0, fp({ dificultad: "dificil", modalidad: "exploratoria", repeticionesPrevias: 2 }));
+check("repetición 3 -> 0",           0, fp({ dificultad: "dificil", modalidad: "exploratoria", repeticionesPrevias: 3 }));
 check("repetición 4 -> 0",           0, fp({ dificultad: "dificil", modalidad: "exploratoria", repeticionesPrevias: 4 }));
 check("repetición 9 -> 0",           0, fp({ dificultad: "dificil", modalidad: "exploratoria", repeticionesPrevias: 9 }));
 
 // --- Combinaciones: los tres factores se multiplican ---
-// 90 * 0.8 (aciertos) = 72 -> *0.6 (rápido) = 43.2 -> *0.2 (repetición) = 8.64 -> redondea 9
-check("experto evaluativa 80% + rápido + 1 repetición = 9", 9,
-  calcularFP({ dificultad: "experto", modalidad: "evaluativa", aciertos: 0.8, duracionMs: 10, repeticionesPrevias: 1 }).fp);
+// 90 * 0.8 (aciertos) = 72 -> *0.6 (rápido) = 43.2 -> redondea 43
+check("experto evaluativa 80% + rápido, 1ª vez = 43", 43,
+  calcularFP({ dificultad: "experto", modalidad: "evaluativa", aciertos: 0.8, duracionMs: 10, repeticionesPrevias: 0 }).fp);
+// La repetición manda sobre todo lo demás: da igual lo bien que salga.
+check("repetir anula cualquier otro factor = 0", 0,
+  calcularFP({ dificultad: "experto", modalidad: "evaluativa", aciertos: 1, duracionMs: 999999, repeticionesPrevias: 1 }).fp);
 
 // --- Caso real conectado: Iceberg, exploratoria fácil, primera vez, sin prisa ---
 check("Iceberg (exploratoria/fácil/1ª vez) = 10", 10,

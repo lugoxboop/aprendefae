@@ -1,9 +1,16 @@
 /*
- * Motor central de cálculo de FP.
+ * ═══════════════════════════════════════════════════════════════════════════
+ * YA NO CALCULA NADA EN PRODUCCIÓN. Es la referencia legible de las reglas.
  *
- * Función pura: no toca red ni estado. Toda actividad pasa por aquí, ninguna
- * calcula puntos por su cuenta. Al ser pura se puede verificar contra las
- * reglas sin base de datos ni sesión.
+ * El cálculo se movió a registrar_fp (migración 0011) porque aquí era
+ * indefendible: vivía en el navegador, y el número que salía de esta función
+ * era el que la base guardaba sin comprobar. Con el ranking dando puntos de
+ * parcial, eso era una puerta abierta.
+ *
+ * Se conserva porque las reglas se leen mejor en JavaScript que en plpgsql, y
+ * porque la prueba de la migración compara las dos implementaciones para que no
+ * se separen en silencio. Si se cambia una regla, se cambian las dos.
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 export const DIFICULTADES = ["facil", "medio", "dificil", "experto"];
@@ -35,9 +42,6 @@ export const TIEMPO_MINIMO_MS = {
 export const FACTOR_TIEMPO_INSUFICIENTE = 0.6;
 /* Una evaluativa nunca baja del 50% de la base, por mal que salga. */
 export const PISO_EVALUATIVA = 0.5;
-export const FACTOR_REPETICION = 0.2;
-/* Repeticiones 1, 2 y 3 dan 20%; de la 4ª en adelante, nada. */
-export const MAX_REPETICIONES_CON_FP = 3;
 
 /**
  * Calcula los FP de una finalización.
@@ -74,13 +78,11 @@ export function calcularFP({
   const demasiadoRapido = typeof duracionMs === "number" && duracionMs < minimo;
   const factorTiempo = demasiadoRapido ? FACTOR_TIEMPO_INSUFICIENTE : 1;
 
-  // 3. Repetición: la primera vez paga completo; las tres siguientes, 20%;
-  //    de ahí en adelante, cero.
+  // 3. Repetición: la primera vez paga completo, las demás no pagan. Sin
+  //    escalón intermedio. Repasar sigue estando permitido —no se restringe
+  //    volver a jugar— simplemente deja de dar puntos desde la segunda vez.
   const previas = Math.max(0, Math.floor(repeticionesPrevias));
-  let factorRepeticion;
-  if (previas === 0) factorRepeticion = 1;
-  else if (previas <= MAX_REPETICIONES_CON_FP) factorRepeticion = FACTOR_REPETICION;
-  else factorRepeticion = 0;
+  const factorRepeticion = previas === 0 ? 1 : 0;
 
   const fp = Math.round(base * factorRendimiento * factorTiempo * factorRepeticion);
 

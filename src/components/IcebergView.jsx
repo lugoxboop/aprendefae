@@ -212,9 +212,14 @@ export default function IcebergView({ modo = null, onBack }) {
         <CamaraPresion
           onCompletar={(pct, ms, modo) =>
             completarEvaluativa(
-              /* El modo experto pide recordar, no reconocer: se paga como difícil. */
-              modo === "dificil" ? { ...CLAS_CAMARA, dificultad: "dificil", fpBase: 50 } : CLAS_CAMARA,
-              "camara-presion", inicioCamara, pct
+              CLAS_CAMARA,
+              /*
+               * El modo experto es otra entrada del catálogo, no una dificultad
+               * que el cliente declare: ahora la dificultad la pone el servidor,
+               * y afirmarla desde aquí no serviría de nada.
+               */
+              modo === "dificil" ? "camara-presion-experto" : "camara-presion",
+              inicioCamara, pct
             )
           }
         />
