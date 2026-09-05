@@ -17,6 +17,7 @@ import HomeScreen from "./components/HomeScreen.jsx";
 import AccountControl from "./components/auth/AccountControl.jsx";
 import AuthDialog from "./components/auth/AuthDialog.jsx";
 import AvisoFP from "./components/shared/AvisoFP.jsx";
+import AvisoRacha from "./components/shared/AvisoRacha.jsx";
 
 /*
  * Cada índice de materia trae su propio fondo animado, así que se cargan aparte:
@@ -256,6 +257,8 @@ export default function App() {
       <AuthDialog />
       {/* Escucha al motor de FP y confirma en pantalla. Se monta una sola vez. */}
       <AvisoFP />
+      {/* Va aparte del aviso de FP: uno es la esquina, el otro el centro. */}
+      <AvisoRacha />
     </NavigationContext.Provider>
   );
 
