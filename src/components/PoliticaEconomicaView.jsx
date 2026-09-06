@@ -7,7 +7,8 @@ import ActivityBadge from "./shared/ActivityBadge.jsx";
 import TableroDeFallas from "./mecanicas/salaDeControl/TableroDeFallas.jsx";
 import Autorregulacion from "./mecanicas/salaDeControl/Autorregulacion.jsx";
 import MaquinaDA from "./mecanicas/salaDeControl/MaquinaDA.jsx";
-import DashboardEconomico from "./mecanicas/DashboardEconomico.jsx";
+import DiagnosticoEnVivo from "./mecanicas/DiagnosticoEnVivo.jsx";
+import ArmaGrupoLogico from "./mecanicas/ArmaGrupoLogico.jsx";
 import { clasificacionDe, APRENDER, HACER, actividadesDeTipo, SUBJECTS } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
@@ -25,7 +26,8 @@ import { useAuth } from "../auth/AuthProvider.jsx";
 
 const MATERIA = "macroeconomia";
 const TEMA = "politica-economica";
-const CLAS_DASHBOARD = clasificacionDe(MATERIA, TEMA, "dashboard-economico");
+const CLAS_DIAGNOSTICO = clasificacionDe(MATERIA, TEMA, "diagnostico-en-vivo");
+const CLAS_GRUPO = clasificacionDe(MATERIA, TEMA, "arma-grupo-logico");
 const CLAS_TABLERO = clasificacionDe(MATERIA, TEMA, "tablero-fallas");
 const CLAS_AUTORREGULACION = clasificacionDe(MATERIA, TEMA, "autorregulacion-intervencion");
 const CLAS_MAQUINA = clasificacionDe(MATERIA, TEMA, "maquina-da-palancas");
@@ -68,11 +70,15 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
 
   const { pedirCuenta } = useAuth();
 
-  const completarDashboard = async (porcentajeAciertos, duracionMs) => {
-    const resultado = await registrarActividadCompletada(CLAS_DASHBOARD, {
+  /*
+   * Un solo camino para los dos juegos: la clasificación y el id son lo único
+   * que cambia, así que no hace falta un manejador por mecánica.
+   */
+  const completarJuego = async (clasificacion, actividadId, porcentajeAciertos, duracionMs) => {
+    const resultado = await registrarActividadCompletada(clasificacion, {
       materiaId: MATERIA,
       temaId: TEMA,
-      actividadId: "dashboard-economico",
+      actividadId,
       porcentajeAciertos,
       duracionMs,
     });
@@ -183,17 +189,41 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
           <ChevronLeft size={15} />
           Volver al camino
         </button>
-        {/* ---------------- J3 ---------------- */}
+        {/* ---------------- Juego 1 · Diagnóstico en vivo ---------------- */}
+        {nodoAbierto === "diagnostico-en-vivo" && (
+        <>
         <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
           <p style={sectionLabel}>MECÁNICA {muestraAprender ? 4 : 1}</p>
-          <ActivityBadge tipo={CLAS_DASHBOARD?.tipo} size="sm" />
+          <ActivityBadge tipo={CLAS_DIAGNOSTICO?.tipo} size="sm" />
         </div>
-        <h2 style={h2}>Dashboard económico en vivo</h2>
+        <h2 style={h2}>Diagnóstico en vivo</h2>
         <p style={lead}>
-          Tres instrumentos, tres estrategias distintas, tres indicadores que se mueven a la vez. No hay
-          instrumento mágico: cada decisión empuja varias cosas, y no todas en la dirección que quieres.
+          Ocho titulares reales bajan uno a uno hacia la línea de archivo. Clasifica cada uno en su problema
+          antes de que la cruce — cuenta el primer intento.
         </p>
-        <DashboardEconomico onCompletar={completarDashboard} />
+        <DiagnosticoEnVivo
+          onCompletar={(pct, ms) => completarJuego(CLAS_DIAGNOSTICO, "diagnostico-en-vivo", pct, ms)}
+        />
+        </>
+        )}
+
+        {/* ---------------- Juego 2 · Arma el grupo lógico ---------------- */}
+        {nodoAbierto === "arma-grupo-logico" && (
+        <>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
+          <p style={sectionLabel}>MECÁNICA {muestraAprender ? 5 : 2}</p>
+          <ActivityBadge tipo={CLAS_GRUPO?.tipo} size="sm" />
+        </div>
+        <h2 style={h2}>Arma el grupo lógico</h2>
+        <p style={lead}>
+          Del problema a la meta, seis casillas de una misma cadena. Doce enunciados para llenarlas, y seis
+          son de cadenas distintas: por posición no se distinguen, hay que leerlos.
+        </p>
+        <ArmaGrupoLogico
+          onCompletar={(pct, ms) => completarJuego(CLAS_GRUPO, "arma-grupo-logico", pct, ms)}
+        />
+        </>
+        )}
         </>
         )}
         </>

@@ -93,14 +93,22 @@ export const SUBJECTS = {
             clasificacion: { tipo: APRENDER },
           },
           {
-            id: "dashboard-economico",
-            nombre: "Dashboard económico en vivo",
-            clasificacion: {
-              tipo: HACER,
-              modalidad: "evaluativa",
-              dificultad: "experto",
-              fpBase: 90,
-            },
+            /*
+             * Recordar. Ocho titulares reales caen uno a uno y hay que
+             * clasificarlos antes de que crucen la línea de archivo.
+             */
+            id: "diagnostico-en-vivo",
+            nombre: "Diagnóstico en vivo",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
+          },
+          {
+            /*
+             * Aplicar. Seis casillas del grupo lógico y doce enunciados, seis
+             * de ellos de otras cadenas del profesor: obligan a leer.
+             */
+            id: "arma-grupo-logico",
+            nombre: "Arma el grupo lógico",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
           },
         ],
       },

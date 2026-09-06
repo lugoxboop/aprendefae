@@ -3,6 +3,21 @@ import { Info, RotateCcw } from "lucide-react";
 import { FAE } from "../../theme.js";
 
 /*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * RETIRADA DE LA INTERFAZ EN LA 0015 — NO BORRAR ESTE ARCHIVO.
+ *
+ * Ya no está registrada en subjects.js ni se renderiza en PoliticaEconomicaView,
+ * y su fila del catálogo quedó marcada `retirada = true` como lápida. El retiro
+ * fue blando aunque la consulta de impacto diera cero filas en fp_history: la
+ * fila cuesta nada y evita el "Actividad desconocida" si un cliente con caché
+ * vieja todavía la llama.
+ *
+ * SE CONSERVA EL ARCHIVO porque su MODELO —`simular` y `evaluar`— es el punto
+ * de partida del "Tablero de decisiones" que lo sustituirá, y porque
+ * dashboard.test.mjs y `npm run barrido` siguen midiéndolo. Borrarlo ahora
+ * tiraría el barrido de las 41.943 combinaciones con él.
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
  * "Dashboard económico en vivo".
  *
  * Tres instrumentos de tres estrategias distintas y tres indicadores que se

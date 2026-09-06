@@ -22,10 +22,18 @@ import { SUBJECTS, HACER } from "../../data/subjects.js";
  * apuntaba a la 0011 sola, y la primera actividad añadida después habría hecho
  * fallar la prueba aunque su migración estuviera bien escrita.
  *
+ * LAS ACTIVIDADES RETIRADAS SE LEEN TAMBIÉN, desde la 0015. Retirar una es
+ * dejar su fila en el servidor como lápida y quitarla del cliente, así que sin
+ * esto la lápida se vería exactamente igual que una deriva y la prueba la
+ * marcaría. Se leen de los `update ... set retirada = true`, y una retirada
+ * queda exenta SOLO del tercer chequeo —el de sobrantes—; si el cliente la
+ * sigue ofreciendo, los otros dos la miran como a cualquier otra.
+ *
  * LO QUE ESTA LECTURA NO CUBRE: un `delete from actividad_catalogo` en alguna
  * migración pasaría desapercibido, porque solo se leen los insert. Hoy no hay
- * ninguno; si algún día se retira una actividad, hay que enseñarle eso a esta
- * función en vez de confiar en que se acuerde alguien.
+ * ninguno, y la política del proyecto es retirar en blando en vez de borrar;
+ * si eso cambia, hay que enseñárselo a esta función en vez de confiar en que
+ * se acuerde alguien.
  */
 
 const CARPETA = "supabase/migrations";
@@ -64,6 +72,29 @@ function catalogoDelServidor() {
           archivo,
         });
       }
+    }
+  }
+  return salida;
+}
+
+/*
+ * Los ids que alguna migración marcó como retirados.
+ *
+ * Se leen de la forma `update ... set retirada = true where activity_id in
+ * (...)`, que es como la 0015 escribe la lápida —con `in` incluso para un solo
+ * id, justamente para que esto tenga una sola forma que leer.
+ */
+function retiradasDelServidor() {
+  const salida = new Set();
+  const archivos = readdirSync(CARPETA).filter((f) => f.endsWith(".sql")).sort();
+
+  for (const archivo of archivos) {
+    const sql = readFileSync(join(CARPETA, archivo), "utf8");
+    const updates = sql.matchAll(
+      /update\s+(?:public\.)?actividad_catalogo\s+set\s+retirada\s*=\s*true\s+where\s+activity_id\s+in\s*\(([^)]*)\)/gi
+    );
+    for (const u of updates) {
+      for (const id of u[1].matchAll(/'([^']+)'/g)) salida.add(id[1]);
     }
   }
   return salida;
@@ -120,12 +151,34 @@ test("dificultad y puntos base coinciden entre cliente y servidor", () => {
 test("el servidor no paga por actividades que el cliente no ofrece", () => {
   const cliente = catalogoDelCliente();
   const servidor = catalogoDelServidor();
+  const retiradas = retiradasDelServidor();
   /*
    * camara-presion-experto es la excepción conocida: es un modo de una
    * actividad, no una entrada propia del catálogo del cliente. Cualquier otra
    * sobrante sería una actividad que la base paga y que ya no existe.
+   *
+   * Las RETIRADAS quedan exentas de este chequeo y solo de este: su fila
+   * existe a propósito sin que el cliente la ofrezca, que es justo lo que
+   * significa retirarla. La prueba sigue haciendo su trabajo con todo lo
+   * demás — una actividad que desaparezca del cliente SIN marcarse retirada
+   * se sigue cazando aquí.
    */
   const conocidas = new Set(["camara-presion-experto"]);
-  const sobran = [...servidor.keys()].filter((id) => !cliente.has(id) && !conocidas.has(id));
+  const sobran = [...servidor.keys()].filter(
+    (id) => !cliente.has(id) && !conocidas.has(id) && !retiradas.has(id)
+  );
   assert.deepEqual(sobran, [], `el servidor pagaría por: ${sobran.join(", ")}`);
+});
+
+test("una actividad retirada no la sigue ofreciendo el cliente", () => {
+  /*
+   * El reverso del chequeo de arriba, y hace falta: la exención de las
+   * retiradas abre la puerta a marcar una por error y dejarla puesta en la
+   * interfaz. Entonces el estudiante la vería, la jugaría y cobraría por una
+   * actividad que en el servidor consta como retirada, sin que nada avisara.
+   */
+  const cliente = catalogoDelCliente();
+  const retiradas = retiradasDelServidor();
+  const puestas = [...retiradas].filter((id) => cliente.has(id));
+  assert.deepEqual(puestas, [], `retiradas que el cliente todavía ofrece: ${puestas.join(", ")}`);
 });
