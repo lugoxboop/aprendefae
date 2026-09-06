@@ -78,6 +78,21 @@ export const SUBJECTS = {
             clasificacion: { tipo: APRENDER },
           },
           {
+            /*
+             * Los tres paneles de "La sala de control de la economía". Material
+             * teórico: exploración libre, sin preguntas, sin condición de
+             * término y sin FP, así que no entran al catálogo del servidor.
+             */
+            id: "tablero-fallas",
+            nombre: "El tablero de fallas",
+            clasificacion: { tipo: APRENDER },
+          },
+          {
+            id: "autorregulacion-intervencion",
+            nombre: "¿Autorregulación o intervención?",
+            clasificacion: { tipo: APRENDER },
+          },
+          {
             id: "dashboard-economico",
             nombre: "Dashboard económico en vivo",
             clasificacion: {
