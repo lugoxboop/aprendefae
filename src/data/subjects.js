@@ -73,11 +73,6 @@ export const SUBJECTS = {
         title: "Política Económica",
         actividades: [
           {
-            id: "cadena-desempleo",
-            nombre: "Desempleo: la cadena en vivo",
-            clasificacion: { tipo: APRENDER },
-          },
-          {
             /*
              * Los tres paneles de "La sala de control de la economía". Material
              * teórico: exploración libre, sin preguntas, sin condición de

@@ -4,7 +4,6 @@ import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
-import CadenaPolitica from "./mecanicas/CadenaPolitica.jsx";
 import TableroDeFallas from "./mecanicas/salaDeControl/TableroDeFallas.jsx";
 import Autorregulacion from "./mecanicas/salaDeControl/Autorregulacion.jsx";
 import MaquinaDA from "./mecanicas/salaDeControl/MaquinaDA.jsx";
@@ -26,7 +25,6 @@ import { useAuth } from "../auth/AuthProvider.jsx";
 
 const MATERIA = "macroeconomia";
 const TEMA = "politica-economica";
-const CLAS_CADENA = clasificacionDe(MATERIA, TEMA, "cadena-desempleo");
 const CLAS_DASHBOARD = clasificacionDe(MATERIA, TEMA, "dashboard-economico");
 const CLAS_TABLERO = clasificacionDe(MATERIA, TEMA, "tablero-fallas");
 const CLAS_AUTORREGULACION = clasificacionDe(MATERIA, TEMA, "autorregulacion-intervencion");
@@ -69,7 +67,6 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
   const nodos = nodosDe(actividadesDeTipo(temaActual, HACER), hechas);
 
   const { pedirCuenta } = useAuth();
-  const inicioCadena = useRef(Date.now());
 
   const completarDashboard = async (porcentajeAciertos, duracionMs) => {
     const resultado = await registrarActividadCompletada(CLAS_DASHBOARD, {
@@ -120,21 +117,9 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
 
         {muestraAprender && (
         <>
-        {/* ---------------- T3 ---------------- */}
+        {/* ------------- Sala de control · Panel 1: el diagnóstico ------------- */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
           <p style={sectionLabel}>MECÁNICA 1</p>
-          <ActivityBadge tipo={CLAS_CADENA?.tipo} size="sm" />
-        </div>
-        <h2 style={h2}>Desempleo: la cadena en vivo</h2>
-        <p style={lead}>
-          Desliza esto de un lado a otro y mira cómo un problema se convierte, paso a paso, en una meta con
-          número. No son 6 casillas sueltas — es una sola fila de fichas de dominó.
-        </p>
-        <CadenaPolitica />
-
-        {/* ------------- Sala de control · Panel 1: el diagnóstico ------------- */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
-          <p style={sectionLabel}>MECÁNICA 2</p>
           <ActivityBadge tipo={CLAS_TABLERO?.tipo} size="sm" />
         </div>
         <h2 style={h2}>El tablero de fallas</h2>
@@ -146,7 +131,7 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
 
         {/* ------------ Sala de control · Panel 2: la demostración ------------ */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
-          <p style={sectionLabel}>MECÁNICA 3</p>
+          <p style={sectionLabel}>MECÁNICA 2</p>
           <ActivityBadge tipo={CLAS_AUTORREGULACION?.tipo} size="sm" />
         </div>
         <h2 style={h2}>¿Autorregulación o intervención?</h2>
@@ -158,7 +143,7 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
 
         {/* ------------ Sala de control · Panel 3: los mandos ------------ */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
-          <p style={sectionLabel}>MECÁNICA 4</p>
+          <p style={sectionLabel}>MECÁNICA 3</p>
           <ActivityBadge tipo={CLAS_MAQUINA?.tipo} size="sm" />
         </div>
         <h2 style={h2}>La máquina de la DA y sus palancas</h2>
@@ -200,7 +185,7 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
         </button>
         {/* ---------------- J3 ---------------- */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
-          <p style={sectionLabel}>MECÁNICA {muestraAprender ? 5 : 1}</p>
+          <p style={sectionLabel}>MECÁNICA {muestraAprender ? 4 : 1}</p>
           <ActivityBadge tipo={CLAS_DASHBOARD?.tipo} size="sm" />
         </div>
         <h2 style={h2}>Dashboard económico en vivo</h2>
