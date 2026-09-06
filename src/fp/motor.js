@@ -25,6 +25,33 @@ export const BASE_POR_DIFICULTAD = {
 };
 
 /*
+ * DESAFÍOS DE VARIAS ETAPAS — regla general del Kit, no una excepción.
+ *
+ * Un nodo de desafío declara cuántas etapas tiene y su base se multiplica por
+ * ese número, con tope en cuatro. Una actividad normal declara una etapa y no
+ * nota la diferencia, que es lo que permite que esto sea una regla y no un caso
+ * especial escrito para "El Proyecto del Arca".
+ *
+ *   base efectiva = base(dificultad) × min(etapas, TOPE_ETAPAS)
+ *
+ * El tope existe para que la regla no se convierta en una forma de inflar
+ * puntos partiendo una actividad en ocho pantallas.
+ *
+ * CÓMO SE REPARTE ENTRE ETAPAS: no se reparte aquí. El motor sigue recibiendo
+ * un solo porcentaje de aciertos, y es la mecánica la que pondera sus etapas y
+ * entrega el resultado ya combinado. Así el servidor no necesita saber nada de
+ * las etapas salvo cuántas son.
+ */
+export const TOPE_ETAPAS = 4;
+
+export function baseEfectiva(dificultad, etapas = 1) {
+  const base = BASE_POR_DIFICULTAD[dificultad];
+  if (base === undefined) throw new Error(`Dificultad desconocida: ${dificultad}`);
+  const n = Math.max(1, Math.min(TOPE_ETAPAS, Math.floor(etapas || 1)));
+  return base * n;
+}
+
+/*
  * Tiempo mínimo esperado por nivel. Debajo de esto se asume que no hubo
  * trabajo real y se aplica la defensa de tiempo.
  *
@@ -52,6 +79,7 @@ export const PISO_EVALUATIVA = 0.5;
  * @param {number} [p.duracionMs]          tiempo empleado; si falta, no se aplica la defensa de tiempo
  * @param {number} [p.aciertos]            proporción 0..1, solo para evaluativa
  * @param {number} [p.repeticionesPrevias] cuántas veces completó ya ESTA actividad
+ * @param {number} [p.etapas]              etapas del desafío; 1 en una actividad normal
  * @returns {{ fp: number, desglose: object }}
  */
 export function calcularFP({
@@ -60,9 +88,9 @@ export function calcularFP({
   duracionMs = null,
   aciertos = null,
   repeticionesPrevias = 0,
+  etapas = 1,
 }) {
-  const base = BASE_POR_DIFICULTAD[dificultad];
-  if (base === undefined) throw new Error(`Dificultad desconocida: ${dificultad}`);
+  const base = baseEfectiva(dificultad, etapas);
   if (!MODALIDADES.includes(modalidad)) throw new Error(`Modalidad desconocida: ${modalidad}`);
 
   // 1. Rendimiento. La exploratoria paga completa por terminar; la evaluativa
@@ -90,6 +118,7 @@ export function calcularFP({
     fp,
     desglose: {
       base,
+      etapas: Math.max(1, Math.min(TOPE_ETAPAS, Math.floor(etapas || 1))),
       factorRendimiento,
       factorTiempo,
       factorRepeticion,

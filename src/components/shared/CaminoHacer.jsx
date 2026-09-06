@@ -80,6 +80,32 @@ export function trazo(p) {
   return d;
 }
 
+/* ------------------------------ el nodo especial ------------------------------ */
+
+/*
+ * Un tema puede tener, además de su camino, UN nodo de desafío al lado. No es
+ * una actividad más con otro color: está fuera de la secuencia numerada, tiene
+ * su propio ramal, es más grande y respira con un halo ámbar.
+ *
+ * ESTÁ FUERA DEL CAMINO A PROPÓSITO. Meterlo dentro lo convertiría en "la
+ * novena", y entonces no completar el tema por no haberlo hecho sería un
+ * bloqueo encubierto. Colgado de un ramal se lee como lo que es: algo extra que
+ * está ahí para quien quiera.
+ *
+ * Cuando no se pasa `especial`, nada de esto se dibuja y el lienzo mantiene su
+ * ancho de siempre: los caminos de los demás temas no cambian ni un píxel.
+ */
+const ANCHO_RAMAL = 176;
+
+const CSS_ESPECIAL = `
+@keyframes fae-ch-halo {
+  0%, 100% { opacity: .16; transform: scale(1); }
+  50%      { opacity: .38; transform: scale(1.13); }
+}
+.fae-ch-halo { transform-box: fill-box; transform-origin: center; animation: fae-ch-halo 3.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .fae-ch-halo { animation: none !important; } }
+`;
+
 /* --------------------------------- la pieza --------------------------------- */
 
 /**
@@ -87,8 +113,10 @@ export function trazo(p) {
  * @param {Array<{id:string, nombre:string, completada:boolean}>} p.nodos
  * @param {(id:string) => void} p.onAbrir
  * @param {string} [p.vacio] qué decir cuando el tema todavía no tiene juegos
+ * @param {{id:string, nombre:string, completada:boolean, etiqueta?:string}} [p.especial]
+ *        nodo de desafío al lado del camino; sin él, nada cambia
  */
-export default function CaminoHacer({ nodos = [], onAbrir, vacio }) {
+export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = null }) {
   const n = nodos.length;
 
   /*
@@ -119,12 +147,26 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio }) {
   /* El siguiente sugerido: el primero sin hacer. Sugerencia, no puerta. */
   const sugerido = nodos.findIndex((x) => !x.completada);
 
+  /*
+   * El desafío cuelga de un ramal a la derecha, a la altura del tercio superior
+   * del camino: lo bastante arriba para verse sin desplazarse y lo bastante
+   * abajo para no competir con el primer nodo.
+   */
+  const anchoTotal = especial ? ANCHO + ANCHO_RAMAL : ANCHO;
+  const radioEspecial = Math.round(m.radio * 1.45);
+  const desdeIndice = Math.min(n - 1, Math.max(0, Math.round((n - 1) * 0.34)));
+  const anclaje = p[desdeIndice];
+  const esp = especial
+    ? { x: ANCHO + ANCHO_RAMAL / 2 - 8, y: Math.max(anclaje.y, MARGEN_Y + radioEspecial) }
+    : null;
+
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
+      {especial && <style>{CSS_ESPECIAL}</style>}
       <svg
-        viewBox={`0 0 ${ANCHO} ${m.alto}`}
+        viewBox={`0 0 ${anchoTotal} ${m.alto}`}
         width="100%"
-        style={{ display: "block", maxWidth: `${ANCHO}px`, overflow: "visible" }}
+        style={{ display: "block", maxWidth: `${anchoTotal}px`, overflow: "visible" }}
       >
         {/* La línea del recorrido, por debajo de todo. */}
         {d && (
@@ -215,6 +257,111 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio }) {
             </g>
           );
         })}
+
+        {/* ------------------------- el nodo de desafío ------------------------- */}
+        {esp && (
+          <g>
+            {/* El ramal, discontinuo: sale del camino pero no es parte de él. */}
+            <path
+              d={`M ${anclaje.x} ${anclaje.y} C ${(anclaje.x + esp.x) / 2} ${anclaje.y}, ${(anclaje.x + esp.x) / 2} ${esp.y}, ${esp.x - radioEspecial} ${esp.y}`}
+              fill="none"
+              stroke={FAE.ambar}
+              strokeWidth={m.grosor * 0.8}
+              strokeLinecap="round"
+              strokeDasharray="6 7"
+              opacity="0.5"
+            />
+
+            <g
+              onClick={() => onAbrir?.(especial.id)}
+              onKeyDown={(e) => {
+                if (e.key !== "Enter" && e.key !== " ") return;
+                e.preventDefault();
+                onAbrir?.(especial.id);
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label={`${especial.etiqueta ? `${especial.etiqueta}: ` : ""}${especial.nombre}${especial.completada ? " · completada" : ""}`}
+              style={{ cursor: "pointer" }}
+            >
+              {/* El halo, que es lo que lo hace "legendario" sin gritar. */}
+              <circle
+                className="fae-ch-halo"
+                cx={esp.x}
+                cy={esp.y}
+                r={radioEspecial + 13}
+                fill={FAE.ambar}
+              />
+              <circle
+                cx={esp.x}
+                cy={esp.y}
+                r={radioEspecial + 5}
+                fill="none"
+                stroke={FAE.ambar}
+                strokeWidth="1.5"
+                opacity="0.4"
+              />
+
+              <circle
+                cx={esp.x}
+                cy={esp.y}
+                r={radioEspecial}
+                fill={especial.completada ? FAE.ambar : "rgba(14,27,46,0.95)"}
+                stroke={FAE.ambar}
+                strokeWidth="3"
+              />
+
+              {/* Una ola dentro: es el nivel del agua del propio desafío. */}
+              <path
+                d={`M ${esp.x - radioEspecial * 0.52} ${esp.y + radioEspecial * 0.16}
+                    q ${radioEspecial * 0.26} ${-radioEspecial * 0.3}, ${radioEspecial * 0.52} 0
+                    t ${radioEspecial * 0.52} 0`}
+                fill="none"
+                stroke={especial.completada ? FAE.bg : FAE.ambar}
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                pointerEvents="none"
+              />
+              <path
+                d={`M ${esp.x - radioEspecial * 0.52} ${esp.y + radioEspecial * 0.5}
+                    q ${radioEspecial * 0.26} ${-radioEspecial * 0.3}, ${radioEspecial * 0.52} 0
+                    t ${radioEspecial * 0.52} 0`}
+                fill="none"
+                stroke={especial.completada ? FAE.bg : FAE.ambar}
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                opacity="0.6"
+                pointerEvents="none"
+              />
+
+              {/* El rótulo, debajo y en dos líneas: el nombre es largo. */}
+              <text
+                x={esp.x}
+                y={esp.y + radioEspecial + 24}
+                textAnchor="middle"
+                fontFamily="Sora, sans-serif"
+                fontWeight="700"
+                fontSize="10"
+                letterSpacing="1.4"
+                fill={FAE.ambar}
+                pointerEvents="none"
+              >
+                {(especial.etiqueta ?? "DESAFÍO").toUpperCase()}
+              </text>
+              <text
+                x={esp.x}
+                y={esp.y + radioEspecial + 40}
+                textAnchor="middle"
+                fontFamily="Inter, sans-serif"
+                fontSize="13"
+                fill={FAE.text}
+                pointerEvents="none"
+              >
+                {especial.nombre}
+              </text>
+            </g>
+          </g>
+        )}
       </svg>
     </div>
   );

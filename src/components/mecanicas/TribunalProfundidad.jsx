@@ -5,6 +5,7 @@ import {
   CASO_TRIBUNAL, PISTAS_TRIBUNAL, HIPOTESIS_TRIBUNAL, ORDEN_TRIBUNAL, CRITERIOS_TRIBUNAL,
 } from "../../data/icebergActividades.js";
 import { barajarDistinto } from "../../utils/barajar.js";
+import { parejasDe, parejasPreservadas } from "../../utils/orden.js";
 
 /*
  * "Tribunal de profundidad" — el peldaño Evaluar de Bloom, el que faltaba.
@@ -53,11 +54,12 @@ const CSS = `
 }
 `;
 
-/* Los tres pares que hay que ordenar bien, en el orden canónico. */
-export const PARES = [];
-for (let i = 0; i < ORDEN_TRIBUNAL.length; i++)
-  for (let j = i + 1; j < ORDEN_TRIBUNAL.length; j++)
-    PARES.push([ORDEN_TRIBUNAL[i], ORDEN_TRIBUNAL[j]]);
+/*
+ * Los tres pares que hay que ordenar bien, en el orden canónico. El cálculo
+ * vive en utils/orden.js desde que la Etapa 3 del Arca necesitó lo mismo con
+ * cuatro opciones: es la misma regla, no dos parecidas.
+ */
+export const PARES = parejasDe(ORDEN_TRIBUNAL);
 
 /*
  * La fórmula, en un solo sitio y exportada para poder medirla. Vivía inline en
@@ -65,7 +67,7 @@ for (let i = 0; i < ORDEN_TRIBUNAL.length; i++)
  * verdad ni que el mínimo es 0 y no un negativo.
  */
 export function puntuarTribunal(puestas, criterioId) {
-  const paresBien = PARES.filter(([a, b]) => puestas.indexOf(a) < puestas.indexOf(b)).length;
+  const paresBien = parejasPreservadas(puestas, ORDEN_TRIBUNAL);
   const criterioBien = CRITERIOS_TRIBUNAL.find((c) => c.id === criterioId)?.correcto === true;
   return {
     paresBien,

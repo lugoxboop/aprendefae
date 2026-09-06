@@ -13,7 +13,8 @@ import ArquitectoProfundidades from "./mecanicas/ArquitectoProfundidades.jsx";
 import TribunalProfundidad from "./mecanicas/TribunalProfundidad.jsx";
 import TransmisionSuperficie from "./mecanicas/TransmisionSuperficie.jsx";
 import CorrienteCruzada from "./mecanicas/CorrienteCruzada.jsx";
-import { clasificacionDe, actividadesDeTipo, SUBJECTS, APRENDER, HACER } from "../data/subjects.js";
+import ProyectoArca from "./mecanicas/arca/ProyectoArca.jsx";
+import { clasificacionDe, actividadesDeTipo, desafioDe, SUBJECTS, APRENDER, HACER } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
@@ -29,6 +30,7 @@ const CLAS_ARQUITECTO = clasificacionDe(MATERIA, TEMA, "arquitecto-profundidades
 const CLAS_TRIBUNAL = clasificacionDe(MATERIA, TEMA, "tribunal-profundidad");
 const CLAS_TRANSMISION = clasificacionDe(MATERIA, TEMA, "transmision-superficie");
 const CLAS_CORRIENTE = clasificacionDe(MATERIA, TEMA, "corriente-cruzada");
+const CLAS_ARCA = clasificacionDe(MATERIA, TEMA, "proyecto-arca");
 
 /*
  * Tema "Modelo del Iceberg", reorganizado sobre la taxonomía de Bloom: cada
@@ -100,6 +102,17 @@ export default function IcebergView({ modo = null, onBack }) {
   const hechas = useCompletadas();
   const tema = SUBJECTS["pensamiento-estrategico"].topics.find((t) => t.id === "modelo-iceberg");
   const nodos = nodosDe(actividadesDeTipo(tema, HACER), hechas);
+  /*
+   * El desafío va al lado del camino, no dentro. actividadesDeTipo() ya lo
+   * excluye de los nodos numerados; aquí se recoge aparte para el ramal.
+   */
+  const desafio = desafioDe(tema);
+  const nodoDesafio = desafio && {
+    id: desafio.id,
+    nombre: desafio.nombre,
+    etiqueta: "Desafío",
+    completada: hechas.has(desafio.id),
+  };
   const enNodo = (id) => nodoAbierto === id;
 
 
@@ -119,6 +132,22 @@ export default function IcebergView({ modo = null, onBack }) {
       actividadId,
       porcentajeAciertos,
       duracionMs: Date.now() - inicioRef.current,
+    });
+    if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
+  };
+
+  /*
+   * El desafío entrega su propio porcentaje —ya combinado de sus cuatro etapas—
+   * y su propia duración. Los puntos los pone el servidor: aquí no se
+   * multiplica nada por cuatro.
+   */
+  const completarDesafio = async (porcentajeAciertos, duracionMs) => {
+    const resultado = await registrarActividadCompletada(CLAS_ARCA, {
+      materiaId: MATERIA,
+      temaId: TEMA,
+      actividadId: "proyecto-arca",
+      porcentajeAciertos,
+      duracionMs,
     });
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
@@ -193,7 +222,7 @@ export default function IcebergView({ modo = null, onBack }) {
             <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 24px" }}>
               Toca el juego que quieras. No hay orden obligatorio: el camino sugiere uno, no lo impone.
             </p>
-            <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} />
+            <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} especial={nodoDesafio} />
           </>
         )}
 
@@ -348,6 +377,29 @@ export default function IcebergView({ modo = null, onBack }) {
         </p>
         <CorrienteCruzada
           onCompletar={(pct) => completarEvaluativa(CLAS_CORRIENTE, "corriente-cruzada", inicioCorriente, pct)}
+        />
+        </>
+        )}
+
+        {/* ------------ Desafío · El Proyecto del Arca (fuera del camino) ------------ */}
+        {enNodo("proyecto-arca") && (
+        <>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+          <p style={{ ...sectionLabel, margin: 0, color: FAE.ambar }}>DESAFÍO</p>
+          <ActivityBadge tipo={CLAS_ARCA?.tipo} size="sm" />
+        </div>
+        <h2 style={h2}>El Proyecto del Arca</h2>
+        <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 20px" }}>
+          Cuatro etapas sobre un solo caso: el general que recibió cuatro meses para construir un arca y
+          montó seis gerencias para vigilar al único que sabía construirla.
+        </p>
+        <ProyectoArca
+          /*
+           * El desafío lleva su propio reloj —empieza al pulsar "Empezar", no
+           * al abrir la página— así que la duración la manda él y no un ref de
+           * esta vista, que estaría contando desde que se cargó el tema.
+           */
+          onCompletar={(pct, duracionMs) => completarDesafio(pct, duracionMs)}
         />
         </>
         )}

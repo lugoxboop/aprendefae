@@ -30,8 +30,12 @@ import { SUBJECTS, HACER } from "../../data/subjects.js";
 
 const CARPETA = "supabase/migrations";
 
-/* Un tupla del insert: (id, materia, tema, modalidad, dificultad, fp_base). */
-const FILA = /\(\s*'([^']+)',\s*'([^']+)',\s*'([^']+)',\s*'(exploratoria|evaluativa)',\s*'(facil|medio|dificil|experto)',\s*(\d+)\s*\)/g;
+/*
+ * Una tupla del insert: (id, materia, tema, modalidad, dificultad, fp_base) y,
+ * desde la 0014, unas etapas opcionales al final. Las filas viejas no la traen
+ * y valen 1, que es el valor por defecto de la columna.
+ */
+const FILA = /\(\s*'([^']+)',\s*'([^']+)',\s*'([^']+)',\s*'(exploratoria|evaluativa)',\s*'(facil|medio|dificil|experto)',\s*(\d+)\s*(?:,\s*(\d+)\s*)?\)/g;
 
 /*
  * Las filas que las migraciones meten en actividad_catalogo, en el orden en que
@@ -56,6 +60,7 @@ function catalogoDelServidor() {
       for (const m of bloque.matchAll(FILA)) {
         salida.set(m[1], {
           subject: m[2], topic: m[3], modalidad: m[4], dificultad: m[5], fpBase: Number(m[6]),
+          etapas: m[7] ? Number(m[7]) : 1,
           archivo,
         });
       }
@@ -75,6 +80,7 @@ function catalogoDelCliente() {
         salida.set(act.id, {
           subject: materia.id, topic: tema.id,
           modalidad: c.modalidad, dificultad: c.dificultad, fpBase: c.fpBase,
+          etapas: c.etapas ?? 1,
         });
       }
   return salida;
@@ -95,7 +101,13 @@ test("dificultad y puntos base coinciden entre cliente y servidor", () => {
   for (const [id, c] of cliente) {
     const s = servidor.get(id);
     if (!s) continue;
-    for (const campo of ["subject", "topic", "modalidad", "dificultad", "fpBase"]) {
+    /*
+     * `etapas` entra en la comparación desde la 0014. Si el cliente dijera 4 y
+     * el servidor 1, el desafío pagaría 90 en vez de 360 y nada más fallaría:
+     * es exactamente el tipo de deriva silenciosa que esta prueba existe para
+     * cazar.
+     */
+    for (const campo of ["subject", "topic", "modalidad", "dificultad", "fpBase", "etapas"]) {
       if (c[campo] !== s[campo]) {
         distintas.push(`${id}.${campo}: cliente=${c[campo]} servidor=${s[campo]}`);
       }

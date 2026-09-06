@@ -184,6 +184,32 @@ export const SUBJECTS = {
             nombre: "Corriente cruzada",
             clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
           },
+          {
+            /*
+             * EL DESAFÍO DEL TEMA, y no una octava actividad.
+             *
+             * `desafio: true` lo saca de actividadesDeTipo(), que es lo que
+             * dibuja el camino y lo que cuenta para "tema completo" y para las
+             * medallas. Si contara, un desafío opcional de cuatro etapas se
+             * volvería obligatorio para cerrar el tema, que es justo lo que no
+             * queremos: está al lado del camino, no dentro.
+             *
+             * `etapas: 4` es lo que dispara la regla del Kit para desafíos
+             * compuestos: base × etapas = 90 × 4 = 360. La multiplicación la
+             * hace el servidor; aquí solo se declara, y catalogo.test.mjs
+             * comprueba que los dos digan lo mismo.
+             */
+            id: "proyecto-arca",
+            nombre: "El Proyecto del Arca",
+            clasificacion: {
+              tipo: HACER,
+              modalidad: "evaluativa",
+              dificultad: "experto",
+              fpBase: 90,
+              etapas: 4,
+              desafio: true,
+            },
+          },
         ],
       },
       {
@@ -222,9 +248,27 @@ export const SUBJECTS = {
   },
 };
 
-/* Las actividades de un tema que son de un tipo (APRENDER u HACER). */
+/*
+ * Las actividades de un tema que son de un tipo (APRENDER u HACER).
+ *
+ * LOS DESAFÍOS NO SALEN POR AQUÍ. Un nodo de desafío es contenido del tema,
+ * pero no forma parte de su recorrido: no se numera en el camino, no cuenta
+ * para "tema completo" ni para las medallas de materia, y no suma en el
+ * contador de la tarjeta partida. Todo eso cuelga de esta función, así que
+ * excluirlos aquí es excluirlos de las cinco cosas a la vez.
+ *
+ * Si contaran, un desafío opcional se volvería requisito para cerrar el tema,
+ * que es exactamente el bloqueo encubierto que el camino evita por diseño.
+ */
 export function actividadesDeTipo(topic, tipo) {
-  return (topic?.actividades ?? []).filter((a) => a.clasificacion?.tipo === tipo);
+  return (topic?.actividades ?? []).filter(
+    (a) => a.clasificacion?.tipo === tipo && !a.clasificacion?.desafio
+  );
+}
+
+/* El desafío de un tema, si tiene. Hoy hay como mucho uno por tema. */
+export function desafioDe(topic) {
+  return (topic?.actividades ?? []).find((a) => a.clasificacion?.desafio) ?? null;
 }
 
 /*
