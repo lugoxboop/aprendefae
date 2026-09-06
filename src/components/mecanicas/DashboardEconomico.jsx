@@ -79,6 +79,20 @@ export function simular({ impuesto, tasa, aranceles }) {
 export function evaluar({ desempleo, inflacion, pib }) {
   const okDesempleo = desempleo <= META.desempleo;
   const okInflacion = inflacion <= META.inflacion;
+  /*
+   * ═══ NO BORRAR ESTE GUARDIÁN AUNQUE HOY NO SE CUMPLA NUNCA ═══
+   *
+   * Con los coeficientes actuales la recesión es INALCANZABLE: el barrido de
+   * las 41.943 combinaciones da un PIB que va de 0,10% a 3,80%, así que
+   * `recesion` es hoy siempre false y las comprobaciones de abajo son código
+   * muerto. Por eso el PIB se presenta como indicador de contexto y no como
+   * meta —prometía una condición que el estudiante no puede incumplir.
+   *
+   * Se conserva a propósito: es la red correcta si alguien recalibra los
+   * coeficientes. En cuanto el PIB pueda bajar de cero, esto vuelve a estar
+   * vivo solo, y entonces habrá que revisar también el texto del escenario.
+   * Cualquier recalibración pasa antes por `npm run barrido`.
+   */
   const recesion = pib < META.pib;
 
   if (okDesempleo && okInflacion && !recesion) {
@@ -117,11 +131,22 @@ const arco = (t0, t1) => {
   return `M ${a.x.toFixed(2)} ${a.y.toFixed(2)} A ${R} ${R} 0 0 1 ${b.x.toFixed(2)} ${b.y.toFixed(2)}`;
 };
 
-function Medidor({ etiqueta, valor, min, max, objetivo, direccion, sufijo = "%" }) {
+/*
+ * Un medidor puede ser de META o de CONTEXTO, y la diferencia no es cosmética.
+ *
+ * El PIB es de contexto: el barrido de las 41.943 combinaciones demostró que va
+ * de 0,10% a 3,80% y que la recesión es inalcanzable, así que presentarlo con
+ * arco coral, zona verde y un rótulo de "meta" le prometía al estudiante una
+ * condición que no puede incumplir. Sin `objetivo` no dibuja ni marca ni zona,
+ * la aguja va en color neutro —no verde ni coral, porque no hay nada que
+ * aprobar— y el rótulo dice lo que es.
+ */
+function Medidor({ etiqueta, valor, min, max, objetivo = null, direccion, sufijo = "%", nota }) {
+  const esContexto = objetivo === null;
   const t = (valor - min) / (max - min);
-  const tObjetivo = (objetivo - min) / (max - min);
-  const dentro = direccion === "menor" ? valor <= objetivo : valor >= objetivo;
-  const color = dentro ? FAE.teal : FAE.coral;
+  const tObjetivo = esContexto ? 0 : (objetivo - min) / (max - min);
+  const dentro = esContexto ? null : direccion === "menor" ? valor <= objetivo : valor >= objetivo;
+  const color = esContexto ? FAE.node : dentro ? FAE.teal : FAE.coral;
 
   const aguja = puntoEnArco(Math.max(0, Math.min(1, t)));
   const marca0 = puntoEnArco(Math.max(0, Math.min(1, tObjetivo)));
@@ -143,11 +168,24 @@ function Medidor({ etiqueta, valor, min, max, objetivo, direccion, sufijo = "%" 
         textAlign: "center",
       }}
     >
-      <svg viewBox="0 0 160 96" width="100%" style={{ display: "block", maxHeight: "112px", margin: "0 auto" }} aria-hidden="true">
+      <svg
+        viewBox="0 0 160 96" width="100%" style={{ display: "block", maxHeight: "112px", margin: "0 auto" }}
+        role="img"
+        aria-label={
+          esContexto
+            ? `${etiqueta}: ${valor.toFixed(1)}${sufijo}. Indicador de contexto, sin meta.`
+            : `${etiqueta}: ${valor.toFixed(1)}${sufijo}. Meta ${direccion === "menor" ? "menor o igual a" : "mayor o igual a"} ${objetivo}${sufijo}. ${dentro ? "En meta." : "Fuera de meta."}`
+        }
+      >
         <path d={arco(0, 1)} fill="none" stroke="rgba(248,249,250,0.14)" strokeWidth="9" strokeLinecap="round" />
-        <path d={zona} fill="none" stroke={FAE.teal} strokeWidth="9" strokeLinecap="round" opacity="0.32" />
-        {/* marca coral del objetivo */}
-        <line x1={marca0.x} y1={marca0.y} x2={marca1.x} y2={marca1.y} stroke={FAE.coral} strokeWidth="2.5" strokeLinecap="round" />
+        {/* Zona y marca solo donde HAY meta: el indicador de contexto no lleva ninguna. */}
+        {!esContexto && (
+          <>
+            <path d={zona} fill="none" stroke={FAE.teal} strokeWidth="9" strokeLinecap="round" opacity="0.32" />
+            {/* marca coral del objetivo */}
+            <line x1={marca0.x} y1={marca0.y} x2={marca1.x} y2={marca1.y} stroke={FAE.coral} strokeWidth="2.5" strokeLinecap="round" />
+          </>
+        )}
         {/* aguja */}
         <line
           x1={CX} y1={CY} x2={aguja.x} y2={aguja.y}
@@ -169,7 +207,7 @@ function Medidor({ etiqueta, valor, min, max, objetivo, direccion, sufijo = "%" 
         {valor.toFixed(1)}{sufijo}
       </p>
       <p style={{ fontSize: "11.5px", color: "rgba(248,249,250,0.45)", margin: "3px 0 0" }}>
-        meta {direccion === "menor" ? "≤" : "≥"} {objetivo}{sufijo}
+        {esContexto ? (nota ?? "indicador de contexto") : `meta ${direccion === "menor" ? "≤" : "≥"} ${objetivo}${sufijo}`}
       </p>
     </div>
   );
@@ -210,9 +248,29 @@ export default function DashboardEconomico({ onCompletar }) {
           marginBottom: "16px",
         }}
       >
+        {/*
+          LAS CIFRAS DE AQUÍ NO SON LAS REALES, y hay que decirlo antes de que
+          toque nada. "El tablero de fallas", en este mismo tema, muestra los
+          datos verdaderos del profesor —desempleo 8,1%, inflación 6%— y quien
+          pase por las dos pantallas vería dos verdades distintas sobre el mismo
+          país. El aviso va arriba del escenario, no en una nota al pie.
+        */}
+        <p
+          style={{
+            display: "inline-flex", alignItems: "center", gap: "7px",
+            fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700,
+            letterSpacing: "0.08em", color: FAE.ambar, margin: "0 0 10px",
+            padding: "6px 11px", borderRadius: "999px",
+            background: "rgba(233,196,106,0.10)", border: `1px solid ${FAE.ambar}55`,
+          }}
+        >
+          Escenario simulado — las cifras de este ejercicio no son los datos reales de Colombia
+        </p>
         <p style={{ fontSize: "15px", lineHeight: 1.6, margin: 0, color: FAE.text }}>
-          Colombia enfrenta un desempleo del 14% y una inflación del 8%. La meta oficial: reducir el desempleo
-          a 12% sin que la inflación supere el 6%, manteniendo la economía en crecimiento (PIB ≥ 0%).
+          Colombia enfrenta un desempleo del 14% y una inflación del 6,5%. La meta oficial: reducir el
+          desempleo a 12% sin que la inflación supere el 6%. El PIB se muestra como indicador de contexto
+          — te deja ver cómo cada decisión afecta el crecimiento, aunque no es una condición que debas
+          cumplir.
         </p>
       </div>
 
@@ -220,7 +278,8 @@ export default function DashboardEconomico({ onCompletar }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px", marginBottom: "18px" }}>
         <Medidor etiqueta="Desempleo" valor={indicadores.desempleo} min={LIMITES.desempleo[0]} max={LIMITES.desempleo[1]} objetivo={META.desempleo} direccion="menor" />
         <Medidor etiqueta="Inflación" valor={indicadores.inflacion} min={LIMITES.inflacion[0]} max={LIMITES.inflacion[1]} objetivo={META.inflacion} direccion="menor" />
-        <Medidor etiqueta="PIB" valor={indicadores.pib} min={LIMITES.pib[0]} max={LIMITES.pib[1]} objetivo={META.pib} direccion="mayor" />
+        {/* Sin `objetivo`: el PIB es contexto, no meta. Ver el comentario de Medidor. */}
+        <Medidor etiqueta="PIB" valor={indicadores.pib} min={LIMITES.pib[0]} max={LIMITES.pib[1]} direccion="mayor" nota="contexto, no es meta" />
       </div>
 
       {/* instrumentos */}
