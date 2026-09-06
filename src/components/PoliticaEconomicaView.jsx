@@ -7,6 +7,7 @@ import ActivityBadge from "./shared/ActivityBadge.jsx";
 import CadenaPolitica from "./mecanicas/CadenaPolitica.jsx";
 import TableroDeFallas from "./mecanicas/salaDeControl/TableroDeFallas.jsx";
 import Autorregulacion from "./mecanicas/salaDeControl/Autorregulacion.jsx";
+import MaquinaDA from "./mecanicas/salaDeControl/MaquinaDA.jsx";
 import DashboardEconomico from "./mecanicas/DashboardEconomico.jsx";
 import { clasificacionDe, APRENDER, HACER, actividadesDeTipo, SUBJECTS } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
@@ -29,6 +30,7 @@ const CLAS_CADENA = clasificacionDe(MATERIA, TEMA, "cadena-desempleo");
 const CLAS_DASHBOARD = clasificacionDe(MATERIA, TEMA, "dashboard-economico");
 const CLAS_TABLERO = clasificacionDe(MATERIA, TEMA, "tablero-fallas");
 const CLAS_AUTORREGULACION = clasificacionDe(MATERIA, TEMA, "autorregulacion-intervencion");
+const CLAS_MAQUINA = clasificacionDe(MATERIA, TEMA, "maquina-da-palancas");
 
 const sectionLabel = {
   fontFamily: "Sora, sans-serif",
@@ -153,6 +155,18 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
           se cuida solo un buen rato — hasta que deja de hacerlo.
         </p>
         <Autorregulacion />
+
+        {/* ------------ Sala de control · Panel 3: los mandos ------------ */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
+          <p style={sectionLabel}>MECÁNICA 4</p>
+          <ActivityBadge tipo={CLAS_MAQUINA?.tipo} size="sm" />
+        </div>
+        <h2 style={h2}>La máquina de la DA y sus palancas</h2>
+        <p style={lead}>
+          La misma máquina de «Los grifos», operada un nivel más arriba: aquí las palancas son las ramas de
+          la política económica. Mueve cualquiera y mira qué parte de la fórmula se enciende.
+        </p>
+        <MaquinaDA />
         </>
         )}
 
@@ -186,7 +200,7 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
         </button>
         {/* ---------------- J3 ---------------- */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
-          <p style={sectionLabel}>MECÁNICA {muestraAprender ? 4 : 1}</p>
+          <p style={sectionLabel}>MECÁNICA {muestraAprender ? 5 : 1}</p>
           <ActivityBadge tipo={CLAS_DASHBOARD?.tipo} size="sm" />
         </div>
         <h2 style={h2}>Dashboard económico en vivo</h2>

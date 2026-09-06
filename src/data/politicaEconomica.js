@@ -177,3 +177,92 @@ export const FASES_MERCADO = [
     ms: null,
   },
 ];
+
+/* ─────── PIEZA 3 — La máquina de la DA y sus palancas (Obj. 4, 5, Idea 6) ─────── */
+
+/*
+ * EL AZUL. El profesor codifica las tres ramas en verde, azul y naranja, y esa
+ * codificación se respeta porque es fidelidad a la fuente, no gusto.
+ *
+ * Verde y naranja los cubre la marca: el teal y el coral ya hacen de verde y de
+ * naranja en todo el sitio. El azul no: el navy de marca ES el fondo de la
+ * página, y una palanca azul marino sobre fondo azul marino no se ve.
+ *
+ * Se usa el azul que YA existe en el proyecto —COLORS.blue de DA-Learn, dentro
+ * de la misma materia— en vez de inventar un tono nuevo. Mantiene el código del
+ * profesor y se lee sobre el fondo oscuro.
+ */
+export const AZUL_MONETARIA = "#3D7FFF";
+
+/* Los términos de la fórmula, y lo que T1 deja abrir por dentro de cada uno. */
+export const TERMINOS_DA = [
+  {
+    id: "C",
+    nombre: "Consumo",
+    /*
+     * Las sub-variables son las mismas que T1 hace manipulables. Aquí salen
+     * apagadas y sin control: son el nivel de abajo, el que este panel no toca.
+     * Que G tenga una sola y C tenga cinco no es un dibujo incompleto — es la
+     * asimetría que T1 enseña, y borrarla aquí la desmentiría.
+     */
+    subvariables: ["C̄", "Y", "t", "TR", "c"],
+  },
+  { id: "I", nombre: "Inversión", subvariables: ["Ī", "i", "b"] },
+  { id: "G", nombre: "Gasto público", subvariables: ["Ḡ"] },
+  { id: "XN", nombre: "Exportaciones netas", subvariables: ["tc"] },
+];
+
+export const RAMAS = [
+  {
+    id: "fiscal",
+    nombre: "Política fiscal",
+    color: "#2A9D8F",
+    terminos: ["C", "G"],
+    definicion:
+      "Actúa con el gasto del Estado y con los impuestos. Toca lo que el Estado gasta directamente y lo que le queda a los hogares para consumir.",
+  },
+  {
+    id: "monetaria",
+    nombre: "Política monetaria",
+    color: AZUL_MONETARIA,
+    terminos: ["I"],
+    definicion:
+      "Actúa sobre el dinero y el crédito. Cambia las condiciones en que se financia quien quiere invertir.",
+  },
+  {
+    id: "cambiaria",
+    nombre: "Política cambiaria y comercial",
+    color: "#E76F51",
+    terminos: ["XN"],
+    definicion:
+      "Actúa sobre el tipo de cambio y sobre las condiciones del comercio con el exterior: lo que se vende fuera y lo que se compra.",
+  },
+];
+
+/*
+ * Tres posiciones con tope, no un recorrido continuo: lo que se enseña es la
+ * dirección, y un valor intermedio invitaría a leer una magnitud que no existe.
+ */
+export const POSICIONES = [
+  { id: "expansiva", etiqueta: "Expansiva", signo: 1 },
+  { id: "neutral", etiqueta: "Neutral", signo: 0 },
+  { id: "restrictiva", etiqueta: "Restrictiva", signo: -1 },
+];
+
+/*
+ * Las palancas de apoyo. Van en su propio compartimento y NO se conectan a la
+ * fórmula: el profesor las separa de las tres ramas tradicionales porque
+ * actúan de forma transversal. Esa separación es contenido, no maquetación.
+ */
+export const APOYO = [
+  {
+    id: "sectoriales",
+    nombre: "Políticas sectoriales",
+    ramas: ["Agropecuaria", "Competitividad", "Mipymes", "Industrial", "Ciencia y tecnología"],
+  },
+  {
+    id: "rentas",
+    nombre: "Políticas de rentas",
+    ramas: [],
+  },
+];

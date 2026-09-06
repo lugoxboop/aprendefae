@@ -93,6 +93,11 @@ export const SUBJECTS = {
             clasificacion: { tipo: APRENDER },
           },
           {
+            id: "maquina-da-palancas",
+            nombre: "La máquina de la DA y sus palancas",
+            clasificacion: { tipo: APRENDER },
+          },
+          {
             id: "dashboard-economico",
             nombre: "Dashboard económico en vivo",
             clasificacion: {
