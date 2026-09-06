@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { RESTOS_BLOCKBUSTER, PREGUNTA_RESCATE, OPCIONES_RESCATE } from "../../data/icebergActividades.js";
+import { barajarDistinto } from "../../utils/barajar.js";
 
 /*
  * "Expediente de rescate" — el peldaño Analizar de Bloom.
@@ -40,6 +41,16 @@ export default function ExpedienteRescate({ onCompletar }) {
   const [limpiando, setLimpiando] = useState(null);
   const [eleccion, setEleccion] = useState(null);
   const [luz, setLuz] = useState({ x: 50, y: 50 });   // en %, para la linterna
+  /*
+   * Las cuatro opciones se barajan. Con A/B/C/D siempre en el mismo sitio, la
+   * respuesta se recuerda por posición en el segundo intento.
+   */
+  const ordenPrevio = useRef(null);
+  const [opciones, setOpciones] = useState(() => {
+    const o = barajarDistinto(OPCIONES_RESCATE, null, (x) => x.id);
+    ordenPrevio.current = o;
+    return o;
+  });
   const escena = useRef(null);
   const inicio = useRef(Date.now());
 
@@ -73,7 +84,11 @@ export default function ExpedienteRescate({ onCompletar }) {
   };
 
   const reiniciar = () => {
-    setRevelados([]); setEleccion(null); inicio.current = Date.now();
+    setRevelados([]); setEleccion(null);
+    const o = barajarDistinto(OPCIONES_RESCATE, ordenPrevio.current, (x) => x.id);
+    ordenPrevio.current = o;
+    setOpciones(o);
+    inicio.current = Date.now();
   };
 
   return (
@@ -173,9 +188,9 @@ export default function ExpedienteRescate({ onCompletar }) {
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
-            {OPCIONES_RESCATE.map((o) => {
+            {opciones.map((o) => {
               const elegida = eleccion === o.id;
-              const color = o.porcentaje === 100 ? FAE.teal : o.porcentaje === 50 ? FAE.ambar : FAE.coral;
+              const color = o.porcentaje === 100 ? FAE.teal : o.porcentaje > 0 ? FAE.ambar : FAE.coral;
               return (
                 <button key={o.id} type="button" onClick={() => responder(o)} disabled={!!eleccion}
                   style={{

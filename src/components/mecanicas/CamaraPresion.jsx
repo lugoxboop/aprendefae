@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { DEFINICIONES, normalizar } from "../../data/icebergActividades.js";
+import { barajarDistinto } from "../../utils/barajar.js";
 
 /*
  * "Cámara de presión" — el peldaño Recordar de Bloom.
@@ -26,16 +27,6 @@ import { DEFINICIONES, normalizar } from "../../data/icebergActividades.js";
 const SEGUNDOS = 18;
 const TICK_MS = 100;
 
-/* Barajado estable por intento: el orden cambia entre partidas, no entre renders. */
-function barajar(xs) {
-  const a = [...xs];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
 const CSS = `
 @keyframes fae-cp-sello { from { opacity: 0.9; } to { opacity: 0; } }
 .fae-cp-sello { animation: fae-cp-sello 620ms ease-out forwards; }
@@ -54,6 +45,12 @@ const GRIETAS = [
 export default function CamaraPresion({ onCompletar }) {
   const [modo, setModo] = useState(null);          // null = eligiendo modo
   const [orden, setOrden] = useState([]);
+  /*
+   * Las burbujas del modo fácil también se barajan. Antes salían siempre en el
+   * orden del catálogo, así que se podía acertar por posición sin leer nada.
+   */
+  const [burbujas, setBurbujas] = useState([]);
+  const ordenPrevio = useRef(null);
   const [i, setI] = useState(0);
   const [transcurrido, setTranscurrido] = useState(0);
   const [respuesta, setRespuesta] = useState("");
@@ -85,7 +82,10 @@ export default function CamaraPresion({ onCompletar }) {
 
   const empezar = (m) => {
     setModo(m);
-    setOrden(barajar(DEFINICIONES));
+    const nuevo = barajarDistinto(DEFINICIONES, ordenPrevio.current, (d) => d.termino);
+    ordenPrevio.current = nuevo;
+    setOrden(nuevo);
+    setBurbujas(barajarDistinto(DEFINICIONES, null, (d) => d.termino));
     setI(0);
     setTranscurrido(0);
     setAcertadas([]);
@@ -252,7 +252,7 @@ export default function CamaraPresion({ onCompletar }) {
             </div>
           ) : modo === "facil" ? (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "10px" }}>
-              {DEFINICIONES.map((d) => (
+              {burbujas.map((d) => (
                 <button key={d.termino} type="button" onClick={() => resolver(d.termino)}
                   style={{
                     fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600,

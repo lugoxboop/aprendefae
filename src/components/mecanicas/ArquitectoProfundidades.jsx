@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { EVENTO_ARQUITECTO, BANCO_ARQUITECTO, RANURAS } from "../../data/icebergActividades.js";
+import { barajar } from "../../utils/barajar.js";
 
 /*
  * "Arquitecto de las profundidades" — el peldaño Crear de Bloom, y la más dura
@@ -33,16 +34,6 @@ const CSS = `
 .fae-ap-rechazo { animation: fae-ap-rechazo 400ms ease-in-out; }
 @media (prefers-reduced-motion: reduce) { .fae-ap-fusion, .fae-ap-rechazo { animation: none !important; } }
 `;
-
-/* Barajado por partida, para que el banco no salga siempre en el mismo orden. */
-function barajar(xs) {
-  const a = [...xs];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
 
 export default function ArquitectoProfundidades({ onCompletar }) {
   const [semilla, setSemilla] = useState(0);

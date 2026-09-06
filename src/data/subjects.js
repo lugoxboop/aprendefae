@@ -148,10 +148,41 @@ export const SUBJECTS = {
             clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
           },
           {
+            /*
+             * Evaluar: tres explicaciones que funcionan, ordenadas por cuánto
+             * explican. Experto como el arquitecto, y por lo mismo: no hay
+             * respuesta que se vea mal a simple vista.
+             *
+             * Va ANTES del arquitecto porque este orden es el que dibuja el
+             * camino, y en Bloom evaluar viene antes que crear.
+             */
+            id: "tribunal-profundidad",
+            nombre: "Tribunal de profundidad",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
+          },
+          {
             /* Crear: armar un iceberg desde cero, con un banco lleno de ruido. */
             id: "arquitecto-profundidades",
             nombre: "Arquitecto de las profundidades",
             clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
+          },
+          {
+            /*
+             * Efecto protégé: explicárselo a alguien que baja por primera vez.
+             * Se pidió "media-alta" y las gradas del motor son cuatro
+             * —facil/medio/dificil/experto—, así que no hay un escalón entre
+             * medio y difícil. Va a difícil: elegir cinco frases de once y
+             * ordenarlas está más cerca de eso que de reconocer un término.
+             */
+            id: "transmision-superficie",
+            nombre: "Transmisión a la superficie",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+          {
+            /* Práctica intercalada: los cuatro casos mezclados, nunca agrupados. */
+            id: "corriente-cruzada",
+            nombre: "Corriente cruzada",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
           },
         ],
       },

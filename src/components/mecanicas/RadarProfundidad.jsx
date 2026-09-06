@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { BLIPS_RADAR, ANILLOS } from "../../data/icebergActividades.js";
+import { barajarDistinto } from "../../utils/barajar.js";
 
 /*
  * "Radar de profundidad" — el peldaño Aplicar de Bloom.
@@ -41,8 +42,20 @@ export default function RadarProfundidad({ onCompletar }) {
   const [primerIntento, setPrimerIntento] = useState({}); // id -> bool
   const [onda, setOnda] = useState(null);
   const inicio = useRef(Date.now());
+  /*
+   * CORRECCIÓN. Antes los blips salían siempre en el orden del catálogo —
+   * evento, patrón, estructura, modelo mental— así que se podía acertar por
+   * posición sin clasificar nada. Ahora se barajan en cada intento, y nunca dos
+   * veces seguidas en el mismo orden.
+   */
+  const ordenPrevio = useRef(null);
+  const [orden, setOrden] = useState(() => {
+    const o = barajarDistinto(BLIPS_RADAR, null, (b) => b.id);
+    ordenPrevio.current = o;
+    return o;
+  });
 
-  const pendientes = BLIPS_RADAR.filter((b) => !anclados[b.id]);
+  const pendientes = orden.filter((b) => !anclados[b.id]);
   const completo = pendientes.length === 0;
 
   useEffect(() => {
@@ -71,6 +84,9 @@ export default function RadarProfundidad({ onCompletar }) {
 
   const reiniciar = () => {
     setAnclados({}); setElegido(null); setPrimerIntento({}); setFallando(null);
+    const o = barajarDistinto(BLIPS_RADAR, ordenPrevio.current, (b) => b.id);
+    ordenPrevio.current = o;
+    setOrden(o);
     inicio.current = Date.now();
   };
 

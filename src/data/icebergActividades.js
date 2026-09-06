@@ -141,7 +141,12 @@ export const OPCIONES_RESCATE = [
     feedback: "❌ Abrir más tiendas refuerza exactamente el modelo que ya perdía relevancia. Combate un síntoma repetido, no la causa que lo repite.",
   },
   {
-    id: "c", porcentaje: 50,
+    /*
+     * Baja de 50 a 20. Media actividad dependía de una sola decisión, y la
+     * pregunta no es tan dura como para que una respuesta incorrecta —aunque
+     * razone bien sobre la estructura— valiera la mitad del total.
+     */
+    id: "c", porcentaje: 20,
     texto: "Estructura — invertir en una plataforma de distribución digital propia",
     feedback: "🟡 Vas bien encaminado, pero no es la jugada que más cambia las cosas. Invertir en digital ayuda, pero si la empresa sigue creyendo que la tienda física es el corazón del negocio, esa inversión queda a medias — la estructura nueva choca con la creencia vieja.",
   },
@@ -247,3 +252,113 @@ export const BANCO_ARQUITECTO = [
 
 /* Las tres ranuras a llenar, en el orden en que se hunde el iceberg. */
 export const RANURAS = ["Patrón", "Estructura", "Modelo mental"];
+
+/* ═══════════ 6. TRIBUNAL DE PROFUNDIDAD — Evaluar ═══════════ */
+
+/*
+ * El peldaño que faltaba. Todas las anteriores piden encontrar la respuesta
+ * buena entre distractores que se ven flojos; esta pide JUZGAR entre tres
+ * explicaciones que suenan todas razonables, con un criterio explícito.
+ * No hay una obviamente mala: hay una que explica más.
+ */
+export const CASO_TRIBUNAL =
+  "Un restaurante familiar en Bogotá bajó sus reseñas de 4.5 a 3.2 estrellas en 6 meses.";
+
+export const PISTAS_TRIBUNAL = [
+  { id: "p1", texto: "El tiempo de espera subió de 15 a 40 minutos." },
+  { id: "p2", texto: "El menú no ha cambiado en 3 años." },
+  { id: "p3", texto: "Las reseñas negativas mencionan “se demoran mucho” más que “la comida no es buena”." },
+  { id: "p4", texto: "El dueño sigue sin contratar más personal a pesar del crecimiento de pedidos por domicilio." },
+];
+
+/*
+ * `explica` es qué pistas cubre cada hipótesis. De ahí sale el haz de luz del
+ * final: se ve qué pista se le escapa a cada una, en vez de decir "mal".
+ */
+export const HIPOTESIS_TRIBUNAL = [
+  {
+    id: "h1",
+    texto: "El dueño cree que basta con que la comida sea buena, y no le da importancia real a la velocidad del servicio.",
+    explica: ["p1", "p2", "p3", "p4"],
+  },
+  {
+    id: "h2",
+    texto: "El dueño cree que las reseñas negativas son de gente que “nunca está conforme con nada”.",
+    explica: ["p3"],
+  },
+  {
+    id: "h3",
+    texto: "El dueño cree que su ubicación siempre traerá clientes nuevos sin necesidad de fidelizar a los que ya tiene.",
+    explica: ["p2", "p4"],
+  },
+];
+
+/* De más a menos poder explicativo. H3 cubre dos pistas; H2, una. */
+export const ORDEN_TRIBUNAL = ["h1", "h3", "h2"];
+
+export const CRITERIOS_TRIBUNAL = [
+  { id: "c1", texto: "Explica todas las pistas", correcto: true },
+  { id: "c2", texto: "Es la explicación más simple", correcto: false },
+  { id: "c3", texto: "Se puede comprobar con datos", correcto: false },
+];
+
+/* ═══════════ 7. TRANSMISIÓN A LA SUPERFICIE — Efecto protégé ═══════════ */
+
+/*
+ * Explicar el caso de la tienda a alguien que baja por primera vez. Lo que se
+ * mide no es si el estudiante sabe, sino si sabe DECIRLO: una frase técnicamente
+ * correcta pero llena de jerga no le sirve a quien no la entiende.
+ *
+ *   "clara"      correcta y en el idioma de una persona. Suma.
+ *   "jerga"      cierta, pero incomprensible. Resta poco: no está mal, está mal dicha.
+ *   "incorrecta" falsa. Resta más.
+ */
+export const RANURAS_TRANSMISION = 5;
+
+export const FRAGMENTOS_TRANSMISION = [
+  { id: "t1", clase: "clara", texto: "Lo que ves primero (menos clientes) no es el problema real, es solo la señal." },
+  { id: "t2", clase: "clara", texto: "Hay algo que se repite, no es solo mala suerte de un mes." },
+  { id: "t3", clase: "clara", texto: "Debajo de lo que se repite hay algo que lo está causando: en este caso, que no hay forma de que un cliente vuelva." },
+  { id: "t4", clase: "clara", texto: "Y más abajo hay una idea que nadie discute: que la gente solo vuelve si el precio es bueno." },
+  { id: "t5", clase: "clara", texto: "Mientras esa idea siga en pie, cualquier arreglo de arriba se deshace solo." },
+  { id: "t6", clase: "jerga", texto: "Existe una condición estructural subyacente que perpetúa la manifestación sintomática observable." },
+  { id: "t7", clase: "jerga", texto: "Se identifica una recurrencia diacrónica en la serie de indicadores de retención." },
+  { id: "t8", clase: "jerga", texto: "El paradigma cognitivo del agente decisor opera como variable latente no problematizada." },
+  { id: "t9", clase: "incorrecta", texto: "El problema se resuelve bajando los precios." },
+  { id: "t10", clase: "incorrecta", texto: "Lo que se ve en la superficie es siempre la causa verdadera." },
+  { id: "t11", clase: "incorrecta", texto: "Si el evento no se repite, no hace falta mirar más abajo." },
+];
+
+/* ═══════════ 8. CORRIENTE CRUZADA — Práctica intercalada ═══════════ */
+
+/*
+ * Los cuatro casos del tema, mezclados a propósito y nunca agrupados. Clasificar
+ * frases de un caso que se acaba de leer es fácil; hacerlo cuando la siguiente
+ * frase viene de otro mundo obliga a generalizar la regla en vez de recordar
+ * ese caso concreto.
+ *
+ * El texto no es nuevo: son las frases ya escritas y ya clasificadas de la
+ * tienda, el canal, Blockbuster y el equipo de fútbol.
+ */
+export const CORRIENTE = [
+  /* --- la tienda --- */
+  { id: "c-t1", caso: "La tienda", nivel: "Evento", texto: "Las ventas caen este mes." },
+  { id: "c-t2", caso: "La tienda", nivel: "Patrón", texto: "Cada trimestre bajan en la misma época." },
+  { id: "c-t3", caso: "La tienda", nivel: "Estructura", texto: "No hay un sistema de fidelización de clientes." },
+  { id: "c-t4", caso: "La tienda", nivel: "Modelo mental", texto: "Creemos que el cliente solo vuelve por precio." },
+  /* --- el canal --- */
+  { id: "c-c1", caso: "El canal", nivel: "Evento", texto: "Pierde 200 suscriptores este mes, subiendo los mismos videos de siempre." },
+  { id: "c-c2", caso: "El canal", nivel: "Patrón", texto: "Lleva 4 meses seguidos perdiendo más suscriptores de los que gana." },
+  { id: "c-c3", caso: "El canal", nivel: "Estructura", texto: "Sigue con el mismo formato de 20 minutos desde hace 2 años." },
+  { id: "c-c4", caso: "El canal", nivel: "Modelo mental", texto: "El creador cree que “si el contenido es bueno, encuentra su audiencia solo”." },
+  /* --- Blockbuster --- */
+  { id: "c-b1", caso: "Blockbuster", nivel: "Evento", texto: "En 2010 se declara en bancarrota y cierra cientos de tiendas." },
+  { id: "c-b2", caso: "Blockbuster", nivel: "Patrón", texto: "Desde 2005 las visitas a las tiendas caían año tras año." },
+  { id: "c-b3", caso: "Blockbuster", nivel: "Estructura", texto: "El modelo dependía de tiendas físicas y DVDs, sin plataforma propia." },
+  { id: "c-b4", caso: "Blockbuster", nivel: "Modelo mental", texto: "Los directivos creían que el streaming era una moda pasajera." },
+  /* --- el equipo --- */
+  { id: "c-f1", caso: "El equipo", nivel: "Evento", texto: "Pierde 4 partidos seguidos jugando de local." },
+  { id: "c-f2", caso: "El equipo", nivel: "Patrón", texto: "Desde hace 3 meses llega con la titular cambiada cada semana." },
+  { id: "c-f3", caso: "El equipo", nivel: "Estructura", texto: "El club no tiene plan de rotación ni banco de suplentes desarrollado." },
+  { id: "c-f4", caso: "El equipo", nivel: "Modelo mental", texto: "La directiva cree que “los titulares de siempre son los que ganan”." },
+];

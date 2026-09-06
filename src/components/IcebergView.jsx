@@ -10,6 +10,9 @@ import CamaraPresion from "./mecanicas/CamaraPresion.jsx";
 import RadarProfundidad from "./mecanicas/RadarProfundidad.jsx";
 import ExpedienteRescate from "./mecanicas/ExpedienteRescate.jsx";
 import ArquitectoProfundidades from "./mecanicas/ArquitectoProfundidades.jsx";
+import TribunalProfundidad from "./mecanicas/TribunalProfundidad.jsx";
+import TransmisionSuperficie from "./mecanicas/TransmisionSuperficie.jsx";
+import CorrienteCruzada from "./mecanicas/CorrienteCruzada.jsx";
 import { clasificacionDe, actividadesDeTipo, SUBJECTS, APRENDER, HACER } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
@@ -23,6 +26,9 @@ const CLAS_CAMARA = clasificacionDe(MATERIA, TEMA, "camara-presion");
 const CLAS_RADAR = clasificacionDe(MATERIA, TEMA, "radar-profundidad");
 const CLAS_RESCATE = clasificacionDe(MATERIA, TEMA, "expediente-rescate");
 const CLAS_ARQUITECTO = clasificacionDe(MATERIA, TEMA, "arquitecto-profundidades");
+const CLAS_TRIBUNAL = clasificacionDe(MATERIA, TEMA, "tribunal-profundidad");
+const CLAS_TRANSMISION = clasificacionDe(MATERIA, TEMA, "transmision-superficie");
+const CLAS_CORRIENTE = clasificacionDe(MATERIA, TEMA, "corriente-cruzada");
 
 /*
  * Tema "Modelo del Iceberg", reorganizado sobre la taxonomía de Bloom: cada
@@ -33,9 +39,17 @@ const CLAS_ARQUITECTO = clasificacionDe(MATERIA, TEMA, "arquitecto-profundidades
  *   Recordar    Cámara de presión — dar el término desde la definición
  *   Aplicar     Radar de profundidad — clasificar un caso nuevo con trampas
  *   Analizar    Expediente de rescate — el caso Blockbuster entero
+ *   Evaluar     Tribunal de profundidad — juzgar tres explicaciones que sirven
  *   Crear       Arquitecto de las profundidades — armar un iceberg desde cero
  *
- * Evaluar queda fuera a propósito, como candidata a una sexta.
+ * Bloom queda completo: Evaluar era el peldaño que faltaba. Y dos más que no son
+ * un peldaño nuevo, sino otra forma de subir los que ya están:
+ *
+ *   Transmisión a la superficie   Explicárselo a quien acaba de llegar. Lo que
+ *                                 mide no es entender: es saber decirlo.
+ *   Corriente cruzada             Los cuatro casos mezclados y nunca dos
+ *                                 seguidos del mismo. Sin contexto que sostenga,
+ *                                 solo queda la regla.
  */
 
 /* ---------------------------------- datos ---------------------------------- */
@@ -94,6 +108,9 @@ export default function IcebergView({ modo = null, onBack }) {
   const inicioRadar = useRef(Date.now());
   const inicioRescate = useRef(Date.now());
   const inicioArquitecto = useRef(Date.now());
+  const inicioTribunal = useRef(Date.now());
+  const inicioTransmision = useRef(Date.now());
+  const inicioCorriente = useRef(Date.now());
 
   const completarEvaluativa = async (clasificacion, actividadId, inicioRef, porcentajeAciertos) => {
     const resultado = await registrarActividadCompletada(clasificacion, {
@@ -262,7 +279,25 @@ export default function IcebergView({ modo = null, onBack }) {
         </>
         )}
 
-        {/* ------------- 4. Arquitecto de las profundidades · Crear ------------- */}
+        {/* -------------- 4. Tribunal de profundidad · Evaluar -------------- */}
+        {enNodo("tribunal-profundidad") && (
+        <>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+          <p style={{ ...sectionLabel, margin: 0 }}>EVALUAR</p>
+          <ActivityBadge tipo={CLAS_TRIBUNAL?.tipo} size="sm" />
+        </div>
+        <h2 style={h2}>Tribunal de profundidad</h2>
+        <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 20px" }}>
+          Aquí ninguna de las tres explicaciones es un disparate: las tres se sostienen. Lo que se pide no
+          es descartar la mala, es ordenarlas por cuánto explican, y decir con qué vara lo mediste.
+        </p>
+        <TribunalProfundidad
+          onCompletar={(pct) => completarEvaluativa(CLAS_TRIBUNAL, "tribunal-profundidad", inicioTribunal, pct)}
+        />
+        </>
+        )}
+
+        {/* ------------- 5. Arquitecto de las profundidades · Crear ------------- */}
         {enNodo("arquitecto-profundidades") && (
         <>
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
@@ -276,6 +311,43 @@ export default function IcebergView({ modo = null, onBack }) {
         </p>
         <ArquitectoProfundidades
           onCompletar={(pct) => completarEvaluativa(CLAS_ARQUITECTO, "arquitecto-profundidades", inicioArquitecto, pct)}
+        />
+        </>
+        )}
+
+        {/* --------- 6. Transmisión a la superficie · Efecto protégé --------- */}
+        {enNodo("transmision-superficie") && (
+        <>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+          <p style={{ ...sectionLabel, margin: 0 }}>ENSEÑAR</p>
+          <ActivityBadge tipo={CLAS_TRANSMISION?.tipo} size="sm" />
+        </div>
+        <h2 style={h2}>Transmisión a la superficie</h2>
+        <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 20px" }}>
+          Alguien baja por primera vez y hay que explicárselo. El canal aguanta cinco frases, y hay once
+          para elegir: unas son ciertas y no se entienden, otras se entienden y son falsas.
+        </p>
+        <TransmisionSuperficie
+          onCompletar={(pct) => completarEvaluativa(CLAS_TRANSMISION, "transmision-superficie", inicioTransmision, pct)}
+        />
+        </>
+        )}
+
+        {/* --------- 7. Corriente cruzada · Práctica intercalada --------- */}
+        {enNodo("corriente-cruzada") && (
+        <>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+          <p style={{ ...sectionLabel, margin: 0 }}>MEZCLAR</p>
+          <ActivityBadge tipo={CLAS_CORRIENTE?.tipo} size="sm" />
+        </div>
+        <h2 style={h2}>Corriente cruzada</h2>
+        <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 20px" }}>
+          Los cuatro casos del tema a la vez, y nunca dos frases seguidas del mismo. Vas a fallar más que
+          en el radar: allí el caso te sostenía entre una frase y la siguiente, y aquí no hay dónde
+          apoyarse salvo la regla.
+        </p>
+        <CorrienteCruzada
+          onCompletar={(pct) => completarEvaluativa(CLAS_CORRIENTE, "corriente-cruzada", inicioCorriente, pct)}
         />
         </>
         )}
