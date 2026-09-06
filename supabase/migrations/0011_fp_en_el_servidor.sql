@@ -1,5 +1,13 @@
 -- ---------------------------------------------------------------------------
--- 0011 — El FP se calcula en el servidor, y repetir ya no paga.
+-- 0011 — El FP se calcula en el servidor (mitad ADITIVA).
+--
+-- ESTA MIGRACIÓN NO CIERRA NADA TODAVÍA, y es a propósito: añade la función
+-- nueva al lado de la vieja, sin tocarla, para que el código que ya está en
+-- producción siga funcionando mientras se despliega el nuevo. La brecha se
+-- cierra en la 0012, que se corre DESPUÉS del despliegue.
+--
+-- Partirlo en dos es lo que evita la ventana sin FP: con las dos firmas vivas
+-- a la vez, cualquiera de los dos clientes funciona.
 --
 -- QUÉ ESTABA MAL. registrar_fp recibía el número de puntos ya hecho, en
 -- `p_fp`, y lo guardaba con un `greatest(p_fp, 0)` como todo control. El
@@ -96,17 +104,14 @@ $$;
 -- ---------------------------------------------------------------------------
 -- 3. registrar_fp, ahora calculando.
 --
--- La firma vieja se elimina, no se deja al lado: si siguiera existiendo, el
--- cliente podría seguir llamándola con su propio p_fp y todo esto no serviría
--- de nada.
+-- Convive con la vieja durante el despliegue. La vieja se elimina en la 0012,
+-- que es lo que de verdad cierra la brecha: mientras siga existiendo, el
+-- cliente podría llamarla con su propio p_fp.
 --
--- Pasa a ser security definer porque ahora es la ÚNICA vía de escritura: la
--- política que permitía insertar a mano se retira más abajo, así que la función
--- necesita permisos propios. El user_id sigue saliendo de auth.uid(), nunca de
--- un parámetro, así que nadie puede escribir en nombre de otro.
+-- Es security definer porque va a ser la única vía de escritura en cuanto la
+-- 0012 retire la política de insert directo. El user_id sigue saliendo de
+-- auth.uid(), nunca de un parámetro, así que nadie puede escribir por otro.
 -- ---------------------------------------------------------------------------
-drop function if exists public.registrar_fp(text, text, integer, text, text, integer, numeric, integer);
-
 create or replace function public.registrar_fp(
   p_activity_id text,
   p_duration_ms integer default null,
@@ -219,19 +224,6 @@ begin
   return v_fila;
 end;
 $$;
-
--- ---------------------------------------------------------------------------
--- 4. Se cierra la puerta de atrás.
---
--- Esta política dejaba a cualquier estudiante autenticado insertar filas de
--- historial a mano, con el FP que quisiera, sin pasar por la función. Cerrar
--- solo el cálculo y dejarla abierta no habría servido de nada.
---
--- La lectura del historial propio se mantiene: el perfil y las medallas la
--- necesitan, y leer lo suyo no permite falsear nada.
--- ---------------------------------------------------------------------------
-drop policy if exists "historial propio: registrar" on public.fp_history;
-revoke insert, update, delete on public.fp_history from authenticated;
 
 revoke all on function public.registrar_fp(text, integer, numeric) from public, anon;
 grant execute on function public.registrar_fp(text, integer, numeric) to authenticated;
