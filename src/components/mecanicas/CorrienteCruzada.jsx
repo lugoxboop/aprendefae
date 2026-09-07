@@ -90,17 +90,43 @@ export default function CorrienteCruzada({ onCompletar }) {
   const [redTocada, setRedTocada] = useState(null);
   const inicio = useRef(Date.now());
 
+  /*
+   * ═══════════ EL DETALLE POR ÍTEM ═══════════
+   *
+   * LA UNIDAD ES LA FRASE que cruza la corriente. Dieciséis, de cuatro casos
+   * intercalados, y de cada una interesa en qué red la echó.
+   *
+   * SIN PREFIJO: los dieciséis ids ya son únicos (c-t1 … c-f4) y la tanda es
+   * una sola. Comprobado en detalle-ids.test.mjs.
+   *
+   * Las tres formas de fila:
+   *   ok=true,  respuesta=null      la echó bien
+   *   ok=false, respuesta=<nivel>   la echó mal, y ahí está en qué red
+   *   ok=false, respuesta=null      se la llevó la corriente sin tocarla
+   *
+   * No hay reintento —la frase se cierra en el acto— así que `intentos` es
+   * siempre 1.
+   */
+  const detalle = useRef([]);
+
   const actual = tanda[i];
   const terminado = i >= tanda.length;
   const pct = Math.round((aciertos * 100) / tanda.length);
 
   useEffect(() => {
-    if (terminado) onCompletar?.(pct, Date.now() - inicio.current);
+    if (terminado) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
   }, [terminado]);
 
   /* Se resuelve la frase actual: `dado` es null cuando se la llevó la corriente. */
   const resolver = (dado) => {
     if (!actual) return;
+    detalle.current.push({
+      item: actual.id,
+      ok: dado === actual.nivel,
+      intentos: 1,
+      respuesta: dado === actual.nivel ? null : dado,
+      orden: detalle.current.length + 1,
+    });
     if (dado === actual.nivel) setAciertos((a) => a + 1);
     else setFallos((f) => [...f, { ...actual, dado }]);
     setI((n) => n + 1);
@@ -115,6 +141,7 @@ export default function CorrienteCruzada({ onCompletar }) {
   const reiniciar = () => {
     setTanda(mezclarCorriente(CORRIENTE));
     setI(0); setFallos([]); setAciertos(0);
+    detalle.current = [];
     inicio.current = Date.now();
   };
 
