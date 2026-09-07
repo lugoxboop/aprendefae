@@ -143,13 +143,14 @@ export default function IcebergView({ modo = null, onBack }) {
    * y su propia duración. Los puntos los pone el servidor: aquí no se
    * multiplica nada por cuatro.
    */
-  const completarDesafio = async (porcentajeAciertos, duracionMs) => {
+  const completarDesafio = async (porcentajeAciertos, duracionMs, detalle = null) => {
     const resultado = await registrarActividadCompletada(CLAS_ARCA, {
       materiaId: MATERIA,
       temaId: TEMA,
       actividadId: "proyecto-arca",
       porcentajeAciertos,
       duracionMs,
+      detalle,
     });
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
@@ -401,7 +402,7 @@ export default function IcebergView({ modo = null, onBack }) {
            * al abrir la página— así que la duración la manda él y no un ref de
            * esta vista, que estaría contando desde que se cargó el tema.
            */
-          onCompletar={(pct, duracionMs) => completarDesafio(pct, duracionMs)}
+          onCompletar={(pct, duracionMs, detalle) => completarDesafio(pct, duracionMs, detalle)}
         />
         </>
         )}

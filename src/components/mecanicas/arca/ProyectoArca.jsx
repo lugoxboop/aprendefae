@@ -50,6 +50,27 @@ export default function ProyectoArca({ onCompletar }) {
   const inicio = useRef(null);
   const yaAvisado = useRef(false);
 
+  /*
+   * ═══════════ EL DETALLE POR ÍTEM DEL DESAFÍO ═══════════
+   *
+   * Cada etapa emite sus propias filas con sus ids nativos, y aquí se les pone
+   * el prefijo `etN:`.
+   *
+   * HOY NO CHOCARÍAN SIN ÉL, y conviene decirlo en vez de inventar un motivo:
+   * las citas de la etapa 1 son e1..e8, las ranuras de la 2 son los nombres de
+   * nivel, la 3 emite par:* y la 4 un solo "momento". Ninguno coincide.
+   *
+   * El prefijo se queda por dos razones reales. Una, que son cuatro juegos
+   * distintos dentro de una sola actividad y sin él nada impide que añadir un
+   * ítem a una etapa colisione en silencio con otra —el fallo que ya apareció
+   * tres veces en este tema, y que nunca lanza un error—. Y dos, que con él la
+   * etapa se lee directamente en el panel sin tener que conocer el catálogo.
+   *
+   * Se guarda por índice de etapa y no acumulando, para que rehacer una etapa
+   * —si algún día se permite— reemplace sus filas en vez de duplicarlas.
+   */
+  const detallePorEtapa = useRef([null, null, null, null]);
+
   const hechas = resultados.filter((r) => typeof r === "number");
   const promedio = hechas.length ? hechas.reduce((s, r) => s + r, 0) / hechas.length : null;
   const agua = nivelDelAgua(hechas.length, promedio);
@@ -57,17 +78,20 @@ export default function ProyectoArca({ onCompletar }) {
 
   const empezar = () => {
     setResultados([null, null, null, null]);
+    detallePorEtapa.current = [null, null, null, null];
     yaAvisado.current = false;
     inicio.current = Date.now();
     setPaso(0);
   };
 
-  const guardar = (indice, pct) =>
+  const guardar = (indice, pct, filas = null) => {
+    detallePorEtapa.current[indice] = filas ?? [];
     setResultados((r) => {
       const copia = [...r];
       copia[indice] = pct;
       return copia;
     });
+  };
 
   const continuar = () => {
     if (paso < ETAPAS.length - 1) {
@@ -78,7 +102,16 @@ export default function ProyectoArca({ onCompletar }) {
     setPaso(ETAPAS.length);
     if (!yaAvisado.current) {
       yaAvisado.current = true;
-      onCompletar?.(puntuarDesafio(resultados).pct, Date.now() - (inicio.current ?? Date.now()));
+      /* Numeración corrida sobre las cuatro etapas: el orden en que jugó. */
+      let n = 0;
+      const filas = detallePorEtapa.current.flatMap((etapa, i) =>
+        (etapa ?? []).map((f) => ({ ...f, item: `et${i + 1}:${f.item}`, orden: ++n }))
+      );
+      onCompletar?.(
+        puntuarDesafio(resultados).pct,
+        Date.now() - (inicio.current ?? Date.now()),
+        filas
+      );
     }
   };
 
@@ -247,7 +280,7 @@ export default function ProyectoArca({ onCompletar }) {
         />
       </div>
 
-      <Etapa key={paso} onTerminar={(pct) => guardar(paso, pct)} />
+      <Etapa key={paso} onTerminar={(pct, filas) => guardar(paso, pct, filas)} />
 
       {hecha && (
         <button

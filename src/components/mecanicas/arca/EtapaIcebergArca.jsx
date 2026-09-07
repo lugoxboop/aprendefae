@@ -94,7 +94,25 @@ export default function EtapaIcebergArca({ onTerminar }) {
   const confirmar = () => {
     if (!lleno || confirmado) return;
     setConfirmado(true);
-    onTerminar?.(puntuarIceberg(colocadas));
+    /*
+     * La unidad es la RANURA del iceberg, y `respuesta` es la pieza que dejó
+     * en ella. Aquí no hay rebote: se colocan las cuatro y se confirma, así que
+     * `intentos` es 1 y lo que informa es QUÉ pieza eligió para cada nivel.
+     *
+     * `ok` solo con la pieza completa: una parcial puntúa 10 de 25 —el motor
+     * sí la premia a medias— pero como acierto no lo es.
+     */
+    const filas = NIVELES.map((nivel, k) => {
+      const p = colocadas[nivel];
+      return {
+        item: nivel,
+        ok: !!p && p.nivel === nivel && p.valor === "completa",
+        intentos: 1,
+        respuesta: p?.id ?? null,
+        orden: k + 1,
+      };
+    });
+    onTerminar?.(puntuarIceberg(colocadas), filas);
   };
 
   return (

@@ -151,7 +151,17 @@ export default function EtapaDiluvio({ onTerminar }) {
   const responder = (m) => {
     if (elegido) return;
     setElegido(m.id);
-    onTerminar?.(m.pct);
+    /*
+     * Una sola decisión, una sola fila: en qué momento del diluvio habría
+     * habido que actuar. `ok` solo con el momento del 100%.
+     */
+    onTerminar?.(m.pct, [{
+      item: "momento",
+      ok: m.pct === 100,
+      intentos: 1,
+      respuesta: m.id,
+      orden: 1,
+    }]);
     lanzarCierre();
   };
 

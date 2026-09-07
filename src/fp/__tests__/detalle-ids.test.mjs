@@ -26,6 +26,7 @@ import {
 import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
 import { QUIZZES } from "../../data/quizzes.js";
 import { parejasDe } from "../../utils/orden.js";
+import { CITAS_EXPEDIENTE, NIVELES, ORDEN_DECISIONES, MOMENTOS, BANCO_ARCA } from "../../data/arca.js";
 import {
   BLIPS_RADAR, ANILLOS, DEFINICIONES, OPCIONES_RESCATE,
   BANCO_ARQUITECTO, RANURAS, FRAGMENTOS_TRANSMISION, CORRIENTE,
@@ -274,6 +275,43 @@ unicos(
   parejasDe(ORDEN_TRIBUNAL).length + 1
 );
 unicos("tribunal-profundidad · criterios", CRITERIOS_TRIBUNAL.map((c) => c.id), CRITERIOS_TRIBUNAL.length);
+
+/* ── proyecto-arca ── cuatro etapas, prefijadas por etapa ── */
+/*
+ * EL PREFIJO NO ES OBLIGATORIO HOY —los ids de las cuatro etapas no coinciden
+ * entre sí— y este paso lo dice tal cual en vez de fingir un choque. Se queda
+ * porque son cuatro juegos dentro de una actividad: sin él, añadir un ítem a
+ * una etapa puede colisionar en silencio con otra, que es el fallo que ya
+ * apareció tres veces en este tema.
+ */
+{
+  const ids = [
+    ...CITAS_EXPEDIENTE.map((c) => `et1:${c.id}`),
+    ...NIVELES.map((n) => `et2:${n}`),
+    ...parejasDe(ORDEN_DECISIONES).map(([a, b]) => `et3:par:${a}-${b}`),
+    "et4:momento",
+  ];
+  unicos("proyecto-arca", ids, CITAS_EXPEDIENTE.length + NIVELES.length + parejasDe(ORDEN_DECISIONES).length + 1);
+
+  /* Y la comprobación de que el prefijo defiende algo de verdad. */
+  const sinPrefijo = [
+    ...CITAS_EXPEDIENTE.map((c) => c.id),
+    ...NIVELES,
+    ...parejasDe(ORDEN_DECISIONES).map(([a, b]) => `par:${a}-${b}`),
+    "momento",
+  ];
+  const choca = sinPrefijo.length !== new Set(sinPrefijo).size;
+  filas.push({
+    actividad: "proyecto-arca (sin prefijo)",
+    esperado: "hay choque, por eso lleva prefijo",
+    obtenido: choca ? "choca, como se documenta" : "no choca hoy, pero el prefijo se queda",
+    resultado: "PASA",
+  });
+}
+
+/* Los valores de `respuesta`: piezas de la etapa 2 y momentos de la 4. */
+unicos("proyecto-arca · piezas", BANCO_ARCA.map((p) => p.id), BANCO_ARCA.length);
+unicos("proyecto-arca · momentos", MOMENTOS.map((m) => m.id), MOMENTOS.length);
 
 console.table(filas);
 console.log(fallos === 0

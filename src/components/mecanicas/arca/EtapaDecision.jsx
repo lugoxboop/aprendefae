@@ -58,7 +58,22 @@ export default function EtapaDecision({ onTerminar }) {
   const decidir = () => {
     if (decidido) return;
     setDecidido(true);
-    onTerminar?.(puntuarOrden(lista, ORDEN_DECISIONES));
+    /*
+     * La unidad es la PAREJA, igual que en el Tribunal y por lo mismo: es lo
+     * que puntuarOrden mide. Cuatro decisiones dan seis parejas. El par se
+     * nombra en su orden canónico y `respuesta` guarda el orden en que quedó.
+     */
+    const filas = parejasDe(ORDEN_DECISIONES).map(([a, b], k) => {
+      const bien = lista.indexOf(a) < lista.indexOf(b);
+      return {
+        item: `par:${a}-${b}`,
+        ok: bien,
+        intentos: 1,
+        respuesta: bien ? null : `${b}-${a}`,
+        orden: k + 1,
+      };
+    });
+    onTerminar?.(puntuarOrden(lista, ORDEN_DECISIONES), filas);
   };
 
   return (

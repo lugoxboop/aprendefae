@@ -42,6 +42,16 @@ export default function EtapaExpediente({ onTerminar }) {
   const [elegida, setElegida] = useState(null);
   const [fallando, setFallando] = useState(null);
 
+  /*
+   * Detalle por ítem de esta etapa. La unidad es la CITA que hay que archivar.
+   * `respuesta` es el nivel donde la metió la primera vez que se equivocó.
+   * El prefijo de etapa lo pone ProyectoArca, que es quien sabe en qué etapa
+   * está: aquí solo se emiten los ids propios.
+   */
+  const detalle = useRef([]);
+  const intentosCita = useRef({});
+  const primerFallo = useRef({});
+
   const pendientes = orden.filter((c) => !archivadas[c.id]);
   const completa = pendientes.length === 0;
   const aciertos = CITAS_EXPEDIENTE.filter((c) => primerIntento[c.id]).length;
@@ -49,7 +59,17 @@ export default function EtapaExpediente({ onTerminar }) {
   const archivar = (nivel) => {
     if (!elegida) return;
     const cita = CITAS_EXPEDIENTE.find((c) => c.id === elegida);
+    const intentos = (intentosCita.current[cita.id] ?? 0) + 1;
+    intentosCita.current[cita.id] = intentos;
+
     if (cita.nivel === nivel) {
+      detalle.current.push({
+        item: cita.id,
+        ok: intentos === 1,
+        intentos,
+        respuesta: primerFallo.current[cita.id] ?? null,
+        orden: detalle.current.length + 1,
+      });
       const primeras = { ...primerIntento, [cita.id]: primerIntento[cita.id] !== false };
       const guardadas = { ...archivadas, [cita.id]: nivel };
       setPrimerIntento(primeras);
@@ -58,9 +78,10 @@ export default function EtapaExpediente({ onTerminar }) {
 
       if (Object.keys(guardadas).length === CITAS_EXPEDIENTE.length) {
         const bien = CITAS_EXPEDIENTE.filter((c) => primeras[c.id]).length;
-        onTerminar?.((bien * 100) / CITAS_EXPEDIENTE.length);
+        onTerminar?.((bien * 100) / CITAS_EXPEDIENTE.length, detalle.current);
       }
     } else {
+      if (!primerFallo.current[cita.id]) primerFallo.current[cita.id] = nivel;
       setPrimerIntento((p) => ({ ...p, [cita.id]: false }));
       setFallando(cita.id);
       setTimeout(() => setFallando(null), 400);
