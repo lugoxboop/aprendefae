@@ -21,6 +21,7 @@
  * actualizar esto, lo que falla es el otro extremo: el recuento total.
  */
 import { RONDAS_GANADORES } from "../../data/juegosPolitica2.js";
+import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
 
 let fallos = 0;
 const filas = [];
@@ -64,6 +65,41 @@ unicos(
     resultado: choca ? "PASA" : "FALLA",
   });
 }
+
+/* ── arma-grupo-logico ── una casilla por hueco, prefijada por caso ── */
+/*
+ * Solo se juega UN caso por partida, así que una partida emite 6 ids. Se
+ * comprueban los 12 posibles juntos porque el riesgo es justo ese: que la
+ * Meta del acero y la Meta de la inflación acaben en la misma fila.
+ */
+unicos(
+  "arma-grupo-logico",
+  CASOS_CADENA.flatMap((c) => CASILLAS.map((k) => `${c.id}:${k.id}`)),
+  CASOS_CADENA.length * CASILLAS.length
+);
+
+{
+  const sinPrefijo = CASOS_CADENA.flatMap(() => CASILLAS.map((k) => k.id));
+  const choca = sinPrefijo.length !== new Set(sinPrefijo).size;
+  if (!choca) fallos++;
+  filas.push({
+    actividad: "arma-grupo-logico (sin prefijo)",
+    esperado: "hay choque, por eso lleva prefijo",
+    obtenido: choca ? "choca, como se documenta" : "YA NO CHOCA: revisar el comentario",
+    resultado: choca ? "PASA" : "FALLA",
+  });
+}
+
+/*
+ * Y los enunciados, que sí vienen prefijados de origen (a-* e i-*): si alguien
+ * añadiera un caso nuevo reusando ids, `respuesta` mezclaría enunciados de
+ * casos distintos y nadie lo notaría.
+ */
+unicos(
+  "arma-grupo-logico · enunciados",
+  CASOS_CADENA.flatMap((c) => c.enunciados.map((e) => e.id)),
+  CASOS_CADENA.reduce((n, c) => n + c.enunciados.length, 0)
+);
 
 console.table(filas);
 console.log(fallos === 0

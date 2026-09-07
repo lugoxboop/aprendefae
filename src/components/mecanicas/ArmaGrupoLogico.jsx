@@ -78,6 +78,28 @@ export default function ArmaGrupoLogico({ onCompletar }) {
   const [senuelosSoltados, setSenuelosSoltados] = useState(0);
   const inicio = useRef(Date.now());
 
+  /*
+   * ═══════════ EL DETALLE POR ÍTEM ═══════════
+   *
+   * LA UNIDAD ES LA CASILLA, no el enunciado. El juego es llenar seis huecos:
+   * lo que hay que saber de cada uno es si lo acertó a la primera, cuántas
+   * veces lo intentó y —lo que vale— QUÉ puso mal antes de acertar.
+   *
+   * EL ID LLEVA EL CASO DELANTE. Las seis casillas se llaman igual en los dos
+   * casos, pero la Meta del acero y la Meta de la inflación son preguntas
+   * distintas con respuestas distintas. Sin el prefijo se sumarían en la misma
+   * fila —el mismo choque que `bonos` en "¿Quién gana, quién pierde?"— y el
+   * panel promediaría dos cosas que no se pueden promediar. Los enunciados sí
+   * vienen ya prefijados (a-* e i-*), así que ahí no hace falta tocar nada.
+   *
+   * `respuesta` guarda el PRIMER enunciado equivocado que soltó en esa casilla,
+   * que es su instinto real antes de ir descartando. Los señuelos se
+   * distinguen solos: sus ids llevan `-s`.
+   */
+  const detalle = useRef([]);
+  const intentosCasilla = useRef({});
+  const primerFallo = useRef({});
+
   const usados = new Set(Object.values(puestos).map((e) => e.id));
   const disponibles = banco.filter((e) => !usados.has(e.id));
   const aciertos = Object.keys(puestos).length;
@@ -87,7 +109,7 @@ export default function ArmaGrupoLogico({ onCompletar }) {
   const pct = Math.round(Math.min(100, Math.max(0, (bruto / CASILLAS.length) * 100)));
 
   useEffect(() => {
-    if (completa) onCompletar?.(pct, Date.now() - inicio.current);
+    if (completa) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
   }, [completa]);
 
   const soltar = (casillaId) => {
@@ -99,13 +121,25 @@ export default function ArmaGrupoLogico({ onCompletar }) {
     const r = retroCadena(enunciado, casillaId, caso.tema);
     setAviso(r);
 
+    const intentos = (intentosCasilla.current[casillaId] ?? 0) + 1;
+    intentosCasilla.current[casillaId] = intentos;
+
     if (r.ok) {
+      /* La casilla queda cerrada: se registra con todo lo que costó llenarla. */
+      detalle.current.push({
+        item: `${caso.id}:${casillaId}`,
+        ok: intentos === 1,
+        intentos,
+        respuesta: primerFallo.current[casillaId] ?? null,
+        orden: detalle.current.length + 1,
+      });
       setPuestos((p) => ({ ...p, [casillaId]: enunciado }));
       setElegido(null);
       return;
     }
 
     /* Falla: el naipe vuelve al banco. Los señuelos además cuestan. */
+    if (!primerFallo.current[casillaId]) primerFallo.current[casillaId] = enunciado.id;
     if (r.senuelo) setSenuelosSoltados((n) => n + 1);
     setRechazado(enunciado.id);
     setTimeout(() => setRechazado(null), 420);
@@ -121,6 +155,9 @@ export default function ArmaGrupoLogico({ onCompletar }) {
     setCaso(otro);
     setBanco(barajar(otro.enunciados));
     setPuestos({}); setElegido(null); setAviso(null); setSenuelosSoltados(0);
+    detalle.current = [];
+    intentosCasilla.current = {};
+    primerFallo.current = {};
     inicio.current = Date.now();
   };
 

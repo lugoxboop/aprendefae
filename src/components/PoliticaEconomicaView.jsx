@@ -232,7 +232,7 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
           son de cadenas distintas: por posición no se distinguen, hay que leerlos.
         </p>
         <ArmaGrupoLogico
-          onCompletar={(pct, ms) => completarJuego(CLAS_GRUPO, "arma-grupo-logico", pct, ms)}
+          onCompletar={(pct, ms, detalle) => completarJuego(CLAS_GRUPO, "arma-grupo-logico", pct, ms, detalle)}
         />
         </>
         )}
