@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect, lazy, Suspense } from "react";
+import { useState, useRef, useEffect, useCallback, lazy, Suspense } from "react";
 import { COLORS, FAE } from "./theme.js";
 import { NavigationContext } from "./navigation.js";
+import { useRuta } from "./ruta.js";
 import { useAuth } from "./auth/AuthProvider.jsx";
 import { APRENDER, clasificacionDe } from "./data/subjects.js";
 import { registrarActividadCompletada } from "./fp/registrarActividad.js";
@@ -75,20 +76,32 @@ export default function App() {
    * estudiante, y hoy sí la tiene.
    */
   const { pedirCuenta, perfil } = useAuth();
-  const [view, setView] = useState("home");
+  /*
+   * ═══════════ LA VISTA VIVE EN LA URL, NO EN ESTADO SUELTO ═══════════
+   *
+   * Antes era un useState y recargar devolvía a la portada desde cualquier
+   * punto, con el botón atrás sacando del sitio porque no había ni una entrada
+   * de historial que retroceder. Ahora la URL manda: recargar deja donde
+   * estabas y atrás retrocede un paso.
+   *
+   * setView sigue existiendo con el mismo nombre y la misma forma —una función
+   * de un argumento— para no tocar las veintitantas llamadas repartidas por el
+   * archivo. Lo que cambia es lo que hace por dentro.
+   */
+  const [ruta, navegar] = useRuta();
+  const view = ruta.vista;
+  const setView = useCallback((vista) => navegar(vista, null), [navegar]);
+
   const [prevView, setPrevView] = useState("dashboard");
   /*
    * Con qué mitad del tema se entró: "aprender", "hacer", o null cuando el tema
    * no tiene las dos y se entra directo. Lo elige la tarjeta partida del índice
    * y lo consume la vista del tema para filtrar sus mecánicas.
    */
-  const [modoTema, setModoTema] = useState(null);
+  const modoTema = ruta.modo;
 
   /* Entrar a un tema, con o sin mitad elegida. */
-  const abrirTema = (topicId, modo = null) => {
-    setModoTema(modo);
-    setView(topicId);
-  };
+  const abrirTema = (topicId, modo = null) => navegar(topicId, modo);
 
   const [consumoState, setConsumoState] = useState({ Y: 5000000, TR: 500000, t: 0.06, c: 0.6 });
   const [inversionState, setInversionState] = useState({ Ibar: 2000000, b: 50000, i: 10 });
