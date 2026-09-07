@@ -236,6 +236,24 @@ export default function FilaEstudiante({
             <span style={{ display: "block", marginTop: "2px", fontSize: "12px", color: "rgba(248,249,250,0.5)" }}>
               {e.full_name ? `${e.nickname} · ` : ""}
               {temas.filter((t) => t.hechas > 0).length} de {temas.length} temas iniciados
+              {/*
+                * Apagado a propósito: informa de por qué esta fila no suma en
+                * los promedios, sin competir con el nombre ni con las alertas.
+                * Va en texto y no solo en un tono, como todo lo demás.
+                */}
+              {e.es_prueba && (
+                <span
+                  style={{
+                    marginLeft: "8px", padding: "1px 7px", borderRadius: "999px",
+                    background: "rgba(248,249,250,0.06)",
+                    border: "1px solid rgba(248,249,250,0.16)",
+                    color: "rgba(248,249,250,0.45)",
+                    fontSize: "10.5px", letterSpacing: "0.03em", whiteSpace: "nowrap",
+                  }}
+                >
+                  cuenta de prueba · fuera de los promedios
+                </span>
+              )}
             </span>
           </span>
 

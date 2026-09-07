@@ -121,13 +121,27 @@ select 2, 'panel_estudiantes tiene exactamente UNA firma', '1',
 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
 where n.nspname = 'public' and p.proname = 'panel_estudiantes';
 
--- ── 3. Y devuelve 19 columnas: las 16 de siempre más las 3 nuevas ───────────
+-- ── 3. Y devuelve las tres columnas nuevas, POR NOMBRE ──────────────────────
+/*
+ * POR NOMBRE Y NO POR RECUENTO. Esto decía "devuelve 19 columnas" y contaba
+ * cardinality(proallargtypes). Funcionaba, pero se rompía con la migración
+ * siguiente que añadiera una columna —la 0020 la deja en 20— y habría fallado
+ * por el motivo equivocado: no porque la 0019 estuviera mal, sino porque el
+ * mundo siguió. Un test que falla cuando no debe entrena a ignorarlo.
+ *
+ * SI FALLARA DE VERDAD: perder cualquiera de las tres columnas de la ventana
+ * de 14 días, o renombrarla, deja este paso en rojo. Añadir columnas nuevas
+ * no lo toca, que es lo correcto.
+ */
 insert into res
-select 3, 'panel_estudiantes devuelve 19 columnas', '19',
-  coalesce((select (cardinality(p.proallargtypes) - 1)::text
+select 3, 'panel_estudiantes trae las 3 columnas de la ventana', 'las 3',
+  coalesce((select array_to_string(array(
+              select x from unnest(p.proargnames) as x
+               where x in ('pct_evaluativa_14d','n_evaluativas_14d','dias_activos_14d')
+             ), ', ')
               from pg_proc p join pg_namespace n on n.oid = p.pronamespace
              where n.nspname = 'public' and p.proname = 'panel_estudiantes'), 'NO HAY'),
-  (select cardinality(p.proallargtypes) - 1 = 19
+  (select array['pct_evaluativa_14d','n_evaluativas_14d','dias_activos_14d'] <@ p.proargnames
      from pg_proc p join pg_namespace n on n.oid = p.pronamespace
     where n.nspname = 'public' and p.proname = 'panel_estudiantes');
 

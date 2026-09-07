@@ -80,8 +80,30 @@ export default function PanelDocente({ onBack }) {
   }, [materia]);
 
   const grupo = useMemo(() => estudiantes.filter((e) => e.en_mi_grupo), [estudiantes]);
-  /* Sin grupo armado todavía, el panel habla de todos: es mejor que no hablar. */
-  const cohorte = grupo.length > 0 ? grupo : estudiantes;
+
+  /*
+   * ═══════════ LA COHORTE: DE QUIÉN HABLAN TODAS LAS MÉTRICAS ═══════════
+   *
+   * Sin grupo armado todavía, el panel habla de todos: es mejor que no hablar.
+   *
+   * Y SIN LAS CUENTAS DE PRUEBA. Esta es la ÚNICA línea del cliente donde se
+   * filtran, y por eso está aquí y no repartida: de `cohorte` cuelgan el
+   * resumen del periodo, las alertas, Destacados, el avance por tema, las
+   * posiciones y el CSV. Filtrar en cada uno significaría que el próximo que
+   * se añada tiene que acordarse, y el primero que se olvide contamina los
+   * promedios sin que nada falle.
+   *
+   * Las que agrega el SERVIDOR —panel_resumen y panel_tendencia— las excluyen
+   * en su propio SQL. panel_estudiantes no: es un censo, una fila por persona,
+   * y esa fila se queda para que la marca se pueda auditar desde la interfaz.
+   * De ahí que `estudiantes` las contenga y `cohorte` no.
+   */
+  const cohorte = useMemo(() => {
+    const base = grupo.length > 0 ? grupo : estudiantes;
+    return base.filter((e) => !e.es_prueba);
+  }, [grupo, estudiantes]);
+
+  const nPrueba = useMemo(() => estudiantes.filter((e) => e.es_prueba).length, [estudiantes]);
   const alertas = useMemo(() => alertasDelGrupo(cohorte), [cohorte]);
 
   const visibles = useMemo(() => {
@@ -226,8 +248,23 @@ export default function PanelDocente({ onBack }) {
 
       <p style={{ fontSize: "13.5px", color: "rgba(248,249,250,0.55)", margin: "0 0 24px" }}>
         {grupo.length > 0
-          ? `Métricas y alertas sobre tu grupo: ${grupo.length} de ${estudiantes.length} activos en la materia.`
+          ? `Métricas y alertas sobre tu grupo: ${cohorte.length} de ${estudiantes.length} activos en la materia.`
           : `Todavía sin grupo armado — se muestran los ${estudiantes.length} estudiantes activos en la materia.`}
+        {nPrueba > 0 && (
+          /*
+           * Se dice en voz alta y no se deja adivinar: un docente que ve una
+           * fila más de las que suman los promedios tiene que poder leer por
+           * qué sin abrir nada.
+           */
+          <>
+            {" "}
+            <span style={{ color: "rgba(248,249,250,0.42)" }}>
+              {nPrueba === 1
+                ? "Hay 1 cuenta de prueba en la lista; no entra en promedios, alertas ni destacados."
+                : `Hay ${nPrueba} cuentas de prueba en la lista; no entran en promedios, alertas ni destacados.`}
+            </span>
+          </>
+        )}
       </p>
 
       {cargando ? (
@@ -247,7 +284,7 @@ export default function PanelDocente({ onBack }) {
       ) : (
         <>
           <CabeceraResumen
-            estudiantes={estudiantes}
+            estudiantes={cohorte}
             alertas={alertas}
             resumen={resumenVisita}
             temaDe={(actividadId) => {
