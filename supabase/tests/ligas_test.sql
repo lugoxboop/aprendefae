@@ -162,19 +162,41 @@ from (
 
 -- ---------------------------------------------------------------------------
 -- 7. Empate en el borde del ascenso: se mueven todos los empatados
+--
+-- HAY QUE VOLVER A SEMBRAR. La versión anterior de este paso creaba el empate
+-- DESPUÉS de `ligas_sembrar` y luego comprobaba que 17 y 18 estaban juntos en
+-- la liga 2 *antes* del cierre — es decir, comprobaba su propio montaje. No
+-- podía fallar nunca, ni siquiera si el cierre resolviera mal los empates, y
+-- `ligas_sembrar` vuelve sin hacer nada si el ciclo ya está sembrado.
+--
+-- QUÉ SE PRUEBA. Con 17 y 18 empatados en 80, la liga 2 queda 100, 90, 80, 80:
+-- rank() da el puesto 3 a los dos, y el cierre los sube a los dos. Con
+-- row_number() en vez de rank(), subiría uno solo.
+--
+-- SI FALLARA DE VERDAD: cambiar rank() por row_number() en ligas_sembrar deja
+-- a 17 en la liga 2 y este paso cuenta 1 en vez de 2 → FALLA.
+--
+-- El resembrado no altera nada de lo ya medido: los pasos 4, 5 y 6 ya
+-- escribieron su fila, y el estudiante 1 —el de la sesión del paso 8— sigue en
+-- la misma liga 3 con los mismos compañeros.
 -- ---------------------------------------------------------------------------
 update public.fp_history
    set fp_awarded = 80
  where subject_id = 'zzz-prueba-ligas'
    and user_id in (select uid from ids where n in (17, 18));
 
+delete from public.liga_membresia
+ where subject_id = 'zzz-prueba-ligas' and ciclo = public.ciclo_actual();
+
+select public.ligas_sembrar('zzz-prueba-ligas');
+
 insert into resultado_prueba
-select 7, 'Empate en el 3.º puesto: se mueven los dos empatados',
-  case when (
-    select count(*) from public.liga_membresia m join ids i on i.uid = m.user_id
-     where m.ciclo = public.ciclo_actual() - 7 and i.n in (17, 18) and m.liga = 2
-  ) = 2 then 'PASA' else 'FALLA' end,
-  'los empatados 17 y 18 estaban juntos en la liga 2 antes del cierre';
+select 7, 'Empate en el 3.º puesto: suben LOS DOS empatados',
+  case when count(*) = 2 then 'PASA' else 'FALLA' end,
+  'empatados en 80 que subieron a la liga 1: ' ||
+  coalesce(string_agg(i.n::text, ', ' order by i.n), 'ninguno') || ' (esperados 17 y 18)'
+from public.liga_membresia m join ids i on i.uid = m.user_id
+where m.ciclo = public.ciclo_actual() and i.n in (17, 18) and m.liga = 1;
 
 -- ---------------------------------------------------------------------------
 -- 8. El tablero: corte del podio y qué se devuelve

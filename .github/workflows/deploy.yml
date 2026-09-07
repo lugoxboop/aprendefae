@@ -145,3 +145,104 @@ jobs:
             **/.git*/**
             **/node_modules/**
             **/.DS_Store
+
+      # ═══════════════════════════════════════════════════════════════════════
+      # SONDA DE POSTDESPLIEGUE — que registrar_fp resuelva a UNA sola firma
+      #
+      # POR QUÉ EXISTE. La 0017 creó registrar_fp(text,integer,numeric,jsonb) y
+      # no retiró la de (text,integer,numeric). Con las dos vivas, la llamada de
+      # tres argumentos que hacen seis de las siete actividades coincidía con
+      # ambas —p_detalle tiene default— y PostgREST devolvía PGRST203 sin
+      # ejecutar nada. Los estudiantes veían su porcentaje y no recibían FP.
+      #
+      # Nada falló: ni el build, ni el despliegue, ni el sitio. Se descubrió
+      # porque alguien lo notó jugando. Esta sonda existe para que la próxima
+      # vez lo note la ejecución y no un estudiante.
+      #
+      # Y LOS PARÁMETROS CON NOMBRE NO SALVAN DE ESTO. Se comprobó contra la API
+      # real: mandando los tres nombres, PGRST203 igual.
+      #
+      # QUÉ MIRA. Que cada forma de llamada resuelva a exactamente una función.
+      # No mira el resultado: mira que PostgREST llegue a intentar ejecutarla.
+      #   · PGRST203 -> hay dos firmas vivas. Es el incidente. Rojo.
+      #   · PGRST202 -> no encuentra la función con esos nombres. También rojo:
+      #                 una migración se revirtió o se renombró un parámetro, y
+      #                 el cliente lleva llamando al vacío.
+      #   · 42501    -> resolvió una sola y paró en el permiso. Es lo correcto.
+      #
+      # NO PUEDE ESCRIBIR NADA. Va sin Authorization, así que el rol es "anon",
+      # que no tiene execute sobre la función. Y aunque lo tuviera, auth.uid()
+      # es null y registrar_fp lanza 'Se requiere sesión' antes de tocar una
+      # tabla. Dos barreras, y ninguna depende de esta sonda.
+      #
+      # VA DESPUÉS DE LA SUBIDA A PROPÓSITO. Una base rota no es motivo para no
+      # publicar el frontend: la versión anterior tampoco funcionaría. Lo que
+      # hace falta es que la ejecución quede en rojo y se vea.
+      #
+      # CUÁNDO CORRERLA A MANO. Después de aplicar una migración que toque una
+      # función: Actions -> Desplegar a producción -> Run workflow. Ese es
+      # exactamente el momento en que se rompió, y el único que no cubría nada.
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: Sonda — registrar_fp resuelve a una sola firma
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          probar() {
+            etiqueta="$1"
+            cuerpo="$2"
+
+            # Un solo reintento, y solo por PGRST202: tras una migración,
+            # PostgREST puede tardar unos segundos en recargar su caché de
+            # esquema. Sin esto la sonda daría falsas alarmas legítimas.
+            for intento in 1 2; do
+              respuesta=$(curl -sS --max-time 20 -w '\n%{http_code}' \
+                -X POST "$VITE_SUPABASE_URL/rest/v1/rpc/registrar_fp" \
+                -H "apikey: $VITE_SUPABASE_ANON_KEY" \
+                -H "Content-Type: application/json" \
+                -d "$cuerpo")
+              codigo=$(printf '%s' "$respuesta" | tail -n1)
+              respuesta=$(printf '%s' "$respuesta" | sed '$d')
+
+              case "$respuesta" in
+                *PGRST203*)
+                  echo "ROJO  $etiqueta"
+                  echo "      HAY DOS FIRMAS VIVAS de registrar_fp. HTTP $codigo"
+                  echo "      $respuesta"
+                  echo "      Las actividades que llaman así NO están pagando FP."
+                  echo "      Arreglo: retirar la sobrante con drop function."
+                  return 1
+                  ;;
+                *PGRST202*)
+                  if [ "$intento" = "1" ]; then
+                    echo "      $etiqueta: no la encuentra. Puede ser la caché de"
+                    echo "      esquema tras una migración. Reintento en 15 s."
+                    sleep 15
+                    continue
+                  fi
+                  echo "ROJO  $etiqueta"
+                  echo "      PostgREST NO ENCUENTRA registrar_fp con esos nombres"
+                  echo "      de parámetro, dos veces seguidas. HTTP $codigo"
+                  echo "      $respuesta"
+                  echo "      El cliente llama al vacío: nadie recibe FP."
+                  return 1
+                  ;;
+                *)
+                  echo "OK    $etiqueta — resuelve a una sola función (HTTP $codigo)"
+                  return 0
+                  ;;
+              esac
+            done
+          }
+
+          fallo=0
+          probar "llamada de 3 argumentos (seis actividades)" \
+            '{"p_activity_id":"diagnostico-en-vivo","p_duration_ms":120000,"p_correct_pct":100}' || fallo=1
+          probar "llamada de 4 argumentos (la que manda detalle)" \
+            '{"p_activity_id":"diagnostico-en-vivo","p_duration_ms":120000,"p_correct_pct":100,"p_detalle":[]}' || fallo=1
+
+          if [ "$fallo" = "0" ]; then
+            echo ""
+            echo "Las dos formas de llamada resuelven. El motor de FP puede ejecutarse."
+          fi
+          exit $fallo

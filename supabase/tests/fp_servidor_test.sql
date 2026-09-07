@@ -50,7 +50,14 @@ from pg_proc p
 join pg_namespace n on n.oid = p.pronamespace
 where n.nspname = 'public'
   and p.proname = 'registrar_fp'
-  and pg_get_function_identity_arguments(p.oid) like '%integer, text, text%';
+  /*
+   * POR NÚMERO DE ARGUMENTOS. Antes esto era un like sobre
+   * identity_arguments buscando '%integer, text, text%', y NO PODÍA COINCIDIR
+   * NUNCA: esa función devuelve los nombres intercalados —"p_fp integer,
+   * p_difficulty text, p_modality text"— así que el chequeo daba verde
+   * existiera o no la firma vieja.
+   */
+  and p.pronargs = 8;
 
 -- ── 2. No se puede insertar en el historial a mano ─────────────────────────
 set local role authenticated;

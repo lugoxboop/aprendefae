@@ -52,17 +52,35 @@ select set_config('request.jwt.claims',
                   json_build_object('sub', (select uid from ids), 'role', 'authenticated')::text,
                   true);
 
--- ── 1. La columna existe y su defecto es false ─────────────────────────────
+-- ── 1. La columna existe, es boolean, y su defecto es de verdad false ─────
+-- SE INSERTA UNA FILA SIN NOMBRAR `retirada` y se mira cómo sale. La versión
+-- anterior de este paso decía "con default false" y solo comprobaba
+-- data_type = 'boolean': el default aparecía en la columna que se muestra,
+-- nunca en la condición. Con un `default true` habría dado OK igual.
+--
+-- SI FALLARA DE VERDAD: con el default en true, la fila zzz saldría retirada y
+-- este paso daría FALLA. Sin la columna, el insert reventaría antes. Se prueba
+-- el comportamiento y no la cadena del catálogo, que además cambia de forma
+-- entre versiones de Postgres.
+insert into public.actividad_catalogo
+  (activity_id, subject_id, topic_id, modalidad, dificultad, fp_base) values
+  ('zzz-default-retirada', 'zzz-materia', 'zzz-tema', 'evaluativa', 'facil', 10);
+
 insert into res
-select 1, 'la columna retirada existe con default false', 'boolean/false',
-  coalesce((select data_type || '/' ||
-                   case when column_default like '%false%' then 'false' else coalesce(column_default, 'sin default') end
-              from information_schema.columns
-             where table_schema = 'public' and table_name = 'actividad_catalogo'
-               and column_name = 'retirada'), 'NO EXISTE'),
-  exists (select 1 from information_schema.columns
-           where table_schema = 'public' and table_name = 'actividad_catalogo'
-             and column_name = 'retirada' and data_type = 'boolean');
+select 1, 'retirada es boolean y una fila nueva nace en false', 'boolean/false',
+  coalesce((select c.data_type || '/' ||
+                   (select case when a.retirada then 'true' else 'false' end
+                      from public.actividad_catalogo a
+                     where a.activity_id = 'zzz-default-retirada')
+              from information_schema.columns c
+             where c.table_schema = 'public' and c.table_name = 'actividad_catalogo'
+               and c.column_name = 'retirada'), 'NO EXISTE'),
+  (select c.data_type = 'boolean' and c.is_nullable = 'NO'
+     from information_schema.columns c
+    where c.table_schema = 'public' and c.table_name = 'actividad_catalogo'
+      and c.column_name = 'retirada')
+  and (select not retirada from public.actividad_catalogo
+        where activity_id = 'zzz-default-retirada');
 
 -- ── 2. Solo el dashboard quedó retirado ────────────────────────────────────
 -- Si el default no hubiera aplicado, aquí saldría más de una.

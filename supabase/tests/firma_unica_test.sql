@@ -45,9 +45,23 @@ from pg_proc p
 join pg_namespace n on n.oid = p.pronamespace
 where n.nspname = 'public' and p.proname = 'registrar_fp';
 
--- ── 2. Y es la de cuatro argumentos ───────────────────────────────────────
+-- ── 2. Y es la de cuatro, comprobada por TIPOS ────────────────────────────
+-- SE COMPARAN LOS TIPOS, NO EL TEXTO DE LA FIRMA. La versión anterior de este
+-- paso comparaba pg_get_function_identity_arguments contra la cadena
+-- 'text, integer, numeric, jsonb' y fallaba SIEMPRE, con la base correcta:
+-- esa función INCLUYE los nombres de parámetro, así que devuelve
+-- "p_activity_id text, p_duration_ms integer, …". Comparaba peras con manzanas.
+--
+-- Los subíndices de proargtypes son 0-based y devuelven null fuera de rango,
+-- así que con menos de cuatro argumentos esto da false, no un error.
+--
+-- SI FALLARA DE VERDAD: con la firma de tres viva y la de cuatro no, pronargs
+-- sería 3 y el exists daría false. Con un quinto parámetro añadido, pronargs
+-- sería 5 y también. Con jsonb cambiado por text, el cuarto format_type no
+-- coincidiría. En los tres casos, FALLA. Se muestra la firma completa con
+-- nombres en 'obtenido' porque para leer el resultado sí es lo más útil.
 insert into res
-select 2, 'la firma viva es la de cuatro, con jsonb al final',
+select 2, 'la firma viva recibe (text, integer, numeric, jsonb)',
   'text, integer, numeric, jsonb',
   coalesce((select pg_get_function_identity_arguments(p.oid)
               from pg_proc p join pg_namespace n on n.oid = p.pronamespace
@@ -55,7 +69,11 @@ select 2, 'la firma viva es la de cuatro, con jsonb al final',
   exists (
     select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
      where n.nspname = 'public' and p.proname = 'registrar_fp'
-       and pg_get_function_identity_arguments(p.oid) = 'text, integer, numeric, jsonb'
+       and p.pronargs = 4
+       and format_type(p.proargtypes[0], null::integer) = 'text'
+       and format_type(p.proargtypes[1], null::integer) = 'integer'
+       and format_type(p.proargtypes[2], null::integer) = 'numeric'
+       and format_type(p.proargtypes[3], null::integer) = 'jsonb'
   );
 
 -- ── 3. La llamada de TRES argumentos resuelve y paga ──────────────────────
@@ -100,13 +118,17 @@ insert into res select 5, 'la llamada de 4 argumentos paga y escribe sus 2 filas
     where h.user_id = (select uid from ids) and h.activity_id = 'arma-grupo-logico');
 
 -- ── 6. La firma de ocho que retiró la 0012 sigue sin volver ───────────────
+-- POR NÚMERO DE ARGUMENTOS, no por un like sobre el texto de la firma. El
+-- patrón anterior —like '%integer, text, text%'— NO PODÍA COINCIDIR NUNCA:
+-- identity_arguments intercala los nombres, así que la firma vieja se lee
+-- "p_fp integer, p_difficulty text, p_modality text" y esa subcadena no está.
+-- El paso daba verde tanto si la función existía como si no.
 insert into res
 select 6, 'la firma vieja de 8 argumentos sigue retirada', '0',
   count(*)::text, count(*) = 0
 from pg_proc p
 join pg_namespace n on n.oid = p.pronamespace
-where n.nspname = 'public' and p.proname = 'registrar_fp'
-  and pg_get_function_identity_arguments(p.oid) like '%integer, text, text%';
+where n.nspname = 'public' and p.proname = 'registrar_fp' and p.pronargs = 8;
 
 -- ── 7. Ninguna otra función del esquema quedó duplicada ───────────────────
 -- El mismo error puede repetirse con cualquier otra: se comprueban todas.
