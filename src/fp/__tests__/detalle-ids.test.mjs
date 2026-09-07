@@ -26,6 +26,7 @@ import {
 import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
 import { QUIZZES } from "../../data/quizzes.js";
 import { parejasDe } from "../../utils/orden.js";
+import { REFERENCIA, clave } from "../../components/mecanicas/MapaCausal.jsx";
 import { CITAS_EXPEDIENTE, NIVELES, ORDEN_DECISIONES, MOMENTOS, BANCO_ARCA } from "../../data/arca.js";
 import {
   BLIPS_RADAR, ANILLOS, DEFINICIONES, OPCIONES_RESCATE,
@@ -312,6 +313,19 @@ unicos("tribunal-profundidad · criterios", CRITERIOS_TRIBUNAL.map((c) => c.id),
 /* Los valores de `respuesta`: piezas de la etapa 2 y momentos de la 4. */
 unicos("proyecto-arca · piezas", BANCO_ARCA.map((p) => p.id), BANCO_ARCA.length);
 unicos("proyecto-arca · momentos", MOMENTOS.map((m) => m.id), MOMENTOS.length);
+
+/* ── constructor-mapa-causal ── la flecha, en dos clases ── */
+/*
+ * Doce ids fijos `ref:*` —las flechas del mapa de referencia— más los
+ * `extra:*` que dependen de lo que invente cada estudiante. El prefijo separa
+ * las dos clases: sin él, una flecha inventada que algún día entrara en la
+ * referencia se sumaría con su propia versión anterior.
+ */
+unicos(
+  "constructor-mapa-causal",
+  REFERENCIA.map((c) => `ref:${clave(c.de, c.a)}`),
+  REFERENCIA.length
+);
 
 console.table(filas);
 console.log(fallos === 0

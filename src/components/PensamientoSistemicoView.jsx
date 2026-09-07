@@ -190,13 +190,14 @@ export default function PensamientoSistemicoView({ modo = null, onBack }) {
   /* Reloj del mapa causal, para la defensa de tiempo del motor de FP. */
   const inicioMapa = useRef(Date.now());
 
-  const completarMapa = async (porcentajeAciertos) => {
+  const completarMapa = async (porcentajeAciertos, detalle = null) => {
     const resultado = await registrarActividadCompletada(CLAS_MAPA, {
       materiaId: MATERIA,
       temaId: TEMA,
       actividadId: "constructor-mapa-causal",
       porcentajeAciertos,
       duracionMs: Date.now() - inicioMapa.current,
+      detalle,
     });
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
@@ -528,7 +529,7 @@ export default function PensamientoSistemicoView({ modo = null, onBack }) {
           sistema. Tienes una sola verificación.
         </p>
 
-        <MapaCausal onCompletar={completarMapa} />
+        <MapaCausal onCompletar={(pct, detalle) => completarMapa(pct, detalle)} />
         </>
         )}
         </>

@@ -43,7 +43,7 @@ const SENUELOS = new Set(["D1", "D2"]);
 const LOOP = { de: "N10", a: "N1" };
 
 /* Mapa de referencia. El cierre del loop va aparte por su peso pedagógico. */
-const REFERENCIA = [
+export const REFERENCIA = [
   { de: "N0", a: "N1" },
   { de: "N0", a: "N2" },
   { de: "N1", a: "N3" },
@@ -58,7 +58,7 @@ const REFERENCIA = [
   LOOP,
 ];
 
-const clave = (de, a) => `${de}->${a}`;
+export const clave = (de, a) => `${de}->${a}`;
 const REFERENCIA_SET = new Set(REFERENCIA.map((c) => clave(c.de, c.a)));
 const esLoop = (c) => c.de === LOOP.de && c.a === LOOP.a;
 
@@ -197,7 +197,50 @@ export default function MapaCausal({ onCompletar }) {
 
     setResultado({ evaluadas, faltantes, bruto, porcentaje });
     setSeleccion(null);
-    onCompletar?.(porcentaje);
+
+    /*
+     * ═══════════ EL DETALLE POR ÍTEM ═══════════
+     *
+     * DOS CLASES DE FILA, porque aquí hay dos preguntas distintas y las dos
+     * importan: qué flecha del mapa de referencia NO trazó, y qué flechas se
+     * inventó. Una sola clase perdería la mitad del diagnóstico.
+     *
+     *   ref:<de>-><a>    las doce del mapa de referencia. Ids FIJOS, así que el
+     *                    panel puede agregar por flecha entre estudiantes.
+     *                    ok = la trazó. Si no la trazó sale ok=false con
+     *                    respuesta null, que es exactamente la forma de "no
+     *                    contestó": no es que se equivocara, es que no la vio.
+     *
+     *   extra:<de>-><a>  las que trazó y no están en la referencia. Ids
+     *                    variables por definición —dependen de lo que invente
+     *                    cada uno— y `respuesta` guarda de qué CLASE de error
+     *                    fue: senuelo (tocó un nodo de fuera del sistema),
+     *                    invertida (la flecha correcta al revés) o sin-relacion.
+     *                    Esa clase es lo que un docente puede llevar a clase.
+     *
+     * El prefijo separa las dos clases: sin él, una flecha inventada que algún
+     * día entrara en la referencia se sumaría con su propia versión anterior.
+     */
+    const trazadas = new Map(evaluadas.map((c) => [clave(c.de, c.a), c]));
+    const filas = REFERENCIA.map((c, k) => ({
+      item: `ref:${clave(c.de, c.a)}`,
+      ok: trazadas.has(clave(c.de, c.a)),
+      intentos: 1,
+      respuesta: null,
+      orden: k + 1,
+    }));
+    for (const c of evaluadas) {
+      if (REFERENCIA_SET.has(clave(c.de, c.a))) continue;
+      filas.push({
+        item: `extra:${clave(c.de, c.a)}`,
+        ok: false,
+        intentos: 1,
+        respuesta: c.estado,
+        orden: filas.length + 1,
+      });
+    }
+
+    onCompletar?.(porcentaje, filas);
   };
 
   /* Flechas a dibujar: las del estudiante y, tras verificar, las que faltaron. */
