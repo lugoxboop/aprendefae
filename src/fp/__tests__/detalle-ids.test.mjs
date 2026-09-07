@@ -25,6 +25,7 @@ import {
 } from "../../data/juegosPolitica2.js";
 import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
 import { QUIZZES } from "../../data/quizzes.js";
+import { BLIPS_RADAR, ANILLOS } from "../../data/icebergActividades.js";
 
 let fallos = 0;
 const filas = [];
@@ -210,6 +211,17 @@ unicos(
     resultado: malas.length ? "FALLA" : "PASA",
   });
 }
+
+/* ── radar-profundidad ── el blip, sin prefijo ── */
+/*
+ * Siete señales con id propio (r-evento … r-trampa-3), un solo caso, sin
+ * rondas: no hay nada que prefijar. Se registran las siete, trampas incluidas.
+ */
+unicos("radar-profundidad", BLIPS_RADAR.map((b) => b.id), BLIPS_RADAR.length);
+
+/* Los anillos son los valores de `respuesta`: si dos se llamaran igual, no se
+ * podría saber dónde puso la señal. */
+unicos("radar-profundidad · anillos", [...ANILLOS], ANILLOS.length);
 
 console.table(filas);
 console.log(fallos === 0

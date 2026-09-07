@@ -125,13 +125,15 @@ export default function IcebergView({ modo = null, onBack }) {
   const inicioTransmision = useRef(Date.now());
   const inicioCorriente = useRef(Date.now());
 
-  const completarEvaluativa = async (clasificacion, actividadId, inicioRef, porcentajeAciertos) => {
+  const completarEvaluativa = async (clasificacion, actividadId, inicioRef, porcentajeAciertos, detalle = null) => {
     const resultado = await registrarActividadCompletada(clasificacion, {
       materiaId: MATERIA,
       temaId: TEMA,
       actividadId,
       porcentajeAciertos,
       duracionMs: Date.now() - inicioRef.current,
+      /* Solo lo mandan las mecánicas instrumentadas; el resto va en null. */
+      detalle,
     });
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
@@ -285,7 +287,7 @@ export default function IcebergView({ modo = null, onBack }) {
           otro: están para que reconocerlas cueste.
         </p>
         <RadarProfundidad
-          onCompletar={(pct) => completarEvaluativa(CLAS_RADAR, "radar-profundidad", inicioRadar, pct)}
+          onCompletar={(pct, ms, detalle) => completarEvaluativa(CLAS_RADAR, "radar-profundidad", inicioRadar, pct, detalle)}
         />
         </>
         )}

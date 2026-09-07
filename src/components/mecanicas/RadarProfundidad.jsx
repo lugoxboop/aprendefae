@@ -42,6 +42,28 @@ export default function RadarProfundidad({ onCompletar }) {
   const [primerIntento, setPrimerIntento] = useState({}); // id -> bool
   const [onda, setOnda] = useState(null);
   const inicio = useRef(Date.now());
+
+  /*
+   * ═══════════ EL DETALLE POR ÍTEM ═══════════
+   *
+   * LA UNIDAD ES EL BLIP: la señal que hay que clasificar. El juego es colocar
+   * siete señales en su anillo, y de cada una interesa si la acertó de una,
+   * cuánto le costó y en qué anillo la puso mal.
+   *
+   * SIN PREFIJO: los siete ids ya son únicos (r-evento … r-trampa-3) y no hay
+   * rondas ni casos que los repitan. Comprobado en detalle-ids.test.mjs.
+   *
+   * SE REGISTRAN LAS SIETE, TRAMPAS INCLUIDAS, aunque las tres trampas no
+   * puntúen. Que alguien meta la trampa que suena a Patrón en Patrón es
+   * justamente lo que esta actividad existe para provocar, y perderlo sería
+   * tirar el dato más interesante. Sus ids lo dicen solos —r-trampa-N— así que
+   * el panel puede separarlas del porcentaje cuando quiera.
+   *
+   * `respuesta` es el anillo donde la puso la PRIMERA vez que se equivocó.
+   */
+  const detalle = useRef([]);
+  const intentosBlip = useRef({});
+  const primerFallo = useRef({});
   /*
    * CORRECCIÓN. Antes los blips salían siempre en el orden del catálogo —
    * evento, patrón, estructura, modelo mental— así que se podía acertar por
@@ -62,13 +84,23 @@ export default function RadarProfundidad({ onCompletar }) {
     if (!completo) return;
     const buenos = BLIPS_RADAR.filter((b) => b.puntua && primerIntento[b.id]).length;
     const total = BLIPS_RADAR.filter((b) => b.puntua).length;
-    onCompletar?.(Math.round((buenos * 100) / total), Date.now() - inicio.current);
+    onCompletar?.(Math.round((buenos * 100) / total), Date.now() - inicio.current, detalle.current);
   }, [completo]);
 
   const soltar = (nivel) => {
     if (!elegido) return;
     const blip = BLIPS_RADAR.find((b) => b.id === elegido);
+    const intentos = (intentosBlip.current[blip.id] ?? 0) + 1;
+    intentosBlip.current[blip.id] = intentos;
+
     if (blip.nivel === nivel) {
+      detalle.current.push({
+        item: blip.id,
+        ok: intentos === 1,
+        intentos,
+        respuesta: primerFallo.current[blip.id] ?? null,
+        orden: detalle.current.length + 1,
+      });
       /* Solo cuenta como acierto si nunca antes se había fallado con este blip. */
       setPrimerIntento((p) => ({ ...p, [blip.id]: p[blip.id] !== false }));
       setAnclados((a) => ({ ...a, [blip.id]: nivel }));
@@ -76,6 +108,7 @@ export default function RadarProfundidad({ onCompletar }) {
       setTimeout(() => setOnda(null), 900);
       setElegido(null);
     } else {
+      if (!primerFallo.current[blip.id]) primerFallo.current[blip.id] = nivel;
       setPrimerIntento((p) => ({ ...p, [blip.id]: false }));
       setFallando(blip.id);
       setTimeout(() => setFallando(null), 400);
@@ -84,6 +117,9 @@ export default function RadarProfundidad({ onCompletar }) {
 
   const reiniciar = () => {
     setAnclados({}); setElegido(null); setPrimerIntento({}); setFallando(null);
+    detalle.current = [];
+    intentosBlip.current = {};
+    primerFallo.current = {};
     const o = barajarDistinto(BLIPS_RADAR, ordenPrevio.current, (b) => b.id);
     ordenPrevio.current = o;
     setOrden(o);
