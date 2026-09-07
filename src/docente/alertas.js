@@ -28,8 +28,16 @@ export const UMBRALES = {
    */
   registrosParaSerRegular: 2,
 
-  /* Desempeño evaluativo por debajo del cual conviene mirar. */
-  pctEvaluativaBaja: 0.6,
+  /*
+   * Desempeño evaluativo por debajo del cual conviene mirar.
+   *
+   * VA EN 0–100, COMO LO GUARDA LA BASE. Estuvo en 0,6 y esta regla no podía
+   * dispararse nunca: fp_history.correct_pct se guarda entre 0 y 100
+   * —registrar_fp hace least(100, greatest(0, …)) sobre lo que manda el
+   * cliente, que ya viene multiplicado— y panel_estudiantes devuelve la media
+   * sin dividir. Comparar 77 con 0,6 da siempre falso.
+   */
+  pctEvaluativaBaja: 60,
   /* Cuánta práctica exploratoria cuenta como "sí está practicando". */
   exploratoriasParaPracticar: 2,
 
@@ -39,7 +47,8 @@ export const UMBRALES = {
    * eso sería alertar justo sobre los mejores estudiantes.
    */
   duracionRapidaMs: 90000,
-  pctBajaParaPrisa: 0.6,
+  /* En 0–100, por lo mismo que pctEvaluativaBaja. También estuvo muerta. */
+  pctBajaParaPrisa: 60,
 };
 
 export const NIVEL = { URGENTE: "urgente", ATENCION: "atencion", INFO: "info" };
@@ -140,7 +149,7 @@ export function alertasDe(e) {
     alertas.push({
       nivel: NIVEL.ATENCION,
       titulo: "Practica, pero no le sale sin apoyo",
-      detalle: `${Math.round(Number(e.pct_evaluativa) * 100)}% en evaluativas con ${e.n_exploratorias} exploratorias hechas.`,
+      detalle: `${Math.round(Number(e.pct_evaluativa))}% en evaluativas con ${e.n_exploratorias} exploratorias hechas.`,
     });
   }
 
@@ -157,7 +166,7 @@ export function alertasDe(e) {
     alertas.push({
       nivel: NIVEL.INFO,
       titulo: "Respuestas rápidas y con poco acierto",
-      detalle: `${Math.round(Number(e.duracion_media_ms) / 1000)}s de media por actividad, ${Math.round(pctGlobal * 100)}% de acierto.`,
+      detalle: `${Math.round(Number(e.duracion_media_ms) / 1000)}s de media por actividad, ${Math.round(pctGlobal)}% de acierto.`,
     });
   }
 

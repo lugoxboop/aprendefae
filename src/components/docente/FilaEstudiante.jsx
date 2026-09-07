@@ -29,7 +29,7 @@ function Acierto({ pct, n, modalidad }) {
   return (
     <span style={{ display: "inline-flex", alignItems: "baseline", gap: "5px" }}>
       <span style={{ ...dato, fontSize: "15px", color: fiable ? FAE.text : "rgba(248,249,250,0.6)" }}>
-        {pct === null ? "—" : `${Math.round(Number(pct) * 100)}%`}
+        {pct === null ? "—" : `${Math.round(Number(pct))}%`}
       </span>
       <span style={{ fontSize: "10.5px", color: "rgba(248,249,250,0.4)" }}>
         ({n})

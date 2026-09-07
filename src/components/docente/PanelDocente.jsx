@@ -218,13 +218,13 @@ export default function PanelDocente({ onBack }) {
               <Kpi rotulo="ESTUDIANTES" valor={resumen.n} nota={`${resumen.activosCiclo} con actividad este ciclo`} />
               <Kpi
                 rotulo="ACIERTO EVALUATIVAS"
-                valor={resumen.pctEval === null ? "—" : `${Math.round(resumen.pctEval * 100)}%`}
+                valor={resumen.pctEval === null ? "—" : `${Math.round(resumen.pctEval)}%`}
                 nota={resumen.nEval === 0 ? "Nadie ha hecho evaluativas aún" : `${resumen.nEval} estudiantes · señal fiable de dominio`}
                 color={FAE.text}
               />
               <Kpi
                 rotulo="ACIERTO EXPLORATORIAS"
-                valor={resumen.pctExpl === null ? "—" : `${Math.round(resumen.pctExpl * 100)}%`}
+                valor={resumen.pctExpl === null ? "—" : `${Math.round(resumen.pctExpl)}%`}
                 /* El aviso va pegado al número, no en una nota al pie que nadie lee. */
                 nota={resumen.nExpl === 0 ? "Nadie ha hecho exploratorias aún" : "Se puede reintentar hasta acertar: tiende a 100% y no mide dominio"}
                 color="rgba(248,249,250,0.72)"

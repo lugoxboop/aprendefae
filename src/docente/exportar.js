@@ -37,7 +37,12 @@ function celda(v) {
   return /[",;\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-const pct = (v) => (v === null || v === undefined ? "" : Math.round(Number(v) * 100));
+/*
+ * En 0–100, que es como lo guarda fp_history y como lo devuelve
+ * panel_estudiantes. Este helper multiplicaba otra vez y el CSV salía con
+ * 7700% donde debía decir 77%.
+ */
+const pct = (v) => (v === null || v === undefined ? "" : Math.round(Number(v)));
 const fecha = (v) => (v ? new Date(v).toISOString().slice(0, 10) : "");
 
 export function csvDelPanel(estudiantes, subjectId) {
