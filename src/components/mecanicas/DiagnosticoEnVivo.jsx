@@ -107,6 +107,16 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
   const [efecto, setEfecto] = useState(null);       // "acierto" | "fallo"
   const [pulsando, setPulsando] = useState(null);   // id de botón que late
   const [historial, setHistorial] = useState([]);
+  /*
+   * El detalle por ítem, que viaja al servidor al terminar. Se acumula aquí en
+   * vez de derivarse de `historial` porque hace falta guardar QUÉ eligió, no
+   * solo si acertó: "confunde fiscal con exterior" es lo que un docente puede
+   * llevar a clase, y "falló el titular 3" no.
+   *
+   * Los ids son los del banco —t1a…t8b— más `brecha` para la etapa 2.
+   * Verificado que no chocan entre sí: 17 ids, ningún duplicado.
+   */
+  const detalle = useRef([]);
   const inicio = useRef(Date.now());
   const pista = useRef(null);
   /*
@@ -145,11 +155,34 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
 
   /* El juego cierra al responder la etapa 2, no al acabar los titulares. */
   useEffect(() => {
-    if (brecha) onCompletar?.(pct, Date.now() - inicio.current);
+    if (!brecha) return;
+    /*
+     * La etapa 2 es otro ítem más, con otra forma —no es un titular— y por eso
+     * esta actividad es la que valida el canal: si el esquema aguanta las dos
+     * formas en una sola partida, aguanta las demás.
+     */
+    const items = [
+      ...detalle.current,
+      {
+        item: "brecha",
+        ok: BRECHAS.find((b) => b.id === brecha)?.correcta === true,
+        intentos: 1,
+        respuesta: brecha,
+        orden: detalle.current.length + 1,
+      },
+    ];
+    onCompletar?.(pct, Date.now() - inicio.current, items);
   }, [brecha]);
 
   /* Cierra el titular actual y pasa al siguiente. */
-  const cerrar = (idTitular, acertoPrimero, textoAviso, ok) => {
+  const cerrar = (idTitular, acertoPrimero, textoAviso, ok, eleccion = null) => {
+    detalle.current.push({
+      item: idTitular,
+      ok: acertoPrimero,
+      intentos: intentos + 1,
+      respuesta: eleccion,
+      orden: detalle.current.length + 1,
+    });
     setPrimeros((p) => ({ ...p, [idTitular]: acertoPrimero }));
     setHistorial((h) => [...h, { id: idTitular, ok, texto: textoAviso }]);
     setAviso({ ok, texto: textoAviso });
@@ -165,7 +198,7 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
     setTimeout(() => setPulsando(null), 500);
 
     if (r.ok) {
-      cerrar(actual.id, intentos === 0, r.texto, true);
+      cerrar(actual.id, intentos === 0, r.texto, true, problemaId);
       return;
     }
 
@@ -175,19 +208,21 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
     setTimeout(() => setEfecto(null), 420);
     const siguienteIntento = intentos + 1;
     setIntentos(siguienteIntento);
-    if (siguienteIntento >= 2) cerrar(actual.id, false, r.texto, false);
+    if (siguienteIntento >= 2) cerrar(actual.id, false, r.texto, false, problemaId);
   };
 
   /* El titular cruzó la línea sin clasificar. */
   const archivar = () => {
     if (!actual) return;
-    cerrar(actual.id, false, textoArchivado(actual.problema), false);
+    /* Se le fue por la línea: no eligió nada, y eso es dato distinto de fallar. */
+    cerrar(actual.id, false, textoArchivado(actual.problema), false, null);
   };
 
   const reiniciar = () => {
     setOrden(barajar(sortearTitulares()));
     setI(0); setPrimeros({}); setIntentos(0); setAviso(null);
     setEfecto(null); setHistorial([]); setBrecha(null);
+    detalle.current = [];
     inicio.current = Date.now();
   };
 

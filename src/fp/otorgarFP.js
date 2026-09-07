@@ -33,6 +33,12 @@ export async function otorgarFP({
   modalidad,
   duracionMs = null,
   aciertos = null,
+  /*
+   * Detalle por ítem, opcional. Es diagnóstico, no producto: si no llega o si
+   * el servidor no lo puede escribir, la actividad paga igual. Esa garantía
+   * vive en registrar_fp, dentro de un bloque con manejador.
+   */
+  detalle = null,
 }) {
   if (!supabase) return { ok: false, motivo: "sin-configuracion" };
 
@@ -40,12 +46,37 @@ export async function otorgarFP({
   /* Sin sesión no hay dónde guardar. El aviso de cuenta lo dispara quien llama. */
   if (!sesion?.session) return { ok: false, motivo: "sin-sesion" };
 
-  const { data, error } = await supabase.rpc("registrar_fp", {
+  const base = {
     p_activity_id: actividadId,
     p_duration_ms: duracionMs === null ? null : Math.round(duracionMs),
     /* El motor del servidor trabaja en porcentaje, no en proporción. */
     p_correct_pct: aciertos === null ? null : Math.round(aciertos * 100),
-  });
+  };
+  const conDetalle = detalle && detalle.length;
+
+  let { data, error } = await supabase.rpc(
+    "registrar_fp",
+    conDetalle ? { ...base, p_detalle: detalle } : base
+  );
+
+  /*
+   * ═══ EL DETALLE TAMPOCO PUEDE COSTAR PUNTOS EN LA VENTANA DE DESPLIEGUE ═══
+   *
+   * PostgREST resuelve la función por el CONJUNTO de parámetros con nombre que
+   * se le manda. Si este código llega a producción antes que la migración 0017,
+   * mandar p_detalle no encontraría ninguna firma —la desplegada tiene tres
+   * argumentos— y la actividad no pagaría.
+   *
+   * Así que ante ese error concreto se reintenta sin el detalle. Se pierde el
+   * diagnóstico durante la ventana y se conservan los puntos, que es la misma
+   * regla que gobierna el bloque con manejador del servidor, aplicada al
+   * despliegue. Sin esto habría que ordenar migración y push, y ese
+   * acoplamiento ya nos costó partir la 0011 en dos.
+   */
+  if (error && conDetalle && /function|schema cache|does not exist/i.test(error.message ?? "")) {
+    console.warn("[aprendeFAE] registrar_fp sin p_detalle: la 0017 todavía no está aplicada.");
+    ({ data, error } = await supabase.rpc("registrar_fp", base));
+  }
 
   if (error) {
     console.error("[aprendeFAE] No se pudo registrar FP:", error.message);

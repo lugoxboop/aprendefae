@@ -54,15 +54,18 @@ const ORDEN = { [NIVEL.URGENTE]: 0, [NIVEL.ATENCION]: 1, [NIVEL.INFO]: 2 };
 export const REGLAS_SIN_DATOS = [
   {
     nivel: NIVEL.ATENCION,
-    titulo: "Atascado en el mismo tema",
-    necesita: "Intentos por pregunta antes de acertar",
-    porque: "Hoy solo se guarda el resultado final de cada actividad, no cuántos intentos costó.",
-  },
-  {
-    nivel: NIVEL.ATENCION,
     titulo: "Abandono repetido a mitad de actividad",
     necesita: "Progreso parcial dentro de la actividad",
-    porque: "Hoy una actividad solo deja rastro cuando se termina; empezarla y dejarla no se distingue de no entrar.",
+    /*
+     * NO la desbloquea fp_detalle, y conviene decir por qué en vez de dejar
+     * que alguien lo suponga: el detalle por ítem se escribe DENTRO de
+     * registrar_fp, y registrar_fp solo se llama al completar. Quien empieza y
+     * abandona sigue sin llamar a nada, así que sigue sin dejar rastro.
+     *
+     * Resolverlo pide otro mecanismo —un evento de inicio, o guardado parcial
+     * periódico— con otro coste y otro volumen. Es un problema distinto.
+     */
+    porque: "El detalle por ítem se guarda solo al terminar una actividad, así que empezarla y dejarla sigue sin distinguirse de no entrar. Haría falta registrar el inicio, no solo el final.",
   },
 ];
 

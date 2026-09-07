@@ -84,13 +84,15 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
    * Un solo camino para los dos juegos: la clasificación y el id son lo único
    * que cambia, así que no hace falta un manejador por mecánica.
    */
-  const completarJuego = async (clasificacion, actividadId, porcentajeAciertos, duracionMs) => {
+  const completarJuego = async (clasificacion, actividadId, porcentajeAciertos, duracionMs, detalle = null) => {
     const resultado = await registrarActividadCompletada(clasificacion, {
       materiaId: MATERIA,
       temaId: TEMA,
       actividadId,
       porcentajeAciertos,
       duracionMs,
+      /* Solo lo mandan las mecánicas ya instrumentadas; el resto va en null. */
+      detalle,
     });
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
@@ -212,7 +214,7 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
           antes de que la cruce — cuenta el primer intento.
         </p>
         <DiagnosticoEnVivo
-          onCompletar={(pct, ms) => completarJuego(CLAS_DIAGNOSTICO, "diagnostico-en-vivo", pct, ms)}
+          onCompletar={(pct, ms, detalle) => completarJuego(CLAS_DIAGNOSTICO, "diagnostico-en-vivo", pct, ms, detalle)}
         />
         </>
         )}

@@ -31,5 +31,6 @@ export async function registrarActividadCompletada(clasificacion, contexto = {})
     modalidad: clasificacion.modalidad,
     duracionMs: contexto.duracionMs ?? null,
     aciertos,
+    detalle: contexto.detalle ?? null,
   });
 }
