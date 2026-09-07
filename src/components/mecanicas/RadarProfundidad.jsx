@@ -226,7 +226,30 @@ export default function RadarProfundidad({ onCompletar }) {
                   key={b.id}
                   type="button"
                   className={fallando === b.id ? "fae-rd-rebote" : undefined}
-                  onClick={() => setElegido(elegido === b.id ? null : b.id)}
+                  /*
+                   * SELECCIÓN PEGAJOSA, A PROPÓSITO. Antes esto era un toggle
+                   * —volver a tocar la señal la deseleccionaba— y ahí había
+                   * un callejón sin salida:
+                   *
+                   *   1. se toca la señal y queda seleccionada
+                   *   2. se toca un anillo equivocado: rebota, y la señal
+                   *      SIGUE seleccionada, que es lo útil
+                   *   3. el estudiante piensa "la habré soltado" y la toca otra
+                   *      vez → se deselecciona
+                   *   4. toca un anillo correcto → no pasa NADA, porque
+                   *      el manejador sale con un `return` mudo si no hay nada
+                   *      seleccionado. Sin mensaje, sin rebote, sin señal.
+                   *
+                   * El paso 4 es el problema: el resalte sí se apaga en el 3, o
+                   * sea que la pantalla no miente, pero el toque siguiente se
+                   * pierde en silencio y desde fuera parece que la actividad se
+                   * colgó.
+                   *
+                   * Tocar la que ya está elegida no hace nada. No se pierde
+                   * nada con ello: para cambiar de señal se toca otra, y no
+                   * queda ningún estado del que no se pueda salir.
+                   */
+                  onClick={() => setElegido(b.id)}
                   style={{
                     textAlign: "left", cursor: "pointer", padding: "11px 13px", borderRadius: "12px",
                     background: elegido === b.id ? "rgba(42,157,143,0.14)" : "rgba(248,249,250,0.04)",
