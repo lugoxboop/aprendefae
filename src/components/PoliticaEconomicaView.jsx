@@ -9,6 +9,11 @@ import Autorregulacion from "./mecanicas/salaDeControl/Autorregulacion.jsx";
 import MaquinaDA from "./mecanicas/salaDeControl/MaquinaDA.jsx";
 import DiagnosticoEnVivo from "./mecanicas/DiagnosticoEnVivo.jsx";
 import ArmaGrupoLogico from "./mecanicas/ArmaGrupoLogico.jsx";
+import QuienGanaQuienPierde from "./mecanicas/QuienGanaQuienPierde.jsx";
+import CorrienteTitulares from "./mecanicas/CorrienteTitulares.jsx";
+import ExplicaLaPolitica from "./mecanicas/ExplicaLaPolitica.jsx";
+import SimuladorDeCrisis from "./mecanicas/SimuladorDeCrisis.jsx";
+import TableroDeDecisiones from "./mecanicas/TableroDeDecisiones.jsx";
 import { clasificacionDe, APRENDER, HACER, actividadesDeTipo, SUBJECTS } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
@@ -28,6 +33,11 @@ const MATERIA = "macroeconomia";
 const TEMA = "politica-economica";
 const CLAS_DIAGNOSTICO = clasificacionDe(MATERIA, TEMA, "diagnostico-en-vivo");
 const CLAS_GRUPO = clasificacionDe(MATERIA, TEMA, "arma-grupo-logico");
+const CLAS_GANADORES = clasificacionDe(MATERIA, TEMA, "quien-gana-quien-pierde");
+const CLAS_CORRIENTE = clasificacionDe(MATERIA, TEMA, "corriente-titulares");
+const CLAS_EXPLICA = clasificacionDe(MATERIA, TEMA, "explica-la-politica");
+const CLAS_CRISIS = clasificacionDe(MATERIA, TEMA, "simulador-de-crisis");
+const CLAS_DECISIONES = clasificacionDe(MATERIA, TEMA, "tablero-decisiones");
 const CLAS_TABLERO = clasificacionDe(MATERIA, TEMA, "tablero-fallas");
 const CLAS_AUTORREGULACION = clasificacionDe(MATERIA, TEMA, "autorregulacion-intervencion");
 const CLAS_MAQUINA = clasificacionDe(MATERIA, TEMA, "maquina-da-palancas");
@@ -224,6 +234,92 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
         />
         </>
         )}
+        {/* ---------------- ¿Quién gana, quién pierde? ---------------- */}
+        {nodoAbierto === "quien-gana-quien-pierde" && (
+        <>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
+          <p style={sectionLabel}>MECÁNICA {muestraAprender ? 6 : 3}</p>
+          <ActivityBadge tipo={CLAS_GANADORES?.tipo} size="sm" />
+        </div>
+        <h2 style={h2}>¿Quién gana, quién pierde?</h2>
+        <p style={lead}>
+          Ninguna medida deja a todo el mundo igual. Cuatro rondas, cuatro personajes cada una: decide a quién le sirve y a quién le duele.
+        </p>
+        <QuienGanaQuienPierde
+          onCompletar={(pct, ms) => completarJuego(CLAS_GANADORES, "quien-gana-quien-pierde", pct, ms)}
+        />
+        </>
+        )}
+
+        {/* ---------------- Corriente de titulares ---------------- */}
+        {nodoAbierto === "corriente-titulares" && (
+        <>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
+          <p style={sectionLabel}>MECÁNICA {muestraAprender ? 7 : 4}</p>
+          <ActivityBadge tipo={CLAS_CORRIENTE?.tipo} size="sm" />
+        </div>
+        <h2 style={h2}>Corriente de titulares</h2>
+        <p style={lead}>
+          Dieciocho enunciados pasan por una cinta que acelera. Clasifica cada uno antes de que salga por el borde.
+        </p>
+        <CorrienteTitulares
+          onCompletar={(pct, ms) => completarJuego(CLAS_CORRIENTE, "corriente-titulares", pct, ms)}
+        />
+        </>
+        )}
+
+        {/* ---------------- Explica la política ---------------- */}
+        {nodoAbierto === "explica-la-politica" && (
+        <>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
+          <p style={sectionLabel}>MECÁNICA {muestraAprender ? 8 : 5}</p>
+          <ActivityBadge tipo={CLAS_EXPLICA?.tipo} size="sm" />
+        </div>
+        <h2 style={h2}>Explica la política</h2>
+        <p style={lead}>
+          Arma con cuatro frases una explicación que entienda alguien sin idea de economía. La jerga también cuenta como ruido.
+        </p>
+        <ExplicaLaPolitica
+          onCompletar={(pct, ms) => completarJuego(CLAS_EXPLICA, "explica-la-politica", pct, ms)}
+        />
+        </>
+        )}
+
+        {/* ---------------- El simulador de crisis ---------------- */}
+        {nodoAbierto === "simulador-de-crisis" && (
+        <>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
+          <p style={sectionLabel}>MECÁNICA {muestraAprender ? 9 : 6}</p>
+          <ActivityBadge tipo={CLAS_CRISIS?.tipo} size="sm" />
+        </div>
+        <h2 style={h2}>El simulador de crisis</h2>
+        <p style={lead}>
+          Te dan el problema y nada más. Construye tú el objetivo, la estrategia, el instrumento, la medida y la meta.
+        </p>
+        <SimuladorDeCrisis
+          onCompletar={(pct, ms) => completarJuego(CLAS_CRISIS, "simulador-de-crisis", pct, ms)}
+        />
+        </>
+        )}
+
+        {/* ---------------- El tablero de decisiones ---------------- */}
+        {nodoAbierto === "tablero-decisiones" && (
+        <>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
+          <p style={sectionLabel}>MECÁNICA {muestraAprender ? 10 : 7}</p>
+          <ActivityBadge tipo={CLAS_DECISIONES?.tipo} size="sm" />
+        </div>
+        <h2 style={h2}>El tablero de decisiones</h2>
+        <p style={lead}>
+          Tres palancas de política y tres indicadores que se mueven a la vez. Dos metas que jalan para
+          lados distintos: el margen para cumplir las dos es más estrecho de lo que parece.
+        </p>
+        <TableroDeDecisiones
+          onCompletar={(pct, ms) => completarJuego(CLAS_DECISIONES, "tablero-decisiones", pct, ms)}
+        />
+        </>
+        )}
+
         </>
         )}
         </>

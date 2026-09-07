@@ -110,6 +110,44 @@ export const SUBJECTS = {
             nombre: "Arma el grupo lógico",
             clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
           },
+          {
+            /* Rol de actor: quién gana y quién pierde con cada medida. */
+            id: "quien-gana-quien-pierde",
+            nombre: "¿Quién gana, quién pierde?",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
+          },
+          {
+            /* Práctica intercalada: dieciocho enunciados en una cinta que acelera. */
+            id: "corriente-titulares",
+            nombre: "Corriente de titulares",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+          {
+            /*
+             * Efecto protégé. La ficha pedía "media-alta", que no es un nivel
+             * de este sistema —las gradas son fácil/medio/difícil/experto— así
+             * que va a difícil: elegir cuatro frases de ocho y ordenarlas, con
+             * jerga y falsedades mezcladas, está más cerca de eso que de medio.
+             */
+            id: "explica-la-politica",
+            nombre: "Explica la política",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+          {
+            /*
+             * Reconstrucción del dashboard retirado: hereda su modelo
+             * verificado —coeficientes y tramos— y nada de su interfaz.
+             */
+            id: "tablero-decisiones",
+            nombre: "El tablero de decisiones",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
+          },
+          {
+            /* Construir la cadena entera desde un problema nuevo. La más dura. */
+            id: "simulador-de-crisis",
+            nombre: "El simulador de crisis",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
+          },
         ],
       },
     ],

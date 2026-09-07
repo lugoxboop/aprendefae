@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw, FolderClosed } from "lucide-react";
 import { FAE } from "../../theme.js";
-import { PROBLEMAS, TITULARES, retroalimentacion, textoArchivado } from "../../data/juegosPolitica.js";
-import { barajarDistinto } from "../../utils/barajar.js";
+import {
+  PROBLEMAS, sortearTitulares, retroalimentacion, textoArchivado,
+  PREGUNTA_BRECHA, BRECHAS,
+} from "../../data/juegosPolitica.js";
+import { barajar } from "../../utils/barajar.js";
 
 /*
  * ACTIVIDAD 1 — "Diagnóstico en vivo".
@@ -33,9 +36,22 @@ import { barajarDistinto } from "../../utils/barajar.js";
  * animación se detiene y el titular NO se pierde: el dibujo y el reloj son el
  * mismo, así que no pueden discrepar.
  *
- * PUNTUACIÓN: 12,5% por titular, y cuenta el PRIMER intento. Un titular
- * corregido al segundo intento da su explicación pero puntúa como fallo — si
- * no, bastaría con probar dos botones en cada uno.
+ * ─────────────── DOS ETAPAS, DOS COSAS DISTINTAS ───────────────
+ *
+ *   Etapa 1 · clasificar los ocho titulares ............ 80% (10% cada uno)
+ *   Etapa 2 · comparar el tamaño de las brechas ........ 20%
+ *
+ * La segunda no es más de lo mismo: clasificar pide reconocer de qué problema
+ * habla un titular; comparar brechas pide restar y ordenar. Es la diferencia
+ * entre saber qué es cada cosa y saber cuál aprieta más.
+ *
+ * CUENTA EL PRIMER INTENTO en las dos. Un titular corregido al segundo intento
+ * da su explicación pero puntúa como fallo — si no, bastaría con probar dos
+ * botones en cada uno.
+ *
+ * EL BANCO SE SORTEA: dieciséis titulares, dos por problema, y cada ronda toma
+ * uno de cada pareja. Los ocho problemas salen siempre, pero no con las mismas
+ * palabras.
  */
 
 /* Segundos de caída, de aparición a línea de archivo. Punto de calibración. */
@@ -70,12 +86,9 @@ const CSS = `
 `;
 
 export default function DiagnosticoEnVivo({ onCompletar }) {
-  const ordenPrevio = useRef(null);
-  const [orden, setOrden] = useState(() => {
-    const o = barajarDistinto(TITULARES, null, (t) => t.id);
-    ordenPrevio.current = o;
-    return o;
-  });
+  const [orden, setOrden] = useState(() => barajar(sortearTitulares()));
+  /* Etapa 2: null mientras no se ha respondido. */
+  const [brecha, setBrecha] = useState(null);
   const [i, setI] = useState(0);
   /* id -> true si acertó al primer intento */
   const [primeros, setPrimeros] = useState({});
@@ -109,12 +122,21 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
 
   const actual = orden[i];
   const terminado = i >= orden.length;
-  const aciertos = TITULARES.filter((t) => primeros[t.id]).length;
-  const pct = Math.round((aciertos * 100) / TITULARES.length);
+  /*
+   * Se cuenta sobre los OCHO sorteados, no sobre el banco de dieciséis: el
+   * estudiante solo vio ocho.
+   */
+  const aciertos = orden.filter((t) => primeros[t.id]).length;
 
+  /* 80% la clasificación, 20% la comparación de brechas. */
+  const pctEtapa1 = (aciertos / orden.length) * 80;
+  const pctEtapa2 = brecha && BRECHAS.find((b) => b.id === brecha)?.correcta ? 20 : 0;
+  const pct = Math.round(pctEtapa1 + pctEtapa2);
+
+  /* El juego cierra al responder la etapa 2, no al acabar los titulares. */
   useEffect(() => {
-    if (terminado) onCompletar?.(pct, Date.now() - inicio.current);
-  }, [terminado]);
+    if (brecha) onCompletar?.(pct, Date.now() - inicio.current);
+  }, [brecha]);
 
   /* Cierra el titular actual y pasa al siguiente. */
   const cerrar = (idTitular, acertoPrimero, textoAviso, ok) => {
@@ -153,11 +175,9 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
   };
 
   const reiniciar = () => {
-    const o = barajarDistinto(TITULARES, ordenPrevio.current, (t) => t.id);
-    ordenPrevio.current = o;
-    setOrden(o);
+    setOrden(barajar(sortearTitulares()));
     setI(0); setPrimeros({}); setIntentos(0); setAviso(null);
-    setEfecto(null); setHistorial([]);
+    setEfecto(null); setHistorial([]); setBrecha(null);
     inicio.current = Date.now();
   };
 
@@ -221,7 +241,7 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
         ) : (
           <div className="fae-dv-entrar" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}>
             <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "clamp(26px, 5vw, 36px)", color: FAE.text, margin: 0, fontVariantNumeric: "tabular-nums" }}>
-              {aciertos} de {TITULARES.length}
+              {aciertos} de {orden.length}
             </p>
           </div>
         )}
@@ -249,7 +269,7 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
       {!terminado ? (
         <>
           <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 9px" }}>
-            Titular {i + 1} de {TITULARES.length}
+            Titular {i + 1} de {orden.length}
             {intentos === 1 && <span style={{ color: FAE.coral }}> · te queda un intento</span>}
           </p>
           {/*
@@ -279,14 +299,63 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
             ))}
           </div>
         </>
+      ) : !brecha ? (
+        /* ─────────────── Etapa 2 · comparar las brechas ─────────────── */
+        <div className="fae-dv-entrar">
+          <p style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.teal, margin: "0 0 6px" }}>
+            ETAPA 2 DE 2
+          </p>
+          <p style={{ fontSize: "13px", color: "rgba(248,249,250,0.55)", margin: "0 0 14px" }}>
+            {aciertos} de {orden.length} clasificados bien a la primera. Queda una pregunta.
+          </p>
+          <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "clamp(15px, 2.3vw, 18px)", lineHeight: 1.45, color: FAE.text, margin: "0 0 14px" }}>
+            {PREGUNTA_BRECHA}
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: "9px" }}>
+            {BRECHAS.map((b) => (
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => setBrecha(b.id)}
+                aria-label={`${b.etiqueta}: ${b.detalle}`}
+                style={{
+                  textAlign: "left", padding: "13px 14px", borderRadius: "13px", cursor: "pointer",
+                  background: "rgba(248,249,250,0.04)", border: "1px solid rgba(248,249,250,0.14)",
+                  color: FAE.text, fontFamily: "Inter, sans-serif",
+                }}
+              >
+                <span style={{ display: "block", fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700, marginBottom: "4px" }}>
+                  {b.etiqueta}
+                </span>
+                <span style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.6)", lineHeight: 1.4 }}>
+                  {b.detalle}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
       ) : (
         <div className="fae-dv-entrar">
           <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "26px", color: FAE.text, margin: "0 0 6px", fontVariantNumeric: "tabular-nums" }}>
             {pct}%
           </p>
-          <p style={{ fontSize: "13.5px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 14px" }}>
-            {aciertos} de {TITULARES.length} clasificados bien a la primera. Cuenta el primer intento: acertar
+          <p style={{ fontSize: "13.5px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 12px" }}>
+            {aciertos} de {orden.length} clasificados bien a la primera. Cuenta el primer intento: acertar
             después de fallar enseña igual, pero no es lo mismo que reconocerlo de entrada.
+          </p>
+
+          {/* El veredicto de la etapa 2, con su texto literal. */}
+          <p
+            aria-label={`Etapa 2: ${BRECHAS.find((b) => b.id === brecha)?.correcta ? "correcto" : "incorrecto"}`}
+            style={{
+              fontSize: "13.5px", lineHeight: 1.55, margin: "0 0 16px",
+              padding: "10px 13px", borderRadius: "12px",
+              background: pctEtapa2 ? "rgba(42,157,143,0.10)" : "rgba(231,111,81,0.10)",
+              border: `1px solid ${pctEtapa2 ? FAE.teal : FAE.coral}55`,
+              color: "rgba(248,249,250,0.88)",
+            }}
+          >
+            {BRECHAS.find((b) => b.id === brecha)?.feedback}
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "7px", marginBottom: "16px" }}>

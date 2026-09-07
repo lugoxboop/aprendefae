@@ -1,20 +1,27 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { FAE } from "../../theme.js";
-import { CASILLAS, ENUNCIADOS, retroCadena } from "../../data/juegosPolitica.js";
-import { barajarDistinto } from "../../utils/barajar.js";
+import { CASILLAS, CASOS_CADENA, sortearCaso, retroCadena } from "../../data/juegosPolitica.js";
+import { barajar } from "../../utils/barajar.js";
 
 /*
  * ACTIVIDAD 2 — "Arma el grupo lógico".
  *
  * Juego evaluativo. Seis casillas —Problema, Objetivo, Estrategia,
  * Instrumento, Medida, Meta— y doce enunciados reales del profesor: los seis
- * de la cadena de los aranceles al acero y seis señuelos de OTRAS cadenas.
+ * de una cadena y seis señuelos de OTRAS cadenas.
  *
  * LOS SEÑUELOS SON LO QUE HACE QUE HAYA QUE LEER. Todos son enunciados de
- * verdad y del mismo curso, así que ninguno se descarta por sonar raro. Hay
- * dos metas señuelo y dos piezas de política monetaria: por posición no se
- * distingue una meta de otra meta, hay que mirar de qué habla.
+ * verdad y del mismo curso, así que ninguno se descarta por sonar raro. Por
+ * posición no se distingue una meta de otra meta: hay que mirar de qué habla.
+ *
+ * DOS CASOS, SORTEADOS. El del acero y el de la inflación. Los señuelos de
+ * cada uno vienen de otro racimo temático a propósito: si los del segundo
+ * fueran las piezas buenas del primero, quien ya hubiera jugado resolvería por
+ * memoria. Dos piezas —"Política monetaria" y "Tasa de interés"— sí aparecen
+ * en los dos, y ahí está la lección: son señuelo en el caso del acero y las
+ * respuestas correctas en el de la inflación. La misma pieza encaja o no según
+ * el problema.
  *
  * SE TOCA, NO SE ARRASTRA — igual que en el resto del sitio, y por lo mismo:
  * el arrastre nativo no funciona con el dedo sin una librería encima. Se elige
@@ -62,12 +69,8 @@ const CSS = `
 `;
 
 export default function ArmaGrupoLogico({ onCompletar }) {
-  const ordenPrevio = useRef(null);
-  const [banco, setBanco] = useState(() => {
-    const o = barajarDistinto(ENUNCIADOS, null, (e) => e.id);
-    ordenPrevio.current = o;
-    return o;
-  });
+  const [caso, setCaso] = useState(() => sortearCaso());
+  const [banco, setBanco] = useState(() => barajar(caso.enunciados));
   const [puestos, setPuestos] = useState({});     // casillaId -> enunciado
   const [elegido, setElegido] = useState(null);
   const [rechazado, setRechazado] = useState(null);
@@ -92,8 +95,8 @@ export default function ArmaGrupoLogico({ onCompletar }) {
     if (!elegido) return;
     if (puestos[casillaId]) return;
 
-    const enunciado = ENUNCIADOS.find((e) => e.id === elegido);
-    const r = retroCadena(enunciado, casillaId);
+    const enunciado = caso.enunciados.find((e) => e.id === elegido);
+    const r = retroCadena(enunciado, casillaId, caso.tema);
     setAviso(r);
 
     if (r.ok) {
@@ -109,10 +112,14 @@ export default function ArmaGrupoLogico({ onCompletar }) {
     setElegido(null);
   };
 
+  /*
+   * Al repetir se alterna de caso: quien acaba de armar la cadena del acero
+   * recibe la de la inflación, no la misma otra vez.
+   */
   const reiniciar = () => {
-    const o = barajarDistinto(ENUNCIADOS, ordenPrevio.current, (e) => e.id);
-    ordenPrevio.current = o;
-    setBanco(o);
+    const otro = CASOS_CADENA.find((c) => c.id !== caso.id) ?? caso;
+    setCaso(otro);
+    setBanco(barajar(otro.enunciados));
     setPuestos({}); setElegido(null); setAviso(null); setSenuelosSoltados(0);
     inicio.current = Date.now();
   };
@@ -121,6 +128,9 @@ export default function ArmaGrupoLogico({ onCompletar }) {
     <div>
       <style>{CSS}</style>
 
+      <p style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.teal, margin: "0 0 6px" }}>
+        CASO · {caso.titulo.toUpperCase()}
+      </p>
       <p style={{ fontSize: "14px", lineHeight: 1.6, color: "rgba(248,249,250,0.7)", margin: "0 0 16px" }}>
         Doce enunciados, todos reales y todos del curso: seis arman una sola cadena y seis son de otras.
         Toca un enunciado y luego la casilla donde crees que va.

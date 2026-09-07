@@ -80,17 +80,85 @@ export const PROBLEMAS = [
   },
 ];
 
-/* Los ocho titulares, literales del material. */
+/*
+ * Dieciséis titulares: DOS por problema, todos del material del profesor.
+ *
+ * POR QUÉ DOS Y NO UNO. Con un solo titular por problema, la segunda partida
+ * era reconocer frases ya vistas en vez de clasificarlas. Con dos variantes se
+ * sortea cuál toca, así que volver a jugar sigue pidiendo leer.
+ *
+ * CADA PROBLEMA SALE EXACTAMENTE UNA VEZ POR RONDA. No es un muestreo de 8
+ * entre 16: es uno de cada pareja. Si fuera al azar sobre los dieciséis, una
+ * ronda podría traer dos de inflación y ninguno de desempleo, y la actividad
+ * dejaría de cubrir los ocho problemas.
+ */
 export const TITULARES = [
-  { id: "t1", texto: "La economía colombiana cerró 2025 con un crecimiento de apenas 2,6%, lejos de la meta de 5,6%.", problema: "crecimiento" },
-  { id: "t2", texto: "La inflación se ubica en 6%, todavía distante de la meta de 3,4%.", problema: "inflacion" },
-  { id: "t3", texto: "La tasa de desempleo llega a 8,1% pese a la búsqueda activa de empleo.", problema: "desempleo" },
-  { id: "t4", texto: "El déficit fiscal se proyecta en 9,4% del PIB para 2027, frente a una meta de 4,5%.", problema: "fiscal" },
-  { id: "t5", texto: "Las importaciones superan a las exportaciones en US$8.198,7 millones.", problema: "exterior" },
-  { id: "t6", texto: "El índice GINI de Colombia se ubica en 0,54, reflejando alta concentración del ingreso.", problema: "concentracion" },
-  { id: "t7", texto: "El 14,1% de la población tiene una o más carencias de acceso a bienes y servicios básicos.", problema: "asignacion" },
-  /* Sin cifra: el material no da ninguna para el ambiental. */
-  { id: "t8", texto: "Las emisiones contaminantes siguen creciendo pese a los compromisos ambientales del país.", problema: "ambiental" },
+  { id: "t1a", texto: "La economía colombiana cerró 2025 con un crecimiento de apenas 2,6%, lejos de la meta de 5,6%.", problema: "crecimiento" },
+  { id: "t1b", texto: "El crecimiento del PIB colombiano se ubicó en 2,6% en el último trimestre, muy por debajo del objetivo de 5,6%.", problema: "crecimiento" },
+
+  { id: "t2a", texto: "La inflación se ubica en 6%, todavía distante de la meta de 3,4%.", problema: "inflacion" },
+  { id: "t2b", texto: "Los precios al consumidor acumulan un alza del 6% en el último año, superando la meta del Banco de la República.", problema: "inflacion" },
+
+  { id: "t3a", texto: "La tasa de desempleo llega a 8,1% pese a la búsqueda activa de empleo.", problema: "desempleo" },
+  { id: "t3b", texto: "8,1% de la población económicamente activa está sin empleo, pese a buscar trabajo activamente.", problema: "desempleo" },
+
+  { id: "t4a", texto: "El déficit fiscal se proyecta en 9,4% del PIB para 2027, frente a una meta de 4,5%.", problema: "fiscal" },
+  { id: "t4b", texto: "Las proyecciones fiscales para 2027 muestran un déficit del 9,4% del PIB, casi el doble de la meta oficial.", problema: "fiscal" },
+
+  { id: "t5a", texto: "Las importaciones superan a las exportaciones en US$8.198,7 millones.", problema: "exterior" },
+  { id: "t5b", texto: "La balanza comercial de Colombia registra un saldo negativo de más de 8 mil millones de dólares.", problema: "exterior" },
+
+  { id: "t6a", texto: "El índice GINI de Colombia se ubica en 0,54, reflejando alta concentración del ingreso.", problema: "concentracion" },
+  { id: "t6b", texto: "Colombia registra un GINI de 0,54, uno de los más altos de la región en desigualdad de ingresos.", problema: "concentracion" },
+
+  { id: "t7a", texto: "El 14,1% de la población tiene una o más carencias de acceso a bienes y servicios básicos.", problema: "asignacion" },
+  { id: "t7b", texto: "Más del 14% de los colombianos carece de acceso adecuado a al menos un bien o servicio básico.", problema: "asignacion" },
+
+  /* Sin cifra ninguna de las dos: el material no da ninguna para el ambiental. */
+  { id: "t8a", texto: "Las emisiones contaminantes siguen creciendo pese a los compromisos ambientales del país.", problema: "ambiental" },
+  { id: "t8b", texto: "Persisten las emisiones contaminantes en el país, pese a los compromisos climáticos adquiridos.", problema: "ambiental" },
+];
+
+/* Uno de cada pareja, en orden aleatorio. Ocho titulares, los ocho problemas. */
+export function sortearTitulares() {
+  return PROBLEMAS.map((p) => {
+    const variantes = TITULARES.filter((t) => t.problema === p.id);
+    return variantes[Math.floor(Math.random() * variantes.length)];
+  });
+}
+
+/* ─────────── Etapa 2: comparar el tamaño de las brechas ─────────── */
+
+/*
+ * Solo tres de los ocho problemas traen meta numérica, y por eso la pregunta
+ * dice "de estos 3". Las brechas son resta directa de las cifras del profesor,
+ * no una estimación: 5,6−2,6 = 3,0 · 6−3,4 = 2,6 · 9,4−4,5 = 4,9.
+ */
+export const PREGUNTA_BRECHA =
+  "De estos 3 problemas con meta numérica clara, ¿cuál tiene la brecha más grande frente a su meta?";
+
+export const BRECHAS = [
+  {
+    id: "crecimiento",
+    etiqueta: "Crecimiento",
+    detalle: "2,6% vs. 5,6% — brecha 3,0 pts",
+    correcta: false,
+    feedback: "❌ Su brecha es real (3,0 puntos), pero menor que la del déficit fiscal (4,9 puntos).",
+  },
+  {
+    id: "inflacion",
+    etiqueta: "Inflación",
+    detalle: "6% vs. 3,4% — brecha 2,6 pts",
+    correcta: false,
+    feedback: "❌ Es la brecha menor de las tres (2,6 puntos) — el déficit fiscal casi duplica su meta.",
+  },
+  {
+    id: "fiscal",
+    etiqueta: "Déficit fiscal",
+    detalle: "9,4% vs. 4,5% — brecha 4,9 pts",
+    correcta: true,
+    feedback: "✅ Correcto — el déficit fiscal tiene la brecha más grande (4,9 puntos), casi el doble de su meta.",
+  },
 ];
 
 /*
@@ -151,28 +219,69 @@ export const CASILLAS = [
  * enunciados reales del profesor, pero de OTRAS cadenas. Están para obligar a
  * leer: por posición no se distingue una meta de otra meta.
  */
-export const ENUNCIADOS = [
-  { id: "c1", texto: "Las importaciones de acero de China están inundando el mercado nacional", casilla: "problema" },
-  { id: "c2", texto: "Controlar las importaciones de China a Colombia", casilla: "objetivo" },
-  { id: "c3", texto: "Política comercial", casilla: "estrategia" },
-  { id: "c4", texto: "Aranceles", casilla: "instrumento" },
-  { id: "c5", texto: "Subir los aranceles al acero del 10% al 20%", casilla: "medida" },
-  { id: "c6", texto: "Reducir las importaciones de acero en un 20% en tres meses", casilla: "meta" },
+/*
+ * DOS CASOS, uno por partida. Cada uno trae su cadena de seis y sus seis
+ * señuelos.
+ *
+ * LOS SEÑUELOS DE CADA CASO SON DE OTRO RACIMO TEMÁTICO, y esto es deliberado:
+ * si los señuelos del caso 2 fueran las piezas correctas del caso 1, quien
+ * hubiera jugado el primero resolvería el segundo por memoria en vez de por
+ * lectura. Los del acero son monetarios; los de la inflación son fiscales y de
+ * empleo. Ninguna pieza se repite entre casos.
+ */
+export const CASOS_CADENA = [
+  {
+    id: "acero",
+    titulo: "Aranceles al acero",
+    /* Cómo se nombra el caso dentro del mensaje de señuelo. */
+    tema: "aranceles al acero",
+    enunciados: [
+      { id: "a-c1", texto: "Las importaciones de acero de China están inundando el mercado nacional", casilla: "problema" },
+      { id: "a-c2", texto: "Controlar las importaciones de China a Colombia", casilla: "objetivo" },
+      { id: "a-c3", texto: "Política comercial", casilla: "estrategia" },
+      { id: "a-c4", texto: "Aranceles", casilla: "instrumento" },
+      { id: "a-c5", texto: "Subir los aranceles al acero del 10% al 20%", casilla: "medida" },
+      { id: "a-c6", texto: "Reducir las importaciones de acero en un 20% en tres meses", casilla: "meta" },
 
-  { id: "s1", texto: "Desempleo del 23%", senuelo: true, tema: "desempleo" },
-  { id: "s2", texto: "Política monetaria", senuelo: true, tema: "política monetaria" },
-  { id: "s3", texto: "Reducir la tasa de interés de referencia del 10% al 8%", senuelo: true, tema: "la tasa de interés" },
-  { id: "s4", texto: "Aumentar las exportaciones de Colombia en un 15% en dos años", senuelo: true, tema: "exportaciones" },
-  { id: "s5", texto: "Tasa de interés", senuelo: true, tema: "la tasa de interés" },
-  { id: "s6", texto: "Reducir el déficit fiscal en 1 punto del PIB para fin de año", senuelo: true, tema: "el déficit fiscal" },
+      { id: "a-s1", texto: "Desempleo del 23%", senuelo: true, tema: "desempleo" },
+      { id: "a-s2", texto: "Política monetaria", senuelo: true, tema: "política monetaria" },
+      { id: "a-s3", texto: "Reducir la tasa de interés de referencia del 10% al 8%", senuelo: true, tema: "la tasa de interés" },
+      { id: "a-s4", texto: "Aumentar las exportaciones de Colombia en un 15% en dos años", senuelo: true, tema: "exportaciones" },
+      { id: "a-s5", texto: "Tasa de interés", senuelo: true, tema: "la tasa de interés" },
+      { id: "a-s6", texto: "Reducir el déficit fiscal en 1 punto del PIB para fin de año", senuelo: true, tema: "el déficit fiscal" },
+    ],
+  },
+  {
+    id: "inflacion",
+    titulo: "Control de la inflación",
+    tema: "control de la inflación",
+    enunciados: [
+      { id: "i-c1", texto: "Se dispararon los precios en Colombia y crecieron al 12% en 2024", casilla: "problema" },
+      { id: "i-c2", texto: "Controlar la inflación", casilla: "objetivo" },
+      { id: "i-c3", texto: "Política monetaria", casilla: "estrategia" },
+      { id: "i-c4", texto: "Tasa de interés", casilla: "instrumento" },
+      { id: "i-c5", texto: "El Banco de la República subirá la tasa de interés de referencia del 7% al 10% en los próximos seis meses", casilla: "medida" },
+      { id: "i-c6", texto: "La inflación bajará del 12% al 11% para finales de año", casilla: "meta" },
+
+      { id: "i-s1", texto: "Desempleo del 23%", senuelo: true, tema: "desempleo" },
+      { id: "i-s2", texto: "Reducir el desempleo", senuelo: true, tema: "el desempleo" },
+      { id: "i-s3", texto: "Política fiscal", senuelo: true, tema: "política fiscal" },
+      { id: "i-s4", texto: "Impuestos", senuelo: true, tema: "impuestos" },
+      { id: "i-s5", texto: "Reducción de impuestos directos a las empresas", senuelo: true, tema: "impuestos" },
+      { id: "i-s6", texto: "Reducción del desempleo del 23% al 20% en un año", senuelo: true, tema: "el desempleo" },
+    ],
+  },
 ];
 
-export function retroCadena(enunciado, casillaDestino) {
+/* El caso de esta partida. */
+export const sortearCaso = () => CASOS_CADENA[Math.floor(Math.random() * CASOS_CADENA.length)];
+
+export function retroCadena(enunciado, casillaDestino, temaDelCaso = "aranceles al acero") {
   if (enunciado.senuelo) {
     return {
       ok: false,
       senuelo: true,
-      texto: `❌ Esto es real, pero pertenece a una cadena distinta (habla de ${enunciado.tema}, no de aranceles al acero).`,
+      texto: `❌ Esto es real, pero pertenece a una cadena distinta (habla de ${enunciado.tema}, no de ${temaDelCaso}).`,
     };
   }
   if (enunciado.casilla === casillaDestino) {
