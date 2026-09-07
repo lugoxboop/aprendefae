@@ -71,6 +71,30 @@ export default function SimuladorDeCrisis({ onCompletar }) {
   const [senuelosSoltados, setSenuelosSoltados] = useState(0);
   const inicio = useRef(Date.now());
 
+  /*
+   * ═══════════ EL DETALLE POR ÍTEM ═══════════
+   *
+   * LA UNIDAD ES LA RANURA, igual que en "Arma el grupo lógico": el juego es
+   * llenar cinco huecos, y de cada uno interesa si lo acertó a la primera,
+   * cuánto le costó y QUÉ puso mal antes.
+   *
+   * EL ID LLEVA EL CASO DELANTE. Las piezas ya vienen prefijadas (sq-* y cb-*)
+   * pero las cinco ranuras se llaman igual en los dos casos, y la Estrategia de
+   * la sequía —política comercial— es exactamente la respuesta CONTRARIA a la
+   * de la corrida bancaria —política monetaria—. Sin prefijo, el panel juntaría
+   * en una sola fila dos preguntas cuya respuesta correcta se contradice, que
+   * es la peor forma posible de este fallo.
+   *
+   * `respuesta` guarda la PRIMERA pieza equivocada que soltó en esa ranura. En
+   * esta actividad es el dato más caro del tema: "en la sequía pusieron
+   * política monetaria en Estrategia" es exactamente la confusión que el juego
+   * existe para provocar, porque esa misma pieza es la correcta en el otro
+   * caso. Los señuelos se distinguen solos: sus ids llevan `-d`.
+   */
+  const detalle = useRef([]);
+  const intentosRanura = useRef({});
+  const primerFallo = useRef({});
+
   const usadas = new Set(Object.values(puestas).map((p) => p.id));
   const disponibles = banco.filter((p) => !usadas.has(p.id));
   const colocadas = Object.keys(puestas).length;
@@ -79,7 +103,7 @@ export default function SimuladorDeCrisis({ onCompletar }) {
   const pct = Math.max(0, Math.min(100, POR_PIEZA * colocadas - CASTIGO_SENUELO * senuelosSoltados));
 
   useEffect(() => {
-    if (completa) onCompletar?.(pct, Date.now() - inicio.current);
+    if (completa) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
   }, [completa]);
 
   const soltar = (ranura) => {
@@ -87,13 +111,25 @@ export default function SimuladorDeCrisis({ onCompletar }) {
     const pieza = caso.piezas.find((p) => p.id === elegida);
     setAviso({ ok: !pieza.senuelo && pieza.ranura === ranura, texto: pieza.feedback, pieza: pieza.texto });
 
+    const intentos = (intentosRanura.current[ranura] ?? 0) + 1;
+    intentosRanura.current[ranura] = intentos;
+
     if (!pieza.senuelo && pieza.ranura === ranura) {
+      /* La ranura queda cerrada: se registra con todo lo que costó llenarla. */
+      detalle.current.push({
+        item: `${caso.id}:${ranura}`,
+        ok: intentos === 1,
+        intentos,
+        respuesta: primerFallo.current[ranura] ?? null,
+        orden: detalle.current.length + 1,
+      });
       setPuestas((s) => ({ ...s, [ranura]: pieza }));
       setElegida(null);
       return;
     }
 
     /* Falla: vuelve al banco. Los señuelos además cuestan. */
+    if (!primerFallo.current[ranura]) primerFallo.current[ranura] = pieza.id;
     if (pieza.senuelo) setSenuelosSoltados((n) => n + 1);
     setRechazada(pieza.id);
     setTimeout(() => setRechazada(null), 420);
@@ -106,6 +142,9 @@ export default function SimuladorDeCrisis({ onCompletar }) {
     setCaso(otro);
     setBanco(barajar(otro.piezas));
     setPuestas({}); setElegida(null); setAviso(null); setSenuelosSoltados(0);
+    detalle.current = [];
+    intentosRanura.current = {};
+    primerFallo.current = {};
     inicio.current = Date.now();
     setEmpezado(true);
   };

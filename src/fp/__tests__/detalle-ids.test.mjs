@@ -20,7 +20,9 @@
  * que usa el componente. Si un componente cambia su esquema de ids sin
  * actualizar esto, lo que falla es el otro extremo: el recuento total.
  */
-import { RONDAS_GANADORES, ESCENARIOS_EXPLICA } from "../../data/juegosPolitica2.js";
+import {
+  RONDAS_GANADORES, ESCENARIOS_EXPLICA, CASOS_CRISIS, RANURAS_CRISIS,
+} from "../../data/juegosPolitica2.js";
 import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
 
 let fallos = 0;
@@ -111,6 +113,36 @@ unicos(
   "explica-la-politica",
   ESCENARIOS_EXPLICA.flatMap((e) => e.fragmentos.map((f) => f.id)),
   ESCENARIOS_EXPLICA.reduce((n, e) => n + e.fragmentos.length, 0)
+);
+
+/* ── simulador-de-crisis ── una ranura por hueco, prefijada por caso ── */
+/*
+ * El caso más grave del prefijo: la Estrategia de la sequía es "política
+ * comercial" y la de la corrida bancaria es "política monetaria" — respuestas
+ * contrarias bajo el mismo nombre de ranura.
+ */
+unicos(
+  "simulador-de-crisis",
+  CASOS_CRISIS.flatMap((c) => RANURAS_CRISIS.map((r) => `${c.id}:${r}`)),
+  CASOS_CRISIS.length * RANURAS_CRISIS.length
+);
+
+{
+  const sinPrefijo = CASOS_CRISIS.flatMap(() => RANURAS_CRISIS);
+  const choca = sinPrefijo.length !== new Set(sinPrefijo).size;
+  if (!choca) fallos++;
+  filas.push({
+    actividad: "simulador-de-crisis (sin prefijo)",
+    esperado: "hay choque, por eso lleva prefijo",
+    obtenido: choca ? "choca, como se documenta" : "YA NO CHOCA: revisar el comentario",
+    resultado: choca ? "PASA" : "FALLA",
+  });
+}
+
+unicos(
+  "simulador-de-crisis · piezas",
+  CASOS_CRISIS.flatMap((c) => c.piezas.map((p) => p.id)),
+  CASOS_CRISIS.reduce((n, c) => n + c.piezas.length, 0)
 );
 
 console.table(filas);

@@ -299,7 +299,7 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
           Te dan el problema y nada más. Construye tú el objetivo, la estrategia, el instrumento, la medida y la meta.
         </p>
         <SimuladorDeCrisis
-          onCompletar={(pct, ms) => completarJuego(CLAS_CRISIS, "simulador-de-crisis", pct, ms)}
+          onCompletar={(pct, ms, detalle) => completarJuego(CLAS_CRISIS, "simulador-de-crisis", pct, ms, detalle)}
         />
         </>
         )}
