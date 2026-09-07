@@ -90,15 +90,67 @@ export default function CorrienteTitulares({ onCompletar }) {
   const [fallos, setFallos] = useState([]);
   const inicio = useRef(Date.now());
 
+  /*
+   * ═══════════ EL DETALLE POR ÍTEM ═══════════
+   *
+   * `fallos` ya existía, pero solo guarda lo que salió mal y guarda el TEXTO,
+   * no el id: sirve para la lista de repaso del final, no para el panel. El
+   * detalle registra las dieciocho, aciertos incluidos, porque "acierta las
+   * Medidas y falla las Metas" solo se ve teniendo las dos.
+   *
+   * SIN PREFIJO, Y AQUÍ SÍ ES CORRECTO. El banco es uno solo y global —29
+   * enunciados, p1..p5, o1..o5, e1..e4, i1..i5, m1..m5, t1..t5— sin rondas ni
+   * casos que repitan nombre. Cada tanda sortea 18 de esos 29. Comprobado en
+   * detalle-ids.test.mjs.
+   *
+   * CÓMO SE LEE CADA FILA:
+   *   ok=true,  respuesta=null      acertó a la primera
+   *   ok=false, respuesta=<cat>     la clasificó mal; `respuesta` es dónde la puso
+   *   ok=false, respuesta=null      se le fue por el borde sin tocarla
+   *
+   * `ok` es "acertó A LA PRIMERA", igual que en el marcador: una carta
+   * corregida en el reintento enseña su explicación pero no puntúa, así que
+   * tampoco puede contar como acierto aquí. Esa sale como ok=false con
+   * intentos=2 y la categoría equivocada en `respuesta`.
+   *
+   * Se guarda el PRIMER error, no el segundo, igual que en las otras cuatro
+   * actividades: es el instinto antes de ir descartando.
+   */
+  const detalle = useRef([]);
+  const primerFallo = useRef(null);
+  /*
+   * Y una guarda contra el cierre doble. Al cerrar por segundo fallo, `efecto`
+   * queda en null y la animación de la cinta SIGUE viva los 240 ms que tarda
+   * el avance de carta: si la carta estaba a punto de salir, su animationend
+   * dispara escapar() sobre una carta ya cerrada. Eso saltaba una carta de la
+   * tanda y ahora, además, duplicaría su fila de detalle con datos distintos.
+   * (En el camino del acierto no pasa: al quitar la animación se emite
+   * animationcancel, no animationend.)
+   */
+  const cerrada = useRef(null);
+
   const actual = tanda[i];
   const terminado = i >= tanda.length;
   const pct = Math.round((aciertos / tanda.length) * 100);
 
   useEffect(() => {
-    if (terminado && empezado) onCompletar?.(pct, Date.now() - inicio.current);
+    if (terminado && empezado) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
   }, [terminado, empezado]);
 
   const cerrar = (texto, ok, categoriaReal) => {
+    /* Esta carta ya se cerró: llegó tarde un animationend. Ver `cerrada`. */
+    if (cerrada.current === actual.id) return;
+    cerrada.current = actual.id;
+
+    detalle.current.push({
+      item: actual.id,
+      ok,
+      intentos: primerFallo.current ? 2 : 1,
+      respuesta: primerFallo.current,
+      orden: detalle.current.length + 1,
+    });
+    primerFallo.current = null;
+
     if (!ok) setFallos((f) => [...f, { texto: actual.texto, real: categoriaReal }]);
     setAviso({ ok, texto });
     setEfecto(ok ? "acierto" : null);
@@ -123,6 +175,7 @@ export default function CorrienteTitulares({ onCompletar }) {
 
     if (!reintento) {
       /* Primer fallo: vuelve a la cinta con menos tiempo por delante. */
+      primerFallo.current = categoriaId;
       setAviso({ ok: false, texto });
       setEfecto("fallo");
       setTimeout(() => setEfecto(null), 400);
@@ -142,6 +195,9 @@ export default function CorrienteTitulares({ onCompletar }) {
 
   const reiniciar = () => {
     setTanda(sortearTanda());
+    detalle.current = [];
+    primerFallo.current = null;
+    cerrada.current = null;
     setI(0); setAciertos(0); setReintento(false); setAviso(null);
     setEfecto(null); setFallos([]);
     inicio.current = Date.now();

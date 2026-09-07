@@ -21,7 +21,7 @@
  * actualizar esto, lo que falla es el otro extremo: el recuento total.
  */
 import {
-  RONDAS_GANADORES, ESCENARIOS_EXPLICA, CASOS_CRISIS, RANURAS_CRISIS,
+  RONDAS_GANADORES, ESCENARIOS_EXPLICA, CASOS_CRISIS, RANURAS_CRISIS, BANCO_CORRIENTE,
 } from "../../data/juegosPolitica2.js";
 import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
 
@@ -143,6 +143,19 @@ unicos(
   "simulador-de-crisis · piezas",
   CASOS_CRISIS.flatMap((c) => c.piezas.map((p) => p.id)),
   CASOS_CRISIS.reduce((n, c) => n + c.piezas.length, 0)
+);
+
+/* ── corriente-titulares ── el enunciado, banco global sin prefijo ── */
+/*
+ * Un solo banco, sin rondas ni casos: los 29 ids ya son distintos entre sí y
+ * cada tanda sortea 18. No hay nada que prefijar, pero sí que vigilar, porque
+ * el banco es el que más crece: añadir un enunciado con un id ya usado sumaría
+ * dos preguntas en la misma fila sin que nada fallara.
+ */
+unicos(
+  "corriente-titulares",
+  BANCO_CORRIENTE.map((x) => x.id),
+  BANCO_CORRIENTE.length
 );
 
 console.table(filas);

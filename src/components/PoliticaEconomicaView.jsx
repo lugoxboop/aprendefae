@@ -265,7 +265,7 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
           Dieciocho enunciados pasan por una cinta que acelera. Clasifica cada uno antes de que salga por el borde.
         </p>
         <CorrienteTitulares
-          onCompletar={(pct, ms) => completarJuego(CLAS_CORRIENTE, "corriente-titulares", pct, ms)}
+          onCompletar={(pct, ms, detalle) => completarJuego(CLAS_CORRIENTE, "corriente-titulares", pct, ms, detalle)}
         />
         </>
         )}
