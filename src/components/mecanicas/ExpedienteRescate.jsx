@@ -80,7 +80,27 @@ export default function ExpedienteRescate({ onCompletar }) {
   const responder = (o) => {
     if (eleccion) return;
     setEleccion(o.id);
-    onCompletar?.(o.porcentaje, Date.now() - inicio.current);
+    /*
+     * ═══════════ EL DETALLE POR ÍTEM ═══════════
+     *
+     * UNA SOLA FILA, y es lo correcto: esta actividad tiene exactamente una
+     * decisión con respuesta —el diagnóstico— después de destapar las pistas
+     * que quiera. El id es fijo porque la pregunta es siempre la misma; lo que
+     * varía, y lo que vale, es cuál de las cuatro opciones eligió.
+     *
+     * `ok` solo con la opción del 100%: la del 20% es una respuesta parcial
+     * que el motor premia a medias, pero como acierto no lo es.
+     *
+     * Qué pistas destapó antes de decidir NO se guarda aquí: no es un ítem con
+     * respuesta correcta, y meterlo forzaría una forma ajena a la tabla.
+     */
+    onCompletar?.(o.porcentaje, Date.now() - inicio.current, [{
+      item: "diagnostico",
+      ok: o.porcentaje === 100,
+      intentos: 1,
+      respuesta: o.id,
+      orden: 1,
+    }]);
   };
 
   const reiniciar = () => {

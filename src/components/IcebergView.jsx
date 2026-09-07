@@ -305,7 +305,7 @@ export default function IcebergView({ modo = null, onBack }) {
           decide dónde valía la pena intervenir.
         </p>
         <ExpedienteRescate
-          onCompletar={(pct) => completarEvaluativa(CLAS_RESCATE, "expediente-rescate", inicioRescate, pct)}
+          onCompletar={(pct, ms, detalle) => completarEvaluativa(CLAS_RESCATE, "expediente-rescate", inicioRescate, pct, detalle)}
         />
         </>
         )}
@@ -341,7 +341,7 @@ export default function IcebergView({ modo = null, onBack }) {
           sobran: unos son de otro nivel, otros ni siquiera son de este caso.
         </p>
         <ArquitectoProfundidades
-          onCompletar={(pct) => completarEvaluativa(CLAS_ARQUITECTO, "arquitecto-profundidades", inicioArquitecto, pct)}
+          onCompletar={(pct, ms, detalle) => completarEvaluativa(CLAS_ARQUITECTO, "arquitecto-profundidades", inicioArquitecto, pct, detalle)}
         />
         </>
         )}
@@ -359,7 +359,7 @@ export default function IcebergView({ modo = null, onBack }) {
           para elegir: unas son ciertas y no se entienden, otras se entienden y son falsas.
         </p>
         <TransmisionSuperficie
-          onCompletar={(pct) => completarEvaluativa(CLAS_TRANSMISION, "transmision-superficie", inicioTransmision, pct)}
+          onCompletar={(pct, ms, detalle) => completarEvaluativa(CLAS_TRANSMISION, "transmision-superficie", inicioTransmision, pct, detalle)}
         />
         </>
         )}
@@ -378,7 +378,7 @@ export default function IcebergView({ modo = null, onBack }) {
           apoyarse salvo la regla.
         </p>
         <CorrienteCruzada
-          onCompletar={(pct) => completarEvaluativa(CLAS_CORRIENTE, "corriente-cruzada", inicioCorriente, pct)}
+          onCompletar={(pct, ms, detalle) => completarEvaluativa(CLAS_CORRIENTE, "corriente-cruzada", inicioCorriente, pct, detalle)}
         />
         </>
         )}

@@ -25,7 +25,10 @@ import {
 } from "../../data/juegosPolitica2.js";
 import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
 import { QUIZZES } from "../../data/quizzes.js";
-import { BLIPS_RADAR, ANILLOS, DEFINICIONES } from "../../data/icebergActividades.js";
+import {
+  BLIPS_RADAR, ANILLOS, DEFINICIONES, OPCIONES_RESCATE,
+  BANCO_ARQUITECTO, RANURAS, FRAGMENTOS_TRANSMISION, CORRIENTE,
+} from "../../data/icebergActividades.js";
 
 let fallos = 0;
 const filas = [];
@@ -231,6 +234,32 @@ unicos("radar-profundidad · anillos", [...ANILLOS], ANILLOS.length);
  * filas ya viven separadas por activity_id.
  */
 unicos("camara-presion", DEFINICIONES.map((d) => d.termino), DEFINICIONES.length);
+
+/* ── expediente-rescate ── una sola decisión ── */
+/*
+ * Una fila por partida: el diagnóstico. El id es fijo, y lo que varía es
+ * `respuesta` —cuál de las cuatro opciones eligió—, así que lo que hay que
+ * vigilar es que esas cuatro no repitan id.
+ */
+unicos("expediente-rescate · opciones", OPCIONES_RESCATE.map((o) => o.id), OPCIONES_RESCATE.length);
+
+/* ── arquitecto-profundidades ── la ranura, sin prefijo ── */
+/*
+ * Un solo caso, tres ranuras con nombre distinto: no hay nada que prefijar.
+ * Las quince piezas son los valores de `respuesta`.
+ */
+unicos("arquitecto-profundidades", [...RANURAS], RANURAS.length);
+unicos("arquitecto-profundidades · piezas", BANCO_ARQUITECTO.map((p) => p.id), BANCO_ARQUITECTO.length);
+
+/* ── transmision-superficie ── el fragmento enviado ── */
+unicos("transmision-superficie", FRAGMENTOS_TRANSMISION.map((f) => f.id), FRAGMENTOS_TRANSMISION.length);
+
+/* ── corriente-cruzada ── la frase ── */
+/*
+ * Dieciséis frases de cuatro casos intercalados, con id propio cada una
+ * (c-t*, c-c*, c-b*, c-f*): el prefijo de caso ya viene de origen.
+ */
+unicos("corriente-cruzada", CORRIENTE.map((c) => c.id), CORRIENTE.length);
 
 console.table(filas);
 console.log(fallos === 0
