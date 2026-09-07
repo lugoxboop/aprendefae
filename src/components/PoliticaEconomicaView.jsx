@@ -282,7 +282,7 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
           Arma con cuatro frases una explicación que entienda alguien sin idea de economía. La jerga también cuenta como ruido.
         </p>
         <ExplicaLaPolitica
-          onCompletar={(pct, ms) => completarJuego(CLAS_EXPLICA, "explica-la-politica", pct, ms)}
+          onCompletar={(pct, ms, detalle) => completarJuego(CLAS_EXPLICA, "explica-la-politica", pct, ms, detalle)}
         />
         </>
         )}

@@ -104,8 +104,43 @@ export default function ExplicaLaPolitica({ onCompletar }) {
   const bruto = claros - CASTIGO_RUIDO * ruido;
   const pct = Math.round(Math.min(100, Math.max(0, (bruto / RANURAS_EXPLICA) * 100)));
 
+  /*
+   * ═══════════ EL DETALLE POR ÍTEM ═══════════
+   *
+   * LA UNIDAD ES EL FRAGMENTO QUE ELIGIÓ, y solo esos cuatro. Aquí no hay
+   * ranuras con respuesta correcta —cualquier combinación de cuatro claros
+   * vale— así que el ítem no puede ser la posición: lo que dice algo es QUÉ
+   * metió en la transmisión.
+   *
+   * LOS IDS YA SON ÚNICOS ENTRE ESCENARIOS: ta1..ta8 y ar1..ar8. No hace falta
+   * prefijo, a diferencia de las dos actividades anteriores, donde las rondas y
+   * las casillas sí repetían nombre. Comprobado en detalle-ids.test.mjs para
+   * que añadir un escenario tercero con ids reusados no pase inadvertido.
+   *
+   * `respuesta` guarda el TIPO del fragmento —correcto, jerga o incorrecto— y
+   * ahí está el valor de esta actividad. Decir algo cierto que el vecino no
+   * entiende no es el mismo fallo que decir algo falso, y el panel puede
+   * separarlos sin tener que conocer el catálogo del cliente.
+   *
+   * `intentos` es siempre 1 A PROPÓSITO. Aquí se puede sacar una pieza y
+   * devolverla al banco antes de transmitir, y la puntuación ya decide no
+   * castigar ese manoseo porque castigaría pensar. Contar las idas y venidas
+   * como "intentos" contradiría esa regla y además haría incomparable el campo
+   * con el de las otras actividades, donde sí significa "veces que lo intentó
+   * antes de acertar".
+   *
+   * `orden` es la posición en la transmisión: el orden en que lo contó.
+   */
   useEffect(() => {
-    if (transmitido) onCompletar?.(pct, Date.now() - inicio.current);
+    if (!transmitido) return;
+    const items = puestos.map((id, k) => ({
+      item: id,
+      ok: trozo(id).tipo === "correcto",
+      intentos: 1,
+      respuesta: trozo(id).tipo,
+      orden: k + 1,
+    }));
+    onCompletar?.(pct, Date.now() - inicio.current, items);
   }, [transmitido]);
 
   const alternar = (id) => {

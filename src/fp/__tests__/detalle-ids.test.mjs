@@ -20,7 +20,7 @@
  * que usa el componente. Si un componente cambia su esquema de ids sin
  * actualizar esto, lo que falla es el otro extremo: el recuento total.
  */
-import { RONDAS_GANADORES } from "../../data/juegosPolitica2.js";
+import { RONDAS_GANADORES, ESCENARIOS_EXPLICA } from "../../data/juegosPolitica2.js";
 import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
 
 let fallos = 0;
@@ -99,6 +99,18 @@ unicos(
   "arma-grupo-logico · enunciados",
   CASOS_CADENA.flatMap((c) => c.enunciados.map((e) => e.id)),
   CASOS_CADENA.reduce((n, c) => n + c.enunciados.length, 0)
+);
+
+/* ── explica-la-politica ── el fragmento elegido, sin prefijo ── */
+/*
+ * Aquí NO hay prefijo, y es correcto: los ids ya nacen separados por escenario
+ * (ta* y ar*). Esta comprobación existe para que un escenario nuevo que reusara
+ * ids no pase inadvertido — sería el mismo fallo silencioso, sin el aviso.
+ */
+unicos(
+  "explica-la-politica",
+  ESCENARIOS_EXPLICA.flatMap((e) => e.fragmentos.map((f) => f.id)),
+  ESCENARIOS_EXPLICA.reduce((n, e) => n + e.fragmentos.length, 0)
 );
 
 console.table(filas);
