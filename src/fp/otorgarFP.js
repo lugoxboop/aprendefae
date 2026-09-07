@@ -46,37 +46,39 @@ export async function otorgarFP({
   /* Sin sesión no hay dónde guardar. El aviso de cuenta lo dispara quien llama. */
   if (!sesion?.session) return { ok: false, motivo: "sin-sesion" };
 
-  const base = {
+  /*
+   * UNA SOLA LLAMADA, SIN RED DE SEGURIDAD, y eso es deliberado.
+   *
+   * Aquí hubo un respaldo que reintentaba sin p_detalle "por si la migración
+   * no estaba aplicada". Se quitó porque no atrapaba nada y hacía daño:
+   *
+   *   · No se disparaba en el caso que fallaba. Su condición exigía que se
+   *     estuviera mandando detalle, y lo que reventaba eran las llamadas SIN
+   *     detalle.
+   *   · Y el reintento era la misma llamada de tres parámetros con nombre que
+   *     ya había fallado.
+   *
+   * Estaba escrito sobre una suposición falsa: que mandar los parámetros CON
+   * NOMBRE desambigua entre dos firmas. No lo hace. Se comprobó contra la API
+   * real y devolvió PGRST203 igual, porque las dos firmas aceptaban el mismo
+   * conjunto de tres nombres —la de cuatro tenía default en el último.
+   *
+   * La 0018 retiró la firma vieja, así que la ventana que ese respaldo decía
+   * cubrir ya no existe. Una red que no atrapa nada es peor que ninguna:
+   * invita a confiar en ella.
+   *
+   * p_detalle solo se manda cuando hay detalle. Con una sola firma viva, la
+   * llamada de tres resuelve contra ella y el parámetro toma su default.
+   */
+  const argumentos = {
     p_activity_id: actividadId,
     p_duration_ms: duracionMs === null ? null : Math.round(duracionMs),
     /* El motor del servidor trabaja en porcentaje, no en proporción. */
     p_correct_pct: aciertos === null ? null : Math.round(aciertos * 100),
   };
-  const conDetalle = detalle && detalle.length;
+  if (detalle && detalle.length) argumentos.p_detalle = detalle;
 
-  let { data, error } = await supabase.rpc(
-    "registrar_fp",
-    conDetalle ? { ...base, p_detalle: detalle } : base
-  );
-
-  /*
-   * ═══ EL DETALLE TAMPOCO PUEDE COSTAR PUNTOS EN LA VENTANA DE DESPLIEGUE ═══
-   *
-   * PostgREST resuelve la función por el CONJUNTO de parámetros con nombre que
-   * se le manda. Si este código llega a producción antes que la migración 0017,
-   * mandar p_detalle no encontraría ninguna firma —la desplegada tiene tres
-   * argumentos— y la actividad no pagaría.
-   *
-   * Así que ante ese error concreto se reintenta sin el detalle. Se pierde el
-   * diagnóstico durante la ventana y se conservan los puntos, que es la misma
-   * regla que gobierna el bloque con manejador del servidor, aplicada al
-   * despliegue. Sin esto habría que ordenar migración y push, y ese
-   * acoplamiento ya nos costó partir la 0011 en dos.
-   */
-  if (error && conDetalle && /function|schema cache|does not exist/i.test(error.message ?? "")) {
-    console.warn("[aprendeFAE] registrar_fp sin p_detalle: la 0017 todavía no está aplicada.");
-    ({ data, error } = await supabase.rpc("registrar_fp", base));
-  }
+  const { data, error } = await supabase.rpc("registrar_fp", argumentos);
 
   if (error) {
     console.error("[aprendeFAE] No se pudo registrar FP:", error.message);

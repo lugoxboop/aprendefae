@@ -1,0 +1,36 @@
+-- ---------------------------------------------------------------------------
+-- 0018 — Retira la firma de tres argumentos de registrar_fp.
+--
+-- IDEMPOTENTE. Un `drop function if exists`. Correrla dos veces deja lo mismo.
+--
+-- ═══════════ QUÉ PASÓ, PARA QUE NO SE REPITA ═══════════
+--
+-- La 0017 creó registrar_fp(text, integer, numeric, jsonb) y NO retiró la de
+-- (text, integer, numeric). Con las dos vivas, una llamada de tres argumentos
+-- coincide con ambas —porque p_detalle tiene default— y Postgres se niega a
+-- elegir:
+--
+--   PGRST203  "Could not choose the best candidate function between: …"
+--
+-- Y LOS PARÁMETROS CON NOMBRE NO SALVAN DE ESTO. Esa era la suposición con la
+-- que se escribió el respaldo del cliente, y era falsa: se comprobó llamando a
+-- la API real con los tres nombres y devolvió PGRST203 igual. PostgREST
+-- resuelve por nombres, pero cuando las dos firmas aceptan el mismo conjunto de
+-- tres nombres, no hay nada que resolver.
+--
+-- EL DAÑO. Entre que se aplicó la 0017 y que se corrió este drop, las seis
+-- actividades que no mandan detalle no pudieron registrar FP. Fallaba en
+-- silencio: el estudiante veía su porcentaje y no recibía puntos.
+--
+-- Lo único que amortigua es que la escritura fallaba ENTERA: no quedó fila en
+-- fp_history, así que `v_previas` sigue en 0 y volver a jugar paga completo.
+-- La regla de repetición no castiga a quien lo sufrió.
+--
+-- LA LECCIÓN. La 0011 se partió en dos precisamente para no dejar dos firmas
+-- conviviendo, y aquí se dejó exactamente eso. Añadir una firma con un
+-- parámetro opcional NO es aditivo: es ambiguo hasta que se retira la vieja.
+-- ---------------------------------------------------------------------------
+
+-- Al quedar una sola firma, una llamada de tres argumentos resuelve contra
+-- ella y p_detalle toma su default. El cliente no cambia.
+drop function if exists public.registrar_fp(text, integer, numeric);

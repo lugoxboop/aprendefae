@@ -19,6 +19,12 @@
 -- Para sacar un resultado de dentro de un bloque `do $$` que corre como
 -- authenticated se usa set_config/current_setting, nunca un insert a `res`.
 --
+-- NOTA DE LA 0018. Este archivo llama a registrar_fp con TRES argumentos
+-- posicionales en el paso 7. Mientras convivieron las dos firmas eso era
+-- ambiguo y reventaba la prueba entera; con la vieja retirada resuelve contra
+-- la única que queda y p_detalle toma su default, que es justo lo que el paso
+-- quiere comprobar.
+--
 -- No toca a nadie real: dos usuarios propios zzz-*, y ROLLBACK al final.
 --
 -- CÓMO SE CORRE: pegar el archivo COMPLETO en el editor SQL de Supabase y
@@ -178,18 +184,30 @@ insert into res select 9, 'intentos fuera de rango se sujeta a 99 y a 1', '99/1'
       and activity_id = 'simulador-de-crisis');
 
 -- ── 10. on delete cascade ─────────────────────────────────────────────────
-insert into res select 10, 'borrar la fila de fp_history se lleva su detalle', '0 tras borrar',
-  (with borrada as (
-     delete from public.fp_history
-      where user_id = (select uid from ids where etiqueta = 'a')
-        and activity_id = 'simulador-de-crisis'
-      returning id
-   )
-   select count(*)::text || ' tras borrar' from public.fp_detalle
-    where fp_history_id in (select id from borrada)),
-  (select count(*) = 0 from public.fp_detalle
-    where user_id = (select uid from ids where etiqueta = 'a')
-      and activity_id = 'simulador-de-crisis');
+-- EN DOS SENTENCIAS, no en una. Una CTE que borra y una consulta exterior que
+-- lee la misma tabla no se ven entre sí: Postgres las corre contra la misma
+-- instantánea, así que el conteo saldría de ANTES del borrado y el paso pasaría
+-- siempre, midiendo nada.
+create temp table cascada(antes bigint, despues bigint) on commit drop;
+
+insert into cascada(antes)
+select count(*) from public.fp_detalle
+ where user_id = (select uid from ids where etiqueta = 'a')
+   and activity_id = 'simulador-de-crisis';
+
+delete from public.fp_history
+ where user_id = (select uid from ids where etiqueta = 'a')
+   and activity_id = 'simulador-de-crisis';
+
+update cascada set despues = (
+  select count(*) from public.fp_detalle
+   where user_id = (select uid from ids where etiqueta = 'a')
+     and activity_id = 'simulador-de-crisis'
+);
+
+insert into res select 10, 'borrar la fila de fp_history se lleva su detalle', 'de 2 a 0',
+  (select 'de ' || antes || ' a ' || despues from cascada),
+  (select antes = 2 and despues = 0 from cascada);
 
 -- ── 11. RLS: cada quien ve lo suyo ────────────────────────────────────────
 -- El usuario B no puede ver el detalle de A. Se saca por set_config para no
