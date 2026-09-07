@@ -44,6 +44,24 @@ export default function ArquitectoProfundidades({ onCompletar }) {
   const [fallos, setFallos] = useState(0);
   const inicio = useRef(Date.now());
 
+  /*
+   * ═══════════ EL DETALLE POR ÍTEM ═══════════
+   *
+   * LA UNIDAD ES LA RANURA, como en "Arma el grupo lógico": el juego es llenar
+   * tres huecos del iceberg, y de cada uno interesa si lo acertó de una, cuánto
+   * le costó y qué pieza puso mal antes.
+   *
+   * SIN PREFIJO: hay un solo caso —Blockbuster— y las tres ranuras (Patrón,
+   * Estructura, Modelo mental) no se repiten. Las quince piezas también tienen
+   * id único. Comprobado en detalle-ids.test.mjs.
+   *
+   * `respuesta` es la primera pieza equivocada de esa ranura. Los señuelos se
+   * distinguen solos: sus ids llevan -t o -x.
+   */
+  const detalle = useRef([]);
+  const intentosRanura = useRef({});
+  const primerFallo = useRef({});
+
   const usadas = new Set(Object.values(colocadas).map((p) => p.id));
   const disponibles = banco.filter((p) => !usadas.has(p.id));
   const completo = RANURAS.every((r) => colocadas[r]);
@@ -52,16 +70,27 @@ export default function ArquitectoProfundidades({ onCompletar }) {
   const pct = Math.max(0, Math.min(100, Math.round((bruto / MAXIMO) * 100)));
 
   useEffect(() => {
-    if (completo) onCompletar?.(pct, Date.now() - inicio.current);
+    if (completo) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
   }, [completo]);
 
   const poner = (nivel) => {
     if (!elegida || colocadas[nivel]) return;
     const pieza = banco.find((p) => p.id === elegida);
+    const intentos = (intentosRanura.current[nivel] ?? 0) + 1;
+    intentosRanura.current[nivel] = intentos;
+
     if (pieza.correcta && pieza.nivel === nivel) {
+      detalle.current.push({
+        item: nivel,
+        ok: intentos === 1,
+        intentos,
+        respuesta: primerFallo.current[nivel] ?? null,
+        orden: detalle.current.length + 1,
+      });
       setColocadas((c) => ({ ...c, [nivel]: pieza }));
       setElegida(null);
     } else {
+      if (!primerFallo.current[nivel]) primerFallo.current[nivel] = pieza.id;
       setFallos((f) => f + 1);
       setRechazada(pieza.id);
       setTimeout(() => setRechazada(null), 420);
@@ -70,6 +99,9 @@ export default function ArquitectoProfundidades({ onCompletar }) {
 
   const reiniciar = () => {
     setColocadas({}); setElegida(null); setFallos(0); setSemilla((s) => s + 1);
+    detalle.current = [];
+    intentosRanura.current = {};
+    primerFallo.current = {};
     inicio.current = Date.now();
   };
 
