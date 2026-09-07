@@ -42,7 +42,12 @@ export default function QuizBlock({ questions, accent, progress, onAnswerCorrect
      */
     if (sinIntentarRef.current) {
       sinIntentarRef.current = false;
-      onFirstAttempt?.(currentIndex, !!opt.correct);
+      /*
+       * Se añade la opción elegida. Es SOLO un dato más en el aviso: no cambia
+       * cuándo se avisa, ni qué se puntúa, ni lo que ve el estudiante. El id
+       * (a/b/c/d) es estable y sobrevive a que se reescriba el enunciado.
+       */
+      onFirstAttempt?.(currentIndex, !!opt.correct, opt.id);
     }
 
     if (opt.correct && !scoredRef.current) {

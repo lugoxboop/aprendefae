@@ -24,6 +24,7 @@ import {
   RONDAS_GANADORES, ESCENARIOS_EXPLICA, CASOS_CRISIS, RANURAS_CRISIS, BANCO_CORRIENTE,
 } from "../../data/juegosPolitica2.js";
 import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
+import { QUIZZES } from "../../data/quizzes.js";
 
 let fallos = 0;
 const filas = [];
@@ -157,6 +158,58 @@ unicos(
   BANCO_CORRIENTE.map((x) => x.id),
   BANCO_CORRIENTE.length
 );
+
+/* ── simulador-da ── la pregunta, prefijada por canal ── */
+/*
+ * Los cuatro canales tienen cinco preguntas cada uno indexadas 0..4: sin el
+ * prefijo de canal, la pregunta 0 de consumo y la 0 de inversión —que no
+ * tienen nada que ver— caerían en la misma fila.
+ */
+{
+  const canales = ["consumo", "inversion", "gasto", "xn"];
+  unicos(
+    "simulador-da",
+    [
+      ...canales.flatMap((c) => QUIZZES[c].map((_, i) => `${c}:${i}`)),
+      "final:finalQ1",
+      "final:finalQ2",
+    ],
+    canales.reduce((n, c) => n + QUIZZES[c].length, 0) + 2
+  );
+
+  const sinPrefijo = [
+    ...canales.flatMap((c) => QUIZZES[c].map((_, i) => String(i))),
+    "finalQ1", "finalQ2",
+  ];
+  const choca = sinPrefijo.length !== new Set(sinPrefijo).size;
+  if (!choca) fallos++;
+  filas.push({
+    actividad: "simulador-da (sin prefijo)",
+    esperado: "hay choque, por eso lleva prefijo",
+    obtenido: choca ? "choca, como se documenta" : "YA NO CHOCA: revisar el comentario",
+    resultado: choca ? "PASA" : "FALLA",
+  });
+
+  /* Y que los ids de opción sean únicos dentro de cada pregunta: son `respuesta`. */
+  const malas = [];
+  for (const c of canales) {
+    QUIZZES[c].forEach((q, i) => {
+      const ids = q.options.map((o) => o.id);
+      if (ids.length !== new Set(ids).size) malas.push(`${c}:${i}`);
+    });
+  }
+  for (const k of ["finalQ1", "finalQ2"]) {
+    const ids = QUIZZES[k].options.map((o) => o.id);
+    if (ids.length !== new Set(ids).size) malas.push(`final:${k}`);
+  }
+  if (malas.length) fallos++;
+  filas.push({
+    actividad: "simulador-da · opciones",
+    esperado: "ninguna pregunta repite id de opción",
+    obtenido: malas.length ? "REPITEN: " + malas.join(", ") : "ninguna repite",
+    resultado: malas.length ? "FALLA" : "PASA",
+  });
+}
 
 console.table(filas);
 console.log(fallos === 0

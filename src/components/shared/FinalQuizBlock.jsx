@@ -21,7 +21,8 @@ export default function FinalQuizBlock({ question, options, accent, completed, o
 
     if (sinIntentarRef.current) {
       sinIntentarRef.current = false;
-      onFirstAttempt?.(!!opt.correct);
+      /* Ver QuizBlock: un dato más en el aviso, nada más. */
+      onFirstAttempt?.(!!opt.correct, opt.id);
     }
 
     if (opt.correct && !scoredRef.current) {

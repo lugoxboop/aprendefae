@@ -9,8 +9,8 @@ export default function FinalView({ completed, onCorrectQ1, onCorrectQ2, onFirst
     <div>
       <TopBar title="Ronda Final" onBack={onBack} />
       <p className="text-sm mb-5" style={{ color: COLORS.textMuted }}>Mezclaste los 4 canales. Ahora conecta las ideas.</p>
-      <FinalQuizBlock question={QUIZZES.finalQ1.question} options={QUIZZES.finalQ1.options} accent={COLORS.gold} completed={completed.finalQ1} onCorrect={onCorrectQ1} onFirstAttempt={(a) => onFirstAttempt("finalQ1", a)} />
-      <FinalQuizBlock question={QUIZZES.finalQ2.question} options={QUIZZES.finalQ2.options} accent={COLORS.gold} completed={completed.finalQ2} onCorrect={onCorrectQ2} onFirstAttempt={(a) => onFirstAttempt("finalQ2", a)} />
+      <FinalQuizBlock question={QUIZZES.finalQ1.question} options={QUIZZES.finalQ1.options} accent={COLORS.gold} completed={completed.finalQ1} onCorrect={onCorrectQ1} onFirstAttempt={(a, resp) => onFirstAttempt("finalQ1", a, resp)} />
+      <FinalQuizBlock question={QUIZZES.finalQ2.question} options={QUIZZES.finalQ2.options} accent={COLORS.gold} completed={completed.finalQ2} onCorrect={onCorrectQ2} onFirstAttempt={(a, resp) => onFirstAttempt("finalQ2", a, resp)} />
       {/* Cierre sin trofeo: el texto ya dice lo que hay que decir. */}
       {bothDone && (
         <div className="mt-6 p-4 rounded-2xl text-center" style={{ backgroundColor: "rgba(255,200,87,0.1)", border: `1px solid ${COLORS.gold}` }}>

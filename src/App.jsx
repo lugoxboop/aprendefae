@@ -122,6 +122,29 @@ export default function App() {
   const [finalFirstTry, setFinalFirstTry] = useState({ finalQ1: null, finalQ2: null });
 
   /*
+   * ═══════════ EL DETALLE POR ÍTEM ═══════════
+   *
+   * LA UNIDAD ES LA PREGUNTA. Veintidós: cinco por cada canal y las dos de la
+   * Ronda Final. Es la única forma que tiene esta actividad, que es un
+   * simulador con quiz y no un juego de piezas.
+   *
+   * EL ID LLEVA EL CANAL DELANTE —`consumo:0`, `xn:3`, `final:finalQ1`—
+   * porque el índice por sí solo se repite en los cuatro canales: la pregunta 0
+   * de consumo y la 0 de inversión son distintas y sin prefijo acabarían en la
+   * misma fila.
+   *
+   * VA EN UN REF, NO EN EL ESTADO, y eso es deliberado. `firstTry` guarda
+   * booleanos y de ahí sale `aciertosPrimerIntento` con un .filter(Boolean):
+   * meter aquí un objeto haría que toda respuesta contara como acierto y
+   * cambiaría los FP. Un ref no entra en ese cálculo ni provoca repintados, así
+   * que la actividad se comporta exactamente igual que antes.
+   *
+   * `respuesta` es el id de la opción (a/b/c/d), estable frente a reescrituras
+   * del enunciado.
+   */
+  const respuestaPrimerIntento = useRef({});
+
+  /*
    * El avance se guarda en local y no depende de tener cuenta. Acertar una
    * pregunta suelta ya no pide la cuenta: no hay nada que guardar todavía,
    * porque los FP se otorgan al completar la actividad entera, no por
@@ -145,7 +168,16 @@ export default function App() {
    * no en el quiz porque este estado sí sobrevive a salir del canal y volver:
    * si el quiz se remonta, el intento de esa pregunta ya no es el primero.
    */
-  const markFirstAttempt = (topicKey, index, acerto) => {
+  const markFirstAttempt = (topicKey, index, acerto, respuesta = null) => {
+    /*
+     * Misma guarda que la de abajo, expresada sobre el ref: al remontar el
+     * quiz, onFirstAttempt vuelve a dispararse y el estado lo descarta por
+     * "ya anotado". Aquí se descarta igual, para que las dos digan lo mismo.
+     */
+    const clave = `${topicKey}:${index}`;
+    if (respuestaPrimerIntento.current[clave] === undefined) {
+      respuestaPrimerIntento.current[clave] = { ok: acerto, respuesta };
+    }
     setFirstTry((prev) => {
       if (prev[topicKey][index] !== null) return prev;
       const updated = [...prev[topicKey]];
@@ -154,7 +186,11 @@ export default function App() {
     });
   };
 
-  const markFinalFirstAttempt = (key, acerto) => {
+  const markFinalFirstAttempt = (key, acerto, respuesta = null) => {
+    const clave = `final:${key}`;
+    if (respuestaPrimerIntento.current[clave] === undefined) {
+      respuestaPrimerIntento.current[clave] = { ok: acerto, respuesta };
+    }
     setFinalFirstTry((prev) => (prev[key] !== null ? prev : { ...prev, [key]: acerto }));
   };
 
@@ -230,6 +266,17 @@ export default function App() {
         actividadId: ACTIVIDAD,
         porcentajeAciertos: (aciertosPrimerIntento / totalPreguntas) * 100,
         duracionMs: inicioSimulador.current ? Date.now() - inicioSimulador.current : null,
+        /*
+         * En el orden en que se contestaron, que en esta actividad es el orden
+         * en que recorrió los canales y no el del catálogo.
+         */
+        detalle: Object.entries(respuestaPrimerIntento.current).map(([item, r], k) => ({
+          item,
+          ok: r.ok,
+          intentos: 1,
+          respuesta: r.respuesta,
+          orden: k + 1,
+        })),
       });
       if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
     })();
@@ -427,28 +474,28 @@ export default function App() {
           {view === "consumo" && (
             <ConsumoView
               state={consumoState} setState={setConsumoState}
-              quizProgress={topicProgress.consumo} onAnswerCorrect={(idx) => markTopicCorrect("consumo", idx)} onFirstAttempt={(idx, a) => markFirstAttempt("consumo", idx, a)}
+              quizProgress={topicProgress.consumo} onAnswerCorrect={(idx) => markTopicCorrect("consumo", idx)} onFirstAttempt={(idx, a, r) => markFirstAttempt("consumo", idx, a, r)}
               onBack={goDashboard} onNext={() => setView("inversion")}
             />
           )}
           {view === "inversion" && (
             <InversionView
               state={inversionState} setState={setInversionState}
-              quizProgress={topicProgress.inversion} onAnswerCorrect={(idx) => markTopicCorrect("inversion", idx)} onFirstAttempt={(idx, a) => markFirstAttempt("inversion", idx, a)}
+              quizProgress={topicProgress.inversion} onAnswerCorrect={(idx) => markTopicCorrect("inversion", idx)} onFirstAttempt={(idx, a, r) => markFirstAttempt("inversion", idx, a, r)}
               onBack={goDashboard} onNext={() => setView("gasto")}
             />
           )}
           {view === "gasto" && (
             <GastoView
               state={gastoState} setState={setGastoState}
-              quizProgress={topicProgress.gasto} onAnswerCorrect={(idx) => markTopicCorrect("gasto", idx)} onFirstAttempt={(idx, a) => markFirstAttempt("gasto", idx, a)}
+              quizProgress={topicProgress.gasto} onAnswerCorrect={(idx) => markTopicCorrect("gasto", idx)} onFirstAttempt={(idx, a, r) => markFirstAttempt("gasto", idx, a, r)}
               onBack={goDashboard} onNext={() => setView("xn")}
             />
           )}
           {view === "xn" && (
             <XNView
               state={xnState} setState={setXnState}
-              quizProgress={topicProgress.xn} onAnswerCorrect={(idx) => markTopicCorrect("xn", idx)} onFirstAttempt={(idx, a) => markFirstAttempt("xn", idx, a)}
+              quizProgress={topicProgress.xn} onAnswerCorrect={(idx) => markTopicCorrect("xn", idx)} onFirstAttempt={(idx, a, r) => markFirstAttempt("xn", idx, a, r)}
               onBack={goDashboard} onNext={() => setView(allFourDone ? "final" : "dashboard")}
             />
           )}
