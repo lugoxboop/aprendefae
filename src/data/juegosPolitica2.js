@@ -346,22 +346,39 @@ export const CASOS_CRISIS = [
     id: "sequia",
     problema:
       "Una sequía golpea la producción agrícola y el precio de los alimentos se dispara en todo el país.",
+    /*
+     * LA CADENA CAMBIÓ DE ESTRATEGIA, Y POR UNA RAZÓN PEDAGÓGICA.
+     *
+     * Antes la respuesta correcta era "Política sectorial (agropecuaria)". Es
+     * contenido real del profesor, pero no se practica en ninguna otra parte
+     * del sitio: usarla como respuesta en la actividad más dura y menos guiada
+     * de las siete medía familiaridad con un término suelto, no razonamiento.
+     *
+     * Ahora la cadena va por política comercial, que sí se trabaja en el resto
+     * del tema. El problema y la meta no se tocaron.
+     *
+     * OJO CON LA DIRECCIÓN, que es donde está la trampa buena: se BAJAN los
+     * aranceles para que entre comida más barata. Subirlos —el señuelo nuevo—
+     * empeora la escasez. Es el mismo instrumento apuntando al revés.
+     */
     piezas: [
       { id: "sq-o", ranura: "objetivo", texto: "Controlar la inflación de alimentos y proteger el ingreso de las familias más vulnerables", feedback: "✅ Correcto — responde directamente al problema planteado." },
-      { id: "sq-e", ranura: "estrategia", texto: "Política sectorial (agropecuaria)", feedback: "✅ Correcto — ataca el sector afectado directamente, no la economía en general." },
-      { id: "sq-i", ranura: "instrumento", texto: "Subsidios a la producción agrícola", feedback: "✅ Correcto — la herramienta típica para apoyar un sector específico en crisis." },
-      { id: "sq-m", ranura: "medida", texto: "Otorgar subsidios directos a los productores afectados por la sequía", feedback: "✅ Correcto — la acción concreta ya aplicada al caso." },
+      { id: "sq-e", ranura: "estrategia", texto: "Política comercial", feedback: "✅ Correcto — permite actuar rápido sobre la oferta disponible en el país sin depender de otro sector." },
+      { id: "sq-i", ranura: "instrumento", texto: "Aranceles a la importación de alimentos", feedback: "✅ Correcto — es la palanca directa sobre cuánta comida puede entrar del exterior." },
+      { id: "sq-m", ranura: "medida", texto: "Reducir o eliminar temporalmente los aranceles a la importación de alimentos básicos, para facilitar el ingreso de productos más baratos del exterior", feedback: "✅ Correcto — nota la dirección: se BAJAN los aranceles para aliviar la escasez, no se suben." },
       { id: "sq-t", ranura: "meta", texto: "Reducir el precio de los alimentos básicos en 10% en 6 meses", feedback: "✅ Correcto — medible, con plazo, conectada al problema." },
 
-      { id: "sq-d1", senuelo: true, texto: "Política monetaria", feedback: "❌ No es la estrategia más directa — un shock de oferta agrícola no se resuelve moviendo tasas de interés." },
-      { id: "sq-d2", senuelo: true, texto: "Aranceles a la importación de alimentos", feedback: "❌ Sería contraproducente — bloquear alimentos importados más baratos empeoraría la escasez." },
-      { id: "sq-d3", senuelo: true, texto: "Reducir la tasa de interés del 10% al 8%", feedback: "❌ Medida real, pero de política monetaria, no de esta crisis." },
-      { id: "sq-d4", senuelo: true, texto: "Aumentar las exportaciones del país", feedback: "❌ Objetivo real, pero de otro contexto." },
-      { id: "sq-d5", senuelo: true, texto: "Reducir el desempleo", feedback: "❌ Objetivo plausible en general, pero no es el foco de esta crisis." },
-      { id: "sq-d6", senuelo: true, texto: "El Banco de la República comprará 300 millones de dólares en el mercado cambiario", feedback: "❌ Medida de política cambiaria — no resuelve una crisis de oferta agrícola." },
-      { id: "sq-d7", senuelo: true, texto: "Política comercial", feedback: "❌ Estrategia real, pero no la más directa para producción interna afectada por sequía." },
+      /* El mismo instrumento, al revés: la confusión que de verdad importa. */
+      { id: "sq-d1", senuelo: true, texto: "Aumentar los aranceles a la importación de alimentos", feedback: "❌ Dirección equivocada — subir aranceles encarece más la comida importada y empeora la escasez, no la alivia." },
+      /* Fue el instrumento correcto de la versión anterior, y sigue siendo defendible. */
+      { id: "sq-d2", senuelo: true, texto: "Subsidios a la producción agrícola", feedback: "❌ Es una respuesta real y defendible, pero más lenta — no alivia el precio en 6 meses como bajar aranceles." },
+      { id: "sq-d3", senuelo: true, texto: "Política monetaria", feedback: "❌ No es la estrategia más directa — un shock de oferta agrícola no se resuelve moviendo tasas de interés." },
+      { id: "sq-d4", senuelo: true, texto: "Reducir la tasa de interés del 10% al 8%", feedback: "❌ Medida real, pero de política monetaria, no de esta crisis." },
+      { id: "sq-d5", senuelo: true, texto: "Aumentar las exportaciones del país", feedback: "❌ Objetivo real, pero de otro contexto." },
+      { id: "sq-d6", senuelo: true, texto: "Reducir el desempleo", feedback: "❌ Objetivo plausible en general, pero no es el foco de esta crisis." },
+      { id: "sq-d7", senuelo: true, texto: "El Banco de la República comprará 300 millones de dólares en el mercado cambiario", feedback: "❌ Medida de política cambiaria — no resuelve una crisis de oferta agrícola." },
     ],
-  },
+},
   {
     id: "ciber",
     problema:

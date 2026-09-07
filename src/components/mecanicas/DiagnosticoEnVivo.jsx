@@ -54,8 +54,18 @@ import { barajar } from "../../utils/barajar.js";
  * palabras.
  */
 
-/* Segundos de caída, de aparición a línea de archivo. Punto de calibración. */
-const SEGUNDOS_CAIDA = 6;
+/*
+ * Segundos de caída, de aparición a línea de archivo.
+ *
+ * ESTUVO EN 6 Y ERA INJUGABLE: no daba tiempo ni a leer el titular, menos a
+ * decidir. Los titulares del profesor son frases largas con cifras dentro
+ * —"El déficit fiscal se proyecta en 9,4% del PIB para 2027, frente a una meta
+ * de 4,5%"— y clasificar exige leerlas enteras.
+ *
+ * 30 es el suelo acordado, no el número final: sigue siendo un punto de
+ * calibración y se ajustará cuando haya estudiantes usándolo.
+ */
+const SEGUNDOS_CAIDA = 30;
 
 /* La línea de archivo, en % de altura desde abajo. */
 const LINEA_ARCHIVO = 15;
