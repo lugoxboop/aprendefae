@@ -25,7 +25,7 @@ import {
 } from "../../data/juegosPolitica2.js";
 import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
 import { QUIZZES } from "../../data/quizzes.js";
-import { BLIPS_RADAR, ANILLOS } from "../../data/icebergActividades.js";
+import { BLIPS_RADAR, ANILLOS, DEFINICIONES } from "../../data/icebergActividades.js";
 
 let fallos = 0;
 const filas = [];
@@ -222,6 +222,15 @@ unicos("radar-profundidad", BLIPS_RADAR.map((b) => b.id), BLIPS_RADAR.length);
 /* Los anillos son los valores de `respuesta`: si dos se llamaran igual, no se
  * podría saber dónde puso la señal. */
 unicos("radar-profundidad · anillos", [...ANILLOS], ANILLOS.length);
+
+/* ── camara-presion ── el término preguntado ── */
+/*
+ * DEFINICIONES no tiene campo id: la cadena del término ES el identificador, y
+ * es con la que compara el componente. Los dos modos se registran como
+ * actividades distintas (camara-presion / camara-presion-experto), así que sus
+ * filas ya viven separadas por activity_id.
+ */
+unicos("camara-presion", DEFINICIONES.map((d) => d.termino), DEFINICIONES.length);
 
 console.table(filas);
 console.log(fallos === 0

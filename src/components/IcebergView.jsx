@@ -258,7 +258,7 @@ export default function IcebergView({ modo = null, onBack }) {
           reconociéndolo entre cuatro, o sacándolo de memoria.
         </p>
         <CamaraPresion
-          onCompletar={(pct, ms, modo) =>
+          onCompletar={(pct, ms, modo, detalle) =>
             completarEvaluativa(
               CLAS_CAMARA,
               /*
@@ -267,7 +267,7 @@ export default function IcebergView({ modo = null, onBack }) {
                * y afirmarla desde aquí no serviría de nada.
                */
               modo === "dificil" ? "camara-presion-experto" : "camara-presion",
-              inicioCamara, pct
+              inicioCamara, pct, detalle
             )
           }
         />

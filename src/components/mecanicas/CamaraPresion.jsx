@@ -60,6 +60,27 @@ export default function CamaraPresion({ onCompletar }) {
   const inicio = useRef(Date.now());
   const campo = useRef(null);
 
+  /*
+   * ═══════════ EL DETALLE POR ÍTEM ═══════════
+   *
+   * LA UNIDAD ES EL TÉRMINO. Se enseña una definición y se pide su nombre, así
+   * que el ítem es el nivel del iceberg por el que se está preguntando.
+   *
+   * EL ID ES EL PROPIO TÉRMINO —"Evento", "Patrón", "Estructura", "Modelo
+   * mental"— porque DEFINICIONES no tiene campo id: la cadena ES el
+   * identificador, y es con la que compara el propio componente.
+   *
+   * SIN PREFIJO POR MODO, y es correcto: el modo fácil y el experto se
+   * registran como actividades DISTINTAS —camara-presion y
+   * camara-presion-experto— así que sus filas ya viven separadas por
+   * activity_id y no pueden mezclarse.
+   *
+   * `respuesta` es lo que contestó: en fácil, la burbuja que tocó; en experto,
+   * lo que escribió. Y null cuando se le acabó el aire sin contestar, que es
+   * dato distinto de equivocarse.
+   */
+  const detalle = useRef([]);
+
   const jugando = modo !== null && i < orden.length && !fallo;
   const actual = orden[i];
   const presion = Math.min(1, transcurrido / (SEGUNDOS * 1000));
@@ -91,11 +112,25 @@ export default function CamaraPresion({ onCompletar }) {
     setAcertadas([]);
     setRespuesta("");
     setFallo(null);
+    detalle.current = [];
     inicio.current = Date.now();
   };
 
   const resolver = (dado) => {
     const bien = dado != null && normalizar(dado) === normalizar(actual.termino);
+
+    /*
+     * Un intento por término: fallar revela la respuesta y se pasa al
+     * siguiente, así que `intentos` es siempre 1.
+     */
+    detalle.current.push({
+      item: actual.termino,
+      ok: bien,
+      intentos: 1,
+      respuesta: dado == null ? null : String(dado).slice(0, 120),
+      orden: detalle.current.length + 1,
+    });
+
     if (bien) {
       setAcertadas((a) => [...a, actual.termino]);
       setSellando(true);
@@ -121,7 +156,7 @@ export default function CamaraPresion({ onCompletar }) {
     const porAcierto = modo === "dificil" ? 2 : 1;
     const maximo = DEFINICIONES.length * porAcierto;
     const pct = Math.round((acertadas.length * porAcierto * 100) / maximo);
-    onCompletar?.(pct, Date.now() - inicio.current, modo);
+    onCompletar?.(pct, Date.now() - inicio.current, modo, detalle.current);
   }, [terminado]);
 
   /* ------------------------------ elegir modo ------------------------------ */
