@@ -323,13 +323,14 @@ export default function PorterView({ modo = null, onBack }) {
   const { pedirCuenta } = useAuth();
 
   /* Única mecánica del tema conectada al motor de FP, por ahora. */
-  const completarAsedio = async (porcentajeAciertos, duracionMs) => {
+  const completarAsedio = async (porcentajeAciertos, duracionMs, detalle = null) => {
     const resultado = await registrarActividadCompletada(CLAS_ASEDIO, {
       materiaId: MATERIA,
       temaId: TEMA,
       actividadId: "asedio-estrategico",
       porcentajeAciertos,
       duracionMs,
+      detalle,
     });
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
@@ -566,7 +567,7 @@ export default function PorterView({ modo = null, onBack }) {
           antes de saber por dónde viene la presión: acertar es leer el caso, no aplicar la misma
           plantilla siempre.
         </p>
-        <AsedioEstrategico onCompletar={completarAsedio} />
+        <AsedioEstrategico onCompletar={(pct, ms, detalle) => completarAsedio(pct, ms, detalle)} />
         </>
         )}
         </>

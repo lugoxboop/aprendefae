@@ -73,6 +73,31 @@ export default function AsedioEstrategico({ onCompletar }) {
   const [historial, setHistorial] = useState([]);
   const inicio = useRef(Date.now());
 
+  /*
+   * ═══════════ EL DETALLE POR ÍTEM ═══════════
+   *
+   * LA UNIDAD ES LA FUERZA DENTRO DE UN CASO. La decisión que toma el
+   * estudiante es cuántos de los diez puntos pone en cada una de las cinco
+   * fuerzas, así que el ítem es esa casilla: tres casos por cinco fuerzas,
+   * quince filas por partida.
+   *
+   * EL ID LLEVA EL CASO DELANTE. Las cinco fuerzas se llaman igual en los tres
+   * casos —rivalidad, entrantes, compradores, sustitutos, proveedores— pero el
+   * reparto ideal es distinto en cada uno: la rivalidad vale 3 en la comida
+   * rápida y otra cosa en la aerolínea. Sin prefijo, el panel promediaría tres
+   * preguntas con tres respuestas correctas distintas. Es el mismo choque que
+   * `bonos` en "¿Quién gana, quién pierde?".
+   *
+   * `respuesta` es cuántos puntos puso, que aquí es literalmente la respuesta.
+   * No hay forma de "no contestar": una fuerza sin tocar vale 0, y 0 puede ser
+   * el reparto correcto, así que las filas de esta actividad solo tienen dos
+   * formas —acertó el número o no—.
+   *
+   * `intentos` es 1: se sube y se baja el dial libremente antes de desplegar y
+   * la puntuación no castiga ese ajuste, igual que en "Explica la política".
+   */
+  const detalle = useRef([]);
+
   const caso = CASOS[ronda];
   const usados = FUERZAS.reduce((s, f) => s + (asignacion[f.id] ?? 0), 0);
   const restantes = PUNTOS_TOTALES - usados;
@@ -114,6 +139,17 @@ export default function AsedioEstrategico({ onCompletar }) {
     const nuevo = [...historial, { caso: caso.id, pct: resultado.pct, asignacion }];
     setHistorial(nuevo);
 
+    for (const f of FUERZAS) {
+      const puesto = asignacion[f.id] ?? 0;
+      detalle.current.push({
+        item: `${caso.id}:${f.id}`,
+        ok: puesto === caso.ideal[f.id],
+        intentos: 1,
+        respuesta: String(puesto),
+        orden: detalle.current.length + 1,
+      });
+    }
+
     if (ronda < CASOS.length - 1) {
       setRonda(ronda + 1);
       setAsignacion({});
@@ -125,7 +161,7 @@ export default function AsedioEstrategico({ onCompletar }) {
     /* Última ronda: el promedio es lo que va al motor de FP. */
     const promedio = nuevo.reduce((s, r) => s + r.pct, 0) / nuevo.length;
     setFase("final");
-    onCompletar?.(promedio, Date.now() - inicio.current);
+    onCompletar?.(promedio, Date.now() - inicio.current, detalle.current);
   };
 
   const promedioFinal =
@@ -133,6 +169,7 @@ export default function AsedioEstrategico({ onCompletar }) {
 
   /* Vuelve a la ronda 1, con los casos en el mismo orden. */
   const reiniciar = () => {
+    detalle.current = [];
     setHistorial([]);
     setRonda(0);
     setAsignacion({});

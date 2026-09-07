@@ -26,6 +26,7 @@ import {
 import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
 import { QUIZZES } from "../../data/quizzes.js";
 import { parejasDe } from "../../utils/orden.js";
+import { FUERZAS, CASOS } from "../../data/asedio.js";
 import { REFERENCIA, clave } from "../../components/mecanicas/MapaCausal.jsx";
 import { CITAS_EXPEDIENTE, NIVELES, ORDEN_DECISIONES, MOMENTOS, BANCO_ARCA } from "../../data/arca.js";
 import {
@@ -326,6 +327,30 @@ unicos(
   REFERENCIA.map((c) => `ref:${clave(c.de, c.a)}`),
   REFERENCIA.length
 );
+
+/* ── asedio-estrategico ── la fuerza dentro de su caso ── */
+/*
+ * Las cinco fuerzas se llaman igual en los tres casos pero el reparto ideal es
+ * distinto en cada uno, así que sin el prefijo de caso el panel promediaría
+ * tres preguntas con tres respuestas correctas distintas.
+ */
+unicos(
+  "asedio-estrategico",
+  CASOS.flatMap((c) => FUERZAS.map((f) => `${c.id}:${f.id}`)),
+  CASOS.length * FUERZAS.length
+);
+
+{
+  const sinPrefijo = CASOS.flatMap(() => FUERZAS.map((f) => f.id));
+  const choca = sinPrefijo.length !== new Set(sinPrefijo).size;
+  if (!choca) fallos++;
+  filas.push({
+    actividad: "asedio-estrategico (sin prefijo)",
+    esperado: "hay choque, por eso lleva prefijo",
+    obtenido: choca ? "choca, como se documenta" : "YA NO CHOCA: revisar el comentario",
+    resultado: choca ? "PASA" : "FALLA",
+  });
+}
 
 console.table(filas);
 console.log(fallos === 0
