@@ -34,6 +34,52 @@ export async function estudiantesDe(subjectId) {
   return { estudiantes: data ?? [], error: null };
 }
 
+/*
+ * Resumen de cabecera: el delta desde la última visita del docente.
+ *
+ * ESTA LLAMADA ESCRIBE. panel_resumen avanza docentes.ultima_visita, pero solo
+ * si la anterior tiene más de treinta minutos. Esa ventana de gracia es lo que
+ * hace que recargar la página, distraerse diez minutos o que React monte dos
+ * veces en desarrollo no se coman el delta.
+ *
+ * SE DEGRADA EN VEZ DE ROMPERSE. Si el cliente se despliega antes de que corra
+ * la migración 0019, la función no existe todavía y PostgREST responde
+ * PGRST202. Aquí eso devuelve `resumen: null` y la cabecera pinta lo que sabe
+ * calcular sola, sin el delta. No hay pantalla rota ni error al usuario.
+ */
+export async function resumenDe(subjectId) {
+  if (!supabase) return { resumen: null, error: "sin-configuracion" };
+  const { data, error } = await supabase.rpc("panel_resumen", { p_subject: subjectId });
+  if (error) {
+    console.error("[aprendeFAE] Resumen del panel:", error.message);
+    return { resumen: null, error: error.message };
+  }
+  /* Devuelve una sola fila; PostgREST la entrega como array de uno. */
+  return { resumen: Array.isArray(data) ? (data[0] ?? null) : data, error: null };
+}
+
+/*
+ * Historial de un estudiante, agrupado por actividad.
+ *
+ * Una llamada por fila expandida, no una para toda la cohorte: encaja con "un
+ * detalle abierto a la vez" y mantiene pequeño lo que viaja.
+ *
+ * Se degrada igual que resumenDe: sin la 0019 aplicada devuelve lista vacía y
+ * un error que el componente enseña como "el historial no está disponible".
+ */
+export async function historialDe(subjectId, userId) {
+  if (!supabase) return { historial: [], error: "sin-configuracion" };
+  const { data, error } = await supabase.rpc("panel_historial", {
+    p_subject: subjectId,
+    p_user: userId,
+  });
+  if (error) {
+    console.error("[aprendeFAE] Historial del panel:", error.message);
+    return { historial: [], error: error.message };
+  }
+  return { historial: data ?? [], error: null };
+}
+
 /** Añadir o quitar a un estudiante del grupo propio. */
 export async function marcarEnGrupo(subjectId, userId, incluir) {
   if (!supabase) return { ok: false };

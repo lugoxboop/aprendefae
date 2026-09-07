@@ -360,4 +360,34 @@ export function tiposDeTema(topic) {
   return vistos;
 }
 
+/*
+ * El nombre legible de una actividad, buscado por id en todas las materias.
+ *
+ * Existe para el panel docente: fp_history guarda ids y un profesor no tiene
+ * por qué leer "arma-grupo-logico". Devuelve null si el id no está en el
+ * catálogo —una actividad retirada, por ejemplo— y quien llama decide qué
+ * enseñar entonces; devolver el id disfrazado de nombre sería peor.
+ */
+const NOMBRES_POR_ID = new Map();
+for (const materia of Object.values(SUBJECTS)) {
+  for (const tema of materia.topics ?? []) {
+    for (const a of tema.actividades ?? []) {
+      if (a.id && a.nombre) NOMBRES_POR_ID.set(a.id, a.nombre);
+    }
+  }
+}
+
+/*
+ * Y los ids que el servidor conoce pero no son una entrada del catálogo del
+ * cliente. Hoy solo uno: el modo experto de la cámara se registra con id
+ * propio porque paga distinto, pero no es otra actividad en el camino. La
+ * excepción ya está documentada en catalogo.test.mjs; aquí solo se le pone
+ * nombre para que el panel no enseñe un id crudo.
+ */
+const ALIAS = { "camara-presion-experto": "Cámara de presión · modo experto" };
+
+export function nombreDeActividad(activityId) {
+  return NOMBRES_POR_ID.get(activityId) ?? ALIAS[activityId] ?? null;
+}
+
 export const EMPTY_TOPICS_MESSAGE = "Los temas de esta materia están en construcción.";

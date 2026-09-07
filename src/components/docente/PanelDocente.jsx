@@ -3,10 +3,13 @@ import { FAE } from "../../theme.js";
 import { SUBJECTS } from "../../data/subjects.js";
 import Logo from "../Logo.jsx";
 import { ChevronLeft } from "lucide-react";
-import { accesoDocente, estudiantesDe, marcarEnGrupo } from "../../docente/datos.js";
+import { accesoDocente, estudiantesDe, marcarEnGrupo, resumenDe } from "../../docente/datos.js";
 import { alertasDelGrupo, avancePorTema, promedioAciertos } from "../../docente/alertas.js";
+import { destacadosDe } from "../../docente/destacados.js";
 import { csvDelPanel, descargarCsv } from "../../docente/exportar.js";
 import BloqueAlertas from "./BloqueAlertas.jsx";
+import CabeceraResumen from "./CabeceraResumen.jsx";
+import Destacados from "./Destacados.jsx";
 import FilaEstudiante from "./FilaEstudiante.jsx";
 
 /*
@@ -42,6 +45,15 @@ export default function PanelDocente({ onBack }) {
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [soloGrupo, setSoloGrupo] = useState(false);
+  /* Del servidor, para el delta de la cabecera. No confundir con `resumen`,
+   * que es el agregado de la cohorte y se calcula abajo. */
+  const [resumenVisita, setResumenVisita] = useState(null);
+  /*
+   * Qué fila tiene el detalle abierto. UNA SOLA, y vive aquí y no en cada fila:
+   * si cada una guardara su propio estado, abrir la segunda no cerraría la
+   * primera y el panel se llenaría de detalles abiertos.
+   */
+  const [filaAbierta, setFilaAbierta] = useState(null);
 
   useEffect(() => {
     accesoDocente().then((a) => {
@@ -54,10 +66,17 @@ export default function PanelDocente({ onBack }) {
   useEffect(() => {
     if (!materia) return;
     setCargando(true);
+    setFilaAbierta(null);
     estudiantesDe(materia).then(({ estudiantes }) => {
       setEstudiantes(estudiantes);
       setCargando(false);
     });
+    /*
+     * El resumen va aparte y no bloquea la lista: si panel_resumen no existe
+     * todavía —cliente desplegado antes que la migración 0019— esto se queda en
+     * null y la cabecera pinta lo que sabe calcular sola.
+     */
+    resumenDe(materia).then(({ resumen }) => setResumenVisita(resumen));
   }, [materia]);
 
   const grupo = useMemo(() => estudiantes.filter((e) => e.en_mi_grupo), [estudiantes]);
@@ -95,6 +114,23 @@ export default function PanelDocente({ onBack }) {
       nEval: evals.length,
       nExpl: expls.length,
     };
+  }, [cohorte]);
+
+  /*
+   * Destacados sobre la COHORTE, no sobre todos: si el docente filtró a su
+   * grupo, los destacados son los de su grupo. Lo contrario sería la única
+   * parte del panel que ignora el filtro.
+   */
+  const destacados = useMemo(() => destacadosDe(cohorte), [cohorte]);
+  const idsDestacados = useMemo(
+    () => new Set(destacados.map((d) => d.estudiante.user_id)),
+    [destacados]
+  );
+
+  /* Posición por FP total dentro de la cohorte, para el detalle de cada fila. */
+  const posiciones = useMemo(() => {
+    const orden = [...cohorte].sort((a, b) => Number(b.fp_total) - Number(a.fp_total));
+    return new Map(orden.map((e, i) => [e.user_id, i + 1]));
   }, [cohorte]);
 
   /* Avance por tema del conjunto: dónde se atasca el grupo, no solo cuánto lleva. */
@@ -210,7 +246,22 @@ export default function PanelDocente({ onBack }) {
         </div>
       ) : (
         <>
+          <CabeceraResumen
+            estudiantes={estudiantes}
+            alertas={alertas}
+            resumen={resumenVisita}
+            temaDe={(actividadId) => {
+              /* El tema al que pertenece una actividad, para la frase del delta. */
+              const t = SUBJECTS[materia]?.topics?.find((x) =>
+                (x.actividades ?? []).some((a) => a.id === actividadId)
+              );
+              return t?.title ?? null;
+            }}
+          />
+
           <BloqueAlertas alertas={alertas} grupoVacio={grupo.length === 0} />
+
+          <Destacados estudiantes={cohorte} />
 
           <section style={{ marginBottom: "28px" }}>
             <h2 style={seccion}>RESUMEN DEL PERIODO</h2>
@@ -261,6 +312,29 @@ export default function PanelDocente({ onBack }) {
             </div>
           </section>
 
+          {/*
+            * ÍTEM 4 — El diagnóstico por pregunta, todavía sin construir.
+            *
+            * fp_detalle empezó a recibir datos hace días y necesita acumular
+            * antes de que un diagnóstico por pregunta signifique algo. Se dice
+            * así, con el vacío honesto que ya usa el resto del sitio, en vez de
+            * rellenar la sección con algo que parezca análisis.
+            *
+            * No se inventa contenido para que se vea llena: un diagnóstico
+            * hecho sobre tres respuestas sería peor que no tenerlo, porque el
+            * docente actuaría sobre ruido creyendo que es señal.
+            */}
+          <section style={{ marginBottom: "28px" }}>
+            <h2 style={seccion}>DIAGNÓSTICO POR PREGUNTA</h2>
+            <div style={{ ...tarjeta, maxWidth: "62ch" }}>
+              <p style={{ margin: 0, fontSize: "13.5px", lineHeight: 1.6, color: "rgba(248,249,250,0.6)" }}>
+                Todavía no hay datos suficientes para un diagnóstico por pregunta. Las actividades
+                empezaron a guardar qué se falla y qué se responde en su lugar hace muy poco;
+                cuando haya recorrido, aquí aparecerá en qué se atasca el grupo.
+              </p>
+            </div>
+          </section>
+
           <section>
             <h2 style={seccion}>ESTUDIANTES ACTIVOS EN {nombreMateria.toUpperCase()}</h2>
             <div style={{ display: "flex", gap: "10px", marginBottom: "14px", flexWrap: "wrap" }}>
@@ -292,7 +366,16 @@ export default function PanelDocente({ onBack }) {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               {visibles.map((e) => (
-                <FilaEstudiante key={e.user_id} e={e} subjectId={materia} onMarcar={marcar} />
+                <FilaEstudiante
+                  key={e.user_id}
+                  e={e}
+                  subjectId={materia}
+                  onMarcar={marcar}
+                  abierta={filaAbierta === e.user_id}
+                  onAlternar={setFilaAbierta}
+                  destacado={idsDestacados.has(e.user_id)}
+                  posicion={posiciones.get(e.user_id)}
+                />
               ))}
               {visibles.length === 0 && (
                 <p style={{ fontSize: "14px", color: "rgba(248,249,250,0.55)" }}>Ningún estudiante coincide con esa búsqueda.</p>

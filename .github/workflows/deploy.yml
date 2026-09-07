@@ -190,14 +190,15 @@ jobs:
         run: |
           probar() {
             etiqueta="$1"
-            cuerpo="$2"
+            funcion="$2"
+            cuerpo="$3"
 
             # Un solo reintento, y solo por PGRST202: tras una migración,
             # PostgREST puede tardar unos segundos en recargar su caché de
             # esquema. Sin esto la sonda daría falsas alarmas legítimas.
             for intento in 1 2; do
               respuesta=$(curl -sS --max-time 20 -w '\n%{http_code}' \
-                -X POST "$VITE_SUPABASE_URL/rest/v1/rpc/registrar_fp" \
+                -X POST "$VITE_SUPABASE_URL/rest/v1/rpc/$funcion" \
                 -H "apikey: $VITE_SUPABASE_ANON_KEY" \
                 -H "Content-Type: application/json" \
                 -d "$cuerpo")
@@ -209,7 +210,7 @@ jobs:
                   echo "ROJO  $etiqueta"
                   echo "      HAY DOS FIRMAS VIVAS de registrar_fp. HTTP $codigo"
                   echo "      $respuesta"
-                  echo "      Las actividades que llaman así NO están pagando FP."
+                  echo "      Quien la llame así NO está obteniendo nada."
                   echo "      Arreglo: retirar la sobrante con drop function."
                   return 1
                   ;;
@@ -221,10 +222,13 @@ jobs:
                     continue
                   fi
                   echo "ROJO  $etiqueta"
-                  echo "      PostgREST NO ENCUENTRA registrar_fp con esos nombres"
-                  echo "      de parámetro, dos veces seguidas. HTTP $codigo"
+                  echo "      PostgREST NO ENCUENTRA $funcion con esos nombres de"
+                  echo "      parámetro, dos veces seguidas. HTTP $codigo"
                   echo "      $respuesta"
-                  echo "      El cliente llama al vacío: nadie recibe FP."
+                  echo "      El cliente la llama al vacío: esa parte del sitio no funciona."
+                  echo "      SI ACABAS DE SUBIR CÓDIGO Y NO HAS CORRIDO LA MIGRACIÓN"
+                  echo "      QUE CREA ESTA FUNCIÓN, esto es lo esperado: córrela y"
+                  echo "      relanza el despliegue desde Actions."
                   return 1
                   ;;
                 *)
@@ -236,13 +240,29 @@ jobs:
           }
 
           fallo=0
-          probar "llamada de 3 argumentos (seis actividades)" \
+
+          # El motor de FP: las dos formas de llamada que hacen las actividades.
+          probar "registrar_fp · 3 argumentos (seis actividades)" registrar_fp \
             '{"p_activity_id":"diagnostico-en-vivo","p_duration_ms":120000,"p_correct_pct":100}' || fallo=1
-          probar "llamada de 4 argumentos (la que manda detalle)" \
+          probar "registrar_fp · 4 argumentos (la que manda detalle)" registrar_fp \
             '{"p_activity_id":"diagnostico-en-vivo","p_duration_ms":120000,"p_correct_pct":100,"p_detalle":[]}' || fallo=1
+
+          # Y el panel docente, desde la 0019.
+          #
+          # POR QUÉ ENTRAN AQUÍ. Para poder añadirle columnas, la 0019 tuvo que
+          # DROPEAR y recrear panel_estudiantes: Postgres no deja cambiar el
+          # tipo de retorno con create or replace. Esa es exactamente la
+          # maniobra que la semana pasada dejó dos firmas vivas de registrar_fp
+          # y seis actividades sin pagar FP. Aquí el riesgo es el contrario
+          # —que un drop deje CERO— y esta sonda lo ve igual de bien: sin la
+          # función, PostgREST responde PGRST202 en vez de 42501.
+          probar "panel_estudiantes" panel_estudiantes '{"p_subject":"macroeconomia"}' || fallo=1
+          probar "panel_resumen" panel_resumen '{"p_subject":"macroeconomia"}' || fallo=1
+          probar "panel_historial" panel_historial \
+            '{"p_subject":"macroeconomia","p_user":"00000000-0000-0000-0000-000000000000"}' || fallo=1
 
           if [ "$fallo" = "0" ]; then
             echo ""
-            echo "Las dos formas de llamada resuelven. El motor de FP puede ejecutarse."
+            echo "Las cinco llamadas resuelven a una sola función. Motor de FP y panel en pie."
           fi
           exit $fallo
