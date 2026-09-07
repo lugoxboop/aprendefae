@@ -104,6 +104,24 @@ export default function PanelDocente({ onBack }) {
   }, [grupo, estudiantes]);
 
   const nPrueba = useMemo(() => estudiantes.filter((e) => e.es_prueba).length, [estudiantes]);
+
+  /*
+   * ═══════════ TRES POBLACIONES, Y CADA NÚMERO DICE CUÁL ES LA SUYA ═══════════
+   *
+   *   estudiantes    todo lo que devuelve el censo, cuentas de prueba incluidas.
+   *                  Es lo que se LISTA, y nunca un denominador de métricas.
+   *   conActividad   los reales con algún FP en la materia.
+   *   cohorte        de quién hablan las métricas: el grupo si lo hay, y si no
+   *                  todos los reales.
+   *
+   * Antes se mezclaban dos de ellas con la misma etiqueta —"13 de 15 activos en
+   * la materia" arriba y "de 13 con actividad en la materia" dos líneas abajo—
+   * y un docente no tenía forma de saber por qué el mismo concepto daba dos
+   * números. Ahora cada uno dice qué cuenta, y el 15 desaparece: incluía la
+   * cuenta de prueba, que ya no entra en ninguna métrica.
+   */
+  const conActividad = useMemo(() => estudiantes.filter((e) => !e.es_prueba).length, [estudiantes]);
+  const etiquetaCohorte = grupo.length > 0 ? "en tu grupo" : "con actividad en la materia";
   const alertas = useMemo(() => alertasDelGrupo(cohorte), [cohorte]);
 
   const visibles = useMemo(() => {
@@ -121,16 +139,18 @@ export default function PanelDocente({ onBack }) {
   };
 
   /* Agregados de la cohorte. Todos toleran una cohorte vacía. */
+  /*
+   * Ya no calcula el tamaño de la cohorte ni cuántos están activos: esas dos
+   * cifras viven ahora en la cabecera, que es donde se leen primero. Dejarlas
+   * aquí sin usar sería una segunda fuente esperando a que alguien la pinte y
+   * vuelva a duplicar el número.
+   */
   const resumen = useMemo(() => {
-    const n = cohorte.length;
-    const conFp = cohorte.filter((e) => Number(e.fp_ciclo) > 0).length;
     const evals = cohorte.filter((e) => Number(e.n_evaluativas) > 0);
     const expls = cohorte.filter((e) => Number(e.n_exploratorias) > 0);
     const media = (arr, campo) =>
       arr.length === 0 ? null : arr.reduce((s, e) => s + Number(e[campo]), 0) / arr.length;
     return {
-      n,
-      activosCiclo: conFp,
       pctEval: media(evals, "pct_evaluativa"),
       pctExpl: media(expls, "pct_exploratoria"),
       nEval: evals.length,
@@ -248,8 +268,8 @@ export default function PanelDocente({ onBack }) {
 
       <p style={{ fontSize: "13.5px", color: "rgba(248,249,250,0.55)", margin: "0 0 24px" }}>
         {grupo.length > 0
-          ? `Métricas y alertas sobre tu grupo: ${cohorte.length} de ${estudiantes.length} activos en la materia.`
-          : `Todavía sin grupo armado — se muestran los ${estudiantes.length} estudiantes activos en la materia.`}
+          ? `Métricas y alertas sobre tu grupo: ${cohorte.length} de ${conActividad} estudiantes con actividad en la materia.`
+          : `Todavía sin grupo armado — las métricas hablan de los ${conActividad} estudiantes con actividad en la materia.`}
         {nPrueba > 0 && (
           /*
            * Se dice en voz alta y no se deja adivinar: un docente que ve una
@@ -284,7 +304,8 @@ export default function PanelDocente({ onBack }) {
       ) : (
         <>
           <CabeceraResumen
-            estudiantes={cohorte}
+            cohorte={cohorte}
+            etiquetaCohorte={etiquetaCohorte}
             alertas={alertas}
             resumen={resumenVisita}
             temaDe={(actividadId) => {
@@ -303,7 +324,15 @@ export default function PanelDocente({ onBack }) {
           <section style={{ marginBottom: "28px" }}>
             <h2 style={seccion}>RESUMEN DEL PERIODO</h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px" }}>
-              <Kpi rotulo="ESTUDIANTES" valor={resumen.n} nota={`${resumen.activosCiclo} con actividad este ciclo`} />
+              {/*
+                * LA TARJETA "ESTUDIANTES" SE FUE ARRIBA. Decía exactamente el
+                * mismo número que la primera tarjeta de la cabecera, a media
+                * pantalla de distancia y sin nada que las distinguiera. La de
+                * la cabecera se queda porque va primero, es lo primero que se
+                * lee y lleva su denominador escrito al lado.
+                *
+                * Las tres que quedan aquí no se repiten en ningún otro sitio.
+                */}
               <Kpi
                 rotulo="ACIERTO EVALUATIVAS"
                 valor={resumen.pctEval === null ? "—" : `${Math.round(resumen.pctEval)}%`}

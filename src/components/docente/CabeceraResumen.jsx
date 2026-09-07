@@ -98,13 +98,23 @@ function desdeCuando(iso) {
   return new Date(iso).toLocaleDateString("es-CO", { day: "numeric", month: "short" });
 }
 
-export default function CabeceraResumen({ estudiantes, alertas, resumen, temaDe }) {
+/*
+ * `cohorte` es la población de la que hablan todas las métricas, y
+ * `etiquetaCohorte` dice EN VOZ ALTA cuál es —"en tu grupo" o "con actividad
+ * en la materia"— porque no es la misma según haya grupo armado o no.
+ *
+ * Esto nació de un error real: la tarjeta decía "de N con actividad en la
+ * materia" mientras recibía la cohorte, que desde que se excluyen las cuentas
+ * de prueba ya no es lo mismo. El número era correcto y la etiqueta mentía, que
+ * es la peor combinación: nada falla y el docente lee otra cosa.
+ */
+export default function CabeceraResumen({ cohorte, etiquetaCohorte, alertas, resumen, temaDe }) {
   const reducido =
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   const animar = !reducido;
 
-  const activos = Number(resumen?.estudiantes_activos ?? estudiantes.filter((e) => Number(e.fp_ciclo) > 0).length);
+  const activos = Number(resumen?.estudiantes_activos ?? cohorte.filter((e) => Number(e.fp_ciclo) > 0).length);
   const urgentes = alertas.filter((a) => a.nivel === NIVEL.URGENTE).length;
   const atencion = alertas.filter((a) => a.nivel === NIVEL.ATENCION).length;
   const info = alertas.filter((a) => a.nivel === NIVEL.INFO).length;
@@ -129,7 +139,7 @@ export default function CabeceraResumen({ estudiantes, alertas, resumen, temaDe 
         <div style={tarjeta}>
           <p style={rotulo}>ACTIVOS ESTE CICLO</p>
           <p style={{ ...cifra, color: FAE.text }}>{nActivos}</p>
-          <p style={pie}>de {estudiantes.length} con actividad en la materia</p>
+          <p style={pie}>de {cohorte.length} {etiquetaCohorte}</p>
         </div>
 
         <div style={tarjeta}>
