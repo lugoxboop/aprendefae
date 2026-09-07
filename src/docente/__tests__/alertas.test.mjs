@@ -15,7 +15,7 @@
  * reales— así que las pruebas se escriben en función de UMBRALES y no de
  * números fijos: subir un umbral no debe romperlas, pero cambiar la ESCALA sí.
  */
-import { alertasDe, promedioAciertos, UMBRALES, NIVEL } from "../alertas.js";
+import { alertasDe, promedioAciertos, avancePorTema, UMBRALES, NIVEL } from "../alertas.js";
 
 let fallos = 0;
 const filas = [];
@@ -145,6 +145,36 @@ check("un estudiante al dia y acertando no genera alertas", 0, alertasDe(base).l
 /* ── promedioAciertos conserva la escala ── */
 check("promedioAciertos devuelve 0–100, no 0–1", true,
   promedioAciertos({ pct_evaluativa: 80, n_evaluativas: 1, pct_exploratoria: 60, n_exploratorias: 1 }) === 70);
+
+/*
+ * ── EL AVANCE POR TEMA CUENTA LOS DESAFÍOS ──
+ *
+ * El Arca era invisible aquí: actividadesDeTipo() la excluye —para que no
+ * salga como nodo numerado del camino— pero mapaActividadTema sí la contiene,
+ * así que tampoco caía en la rama de huérfanas. Ni contada ni mostrada.
+ * Resultado en el panel real: "0 de 3 temas iniciados" con cientos de FP.
+ *
+ * Este caso es el que lo caza, y va con el id literal a propósito: escribirlo
+ * en función de desafioDe() lo haría inmune al fallo que vino a vigilar.
+ */
+{
+  const soloArca = avancePorTema("pensamiento-estrategico", ["proyecto-arca"]);
+  check("jugar solo el desafio cuenta como tema iniciado", 1,
+    soloArca.filter((t) => t.hechas > 0).length);
+
+  /* Y el desafío suma al total del tema: el Iceberg tiene 7 + el Arca. */
+  const iceberg = avancePorTema("pensamiento-estrategico", []).find((t) => t.id === "modelo-iceberg");
+  check("el total del Iceberg incluye el desafio", 8, iceberg.total);
+
+  /* Sin nada hecho sigue siendo cero: el arreglo no infla el numerador. */
+  check("sin actividad, ningun tema iniciado", 0,
+    avancePorTema("pensamiento-estrategico", []).filter((t) => t.hechas > 0).length);
+
+  /* Los bonos de racha siguen saliendo como huérfanas, que es lo correcto. */
+  const conRacha = avancePorTema("pensamiento-estrategico", ["racha-2"]);
+  check("un bono de racha entra como huerfana", true,
+    conRacha.some((t) => t.huerfana && t.id === "racha-2"));
+}
 
 console.table(filas);
 console.log(fallos === 0

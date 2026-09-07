@@ -1,4 +1,4 @@
-import { SUBJECTS, HACER, actividadesDeTipo } from "../data/subjects.js";
+import { SUBJECTS, HACER, actividadesDeTipo, desafioDe } from "../data/subjects.js";
 
 /*
  * Alertas del panel docente.
@@ -101,7 +101,25 @@ export function avancePorTema(subjectId, actividadesHechas = []) {
   const porTema = new Map();
 
   for (const topic of SUBJECTS[subjectId]?.topics ?? []) {
-    const conFp = actividadesDeTipo(topic, HACER);
+    /*
+     * EL DESAFÍO CUENTA, Y ANTES NO CONTABA.
+     *
+     * actividadesDeTipo() excluye los desafíos a propósito: esa exclusión se
+     * añadió para que el Arca no saliera como un nodo numerado más del camino,
+     * y ahí es correcta. Pero se coló aquí, y el efecto era mudo:
+     * proyecto-arca sigue estando en mapaActividadTema, así que tampoco caía
+     * en la rama de huérfanas de abajo. Ni se contaba ni aparecía por otro
+     * lado: era invisible.
+     *
+     * Un estudiante que solo hubiera jugado el Arca salía como "0 de 3 temas
+     * iniciados" teniendo cientos de FP. Reproducido con los datos reales:
+     * 216, 295 y 342 FP son el 60%, el 82% y el 95% de los 360 del desafío.
+     *
+     * El desafío otorga FP como cualquier otra, y esta sección dice
+     * literalmente que cuenta las actividades que otorgan FP. Así que entra.
+     */
+    const desafio = desafioDe(topic);
+    const conFp = [...actividadesDeTipo(topic, HACER), ...(desafio ? [desafio] : [])];
     if (conFp.length === 0) continue;
     porTema.set(topic.id, {
       id: topic.id,
