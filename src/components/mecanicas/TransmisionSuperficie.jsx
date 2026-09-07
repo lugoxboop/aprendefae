@@ -108,7 +108,32 @@ export default function TransmisionSuperficie({ onCompletar }) {
   const transmitir = () => {
     if (!lleno || enviado) return;
     setEnviado(true);
-    onCompletar?.(pct, Date.now() - inicio.current);
+    /*
+     * ═══════════ EL DETALLE POR ÍTEM ═══════════
+     *
+     * LA UNIDAD ES EL FRAGMENTO ENVIADO, y solo esos cinco. Igual que en
+     * "Explica la política": aquí no hay ranuras con respuesta correcta —vale
+     * cualquier combinación de claras— así que el ítem no puede ser la
+     * posición; lo que dice algo es QUÉ metió en el mensaje.
+     *
+     * SIN PREFIJO: los once ids (t1..t11) ya son únicos y no hay escenarios.
+     *
+     * `respuesta` guarda la CLASE —clara, jerga o incorrecta— porque decir algo
+     * cierto que no se entiende no es el mismo fallo que decir algo falso, y el
+     * panel los separa sin conocer el catálogo del cliente.
+     *
+     * `intentos` es siempre 1: aquí se puede sacar un fragmento y devolverlo
+     * antes de transmitir, y la puntuación no castiga ese manoseo.
+     *
+     * `ok` mira solo la CLASE. La posición también puntúa —una clara en su
+     * sitio vale más que fuera de sitio— pero eso es calidad del orden, no
+     * acierto o error: `orden` ya guarda dónde la puso y el panel puede
+     * cruzarlo si quiere.
+     */
+    onCompletar?.(pct, Date.now() - inicio.current, enviadas.map((id, k) => {
+      const f = FRAGMENTOS_TRANSMISION.find((x) => x.id === id);
+      return { item: id, ok: f?.clase === "clara", intentos: 1, respuesta: f?.clase ?? null, orden: k + 1 };
+    }));
   };
 
   const reiniciar = () => {
