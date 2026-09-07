@@ -25,9 +25,11 @@ import {
 } from "../../data/juegosPolitica2.js";
 import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
 import { QUIZZES } from "../../data/quizzes.js";
+import { parejasDe } from "../../utils/orden.js";
 import {
   BLIPS_RADAR, ANILLOS, DEFINICIONES, OPCIONES_RESCATE,
   BANCO_ARQUITECTO, RANURAS, FRAGMENTOS_TRANSMISION, CORRIENTE,
+  ORDEN_TRIBUNAL, CRITERIOS_TRIBUNAL,
 } from "../../data/icebergActividades.js";
 
 let fallos = 0;
@@ -260,6 +262,18 @@ unicos("transmision-superficie", FRAGMENTOS_TRANSMISION.map((f) => f.id), FRAGME
  * (c-t*, c-c*, c-b*, c-f*): el prefijo de caso ya viene de origen.
  */
 unicos("corriente-cruzada", CORRIENTE.map((c) => c.id), CORRIENTE.length);
+
+/* ── tribunal-profundidad ── la pareja, mas el criterio ── */
+/*
+ * Tres hipótesis dan tres parejas, y el criterio es un ítem más. El prefijo
+ * `par:` existe para que ninguna pareja pueda llamarse igual que `criterio`.
+ */
+unicos(
+  "tribunal-profundidad",
+  [...parejasDe(ORDEN_TRIBUNAL).map(([a, b]) => `par:${a}-${b}`), "criterio"],
+  parejasDe(ORDEN_TRIBUNAL).length + 1
+);
+unicos("tribunal-profundidad · criterios", CRITERIOS_TRIBUNAL.map((c) => c.id), CRITERIOS_TRIBUNAL.length);
 
 console.table(filas);
 console.log(fallos === 0

@@ -323,7 +323,7 @@ export default function IcebergView({ modo = null, onBack }) {
           es descartar la mala, es ordenarlas por cuánto explican, y decir con qué vara lo mediste.
         </p>
         <TribunalProfundidad
-          onCompletar={(pct) => completarEvaluativa(CLAS_TRIBUNAL, "tribunal-profundidad", inicioTribunal, pct)}
+          onCompletar={(pct, ms, detalle) => completarEvaluativa(CLAS_TRIBUNAL, "tribunal-profundidad", inicioTribunal, pct, detalle)}
         />
         </>
         )}

@@ -110,7 +110,45 @@ export default function TribunalProfundidad({ onCompletar }) {
   const dictar = () => {
     if (!listo || dictado) return;
     setDictado(true);
-    onCompletar?.(puntuarTribunal(puestas, criterio).pct, Date.now() - inicio.current);
+    /*
+     * ═══════════ EL DETALLE POR ÍTEM ═══════════
+     *
+     * LA UNIDAD ES LA PAREJA, no la posición, porque la pareja es lo que esta
+     * actividad puntúa: parejasPreservadas cuenta relaciones "a antes que b",
+     * y medir por posición exacta diría que confundir el segundo con el
+     * tercero cuesta lo mismo que poner el último primero. El criterio va como
+     * un ítem más, que es exactamente su peso en el marcador (25 de 100).
+     *
+     * Con tres hipótesis salen tres parejas: cuatro filas por partida.
+     *
+     * EL ID LLEVA PREFIJO `par:` para que las parejas no se confundan con el
+     * ítem `criterio`, y el par se nombra en su orden CANÓNICO —par:h1-h3—
+     * mientras que `respuesta` guarda el orden en que lo dejó —h3-h1—. Así el
+     * ítem es siempre el mismo aunque la respuesta cambie, que es lo que
+     * permite agregar por pregunta en el panel.
+     *
+     * `respuesta` va a null cuando la pareja quedó bien: misma convención que
+     * en el resto del sitio.
+     */
+    const orden = puestas;
+    const filas = PARES.map(([a, b], k) => {
+      const bien = orden.indexOf(a) < orden.indexOf(b);
+      return {
+        item: `par:${a}-${b}`,
+        ok: bien,
+        intentos: 1,
+        respuesta: bien ? null : `${b}-${a}`,
+        orden: k + 1,
+      };
+    });
+    filas.push({
+      item: "criterio",
+      ok: CRITERIOS_TRIBUNAL.find((c) => c.id === criterio)?.correcto === true,
+      intentos: 1,
+      respuesta: criterio,
+      orden: filas.length + 1,
+    });
+    onCompletar?.(puntuarTribunal(puestas, criterio).pct, Date.now() - inicio.current, filas);
   };
 
   const reiniciar = () => {
