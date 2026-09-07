@@ -80,6 +80,30 @@ export default function QuienGanaQuienPierde({ onCompletar }) {
   const [directos, setDirectos] = useState(0);    // etapas 2 bien, acumuladas
   const inicio = useRef(Date.now());
 
+  /*
+   * ═══════════ EL DETALLE POR ÍTEM, Y POR QUÉ LLEVA PREFIJO ═══════════
+   *
+   * fp_detalle no impone que los item_id sean únicos dentro de una actividad:
+   * es responsabilidad de quien los emite. Y aquí SÍ chocan. `bonos` es un
+   * personaje de la ronda "tasa" y otro distinto de la ronda "gasto":
+   *
+   *   tasa   → hipoteca, cdt, empresario, bonos
+   *   gasto  → empleado, contratista, bonos, pensionado
+   *
+   * Sin prefijo, dos preguntas que no tienen nada que ver se sumarían en la
+   * misma fila y el panel diría que "bonos" se falla la mitad de las veces,
+   * mezclando quien tiene bonos cuando sube la tasa con quien los tiene cuando
+   * sube el gasto. Nada fallaría; el dato saldría mal en silencio.
+   *
+   * Por eso el id es `<ronda>:<personaje>`, y la etapa 2 de cada ronda es
+   * `<ronda>:directo`. Con eso son 20 ítems, todos distintos.
+   *
+   * SE GUARDA QUÉ ELIGIÓ, no solo si acertó. "puso al del CDT en PIERDE cuando
+   * sube la tasa" es lo que un docente puede llevar a clase; "falló el ítem 2"
+   * no le sirve para nada.
+   */
+  const detalle = useRef([]);
+
   const r = RONDAS_GANADORES[ronda];
   const terminado = ronda >= RONDAS_GANADORES.length;
 
@@ -95,13 +119,25 @@ export default function QuienGanaQuienPierde({ onCompletar }) {
   );
 
   useEffect(() => {
-    if (terminado) onCompletar?.(pct, Date.now() - inicio.current);
+    if (terminado) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
   }, [terminado]);
 
   const colocar = (resultado) => {
     if (!elegido) return;
     const p = r.personajes.find((x) => x.id === elegido);
     if (puestos[p.id]) return;
+
+    /*
+     * No hay segundo intento en este juego, así que intentos es siempre 1.
+     * `respuesta` es la zona que eligió: es lo que revela la confusión.
+     */
+    detalle.current.push({
+      item: `${r.id}:${p.id}`,
+      ok: p.resultado === resultado,
+      intentos: 1,
+      respuesta: resultado,
+      orden: detalle.current.length + 1,
+    });
 
     if (p.resultado === resultado) setAciertos((n) => n + 1);
     else {
@@ -126,6 +162,7 @@ export default function QuienGanaQuienPierde({ onCompletar }) {
   const reiniciar = () => {
     setRonda(0); setPuestos({}); setElegido(null); setDirecto(null);
     setAciertos(0); setDirectos(0);
+    detalle.current = [];
     setOrden(barajar(RONDAS_GANADORES[0].personajes));
     inicio.current = Date.now();
     setEmpezado(true);
@@ -298,6 +335,14 @@ export default function QuienGanaQuienPierde({ onCompletar }) {
                   type="button"
                   onClick={() => {
                     setDirecto(p.id);
+                    /* `respuesta` es a quién señaló, no si acertó. */
+                    detalle.current.push({
+                      item: `${r.id}:directo`,
+                      ok: p.id === r.masDirecto,
+                      intentos: 1,
+                      respuesta: p.id,
+                      orden: detalle.current.length + 1,
+                    });
                     if (p.id === r.masDirecto) setDirectos((n) => n + 1);
                   }}
                   style={{

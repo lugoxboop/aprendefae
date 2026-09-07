@@ -248,7 +248,7 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
           Ninguna medida deja a todo el mundo igual. Cuatro rondas, cuatro personajes cada una: decide a quién le sirve y a quién le duele.
         </p>
         <QuienGanaQuienPierde
-          onCompletar={(pct, ms) => completarJuego(CLAS_GANADORES, "quien-gana-quien-pierde", pct, ms)}
+          onCompletar={(pct, ms, detalle) => completarJuego(CLAS_GANADORES, "quien-gana-quien-pierde", pct, ms, detalle)}
         />
         </>
         )}
