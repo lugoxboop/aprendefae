@@ -115,23 +115,30 @@ export async function historialDe(subjectId, userId) {
  * Las cifras de UNA actividad: finalización, distribución por bandas, tiempo,
  * FP y de dónde sale el diagnóstico.
  *
- * Se degrada igual que resumenDe e historialDe. Si el cliente se despliega
- * antes de que corra la migración 0021, panel_actividad no existe todavía y
- * PostgREST responde PGRST202; aquí eso devuelve `actividad: null` con el
- * error, y el componente enseña que la vista no está disponible en vez de una
- * pantalla rota.
+ * ═══════════ EL ERROR VIAJA ENTERO, Y NO ES UN DETALLE ═══════════
+ *
+ * Estas dos funciones devolvían solo `error.message`, así que quien las usaba
+ * no podía distinguir «la migración no ha corrido» de «no tienes permiso» ni
+ * de «se cayó la red». Las tres pintaban el mismo aviso, y ese aviso decía
+ * «todavía», que es una de las tres.
+ *
+ * Costó diez minutos de diagnóstico a ciegas. Ahora sale el objeto completo
+ * —code, message, details, hint— y quien pinta decide qué decir. La consola
+ * también lo registra entero: con PGRST202 el `hint` de PostgREST suele traer
+ * la firma que sí encontró, que es justo lo que hace falta para saber si el
+ * problema es la caché de esquema o los argumentos.
  *
  * Devuelve una sola fila, que PostgREST entrega como array de uno.
  */
 export async function actividadDe(subjectId, activityId) {
-  if (!supabase) return { actividad: null, error: "sin-configuracion" };
+  if (!supabase) return { actividad: null, error: { code: "sin-configuracion", message: "Supabase no está configurado" } };
   const { data, error } = await supabase.rpc("panel_actividad", {
     p_subject: subjectId,
     p_activity_id: activityId,
   });
   if (error) {
-    console.error("[aprendeFAE] Rendimiento por actividad:", error.message);
-    return { actividad: null, error: error.message };
+    console.error("[aprendeFAE] Rendimiento por actividad:", error);
+    return { actividad: null, error };
   }
   return { actividad: Array.isArray(data) ? (data[0] ?? null) : data, error: null };
 }
@@ -148,14 +155,14 @@ export async function actividadDe(subjectId, activityId) {
  * Por eso aquí no se interpreta nada: se devuelve la lista tal cual llegó.
  */
 export async function itemsDe(subjectId, activityId) {
-  if (!supabase) return { items: [], error: "sin-configuracion" };
+  if (!supabase) return { items: [], error: { code: "sin-configuracion", message: "Supabase no está configurado" } };
   const { data, error } = await supabase.rpc("panel_items", {
     p_subject: subjectId,
     p_activity_id: activityId,
   });
   if (error) {
-    console.error("[aprendeFAE] Diagnóstico por pregunta:", error.message);
-    return { items: [], error: error.message };
+    console.error("[aprendeFAE] Diagnóstico por pregunta:", error);
+    return { items: [], error };
   }
   return { items: data ?? [], error: null };
 }

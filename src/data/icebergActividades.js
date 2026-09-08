@@ -296,6 +296,18 @@ export const HIPOTESIS_TRIBUNAL = [
 /* De más a menos poder explicativo. H3 cubre dos pistas; H2, una. */
 export const ORDEN_TRIBUNAL = ["h1", "h3", "h2"];
 
+/*
+ * El enunciado de la segunda pregunta del tribunal. Estaba escrito a mano
+ * dentro del JSX del componente; vive aquí porque el panel docente necesita
+ * leerlo para nombrar el ítem `criterio` en el diagnóstico por pregunta.
+ *
+ * Se MUEVE, no se copia: el componente lo importa desde aquí. Dejar la cadena
+ * en los dos sitios habría creado exactamente la segunda copia que este
+ * diseño existe para evitar.
+ */
+export const PREGUNTA_CRITERIO_TRIBUNAL =
+  "¿Qué hace mejor a una explicación que a otra en un caso como este?";
+
 export const CRITERIOS_TRIBUNAL = [
   { id: "c1", texto: "Explica todas las pistas", correcto: true },
   { id: "c2", texto: "Es la explicación más simple", correcto: false },

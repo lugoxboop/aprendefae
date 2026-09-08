@@ -35,7 +35,17 @@ const BANCO = [
 ];
 
 const NODOS = [ORIGEN, ...BANCO];
-const TEXTO = Object.fromEntries(NODOS.map((n) => [n.id, n.texto]));
+
+/*
+ * El texto de cada nodo, por id. Se exporta porque el panel docente lo
+ * necesita para nombrar las flechas del diagnóstico por pregunta: un ítem
+ * `ref:N0->N1` no le dice nada a nadie, y con esto se lee como
+ * "Baja el precio de las hamburguesas → Aumentan las ventas diarias".
+ *
+ * Ya estaba construido aquí para uso interno; lo único que cambia es la
+ * palabra `export`. No hay copia del texto en ningún otro sitio.
+ */
+export const TEXTO = Object.fromEntries(NODOS.map((n) => [n.id, n.texto]));
 
 /* Nodos fuera de la frontera del sistema: no tienen ninguna conexión correcta. */
 const SENUELOS = new Set(["D1", "D2"]);

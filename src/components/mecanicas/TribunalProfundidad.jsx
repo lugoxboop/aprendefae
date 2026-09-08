@@ -3,6 +3,7 @@ import { RotateCcw, Lock } from "lucide-react";
 import { FAE } from "../../theme.js";
 import {
   CASO_TRIBUNAL, PISTAS_TRIBUNAL, HIPOTESIS_TRIBUNAL, ORDEN_TRIBUNAL, CRITERIOS_TRIBUNAL,
+  PREGUNTA_CRITERIO_TRIBUNAL,
 } from "../../data/icebergActividades.js";
 import { barajarDistinto } from "../../utils/barajar.js";
 import { parejasDe, parejasPreservadas } from "../../utils/orden.js";
@@ -229,7 +230,7 @@ export default function TribunalProfundidad({ onCompletar }) {
             PRIMERO, LA VARA
           </p>
           <p style={{ fontSize: "13.5px", lineHeight: 1.55, color: "rgba(248,249,250,0.6)", margin: "0 0 12px" }}>
-            ¿Qué hace mejor a una explicación que a otra en un caso como este?
+            {PREGUNTA_CRITERIO_TRIBUNAL}
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "22px" }}>
             {CRITERIOS_TRIBUNAL.map((c) => {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FAE } from "../../theme.js";
 import { actividadDe, itemsDe } from "../../docente/datos.js";
 import { BANDAS, bandaDe, CORTE_BAJO } from "../../docente/bandas.js";
+import { etiquetaDeItem } from "../../docente/etiquetasItem.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -76,22 +77,69 @@ function fechaCorta(iso) {
 }
 
 /*
- * El id del ítem partido por su prefijo, cuando lo lleva.
+ * ═══════════ EL ITEM SE NOMBRA LEYENDO SU BANCO ═══════════
  *
- * Los ids son internos —`et2:iceberg-3`, `r3:cRD`, `a:b-vs-c`— y no hay ningún
- * registro que los traduzca a la pregunta escrita. Se enseñan tal cual, que es
- * honesto, con el prefijo separado para que la ronda o el caso se lean como
- * contexto y no como parte del nombre.
+ * Aquí se enseñaba el id crudo —`et2:Evento`, `r3:cRD`— partido por su prefijo.
+ * Para un profesor eso es ruido, y el diagnóstico por pregunta es justo la
+ * parte que se lleva a clase.
  *
- * Traducirlos pediría un catálogo de textos por ítem que hoy no existe; sería
- * una segunda copia de los enunciados esperando a separarse de la primera.
+ * etiquetaDeItem() devuelve el enunciado que vio el estudiante, LEÍDO del mismo
+ * banco del que salió el id. No hay catálogo de traducciones y por tanto no hay
+ * segunda copia que pueda desincronizarse.
+ *
+ * Cuando no puede nombrarlo devuelve null, y eso NO se maquilla: se enseña el
+ * id crudo y se cuenta arriba. Ver el canario, más abajo.
  */
-function partirItem(id) {
-  const i = String(id).indexOf(":");
-  if (i <= 0) return { contexto: null, nombre: String(id) };
-  return { contexto: String(id).slice(0, i), nombre: String(id).slice(i + 1) };
-}
 
+/*
+ * ═══════════ QUÉ FALLÓ, DICHO CON PRECISIÓN ═══════════
+ *
+ * Aquí había un solo aviso —"no está disponible todavía"— para cualquier error.
+ * Era indistinguible de «se rompió», y ese «todavía» afirmaba una causa concreta
+ * —que la migración no ha corrido— que casi nunca es la verdadera. Costó diez
+ * minutos de diagnóstico a ciegas la primera vez que se usó de verdad.
+ *
+ * Los tres códigos que se pueden distinguir, y por qué importan:
+ *
+ *   PGRST202  PostgREST no encuentra la función. O la migración no corrió, o
+ *             corrió hace un momento y su caché de esquema todavía no se ha
+ *             recargado — se recarga sola, así que la salida es esperar y
+ *             volver a cargar. Es la única causa transitoria de las tres.
+ *   42501     Permiso denegado. O la cuenta no es docente, o no lo es de ESTA
+ *             materia. No se arregla recargando.
+ *   cualquier PGRST203, un fallo de red, un timeout. No se adivina la causa:
+ *   otro      se enseña el código y se dice que no se pudo cargar.
+ *
+ * Ninguna de las tres promete nada que no se sepa. Y todas enseñan el código,
+ * porque el objetivo no es que el docente entienda el error, sino que pueda
+ * mandarlo sin tener que abrir nada.
+ */
+function explicarFallo(error) {
+  const code = error?.code ?? null;
+  if (code === "PGRST202") {
+    return {
+      titulo: "El servidor todavía no ve esta consulta",
+      cuerpo:
+        "Si la migración 0021 acaba de correr, PostgREST tarda un momento en recargar su " +
+        "caché de esquema y lo hace solo. Espera un minuto y vuelve a cargar la página. Si " +
+        "sigue igual pasados unos minutos, la migración no llegó a aplicarse.",
+    };
+  }
+  if (code === "42501") {
+    return {
+      titulo: "Sin permiso para esta consulta",
+      cuerpo:
+        "Tu cuenta no está autorizada para ver el rendimiento de esta materia. Recargar no " +
+        "lo cambia: el acceso se habilita correo por correo, y por materia.",
+    };
+  }
+  return {
+    titulo: "No se pudo cargar el rendimiento por actividad",
+    cuerpo:
+      "El resto del panel sigue funcionando. Si se repite, manda el código de abajo: dice " +
+      "exactamente qué respondió el servidor.",
+  };
+}
 /* Una barra de banda. Misma pista y mismo relleno que AVANCE POR TEMA. */
 function BarraBanda({ banda, n, total }) {
   const pct = total > 0 ? (n / total) * 100 : 0;
@@ -153,10 +201,20 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
   if (!id) return null;
 
   if (error) {
+    const { titulo, cuerpo } = explicarFallo(error);
     return (
       <div style={{ ...tarjeta, maxWidth: "62ch" }}>
-        <p style={nota}>
-          El rendimiento por actividad no está disponible todavía. El resto del panel sí.
+        <p style={{ margin: "0 0 5px", fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 600, color: FAE.ambar }}>
+          {titulo}
+        </p>
+        <p style={nota}>{cuerpo}</p>
+        {/*
+          * El código, en pequeño y siempre. Con una captura de pantalla basta
+          * para saber qué pasó, sin pedirle a nadie que abra la consola.
+          */}
+        <p style={{ margin: "8px 0 0", fontSize: "11px", color: "rgba(248,249,250,0.4)" }}>
+          Código: {error.code ?? "sin código"}
+          {error.message ? ` · ${error.message}` : ""}
         </p>
       </div>
     );
@@ -199,6 +257,8 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
   }
 
   const conDetalle = Number(datos.intentos_con_detalle ?? 0);
+  /* Cuántos ítems reales no se pudieron nombrar. Lo usa el canario. */
+  const sinNombrar = items.filter((it) => !etiquetaDeItem(actividad.id, it.item_id)).length;
   const coberturaTotal = conDetalle >= intentos;
   const desde = fechaCorta(datos.detalle_desde);
   const bandaMedia = bandaDe(datos.pct_medio);
@@ -343,6 +403,29 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
                 </p>
               )}
 
+              {/*
+                * ═══════════ EL CANARIO ═══════════
+                *
+                * Los ids de aquí son los REALES, los que devolvió el servidor.
+                * Es la única verdad disponible: las pruebas de etiquetas derivan
+                * de los mismos bancos que las reglas, así que demuestran
+                * coherencia y no corrección — si la gramática de un componente
+                * se separa de las otras dos a la vez, ninguna prueba lo ve.
+                *
+                * Por eso esto no deja un hueco en blanco: dice cuántos no supo
+                * nombrar. Un docente que lo vea puede reportarlo, y ese aviso es
+                * lo único que separa este fallo del modo del «×100» —nada falla
+                * y el panel enseña otra cosa—.
+                */}
+              {sinNombrar > 0 && (
+                <p style={{ ...nota, margin: "0 0 10px", color: FAE.ambar }}>
+                  {sinNombrar === 1
+                    ? "1 de estas preguntas no se pudo nombrar y sale con su id interno."
+                    : `${sinNombrar} de estas preguntas no se pudieron nombrar y salen con su id interno.`}
+                  {" "}Avísanos: es un fallo nuestro, no un dato raro.
+                </p>
+              )}
+
               <div style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
                 {items.map((it) => {
                   const pctFallo = Number(it.pct_fallo ?? 0);
@@ -353,7 +436,7 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
                    */
                   const grave = pctFallo > 100 - CORTE_BAJO;
                   const color = grave ? FAE.coral : pctFallo >= 25 ? FAE.ambar : "rgba(248,249,250,0.25)";
-                  const { contexto, nombre } = partirItem(it.item_id);
+                  const etiqueta = etiquetaDeItem(actividad.id, it.item_id);
                   return (
                     <div
                       key={it.item_id}
@@ -366,10 +449,12 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
                       <span aria-hidden="true" style={{ width: "3px", alignSelf: "stretch", borderRadius: "2px", background: color, flexShrink: 0 }} />
                       <div style={{ minWidth: 0, flex: 1 }}>
                         <p style={{ margin: 0, fontSize: "13px", color: "rgba(248,249,250,0.85)", wordBreak: "break-word" }}>
-                          {contexto && (
-                            <span style={{ color: "rgba(248,249,250,0.42)" }}>{contexto} · </span>
+                          {etiqueta ?? (
+                            /* Sin nombre: el id crudo, marcado como lo que es. */
+                            <span style={{ fontFamily: "ui-monospace, monospace", fontSize: "12px", color: FAE.ambar }}>
+                              {it.item_id}
+                            </span>
                           )}
-                          {nombre}
                         </p>
                         {/* Qué contestaron en su lugar: lo único accionable de aquí. */}
                         {it.respuesta_top && (
