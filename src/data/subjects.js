@@ -193,9 +193,20 @@ export const SUBJECTS = {
             /*
              * Reconstrucción del dashboard retirado: hereda su modelo
              * verificado —coeficientes y tramos— y nada de su interfaz.
+             *
+             * SIN ÍTEMS, Y ES UNA PROPIEDAD DE LA MECÁNICA. No hay preguntas
+             * que acertar o fallar: se mueven tres palancas y se lee a dónde
+             * llegan los indicadores, así que no hay nada que registrar en
+             * fp_detalle y nunca lo habrá mientras la mecánica sea esta.
+             *
+             * Lo declara para que la vista por actividad OMITA la sección de
+             * diagnóstico entera en vez de enseñarla vacía. Un vacío por "no
+             * hay ítems" y uno por "todavía no hay bastantes intentos" son dos
+             * cosas distintas y el docente tiene que poder distinguirlas.
              */
             id: "tablero-decisiones",
             nombre: "El tablero de decisiones",
+            sinItems: true,
             clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
           },
           {

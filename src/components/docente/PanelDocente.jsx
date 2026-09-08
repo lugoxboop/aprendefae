@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { FAE } from "../../theme.js";
-import { SUBJECTS } from "../../data/subjects.js";
+import { SUBJECTS, HACER, actividadesDeTipo, desafioDe } from "../../data/subjects.js";
 import Logo from "../Logo.jsx";
 import { ChevronLeft } from "lucide-react";
 import { accesoDocente, estudiantesDe, marcarEnGrupo, resumenDe } from "../../docente/datos.js";
@@ -11,6 +11,7 @@ import BloqueAlertas from "./BloqueAlertas.jsx";
 import CabeceraResumen from "./CabeceraResumen.jsx";
 import Destacados from "./Destacados.jsx";
 import FilaEstudiante from "./FilaEstudiante.jsx";
+import VistaRendimiento from "./VistaRendimiento.jsx";
 
 /*
  * Panel docente.
@@ -54,6 +55,21 @@ export default function PanelDocente({ onBack }) {
    * primera y el panel se llenaría de detalles abiertos.
    */
   const [filaAbierta, setFilaAbierta] = useState(null);
+
+  /*
+   * ═══════════ QUÉ ACTIVIDAD SE ESTÁ MIRANDO ═══════════
+   *
+   * Se recuerda en localStorage y NO en la URL, a propósito. La URL de este
+   * sitio es navegación —qué vista estás viendo— y no estado de un control
+   * dentro de una vista; meter aquí un parámetro obligaría a que el enrutador
+   * conociera el catálogo de actividades del panel.
+   *
+   * Es una comodidad por navegador, no un dato: si localStorage falla —modo
+   * privado, sitio con almacenamiento bloqueado— se cae a la primera actividad
+   * de la materia y no pasa nada. Por eso todo va envuelto en try/catch y por
+   * eso se lee dentro de un inicializador perezoso, que corre una sola vez.
+   */
+  const [actividadElegida, setActividadElegida] = useState(null);
 
   useEffect(() => {
     accesoDocente().then((a) => {
@@ -174,6 +190,51 @@ export default function PanelDocente({ onBack }) {
     const orden = [...cohorte].sort((a, b) => Number(b.fp_total) - Number(a.fp_total));
     return new Map(orden.map((e, i) => [e.user_id, i + 1]));
   }, [cohorte]);
+
+  /*
+   * Las actividades que PUEDEN tener datos: las de "Hacer" de esta materia,
+   * con su desafío. Las de "Aprender" no otorgan FP, no dejan fila en
+   * fp_history y por tanto no tienen nada que enseñar aquí; listarlas sería
+   * ofrecer siete pantallas que solo pueden decir "sin datos".
+   *
+   * Se incluye el desafío porque actividadesDeTipo() lo excluye a propósito
+   * —vive al lado del camino, no dentro— pero sí otorga FP y sí tiene
+   * historial. El Arca es justamente eso, y es la primera que Mateo va a abrir.
+   */
+  const actividadesMirables = useMemo(() => {
+    const s = SUBJECTS[materia];
+    if (!s) return [];
+    const salida = [];
+    for (const t of s.topics ?? []) {
+      const desafio = desafioDe(t);
+      for (const a of [...actividadesDeTipo(t, HACER), ...(desafio ? [desafio] : [])]) {
+        salida.push({ id: a.id, nombre: a.nombre, tema: t.title, sinItems: a.sinItems === true });
+      }
+    }
+    return salida;
+  }, [materia]);
+
+  /* Al cambiar de materia se recupera lo último que se miró en ELLA. */
+  useEffect(() => {
+    if (!materia || actividadesMirables.length === 0) return;
+    let recordada = null;
+    try {
+      recordada = window.localStorage.getItem(`fae.docente.actividad.${materia}`);
+    } catch {
+      /* Almacenamiento bloqueado: se sigue sin recordar nada. */
+    }
+    const existe = actividadesMirables.some((a) => a.id === recordada);
+    setActividadElegida(existe ? recordada : actividadesMirables[0].id);
+  }, [materia, actividadesMirables]);
+
+  const elegirActividad = (id) => {
+    setActividadElegida(id);
+    try {
+      window.localStorage.setItem(`fae.docente.actividad.${materia}`, id);
+    } catch {
+      /* Que no se recuerde no puede impedir que se mire. */
+    }
+  };
 
   /* Avance por tema del conjunto: dónde se atasca el grupo, no solo cuánto lleva. */
   const porTema = useMemo(() => {
@@ -379,27 +440,84 @@ export default function PanelDocente({ onBack }) {
           </section>
 
           {/*
-            * ÍTEM 4 — El diagnóstico por pregunta, todavía sin construir.
+            * ÍTEM 4 — El rendimiento por actividad, que era el hueco honesto.
             *
-            * fp_detalle empezó a recibir datos hace días y necesita acumular
-            * antes de que un diagnóstico por pregunta signifique algo. Se dice
-            * así, con el vacío honesto que ya usa el resto del sitio, en vez de
-            * rellenar la sección con algo que parezca análisis.
+            * Aquí había una tarjeta diciendo que el diagnóstico por pregunta
+            * llegaría cuando fp_detalle acumulara recorrido. Ya llegó, y con él
+            * las otras cifras de la misma pregunta: finalización, distribución,
+            * tiempo y FP de UNA actividad concreta.
             *
-            * No se inventa contenido para que se vea llena: un diagnóstico
-            * hecho sobre tres respuestas sería peor que no tenerlo, porque el
-            * docente actuaría sobre ruido creyendo que es señal.
+            * ═══════════ LA CONDICIÓN ES POR MATERIA, NO SOLO POR SER DOCENTE ═══════════
+            *
+            * Que la cuenta sea docente no basta: hay que estar autorizado en
+            * ESTA materia. El servidor lo comprueba en las dos funciones con su
+            * propio 42501 y no se fía del cliente; esto de aquí es para que la
+            * interfaz no ofrezca lo que el servidor va a rechazar.
             */}
-          <section style={{ marginBottom: "28px" }}>
-            <h2 style={seccion}>DIAGNÓSTICO POR PREGUNTA</h2>
-            <div style={{ ...tarjeta, maxWidth: "62ch" }}>
-              <p style={{ margin: 0, fontSize: "13.5px", lineHeight: 1.6, color: "rgba(248,249,250,0.6)" }}>
-                Todavía no hay datos suficientes para un diagnóstico por pregunta. Las actividades
-                empezaron a guardar qué se falla y qué se responde en su lugar hace muy poco;
-                cuando haya recorrido, aquí aparecerá en qué se atasca el grupo.
+          {acceso.materias.includes(materia) && actividadesMirables.length > 0 && (
+            <section style={{ marginBottom: "28px" }}>
+              <h2 style={seccion}>RENDIMIENTO POR ACTIVIDAD</h2>
+              <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "-4px 0 12px", maxWidth: "62ch" }}>
+                Solo las actividades que otorgan FP: las de material teórico no dejan registro y no
+                tendrían nada que enseñar aquí.
               </p>
-            </div>
-          </section>
+
+              {/*
+                * El selector va con aria-label y no con una etiqueta oculta:
+                * el panel no tiene ninguna clase de "solo lectores de pantalla"
+                * y meter una hoja de estilos entera para una línea sería peor
+                * que usar el atributo que existe justo para esto.
+                */}
+              <div style={{ marginBottom: "16px" }}>
+                <select
+                  aria-label="Actividad que se está mirando"
+                  value={actividadElegida ?? ""}
+                  onChange={(ev) => elegirActividad(ev.target.value)}
+                  style={{
+                    width: "100%", maxWidth: "420px", padding: "10px 14px", borderRadius: "10px",
+                    background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.16)",
+                    color: FAE.text, fontFamily: "Inter, sans-serif", fontSize: "14px", outline: "none",
+                  }}
+                >
+                  {[...new Set(actividadesMirables.map((a) => a.tema))].map((tema) => (
+                    <optgroup key={tema} label={tema}>
+                      {actividadesMirables
+                        .filter((a) => a.tema === tema)
+                        .map((a) => (
+                          <option key={a.id} value={a.id}>{a.nombre}</option>
+                        ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </div>
+
+              {/*
+                * SE BUSCA ANTES DE MONTAR, Y ESTO NO ES DEFENSA GRATUITA.
+                *
+                * Al cambiar de materia, `materia` y `actividadesMirables` se
+                * actualizan en el mismo repintado pero `actividadElegida`
+                * todavía trae la actividad de la materia ANTERIOR: el efecto que
+                * la corrige corre después. En ese hueco el find() devolvía
+                * undefined y la vista reventaba con "Cannot read properties of
+                * undefined (reading 'id')", tumbando el panel entero.
+                *
+                * Salió al probar con las dos materias de Mateo. Sin el guardia,
+                * el primer clic en el selector de materia lo dejaba en blanco.
+                */}
+              {(() => {
+                const actual = actividadesMirables.find((a) => a.id === actividadElegida);
+                if (!actual) return null;
+                return (
+                  <VistaRendimiento
+                    key={`${materia}:${actual.id}`}
+                    subjectId={materia}
+                    nombreMateria={nombreMateria}
+                    actividad={actual}
+                  />
+                );
+              })()}
+            </section>
+          )}
 
           <section>
             <h2 style={seccion}>ESTUDIANTES ACTIVOS EN {nombreMateria.toUpperCase()}</h2>

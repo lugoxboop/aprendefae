@@ -9,18 +9,49 @@ import { supabase } from "../lib/supabase.js";
  * estar autorizado, Postgres responde con un error de permisos, no con datos.
  */
 
-/** ¿La sesión actual pertenece a un docente autorizado, y para qué materias? */
-export async function accesoDocente() {
-  if (!supabase) return { esDocente: false, materias: [] };
+/*
+ * ¿La sesión actual pertenece a un docente autorizado, y para qué materias?
+ *
+ * ═══════════ EL DEFECTO ANTE CUALQUIER FALLO ES "NO ES DOCENTE" ═══════════
+ *
+ * Cada salida de esta función que no sea el camino feliz completo devuelve
+ * exactamente { esDocente: false, materias: [] }. Sin cliente, sin sesión, con
+ * la llamada rota, con la red caída o con una respuesta rara: siempre lo
+ * mismo, y lo mismo es lo cerrado.
+ *
+ * Importa porque esto es lo que decide si se PINTA el panel. El servidor no
+ * depende de ello —cada función SQL comprueba es_docente() y la materia por su
+ * cuenta, y responde 42501— así que un fallo aquí no filtra datos. Lo que
+ * filtraría es lo contrario: que un error de red se leyera como «sí, adelante»
+ * y se le enseñara la estructura del panel a quien no debe verla.
+ *
+ * El parámetro `cliente` es una costura para poder probar exactamente eso. En
+ * producción nadie lo pasa y usa el de siempre; acceso.test.mjs recorre todas
+ * las formas de fallar y comprueba que ninguna deja pasar.
+ */
+export async function accesoDocente(cliente = supabase) {
+  const cerrado = { esDocente: false, materias: [] };
+  if (!cliente) return cerrado;
 
-  const { data: sesion } = await supabase.auth.getSession();
-  if (!sesion?.session) return { esDocente: false, materias: [] };
+  try {
+    const { data: sesion } = await cliente.auth.getSession();
+    if (!sesion?.session) return cerrado;
 
-  const { data: es, error } = await supabase.rpc("es_docente");
-  if (error || !es) return { esDocente: false, materias: [] };
+    const { data: es, error } = await cliente.rpc("es_docente");
+    if (error || !es) return cerrado;
 
-  const { data: materias } = await supabase.rpc("materias_docente");
-  return { esDocente: true, materias: materias ?? [] };
+    const { data: materias } = await cliente.rpc("materias_docente");
+    return { esDocente: true, materias: Array.isArray(materias) ? materias : [] };
+  } catch (e) {
+    /*
+     * Una excepción —red caída, cliente a medio inicializar— salía de aquí sin
+     * atrapar y reventaba el .then() de quien llamara, dejando el panel en
+     * "Comprobando acceso…" para siempre. Ahora cae en lo cerrado, como todo
+     * lo demás.
+     */
+    console.error("[aprendeFAE] No se pudo comprobar el acceso docente:", e?.message ?? e);
+    return cerrado;
+  }
 }
 
 /** Métricas por estudiante de una materia. */
@@ -78,6 +109,55 @@ export async function historialDe(subjectId, userId) {
     return { historial: [], error: error.message };
   }
   return { historial: data ?? [], error: null };
+}
+
+/*
+ * Las cifras de UNA actividad: finalización, distribución por bandas, tiempo,
+ * FP y de dónde sale el diagnóstico.
+ *
+ * Se degrada igual que resumenDe e historialDe. Si el cliente se despliega
+ * antes de que corra la migración 0021, panel_actividad no existe todavía y
+ * PostgREST responde PGRST202; aquí eso devuelve `actividad: null` con el
+ * error, y el componente enseña que la vista no está disponible en vez de una
+ * pantalla rota.
+ *
+ * Devuelve una sola fila, que PostgREST entrega como array de uno.
+ */
+export async function actividadDe(subjectId, activityId) {
+  if (!supabase) return { actividad: null, error: "sin-configuracion" };
+  const { data, error } = await supabase.rpc("panel_actividad", {
+    p_subject: subjectId,
+    p_activity_id: activityId,
+  });
+  if (error) {
+    console.error("[aprendeFAE] Rendimiento por actividad:", error.message);
+    return { actividad: null, error: error.message };
+  }
+  return { actividad: Array.isArray(data) ? (data[0] ?? null) : data, error: null };
+}
+
+/*
+ * El diagnóstico por pregunta de esa misma actividad.
+ *
+ * DOS VACÍOS DISTINTOS, Y NO SE CONFUNDEN. Esta función devuelve cero filas
+ * cuando no hay bastantes intentos con captura —el servidor corta por debajo de
+ * cinco— y también cuando la actividad simplemente no tiene ítems. Quién es
+ * cuál lo decide el componente: `sinItems` de subjects.js dice lo segundo, y
+ * el `intentos_con_detalle` de panel_actividad dice lo primero.
+ *
+ * Por eso aquí no se interpreta nada: se devuelve la lista tal cual llegó.
+ */
+export async function itemsDe(subjectId, activityId) {
+  if (!supabase) return { items: [], error: "sin-configuracion" };
+  const { data, error } = await supabase.rpc("panel_items", {
+    p_subject: subjectId,
+    p_activity_id: activityId,
+  });
+  if (error) {
+    console.error("[aprendeFAE] Diagnóstico por pregunta:", error.message);
+    return { items: [], error: error.message };
+  }
+  return { items: data ?? [], error: null };
 }
 
 /** Añadir o quitar a un estudiante del grupo propio. */
