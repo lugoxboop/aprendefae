@@ -15,16 +15,16 @@ import { CSS_SALA, Panel, Piloto, Grabado } from "./marco.jsx";
  *
  * ═════════════ UN NIVEL POR ENCIMA DE T1, Y TIENE QUE VERSE ═════════════
  *
- * T1 —"Los grifos de la Demanda Agregada"— deja manipular las sub-variables de
- * DENTRO de cada componente: C̄, t, c, TR, Ī, i, b, tc. Aquí las palancas son
- * las RAMAS DE LA POLÍTICA ECONÓMICA, que actúan sobre esos componentes. Misma
- * máquina, otro nivel de mando.
+ * T1 —"El corazón de la economía"— deja manipular las sub-variables de DENTRO
+ * de cada componente: C̄, t, c, TR, Ī, i, b, tc. Son los CAPILARES que llenan
+ * cada arteria. Aquí las palancas son las RAMAS DE LA POLÍTICA ECONÓMICA, que
+ * actúan sobre esos componentes. Misma máquina, otro nivel de mando.
  *
  * Decirlo en un rótulo no basta: tiene que percibirse. Tres decisiones lo
  * sostienen, y las tres son deliberadas:
  *
- *   1. EL DEPÓSITO ES VERTICAL Y DE NIVEL. T1 cierra con una barra apilada
- *      horizontal que reparte la DA en franjas. Aquí el depósito SUBE y BAJA.
+ *   1. EL DEPÓSITO ES VERTICAL Y DE NIVEL. La cámara de T1 es una tira
+ *      horizontal de bandas que reparte la DA. Aquí el depósito SUBE y BAJA.
  *      Repartir y llenar son dos gestos distintos, y esa diferencia sola separa
  *      las dos pantallas de un vistazo.
  *
@@ -209,7 +209,7 @@ export default function MaquinaDA() {
         style={{ marginBottom: "16px" }}
       >
         <p style={{ fontSize: "14px", lineHeight: 1.62, color: "rgba(248,249,250,0.72)", margin: "0 0 12px" }}>
-          Esta es la misma máquina de «Los grifos de la Demanda Agregada», operada un nivel más arriba.
+          Esta es la misma máquina de «El corazón de la economía», operada un nivel más arriba.
           Allí se movían las piezas de dentro de cada componente; aquí las palancas son las <strong>ramas
           de la política económica</strong>, que actúan sobre esos componentes.
         </p>
@@ -292,7 +292,11 @@ export default function MaquinaDA() {
                       sin control. Que C tenga cinco piezas y G una sola es la
                       asimetría que T1 enseña; borrarla aquí la desmentiría.
                     */}
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "9px", paddingTop: "8px", borderTop: "1px dashed rgba(248,249,250,0.14)" }}>
+                    <div style={{ marginTop: "9px", paddingTop: "8px", borderTop: "1px dashed rgba(248,249,250,0.14)" }}>
+                    <p style={{ margin: "0 0 5px", fontFamily: "Sora, sans-serif", fontSize: "9px", fontWeight: 700, letterSpacing: "0.16em", color: "rgba(248,249,250,0.28)" }}>
+                      CAPILARES
+                    </p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
                       {t.subvariables.map((s) => (
                         <span
                           key={s}
@@ -305,6 +309,7 @@ export default function MaquinaDA() {
                           {s}
                         </span>
                       ))}
+                    </div>
                     </div>
                   </div>
 
@@ -319,8 +324,8 @@ export default function MaquinaDA() {
           </div>
 
           <p style={{ fontSize: "11.5px", color: "rgba(248,249,250,0.35)", margin: "10px 0 0", lineHeight: 1.45 }}>
-            Las etiquetas grises de cada término son las piezas que se manipulan en «Los grifos». Desde este
-            panel no se tocan: aquí se opera un nivel más arriba.
+            Los capilares grises de cada término son las piezas que se manipulan en «El corazón de la
+            economía». Desde este panel no se tocan: aquí se opera un nivel más arriba.
           </p>
         </div>
 

@@ -343,7 +343,8 @@ export default function App() {
             if (topicId === "demanda-agregada") {
               /*
                * El tema tiene las dos mitades y cada una va a un sitio
-               * distinto: "Aprender" a los grifos, "Hacer" al simulador. Sin
+               * distinto: "Aprender" al corazón de la economía, "Hacer" al
+               * simulador. Sin
                * modo (nadie debería llegar así hoy) se entra al simulador,
                * que es como se comportaba antes.
                */

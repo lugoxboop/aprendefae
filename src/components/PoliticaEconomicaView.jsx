@@ -166,7 +166,7 @@ export default function PoliticaEconomicaView({ modo = null, onBack }) {
         </div>
         <h2 style={h2}>La máquina de la DA y sus palancas</h2>
         <p style={lead}>
-          La misma máquina de «Los grifos», operada un nivel más arriba: aquí las palancas son las ramas de
+          La misma máquina de «El corazón de la economía», operada un nivel más arriba: aquí las palancas son las ramas de
           la política económica. Mueve cualquiera y mira qué parte de la fórmula se enciende.
         </p>
         <MaquinaDA />

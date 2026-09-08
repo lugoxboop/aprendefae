@@ -41,11 +41,28 @@ export const SUBJECTS = {
         actividades: [
           {
             /*
-             * Exploración libre: no hay preguntas ni condición de término, así
-             * que no hay nada que puntuar. Material, no juego.
+             * Las tres piezas de "El corazón de la economía". Exploración
+             * libre: no hay preguntas ni condición de término, así que no hay
+             * nada que puntuar. Material, no juego.
+             *
+             * EL ID SE CONSERVA A PROPÓSITO. La pieza se rehízo entera y
+             * cambió de nombre, pero "grifos-da" es también el nombre de la
+             * vista en el hash (#/grifos-da) y de la rama del enrutador.
+             * Renombrarlo rompería los enlaces que ya circulan y no arreglaría
+             * nada: el id no se le enseña a nadie.
              */
             id: "grifos-da",
-            nombre: "Los grifos de la Demanda Agregada",
+            nombre: "El corazón de la economía",
+            clasificacion: { tipo: APRENDER },
+          },
+          {
+            id: "pulso-memoria",
+            nombre: "Pulso de memoria",
+            clasificacion: { tipo: APRENDER },
+          },
+          {
+            id: "estetoscopio-casos",
+            nombre: "Diagnóstico con estetoscopio",
             clasificacion: { tipo: APRENDER },
           },
           {
