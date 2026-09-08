@@ -167,6 +167,29 @@ export async function itemsDe(subjectId, activityId) {
   return { items: data ?? [], error: null };
 }
 
+/*
+ * Quién es quién en una actividad: una fila por estudiante del grupo curado.
+ *
+ * El filtro del grupo lo hace el SERVIDOR. Los nombres de quien no está en el
+ * grupo no llegan al navegador, así que no se pueden leer en la respuesta de
+ * red aunque la interfaz cambie.
+ *
+ * Se degrada como las otras dos: si la 0024 no ha corrido, PostgREST responde
+ * PGRST202 y aquí eso devuelve lista vacía con el error, para que la tabla
+ * pueda decir por qué está vacía en vez de fingir que no hay estudiantes.
+ */
+export async function grupoDeActividad(subjectId, activityId) {
+  if (!supabase) return { estudiantes: [], error: { code: "sin-configuracion", message: "Supabase no está configurado" } };
+  const { data, error } = await supabase.rpc("panel_grupo_actividad", {
+    p_subject: subjectId,
+    p_activity_id: activityId,
+  });
+  if (error) {
+    console.error("[aprendeFAE] Estudiantes de la actividad:", error);
+    return { estudiantes: [], error };
+  }
+  return { estudiantes: data ?? [], error: null };
+}
 /** Añadir o quitar a un estudiante del grupo propio. */
 export async function marcarEnGrupo(subjectId, userId, incluir) {
   if (!supabase) return { ok: false };

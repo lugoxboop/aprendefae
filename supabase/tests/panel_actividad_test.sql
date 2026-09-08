@@ -47,7 +47,7 @@
 -- es_docente() y materias_docente() sacan el correo del JWT, no de un
 -- parámetro, así que basta con poner request.jwt.claims. Las llamadas de datos
 -- se hacen como DUEÑO y no como `authenticated`: el rol solo decide si se puede
--- ejecutar, y eso se mira aparte en los pasos 13 a 16.
+-- ejecutar, y eso se mira aparte en los pasos 17 a 21.
 --
 -- No toca a nadie real: usuarios, docente y materia propios zzz-*, y ROLLBACK
 -- al final.
@@ -68,13 +68,15 @@ insert into auth.users (id, email, encrypted_password, email_confirmed_at,
 values (gen_random_uuid(), 'zzz-pa-a@prueba.local', '', now(), now(), now(), '{}'::jsonb, '{}'::jsonb, 'authenticated', 'authenticated'),
        (gen_random_uuid(), 'zzz-pa-b@prueba.local', '', now(), now(), now(), '{}'::jsonb, '{}'::jsonb, 'authenticated', 'authenticated'),
        (gen_random_uuid(), 'zzz-pa-c@prueba.local', '', now(), now(), now(), '{}'::jsonb, '{}'::jsonb, 'authenticated', 'authenticated'),
-       (gen_random_uuid(), 'zzz-pa-p@prueba.local', '', now(), now(), now(), '{}'::jsonb, '{}'::jsonb, 'authenticated', 'authenticated');
+       (gen_random_uuid(), 'zzz-pa-p@prueba.local', '', now(), now(), now(), '{}'::jsonb, '{}'::jsonb, 'authenticated', 'authenticated'),
+       (gen_random_uuid(), 'zzz-pa-f@prueba.local', '', now(), now(), now(), '{}'::jsonb, '{}'::jsonb, 'authenticated', 'authenticated');
 
 insert into ids(etiqueta, uid)
 select 'a', id from auth.users where email = 'zzz-pa-a@prueba.local'
 union all select 'b', id from auth.users where email = 'zzz-pa-b@prueba.local'
 union all select 'c', id from auth.users where email = 'zzz-pa-c@prueba.local'
-union all select 'p', id from auth.users where email = 'zzz-pa-p@prueba.local';
+union all select 'p', id from auth.users where email = 'zzz-pa-p@prueba.local'
+union all select 'f', id from auth.users where email = 'zzz-pa-f@prueba.local';
 
 /* Tres estudiantes reales y uno marcado como cuenta de prueba. */
 insert into public.profiles(user_id, nickname, es_prueba)
@@ -83,17 +85,25 @@ select uid, 'zzzpa' || etiqueta, etiqueta = 'p' from ids;
 insert into public.docentes(email, nombre, materias, activo)
 values ('zzz-pa-doc@prueba.local', 'Docente de prueba', array['zzz-pa-materia'], true);
 
-/* Los tres reales están en el grupo del docente; la cuenta de prueba también,
-   para comprobar que no la cuenta ni estando dentro. */
+/*
+ * Al grupo entran a, b, c y la cuenta de prueba —esta última para comprobar
+ * que no cuenta en los promedios ni estando dentro—. `f` se queda FUERA a
+ * propósito: tiene actividad en la materia pero no es del grupo del docente.
+ *
+ * Es la única forma de comprobar que las dos poblaciones de la vista son
+ * distintas de verdad: los agregados de panel_actividad cuentan a `f` y la
+ * tabla de panel_grupo_actividad no debe enseñarlo.
+ */
 insert into public.docente_grupo(docente_email, subject_id, user_id)
-select 'zzz-pa-doc@prueba.local', 'zzz-pa-materia', uid from ids;
+select 'zzz-pa-doc@prueba.local', 'zzz-pa-materia', uid from ids where etiqueta <> 'f';
 
 /*
  * Historial de zzz-pa-act, evaluativa. CINCO intentos reales:
  *
- *   a  50 y 92   -> su mejor es 92, banda alta
- *   b  70 y 60   -> su mejor es 70, banda media
- *   c  30        -> banda baja
+ *   a  50 y 92   -> su mejor es 92, banda alta   · en el grupo
+ *   b  70 y 60   -> su mejor es 70, banda media  · en el grupo
+ *   c  30        -> banda baja                   · en el grupo
+ *   f  45        -> banda baja                   · FUERA del grupo
  *   p  100       -> cuenta de prueba: no cuenta en nada
  *
  * Y un bono de racha de `a`, que no es un intento.
@@ -115,6 +125,8 @@ union all
 select uid, 'zzz-pa-act', 'zzz-pa-materia', 10, 'medio', 'evaluativa',  30, 400000, now() from ids where etiqueta = 'c'
 union all
 select uid, 'zzz-pa-act', 'zzz-pa-materia', 99, 'medio', 'evaluativa', 100, 999000, now() from ids where etiqueta = 'p'
+union all
+select uid, 'zzz-pa-act', 'zzz-pa-materia', 15, 'medio', 'evaluativa',  45, 500000, now() from ids where etiqueta = 'f'
 union all
 select uid, 'racha-3',    'zzz-pa-materia', 15, 'bono',  'racha',     null,   null, now() from ids where etiqueta = 'a';
 
@@ -269,46 +281,111 @@ insert into res select 5, 'el ítem siempre acertado NO desaparece, y viene sin 
 
 -- ── 6 a 12. Las cifras de panel_actividad son las sembradas ────────────────
 /*
- * completaron = 3 (a, b, c) y NO 4: la cuenta de prueba no cuenta.
- * intentos    = 5 y NO 6: el bono de racha no es un intento.
- * pct_medio   = (92 + 70 + 30) / 3 = 64,0 — el MEJOR de cada estudiante, no la
- *               media de los cinco intentos, que daría 60,4.
+ * completaron = 4 (a, b, c, f) y NO 5: la cuenta de prueba no cuenta. Sí
+ *               cuenta `f`, que no es del grupo: los agregados son de la
+ *               materia, no del grupo.
+ * intentos    = 6 y NO 7: el bono de racha no es un intento.
+ * pct_medio   = (92 + 70 + 30 + 45) / 4 = 59,25 -> 59,3 — el MEJOR de cada
+ * estudiante, incluido el que no es del grupo.
  */
-insert into res select 6, 'completaron cuenta personas reales, no intentos ni cuentas de prueba', '3',
+insert into res select 6, 'completaron cuenta a los de dentro Y fuera del grupo, sin cuentas de prueba', '4',
   (select coalesce(completaron::text, 'NULO') from pa),
-  (select completaron = 3 from pa);
+  (select completaron = 4 from pa);
 
-insert into res select 7, 'intentos excluye el bono de racha y la cuenta de prueba', '5',
+insert into res select 7, 'intentos excluye el bono de racha y la cuenta de prueba', '6',
   (select coalesce(intentos::text, 'NULO') from pa),
-  (select intentos = 5 from pa);
+  (select intentos = 6 from pa);
 
-insert into res select 8, 'pct_medio usa el MEJOR intento de cada estudiante', '64.0',
+insert into res select 8, 'pct_medio usa el MEJOR intento de cada estudiante', '59.3',
   (select coalesce(pct_medio::text, 'NULO') from pa),
-  (select pct_medio = 64.0 from pa);
+  (select pct_medio = 59.3 from pa);
 
 insert into res select 9, 'modality y difficulty salen resueltas, no nulas', 'evaluativa / medio',
   (select coalesce(modality, 'NULO') || ' / ' || coalesce(difficulty, 'NULO') from pa),
   (select modality = 'evaluativa' and difficulty = 'medio' from pa);
 
-insert into res select 10, 'el tiempo medio ignora el bono y la cuenta de prueba', '240000',
+insert into res select 10, 'el tiempo medio ignora el bono y la cuenta de prueba', '283333',
   (select coalesce(duracion_media_ms::text, 'NULO') from pa),
-  (select duracion_media_ms = 240000 from pa);
+  (select duracion_media_ms = 283333 from pa);
 
-insert into res select 11, 'el FP medio ignora el bono y la cuenta de prueba', '24.0',
+insert into res select 11, 'el FP medio ignora el bono y la cuenta de prueba', '22.5',
   (select coalesce(fp_medio::text, 'NULO') from pa),
-  (select fp_medio = 24.0 from pa);
+  (select fp_medio = 22.5 from pa);
 
 /*
- * Las tres bandas tienen una persona cada una (92 alta, 70 media, 30 baja), y
- * el mínimo son tres. Así que los tres recuentos vuelven en NULL y
- * distribucion_visible en false: los números exactos ni siquiera salen de aquí.
+ * EL UMBRAL DE CELDA SE RETIRÓ EN LA 0024, y este paso es el que lo comprueba.
+ *
+ * Antes, con bandas de una persona los tres recuentos volvían en NULL. Ahora
+ * se devuelven: 1 alta (92), 1 media (70) y 2 bajas (30 y 45). Si alguien
+ * repusiera el umbral sin querer, esto se pondría en rojo con los tres en
+ * null, que es exactamente lo que hay que ver.
+ *
+ * La decisión y su razón están escritas encima de la función en la 0024.
  */
-insert into res select 12, 'con una persona por banda, la distribución no se devuelve', 'false / null',
+insert into res select 12, 'sin umbral de celda, la distribución se devuelve entera', 'true / 1-1-2',
   (select coalesce(distribucion_visible::text, 'NULO') || ' / ' ||
-          coalesce(banda_alta::text, 'null') || coalesce(banda_media::text, '') || coalesce(banda_baja::text, '') from pa),
-  (select distribucion_visible = false and banda_alta is null and banda_media is null and banda_baja is null from pa);
+          coalesce(banda_alta::text, 'null') || '-' || coalesce(banda_media::text, 'null') || '-' ||
+          coalesce(banda_baja::text, 'null') from pa),
+  (select distribucion_visible = true and banda_alta = 1 and banda_media = 1 and banda_baja = 2 from pa);
 
--- ── 13 a 16. Las guardas siguen cerradas ────────────────────────────────────
+-- ── 13 a 16. panel_grupo_actividad: quién es quién ─────────────────────────
+/*
+ * LA TABLA HABLA DEL GRUPO CURADO; LOS AGREGADOS DE ARRIBA, DE LA MATERIA.
+ * Son dos poblaciones distintas y estos pasos lo comprueban: `f` cuenta en
+ * completaron y en las bandas, y NO puede aparecer aquí.
+ *
+ * La cuenta de prueba SÍ aparece, marcada. Es lo decidido para el panel
+ * principal y aquí se mantiene: la fila se enseña con su distintivo en vez de
+ * desaparecer, y sigue fuera de todos los promedios.
+ */
+create temp table pg(
+  user_id   uuid,
+  nickname  text,
+  full_name text,
+  es_prueba boolean,
+  mejor_pct numeric,
+  fp_total  bigint,
+  intentos  integer,
+  ultimo    timestamptz
+) on commit drop;
+
+do $x$
+begin
+  insert into pg select * from public.panel_grupo_actividad('zzz-pa-materia', 'zzz-pa-act');
+exception when others then
+  perform set_config('prueba.pg_error', sqlstate || ': ' || sqlerrm, true);
+end;
+$x$;
+
+insert into res select 13, 'panel_grupo_actividad se ejecuta y devuelve el grupo (con la de prueba)', '4',
+  coalesce(current_setting('prueba.pg_error', true), (select count(*)::text from pg)),
+  (select count(*) = 4 from pg);
+
+insert into res select 14, 'el estudiante de fuera del grupo NO aparece en la tabla', 'no está',
+  coalesce((select 'SÍ ESTÁ' from pg where nickname = 'zzzpaf'), 'no está'),
+  not exists (select 1 from pg where nickname = 'zzzpaf');
+
+/*
+ * El contenido de una fila, calculado a mano: `a` tiene dos intentos (50 y 92),
+ * su mejor es 92 y sus FP son 20 + 40 = 60. Sumados, no el mejor: el motor paga
+ * la primera vez y las repeticiones dan cero, así que sumar es lo que responde
+ * "cuántos FP le dio esto".
+ */
+insert into res select 15, 'la fila de un estudiante trae mejor_pct, FP sumados e intentos', '92 / 60 / 2',
+  coalesce((select mejor_pct::text || ' / ' || fp_total::text || ' / ' || intentos::text
+              from pg where nickname = 'zzzpaa'), 'NO ESTÁ'),
+  coalesce((select mejor_pct = 92 and fp_total = 60 and intentos = 2
+              from pg where nickname = 'zzzpaa'), false);
+
+/*
+ * Y el orden: de menor a mayor acierto, porque la pregunta que trae aquí a un
+ * docente es a quién acompañar. El primero tiene que ser `c`, con 30.
+ */
+insert into res select 16, 'la tabla ordena de menor a mayor acierto', 'zzzpac',
+  coalesce((select nickname from pg limit 1), 'VACÍA'),
+  (select nickname = 'zzzpac' from pg limit 1);
+
+-- ── 17 a 20. Las guardas siguen cerradas ────────────────────────────────────
 /*
  * Esto es lo que la 0021 ya comprobaba, y sigue haciendo falta: arreglar la
  * ambigüedad no puede haber abierto la puerta. Va DESPUÉS de los pasos que
@@ -338,13 +415,27 @@ exception when insufficient_privilege then
 end;
 $g$;
 
-insert into res select 13, 'un estudiante no puede leer panel_actividad', 'rechazado',
+/* La función nueva lleva las mismas dos guardas, y hay que comprobarlo. */
+do $g$
+begin
+  perform 1 from public.panel_grupo_actividad('zzz-pa-materia', 'zzz-pa-act');
+  perform set_config('prueba.g5', 'pasó', true);
+exception when insufficient_privilege then
+  perform set_config('prueba.g5', 'rechazado', true);
+end;
+$g$;
+
+insert into res select 17, 'un estudiante no puede leer panel_actividad', 'rechazado',
   current_setting('prueba.g1', true),
   current_setting('prueba.g1', true) = 'rechazado';
 
-insert into res select 14, 'un estudiante no puede leer panel_items', 'rechazado',
+insert into res select 18, 'un estudiante no puede leer panel_items', 'rechazado',
   current_setting('prueba.g2', true),
   current_setting('prueba.g2', true) = 'rechazado';
+
+insert into res select 19, 'un estudiante no puede leer la tabla de nombres', 'rechazado',
+  current_setting('prueba.g5', true),
+  current_setting('prueba.g5', true) = 'rechazado';
 
 insert into public.docentes(email, nombre, materias, activo)
 values ('zzz-pa-otro@prueba.local', 'Docente de otra materia', array['zzz-pa-otra'], true);
@@ -364,7 +455,7 @@ exception when insufficient_privilege then
 end;
 $g$;
 
-insert into res select 15, 'un docente de otra materia tampoco entra', 'rechazado',
+insert into res select 20, 'un docente de otra materia tampoco entra', 'rechazado',
   current_setting('prueba.g3', true),
   current_setting('prueba.g3', true) = 'rechazado';
 
@@ -383,7 +474,7 @@ end;
 $g$;
 reset role;
 
-insert into res select 16, 'anon no puede ejecutar panel_actividad', 'rechazado',
+insert into res select 21, 'anon no puede ejecutar panel_actividad', 'rechazado',
   current_setting('prueba.g4', true),
   current_setting('prueba.g4', true) = 'rechazado';
 

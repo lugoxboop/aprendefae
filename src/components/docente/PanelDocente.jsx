@@ -534,14 +534,39 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
                     width: "100%", maxWidth: "420px", padding: "10px 14px", borderRadius: "10px",
                     background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.16)",
                     color: FAE.text, fontFamily: "Inter, sans-serif", fontSize: "14px", outline: "none",
+                    /*
+                     * LA LISTA DESPLEGADA LA PINTA EL SISTEMA, NO ESTA HOJA.
+                     *
+                     * El cuadro cerrado tomaba estos colores, pero al abrirlo el
+                     * navegador dibujaba el menú con el tema CLARO del sistema:
+                     * fondo blanco y encima el texto casi invisible que hereda de
+                     * aquí. Ilegible en un sitio oscuro.
+                     *
+                     * `color-scheme` es lo único que el sistema escucha para
+                     * decidir con qué tema pinta sus propios controles. No es
+                     * decoración: sin él, el color del texto de las opciones y el
+                     * fondo que les pone el sistema los eligen dos capas
+                     * distintas y nadie garantiza que contrasten.
+                     *
+                     * Los `option` llevan además su color explícito porque
+                     * Windows y Linux ignoran color-scheme en el menú abierto de
+                     * un select y usan los del elemento.
+                     */
+                    colorScheme: "dark",
                   }}
                 >
                   {[...new Set(actividadesMirables.map((a) => a.tema))].map((tema) => (
-                    <optgroup key={tema} label={tema}>
+                    <optgroup key={tema} label={tema} style={{ background: FAE.bg, color: "rgba(248,249,250,0.6)" }}>
                       {actividadesMirables
                         .filter((a) => a.tema === tema)
                         .map((a) => (
-                          <option key={a.id} value={a.id}>{a.nombre}</option>
+                          <option
+                            key={a.id}
+                            value={a.id}
+                            style={{ background: FAE.bg, color: FAE.text }}
+                          >
+                            {a.nombre}
+                          </option>
                         ))}
                     </optgroup>
                   ))}

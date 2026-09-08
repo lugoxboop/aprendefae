@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { FAE } from "../../theme.js";
-import { actividadDe, itemsDe } from "../../docente/datos.js";
+import { actividadDe, itemsDe, grupoDeActividad } from "../../docente/datos.js";
 import { BANDAS, bandaDe, CORTE_BAJO } from "../../docente/bandas.js";
 import { etiquetaDeItem } from "../../docente/etiquetasItem.js";
 import { NavigationContext } from "../../navigation.js";
@@ -166,6 +166,116 @@ function BarraBanda({ banda, n, total }) {
   );
 }
 
+/*
+ * ═══════════ QUIÉN ES QUIÉN ═══════════
+ *
+ * La distribución dice que hay uno en banda baja; esto dice a quién acompañar,
+ * que es la única forma de que el dato sirva para algo un martes por la mañana.
+ *
+ * ═══════════ POR QUÉ ESTO NO ROMPE NINGUNA PROTECCIÓN ═══════════
+ *
+ * Había un umbral de celda que ocultaba los recuentos cuando una banda tenía
+ * una o dos personas. Se retiró en la 0024, y con esta tabla debajo era lo
+ * coherente: el anonimato protege a los estudiantes ENTRE SÍ, no de su
+ * profesor, y un docente mirando su grupo curado tiene derecho a ver nombres.
+ * Ocultar el recuento mientras la tabla da el nombre entero era una protección
+ * aparente, que es peor que ninguna.
+ *
+ * Se comprobó antes de quitarlo que ese umbral no vivía en ningún camino de
+ * estudiante. Si algún día hay una vista de cohorte para estudiantes, ahí sí
+ * hace falta.
+ *
+ * ═══════════ LAS CUENTAS DE PRUEBA SE VEN, MARCADAS ═══════════
+ *
+ * Igual que en el panel principal, y por la misma razón: un docente que ve una
+ * fila de más de las que suman los promedios tiene que poder leer por qué sin
+ * abrir nada. Siguen fuera de todos los agregados de arriba.
+ */
+function TablaEstudiantes({ estudiantes, hayGrupo, evaluativa }) {
+  if (!estudiantes || estudiantes.length === 0) return null;
+
+  return (
+    <div style={{ marginTop: "22px" }}>
+      <p style={{ ...rotulo, marginBottom: "4px" }}>QUIÉN ES QUIÉN</p>
+      <p style={{ ...nota, margin: "0 0 10px", color: "rgba(248,249,250,0.45)" }}>
+        {hayGrupo
+          ? "Solo tu grupo, ordenado de menor a mayor acierto: arriba está quien más lo necesita."
+          : "Todavía sin grupo armado — salen todos los que la hicieron, ordenados de menor a mayor acierto."}
+      </p>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
+        {estudiantes.map((e) => {
+          const pct = e.mejor_pct === null || e.mejor_pct === undefined ? null : Math.round(Number(e.mejor_pct));
+          const banda = bandaDe(e.mejor_pct);
+          const intentos = Number(e.intentos ?? 0);
+          return (
+            <div
+              key={e.user_id}
+              style={{
+                display: "grid",
+                /* En móvil el nombre manda y las cifras se aprietan a la derecha. */
+                gridTemplateColumns: "minmax(0, 1fr) auto auto",
+                gap: "10px",
+                alignItems: "baseline",
+                padding: "9px 0",
+                borderBottom: "1px solid rgba(248,249,250,0.07)",
+              }}
+            >
+              {/*
+                * El nombre y la marca en bloques distintos, no en la misma línea.
+                * Estaban juntos en una celda con nowrap y a 375 px la marca salía
+                * cortada como "cuenta de prueba…" — que es justo lo que tiene que
+                * poder leerse.
+                */}
+              <span style={{ minWidth: 0 }}>
+                <span style={{ display: "block", fontSize: "13px", color: "rgba(248,249,250,0.85)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {e.full_name || e.nickname}
+                {/* El ×3 va apagado: es un matiz, no una insignia. */}
+                {intentos > 1 && (
+                  <span style={{ marginLeft: "6px", fontSize: "10.5px", color: "rgba(248,249,250,0.4)", fontVariantNumeric: "tabular-nums" }}>
+                    ×{intentos}
+                  </span>
+                )}
+                </span>
+                {e.es_prueba && (
+                  <span style={{ display: "block", marginTop: "2px", fontSize: "10.5px", color: FAE.ambar }}>
+                    cuenta de prueba · fuera de los promedios
+                  </span>
+                )}
+              </span>
+
+              {/*
+                * El porcentaje en el tono de SU banda, con la palabra de la banda
+                * al lado: los mismos dos cortes de las barras de arriba, así que
+                * un estudiante en coral aquí es uno de los de la banda baja allí.
+                */}
+              <span style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                {evaluativa && pct !== null ? (
+                  <>
+                    <span style={{ fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: banda ? COLOR_BANDA[banda] : FAE.text }}>
+                      {pct}%
+                    </span>
+                    {banda && (
+                      <span style={{ marginLeft: "6px", fontSize: "10.5px", color: COLOR_BANDA[banda] }}>
+                        {BANDAS.find((b) => b.id === banda).nombre.toLowerCase()}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span style={{ fontSize: "12px", color: "rgba(248,249,250,0.4)" }}>—</span>
+                )}
+              </span>
+
+              <span style={{ fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: FAE.teal, whiteSpace: "nowrap" }}>
+                {Number(e.fp_total ?? 0)} FP
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 export default function VistaRendimiento({ subjectId, actividad, nombreMateria }) {
   /*
    * Sin actividad no hay nada que pedir ni que pintar. El panel ya no la monta
@@ -177,12 +287,14 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
   const nav = useContext(NavigationContext);
   const [datos, setDatos] = useState(null);      // null = cargando
   const [items, setItems] = useState([]);
+  const [delGrupo, setDelGrupo] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     let vivo = true;
     setDatos(null);
     setItems([]);
+    setDelGrupo([]);
     setError(null);
 
     if (!id) return undefined;
@@ -198,6 +310,14 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
      */
     itemsDe(subjectId, id).then(({ items }) => {
       if (vivo) setItems(items);
+    });
+    /*
+     * La tabla de estudiantes va en su propia llamada, igual que el
+     * diagnóstico: si la 0024 todavía no corrió, las cifras de arriba se ven
+     * igual y solo falta la tabla.
+     */
+    grupoDeActividad(subjectId, id).then(({ estudiantes }) => {
+      if (vivo) setDelGrupo(estudiantes);
     });
     return () => { vivo = false; };
   }, [subjectId, id]);
@@ -379,6 +499,23 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
         <div style={{ marginTop: "20px" }}>
           <p style={{ ...rotulo, marginBottom: "10px" }}>DISTRIBUCIÓN POR BANDAS</p>
 
+          {/*
+            * LA POBLACIÓN DE LAS BARRAS NO ES LA DE LA TABLA, Y SE DICE.
+            *
+            * Las bandas cuentan a todos los que terminaron la actividad en la
+            * materia; la tabla de abajo es del grupo curado. Con un grupo que
+            * no sea toda la cohorte, los dos números no coinciden — y ya pasó
+            * una vez que un número correcto llevara una etiqueta que mentía.
+            *
+            * Aquí ya no hay umbral de celda: se retiró a propósito en la 0024,
+            * porque con la tabla de nombres justo debajo ocultar el recuento no
+            * ocultaba nada. La razón larga está en la migración.
+            */}
+          <p style={{ ...nota, margin: "-4px 0 12px", color: "rgba(248,249,250,0.45)" }}>
+            Sobre {completaron} {completaron === 1 ? "estudiante" : "estudiantes"} que la
+            terminaron en la materia, dentro y fuera de tu grupo.
+          </p>
+
           {datos.distribucion_visible ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {BANDAS.map((b) => (
@@ -391,19 +528,18 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
               ))}
             </div>
           ) : (
-            /*
-              * El umbral de celda lo decide el SERVIDOR: si alguna banda no
-              * vacía tiene menos de tres estudiantes, los tres recuentos vienen
-              * en null y ni siquiera llegan al navegador. Aquí solo se explica.
-              */
             <div style={{ ...tarjeta, maxWidth: "62ch" }}>
               <p style={nota}>
-                La distribución no se muestra: con este número de estudiantes, alguna de las bandas
-                tendría una o dos personas y señalaría a alguien. El acierto medio de arriba sí es
-                seguro porque no separa a nadie.
+                Todavía no hay ningún porcentaje que repartir en bandas.
               </p>
             </div>
           )}
+
+          <TablaEstudiantes
+            estudiantes={delGrupo}
+            hayGrupo={hayGrupo}
+            evaluativa={evaluativa}
+          />
         </div>
       )}
 
