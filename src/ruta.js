@@ -53,13 +53,12 @@ export const VISTAS = new Set([
   "pensamiento-sistemico",
   "modelo-iceberg",
   "fuerzas-porter",
-  /* DA-Learn por dentro */
-  "dashboard",
-  "consumo",
-  "inversion",
-  "gasto",
-  "xn",
-  "final",
+  /*
+   * Aquí estaban las seis vistas de DA-Learn —dashboard, consumo, inversion,
+   * gasto, xn y final—. El simulador se retiró entero, así que sus hashes
+   * dejan de ser rutas: quien tenga uno guardado cae en la portada, que es lo
+   * que hace esta lista con cualquier hash desconocido.
+   */
   /* Nivel sitio */
   "perfil",
   "docente",

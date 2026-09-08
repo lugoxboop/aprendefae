@@ -24,11 +24,14 @@ import {
   RONDAS_GANADORES, ESCENARIOS_EXPLICA, CASOS_CRISIS, RANURAS_CRISIS, BANCO_CORRIENTE,
 } from "../../data/juegosPolitica2.js";
 import { CASILLAS, CASOS_CADENA } from "../../data/juegosPolitica.js";
-import { QUIZZES } from "../../data/quizzes.js";
 import { parejasDe } from "../../utils/orden.js";
 import { FUERZAS, CASOS } from "../../data/asedio.js";
 import { REFERENCIA, clave } from "../../components/mecanicas/MapaCausal.jsx";
 import { CITAS_EXPEDIENTE, NIVELES, ORDEN_DECISIONES, MOMENTOS, BANCO_ARCA } from "../../data/arca.js";
+import {
+  TERMINOS_ECG, DEFINICIONES_ECG, FRAGMENTOS_ECG, REACCIONES, PASOS_TRANSFUSION,
+  CASOS_BIOPSIA, CASOS_TRIAGE, CASOS_CIRUGIA, ALERTAS_MONITOR, COMPONENTES_MONITOR,
+} from "../../data/demandaAgregadaHacer.js";
 import {
   BLIPS_RADAR, ANILLOS, DEFINICIONES, OPCIONES_RESCATE,
   BANCO_ARQUITECTO, RANURAS, FRAGMENTOS_TRANSMISION, CORRIENTE,
@@ -168,58 +171,6 @@ unicos(
   BANCO_CORRIENTE.length
 );
 
-/* ── simulador-da ── la pregunta, prefijada por canal ── */
-/*
- * Los cuatro canales tienen cinco preguntas cada uno indexadas 0..4: sin el
- * prefijo de canal, la pregunta 0 de consumo y la 0 de inversión —que no
- * tienen nada que ver— caerían en la misma fila.
- */
-{
-  const canales = ["consumo", "inversion", "gasto", "xn"];
-  unicos(
-    "simulador-da",
-    [
-      ...canales.flatMap((c) => QUIZZES[c].map((_, i) => `${c}:${i}`)),
-      "final:finalQ1",
-      "final:finalQ2",
-    ],
-    canales.reduce((n, c) => n + QUIZZES[c].length, 0) + 2
-  );
-
-  const sinPrefijo = [
-    ...canales.flatMap((c) => QUIZZES[c].map((_, i) => String(i))),
-    "finalQ1", "finalQ2",
-  ];
-  const choca = sinPrefijo.length !== new Set(sinPrefijo).size;
-  if (!choca) fallos++;
-  filas.push({
-    actividad: "simulador-da (sin prefijo)",
-    esperado: "hay choque, por eso lleva prefijo",
-    obtenido: choca ? "choca, como se documenta" : "YA NO CHOCA: revisar el comentario",
-    resultado: choca ? "PASA" : "FALLA",
-  });
-
-  /* Y que los ids de opción sean únicos dentro de cada pregunta: son `respuesta`. */
-  const malas = [];
-  for (const c of canales) {
-    QUIZZES[c].forEach((q, i) => {
-      const ids = q.options.map((o) => o.id);
-      if (ids.length !== new Set(ids).size) malas.push(`${c}:${i}`);
-    });
-  }
-  for (const k of ["finalQ1", "finalQ2"]) {
-    const ids = QUIZZES[k].options.map((o) => o.id);
-    if (ids.length !== new Set(ids).size) malas.push(`final:${k}`);
-  }
-  if (malas.length) fallos++;
-  filas.push({
-    actividad: "simulador-da · opciones",
-    esperado: "ninguna pregunta repite id de opción",
-    obtenido: malas.length ? "REPITEN: " + malas.join(", ") : "ninguna repite",
-    resultado: malas.length ? "FALLA" : "PASA",
-  });
-}
-
 /* ── radar-profundidad ── el blip, sin prefijo ── */
 /*
  * Siete señales con id propio (r-evento … r-trampa-3), un solo caso, sin
@@ -349,6 +300,223 @@ unicos(
     esperado: "hay choque, por eso lleva prefijo",
     obtenido: choca ? "choca, como se documenta" : "YA NO CHOCA: revisar el comentario",
     resultado: choca ? "PASA" : "FALLA",
+  });
+}
+
+/* ═══════════ LOS SIETE JUEGOS DE DEMANDA AGREGADA ═══════════ */
+
+/* ── electrocardiograma ── el término en la etapa 1, el fragmento en la 2 ── */
+/*
+ * Ocho ids `def:*` —uno por término, no por definición: las dos variantes son
+ * paráfrasis de la misma pregunta y comparten fila a propósito— y seis
+ * `frag:*`, de los que cada partida sortea cuatro.
+ *
+ * Los dos prefijos NO arreglan un choque presente: hoy ningún término se llama
+ * como un fragmento. Están para que las dos etapas no puedan pisarse al crecer,
+ * y para que la fila del panel diga sola de qué etapa era.
+ */
+unicos(
+  "electrocardiograma",
+  [
+    ...TERMINOS_ECG.map((t) => `def:${t.id}`),
+    ...FRAGMENTOS_ECG.map((x) => `frag:${x.id}`),
+  ],
+  TERMINOS_ECG.length + FRAGMENTOS_ECG.length
+);
+
+/* Cada definición apunta a un término que existe, y cada término tiene sus dos. */
+{
+  const huerfanas = DEFINICIONES_ECG.filter((d) => !TERMINOS_ECG.some((t) => t.id === d.termino));
+  const sinPareja = TERMINOS_ECG.filter(
+    (t) => DEFINICIONES_ECG.filter((d) => d.termino === t.id).length !== 2
+  );
+  const mal = huerfanas.length + sinPareja.length;
+  if (mal) fallos++;
+  filas.push({
+    actividad: "electrocardiograma · parejas",
+    esperado: "8 términos con 2 definiciones cada uno",
+    obtenido: mal
+      ? `huérfanas: ${huerfanas.map((d) => d.id).join(", ") || "ninguna"} · sin pareja: ${sinPareja.map((t) => t.id).join(", ") || "ninguno"}`
+      : "las 16 emparejadas",
+    resultado: mal ? "FALLA" : "PASA",
+  });
+}
+
+/* ── termometro-reacciones ── el id de la ronda ── */
+/*
+ * Doce en el banco, seis por partida. Sin prefijo y sin necesidad: cada cambio
+ * es su propia pregunta. Que "sube-y" y "baja-y" sean filas separadas es lo que
+ * se quiere —subir y bajar la renta son dos preguntas distintas— y por eso el
+ * id lleva la dirección dentro.
+ */
+unicos("termometro-reacciones", REACCIONES.map((x) => x.id), REACCIONES.length);
+
+/*
+ * Los ids de opción son los valores de `respuesta`: dos iguales en una ronda
+ * harían imposible saber qué eligió el estudiante.
+ */
+{
+  const malas = REACCIONES.filter((x) => {
+    const ids = x.opciones.map((o) => o.id);
+    return ids.length !== new Set(ids).size || !ids.includes(x.correcta);
+  }).map((x) => x.id);
+  if (malas.length) fallos++;
+  filas.push({
+    actividad: "termometro-reacciones · opciones",
+    esperado: "ids únicos y la correcta entre ellos",
+    obtenido: malas.length ? "MAL: " + malas.join(", ") : "las 12 rondas bien",
+    resultado: malas.length ? "FALLA" : "PASA",
+  });
+}
+
+/* ── banco-transfusiones ── el paso, prefijado por ronda ── */
+unicos(
+  "banco-transfusiones",
+  ["r2", "r3"].flatMap((ronda) => PASOS_TRANSFUSION.map((p) => `${ronda}:${p.id}`)),
+  PASOS_TRANSFUSION.length * 2
+);
+
+/*
+ * Aquí el prefijo SÍ es lo único que separa dos preguntas: los cuatro pasos se
+ * llaman igual en la ronda guiada y en la sola, y sin él el paso hecho con la
+ * fórmula delante se sumaría con el hecho sin ella, que es justo la comparación
+ * que esta actividad existe para poder hacer.
+ */
+{
+  const sinPrefijo = ["r2", "r3"].flatMap(() => PASOS_TRANSFUSION.map((p) => p.id));
+  const choca = sinPrefijo.length !== new Set(sinPrefijo).size;
+  if (!choca) fallos++;
+  filas.push({
+    actividad: "banco-transfusiones (sin prefijo)",
+    esperado: "hay choque, por eso lleva prefijo",
+    obtenido: choca ? "choca, como se documenta" : "YA NO CHOCA: revisar el comentario",
+    resultado: choca ? "PASA" : "FALLA",
+  });
+}
+
+/* ── biopsia-economica ── un id por caso ── */
+/*
+ * Una sola fila por partida. Lleva el caso porque los dos enunciados son
+ * distintos y el panel debe poder decir cuál se atraviesa, aunque la respuesta
+ * correcta sea la misma en los dos.
+ */
+unicos("biopsia-economica", CASOS_BIOPSIA.map((c) => `biopsia:${c.id}`), CASOS_BIOPSIA.length);
+
+{
+  const malas = CASOS_BIOPSIA.filter((c) => {
+    const ids = c.opciones.map((o) => o.id);
+    return ids.length !== new Set(ids).size || !ids.includes(c.correcta);
+  }).map((c) => c.id);
+  if (malas.length) fallos++;
+  filas.push({
+    actividad: "biopsia-economica · opciones",
+    esperado: "ids únicos y la correcta entre ellos",
+    obtenido: malas.length ? "MAL: " + malas.join(", ") : "los dos casos bien",
+    resultado: malas.length ? "FALLA" : "PASA",
+  });
+}
+
+/* ── triage-emergencias ── el duelo, prefijado por caso ── */
+/*
+ * Seis: tres duelos por cada uno de los dos casos. HOY NO CHOCARÍAN sin el
+ * prefijo, y por eso aquí no hay chequeo de choque que fingir: los seis nombres
+ * salieron distintos por cómo cayeron las parejas. El prefijo está porque las
+ * medidas A, B y C significan cosas contrarias en cada caso y con tres letras
+ * solo hay tres parejas posibles: un tercer caso repetiría una.
+ */
+unicos(
+  "triage-emergencias",
+  CASOS_TRIAGE.flatMap((c) => c.duelos.map((d) => `${c.id}:${d.id}`)),
+  CASOS_TRIAGE.reduce((n, c) => n + c.duelos.length, 0)
+);
+
+/*
+ * El ganador de cada duelo tiene que ser uno de los dos que compiten, y los tres
+ * duelos tienen que estar de acuerdo con el ranking declarado del caso. Un
+ * duelo que contradijera el orden enseñaría un ciclo.
+ */
+{
+  const mal = [];
+  for (const c of CASOS_TRIAGE) {
+    for (const d of c.duelos) {
+      if (!d.par.includes(d.gana)) mal.push(`${c.id}:${d.id} gana quien no juega`);
+      const [x, y] = d.par;
+      const mejor = c.ranking.indexOf(x) < c.ranking.indexOf(y) ? x : y;
+      if (mejor !== d.gana) mal.push(`${c.id}:${d.id} contradice el ranking`);
+    }
+  }
+  if (mal.length) fallos++;
+  filas.push({
+    actividad: "triage-emergencias · coherencia",
+    esperado: "cada duelo lo gana quien va antes en el ranking",
+    obtenido: mal.length ? mal.join(" · ") : "los seis de acuerdo con su ranking",
+    resultado: mal.length ? "FALLA" : "PASA",
+  });
+}
+
+/* ── cirugia-reconstruccion ── la casilla, prefijada por caso ── */
+unicos(
+  "cirugia-reconstruccion",
+  CASOS_CIRUGIA.flatMap((c) => [`${c.id}:primero`, `${c.id}:segundo`]),
+  CASOS_CIRUGIA.length * 2
+);
+
+/*
+ * Aquí el prefijo es obligatorio: las dos casillas se llaman igual en los dos
+ * casos, y "primer orden" es XN en la helada y Ḡ en el puente.
+ */
+{
+  const sinPrefijo = CASOS_CIRUGIA.flatMap(() => ["primero", "segundo"]);
+  const choca = sinPrefijo.length !== new Set(sinPrefijo).size;
+  if (!choca) fallos++;
+  filas.push({
+    actividad: "cirugia-reconstruccion (sin prefijo)",
+    esperado: "hay choque, por eso lleva prefijo",
+    obtenido: choca ? "choca, como se documenta" : "YA NO CHOCA: revisar el comentario",
+    resultado: choca ? "PASA" : "FALLA",
+  });
+}
+
+/* Cada caso tiene exactamente un primero, un segundo y tres señuelos. */
+{
+  const mal = CASOS_CIRUGIA.filter((c) => {
+    const n = (papel) => c.opciones.filter((o) => o.papel === papel).length;
+    return n("primero") !== 1 || n("segundo") !== 1 || n("senuelo") !== 3;
+  }).map((c) => c.id);
+  if (mal.length) fallos++;
+  filas.push({
+    actividad: "cirugia-reconstruccion · reparto",
+    esperado: "1 primero, 1 segundo y 3 señuelos por caso",
+    obtenido: mal.length ? "MAL: " + mal.join(", ") : "los dos casos bien repartidos",
+    resultado: mal.length ? "FALLA" : "PASA",
+  });
+}
+
+/* ── sala-monitores ── el id de la alerta ── */
+/*
+ * Veinticuatro en el banco, doce por partida. Sin prefijo y sin necesidad: no
+ * hay dos contextos donde la misma alerta signifique cosas distintas, que es la
+ * única razón por la que otras actividades lo llevan.
+ */
+unicos("sala-monitores", ALERTAS_MONITOR.map((a) => a.id), ALERTAS_MONITOR.length);
+
+/* Seis alertas por componente, y ninguna apuntando a un componente inventado. */
+{
+  const desbalance = COMPONENTES_MONITOR
+    .map((c) => [c.id, ALERTAS_MONITOR.filter((a) => a.componente === c.id).length])
+    .filter(([, n]) => n !== 6);
+  const huerfanas = ALERTAS_MONITOR.filter(
+    (a) => !COMPONENTES_MONITOR.some((c) => c.id === a.componente)
+  );
+  const roto = desbalance.length + huerfanas.length;
+  if (roto) fallos++;
+  filas.push({
+    actividad: "sala-monitores · reparto",
+    esperado: "6 alertas por componente, ninguna huérfana",
+    obtenido: roto
+      ? `desbalance: ${desbalance.map(([c, n]) => `${c}=${n}`).join(", ") || "ninguno"} · huérfanas: ${huerfanas.map((a) => a.id).join(", ") || "ninguna"}`
+      : "24 repartidas de seis en seis",
+    resultado: roto ? "FALLA" : "PASA",
   });
 }
 

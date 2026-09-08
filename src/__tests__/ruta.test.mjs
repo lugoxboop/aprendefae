@@ -28,7 +28,14 @@ const check = (caso, esperado, obtenido) => {
 check("#/modelo-iceberg", { vista: "modelo-iceberg", modo: null }, interpretar("#/modelo-iceberg"));
 check("#/modelo-iceberg/hacer", { vista: "modelo-iceberg", modo: "hacer" }, interpretar("#/modelo-iceberg/hacer"));
 check("#/politica-economica/aprender", { vista: "politica-economica", modo: "aprender" }, interpretar("#/politica-economica/aprender"));
-check("#/consumo (subvista de DA-Learn)", { vista: "consumo", modo: null }, interpretar("#/consumo"));
+/*
+ * Este caso comprobaba que "#/consumo" abría la subvista de DA-Learn. El
+ * simulador se retiró entero y sus seis hashes salieron de VISTAS, así que
+ * ahora comprueba lo contrario: un enlace guardado de aquella época cae en la
+ * portada en vez de pintar una pantalla vacía. Si alguien vuelve a meter
+ * "consumo" en la lista sin haber reconstruido la vista, esto lo dice.
+ */
+check("#/consumo (hash retirado de DA-Learn)", { vista: "home", modo: null }, interpretar("#/consumo"));
 check("barra sobrante al final", { vista: "docente", modo: null }, interpretar("#/docente/"));
 
 /* ── Lo que NO es una ruta cae en la portada ── */
@@ -79,7 +86,7 @@ check("la portada serializa a vacío", "", serializar("home", null));
  */
 {
   const rotas = [...VISTAS].filter((v) => interpretar(serializar(v, null)).vista !== v);
-  check("las 17 vistas sobreviven el ciclo", [], rotas);
+  check(`las ${VISTAS.size} vistas sobreviven el ciclo`, [], rotas);
 }
 
 console.table(filas);

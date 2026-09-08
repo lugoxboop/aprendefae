@@ -65,23 +65,62 @@ export const SUBJECTS = {
             nombre: "Diagnóstico con estetoscopio",
             clasificacion: { tipo: APRENDER },
           },
+          /*
+           * ═══════════ LOS SIETE JUEGOS DEL CORAZÓN ═══════════
+           *
+           * Sustituyen al "Simulador de los 4 canales" (id simulador-da), que
+           * era la única actividad Hacer del tema y se retiró entero: su
+           * exploración con diales es hoy "El corazón de la economía", en la
+           * mitad Aprender y con el mismo modelo, y sus veintidós preguntas de
+           * recordar y comprender las cubren la 1, la 2 y la 7 con banco más
+           * grande y sorteo por partida. Analizar, evaluar y crear no los tenía
+           * de ninguna forma; los añaden la 4, la 5 y la 6.
+           *
+           * Las siete son evaluativas: se contesta una vez por ítem y el
+           * porcentaje mide desempeño, no constancia. Era justamente lo que el
+           * simulador no podía sostener, por eso él era exploratoria.
+           */
           {
-            id: "simulador-da",
-            nombre: "Simulador de los 4 canales",
-            /*
-             * Exploratoria y no evaluativa por decisión de Gen: el quiz deja
-             * reintentar hasta acertar, así que el porcentaje final siempre
-             * sería 100 y mediría constancia, no desempeño. Llamarla
-             * evaluativa sería ponerle una etiqueta que el dato no sostiene.
-             *
-             * No es una rebaja temporal: describe lo que la actividad hace hoy.
-             */
-            clasificacion: {
-              tipo: HACER,
-              modalidad: "exploratoria",
-              dificultad: "dificil",
-              fpBase: 50,
-            },
+            /* Recordar. Ocho definiciones de dieciséis y cuatro fragmentos de seis. */
+            id: "electrocardiograma",
+            nombre: "Lectura de electrocardiograma",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
+          },
+          {
+            /* Comprender. Doce cambios en el banco, seis por partida. */
+            id: "termometro-reacciones",
+            nombre: "El termómetro de reacciones",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
+          },
+          {
+            /* Aplicar. Ejemplos que se desvanecen: resuelto, guiado, solo. */
+            id: "banco-transfusiones",
+            nombre: "Banco de transfusiones",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+          {
+            /* Analizar. Dos fuerzas opuestas y una sola decisión, todo o nada. */
+            id: "biopsia-economica",
+            nombre: "Biopsia económica",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+          {
+            /* Evaluar. Duelos por parejas: cuál va primero y por qué. */
+            id: "triage-emergencias",
+            nombre: "Triage de emergencias",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
+          },
+          {
+            /* Crear. Reconstruir la cadena de un golpe: primer y segundo orden. */
+            id: "cirugia-reconstruccion",
+            nombre: "Cirugía de reconstrucción",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
+          },
+          {
+            /* Aplicar, intercalado. Doce alertas de veinticuatro, mezcladas. */
+            id: "sala-monitores",
+            nombre: "Sala de monitores",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
           },
         ],
       },

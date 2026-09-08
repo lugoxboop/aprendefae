@@ -29,11 +29,14 @@ import { SUBJECTS, HACER } from "../../data/subjects.js";
  * queda exenta SOLO del tercer chequeo —el de sobrantes—; si el cliente la
  * sigue ofreciendo, los otros dos la miran como a cualquier otra.
  *
- * LO QUE ESTA LECTURA NO CUBRE: un `delete from actividad_catalogo` en alguna
- * migración pasaría desapercibido, porque solo se leen los insert. Hoy no hay
- * ninguno, y la política del proyecto es retirar en blando en vez de borrar;
- * si eso cambia, hay que enseñárselo a esta función en vez de confiar en que
- * se acuerde alguien.
+ * LOS DELETE TAMBIÉN SE LEEN, DESDE LA 0022. Antes no, y este comentario decía
+ * que si algún día se borraba una fila había que enseñárselo a la función en
+ * vez de confiar en que alguien se acordara. Se borró una —simulador-da, con
+ * el simulador entero fuera del repositorio— y se le enseñó.
+ *
+ * La política sigue siendo retirar en blando: el borrado duro se reserva para
+ * cuando no queda cliente que pueda llamar a la actividad, que es lo que hace
+ * inútil a la lápida.
  */
 
 const CARPETA = "supabase/migrations";
@@ -44,6 +47,12 @@ const CARPETA = "supabase/migrations";
  * y valen 1, que es el valor por defecto de la columna.
  */
 const FILA = /\(\s*'([^']+)',\s*'([^']+)',\s*'([^']+)',\s*'(exploratoria|evaluativa)',\s*'(facil|medio|dificil|experto)',\s*(\d+)\s*(?:,\s*(\d+)\s*)?\)/g;
+
+/*
+ * Un borrado del catálogo. Se escribe con `in (...)` incluso para un solo id
+ * —igual que la lápida de la 0015— para que esto tenga una sola forma que leer.
+ */
+const BORRADO = /delete\s+from\s+(?:public\.)?actividad_catalogo\s+where\s+activity_id\s+in\s*\(([^)]*)\)/gi;
 
 /*
  * Las filas que las migraciones meten en actividad_catalogo, en el orden en que
@@ -72,6 +81,19 @@ function catalogoDelServidor() {
           archivo,
         });
       }
+    }
+
+    /*
+     * Y los borrados, en el mismo recorrido y en el mismo orden: una migración
+     * posterior puede quitar una fila que otra anterior metió, y desde la 0022
+     * eso pasa de verdad —simulador-da—.
+     *
+     * Hasta entonces esta función solo leía inserciones y su comentario decía
+     * que un delete pasaría desapercibido. Pasó a hacerlo de verdad, así que
+     * se le enseña, que era la instrucción que ese comentario dejaba escrita.
+     */
+    for (const d of sql.matchAll(BORRADO)) {
+      for (const id of d[1].matchAll(/'([^']+)'/g)) salida.delete(id[1]);
     }
   }
   return salida;

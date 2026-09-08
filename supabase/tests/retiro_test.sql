@@ -182,17 +182,22 @@ insert into res select 10, 'una actividad inexistente sigue siendo rechazada', '
 -- ── 11. Ninguna actividad viva perdió su configuración ─────────────────────
 -- La 0015 solo debía añadir una columna. Si hubiera tocado otra cosa, aquí se
 -- vería: estas cuatro son de temas que la migración ni menciona.
+--
+-- La cuarta era 'simulador-da' hasta que la 0022 lo borró del catálogo con el
+-- simulador entero. Se cambia por 'constructor-mapa-causal', que cumple lo
+-- mismo —tema que la 0015 no toca, dificultad y puntos estables desde la
+-- 0011—. Dejarlo habría hecho fallar esta prueba por algo que la 0015 no hizo.
 insert into res select 11, 'las actividades de otros temas siguen intactas', '4 de 4',
   (select count(*)::text || ' de 4' from public.actividad_catalogo
     where (activity_id = 'camara-presion'         and dificultad = 'medio'   and fp_base = 25)
        or (activity_id = 'arquitecto-profundidades' and dificultad = 'experto' and fp_base = 90)
        or (activity_id = 'proyecto-arca'          and dificultad = 'experto' and fp_base = 90 and etapas = 4)
-       or (activity_id = 'simulador-da'           and dificultad = 'dificil' and fp_base = 50)),
+       or (activity_id = 'constructor-mapa-causal' and dificultad = 'dificil' and fp_base = 50)),
   (select count(*) = 4 from public.actividad_catalogo
     where (activity_id = 'camara-presion'         and dificultad = 'medio'   and fp_base = 25)
        or (activity_id = 'arquitecto-profundidades' and dificultad = 'experto' and fp_base = 90)
        or (activity_id = 'proyecto-arca'          and dificultad = 'experto' and fp_base = 90 and etapas = 4)
-       or (activity_id = 'simulador-da'           and dificultad = 'dificil' and fp_base = 50));
+       or (activity_id = 'constructor-mapa-causal' and dificultad = 'dificil' and fp_base = 50));
 
 -- ── 12. El historial de los demás no se movió ──────────────────────────────
 -- Lo único que fp_history puede haber ganado son las filas de ESTA prueba, que
