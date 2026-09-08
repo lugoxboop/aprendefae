@@ -17,15 +17,37 @@
 -- es cierto.
 --
 -- Lo único que lo saca es ejecutar el cuerpo entero con las guardas
--- SATISFECHAS. Eso es lo que hace este archivo, y por eso el paso 1 es el más
--- importante: no comprueba un número, comprueba que la función llega al final.
+-- SATISFECHAS. Eso es lo que hacen los pasos 1 y 2.
+--
+-- ═══════════ Y EJECUTAR NO BASTA: HAY QUE MIRAR LO QUE DEVUELVE ═══════════
+--
+-- La primera versión de este archivo solo comprobaba que panel_items devolviera
+-- dos filas. Devolvió CERO, y cero no es un error: no revienta, no avisa, y el
+-- panel lo pintaría como "todavía no hay nada que diagnosticar". Otra vez la
+-- misma forma.
+--
+-- La causa era de la siembra, no de la función, y queda escrita porque es fácil
+-- volver a caer. HAY TRES FORMAS DE CONTAR "intentos con captura" Y DAN
+-- NÚMEROS DISTINTOS con exactamente los mismos datos:
+--
+--     filas de fp_detalle .............. 8   (4 intentos × 2 ítems)
+--     estudiantes distintos ............ 3   (a, b, c)
+--     intentos con al menos un ítem .... 4   <- ESTO es lo que cuenta
+--
+-- panel_items hace `count(distinct d.fp_history_id)`: cuenta INTENTOS que
+-- dejaron detalle, ni filas ni personas. Se sembraron cuatro creyendo que eran
+-- seis, el mínimo son cinco, y la función devolvió pronto y en silencio.
+--
+-- Ahora se siembran cinco —justo el mínimo, para que el paso 2 esté EN el borde
+-- y compruebe que el corte es "menos de 5" y no "5 o menos"— y los pasos 4 y 5
+-- miran el CONTENIDO de las dos filas, no su número.
 --
 -- ═══════════ CÓMO SE SIEMBRA LA SESIÓN ═══════════
 --
 -- es_docente() y materias_docente() sacan el correo del JWT, no de un
 -- parámetro, así que basta con poner request.jwt.claims. Las llamadas de datos
 -- se hacen como DUEÑO y no como `authenticated`: el rol solo decide si se puede
--- ejecutar, y eso se mira aparte en los pasos 10 a 13.
+-- ejecutar, y eso se mira aparte en los pasos 13 a 16.
 --
 -- No toca a nadie real: usuarios, docente y materia propios zzz-*, y ROLLBACK
 -- al final.
@@ -67,12 +89,18 @@ insert into public.docente_grupo(docente_email, subject_id, user_id)
 select 'zzz-pa-doc@prueba.local', 'zzz-pa-materia', uid from ids;
 
 /*
- * Historial de zzz-pa-act, evaluativa:
- *   a  dos intentos: 50 y 92   -> su mejor es 92, banda alta
- *   b  un intento:   70        -> banda media
- *   c  un intento:   30        -> banda baja
- *   p  un intento:  100        -> cuenta de prueba, no debe contar en nada
- * Y un bono de racha, que no es un intento.
+ * Historial de zzz-pa-act, evaluativa. CINCO intentos reales:
+ *
+ *   a  50 y 92   -> su mejor es 92, banda alta
+ *   b  70 y 60   -> su mejor es 70, banda media
+ *   c  30        -> banda baja
+ *   p  100       -> cuenta de prueba: no cuenta en nada
+ *
+ * Y un bono de racha de `a`, que no es un intento.
+ *
+ * Cinco es el mínimo exacto de panel_items, y está puesto ahí a propósito: si
+ * el corte se escribiera como "5 o menos" en vez de "menos de 5", el paso 2 se
+ * pondría en rojo.
  */
 insert into public.fp_history
   (user_id, activity_id, subject_id, fp_awarded, difficulty, modality, correct_pct, duration_ms, created_at)
@@ -82,6 +110,8 @@ select uid, 'zzz-pa-act', 'zzz-pa-materia', 40, 'medio', 'evaluativa',  92, 2000
 union all
 select uid, 'zzz-pa-act', 'zzz-pa-materia', 30, 'medio', 'evaluativa',  70, 300000, now() from ids where etiqueta = 'b'
 union all
+select uid, 'zzz-pa-act', 'zzz-pa-materia', 20, 'medio', 'evaluativa',  60, 200000, now() - interval '2 days' from ids where etiqueta = 'b'
+union all
 select uid, 'zzz-pa-act', 'zzz-pa-materia', 10, 'medio', 'evaluativa',  30, 400000, now() from ids where etiqueta = 'c'
 union all
 select uid, 'zzz-pa-act', 'zzz-pa-materia', 99, 'medio', 'evaluativa', 100, 999000, now() from ids where etiqueta = 'p'
@@ -89,13 +119,20 @@ union all
 select uid, 'racha-3',    'zzz-pa-materia', 15, 'bono',  'racha',     null,   null, now() from ids where etiqueta = 'a';
 
 /*
- * Detalle por ítem: SEIS intentos con captura, para pasar el mínimo de cinco de
- * panel_items. Sin esto la función devuelve pronto y su consulta —la que tenía
- * el item_id ambiguo— no llegaría a ejecutarse nunca, que es precisamente por
- * lo que ese fallo estuvo escondido.
+ * Detalle: DOS ÍTEMS EN CADA UNO de los cinco intentos reales.
+ *
+ *   p1  fallado siempre, y siempre con la misma respuesta equivocada
+ *   p2  acertado siempre
+ *
+ * Así el paso 4 recorre el camino con respuesta_top y el 5 el camino SIN ella
+ * —el LEFT JOIN de la función—, que es donde un INNER JOIN mal puesto haría
+ * desaparecer justo los ítems que nadie falla.
+ *
+ * La cuenta de prueba NO deja detalle: si lo dejara y la función no la
+ * excluyera, los recuentos del paso 4 saldrían en 6 en vez de 5.
  */
 insert into public.fp_detalle(fp_history_id, user_id, activity_id, item_id, acerto, intentos, respuesta)
-select h.id, h.user_id, h.activity_id, i.item, i.ok, 1, case when i.ok then null else 'otra' end
+select h.id, h.user_id, h.activity_id, i.item, i.ok, 1, case when i.ok then null else 'confunde-con-esto' end
   from public.fp_history h
   join ids on ids.uid = h.user_id
  cross join (values ('p1', false), ('p2', true)) as i(item, ok)
@@ -110,18 +147,8 @@ select set_config('request.jwt.claims',
 
 -- ── 1. panel_actividad EJECUTA Y DEVUELVE UNA FILA ──────────────────────────
 /*
- * EL PASO QUE FALTABA. Con la 0021 tal como se desplegó, esto levanta
- * 42702 y `obtenido` sale con el mensaje de Postgres en vez de 'una fila'.
- *
- * SI FALLARA DE VERDAD: es lo que le pasó a Mateo en pantalla, con la 0021
- * aplicada y este archivo sin existir.
- *
- * NO ESTÁ COMPROBADO CONTRA LA 0021, y conviene decirlo. En esta máquina no hay
- * Postgres, ni psql, ni Docker: no puedo ejecutar SQL, que es precisamente el
- * agujero que esta prueba viene a tapar y que solo se cierra de verdad con
- * infraestructura. Lo que sí está comprobado es que la ambigüedad está en el
- * SELECT final de panel_actividad, por el que pasa toda llamada que supere las
- * guardas — así que este paso no puede no verla.
+ * EL PASO QUE FALTABA EN LA 0021. Con aquella versión esto levanta 42702 y
+ * `obtenido` sale con el mensaje de Postgres en vez de '1'.
  */
 do $x$
 declare v int;
@@ -137,10 +164,11 @@ insert into res select 1, 'panel_actividad se ejecuta entera y devuelve una fila
   current_setting('prueba.pa_ejecuta', true),
   current_setting('prueba.pa_ejecuta', true) = '1';
 
--- ── 2. panel_items EJECUTA Y DEVUELVE SUS ÍTEMS ─────────────────────────────
+-- ── 2. panel_items EJECUTA Y DEVUELVE SUS DOS ÍTEMS ─────────────────────────
 /*
- * Con seis intentos con captura pasa el mínimo de cinco y entra en la consulta
- * que tenía el item_id ambiguo. Dos ítems distintos: p1 y p2.
+ * SI ESTO DA 0: o la siembra no llega al mínimo —ver la nota de las tres formas
+ * de contar, arriba— o la función devuelve vacío por otra razón. El paso 3
+ * separa las dos cosas: dice cuántos intentos con captura ve el servidor.
  */
 do $x$
 declare v int;
@@ -156,29 +184,17 @@ insert into res select 2, 'panel_items se ejecuta entera y devuelve sus dos íte
   current_setting('prueba.pi_ejecuta', true),
   current_setting('prueba.pi_ejecuta', true) = '2';
 
--- ── 3 a 8. Las cifras son las sembradas, no cualquier fila ─────────────────
+-- ── 3. Las dos funciones cuentan los intentos con captura IGUAL ─────────────
 /*
- * Que devuelva UNA fila no basta: podría devolver una fila de ceros. Esto mira
- * los números que se pueden calcular a mano desde el montaje.
+ * panel_items decide con `count(distinct fp_history_id)` si hay bastante para
+ * diagnosticar; panel_actividad devuelve ese mismo número en
+ * `intentos_con_detalle` para que el cliente explique por qué la sección está
+ * vacía. Si los dos se separaran, el panel podría decir "hacen falta 5 y hay 7"
+ * y no enseñar nada — un mensaje que se contradice solo.
  *
- * completaron = 3 (a, b, c) y NO 4: la cuenta de prueba no cuenta.
- * intentos    = 4 y NO 5: el bono de racha no es un intento.
- * pct_medio   = (92 + 70 + 30) / 3 = 64,0 — con el MEJOR de cada uno, no con
- *               los cinco intentos.
- */
-/*
- * LA TABLA SE DECLARA Y LUEGO SE LLENA, y no las dos cosas a la vez.
- *
- * Con `create temp table pa as select * from panel_actividad(...)`, una función
- * que levante 42702 aborta la transacción entera y este archivo no llega a
- * imprimir ni el resumen: el paso 1 habría detectado el fallo y nadie lo vería.
- * Declarando las columnas y llenándolas dentro de un bloque con manejador, un
- * fallo deja la tabla vacía y los pasos 3 a 7 salen en rojo con el resumen
- * puesto, que es lo que sirve para diagnosticar.
- *
- * Que las columnas estén escritas aquí es deliberado: son el contrato que el
- * cliente consume por nombre. Si la firma cambiara, esta prueba lo dice en voz
- * alta en vez de adaptarse en silencio.
+ * Las dos consultas NO son idénticas: la de panel_items cruza con fp_history
+ * para acotar la materia y la de panel_actividad no, porque activity_id es
+ * único en el catálogo. Hoy dan lo mismo; esto lo comprueba en vez de suponerlo.
  */
 create temp table pa(
   activity_id           text,
@@ -208,42 +224,91 @@ exception when others then
 end;
 $x$;
 
-insert into res select 3, 'completaron cuenta personas reales, no intentos ni cuentas de prueba', '3',
-  (select completaron::text from pa),
+insert into res select 3, 'intentos_con_detalle coincide con lo que mira panel_items', '5',
+  (select coalesce(intentos_con_detalle::text, 'NULO') from pa),
+  (select intentos_con_detalle = 5 from pa);
+
+-- ── 4 y 5. El CONTENIDO de panel_items, no su número ────────────────────────
+/*
+ * Que devuelva dos filas no basta: podrían venir con ceros. Estos dos pasos
+ * miran los números que se calculan a mano desde la siembra.
+ */
+create temp table pit(
+  item_id             text,
+  veces               integer,
+  fallos              integer,
+  pct_fallo           numeric,
+  respuesta_top       text,
+  respuesta_top_veces integer
+) on commit drop;
+
+do $x$
+begin
+  insert into pit select * from public.panel_items('zzz-pa-materia', 'zzz-pa-act');
+exception when others then
+  null;
+end;
+$x$;
+
+insert into res select 4, 'el ítem siempre fallado trae sus cinco fallos y su respuesta',
+  '5 de 5 · 100.0 · confunde-con-esto x5',
+  coalesce((select fallos || ' de ' || veces || ' · ' || pct_fallo || ' · ' ||
+                   coalesce(respuesta_top, 'SIN RESPUESTA') || ' x' || coalesce(respuesta_top_veces::text, '0')
+              from pit where item_id = 'p1'), 'NO ESTÁ'),
+  coalesce((select veces = 5 and fallos = 5 and pct_fallo = 100.0
+                   and respuesta_top = 'confunde-con-esto' and respuesta_top_veces = 5
+              from pit where item_id = 'p1'), false);
+
+insert into res select 5, 'el ítem siempre acertado NO desaparece, y viene sin respuesta_top',
+  '0 de 5 · 0.0 · sin respuesta',
+  coalesce((select fallos || ' de ' || veces || ' · ' || pct_fallo || ' · ' ||
+                   coalesce(respuesta_top, 'sin respuesta')
+              from pit where item_id = 'p2'), 'NO ESTÁ'),
+  coalesce((select veces = 5 and fallos = 0 and pct_fallo = 0.0 and respuesta_top is null
+              from pit where item_id = 'p2'), false);
+
+-- ── 6 a 12. Las cifras de panel_actividad son las sembradas ────────────────
+/*
+ * completaron = 3 (a, b, c) y NO 4: la cuenta de prueba no cuenta.
+ * intentos    = 5 y NO 6: el bono de racha no es un intento.
+ * pct_medio   = (92 + 70 + 30) / 3 = 64,0 — el MEJOR de cada estudiante, no la
+ *               media de los cinco intentos, que daría 60,4.
+ */
+insert into res select 6, 'completaron cuenta personas reales, no intentos ni cuentas de prueba', '3',
+  (select coalesce(completaron::text, 'NULO') from pa),
   (select completaron = 3 from pa);
 
-insert into res select 4, 'intentos excluye el bono de racha', '4',
-  (select intentos::text from pa),
-  (select intentos = 4 from pa);
+insert into res select 7, 'intentos excluye el bono de racha y la cuenta de prueba', '5',
+  (select coalesce(intentos::text, 'NULO') from pa),
+  (select intentos = 5 from pa);
 
-insert into res select 5, 'pct_medio usa el MEJOR intento de cada estudiante', '64.0',
-  (select pct_medio::text from pa),
+insert into res select 8, 'pct_medio usa el MEJOR intento de cada estudiante', '64.0',
+  (select coalesce(pct_medio::text, 'NULO') from pa),
   (select pct_medio = 64.0 from pa);
 
-insert into res select 6, 'modality y difficulty salen resueltas, no nulas', 'evaluativa / medio',
+insert into res select 9, 'modality y difficulty salen resueltas, no nulas', 'evaluativa / medio',
   (select coalesce(modality, 'NULO') || ' / ' || coalesce(difficulty, 'NULO') from pa),
   (select modality = 'evaluativa' and difficulty = 'medio' from pa);
 
--- ── 9. El umbral de celda: con 1 por banda, no se enseña la distribución ────
+insert into res select 10, 'el tiempo medio ignora el bono y la cuenta de prueba', '240000',
+  (select coalesce(duracion_media_ms::text, 'NULO') from pa),
+  (select duracion_media_ms = 240000 from pa);
+
+insert into res select 11, 'el FP medio ignora el bono y la cuenta de prueba', '24.0',
+  (select coalesce(fp_medio::text, 'NULO') from pa),
+  (select fp_medio = 24.0 from pa);
+
 /*
  * Las tres bandas tienen una persona cada una (92 alta, 70 media, 30 baja), y
  * el mínimo son tres. Así que los tres recuentos vuelven en NULL y
  * distribucion_visible en false: los números exactos ni siquiera salen de aquí.
  */
-insert into res select 7, 'el tiempo medio ignora el bono y la cuenta de prueba', '250000',
-  (select coalesce(duracion_media_ms::text, 'NULO') from pa),
-  (select duracion_media_ms = 250000 from pa);
-
-insert into res select 8, 'el FP medio ignora el bono y la cuenta de prueba', '25.0',
-  (select coalesce(fp_medio::text, 'NULO') from pa),
-  (select fp_medio = 25.0 from pa);
-
-insert into res select 9, 'con una persona por banda, la distribución no se devuelve', 'false / null',
-  (select distribucion_visible::text || ' / ' ||
+insert into res select 12, 'con una persona por banda, la distribución no se devuelve', 'false / null',
+  (select coalesce(distribucion_visible::text, 'NULO') || ' / ' ||
           coalesce(banda_alta::text, 'null') || coalesce(banda_media::text, '') || coalesce(banda_baja::text, '') from pa),
   (select distribucion_visible = false and banda_alta is null and banda_media is null and banda_baja is null from pa);
 
--- ── 10. Y las dos guardas siguen cerradas para quien no es docente ──────────
+-- ── 13 a 16. Las guardas siguen cerradas ────────────────────────────────────
 /*
  * Esto es lo que la 0021 ya comprobaba, y sigue haciendo falta: arreglar la
  * ambigüedad no puede haber abierto la puerta. Va DESPUÉS de los pasos que
@@ -273,15 +338,14 @@ exception when insufficient_privilege then
 end;
 $g$;
 
-insert into res select 10, 'un estudiante no puede leer panel_actividad', 'rechazado',
+insert into res select 13, 'un estudiante no puede leer panel_actividad', 'rechazado',
   current_setting('prueba.g1', true),
   current_setting('prueba.g1', true) = 'rechazado';
 
-insert into res select 11, 'un estudiante no puede leer panel_items', 'rechazado',
+insert into res select 14, 'un estudiante no puede leer panel_items', 'rechazado',
   current_setting('prueba.g2', true),
   current_setting('prueba.g2', true) = 'rechazado';
 
--- ── 12. Un docente de OTRA materia tampoco ──────────────────────────────────
 insert into public.docentes(email, nombre, materias, activo)
 values ('zzz-pa-otro@prueba.local', 'Docente de otra materia', array['zzz-pa-otra'], true);
 
@@ -300,15 +364,13 @@ exception when insufficient_privilege then
 end;
 $g$;
 
-insert into res select 12, 'un docente de otra materia tampoco entra', 'rechazado',
+insert into res select 15, 'un docente de otra materia tampoco entra', 'rechazado',
   current_setting('prueba.g3', true),
   current_setting('prueba.g3', true) = 'rechazado';
 
--- ── 13. anon no puede ni ejecutarlas ────────────────────────────────────────
 /*
- * Esto mira el GRANT, no la guarda: son dos defensas distintas y las dos tienen
- * que estar. Un create or replace no se lleva los grants, pero la 0023 los
- * reemite igualmente y esto lo confirma.
+ * Y el GRANT, que es una defensa distinta de la guarda: create or replace no se
+ * lleva los permisos, pero la 0023 los reemite igual y esto lo confirma.
  */
 set local role anon;
 do $g$
@@ -321,13 +383,18 @@ end;
 $g$;
 reset role;
 
-insert into res select 13, 'anon no puede ejecutar panel_actividad', 'rechazado',
+insert into res select 16, 'anon no puede ejecutar panel_actividad', 'rechazado',
   current_setting('prueba.g4', true),
   current_setting('prueba.g4', true) = 'rechazado';
 
 -- ── Resumen. Única consulta que devuelve filas. ────────────────────────────
+/*
+ * `lpad` para que el orden sea 01, 02, ... 16 y no 1, 10, 11, ... 2: la
+ * columna es texto porque la última fila dice TOTAL, y ordenar texto pone el 10
+ * antes que el 2. Con dieciséis pasos ya se nota.
+ */
 select
-  n::text                                 as n,
+  lpad(n::text, 2, '0')                   as n,
   paso,
   esperado,
   obtenido,

@@ -1,0 +1,301 @@
+# Pruebas de AprendeFAE: las de JavaScript y las de SQL, en cada push.
+#
+# ═══════════════════════════════════════════════════════════════════════════
+# POR QUÉ EXISTE
+#
+# Tres fallos llegaron a producción y ninguno los vio nada automático:
+#
+#   · un factor de escala mal aplicado (correct_pct en 0–100 comparado con 0,6)
+#   · dos firmas vivas de registrar_fp, seis actividades sin pagar FP
+#   · una columna ambigua en panel_actividad, que reventó al ejecutarla
+#
+# Son tres CLASES distintas. Un chequeo estático por clase es perseguir el
+# pasado; lo que las cubre a las tres es ejecutar de verdad. Así que aquí se
+# aplican las 23 migraciones sobre un Postgres limpio y se corren las pruebas
+# SQL contra él.
+#
+# SIN SECRETOS Y SIN TOCAR PRODUCCIÓN. La base es un contenedor que nace y
+# muere con la ejecución. No hay credenciales que guardar ni datos reales que
+# arriesgar, que es justamente por lo que se descartó la opción del JWT firmado.
+#
+# ═══════════════════════════════════════════════════════════════════════════
+# QUÉ **NO** CUBRE
+#
+# La misma disciplina que el auth de mentira: si no se escribe, alguien va a
+# suponer que sí.
+#
+#   1. NADA DEL CLIENTE. Ni React, ni el enrutador, ni que una vista pinte lo
+#      que dice. Las pruebas de JavaScript miran lógica pura y datos; nada
+#      renderiza una pantalla salvo dos que usan react-dom/server.
+#
+#   2. NADA DE PostgREST. La resolución de firmas —el PGRST203 del segundo
+#      incidente—, la caché de esquema y el mapeo de errores a HTTP son suyos y
+#      aquí no hay PostgREST. Eso lo mira la sonda de postdespliegue.
+#
+#   3. NADA DE LA AUTENTICACIÓN REAL. Ni Google, ni la verificación de firmas
+#      del JWT, ni el flujo de redirección. Ver supabase/ci/00_auth_de_mentira.sql,
+#      que lleva la lista larga de lo que su decorado no reproduce.
+#
+#   4. NO SABE SI LA MIGRACIÓN SE APLICÓ EN PRODUCCIÓN. Comprueba que la
+#      secuencia de archivos reconstruye la base; que alguien la haya pegado en
+#      el editor de Supabase es otra cosa. Un despliegue de código sin su
+#      migración sale verde aquí y roto en el sitio — eso lo caza la sonda.
+#
+#   5. NO CORRE cuentas_prueba_test.sql. Ver la razón donde se excluye, abajo.
+#
+#   6. NO MIDE RENDIMIENTO. Una consulta que tarde diez segundos pasa igual.
+# ═══════════════════════════════════════════════════════════════════════════
+
+name: Pruebas
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  javascript:
+    name: Pruebas de JavaScript y build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Traer el código
+        uses: actions/checkout@v7
+
+      - name: Preparar Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      # Hasta ahora estas ochenta pruebas solo corrían en el computador de
+      # quien se acordara. Un push podía romper el catálogo, los umbrales o la
+      # unicidad de los item_id sin que nada lo dijera.
+      - name: Correr las pruebas
+        run: npm test
+
+      # El build entra aquí y no solo en el despliegue: un error de compilación
+      # en una rama tiene que verse antes de fusionar, no al desplegar.
+      - name: Compilar
+        run: npm run build
+
+  base-de-datos:
+    name: Migraciones y pruebas SQL sobre Postgres limpio
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        # La mayor de Postgres del proyecto en Supabase. Si allí sube, aquí
+        # también: una diferencia de versión es de las cosas que este montaje
+        # no puede detectar por su cuenta.
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: aprendefae
+        ports:
+          - 5432:5432
+        # Sin el health check, los pasos empiezan antes de que Postgres acepte
+        # conexiones y el fallo parece de SQL cuando es de arranque.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: aprendefae
+
+    steps:
+      - name: Traer el código
+        uses: actions/checkout@v7
+
+      # Que el cliente exista se comprueba, no se supone: si la imagen del
+      # runner cambiara y psql desapareciera, el error tiene que decir eso.
+      - name: Comprobar el cliente de Postgres
+        run: |
+          set -euo pipefail
+          if ! command -v psql >/dev/null; then
+            echo "No hay psql en el runner. Instalando el cliente."
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq postgresql-client
+          fi
+          psql --version
+
+      # El servicio puede quedarse a medias sin que el job se entere. Esto lo
+      # convierte en rojo aquí, con un mensaje que dice qué pasó.
+      - name: Comprobar que la base responde
+        run: |
+          set -euo pipefail
+          for intento in $(seq 1 20); do
+            if pg_isready -q; then
+              echo "Postgres responde al intento $intento."
+              psql -Atc "select version();"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "ROJO: Postgres no llegó a aceptar conexiones en 40 segundos."
+          echo "      El servicio no arrancó; nada de lo de abajo significaría nada."
+          exit 1
+
+      - name: Montar el auth de mentira
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 -f supabase/ci/00_auth_de_mentira.sql
+
+      # ═══════════════════════════════════════════════════════════════════════
+      # LAS 23 MIGRACIONES, EN ORDEN Y DESDE CERO.
+      #
+      # Esto es una prueba por sí solo, y una que no existía: verifica que la
+      # secuencia completa de archivos reconstruye la base. Hasta ahora nadie
+      # sabía si una migración de hace cuatro meses seguía aplicándose limpia
+      # —el día que hubiera que restaurar se descubriría entonces—.
+      #
+      # ON_ERROR_STOP=1 hace que psql salga con código distinto de cero al
+      # primer error. Sin él, psql se traga los fallos y sigue: el paso saldría
+      # verde con media base sin crear.
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: Aplicar las migraciones en orden
+        run: |
+          set -euo pipefail
+          n=0
+          for archivo in $(ls supabase/migrations/*.sql | sort); do
+            n=$((n + 1))
+            echo "── $archivo"
+            psql -v ON_ERROR_STOP=1 -q -f "$archivo"
+          done
+          echo ""
+          echo "$n migraciones aplicadas sobre una base vacía, sin un solo error."
+
+      # Que apliquen no basta: podrían aplicar y no dejar nada. Esto mira que
+      # las piezas centrales existan de verdad después.
+      - name: Comprobar que la base quedó montada
+        run: |
+          set -euo pipefail
+          faltan=0
+          comprobar_tabla() {
+            if ! psql -Atc "select to_regclass('public.$1') is not null" | grep -qx t; then
+              echo "FALTA la tabla $1"; faltan=1
+            fi
+          }
+          comprobar_funcion() {
+            if ! psql -Atc "select count(*) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = '$1'" | grep -qv '^0$'; then
+              echo "FALTA la función $1"; faltan=1
+            fi
+          }
+          for t in profiles fp_history fp_detalle actividad_catalogo docentes docente_grupo; do
+            comprobar_tabla "$t"
+          done
+          for f in registrar_fp es_docente materias_docente panel_estudiantes panel_resumen \
+                   panel_historial panel_actividad panel_items; do
+            comprobar_funcion "$f"
+          done
+          if [ "$faltan" != "0" ]; then
+            echo "ROJO: las migraciones aplicaron pero la base no quedó completa."
+            exit 1
+          fi
+          echo "Tablas y funciones centrales, todas presentes."
+          echo ""
+          echo "Actividades en el catálogo:"
+          psql -Atc "select count(*) || ' filas' from public.actividad_catalogo"
+
+      # ═══════════════════════════════════════════════════════════════════════
+      # LAS PRUEBAS SQL.
+      #
+      # CÓMO SE DECIDE QUE UNA FALLA. Los archivos no devuelven un código de
+      # salida: imprimen una tabla y terminan con un veredicto. Así que se mira
+      # lo que imprimen, con tres condiciones, y basta una para el rojo:
+      #
+      #   · psql sale con código distinto de cero  -> error de SQL, aborto
+      #   · la salida trae FALLA o FALLO           -> un paso no pasó
+      #   · la salida NO trae ningún veredicto     -> el archivo no llegó al
+      #     (TODO OK / PASAN / PASA)                  final, que es igual de malo
+      #
+      # La tercera es la que evita el verde por accidente: un archivo que se
+      # corta a la mitad no imprime FALLA, y sin esta condición pasaría.
+      #
+      # QUÉ SE EXCLUYE, Y POR QUÉ. Se dice aquí y no en un filtro silencioso:
+      #
+      #   destacados_hoy.sql        No es una prueba. Lo dice en su cabecera:
+      #                             cuenta cuántos estudiantes califican hoy
+      #                             para cada señal. No afirma nada.
+      #
+      #   cuentas_prueba_test.sql   Su paso 3 afirma que lugox173@gmail.com
+      #                             quedó marcada como cuenta de prueba por la
+      #                             migración 0020. Eso solo es cierto donde
+      #                             ese perfil existe, o sea en producción.
+      #                             Se podría ablandar para que aquí dijera "no
+      #                             aplica", pero entonces dejaría de detectar
+      #                             el día que en producción se desmarque —y
+      #                             ese es el único sitio donde importa—. Se
+      #                             prefiere perder cobertura en CI antes que
+      #                             debilitar una prueba de producción.
+      #                             Sigue corriéndose a mano contra Supabase.
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: Correr las pruebas SQL
+        run: |
+          set -uo pipefail
+
+          EXCLUIDAS="destacados_hoy.sql cuentas_prueba_test.sql"
+          fallos=0
+          corridas=0
+
+          for archivo in $(ls supabase/tests/*.sql | sort); do
+            nombre=$(basename "$archivo")
+
+            if echo "$EXCLUIDAS" | grep -qw "$nombre"; then
+              echo "── $nombre  (excluida a propósito, ver la nota del workflow)"
+              continue
+            fi
+
+            corridas=$((corridas + 1))
+            echo ""
+            echo "═══ $nombre ═══"
+
+            salida=$(psql -v ON_ERROR_STOP=1 -f "$archivo" 2>&1)
+            codigo=$?
+            echo "$salida"
+
+            if [ "$codigo" != "0" ]; then
+              echo "ROJO  $nombre: psql terminó con código $codigo (error de SQL)."
+              fallos=$((fallos + 1))
+              continue
+            fi
+
+            if echo "$salida" | grep -qE 'FALLA|FALLO'; then
+              echo "ROJO  $nombre: hay pasos en rojo dentro de la prueba."
+              fallos=$((fallos + 1))
+              continue
+            fi
+
+            if ! echo "$salida" | grep -qE 'TODO OK|PASAN|PASA'; then
+              echo "ROJO  $nombre: no imprimió ningún veredicto."
+              echo "      El archivo no llegó al final, o dejó de producir resumen."
+              fallos=$((fallos + 1))
+              continue
+            fi
+
+            echo "OK    $nombre"
+          done
+
+          echo ""
+          echo "──────────────────────────────────────────────"
+          echo "$corridas pruebas SQL corridas, $fallos en rojo."
+
+          # Una tanda vacía es rojo: significa que el filtro se comió todo o que
+          # la carpeta cambió de sitio, y un cero silencioso parecería verde.
+          if [ "$corridas" = "0" ]; then
+            echo "ROJO: no se corrió ninguna prueba. El filtro o la ruta están mal."
+            exit 1
+          fi
+
+          exit $([ "$fallos" = "0" ] && echo 0 || echo 1)

@@ -162,13 +162,28 @@ jobs:
       # Y LOS PARÁMETROS CON NOMBRE NO SALVAN DE ESTO. Se comprobó contra la API
       # real: mandando los tres nombres, PGRST203 igual.
       #
-      # QUÉ MIRA. Que cada forma de llamada resuelva a exactamente una función.
-      # No mira el resultado: mira que PostgREST llegue a intentar ejecutarla.
+      # QUÉ MIRA, Y QUÉ **NO**. Mira que cada forma de llamada RESUELVA a
+      # exactamente una función. No mira que la función funcione.
+      #
       #   · PGRST203 -> hay dos firmas vivas. Es el incidente. Rojo.
       #   · PGRST202 -> no encuentra la función con esos nombres. También rojo:
       #                 una migración se revirtió o se renombró un parámetro, y
       #                 el cliente lleva llamando al vacío.
-      #   · 42501    -> resolvió una sola y paró en el permiso. Es lo correcto.
+      #   · 42501    -> resolvió una sola y paró en la guarda de permisos.
+      #                 ALCANZABLE, que no es lo mismo que correcta.
+      #
+      # LA DIFERENCIA ENTRE "ALCANZABLE" Y "FUNCIONA" NO ES UNA SUTILEZA. Esta
+      # sonda daba "OK ... resuelve a una sola función" para cualquier respuesta
+      # que no fuera PGRST20x, y cerraba diciendo "Motor de FP y panel en pie".
+      # Con panel_actividad rota por una columna ambigua —42702 al ejecutar— la
+      # sonda salía en verde, porque el 42501 de la guarda se levanta ANTES de
+      # llegar a la consulta rota. Esa lectura equivocada es literalmente lo que
+      # llevó a descartar el servidor durante un diagnóstico.
+      #
+      # Sin sesión no hay forma de pasar de aquí: la guarda para toda llamada
+      # anónima antes del cuerpo. Ejecutar el cuerpo de verdad es cosa del
+      # workflow "Pruebas", que levanta un Postgres propio, aplica las
+      # migraciones y corre supabase/tests/*.sql con un docente sembrado.
       #
       # NO PUEDE ESCRIBIR NADA. Va sin Authorization, así que el rol es "anon",
       # que no tiene execute sobre la función. Y aunque lo tuviera, auth.uid()
@@ -231,9 +246,23 @@ jobs:
                   echo "      relanza el despliegue desde Actions."
                   return 1
                   ;;
-                *)
-                  echo "OK    $etiqueta — resuelve a una sola función (HTTP $codigo)"
+                *42501*)
+                  # Lo esperado: resolvió una sola función y la guarda la paró.
+                  echo "ALCANZABLE  $etiqueta — una sola firma; la guarda la paró (HTTP $codigo)"
+                  echo "            El cuerpo NO se ejecutó: esta sonda no puede decir si funciona."
                   return 0
+                  ;;
+                *)
+                  # Cualquier otra cosa es desconocida, y desconocido no es OK.
+                  # Un 42702, un 42883 o un error de red caían aquí y se
+                  # registraban como "resuelve a una sola función".
+                  echo "ROJO  $etiqueta"
+                  echo "      Respuesta que esta sonda no sabe interpretar. HTTP $codigo"
+                  echo "      $respuesta"
+                  echo "      Sin sesión, lo único esperado es 42501. Cualquier otra cosa"
+                  echo "      significa que la llamada llegó más lejos de lo que debería,"
+                  echo "      o que el servidor respondió algo que nadie previó."
+                  return 1
                   ;;
               esac
             done
@@ -261,8 +290,20 @@ jobs:
           probar "panel_historial" panel_historial \
             '{"p_subject":"macroeconomia","p_user":"00000000-0000-0000-0000-000000000000"}' || fallo=1
 
+          # Y las dos de la vista por actividad, desde la 0021.
+          probar "panel_actividad" panel_actividad \
+            '{"p_subject":"macroeconomia","p_activity_id":"proyecto-arca"}' || fallo=1
+          probar "panel_items" panel_items \
+            '{"p_subject":"macroeconomia","p_activity_id":"proyecto-arca"}' || fallo=1
+
           if [ "$fallo" = "0" ]; then
             echo ""
-            echo "Las cinco llamadas resuelven a una sola función. Motor de FP y panel en pie."
+            echo "Las siete llamadas resuelven a UNA SOLA función y llegan a su guarda."
+            echo ""
+            echo "Eso es todo lo que esto comprueba. NO dice que las funciones"
+            echo "devuelvan lo correcto, ni que se ejecuten sin error: sin sesión,"
+            echo "ninguna llega a ejecutar su cuerpo. De eso se ocupa el workflow"
+            echo "\"Pruebas\", que corre las migraciones y los tests SQL sobre un"
+            echo "Postgres limpio."
           fi
           exit $fallo
