@@ -3,6 +3,7 @@ import { ChevronLeft, ArrowDown, RotateCcw } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
+import EnlaceRendimiento from "./shared/EnlaceRendimiento.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import VideoYouTube from "./shared/VideoYouTube.jsx";
 import InmersionDoble from "./mecanicas/InmersionDoble.jsx";
@@ -245,6 +246,14 @@ export default function IcebergView({ modo = null, onBack }) {
             Volver al camino
           </button>
         )}
+
+        {/*
+          * El atajo del docente. Se pinta solo para quien está autorizado en esta
+          * materia; para todos los demás no existe. Va aquí, en la fila de volver,
+          * porque pertenece a «hay una actividad abierta» y no al contenido de
+          * ninguna de ellas: una sola inserción en vez de una por juego.
+          */}
+        {nodoAbierto && <EnlaceRendimiento actividadId={nodoAbierto} />}
 
         {/* ---------------- 1. Cámara de presión · Recordar ---------------- */}
         {enNodo("camara-presion") && (

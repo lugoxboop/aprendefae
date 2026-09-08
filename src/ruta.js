@@ -64,15 +64,54 @@ export const VISTAS = new Set([
   "docente",
 ]);
 
+/*
+ * De un tema del catálogo a la vista que lo pinta.
+ *
+ * Son el mismo nombre salvo Demanda Agregada, que tiene una vista por mitad:
+ * "Aprender" al corazón de la economía y "Hacer" al camino de los siete juegos.
+ * Esa excepción estaba escrita dentro de App.jsx y ahora la usan dos sitios
+ * —App y el enlace de vuelta del panel—, así que vive aquí, que es donde están
+ * los nombres de vista.
+ *
+ * Devuelve null si el tema no tiene vista propia: quien llame decide si eso es
+ * un enlace que no se pinta o una navegación que no se hace.
+ */
+export function vistaDeTema(topicId, modo = null) {
+  if (topicId === "demanda-agregada") return modo === "aprender" ? "grifos-da" : "camino-da";
+  return VISTAS.has(topicId) ? topicId : null;
+}
+
 /* Las dos mitades de un tema. null = se entró sin elegir. */
 export const MODOS = new Set(["aprender", "hacer"]);
 
-export const RUTA_INICIAL = { vista: "home", modo: null };
+export const RUTA_INICIAL = { vista: "home", modo: null, extra: null };
 
-/** De {vista, modo} al texto del hash. La portada no lleva hash: queda limpia. */
-export function serializar(vista, modo) {
+/*
+ * ═══════════ EL TERCER SEGMENTO: `extra` ═══════════
+ *
+ * Un dato opaco que la vista de destino interpreta como quiera. Hoy lo usan
+ * dos cosas, las dos con la misma forma —un id de actividad—:
+ *
+ *   #/docente/proyecto-arca            el panel abre con esa actividad puesta
+ *   #/modelo-iceberg/hacer/proyecto-arca   el tema abre con ese nodo abierto
+ *
+ * NO SE VALIDA AQUÍ, y es deliberado. La lista blanca de VISTAS existe porque
+ * una vista desconocida deja la pantalla en blanco; un `extra` desconocido no
+ * rompe nada — quien lo lee comprueba que sea suyo y lo ignora si no. Meter
+ * aquí un catálogo de ids de actividad obligaría al enrutador a conocer el
+ * contenido del sitio, que es justo lo que no tiene que saber.
+ *
+ * DÓNDE VA EN EL HASH. El modo es opcional, así que el extra ocupa la segunda
+ * posición cuando no hay modo y la tercera cuando lo hay. Se distinguen porque
+ * MODOS es un conjunto cerrado de dos palabras: lo que no está en él, no es un
+ * modo. Por eso ninguna actividad puede llamarse `aprender` ni `hacer`, y hay
+ * una prueba que lo comprueba en vez de confiar en que nadie lo haga.
+ */
+
+/** De {vista, modo, extra} al texto del hash. La portada no lleva hash. */
+export function serializar(vista, modo, extra = null) {
   if (vista === "home") return "";
-  return modo ? `#/${vista}/${modo}` : `#/${vista}`;
+  return `#/${[vista, modo, extra].filter(Boolean).join("/")}`;
 }
 
 /**
@@ -90,7 +129,9 @@ export function interpretar(crudo) {
   if (!VISTAS.has(vista)) return RUTA_INICIAL;
 
   const modo = partes[1] && MODOS.has(partes[1]) ? partes[1] : null;
-  return { vista, modo };
+  /* El primer segmento después de la vista que NO sea un modo. */
+  const extra = (modo ? partes[2] : partes[1]) ?? null;
+  return { vista, modo, extra };
 }
 
 /**
@@ -128,8 +169,8 @@ export function useRuta() {
     };
   }, []);
 
-  const navegar = useCallback((vista, modo = null, { reemplazar = false } = {}) => {
-    const destino = serializar(vista, modo);
+  const navegar = useCallback((vista, modo = null, { reemplazar = false, extra = null } = {}) => {
+    const destino = serializar(vista, modo, extra);
     const actual = window.location.hash;
 
     /* Ya estamos ahí: no se empuja una entrada repetida al historial. */

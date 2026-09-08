@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FAE } from "../../theme.js";
 import { actividadDe, itemsDe } from "../../docente/datos.js";
 import { BANDAS, bandaDe, CORTE_BAJO } from "../../docente/bandas.js";
 import { etiquetaDeItem } from "../../docente/etiquetasItem.js";
+import { NavigationContext } from "../../navigation.js";
+import { vistaDeTema } from "../../ruta.js";
+import { ubicacionDeActividad } from "../../data/subjects.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -171,6 +174,7 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
    * el árbol entero en vez de no pintar nada.
    */
   const id = actividad?.id ?? null;
+  const nav = useContext(NavigationContext);
   const [datos, setDatos] = useState(null);      // null = cargando
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
@@ -256,6 +260,14 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
     );
   }
 
+  /*
+   * A qué vista lleva la vuelta. Sale de subjects.js y ruta.js, no de una lista
+   * escrita aquí: si el enlace no sabe a dónde ir, no se pinta.
+   */
+  const enlaceAlTema = nav?.irA
+    ? vistaDeTema(ubicacionDeActividad(id)?.temaId ?? "", "hacer")
+    : null;
+
   const conDetalle = Number(datos.intentos_con_detalle ?? 0);
   /* Cuántos ítems reales no se pudieron nombrar. Lo usa el canario. */
   const sinNombrar = items.filter((it) => !etiquetaDeItem(actividad.id, it.item_id)).length;
@@ -276,6 +288,36 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
           {" · "}
           {evaluativa ? "evaluativa" : "exploratoria"}
         </p>
+
+        {/*
+          * ═══════════ EL CAMINO DE VUELTA, Y HASTA DÓNDE LLEGA ═══════════
+          *
+          * Lleva al TEMA de la actividad, no a la actividad. La diferencia es
+          * real y conviene que se lea en el propio texto del enlace: cuál nodo
+          * está abierto dentro de un tema no vive en la URL todavía —eso es A2,
+          * pendiente— así que el docente aterriza en el camino y toca el nodo.
+          *
+          * Se podría haber forzado pasando el nodo inicial a las cinco vistas de
+          * tema, pero cada una tendría que comprobar que el nodo recibido es
+          * suyo y volver al camino si no; son cinco ediciones con cuidado, no un
+          * añadido. Con el tercer segmento del hash ya puesto, A2 es más barato
+          * que antes y ese es su sitio.
+          */}
+        {enlaceAlTema && (
+          <button
+            type="button"
+            onClick={() => nav.irA(enlaceAlTema, "hacer")}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: "6px",
+              marginTop: "8px", padding: 0, background: "transparent", border: "none",
+              cursor: "pointer", color: FAE.teal, fontFamily: "Inter, sans-serif", fontSize: "12.5px",
+              textDecorationLine: "underline", textUnderlineOffset: "3px",
+              textDecorationColor: `${FAE.teal}66`,
+            }}
+          >
+            Ir al camino de este tema
+          </button>
+        )}
       </div>
 
       {/* ── Las cifras, en el formato de tarjeta del resumen ejecutivo ── */}

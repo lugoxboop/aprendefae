@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FAE } from "../../theme.js";
-import { SUBJECTS, HACER, actividadesDeTipo, desafioDe } from "../../data/subjects.js";
+import { SUBJECTS, HACER, actividadesDeTipo, desafioDe, ubicacionDeActividad } from "../../data/subjects.js";
 import Logo from "../Logo.jsx";
 import { ChevronLeft } from "lucide-react";
 import { accesoDocente, estudiantesDe, marcarEnGrupo, resumenDe } from "../../docente/datos.js";
@@ -39,7 +39,16 @@ function Kpi({ rotulo, valor, nota, color = FAE.text }) {
   );
 }
 
-export default function PanelDocente({ onBack }) {
+/*
+ * `actividadInicial` llega del tercer segmento del hash: #/docente/proyecto-arca.
+ * Es lo que hace que el enlace desde una actividad caiga en ella y no en el
+ * selector vacío.
+ *
+ * NO SE VALIDA AQUÍ QUE SEA UNA ACTIVIDAD: se comprueba contra la lista de la
+ * materia y, si no está, se ignora. Un hash escrito a mano no puede dejar el
+ * panel en un estado que no sepa pintar.
+ */
+export default function PanelDocente({ actividadInicial = null, onBack }) {
   const [acceso, setAcceso] = useState(null);
   const [materia, setMateria] = useState(null);
   const [estudiantes, setEstudiantes] = useState([]);
@@ -74,10 +83,17 @@ export default function PanelDocente({ onBack }) {
   useEffect(() => {
     accesoDocente().then((a) => {
       setAcceso(a);
-      if (a.materias.length > 0) setMateria(a.materias[0]);
-      else setCargando(false);
+      if (a.materias.length === 0) { setCargando(false); return; }
+      /*
+       * Si se llega con una actividad en la URL, se abre en SU materia. Sin
+       * esto, un enlace desde el Arca —que vive en Pensamiento Estratégico—
+       * aterrizaría en la primera materia del docente y la preselección
+       * fallaría en silencio, que es peor que no tener el enlace.
+       */
+      const suya = ubicacionDeActividad(actividadInicial)?.materiaId;
+      setMateria(suya && a.materias.includes(suya) ? suya : a.materias[0]);
     });
-  }, []);
+  }, [actividadInicial]);
 
   useEffect(() => {
     if (!materia) return;
@@ -214,9 +230,19 @@ export default function PanelDocente({ onBack }) {
     return salida;
   }, [materia]);
 
-  /* Al cambiar de materia se recupera lo último que se miró en ELLA. */
+  /*
+   * Qué actividad se abre, por orden de prioridad:
+   *
+   *   1. La que venga en la URL, si es de esta materia. Es una intención
+   *      explícita —alguien pulsó un enlace— y gana sobre cualquier memoria.
+   *   2. La última que se miró en ESTA materia.
+   *   3. La primera de la lista.
+   */
   useEffect(() => {
     if (!materia || actividadesMirables.length === 0) return;
+    const dePar = actividadesMirables.some((a) => a.id === actividadInicial);
+    if (dePar) { setActividadElegida(actividadInicial); return; }
+
     let recordada = null;
     try {
       recordada = window.localStorage.getItem(`fae.docente.actividad.${materia}`);
@@ -225,7 +251,38 @@ export default function PanelDocente({ onBack }) {
     }
     const existe = actividadesMirables.some((a) => a.id === recordada);
     setActividadElegida(existe ? recordada : actividadesMirables[0].id);
-  }, [materia, actividadesMirables]);
+  }, [materia, actividadesMirables, actividadInicial]);
+
+  /*
+   * Y se baja hasta la sección, una sola vez. Llegar de un enlace y aterrizar
+   * arriba del todo obligaría a buscar a mano lo que el enlace prometía enseñar.
+   * Solo pasa cuando se llegó con actividad en la URL: abrir el panel a mano
+   * sigue empezando por el resumen, que es lo primero que un docente quiere ver.
+   */
+  const yaBajo = useRef(false);
+  useEffect(() => {
+    /*
+     * Solo si la actividad de la URL EXISTE y quedó puesta. Con un hash escrito
+     * a mano —o con una actividad de otra materia— no se prometió nada, así que
+     * tampoco se mueve la página: el panel abre por arriba, como siempre.
+     */
+    if (!actividadInicial || actividadElegida !== actividadInicial) return;
+    if (yaBajo.current || cargando) return;
+    const seccion = document.getElementById("rendimiento-por-actividad");
+    if (!seccion) return;
+    yaBajo.current = true;
+    /*
+     * INSTANTÁNEO, NO SUAVE. El desplazamiento suave lo dibuja el navegador
+     * cuadro a cuadro, y una pestaña que no está al frente no produce cuadros:
+     * el panel abierto en segundo plano se quedaba arriba del todo y el enlace
+     * no cumplía lo que promete. Se comprobó que requestAnimationFrame no llega
+     * a dispararse en ese estado.
+     *
+     * Un salto tampoco desorienta aquí: no es el usuario quien se mueve por la
+     * página, es un enlace que dijo a dónde iba.
+     */
+    seccion.scrollIntoView({ behavior: "auto", block: "start" });
+  }, [actividadInicial, cargando, actividadElegida]);
 
   const elegirActividad = (id) => {
     setActividadElegida(id);
@@ -455,7 +512,7 @@ export default function PanelDocente({ onBack }) {
             * interfaz no ofrezca lo que el servidor va a rechazar.
             */}
           {acceso.materias.includes(materia) && actividadesMirables.length > 0 && (
-            <section style={{ marginBottom: "28px" }}>
+            <section id="rendimiento-por-actividad" style={{ marginBottom: "28px", scrollMarginTop: "16px" }}>
               <h2 style={seccion}>RENDIMIENTO POR ACTIVIDAD</h2>
               <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "-4px 0 12px", maxWidth: "62ch" }}>
                 Solo las actividades que otorgan FP: las de material teórico no dejan registro y no

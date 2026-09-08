@@ -3,6 +3,7 @@ import { ChevronLeft } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
+import EnlaceRendimiento from "./shared/EnlaceRendimiento.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
 import Electrocardiograma from "./mecanicas/corazon/Electrocardiograma.jsx";
@@ -198,6 +199,14 @@ export default function DemandaAgregadaHacerView({ onBack }) {
               >
                 <ChevronLeft size={15} /> El camino
               </button>
+
+              {/*
+                * El atajo del docente. Se pinta solo para quien está autorizado en esta
+                * materia; para todos los demás no existe. Va aquí, en la fila de volver,
+                * porque pertenece a «hay una actividad abierta» y no al contenido de
+                * ninguna de ellas: una sola inserción en vez de una por juego.
+                */}
+              {nodoAbierto && <EnlaceRendimiento actividadId={nodoAbierto} />}
 
               <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "0 0 8px" }}>
                 <p style={sectionLabel}>JUEGO {JUEGOS.findIndex((j) => j.id === juego.id) + 1}</p>

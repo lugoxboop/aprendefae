@@ -6,6 +6,7 @@ import {
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
+import EnlaceRendimiento from "./shared/EnlaceRendimiento.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import VideoYouTube from "./shared/VideoYouTube.jsx";
 import AsedioEstrategico from "./mecanicas/AsedioEstrategico.jsx";
@@ -556,6 +557,14 @@ export default function PorterView({ modo = null, onBack }) {
           <ChevronLeft size={15} />
           Volver al camino
         </button>
+
+        {/*
+          * El atajo del docente. Se pinta solo para quien está autorizado en esta
+          * materia; para todos los demás no existe. Va aquí, en la fila de volver,
+          * porque pertenece a «hay una actividad abierta» y no al contenido de
+          * ninguna de ellas: una sola inserción en vez de una por juego.
+          */}
+        {nodoAbierto && <EnlaceRendimiento actividadId={nodoAbierto} />}
         {/* ---------------- Mecánica 3: Asedio Estratégico ---------------- */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
           <p style={sectionLabel}>MECÁNICA {muestraAprender ? 3 : 1}</p>

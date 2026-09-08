@@ -1,8 +1,7 @@
 import { useState, useCallback, lazy, Suspense } from "react";
 import { FAE } from "./theme.js";
 import { NavigationContext } from "./navigation.js";
-import { useRuta } from "./ruta.js";
-import { APRENDER } from "./data/subjects.js";
+import { useRuta, vistaDeTema } from "./ruta.js";
 
 /* La pantalla de entrada se carga de forma estática: es lo primero que ve el estudiante. */
 import HomeScreen from "./components/HomeScreen.jsx";
@@ -95,6 +94,15 @@ export default function App() {
     goHome,
     irAPerfil: () => { setPrevView(view); setView("perfil"); },
     irAPanelDocente: () => { setPrevView(view); setView("docente"); },
+    /*
+     * La navegación con estado en el hash. La usan los dos enlaces que cruzan
+     * entre una actividad y su rendimiento; `prevView` se recuerda igual que
+     * con el perfil, para que volver del panel devuelva a donde se estaba.
+     */
+    irA: (vista, modo = null, extra = null) => {
+      setPrevView(view);
+      navegar(vista, modo, { extra });
+    },
   };
   const siteFallback = <div style={{ minHeight: "100vh", backgroundColor: FAE.bg }} />;
   const wrap = (node) => (
@@ -115,16 +123,12 @@ export default function App() {
         <MacroTopicIndex
           onOpenTopic={(topicId, modo) => {
             /*
-             * Demanda Agregada tiene las dos mitades y cada una va a su vista:
-             * "Aprender" al corazón de la economía, "Hacer" al camino de los
-             * siete juegos. Sin modo —nadie debería llegar así— se entra al
-             * camino, que es donde se ganan los FP del tema.
+             * Casi todos los temas se llaman igual que su vista; Demanda
+             * Agregada tiene una por mitad. Esa excepción vive en vistaDeTema()
+             * porque el enlace de vuelta del panel necesita la misma respuesta,
+             * y dos copias de una excepción se separan en la primera edición.
              */
-            if (topicId === "demanda-agregada") {
-              abrirTema(modo === APRENDER ? "grifos-da" : "camino-da", modo);
-              return;
-            }
-            abrirTema(topicId, modo);
+            abrirTema(vistaDeTema(topicId, modo) ?? topicId, modo);
           }}
         />
       </Suspense>
@@ -182,7 +186,10 @@ export default function App() {
   if (view === "docente") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <PanelDocente onBack={() => setView(prevView === "docente" ? "home" : prevView)} />
+        <PanelDocente
+          actividadInicial={ruta.extra}
+          onBack={() => setView(prevView === "docente" ? "home" : prevView)}
+        />
       </Suspense>
     );
   }

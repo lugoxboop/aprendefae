@@ -436,12 +436,31 @@ export function tiposDeTema(topic) {
  * enseñar entonces; devolver el id disfrazado de nombre sería peor.
  */
 const NOMBRES_POR_ID = new Map();
+/*
+ * Y dónde vive cada actividad. Se llena en el mismo recorrido: separarlo en un
+ * segundo bucle sobre lo mismo sería una segunda oportunidad de que uno se
+ * quedara desactualizado respecto al otro.
+ */
+const UBICACION_POR_ID = new Map();
 for (const materia of Object.values(SUBJECTS)) {
   for (const tema of materia.topics ?? []) {
     for (const a of tema.actividades ?? []) {
       if (a.id && a.nombre) NOMBRES_POR_ID.set(a.id, a.nombre);
+      if (a.id) UBICACION_POR_ID.set(a.id, { materiaId: materia.id, temaId: tema.id });
     }
   }
+}
+
+/**
+ * En qué materia y tema vive una actividad, o null si no es una del catálogo.
+ *
+ * Lo necesitan las dos direcciones del enlace de rendimiento: el enlace que sale
+ * de una actividad tiene que saber su materia para preguntar si el docente está
+ * autorizado EN ELLA, y el panel tiene que saberla para abrirse en la materia
+ * correcta cuando llega con una actividad en la URL.
+ */
+export function ubicacionDeActividad(activityId) {
+  return UBICACION_POR_ID.get(activityId) ?? null;
 }
 
 /*
