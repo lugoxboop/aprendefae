@@ -22,8 +22,15 @@ import { FAE } from "../../theme.js";
 const VB = 100;
 const C = VB / 2;
 
-/* Polígono regular de n lados, con la punta arriba. */
-function poligono(n, r, cx = C, cy = C) {
+/*
+ * Polígono regular de n lados, con la punta arriba.
+ *
+ * EXPORTADO PARA LA INSIGNIA DE LIGA. El distintivo de nivel de las ligas usa
+ * esta misma geometría y el mismo LADOS de abajo, no una copia parecida: si
+ * algún día el marco intermedio deja de ser un octágono, deja de serlo en los
+ * dos sitios a la vez. Ver InsigniaLiga.jsx.
+ */
+export function poligono(n, r, cx = C, cy = C) {
   return Array.from({ length: n }, (_, i) => {
     const a = (i / n) * Math.PI * 2 - Math.PI / 2;
     return `${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`;
@@ -47,8 +54,8 @@ export const ETIQUETA_NIVEL = {
   elite: "Élite",
 };
 
-/* Cuántos lados tiene el marco de cada nivel. */
-const LADOS = { base: 6, intermedio: 8, avanzado: 12, elite: 14 };
+/* Cuántos lados tiene el marco de cada nivel. Exportado: ver poligono(). */
+export const LADOS = { base: 6, intermedio: 8, avanzado: 12, elite: 14 };
 
 /* ------------------------------- los iconos ------------------------------- */
 

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { FAE } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
-import { tableroDe, repartir, nombreLiga, tieneLigas } from "../../ligas/ligas.js";
+import { tableroDe, contextoDe, repartir, tieneLigas } from "../../ligas/ligas.js";
+import CabeceraLiga from "./CabeceraLiga.jsx";
 import BotonAnimo from "../social/BotonAnimo.jsx";
 import { estadoDeAnimos } from "../../social/animo.js";
 
@@ -57,15 +58,28 @@ function Puesto({ n, destacado }) {
   );
 }
 
+/*
+ * Mientras no se sabe, no hay niveles. Con esto la cabecera dice lo genérico en
+ * vez de parpadear un nombre y quitarlo, que es peor que no ponerlo.
+ */
+const SIN_CONTEXTO = { totalNiveles: 0, ciclosConNiveles: 0, ligaAnterior: null };
+
 export default function LigaBoard({ subjectId }) {
   const { session, pedirCuenta } = useAuth();
   const [estado, setEstado] = useState({ cargando: true, filas: [], error: null });
+  const [contexto, setContexto] = useState(SIN_CONTEXTO);
   const [animos, setAnimos] = useState({});
 
   const cargar = useCallback(async () => {
     if (!tieneLigas(subjectId)) return;
     setEstado((e) => ({ ...e, cargando: true }));
-    const { filas, error } = await tableroDe(subjectId);
+    /*
+     * Las dos llamadas van a la vez, no una tras otra: son independientes y
+     * encadenarlas sumaría una ida y vuelta a un tablero que ya hace dos.
+     */
+    const [tablero, ctx] = await Promise.all([tableroDe(subjectId), contextoDe(subjectId)]);
+    const { filas, error } = tablero;
+    setContexto(ctx.contexto ?? SIN_CONTEXTO);
     setEstado({ cargando: false, filas, error });
     /* Aparte de liga_tablero, para no tocar una función ya asegurada. */
     setAnimos(await estadoDeAnimos((filas ?? []).filter((f) => !f.es_tuyo).map((f) => f.nickname)));
@@ -81,23 +95,21 @@ export default function LigaBoard({ subjectId }) {
 
   if (!tieneLigas(subjectId)) return null;
 
-  const { podio, tuya, enPodio, liga, totalLigas, tamLiga, restantes } = repartir(estado.filas);
+  const { podio, tuya, enPodio, liga, tamLiga, restantes } = repartir(estado.filas);
 
   return (
     <section style={marco}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "4px" }}>
-        <h3 style={{ fontFamily: "Sora, sans-serif", fontSize: "15px", fontWeight: 700, letterSpacing: "-0.01em", margin: 0, color: FAE.text }}>
-          {liga ? nombreLiga(liga) : "Tu liga"}
-        </h3>
-        {liga && totalLigas > 1 && (
-          <span style={{ fontSize: "12px", color: "rgba(248,249,250,0.45)" }}>
-            {tamLiga} compitiendo
-          </span>
-        )}
-      </div>
-      <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 14px" }}>
-        Se reparte cada semana según los FP del ciclo.
-      </p>
+      {/*
+        El nombre del nivel y el texto de la semana salen los dos de aquí, de
+        una sola llamada a mensajeSemanal(). Ver CabeceraLiga.jsx.
+      */}
+      <CabeceraLiga
+        liga={liga}
+        totalNiveles={contexto.totalNiveles}
+        ciclosConNiveles={contexto.ciclosConNiveles}
+        ligaAnterior={contexto.ligaAnterior}
+        tamLiga={liga ? tamLiga : 0}
+      />
 
       {estado.cargando ? (
         <p style={{ fontSize: "13.5px", color: "rgba(248,249,250,0.5)", margin: 0 }}>Cargando…</p>

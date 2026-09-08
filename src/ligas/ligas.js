@@ -15,11 +15,58 @@ export const MATERIAS_CON_LIGAS = ["pensamiento-estrategico"];
 export const tieneLigas = (subjectId) => MATERIAS_CON_LIGAS.includes(subjectId);
 
 /*
- * Nombres neutros. La estructura tiene jerarquía —se sube y se baja— pero la
- * interfaz no la anuncia: "Oro" y "Bronce" se quedan pegados a la persona en un
- * grupo donde todos se conocen, y un número no.
+ * ═══════════ LOS NOMBRES SE FUERON A niveles.js ═══════════
+ *
+ * Aquí vivía `nombreLiga = (liga) => \`Grupo ${liga}\`` con una nota que decía
+ * que la interfaz no anuncia la jerarquía porque "Oro" y "Bronce" se quedan
+ * pegados a la persona. Esa nota tenía razón sobre los metales y se equivocaba
+ * sobre el silencio: un grupo sin nombre no deja de tener arriba y abajo, solo
+ * deja de explicarlo.
+ *
+ * Los nombres —Emergente, Intermedio, Avanzado, Élite— y la decisión de no
+ * poner ninguno mientras haya un solo nivel están en src/ligas/niveles.js, con
+ * el mensaje semanal, porque las dos cosas se deciden con el mismo dato.
  */
-export const nombreLiga = (liga) => `Grupo ${liga}`;
+
+/**
+ * El contexto de la liga: cuántos niveles hay, cuántos ciclos llevan con más de
+ * uno, y en cuál estaba quien pregunta la semana pasada.
+ *
+ * Va aparte de `tableroDe` porque el tablero devuelve una fila por estudiante
+ * del podio y esto es un solo dato de la materia: repetido en cada fila sería
+ * ruido, y con el podio vacío no llegaría nunca.
+ */
+export async function contextoDe(subjectId) {
+  const VACIO = { totalNiveles: 0, ciclosConNiveles: 0, ligaAnterior: null };
+  if (!supabase || !tieneLigas(subjectId)) return { contexto: VACIO, error: null };
+
+  const { data, error } = await supabase.rpc("liga_contexto", { p_subject: subjectId });
+  if (error) {
+    if (error.code !== "42501") console.error("[aprendeFAE] Liga (contexto):", error.message);
+    return { contexto: VACIO, error: error.code === "42501" ? "sin-sesion" : error.message };
+  }
+
+  /*
+   * La función devuelve una fila; PostgREST la entrega como arreglo. Si llegara
+   * vacía —o si la migración 0025 todavía no estuviera aplicada y respondiera
+   * un PGRST202 que cae en la rama de arriba— el contexto vacío deja el tablero
+   * exactamente como estaba antes de esta función: sin nombre y con el texto
+   * genérico. Degradar a lo de antes, nunca a una pantalla rota.
+   */
+  const f = Array.isArray(data) ? data[0] : data;
+  if (!f) return { contexto: VACIO, error: null };
+
+  return {
+    contexto: {
+      totalNiveles: Number(f.total_ligas ?? 0),
+      ciclosConNiveles: Number(f.ciclos_con_niveles ?? 0),
+      ligaAnterior: f.liga_anterior === null || f.liga_anterior === undefined
+        ? null
+        : Number(f.liga_anterior),
+    },
+    error: null,
+  };
+}
 
 /** El tablero de la liga propia: podio + tu fila. */
 export async function tableroDe(subjectId) {
@@ -66,7 +113,18 @@ export function repartir(filas) {
     tuya,
     enPodio: !!tuya?.en_podio,
     liga: meta?.liga ?? null,
-    totalLigas: meta?.total_ligas ?? null,
+    /*
+     * ═══════════ `totalLigas` NO SE DEVUELVE, Y ES A PROPÓSITO ═══════════
+     *
+     * `liga_tablero` también trae `total_ligas`, así que aquí había un
+     * `totalLigas: meta?.total_ligas`. Se quitó: el recuento de niveles decide
+     * a la vez el NOMBRE del nivel y el MENSAJE de la semana, y dos sitios
+     * capaces de responder "cuántos niveles hay" es la forma exacta en que se
+     * desincronizan —un lunes con nombre nuevo y texto viejo, o al revés—.
+     *
+     * La única fuente es `contextoDe()`. Y no se deja aquí "por si acaso":
+     * mientras exista, alguien lo va a usar.
+     */
     tamLiga: meta?.tam_liga ?? 0,
     restantes,
   };
