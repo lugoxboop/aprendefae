@@ -14,6 +14,11 @@
 # aplican todas las migraciones sobre un Postgres limpio y se corren las pruebas
 # SQL contra él.
 #
+# EN LOCAL, ANTES DE SUBIR: `npm run verificar` ejecuta estos mismos pasos
+# sobre PGlite. Es un ensayo, no el veredicto —es Postgres 18.3 y no 16, el
+# psql es una emulación y no hay runner—: lo que diga ESTE workflow es lo que
+# manda. Los límites, en la cabecera de scripts/verificar/verificar.mjs.
+#
 # SIN SECRETOS Y SIN TOCAR PRODUCCIÓN. La base es un contenedor que nace y
 # muere con la ejecución. No hay credenciales que guardar ni datos reales que
 # arriesgar, que es justamente por lo que se descartó la opción del JWT firmado.

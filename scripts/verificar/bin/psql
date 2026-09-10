@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# psql de reemplazo para npm run verificar: corre sobre PGlite.
+# NO es el psql real. Ver scripts/verificar/psql-pglite.mjs.
+exec node "$(dirname "$0")/../psql-pglite.mjs" "$@"

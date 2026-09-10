@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "node --import ./scripts/cargador-jsx.mjs --test \"src/**/*.test.mjs\"",
-    "barrido": "node --import ./scripts/cargador-jsx.mjs scripts/barrido-dashboard.mjs"
+    "barrido": "node --import ./scripts/cargador-jsx.mjs scripts/barrido-dashboard.mjs",
+    "verificar": "node scripts/verificar/verificar.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",
@@ -19,9 +20,11 @@
     "three": "^0.185.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "@tailwindcss/vite": "^4.0.5",
     "@vitejs/plugin-react": "^4.3.4",
     "tailwindcss": "^4.0.5",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "yaml": "^2.9.0"
   }
 }

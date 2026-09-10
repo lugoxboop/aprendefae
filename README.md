@@ -77,7 +77,7 @@ La consulta se hace al entrar y al cambiar de pestaña; no hay suscripción en v
 
 ### Verificar RLS
 
-`supabase/tests/rls_profiles_test.sql` comprueba el aislamiento entre estudiantes. No necesita contraseñas ni iniciar sesión con Google: suplanta el JWT dentro de una transacción, que es como Postgres resuelve `auth.uid()`. Solo hace falta crear tres usuarios de prueba desde el panel y pegar sus UUID.
+`supabase/tests/rls_profiles_test.sql` comprueba el aislamiento entre estudiantes. No necesita contraseñas ni iniciar sesión con Google: suplanta el JWT dentro de una transacción, que es como Postgres resuelve `auth.uid()`. Crea sus propios usuarios dentro de la transacción, así que se corre tal cual en el SQL Editor, y CI la corre en cada push.
 
 Corre nueve chequeos —RLS encendida y forzada, cada estudiante ve solo su fila, no puede leer ni modificar la ajena, no puede crear filas a nombre de otro, y un visitante anónimo no ve nada— y termina en `ROLLBACK`, así que no deja rastro. Todos deben decir `PASA`.
 
@@ -114,6 +114,18 @@ Para previsualizar ese build localmente antes de desplegar:
 ```bash
 npm run preview
 ```
+
+## Verificar antes de subir
+
+```bash
+npm run verificar
+```
+
+Ejecuta aquí el workflow «Pruebas» de GitHub —las pruebas de JavaScript, el build, las migraciones aplicadas desde cero sobre una base vacía y todas las pruebas SQL— con los mismos pasos de `.github/workflows/base.yml`, sobre PGlite, un Postgres que corre dentro de Node. Tarda unos cuatro minutos y sale en rojo si algo falla. `npm run verificar -- base-de-datos` corre solo la parte de SQL.
+
+**Es para antes de cada push, no en vez del CI.** El veredicto que manda es el de Actions. Aquí es PostgreSQL 18.3 y no 16, el `psql` es una emulación escrita para el proyecto y no hay runner de GitHub: algo puede pasar aquí y fallar allí. La lista de lo que no reproduce está en la cabecera de `scripts/verificar/verificar.mjs`.
+
+Existe porque tres fallos llegaron a producción —un factor ×100, dos firmas vivas de `registrar_fp`, una columna ambigua— y la causa común fue SQL que nadie había ejecutado.
 
 ## Despliegue automático
 

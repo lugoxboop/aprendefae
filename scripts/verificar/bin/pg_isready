@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# pg_isready de reemplazo para npm run verificar. Aquí no hay servicio que
+# esperar: responde que sí en cuanto PGlite abre la base. No prueba el arranque.
+node "$(dirname "$0")/../psql-pglite.mjs" -c "select 1" >/dev/null 2>&1 || exit 2
