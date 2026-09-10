@@ -67,7 +67,7 @@ export default function DemandaAgregadaAprenderView({ onBack }) {
         }}
       >
         <div style={{ maxWidth: "860px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
+          <div className="fae-reserva-cuenta" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
             <Logo variant="symbol" size={26} theme="dark" />
             <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
             <button

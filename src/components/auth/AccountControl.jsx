@@ -7,12 +7,58 @@ import GoogleSignInButton from "./GoogleSignInButton.jsx";
 
 /*
  * Control de cuenta fijo arriba a la derecha, en todas las páginas.
- * Es el espejo del logo (arriba a la izquierda), así que ninguno de los dos
- * estorba al otro ni a lo que ya vive en las cabeceras.
  *
  * Sin sesión muestra el botón oficial de Google; con sesión, el apodo y la
  * salida.
+ *
+ * ═══════════ EN MÓVIL SE ENCOGE, Y POR QUÉ ═══════════
+ *
+ * La nota de antes decía que era "el espejo del logo" y que no estorbaba a las
+ * cabeceras. En escritorio es verdad. A 375 px no lo era: la pastilla "Acceder
+ * con Google" medía 181×32 y, medida vista por vista, tapaba el título de LAS
+ * ONCE —el h1 de cada tema, "Tu perfil", "Panel docente"— y, en la portada,
+ * 171 px del propio logo. Lo veía cada estudiante que entraba desde el
+ * teléfono, en cada pantalla, desde el primer día.
+ *
+ * Por debajo de ANCHO_ESTRECHO pasa a un círculo de 40×40: sin sesión, el
+ * botón de Google en su forma de icono —oficial, lo dibuja su librería—; con
+ * sesión, solo la inicial del apodo. 40 px es también el mínimo cómodo para el
+ * dedo. Por encima de ese ancho, todo sigue exactamente como estaba.
+ *
+ * ═══════════ LO DECIDE EL CSS, NO JAVASCRIPT ═══════════
+ *
+ * Una media query elige la forma. Se intentó primero midiendo la ventana con
+ * JavaScript y falló de tres maneras distintas, todas medidas: el ancho pasaba
+ * por un valor transitorio al cargar y el control se quedaba en círculo en
+ * escritorio; al girar, el aviso llegaba antes que la media query y el botón
+ * iba un paso atrasado; y los temporizadores de respaldo se congelan con la
+ * pestaña en segundo plano. El CSS lo evalúa el navegador en cada pintado.
+ *
+ * ═══════════ Y EL HUECO QUE RESERVA ═══════════
+ *
+ * Encoger no bastó: el círculo todavía tapaba el título largo de Pensamiento
+ * Sistémico y la etiqueta «Hacer» / «Aprender» de Demanda Agregada. Así que
+ * las filas de cabecera de las vistas de tema llevan la clase
+ * `fae-reserva-cuenta`, y la regla vive AQUÍ, junto al elemento que necesita el
+ * hueco: si el control cambia de tamaño, su reserva cambia en el mismo
+ * archivo. 40 px: el círculo empieza a 54 px del borde y el contenido de las
+ * páginas a 24, así que el texto queda a unos 8 px del círculo.
  */
+const ANCHO_ESTRECHO = 560;
+
+const CSS_CUENTA = `
+.fae-gsi-icono { display: none; }
+@media (max-width: ${ANCHO_ESTRECHO}px) {
+  .fae-reserva-cuenta { padding-right: 40px; }
+  .fae-gsi-ancho { display: none; }
+  .fae-gsi-icono { display: block; }
+  .fae-cuenta-boton { width: 40px; height: 40px; padding: 0 !important; }
+  .fae-cuenta-nombre { display: none; }
+  .fae-cuenta-inicial { width: 26px !important; height: 26px !important; font-size: 12px !important; }
+}
+`;
+const EstiloCuenta = () => <style>{CSS_CUENTA}</style>;
+
 export default function AccountControl() {
   const { disponible, cargando, perfil, session, cerrarSesion } = useAuth();
   const nav = useContext(NavigationContext);
@@ -37,12 +83,20 @@ export default function AccountControl() {
   };
 
   /* Mientras se resuelve la sesión guardada no se parpadea entre estados. */
-  if (cargando) return <div style={{ ...envoltorio, width: "1px", height: "1px" }} />;
+  if (cargando) {
+    return (
+      <>
+        <EstiloCuenta />
+        <div style={{ ...envoltorio, width: "1px", height: "1px" }} />
+      </>
+    );
+  }
 
   if (!session) {
     return (
       <div style={envoltorio}>
-        <GoogleSignInButton size="medium" />
+        <EstiloCuenta />
+        <GoogleSignInButton size="medium" adaptable />
       </div>
     );
   }
@@ -52,13 +106,18 @@ export default function AccountControl() {
 
   return (
     <div style={envoltorio} ref={caja}>
+      <EstiloCuenta />
       <button
         type="button"
+        className="fae-cuenta-boton"
         onClick={() => setAbierto((v) => !v)}
         aria-expanded={abierto}
+        /* En móvil solo se ve la inicial: el nombre va aquí para quien no ve la pantalla. */
+        aria-label={`Tu cuenta: ${etiqueta}`}
         style={{
           display: "inline-flex",
           alignItems: "center",
+          justifyContent: "center",
           gap: "8px",
           fontFamily: "Sora, sans-serif",
           fontSize: "13px",
@@ -75,6 +134,7 @@ export default function AccountControl() {
       >
         <span
           aria-hidden="true"
+          className="fae-cuenta-inicial"
           style={{
             width: "18px", height: "18px", borderRadius: "999px", flexShrink: 0,
             background: "rgba(42,157,143,0.28)", border: `1px solid ${FAE.teal}`,
@@ -84,7 +144,7 @@ export default function AccountControl() {
         >
           {etiqueta.charAt(0).toUpperCase()}
         </span>
-        {etiqueta}
+        <span className="fae-cuenta-nombre">{etiqueta}</span>
       </button>
 
       {abierto && (

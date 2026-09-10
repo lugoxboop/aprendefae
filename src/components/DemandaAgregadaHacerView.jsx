@@ -6,6 +6,7 @@ import FondoMateria from "./shared/FondoMateria.jsx";
 import EnlaceRendimiento from "./shared/EnlaceRendimiento.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
+import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import Electrocardiograma from "./mecanicas/corazon/Electrocardiograma.jsx";
 import Termometro from "./mecanicas/corazon/Termometro.jsx";
 import BancoTransfusiones from "./mecanicas/corazon/BancoTransfusiones.jsx";
@@ -113,13 +114,15 @@ const h2 = {
 
 const lead = { fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 20px" };
 
-export default function DemandaAgregadaHacerView({ onBack }) {
+export default function DemandaAgregadaHacerView({ nodoInicial = null, onBack }) {
   const [nodoAbierto, setNodoAbierto] = useState(null);
   const hechas = useCompletadas();
   const { pedirCuenta } = useAuth();
 
   const tema = SUBJECTS.macroeconomia.topics.find((t) => t.id === TEMA);
   const nodos = nodosDe(actividadesDeTipo(tema, HACER), hechas);
+  /* A2: el nodo que trae la URL, validado contra ESTE camino. Ver useNodoEnRuta. */
+  const resaltado = useNodoEnRuta(nodoAbierto, nodoInicial, nodos.map((x) => x.id));
 
   /*
    * El mismo camino central que el resto del sitio: la mecánica entrega
@@ -152,7 +155,7 @@ export default function DemandaAgregadaHacerView({ onBack }) {
         }}
       >
         <div style={{ maxWidth: "860px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
+          <div className="fae-reserva-cuenta" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
             <Logo variant="symbol" size={26} theme="dark" />
             <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
             <button
@@ -180,7 +183,7 @@ export default function DemandaAgregadaHacerView({ onBack }) {
                 Siete juegos, del reconocer al reconstruir. No hay orden obligatorio: el camino sugiere
                 uno, no lo impone.
               </p>
-              <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} />
+              <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} />
             </>
           )}
 

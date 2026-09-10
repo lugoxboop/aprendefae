@@ -12,6 +12,7 @@ import VideoYouTube from "./shared/VideoYouTube.jsx";
 import AsedioEstrategico from "./mecanicas/AsedioEstrategico.jsx";
 import { APRENDER, HACER, clasificacionDe, actividadesDeTipo, SUBJECTS } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
+import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
@@ -305,7 +306,7 @@ function Gauge({ gauge, answers, onAnswer }) {
 const emptyAnswers = () =>
   GAUGES.reduce((acc, g) => ({ ...acc, [g.key]: [null, null] }), {});
 
-export default function PorterView({ modo = null, onBack }) {
+export default function PorterView({ modo = null, nodoInicial = null, onBack }) {
   /*
    * Con qué mitad se entró desde la tarjeta partida. Sin modo se ve entera.
    */
@@ -320,6 +321,8 @@ export default function PorterView({ modo = null, onBack }) {
   const hechas = useCompletadas();
   const temaActual = SUBJECTS["pensamiento-estrategico"].topics.find((t) => t.id === "fuerzas-porter");
   const nodos = nodosDe(actividadesDeTipo(temaActual, HACER), hechas);
+  /* A2: el nodo que trae la URL, validado contra ESTE camino. Ver useNodoEnRuta. */
+  const resaltado = useNodoEnRuta(nodoAbierto, nodoInicial, muestraHacer ? nodos.map((x) => x.id) : []);
 
   const { pedirCuenta } = useAuth();
 
@@ -364,7 +367,7 @@ export default function PorterView({ modo = null, onBack }) {
     >
       <div style={{ maxWidth: "860px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
         {/* Logo (salir al inicio) y volver (subir al índice de la materia) conviven. */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
+        <div className="fae-reserva-cuenta" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
           <Logo variant="symbol" size={26} theme="dark" />
           <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
           <button
@@ -537,7 +540,7 @@ export default function PorterView({ modo = null, onBack }) {
             <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 24px" }}>
               Toca el juego que quieras. No hay orden obligatorio: el camino sugiere uno, no lo impone.
             </p>
-            <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} />
+            <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} />
           </>
         )}
 

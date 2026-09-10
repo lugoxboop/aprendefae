@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, ArrowDown, RotateCcw } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
@@ -17,9 +17,11 @@ import CorrienteCruzada from "./mecanicas/CorrienteCruzada.jsx";
 import ProyectoArca from "./mecanicas/arca/ProyectoArca.jsx";
 import { clasificacionDe, actividadesDeTipo, desafioDe, SUBJECTS, APRENDER, HACER } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
+import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
+import { leerPartida } from "../arca/partida.js";
 
 const MATERIA = "pensamiento-estrategico";
 const TEMA = "modelo-iceberg";
@@ -84,8 +86,8 @@ const h2 = {
   margin: "0 0 10px",
 };
 
-export default function IcebergView({ modo = null, onBack }) {
-  const { pedirCuenta } = useAuth();
+export default function IcebergView({ modo = null, nodoInicial = null, onBack }) {
+  const { pedirCuenta, session } = useAuth();
 
   /*
    * Con qué mitad del tema se entró desde la tarjeta partida. Sin modo (null)
@@ -115,6 +117,26 @@ export default function IcebergView({ modo = null, onBack }) {
     completada: hechas.has(desafio.id),
   };
   const enNodo = (id) => nodoAbierto === id;
+
+  /* A2: el nodo que trae la URL, validado contra ESTE camino —el desafío incluido—. */
+  const resaltado = useNodoEnRuta(
+    nodoAbierto,
+    nodoInicial,
+    muestraHacer ? [...nodos.map((x) => x.id), ...(nodoDesafio ? [nodoDesafio.id] : [])] : [],
+  );
+
+  /*
+   * La marca de partida a medias en el nodo del Arca. Se pregunta cada vez
+   * que se vuelve al camino y al cambiar la sesión: al registrar el desafío
+   * el servidor borra la partida, y la marca tiene que irse con ella.
+   */
+  const [arcaAMedias, setArcaAMedias] = useState(false);
+  useEffect(() => {
+    if (!muestraHacer || nodoAbierto) return undefined;
+    let vivo = true;
+    leerPartida().then((p) => vivo && setArcaAMedias(!!p)).catch(() => {});
+    return () => { vivo = false; };
+  }, [muestraHacer, nodoAbierto, session]);
 
 
   /* Cada mecánica evaluativa lleva su propio reloj y su propio % de acierto. */
@@ -170,7 +192,7 @@ export default function IcebergView({ modo = null, onBack }) {
     >
       <div style={{ maxWidth: "860px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
         {/* Logo (salir al inicio) y volver (subir al índice de la materia) conviven. */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
+        <div className="fae-reserva-cuenta" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
           <Logo variant="symbol" size={26} theme="dark" />
           <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
           <button
@@ -226,7 +248,13 @@ export default function IcebergView({ modo = null, onBack }) {
             <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 24px" }}>
               Toca el juego que quieras. No hay orden obligatorio: el camino sugiere uno, no lo impone.
             </p>
-            <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} especial={nodoDesafio} />
+            <CaminoHacer
+              nodos={nodos}
+              onAbrir={setNodoAbierto}
+              especial={nodoDesafio}
+              resaltado={resaltado}
+              marcas={arcaAMedias && nodoDesafio ? { [nodoDesafio.id]: "Tienes una partida a medias" } : null}
+            />
           </>
         )}
 

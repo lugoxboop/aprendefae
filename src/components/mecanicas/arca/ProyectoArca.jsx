@@ -1,10 +1,13 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Download, Waves, ChevronRight, RotateCcw } from "lucide-react";
 import { FAE } from "../../../theme.js";
 import { PDF_CASO } from "../../../data/arca.js";
 import {
   ETAPAS, PUNTOS_POR_ETAPA, TOTAL_PUNTOS, puntuarDesafio, nivelDelAgua,
 } from "../../../arca/puntuacion.js";
+import {
+  estadoParaGuardar, filasDelDesafio, guardarPartida, leerPartida, borrarPartida, haceCuanto,
+} from "../../../arca/partida.js";
 import NivelDelAgua from "./NivelDelAgua.jsx";
 import EtapaExpediente from "./EtapaExpediente.jsx";
 import EtapaIcebergArca from "./EtapaIcebergArca.jsx";
@@ -28,6 +31,18 @@ import EtapaDiluvio from "./EtapaDiluvio.jsx";
  * EL CASO NO SE REPRODUCE. Se lee antes de clase en papel; el PDF queda
  * descargable en la portada y nada más. Lo que se evalúa es la aplicación del
  * modelo, no la lectura.
+ *
+ * ═══════════ LA PARTIDA SOBREVIVE A UNA RECARGA (0028) ═══════════
+ *
+ * Al TERMINAR cada etapa se guarda en el servidor lo sellado: resultados,
+ * detalle y tiempo jugado. Recargar a mitad de la etapa 3 devuelve —al
+ * elegirlo— al principio de la 3, con la 1 y la 2 como quedaron, fallos
+ * incluidos. Recargar deja de ser una estrategia porque deja de ser una
+ * ventaja. Las reglas y su porqué, en src/arca/partida.js.
+ *
+ * Volver NUNCA es silencioso: la portada dice que hay una partida, por qué
+ * etapa iba y cuándo se guardó, y el estudiante elige continuar o empezar de
+ * nuevo.
  */
 
 const CSS = `
@@ -47,29 +62,59 @@ export default function ProyectoArca({ onCompletar }) {
   /* null = portada. 0..3 = etapa en curso. 4 = balance final. */
   const [paso, setPaso] = useState(null);
   const [resultados, setResultados] = useState([null, null, null, null]);
-  const inicio = useRef(null);
   const yaAvisado = useRef(false);
 
   /*
    * ═══════════ EL DETALLE POR ÍTEM DEL DESAFÍO ═══════════
    *
-   * Cada etapa emite sus propias filas con sus ids nativos, y aquí se les pone
-   * el prefijo `etN:`.
+   * Cada etapa emite sus propias filas con sus ids nativos, y al registrar se
+   * les pone el prefijo `etN:` (filasDelDesafio, en arca/partida.js).
    *
    * HOY NO CHOCARÍAN SIN ÉL, y conviene decirlo en vez de inventar un motivo:
    * las citas de la etapa 1 son e1..e8, las ranuras de la 2 son los nombres de
    * nivel, la 3 emite par:* y la 4 un solo "momento". Ninguno coincide.
    *
-   * El prefijo se queda por dos razones reales. Una, que son cuatro juegos
+   * El prefijo se queda por tres razones reales. Una, que son cuatro juegos
    * distintos dentro de una sola actividad y sin él nada impide que añadir un
    * ítem a una etapa colisione en silencio con otra —el fallo que ya apareció
-   * tres veces en este tema, y que nunca lanza un error—. Y dos, que con él la
-   * etapa se lee directamente en el panel sin tener que conocer el catálogo.
+   * tres veces en este tema, y que nunca lanza un error—. Dos, que con él la
+   * etapa se lee directamente en el panel sin tener que conocer el catálogo. Y
+   * tres, desde la 0028: es lo que hace EXACTA la sustitución al retomar.
    *
-   * Se guarda por índice de etapa y no acumulando, para que rehacer una etapa
-   * —si algún día se permite— reemplace sus filas en vez de duplicarlas.
+   * Se guarda POR ÍNDICE DE ETAPA y no acumulando, y eso ya no es un "si algún
+   * día se permite": al retomar una partida, la etapa reabierta empieza vacía
+   * y rehacerla REEMPLAZA sus filas en vez de duplicarlas. El servidor lo
+   * garantiza además por su cuenta —un ítem, una fila—.
    */
   const detallePorEtapa = useRef([null, null, null, null]);
+
+  /* ═══════════ la partida guardada ═══════════ */
+
+  /* Lo que había en el servidor al abrir el desafío: se ofrece, nunca se aplica solo. */
+  const [guardada, setGuardada] = useState(null);
+  /* Mientras se pregunta, "Empezar" espera: empezar encima reemplazaría la guardada sin haberla ofrecido. */
+  const [comprobando, setComprobando] = useState(true);
+  /* La identidad que el servidor le dio a esta partida en su primer guardado. */
+  const iniciadaEn = useRef(null);
+  /* TIEMPO JUGADO, no de reloj: la suma de las etapas selladas. Ver arca/partida.js. */
+  const jugadoMs = useRef(0);
+  const inicioTramo = useRef(null);
+  /* Los guardados van en fila: el segundo necesita la identidad que devuelve el primero. */
+  const guardando = useRef(Promise.resolve());
+  /* El servidor dijo que esta partida ya no existe: no se vuelve a intentar guardar. */
+  const cerrada = useRef(false);
+
+  useEffect(() => {
+    let vivo = true;
+    leerPartida()
+      .then((p) => {
+        if (!vivo) return;
+        setGuardada(p);
+        setComprobando(false);
+      })
+      .catch(() => vivo && setComprobando(false));
+    return () => { vivo = false; };
+  }, []);
 
   const hechas = resultados.filter((r) => typeof r === "number");
   const promedio = hechas.length ? hechas.reduce((s, r) => s + r, 0) / hechas.length : null;
@@ -80,39 +125,95 @@ export default function ProyectoArca({ onCompletar }) {
     setResultados([null, null, null, null]);
     detallePorEtapa.current = [null, null, null, null];
     yaAvisado.current = false;
-    inicio.current = Date.now();
+    iniciadaEn.current = null;
+    jugadoMs.current = 0;
+    cerrada.current = false;
+    inicioTramo.current = Date.now();
+    setGuardada(null);
     setPaso(0);
   };
 
+  /* "Empezar de nuevo": la guardada se borra antes, para que nadie la retome después. */
+  const empezarDeNuevo = async () => {
+    await borrarPartida();
+    empezar();
+  };
+
+  /*
+   * Cierra el desafío y avisa al motor UNA vez. Espera a que termine el
+   * guardado pendiente —el de la etapa 4— antes de registrar: si llegara
+   * después, el servidor lo rechazaría igual (la partida ya estaría cerrada),
+   * pero así ni siquiera se intenta.
+   */
+  const cerrarDesafio = (finales) => {
+    setPaso(ETAPAS.length);
+    if (yaAvisado.current) return;
+    yaAvisado.current = true;
+    const filas = filasDelDesafio(detallePorEtapa.current);
+    const duracion = jugadoMs.current;
+    const pct = puntuarDesafio(finales).pct;
+    guardando.current.finally(() => onCompletar?.(pct, duracion, filas));
+  };
+
+  const continuarGuardada = () => {
+    const g = guardada;
+    if (!g) return;
+    setResultados(g.resultados);
+    detallePorEtapa.current = g.detalle;
+    jugadoMs.current = g.jugadoMs;
+    iniciadaEn.current = g.iniciadaEn;
+    cerrada.current = false;
+    yaAvisado.current = false;
+    inicioTramo.current = Date.now();
+    setGuardada(null);
+    /* Si ya estaban las cuatro, lo que faltaba era el balance: ahí se registra. */
+    if (g.siguiente >= ETAPAS.length) {
+      cerrarDesafio(g.resultados);
+      return;
+    }
+    setPaso(g.siguiente);
+  };
+
+  /*
+   * Una etapa terminó: su resultado queda SELLADO aquí y en el servidor. Se
+   * guarda al terminarla y no al pulsar "Siguiente": quien recargara con el
+   * resultado ya en pantalla podría rehacerla, y eso es justo lo que la regla
+   * impide.
+   */
   const guardar = (indice, pct, filas = null) => {
     detallePorEtapa.current[indice] = filas ?? [];
-    setResultados((r) => {
-      const copia = [...r];
-      copia[indice] = pct;
-      return copia;
+    const siguientes = [...resultados];
+    siguientes[indice] = pct;
+    setResultados(siguientes);
+
+    if (inicioTramo.current !== null) {
+      jugadoMs.current += Date.now() - inicioTramo.current;
+      inicioTramo.current = null;
+    }
+
+    if (cerrada.current) return;
+    const estado = estadoParaGuardar({
+      resultados: siguientes,
+      detallePorEtapa: detallePorEtapa.current,
+      jugadoMs: jugadoMs.current,
     });
+    guardando.current = guardando.current
+      .then(() => guardarPartida(estado, iniciadaEn.current))
+      .then((r) => {
+        if (r?.ok) iniciadaEn.current = r.iniciadaEn;
+        else if (r?.motivo === "cerrada") cerrada.current = true;
+      })
+      .catch(() => {});
   };
 
   const continuar = () => {
     if (paso < ETAPAS.length - 1) {
       setPaso(paso + 1);
+      inicioTramo.current = Date.now();
       return;
     }
     /* Última etapa: se cierra el desafío y se avisa al motor una sola vez. */
-    setPaso(ETAPAS.length);
-    if (!yaAvisado.current) {
-      yaAvisado.current = true;
-      /* Numeración corrida sobre las cuatro etapas: el orden en que jugó. */
-      let n = 0;
-      const filas = detallePorEtapa.current.flatMap((etapa, i) =>
-        (etapa ?? []).map((f) => ({ ...f, item: `et${i + 1}:${f.item}`, orden: ++n }))
-      );
-      onCompletar?.(
-        puntuarDesafio(resultados).pct,
-        Date.now() - (inicio.current ?? Date.now()),
-        filas
-      );
-    }
+    cerrarDesafio(resultados);
   };
 
   /* --------------------------------- portada --------------------------------- */
@@ -120,6 +221,60 @@ export default function ProyectoArca({ onCompletar }) {
     return (
       <div className="fae-pa-entrar">
         <style>{CSS}</style>
+
+        {/*
+          La partida a medias, antes que nada. Dice por qué etapa iba y CUÁNDO
+          se guardó: "continuar" sobre algo de hace tres días sorprende si no se
+          dice.
+        */}
+        {guardada && (
+          <div
+            style={{
+              borderRadius: "18px", padding: "16px 18px", marginBottom: "14px",
+              background: "rgba(42,157,143,0.10)", border: `1px solid ${FAE.teal}66`,
+            }}
+          >
+            <p style={{ fontFamily: "Sora, sans-serif", fontSize: "15px", fontWeight: 700, color: FAE.text, margin: "0 0 4px" }}>
+              Tienes el Proyecto del Arca a medias.
+            </p>
+            <p style={{ fontSize: "14px", lineHeight: 1.55, color: "rgba(248,249,250,0.75)", margin: "0 0 4px" }}>
+              {guardada.siguiente >= ETAPAS.length
+                ? "Terminaste las cuatro etapas y te faltó ver el balance"
+                : `Ibas por la etapa ${guardada.siguiente + 1} de ${ETAPAS.length}`}{" "}
+              (guardado {haceCuanto(Date.now() - new Date(guardada.actualizadoEn).getTime())}).
+            </p>
+            <p style={{ fontSize: "12.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.5)", margin: "0 0 12px" }}>
+              Las etapas que terminaste quedan como las dejaste; la que estaba a medias empieza desde el principio.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+              <button
+                type="button"
+                onClick={continuarGuardada}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: "8px",
+                  padding: "11px 18px", borderRadius: "12px", cursor: "pointer",
+                  background: FAE.teal, border: `1px solid ${FAE.teal}`, color: FAE.bg,
+                  fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700,
+                }}
+              >
+                Continuar <ChevronRight size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={empezarDeNuevo}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: "8px",
+                  padding: "11px 18px", borderRadius: "12px", cursor: "pointer",
+                  background: "transparent", border: "1px solid rgba(248,249,250,0.24)",
+                  color: "rgba(248,249,250,0.8)", fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600,
+                }}
+              >
+                <RotateCcw size={14} /> Empezar de nuevo
+              </button>
+            </div>
+          </div>
+        )}
+
         <div
           style={{
             borderRadius: "22px", padding: "clamp(18px, 3vw, 28px)",
@@ -159,18 +314,23 @@ export default function ProyectoArca({ onCompletar }) {
           </div>
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
-            <button
-              type="button"
-              onClick={empezar}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: "8px",
-                padding: "13px 22px", borderRadius: "14px", cursor: "pointer",
-                background: FAE.ambar, border: `1px solid ${FAE.ambar}`, color: "#08111d",
-                fontFamily: "Sora, sans-serif", fontSize: "14.5px", fontWeight: 700,
-              }}
-            >
-              Empezar el desafío <ChevronRight size={16} />
-            </button>
+            {/* Con una partida guardada, las dos opciones están arriba y son explícitas. */}
+            {!guardada && (
+              <button
+                type="button"
+                onClick={empezar}
+                disabled={comprobando}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: "8px",
+                  padding: "13px 22px", borderRadius: "14px", cursor: comprobando ? "wait" : "pointer",
+                  background: FAE.ambar, border: `1px solid ${FAE.ambar}`, color: "#08111d",
+                  fontFamily: "Sora, sans-serif", fontSize: "14.5px", fontWeight: 700,
+                  opacity: comprobando ? 0.6 : 1,
+                }}
+              >
+                Empezar el desafío <ChevronRight size={16} />
+              </button>
+            )}
 
             {/*
               El caso completo. Se lee en papel antes de clase; el enlace está

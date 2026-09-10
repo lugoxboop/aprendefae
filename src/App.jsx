@@ -103,6 +103,13 @@ export default function App() {
       setPrevView(view);
       navegar(vista, modo, { extra });
     },
+    /*
+     * A2: el nodo abierto de un tema, en la URL —ver useNodoEnRuta—.
+     * REEMPLAZA la entrada en vez de empujar otra: abrir un juego no es una
+     * página nueva para el botón atrás. Existe para que recargar devuelva al
+     * camino con ese nodo a la vista.
+     */
+    marcarNodo: (extra) => navegar(view, ruta.modo, { extra, reemplazar: true }),
   };
   const siteFallback = <div style={{ minHeight: "100vh", backgroundColor: FAE.bg }} />;
   const wrap = (node) => (
@@ -138,7 +145,7 @@ export default function App() {
   if (view === "camino-da") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <DemandaAgregadaHacerView onBack={() => setView("macroeconomia")} />
+        <DemandaAgregadaHacerView nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
       </Suspense>
     );
   }
@@ -162,7 +169,7 @@ export default function App() {
   if (view === "pensamiento-sistemico") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <PensamientoSistemicoView modo={modoTema} onBack={() => setView("pensamiento-estrategico")} />
+        <PensamientoSistemicoView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("pensamiento-estrategico")} />
       </Suspense>
     );
   }
@@ -170,7 +177,7 @@ export default function App() {
   if (view === "modelo-iceberg") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <IcebergView modo={modoTema} onBack={() => setView("pensamiento-estrategico")} />
+        <IcebergView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("pensamiento-estrategico")} />
       </Suspense>
     );
   }
@@ -178,7 +185,7 @@ export default function App() {
   if (view === "politica-economica") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <PoliticaEconomicaView modo={modoTema} onBack={() => setView("macroeconomia")} />
+        <PoliticaEconomicaView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
       </Suspense>
     );
   }
@@ -206,7 +213,7 @@ export default function App() {
   if (view === "fuerzas-porter") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <PorterView modo={modoTema} onBack={() => setView("pensamiento-estrategico")} />
+        <PorterView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("pensamiento-estrategico")} />
       </Suspense>
     );
   }

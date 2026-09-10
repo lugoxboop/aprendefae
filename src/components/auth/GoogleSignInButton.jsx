@@ -14,6 +14,21 @@ import { FAE } from "../../theme.js";
  * Si la librería de Google no carga (bloqueada, sin client id, sin red), no se
  * dibuja una imitación del botón: se ofrece un enlace de texto que hace el
  * mismo login por redirección de Supabase.
+ *
+ * ═══════════ `adaptable`: LAS DOS FORMAS, Y EL CSS ELIGE ═══════════
+ *
+ * Con `adaptable`, además del botón con texto se dibuja el mismo botón en su
+ * forma de icono —también oficial: type "icon" de la librería de Google—, y es
+ * una media query de AccountControl la que enseña uno u otro según el ancho.
+ *
+ * Por qué dos botones y no uno que se redibuja al cambiar el ancho: se probó
+ * midiendo la ventana con JavaScript y ninguna lectura acertaba en todos los
+ * casos. Durante la carga el ancho puede pasar por un valor transitorio;
+ * al girar, la media query y el ancho no se actualizan en el mismo orden; y
+ * los temporizadores de respaldo se congelan con la pestaña en segundo plano.
+ * Una media query de CSS no tiene ninguno de esos problemas: la evalúa el
+ * navegador en cada pintado. Girar el teléfono cambia la forma sin redibujar
+ * nada.
  */
 
 const GSI_SRC = "https://accounts.google.com/gsi/client";
@@ -37,8 +52,9 @@ function cargarGsi() {
   });
 }
 
-export default function GoogleSignInButton({ size = "large" }) {
-  const contenedor = useRef(null);
+export default function GoogleSignInButton({ size = "large", adaptable = false }) {
+  const ancho = useRef(null);
+  const icono = useRef(null);
   const [modo, setModo] = useState("cargando"); // cargando | gsi | fallback
   const [error, setError] = useState(null);
 
@@ -52,7 +68,7 @@ export default function GoogleSignInButton({ size = "large" }) {
 
     cargarGsi().then((ok) => {
       if (!vigente) return;
-      if (!ok || !window.google?.accounts?.id || !contenedor.current) {
+      if (!ok || !window.google?.accounts?.id || !ancho.current) {
         setModo("fallback");
         return;
       }
@@ -68,7 +84,7 @@ export default function GoogleSignInButton({ size = "large" }) {
             if (err) setError(err.message);
           },
         });
-        window.google.accounts.id.renderButton(contenedor.current, {
+        window.google.accounts.id.renderButton(ancho.current, {
           type: "standard",
           theme: "filled_black", // el que mejor se integra al navy del sitio
           shape: "pill",         // coincide con los controles redondeados del resto
@@ -76,6 +92,15 @@ export default function GoogleSignInButton({ size = "large" }) {
           text: "signin_with",
           logo_alignment: "left",
         });
+        /* El icono de 40 px: "large" es el tamaño en el que la librería lo dibuja así. */
+        if (adaptable && icono.current) {
+          window.google.accounts.id.renderButton(icono.current, {
+            type: "icon",
+            shape: "circle",
+            theme: "filled_black",
+            size: "large",
+          });
+        }
         setModo("gsi");
       } catch (e) {
         setModo("fallback");
@@ -83,7 +108,7 @@ export default function GoogleSignInButton({ size = "large" }) {
     });
 
     return () => { vigente = false; };
-  }, [size]);
+  }, [size, adaptable]);
 
   /* Login por redirección: mismo resultado, sin imitar el botón de Google. */
   const entrarPorRedireccion = async () => {
@@ -96,7 +121,12 @@ export default function GoogleSignInButton({ size = "large" }) {
 
   return (
     <div>
-      <div ref={contenedor} style={{ display: modo === "gsi" ? "block" : "none", colorScheme: "light" }} />
+      {/*
+        Los contenedores quedan vacíos hasta que la librería dibuja en ellos:
+        mientras carga, o si falla, no ocupan sitio.
+      */}
+      <div ref={ancho} className={adaptable ? "fae-gsi-ancho" : undefined} style={{ colorScheme: "light" }} />
+      {adaptable && <div ref={icono} className="fae-gsi-icono" style={{ colorScheme: "light" }} />}
 
       {modo === "fallback" && (
         <button
@@ -114,7 +144,15 @@ export default function GoogleSignInButton({ size = "large" }) {
             cursor: "pointer",
           }}
         >
-          Continuar con Google
+          {adaptable ? (
+            <>
+              <span className="fae-gsi-ancho">Continuar con Google</span>
+              {/* En móvil, corto: el largo tapaba el título igual que el botón de Google. */}
+              <span className="fae-gsi-icono">Entrar</span>
+            </>
+          ) : (
+            "Continuar con Google"
+          )}
         </button>
       )}
 

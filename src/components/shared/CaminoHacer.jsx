@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { FAE } from "../../theme.js";
 
 /*
@@ -106,6 +107,13 @@ const CSS_ESPECIAL = `
 @media (prefers-reduced-motion: reduce) { .fae-ch-halo { animation: none !important; } }
 `;
 
+/* El aro del nodo que venía en la URL: late, para que se encuentre de un vistazo. */
+const CSS_RESALTADO = `
+@keyframes fae-ch-aqui { 0%, 100% { opacity: .95; } 50% { opacity: .35; } }
+.fae-ch-aqui { animation: fae-ch-aqui 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .fae-ch-aqui { animation: none !important; } }
+`;
+
 /* --------------------------------- la pieza --------------------------------- */
 
 /**
@@ -115,9 +123,24 @@ const CSS_ESPECIAL = `
  * @param {string} [p.vacio] qué decir cuando el tema todavía no tiene juegos
  * @param {{id:string, nombre:string, completada:boolean, etiqueta?:string}} [p.especial]
  *        nodo de desafío al lado del camino; sin él, nada cambia
+ * @param {string} [p.resaltado] id del nodo que se resalta y se trae a la vista
+ * @param {Object<string,string>} [p.marcas] texto corto junto a un nodo, por id
+ *        —hoy solo «Tienes una partida a medias», en el Arca—
  */
-export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = null }) {
+export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = null, resaltado = null, marcas = null }) {
   const n = nodos.length;
+  const lienzo = useRef(null);
+
+  /*
+   * EL NODO RESALTADO SE TRAE A LA VISTA. Es el que venía en la URL al
+   * recargar dentro de un juego —ver useNodoEnRuta—: en un camino largo, un
+   * aro que queda fuera de la pantalla no le dice nada a nadie.
+   */
+  useEffect(() => {
+    if (!resaltado || !lienzo.current) return;
+    const el = lienzo.current.querySelector(`[data-nodo="${CSS.escape(resaltado)}"]`);
+    el?.scrollIntoView?.({ block: "center", behavior: "auto" });
+  }, [resaltado]);
 
   /*
    * Un tema sin juegos todavía. Se dice y ya: inventar nodos apagados de
@@ -161,8 +184,9 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
     : null;
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
+    <div ref={lienzo} style={{ display: "flex", justifyContent: "center" }}>
       {especial && <style>{CSS_ESPECIAL}</style>}
+      {resaltado && <style>{CSS_RESALTADO}</style>}
       <svg
         viewBox={`0 0 ${anchoTotal} ${m.alto}`}
         width="100%"
@@ -199,6 +223,7 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
           return (
             <g
               key={nodo.id}
+              data-nodo={nodo.id}
               onClick={() => onAbrir?.(nodo.id)}
               onKeyDown={(e) => {
                 if (e.key !== "Enter" && e.key !== " ") return;
@@ -207,12 +232,15 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
               }}
               role="button"
               tabIndex={0}
-              aria-label={`${nodo.nombre}${nodo.completada ? " · completada" : ""}`}
+              aria-label={`${nodo.nombre}${nodo.completada ? " · completada" : ""}${marcas?.[nodo.id] ? ` · ${marcas[nodo.id]}` : ""}`}
               style={{ cursor: "pointer" }}
             >
               {/* Aro coral del sugerido: acento, no candado. */}
               {esSugerido && (
                 <circle cx={x} cy={y} r={m.radio + 7} fill="none" stroke={FAE.coral} strokeWidth="2" opacity="0.75" />
+              )}
+              {resaltado === nodo.id && (
+                <circle className="fae-ch-aqui" cx={x} cy={y} r={m.radio + 12} fill="none" stroke={FAE.teal} strokeWidth="3" />
               )}
 
               <circle
@@ -254,6 +282,20 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
               >
                 {nodo.nombre}
               </text>
+              {marcas?.[nodo.id] && (
+                <text
+                  x={x < ANCHO / 2 ? x + m.radio + 12 : x - m.radio - 12}
+                  y={y + 23}
+                  textAnchor={x < ANCHO / 2 ? "start" : "end"}
+                  fontFamily="Sora, sans-serif"
+                  fontWeight="600"
+                  fontSize="12"
+                  fill={FAE.ambar}
+                  pointerEvents="none"
+                >
+                  {marcas[nodo.id]}
+                </text>
+              )}
             </g>
           );
         })}
@@ -273,6 +315,7 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
             />
 
             <g
+              data-nodo={especial.id}
               onClick={() => onAbrir?.(especial.id)}
               onKeyDown={(e) => {
                 if (e.key !== "Enter" && e.key !== " ") return;
@@ -281,9 +324,13 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
               }}
               role="button"
               tabIndex={0}
-              aria-label={`${especial.etiqueta ? `${especial.etiqueta}: ` : ""}${especial.nombre}${especial.completada ? " · completada" : ""}`}
+              aria-label={`${especial.etiqueta ? `${especial.etiqueta}: ` : ""}${especial.nombre}${especial.completada ? " · completada" : ""}${marcas?.[especial.id] ? ` · ${marcas[especial.id]}` : ""}`}
               style={{ cursor: "pointer" }}
             >
+              {resaltado === especial.id && (
+                <circle className="fae-ch-aqui" cx={esp.x} cy={esp.y} r={radioEspecial + 20} fill="none" stroke={FAE.teal} strokeWidth="3" />
+              )}
+
               {/* El halo, que es lo que lo hace "legendario" sin gritar. */}
               <circle
                 className="fae-ch-halo"
@@ -359,6 +406,25 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
               >
                 {especial.nombre}
               </text>
+
+              {/*
+                La marca de partida a medias va ENCIMA del nodo: debajo están
+                el rótulo y el nombre, y más abajo puede acabarse el lienzo.
+              */}
+              {marcas?.[especial.id] && (
+                <text
+                  x={esp.x}
+                  y={esp.y - radioEspecial - 24}
+                  textAnchor="middle"
+                  fontFamily="Sora, sans-serif"
+                  fontWeight="600"
+                  fontSize="12"
+                  fill={FAE.ambar}
+                  pointerEvents="none"
+                >
+                  {marcas[especial.id]}
+                </text>
+              )}
             </g>
           </g>
         )}

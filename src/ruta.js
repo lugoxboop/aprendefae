@@ -93,7 +93,9 @@ export const RUTA_INICIAL = { vista: "home", modo: null, extra: null };
  * dos cosas, las dos con la misma forma —un id de actividad—:
  *
  *   #/docente/proyecto-arca            el panel abre con esa actividad puesta
- *   #/modelo-iceberg/hacer/proyecto-arca   el tema abre con ese nodo abierto
+ *   #/modelo-iceberg/hacer/proyecto-arca   el tema vuelve al camino con ese
+ *                                          nodo resaltado —no abierto: ver
+ *                                          useNodoEnRuta—
  *
  * NO SE VALIDA AQUÍ, y es deliberado. La lista blanca de VISTAS existe porque
  * una vista desconocida deja la pantalla en blanco; un `extra` desconocido no
