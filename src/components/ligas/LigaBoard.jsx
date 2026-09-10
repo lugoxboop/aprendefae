@@ -62,7 +62,13 @@ function Puesto({ n, destacado }) {
  * Mientras no se sabe, no hay niveles. Con esto la cabecera dice lo genérico en
  * vez de parpadear un nombre y quitarlo, que es peor que no ponerlo.
  */
-const SIN_CONTEXTO = { totalNiveles: 0, ciclosConNiveles: 0, ligaAnterior: null };
+const SIN_CONTEXTO = {
+  totalNiveles: 0,
+  ligaAnterior: null,
+  nivelesAnterior: null,
+  transicion: null,
+  activosReparto: null,
+};
 
 export default function LigaBoard({ subjectId }) {
   const { session, pedirCuenta } = useAuth();
@@ -106,8 +112,10 @@ export default function LigaBoard({ subjectId }) {
       <CabeceraLiga
         liga={liga}
         totalNiveles={contexto.totalNiveles}
-        ciclosConNiveles={contexto.ciclosConNiveles}
         ligaAnterior={contexto.ligaAnterior}
+        nivelesAnterior={contexto.nivelesAnterior}
+        transicion={contexto.transicion}
+        activosReparto={contexto.activosReparto}
         tamLiga={liga ? tamLiga : 0}
       />
 

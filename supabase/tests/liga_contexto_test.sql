@@ -48,6 +48,16 @@ create temporary table resultado_prueba (
    llegar a probar nada de ligas. */
 grant all on resultado_prueba to authenticated;
 
+/*
+ * La foto de las materias REALES antes de tocar nada, para el último
+ * chequeo. Ver allí por qué se compara contra una foto y no contra "no hay
+ * filas".
+ */
+create temporary table reales_antes on commit drop as
+select subject_id, ciclo, user_id, liga
+  from public.liga_membresia
+ where subject_id in ('macroeconomia', 'pensamiento-estrategico');
+
 create temporary table ids (n integer, uid uuid) on commit drop;
 grant select on ids to authenticated;
 insert into ids (n, uid) select g, gen_random_uuid() from generate_series(1, 5) g;
@@ -207,16 +217,31 @@ $prueba$;
 -- ---------------------------------------------------------------------------
 -- 9. anon no puede ejecutarla, y ninguna materia real quedó tocada
 -- ---------------------------------------------------------------------------
+/*
+ * ANTES ESTO AFIRMABA QUE NO HABÍA NINGUNA FILA de las materias reales. En CI
+ * se cumple —la base nace vacía—, pero en producción Pensamiento Estratégico
+ * tiene membresía de verdad, y ahí salía FALLA sin que la prueba hubiera
+ * tocado nada. "No tocado" es "igual que antes", no "vacío".
+ */
 insert into resultado_prueba
 select 9, 'anon sin permiso de ejecución y ninguna materia real tocada',
   case when not has_function_privilege('anon', 'public.liga_contexto(text)', 'execute')
         and not exists (
-          select 1 from public.liga_membresia
-           where subject_id in ('macroeconomia', 'pensamiento-estrategico')
-        )
+         (select subject_id, ciclo, user_id, liga from public.liga_membresia
+           where subject_id in ('macroeconomia', 'pensamiento-estrategico'))
+         except
+         (select subject_id, ciclo, user_id, liga from reales_antes)
+       )
+        and not exists (
+         (select subject_id, ciclo, user_id, liga from reales_antes)
+         except
+         (select subject_id, ciclo, user_id, liga from public.liga_membresia
+           where subject_id in ('macroeconomia', 'pensamiento-estrategico'))
+       )
        then 'PASA' else 'FALLA' end,
-  format('anon puede ejecutar: %s ; el escenario vivió entero en materias de prueba',
-         has_function_privilege('anon', 'public.liga_contexto(text)', 'execute'));
+  format('anon puede ejecutar: %s ; %s filas reales antes, las mismas después',
+         has_function_privilege('anon', 'public.liga_contexto(text)', 'execute'),
+         (select count(*) from reales_antes));
 
 -- ---------------------------------------------------------------------------
 -- RESULTADO

@@ -40,6 +40,16 @@ create temporary table resultado_prueba (
  */
 grant all on resultado_prueba to authenticated;
 
+/*
+ * La foto de las materias REALES antes de tocar nada, para el último
+ * chequeo. Ver allí por qué se compara contra una foto y no contra "no hay
+ * filas".
+ */
+create temporary table reales_antes on commit drop as
+select subject_id, ciclo, user_id, liga
+  from public.liga_membresia
+ where subject_id in ('macroeconomia', 'pensamiento-estrategico');
+
 -- ---------------------------------------------------------------------------
 -- 1. Cuántas ligas para N activos
 -- ---------------------------------------------------------------------------
@@ -49,12 +59,14 @@ select 1, 'Tamaños de liga según activos',
         and public.ligas_para(19)  = 1
         and public.ligas_para(20)  = 3
         and public.ligas_para(59)  = 3
-        and public.ligas_para(60)  = 4
-        and public.ligas_para(100) = 5
+        and public.ligas_para(60)   = 4
+        and public.ligas_para(100)  = 4
+        and public.ligas_para(1000) = 4
        then 'PASA' else 'FALLA' end,
-  format('5→%s  19→%s  20→%s  59→%s  60→%s  100→%s',
+  format('5→%s  19→%s  20→%s  59→%s  60→%s  100→%s  1000→%s  (techo de 4 desde la 0026)',
     public.ligas_para(5), public.ligas_para(19), public.ligas_para(20),
-    public.ligas_para(59), public.ligas_para(60), public.ligas_para(100));
+    public.ligas_para(59), public.ligas_para(60), public.ligas_para(100),
+    public.ligas_para(1000));
 
 -- ---------------------------------------------------------------------------
 -- Escenario: 30 estudiantes de mentira en la materia de prueba
@@ -230,13 +242,28 @@ reset role;
 -- ---------------------------------------------------------------------------
 -- 9. Ninguna materia real quedó tocada
 -- ---------------------------------------------------------------------------
+/*
+ * ANTES ESTO AFIRMABA QUE NO HABÍA NINGUNA FILA de las materias reales. En CI
+ * se cumple —la base nace vacía—, pero en producción Pensamiento Estratégico
+ * tiene membresía de verdad, y ahí salía FALLA sin que la prueba hubiera
+ * tocado nada. "No tocado" es "igual que antes", no "vacío".
+ */
 insert into resultado_prueba
 select 9, 'Ninguna materia real quedó tocada',
   case when not exists (
-    select 1 from public.liga_membresia
-     where subject_id in ('macroeconomia', 'pensamiento-estrategico')
-  ) then 'PASA' else 'FALLA' end,
-  'el escenario vivió entero en la materia de prueba';
+         (select subject_id, ciclo, user_id, liga from public.liga_membresia
+           where subject_id in ('macroeconomia', 'pensamiento-estrategico'))
+         except
+         (select subject_id, ciclo, user_id, liga from reales_antes)
+       )
+        and not exists (
+         (select subject_id, ciclo, user_id, liga from reales_antes)
+         except
+         (select subject_id, ciclo, user_id, liga from public.liga_membresia
+           where subject_id in ('macroeconomia', 'pensamiento-estrategico'))
+       )
+       then 'PASA' else 'FALLA' end,
+  format('%s filas reales antes, las mismas después', (select count(*) from reales_antes));
 
 -- ---------------------------------------------------------------------------
 -- RESULTADO

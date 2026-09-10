@@ -2,69 +2,62 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * LOS NIVELES DE LIGA: CUÁNTOS HAY, CÓMO SE LLAMAN Y QUÉ SE DICE CADA SEMANA.
  *
- * Este archivo es la ÚNICA fuente de las tres cosas. El nombre y el mensaje
- * salen del mismo recuento de niveles, calculado aquí una vez: dos sitios
+ * Este archivo es la ÚNICA fuente de las tres cosas en el cliente. El nombre y
+ * el mensaje salen de una sola llamada a mensajeSemanal(), con el recuento de
+ * niveles que da el servidor —liga_niveles(), también única allí—. Dos sitios
  * decidiendo cuántos niveles hay es la forma de fallo que ya nos costó tres
- * incidentes —el ×100, las dos firmas vivas, la columna ambigua— y siempre
- * empieza igual, con dos lugares que sabían lo mismo hasta que dejaron de
- * saberlo.
+ * incidentes, y siempre empieza igual: dos lugares que sabían lo mismo hasta
+ * que dejaron de saberlo.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 /*
  * ═══════════ LOS UMBRALES, EN UN SOLO SITIO ═══════════
  *
- * Los mismos números que la función SQL ligas_para() de la migración 0006. No
- * se pueden compartir —SQL no lee JavaScript— así que están duplicados a la
- * fuerza, y por eso niveles.test.mjs LEE la migración y falla si los dos lados
- * dejan de coincidir. Es la misma disciplina que bandas.js con la 0021.
- *
- * Para moverlos: cambiar aquí, cambiar en una migración nueva, y la prueba
- * confirma que los dos cambiaron.
+ * Los mismos números que la función SQL ligas_para(), en la ÚLTIMA migración
+ * que la define —hoy la 0026—. No se pueden compartir —SQL no lee JavaScript—
+ * así que están duplicados a la fuerza, y por eso niveles.test.mjs busca esa
+ * migración, la LEE, y falla si los dos lados dejan de coincidir.
  */
 export const UMBRALES_NIVEL = {
   /* Por debajo de esto, un solo nivel: partir un grupo pequeño deja ligas de
    * cuatro personas donde el podio es casi todo el mundo. */
   unoHasta: 20,
-  /* Entre unoHasta y esto, tres niveles. */
+  /* Entre unoHasta y esto, tres niveles. Desde aquí, MAX_NIVELES. */
   tresHasta: 60,
-  /* Por encima, se mantiene ~este tamaño por nivel mientras quepa. */
-  porNivel: 20,
+  /*
+   * Aquí había `porNivel: 20`, para mantener ~20 por nivel en el tramo alto.
+   * Con el techo de cuatro ya no calculaba nada: por encima de 60 la respuesta
+   * es siempre cuatro. Se quitó de los dos lados en la 0026.
+   */
 };
 
 /*
  * ═══════════ CUATRO ES EL TECHO. NUNCA HAY UN QUINTO NOMBRE ═══════════
  *
- * Si la adopción crece por encima de lo que cuatro niveles de ~25 personas
- * aguantan, los grupos se hacen MÁS GRANDES —hasta 35 o 40— en vez de aparecer
- * un nivel nuevo.
- *
- * Es deliberado y vale la pena entender por qué: un quinto nivel obligaría a
- * inventarle nombre, y el problema de nombrar se reabriría en cada salto de
- * tamaño. Con el techo puesto, la pregunta se responde una vez.
+ * Si la adopción crece por encima de lo que cuatro niveles aguantan, los
+ * grupos se hacen MÁS GRANDES —hasta 35 o 40— en vez de aparecer un nivel
+ * nuevo. Un quinto obligaría a inventarle nombre, y la pregunta de nombrar se
+ * reabriría en cada salto de tamaño. Con el techo, se responde una vez.
  */
 export const MAX_NIVELES = 4;
 
 /*
  * ═══════════ LOS NOMBRES, DE ABAJO ARRIBA ═══════════
  *
- * Se asignan SIEMPRE desde el nivel más bajo. Con tres niveles activos son
- * Emergente, Intermedio y Avanzado; Élite solo existe cuando hay cuatro. Al
- * revés —repartir desde arriba— dejaría a alguien en "Emergente" un día y en
- * "Intermedio" al siguiente sin haber cambiado nada, solo porque el grupo
- * creció.
+ * Se asignan SIEMPRE desde el nivel más bajo. Con tres niveles son Emergente,
+ * Intermedio y Avanzado; Élite solo existe cuando hay cuatro. Así, abrir Élite
+ * no le cambia el nombre a nadie de Intermedio ni de Emergente: cambia su
+ * número de liga, no la palabra que ven.
  *
  * ═══════════ POR QUÉ "EMERGENTE" Y NO "BASE" ═══════════
  *
  * El kit de medallas tiene cuatro niveles —base, intermedio, avanzado, elite—
- * y tres de ellos se reutilizan aquí tal cual. EL MÁS BAJO NO, y la razón hay
- * que dejarla escrita porque la coincidencia invita a reutilizarlo:
+ * y tres se reutilizan aquí tal cual. EL MÁS BAJO NO:
  *
- *   En medallas, "Base" es un logro que CONSEGUISTE: la primera racha, el
- *   primer top 10. Es un suelo del que se sube.
- *
+ *   En medallas, "Base" es un logro que CONSEGUISTE: un suelo del que se sube.
  *   En ligas, "Base" sería DÓNDE QUEDASTE respecto a compañeros que te conocen
- *   por el nombre. Es un suelo al que se cae.
+ *   por el nombre: un suelo al que se cae.
  *
  * La misma palabra, el sentido contrario, y uno de los dos duele. "Emergente"
  * describe un momento, no un resultado — que es lo que una liga semanal es.
@@ -74,8 +67,7 @@ export const NOMBRES_NIVEL = ["Emergente", "Intermedio", "Avanzado", "Élite"];
 /*
  * A qué escalón del marco facetado corresponde cada nombre. Los tres que
  * comparten palabra con el kit de medallas comparten también su riqueza
- * visual; "Emergente" toma la del escalón más simple, que es el que le
- * corresponde por posición.
+ * visual; "Emergente" toma la del escalón más simple.
  */
 export const RIQUEZA_NIVEL = {
   Emergente: "base",
@@ -84,43 +76,42 @@ export const RIQUEZA_NIVEL = {
   "Élite": "elite",
 };
 
-/**
- * Cuántos niveles para N estudiantes activos.
- *
- * Espeja ligas_para() de la 0006 con UNA diferencia deliberada: aquí hay techo.
- * La función SQL puede devolver cinco, seis o diez; esta nunca pasa de cuatro.
- * Mientras el servidor no tenga el mismo techo, un despliegue con más de ~80
- * activos produciría ligas sin nombre — está anotado como pendiente y la
- * prueba de coherencia lo marca.
- */
+/** Cuántos niveles para N activos. Espeja ligas_para() del servidor, techo incluido. */
 export function nivelesPara(nActivos) {
   const n = Number(nActivos);
   if (!Number.isFinite(n) || n <= 0) return 1;
   if (n < UMBRALES_NIVEL.unoHasta) return 1;
   if (n < UMBRALES_NIVEL.tresHasta) return 3;
-  return Math.min(MAX_NIVELES, Math.max(4, Math.ceil(n / UMBRALES_NIVEL.porNivel)));
+  return MAX_NIVELES;
+}
+
+/*
+ * Cuántos escalones hay por debajo de la liga `liga` cuando hay `total`: 0 es
+ * Emergente, 3 es Élite. Es el índice del nombre, y es lo que hay que comparar
+ * para saber si alguien subió — no el número de liga, que cambia sin moverse
+ * nadie cuando se abre Élite.
+ */
+export function posicionDesdeAbajo(liga, total) {
+  const l = Number(liga);
+  const t = Number(total);
+  if (!Number.isFinite(l) || !Number.isFinite(t) || l < 1 || l > t) return null;
+  return t - l;
 }
 
 /**
  * El nombre del nivel `liga` (1 = el de arriba, como en la base) cuando hay
- * `total` niveles activos.
+ * `total` niveles.
  *
  * DEVUELVE null CON UN SOLO NIVEL, y no es un caso borde olvidado: es la
  * decisión. Un nombre implica algo con qué compararse, y con un solo grupo no
- * lo hay. Quien llama tiene que tratar el null como "aquí no va nombre", no
- * como "algo falló".
+ * lo hay.
  */
 export function nombreDeNivel(liga, total) {
   const t = Number(total);
-  const l = Number(liga);
-  if (!Number.isFinite(t) || !Number.isFinite(l)) return null;
-  if (t <= 1) return null;
-  if (l < 1 || l > t) return null;
-
-  const usados = NOMBRES_NIVEL.slice(0, Math.min(t, MAX_NIVELES));
-  /* liga 1 es la de arriba; los nombres se reparten desde abajo. */
-  const desdeAbajo = t - l;
-  return usados[desdeAbajo] ?? null;
+  if (!Number.isFinite(t) || t <= 1) return null;
+  const pos = posicionDesdeAbajo(liga, t);
+  if (pos === null) return null;
+  return NOMBRES_NIVEL.slice(0, Math.min(t, MAX_NIVELES))[pos] ?? null;
 }
 
 /*
@@ -129,169 +120,182 @@ export function nombreDeNivel(liga, total) {
  *
  * ═══════════ NUNCA SILENCIO, NUNCA DIRECCIONAL ═══════════
  *
- * El hallazgo que ordena todo esto: EL NOMBRE YA ANUNCIA EL DESCENSO. Quien
- * leyó "Avanzado" la semana pasada y hoy lee "Intermedio" sabe perfectamente
- * qué pasó, diga el sistema lo que diga.
+ * EL NOMBRE YA ANUNCIA EL DESCENSO. Quien leyó "Avanzado" la semana pasada y
+ * hoy lee "Intermedio" sabe qué pasó, diga el sistema lo que diga. Así que
+ * siempre hay mensaje, y lo que cambia es cuánto dice:
  *
- * Así que la respuesta no es callar cuando alguien baja. Es que SIEMPRE hay
- * mensaje, y lo que cambia es cuánto dice:
+ *   subió          el mensaje de siempre, más una línea que lo reconoce.
+ *   bajó           el mensaje de siempre, entero, sin capa extra.
+ *   se mantuvo     el mensaje de siempre.
+ *   CAMBIÓ DE NIVEL SIN SUBIR NI BAJAR — el cuarto caso, y el nuevo. Es la
+ *                  semana en que el grupo se reparte por primera vez: nadie se
+ *                  movió, pero todos quedaron en un nivel con nombre. Lleva su
+ *                  propio texto, el mismo para todos salvo el corchete.
  *
- *   · base       todas las semanas, para todos. Habla del grupo actual y de
- *                qué hacer, nunca de comparar.
- *   · ascenso    encima del base, una línea que lo reconoce y una flecha.
- *   · descenso   el base entero, sin capa extra. El sistema no declara
- *                "bajaste", pero tampoco hace como si no hubiera pasado nada.
+ * Y la apertura de Élite, que no es un cuarto caso para todos: solo para quien
+ * estaba en Avanzado. Intermedio y Emergente no se enteran de nada distinto.
  *
- * Y la posición exacta se enseña SIEMPRE. Evitar que el sistema declare un
- * fracaso no es lo mismo que esconder información real, y confundir las dos
- * cosas convierte el cuidado en opacidad.
+ * La posición exacta ("#14 de 17") se enseña SIEMPRE, en el tablero. Evitar
+ * que el sistema declare un fracaso no es lo mismo que esconder información.
+ *
+ * ═══════════ LAS TRANSICIONES LAS DICE EL SERVIDOR ═══════════
+ *
+ * Quién vivió un reparto o la apertura de Élite está en liga_reparto, y llega
+ * como `transicion`. No se deduce aquí comparando niveles: un estudiante que
+ * entra a mitad de la semana del reparto también ve tres niveles donde antes
+ * había uno, y no fue repartido — entró por el medio. Si viera "quedaste en X
+ * según tu ciclo más reciente", el texto le mentiría.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/*
- * En qué momento de la vida de las ligas estamos. Se deduce del dato —cuántos
- * ciclos llevan ya con más de un nivel— y no de una bandera que alguien tenga
- * que acordarse de encender.
- *
- *   "sin-niveles"  un solo grupo. Hoy.
- *   "estreno"      el primer ciclo con varios niveles: todos entraron juntos.
- *   "primer-cierre" el segundo. Es el lunes en que se reordena por primera vez.
- *   "normal"       de ahí en adelante.
- */
-export const FASE = {
+export const TRANSICION = { REPARTO: "reparto", ELITE: "elite" };
+
+export const TIPO_MENSAJE = {
   SIN_NIVELES: "sin-niveles",
-  ESTRENO: "estreno",
-  PRIMER_CIERRE: "primer-cierre",
+  REPARTO: "reparto",
+  ELITE: "elite",
   NORMAL: "normal",
 };
 
-export function faseDe({ totalNiveles, ciclosConNiveles }) {
-  if (Number(totalNiveles) <= 1) return FASE.SIN_NIVELES;
-  const c = Number(ciclosConNiveles);
-  if (c <= 1) return FASE.ESTRENO;
-  if (c === 2) return FASE.PRIMER_CIERRE;
-  return FASE.NORMAL;
+export const TEXTO_SIN_NIVELES = "Se reparte cada semana según los FP del ciclo.";
+export const TEXTO_BASE = "Se reordena cada lunes según los FP que sumes.";
+
+/*
+ * EL CUARTO CASO, texto de Xeno. Con UN cambio respecto a su borrador: él
+ * escribió "Ya son 20 estudiantes activos", con el número literal. Aquí [N] sale
+ * del dato —los activos que decidieron el reparto, guardados en liga_ciclo—,
+ * porque si el cruce ocurre con 23, o si el umbral se mueve, "20" mentiría. Las
+ * dos apariciones son el mismo valor.
+ */
+export function textoReparto({ activos, nombre }) {
+  return (
+    `Ya son ${activos} estudiantes activos en tu materia — momento de organizarse ` +
+    `en grupos más chicos para competir entre pares más cercanos, no entre ${activos} ` +
+    `personas a la vez. Esta semana quedaste en ${nombre} según tu ciclo más reciente. ` +
+    `No subiste ni bajaste — es la primera vez que hay grupos distintos aquí, y cada ` +
+    `quien entró según cómo le fue la última semana. Desde la próxima, el ascenso y ` +
+    `descenso funcionan como ya los conoces.`
+  );
 }
 
-/**
- * Qué se le dice a este estudiante esta semana.
- *
- * Devuelve { titulo, base, ascenso } — `ascenso` es null salvo que haya subido.
- * `titulo` es lo que va en la cabecera: el nombre del nivel, o el texto
- * genérico cuando no hay nombre que dar.
- */
+/* La apertura de Élite, texto de Xeno. Solo lo lee quien estaba en Avanzado. */
+export const TEXTO_ELITE =
+  "La comunidad de esta materia creció lo suficiente para abrir un nuevo nivel: Élite. " +
+  "Quienes tuvieron el mejor ciclo dentro de Avanzado esta semana pasan a Élite. " +
+  "Si no fue tu caso, sigues en Avanzado — desde la próxima semana, subir y bajar de " +
+  "Élite funciona como cualquier otro nivel.";
+
+const esConteo = (v) => Number.isInteger(v) && v > 0;
+
 /**
  * Qué se le dice a este estudiante esta semana.
  *
  * Devuelve:
+ *   tipo      TIPO_MENSAJE: sin-niveles, reparto, elite o normal.
  *   nombre    el del nivel, o null cuando hay un solo nivel.
  *   rotulo    el sobretítulo pequeño. Solo cuando hay nombre: una palabra
  *             como "Emergente" no puede aparecer sola sin decir de qué es.
  *   titulo    lo que va en la cabecera grande.
- *   base      la línea de siempre. NUNCA null: esa es la regla entera.
- *   ascenso   la capa extra, y solo hacia arriba. null el resto de semanas.
+ *   base      el texto de la semana. NUNCA vacío: esa es la regla entera.
+ *   ascenso   la capa extra, y solo hacia arriba y en semanas normales.
  */
-export function mensajeSemanal({ liga, totalNiveles, ciclosConNiveles, ligaAnterior = null }) {
-  const nombre = nombreDeNivel(liga, totalNiveles);
-  const fase = faseDe({ totalNiveles, ciclosConNiveles });
+export function mensajeSemanal({
+  liga,
+  totalNiveles,
+  ligaAnterior = null,
+  nivelesAnterior = null,
+  transicion = null,
+  activosReparto = null,
+}) {
+  const total = Number(totalNiveles);
+  const nombre = nombreDeNivel(liga, total);
 
-  if (fase === FASE.SIN_NIVELES) {
+  if (!(total > 1) || !nombre) {
     /*
      * HOY. Un solo grupo, así que no hay nombre que dar y el texto es el
-     * genérico. La frase es la que ya estaba: explica el mecanismo sin
-     * prometer una jerarquía que todavía no existe.
+     * genérico: explica el mecanismo sin prometer una jerarquía que no existe.
      */
     return {
+      tipo: TIPO_MENSAJE.SIN_NIVELES,
       nombre: null,
       rotulo: null,
       titulo: "Tu grupo esta semana",
-      base: "Se reparte cada semana según los FP del ciclo.",
-      ascenso: null,
-      fase,
-    };
-  }
-
-  const comun = { nombre, rotulo: "TU GRUPO ESTA SEMANA", titulo: nombre, fase };
-
-  if (fase === FASE.ESTRENO) {
-    /*
-     * El día que los nombres se encienden. Todos entran al mismo nivel a la
-     * vez, así que el mensaje habla de la comunidad y no de la persona: nadie
-     * amanece abajo sin haber hecho nada distinto.
-     */
-    return {
-      ...comun,
-      base: "Ya son suficientes para competir por grupos. Todos empiezan aquí esta semana.",
+      base: TEXTO_SIN_NIVELES,
       ascenso: null,
     };
   }
 
-  if (fase === FASE.PRIMER_CIERRE) {
+  const comun = { nombre, rotulo: "TU GRUPO ESTA SEMANA", titulo: nombre };
+
+  if (transicion === TRANSICION.REPARTO) {
     /*
-     * EL DÍA OCHO. Ver la nota larga al final del archivo: este texto va para
-     * TODOS, no solo para quien bajó, y por eso no señala a nadie.
+     * Sin un conteo válido no se escribe el texto: un "Ya son null
+     * estudiantes" o un número inventado serían peores que el mensaje normal.
+     * El servidor siempre lo guarda en un reparto; esto es la red.
      */
-    return {
-      ...comun,
-      base:
-        "Primera semana con grupos repartidos. Se reordenan cada lunes según los FP: " +
-        "subir y bajar es el ritmo normal, no un resultado.",
-      ascenso: null,
-    };
+    if (esConteo(activosReparto)) {
+      return {
+        ...comun,
+        tipo: TIPO_MENSAJE.REPARTO,
+        base: textoReparto({ activos: activosReparto, nombre }),
+        ascenso: null,
+      };
+    }
+  }
+
+  if (transicion === TRANSICION.ELITE) {
+    return { ...comun, tipo: TIPO_MENSAJE.ELITE, base: TEXTO_ELITE, ascenso: null };
   }
 
   /*
-   * ═══════════ POR QUÉ NO HAY CAPA DE DESCENSO ═══════════
+   * ═══════════ SUBIR SE MIDE DESDE ABAJO, NO POR NÚMERO ═══════════
    *
-   * Porque el nombre ya lo dijo. Quien leyó "Avanzado" el lunes pasado y hoy
-   * lee "Intermedio" no necesita que además se lo anuncien; añadir la línea
-   * solo agrega la voz del sistema a un hecho que la persona ya vio.
+   * La semana que se abre Élite, Intermedio pasa de la liga 2 a la 3 sin
+   * moverse. Comparando números parecería que bajó; comparando la posición
+   * desde abajo —el índice del nombre— sigue igual, que es lo cierto.
    *
-   * Y no es silencio: recibe el mismo mensaje base que todo el mundo, y su
-   * puesto exacto sigue a la vista más abajo. Lo que no hay es una frase que
-   * exista únicamente para quien bajó — una frase así se delata sola.
+   * Sin niveles_anterior —un servidor todavía en la 0025— se supone que la
+   * semana pasada había los mismos niveles que hoy, que es lo que se hacía
+   * antes de la 0026.
+   *
+   * ═══════════ Y NO HAY CAPA DE DESCENSO ═══════════
+   *
+   * Porque el nombre ya lo dijo. Quien bajó recibe el mismo mensaje base que
+   * todo el mundo, y su puesto exacto sigue a la vista. Lo que no hay es una
+   * frase que exista únicamente para quien bajó: una frase así se delata sola.
    */
-  const subio =
-    ligaAnterior !== null && ligaAnterior !== undefined && Number(liga) < Number(ligaAnterior);
+  const totalAntes = nivelesAnterior === null || nivelesAnterior === undefined ? total : Number(nivelesAnterior);
+  const ahora = posicionDesdeAbajo(liga, total);
+  const antes = totalAntes > 1 ? posicionDesdeAbajo(ligaAnterior, totalAntes) : null;
+  const subio = ahora !== null && antes !== null && ahora > antes;
 
   return {
     ...comun,
-    base: "Se reordena cada lunes según los FP que sumes.",
+    tipo: TIPO_MENSAJE.NORMAL,
+    base: TEXTO_BASE,
     ascenso: subio ? `Subiste a ${nombre} esta semana.` : null,
   };
 }
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * EL DÍA OCHO, Y POR QUÉ SE RESUELVE CON MENSAJE Y NO CON EXCEPCIÓN
+ * EL DÍA OCHO, Y POR QUÉ YA NO LLEVA MENSAJE PROPIO
  *
- * El encargo diseñó el día uno —todos entran a Intermedio, mensaje de
- * bienvenida— y dejó abierto el día ocho: el lunes siguiente se reordena, el
- * último baja a "Emergente", y esa palabra aparece por primera vez siete días
- * después de que a todos se les dijera que empezaban iguales.
+ * La primera versión de este archivo tenía una fase "primer cierre" con texto
+ * propio para el lunes ocho. Existía por una premisa del diseño de entonces: el
+ * día del estreno TODOS entraban a Intermedio, y una semana después, en la
+ * primera reordenación, la palabra "Emergente" aparecía por primera vez. Ese
+ * lunes necesitaba una explicación, dicha a todos para no señalar a nadie.
  *
- * Se consideraron las tres salidas:
+ * La partición de Xeno cambió la premisa. Ya no hay un estreno con todos
+ * iguales: el grupo se reparte el primer día por el ciclo más reciente, y
+ * "Emergente" aparece ESE día, con el texto del cuarto caso explicándolo. Ese
+ * mismo texto termina diciendo que desde la semana siguiente el ascenso y
+ * descenso funcionan como siempre.
  *
- *   1. NO DESCENDER EL PRIMER CICLO. Descartada, y no por blanda: no funciona.
- *      En el estreno TODOS están en Intermedio y los otros dos niveles están
- *      vacíos. Si solo se sube, Emergente sigue vacío y la estructura no se
- *      forma; la palabra no desaparece, aparece una semana más tarde y ya sin
- *      el "acabamos de empezar" que la explicaba. Se aplaza el problema a un
- *      momento con MENOS contexto, no se resuelve.
- *
- *   2. NADA ESPECIAL. Descartada: es el primer uso de la palabra y no hay
- *      todavía ninguna experiencia de "esto se mueve cada lunes" que la
- *      amortigüe. El mensaje semanal normal —"sigue completando actividades
- *      para mantenerte aquí"— leído desde el último puesto una semana después
- *      de "empiezas igual que todos" se lee como un cambio de trato.
- *
- *   3. UN MENSAJE PROPIO ESE CICLO. Es la elegida.
- *
- * Y la parte que la hace funcionar: EL MENSAJE VA PARA TODOS, no solo para
- * quien bajó. Un texto de consuelo que solo ve el último anuncia por sí mismo
- * que es el último — el mismo error que el sistema evita al no declarar
- * descensos. Dicho a todo el grupo, explica el mecanismo sin señalar a nadie.
- *
- * Dura exactamente un ciclo. Al tercero, el mensaje normal.
+ * Así que el mensaje del día ocho perdió su razón de ser, y la primera frase
+ * —"Primera semana con grupos repartidos"— habría pasado a ser falsa: la
+ * primera semana repartida es la del reparto. Se quitó. El lunes ocho es un
+ * lunes normal, que es lo que el propio texto del reparto promete.
  * ═══════════════════════════════════════════════════════════════════════════
  */

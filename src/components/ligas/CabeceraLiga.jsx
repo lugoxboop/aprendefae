@@ -1,5 +1,5 @@
 import { FAE } from "../../theme.js";
-import { mensajeSemanal } from "../../ligas/niveles.js";
+import { mensajeSemanal, TIPO_MENSAJE } from "../../ligas/niveles.js";
 import InsigniaLiga from "./InsigniaLiga.jsx";
 
 /*
@@ -8,38 +8,44 @@ import InsigniaLiga from "./InsigniaLiga.jsx";
  *
  * ═══════════ UNA SOLA LLAMADA DECIDE LAS DOS COSAS ═══════════
  *
- * `mensajeSemanal` devuelve el nombre Y el texto, calculados los dos a partir
- * del mismo recuento de niveles. No hay una rama que decida el nombre y otra
- * que decida el mensaje: eso es lo que permitiría que un lunes apareciera
- * \"Emergente\" con el texto de bienvenida, o el texto del primer cierre sin
- * nombres a la vista. Si alguna vez hace falta el nombre en otro sitio, sale de
- * aquí, no de una segunda cuenta.
+ * `mensajeSemanal` devuelve el nombre Y el texto, calculados a partir del mismo
+ * recuento de niveles. No hay una rama que decida el nombre y otra el mensaje:
+ * eso es lo que permitiría que un lunes apareciera "Emergente" con un texto que
+ * no corresponde a ese nivel.
  *
  * ═══════════ CON UN SOLO NIVEL NO HAY NOMBRE, Y NO ES UN CASO SIN TERMINAR ══
  *
- * Es el estado de HOY: una sola liga en Pensamiento Estratégico. `nombre` llega
- * null, la insignia no se dibuja, el título es \"Tu grupo esta semana\" y el
- * texto es el mismo de siempre. El día que el sistema pase a más de un nivel,
- * los nombres aparecen solos: no hay bandera que encender ni despliegue que
- * hacer, porque la condición es el dato.
+ * `nombre` llega null, la insignia no se dibuja y el título es "Tu grupo esta
+ * semana". El día que el servidor reparta, los nombres aparecen solos: la
+ * condición es el dato.
+ *
+ * ═══════════ LAS SEMANAS DE TRANSICIÓN SE VEN DISTINTAS ═══════════
+ *
+ * El texto del reparto y el de Élite son largos, se leen una sola vez en la
+ * vida del grupo, y explican algo que la persona no ha visto nunca. Con el
+ * mismo gris tenue de la línea de siempre, el ojo lo saltaría como "la frase
+ * de cada lunes". Van en un recuadro con borde teal: no es una alerta —no hay
+ * nada malo que avisar—, es una nota que merece leerse entera.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 export default function CabeceraLiga({
   liga,
   totalNiveles,
-  ciclosConNiveles,
   ligaAnterior = null,
+  nivelesAnterior = null,
+  transicion = null,
+  activosReparto = null,
   tamLiga = 0,
 }) {
-  const m = mensajeSemanal({ liga, totalNiveles, ciclosConNiveles, ligaAnterior });
+  const m = mensajeSemanal({ liga, totalNiveles, ligaAnterior, nivelesAnterior, transicion, activosReparto });
+  const transitoria = m.tipo === TIPO_MENSAJE.REPARTO || m.tipo === TIPO_MENSAJE.ELITE;
 
   return (
     <header style={{ marginBottom: "14px" }}>
       {/*
         El sobretítulo solo aparece cuando hay nombre. Una palabra suelta como
-        \"Emergente\" en un titular no dice de qué es; con la línea encima, sí. Y
-        cuando no hay nombre sobra, porque el titular ya es la frase entera.
+        "Emergente" en un titular no dice de qué es; con la línea encima, sí.
       */}
       {m.rotulo && (
         <p
@@ -89,14 +95,31 @@ export default function CabeceraLiga({
         )}
       </div>
 
-      {/* El mensaje base. Todas las semanas, para todos, sin excepción. */}
-      <p style={{ fontSize: "12.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.5)", margin: 0 }}>
-        {m.base}
-      </p>
+      {transitoria ? (
+        <p
+          style={{
+            fontSize: "12.5px",
+            lineHeight: 1.6,
+            color: "rgba(248,249,250,0.78)",
+            margin: "8px 0 0",
+            padding: "10px 12px",
+            borderLeft: `2px solid ${FAE.teal}`,
+            borderRadius: "0 10px 10px 0",
+            background: "rgba(42,157,143,0.08)",
+          }}
+        >
+          {m.base}
+        </p>
+      ) : (
+        /* El mensaje base. Todas las semanas, para todos, sin excepción. */
+        <p style={{ fontSize: "12.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.5)", margin: 0 }}>
+          {m.base}
+        </p>
+      )}
 
       {/*
         La capa de ascenso. Es la única que se añade, y por eso puede llevar
-        color y flecha sin que nadie la lea como \"la que falta cuando bajas\":
+        color y flecha sin que nadie la lea como "la que falta cuando bajas":
         cuando no está, lo que queda no es un hueco, es el mensaje de siempre.
       */}
       {m.ascenso && (

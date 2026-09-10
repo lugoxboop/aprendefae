@@ -11,7 +11,7 @@
 #
 # Son tres CLASES distintas. Un chequeo estático por clase es perseguir el
 # pasado; lo que las cubre a las tres es ejecutar de verdad. Así que aquí se
-# aplican las 23 migraciones sobre un Postgres limpio y se corren las pruebas
+# aplican todas las migraciones sobre un Postgres limpio y se corren las pruebas
 # SQL contra él.
 #
 # SIN SECRETOS Y SIN TOCAR PRODUCCIÓN. La base es un contenedor que nace y
@@ -153,7 +153,8 @@ jobs:
           psql -v ON_ERROR_STOP=1 -f supabase/ci/00_auth_de_mentira.sql
 
       # ═══════════════════════════════════════════════════════════════════════
-      # LAS 23 MIGRACIONES, EN ORDEN Y DESDE CERO.
+      # TODAS LAS MIGRACIONES, EN ORDEN Y DESDE CERO. El número no se escribe
+      # aquí: se quedaba viejo con cada migración nueva. Lo cuenta el paso.
       #
       # Esto es una prueba por sí solo, y una que no existía: verifica que la
       # secuencia completa de archivos reconstruye la base. Hasta ahora nadie
@@ -192,11 +193,15 @@ jobs:
               echo "FALTA la función $1"; faltan=1
             fi
           }
-          for t in profiles fp_history fp_detalle actividad_catalogo docentes docente_grupo; do
+          for t in profiles fp_history fp_detalle actividad_catalogo docentes docente_grupo \
+                   liga_membresia liga_ciclo liga_reparto; do
             comprobar_tabla "$t"
           done
           for f in registrar_fp es_docente materias_docente panel_estudiantes panel_resumen \
-                   panel_historial panel_actividad panel_items; do
+                   panel_historial panel_actividad panel_items panel_grupo_actividad \
+                   ligas_para ligas_sembrar liga_entrar liga_tablero liga_contexto \
+                   liga_niveles ligas_transicion ligas_repartir ligas_abrir_elite \
+                   ligas_cerrar_ciclo; do
             comprobar_funcion "$f"
           done
           if [ "$faltan" != "0" ]; then

@@ -29,15 +29,22 @@ export const tieneLigas = (subjectId) => MATERIAS_CON_LIGAS.includes(subjectId);
  */
 
 /**
- * El contexto de la liga: cuántos niveles hay, cuántos ciclos llevan con más de
- * uno, y en cuál estaba quien pregunta la semana pasada.
+ * El contexto de la liga: cuántos niveles hay, en qué nivel estaba quien
+ * pregunta y cuántos niveles había entonces, y si este ciclo vivió un reparto
+ * o la apertura de Élite.
  *
  * Va aparte de `tableroDe` porque el tablero devuelve una fila por estudiante
  * del podio y esto es un solo dato de la materia: repetido en cada fila sería
  * ruido, y con el podio vacío no llegaría nunca.
  */
 export async function contextoDe(subjectId) {
-  const VACIO = { totalNiveles: 0, ciclosConNiveles: 0, ligaAnterior: null };
+  const VACIO = {
+    totalNiveles: 0,
+    ligaAnterior: null,
+    nivelesAnterior: null,
+    transicion: null,
+    activosReparto: null,
+  };
   if (!supabase || !tieneLigas(subjectId)) return { contexto: VACIO, error: null };
 
   const { data, error } = await supabase.rpc("liga_contexto", { p_subject: subjectId });
@@ -56,13 +63,21 @@ export async function contextoDe(subjectId) {
   const f = Array.isArray(data) ? data[0] : data;
   if (!f) return { contexto: VACIO, error: null };
 
+  /* null se queda null: "no hay" no es cero. */
+  const entero = (v) => (v === null || v === undefined ? null : Number(v));
+
   return {
     contexto: {
       totalNiveles: Number(f.total_ligas ?? 0),
-      ciclosConNiveles: Number(f.ciclos_con_niveles ?? 0),
-      ligaAnterior: f.liga_anterior === null || f.liga_anterior === undefined
-        ? null
-        : Number(f.liga_anterior),
+      ligaAnterior: entero(f.liga_anterior),
+      /*
+       * Las tres de la 0026. Si el servidor todavía es el de la 0025 no
+       * llegan, quedan en null, y la cabecera se comporta como antes:
+       * sin mensajes de transición y comparando por número de liga.
+       */
+      nivelesAnterior: entero(f.niveles_anterior),
+      transicion: f.transicion ?? null,
+      activosReparto: entero(f.activos_reparto),
     },
     error: null,
   };
