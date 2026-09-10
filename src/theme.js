@@ -15,6 +15,16 @@ export const FAE = {
   ambar: "#E9C46A",
 };
 
+/*
+ * Por debajo de este ancho de ventana el sitio pasa a su forma de teléfono: el
+ * control de cuenta se encoge a un círculo y el camino de actividades saca el
+ * desafío de su ramal lateral. Un solo número para los dos, a propósito: si se
+ * ajustara uno sin el otro habría un tramo de anchos donde uno ya es de móvil y
+ * el otro todavía no. Se usa en media queries, no leyendo la ventana con
+ * JavaScript —ver la nota de AccountControl—.
+ */
+export const ANCHO_ESTRECHO = 560;
+
 /* Paleta de DA-Learn (tema de Macroeconomía). */
 export const COLORS = {
   bg: "#0F1B2E",

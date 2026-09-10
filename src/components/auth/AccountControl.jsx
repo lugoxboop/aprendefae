@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext } from "react";
-import { FAE } from "../../theme.js";
+import { FAE, ANCHO_ESTRECHO } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { NavigationContext } from "../../navigation.js";
 import { rachaVigente } from "../../fp/racha.js";
@@ -44,8 +44,7 @@ import GoogleSignInButton from "./GoogleSignInButton.jsx";
  * archivo. 40 px: el círculo empieza a 54 px del borde y el contenido de las
  * páginas a 24, así que el texto queda a unos 8 px del círculo.
  */
-const ANCHO_ESTRECHO = 560;
-
+/* El corte vive en theme.js: es el mismo en que el camino pasa a su forma de teléfono. */
 const CSS_CUENTA = `
 .fae-gsi-icono { display: none; }
 @media (max-width: ${ANCHO_ESTRECHO}px) {

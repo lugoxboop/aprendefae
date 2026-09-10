@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { FAE } from "../../theme.js";
+import { FAE, ANCHO_ESTRECHO } from "../../theme.js";
 
 /*
  * Camino de actividades para la mitad "Hacer" de cualquier tema.
@@ -15,6 +15,38 @@ import { FAE } from "../../theme.js";
  * sobra, y uno con quince no puede salirse ni apelotonarse. Por eso aquí no
  * hay ni una medida fija: separación, radio, grosor y amplitud del serpenteo
  * salen todos del número de nodos, con topes por arriba y por abajo.
+ *
+ * ═══════════ EL TEXTO VA EN HTML, NO DENTRO DEL SVG ═══════════
+ *
+ * Los rótulos estaban dentro del SVG, en unidades del viewBox. El SVG ocupa el
+ * 100% del ancho con un tope igual a su lienzo, así que por debajo de ese
+ * ancho TODO el dibujo se escala junto, y el texto con él: no hay unidad que
+ * se libre dentro de un viewBox. Medido a 375 px de ventana (327 px útiles):
+ *
+ *   · Iceberg, lienzo de 596 con el ramal del desafío: escala 0,55. Nombres
+ *     a 7,4 px, «DESAFÍO» a 5,5 px, la marca de partida a medias a 6,6.
+ *   · Los otros cuatro caminos, lienzo de 420: escala 0,78. Nombres a 10,5.
+ *
+ * Y subir los tamaños no arreglaba nada: 12 px a escala 0,55 son 22 unidades,
+ * y a ese cuerpo los nombres ya no caben al lado de su nodo.
+ *
+ * Ahora el SVG dibuja solo lo que puede escalar —la línea, los círculos, los
+ * números— y los rótulos son HTML con píxeles de verdad, colocados encima en
+ * porcentajes del lienzo. El texto nunca baja de 12 px a ningún ancho y, si no
+ * cabe, parte la línea en vez de encogerse. En escritorio, donde la escala es
+ * 1, se ve como antes.
+ *
+ * ═══════════ EN EL TELÉFONO EL DESAFÍO SALE DEL RAMAL ═══════════
+ *
+ * Por debajo de ANCHO_ESTRECHO el ramal lateral es lo que hace el lienzo de
+ * 596, y 596 metidos en 327 px deja los círculos de 30 px de diámetro. Así
+ * que en móvil el desafío es una tarjeta ENCIMA del camino y el lienzo vuelve
+ * a 420. Sigue fuera de la secuencia —no lleva número ni está en la línea—, y
+ * arriba se ve sin desplazarse, que es lo mismo que buscaba el ramal.
+ *
+ * Las dos formas están en el DOM y una media query enseña una: la anchura se
+ * decidió en CSS por lo mismo que en AccountControl —leerla con JavaScript
+ * falló de tres maneras distintas en este proyecto—.
  */
 
 /* ---------------------------- medidas que respiran ---------------------------- */
@@ -111,8 +143,55 @@ const CSS_ESPECIAL = `
 const CSS_RESALTADO = `
 @keyframes fae-ch-aqui { 0%, 100% { opacity: .95; } 50% { opacity: .35; } }
 .fae-ch-aqui { animation: fae-ch-aqui 1.6s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .fae-ch-aqui { animation: none !important; } }
+@keyframes fae-ch-aqui-caja {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(42,157,143,0.95); }
+  50%      { box-shadow: 0 0 0 3px rgba(42,157,143,0.3); }
+}
+.fae-ch-aqui-caja { animation: fae-ch-aqui-caja 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .fae-ch-aqui, .fae-ch-aqui-caja { animation: none !important; } }
 `;
+
+/* --------------------------------- el texto --------------------------------- */
+
+/*
+ * Qué forma se ve, y el cuerpo de los nombres. 13,5 px es el de siempre en
+ * escritorio; en el teléfono sube a 14 porque se lee a la distancia del brazo.
+ * Ningún texto del camino baja de 12 px.
+ */
+const CSS_CAMINO = `
+.fae-ch-estrecho { display: none; }
+.fae-ch-rotulo { font-size: 13.5px; text-wrap: balance; }
+@media (max-width: ${ANCHO_ESTRECHO}px) {
+  .fae-ch-ancho { display: none; }
+  .fae-ch-estrecho { display: block; }
+  .fae-ch-rotulo { font-size: 14px; }
+}
+`;
+
+/* Una medida del lienzo como porcentaje de su caja: así el HTML sigue al SVG al escalar. */
+const pct = (v, total) => `${((v / total) * 100).toFixed(3)}%`;
+
+/*
+ * Cuando un rótulo parte línea, que las dos queden parejas: «Tienes una
+ * partida / a medias» y no «Tienes una partida a / medias». Donde el navegador
+ * no lo entiende, parte como siempre.
+ */
+const PAREJO = { textWrap: "balance" };
+
+const MARCA = { display: "block", marginTop: "3px", fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "12.5px", lineHeight: 1.3, color: FAE.ambar, ...PAREJO };
+const ETIQUETA = { display: "block", fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "12px", letterSpacing: "0.12em", lineHeight: 1.3, color: FAE.ambar };
+
+const alPulsar = (onAbrir, id) => ({
+  onClick: () => onAbrir?.(id),
+  onKeyDown: (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    onAbrir?.(id);
+  },
+});
+
+const etiquetaAria = (nodo, marcas, prefijo = "") =>
+  `${prefijo}${nodo.nombre}${nodo.completada ? " · completada" : ""}${marcas?.[nodo.id] ? ` · ${marcas[nodo.id]}` : ""}`;
 
 /* --------------------------------- la pieza --------------------------------- */
 
@@ -129,16 +208,20 @@ const CSS_RESALTADO = `
  */
 export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = null, resaltado = null, marcas = null }) {
   const n = nodos.length;
-  const lienzo = useRef(null);
+  const caja = useRef(null);
 
   /*
    * EL NODO RESALTADO SE TRAE A LA VISTA. Es el que venía en la URL al
    * recargar dentro de un juego —ver useNodoEnRuta—: en un camino largo, un
    * aro que queda fuera de la pantalla no le dice nada a nadie.
+   *
+   * Cada nodo está dos veces en el DOM, una por forma, y la oculta no tiene
+   * caja: se trae el que se ve.
    */
   useEffect(() => {
-    if (!resaltado || !lienzo.current) return;
-    const el = lienzo.current.querySelector(`[data-nodo="${CSS.escape(resaltado)}"]`);
+    if (!resaltado || !caja.current) return;
+    const el = [...caja.current.querySelectorAll(`[data-nodo="${CSS.escape(resaltado)}"]`)]
+      .find((x) => x.getClientRects().length > 0);
     el?.scrollIntoView?.({ block: "center", behavior: "auto" });
   }, [resaltado]);
 
@@ -164,6 +247,34 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
     );
   }
 
+  const comunes = { nodos, onAbrir, resaltado, marcas };
+
+  return (
+    <div ref={caja}>
+      <style>{CSS_CAMINO}</style>
+      {especial && <style>{CSS_ESPECIAL}</style>}
+      {resaltado && <style>{CSS_RESALTADO}</style>}
+
+      {/* Escritorio: el desafío cuelga de su ramal. */}
+      <div className="fae-ch-ancho">
+        <Lienzo {...comunes} especial={especial} />
+      </div>
+
+      {/* Teléfono: el desafío arriba, como tarjeta, y el camino a su ancho de siempre. */}
+      <div className="fae-ch-estrecho">
+        {especial && (
+          <DesafioEnTarjeta especial={especial} onAbrir={onAbrir} resaltado={resaltado} marca={marcas?.[especial.id]} marcas={marcas} />
+        )}
+        <Lienzo {...comunes} especial={null} />
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------- el lienzo -------------------------------- */
+
+function Lienzo({ nodos, onAbrir, especial, resaltado, marcas }) {
+  const n = nodos.length;
   const m = medidas(n);
   const p = posiciones(n, m);
   const d = trazo(p);
@@ -183,24 +294,38 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
     ? { x: ANCHO + ANCHO_RAMAL / 2 - 8, y: Math.max(anclaje.y, MARGEN_Y + radioEspecial) }
     : null;
 
+  /*
+   * Dónde va el rótulo de cada nodo, en porcentajes del lienzo.
+   *
+   * Al lado que quede libre: si el nodo se fue a la derecha, el rótulo va a su
+   * izquierda, y al revés. Su ancho máximo es lo que queda hasta el borde del
+   * camino —nunca el ramal—, y si el nombre no cabe parte la línea.
+   *
+   * Con un solo nodo va DEBAJO y centrado: a un lado le quedaban 168 unidades
+   * y el nombre de Porter tiene 39 letras; en escritorio se salía del lienzo.
+   */
+  const lugarDelRotulo = ({ x, y }) => {
+    if (n === 1) {
+      return {
+        left: pct(x, anchoTotal), top: pct(y + m.radio + 14, m.alto),
+        width: pct(ANCHO - 60, anchoTotal), transform: "translateX(-50%)", textAlign: "center",
+      };
+    }
+    const aLaDerecha = x < ANCHO / 2;
+    const borde = aLaDerecha ? x + m.radio + 12 : x - m.radio - 12;
+    const libre = (aLaDerecha ? ANCHO - borde : borde) - 6;
+    return {
+      ...(aLaDerecha ? { left: pct(borde, anchoTotal), textAlign: "left" } : { right: pct(anchoTotal - borde, anchoTotal), textAlign: "right" }),
+      top: pct(y, m.alto), maxWidth: pct(libre, anchoTotal), transform: "translateY(-50%)",
+    };
+  };
+
   return (
-    <div ref={lienzo} style={{ display: "flex", justifyContent: "center" }}>
-      {especial && <style>{CSS_ESPECIAL}</style>}
-      {resaltado && <style>{CSS_RESALTADO}</style>}
-      <svg
-        viewBox={`0 0 ${anchoTotal} ${m.alto}`}
-        width="100%"
-        style={{ display: "block", maxWidth: `${anchoTotal}px`, overflow: "visible" }}
-      >
+    <div style={{ position: "relative", width: "100%", maxWidth: `${anchoTotal}px`, margin: "0 auto" }}>
+      <svg viewBox={`0 0 ${anchoTotal} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible" }}>
         {/* La línea del recorrido, por debajo de todo. */}
         {d && (
-          <path
-            d={d}
-            fill="none"
-            stroke="rgba(248,249,250,0.22)"
-            strokeWidth={m.grosor}
-            strokeLinecap="round"
-          />
+          <path d={d} fill="none" stroke="rgba(248,249,250,0.22)" strokeWidth={m.grosor} strokeLinecap="round" />
         )}
         {/*
           El tramo ya recorrido, en teal encima del gris. Se dibuja hasta el
@@ -224,15 +349,10 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
             <g
               key={nodo.id}
               data-nodo={nodo.id}
-              onClick={() => onAbrir?.(nodo.id)}
-              onKeyDown={(e) => {
-                if (e.key !== "Enter" && e.key !== " ") return;
-                e.preventDefault();
-                onAbrir?.(nodo.id);
-              }}
+              {...alPulsar(onAbrir, nodo.id)}
               role="button"
               tabIndex={0}
-              aria-label={`${nodo.nombre}${nodo.completada ? " · completada" : ""}${marcas?.[nodo.id] ? ` · ${marcas[nodo.id]}` : ""}`}
+              aria-label={etiquetaAria(nodo, marcas)}
               style={{ cursor: "pointer" }}
             >
               {/* Aro coral del sugerido: acento, no candado. */}
@@ -252,7 +372,10 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
                 strokeWidth="2"
               />
 
-              {/* El número dentro. Orienta sin ordenar. */}
+              {/*
+                El número dentro. Orienta sin ordenar. Se queda en el SVG porque
+                aguanta la escala: a 320 px de ventana sigue en 16 px.
+              */}
               <text
                 x={x}
                 y={y + m.radio * 0.34}
@@ -265,37 +388,6 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
               >
                 {i + 1}
               </text>
-
-              {/*
-                El nombre, al lado que quede libre: si el nodo se fue a la
-                derecha el rótulo va a su izquierda, y al revés. Así nunca se
-                sale del lienzo por el lado por el que serpentea.
-              */}
-              <text
-                x={x < ANCHO / 2 ? x + m.radio + 12 : x - m.radio - 12}
-                y={y + 5}
-                textAnchor={x < ANCHO / 2 ? "start" : "end"}
-                fontFamily="Inter, sans-serif"
-                fontSize="13.5"
-                fill={nodo.completada ? FAE.text : "rgba(248,249,250,0.7)"}
-                pointerEvents="none"
-              >
-                {nodo.nombre}
-              </text>
-              {marcas?.[nodo.id] && (
-                <text
-                  x={x < ANCHO / 2 ? x + m.radio + 12 : x - m.radio - 12}
-                  y={y + 23}
-                  textAnchor={x < ANCHO / 2 ? "start" : "end"}
-                  fontFamily="Sora, sans-serif"
-                  fontWeight="600"
-                  fontSize="12"
-                  fill={FAE.ambar}
-                  pointerEvents="none"
-                >
-                  {marcas[nodo.id]}
-                </text>
-              )}
             </g>
           );
         })}
@@ -316,119 +408,147 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
 
             <g
               data-nodo={especial.id}
-              onClick={() => onAbrir?.(especial.id)}
-              onKeyDown={(e) => {
-                if (e.key !== "Enter" && e.key !== " ") return;
-                e.preventDefault();
-                onAbrir?.(especial.id);
-              }}
+              {...alPulsar(onAbrir, especial.id)}
               role="button"
               tabIndex={0}
-              aria-label={`${especial.etiqueta ? `${especial.etiqueta}: ` : ""}${especial.nombre}${especial.completada ? " · completada" : ""}${marcas?.[especial.id] ? ` · ${marcas[especial.id]}` : ""}`}
+              aria-label={etiquetaAria(especial, marcas, especial.etiqueta ? `${especial.etiqueta}: ` : "")}
               style={{ cursor: "pointer" }}
             >
               {resaltado === especial.id && (
                 <circle className="fae-ch-aqui" cx={esp.x} cy={esp.y} r={radioEspecial + 20} fill="none" stroke={FAE.teal} strokeWidth="3" />
               )}
-
-              {/* El halo, que es lo que lo hace "legendario" sin gritar. */}
-              <circle
-                className="fae-ch-halo"
-                cx={esp.x}
-                cy={esp.y}
-                r={radioEspecial + 13}
-                fill={FAE.ambar}
-              />
-              <circle
-                cx={esp.x}
-                cy={esp.y}
-                r={radioEspecial + 5}
-                fill="none"
-                stroke={FAE.ambar}
-                strokeWidth="1.5"
-                opacity="0.4"
-              />
-
-              <circle
-                cx={esp.x}
-                cy={esp.y}
-                r={radioEspecial}
-                fill={especial.completada ? FAE.ambar : "rgba(14,27,46,0.95)"}
-                stroke={FAE.ambar}
-                strokeWidth="3"
-              />
-
-              {/* Una ola dentro: es el nivel del agua del propio desafío. */}
-              <path
-                d={`M ${esp.x - radioEspecial * 0.52} ${esp.y + radioEspecial * 0.16}
-                    q ${radioEspecial * 0.26} ${-radioEspecial * 0.3}, ${radioEspecial * 0.52} 0
-                    t ${radioEspecial * 0.52} 0`}
-                fill="none"
-                stroke={especial.completada ? FAE.bg : FAE.ambar}
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                pointerEvents="none"
-              />
-              <path
-                d={`M ${esp.x - radioEspecial * 0.52} ${esp.y + radioEspecial * 0.5}
-                    q ${radioEspecial * 0.26} ${-radioEspecial * 0.3}, ${radioEspecial * 0.52} 0
-                    t ${radioEspecial * 0.52} 0`}
-                fill="none"
-                stroke={especial.completada ? FAE.bg : FAE.ambar}
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                opacity="0.6"
-                pointerEvents="none"
-              />
-
-              {/* El rótulo, debajo y en dos líneas: el nombre es largo. */}
-              <text
-                x={esp.x}
-                y={esp.y + radioEspecial + 24}
-                textAnchor="middle"
-                fontFamily="Sora, sans-serif"
-                fontWeight="700"
-                fontSize="10"
-                letterSpacing="1.4"
-                fill={FAE.ambar}
-                pointerEvents="none"
-              >
-                {(especial.etiqueta ?? "DESAFÍO").toUpperCase()}
-              </text>
-              <text
-                x={esp.x}
-                y={esp.y + radioEspecial + 40}
-                textAnchor="middle"
-                fontFamily="Inter, sans-serif"
-                fontSize="13"
-                fill={FAE.text}
-                pointerEvents="none"
-              >
-                {especial.nombre}
-              </text>
-
-              {/*
-                La marca de partida a medias va ENCIMA del nodo: debajo están
-                el rótulo y el nombre, y más abajo puede acabarse el lienzo.
-              */}
-              {marcas?.[especial.id] && (
-                <text
-                  x={esp.x}
-                  y={esp.y - radioEspecial - 24}
-                  textAnchor="middle"
-                  fontFamily="Sora, sans-serif"
-                  fontWeight="600"
-                  fontSize="12"
-                  fill={FAE.ambar}
-                  pointerEvents="none"
-                >
-                  {marcas[especial.id]}
-                </text>
-              )}
+              <IconoDesafio cx={esp.x} cy={esp.y} r={radioEspecial} completada={especial.completada} />
             </g>
           </g>
         )}
       </svg>
+
+      {/* ------------------- los rótulos, en HTML y a px reales ------------------- */}
+      {nodos.map((nodo, i) => (
+        <span
+          key={nodo.id}
+          aria-hidden="true"
+          className="fae-ch-rotulo"
+          onClick={() => onAbrir?.(nodo.id)}
+          style={{
+            position: "absolute",
+            ...lugarDelRotulo(p[i]),
+            fontFamily: "Inter, sans-serif",
+            lineHeight: 1.3,
+            color: nodo.completada ? FAE.text : "rgba(248,249,250,0.72)",
+            cursor: "pointer",
+          }}
+        >
+          {nodo.nombre}
+          {marcas?.[nodo.id] && <span style={MARCA}>{marcas[nodo.id]}</span>}
+        </span>
+      ))}
+
+      {esp && (
+        <>
+          {/* El rótulo del desafío, debajo; el nombre es largo y puede partirse. */}
+          <span
+            aria-hidden="true"
+            onClick={() => onAbrir?.(especial.id)}
+            style={{
+              position: "absolute",
+              left: pct(esp.x, anchoTotal),
+              top: pct(esp.y + radioEspecial + 14, m.alto),
+              width: pct(ANCHO_RAMAL - 12, anchoTotal),
+              transform: "translateX(-50%)",
+              textAlign: "center",
+              cursor: "pointer",
+            }}
+          >
+            <span style={ETIQUETA}>{(especial.etiqueta ?? "Desafío").toUpperCase()}</span>
+            <span className="fae-ch-rotulo" style={{ display: "block", marginTop: "3px", fontFamily: "Inter, sans-serif", lineHeight: 1.3, color: FAE.text }}>
+              {especial.nombre}
+            </span>
+          </span>
+
+          {/*
+            La marca de partida a medias va ENCIMA del nodo: debajo están el
+            rótulo y el nombre, y más abajo puede acabarse el lienzo.
+          */}
+          {marcas?.[especial.id] && (
+            <span
+              aria-hidden="true"
+              onClick={() => onAbrir?.(especial.id)}
+              style={{
+                ...MARCA,
+                position: "absolute",
+                marginTop: 0,
+                left: pct(esp.x, anchoTotal),
+                top: pct(esp.y - radioEspecial - 20, m.alto),
+                width: pct(ANCHO_RAMAL - 12, anchoTotal),
+                transform: "translate(-50%, -100%)",
+                textAlign: "center",
+                cursor: "pointer",
+              }}
+            >
+              {marcas[especial.id]}
+            </span>
+          )}
+        </>
+      )}
     </div>
+  );
+}
+
+/* El círculo del desafío: halo, aro y la ola del nivel del agua. Lo usan las dos formas. */
+function IconoDesafio({ cx, cy, r, completada }) {
+  const ola = (dy, opacity) => (
+    <path
+      d={`M ${cx - r * 0.52} ${cy + r * dy} q ${r * 0.26} ${-r * 0.3}, ${r * 0.52} 0 t ${r * 0.52} 0`}
+      fill="none"
+      stroke={completada ? FAE.bg : FAE.ambar}
+      strokeWidth={Math.max(1.8, r * 0.062)}
+      strokeLinecap="round"
+      opacity={opacity}
+      pointerEvents="none"
+    />
+  );
+  return (
+    <>
+      {/* El halo, que es lo que lo hace "legendario" sin gritar. */}
+      <circle className="fae-ch-halo" cx={cx} cy={cy} r={r + r * 0.33} fill={FAE.ambar} />
+      <circle cx={cx} cy={cy} r={r + r * 0.13} fill="none" stroke={FAE.ambar} strokeWidth="1.5" opacity="0.4" />
+      <circle cx={cx} cy={cy} r={r} fill={completada ? FAE.ambar : "rgba(14,27,46,0.95)"} stroke={FAE.ambar} strokeWidth={Math.max(2.2, r * 0.077)} />
+      {ola(0.16, 1)}
+      {ola(0.5, 0.6)}
+    </>
+  );
+}
+
+/*
+ * El desafío en el teléfono: una tarjeta encima del camino. Mismo icono, mismo
+ * ámbar, mismos datos que el nodo del ramal; solo cambia dónde está.
+ */
+function DesafioEnTarjeta({ especial, onAbrir, resaltado, marca, marcas }) {
+  return (
+    <button
+      type="button"
+      data-nodo={especial.id}
+      onClick={() => onAbrir?.(especial.id)}
+      aria-label={etiquetaAria(especial, marcas, especial.etiqueta ? `${especial.etiqueta}: ` : "")}
+      className={resaltado === especial.id ? "fae-ch-aqui-caja" : undefined}
+      style={{
+        display: "flex", alignItems: "center", gap: "14px", width: "100%", textAlign: "left",
+        padding: "14px 16px", margin: "0 0 26px", borderRadius: "18px", cursor: "pointer",
+        background: "linear-gradient(155deg, rgba(233,196,106,0.10), rgba(10,20,34,0.55) 60%)",
+        border: `1px solid ${FAE.ambar}66`, color: FAE.text,
+      }}
+    >
+      <svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" style={{ flexShrink: 0, overflow: "visible" }}>
+        <IconoDesafio cx={29} cy={29} r={21} completada={especial.completada} />
+      </svg>
+      <span style={{ minWidth: 0 }}>
+        <span style={ETIQUETA}>{(especial.etiqueta ?? "Desafío").toUpperCase()}</span>
+        <span style={{ display: "block", marginTop: "3px", fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "16px", lineHeight: 1.3 }}>
+          {especial.nombre}
+        </span>
+        {marca && <span style={{ ...MARCA, marginTop: "4px", fontSize: "13px" }}>{marca}</span>}
+      </span>
+    </button>
   );
 }

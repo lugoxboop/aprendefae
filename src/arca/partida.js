@@ -29,6 +29,19 @@ import { supabase } from "../lib/supabase.js";
  * pared, una pausa para cenar se convertía en "tardó cuatro horas" y
  * envenenaba la media del panel docente. El tiempo de una etapa que se perdió
  * al recargar no cuenta: se vuelve a jugar y se vuelve a medir.
+ *
+ * ═══════════ LÍMITE CONOCIDO, Y DECIDIDO: DOS PESTAÑAS ═══════════
+ *
+ * Dos pestañas jugando la MISMA partida a la vez: la que termina primero
+ * registra y cierra; la otra, si termina después, registra una repetición
+ * (0 FP) con su propio detalle. La 0028 lo explica en su cabecera.
+ *
+ * NO SE ARREGLA, y es una decisión tomada, no algo pendiente. Cerrarlo exige
+ * que registrar_fp reciba la identidad de la partida, o sea, cambiarle la
+ * firma, y eso trae el riesgo de dos firmas conviviendo: exactamente el
+ * incidente que dejó a los estudiantes sin puntos durante una hora. El caso
+ * es raro —ya pasaba sin guardado— y el arreglo es más peligroso que el
+ * problema. Quien lo retome, que empiece por releer ese incidente.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
