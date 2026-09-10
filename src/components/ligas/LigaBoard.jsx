@@ -17,8 +17,10 @@ import { estadoDeAnimos } from "../../social/animo.js";
  *               De los demás que no están en el podio no se dice ni el nombre
  *               ni el número: solo cuántos son.
  *
- * A ~17 personas por liga el podio son 5 puestos: no salir en él es la
- * situación del 71%, o sea la normal. Por eso no aparecer no señala a nadie.
+ * EL PODIO ES LA ZONA DE ASCENSO (0026): quien sale en él subiría si la semana
+ * terminara ahora, y el cierre del lunes sube exactamente a esos. Es el 15% de
+ * los activos del nivel, mínimo 1: 3 nombres con 17, 1 con 7. No salir en él
+ * es lo normal —más del 80%—, y por eso no aparecer no señala a nadie.
  */
 
 const marco = {
@@ -148,6 +150,16 @@ export default function LigaBoard({ subjectId }) {
         </p>
       ) : (
         <>
+          {/*
+            Podio vacío: nadie ha sumado FP todavía, o todos van empatados. Con
+            el 28% no pasaba nunca —todos a cero cabían en el corte— y el lunes
+            por la mañana la liga entera salía en el podio.
+          */}
+          {podio.length === 0 && (
+            <p style={{ fontSize: "13.5px", lineHeight: 1.55, color: "rgba(248,249,250,0.62)", margin: 0 }}>
+              Esta semana todavía nadie se ha separado del grupo.
+            </p>
+          )}
           <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
             {podio.map((f) => (
               <li
@@ -175,7 +187,7 @@ export default function LigaBoard({ subjectId }) {
           </ol>
 
           {/* De los demás, solo cuántos son. Ni nombres ni puestos. */}
-          {restantes > 0 && (
+          {restantes > 0 && podio.length > 0 && (
             <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.45)", margin: "12px 0 0" }}>
               y {restantes} estudiante{restantes === 1 ? "" : "s"} más compitiendo esta semana
             </p>

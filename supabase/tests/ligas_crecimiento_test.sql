@@ -19,7 +19,7 @@
 --
 --   Y la red de sembrar, los permisos, y las materias reales intactas.
 --
--- Los 23 deben decir PASA.
+-- Los 27 deben decir PASA.
 
 begin;
 
@@ -261,31 +261,33 @@ from (
 ) x;
 
 /*
- * EL GRUPO DE 7. Intermedio tenía 7 personas: los 6 activos (7..12) y el 24,
- * que no tuvo FP. Suben 12, 11, 10; bajan 9, 8, 7; el 24 no se mueve. Los 6
- * activos cambian de nivel: todos.
+ * EL GRUPO DE 7, con el cupo proporcional. Intermedio tenía 7 personas: los 6
+ * activos (7..12) y el 24, que no tuvo FP. Con 6 activos el cupo es 1: sube
+ * el 12, baja el 7, y se quedan 8, 9, 10, 11 y el 24. Con la regla de 3
+ * fijos se movían los seis activos.
  */
 insert into resultado_prueba
-select 11, 'A · Grupo de 7: suben 3, bajan 3, y solo se queda el que no tuvo actividad',
-  case when x.subieron = 3 and x.bajaron = 3 and x.el_24 = 2 then 'PASA' else 'FALLA' end,
-  format('de 10, 11, 12 subieron %s ; de 7, 8, 9 bajaron %s ; el 24 sigue en %s',
-         x.subieron, x.bajaron, x.el_24)
+select 11, 'A · Grupo de 7: sube 1, baja 1, se quedan 5',
+  case when x.el_12 = 1 and x.el_7 = 3 and x.quedan = 5 then 'PASA' else 'FALLA' end,
+  format('el 12 → nivel %s ; el 7 → nivel %s ; siguen en Intermedio %s de 8, 9, 10, 11 y 24',
+         x.el_12, x.el_7, x.quedan)
 from (
   select
-    count(*) filter (where n in (10, 11, 12) and liga = 1) as subieron,
-    count(*) filter (where n in (7, 8, 9) and liga = 3) as bajaron,
-    max(liga) filter (where n = 24) as el_24
+    max(liga) filter (where n = 12) as el_12,
+    max(liga) filter (where n = 7) as el_7,
+    count(*) filter (where n in (8, 9, 10, 11, 24) and liga = 2) as quedan
   from nivel_de where subject_id = 'zzz-crece-reparto' and ciclo = public.ciclo_actual()
 ) x;
 
 /*
- * En todo el sistema: de Avanzado bajan 13, 14 y 15 (el empate del 13 y el 14
- * en 140 comparte el último puesto); de Intermedio se mueven 6; de Emergente
- * suben 6, 5 y 4. Doce de veinte activos cambian de nivel en una semana.
+ * En todo el sistema: de Avanzado (8 activos, cupo 1) bajan el 13 y el 14,
+ * que empatan en 140 en el último puesto; de Intermedio, el 12 sube y el 7
+ * baja; de Emergente (6 activos, cupo 1) sube el 6. Cinco de veinte, donde
+ * con la regla de 3 fijos eran doce.
  */
 insert into resultado_prueba
-select 12, 'A · Día ocho en total: 12 de 20 activos cambian de nivel',
-  case when count(*) = 12 then 'PASA' else 'FALLA' end,
+select 12, 'A · Día ocho en total: 5 de 20 activos cambian de nivel (con 3 fijos eran 12)',
+  case when count(*) = 5 then 'PASA' else 'FALLA' end,
   format('%s de 20 activos en un nivel distinto al de la semana del reparto', count(*))
 from nivel_de ahora
 join nivel_de antes
@@ -482,6 +484,111 @@ end
 $red$;
 
 -- ═══════════════════════════════════════════════════════════════════════════
+-- EL MOVIMIENTO PROPORCIONAL Y EL PODIO
+-- ═══════════════════════════════════════════════════════════════════════════
+
+/* El cupo, y la zona en los tres casos que la regla de 3 fijos resolvía mal. */
+insert into resultado_prueba
+select 24, 'El cupo es el 15% de los activos, redondeado, mínimo 1; y nadie está a la vez arriba y abajo',
+  case when x.obtenido = x.esperado
+        and public.ligas_zona(1, 1, 1) is null
+        and public.ligas_zona(1, 5, 7) = 'sube'
+        and public.ligas_zona(7, 1, 7) = 'baja'
+        and public.ligas_zona(1, 1, 7) is null
+       then 'PASA' else 'FALLA' end,
+  format('k→cupo: %s ; único activo: %s ; empate arriba: %s ; último: %s ; todos empatados: %s',
+         x.obtenido,
+         coalesce(public.ligas_zona(1, 1, 1), 'quieto'), public.ligas_zona(1, 5, 7),
+         public.ligas_zona(7, 1, 7), coalesce(public.ligas_zona(1, 1, 7), 'quieto'))
+from (
+  select
+    string_agg(k || '→' || public.ligas_cupo(k), ' ' order by k) as obtenido,
+    '0→0 1→1 2→1 3→1 4→1 6→1 7→1 9→1 10→2 13→2 17→3 20→3 24→4 30→5 40→6' as esperado
+  from unnest(array[0, 1, 2, 3, 4, 6, 7, 9, 10, 13, 17, 20, 24, 30, 40]::bigint[]) k
+) x;
+
+/*
+ * Siete empatados en el nivel del medio, pasando por el cierre de verdad. Con
+ * la regla de 3 fijos subían los siete: todos tenían el puesto 1.
+ */
+insert into public.liga_membresia (subject_id, ciclo, user_id, liga)
+select 'zzz-crece-empate', public.ciclo_actual() - 7, uid, 2 from ids where n <= 7;
+
+insert into public.liga_ciclo (subject_id, ciclo, niveles)
+values ('zzz-crece-empate', public.ciclo_actual() - 7, 3);
+
+insert into public.fp_history (user_id, activity_id, subject_id, fp_awarded, difficulty, modality, created_at)
+select uid, 'act-crece', 'zzz-crece-empate', 50, 'medio', 'evaluativa',
+       (public.ciclo_actual() - 5)::timestamp at time zone 'America/Bogota'
+  from ids where n <= 7;
+
+select public.ligas_sembrar('zzz-crece-empate');
+
+insert into resultado_prueba
+select 25, 'Siete empatados en el mismo nivel: no se mueve nadie (con 3 fijos subían los siete)',
+  case when count(*) filter (where liga = 2) = 7 then 'PASA' else 'FALLA' end,
+  format('siguen en el nivel del medio %s de 7', count(*) filter (where liga = 2))
+from nivel_de where subject_id = 'zzz-crece-empate' and ciclo = public.ciclo_actual();
+
+/*
+ * EL PODIO ES LA ZONA DE ASCENSO, en el tablero de verdad. En Intermedio de
+ * la materia A, esta semana suman el 8 (30), el 9 (20) y el 10 (10): 3
+ * activos, cupo 1. El podio tiene que ser el 8 y solo el 8 —el que subiría—,
+ * y el 9 ve su fila aparte.
+ */
+insert into public.fp_history (user_id, activity_id, subject_id, fp_awarded, difficulty, modality, created_at)
+select uid, 'act-hoy', 'zzz-crece-reparto', case n when 8 then 30 when 9 then 20 else 10 end,
+       'medio', 'evaluativa', now()
+  from ids where n in (8, 9, 10);
+
+select set_config('request.jwt.claims',
+  json_build_object('sub', (select uid::text from ids where n = 9), 'role', 'authenticated')::text, true);
+set local role authenticated;
+
+insert into resultado_prueba
+select 26, 'El podio es la zona: 3 activos en el nivel, 1 nombre en el podio — el que subiría',
+  case when t.corte = 1 and t.podio = 1 and t.quien = 'crece_08' and t.tuyas = 1 then 'PASA' else 'FALLA' end,
+  format('cupo %s ; en el podio %s (%s) ; filas tuyas %s', t.corte, t.podio, t.quien, t.tuyas)
+from (
+  select max(corte_podio) as corte,
+         count(*) filter (where en_podio) as podio,
+         max(nickname) filter (where en_podio) as quien,
+         count(*) filter (where es_tuyo) as tuyas
+    from public.liga_tablero('zzz-crece-reparto')
+) t;
+
+reset role;
+
+/*
+ * LAS MEDALLAS NO SE RECALCULAN HACIA ATRÁS. Intermedio de la semana del
+ * reparto (7 personas, 6 activos) tuvo 2 en el podio del 28% y tendría 1 en el
+ * de la zona. Con la fecha de corte en este ciclo, esa semana es anterior y se
+ * cuenta con el 28%; con la fecha de corte en esa semana, con la zona.
+ */
+update public.ajustes set valor = public.ciclo_actual()::text
+ where clave = 'podio_proporcional_desde';
+insert into mira
+select 'podio_viejo', count(*)::text
+  from public.liga_resultados('zzz-crece-reparto', public.ciclo_actual() - 7) r
+ where r.liga = 2 and r.en_podio;
+
+update public.ajustes set valor = (public.ciclo_actual() - 7)::text
+ where clave = 'podio_proporcional_desde';
+insert into mira
+select 'podio_nuevo', count(*)::text
+  from public.liga_resultados('zzz-crece-reparto', public.ciclo_actual() - 7) r
+ where r.liga = 2 and r.en_podio;
+
+insert into resultado_prueba
+select 27, 'Las medallas cuentan cada ciclo con su regla: 2 en el podio con el 28%, 1 con la zona',
+  case when (select valor from mira where clave = 'podio_viejo') = '2'
+        and (select valor from mira where clave = 'podio_nuevo') = '1'
+       then 'PASA' else 'FALLA' end,
+  format('ciclo anterior a la fecha de corte → %s en el podio ; desde la fecha de corte → %s',
+         (select valor from mira where clave = 'podio_viejo'),
+         (select valor from mira where clave = 'podio_nuevo'));
+
+-- ═══════════════════════════════════════════════════════════════════════════
 -- PERMISOS
 --
 -- liga_contexto se recreó con drop, que se lleva los grants: aquí se comprueba
@@ -504,7 +611,9 @@ from (
           'public.ligas_cerrar_ciclo(text, date, integer, integer, integer)',
           'public.ligas_repartir(text, date, date, integer)',
           'public.ligas_abrir_elite(text, date, date)',
-          'public.ligas_transicion(text, date, date, integer, integer)'
+          'public.ligas_transicion(text, date, date, integer, integer)',
+          'public.ligas_cupo(bigint)',
+          'public.ligas_zona(bigint, bigint, bigint)'
         ]) f(firma)
         cross join unnest(array['anon', 'authenticated']) r(rol)
        where has_function_privilege(r.rol, f.firma, 'execute')
@@ -565,9 +674,9 @@ select
   99,
   '=== RESUMEN ===',
   case when exists (select 1 from resultado_prueba where resultado = 'FALLA')
-            or (select count(*) from resultado_prueba) <> 23
-       then 'HAY FALLOS' else 'LOS 23 PASAN' end,
-  format('%s de 23 en verde', (select count(*) from resultado_prueba where resultado = 'PASA'))
+            or (select count(*) from resultado_prueba) <> 27
+       then 'HAY FALLOS' else 'LOS 27 PASAN' end,
+  format('%s de 27 en verde', (select count(*) from resultado_prueba where resultado = 'PASA'))
 order by 1;
 
 rollback;

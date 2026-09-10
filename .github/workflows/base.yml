@@ -172,7 +172,12 @@ jobs:
           for archivo in $(ls supabase/migrations/*.sql | sort); do
             n=$((n + 1))
             echo "── $archivo"
-            psql -v ON_ERROR_STOP=1 -q -f "$archivo"
+            if ! psql -v ON_ERROR_STOP=1 -q -f "$archivo"; then
+              echo ""
+              echo "ROJO: $archivo no aplica sobre la base que dejaron las anteriores."
+              echo "      El error de Postgres, con archivo y línea, está justo arriba."
+              exit 1
+            fi
           done
           echo ""
           echo "$n migraciones aplicadas sobre una base vacía, sin un solo error."
@@ -248,16 +253,36 @@ jobs:
       # ═══════════════════════════════════════════════════════════════════════
       - name: Correr las pruebas SQL
         run: |
+          # ═══ POR QUÉ `set +e`, Y POR QUÉ SE DICE EN VOZ ALTA ═══
+          #
+          # GitHub ejecuta cada `run:` con `bash -eo pipefail`, diga lo que diga
+          # el script: un `set -uo pipefail` NO apaga la -e. Con -e, la línea
+          # `salida=$(psql …)` mata el paso en cuanto psql devuelve distinto de
+          # cero, ANTES de llegar al `echo` que imprime lo que dijo Postgres. Así
+          # salió el primer rojo de este workflow: «=== detalle_test.sql ===» y
+          # después solo «exit code 3», sin el error ni la línea.
+          #
+          # Aquí la -e se apaga a propósito y cada código se recoge a mano. Se
+          # corren TODOS los archivos aunque uno falle, y al final va un resumen
+          # con el motivo de cada rojo: un registro que enseña los cinco fallos
+          # vale más que uno que enseña el primero y se calla.
+          #
+          # Y nada de `echo "$salida" | grep -q`: con pipefail, si grep -q
+          # encuentra y cierra antes de que echo termine, echo muere de SIGPIPE y
+          # la tubería entera cuenta como fallo —un «sí» leído como «no»—. Se usa
+          # `grep <<< "$salida"`, que no tiene tubería.
+          set +e
           set -uo pipefail
 
           EXCLUIDAS="destacados_hoy.sql cuentas_prueba_test.sql"
           fallos=0
           corridas=0
+          resumen=""
 
           for archivo in $(ls supabase/tests/*.sql | sort); do
             nombre=$(basename "$archivo")
 
-            if echo "$EXCLUIDAS" | grep -qw "$nombre"; then
+            if grep -qw "$nombre" <<< "$EXCLUIDAS"; then
               echo "── $nombre  (excluida a propósito, ver la nota del workflow)"
               continue
             fi
@@ -271,29 +296,44 @@ jobs:
             echo "$salida"
 
             if [ "$codigo" != "0" ]; then
-              echo "ROJO  $nombre: psql terminó con código $codigo (error de SQL)."
+              motivo=$(grep -m1 -E "ERROR:" <<< "$salida")
+              [ -z "$motivo" ] && motivo="psql terminó con código $codigo y no dijo por qué"
+              echo ""
+              echo "ROJO  $nombre: error de SQL (código $codigo)."
+              echo "      $motivo"
+              resumen+=$'\n'"  ROJO  $nombre — $motivo"
               fallos=$((fallos + 1))
               continue
             fi
 
-            if echo "$salida" | grep -qE 'FALLA|FALLO'; then
+            if grep -qE 'FALLA|FALLO' <<< "$salida"; then
+              echo ""
               echo "ROJO  $nombre: hay pasos en rojo dentro de la prueba."
+              resumen+=$'\n'"  ROJO  $nombre — pasos en rojo:"
+              while IFS= read -r linea; do
+                resumen+=$'\n'"          $linea"
+              done < <(grep -E 'FALLA|FALLO' <<< "$salida")
               fallos=$((fallos + 1))
               continue
             fi
 
-            if ! echo "$salida" | grep -qE 'TODO OK|PASAN|PASA'; then
+            if ! grep -qE 'TODO OK|PASAN|PASA' <<< "$salida"; then
+              echo ""
               echo "ROJO  $nombre: no imprimió ningún veredicto."
               echo "      El archivo no llegó al final, o dejó de producir resumen."
+              resumen+=$'\n'"  ROJO  $nombre — no imprimió ningún veredicto"
               fallos=$((fallos + 1))
               continue
             fi
 
             echo "OK    $nombre"
+            resumen+=$'\n'"  OK    $nombre"
           done
 
           echo ""
-          echo "──────────────────────────────────────────────"
+          echo "══════════════════════ RESUMEN ══════════════════════"
+          echo "$resumen"
+          echo ""
           echo "$corridas pruebas SQL corridas, $fallos en rojo."
 
           # Una tanda vacía es rojo: significa que el filtro se comió todo o que
@@ -303,4 +343,4 @@ jobs:
             exit 1
           fi
 
-          exit $([ "$fallos" = "0" ] && echo 0 || echo 1)
+          [ "$fallos" = "0" ] || exit 1

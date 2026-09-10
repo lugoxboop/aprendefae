@@ -1,8 +1,9 @@
 -- ---------------------------------------------------------------------------
 -- EL AUTH DE MENTIRA — lo mínimo de Supabase para que las migraciones apliquen.
 --
--- Esto NO es Supabase. Es un decorado con las cuatro cosas que las 23
--- migraciones y las pruebas le piden al esquema `auth`, y nada más:
+-- Esto NO es Supabase. Es un decorado con las cuatro cosas que las
+-- migraciones y las pruebas le piden al esquema `auth`, más los permisos por
+-- defecto que Supabase da en `public` (ver abajo), y nada más:
 --
 --     auth.users     tabla, referenciada por clave foránea en cinco tablas
 --     auth.uid()     usada en 38 políticas RLS
@@ -49,10 +50,11 @@
 --     el dueño lo ve todo. Las políticas que sí se prueban son las de `public`,
 --     que son las que escriben las migraciones.
 --
---  6. LOS ROLES SON CÁSCARAS. `anon` y `authenticated` existen para que los
---     grant/revoke de las migraciones tengan a quién apuntar y para que
---     `set local role` funcione en las pruebas, pero no traen la configuración
---     que Supabase les da. Un `alter role ... set` de producción no está.
+--  6. LOS ROLES TRAEN LOS PERMISOS POR DEFECTO DE SUPABASE, Y NADA MÁS.
+--     Todo lo que se crea en `public` nace con ALL para anon y authenticated
+--     en tablas y secuencias, y EXECUTE en funciones —ver el bloque de abajo—.
+--     Lo que NO traen: ningún `alter role ... set` de producción, ni el rol
+--     service_role, ni los permisos que Supabase da en otros esquemas.
 --
 --  7. LA VERSIÓN DE POSTGRES PUEDE NO COINCIDIR con la del proyecto en
 --     Supabase. Si divergieran mucho, algo podría comportarse distinto.
@@ -85,6 +87,33 @@ end;
 $$;
 
 grant usage on schema public to anon, authenticated;
+
+-- ── Los permisos por defecto de Supabase en `public` ─────────────────────
+/*
+ * En Supabase, todo lo que se crea en `public` nace con permisos para anon y
+ * authenticated: ALL en tablas y secuencias, EXECUTE en funciones. Lo pone
+ * `alter default privileges` en la configuración del proyecto, NO ninguna
+ * migración. Por eso ninguna migración concede SELECT sobre sus tablas, y por
+ * eso la 0017 solo REVOCA insert/update/delete de fp_detalle: el select lo
+ * da Supabase y lo filtra RLS.
+ *
+ * Sin esto, authenticated no podía leer ninguna tabla, y detalle_test.sql
+ * reventaba en su paso 11 —la prueba de RLS— con "permission denied for table
+ * fp_detalle", un error que en producción no existe. Y hay algo peor que el
+ * error: un "no puedes leer esto" que viene de un GRANT que falta se parece
+ * mucho a uno que viene de una política, y una prueba de RLS podía pasar por
+ * el motivo equivocado.
+ *
+ * El mismo mecanismo da EXECUTE en cada función nueva a anon, que es la razón
+ * de que las migraciones revoquen a mano. Con esto, esos revokes se ejercen
+ * aquí igual que en producción.
+ *
+ * Tiene que ir ANTES de las migraciones: los permisos por defecto solo se
+ * aplican a lo que se crea después.
+ */
+alter default privileges in schema public grant all on tables to anon, authenticated;
+alter default privileges in schema public grant all on sequences to anon, authenticated;
+alter default privileges in schema public grant all on functions to anon, authenticated;
 
 -- ── El esquema y la tabla ───────────────────────────────────────────────────
 create schema if not exists auth;
@@ -182,4 +211,33 @@ begin
 
   raise notice 'Auth de mentira montado y comprobado.';
 end;
+$$;
+
+-- ── Y los permisos por defecto se aplican de verdad ─────────────────────
+/*
+ * Se comprueba creando una tabla y una función reales en public, y se borran.
+ * La función se mira en su ACL y no con has_function_privilege: Postgres da
+ * EXECUTE a PUBLIC por su cuenta, y esa pregunta diría que sí aunque el
+ * bloque de arriba no hubiera hecho nada.
+ */
+do $$
+begin
+  create table public.zzz_prueba_permisos (x integer);
+  create function public.zzz_prueba_permisos_fn() returns integer language sql as 'select 1';
+
+  if not has_table_privilege('authenticated', 'public.zzz_prueba_permisos', 'select') then
+    raise exception 'El auth de mentira está mal: una tabla nueva de public no nace legible por authenticated, como en Supabase';
+  end if;
+
+  if not exists (
+    select 1 from pg_proc p
+     where p.proname = 'zzz_prueba_permisos_fn'
+       and p.proacl::text like '%anon=X%'
+  ) then
+    raise exception 'El auth de mentira está mal: una función nueva de public no nace con EXECUTE explícito para anon, como en Supabase';
+  end if;
+
+  drop function public.zzz_prueba_permisos_fn();
+  drop table public.zzz_prueba_permisos;
+end
 $$;

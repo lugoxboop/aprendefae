@@ -4,14 +4,15 @@
 -- No requiere contraseñas ni iniciar sesión con Google: se suplanta el JWT
 -- dentro de la transacción, que es como Postgres evalúa auth.uid().
 --
--- ANTES DE CORRERLO
--- 1. Supabase → Authentication → Users → Add user. Crea TRES usuarios de
---    prueba (email y contraseña cualquiera, son desechables). Se necesitan
---    tres y no dos: el tercero permite probar que un estudiante no puede
---    crear una fila a nombre de otro sin que el fallo se confunda con un
---    choque de clave primaria.
--- 2. Copia sus UUID y pégalos abajo, donde dice PEGA-UUID.
--- 3. Pega todo el script en el SQL Editor y ejecútalo.
+-- CREA SUS PROPIOS USUARIOS. Antes había que dar de alta tres usuarios a mano
+-- en Supabase y pegar sus UUID aquí, lo que la dejaba fuera de CI: con los
+-- marcadores sin reemplazar reventaba en la línea 25 con "invalid input syntax
+-- for type uuid". Ahora inserta tres en auth.users dentro de la transacción,
+-- igual que ligas_test.sql, y se corre tal cual: en el SQL Editor o en CI.
+--
+-- Se necesitan tres y no dos: el tercero existe en auth.users pero no tiene
+-- perfil, y permite probar que un estudiante no puede crear una fila a nombre
+-- de otro sin que el rechazo se confunda con un choque de clave primaria.
 --
 -- La transacción termina en ROLLBACK: no deja nada en la base.
 -- Si tu editor no muestra la tabla de resultados, ejecuta hasta el SELECT
@@ -22,9 +23,14 @@ begin;
 
 create temp table rls_ids (label text primary key, id uuid) on commit drop;
 insert into rls_ids values
-  ('A',       'PEGA-UUID-DEL-USUARIO-A'),
-  ('B',       'PEGA-UUID-DEL-USUARIO-B'),
-  ('C_libre', 'PEGA-UUID-DEL-USUARIO-C');   -- este se queda sin fila de perfil
+  ('A',       gen_random_uuid()),
+  ('B',       gen_random_uuid()),
+  ('C_libre', gen_random_uuid());   -- este se queda sin fila de perfil
+
+insert into auth.users (id, instance_id, aud, role, email, encrypted_password, created_at, updated_at)
+select id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
+       'rls-prueba-' || lower(label) || '@ejemplo.test', '', now(), now()
+  from rls_ids;
 
 create temp table rls_out (
   n        int,

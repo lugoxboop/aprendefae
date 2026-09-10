@@ -115,8 +115,9 @@ export async function asegurarEntrada(subjectId) {
  * Reparte las filas del tablero en lo que la interfaz enseña de cada forma.
  *
  * El podio es público. La posición exacta de quien no está en él es privada: la
- * ve solo esa persona, en su propio espacio. A ~17 por liga el podio son 5
- * puestos, o sea que el 71% no aparece — no salir es lo normal, no una señal.
+ * ve solo esa persona, en su propio espacio. El podio es la zona de ascenso
+ * —el 15% de los activos del nivel, mínimo 1—: no salir es lo normal, no una
+ * señal.
  */
 export function repartir(filas) {
   const podio = filas.filter((f) => f.en_podio);

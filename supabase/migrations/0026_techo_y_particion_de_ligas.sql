@@ -11,7 +11,7 @@
 -- Esto CONTRADICE a propósito una nota de la 0006, que decía que en el tramo
 -- alto "manda el tamaño" (~20 por nivel). La decisión nueva es la contraria:
 -- cuatro es el techo, y por encima los niveles se hacen más grandes. Con 160
--- activos son 40 por nivel y el podio del 28% pasa de ~5 nombres a ~11.
+-- activos son 40 por nivel, y el podio —el cupo del 15%, sección 7— es de 6.
 --
 -- ═══════════════════════════════════════════════════════════════════════════
 -- 2. EL RECUENTO SE GUARDA; YA NO SE DEDUCE DE max(liga)
@@ -66,7 +66,7 @@
 --   CUALQUIER OTRO →  false: se sostiene el número de la semana pasada.
 --
 -- UNA CONSECUENCIA DE "NADIE BAJA": la semana de la 3→4 no hay movimiento
--- semanal para nadie. Si hubiera, los tres últimos de cada nivel bajarían. Así
+-- semanal para nadie. Si hubiera, los últimos de cada nivel bajarían. Así
 -- que esa semana quien habría subido de Intermedio a Avanzado tampoco sube.
 --
 -- Quién vivió cada reparto queda en `liga_reparto`, y es de ahí de donde el
@@ -90,6 +90,12 @@
 -- materia que se encienda por primera vez —Pensamiento Estratégico ya está
 -- sembrada—, y es la decisión 1 de Xeno aplicada al único reparto que quedaba
 -- con el criterio viejo.
+--
+-- Y LAS SECCIONES 6 Y 7 —el movimiento proporcional y el podio— están más
+-- abajo, junto a las dos funciones que las implementan.
+--
+-- SÍ TOCA liga_resultados, de la 0008: su podio pasa a ser la zona de ascenso
+-- para los ciclos jugados desde esta migración (sección 7).
 --
 -- LO QUE NO TOCA: la medalla de "semanas en la liga alta" de la 0008 sigue
 -- calculando su total con max(m.liga). Solo lo usa para saber si había más de
@@ -387,13 +393,8 @@ $$;
  * a Élite" y "sigue en Avanzado". Nadie baja. Intermedio y Emergente pasan de
  * la 2 y la 3 a la 3 y la 4: cambia el número, no el nombre.
  *
- * CUÁNTOS SUBEN: la mitad de los activos de Avanzado, redondeando hacia abajo
- * y al menos uno, con los empates del borde hacia arriba. "Subdividir el grupo"
- * se leyó como partirlo en dos mitades; Xeno no dio el número, y es la única
- * cifra de esta migración que no viene de una decisión escrita.
- *
  * Quien estaba en Avanzado sin actividad se queda en Avanzado: no tuvo "el
- * mejor ciclo".
+ * mejor ciclo". Los empates en el corte suben los dos, como en todo reparto.
  */
 create or replace function public.ligas_abrir_elite(
   p_subject  text,
@@ -405,6 +406,22 @@ language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  /*
+   * ═════════════════ DECISIÓN, NO DATO ═════════════════
+   *
+   * QUÉ PARTE DE AVANZADO SUBE A ÉLITE AL ABRIRLA.
+   *
+   * Xeno decidió QUE se subdivide Avanzado y QUE nadie baja. NO dio la
+   * proporción. La mitad la eligió quien escribió esta migración, leyendo
+   * "subdividir el grupo" como partirlo en dos. No viene de ningún documento
+   * de diseño ni es un número heredado, y cuestionarla es legítimo: se cambia
+   * aquí y en ningún otro sitio.
+   *
+   * Lo que sí se sabe de ella: redondea hacia abajo y nunca deja Élite vacía
+   * si hay alguien activo en Avanzado (mínimo uno).
+   */
+  c_parte_a_elite constant numeric := 0.5;
 begin
   with miembros as (
     select
@@ -434,7 +451,8 @@ begin
       mm.user_id,
       mm.liga_antes,
       (case
-         when av.user_id is not null and av.puesto <= greatest(1, av.n_activos / 2) then 1
+         when av.user_id is not null
+              and av.puesto <= greatest(1, floor(av.n_activos * c_parte_a_elite)) then 1
          else mm.liga_antes + 1
        end)::integer as nivel
     from miembros mm
@@ -495,6 +513,115 @@ begin
 end;
 $$;
 
+-- ── El movimiento proporcional y el podio ───────────────────────────────────
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 6. CUÁNTOS SE MUEVEN: EL 15% DEL NIVEL, NO TRES FIJOS
+ *
+ * La 0006 subía a los 3 primeros y bajaba a los 3 últimos de cada nivel, fuera
+ * cual fuera su tamaño. Con los grupos de ~7 que deja el primer reparto eso era
+ * mover 6 de 7 cada semana: en 40 semanas simuladas, el 60% de los activos
+ * cambiaba de nivel cada lunes y más de la mitad volvía al anterior la semana
+ * siguiente. No se leía como competencia sino como tómbola, y los primeros en
+ * vivirlo iban a ser justo los del grupo de 7.
+ *
+ * AHORA el cupo por dirección es el 15% de los ACTIVOS del nivel:
+ *
+ *   REDONDEO AL MÁS CERCANO. 7 → 1,05 → 1; 17 → 2,55 → 3. Es el único que
+ *   cumple las dos cosas pedidas: que un grupo de 7 mueva 1 y que uno de 17
+ *   siga moviendo 3, como antes. Hacia abajo, 17 movería 2; hacia arriba, 7
+ *   movería 2. Los ,5 van hacia arriba: 10 → 2.
+ *
+ *   MÍNIMO 1. Con el 15% a secas, un nivel de 3 activos movería 0 (0,45
+ *   redondea a 0), y un nivel donde nunca sube nadie se congela: quien merece
+ *   subir se queda atascado para siempre. Uno por dirección es el movimiento
+ *   más pequeño que mantiene la escalera abierta.
+ *
+ *   NADIE ESTÁ A LA VEZ ARRIBA Y ABAJO. Si alguien cae dentro del cupo por los
+ *   dos lados —el único activo del nivel, o todos empatados— no se mueve: en
+ *   su nivel no hubo con quién distinguirlo. Con la regla de la 0006 un nivel
+ *   entero empatado subía completo, y el único activo del nivel de arriba
+ *   bajaba por ser a la vez el mejor y el peor.
+ *
+ *   EMPATES EN EL BORDE: LOS DOS. rank(), el criterio de Xeno. Con cupo 1 un
+ *   empate en el primer puesto sube a dos, que en relativo es más que con cupo
+ *   3; pero ya no puede pasar lo de antes, un triple empate en el tercer puesto
+ *   de un grupo de 7 subiendo a cinco.
+ *
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 7. EL PODIO ES LA ZONA DE ASCENSO
+ *
+ * El podio era el 28% del nivel —2 nombres en un grupo de 7— y subían 3 con la
+ * regla vieja o 1 con la nueva. Podio y ascenso decían cosas distintas, y con
+ * el 15% el podio prometía más de lo que cumplía: salir en él ya no era subir.
+ *
+ * Ahora los dos salen de `ligas_zona`. El podio del tablero es exactamente
+ * quien subiría si la semana terminara en ese momento, y el cierre del lunes
+ * sube exactamente a quien estaba ahí. En el nivel de arriba, donde no se
+ * sube, el podio es la misma zona: los que lideran.
+ *
+ * Consecuencias que conviene tener a la vista:
+ *   · el podio es más chico: 3 nombres con 17 activos (eran 5), 1 con 7 (eran
+ *     2). Las medallas de podio cuestan más.
+ *   · el lunes por la mañana, antes de que nadie sume FP, el podio está vacío.
+ *     Con el 28% salía la liga ENTERA: todos a cero, todos empatados en el
+ *     puesto 1, todos dentro del corte.
+ *
+ * ═══════════ LAS MEDALLAS NO SE RECALCULAN HACIA ATRÁS ═══════════
+ *
+ * Las medallas de podio se calculan al vuelo desde liga_resultados (0008), sin
+ * tabla de medallas ganadas. Cambiar el podio ahí para todos los ciclos habría
+ * QUITADO medallas ya ganadas a quien estuvo en el podio del 28% y no lo está
+ * en el de la zona. Así que cada ciclo se cuenta con la regla con que se jugó:
+ * los anteriores a 'podio_proporcional_desde' con el 28%, los demás con la
+ * zona. La fecha se fija al aplicar esta migración y no se mueve si se vuelve
+ * a correr.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/* Cuántos se mueven por dirección en un nivel con p_activos activos. */
+create or replace function public.ligas_cupo(p_activos bigint)
+returns integer
+language sql
+immutable
+as $$
+  select case
+    when p_activos is null or p_activos < 1 then 0
+    else greatest(1, round(p_activos * 0.15))::integer
+  end;
+$$;
+
+/*
+ * En qué zona está alguien dentro de su nivel: 'sube', 'baja' o null.
+ *
+ *   p_arriba   su puesto contando desde el mejor (rank: los empatados comparten)
+ *   p_abajo    su puesto contando desde el peor
+ *   p_activos  cuántos activos tiene el nivel
+ *
+ * La usan el cierre semanal (quién se mueve), el tablero (quién sale en el
+ * podio) y liga_resultados (el podio de las medallas). Un solo sitio.
+ */
+create or replace function public.ligas_zona(p_arriba bigint, p_abajo bigint, p_activos bigint)
+returns text
+language sql
+immutable
+as $$
+  select case
+    when p_arriba is null or p_abajo is null then null
+    when p_arriba <= public.ligas_cupo(p_activos) and p_abajo > public.ligas_cupo(p_activos) then 'sube'
+    when p_abajo <= public.ligas_cupo(p_activos) and p_arriba > public.ligas_cupo(p_activos) then 'baja'
+  end;
+$$;
+
+/* Desde qué ciclo el podio es la zona. Ver arriba: no se recalcula hacia atrás. */
+insert into public.ajustes (clave, valor, nota)
+values (
+  'podio_proporcional_desde',
+  public.ciclo_actual()::text,
+  'Primer ciclo cuyo podio es la zona de ascenso (0026). Los anteriores se cuentan con el 28%.'
+)
+on conflict (clave) do nothing;
+
 -- ── ligas_sembrar: recalcula por activos, la partición decide los cambios ────
 
 /*
@@ -504,8 +631,9 @@ $$;
  *   · primera siembra: niveles por activos; si son varios, la partición
  *   · cierre: niveles de la semana pasada del recuento guardado
  *   · cierre: objetivo por activos; si cambia, la partición
+ *   · movimiento: la zona proporcional en vez de 3 fijos
  *   · los cuatro finales registran con ligas_cerrar_ciclo
- * El movimiento semanal —subir tres, bajar tres— queda byte a byte igual.
+ * La ventana de FP de la semana que se cierra queda byte a byte igual.
  */
 create or replace function public.ligas_sembrar(p_subject text)
 returns void
@@ -660,22 +788,33 @@ begin
     select
       f.*,
       rank() over (partition by f.liga order by f.fp desc) as puesto_arriba,
-      rank() over (partition by f.liga order by f.fp asc)  as puesto_abajo
+      rank() over (partition by f.liga order by f.fp asc)  as puesto_abajo,
+      count(*) over (partition by f.liga)                  as activos_nivel
     from fp_anterior f
     where f.fp > 0
+  ),
+  /*
+   * ANTES: subían los 3 primeros y bajaban los 3 últimos, fuera cual fuera el
+   * tamaño del nivel. AHORA: la zona de ligas_zona(), el 15% de los activos
+   * del nivel con mínimo 1 —ver las secciones 6 y 7 de esta migración—. Es
+   * la misma función que decide el podio del tablero: quien sube el lunes es
+   * exactamente quien estaba en el podio el domingo por la noche.
+   */
+  zonas as (
+    select a.user_id, public.ligas_zona(a.puesto_arriba, a.puesto_abajo, a.activos_nivel) as zona
+      from activos a
   )
   select
     p_subject,
     v_ciclo,
     f.user_id,
     case
-      /* rank() empata: dos en el puesto 3 suben los dos. */
-      when a.puesto_arriba <= 3 and f.liga > 1 then f.liga - 1
-      when a.puesto_abajo  <= 3 and f.liga < v_ligas then f.liga + 1
+      when z.zona = 'sube' and f.liga > 1 then f.liga - 1
+      when z.zona = 'baja' and f.liga < v_ligas then f.liga + 1
       else f.liga
     end
   from fp_anterior f
-  left join activos a on a.user_id = f.user_id;
+  left join zonas z on z.user_id = f.user_id;
 
   perform public.ligas_cerrar_ciclo(p_subject, v_ciclo, v_ligas, v_n, v_activos);
 end;
@@ -721,9 +860,9 @@ begin
 end;
 $$;
 
--- ── liga_tablero: total_ligas del recuento guardado ─────────────────────────
+-- ── liga_tablero: recuento guardado y podio = zona de ascenso ───────────────
 
-/* Derivada de la 0006. Un solo cambio: de dónde sale v_total. */
+/* Derivada de la 0006. Dos cambios: de dónde sale v_total, y el podio es la zona. */
 create or replace function public.liga_tablero(p_subject text)
 returns table (
   liga          integer,
@@ -747,7 +886,6 @@ declare
   v_liga  integer;
   v_tam   integer;
   v_total integer;
-  v_corte integer;
 begin
   if v_uid is null then
     raise exception 'Se requiere sesión para ver tu liga' using errcode = '42501';
@@ -767,8 +905,12 @@ begin
   /* Del recuento guardado: la misma respuesta que da liga_contexto. */
   v_total := public.liga_niveles(p_subject, v_ciclo);
 
-  /* 28% de la liga, redondeado hacia arriba: a 17 personas son 5 puestos. */
-  v_corte := greatest(1, ceil(v_tam::numeric * 0.28)::integer);
+  /*
+   * EL PODIO YA NO ES EL 28% DE LA LIGA. Es la zona de ascenso: quien subiría
+   * si la semana terminara ahora, con ligas_zona(), la misma función del
+   * cierre semanal. corte_podio pasa a ser el cupo del nivel. Ver las
+   * secciones 6 y 7 de la 0026.
+   */
 
   return query
   with tabla as (
@@ -797,11 +939,25 @@ begin
    * rank() ya da el mismo número a los empatados, así que basta con incluir a
    * todos los que compartan el puesto de corte.
    */
+  zonas as (
+    select
+      t.user_id,
+      public.ligas_zona(
+        rank() over (order by t.fp desc),
+        rank() over (order by t.fp asc),
+        count(*) over ()
+      ) as zona
+    from tabla t
+    where t.fp > 0
+  ),
   con_podio as (
-    select c.*, (c.posicion <= v_corte) as en_podio from clasificada c
+    select c.*, coalesce(z.zona = 'sube', false) as en_podio
+      from clasificada c
+      left join zonas z on z.user_id = c.user_id
   )
   select
-    v_liga, v_total, v_tam, v_corte,
+    v_liga, v_total, v_tam,
+    (select public.ligas_cupo(count(*)) from tabla t2 where t2.fp > 0),
     c.posicion, p.nickname, c.fp,
     (c.user_id = v_uid) as es_tuyo,
     c.en_podio
@@ -810,6 +966,74 @@ begin
   where c.en_podio or c.user_id = v_uid
   order by c.posicion;
 end;
+$$;
+
+-- ── liga_resultados: el podio de las medallas, con fecha de corte ───────────
+
+/*
+ * Derivada de la 0008. Un solo cambio: en_podio. Desde la fecha de corte es la
+ * zona de ascenso; antes, el 28% con el que se jugaron esos ciclos.
+ */
+create or replace function public.liga_resultados(p_subject text, p_ciclo date)
+returns table (user_id uuid, liga integer, posicion bigint, fp bigint, en_podio boolean, tam_liga integer)
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  with fp_ciclo as (
+    select
+      m.user_id,
+      m.liga,
+      coalesce((
+        select sum(h.fp_awarded)
+          from public.fp_history h
+         where h.user_id = m.user_id
+           and h.subject_id = p_subject
+           and h.created_at >= p_ciclo::timestamp at time zone 'America/Bogota'
+           and h.created_at <  (p_ciclo + 7)::timestamp at time zone 'America/Bogota'
+      ), 0)::bigint as fp
+    from public.liga_membresia m
+    where m.subject_id = p_subject and m.ciclo = p_ciclo
+  ),
+  tam as (
+    select liga, count(*)::integer as n from fp_ciclo group by liga
+  ),
+  clasificada as (
+    select
+      f.user_id, f.liga, f.fp,
+      rank() over (partition by f.liga order by f.fp desc) as posicion,
+      t.n as tam_liga
+    from fp_ciclo f
+    join tam t on t.liga = f.liga
+  ),
+  zonas as (
+    select
+      f.user_id,
+      public.ligas_zona(
+        rank() over (partition by f.liga order by f.fp desc),
+        rank() over (partition by f.liga order by f.fp asc),
+        count(*) over (partition by f.liga)
+      ) as zona
+    from fp_ciclo f
+    where f.fp > 0
+  )
+  select
+    c.user_id, c.liga, c.posicion, c.fp,
+    (case
+       /*
+        * Cada ciclo con la regla con que se jugó. Los anteriores a la 0026
+        * con el 28%: recalcularlos con la zona le quitaría a alguien una
+        * medalla de podio que ya tiene. Sin el ajuste, todo con el 28%:
+        * es la opción que nunca quita nada.
+        */
+       when p_ciclo < public.ajuste_fecha('podio_proporcional_desde', '9999-12-31'::date)
+         then c.posicion <= greatest(1, ceil(c.tam_liga::numeric * 0.28)::integer)
+       else coalesce(z.zona = 'sube', false)
+     end) as en_podio,
+    c.tam_liga
+  from clasificada c
+  left join zonas z on z.user_id = c.user_id;
 $$;
 
 -- ── liga_contexto: tres columnas más, y por eso drop + create ───────────────
@@ -909,7 +1133,7 @@ $$;
 
 -- ── Permisos ────────────────────────────────────────────────────────────────
 /*
- * Las cinco internas, fuera del alcance de TODOS los roles de cliente,
+ * Las siete internas, fuera del alcance de TODOS los roles de cliente,
  * incluido `authenticated`. Solo las llaman funciones security definer, que
  * corren como su dueño; ningún estudiante tiene por qué poder decir "reparte
  * esta materia".
@@ -922,6 +1146,8 @@ revoke all on function public.ligas_cerrar_ciclo(text, date, integer, integer, i
 revoke all on function public.ligas_repartir(text, date, date, integer) from public, anon, authenticated;
 revoke all on function public.ligas_abrir_elite(text, date, date) from public, anon, authenticated;
 revoke all on function public.ligas_transicion(text, date, date, integer, integer) from public, anon, authenticated;
+revoke all on function public.ligas_cupo(bigint) from public, anon, authenticated;
+revoke all on function public.ligas_zona(bigint, bigint, bigint) from public, anon, authenticated;
 
 /*
  * liga_contexto se recreó con drop: SIN ESTO QUEDARÍA ABIERTA A anon. Las
@@ -934,7 +1160,9 @@ revoke all on function public.ligas_para(integer) from public, anon;
 revoke all on function public.ligas_sembrar(text) from public, anon;
 revoke all on function public.liga_entrar(text) from public, anon;
 revoke all on function public.liga_tablero(text) from public, anon;
+revoke all on function public.liga_resultados(text, date) from public, anon;
 grant execute on function public.ligas_para(integer) to authenticated;
 grant execute on function public.ligas_sembrar(text) to authenticated;
 grant execute on function public.liga_entrar(text) to authenticated;
 grant execute on function public.liga_tablero(text) to authenticated;
+grant execute on function public.liga_resultados(text, date) to authenticated;

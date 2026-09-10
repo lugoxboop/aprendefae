@@ -149,19 +149,26 @@ select public.ligas_sembrar('zzz-prueba-ligas');
 -- ---------------------------------------------------------------------------
 -- 4, 5 y 6. Ascenso, descenso y la regla del inactivo
 -- ---------------------------------------------------------------------------
+/*
+ * CON EL CUPO PROPORCIONAL (0026). La liga 2 tuvo 9 activos —el 11 no—: el
+ * cupo es el 15% de 9, redondeado, 1. Sube solo el primero, el 20. Con la
+ * regla de 3 fijos subían 18, 19 y 20. Se mira a todos los de la liga 2 que
+ * acabaron en la 1, no solo a los esperados: que suba uno de más también es
+ * fallo.
+ */
 insert into resultado_prueba
-select 4, 'Suben los 3 primeros de la liga 2 (18, 19 y 20)',
-  case when count(*) = 3 then 'PASA' else 'FALLA' end,
-  'subieron a la liga 1: ' || coalesce(string_agg(i.n::text, ', ' order by i.n), 'nadie')
+select 4, 'Con 9 activos el cupo es 1: sube solo el primero de la liga 2 (el 20)',
+  case when coalesce(string_agg(i.n::text, ', ' order by i.n), '') = '20' then 'PASA' else 'FALLA' end,
+  'de la liga 2 subieron a la 1: ' || coalesce(string_agg(i.n::text, ', ' order by i.n), 'nadie')
 from public.liga_membresia m join ids i on i.uid = m.user_id
-where m.ciclo = public.ciclo_actual() and i.n in (18, 19, 20) and m.liga = 1;
+where m.ciclo = public.ciclo_actual() and i.n between 11 and 20 and m.liga = 1;
 
 insert into resultado_prueba
-select 5, 'Bajan los 3 últimos de la liga 2 (12, 13 y 14)',
-  case when count(*) = 3 then 'PASA' else 'FALLA' end,
-  'bajaron a la liga 3: ' || coalesce(string_agg(i.n::text, ', ' order by i.n), 'nadie')
+select 5, 'Con cupo 1 baja solo el último de la liga 2 (el 12)',
+  case when coalesce(string_agg(i.n::text, ', ' order by i.n), '') = '12' then 'PASA' else 'FALLA' end,
+  'de la liga 2 bajaron a la 3: ' || coalesce(string_agg(i.n::text, ', ' order by i.n), 'nadie')
 from public.liga_membresia m join ids i on i.uid = m.user_id
-where m.ciclo = public.ciclo_actual() and i.n in (12, 13, 14) and m.liga = 3;
+where m.ciclo = public.ciclo_actual() and i.n between 11 and 20 and m.liga = 3;
 
 insert into resultado_prueba
 select 6, 'Sin actividad en la semana: no se mueve',
@@ -181,21 +188,22 @@ from (
 -- podía fallar nunca, ni siquiera si el cierre resolviera mal los empates, y
 -- `ligas_sembrar` vuelve sin hacer nada si el ciclo ya está sembrado.
 --
--- QUÉ SE PRUEBA. Con 17 y 18 empatados en 80, la liga 2 queda 100, 90, 80, 80:
--- rank() da el puesto 3 a los dos, y el cierre los sube a los dos. Con
+-- QUÉ SE PRUEBA. Con el cupo proporcional la liga 2 sube a UNO (9 activos).
+-- Con 19 y 20 empatados en 100, rank() da el puesto 1 a los dos, los dos caen
+-- dentro del cupo, y el cierre sube a los dos aunque el cupo sea 1. Con
 -- row_number() en vez de rank(), subiría uno solo.
 --
 -- SI FALLARA DE VERDAD: cambiar rank() por row_number() en ligas_sembrar deja
--- a 17 en la liga 2 y este paso cuenta 1 en vez de 2 → FALLA.
+-- a uno de los dos en la liga 2 y este paso cuenta 1 en vez de 2 → FALLA.
 --
 -- El resembrado no altera nada de lo ya medido: los pasos 4, 5 y 6 ya
 -- escribieron su fila, y el estudiante 1 —el de la sesión del paso 8— sigue en
 -- la misma liga 3 con los mismos compañeros.
 -- ---------------------------------------------------------------------------
 update public.fp_history
-   set fp_awarded = 80
+   set fp_awarded = 100
  where subject_id = 'zzz-prueba-ligas'
-   and user_id in (select uid from ids where n in (17, 18));
+   and user_id in (select uid from ids where n = 19);
 
 delete from public.liga_membresia
  where subject_id = 'zzz-prueba-ligas' and ciclo = public.ciclo_actual();
@@ -203,12 +211,12 @@ delete from public.liga_membresia
 select public.ligas_sembrar('zzz-prueba-ligas');
 
 insert into resultado_prueba
-select 7, 'Empate en el 3.º puesto: suben LOS DOS empatados',
+select 7, 'Empate en el borde del cupo: 19 y 20, empatados en 100, suben LOS DOS',
   case when count(*) = 2 then 'PASA' else 'FALLA' end,
-  'empatados en 80 que subieron a la liga 1: ' ||
-  coalesce(string_agg(i.n::text, ', ' order by i.n), 'ninguno') || ' (esperados 17 y 18)'
+  'empatados en 100 que subieron a la liga 1: ' ||
+  coalesce(string_agg(i.n::text, ', ' order by i.n), 'ninguno') || ' (esperados 19 y 20)'
 from public.liga_membresia m join ids i on i.uid = m.user_id
-where m.ciclo = public.ciclo_actual() and i.n in (17, 18) and m.liga = 1;
+where m.ciclo = public.ciclo_actual() and i.n in (19, 20) and m.liga = 1;
 
 -- ---------------------------------------------------------------------------
 -- 8. El tablero: corte del podio y qué se devuelve
@@ -219,21 +227,32 @@ where m.ciclo = public.ciclo_actual() and i.n in (17, 18) and m.liga = 1;
  * que no es dueño de esa tabla, y Postgres la rechaza con "permission denied
  * for table ids" antes de llegar a probar nada de ligas.
  */
+/*
+ * FP de ESTA semana para cinco compañeros de nivel del estudiante 1, del 2
+ * (50) al 6 (10). El 1 no suma: así su fila sale aparte y no en el podio.
+ * Con 5 activos el cupo es 1: el podio es el 2, y nadie más.
+ */
+insert into public.fp_history (user_id, activity_id, subject_id, fp_awarded, difficulty, modality, created_at)
+select uid, 'act-hoy', 'zzz-prueba-ligas', (7 - n) * 10, 'medio', 'evaluativa', now()
+  from ids where n between 2 and 6;
+
 select set_config('request.jwt.claims',
   json_build_object('sub', (select uid::text from ids where n = 1), 'role', 'authenticated')::text, true);
 
 set local role authenticated;
 
 insert into resultado_prueba
-select 8, 'Tablero: corta al 28% y solo devuelve podio + tu fila',
-  case when filas > 0
-        and corte = greatest(1, ceil(tam::numeric * 0.28)::integer)
-        and tuyas = 1
+select 8, 'Tablero: el podio es la zona de ascenso — 5 activos, 1 nombre, y tu fila aparte',
+  case when corte = 1 and podio = 1 and primero = 'liga_02' and tuyas = 1 and filas = 2
        then 'PASA' else 'FALLA' end,
-  format('liga de %s → podio de %s ; filas devueltas %s ; filas tuyas %s', tam, corte, filas, tuyas)
+  format('cupo %s ; en el podio %s (%s) ; filas devueltas %s ; filas tuyas %s',
+         corte, podio, primero, filas, tuyas)
 from (
-  select max(tam_liga) as tam, max(corte_podio) as corte,
-         count(*) as filas, count(*) filter (where es_tuyo) as tuyas
+  select max(corte_podio) as corte,
+         count(*) filter (where en_podio) as podio,
+         max(nickname) filter (where en_podio) as primero,
+         count(*) as filas,
+         count(*) filter (where es_tuyo) as tuyas
     from public.liga_tablero('zzz-prueba-ligas')
 ) t;
 
