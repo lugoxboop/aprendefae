@@ -145,23 +145,53 @@ export default function ExpedienteRescate({ onCompletar }) {
             <line x1="0" y1="-44" x2="0" y2="-86" stroke="rgba(203,220,242,0.3)" strokeWidth="2.5" />
           </g>
 
-          {/* Los cuatro restos. */}
+          {/* Los cuatro restos: el SVG dibuja el círculo; el número y el toque van en HTML, abajo. */}
           {RESTOS_BLOCKBUSTER.map((r, i) => {
             const p = POSICIONES[i];
             const fuera = revelados.includes(i);
             return (
-              <g key={r.nivel} onClick={() => destapar(i)} style={{ cursor: fuera ? "default" : "pointer" }}>
+              <g key={r.nivel}>
                 <circle cx={p.x} cy={p.y} r="26" fill={fuera ? "rgba(42,157,143,0.16)" : "rgba(203,220,242,0.07)"}
                   stroke={fuera ? FAE.teal : "rgba(203,220,242,0.3)"} strokeWidth="1.6" />
-                <text x={p.x} y={p.y + 5} textAnchor="middle" fontFamily="Sora, sans-serif" fontSize="13" fontWeight="700"
-                  fill={fuera ? FAE.teal : "rgba(203,220,242,0.55)"}>
-                  {i + 1}
-                </text>
                 {limpiando === i && <circle className="fae-er-limpiar" cx={p.x} cy={p.y} r="30" fill="#CBDCF2" />}
               </g>
             );
           })}
         </svg>
+
+        {/*
+          EL NÚMERO Y EL TOQUE, EN HTML. Estaban dentro del SVG, en unidades de
+          un lienzo de 520: a 375 px de ventana el dibujo se escala a 0,62 y los
+          números salían a 8 px. Aquí van a px reales, y cada resto es un botón
+          de verdad —antes era un <g> con onClick dentro de un SVG aria-hidden,
+          al que no llegaban ni el teclado ni un lector de pantalla—.
+
+          Van por DEBAJO del velo de la linterna, que se pinta después: siguen a
+          oscuras hasta que se les acerca la luz, que es el juego.
+        */}
+        {RESTOS_BLOCKBUSTER.map((r, i) => {
+          const p = POSICIONES[i];
+          const fuera = revelados.includes(i);
+          return (
+            <button
+              key={r.nivel}
+              type="button"
+              onClick={() => destapar(i)}
+              disabled={fuera}
+              aria-label={fuera ? `Resto ${i + 1}, ya recuperado: ${r.nivel}` : `Resto ${i + 1} de ${RESTOS_BLOCKBUSTER.length}`}
+              style={{
+                position: "absolute", left: `${(p.x / VB.w) * 100}%`, top: `${(p.y / VB.h) * 100}%`,
+                transform: "translate(-50%, -50%)", width: "44px", height: "44px",
+                display: "grid", placeItems: "center", padding: 0, borderRadius: "999px",
+                background: "transparent", border: "none", cursor: fuera ? "default" : "pointer",
+                fontFamily: "Sora, sans-serif", fontSize: "clamp(15px, 3.2vw, 20px)", fontWeight: 700,
+                color: fuera ? FAE.teal : "rgba(203,220,242,0.62)",
+              }}
+            >
+              {i + 1}
+            </button>
+          );
+        })}
 
         {/*
           La linterna. Un velo oscuro con un agujero suave donde está el cursor;

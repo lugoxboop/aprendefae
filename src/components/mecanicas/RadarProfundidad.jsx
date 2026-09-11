@@ -135,6 +135,7 @@ export default function RadarProfundidad({ onCompletar }) {
 
         {/* ----------------------------- el radar ----------------------------- */}
         <div style={{ borderRadius: "18px", background: "#0A1422", border: "1px solid rgba(248,249,250,0.14)", padding: "14px" }}>
+          <div style={{ position: "relative" }}>
           <svg viewBox={`0 0 ${VB} ${VB}`} width="100%" style={{ display: "block" }} aria-hidden="true">
             <defs>
               <linearGradient id="rd-barrido" x1="0" y1="0" x2="1" y2="0">
@@ -145,7 +146,7 @@ export default function RadarProfundidad({ onCompletar }) {
 
             <circle cx={C} cy={C} r={RADIOS[0]} fill="rgba(42,157,143,0.05)" />
 
-            {/* Anillos, de fuera hacia dentro. Cada uno es una zona de suelte. */}
+            {/* Anillos, de fuera hacia dentro. Cada uno es una zona de suelte; su nombre va en HTML, abajo. */}
             {ANILLOS.map((nivel, k) => (
               <g key={nivel} onClick={() => soltar(nivel)} style={{ cursor: elegido ? "pointer" : "default" }}>
                 <circle
@@ -155,13 +156,6 @@ export default function RadarProfundidad({ onCompletar }) {
                   strokeWidth={elegido ? 1.6 : 1}
                   strokeDasharray={elegido ? "5 4" : undefined}
                 />
-                <text
-                  x={C} y={C - RADIOS[k] + 15} textAnchor="middle"
-                  fontFamily="Sora, sans-serif" fontSize="11" fontWeight="700"
-                  fill={elegido ? FAE.teal : "rgba(42,157,143,0.6)"} letterSpacing="0.5"
-                >
-                  {nivel.toUpperCase()}
-                </text>
               </g>
             ))}
 
@@ -186,6 +180,31 @@ export default function RadarProfundidad({ onCompletar }) {
                 fill="none" stroke={FAE.teal} strokeWidth="2" />
             )}
           </svg>
+
+          {/*
+            Los nombres de los anillos, en HTML a 12 px. Dentro del SVG iban a 11
+            unidades de un lienzo de 340, y a 375 px de ventana salían a 9,6 px.
+            No captan el toque —pointer-events: none—: tocar el nombre es tocar
+            el anillo que hay debajo, como antes. El del centro parte en dos
+            líneas para caber en su círculo.
+          */}
+          {ANILLOS.map((nivel, k) => (
+            <span
+              key={nivel}
+              aria-hidden="true"
+              style={{
+                position: "absolute", left: "50%", top: `${((C - RADIOS[k] + 5) / VB) * 100}%`,
+                transform: "translateX(-50%)", maxWidth: `${((RADIOS[k] * 1.3) / VB) * 100}%`,
+                textAlign: "center", pointerEvents: "none",
+                fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700,
+                letterSpacing: "0.04em", lineHeight: 1.15,
+                color: elegido ? FAE.teal : "rgba(42,157,143,0.85)",
+              }}
+            >
+              {nivel.toUpperCase()}
+            </span>
+          ))}
+          </div>
 
           <p style={{ fontSize: "12px", color: "rgba(248,249,250,0.45)", textAlign: "center", margin: "10px 0 0" }}>
             {elegido ? "Ahora toca el anillo donde va" : `${aciertos} de 4 del caso, a la primera`}

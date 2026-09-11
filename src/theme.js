@@ -25,6 +25,41 @@ export const FAE = {
  */
 export const ANCHO_ESTRECHO = 560;
 
+/*
+ * ═══════════ EL SUELO TIPOGRÁFICO, TAL COMO ESTÁ HOY ═══════════
+ *
+ * Nada de esto se aplica solo: es la regla que se sigue a mano, escrita aquí
+ * para que el día que se quiera subir se suba de forma pareja.
+ *
+ *   12 px   el mínimo de todo lo que se LEE: texto de contenido, rótulos de
+ *           un diagrama, nombres de nodos. Medido a 375 px de ventana, que
+ *           es donde falla. Ojo con el texto dentro de un SVG: si el SVG
+ *           escala su viewBox, el texto escala con él y un 13 del código
+ *           puede salir a 8 en el teléfono. Por eso el camino, el radar, el
+ *           expediente y el asedio llevan sus rótulos en HTML encima del
+ *           dibujo, a px reales.
+ *
+ *   10,5 px EL SUELO ACTUAL DEL SITIO, por decisión de estilo: etiquetas en
+ *           mayúsculas con tracking ("RONDA 1 DE 3", "ETAPA 2"), contadores y
+ *           la insignia «Hacer / Aprender». Son marcas, no texto de lectura,
+ *           y se dejaron así a propósito (septiembre de 2026).
+ *
+ *   Por debajo de 10,5 hay cuatro que ya existen y habría que revisar si se
+ *   sube el suelo: «CAPILARES» (9 px, Política Económica · Aprender),
+ *   «ARCHIVO» (10 px, Diagnóstico en vivo), «PRIMER / SEGUNDO ORDEN» y
+ *   «· TE TOCA» (10 px, Cirugía de reconstrucción) y «NIVEL DEL AGUA»
+ *   (10 px, el Proyecto del Arca).
+ *
+ *   Y un caso distinto, TEXTO QUE SE LEE por debajo de 12, fijo en HTML: las
+ *   citas archivadas en los cajones del Arca (11,5), el balance de Corriente
+ *   cruzada (11,5) y los avisos "Caso hipotético…" del Simulador de crisis
+ *   (10,5) y "Escenario simulado…" del Tablero de decisiones (11). No son
+ *   marcas: si se sube algo, esto primero.
+ *
+ * Para encontrarlos todos: buscar fontSize con valores por debajo de 12 —y
+ * mirar a 375 px lo que esté dentro de un <svg>, que no se ve en el código—.
+ */
+
 /* Paleta de DA-Learn (tema de Macroeconomía). */
 export const COLORS = {
   bg: "#0F1B2E",

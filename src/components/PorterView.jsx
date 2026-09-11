@@ -210,17 +210,28 @@ function IndustryRadar({ industry }) {
         {industry.name}
       </p>
       <p style={{ fontSize: "13px", color: industry.accent, margin: "0 0 10px" }}>{industry.tagline}</p>
+      {/*
+        Los nombres de los vértices salían a 11 px, fijos: Recharts dibuja a
+        píxeles reales, así que aquí no era el escalado de un viewBox sino un
+        cuerpo pequeño. A 12,5 px no cabían: a 320 px de ventana "Sustitutos"
+        se cortaba por la izquierda, porque Recharts recorta en el borde de su
+        SVG aunque el panel tenga relleno de sobra alrededor. Dos cosas: el SVG
+        deja que el rótulo se asome a ese relleno, y el radar baja al 56%.
+      */}
+      <style>{".fae-radar-industria .recharts-surface { overflow: visible; }"}</style>
+      <div className="fae-radar-industria">
       <ResponsiveContainer width="100%" height={250}>
-        <RadarChart data={toRadarData(industry)} outerRadius="70%">
+        <RadarChart data={toRadarData(industry)} outerRadius="56%">
           <PolarGrid stroke="rgba(203,220,242,0.18)" />
           <PolarAngleAxis
             dataKey="axis"
-            tick={{ fill: "rgba(248,249,250,0.72)", fontSize: 11, fontFamily: "Inter, sans-serif" }}
+            tick={{ fill: "rgba(248,249,250,0.78)", fontSize: 12.5, fontFamily: "Inter, sans-serif" }}
           />
           <PolarRadiusAxis domain={[0, 5]} tick={false} axisLine={false} />
           <Radar dataKey="value" stroke={industry.accent} strokeWidth={2} fill={industry.accent} fillOpacity={0.28} />
         </RadarChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 }

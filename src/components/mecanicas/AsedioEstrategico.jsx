@@ -26,10 +26,22 @@ import { FUERZAS, CASOS, CIERRE, PUNTOS_TOTALES, puntajeRonda } from "../../data
  * plantilla a todo.
  */
 
-/* Geometría del pentágono. Vértice arriba y flancos cada 72°. */
-const R_NUCLEO = 30;
-const R_ESCUDO = 74;
+/*
+ * Geometría del pentágono. Vértice arriba y flancos cada 72°.
+ *
+ * EL PENTÁGONO ENCOGIÓ PARA DEJAR SITIO AL TEXTO. Los rótulos iban dentro del
+ * SVG a 7–8,5 unidades en un lienzo de 220 que se pinta a 300 px como mucho:
+ * salían entre 9,5 y 11,6 px, en el teléfono Y en el escritorio. Ahora son
+ * HTML a 12,5 px, y a ese cuerpo no cabían alrededor de un escudo de radio 74
+ * sin montarse sobre los arcos: el escudo baja a 52 y los rótulos van en la
+ * franja que queda, pegados al borde en los flancos.
+ */
+/* El núcleo abraza "Rentabilidad / de la empresa" a 12,5 px: con 24 el trazo del círculo le cruzaba por detrás. */
+const R_NUCLEO = 34;
+const R_ESCUDO = 52;
+const R_ROTULO = 86;
 const CENTRO = 110;
+const LIENZO = 220;
 
 const rad = (grados) => ((grados - 90) * Math.PI) / 180;
 const punto = (grados, radio) => ({
@@ -43,6 +55,24 @@ function arcoFlanco(i, radio) {
   const a = punto(centro - 28, radio);
   const b = punto(centro + 28, radio);
   return `M ${a.x.toFixed(2)} ${a.y.toFixed(2)} A ${radio} ${radio} 0 0 1 ${b.x.toFixed(2)} ${b.y.toFixed(2)}`;
+}
+
+/*
+ * Dónde va el rótulo de cada flanco, en porcentajes del lienzo cuadrado.
+ *
+ * El de arriba y los dos de abajo, centrados en su vértice. Los dos de los
+ * flancos laterales, PEGADOS AL BORDE y alineados hacia fuera: centrados, a
+ * 12,5 px, "Nuevos entrantes" se salía del cuadrado por la derecha y
+ * "Proveedores" por la izquierda. Suben un poco sobre su vértice para no
+ * pisar el arco cuando el flanco va grueso.
+ */
+function lugarDelRotulo(i) {
+  /* Los dos de abajo, un poco más fuera: un flanco inferior roto y grueso llegaba a rozar su rótulo. */
+  const p = punto(i * 72, i === 2 || i === 3 ? R_ROTULO + 6 : R_ROTULO);
+  const pct = (v) => `${(v / LIENZO) * 100}%`;
+  if (i === 1) return { right: pct(2), top: pct(p.y - 8), transform: "translateY(-50%)", textAlign: "right", maxWidth: pct(62) };
+  if (i === 4) return { left: pct(2), top: pct(p.y - 8), transform: "translateY(-50%)", textAlign: "left", maxWidth: pct(62) };
+  return { left: pct(p.x), top: pct(p.y), transform: "translate(-50%, -50%)", textAlign: "center", width: "max-content", maxWidth: pct(100) };
 }
 
 /*
@@ -239,7 +269,12 @@ export default function AsedioEstrategico({ onCompletar }) {
 
       {/* ---------------- el pentágono ---------------- */}
       <div style={{ borderRadius: "18px", background: "rgba(248,249,250,0.03)", border: "1px solid rgba(248,249,250,0.1)", padding: "12px", marginBottom: "16px" }}>
-        <svg viewBox="0 0 220 220" width="100%" style={{ display: "block", maxHeight: "300px", margin: "0 auto" }} role="img"
+        {/*
+          Un cuadrado: el SVG lo llena entero y los rótulos en HTML se colocan en
+          porcentajes del mismo lienzo, así que caen en su sitio a cualquier ancho.
+        */}
+        <div style={{ position: "relative", width: "100%", maxWidth: "300px", aspectRatio: "1 / 1", margin: "0 auto" }}>
+        <svg viewBox={`0 0 ${LIENZO} ${LIENZO}`} width="100%" height="100%" style={{ display: "block" }} role="img"
           aria-label={fase === "asignar" ? "Pentágono de defensa, sin desplegar" : `Resultado: ${Math.round(resultado?.pct ?? 0)}% de margen defendido`}>
           {FUERZAS.map((f, i) => {
             const asignado = asignacion[f.id] ?? 0;
@@ -256,43 +291,21 @@ export default function AsedioEstrategico({ onCompletar }) {
             /* Un flanco roto además cede hacia fuera. */
             const empuje = yaReveló && !est.aguanta ? est.intensidad * 7 : 0;
 
-            const etiqueta = punto(i * 72, R_ESCUDO + 30);
-
             return (
-              <g key={f.id}>
-                <path
-                  d={arcoFlanco(i, R_ESCUDO + empuje)}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={grosor}
-                  strokeLinecap="round"
-                  strokeDasharray={guiones}
-                  style={{
-                    opacity: yaReveló && !est.aguanta ? 0.45 + (1 - est.intensidad) * 0.5 : 1,
-                    filter: yaReveló && est.aguanta ? `drop-shadow(0 0 6px ${FAE.teal})` : "none",
-                    transition: "all 420ms cubic-bezier(0.2,0.8,0.3,1)",
-                  }}
-                />
-                <text
-                  x={etiqueta.x}
-                  y={etiqueta.y}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  style={{ fontFamily: "Inter, sans-serif", fontSize: "8.5px", fill: yaReveló ? color : "rgba(248,249,250,0.5)", transition: "fill 420ms ease" }}
-                >
-                  {f.corto}
-                </text>
-                {yaReveló && (
-                  <text
-                    x={etiqueta.x}
-                    y={etiqueta.y + 10}
-                    textAnchor="middle"
-                    style={{ fontFamily: "Sora, sans-serif", fontSize: "8px", fontWeight: 700, fill: "rgba(248,249,250,0.55)" }}
-                  >
-                    {asignado} / {caso.ideal[f.id]}
-                  </text>
-                )}
-              </g>
+              <path
+                key={f.id}
+                d={arcoFlanco(i, R_ESCUDO + empuje)}
+                fill="none"
+                stroke={color}
+                strokeWidth={grosor}
+                strokeLinecap="round"
+                strokeDasharray={guiones}
+                style={{
+                  opacity: yaReveló && !est.aguanta ? 0.45 + (1 - est.intensidad) * 0.5 : 1,
+                  filter: yaReveló && est.aguanta ? `drop-shadow(0 0 6px ${FAE.teal})` : "none",
+                  transition: "all 420ms cubic-bezier(0.2,0.8,0.3,1)",
+                }}
+              />
             );
           })}
 
@@ -309,13 +322,41 @@ export default function AsedioEstrategico({ onCompletar }) {
               transition: "all 500ms cubic-bezier(0.2,0.8,0.3,1)",
             }}
           />
-          <text x={CENTRO} y={CENTRO - 4} textAnchor="middle" style={{ fontFamily: "Sora, sans-serif", fontSize: "8px", fontWeight: 700, fill: FAE.text }}>
-            Rentabilidad
-          </text>
-          <text x={CENTRO} y={CENTRO + 7} textAnchor="middle" style={{ fontFamily: "Inter, sans-serif", fontSize: "7px", fill: "rgba(248,249,250,0.6)" }}>
-            de la empresa
-          </text>
         </svg>
+
+        {/* Los rótulos de los flancos, en HTML a px reales. Con el reparto revelado, debajo va "puesto / ideal". */}
+        {FUERZAS.map((f, i) => {
+          const asignado = asignacion[f.id] ?? 0;
+          const yaReveló = mostrandoDano && i < revelados;
+          const est = yaReveló ? estadoFlanco(asignado, caso.ideal[f.id]) : null;
+          const color = !yaReveló ? "rgba(248,249,250,0.66)" : est.aguanta ? FAE.teal : FAE.coral;
+          return (
+            <span
+              key={f.id}
+              aria-hidden="true"
+              style={{
+                position: "absolute", ...lugarDelRotulo(i), pointerEvents: "none",
+                fontFamily: "Inter, sans-serif", fontSize: "12.5px", lineHeight: 1.2,
+                color, transition: "color 420ms ease", textWrap: "balance",
+              }}
+            >
+              {f.corto}
+              {yaReveló && (
+                <span style={{ display: "block", marginTop: "2px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, color: "rgba(248,249,250,0.66)", fontVariantNumeric: "tabular-nums" }}>
+                  {asignado} / {caso.ideal[f.id]}
+                </span>
+              )}
+            </span>
+          );
+        })}
+        <span
+          aria-hidden="true"
+          style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)", textAlign: "center", pointerEvents: "none", whiteSpace: "nowrap" }}
+        >
+          <span style={{ display: "block", fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 700, color: FAE.text, lineHeight: 1.25 }}>Rentabilidad</span>
+          <span style={{ display: "block", fontFamily: "Inter, sans-serif", fontSize: "12px", color: "rgba(248,249,250,0.62)", lineHeight: 1.25 }}>de la empresa</span>
+        </span>
+        </div>
       </div>
 
       {/* ---------------- reparto o resultado ---------------- */}
