@@ -74,7 +74,14 @@ export default function EtapaIcebergArca({ onTerminar }) {
   const [elegida, setElegida] = useState(null);
   const [confirmado, setConfirmado] = useState(false);
 
-  const usadas = new Set(Object.values(colocadas).map((p) => p.id));
+  /*
+   * `.filter(Boolean)`: una ranura vaciada no es una pieza. Sin él, vaciar una
+   * ranura —lo que la propia pantalla invita a hacer— tumbaba el Arca entera
+   * con "Cannot read properties of undefined (reading 'id')". Lo encontró
+   * unicidad-partida.test.mjs jugando la etapa. Vaciar ya quita la clave (ver
+   * `poner`); esto es la segunda barrera, por si algún día vuelve un hueco.
+   */
+  const usadas = new Set(Object.values(colocadas).filter(Boolean).map((p) => p.id));
   const disponibles = banco.filter((p) => !usadas.has(p.id));
   const lleno = NIVELES.every((n) => colocadas[n]);
   const pct = puntuarIceberg(colocadas);
@@ -83,7 +90,13 @@ export default function EtapaIcebergArca({ onTerminar }) {
     if (confirmado) return;
     if (!elegida) {
       /* Tocar una ranura llena la vacía: se puede rehacer sin reiniciar. */
-      if (colocadas[nivel]) setColocadas((c) => ({ ...c, [nivel]: undefined }));
+      /* Se QUITA la clave: dejarla en undefined metía un hueco que no es una pieza. */
+      if (colocadas[nivel]) {
+        setColocadas((c) => {
+          const { [nivel]: _vaciada, ...resto } = c;
+          return resto;
+        });
+      }
       return;
     }
     const pieza = banco.find((p) => p.id === elegida);

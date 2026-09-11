@@ -154,12 +154,25 @@ export default function CorrienteTitulares({ onCompletar }) {
     if (!ok) setFallos((f) => [...f, { texto: actual.texto, real: categoriaReal }]);
     setAviso({ ok, texto });
     setEfecto(ok ? "acierto" : null);
-    setReintento(false);
-    setTimeout(() => { setEfecto(null); setI((n) => n + 1); }, ok ? 390 : 240);
+    /*
+     * El reintento se apaga AL AVANZAR, no aquí. Apagarlo al cerrar cambiaba la
+     * `key` de la carta —`${id}-${reintento}`— y la MISMA carta volvía a entrar
+     * deslizándose durante esos 240 ms, que es justo lo que invitaba a tocarla.
+     */
+    setTimeout(() => { setEfecto(null); setReintento(false); setI((n) => n + 1); }, ok ? 390 : 240);
   };
 
   const clasificar = (categoriaId) => {
-    if (!actual || efecto === "acierto") return;
+    /*
+     * Una carta cerrada sigue en pantalla 240 ms (390 si acertó) hasta que
+     * avanza. `cerrada` ya impedía una segunda FILA, pero no un toque: uno
+     * equivocado en ese hueco dejaba `primerFallo` y el reintento puestos para
+     * la carta SIGUIENTE —que salía ya en reintento, con un solo intento y
+     * registrada como ok:false, intentos:2 aunque la acertara a la primera—, y
+     * uno correcto sumaba un acierto a una carta cuya fila decía que no. Lo
+     * prueba unicidad-partida.test.mjs.
+     */
+    if (!actual || efecto === "acierto" || cerrada.current === actual.id) return;
     const ok = actual.categoria === categoriaId;
     const texto = retroCorriente(actual.categoria, categoriaId);
 
@@ -319,10 +332,12 @@ export default function CorrienteTitulares({ onCompletar }) {
                 key={c.id}
                 type="button"
                 onClick={() => clasificar(c.id)}
+                /* La carta ya cerrada sigue en la cinta hasta que avanza: ningún botón la reabre. */
+                disabled={!!actual && cerrada.current === actual.id}
                 className={flash === c.id ? "fae-ct-flash" : undefined}
                 aria-label={`Clasificar como ${c.nombre}`}
                 style={{
-                  padding: "14px 12px", borderRadius: "12px", cursor: "pointer",
+                  padding: "14px 12px", borderRadius: "12px", cursor: actual && cerrada.current === actual.id ? "default" : "pointer",
                   background: "rgba(248,249,250,0.04)", border: "1px solid rgba(248,249,250,0.14)",
                   color: FAE.text, fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 700,
                 }}

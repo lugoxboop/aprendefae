@@ -117,9 +117,20 @@ export default function CorrienteCruzada({ onCompletar }) {
     if (terminado) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
   }, [terminado]);
 
+  /*
+   * UNA FRASE SE RESUELVE UNA SOLA VEZ. El final de la animación —la frase se
+   * va por el borde— no es un evento de prioridad alta en React: entre él y el
+   * siguiente pintado cabe un toque en una red, y los dos llegaban aquí con la
+   * MISMA frase. Salían dos filas de ella, el índice avanzaba dos y la frase
+   * siguiente no se veía nunca. Gana lo que llegó primero —la frase ya se
+   * había ido—, y lo prueba unicidad-partida.test.mjs.
+   */
+  const resueltas = useRef(new Set());
+
   /* Se resuelve la frase actual: `dado` es null cuando se la llevó la corriente. */
   const resolver = (dado) => {
-    if (!actual) return;
+    if (!actual || resueltas.current.has(actual.id)) return;
+    resueltas.current.add(actual.id);
     detalle.current.push({
       item: actual.id,
       ok: dado === actual.nivel,
@@ -142,6 +153,7 @@ export default function CorrienteCruzada({ onCompletar }) {
     setTanda(mezclarCorriente(CORRIENTE));
     setI(0); setFallos([]); setAciertos(0);
     detalle.current = [];
+    resueltas.current = new Set();
     inicio.current = Date.now();
   };
 

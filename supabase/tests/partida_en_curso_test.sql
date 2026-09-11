@@ -82,8 +82,10 @@ select public.partida_guardar('proyecto-arca',
 insert into mira select 'antes', count(*)::text from public.partida_leer('proyecto-arca');
 
 /*
- * Termina el desafío. El detalle trae et3:par:a-c DOS veces —la etapa 3
- * rehecha al retomar—: primero mal, después bien.
+ * Termina el desafío. El detalle trae et3:par:a-c DOS veces: primero el
+ * cierre de verdad, mal; después un toque de más, bien. Es la forma exacta de
+ * los dos pares que pararon esta migración en producción (diagnostico-en-vivo,
+ * un titular que se cerraba dos veces): la primera aparición es la buena.
  */
 select public.registrar_fp('proyecto-arca', 780000, 70, '[
   {"item":"et1:e1","ok":true,"orden":1},
@@ -141,10 +143,10 @@ from (
 -- 4-5 · LOS ÍTEMS REPETIDOS AL RETOMAR
 -- ═══════════════════════════════════════════════════════════════════════════
 insert into resultado_prueba
-select 4, 'RETOMAR · Un ítem repetido queda una sola vez, con la última respuesta',
-  case when count(*) = 1 and bool_and(d.acerto) then 'PASA' else 'FALLA' end,
-  format('filas de et3:par:a-c: %s ; acertó: %s (esperado 1 fila y true: la etapa rehecha)',
-         count(*), coalesce(bool_and(d.acerto)::text, 'sin filas'))
+select 4, 'DUPLICADO · Un ítem repetido queda una sola vez, con la PRIMERA aparición',
+  case when count(*) = 1 and not bool_or(d.acerto) and min(d.respuesta) = 'b' then 'PASA' else 'FALLA' end,
+  format('filas de et3:par:a-c: %s ; acertó: %s ; respuesta: %s (esperado 1 fila, false y b: el cierre de verdad, no el toque de más)',
+         count(*), coalesce(bool_or(d.acerto)::text, 'sin filas'), coalesce(min(d.respuesta), 'null'))
 from public.fp_detalle d
 where d.user_id = (select uid from ids where n = 1)
   and d.activity_id = 'proyecto-arca'

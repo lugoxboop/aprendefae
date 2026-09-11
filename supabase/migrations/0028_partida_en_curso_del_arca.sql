@@ -25,16 +25,26 @@
 -- ═══════════════════════════════════════════════════════════════════════════
 -- LAS DOS COSAS FRÁGILES, GARANTIZADAS EN EL SERVIDOR Y NO EN EL CLIENTE
 --
--- 1. ÍTEMS DUPLICADOS AL RETOMAR. Si una etapa se rehace, sus ítems no pueden
---    entrar dos veces al diagnóstico. El cliente ya guarda el detalle por
---    índice de etapa —rehacer la 3 reemplaza sus filas, no las añade—, pero
---    eso es disciplina del cliente. Aquí además:
+-- 1. ÍTEMS DUPLICADOS. Un ítem no puede entrar dos veces al diagnóstico en la
+--    misma partida. El cliente ya guarda el detalle del Arca por índice de
+--    etapa —rehacer la 3 reemplaza sus filas, no las añade—, pero eso es
+--    disciplina del cliente. Aquí además:
 --      · registrar_fp deja UNA fila por ítem: si el mismo item llega dos veces
---        en la misma partida, gana la última aparición;
+--        en la misma partida, gana la PRIMERA aparición;
 --      · y un índice único (fp_history_id, item_id) lo hace imposible por
 --        esquema, venga de donde venga la escritura.
 --    Los prefijos de etapa (et3:par:a-c) son lo que hace exacta la
 --    sustitución: sin ellos, dos etapas podrían compartir un item.
+--
+--    POR QUÉ LA PRIMERA. Esta migración se paró la primera vez en su guarda:
+--    había dos pares repetidos en producción, y no venían del Arca sino de
+--    diagnostico-en-vivo —un titular ya cerrado aceptaba un toque más y se
+--    cerraba OTRA VEZ—. La primera fila era el cierre de verdad (ok:false,
+--    intentos:2); la segunda, un toque fantasma (ok:true, intentos:1), con los
+--    dos campos falsos. Los duplicados que llegan aquí nacen de fallos así, y
+--    en todos los vistos la primera aparición es la que siguió las reglas.
+--    Rehacer una etapa del Arca, que es para lo que se pensó la regla contraria,
+--    no llega nunca: el cliente reemplaza la etapa entera antes de mandarla.
 --
 -- 2. LA PARTIDA ZOMBI. El estudiante termina, recarga, retoma lo que quedó
 --    guardado, termina otra vez: segunda llamada a registrar_fp. Paga 0 FP
@@ -259,7 +269,7 @@ create unique index if not exists fp_detalle_un_item_por_partida
  * de tres—. MISMA FIRMA, así que create or replace no crea otra y no puede
  * repetirse lo de las dos firmas vivas. Tres cambios, contados por el script:
  *   · borra la partida en curso en la misma transacción en que paga
- *   · deduplica el detalle por ítem, gana la última aparición
+ *   · deduplica el detalle por ítem, gana la primera aparición
  *   · el aviso de recorte nombra también los repetidos
  * El cálculo de FP queda byte a byte igual.
  */
@@ -444,15 +454,17 @@ begin
         from (
           /*
            * (0028) UN ÍTEM, UNA FILA. Si el mismo item llega dos veces en la
-           * misma partida —una etapa rehecha al retomar—, gana la ÚLTIMA
-           * aparición, que es la que el estudiante dejó al final. El índice
-           * único (fp_history_id, item_id) lo exige por esquema; esto hace que
-           * el insert no choque contra él.
+           * misma partida, gana la PRIMERA aparición: los duplicados vistos
+           * nacen de fallos de la actividad —un titular que se cerraba dos
+           * veces— y la primera es la que siguió las reglas. Ver la cabecera.
+           * El índice único (fp_history_id, item_id) lo exige por esquema;
+           * esto hace que el insert no choque contra él, así que un duplicado
+           * nunca le cuesta los puntos a nadie.
            */
           select e.d, e.n,
                  row_number() over (
                    partition by left(btrim(e.d ->> 'item'), 120)
-                   order by e.n desc
+                   order by e.n asc
                  ) as vez
             from jsonb_array_elements(p_detalle) with ordinality as e(d, n)
            where jsonb_typeof(e.d -> 'item') = 'string'

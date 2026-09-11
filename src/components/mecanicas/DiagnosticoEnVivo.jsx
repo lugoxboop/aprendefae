@@ -174,8 +174,35 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
     onCompletar?.(pct, Date.now() - inicio.current, items);
   }, [brecha]);
 
-  /* Cierra el titular actual y pasa al siguiente. */
+  /*
+   * ═══════════ UN TITULAR SE CIERRA UNA SOLA VEZ ═══════════
+   *
+   * Fallo visto en producción: `t3a` dos veces en la misma partida, en los
+   * órdenes 2 y 3 —la primera con ok:false e intentos:2, la segunda con
+   * ok:true e intentos:1—, y uno de los ocho titulares que nunca apareció.
+   *
+   * No era el sorteo. Entre cerrar un titular y pasar al siguiente hay 260 ms
+   * (430 si acertó) en los que ESE MISMO titular sigue en pantalla. Tras un
+   * segundo fallo o tras archivarse, nada bloqueaba los botones en ese hueco:
+   * un toque más —y el aviso acababa de decir cuál era el problema— lo cerraba
+   * OTRA VEZ con ok:true e intentos:1. Cada cierre programa su propio avance,
+   * así que el índice saltaba dos y el titular siguiente no salía nunca. Si ese
+   * toque de más era un fallo, no duplicaba nada pero dejaba `intentos` en 1, y
+   * el titular siguiente empezaba ya con "te queda un intento": acertarlo a la
+   * primera se registraba como ok:false, intentos:2.
+   *
+   * El cierre se apunta POR ID y es idempotente. Mientras el titular cerrado
+   * sigue en pantalla, clasificar y archivar no hacen nada y los botones se
+   * desactivan. Lo prueba unicidad-partida.test.mjs, que juega la actividad
+   * tocando a destiempo a propósito.
+   */
+  const cerrados = useRef(new Set());
+  const cerradoActual = !!actual && cerrados.current.has(actual.id);
+
+  /* Cierra el titular actual y pasa al siguiente. Una sola vez por titular. */
   const cerrar = (idTitular, acertoPrimero, textoAviso, ok, eleccion = null) => {
+    if (cerrados.current.has(idTitular)) return;
+    cerrados.current.add(idTitular);
     detalle.current.push({
       item: idTitular,
       ok: acertoPrimero,
@@ -192,7 +219,8 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
   };
 
   const clasificar = (problemaId) => {
-    if (!actual || efecto === "acierto") return;
+    /* Un titular ya cerrado sigue en pantalla unos milisegundos: no se vuelve a clasificar. */
+    if (!actual || efecto === "acierto" || cerrados.current.has(actual.id)) return;
     const r = retroalimentacion(actual.problema, problemaId);
     setPulsando(problemaId);
     setTimeout(() => setPulsando(null), 500);
@@ -213,7 +241,7 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
 
   /* El titular cruzó la línea sin clasificar. */
   const archivar = () => {
-    if (!actual) return;
+    if (!actual || cerrados.current.has(actual.id)) return;
     /* Se le fue por la línea: no eligió nada, y eso es dato distinto de fallar. */
     cerrar(actual.id, false, textoArchivado(actual.problema), false, null);
   };
@@ -223,6 +251,7 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
     setI(0); setPrimeros({}); setIntentos(0); setAviso(null);
     setEfecto(null); setHistorial([]); setBrecha(null);
     detalle.current = [];
+    cerrados.current = new Set();
     inicio.current = Date.now();
   };
 
@@ -327,11 +356,13 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
                 key={p.id}
                 type="button"
                 onClick={() => clasificar(p.id)}
+                /* Mientras el titular ya cerrado sigue en pantalla, ningún botón lo reabre. */
+                disabled={cerradoActual}
                 className={pulsando === p.id ? "fae-dv-pulso" : undefined}
                 aria-label={`Clasificar como ${p.nombre}`}
                 style={{
                   display: "flex", alignItems: "center", gap: "8px",
-                  padding: "12px 13px", borderRadius: "13px", cursor: "pointer",
+                  padding: "12px 13px", borderRadius: "13px", cursor: cerradoActual ? "default" : "pointer",
                   background: "rgba(248,249,250,0.04)",
                   border: "1px solid rgba(248,249,250,0.14)",
                   color: FAE.text, fontFamily: "Sora, sans-serif",

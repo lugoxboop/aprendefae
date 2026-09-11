@@ -113,10 +113,26 @@ export default function CamaraPresion({ onCompletar }) {
     setRespuesta("");
     setFallo(null);
     detalle.current = [];
+    resueltos.current = new Set();
     inicio.current = Date.now();
   };
 
-  const resolver = (dado) => {
+  /*
+   * UN TÉRMINO SE RESUELVE UNA SOLA VEZ. "Se acabó el aire" llega por un
+   * efecto, que React ejecuta justo antes de procesar el siguiente toque: si
+   * la barra se llenaba y el estudiante tocaba en ese mismo instante, los dos
+   * llegaban aquí con el mismo término y salían dos filas de él. Si el toque
+   * era un acierto, además se saltaba el término siguiente.
+   *
+   * Y un toque que llega con la barra ya llena cuenta como lo que el
+   * estudiante tenía en pantalla: se le acabó el aire.
+   */
+  const resueltos = useRef(new Set());
+
+  const resolver = (dadoTocado) => {
+    if (!actual || resueltos.current.has(actual.termino)) return;
+    resueltos.current.add(actual.termino);
+    const dado = presion >= 1 ? null : dadoTocado;
     const bien = dado != null && normalizar(dado) === normalizar(actual.termino);
 
     /*

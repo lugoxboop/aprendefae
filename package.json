@@ -23,6 +23,7 @@
     "@electric-sql/pglite": "0.5.8",
     "@tailwindcss/vite": "^4.0.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "26.1.0",
     "tailwindcss": "^4.0.5",
     "vite": "^6.0.5",
     "yaml": "^2.9.0"
