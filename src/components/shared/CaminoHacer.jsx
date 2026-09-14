@@ -631,7 +631,12 @@ function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas }) {
         const tono = TONOS[b.id] ?? TONOS.otras;
         const disposicion = { ...disposicionDeBloque(total, b.inicio, b.nodos.length), sugeridoId, total };
         return (
-          <section key={b.id} data-bloque={b.id} aria-labelledby={`fae-cb-${b.id}`} style={{ marginTop: b.separador ? 0 : "4px" }}>
+          /*
+            Al ancho del lienzo y centrado, como el camino: en escritorio la
+            columna mide 860 y el título se quedaba lejos, a la izquierda de
+            un camino de 420 centrado.
+          */
+          <section key={b.id} data-bloque={b.id} aria-labelledby={`fae-cb-${b.id}`} style={{ marginTop: b.separador ? 0 : "4px", maxWidth: `${ANCHO}px`, marginInline: "auto" }}>
             {b.separador && <Separador texto={b.separador} tono={tono} />}
             <CabezaBloque bloque={b} tono={tono} />
             <Lienzo nodos={b.nodos} onAbrir={onAbrir} especial={null} resaltado={resaltado} marcas={marcas} disposicion={disposicion} tono={tono} />
