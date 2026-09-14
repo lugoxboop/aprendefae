@@ -50,6 +50,7 @@ export const VISTAS = new Set([
   "camino-da",
   "grifos-da",
   "politica-economica",
+  "politica-fiscal",
   "pensamiento-sistemico",
   "modelo-iceberg",
   "fuerzas-porter",

@@ -37,6 +37,10 @@ import {
   BANCO_ARQUITECTO, RANURAS, FRAGMENTOS_TRANSMISION, CORRIENTE,
   ORDEN_TRIBUNAL, CRITERIOS_TRIBUNAL,
 } from "../../data/icebergActividades.js";
+import {
+  CLASIFICADOR, IMPUESTOS_SELLO, SELLOS, MEDIDAS_FLUJO, CANALES, OPCIONES_MULTIPLICADOR, OPCIONES_AGUJERO,
+  CASOS_EXPANSIVA, CASILLAS_PRESUPUESTO, PIEZAS_PRESUPUESTO, BANCO_DEFICIT, BANDEJAS, INSTRUMENTOS,
+} from "../../data/politicaFiscal.js";
 
 let fallos = 0;
 const filas = [];
@@ -517,6 +521,72 @@ unicos("sala-monitores", ALERTAS_MONITOR.map((a) => a.id), ALERTAS_MONITOR.lengt
       ? `desbalance: ${desbalance.map(([c, n]) => `${c}=${n}`).join(", ") || "ninguno"} · huérfanas: ${huerfanas.map((a) => a.id).join(", ") || "ninguna"}`
       : "24 repartidas de seis en seis",
     resultado: roto ? "FALLA" : "PASA",
+  });
+}
+
+/* ═══════════ LOS SIETE JUEGOS DE POLÍTICA FISCAL ═══════════ */
+
+/* ── clasificador-tesoro ── la tarjeta, sin prefijo: un solo banco, sin rondas ── */
+unicos("clasificador-tesoro", CLASIFICADOR.map((t) => t.id), 18);
+/* Los instrumentos son los valores de `respuesta`. */
+unicos("clasificador-tesoro · instrumentos", INSTRUMENTOS.map((x) => x.id), 3);
+
+/* ── directos-indirectos ── el impuesto; los sellos son las respuestas ── */
+unicos("directos-indirectos", IMPUESTOS_SELLO.map((x) => x.id), 8);
+unicos("directos-indirectos · sellos", SELLOS.map((s) => s.id), 4);
+
+/* ── flujo-de-caja ── `canal:<medida>` en la etapa 1 y `multiplicador` en la 2 ── */
+unicos("flujo-de-caja", [...MEDIDAS_FLUJO.map((m) => `canal:${m.id}`), "multiplicador"], MEDIDAS_FLUJO.length + 1);
+unicos("flujo-de-caja · canales", CANALES.map((c) => c.id), 3);
+unicos("flujo-de-caja · opciones de la etapa 2", OPCIONES_MULTIPLICADOR.map((o) => o.id), 3);
+
+/* ── agujero-fiscal ── una fila por partida; las opciones son las respuestas ── */
+unicos("agujero-fiscal · opciones", OPCIONES_AGUJERO.map((o) => o.id), 4);
+
+/* ── expansiva-contractiva ── el duelo, prefijado por caso ── */
+unicos(
+  "expansiva-contractiva",
+  CASOS_EXPANSIVA.flatMap((c) => c.duelos.map((d) => `${c.id}:${d.id}`)),
+  CASOS_EXPANSIVA.reduce((n, c) => n + c.duelos.length, 0)
+);
+
+/*
+ * Aquí el prefijo SÍ separa preguntas: `a-vs-c` y `b-vs-c` existen en los dos
+ * casos, y la C de la recesión ("subir impuestos para equilibrar") no es la C
+ * del sobrecalentamiento ("bajar impuestos").
+ */
+{
+  const sinPrefijo = CASOS_EXPANSIVA.flatMap((c) => c.duelos.map((d) => d.id));
+  const choca = sinPrefijo.length !== new Set(sinPrefijo).size;
+  if (!choca) fallos++;
+  filas.push({
+    actividad: "expansiva-contractiva (sin prefijo)",
+    esperado: "hay choque, por eso lleva prefijo",
+    obtenido: choca ? "choca, como se documenta" : "YA NO CHOCA: revisar el comentario",
+    resultado: choca ? "PASA" : "FALLA",
+  });
+}
+
+/* ── disena-presupuesto ── la casilla; las diez piezas son las respuestas ── */
+unicos("disena-presupuesto", CASILLAS_PRESUPUESTO.map((c) => c.id), 2);
+unicos("disena-presupuesto · piezas", PIEZAS_PRESUPUESTO.map((p) => p.id), 10);
+
+/* ── deficit-vs-deuda ── el papel; las bandejas son las respuestas ── */
+unicos("deficit-vs-deuda", BANCO_DEFICIT.map((x) => x.id), 14);
+unicos("deficit-vs-deuda · bandejas", BANDEJAS.map((b) => b.id), 4);
+
+/*
+ * El 1 y el 7 comparten conceptos —TES, el FMI— y alguno comparte id. No
+ * pueden chocar: son activity_id distintos, y la unicidad de fp_detalle es por
+ * partida. Se dice aquí para que nadie lo "arregle" renombrando.
+ */
+{
+  const comunes = CLASIFICADOR.map((t) => t.id).filter((id) => BANCO_DEFICIT.some((x) => x.id === id));
+  filas.push({
+    actividad: "clasificador-tesoro ↔ deficit-vs-deuda",
+    esperado: "entre actividades distintas un id repetido no choca",
+    obtenido: comunes.length ? `comparten ${comunes.join(", ")} (inofensivo)` : "no comparten ningún id",
+    resultado: "PASA",
   });
 }
 

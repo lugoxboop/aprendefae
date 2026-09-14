@@ -217,6 +217,68 @@ export const SUBJECTS = {
           },
         ],
       },
+      {
+        /*
+         * ═══════════ POLÍTICA FISCAL — "LA TESORERÍA NACIONAL" ═══════════
+         *
+         * Siete juegos, uno por peldaño de Bloom más uno intercalado, sobre el
+         * PPTX del profesor. Solo la mitad Hacer: todavía no hay material
+         * clasificado, así que el índice abre el tema directo, sin tarjeta
+         * partida. Los bancos viven en src/data/politicaFiscal.js.
+         *
+         * OJO CON UNA CONSECUENCIA: "Macroeconomía al día" (medallas.js) exige
+         * TODOS los juegos Hacer de la materia y se calcula al vuelo. Con estos
+         * siete, quien la tuviera vuelve a 14 de 21 hasta hacerlos. Es el
+         * comportamiento que la medalla declara —"al día"—, no un efecto
+         * secundario, pero conviene saberlo antes de que un estudiante pregunte.
+         */
+        id: "politica-fiscal",
+        title: "Política Fiscal",
+        actividades: [
+          {
+            /* Recordar. Las tarjetas del profesor: doce de dieciocho, a tres ranuras. */
+            id: "clasificador-tesoro",
+            nombre: "El clasificador del Tesoro",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
+          },
+          {
+            /* Comprender. Ocho impuestos, cuatro sellos: sobre qué recae cada uno. */
+            id: "directos-indirectos",
+            nombre: "Directos e indirectos",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
+          },
+          {
+            /* Aplicar. Por qué canal llega cada medida a la DA, y el multiplicador. */
+            id: "flujo-de-caja",
+            nombre: "Flujo de caja: ¿a quién afecta?",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+          {
+            /* Analizar. Un caso de prensa y una sola decisión, todo o nada. */
+            id: "agujero-fiscal",
+            nombre: "El agujero fiscal",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+          {
+            /* Evaluar. Duelos por parejas en recesión o en sobrecalentamiento. */
+            id: "expansiva-contractiva",
+            nombre: "Expansiva o contractiva",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
+          },
+          {
+            /* Crear. Dos casillas y ocho señuelos: cómo se paga un acueducto. */
+            id: "disena-presupuesto",
+            nombre: "Diseña el presupuesto",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
+          },
+          {
+            /* Aplicar, intercalado. Déficit (flujo) contra deuda (saldo), cada vez más rápido. */
+            id: "deficit-vs-deuda",
+            nombre: "Déficit vs deuda",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+        ],
+      },
     ],
   },
   "pensamiento-estrategico": {

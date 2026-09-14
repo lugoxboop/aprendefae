@@ -28,6 +28,8 @@ const IcebergView = lazy(() => import("./components/IcebergView.jsx"));
 const PorterView = lazy(() => import("./components/PorterView.jsx"));
 const PerfilView = lazy(() => import("./components/PerfilView.jsx"));
 const PoliticaEconomicaView = lazy(() => import("./components/PoliticaEconomicaView.jsx"));
+/* "La Tesorería Nacional": los siete juegos de Política Fiscal. Solo tiene mitad Hacer. */
+const PoliticaFiscalView = lazy(() => import("./components/PoliticaFiscalView.jsx"));
 const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"));
 
 /*
@@ -186,6 +188,15 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <PoliticaEconomicaView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
+      </Suspense>
+    );
+  }
+
+  /* Solo mitad Hacer: el modo del hash, si llega, no cambia nada. */
+  if (view === "politica-fiscal") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <PoliticaFiscalView nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
       </Suspense>
     );
   }

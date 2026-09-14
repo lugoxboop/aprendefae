@@ -17,6 +17,9 @@ import {
   CASOS_BIOPSIA, CASOS_TRIAGE, CASOS_CIRUGIA, ALERTAS_MONITOR,
 } from "../../data/demandaAgregadaHacer.js";
 import { parejasDe } from "../../utils/orden.js";
+import {
+  CLASIFICADOR, IMPUESTOS_SELLO, MEDIDAS_FLUJO, CASOS_EXPANSIVA, CASILLAS_PRESUPUESTO, BANCO_DEFICIT,
+} from "../../data/politicaFiscal.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -93,6 +96,14 @@ const IDS = {
   "biopsia-economica": CASOS_BIOPSIA.map((c) => `biopsia:${c.id}`),
   "triage-emergencias": CASOS_TRIAGE.flatMap((c) => c.duelos.map((d) => `${c.id}:${d.id}`)),
   "cirugia-reconstruccion": CASOS_CIRUGIA.flatMap((c) => [`${c.id}:primero`, `${c.id}:segundo`]),
+
+  "clasificador-tesoro": CLASIFICADOR.map((t) => t.id),
+  "directos-indirectos": IMPUESTOS_SELLO.map((x) => x.id),
+  "flujo-de-caja": [...MEDIDAS_FLUJO.map((m) => `canal:${m.id}`), "multiplicador"],
+  "agujero-fiscal": ["por-que-renta"],
+  "expansiva-contractiva": CASOS_EXPANSIVA.flatMap((c) => c.duelos.map((d) => `${c.id}:${d.id}`)),
+  "disena-presupuesto": CASILLAS_PRESUPUESTO.map((c) => c.id),
+  "deficit-vs-deuda": BANCO_DEFICIT.map((x) => x.id),
 };
 
 test("todo id derivado de los bancos se puede nombrar", () => {

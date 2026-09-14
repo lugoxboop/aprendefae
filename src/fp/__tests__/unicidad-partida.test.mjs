@@ -135,6 +135,13 @@ const ACTIVIDADES = [
   ["triage-emergencias", "corazon/Triage.jsx", 2],
   ["cirugia-reconstruccion", "corazon/Cirugia.jsx", 2],
   ["sala-monitores", "corazon/SalaMonitores.jsx", 2],
+  ["clasificador-tesoro", "tesoreria/ClasificadorTesoro.jsx", 2],
+  ["directos-indirectos", "tesoreria/DirectosIndirectos.jsx", 2],
+  ["flujo-de-caja", "tesoreria/FlujoDeCaja.jsx", 2],
+  ["agujero-fiscal", "tesoreria/AgujeroFiscal.jsx", 2],
+  ["expansiva-contractiva", "tesoreria/ExpansivaContractiva.jsx", 2],
+  ["disena-presupuesto", "tesoreria/DisenaPresupuesto.jsx", 2],
+  ["deficit-vs-deuda", "tesoreria/DeficitVsDeuda.jsx", 2],
 ];
 
 /*

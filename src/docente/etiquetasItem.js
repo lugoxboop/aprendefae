@@ -13,6 +13,10 @@ import {
   CASOS_BIOPSIA, CASOS_TRIAGE, CASOS_CIRUGIA, ALERTAS_MONITOR,
 } from "../data/demandaAgregadaHacer.js";
 import { TEXTO as TEXTO_NODOS } from "../components/mecanicas/MapaCausal.jsx";
+import {
+  CLASIFICADOR, IMPUESTOS_SELLO, MEDIDAS_FLUJO, PREGUNTA_MULTIPLICADOR, PREGUNTA_AGUJERO,
+  CASOS_EXPANSIVA, CASILLAS_PRESUPUESTO, BANCO_DEFICIT,
+} from "../data/politicaFiscal.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -270,6 +274,33 @@ export const REGLAS = {
     const orden = papel === "primero" ? "Primer orden" : "Segundo orden";
     return `${orden} — ${c.caso}`;
   },
+
+  /* ── Política Fiscal ── */
+  "clasificador-tesoro": (id) => porId(CLASIFICADOR, "concepto")[id] ?? null,
+  "directos-indirectos": (id) => porId(IMPUESTOS_SELLO, "concepto")[id] ?? null,
+  "deficit-vs-deuda": (id) => porId(BANCO_DEFICIT, "texto")[id] ?? null,
+
+  "flujo-de-caja": (id) => {
+    /* `canal:<medida>` en la etapa 1; `multiplicador`, la etapa 2. */
+    if (id === "multiplicador") return PREGUNTA_MULTIPLICADOR;
+    const [etapa, medida] = String(id).split(":");
+    return etapa === "canal" ? porId(MEDIDAS_FLUJO, "medida")[medida] ?? null : null;
+  },
+
+  "agujero-fiscal": (id) => (id === "por-que-renta" ? PREGUNTA_AGUJERO : null),
+
+  "expansiva-contractiva": (id) => {
+    const [caso, duelo] = String(id).split(":");
+    const c = CASOS_EXPANSIVA.find((x) => x.id === caso);
+    const d = c?.duelos.find((x) => x.id === duelo);
+    if (!c || !d) return null;
+    /* Mismo tratamiento que los otros duelos: cada lado por su cuenta. */
+    const [a, b] = d.par.map((letra) => c.medidas[letra]);
+    const p = prefijoComun([a, b]);
+    return `${recortar(sinPrefijo(a, p), 33)} vs ${recortar(sinPrefijo(b, p), 33)}`;
+  },
+
+  "disena-presupuesto": (id) => CASILLAS_PRESUPUESTO.find((x) => x.id === id)?.ayuda ?? null,
 };
 
 /** Corta por palabras, sin partir una a la mitad. */
