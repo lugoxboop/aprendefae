@@ -23,8 +23,9 @@ import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
  * minutos de arco: el doble del límite de agudeza, dentro de lo que se lee
  * sin esfuerzo en etiquetas cortas. Y es lo mismo que la regla clásica de las
  * diapositivas, 18 pt como mínimo en una lámina de 7,5 pulgadas de alto (un
- * 3,3 %). A 1080 p son unos 32 px; el suelo del resto del sitio, 12 px, sería
- * un 1,1 % de la imagen y no se leería desde la mitad del aula.
+ * 3,3 %). A 1080 p son unos 32 px. El suelo del resto del sitio (theme.js:
+ * 10,5 px, y 12 en el texto que se lee) sería un 1 % de la imagen y no se
+ * leería desde la mitad del aula.
  *
  * SI NO CABE, ENCOGE; NO SE DESPLAZA. Con un mando no se puede desplazar la
  * página, así que una escena que no cabe en el alto de la imagen se queda a
