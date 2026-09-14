@@ -287,6 +287,31 @@ test("la respuesta de un chequeo no está en la página hasta revelarla", () => 
   desmontar();
 });
 
+/*
+ * La guarda de la flecha del servicio de la deuda (ver EscenaChequeos.jsx).
+ * Si alguien la "completa" con monedas, esta prueba falla a propósito: monedas
+ * saliendo del libro de la deuda hacia el distribuidor dibujan pedir prestado
+ * para gastar, lo contrario de lo que enseña el chequeo.
+ */
+test("por la flecha del servicio de la deuda viaja el recibo, no monedas, y va del libro al distribuidor", () => {
+  empezarLimpio();
+  const { cont, desmontar } = montar();
+  tecla("End");
+  act(() => cont.querySelectorAll(".fae-cl-pestana")[1].click());
+  tecla("ArrowRight"); /* revela el chequeo 2 */
+  const flechas = cont.querySelector(".fae-cl-flechas");
+  assert.ok(flechas.querySelector("rect"), "el recibo viaja por la flecha");
+  assert.equal(flechas.querySelectorAll("circle").length, 0, "ninguna moneda en la flecha");
+
+  /* El libro arriba, el distribuidor abajo, y la punta de la flecha abajo. */
+  const libro = [...cont.querySelectorAll(".fae-cl-caja-nombre")].find((p) => p.textContent === "Deuda Pública");
+  const distribuidor = [...cont.querySelectorAll(".fae-cl-caja-nombre")].find((p) => p.textContent === "Gasto del Gobierno");
+  assert.ok(libro.compareDocumentPosition(flechas) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+  assert.ok(flechas.compareDocumentPosition(distribuidor) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+  assert.match(flechas.querySelector("path").getAttribute("d"), /^M20 4 V90 .*L20 92/, "la flecha principal baja hacia el distribuidor");
+  desmontar();
+});
+
 test("los destinos de los chequeos son ranuras que existen en la escena 2", () => {
   for (const c of CHEQUEOS_CLASE) {
     const m = MECANISMOS_CLASE.find((x) => x.id === c.destino.instrumento);
@@ -376,5 +401,5 @@ test("sin cifras más que la de la cita: el $1 billón de Mi Casa Ya", () => {
 test("partirVariedad separa la aclaración entre paréntesis y deja el resto igual", () => {
   assert.deepEqual(partirVariedad("De inversión (obras)"), { cabeza: "De inversión", detalle: "(obras)" });
   assert.deepEqual(partirVariedad("Interna (TES, bancos locales)"), { cabeza: "Interna", detalle: "(TES, bancos locales)" });
-  assert.deepEqual(partirVariedad("Tasas/tarifas"), { cabeza: "Tasas/tarifas", detalle: null });
+  assert.deepEqual(partirVariedad("Tasas o tarifas"), { cabeza: "Tasas o tarifas", detalle: null });
 });

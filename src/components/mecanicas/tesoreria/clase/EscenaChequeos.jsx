@@ -12,13 +12,21 @@ import { CSS_CLASE, UnaVez, anima, useVistasAlMontar } from "./animaciones.jsx";
  * tiempo inspeccionando ni con un lector de pantalla.
  *
  *   El peaje               el carro paga, la talanquera sube y la moneda va
- *                          a la ranura «Tasas/tarifas» del recaudador
+ *                          a la ranura «Tasas o tarifas» del recaudador
  *   El servicio de la deuda la flecha va DEL LIBRO AL DISTRIBUIDOR, no al
  *                          revés: esa dirección es la lección
  *
- * Por la flecha del servicio viaja la CUOTA —el papel con lo que hay que
- * pagar—, no dinero. Monedas saliendo del libro de la deuda hacia el
- * distribuidor dibujarían justo lo contrario: pedir prestado para gastar.
+ * ═══════════ POR ESA FLECHA VIAJA UN RECIBO, NO MONEDAS. NO ES UN OLVIDO. ═══════════
+ *
+ * Lo que baja del libro de la deuda al distribuidor es la CUOTA —el recibo
+ * con los intereses y el capital que hay que pagar—, no dinero. Monedas
+ * saliendo del libro hacia el distribuidor dibujarían exactamente lo
+ * contrario de lo que enseña el chequeo: pedir prestado para gastar, que es
+ * Deuda Pública como instrumento. El servicio de la deuda es lo otro: una
+ * obligación que el distribuidor paga con el presupuesto, como la nómina o
+ * una obra. Quien "complete" la flecha con monedas rompe la lección, y la
+ * prueba «por la flecha del servicio de la deuda viaja el recibo, no
+ * monedas» de presentacion.test.mjs falla a propósito.
  */
 
 const CSS = `
@@ -196,7 +204,11 @@ function Servicio({ revelada, animar, destino, mecanismos }) {
                 fill="none" stroke={ACENTOS.gasto} strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"
                 style={anima(animar, "fae-cl-trazar", 700, 100, "ease-out")}
               />
-              {/* la cuota: el papel con lo que hay que pagar */}
+              {/*
+                * El recibo de la cuota. A propósito papel y no una moneda: dinero
+                * saliendo del libro de la deuda sería pedir prestado para gastar,
+                * lo contrario de la lección. Ver la cabecera antes de cambiarlo.
+                */}
               <rect
                 x="12" y="66" width="16" height="12" rx="2" fill="#F4EFE3"
                 style={{ opacity: 0, "--de-y": "-60px", ...anima(animar, "fae-cl-viajar", 1000, 600, "ease-in-out") }}

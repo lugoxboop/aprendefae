@@ -17,6 +17,9 @@
  *   · "…el arriendo, o una deuda vieja" → sin la coma antes de "o".
  *   · "El 'servicio de la deuda'…" → comillas latinas, «servicio de la deuda»,
  *     como en el resto del sitio; las rectas simples son de teclado, no de texto.
+ *   · "Tasas/tarifas" → "Tasas o tarifas", como en la taxonomía del profesor.
+ *     Es un solo dato: cambia a la vez la ranura de la escena 2 y la del
+ *     chequeo del peaje.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -45,7 +48,7 @@ export const MECANISMOS_CLASE = [
     verbo: "Cobra",
     instrumento: "Tributación",
     analogia: "Como cuando te pagan el sueldo",
-    variedades: ["Impuestos directos", "Impuestos indirectos", "Tasas/tarifas", "Contribuciones"],
+    variedades: ["Impuestos directos", "Impuestos indirectos", "Tasas o tarifas", "Contribuciones"],
   },
   {
     id: "gasto",
@@ -106,14 +109,14 @@ export const EJEMPLOS_CLASE = [
 
 /*
  * `destino` dice a qué ranura de qué máquina va cada caso, con el MISMO texto
- * que en la escena 2: el peaje entra en «Tasas/tarifas», la ranura que el
+ * que en la escena 2: el peaje entra en «Tasas o tarifas», la ranura que el
  * estudiante ya vio abrirse en el recaudador. La prueba comprueba que exista.
  */
 export const CHEQUEOS_CLASE = [
   {
     id: "peaje",
     titulo: "El peaje",
-    destino: { instrumento: "tributacion", variedad: "Tasas/tarifas" },
+    destino: { instrumento: "tributacion", variedad: "Tasas o tarifas" },
     pregunta: "Un peaje que pagas en la autopista — ¿es Tributación, Gasto o Deuda? ¿Qué variedad específica?",
     respuesta: "Es Tributación — específicamente una tasa o tarifa, porque pagas a cambio de un servicio concreto (usar la vía), no es un impuesto general sobre tu ingreso o consumo.",
   },
