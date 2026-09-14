@@ -147,6 +147,12 @@ function Corriente() {
  * PROPIA. La onda de la actividad, el mismo componente: ruido y después señal
  * limpia, que es lo que pasa al transmitir. El coral de la onda rota es el de
  * la actividad real y es de error —ruido—, el único sitio donde aparece.
+ *
+ * IDENTIFICADA, NO PASADA POR ALTO: esta es la única previsualización que no
+ * cumple del todo la regla. Enseña la RESPUESTA del sistema —la onda al
+ * transmitir—, no el GESTO del estudiante, que es elegir fragmentos y
+ * ordenarlos. Se queda porque es el movimiento propio y real de la
+ * actividad; está llevada a pedagogía para decidir si cambia.
  */
 function Explica() {
   const [limpia, setLimpia] = useState(false);
@@ -165,30 +171,37 @@ function Explica() {
 }
 
 /*
- * GESTO. Una pieza sin texto encaja en uno de los cinco huecos; al encajar,
- * el pulso ámbar del panel se atenúa un momento y vuelve a su ritmo. PARCIAL:
- * la resolución entera solo llega con las cinco correctas, y una pieza sola
- * no puede parecer que resuelve nada.
+ * GESTO. Una pieza sin texto baja a uno de los cinco huecos y ENCAJA con el
+ * mismo golpe que en la actividad —fae-sc-encaje: de 0,93 a 1—. El aviso
+ * ámbar late a su ritmo de siempre, 2,4 s, y el marco ámbar se queda quieto,
+ * como en la actividad.
+ *
+ * LA FICHA PEDÍA QUE EL PULSO ÁMBAR SE ATENUARA AL ENCAJAR, como "la misma
+ * capa de retroalimentación que ya existe en la actividad real". No existe:
+ * en SimuladorDeCrisis.jsx el triángulo del aviso late igual pase lo que pase
+ * (fae-sc-alerta) y lo único que reacciona al encajar es la pieza. Y la
+ * atenuación, metida dentro del propio latido, no se distinguía de él. Así
+ * que el gesto usa lo que la actividad sí hace, y nada más. Tampoco resuelve:
+ * una pieza sola no puede parecer que arregla la crisis.
  */
 function Simulador() {
   return (
     <Lamina
       id="simulador-de-crisis"
       css={`
-@keyframes fae-pv-sc-borde {
-  0% { stroke-opacity: .5; } 22% { stroke-opacity: 1; } 33% { stroke-opacity: .92; }
-  42% { stroke-opacity: .3; } 52% { stroke-opacity: .55; } 75% { stroke-opacity: 1; } 100% { stroke-opacity: .5; }
-}
-.fae-pv-sc-borde { animation: fae-pv-sc-borde 1.8s ease-in-out infinite; }
+@keyframes fae-pv-sc-aviso { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+.fae-pv-sc-aviso { animation: fae-pv-sc-aviso 2.4s ease-in-out infinite; }
 @keyframes fae-pv-sc-pieza {
-  0% { transform: translateY(-40px); opacity: 0; } 8% { transform: translateY(-40px); opacity: 1; animation-timing-function: cubic-bezier(.3,.7,.3,1); }
-  33%, 88% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(0); opacity: 0; }
+  0% { transform: translateY(-40px) scale(1); opacity: 0; }
+  8% { transform: translateY(-40px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(.3,.7,.3,1); }
+  30% { transform: translateY(0) scale(.93); opacity: 1; animation-timing-function: cubic-bezier(.3,.9,.4,1); }
+  42%, 88% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(0) scale(1); opacity: 0; }
 }
 .fae-pv-sc-pieza { animation: fae-pv-sc-pieza 1.8s linear infinite; }
 `}
     >
-      <rect className="fae-pv-sc-borde" x="6" y="12" width="108" height="66" rx="8" fill={C.fondo} stroke={C.ambar} strokeWidth="2" />
-      <path className="fae-pv-sc-borde" d="M13 29 L18.5 19.5 L24 29 Z" fill="none" stroke={C.ambar} strokeWidth="1.8" strokeLinejoin="round" />
+      <rect x="6" y="12" width="108" height="66" rx="8" fill={C.fondo} stroke={C.ambar} strokeOpacity="0.35" strokeWidth="2" />
+      <path className="fae-pv-sc-aviso" d="M13 29 L18.5 19.5 L24 29 Z" fill="none" stroke={C.ambar} strokeWidth="1.8" strokeLinejoin="round" />
       {[12, 32, 52, 72, 92].map((x) => (
         <rect key={x} x={x} y="44" width="16" height="20" rx="3" fill="none" stroke={C.hueco} strokeWidth="1.5" strokeDasharray="3 2.5" />
       ))}

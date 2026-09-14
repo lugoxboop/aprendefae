@@ -93,6 +93,12 @@ function Directos() {
  *
  * La curva sale de mover la moneda en dos ejes con curvas distintas: lineal
  * en horizontal, frenando en vertical.
+ *
+ * OJO, LLEVADO A PEDAGOGÍA: los dos caminos se distinguen solos —arriba y
+ * continuo, abajo y discontinuo, a destinos distintos—, pero el SENTIDO del
+ * segundo depende de ver el bolsillo encoger. Sin eso, una moneda que entra en
+ * un bolsillo se lee como dinero que llega, que es lo contrario de la
+ * Tributación: el impuesto sale del bolsillo.
  */
 function Flujo() {
   return (

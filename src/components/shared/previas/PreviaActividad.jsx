@@ -31,6 +31,11 @@ export const PREVIAS = {
   "tablero-decisiones": { tema: "economica", tipo: "clip" },
   "quien-gana-quien-pierde": { tema: "economica", tipo: "gesto" },
   "corriente-titulares": { tema: "economica", tipo: "propia" },
+  /*
+   * Identificada: su animación es la respuesta del sistema (la onda al
+   * transmitir), no el gesto del estudiante (elegir y ordenar fragmentos).
+   * Se queda por ser su movimiento propio y real; en revisión de pedagogía.
+   */
   "explica-la-politica": { tema: "economica", tipo: "propia" },
   "simulador-de-crisis": { tema: "economica", tipo: "gesto" },
 

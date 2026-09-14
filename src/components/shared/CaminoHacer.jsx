@@ -55,23 +55,20 @@ import { bloquesDe } from "../../hacer/bloques.js";
  *
  * Política Económica, Demanda Agregada y Política Fiscal parten su camino en
  * Cimientos, Aplicación, Análisis y Maestría, por la dificultad del catálogo
- * (hacer/bloques.js). Cada bloque es un lienzo propio con su título, su anillo
- * de avance y, si no es el primero que se ve, su separador encima. Lo que no
- * cambia es lo de arriba: rótulos en HTML a px reales, nunca por debajo de 12.
+ * (hacer/bloques.js), y siguen siendo UN recorrido: un solo lienzo y una
+ * línea continua de punta a punta. Cada bloque se anuncia con su título —el
+ * anillo de avance, el nombre y la dificultad— en una franja propia, del lado
+ * por el que no pasa la línea (ver disposicionPorBloques). Hubo una línea
+ * horizontal con una frase entre bloques y partía el camino en pedazos; se
+ * quitó, y las frases quedan guardadas en hacer/bloques.js. Lo que no cambia
+ * es lo de arriba: rótulos en HTML a px reales, nunca por debajo de 12.
  *
- * Tres decisiones de medida, todas para que el camino no crezca de más en el
- * teléfono:
- *   · el radio, el grosor y la amplitud salen del camino ENTERO, no de cada
- *     bloque: un bloque de dos no puede tener nodos más gordos que uno de tres;
- *   · el serpenteo sigue de un bloque al siguiente, como si fuera uno;
- *   · entre nodos del mismo bloque, 100 unidades como mucho, y a cada lado del
- *     bloque solo el aire que piden sus rótulos.
+ * El radio, el grosor y la amplitud salen del camino entero, y entre nodos
+ * del mismo bloque hay 100 unidades como mucho: el camino no crece de más en
+ * el teléfono.
  *
- * En esta forma hay UN solo lienzo por bloque, sin la doble forma de arriba:
- * esa doble forma existía por el ramal del desafío, y aquí el desafío —si un
- * tema llega a tener— va siempre como tarjeta encima de los bloques. Colgarlo
- * del lienzo de un bloque haría ese bloque más ancho que los demás y el
- * camino dejaría de estar alineado.
+ * En esta forma no hay doble forma: existía por el ramal del desafío, y aquí
+ * el desafío —si un tema llega a tener— va siempre como tarjeta encima.
  *
  * Y cada nodo lleva el icono de su actividad (iconosActividad.jsx) en vez del
  * número; el que no tiene uno declarado sigue con su número.
@@ -120,51 +117,90 @@ export function posiciones(n, m) {
 
 /* En un camino por bloques: lo más que se separan dos nodos del mismo bloque. */
 const SEPARACION_BLOQUE = 100;
+/*
+ * La franja del título de un bloque y el aire a cada lado, en unidades del
+ * lienzo. A 375 px de ventana el lienzo va a escala 0,78 y 64 unidades son
+ * 50 px: cabe el anillo de 44. Los dos aires dejan libres los rótulos de los
+ * nodos de antes y de después, que se extienden unos 35 unidades arriba y abajo.
+ */
+const BANDA = 64;
+const AIRE_ANTES = 24;
+const AIRE_DESPUES = 20;
+const MARGEN_FINAL = 34;
 
 /*
- * La disposición de un bloque dentro de un camino por bloques: medidas del
- * camino entero (`nTotal`), el serpenteo continuando desde `inicio` —la
- * posición del primer nodo del bloque en el camino— y un alto justo para sus
- * `k` nodos y el aire de sus rótulos.
+ * El camino por bloques entero, en un solo lienzo: dónde cae cada nodo y
+ * dónde va el título de cada bloque.
+ *
+ * LA LÍNEA NO CRUZA NINGÚN TÍTULO, Y NO POR SUERTE. Dentro de un bloque los
+ * nodos alternan de lado, como siempre; pero el primer nodo de un bloque se
+ * queda del MISMO lado que el último del anterior. Así, entre bloque y
+ * bloque, la línea baja por ese lado —la curva hasta se abre hacia fuera— y
+ * el título ocupa la franja del lado contrario, que queda libre. Y el primer
+ * bloque empieza del lado que haga que termine a la derecha: con los bloques
+ * de hoy (2, 3 y 2 actividades) eso deja todos los títulos a la izquierda,
+ * como estaban. Si otro reparto hiciera bajar la línea por la izquierda, ese
+ * título se iría a la derecha en vez de quedar atravesado.
  */
-export function disposicionDeBloque(nTotal, inicio, k) {
+export function disposicionPorBloques(bloques, nTotal) {
   const base = medidas(nTotal);
   const separacion = Math.min(base.separacion || SEPARACION_BLOQUE, SEPARACION_BLOQUE);
-  const margen = base.radio + 28;
-  const m = { ...base, separacion, alto: separacion * Math.max(0, k - 1) + margen * 2 };
+  const r = base.radio;
   const centro = ANCHO / 2;
-  const puntos = Array.from({ length: k }, (_, j) => {
-    const i = inicio + j;
-    return {
-      x: centro + m.amplitud * Math.cos(i * Math.PI) * (0.72 + 0.28 * Math.sin(i * 1.3)),
-      y: margen + j * separacion,
-    };
+  const puntos = [];
+  const cabeceras = [];
+  let lado = (bloques[0]?.nodos.length ?? 0) % 2 === 1 ? 1 : -1;
+  let i = 0;
+
+  bloques.forEach((b, k) => {
+    const yCabecera = k === 0 ? 0 : puntos[puntos.length - 1].y + r + AIRE_ANTES;
+    cabeceras.push({ id: b.id, y: yCabecera, lado: k === 0 ? -1 : -lado });
+    let y = yCabecera + BANDA + r + AIRE_DESPUES;
+    b.nodos.forEach((nodo, j) => {
+      if (j > 0) {
+        lado = -lado;
+        y += separacion;
+      }
+      puntos.push({ x: centro + lado * base.amplitud * (0.72 + 0.28 * Math.sin(i * 1.3)), y, id: nodo.id });
+      i += 1;
+    });
   });
-  return { m, posiciones: puntos, inicio };
+
+  const alto = (puntos[puntos.length - 1]?.y ?? 0) + r + MARGEN_FINAL;
+  return { m: { ...base, separacion, alto }, puntos, cabeceras, banda: BANDA };
 }
 
 /*
- * Curva suave que pasa por todos los puntos (Catmull-Rom convertido a Bézier).
- * Se usa esto y no una polilínea porque el lenguaje de líneas del sitio —la
- * red de la portada, los flujos de Demanda Agregada— es curvo, y un zigzag
- * rígido cantaría a plantilla de otro producto.
+ * Curva suave que pasa por todos los puntos (Catmull-Rom convertido a Bézier),
+ * tramo a tramo. Se usa esto y no una polilínea porque el lenguaje de líneas
+ * del sitio —la red de la portada, los flujos de Demanda Agregada— es curvo,
+ * y un zigzag rígido cantaría a plantilla de otro producto.
  */
-export function trazo(p) {
-  if (p.length < 2) return "";
-  let d = `M ${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`;
-  for (let i = 0; i < p.length - 1; i++) {
+export function tramosDe(p) {
+  return p.slice(0, -1).map((_, i) => {
     const p0 = p[i - 1] ?? p[i];
     const p1 = p[i];
     const p2 = p[i + 1];
     const p3 = p[i + 2] ?? p2;
-    const c1x = p1.x + (p2.x - p0.x) / 6;
-    const c1y = p1.y + (p2.y - p0.y) / 6;
-    const c2x = p2.x - (p3.x - p1.x) / 6;
-    const c2y = p2.y - (p3.y - p1.y) / 6;
-    d += ` C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
-  }
-  return d;
+    return {
+      p1,
+      c1: { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 },
+      c2: { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 },
+      p2,
+    };
+  });
 }
+
+const u = (v) => v.toFixed(1);
+const curva = ({ c1, c2, p2 }) => `C ${u(c1.x)} ${u(c1.y)}, ${u(c2.x)} ${u(c2.y)}, ${u(p2.x)} ${u(p2.y)}`;
+
+export function trazo(p) {
+  if (p.length < 2) return "";
+  return `M ${u(p[0].x)} ${u(p[0].y)} ${tramosDe(p).map(curva).join(" ")}`;
+}
+
+/* Un path por tramo: el recorrido se pinta de a un tramo, cada uno del tono de su bloque. */
+const tramosSueltos = (p) => tramosDe(p).map((t) => `M ${u(t.p1.x)} ${u(t.p1.y)} ${curva(t)}`);
 
 /* ------------------------------ el nodo especial ------------------------------ */
 
@@ -339,21 +375,13 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
 
 /* -------------------------------- el lienzo -------------------------------- */
 
-function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, disposicion = null, tono = null }) {
+function Lienzo({ nodos, onAbrir, especial, resaltado, marcas }) {
   const n = nodos.length;
-  /* En un camino por bloques, cada bloque trae su disposición (ver disposicionDeBloque). */
-  const m = disposicion?.m ?? medidas(n);
-  const p = disposicion?.posiciones ?? posiciones(n, m);
+  const m = medidas(n);
+  const p = posiciones(n, m);
   const d = trazo(p);
-  /* El primero sin hacer de ESTE lienzo: hasta él llega el tramo recorrido. */
+  /* El siguiente sugerido: el primero sin hacer. Sugerencia, no puerta. */
   const sugerido = nodos.findIndex((x) => !x.completada);
-  /*
-   * El siguiente sugerido: el primero sin hacer del camino. Sugerencia, no
-   * puerta. Por bloques lo decide el camino entero, no cada bloque: si no,
-   * cada bloque tendría el suyo.
-   */
-  const idSugerido = disposicion ? disposicion.sugeridoId : nodos[sugerido]?.id;
-  const hayVarios = disposicion ? disposicion.total > 1 : n > 1;
 
   /*
    * El desafío cuelga de un ramal a la derecha, a la altura del tercio superior
@@ -378,20 +406,14 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, disposicion = nul
    * Con un solo nodo va DEBAJO y centrado: a un lado le quedaban 168 unidades
    * y el nombre de Porter tiene 39 letras; en escritorio se salía del lienzo.
    */
-  const lugarDelRotulo = ({ x, y }) => {
-    if (n === 1 && !disposicion) {
+  const lugarDelRotulo = (punto) => {
+    if (n === 1) {
       return {
-        left: pct(x, anchoTotal), top: pct(y + m.radio + 14, m.alto),
+        left: pct(punto.x, anchoTotal), top: pct(punto.y + m.radio + 14, m.alto),
         width: pct(ANCHO - 60, anchoTotal), transform: "translateX(-50%)", textAlign: "center",
       };
     }
-    const aLaDerecha = x < ANCHO / 2;
-    const borde = aLaDerecha ? x + m.radio + 12 : x - m.radio - 12;
-    const libre = (aLaDerecha ? ANCHO - borde : borde) - 6;
-    return {
-      ...(aLaDerecha ? { left: pct(borde, anchoTotal), textAlign: "left" } : { right: pct(anchoTotal - borde, anchoTotal), textAlign: "right" }),
-      top: pct(y, m.alto), maxWidth: pct(libre, anchoTotal), transform: "translateY(-50%)",
-    };
+    return alLado(punto, m.radio, m.alto, anchoTotal);
   };
 
   return (
@@ -409,79 +431,27 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, disposicion = nul
           <path
             d={trazo(p.slice(0, sugerido === -1 ? n : sugerido + 1))}
             fill="none"
-            stroke={tono?.linea ?? FAE.teal}
+            stroke={FAE.teal}
             strokeWidth={m.grosor}
             strokeLinecap="round"
             opacity="0.75"
           />
         )}
 
-        {nodos.map((nodo, i) => {
-          const { x, y } = p[i];
-          const esSugerido = nodo.id === idSugerido && hayVarios;
-          const Icono = iconoDe(nodo.id);
-          const lado = Math.round(m.radio * 1.1);
-          return (
-            <g
-              key={nodo.id}
-              data-nodo={nodo.id}
-              {...alPulsar(onAbrir, nodo.id)}
-              role="button"
-              tabIndex={0}
-              aria-label={etiquetaAria(nodo, marcas)}
-              style={{ cursor: "pointer" }}
-            >
-              {/* Aro coral del sugerido: acento, no candado. */}
-              {esSugerido && (
-                <circle cx={x} cy={y} r={m.radio + 7} fill="none" stroke={FAE.coral} strokeWidth="2" opacity="0.75" />
-              )}
-              {resaltado === nodo.id && (
-                <circle className="fae-ch-aqui" cx={x} cy={y} r={m.radio + 12} fill="none" stroke={FAE.teal} strokeWidth="3" />
-              )}
-
-              <circle
-                cx={x}
-                cy={y}
-                r={m.radio}
-                fill={nodo.completada ? FAE.teal : "rgba(14,27,46,0.85)"}
-                stroke={nodo.completada ? FAE.teal : tono?.nodo ?? "rgba(248,249,250,0.45)"}
-                strokeWidth={tono ? 2.5 : 2}
-                style={tono?.brillo && !nodo.completada ? { filter: tono.brillo } : undefined}
-              />
-
-              {/*
-                Dentro, el icono de la actividad; sin uno declarado, el número de
-                siempre, que orienta sin ordenar. Los dos se quedan en el SVG
-                porque aguantan la escala: a 320 px de ventana el número sigue en
-                16 px y el icono en unos 22.
-
-                Hecha no es solo un color: además del relleno teal lleva un ✓ en
-                su esquina.
-              */}
-              {Icono ? (
-                <>
-                  <g transform={`translate(${(x - lado / 2).toFixed(1)} ${(y - lado / 2).toFixed(1)})`} pointerEvents="none" data-icono={nodo.id}>
-                    <Icono size={lado} color={nodo.completada ? FAE.bg : "rgba(248,249,250,0.9)"} strokeWidth={2} aria-hidden="true" />
-                  </g>
-                  {nodo.completada && <Hecha x={x + m.radio * 0.74} y={y - m.radio * 0.74} r={Math.max(7, m.radio * 0.36)} />}
-                </>
-              ) : (
-                <text
-                  x={x}
-                  y={y + m.radio * 0.34}
-                  textAnchor="middle"
-                  fontFamily="Sora, sans-serif"
-                  fontWeight="700"
-                  fontSize={m.radio * 0.92}
-                  fill={nodo.completada ? FAE.bg : "rgba(248,249,250,0.75)"}
-                  pointerEvents="none"
-                >
-                  {(disposicion?.inicio ?? 0) + i + 1}
-                </text>
-              )}
-            </g>
-          );
-        })}
+        {nodos.map((nodo, i) => (
+          <NodoSvg
+            key={nodo.id}
+            nodo={nodo}
+            x={p[i].x}
+            y={p[i].y}
+            m={m}
+            numero={i + 1}
+            sugerido={i === sugerido && n > 1}
+            resaltado={resaltado}
+            marcas={marcas}
+            onAbrir={onAbrir}
+          />
+        ))}
 
         {/* ------------------------- el nodo de desafío ------------------------- */}
         {esp && (
@@ -586,6 +556,88 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, disposicion = nul
   );
 }
 
+/*
+ * El rótulo de un nodo, al lado que quede libre: si el nodo se fue a la
+ * derecha, el rótulo va a su izquierda, y al revés. Su ancho máximo es lo que
+ * queda hasta el borde del camino —nunca el ramal—, y si el nombre no cabe
+ * parte la línea.
+ */
+function alLado({ x, y }, radio, alto, anchoTotal = ANCHO) {
+  const aLaDerecha = x < ANCHO / 2;
+  const borde = aLaDerecha ? x + radio + 12 : x - radio - 12;
+  const libre = (aLaDerecha ? ANCHO - borde : borde) - 6;
+  return {
+    ...(aLaDerecha ? { left: pct(borde, anchoTotal), textAlign: "left" } : { right: pct(anchoTotal - borde, anchoTotal), textAlign: "right" }),
+    top: pct(y, alto), maxWidth: pct(libre, anchoTotal), transform: "translateY(-50%)",
+  };
+}
+
+/* Un nodo del camino. Lo usan las dos formas: la de siempre y la de bloques. */
+function NodoSvg({ nodo, x, y, m, numero, sugerido, resaltado, marcas, onAbrir, tono = null, bloqueId, prefijo = "" }) {
+  const Icono = iconoDe(nodo.id);
+  const lado = Math.round(m.radio * 1.1);
+  return (
+    <g
+      data-nodo={nodo.id}
+      data-bloque-de={bloqueId}
+      {...alPulsar(onAbrir, nodo.id)}
+      role="button"
+      tabIndex={0}
+      aria-label={etiquetaAria(nodo, marcas, prefijo)}
+      style={{ cursor: "pointer" }}
+    >
+      {/* Aro coral del sugerido: acento, no candado. */}
+      {sugerido && (
+        <circle cx={x} cy={y} r={m.radio + 7} fill="none" stroke={FAE.coral} strokeWidth="2" opacity="0.75" />
+      )}
+      {resaltado === nodo.id && (
+        <circle className="fae-ch-aqui" cx={x} cy={y} r={m.radio + 12} fill="none" stroke={FAE.teal} strokeWidth="3" />
+      )}
+
+      <circle
+        cx={x}
+        cy={y}
+        r={m.radio}
+        fill={nodo.completada ? FAE.teal : "rgba(14,27,46,0.85)"}
+        stroke={nodo.completada ? FAE.teal : tono?.nodo ?? "rgba(248,249,250,0.45)"}
+        strokeWidth={tono ? 2.5 : 2}
+        style={tono?.brillo && !nodo.completada ? { filter: tono.brillo } : undefined}
+      />
+
+      {/*
+        Dentro, el icono de la actividad; sin uno declarado, el número de
+        siempre, que orienta sin ordenar. Los dos se quedan en el SVG porque
+        aguantan la escala: a 320 px de ventana el número sigue en 16 px y el
+        icono en unos 22.
+
+        Hecha no es solo un color: además del relleno teal lleva un ✓ en su
+        esquina.
+      */}
+      {Icono ? (
+        <>
+          <g transform={`translate(${(x - lado / 2).toFixed(1)} ${(y - lado / 2).toFixed(1)})`} pointerEvents="none" data-icono={nodo.id}>
+            <Icono size={lado} color={nodo.completada ? FAE.bg : "rgba(248,249,250,0.9)"} strokeWidth={2} aria-hidden="true" />
+          </g>
+          {nodo.completada && <Hecha x={x + m.radio * 0.74} y={y - m.radio * 0.74} r={Math.max(7, m.radio * 0.36)} />}
+        </>
+      ) : (
+        <text
+          x={x}
+          y={y + m.radio * 0.34}
+          textAnchor="middle"
+          fontFamily="Sora, sans-serif"
+          fontWeight="700"
+          fontSize={m.radio * 0.92}
+          fill={nodo.completada ? FAE.bg : "rgba(248,249,250,0.75)"}
+          pointerEvents="none"
+        >
+          {numero}
+        </text>
+      )}
+    </g>
+  );
+}
+
 /* El ✓ de un nodo hecho: una marca que no depende del color. */
 function Hecha({ x, y, r }) {
   return (
@@ -620,8 +672,7 @@ const OCULTO = { position: "absolute", width: "1px", height: "1px", overflow: "h
 
 function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas }) {
   const bloques = bloquesDe(nodos);
-  const total = nodos.length;
-  const sugeridoId = nodos.find((x) => !x.completada)?.id ?? null;
+  const orden = bloques.flatMap((b) => b.nodos);
   /*
    * Tocar un nodo abre su panel —con la previsualización— y «Empezar» abre la
    * actividad. Antes el toque entraba directo; el panel es lo que da un
@@ -636,28 +687,13 @@ function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas }) {
       {especial && (
         <DesafioEnTarjeta especial={especial} onAbrir={onAbrir} resaltado={resaltado} marca={marcas?.[especial.id]} marcas={marcas} />
       )}
-      {bloques.map((b) => {
-        const tono = TONOS[b.id] ?? TONOS.otras;
-        const disposicion = { ...disposicionDeBloque(total, b.inicio, b.nodos.length), sugeridoId, total };
-        return (
-          /*
-            Al ancho del lienzo y centrado, como el camino: en escritorio la
-            columna mide 860 y el título se quedaba lejos, a la izquierda de
-            un camino de 420 centrado.
-          */
-          <section key={b.id} data-bloque={b.id} aria-labelledby={`fae-cb-${b.id}`} style={{ marginTop: b.separador ? 0 : "4px", maxWidth: `${ANCHO}px`, marginInline: "auto" }}>
-            {b.separador && <Separador texto={b.separador} tono={tono} />}
-            <CabezaBloque bloque={b} tono={tono} />
-            <Lienzo nodos={b.nodos} onAbrir={setDetalle} especial={null} resaltado={resaltado} marcas={marcas} disposicion={disposicion} tono={tono} />
-          </section>
-        );
-      })}
+      <LienzoPorBloques bloques={bloques} onAbrir={setDetalle} resaltado={resaltado} marcas={marcas} />
       {nodoDetalle && (
         <DetalleNodo
           key={nodoDetalle.id}
           nodo={nodoDetalle}
           bloque={bloqueDetalle}
-          numero={nodos.indexOf(nodoDetalle) + 1}
+          numero={orden.indexOf(nodoDetalle) + 1}
           onCerrar={() => setDetalle(null)}
           onEmpezar={() => {
             setDetalle(null);
@@ -669,13 +705,104 @@ function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas }) {
   );
 }
 
+/*
+ * EL CAMINO POR BLOQUES, EN UN SOLO LIENZO: una línea de punta a punta, sin
+ * cortes entre bloques. Los títulos van en su franja, al lado contrario de por
+ * donde baja la línea (ver disposicionPorBloques), en HTML y a px reales como
+ * los rótulos. Al ancho del lienzo y centrado: en escritorio la columna mide
+ * 860 y un título a su izquierda quedaría lejos del camino.
+ *
+ * Cada nodo lleva en su nombre accesible el bloque y la dificultad —el título
+ * ya no lo envuelve en el DOM, así que un lector de pantalla lo oye ahí—.
+ */
+function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas }) {
+  const orden = bloques.flatMap((b) => b.nodos);
+  const { m, puntos, cabeceras } = disposicionPorBloques(bloques, orden.length);
+  const bloqueDe = new Map(bloques.flatMap((b) => b.nodos.map((n) => [n.id, b])));
+  const tonoDe = (id) => TONOS[bloqueDe.get(id)?.id] ?? TONOS.otras;
+  /* El siguiente sugerido: el primero sin hacer en el orden del camino. */
+  const sugerido = orden.findIndex((x) => !x.completada);
+  /* El recorrido llega hasta él, cada tramo del tono del bloque al que entra. */
+  const recorridos = sugerido === -1 ? orden.length - 1 : sugerido;
+
+  return (
+    <div data-camino-bloques style={{ position: "relative", width: "100%", maxWidth: `${ANCHO}px`, margin: "0 auto" }}>
+      <svg viewBox={`0 0 ${ANCHO} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible" }}>
+        {puntos.length > 1 && (
+          <path data-linea d={trazo(puntos)} fill="none" stroke="rgba(248,249,250,0.22)" strokeWidth={m.grosor} strokeLinecap="round" />
+        )}
+        {tramosSueltos(puntos).slice(0, Math.max(0, recorridos)).map((d, i) => (
+          <path key={i} data-recorrido d={d} fill="none" stroke={tonoDe(orden[i + 1].id).linea} strokeWidth={m.grosor} strokeLinecap="round" opacity="0.75" />
+        ))}
+        {orden.map((nodo, i) => {
+          const b = bloqueDe.get(nodo.id);
+          return (
+            <NodoSvg
+              key={nodo.id}
+              nodo={nodo}
+              x={puntos[i].x}
+              y={puntos[i].y}
+              m={m}
+              numero={i + 1}
+              sugerido={i === sugerido && orden.length > 1}
+              resaltado={resaltado}
+              marcas={marcas}
+              onAbrir={onAbrir}
+              tono={tonoDe(nodo.id)}
+              bloqueId={b.id}
+              prefijo={`${b.nombre}, ${b.etiqueta.toLowerCase()}: `}
+            />
+          );
+        })}
+      </svg>
+
+      {cabeceras.map((c) => {
+        const b = bloques.find((x) => x.id === c.id);
+        return (
+          <section
+            key={c.id}
+            data-bloque={c.id}
+            data-lado={c.lado < 0 ? "izquierda" : "derecha"}
+            aria-labelledby={`fae-cb-${c.id}`}
+            style={{ position: "absolute", top: pct(c.y + 6, m.alto), maxWidth: "58%", ...(c.lado < 0 ? { left: 0 } : { right: 0 }) }}
+          >
+            <CabezaBloque bloque={b} tono={TONOS[b.id] ?? TONOS.otras} alDerecha={c.lado > 0} />
+          </section>
+        );
+      })}
+
+      {orden.map((nodo, i) => (
+        <span
+          key={nodo.id}
+          aria-hidden="true"
+          className="fae-ch-rotulo"
+          onClick={() => onAbrir?.(nodo.id)}
+          style={{
+            position: "absolute",
+            ...alLado(puntos[i], m.radio, m.alto),
+            fontFamily: "Inter, sans-serif",
+            lineHeight: 1.3,
+            color: nodo.completada ? FAE.text : "rgba(248,249,250,0.72)",
+            cursor: "pointer",
+          }}
+        >
+          {nodo.nombre}
+          {marcas?.[nodo.id] && <span style={MARCA}>{marcas[nodo.id]}</span>}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 /* ------------------------------ el panel del nodo ------------------------------ */
 
 const CSS_DETALLE = `
-.fae-dn-fondo { position: fixed; inset: 0; z-index: 65; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(6,12,22,0.62); animation: fae-dn-fundido 140ms ease-out both; }
+.fae-dn-fondo { position: fixed; inset: 0; z-index: 65; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(6,12,22,0.62); animation: fae-dn-fundido 140ms ease-out backwards; }
+/* La entrada solo rellena hacia atrás: al acabar no retiene el transform, y la hoja puede seguir al dedo y volver con su transición. */
 .fae-dn { width: min(100%, 380px); box-sizing: border-box; border-radius: 22px; padding: 20px 20px 18px; text-align: center; color: ${FAE.text};
   background: linear-gradient(160deg, #1C3150, #13233B); border: 1px solid rgba(248,249,250,0.22); box-shadow: 0 18px 48px rgba(0,0,0,0.5);
-  animation: fae-dn-subir 180ms cubic-bezier(.2,.8,.3,1) both; }
+  transition: transform 180ms ease; animation: fae-dn-subir 180ms cubic-bezier(.2,.8,.3,1) backwards; }
+.fae-dn-agarre { display: none; }
 .fae-dn-previa { width: 144px; height: 108px; margin: 0 auto 14px; border-radius: 16px; display: grid; place-items: center; overflow: hidden;
   background: #13233B; border: 1px solid rgba(248,249,250,0.14); }
 .fae-dn-bloque { margin: 0 0 4px; font-family: Sora, sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.12em; color: rgba(248,249,250,0.72); }
@@ -689,7 +816,10 @@ const CSS_DETALLE = `
 @keyframes fae-dn-subir { from { opacity: 0; transform: translateY(14px); } }
 @media (max-width: ${ANCHO_ESTRECHO}px) {
   .fae-dn-fondo { align-items: flex-end; padding: 0; }
-  .fae-dn { width: 100%; border-radius: 22px 22px 0 0; padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+  /* Sin desplazamiento propio: el arrastre vertical es de la hoja, no de la página. */
+  .fae-dn { width: 100%; border-radius: 22px 22px 0 0; padding-bottom: max(18px, env(safe-area-inset-bottom)); touch-action: none; }
+  /* El asa: dice que la hoja se puede bajar. */
+  .fae-dn-agarre { display: block; width: 40px; height: 4px; border-radius: 999px; margin: -8px auto 12px; background: rgba(248,249,250,0.35); }
 }
 @media (prefers-reduced-motion: reduce) { .fae-dn-fondo, .fae-dn { animation: none !important; } }
 `;
@@ -733,6 +863,41 @@ function DetalleNodo({ nodo, bloque, numero, onCerrar, onEmpezar }) {
   const [animar, setAnimar] = useState(false);
   const reducir = typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
 
+  /*
+   * DESLIZAR HACIA ABAJO CIERRA, en el teléfono: es lo que la gente intenta
+   * con una hoja que sube desde abajo. La hoja sigue al dedo; si baja más de
+   * 90 px —o se lanza rápido—, se cierra, y si no, vuelve a su sitio. Hasta
+   * 8 px sigue siendo un toque, para no comerse los botones, y el clic que
+   * llega después de un arrastre se descarta. En escritorio no hay hoja:
+   * Escape y tocar fuera.
+   */
+  const arrastre = useRef(null);
+  const tragarClic = useRef(false);
+  const [bajada, setBajada] = useState(0);
+  const alPresionar = (e) => {
+    if (!window.matchMedia?.(`(max-width: ${ANCHO_ESTRECHO}px)`)?.matches) return;
+    arrastre.current = { y0: e.clientY, t0: performance.now(), dy: 0, movido: false, id: e.pointerId, el: e.currentTarget };
+  };
+  const alMover = (e) => {
+    const a = arrastre.current;
+    if (!a) return;
+    a.dy = Math.max(0, e.clientY - a.y0);
+    if (!a.movido && a.dy > 8) {
+      a.movido = true;
+      try { if (a.id != null) a.el.setPointerCapture?.(a.id); } catch { /* sin captura, se sigue igual */ }
+    }
+    if (a.movido) setBajada(a.dy);
+  };
+  const alSoltar = () => {
+    const a = arrastre.current;
+    arrastre.current = null;
+    if (!a) return;
+    if (a.movido) tragarClic.current = true;
+    const lanzada = a.dy > 40 && performance.now() - a.t0 < 250;
+    if (a.dy > 90 || lanzada) cerrar.current();
+    else setBajada(0);
+  };
+
   useEffect(() => {
     const previo = document.activeElement;
     empezar.current?.focus();
@@ -775,7 +940,19 @@ function DetalleNodo({ nodo, bloque, numero, onCerrar, onEmpezar }) {
         aria-modal="true"
         aria-labelledby="fae-dn-titulo"
         onClick={(e) => e.stopPropagation()}
+        onClickCapture={(e) => {
+          if (!tragarClic.current) return;
+          tragarClic.current = false;
+          e.stopPropagation();
+          e.preventDefault();
+        }}
+        onPointerDown={alPresionar}
+        onPointerMove={alMover}
+        onPointerUp={alSoltar}
+        onPointerCancel={alSoltar}
+        style={bajada ? { transform: `translateY(${bajada}px)`, transition: "none" } : undefined}
       >
+        <span className="fae-dn-agarre" aria-hidden="true" />
         <div className="fae-dn-previa" aria-hidden="true">
           {animar && !reducir ? <PreviaActividad actividadId={nodo.id} respaldo={estatico} /> : estatico}
         </div>
@@ -803,12 +980,15 @@ function DetalleNodo({ nodo, bloque, numero, onCerrar, onEmpezar }) {
  * sola al completar una actividad: los nodos vienen de useCompletadas, que
  * escucha el canal de FP.
  */
-function CabezaBloque({ bloque, tono }) {
+function CabezaBloque({ bloque, tono, alDerecha = false }) {
   const { hechas, total } = bloque;
   const R = 17;
   const L = 2 * Math.PI * R;
   return (
-    <div data-cabeza-bloque={bloque.id} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+    <div
+      data-cabeza-bloque={bloque.id}
+      style={{ display: "flex", alignItems: "center", gap: "12px", flexDirection: alDerecha ? "row-reverse" : "row", textAlign: alDerecha ? "right" : "left" }}
+    >
       <span
         role="img"
         aria-label={`${hechas} de ${total} ${total === 1 ? "completada" : "completadas"}`}
@@ -845,19 +1025,6 @@ function CabezaBloque({ bloque, tono }) {
           <span style={OCULTO}>, {hechas} de {total} completadas</span>
         </span>
       </span>
-    </div>
-  );
-}
-
-/* El separador que lleva a un bloque: una frase entre dos líneas del tono de ese bloque. */
-function Separador({ texto, tono }) {
-  return (
-    <div data-separador style={{ display: "flex", alignItems: "center", gap: "12px", margin: "2px 0 16px" }}>
-      <span aria-hidden="true" style={{ flex: "1 1 16px", height: "1px", background: `linear-gradient(90deg, transparent, ${tono.acento})` }} />
-      <p style={{ margin: 0, flex: "0 1 auto", maxWidth: "26em", textAlign: "center", fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "13px", lineHeight: 1.35, color: "rgba(248,249,250,0.84)", ...PAREJO }}>
-        {texto}
-      </p>
-      <span aria-hidden="true" style={{ flex: "1 1 16px", height: "1px", background: `linear-gradient(90deg, ${tono.acento}, transparent)` }} />
     </div>
   );
 }

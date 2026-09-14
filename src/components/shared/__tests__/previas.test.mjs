@@ -18,8 +18,9 @@ import { JSDOM, VirtualConsole } from "jsdom";
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
 let reducirMovimiento = false;
+let estrecho = false;
 w.matchMedia = (q) => ({
-  matches: /reduced-motion: reduce/.test(q) ? reducirMovimiento : false,
+  matches: /reduced-motion: reduce/.test(q) ? reducirMovimiento : /max-width/.test(q) ? estrecho : false,
   addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {},
 });
 w.requestAnimationFrame = (cb) => setTimeout(() => cb(Date.now()), 16);
@@ -126,6 +127,43 @@ test("Escape y «Cerrar» cierran el panel y desmontan la animación", async () 
   tocar(m.cont.querySelector('g[data-nodo="triage-emergencias"]'));
   tocar([...m.cont.querySelectorAll('[role="dialog"] button')].find((b) => b.textContent === "Cerrar"));
   assert.equal(m.cont.querySelector('[role="dialog"]'), null);
+  m.desmontar();
+});
+
+test("en el teléfono, deslizar la hoja hacia abajo la cierra; un roce corto sigue siendo un toque; en escritorio no hay arrastre", () => {
+  const puntero = (hoja, tipo, y) => act(() => { hoja.dispatchEvent(new w.MouseEvent(tipo, { bubbles: true, clientY: y })); });
+  estrecho = true;
+  try {
+    const abiertas = [];
+    const m = abrirPanel("triage-emergencias", (id) => abiertas.push(id));
+    const hoja = () => m.cont.querySelector('[role="dialog"]');
+
+    puntero(hoja(), "pointerdown", 500);
+    puntero(hoja(), "pointermove", 505);
+    puntero(hoja(), "pointerup", 505);
+    assert.ok(hoja(), "un roce de 5 px no cierra");
+    assert.equal(hoja().style.transform, "", "ni mueve la hoja");
+
+    puntero(hoja(), "pointerdown", 500);
+    puntero(hoja(), "pointermove", 560);
+    assert.match(hoja().style.transform, /translateY\(60px\)/, "la hoja sigue al dedo");
+    puntero(hoja(), "pointermove", 630);
+    puntero(hoja(), "pointerup", 630);
+    assert.equal(hoja(), null, "bajarla la cierra");
+    assert.deepEqual(abiertas, [], "y cerrar no empieza nada");
+    m.desmontar();
+  } finally {
+    estrecho = false;
+  }
+
+  const m = abrirPanel("triage-emergencias");
+  const hoja = m.cont.querySelector('[role="dialog"]');
+  puntero(hoja, "pointerdown", 500);
+  puntero(hoja, "pointermove", 640);
+  puntero(hoja, "pointerup", 640);
+  assert.ok(m.cont.querySelector('[role="dialog"]'), "en escritorio el panel no se arrastra");
+  tocar(m.cont.querySelector(".fae-dn-fondo"));
+  assert.equal(m.cont.querySelector('[role="dialog"]'), null, "tocar fuera lo cierra");
   m.desmontar();
 });
 

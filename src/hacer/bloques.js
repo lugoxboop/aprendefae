@@ -15,35 +15,33 @@
  * vacío en los tres temas —ninguna de las 21 actividades es Fácil— y los tres
  * caminos empiezan en «Aplicación». No es un fallo.
  *
- * Y el separador va con el bloque al que LLEVA, no con el que deja: «Sube de
- * nivel» es la entrada de Aplicación. Así, si un bloque no se pinta, su
- * separador tampoco, y el primer bloque visible nunca lleva uno encima aunque
- * en el orden fijo no sea el primero.
+ * ═══════════ SIN SEPARADORES ENTRE BLOQUES ═══════════
+ *
+ * Hubo una línea horizontal con una frase entre bloque y bloque, y partía el
+ * camino en pedazos: la línea que une los nodos se cortaba y el recorrido se
+ * leía como bloques sueltos apilados. La división ya la dicen los títulos
+ * —anillo, nombre y dificultad—, así que las frases se quitaron. Se guardan
+ * aquí por si más adelante caben en otro sitio del diseño:
+ *
+ *   hacia Aplicación   «Sube de nivel: ahora se aplica lo que aprendiste»
+ *   hacia Análisis     «Aquí ya no hay una sola respuesta obvia»
+ *   hacia Maestría     «La zona de los que se la saben»
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 export const BLOQUES = [
-  { id: "cimientos", nombre: "Cimientos", dificultad: "facil", etiqueta: "Fácil", separador: null },
-  {
-    id: "aplicacion", nombre: "Aplicación", dificultad: "medio", etiqueta: "Medio",
-    separador: "Sube de nivel: ahora se aplica lo que aprendiste",
-  },
-  {
-    id: "analisis", nombre: "Análisis", dificultad: "dificil", etiqueta: "Difícil",
-    separador: "Aquí ya no hay una sola respuesta obvia",
-  },
-  {
-    id: "maestria", nombre: "Maestría", dificultad: "experto", etiqueta: "Experto",
-    separador: "La zona de los que se la saben",
-  },
+  { id: "cimientos", nombre: "Cimientos", dificultad: "facil", etiqueta: "Fácil" },
+  { id: "aplicacion", nombre: "Aplicación", dificultad: "medio", etiqueta: "Medio" },
+  { id: "analisis", nombre: "Análisis", dificultad: "dificil", etiqueta: "Difícil" },
+  { id: "maestria", nombre: "Maestría", dificultad: "experto", etiqueta: "Experto" },
 ];
 
 /*
  * Una actividad con una dificultad que no es de las cuatro —mal escrita, o
  * nueva y sin clasificar del todo— no rompe el camino ni desaparece: va a un
- * bloque final sin separador. Que se vea rara es preferible a que no se vea.
+ * bloque final. Que se vea rara es preferible a que no se vea.
  */
-const SIN_NIVEL = { id: "otras", nombre: "Más actividades", dificultad: null, etiqueta: "Sin nivel asignado", separador: null };
+const SIN_NIVEL = { id: "otras", nombre: "Más actividades", dificultad: null, etiqueta: "Sin nivel asignado" };
 
 /** El bloque de una dificultad, o null si no es de las cuatro. */
 export function bloqueDeDificultad(dificultad) {
@@ -55,7 +53,7 @@ export function bloqueDeDificultad(dificultad) {
  *
  * @param {Array<{id:string, dificultad?:string|null, completada:boolean}>} nodos
  *        en el orden del catálogo; dentro de cada bloque se conserva
- * @returns {Array<{id, nombre, etiqueta, separador:string|null, nodos, inicio:number, total:number, hechas:number}>}
+ * @returns {Array<{id, nombre, etiqueta, nodos, inicio:number, total:number, hechas:number}>}
  *        `inicio`: posición del primer nodo del bloque en el camino entero
  */
 export function bloquesDe(nodos) {
@@ -66,11 +64,9 @@ export function bloquesDe(nodos) {
   let inicio = 0;
   return grupos
     .filter((b) => b.nodos.length > 0)
-    .map((b, k) => {
+    .map((b) => {
       const bloque = {
         ...b,
-        /* El primero que se ve no lleva separador: no hay nada antes de lo que separarlo. */
-        separador: k === 0 ? null : b.separador,
         inicio,
         total: b.nodos.length,
         hechas: b.nodos.filter((n) => n.completada).length,
