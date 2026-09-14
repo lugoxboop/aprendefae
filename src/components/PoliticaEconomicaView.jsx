@@ -17,6 +17,7 @@ import SimuladorDeCrisis from "./mecanicas/SimuladorDeCrisis.jsx";
 import TableroDeDecisiones from "./mecanicas/TableroDeDecisiones.jsx";
 import { clasificacionDe, APRENDER, HACER, actividadesDeTipo, SUBJECTS } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
+import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
@@ -83,12 +84,15 @@ export default function PoliticaEconomicaView({ modo = null, nodoInicial = null,
   const resaltado = useNodoEnRuta(nodoAbierto, nodoInicial, muestraHacer ? nodos.map((x) => x.id) : []);
 
   const { pedirCuenta } = useAuth();
+  /* El cierre a la altura de la dificultad: sale al terminar, con o sin cuenta. */
+  const [recompensa, celebrar] = useRecompensa();
 
   /*
    * Un solo camino para los dos juegos: la clasificación y el id son lo único
    * que cambia, así que no hace falta un manejador por mecánica.
    */
   const completarJuego = async (clasificacion, actividadId, porcentajeAciertos, duracionMs, detalle = null) => {
+    celebrar(clasificacion?.dificultad, actividadId);
     const resultado = await registrarActividadCompletada(clasificacion, {
       materiaId: MATERIA,
       temaId: TEMA,
@@ -103,6 +107,7 @@ export default function PoliticaEconomicaView({ modo = null, nodoInicial = null,
 
   return (
     <FondoMateria materiaId="macroeconomia">
+    {recompensa}
     <div
       style={{
         minHeight: "100vh",
@@ -185,7 +190,7 @@ export default function PoliticaEconomicaView({ modo = null, nodoInicial = null,
             <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 24px" }}>
               Toca el juego que quieras. No hay orden obligatorio: el camino sugiere uno, no lo impone.
             </p>
-            <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} />
+            <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} porBloques />
           </>
         )}
 

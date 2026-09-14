@@ -6,6 +6,7 @@ import FondoMateria from "./shared/FondoMateria.jsx";
 import EnlaceRendimiento from "./shared/EnlaceRendimiento.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
+import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import ClasificadorTesoro from "./mecanicas/tesoreria/ClasificadorTesoro.jsx";
 import DirectosIndirectos from "./mecanicas/tesoreria/DirectosIndirectos.jsx";
@@ -153,6 +154,8 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
   const [nodoAbierto, setNodoAbierto] = useState(null);
   const hechas = useCompletadas();
   const { pedirCuenta } = useAuth();
+  /* El cierre a la altura de la dificultad: sale al terminar, con o sin cuenta. */
+  const [recompensa, celebrar] = useRecompensa();
 
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
   const nodos = nodosDe(actividadesDeTipo(tema, HACER), hechas);
@@ -161,6 +164,7 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
 
   /* El mismo camino central que el resto del sitio: porcentaje, duración y detalle. */
   const completarJuego = async (actividadId, porcentajeAciertos, duracionMs, detalle = null) => {
+    celebrar(CLAS[actividadId]?.dificultad, actividadId);
     const resultado = await registrarActividadCompletada(CLAS[actividadId], {
       materiaId: MATERIA,
       temaId: TEMA,
@@ -176,6 +180,7 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
 
   return (
     <FondoMateria materiaId="macroeconomia">
+      {recompensa}
       <div
         style={{
           minHeight: "100vh",
@@ -218,7 +223,7 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
                 camino sugiere uno, no lo impone.
               </p>
               <Tesoreria />
-              <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} />
+              <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} porBloques />
             </>
           )}
 

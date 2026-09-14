@@ -171,10 +171,13 @@ export const ICONOS = {
  * @param {"base"|"intermedio"|"avanzado"|"elite"} p.nivel  qué marco se dibuja
  * @param {string} [p.icono]   clave de ICONOS; manda sobre `numero` si van los dos
  * @param {string|number} [p.numero]  para las medallas que llevan cifra dentro
+ * @param {(color:string) => JSX.Element} [p.glifo]  un glifo que no es de ICONOS,
+ *        dibujado en la misma caja de 40×40 —hoy, el icono de una actividad en la
+ *        insignia de su cierre (RecompensaCierre)—; manda sobre los otros dos
  * @param {boolean} [p.obtenida]
  * @param {number} [p.tamano]  lado en píxeles
  */
-export default function Medalla({ nivel = "base", icono, numero, obtenida = false, tamano = 76 }) {
+export default function Medalla({ nivel = "base", icono, numero, glifo, obtenida = false, tamano = 76 }) {
   const lados = LADOS[nivel] ?? 6;
   const id = `med-${nivel}-${icono ?? "num"}-${obtenida ? "on" : "off"}`;
 
@@ -274,7 +277,9 @@ export default function Medalla({ nivel = "base", icono, numero, obtenida = fals
 
       {/* El interior: o un icono, o una cifra. Nunca los dos. */}
       <g transform={`translate(${C - 20}, ${C - 20})`}>
-        {icono && ICONOS[icono] ? (
+        {glifo ? (
+          glifo(tinta)
+        ) : icono && ICONOS[icono] ? (
           ICONOS[icono](tinta)
         ) : (
           <text

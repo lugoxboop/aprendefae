@@ -6,6 +6,7 @@ import FondoMateria from "./shared/FondoMateria.jsx";
 import EnlaceRendimiento from "./shared/EnlaceRendimiento.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
+import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import Electrocardiograma from "./mecanicas/corazon/Electrocardiograma.jsx";
 import Termometro from "./mecanicas/corazon/Termometro.jsx";
@@ -118,6 +119,8 @@ export default function DemandaAgregadaHacerView({ nodoInicial = null, onBack })
   const [nodoAbierto, setNodoAbierto] = useState(null);
   const hechas = useCompletadas();
   const { pedirCuenta } = useAuth();
+  /* El cierre a la altura de la dificultad: sale al terminar, con o sin cuenta. */
+  const [recompensa, celebrar] = useRecompensa();
 
   const tema = SUBJECTS.macroeconomia.topics.find((t) => t.id === TEMA);
   const nodos = nodosDe(actividadesDeTipo(tema, HACER), hechas);
@@ -130,6 +133,7 @@ export default function DemandaAgregadaHacerView({ nodoInicial = null, onBack })
    * de este tema.
    */
   const completarJuego = async (actividadId, porcentajeAciertos, duracionMs, detalle = null) => {
+    celebrar(CLAS[actividadId]?.dificultad, actividadId);
     const resultado = await registrarActividadCompletada(CLAS[actividadId], {
       materiaId: MATERIA,
       temaId: TEMA,
@@ -145,6 +149,7 @@ export default function DemandaAgregadaHacerView({ nodoInicial = null, onBack })
 
   return (
     <FondoMateria materiaId="macroeconomia">
+      {recompensa}
       <div
         style={{
           minHeight: "100vh",
@@ -183,7 +188,7 @@ export default function DemandaAgregadaHacerView({ nodoInicial = null, onBack })
                 Siete juegos, del reconocer al reconstruir. No hay orden obligatorio: el camino sugiere
                 uno, no lo impone.
               </p>
-              <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} />
+              <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} porBloques />
             </>
           )}
 

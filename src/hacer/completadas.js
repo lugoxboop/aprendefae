@@ -42,8 +42,26 @@ export function useCompletadas() {
   const [hechas, setHechas] = useState(() => new Set());
 
   useEffect(() => {
-    if (!supabase) return;
     let vivo = true;
+
+    /*
+     * El canal de FP se escucha ANTES de mirar si hay cliente: sin Supabase
+     * nadie emite, así que no cambia nada en producción, y una prueba puede
+     * emitir un aviso y ver el camino —y el anillo de su bloque— al día.
+     */
+    const dejarDeEscuchar = escucharFP(({ actividadId }) => {
+      if (!vivo || !actividadId) return;
+      setHechas((previas) =>
+        previas.has(actividadId) ? previas : new Set(previas).add(actividadId)
+      );
+    });
+
+    if (!supabase) {
+      return () => {
+        vivo = false;
+        dejarDeEscuchar();
+      };
+    }
 
     const traer = async () => {
       const { data, error } = await supabase.rpc("actividades_hechas");
@@ -68,13 +86,6 @@ export function useCompletadas() {
       if (evento === "INITIAL_SESSION" || evento === "SIGNED_IN") traer();
     });
 
-    const dejarDeEscuchar = escucharFP(({ actividadId }) => {
-      if (!vivo || !actividadId) return;
-      setHechas((previas) =>
-        previas.has(actividadId) ? previas : new Set(previas).add(actividadId)
-      );
-    });
-
     return () => {
       vivo = false;
       sub.subscription.unsubscribe();
@@ -88,11 +99,16 @@ export function useCompletadas() {
 /*
  * Arma los nodos del camino de un tema a partir del catálogo y de lo hecho.
  * El orden es el de subjects.js: es el que decide Gen al escribir el tema.
+ *
+ * La dificultad viaja con el nodo porque de ella sale su bloque (ver
+ * hacer/bloques.js): el catálogo es la única fuente, y registrar una
+ * actividad con su dificultad basta para que caiga en el bloque que toca.
  */
 export function nodosDe(actividades, hechas) {
   return actividades.map((a) => ({
     id: a.id,
     nombre: a.nombre,
+    dificultad: a.clasificacion?.dificultad ?? null,
     completada: hechas.has(a.id),
   }));
 }
