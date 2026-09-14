@@ -222,9 +222,10 @@ export const SUBJECTS = {
          * ═══════════ POLÍTICA FISCAL — "LA TESORERÍA NACIONAL" ═══════════
          *
          * Siete juegos, uno por peldaño de Bloom más uno intercalado, sobre el
-         * PPTX del profesor. Solo la mitad Hacer: todavía no hay material
-         * clasificado, así que el índice abre el tema directo, sin tarjeta
-         * partida. Los bancos viven en src/data/politicaFiscal.js.
+         * PPTX del profesor, y una presentación de cuatro escenas para
+         * proyectar en clase. Con las dos mitades, el índice parte la
+         * tarjeta. Los bancos de los juegos viven en src/data/politicaFiscal.js;
+         * el texto de la presentación, en src/data/politicaFiscalClase.js.
          *
          * OJO CON UNA CONSECUENCIA: "Macroeconomía al día" (medallas.js) exige
          * TODOS los juegos Hacer de la materia y se calcula al vuelo. Con estos
@@ -235,6 +236,17 @@ export const SUBJECTS = {
         id: "politica-fiscal",
         title: "Política Fiscal",
         actividades: [
+          {
+            /*
+             * La mitad Aprender: la presentación que el profesor proyecta y
+             * avanza con el mando (ClasePoliticaFiscal). Material, no juego:
+             * no otorga FP, no entra en actividad_catalogo y no llama a
+             * registrar_fp.
+             */
+            id: "clase-politica-fiscal",
+            nombre: "La política fiscal en cuatro escenas",
+            clasificacion: { tipo: APRENDER },
+          },
           {
             /* Recordar. Las tarjetas del profesor: doce de dieciocho, a tres ranuras. */
             id: "clasificador-tesoro",

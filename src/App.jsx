@@ -192,11 +192,10 @@ export default function App() {
     );
   }
 
-  /* Solo mitad Hacer: el modo del hash, si llega, no cambia nada. */
   if (view === "politica-fiscal") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <PoliticaFiscalView nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
+        <PoliticaFiscalView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
       </Suspense>
     );
   }

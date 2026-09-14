@@ -14,15 +14,20 @@ import AgujeroFiscal from "./mecanicas/tesoreria/AgujeroFiscal.jsx";
 import ExpansivaContractiva from "./mecanicas/tesoreria/ExpansivaContractiva.jsx";
 import DisenaPresupuesto from "./mecanicas/tesoreria/DisenaPresupuesto.jsx";
 import DeficitVsDeuda from "./mecanicas/tesoreria/DeficitVsDeuda.jsx";
+import ClasePoliticaFiscal from "./mecanicas/tesoreria/clase/ClasePoliticaFiscal.jsx";
 import { IconoMecanismo, ACENTOS } from "./mecanicas/tesoreria/tesoreria.jsx";
 import { INSTRUMENTOS } from "../data/politicaFiscal.js";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
-import { SUBJECTS, HACER, clasificacionDe, actividadesDeTipo } from "../data/subjects.js";
+import { SUBJECTS, APRENDER, HACER, clasificacionDe, actividadesDeTipo } from "../data/subjects.js";
 
 /*
- * Política Fiscal — "La Tesorería Nacional". Siete juegos, solo la mitad Hacer.
+ * Política Fiscal — "La Tesorería Nacional". Dos mitades:
+ *
+ *   APRENDER  la presentación de cuatro escenas que el profesor proyecta
+ *             (mecanicas/tesoreria/clase). No puntúa.
+ *   HACER     los siete juegos, en el camino.
  *
  * Es un cuarto del mismo edificio que la Sala de Control de Política
  * Económica, no un mundo aparte: los paneles, los rótulos grabados y la
@@ -30,10 +35,13 @@ import { SUBJECTS, HACER, clasificacionDe, actividadesDeTipo } from "../data/sub
  * Económica —un camino con los nodos y, al tocar uno, la mecánica sola con su
  * botón de volver— porque esa es la convención del sitio.
  *
- * NO HAY MITAD APRENDER TODAVÍA. El tema no tiene material clasificado, así
- * que el índice de la materia lo abre directo aquí, sin tarjeta partida: la
- * elección sería un clic de más hacia el único destino que existe. En cuanto
- * Gen clasifique material, el índice parte la tarjeta solo.
+ * LAS DOS MITADES NO SE VEN JUNTAS. En Política Económica, sin modo se ve la
+ * página entera; aquí no, porque la presentación se queda con las flechas y
+ * la barra espaciadora de toda la ventana —es como se avanza con un mando—, y
+ * en la página del camino esas teclas son para desplazarse. La presentación
+ * solo se monta con el modo "aprender"; sin modo —un enlace de antes, el
+ * atajo del docente a un juego— se abre el camino, que es lo que abría
+ * siempre.
  */
 
 const MATERIA = "macroeconomia";
@@ -140,7 +148,8 @@ function Tesoreria() {
   );
 }
 
-export default function PoliticaFiscalView({ nodoInicial = null, onBack }) {
+export default function PoliticaFiscalView({ modo = null, nodoInicial = null, onBack }) {
+  const esClase = modo === APRENDER;
   const [nodoAbierto, setNodoAbierto] = useState(null);
   const hechas = useCompletadas();
   const { pedirCuenta } = useAuth();
@@ -148,7 +157,7 @@ export default function PoliticaFiscalView({ nodoInicial = null, onBack }) {
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
   const nodos = nodosDe(actividadesDeTipo(tema, HACER), hechas);
   /* A2: el nodo que trae la URL, validado contra ESTE camino. Ver useNodoEnRuta. */
-  const resaltado = useNodoEnRuta(nodoAbierto, nodoInicial, nodos.map((x) => x.id));
+  const resaltado = useNodoEnRuta(nodoAbierto, nodoInicial, esClase ? [] : nodos.map((x) => x.id));
 
   /* El mismo camino central que el resto del sitio: porcentaje, duración y detalle. */
   const completarJuego = async (actividadId, porcentajeAciertos, duracionMs, detalle = null) => {
@@ -163,7 +172,7 @@ export default function PoliticaFiscalView({ nodoInicial = null, onBack }) {
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
 
-  const juego = JUEGOS.find((j) => j.id === nodoAbierto);
+  const juego = esClase ? null : JUEGOS.find((j) => j.id === nodoAbierto);
 
   return (
     <FondoMateria materiaId="macroeconomia">
@@ -176,8 +185,9 @@ export default function PoliticaFiscalView({ nodoInicial = null, onBack }) {
           backgroundImage: "radial-gradient(circle at 50% -10%, rgba(42,157,143,0.14), transparent 55%)",
         }}
       >
-        <div style={{ maxWidth: "860px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
-          <div className="fae-reserva-cuenta" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
+        {/* La presentación usa el ancho entero: en un proyector cada columna cuenta. */}
+        <div style={{ maxWidth: esClase ? "none" : "860px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) clamp(16px, 2vw, 24px) 56px" }}>
+          <div className="fae-reserva-cuenta" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: esClase ? "16px" : "22px" }}>
             <Logo variant="symbol" size={26} theme="dark" />
             <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
             <button
@@ -195,10 +205,12 @@ export default function PoliticaFiscalView({ nodoInicial = null, onBack }) {
             <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1 }}>
               Política Fiscal
             </h1>
-            <ActivityBadge tipo={HACER} size="sm" />
+            <ActivityBadge tipo={esClase ? APRENDER : HACER} size="sm" />
           </div>
 
-          {!nodoAbierto && (
+          {esClase && <ClasePoliticaFiscal />}
+
+          {!esClase && !nodoAbierto && (
             <>
               <h2 style={h2}>El camino de este tema</h2>
               <p style={lead}>
