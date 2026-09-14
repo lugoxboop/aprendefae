@@ -3,7 +3,8 @@ import { FAE } from "../../theme.js";
 import { SUBJECTS, HACER, actividadesDeTipo, desafioDe, ubicacionDeActividad } from "../../data/subjects.js";
 import Logo from "../Logo.jsx";
 import { ChevronLeft } from "lucide-react";
-import { accesoDocente, estudiantesDe, marcarEnGrupo, resumenDe } from "../../docente/datos.js";
+import { estudiantesDe, marcarEnGrupo, resumenDe } from "../../docente/datos.js";
+import { useAccesoDocente } from "../../docente/useAccesoDocente.js";
 import { alertasDelGrupo, avancePorTema, promedioAciertos } from "../../docente/alertas.js";
 import { destacadosDe } from "../../docente/destacados.js";
 import { csvDelPanel, descargarCsv } from "../../docente/exportar.js";
@@ -49,7 +50,8 @@ function Kpi({ rotulo, valor, nota, color = FAE.text }) {
  * panel en un estado que no sepa pintar.
  */
 export default function PanelDocente({ actividadInicial = null, onBack }) {
-  const [acceso, setAcceso] = useState(null);
+  /* La respuesta que comparten la cabecera, el perfil y esto: una llamada, no una por pantalla. */
+  const acceso = useAccesoDocente();
   const [materia, setMateria] = useState(null);
   const [estudiantes, setEstudiantes] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -81,19 +83,17 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
   const [actividadElegida, setActividadElegida] = useState(null);
 
   useEffect(() => {
-    accesoDocente().then((a) => {
-      setAcceso(a);
-      if (a.materias.length === 0) { setCargando(false); return; }
-      /*
-       * Si se llega con una actividad en la URL, se abre en SU materia. Sin
-       * esto, un enlace desde el Arca —que vive en Pensamiento Estratégico—
-       * aterrizaría en la primera materia del docente y la preselección
-       * fallaría en silencio, que es peor que no tener el enlace.
-       */
-      const suya = ubicacionDeActividad(actividadInicial)?.materiaId;
-      setMateria(suya && a.materias.includes(suya) ? suya : a.materias[0]);
-    });
-  }, [actividadInicial]);
+    if (acceso.pendiente) return;
+    if (acceso.materias.length === 0) { setCargando(false); return; }
+    /*
+     * Si se llega con una actividad en la URL, se abre en SU materia. Sin
+     * esto, un enlace desde el Arca —que vive en Pensamiento Estratégico—
+     * aterrizaría en la primera materia del docente y la preselección
+     * fallaría en silencio, que es peor que no tener el enlace.
+     */
+    const suya = ubicacionDeActividad(actividadInicial)?.materiaId;
+    setMateria(suya && acceso.materias.includes(suya) ? suya : acceso.materias[0]);
+  }, [acceso, actividadInicial]);
 
   useEffect(() => {
     if (!materia) return;
@@ -311,7 +311,7 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
 
   /* ---------------- puertas de acceso ---------------- */
 
-  if (acceso === null) {
+  if (acceso.pendiente) {
     return <Marco onBack={onBack}><p style={{ color: "rgba(248,249,250,0.6)" }}>Comprobando acceso…</p></Marco>;
   }
 

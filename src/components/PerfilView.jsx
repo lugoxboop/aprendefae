@@ -5,7 +5,7 @@ import RankingFP from "./ranking/RankingFP.jsx";
 import { useAuth } from "../auth/AuthProvider.jsx";
 import { useContext, useEffect, useState } from "react";
 import { NavigationContext } from "../navigation.js";
-import { accesoDocente } from "../docente/datos.js";
+import { useAccesoDocente } from "../docente/useAccesoDocente.js";
 import { rachaVigente, proximoHito, enRiesgoHoy } from "../fp/racha.js";
 import { animosRecibidos } from "../social/animo.js";
 import Medallas from "./perfil/Medallas.jsx";
@@ -31,9 +31,9 @@ export default function PerfilView({ onBack }) {
    * algo detrás.
    */
   const nav = useContext(NavigationContext);
-  const [esDocente, setEsDocente] = useState(false);
   const [animos, setAnimos] = useState(null);
-  useEffect(() => { accesoDocente().then((a) => setEsDocente(a.esDocente)); }, []);
+  /* La misma respuesta que el atajo de la cabecera: no se vuelve a preguntar. */
+  const { esDocente } = useAccesoDocente();
 
   const { perfil, session, pedirCuenta } = useAuth();
 
