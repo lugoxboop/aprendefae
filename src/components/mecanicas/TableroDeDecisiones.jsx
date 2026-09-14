@@ -78,6 +78,9 @@ const CSS = `
 }
 `;
 
+/* Exportado para la previsualización del camino: la aguja necesita su transición. */
+export const CSS_TABLERO = CSS;
+
 /* ─────────────────────────── el medidor ─────────────────────────── */
 
 /*
@@ -85,7 +88,7 @@ const CSS = `
  * caso del PIB— no dibuja ninguno y la aguja va en color neutro: no hay nada
  * que aprobar, así que no se pinta como si lo hubiera.
  */
-function Esfera({ etiqueta, valor, min, max, objetivo = null, direccion, nota }) {
+export function Esfera({ etiqueta, valor, min, max, objetivo = null, direccion, nota, soloDial = false }) {
   const contexto = objetivo === null;
   const t = (valor - min) / (max - min);
   const tMeta = contexto ? 0 : (objetivo - min) / (max - min);
@@ -95,6 +98,36 @@ function Esfera({ etiqueta, valor, min, max, objetivo = null, direccion, nota })
   const aguja = punto(t, R - 9);
   /* El ángulo de la aguja, para poder rotarla con transición en vez de saltar. */
   const grados = -180 + Math.max(0, Math.min(1, t)) * 180;
+
+  const fondoArco = <path d={arco(0, 1)} fill="none" stroke="rgba(248,249,250,0.13)" strokeWidth="11" strokeLinecap="round" />;
+  const agujaYEje = (
+    <>
+      {/* La aguja: rota con inercia desde el eje. */}
+      <g
+        className="fae-td-aguja"
+        style={{ transform: `rotate(${grados}deg)`, transformOrigin: `${CX}px ${CY}px` }}
+      >
+        <line x1={CX} y1={CY} x2={CX + (R - 9)} y2={CY} stroke={color} strokeWidth="3.5" strokeLinecap="round" />
+      </g>
+      <circle cx={CX} cy={CY} r="6.5" fill={color} />
+      <circle cx={CX} cy={CY} r="2.5" fill={FAE.bg} />
+    </>
+  );
+
+  /*
+   * SOLO EL DIAL: la previsualización del nodo en el camino. Es este mismo
+   * medidor —el mismo arco, la misma aguja, la misma curva de inercia—, no
+   * una copia, pero sin tarjeta, sin cifras y sin meta: una previsualización
+   * no puede enseñar ni un número ni dónde está el objetivo.
+   */
+  if (soloDial) {
+    return (
+      <svg viewBox={`0 0 ${VB.w} ${VB.h}`} width="100%" aria-hidden="true" style={{ display: "block" }}>
+        {fondoArco}
+        {agujaYEje}
+      </svg>
+    );
+  }
 
   return (
     <div
@@ -127,7 +160,7 @@ function Esfera({ etiqueta, valor, min, max, objetivo = null, direccion, nota })
             : `${etiqueta}: ${valor.toFixed(1)}%. Meta ${direccion === "menor" ? "menor o igual a" : "mayor o igual a"} ${objetivo}%. ${enMeta ? "En meta." : "Fuera de meta."}`
         }
       >
-        <path d={arco(0, 1)} fill="none" stroke="rgba(248,249,250,0.13)" strokeWidth="11" strokeLinecap="round" />
+        {fondoArco}
 
         {/* Zona verde y arco coral SOLO donde hay meta. */}
         {!contexto && (
@@ -143,15 +176,7 @@ function Esfera({ etiqueta, valor, min, max, objetivo = null, direccion, nota })
           </>
         )}
 
-        {/* La aguja: rota con inercia desde el eje. */}
-        <g
-          className="fae-td-aguja"
-          style={{ transform: `rotate(${grados}deg)`, transformOrigin: `${CX}px ${CY}px` }}
-        >
-          <line x1={CX} y1={CY} x2={CX + (R - 9)} y2={CY} stroke={color} strokeWidth="3.5" strokeLinecap="round" />
-        </g>
-        <circle cx={CX} cy={CY} r="6.5" fill={color} />
-        <circle cx={CX} cy={CY} r="2.5" fill={FAE.bg} />
+        {agujaYEje}
       </svg>
 
       <p style={{ fontFamily: "Sora, sans-serif", fontSize: "11.5px", fontWeight: 700, letterSpacing: "0.1em", color: "rgba(248,249,250,0.55)", margin: "4px 0 2px", position: "relative" }}>

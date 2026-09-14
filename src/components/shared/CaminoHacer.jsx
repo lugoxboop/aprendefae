@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FAE, ANCHO_ESTRECHO } from "../../theme.js";
 import { iconoDe } from "./iconosActividad.jsx";
+import PreviaActividad from "./previas/PreviaActividad.jsx";
 import { bloquesDe } from "../../hacer/bloques.js";
 
 /*
@@ -621,6 +622,14 @@ function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas }) {
   const bloques = bloquesDe(nodos);
   const total = nodos.length;
   const sugeridoId = nodos.find((x) => !x.completada)?.id ?? null;
+  /*
+   * Tocar un nodo abre su panel —con la previsualización— y «Empezar» abre la
+   * actividad. Antes el toque entraba directo; el panel es lo que da un
+   * sitio donde enseñar el gesto antes de entrar.
+   */
+  const [detalle, setDetalle] = useState(null);
+  const nodoDetalle = detalle ? nodos.find((x) => x.id === detalle) : null;
+  const bloqueDetalle = nodoDetalle ? bloques.find((b) => b.nodos.includes(nodoDetalle)) : null;
 
   return (
     <>
@@ -639,11 +648,152 @@ function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas }) {
           <section key={b.id} data-bloque={b.id} aria-labelledby={`fae-cb-${b.id}`} style={{ marginTop: b.separador ? 0 : "4px", maxWidth: `${ANCHO}px`, marginInline: "auto" }}>
             {b.separador && <Separador texto={b.separador} tono={tono} />}
             <CabezaBloque bloque={b} tono={tono} />
-            <Lienzo nodos={b.nodos} onAbrir={onAbrir} especial={null} resaltado={resaltado} marcas={marcas} disposicion={disposicion} tono={tono} />
+            <Lienzo nodos={b.nodos} onAbrir={setDetalle} especial={null} resaltado={resaltado} marcas={marcas} disposicion={disposicion} tono={tono} />
           </section>
         );
       })}
+      {nodoDetalle && (
+        <DetalleNodo
+          key={nodoDetalle.id}
+          nodo={nodoDetalle}
+          bloque={bloqueDetalle}
+          numero={nodos.indexOf(nodoDetalle) + 1}
+          onCerrar={() => setDetalle(null)}
+          onEmpezar={() => {
+            setDetalle(null);
+            onAbrir?.(nodoDetalle.id);
+          }}
+        />
+      )}
     </>
+  );
+}
+
+/* ------------------------------ el panel del nodo ------------------------------ */
+
+const CSS_DETALLE = `
+.fae-dn-fondo { position: fixed; inset: 0; z-index: 65; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(6,12,22,0.62); animation: fae-dn-fundido 140ms ease-out both; }
+.fae-dn { width: min(100%, 380px); box-sizing: border-box; border-radius: 22px; padding: 20px 20px 18px; text-align: center; color: ${FAE.text};
+  background: linear-gradient(160deg, #1C3150, #13233B); border: 1px solid rgba(248,249,250,0.22); box-shadow: 0 18px 48px rgba(0,0,0,0.5);
+  animation: fae-dn-subir 180ms cubic-bezier(.2,.8,.3,1) both; }
+.fae-dn-previa { width: 144px; height: 108px; margin: 0 auto 14px; border-radius: 16px; display: grid; place-items: center; overflow: hidden;
+  background: #13233B; border: 1px solid rgba(248,249,250,0.14); }
+.fae-dn-bloque { margin: 0 0 4px; font-family: Sora, sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.12em; color: rgba(248,249,250,0.72); }
+.fae-dn-titulo { margin: 0 0 6px; font-family: Sora, sans-serif; font-weight: 700; font-size: 19px; line-height: 1.25; letter-spacing: -0.01em; }
+.fae-dn-hecha { margin: 0; font-size: 13.5px; color: rgba(248,249,250,0.85); }
+.fae-dn-botones { display: flex; gap: 10px; margin-top: 16px; }
+.fae-dn-botones button { flex: 1; font-family: Sora, sans-serif; font-weight: 600; font-size: 15px; padding: 13px 16px; border-radius: 999px; cursor: pointer; }
+.fae-dn-empezar { background: ${FAE.teal}; border: none; color: ${FAE.bg}; }
+.fae-dn-cerrar { background: transparent; border: 1px solid rgba(248,249,250,0.3); color: ${FAE.text}; }
+@keyframes fae-dn-fundido { from { opacity: 0; } }
+@keyframes fae-dn-subir { from { opacity: 0; transform: translateY(14px); } }
+@media (max-width: ${ANCHO_ESTRECHO}px) {
+  .fae-dn-fondo { align-items: flex-end; padding: 0; }
+  .fae-dn { width: 100%; border-radius: 22px 22px 0 0; padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+}
+@media (prefers-reduced-motion: reduce) { .fae-dn-fondo, .fae-dn { animation: none !important; } }
+`;
+
+/* El icono quieto, en grande: lo que se ve antes de la animación, y en lugar de ella. */
+function IconoEstatico({ nodo, numero }) {
+  const Icono = iconoDe(nodo.id);
+  return (
+    <span
+      data-estatico
+      style={{
+        width: "72px", height: "72px", borderRadius: "50%", display: "grid", placeItems: "center",
+        border: `2.5px solid ${FAE.teal}`, background: "rgba(14,27,46,0.85)", color: FAE.text,
+      }}
+    >
+      {Icono ? (
+        <Icono size={36} color="rgba(248,249,250,0.92)" strokeWidth={1.8} aria-hidden="true" />
+      ) : (
+        <span style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "26px" }}>{numero}</span>
+      )}
+    </span>
+  );
+}
+
+/*
+ * EL PANEL PRIMERO, LA ANIMACIÓN DESPUÉS. El panel se pinta en el mismo toque
+ * con el icono quieto; la previsualización se monta dos fotogramas más tarde,
+ * cuando el panel ya está en pantalla, y su código se descarga la primera vez
+ * (ver PreviaActividad). Una previsualización que hiciera sentir lento el
+ * toque sería peor que ninguna.
+ *
+ * Solo existe mientras el panel está abierto: al cerrar o al empezar se
+ * desmonta y el bucle se acaba. Con "reducir movimiento" no se monta nunca:
+ * se queda el icono quieto, sin excepciones.
+ */
+function DetalleNodo({ nodo, bloque, numero, onCerrar, onEmpezar }) {
+  const caja = useRef(null);
+  const empezar = useRef(null);
+  const cerrar = useRef(onCerrar);
+  cerrar.current = onCerrar;
+  const [animar, setAnimar] = useState(false);
+  const reducir = typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
+
+  useEffect(() => {
+    const previo = document.activeElement;
+    empezar.current?.focus();
+    let segundo = null;
+    const primero = requestAnimationFrame(() => {
+      segundo = requestAnimationFrame(() => setAnimar(true));
+    });
+    const alPulsar = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        cerrar.current();
+        return;
+      }
+      /* El foco se queda dentro del panel mientras está abierto. */
+      if (e.key === "Tab" && caja.current) {
+        const botones = [...caja.current.querySelectorAll("button")];
+        const [a, z] = [botones[0], botones[botones.length - 1]];
+        if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
+        else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
+      }
+    };
+    document.addEventListener("keydown", alPulsar);
+    return () => {
+      cancelAnimationFrame(primero);
+      if (segundo !== null) cancelAnimationFrame(segundo);
+      document.removeEventListener("keydown", alPulsar);
+      if (previo?.isConnected) previo.focus?.();
+    };
+  }, []);
+
+  const estatico = <IconoEstatico nodo={nodo} numero={numero} />;
+
+  return (
+    <div className="fae-dn-fondo" onClick={() => cerrar.current()}>
+      <style>{CSS_DETALLE}</style>
+      <div
+        ref={caja}
+        className="fae-dn"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="fae-dn-titulo"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="fae-dn-previa" aria-hidden="true">
+          {animar && !reducir ? <PreviaActividad actividadId={nodo.id} respaldo={estatico} /> : estatico}
+        </div>
+        {bloque && (
+          <p className="fae-dn-bloque">
+            {bloque.nombre.toUpperCase()} · {bloque.etiqueta.toUpperCase()}
+          </p>
+        )}
+        <h3 id="fae-dn-titulo" className="fae-dn-titulo">{nodo.nombre}</h3>
+        {nodo.completada && (
+          <p className="fae-dn-hecha"><span aria-hidden="true">✓ </span>Ya la completaste</p>
+        )}
+        <div className="fae-dn-botones">
+          <button type="button" className="fae-dn-cerrar" onClick={() => cerrar.current()}>Cerrar</button>
+          <button ref={empezar} type="button" className="fae-dn-empezar" onClick={onEmpezar}>Empezar</button>
+        </div>
+      </div>
+    </div>
   );
 }
 

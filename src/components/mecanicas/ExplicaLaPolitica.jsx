@@ -71,8 +71,11 @@ const CSS = `
 }
 `;
 
+/* Exportado con Onda: la previsualización del camino la usa tal cual, con sus animaciones. */
+export const CSS_EXPLICA = CSS;
+
 /* Una onda de sonido: limpia si el fragmento es claro, rota si es ruido. */
-function Onda({ limpia, animada }) {
+export function Onda({ limpia, animada }) {
   const alturas = limpia ? [10, 18, 26, 18, 10] : [22, 8, 28, 6, 24];
   const color = limpia ? FAE.teal : FAE.coral;
   return (

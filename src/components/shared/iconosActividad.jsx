@@ -1,7 +1,7 @@
 import {
-  Radar, Link, Gauge, Scale, Siren,
+  Link, Gauge, Scale, Siren,
   Activity, Thermometer, Droplet, Microscope, Cross,
-  Stamp, Sheet, FileStack, ToggleLeft,
+  Stamp, Sheet, FileStack, ToggleLeft, ArrowRightLeft,
 } from "lucide-react";
 
 /*
@@ -11,22 +11,36 @@ import {
  * REUTILIZAR ANTES QUE INVENTAR. El sitio ya dibuja sus iconos con
  * lucide-react, así que catorce de los veintiuno son de ahí. El juego de las
  * medallas (Medalla.jsx) no tenía ninguno que sirviera: sus glifos son de
- * logros —racha, ranking, liga—, no de actividades. Los siete que lucide no
- * tiene se dibujan aquí, con su misma rejilla de 24, trazo de 2 y extremos
- * redondos, para que no se note cuál es de quién:
+ * logros —racha, ranking, liga—, no de actividades. Los que lucide no tiene
+ * se dibujan aquí, con su misma rejilla de 24, trazo de 2 y extremos
+ * redondos, para que no se note cuál es de quién.
  *
- *   cinta transportadora · micrófono con onda · bisturí · pantallas múltiples
- *   máquina contadora de billetes · flujo de dinero · agujero en el piso
+ * TODOS SE JUZGAN A SU TAMAÑO REAL: 24 px dentro de un nodo de 44 en el
+ * teléfono. Tres no se leían y se cambiaron de metáfora, no de dibujo:
+ *
+ *   El agujero fiscal   un óvalo en el piso se leía como un ojo o un ovni
+ *                       → una grieta en zigzag partiendo un rectángulo
+ *   Sala de monitores   dos pantallas arriba se leían como la cara de un robot
+ *                       → un pulso de alerta: punto y anillos que se abren
+ *   Flujo de caja       la moneda con la flecha curva, como un renacuajo
+ *                       → ⇄, dos flechas rectas (ArrowRightLeft, de lucide)
+ *
+ * Y el pulso de Sala de monitores chocaba con el radar de Diagnóstico en
+ * vivo: dos pictogramas de ondas concéntricas en el mismo sitio. Se cambió
+ * Diagnóstico, que en la ficha es "consola de monitoreo con onda tipo radar":
+ * ahora es la consola —una pantalla con su pie— con el radar dentro. La
+ * pantalla rectangular es lo que los separa a 24 px.
  *
  * Todos tienen la misma forma que un icono de lucide —size, color,
  * strokeWidth y el resto va al <svg>—, así que el camino y la medalla los
  * usan igual sin saber de dónde vienen.
  *
  * UNA ACTIVIDAD SIN ICONO NO ROMPE NADA: iconoDe() devuelve null y el nodo
- * enseña su número, como antes de esto.
+ * enseña su número.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/* `dibujo` es el contenido del svg, o una función del color para lo que va relleno. */
 function propio(nombre, dibujo) {
   const Icono = ({ size = 24, color = "currentColor", strokeWidth = 2, ...resto }) => (
     <svg
@@ -34,12 +48,25 @@ function propio(nombre, dibujo) {
       fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"
       {...resto}
     >
-      {dibujo}
+      {typeof dibujo === "function" ? dibujo(color) : dibujo}
     </svg>
   );
   Icono.displayName = nombre;
   return Icono;
 }
+
+/* Diagnóstico en vivo: la consola de monitoreo —pantalla y pie— con el radar dentro. */
+export const ConsolaRadar = propio("ConsolaRadar", (c) => (
+  <>
+    <rect x="2.5" y="2.5" width="19" height="14" rx="2" />
+    <path d="M8.5 21h7M12 16.5V21" />
+    <circle cx="12" cy="9.5" r="4.3" />
+    {/* El barrido, como cuña rellena: con solo la línea, el círculo cruzado se leía como una señal de prohibido. */}
+    <path d="M12 9.5 12 5.2A4.3 4.3 0 0 1 15.72 7.35Z" fill={c} fillOpacity="0.45" stroke="none" />
+    <path d="M12 9.5 15.72 7.35" strokeWidth="1.6" />
+    <circle cx="9.9" cy="11" r="0.9" fill={c} stroke="none" />
+  </>
+));
 
 /* Corriente de titulares: dos cajas sobre una cinta con sus rodillos. */
 export const CintaTransportadora = propio("CintaTransportadora", (
@@ -73,13 +100,17 @@ export const Bisturi = propio("Bisturi", (
   </>
 ));
 
-/* Sala de monitores: tres pantallas, dos arriba y una abajo, con su línea de pulso. */
-export const PantallasMultiples = propio("PantallasMultiples", (
+/*
+ * Sala de monitores: un pulso de alerta. El punto, un anillo entero y el de
+ * fuera ya abriéndose en dos arcos: irradia, y no es simétrico como las dos
+ * pantallas que parecían una cara.
+ */
+export const PulsoAlerta = propio("PulsoAlerta", (c) => (
   <>
-    <rect x="2" y="3" width="9" height="7" rx="1.2" />
-    <rect x="13" y="3" width="9" height="7" rx="1.2" />
-    <rect x="7.5" y="13" width="9" height="7" rx="1.2" />
-    <path d="M9.5 16.5h1.5l1-1.5 1 3 1-1.5h1" strokeWidth="1.4" />
+    <circle cx="12" cy="12" r="2.2" fill={c} stroke="none" />
+    <circle cx="12" cy="12" r="5.6" />
+    <path d="M12 2.5a9.5 9.5 0 0 1 9.5 9.5" />
+    <path d="M12 21.5A9.5 9.5 0 0 1 2.5 12" />
   </>
 ));
 
@@ -94,31 +125,18 @@ export const ContadoraBilletes = propio("ContadoraBilletes", (
   </>
 ));
 
-/* Flujo de caja: la moneda y la flecha por la que corre el dinero. */
-export const FlujoDinero = propio("FlujoDinero", (
+/* El agujero fiscal: una grieta en zigzag que parte el rectángulo. Angular: una curva se leía como un ojo. */
+export const GrietaFiscal = propio("GrietaFiscal", (
   <>
-    <circle cx="7" cy="8" r="3.2" />
-    <path d="M7 6.8v2.4" />
-    <path d="M3 18c6 0 7-8 13-8h5" />
-    <path d="m18.5 7.5 2.5 2.5-2.5 2.5" />
-  </>
-));
-
-/* El agujero fiscal: un hueco abierto en el piso, con sus grietas. */
-export const AgujeroPiso = propio("AgujeroPiso", (
-  <>
-    <path d="M2 15h3.5M18.5 15H22" />
-    <ellipse cx="12" cy="15" rx="6.5" ry="3.2" />
-    <path d="M7.5 16.2a4.8 1.9 0 0 0 9 0" />
-    <path d="m12 11.8-1-2.8 1.5-2.2" />
-    <path d="m16.2 12.4 1.6-2.4" />
+    <rect x="3" y="4" width="18" height="16" rx="2" />
+    <path d="M12.5 4 10 8.5l3 3-2.5 3.5 1.5 5" />
   </>
 ));
 
 /* Cada actividad de los tres temas, con su icono. */
 export const ICONOS_ACTIVIDAD = {
   /* Política Económica */
-  "diagnostico-en-vivo": Radar,
+  "diagnostico-en-vivo": ConsolaRadar,
   "arma-grupo-logico": Link,
   "tablero-decisiones": Gauge,
   "quien-gana-quien-pierde": Scale,
@@ -132,12 +150,12 @@ export const ICONOS_ACTIVIDAD = {
   "biopsia-economica": Microscope,
   "triage-emergencias": Cross,
   "cirugia-reconstruccion": Bisturi,
-  "sala-monitores": PantallasMultiples,
+  "sala-monitores": PulsoAlerta,
   /* Política Fiscal */
   "clasificador-tesoro": ContadoraBilletes,
   "directos-indirectos": Stamp,
-  "flujo-de-caja": FlujoDinero,
-  "agujero-fiscal": AgujeroPiso,
+  "flujo-de-caja": ArrowRightLeft,
+  "agujero-fiscal": GrietaFiscal,
   "expansiva-contractiva": ToggleLeft,
   "disena-presupuesto": Sheet,
   "deficit-vs-deuda": FileStack,
