@@ -32,8 +32,8 @@ import { Avanzar, TEXTO_CIERRE } from "./marcos.jsx";
 /*
  * PIERDE va en ámbar, no en coral. Perder con una medida no es un error del
  * estudiante, y el coral es el error en todo el sitio: aquí solo sale para
- * decir "te equivocaste". (¿Quién gana, quién pierde?, más antiguo, pinta
- * PIERDE en coral; no se tocó en esta tarea.)
+ * decir "te equivocaste". ¿Quién gana, quién pierde? usa los mismos colores:
+ * dos actividades hermanas no pueden pintar lo mismo de dos formas.
  */
 const COLOR = { gana: FAE.teal, pierde: FAE.ambar };
 

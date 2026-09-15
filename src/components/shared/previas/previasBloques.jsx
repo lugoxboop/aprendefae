@@ -142,38 +142,11 @@ function SeAcerca() {
   );
 }
 
-/* ─────────────────────── El expediente del gabinete ─────────────────────── */
-
 /*
- * La carpeta se entreabre (0,4 s), asoma el borde del papel y se cierra
- * (0,4 s). Es la ficha de pedagogía, y ROMPE UNA REGLA QUE YA TENÍAMOS:
- * Biopsia y El agujero fiscal —también un caso y una decisión— se quedaron
- * quietas porque no hay un gesto repetido que animar. Abrir el expediente es
- * leer el caso, que sí es algo que el estudiante hace; se hizo como pide la
- * ficha y queda señalado para que pedagogía decida si las tres van igual.
+ * El expediente del gabinete NO tiene gesto aquí, a propósito: es una sola
+ * decisión, como Biopsia y El agujero fiscal, y se queda quieta igual que
+ * ellas. La razón está escrita en PreviaActividad.jsx.
  */
-function Gabinete() {
-  return (
-    <Lamina
-      id="expediente-gabinete"
-      css={`
-@keyframes fae-pv-eg-tapa { 0%, 8% { transform: skewX(0deg) scaleY(1); } 33%, 58% { transform: skewX(-14deg) scaleY(.72); } 83%, 100% { transform: skewX(0deg) scaleY(1); } }
-@keyframes fae-pv-eg-papel { 0%, 8% { transform: translateY(0); } 33%, 58% { transform: translateY(-9px); } 83%, 100% { transform: translateY(0); } }
-.fae-pv-eg-g .fae-pv-eg-tapa { transform-box: view-box; transform-origin: 60px 78px; animation: fae-pv-eg-tapa 1.6s ease-in-out infinite; }
-.fae-pv-eg-papel { animation: fae-pv-eg-papel 1.6s ease-in-out infinite; }
-`}
-    >
-      <g className="fae-pv-eg-g">
-        <path d="M22 26 h26 l6 6 h44 v46 h-76 z" fill={C.fondo} stroke={C.trazo} strokeWidth="1.8" strokeLinejoin="round" />
-        <g className="fae-pv-eg-papel">
-          <rect x="30" y="34" width="60" height="40" rx="2" fill={C.papel} />
-          <Renglones x={36} y={40} anchos={[40, 30]} color="rgba(29,53,87,0.45)" />
-        </g>
-        <path className="fae-pv-eg-tapa" d="M22 40 h76 v38 h-76 z" fill={C.tarjeta} stroke={C.trazo} strokeWidth="1.8" strokeLinejoin="round" />
-      </g>
-    </Lamina>
-  );
-}
 
 /* ─────────────────────── El consejo de ministros ─────────────────────── */
 
@@ -319,7 +292,6 @@ const GESTOS = {
   "cual-componente": () => <Clasificacion id="cual-componente" forma="etiqueta" categorias={4} destino={1} />,
   "cobra-gasta-o-pide": () => <Clasificacion id="cobra-gasta-o-pide" forma="bandeja" categorias={3} destino={1} />,
   "se-acerca-o-se-aleja": SeAcerca,
-  "expediente-gabinete": Gabinete,
   "consejo-ministros": Consejo,
   "quien-beneficia-auge": () => <Reparto id="quien-beneficia-auge" />,
   "quien-afecta-ajuste": () => <Reparto id="quien-afecta-ajuste" />,

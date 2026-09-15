@@ -239,7 +239,8 @@ export default function QuienGanaQuienPierde({ onCompletar }) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "14px" }}>
           {[
             { id: "gana", nombre: "GANA", color: FAE.teal, Icono: TrendingUp },
-            { id: "pierde", nombre: "PIERDE", color: FAE.coral, Icono: TrendingDown },
+            /* Ámbar, no coral: perder con una medida no es un error del estudiante. Igual que los repartos de la 0030. */
+            { id: "pierde", nombre: "PIERDE", color: FAE.ambar, Icono: TrendingDown },
           ].map((z) => (
             <button
               key={z.id}
@@ -268,7 +269,7 @@ export default function QuienGanaQuienPierde({ onCompletar }) {
         {orden.map((p) => {
           const puesto = puestos[p.id];
           const acerto = puesto && puesto === p.resultado;
-          const color = !puesto ? null : p.resultado === "gana" ? FAE.teal : FAE.coral;
+          const color = !puesto ? null : p.resultado === "gana" ? FAE.teal : FAE.ambar;
           return (
             <div
               key={p.id}
@@ -298,7 +299,8 @@ export default function QuienGanaQuienPierde({ onCompletar }) {
                   {puesto && (
                     <span style={{ display: "block", marginTop: "6px", fontFamily: "Sora, sans-serif", fontSize: "11.5px", fontWeight: 700, letterSpacing: "0.06em", color }}>
                       {p.resultado === "gana" ? "GANA" : "PIERDE"}
-                      {!acerto && " · te equivocaste"}
+                      {/* El coral, solo aquí: esto sí es el error. */}
+                      {!acerto && <span style={{ color: FAE.coral }}> · ✗ te equivocaste</span>}
                     </span>
                   )}
                 </span>

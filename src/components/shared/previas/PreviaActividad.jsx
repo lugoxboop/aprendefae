@@ -90,7 +90,18 @@ export const PREVIAS = {
   "memorama-tesoro": { tema: "bloques", tipo: "gesto" },
   "que-rama-es": { tema: "bloques", tipo: "gesto" },
   "se-acerca-o-se-aleja": { tema: "bloques", tipo: "gesto" },
-  "expediente-gabinete": { tema: "bloques", tipo: "gesto" },
+  "expediente-gabinete": {
+    tipo: "estatica",
+    /*
+     * NO ES UN OLVIDO, y es el mismo criterio que Biopsia y El agujero fiscal:
+     * se lee un caso y se toca una opción, una vez. La ficha traía un gesto —la
+     * carpeta que se entreabre— y se llegó a hacer; se quitó para que las tres
+     * actividades de una sola decisión se traten igual. Tres con el mismo
+     * criterio es coherencia; dos y una excepción, un descuido. No le pongas
+     * una animación.
+     */
+    razon: "Una sola decisión, un solo toque: no hay gesto repetido que animar. Mismo criterio que Biopsia y El agujero fiscal; una carpeta que se abre ilustraría leer, no decidir.",
+  },
   "consejo-ministros": { tema: "bloques", tipo: "gesto" },
   "memorama-corazon": { tema: "bloques", tipo: "gesto" },
   "cual-componente": { tema: "bloques", tipo: "gesto" },

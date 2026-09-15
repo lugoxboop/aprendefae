@@ -586,9 +586,14 @@ function NodoSvg({ nodo, x, y, m, numero, sugerido, resaltado, marcas, onAbrir, 
       aria-label={etiquetaAria(nodo, marcas, prefijo)}
       style={{ cursor: "pointer" }}
     >
-      {/* Aro coral del sugerido: acento, no candado. */}
+      {/*
+        * Aro del sugerido: acento, no candado. Era coral, y el coral es error en
+        * todo el sitio; desde que el camino empieza en una Fácil, un aro coral en
+        * el primer nodo se leía como "aquí algo va mal". Teal, fino y quieto: el
+        * de "estás aquí" es más ancho, más separado y late.
+        */}
       {sugerido && (
-        <circle cx={x} cy={y} r={m.radio + 7} fill="none" stroke={FAE.coral} strokeWidth="2" opacity="0.75" />
+        <circle data-sugerido cx={x} cy={y} r={m.radio + 7} fill="none" stroke={FAE.teal} strokeWidth="2" opacity="0.75" />
       )}
       {resaltado === nodo.id && (
         <circle className="fae-ch-aqui" cx={x} cy={y} r={m.radio + 12} fill="none" stroke={FAE.teal} strokeWidth="3" />

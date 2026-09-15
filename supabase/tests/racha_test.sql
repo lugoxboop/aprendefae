@@ -104,7 +104,7 @@ where n.nspname = 'public'
   and p.pronargs = 8;
 
 -- ── 1. Primera actividad: la racha arranca en 1 ────────────────────────────
--- 60 s está por encima del mínimo de 'facil' (20 s), así que no entra la
+-- 60 s está por encima del mínimo de 'facil' (5 s desde la 0030), así que no entra la
 -- defensa de tiempo y la actividad paga su base completa.
 set local role authenticated;
 select public.registrar_fp('zzz-act-1', 60000, null);

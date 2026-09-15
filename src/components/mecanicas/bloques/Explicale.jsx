@@ -46,6 +46,10 @@ export default function Explicale({ escenario, Marco, rotulo, titulo, acento, on
   const ruido = puestos.length - claras;
   const pct = puntuarExplicacion(claras, ruido);
 
+  /*
+   * [ESCRITO POR CLAUDE, NO POR LA FICHA — PENDIENTE DE REVISIÓN DE PEDAGOGÍA]
+   * La ficha no trae devolución por frase. Estas tres, una por tipo, son mías.
+   */
   const porTipo = {
     correcto: "se entiende sin saber economía, y es cierto.",
     jerga: `es cierto, pero ${escenario.destinatario} no lo entiende.`,

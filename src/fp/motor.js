@@ -60,7 +60,16 @@ export function baseEfectiva(dificultad, etapas = 1) {
  * para que ajustarlas sea cambiar estos números.
  */
 export const TIEMPO_MINIMO_MS = {
-  facil: 20_000,
+  /*
+   * FÁCIL TIENE UN PISO PROPIO, Y NO ES UN DESCUIDO (0030). En Fácil hay
+   * actividades legítimamente breves: el Memorama de tres parejas y las
+   * primeras clasificaciones se terminan bien en 6-12 s jugando rápido y de
+   * verdad (scripts/medir-faciles.mjs). Con 20 s, la defensa castigaba al 60%
+   * a quien lo hacía bien y sin decirle por qué. 5 s deja pasar la partida
+   * honesta más rápida medida (6,1 s) y sigue parando al que toca sin leer.
+   * Medio, Difícil y Experto no cambian.
+   */
+  facil: 5_000,
   medio: 45_000,
   dificil: 90_000,
   experto: 150_000,

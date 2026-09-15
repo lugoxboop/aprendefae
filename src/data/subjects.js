@@ -86,19 +86,21 @@ export const SUBJECTS = {
            * Los dos juegos Fácil. La mecánica es la misma en las tres materias
            * a propósito: la entrada del camino se siente igual se abra la que
            * se abra. El Memorama es exploratoria —paga por terminar— y la
-           * primera clasificación, evaluativa. Los dos a 18 FP: la razón de 18
-           * y no los 10 de referencia de motor.js está en la 0030.
+           * primera clasificación, evaluativa. Los dos a 10 FP, la base de
+           * Fácil de motor.js: con 18, una Fácil pagaba casi lo que una Media
+           * (25, o 21 con cinco de seis) y la escala de dificultad dejaba de
+           * decir nada. Ver la 0030.
            */
           {
             id: "memorama-corazon",
             nombre: "Memorama del Corazón",
-            clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 18 },
+            clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 },
           },
           {
             /* La versión sin reloj de la Sala de monitores. */
             id: "cual-componente",
             nombre: "¿Cuál componente?",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 18 },
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 },
           },
           {
             /* Recordar. Ocho definiciones de dieciséis y cuatro fragmentos de seis. */
@@ -192,12 +194,12 @@ export const SUBJECTS = {
           {
             id: "memorama-tesoro",
             nombre: "Memorama del Tesoro",
-            clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 18 },
+            clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 },
           },
           {
             id: "que-rama-es",
             nombre: "¿Qué rama es?",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 18 },
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 },
           },
           {
             /*
@@ -321,12 +323,12 @@ export const SUBJECTS = {
           {
             id: "memorama-tesoreria",
             nombre: "Memorama de la Tesorería",
-            clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 18 },
+            clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 },
           },
           {
             id: "cobra-gasta-o-pide",
             nombre: "¿Cobra, gasta o pide prestado?",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 18 },
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 },
           },
           {
             /* Recordar. Las tarjetas del profesor: doce de dieciocho, a tres ranuras. */

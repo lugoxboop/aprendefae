@@ -256,7 +256,7 @@ test("el anillo de cada bloque dice la fracción como texto y se pone al día co
   assert.equal(anillo("analisis").querySelector("[data-fraccion]").textContent, "0/4", "solo cambia su bloque");
 
   /* Y una Fácil llena su anillo como cualquier otra. */
-  act(() => emitirFP({ actividadId: "memorama-tesoreria", fp: 18, repetida: false }));
+  act(() => emitirFP({ actividadId: "memorama-tesoreria", fp: 10, repetida: false }));
   assert.equal(anillo("cimientos").querySelector("[data-fraccion]").textContent, "1/2");
   /* Y el tramo recorrido de la línea llega al siguiente nodo. */
   assert.equal(m.cont.querySelectorAll("path[data-recorrido]").length, 1);
@@ -265,7 +265,9 @@ test("el anillo de cada bloque dice la fracción como texto y se pone al día co
 
 test("el color de los bloques es teal, nunca coral", () => {
   const m = montar(camino(nodosDelTema("politica-economica", new Set(["diagnostico-en-vivo", "tablero-decisiones"]))));
-  const cromo = [...m.cont.querySelectorAll("[data-cabeza-bloque], path[data-recorrido]")].map((e) => e.outerHTML).join("");
+  /* Y el aro del nodo sugerido, que era coral y ahora cae sobre una Fácil. */
+  assert.ok(m.cont.querySelector("[data-sugerido]"), "hay un nodo sugerido");
+  const cromo = [...m.cont.querySelectorAll("[data-cabeza-bloque], path[data-recorrido], [data-sugerido]")].map((e) => e.outerHTML).join("");
   assert.ok(cromo.length > 0);
   assert.ok(!/E76F51|231,\s*111,\s*81/i.test(cromo), "coral en un título, un anillo o el recorrido");
   assert.ok(/42,\s*157,\s*143|2A9D8F/i.test(cromo));

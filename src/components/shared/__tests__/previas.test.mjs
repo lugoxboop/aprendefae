@@ -72,23 +72,26 @@ const GESTOS = [
   "electrocardiograma", "termometro-reacciones", "banco-transfusiones", "triage-emergencias", "cirugia-reconstruccion", "sala-monitores",
   "flujo-de-caja", "expansiva-contractiva", "disena-presupuesto",
   /* Los quince de la 0030 */
-  "memorama-tesoro", "que-rama-es", "se-acerca-o-se-aleja", "expediente-gabinete", "consejo-ministros",
+  "memorama-tesoro", "que-rama-es", "se-acerca-o-se-aleja", "consejo-ministros",
   "memorama-corazon", "cual-componente", "quien-beneficia-auge", "explica-paciente", "sala-espera-llena",
   "memorama-tesoreria", "cobra-gasta-o-pide", "quien-afecta-ajuste", "explica-contribuyente", "comite-presupuesto",
 ];
 
 /* ─────────────────────────────── el registro ─────────────────────────────── */
 
-test("las 36 tienen su previsualización decidida: 27 gestos, el clip del tablero y dos quietas con su razón", () => {
+/* Las tres de una sola decisión: mismo criterio, las tres quietas. */
+const QUIETAS = ["agujero-fiscal", "biopsia-economica", "expediente-gabinete"];
+
+test("las 36 tienen su previsualización decidida: 26 gestos, el clip del tablero y tres quietas con su razón", () => {
   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
   assert.deepEqual(Object.keys(PREVIAS).sort(), [...ids].sort());
   assert.deepEqual(Object.entries(PREVIAS).filter(([, p]) => p.tipo === "gesto").map(([id]) => id).sort(), [...GESTOS].sort());
   assert.equal(PREVIAS["tablero-decisiones"].tipo, "clip");
-  for (const id of ["biopsia-economica", "agujero-fiscal"]) {
+  for (const id of QUIETAS) {
     assert.equal(PREVIAS[id].tipo, "estatica", id);
     assert.ok(PREVIAS[id].razon?.length > 60, `${id}: la razón va escrita`);
   }
-  assert.deepEqual(Object.entries(PREVIAS).filter(([, p]) => p.tipo === "estatica").map(([id]) => id).sort(), ["agujero-fiscal", "biopsia-economica"]);
+  assert.deepEqual(Object.entries(PREVIAS).filter(([, p]) => p.tipo === "estatica").map(([id]) => id).sort(), QUIETAS);
 });
 
 /* ──────────────────────────────── el panel ──────────────────────────────── */
@@ -185,9 +188,9 @@ test("con «reducir movimiento», icono quieto y ninguna animación montada", as
   }
 });
 
-test("Biopsia y El agujero fiscal se quedan quietas aunque se permita el movimiento", async () => {
+test("Biopsia, El agujero fiscal y El expediente del gabinete se quedan quietas aunque se permita el movimiento", async () => {
   reducirMovimiento = false;
-  for (const id of ["biopsia-economica", "agujero-fiscal"]) {
+  for (const id of QUIETAS) {
     const m = abrirPanel(id);
     await esperar();
     await esperar();
@@ -207,7 +210,7 @@ const sinEstilos = (el) => {
 
 test("ninguna previsualización enseña texto, y el coral solo aparece donde es de error", async () => {
   const animadas = Object.entries(PREVIAS).filter(([, p]) => p.tipo !== "estatica").map(([id]) => id);
-  assert.equal(animadas.length, 34);
+  assert.equal(animadas.length, 33);
   for (const id of animadas) {
     const m = montar(React.createElement(PreviaActividad, { actividadId: id, respaldo: React.createElement("i", { "data-respaldo": true }) }));
     await esperar(120);

@@ -24,9 +24,11 @@ export const OPCIONES_ACERCA = [
 ];
 
 /*
- * ESCRITO AQUÍ: la ficha pide "✅ Correcto — [razón de la fila]" pero no trae
- * la razón de cada fila. Estas seis son una frase cada una, del mismo
- * mecanismo que el resto del tema ya enseña; pedagogía debe revisarlas.
+ * [ESCRITO POR CLAUDE, NO POR LA FICHA — PENDIENTE DE REVISIÓN DE PEDAGOGÍA]
+ * La ficha pide "✅ Correcto — [razón de la fila]" pero no trae la razón de
+ * ninguna fila. Las seis `razon` de abajo son mías: una frase cada una, con el
+ * mismo mecanismo que el tema ya enseña. El resto de cada fila —cambio,
+ * objetivo y respuesta correcta— sí es de la ficha, literal.
  */
 export const CAMBIOS_ACERCA = [
   {
@@ -119,9 +121,10 @@ export const CASO_CONSEJO = {
     },
     { id: "a-vs-c", par: ["a", "c"], gana: "a", argumento: POR_QUE_A_SOBRE_C },
     /*
-     * La ficha dice "same argument" sin decir cuál. B gana a C por lo mismo que
-     * A gana a C: B lleva el gasto que entra directo, y C depende solo de que
-     * las empresas se animen. Se usa ese, literal.
+     * [ESCRITO POR CLAUDE, NO POR LA FICHA — PENDIENTE DE REVISIÓN DE PEDAGOGÍA]
+     * La ficha dice "same argument" sin decir cuál. La elección es mía: B gana
+     * a C por lo mismo que A gana a C —B lleva el gasto que entra directo, y C
+     * depende solo de que las empresas se animen—, así que se reusa ese texto.
      */
     { id: "b-vs-c", par: ["b", "c"], gana: "b", argumento: POR_QUE_A_SOBRE_C },
   ],
