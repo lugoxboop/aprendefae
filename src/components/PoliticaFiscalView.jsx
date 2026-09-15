@@ -16,6 +16,8 @@ import ExpansivaContractiva from "./mecanicas/tesoreria/ExpansivaContractiva.jsx
 import DisenaPresupuesto from "./mecanicas/tesoreria/DisenaPresupuesto.jsx";
 import DeficitVsDeuda from "./mecanicas/tesoreria/DeficitVsDeuda.jsx";
 import ClasePoliticaFiscal from "./mecanicas/tesoreria/clase/ClasePoliticaFiscal.jsx";
+import { MemoramaTesoreria, CobraGastaOPide } from "./mecanicas/bloques/cimientos.jsx";
+import { QuienAfectaAjuste, ExplicaContribuyente, ComitePresupuesto } from "./mecanicas/bloques/avanzados.jsx";
 import { IconoMecanismo, ACENTOS } from "./mecanicas/tesoreria/tesoreria.jsx";
 import { INSTRUMENTOS } from "../data/politicaFiscal.js";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
@@ -28,7 +30,7 @@ import { SUBJECTS, APRENDER, HACER, clasificacionDe, actividadesDeTipo } from ".
  *
  *   APRENDER  la presentación de cuatro escenas que el profesor proyecta
  *             (mecanicas/tesoreria/clase). No puntúa.
- *   HACER     los siete juegos, en el camino.
+ *   HACER     los doce juegos, en el camino.
  *
  * Es un cuarto del mismo edificio que la Sala de Control de Política
  * Económica, no un mundo aparte: los paneles, los rótulos grabados y la
@@ -50,6 +52,18 @@ const TEMA = "politica-fiscal";
 
 /* Rótulo y entradilla de cada juego. El orden es el del camino, que es el de Bloom. */
 const JUEGOS = [
+  {
+    id: "memorama-tesoreria",
+    titulo: "Memorama de la Tesorería",
+    lead: "Los tres instrumentos de la Tesorería y lo que hace cada uno, boca abajo. Voltea de dos en dos hasta emparejarlos; las cartas cambian de sitio en cada partida.",
+    Mecanica: MemoramaTesoreria,
+  },
+  {
+    id: "cobra-gasta-o-pide",
+    titulo: "¿Cobra, gasta o pide prestado?",
+    lead: "Seis situaciones y tres bandejas, sin reloj. En cada una, ¿el Estado cobra, gasta o pide prestado?",
+    Mecanica: CobraGastaOPide,
+  },
   {
     id: "clasificador-tesoro",
     titulo: "El clasificador del Tesoro",
@@ -91,6 +105,24 @@ const JUEGOS = [
     titulo: "Déficit vs deuda",
     lead: "Diez papeles caen cada vez más rápido en cuatro bandejas. El déficit es lo que falta en un año; la deuda, lo que se acumula.",
     Mecanica: DeficitVsDeuda,
+  },
+  {
+    id: "quien-afecta-ajuste",
+    titulo: "¿A quién afecta el ajuste?",
+    lead: "Una medida fiscal nunca le llega igual a todos. Tres rondas, cuatro personajes cada una: ¿quién gana y quién pierde?",
+    Mecanica: QuienAfectaAjuste,
+  },
+  {
+    id: "explica-contribuyente",
+    titulo: "Explícaselo a un contribuyente",
+    lead: "El gobierno amplía la base del impuesto a la renta. Explícaselo a un contribuyente con cuatro frases de ocho: la jerga también cuenta como ruido.",
+    Mecanica: ExplicaContribuyente,
+  },
+  {
+    id: "comite-presupuesto",
+    titulo: "El comité de presupuesto",
+    lead: "El déficit creció este año. Catorce datos sobre la mesa del comité, y solo cinco explican por qué.",
+    Mecanica: ComitePresupuesto,
   },
 ];
 
@@ -219,7 +251,7 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
             <>
               <h2 style={h2}>El camino de este tema</h2>
               <p style={lead}>
-                Siete juegos sobre cómo cobra, gasta y se endeuda el Estado. No hay orden obligatorio: el
+                Doce juegos sobre cómo cobra, gasta y se endeuda el Estado. No hay orden obligatorio: el
                 camino sugiere uno, no lo impone.
               </p>
               <Tesoreria />

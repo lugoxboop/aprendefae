@@ -82,12 +82,33 @@ export const PREVIAS = {
    * sea el Clasificador repetido.
    */
   "deficit-vs-deuda": { tema: "fiscal", tipo: "propia" },
+
+  /*
+   * Los quince de la 0030, en su propio módulo (previasBloques.jsx): la mitad
+   * comparten gesto entre temas a propósito, y repartirlos obligaría a copiar.
+   */
+  "memorama-tesoro": { tema: "bloques", tipo: "gesto" },
+  "que-rama-es": { tema: "bloques", tipo: "gesto" },
+  "se-acerca-o-se-aleja": { tema: "bloques", tipo: "gesto" },
+  "expediente-gabinete": { tema: "bloques", tipo: "gesto" },
+  "consejo-ministros": { tema: "bloques", tipo: "gesto" },
+  "memorama-corazon": { tema: "bloques", tipo: "gesto" },
+  "cual-componente": { tema: "bloques", tipo: "gesto" },
+  "quien-beneficia-auge": { tema: "bloques", tipo: "gesto" },
+  "explica-paciente": { tema: "bloques", tipo: "gesto" },
+  "sala-espera-llena": { tema: "bloques", tipo: "gesto" },
+  "memorama-tesoreria": { tema: "bloques", tipo: "gesto" },
+  "cobra-gasta-o-pide": { tema: "bloques", tipo: "gesto" },
+  "quien-afecta-ajuste": { tema: "bloques", tipo: "gesto" },
+  "explica-contribuyente": { tema: "bloques", tipo: "gesto" },
+  "comite-presupuesto": { tema: "bloques", tipo: "gesto" },
 };
 
 const MODULOS = {
   economica: lazy(() => import("./previasEconomica.jsx")),
   demanda: lazy(() => import("./previasDemanda.jsx")),
   fiscal: lazy(() => import("./previasFiscal.jsx")),
+  bloques: lazy(() => import("./previasBloques.jsx")),
 };
 
 /**

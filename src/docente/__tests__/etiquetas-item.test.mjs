@@ -20,6 +20,11 @@ import { parejasDe } from "../../utils/orden.js";
 import {
   CLASIFICADOR, IMPUESTOS_SELLO, MEDIDAS_FLUJO, CASOS_EXPANSIVA, CASILLAS_PRESUPUESTO, BANCO_DEFICIT,
 } from "../../data/politicaFiscal.js";
+import { MEMORAMAS, CLASIFICACIONES } from "../../data/cimientos.js";
+import {
+  CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
+  EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
+} from "../../data/bloquesAvanzados.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -104,6 +109,19 @@ const IDS = {
   "expansiva-contractiva": CASOS_EXPANSIVA.flatMap((c) => c.duelos.map((d) => `${c.id}:${d.id}`)),
   "disena-presupuesto": CASILLAS_PRESUPUESTO.map((c) => c.id),
   "deficit-vs-deuda": BANCO_DEFICIT.map((x) => x.id),
+
+  /* Los quince de la 0030. */
+  ...Object.fromEntries(Object.entries(MEMORAMAS).map(([id, m]) => [id, m.pares.map((p) => p.id)])),
+  ...Object.fromEntries(Object.entries(CLASIFICACIONES).map(([id, b]) => [id, b.items.map((x) => x.id)])),
+  "se-acerca-o-se-aleja": CAMBIOS_ACERCA.map((f) => f.id),
+  "expediente-gabinete": [CASO_GABINETE.id],
+  "consejo-ministros": CASO_CONSEJO.duelos.map((d) => d.id),
+  "quien-beneficia-auge": RONDAS_AUGE.flatMap((r) => r.personajes.map((p) => `${r.id}:${p.id}`)),
+  "quien-afecta-ajuste": RONDAS_AJUSTE.flatMap((r) => r.personajes.map((p) => `${r.id}:${p.id}`)),
+  "explica-paciente": EXPLICA_PACIENTE.fragmentos.map((f) => f.id),
+  "explica-contribuyente": EXPLICA_CONTRIBUYENTE.fragmentos.map((f) => f.id),
+  "sala-espera-llena": [...SALA_ESPERA.relevantes, ...SALA_ESPERA.senuelos].map((d) => d.id),
+  "comite-presupuesto": [...COMITE_PRESUPUESTO.relevantes, ...COMITE_PRESUPUESTO.senuelos].map((d) => d.id),
 };
 
 test("todo id derivado de los bancos se puede nombrar", () => {

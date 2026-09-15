@@ -110,6 +110,10 @@ const MECANICAS = "../../components/mecanicas/";
  * [id del catálogo, archivo, en qué argumento de onCompletar llega el detalle].
  * Son todas las que mandan detalle —tablero-decisiones no manda—, con la firma
  * con la que las monta su vista.
+ *
+ * `archivo#Nombre` para las que viven como export con nombre: los quince de la
+ * 0030 comparten seis mecánicas y cada actividad es un export de
+ * bloques/cimientos.jsx o bloques/avanzados.jsx.
  */
 const ACTIVIDADES = [
   ["camara-presion", "CamaraPresion.jsx", 3],
@@ -142,6 +146,21 @@ const ACTIVIDADES = [
   ["expansiva-contractiva", "tesoreria/ExpansivaContractiva.jsx", 2],
   ["disena-presupuesto", "tesoreria/DisenaPresupuesto.jsx", 2],
   ["deficit-vs-deuda", "tesoreria/DeficitVsDeuda.jsx", 2],
+  ["memorama-tesoro", "bloques/cimientos.jsx#MemoramaTesoro", 2],
+  ["memorama-corazon", "bloques/cimientos.jsx#MemoramaCorazon", 2],
+  ["memorama-tesoreria", "bloques/cimientos.jsx#MemoramaTesoreria", 2],
+  ["que-rama-es", "bloques/cimientos.jsx#QueRamaEs", 2],
+  ["cual-componente", "bloques/cimientos.jsx#CualComponente", 2],
+  ["cobra-gasta-o-pide", "bloques/cimientos.jsx#CobraGastaOPide", 2],
+  ["se-acerca-o-se-aleja", "bloques/avanzados.jsx#SeAcerca", 2],
+  ["expediente-gabinete", "bloques/avanzados.jsx#ExpedienteGabinete", 2],
+  ["consejo-ministros", "bloques/avanzados.jsx#ConsejoMinistros", 2],
+  ["quien-beneficia-auge", "bloques/avanzados.jsx#QuienBeneficiaAuge", 2],
+  ["quien-afecta-ajuste", "bloques/avanzados.jsx#QuienAfectaAjuste", 2],
+  ["explica-paciente", "bloques/avanzados.jsx#ExplicaPaciente", 2],
+  ["explica-contribuyente", "bloques/avanzados.jsx#ExplicaContribuyente", 2],
+  ["sala-espera-llena", "bloques/avanzados.jsx#SalaEsperaLlena", 2],
+  ["comite-presupuesto", "bloques/avanzados.jsx#ComitePresupuesto", 2],
 ];
 
 /*
@@ -270,8 +289,10 @@ const SEMILLAS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 for (const [id, archivo, posDetalle] of ACTIVIDADES) {
   test(`${id}: ninguna partida registra el mismo ítem dos veces`, async () => {
-    const { default: Componente } = await import(MECANICAS + archivo);
-    const animaciones = animacionesDe(archivo);
+    const [ruta, nombre = "default"] = archivo.split("#");
+    const Componente = (await import(MECANICAS + ruta))[nombre];
+    assert.equal(typeof Componente, "function", `${ruta} no exporta ${nombre}`);
+    const animaciones = animacionesDe(ruta);
     let terminadas = 0;
     const fallos = [];
 

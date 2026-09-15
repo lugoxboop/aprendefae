@@ -71,11 +71,15 @@ const GESTOS = [
   "arma-grupo-logico", "quien-gana-quien-pierde", "simulador-de-crisis",
   "electrocardiograma", "termometro-reacciones", "banco-transfusiones", "triage-emergencias", "cirugia-reconstruccion", "sala-monitores",
   "flujo-de-caja", "expansiva-contractiva", "disena-presupuesto",
+  /* Los quince de la 0030 */
+  "memorama-tesoro", "que-rama-es", "se-acerca-o-se-aleja", "expediente-gabinete", "consejo-ministros",
+  "memorama-corazon", "cual-componente", "quien-beneficia-auge", "explica-paciente", "sala-espera-llena",
+  "memorama-tesoreria", "cobra-gasta-o-pide", "quien-afecta-ajuste", "explica-contribuyente", "comite-presupuesto",
 ];
 
 /* ─────────────────────────────── el registro ─────────────────────────────── */
 
-test("las 21 tienen su previsualización decidida: 12 gestos, el clip del tablero y dos quietas con su razón", () => {
+test("las 36 tienen su previsualización decidida: 27 gestos, el clip del tablero y dos quietas con su razón", () => {
   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
   assert.deepEqual(Object.keys(PREVIAS).sort(), [...ids].sort());
   assert.deepEqual(Object.entries(PREVIAS).filter(([, p]) => p.tipo === "gesto").map(([id]) => id).sort(), [...GESTOS].sort());
@@ -203,7 +207,7 @@ const sinEstilos = (el) => {
 
 test("ninguna previsualización enseña texto, y el coral solo aparece donde es de error", async () => {
   const animadas = Object.entries(PREVIAS).filter(([, p]) => p.tipo !== "estatica").map(([id]) => id);
-  assert.equal(animadas.length, 19);
+  assert.equal(animadas.length, 34);
   for (const id of animadas) {
     const m = montar(React.createElement(PreviaActividad, { actividadId: id, respaldo: React.createElement("i", { "data-respaldo": true }) }));
     await esperar(120);
@@ -219,6 +223,31 @@ test("ninguna previsualización enseña texto, y el coral solo aparece donde es 
       assert.ok(!/E76F51|231,\s*111,\s*81/i.test(previa.outerHTML), `${id}: coral en un gesto neutro`);
     }
     m.desmontar();
+  }
+});
+
+/*
+ * LAS PAREJAS QUE COMPARTEN GESTO, A PROPÓSITO: misma mecánica, mismo gesto.
+ * Se comprueba que de verdad son el mismo dibujo —cambiando solo el id—, y
+ * que lo que las separa, el icono, es distinto.
+ */
+test("las tres parejas de DA y PF comparten gesto y se distinguen por el icono", async () => {
+  const { ICONOS_ACTIVIDAD } = await import("../iconosActividad.jsx");
+  const pares = [
+    ["quien-beneficia-auge", "quien-afecta-ajuste"],
+    ["explica-paciente", "explica-contribuyente"],
+    ["sala-espera-llena", "comite-presupuesto"],
+  ];
+  const dibujo = async (id) => {
+    const m = montar(React.createElement(PreviaActividad, { actividadId: id }));
+    await esperar(120);
+    const html = m.cont.querySelector(`[data-previa="${id}"]`).outerHTML.split(id).join("X");
+    m.desmontar();
+    return html;
+  };
+  for (const [a, b] of pares) {
+    assert.equal(await dibujo(a), await dibujo(b), `${a} y ${b}: el mismo gesto`);
+    assert.notEqual(ICONOS_ACTIVIDAD[a], ICONOS_ACTIVIDAD[b], `${a} y ${b}: iconos distintos`);
   }
 });
 

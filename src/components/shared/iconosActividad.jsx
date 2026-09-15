@@ -2,6 +2,7 @@ import {
   Link, Gauge, Scale, Siren,
   Activity, Thermometer, Droplet, Microscope, Cross,
   Stamp, Sheet, FileStack, ToggleLeft, ArrowRightLeft,
+  Folder, MessageSquarePlus,
 } from "lucide-react";
 
 /*
@@ -133,8 +134,160 @@ export const GrietaFiscal = propio("GrietaFiscal", (
   </>
 ));
 
+/* ═══════════ LOS QUINCE DE LA 0030 ═══════════ */
+
+/* Memorama del Tesoro: dos cartas, la segunda a medio voltear (estrecha y sesgada). */
+export const CartasVolteo = propio("CartasVolteo", (
+  <>
+    <rect x="2.5" y="5" width="9" height="14" rx="1.6" />
+    <path d="M15 5.5 20.5 4v16L15 18.5z" />
+    <path d="M5.5 10h3M5.5 13.5h3" />
+  </>
+));
+
+/* Memorama del Corazón: dos cartas cruzadas por un pulso. */
+export const CartasPulso = propio("CartasPulso", (
+  <>
+    <rect x="2.5" y="4" width="8.5" height="16" rx="1.6" />
+    <rect x="13" y="4" width="8.5" height="16" rx="1.6" />
+    <path d="M1.5 12h4l1.6-3.2 2.4 6.4 1.8-3.2h11.2" strokeWidth="1.7" />
+  </>
+));
+
+/* Memorama de la Tesorería: una moneda de frente y otra de canto, volteándose. */
+export const MonedasVolteo = propio("MonedasVolteo", (
+  <>
+    <circle cx="8.5" cy="12" r="6" />
+    <circle cx="8.5" cy="12" r="2.6" />
+    <ellipse cx="18.5" cy="12" rx="2.4" ry="6" />
+  </>
+));
+
+/* ¿Qué rama es?: cuatro puertas en fila. El color de cada una en la ficha no se usa: sola, una forma. */
+export const CuatroPuertas = propio("CuatroPuertas", (
+  <>
+    <path d="M1.5 20.5h21" />
+    <path d="M2.5 20.5V9.5a2 2 0 0 1 4 0v11M7.5 20.5V9.5a2 2 0 0 1 4 0v11M12.5 20.5V9.5a2 2 0 0 1 4 0v11M17.5 20.5V9.5a2 2 0 0 1 4 0v11" />
+  </>
+));
+
+/* ¿Cuál componente?: cuatro etiquetas de sala, dos por fila. */
+export const CuatroEtiquetas = propio("CuatroEtiquetas", (c) => (
+  <>
+    {[[2.5, 4], [12.5, 4], [2.5, 14], [12.5, 14]].map(([x, y]) => (
+      <g key={`${x}-${y}`}>
+        <path d={`M${x} ${y}h5.5l3 3-3 3h-5.5z`} />
+        <circle cx={x + 5.6} cy={y + 3} r="0.7" fill={c} stroke="none" />
+      </g>
+    ))}
+  </>
+));
+
+/* ¿Cobra, gasta o pide prestado?: tres bandejas abiertas. */
+export const TresBandejas = propio("TresBandejas", (
+  <>
+    <path d="M1.5 12.5l1 6h4.5l1-6M8.5 12.5l1 6h4.5l1-6M15.5 12.5l1 6h4.5l1-6" />
+    <path d="M10.5 4.5h3v5h-3z" />
+  </>
+));
+
+/* ¿Se acerca o se aleja?: la aguja del medidor apuntando a la bandera de la meta. */
+export const AgujaMeta = propio("AgujaMeta", (c) => (
+  <>
+    <path d="M3 19a9 9 0 0 1 15.2-6.5" />
+    <path d="M12 19l4.6-5.8" />
+    <circle cx="12" cy="19" r="1.3" fill={c} stroke="none" />
+    <path d="M19.5 11V3.5l3 1.4-3 1.4" />
+  </>
+));
+
+/* El consejo de ministros: la mesa y sus tres sillas. */
+export const MesaTresSillas = propio("MesaTresSillas", (
+  <>
+    <rect x="7" y="10" width="10" height="7" rx="1.5" />
+    <rect x="2" y="11" width="3" height="5" rx="1" />
+    <rect x="19" y="11" width="3" height="5" rx="1" />
+    <rect x="9.5" y="3" width="5" height="4.5" rx="1" />
+  </>
+));
+
+/* ¿A quién beneficia el auge?: una silueta con un más arriba y un menos abajo. */
+export const SiluetaMasMenos = propio("SiluetaMasMenos", (
+  <>
+    <circle cx="9" cy="8" r="3.5" />
+    <path d="M3 20.5c0-3.6 2.7-6.2 6-6.2s6 2.6 6 6.2" />
+    <path d="M19 3.5v5M16.5 6h5" />
+    <path d="M16.5 15h5" />
+  </>
+));
+
+/* ¿A quién afecta el ajuste?: la misma silueta; el más va dentro de una moneda. Es lo que la separa del auge. */
+export const SiluetaMoneda = propio("SiluetaMoneda", (
+  <>
+    <circle cx="8.5" cy="8.5" r="3.5" />
+    <path d="M2.5 20.5c0-3.6 2.7-6.2 6-6.2s6 2.6 6 6.2" />
+    <circle cx="18.5" cy="6" r="3.8" />
+    <path d="M18.5 4.3v3.4M16.8 6h3.4" strokeWidth="1.6" />
+    <path d="M16 15h5" />
+  </>
+));
+
+/* Explícaselo a un contribuyente: el globo de diálogo, con un peso dentro. */
+export const GloboPeso = propio("GloboPeso", (
+  <>
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    <path d="M12 5.5v9" strokeWidth="1.7" />
+    <path d="M14.3 7.2h-3.1a1.5 1.5 0 0 0 0 3h1.6a1.5 1.5 0 0 1 0 3H9.6" strokeWidth="1.7" />
+  </>
+));
+
+/* La sala de espera llena: la lupa sobre puntos sueltos, la gente esperando. */
+export const LupaPuntos = propio("LupaPuntos", (c) => (
+  <>
+    <circle cx="10" cy="10" r="5.8" />
+    <path d="M14.3 14.3 20.5 20.5" strokeWidth="2.4" />
+    {[[8.3, 9], [11.6, 11.4], [3, 20], [20.5, 4], [15.5, 3.2], [3.2, 3.5]].map(([x, y]) => (
+      <circle key={`${x}-${y}`} cx={x} cy={y} r="1" fill={c} stroke="none" />
+    ))}
+  </>
+));
+
+/*
+ * El comité de presupuesto: la lupa sobre puntos EN RENGLONES, los ítems de
+ * una planilla. La ficha pedía «lupa sobre puntos» para los dos Experto, que
+ * además comparten gesto: con el mismo icono no se distinguirían en nada. La
+ * diferencia va aquí —puntos sueltos contra puntos con su renglón—.
+ */
+export const LupaRenglones = propio("LupaRenglones", (c) => (
+  <>
+    <circle cx="10" cy="10" r="5.8" />
+    <path d="M14.3 14.3 20.5 20.5" strokeWidth="2.4" />
+    <circle cx="7.8" cy="8.2" r="0.9" fill={c} stroke="none" />
+    <path d="M9.6 8.2h3" strokeWidth="1.5" />
+    <circle cx="7.8" cy="11.6" r="0.9" fill={c} stroke="none" />
+    <path d="M9.6 11.6h3" strokeWidth="1.5" />
+  </>
+));
+
 /* Cada actividad de los tres temas, con su icono. */
 export const ICONOS_ACTIVIDAD = {
+  /* Cimientos (0030) */
+  "memorama-tesoro": CartasVolteo,
+  "que-rama-es": CuatroPuertas,
+  "memorama-corazon": CartasPulso,
+  "cual-componente": CuatroEtiquetas,
+  "memorama-tesoreria": MonedasVolteo,
+  "cobra-gasta-o-pide": TresBandejas,
+  /* Aplicación, Análisis y Maestría (0030) */
+  "se-acerca-o-se-aleja": AgujaMeta,
+  "expediente-gabinete": Folder,
+  "consejo-ministros": MesaTresSillas,
+  "quien-beneficia-auge": SiluetaMasMenos,
+  "explica-paciente": MessageSquarePlus,
+  "sala-espera-llena": LupaPuntos,
+  "quien-afecta-ajuste": SiluetaMoneda,
+  "explica-contribuyente": GloboPeso,
+  "comite-presupuesto": LupaRenglones,
   /* Política Económica */
   "diagnostico-en-vivo": ConsolaRadar,
   "arma-grupo-logico": Link,

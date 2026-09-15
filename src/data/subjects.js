@@ -80,6 +80,26 @@ export const SUBJECTS = {
            * porcentaje mide desempeño, no constancia. Era justamente lo que el
            * simulador no podía sostener, por eso él era exploratoria.
            */
+          /*
+           * ═══════════ CIMIENTOS (0030) ═══════════
+           *
+           * Los dos juegos Fácil. La mecánica es la misma en las tres materias
+           * a propósito: la entrada del camino se siente igual se abra la que
+           * se abra. El Memorama es exploratoria —paga por terminar— y la
+           * primera clasificación, evaluativa. Los dos a 18 FP: la razón de 18
+           * y no los 10 de referencia de motor.js está en la 0030.
+           */
+          {
+            id: "memorama-corazon",
+            nombre: "Memorama del Corazón",
+            clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 18 },
+          },
+          {
+            /* La versión sin reloj de la Sala de monitores. */
+            id: "cual-componente",
+            nombre: "¿Cuál componente?",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 18 },
+          },
           {
             /* Recordar. Ocho definiciones de dieciséis y cuatro fragmentos de seis. */
             id: "electrocardiograma",
@@ -122,6 +142,26 @@ export const SUBJECTS = {
             nombre: "Sala de monitores",
             clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
           },
+          /*
+           * Los tres que completan Aplicación, Análisis y Maestría (0030). Cada
+           * uno comparte mecánica con su par de Política Fiscal: el reparto de
+           * actores, el efecto protégé y la frontera de señales.
+           */
+          {
+            id: "quien-beneficia-auge",
+            nombre: "¿A quién beneficia el auge?",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
+          },
+          {
+            id: "explica-paciente",
+            nombre: "Explícaselo a un paciente nuevo",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+          {
+            id: "sala-espera-llena",
+            nombre: "La sala de espera llena",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
+          },
         ],
       },
       {
@@ -147,6 +187,17 @@ export const SUBJECTS = {
             id: "maquina-da-palancas",
             nombre: "La máquina de la DA y sus palancas",
             clasificacion: { tipo: APRENDER },
+          },
+          /* Cimientos (0030): los mismos dos juegos Fácil que en los otros dos temas. */
+          {
+            id: "memorama-tesoro",
+            nombre: "Memorama del Tesoro",
+            clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 18 },
+          },
+          {
+            id: "que-rama-es",
+            nombre: "¿Qué rama es?",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 18 },
           },
           {
             /*
@@ -215,6 +266,25 @@ export const SUBJECTS = {
             nombre: "El simulador de crisis",
             clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
           },
+          /* Los tres que completan Aplicación, Análisis y Maestría (0030). */
+          {
+            /* Predecir antes de ver: el cambio acerca o aleja el objetivo. */
+            id: "se-acerca-o-se-aleja",
+            nombre: "¿Se acerca o se aleja?",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
+          },
+          {
+            /* Un caso y una decisión, todo o nada, como Biopsia y El agujero fiscal. */
+            id: "expediente-gabinete",
+            nombre: "El expediente del gabinete",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+          {
+            /* Tres propuestas y tres duelos: un orden sin pedirlo de golpe. */
+            id: "consejo-ministros",
+            nombre: "El consejo de ministros",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
+          },
         ],
       },
       {
@@ -246,6 +316,17 @@ export const SUBJECTS = {
             id: "clase-politica-fiscal",
             nombre: "La política fiscal en cuatro escenas",
             clasificacion: { tipo: APRENDER },
+          },
+          /* Cimientos (0030): los mismos dos juegos Fácil que en los otros dos temas. */
+          {
+            id: "memorama-tesoreria",
+            nombre: "Memorama de la Tesorería",
+            clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 18 },
+          },
+          {
+            id: "cobra-gasta-o-pide",
+            nombre: "¿Cobra, gasta o pide prestado?",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 18 },
           },
           {
             /* Recordar. Las tarjetas del profesor: doce de dieciocho, a tres ranuras. */
@@ -288,6 +369,29 @@ export const SUBJECTS = {
             id: "deficit-vs-deuda",
             nombre: "Déficit vs deuda",
             clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+          /*
+           * Los tres que completan Aplicación, Análisis y Maestría (0030), con
+           * la mecánica de su par de Demanda Agregada.
+           *
+           * Y la misma consecuencia que la nota de arriba, más grande: con los
+           * quince de la 0030, "Macroeconomía al día" y "Materia completa"
+           * pasan de exigir 21 juegos a exigir 36.
+           */
+          {
+            id: "quien-afecta-ajuste",
+            nombre: "¿A quién afecta el ajuste?",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
+          },
+          {
+            id: "explica-contribuyente",
+            nombre: "Explícaselo a un contribuyente",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
+          },
+          {
+            id: "comite-presupuesto",
+            nombre: "El comité de presupuesto",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
           },
         ],
       },

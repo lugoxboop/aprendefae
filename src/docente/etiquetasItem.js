@@ -17,6 +17,11 @@ import {
   CLASIFICADOR, IMPUESTOS_SELLO, MEDIDAS_FLUJO, PREGUNTA_MULTIPLICADOR, PREGUNTA_AGUJERO,
   CASOS_EXPANSIVA, CASILLAS_PRESUPUESTO, BANCO_DEFICIT,
 } from "../data/politicaFiscal.js";
+import { MEMORAMAS, CLASIFICACIONES } from "../data/cimientos.js";
+import {
+  CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
+  EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
+} from "../data/bloquesAvanzados.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -301,7 +306,54 @@ export const REGLAS = {
   },
 
   "disena-presupuesto": (id) => CASILLAS_PRESUPUESTO.find((x) => x.id === id)?.ayuda ?? null,
+
+  /* ── Los quince de la 0030 ── */
+  /* Memorama: el ítem es la pareja, y la pareja se lee como término y definición. */
+  "memorama-tesoro": (id) => pareja("memorama-tesoro", id),
+  "memorama-corazon": (id) => pareja("memorama-corazon", id),
+  "memorama-tesoreria": (id) => pareja("memorama-tesoreria", id),
+
+  "que-rama-es": (id) => porId(CLASIFICACIONES["que-rama-es"].items, "texto")[id] ?? null,
+  "cual-componente": (id) => porId(CLASIFICACIONES["cual-componente"].items, "texto")[id] ?? null,
+  "cobra-gasta-o-pide": (id) => porId(CLASIFICACIONES["cobra-gasta-o-pide"].items, "texto")[id] ?? null,
+
+  "se-acerca-o-se-aleja": (id) => {
+    const f = CAMBIOS_ACERCA.find((x) => x.id === id);
+    /* El cambio recortado deja sitio al objetivo: sin él, la fila no dice la pregunta. */
+    return f ? `${recortar(f.cambio, 36)} → ${f.objetivo}` : null;
+  },
+
+  "expediente-gabinete": (id) => (id === CASO_GABINETE.id ? CASO_GABINETE.pregunta : null),
+
+  "consejo-ministros": (id) => {
+    const d = CASO_CONSEJO.duelos.find((x) => x.id === id);
+    if (!d) return null;
+    const [a, b] = d.par.map((letra) => CASO_CONSEJO.medidas[letra]);
+    const p = prefijoComun([a, b]);
+    return `${recortar(sinPrefijo(a, p), 33)} vs ${recortar(sinPrefijo(b, p), 33)}`;
+  },
+
+  /* El reparto de actores: `<ronda>:<personaje>`, como ¿Quién gana, quién pierde? */
+  "quien-beneficia-auge": (id) => actorDe(RONDAS_AUGE, id),
+  "quien-afecta-ajuste": (id) => actorDe(RONDAS_AJUSTE, id),
+
+  "explica-paciente": (id) => porId(EXPLICA_PACIENTE.fragmentos, "texto")[id] ?? null,
+  "explica-contribuyente": (id) => porId(EXPLICA_CONTRIBUYENTE.fragmentos, "texto")[id] ?? null,
+
+  /* La frontera: cada uno de los catorce datos, relevante o señuelo. */
+  "sala-espera-llena": (id) => porId([...SALA_ESPERA.relevantes, ...SALA_ESPERA.senuelos], "texto")[id] ?? null,
+  "comite-presupuesto": (id) => porId([...COMITE_PRESUPUESTO.relevantes, ...COMITE_PRESUPUESTO.senuelos], "texto")[id] ?? null,
 };
+
+function pareja(memorama, id) {
+  const p = MEMORAMAS[memorama].pares.find((x) => x.id === id);
+  return p ? `${p.termino} — ${p.definicion}` : null;
+}
+
+function actorDe(rondas, id) {
+  const [ronda, quien] = String(id).split(":");
+  return rondas.find((r) => r.id === ronda)?.personajes.find((p) => p.id === quien)?.nombre ?? null;
+}
 
 /** Corta por palabras, sin partir una a la mitad. */
 export function recortar(texto, tope = 70) {

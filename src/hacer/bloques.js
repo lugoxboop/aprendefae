@@ -11,9 +11,10 @@
  * ═══════════ UN BLOQUE VACÍO NO EXISTE ═══════════
  *
  * Sin actividades no se pinta nada: ni título, ni separador, ni hueco. El
- * camino empieza en el primer bloque que tenga algo. Hoy «Cimientos» está
- * vacío en los tres temas —ninguna de las 21 actividades es Fácil— y los tres
- * caminos empiezan en «Aplicación». No es un fallo.
+ * camino empieza en el primer bloque que tenga algo. Desde la migración 0030
+ * los cuatro bloques tienen actividades en los tres temas de Macroeconomía
+ * —2 Fácil, 3 Medio, 4 Difícil y 3 Experto en cada uno—, pero la regla sigue
+ * en pie para cualquier tema que no los llene: un bloque vacío no es un fallo.
  *
  * ═══════════ SIN SEPARADORES ENTRE BLOQUES ═══════════
  *

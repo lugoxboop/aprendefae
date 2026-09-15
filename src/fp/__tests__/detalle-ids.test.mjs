@@ -41,6 +41,11 @@ import {
   CLASIFICADOR, IMPUESTOS_SELLO, SELLOS, MEDIDAS_FLUJO, CANALES, OPCIONES_MULTIPLICADOR, OPCIONES_AGUJERO,
   CASOS_EXPANSIVA, CASILLAS_PRESUPUESTO, PIEZAS_PRESUPUESTO, BANCO_DEFICIT, BANDEJAS, INSTRUMENTOS,
 } from "../../data/politicaFiscal.js";
+import { MEMORAMAS, CLASIFICACIONES, ITEMS_POR_PARTIDA } from "../../data/cimientos.js";
+import {
+  CAMBIOS_ACERCA, OPCIONES_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
+  EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
+} from "../../data/bloquesAvanzados.js";
 
 let fallos = 0;
 const filas = [];
@@ -588,6 +593,107 @@ unicos("deficit-vs-deuda · bandejas", BANDEJAS.map((b) => b.id), 4);
     obtenido: comunes.length ? `comparten ${comunes.join(", ")} (inofensivo)` : "no comparten ningún id",
     resultado: "PASA",
   });
+}
+
+/* ═══════════ LOS QUINCE DE LA 0030 ═══════════ */
+
+/* Un chequeo con nombre, para lo que no es "ids únicos". */
+const regla = (actividad, esperado, malos) => {
+  if (malos.length) fallos++;
+  filas.push({ actividad, esperado, obtenido: malos.length ? "MAL: " + malos.join(", ") : "bien", resultado: malos.length ? "FALLA" : "PASA" });
+};
+
+/* ── los tres Memoramas ── la PAREJA es el ítem, no el volteo (ver Memorama.jsx) ── */
+/*
+ * Una fila por pareja, cuando se encuentra: seis, cuatro y tres. `respuesta`
+ * es el id de OTRA pareja —con la que se confundió—, así que los ids de pareja
+ * son a la vez los ítems y los valores de respuesta.
+ *
+ * Los tres comparten mecánica y ninguna gramática de id que pueda chocar
+ * dentro de una misma actividad. `cobra`/`gasta`/`pide` salen también como
+ * categorías en ¿Cobra, gasta o pide prestado?, y es inofensivo: son
+ * activity_id distintos.
+ */
+for (const [id, m] of Object.entries(MEMORAMAS)) unicos(id, m.pares.map((p) => p.id), m.pares.length);
+regla("memoramas · tamaños", "6, 4 y 3 parejas", Object.entries(MEMORAMAS)
+  .filter(([id, m]) => m.pares.length !== { "memorama-tesoro": 6, "memorama-corazon": 4, "memorama-tesoreria": 3 }[id])
+  .map(([id]) => id));
+
+/* ── las tres primeras clasificaciones ── el enunciado; las categorías son las respuestas ── */
+for (const [id, b] of Object.entries(CLASIFICACIONES)) {
+  unicos(id, b.items.map((x) => x.id), 8);
+  unicos(`${id} · categorías`, b.categorias.map((c) => c.id), b.categorias.length);
+  regla(`${id} · respuestas`, "cada ítem apunta a una categoría que existe", b.items
+    .filter((x) => !b.categorias.some((c) => c.id === x.respuesta)).map((x) => x.id));
+}
+regla("primera clasificación · sorteo", "se sortean 6 de 8", ITEMS_POR_PARTIDA === 6 ? [] : [`sortea ${ITEMS_POR_PARTIDA}`]);
+
+/* ── se-acerca-o-se-aleja ── la fila ── */
+unicos("se-acerca-o-se-aleja", CAMBIOS_ACERCA.map((f) => f.id), 6);
+regla("se-acerca-o-se-aleja · correctas", "cada fila con una correcta de las dos y su razón escrita", CAMBIOS_ACERCA
+  .filter((f) => !OPCIONES_ACERCA.some((o) => o.id === f.correcta) || !(f.razon?.length > 20)).map((f) => f.id));
+
+/* ── expediente-gabinete ── una fila por partida; las opciones son las respuestas ── */
+unicos("expediente-gabinete · opciones", CASO_GABINETE.opciones.map((o) => o.id), 3);
+
+/* ── consejo-ministros ── el duelo; y los tres, de acuerdo con B > A > C ── */
+unicos("consejo-ministros", CASO_CONSEJO.duelos.map((d) => d.id), 3);
+regla("consejo-ministros · coherencia", "cada duelo lo gana quien va antes en el ranking", CASO_CONSEJO.duelos.filter((d) => {
+  const [x, y] = d.par;
+  return (CASO_CONSEJO.ranking.indexOf(x) < CASO_CONSEJO.ranking.indexOf(y) ? x : y) !== d.gana;
+}).map((d) => d.id));
+
+/*
+ * ── reparto de actores, Demanda Agregada y Política Fiscal ── `<ronda>:<personaje>` ──
+ *
+ * LA PAREJA QUE COMPARTE ESTRUCTURA. Mismo componente, misma gramática de id.
+ * El prefijo de ronda NO arregla hoy ningún choque dentro de una misma
+ * actividad —ningún personaje sale dos veces en su banco— y la fila de abajo lo
+ * dice tal cual. Se queda por lo mismo que en el Arca: el mismo personaje en
+ * dos rondas son dos preguntas, y el banco va a crecer.
+ *
+ * Entre las dos actividades SÍ se repite un id: `trabajador-construccion` está
+ * en la ronda de la inversión (auge) y en la de Mi Casa Ya (ajuste). No choca:
+ * son activity_id distintos y además la ronda los separa.
+ */
+unicos("quien-beneficia-auge", RONDAS_AUGE.flatMap((r) => r.personajes.map((p) => `${r.id}:${p.id}`)), 12);
+unicos("quien-afecta-ajuste", RONDAS_AJUSTE.flatMap((r) => r.personajes.map((p) => `${r.id}:${p.id}`)), 12);
+for (const [id, rondas] of [["quien-beneficia-auge", RONDAS_AUGE], ["quien-afecta-ajuste", RONDAS_AJUSTE]]) {
+  const sinPrefijo = rondas.flatMap((r) => r.personajes.map((p) => p.id));
+  filas.push({
+    actividad: `${id} (sin prefijo)`,
+    esperado: "hay choque, por eso lleva prefijo",
+    obtenido: sinPrefijo.length !== new Set(sinPrefijo).size ? "choca, como se documenta" : "no choca hoy, pero el prefijo se queda",
+    resultado: "PASA",
+  });
+  regla(`${id} · resultados`, "cada personaje gana o pierde, con su explicación", rondas
+    .flatMap((r) => r.personajes.filter((p) => !["gana", "pierde"].includes(p.resultado) || !p.explicacion).map((p) => `${r.id}:${p.id}`)));
+}
+{
+  const auge = new Set(RONDAS_AUGE.flatMap((r) => r.personajes.map((p) => p.id)));
+  const comunes = RONDAS_AJUSTE.flatMap((r) => r.personajes.map((p) => p.id)).filter((p) => auge.has(p));
+  filas.push({
+    actividad: "quien-beneficia-auge ↔ quien-afecta-ajuste",
+    esperado: "entre actividades distintas un id repetido no choca",
+    obtenido: comunes.length ? `comparten ${comunes.join(", ")} (inofensivo)` : "no comparten ningún id",
+    resultado: "PASA",
+  });
+}
+
+/* ── efecto protégé ── el fragmento elegido; `pac-` y `con-` ya separan los dos bancos ── */
+unicos("explica-paciente", EXPLICA_PACIENTE.fragmentos.map((f) => f.id), 8);
+unicos("explica-contribuyente", EXPLICA_CONTRIBUYENTE.fragmentos.map((f) => f.id), 8);
+for (const [id, e] of [["explica-paciente", EXPLICA_PACIENTE], ["explica-contribuyente", EXPLICA_CONTRIBUYENTE]]) {
+  const n = (t) => e.fragmentos.filter((f) => f.tipo === t).length;
+  regla(`${id} · reparto`, "4 claras, 2 de jerga, 2 falsas", n("correcto") === 4 && n("jerga") === 2 && n("incorrecto") === 2 ? [] : ["reparto distinto"]);
+}
+
+/* ── frontera de señales ── los catorce datos, elegidos o no ── */
+unicos("sala-espera-llena", [...SALA_ESPERA.relevantes, ...SALA_ESPERA.senuelos].map((d) => d.id), 14);
+unicos("comite-presupuesto", [...COMITE_PRESUPUESTO.relevantes, ...COMITE_PRESUPUESTO.senuelos].map((d) => d.id), 14);
+for (const [id, b] of [["sala-espera-llena", SALA_ESPERA], ["comite-presupuesto", COMITE_PRESUPUESTO]]) {
+  regla(`${id} · reparto`, "5 relevantes y 9 señuelos, cada señuelo con su porqué",
+    b.relevantes.length === 5 && b.senuelos.length === 9 && b.senuelos.every((s) => s.porque) ? [] : ["reparto distinto"]);
 }
 
 console.table(filas);

@@ -15,6 +15,8 @@ import CorrienteTitulares from "./mecanicas/CorrienteTitulares.jsx";
 import ExplicaLaPolitica from "./mecanicas/ExplicaLaPolitica.jsx";
 import SimuladorDeCrisis from "./mecanicas/SimuladorDeCrisis.jsx";
 import TableroDeDecisiones from "./mecanicas/TableroDeDecisiones.jsx";
+import { MemoramaTesoro, QueRamaEs } from "./mecanicas/bloques/cimientos.jsx";
+import { SeAcerca, ExpedienteGabinete, ConsejoMinistros } from "./mecanicas/bloques/avanzados.jsx";
 import { clasificacionDe, APRENDER, HACER, actividadesDeTipo, SUBJECTS } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
@@ -44,6 +46,43 @@ const CLAS_DECISIONES = clasificacionDe(MATERIA, TEMA, "tablero-decisiones");
 const CLAS_TABLERO = clasificacionDe(MATERIA, TEMA, "tablero-fallas");
 const CLAS_AUTORREGULACION = clasificacionDe(MATERIA, TEMA, "autorregulacion-intervencion");
 const CLAS_MAQUINA = clasificacionDe(MATERIA, TEMA, "maquina-da-palancas");
+
+/*
+ * Los cinco de la 0030. Van en una lista y no copiados cinco veces como los de
+ * abajo: cabecera, título y entradilla tienen la misma forma en todos.
+ */
+const NUEVOS = [
+  {
+    id: "memorama-tesoro",
+    titulo: "Memorama del Tesoro",
+    lead: "Los seis niveles del grupo lógico y sus definiciones, boca abajo. Voltea de dos en dos hasta encontrar todas las parejas; las cartas cambian de sitio en cada partida.",
+    Mecanica: MemoramaTesoro,
+  },
+  {
+    id: "que-rama-es",
+    titulo: "¿Qué rama es?",
+    lead: "Seis medidas y cuatro ramas de la política económica, sin reloj. Toca la rama de cada una.",
+    Mecanica: QueRamaEs,
+  },
+  {
+    id: "se-acerca-o-se-aleja",
+    titulo: "¿Se acerca o se aleja?",
+    lead: "Un cambio y un objetivo. Antes de ver a dónde va la aguja, decide: ¿ese cambio acerca la economía al objetivo o la aleja?",
+    Mecanica: SeAcerca,
+  },
+  {
+    id: "expediente-gabinete",
+    titulo: "El expediente del gabinete",
+    lead: "Dos anuncios del gobierno el mismo día, que empujan en sentidos contrarios. Una sola decisión.",
+    Mecanica: ExpedienteGabinete,
+  },
+  {
+    id: "consejo-ministros",
+    titulo: "El consejo de ministros",
+    lead: "Una economía estancada y tres propuestas sobre la mesa. De dos en dos: cuál conviene más, y por qué.",
+    Mecanica: ConsejoMinistros,
+  },
+].map((j) => ({ ...j, clas: clasificacionDe(MATERIA, TEMA, j.id) }));
 
 const sectionLabel = {
   fontFamily: "Sora, sans-serif",
@@ -338,6 +377,19 @@ export default function PoliticaEconomicaView({ modo = null, nodoInicial = null,
         />
         </>
         )}
+
+        {/* ---------------- Los cinco de la 0030 ---------------- */}
+        {NUEVOS.map((j, k) => nodoAbierto === j.id && (
+          <div key={j.id}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: modo ? "0 0 8px" : "48px 0 8px" }}>
+              <p style={sectionLabel}>MECÁNICA {(muestraAprender ? 11 : 8) + k}</p>
+              <ActivityBadge tipo={j.clas?.tipo} size="sm" />
+            </div>
+            <h2 style={h2}>{j.titulo}</h2>
+            <p style={lead}>{j.lead}</p>
+            <j.Mecanica onCompletar={(pct, ms, detalle) => completarJuego(j.clas, j.id, pct, ms, detalle)} />
+          </div>
+        ))}
 
         </>
         )}

@@ -4,9 +4,9 @@
  * no se cruzan con ella, los iconos, el anillo y el cierre.
  *
  * La regla que se rompe fácil es la del bloque vacío: un bloque sin
- * actividades no pinta NADA. Hoy «Cimientos» está vacío en los tres temas; la
- * prueba que importa es que registrar una actividad Fácil en el catálogo —y
- * nada más— lo haga aparecer, y que quitarla lo haga desaparecer.
+ * actividades no pinta NADA. Desde la 0030 «Cimientos» tiene dos actividades
+ * en cada tema, así que la prueba va al revés que antes: quitar las Fácil del
+ * catálogo —y nada más— lo hace desaparecer entero, y devolverlas lo trae.
  *
  * Y la que se rompe sin que nadie lo note: que la línea que une los nodos
  * atraviese el título de un bloque. Se comprueba con la geometría, no a ojo.
@@ -88,34 +88,36 @@ test("bloquesDe: orden fijo, solo los bloques con algo y cada uno con su posici�
 
 /* ─────────────────────────── el bloque vacío, pintado ─────────────────────────── */
 
-test("un bloque vacío no pinta nada; registrar una actividad Fácil en el catálogo lo hace aparecer, y quitarla lo quita", () => {
+const LOS_CUATRO = ["cimientos", "aplicacion", "analisis", "maestria"];
+
+test("Cimientos se pinta en los tres temas; quitarle sus Fácil del catálogo lo borra entero, y devolverlas lo trae", () => {
   for (const temaId of TEMAS) {
     const tema = temaDe(temaId);
     const m = montar(camino(nodosDelTema(temaId)));
 
-    assert.deepEqual(bloquesPintados(m.cont), ["aplicacion", "analisis", "maestria"], temaId);
-    assert.ok(!m.cont.textContent.includes("Cimientos"), `${temaId}: ni el título`);
+    assert.deepEqual(bloquesPintados(m.cont), LOS_CUATRO, `${temaId}: los cuatro bloques`);
+    assert.equal(m.cont.querySelector('[data-bloque="cimientos"] h3').textContent, "Cimientos");
+    const faciles = tema.actividades.filter((a) => a.clasificacion?.tipo === HACER && a.clasificacion.dificultad === "facil");
+    assert.equal(faciles.length, 2, `${temaId}: dos Fácil`);
+    for (const f of faciles) {
+      assert.ok(m.cont.querySelector(`g[data-nodo="${f.id}"][data-bloque-de="cimientos"]`), `${temaId}: ${f.id} en Cimientos`);
+    }
+    assert.ok(alturaDe(m.cont, "cimientos") < alturaDe(m.cont, "aplicacion"), "Cimientos va antes que Aplicación");
 
-    /* Solo se registra en el catálogo, con su dificultad. Ningún otro cambio. */
-    const falsa = {
-      id: "prueba-facil",
-      nombre: "Actividad fácil de prueba",
-      clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 },
-    };
-    tema.actividades.push(falsa);
+    /* Solo se quitan del catálogo. Ningún otro cambio: ni en el camino ni en los bloques. */
+    const posiciones = faciles.map((f) => tema.actividades.indexOf(f));
+    for (const f of faciles) tema.actividades.splice(tema.actividades.indexOf(f), 1);
     try {
       m.pintar(camino(nodosDelTema(temaId)));
-      assert.deepEqual(bloquesPintados(m.cont), ["cimientos", "aplicacion", "analisis", "maestria"], temaId);
-      assert.equal(m.cont.querySelector('[data-bloque="cimientos"] h3').textContent, "Cimientos");
-      assert.ok(m.cont.querySelector('g[data-nodo="prueba-facil"][data-bloque-de="cimientos"]'), `${temaId}: la actividad cae en su bloque`);
-      assert.ok(alturaDe(m.cont, "cimientos") < alturaDe(m.cont, "aplicacion"), "Cimientos va antes que Aplicación");
+      assert.deepEqual(bloquesPintados(m.cont), ["aplicacion", "analisis", "maestria"], `${temaId}: sin Fácil no hay Cimientos`);
+      assert.ok(!m.cont.textContent.includes("Cimientos"), `${temaId}: ni el título`);
+      assert.equal(m.cont.querySelectorAll('[data-bloque-de="cimientos"]').length, 0, `${temaId}: ni un nodo`);
     } finally {
-      tema.actividades.splice(tema.actividades.indexOf(falsa), 1);
+      posiciones.forEach((p, k) => tema.actividades.splice(p, 0, faciles[k]));
     }
 
     m.pintar(camino(nodosDelTema(temaId)));
-    assert.deepEqual(bloquesPintados(m.cont), ["aplicacion", "analisis", "maestria"], `${temaId}: se va al quitarla`);
-    assert.ok(!m.cont.textContent.includes("Cimientos"));
+    assert.deepEqual(bloquesPintados(m.cont), LOS_CUATRO, `${temaId}: vuelve al devolverlas`);
     m.desmontar();
   }
 });
@@ -195,24 +197,31 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
     }
   }
 
-  /* Con los bloques de hoy, los tres títulos quedan a la izquierda, como estaban. */
+  /*
+   * Con el reparto de hoy (2-3-4-3) los tres primeros títulos van a la
+   * izquierda y el de Maestría a la DERECHA: Análisis tiene cuatro nodos y
+   * acaba en el lado izquierdo, y el título va siempre al lado contrario del
+   * nodo que lo precede. Es la regla, no una excepción; se fija aquí para que
+   * un cambio de lado no pase sin que nadie lo vea.
+   */
   for (const temaId of TEMAS) {
     const nodos = nodosDelTema(temaId);
-    assert.deepEqual(disposicionPorBloques(bloquesDe(nodos), nodos.length).cabeceras.map((c) => c.lado), [-1, -1, -1], temaId);
+    assert.deepEqual(disposicionPorBloques(bloquesDe(nodos), nodos.length).cabeceras.map((c) => c.lado), [-1, -1, -1, 1], temaId);
   }
 });
 
 /* ─────────────────────────────── los iconos ─────────────────────────────── */
 
-test("las 21 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
+test("las 36 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
-  assert.equal(ids.length, 21);
+  assert.equal(ids.length, 36);
   for (const id of ids) assert.ok(iconoDe(id), `${id} sin icono`);
   assert.deepEqual(Object.keys(ICONOS_ACTIVIDAD).sort(), [...ids].sort(), "ni iconos de más ni de menos");
+  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 36, "ningún icono repetido entre dos actividades");
 
   for (const temaId of TEMAS) {
     const m = montar(camino(nodosDelTema(temaId)));
-    assert.equal(m.cont.querySelectorAll("[data-icono]").length, 7, temaId);
+    assert.equal(m.cont.querySelectorAll("[data-icono]").length, 12, temaId);
     m.desmontar();
   }
 
@@ -235,15 +244,20 @@ test("el anillo de cada bloque dice la fracción como texto y se pone al día co
   }
   const m = montar(React.createElement(Arnes));
   const anillo = (id) => m.cont.querySelector(`[data-cabeza-bloque="${id}"] [role="img"]`);
-  assert.equal(anillo("aplicacion").getAttribute("aria-label"), "0 de 2 completadas");
-  assert.equal(anillo("aplicacion").querySelector("[data-fraccion]").textContent, "0/2");
-  assert.equal(anillo("analisis").querySelector("[data-fraccion]").textContent, "0/3");
+  assert.equal(anillo("aplicacion").getAttribute("aria-label"), "0 de 3 completadas");
+  assert.equal(anillo("aplicacion").querySelector("[data-fraccion]").textContent, "0/3");
+  assert.equal(anillo("analisis").querySelector("[data-fraccion]").textContent, "0/4");
+  assert.equal(anillo("cimientos").querySelector("[data-fraccion]").textContent, "0/2");
 
   /* Lo que emite otorgarFP cuando el servidor confirma. */
   act(() => emitirFP({ actividadId: "clasificador-tesoro", fp: 25, repetida: false }));
-  assert.equal(anillo("aplicacion").querySelector("[data-fraccion]").textContent, "1/2");
-  assert.equal(anillo("aplicacion").getAttribute("aria-label"), "1 de 2 completadas");
-  assert.equal(anillo("analisis").querySelector("[data-fraccion]").textContent, "0/3", "solo cambia su bloque");
+  assert.equal(anillo("aplicacion").querySelector("[data-fraccion]").textContent, "1/3");
+  assert.equal(anillo("aplicacion").getAttribute("aria-label"), "1 de 3 completadas");
+  assert.equal(anillo("analisis").querySelector("[data-fraccion]").textContent, "0/4", "solo cambia su bloque");
+
+  /* Y una Fácil llena su anillo como cualquier otra. */
+  act(() => emitirFP({ actividadId: "memorama-tesoreria", fp: 18, repetida: false }));
+  assert.equal(anillo("cimientos").querySelector("[data-fraccion]").textContent, "1/2");
   /* Y el tramo recorrido de la línea llega al siguiente nodo. */
   assert.equal(m.cont.querySelectorAll("path[data-recorrido]").length, 1);
   m.desmontar();

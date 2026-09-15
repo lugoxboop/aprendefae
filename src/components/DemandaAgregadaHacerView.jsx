@@ -15,6 +15,8 @@ import Biopsia from "./mecanicas/corazon/Biopsia.jsx";
 import Triage from "./mecanicas/corazon/Triage.jsx";
 import Cirugia from "./mecanicas/corazon/Cirugia.jsx";
 import SalaMonitores from "./mecanicas/corazon/SalaMonitores.jsx";
+import { MemoramaCorazon, CualComponente } from "./mecanicas/bloques/cimientos.jsx";
+import { QuienBeneficiaAuge, ExplicaPaciente, SalaEsperaLlena } from "./mecanicas/bloques/avanzados.jsx";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
@@ -47,10 +49,27 @@ const CLAS = {
   "triage-emergencias": clasificacionDe(MATERIA, TEMA, "triage-emergencias"),
   "cirugia-reconstruccion": clasificacionDe(MATERIA, TEMA, "cirugia-reconstruccion"),
   "sala-monitores": clasificacionDe(MATERIA, TEMA, "sala-monitores"),
+  "memorama-corazon": clasificacionDe(MATERIA, TEMA, "memorama-corazon"),
+  "cual-componente": clasificacionDe(MATERIA, TEMA, "cual-componente"),
+  "quien-beneficia-auge": clasificacionDe(MATERIA, TEMA, "quien-beneficia-auge"),
+  "explica-paciente": clasificacionDe(MATERIA, TEMA, "explica-paciente"),
+  "sala-espera-llena": clasificacionDe(MATERIA, TEMA, "sala-espera-llena"),
 };
 
 /* Rótulo y entradilla de cada juego. El orden es el del camino. */
 const JUEGOS = [
+  {
+    id: "memorama-corazon",
+    titulo: "Memorama del Corazón",
+    lead: "Los cuatro componentes de la Demanda Agregada y lo que significa cada uno, boca abajo. Voltea de dos en dos hasta emparejarlos; las cartas cambian de sitio en cada partida.",
+    Mecanica: MemoramaCorazon,
+  },
+  {
+    id: "cual-componente",
+    titulo: "¿Cuál componente?",
+    lead: "Seis compras de la vida diaria y cuatro componentes. Sin reloj: di por cuál entra cada una a la Demanda Agregada.",
+    Mecanica: CualComponente,
+  },
   {
     id: "electrocardiograma",
     titulo: "Lectura de electrocardiograma",
@@ -92,6 +111,24 @@ const JUEGOS = [
     titulo: "Sala de monitores",
     lead: "Doce alertas seguidas, mezcladas a propósito. Cada una entra por un componente distinto y hay que decir por cuál.",
     Mecanica: SalaMonitores,
+  },
+  {
+    id: "quien-beneficia-auge",
+    titulo: "¿A quién beneficia el auge?",
+    lead: "Cuando un componente sube o baja, no a todos les va igual. Tres rondas, cuatro personajes cada una: ¿quién gana y quién pierde?",
+    Mecanica: QuienBeneficiaAuge,
+  },
+  {
+    id: "explica-paciente",
+    titulo: "Explícaselo a un paciente nuevo",
+    lead: "La inversión cayó y tienes que explicárselo a alguien sin idea de economía. Cuatro frases de ocho: la jerga también cuenta como ruido.",
+    Mecanica: ExplicaPaciente,
+  },
+  {
+    id: "sala-espera-llena",
+    titulo: "La sala de espera llena",
+    lead: "Catorce datos en la sala de espera y una sola pregunta. Solo cinco explican este mes; los demás son de otro plazo, de otro componente o no son un cambio.",
+    Mecanica: SalaEsperaLlena,
   },
 ];
 
@@ -185,7 +222,7 @@ export default function DemandaAgregadaHacerView({ nodoInicial = null, onBack })
             <>
               <h2 style={h2}>El camino de este tema</h2>
               <p style={lead}>
-                Siete juegos, del reconocer al reconstruir. No hay orden obligatorio: el camino sugiere
+                Doce juegos, del reconocer al reconstruir. No hay orden obligatorio: el camino sugiere
                 uno, no lo impone.
               </p>
               <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} porBloques />
