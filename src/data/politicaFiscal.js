@@ -397,3 +397,10 @@ export function sortearPapeles(barajar) {
   const libres = barajar([...ninguno.slice(MINIMO_NINGUNO), ...resto]).slice(0, PAPELES_POR_PARTIDA - fijos.length);
   return barajar([...fijos, ...libres]);
 }
+
+/*
+ * Expansiva o contractiva: el encabezado de la devolución, compartido con el
+ * Repaso Diario. Debajo va el argumento del duelo, literal.
+ */
+export const encabezadoExpansiva = (caso, duelo, elegido) =>
+  `${elegido === duelo.gana ? "CORRECTO" : "REVISA"} · MEJOR: ${caso.medidas[duelo.gana]}`;

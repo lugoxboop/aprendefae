@@ -3,7 +3,7 @@ import { barajar } from "../../../utils/barajar.js";
 import {
   MEMORAMA_BANCO_CENTRAL, QUIEN_DECIDE, VOLANTE_DE_LA_TASA, CAJA_DE_HERRAMIENTAS, A_QUIEN_LE_PEGA,
   CADENAS_TRANSMISION, EXPLICA_DEUDOR, CORRIENTE_DECISIONES, EL_REZAGO, DILEMA_BANQUERO,
-  DUELO_INSTRUMENTOS, DISENA_RESPUESTA, CASILLAS_RESPUESTA,
+  DUELO_INSTRUMENTOS, DISENA_RESPUESTA, CASILLAS_RESPUESTA, retroDuelo,
 } from "../../../data/politicaMonetaria.js";
 import Memorama from "../bloques/Memorama.jsx";
 import PrimeraClasificacion from "../bloques/PrimeraClasificacion.jsx";
@@ -111,8 +111,8 @@ export const DilemaBanqueroCentral = ({ onCompletar }) => (
     rotulo="MAESTRÍA" titulo={DILEMA_BANQUERO.subtema} onCompletar={onCompletar} />
 );
 
-/* PM-11: la ficha trae el argumento de cada duelo; se muestra con su signo. */
-export const retroDuelo = (d, elegida) => `${elegida === d.gana ? "✅" : "❌"} ${d.argumento}`;
+/* PM-11: la devolución de cada duelo vive en el banco (retroDuelo), compartida con el Repaso Diario. */
+export { retroDuelo };
 
 export const DueloDeInstrumentos = ({ onCompletar }) => (
   <DuelosRanking casos={DUELO_INSTRUMENTOS.casos} retro={retroDuelo} Marco={MarcoMaquinas} acento={T}

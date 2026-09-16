@@ -55,6 +55,8 @@ export const VISTAS = new Set([
   "pensamiento-sistemico",
   "modelo-iceberg",
   "fuerzas-porter",
+  /* Transversales: no son un tema, pero se entra igual desde el índice. */
+  "repaso-diario",
   /*
    * Aquí estaban las seis vistas de DA-Learn —dashboard, consumo, inversion,
    * gasto, xn y final—. El simulador se retiró entero, así que sus hashes

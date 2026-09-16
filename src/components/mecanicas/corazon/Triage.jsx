@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../theme.js";
 import { barajar } from "../../../utils/barajar.js";
-import { CASOS_TRIAGE } from "../../../data/demandaAgregadaHacer.js";
+import { CASOS_TRIAGE, encabezadoTriage } from "../../../data/demandaAgregadaHacer.js";
 import { Camaraseccion } from "./circulatorio.jsx";
 import { CSS_JUEGO, Opcion, Opciones, Pulsos, Cierre, Enunciado } from "./juego.jsx";
 
@@ -148,7 +148,7 @@ export default function Triage({ onCompletar }) {
           }}
         >
           <p style={{ margin: "0 0 5px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", color: acertado ? FAE.teal : FAE.coral }}>
-            {acertado ? "CORRECTO" : "REVISA"} · VA PRIMERO {caso.medidas[duelo.gana].toUpperCase()}
+            {encabezadoTriage(caso, duelo, elegido)}
           </p>
           {/* El argumento, literal del banco. */}
           <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.55, color: "rgba(248,249,250,0.82)" }}>

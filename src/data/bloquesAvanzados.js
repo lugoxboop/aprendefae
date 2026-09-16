@@ -24,11 +24,12 @@ export const OPCIONES_ACERCA = [
 ];
 
 /*
- * [ESCRITO POR CLAUDE, NO POR LA FICHA — PENDIENTE DE REVISIÓN DE PEDAGOGÍA]
- * La ficha pide "✅ Correcto — [razón de la fila]" pero no trae la razón de
- * ninguna fila. Las seis `razon` de abajo son mías: una frase cada una, con el
- * mismo mecanismo que el tema ya enseña. El resto de cada fila —cambio,
- * objetivo y respuesta correcta— sí es de la ficha, literal.
+ * Texto oficial de Gen (Parte C del prompt del Repaso Diario), que sustituye
+ * las razones provisionales. Trae también los enunciados tal como Gen los
+ * cerró: la fila 6 y los objetivos de las filas 2 y 4 cambian de redacción.
+ *
+ * `razon` es lo que va después de la raya en el acierto. El error la repite
+ * como frase propia —"[Razón de la fila]."—, con la primera letra en mayúscula.
  */
 export const CAMBIOS_ACERCA = [
   {
@@ -36,49 +37,55 @@ export const CAMBIOS_ACERCA = [
     cambio: "Sube el gasto público en infraestructura",
     objetivo: "Reducir desempleo",
     correcta: "acerca",
-    razon: "más obra pública es más contratación: el gasto entra directo a la Demanda Agregada y empuja el empleo.",
+    razon: "más obra pública significa más contratación, directa y en toda la cadena de proveedores.",
   },
   {
     id: "sube-tasa",
     cambio: "Sube la tasa de interés",
-    objetivo: "Controlar inflación",
+    objetivo: "Controlar la inflación",
     correcta: "acerca",
-    razon: "el crédito se encarece, se gasta menos y los precios pierden presión.",
+    razon: "crédito más caro enfría el gasto, y menos gasto quita presión sobre los precios.",
   },
   {
     id: "bajan-aranceles",
     cambio: "Bajan los aranceles a un producto importado",
     objetivo: "Proteger la industria local",
     correcta: "aleja",
-    razon: "con aranceles más bajos, lo importado llega más barato y le compite con más fuerza a lo que se produce aquí.",
+    razon: "sin arancel, el producto de afuera entra más barato y le compite más fuerte al productor local.",
   },
   {
     id: "peso-deprecia",
     cambio: "El peso se deprecia",
-    objetivo: "Aumentar exportaciones",
+    objetivo: "Aumentar las exportaciones",
     correcta: "acerca",
-    razon: "con el peso más débil, lo que Colombia vende afuera les sale más barato a los compradores extranjeros.",
+    razon: "un peso más débil hace que lo colombiano le salga más barato al comprador extranjero.",
   },
   {
     id: "menos-impuestos-empresas",
     cambio: "Se reducen los impuestos a las empresas",
     objetivo: "Aumentar la inversión privada",
     correcta: "acerca",
-    razon: "a las empresas les queda más utilidad para reinvertir.",
+    razon: "a la empresa le queda más utilidad después de impuestos, y parte de eso se reinvierte.",
   },
   {
     id: "gasto-sin-ingresos",
-    cambio: "Sube el gasto público sin control adicional de ingresos",
+    cambio: "Sube el gasto público sin recaudar más",
     objetivo: "Reducir el déficit fiscal",
     correcta: "aleja",
-    razon: "si el gasto sube y los ingresos no, se agranda la brecha entre lo que el Estado gasta y lo que recauda.",
+    razon: "gastar más sin recaudar más agranda exactamente el hueco que se quería cerrar.",
   },
 ];
 
+const conMayuscula = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+
+/*
+ *   acierto  "✅ Se acerca — [razón]"  /  "✅ Se aleja — [razón]"
+ *   error    "❌ Al revés — este cambio [acerca / aleja] al objetivo. [Razón de la fila]."
+ */
 export const retroAcerca = (fila, elegida) =>
   elegida === fila.correcta
-    ? `✅ Correcto — ${fila.razon}`
-    : `❌ Revisa la relación — este cambio ${fila.correcta === "acerca" ? "se acerca" : "se aleja"}, no lo contrario.`;
+    ? `✅ ${fila.correcta === "acerca" ? "Se acerca" : "Se aleja"} — ${fila.razon}`
+    : `❌ Al revés — este cambio ${fila.correcta} al objetivo. ${conMayuscula(fila.razon)}`;
 
 /* ═══════════════════════ POLÍTICA ECONÓMICA · DIFÍCIL ═══════════════════════
  * «El expediente del gabinete» — un caso, una decisión, todo o nada.
@@ -102,33 +109,39 @@ export const CASO_GABINETE = {
 
 /* ═══════════════════════ POLÍTICA ECONÓMICA · EXPERTO ═══════════════════════
  * «El consejo de ministros» — tres propuestas, tres duelos, un orden B > A > C.
+ * Acierto y error de cada duelo: texto oficial de Gen (Parte C).
  */
-
-const POR_QUE_A_SOBRE_C = "El gasto público entra directo a la Demanda Agregada; bajar la tasa depende de que las empresas decidan invertir, algo menos seguro en una economía estancada.";
 
 export const CASO_CONSEJO = {
   caso: "La economía está estancada: desempleo alto y algo de inflación.",
   medidas: {
     a: "Fiscal expansivo puro",
-    b: "Mixto (gasto + baja leve de tasa)",
+    b: "Mixto (gasto público + baja leve de tasa)",
     c: "Solo monetario (baja fuerte de tasa)",
   },
   ranking: ["b", "a", "c"],
   duelos: [
     {
+      /* El duelo B vs. A de la ficha. */
       id: "a-vs-b", par: ["a", "b"], gana: "b",
-      argumento: "Combinar dos palancas reduce el riesgo de depender de una sola — si el gasto público tarda en ejecutarse, la tasa más baja ya está actuando.",
+      acierto: "✅ Correcto — combinar dos palancas reduce el riesgo de depender de una sola: si el gasto público tarda en ejecutarse, la tasa más baja ya está actuando.",
+      error: "❌ Gana el paquete mixto. Apostar todo al gasto público deja el resultado a merced de una sola palanca, y además una lenta de ejecutar.",
     },
-    { id: "a-vs-c", par: ["a", "c"], gana: "a", argumento: POR_QUE_A_SOBRE_C },
-    /*
-     * [ESCRITO POR CLAUDE, NO POR LA FICHA — PENDIENTE DE REVISIÓN DE PEDAGOGÍA]
-     * La ficha dice "same argument" sin decir cuál. La elección es mía: B gana
-     * a C por lo mismo que A gana a C —B lleva el gasto que entra directo, y C
-     * depende solo de que las empresas se animen—, así que se reusa ese texto.
-     */
-    { id: "b-vs-c", par: ["b", "c"], gana: "b", argumento: POR_QUE_A_SOBRE_C },
+    {
+      id: "a-vs-c", par: ["a", "c"], gana: "a",
+      acierto: "✅ Correcto — el gasto público entra directo a la Demanda Agregada; bajar la tasa depende de que las empresas decidan invertir, algo poco seguro en una economía estancada.",
+      error: "❌ Gana el gasto público. En una economía estancada, bajar la tasa no garantiza que alguien pida prestado; el gasto estatal sí entra seguro.",
+    },
+    {
+      id: "b-vs-c", par: ["b", "c"], gana: "b",
+      acierto: "✅ Correcto — combinar reduce el riesgo de que la única palanca elegida no reaccione como se esperaba.",
+      error: "❌ Gana el paquete mixto. Confiar solo en la tasa de interés es la apuesta más frágil de las tres, justo cuando la confianza empresarial está baja.",
+    },
   ],
 };
+
+/** La devolución de un duelo del consejo: la de la ficha, según se acierte o no. */
+export const retroConsejo = (duelo, elegida) => (elegida === duelo.gana ? duelo.acierto : duelo.error);
 
 /* ═══════════════════════ REPARTO DE ACTORES · MEDIO ═══════════════════════
  * Demanda Agregada y Política Fiscal: tres rondas × cuatro personajes, a

@@ -25,6 +25,12 @@ export default function TopicIndexView({
   renderTopicIcon,
   veilCenterAlpha,
   onOpenTopic,
+  /*
+   * Entradas que no son un tema: hoy, el Repaso Diario. Llegan ya dibujadas y
+   * se ponen en la misma rejilla, después de los temas. La plantilla no sabe
+   * qué son ni de dónde salen.
+   */
+  entradas = null,
 }) {
   /*
    * Qué tarjeta está mostrando su elección. Solo una a la vez: dos tarjetas
@@ -152,6 +158,7 @@ export default function TopicIndexView({
                   />
                 );
               })}
+              {entradas}
             </div>
           ) : (
             <p

@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { SUBJECTS, HACER } from "../../data/subjects.js";
+import { SUBJECTS, HACER, ACTIVIDADES_TRANSVERSALES } from "../../data/subjects.js";
 
 /*
  * El catálogo de actividades vive en DOS sitios y no hay forma de evitarlo: el
@@ -136,6 +136,41 @@ function catalogoDelCliente() {
           etapas: c.etapas ?? 1,
         });
       }
+  /*
+   * Y las transversales (desde la 0033: el Repaso Diario). No son de ningún
+   * tema del camino, pero pagan FP igual y tienen su fila en el servidor, con
+   * su propio topic_id.
+   */
+  for (const act of ACTIVIDADES_TRANSVERSALES) {
+    const c = act.clasificacion;
+    if (c?.tipo !== HACER) continue;
+    salida.set(act.id, {
+      subject: act.materiaId, topic: act.temaId,
+      modalidad: c.modalidad, dificultad: c.dificultad, fpBase: c.fpBase,
+      etapas: c.etapas ?? 1,
+    });
+  }
+  return salida;
+}
+
+/*
+ * Las renovables a diario, de las `update ... set renovable_diario = true where
+ * activity_id in (...)`. Misma forma que la lápida de las retiradas.
+ */
+function renovablesDelServidor() {
+  const salida = new Set();
+  for (const archivo of readdirSync(CARPETA).filter((f) => f.endsWith(".sql")).sort()) {
+    const sql = readFileSync(join(CARPETA, archivo), "utf8");
+    const updates = sql.matchAll(
+      /update\s+(?:public\.)?actividad_catalogo\s+set\s+renovable_diario\s*=\s*(true|false)\s+where\s+activity_id\s+in\s*\(([^)]*)\)/gi
+    );
+    for (const u of updates) {
+      for (const id of u[2].matchAll(/'([^']+)'/g)) {
+        if (u[1].toLowerCase() === "true") salida.add(id[1]);
+        else salida.delete(id[1]);
+      }
+    }
+  }
   return salida;
 }
 
@@ -203,4 +238,20 @@ test("una actividad retirada no la sigue ofreciendo el cliente", () => {
   const retiradas = retiradasDelServidor();
   const puestas = [...retiradas].filter((id) => cliente.has(id));
   assert.deepEqual(puestas, [], `retiradas que el cliente todavía ofrece: ${puestas.join(", ")}`);
+});
+
+test("renovable a diario: las mismas en el cliente y en el servidor, y solo el Repaso", () => {
+  /*
+   * La marca cambia qué cuenta como repetición en registrar_fp. Si el cliente
+   * la creyera puesta y el servidor no, el Repaso de mañana pagaría 0 sin
+   * aviso; si se colara en otra actividad, esa volvería a pagar cada día.
+   */
+  const cliente = new Set();
+  for (const materia of Object.values(SUBJECTS))
+    for (const tema of materia.topics)
+      for (const act of tema.actividades ?? []) if (act.clasificacion?.renovableDiario) cliente.add(act.id);
+  for (const act of ACTIVIDADES_TRANSVERSALES) if (act.clasificacion?.renovableDiario) cliente.add(act.id);
+
+  assert.deepEqual([...renovablesDelServidor()].sort(), [...cliente].sort());
+  assert.deepEqual([...cliente], ["repaso-diario"]);
 });

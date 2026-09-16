@@ -206,8 +206,11 @@ test("se-acerca-o-se-aleja: seis filas, una fallada a propósito — 5/6 exacto,
       const mala = B.OPCIONES_ACERCA.find((o) => o.id !== fila.correcta).nombre;
       click(contiene(m.caja, n === 0 ? mala : buena), "opción");
       const retro = retroVisible(m.caja);
-      if (n === 0) assert.ok(retro.includes("Revisa la relación"), retro);
-      else assert.ok(retro.includes(fila.razon), retro);
+      /* El texto oficial de Gen (Parte C): el error repite la razón como frase propia, con mayúscula. */
+      const esperado = B.retroAcerca(fila, n === 0 ? B.OPCIONES_ACERCA.find((o) => o.id !== fila.correcta).id : fila.correcta);
+      assert.ok(retro.includes(esperado.slice(2)), retro);
+      if (n === 0) assert.ok(retro.includes("Al revés — este cambio") && retro.includes(fila.razon.charAt(0).toUpperCase() + fila.razon.slice(1)), retro);
+      else assert.ok(retro.includes(`Se ${fila.correcta} — ${fila.razon}`), retro);
       avanzar(m.caja);
     }
     const detalle = cerrada(m, porcentaje(5, 6), 6);
@@ -246,7 +249,8 @@ test("consejo-ministros: tres duelos, uno perdido a propósito — 2/3 exacto, y
       assert.ok(d, `vuelta ${n + 1}: ${letras}`);
       const elegida = n === 0 ? d.par.find((l) => l !== d.gana) : d.gana;
       click(exacto(m.caja, `${elegida.toUpperCase()} · ${medidas[elegida]}`), elegida);
-      assert.ok(retroVisible(m.caja).includes(d.argumento));
+      /* Acierto y error de cada duelo: el texto oficial de Gen (Parte C). */
+      assert.ok(retroVisible(m.caja).includes((n === 0 ? d.error : d.acierto).slice(2)), retroVisible(m.caja));
       avanzar(m.caja);
     }
     const detalle = cerrada(m, porcentaje(2, 3), 3);

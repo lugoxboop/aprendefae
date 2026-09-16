@@ -32,6 +32,7 @@ const PoliticaEconomicaView = lazy(() => import("./components/PoliticaEconomicaV
 const PoliticaFiscalView = lazy(() => import("./components/PoliticaFiscalView.jsx"));
 /* "La Sala de Máquinas": Política Monetaria, con sus dos mitades. */
 const PoliticaMonetariaView = lazy(() => import("./components/PoliticaMonetariaView.jsx"));
+const RepasoView = lazy(() => import("./components/repaso/RepasoView.jsx"));
 const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"));
 
 /*
@@ -206,6 +207,14 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <PoliticaMonetariaView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
+      </Suspense>
+    );
+  }
+
+  if (view === "repaso-diario") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <RepasoView onBack={() => setView("macroeconomia")} />
       </Suspense>
     );
   }

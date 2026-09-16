@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../theme.js";
 import { barajar } from "../../../utils/barajar.js";
-import { ALERTAS_MONITOR, COMPONENTES_MONITOR } from "../../../data/demandaAgregadaHacer.js";
+import { ALERTAS_MONITOR, COMPONENTES_MONITOR, retroMonitor } from "../../../data/demandaAgregadaHacer.js";
 import { COMPONENTES } from "../../../data/corazonDA.js";
 import { Camaraseccion } from "./circulatorio.jsx";
 import { CSS_JUEGO, Opcion, Opciones, Retro, Pulsos, Cierre, Enunciado } from "./juego.jsx";
@@ -97,11 +97,8 @@ export default function SalaMonitores({ onCompletar }) {
     );
   }
 
-  const retro = !elegido
-    ? null
-    : elegido === alerta.componente
-      ? `✅ ${nombreDe(alerta.componente)} — bien identificado.`
-      : `❌ Esto afecta ${nombreDe(alerta.componente)}, no ${nombreDe(elegido)}.`;
+  /* La devolución vive en el banco: el Repaso Diario la reutiliza tal cual. */
+  const retro = !elegido ? null : retroMonitor(alerta, elegido);
 
   return (
     <Camaraseccion rotulo="SALA DE MONITORES" titulo="¿A qué componente afecta?" acento={FAE.teal}>

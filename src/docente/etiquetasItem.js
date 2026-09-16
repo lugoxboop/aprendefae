@@ -392,6 +392,20 @@ Object.assign(REGLAS, {
   },
 });
 
+/*
+ * El Repaso Diario guarda cada ítem con su clave entera —`<actividad>:<item_id>`—,
+ * así que su etiqueta es la de la actividad de origen: se parte por el primer
+ * «:» y se le pregunta a esa regla. Sin texto propio.
+ */
+REGLAS["repaso-diario"] = (id) => {
+  const texto = String(id);
+  const corte = texto.indexOf(":");
+  if (corte <= 0) return null;
+  const origen = texto.slice(0, corte);
+  if (origen === "repaso-diario" || !REGLAS[origen]) return null;
+  return REGLAS[origen](texto.slice(corte + 1));
+};
+
 function pareja(memorama, id) {
   const p = MEMORAMAS[memorama].pares.find((x) => x.id === id);
   return p ? `${p.termino} — ${p.definicion}` : null;

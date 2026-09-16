@@ -551,3 +551,42 @@ export const ALERTAS_MONITOR = [
   { id: "aeropuerto", componente: "G", texto: "El gobierno construye un nuevo aeropuerto regional." },
   { id: "demanda-petroleo", componente: "XN", texto: "Baja la demanda internacional de petróleo y caen las exportaciones colombianas." },
 ];
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * DEVOLUCIONES COMPARTIDAS CON EL REPASO DIARIO
+ *
+ * Vivían escritas dentro de sus componentes. El Repaso las reutiliza palabra
+ * por palabra, así que se sacan aquí y los dos las llaman: una sola copia, y
+ * si alguien las edita cambian en los dos sitios a la vez.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+const nombreTerminoECG = (id) => TERMINOS_ECG.find((t) => t.id === id)?.nombre ?? id;
+const textoFragmentoECG = (id) => FRAGMENTOS_ECG.find((f) => f.id === id)?.fragmento ?? id;
+
+/** Electrocardiograma, etapa 1: ¿de qué término es esta lectura? */
+export const retroDefinicionECG = (definicion, elegido) =>
+  elegido === definicion.termino
+    ? `✅ ${nombreTerminoECG(definicion.termino)} — lectura correcta.`
+    : `❌ Eso describe ${nombreTerminoECG(definicion.termino)}, no ${nombreTerminoECG(elegido)}.`;
+
+/*
+ * Electrocardiograma, etapa 2. El encargo no traía texto de error para esta
+ * etapa: se escribió con la misma forma que el de la etapa 1 y queda anotado
+ * como añadido, no como cita.
+ */
+export const retroFragmentoECG = (fragmento, elegido) =>
+  elegido === fragmento.id
+    ? fragmento.acierto
+    : `❌ Esa es la lectura de «${textoFragmentoECG(elegido)}», no de «${fragmento.fragmento}».`;
+
+const nombreComponenteMonitor = (id) => COMPONENTES_MONITOR.find((c) => c.id === id)?.nombre ?? id;
+
+/** Sala de monitores. */
+export const retroMonitor = (alerta, elegido) =>
+  elegido === alerta.componente
+    ? `✅ ${nombreComponenteMonitor(alerta.componente)} — bien identificado.`
+    : `❌ Esto afecta ${nombreComponenteMonitor(alerta.componente)}, no ${nombreComponenteMonitor(elegido)}.`;
+
+/** Triage de emergencias: el encabezado de la devolución; debajo va el argumento del duelo, literal. */
+export const encabezadoTriage = (caso, duelo, elegido) =>
+  `${elegido === duelo.gana ? "CORRECTO" : "REVISA"} · VA PRIMERO ${caso.medidas[duelo.gana].toUpperCase()}`;

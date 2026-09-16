@@ -503,6 +503,9 @@ export const DUELO_INSTRUMENTOS = {
   ],
 };
 
+/* PM-11: la ficha trae el argumento de cada duelo; se muestra con su signo. */
+export const retroDuelo = (d, elegida) => `${elegida === d.gana ? "✅" : "❌"} ${d.argumento}`;
+
 /* PM-12 — Diseña la Respuesta Monetaria */
 export const CASILLAS_RESPUESTA = [
   { id: "tipo", rotulo: "Tipo de política" },
@@ -565,3 +568,58 @@ export const puntuarConSenuelos = (senuelos, castigo = 5) => Math.max(0, 100 - c
 /** PM-9: 16 % por posición exacta, 20 % la pregunta de cierre. */
 export const puntuarRezago = (posicionesBien, cierreBien) =>
   posicionesBien * EL_REZAGO.pesoPosicion + (cierreBien ? EL_REZAGO.pesoCierre : 0);
+
+/* ═══════════════════════════ EL REZAGO EN EL REPASO DIARIO ═══════════════════════════
+ *
+ * Contenido de Gen (B2b del prompt del Repaso Diario), LITERAL. Estos diez
+ * ítems existen SOLO en el pool del Repaso: la actividad El Rezago sigue
+ * siendo la de ordenar, sin ningún cambio.
+ *
+ * Cada hecho pasa de "ordene estos 5 hechos" a "¿cuánto se demora esto en
+ * pasar?", con cuatro opciones fijas. `caso` y `hecho` son los ids de El
+ * Rezago: así su historial de encuentros es el mismo hecho que ya se vio al
+ * ordenar.
+ */
+
+export const ESCALAS_REZAGO = [
+  { id: "dias", nombre: "Días" },
+  { id: "semanas", nombre: "Semanas" },
+  { id: "meses", nombre: "Meses" },
+  { id: "trimestres", nombre: "Trimestres" },
+];
+
+export const REZAGO_REPASO = [
+  {
+    caso: "sube-enero",
+    titulo: "El Banco sube la tasa",
+    hechos: [
+      { hecho: "interbancario", texto: "La tasa del mercado interbancario se ajusta", escala: "dias", acierto: "✅ Días — es el mercado donde los bancos se prestan entre sí, reacciona casi de inmediato." },
+      { hecho: "creditos-nuevos", texto: "Los bancos suben las tasas de sus créditos nuevos", escala: "semanas", acierto: "✅ Semanas — cada banco necesita ajustar sus productos y contratos." },
+      { hecho: "solicitudes", texto: "Bajan las solicitudes de crédito de consumo", escala: "meses", acierto: "✅ Meses — la gente reacciona cuando ve las nuevas cuotas, no el mismo día del anuncio." },
+      { hecho: "consumo-hogares", texto: "Se desacelera el consumo de los hogares", escala: "meses", acierto: "✅ Meses — primero se posterga la compra, después se nota en las cifras agregadas." },
+      { hecho: "inflacion-cede", texto: "La inflación empieza a ceder", escala: "trimestres", acierto: "✅ Trimestres — es el último eslabón de toda la cadena y el más lento de todos." },
+    ],
+  },
+  {
+    caso: "baja-marzo",
+    titulo: "El Banco baja la tasa",
+    hechos: [
+      { hecho: "fondeo", texto: "El costo de fondeo de los bancos cae", escala: "dias", acierto: "✅ Días — es lo primero que cambia después de la decisión de la Junta." },
+      { hecho: "creditos-baratos", texto: "Aparecen créditos más baratos en el mercado", escala: "semanas", acierto: "✅ Semanas — los bancos tienen que rediseñar y publicar su oferta." },
+      { hecho: "proyectos", texto: "Las empresas empiezan a aprobar proyectos que tenían frenados", escala: "meses", acierto: "✅ Meses — requiere comités, decisiones internas y presupuesto. No es automático." },
+      { hecho: "maquinaria-contratacion", texto: "Aumenta la compra de maquinaria y la contratación", escala: "meses", acierto: "✅ Meses — entre aprobar un proyecto y ejecutarlo pasa un buen rato." },
+      { hecho: "pib", texto: "Se ve el efecto en el crecimiento del PIB", escala: "trimestres", acierto: "✅ Trimestres — es el resultado agregado final de toda la cadena." },
+    ],
+  },
+];
+
+/*
+ * El error, la regla dinámica de Gen para los diez. Las escalas van en
+ * minúscula dentro de la frase ("tarda días, no semanas"), como en la regla
+ * gruesa que la sigue.
+ */
+export function retroEscala(hecho, elegida) {
+  if (elegida === hecho.escala) return hecho.acierto;
+  const nombre = (id) => (ESCALAS_REZAGO.find((e) => e.id === id)?.nombre ?? id).toLowerCase();
+  return `❌ Esto tarda ${nombre(hecho.escala)}, no ${nombre(elegida)}. La regla gruesa: lo financiero reacciona en días, las decisiones de bancos en semanas, las decisiones de la gente y las empresas en meses, y los precios y el crecimiento en trimestres.`;
+}

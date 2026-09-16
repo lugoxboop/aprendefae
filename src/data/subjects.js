@@ -686,6 +686,36 @@ export function ubicacionDeActividad(activityId) {
  */
 const ALIAS = { "camara-presion-experto": "Cámara de presión · modo experto" };
 
+/*
+ * ═══════════ ACTIVIDADES TRANSVERSALES ═══════════
+ *
+ * Actividades que dan FP pero NO pertenecen al camino de ningún tema: no están
+ * dentro de `topics`, así que ningún camino ni bloque las pinta, y las
+ * medallas de "materia completa" no las cuentan.
+ *
+ * El Repaso Diario es la primera. Vive en El Pasillo, con su propia entrada.
+ * `indice` dice bajo qué índice aparece esa entrada, y NADA MÁS: qué materias
+ * alimentan su pool se decide en src/repaso/repaso.js, aparte, para que moverla
+ * de índice el día que entre Pensamiento Estratégico no toque ni El Pasillo ni
+ * el motor de selección.
+ */
+export const ACTIVIDADES_TRANSVERSALES = [
+  {
+    id: "repaso-diario",
+    nombre: "El Repaso Diario",
+    materiaId: "macroeconomia",
+    temaId: "repaso-diario",
+    indice: "macroeconomia",
+    /* Medio fija el tiempo mínimo antes de recortar FP; la base de 60 anula la de Medio. */
+    clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 60, renovableDiario: true },
+  },
+];
+
+for (const a of ACTIVIDADES_TRANSVERSALES) {
+  NOMBRES_POR_ID.set(a.id, a.nombre);
+  UBICACION_POR_ID.set(a.id, { materiaId: a.materiaId, temaId: a.temaId });
+}
+
 export function nombreDeActividad(activityId) {
   return NOMBRES_POR_ID.get(activityId) ?? ALIAS[activityId] ?? null;
 }

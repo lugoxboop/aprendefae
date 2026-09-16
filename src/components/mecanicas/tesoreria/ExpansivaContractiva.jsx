@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../theme.js";
 import { barajar } from "../../../utils/barajar.js";
-import { CASOS_EXPANSIVA, porcentaje } from "../../../data/politicaFiscal.js";
+import { CASOS_EXPANSIVA, porcentaje, encabezadoExpansiva } from "../../../data/politicaFiscal.js";
 import { Tesoreria, Opcion, Opciones, Pulsos, Cierre, Enunciado, Avanzar, TEXTO_CIERRE } from "./tesoreria.jsx";
 
 /*
@@ -115,7 +115,7 @@ export default function ExpansivaContractiva({ onCompletar }) {
           }}
         >
           <p style={{ margin: "0 0 5px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", color: acerto ? FAE.teal : FAE.coral }}>
-            {acerto ? "CORRECTO" : "REVISA"} · MEJOR: {caso.medidas[duelo.gana]}
+            {encabezadoExpansiva(caso, duelo, elegido)}
           </p>
           <p style={{ margin: 0, fontSize: "13.5px", lineHeight: 1.55, color: "rgba(248,249,250,0.85)" }}>{duelo.argumento}</p>
         </div>

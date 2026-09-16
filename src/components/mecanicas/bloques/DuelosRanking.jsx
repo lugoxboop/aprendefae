@@ -4,6 +4,8 @@ import { barajar } from "../../../utils/barajar.js";
 import { porcentaje } from "../../../data/politicaFiscal.js";
 import { Opcion, Opciones, Retro, Pulsos, Cierre, Enunciado } from "../corazon/juego.jsx";
 import { Avanzar, TEXTO_CIERRE, RotuloEscenario } from "./marcos.jsx";
+/* Por defecto, la devolución del consejo de ministros: acierto y error de la ficha. */
+import { retroConsejo } from "../../../data/bloquesAvanzados.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -25,15 +27,6 @@ import { Avanzar, TEXTO_CIERRE, RotuloEscenario } from "./marcos.jsx";
  * actividad), `caso.etiqueta` (el rótulo de escenario simulado o real).
  * ═══════════════════════════════════════════════════════════════════════════
  */
-
-/*
- * [ESCRITO POR CLAUDE, NO POR LA FICHA] Las plantillas del consejo de
- * ministros: su ficha solo traía los argumentos.
- */
-const retroConsejo = (d, elegida) =>
-  elegida === d.gana
-    ? `✅ Correcto — ${d.argumento}`
-    : `❌ Aquí conviene más ${d.gana.toUpperCase()}: ${d.argumento}`;
 
 const duelosDe = (caso) => barajar(caso.duelos).map((d) => ({ ...d, lados: barajar(d.par) }));
 

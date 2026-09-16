@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../theme.js";
 import { barajar } from "../../../utils/barajar.js";
-import { TERMINOS_ECG, DEFINICIONES_ECG, FRAGMENTOS_ECG } from "../../../data/demandaAgregadaHacer.js";
+import { TERMINOS_ECG, DEFINICIONES_ECG, FRAGMENTOS_ECG, retroDefinicionECG, retroFragmentoECG } from "../../../data/demandaAgregadaHacer.js";
 import { Camaraseccion } from "./circulatorio.jsx";
 import { CSS_JUEGO, Opcion, Opciones, Retro, Pulsos, Cierre, Enunciado } from "./juego.jsx";
 
@@ -130,24 +130,10 @@ export default function Electrocardiograma({ onCompletar }) {
 
   /* ─────────────────────────── la devolución ─────────────────────────── */
 
-  const nombreDe = (id) => TERMINOS_ECG.find((t) => t.id === id)?.nombre ?? id;
-  const fragmentoDe = (id) => FRAGMENTOS_ECG.find((f) => f.id === id)?.fragmento ?? id;
-
+  /* Las dos devoluciones viven en el banco: el Repaso Diario las reutiliza tal cual. */
   let retro = null;
-  if (elegido && etapa === 1) {
-    retro = elegido === definicion.termino
-      ? `✅ ${nombreDe(definicion.termino)} — lectura correcta.`
-      : `❌ Eso describe ${nombreDe(definicion.termino)}, no ${nombreDe(elegido)}.`;
-  } else if (elegido && etapa === 2) {
-    retro = elegido === fragmento.id
-      ? fragmento.acierto
-      /*
-       * El encargo no traía texto de error para esta etapa. Se escribe con la
-       * misma forma que el de la etapa 1 —decir qué es lo que sí describe la
-       * lectura elegida— y queda anotado como añadido, no como cita.
-       */
-      : `❌ Esa es la lectura de «${fragmentoDe(elegido)}», no de «${fragmento.fragmento}».`;
-  }
+  if (elegido && etapa === 1) retro = retroDefinicionECG(definicion, elegido);
+  else if (elegido && etapa === 2) retro = retroFragmentoECG(fragmento, elegido);
 
   if (terminado) {
     return (
