@@ -3,29 +3,43 @@ import { FAE } from "../../../theme.js";
 import { barajar } from "../../../utils/barajar.js";
 import { porcentaje } from "../../../data/politicaFiscal.js";
 import { Opcion, Opciones, Retro, Pulsos, Cierre, Enunciado } from "../corazon/juego.jsx";
-import { Avanzar, TEXTO_CIERRE } from "./marcos.jsx";
+import { Avanzar, TEXTO_CIERRE, RotuloEscenario } from "./marcos.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * DUELOS POR PAREJAS — Política Económica, Experto («El consejo de
- * ministros»).
+ * DUELOS POR PAREJAS — Experto. «El consejo de ministros» (Política
+ * Económica) y «Duelo de instrumentos» (Política Monetaria).
  *
- * Tres propuestas para una misma economía y tres duelos: de dos en dos, cuál
- * conviene más en ESTA situación. Juntos, los tres duelos son un orden
- * (B > A > C) sin pedir que se ordene de golpe, que es donde se adivina.
+ * Tres propuestas para una misma situación y tres duelos: de dos en dos, cuál
+ * conviene más. Juntos, los tres duelos son un orden sin pedir que se ordene
+ * de golpe, que es donde se adivina (Thurstone, juicio comparativo).
  *
  * Los duelos y los lados se barajan: la que gana no va siempre a la izquierda.
  *
  *   pct = duelos acertados / 3 × 100, sin redondear por el camino
  *
- * Ítem = el duelo, por su id (`a-vs-b`…); `respuesta` es la propuesta que se
- * eligió. Mismo esquema que Triage y Expansiva o contractiva.
+ * Ítem = el duelo, por su id (`a-vs-b`…); con varios casos, `<caso>:<duelo>`
+ * —la A de un caso no es la A del otro—. `respuesta` es la propuesta elegida.
+ *
+ * Opciones: `casos` (se sortea uno por partida), `retro` (la devolución de la
+ * actividad), `caso.etiqueta` (el rótulo de escenario simulado o real).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * [ESCRITO POR CLAUDE, NO POR LA FICHA] Las plantillas del consejo de
+ * ministros: su ficha solo traía los argumentos.
+ */
+const retroConsejo = (d, elegida) =>
+  elegida === d.gana
+    ? `✅ Correcto — ${d.argumento}`
+    : `❌ Aquí conviene más ${d.gana.toUpperCase()}: ${d.argumento}`;
+
 const duelosDe = (caso) => barajar(caso.duelos).map((d) => ({ ...d, lados: barajar(d.par) }));
 
-export default function DuelosRanking({ caso, Marco, rotulo, titulo, acento, onCompletar }) {
+export default function DuelosRanking({ caso: casoUnico, casos, Marco, rotulo, titulo, acento, onCompletar, retro = retroConsejo }) {
+  const sortear = () => (casos ? barajar(casos)[0] : casoUnico);
+  const [caso, setCaso] = useState(sortear);
   const [duelos, setDuelos] = useState(() => duelosDe(caso));
   const [i, setI] = useState(0);
   const [elegida, setElegida] = useState(null);
@@ -39,6 +53,7 @@ export default function DuelosRanking({ caso, Marco, rotulo, titulo, acento, onC
   const d = duelos[i];
   const pct = porcentaje(aciertos, duelos.length);
   const letra = (x) => x.toUpperCase();
+  const idItem = (duelo) => (casos ? `${caso.id}:${duelo.id}` : duelo.id);
 
   useEffect(() => {
     if (terminado) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
@@ -48,7 +63,7 @@ export default function DuelosRanking({ caso, Marco, rotulo, titulo, acento, onC
     if (respondidos.current.has(d.id)) return;
     respondidos.current.add(d.id);
     const ok = x === d.gana;
-    detalle.current.push({ item: d.id, ok, intentos: 1, respuesta: x, orden: detalle.current.length + 1 });
+    detalle.current.push({ item: idItem(d), ok, intentos: 1, respuesta: x, orden: detalle.current.length + 1 });
     if (ok) setAciertos((n) => n + 1);
     setElegida(x);
   };
@@ -61,23 +76,19 @@ export default function DuelosRanking({ caso, Marco, rotulo, titulo, acento, onC
   };
 
   const reiniciar = () => {
-    setDuelos(duelosDe(caso));
+    const otro = sortear();
+    setCaso(otro);
+    setDuelos(duelosDe(otro));
     setI(0); setElegida(null); setAciertos(0); setTerminado(false);
     respondidos.current = new Set();
     detalle.current = [];
     inicio.current = Date.now();
   };
 
-  const retro = !elegida
-    ? null
-    : elegida === d.gana
-      ? `✅ Correcto — ${d.argumento}`
-      : `❌ Aquí conviene más ${letra(d.gana)}: ${d.argumento}`;
-
   if (terminado) {
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-        <Cierre pct={Math.round(pct)} onReiniciar={reiniciar} textoReiniciar="Otra sesión del consejo">
+        <Cierre pct={Math.round(pct)} onReiniciar={reiniciar} textoReiniciar="Otra ronda de duelos">
           <p style={TEXTO_CIERRE}>{aciertos} de {duelos.length} duelos. Los tres juntos dan este orden:</p>
           <ol style={{ margin: "8px 0 0", paddingLeft: "20px", display: "flex", flexDirection: "column", gap: "4px" }}>
             {caso.ranking.map((x) => (
@@ -97,8 +108,9 @@ export default function DuelosRanking({ caso, Marco, rotulo, titulo, acento, onC
         <Pulsos total={duelos.length} hechos={i + (elegida ? 1 : 0)} etiqueta="Duelo" />
       </div>
       <Enunciado rotulo="LA SITUACIÓN" acento={acento}>{caso.caso}</Enunciado>
+      {caso.etiqueta && <RotuloEscenario texto={caso.etiqueta} />}
       <p style={{ margin: "14px 0 0", fontFamily: "Sora, sans-serif", fontSize: "15px", fontWeight: 700, lineHeight: 1.4 }}>
-        De estas dos propuestas, ¿cuál conviene más aquí?
+        De estas dos, ¿cuál conviene más aquí?
       </p>
       <Opciones columnas="repeat(auto-fit, minmax(200px, 1fr))">
         {d.lados.map((x) => (
@@ -113,7 +125,7 @@ export default function DuelosRanking({ caso, Marco, rotulo, titulo, acento, onC
           </Opcion>
         ))}
       </Opciones>
-      <Retro texto={retro} />
+      <Retro texto={elegida ? retro(d, elegida) : null} />
       {elegida && <Avanzar onClick={avanzar}>{i + 1 === duelos.length ? "Ver el orden" : "Siguiente duelo"}</Avanzar>}
     </Marco>
   );

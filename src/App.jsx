@@ -30,6 +30,8 @@ const PerfilView = lazy(() => import("./components/PerfilView.jsx"));
 const PoliticaEconomicaView = lazy(() => import("./components/PoliticaEconomicaView.jsx"));
 /* "La Tesorería Nacional": los siete juegos de Política Fiscal. Solo tiene mitad Hacer. */
 const PoliticaFiscalView = lazy(() => import("./components/PoliticaFiscalView.jsx"));
+/* "La Sala de Máquinas": Política Monetaria, con sus dos mitades. */
+const PoliticaMonetariaView = lazy(() => import("./components/PoliticaMonetariaView.jsx"));
 const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"));
 
 /*
@@ -196,6 +198,14 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <PoliticaFiscalView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
+      </Suspense>
+    );
+  }
+
+  if (view === "politica-monetaria") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <PoliticaMonetariaView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
       </Suspense>
     );
   }

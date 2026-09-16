@@ -22,6 +22,11 @@ import {
   CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
   EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
 } from "../data/bloquesAvanzados.js";
+import {
+  MEMORAMA_BANCO_CENTRAL, QUIEN_DECIDE, VOLANTE_DE_LA_TASA, CAJA_DE_HERRAMIENTAS, A_QUIEN_LE_PEGA,
+  CADENAS_TRANSMISION, EXPLICA_DEUDOR, CORRIENTE_DECISIONES, EL_REZAGO, DILEMA_BANQUERO,
+  DUELO_INSTRUMENTOS, DISENA_RESPUESTA, CASILLAS_RESPUESTA,
+} from "../data/politicaMonetaria.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -344,6 +349,48 @@ export const REGLAS = {
   "sala-espera-llena": (id) => porId([...SALA_ESPERA.relevantes, ...SALA_ESPERA.senuelos], "texto")[id] ?? null,
   "comite-presupuesto": (id) => porId([...COMITE_PRESUPUESTO.relevantes, ...COMITE_PRESUPUESTO.senuelos], "texto")[id] ?? null,
 };
+
+/* ── Política Monetaria (0031) ── */
+Object.assign(REGLAS, {
+  "memorama-banco-central": (id) => {
+    const p = MEMORAMA_BANCO_CENTRAL.pares.find((x) => x.id === id);
+    return p ? `${p.termino} — ${p.definicion}` : null;
+  },
+  "quien-decide-esto": (id) => porId(QUIEN_DECIDE.items, "texto")[id] ?? null,
+  "volante-de-la-tasa": (id) => porId(VOLANTE_DE_LA_TASA.escenarios, "texto")[id] ?? null,
+  "caja-de-herramientas": (id) => porId(CAJA_DE_HERRAMIENTAS.items, "texto")[id] ?? null,
+  "a-quien-le-pega-la-tasa": (id) => actorDe(A_QUIEN_LE_PEGA.rondas, id),
+  /* `<cadena>:eslabon-N`: el eslabón que va en esa casilla de esa cadena. */
+  "cadena-de-transmision": (id) => {
+    const [cadena, casilla] = String(id).split(":");
+    const c = CADENAS_TRANSMISION.cadenas.find((x) => x.id === cadena);
+    const n = Number(/^eslabon-(\d)$/.exec(casilla ?? "")?.[1]);
+    return c && n >= 2 && n <= c.eslabones.length ? c.eslabones[n - 1].texto : null;
+  },
+  "explicaselo-a-un-deudor": (id) => porId(EXPLICA_DEUDOR.escenarios.flatMap((e) => e.fragmentos), "texto")[id] ?? null,
+  "corriente-de-decisiones": (id) => porId(CORRIENTE_DECISIONES.items, "texto")[id] ?? null,
+  "el-rezago": (id) => {
+    if (id === "cierre") return EL_REZAGO.cierre.pregunta;
+    const [caso, hecho] = String(id).split(":");
+    return EL_REZAGO.casos.find((x) => x.id === caso)?.hechos.find((h) => h.id === hecho)?.texto ?? null;
+  },
+  "dilema-banquero-central": (id) => (id === DILEMA_BANQUERO.id ? DILEMA_BANQUERO.pregunta : null),
+  "duelo-de-instrumentos": (id) => {
+    const [caso, duelo] = String(id).split(":");
+    const c = DUELO_INSTRUMENTOS.casos.find((x) => x.id === caso);
+    const d = c?.duelos.find((x) => x.id === duelo);
+    if (!c || !d) return null;
+    const [a, b] = d.par.map((letra) => c.medidas[letra]);
+    const p = prefijoComun([a, b]);
+    return `${recortar(sinPrefijo(a, p), 33)} vs ${recortar(sinPrefijo(b, p), 33)}`;
+  },
+  "disena-respuesta-monetaria": (id) => {
+    const [caso, casilla] = String(id).split(":");
+    const c = DISENA_RESPUESTA.casos.find((x) => x.id === caso);
+    const k = CASILLAS_RESPUESTA.find((x) => x.id === casilla);
+    return c && k ? `${k.rotulo} — ${c.caso}` : null;
+  },
+});
 
 function pareja(memorama, id) {
   const p = MEMORAMAS[memorama].pares.find((x) => x.id === id);

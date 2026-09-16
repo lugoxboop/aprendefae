@@ -41,7 +41,7 @@ const { nodosDe, useCompletadas } = await import("../../../hacer/completadas.js"
 const { emitirFP } = await import("../../../fp/aviso.js");
 const { SUBJECTS, HACER, actividadesDeTipo } = await import("../../../data/subjects.js");
 
-const TEMAS = ["politica-economica", "demanda-agregada", "politica-fiscal"];
+const TEMAS = ["politica-economica", "demanda-agregada", "politica-fiscal", "politica-monetaria"];
 const temaDe = (id) => SUBJECTS.macroeconomia.topics.find((t) => t.id === id);
 const nodosDelTema = (id, hechas = new Set()) => nodosDe(actividadesDeTipo(temaDe(id), HACER), hechas);
 
@@ -212,12 +212,12 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
 
 /* ─────────────────────────────── los iconos ─────────────────────────────── */
 
-test("las 36 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
+test("las 48 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
-  assert.equal(ids.length, 36);
+  assert.equal(ids.length, 48);
   for (const id of ids) assert.ok(iconoDe(id), `${id} sin icono`);
   assert.deepEqual(Object.keys(ICONOS_ACTIVIDAD).sort(), [...ids].sort(), "ni iconos de más ni de menos");
-  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 36, "ningún icono repetido entre dos actividades");
+  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 48, "ningún icono repetido entre dos actividades");
 
   for (const temaId of TEMAS) {
     const m = montar(camino(nodosDelTema(temaId)));

@@ -397,6 +397,40 @@ export const SUBJECTS = {
           },
         ],
       },
+      {
+        /*
+         * ═══════════ POLÍTICA MONETARIA — "LA SALA DE MÁQUINAS" ═══════════
+         *
+         * Tercer cuarto del edificio: un volante —la tasa de intervención— y
+         * tres correas —crédito, ahorro y cambiario—. Tres piezas de Aprender
+         * en cuatro capas (cero FP) y doce juegos, 2-3-4-3 como los otros tres
+         * temas. Contenido de Gen, en src/data/politicaMonetaria.js. Catálogo
+         * del servidor: 0031.
+         */
+        id: "politica-monetaria",
+        title: "Política Monetaria",
+        actividades: [
+          { id: "quien-manda-aqui", nombre: "¿Quién Manda Aquí?", clasificacion: { tipo: APRENDER } },
+          { id: "los-cuatro-instrumentos", nombre: "Los Cuatro Instrumentos", clasificacion: { tipo: APRENDER } },
+          { id: "las-tres-transmisiones", nombre: "Las Tres Transmisiones", clasificacion: { tipo: APRENDER } },
+          /* Cimientos */
+          { id: "memorama-banco-central", nombre: "Memorama del Banco Central", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
+          { id: "quien-decide-esto", nombre: "¿Quién Decide Esto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* Aplicación */
+          { id: "volante-de-la-tasa", nombre: "El Volante de la Tasa", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "caja-de-herramientas", nombre: "La Caja de Herramientas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "a-quien-le-pega-la-tasa", nombre: "¿A Quién Le Pega la Tasa?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* Análisis */
+          { id: "cadena-de-transmision", nombre: "La Cadena de Transmisión", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "explicaselo-a-un-deudor", nombre: "Explícaselo a un Deudor", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "corriente-de-decisiones", nombre: "Corriente de Decisiones", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "el-rezago", nombre: "El Rezago", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* Maestría */
+          { id: "dilema-banquero-central", nombre: "El Dilema del Banquero Central", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          { id: "duelo-de-instrumentos", nombre: "Duelo de Instrumentos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          { id: "disena-respuesta-monetaria", nombre: "Diseña la Respuesta Monetaria", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+        ],
+      },
     ],
   },
   "pensamiento-estrategico": {

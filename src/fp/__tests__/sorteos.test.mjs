@@ -25,6 +25,7 @@ import { sortearPapeles, BANCO_DEFICIT, PAPELES_POR_PARTIDA, MINIMO_NINGUNO, CLA
 import { ALERTAS_MONITOR, REACCIONES, FRAGMENTOS_ECG } from "../../data/demandaAgregadaHacer.js";
 import { CLASIFICACIONES, ITEMS_POR_PARTIDA } from "../../data/cimientos.js";
 import { barajar } from "../../utils/barajar.js";
+import * as PM from "../../data/politicaMonetaria.js";
 
 const VECES = 3000;
 const repetidos = (ids) => ids.filter((x, k) => ids.indexOf(x) !== k);
@@ -59,7 +60,24 @@ const BANCOS = {
   "clasificador-tesoro": CLASIFICADOR,
   "corriente-titulares": BANCO_CORRIENTE,
   ...Object.fromEntries(Object.entries(CLASIFICACIONES).map(([id, b]) => [id, b.items])),
+  /* Política Monetaria */
+  "quien-decide-esto": PM.QUIEN_DECIDE.items,
+  "caja-de-herramientas": PM.CAJA_DE_HERRAMIENTAS.items,
+  "corriente-de-decisiones": PM.CORRIENTE_DECISIONES.items,
+  "volante-de-la-tasa": PM.VOLANTE_DE_LA_TASA.escenarios,
 };
+
+test("cadena-de-transmision: cuatro eslabones buenos y cinco señuelos distintos, ninguno de la propia cadena", async () => {
+  const { sortearCadena } = await import("../../components/mecanicas/maquinas/actividades.jsx");
+  for (let k = 0; k < VECES / 10; k++) {
+    const c = sortearCadena();
+    assert.deepEqual(repetidos(c.piezas.map((p) => p.id)), [], "pieza repetida");
+    assert.equal(c.piezas.filter((p) => p.casilla).length, 4);
+    const senuelos = c.piezas.filter((p) => !p.casilla);
+    assert.equal(senuelos.length, 5);
+    assert.ok(senuelos.every((p) => !p.id.startsWith(c.id.slice(0, 3))), "un señuelo de la propia cadena");
+  }
+});
 
 test("barajar(banco).slice(…) nunca repite, en los bancos que sortean por partida", () => {
   for (const [id, banco] of Object.entries(BANCOS)) {

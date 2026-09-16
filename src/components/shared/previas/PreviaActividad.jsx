@@ -113,6 +113,29 @@ export const PREVIAS = {
   "quien-afecta-ajuste": { tema: "bloques", tipo: "gesto" },
   "explica-contribuyente": { tema: "bloques", tipo: "gesto" },
   "comite-presupuesto": { tema: "bloques", tipo: "gesto" },
+
+  /* Política Monetaria (0031): en el mismo módulo, porque seis comparten gesto con otras. */
+  "memorama-banco-central": { tema: "bloques", tipo: "gesto" },
+  "quien-decide-esto": { tema: "bloques", tipo: "gesto" },
+  "volante-de-la-tasa": { tema: "bloques", tipo: "gesto" },
+  "caja-de-herramientas": { tema: "bloques", tipo: "gesto" },
+  "a-quien-le-pega-la-tasa": { tema: "bloques", tipo: "gesto" },
+  "cadena-de-transmision": { tema: "bloques", tipo: "gesto" },
+  "explicaselo-a-un-deudor": { tema: "bloques", tipo: "gesto" },
+  "corriente-de-decisiones": { tema: "bloques", tipo: "gesto" },
+  "el-rezago": { tema: "bloques", tipo: "gesto" },
+  "dilema-banquero-central": {
+    tipo: "estatica",
+    /*
+     * NO ES UN OLVIDO: decisión explícita de la ficha. Una sola pregunta,
+     * 100 % o 0 %, la misma forma que Biopsia, El agujero fiscal y El
+     * expediente del gabinete. No le pongas una animación aunque el resto del
+     * bloque la tenga.
+     */
+    razon: "Una sola pregunta, 100 % o 0 %: no hay gesto repetido del cual derivar movimiento honesto, y animarla prometería una interacción que la actividad no tiene.",
+  },
+  "duelo-de-instrumentos": { tema: "bloques", tipo: "gesto" },
+  "disena-respuesta-monetaria": { tema: "bloques", tipo: "gesto" },
 };
 
 const MODULOS = {

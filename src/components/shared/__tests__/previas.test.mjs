@@ -45,7 +45,7 @@ const { default: PreviaActividad, PREVIAS } = await import("../previas/PreviaAct
 const { nodosDe } = await import("../../../hacer/completadas.js");
 const { SUBJECTS, HACER, actividadesDeTipo } = await import("../../../data/subjects.js");
 
-const TEMAS = ["politica-economica", "demanda-agregada", "politica-fiscal"];
+const TEMAS = ["politica-economica", "demanda-agregada", "politica-fiscal", "politica-monetaria"];
 const temaDe = (id) => SUBJECTS.macroeconomia.topics.find((t) => t.id === id);
 const nodosDelTema = (id) => nodosDe(actividadesDeTipo(temaDe(id), HACER), new Set());
 const temaDeActividad = (actividadId) => TEMAS.find((t) => actividadesDeTipo(temaDe(t), HACER).some((a) => a.id === actividadId));
@@ -75,14 +75,17 @@ const GESTOS = [
   "memorama-tesoro", "que-rama-es", "se-acerca-o-se-aleja", "consejo-ministros",
   "memorama-corazon", "cual-componente", "quien-beneficia-auge", "explica-paciente", "sala-espera-llena",
   "memorama-tesoreria", "cobra-gasta-o-pide", "quien-afecta-ajuste", "explica-contribuyente", "comite-presupuesto",
+  /* Política Monetaria (0031) */
+  "memorama-banco-central", "quien-decide-esto", "volante-de-la-tasa", "caja-de-herramientas", "a-quien-le-pega-la-tasa",
+  "cadena-de-transmision", "explicaselo-a-un-deudor", "corriente-de-decisiones", "el-rezago", "duelo-de-instrumentos", "disena-respuesta-monetaria",
 ];
 
 /* ─────────────────────────────── el registro ─────────────────────────────── */
 
-/* Las tres de una sola decisión: mismo criterio, las tres quietas. */
-const QUIETAS = ["agujero-fiscal", "biopsia-economica", "expediente-gabinete"];
+/* Las cuatro de una sola decisión: mismo criterio, las cuatro quietas. */
+const QUIETAS = ["agujero-fiscal", "biopsia-economica", "dilema-banquero-central", "expediente-gabinete"];
 
-test("las 36 tienen su previsualización decidida: 26 gestos, el clip del tablero y tres quietas con su razón", () => {
+test("las 48 tienen su previsualización decidida: 37 gestos, el clip del tablero y cuatro quietas con su razón", () => {
   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
   assert.deepEqual(Object.keys(PREVIAS).sort(), [...ids].sort());
   assert.deepEqual(Object.entries(PREVIAS).filter(([, p]) => p.tipo === "gesto").map(([id]) => id).sort(), [...GESTOS].sort());
@@ -188,7 +191,7 @@ test("con «reducir movimiento», icono quieto y ninguna animación montada", as
   }
 });
 
-test("Biopsia, El agujero fiscal y El expediente del gabinete se quedan quietas aunque se permita el movimiento", async () => {
+test("Las cuatro de una sola decisión se quedan quietas aunque se permita el movimiento", async () => {
   reducirMovimiento = false;
   for (const id of QUIETAS) {
     const m = abrirPanel(id);
@@ -210,7 +213,7 @@ const sinEstilos = (el) => {
 
 test("ninguna previsualización enseña texto, y el coral solo aparece donde es de error", async () => {
   const animadas = Object.entries(PREVIAS).filter(([, p]) => p.tipo !== "estatica").map(([id]) => id);
-  assert.equal(animadas.length, 33);
+  assert.equal(animadas.length, 44);
   for (const id of animadas) {
     const m = montar(React.createElement(PreviaActividad, { actividadId: id, respaldo: React.createElement("i", { "data-respaldo": true }) }));
     await esperar(120);

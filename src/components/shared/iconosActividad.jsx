@@ -269,8 +269,155 @@ export const LupaRenglones = propio("LupaRenglones", (c) => (
   </>
 ));
 
+/* ═══════════ POLÍTICA MONETARIA (0031) ═══════════ */
+
+/* Un engranaje: círculo con ocho dientes cortos. */
+const dientes = (cx, cy, r, n = 8) =>
+  Array.from({ length: n }, (_, k) => {
+    const a = (k * 2 * Math.PI) / n;
+    return `M${(cx + Math.cos(a) * r).toFixed(2)} ${(cy + Math.sin(a) * r).toFixed(2)}L${(cx + Math.cos(a) * (r + 1.8)).toFixed(2)} ${(cy + Math.sin(a) * (r + 1.8)).toFixed(2)}`;
+  }).join("");
+
+/* PM-1 · Memorama del Banco Central: dos monedas volteándose y una flecha circular. */
+export const MonedasFlecha = propio("MonedasFlecha", (
+  <>
+    <circle cx="8" cy="14" r="5" />
+    <ellipse cx="17.5" cy="14" rx="2.2" ry="5" />
+    <path d="M5 6.5a9 9 0 0 1 13.5-1.5" />
+    <path d="M18.8 2.2 18.5 5l-2.8-.2" />
+  </>
+));
+
+/* PM-2 · ¿Quién decide esto?: dos edificios lado a lado, uno con cúpula. */
+export const DosEdificios = propio("DosEdificios", (
+  <>
+    <path d="M1.5 21h21" />
+    <path d="M2.5 11 6.5 8l4 3M3.5 11v10M9.5 11v10M6.5 13.5v5" />
+    <path d="M14 11a3.5 3.5 0 0 1 7 0M13.5 11h8M14.5 11v10M20.5 11v10M17.5 13.5v5" />
+  </>
+));
+
+/* PM-3 · El volante de la tasa: el volante y su flecha de giro. */
+export const VolanteGiro = propio("VolanteGiro", (
+  <>
+    <circle cx="11" cy="13" r="7" />
+    <path d="M11 6v14M4 13h14M6 8l10 10M16 8 6 18" strokeWidth="1.4" />
+    <path d="M17.5 3.5a9 9 0 0 1 4 5" />
+    <path d="M21.9 5.6 21.5 8.5l-2.8-.6" />
+  </>
+));
+
+/* PM-4 · La caja de herramientas: un volante grande y tres engranajes pequeños. */
+export const VolanteTresEngranajes = propio("VolanteTresEngranajes", (
+  <>
+    <circle cx="9" cy="12" r="6.5" />
+    <path d="M9 5.5v13M2.5 12h13" strokeWidth="1.4" />
+    <circle cx="19.5" cy="4.5" r="1.8" />
+    <path d={dientes(19.5, 4.5, 1.8, 6)} strokeWidth="1.4" />
+    <circle cx="20" cy="12" r="1.8" />
+    <path d={dientes(20, 12, 1.8, 6)} strokeWidth="1.4" />
+    <circle cx="19.5" cy="19.5" r="1.8" />
+    <path d={dientes(19.5, 19.5, 1.8, 6)} strokeWidth="1.4" />
+  </>
+));
+
+/* PM-5 · ¿A quién le pega la tasa?: una silueta con flechas arriba y abajo. */
+export const SiluetaFlechas = propio("SiluetaFlechas", (
+  <>
+    <circle cx="9" cy="8" r="3.5" />
+    <path d="M3 20.5c0-3.6 2.7-6.2 6-6.2s6 2.6 6 6.2" />
+    <path d="M18.5 10.5V3M16 5.5 18.5 3 21 5.5" />
+    <path d="M18.5 13.5V21M16 18.5l2.5 2.5 2.5-2.5" />
+  </>
+));
+
+/* PM-6 · La cadena de transmisión: tres correas que salen de un eje. */
+export const TresCorreas = propio("TresCorreas", (c) => (
+  <>
+    <circle cx="5" cy="12" r="3" />
+    <circle cx="5" cy="12" r="0.9" fill={c} stroke="none" />
+    <circle cx="19.5" cy="4.5" r="2" />
+    <circle cx="19.5" cy="12" r="2" />
+    <circle cx="19.5" cy="19.5" r="2" />
+    <path d="M6.5 9.4 17.8 3.2M7.8 11 17.5 11.2M6.5 14.6l11.3 6.2" />
+  </>
+));
+
+/* PM-7 · Explícaselo a un deudor: el globo de diálogo con un signo de porcentaje. */
+export const GloboPorcentaje = propio("GloboPorcentaje", (c) => (
+  <>
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    <path d="M14.5 6.5 8.5 13.5" strokeWidth="1.7" />
+    <circle cx="9" cy="7" r="1.3" fill={c} stroke="none" />
+    <circle cx="14" cy="13" r="1.3" fill={c} stroke="none" />
+  </>
+));
+
+/* PM-8 · Corriente de decisiones: una correa en movimiento, con sus dos flechas. */
+export const CorreaEnMovimiento = propio("CorreaEnMovimiento", (
+  <>
+    <rect x="2" y="7" width="20" height="10" rx="5" />
+    <path d="M9 7h6M12.5 5 15 7l-2.5 2" />
+    <path d="M15 17H9M11.5 19 9 17l2.5-2" />
+  </>
+));
+
+/* PM-9 · El rezago: un reloj con una correa alrededor. */
+export const RelojCorrea = propio("RelojCorrea", (
+  <>
+    <circle cx="12" cy="12" r="6" />
+    <path d="M12 8.5V12l2.5 1.5" />
+    <path d="M3.5 8.5A9.5 9.5 0 0 1 17 3.4" strokeDasharray="2.2 1.6" />
+    <path d="M20.5 15.5A9.5 9.5 0 0 1 7 20.6" strokeDasharray="2.2 1.6" />
+  </>
+));
+
+/* PM-10 · El dilema del banquero central: una balanza con un volante en un plato. */
+export const BalanzaVolante = propio("BalanzaVolante", (
+  <>
+    <path d="M12 3v17M7 21h10M4 7h16" />
+    <path d="M4 7 1.5 13h5L4 7M20 7l-2.5 6h5L20 7" />
+    <circle cx="4" cy="16.5" r="2.4" />
+    <path d="M4 14.1v4.8M1.6 16.5h4.8" strokeWidth="1.2" />
+  </>
+));
+
+/* PM-11 · Duelo de instrumentos: dos engranajes enfrentados. */
+export const EngranajesEnfrentados = propio("EngranajesEnfrentados", (
+  <>
+    <circle cx="7" cy="12" r="4" />
+    <path d={dientes(7, 12, 4)} />
+    <circle cx="17" cy="12" r="4" />
+    <path d={dientes(17, 12, 4)} />
+  </>
+));
+
+/* PM-12 · Diseña la respuesta monetaria: un panel de control con una palanca sin asignar. */
+export const PanelPalanca = propio("PanelPalanca", (c) => (
+  <>
+    <rect x="2.5" y="4" width="19" height="16" rx="2" />
+    <circle cx="7" cy="9" r="1.6" fill={c} stroke="none" />
+    <circle cx="12" cy="9" r="1.6" fill={c} stroke="none" />
+    <path d="M6 15.5h2M11 15.5h2" />
+    <rect x="15.5" y="7.5" width="3" height="9" rx="1.5" strokeDasharray="2 1.5" />
+  </>
+));
+
 /* Cada actividad de los tres temas, con su icono. */
 export const ICONOS_ACTIVIDAD = {
+  /* Política Monetaria (0031) */
+  "memorama-banco-central": MonedasFlecha,
+  "quien-decide-esto": DosEdificios,
+  "volante-de-la-tasa": VolanteGiro,
+  "caja-de-herramientas": VolanteTresEngranajes,
+  "a-quien-le-pega-la-tasa": SiluetaFlechas,
+  "cadena-de-transmision": TresCorreas,
+  "explicaselo-a-un-deudor": GloboPorcentaje,
+  "corriente-de-decisiones": CorreaEnMovimiento,
+  "el-rezago": RelojCorrea,
+  "dilema-banquero-central": BalanzaVolante,
+  "duelo-de-instrumentos": EngranajesEnfrentados,
+  "disena-respuesta-monetaria": PanelPalanca,
   /* Cimientos (0030) */
   "memorama-tesoro": CartasVolteo,
   "que-rama-es": CuatroPuertas,

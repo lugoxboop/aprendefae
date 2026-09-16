@@ -5,7 +5,7 @@ import { barajar } from "../../../utils/barajar.js";
 import { porcentaje } from "../../../data/politicaFiscal.js";
 import { retroActor } from "../../../data/bloquesAvanzados.js";
 import { Retro, Pulsos, Cierre, Enunciado } from "../corazon/juego.jsx";
-import { Avanzar, TEXTO_CIERRE } from "./marcos.jsx";
+import { Avanzar, TEXTO_CIERRE, RotuloEscenario } from "./marcos.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -51,7 +51,12 @@ function Silueta({ color = "rgba(203,220,242,0.5)" }) {
   );
 }
 
-export default function RolDeActores({ rondas, Marco, rotulo, titulo, acento, onCompletar }) {
+/*
+ * `retro` (opcional): la devolución de la actividad, (personaje, zona) → texto
+ * o null. Política Monetaria trae la suya. `ronda.etiqueta` se pinta bajo la
+ * medida: «Escenario simulado» o «Escenario real, julio 2026».
+ */
+export default function RolDeActores({ rondas, Marco, rotulo, titulo, acento, onCompletar, retro = retroActor }) {
   const total = rondas.reduce((n, r) => n + r.personajes.length, 0);
   const [ronda, setRonda] = useState(0);
   const [orden, setOrden] = useState(() => barajar(rondas[0].personajes));
@@ -125,6 +130,7 @@ export default function RolDeActores({ rondas, Marco, rotulo, titulo, acento, on
         <Pulsos total={rondas.length} hechos={ronda + (completa ? 1 : 0)} etiqueta="Ronda" />
       </div>
       <Enunciado rotulo={`RONDA ${ronda + 1} DE ${rondas.length}`} acento={acento}>{r.medida}</Enunciado>
+      {r.etiqueta && <RotuloEscenario texto={r.etiqueta} />}
 
       {!completa && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", margin: "14px 0" }}>
@@ -192,7 +198,7 @@ export default function RolDeActores({ rondas, Marco, rotulo, titulo, acento, on
         })}
       </div>
 
-      <Retro texto={ultimo ? retroActor(ultimo.p, ultimo.zona) : null} />
+      <Retro texto={ultimo ? retro(ultimo.p, ultimo.zona) : null} />
 
       {!completa && (
         <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.55)", margin: "12px 0 0" }}>

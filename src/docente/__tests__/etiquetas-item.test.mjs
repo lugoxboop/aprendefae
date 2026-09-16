@@ -21,6 +21,7 @@ import {
   CLASIFICADOR, IMPUESTOS_SELLO, MEDIDAS_FLUJO, CASOS_EXPANSIVA, CASILLAS_PRESUPUESTO, BANCO_DEFICIT,
 } from "../../data/politicaFiscal.js";
 import { MEMORAMAS, CLASIFICACIONES } from "../../data/cimientos.js";
+import * as PM from "../../data/politicaMonetaria.js";
 import {
   CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
   EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
@@ -122,6 +123,20 @@ const IDS = {
   "explica-contribuyente": EXPLICA_CONTRIBUYENTE.fragmentos.map((f) => f.id),
   "sala-espera-llena": [...SALA_ESPERA.relevantes, ...SALA_ESPERA.senuelos].map((d) => d.id),
   "comite-presupuesto": [...COMITE_PRESUPUESTO.relevantes, ...COMITE_PRESUPUESTO.senuelos].map((d) => d.id),
+
+  /* Política Monetaria (0031) */
+  "memorama-banco-central": PM.MEMORAMA_BANCO_CENTRAL.pares.map((p) => p.id),
+  "quien-decide-esto": PM.QUIEN_DECIDE.items.map((x) => x.id),
+  "volante-de-la-tasa": PM.VOLANTE_DE_LA_TASA.escenarios.map((x) => x.id),
+  "caja-de-herramientas": PM.CAJA_DE_HERRAMIENTAS.items.map((x) => x.id),
+  "a-quien-le-pega-la-tasa": PM.A_QUIEN_LE_PEGA.rondas.flatMap((r) => r.personajes.map((p) => `${r.id}:${p.id}`)),
+  "cadena-de-transmision": PM.CADENAS_TRANSMISION.cadenas.flatMap((c) => c.eslabones.slice(1).map((_, k) => `${c.id}:eslabon-${k + 2}`)),
+  "explicaselo-a-un-deudor": PM.EXPLICA_DEUDOR.escenarios.flatMap((e) => e.fragmentos.map((f) => f.id)),
+  "corriente-de-decisiones": PM.CORRIENTE_DECISIONES.items.map((x) => x.id),
+  "el-rezago": [...PM.EL_REZAGO.casos.flatMap((c) => c.hechos.map((h) => `${c.id}:${h.id}`)), "cierre"],
+  "dilema-banquero-central": [PM.DILEMA_BANQUERO.id],
+  "duelo-de-instrumentos": PM.DUELO_INSTRUMENTOS.casos.flatMap((c) => c.duelos.map((d) => `${c.id}:${d.id}`)),
+  "disena-respuesta-monetaria": PM.DISENA_RESPUESTA.casos.flatMap((c) => PM.CASILLAS_RESPUESTA.map((k) => `${c.id}:${k.id}`)),
 };
 
 test("todo id derivado de los bancos se puede nombrar", () => {

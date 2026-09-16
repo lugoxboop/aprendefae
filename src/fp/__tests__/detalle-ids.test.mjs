@@ -47,6 +47,8 @@ import {
   EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
 } from "../../data/bloquesAvanzados.js";
 
+import * as PM from "../../data/politicaMonetaria.js";
+
 let fallos = 0;
 const filas = [];
 
@@ -695,6 +697,63 @@ for (const [id, b] of [["sala-espera-llena", SALA_ESPERA], ["comite-presupuesto"
   regla(`${id} · reparto`, "5 relevantes y 9 señuelos, cada señuelo con su porqué",
     b.relevantes.length === 5 && b.senuelos.length === 9 && b.senuelos.every((s) => s.porque) ? [] : ["reparto distinto"]);
 }
+
+/* ═══════════ POLÍTICA MONETARIA (0031) ═══════════ */
+
+unicos("memorama-banco-central", PM.MEMORAMA_BANCO_CENTRAL.pares.map((p) => p.id), 5);
+
+for (const [id, b, n, cats, porPartida] of [
+  ["quien-decide-esto", PM.QUIEN_DECIDE, 10, 2, 6],
+  ["caja-de-herramientas", PM.CAJA_DE_HERRAMIENTAS, 12, 4, 8],
+  ["corriente-de-decisiones", PM.CORRIENTE_DECISIONES, 20, 4, 12],
+]) {
+  unicos(id, b.items.map((x) => x.id), n);
+  unicos(`${id} · categorías`, b.categorias.map((c) => c.id), cats);
+  regla(`${id} · respuestas y sorteo`, `cada ítem apunta a una categoría; se sortean ${porPartida}`,
+    [...b.items.filter((x) => !b.categorias.some((c) => c.id === x.respuesta)).map((x) => x.id), ...(b.porPartida === porPartida ? [] : [`sortea ${b.porPartida}`])]);
+}
+
+unicos("volante-de-la-tasa", PM.VOLANTE_DE_LA_TASA.escenarios.map((x) => x.id), 12);
+
+unicos("a-quien-le-pega-la-tasa", PM.A_QUIEN_LE_PEGA.rondas.flatMap((r) => r.personajes.map((p) => `${r.id}:${p.id}`)), 12);
+
+/*
+ * La cadena: `<cadena>:eslabon-N`. El prefijo SÍ separa preguntas: las tres
+ * cadenas tienen un "eslabon-2" y en cada una es un eslabón distinto.
+ */
+unicos("cadena-de-transmision", PM.CADENAS_TRANSMISION.cadenas.flatMap((c) => c.eslabones.slice(1).map((_, k) => `${c.id}:eslabon-${k + 2}`)), 12);
+unicos("cadena-de-transmision · piezas", PM.CADENAS_TRANSMISION.cadenas.flatMap((c) => c.eslabones.map((e) => e.id)), 15);
+
+/* Protégé: los dos escenarios nacen separados por prefijo (tia-, amigo-). */
+unicos("explicaselo-a-un-deudor", PM.EXPLICA_DEUDOR.escenarios.flatMap((e) => e.fragmentos.map((f) => f.id)), 16);
+for (const e of PM.EXPLICA_DEUDOR.escenarios) {
+  const n = (t) => e.fragmentos.filter((f) => f.tipo === t).length;
+  regla(`explicaselo-a-un-deudor · ${e.id}`, "4 claras, 2 de jerga, 2 falsas, cada una con su devolución",
+    n("correcto") === 4 && n("jerga") === 2 && n("incorrecto") === 2 && e.fragmentos.every((f) => f.retro) ? [] : ["reparto o devoluciones"]);
+}
+
+/* El rezago: `<caso>:<hecho>` y `cierre`. */
+unicos("el-rezago", [...PM.EL_REZAGO.casos.flatMap((c) => c.hechos.map((h) => `${c.id}:${h.id}`)), "cierre"], 11);
+
+unicos("dilema-banquero-central · opciones", PM.DILEMA_BANQUERO.opciones.map((o) => o.id), 4);
+
+unicos("duelo-de-instrumentos", PM.DUELO_INSTRUMENTOS.casos.flatMap((c) => c.duelos.map((d) => `${c.id}:${d.id}`)), 6);
+{
+  const sinPrefijo = PM.DUELO_INSTRUMENTOS.casos.flatMap((c) => c.duelos.map((d) => d.id));
+  const choca = sinPrefijo.length !== new Set(sinPrefijo).size;
+  if (!choca) fallos++;
+  filas.push({ actividad: "duelo-de-instrumentos (sin prefijo)", esperado: "hay choque, por eso lleva prefijo", obtenido: choca ? "choca, como se documenta" : "YA NO CHOCA", resultado: choca ? "PASA" : "FALLA" });
+  regla("duelo-de-instrumentos · coherencia", "cada duelo lo gana quien va antes en el ranking", PM.DUELO_INSTRUMENTOS.casos.flatMap((c) => c.duelos.filter((d) => {
+    const [x, y] = d.par;
+    return (c.ranking.indexOf(x) < c.ranking.indexOf(y) ? x : y) !== d.gana;
+  }).map((d) => `${c.id}:${d.id}`)));
+}
+
+unicos("disena-respuesta-monetaria", PM.DISENA_RESPUESTA.casos.flatMap((c) => PM.CASILLAS_RESPUESTA.map((k) => `${c.id}:${k.id}`)), 10);
+unicos("disena-respuesta-monetaria · piezas", PM.DISENA_RESPUESTA.casos.flatMap((c) => c.piezas.map((p) => p.id)), 24);
+regla("disena-respuesta-monetaria · reparto", "una correcta por casilla y 7 señuelos por caso", PM.DISENA_RESPUESTA.casos.filter((c) =>
+  PM.CASILLAS_RESPUESTA.some((k) => c.piezas.filter((p) => p.casilla === k.id).length !== 1) || c.piezas.filter((p) => !p.casilla).length !== 7,
+).map((c) => c.id));
 
 console.table(filas);
 console.log(fallos === 0

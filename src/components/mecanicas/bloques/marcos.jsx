@@ -37,5 +37,39 @@ export function MarcoCorazon({ rotulo, titulo, acento = FAE.teal, children }) {
 /* La Tesorería ya trae dentro el CSS de los juegos. */
 export const MarcoTesoreria = Tesoreria;
 
+/*
+ * La Sala de Máquinas (Política Monetaria): el mismo panel del edificio, con
+ * su rótulo. No trae mundo visual propio dentro de los juegos: el volante y
+ * las correas viven en las piezas de Aprender y en los juegos que las usan.
+ */
+export function MarcoMaquinas({ rotulo, titulo, acento = FAE.teal, children }) {
+  return (
+    <Panel rotulo={rotulo ? `SALA DE MÁQUINAS · ${rotulo}` : "SALA DE MÁQUINAS"} titulo={titulo} acento={acento}>
+      <style>{CSS_SALA + CSS_JUEGO}</style>
+      {children}
+    </Panel>
+  );
+}
+
+/*
+ * El rótulo de una cifra que no es del bloque de datos verificados. La regla
+ * del prompt maestro: ninguna cifra simulada sale sin él. No es un error: va
+ * en ámbar y con el texto escrito, nunca en coral.
+ */
+export function RotuloEscenario({ texto = "Escenario simulado" }) {
+  return (
+    <p
+      data-rotulo-escenario
+      style={{
+        display: "inline-block", margin: "8px 0 0", padding: "3px 9px", borderRadius: "999px",
+        fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em",
+        color: FAE.ambar, border: `1px solid ${FAE.ambar}66`, background: "rgba(233,196,106,0.08)",
+      }}
+    >
+      {texto}
+    </p>
+  );
+}
+
 /** El botón de avance y el texto pequeño de un cierre, los mismos en las tres. */
 export { Avanzar, TEXTO_CIERRE } from "../tesoreria/tesoreria.jsx";

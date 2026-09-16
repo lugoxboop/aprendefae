@@ -160,22 +160,237 @@ function Silueta({ x, clase }) {
   );
 }
 
-function Consejo() {
+/* Un engranaje de lámina, para el duelo de instrumentos. */
+function Engranaje({ x, clase }) {
+  const dientes = Array.from({ length: 8 }, (_, k) => {
+    const a = (k * Math.PI) / 4;
+    return `M${x + Math.cos(a) * 15} ${45 + Math.sin(a) * 15} L${x + Math.cos(a) * 21} ${45 + Math.sin(a) * 21}`;
+  }).join(" ");
+  return (
+    <g className={clase}>
+      <circle cx={x} cy={45} r="15" fill={C.silueta} />
+      <path d={dientes} stroke={C.silueta} strokeWidth="6" strokeLinecap="round" />
+      <circle cx={x} cy={45} r="5" fill={C.fondo} />
+    </g>
+  );
+}
+
+/*
+ * El consejo de ministros y el duelo de instrumentos: misma mecánica, mismo
+ * gesto —uno se adelanta mientras el otro retrocede (0,5 s) y luego al revés—.
+ * Lo que cambia es lo que compite: dos siluetas a la mesa, o dos engranajes.
+ */
+function Consejo({ id = "consejo-ministros", figura = "silueta" }) {
   return (
     <Lamina
-      id="consejo-ministros"
+      id={id}
       css={`
-@keyframes fae-pv-cm-i { 0% { transform: translateX(0) scale(1); opacity: 1; } 25%, 45% { transform: translateX(7px) scale(1.08); opacity: 1; } 50% { transform: translateX(0) scale(1); } 75%, 95% { transform: translateX(-4px) scale(.9); opacity: .55; } 100% { transform: translateX(0) scale(1); opacity: 1; } }
-@keyframes fae-pv-cm-d { 0% { transform: translateX(0) scale(1); opacity: 1; } 25%, 45% { transform: translateX(4px) scale(.9); opacity: .55; } 50% { transform: translateX(0) scale(1); opacity: 1; } 75%, 95% { transform: translateX(-7px) scale(1.08); opacity: 1; } 100% { transform: translateX(0) scale(1); } }
-.fae-pv-cm-i { animation: fae-pv-cm-i 2s ease-in-out infinite; }
-.fae-pv-cm-d { animation: fae-pv-cm-d 2s ease-in-out infinite; }
+@keyframes fae-pv-${id}-i { 0% { transform: translateX(0) scale(1); opacity: 1; } 25%, 45% { transform: translateX(7px) scale(1.08); opacity: 1; } 50% { transform: translateX(0) scale(1); } 75%, 95% { transform: translateX(-4px) scale(.9); opacity: .55; } 100% { transform: translateX(0) scale(1); opacity: 1; } }
+@keyframes fae-pv-${id}-d { 0% { transform: translateX(0) scale(1); opacity: 1; } 25%, 45% { transform: translateX(4px) scale(.9); opacity: .55; } 50% { transform: translateX(0) scale(1); opacity: 1; } 75%, 95% { transform: translateX(-7px) scale(1.08); opacity: 1; } 100% { transform: translateX(0) scale(1); } }
+.fae-pv-${id}-i { animation: fae-pv-${id}-i 2s ease-in-out infinite; }
+.fae-pv-${id}-d { animation: fae-pv-${id}-d 2s ease-in-out infinite; }
 `}
     >
-      {/* La tercera silla, vacía, al fondo. */}
-      <rect x="52" y="10" width="16" height="14" rx="3" fill="none" stroke={C.hueco} strokeWidth="1.6" strokeDasharray="3 2.5" />
-      <Silueta x={26} clase="fae-pv-cm-i" />
-      <Silueta x={94} clase="fae-pv-cm-d" />
-      <rect x="36" y="58" width="48" height="16" rx="4" fill={C.fondo} stroke={C.trazo} strokeWidth="1.8" />
+      {figura === "silueta" ? (
+        <>
+          {/* La tercera silla, vacía, al fondo. */}
+          <rect x="52" y="10" width="16" height="14" rx="3" fill="none" stroke={C.hueco} strokeWidth="1.6" strokeDasharray="3 2.5" />
+          <Silueta x={26} clase={`fae-pv-${id}-i`} />
+          <Silueta x={94} clase={`fae-pv-${id}-d`} />
+          <rect x="36" y="58" width="48" height="16" rx="4" fill={C.fondo} stroke={C.trazo} strokeWidth="1.8" />
+        </>
+      ) : (
+        <>
+          <Engranaje x={34} clase={`fae-pv-${id}-i`} />
+          <Engranaje x={86} clase={`fae-pv-${id}-d`} />
+          <path d="M20 80 H100" stroke={C.hueco} strokeWidth="1.4" strokeDasharray="3 3" />
+        </>
+      )}
+    </Lamina>
+  );
+}
+
+/* ═══════════════════════ POLÍTICA MONETARIA (0031) ═══════════════════════ */
+
+/*
+ * Una ficha tras otra hacia destinos distintos (0,5 s cada una). ¿Quién decide
+ * esto? alterna entre dos edificios; La caja de herramientas va a dos de sus
+ * cuatro ranuras. No espera como la primera clasificación: los dos gestos de la
+ * ficha piden que la ficha salga ya.
+ */
+function FichaADestinos({ id, forma, n, destinos, segundos = 2 }) {
+  const hueco = n === 2 ? 30 : 5;
+  const w = (104 - (n - 1) * hueco) / n;
+  const xs = Array.from({ length: n }, (_, k) => 8 + k * (w + hueco));
+  const mitad = 100 / destinos.length;
+  const viaje = (0.5 / segundos) * 100;
+  return (
+    <Lamina
+      id={id}
+      css={destinos.map((d, k) => {
+        const i = k * mitad;
+        const cx = xs[d] + w / 2;
+        return `
+@keyframes fae-pv-${id}-f${k} {
+  0%, ${i.toFixed(1)}% { transform: translate(0, 0) scale(1); opacity: ${k === 0 ? 1 : 0}; }
+  ${(i + 1).toFixed(1)}% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(.3,.7,.3,1); }
+  ${(i + viaje).toFixed(1)}%, ${(i + mitad - 6).toFixed(1)}% { transform: translate(${cx - 60}px, 44px) scale(.5); opacity: 1; }
+  ${(i + mitad - 2).toFixed(1)}%, 100% { transform: translate(${cx - 60}px, 44px) scale(.5); opacity: 0; }
+}
+.fae-pv-${id}-f${k} { animation: fae-pv-${id}-f${k} ${segundos}s linear infinite; }
+@keyframes fae-pv-${id}-luz${k} { 0%, ${(i + viaje - 2).toFixed(1)}% { stroke: ${C.hueco}; } ${(i + viaje).toFixed(1)}%, ${(i + mitad - 4).toFixed(1)}% { stroke: ${C.luz}; } ${(i + mitad).toFixed(1)}%, 100% { stroke: ${C.hueco}; } }
+.fae-pv-${id}-luz${k} { animation: fae-pv-${id}-luz${k} ${segundos}s linear infinite; }`;
+      }).join("")}
+    >
+      {destinos.map((_, k) => (
+        <g key={k} className={`fae-pv-${id}-f${k}`}>
+          <rect x="44" y="10" width="32" height="20" rx="4" fill={C.silueta} />
+        </g>
+      ))}
+      {xs.map((x, k) => {
+        const clase = destinos.includes(k) ? `fae-pv-${id}-luz${destinos.indexOf(k)}` : undefined;
+        if (forma === "edificio") {
+          return (
+            <g key={x} className={clase} fill="none" stroke={C.hueco} strokeWidth="1.8" strokeLinejoin="round">
+              {k === 1
+                ? <path d={`M${x + w * 0.25} 58 A${w * 0.25} ${w * 0.2} 0 0 1 ${x + w * 0.75} 58`} />
+                : <path d={`M${x} 58 L${x + w / 2} 50 L${x + w} 58`} />}
+              <rect x={x} y="58" width={w} height="26" rx="2" />
+            </g>
+          );
+        }
+        return <rect key={x} className={clase} x={x} y="66" width={w} height="16" rx="4" fill="none" stroke={C.hueco} strokeWidth="1.8" />;
+      })}
+    </Lamina>
+  );
+}
+
+/* El volante de la tasa: un cuarto de vuelta (0,6 s), pausa, y vuelve apagándose (0,3 s); alterna el sentido. */
+function VolanteGesto() {
+  const rayos = Array.from({ length: 6 }, (_, k) => (k * Math.PI) / 3);
+  return (
+    <Lamina
+      id="volante-de-la-tasa"
+      css={`
+@keyframes fae-pv-vt-giro {
+  0% { transform: rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(.3,.8,.4,1); }
+  18.75% { transform: rotate(90deg); opacity: 1; } 40.6% { transform: rotate(90deg); opacity: 1; }
+  50% { transform: rotate(0deg); opacity: .3; } 50.1% { transform: rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(.3,.8,.4,1); }
+  68.75% { transform: rotate(-90deg); opacity: 1; } 90.6% { transform: rotate(-90deg); opacity: 1; }
+  100% { transform: rotate(0deg); opacity: .3; }
+}
+.fae-pv-vt .fae-pv-vt-rueda { transform-box: view-box; transform-origin: 60px 45px; animation: fae-pv-vt-giro 3.2s linear infinite; }
+`}
+    >
+      <g className="fae-pv-vt">
+        <g className="fae-pv-vt-rueda">
+          <circle cx="60" cy="45" r="30" fill="none" stroke={C.silueta} strokeWidth="5" />
+          {rayos.map((a) => <line key={a} x1="60" y1="45" x2={60 + Math.cos(a) * 30} y2={45 + Math.sin(a) * 30} stroke={C.silueta} strokeWidth="3" strokeLinecap="round" />)}
+          <circle cx="90" cy="45" r="5" fill={C.luz} />
+        </g>
+        <circle cx="60" cy="45" r="7" fill={C.fondo} stroke={C.silueta} strokeWidth="3" />
+      </g>
+    </Lamina>
+  );
+}
+
+/* La cadena de transmisión: una ficha entra al eslabón vacío (0,5 s) y una luz viaja al siguiente (0,4 s). */
+function CadenaGesto() {
+  const xs = [6, 30, 54, 78, 102];
+  return (
+    <Lamina
+      id="cadena-de-transmision"
+      css={`
+@keyframes fae-pv-ct2-ficha { 0% { transform: translateY(-34px); opacity: 0; } 5% { opacity: 1; animation-timing-function: cubic-bezier(.3,.7,.3,1); } 27.8%, 88% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(0); opacity: 0; } }
+.fae-pv-ct2-ficha { animation: fae-pv-ct2-ficha 1.8s linear infinite; }
+@keyframes fae-pv-ct2-luz { 0%, 27.8% { transform: translateX(0); opacity: 0; } 30% { opacity: 1; } 50% { transform: translateX(24px); opacity: 1; } 58%, 100% { transform: translateX(24px); opacity: 0; } }
+.fae-pv-ct2-luz { animation: fae-pv-ct2-luz 1.8s linear infinite; }
+`}
+    >
+      <path d="M18 60 H108" stroke={C.hueco} strokeWidth="1.6" />
+      {xs.map((x, k) => (
+        <rect key={x} x={x} y="50" width="14" height="20" rx="4" fill={k < 2 ? C.silueta : C.fondo} stroke={k < 2 ? "none" : C.hueco} strokeWidth="1.6" strokeDasharray={k < 2 ? undefined : "3 2.5"} />
+      ))}
+      <rect className="fae-pv-ct2-ficha" x="54" y="50" width="14" height="20" rx="4" fill={C.silueta} />
+      <circle className="fae-pv-ct2-luz" cx="61" cy="60" r="3.2" fill={C.luz} />
+    </Lamina>
+  );
+}
+
+/*
+ * Corriente de decisiones: un punto corre por la correa hacia una bandeja
+ * (0,4 s), la bandeja destella, y otro hacia otra. Deliberadamente más rápido
+ * que los demás gestos: es la técnica (intercalado, Rohrer 2012), no un atajo.
+ * No lo iguales al ritmo del resto.
+ */
+function CorrienteGesto() {
+  const bandejas = [10, 38, 66, 94];
+  const destinos = [1, 3];
+  const seg = 1.2;
+  return (
+    <Lamina
+      id="corriente-de-decisiones"
+      css={destinos.map((d, k) => {
+        const i = k * 50;
+        const dx = bandejas[d] + 8 - 10;
+        return `
+@keyframes fae-pv-cd-p${k} { 0%, ${i}% { transform: translate(0, 0); opacity: 0; } ${i + 1}% { opacity: 1; } ${i + 33}% { transform: translate(${dx}px, 0); opacity: 1; } ${i + 45}% { transform: translate(${dx}px, 30px); opacity: 0; } ${i + 46}%, 100% { transform: translate(${dx}px, 30px); opacity: 0; } }
+.fae-pv-cd-p${k} { animation: fae-pv-cd-p${k} ${seg}s linear infinite; }
+@keyframes fae-pv-cd-b${k} { 0%, ${i + 40}% { stroke: ${C.hueco}; } ${i + 44}%, ${i + 49}% { stroke: ${C.luz}; } ${i + 50}%, 100% { stroke: ${C.hueco}; } }
+.fae-pv-cd-b${k} { animation: fae-pv-cd-b${k} ${seg}s linear infinite; }`;
+      }).join("")}
+    >
+      <rect x="4" y="30" width="112" height="12" rx="6" fill={C.fondo} stroke={C.trazo} strokeWidth="1.6" />
+      {destinos.map((_, k) => <circle key={k} className={`fae-pv-cd-p${k}`} cx="10" cy="36" r="4.5" fill={C.luz} />)}
+      {bandejas.map((x, k) => (
+        <path key={x} className={destinos.includes(k) ? `fae-pv-cd-b${destinos.indexOf(k)}` : undefined} d={`M${x} 62 l2 16 h12 l2 -16`} fill="none" stroke={C.hueco} strokeWidth="1.8" strokeLinejoin="round" />
+      ))}
+    </Lamina>
+  );
+}
+
+/* El rezago: la manecilla da un cuarto de vuelta (0,6 s) mientras la correa de detrás gira más lento. Sin datos. */
+function RezagoGesto() {
+  return (
+    <Lamina
+      id="el-rezago"
+      css={`
+@keyframes fae-pv-rz-mano { 0% { transform: rotate(0deg); animation-timing-function: cubic-bezier(.3,.8,.4,1); } 25%, 100% { transform: rotate(90deg); } }
+.fae-pv-rz .fae-pv-rz-mano { transform-box: view-box; transform-origin: 60px 45px; animation: fae-pv-rz-mano 2.4s linear infinite; }
+@keyframes fae-pv-rz-correa { to { stroke-dashoffset: -14; } }
+.fae-pv-rz-correa { animation: fae-pv-rz-correa 2.4s linear infinite; }
+`}
+    >
+      <g className="fae-pv-rz">
+        <ellipse className="fae-pv-rz-correa" cx="60" cy="45" rx="50" ry="36" fill="none" stroke={C.hueco} strokeWidth="2.4" strokeDasharray="7 7" />
+        <circle cx="60" cy="45" r="24" fill={C.fondo} stroke={C.trazo} strokeWidth="2" />
+        {[0, 1, 2, 3].map((k) => {
+          const a = (k * Math.PI) / 2;
+          return <line key={k} x1={60 + Math.cos(a) * 19} y1={45 + Math.sin(a) * 19} x2={60 + Math.cos(a) * 24} y2={45 + Math.sin(a) * 24} stroke={C.trazo} strokeWidth="2" />;
+        })}
+        <line className="fae-pv-rz-mano" x1="60" y1="45" x2="60" y2="27" stroke={C.luz} strokeWidth="3" strokeLinecap="round" />
+      </g>
+    </Lamina>
+  );
+}
+
+/* Diseña la respuesta monetaria: una pieza entra en el espacio vacío del panel (0,5 s) y se asienta con un destello. */
+function PanelGesto() {
+  return (
+    <Lamina
+      id="disena-respuesta-monetaria"
+      css={`
+@keyframes fae-pv-dr-pieza { 0% { transform: translate(-46px, 26px); opacity: 0; } 6% { opacity: 1; animation-timing-function: cubic-bezier(.3,.7,.3,1); } 31% { transform: translate(0, 0) scale(.94); } 38%, 88% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(0, 0); opacity: 0; } }
+.fae-pv-dr-pieza { animation: fae-pv-dr-pieza 1.6s linear infinite; }
+@keyframes fae-pv-dr-destello { 0%, 30% { opacity: 0; } 36% { opacity: 1; } 55%, 100% { opacity: 0; } }
+.fae-pv-dr-destello { animation: fae-pv-dr-destello 1.6s linear infinite; }
+`}
+    >
+      <rect x="14" y="10" width="92" height="70" rx="8" fill={C.fondo} stroke={C.trazo} strokeWidth="1.8" />
+      {[18, 32, 46, 60].map((y) => <rect key={y} x="24" y={y} width="42" height="9" rx="2.5" fill="rgba(203,220,242,0.45)" />)}
+      <rect x="78" y="22" width="16" height="44" rx="5" fill="none" stroke={C.hueco} strokeWidth="1.5" strokeDasharray="3 2.5" />
+      <rect className="fae-pv-dr-destello" x="74" y="18" width="24" height="52" rx="8" fill="none" stroke={C.luz} strokeWidth="2.4" />
+      <rect className="fae-pv-dr-pieza" x="78" y="22" width="16" height="44" rx="5" fill={C.silueta} />
     </Lamina>
   );
 }
@@ -299,6 +514,18 @@ const GESTOS = {
   "explica-contribuyente": () => <Explicale id="explica-contribuyente" />,
   "sala-espera-llena": () => <Frontera id="sala-espera-llena" />,
   "comite-presupuesto": () => <Frontera id="comite-presupuesto" />,
+  /* Política Monetaria (0031). El dilema del banquero central se queda quieto. */
+  "memorama-banco-central": () => <Memorama id="memorama-banco-central" columnas={5} filas={2} a={1} b={8} />,
+  "quien-decide-esto": () => <FichaADestinos id="quien-decide-esto" forma="edificio" n={2} destinos={[0, 1]} />,
+  "volante-de-la-tasa": VolanteGesto,
+  "caja-de-herramientas": () => <FichaADestinos id="caja-de-herramientas" forma="ranura" n={4} destinos={[1, 3]} />,
+  "a-quien-le-pega-la-tasa": () => <Reparto id="a-quien-le-pega-la-tasa" />,
+  "cadena-de-transmision": CadenaGesto,
+  "explicaselo-a-un-deudor": () => <Explicale id="explicaselo-a-un-deudor" />,
+  "corriente-de-decisiones": CorrienteGesto,
+  "el-rezago": RezagoGesto,
+  "duelo-de-instrumentos": () => <Consejo id="duelo-de-instrumentos" figura="engranaje" />,
+  "disena-respuesta-monetaria": PanelGesto,
 };
 
 export default function PreviasBloques({ actividadId }) {

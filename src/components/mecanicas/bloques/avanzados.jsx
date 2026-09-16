@@ -29,7 +29,8 @@ export const SeAcerca = ({ onCompletar }) => (
 
 export const ExpedienteGabinete = ({ onCompletar }) => (
   <CasoUnico caso={CASO_GABINETE} Marco={MarcoSala} acento={FAE.ambar}
-    rotulo="ANÁLISIS · EXPEDIENTE" titulo="Una decisión del gabinete" onCompletar={onCompletar} />
+    rotulo="ANÁLISIS · EXPEDIENTE" titulo="Una decisión del gabinete" onCompletar={onCompletar}
+    cierre={(ok) => (ok ? "Una sola decisión, y era la difícil: reconocer cuándo faltan datos." : "Una sola decisión: aquí pesa tanto lo que empuja como lo que frena.")} />
 );
 
 export const ConsejoMinistros = ({ onCompletar }) => (

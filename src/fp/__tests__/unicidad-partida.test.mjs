@@ -161,6 +161,19 @@ const ACTIVIDADES = [
   ["explica-contribuyente", "bloques/avanzados.jsx#ExplicaContribuyente", 2],
   ["sala-espera-llena", "bloques/avanzados.jsx#SalaEsperaLlena", 2],
   ["comite-presupuesto", "bloques/avanzados.jsx#ComitePresupuesto", 2],
+  /* Política Monetaria (0031) */
+  ["memorama-banco-central", "maquinas/actividades.jsx#MemoramaBancoCentral", 2],
+  ["quien-decide-esto", "maquinas/actividades.jsx#QuienDecideEsto", 2],
+  ["volante-de-la-tasa", "maquinas/actividades.jsx#VolanteDeLaTasa", 2],
+  ["caja-de-herramientas", "maquinas/actividades.jsx#CajaDeHerramientas", 2],
+  ["a-quien-le-pega-la-tasa", "maquinas/actividades.jsx#AQuienLePegaLaTasa", 2],
+  ["cadena-de-transmision", "maquinas/actividades.jsx#CadenaDeTransmision", 2],
+  ["explicaselo-a-un-deudor", "maquinas/actividades.jsx#ExplicaseloADeudor", 2],
+  ["corriente-de-decisiones", "maquinas/actividades.jsx#CorrienteDeDecisiones", 2],
+  ["el-rezago", "maquinas/actividades.jsx#ElRezago", 2],
+  ["dilema-banquero-central", "maquinas/actividades.jsx#DilemaBanqueroCentral", 2],
+  ["duelo-de-instrumentos", "maquinas/actividades.jsx#DueloDeInstrumentos", 2],
+  ["disena-respuesta-monetaria", "maquinas/actividades.jsx#DisenaRespuestaMonetaria", 2],
 ];
 
 /*
