@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
 import { supabase, supabaseConfigurado } from "../lib/supabase.js";
+import { COLUMNAS_PERFIL, cambioPermitido, mensajeDeErrorPerfil } from "./perfilEditable.js";
 
 /*
  * Estado de sesión y perfil.
@@ -136,6 +137,29 @@ export function AuthProvider({ children }) {
     [session]
   );
 
+  /*
+   * Editar perfil. Manda solo las columnas de CAMPOS_EDITABLES, vuelve a leer
+   * la fila tal como quedó y la pone en `perfil`: todo lo que pinta el apodo en
+   * el cliente —la cabecera, el perfil, el resumen del semestre— lee de aquí,
+   * así que el cambio se ve en el acto, sin recargar. Rankings, ligas y panel
+   * docente leen `profiles` en vivo en el servidor: no guardan copia.
+   */
+  const guardarPerfil = useCallback(
+    async (cambio) => {
+      if (!supabase || !session) return { error: "Sin sesión activa." };
+      const { data, error } = await supabase
+        .from("profiles")
+        .update(cambioPermitido(cambio))
+        .eq("user_id", session.user.id)
+        .select(COLUMNAS_PERFIL)
+        .single();
+      if (error) return { error: mensajeDeErrorPerfil(error) };
+      setPerfil(data);
+      return { data };
+    },
+    [session]
+  );
+
   const apodoDisponible = useCallback(async (nickname) => {
     if (!supabase) return true;
     const { data, error } = await supabase.rpc("nickname_disponible", {
@@ -165,10 +189,11 @@ export function AuthProvider({ children }) {
       pedirCuenta,
       cerrarDialogo,
       crearPerfil,
+      guardarPerfil,
       apodoDisponible,
       cerrarSesion,
     }),
-    [cargando, session, perfil, errorPerfil, necesitaApodo, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, apodoDisponible, cerrarSesion]
+    [cargando, session, perfil, errorPerfil, necesitaApodo, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, guardarPerfil, apodoDisponible, cerrarSesion]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

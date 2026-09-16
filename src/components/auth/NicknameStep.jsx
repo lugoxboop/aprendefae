@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FAE } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
+import { CAMPO, ETIQUETA, AYUDA } from "./estilosCampo.js";
 
 /*
  * Paso del primer ingreso. Es parte del login, no una pantalla que se pueda
@@ -70,7 +71,7 @@ export default function NicknameStep() {
         Dos datos y listo. El apodo es lo público; tu nombre es privado.
       </p>
 
-      <label htmlFor="paso-nombre" style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "rgba(248,249,250,0.8)", margin: "0 0 6px" }}>
+      <label htmlFor="paso-nombre" style={ETIQUETA}>
         ¿Cómo te llamas?
       </label>
       <input
@@ -82,23 +83,13 @@ export default function NicknameStep() {
         maxLength={MAX_NOMBRE}
         autoFocus
         autoComplete="name"
-        style={{
-          width: "100%",
-          padding: "13px 16px",
-          borderRadius: "14px",
-          fontFamily: "Inter, sans-serif",
-          fontSize: "15px",
-          color: FAE.text,
-          background: "rgba(248,249,250,0.05)",
-          border: "1px solid rgba(248,249,250,0.18)",
-          outline: "none",
-        }}
+        style={CAMPO}
       />
-      <p style={{ fontSize: "12.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.45)", margin: "6px 2px 18px" }}>
+      <p style={AYUDA}>
         Solo lo ve el profesor de tu curso, para saber cómo vas. No aparece en los rankings.
       </p>
 
-      <label htmlFor="paso-apodo" style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "rgba(248,249,250,0.8)", margin: "0 0 6px" }}>
+      <label htmlFor="paso-apodo" style={ETIQUETA}>
         Tu apodo
       </label>
       <input
@@ -109,17 +100,7 @@ export default function NicknameStep() {
         placeholder="Tu apodo"
         maxLength={MAX}
         aria-label="Tu apodo"
-        style={{
-          width: "100%",
-          padding: "13px 16px",
-          borderRadius: "14px",
-          fontFamily: "Inter, sans-serif",
-          fontSize: "15px",
-          color: FAE.text,
-          background: "rgba(248,249,250,0.05)",
-          border: `1px solid ${error ? FAE.coral : "rgba(248,249,250,0.18)"}`,
-          outline: "none",
-        }}
+        style={{ ...CAMPO, border: `1px solid ${error ? FAE.coral : "rgba(248,249,250,0.18)"}` }}
       />
 
       <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", margin: "8px 2px 18px" }}>

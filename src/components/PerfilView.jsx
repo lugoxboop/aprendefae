@@ -10,6 +10,7 @@ import { rachaVigente, proximoHito, enRiesgoHoy } from "../fp/racha.js";
 import { animosRecibidos } from "../social/animo.js";
 import Medallas from "./perfil/Medallas.jsx";
 import ResumenSemestre from "./perfil/ResumenSemestre.jsx";
+import EditarPerfil from "./perfil/EditarPerfil.jsx";
 
 /*
  * Perfil del estudiante. Se llega desde el indicador de cuenta de la cabecera.
@@ -35,7 +36,14 @@ export default function PerfilView({ onBack }) {
   /* La misma respuesta que el atajo de la cabecera: no se vuelve a preguntar. */
   const { esDocente } = useAccesoDocente();
 
-  const { perfil, session, pedirCuenta } = useAuth();
+  const { perfil, session, pedirCuenta, guardarPerfil } = useAuth();
+  /*
+   * Editar perfil se abre en el sitio de la ficha y vuelve a ella al guardar o
+   * cancelar. `vuelta` remonta el ranking de abajo tras guardar: ya pintado,
+   * seguiría enseñando el apodo viejo en tu fila hasta recargar.
+   */
+  const [editando, setEditando] = useState(false);
+  const [vuelta, setVuelta] = useState(0);
 
   useEffect(() => {
     if (!session) return;
@@ -96,9 +104,19 @@ export default function PerfilView({ onBack }) {
               Entrar
             </button>
           </div>
+        ) : editando ? (
+          <div style={{ ...dato, marginBottom: "26px" }}>
+            <EditarPerfil
+              perfil={perfil}
+              guardar={guardarPerfil}
+              onCancelar={() => setEditando(false)}
+              onGuardado={() => { setEditando(false); setVuelta((v) => v + 1); }}
+            />
+          </div>
         ) : (
           <>
             <p
+              data-apodo
               style={{
                 fontFamily: "Sora, sans-serif", fontWeight: 700,
                 fontSize: "clamp(26px, 4vw, 34px)", letterSpacing: "-0.03em",
@@ -107,9 +125,23 @@ export default function PerfilView({ onBack }) {
             >
               {perfil?.nickname ?? "Tu cuenta"}
             </p>
-            <p style={{ fontSize: "14px", color: "rgba(248,249,250,0.5)", margin: "0 0 22px" }}>
+            <p style={{ fontSize: "14px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>
               Este es el nombre que ven los demás en los rankings.
             </p>
+            <p data-nombre-real style={{ fontSize: "14px", color: "rgba(248,249,250,0.5)", margin: "0 0 14px" }}>
+              Nombre real: {perfil?.full_name || "sin escribir"} · solo lo ve tu profesor.
+            </p>
+            <button
+              type="button"
+              onClick={() => setEditando(true)}
+              style={{
+                fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 600,
+                padding: "10px 18px", borderRadius: "999px", cursor: "pointer", margin: "0 0 22px",
+                background: "transparent", border: "1px solid rgba(248,249,250,0.22)", color: "rgba(248,249,250,0.72)",
+              }}
+            >
+              Editar perfil
+            </button>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px", marginBottom: "26px" }}>
               <div style={dato}>
@@ -187,7 +219,7 @@ export default function PerfilView({ onBack }) {
           </button>
         )}
 
-        <RankingFP titulo="Ranking general" nota="Todas las materias" />
+        <RankingFP key={vuelta} titulo="Ranking general" nota="Todas las materias" />
       </div>
     </div>
   );
