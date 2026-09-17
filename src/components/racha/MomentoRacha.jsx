@@ -3,6 +3,7 @@ import { FAE } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { escucharFP } from "../../fp/aviso.js";
 import { crearDisparador } from "../../racha/disparador.js";
+import { crearRelojPausable, visibilidadDocumento } from "../../racha/visibilidad.js";
 import { pedirMomentoRacha } from "../../racha/datos.js";
 import { aristasNuevas, mensajeRacha, semana } from "../../racha/teseracto.js";
 
@@ -84,8 +85,15 @@ const NOMBRE_ESTADO = { completado: "completado", "hoy-hecho": "hoy, completado"
  * La secuencia en pantalla. Separada del disparo para poder probarla y verla
  * sin sesión.
  */
-export function SecuenciaRacha({ momento, onFin }) {
+export function SecuenciaRacha({ momento, onFin, visibilidad = visibilidadDocumento }) {
   const [fase, setFase] = useState("entrada");
+  /*
+   * Todas las esperas de la secuencia van por un reloj que se para con la
+   * página oculta y retoma al volver: con setTimeout a secas, la secuencia se
+   * cerraba sola en una pestaña que nadie estaba mirando.
+   */
+  const reloj = useRef(null);
+  if (!reloj.current) reloj.current = crearRelojPausable(visibilidad);
   const [sinWebGL, setSinWebGL] = useState(false);
   const [destino, setDestino] = useState(null);
   const hueco = useRef(null);
@@ -98,15 +106,15 @@ export function SecuenciaRacha({ momento, onFin }) {
     if (cerrado.current) return;
     cerrado.current = true;
     setFase("salida");
-    setTimeout(() => onFin?.(), TIEMPOS.salida);
+    reloj.current.programar(() => onFin?.(), TIEMPOS.salida);
   };
 
   useEffect(() => {
-    const aSemana = setTimeout(() => setFase("semana"), duracionEntrada(dia));
-    const fin = setTimeout(cerrar, duracionEntrada(dia) + TIEMPOS.transicion + TIEMPOS.semana);
+    reloj.current.programar(() => setFase((f) => (f === "entrada" ? "semana" : f)), duracionEntrada(dia));
+    reloj.current.programar(cerrar, duracionEntrada(dia) + TIEMPOS.transicion + TIEMPOS.semana);
     const tecla = (e) => { if (e.key === "Escape" || e.key === "Enter" || e.key === " ") cerrar(); };
     window.addEventListener("keydown", tecla);
-    return () => { clearTimeout(aSemana); clearTimeout(fin); window.removeEventListener("keydown", tecla); };
+    return () => { reloj.current.detener(); window.removeEventListener("keydown", tecla); };
   }, []);
 
   /* Dónde tiene que acabar el teseracto: el hueco de arriba a la derecha de la tarjeta. */
@@ -221,21 +229,30 @@ export function SecuenciaRacha({ momento, onFin }) {
   );
 }
 
-/** Montado una vez en App: escucha, pregunta cuando toca y enseña la secuencia. */
-export default function MomentoRacha() {
-  const { session } = useAuth();
+/**
+ * El disparo y la secuencia juntos, con sus dependencias a la vista: la sesión,
+ * la pregunta al servidor, el canal de FP y la visibilidad de la página. Así la
+ * prueba monta exactamente lo que monta App, con una pestaña oculta de mentira.
+ */
+export function MomentoRachaCon({ sesionActiva, pedir, escucharFP: escuchar, visibilidad = visibilidadDocumento, esperaMs }) {
   const [momento, setMomento] = useState(null);
   const disparador = useRef(null);
 
   useEffect(() => {
-    disparador.current = crearDisparador({ pedir: pedirMomentoRacha, escucharFP, alMostrar: setMomento });
+    disparador.current = crearDisparador({ pedir, escucharFP: escuchar, alMostrar: setMomento, visibilidad, esperaMs });
     return () => disparador.current.detener();
   }, []);
 
   useEffect(() => {
-    disparador.current?.sesion(Boolean(session));
-  }, [session]);
+    disparador.current?.sesion(Boolean(sesionActiva));
+  }, [sesionActiva]);
 
   if (!momento) return null;
-  return <SecuenciaRacha momento={momento} onFin={() => setMomento(null)} />;
+  return <SecuenciaRacha momento={momento} visibilidad={visibilidad} onFin={() => setMomento(null)} />;
+}
+
+/** Montado una vez en App: escucha, pregunta cuando toca y enseña la secuencia. */
+export default function MomentoRacha() {
+  const { session } = useAuth();
+  return <MomentoRachaCon sesionActiva={Boolean(session)} pedir={pedirMomentoRacha} escucharFP={escucharFP} />;
 }
