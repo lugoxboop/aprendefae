@@ -32,12 +32,20 @@ import { aristasNuevas, mensajeRacha, semana } from "../../racha/teseracto.js";
 
 const Teseracto = lazy(() => import("./Teseracto.jsx"));
 
+/*
+ * Los tiempos de la secuencia. El trazo de cada arista dura dos segundos —se
+ * ve nacer— y después la figura se queda quieta y completa segundo y medio
+ * antes de encogerse: sin esa pausa, el estudiante no alcanza a ver la arista
+ * que ganó hoy. Los días de dos aristas (8 y 23) llevan dos trazos seguidos.
+ *
+ * NO HAY TIEMPO DE CIERRE. La tarjeta de la semana se queda hasta que el
+ * estudiante la cierre.
+ */
 export const TIEMPOS = {
   inicioTrazo: 500,
-  porArista: 950,
-  pausaTrasTrazo: 750,
+  porArista: 2000,
+  pausaTrasTrazo: 1400,
   transicion: 750,
-  semana: 2600,
   salida: 320,
 };
 
@@ -110,8 +118,11 @@ export function SecuenciaRacha({ momento, onFin, visibilidad = visibilidadDocume
   };
 
   useEffect(() => {
+    /*
+     * Solo una espera: la de pasar a la semana. La tarjeta no se cierra sola;
+     * un temporizador ahí le quitaría al estudiante la única parte que se lee.
+     */
     reloj.current.programar(() => setFase((f) => (f === "entrada" ? "semana" : f)), duracionEntrada(dia));
-    reloj.current.programar(cerrar, duracionEntrada(dia) + TIEMPOS.transicion + TIEMPOS.semana);
     const tecla = (e) => { if (e.key === "Escape" || e.key === "Enter" || e.key === " ") cerrar(); };
     window.addEventListener("keydown", tecla);
     return () => { reloj.current.detener(); window.removeEventListener("keydown", tecla); };
@@ -215,6 +226,24 @@ export function SecuenciaRacha({ momento, onFin, visibilidad = visibilidadDocume
                 <Dia key={d.fecha} etiqueta={d.etiqueta} estado={d.estado} />
               ))}
             </ol>
+            {/*
+              El único cierre de la tarjeta es del estudiante: este botón o un
+              toque en cualquier sitio. Nunca un temporizador.
+            */}
+            <button
+              type="button"
+              data-continuar
+              onClick={cerrar}
+              style={{
+                pointerEvents: "auto", display: "block", width: "100%", marginTop: "16px",
+                padding: "12px 18px", borderRadius: "14px", cursor: "pointer",
+                background: FAE.teal, border: `1px solid ${FAE.teal}`, color: FAE.bg,
+                fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700,
+              }}
+            >
+              Continuar
+            </button>
+
             <p className="fae-jg-oculto" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>
               {dias.map((d) => `${d.etiqueta}: ${NOMBRE_ESTADO[d.estado]}`).join(". ")}
             </p>

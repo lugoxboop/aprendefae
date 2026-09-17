@@ -44,7 +44,7 @@ function montar(momento = MOMENTO) {
 }
 const avanzar = (ms) => act(() => { mock.timers.tick(ms); });
 
-test("la secuencia: entrada con el mensaje, luego la semana, y se va sola en pocos segundos", () => {
+test("la secuencia: entrada con el mensaje y luego la semana, que espera al estudiante", () => {
   mock.timers.enable({ apis: ["setTimeout"] });
   const m = montar();
   try {
@@ -62,12 +62,10 @@ test("la secuencia: entrada con el mensaje, luego la semana, y se va sola en poc
     assert.ok(m.caja.querySelector("[data-semana-racha]"));
     assert.ok(m.caja.querySelector("[data-lienzo-teseracto]"), "el teseracto sigue ahí, no se desmonta");
 
-    const total = duracionEntrada(8) + TIEMPOS.transicion + TIEMPOS.semana + TIEMPOS.salida;
-    assert.ok(total <= 8000, `corta: ${total} ms`);
-    avanzar(TIEMPOS.transicion + TIEMPOS.semana);
-    assert.equal(m.fase(), "salida");
-    avanzar(TIEMPOS.salida);
-    assert.equal(m.fin.length, 1);
+    /* Y ahí se queda: la tarjeta no se cierra sola. */
+    avanzar(10 * 60 * 1000);
+    assert.equal(m.fase(), "semana");
+    assert.equal(m.fin.length, 0);
   } finally {
     m.desmontar();
     mock.timers.reset();

@@ -57,20 +57,22 @@ test("teseracto: 16 vértices, 32 aristas únicas entre vértices que difieren e
   assert.equal(carasVisibles(0).length, 0);
 });
 
-test("el primer cubo se cierra entero antes de empezar las conexiones: las 12 primeras aristas comparten w", () => {
-  assert.deepEqual(ARISTAS[0], [0, 1], "arranca en el vértice 0");
-  const w = (v) => VERTICES[v][3];
-  const primeras = ARISTAS.slice(0, 12);
-  assert.ok(primeras.every(([a, b]) => w(a) === w(b) && w(a) === w(ARISTAS[0][0])), "doce aristas de un mismo cubo");
-  assert.ok(ARISTAS.slice(12, 20).every(([a, b]) => w(a) !== w(b)), "luego las ocho que unen los dos cubos");
-});
-
-test("cada arista nueva nace de lo ya revelado: todos los prefijos son una figura conexa", () => {
-  const vistos = new Set([ARISTAS[0][0]]);
-  for (const [a, b] of ARISTAS) {
-    assert.ok(vistos.has(a) || vistos.has(b), `${a}-${b} flota suelta`);
-    vistos.add(a); vistos.add(b);
+test("cada cubo crece conexo dentro de su fase, y las conexiones cosen los dos", () => {
+  /*
+   * Los prefijos ya no son conexos de punta a punta —el cubo interior aparece
+   * entero antes que las conexiones, y eso es lo que pide el orden por fases—,
+   * pero dentro de cada cubo cada arista nueva sí nace de lo que ya estaba.
+   */
+  for (const bloque of [ARISTAS.slice(0, 12), ARISTAS.slice(12, 24)]) {
+    const vistos = new Set(bloque[0]);
+    for (const [a, b] of bloque.slice(1)) {
+      assert.ok(vistos.has(a) || vistos.has(b), `${a}-${b} flota suelta dentro de su cubo`);
+      vistos.add(a); vistos.add(b);
+    }
+    assert.equal(vistos.size, 8, "un cubo son ocho vértices");
   }
+  /* Las ocho conexiones unen cada vértice de un cubo con su correspondiente. */
+  for (const [a, b] of ARISTAS.slice(24)) assert.equal(Math.abs(a - b), 8);
 });
 
 test("proyección: el cubo de w cercano sale más grande que el lejano (los dos cubos del teseracto)", () => {

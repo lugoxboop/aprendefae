@@ -46,33 +46,48 @@ export const VERTICES = Array.from({ length: 16 }, (_, i) => [0, 1, 2, 3].map((b
 
 /*
  * Las 32 aristas —pares de vértices que difieren en UNA coordenada—, en el
- * orden en que se revelan: crece como un recorrido desde el vértice 0, así que
- * cualquier prefijo es una figura conexa y la arista nueva siempre nace de lo
- * que ya estaba. Primero se cierra el cubo exterior (w = −1… en proyección, el
- * grande), luego las conexiones y el cubo interior.
+ * orden en que se revelan, EN TRES FASES:
+ *
+ *   1–12   el cubo exterior entero (w = +1, el que la proyección agranda).
+ *          Los primeros días enseñan una forma simple y reconocible.
+ *   13–24  el cubo interior entero. La figura gana profundidad.
+ *   25–32  las ocho conexiones entre vértices correspondientes. Son las que
+ *          hacen que se lea como teseracto y no como dos cubos sueltos, y
+ *          llegan al final: son la recompensa de sostener la racha.
+ *
+ * La regla es dura: ninguna del interior antes de cerrar el exterior, ninguna
+ * conexión antes de cerrar el interior. Dentro de cada fase el orden es el de
+ * la indexación de los vértices, que además hace que cada cubo crezca desde un
+ * vértice y no a saltos.
  */
+const FASE = ([a, b]) => ((a & 8) && (b & 8) ? 0 : !(a & 8) && !(b & 8) ? 1 : 2);
+
 export const ARISTAS = (() => {
   const todas = [];
   for (let a = 0; a < 16; a++) for (let b = 0; b < 4; b++) {
     const c = a ^ (1 << b);
     if (a < c) todas.push([a, c]);
   }
-  /* Prioridad: primero las del cubo con w = −1 (bit 3 apagado), luego las que cruzan en w, luego el otro cubo. */
-  const grupo = ([a, c]) => (((a | c) & 8) === 0 ? 0 : (a ^ c) === 8 ? 1 : 2);
-  const orden = [];
-  const vistos = new Set([0]);
-  const quedan = new Set(todas.map((_, k) => k));
-  while (quedan.size) {
-    const candidatas = [...quedan].filter((k) => vistos.has(todas[k][0]) || vistos.has(todas[k][1]));
-    candidatas.sort((x, y) => grupo(todas[x]) - grupo(todas[y]) || x - y);
-    const k = candidatas[0];
-    quedan.delete(k);
-    orden.push(todas[k]);
-    vistos.add(todas[k][0]);
-    vistos.add(todas[k][1]);
-  }
-  return orden;
+  return todas.sort((x, y) => FASE(x) - FASE(y) || x[0] - y[0] || x[1] - y[1]);
 })();
+
+/** En qué fase cae una arista: 0 exterior, 1 interior, 2 conexión. */
+export const faseDeArista = FASE;
+
+/*
+ * El calendario del trazo de las aristas nuevas del día: una tras otra, cada
+ * una con su propio tiempo. Los días de dos aristas (8 y 23) se ven como dos
+ * trazos seguidos, no como uno solo instantáneo.
+ */
+export function trazos(dia, { inicio, porArista }) {
+  const antes = aristasReveladas(dia - 1);
+  const total = aristasReveladas(dia);
+  const lista = [];
+  for (let k = antes; k < total; k++) {
+    lista.push({ indice: k, arista: ARISTAS[k], desde: inicio + (k - antes) * porArista, hasta: inicio + (k - antes + 1) * porArista });
+  }
+  return lista;
+}
 
 /** Las 24 caras cuadradas: dos coordenadas fijas, dos libres. Cada una como ciclo de 4 vértices. */
 export const CARAS = (() => {

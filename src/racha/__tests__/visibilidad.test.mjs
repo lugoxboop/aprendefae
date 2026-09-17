@@ -168,10 +168,11 @@ test("oculta a mitad de la secuencia: se congela sin cerrarse y retoma donde iba
     await pasar(10 * 60 * 1000);
     assert.equal(m.fase(), "semana");
     m.vis.poner(true);
-    await pasar(TIEMPOS.transicion + TIEMPOS.semana);
-    assert.equal(m.fase(), "salida");
+    await pasar(TIEMPOS.transicion + 10 * 60 * 1000);
+    assert.equal(m.fase(), "semana", "la tarjeta espera al estudiante, no al reloj");
+    act(() => { m.caja.querySelector("[data-continuar]").dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
     await pasar(TIEMPOS.salida);
-    assert.equal(m.fase(), null, "cerrada al terminar, viéndose");
+    assert.equal(m.fase(), null, "cerrada por el botón");
     assert.equal(m.srv.pedidos, 1, "y el día se preguntó una sola vez");
   } finally {
     m.desmontar();

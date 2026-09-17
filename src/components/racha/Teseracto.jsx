@@ -4,7 +4,7 @@ import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { FAE } from "../../theme.js";
-import { VERTICES, ARISTAS, CARAS, aristasReveladas, carasVisibles, proyectar, riqueza } from "../../racha/teseracto.js";
+import { VERTICES, ARISTAS, aristasReveladas, carasVisibles, proyectar, riqueza, trazos } from "../../racha/teseracto.js";
 import { prefersReducedMotion, isLowEndDevice } from "../../utils/device.js";
 
 /*
@@ -73,6 +73,8 @@ export default function Teseracto({ dia, trazarNuevas = false, inicioTrazoMs = 4
     const bajo = isLowEndDevice();
     const total = aristasReveladas(dia);
     const antes = trazarNuevas && !quieto ? aristasReveladas(dia - 1) : total;
+    /* El calendario del trazo: cada arista nueva, su tramo de tiempo. */
+    const calendario = trazos(dia, { inicio: inicioTrazoMs, porArista: msPorArista });
     const rico = riqueza(dia);
 
     let renderer;
@@ -188,11 +190,11 @@ export default function Teseracto({ dia, trazarNuevas = false, inicioTrazoMs = 4
         colCaras[i * 3] = c.r; colCaras[i * 3 + 1] = c.g; colCaras[i * 3 + 2] = c.b;
       }
 
-      /* Cuánto lleva trazado cada arista nueva. */
+      /* Cuánto lleva trazado cada arista nueva, según su tramo del calendario. */
       const trazo = (k) => {
         if (k < antes) return 1;
-        const desde = inicioTrazoMs + (k - antes) * msPorArista;
-        return easeInOut(Math.max(0, Math.min(1, (ms - desde) / msPorArista)));
+        const t = calendario.find((x) => x.indice === k);
+        return easeInOut(Math.max(0, Math.min(1, (ms - t.desde) / (t.hasta - t.desde))));
       };
 
       const visibles = new Set();
@@ -242,10 +244,15 @@ export default function Teseracto({ dia, trazarNuevas = false, inicioTrazoMs = 4
       geoCaras.attributes.position.needsUpdate = true;
       geoCaras.attributes.color.needsUpdate = true;
 
-      /* Las caras de las aristas nuevas entran cuando terminan de trazarse. */
-      if (carasPuestas < total && trazo(total - 1) >= 1) {
-        geoCaras.setIndex(indicesDe(carasVisibles(total)));
-        carasPuestas = total;
+      /*
+        * Una cara nace en cuanto se termina de trazar su última arista, no al
+        * final del día: se recalcula cada vez que una arista más queda completa.
+        */
+      let completas = antes;
+      while (completas < total && trazo(completas) >= 1) completas++;
+      if (completas !== carasPuestas) {
+        geoCaras.setIndex(indicesDe(carasVisibles(completas)));
+        carasPuestas = completas;
       }
 
       renderer.render(escena, camara);
