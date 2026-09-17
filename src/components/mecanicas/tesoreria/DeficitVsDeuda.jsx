@@ -83,7 +83,7 @@ export default function DeficitVsDeuda({ onCompletar }) {
   };
 
   return (
-    <Tesoreria rotulo="TESORERÍA · BANDEJAS DE ENTRADA" titulo="¿A qué bandeja va cada papel?" acento={FAE.coral}>
+    <Tesoreria rotulo="TESORERÍA · BANDEJAS DE ENTRADA" titulo="¿A qué bandeja va cada papel?" acento={FAE.teal}>
       {!terminado ? (
         <>
           <div style={{ marginBottom: "12px" }}>

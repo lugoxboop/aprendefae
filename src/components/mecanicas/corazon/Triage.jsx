@@ -91,7 +91,7 @@ export default function Triage({ onCompletar }) {
 
   if (terminado) {
     return (
-      <Camaraseccion rotulo="TRIAGE" titulo="Prioridades fijadas" acento={FAE.coral}>
+      <Camaraseccion rotulo="TRIAGE" titulo="Prioridades fijadas" acento={FAE.teal}>
         <style>{CSS_JUEGO}</style>
         <Cierre pct={pct} onReiniciar={reiniciar} textoReiniciar="El otro caso">
           <p style={{ margin: "0 0 10px", fontSize: "13px", lineHeight: 1.55, color: "rgba(248,249,250,0.68)" }}>
@@ -110,14 +110,14 @@ export default function Triage({ onCompletar }) {
   const acertado = elegido === duelo.gana;
 
   return (
-    <Camaraseccion rotulo="TRIAGE DE EMERGENCIAS" titulo="¿Cuál atiendes primero?" acento={FAE.coral}>
+    <Camaraseccion rotulo="TRIAGE DE EMERGENCIAS" titulo="¿Cuál atiendes primero?" acento={FAE.teal}>
       <style>{CSS_JUEGO}</style>
 
       <div style={{ marginBottom: "14px" }}>
         <Pulsos total={duelos.length} hechos={i + (elegido ? 1 : 0)} etiqueta="Duelo" />
       </div>
 
-      <Enunciado rotulo="SITUACIÓN" acento={FAE.coral}>{caso.caso}</Enunciado>
+      <Enunciado rotulo="SITUACIÓN" acento={FAE.teal}>{caso.caso}</Enunciado>
 
       <Opciones>
         {duelo.par.map((letra) => (

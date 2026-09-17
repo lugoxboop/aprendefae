@@ -72,7 +72,7 @@ export default function ExpansivaContractiva({ onCompletar }) {
 
   if (terminado) {
     return (
-      <Tesoreria rotulo={`TESORERÍA · ${caso.titulo.toUpperCase()}`} titulo="El orden completo" acento={FAE.coral}>
+      <Tesoreria rotulo={`TESORERÍA · ${caso.titulo.toUpperCase()}`} titulo="El orden completo" acento={FAE.teal}>
         <Cierre pct={Math.round(pct)} onReiniciar={reiniciar} textoReiniciar="El otro caso">
           <p style={{ ...TEXTO_CIERRE, marginBottom: "8px" }}>{aciertos} de {duelos.length} duelos. De mejor a peor para esta economía:</p>
           <ol style={{ margin: 0, paddingLeft: "20px", fontSize: "13.5px", lineHeight: 1.65, color: FAE.text }}>
@@ -86,11 +86,11 @@ export default function ExpansivaContractiva({ onCompletar }) {
   const acerto = elegido === duelo.gana;
 
   return (
-    <Tesoreria rotulo={`TESORERÍA · ${caso.titulo.toUpperCase()}`} titulo="¿Cuál de las dos es mejor aquí?" acento={FAE.coral}>
+    <Tesoreria rotulo={`TESORERÍA · ${caso.titulo.toUpperCase()}`} titulo="¿Cuál de las dos es mejor aquí?" acento={FAE.teal}>
       <div style={{ marginBottom: "12px" }}>
         <Pulsos total={duelos.length} hechos={i + (elegido ? 1 : 0)} etiqueta="Duelo" />
       </div>
-      <Enunciado rotulo="LA ECONOMÍA" acento={FAE.coral}>{caso.caso}</Enunciado>
+      <Enunciado rotulo="LA ECONOMÍA" acento={FAE.teal}>{caso.caso}</Enunciado>
       <Opciones>
         {duelo.par.map((letra) => (
           <Opcion

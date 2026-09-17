@@ -248,7 +248,7 @@ export default function BancoTransfusiones({ onCompletar }) {
     <Camaraseccion
       rotulo={ronda === "guiada" ? "RONDA 2 · CON LA FÓRMULA" : "RONDA 3 · SIN AYUDA"}
       titulo={pasoActual.rotulo}
-      acento={ronda === "guiada" ? FAE.ambar : FAE.coral}
+      acento={ronda === "guiada" ? FAE.ambar : FAE.teal}
     >
       <style>{CSS_JUEGO}</style>
 

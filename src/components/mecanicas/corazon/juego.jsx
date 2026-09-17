@@ -1,5 +1,12 @@
 import { FAE } from "../../../theme.js";
 import { CSS_CORAZON } from "./circulatorio.jsx";
+import { CARD_SHELL } from "../../SubjectCard.jsx";
+
+/* El borde de las tarjetas del sitio, el mismo de CARD_SHELL. */
+const BORDE_TARJETA = CARD_SHELL.border.replace(/^1px solid /, "");
+
+/* El ancho mínimo de una columna de opciones: ver Opciones. */
+export const ANCHO_MINIMO_OPCION = 170;
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -37,6 +44,10 @@ ${CSS_CORAZON}
   clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
 
+/* Una opción libre bajo el dedo: el borde se aclara; el marcador sigue hueco. */
+.fae-jg-opcion:not(:disabled):hover { border-color: rgba(248,249,250,0.32) !important; }
+.fae-jg-opcion:focus-visible { outline: 2px solid ${FAE.teal}; outline-offset: 2px; }
+
 /* El latido de la opción recién acertada: un solo pulso, no un bucle. */
 @keyframes fae-jg-acierto {
   0%, 100% { transform: scale(1); }
@@ -56,71 +67,96 @@ ${CSS_CORAZON}
 }
 `;
 
-/* ─────────────────────────── los dos signos ─────────────────────────── */
+/* ─────────────────────────── la opción ─────────────────────────── */
 
-function Visto({ color }) {
+/*
+ * El marcador de la izquierda: un nodo, la misma pieza del logo y del camino.
+ * Hueco mientras se puede elegir; al elegir SE LLENA, y el relleno es lo que
+ * dice «esta es la tuya». Dentro del relleno va el signo —visto o aspa— para
+ * que el color nunca informe solo.
+ *
+ *   libre       anillo claro, hueco
+ *   correcta    lleno teal, con visto
+ *   incorrecta  lleno coral, con aspa        ← el ÚNICO coral de la opción
+ *   revelada    anillo teal con visto, hueco: la buena que NO se eligió
+ *   elegida     lleno claro, sin signo: tomada, todavía sin veredicto
+ */
+function Marcador({ estado }) {
+  const lleno = { correcta: FAE.teal, incorrecta: FAE.coral, elegida: FAE.node }[estado] ?? null;
+  const anillo = lleno ?? (estado === "revelada" ? FAE.teal : "rgba(248,249,250,0.5)");
+  const signo = estado === "revelada" ? FAE.teal : FAE.bg;
   return (
-    <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true" style={{ flexShrink: 0 }}>
-      <path d="M3 8 L6 11 L12 4" fill="none" stroke={color} strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function Aspa({ color }) {
-  return (
-    <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true" style={{ flexShrink: 0 }}>
-      <path d="M4 4 L11 11 M11 4 L4 11" fill="none" stroke={color} strokeWidth="2.1" strokeLinecap="round" />
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" data-marcador={estado ?? "libre"} style={{ flexShrink: 0 }}>
+      <circle cx="9" cy="9" r="7.5" fill={lleno ?? "none"} stroke={anillo} strokeWidth={estado === "revelada" ? 2 : 1.5} />
+      {(estado === "correcta" || estado === "revelada") && (
+        <path d="M5.4 9.3 L7.9 11.7 L12.6 6.6" fill="none" stroke={signo} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      )}
+      {estado === "incorrecta" && (
+        <path d="M6.2 6.2 L11.8 11.8 M11.8 6.2 L6.2 11.8" fill="none" stroke={signo} strokeWidth="2" strokeLinecap="round" />
+      )}
     </svg>
   );
 }
 
 /*
- * Una opción que se toca.
+ * Una opción que se toca: la tarjeta del sitio —el radio, el fondo apenas más
+ * claro que el navy y el borde sutil de CARD_SHELL—, no un rectángulo de
+ * formulario.
  *
  * `estado`: null mientras se puede elegir · "correcta" · "incorrecta" ·
  * "revelada" para la respuesta buena que el estudiante NO eligió, que se
- * enseña sin celebrarla.
+ * enseña sin celebrarla · "elegida" para una pieza tomada que todavía no se
+ * juzga (la línea de tiempo).
  */
 export function Opcion({ children, onClick, estado = null, deshabilitada = false, ancho = false }) {
   const acierto = estado === "correcta";
   const fallo = estado === "incorrecta";
   const revelada = estado === "revelada";
 
-  const borde = acierto ? FAE.teal : fallo ? FAE.coral : revelada ? `${FAE.teal}77` : "rgba(248,249,250,0.16)";
-  const fondo = acierto
-    ? "rgba(42,157,143,0.16)"
+  const borde = acierto
+    ? FAE.teal
     : fallo
-      ? "rgba(231,111,81,0.15)"
+      ? FAE.coral
       : revelada
-        ? "rgba(42,157,143,0.07)"
-        : "rgba(248,249,250,0.04)";
+        ? `${FAE.teal}88`
+        : estado === "elegida"
+          ? "rgba(203,220,242,0.55)"
+          : BORDE_TARJETA;
+  const fondo = acierto ? "rgba(42,157,143,0.14)" : fallo ? "rgba(231,111,81,0.13)" : CARD_SHELL.background;
 
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={deshabilitada}
-      className={acierto ? "fae-jg-acierto" : fallo ? "fae-jg-fallo" : undefined}
+      data-estado={estado ?? "libre"}
+      className={`fae-jg-opcion${acierto ? " fae-jg-acierto" : fallo ? " fae-jg-fallo" : ""}`}
       style={{
-        display: "flex", alignItems: "center", gap: "10px",
-        width: ancho ? "100%" : undefined,
-        textAlign: "left", padding: "13px 15px", borderRadius: "14px",
+        display: "flex", alignItems: "center", gap: "12px",
+        width: ancho ? "100%" : undefined, boxSizing: "border-box",
+        textAlign: "left", padding: "13px 15px", borderRadius: CARD_SHELL.borderRadius,
         background: fondo, border: `1px solid ${borde}`,
         color: FAE.text, fontFamily: "Inter, sans-serif", fontSize: "13.5px", lineHeight: 1.45,
+        /* Las que quedaron sin tocar se apagan un poco: el veredicto manda. */
+        opacity: deshabilitada && !estado ? 0.62 : 1,
         cursor: deshabilitada ? "default" : "pointer",
-        transition: "background 180ms ease, border-color 180ms ease",
+        transition: "background 180ms ease, border-color 180ms ease, opacity 180ms ease",
       }}
     >
-      {/* El signo acompaña al color; ninguno de los dos informa solo. */}
-      {acierto && <Visto color={FAE.teal} />}
-      {fallo && <Aspa color={FAE.coral} />}
-      {revelada && <Visto color={`${FAE.teal}aa`} />}
-      <span style={{ minWidth: 0, flex: 1 }}>{children}</span>
-      {revelada && (
-        <span style={{ fontSize: "11px", color: "rgba(248,249,250,0.5)", whiteSpace: "nowrap" }}>
-          era esta
-        </span>
-      )}
+      <Marcador estado={estado} />
+      <span style={{ minWidth: 0, flex: 1 }}>
+        {children}
+        {/*
+          Debajo del texto y no en una columna a la derecha: en la rejilla de
+          dos columnas del teléfono, esa columna partía «G · Gasto público» en
+          tres renglones.
+        */}
+        {revelada && (
+          <span style={{ display: "block", marginTop: "2px", fontSize: "11px", color: "rgba(248,249,250,0.62)" }}>
+            era esta
+          </span>
+        )}
+      </span>
     </button>
   );
 }
@@ -156,26 +192,61 @@ export function Retro({ texto }) {
 }
 
 /*
- * El avance, en la lengua de la casa: un pulso por ítem. Lleno el que ya se
- * contestó, hueco el que falta, y el número escrito al lado porque contar
- * puntos en una fila de doce no es leer.
+ * El avance: una línea de nodos unidos —el lenguaje del logo, del fondo de la
+ * portada y del camino—, no puntos sueltos.
+ *
+ *   hecho      lleno teal
+ *   actual     anillo de énfasis, hueco
+ *   pendiente  solo el contorno
+ *
+ * El tramo de línea hasta el nodo actual va en teal. NUNCA coral: en esta misma
+ * pantalla el coral marca la respuesta incorrecta, y aquí diría otra cosa.
+ *
+ * «Ítem 3 de 10» va pegado a la línea, en Inter, como rótulo de la misma pieza.
  */
 export function Pulsos({ total, hechos, etiqueta = "Avance" }) {
+  const actual = hechos < total ? hechos : null;
+  const hasta = total > 1 ? Math.min(hechos, total - 1) / (total - 1) : 0;
+  const NODO = 10;
+
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "9px", flexWrap: "wrap" }}>
-      <span style={{ display: "flex", gap: "5px" }} aria-hidden="true">
-        {Array.from({ length: total }, (_, i) => (
-          <span
-            key={i}
-            style={{
-              width: "8px", height: "8px", borderRadius: "999px",
-              background: i < hechos ? FAE.teal : "transparent",
-              border: `1px solid ${i < hechos ? FAE.teal : "rgba(248,249,250,0.28)"}`,
-            }}
-          />
-        ))}
-      </span>
-      <span style={{ fontFamily: "Sora, sans-serif", fontSize: "11.5px", fontWeight: 600, color: "rgba(248,249,250,0.5)" }}>
+    <div data-avance style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+      <div
+        role="progressbar"
+        aria-label={etiqueta}
+        aria-valuemin={0}
+        aria-valuemax={total}
+        aria-valuenow={hechos}
+        style={{
+          position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between",
+          flex: `0 1 ${total * 24}px`, minWidth: `${total * 13}px`, height: "16px",
+        }}
+      >
+        <span aria-hidden="true" style={{ position: "absolute", left: NODO / 2, right: NODO / 2, top: "50%", height: "1.5px", marginTop: "-0.75px", background: "rgba(248,249,250,0.2)" }} />
+        <span
+          aria-hidden="true"
+          data-tramo-hecho
+          style={{ position: "absolute", left: NODO / 2, top: "50%", height: "1.5px", marginTop: "-0.75px", width: `calc((100% - ${NODO}px) * ${hasta})`, background: FAE.teal, transition: "width 240ms ease" }}
+        />
+        {Array.from({ length: total }, (_, k) => {
+          const estado = k < hechos ? "hecho" : k === actual ? "actual" : "pendiente";
+          return (
+            <span
+              key={k}
+              aria-hidden="true"
+              data-nodo={estado}
+              style={{
+                position: "relative", boxSizing: "border-box", borderRadius: "999px", flexShrink: 0,
+                width: estado === "actual" ? "12px" : `${NODO}px`, height: estado === "actual" ? "12px" : `${NODO}px`,
+                background: estado === "hecho" ? FAE.teal : FAE.bg,
+                border: estado === "hecho" ? `1.5px solid ${FAE.teal}` : estado === "actual" ? `2px solid ${FAE.teal}` : "1.5px solid rgba(248,249,250,0.38)",
+                boxShadow: estado === "actual" ? "0 0 0 3px rgba(42,157,143,0.22)" : "none",
+              }}
+            />
+          );
+        })}
+      </div>
+      <span style={{ fontFamily: "Inter, sans-serif", fontSize: "11.5px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
         {etiqueta} {hechos} de {total}
       </span>
     </div>
@@ -244,8 +315,15 @@ export function Enunciado({ rotulo, children, acento = FAE.teal }) {
 
 /** La rejilla de opciones: una columna en móvil, dos cuando hay sitio. */
 export function Opciones({ children, columnas = "repeat(auto-fit, minmax(240px, 1fr))" }) {
+  /*
+   * Ninguna columna por debajo de ANCHO_MINIMO_OPCION, pida lo que pida la
+   * pantalla. El marcador y su hueco se comen ~30 px de cada tarjeta, y a 150 px
+   * «Operaciones de Mercado Abierto» salía en tres renglones. Con este piso, en
+   * un teléfono las opciones se apilan y en pantallas anchas siguen lado a lado.
+   */
+  const conPiso = columnas.replace(/minmax\((\d+)px/g, (_, n) => `minmax(${Math.max(Number(n), ANCHO_MINIMO_OPCION)}px`);
   return (
-    <div style={{ display: "grid", gridTemplateColumns: columnas, gap: "10px", marginTop: "14px" }}>
+    <div style={{ display: "grid", gridTemplateColumns: conPiso, gap: "10px", marginTop: "14px" }}>
       {children}
     </div>
   );

@@ -156,7 +156,7 @@ export default function LineaDeTiempo({ banco = EL_REZAGO, Marco, rotulo, titulo
           </p>
           <Opciones columnas="1fr">
             {sinPoner.map((h) => (
-              <Opcion key={h.id} ancho onClick={() => setElegido(elegido === h.id ? null : h.id)} estado={elegido === h.id ? "revelada" : null}>
+              <Opcion key={h.id} ancho onClick={() => setElegido(elegido === h.id ? null : h.id)} estado={elegido === h.id ? "elegida" : null}>
                 {h.texto}
               </Opcion>
             ))}

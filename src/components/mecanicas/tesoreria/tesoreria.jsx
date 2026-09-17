@@ -36,6 +36,19 @@ export const ACENTOS = {
   ninguno: "rgba(203,220,242,0.8)",
 };
 
+/*
+ * Las ranuras de los JUEGOS de la Tesorería. Deuda no va en coral aquí: en una
+ * pantalla de preguntas el coral es la respuesta incorrecta y nada más, y una
+ * bandeja coral se leería como «ahí va lo malo». Las escenas de Aprender
+ * siguen con ACENTOS.
+ */
+export const ACENTOS_RANURA = {
+  tributacion: FAE.teal,
+  gasto: FAE.ambar,
+  deuda: FAE.node,
+  ninguno: "rgba(248,249,250,0.5)",
+};
+
 export const CSS_TESORERIA = `
 ${CSS_SALA}
 ${CSS_JUEGO}
@@ -106,7 +119,7 @@ export function IconoMecanismo({ id, color = FAE.text, tam = 22 }) {
  * con palabras.
  */
 export function Ranura({ id, nombre, detalle, onClick, deshabilitada = false }) {
-  const color = ACENTOS[id] ?? FAE.teal;
+  const color = ACENTOS_RANURA[id] ?? FAE.teal;
   return (
     <button
       type="button"
@@ -183,12 +196,12 @@ export function Pista({ itemKey, texto, segundos, detenido = false, marca = null
         border: "1px solid rgba(248,249,250,0.14)",
       }}
     >
-      <div aria-hidden="true" style={{ position: "absolute", left: 0, right: 0, bottom: `${LINEA_ARCHIVO}%`, borderTop: `2px dashed ${FAE.coral}`, opacity: 0.7 }} />
+      <div aria-hidden="true" style={{ position: "absolute", left: 0, right: 0, bottom: `${LINEA_ARCHIVO}%`, borderTop: `2px dashed ${FAE.ambar}`, opacity: 0.7 }} />
       <span
         aria-hidden="true"
         style={{
           position: "absolute", right: "10px", bottom: `calc(${LINEA_ARCHIVO}% + 6px)`,
-          fontFamily: "Sora, sans-serif", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.coral,
+          fontFamily: "Sora, sans-serif", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar,
         }}
       >
         {rotulo}

@@ -78,7 +78,7 @@ export default function Termometro({ onCompletar }) {
 
   if (terminado) {
     return (
-      <Camaraseccion rotulo="TERMÓMETRO" titulo="Lecturas tomadas" acento={FAE.coral}>
+      <Camaraseccion rotulo="TERMÓMETRO" titulo="Lecturas tomadas" acento={FAE.teal}>
         <style>{CSS_JUEGO}</style>
         <Cierre pct={pct} onReiniciar={reiniciar} textoReiniciar="Otras seis lecturas">
           <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.55, color: "rgba(248,249,250,0.68)" }}>
@@ -93,14 +93,14 @@ export default function Termometro({ onCompletar }) {
   const retro = !elegido ? null : elegido === ronda.correcta ? ronda.acierto : errorReaccion(ronda);
 
   return (
-    <Camaraseccion rotulo="TERMÓMETRO DE REACCIONES" titulo="¿Cómo reacciona?" acento={FAE.coral}>
+    <Camaraseccion rotulo="TERMÓMETRO DE REACCIONES" titulo="¿Cómo reacciona?" acento={FAE.teal}>
       <style>{CSS_JUEGO}</style>
 
       <div style={{ marginBottom: "14px" }}>
         <Pulsos total={tanda.length} hechos={i + (elegido ? 1 : 0)} etiqueta="Lectura" />
       </div>
 
-      <Enunciado rotulo="CAMBIO" acento={FAE.coral}>{ronda.cambio}</Enunciado>
+      <Enunciado rotulo="CAMBIO" acento={FAE.teal}>{ronda.cambio}</Enunciado>
 
       <Opciones columnas="repeat(auto-fit, minmax(180px, 1fr))">
         {ronda.opciones.map((o) => (

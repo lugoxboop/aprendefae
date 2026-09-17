@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../theme.js";
 import { barajar } from "../../../utils/barajar.js";
 import { ALERTAS_MONITOR, COMPONENTES_MONITOR, retroMonitor } from "../../../data/demandaAgregadaHacer.js";
-import { COMPONENTES } from "../../../data/corazonDA.js";
 import { Camaraseccion } from "./circulatorio.jsx";
 import { CSS_JUEGO, Opcion, Opciones, Retro, Pulsos, Cierre, Enunciado } from "./juego.jsx";
 
@@ -33,9 +32,6 @@ import { CSS_JUEGO, Opcion, Opciones, Retro, Pulsos, Cierre, Enunciado } from ".
  */
 
 const POR_PARTIDA = 12;
-
-/* El tono de cada componente sale del mismo sitio que en las piezas de Aprender. */
-const COLOR = Object.fromEntries(COMPONENTES.map((c) => [c.id, c.color]));
 
 export default function SalaMonitores({ onCompletar }) {
   const [tanda, setTanda] = useState(() => barajar(ALERTAS_MONITOR).slice(0, POR_PARTIDA));
@@ -125,11 +121,12 @@ export default function SalaMonitores({ onCompletar }) {
             }
           >
             {/*
-              La letra en su tono y el nombre escrito al lado: el color señala,
-              nunca informa solo.
+              La letra y el nombre, en el color del texto. Las piezas de Aprender
+              pintan G en coral; aquí no, porque en una pantalla de preguntas el
+              coral es solo la respuesta incorrecta.
             */}
             <span style={{ display: "inline-flex", alignItems: "baseline", gap: "8px" }}>
-              <span style={{ fontFamily: "Sora, sans-serif", fontSize: "17px", fontWeight: 700, color: COLOR[c.id] ?? FAE.text }}>
+              <span style={{ fontFamily: "Sora, sans-serif", fontSize: "17px", fontWeight: 700, color: FAE.text }}>
                 {c.id}
               </span>
               <span>{c.nombre}</span>

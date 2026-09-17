@@ -47,8 +47,8 @@ export default function AgujeroFiscal({ onCompletar }) {
   };
 
   return (
-    <Tesoreria rotulo="TESORERÍA · EXPEDIENTE DEL DÉFICIT" titulo="El agujero fiscal" acento={FAE.coral}>
-      <Enunciado rotulo="EL CASO" acento={FAE.coral}>{CASO_AGUJERO}</Enunciado>
+    <Tesoreria rotulo="TESORERÍA · EXPEDIENTE DEL DÉFICIT" titulo="El agujero fiscal" acento={FAE.teal}>
+      <Enunciado rotulo="EL CASO" acento={FAE.teal}>{CASO_AGUJERO}</Enunciado>
       <p style={{ margin: "16px 0 0", fontFamily: "Sora, sans-serif", fontSize: "15.5px", fontWeight: 700, lineHeight: 1.45, color: FAE.text }}>
         {PREGUNTA_AGUJERO}
       </p>
