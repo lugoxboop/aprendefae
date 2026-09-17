@@ -1,9 +1,8 @@
 import { FAE } from "../theme.js";
-import { SUBJECTS, ACTIVIDADES_TRANSVERSALES } from "../data/subjects.js";
+import { SUBJECTS } from "../data/subjects.js";
 import TopicIndexView from "./TopicIndexView.jsx";
 import { MacroIcon } from "./SubjectCard.jsx";
 import SupplyDemandBackground from "./backgrounds/SupplyDemandBackground.jsx";
-import EntradaRepaso from "./repaso/EntradaRepaso.jsx";
 
 /*
  * Índice de temas de Macroeconomía.
@@ -23,15 +22,6 @@ export default function MacroTopicIndex({ onOpenTopic }) {
       topics={subject.topics}
       renderTopicIcon={() => <MacroIcon />}
       onOpenTopic={onOpenTopic}
-      entradas={ACTIVIDADES_TRANSVERSALES.filter((a) => a.indice === subject.id).map((a) => (
-        <EntradaRepaso
-          key={a.id}
-          actividad={a}
-          onAbrir={(id) => onOpenTopic(id)}
-          hoverBg="rgba(42,157,143,0.12)"
-          hoverBorder="rgba(42,157,143,0.7)"
-        />
-      ))}
     />
   );
 }

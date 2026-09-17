@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FAE } from "../theme.js";
-import { APRENDER, EMPTY_TOPICS_MESSAGE, HACER, tieneContenidoDe, tiposDeTema } from "../data/subjects.js";
+import { ACTIVIDADES_TRANSVERSALES, APRENDER, EMPTY_TOPICS_MESSAGE, HACER, tieneContenidoDe, tiposDeTema } from "../data/subjects.js";
 import SubjectCard from "./SubjectCard.jsx";
 import TopicSplitCard from "./TopicSplitCard.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
@@ -8,6 +8,7 @@ import BackgroundVeil from "./shared/BackgroundVeil.jsx";
 import Logo from "./Logo.jsx";
 import RankingFP from "./ranking/RankingFP.jsx";
 import LigaBoard from "./ligas/LigaBoard.jsx";
+import BannerRepaso from "./repaso/BannerRepaso.jsx";
 
 /*
  * Plantilla del índice de temas, compartida por las dos materias.
@@ -25,12 +26,6 @@ export default function TopicIndexView({
   renderTopicIcon,
   veilCenterAlpha,
   onOpenTopic,
-  /*
-   * Entradas que no son un tema: hoy, el Repaso Diario. Llegan ya dibujadas y
-   * se ponen en la misma rejilla, después de los temas. La plantilla no sabe
-   * qué son ni de dónde salen.
-   */
-  entradas = null,
 }) {
   /*
    * Qué tarjeta está mostrando su elección. Solo una a la vez: dos tarjetas
@@ -79,6 +74,18 @@ export default function TopicIndexView({
             {name}
           </h1>
         </div>
+
+        {/*
+          Lo transversal de esta materia —hoy, el Repaso Diario— va ARRIBA, justo
+          bajo la cabecera y FUERA de la rejilla: no es un tema y no se ve como
+          uno. Sale de ACTIVIDADES_TRANSVERSALES por `indice`, así que cada
+          materia enseña solo el suyo y una materia sin ninguno no reserva sitio.
+        */}
+        {ACTIVIDADES_TRANSVERSALES.filter((a) => a.indice === subjectId).map((a) => (
+          <div key={a.id} data-encabezado-materia style={{ width: "100%", maxWidth: "760px", margin: "clamp(18px, 3vh, 28px) auto 0" }}>
+            <BannerRepaso actividad={a} onAbrir={onOpenTopic} />
+          </div>
+        ))}
 
         <div
           style={{
@@ -158,7 +165,6 @@ export default function TopicIndexView({
                   />
                 );
               })}
-              {entradas}
             </div>
           ) : (
             <p

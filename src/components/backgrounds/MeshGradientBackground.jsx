@@ -22,7 +22,7 @@ import { FAE } from "../../theme.js";
  */
 
 /* Variante clara del navy de marca. No es un color nuevo: es #1D3557 subido. */
-const NAVY_CLARO = "#2E5385";
+export const NAVY_CLARO = "#2E5385";
 
 /*
  * Recorridos con cuatro paradas que vuelven al origen, para que el ciclo cierre
@@ -71,8 +71,8 @@ const CSS = `
 }
 `;
 
-/* Cada mancha: tamaño en vmax para que escale igual en cualquier pantalla. */
-const MANCHAS = [
+/* Las de la portada. Tamaño en vmax para que escale igual en cualquier pantalla. */
+export const MANCHAS_PORTADA = [
   {
     color: FAE.coral,
     tamano: "62vmax",
@@ -105,23 +105,31 @@ const MANCHAS = [
   },
 ];
 
-export default function MeshGradientBackground() {
+/*
+ * La malla, reutilizable. La portada la usa a pantalla completa (`fija`); el
+ * banner del Repaso Diario, dentro de su franja (`fija={false}`, ocupa su
+ * contenedor posicionado) y con sus propias manchas. La técnica, las
+ * animaciones y la regla de solo animar `transform` son las mismas: no hay
+ * una segunda copia de este fondo en ningún sitio.
+ */
+export function MallaAnimada({ manchas = MANCHAS_PORTADA, fija = true, fondo = FAE.bg }) {
   return (
     <div
       aria-hidden="true"
+      data-malla-animada
       style={{
-        position: "fixed",
+        position: fija ? "fixed" : "absolute",
         inset: 0,
         zIndex: 0,
         overflow: "hidden",
-        background: FAE.bg,
+        background: fondo,
         pointerEvents: "none",
       }}
     >
       <style>{CSS}</style>
-      {MANCHAS.map((m) => (
+      {manchas.map((m, k) => (
         <div
-          key={m.color}
+          key={k}
           className="fae-mesh-blob"
           style={{
             width: m.tamano,
@@ -148,4 +156,8 @@ export default function MeshGradientBackground() {
       ))}
     </div>
   );
+}
+
+export default function MeshGradientBackground() {
+  return <MallaAnimada />;
 }
