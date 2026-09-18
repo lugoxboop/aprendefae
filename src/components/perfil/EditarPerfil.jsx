@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FAE } from "../../theme.js";
 import { CAMPO, ETIQUETA, AYUDA } from "../auth/estilosCampo.js";
+import SeccionAvatar from "./SeccionAvatar.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -59,8 +60,21 @@ function SeccionIdentidad({ valores, cambiar }) {
   );
 }
 
+/*
+ * ═══════════ LA SEGUNDA SECCIÓN: EL AVATAR ═══════════
+ *
+ * Sin campos, y por tanto sin nada que el botón de guardar del panel tenga que
+ * mandar. Cada toque del selector ESCRIBE SOLO, por su propia función de la
+ * 0035 —el nivel hay que comprobar que esté comprado, y eso no lo hace un
+ * update del cliente—. Así que aquí solo declara que existe y dónde va.
+ *
+ * `campos: []` no es un hueco: hace que borradorDe, sePuedeGuardar y cambioDe
+ * la ignoren sin un solo `if` en el panel. Lo que se guarda por el botón sigue
+ * siendo el apodo y el nombre real, ni uno más.
+ */
 export const SECCIONES = [
   { id: "identidad", titulo: "Cómo te llamas aquí", campos: ["nickname", "full_name"], Componente: SeccionIdentidad },
+  { id: "avatar", titulo: "Tu avatar", campos: [], Componente: SeccionAvatar },
 ];
 
 const vacio = (v) => typeof v !== "string" || v.trim() === "";

@@ -1,0 +1,152 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * EL GENERADOR PARAMÉTRICO DE AVATARES — la parte que no dibuja.
+ *
+ * Portado TAL CUAL del kit de diseño: paletas, formas, verts(), fmt() y
+ * computeAvatarProps(). No se rediseña ni se aproxima nada aquí; quien quiera
+ * cambiar el aspecto de un avatar cambia el kit y se vuelve a portar. Lo que
+ * este archivo añade son las listas de lo SELECCIONABLE y los nombres que se
+ * enseñan, que el kit no tenía porque allí no había estudiante.
+ *
+ * 5 formas × 4 paletas × 4 niveles = 80 combinaciones, todas calculadas, ninguna
+ * dibujada a mano.
+ *
+ * ═══════════ 'comparacion' NO ES UNA PALETA DEL ESTUDIANTE ═══════════
+ *
+ * Es el gris de las miniaturas de la pestaña «Forma»: allí lo que se compara es
+ * la geometría, y pintar las cinco con la paleta puesta haría que se eligiera
+ * por color. Nunca aparece como opción —PALETAS es la lista de lo elegible y no
+ * la incluye— y avatar.test.mjs lo comprueba leyendo este archivo y el selector.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+export const PALETTES = {
+  nocturno:    { c1: '#1D3557', c2: '#2A9D8F', stroke: '#14263F', node: '#E76F51', ring: '#2A9D8F' },
+  marea:       { c1: '#2A9D8F', c2: '#1D3557', stroke: '#14263F', node: '#F2F5F8', ring: '#2A9D8F' },
+  brasa:       { c1: '#E76F51', c2: '#1D3557', stroke: '#14263F', node: '#2A9D8F', ring: '#E76F51' },
+  aurora:      { c1: '#E76F51', c2: '#2A9D8F', stroke: '#1D3557', node: '#1D3557', ring: '#E76F51' },
+  comparacion: { c1: '#4A5A72', c2: '#7A8798', stroke: '#9AA5B4', node: '#C8D0DA', ring: '#6B7A90' },
+};
+
+export const SHAPES = {
+  decaedro: { n: 10, rot: -90, alt: 1,    step: 3 },
+  prisma:   { n: 6,  rot: -90, alt: 1,    step: 2 },
+  nucleo:   { n: 8,  rot: -90, alt: 0.66, step: 3 },
+  red:      { n: 12, rot: -90, alt: 1,    step: 5 },
+  cuna:     { n: 5,  rot: -90, alt: 1,    step: 2 },
+};
+
+export function verts(s, R) {
+  const out = [];
+  for (let i = 0; i < s.n; i++) {
+    const a = (s.rot + i * 360 / s.n) * Math.PI / 180;
+    const r = R * (s.alt !== 1 && i % 2 ? s.alt : 1);
+    out.push([100 + r * Math.cos(a), 100 + r * Math.sin(a)]);
+  }
+  return out;
+}
+
+export const fmt = (pts) => pts.map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+
+export function computeAvatarProps(shapeKey, paletteKey, level) {
+  const s = SHAPES[shapeKey] ?? SHAPES.decaedro;
+  const p = PALETTES[paletteKey] ?? PALETTES.nocturno;
+  const lvl = Math.max(1, Math.min(4, +level || 1));
+  const R = 84;
+  const V = verts(s, R);
+  const W = verts(s, R * 0.8);
+  const rich = lvl >= 3;
+
+  return {
+    c1: p.c1, c2: p.c2, node: p.node, ring: p.ring,
+    pts: fmt(V),
+    insetPts: fmt(verts(s, R * (s.alt !== 1 ? 0.44 : 0.52))),
+    stroke: rich ? p.stroke : p.c1,
+    sw: rich ? 2.2 : 2.8,
+    bodyFill: rich,
+    chordColor: rich ? '#FFFFFF' : p.c2,
+    insetStroke: rich ? '#FFFFFF' : p.c2,
+    insetFill: rich ? 'rgba(255,255,255,0.07)' : 'none',
+    insetOp: rich ? 0.38 : 0.55,
+    facets: rich ? V.map((v, i) => ({
+      pts: fmt([[100, 100], v, V[(i + 1) % V.length]]),
+      op: i % 2 ? 0.17 : 0.05,
+    })) : [],
+    spokes: lvl >= 2 ? V.filter((_, i) => i % 2 === 0).map((v) => ({ x: +v[0].toFixed(1), y: +v[1].toFixed(1) })) : [],
+    chords: lvl >= 4 ? W.map((v, i) => {
+      const q = W[(i + s.step) % W.length];
+      return { x1: +v[0].toFixed(1), y1: +v[1].toFixed(1), x2: +q[0].toFixed(1), y2: +q[1].toFixed(1) };
+    }) : [],
+    nodes: lvl >= 2 ? V.map((v) => ({ x: +v[0].toFixed(1), y: +v[1].toFixed(1), r: s.n > 10 ? 2.4 : 3.2 })) : [],
+    showCore: lvl >= 2,
+    coreR: lvl >= 3 ? 5 : 4,
+    showHalo: lvl >= 4,
+    showGloss: lvl >= 4,
+  };
+}
+
+/*
+ * ═══════════ LO QUE UN ESTUDIANTE PUEDE ELEGIR ═══════════
+ *
+ * Las cinco formas, las CUATRO paletas —'comparacion' no está— y los cuatro
+ * niveles. El orden es el que se enseña en las pestañas del selector.
+ */
+export const FORMAS = ["decaedro", "prisma", "nucleo", "red", "cuna"];
+export const PALETAS = ["nocturno", "marea", "brasa", "aurora"];
+
+/** La paleta interna de las miniaturas de «Forma». Nunca elegible. Ver la cabecera. */
+export const PALETA_COMPARACION = "comparacion";
+/** Y el nivel fijo de esas miniaturas: se comparan geometrías, no niveles. */
+export const NIVEL_COMPARACION = 2;
+
+export const NOMBRE_FORMA = {
+  decaedro: "Decaedro",
+  prisma: "Prisma",
+  nucleo: "Núcleo",
+  red: "Red",
+  cuna: "Cuña",
+};
+
+export const NOMBRE_PALETA = {
+  nocturno: "Nocturno",
+  marea: "Marea",
+  brasa: "Brasa",
+  aurora: "Aurora",
+};
+
+/* Los cuatro niveles del avatar, con su número romano y su palabra. */
+export const NIVELES = [1, 2, 3, 4];
+export const ROMANO = { 1: "I", 2: "II", 3: "III", 4: "IV" };
+export const NOMBRE_NIVEL = { 1: "Línea", 2: "Nodos", 3: "Facetado", 4: "Brillo" };
+export const ETIQUETA_NIVEL = (n) => `Nivel ${ROMANO[n] ?? "I"}`;
+
+/* Lo que no viene de la base o viene roto: Decaedro · Nocturno · Nivel I. */
+export const POR_DEFECTO = { forma: "decaedro", paleta: "nocturno", nivel: 1 };
+
+/** La combinación del perfil, saneada: nunca 'comparacion', nunca un nivel fuera de 1-4. */
+export function combinacionDe(perfil) {
+  const forma = FORMAS.includes(perfil?.avatar_shape) ? perfil.avatar_shape : POR_DEFECTO.forma;
+  const paleta = PALETAS.includes(perfil?.avatar_palette) ? perfil.avatar_palette : POR_DEFECTO.paleta;
+  const n = Math.floor(Number(perfil?.avatar_level));
+  const nivel = n >= 1 && n <= 4 ? n : POR_DEFECTO.nivel;
+  return { forma, paleta, nivel };
+}
+
+/** El pie del selector: «Núcleo · Marea · Nivel II». */
+export const leyenda = ({ forma, paleta, nivel }) =>
+  `${NOMBRE_FORMA[forma] ?? ""} · ${NOMBRE_PALETA[paleta] ?? ""} · ${ETIQUETA_NIVEL(nivel)}`;
+
+/*
+ * ═══════════ EL HALO Y LAS CUERDAS SE RETIRAN POR DEBAJO DE 40 px ═══════════
+ *
+ * A 36 y a 24 —ranking y liga— los dos anillos del halo y las cuerdas internas
+ * no se leen: se convierten en una sombra sucia alrededor de la figura y en
+ * ruido dentro. El nivel SIGUE SIENDO el que es; lo que se retira es su adorno
+ * más fino, igual que un sello pequeño no lleva la filigrana del grande.
+ */
+export const UMBRAL_DETALLE = 40;
+
+export function ajustarAlTamano(props, tamano) {
+  if (Number(tamano) >= UMBRAL_DETALLE) return props;
+  return { ...props, showHalo: false, chords: [] };
+}

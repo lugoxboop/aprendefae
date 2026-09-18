@@ -12,9 +12,22 @@
  * NO ES LA ÚNICA DEFENSA, NI LA QUE MANDA. Desde la 0032 la base solo le
  * concede a un estudiante escribir nickname y full_name (permisos por
  * columna): aunque alguien saltara esta lista desde la consola, el resto de
- * columnas —FP, rachas, es_prueba— se rechaza con 42501. El día del avatar
- * se añade su columna AQUÍ, a su sección del panel Y a un grant de una
- * migración nueva; con solo las dos primeras, guardar fallaría.
+ * columnas —FP, rachas, es_prueba— se rechaza con 42501.
+ *
+ * ═══════════ EL AVATAR NO ENTRÓ AQUÍ, Y ES A PROPÓSITO ═══════════
+ *
+ * Aquí decía que el día del avatar se añadiría su columna a esta lista y un
+ * grant a una migración nueva. No se hizo así: avatar_level solo es válido si
+ * el estudiante COMPRÓ ese nivel, y un grant por columna no sabe comprobarlo
+ * —concede o no concede—. Con el grant, cualquiera podría ponerse el nivel IV
+ * desde la consola sin gastar un Cristal.
+ *
+ * Así que las cuatro columnas del avatar y el saldo de Cristales siguen
+ * cerradas al cliente, como los FP, y se escriben por dos funciones security
+ * definer de la 0035: avatar_elegir() —que valida forma, paleta y que el nivel
+ * esté comprado— y comprar_nivel_avatar() —que cobra—. Ver src/cristales.
+ * SÍ se LEEN desde el cliente: están en COLUMNAS_PERFIL, y leer la fila propia
+ * es lo que RLS ya permitía.
  *
  * ═══════════ LAS REGLAS SON DE LA BASE, NO DEL FORMULARIO ═══════════
  *
@@ -34,8 +47,14 @@
 
 export const CAMPOS_EDITABLES = ["nickname", "full_name"];
 
-/* Las columnas que se leen del perfil, las mismas al cargar y al guardar. */
-export const COLUMNAS_PERFIL = "user_id, nickname, full_name, points, streak, best_streak, last_activity_day, created_at";
+/*
+ * Las columnas que se leen del perfil, las mismas al cargar y al guardar. Las
+ * cinco últimas son de la 0035: el saldo de Cristales y la combinación del
+ * avatar. Se leen, no se escriben desde aquí —ver la nota de arriba—.
+ */
+export const COLUMNAS_PERFIL =
+  "user_id, nickname, full_name, points, streak, best_streak, last_activity_day, created_at, " +
+  "cristales_balance, avatar_shape, avatar_palette, avatar_level, avatar_unlocked_levels";
 
 /** Solo las columnas editables del cambio, con los textos sin espacios en los extremos. */
 export function cambioPermitido(cambio) {

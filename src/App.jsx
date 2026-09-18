@@ -27,6 +27,7 @@ const PensamientoSistemicoView = lazy(() => import("./components/PensamientoSist
 const IcebergView = lazy(() => import("./components/IcebergView.jsx"));
 const PorterView = lazy(() => import("./components/PorterView.jsx"));
 const PerfilView = lazy(() => import("./components/PerfilView.jsx"));
+const TiendaView = lazy(() => import("./components/tienda/TiendaView.jsx"));
 const PoliticaEconomicaView = lazy(() => import("./components/PoliticaEconomicaView.jsx"));
 /* "La Tesorería Nacional": los siete juegos de Política Fiscal. Solo tiene mitad Hacer. */
 const PoliticaFiscalView = lazy(() => import("./components/PoliticaFiscalView.jsx"));
@@ -99,6 +100,8 @@ export default function App() {
     goHome,
     irAPerfil: () => { setPrevView(view); setView("perfil"); },
     irAPanelDocente: () => { setPrevView(view); setView("docente"); },
+    /* La Tienda. Se entra desde el perfil y desde la pestaña «Nivel» del selector. */
+    irATienda: () => { setPrevView(view); setView("tienda"); },
     /*
      * La navegación con estado en el hash. La usan los dos enlaces que cruzan
      * entre una actividad y su rendimiento; `prevView` se recuerda igual que
@@ -235,6 +238,15 @@ export default function App() {
       <Suspense fallback={siteFallback}>
         {/* Volver devuelve a donde estaba el estudiante, no siempre al inicio. */}
         <PerfilView onBack={() => setView(prevView === "perfil" ? "home" : prevView)} />
+      </Suspense>
+    );
+  }
+
+  if (view === "tienda") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        {/* Se entra desde el perfil o desde el selector de avatar; vuelve a donde estaba. */}
+        <TiendaView onBack={() => setView(prevView === "tienda" ? "perfil" : prevView)} />
       </Suspense>
     );
   }

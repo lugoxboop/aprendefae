@@ -11,6 +11,11 @@ import { animosRecibidos } from "../social/animo.js";
 import Medallas from "./perfil/Medallas.jsx";
 import ResumenSemestre from "./perfil/ResumenSemestre.jsx";
 import EditarPerfil from "./perfil/EditarPerfil.jsx";
+import Avatar, { TAMANOS } from "./avatar/Avatar.jsx";
+import IconoCristal from "./shared/IconoCristal.jsx";
+import { combinacionDe, leyenda } from "../avatar/generador.js";
+import { saldoDe } from "../cristales/cristales.js";
+import { AVISO_AVATAR, avisoPendiente, descartarAviso } from "./perfil/avisoAvatar.js";
 
 /*
  * Perfil del estudiante. Se llega desde el indicador de cuenta de la cabecera.
@@ -44,6 +49,8 @@ export default function PerfilView({ onBack }) {
    */
   const [editando, setEditando] = useState(false);
   const [vuelta, setVuelta] = useState(0);
+  /* El aviso de la primera vez. Se decide al montar: ver avisoAvatar.js. */
+  const [aviso, setAviso] = useState(() => avisoPendiente());
 
   useEffect(() => {
     if (!session) return;
@@ -115,16 +122,58 @@ export default function PerfilView({ onBack }) {
           </div>
         ) : (
           <>
-            <p
-              data-apodo
-              style={{
-                fontFamily: "Sora, sans-serif", fontWeight: 700,
-                fontSize: "clamp(26px, 4vw, 34px)", letterSpacing: "-0.03em",
-                lineHeight: 1.1, margin: "0 0 4px",
-              }}
-            >
-              {perfil?.nickname ?? "Tu cuenta"}
-            </p>
+            {/*
+              El avatar, a 96 px, con el apodo al lado. TOCARLO ABRE EDITAR
+              PERFIL: es el atajo directo al selector, además del botón de
+              abajo. Lo que se toca para cambiar algo es la cosa misma.
+            */}
+            <div style={{ display: "flex", alignItems: "center", gap: "14px", margin: "0 0 10px" }}>
+              <button
+                type="button"
+                data-abrir-avatar
+                onClick={() => setEditando(true)}
+                aria-label={`Cambiar tu avatar. Ahora: ${leyenda(combinacionDe(perfil))}`}
+                style={{
+                  padding: "6px", borderRadius: "999px", cursor: "pointer", flexShrink: 0,
+                  background: "rgba(29,53,87,0.55)", border: "1px solid rgba(248,249,250,0.14)", lineHeight: 0,
+                }}
+              >
+                <Avatar perfil={perfil} tamano={TAMANOS.perfil} />
+              </button>
+              <p
+                data-apodo
+                style={{
+                  fontFamily: "Sora, sans-serif", fontWeight: 700,
+                  fontSize: "clamp(24px, 4vw, 34px)", letterSpacing: "-0.03em",
+                  lineHeight: 1.1, margin: 0, minWidth: 0, overflowWrap: "anywhere",
+                }}
+              >
+                {perfil?.nickname ?? "Tu cuenta"}
+              </p>
+            </div>
+
+            {aviso && (
+              <p
+                data-aviso-avatar
+                style={{
+                  display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap",
+                  fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.66)", margin: "0 0 12px",
+                }}
+              >
+                {AVISO_AVATAR}
+                <button
+                  type="button"
+                  data-descartar-aviso
+                  onClick={() => { descartarAviso(); setAviso(false); }}
+                  style={{
+                    background: "transparent", border: "none", padding: 0, cursor: "pointer",
+                    fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600, color: FAE.teal,
+                  }}
+                >
+                  Entendido
+                </button>
+              </p>
+            )}
             <p style={{ fontSize: "14px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>
               Este es el nombre que ven los demás en los rankings.
             </p>
@@ -176,6 +225,28 @@ export default function PerfilView({ onBack }) {
                 * Ánimos recibidos: el número y nada más. Quién los dio no se
                 * guarda para mostrarse, y ninguna consulta lo devuelve.
                 */}
+              {/*
+                * Los Cristales, junto a los FP y la racha, y la entrada
+                * principal a la Tienda: la moneda y el sitio donde se gasta son
+                * la misma tarjeta. FP y Cristales se ven al lado sin mezclarse
+                * —uno es el puntaje, el otro la moneda— y no hay forma de
+                * cambiar uno por el otro en ninguna dirección.
+                */}
+              <button
+                type="button"
+                data-ir-tienda
+                onClick={() => nav?.irATienda?.()}
+                style={{ ...dato, textAlign: "left", cursor: "pointer", color: FAE.text, font: "inherit", border: `1px solid ${FAE.teal}`, background: "rgba(42,157,143,0.10)" }}
+              >
+                <p style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>
+                  <IconoCristal tamano={12} />
+                  Cristales
+                </p>
+                <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "24px", margin: 0, color: FAE.text, fontVariantNumeric: "tabular-nums" }}>
+                  {saldoDe(perfil)}
+                </p>
+                <p style={{ fontSize: "11.5px", color: FAE.teal, margin: "4px 0 0" }}>Ir a la Tienda →</p>
+              </button>
               <div style={dato}>
                 <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>Ánimos recibidos</p>
                 <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "24px", margin: 0, color: FAE.coral, fontVariantNumeric: "tabular-nums" }}>

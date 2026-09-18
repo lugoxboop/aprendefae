@@ -101,26 +101,29 @@ test("al guardado solo llegan columnas de la lista blanca, y los errores de la b
   assert.match(mensajeDeErrorPerfil({ code: "08006" }), /No se pudo guardar/);
 });
 
-test("una sección nueva —el avatar de mañana— entra sin tocar el panel: se pinta, se valida y se guarda con las demás", async () => {
-  function SeccionAvatar({ valores, cambiar }) {
-    return React.createElement("input", { id: "prueba-avatar", value: valores.avatar, onChange: (e) => cambiar("avatar", e.target.value) });
+test("una sección nueva entra sin tocar el panel: se pinta, se valida y se guarda con las demás", async () => {
+  /* El avatar YA llegó (es la segunda sección real), así que la sección de
+   * mentira de esta prueba es otra cosa: lo que se comprueba es el punto de
+   * extensión, no el avatar. */
+  function SeccionInsignia({ valores, cambiar }) {
+    return React.createElement("input", { id: "prueba-insignia", value: valores.insignia, onChange: (e) => cambiar("insignia", e.target.value) });
   }
-  const secciones = [...SECCIONES, { id: "avatar", titulo: "Avatar", campos: ["avatar"], Componente: SeccionAvatar }];
+  const secciones = [...SECCIONES, { id: "insignia", titulo: "Insignia", campos: ["insignia"], Componente: SeccionInsignia }];
   const llamadas = [];
   const m = montar({
-    perfil: { nickname: "Cami", full_name: "Camila", avatar: "" },
+    perfil: { nickname: "Cami", full_name: "Camila", insignia: "" },
     secciones,
     guardar: async (c) => { llamadas.push(c); return {}; },
   });
   try {
-    assert.deepEqual([...m.caja.querySelectorAll("[data-seccion]")].map((s) => s.getAttribute("data-seccion")), ["identidad", "avatar"]);
+    assert.deepEqual([...m.caja.querySelectorAll("[data-seccion]")].map((s) => s.getAttribute("data-seccion")), ["identidad", "avatar", "insignia"]);
     assert.equal(m.caja.querySelectorAll('button[type="submit"]').length, 1, "un solo guardar para todas las secciones");
-    assert.ok(guardarBtn(m.caja).disabled, "el avatar vacío también bloquea");
-    escribir(m.caja.querySelector("#prueba-avatar"), "buho");
+    assert.ok(guardarBtn(m.caja).disabled, "la insignia vacía también bloquea");
+    escribir(m.caja.querySelector("#prueba-insignia"), "buho");
     await pulsar(guardarBtn(m.caja));
-    assert.deepEqual(llamadas, [{ nickname: "Cami", full_name: "Camila", avatar: "buho" }]);
+    assert.deepEqual(llamadas, [{ nickname: "Cami", full_name: "Camila", insignia: "buho" }]);
   } finally { m.desmontar(); }
 
-  assert.deepEqual(borradorDe({ nickname: "a" }, secciones), { nickname: "a", full_name: "", avatar: "" });
-  assert.deepEqual(cambioDe({ nickname: " a", full_name: "b ", avatar: "c" }, secciones), { nickname: "a", full_name: "b", avatar: "c" });
+  assert.deepEqual(borradorDe({ nickname: "a" }, secciones), { nickname: "a", full_name: "", insignia: "" });
+  assert.deepEqual(cambioDe({ nickname: " a", full_name: "b ", insignia: "c" }, secciones), { nickname: "a", full_name: "b", insignia: "c" });
 });

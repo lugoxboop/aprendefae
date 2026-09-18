@@ -13,13 +13,25 @@ import { COLUMNAS_PERFIL, cambioPermitido, mensajeDeErrorPerfil } from "./perfil
  *   paso de apodo queda pendiente: `necesitaApodo` lo señala.
  */
 
-const AuthContext = createContext(null);
+/*
+ * EXPORTADO, y con una razón concreta. La sección del avatar de «Editar perfil»
+ * necesita la cuenta pero tiene que poder montarse sin ella —el panel se prueba
+ * suelto, sin Supabase— y una vista con cuenta se prueba con un proveedor de
+ * mentira. Las dos cosas piden el contexto, no el hook que revienta sin él.
+ *
+ * El hook sigue siendo la forma normal de leerlo: quien necesita la cuenta de
+ * verdad usa useAuth() y se enterará en el acto si está fuera del proveedor.
+ */
+export const AuthContext = createContext(null);
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth debe usarse dentro de <AuthProvider>");
   return ctx;
 };
+
+/** Como useAuth, pero devuelve null fuera del proveedor en vez de lanzar. */
+export const useAuthOpcional = () => useContext(AuthContext);
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
@@ -42,7 +54,7 @@ export function AuthProvider({ children }) {
     if (!supabase || !userId) return { perfil: null, error: null };
     const { data, error } = await supabase
       .from("profiles")
-      .select("user_id, nickname, full_name, points, streak, best_streak, last_activity_day, created_at")
+      .select(COLUMNAS_PERFIL)
       .eq("user_id", userId)
       .maybeSingle();
     if (error) {
@@ -121,7 +133,7 @@ export function AuthProvider({ children }) {
       const { data, error } = await supabase
         .from("profiles")
         .insert({ user_id: session.user.id, nickname: limpio, full_name: nombre })
-        .select("user_id, nickname, full_name, points, streak, best_streak, last_activity_day, created_at")
+        .select(COLUMNAS_PERFIL)
         .single();
 
       if (error) {
@@ -160,6 +172,31 @@ export function AuthProvider({ children }) {
     [session]
   );
 
+  /*
+   * ═══════════ LAS DOS PUERTAS PARA EL PERFIL QUE ESCRIBE EL SERVIDOR ═══════════
+   *
+   * El saldo de Cristales y la combinación del avatar los escriben funciones
+   * security definer (0035), no un update del cliente: aquí no hay `guardar`
+   * que valga. Pero la pantalla tiene que reflejarlo en el acto —el avatar sale
+   * en el ranking y el saldo en la Tienda— así que:
+   *
+   *   aplicarPerfil   pone la fila que la función ya devolvió. Sin viaje extra.
+   *   refrescarPerfil vuelve a leer, para cuando el cambio no vino con fila
+   *                   (los Cristales que paga registrar_fp al terminar algo).
+   */
+  const aplicarPerfil = useCallback((fila) => {
+    if (!fila) return;
+    setPerfil((antes) => ({ ...(antes ?? {}), ...fila }));
+    setErrorPerfil(null);
+  }, []);
+
+  const refrescarPerfil = useCallback(async () => {
+    if (!session) return null;
+    const { perfil: p } = await cargarPerfil(session.user.id);
+    if (p) setPerfil(p);
+    return p;
+  }, [session, cargarPerfil]);
+
   const apodoDisponible = useCallback(async (nickname) => {
     if (!supabase) return true;
     const { data, error } = await supabase.rpc("nickname_disponible", {
@@ -190,10 +227,12 @@ export function AuthProvider({ children }) {
       cerrarDialogo,
       crearPerfil,
       guardarPerfil,
+      aplicarPerfil,
+      refrescarPerfil,
       apodoDisponible,
       cerrarSesion,
     }),
-    [cargando, session, perfil, errorPerfil, necesitaApodo, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, guardarPerfil, apodoDisponible, cerrarSesion]
+    [cargando, session, perfil, errorPerfil, necesitaApodo, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

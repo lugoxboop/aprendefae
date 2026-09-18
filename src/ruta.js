@@ -65,6 +65,7 @@ export const VISTAS = new Set([
    */
   /* Nivel sitio */
   "perfil",
+  "tienda",
   "docente",
 ]);
 

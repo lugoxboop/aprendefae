@@ -204,14 +204,18 @@ jobs:
             fi
           }
           for t in profiles fp_history fp_detalle actividad_catalogo docentes docente_grupo \
-                   liga_membresia liga_ciclo liga_reparto; do
+                   liga_membresia liga_ciclo liga_reparto \
+                   cristal_movimiento liga_cierre liga_resultado; do
             comprobar_tabla "$t"
           done
           for f in registrar_fp es_docente materias_docente panel_estudiantes panel_resumen \
                    panel_historial panel_actividad panel_items panel_grupo_actividad \
                    ligas_para ligas_sembrar liga_entrar liga_tablero liga_contexto \
                    liga_niveles ligas_transicion ligas_repartir ligas_abrir_elite \
-                   ligas_cerrar_ciclo; do
+                   ligas_cerrar_ciclo ligas_cerrar_semana ligas_cerrar_resultados \
+                   ligas_sembrar_ciclo liga_podio_tamano liga_cristales_puesto \
+                   cristales_dar cristales_por_racha cristales_por_actividades \
+                   avatar_elegir comprar_nivel_avatar; do
             comprobar_funcion "$f"
           done
           if [ "$faltan" != "0" ]; then
