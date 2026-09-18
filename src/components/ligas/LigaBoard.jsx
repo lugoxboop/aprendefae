@@ -5,6 +5,7 @@ import { tableroDe, contextoDe, repartir, tieneLigas } from "../../ligas/ligas.j
 import CabeceraLiga from "./CabeceraLiga.jsx";
 import BotonAnimo from "../social/BotonAnimo.jsx";
 import { estadoDeAnimos } from "../../social/animo.js";
+import Avatar, { TAMANOS } from "../avatar/Avatar.jsx";
 
 /*
  * Tablero de liga de una materia.
@@ -72,7 +73,8 @@ const SIN_CONTEXTO = {
   activosReparto: null,
 };
 
-export default function LigaBoard({ subjectId }) {
+/* Las dos consultas, inyectables por la misma razón que en RankingFP. */
+export default function LigaBoard({ subjectId, cargarTablero = tableroDe, cargarContexto = contextoDe }) {
   const { session, pedirCuenta } = useAuth();
   const [estado, setEstado] = useState({ cargando: true, filas: [], error: null });
   const [contexto, setContexto] = useState(SIN_CONTEXTO);
@@ -85,13 +87,13 @@ export default function LigaBoard({ subjectId }) {
      * Las dos llamadas van a la vez, no una tras otra: son independientes y
      * encadenarlas sumaría una ida y vuelta a un tablero que ya hace dos.
      */
-    const [tablero, ctx] = await Promise.all([tableroDe(subjectId), contextoDe(subjectId)]);
+    const [tablero, ctx] = await Promise.all([cargarTablero(subjectId), cargarContexto(subjectId)]);
     const { filas, error } = tablero;
     setContexto(ctx.contexto ?? SIN_CONTEXTO);
     setEstado({ cargando: false, filas, error });
     /* Aparte de liga_tablero, para no tocar una función ya asegurada. */
     setAnimos(await estadoDeAnimos((filas ?? []).filter((f) => !f.es_tuyo).map((f) => f.nickname)));
-  }, [subjectId]);
+  }, [subjectId, cargarTablero, cargarContexto]);
 
   useEffect(() => {
     cargar();
@@ -172,6 +174,8 @@ export default function LigaBoard({ subjectId }) {
                 }}
               >
                 <Puesto n={f.posicion} destacado={f.es_tuyo} />
+                {/* A 24 px, el tamaño de liga. Forma, paleta y nivel llegan con la fila (0037). */}
+                <Avatar perfil={f} tamano={TAMANOS.liga} style={{ flexShrink: 0 }} />
                 <span style={{ flex: 1, minWidth: 0, fontSize: "14px", fontWeight: f.es_tuyo ? 700 : 400, color: FAE.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {f.nickname}{f.es_tuyo ? " · tú" : ""}
                 </span>

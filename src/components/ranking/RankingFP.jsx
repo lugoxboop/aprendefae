@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase.js";
 import BotonAnimo from "../social/BotonAnimo.jsx";
 import { estadoDeAnimos } from "../../social/animo.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
+import Avatar, { TAMANOS } from "../avatar/Avatar.jsx";
 
 /*
  * Tabla de posiciones de FP. Sirve a los dos emplazamientos: por materia
@@ -72,6 +73,12 @@ function Fila({ entrada, destacada, animo }) {
       }}
     >
       <Posicion n={entrada.posicion} />
+      {/*
+        El avatar de cada fila, a 36 px. La fila trae forma, paleta y nivel
+        desde ranking_fp (0037). El retiro de halo y cuerdas por debajo de 40 px
+        lo hace el generador: aquí solo se dice el tamaño.
+      */}
+      <Avatar perfil={entrada} tamano={TAMANOS.ranking} style={{ flexShrink: 0 }} />
       <span
         style={{
           flex: 1,
@@ -107,19 +114,26 @@ function Fila({ entrada, destacada, animo }) {
   );
 }
 
-export default function RankingFP({ subjectId = null, titulo = "Ranking", nota }) {
+/*
+ * La consulta, aparte e inyectable: la de verdad va contra ranking_fp, y la
+ * prueba de la lista larga de avatares la sustituye por filas de mentira con la
+ * misma forma. Mismo trato que onGuardar en el selector de avatar.
+ */
+export async function pedirRanking({ subjectId, periodo }) {
+  if (!supabase) return { data: [], error: null };
+  return supabase.rpc("ranking_fp", { p_subject: subjectId, p_periodo: periodo });
+}
+
+export default function RankingFP({ subjectId = null, titulo = "Ranking", nota, pedir = pedirRanking }) {
   const { session, perfil, pedirCuenta } = useAuth();
   const [periodo, setPeriodo] = useState("semestre");
   const [estado, setEstado] = useState({ cargando: false, filas: null, error: null });
   const [animos, setAnimos] = useState({});
 
   const consultar = useCallback(async () => {
-    if (!supabase || !session) return;
+    if (!session) return;
     setEstado({ cargando: true, filas: null, error: null });
-    const { data, error } = await supabase.rpc("ranking_fp", {
-      p_subject: subjectId,
-      p_periodo: periodo,
-    });
+    const { data, error } = await pedir({ subjectId, periodo });
     if (error) {
       setEstado({ cargando: false, filas: null, error: error.message });
       return;
@@ -133,7 +147,7 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota }
      */
     const ajenos = (data ?? []).filter((f) => !f.es_tuyo).map((f) => f.nickname);
     setAnimos(await estadoDeAnimos(ajenos));
-  }, [subjectId, periodo, session]);
+  }, [subjectId, periodo, session, pedir]);
 
   /* Se consulta al entrar y cada vez que cambia la pestaña. */
   useEffect(() => { consultar(); }, [consultar]);
