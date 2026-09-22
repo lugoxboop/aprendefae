@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import {
   PALETTES, SHAPES, verts, fmt, computeAvatarProps, FORMAS, PALETAS, NIVELES,
   PALETA_COMPARACION, NIVEL_COMPARACION, combinacionDe, leyenda, ajustarAlTamano, UMBRAL_DETALLE,
+  NAVY_AVATAR, POR_DEFECTO,
 } from "../generador.js";
 
 /*
@@ -18,10 +19,10 @@ import {
  */
 
 const PALETAS_ESPERADAS = {
-  nocturno:    { c1: "#1D3557", c2: "#2A9D8F", stroke: "#14263F", node: "#E76F51", ring: "#2A9D8F" },
-  marea:       { c1: "#2A9D8F", c2: "#1D3557", stroke: "#14263F", node: "#F2F5F8", ring: "#2A9D8F" },
-  brasa:       { c1: "#E76F51", c2: "#1D3557", stroke: "#14263F", node: "#2A9D8F", ring: "#E76F51" },
-  aurora:      { c1: "#E76F51", c2: "#2A9D8F", stroke: "#1D3557", node: "#1D3557", ring: "#E76F51" },
+  nocturno:    { c1: "#3D5A80", c2: "#2A9D8F", stroke: "#14263F", node: "#E76F51", ring: "#2A9D8F" },
+  marea:       { c1: "#2A9D8F", c2: "#3D5A80", stroke: "#14263F", node: "#F2F5F8", ring: "#2A9D8F" },
+  brasa:       { c1: "#E76F51", c2: "#3D5A80", stroke: "#14263F", node: "#2A9D8F", ring: "#E76F51" },
+  aurora:      { c1: "#E76F51", c2: "#2A9D8F", stroke: "#3D5A80", node: "#3D5A80", ring: "#E76F51" },
   comparacion: { c1: "#4A5A72", c2: "#7A8798", stroke: "#9AA5B4", node: "#C8D0DA", ring: "#6B7A90" },
 };
 
@@ -73,7 +74,11 @@ test("los cuatro niveles ponen y quitan exactamente lo que dice el kit", () => {
       const p = PALETTES[paleta];
       const [uno, dos, tres, cuatro] = NIVELES.map((n) => computeAvatarProps(forma, paleta, n));
 
-      /* Nivel I: línea. Sin nodos, sin radios, sin cuerdas, sin núcleo, sin halo. */
+      /*
+       * Nivel I: PRESENCIA. Bitono plano —contorno grueso en c1 y relleno
+       * plano en c2 al 20%—, y nada más: sin nodos, radios, cuerdas, facetas,
+       * núcleo ni halo.
+       */
       assert.deepEqual(uno.nodes, [], `${forma}/${paleta}`);
       assert.deepEqual(uno.spokes, []);
       assert.deepEqual(uno.chords, []);
@@ -81,12 +86,23 @@ test("los cuatro niveles ponen y quitan exactamente lo que dice el kit", () => {
       assert.equal(uno.showCore, false);
       assert.equal(uno.showHalo, false);
       assert.equal(uno.showGloss, false);
-      assert.equal(uno.bodyFill, false);
+      assert.equal(uno.bodyFill, false, "el degradado es de III y IV");
+      assert.equal(uno.flatFill, p.c2, "pero SÍ tiene relleno: plano, en c2");
+      assert.equal(uno.flatFillOp, 0.2);
       assert.equal(uno.stroke, p.c1, "sin facetado el trazo es el color 1, no el de contorno");
-      assert.equal(uno.sw, 2.8);
+      assert.equal(uno.sw, 3, "el trazo del bitono es más grueso: es lo que le da presencia");
       assert.equal(uno.coreR, 4);
 
-      /* Nivel II: nodos, radios y núcleo. Nada más. */
+      /*
+       * Nivel II: + ESTRUCTURA. Hereda el cuerpo del I —mismo trazo, mismo
+       * relleno plano— y le suma nodos, radios y núcleo. NO vuelve al
+       * wireframe vacío: eso es lo que esta prueba defiende.
+       */
+      assert.equal(dos.bodyFill, false, "el II sigue en bitono, no en degradado");
+      assert.equal(dos.flatFill, uno.flatFill, "el II hereda el relleno plano del I");
+      assert.equal(dos.flatFillOp, uno.flatFillOp);
+      assert.equal(dos.stroke, uno.stroke, "y el mismo trazo");
+      assert.equal(dos.sw, uno.sw, "y el mismo grosor");
       assert.equal(dos.nodes.length, s.n);
       assert.equal(dos.spokes.length, Math.ceil(s.n / 2), "los radios van a los vértices pares");
       assert.deepEqual(dos.chords, []);
@@ -99,6 +115,7 @@ test("los cuatro niveles ponen y quitan exactamente lo que dice el kit", () => {
       /* Nivel III: facetado. Relleno, trazo de contorno, facetas y núcleo mayor. */
       assert.equal(tres.facets.length, s.n);
       assert.equal(tres.bodyFill, true);
+      assert.equal(tres.flatFill, null, "a partir del III manda el degradado, no el plano");
       assert.equal(tres.stroke, p.stroke);
       assert.equal(tres.sw, 2.2);
       assert.equal(tres.chordColor, "#FFFFFF");
@@ -157,10 +174,10 @@ test("las 80 combinaciones se calculan y ninguna sale vacía o con NaN", () => {
   assert.equal(vistas.size, 80, "cada combinación da una figura distinta de las demás");
 });
 
-test("valores fuera de rango caen en el defecto sin lanzar: decaedro, nocturno, nivel I", () => {
+test("valores fuera de rango caen en el defecto sin lanzar: decaedro, marea, nivel I", () => {
   const raro = computeAvatarProps("triangulo", "fucsia", 99);
   assert.equal(raro.pts, computeAvatarProps("decaedro", "nocturno", 4).pts, "forma desconocida → decaedro");
-  assert.equal(raro.c1, PALETTES.nocturno.c1);
+  assert.equal(raro.c1, PALETTES.marea.c1, "paleta desconocida → marea, el nuevo defecto");
   assert.equal(raro.showHalo, true, "99 se sujeta a 4");
   assert.equal(computeAvatarProps("decaedro", "nocturno", 0).showCore, false, "0 se sujeta a 1");
   assert.equal(computeAvatarProps("decaedro", "nocturno", null).coreR, 4);
@@ -177,9 +194,9 @@ test("'comparacion' NO está entre las paletas elegibles, y sí existe para las 
   assert.equal(NIVEL_COMPARACION, 2, "las miniaturas de forma van fijas en nivel II");
 });
 
-test("un perfil con la paleta de comparación guardada se lee como nocturno", () => {
+test("un perfil con la paleta de comparación guardada se lee como el defecto", () => {
   /* La base lo rechaza con un check, pero si llegara igual, no se pinta gris. */
-  assert.equal(combinacionDe({ avatar_palette: "comparacion" }).paleta, "nocturno");
+  assert.equal(combinacionDe({ avatar_palette: "comparacion" }).paleta, "marea");
   assert.equal(combinacionDe({ avatar_shape: "octaedro" }).forma, "decaedro");
   assert.equal(combinacionDe({ avatar_level: 9 }).nivel, 1);
   assert.equal(combinacionDe(null).nivel, 1);
@@ -235,7 +252,79 @@ test("las formas y paletas del generador son las mismas que acepta la 0035", () 
 
   /* Los defectos del primer ingreso: Decaedro, Nocturno, nivel I y solo el I comprado. */
   assert.ok(sql.includes("avatar_shape           text      not null default 'decaedro'"));
+  /*
+   * LA 0035 SIGUE DICIENDO 'nocturno', y tiene que seguir diciendolo: es el
+   * registro de lo que de verdad se aplico en produccion. El cambio a 'marea'
+   * lo hace la 0038, y se comprueba abajo. Editar la 0035 dejaria CI y
+   * produccion construyendo defectos distintos.
+   */
   assert.ok(sql.includes("avatar_palette         text      not null default 'nocturno'"));
   assert.ok(sql.includes("avatar_level           integer   not null default 1"));
   assert.ok(sql.includes("avatar_unlocked_levels integer[] not null default '{1}'"));
+});
+
+/* ───────────────── lo que decidió Xeno, fijado aquí ───────────────── */
+
+/*
+ * El navy de marca no puede volver a las paletas de avatar. Se mira el OBJETO
+ * de paletas, no el archivo entero: la cabecera lo nombra a propósito para
+ * explicar por qué se fue, y nombrarlo no es usarlo.
+ */
+test("#1D3557 no aparece en ninguna paleta de avatar", () => {
+  for (const [nombre, p] of Object.entries(PALETTES)) {
+    for (const [papel, valor] of Object.entries(p)) {
+      assert.notEqual(valor.toUpperCase(), "#1D3557",
+        `${nombre}.${papel} volvió al navy de marca, que es el fondo del sitio`);
+    }
+  }
+  const fuente = readFileSync(new URL("../generador.js", import.meta.url), "utf8");
+  const objeto = fuente.slice(fuente.indexOf("export const PALETTES"), fuente.indexOf("export const SHAPES"));
+  assert.ok(!/#1D3557/i.test(objeto), "ni escrito a mano dentro del objeto de paletas");
+});
+
+test("el navy de avatar es #3D5A80 y está en las cuatro paletas seleccionables", () => {
+  assert.equal(NAVY_AVATAR, "#3D5A80");
+  for (const nombre of PALETAS) {
+    assert.ok(Object.values(PALETTES[nombre]).includes(NAVY_AVATAR), `${nombre} debería llevarlo`);
+  }
+  assert.ok(!Object.values(PALETTES.comparacion).includes(NAVY_AVATAR),
+    "'comparacion' es gris y no se toca");
+});
+
+test("el defecto es Decaedro · Marea · Nivel I, y la base dice lo mismo", () => {
+  assert.deepEqual(POR_DEFECTO, { forma: "decaedro", paleta: "marea", nivel: 1 });
+  assert.deepEqual(combinacionDe(null), POR_DEFECTO, "un perfil vacío cae en el defecto entero");
+
+  /*
+   * Y el otro lado de la frontera. SQL no lee JavaScript, así que el default de
+   * la columna está duplicado a la fuerza: esto lee la migración que lo fija.
+   */
+  const sql = readFileSync(new URL("../../../supabase/migrations/0038_default_de_paleta_marea.sql", import.meta.url), "utf8");
+  assert.match(sql, /alter column avatar_palette set default 'marea'/,
+    "la 0038 es la que pone el default de la columna");
+  assert.ok(sql.includes(`avatar_palette = '${POR_DEFECTO.paleta}'`),
+    "y el relleno tiene que mover a la misma paleta que usa el cliente");
+});
+
+test("el Nivel I y el Nivel II comparten cuerpo pero no se confunden", () => {
+  for (const forma of FORMAS) {
+    for (const paleta of PALETAS) {
+      const uno = computeAvatarProps(forma, paleta, 1);
+      const dos = computeAvatarProps(forma, paleta, 2);
+
+      /* Lo que comparten: el cuerpo entero. El II hereda al I, no lo sustituye. */
+      assert.equal(dos.pts, uno.pts, `${forma}/${paleta}`);
+      assert.equal(dos.flatFill, uno.flatFill);
+      assert.equal(dos.flatFillOp, uno.flatFillOp);
+      assert.equal(dos.stroke, uno.stroke);
+      assert.equal(dos.sw, uno.sw);
+
+      /* Y lo que los separa: la estructura, que es la cualidad que suma el II. */
+      assert.equal(uno.nodes.length, 0);
+      assert.ok(dos.nodes.length > 0, "el II tiene nodos y el I no");
+      assert.ok(dos.spokes.length > 0, "y radios");
+      assert.equal(uno.showCore, false);
+      assert.equal(dos.showCore, true);
+    }
+  }
 });

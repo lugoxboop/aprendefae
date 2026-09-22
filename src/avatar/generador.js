@@ -20,11 +20,29 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * ═══════════ EL NAVY DE AVATAR, Y POR QUÉ NO ES EL DE MARCA ═══════════
+ *
+ * #3D5A80 sustituye en las cuatro paletas seleccionables a #1D3557, el navy de
+ * marca. El de marca es también el fondo del sitio, así que una figura que lo
+ * usaba como relleno o como trazo desaparecía sobre él: el Nivel I se veía como
+ * un contorno flotando en el vacío. Este es el mismo navy, subido lo justo para
+ * despegarse del fondo.
+ *
+ * SE USA EXCLUSIVAMENTE EN EL RENDER DE AVATARES. No entra en theme.js ni en
+ * ninguna otra superficie de la interfaz: fuera de estas figuras, el navy del
+ * sitio sigue siendo #1D3557.
+ *
+ * 'comparacion' —el gris de las miniaturas de la pestaña «Forma»— no llevaba
+ * navy de marca y no se toca.
+ */
+export const NAVY_AVATAR = '#3D5A80';
+
 export const PALETTES = {
-  nocturno:    { c1: '#1D3557', c2: '#2A9D8F', stroke: '#14263F', node: '#E76F51', ring: '#2A9D8F' },
-  marea:       { c1: '#2A9D8F', c2: '#1D3557', stroke: '#14263F', node: '#F2F5F8', ring: '#2A9D8F' },
-  brasa:       { c1: '#E76F51', c2: '#1D3557', stroke: '#14263F', node: '#2A9D8F', ring: '#E76F51' },
-  aurora:      { c1: '#E76F51', c2: '#2A9D8F', stroke: '#1D3557', node: '#1D3557', ring: '#E76F51' },
+  nocturno:    { c1: NAVY_AVATAR, c2: '#2A9D8F', stroke: '#14263F', node: '#E76F51', ring: '#2A9D8F' },
+  marea:       { c1: '#2A9D8F', c2: NAVY_AVATAR, stroke: '#14263F', node: '#F2F5F8', ring: '#2A9D8F' },
+  brasa:       { c1: '#E76F51', c2: NAVY_AVATAR, stroke: '#14263F', node: '#2A9D8F', ring: '#E76F51' },
+  aurora:      { c1: '#E76F51', c2: '#2A9D8F', stroke: NAVY_AVATAR, node: NAVY_AVATAR, ring: '#E76F51' },
   comparacion: { c1: '#4A5A72', c2: '#7A8798', stroke: '#9AA5B4', node: '#C8D0DA', ring: '#6B7A90' },
 };
 
@@ -50,20 +68,54 @@ export const fmt = (pts) => pts.map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(
 
 export function computeAvatarProps(shapeKey, paletteKey, level) {
   const s = SHAPES[shapeKey] ?? SHAPES.decaedro;
-  const p = PALETTES[paletteKey] ?? PALETTES.nocturno;
+  const p = PALETTES[paletteKey] ?? PALETTES.marea;
   const lvl = Math.max(1, Math.min(4, +level || 1));
   const R = 84;
   const V = verts(s, R);
   const W = verts(s, R * 0.8);
-  const rich = lvl >= 3;
+
+  /*
+   * ═══════════ LOS DOS MODOS DE CUERPO ═══════════
+   *
+   * La progresión es acumulativa: cada nivel suma UNA cualidad.
+   *
+   *   I    presencia            bitono plano
+   *   II   + estructura         bitono plano + nodos, radios y núcleo
+   *   III  + profundidad        degradado y facetas
+   *   IV   + luz                halo, lustre y cuerdas
+   *
+   * De ahí que el corte sea `lvl < 3` y no `lvl < 2`: el Nivel II NO vuelve al
+   * wireframe transparente, hereda el cuerpo del I y le pone estructura encima.
+   * Antes los dos modos se decidían con `rich = lvl >= 3` y el grupo de abajo
+   * era «sin relleno»; ahora ese grupo tiene relleno propio y por eso tiene
+   * nombre: bitono.
+   */
+  const bitono = lvl < 3;
+  const rich = !bitono;
 
   return {
     c1: p.c1, c2: p.c2, node: p.node, ring: p.ring,
     pts: fmt(V),
     insetPts: fmt(verts(s, R * (s.alt !== 1 ? 0.44 : 0.52))),
     stroke: rich ? p.stroke : p.c1,
-    sw: rich ? 2.2 : 2.8,
+    /*
+     * El trazo del bitono sube a 3 sobre el lienzo de 200. Es lo que le da la
+     * «presencia» del Nivel I: con el trazo fino de antes, un contorno sin
+     * relleno sobre el navy del sitio no se leía. III y IV se quedan en 2.2,
+     * que es el que va con el degradado.
+     */
+    sw: bitono ? 3 : 2.2,
+    /*
+     * Dos rellenos que NO son el mismo estado, a propósito:
+     *
+     *   bodyFill  el degradado c1→c2 de los niveles III y IV.
+     *   flatFill  el relleno PLANO del bitono: c2 al 20%. No es un degradado
+     *             apagado ni un bodyFill con menos opacidad — es otra cosa, y
+     *             se guarda aparte para que nadie los funda al tocar uno.
+     */
     bodyFill: rich,
+    flatFill: bitono ? p.c2 : null,
+    flatFillOp: bitono ? 0.2 : 0,
     chordColor: rich ? '#FFFFFF' : p.c2,
     insetStroke: rich ? '#FFFFFF' : p.c2,
     insetFill: rich ? 'rgba(255,255,255,0.07)' : 'none',
@@ -120,8 +172,16 @@ export const ROMANO = { 1: "I", 2: "II", 3: "III", 4: "IV" };
 export const NOMBRE_NIVEL = { 1: "Línea", 2: "Nodos", 3: "Facetado", 4: "Brillo" };
 export const ETIQUETA_NIVEL = (n) => `Nivel ${ROMANO[n] ?? "I"}`;
 
-/* Lo que no viene de la base o viene roto: Decaedro · Nocturno · Nivel I. */
-export const POR_DEFECTO = { forma: "decaedro", paleta: "nocturno", nivel: 1 };
+/*
+ * Lo que no viene de la base o viene roto: Decaedro · Marea · Nivel I.
+ *
+ * La paleta por defecto era Nocturno y se cambió porque su c1 era el navy de
+ * marca, el mismo del fondo del sitio: un Nivel I por defecto no se veía. El
+ * mismo cambio va en la columna avatar_palette de la base (migración 0038), y
+ * los dos lados tienen que decir lo mismo — hay una prueba que lo comprueba
+ * leyendo la migración.
+ */
+export const POR_DEFECTO = { forma: "decaedro", paleta: "marea", nivel: 1 };
 
 /** La combinación del perfil, saneada: nunca 'comparacion', nunca un nivel fuera de 1-4. */
 export function combinacionDe(perfil) {

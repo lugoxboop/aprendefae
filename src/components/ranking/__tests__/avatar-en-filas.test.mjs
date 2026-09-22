@@ -161,7 +161,7 @@ test("sin las columnas nuevas (servidor todavía sin la 0037) la fila pinta el a
   });
   for (let k = 0; k < 5; k++) await act(async () => { await new Promise((r) => setTimeout(r, 0)); });
   try {
-    assert.equal(caja.querySelector("svg[data-avatar]").dataset.avatar, "decaedro-nocturno-1");
+    assert.equal(caja.querySelector("svg[data-avatar]").dataset.avatar, "decaedro-marea-1");
   } finally { act(() => raiz.unmount()); caja.remove(); }
 });
 

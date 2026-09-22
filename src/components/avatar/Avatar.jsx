@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { ajustarAlTamano, combinacionDe, computeAvatarProps, leyenda } from "../../avatar/generador.js";
+import { ajustarAlTamano, combinacionDe, computeAvatarProps, leyenda, POR_DEFECTO } from "../../avatar/generador.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -38,10 +38,11 @@ export const TAMANOS = { perfil: 96, medio: 56, ranking: 36, liga: 24 };
 export default function Avatar({
   forma, paleta, nivel, perfil = null, tamano = TAMANOS.perfil, titulo = null, style = null, ...resto
 }) {
+  /* El defecto sale de POR_DEFECTO y no escrito a mano: es un solo sitio. */
   const base = perfil ? combinacionDe(perfil) : null;
-  const f = forma ?? base?.forma ?? "decaedro";
-  const pal = paleta ?? base?.paleta ?? "nocturno";
-  const niv = nivel ?? base?.nivel ?? 1;
+  const f = forma ?? base?.forma ?? POR_DEFECTO.forma;
+  const pal = paleta ?? base?.paleta ?? POR_DEFECTO.paleta;
+  const niv = nivel ?? base?.nivel ?? POR_DEFECTO.nivel;
 
   const bruto = computeAvatarProps(f, pal, niv);
   const a = ajustarAlTamano(bruto, tamano);
@@ -84,11 +85,21 @@ export default function Avatar({
         </g>
       )}
 
-      {/* 3. el cuerpo */}
+      {/*
+        3. el cuerpo, en uno de sus DOS modos —ver computeAvatarProps—:
+
+           III y IV   degradado c1→c2
+           I y II     relleno PLANO en c2 al 20% (bitono)
+
+        Son estados distintos, no el mismo con menos fuerza, así que se leen de
+        dos props distintas. Si algún día llegara un tercer modo, entra aquí y
+        no apagando uno de estos dos.
+      */}
       <polygon
         data-cuerpo
         points={a.pts}
-        fill={a.bodyFill ? `url(#${idCuerpo})` : "none"}
+        fill={a.bodyFill ? `url(#${idCuerpo})` : a.flatFill ?? "none"}
+        fillOpacity={a.bodyFill || !a.flatFill ? undefined : a.flatFillOp}
         stroke={a.stroke}
         strokeWidth={a.sw}
         strokeLinejoin="round"

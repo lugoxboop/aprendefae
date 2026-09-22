@@ -81,7 +81,7 @@ test("nivel IV: las diez capas del kit, en su orden exacto", () => {
     assert.equal(lineal.getAttribute("y1"), "0%");
     assert.equal(lineal.getAttribute("x2"), "100%");
     assert.equal(lineal.getAttribute("y2"), "100%");
-    assert.equal(lineal.children[0].getAttribute("stop-color"), "#1D3557");
+    assert.equal(lineal.children[0].getAttribute("stop-color"), "#3D5A80", "c1 de Nocturno es el navy de AVATAR, no el de marca");
     assert.equal(lineal.children[1].getAttribute("stop-color"), "#2A9D8F");
 
     /* El lustre: radial, arriba a la izquierda, del 42% de blanco a nada. */
@@ -105,7 +105,10 @@ test("nivel I: solo el cuerpo y el interior, sin nodos ni núcleo ni halo", () =
   try {
     const svg = m.caja.querySelector("svg");
     assert.deepEqual(capas(svg), ["defs", "cuerpo", "interior"]);
-    assert.equal(svg.querySelector("[data-cuerpo]").getAttribute("fill"), "none", "sin facetado no hay relleno");
+    /* Bitono: el I ya NO es un contorno vacio — lleva relleno plano en c2 al 20%. */
+    assert.equal(svg.querySelector("[data-cuerpo]").getAttribute("fill"), "#3D5A80", "c2 de Marea, plano");
+    assert.equal(svg.querySelector("[data-cuerpo]").getAttribute("fill-opacity"), "0.2");
+    assert.equal(svg.querySelector("[data-cuerpo]").getAttribute("stroke-width"), "3", "y el trazo grueso del bitono");
     assert.equal(svg.querySelector("[data-cuerpo]").getAttribute("stroke"), "#2A9D8F", "el trazo es el color 1 de Marea");
     assert.equal(svg.querySelector("radialGradient"), null, "el lustre es del IV");
   } finally { m.desmontar(); }
@@ -123,7 +126,7 @@ test("nivel II: nodos, radios y núcleo; ni facetas ni cuerdas ni halo", () => {
     assert.equal(orden.includes("halo"), false);
     assert.equal(orden.includes("nucleo"), true);
     /* El nodo toma el color `node` de la paleta, que en Aurora es navy. */
-    assert.equal(svg.querySelectorAll("circle")[0].getAttribute("fill"), "#1D3557");
+    assert.equal(svg.querySelectorAll("circle")[0].getAttribute("fill"), "#3D5A80");
   } finally { m.desmontar(); }
 });
 
@@ -194,7 +197,7 @@ test("el avatar se puede pintar desde la fila del perfil, y un perfil vacío no 
   try {
     const [uno, dos] = [...m.caja.querySelectorAll("svg")];
     assert.equal(uno.getAttribute("data-avatar"), "cuna-brasa-3");
-    assert.equal(dos.getAttribute("data-avatar"), "decaedro-nocturno-1", "sin perfil, el avatar por defecto");
+    assert.equal(dos.getAttribute("data-avatar"), "decaedro-marea-1", "sin perfil, el avatar por defecto");
     /* Y el cuerpo es el mismo polígono que calcula el generador. */
     assert.equal(uno.querySelector("[data-cuerpo]").getAttribute("points"), computeAvatarProps("cuna", "brasa", 3).pts);
   } finally { m.desmontar(); }

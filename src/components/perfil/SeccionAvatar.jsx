@@ -142,10 +142,27 @@ export default function SeccionAvatar({ perfil: perfilProp = null, onGuardar = g
       <style>{CSS}</style>
       <div className="fae-avatar-sel">
         {/* ── la vista previa, fija ── */}
+        {/*
+          ═══════════ LA LUZ DE LA TARJETA NO ES EL HALO DEL NIVEL IV ═══════════
+
+          Esto es un tratamiento de FONDO DE LA TARJETA: una luz radial suave
+          detrás de donde se para el avatar, para que la figura tenga sobre qué
+          recortarse mientras se elige. Se ve en CUALQUIER nivel, incluido el I.
+
+          El halo del Nivel IV es otra cosa: son dos anillos dibujados DENTRO
+          del SVG, con el color de la paleta, y son la recompensa de ese nivel
+          —salen en el ranking, en la liga y en todas partes—. Esta luz no sale
+          del selector y no premia nada. Si se fundieran, el Nivel IV dejaría de
+          tener algo propio que enseñar.
+        */}
         <div
           data-vista-previa
           style={{
-            borderRadius: "16px", background: "rgba(29,53,87,0.55)",
+            borderRadius: "16px",
+            background: [
+              "radial-gradient(circle at 50% 40%, rgba(248,249,250,0.10) 0%, rgba(248,249,250,0.04) 38%, rgba(248,249,250,0) 68%)",
+              "rgba(29,53,87,0.55)",
+            ].join(", "),
             border: "1px solid rgba(248,249,250,0.12)", padding: "16px",
             display: "flex", flexDirection: "column", alignItems: "center", gap: "10px",
           }}
