@@ -236,8 +236,17 @@ export default function App() {
   if (view === "perfil") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        {/* Volver devuelve a donde estaba el estudiante, no siempre al inicio. */}
-        <PerfilView onBack={() => setView(prevView === "perfil" ? "home" : prevView)} />
+        {/*
+          Volver devuelve a donde estaba el estudiante, no siempre al inicio.
+
+          `seccion` es el tercer segmento del hash: #/perfil/avatar entra
+          directo al selector de avatar, sin pasar por apodo y nombre real. Lo
+          usa «Mi avatar» del menú de cuenta.
+        */}
+        <PerfilView
+          seccion={ruta.extra}
+          onBack={() => setView(prevView === "perfil" ? "home" : prevView)}
+        />
       </Suspense>
     );
   }

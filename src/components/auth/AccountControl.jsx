@@ -1,10 +1,18 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext, useCallback } from "react";
 import { BarChart2 } from "lucide-react";
 import { FAE, ANCHO_ESTRECHO } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { NavigationContext } from "../../navigation.js";
 import { rachaVigente } from "../../fp/racha.js";
+import { escucharFP } from "../../fp/aviso.js";
+import { DURACION_CONTEO_MS, valorEnProgreso } from "../../fp/conteo.js";
+import { formatoFP } from "../../utils/formato.js";
+import { saldoDe } from "../../cristales/cristales.js";
+import { puntoDeTienda } from "../../tienda/novedades.js";
 import { useAccesoDocente, recordadoComoDocente } from "../../docente/useAccesoDocente.js";
+import Avatar from "../avatar/Avatar.jsx";
+import IconoCristal from "../shared/IconoCristal.jsx";
+import IconoRacha from "../shared/IconoRacha.jsx";
 import GoogleSignInButton from "./GoogleSignInButton.jsx";
 
 /*
@@ -78,6 +86,20 @@ import GoogleSignInButton from "./GoogleSignInButton.jsx";
  */
 const ANCHO_ATAJO = 768;
 
+/*
+ * El hueco que la pastilla reserva en la cabecera de un tema, en el teléfono.
+ *
+ * Eran 40 px, cuando la pastilla se encogía a un círculo con la inicial. Ahora
+ * lleva avatar (28) + separación (8) + el número de FP, así que ocupa más y la
+ * reserva sube con ella. Medido a 375 px con el número más largo que se puede
+ * tener hoy —cinco cifras, «12.500»—: la pastilla llega a 104 px de ancho, y la
+ * reserva la deja separada del título.
+ *
+ * Vive aquí, junto al control, por la misma razón de siempre: si la pastilla
+ * cambia de tamaño, su reserva cambia en el mismo archivo.
+ */
+const RESERVA_MOVIL = 112;
+
 const CSS_CUENTA = `
 .fae-gsi-icono { display: none; }
 .fae-atajo-pastilla { display: inline-flex; }
@@ -87,18 +109,176 @@ const CSS_CUENTA = `
   .fae-atajo-menu { display: flex; }
 }
 @media (max-width: ${ANCHO_ESTRECHO}px) {
-  .fae-reserva-cuenta { padding-right: 40px; }
+  .fae-reserva-cuenta { padding-right: ${RESERVA_MOVIL}px; }
+  /*
+   * ═══════════ QUIÉN ENCOGE CUANDO NO CABE ═══════════
+   *
+   * En la cabecera de una actividad conviven logo, divisor, botón de volver,
+   * título e insignia, y a 375 px no siempre caben. La prioridad la fijó Xeno:
+   * el TÍTULO se trunca primero; el botón de volver y la pastilla de cuenta no
+   * se tocan nunca — son navegación, y una flecha a medias no se puede pulsar.
+   *
+   * Se consigue con flex y no con anchos: todo lo demás se declara
+   * irreducible, y solo el h1 puede encoger. «min-width: 0» es imprescindible
+   * —un hijo flex no baja de su contenido sin él— y sin eso el título empujaría
+   * a los otros en vez de truncarse.
+   */
+  .fae-reserva-cuenta > * { flex-shrink: 0; }
+  .fae-reserva-cuenta > h1 {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .fae-gsi-ancho { display: none; }
   .fae-gsi-icono { display: block; }
-  .fae-cuenta-boton { width: 40px; height: 40px; padding: 0 !important; }
-  .fae-cuenta-nombre { display: none; }
-  .fae-cuenta-inicial { width: 26px !important; height: 26px !important; font-size: 12px !important; }
+  /* En el teléfono el número va solo: la etiqueta «FP» no cabe. */
+  .fae-cuenta-sufijo { display: none; }
 }
 @keyframes fae-atajo-entra { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: none; } }
 .fae-atajo-entra { animation: fae-atajo-entra 0.2s ease-out; }
 @media (prefers-reduced-motion: reduce) { .fae-atajo-entra { animation: none; } }
 `;
 const EstiloCuenta = () => <style>{CSS_CUENTA}</style>;
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * LOS FP DE LA PASTILLA, Y POR QUÉ SUBEN CONTANDO.
+ *
+ * ═══════════ DE DÓNDE SALE EL NÚMERO ═══════════
+ *
+ * De dos sitios que se suman, y hace falta que sean dos:
+ *
+ *   · profiles.points, que es la verdad, pero se lee UNA VEZ al abrir sesión.
+ *     Terminar una actividad no lo vuelve a leer.
+ *   · el canal de FP (fp/aviso.js), que emite DESPUÉS de que el servidor
+ *     confirmó la escritura. Nunca se cuenta un punto que la base no tenga.
+ *
+ * Así que se enseña `points + lo ganado desde que se leyó`. Y en cuanto el
+ * perfil trae un total nuevo —al recargar, o si alguien lo refresca— el
+ * acumulado vuelve a cero: ese total ya lo incluye, y sumarlo otra vez lo
+ * contaría dos veces.
+ *
+ * ═══════════ SOLO SE ANIMA LO QUE SE GANA ═══════════
+ *
+ * Al abrir la página el número aparece puesto, sin contar desde cero: ahí no se
+ * ha ganado nada, solo se ha leído. El conteo es la confirmación de un FP
+ * nuevo, y va con el aviso «+X FP» que ya sale en la esquina.
+ *
+ * Con «reducir movimiento» no se cuenta: el número salta al valor nuevo. La
+ * información es la misma; lo que se quita es el recorrido.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+function useContadorFP(base) {
+  const [mostrado, setMostrado] = useState(base);
+  /* Lo ganado en esta sesión, aparte del total que trajo el perfil. */
+  const ganado = useRef(0);
+  const animacion = useRef(0);
+  const actual = useRef(base);
+
+  const fijar = useCallback((v) => {
+    actual.current = v;
+    setMostrado(v);
+  }, []);
+
+  /* El perfil manda: su total se pone sin animar, y reinicia lo acumulado. */
+  useEffect(() => {
+    ganado.current = 0;
+    fijar(base);
+  }, [base, fijar]);
+
+  useEffect(() => {
+    const dejar = escucharFP(({ fp }) => {
+      const suma = Math.round(Number(fp) || 0);
+      if (suma <= 0) return; // una repetición paga 0: no hay nada que contar
+      ganado.current += suma;
+      const destino = actual.current + suma;
+
+      const quieto = typeof window !== "undefined"
+        && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+      if (quieto || typeof requestAnimationFrame !== "function") {
+        fijar(destino);
+        return;
+      }
+
+      cancelAnimationFrame(animacion.current);
+      const desde = actual.current;
+      let inicio = null;
+      const paso = (t) => {
+        if (inicio === null) inicio = t;
+        const progreso = (t - inicio) / DURACION_CONTEO_MS;
+        fijar(valorEnProgreso(desde, destino, progreso));
+        if (progreso < 1) animacion.current = requestAnimationFrame(paso);
+      };
+      animacion.current = requestAnimationFrame(paso);
+    });
+    return () => {
+      dejar();
+      cancelAnimationFrame(animacion.current);
+    };
+  }, [fijar]);
+
+  return mostrado;
+}
+
+/* Las dos piezas repetidas del menú, para que sus medidas se toquen en un sitio. */
+function Divisor() {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ height: "1px", background: "rgba(248,249,250,0.10)", margin: "6px 4px" }}
+    />
+  );
+}
+
+/*
+ * Una opción del menú. `punto` pinta el aviso ámbar de la Tienda.
+ *
+ * EL PUNTO NO VA SOLO: lleva su propio texto para lectores de pantalla. Un
+ * color sin palabra no informa a quien no lo ve, y aquí además es la única
+ * diferencia entre «Tienda» y «Tienda, y hay algo que ya puedes comprar».
+ *
+ * Ámbar y no coral, y esto no es una excepción a la regla del sitio: el coral
+ * significa error en toda la interfaz, y esto no es un error — es un aviso. El
+ * ámbar ya existe en theme.js para exactamente este escalón.
+ */
+function OpcionMenu({ onClick, punto = false, children }) {
+  return (
+    <button
+      type="button"
+      data-opcion-menu
+      onClick={onClick}
+      style={{
+        width: "100%", display: "flex", alignItems: "center", gap: "8px",
+        textAlign: "left", fontFamily: "Inter, sans-serif", fontSize: "13.5px",
+        minHeight: "40px", padding: "9px 10px", borderRadius: "9px", cursor: "pointer",
+        background: "transparent", border: "none", color: "rgba(248,249,250,0.8)",
+      }}
+    >
+      {children}
+      {punto && (
+        <>
+          <span
+            data-punto-tienda
+            aria-hidden="true"
+            style={{
+              width: "7px", height: "7px", borderRadius: "999px",
+              backgroundColor: FAE.ambar, flexShrink: 0,
+            }}
+          />
+          <span style={POSICION_LECTOR}>Hay algo que ya puedes comprar</span>
+        </>
+      )}
+    </button>
+  );
+}
+
+/* Visible para lectores de pantalla y para nadie más. */
+const POSICION_LECTOR = {
+  position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px",
+  overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0,
+};
 
 const ENVOLTORIO = {
   position: "fixed",
@@ -166,8 +346,27 @@ function ConSesion({ usuarioId, perfil, cerrarSesion }) {
   /* Con sesión pero sin perfil, el diálogo de apodo ya está encima. */
   const etiqueta = perfil?.nickname ?? "Tu cuenta";
 
+  const fp = useContadorFP(Math.max(0, Math.floor(Number(perfil?.points) || 0)));
+  const cristales = saldoDe(perfil);
+  const racha = rachaVigente(perfil);
+
+  /*
+   * El punto de la Tienda se vuelve a calcular cada vez que se ABRE el menú, y
+   * no una vez al montar: entre una apertura y la siguiente el estudiante pudo
+   * entrar a la Tienda —y entonces ya no hay novedad— o ganar Cristales. Leer
+   * localStorage al abrir cuesta nada y siempre dice la verdad.
+   */
+  const [punto, setPunto] = useState(false);
+  useEffect(() => {
+    if (abierto) setPunto(puntoDeTienda(usuarioId, perfil));
+  }, [abierto, usuarioId, perfil]);
+
   /* La misma ruta con estado en el hash que usa el atajo de cada actividad. */
   const irAlPanel = () => { setAbierto(false); nav?.irA?.("docente"); };
+  const irAPerfil = () => { setAbierto(false); nav?.irAPerfil?.(); };
+  /* Directo a la sección del avatar, sin pasar por apodo y nombre real. */
+  const irAMiAvatar = () => { setAbierto(false); nav?.irA?.("perfil", null, "avatar"); };
+  const irATienda = () => { setAbierto(false); nav?.irATienda?.(); };
 
   return (
     <div style={ENVOLTORIO} ref={caja}>
@@ -230,8 +429,12 @@ function ConSesion({ usuarioId, perfil, cerrarSesion }) {
         className="fae-cuenta-boton"
         onClick={() => setAbierto((v) => !v)}
         aria-expanded={abierto}
-        /* En móvil solo se ve la inicial: el nombre va aquí para quien no ve la pantalla. */
-        aria-label={`Tu cuenta: ${etiqueta}`}
+        /*
+         * El nombre ya no se ve en la pastilla —vive en la cabecera del menú—
+         * así que aquí es donde queda para quien no ve la pantalla, junto con
+         * los FP escritos con su unidad, que en el teléfono tampoco se pintan.
+         */
+        aria-label={`Tu cuenta: ${etiqueta}, ${formatoFP(fp)} FP`}
         style={{
           display: "inline-flex",
           alignItems: "center",
@@ -250,25 +453,29 @@ function ConSesion({ usuarioId, perfil, cerrarSesion }) {
           WebkitBackdropFilter: "blur(8px)",
         }}
       >
+        {/*
+          El avatar sustituye a la inicial en un círculo: es la figura que el
+          estudiante eligió, y la misma que sale en el ranking y en la liga.
+        */}
+        <Avatar perfil={perfil} tamano={28} style={{ flexShrink: 0 }} />
+        {/*
+          Y los FP, que es lo que esta pastilla viene a enseñar en todas las
+          páginas. El número lleva tabular-nums para que no baile de ancho
+          mientras cuenta: sin eso, cada cifra que cambia mueve la pastilla.
+        */}
         <span
-          aria-hidden="true"
-          className="fae-cuenta-inicial"
-          style={{
-            width: "18px", height: "18px", borderRadius: "999px", flexShrink: 0,
-            background: "rgba(42,157,143,0.28)", border: `1px solid ${FAE.teal}`,
-            display: "inline-flex", alignItems: "center", justifyContent: "center",
-            fontSize: "10px", color: FAE.teal,
-          }}
+          data-fp-pastilla
+          style={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}
         >
-          {etiqueta.charAt(0).toUpperCase()}
+          {formatoFP(fp)}
+          <span className="fae-cuenta-sufijo">{" FP"}</span>
         </span>
-        <span className="fae-cuenta-nombre">{etiqueta}</span>
       </button>
 
       {abierto && (
         <div
           style={{
-            position: "absolute", top: "calc(100% + 8px)", right: 0, minWidth: "180px",
+            position: "absolute", top: "calc(100% + 8px)", right: 0, minWidth: "232px",
             borderRadius: "14px", background: "#16233A",
             border: "1px solid rgba(248,249,250,0.14)", padding: "8px",
             boxShadow: "0 16px 40px rgba(0,0,0,0.4)",
@@ -292,36 +499,61 @@ function ConSesion({ usuarioId, perfil, cerrarSesion }) {
               Panel docente
             </button>
           )}
+          {/*
+            ═══════════ LA FICHA DE IDENTIDAD ═══════════
+
+            El nombre del estudiante vive AQUÍ desde que la pastilla pasó a
+            enseñar los FP. Debajo, las tres cifras que se miran de reojo:
+            FP, Cristales y racha. El cristal es el icono facetado del sitio,
+            nunca un emoji: es el mismo que se ve en la Tienda y en el perfil.
+          */}
           {perfil && (
-            <div style={{ padding: "8px 10px 10px", borderBottom: "1px solid rgba(248,249,250,0.08)", marginBottom: "6px" }}>
-              <p style={{ fontSize: "12px", color: "rgba(248,249,250,0.45)", margin: "0 0 3px" }}>Tu progreso</p>
-              <p style={{ fontSize: "13px", color: FAE.text, margin: 0 }}>
-                {perfil.points} pts · racha {rachaVigente(perfil)}
-              </p>
+            <div
+              data-ficha-cuenta
+              style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 10px 10px" }}
+            >
+              <Avatar perfil={perfil} tamano={40} style={{ flexShrink: 0 }} />
+              <div style={{ minWidth: 0 }}>
+                <p
+                  style={{
+                    fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, color: FAE.text,
+                    margin: "0 0 3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                  }}
+                >
+                  {etiqueta}
+                </p>
+                <p
+                  style={{
+                    display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap",
+                    fontSize: "12.5px", color: "rgba(248,249,250,0.72)", margin: 0,
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  <span>{formatoFP(fp)} FP</span>
+                  <span aria-hidden="true" style={{ opacity: 0.45 }}>·</span>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                    {cristales}
+                    <IconoCristal tamano={11} />
+                  </span>
+                  <span aria-hidden="true" style={{ opacity: 0.45 }}>·</span>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                    <IconoRacha tamano={13} encendida={racha > 0} />
+                    {racha === 1 ? "1 día" : `${racha} días`}
+                  </span>
+                </p>
+              </div>
             </div>
           )}
-          <button
-            type="button"
-            onClick={() => { setAbierto(false); nav?.irAPerfil?.(); }}
-            style={{
-              width: "100%", textAlign: "left", fontFamily: "Inter, sans-serif", fontSize: "13.5px",
-              padding: "9px 10px", borderRadius: "9px", cursor: "pointer",
-              background: "transparent", border: "none", color: "rgba(248,249,250,0.8)",
-            }}
-          >
-            Ver mi perfil
-          </button>
-          <button
-            type="button"
-            onClick={() => { setAbierto(false); cerrarSesion(); }}
-            style={{
-              width: "100%", textAlign: "left", fontFamily: "Inter, sans-serif", fontSize: "13.5px",
-              padding: "9px 10px", borderRadius: "9px", cursor: "pointer",
-              background: "transparent", border: "none", color: "rgba(248,249,250,0.8)",
-            }}
-          >
-            Cerrar sesión
-          </button>
+
+          <Divisor />
+
+          <OpcionMenu onClick={irAPerfil}>Mi perfil</OpcionMenu>
+          <OpcionMenu onClick={irAMiAvatar}>Mi avatar</OpcionMenu>
+          <OpcionMenu onClick={irATienda} punto={punto}>Tienda</OpcionMenu>
+
+          <Divisor />
+
+          <OpcionMenu onClick={() => { setAbierto(false); cerrarSesion(); }}>Cerrar sesión</OpcionMenu>
         </div>
       )}
     </div>

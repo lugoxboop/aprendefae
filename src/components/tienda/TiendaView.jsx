@@ -5,6 +5,7 @@ import Logo from "../Logo.jsx";
 import IconoCristal from "../shared/IconoCristal.jsx";
 import Avatar from "../avatar/Avatar.jsx";
 import { useAuth } from "../../auth/AuthProvider.jsx";
+import { marcarVisitada } from "../../tienda/novedades.js";
 import { combinacionDe, ETIQUETA_NIVEL, NOMBRE_NIVEL } from "../../avatar/generador.js";
 import {
   FUENTES, NIVELES_COMPRABLES, comprarNivel, estadoDeNivel, faltanPara, precioDe, saldoDe,
@@ -157,6 +158,19 @@ export default function TiendaView({ onBack, onComprar = comprarNivel }) {
   useEffect(() => {
     if (session) refrescarPerfil();
   }, [session, refrescarPerfil]);
+
+  /*
+   * ═══════════ ENTRAR APAGA EL PUNTO DEL MENÚ ═══════════
+   *
+   * Depende de `perfil` y no solo de `session` a propósito: así vuelve a
+   * correr cuando llega la fila fresca del efecto de arriba, y también después
+   * de comprar. Marcar con el saldo viejo daría por visto un nivel que el
+   * estudiante todavía no ve alcanzable, y entonces el aviso no volvería a
+   * salir el día que el saldo nuevo lo destapara.
+   */
+  useEffect(() => {
+    if (session) marcarVisitada(session.user?.id, perfil);
+  }, [session, perfil]);
 
   const comprar = async (nivel) => {
     setComprando(nivel);

@@ -10,7 +10,7 @@ import { rachaVigente, proximoHito, enRiesgoHoy } from "../fp/racha.js";
 import { animosRecibidos } from "../social/animo.js";
 import Medallas from "./perfil/Medallas.jsx";
 import ResumenSemestre from "./perfil/ResumenSemestre.jsx";
-import EditarPerfil from "./perfil/EditarPerfil.jsx";
+import EditarPerfil, { SECCIONES } from "./perfil/EditarPerfil.jsx";
 import Avatar, { TAMANOS } from "./avatar/Avatar.jsx";
 import IconoCristal from "./shared/IconoCristal.jsx";
 import { combinacionDe, leyenda } from "../avatar/generador.js";
@@ -30,7 +30,7 @@ const dato = {
   padding: "16px 18px",
 };
 
-export default function PerfilView({ onBack }) {
+export default function PerfilView({ seccion = null, onBack }) {
   /*
    * El acceso al panel docente aparece solo si la cuenta está en la lista
    * blanca. Para un estudiante no existe: ni el enlace ni la pista de que haya
@@ -47,7 +47,20 @@ export default function PerfilView({ onBack }) {
    * cancelar. `vuelta` remonta el ranking de abajo tras guardar: ya pintado,
    * seguiría enseñando el apodo viejo en tu fila hasta recargar.
    */
-  const [editando, setEditando] = useState(false);
+  /*
+   * ═══════════ #/perfil/avatar ABRE DIRECTO EN EL AVATAR ═══════════
+   *
+   * «Mi avatar», en el menú de cuenta, tiene que llevar al selector y no al
+   * formulario entero: cambiar de figura no es editar el apodo. Se resuelve
+   * con el mismo mecanismo que ya existe —EditarPerfil recibe qué secciones
+   * pintar— así que aquí solo se filtra la lista, y no hay una segunda vista
+   * de avatar que mantener al lado de la primera.
+   */
+  const soloAvatar = seccion === "avatar";
+  const [editando, setEditando] = useState(soloAvatar);
+
+  /* Si se llega con el hash puesto estando ya en el perfil, se abre igual. */
+  useEffect(() => { if (soloAvatar) setEditando(true); }, [soloAvatar]);
   const [vuelta, setVuelta] = useState(0);
   /* El aviso de la primera vez. Se decide al montar: ver avisoAvatar.js. */
   const [aviso, setAviso] = useState(() => avisoPendiente());
@@ -116,6 +129,7 @@ export default function PerfilView({ onBack }) {
             <EditarPerfil
               perfil={perfil}
               guardar={guardarPerfil}
+              secciones={soloAvatar ? SECCIONES.filter((s) => s.id === "avatar") : SECCIONES}
               onCancelar={() => setEditando(false)}
               onGuardado={() => { setEditando(false); setVuelta((v) => v + 1); }}
             />

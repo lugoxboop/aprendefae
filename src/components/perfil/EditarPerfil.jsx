@@ -123,10 +123,29 @@ export default function EditarPerfil({ perfil, guardar, onCancelar, onGuardado, 
     else onGuardado?.();
   };
 
+  /*
+   * ═══════════ CUANDO NO HAY NADA QUE GUARDAR ═══════════
+   *
+   * «Mi avatar» abre este mismo panel con una sola sección, la del avatar, que
+   * declara `campos: []` porque el selector ESCRIBE SOLO en cada toque. Sin
+   * campos no hay nada que mandar, así que el botón «Guardar» no se pinta: un
+   * botón que no hace nada enseña que algo quedó sin guardar cuando ya está
+   * guardado, y el estudiante se queda esperando.
+   *
+   * No es un caso especial escrito para el avatar: sale de `campos`, igual que
+   * borradorDe y sePuedeGuardar. Cualquier sección futura sin campos se
+   * comporta igual sin tocar esto.
+   *
+   * TEXTOS PENDIENTES DE REVISIÓN DE GEN: «Tu avatar» como título y «Volver»
+   * como salida. Son de necesidad, no acordados.
+   */
+  const hayCampos = secciones.some((s) => s.campos.length > 0);
+  const titulo = hayCampos ? "Editar perfil" : secciones[0]?.titulo ?? "Editar perfil";
+
   return (
     <form data-editar-perfil onSubmit={enviar} noValidate>
       <h2 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "22px", letterSpacing: "-0.025em", margin: "0 0 18px", color: FAE.text }}>
-        Editar perfil
+        {titulo}
       </h2>
 
       {secciones.map(({ id, titulo, campos, Componente }) => (
@@ -141,25 +160,27 @@ export default function EditarPerfil({ perfil, guardar, onCancelar, onGuardado, 
       {error && <p role="alert" style={{ fontSize: "13px", lineHeight: 1.5, color: FAE.coral, margin: "0 0 14px" }}>{error}</p>}
 
       <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-        <button
-          type="submit"
-          disabled={!listo}
-          style={{
-            ...PASTILLA, border: "none",
-            cursor: listo ? "pointer" : "default",
-            backgroundColor: listo ? FAE.teal : "rgba(248,249,250,0.08)",
-            color: listo ? FAE.bg : "rgba(248,249,250,0.4)",
-          }}
-        >
-          {guardando ? "Guardando…" : "Guardar"}
-        </button>
+        {hayCampos && (
+          <button
+            type="submit"
+            disabled={!listo}
+            style={{
+              ...PASTILLA, border: "none",
+              cursor: listo ? "pointer" : "default",
+              backgroundColor: listo ? FAE.teal : "rgba(248,249,250,0.08)",
+              color: listo ? FAE.bg : "rgba(248,249,250,0.4)",
+            }}
+          >
+            {guardando ? "Guardando…" : "Guardar"}
+          </button>
+        )}
         <button
           type="button"
           onClick={onCancelar}
           disabled={guardando}
           style={{ ...PASTILLA, background: "transparent", border: "1px solid rgba(248,249,250,0.22)", color: "rgba(248,249,250,0.72)" }}
         >
-          Cancelar
+          {hayCampos ? "Cancelar" : "Volver"}
         </button>
       </div>
     </form>
