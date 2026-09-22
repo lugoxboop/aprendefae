@@ -66,12 +66,28 @@ insert into res select 1, 'una fila sin etapas declaradas vale 1', '1',
 --
 -- Se excluyen las filas zzz que siembra esta misma prueba: sin ese filtro el
 -- chequeo se contaba a sí mismo y fallaba siempre.
+--
+-- Y se excluyen los desafíos, que son los únicos que declaran más de una etapa
+-- a propósito. La lista es explícita y no un `etapas > 1` cualquiera: así,
+-- cuando alguien le ponga etapas a una actividad normal por error, esto lo
+-- caza igual que el día que se escribió. El desafío nuevo que llegue hay que
+-- añadirlo aquí a mano, que es exactamente la fricción que se busca.
 insert into res select 2, 'las actividades reales que no son desafío siguen en 1 etapa', '0 con etapas>1',
   (select count(*)::text || ' con etapas>1'
      from public.actividad_catalogo
-    where etapas > 1 and activity_id <> 'proyecto-arca' and activity_id not like 'zzz-%'),
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova') and activity_id not like 'zzz-%'),
   (select count(*) = 0 from public.actividad_catalogo
-    where etapas > 1 and activity_id <> 'proyecto-arca' and activity_id not like 'zzz-%');
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova') and activity_id not like 'zzz-%');
+
+-- ── 13. Y los dos desafíos declaran sus cuatro etapas ─────────────────────
+-- El complemento del chequeo de arriba: excluirlos de la cuenta no puede
+-- significar dejar de mirarlos.
+insert into res select 13, 'los dos desafíos declaran 4 etapas y base 90', '2 filas',
+  (select count(*)::text || ' filas'
+     from public.actividad_catalogo
+    where activity_id in ('proyecto-arca', 'comite-nova') and etapas = 4 and fp_base = 90),
+  (select count(*) = 2 from public.actividad_catalogo
+    where activity_id in ('proyecto-arca', 'comite-nova') and etapas = 4 and fp_base = 90);
 
 -- ── 3. Lo de siempre sigue pagando lo de siempre ───────────────────────────
 -- EL CHEQUEO MÁS IMPORTANTE DEL ARCHIVO. registrar_fp se reemplazó entera; si

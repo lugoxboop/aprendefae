@@ -35,7 +35,8 @@ const B2 = [
 const hacerDeMacro = () =>
   SUBJECTS.macroeconomia.topics
     .filter((t) => MATERIAS_DEL_POOL.includes(t.id))
-    .flatMap((t) => (t.actividades ?? []).filter((a) => a.clasificacion?.tipo === HACER).map((a) => ({ id: a.id, tema: t.id })));
+    .flatMap((t) => (t.actividades ?? []).filter((a) => a.clasificacion?.tipo === HACER)
+      .map((a) => ({ id: a.id, tema: t.id, desafio: Boolean(a.clasificacion.desafio) })));
 
 test("tamaño real del pool por materia: PE 84, DA 86, PF 72, PM 83", () => {
   const cuenta = {};
@@ -163,8 +164,18 @@ test("B2b: los diez hechos de El Rezago, con escala y acierto literales y la reg
   );
 });
 
-test("B2c: las 33 actividades de PE, DA y PF (sin Memoramas) tienen su subtema etiquetado", () => {
-  const las33 = hacerDeMacro().filter((a) => a.tema !== "politica-monetaria" && !a.id.startsWith("memorama-")).map((a) => a.id);
+/*
+ * LOS DESAFÍOS NO ENTRAN EN ESTA CUENTA, y conviene decir por qué en vez de
+ * subir el número. Esta prueba comprueba que cada actividad tenga SU subtema,
+ * uno; un desafío de cuatro etapas tiene cuatro, uno por etapa, y no viven en
+ * el registro del Repaso porque no aportan ni un ítem al pool. Los suyos los
+ * comprueba nova.test.mjs. Si algún día un desafío alimenta el pool, se quita
+ * este filtro y la prueba pedirá su etiqueta como a cualquier otra.
+ */
+test("B2c: las 33 actividades de PE, DA y PF (sin Memoramas ni desafíos) tienen su subtema etiquetado", () => {
+  const las33 = hacerDeMacro()
+    .filter((a) => a.tema !== "politica-monetaria" && !a.id.startsWith("memorama-") && !a.desafio)
+    .map((a) => a.id);
   assert.equal(las33.length, 33);
   const etiquetadas = new Set([...Object.keys(SUBTEMA_REGLA), ...Object.keys(SUBTEMA_FIJO).map((k) => k.split(":")[0])]);
   assert.deepEqual(las33.filter((id) => !etiquetadas.has(id)), []);

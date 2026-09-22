@@ -16,6 +16,8 @@ import ExpansivaContractiva from "./mecanicas/tesoreria/ExpansivaContractiva.jsx
 import DisenaPresupuesto from "./mecanicas/tesoreria/DisenaPresupuesto.jsx";
 import DeficitVsDeuda from "./mecanicas/tesoreria/DeficitVsDeuda.jsx";
 import ClasePoliticaFiscal from "./mecanicas/tesoreria/clase/ClasePoliticaFiscal.jsx";
+import ComiteNova from "./mecanicas/nova/ComiteNova.jsx";
+import MesaDeJuntas from "./mecanicas/nova/MesaDeJuntas.jsx";
 import { MemoramaTesoreria, CobraGastaOPide } from "./mecanicas/bloques/cimientos.jsx";
 import { QuienAfectaAjuste, ExplicaContribuyente, ComitePresupuesto } from "./mecanicas/bloques/avanzados.jsx";
 import { IconoMecanismo, ACENTOS } from "./mecanicas/tesoreria/tesoreria.jsx";
@@ -23,7 +25,7 @@ import { INSTRUMENTOS } from "../data/politicaFiscal.js";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
-import { SUBJECTS, APRENDER, HACER, clasificacionDe, actividadesDeTipo } from "../data/subjects.js";
+import { SUBJECTS, APRENDER, HACER, clasificacionDe, actividadesDeTipo, desafioDe } from "../data/subjects.js";
 
 /*
  * Política Fiscal — "La Tesorería Nacional". Dos mitades:
@@ -191,8 +193,25 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
 
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
   const nodos = nodosDe(actividadesDeTipo(tema, HACER), hechas);
-  /* A2: el nodo que trae la URL, validado contra ESTE camino. Ver useNodoEnRuta. */
-  const resaltado = useNodoEnRuta(nodoAbierto, nodoInicial, esClase ? [] : nodos.map((x) => x.id));
+  /*
+   * El desafío va al lado del camino, no dentro. actividadesDeTipo() ya lo
+   * excluye de los doce nodos; aquí se recoge aparte para la tarjeta especial,
+   * con su propio dibujo: la mesa de junta en vez de las olas del Arca.
+   */
+  const desafio = desafioDe(tema);
+  const nodoDesafio = desafio && {
+    id: desafio.id,
+    nombre: desafio.nombre,
+    etiqueta: "Desafío",
+    completada: hechas.has(desafio.id),
+    Marca: MesaDeJuntas,
+  };
+  /* A2: el nodo que trae la URL, validado contra ESTE camino —el desafío incluido—. */
+  const resaltado = useNodoEnRuta(
+    nodoAbierto,
+    nodoInicial,
+    esClase ? [] : [...nodos.map((x) => x.id), ...(nodoDesafio ? [nodoDesafio.id] : [])],
+  );
 
   /* El mismo camino central que el resto del sitio: porcentaje, duración y detalle. */
   const completarJuego = async (actividadId, porcentajeAciertos, duracionMs, detalle = null) => {
@@ -208,7 +227,27 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
 
+  /*
+   * El desafío entrega su propio porcentaje —ya combinado de sus cuatro
+   * etapas— y su propia duración. Los puntos los pone el servidor: aquí no se
+   * multiplica nada por cuatro.
+   */
+  const completarDesafio = async (porcentajeAciertos, duracionMs, detalle = null) => {
+    const clasificacion = clasificacionDe(MATERIA, TEMA, "comite-nova");
+    celebrar(clasificacion?.dificultad, "comite-nova");
+    const resultado = await registrarActividadCompletada(clasificacion, {
+      materiaId: MATERIA,
+      temaId: TEMA,
+      actividadId: "comite-nova",
+      porcentajeAciertos,
+      duracionMs,
+      detalle,
+    });
+    if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
+  };
+
   const juego = esClase ? null : JUEGOS.find((j) => j.id === nodoAbierto);
+  const enDesafio = !esClase && nodoAbierto === nodoDesafio?.id;
 
   return (
     <FondoMateria materiaId="macroeconomia">
@@ -264,7 +303,51 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
                 camino sugiere uno, no lo impone.
               </p>
               <Tesoreria />
-              <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} porBloques />
+              <CaminoHacer
+                nodos={nodos}
+                onAbrir={setNodoAbierto}
+                especial={nodoDesafio}
+                resaltado={resaltado}
+                porBloques
+              />
+            </>
+          )}
+
+          {enDesafio && (
+            <>
+              <button
+                type="button"
+                onClick={() => setNodoAbierto(null)}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: "18px",
+                  fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
+                  padding: "9px 15px", borderRadius: "999px", cursor: "pointer",
+                  background: "transparent", border: "1px solid rgba(248,249,250,0.22)",
+                  color: "rgba(248,249,250,0.7)",
+                }}
+              >
+                <ChevronLeft size={15} /> Volver al camino
+              </button>
+
+              <EnlaceRendimiento actividadId="comite-nova" />
+
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "0 0 8px" }}>
+                {/*
+                  Ámbar y no el coral de «JUEGO n»: ámbar es el color del
+                  desafío en todo el sitio —el halo del nodo, su aro, su
+                  etiqueta en el camino— y coral significa error. Que el rótulo
+                  de los doce juegos sea coral viene de antes y no se toca aquí.
+                */}
+                <p style={{ ...sectionLabel, color: FAE.ambar }}>DESAFÍO</p>
+                <ActivityBadge tipo={HACER} size="sm" />
+              </div>
+              <h2 style={h2}>{nodoDesafio.nombre}</h2>
+              <p style={lead}>
+                La sala de juntas de NOVA: el Gobierno cobra, gasta y pide prestado durante un año, y
+                el estado de resultados de la empresa se mueve con cada decisión.
+              </p>
+
+              <ComiteNova onCompletar={completarDesafio} />
             </>
           )}
 

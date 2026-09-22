@@ -7,6 +7,9 @@ import {
   HIPOTESIS_TRIBUNAL, PREGUNTA_CRITERIO_TRIBUNAL,
 } from "../data/icebergActividades.js";
 import { CITAS_EXPEDIENTE, NIVELES, DECISIONES, PREGUNTA_DILUVIO } from "../data/arca.js";
+import {
+  COMUNICADOS, MEDIDAS_LINEA, MEDIDAS_INCIDENCIA, ESCENARIOS,
+} from "../data/nova.js";
 import { FUERZAS, CASOS as CASOS_ASEDIO } from "../data/asedio.js";
 import {
   TERMINOS_ECG, FRAGMENTOS_ECG, REACCIONES, PASOS_TRANSFUSION,
@@ -246,6 +249,34 @@ export const REGLAS = {
       return `${recortar(sinPrefijo(da.texto, pd), 40)} vs ${recortar(sinPrefijo(db.texto, pd), 40)}`;
     }
     if (etapa === "et4") return clave === "momento" ? PREGUNTA_DILUVIO : null;
+    return null;
+  },
+
+  /*
+   * El Comité de NOVA, el segundo desafío. Mismo prefijo `etN:` y misma razón:
+   * son cuatro juegos dentro de una actividad, y sin él el panel no sabría de
+   * qué etapa viene una fila.
+   */
+  "comite-nova": (id) => {
+    const [etapa, ...resto] = String(id).split(":");
+    const clave = resto.join(":");
+    if (etapa === "et1") return porId(COMUNICADOS, "texto")[clave] ?? null;
+    if (etapa === "et2") return porId(MEDIDAS_LINEA, "texto")[clave] ?? null;
+    if (etapa === "et3") {
+      /* `m1:gira` — la medida y cuál de sus dos preguntas. */
+      const [medidaId, fase] = clave.split(":");
+      const medida = MEDIDAS_INCIDENCIA.find((m) => m.id === medidaId);
+      if (!medida) return null;
+      return `${recortar(medida.titulo, 46)} · ${fase === "gira" ? "quién gira" : "quién lo soporta"}`;
+    }
+    if (etapa === "et4") {
+      /* `a:a1` — el escenario y su decisión. */
+      const [escenarioId, decisionId] = clave.split(":");
+      const escenario = ESCENARIOS.find((e) => e.id === escenarioId);
+      const decision = escenario?.decisiones.find((d) => d.id === decisionId);
+      if (!decision) return null;
+      return `${escenario.titulo} · ${recortar(decision.pregunta, 46)}`;
+    }
     return null;
   },
 

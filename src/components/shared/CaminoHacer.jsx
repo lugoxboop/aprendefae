@@ -478,7 +478,7 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas }) {
               {resaltado === especial.id && (
                 <circle className="fae-ch-aqui" cx={esp.x} cy={esp.y} r={radioEspecial + 20} fill="none" stroke={FAE.teal} strokeWidth="3" />
               )}
-              <IconoDesafio cx={esp.x} cy={esp.y} r={radioEspecial} completada={especial.completada} />
+              <IconoDesafio cx={esp.x} cy={esp.y} r={radioEspecial} completada={especial.completada} Marca={especial.Marca} />
             </g>
           </g>
         )}
@@ -1035,7 +1035,16 @@ function CabezaBloque({ bloque, tono, alDerecha = false }) {
 }
 
 /* El círculo del desafío: halo, aro y la ola del nivel del agua. Lo usan las dos formas. */
-function IconoDesafio({ cx, cy, r, completada }) {
+/*
+ * EL DIBUJO DE DENTRO ES DEL TEMA, EL HALO ES DEL SITIO.
+ *
+ * El aro ámbar, el halo que respira y el relleno al completarlo son la forma de
+ * «esto es un desafío» y valen para todos. Lo de dentro identifica a cada uno:
+ * las olas son del Arca y la mesa de junta es del Comité de NOVA. Un desafío
+ * que no pase su `Marca` se queda con las olas, que es lo que había antes de
+ * que existiera el segundo.
+ */
+function MarcaOlas({ cx, cy, r, completada }) {
   const ola = (dy, opacity) => (
     <path
       d={`M ${cx - r * 0.52} ${cy + r * dy} q ${r * 0.26} ${-r * 0.3}, ${r * 0.52} 0 t ${r * 0.52} 0`}
@@ -1049,12 +1058,20 @@ function IconoDesafio({ cx, cy, r, completada }) {
   );
   return (
     <>
+      {ola(0.16, 1)}
+      {ola(0.5, 0.6)}
+    </>
+  );
+}
+
+function IconoDesafio({ cx, cy, r, completada, Marca = MarcaOlas }) {
+  return (
+    <>
       {/* El halo, que es lo que lo hace "legendario" sin gritar. */}
       <circle className="fae-ch-halo" cx={cx} cy={cy} r={r + r * 0.33} fill={FAE.ambar} />
       <circle cx={cx} cy={cy} r={r + r * 0.13} fill="none" stroke={FAE.ambar} strokeWidth="1.5" opacity="0.4" />
       <circle cx={cx} cy={cy} r={r} fill={completada ? FAE.ambar : "rgba(14,27,46,0.95)"} stroke={FAE.ambar} strokeWidth={Math.max(2.2, r * 0.077)} />
-      {ola(0.16, 1)}
-      {ola(0.5, 0.6)}
+      <Marca cx={cx} cy={cy} r={r} completada={completada} />
     </>
   );
 }
@@ -1079,7 +1096,7 @@ function DesafioEnTarjeta({ especial, onAbrir, resaltado, marca, marcas }) {
       }}
     >
       <svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" style={{ flexShrink: 0, overflow: "visible" }}>
-        <IconoDesafio cx={29} cy={29} r={21} completada={especial.completada} />
+        <IconoDesafio cx={29} cy={29} r={21} completada={especial.completada} Marca={especial.Marca} />
       </svg>
       <span style={{ minWidth: 0 }}>
         <span style={ETIQUETA}>{(especial.etiqueta ?? "Desafío").toUpperCase()}</span>

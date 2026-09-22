@@ -395,6 +395,32 @@ export const SUBJECTS = {
             nombre: "El comité de presupuesto",
             clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
           },
+          {
+            /*
+             * EL DESAFÍO DEL TEMA, el segundo del sitio tras El Proyecto del
+             * Arca, y con la misma estructura por la misma regla.
+             *
+             * `desafio: true` lo saca de actividadesDeTipo(), que es lo que
+             * dibuja el camino y lo que cuenta para «tema completo» y para las
+             * medallas. Va AL LADO del camino: si contara, un desafío opcional
+             * de cuatro etapas se volvería obligatorio para cerrar el tema.
+             *
+             * `etapas: 4` dispara la regla del Kit para desafíos compuestos:
+             * base × etapas = 90 × 4 = 360. La multiplicación la hace el
+             * servidor (migración 0041); aquí solo se declara, y
+             * catalogo.test.mjs comprueba que los dos digan lo mismo.
+             */
+            id: "comite-nova",
+            nombre: "El Comité de NOVA",
+            clasificacion: {
+              tipo: HACER,
+              modalidad: "evaluativa",
+              dificultad: "experto",
+              fpBase: 90,
+              etapas: 4,
+              desafio: true,
+            },
+          },
         ],
       },
       {
