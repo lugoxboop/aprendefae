@@ -71,7 +71,7 @@ test("activo pendiente: un solo icono, chip ámbar, título y subtítulo exactos
     assert.equal(b.querySelectorAll("[data-llama]").length, 1, "solo la llama, y una sola vez");
     assert.equal(b.querySelectorAll("[data-icono]").length, 0, "el reloj ya no está");
     /* Y el widget de cuatro rectángulos y la insignia HACER, fuera. */
-    assert.equal(b.querySelectorAll("[data-previa]").length, 0, "sin la miniatura de las puertas");
+    assert.equal(b.querySelectorAll("[data-previa]").length, 0, "sin la miniatura de cuatro rectángulos");
     assert.ok(!/HACER/i.test(b.textContent), "sin la insignia HACER: su sitio lo ocupa el chip");
   } finally { m.desmontar(); }
 });

@@ -17,8 +17,8 @@ import PartidaRepaso from "./PartidaRepaso.jsx";
  *
  * ═══════════ AQUÍ HABÍA UNA PANTALLA INTERMEDIA, Y YA NO ═══════════
  *
- * Esta vista enseñaba primero el pasillo con las puertas de lo ya jugado y un
- * botón de «Empezar el repaso», y solo después las preguntas. Eran dos toques
+ * Esta vista enseñaba primero un dibujo con una puerta por materia ya jugada y
+ * un botón de «Empezar el repaso», y solo después las preguntas. Eran dos toques
  * y una pantalla entera para decidir algo que ya venía decidido: quien entra
  * al Repaso viene a repasar.
  *

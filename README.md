@@ -208,7 +208,9 @@ Hay un **tope por materia** (4; 5 con exactamente dos materias completadas; ning
 
 **La clave de historial** es `actividad:item_id`, con el mismo `item_id` que la actividad de origen manda a `fp_detalle`. Así un ítem visto en su actividad y el mismo ítem visto en el Repaso son un solo historial, sin tabla nueva. Se sortea **por clave y no por ítem**: en el Electrocardiograma una clave son dos lecturas del mismo término, y de esa unidad sale una sola.
 
-**El Pasillo** (`src/components/repaso/Pasillo.jsx`) es la entrada: una puerta dibujada por cada materia de la que ya se jugó algo —la sala de control, el quirófano, la bóveda, la sala de máquinas—. Solo las puertas que existen para ese estudiante: ninguna apagada, ningún "próximamente", ningún hueco guardado.
+**El banner** (`src/components/repaso/BannerRepaso.jsx`) es la entrada: una franja de ancho completo sobre la rejilla de temas del índice de Macroeconomía, fuera de la rejilla —no es un tema y no tiene forma de tema—. Enseña el estado **sin entrar**: pendiente, ya hecho hoy, o bloqueado. Al tocarlo **se expande donde está**, con el mismo patrón que la tarjeta partida de Aprender/Hacer, y no navega: dentro están los temas que entran hoy, cuántos ítems, cuántos FP y el botón de empezar.
+
+Los temas que anuncia son **los mismos que saldrán** en la partida, porque el barajado va sembrado con el estudiante y el día de Bogotá (`vistaPreviaDelDia` en `src/repaso/seleccion.js`): la previa y la partida sortean dos veces y coinciden. Sin eso el banner prometería unos temas y saldrían otros.
 
 ---
 
@@ -483,7 +485,7 @@ Medido con `npm run build` sobre el HEAD actual. La portada se carga de forma es
 
 | Momento | Se descarga (sin comprimir / gzip) |
 |---|---|
-| Abrir el sitio | Entrada + núcleo compartido: **423 kB / 124 kB** |
+| Abrir el sitio | Entrada + núcleo compartido: **440 kB / 130 kB** |
 | Índice de Macroeconomía | Plantilla de índice (23 kB) + curvas de oferta y demanda (2,7 kB) |
 | Índice de Pensamiento Estratégico | Plantilla + escena de ajedrez (13 kB) + **Three.js, 553 kB / 140 kB** |
 | Camino de un tema de Macro | 27–86 kB según el tema, más su banco de datos |
@@ -549,7 +551,7 @@ En la escena de ajedrez el fallback es una imagen y no un fotograma renderizado:
 
 - **Coral (`#E76F51`) significa error**, en todo el sitio y sin excepción. La única salvedad son las **figuras de avatar** (paletas Brasa y Aurora), donde es parte del kit aprobado y no un estado.
 - **Suelo tipográfico: 12 px** para todo lo que se lee —texto de contenido, rótulos de un diagrama, nombres de nodos—, medido a 375 px de ventana; 10,5 px es el suelo absoluto para etiquetas. La presentación de clase tiene su propia escala, en vh. Nada de esto se aplica solo: es la regla, escrita en `theme.js`.
-- **El color nunca va solo.** Cada banda de desempeño lleva su nombre escrito y su rango en números; cada puerta del Pasillo, el suyo debajo.
+- **El color nunca va solo.** Cada banda de desempeño lleva su nombre escrito y su rango en números; cada chip de estado del Repaso, su palabra al lado del color.
 - **Se verifica a 375 px.** Los estudiantes entran desde el teléfono. `ANCHO_ESTRECHO = 560` es el ancho donde el sitio pasa a su forma de teléfono, y es **un solo número** para el control de cuenta y para el camino: ajustar uno sin el otro dejaría un tramo de anchos donde uno ya es de móvil y el otro todavía no.
 - **Las duplicaciones entre JavaScript y SQL se prueban, no se confían.** Umbrales de liga, precios de Cristales y cortes de banda están a la fuerza en los dos lados; en los tres casos hay una prueba que **lee la migración** y falla si se separan. Es la única forma de tener una sola verdad cuando el lenguaje impide compartirla.
 
@@ -627,7 +629,7 @@ En la escena de ajedrez el fallback es una imagen y no un fotograma renderizado:
     │   ├── ranking/RankingFP.jsx   # con el avatar a 36 px
     │   ├── ligas/                  # LigaBoard (avatar a 24 px), cabecera, insignia
     │   ├── racha/                  # MomentoRacha + Teseracto (Three.js, lazy)
-    │   ├── repaso/                 # RepasoView, Pasillo, PartidaRepaso, BannerRepaso, GestoPasillo
+    │   ├── repaso/                 # BannerRepaso (la entrada), RepasoView, PartidaRepaso
     │   ├── perfil/                 # medallas, resumen, editar, selector de avatar
     │   ├── docente/                # PanelDocente y sus seis piezas
     │   ├── presentacion/           # la vista para proyectar en clase

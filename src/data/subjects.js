@@ -693,11 +693,11 @@ const ALIAS = { "camara-presion-experto": "Cámara de presión · modo experto" 
  * dentro de `topics`, así que ningún camino ni bloque las pinta, y las
  * medallas de "materia completa" no las cuentan.
  *
- * El Repaso Diario es la primera. Vive en El Pasillo, con su propia entrada.
- * `indice` dice bajo qué índice aparece esa entrada, y NADA MÁS: qué materias
- * alimentan su pool se decide en src/repaso/repaso.js, aparte, para que moverla
- * de índice el día que entre Pensamiento Estratégico no toque ni El Pasillo ni
- * el motor de selección.
+ * El Repaso Diario es la primera. Su entrada es el banner que va sobre la
+ * rejilla de temas. `indice` dice bajo qué índice aparece esa entrada, y NADA
+ * MÁS: qué materias alimentan su pool se decide en src/repaso/repaso.js,
+ * aparte, para que moverla de índice el día que entre Pensamiento Estratégico
+ * no toque ni el banner ni el motor de selección.
  */
 export const ACTIVIDADES_TRANSVERSALES = [
   {

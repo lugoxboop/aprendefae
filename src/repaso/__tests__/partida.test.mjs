@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { JSDOM, VirtualConsole } from "jsdom";
 
 /*
- * El Pasillo (B6), la partida (B7, B8) y dónde vive la entrada: todo lo que
- * se ve. Mismo montaje jsdom que bloques-partidas.
+ * La partida (B7, B8) y dónde vive la entrada: todo lo que se ve.
+ * Mismo montaje jsdom que bloques-partidas.
  */
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
@@ -24,14 +24,11 @@ const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act ?? (await import("react-dom/test-utils")).act;
 
-const { default: Pasillo, PUERTAS } = await import("../../components/repaso/Pasillo.jsx");
-const { default: GestoPasillo, VIAJES, SEGUNDOS_POR_VIAJE } = await import("../../components/repaso/GestoPasillo.jsx");
 const { default: PartidaRepaso } = await import("../../components/repaso/PartidaRepaso.jsx");
 const { POOL } = await import("../items.js");
-const { MATERIAS_DEL_POOL, MENSAJES } = await import("../repaso.js");
+const { MENSAJES } = await import("../repaso.js");
 const { SUBJECTS, ACTIVIDADES_TRANSVERSALES, ubicacionDeActividad } = await import("../../data/subjects.js");
 const { VISTAS, vistaDeTema } = await import("../../ruta.js");
-const { FAE } = await import("../../theme.js");
 
 function montar(elemento) {
   const caja = document.createElement("div");
@@ -46,74 +43,6 @@ const click = (el, que) => {
   act(() => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 };
 const botones = (caja) => [...caja.querySelectorAll("button")];
-
-/* ─────────────────────────────── El Pasillo ─────────────────────────────── */
-
-const combinaciones = (xs) => xs.reduce((acc, x) => [...acc, ...acc.map((c) => [...c, x])], [[]]).filter((c) => c.length > 0);
-
-test("El Pasillo pinta una puerta por materia completada, en las 15 combinaciones de 1 a 4", () => {
-  const todas = combinaciones(MATERIAS_DEL_POOL);
-  assert.equal(todas.length, 15);
-  for (const materias of todas) {
-    const m = montar(React.createElement(Pasillo, { materias }));
-    try {
-      const puertas = [...m.caja.querySelectorAll("[data-puerta]")].map((p) => p.getAttribute("data-puerta"));
-      assert.deepEqual(puertas, MATERIAS_DEL_POOL.filter((x) => materias.includes(x)), `con ${materias}`);
-      /* Cada puerta dice su nombre escrito: el dibujo no informa solo. */
-      for (const id of puertas) {
-        const titulo = SUBJECTS.macroeconomia.topics.find((t) => t.id === id).title;
-        assert.ok(m.caja.querySelector(`[data-puerta="${id}"]`).textContent.includes(titulo), id);
-      }
-      /* Ni apagadas, ni «próximamente», ni sitio guardado para otra materia. */
-      assert.ok(!/próximamente|pensamiento/i.test(m.caja.textContent));
-      assert.equal(m.caja.querySelectorAll("svg").length, puertas.length);
-    } finally {
-      m.desmontar();
-    }
-  }
-});
-
-test("sin materias completadas no hay pasillo; las cuatro puertas son distintas entre sí", () => {
-  const m = montar(React.createElement(Pasillo, { materias: [] }));
-  assert.equal(m.caja.innerHTML, "");
-  m.desmontar();
-  assert.deepEqual(Object.keys(PUERTAS).sort(), [...MATERIAS_DEL_POOL].sort());
-  const dibujos = MATERIAS_DEL_POOL.map((id) => {
-    const p = montar(React.createElement(Pasillo, { materias: [id] }));
-    const html = p.caja.querySelector("svg").innerHTML;
-    p.desmontar();
-    return html;
-  });
-  assert.equal(new Set(dibujos).size, 4);
-});
-
-test("El Pasillo no usa coral: no hay nada que esté mal", () => {
-  const m = montar(React.createElement(Pasillo, { materias: MATERIAS_DEL_POOL }));
-  assert.ok(!m.caja.innerHTML.toLowerCase().includes(FAE.coral.toLowerCase()));
-  m.desmontar();
-});
-
-test("la miniatura: sin texto, sin coral, cuatro puertas iguales y dos viajes de 0,6 s desde puertas distintas", () => {
-  const m = montar(React.createElement(GestoPasillo));
-  try {
-    const svg = m.caja.querySelector("svg");
-    assert.equal(svg.querySelectorAll("text").length, 0);
-    const sinEstilo = svg.cloneNode(true);
-    sinEstilo.querySelectorAll("style").forEach((x) => x.remove());
-    assert.equal(sinEstilo.textContent.trim(), "", "ningún texto visible");
-    assert.ok(!m.caja.innerHTML.toLowerCase().includes(FAE.coral.toLowerCase()));
-    const puertas = [...svg.querySelectorAll("rect")].filter((r) => r.getAttribute("height") === "32");
-    assert.equal(puertas.length, 4);
-    assert.equal(new Set(puertas.map((r) => `${r.getAttribute("width")}|${r.getAttribute("fill")}`)).size, 1, "iguales: no se sabe de qué materia salen");
-    assert.equal(SEGUNDOS_POR_VIAJE, 0.6);
-    assert.equal(VIAJES.length, 2);
-    assert.notEqual(VIAJES[0][0], VIAJES[1][0], "el segundo viaje sale de otra puerta");
-    assert.ok(VIAJES.every(([de, a]) => de !== a));
-    assert.match(svg.innerHTML, /animation: fae-pv-repaso-ficha 1\.2s linear infinite/);
-  } finally {
-    m.desmontar();
-  }
-});
 
 /* ─────────────────────────── Dónde vive la entrada ─────────────────────────── */
 

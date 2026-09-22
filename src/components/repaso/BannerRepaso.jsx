@@ -23,7 +23,7 @@ const REPASO = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === ID_REPASO);
  *   · Se EXPANDE EN SITIO, con el mismo patrón que la tarjeta partida de
  *     Aprender/Hacer: no navega, cambia de estado donde está.
  *   · DESAPARECIÓ la pantalla intermedia de las tres puertas. Su botón vive
- *     ahora en esta expansión, y el pasillo dejó de tener sitio propio.
+ *     ahora en esta expansión, y el dibujo de las puertas se borró del repo.
  *
  * ═══════════ UN SOLO ICONO, Y CASI SIEMPRE QUIETO ═══════════
  *
@@ -189,12 +189,6 @@ export function copiaBloqueo(estado, faltan) {
   return "Completa más actividades para desbloquearlo";
 }
 
-/*
- *  es inyectable por la misma razón que  en el selector de
- * avatar y  en la Tienda: los tres estados del banner dependen de
- * lo que diga la base, y una prueba tiene que poder ponerlos sin una base. En
- * producción nadie lo pasa y manda el hook.
- */
 /*
  * `repaso` es inyectable por la misma razón que `onGuardar` en el selector de
  * avatar y `onComprar` en la Tienda: los tres estados del banner dependen de lo

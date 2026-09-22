@@ -10,7 +10,7 @@
  * ACTIVIDADES_TRANSVERSALES en subjects.js (`indice`). Qué materias alimentan
  * el pool lo dice MATERIAS_DEL_POOL, aquí. El día que Pensamiento Estratégico
  * salga de standby, se añaden sus temas a esta lista y la entrada se mueve de
- * índice, cada cosa por su lado: ni El Pasillo ni el motor de selección saben
+ * índice, cada cosa por su lado: ni el banner ni el motor de selección saben
  * dónde está la entrada.
  * ═══════════════════════════════════════════════════════════════════════════
  */
