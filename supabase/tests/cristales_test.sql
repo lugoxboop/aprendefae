@@ -36,11 +36,16 @@ select set_config('request.jwt.claims',
   json_build_object('sub', (select uid from ids), 'role', 'authenticated')::text, true);
 
 -- ── 1. Cómo nace el perfil ──────────────────────────────────────────────────
+/*
+ * La paleta por defecto es MAREA desde la 0038. Era 'nocturno', y se cambió
+ * porque su c1 era el navy de marca —el mismo del fondo del sitio— así que un
+ * Nivel I recién nacido no se veía.
+ */
 insert into res
-select 1, 'nace con saldo 0, Decaedro, Nocturno, nivel I y solo el I comprado',
-  '0 decaedro nocturno 1 {1}',
+select 1, 'nace con saldo 0, Decaedro, Marea, nivel I y solo el I comprado',
+  '0 decaedro marea 1 {1}',
   cristales_balance || ' ' || avatar_shape || ' ' || avatar_palette || ' ' || avatar_level || ' ' || avatar_unlocked_levels::text,
-  cristales_balance = 0 and avatar_shape = 'decaedro' and avatar_palette = 'nocturno'
+  cristales_balance = 0 and avatar_shape = 'decaedro' and avatar_palette = 'marea'
     and avatar_level = 1 and avatar_unlocked_levels = array[1]
 from public.profiles where user_id = (select uid from ids);
 
