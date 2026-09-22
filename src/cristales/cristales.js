@@ -131,6 +131,90 @@ export function estadoDeNivel(perfil, nivel) {
   return faltanPara(perfil, nivel) === 0 ? "alcanzable" : "falta";
 }
 
+/* ─────────────────────── por qué falló, de verdad ─────────────────────── */
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * EL MENSAJE NO PUEDE CULPAR A LA CONEXIÓN SIN SABERLO.
+ *
+ * Esto existe por un caso real. En producción faltaba correr la migración
+ * 0035, así que avatar_elegir() no existía: PostgREST respondía 404 PGRST202
+ * —«Could not find the function public.avatar_elegir…»— y el estudiante leía
+ * «No se pudo guardar tu avatar. Revisa tu conexión.» con la conexión
+ * perfecta. El mensaje mandó a mirar al sitio equivocado, y el fallo real
+ * —una migración sin aplicar— quedó tapado.
+ *
+ * La regla, entonces: SOLO se habla de conexión cuando de verdad no se pudo
+ * hablar con el servidor. Si el servidor contestó, contestó algo, y eso es lo
+ * que hay que enseñar.
+ *
+ * Y el código va escrito en el mensaje a propósito. Un estudiante no sabe qué
+ * es un PGRST202, pero la captura que manda por WhatsApp sí lo lleva, y con él
+ * se sabe en un vistazo si hay que correr una migración o mirar otra cosa. Sin
+ * eso, el único camino es abrir la consola en el teléfono de alguien.
+ *
+ * TEXTOS PENDIENTES DE REVISIÓN DE GEN. Los escribí por necesidad —sin ellos
+ * el arreglo no se puede ver— y no son contenido acordado.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/*
+ * El servidor contestó, y lo que contestó es que le falta algo: la función no
+ * existe, hay dos firmas, o falta una columna. Nunca es culpa del estudiante y
+ * nunca se arregla reintentando: se arregla corriendo la migración que falta.
+ */
+const FALTA_EN_EL_SERVIDOR = new Set([
+  "PGRST202", // no encuentra la función con esos parámetros
+  "PGRST203", // dos firmas vivas: la llamada es ambigua
+  "PGRST205", // no encuentra la tabla
+  "42883",    // undefined_function
+  "42P01",    // undefined_table
+  "42703",    // undefined_column
+]);
+
+/*
+ * Y esto tampoco es un fallo de red: es el sitio compilado sin sus variables de
+ * entorno, así que no hay cliente y no hay a dónde escribir. Decía «Sin
+ * conexión.», que mandaba a mirar al mismo sitio equivocado.
+ */
+export const SIN_CONFIGURAR =
+  "Este sitio se publicó sin conexión a la base de datos, así que no hay dónde guardar. No es tu conexión.";
+
+/** Si supabase-js no llegó a hablar con el servidor (no hay código de Postgres). */
+function esFalloDeRed(error) {
+  if (error?.code) return false;
+  return /fetch|network|networkerror|load failed|failed to fetch/i.test(error?.message ?? "");
+}
+
+/**
+ * De un error de supabase-js al mensaje que se le enseña a quien lo sufrió.
+ *
+ * @param {object} error   el que devuelve supabase-js
+ * @param {string} intento qué se estaba intentando, en infinitivo y en corto
+ * @returns {string}
+ */
+export function motivoDeError(error, intento) {
+  const codigo = error?.code ?? "";
+
+  if (esFalloDeRed(error)) return `No se pudo ${intento}: no hay conexión. Inténtalo otra vez.`;
+
+  if (FALTA_EN_EL_SERVIDOR.has(codigo)) {
+    return `No se pudo ${intento}: al servidor le falta una actualización (${codigo}). No es tu conexión — avísale a quien mantiene el sitio.`;
+  }
+
+  /* Sesión caducada o sin permiso. Reintentar no sirve; volver a entrar, sí. */
+  if (codigo === "42501") return `No se pudo ${intento}: tu sesión expiró. Vuelve a entrar y prueba otra vez.`;
+
+  /*
+   * 22023 lo levanta la propia función con un texto escrito para leerse —«El
+   * nivel 3 no está desbloqueado»—, así que se enseña tal cual en vez de
+   * taparlo con uno genérico.
+   */
+  if (codigo === "22023" && error?.message) return error.message;
+
+  return `No se pudo ${intento}${codigo ? ` (${codigo})` : ""}. Inténtalo otra vez.`;
+}
+
 /* ─────────────────────── las dos escrituras ─────────────────────── */
 
 /*
@@ -139,13 +223,11 @@ export function estadoDeNivel(perfil, nivel) {
  * negativo ni cobrar dos veces. Devuelve la fila del perfil ya actualizada.
  */
 export async function comprarNivel(nivel) {
-  if (!supabase) return { error: "Sin conexión." };
+  if (!supabase) return { error: SIN_CONFIGURAR };
   const { data, error } = await supabase.rpc("comprar_nivel_avatar", { p_nivel: Math.floor(Number(nivel)) });
   if (error) {
-    /* 22023 = la base dijo que no alcanza, que ya lo tiene o que el nivel no existe. */
-    if (error.code === "22023") return { error: "No se pudo comprar. Vuelve a mirar tu saldo." };
-    console.error("[aprendeFAE] Compra de nivel:", error.message);
-    return { error: "No se pudo comprar. Revisa tu conexión e inténtalo otra vez." };
+    console.error("[aprendeFAE] Compra de nivel:", error.code ?? "", error.message);
+    return { error: motivoDeError(error, "comprar este nivel") };
   }
   return { perfil: Array.isArray(data) ? data[0] : data };
 }
@@ -155,15 +237,15 @@ export async function comprarNivel(nivel) {
  * guardar. Manda solo lo que cambió; los nulls dejan el resto como estaba.
  */
 export async function guardarAvatar({ forma = null, paleta = null, nivel = null } = {}) {
-  if (!supabase) return { error: "Sin conexión." };
+  if (!supabase) return { error: SIN_CONFIGURAR };
   const { data, error } = await supabase.rpc("avatar_elegir", {
     p_forma: forma,
     p_paleta: paleta,
     p_nivel: nivel === null || nivel === undefined ? null : Math.floor(Number(nivel)),
   });
   if (error) {
-    console.error("[aprendeFAE] Guardar avatar:", error.message);
-    return { error: "No se pudo guardar tu avatar. Revisa tu conexión." };
+    console.error("[aprendeFAE] Guardar avatar:", error.code ?? "", error.message);
+    return { error: motivoDeError(error, "guardar tu avatar") };
   }
   return { perfil: Array.isArray(data) ? data[0] : data };
 }

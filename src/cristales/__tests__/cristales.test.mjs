@@ -5,6 +5,7 @@ import {
   PRECIO_NIVEL, NIVELES_COMPRABLES, CRISTALES_RACHA, ACTIVIDADES_POR_PREMIO, CRISTALES_POR_ACTIVIDADES,
   CRISTALES_PODIO, CRISTALES_PODIO_RESTO, cristalesDePuesto, PODIO_PROPORCION, PODIO_MINIMO, tamanoPodio,
   FUENTES, saldoDe, nivelesDesbloqueados, estaDesbloqueado, precioDe, faltanPara, estadoDeNivel,
+  motivoDeError,
 } from "../cristales.js";
 
 /*
@@ -207,4 +208,64 @@ test("y no hay conversión entre FP y Cristales en ninguna dirección", () => {
   }
   const cliente = readFileSync(new URL("../cristales.js", import.meta.url), "utf8");
   assert.ok(!/points/.test(cliente), "el módulo de Cristales no tiene por qué mirar los FP");
+});
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * EL MENSAJE DE ERROR NO PUEDE CULPAR A LA CONEXIÓN SIN SABERLO.
+ *
+ * Estas pruebas existen por el caso real que las motivó: en producción faltaba
+ * la migración 0035, avatar_elegir() no existía, PostgREST devolvía PGRST202 y
+ * el estudiante leía «Revisa tu conexión» con la conexión perfecta. Lo que se
+ * comprueba aquí es justo eso: que un fallo del servidor NUNCA se cuente como
+ * un fallo de red.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+test("un servidor al que le falta la migración no se cuenta como fallo de red", () => {
+  for (const codigo of ["PGRST202", "PGRST203", "PGRST205", "42883", "42P01", "42703"]) {
+    const msg = motivoDeError({ code: codigo, message: "lo que sea que diga Postgres" }, "guardar tu avatar");
+    /* Puede NEGAR que sea la conexión; lo que no puede es mandar a revisarla. */
+    assert.ok(!/revisa tu conexi[oó]n|comprueba tu conexi[oó]n|no hay conexi[oó]n/i.test(msg),
+      `${codigo}: no puede mandar a mirar la conexión — decía «${msg}»`);
+    assert.ok(msg.includes(codigo), `${codigo}: el código tiene que ir en el mensaje, para que la captura sirva`);
+    assert.ok(/actualizaci[oó]n/i.test(msg), `${codigo}: tiene que decir que al servidor le falta algo`);
+  }
+});
+
+test("y un fallo de red de verdad sí se cuenta como tal", () => {
+  for (const m of ["TypeError: Failed to fetch", "NetworkError when attempting to fetch resource", "Load failed"]) {
+    const msg = motivoDeError({ message: m }, "guardar tu avatar");
+    assert.match(msg, /no hay conexi[oó]n/i, `«${m}» sí es un fallo de red`);
+  }
+});
+
+test("la sesión caducada se distingue, porque reintentar no la arregla", () => {
+  const msg = motivoDeError({ code: "42501", message: "permission denied" }, "guardar tu avatar");
+  assert.match(msg, /sesi[oó]n/i);
+  assert.ok(!/no hay conexión/i.test(msg));
+});
+
+test("22023 enseña el texto de la propia función, que ya está escrito para leerse", () => {
+  const msg = motivoDeError({ code: "22023", message: "El nivel 3 no está desbloqueado" }, "comprar este nivel");
+  assert.equal(msg, "El nivel 3 no está desbloqueado");
+});
+
+test("un error desconocido dice qué se intentaba y su código, sin inventarse la causa", () => {
+  const msg = motivoDeError({ code: "XX000", message: "algo raro" }, "guardar tu avatar");
+  assert.match(msg, /guardar tu avatar/);
+  assert.match(msg, /XX000/);
+  assert.ok(!/conexi[oó]n/i.test(msg), "no se afirma que sea la conexión cuando no se sabe");
+});
+
+/*
+ * El guardián contra la recaída. Mira el CÓDIGO, no los comentarios: la
+ * cabecera del módulo cita el texto viejo a propósito, para dejar dicho por qué
+ * no vuelve, y citarlo no es usarlo.
+ */
+test("ningún mensaje del módulo vuelve a mandar a revisar la conexión a ciegas", () => {
+  const cliente = readFileSync(new URL("../cristales.js", import.meta.url), "utf8");
+  const sinComentarios = cliente.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+  assert.ok(!/Revisa tu conexi[oó]n/.test(sinComentarios),
+    "ese texto es el que tapó el fallo real: el servidor contestaba y se culpaba a la red");
 });
