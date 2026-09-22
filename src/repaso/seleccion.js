@@ -1,5 +1,5 @@
 import { ubicacionDeActividad } from "../data/subjects.js";
-import { barajar } from "../utils/barajar.js";
+import { barajar, barajadorDe } from "../utils/barajar.js";
 import {
   ID_REPASO, MATERIAS_DEL_POOL, ITEMS_POR_REPASO, MINIMO_ACTIVIDADES, MINIMO_POOL,
   CUPOS, DIAS_PARA_OLVIDO, topePorMateria,
@@ -160,3 +160,57 @@ export function seleccionarRepaso({ pool, historial, ahora, mezclar = barajar })
 
 /** Si este ítem cuenta como «antes fallado»: su último resultado, antes de hoy, fue un error. */
 export const estabaFallado = (historial, clave) => historial.get(clave)?.ultimoOk === false;
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * LA VISTA PREVIA DEL DÍA — solo lectura, y la MISMA tirada que la partida.
+ *
+ * El banner necesita decir «Hoy entran: A · B · C» antes de empezar, y eso
+ * obliga a sortear dos veces: una para enseñarlo y otra al pulsar el botón.
+ * Con el barajado al azar las dos tiradas podían no coincidir, y el banner
+ * prometía unos temas y salían otros.
+ *
+ * Se resuelve sembrando el barajado con el estudiante y el día: las dos
+ * llamadas dan lo mismo por construcción. No hace falta guardar la selección
+ * en ninguna parte, sobrevive a recargar la página, y reabrir el banner no
+ * vuelve a sortear — la mezcla del día es la del día.
+ *
+ * NO TIENE NI UN EFECTO SECUNDARIO: ni marca el día como hecho, ni consume
+ * nada, ni toca la red. Los tres datos que recibe se leen con las funciones
+ * de solo lectura de datos.js (repaso_historial, repaso_hecho_hoy y
+ * actividades_hechas), que tampoco escriben.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/** La semilla del día para un estudiante. Sin sesión, una estable igualmente. */
+export const semillaDelDia = (usuarioId, ahora) => `${usuarioId ?? "invitado"}:${diaBogota(ahora)}`;
+
+/**
+ * Qué entraría en el repaso de hoy.
+ *
+ * @returns {{ items, temas, cuantos, topeRelajado }}
+ *   `temas` son los ids de tema de la mezcla, en el orden del pool.
+ */
+export function vistaPreviaDelDia({ hechas, historial, ahora = new Date(), usuarioId = null }) {
+  const { items, topeRelajado } = seleccionarRepaso({
+    pool: poolDe(hechas),
+    historial,
+    ahora,
+    mezclar: barajadorDe(semillaDelDia(usuarioId, ahora)),
+  });
+  const presentes = new Set(items.map((x) => x.materia));
+  return {
+    items,
+    temas: MATERIAS_DEL_POOL.filter((m) => presentes.has(m)),
+    cuantos: items.length,
+    topeRelajado,
+  };
+}
+
+/**
+ * Cuántas actividades le faltan para desbloquear el Repaso por número.
+ * Cero cuando ya no es esa la razón del bloqueo.
+ */
+export function faltanActividades(hechas) {
+  return Math.max(0, MINIMO_ACTIVIDADES - actividadesDelPool(hechas).length);
+}

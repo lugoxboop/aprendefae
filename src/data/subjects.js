@@ -721,3 +721,18 @@ export function nombreDeActividad(activityId) {
 }
 
 export const EMPTY_TOPICS_MESSAGE = "Los temas de esta materia están en construcción.";
+
+/*
+ * El nombre legible de un tema, buscado por id en todas las materias.
+ *
+ * Lo necesita el banner del Repaso para decir «Hoy entran: …» con los nombres
+ * que el estudiante ve en la rejilla, no con los ids. Devuelve el id si no
+ * está en el catálogo: un nombre feo se ve y se arregla; un hueco en blanco en
+ * mitad de una frase parece un error del sitio.
+ */
+const NOMBRE_DE_TEMA = new Map();
+for (const materia of Object.values(SUBJECTS)) {
+  for (const tema of materia.topics ?? []) NOMBRE_DE_TEMA.set(tema.id, tema.title);
+}
+
+export const nombreDeTema = (temaId) => NOMBRE_DE_TEMA.get(temaId) ?? String(temaId ?? "");

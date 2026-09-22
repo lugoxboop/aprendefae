@@ -17,8 +17,13 @@ import { FAE } from "../../theme.js";
  * siempre el mismo basta con uno estable y compartido. */
 const ID = "fae-llama";
 
-export default function IconoRacha({ tamano = 28, encendida = true, brillo = false }) {
-  const trazo = encendida ? `url(#${ID}-borde)` : "rgba(248,249,250,0.32)";
+/*
+ * `colorApagado` existe para el banner del Repaso, donde el fuego sin racha va
+ * en el gris del kit (#7A8798) y no en el blanco translúcido de siempre. El
+ * valor por defecto es el de antes, así que ningún otro sitio cambia.
+ */
+export default function IconoRacha({ tamano = 28, encendida = true, brillo = false, colorApagado = "rgba(248,249,250,0.32)" }) {
+  const trazo = encendida ? `url(#${ID}-borde)` : colorApagado;
   const relleno = encendida ? `url(#${ID}-relleno)` : "none";
 
   return (

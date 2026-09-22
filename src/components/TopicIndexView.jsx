@@ -92,7 +92,8 @@ export default function TopicIndexView({
         */}
         {ACTIVIDADES_TRANSVERSALES.filter((a) => a.indice === subjectId).map((a) => (
           <div key={a.id} data-encabezado-materia style={{ width: "100%", maxWidth: "760px", margin: "clamp(18px, 3vh, 28px) auto 0" }}>
-            <BannerRepaso actividad={a} onAbrir={onOpenTopic} />
+            {/* La expansión vive dentro del banner; el botón de empezar navega a la partida. */}
+            <BannerRepaso actividad={a} onEmpezar={() => onOpenTopic(a.temaId)} />
           </div>
         ))}
 

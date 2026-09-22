@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { FAE } from "../../theme.js";
 import Logo from "../Logo.jsx";
@@ -9,20 +8,30 @@ import { useAuth } from "../../auth/AuthProvider.jsx";
 import { registrarActividadCompletada } from "../../fp/registrarActividad.js";
 import { ACTIVIDADES_TRANSVERSALES, HACER } from "../../data/subjects.js";
 import { ID_REPASO, MENSAJES } from "../../repaso/repaso.js";
-import { poolDe } from "../../repaso/items.js";
-import { estadoRepaso, materiasCompletadas, seleccionarRepaso } from "../../repaso/seleccion.js";
-import { leerHechas, leerHistorial, leerHechoHoy } from "../../repaso/datos.js";
-import Pasillo from "./Pasillo.jsx";
+import { useRepaso } from "../../repaso/useRepaso.js";
 import PartidaRepaso from "./PartidaRepaso.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * EL PASILLO — la vista del Repaso Diario.
+ * LA PARTIDA DEL REPASO DIARIO.
  *
- * No es un nodo de ningún camino ni de ningún bloque: es su propia entrada en
- * el índice de Macroeconomía. Dentro, el pasillo con las puertas de lo ya
- * jugado y, según el día, el botón de empezar o uno de los tres mensajes de
- * Gen (B5), literales.
+ * ═══════════ AQUÍ HABÍA UNA PANTALLA INTERMEDIA, Y YA NO ═══════════
+ *
+ * Esta vista enseñaba primero el pasillo con las puertas de lo ya jugado y un
+ * botón de «Empezar el repaso», y solo después las preguntas. Eran dos toques
+ * y una pantalla entera para decidir algo que ya venía decidido: quien entra
+ * al Repaso viene a repasar.
+ *
+ * Esa información —qué temas entran hoy, cuántos ítems, cuántos FP— vive ahora
+ * en el banner del índice, que se expande en su sitio. Esta vista arranca la
+ * partida directamente.
+ *
+ * ═══════════ LA MEZCLA ES LA MISMA QUE PROMETIÓ EL BANNER ═══════════
+ *
+ * El banner dice «Hoy entran: A · B · C» antes de pulsar, y aquí se vuelve a
+ * calcular. Las dos tiradas coinciden porque el barajado va sembrado con el
+ * estudiante y el día —ver vistaPreviaDelDia—: sin eso el banner prometería
+ * unos temas y saldrían otros.
  *
  * Lo registra como cualquier actividad: registrarActividadCompletada con su
  * clasificación. El servidor decide los FP —base 60, renovable a diario— y la
@@ -38,43 +47,15 @@ const MENSAJE_DE_ESTADO = {
   "hecho-hoy": MENSAJES.hechoHoy,
 };
 
-const VACIO = { hechas: new Set(), historial: new Map(), hechoHoy: false };
-
 export default function RepasoView({ onBack }) {
-  const { session, cargando: cargandoSesion, pedirCuenta } = useAuth();
+  const { pedirCuenta } = useAuth();
   const [recompensa, celebrar] = useRecompensa();
-
-  /* null mientras carga; "error" si una lectura falló; si no, lo leído. */
-  const [datos, setDatos] = useState(null);
-  const [partida, setPartida] = useState(null);
-
-  const idUsuario = session?.user?.id ?? null;
-
-  useEffect(() => {
-    if (cargandoSesion) return;
-    let vivo = true;
-    if (!idUsuario) {
-      setDatos(VACIO);
-      return;
-    }
-    setDatos(null);
-    Promise.all([leerHechas(), leerHistorial(), leerHechoHoy()]).then(([hechas, historial, hechoHoy]) => {
-      if (!vivo) return;
-      if (hechas === null || historial === null || hechoHoy === null) setDatos("error");
-      else setDatos({ hechas, historial, hechoHoy });
-    });
-    return () => { vivo = false; };
-  }, [cargandoSesion, idUsuario]);
-
-  const empezar = () => {
-    const { items } = seleccionarRepaso({ pool: poolDe(datos.hechas), historial: datos.historial, ahora: new Date() });
-    setPartida({ items, historial: datos.historial });
-  };
+  const { cargando, error, datos, estado, previa, marcarHechoHoy } = useRepaso();
 
   const terminar = async (pct, ms, detalle) => {
     celebrar(REPASO.clasificacion.dificultad, ID_REPASO);
     /* Hecho hoy desde ya: el mensaje de «vuelve mañana» no espera a la red. */
-    setDatos((d) => (d && d !== "error" ? { ...d, hechoHoy: true } : d));
+    marcarHechoHoy();
     const resultado = await registrarActividadCompletada(REPASO.clasificacion, {
       materiaId: REPASO.materiaId,
       temaId: REPASO.temaId,
@@ -86,9 +67,13 @@ export default function RepasoView({ onBack }) {
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
 
-  const listo = datos && datos !== "error";
-  const estado = listo ? estadoRepaso(datos) : null;
+  /*
+   * Se puede llegar aquí con el hash escrito a mano, sin pasar por el banner y
+   * sin cumplir las condiciones. Por eso los mensajes de estado se quedan: esta
+   * es la única pantalla donde decir por qué no hay partida.
+   */
   const mensaje = estado ? MENSAJE_DE_ESTADO[estado] : null;
+  const jugando = !cargando && !error && estado === "listo" && previa;
 
   return (
     <FondoMateria materiaId="macroeconomia">
@@ -106,7 +91,7 @@ export default function RepasoView({ onBack }) {
 
           {/*
             LA INSIGNIA VIVE CON EL CONTENIDO, NO EN LA CABECERA.
-          
+
             Es metadato de lo que hay debajo —no navegación, no estado— y no
             cambia mientras se juega: el estudiante ya la vio en la tarjeta que
             tocó para entrar. En la cabecera competía por el ancho con el título,
@@ -114,38 +99,24 @@ export default function RepasoView({ onBack }) {
           */}
           <div className="fae-insignia-actividad"><ActivityBadge tipo={HACER} size="sm" /></div>
 
-          {!datos && (
+          {cargando && (
             <p role="status" style={{ fontSize: "14px", color: "rgba(248,249,250,0.6)" }}>Cargando…</p>
           )}
 
-          {datos === "error" && (
+          {error && (
             <p role="alert" style={{ fontSize: "14px", lineHeight: 1.55, color: "rgba(248,249,250,0.82)" }}>
               No se pudo cargar el Repaso. Intenta de nuevo en un momento.
             </p>
           )}
 
-          {listo && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-              <Pasillo materias={materiasCompletadas(datos.hechas)} />
+          {jugando && (
+            <PartidaRepaso items={previa.items} historial={datos.historial} onTerminar={terminar} />
+          )}
 
-              {partida ? (
-                <PartidaRepaso items={partida.items} historial={partida.historial} onTerminar={terminar} />
-              ) : estado === "listo" ? (
-                <button
-                  type="button"
-                  onClick={empezar}
-                  style={{ alignSelf: "flex-start", fontFamily: "Sora, sans-serif", fontSize: "14.5px", fontWeight: 700, padding: "13px 22px", borderRadius: "14px", cursor: "pointer", background: FAE.teal, border: `1px solid ${FAE.teal}`, color: FAE.bg }}
-                >
-                  Empezar el repaso
-                </button>
-              ) : null}
-
-              {mensaje && (!partida || estado === "hecho-hoy") && (
-                <p data-mensaje-repaso={estado} style={{ margin: 0, fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.82)" }}>
-                  {mensaje}
-                </p>
-              )}
-            </div>
+          {!cargando && !error && !jugando && mensaje && (
+            <p data-mensaje-repaso={estado} style={{ margin: 0, fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.82)" }}>
+              {mensaje}
+            </p>
           )}
         </div>
       </div>
