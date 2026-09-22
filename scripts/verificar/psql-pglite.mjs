@@ -228,4 +228,44 @@ try {
 } finally {
   await db.close();
 }
-process.exit(codigo);
+
+/*
+ * ═══════════ AQUÍ IBA process.exit(codigo), Y REVENTABA EN WINDOWS ═══════════
+ *
+ * El síntoma: una de cada tres o cuatro invocaciones moría con
+ *
+ *   Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c, line 94
+ *
+ * y `npm run verificar` salía en rojo en un paso distinto cada vez —a veces
+ * montando el auth de mentira, a veces a mitad de las migraciones—. Que el
+ * punto de falla se moviera es lo que delata que no era el SQL: el SQL no
+ * cambia entre ejecuciones.
+ *
+ * LA CAUSA, EN DOS PISOS:
+ *
+ *   1. Debajo hay una carrera conocida de libuv en Windows (libuv#5079): se
+ *      llama a uv_async_send() sobre un handle que ya está cerrándose. Se
+ *      arregló aguas arriba en libuv 1.53.0; el Node con el que se encontró
+ *      esto traía 1.52.1, así que cualquiera con esa combinación la tiene.
+ *
+ *   2. Y process.exit() era lo que le daba la oportunidad. Mata el bucle de
+ *      eventos AHORA, sin esperar a que se drene: PGlite es PostgreSQL
+ *      compilado a WebAssembly y su runtime todavía tiene trabajo asíncrono en
+ *      vuelo cuando close() ya devolvió. Ese trabajo aterriza sobre handles a
+ *      medio cerrar, y de ahí la aserción.
+ *
+ * Medido con un A/B de UNA línea sobre este archivo, doce vueltas cada uno:
+ * con process.exit(), 3 de 12 en rojo; con process.exitCode, 0 de 12 (y 0 de
+ * 20 sumando una tanda previa).
+ *
+ * Poner el código y dejar que el proceso termine solo es además lo correcto
+ * por otra razón: process.exit() puede cortar la salida a medias cuando stdout
+ * es una tubería, y aquí SIEMPRE lo es —base.yml hace `salida=$(psql …)` y
+ * decide el rojo leyendo lo que imprimimos—. Una salida truncada sería un
+ * veredicto equivocado.
+ *
+ * Si algún día esto se quedara colgado, sería que PGlite dejó un handle vivo
+ * tras close(): eso se arregla cerrando lo que falte, no volviendo a matar el
+ * proceso a la fuerza.
+ */
+process.exitCode = codigo;
