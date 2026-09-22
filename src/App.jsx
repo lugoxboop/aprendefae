@@ -61,6 +61,28 @@ const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"))
 const DemandaAgregadaAprenderView = lazy(() => import("./components/DemandaAgregadaAprenderView.jsx"));
 const DemandaAgregadaHacerView = lazy(() => import("./components/DemandaAgregadaHacerView.jsx"));
 
+/*
+ * ═══════════ QUÉ VISTAS LLEVAN TÍTULO EN LA CABECERA ═══════════
+ *
+ * Las que lo llevan usan el header compacto en pantallas estrechas: sin logo,
+ * sin divisor y con la pastilla de cuenta encogida a solo los FP. La lista vive
+ * aquí porque es App quien sabe qué vista está puesta, y la pastilla se pinta
+ * fuera del árbol de la vista —no puede deducirlo mirando a su alrededor—.
+ *
+ * NO ESTÁN el perfil, la Tienda ni el panel docente, aunque sus cabeceras
+ * también tienen un título: la tabla de variantes de Xeno pone el perfil con la
+ * pastilla completa, y sus cabeceras no llevan insignia ni compiten por el
+ * ancho como las de actividad. Queda anotado porque la regla general, leída al
+ * pie de la letra, los incluiría.
+ */
+const VISTAS_CON_TITULO = new Set([
+  "macroeconomia", "pensamiento-estrategico",
+  "camino-da", "grifos-da",
+  "politica-economica", "politica-fiscal", "politica-monetaria",
+  "pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter",
+  "repaso-diario",
+]);
+
 export default function App() {
   /*
    * ═══════════ LA VISTA VIVE EN LA URL, NO EN ESTADO SUELTO ═══════════
@@ -123,7 +145,7 @@ export default function App() {
   const wrap = (node) => (
     <NavigationContext.Provider value={navigation}>
       {node}
-      <AccountControl />
+      <AccountControl conTitulo={VISTAS_CON_TITULO.has(view)} />
       <AuthDialog />
       {/* Escucha al motor de FP y confirma en pantalla. Se monta una sola vez. */}
       <AvisoFP />

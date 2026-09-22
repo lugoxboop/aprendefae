@@ -224,9 +224,9 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
       >
         {/* La presentación usa el ancho entero: en un proyector cada columna cuenta. */}
         <div style={{ maxWidth: esClase ? "none" : "860px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) clamp(16px, 2vw, 24px) 56px" }}>
-          <div className="fae-reserva-cuenta" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: esClase ? "16px" : "22px" }}>
-            <Logo variant="symbol" size={26} theme="dark" />
-            <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
+          <div className="fae-cabecera-titulo" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: esClase ? "16px" : "22px" }}>
+            <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
+            <span aria-hidden="true" className="fae-cabecera-marca" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
             <button
               type="button"
               onClick={onBack}
@@ -242,8 +242,17 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
             <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1 }}>
               Política Fiscal
             </h1>
-            <ActivityBadge tipo={esClase ? APRENDER : HACER} size="sm" />
           </div>
+
+          {/*
+            LA INSIGNIA VIVE CON EL CONTENIDO, NO EN LA CABECERA.
+          
+            Es metadato de lo que hay debajo —no navegación, no estado— y no
+            cambia mientras se juega: el estudiante ya la vio en la tarjeta que
+            tocó para entrar. En la cabecera competía por el ancho con el título,
+            y a 375 px se lo comía. Sale en TODOS los anchos, no solo en móvil.
+          */}
+          <div className="fae-insignia-actividad"><ActivityBadge tipo={esClase ? APRENDER : HACER} size="sm" /></div>
 
           {esClase && <ClasePoliticaFiscal />}
 

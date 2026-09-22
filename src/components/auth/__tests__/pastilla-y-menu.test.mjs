@@ -53,7 +53,7 @@ const PERFIL = {
   avatar_unlocked_levels: [1],
 };
 
-function montar({ perfil = PERFIL, navegacion = {} } = {}) {
+function montar({ perfil = PERFIL, navegacion = {}, conTitulo = false } = {}) {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
@@ -66,7 +66,7 @@ function montar({ perfil = PERFIL, navegacion = {} } = {}) {
   act(() => raiz.render(
     React.createElement(AuthContext.Provider, { value: auth },
       React.createElement(NavigationContext.Provider, { value: navegacion },
-        React.createElement(AccountControl))),
+        React.createElement(AccountControl, { conTitulo }))),
   ));
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 }
@@ -199,4 +199,71 @@ test("y vuelve el día que alcanza uno que todavía no había visto", () => {
     abrir(m.caja);
     assert.equal(hayPunto(m.caja), true, "el III es nuevo");
   } finally { m.desmontar(); limpiar(); }
+});
+
+/* ─────────────────────── el header compacto ─────────────────────── */
+
+test("en una vista CON título la pastilla se compacta; en las demás, no", () => {
+  const conTitulo = montar({ navegacion: {}, conTitulo: true });
+  try {
+    const p = pastilla(conTitulo.caja);
+    assert.match(p.className, /fae-cuenta-compacta/);
+    /* El avatar sigue en el DOM —lo esconde el CSS, que jsdom no aplica— pero
+     * envuelto en la clase que la hoja puede apagar. Sin la envoltura, el
+     * `display:block` inline de Avatar ganaría y no habría forma de esconderlo. */
+    assert.ok(p.querySelector(".fae-cuenta-avatar"), "el avatar va envuelto para poder esconderlo");
+    /* Y el número nunca se va: es lo único que no cede en ningún ancho. */
+    assert.match(p.querySelector("[data-fp-pastilla]").textContent, /815/);
+  } finally { conTitulo.desmontar(); }
+
+  const sinTitulo = montar();
+  try {
+    assert.ok(!/fae-cuenta-compacta/.test(pastilla(sinTitulo.caja).className));
+  } finally { sinTitulo.desmontar(); }
+});
+
+test("la pastilla compacta sigue abriendo el mismo menú", () => {
+  const m = montar({ conTitulo: true });
+  try {
+    abrir(m.caja);
+    assert.ok(m.caja.querySelector("[data-ficha-cuenta]"), "la ficha de identidad, igual que en la completa");
+    assert.deepEqual(opciones(m.caja), ["Mi perfil", "Mi avatar", "Tienda", "Cerrar sesión"]);
+  } finally { m.desmontar(); }
+});
+
+/*
+ * ═══════════ LA INSIGNIA NO PUEDE VOLVER A LA CABECERA ═══════════
+ *
+ * Se mira el código fuente y no el render, porque son nueve vistas y montarlas
+ * todas pediría el árbol entero de cada tema. Lo que se comprueba es lo que de
+ * verdad se rompería: que alguien vuelva a meter un ActivityBadge dentro de la
+ * fila de cabecera, que es de donde salió por comerse el título.
+ */
+test("ninguna cabecera con título lleva la insignia dentro", async () => {
+  const { readdirSync, readFileSync, statSync } = await import("node:fs");
+  const { join } = await import("node:path");
+  const raiz = new URL("../../../", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
+
+  const archivos = [];
+  const recorrer = (dir) => {
+    for (const f of readdirSync(dir)) {
+      const p = join(dir, f);
+      if (statSync(p).isDirectory()) { if (f !== "__tests__") recorrer(p); }
+      else if (f.endsWith(".jsx")) archivos.push(p);
+    }
+  };
+  recorrer(raiz);
+
+  const conCabecera = archivos.filter((p) => readFileSync(p, "utf8").includes("fae-cabecera-titulo"));
+  assert.ok(conCabecera.length >= 9, `solo ${conCabecera.length} vistas con cabecera de título; se esperaban al menos 9`);
+
+  const culpables = [];
+  for (const p of conCabecera) {
+    const texto = readFileSync(p, "utf8");
+    const ini = texto.indexOf("fae-cabecera-titulo");
+    /* Desde la clase hasta el cierre de esa fila: el primer </div> a su nivel. */
+    const trozo = texto.slice(ini, ini + texto.slice(ini).search(/\n\s*<\/div>/) + 1);
+    if (trozo.includes("<ActivityBadge")) culpables.push(p.split(/[\/]/).pop());
+  }
+  assert.deepEqual(culpables, [], "la insignia es metadato de contenido, no de cabecera");
 });

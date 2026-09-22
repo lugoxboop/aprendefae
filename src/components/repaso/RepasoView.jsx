@@ -95,15 +95,24 @@ export default function RepasoView({ onBack }) {
       {recompensa}
       <div style={{ minHeight: "100vh", backgroundColor: "transparent", fontFamily: "Inter, sans-serif", color: FAE.text, backgroundImage: "radial-gradient(circle at 50% -10%, rgba(42,157,143,0.14), transparent 55%)" }}>
         <div style={{ maxWidth: "720px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 16px 56px" }}>
-          <div className="fae-reserva-cuenta" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
-            <Logo variant="symbol" size={26} theme="dark" />
-            <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
+          <div className="fae-cabecera-titulo" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
+            <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
+            <span aria-hidden="true" className="fae-cabecera-marca" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
             <button type="button" onClick={onBack} aria-label="Volver a Macroeconomía" style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "8px", borderRadius: "999px", background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)", cursor: "pointer" }}>
               <ChevronLeft size={20} color={FAE.text} />
             </button>
             <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1 }}>{REPASO.nombre}</h1>
-            <ActivityBadge tipo={HACER} size="sm" />
           </div>
+
+          {/*
+            LA INSIGNIA VIVE CON EL CONTENIDO, NO EN LA CABECERA.
+          
+            Es metadato de lo que hay debajo —no navegación, no estado— y no
+            cambia mientras se juega: el estudiante ya la vio en la tarjeta que
+            tocó para entrar. En la cabecera competía por el ancho con el título,
+            y a 375 px se lo comía. Sale en TODOS los anchos, no solo en móvil.
+          */}
+          <div className="fae-insignia-actividad"><ActivityBadge tipo={HACER} size="sm" /></div>
 
           {!datos && (
             <p role="status" style={{ fontSize: "14px", color: "rgba(248,249,250,0.6)" }}>Cargando…</p>

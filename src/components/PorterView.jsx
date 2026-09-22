@@ -378,9 +378,9 @@ export default function PorterView({ modo = null, nodoInicial = null, onBack }) 
     >
       <div style={{ maxWidth: "860px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
         {/* Logo (salir al inicio) y volver (subir al índice de la materia) conviven. */}
-        <div className="fae-reserva-cuenta" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
-          <Logo variant="symbol" size={26} theme="dark" />
-          <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
+        <div className="fae-cabecera-titulo" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
+          <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
+          <span aria-hidden="true" className="fae-cabecera-marca" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
           <button
             type="button"
             onClick={onBack}
@@ -397,8 +397,17 @@ export default function PorterView({ modo = null, nodoInicial = null, onBack }) 
             Fuerzas de Porter
           </h1>
           {/* Sin modo, ActivityBadge no dibuja nada: la página entera se ve igual. */}
-          <ActivityBadge tipo={modo} size="sm" />
         </div>
+
+        {/*
+          LA INSIGNIA VIVE CON EL CONTENIDO, NO EN LA CABECERA.
+        
+          Es metadato de lo que hay debajo —no navegación, no estado— y no
+          cambia mientras se juega: el estudiante ya la vio en la tarjeta que
+          tocó para entrar. En la cabecera competía por el ancho con el título,
+          y a 375 px se lo comía. Sale en TODOS los anchos, no solo en móvil.
+        */}
+        <div className="fae-insignia-actividad"><ActivityBadge tipo={modo} size="sm" /></div>
 
         {muestraAprender && (
         <>

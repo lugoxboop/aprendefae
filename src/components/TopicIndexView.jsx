@@ -57,9 +57,18 @@ export default function TopicIndexView({
           padding: "clamp(18px, 3vh, 30px) 24px clamp(18px, 3vh, 34px)",
         }}
       >
-        {/* El logo hace de regreso al inicio: aquí no hay botón de volver aparte. */}
-        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-          <Logo variant="symbol" size={28} theme="dark" />
+        {/*
+          El logo hace de regreso al inicio: aquí no hay botón de volver aparte.
+
+          Por eso la cabecera lleva `fae-sin-volver`. La regla del header
+          compacto esconde el logo en pantallas estrechas porque «el botón de
+          volver ya cubre la salida», y aquí esa premisa no se cumple: el logo
+          ES la salida. Esconderlo dejaría al estudiante dentro del índice sin
+          forma de ir al inicio. Lo demás de la regla —sin divisor, pastilla
+          compacta, título que trunca el último— sí se aplica.
+        */}
+        <div className="fae-cabecera-titulo fae-sin-volver" style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+          <span className="fae-cabecera-marca"><Logo variant="symbol" size={28} theme="dark" /></span>
           <h1
             style={{
               fontFamily: "Sora, sans-serif",

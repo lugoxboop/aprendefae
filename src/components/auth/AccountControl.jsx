@@ -30,10 +30,23 @@ import GoogleSignInButton from "./GoogleSignInButton.jsx";
  * 171 px del propio logo. Lo veía cada estudiante que entraba desde el
  * teléfono, en cada pantalla, desde el primer día.
  *
- * Por debajo de ANCHO_ESTRECHO pasa a un círculo de 40×40: sin sesión, el
- * botón de Google en su forma de icono —oficial, lo dibuja su librería—; con
- * sesión, solo la inicial del apodo. 40 px es también el mínimo cómodo para el
- * dedo. Por encima de ese ancho, todo sigue exactamente como estaba.
+ * Sin sesión, por debajo de ANCHO_ESTRECHO el botón de Google pasa a su forma
+ * de icono —oficial, lo dibuja su librería—, de 40×40, que es el mínimo cómodo
+ * para el dedo.
+ *
+ * CON SESIÓN YA NO ES UN CÍRCULO CON LA INICIAL. La pastilla enseña el avatar
+ * y los FP, y tiene dos formas:
+ *
+ *   completa   avatar + «12.500 FP». En escritorio siempre, y en el teléfono
+ *              en las vistas sin título en la cabecera (portada, perfil).
+ *   compacta   solo «12.500 FP», sin avatar, en el teléfono y en las vistas
+ *              CON título. Por debajo de ANCHO_MINIMO_SUFIJO se queda el
+ *              número solo. Es el mismo botón —mismo fondo, mismo borde, mismo
+ *              menú— encogido; nunca desaparece.
+ *
+ * Quién es «con título» no lo adivina esta pastilla: se pinta fuera del árbol
+ * de la vista, así que no tiene a su alrededor nada que mirar. Lo dice App con
+ * la prop `conTitulo`, desde una lista de vistas que vive allí.
  *
  * ═══════════ LO DECIDE EL CSS, NO JAVASCRIPT ═══════════
  *
@@ -46,13 +59,15 @@ import GoogleSignInButton from "./GoogleSignInButton.jsx";
  *
  * ═══════════ Y EL HUECO QUE RESERVA ═══════════
  *
- * Encoger no bastó: el círculo todavía tapaba el título largo de Pensamiento
- * Sistémico y la etiqueta «Hacer» / «Aprender» de Demanda Agregada. Así que
- * las filas de cabecera de las vistas de tema llevan la clase
- * `fae-reserva-cuenta`, y la regla vive AQUÍ, junto al elemento que necesita el
- * hueco: si el control cambia de tamaño, su reserva cambia en el mismo
- * archivo. 40 px: el círculo empieza a 54 px del borde y el contenido de las
- * páginas a 24, así que el texto queda a unos 8 px del círculo.
+ * Encoger no bastó: el control todavía tapaba el título largo de Pensamiento
+ * Sistémico y la etiqueta de Demanda Agregada. Así que las filas de cabecera
+ * con título llevan la clase `fae-cabecera-titulo`, y la regla vive AQUÍ,
+ * junto al elemento que necesita el hueco: si el control cambia de tamaño, su
+ * reserva cambia en el mismo archivo.
+ *
+ * Esa misma clase es la que trae el HEADER COMPACTO entero —sin logo, sin
+ * divisor, con el título truncando el último—. Su orden de cesión está escrito
+ * en el bloque de CSS de abajo, que es donde se aplica.
  *
  * ═══════════ EL ATAJO AL PANEL DOCENTE, Y POR QUÉ NO SIEMPRE ES PASTILLA ═══════════
  *
@@ -100,8 +115,24 @@ const ANCHO_ATAJO = 768;
  */
 const RESERVA_MOVIL = 112;
 
+/*
+ * Y el hueco cuando la pastilla va compacta —sin avatar— en una vista con
+ * título. Medido: 76 px de pastilla + los 14 que la separan del borde, menos
+ * los 24 de relleno que la página ya tiene, redondeado hacia arriba.
+ */
+const RESERVA_MOVIL_COMPACTA = 76;
+
+/*
+ * Por debajo de esto ni «FP» cabe al lado del número, y se queda solo la cifra.
+ * 360 px es el ancho de un Galaxy A-algo, que es lo que de verdad se ve en el
+ * salón; los 320 de un iPhone SE viejo entran de sobra por debajo.
+ */
+const ANCHO_MINIMO_SUFIJO = 360;
+
 const CSS_CUENTA = `
 .fae-gsi-icono { display: none; }
+/* Normal aquí, para que la regla que lo esconde viva también en la hoja. */
+.fae-cuenta-avatar { display: inline-flex; }
 .fae-atajo-pastilla { display: inline-flex; }
 .fae-atajo-menu { display: none; }
 @media (max-width: ${ANCHO_ATAJO - 1}px) {
@@ -109,32 +140,77 @@ const CSS_CUENTA = `
   .fae-atajo-menu { display: flex; }
 }
 @media (max-width: ${ANCHO_ESTRECHO}px) {
-  .fae-reserva-cuenta { padding-right: ${RESERVA_MOVIL}px; }
   /*
-   * ═══════════ QUIÉN ENCOGE CUANDO NO CABE ═══════════
+   * ═══════════════════════════════════════════════════════════════════════
+   * EL HEADER COMPACTO — tres elementos y nada más:
    *
-   * En la cabecera de una actividad conviven logo, divisor, botón de volver,
-   * título e insignia, y a 375 px no siempre caben. La prioridad la fijó Xeno:
-   * el TÍTULO se trunca primero; el botón de volver y la pastilla de cuenta no
-   * se tocan nunca — son navegación, y una flecha a medias no se puede pulsar.
+   *     [← volver]   Título de la actividad            [1.200 FP]
    *
-   * Se consigue con flex y no con anchos: todo lo demás se declara
-   * irreducible, y solo el h1 puede encoger. «min-width: 0» es imprescindible
-   * —un hijo flex no baja de su contenido sin él— y sin eso el título empujaría
-   * a los otros en vez de truncarse.
+   * Vale para CUALQUIER vista con título en la cabecera, no solo las de
+   * actividad: también el índice de materia. Se marca con
+   * .fae-cabecera-titulo, y el orden en que las cosas ceden lo fijó Xeno:
+   *
+   *   1. el divisor, siempre
+   *   2. el logo, porque el botón de volver ya cubre la salida
+   *      —salvo en .fae-sin-volver, donde el logo ES la salida—
+   *   3. la insignia, que ya salió del header en el JSX, a todos los anchos
+   *   4. la pastilla, que pierde el avatar y se queda con el número
+   *   5. y SOLO ENTONCES el título trunca, si todavía hace falta
+   *
+   * Antes de esto el título se quedaba con 33 px a 375 y «Política Fiscal»
+   * se leía «P…». Medido después: 200 px, y entra entero.
+   * ═══════════════════════════════════════════════════════════════════════
    */
-  .fae-reserva-cuenta > * { flex-shrink: 0; }
-  .fae-reserva-cuenta > h1 {
+  .fae-cabecera-titulo .fae-cabecera-marca { display: none; }
+  .fae-cabecera-titulo.fae-sin-volver .fae-cabecera-marca { display: inline-flex; }
+
+  /*
+   * La reserva sube o baja con la pastilla: compacta ocupa ~76 px, así que
+   * hace falta menos hueco que con el avatar puesto.
+   */
+  .fae-cabecera-titulo { padding-right: ${RESERVA_MOVIL_COMPACTA}px; }
+
+  /*
+   * Solo el título encoge. «min-width: 0» es imprescindible —un hijo flex no
+   * baja de su contenido sin él— y sin eso el título empujaría a los otros en
+   * vez de truncarse. El botón de volver no se toca: una flecha a medias no
+   * se puede pulsar.
+   */
+  .fae-cabecera-titulo > * { flex-shrink: 0; }
+  .fae-cabecera-titulo > h1 {
     flex-shrink: 1;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
   .fae-gsi-ancho { display: none; }
   .fae-gsi-icono { display: block; }
-  /* En el teléfono el número va solo: la etiqueta «FP» no cabe. */
-  .fae-cuenta-sufijo { display: none; }
+
+  /*
+   * ═══════════ LA PASTILLA COMPACTA ═══════════
+   *
+   * Solo en vistas CON título: el avatar se va y queda el número con su «FP»
+   * en peso ligero. No desaparece ni cambia de forma —mismo fondo, mismo
+   * borde, mismo menú al tocarla—: se encoge.
+   *
+   * Que el avatar salga del header dentro de una actividad es deliberado: ahí
+   * los FP en vivo importan más que la identidad, y el avatar sigue entero en
+   * el perfil, la portada, el ranking y las ligas.
+   */
+  .fae-cuenta-compacta .fae-cuenta-avatar { display: none; }
+  .fae-cuenta-compacta { padding-left: 14px !important; }
+  .fae-cuenta-compacta .fae-cuenta-sufijo { font-weight: 400; opacity: 0.66; }
+}
+
+/*
+ * Y si ni con eso cabe —pantallas de 320 px, que existen— el número se queda
+ * solo. Es lo último que cede, y nunca cede del todo: la lectura de FP no
+ * desaparece en ningún ancho.
+ */
+@media (max-width: ${ANCHO_MINIMO_SUFIJO}px) {
+  .fae-cuenta-compacta .fae-cuenta-sufijo { display: none; }
 }
 @keyframes fae-atajo-entra { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: none; } }
 .fae-atajo-entra { animation: fae-atajo-entra 0.2s ease-out; }
@@ -287,7 +363,7 @@ const ENVOLTORIO = {
   zIndex: 40,
 };
 
-export default function AccountControl() {
+export default function AccountControl({ conTitulo = false }) {
   const { disponible, cargando, perfil, session, cerrarSesion } = useAuth();
 
   /* Sin credenciales configuradas no se anuncia un login que no existe. */
@@ -313,10 +389,10 @@ export default function AccountControl() {
   }
 
   /* Una por cuenta: si se entra con otra, el atajo vuelve a decidir desde cero. */
-  return <ConSesion key={session.user.id} usuarioId={session.user.id} perfil={perfil} cerrarSesion={cerrarSesion} />;
+  return <ConSesion key={session.user.id} usuarioId={session.user.id} perfil={perfil} cerrarSesion={cerrarSesion} conTitulo={conTitulo} />;
 }
 
-function ConSesion({ usuarioId, perfil, cerrarSesion }) {
+function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
   const nav = useContext(NavigationContext);
   const [abierto, setAbierto] = useState(false);
   const caja = useRef(null);
@@ -426,7 +502,7 @@ function ConSesion({ usuarioId, perfil, cerrarSesion }) {
       )}
       <button
         type="button"
-        className="fae-cuenta-boton"
+        className={`fae-cuenta-boton${conTitulo ? " fae-cuenta-compacta" : ""}`}
         onClick={() => setAbierto((v) => !v)}
         aria-expanded={abierto}
         /*
@@ -457,7 +533,15 @@ function ConSesion({ usuarioId, perfil, cerrarSesion }) {
           El avatar sustituye a la inicial en un círculo: es la figura que el
           estudiante eligió, y la misma que sale en el ranking y en la liga.
         */}
-        <Avatar perfil={perfil} tamano={28} style={{ flexShrink: 0 }} />
+        {/*
+          El avatar va envuelto, y no es un adorno del marcado: Avatar se pinta
+          con `display: block` en su style inline, y un estilo inline gana a
+          cualquier regla de hoja. Sin esta envoltura —que no lleva style— la
+          pastilla compacta no podría esconderlo sin recurrir a !important.
+        */}
+        <span className="fae-cuenta-avatar" style={{ flexShrink: 0 }}>
+          <Avatar perfil={perfil} tamano={28} />
+        </span>
         {/*
           Y los FP, que es lo que esta pastilla viene a enseñar en todas las
           páginas. El número lleva tabular-nums para que no baile de ancho

@@ -221,8 +221,8 @@ export default function PensamientoSistemicoView({ modo = null, nodoInicial = nu
     >
       <div style={{ maxWidth: "860px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 48px" }}>
         {/* Logo (salir al inicio) y volver (subir al índice de la materia) conviven. */}
-        <div className="fae-reserva-cuenta" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
-          <Logo variant="symbol" size={26} theme="dark" />
+        <div className="fae-cabecera-titulo" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
+          <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
           <span
             aria-hidden="true"
             style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }}
