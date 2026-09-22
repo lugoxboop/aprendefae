@@ -193,8 +193,19 @@ jobs:
             "")
               echo "ROJO  la portada NO trae Cache-Control."
               echo "      El .htaccess no está surtiendo efecto en producción."
-              echo "      Lo más probable: el FTP no subió el archivo por empezar"
-              echo "      con punto. Comprueba que exista public_html/.htaccess."
+              echo ""
+              echo "      NO es que el FTP se salte los ocultos: está comprobado que"
+              echo "      los sube —el propio .ftp-deploy-sync-state.json del action"
+              echo "      es un archivo oculto y está en el servidor—. Y no sirve"
+              echo "      pedir /.htaccess para ver si llegó: el servidor responde"
+              echo "      403 a cualquier cosa que empiece por .ht exista o no."
+              echo ""
+              echo "      Lo que queda por mirar, en este orden:"
+              echo "        1. ¿Corrió este despliegue? Lo dice la sonda de abajo."
+              echo "        2. ¿Llegó el archivo? Lo dice el inventario de aquí abajo."
+              echo "        3. Si llegó y aun así no hay cabecera, LiteSpeed está"
+              echo "           ignorando las directivas: el <IfModule mod_headers.c>"
+              echo "           evalúa falso y el archivo queda inerte sin dar error."
               fallo=1
               ;;
             *)
@@ -224,6 +235,33 @@ jobs:
                 ;;
             esac
           fi
+
+          # ── Inventario de lo que hay REALMENTE en el servidor ──────────────
+          #
+          # El action de FTP deja en la raíz un .ftp-deploy-sync-state.json con
+          # la lista de lo que subió y cuándo. Es público y no tiene nada
+          # sensible —son las rutas de archivos que ya sirve la web—, y
+          # convierte «no aparece la cabecera» en un diagnóstico con fecha:
+          # dice si el despliegue vivo es este o uno anterior, y si el
+          # .htaccess llegó a entrar.
+          #
+          # Se imprime SIEMPRE, salga verde o rojo: cuando sale verde no
+          # estorba, y cuando sale rojo es justo lo que hace falta.
+          estado=$(curl -sS --max-time 25 "$sitio/.ftp-deploy-sync-state.json" || true)
+          printf '%s' "$estado" | node -e '
+            let d = "";
+            process.stdin.on("data", (c) => (d += c)).on("end", () => {
+              try {
+                const j = JSON.parse(d);
+                const archivos = Object.keys(j.data ?? j);
+                console.log("      Último despliegue registrado : " + new Date(j.generatedTime).toISOString());
+                console.log("      Archivos subidos             : " + archivos.length);
+                console.log("      ¿Está el .htaccess?          : " + (archivos.some((x) => /(^|\/)\.htaccess$/.test(x)) ? "sí" : "NO"));
+              } catch {
+                console.log("      (no se pudo leer el inventario del servidor)");
+              }
+            });
+          ' || true
 
           exit $fallo
 
