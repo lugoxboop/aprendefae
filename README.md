@@ -500,6 +500,28 @@ Las dos dependencias pesadas —Recharts y Three.js— **no entran en la carga i
 - **Recharts** hoy tiene **un solo consumidor**: `PorterView.jsx`, que dibuja dos radares de cinco puntos. Si ese peso llega a importar, los radares son sustituibles por SVG a mano sin tocar el resto: los datos ya están normalizados a una escala 1–5 en `CASE_PAIRS`.
 - **Three.js** tiene **dos**: la escena de ajedrez del índice de Pensamiento Estratégico y el teseracto del momento de racha. Es decir, ya **no** es cierto que quien vaya solo a Macroeconomía nunca lo descargue: lo pedirá el día que su racha avance.
 
+### Qué se cachea y qué no
+
+Los archivos de `assets/` llevan **un hash en el nombre** (`main-19A3utOu.js`) que cambia con cada build. Un nombre nunca cambia de contenido, así que guardarlos mucho tiempo es correcto: Hostinger los sirve con `max-age=604800` (una semana) y no hay nada que tocar ahí.
+
+**Los `.html` son el caso contrario, y necesitaron un arreglo.** Hostinger los servía **sin ninguna cabecera `Cache-Control`**, y cuando falta, el navegador no se queda sin caché: aplica una **caché heurística**, una fracción del tiempo transcurrido desde `Last-Modified`. Se inventa cuánto guardarlo, y ese número crece solo a medida que pasan los días desde el último despliegue.
+
+Eso tiene una consecuencia concreta: el `index.html` es quien nombra el bundle. Con un index viejo guardado, el navegador pide el bundle viejo — y lo pide con éxito, porque sigue en el servidor. **El despliegue sale en verde, el sitio funciona, y el estudiante está usando el de la semana pasada.** Pasó de verdad: un navegador pedía `main-B1CbYu6c.js` mientras el servidor servía `main-D-0S14Zr.js`.
+
+`public/.htaccess` pone `no-cache, must-revalidate` en los dos `.html` (el del sitio y el de `/privacidad/`). `no-cache` **no** significa «no lo guardes»: significa «guárdalo, pero pregunta antes de usarlo». El navegador manda su ETag y recibe un `304 Not Modified` de unos cientos de bytes mientras no haya despliegue nuevo.
+
+Tres cosas lo sostienen, y miran sitios distintos a propósito, porque este fallo no avisa cuando vuelve:
+
+| Barrera | Qué comprueba |
+|---|---|
+| `src/__tests__/despliegue.test.mjs` | que el `.htaccess` diga lo que tiene que decir, y que no se meta con los bundles |
+| Paso «Comprobar que el build salió completo» | que el archivo llegue a `dist/` |
+| Sonda «el index.html llega con Cache-Control» | que llegue **al servidor**, midiendo la cabecera contra el sitio en vivo |
+
+La tercera es la que importa: el archivo empieza por punto, y que el build lo genere no demuestra que el FTP lo suba.
+
+Todo el `.htaccess` va dentro de `<IfModule mod_headers.c>`. Una directiva que el servidor no entienda **no se ignora: devuelve HTTP 500 para el dominio entero**. Envuelto así, el peor caso es que no haga nada.
+
 ---
 
 ## Fondos animados
