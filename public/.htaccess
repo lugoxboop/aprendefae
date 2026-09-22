@@ -1,0 +1,55 @@
+# ---------------------------------------------------------------------------
+# AprendeFAE — cabeceras de caché para Hostinger (LiteSpeed lee este archivo).
+#
+# EL PROBLEMA QUE RESUELVE. Hostinger sirve index.html SIN ninguna cabecera
+# Cache-Control. Cuando falta, el navegador no se queda sin caché: aplica una
+# caché HEURÍSTICA, que es una fracción del tiempo transcurrido desde
+# Last-Modified. O sea, se inventa cuánto vale guardarlo, y ese número crece
+# solo a medida que pasan los días desde el último despliegue.
+#
+# Eso ya pasó de verdad: el navegador de Mateo estaba pidiendo
+# main-B1CbYu6c.js mientras el servidor servía main-D-0S14Zr.js. El index.html
+# viejo que tenía guardado apuntaba al bundle viejo, así que no bastaba con que
+# el despliegue hubiera salido bien: hasta que ese index no caducara, seguía
+# corriendo el sitio de antes. Un estudiante puede quedarse días así sin que
+# nada falle ni avise.
+#
+# QUÉ CAMBIA, Y QUÉ NO.
+#
+#   index.html  pasa a `no-cache`, que NO significa «no lo guardes»: significa
+#               «guárdalo, pero pregunta antes de usarlo». El navegador manda
+#               su ETag y el servidor contesta 304 Not Modified —unos cientos
+#               de bytes— mientras no haya despliegue nuevo. Es barato, y el
+#               día que sí lo hay, el estudiante recibe el index nuevo en la
+#               primera visita en vez de cuando al navegador le parezca.
+#
+#   el resto    NO SE TOCA. Los archivos de assets/ llevan un hash en el
+#               nombre (main-19A3utOu.js) que cambia en cada build, así que un
+#               nombre nunca cambia de contenido: guardarlos mucho tiempo es
+#               correcto y es lo que ya hace Hostinger (max-age=604800). Meter
+#               mano ahí solo podría empeorarlo.
+#
+# POR QUÉ `\.html$` Y NO SOLO index.html. Son dos: el del sitio y el de
+# /privacidad/. Los dos tienen el mismo problema y la misma solución.
+#
+# POR QUÉ VA DENTRO DE <IfModule>. Un .htaccess con una directiva que el
+# servidor no entiende no se ignora: devuelve HTTP 500 para el sitio entero.
+# Envuelto así, si mod_headers no estuviera, este archivo no haría nada en vez
+# de tumbar aprendefae.com.
+#
+# DÓNDE VIVE Y POR QUÉ. En public/, que Vite copia tal cual a dist/, y dist/ es
+# lo que el workflow sube por FTP a public_html. No se sube a mano: si se
+# subiera a mano, el próximo despliegue no lo tocaría y nadie sabría que está
+# ahí ni de dónde salió.
+# ---------------------------------------------------------------------------
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+    # Por si alguna capa de arriba mete un Expires suyo: con los dos presentes
+    # manda Cache-Control, pero dejarlo limpio evita una lectura confusa el día
+    # que alguien mire las cabeceras para diagnosticar otra cosa.
+    Header unset Expires
+    Header unset Pragma
+  </FilesMatch>
+</IfModule>

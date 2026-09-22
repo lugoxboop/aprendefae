@@ -110,7 +110,12 @@ jobs:
         run: |
           test -f dist/index.html || { echo "Falta dist/index.html"; exit 1; }
           test -f dist/privacidad/index.html || { echo "Falta dist/privacidad/index.html"; exit 1; }
-          echo "Build correcto. Contenido de dist/:"
+          # El .htaccess es lo que pone Cache-Control en los index.html. Si
+          # falta, el sitio funciona igual y los estudiantes se quedan con la
+          # versión vieja durante días: exactamente el fallo silencioso que
+          # este archivo vino a cerrar. Mejor parar aquí.
+          test -f dist/.htaccess || { echo "Falta dist/.htaccess (¿se borró public/.htaccess?)"; exit 1; }
+          echo "Build correcto. Contenido de dist/ (incluidos los ocultos):"
           ls -la dist
 
       # Un despliegue a la ruta equivocada sale en verde. Dejar el destino
@@ -145,6 +150,82 @@ jobs:
             **/.git*/**
             **/node_modules/**
             **/.DS_Store
+
+      # ═══════════════════════════════════════════════════════════════════════
+      # SONDA DE POSTDESPLIEGUE — que el index.html llegue con Cache-Control
+      #
+      # POR QUÉ EXISTE. La cabecera la pone public/.htaccess, y ese archivo
+      # empieza por punto. Que el build lo genere NO demuestra que el FTP lo
+      # suba: un cliente de FTP que no mande los ocultos deja el despliegue en
+      # verde, el sitio funcionando y la cabecera sin poner. Es el mismo tipo de
+      # fallo silencioso que el archivo intenta resolver, así que no se da por
+      # hecho: se mide contra el sitio en vivo.
+      #
+      # QUÉ MIRA. Que la portada responda con un Cache-Control que contenga
+      # no-cache, y que un archivo de assets/ SIGA con su caché larga: si
+      # alguien alguna vez amplía el .htaccess y se lleva por delante la caché
+      # de los bundles, el sitio se pondría lento sin que nadie lo note.
+      #
+      # NO ESCRIBE NADA: son dos peticiones GET a una web pública.
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: Sonda — el index.html llega con Cache-Control
+        run: |
+          fallo=0
+          sitio="https://aprendefae.com"
+
+          # La CDN de Hostinger puede tardar en soltar la copia anterior.
+          for intento in 1 2 3; do
+            portada=$(curl -sS -D - -o /dev/null --max-time 25 "$sitio/" | tr -d '')
+            cc=$(printf '%s' "$portada" | grep -i '^cache-control:' | head -1)
+            case "$cc" in
+              *no-cache*) break ;;
+            esac
+            [ "$intento" = "3" ] && break
+            echo "      Todavía sin no-cache en la portada. Reintento en 20 s ($intento/3)."
+            sleep 20
+          done
+
+          case "$cc" in
+            *no-cache*)
+              echo "OK    la portada revalida en cada visita"
+              echo "      $cc"
+              ;;
+            "")
+              echo "ROJO  la portada NO trae Cache-Control."
+              echo "      El .htaccess no está surtiendo efecto en producción."
+              echo "      Lo más probable: el FTP no subió el archivo por empezar"
+              echo "      con punto. Comprueba que exista public_html/.htaccess."
+              fallo=1
+              ;;
+            *)
+              echo "ROJO  la portada trae un Cache-Control que no revalida:"
+              echo "      $cc"
+              echo "      Un estudiante puede seguir con la versión vieja días."
+              fallo=1
+              ;;
+          esac
+
+          # Y los bundles con hash tienen que seguir con su caché larga.
+          asset=$(curl -sS --max-time 25 "$sitio/" | grep -oE '/assets/main-[A-Za-z0-9_-]+.js' | head -1)
+          if [ -z "$asset" ]; then
+            echo "ROJO  no se encontró el bundle principal en la portada servida."
+            fallo=1
+          else
+            cca=$(curl -sS -D - -o /dev/null --max-time 25 "$sitio$asset" | tr -d '' | grep -i '^cache-control:' | head -1)
+            case "$cca" in
+              *max-age=[1-9]*)
+                echo "OK    $asset conserva su caché larga"
+                echo "      $cca"
+                ;;
+              *)
+                echo "ROJO  $asset perdió su caché larga: '$cca'"
+                echo "      Los archivos con hash en el nombre pueden y deben cachearse."
+                fallo=1
+                ;;
+            esac
+          fi
+
+          exit $fallo
 
       # ═══════════════════════════════════════════════════════════════════════
       # SONDA DE POSTDESPLIEGUE — que registrar_fp resuelva a UNA sola firma
