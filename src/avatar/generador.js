@@ -40,7 +40,20 @@ export const NAVY_AVATAR = '#3D5A80';
 
 export const PALETTES = {
   nocturno:    { c1: NAVY_AVATAR, c2: '#2A9D8F', stroke: '#14263F', node: '#E76F51', ring: '#2A9D8F' },
-  marea:       { c1: '#2A9D8F', c2: NAVY_AVATAR, stroke: '#14263F', node: '#F2F5F8', ring: '#2A9D8F' },
+  /*
+   * El nodo de Marea era blanco y pasa a coral. La regla de las paletas es que
+   * el nodo lleva el color de marca que NO está en el par: Marea es teal+navy,
+   * así que le toca coral. Las otras tres ya la cumplían.
+   *
+   * Esto le cambia también el color al núcleo, que lee el mismo `node`. Es
+   * intencional: el nodo y el núcleo son la misma idea visual a dos tamaños, y
+   * separarlos aquí sería inventar un quinto color por paleta.
+   *
+   * Y no, esto no contradice que el coral signifique error: dentro de las
+   * figuras de avatar el coral es parte del kit aprobado, igual que en Brasa y
+   * en Aurora.
+   */
+  marea:       { c1: '#2A9D8F', c2: NAVY_AVATAR, stroke: '#14263F', node: '#E76F51', ring: '#2A9D8F' },
   brasa:       { c1: '#E76F51', c2: NAVY_AVATAR, stroke: '#14263F', node: '#2A9D8F', ring: '#E76F51' },
   aurora:      { c1: '#E76F51', c2: '#2A9D8F', stroke: NAVY_AVATAR, node: NAVY_AVATAR, ring: '#E76F51' },
   comparacion: { c1: '#4A5A72', c2: '#7A8798', stroke: '#9AA5B4', node: '#C8D0DA', ring: '#6B7A90' },
@@ -115,7 +128,12 @@ export function computeAvatarProps(shapeKey, paletteKey, level) {
      */
     bodyFill: rich,
     flatFill: bitono ? p.c2 : null,
-    flatFillOp: bitono ? 0.2 : 0,
+    /*
+     * 0,5 y no 0,2. El relleno al 20% dejaba el Nivel I casi tan vacío como el
+     * wireframe que vino a sustituir: sobre el navy del sitio no se leía como
+     * cuerpo. Vale igual para el I y para el II, que siguen compartiéndolo.
+     */
+    flatFillOp: bitono ? 0.5 : 0,
     chordColor: rich ? '#FFFFFF' : p.c2,
     insetStroke: rich ? '#FFFFFF' : p.c2,
     insetFill: rich ? 'rgba(255,255,255,0.07)' : 'none',
@@ -129,7 +147,25 @@ export function computeAvatarProps(shapeKey, paletteKey, level) {
       const q = W[(i + s.step) % W.length];
       return { x1: +v[0].toFixed(1), y1: +v[1].toFixed(1), x2: +q[0].toFixed(1), y2: +q[1].toFixed(1) };
     }) : [],
-    nodes: lvl >= 2 ? V.map((v) => ({ x: +v[0].toFixed(1), y: +v[1].toFixed(1), r: s.n > 10 ? 2.4 : 3.2 })) : [],
+    /*
+     * ═══════════ LOS NODOS BAJAN AL NIVEL I, HUECOS ═══════════
+     *
+     * El reparto de ideas visuales estaba desigual: el I tenía UNA —el cuerpo—
+     * y el II tenía TRES —nodos, radios y núcleo—. No era cuestión de subir
+     * opacidades: era que al I le faltaba algo que enseñar. Así que los
+     * vértices se marcan desde el primer nivel.
+     *
+     *   Nivel I      hueco: solo contorno, r 3, trazo 1,5
+     *   Niveles II+  sólido: relleno, r 4,5
+     *
+     * El radio SÓLIDO ES FIJO. Antes valía 2,4 en las formas de muchos lados y
+     * 3,2 en el resto; ese condicional se retira, el nodo ya no depende de la
+     * forma. Los radios y el núcleo siguen siendo del II en adelante: la
+     * progresión no cambia, solo se reparte mejor.
+     */
+    nodes: V.map((v) => ({ x: +v[0].toFixed(1), y: +v[1].toFixed(1), r: lvl >= 2 ? 4.5 : 3 })),
+    nodoHueco: lvl < 2,
+    nodoTrazo: 1.5,
     showCore: lvl >= 2,
     coreR: lvl >= 3 ? 5 : 4,
     showHalo: lvl >= 4,

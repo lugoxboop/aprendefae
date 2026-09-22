@@ -133,9 +133,28 @@ export default function Avatar({
       {/* 8. el lustre del nivel IV, por encima de la geometría y debajo de los nodos */}
       {a.showGloss && <polygon points={a.pts} fill={`url(#${idBrillo})`} />}
 
-      {/* 9. los nodos de cada vértice */}
+      {/*
+        9. los nodos de cada vértice, desde el Nivel I.
+
+           I     huecos: solo contorno, para que el primer nivel tenga algo que
+                 enseñar además del cuerpo
+           II+   sólidos y más grandes
+
+        No los toca ajustarAlTamano: por debajo de 40 px se retiran el halo y
+        las cuerdas —adorno fino que a ese tamaño ensucia— pero los nodos son
+        estructura, y a 24 px son justo lo que deja ver de qué figura se trata.
+      */}
       {a.nodes.map((n, i) => (
-        <circle key={`n${i}`} cx={n.x} cy={n.y} r={n.r} fill={a.node} />
+        <circle
+          key={`n${i}`}
+          data-nodo={a.nodoHueco ? "hueco" : "solido"}
+          cx={n.x}
+          cy={n.y}
+          r={n.r}
+          fill={a.nodoHueco ? "none" : a.node}
+          stroke={a.nodoHueco ? a.node : undefined}
+          strokeWidth={a.nodoHueco ? a.nodoTrazo : undefined}
+        />
       ))}
 
       {/* 10. el núcleo */}

@@ -20,7 +20,7 @@ import {
 
 const PALETAS_ESPERADAS = {
   nocturno:    { c1: "#3D5A80", c2: "#2A9D8F", stroke: "#14263F", node: "#E76F51", ring: "#2A9D8F" },
-  marea:       { c1: "#2A9D8F", c2: "#3D5A80", stroke: "#14263F", node: "#F2F5F8", ring: "#2A9D8F" },
+  marea:       { c1: "#2A9D8F", c2: "#3D5A80", stroke: "#14263F", node: "#E76F51", ring: "#2A9D8F" },
   brasa:       { c1: "#E76F51", c2: "#3D5A80", stroke: "#14263F", node: "#2A9D8F", ring: "#E76F51" },
   aurora:      { c1: "#E76F51", c2: "#2A9D8F", stroke: "#3D5A80", node: "#3D5A80", ring: "#E76F51" },
   comparacion: { c1: "#4A5A72", c2: "#7A8798", stroke: "#9AA5B4", node: "#C8D0DA", ring: "#6B7A90" },
@@ -76,27 +76,30 @@ test("los cuatro niveles ponen y quitan exactamente lo que dice el kit", () => {
 
       /*
        * Nivel I: PRESENCIA. Bitono plano —contorno grueso en c1 y relleno
-       * plano en c2 al 20%—, y nada más: sin nodos, radios, cuerdas, facetas,
-       * núcleo ni halo.
+       * plano en c2 al 50%— MÁS los vértices marcados con nodos huecos. Nada
+       * más: sin radios, cuerdas, facetas, núcleo ni halo.
        */
-      assert.deepEqual(uno.nodes, [], `${forma}/${paleta}`);
-      assert.deepEqual(uno.spokes, []);
+      assert.equal(uno.nodes.length, s.n, `${forma}/${paleta}: un nodo por vértice desde el I`);
+      assert.equal(uno.nodoHueco, true, "en el I el nodo es solo contorno");
+      assert.equal(uno.nodes[0].r, 3);
+      assert.equal(uno.nodoTrazo, 1.5);
+      assert.deepEqual(uno.spokes, [], "los radios siguen siendo del II");
       assert.deepEqual(uno.chords, []);
       assert.deepEqual(uno.facets, []);
-      assert.equal(uno.showCore, false);
+      assert.equal(uno.showCore, false, "y el núcleo también");
       assert.equal(uno.showHalo, false);
       assert.equal(uno.showGloss, false);
       assert.equal(uno.bodyFill, false, "el degradado es de III y IV");
       assert.equal(uno.flatFill, p.c2, "pero SÍ tiene relleno: plano, en c2");
-      assert.equal(uno.flatFillOp, 0.2);
+      assert.equal(uno.flatFillOp, 0.5);
       assert.equal(uno.stroke, p.c1, "sin facetado el trazo es el color 1, no el de contorno");
       assert.equal(uno.sw, 3, "el trazo del bitono es más grueso: es lo que le da presencia");
       assert.equal(uno.coreR, 4);
 
       /*
        * Nivel II: + ESTRUCTURA. Hereda el cuerpo del I —mismo trazo, mismo
-       * relleno plano— y le suma nodos, radios y núcleo. NO vuelve al
-       * wireframe vacío: eso es lo que esta prueba defiende.
+       * relleno plano— y sus nodos pasan a sólidos y más grandes, más los
+       * radios y el núcleo. NO vuelve al wireframe vacío.
        */
       assert.equal(dos.bodyFill, false, "el II sigue en bitono, no en degradado");
       assert.equal(dos.flatFill, uno.flatFill, "el II hereda el relleno plano del I");
@@ -104,13 +107,25 @@ test("los cuatro niveles ponen y quitan exactamente lo que dice el kit", () => {
       assert.equal(dos.stroke, uno.stroke, "y el mismo trazo");
       assert.equal(dos.sw, uno.sw, "y el mismo grosor");
       assert.equal(dos.nodes.length, s.n);
+      assert.equal(dos.nodoHueco, false, "del II en adelante el nodo va relleno");
+      /*
+       * EL RADIO SÓLIDO ES FIJO. Antes valía 2,4 en las formas de muchos lados
+       * y 3,2 en el resto; ese condicional se retiró, así que el nodo ya no
+       * depende de la forma. Se comprueba en las cinco.
+       */
+      assert.equal(dos.nodes[0].r, 4.5, `${forma}: el radio sólido no depende de la forma`);
       assert.equal(dos.spokes.length, Math.ceil(s.n / 2), "los radios van a los vértices pares");
       assert.deepEqual(dos.chords, []);
       assert.deepEqual(dos.facets, []);
       assert.equal(dos.showCore, true);
       assert.equal(dos.coreR, 4);
       assert.equal(dos.showHalo, false);
-      assert.equal(dos.nodes[0].r, s.n > 10 ? 2.4 : 3.2, "en las de muchos lados el nodo es más pequeño");
+
+      /* Y III y IV heredan el nodo sólido del II, sin volver a cambiar. */
+      for (const alto of [tres, cuatro]) {
+        assert.equal(alto.nodoHueco, false);
+        assert.equal(alto.nodes[0].r, 4.5);
+      }
 
       /* Nivel III: facetado. Relleno, trazo de contorno, facetas y núcleo mayor. */
       assert.equal(tres.facets.length, s.n);
@@ -166,7 +181,19 @@ test("las 80 combinaciones se calculan y ninguna sale vacía o con NaN", () => {
         const a = computeAvatarProps(forma, paleta, nivel);
         assert.ok(a.pts.length > 0 && !a.pts.includes("NaN"), `${forma}/${paleta}/${nivel}`);
         assert.ok(!a.insetPts.includes("NaN"));
-        vistas.add(`${a.pts}|${a.c1}|${a.c2}|${a.nodes.length}|${a.chords.length}|${a.facets.length}|${a.showHalo}`);
+        /*
+         * La huella lleva TAMBIÉN el estilo del nodo, los radios y el núcleo.
+         * Con solo `nodes.length` los niveles I y II pasaron a ser
+         * indistinguibles el día que los nodos bajaron al I —la prueba cayó a
+         * 60 de 80 y lo cazó—. No se aflojó la afirmación: se completó la
+         * huella con lo que de verdad los separa ahora.
+         */
+        vistas.add([
+          a.pts, a.c1, a.c2, a.node,
+          a.nodes.length, a.nodes[0]?.r, a.nodoHueco,
+          a.spokes.length, a.showCore,
+          a.chords.length, a.facets.length, a.showHalo,
+        ].join("|"));
       }
     }
   }
@@ -319,12 +346,19 @@ test("el Nivel I y el Nivel II comparten cuerpo pero no se confunden", () => {
       assert.equal(dos.stroke, uno.stroke);
       assert.equal(dos.sw, uno.sw);
 
-      /* Y lo que los separa: la estructura, que es la cualidad que suma el II. */
-      assert.equal(uno.nodes.length, 0);
-      assert.ok(dos.nodes.length > 0, "el II tiene nodos y el I no");
-      assert.ok(dos.spokes.length > 0, "y radios");
+      /*
+       * Y lo que los separa. Los dos marcan los vértices —eso bajó al I para
+       * que no tuviera una sola idea visual contra las tres del II— pero el
+       * nodo cambia de forma y de tamaño, y la estructura sigue siendo del II.
+       */
+      assert.equal(uno.nodes.length, dos.nodes.length, "los dos marcan los vértices");
+      assert.equal(uno.nodoHueco, true);
+      assert.equal(dos.nodoHueco, false, "hueco en el I, sólido en el II");
+      assert.ok(dos.nodes[0].r > uno.nodes[0].r, "y más grande en el II");
+      assert.equal(uno.spokes.length, 0);
+      assert.ok(dos.spokes.length > 0, "los radios son del II");
       assert.equal(uno.showCore, false);
-      assert.equal(dos.showCore, true);
+      assert.equal(dos.showCore, true, "y el núcleo también");
     }
   }
 });

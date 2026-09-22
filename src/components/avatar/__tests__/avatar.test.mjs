@@ -100,17 +100,68 @@ test("nivel IV: las diez capas del kit, en su orden exacto", () => {
   } finally { m.desmontar(); }
 });
 
-test("nivel I: solo el cuerpo y el interior, sin nodos ni núcleo ni halo", () => {
+test("nivel I: cuerpo bitono, interior y vértices huecos; sin radios, núcleo ni halo", () => {
   const m = montar(React.createElement(Avatar, { forma: "decaedro", paleta: "marea", nivel: 1, tamano: 96 }));
   try {
     const svg = m.caja.querySelector("svg");
-    assert.deepEqual(capas(svg), ["defs", "cuerpo", "interior"]);
-    /* Bitono: el I ya NO es un contorno vacio — lleva relleno plano en c2 al 20%. */
-    assert.equal(svg.querySelector("[data-cuerpo]").getAttribute("fill"), "#3D5A80", "c2 de Marea, plano");
-    assert.equal(svg.querySelector("[data-cuerpo]").getAttribute("fill-opacity"), "0.2");
-    assert.equal(svg.querySelector("[data-cuerpo]").getAttribute("stroke-width"), "3", "y el trazo grueso del bitono");
-    assert.equal(svg.querySelector("[data-cuerpo]").getAttribute("stroke"), "#2A9D8F", "el trazo es el color 1 de Marea");
+    const orden = capas(svg);
+    assert.deepEqual(orden.filter((c) => c !== "nodo"), ["defs", "cuerpo", "interior"]);
+    assert.equal(orden.filter((c) => c === "nodo").length, 10, "un nodo por vértice del decaedro");
+    assert.equal(orden.includes("radio"), false, "los radios son del II");
+    assert.equal(orden.includes("nucleo"), false, "y el núcleo también");
+
+    /* Bitono: el I no es un contorno vacío — lleva relleno plano en c2 al 50%. */
+    const cuerpo = svg.querySelector("[data-cuerpo]");
+    assert.equal(cuerpo.getAttribute("fill"), "#3D5A80", "c2 de Marea, plano");
+    assert.equal(cuerpo.getAttribute("fill-opacity"), "0.5");
+    assert.equal(cuerpo.getAttribute("stroke-width"), "3", "y el trazo grueso del bitono");
+    assert.equal(cuerpo.getAttribute("stroke"), "#2A9D8F", "el trazo es el color 1 de Marea");
+
+    /* Y el nodo del I es HUECO: contorno sin relleno. */
+    const nodo = svg.querySelector('[data-nodo="hueco"]');
+    assert.ok(nodo, "en el I el nodo es hueco");
+    assert.equal(nodo.getAttribute("fill"), "none");
+    assert.equal(nodo.getAttribute("r"), "3");
+    assert.equal(nodo.getAttribute("stroke-width"), "1.5");
+    assert.equal(nodo.getAttribute("stroke"), "#E76F51", "Marea marca sus vértices en coral");
+
     assert.equal(svg.querySelector("radialGradient"), null, "el lustre es del IV");
+  } finally { m.desmontar(); }
+});
+
+/*
+ * LOS 56 DEL RELLENO DE LA 0038. Todos los estudiantes que nunca tocaron el
+ * selector quedaron en Decaedro · Marea · Nivel I, así que ESTA es la figura
+ * que ve la mayoría del salón. Su nodo era blanco y ahora es coral.
+ */
+test("el avatar por defecto —Decaedro · Marea · Nivel I— marca en coral, no en blanco", () => {
+  const m = montar(React.createElement(Avatar, { perfil: {}, tamano: 96 }));
+  try {
+    const svg = m.caja.querySelector("svg");
+    assert.equal(svg.getAttribute("data-avatar"), "decaedro-marea-1", "el defecto tras la 0038");
+    const nodos = [...svg.querySelectorAll("[data-nodo]")];
+    assert.equal(nodos.length, 10);
+    for (const n of nodos) {
+      assert.equal(n.getAttribute("stroke"), "#E76F51");
+      assert.notEqual(n.getAttribute("stroke"), "#F2F5F8", "el blanco de antes no puede volver");
+    }
+  } finally { m.desmontar(); }
+});
+
+test("y en el nivel II ese mismo defecto lleva nodo y núcleo coral, ya sólidos", () => {
+  const m = montar(React.createElement(Avatar, { forma: "decaedro", paleta: "marea", nivel: 2, tamano: 96 }));
+  try {
+    const svg = m.caja.querySelector("svg");
+    const nodo = svg.querySelector('[data-nodo="solido"]');
+    assert.ok(nodo, "del II en adelante el nodo va relleno");
+    assert.equal(nodo.getAttribute("fill"), "#E76F51");
+    assert.equal(nodo.getAttribute("r"), "4.5");
+    assert.equal(nodo.getAttribute("stroke"), null, "el sólido no lleva contorno propio");
+    /* El núcleo lee el mismo `node`: cambia con él, y eso es lo buscado. */
+    const circulos = [...svg.querySelectorAll("circle")];
+    const nucleo = circulos.find((c) => c.getAttribute("cx") === "100" && c.getAttribute("cy") === "100" && !c.hasAttribute("data-nodo"));
+    assert.ok(nucleo, "el núcleo del II");
+    assert.equal(nucleo.getAttribute("fill"), "#E76F51");
   } finally { m.desmontar(); }
 });
 
@@ -171,6 +222,13 @@ test("a 36 y 24 px se retiran halo y cuerdas; el resto del nivel se queda", () =
       /* Sigue siendo un nivel IV: facetas, lustre, nodos y núcleo, todos ahí. */
       assert.equal(svg.querySelectorAll("polygon[fill='#FFFFFF']").length, 10);
       assert.equal(svg.querySelectorAll("circle").length, 11);
+      /*
+       * LOS NODOS NO ENTRAN EN LA REGLA DE RETIRO, y conviene dejarlo dicho:
+       * lo que se quita por debajo de 40 px es adorno fino —halo y cuerdas—
+       * que a ese tamaño se convierte en suciedad. El nodo es estructura, y a
+       * 24 px es justo lo que deja ver de qué figura se trata.
+       */
+      assert.equal(svg.querySelectorAll("[data-nodo]").length, 10, `${tamano} px: los nodos se quedan`);
       assert.ok(svg.querySelector("radialGradient"), "el lustre se queda");
       assert.equal(svg.getAttribute("width"), String(tamano));
       assert.equal(svg.getAttribute("data-avatar"), "decaedro-nocturno-4");
@@ -220,4 +278,23 @@ test("sin título es decorativo; con título es una imagen con nombre", () => {
     assert.equal(conNombre.getAttribute("aria-label"), "Tu avatar: Red · Marea · Nivel II");
     assert.equal(conNombre.getAttribute("aria-hidden"), null);
   } finally { m.desmontar(); }
+});
+
+/*
+ * Y a los dos tamaños compactos, el NIVEL I —el de la mayoría del salón— sigue
+ * marcando sus vértices. Es el caso que de verdad importa comprobar: si la
+ * regla de retiro llegara a tocar los nodos, la figura más común del sitio se
+ * quedaría sin lo único que la distingue a 24 px.
+ */
+test("a 36 y 24 px el nivel I conserva sus nodos huecos", () => {
+  for (const tamano of [TAMANOS.ranking, TAMANOS.liga]) {
+    const m = montar(React.createElement(Avatar, { forma: "decaedro", paleta: "marea", nivel: 1, tamano }));
+    try {
+      const svg = m.caja.querySelector("svg");
+      const nodos = svg.querySelectorAll('[data-nodo="hueco"]');
+      assert.equal(nodos.length, 10, `${tamano} px`);
+      assert.equal(nodos[0].getAttribute("r"), "3", "y con su radio de siempre: no se encoge aparte");
+      assert.equal(nodos[0].getAttribute("fill"), "none");
+    } finally { m.desmontar(); }
+  }
 });
