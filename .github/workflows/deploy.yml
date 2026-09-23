@@ -175,7 +175,7 @@ jobs:
 
           # La CDN de Hostinger puede tardar en soltar la copia anterior.
           for intento in 1 2 3; do
-            portada=$(curl -sS -D - -o /dev/null --max-time 25 "$sitio/" | tr -d '')
+            portada=$(curl -sS -D - -o /dev/null --max-time 25 "$sitio/" | tr -d '\r')
             cc=$(printf '%s' "$portada" | grep -i '^cache-control:' | head -1)
             case "$cc" in
               *no-cache*) break ;;
@@ -222,7 +222,7 @@ jobs:
             echo "ROJO  no se encontró el bundle principal en la portada servida."
             fallo=1
           else
-            cca=$(curl -sS -D - -o /dev/null --max-time 25 "$sitio$asset" | tr -d '' | grep -i '^cache-control:' | head -1)
+            cca=$(curl -sS -D - -o /dev/null --max-time 25 "$sitio$asset" | tr -d '\r' | grep -i '^cache-control:' | head -1)
             case "$cca" in
               *max-age=[1-9]*)
                 echo "OK    $asset conserva su caché larga"
