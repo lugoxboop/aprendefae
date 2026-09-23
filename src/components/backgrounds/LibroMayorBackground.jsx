@@ -134,15 +134,32 @@ export default function LibroMayorBackground({ animation = true, semilla = "cont
       return cvTextura;
     };
 
+    /*
+     * MEDIR NO PUEDE COMETER UN LIENZO DE CERO.
+     *
+     * Pasó en producción: un `resize` llegó mientras el elemento todavía no
+     * tenía tamaño, se fijó cv.width = 0 y se creó una escena de ancho 0. El
+     * fondo se quedó en negro PARA SIEMPRE, porque `medir` solo volvía a
+     * correr con otro `resize` y no llegaba ninguno. El elemento medía 375×812
+     * y el lienzo, 0×0.
+     *
+     * Devuelve false cuando no hay tamaño todavía; quien llama decide si
+     * reintentar. Y el bucle mira el tamaño en CADA fotograma en vez de fiarse
+     * del evento, que es lo que ya hacen los otros fondos del sitio.
+     */
     const medir = () => {
+      const w = cv.clientWidth;
+      const h = cv.clientHeight;
+      if (!w || !h) return false;
       const dpr = Math.min(window.devicePixelRatio || 1, movil ? 1.5 : 2);
-      ancho = cv.clientWidth;
-      alto = cv.clientHeight;
+      ancho = w;
+      alto = h;
       cv.width = Math.round(ancho * dpr);
       cv.height = Math.round(alto * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       escena = crearEscena({ ancho, alto, semilla });
       texturaFondo = prepararTextura();
+      return true;
     };
 
     /* ─────────────── capa 1: una cuenta T ─────────────── */
@@ -275,18 +292,34 @@ export default function LibroMayorBackground({ animation = true, semilla = "cont
       }
     };
 
-    medir();
-
     /* ─────────────── gama baja: un fotograma y nada más ─────────────── */
 
     if (quieto) {
-      /* Se adelanta la escena para que el fotograma tenga un asiento a la vista. */
-      for (let i = 0; i < 80; i += 1) avanzarEscena(escena, 0.05);
-      pintar();
-      const alRedimensionar = () => { medir(); for (let i = 0; i < 80; i += 1) avanzarEscena(escena, 0.05); pintar(); };
+      /*
+       * Se reintenta hasta que el elemento tenga tamaño: al montar dentro de
+       * una transición puede tardar unos fotogramas en tenerlo.
+       */
+      let arranque = 0;
+      let intentos = 0;
+      const unFotograma = () => {
+        if (!medir()) {
+          if (intentos++ < 120) arranque = requestAnimationFrame(unFotograma);
+          return;
+        }
+        /* Se adelanta la escena para que el fotograma tenga un asiento a la vista. */
+        for (let i = 0; i < 80; i += 1) avanzarEscena(escena, 0.05);
+        pintar();
+      };
+      unFotograma();
+      const alRedimensionar = () => { intentos = 0; unFotograma(); };
       window.addEventListener("resize", alRedimensionar);
-      return () => window.removeEventListener("resize", alRedimensionar);
+      return () => {
+        cancelAnimationFrame(arranque);
+        window.removeEventListener("resize", alRedimensionar);
+      };
     }
+
+    medir();
 
     /* ─────────────── el cursor, solo en escritorio ─────────────── */
 
@@ -309,6 +342,18 @@ export default function LibroMayorBackground({ animation = true, semilla = "cont
     const paso = (ahora) => {
       const dt = Math.min((ahora - previo) / 1000, 0.05);
       previo = ahora;
+
+      /*
+       * EL TAMAÑO SE MIRA AQUÍ, NO EN EL EVENTO. Un `resize` puede llegar con
+       * el elemento todavía a cero, y entonces no llega ningún otro y el fondo
+       * se queda en negro. Comprobarlo cada fotograma lo hace irrelevante: en
+       * cuanto el elemento tiene tamaño, se mide. Es lo que ya hacen los otros
+       * fondos del sitio.
+       */
+      if (!escena || cv.clientWidth !== ancho || cv.clientHeight !== alto) {
+        if (!medir()) { raf = requestAnimationFrame(paso); return; }
+      }
+
       avanzarEscena(escena, dt);
 
       if (!movil) {
@@ -326,12 +371,13 @@ export default function LibroMayorBackground({ animation = true, semilla = "cont
     };
     raf = requestAnimationFrame(paso);
 
-    const alRedimensionar = () => medir();
-    window.addEventListener("resize", alRedimensionar);
-
+    /*
+     * Sin escucha de `resize` en el camino animado: el bucle ya mira el tamaño
+     * en cada fotograma, así que el evento no aportaba nada y sí podía hacer
+     * daño —era justo el que cometía el lienzo de cero—.
+     */
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", alRedimensionar);
       window.removeEventListener("pointermove", alMover);
       window.removeEventListener("pointerleave", alSalir);
     };
