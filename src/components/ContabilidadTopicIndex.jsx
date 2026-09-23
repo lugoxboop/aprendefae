@@ -2,7 +2,7 @@ import { FAE } from "../theme.js";
 import { SUBJECTS } from "../data/subjects.js";
 import TopicIndexView from "./TopicIndexView.jsx";
 import { ContabilidadIcon } from "./SubjectCard.jsx";
-import RombicuboctaedroBackground from "./backgrounds/RombicuboctaedroBackground.jsx";
+import LibroMayorBackground from "./backgrounds/LibroMayorBackground.jsx";
 
 /*
  * Índice de temas de Contabilidad.
@@ -14,8 +14,8 @@ import RombicuboctaedroBackground from "./backgrounds/RombicuboctaedroBackground
  * hay que decir, y usar el del sitio es lo que hace que la materia se sienta
  * parte del sitio y no un anexo.
  *
- * El fondo del sólido solo se descarga al abrir esta materia, igual que el
- * ajedrez en Pensamiento Estratégico.
+ * El fondo del libro mayor solo se descarga al abrir esta materia, igual que
+ * el ajedrez en Pensamiento Estratégico.
  */
 export default function ContabilidadTopicIndex({ onOpenTopic }) {
   const subject = SUBJECTS.contabilidad;
@@ -26,7 +26,7 @@ export default function ContabilidadTopicIndex({ onOpenTopic }) {
       accent={FAE.ambar}
       hoverBg="rgba(233,196,106,0.12)"
       hoverBorder="rgba(233,196,106,0.7)"
-      background={<RombicuboctaedroBackground />}
+      background={<LibroMayorBackground />}
       topics={subject.topics}
       renderTopicIcon={() => <ContabilidadIcon />}
       onOpenTopic={onOpenTopic}

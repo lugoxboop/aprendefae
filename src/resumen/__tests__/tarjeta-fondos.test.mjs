@@ -78,6 +78,9 @@ function lienzoFalso() {
   const llamadas = [];
   const colores = new Set();
   const puntos = [];
+  /* Los montos escritos, con el color que llevaban: es lo que mira la partida doble. */
+  const textos = [];
+  let relleno = "";
   const ctx = {
     save() {}, restore() {}, beginPath() {}, closePath() {},
     translate() {}, scale() {}, transform() {},
@@ -85,39 +88,71 @@ function lienzoFalso() {
     quadraticCurveTo() {}, arc() {},
     fill() { llamadas.push("fill"); }, stroke() { llamadas.push("stroke"); },
     fillRect() { llamadas.push("fillRect"); },
-    set fillStyle(v) { colores.add(String(v)); },
+    fillText(t, x, y) { textos.push({ texto: String(t), x, y, color: relleno }); },
+    measureText(t) { return { width: String(t).length * 7 }; },
+    createLinearGradient() { return { addColorStop(_, c) { colores.add(String(c)); } }; },
+    set fillStyle(v) { relleno = String(v); colores.add(String(v)); },
     set strokeStyle(v) { colores.add(String(v)); },
-    get fillStyle() { return ""; }, get strokeStyle() { return ""; },
-    lineWidth: 0, lineCap: "", lineJoin: "",
+    get fillStyle() { return relleno; }, get strokeStyle() { return ""; },
+    lineWidth: 0, lineCap: "", lineJoin: "", font: "", textBaseline: "", textAlign: "",
   };
-  return { ctx, llamadas, colores, puntos };
+  return { ctx, llamadas, colores, puntos, textos };
 }
 
-test("el fondo de Contabilidad traza el sólido entero y subraya el nivel", () => {
+test("el fondo de Contabilidad traza las cuentas T y sus asientos", () => {
   const l = lienzoFalso();
   fondoDeMateria("contabilidad")(l.ctx);
 
-  assert.ok(l.llamadas.includes("stroke"), "no trazó ninguna arista");
-  assert.ok(l.llamadas.includes("fill"), "no pintó el líquido");
-  /* Las 48 aristas, más el líquido, más la línea del nivel. */
-  assert.ok(l.puntos.length > 96, `solo trazó ${l.puntos.length} puntos: falta geometría`);
+  assert.ok(l.llamadas.includes("stroke"), "no trazó ni una cuenta");
+  /*
+   * Cada cuenta T son cuatro puntos —la horizontal y la vertical— y hay entre
+   * 8 y 14, así que por debajo de 32 falta geometría. El número sale de la
+   * ficha, no de lo que salga hoy.
+   */
+  assert.ok(l.puntos.length >= 32, `solo trazó ${l.puntos.length} puntos: faltan cuentas`);
 
   const texto = [...l.colores].join(" ");
-  assert.match(texto, /42,157,143/, "el líquido no va en teal");
-  assert.match(texto, /61,90,128/, "las aristas no van en el navy de los avatares");
+  assert.match(texto, /61,90,128/, "las cuentas no van en el navy de los avatares");
   /* Coral significa error en todo el sitio: no pinta un fondo. */
   assert.ok(!/231,111,81/.test(texto), "hay coral en el fondo de Contabilidad");
 });
 
-test("el nivel se dibuja HORIZONTAL: la misma promesa que el fondo animado", () => {
+test("la miniatura enseña la partida doble: el mismo monto al debe y al haber", () => {
   const l = lienzoFalso();
   fondoDeMateria("contabilidad")(l.ctx);
+
   /*
-   * La última línea que se traza es la del nivel, y sus dos extremos tienen que
-   * estar a la misma altura. Si algún día la superficie se rotara con el
-   * sólido, esos dos números dejarían de coincidir.
+   * ESTA ES LA PRUEBA QUE IMPORTA. Si la miniatura pintara un monto solo, o dos
+   * distintos, dejaría de decir lo único que el fondo existe para decir.
    */
-  const [a, b] = l.puntos.slice(-2);
-  assert.ok(Math.abs(a[1] - b[1]) < 1e-9, `el nivel sale torcido: ${a[1]} vs ${b[1]}`);
-  assert.ok(Math.abs(a[0] - b[0]) > 50, "el nivel no tiene ancho: no se vería");
+  assert.ok(l.textos.length > 0, "no escribió ningún monto");
+  const cuenta = {};
+  for (const t of l.textos) cuenta[t.texto] = (cuenta[t.texto] ?? 0) + 1;
+  for (const [monto, veces] of Object.entries(cuenta)) {
+    assert.equal(veces, 2, `${monto} aparece ${veces} veces; un asiento se anota DOS`);
+  }
+
+  /* Y sin signos: el debe no es positivo ni el haber negativo. */
+  for (const t of l.textos) {
+    assert.match(t.texto, /^\$[\d.]+$/, `${t.texto} no tiene el formato de peso colombiano`);
+    assert.ok(!/[+−-]/.test(t.texto), `${t.texto} lleva signo`);
+  }
+
+  /* Uno en teal y otro en ámbar, por monto. */
+  const colores = l.textos.map((t) => t.color);
+  assert.ok(colores.some((c) => c.includes("42,157,143")), "ningún monto en teal (debe)");
+  assert.ok(colores.some((c) => c.includes("233,196,106")), "ningún monto en ámbar (haber)");
+});
+
+test("la miniatura es siempre la misma: su semilla es fija", () => {
+  /*
+   * Es una imagen que el estudiante descarga y comparte. Si cambiara en cada
+   * generación, dos descargas del mismo resumen saldrían distintas.
+   */
+  const a = lienzoFalso();
+  const b = lienzoFalso();
+  fondoDeMateria("contabilidad")(a.ctx);
+  fondoDeMateria("contabilidad")(b.ctx);
+  assert.deepEqual(a.puntos, b.puntos, "la miniatura cambia entre generaciones");
+  assert.deepEqual(a.textos.map((t) => t.texto), b.textos.map((t) => t.texto));
 });

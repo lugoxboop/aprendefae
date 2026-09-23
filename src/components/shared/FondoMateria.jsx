@@ -22,7 +22,7 @@ import BackgroundVeil from "./BackgroundVeil.jsx";
 
 const SupplyDemandBackground = lazy(() => import("../backgrounds/SupplyDemandBackground.jsx"));
 const ChessBackground = lazy(() => import("../backgrounds/ChessBackground.jsx"));
-const RombicuboctaedroBackground = lazy(() => import("../backgrounds/RombicuboctaedroBackground.jsx"));
+const LibroMayorBackground = lazy(() => import("../backgrounds/LibroMayorBackground.jsx"));
 
 const FONDOS = {
   macroeconomia: SupplyDemandBackground,
@@ -33,7 +33,7 @@ const FONDOS = {
    * dentro como en las otras dos, y dejarlo enganchado ahora evita que la
    * primera actividad que entre se abra con fondo plano sin que nadie sepa por qué.
    */
-  contabilidad: RombicuboctaedroBackground,
+  contabilidad: LibroMayorBackground,
 };
 
 export default function FondoMateria({ materiaId, children }) {

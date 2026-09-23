@@ -488,7 +488,7 @@ Medido con `npm run build` sobre el HEAD actual. La portada se carga de forma es
 | Abrir el sitio | Entrada + núcleo compartido: **440 kB / 130 kB** |
 | Índice de Macroeconomía | Plantilla de índice (23 kB) + curvas de oferta y demanda (2,7 kB) |
 | Índice de Pensamiento Estratégico | Plantilla + escena de ajedrez (13 kB) + **Three.js, 553 kB / 140 kB** |
-| Índice de Contabilidad | Plantilla + el sólido de Pacioli: **7,2 kB / 3,2 kB**, sin Three.js |
+| Índice de Contabilidad | Plantilla + el libro mayor: **7,6 kB / 3,7 kB** (fondo 4,6 + módulo compartido 3,0), sin Three.js |
 | Camino de un tema de Macro | 27–86 kB según el tema, más su banco de datos |
 | Modelo del Iceberg | 110 kB / 27 kB |
 | Fuerzas de Porter | **390 kB / 109 kB** — incluye el núcleo de Recharts |
@@ -534,40 +534,30 @@ Cada nivel del sitio tiene su fondo, y los que animan traen su salida para hardw
 | Inicio | **Degradado en malla**: manchas muy desenfocadas que se cruzan despacio sobre el navy | No lo necesita: ver abajo |
 | Índice de Macroeconomía | Curvas de oferta y demanda que derivan y se cruzan, con destello coral en el equilibrio | Un fotograma con el equilibrio ya encendido |
 | Índice de Pensamiento Estratégico | Escena Three.js: partida en curso, cámara en órbita lenta, pieza en juego resaltada en teal | Imagen JPEG (`src/assets/chess-fallback.jpg`) |
-| Índice de Contabilidad | **El rombicuboctaedro de Pacioli**, medio lleno de líquido, girando una vuelta cada 52 s | Un fotograma quieto, con el líquido nivelado |
+| Índice de Contabilidad | **El libro mayor como red**: cuentas T derivando en tres planos y, cada 3-5 s, un asiento que las une | Un fotograma quieto, con sus asientos a la vista |
 | Dentro de un tema | El fondo de su materia, **más atenuado** (`FondoMateria.jsx`) | el mismo de la materia |
 
 La lógica compartida de detección está en `src/utils/device.js`.
 
-### El sólido de Contabilidad, y por qué no usa Three.js
+### El fondo de Contabilidad: el libro mayor como red
 
-El fondo de Contabilidad es el **rombicuboctaedro** que Leonardo dibujó para *De divina proportione* y que aparece en el retrato de Pacioli: 26 caras (18 cuadradas y 8 triangulares), 24 vértices, 48 aristas. No está modelado a mano — sale de su definición, que cabe en una línea: los vértices son todas las permutaciones de (±1, ±1, ±(1+√2)), y las aristas, las caras y el volumen se deducen de ahí.
+Cuentas T derivando en tres planos de profundidad y, cada tres a cinco segundos, un **asiento**: un arco entre dos de ellas y el mismo monto anotado dos veces, al debe de una —teal— y al haber de la otra —ámbar—. La partida doble en movimiento, sin una palabra de texto.
 
-Es el único fondo animado que **no usa Three.js**, y es deliberado:
+Cuatro capas, de atrás hacia delante: columnas de cifras ilegibles a propósito (8 % de opacidad, el suelo del rango), las cuentas T, los arcos y los montos.
 
-- **Pesa 7,2 kB en vez de 553.** Un fondo es lo que por definición no debe disputarle nada a lo de delante; volver obligatoria la dependencia más cara del sitio en una materia que todavía no tiene contenido no sale a cuenta.
-- **Se puede probar.** La geometría y el líquido son funciones puras en `src/contabilidad/`: se miden en Node, sin GPU y sin pintar un píxel.
+**La escena no vive en el componente.** Cuántas cuentas hay, que no formen cuadrícula, cada cuánto entra un asiento, cuántos arcos pueden convivir y cuánto dura un monto los decide `src/contabilidad/libroMayor.js`, que es una función pura y avanza con un `dt`. Eso permite correr **tres minutos de fondo en una prueba** y medir lo que pasó, en vez de mirar un canvas y confiar. Es también lo que hace que la miniatura de la tarjeta de resumen salga de los mismos módulos que el fondo animado, y no sea un dibujo aparte que se separaría en la primera edición.
 
-Del teseracto sí se reutiliza el **enfoque** de las aristas —dos capas por arista, un halo ancho y tenue y un núcleo fino, con el brillo según la profundidad—, que no depende de Three.js.
+Reglas que la prueba vigila, y que no son decoración:
 
-#### La regla del líquido
+- **Un asiento, un monto, dos anotaciones.** Nunca uno solo, nunca dos distintos, nunca una cuenta contra sí misma.
+- **Sin signos.** El debe no es positivo ni el haber negativo, y escribirlo con + y − enseñaría mal justo la idea que el fondo existe para insinuar.
+- **Coral no aparece.** Significa error en todo el sitio, y un asiento contable no lo es.
 
-**La superficie vive en espacio de mundo.** El sólido gira por debajo; el líquido no gira con él. Si la superficie se inclinara junto con la geometría del poliedro dejaría de leerse como líquido y la metáfora se caería entera. `src/contabilidad/liquido.js` recibe los vértices *ya rotados* y define su plano contra la vertical del mundo: nunca ve los ángulos del sólido, y una prueba comprueba que no los nombra en ninguna línea.
+**Cifras tabulares en canvas.** El canvas **no puede** activar `font-variant-numeric`: el atajo `ctx.font` no admite variantes numéricas y no hay forma de encender la característica `tnum` de la fuente. Poner esa propiedad en el estilo del lienzo no haría nada. Así que se implementa el efecto: cada carácter se dibuja en una celda del ancho del «0», de modo que las columnas alinean como en un libro de verdad.
 
-**Y el volumen no cambia nunca** — no porque se vigile, sino por geometría. El rombicuboctaedro es **centralmente simétrico** y está centrado en el origen, así que *cualquier* plano que pase por el centro lo parte en dos mitades de volumen idéntico, sea cual sea su inclinación. La regla se reduce a una condición: el plano pasa siempre por el centro y solo se mueve su normal, que es el chapoteo. Medido en 100 combinaciones de orientación y agitación, la fracción llena es 0,5 con un error de un solo ULP.
+En el teléfono **no hay interacción táctil**: el fondo corre su ciclo solo y el dedo es para navegar el contenido. En escritorio, acercar el cursor a una cuenta ilumina los asientos suyos que sigan en pantalla.
 
-En pantalla eso se ve así: como la cámara mira al origen, un plano horizontal del mundo se proyecta **de canto**, es decir, como una línea recta a la altura del centro. Por eso el nivel se lee de un vistazo y no se mueve ni un píxel al girar el sólido; al agitarlo, esa línea se inclina y vuelve a nivelarse en dos o tres oscilaciones.
-
-**El degradado en malla no necesita canvas, ni `requestAnimationFrame`, ni respaldo estático**, y esa es la razón de que sustituyera al colibrí de la versión anterior: **solo se anima `transform`**. El desenfoque es lo caro de esta técnica; moviendo únicamente la posición, la mancha se desenfoca una vez, queda cacheada como textura y el compositor solo la traslada — trabajo de GPU que sale casi gratis. `mix-blend-mode: screen` sobre el navy oscuro hace que donde dos manchas se cruzan salga un tono intermedio más claro, que es lo que da la sensación líquida. Medido sobre el ciclo completo, el peor contraste del titular es **8,62:1** incluso con el velo en cero.
-
-**El fondo entra en las páginas de tema**, no solo en los índices: antes entrar a un tema caía en un fondo plano y se sentía como salir del sitio. Va más opaco que en el índice, porque debajo hay quizzes, diagramas y controles que se leen de cerca: el fondo tiene que estar, no que notarse.
-
-### Niveles de calidad de la escena 3D
-
-`detectQualityTier()` decide entre tres niveles. Se evalúan **en este orden** y gana el primero que se cumpla:
-
-| Nivel | Condición que lo dispara | Qué se renderiza |
-|---|---|---|
+---|---|---|
 | `static` | `prefers-reduced-motion`, **o** sin WebGL, **o** `hardwareConcurrency <= 4`, **o** `deviceMemory < 4` | Imagen fija. No se inicializa WebGL ni se construye geometría. |
 | `mobile` | `innerWidth < 700` (y no ser `static`) | Escena completa, `pixelRatio` tope 1.5, sin antialias, sombras 512 px, tope 30 fps |
 | `full` | Todo lo demás | Escena completa, `pixelRatio` tope 2, antialias, sombras 1024 px, fps libre |

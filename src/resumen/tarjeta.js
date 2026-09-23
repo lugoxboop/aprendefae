@@ -1,6 +1,8 @@
 import { FAE } from "../theme.js";
-import { VERTICES, ARISTAS, rotarTodos, proyectar } from "../contabilidad/solido.js";
-import { estadoInicial, normalDeSuperficie, cuerpoDelLiquido } from "../contabilidad/liquido.js";
+import {
+  crearEscena, avanzarEscena, posicionDe, faseDelArco, formatearMonto,
+  PLANOS, COLOR_DEBE, COLOR_HABER, COLOR_CUENTA,
+} from "../contabilidad/libroMayor.js";
 
 /*
  * Dibuja el resumen de semestre como imagen descargable.
@@ -65,75 +67,82 @@ function fondoOfertaDemanda(ctx) {
 }
 
 /*
- * Contabilidad: el rombicuboctaedro de Pacioli, medio lleno.
+ * Contabilidad: el libro mayor como red, congelado.
  *
- * NO SE REDIBUJA A MANO. Usa la MISMA geometría del fondo animado —los 24
- * vértices, las 48 aristas y el corte del líquido de src/contabilidad/— con la
- * rotación congelada. Un octágono dibujado aparte se separaría del sólido de
- * verdad en la primera edición, y además volvería a plantear la pregunta que
- * esta pieza ya tiene contestada: dónde está el nivel.
+ * NO SE REDIBUJA A MANO. Usa los MISMOS módulos que el fondo animado —las
+ * cuentas T, los planos de profundidad, los arcos y los montos de
+ * src/contabilidad/libroMayor.js— con la escena adelantada hasta un instante
+ * que tenga asientos a la vista. Un dibujo aparte se separaría del fondo de
+ * verdad en la primera edición, y además los dos comparten módulo, así que lo
+ * que cuesta es casi nada.
  *
- * La superficie sigue siendo horizontal respecto al mundo, así que aquí se ve
- * lo mismo que en el índice: una línea recta a media altura. En una imagen que
- * se comparte por WhatsApp, esa línea es toda la idea.
+ * La semilla es fija: la tarjeta de un estudiante sale siempre igual, que es
+ * lo que se espera de una imagen que se descarga y se comparte.
  */
-const GIRO_TARJETA = [0.42, 0.72, 0.1];
+const SEMILLA_TARJETA = "resumen-contabilidad";
+/* Segundos de escena que se adelantan antes de congelar: bastan para que haya arcos. */
+const ADELANTO = 12;
 
 function fondoContabilidad(ctx) {
-  /*
-   * 115 y no 96: a 96 el solido quedaba como un objeto centrado en medio de la
-   * tarjeta y le disputaba el sitio al texto. Los otros dos fondos ocupan casi
-   * todo el ancho y funcionan como textura, no como ilustracion; este hace lo
-   * mismo. Se vio comparando los tres lado a lado.
-   */
-  const k = 115;
-  const cx = W / 2;
-  const cy = H * 0.62;
-  const V = rotarTodos(VERTICES, ...GIRO_TARJETA);
-  const plano = ([x, y, z]) => {
-    const [px, py] = proyectar([x, y, z], { escala: k });
-    return [cx + px, cy + py];
-  };
+  const escena = crearEscena({ ancho: W, alto: H, semilla: SEMILLA_TARJETA });
+  for (let i = 0; i < ADELANTO / 0.05; i += 1) avanzarEscena(escena, 0.05);
 
   ctx.save();
-
-  /* El líquido, del mismo tono y la misma discreción que los otros dos fondos. */
-  const { partes, superficie } = cuerpoDelLiquido(V, normalDeSuperficie(estadoInicial()));
-  ctx.fillStyle = "rgba(42,157,143,0.055)";
-  for (const parte of partes) {
-    if (parte.puntos.length < 3) continue;
-    ctx.beginPath();
-    parte.puntos.forEach((q, i) => {
-      const [x, y] = plano(q);
-      return i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-    });
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  /* Las aristas, en el navy de los avatares. */
-  ctx.strokeStyle = "rgba(61,90,128,0.16)";
-  ctx.lineWidth = 3;
   ctx.lineCap = "round";
-  for (const [a, b] of ARISTAS) {
-    const [x1, y1] = plano(V[a]);
-    const [x2, y2] = plano(V[b]);
+
+  const posiciones = new Map();
+  for (const cuenta of escena.cuentas) {
+    posiciones.set(cuenta.id, posicionDe(cuenta, escena.t, W, H));
+  }
+
+  /* Las cuentas T, con la misma discreción que los otros dos fondos. */
+  for (const cuenta of [...escena.cuentas].sort((a, b) => a.plano - b.plano)) {
+    const plano = PLANOS[cuenta.plano];
+    const pos = posiciones.get(cuenta.id);
+    const brazo = 46 * plano.escala;
+    const caida = 54 * plano.escala;
+    ctx.strokeStyle = `rgba(${COLOR_CUENTA},${(plano.opacidad * 0.72).toFixed(3)})`;
+    ctx.lineWidth = plano.grosor * 2.4;
     ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
+    ctx.moveTo(pos.x - brazo, pos.y - caida * 0.42);
+    ctx.lineTo(pos.x + brazo, pos.y - caida * 0.42);
+    ctx.moveTo(pos.x, pos.y - caida * 0.42);
+    ctx.lineTo(pos.x, pos.y + caida * 0.58);
     ctx.stroke();
   }
 
-  /* Y el nivel, que es lo único que se subraya. */
-  if (superficie.length >= 2) {
-    const xs = superficie.map((q) => plano(q)[0]);
-    const [, y] = plano(superficie[0]);
-    ctx.strokeStyle = "rgba(42,157,143,0.2)";
-    ctx.lineWidth = 4;
+  /* Y los asientos que estén vivos en ese instante. */
+  for (const arco of escena.arcos) {
+    const fase = faseDelArco(arco.edad);
+    const desde = posiciones.get(arco.debe);
+    const hasta = posiciones.get(arco.haber);
+    if (!desde || !hasta || fase.opacidad <= 0) continue;
+
+    const mx = (desde.x + hasta.x) / 2;
+    const my = (desde.y + hasta.y) / 2;
+    const cx = mx - (hasta.y - desde.y) * arco.curvatura;
+    const cy = my + (hasta.x - desde.x) * arco.curvatura;
+
+    const grad = ctx.createLinearGradient(desde.x, desde.y, hasta.x, hasta.y);
+    grad.addColorStop(0, `rgba(${COLOR_DEBE},0.3)`);
+    grad.addColorStop(1, `rgba(${COLOR_HABER},0.3)`);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(Math.min(...xs), y);
-    ctx.lineTo(Math.max(...xs), y);
+    ctx.moveTo(desde.x, desde.y);
+    ctx.quadraticCurveTo(cx, cy, hasta.x, hasta.y);
     ctx.stroke();
+
+    /* El mismo monto a los dos lados: al debe en teal, al haber en ámbar. */
+    ctx.font = "26px Inter, system-ui, sans-serif";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "right";
+    ctx.fillStyle = `rgba(${COLOR_DEBE},0.34)`;
+    ctx.fillText(arco.texto, desde.x - 14, desde.y - 4);
+    ctx.textAlign = "left";
+    ctx.fillStyle = `rgba(${COLOR_HABER},0.34)`;
+    ctx.fillText(arco.texto, hasta.x + 14, hasta.y - 4);
+    ctx.textAlign = "left";
   }
 
   ctx.restore();
