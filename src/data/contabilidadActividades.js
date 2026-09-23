@@ -235,3 +235,433 @@ export const DEBITA_O_ACREDITA = {
   ],
   errorIngreso: "❌ Los ingresos se acreditan. El dinero que entra se debita en Caja; el ingreso que lo explica se acredita. Son dos cuentas distintas del mismo asiento.",
 };
+
+
+/* ═══════════════════════ CU-5 · El Saldo de la Cuenta ═══════════════════════ */
+
+/*
+ * LAS CUENTAS NO SE COPIAN, SE REFERENCIAN.
+ *
+ * Nueve de las diez ya existen: seis son del mayor de Lavado de Autos y tres
+ * del de Caleja, y los dos mayores se derivan de sus asientos. Teclear aquí
+ * sus movimientos otra vez sería una tercera copia de las mismas cifras, y la
+ * tercera copia es la que se queda desactualizada.
+ *
+ * Solo la décima va escrita a mano: es la cuenta Caja que el capítulo usa como
+ * ejemplo suelto para explicar el saldo, y no sale de ninguna transacción.
+ */
+export const CAJA_DEL_CAPITULO = {
+  cuenta: "Caja",
+  debitos: [{ valor: 1000 }, { valor: 500 }],
+  creditos: [{ valor: 150 }],
+};
+
+export const SALDO_DE_LA_CUENTA = {
+  subtema: "Cálculo del saldo",
+  porPartida: 6,
+  /* `caso` dice de qué mayor sacar la cuenta; `capitulo` es la de arriba. */
+  items: [
+    { id: "cu5-01", caso: "lavado", cuenta: "Bancos" },
+    { id: "cu5-02", caso: "lavado", cuenta: "Caja" },
+    { id: "cu5-03", caso: "lavado", cuenta: "Cuentas por pagar" },
+    { id: "cu5-04", caso: "lavado", cuenta: "Hipoteca por pagar" },
+    { id: "cu5-05", caso: "lavado", cuenta: "Letras por pagar" },
+    { id: "cu5-06", caso: "lavado", cuenta: "Acciones" },
+    { id: "cu5-07", caso: "caleja", cuenta: "Caja" },
+    { id: "cu5-08", caso: "caleja", cuenta: "Aportes sociales" },
+    { id: "cu5-09", caso: "caleja", cuenta: "Equipo de computación" },
+    { id: "cu5-10", caso: "capitulo", cuenta: "Caja" },
+  ],
+  /*
+   * Las dos preguntas por cuenta. El texto lleva huecos que la mecánica
+   * rellena con las cifras de ESA cuenta: escribir diez versiones a mano
+   * invitaría a que una llevara el número de otra.
+   */
+  aciertoSaldo: "✅ {saldo}. Movimiento débito {debito} menos movimiento crédito {credito}.",
+  aciertoLado: "✅ {Lado} — porque el movimiento {movimiento} fue el mayor, y el saldo siempre se coloca del lado que pesó más.",
+  errores: {
+    sumo: "❌ El saldo es una resta, no una suma. Sume cada lado por separado y reste el menor del mayor.",
+    ladoEquivocado: "❌ La cifra está bien. El lado no: el saldo va donde estuvo el movimiento mayor, que aquí fue el {movimiento}.",
+    ladoMenor: "❌ Es al revés. Si por la izquierda pasaron {debito} y por la derecha {credito}, lo que sobra queda del lado que pesó más.",
+    restoAlReves: "❌ Reste siempre el menor del mayor — el saldo nunca es negativo. Lo que indica de qué naturaleza es, es el lado donde queda, no un signo.",
+  },
+};
+
+/* ═══════════════════════ CU-6 · Arma el Asiento ═══════════════════════ */
+
+/*
+ * Nueve de las doce transacciones ya están en los dos casos —seis de Caleja y
+ * tres de Lavado de Autos—, así que se referencian por su id. Las otras tres
+ * son del capítulo y no pertenecen a ningún caso: van completas aquí.
+ */
+export const TRANSACCIONES_SUELTAS = [
+  {
+    id: "cu6-dos-socios",
+    /*
+     * CORRECCIÓN 1. El enunciado del libro dice que cada socio aporta $1.000 y
+     * luego totaliza mal; su propio libro diario (p. 96) registra $2.000.
+     * Manda el diario, y el enunciado se deja tal cual para que el estudiante
+     * vea la cifra que el libro le va a enseñar.
+     */
+    texto: "Se inicia un negocio con dos socios y cada uno aporta $1.000 en efectivo.",
+    asiento: { debe: [["Caja", 2000]], haber: [["Aportes sociales", 2000]] },
+  },
+  {
+    id: "cu6-pagare",
+    texto: "La empresa recibe un préstamo de un banco por $500 respaldado con pagaré.",
+    asiento: { debe: [["Caja", 500]], haber: [["Documentos por pagar", 500]] },
+  },
+  {
+    id: "cu6-computador-contado",
+    texto: "La empresa compró un computador por $150 y lo pagó de contado.",
+    asiento: { debe: [["Equipo de computación", 150]], haber: [["Caja", 150]] },
+  },
+];
+
+export const ARMA_EL_ASIENTO = {
+  subtema: "Asiento contable simple",
+  porPartida: 6,
+  /* Cuatro decisiones por ítem: dos cuentas y el lado de cada una. */
+  decisionesPorItem: 4,
+  items: [
+    { id: "cu6-01", suelta: "cu6-dos-socios" },
+    { id: "cu6-02", suelta: "cu6-pagare" },
+    { id: "cu6-03", suelta: "cu6-computador-contado" },
+    { id: "cu6-04", caso: "caleja", transaccion: "cal-1" },
+    { id: "cu6-05", caso: "caleja", transaccion: "cal-2" },
+    { id: "cu6-06", caso: "caleja", transaccion: "cal-3" },
+    { id: "cu6-07", caso: "caleja", transaccion: "cal-4" },
+    { id: "cu6-08", caso: "caleja", transaccion: "cal-5" },
+    { id: "cu6-09", caso: "caleja", transaccion: "cal-6" },
+    { id: "cu6-10", caso: "lavado", transaccion: "ene-08" },
+    { id: "cu6-11", caso: "lavado", transaccion: "ene-18" },
+    { id: "cu6-12", caso: "lavado", transaccion: "ene-26" },
+  ],
+  errores: {
+    invirtioLados: "❌ Las dos cuentas son las correctas, pero están al revés. Pregúntese cuál recibe y cuál entrega: lo que entra se debita, lo que sale se acredita.",
+    cuentaAjena: "❌ {cuenta} no se mueve en esta transacción. Vuelva a las dos preguntas del libro: ¿qué está recibiendo el negocio, y qué entregó o en qué se comprometió a cambio?",
+    cajaPorBancos: "❌ Son dos activos distintos. Si la transacción dice «con cheque» o «se consignó», es Bancos. Si dice «de contado» sin más, o «en efectivo», es Caja.",
+    consignar: "❌ Consignar no es un ingreso ni un gasto: es mover plata de un bolsillo a otro. Bancos aumenta, Caja disminuye — dos activos, sin tocar pasivos ni patrimonio.",
+    devolucionAportes: "❌ Devolver un aporte disminuye el patrimonio, y el patrimonio disminuye por el debe. Es la única transacción del banco donde Aportes sociales va al debe.",
+  },
+};
+
+/* ═══════════════════════ CU-7 · ¿Simple o Compuesto? ═══════════════════════ */
+
+export const SIMPLE_O_COMPUESTO = {
+  subtema: "Asiento simple y compuesto",
+  porPartida: 6,
+  categorias: [
+    { id: "simple", nombre: "Simple" },
+    { id: "compuesto", nombre: "Compuesto" },
+  ],
+  items: [
+    { id: "cu7-01", enunciado: "Se compró una computadora por $2.000, todo a crédito.",
+      categoria: "simple", cuentas: 2,
+      acierto: "✅ Simple: una cuenta al debe, una al haber." },
+    { id: "cu7-02", enunciado: "Se compró edificio y terreno por $10.000: $2.000 de contado con cheque y el resto con hipoteca. El terreno se estimó en $4.000.",
+      categoria: "compuesto", cuentas: 4,
+      acierto: "✅ Compuesto, y de los grandes: dos activos entran (Construcciones y Terrenos) y dos cosas los pagan (Bancos e Hipoteca)." },
+    { id: "cu7-03", enunciado: "Camión de $4.800: $800 de contado con cheque y el saldo en letras.",
+      categoria: "compuesto", cuentas: 3,
+      acierto: "✅ Compuesto: un activo entra, dos cuentas lo financian." },
+    { id: "cu7-04", enunciado: "Muebles y enseres por $2.500: $500 de contado con cheque y el saldo a crédito.",
+      categoria: "compuesto", cuentas: 3,
+      acierto: "✅ Compuesto. Mismo patrón que el camión: una compra pagada de dos formas." },
+    { id: "cu7-05", enunciado: "Se consignó en la cuenta corriente $800.",
+      categoria: "simple", cuentas: 2,
+      acierto: "✅ Simple: Bancos sube, Caja baja." },
+    { id: "cu7-06", enunciado: "Los accionistas depositaron $5.000 por la compra de 1.000 acciones.",
+      categoria: "simple", cuentas: 2,
+      acierto: "✅ Simple, aunque sean muchos accionistas: contablemente son dos cuentas." },
+    { id: "cu7-07", enunciado: "Se canceló con cheque $400 de la deuda del edificio.",
+      categoria: "simple", cuentas: 2,
+      acierto: "✅ Simple: el pasivo baja, Bancos baja." },
+    { id: "cu7-08", enunciado: "Se constituye una sociedad con tres socios, cada uno aporta $100.000.",
+      categoria: "simple", cuentas: 2,
+      acierto: "✅ Simple. Tres socios, pero dos cuentas — es la trampa clásica de este ejercicio." },
+    { id: "cu7-09", enunciado: "Un nuevo socio aporta un vehículo valorado en $2.000.000 y $1.000.000 en efectivo.",
+      categoria: "compuesto", cuentas: 3,
+      acierto: "✅ Compuesto: entran dos activos distintos contra un solo aporte." },
+    { id: "cu7-10", enunciado: "Se compró maquinaria por $50.000 con un préstamo bancario.",
+      categoria: "simple", cuentas: 2,
+      acierto: "✅ Simple: el activo entra, el pasivo lo financia." },
+  ],
+  errores: {
+    compuestoPorPersonas: "❌ La trampa está en confundir personas con cuentas. Tres socios aportando a la misma cuenta de patrimonio siguen siendo una sola cuenta. Cuente cuentas, no gente.",
+    simpleSiendoCompuesto: "❌ Fíjese en cómo se pagó: cuando una compra se paga de dos formas distintas (parte de contado, parte a crédito), hacen falta más de dos cuentas.",
+    numeroEquivocado: "❌ Vuelva a contar: son {cuentas}. Liste primero todo lo que entra y después todo lo que sale o se debe.",
+    reglaGeneral: "❌ Recuerde: un asiento compuesto sigue cumpliendo la partida doble. Lo que tiene que cuadrar es el total del debe contra el total del haber, no el número de cuentas de cada lado.",
+  },
+};
+
+/* ═══════════════════════ CU-8 · ¿Cuadra o No Cuadra? ═══════════════════════ */
+
+/*
+ * El descuadre NO se declara: se calcula de los totales. Escribirlo a mano
+ * permitiría que un asiento dijera «descuadre 500» con unas cifras que dan
+ * 400, y la actividad calificaría mal sin que nada avisara.
+ */
+export const CUADRA_O_NO = {
+  subtema: "Partida doble",
+  porPartida: 6,
+  asientos: [
+    { id: "cu8-01", debe: [["Construcciones y edificaciones", 6000], ["Terrenos", 4000]],
+      haber: [["Bancos", 2000], ["Hipoteca por pagar", 8000]] },
+    { id: "cu8-02", debe: [["Flota y equipo de transporte", 4800]],
+      haber: [["Bancos", 800], ["Letras por pagar", 4000]] },
+    { id: "cu8-03", debe: [["Muebles y enseres", 2500]],
+      haber: [["Bancos", 500], ["Cuentas por pagar", 2000]] },
+    { id: "cu8-04", debe: [["Equipo de computación", 2000]], haber: [["Cuentas por pagar", 2500]] },
+    { id: "cu8-05", debe: [["Caja", 1000]], haber: [["Acciones", 1100]] },
+    { id: "cu8-06", debe: [["Bancos", 5000]], haber: [["Acciones", 5000]] },
+    { id: "cu8-07", debe: [["Maquinaria", 50000]], haber: [["Obligaciones financieras", 45000]] },
+    { id: "cu8-08", debe: [["Caja", 300000]], haber: [["Aportes sociales", 300000]] },
+    { id: "cu8-09", debe: [["Cuentas por pagar", 250]], haber: [["Bancos", 200]] },
+    { id: "cu8-10", debe: [["Construcciones y edificaciones", 6000], ["Terrenos", 4000]],
+      haber: [["Bancos", 2000], ["Hipoteca por pagar", 7500]] },
+  ],
+  aciertoCuadra: "✅ Cuadra: {debe} al debe contra {haber} al haber.",
+  aciertoDescuadre: "✅ Correcto, está descuadrado en {descuadre}. El debe suma {debe} y el haber {haber}.",
+  errores: {
+    dijoCuadra: "❌ Sume otra vez cada lado por separado: el debe da {debe} y el haber {haber}. Faltan {descuadre} para que cuadre.",
+    dijoNoCuadra: "❌ Sí cuadra. Puede que lo haya confundido el número de cuentas: este asiento tiene {cuentas} cuentas, pero un asiento compuesto es perfectamente válido mientras los totales coincidan.",
+    cifraEquivocada: "❌ Acertó en que no cuadra. La diferencia exacta es {descuadre}: debe {debe} contra haber {haber}.",
+  },
+};
+
+/** El total de cada lado y la diferencia, calculados del propio asiento. */
+export function balanceDelAsiento(asiento) {
+  const debe = asiento.debe.reduce((s, [, v]) => s + v, 0);
+  const haber = asiento.haber.reduce((s, [, v]) => s + v, 0);
+  return { debe, haber, descuadre: Math.abs(debe - haber), cuadra: debe === haber };
+}
+
+/*
+ * EL PUNTAJE DE CU-8, que no es como el de las demás.
+ *
+ * Seis juicios valen el 75 %; el 25 % restante se reparte en partes iguales
+ * entre los asientos DESCUADRADOS que hayan salido en ese intento, y se gana
+ * diciendo la cifra exacta del descuadre.
+ *
+ * El reparto es variable a propósito: cuántos descuadrados salen depende del
+ * sorteo. Lo que no puede pasar es que salgan cero —el 25 % quedaría sin
+ * repartir y el intento valdría 75 como máximo sin culpa del estudiante—, y el
+ * banco está construido para que no pase: con cinco cuadrados de diez y seis
+ * sorteados, siempre sale al menos uno descuadrado. Hay una prueba que lo
+ * comprueba sobre las 210 combinaciones posibles.
+ */
+export const PESO_JUICIOS = 0.75;
+export const PESO_DESCUADRES = 0.25;
+
+export function puntuarCuadraONo({ juiciosAcertados, porPartida = 6, descuadradosEnJuego, cifrasAcertadas }) {
+  const juicios = (juiciosAcertados / porPartida) * PESO_JUICIOS;
+  const cifras = descuadradosEnJuego > 0
+    ? (cifrasAcertadas / descuadradosEnJuego) * PESO_DESCUADRES
+    /* Sin descuadrados no hay nada que repartir; el banco impide que ocurra. */
+    : PESO_DESCUADRES;
+  return Math.round((juicios + cifras) * 100);
+}
+
+/* ═══════════════════════ CU-9 · Corriente de Cuentas ═══════════════════════ */
+
+/*
+ * Práctica intercalada (Rohrer, 2012): repetir la misma clasificación a
+ * velocidad ES la técnica, no un defecto del diseño. Por eso el ritmo es más
+ * urgente que el de las demás y por eso salen doce de veinticuatro.
+ *
+ * Las cuentas NO llevan su familia escrita: se toma del catálogo. Una lista
+ * paralela podría contradecirlo, y entonces dos actividades del mismo tema
+ * clasificarían la misma cuenta de dos maneras.
+ */
+export const CORRIENTE_DE_CUENTAS = {
+  subtema: "Interleaving — clasificación de las seis familias",
+  porPartida: 12,
+  categorias: [
+    { id: ACTIVO, nombre: "Activo" },
+    { id: PASIVO, nombre: "Pasivo" },
+    { id: PATRIMONIO, nombre: "Patrimonio" },
+    { id: INGRESO, nombre: "Ingreso" },
+    { id: GASTO, nombre: "Gasto" },
+    { id: COSTO, nombre: "Costo" },
+  ],
+  cuentas: [
+    "Terreno", "Equipos de oficina", "Inventario de mercancías", "Depósitos en garantía",
+    "Cuentas por cobrar", "Flota y equipo de transporte",
+    "Obligaciones financieras", "Salarios por pagar", "Cuentas por pagar", "Letras por pagar",
+    "Hipoteca por pagar",
+    "Aportes sociales", "Acciones", "Reserva legal", "Utilidad acumulada",
+    "Renta por servicios", "Renta por interés", "Ingresos por ventas", "Ingresos operacionales",
+    "Servicios públicos", "Gastos de operación", "Gastos por salarios", "Gastos por arriendo",
+    "Costo de ventas",
+  ],
+  acierto: "✅ {Familia}.",
+  errorGenerico: "❌ Es {familia}, no {elegida}.",
+  /* Los tres pares que más se confunden llevan su propia explicación. */
+  errorReforzado: {
+    [`${INGRESO}>${ACTIVO}`]: "❌ Es un Ingreso. Ojo: «Renta por servicios» es lo que la empresa ganó, no algo que tenga. Lo que tiene sería la Caja o la Cuenta por cobrar que resultó de esa venta.",
+    [`${GASTO}>${PASIVO}`]: "❌ Es un Gasto. «Servicios públicos» es el consumo del mes; si además quedó pendiente de pago, eso sería otra cuenta distinta, «Servicios públicos por pagar», esa sí pasivo.",
+    [`${PATRIMONIO}>${PASIVO}`]: "❌ Es Patrimonio. Los dos están a la derecha de la ecuación, pero el pasivo se le debe a terceros y el patrimonio a los dueños.",
+  },
+};
+
+
+/* ═══════════════════════ CU-10 · El Asiento Compuesto ═══════════════════════ */
+
+/*
+ * Tres de los cinco son transacciones de Lavado de Autos y se referencian; las
+ * otras dos son del capítulo y van completas. Construcción libre: el
+ * estudiante arma el asiento entero y solo se acepta si cuadra.
+ */
+export const COMPUESTAS_SUELTAS = [
+  {
+    id: "cu10-computador-mitad",
+    texto: "Los socios compran un computador por $1.500.000, pagan el 50% de contado y el saldo a crédito.",
+    asiento: {
+      debe: [["Equipo de computación", 1500000]],
+      haber: [["Caja", 750000], ["Cuentas por pagar", 750000]],
+    },
+  },
+  {
+    id: "cu10-socio-vehiculo",
+    texto: "Aceptan en el negocio a un nuevo socio, quien aporta un vehículo valorado en $2.000.000 y $1.000.000 en efectivo.",
+    asiento: {
+      debe: [["Flota y equipo de transporte", 2000000], ["Caja", 1000000]],
+      haber: [["Aportes sociales", 3000000]],
+    },
+  },
+];
+
+export const ASIENTO_COMPUESTO = {
+  subtema: "Asiento compuesto",
+  porPartida: 3,
+  items: [
+    { id: "cu10-01", caso: "lavado", transaccion: "ene-03" },
+    { id: "cu10-02", caso: "lavado", transaccion: "ene-04" },
+    { id: "cu10-03", caso: "lavado", transaccion: "ene-12" },
+    { id: "cu10-04", suelta: "cu10-computador-mitad" },
+    { id: "cu10-05", suelta: "cu10-socio-vehiculo" },
+  ],
+  /*
+   * Dentro de cada transacción: acertar las cuentas vale la mitad, los lados un
+   * cuarto y las cifras el otro cuarto. Elegir bien las cuentas es lo que de
+   * verdad exige entender la transacción.
+   */
+  peso: { cuentas: 0.5, lados: 0.25, cifras: 0.25 },
+  acierto: "✅ Correcto. El debe suma {total} y el haber {total} — cuadra. Note que {cuentas} cuentas no rompen la partida doble: lo que cuadra son los totales.",
+  errores: {
+    noCuadra: "❌ No cuadra: debe {debe}, haber {haber}. Antes de buscar el error de concepto, revise la aritmética — a veces es solo eso.",
+    faltaCuenta: "❌ Falta algo. Pregúntese si todo lo que entró está en el debe y todo lo que lo pagó está en el haber. En esta transacción la compra se pagó de más de una forma.",
+  },
+  /* Los cinco casos con su propia trampa llevan su propia explicación. */
+  erroresPorCaso: {
+    "cu10-01": {
+      unioEdificioYTerreno: "❌ Son dos activos distintos y el enunciado le da el valor de cada uno a propósito: terreno $4.000, construcción el resto. El terreno no se deprecia y la edificación sí, por eso se separan desde el registro.",
+      hipotecaAlDebe: "❌ La hipoteca es una deuda que nace con esta transacción. Los pasivos nacen y aumentan por el haber.",
+    },
+    "cu10-04": {
+      mitadMal: "❌ La mitad de $1.500.000 es $750.000 a cada lado del pago. El total del haber tiene que sumar $1.500.000, igual que el activo que entró.",
+    },
+    "cu10-05": {
+      olvidoUnActivo: "❌ El socio aportó dos cosas: un vehículo y efectivo. Los dos entran por el debe, y el aporte total se acredita en una sola cuenta de patrimonio.",
+    },
+  },
+};
+
+/* ═══════════════════════ CU-11 · La Mayorización ═══════════════════════ */
+
+/*
+ * ⚠️ EL SET A ESTÁ TRUNCADO A PROPÓSITO. ⚠️
+ *
+ * Usa SOLO los asientos de ene-02 a ene-12. Sus saldos NO coinciden con el
+ * mayor completo del libro (p. 100) en cuatro cuentas —Bancos, Acciones,
+ * Hipoteca por pagar y Cuentas por pagar—, y eso es correcto: son el mayor de
+ * un corte, no del mes entero. Caja ni siquiera aparece, porque entra en
+ * ene-25.
+ *
+ * SI ALGUIEN CRUZA ESTAS CIFRAS CONTRA EL MAYOR COMPLETO Y LAS «CORRIGE»,
+ * ROMPE LA ACTIVIDAD: estaría calificando como error la respuesta correcta.
+ * Por eso el corte se declara como una lista de ids y los saldos se derivan de
+ * ella; no hay ninguna tabla que se pueda editar por descuido. Y hay una
+ * prueba que exige que las cuatro sigan siendo distintas.
+ */
+export const CORTE_SET_A = ["ene-02", "ene-03", "ene-04", "ene-08", "ene-12"];
+
+export const MAYORIZACION = {
+  subtema: "Mayorización",
+  porPartida: 1,
+  sets: [
+    {
+      id: "set-a",
+      nombre: "Lavado de Autos Mateo S.A. — del 2 al 12 de enero",
+      caso: "lavado",
+      /* El corte, no el mes entero: de aquí salen sus diez cuentas. */
+      transacciones: CORTE_SET_A,
+    },
+    {
+      id: "set-b",
+      nombre: "Comercializadora Caleja Ltda. — las seis transacciones",
+      caso: "caleja",
+      /* Las seis, sin truncar. */
+      transacciones: null,
+    },
+  ],
+  acierto: "✅ Bien mayorizado. El valor del debe del diario va al debe del mayor — no se transforma nada, solo se reordena.",
+  errores: {
+    ladoContrario: "❌ Mayorizar no cambia de lado: lo que estaba en el debe del diario va al debe del mayor. Si lo cambia, rompe la partida doble que ya estaba bien.",
+    cuentaEquivocada: "❌ Ese valor pertenece a {cuenta}. Lea el asiento del diario de nuevo: la cuenta acreditada es la que va corrida a la derecha.",
+    saldoMal: "❌ Sume cada lado de esa cuenta y reste el menor del mayor. Debe: {debito}. Haber: {credito}. Saldo: {saldo} al {lado}.",
+    fechaDelTraslado: "❌ En el mayor se anota la fecha que tenía la transacción en el diario, no el día en que usted la traslada. Si no, se pierde el orden cronológico real.",
+  },
+};
+
+/* ═══════════════════════ CU-12 · El Error Escondido ═══════════════════════ */
+
+export const TIPOS_DE_ERROR = [
+  { id: "valor", nombre: "Valor equivocado" },
+  { id: "lado", nombre: "Lado equivocado" },
+  { id: "cuenta", nombre: "Cuenta equivocada" },
+  { id: "falta", nombre: "Falta un registro" },
+];
+
+/*
+ * Seis errores sembrados sobre el mayor completo de Lavado de Autos. Cada caso
+ * dice qué transacción se estropea y cómo, para que el mayor defectuoso se
+ * GENERE del bueno: así el «error» siempre es exactamente uno y no puede
+ * quedar desincronizado de la respuesta.
+ */
+export const ERROR_ESCONDIDO = {
+  subtema: "Diagnóstico de errores de registro",
+  porPartida: 3,
+  /* Dentro de cada caso: señalar la cuenta vale 60 %, decir el tipo 40 %. */
+  peso: { cuenta: 0.6, tipo: 0.4 },
+  casos: [
+    { id: "cu12-01", transaccion: "ene-03", cuenta: "Hipoteca por pagar", tipo: "lado",
+      siembra: { clase: "invertirLado", cuenta: "Hipoteca por pagar" },
+      explicacion: "La hipoteca de $8.000 quedó en el debe. Es un pasivo que nace: nace por el haber." },
+    { id: "cu12-02", transaccion: "ene-18", cuenta: "Bancos", tipo: "valor",
+      siembra: { clase: "cambiarValor", cuenta: "Bancos", valor: 520 },
+      explicacion: "El cheque del 18 de enero fue de $250 y en el mayor figura $520." },
+    { id: "cu12-03", transaccion: "ene-04", cuenta: "Muebles y enseres", tipo: "cuenta",
+      siembra: { clase: "cambiarCuenta", de: "Flota y equipo de transporte", a: "Muebles y enseres" },
+      explicacion: "El camión de $4.800 se registró en Muebles y enseres. Es Flota y equipo de transporte." },
+    { id: "cu12-04", transaccion: "ene-26", cuenta: "Caja", tipo: "falta",
+      siembra: { clase: "quitarMitad", lado: "haber" },
+      explicacion: "Consignar mueve plata de Caja a Bancos. Bancos subió, pero nadie registró que Caja bajó." },
+    { id: "cu12-05", transaccion: "ene-25", cuenta: "Caja", tipo: "lado",
+      siembra: { clase: "invertirLado", cuenta: "Caja" },
+      explicacion: "Los $1.000 de las acciones entraron a Caja: van al debe, no al haber." },
+    { id: "cu12-06", transaccion: "ene-30", cuenta: "Hipoteca por pagar", tipo: "valor",
+      siembra: { clase: "cambiarValor", cuenta: "Hipoteca por pagar", valor: 40 },
+      explicacion: "El pago del 30 de enero fue de $400 y en el mayor figura $40." },
+  ],
+  aciertoCuenta: "✅ Ahí está. {cuenta} es la que no cuadra.",
+  aciertoTipo: "✅ {tipo}. {explicacion}",
+  errores: {
+    cuentaSana: "❌ Esa cuenta está bien. Pista: cuando el mayor no cuadra, empiece comparando el total del debe contra el total del haber — la diferencia le dice cuánto busca.",
+    valorPorLado: "❌ El valor está bien: es exactamente el del diario. Lo que está mal es de qué lado quedó.",
+    ladoPorValor: "❌ El lado es el correcto. Compare la cifra contra el diario: no coinciden.",
+    faltaPorMalPuesto: "❌ El registro sí está. El problema es que está mal — no que falte. «Falta un registro» es cuando una de las dos mitades del asiento nunca se anotó.",
+    consignacion: "❌ Aquí sí falta: consignar mueve plata de Caja a Bancos. Bancos subió, pero nadie registró que Caja bajó. Media transacción no es una transacción.",
+  },
+};
