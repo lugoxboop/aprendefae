@@ -253,10 +253,19 @@ jobs:
             process.stdin.on("data", (c) => (d += c)).on("end", () => {
               try {
                 const j = JSON.parse(d);
-                const archivos = Object.keys(j.data ?? j);
-                console.log("      Último despliegue registrado : " + new Date(j.generatedTime).toISOString());
-                console.log("      Archivos subidos             : " + archivos.length);
-                console.log("      ¿Está el .htaccess?          : " + (archivos.some((x) => /(^|\/)\.htaccess$/.test(x)) ? "sí" : "NO"));
+                /*
+                 * El inventario es un objeto indexado por numero ("0", "1", ...),
+                 * y el nombre del archivo esta en .name, NO en la clave. Leer las
+                 * claves daba "no esta el .htaccess" con el .htaccess puesto.
+                 */
+                const entradas = Object.values(j.data ?? j).filter((x) => x && x.type === "file");
+                const nombres = entradas.map((x) => x.name);
+                const conta = nombres.filter((n) => /Contabilidad|Rombicub/i.test(n)).length;
+                console.log("      Ultimo despliegue registrado : " + new Date(j.generatedTime).toISOString());
+                console.log("      Archivos subidos             : " + entradas.length);
+                console.log("      Esta el .htaccess?           : " + (nombres.includes(".htaccess") ? "si" : "NO"));
+                console.log("      Esta el index.html?          : " + (nombres.includes("index.html") ? "si" : "NO"));
+                if (conta) console.log("      Piezas de Contabilidad       : " + conta);
               } catch {
                 console.log("      (no se pudo leer el inventario del servidor)");
               }
