@@ -46,6 +46,7 @@ export const VISTAS = new Set([
   "home",
   "macroeconomia",
   "pensamiento-estrategico",
+  "contabilidad",
   /* Temas */
   "camino-da",
   "grifos-da",

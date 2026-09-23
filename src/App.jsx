@@ -23,6 +23,7 @@ import MomentoRacha from "./components/racha/MomentoRacha.jsx";
  */
 const MacroTopicIndex = lazy(() => import("./components/MacroTopicIndex.jsx"));
 const EstrategiaTopicIndex = lazy(() => import("./components/EstrategiaTopicIndex.jsx"));
+const ContabilidadTopicIndex = lazy(() => import("./components/ContabilidadTopicIndex.jsx"));
 const PensamientoSistemicoView = lazy(() => import("./components/PensamientoSistemicoView.jsx"));
 const IcebergView = lazy(() => import("./components/IcebergView.jsx"));
 const PorterView = lazy(() => import("./components/PorterView.jsx"));
@@ -76,7 +77,7 @@ const DemandaAgregadaHacerView = lazy(() => import("./components/DemandaAgregada
  * pie de la letra, los incluiría.
  */
 const VISTAS_CON_TITULO = new Set([
-  "macroeconomia", "pensamiento-estrategico",
+  "macroeconomia", "pensamiento-estrategico", "contabilidad",
   "camino-da", "grifos-da",
   "politica-economica", "politica-fiscal", "politica-monetaria",
   "pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter",
@@ -192,6 +193,20 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <EstrategiaTopicIndex onOpenTopic={abrirTema} />
+      </Suspense>
+    );
+  }
+
+  /*
+   * Contabilidad todavía no tiene temas, así que `onOpenTopic` no lo llama
+   * nadie: la rejilla está vacía. Se pasa igual, y con la misma forma que las
+   * otras dos, para que el día que entre el primer tema no haya que recordar
+   * que esta materia se enganchaba distinto.
+   */
+  if (view === "contabilidad") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <ContabilidadTopicIndex onOpenTopic={abrirTema} />
       </Suspense>
     );
   }

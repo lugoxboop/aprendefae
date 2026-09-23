@@ -2,7 +2,7 @@ import { FAE } from "../theme.js";
 import MeshGradientBackground from "./backgrounds/MeshGradientBackground.jsx";
 import BackgroundVeil from "./shared/BackgroundVeil.jsx";
 import Hero from "./Hero.jsx";
-import SubjectCard, { MacroIcon, EstrategiaIcon } from "./SubjectCard.jsx";
+import SubjectCard, { MacroIcon, EstrategiaIcon, ContabilidadIcon } from "./SubjectCard.jsx";
 import Logo from "./Logo.jsx";
 import Footer from "./shared/Footer.jsx";
 
@@ -80,6 +80,15 @@ export default function HomeScreen({ onSelectSubject }) {
               hoverBg="rgba(42,157,143,0.14)"
               hoverBorder="rgba(42,157,143,0.75)"
               onClick={() => onSelectSubject("pensamiento-estrategico")}
+            />
+            <SubjectCard
+              icon={<ContabilidadIcon />}
+              title="Contabilidad"
+              label="Card Contabilidad"
+              accent={FAE.ambar}
+              hoverBg="rgba(233,196,106,0.12)"
+              hoverBorder="rgba(233,196,106,0.7)"
+              onClick={() => onSelectSubject("contabilidad")}
             />
           </div>
         </div>

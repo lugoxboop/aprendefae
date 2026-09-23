@@ -94,3 +94,36 @@ export function EstrategiaIcon() {
     </div>
   );
 }
+
+/*
+ * Poliedro medio lleno — Contabilidad.
+ *
+ * El mismo sólido del fondo, reducido a lo que sobrevive a 34 px: un contorno
+ * y una línea de líquido. Los otros dos íconos son divs; este es SVG porque un
+ * octágono no se hace con rectángulos, pero ocupa los mismos 34 px y pesa lo
+ * mismo a la vista.
+ *
+ * MITAD INFERIOR LLENA, MITAD SUPERIOR VACÍA, y la línea de líquido es
+ * HORIZONTAL: es la misma promesa que hace el fondo, en pequeño.
+ */
+export function ContabilidadIcon() {
+  /* Octágono regular inscrito: la silueta del rombicuboctaedro de frente. */
+  const r = 16;
+  const puntos = Array.from({ length: 8 }, (_, i) => {
+    const a = (Math.PI / 4) * i + Math.PI / 8;
+    return [17 + r * Math.cos(a), 17 + r * Math.sin(a)];
+  });
+  const contorno = puntos.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(2)} ${y.toFixed(2)}`).join(" ") + " Z";
+
+  return (
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true" style={{ display: "block" }}>
+      {/* La mitad de abajo, llena. El recorte es una caja: la línea sale recta. */}
+      <clipPath id="fae-ci-mitad">
+        <rect x="0" y="17" width="34" height="17" />
+      </clipPath>
+      <path d={contorno} fill="none" stroke={FAE.ambar} strokeWidth="2" strokeLinejoin="round" />
+      <path d={contorno} fill={FAE.ambar} fillOpacity="0.9" clipPath="url(#fae-ci-mitad)" />
+      <line x1="4" y1="17" x2="30" y2="17" stroke={FAE.ambar} strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}

@@ -22,10 +22,18 @@ import BackgroundVeil from "./BackgroundVeil.jsx";
 
 const SupplyDemandBackground = lazy(() => import("../backgrounds/SupplyDemandBackground.jsx"));
 const ChessBackground = lazy(() => import("../backgrounds/ChessBackground.jsx"));
+const RombicuboctaedroBackground = lazy(() => import("../backgrounds/RombicuboctaedroBackground.jsx"));
 
 const FONDOS = {
   macroeconomia: SupplyDemandBackground,
   "pensamiento-estrategico": ChessBackground,
+  /*
+   * Registrado desde ya, aunque Contabilidad no tenga todavía ninguna página
+   * de actividad que lo use: el encargo pide que el fondo se propague hacia
+   * dentro como en las otras dos, y dejarlo enganchado ahora evita que la
+   * primera actividad que entre se abra con fondo plano sin que nadie sepa por qué.
+   */
+  contabilidad: RombicuboctaedroBackground,
 };
 
 export default function FondoMateria({ materiaId, children }) {

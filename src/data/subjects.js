@@ -459,6 +459,23 @@ export const SUBJECTS = {
       },
     ],
   },
+  /*
+   * CONTABILIDAD — creada, sin contenido todavía.
+   *
+   * `topics: []` NO es un olvido: la materia existe con su identidad visual y
+   * sus temas los define Gen cuando llegue el material del profesor. Con la
+   * lista vacía, TopicIndexView enseña EMPTY_TOPICS_MESSAGE, que ya existía.
+   *
+   * No lleva fila en actividad_catalogo porque no tiene ni una actividad: el
+   * catálogo del servidor guarda actividades, no materias, y `subject_id` no
+   * está restringido a una lista en ninguna migración. El día que entre la
+   * primera actividad, entra con su migración como cualquier otra.
+   */
+  contabilidad: {
+    id: "contabilidad",
+    name: "Contabilidad",
+    topics: [],
+  },
   "pensamiento-estrategico": {
     id: "pensamiento-estrategico",
     name: "Pensamiento Estratégico",
