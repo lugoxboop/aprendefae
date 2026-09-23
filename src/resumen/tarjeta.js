@@ -1,4 +1,6 @@
 import { FAE } from "../theme.js";
+import { VERTICES, ARISTAS, rotarTodos, proyectar } from "../contabilidad/solido.js";
+import { estadoInicial, normalDeSuperficie, cuerpoDelLiquido } from "../contabilidad/liquido.js";
 
 /*
  * Dibuja el resumen de semestre como imagen descargable.
@@ -62,6 +64,107 @@ function fondoOfertaDemanda(ctx) {
   ctx.restore();
 }
 
+/*
+ * Contabilidad: el rombicuboctaedro de Pacioli, medio lleno.
+ *
+ * NO SE REDIBUJA A MANO. Usa la MISMA geometría del fondo animado —los 24
+ * vértices, las 48 aristas y el corte del líquido de src/contabilidad/— con la
+ * rotación congelada. Un octágono dibujado aparte se separaría del sólido de
+ * verdad en la primera edición, y además volvería a plantear la pregunta que
+ * esta pieza ya tiene contestada: dónde está el nivel.
+ *
+ * La superficie sigue siendo horizontal respecto al mundo, así que aquí se ve
+ * lo mismo que en el índice: una línea recta a media altura. En una imagen que
+ * se comparte por WhatsApp, esa línea es toda la idea.
+ */
+const GIRO_TARJETA = [0.42, 0.72, 0.1];
+
+function fondoContabilidad(ctx) {
+  /*
+   * 115 y no 96: a 96 el solido quedaba como un objeto centrado en medio de la
+   * tarjeta y le disputaba el sitio al texto. Los otros dos fondos ocupan casi
+   * todo el ancho y funcionan como textura, no como ilustracion; este hace lo
+   * mismo. Se vio comparando los tres lado a lado.
+   */
+  const k = 115;
+  const cx = W / 2;
+  const cy = H * 0.62;
+  const V = rotarTodos(VERTICES, ...GIRO_TARJETA);
+  const plano = ([x, y, z]) => {
+    const [px, py] = proyectar([x, y, z], { escala: k });
+    return [cx + px, cy + py];
+  };
+
+  ctx.save();
+
+  /* El líquido, del mismo tono y la misma discreción que los otros dos fondos. */
+  const { partes, superficie } = cuerpoDelLiquido(V, normalDeSuperficie(estadoInicial()));
+  ctx.fillStyle = "rgba(42,157,143,0.055)";
+  for (const parte of partes) {
+    if (parte.puntos.length < 3) continue;
+    ctx.beginPath();
+    parte.puntos.forEach((q, i) => {
+      const [x, y] = plano(q);
+      return i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  /* Las aristas, en el navy de los avatares. */
+  ctx.strokeStyle = "rgba(61,90,128,0.16)";
+  ctx.lineWidth = 3;
+  ctx.lineCap = "round";
+  for (const [a, b] of ARISTAS) {
+    const [x1, y1] = plano(V[a]);
+    const [x2, y2] = plano(V[b]);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+
+  /* Y el nivel, que es lo único que se subraya. */
+  if (superficie.length >= 2) {
+    const xs = superficie.map((q) => plano(q)[0]);
+    const [, y] = plano(superficie[0]);
+    ctx.strokeStyle = "rgba(42,157,143,0.2)";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(Math.min(...xs), y);
+    ctx.lineTo(Math.max(...xs), y);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+/*
+ * ═══════════ UN FONDO POR MATERIA, SIN «EL RESTO» ═══════════
+ *
+ * Esto era un `if (es estrategia) … else …`, y ese `else` era un error
+ * esperando a una materia nueva: al crear Contabilidad, un estudiante suyo
+ * habría recibido las curvas de oferta y demanda en su tarjeta, sin que nada
+ * fallara ni avisara. Ahora cada materia se declara, y la que no esté declarada
+ * se nota: hay una prueba que recorre SUBJECTS y exige que todas estén aquí.
+ *
+ * POR_DEFECTO es para `materiaPrincipal: null` —quien todavía no ha hecho
+ * nada—, que es un caso legítimo y no una materia sin declarar.
+ */
+const FONDOS_DE_MATERIA = {
+  macroeconomia: fondoOfertaDemanda,
+  "pensamiento-estrategico": fondoAjedrez,
+  contabilidad: fondoContabilidad,
+};
+
+const POR_DEFECTO = fondoOfertaDemanda;
+
+export function fondoDeMateria(materiaId) {
+  return FONDOS_DE_MATERIA[materiaId] ?? POR_DEFECTO;
+}
+
+export { FONDOS_DE_MATERIA };
+
 /* ------------------------------ el logo ------------------------------ */
 
 /*
@@ -103,8 +206,7 @@ export function dibujarResumen(resumen, apodo) {
   ctx.fillStyle = FAE.bg;
   ctx.fillRect(0, 0, W, H);
 
-  if (resumen.materiaPrincipal === "pensamiento-estrategico") fondoAjedrez(ctx);
-  else fondoOfertaDemanda(ctx);
+  fondoDeMateria(resumen.materiaPrincipal)(ctx);
 
   const velo = ctx.createRadialGradient(W / 2, H * 0.34, 0, W / 2, H * 0.34, W * 1.15);
   velo.addColorStop(0, "rgba(14,27,46,0.15)");
