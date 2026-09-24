@@ -154,6 +154,7 @@ const IDS = {
   "cu-simple-o-compuesto": CUA.SIMPLE_O_COMPUESTO.items.flatMap((x) => [`${x.id}:clase`, `${x.id}:cuentas`]),
   "cu-arma-el-asiento": CUA.ARMA_EL_ASIENTO.items.map((x) => x.id),
   "cu-asiento-compuesto": CUA.ASIENTO_COMPUESTO.items.map((x) => x.id),
+  "cu-cuadra-o-no": CUA.CUADRA_O_NO.asientos.flatMap((x) => [`${x.id}:juicio`, `${x.id}:cifra`]),
 };
 
 test("todo id derivado de los bancos se puede nombrar", () => {

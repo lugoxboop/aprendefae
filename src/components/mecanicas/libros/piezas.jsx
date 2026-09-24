@@ -193,6 +193,61 @@ export function CampoCifra({ valor, onCambio, onEnviar, deshabilitado = false, e
 }
 
 /**
+ * Un asiento escrito en renglones: el lado, la cuenta y su cifra.
+ *
+ * Lo usan ¿Cuadra o No Cuadra? para enseñar el asiento que hay que juzgar y El
+ * Asiento Compuesto para enseñar el correcto al corregir. Es el mismo objeto y
+ * se dibuja igual: si cada una lo pintara a su manera, el estudiante tendría
+ * que volver a aprender a leerlo al cambiar de actividad.
+ *
+ *   lineas  [{ cuenta, lado, valor }]
+ *   totales true añade la fila de sumas, que es justo lo que CU-8 pregunta
+ */
+export function AsientoEnLineas({ lineas, rotulo = null, acento = FAE.teal, totales = false }) {
+  const suma = (lado) => lineas.filter((l) => l.lado === lado).reduce((s, l) => s + l.valor, 0);
+
+  return (
+    <div
+      data-asiento
+      style={{
+        padding: "12px 14px", borderRadius: "13px",
+        background: "rgba(10,20,34,0.45)", border: "1px solid rgba(248,249,250,0.12)",
+      }}
+    >
+      {rotulo && (
+        <p style={{
+          margin: "0 0 9px", fontFamily: "Sora, sans-serif", fontSize: "10.5px",
+          fontWeight: 700, letterSpacing: "0.16em", color: acento,
+        }}>
+          {rotulo}
+        </p>
+      )}
+      {lineas.map((l, k) => (
+        <div key={`${l.cuenta}-${l.lado}-${k}`} style={{ display: "flex", gap: "8px", alignItems: "baseline", padding: "3px 0" }}>
+          <span style={{
+            flexShrink: 0, width: "50px", fontFamily: "Sora, sans-serif", fontSize: "10px",
+            fontWeight: 700, letterSpacing: "0.08em", color: COLOR_LADO[l.lado],
+          }}>
+            {l.lado === DEBE ? "DEBE" : "HABER"}
+          </span>
+          <span style={{ flex: 1, minWidth: 0, fontSize: "13px", lineHeight: 1.35, color: FAE.text }}>{l.cuenta}</span>
+          <span style={{ ...CIFRA, flexShrink: 0 }}>{pesos(l.valor)}</span>
+        </div>
+      ))}
+      {totales && (
+        <div style={{
+          display: "flex", justifyContent: "space-between", gap: "10px",
+          borderTop: "1px solid rgba(248,249,250,0.22)", marginTop: "8px", paddingTop: "8px",
+        }}>
+          <span style={{ ...CIFRA, fontWeight: 700, color: COLOR_LADO[DEBE] }}>{pesos(suma(DEBE))}</span>
+          <span style={{ ...CIFRA, fontWeight: 700, color: COLOR_LADO[HABER] }}>{pesos(suma(HABER))}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
  * Los dos lados como par de opciones. Sale tantas veces en este tema que
  * escribirlo en cada actividad sería copiar el mismo gesto cinco veces.
  */

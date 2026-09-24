@@ -34,10 +34,10 @@ import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
 } from "../contabilidad/bancos.js";
-import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO } from "../data/contabilidadActividades.js";
+import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, balanceDelAsiento } from "../data/contabilidadActividades.js";
 import { transaccionDe } from "../components/mecanicas/libros/ArmaElAsiento.jsx";
 import { transaccionDe as transaccionCompuesta } from "../components/mecanicas/libros/ElAsientoCompuesto.jsx";
-import { LAVADO_DE_AUTOS, CALEJA } from "../data/contabilidad.js";
+import { LAVADO_DE_AUTOS, CALEJA, pesos as pesosContables } from "../data/contabilidad.js";
 
 /* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
 const EMPRESAS = { lavado: LAVADO_DE_AUTOS.empresa, caleja: CALEJA.empresa };
@@ -475,6 +475,27 @@ Object.assign(REGLAS, {
   "cu-arma-el-asiento": (id) => {
     const i = ARMA_EL_ASIENTO.items.find((x) => x.id === id);
     return i ? transaccionDe(i).texto : null;
+  },
+
+  /*
+   * `<asiento>:juicio` y `<asiento>:cifra`. El asiento no tiene enunciado —es
+   * el propio asiento lo que se juzga—, así que la etiqueta lo resume.
+   *
+   * LOS TOTALES VAN DELANTE Y NO SOBRAN. Dos asientos del banco tocan las
+   * mismas cuentas y solo se diferencian en una cifra: uno cuadra y el otro
+   * no, que es exactamente el par que la actividad quiere contrastar. Con solo
+   * los nombres de las cuentas, el profesor vería dos preguntas distintas
+   * escritas igual — y encima el recorte a 70 caracteres se come lo que viene
+   * después.
+   */
+  "cu-cuadra-o-no": (id) => {
+    const [item, que] = String(id).split(":");
+    const a = CUADRA_O_NO.asientos.find((x) => x.id === item);
+    if (!a || (que !== "juicio" && que !== "cifra")) return null;
+    const b = balanceDelAsiento(a);
+    const cuentas = [...a.debe, ...a.haber].map(([c]) => c).join(" / ");
+    const pregunta = que === "juicio" ? "Cuadra o no" : "La diferencia";
+    return `${pregunta} · ${pesosContables(b.debe)} contra ${pesosContables(b.haber)}: ${cuentas}`;
   },
 
   /* Igual que CU-6: el id es el del item y la etiqueta, su transaccion. */

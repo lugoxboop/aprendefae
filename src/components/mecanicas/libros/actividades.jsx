@@ -5,7 +5,8 @@ import SaldoDeLaCuenta from "./SaldoDeLaCuenta.jsx";
 import SimpleOCompuestoMecanica from "./SimpleOCompuesto.jsx";
 import ArmaElAsientoMecanica from "./ArmaElAsiento.jsx";
 import ElAsientoCompuestoMecanica from "./ElAsientoCompuesto.jsx";
-import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO } from "../../../data/contabilidadActividades.js";
+import CuadraONoCuadraMecanica from "./CuadraONoCuadra.jsx";
+import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO } from "../../../data/contabilidadActividades.js";
 import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
@@ -75,6 +76,12 @@ export const ArmaElAsiento = ({ onCompletar }) => (
 export const SimpleOCompuesto = ({ onCompletar }) => (
   <SimpleOCompuestoMecanica Marco={MarcoLibros} acento={A}
     rotulo="ANÁLISIS" titulo={SIMPLE_O_COMPUESTO.subtema} onCompletar={onCompletar} />
+);
+
+/* CU-8: el juicio, y por los descuadrados la cifra exacta de la diferencia. */
+export const CuadraONoCuadra = ({ onCompletar }) => (
+  <CuadraONoCuadraMecanica Marco={MarcoLibros} acento={A}
+    rotulo="ANÁLISIS" titulo={CUADRA_O_NO.subtema} onCompletar={onCompletar} />
 );
 
 /*

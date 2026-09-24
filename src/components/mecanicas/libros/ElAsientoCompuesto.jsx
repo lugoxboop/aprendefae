@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { FAE } from "../../../theme.js";
 import { barajar } from "../../../utils/barajar.js";
-import { DEBE, HABER, COLOR_LADO, pesos, LAVADO_DE_AUTOS } from "../../../data/contabilidad.js";
+import { DEBE, HABER, pesos, LAVADO_DE_AUTOS } from "../../../data/contabilidad.js";
 import { ASIENTO_COMPUESTO, COMPUESTAS_SUELTAS } from "../../../data/contabilidadActividades.js";
 import { Retro, Pulsos, Cierre, Enunciado } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
-import { Responder, useTanda, leerCifra } from "./piezas.jsx";
+import { Responder, useTanda, leerCifra, AsientoEnLineas } from "./piezas.jsx";
 import ConstructorAsiento, { filaVacia, asientoDe } from "./ConstructorAsiento.jsx";
 import { UNIVERSO as UNIVERSO_SIMPLE } from "./ArmaElAsiento.jsx";
 
@@ -191,38 +191,11 @@ export function evaluar(item, transaccion, filas) {
 }
 
 /* El asiento correcto, como datos: es la devolución de una actividad de construir. */
-function AsientoCorrecto({ real }) {
-  return (
-    <div style={{
-      marginTop: "12px", padding: "11px 13px", borderRadius: "13px",
-      background: "rgba(10,20,34,0.45)", border: `1px solid ${FAE.teal}55`,
-    }}>
-      <p style={{
-        margin: "0 0 8px", fontFamily: "Sora, sans-serif", fontSize: "10.5px",
-        fontWeight: 700, letterSpacing: "0.16em", color: FAE.teal,
-      }}>
-        EL ASIENTO CORRECTO
-      </p>
-      {real.map((l) => (
-        <div key={`${l.cuenta}-${l.lado}`} style={{ display: "flex", gap: "8px", alignItems: "baseline", padding: "2px 0" }}>
-          <span style={{
-            flexShrink: 0, width: "52px", fontFamily: "Sora, sans-serif", fontSize: "10.5px",
-            fontWeight: 700, letterSpacing: "0.08em", color: COLOR_LADO[l.lado],
-          }}>
-            {l.lado === DEBE ? "DEBE" : "HABER"}
-          </span>
-          <span style={{ flex: 1, minWidth: 0, fontSize: "13px", color: FAE.text }}>{l.cuenta}</span>
-          <span style={{
-            fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-            fontVariantNumeric: "tabular-nums", fontSize: "13px", color: FAE.text,
-          }}>
-            {pesos(l.valor)}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
+const AsientoCorrecto = ({ real }) => (
+  <div style={{ marginTop: "12px" }}>
+    <AsientoEnLineas lineas={real} rotulo="EL ASIENTO CORRECTO" acento={FAE.teal} />
+  </div>
+);
 
 export default function ElAsientoCompuesto({ Marco, rotulo, titulo, acento, onCompletar }) {
   const sortear = () => barajar(ITEMS).slice(0, ASIENTO_COMPUESTO.porPartida)

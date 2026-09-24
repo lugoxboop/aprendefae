@@ -506,7 +506,7 @@ export const SUBJECTS = {
           /* Análisis */
           { id: "cu-arma-el-asiento", nombre: "Arma el Asiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "cu-simple-o-compuesto", nombre: "¿Simple o Compuesto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "cu-cuadra-o-no", pendiente: true, nombre: "¿Cuadra o No Cuadra?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "cu-cuadra-o-no", nombre: "¿Cuadra o No Cuadra?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "cu-corriente-de-cuentas", nombre: "Corriente de Cuentas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* Maestría */
           { id: "cu-asiento-compuesto", nombre: "El Asiento Compuesto", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },

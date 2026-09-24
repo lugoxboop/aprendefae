@@ -10,7 +10,7 @@ import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import {
   IzquierdaODerecha, DeQueFamilia, CuadroDinamicas, DebitaOAcredita, CorrienteDeCuentas,
-  ElSaldoDeLaCuenta, SimpleOCompuesto, ArmaElAsiento, ElAsientoCompuesto,
+  ElSaldoDeLaCuenta, SimpleOCompuesto, ArmaElAsiento, ElAsientoCompuesto, CuadraONoCuadra,
 } from "./mecanicas/libros/actividades.jsx";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
@@ -59,6 +59,7 @@ const JUEGOS = [
   { id: "cu-saldo-de-la-cuenta", Mecanica: ElSaldoDeLaCuenta },
   { id: "cu-arma-el-asiento", Mecanica: ArmaElAsiento },
   { id: "cu-simple-o-compuesto", Mecanica: SimpleOCompuesto },
+  { id: "cu-cuadra-o-no", Mecanica: CuadraONoCuadra },
   { id: "cu-corriente-de-cuentas", Mecanica: CorrienteDeCuentas },
   { id: "cu-asiento-compuesto", Mecanica: ElAsientoCompuesto },
 ];
