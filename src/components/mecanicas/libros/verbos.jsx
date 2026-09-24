@@ -256,6 +256,13 @@ export function Ficha({
         background: `${color}${tomada ? "3A" : "22"}`,
         border: `1px solid ${tomada ? FAE.text : color}`,
         color: FAE.text, ...CIFRA, fontSize: "13px", fontWeight: 600,
+        /*
+         * Una ficha gastada TIENE que verse gastada. Sin esto, el nombre ya
+         * puesto en una cuenta seguía en el banco con el mismo aspecto que
+         * los disponibles: no se podía tomar, y nada lo decía. Se vio
+         * mirándolo, no leyéndolo.
+         */
+        opacity: deshabilitada ? 0.38 : 1,
         cursor: deshabilitada ? "default" : (gestos ? "grab" : onClick ? "pointer" : "default"),
         touchAction: gestos ? "none" : undefined,
         transform: tomada ? "scale(1.04)" : "none",
@@ -423,7 +430,18 @@ export function CuentaDeValor({
  * La ecuación contable donde se puede ver. La viga gira lo que diga
  * `inclinacion` (−1 a 1) y los dos platillos suben y bajan con ella.
  */
-export function Balanza({ inclinacion = 0, izquierda = null, derecha = null, etiqueta = null }) {
+/*
+ * ═══════════ EL PLATILLO QUE RECIBE ═══════════
+ *
+ * `destino` convierte UNO de los dos platillos en sitio donde soltar: el
+ * liviano, en «¿Cuadra o no cuadra?». Es el mismo trato que las columnas de
+ * CuentaDeValor —botón con `data-destino`, y `onClick` además del arrastre—
+ * porque el camino accesible ya se rompió una vez en silencio por no tenerlo.
+ */
+export function Balanza({
+  inclinacion = 0, izquierda = null, derecha = null, etiqueta = null,
+  destino = null, tomada = null, onSoltar = null,
+}) {
   const grados = gradosDe(inclinacion);
   const recta = grados === 0;
   const color = recta ? FAE.teal : FAE.ambar;
@@ -458,28 +476,43 @@ export function Balanza({ inclinacion = 0, izquierda = null, derecha = null, eti
           marginLeft: "-22px", borderRadius: "999px", background: "rgba(248,249,250,0.3)",
         }} />
         {/* Los dos platillos, que suben y bajan con la viga. */}
-        {[["izquierda", izquierda, 1], ["derecha", derecha, -1]].map(([donde, contenido, signo]) => (
-          <div
-            key={donde}
-            data-platillo={donde}
-            style={{
-              position: "absolute", top: `${18 + signo * caida}px`,
-              [donde === "izquierda" ? "left" : "right"]: "6%",
-              minWidth: "70px", textAlign: "center",
-              transition: "top 520ms cubic-bezier(.34,1.2,.5,1)",
-            }}
-          >
-            <div aria-hidden="true" style={{ width: "1px", height: "12px", margin: "0 auto", background: "rgba(248,249,250,0.28)" }} />
-            <div style={{
-              padding: "4px 8px", borderRadius: "8px",
-              background: "rgba(10,20,34,0.6)", border: `1px solid ${COLOR_LADO[donde === "izquierda" ? DEBE : HABER]}66`,
-              ...CIFRA, fontSize: "12px", fontWeight: 700,
-              color: COLOR_LADO[donde === "izquierda" ? DEBE : HABER],
-            }}>
-              {contenido}
-            </div>
-          </div>
-        ))}
+        {[["izquierda", izquierda, 1], ["derecha", derecha, -1]].map(([donde, contenido, signo]) => {
+          const lado = donde === "izquierda" ? DEBE : HABER;
+          const recibe = destino === lado;
+          const Marco = recibe ? "button" : "div";
+          return (
+            <Marco
+              key={donde}
+              type={recibe ? "button" : undefined}
+              data-platillo={donde}
+              data-destino={recibe ? lado : undefined}
+              aria-label={recibe ? `Soltar en el platillo del ${lado === DEBE ? "debe" : "haber"}` : undefined}
+              onClick={recibe && onSoltar ? () => onSoltar(lado) : undefined}
+              style={{
+                position: "absolute", top: `${18 + signo * caida}px`,
+                [donde === "izquierda" ? "left" : "right"]: "6%",
+                minWidth: "70px", textAlign: "center", padding: 0,
+                background: "transparent", border: "none",
+                cursor: recibe ? "pointer" : "default",
+                transition: "top 520ms cubic-bezier(.34,1.2,.5,1)",
+              }}
+            >
+              <div aria-hidden="true" style={{ width: "1px", height: "12px", margin: "0 auto", background: "rgba(248,249,250,0.28)" }} />
+              <div style={{
+                padding: "4px 8px", borderRadius: "8px",
+                background: recibe && tomada != null ? `${COLOR_LADO[lado]}1F` : "rgba(10,20,34,0.6)",
+                border: recibe
+                  ? `1px dashed ${tomada != null ? COLOR_LADO[lado] : "rgba(248,249,250,0.35)"}`
+                  : `1px solid ${COLOR_LADO[lado]}66`,
+                ...CIFRA, fontSize: "12px", fontWeight: 700,
+                color: COLOR_LADO[lado],
+                transition: "background 180ms ease, border-color 180ms ease",
+              }}>
+                {contenido}
+              </div>
+            </Marco>
+          );
+        })}
       </div>
     </div>
   );

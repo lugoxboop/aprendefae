@@ -419,8 +419,14 @@ export const ARMA_EL_ASIENTO = {
     { id: "cu6-12", caso: "lavado", transaccion: "ene-26" },
   ],
   errores: {
-    invirtioLados: "❌ Las dos cuentas son las correctas, pero están al revés. Pregúntese cuál recibe y cuál entrega: lo que entra se debita, lo que sale se acredita.",
-    cuentaAjena: "❌ {cuenta} no se mueve en esta transacción. Vuelva a las dos preguntas del libro: ¿qué está recibiendo el negocio, y qué entregó o en qué se comprometió a cambio?",
+    /*
+     * Los dos primeros están escritos PARA EL GESTO: el estudiante traza un
+     * arco del debe de una cuenta al haber de la otra, así que la devolución
+     * habla de ese arco y de esa cuenta —las dos cosas están en pantalla
+     * mientras lee—. Sustituyen a la redacción anterior, que describía filas.
+     */
+    invirtioLados: "❌ El arco quedó al revés. Pregúntese cuál cuenta recibe y cuál entrega: lo que entra se debita, lo que sale se acredita.",
+    cuentaAjena: "❌ Esa cuenta no se mueve en esta transacción. Vuelva a las dos preguntas del libro: ¿qué está recibiendo el negocio, y qué entregó o en qué se comprometió a cambio?",
     cajaPorBancos: "❌ Son dos activos distintos. Si la transacción dice «con cheque» o «se consignó», es Bancos. Si dice «de contado» sin más, o «en efectivo», es Caja.",
     consignar: "❌ Consignar no es un ingreso ni un gasto: es mover plata de un bolsillo a otro. Bancos aumenta, Caja disminuye — dos activos, sin tocar pasivos ni patrimonio.",
     devolucionAportes: "❌ Devolver un aporte disminuye el patrimonio, y el patrimonio disminuye por el debe. Es la única transacción del banco donde Aportes sociales va al debe.",
@@ -504,10 +510,34 @@ export const CUADRA_O_NO = {
   ],
   aciertoCuadra: "✅ Cuadra: {debe} al debe contra {haber} al haber.",
   aciertoDescuadre: "✅ Correcto, está descuadrado en {descuadre}. El debe suma {debe} y el haber {haber}.",
+  /*
+   * ═══════════ LAS CINCO FICHAS, Y POR QUÉ ESTE REPERTORIO ═══════════
+   *
+   * La diferencia ya no se teclea: se elige entre cinco fichas de valor y se
+   * suelta en el platillo liviano de la balanza. El repertorio del que salen
+   * las cinco es este, y es DELIBERADAMENTE tramposo — 450, 500 y 550 están
+   * los tres, y 4.500, 5.000 y 5.500 también—, porque el error que la
+   * actividad persigue es tomar el total de un lado por la diferencia entre
+   * los dos.
+   *
+   * Cuáles cinco salen en cada ítem NO se escribe aquí: se calculan del
+   * descuadre real de ese asiento. Escribir cinco listas a mano sería una
+   * segunda verdad, y bastaría con que alguien corrigiera una cifra del banco
+   * para que la ficha correcta desapareciera del repertorio de su ítem.
+   */
+  repertorioDeFichas: [50, 100, 450, 500, 550, 1000, 4500, 5000, 5500],
+  fichasPorItem: 5,
   errores: {
     dijoCuadra: "❌ Sume otra vez cada lado por separado: el debe da {debe} y el haber {haber}. Faltan {descuadre} para que cuadre.",
     dijoNoCuadra: "❌ Sí cuadra. Puede que lo haya confundido el número de cuentas: este asiento tiene {cuentas} cuentas, pero un asiento compuesto es perfectamente válido mientras los totales coincidan.",
-    cifraEquivocada: "❌ Acertó en que no cuadra. La diferencia exacta es {descuadre}: debe {debe} contra haber {haber}.",
+    /*
+     * Las dos direcciones del fallo, que con fichas son las dos únicas
+     * posibles: la balanza se pasa de largo o se queda corta. El campo de
+     * texto anterior admitía cualquier cifra y por eso tenía una sola
+     * devolución; aquí el error tiene sentido físico y se dice como tal.
+     */
+    sePaso: "❌ Se pasó: ahora la balanza está inclinada al otro lado. Eso significa que puso más de lo que faltaba. El descuadre es la diferencia entre los dos totales, no el total de un lado.",
+    quedaCorta: "❌ Queda corta: la balanza sigue inclinada para el mismo lado. Sume otra vez cada lado por separado y reste — falta {falta} para nivelarla.",
   },
 };
 

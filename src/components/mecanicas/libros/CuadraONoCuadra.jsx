@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { barajar } from "../../../utils/barajar.js";
 import { DEBE, HABER, pesos } from "../../../data/contabilidad.js";
 import {
@@ -6,9 +6,10 @@ import {
 } from "../../../data/contabilidadActividades.js";
 import { Opcion, Opciones, Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
-import { Responder, useTanda, leerCifra, CampoCifra, AsientoEnLineas } from "./piezas.jsx";
-import { Balanza, EstilosDeVerbos } from "./verbos.jsx";
+import { Responder, useTanda, AsientoEnLineas } from "./piezas.jsx";
+import { Balanza, Ficha, FichaEnVuelo, EstilosDeVerbos, useArrastre } from "./verbos.jsx";
 import { inclinacionDe } from "../../../contabilidad/balanza.js";
+import { fichasDe, alSoltar, ladoLiviano } from "../../../contabilidad/descuadre.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -55,22 +56,32 @@ export const CATEGORIAS = [
  * La devolución sale entera de la ficha, con las cifras del propio asiento:
  *
  *   dijo que cuadra y cuadra            aciertoCuadra
- *   dijo que no y no, con la cifra      aciertoDescuadre
- *   dijo que no y no, con otra cifra    cifraEquivocada
+ *   dijo que no y no, con la ficha      aciertoDescuadre
+ *   dijo que no y no, con una mayor     sePaso
+ *   dijo que no y no, con una menor     quedaCorta
  *   dijo que cuadra y no cuadraba       dijoCuadra
  *   dijo que no y sí cuadraba           dijoNoCuadra
+ *
+ * Con fichas, el fallo de la cifra tiene DOS formas y no una: la balanza se
+ * pasa de largo o se queda corta. El campo de texto anterior admitía
+ * cualquier número y por eso le bastaba una sola devolución.
  */
 export function evaluar(asiento, juicio, cifra) {
   const b = balanceDelAsiento(asiento);
   const juicioOk = (juicio === CUADRA) === b.cuadra;
   /* La cifra solo cuenta en un descuadrado que además se reconoció como tal. */
   const cifraOk = !b.cuadra && juicio === NO_CUADRA && cifra === b.descuadre;
+  /* Qué le pasa a la balanza con esa ficha encima: es de donde sale el texto. */
+  const efecto = !b.cuadra && juicio === NO_CUADRA && cifra != null
+    ? alSoltar(asiento, cifra)
+    : null;
 
   const e = CUADRA_O_NO.errores;
   const rellenar = (t) => t
     .replace(/\{debe\}/g, pesos(b.debe))
     .replace(/\{haber\}/g, pesos(b.haber))
     .replace(/\{descuadre\}/g, pesos(b.descuadre))
+    .replace(/\{falta\}/g, pesos(efecto?.falta ?? 0))
     .replace(/\{cuentas\}/g, String(asiento.debe.length + asiento.haber.length));
 
   let texto;
@@ -78,11 +89,36 @@ export function evaluar(asiento, juicio, cifra) {
     texto = juicio === CUADRA ? CUADRA_O_NO.aciertoCuadra : e.dijoNoCuadra;
   } else if (juicio === CUADRA) {
     texto = e.dijoCuadra;
+  } else if (cifraOk) {
+    texto = CUADRA_O_NO.aciertoDescuadre;
   } else {
-    texto = cifraOk ? CUADRA_O_NO.aciertoDescuadre : e.cifraEquivocada;
+    texto = efecto?.efecto === "pasa" ? e.sePaso : e.quedaCorta;
   }
 
-  return { texto: rellenar(texto), juicioOk, cifraOk, balance: b };
+  return { texto: rellenar(texto), juicioOk, cifraOk, balance: b, efecto };
+}
+
+/*
+ * Lo que la balanza DICE, para quien no puede ver cuánto se inclina.
+ *
+ * Antes de responder no puede decir de cuánto es el descuadre —sería regalar
+ * la respuesta por el lado accesible, que es la peor forma de regalarla— así
+ * que dice solo lo que también se ve: que está inclinada, y hacia dónde.
+ */
+export function etiquetaDeLaBalanza(retro, balance, ficha) {
+  if (!retro) {
+    if (balance.cuadra) return "La balanza está nivelada";
+    const liviano = ladoLiviano(balance);
+    return `La balanza está inclinada: falta peso en el platillo del ${liviano === DEBE ? "debe" : "haber"}`;
+  }
+  if (!retro.efecto) {
+    return retro.balance.cuadra
+      ? "Los dos lados pesan lo mismo: el asiento cuadra"
+      : `El asiento está descuadrado por ${pesos(retro.balance.descuadre)}`;
+  }
+  if (retro.efecto.efecto === "nivela") return `Con ${pesos(ficha)} la balanza quedó nivelada`;
+  if (retro.efecto.efecto === "pasa") return `Con ${pesos(ficha)} la balanza se pasó y cayó al otro lado`;
+  return `Con ${pesos(ficha)} la balanza sigue inclinada del mismo lado`;
 }
 
 export default function CuadraONoCuadra({ Marco, rotulo, titulo, acento, onCompletar }) {
@@ -90,12 +126,27 @@ export default function CuadraONoCuadra({ Marco, rotulo, titulo, acento, onCompl
   const t = useTanda(sortear);
 
   const [juicio, setJuicio] = useState(null);
-  const [cifra, setCifra] = useState("");
+  /* La ficha elegida, en pesos. Null mientras no haya ninguna en el platillo. */
+  const [ficha, setFicha] = useState(null);
   const [retro, setRetro] = useState(null);
   const [juicios, setJuicios] = useState(0);
   const [cifras, setCifras] = useState(0);
 
   const asiento = t.items[t.i];
+  const balance = balanceDelAsiento(asiento);
+  const liviano = ladoLiviano(balance);
+  /*
+   * Las cinco se barajan una vez POR ÍTEM: si se recalcularan en cada
+   * repintado, saltarían de sitio bajo el dedo mientras el estudiante decide.
+   */
+  const fichas = useMemo(() => barajar(fichasDe(asiento)), [asiento]);
+
+  /*
+   * El gesto es arrastrar la ficha al platillo, con el toque como camino
+   * alterno — tocar la ficha, tocar el platillo—. Lo segundo no es un extra:
+   * es lo que hace que la actividad se pueda jugar sin arrastrar.
+   */
+  const arrastre = useArrastre({ onSoltar: (valor) => setFicha(valor) });
 
   /* Cuántos de los sorteados no cuadran: es el denominador del cuarto de la nota. */
   const descuadradosEnJuego = t.items.filter((a) => !balanceDelAsiento(a).cuadra).length;
@@ -110,14 +161,21 @@ export default function CuadraONoCuadra({ Marco, rotulo, titulo, acento, onCompl
     if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
 
-  const listo = juicio === CUADRA || (juicio === NO_CUADRA && leerCifra(cifra) !== null);
+  /*
+   * Quien dice «no cuadra» sobre un asiento que SÍ cuadra no tiene platillo
+   * que nivelar —no hay descuadre— así que su respuesta está lista sin ficha.
+   * Sin esta salida se quedaría encerrado: sin fichas que soltar y sin botón
+   * que pulsar. Se vio jugándolo.
+   */
+  const listo = juicio === CUADRA || (juicio === NO_CUADRA && (balance.cuadra || ficha !== null));
 
   const responder = () => {
     if (retro || !listo) return;
-    const r = evaluar(asiento, juicio, leerCifra(cifra));
+    const r = evaluar(asiento, juicio, ficha);
     t.anotar(`${asiento.id}:juicio`, r.juicioOk, r.juicioOk ? null : juicio);
     if (!r.balance.cuadra) {
-      t.anotar(`${asiento.id}:cifra`, r.cifraOk, r.cifraOk ? null : String(leerCifra(cifra) ?? ""));
+      /* El id del ítem no cambia: el panel docente sigue leyendo lo mismo. */
+      t.anotar(`${asiento.id}:cifra`, r.cifraOk, r.cifraOk ? null : String(ficha ?? ""));
     }
     if (r.juicioOk) setJuicios((n) => n + 1);
     if (r.cifraOk) setCifras((n) => n + 1);
@@ -125,13 +183,13 @@ export default function CuadraONoCuadra({ Marco, rotulo, titulo, acento, onCompl
   };
 
   const avanzar = () => {
-    setRetro(null); setJuicio(null); setCifra("");
+    setRetro(null); setJuicio(null); setFicha(null); arrastre.limpiar();
     if (t.i + 1 < t.items.length) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
 
   const reiniciar = () => {
-    t.reiniciar(); setRetro(null); setJuicio(null); setCifra(""); setJuicios(0); setCifras(0);
+    t.reiniciar(); setRetro(null); setJuicio(null); setFicha(null); arrastre.limpiar(); setJuicios(0); setCifras(0);
   };
 
   if (t.terminado) {
@@ -193,41 +251,63 @@ export default function CuadraONoCuadra({ Marco, rotulo, titulo, acento, onCompl
         ))}
       </Opciones>
 
-      {juicio === NO_CUADRA && (
-        <>
-          <p style={rotuloPregunta}>¿DE CUÁNTO ES LA DIFERENCIA?</p>
-          <CampoCifra
-            valor={cifra}
-            onCambio={setCifra}
-            onEnviar={responder}
-            deshabilitado={Boolean(retro)}
-            etiqueta="Diferencia del descuadre"
-            estado={retro ? (retro.cifraOk ? "correcta" : "incorrecta") : null}
-            autoFoco
+      {/*
+        ═══════════ LA BALANZA NO SE ADELANTA AL JUICIO ═══════════
+
+        Esta actividad PIDE el juicio: dibujar la balanza antes de que el
+        estudiante diga si cuadra o no sería contestar la pregunta en la
+        pantalla. Aparece exactamente cuando él ya dijo «no cuadra» —o al
+        corregir, si dijo que sí—, que es lo que pide la ficha.
+
+        Y HASTA QUE SUELTA LA FICHA, LOS PLATILLOS NO LLEVAN CIFRAS. Con los
+        dos totales escritos, «¿de cuánto es la diferencia?» se contestaría
+        restando dos números que están en pantalla; sin ellos, el estudiante
+        tiene que sumar cada lado del asiento, que es el trabajo. El platillo
+        liviano se ve liviano; cuánto pesa cada uno, no.
+      */}
+      {(juicio === NO_CUADRA || retro) && (
+        <div style={{ marginTop: "16px" }}>
+          <Balanza
+            inclinacion={inclinacionDe(
+              retro?.efecto ? retro.efecto.debe : balance.debe,
+              retro?.efecto ? retro.efecto.haber : balance.haber,
+            )}
+            izquierda={retro ? pesos(retro.efecto ? retro.efecto.debe : balance.debe) : "DEBE"}
+            derecha={retro ? pesos(retro.efecto ? retro.efecto.haber : balance.haber) : "HABER"}
+            destino={!retro && !balance.cuadra ? liviano : null}
+            tomada={arrastre.tomada}
+            onSoltar={() => arrastre.soltarEn(liviano)}
+            etiqueta={etiquetaDeLaBalanza(retro, balance, ficha)}
           />
+        </div>
+      )}
+
+      {juicio === NO_CUADRA && !balance.cuadra && (
+        <>
+          <p style={rotuloPregunta}>SUELTE EN EL PLATILLO LIVIANO LO QUE FALTA</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(84px, 1fr))", gap: "8px" }}>
+            {fichas.map((v) => (
+              <Ficha
+                key={v}
+                valor={v}
+                lado={liviano}
+                tomada={arrastre.tomada === v || ficha === v}
+                deshabilitada={Boolean(retro)}
+                onClick={retro ? null : () => arrastre.tocar(v)}
+                gestos={retro ? null : arrastre.gestos(v)}
+                etiqueta={`Soltar ${pesos(v)} en el platillo`}
+              />
+            ))}
+          </div>
+          <FichaEnVuelo valor={arrastre.tomada ?? 0} lado={liviano} puntero={arrastre.puntero} />
         </>
       )}
 
       {/*
-        LA BALANZA LLEGA DESPUÉS DE RESPONDER, Y NO ES UN ADORNO.
-        Esta actividad PIDE el juicio: dibujarla antes —inclinada o recta—
-        sería contestar la pregunta en la pantalla. Al corregir, en cambio,
-        el descuadre deja de ser una resta y pasa a ser una imagen, y la
-        inclinación es proporcional: $50 de diferencia en un asiento de
-        $5.000 se ve apenas, y eso también enseña.
+        El asiento que el estudiante dijo que cuadraba y no cuadraba nunca
+        llega a las fichas —no se le pregunta por una diferencia que acaba de
+        negar—, así que su balanza solo aparece al corregir, con los totales.
       */}
-      {retro && (
-        <div style={{ marginTop: "14px" }}>
-          <Balanza
-            inclinacion={inclinacionDe(retro.balance.debe, retro.balance.haber)}
-            izquierda={pesos(retro.balance.debe)}
-            derecha={pesos(retro.balance.haber)}
-            etiqueta={retro.balance.cuadra
-              ? "Los dos lados pesan lo mismo: el asiento cuadra"
-              : `El asiento está descuadrado por ${pesos(retro.balance.descuadre)}`}
-          />
-        </div>
-      )}
 
       {retro && <Retro texto={retro.texto} />}
 
@@ -241,7 +321,9 @@ export default function CuadraONoCuadra({ Marco, rotulo, titulo, acento, onCompl
 
       {!retro && !listo && (
         <p style={{ margin: "9px 0 0", fontSize: "12.5px", color: "rgba(248,249,250,0.45)", textAlign: "center" }}>
-          {juicio === NO_CUADRA ? "Escribe de cuánto es la diferencia." : "Di si el asiento cuadra."}
+          {juicio === NO_CUADRA
+            ? "Suelta una ficha en el platillo liviano para nivelar la balanza."
+            : "Di si el asiento cuadra."}
         </p>
       )}
       {retro && descuadradosEnJuego > 0 && (

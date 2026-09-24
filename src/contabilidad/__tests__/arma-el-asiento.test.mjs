@@ -182,11 +182,20 @@ test("★ en la devolución de aporte, Bancos por Caja gana a la explicación pr
     ARMA_EL_ASIENTO.errores.devolucionAportes);
 });
 
-test("una cuenta que no se mueve se nombra en la explicación", () => {
+test("★ a una cuenta que no se mueve se le dice que no se mueve", () => {
+  /*
+   * La explicación ya NO la nombra, y es a propósito: con la mesa, la cuenta
+   * que sobra está escrita en la T que el estudiante acaba de armar, delante
+   * de sus ojos mientras lee. El hueco de antes describía filas que ya no
+   * existen.
+   */
   const { item, transaccion } = ITEMS.find((x) => x.transaccion.id === "cal-2");
   const filas = filasDe([["Equipo de computación", DEBE], ["Maquinaria", HABER]]);
   const r = evaluar(item, transaccion, filas);
-  assert.match(r.texto, /^❌ Maquinaria no se mueve en esta transacción/);
+  assert.equal(r.texto, ARMA_EL_ASIENTO.errores.cuentaAjena);
+  assert.ok(r.texto.startsWith("❌ Esa cuenta no se mueve en esta transacción"));
+  /* Y no queda ningún hueco sin rellenar, que es el fallo que esto vigilaba. */
+  assert.ok(!/\{[a-z]+\}/i.test(r.texto), `quedó un hueco sin rellenar: ${r.texto}`);
 });
 
 test("★ el puntaje reparte las cuatro decisiones: cuenta y lado de cada una", () => {

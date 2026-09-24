@@ -75,7 +75,9 @@ test("★ cada clase recibe EXACTAMENTE el texto de la ficha que le toca", () =>
   arranca(evaluar(cuadrado, NO_CUADRA, 1).texto, CUADRA_O_NO.errores.dijoNoCuadra);
   arranca(evaluar(descuadrado, CUADRA, null).texto, CUADRA_O_NO.errores.dijoCuadra);
   arranca(evaluar(descuadrado, NO_CUADRA, b.descuadre).texto, CUADRA_O_NO.aciertoDescuadre);
-  arranca(evaluar(descuadrado, NO_CUADRA, b.descuadre + 1).texto, CUADRA_O_NO.errores.cifraEquivocada);
+  /* Con fichas el fallo de la cifra tiene dos direcciones, y cada una su texto. */
+  arranca(evaluar(descuadrado, NO_CUADRA, b.descuadre + 1).texto, CUADRA_O_NO.errores.sePaso);
+  arranca(evaluar(descuadrado, NO_CUADRA, b.descuadre - 1).texto, CUADRA_O_NO.errores.quedaCorta);
 });
 
 test("★ la devolución dice las cifras de ESE asiento, no otras", () => {
@@ -103,9 +105,13 @@ test("★ y cada total va donde le toca: el del debe antes que el del haber", ()
   for (const asiento of descuadrados) {
     const b = balanceDelAsiento(asiento);
     assert.notEqual(b.debe, b.haber);
+    /*
+     * «Se pasó» no nombra ningún total —habla de la balanza, no de las
+     * cifras— así que no entra aquí: esta prueba vigila el ORDEN de los dos
+     * totales en los textos que los dicen.
+     */
     for (const [que, juicio, cifra] of [
       ["acierto", NO_CUADRA, b.descuadre],
-      ["cifra equivocada", NO_CUADRA, b.descuadre + 1],
       ["dijo que cuadraba", CUADRA, null],
     ]) {
       const { texto } = evaluar(asiento, juicio, cifra);

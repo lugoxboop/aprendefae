@@ -121,38 +121,26 @@ test("★ CU-5 NO cancela hasta que se responde: el saldo no puede estar dibujad
 
 /* ═══════════════ CU-6 · LA BALANZA DEL ASIENTO SIMPLE ═══════════════ */
 
-test("★ CU-6 no enseña la balanza antes de responder, y la nivela al acertar el reparto", () => {
+/*
+ * El gesto de CU-6 —nombrar las dos T y trazar el arco— tiene sus pruebas en
+ * arco-y-fichas.test.mjs, que es donde se construyó. Aquí solo queda la
+ * diferencia que separa a esta balanza de la de CU-8, porque es la que se
+ * presta a confusión:
+ *
+ *   CU-8  la balanza mide LA RESPUESTA —si el asiento cuadra— y por eso no
+ *         puede aparecer antes del juicio.
+ *   CU-6  la balanza mide si el asiento está CERRADO, que no es la respuesta
+ *         a nada: se puede tener una cuenta a cada lado y las dos mal.
+ *
+ * Confundirlas en cualquiera de las dos direcciones rompe una actividad: o se
+ * regala el juicio de CU-8, o se le quita a CU-6 el mandamiento del capítulo.
+ */
+test("★ la balanza de CU-6 está a la vista desde el principio, caída", () => {
   const { caja, desmontar } = montar(ArmaElAsiento);
   try {
-    assert.equal(grados(caja), null, "la balanza salió antes de responder");
-
-    /* Dos cuentas cualesquiera, una a cada lado: el reparto de todo asiento simple. */
-    const paleta = [...caja.querySelectorAll("button")].filter((b) => /^[A-ZÁÉÍÓÚ]/.test(b.textContent.trim()) && !b.disabled);
-    tocar(paleta[0]);
-    tocar(paleta.find((b) => b.textContent.trim() !== paleta[0].textContent.trim()));
-    const lados = [...caja.querySelectorAll("[data-fila-asiento]")];
-    tocar(porTexto(lados[0], "Debe"));
-    tocar(porTexto(lados[1], "Haber"));
-    tocar(porTexto(caja, "Responder"));
-
-    assert.equal(grados(caja), 0, "una cuenta a cada lado y la balanza salió torcida");
-  } finally { desmontar(); }
-});
-
-test("★ CU-6: las dos cuentas del mismo lado tumban la balanza del todo", () => {
-  const { caja, desmontar } = montar(ArmaElAsiento);
-  try {
-    const paleta = [...caja.querySelectorAll("button")].filter((b) => /^[A-ZÁÉÍÓÚ]/.test(b.textContent.trim()) && !b.disabled);
-    tocar(paleta[0]);
-    tocar(paleta.find((b) => b.textContent.trim() !== paleta[0].textContent.trim()));
-    const lados = [...caja.querySelectorAll("[data-fila-asiento]")];
-    tocar(porTexto(lados[0], "Debe"));
-    tocar(porTexto(lados[1], "Debe"));
-    tocar(porTexto(caja, "Responder"));
-
     const g = grados(caja);
-    assert.ok(g !== null && Math.abs(g) > GRADOS_MINIMOS, `la balanza salió en ${g}°`);
-    assert.equal(caja.querySelector("[data-nivelada]").getAttribute("data-nivelada"), "no");
+    assert.notEqual(g, null, "la balanza del borde no está");
+    assert.notEqual(g, 0, "el asiento vacío y la balanza ya nivelada");
   } finally { desmontar(); }
 });
 
