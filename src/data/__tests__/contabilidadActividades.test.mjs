@@ -168,9 +168,15 @@ test("CU-3 cubre las DOCE combinaciones y ninguna contradice la regla", () => {
     for (const lado of [DEBE, HABER]) {
       const texto = CUADRO_DINAMICAS.acierto[`${tipo}>${lado}`];
       assert.ok(texto, `falta ${tipo}/${lado}`);
-      /* El texto tiene que decir lo mismo que la regla. */
-      const esperado = efectoDe(tipo, lado);
-      assert.match(texto, new RegExp(`^✅ ${esperado[0].toUpperCase()}${esperado.slice(1)}\\.`),
+      /*
+       * El texto tiene que decir lo mismo que la regla. El rediseño cambió el
+       * vocabulario —la actividad ya no clasifica, predice una BARRA— pero la
+       * exigencia es idéntica: «Sube» donde la regla dice aumenta y «Baja»
+       * donde dice disminuye. Un acierto que contradijera a CRECE_POR enseñaría
+       * lo contrario que la pieza de Aprender, y nada más fallaría.
+       */
+      const esperado = efectoDe(tipo, lado) === "aumenta" ? "Sube" : "Baja";
+      assert.match(texto, new RegExp(`^✅ ${esperado}\\.`),
         `${tipo}/${lado}: el texto no dice «${esperado}»`);
     }
   }
@@ -188,11 +194,21 @@ test("CU-4: la cuenta de cada transacción existe, y su respuesta cuadra con su 
 
 /* ─────────────────────── las retroalimentaciones de error ─────────────────────── */
 
-test("CU-1 explica el error por familia, y cubre las tres que usa", () => {
+/*
+ * El redisenio sustituyo las tres explicaciones por familia de CU-1 por dos
+ * patrones conceptuales. Cual sale lo decide el ENUNCIADO —aumenta o
+ * disminuye—, no la familia, y eso se comprueba en bancos.test.mjs, que es
+ * donde vive el reparto. Aqui solo se vigila que los dos textos existan y que
+ * el patron A conserve los dos huecos que la mecanica le rellena.
+ */
+test("CU-1 trae los dos patrones de error, y el A con sus dos huecos", () => {
+  assert.ok(IZQUIERDA_O_DERECHA.errorA?.startsWith("❌"), "falta el patron A");
+  assert.ok(IZQUIERDA_O_DERECHA.errorB?.startsWith("❌"), "falta el patron B");
+  assert.match(IZQUIERDA_O_DERECHA.errorA, /{Familia}/, "el patron A tiene que nombrar la familia");
+  assert.match(IZQUIERDA_O_DERECHA.errorA, /{lado}/, "y decir de que lado vive");
+  assert.match(IZQUIERDA_O_DERECHA.errorB, /no leyo la direccion|no leyó la dirección/, "el patron B habla de la direccion");
+  /* Las tres familias del banco siguen siendo las de Cimientos. */
   const familias = new Set(IZQUIERDA_O_DERECHA.items.map((i) => tipoDeCuenta(i.cuenta)));
-  for (const f of familias) {
-    assert.ok(IZQUIERDA_O_DERECHA.errorPorTipo[f]?.startsWith("❌"), `sin error para ${f}`);
-  }
   assert.deepEqual([...familias].sort(), [ACTIVO, PASIVO, PATRIMONIO].sort());
 });
 
@@ -210,23 +226,28 @@ test("CU-2 cubre las SEIS confusiones posibles entre tres familias", () => {
   assert.equal(cubiertas, 6);
 });
 
-test("CU-3 explica el error para los seis tipos, y señala los ingresos como el peor", () => {
-  for (const tipo of Object.keys(CRECE_POR)) {
-    assert.ok(CUADRO_DINAMICAS.errorPorTipo[tipo]?.startsWith("❌"), `sin error para ${tipo}`);
-  }
-  assert.match(CUADRO_DINAMICAS.errorPorTipo[INGRESO], /el que más se falla/);
-  /* Gastos y Costos comparten explicación porque comparten regla. */
-  assert.equal(CUADRO_DINAMICAS.errorPorTipo[GASTO], CUADRO_DINAMICAS.errorPorTipo[COSTO]);
+test("CU-3 trae los dos patrones de error, y el A con su hueco", () => {
+  /*
+   * La prediccion solo puede fallar de dos maneras, asi que dos textos bastan
+   * —y cada uno habla de lo que la barra ACABA DE HACER, que es lo que el
+   * estudiante tiene delante—. El ingreso deja de necesitar su propio error:
+   * su acierto ya dice que es la fila que mas se falla.
+   */
+  assert.ok(CUADRO_DINAMICAS.errorA?.startsWith("❌"), "falta el patron A");
+  assert.ok(CUADRO_DINAMICAS.errorB?.startsWith("❌"), "falta el patron B");
+  assert.match(CUADRO_DINAMICAS.errorA, /{lado}/, "el patron A tiene que decir donde estaba el saldo");
+  assert.match(CUADRO_DINAMICAS.acierto[`${INGRESO}>${DEBE}`], /la fila que mas se falla|la fila que más se falla/);
 });
 
 test("coral no aparece en ningún texto: los errores se marcan con ❌, no con color", () => {
   const todos = [
     ...IZQUIERDA_O_DERECHA.items.map((i) => i.acierto),
-    ...Object.values(IZQUIERDA_O_DERECHA.errorPorTipo),
+    IZQUIERDA_O_DERECHA.errorA, IZQUIERDA_O_DERECHA.errorB,
     ...DE_QUE_FAMILIA.items.map((i) => i.acierto),
     ...Object.values(DE_QUE_FAMILIA.errorPorConfusion),
+    DE_QUE_FAMILIA.errorA, DE_QUE_FAMILIA.errorB,
     ...Object.values(CUADRO_DINAMICAS.acierto),
-    ...Object.values(CUADRO_DINAMICAS.errorPorTipo),
+    CUADRO_DINAMICAS.errorA, CUADRO_DINAMICAS.errorB,
     ...DEBITA_O_ACREDITA.items.map((i) => i.acierto),
   ].join(" ");
   assert.ok(!/E76F51|231,\s*111,\s*81/i.test(todos));

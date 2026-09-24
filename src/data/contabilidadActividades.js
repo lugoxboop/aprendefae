@@ -116,14 +116,22 @@ export const IZQUIERDA_O_DERECHA = {
       acierto: "✅ Debe. Abonar a una deuda la reduce, y eso va por la izquierda." },
   ],
   /*
-   * El error se explica por la FAMILIA de la cuenta, no por el ítem: los diez
-   * comparten tres explicaciones porque comparten tres reglas.
+   * ═══════════ LOS DOS PATRONES DE ERROR ═══════════
+   *
+   * El rediseño los reorganiza en dos, y son distintos de verdad. Cuál sale no
+   * se decide por el ítem sino por LO QUE EL ENUNCIADO PEDÍA:
+   *
+   *   El enunciado dice AUMENTA y se falla  →  no sabe de qué lado vive esa
+   *       familia. Es el error A, y se explica por la familia.
+   *   El enunciado dice DISMINUYE y se falla  →  sabe dónde vive la familia y
+   *       la puso ahí, sin leer que le pedían lo contrario. Es el error B.
+   *
+   * Con dos lados, cualquier fallo es «el otro», así que sin esta distinción
+   * las dos situaciones recibirían la misma frase — y son dos problemas con
+   * dos remedios: uno es no saberse la regla y el otro es no leer.
    */
-  errorPorTipo: {
-    [ACTIVO]: "❌ Al revés. Los activos son de la familia que crece por la izquierda: aumentan en el debe, disminuyen en el haber.",
-    [PASIVO]: "❌ Al revés. Los pasivos son de la familia que crece por la derecha: aumentan en el haber, disminuyen en el debe.",
-    [PATRIMONIO]: "❌ Al revés. El patrimonio va con los pasivos: crece por la derecha, decrece por la izquierda. Están del mismo lado de la ecuación.",
-  },
+  errorA: "❌ Mire lo que pasó: el saldo se fue para el lado equivocado. {Familia} viven en {lado}, y esta cuenta acaba de quedar del lado contrario al que le corresponde por naturaleza.",
+  errorB: "❌ Tiene la familia bien, pero no leyó la dirección. El enunciado dice que disminuye, y disminuir siempre es el lado contrario al que esa cuenta usa para crecer.",
 };
 
 /* ═══════════════════════ CU-2 · ¿De qué familia es? ═══════════════════════ */
@@ -150,7 +158,36 @@ export const DE_QUE_FAMILIA = {
     { id: "cu2-11", enunciado: "Letras por pagar", categoria: PASIVO, acierto: "✅ Pasivo. Una deuda respaldada con un documento firmado." },
     { id: "cu2-12", enunciado: "Acciones", categoria: PATRIMONIO, acierto: "✅ Patrimonio. Representa la participación de los dueños en la empresa." },
   ],
-  /* La clave es `correcta>elegida`: la confusión es entre dos familias, no de un ítem. */
+  /*
+   * ═══════════ LOS DOS PATRONES DE ERROR ═══════════
+   *
+   * El rediseño los reorganiza en dos, y aquí el reparto es por LO QUE SE
+   * CONFUNDIÓ, no por el ítem:
+   *
+   *   A · confundió TENER con DEBER — puso un activo entre los pasivos o al
+   *       revés. Es el error que rompe el documento entero.
+   *   B · confundió PASIVO con PATRIMONIO — las dos secciones están a la
+   *       derecha y no son lo mismo.
+   *
+   * Los dos hablan del estado de situación financiera porque es donde cae la
+   * ficha: la actividad ya no clasifica en abstracto, escribe un balance.
+   */
+  errorA: "❌ Fíjese en la sección donde cayó: ahí van las cosas que la empresa debe, y esta es algo que tiene. Si aparece en el lado equivocado del balance, el documento entero deja de decir la verdad.",
+  errorB: "❌ Las dos secciones están del lado derecho del balance, pero no son lo mismo: el pasivo se le debe a terceros y el patrimonio a los dueños. Si un aporte de socios aparece como deuda, el balance dice que la empresa le debe a alguien que en realidad es su dueño.",
+
+  /*
+   * ═══════════ PENDIENTE DE GEN — EL PATRÓN A SOLO SIRVE EN UNA DIRECCIÓN ═══════════
+   *
+   * «ahí van las cosas que la empresa debe, y esta es algo que tiene» describe
+   * exactamente un caso: soltar un ACTIVO en la sección de pasivos. Al revés
+   * —un pasivo soltado entre los activos— la misma frase diría lo contrario de
+   * lo que pasó, y de las seis direcciones posibles solo encaja en una.
+   *
+   * No escribo la versión espejada: es contenido. Se conservan los seis textos
+   * anteriores, que son de Gen y sí cubren cada dirección, como respaldo de las
+   * que el patrón nuevo no alcanza. Queda reportado para que decida si quiere
+   * el espejo del patrón A o prefiere quedarse con estos.
+   */
   errorPorConfusion: {
     [`${ACTIVO}>${PASIVO}`]: "❌ Pregúntese: ¿esto la empresa lo tiene o lo debe? Aquí lo tiene. Eso es un activo.",
     [`${PASIVO}>${ACTIVO}`]: "❌ Pregúntese: ¿lo tiene o lo debe? Aquí lo debe. Eso es un pasivo — y fíjese que muchos llevan «por pagar» en el nombre.",
@@ -168,19 +205,25 @@ export const DE_QUE_FAMILIA = {
  * tabla escrita a mano podría contradecir a CRECE_POR sin que nadie lo notara,
  * y entonces la actividad enseñaría lo contrario que la pieza de Aprender.
  */
+/*
+ * Los doce aciertos hablan de la BARRA, no de la palabra: «sube», «baja»,
+ * «engorda», «consume». Es lo que el rediseño cambió — el estudiante ya no
+ * elige entre dos etiquetas, predice qué va a hacer una barra que tiene
+ * delante— y el texto tiene que decir lo que acaba de ver.
+ */
 const ACIERTO_DINAMICA = {
-  [`${ACTIVO}>${DEBE}`]: "✅ Aumenta. Activos, Gastos y Costos crecen por el debe.",
-  [`${ACTIVO}>${HABER}`]: "✅ Disminuye. Si crece por el debe, decrece por el haber.",
-  [`${PASIVO}>${DEBE}`]: "✅ Disminuye. Los pasivos crecen por el haber, así que el debe los reduce.",
-  [`${PASIVO}>${HABER}`]: "✅ Aumenta. Pasivos, Patrimonio e Ingresos crecen por el haber.",
-  [`${PATRIMONIO}>${DEBE}`]: "✅ Disminuye. El patrimonio va con los pasivos: crece por el haber.",
-  [`${PATRIMONIO}>${HABER}`]: "✅ Aumenta. Un aporte de los socios se registra por el haber.",
-  [`${INGRESO}>${DEBE}`]: "✅ Disminuye. Y aquí es donde más gente se cae: los ingresos crecen por el haber, no por el debe.",
-  [`${INGRESO}>${HABER}`]: "✅ Aumenta. Vender se registra acreditando el ingreso — aunque suene raro la primera vez.",
-  [`${GASTO}>${DEBE}`]: "✅ Aumenta. Los gastos van con los activos: crecen por el debe.",
-  [`${GASTO}>${HABER}`]: "✅ Disminuye. Poco común, pero es la otra cara de la regla.",
-  [`${COSTO}>${DEBE}`]: "✅ Aumenta. Los costos se comportan igual que los gastos.",
-  [`${COSTO}>${HABER}`]: "✅ Disminuye. Misma familia que gastos y activos.",
+  [`${ACTIVO}>${DEBE}`]: "✅ Sube. Cae del mismo lado donde la cuenta ya tenía su saldo, así que engorda.",
+  [`${ACTIVO}>${HABER}`]: "✅ Baja. Cae del lado contrario al saldo, así que lo consume.",
+  [`${PASIVO}>${DEBE}`]: "✅ Baja. En un pasivo el saldo vive en el haber; lo que cae en el debe lo reduce.",
+  [`${PASIVO}>${HABER}`]: "✅ Sube. Mismo lado que el saldo: la deuda crece.",
+  [`${PATRIMONIO}>${DEBE}`]: "✅ Baja. El patrimonio vive en el haber, igual que el pasivo.",
+  [`${PATRIMONIO}>${HABER}`]: "✅ Sube. Un aporte nuevo engorda el patrimonio.",
+  [`${INGRESO}>${DEBE}`]: "✅ Baja. Los ingresos viven en el haber — y esta es la fila que más se falla del banco.",
+  [`${INGRESO}>${HABER}`]: "✅ Sube. Vender acredita el ingreso.",
+  [`${GASTO}>${DEBE}`]: "✅ Sube. Los gastos viven en el debe, igual que los activos.",
+  [`${GASTO}>${HABER}`]: "✅ Baja. Poco común, pero es la otra cara de la regla.",
+  [`${COSTO}>${DEBE}`]: "✅ Sube. Los costos se comportan igual que los gastos.",
+  [`${COSTO}>${HABER}`]: "✅ Baja. Misma familia que gastos y activos.",
 };
 
 export const CUADRO_DINAMICAS = {
@@ -191,14 +234,22 @@ export const CUADRO_DINAMICAS = {
     { id: "disminuye", nombre: "Disminuye" },
   ],
   acierto: ACIERTO_DINAMICA,
-  errorPorTipo: {
-    [INGRESO]: "❌ Este es el que más se falla de todo el tema. Un ingreso crece por el haber, igual que los pasivos y el patrimonio. Suena contraintuitivo porque vender se siente como que algo entra — pero lo que entra es la caja (que sí se debita); el ingreso que lo explica se acredita.",
-    [GASTO]: "❌ Gastos y Costos van con los Activos: crecen por el debe. Si le sirve: los tres son cosas en las que la empresa pone plata.",
-    [COSTO]: "❌ Gastos y Costos van con los Activos: crecen por el debe. Si le sirve: los tres son cosas en las que la empresa pone plata.",
-    [ACTIVO]: "❌ Los activos crecen por el debe. Es la regla base de la que salen todas las demás.",
-    [PASIVO]: "❌ Pasivos y Patrimonio crecen por el haber. Están del lado derecho de la ecuación, y crecen por el lado derecho de la cuenta.",
-    [PATRIMONIO]: "❌ Pasivos y Patrimonio crecen por el haber. Están del lado derecho de la ecuación, y crecen por el lado derecho de la cuenta.",
-  },
+
+  /*
+   * ═══════════ LOS DOS PATRONES DE ERROR ═══════════
+   *
+   * Aquí el reparto es el más simple de los doce bancos, y por eso es el más
+   * claro: la predicción solo puede fallar de dos maneras, y cada una tiene
+   * una explicación que habla de lo que la barra ACABA DE HACER.
+   *
+   *   A · dijo «sube» y bajó   →  la ficha cayó del lado contrario al saldo
+   *   B · dijo «baja» y subió  →  la ficha cayó del mismo lado que el saldo
+   *
+   * El patrón A nombra dónde estaba el saldo, y ese hueco lo rellena la
+   * mecánica con el lado que corresponde a esa familia.
+   */
+  errorA: "❌ La barra bajó. Mire dónde estaba el saldo antes: en {lado}. Una ficha que cae del lado contrario al saldo lo consume, no lo engorda. El lado donde vive el saldo es lo que define si crece o se come.",
+  errorB: "❌ La barra subió. La ficha cayó del mismo lado donde la cuenta ya tenía su saldo, así que se suma a él. Para que baje tiene que caer del lado contrario.",
 };
 
 /* ═══════════════════ CU-4 · ¿Se Debita o se Acredita? ═══════════════════ */
@@ -212,28 +263,58 @@ export const DEBITA_O_ACREDITA = {
     { id: HABER, nombre: "Crédito" },
   ],
   items: [
-    { id: "cu4-01", enunciado: "Compra a crédito de un inventario", cuenta: "Inventario", categoria: DEBE,
+    { id: "cu4-01", enunciado: "Compra a crédito de un inventario", cuenta: "Inventario", categoria: DEBE, contrapartida: "Cuentas por pagar",
       acierto: "✅ Débito. El inventario es un activo y está aumentando." },
-    { id: "cu4-02", enunciado: "Devolución de aportes a un socio", cuenta: "Aportes sociales", categoria: DEBE,
+    { id: "cu4-02", enunciado: "Devolución de aportes a un socio", cuenta: "Aportes sociales", categoria: DEBE, contrapartida: "Caja",
       acierto: "✅ Débito. El patrimonio está disminuyendo, y el patrimonio disminuye por el debe." },
-    { id: "cu4-03", enunciado: "Compra de contado de una maquinaria", cuenta: "Caja", categoria: HABER,
+    { id: "cu4-03", enunciado: "Compra de contado de una maquinaria", cuenta: "Caja", categoria: HABER, contrapartida: "Maquinaria",
       acierto: "✅ Crédito. Salió dinero: el activo disminuye, y eso va por el haber." },
-    { id: "cu4-04", enunciado: "Prestación de servicios a crédito", cuenta: "Ingresos por servicios", categoria: HABER,
+    { id: "cu4-04", enunciado: "Prestación de servicios a crédito", cuenta: "Ingresos por servicios", categoria: HABER, contrapartida: "Cuentas por cobrar",
       acierto: "✅ Crédito. Los ingresos aumentan por el haber — aunque todavía no haya entrado un peso." },
-    { id: "cu4-05", enunciado: "Cancelación de gastos operacionales", cuenta: "Gastos de operación", categoria: DEBE,
+    { id: "cu4-05", enunciado: "Cancelación de gastos operacionales", cuenta: "Gastos de operación", categoria: DEBE, contrapartida: "Caja",
       acierto: "✅ Débito. Los gastos aumentan por el debe." },
-    { id: "cu4-06", enunciado: "Aportes en efectivo de un nuevo socio", cuenta: "Caja", categoria: DEBE,
+    { id: "cu4-06", enunciado: "Aportes en efectivo de un nuevo socio", cuenta: "Caja", categoria: DEBE, contrapartida: "Aportes sociales",
       acierto: "✅ Débito. Entró dinero: el activo aumenta." },
-    { id: "cu4-07", enunciado: "Recibo de un préstamo otorgado por un banco", cuenta: "Obligaciones financieras", categoria: HABER,
+    { id: "cu4-07", enunciado: "Recibo de un préstamo otorgado por un banco", cuenta: "Obligaciones financieras", categoria: HABER, contrapartida: "Caja",
       acierto: "✅ Crédito. La deuda aumenta, y los pasivos aumentan por el haber." },
-    { id: "cu4-08", enunciado: "Cobros de facturas a los clientes", cuenta: "Cuentas por cobrar", categoria: HABER,
+    { id: "cu4-08", enunciado: "Cobros de facturas a los clientes", cuenta: "Cuentas por cobrar", categoria: HABER, contrapartida: "Caja",
       acierto: "✅ Crédito. Ojo: cobrar reduce lo que le deben. El activo disminuye." },
-    { id: "cu4-09", enunciado: "Pago a proveedores", cuenta: "Cuentas por pagar", categoria: DEBE,
+    { id: "cu4-09", enunciado: "Pago a proveedores", cuenta: "Cuentas por pagar", categoria: DEBE, contrapartida: "Caja",
       acierto: "✅ Débito. Pagar reduce la deuda, y los pasivos se reducen por el debe." },
-    { id: "cu4-10", enunciado: "Pago de participaciones a los socios", cuenta: "Participaciones por pagar", categoria: DEBE,
+    { id: "cu4-10", enunciado: "Pago de participaciones a los socios", cuenta: "Participaciones por pagar", categoria: DEBE, contrapartida: "Caja",
       acierto: "✅ Débito. Es un pasivo que se está cancelando." },
   ],
   errorIngreso: "❌ Los ingresos se acreditan. El dinero que entra se debita en Caja; el ingreso que lo explica se acredita. Son dos cuentas distintas del mismo asiento.",
+
+  /*
+   * ═══════════ EL PATRÓN A DEL REDISEÑO ═══════════
+   *
+   * Con dos lados y dos cuentas, equivocarse de lado ES contestar sobre la
+   * otra mitad del asiento — el error y su explicación son la misma cosa. Por
+   * eso este texto vale para cualquier fallo y nombra la cuenta por la que sí
+   * se preguntó, que es lo que devuelve al estudiante a su pregunta.
+   */
+  errorA: "❌ Se fijó en la otra mitad del asiento. Esa cuenta también se mueve — pero le pregunté por {cuenta}, y a esa cuenta le pasa lo contrario.",
+
+  /*
+   * ═══════════ PENDIENTE DE GEN — EL PATRÓN B NO SE PUEDE USAR ═══════════
+   *
+   * El rediseño lo describe así: «El nombre lo llevó al lado contrario.
+   * "[Cuenta]" suena a que [lo que sugiere], pero en esta transacción está
+   * [aumentando/disminuyendo]».
+   *
+   * Le faltan dos cosas para poder salir. La primera es contenido: «suena a
+   * que…» hay que escribirlo cuenta por cuenta —qué sugiere «Cuentas por
+   * cobrar», qué sugiere «Participaciones por pagar»— y eso es de Gen, no mío.
+   *
+   * La segunda es que no hay forma de distinguirlo del patrón A desde lo que
+   * el estudiante hizo: con dos lados, los dos patrones describen exactamente
+   * la misma respuesta equivocada. Harían falta dos errores distinguibles, y
+   * aquí solo hay uno.
+   *
+   * Así que sale el patrón A —que siempre es cierto— y el caso de los ingresos
+   * conserva su explicación propia, que es más precisa que los dos.
+   */
 };
 
 

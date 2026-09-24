@@ -1,5 +1,6 @@
 import {
-  DEBE, HABER, INGRESO, NOMBRE_TIPO, CRECE_POR, efectoDe, tipoDeCuenta,
+  DEBE, HABER, ACTIVO, PASIVO, PATRIMONIO, INGRESO, GASTO, COSTO,
+  NOMBRE_TIPO, CRECE_POR, efectoDe, tipoDeCuenta,
 } from "../data/contabilidad.js";
 import {
   IZQUIERDA_O_DERECHA, DE_QUE_FAMILIA, CUADRO_DINAMICAS,
@@ -56,19 +57,49 @@ export const slug = (texto) =>
 
 /* ═══════════════════ CU-1 · ¿Izquierda o Derecha? ═══════════════════ */
 
+/*
+ * ═══════════ CÓMO SE SABE SI EL ENUNCIADO PEDÍA AUMENTAR ═══════════
+ *
+ * Del propio enunciado, que es donde está escrito: «Caja aumenta», «Caja
+ * disminuye». No se guarda aparte porque una segunda copia de la dirección
+ * podría contradecir a la frase que el estudiante tiene delante.
+ */
+export const pideAumentar = (item) => /\baumenta\b/i.test(item.enunciado);
+
+/* Cómo se llama cada familia en plural, y de qué lado vive. Sale de las reglas. */
+const COMO_SE_LLAMA = {
+  [ACTIVO]: "Los activos", [PASIVO]: "Los pasivos", [PATRIMONIO]: "El patrimonio",
+  [INGRESO]: "Los ingresos", [GASTO]: "Los gastos", [COSTO]: "Los costos",
+};
+const VIVEN_EN = (tipo) => (CRECE_POR[tipo] === DEBE ? "el debe" : "el haber");
+
 export const BANCO_IZQUIERDA_O_DERECHA = {
   ...IZQUIERDA_O_DERECHA,
   /* PENDIENTE: rótulo mío. Es el nombre de la actividad, en minúsculas. */
   pregunta: "¿Izquierda o derecha?",
   items: IZQUIERDA_O_DERECHA.items.map((i) => ({ ...i, texto: i.enunciado, respuesta: i.categoria })),
   /*
-   * El error se explica por la familia de la cuenta y no por el ítem, tal como
-   * lo dejó escrito la ficha: los diez enunciados comparten tres reglas.
+   * Los dos patrones del rediseño. Con dos lados, todo fallo es «el otro», así
+   * que lo que los separa es QUÉ PEDÍA EL ENUNCIADO: quien falla un «aumenta»
+   * no sabe dónde vive esa familia; quien falla un «disminuye» sí lo sabe y
+   * puso la ficha justo ahí, sin leer que le pedían lo contrario.
    */
+  evaluar: (item, puesta) => {
+    const ok = puesta === item.categoria;
+    if (ok) return { ok, texto: item.acierto };
+    const tipo = tipoDeCuenta(item.cuenta);
+    const texto = pideAumentar(item)
+      ? IZQUIERDA_O_DERECHA.errorA
+        .replace("{Familia}", COMO_SE_LLAMA[tipo])
+        .replace("{lado}", VIVEN_EN(tipo))
+      : IZQUIERDA_O_DERECHA.errorB;
+    return { ok, texto };
+  },
+  /* La devolución de la mecánica vieja, mientras conviva con la nueva. */
   retro: (item, elegida) =>
     elegida === item.respuesta
       ? item.acierto
-      : IZQUIERDA_O_DERECHA.errorPorTipo[tipoDeCuenta(item.cuenta)],
+      : BANCO_IZQUIERDA_O_DERECHA.evaluar(item, elegida).texto,
 };
 
 /* ═══════════════════ CU-2 · ¿De qué familia es? ═══════════════════ */
@@ -78,11 +109,39 @@ export const BANCO_DE_QUE_FAMILIA = {
   /* PENDIENTE: rótulo mío. Es el nombre de la actividad. */
   pregunta: "¿De qué familia es?",
   items: DE_QUE_FAMILIA.items.map((i) => ({ ...i, texto: i.enunciado, respuesta: i.categoria })),
-  /* La confusión es entre dos familias, así que la clave es «correcta>elegida». */
+  /*
+   * ═══════════ LOS DOS PATRONES, Y DÓNDE NO LLEGAN ═══════════
+   *
+   *   B · pasivo y patrimonio confundidos entre sí — las dos secciones de la
+   *       derecha, que es lo que el patrón B explica. Vale en las dos
+   *       direcciones porque el texto habla de las dos.
+   *   A · un ACTIVO escrito entre los pasivos — «ahí van las cosas que la
+   *       empresa debe, y esta es algo que tiene». Literal y exacto.
+   *
+   * Las otras tres direcciones —un pasivo entre los activos, y las dos que
+   * mezclan patrimonio con activo— no las cubre ninguno de los dos patrones:
+   * el A leído al revés diría lo contrario de lo que pasó. Para esas se usan
+   * los textos anteriores, que son de Gen y sí dicen la verdad en su
+   * dirección. Está reportado en el archivo de contenido.
+   */
+  evaluar: (item, puesta) => {
+    const ok = puesta === item.categoria;
+    if (ok) return { ok, texto: item.acierto };
+    const correcta = item.categoria;
+    const derecha = [PASIVO, PATRIMONIO];
+    if (derecha.includes(correcta) && derecha.includes(puesta)) {
+      return { ok, texto: DE_QUE_FAMILIA.errorB };
+    }
+    if (correcta === ACTIVO && puesta === PASIVO) {
+      return { ok, texto: DE_QUE_FAMILIA.errorA };
+    }
+    return { ok, texto: DE_QUE_FAMILIA.errorPorConfusion[`${correcta}>${puesta}`] };
+  },
+  /* La devolución de la mecánica vieja, mientras conviva con la nueva. */
   retro: (item, elegida) =>
     elegida === item.respuesta
       ? item.acierto
-      : DE_QUE_FAMILIA.errorPorConfusion[`${item.respuesta}>${elegida}`],
+      : BANCO_DE_QUE_FAMILIA.evaluar(item, elegida).texto,
 };
 
 /* ═══════════════════ CU-3 · El Cuadro de Dinámicas ═══════════════════ */
@@ -110,10 +169,27 @@ export const BANCO_CUADRO_DINAMICAS = {
   /* PENDIENTE: rótulo mío. Son las dos categorías, preguntadas. */
   pregunta: "¿Aumenta o disminuye?",
   items: COMBINACIONES,
-  retro: (item, elegida) =>
-    elegida === item.respuesta
-      ? CUADRO_DINAMICAS.acierto[`${item.tipo}>${item.lado}`]
-      : CUADRO_DINAMICAS.errorPorTipo[item.tipo],
+  /*
+   * La predicción solo puede fallar de dos maneras y cada una tiene su texto.
+   * `escena` la calcula la mecánica —dónde vivía el saldo y qué hizo la barra—
+   * y de ahí sale cuál de los dos patrones corresponde.
+   */
+  evaluar: (item, prediccion, escena) => {
+    const ok = prediccion === escena.esperado;
+    if (ok) return { ok, texto: CUADRO_DINAMICAS.acierto[`${item.tipo}>${item.lado}`] };
+    const texto = escena.esperado === "baja"
+      ? CUADRO_DINAMICAS.errorA.replace("{lado}", escena.ladoDelSaldo === DEBE ? "el debe" : "el haber")
+      : CUADRO_DINAMICAS.errorB;
+    return { ok, texto };
+  },
+  /* La devolución de la mecánica vieja, mientras conviva con la nueva. */
+  retro: (item, elegida) => {
+    if (elegida === item.respuesta) return CUADRO_DINAMICAS.acierto[`${item.tipo}>${item.lado}`];
+    const ladoDelSaldo = CRECE_POR[item.tipo];
+    return item.respuesta === "disminuye"
+      ? CUADRO_DINAMICAS.errorA.replace("{lado}", ladoDelSaldo === DEBE ? "el debe" : "el haber")
+      : CUADRO_DINAMICAS.errorB;
+  },
 };
 
 /* ═══════════════════ CU-4 · ¿Se Debita o se Acredita? ═══════════════════ */
@@ -147,12 +223,27 @@ export const BANCO_DEBITA_O_ACREDITA = {
     texto: `${i.enunciado} — cuenta: ${i.cuenta}`,
     respuesta: i.categoria,
   })),
-  retro: (item, elegida) => {
-    if (elegida === item.respuesta) return item.acierto;
-    return tipoDeCuenta(item.cuenta) === INGRESO
+  /*
+   * El patrón A del rediseño sustituye al genérico que había que escribir por
+   * necesidad: dice algo de verdad —que se contestó sobre la otra mitad— y
+   * devuelve al estudiante a la cuenta por la que se le preguntó.
+   *
+   * El caso de los ingresos conserva su explicación propia, que es más precisa
+   * que cualquiera de los dos patrones: nombra las dos cuentas del asiento.
+   */
+  evaluar: (item, puesta) => {
+    const ok = puesta === item.categoria;
+    if (ok) return { ok, texto: item.acierto };
+    const texto = tipoDeCuenta(item.cuenta) === INGRESO
       ? DEBITA_O_ACREDITA.errorIngreso
-      : errorGenericoCU4(item, elegida);
+      : DEBITA_O_ACREDITA.errorA.replace("{cuenta}", item.cuenta);
+    return { ok, texto };
   },
+  /* La devolución de la mecánica vieja, mientras conviva con la nueva. */
+  retro: (item, elegida) =>
+    elegida === item.respuesta
+      ? item.acierto
+      : BANCO_DEBITA_O_ACREDITA.evaluar(item, elegida).texto,
 };
 
 /* ═══════════════════ CU-9 · Corriente de Cuentas ═══════════════════ */
@@ -183,6 +274,17 @@ export const BANCO_CORRIENTE_DE_CUENTAS = {
    * la de la cuenta es la que tiene que ganar: es la que habla de lo que el
    * estudiante tiene delante.
    */
+  /*
+   * Los dos patrones del redisenio son, palabra por palabra, las dos
+   * explicaciones reforzadas que ya estaban: el ingreso confundido con el
+   * activo que resulto de el, y el gasto confundido con la deuda de ese gasto.
+   * Siguen guardadas por CUENTA —no por familia— porque hablan de una cuenta
+   * concreta, que es el error que se encontro jugando.
+   */
+  evaluar: (item, familia) => {
+    const ok = familia === item.respuesta;
+    return { ok, texto: BANCO_CORRIENTE_DE_CUENTAS.retro(item, familia) };
+  },
   retro: (item, elegida) => {
     const familia = NOMBRE_TIPO[item.respuesta];
     if (elegida === item.respuesta) return CORRIENTE_DE_CUENTAS.acierto.replace("{Familia}", familia);

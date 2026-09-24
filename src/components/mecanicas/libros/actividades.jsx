@@ -1,7 +1,12 @@
 import { FAE } from "../../../theme.js";
-import PrimeraClasificacion from "../bloques/PrimeraClasificacion.jsx";
 import { MarcoLibros } from "../bloques/marcos.jsx";
+import { tipoDeCuenta } from "../../../data/contabilidad.js";
 import SaldoDeLaCuenta from "./SaldoDeLaCuenta.jsx";
+import SoltarEnUnLado from "./SoltarEnUnLado.jsx";
+import EscribirElBalance from "./EscribirElBalance.jsx";
+import PredecirLaBarra from "./PredecirLaBarra.jsx";
+import LaContrapartida from "./LaContrapartida.jsx";
+import SeisCuentasAbiertas from "./SeisCuentasAbiertas.jsx";
 import SimpleOCompuestoMecanica from "./SimpleOCompuesto.jsx";
 import ArmaElAsientoMecanica from "./ArmaElAsiento.jsx";
 import ElAsientoCompuestoMecanica from "./ElAsientoCompuesto.jsx";
@@ -33,31 +38,43 @@ import {
 
 const A = FAE.ambar;
 
-/* CU-1 */
+/*
+ * CU-1: la ficha se lleva al lado que corresponde y cae dentro de la cuenta T.
+ * El primer verbo visual del tema, en su forma más desnuda.
+ */
 export const IzquierdaODerecha = ({ onCompletar }) => (
-  <PrimeraClasificacion banco={BANCO_IZQUIERDA_O_DERECHA} Marco={MarcoLibros} acento={A}
+  <SoltarEnUnLado banco={BANCO_IZQUIERDA_O_DERECHA} tipoDe={(i) => tipoDeCuenta(i.cuenta)}
+    Marco={MarcoLibros} acento={A}
     rotulo="CIMIENTOS" titulo={BANCO_IZQUIERDA_O_DERECHA.subtema} onCompletar={onCompletar} />
 );
 
 /*
- * CU-2: las opciones se barajan. Con tres categorías fijas, la posición se
- * memoriza antes que la regla —«el patrimonio es el botón de la derecha»— y
- * entonces la actividad deja de medir lo que cree medir.
+ * CU-2: el balance en blanco. Cada acierto ESCRIBE su renglon, y el documento
+ * se va llenando: equivocarse deja de ser fallar una pregunta y pasa a ser
+ * escribir una deuda donde va una propiedad.
  */
 export const DeQueFamilia = ({ onCompletar }) => (
-  <PrimeraClasificacion banco={BANCO_DE_QUE_FAMILIA} Marco={MarcoLibros} acento={A} barajarOpciones
+  <EscribirElBalance banco={BANCO_DE_QUE_FAMILIA} Marco={MarcoLibros} acento={A}
     rotulo="CIMIENTOS" titulo={BANCO_DE_QUE_FAMILIA.subtema} onCompletar={onCompletar} />
 );
 
-/* CU-3 */
+/*
+ * CU-3: prediccion-revelacion. La cuenta ensena su saldo previo, el estudiante
+ * dice que va a hacer la barra, y SOLO ENTONCES cae la ficha. Al reves, la
+ * respuesta estaria en la pantalla.
+ */
 export const CuadroDinamicas = ({ onCompletar }) => (
-  <PrimeraClasificacion banco={BANCO_CUADRO_DINAMICAS} Marco={MarcoLibros} acento={A}
+  <PredecirLaBarra banco={BANCO_CUADRO_DINAMICAS} Marco={MarcoLibros} acento={A}
     rotulo="APLICACIÓN" titulo={BANCO_CUADRO_DINAMICAS.subtema} onCompletar={onCompletar} />
 );
 
-/* CU-4 */
+/*
+ * CU-4: la ficha va al debe o al haber de la cuenta preguntada, y SOLO al
+ * acertar se materializa la contrapartida. Ensenarla tras un fallo regalaria
+ * la logica: el estudiante deduciria su lado del de la otra sin razonarlo.
+ */
 export const DebitaOAcredita = ({ onCompletar }) => (
-  <PrimeraClasificacion banco={BANCO_DEBITA_O_ACREDITA} Marco={MarcoLibros} acento={A}
+  <LaContrapartida banco={BANCO_DEBITA_O_ACREDITA} Marco={MarcoLibros} acento={A}
     rotulo="APLICACIÓN" titulo={BANCO_DEBITA_O_ACREDITA.subtema} onCompletar={onCompletar} />
 );
 
@@ -86,13 +103,13 @@ export const CuadraONoCuadra = ({ onCompletar }) => (
 );
 
 /*
- * CU-9: la práctica intercalada. `cae` hace que el enunciado entre cayendo,
- * igual que en Corriente de Decisiones —la misma mecánica con el mismo gesto—,
- * y `barajarOpciones` impide memorizar dónde está cada familia. Sortea doce de
- * veinticuatro: repetir la clasificación a velocidad ES la técnica.
+ * CU-9: la práctica intercalada, con las seis cuentas del mayor abiertas sobre
+ * la mesa. Repetir la clasificación a velocidad ES la técnica (Rohrer, 2012) y
+ * eso no se toca; lo que cambia es que las respuestas ya no se evaporan, se
+ * apilan, y al final de la ronda queda un mayor de seis cuentas.
  */
 export const CorrienteDeCuentas = ({ onCompletar }) => (
-  <PrimeraClasificacion banco={BANCO_CORRIENTE_DE_CUENTAS} Marco={MarcoLibros} acento={A} barajarOpciones cae
+  <SeisCuentasAbiertas banco={BANCO_CORRIENTE_DE_CUENTAS} Marco={MarcoLibros} acento={A}
     rotulo="ANÁLISIS" titulo={BANCO_CORRIENTE_DE_CUENTAS.subtema} onCompletar={onCompletar} />
 );
 

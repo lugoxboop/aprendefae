@@ -7,7 +7,8 @@ import {
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
 } from "../bancos.js";
 import { CRECE_POR, efectoDe, tipoDeCuenta, NOMBRE_TIPO, CUENTAS, DEBE, HABER, INGRESO } from "../../data/contabilidad.js";
-import { CUADRO_DINAMICAS, DEBITA_O_ACREDITA } from "../../data/contabilidadActividades.js";
+import { CUADRO_DINAMICAS, DEBITA_O_ACREDITA, DE_QUE_FAMILIA, IZQUIERDA_O_DERECHA } from "../../data/contabilidadActividades.js";
+import { escenaDe } from "../../components/mecanicas/libros/PredecirLaBarra.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -122,6 +123,64 @@ test("CU-1: el enunciado y la respuesta salen del banco de la ficha", () => {
   }
 });
 
+test("★ CU-1: qué patrón sale lo decide el ENUNCIADO, no el ítem", () => {
+  /*
+   * Con dos lados, cualquier fallo es «el otro», así que sin esta distinción
+   * las dos situaciones recibirían la misma frase — y son dos problemas
+   * distintos: uno es no saberse dónde vive la familia y el otro es no haber
+   * leído que pedían disminuir.
+   */
+  const b = BANCO_IZQUIERDA_O_DERECHA;
+  let conA = 0;
+  let conB = 0;
+  for (const item of b.items) {
+    const otro = item.categoria === DEBE ? HABER : DEBE;
+    const { ok, texto } = b.evaluar(item, otro);
+    assert.equal(ok, false, item.id);
+    assert.ok(!/\{[a-zA-Z]+\}/.test(texto), `${item.id}: hueco sin rellenar — ${texto}`);
+    if (/\baumenta\b/.test(item.enunciado)) {
+      assert.match(texto, /^❌ Mire lo que pasó/, `${item.id}: un «aumenta» no recibió el patrón A`);
+      conA += 1;
+    } else {
+      assert.equal(texto, IZQUIERDA_O_DERECHA.errorB, `${item.id}: un «disminuye» no recibió el patrón B`);
+      conB += 1;
+    }
+  }
+  assert.ok(conA >= 4 && conB >= 4, `el banco dejó de tener las dos direcciones: ${conA} y ${conB}`);
+});
+
+test("★ CU-1: el patrón A nombra la familia de ESA cuenta y su lado natural", () => {
+  /*
+   * El texto lleva dos huecos y los dos salen de las reglas, no de una tabla:
+   * si se rellenaran mal, el estudiante leería que los pasivos viven en el
+   * debe y nada fallaría.
+   */
+  const b = BANCO_IZQUIERDA_O_DERECHA;
+  const casos = [
+    ["cu1-01", "Los activos", "el debe"],
+    ["cu1-05", "Los pasivos", "el haber"],
+    ["cu1-09", "Los pasivos", "el haber"],
+  ];
+  for (const [id, familia, lado] of casos) {
+    const item = b.items.find((i) => i.id === id);
+    assert.ok(/\baumenta\b/.test(item.enunciado), `${id} dejó de ser un «aumenta»`);
+    const otro = item.categoria === DEBE ? HABER : DEBE;
+    const { texto } = b.evaluar(item, otro);
+    assert.ok(texto.includes(familia), `${id}: no dice «${familia}» — ${texto}`);
+    assert.ok(texto.includes(lado), `${id}: no dice «${lado}» — ${texto}`);
+  }
+});
+
+test("★ CU-1: acertar da el acierto que escribió Gen para ese ítem", () => {
+  const b = BANCO_IZQUIERDA_O_DERECHA;
+  for (const item of b.items) {
+    const r = b.evaluar(item, item.categoria);
+    assert.ok(r.ok, item.id);
+    assert.equal(r.texto, item.acierto, item.id);
+    assert.ok(r.texto.startsWith("✅"), item.id);
+  }
+});
+
 /* ─────────────────────────── CU-2 ─────────────────────────── */
 
 test("CU-2: las doce cuentas responden lo que dice el catálogo", () => {
@@ -133,19 +192,53 @@ test("CU-2: las doce cuentas responden lo que dice el catálogo", () => {
   }
 });
 
-test("★ CU-2: la explicación es la de la familia CORRECTA, no la de la elegida", () => {
+test("★ CU-2: cada patrón de error sale SOLO donde su texto es verdad", () => {
   /*
-   * Las seis confusiones están guardadas bajo «correcta>elegida». Buscarlas al
-   * revés devuelve un texto que existe, empieza por ❌ y se lee perfectamente
-   * —pero le dice a quien confundió un activo con un pasivo que «aquí lo debe,
-   * eso es un pasivo»—. Ninguna de las pruebas de forma lo nota: hay que mirar
-   * lo que el texto AFIRMA.
+   * El patrón A dice «ahí van las cosas que la empresa debe, y esta es algo
+   * que tiene»: eso solo es cierto al escribir un ACTIVO entre los pasivos. En
+   * cualquier otra dirección afirmaría lo contrario de lo que pasó, que es
+   * peor que no decir nada.
+   *
+   * El patrón B habla de las dos secciones de la derecha, así que vale entre
+   * pasivo y patrimonio en las dos direcciones.
+   *
+   * Y las tres direcciones que ninguno cubre reciben el texto anterior de Gen,
+   * que sí nombra la familia correcta. Aquí se comprueban las tres cosas.
+   */
+  const b = BANCO_DE_QUE_FAMILIA;
+  const derecha = new Set(["pasivo", "patrimonio"]);
+  let conA = 0;
+  let conB = 0;
+  for (const [item, elegida] of todosLosErrores(b)) {
+    const { texto } = b.evaluar(item, elegida);
+    const correcta = item.respuesta;
+    if (derecha.has(correcta) && derecha.has(elegida)) {
+      assert.equal(texto, DE_QUE_FAMILIA.errorB, `${item.id} → ${elegida}`);
+      conB += 1;
+    } else if (correcta === "activo" && elegida === "pasivo") {
+      assert.equal(texto, DE_QUE_FAMILIA.errorA, `${item.id} → ${elegida}`);
+      conA += 1;
+    } else {
+      /* El respaldo por dirección: ese sí nombra la familia que era. */
+      assert.ok(texto.toLowerCase().includes(NOMBRE_TIPO[correcta].toLowerCase()),
+        `${item.id} → ${elegida}: no nombra la familia correcta — ${texto}`);
+    }
+  }
+  assert.ok(conA >= 6, `el patrón A no salió en ningún activo: ${conA}`);
+  assert.ok(conB >= 4, `el patrón B no salió entre las dos de la derecha: ${conB}`);
+});
+
+test("★ CU-2: el patrón A NUNCA sale en la dirección contraria", () => {
+  /*
+   * La otra mitad de lo mismo, dicha al revés porque es el error que de verdad
+   * haría daño: decirle «esta es algo que tiene» a quien acaba de escribir una
+   * deuda entre los activos.
    */
   const b = BANCO_DE_QUE_FAMILIA;
   for (const [item, elegida] of todosLosErrores(b)) {
-    const texto = b.retro(item, elegida).toLowerCase();
-    assert.ok(texto.includes(NOMBRE_TIPO[item.respuesta].toLowerCase()),
-      `${item.id} respondido «${elegida}»: la explicación no nombra la familia correcta — ${texto}`);
+    if (item.respuesta === "activo" && elegida === "pasivo") continue;
+    assert.notEqual(b.evaluar(item, elegida).texto, DE_QUE_FAMILIA.errorA,
+      `${item.id} → ${elegida}: el patrón A dice lo contrario de lo que pasó`);
   }
 });
 
@@ -169,6 +262,46 @@ test("CU-3 ★ la respuesta se DERIVA de las dos reglas, no se teclea", () => {
   }
   const ingresoAlDebe = COMBINACIONES.find((c) => c.tipo === INGRESO && c.lado === DEBE);
   assert.equal(ingresoAlDebe.respuesta, "disminuye", "el que más se falla del tema");
+});
+
+test("★ CU-3: las doce combinaciones se predicen bien y los dos patrones reparten", () => {
+  /*
+   * La predicción solo puede fallar de dos maneras, y cada una tiene su texto.
+   * Se enumeran las doce combinaciones por las dos predicciones posibles: 24
+   * caminos, ninguno mudo, ninguno con un hueco sin rellenar.
+   */
+  const b = BANCO_CUADRO_DINAMICAS;
+  let caminos = 0;
+  let conA = 0;
+  let conB = 0;
+  for (const item of COMBINACIONES) {
+    const escena = escenaDe(item);
+    /* La escena tiene que coincidir con las dos reglas, no inventarse nada. */
+    assert.equal(escena.ladoDelSaldo, CRECE_POR[item.tipo], `${item.id}: el saldo previo no vive donde debe`);
+    assert.equal(escena.esperado, efectoDe(item.tipo, item.lado) === "aumenta" ? "sube" : "baja", item.id);
+
+    for (const prediccion of ["sube", "baja"]) {
+      const r = b.evaluar(item, prediccion, escena);
+      assert.equal(r.ok, prediccion === escena.esperado, item.id);
+      assert.ok(r.texto.startsWith(r.ok ? "✅" : "❌"), `${item.id} · ${prediccion}: no se ve como lo que es`);
+      assert.ok(!/\{[a-zA-Z]+\}/.test(r.texto), `${item.id} · ${prediccion}: hueco sin rellenar — ${r.texto}`);
+      if (!r.ok && escena.esperado === "baja") { assert.equal(r.texto, CUADRO_DINAMICAS.errorA.replace("{lado}", escena.ladoDelSaldo === DEBE ? "el debe" : "el haber")); conA += 1; }
+      if (!r.ok && escena.esperado === "sube") { assert.equal(r.texto, CUADRO_DINAMICAS.errorB); conB += 1; }
+      caminos += 1;
+    }
+  }
+  assert.equal(caminos, 24, "12 combinaciones × 2 predicciones");
+  assert.equal(conA, 6, "seis combinaciones bajan");
+  assert.equal(conB, 6, "seis suben");
+});
+
+test("★ CU-3: el patrón A dice dónde estaba el saldo, y acierta el lado", () => {
+  const b = BANCO_CUADRO_DINAMICAS;
+  /* Un activo: su saldo vive en el debe. Un ingreso: en el haber. */
+  const activo = COMBINACIONES.find((c) => c.tipo === "activo" && c.lado === HABER);
+  const ingreso = COMBINACIONES.find((c) => c.tipo === "ingreso" && c.lado === DEBE);
+  assert.ok(b.evaluar(activo, "sube", escenaDe(activo)).texto.includes("en el debe"));
+  assert.ok(b.evaluar(ingreso, "sube", escenaDe(ingreso)).texto.includes("en el haber"));
 });
 
 test("CU-3: el enunciado nombra el lado y la familia de la combinación", () => {
@@ -200,18 +333,42 @@ test("CU-4: el ítem de los ingresos recibe la explicación de la ficha", () => 
   assert.equal(b.retro(ingreso, otro), DEBITA_O_ACREDITA.errorIngreso);
 });
 
-test("CU-4: los otros nueve caen en el genérico — PENDIENTE DE GEN", () => {
+test("★ CU-4: el hueco se cerró — los nueve reciben el patrón A con SU cuenta", () => {
   /*
-   * Esta prueba NO dice que esté bien: deja constancia de que hay nueve ítems
-   * sin explicación escrita, para que se vea cuando Gen las entregue.
+   * Esta prueba era la constancia de un hueco: nueve ítems sin explicación
+   * escrita, con un genérico mío de relleno. El rediseño trajo el texto de Gen
+   * y el hueco se cerró, así que ahora vigila lo contrario: que cada uno reciba
+   * el patrón A, y que el patrón nombre LA CUENTA POR LA QUE SE PREGUNTÓ — es
+   * lo que devuelve al estudiante a su pregunta en vez de a la otra mitad.
    */
   const b = BANCO_DEBITA_O_ACREDITA;
-  const sinExplicacion = b.items.filter((i) => tipoDeCuenta(i.cuenta) !== INGRESO);
-  assert.equal(sinExplicacion.length, 9);
-  for (const i of sinExplicacion) {
-    const otro = b.categorias.find((c) => c.id !== i.respuesta).id;
-    assert.match(b.retro(i, otro), /^❌ Es (Débito|Crédito), no (Débito|Crédito)\.$/, i.id);
+  const conPatron = b.items.filter((i) => tipoDeCuenta(i.cuenta) !== INGRESO);
+  assert.equal(conPatron.length, 9);
+  for (const i of conPatron) {
+    const otro = i.categoria === DEBE ? HABER : DEBE;
+    const { texto } = b.evaluar(i, otro);
+    assert.match(texto, /^❌ Se fijó en la otra mitad del asiento/, i.id);
+    assert.ok(texto.includes(i.cuenta), `${i.id}: no nombra «${i.cuenta}» — ${texto}`);
+    assert.ok(!/\{[a-zA-Z]+\}/.test(texto), `${i.id}: hueco sin rellenar`);
   }
+});
+
+test("★ CU-4: la contrapartida de cada ítem existe y no es la misma cuenta", () => {
+  /*
+   * La contrapartida es la que se materializa al acertar: es el momento en que
+   * la partida doble deja de ser una frase y se ve. Si alguna faltara, ese
+   * momento no llegaría y nada más fallaría.
+   */
+  const b = BANCO_DEBITA_O_ACREDITA;
+  for (const i of b.items) {
+    assert.ok(i.contrapartida, `${i.id}: sin contrapartida`);
+    assert.notEqual(i.contrapartida, i.cuenta, `${i.id}: la contrapartida es la misma cuenta`);
+    assert.ok(tipoDeCuenta(i.contrapartida), `${i.id}: «${i.contrapartida}» no está en el catálogo`);
+  }
+  /* El único caso donde la contrapartida NO es dinero: «a crédito». */
+  const aCredito = b.items.find((i) => i.id === "cu4-04");
+  assert.equal(aCredito.contrapartida, "Cuentas por cobrar",
+    "el caso que enseña que «a crédito» significa que el dinero no llegó todavía");
 });
 
 /* ─────────────────────────── CU-9 ─────────────────────────── */
