@@ -35,7 +35,7 @@ export const normalizar = (s) =>
     .trim()
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/\p{Mark}/gu, "")
     .replace(/\s+/g, " ");
 
 /* ═══════════ 3. RADAR DE PROFUNDIDAD — Aplicar ═══════════ */

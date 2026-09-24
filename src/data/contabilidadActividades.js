@@ -497,10 +497,23 @@ export const CORRIENTE_DE_CUENTAS = {
   ],
   acierto: "✅ {Familia}.",
   errorGenerico: "❌ Es {familia}, no {elegida}.",
-  /* Los tres pares que más se confunden llevan su propia explicación. */
+  /*
+   * ═══════════ DOS DE ESTAS EXPLICACIONES SON DE UNA CUENTA, NO DE UNA FAMILIA ═══════════
+   *
+   * Las tres estuvieron bajo la misma llave «familia>familia», y eso hacía que
+   * al fallar «Gastos por salarios» el estudiante leyera una explicación sobre
+   * «Servicios públicos»: el par era el mismo (Gasto confundido con Pasivo)
+   * pero el texto habla de una cuenta concreta. Se vio jugándolo, no leyéndolo.
+   *
+   * Así que van separadas por lo que de verdad son: dos hablan de SU cuenta y
+   * solo salen para ella; la tercera es una regla entre dos familias y vale
+   * para cualquier cuenta de patrimonio.
+   */
+  errorPorCuenta: {
+    [`Renta por servicios>${ACTIVO}`]: "❌ Es un Ingreso. Ojo: «Renta por servicios» es lo que la empresa ganó, no algo que tenga. Lo que tiene sería la Caja o la Cuenta por cobrar que resultó de esa venta.",
+    [`Servicios públicos>${PASIVO}`]: "❌ Es un Gasto. «Servicios públicos» es el consumo del mes; si además quedó pendiente de pago, eso sería otra cuenta distinta, «Servicios públicos por pagar», esa sí pasivo.",
+  },
   errorReforzado: {
-    [`${INGRESO}>${ACTIVO}`]: "❌ Es un Ingreso. Ojo: «Renta por servicios» es lo que la empresa ganó, no algo que tenga. Lo que tiene sería la Caja o la Cuenta por cobrar que resultó de esa venta.",
-    [`${GASTO}>${PASIVO}`]: "❌ Es un Gasto. «Servicios públicos» es el consumo del mes; si además quedó pendiente de pago, eso sería otra cuenta distinta, «Servicios públicos por pagar», esa sí pasivo.",
     [`${PATRIMONIO}>${PASIVO}`]: "❌ Es Patrimonio. Los dos están a la derecha de la ecuación, pero el pasivo se le debe a terceros y el patrimonio a los dueños.",
   },
 };

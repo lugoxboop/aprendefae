@@ -56,6 +56,7 @@ export const VISTAS = new Set([
   "pensamiento-sistemico",
   "modelo-iceberg",
   "fuerzas-porter",
+  "cuentas-debe-haber",
   /* Transversales: no son un tema, pero se entra igual desde el índice. */
   "repaso-diario",
   /*

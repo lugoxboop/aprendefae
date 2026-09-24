@@ -460,21 +460,74 @@ export const SUBJECTS = {
     ],
   },
   /*
-   * CONTABILIDAD — creada, sin contenido todavía.
+   * ═══════════════════════ CONTABILIDAD ═══════════════════════
    *
-   * `topics: []` NO es un olvido: la materia existe con su identidad visual y
-   * sus temas los define Gen cuando llegue el material del profesor. Con la
-   * lista vacía, TopicIndexView enseña EMPTY_TOPICS_MESSAGE, que ya existía.
+   * Su primer tema: el capítulo 3 del libro del profesor. Doce juegos con la
+   * misma distribución que los cuatro temas de Macroeconomía —2 Fácil, 3
+   * Medio, 4 Difícil y 3 Experto, o sea 565 FP— y un desafío de cuatro etapas
+   * al lado del camino. Catálogo del servidor: 0042.
    *
-   * No lleva fila en actividad_catalogo porque no tiene ni una actividad: el
-   * catálogo del servidor guarda actividades, no materias, y `subject_id` no
-   * está restringido a una lista en ninguna migración. El día que entre la
-   * primera actividad, entra con su migración como cualquier otra.
+   * LAS DOCE ESTÁN DECLARADAS AUNQUE SOLO CINCO SE PUEDAN JUGAR HOY. Esta
+   * lista es la ficha del tema, no el inventario de lo construido: si
+   * declarara cinco, «tema completo» pediría cinco, alguien se ganaría la
+   * medalla y al entrar las otras siete se la quitaríamos.
+   *
+   * Las que aún no tienen mecánica llevan `pendiente: true`. Es un dato del
+   * registro y no una lista escondida en un componente, porque lo consultan
+   * dos sitios que de otro modo se contradirían: la vista del tema, que no las
+   * dibuja en el camino —un nodo que se abre en blanco es peor que un nodo que
+   * todavía no está—, y la prueba de cobertura del panel docente, que no les
+   * exige una regla de etiqueta porque no pueden emitir ni un ítem.
+   *
+   * QUITAR LA MARCA ES PARTE DE CONSTRUIR LA ACTIVIDAD. En cuanto desaparece,
+   * la actividad entra al camino y la prueba del panel docente empieza a
+   * exigirle su regla. Es el orden correcto: nadie puede jugarla sin que el
+   * profesor pueda leer lo que respondió.
+   *
+   * Las cuatro piezas de Aprender no están todavía: tienen el texto escrito
+   * pero no las escenas que lo animan, y declararlas pondría una mitad
+   * «Aprender» en el índice que se abre vacía. Entran con sus escenas.
    */
   contabilidad: {
     id: "contabilidad",
     name: "Contabilidad",
-    topics: [],
+    topics: [
+      {
+        id: "cuentas-debe-haber",
+        title: "Las cuentas, el debe y el haber",
+        actividades: [
+          /* Cimientos */
+          { id: "cu-izquierda-o-derecha", nombre: "¿Izquierda o Derecha?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "cu-de-que-familia", nombre: "¿De qué familia es?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* Aplicación */
+          { id: "cu-cuadro-dinamicas", nombre: "El Cuadro de Dinámicas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "cu-debita-o-acredita", nombre: "¿Se Debita o se Acredita?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "cu-saldo-de-la-cuenta", pendiente: true, nombre: "El Saldo de la Cuenta", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* Análisis */
+          { id: "cu-arma-el-asiento", pendiente: true, nombre: "Arma el Asiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "cu-simple-o-compuesto", pendiente: true, nombre: "¿Simple o Compuesto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "cu-cuadra-o-no", pendiente: true, nombre: "¿Cuadra o No Cuadra?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "cu-corriente-de-cuentas", nombre: "Corriente de Cuentas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* Maestría */
+          { id: "cu-asiento-compuesto", pendiente: true, nombre: "El Asiento Compuesto", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          { id: "cu-mayorizacion", pendiente: true, nombre: "La Mayorización", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          { id: "cu-error-escondido", pendiente: true, nombre: "El Error Escondido", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          {
+            /*
+             * EL DESAFÍO DEL TEMA, el tercero del sitio. Misma estructura y
+             * misma regla que el Comité de NOVA: `desafio: true` lo saca de
+             * actividadesDeTipo() —no cuenta para «tema completo», porque un
+             * desafío opcional que cuenta deja de ser opcional— y `etapas: 4`
+             * dispara la regla del Kit en el servidor: 90 × 4 = 360 FP.
+             */
+            id: "ciclo-completo",
+            pendiente: true,
+            nombre: "El Ciclo Completo",
+            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90, etapas: 4, desafio: true },
+          },
+        ],
+      },
+    ],
   },
   "pensamiento-estrategico": {
     id: "pensamiento-estrategico",

@@ -22,6 +22,7 @@ import {
 } from "../../data/politicaFiscal.js";
 import { MEMORAMAS, CLASIFICACIONES } from "../../data/cimientos.js";
 import * as PM from "../../data/politicaMonetaria.js";
+import * as CU from "../../contabilidad/bancos.js";
 import {
   CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
   EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
@@ -137,6 +138,17 @@ const IDS = {
   "dilema-banquero-central": [PM.DILEMA_BANQUERO.id],
   "duelo-de-instrumentos": PM.DUELO_INSTRUMENTOS.casos.flatMap((c) => c.duelos.map((d) => `${c.id}:${d.id}`)),
   "disena-respuesta-monetaria": PM.DISENA_RESPUESTA.casos.flatMap((c) => PM.CASILLAS_RESPUESTA.map((k) => `${c.id}:${k.id}`)),
+
+  /*
+   * Contabilidad · Las cuentas, el debe y el haber (0042). Las cinco que ya
+   * tienen mecánica; las otras siete y el desafío van marcadas `pendiente` en
+   * subjects.js y entran aquí con su mecánica.
+   */
+  "cu-izquierda-o-derecha": CU.BANCO_IZQUIERDA_O_DERECHA.items.map((x) => x.id),
+  "cu-de-que-familia": CU.BANCO_DE_QUE_FAMILIA.items.map((x) => x.id),
+  "cu-cuadro-dinamicas": CU.BANCO_CUADRO_DINAMICAS.items.map((x) => x.id),
+  "cu-debita-o-acredita": CU.BANCO_DEBITA_O_ACREDITA.items.map((x) => x.id),
+  "cu-corriente-de-cuentas": CU.BANCO_CORRIENTE_DE_CUENTAS.items.map((x) => x.id),
 };
 
 test("todo id derivado de los bancos se puede nombrar", () => {
@@ -184,6 +196,17 @@ test("ninguna etiqueta pasa del tope, y ninguna queda en el id crudo", () => {
  *
  * `sinItems` queda fuera a propósito: esas actividades no emiten ítems y no
  * tienen nada que nombrar.
+ *
+ * `pendiente` también, y por una razón distinta que conviene no confundir con
+ * la anterior: esas actividades SÍ van a emitir ítems, pero todavía no tienen
+ * mecánica. No están en ningún camino, nadie puede abrirlas y no existe la
+ * gramática de id que una regla tendría que deshacer — escribirla hoy sería
+ * adivinarla, y una regla que adivina mal devuelve null, que es exactamente el
+ * fallo que esta prueba quiere evitar, solo que más tarde y más callado.
+ *
+ * La marca se quita al construir la mecánica, y en ese momento esta prueba
+ * empieza a exigir su regla. Ese es el orden que importa: nadie puede jugar
+ * una actividad sin que el profesor pueda leer lo que respondió.
  */
 test("toda actividad que puede emitir ítems tiene regla", () => {
   const sinRegla = [];
@@ -191,7 +214,7 @@ test("toda actividad que puede emitir ítems tiene regla", () => {
     for (const tema of materia.topics ?? []) {
       const desafio = desafioDe(tema);
       for (const a of [...actividadesDeTipo(tema, HACER), ...(desafio ? [desafio] : [])]) {
-        if (a.sinItems === true) continue;
+        if (a.sinItems === true || a.pendiente === true) continue;
         if (!hayReglaPara(a.id)) sinRegla.push(`${materia.id} · ${a.id}`);
       }
     }

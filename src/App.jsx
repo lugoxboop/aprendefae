@@ -34,6 +34,7 @@ const PoliticaEconomicaView = lazy(() => import("./components/PoliticaEconomicaV
 const PoliticaFiscalView = lazy(() => import("./components/PoliticaFiscalView.jsx"));
 /* "La Sala de Máquinas": Política Monetaria, con sus dos mitades. */
 const PoliticaMonetariaView = lazy(() => import("./components/PoliticaMonetariaView.jsx"));
+const CuentasDebeHaberView = lazy(() => import("./components/CuentasDebeHaberView.jsx"));
 const RepasoView = lazy(() => import("./components/repaso/RepasoView.jsx"));
 const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"));
 
@@ -81,6 +82,7 @@ const VISTAS_CON_TITULO = new Set([
   "camino-da", "grifos-da",
   "politica-economica", "politica-fiscal", "politica-monetaria",
   "pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter",
+  "cuentas-debe-haber",
   "repaso-diario",
 ]);
 
@@ -197,16 +199,24 @@ export default function App() {
     );
   }
 
-  /*
-   * Contabilidad todavía no tiene temas, así que `onOpenTopic` no lo llama
-   * nadie: la rejilla está vacía. Se pasa igual, y con la misma forma que las
-   * otras dos, para que el día que entre el primer tema no haya que recordar
-   * que esta materia se enganchaba distinto.
-   */
   if (view === "contabilidad") {
     return wrap(
       <Suspense fallback={siteFallback}>
         <ContabilidadTopicIndex onOpenTopic={abrirTema} />
+      </Suspense>
+    );
+  }
+
+  /*
+   * El primer tema de Contabilidad. No recibe `modo`: su mitad Aprender
+   * todavía no existe, así que el índice lo abre directo y no hay dos mitades
+   * que distinguir. El día que entren las cuatro piezas, se le pasa `modo`
+   * como a los demás.
+   */
+  if (view === "cuentas-debe-haber") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <CuentasDebeHaberView nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }

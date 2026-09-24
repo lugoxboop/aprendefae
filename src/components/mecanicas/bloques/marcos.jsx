@@ -52,6 +52,24 @@ export function MarcoMaquinas({ rotulo, titulo, acento = FAE.teal, children }) {
 }
 
 /*
+ * Contabilidad: el libro mayor, que es el mundo visual de toda la materia —el
+ * mismo que se mueve en el fondo—. El acento por defecto es el ámbar del
+ * índice de la materia, no el teal de las otras tres.
+ *
+ * PENDIENTE DE REVISIÓN: «EL LIBRO MAYOR» como rótulo del marco es reuso del
+ * nombre que ya tiene el fondo de la materia, no un nombre nuevo, pero es una
+ * decisión de identidad y le toca a Gen confirmarla.
+ */
+export function MarcoLibros({ rotulo, titulo, acento = FAE.ambar, children }) {
+  return (
+    <Panel rotulo={rotulo ? `EL LIBRO MAYOR · ${rotulo}` : "EL LIBRO MAYOR"} titulo={titulo} acento={acento}>
+      <style>{CSS_SALA + CSS_JUEGO}</style>
+      {children}
+    </Panel>
+  );
+}
+
+/*
  * El rótulo de una cifra que no es del bloque de datos verificados. La regla
  * del prompt maestro: ninguna cifra simulada sale sin él. No es un error: va
  * en ámbar y con el texto escrito, nunca en coral.

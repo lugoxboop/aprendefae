@@ -30,6 +30,10 @@ import {
   CADENAS_TRANSMISION, EXPLICA_DEUDOR, CORRIENTE_DECISIONES, EL_REZAGO, DILEMA_BANQUERO,
   DUELO_INSTRUMENTOS, DISENA_RESPUESTA, CASILLAS_RESPUESTA,
 } from "../data/politicaMonetaria.js";
+import {
+  BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
+  BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
+} from "../contabilidad/bancos.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -421,6 +425,24 @@ Object.assign(REGLAS, {
     const k = CASILLAS_RESPUESTA.find((x) => x.id === casilla);
     return c && k ? `${k.rotulo} — ${c.caso}` : null;
   },
+
+  /*
+   * ═══════════ CONTABILIDAD · LAS CUENTAS, EL DEBE Y EL HABER ═══════════
+   *
+   * Las cinco que ya se juegan. Leen del mismo banco adaptado del que salió el
+   * id, así que si mañana cambia un enunciado el panel lo enseña cambiado sin
+   * tocar nada aquí.
+   *
+   * Las otras siete del tema y el desafío todavía no tienen mecánica: están
+   * marcadas `pendiente: true` en subjects.js y no pueden emitir ni un ítem.
+   * Sus reglas entran con su mecánica, porque es la mecánica la que decide la
+   * gramática del id — escribirlas ahora sería adivinarla.
+   */
+  "cu-izquierda-o-derecha": (id) => porId(BANCO_IZQUIERDA_O_DERECHA.items, "texto")[id] ?? null,
+  "cu-de-que-familia": (id) => porId(BANCO_DE_QUE_FAMILIA.items, "texto")[id] ?? null,
+  "cu-cuadro-dinamicas": (id) => porId(BANCO_CUADRO_DINAMICAS.items, "texto")[id] ?? null,
+  "cu-debita-o-acredita": (id) => porId(BANCO_DEBITA_O_ACREDITA.items, "texto")[id] ?? null,
+  "cu-corriente-de-cuentas": (id) => porId(BANCO_CORRIENTE_DE_CUENTAS.items, "texto")[id] ?? null,
 });
 
 /*

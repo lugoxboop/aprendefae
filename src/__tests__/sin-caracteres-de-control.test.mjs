@@ -105,3 +105,62 @@ test("y el paso que lo provocó sigue pidiendo el escape, no el carácter", () =
     assert.equal(uso, "tr -d '\\r'", `${JSON.stringify(uso)} no es el escape de dos caracteres`);
   }
 });
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * NI UNA TILDE SUELTA, QUE ES LA MISMA CLASE DE FALLO SIN SER UN CONTROL.
+ *
+ * Al escribir la expresión regular que quita los acentos de un nombre de
+ * cuenta, el rango de marcas combinantes —escrito con los escapes u0300 y
+ * u036f— se convirtió en ESOS CARACTERES de verdad dentro del archivo. El
+ * código seguía funcionando, porque era un rango literal de esos mismos
+ * caracteres, pero en el editor quedaba una tilde pegada a un corchete y otra
+ * pegada a un guion: invisibles, imposibles de teclear a mano y a merced de la
+ * primera herramienta que normalice el archivo. No son caracteres de control,
+ * así que el guardia de arriba no los ve.
+ *
+ * La regla: una marca combinante tiene que ir sobre una LETRA. Sobre la «o» de
+ * «computación» es una palabra en español; sobre un corchete es un accidente.
+ *
+ * (La expresión de la que salió esto se reescribió con la clase Unicode, que
+ * es ASCII puro y no se puede estropear al copiarla.)
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/*
+ * El selector de variación (U+FE00 a U+FE0F) también es una marca combinante,
+ * pero es lo que convierte ⚠ o ⚖ en su versión a color. Va detrás de un símbolo
+ * a propósito y en todo el sitio: no es un accidente y se deja pasar.
+ */
+const ES_SELECTOR = (c) => c >= "︀" && c <= "️";
+
+/** Las marcas combinantes que no van sobre una letra, con su línea. */
+export function tildesSueltas(ruta) {
+  const texto = readFileSync(ruta, "utf8");
+  const hallazgos = [];
+  let linea = 1;
+  let anterior = "";
+  /* Por puntos de código, no por unidades: si no, un emoji se parte en dos. */
+  for (const c of texto) {
+    if (c === "\n") { linea += 1; anterior = c; continue; }
+    if (/\p{Mark}/u.test(c) && !ES_SELECTOR(c)) {
+      /* Una marca sobre otra marca sigue siendo parte de la misma letra. */
+      const sobreLetra = /\p{Letter}|\p{Mark}/u.test(anterior);
+      if (!sobreLetra) hallazgos.push({ linea, sobre: JSON.stringify(anterior) });
+    }
+    anterior = c;
+  }
+  return hallazgos;
+}
+
+test("ninguna marca combinante anda suelta sobre un signo de puntuación", () => {
+  const sucios = [];
+  for (const ruta of archivos(".")) {
+    const hallazgos = tildesSueltas(ruta);
+    if (hallazgos.length) {
+      const donde = hallazgos.map((h) => `línea ${h.linea}, sobre ${h.sobre}`).join(", ");
+      sucios.push(`${ruta.split("\\").join("/")} → ${donde}`);
+    }
+  }
+  assert.deepEqual(sucios, [], `archivos con tildes sueltas:\n  ${sucios.join("\n  ")}`);
+});
