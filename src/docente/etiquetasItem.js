@@ -547,6 +547,46 @@ Object.assign(REGLAS, {
    * actividad que sus estudiantes todavía tienen que jugar. Lo que sí va es la
    * transacción, que es de dónde sale el caso y lo identifica sin resolverlo.
    */
+  /*
+   * El desafío, con el prefijo de etapa que pone el orquestador:
+   *
+   *   et1:<transaccion>            armar el asiento
+   *   et2:<transaccion>:<cuenta>:<lado>   mayorizar un valor
+   *   et3:saldo:<cuenta>:cifra|lado       el saldo y su lado
+   *   et4:esf:<cuenta>                    dónde va en el estado
+   *
+   * La etapa va delante en el texto porque el profesor lee estas filas para
+   * saber en qué parte del ciclo se le cayó el estudiante, que es la pregunta
+   * que el desafío contesta y las doce actividades no.
+   */
+  "ciclo-completo": (id) => {
+    const [etapa, ...resto] = String(id).split(":");
+    const clave = resto.join(":");
+    const transaccion = (x) => LAVADO_DE_AUTOS.transacciones.find((t) => t.id === x);
+
+    if (etapa === "et1") {
+      const t = transaccion(clave);
+      return t ? `Diario · ${t.texto}` : null;
+    }
+    if (etapa === "et2") {
+      const [idTransaccion, cuenta, lado] = clave.split(":");
+      const t = transaccion(idTransaccion);
+      if (!t || !cuenta || !lado) return null;
+      return `Mayorizar · ${cuenta} al ${lado} — ${t.texto}`;
+    }
+    if (etapa === "et3") {
+      const [uno, cuenta, que] = clave.split(":");
+      if (uno !== "saldo" || (que !== "cifra" && que !== "lado")) return null;
+      return `Saldo · ${que === "cifra" ? "cuánto es" : "de qué lado va"}: ${cuenta}`;
+    }
+    if (etapa === "et4") {
+      const [uno, cuenta] = clave.split(":");
+      if (uno !== "esf" || !cuenta) return null;
+      return `Estado de situación · dónde va ${cuenta}`;
+    }
+    return null;
+  },
+
   "cu-error-escondido": (id) => {
     const [item, que] = String(id).split(":");
     const c = ERROR_ESCONDIDO.casos.find((x) => x.id === item);

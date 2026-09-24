@@ -16,10 +16,12 @@ import {
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
-import { SUBJECTS, HACER, APRENDER, clasificacionDe, actividadesDeTipo, nombreDeActividad } from "../data/subjects.js";
+import { SUBJECTS, HACER, APRENDER, clasificacionDe, actividadesDeTipo, desafioDe, nombreDeActividad } from "../data/subjects.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZAS_APRENDER } from "../data/contabilidadAprender.js";
 import { ESCENAS } from "./mecanicas/libros/escenas.jsx";
+import ElCicloCompleto from "./mecanicas/libros/ciclo/ElCicloCompleto.jsx";
+import EscritorioDelContador from "./mecanicas/libros/ciclo/EscritorioDelContador.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -87,7 +89,26 @@ export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, 
 
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
   const nodos = nodosDe(actividadesDeTipo(tema, HACER).filter((a) => !a.pendiente), hechas);
-  const resaltado = useNodoEnRuta(nodoAbierto, nodoInicial, esAprender ? [] : nodos.map((x) => x.id));
+
+  /*
+   * El desafío va AL LADO del camino, no dentro: actividadesDeTipo() ya lo
+   * excluye de los doce nodos y aquí se recoge aparte para la tarjeta
+   * especial, con su propio dibujo — el escritorio con sus tres hojas, como
+   * la mesa de junta es de NOVA y las olas son del Arca.
+   */
+  const desafio = desafioDe(tema);
+  const nodoDesafio = desafio && !desafio.pendiente && {
+    id: desafio.id,
+    nombre: desafio.nombre,
+    etiqueta: "Desafío",
+    completada: hechas.has(desafio.id),
+    Marca: EscritorioDelContador,
+  };
+  const resaltado = useNodoEnRuta(
+    nodoAbierto,
+    nodoInicial,
+    esAprender ? [] : [...nodos.map((x) => x.id), ...(nodoDesafio ? [nodoDesafio.id] : [])],
+  );
 
   const completarJuego = async (actividadId, porcentajeAciertos, duracionMs, detalle = null) => {
     celebrar(CLAS[actividadId]?.dificultad, actividadId);
@@ -97,7 +118,17 @@ export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, 
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
 
+  const completarDesafio = async (porcentajeAciertos, duracionMs, detalle = null) => {
+    if (!desafio) return;
+    celebrar(desafio.clasificacion?.dificultad, desafio.id);
+    const resultado = await registrarActividadCompletada(clasificacionDe(MATERIA, TEMA, desafio.id), {
+      materiaId: MATERIA, temaId: TEMA, actividadId: desafio.id, porcentajeAciertos, duracionMs, detalle,
+    });
+    if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
+  };
+
   const juego = esAprender ? null : JUEGOS.find((j) => j.id === nodoAbierto);
+  const enDesafio = !esAprender && nodoDesafio && nodoAbierto === nodoDesafio.id;
 
   return (
     <FondoMateria materiaId={MATERIA}>
@@ -134,7 +165,31 @@ export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, 
             <>
               <h2 style={h2}>El camino de este tema</h2>
               <p style={lead}>Toca el juego que quieras. No hay orden obligatorio: el camino sugiere uno, no lo impone.</p>
-              <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} porBloques />
+              <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} especial={nodoDesafio} resaltado={resaltado} porBloques />
+            </>
+          )}
+
+          {enDesafio && (
+            <>
+              <button
+                type="button"
+                onClick={() => setNodoAbierto(null)}
+                style={{ display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: "18px", fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, padding: "9px 15px", borderRadius: "999px", cursor: "pointer", background: "transparent", border: "1px solid rgba(248,249,250,0.22)", color: "rgba(248,249,250,0.7)" }}
+              >
+                <ChevronLeft size={15} /> Volver al camino
+              </button>
+              <EnlaceRendimiento actividadId={desafio.id} />
+              {/*
+                Ámbar y no el coral de «JUEGO n»: ámbar es el color del desafío
+                en todo el sitio —el halo del nodo, su aro, su etiqueta en el
+                camino— y coral significa error.
+              */}
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "0 0 8px" }}>
+                <p style={{ ...sectionLabel, color: FAE.ambar }}>DESAFÍO</p>
+                <ActivityBadge tipo={HACER} size="sm" />
+              </div>
+              <h2 style={h2}>{nodoDesafio.nombre}</h2>
+              <ElCicloCompleto onCompletar={completarDesafio} />
             </>
           )}
 

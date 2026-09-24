@@ -79,7 +79,16 @@ test("el tema tiene ruta propia y se llega a ella desde el índice", () => {
  * archivos .sql.
  */
 const VISTA = readFileSync("src/components/CuentasDebeHaberView.jsx", "utf8");
-const CONSTRUIDAS = [...VISTA.matchAll(/\{ id: "([a-z0-9-]+)", Mecanica:/g)].map((m) => m[1]);
+const JUEGOS_DE_LA_VISTA = [...VISTA.matchAll(/\{ id: "([a-z0-9-]+)", Mecanica:/g)].map((m) => m[1]);
+
+/*
+ * El desafío no entra por la lista de JUEGOS —va al lado del camino, en su
+ * propia rama— así que se reconoce por su componente. Sin esto, quitarle la
+ * marca `pendiente` sin montarlo dejaría un nodo que se abre en blanco, que es
+ * justo lo que esta prueba existe para impedir.
+ */
+const DESAFIO_MONTADO = /<ElCicloCompleto\b/.test(VISTA);
+const CONSTRUIDAS = [...JUEGOS_DE_LA_VISTA, ...(DESAFIO_MONTADO ? [DESAFIO.id] : [])];
 
 test("★ lo que la vista construye es EXACTAMENTE lo que el tema no marca pendiente", () => {
   /*
@@ -89,7 +98,7 @@ test("★ lo que la vista construye es EXACTAMENTE lo que el tema no marca pendi
    * docente no le sabe poner nombre porque la prueba de cobertura la estaba
    * dejando pasar por pendiente.
    */
-  const jugables = JUEGOS.filter((a) => !a.pendiente).map((a) => a.id);
+  const jugables = [...JUEGOS, desafioDe(TEMA)].filter((a) => a && !a.pendiente).map((a) => a.id);
   assert.deepEqual([...CONSTRUIDAS].sort(), [...jugables].sort());
 });
 
@@ -129,7 +138,8 @@ test("★ «tema completo» pide las doce, y el desafío no cuenta", () => {
    */
   assert.equal(JUEGOS.length, 12);
   assert.deepEqual(JUEGOS.filter((a) => a.pendiente), [], "una de las doce volvió a quedar pendiente");
-  assert.equal(CONSTRUIDAS.length, 12, "la vista no dibuja las doce");
+  assert.equal(JUEGOS_DE_LA_VISTA.length, 12, "la vista no dibuja las doce");
+  assert.ok(DESAFIO_MONTADO, "la vista no monta el desafío");
 
   const desafio = desafioDe(TEMA);
   assert.ok(desafio, "el tema perdió su desafío");

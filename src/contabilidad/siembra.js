@@ -1,4 +1,5 @@
 import { DEBE, HABER, LAVADO_DE_AUTOS, mayorConSaldos } from "../data/contabilidad.js";
+import { TIPOS_DE_ERROR as TIPOS_DE_ERROR_FICHA } from "../data/contabilidadActividades.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -131,12 +132,12 @@ export function sortearCasos(casos, cuantos, barajar) {
   return [...resto, mudo];
 }
 
-/* Los cuatro diagnósticos, en el orden en que el capítulo los enumera. */
-export const TIPOS_DE_ERROR = [
-  { id: "valor", nombre: "Valor equivocado" },
-  { id: "lado", nombre: "Lado equivocado" },
-  { id: "cuenta", nombre: "Cuenta equivocada" },
-  { id: "falta", nombre: "Falta un registro" },
-];
+/*
+ * Los cuatro diagnósticos viven en la ficha del capítulo, no aquí. Se
+ * reexportan para que la mecánica tenga un solo sitio del que importar, pero
+ * la lista es una sola: dos listas idénticas se separan el día que alguien
+ * reordene una.
+ */
+export { TIPOS_DE_ERROR } from "../data/contabilidadActividades.js";
 
-export const nombreDeTipo = (id) => TIPOS_DE_ERROR.find((t) => t.id === id)?.nombre ?? null;
+export const nombreDeTipo = (id) => TIPOS_DE_ERROR_FICHA.find((t) => t.id === id)?.nombre ?? null;

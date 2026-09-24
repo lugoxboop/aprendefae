@@ -531,7 +531,6 @@ export const SUBJECTS = {
              * dispara la regla del Kit en el servidor: 90 × 4 = 360 FP.
              */
             id: "ciclo-completo",
-            pendiente: true,
             nombre: "El Ciclo Completo",
             clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90, etapas: 4, desafio: true },
           },
