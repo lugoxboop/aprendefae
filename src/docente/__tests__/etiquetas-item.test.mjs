@@ -152,6 +152,7 @@ const IDS = {
   "cu-corriente-de-cuentas": CU.BANCO_CORRIENTE_DE_CUENTAS.items.map((x) => x.id),
   "cu-saldo-de-la-cuenta": CUA.SALDO_DE_LA_CUENTA.items.flatMap((x) => [`${x.id}:saldo`, `${x.id}:lado`]),
   "cu-simple-o-compuesto": CUA.SIMPLE_O_COMPUESTO.items.flatMap((x) => [`${x.id}:clase`, `${x.id}:cuentas`]),
+  "cu-arma-el-asiento": CUA.ARMA_EL_ASIENTO.items.map((x) => x.id),
 };
 
 test("todo id derivado de los bancos se puede nombrar", () => {

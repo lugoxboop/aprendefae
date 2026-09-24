@@ -3,7 +3,8 @@ import PrimeraClasificacion from "../bloques/PrimeraClasificacion.jsx";
 import { MarcoLibros } from "../bloques/marcos.jsx";
 import SaldoDeLaCuenta from "./SaldoDeLaCuenta.jsx";
 import SimpleOCompuestoMecanica from "./SimpleOCompuesto.jsx";
-import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO } from "../../../data/contabilidadActividades.js";
+import ArmaElAsientoMecanica from "./ArmaElAsiento.jsx";
+import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO } from "../../../data/contabilidadActividades.js";
 import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
@@ -13,15 +14,15 @@ import {
  * ═══════════════════════════════════════════════════════════════════════════
  * LAS ACTIVIDADES DE «LAS CUENTAS, EL DEBE Y EL HABER» QUE YA SE PUEDEN JUGAR.
  *
- * Cinco de las doce, las que caben en una mecánica que ya existe: clasificar
- * un enunciado entre dos o seis categorías. Es la convención del sitio —misma
- * mecánica, mismo motor, mismo gesto— y aquí además es lo que hace que el tema
- * quede jugable hoy en vez de dentro de tres bloques de trabajo.
+ * Las que caben en una mecánica que ya existía —clasificar un enunciado entre
+ * dos o seis categorías— se sientan en ella: es la convención del sitio, misma
+ * mecánica, mismo motor, mismo gesto. Las demás traen la suya, y las suyas
+ * comparten piezas entre sí: la cuenta T, el campo de cifra, el constructor de
+ * asientos.
  *
- * Las otras siete piden mecánicas nuevas (construir un asiento, mayorizar,
- * encontrar un error sembrado) y son el bloque siguiente. Mientras tanto NO
- * aparecen en el camino: un nodo que se abre a una pantalla en blanco es peor
- * que un nodo que todavía no está.
+ * Las que todavía no están construidas van marcadas `pendiente` en subjects.js
+ * y NO aparecen en el camino: un nodo que se abre a una pantalla en blanco es
+ * peor que un nodo que todavía no está.
  *
  * Cada una recibe solo `onCompletar`, como cualquier mecánica del sitio.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -61,6 +62,12 @@ export const DebitaOAcredita = ({ onCompletar }) => (
 export const ElSaldoDeLaCuenta = ({ onCompletar }) => (
   <SaldoDeLaCuenta Marco={MarcoLibros} acento={A}
     rotulo="APLICACIÓN" titulo={SALDO_DE_LA_CUENTA.subtema} onCompletar={onCompletar} />
+);
+
+/* CU-6: el estudiante arma el asiento — dos cuentas y el lado de cada una. */
+export const ArmaElAsiento = ({ onCompletar }) => (
+  <ArmaElAsientoMecanica Marco={MarcoLibros} acento={A}
+    rotulo="ANÁLISIS" titulo={ARMA_EL_ASIENTO.subtema} onCompletar={onCompletar} />
 );
 
 /* CU-7: la clase de asiento y cuántas cuentas toca. */

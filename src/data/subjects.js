@@ -504,7 +504,7 @@ export const SUBJECTS = {
           { id: "cu-debita-o-acredita", nombre: "¿Se Debita o se Acredita?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "cu-saldo-de-la-cuenta", nombre: "El Saldo de la Cuenta", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* Análisis */
-          { id: "cu-arma-el-asiento", pendiente: true, nombre: "Arma el Asiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "cu-arma-el-asiento", nombre: "Arma el Asiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "cu-simple-o-compuesto", nombre: "¿Simple o Compuesto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "cu-cuadra-o-no", pendiente: true, nombre: "¿Cuadra o No Cuadra?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "cu-corriente-de-cuentas", nombre: "Corriente de Cuentas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
