@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FAE } from "../../../theme.js";
 import { barajar } from "../../../utils/barajar.js";
 import { porcentaje } from "../../../data/politicaFiscal.js";
 import { SIMPLE_O_COMPUESTO } from "../../../data/contabilidadActividades.js";
@@ -35,6 +36,72 @@ import { Responder, useTanda } from "./piezas.jsx";
 
 /** Los números que el banco usa de verdad, en orden. Ni inventados ni fijos. */
 export const NUMEROS = [...new Set(SIMPLE_O_COMPUESTO.items.map((i) => i.cuentas))].sort((a, b) => a - b);
+
+/*
+ * ═══════════ LAS CUENTAS EN BLANCO ═══════════
+ *
+ * La pregunta no cambia —cuántas cuentas toca— y la respuesta tampoco: sigue
+ * siendo 2, 3 o 4. Lo que cambia es con qué se contesta. Tocar el dígito «3»
+ * no se parece a nada de lo que el estudiante va a hacer después; abrir tres
+ * cuentas sí, porque es exactamente lo que hará en El Asiento Compuesto y en
+ * el desafío.
+ *
+ * Las cuentas van EN BLANCO, sin nombre ni cifra, y eso es deliberado: aquí
+ * todavía no se pregunta cuáles son. Se pregunta cuántas.
+ */
+function CuentasEnBlanco({ elegidas, correcto, deshabilitado, onElegir, acento }) {
+  const maximo = Math.max(...NUMEROS);
+
+  const revelado = correcto != null;
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: `repeat(${maximo}, 1fr)`, gap: "8px", marginTop: "14px" }}>
+      {Array.from({ length: maximo }, (_, i) => i + 1).map((n) => {
+        const abierta = elegidas != null && n <= elegidas;
+        const debida = revelado && n <= correcto;
+        const posible = NUMEROS.includes(n);
+
+        let borde = "rgba(248,249,250,0.22)";
+        if (revelado && debida && elegidas === correcto) borde = FAE.teal;
+        else if (revelado && debida) borde = FAE.ambar;
+        else if (revelado && abierta) borde = FAE.coral;
+        else if (abierta) borde = acento;
+
+        return (
+          <button
+            key={n}
+            type="button"
+            data-cuenta-en-blanco={n}
+            data-abierta={abierta ? "si" : "no"}
+            disabled={deshabilitado || !posible}
+            aria-label={`Un asiento de ${n} cuentas`}
+            aria-pressed={elegidas === n}
+            onClick={() => onElegir(n)}
+            style={{
+              padding: "9px 4px 7px", borderRadius: "11px",
+              cursor: deshabilitado || !posible ? "default" : "pointer",
+              background: abierta ? "rgba(10,20,34,0.55)" : "rgba(10,20,34,0.22)",
+              border: `1px ${abierta ? "solid" : "dashed"} ${borde}`,
+              opacity: posible ? 1 : 0.35,
+              transition: "border-color 180ms ease, background 180ms ease",
+            }}
+          >
+            {/* La T en miniatura: un techo y una raya que parte el espacio. */}
+            <span aria-hidden="true" style={{ display: "block", height: "1px", background: borde, margin: "0 3px 0" }} />
+            <span aria-hidden="true" style={{ display: "block", width: "1px", height: "20px", background: borde, margin: "0 auto" }} />
+            <span style={{
+              display: "block", marginTop: "5px", fontFamily: "Sora, sans-serif",
+              fontSize: "11px", fontWeight: 700,
+              color: abierta ? FAE.text : "rgba(248,249,250,0.35)",
+            }}>
+              {n}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 /*
  * La devolución sale de la ficha y se elige por lo que el estudiante hizo:
@@ -161,19 +228,13 @@ export default function SimpleOCompuesto({ Marco, rotulo, titulo, acento, onComp
         «2», «3» y «4» ocupaban tres filas enteras del teléfono para decir tres
         caracteres, y empujaban la devolución fuera de la pantalla.
       */}
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(${NUMEROS.length}, 1fr)`, gap: "10px", marginTop: "14px" }}>
-        {NUMEROS.map((n) => (
-          <Opcion
-            key={n}
-            ancho
-            deshabilitada={Boolean(retro)}
-            onClick={() => setCuentas(n)}
-            estado={estadoDe(cuentas, n, item.cuentas)}
-          >
-            {n}
-          </Opcion>
-        ))}
-      </div>
+      <CuentasEnBlanco
+        elegidas={cuentas}
+        correcto={retro ? item.cuentas : null}
+        deshabilitado={Boolean(retro)}
+        onElegir={setCuentas}
+        acento={acento}
+      />
 
       {retro && <Retro texto={retro.texto} />}
 

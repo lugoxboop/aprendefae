@@ -7,6 +7,8 @@ import {
 import { Opcion, Opciones, Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { Responder, useTanda, leerCifra, CampoCifra, AsientoEnLineas } from "./piezas.jsx";
+import { Balanza, EstilosDeVerbos } from "./verbos.jsx";
+import { inclinacionDe } from "../../../contabilidad/balanza.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -159,6 +161,7 @@ export default function CuadraONoCuadra({ Marco, rotulo, titulo, acento, onCompl
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+      <EstilosDeVerbos />
       <div style={{ marginBottom: "12px" }}>
         <Pulsos total={t.items.length} hechos={t.i + (retro ? 1 : 0)} etiqueta="Asiento" />
       </div>
@@ -203,6 +206,27 @@ export default function CuadraONoCuadra({ Marco, rotulo, titulo, acento, onCompl
             autoFoco
           />
         </>
+      )}
+
+      {/*
+        LA BALANZA LLEGA DESPUÉS DE RESPONDER, Y NO ES UN ADORNO.
+        Esta actividad PIDE el juicio: dibujarla antes —inclinada o recta—
+        sería contestar la pregunta en la pantalla. Al corregir, en cambio,
+        el descuadre deja de ser una resta y pasa a ser una imagen, y la
+        inclinación es proporcional: $50 de diferencia en un asiento de
+        $5.000 se ve apenas, y eso también enseña.
+      */}
+      {retro && (
+        <div style={{ marginTop: "14px" }}>
+          <Balanza
+            inclinacion={inclinacionDe(retro.balance.debe, retro.balance.haber)}
+            izquierda={pesos(retro.balance.debe)}
+            derecha={pesos(retro.balance.haber)}
+            etiqueta={retro.balance.cuadra
+              ? "Los dos lados pesan lo mismo: el asiento cuadra"
+              : `El asiento está descuadrado por ${pesos(retro.balance.descuadre)}`}
+          />
+        </div>
       )}
 
       {retro && <Retro texto={retro.texto} />}

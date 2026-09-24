@@ -6,6 +6,8 @@ import { ASIENTO_COMPUESTO, COMPUESTAS_SUELTAS } from "../../../data/contabilida
 import { Retro, Pulsos, Cierre, Enunciado } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { Responder, useTanda, leerCifra, AsientoEnLineas } from "./piezas.jsx";
+import { Balanza, EstilosDeVerbos } from "./verbos.jsx";
+import { inclinacionDe } from "../../../contabilidad/balanza.js";
 import ConstructorAsiento, { filaVacia, asientoDe } from "./ConstructorAsiento.jsx";
 import { UNIVERSO as UNIVERSO_SIMPLE } from "./ArmaElAsiento.jsx";
 
@@ -260,6 +262,7 @@ export default function ElAsientoCompuesto({ Marco, rotulo, titulo, acento, onCo
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+      <EstilosDeVerbos />
       <div style={{ marginBottom: "12px" }}>
         <Pulsos total={t.items.length} hechos={t.i + (retro ? 1 : 0)} etiqueta="Transacción" />
       </div>
@@ -276,6 +279,25 @@ export default function ElAsientoCompuesto({ Marco, rotulo, titulo, acento, onCo
         acento={acento}
         onFilas={setFilas}
       />
+
+      {/*
+        LA BALANZA ARRANCA COMO EL ESTUDIANTE LA DEJÓ. Si su asiento no
+        cuadraba, entra INCLINADA en proporción al descuadre —no «torcida» a
+        secas— y se queda así: el error no se corrige solo, se ve. El asiento
+        correcto va debajo, como siempre.
+      */}
+      {retro && (
+        <div style={{ marginTop: "14px" }}>
+          <Balanza
+            inclinacion={inclinacionDe(retro.totalDebe, retro.totalHaber)}
+            izquierda={pesos(retro.totalDebe)}
+            derecha={pesos(retro.totalHaber)}
+            etiqueta={retro.cuadra
+              ? "Los dos lados pesan lo mismo"
+              : `Su asiento quedó descuadrado por ${pesos(Math.abs(retro.totalDebe - retro.totalHaber))}`}
+          />
+        </div>
+      )}
 
       {retro?.texto && <Retro texto={retro.texto} />}
       {retro && !retro.perfecto && <AsientoCorrecto real={retro.real} />}

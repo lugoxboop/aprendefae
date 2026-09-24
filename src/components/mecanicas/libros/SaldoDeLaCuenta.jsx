@@ -5,7 +5,8 @@ import { DEBE, pesos, saldoDe, mayorizar, LAVADO_DE_AUTOS, CALEJA } from "../../
 import { SALDO_DE_LA_CUENTA, CAJA_DEL_CAPITULO } from "../../../data/contabilidadActividades.js";
 import { Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
-import { CuentaT, CampoCifra, ElegirLado, Responder, leerCifra, useTanda } from "./piezas.jsx";
+import { CampoCifra, ElegirLado, Responder, leerCifra, useTanda } from "./piezas.jsx";
+import { CuentaDeValor, EstilosDeVerbos } from "./verbos.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -134,11 +135,27 @@ export default function SaldoDeLaCuenta({ Marco, rotulo, titulo, acento, onCompl
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+      <EstilosDeVerbos />
       <div style={{ marginBottom: "12px" }}>
         <Pulsos total={t.items.length} hechos={t.i + (retro ? 1 : 0)} etiqueta="Cuenta" />
       </div>
 
-      <CuentaT cuenta={cuenta} saldo={retro ? retro.real : null} />
+      {/*
+        LAS COLUMNAS DE VALOR, NO LA LISTA DE CIFRAS. Cada movimiento mide lo
+        que vale, así que de un vistazo se ve cuál lado pesó más — que es la
+        segunda pregunta— sin que se regale la primera: cuánto es el saldo
+        sigue siendo una resta.
+
+        Y LA CANCELACIÓN ESPERA AL RESPONDER. Consumir los dos lados antes de
+        tiempo dejaría el saldo dibujado en pantalla y no habría nada que
+        calcular; al responder, lo que queda en pie ES el saldo.
+      */}
+      <CuentaDeValor
+        cuenta={cuenta.cuenta}
+        debitos={cuenta.debitos}
+        creditos={cuenta.creditos}
+        cancelar={Boolean(retro)}
+      />
 
       <p style={{
         margin: "16px 0 8px", fontFamily: "Sora, sans-serif", fontSize: "10.5px",

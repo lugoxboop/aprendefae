@@ -7,6 +7,11 @@ import { Retro, Pulsos, Cierre, Enunciado } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { Responder, useTanda } from "./piezas.jsx";
 import ConstructorAsiento, { filaVacia, asientoDe } from "./ConstructorAsiento.jsx";
+import { Balanza, EstilosDeVerbos } from "./verbos.jsx";
+import { inclinacionDe } from "../../../contabilidad/balanza.js";
+
+/* Cuántas filas quedaron de un lado. Sin cifras, el peso es el recuento. */
+const cuantasAlLado = (filas, lado) => filas.filter((f) => f.cuenta && f.lado === lado).length;
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -193,6 +198,7 @@ export default function ArmaElAsiento({ Marco, rotulo, titulo, acento, onComplet
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+      <EstilosDeVerbos />
       <div style={{ marginBottom: "12px" }}>
         <Pulsos total={t.items.length} hechos={t.i + (retro ? 1 : 0)} etiqueta="Transacción" />
       </div>
@@ -207,6 +213,26 @@ export default function ArmaElAsiento({ Marco, rotulo, titulo, acento, onComplet
         acento={acento}
         onFilas={setFilas}
       />
+
+      {/*
+        LA BALANZA, SOLO AL CORREGIR. Aquí no hay cifras: lo que se pesa es
+        cuántas cuentas quedaron de cada lado, que en un asiento simple es una
+        y una. Poner las dos al mismo lado la tumba del todo, y eso es
+        exactamente lo que el estudiante acaba de hacer mal — pero se enseña
+        DESPUÉS de responder, porque antes sería decirle la respuesta.
+      */}
+      {retro && (
+        <div style={{ marginTop: "14px" }}>
+          <Balanza
+            inclinacion={inclinacionDe(cuantasAlLado(filas, DEBE), cuantasAlLado(filas, HABER))}
+            izquierda={`${cuantasAlLado(filas, DEBE)} al debe`}
+            derecha={`${cuantasAlLado(filas, HABER)} al haber`}
+            etiqueta={cuantasAlLado(filas, DEBE) === cuantasAlLado(filas, HABER)
+              ? "Una cuenta a cada lado: la partida doble se sostiene"
+              : "Las dos cuentas quedaron del mismo lado y la balanza se cayó"}
+          />
+        </div>
+      )}
 
       {retro && <Retro texto={retro.texto} />}
 

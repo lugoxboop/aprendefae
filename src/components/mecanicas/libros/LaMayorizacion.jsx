@@ -111,7 +111,19 @@ export function evaluarSaldo(cuentaDelMayor, cifra, lado) {
  * `AsientoEnLineas` a propósito — aquella es un resumen y esta es la página
  * del diario, y la sangría es justo lo que la ficha le pide leer al estudiante.
  */
-function AsientoDeDiario({ transaccion, resaltado }) {
+/*
+ * ═══════════ LA MARCA DE MAYORIZADO, Y POR QUÉ NO SE BORRA NADA ═══════════
+ *
+ * El renglón que ya pasó al mayor recibe su ✓ al costado y SE QUEDA entero y
+ * legible. El capítulo lo prohíbe expresamente —un asiento registrado no se
+ * altera, no se corrige, no se tacha— y la columna de referencia de un diario
+ * de verdad es exactamente esto: una marca que dice «este ya está allá».
+ *
+ * Quitar el renglón enseñaría que el dato SE MUDA del diario al mayor, y la
+ * actividad de al lado —la pieza 4 de Aprender— dice lo contrario: los mismos
+ * datos, dos ordenamientos, ninguno reemplaza al otro.
+ */
+function AsientoDeDiario({ transaccion, resaltado, mayorizados = [] }) {
   const lineas = [
     ...transaccion.asiento.debe.map(([cuenta, valor]) => ({ cuenta, valor, lado: DEBE })),
     ...transaccion.asiento.haber.map(([cuenta, valor]) => ({ cuenta, valor, lado: HABER })),
@@ -152,6 +164,12 @@ function AsientoDeDiario({ transaccion, resaltado }) {
               color: es ? COLOR_LADO[l.lado] : "rgba(248,249,250,0.6)",
             }}>
               {pesos(l.valor)}
+            </span>
+            <span data-marca={mayorizados.includes(k) ? "si" : "no"} aria-hidden="true" style={{
+              width: "14px", textAlign: "center", fontSize: "11px",
+              color: mayorizados.includes(k) ? FAE.teal : "rgba(248,249,250,0.2)",
+            }}>
+              {mayorizados.includes(k) ? "✓" : "·"}
             </span>
           </div>
         );
@@ -199,6 +217,21 @@ export default function LaMayorizacion({ Marco, rotulo, titulo, acento, onComple
   const indiceEnAsiento = renglon
     ? renglonesDe([transaccion]).findIndex((l) => l.cuenta === renglon.cuenta && l.lado === renglon.lado)
     : -1;
+
+  /*
+   * Qué renglones de ESTE asiento ya llevan su marca. Se calcula de la
+   * posición dentro del recorrido —no de una lista aparte— para que no pueda
+   * quedar marcado algo que no se ha mayorizado ni al revés. El renglón en
+   * curso recibe la suya al corregir, no al preguntar.
+   */
+  const inicioDelAsiento = renglon
+    ? renglones.findIndex((l) => l.transaccion === renglon.transaccion)
+    : -1;
+  const yaMayorizados = renglon
+    ? renglonesDe([transaccion])
+      .map((_, k) => k)
+      .filter((k) => inicioDelAsiento + k < paso || (inicioDelAsiento + k === paso && Boolean(retro)))
+    : [];
 
   const listo = enMayorizar
     ? Boolean(cuenta && lado)
@@ -267,7 +300,7 @@ export default function LaMayorizacion({ Marco, rotulo, titulo, acento, onComple
 
       {enMayorizar ? (
         <>
-          <AsientoDeDiario transaccion={transaccion} resaltado={indiceEnAsiento} />
+          <AsientoDeDiario transaccion={transaccion} resaltado={indiceEnAsiento} mayorizados={yaMayorizados} />
           <p style={rotuloPregunta}>¿A QUÉ CUENTA DEL MAYOR VA?</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
             {cuentasDelSet.map((c) => {
