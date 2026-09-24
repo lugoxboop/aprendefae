@@ -34,8 +34,9 @@ import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
 } from "../contabilidad/bancos.js";
-import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO } from "../data/contabilidadActividades.js";
+import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO } from "../data/contabilidadActividades.js";
 import { transaccionDe } from "../components/mecanicas/libros/ArmaElAsiento.jsx";
+import { transaccionDe as transaccionCompuesta } from "../components/mecanicas/libros/ElAsientoCompuesto.jsx";
 import { LAVADO_DE_AUTOS, CALEJA } from "../data/contabilidad.js";
 
 /* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
@@ -474,6 +475,12 @@ Object.assign(REGLAS, {
   "cu-arma-el-asiento": (id) => {
     const i = ARMA_EL_ASIENTO.items.find((x) => x.id === id);
     return i ? transaccionDe(i).texto : null;
+  },
+
+  /* Igual que CU-6: el id es el del item y la etiqueta, su transaccion. */
+  "cu-asiento-compuesto": (id) => {
+    const i = ASIENTO_COMPUESTO.items.find((x) => x.id === id);
+    return i ? transaccionCompuesta(i).texto : null;
   },
 
   /*

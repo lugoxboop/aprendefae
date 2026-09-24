@@ -509,7 +509,7 @@ export const SUBJECTS = {
           { id: "cu-cuadra-o-no", pendiente: true, nombre: "¿Cuadra o No Cuadra?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "cu-corriente-de-cuentas", nombre: "Corriente de Cuentas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* Maestría */
-          { id: "cu-asiento-compuesto", pendiente: true, nombre: "El Asiento Compuesto", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          { id: "cu-asiento-compuesto", nombre: "El Asiento Compuesto", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
           { id: "cu-mayorizacion", pendiente: true, nombre: "La Mayorización", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
           { id: "cu-error-escondido", pendiente: true, nombre: "El Error Escondido", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
           {

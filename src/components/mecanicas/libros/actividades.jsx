@@ -4,7 +4,8 @@ import { MarcoLibros } from "../bloques/marcos.jsx";
 import SaldoDeLaCuenta from "./SaldoDeLaCuenta.jsx";
 import SimpleOCompuestoMecanica from "./SimpleOCompuesto.jsx";
 import ArmaElAsientoMecanica from "./ArmaElAsiento.jsx";
-import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO } from "../../../data/contabilidadActividades.js";
+import ElAsientoCompuestoMecanica from "./ElAsientoCompuesto.jsx";
+import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO } from "../../../data/contabilidadActividades.js";
 import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
@@ -85,4 +86,10 @@ export const SimpleOCompuesto = ({ onCompletar }) => (
 export const CorrienteDeCuentas = ({ onCompletar }) => (
   <PrimeraClasificacion banco={BANCO_CORRIENTE_DE_CUENTAS} Marco={MarcoLibros} acento={A} barajarOpciones cae
     rotulo="ANÁLISIS" titulo={BANCO_CORRIENTE_DE_CUENTAS.subtema} onCompletar={onCompletar} />
+);
+
+/* CU-10: el mismo constructor, con cifras y hasta cuatro cuentas. */
+export const ElAsientoCompuesto = ({ onCompletar }) => (
+  <ElAsientoCompuestoMecanica Marco={MarcoLibros} acento={A}
+    rotulo="MAESTRÍA" titulo={ASIENTO_COMPUESTO.subtema} onCompletar={onCompletar} />
 );
