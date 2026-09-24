@@ -23,6 +23,7 @@ import {
 import { MEMORAMAS, CLASIFICACIONES } from "../../data/cimientos.js";
 import * as PM from "../../data/politicaMonetaria.js";
 import * as CU from "../../contabilidad/bancos.js";
+import * as CUA from "../../data/contabilidadActividades.js";
 import {
   CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
   EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
@@ -149,6 +150,8 @@ const IDS = {
   "cu-cuadro-dinamicas": CU.BANCO_CUADRO_DINAMICAS.items.map((x) => x.id),
   "cu-debita-o-acredita": CU.BANCO_DEBITA_O_ACREDITA.items.map((x) => x.id),
   "cu-corriente-de-cuentas": CU.BANCO_CORRIENTE_DE_CUENTAS.items.map((x) => x.id),
+  "cu-saldo-de-la-cuenta": CUA.SALDO_DE_LA_CUENTA.items.flatMap((x) => [`${x.id}:saldo`, `${x.id}:lado`]),
+  "cu-simple-o-compuesto": CUA.SIMPLE_O_COMPUESTO.items.flatMap((x) => [`${x.id}:clase`, `${x.id}:cuentas`]),
 };
 
 test("todo id derivado de los bancos se puede nombrar", () => {

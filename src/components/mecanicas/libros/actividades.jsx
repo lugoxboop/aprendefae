@@ -1,6 +1,9 @@
 import { FAE } from "../../../theme.js";
 import PrimeraClasificacion from "../bloques/PrimeraClasificacion.jsx";
 import { MarcoLibros } from "../bloques/marcos.jsx";
+import SaldoDeLaCuenta from "./SaldoDeLaCuenta.jsx";
+import SimpleOCompuestoMecanica from "./SimpleOCompuesto.jsx";
+import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO } from "../../../data/contabilidadActividades.js";
 import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
@@ -52,6 +55,18 @@ export const CuadroDinamicas = ({ onCompletar }) => (
 export const DebitaOAcredita = ({ onCompletar }) => (
   <PrimeraClasificacion banco={BANCO_DEBITA_O_ACREDITA} Marco={MarcoLibros} acento={A}
     rotulo="APLICACIÓN" titulo={BANCO_DEBITA_O_ACREDITA.subtema} onCompletar={onCompletar} />
+);
+
+/* CU-5: la cuenta T con sus movimientos, y dos preguntas — la cifra y el lado. */
+export const ElSaldoDeLaCuenta = ({ onCompletar }) => (
+  <SaldoDeLaCuenta Marco={MarcoLibros} acento={A}
+    rotulo="APLICACIÓN" titulo={SALDO_DE_LA_CUENTA.subtema} onCompletar={onCompletar} />
+);
+
+/* CU-7: la clase de asiento y cuántas cuentas toca. */
+export const SimpleOCompuesto = ({ onCompletar }) => (
+  <SimpleOCompuestoMecanica Marco={MarcoLibros} acento={A}
+    rotulo="ANÁLISIS" titulo={SIMPLE_O_COMPUESTO.subtema} onCompletar={onCompletar} />
 );
 
 /*

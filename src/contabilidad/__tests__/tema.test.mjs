@@ -91,7 +91,6 @@ test("★ lo que la vista construye es EXACTAMENTE lo que el tema no marca pendi
    */
   const jugables = JUEGOS.filter((a) => !a.pendiente).map((a) => a.id);
   assert.deepEqual([...CONSTRUIDAS].sort(), [...jugables].sort());
-  assert.equal(CONSTRUIDAS.length, 5);
 });
 
 test("★ ninguna actividad pendiente llega al camino", () => {
@@ -101,14 +100,22 @@ test("★ ninguna actividad pendiente llega al camino", () => {
    * emitir un ítem que el profesor no sepa leer.
    */
   const desafio = desafioDe(TEMA);
-  const pendientes = [...JUEGOS, ...(desafio ? [desafio] : [])].filter((a) => a.pendiente);
-  assert.equal(pendientes.length, 8, "siete juegos y el desafío");
+  const todas = [...JUEGOS, ...(desafio ? [desafio] : [])];
+  const pendientes = todas.filter((a) => a.pendiente);
   for (const a of pendientes) {
     assert.ok(!CONSTRUIDAS.includes(a.id), `${a.id}: está marcada pendiente y la vista la dibuja`);
   }
+  /*
+   * El número no se escribe: cada actividad del tema está construida o
+   * pendiente, y nunca las dos ni ninguna. Escribirlo obligaría a subirlo a
+   * mano en cada bloque de trabajo, que es justo la clase de cuenta que se
+   * olvida de actualizar.
+   */
+  assert.equal(CONSTRUIDAS.length + pendientes.length, todas.length);
+  assert.equal(todas.length, 13, "doce juegos y el desafío");
 });
 
-test("★ «tema completo» sigue pidiendo las doce, no las cinco de hoy", () => {
+test("★ «tema completo» sigue pidiendo las doce, no las que ya estén construidas", () => {
   /*
    * Si el tema declarara solo lo construido, alguien terminaría las cinco, se
    * ganaría la medalla de tema completo, y al entrar las otras siete se la

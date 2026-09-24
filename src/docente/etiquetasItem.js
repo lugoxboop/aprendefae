@@ -34,6 +34,11 @@ import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
 } from "../contabilidad/bancos.js";
+import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO } from "../data/contabilidadActividades.js";
+import { LAVADO_DE_AUTOS, CALEJA } from "../data/contabilidad.js";
+
+/* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
+const EMPRESAS = { lavado: LAVADO_DE_AUTOS.empresa, caleja: CALEJA.empresa };
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -443,6 +448,38 @@ Object.assign(REGLAS, {
   "cu-cuadro-dinamicas": (id) => porId(BANCO_CUADRO_DINAMICAS.items, "texto")[id] ?? null,
   "cu-debita-o-acredita": (id) => porId(BANCO_DEBITA_O_ACREDITA.items, "texto")[id] ?? null,
   "cu-corriente-de-cuentas": (id) => porId(BANCO_CORRIENTE_DE_CUENTAS.items, "texto")[id] ?? null,
+
+  /*
+   * `<cuenta>:saldo` y `<cuenta>:lado`: las dos preguntas de cada cuenta.
+   *
+   * LA EMPRESA VA EN LA ETIQUETA Y NO SOBRA. Tres ítems del banco son la
+   * cuenta «Caja» —la de Lavado de Autos, la de Caleja y la del ejemplo del
+   * capítulo— y sin decir de cuál empresa, el profesor vería tres preguntas
+   * distintas escritas exactamente igual.
+   */
+  "cu-saldo-de-la-cuenta": (id) => {
+    const [item, que] = String(id).split(":");
+    const i = SALDO_DE_LA_CUENTA.items.find((x) => x.id === item);
+    if (!i || (que !== "saldo" && que !== "lado")) return null;
+    const empresa = i.caso === "capitulo" ? "ejemplo del capítulo" : EMPRESAS[i.caso];
+    if (!empresa) return null;
+    return `${que === "saldo" ? "Cuánto es el saldo" : "De qué lado va"}: ${i.cuenta} (${empresa})`;
+  },
+
+  /*
+   * `<transaccion>:clase` y `<transaccion>:cuentas`.
+   *
+   * LA PREGUNTA VA DELANTE DEL ENUNCIADO, y no es cuestión de estilo: los
+   * enunciados de este banco pasan de los 70 caracteres del recorte, así que
+   * con la pregunta al final las dos etiquetas del mismo ítem se cortaban en
+   * el mismo sitio y el profesor veía dos filas idénticas.
+   */
+  "cu-simple-o-compuesto": (id) => {
+    const [item, que] = String(id).split(":");
+    const i = SIMPLE_O_COMPUESTO.items.find((x) => x.id === item);
+    if (!i || (que !== "clase" && que !== "cuentas")) return null;
+    return `${que === "clase" ? "Simple o compuesto" : "Cuántas cuentas"}: ${i.enunciado}`;
+  },
 });
 
 /*
