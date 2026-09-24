@@ -24,6 +24,8 @@ import { MEMORAMAS, CLASIFICACIONES } from "../../data/cimientos.js";
 import * as PM from "../../data/politicaMonetaria.js";
 import * as CU from "../../contabilidad/bancos.js";
 import * as CUA from "../../data/contabilidadActividades.js";
+import { transaccionesDe, renglonesDe } from "../../components/mecanicas/libros/LaMayorizacion.jsx";
+import { mayorConSaldos } from "../../data/contabilidad.js";
 import {
   CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
   EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
@@ -155,6 +157,13 @@ const IDS = {
   "cu-arma-el-asiento": CUA.ARMA_EL_ASIENTO.items.map((x) => x.id),
   "cu-asiento-compuesto": CUA.ASIENTO_COMPUESTO.items.map((x) => x.id),
   "cu-cuadra-o-no": CUA.CUADRA_O_NO.asientos.flatMap((x) => [`${x.id}:juicio`, `${x.id}:cifra`]),
+  "cu-mayorizacion": CUA.MAYORIZACION.sets.flatMap((s) => {
+    const ts = transaccionesDe(s);
+    return [
+      ...renglonesDe(ts).flatMap((r) => [`${r.transaccion}:${r.cuenta}:cuenta`, `${r.transaccion}:${r.cuenta}:lado`]),
+      ...mayorConSaldos(ts).flatMap((c) => [`saldo:${c.cuenta}:cifra`, `saldo:${c.cuenta}:lado`]),
+    ];
+  }),
 };
 
 test("todo id derivado de los bancos se puede nombrar", () => {

@@ -27,7 +27,7 @@ const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act ?? (await import("react-dom/test-utils")).act;
 
-const { Pulsos, Opcion } = await import("../corazon/juego.jsx");
+const { Pulsos, Opcion, MAXIMO_NODOS } = await import("../corazon/juego.jsx");
 const { CARD_SHELL } = await import("../../SubjectCard.jsx");
 const { FAE } = await import("../../../theme.js");
 
@@ -69,6 +69,40 @@ test("avance: nodos unidos por una línea; hechos llenos teal, el actual con ani
     assert.equal(barra.getAttribute("aria-valuenow"), "3");
     assert.equal(barra.getAttribute("aria-valuemax"), "10");
     assert.doesNotMatch(m.caja.innerHTML, CORAL, "ni un coral en el avance");
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★ avance: por encima del tope los nodos dejan paso a una barra", () => {
+  /*
+   * La Mayorizacion pide diecinueve pasos y veinticuatro en su otro set. Con
+   * nodos, la fila se salia de un telefono de 375 px y se comia el rotulo. La
+   * barra dice lo mismo sin ocupar ancho por paso.
+   */
+  const m = montar(React.createElement(Pulsos, { total: 24, hechos: 6, etiqueta: "Renglón" }));
+  try {
+    const avance = m.caja.querySelector("[data-avance]");
+    assert.ok(avance.hasAttribute("data-barra"), "con 24 pasos tiene que ser barra");
+    assert.equal(avance.querySelectorAll("[data-nodo]").length, 0, "no quedan nodos que contar");
+    const tramo = avance.querySelector("[data-tramo-hecho]");
+    assert.equal(tramo.style.width, "25%", "seis de veinticuatro es un cuarto");
+    /* El rotulo sigue diciendo el numero exacto, que es lo que hace falta. */
+    assert.equal(avance.textContent.trim(), "Renglón 6 de 24");
+    const barra = avance.querySelector('[role="progressbar"]');
+    assert.equal(barra.getAttribute("aria-valuenow"), "6");
+    assert.equal(barra.getAttribute("aria-valuemax"), "24");
+    assert.doesNotMatch(m.caja.innerHTML, CORAL, "ni un coral en el avance");
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("avance: justo en el tope todavia son nodos", () => {
+  const m = montar(React.createElement(Pulsos, { total: MAXIMO_NODOS, hechos: 2 }));
+  try {
+    assert.equal(m.caja.querySelectorAll("[data-nodo]").length, MAXIMO_NODOS);
+    assert.equal(m.caja.querySelectorAll("[data-barra]").length, 0);
   } finally {
     m.desmontar();
   }

@@ -34,7 +34,7 @@ import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
 } from "../contabilidad/bancos.js";
-import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, balanceDelAsiento } from "../data/contabilidadActividades.js";
+import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, balanceDelAsiento, MAYORIZACION } from "../data/contabilidadActividades.js";
 import { transaccionDe } from "../components/mecanicas/libros/ArmaElAsiento.jsx";
 import { transaccionDe as transaccionCompuesta } from "../components/mecanicas/libros/ElAsientoCompuesto.jsx";
 import { LAVADO_DE_AUTOS, CALEJA, pesos as pesosContables } from "../data/contabilidad.js";
@@ -496,6 +496,25 @@ Object.assign(REGLAS, {
     const cuentas = [...a.debe, ...a.haber].map(([c]) => c).join(" / ");
     const pregunta = que === "juicio" ? "Cuadra o no" : "La diferencia";
     return `${pregunta} · ${pesosContables(b.debe)} contra ${pesosContables(b.haber)}: ${cuentas}`;
+  },
+
+  /*
+   * Dos gramaticas: `<transaccion>:<cuenta>:cuenta|lado` al mayorizar, y
+   * `saldo:<cuenta>:cifra|lado` en la segunda fase. El primer trozo distingue
+   * las dos sin ambiguedad porque ninguna transaccion se llama "saldo".
+   */
+  "cu-mayorizacion": (id) => {
+    const trozos = String(id).split(":");
+    if (trozos.length !== 3) return null;
+    const [uno, cuenta, que] = trozos;
+    if (uno === "saldo") {
+      if (que !== "cifra" && que !== "lado") return null;
+      return `${que === "cifra" ? "Cuanto es el saldo" : "De que lado va el saldo"}: ${cuenta}`;
+    }
+    if (que !== "cuenta" && que !== "lado") return null;
+    const t = [...LAVADO_DE_AUTOS.transacciones, ...CALEJA.transacciones].find((x) => x.id === uno);
+    if (!t) return null;
+    return `${que === "cuenta" ? "A que cuenta va" : "De que lado va"} ${cuenta} — ${t.texto}`;
   },
 
   /* Igual que CU-6: el id es el del item y la etiqueta, su transaccion. */

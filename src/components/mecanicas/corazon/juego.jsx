@@ -204,10 +204,56 @@ export function Retro({ texto }) {
  *
  * «Ítem 3 de 10» va pegado a la línea, en Inter, como rótulo de la misma pieza.
  */
+/*
+ * ═══════════ CUÁNDO LOS NODOS DEJAN DE SER NODOS ═══════════
+ *
+ * Cada nodo pide unos 13 px de ancho mínimo, así que a 375 px caben catorce
+ * contando el rótulo. La Mayorización pide diecinueve y veinticuatro —es la
+ * única actividad que trabaja un caso entero— y con esos, la fila se salía y
+ * el rótulo «Renglón 3 de 19» quedaba cortado por la derecha.
+ *
+ * Por encima del tope, los nodos se sustituyen por una barra continua. No es
+ * una pérdida: catorce puntos ya no se cuentan de un vistazo, y lo que el
+ * estudiante necesita saber —cuánto llevo— lo dice mejor una barra y el
+ * rótulo, que sigue estando y sigue diciendo el número exacto.
+ */
+export const MAXIMO_NODOS = 14;
+
 export function Pulsos({ total, hechos, etiqueta = "Avance" }) {
   const actual = hechos < total ? hechos : null;
   const hasta = total > 1 ? Math.min(hechos, total - 1) / (total - 1) : 0;
   const NODO = 10;
+
+  if (total > MAXIMO_NODOS) {
+    const llevado = total > 0 ? Math.min(hechos, total) / total : 0;
+    return (
+      <div data-avance data-barra style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+        <div
+          role="progressbar"
+          aria-label={etiqueta}
+          aria-valuemin={0}
+          aria-valuemax={total}
+          aria-valuenow={hechos}
+          style={{
+            position: "relative", flex: "1 1 auto", minWidth: "60px", height: "6px",
+            borderRadius: "999px", background: "rgba(248,249,250,0.2)", overflow: "hidden",
+          }}
+        >
+          <span
+            aria-hidden="true"
+            data-tramo-hecho
+            style={{
+              position: "absolute", left: 0, top: 0, bottom: 0,
+              width: `${llevado * 100}%`, background: FAE.teal, transition: "width 240ms ease",
+            }}
+          />
+        </div>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: "11.5px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
+          {etiqueta} {hechos} de {total}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div data-avance style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>

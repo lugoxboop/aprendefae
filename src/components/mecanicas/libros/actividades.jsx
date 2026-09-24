@@ -6,7 +6,8 @@ import SimpleOCompuestoMecanica from "./SimpleOCompuesto.jsx";
 import ArmaElAsientoMecanica from "./ArmaElAsiento.jsx";
 import ElAsientoCompuestoMecanica from "./ElAsientoCompuesto.jsx";
 import CuadraONoCuadraMecanica from "./CuadraONoCuadra.jsx";
-import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO } from "../../../data/contabilidadActividades.js";
+import LaMayorizacionMecanica from "./LaMayorizacion.jsx";
+import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, MAYORIZACION } from "../../../data/contabilidadActividades.js";
 import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
@@ -99,4 +100,10 @@ export const CorrienteDeCuentas = ({ onCompletar }) => (
 export const ElAsientoCompuesto = ({ onCompletar }) => (
   <ElAsientoCompuestoMecanica Marco={MarcoLibros} acento={A}
     rotulo="MAESTRÍA" titulo={ASIENTO_COMPUESTO.subtema} onCompletar={onCompletar} />
+);
+
+/* CU-11: el set entero — mayorizar cada renglon y despues los saldos. */
+export const LaMayorizacion = ({ onCompletar }) => (
+  <LaMayorizacionMecanica Marco={MarcoLibros} acento={A}
+    rotulo="MAESTRÍA" titulo={MAYORIZACION.subtema} onCompletar={onCompletar} />
 );
