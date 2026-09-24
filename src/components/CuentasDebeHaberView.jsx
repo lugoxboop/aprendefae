@@ -15,7 +15,10 @@ import {
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
-import { SUBJECTS, HACER, clasificacionDe, actividadesDeTipo, nombreDeActividad } from "../data/subjects.js";
+import { SUBJECTS, HACER, APRENDER, clasificacionDe, actividadesDeTipo, nombreDeActividad } from "../data/subjects.js";
+import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
+import { PIEZAS_APRENDER } from "../data/contabilidadAprender.js";
+import { ESCENAS } from "./mecanicas/libros/escenas.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -41,9 +44,11 @@ import { SUBJECTS, HACER, clasificacionDe, actividadesDeTipo, nombreDeActividad 
  * pedir cinco juegos, alguien se ganaría la medalla, y al entrar las otras
  * siete se la quitaríamos.
  *
- * La mitad Aprender no existe todavía: sus cuatro piezas tienen el texto
- * escrito pero no las escenas que lo animan, así que el tema no declara
- * actividades de Aprender y el índice lo abre directo, sin tarjeta partida.
+ * ═══════════ LAS DOS MITADES ═══════════
+ *
+ * Con las cuatro piezas de Aprender construidas, el índice ofrece la tarjeta
+ * partida y esta vista recibe `modo`. Las piezas no otorgan FP: son material
+ * teórico, no entran al catálogo del servidor y su capa 4 no califica nada.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -71,7 +76,8 @@ const sectionLabel = { fontFamily: "Sora, sans-serif", fontSize: "12px", fontWei
 const h2 = { fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "clamp(21px, 3.2vw, 27px)", letterSpacing: "-0.025em", lineHeight: 1.15, margin: "0 0 16px" };
 const lead = { fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 20px" };
 
-export default function CuentasDebeHaberView({ nodoInicial = null, onBack }) {
+export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, onBack }) {
+  const esAprender = modo === APRENDER;
   const [nodoAbierto, setNodoAbierto] = useState(null);
   const hechas = useCompletadas();
   const { pedirCuenta } = useAuth();
@@ -79,7 +85,7 @@ export default function CuentasDebeHaberView({ nodoInicial = null, onBack }) {
 
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
   const nodos = nodosDe(actividadesDeTipo(tema, HACER).filter((a) => !a.pendiente), hechas);
-  const resaltado = useNodoEnRuta(nodoAbierto, nodoInicial, nodos.map((x) => x.id));
+  const resaltado = useNodoEnRuta(nodoAbierto, nodoInicial, esAprender ? [] : nodos.map((x) => x.id));
 
   const completarJuego = async (actividadId, porcentajeAciertos, duracionMs, detalle = null) => {
     celebrar(CLAS[actividadId]?.dificultad, actividadId);
@@ -89,7 +95,7 @@ export default function CuentasDebeHaberView({ nodoInicial = null, onBack }) {
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
 
-  const juego = JUEGOS.find((j) => j.id === nodoAbierto);
+  const juego = esAprender ? null : JUEGOS.find((j) => j.id === nodoAbierto);
 
   return (
     <FondoMateria materiaId={MATERIA}>
@@ -106,9 +112,23 @@ export default function CuentasDebeHaberView({ nodoInicial = null, onBack }) {
           </div>
 
           {/* La insignia vive con el contenido, no en la cabecera: a 375 px se comía el título. */}
-          <div className="fae-insignia-actividad"><ActivityBadge tipo={HACER} size="sm" /></div>
+          <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
 
-          {!nodoAbierto && (
+          {esAprender && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+              {PIEZAS_APRENDER.map((pieza, k) => {
+                const { Escena, Exploracion } = ESCENAS[pieza.id];
+                return (
+                  <section key={pieza.id} data-pieza={pieza.id}>
+                    <p style={{ ...sectionLabel, marginBottom: "10px" }}>PIEZA {k + 1} DE {PIEZAS_APRENDER.length}</p>
+                    <CuatroCapas pieza={pieza} Escena={Escena} Exploracion={Exploracion} rotulo="EL LIBRO MAYOR · APRENDER" />
+                  </section>
+                );
+              })}
+            </div>
+          )}
+
+          {!esAprender && !nodoAbierto && (
             <>
               <h2 style={h2}>El camino de este tema</h2>
               <p style={lead}>Toca el juego que quieras. No hay orden obligatorio: el camino sugiere uno, no lo impone.</p>

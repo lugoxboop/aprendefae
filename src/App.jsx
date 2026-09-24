@@ -207,16 +207,11 @@ export default function App() {
     );
   }
 
-  /*
-   * El primer tema de Contabilidad. No recibe `modo`: su mitad Aprender
-   * todavía no existe, así que el índice lo abre directo y no hay dos mitades
-   * que distinguir. El día que entren las cuatro piezas, se le pasa `modo`
-   * como a los demás.
-   */
+  /* El primer tema de Contabilidad, con sus dos mitades como los demás. */
   if (view === "cuentas-debe-haber") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <CuentasDebeHaberView nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
+        <CuentasDebeHaberView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }

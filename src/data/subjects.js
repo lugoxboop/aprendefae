@@ -496,6 +496,16 @@ export const SUBJECTS = {
         id: "cuentas-debe-haber",
         title: "Las cuentas, el debe y el haber",
         actividades: [
+          /*
+           * Las cuatro piezas de Aprender. Material teorico: CERO FP, no entran
+           * al catalogo del servidor y su capa 4 no califica nada. Con ellas el
+           * indice ofrece la tarjeta partida y el tema tiene sus dos mitades.
+           */
+          { id: "cu-a1-anatomia-de-una-cuenta", nombre: "De qué está hecha una cuenta", clasificacion: { tipo: APRENDER } },
+          { id: "cu-a2-dos-familias", nombre: "Las dos familias de cuentas", clasificacion: { tipo: APRENDER } },
+          { id: "cu-a3-partida-doble", nombre: "La partida doble y las dos reglas", clasificacion: { tipo: APRENDER } },
+          { id: "cu-a4-diario-y-mayor", nombre: "Del diario al mayor", clasificacion: { tipo: APRENDER } },
+
           /* Cimientos */
           { id: "cu-izquierda-o-derecha", nombre: "¿Izquierda o Derecha?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "cu-de-que-familia", nombre: "¿De qué familia es?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },

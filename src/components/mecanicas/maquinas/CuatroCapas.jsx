@@ -33,7 +33,13 @@ function Capa({ numero, nombre, children }) {
   );
 }
 
-export default function CuatroCapas({ pieza, Escena, Exploracion }) {
+/*
+ *  llega desde fuera desde que Contabilidad usa esta pieza: el mundo
+ * visual de cada materia es suyo, y una pieza de Contabilidad rotulada «SALA
+ * DE MAQUINAS» diria que el estudiante esta en Politica Monetaria. El valor
+ * por defecto conserva el de las tres piezas que ya existian.
+ */
+export default function CuatroCapas({ pieza, Escena, Exploracion, rotulo = "SALA DE MÁQUINAS · APRENDER" }) {
   const [paso, setPaso] = useState(0);
   const [verRespuesta, setVerRespuesta] = useState(false);
   const actual = pieza.pasos[paso];
@@ -45,7 +51,7 @@ export default function CuatroCapas({ pieza, Escena, Exploracion }) {
   });
 
   return (
-    <Panel rotulo="SALA DE MÁQUINAS · APRENDER" titulo={pieza.titulo}>
+    <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <Capa numero={1} nombre="Primero, los nombres">
         <dl style={{ margin: 0, display: "flex", flexDirection: "column", gap: "9px" }}>
           {pieza.nombres.map((n) => (
