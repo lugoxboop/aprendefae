@@ -115,15 +115,23 @@ test("★ ninguna actividad pendiente llega al camino", () => {
   assert.equal(todas.length, 13, "doce juegos y el desafío");
 });
 
-test("★ «tema completo» sigue pidiendo las doce, no las que ya estén construidas", () => {
+test("★ «tema completo» pide las doce, y el desafío no cuenta", () => {
   /*
-   * Si el tema declarara solo lo construido, alguien terminaría las cinco, se
-   * ganaría la medalla de tema completo, y al entrar las otras siete se la
-   * quitaríamos. Declarar las doce desde el principio es lo que impide esa
-   * regresión — y esta prueba es lo que impide que alguien «arregle» la lista
-   * recortándola a lo que se puede jugar.
+   * Mientras el tema se construía, esta prueba vigilaba lo contrario: que
+   * nadie recortara la lista a lo que ya se podía jugar, porque entonces
+   * alguien se ganaría la medalla de tema completo con cinco juegos y al
+   * entrar los otros siete se la quitaríamos. Ya están las doce, así que lo
+   * que queda por vigilar es el otro extremo: que las doce sigan siendo
+   * jugables y que el desafío NO se cuele en la cuenta.
+   *
+   * Un desafío opcional que cuenta para la medalla deja de ser opcional, y
+   * esa es la regla del Kit — la misma del Comité de NOVA.
    */
   assert.equal(JUEGOS.length, 12);
-  assert.ok(CONSTRUIDAS.length < JUEGOS.length,
-    "si ya están las doce construidas, esta prueba cumplió su función y se puede quitar");
+  assert.deepEqual(JUEGOS.filter((a) => a.pendiente), [], "una de las doce volvió a quedar pendiente");
+  assert.equal(CONSTRUIDAS.length, 12, "la vista no dibuja las doce");
+
+  const desafio = desafioDe(TEMA);
+  assert.ok(desafio, "el tema perdió su desafío");
+  assert.ok(!JUEGOS.some((a) => a.id === desafio.id), "el desafío se coló en «tema completo»");
 });

@@ -753,6 +753,17 @@ export const ERROR_ESCONDIDO = {
   aciertoTipo: "✅ {tipo}. {explicacion}",
   errores: {
     cuentaSana: "❌ Esa cuenta está bien. Pista: cuando el mayor no cuadra, empiece comparando el total del debe contra el total del haber — la diferencia le dice cuánto busca.",
+    /*
+     * [ESCRITO POR CLAUDE, NO POR LA FICHA — PENDIENTE DE REVISIÓN DE PEDAGOGÍA]
+     *
+     * La ficha trae una sola pista para «señaló una cuenta sana», y esa pista
+     * manda a comparar los dos totales del mayor. En el caso que NO descuadra
+     * esa instrucción es falsa —los totales coinciden y aun así hay un error—,
+     * así que repetirla ahí enseñaría a confiar en un instrumento que en ese
+     * caso concreto no sirve. Esta línea dice lo que queda por hacer cuando la
+     * balanza calla, sin inventar doctrina: volver al diario.
+     */
+    cuentaSanaSinDescuadre: "❌ Esa cuenta está bien. Y fíjese: aquí la balanza está nivelada y aun así hay un error. Los totales no lo delatan, así que toca comparar el mayor contra el libro diario, renglón por renglón.",
     valorPorLado: "❌ El valor está bien: es exactamente el del diario. Lo que está mal es de qué lado quedó.",
     ladoPorValor: "❌ El lado es el correcto. Compare la cifra contra el diario: no coinciden.",
     faltaPorMalPuesto: "❌ El registro sí está. El problema es que está mal — no que falte. «Falta un registro» es cuando una de las dos mitades del asiento nunca se anotó.",

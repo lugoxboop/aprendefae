@@ -521,7 +521,7 @@ export const SUBJECTS = {
           /* Maestría */
           { id: "cu-asiento-compuesto", nombre: "El Asiento Compuesto", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
           { id: "cu-mayorizacion", nombre: "La Mayorización", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
-          { id: "cu-error-escondido", pendiente: true, nombre: "El Error Escondido", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          { id: "cu-error-escondido", nombre: "El Error Escondido", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
           {
             /*
              * EL DESAFÍO DEL TEMA, el tercero del sitio. Misma estructura y

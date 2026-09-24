@@ -11,6 +11,7 @@ import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import {
   IzquierdaODerecha, DeQueFamilia, CuadroDinamicas, DebitaOAcredita, CorrienteDeCuentas,
   ElSaldoDeLaCuenta, SimpleOCompuesto, ArmaElAsiento, ElAsientoCompuesto, CuadraONoCuadra, LaMayorizacion,
+  ElErrorEscondido,
 } from "./mecanicas/libros/actividades.jsx";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
@@ -68,6 +69,7 @@ const JUEGOS = [
   { id: "cu-corriente-de-cuentas", Mecanica: CorrienteDeCuentas },
   { id: "cu-asiento-compuesto", Mecanica: ElAsientoCompuesto },
   { id: "cu-mayorizacion", Mecanica: LaMayorizacion },
+  { id: "cu-error-escondido", Mecanica: ElErrorEscondido },
 ];
 
 const CLAS = Object.fromEntries(JUEGOS.map((j) => [j.id, clasificacionDe(MATERIA, TEMA, j.id)]));

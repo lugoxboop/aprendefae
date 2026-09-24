@@ -34,7 +34,7 @@ import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
 } from "../contabilidad/bancos.js";
-import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, balanceDelAsiento, MAYORIZACION } from "../data/contabilidadActividades.js";
+import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, balanceDelAsiento, MAYORIZACION, ERROR_ESCONDIDO } from "../data/contabilidadActividades.js";
 import { transaccionDe } from "../components/mecanicas/libros/ArmaElAsiento.jsx";
 import { transaccionDe as transaccionCompuesta } from "../components/mecanicas/libros/ElAsientoCompuesto.jsx";
 import { LAVADO_DE_AUTOS, CALEJA, pesos as pesosContables } from "../data/contabilidad.js";
@@ -536,6 +536,24 @@ Object.assign(REGLAS, {
     const i = SIMPLE_O_COMPUESTO.items.find((x) => x.id === item);
     if (!i || (que !== "clase" && que !== "cuentas")) return null;
     return `${que === "clase" ? "Simple o compuesto" : "Cuántas cuentas"}: ${i.enunciado}`;
+  },
+
+  /*
+   * `<caso>:cuenta` y `<caso>:tipo`.
+   *
+   * LA CUENTA SEMBRADA NO VA EN LA ETIQUETA, aunque cabría. El profesor lee
+   * estas filas para saber qué falló, no para resolver el caso; escribir ahí
+   * «Hipoteca por pagar» convertiría el panel en la hoja de respuestas de una
+   * actividad que sus estudiantes todavía tienen que jugar. Lo que sí va es la
+   * transacción, que es de dónde sale el caso y lo identifica sin resolverlo.
+   */
+  "cu-error-escondido": (id) => {
+    const [item, que] = String(id).split(":");
+    const c = ERROR_ESCONDIDO.casos.find((x) => x.id === item);
+    if (!c || (que !== "cuenta" && que !== "tipo")) return null;
+    const t = LAVADO_DE_AUTOS.transacciones.find((x) => x.id === c.transaccion);
+    const pregunta = que === "cuenta" ? "Cuál cuenta no cuadra" : "Qué error tiene";
+    return `${pregunta} — ${t ? t.texto : c.transaccion}`;
   },
 });
 

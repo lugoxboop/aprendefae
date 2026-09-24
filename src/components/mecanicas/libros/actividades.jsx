@@ -12,7 +12,8 @@ import ArmaElAsientoMecanica from "./ArmaElAsiento.jsx";
 import ElAsientoCompuestoMecanica from "./ElAsientoCompuesto.jsx";
 import CuadraONoCuadraMecanica from "./CuadraONoCuadra.jsx";
 import LaMayorizacionMecanica from "./LaMayorizacion.jsx";
-import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, MAYORIZACION } from "../../../data/contabilidadActividades.js";
+import ElErrorEscondidoMecanica from "./ElErrorEscondido.jsx";
+import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, MAYORIZACION, ERROR_ESCONDIDO } from "../../../data/contabilidadActividades.js";
 import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
@@ -123,4 +124,14 @@ export const ElAsientoCompuesto = ({ onCompletar }) => (
 export const LaMayorizacion = ({ onCompletar }) => (
   <LaMayorizacionMecanica Marco={MarcoLibros} acento={A}
     rotulo="MAESTRÍA" titulo={MAYORIZACION.subtema} onCompletar={onCompletar} />
+);
+
+/*
+ * CU-12: el mayor completo con un error sembrado dentro, y la balanza de los
+ * dos totales arriba como instrumento de diagnostico — incluido el caso en el
+ * que la balanza calla y el error esta igual.
+ */
+export const ElErrorEscondido = ({ onCompletar }) => (
+  <ElErrorEscondidoMecanica Marco={MarcoLibros} acento={A}
+    rotulo="MAESTRÍA" titulo={ERROR_ESCONDIDO.subtema} onCompletar={onCompletar} />
 );
