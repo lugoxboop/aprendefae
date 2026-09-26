@@ -69,7 +69,24 @@ export function useNumeroQueSube(valor, ms = 420) {
       else desde.current = valor;
     };
     raf.current = requestAnimationFrame(paso);
-    return () => cancelAnimationFrame(raf.current);
+
+    /*
+     * ═══════════ Y UNA RED POR DEBAJO DEL requestAnimationFrame ═══════════
+     *
+     * El navegador NO llama a requestAnimationFrame mientras la página está
+     * oculta. Si el total cambia justo cuando el estudiante se fue a otra
+     * aplicación, la animación no arranca, y al volver se encuentra el número
+     * congelado en el valor viejo —o en cero— mientras todo lo demás ya dice
+     * otra cosa. Salió mirándolo: el colector de El Asiento Compuesto marcaba
+     * $0 con los cuatro valores escritos y el conector cerrado.
+     *
+     * El temporizador sí corre con la página oculta, así que se deja uno de
+     * red: cuando la animación debería haber terminado, el valor final queda
+     * puesto pase lo que pase. Si el rAF corrió, no cambia nada —ya estaba—.
+     */
+    const red = setTimeout(() => { desde.current = valor; setVisible(valor); }, ms + 40);
+
+    return () => { cancelAnimationFrame(raf.current); clearTimeout(red); };
   }, [valor, ms, reducido]);
 
   return visible;

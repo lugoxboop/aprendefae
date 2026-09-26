@@ -6,9 +6,10 @@ import ArmaElBalance from "./ArmaElBalance.jsx";
 import CuadroDeDinamicas from "./CuadroDeDinamicas.jsx";
 import DebitaOAcreditaMecanica from "./DebitaOAcredita.jsx";
 import ElSaldoDeLaCuentaMecanica from "./ElSaldoDeLaCuenta.jsx";
+import ElAsientoSimpleMecanica from "./ElAsientoSimple.jsx";
+import ElAsientoCompuestoNuevoMecanica from "./ElAsientoCompuestoNuevo.jsx";
 import SeisCuentasAbiertas from "./SeisCuentasAbiertas.jsx";
 import SimpleOCompuestoMecanica from "./SimpleOCompuesto.jsx";
-import ArmaElAsientoMecanica from "./ArmaElAsiento.jsx";
 import ElAsientoCompuestoMecanica from "./ElAsientoCompuesto.jsx";
 import CuadraONoCuadraMecanica from "./CuadraONoCuadra.jsx";
 import LaMayorizacionMecanica from "./LaMayorizacion.jsx";
@@ -16,7 +17,9 @@ import ElErrorEscondidoMecanica from "./ElErrorEscondido.jsx";
 import { SUBTEMA as SUBTEMA_CUADRO } from "../../../data/contabilidadCuadro.js";
 import { SUBTEMA as SUBTEMA_A4 } from "../../../data/contabilidadDebitaOAcredita.js";
 import { SUBTEMA as SUBTEMA_A5 } from "../../../data/contabilidadSaldo.js";
-import { SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, MAYORIZACION, ERROR_ESCONDIDO, IZQUIERDA_O_DERECHA } from "../../../data/contabilidadActividades.js";
+import { SUBTEMA as SUBTEMA_A6 } from "../../../data/contabilidadArmaElAsiento.js";
+import { SUBTEMA as SUBTEMA_A7 } from "../../../data/contabilidadAsientoCompuesto.js";
+import { SIMPLE_O_COMPUESTO, ASIENTO_COMPUESTO, CUADRA_O_NO, MAYORIZACION, ERROR_ESCONDIDO, IZQUIERDA_O_DERECHA } from "../../../data/contabilidadActividades.js";
 import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA,
   BANCO_CORRIENTE_DE_CUENTAS,
@@ -95,10 +98,15 @@ export const ElSaldoDeLaCuenta = ({ onCompletar }) => (
     rotulo="ANÁLISIS" titulo={SUBTEMA_A5} onCompletar={onCompletar} />
 );
 
-/* CU-6: el estudiante arma el asiento — dos cuentas y el lado de cada una. */
+/*
+ * CU-6: el estudiante nombra las dos cuentas, pone cada valor en un lado y
+ * confirma. Las TRES senales —el arco del cuadre, el triangulo con su flecha
+ * y la linea al enunciado— aparecen SIEMPRE al confirmar: si alguna saliera
+ * solo en el error, su presencia seria el veredicto.
+ */
 export const ArmaElAsiento = ({ onCompletar }) => (
-  <ArmaElAsientoMecanica Marco={MarcoLibros} acento={A}
-    rotulo="ANÁLISIS" titulo={ARMA_EL_ASIENTO.subtema} onCompletar={onCompletar} />
+  <ElAsientoSimpleMecanica Marco={MarcoLibros} acento={A}
+    rotulo="ANÁLISIS" titulo={SUBTEMA_A6} onCompletar={onCompletar} />
 );
 
 /* CU-7: la clase de asiento y cuántas cuentas toca. */
@@ -124,11 +132,17 @@ export const CorrienteDeCuentas = ({ onCompletar }) => (
     rotulo="ANÁLISIS" titulo={BANCO_CORRIENTE_DE_CUENTAS.subtema} onCompletar={onCompletar} />
 );
 
-/* CU-10: el mismo constructor, con cifras y hasta cuatro cuentas. */
+/*
+ * CU-10: el nodo de totales. No hay arcos de una cuenta a otra —en un asiento
+ * compuesto no hay parejas—: hay dos colectores y un conector que cierra
+ * cuando las dos sumas coinciden. Y una T con DOS lineas al enunciado es la
+ * senal de haber fundido dos cuentas en una.
+ */
 export const ElAsientoCompuesto = ({ onCompletar }) => (
-  <ElAsientoCompuestoMecanica Marco={MarcoLibros} acento={A}
-    rotulo="MAESTRÍA" titulo={ASIENTO_COMPUESTO.subtema} onCompletar={onCompletar} />
+  <ElAsientoCompuestoNuevoMecanica Marco={MarcoLibros} acento={A}
+    rotulo="MAESTRÍA" titulo={SUBTEMA_A7} onCompletar={onCompletar} />
 );
+
 
 /* CU-11: el set entero — mayorizar cada renglon y despues los saldos. */
 export const LaMayorizacion = ({ onCompletar }) => (

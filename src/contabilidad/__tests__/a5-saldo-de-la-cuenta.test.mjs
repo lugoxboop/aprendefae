@@ -347,7 +347,8 @@ test("★★ un primer error NO cancela las columnas, y el reintento sí", () =>
 
 test("★★ acertar las dos a la primera cancela sin pasar por el reintento", () => {
   const { caja, desmontar } = montarVista();
-  const c = cuentaEnPantalla(caja);
+  /* En la de un solo lado no hay nada que cancelar: no sirve para esta prueba. */
+  const c = avanzarHastaDosLados(caja);
   responder(caja, c.saldo, c.lado);
   assert.equal(cancelando(caja), true, "acertar no canceló");
   assert.equal(Boolean(boton(caja, "Responder otra vez")), false, "pidió reintento tras acertar");
@@ -356,7 +357,7 @@ test("★★ acertar las dos a la primera cancela sin pasar por el reintento", (
 
 test("★★ el lado correcto no se destapa mientras quede reintento", () => {
   const { caja, desmontar } = montarVista();
-  const c = cuentaEnPantalla(caja);
+  const c = avanzarHastaDosLados(caja);
   const otro = c.lado === DEBE ? HABER : DEBE;
 
   /*

@@ -42,6 +42,8 @@ import { BALANCES as BALANCES_DE_A2, cuentaHistorica } from "../contabilidad/arm
 import { FILAS as FILAS_DE_A3 } from "../contabilidad/cuadroDinamicas.js";
 import { transaccionDe as transaccionDeA4 } from "../contabilidad/debitaOAcredita.js";
 import { cuentaDeItemDocente } from "../contabilidad/saldoDeLaCuenta.js";
+import { textoDeItem as textoDeItemA6 } from "../contabilidad/armaElAsiento.js";
+import { textoDeItem as textoDeItemA7 } from "../contabilidad/asientoCompuesto.js";
 
 /* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
 const EMPRESAS = { lavado: LAVADO_DE_AUTOS.empresa, caleja: CALEJA.empresa };
@@ -509,10 +511,12 @@ Object.assign(REGLAS, {
    * El id es el del ítem y la etiqueta, la transacción que el estudiante tenía
    * delante. Se lee del caso o de las sueltas, según de dónde venga.
    */
-  "cu-arma-el-asiento": (id) => {
-    const i = ARMA_EL_ASIENTO.items.find((x) => x.id === id);
-    return i ? transaccionDe(i).texto : null;
-  },
+  /*
+   * Los once ids son los mismos de antes; el que salió del banco —el de los
+   * $1.000 con asiento de $2.000— se sigue traduciendo, porque las respuestas
+   * que ya recibió están en el servidor.
+   */
+  "cu-arma-el-asiento": (id) => textoDeItemA6(id),
 
   /*
    * `<asiento>:juicio` y `<asiento>:cifra`. El asiento no tiene enunciado —es
@@ -555,10 +559,7 @@ Object.assign(REGLAS, {
   },
 
   /* Igual que CU-6: el id es el del item y la etiqueta, su transaccion. */
-  "cu-asiento-compuesto": (id) => {
-    const i = ASIENTO_COMPUESTO.items.find((x) => x.id === id);
-    return i ? transaccionCompuesta(i).texto : null;
-  },
+  "cu-asiento-compuesto": (id) => textoDeItemA7(id),
 
   /*
    * `<transaccion>:clase` y `<transaccion>:cuentas`.
