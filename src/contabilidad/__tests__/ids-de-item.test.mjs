@@ -34,9 +34,16 @@ test("★ los ítems de las cinco clasificaciones conservan su nombre", () => {
     BANCOS_CLASIFICACION.map((b) => [b.subtema, b.items.map((i) => i.id)]),
   );
 
-  /* CU-1 y CU-4: la numeración del banco, tal cual. */
-  assert.deepEqual(nombres["Estructura de la cuenta T"],
-    ["cu1-01", "cu1-02", "cu1-03", "cu1-04", "cu1-05", "cu1-06", "cu1-07", "cu1-08", "cu1-09", "cu1-10"]);
+  /*
+   * CU-1: los doce ids, mirados como CONJUNTO y no como lista ordenada. El
+   * orden del banco es pedagógico —los seis de activo primero, para que el
+   * sorteo estratificado se lea de un vistazo— y cambiarlo no le cambia el
+   * nombre a nada. Lo que no puede pasar es que un id desaparezca.
+   */
+  assert.deepEqual([...nombres["Naturaleza del debe y el haber"]].sort(),
+    ["cu1-01", "cu1-02", "cu1-03", "cu1-04", "cu1-05", "cu1-06", "cu1-07", "cu1-08", "cu1-09", "cu1-10", "cu1-11", "cu1-12"]);
+
+  /* CU-4: la numeración del banco, tal cual. */
   assert.deepEqual(nombres["Reglas de registro aplicadas"],
     ["cu4-01", "cu4-02", "cu4-03", "cu4-04", "cu4-05", "cu4-06", "cu4-07", "cu4-08", "cu4-09", "cu4-10"]);
 
@@ -79,7 +86,7 @@ test("★ y el panel docente sabe leer todos esos nombres", () => {
    * nada si la regla de etiqueta deja de entenderlos.
    */
   const porActividad = {
-    "cu-izquierda-o-derecha": "Estructura de la cuenta T",
+    "cu-izquierda-o-derecha": "Naturaleza del debe y el haber",
     "cu-de-que-familia": "Clasificación de cuentas reales",
     "cu-cuadro-dinamicas": "Reglas de registro",
     "cu-debita-o-acredita": "Reglas de registro aplicadas",

@@ -87,51 +87,93 @@ export const FP_DEL_TEMA = ACTIVIDADES.reduce((s, a) => s + a.fpBase, 0);
 /* ═══════════════════════ CU-1 · ¿Izquierda o Derecha? ═══════════════════════ */
 
 export const IZQUIERDA_O_DERECHA = {
-  subtema: "Estructura de la cuenta T",
-  porPartida: 6,
+  subtema: "Naturaleza del debe y el haber",
+  /*
+   * OCHO por intento, y no seis: el sorteo es estratificado y necesita cuatro
+   * de cada bloque. Ver `estratosDeLados` en bancos.js.
+   */
+  porPartida: 8,
   categorias: [
     { id: DEBE, nombre: "Debe" },
     { id: HABER, nombre: "Haber" },
   ],
+  /*
+   * ═══════════ ALCANCE RESTRINGIDO, A PROPÓSITO ═══════════
+   *
+   * Solo cuentas reales —activo, pasivo, patrimonio— y un conjunto corto que
+   * se repite. Ni un ingreso, ni un gasto, ni un costo: Averkamp lleva
+   * veinticinco años viendo que el quiebre llega justo con los ingresos, y
+   * Byrne & Flood (2005) que las experiencias negativas tempranas en
+   * contabilidad aumentan la deserción. Los ingresos entran en El Cuadro de
+   * Dinámicas, cuando la regla de las dos familias ya está en pie.
+   *
+   * ═══════════ LOS IDS NO SE REORDENAN ═══════════
+   *
+   * Diez de estos doce ya existían con este mismo enunciado y esta misma
+   * respuesta, y conservan su id. Los dos nuevos —Bancos aumenta y Maquinaria
+   * aumenta— entran como cu1-11 y cu1-12, al final. Renumerar habría hecho que
+   * el panel docente enseñara un enunciado distinto del que contestó cada
+   * estudiante, sin que nada fallara.
+   */
   items: [
     { id: "cu1-01", enunciado: "Caja aumenta", cuenta: "Caja", categoria: DEBE,
-      acierto: "✅ Debe. Caja es un activo, y los activos aumentan por la izquierda." },
+      acierto: "✅ Debe. Mira el ▲: Caja es un activo y crece por la izquierda." },
     { id: "cu1-02", enunciado: "Caja disminuye", cuenta: "Caja", categoria: HABER,
-      acierto: "✅ Haber. Si el activo aumenta por la izquierda, disminuye por la derecha. Siempre es el lado contrario." },
-    { id: "cu1-03", enunciado: "Aportes sociales aumenta", cuenta: "Aportes sociales", categoria: HABER,
-      acierto: "✅ Haber. Aportes sociales es patrimonio, y el patrimonio aumenta por la derecha." },
-    { id: "cu1-04", enunciado: "Aportes sociales disminuye", cuenta: "Aportes sociales", categoria: DEBE,
-      acierto: "✅ Debe. El patrimonio crece por la derecha, así que decrece por la izquierda." },
-    { id: "cu1-05", enunciado: "Obligaciones financieras aumenta", cuenta: "Obligaciones financieras", categoria: HABER,
-      acierto: "✅ Haber. Es un pasivo, y los pasivos aumentan por la derecha, igual que el patrimonio." },
-    { id: "cu1-06", enunciado: "Obligaciones financieras disminuye", cuenta: "Obligaciones financieras", categoria: DEBE,
-      acierto: "✅ Debe. Pagar una deuda la reduce, y eso se registra por la izquierda." },
-    { id: "cu1-07", enunciado: "Equipo de computación aumenta", cuenta: "Equipo de computación", categoria: DEBE,
-      acierto: "✅ Debe. Es un activo — igual que Caja, aunque no sea dinero." },
+      acierto: "✅ Haber. Si crece por la izquierda, decrece por la derecha. Siempre el lado contrario al ▲." },
+    { id: "cu1-11", enunciado: "Bancos aumenta", cuenta: "Bancos", categoria: DEBE,
+      acierto: "✅ Debe. Bancos es un activo igual que Caja, aunque el dinero esté depositado." },
     { id: "cu1-08", enunciado: "Bancos disminuye", cuenta: "Bancos", categoria: HABER,
-      acierto: "✅ Haber. Bancos es un activo, exactamente igual que Caja." },
+      acierto: "✅ Haber. Sale dinero de la cuenta: el activo se reduce." },
+    { id: "cu1-07", enunciado: "Equipo de computación aumenta", cuenta: "Equipo de computación", categoria: DEBE,
+      acierto: "✅ Debe. Es un activo aunque no sea dinero — la empresa lo tiene." },
+    { id: "cu1-12", enunciado: "Maquinaria aumenta", cuenta: "Maquinaria", categoria: DEBE,
+      acierto: "✅ Debe. Todos los activos comparten el mismo ▲, sean dinero o no." },
+    { id: "cu1-05", enunciado: "Obligaciones financieras aumenta", cuenta: "Obligaciones financieras", categoria: HABER,
+      acierto: "✅ Haber. Mira el ▲: los pasivos crecen por la derecha, al revés que los activos." },
+    { id: "cu1-06", enunciado: "Obligaciones financieras disminuye", cuenta: "Obligaciones financieras", categoria: DEBE,
+      acierto: "✅ Debe. Pagar reduce la deuda, y reducir un pasivo va por la izquierda." },
     { id: "cu1-09", enunciado: "Cuentas por pagar aumenta", cuenta: "Cuentas por pagar", categoria: HABER,
-      acierto: "✅ Haber. Deber más es aumentar un pasivo, y los pasivos crecen por la derecha." },
+      acierto: "✅ Haber. Deber más es aumentar un pasivo." },
     { id: "cu1-10", enunciado: "Cuentas por pagar disminuye", cuenta: "Cuentas por pagar", categoria: DEBE,
-      acierto: "✅ Debe. Abonar a una deuda la reduce, y eso va por la izquierda." },
+      acierto: "✅ Debe. Abonar a la deuda la reduce." },
+    { id: "cu1-03", enunciado: "Aportes sociales aumenta", cuenta: "Aportes sociales", categoria: HABER,
+      acierto: "✅ Haber. El patrimonio lleva el ▲ del mismo lado que el pasivo: los dos viven a la derecha de la ecuación." },
+    { id: "cu1-04", enunciado: "Aportes sociales disminuye", cuenta: "Aportes sociales", categoria: DEBE,
+      acierto: "✅ Debe. Devolver un aporte reduce el patrimonio." },
   ],
+
   /*
-   * ═══════════ LOS DOS PATRONES DE ERROR ═══════════
+   * ═══════════ EL VALOR DE LA FICHA VARÍA, Y NO DECIDE NADA ═══════════
    *
-   * El rediseño los reorganiza en dos, y son distintos de verdad. Cuál sale no
-   * se decide por el ítem sino por LO QUE EL ENUNCIADO PEDÍA:
-   *
-   *   El enunciado dice AUMENTA y se falla  →  no sabe de qué lado vive esa
-   *       familia. Es el error A, y se explica por la familia.
-   *   El enunciado dice DISMINUYE y se falla  →  sabe dónde vive la familia y
-   *       la puso ahí, sin leer que le pedían lo contrario. Es el error B.
-   *
-   * Con dos lados, cualquier fallo es «el otro», así que sin esta distinción
-   * las dos situaciones recibirían la misma frase — y son dos problemas con
-   * dos remedios: uno es no saberse la regla y el otro es no leer.
+   * Tres montos distintos sin efecto alguno sobre la respuesta. Es deliberado:
+   * refuerza que el lado lo decide la familia de la cuenta, no el tamaño de la
+   * cifra — que es media confusión del tema.
    */
-  errorA: "❌ Mire lo que pasó: el saldo se fue para el lado equivocado. {Familia} viven en {lado}, y esta cuenta acaba de quedar del lado contrario al que le corresponde por naturaleza.",
-  errorB: "❌ Tiene la familia bien, pero no leyó la dirección. El enunciado dice que disminuye, y disminuir siempre es el lado contrario al que esa cuenta usa para crecer.",
+  valoresDeFicha: [500, 1000, 5000],
+
+  /*
+   * ═══════════ LOS DOS PATRONES, POR FAMILIA Y NO POR ADIVINANZA ═══════════
+   *
+   * Cuál sale lo decide LA FAMILIA DEL ÍTEM, no una hipótesis sobre qué estaba
+   * pensando el estudiante. Con dos lados, todo fallo es «el otro», así que
+   * cualquier regla más fina sería inventada: lo único que se sabe con certeza
+   * es de qué familia era la cuenta que acaba de fallar, y eso es justo lo que
+   * hay que explicarle.
+   */
+  errorA: "❌ Mira el ▲ que acaba de aparecer: está a la izquierda. Los activos crecen por el debe y se reducen por el haber. No es 'lo que suba va a la izquierda' — es que esta familia crece por ahí.",
+  errorB: "❌ Mira el ▲: está a la derecha. Pasivos y patrimonio crecen por el haber. Es el espejo exacto de los activos, y por eso un mismo débito los mueve al revés.",
+
+  /*
+   * ═══════════ EL TERCER MENSAJE NO ES DE UN ÍTEM: ES DE LA SESIÓN ═══════════
+   *
+   * Sale solo cuando el patrón entero lo dice —los cuatro activos bien y los
+   * cuatro pasivos mal—, y por eso no puede vivir en ningún ítem. Ese reparto
+   * exacto no es mala suerte: es la firma de leer «débito» como «aumenta»,
+   * que funciona con los activos y falla con todo lo demás. Por eso el sorteo
+   * es 4+4: con un sorteo libre, el mismo estudiante podría sacar 75 % y el
+   * resultado mentiría.
+   */
+  errorC: "Fíjate en tu patrón: acertaste los cuatro activos y fallaste los cuatro pasivos. Eso no es mala suerte — es la señal de que estás leyendo 'débito' como 'aumenta'. Funciona con los activos y falla con todo lo demás. Vuelve a los ▲: cada familia tiene el suyo, y ahí está la diferencia.",
 };
 
 /* ═══════════════════════ CU-2 · ¿De qué familia es? ═══════════════════════ */

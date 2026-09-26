@@ -138,10 +138,17 @@ export function MarcadorDeSaldo({ lado, cifra }) {
         opacity: puesto ? 1 : 0,
         textAlign: "center",
       }}>
+        {/*
+          UNA BARRA, NO UN TRIÁNGULO. El ▲ ya significa otra cosa en este tema
+          —por dónde crece la cuenta, una propiedad permanente— y dibujar el
+          marcador de saldo también como triángulo ponía dos símbolos con la
+          misma forma y distinto significado dentro de la misma cuenta T. Se
+          vio mirándolo, no leyéndolo.
+        */}
         <span aria-hidden="true" style={{
-          display: "block", width: "0", height: "0", margin: "0 auto 2px",
-          borderLeft: "5px solid transparent", borderRight: "5px solid transparent",
-          borderBottom: `6px solid ${puesto ? COLOR_LADO[lado] : "transparent"}`,
+          display: "block", width: "26px", height: "3px", margin: "0 auto 3px",
+          borderRadius: "999px",
+          background: puesto ? COLOR_LADO[lado] : "transparent",
         }} />
         <span style={{
           fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",

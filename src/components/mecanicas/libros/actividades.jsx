@@ -13,7 +13,7 @@ import ElAsientoCompuestoMecanica from "./ElAsientoCompuesto.jsx";
 import CuadraONoCuadraMecanica from "./CuadraONoCuadra.jsx";
 import LaMayorizacionMecanica from "./LaMayorizacion.jsx";
 import ElErrorEscondidoMecanica from "./ElErrorEscondido.jsx";
-import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, MAYORIZACION, ERROR_ESCONDIDO } from "../../../data/contabilidadActividades.js";
+import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, MAYORIZACION, ERROR_ESCONDIDO, IZQUIERDA_O_DERECHA } from "../../../data/contabilidadActividades.js";
 import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
@@ -44,9 +44,8 @@ const A = FAE.ambar;
  * El primer verbo visual del tema, en su forma más desnuda.
  */
 export const IzquierdaODerecha = ({ onCompletar }) => (
-  <SoltarEnUnLado banco={BANCO_IZQUIERDA_O_DERECHA} tipoDe={(i) => tipoDeCuenta(i.cuenta)}
-    Marco={MarcoLibros} acento={A}
-    rotulo="CIMIENTOS" titulo={BANCO_IZQUIERDA_O_DERECHA.subtema} onCompletar={onCompletar} />
+  <SoltarEnUnLado Marco={MarcoLibros} acento={A}
+    rotulo="CIMIENTOS" titulo={IZQUIERDA_O_DERECHA.subtema} onCompletar={onCompletar} />
 );
 
 /*

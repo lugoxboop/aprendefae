@@ -7,7 +7,7 @@ import {
 } from "../contabilidadActividades.js";
 import {
   DEBE, HABER, ACTIVO, PASIVO, PATRIMONIO, INGRESO, GASTO, COSTO,
-  CRECE_POR, efectoDe, tipoDeCuenta, TRANSITORIAS,
+  CRECE_POR, efectoDe, tipoDeCuenta, TRANSITORIAS, REALES,
 } from "../contabilidad.js";
 import { BASE_POR_DIFICULTAD, TOPE_ETAPAS } from "../../fp/motor.js";
 
@@ -96,17 +96,29 @@ test("CIMIENTOS no toca ingresos, gastos ni costos: ahí es donde se rompe la me
   assert.deepEqual(DE_QUE_FAMILIA.categorias.map((c) => c.id), [ACTIVO, PASIVO, PATRIMONIO]);
 });
 
-test("CU-1 usa SOLO las seis cuentas del rango corto", () => {
-  assert.equal(CUENTAS_DE_CIMIENTOS.length, 6);
-  for (const i of IZQUIERDA_O_DERECHA.items) {
-    assert.ok(CUENTAS_DE_CIMIENTOS.includes(i.cuenta), `${i.id}: «${i.cuenta}» está fuera del rango`);
+test("★ CU-1 se queda en un conjunto corto de cuentas reales", () => {
+  /*
+   * El rediseño amplía el banco a doce ítems y añade Maquinaria, que no
+   * estaba en las seis de Cimientos. Lo que NO se mueve es la regla que
+   * importa: el conjunto sigue siendo corto y recurrente, y sigue sin entrar
+   * ni un ingreso, ni un gasto, ni un costo — que es donde Averkamp ve
+   * romperse la memorización.
+   */
+  const cuentas = [...new Set(IZQUIERDA_O_DERECHA.items.map((i) => i.cuenta))];
+  assert.ok(cuentas.length <= 8, `el conjunto se alargó a ${cuentas.length} cuentas`);
+  for (const c of cuentas) {
+    assert.ok(REALES.includes(tipoDeCuenta(c)), `«${c}» no es una cuenta real`);
+  }
+  /* Y las seis de Cimientos siguen todas dentro. */
+  for (const c of CUENTAS_DE_CIMIENTOS) {
+    assert.ok(cuentas.includes(c), `se cayó «${c}», que estaba en el rango corto`);
   }
 });
 
 /* ═══════════ los bancos: tamaño, unicidad y coherencia con las reglas ═══════════ */
 
 const BANCOS = [
-  ["CU-1", IZQUIERDA_O_DERECHA, 10, 6],
+  ["CU-1", IZQUIERDA_O_DERECHA, 12, 8],
   ["CU-2", DE_QUE_FAMILIA, 12, 6],
   ["CU-4", DEBITA_O_ACREDITA, 10, 8],
 ];
@@ -201,12 +213,20 @@ test("CU-4: la cuenta de cada transacción existe, y su respuesta cuadra con su 
  * donde vive el reparto. Aqui solo se vigila que los dos textos existan y que
  * el patron A conserve los dos huecos que la mecanica le rellena.
  */
-test("CU-1 trae los dos patrones de error, y el A con sus dos huecos", () => {
+test("★ CU-1 trae los tres textos, y ninguno lleva huecos sin rellenar", () => {
+  /*
+   * El rediseño cambia la regla: el patrón lo decide LA FAMILIA del ítem, no
+   * lo que pedía el enunciado. Por eso los dos textos son literales y ya no
+   * llevan {Familia} ni {lado} — cada uno habla de su bloque entero.
+   */
   assert.ok(IZQUIERDA_O_DERECHA.errorA?.startsWith("❌"), "falta el patron A");
   assert.ok(IZQUIERDA_O_DERECHA.errorB?.startsWith("❌"), "falta el patron B");
-  assert.match(IZQUIERDA_O_DERECHA.errorA, /{Familia}/, "el patron A tiene que nombrar la familia");
-  assert.match(IZQUIERDA_O_DERECHA.errorA, /{lado}/, "y decir de que lado vive");
-  assert.match(IZQUIERDA_O_DERECHA.errorB, /no leyo la direccion|no leyó la dirección/, "el patron B habla de la direccion");
+  assert.ok(IZQUIERDA_O_DERECHA.errorC?.length > 80, "falta el mensaje de patron de sesion");
+  for (const [nombre, texto] of [["A", IZQUIERDA_O_DERECHA.errorA], ["B", IZQUIERDA_O_DERECHA.errorB], ["C", IZQUIERDA_O_DERECHA.errorC]]) {
+    assert.ok(!/{[a-zA-Z]+}/.test(texto), `el patron ${nombre} dejo un hueco sin rellenar`);
+  }
+  assert.match(IZQUIERDA_O_DERECHA.errorA, /izquierda/, "el patron A manda a mirar la izquierda");
+  assert.match(IZQUIERDA_O_DERECHA.errorB, /derecha/, "el patron B manda a mirar la derecha");
   /* Las tres familias del banco siguen siendo las de Cimientos. */
   const familias = new Set(IZQUIERDA_O_DERECHA.items.map((i) => tipoDeCuenta(i.cuenta)));
   assert.deepEqual([...familias].sort(), [ACTIVO, PASIVO, PATRIMONIO].sort());

@@ -1,3 +1,4 @@
+import { evaluarItem } from "./izquierdaODerecha.js";
 import {
   DEBE, HABER, ACTIVO, PASIVO, PATRIMONIO, INGRESO, GASTO, COSTO,
   NOMBRE_TIPO, CRECE_POR, efectoDe, tipoDeCuenta,
@@ -79,22 +80,18 @@ export const BANCO_IZQUIERDA_O_DERECHA = {
   pregunta: "¿Izquierda o derecha?",
   items: IZQUIERDA_O_DERECHA.items.map((i) => ({ ...i, texto: i.enunciado, respuesta: i.categoria })),
   /*
-   * Los dos patrones del rediseño. Con dos lados, todo fallo es «el otro», así
-   * que lo que los separa es QUÉ PEDÍA EL ENUNCIADO: quien falla un «aumenta»
-   * no sabe dónde vive esa familia; quien falla un «disminuye» sí lo sabe y
-   * puso la ficha justo ahí, sin leer que le pedían lo contrario.
+   * ═══════════ EL PATRÓN LO DECIDE LA FAMILIA ═══════════
+   *
+   * La versión anterior lo decidía por lo que pedía el enunciado —«aumenta» o
+   * «disminuye»—, que es una hipótesis sobre lo que el estudiante estaba
+   * pensando. Con dos lados, todo fallo es «el otro»: lo único que se sabe con
+   * certeza es de qué familia era la cuenta que acaba de fallar, y eso es
+   * justo lo que hay que explicarle.
+   *
+   * La regla vive en izquierdaODerecha.js, con el sorteo estratificado y el
+   * mensaje de patrón, porque los tres son la misma decisión.
    */
-  evaluar: (item, puesta) => {
-    const ok = puesta === item.categoria;
-    if (ok) return { ok, texto: item.acierto };
-    const tipo = tipoDeCuenta(item.cuenta);
-    const texto = pideAumentar(item)
-      ? IZQUIERDA_O_DERECHA.errorA
-        .replace("{Familia}", COMO_SE_LLAMA[tipo])
-        .replace("{lado}", VIVEN_EN(tipo))
-      : IZQUIERDA_O_DERECHA.errorB;
-    return { ok, texto };
-  },
+  evaluar: (item, puesta) => evaluarItem(item, puesta),
   /* La devolución de la mecánica vieja, mientras conviva con la nueva. */
   retro: (item, elegida) =>
     elegida === item.respuesta

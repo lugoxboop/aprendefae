@@ -6,7 +6,7 @@ import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
 } from "../bancos.js";
-import { CRECE_POR, efectoDe, tipoDeCuenta, NOMBRE_TIPO, CUENTAS, DEBE, HABER, INGRESO } from "../../data/contabilidad.js";
+import { CRECE_POR, efectoDe, tipoDeCuenta, NOMBRE_TIPO, CUENTAS, DEBE, HABER, INGRESO, ACTIVO } from "../../data/contabilidad.js";
 import { CUADRO_DINAMICAS, DEBITA_O_ACREDITA, DE_QUE_FAMILIA, IZQUIERDA_O_DERECHA } from "../../data/contabilidadActividades.js";
 import { escenaDe } from "../../components/mecanicas/libros/PredecirLaBarra.jsx";
 
@@ -53,7 +53,7 @@ test("los cinco bancos traen la forma que PrimeraClasificacion consume", () => {
 test("★ NINGUNA combinación de ítem y error se queda sin devolución", () => {
   /*
    * Exactamente el agujero que quedó abierto en el Comité de NOVA: había diez
-   * combinaciones sin texto y solo se vieron enumerándolas. Aquí son 176.
+   * combinaciones sin texto y solo se vieron enumerándolas. Aquí son 178.
    */
   let combinaciones = 0;
   for (const b of BANCOS_CLASIFICACION) {
@@ -78,8 +78,8 @@ test("★ NINGUNA combinación de ítem y error se queda sin devolución", () =>
       assert.ok(!/\{[a-zA-Z]+\}/.test(mal), `${item.id} respondido «${elegida}»: quedó un hueco sin rellenar — ${mal}`);
     }
   }
-  /* 10×1 + 12×2 + 12×1 + 10×1 + 24×5 = 10 + 24 + 12 + 10 + 120 = 176. */
-  assert.equal(combinaciones, 176, "cambió el número de combinaciones; revisa que siga cubierto");
+  /* 12×1 + 12×2 + 12×1 + 10×1 + 24×5 = 12 + 24 + 12 + 10 + 120 = 178. */
+  assert.equal(combinaciones, 178, "cambió el número de combinaciones; revisa que siga cubierto");
 });
 
 test("★ ninguna devolución le habla al estudiante de OTRA cuenta", () => {
@@ -112,62 +112,64 @@ test("★ ninguna devolución le habla al estudiante de OTRA cuenta", () => {
 
 test("CU-1: el enunciado y la respuesta salen del banco de la ficha", () => {
   const b = BANCO_IZQUIERDA_O_DERECHA;
-  assert.equal(b.items.length, 10);
+  assert.equal(b.items.length, 12);
   const caja = b.items.find((i) => i.id === "cu1-01");
   assert.equal(caja.texto, "Caja aumenta");
   assert.equal(caja.respuesta, DEBE);
   /* Y cada ítem responde lo que dicen las dos reglas, no lo que diga una tabla. */
   for (const i of b.items) {
-    const esperado = i.texto.endsWith("aumenta") ? CRECE_POR[tipoDeCuenta(i.cuenta)] : null;
-    if (esperado) assert.equal(i.respuesta, esperado, `${i.id}: contradice CRECE_POR`);
+    const crece = CRECE_POR[tipoDeCuenta(i.cuenta)];
+    const esperado = i.texto.endsWith("aumenta") ? crece : (crece === DEBE ? HABER : DEBE);
+    assert.equal(i.respuesta, esperado, `${i.id}: contradice CRECE_POR`);
   }
 });
 
-test("★ CU-1: qué patrón sale lo decide el ENUNCIADO, no el ítem", () => {
+test("★ CU-1: qué patrón sale lo decide LA FAMILIA, no el enunciado", () => {
   /*
-   * Con dos lados, cualquier fallo es «el otro», así que sin esta distinción
-   * las dos situaciones recibirían la misma frase — y son dos problemas
-   * distintos: uno es no saberse dónde vive la familia y el otro es no haber
-   * leído que pedían disminuir.
+   * El rediseño cambia esta regla, y el cambio importa. Antes lo decidía lo
+   * que pedía el enunciado —«aumenta» o «disminuye»—, que es una hipótesis
+   * sobre lo que el estudiante estaba pensando. Con dos lados todo fallo es
+   * «el otro»: lo único que se sabe de cierto es de qué familia era la
+   * cuenta, y eso es lo que hay que explicarle.
    */
   const b = BANCO_IZQUIERDA_O_DERECHA;
   let conA = 0;
   let conB = 0;
   for (const item of b.items) {
     const otro = item.categoria === DEBE ? HABER : DEBE;
-    const { ok, texto } = b.evaluar(item, otro);
+    const { ok, texto, patron } = b.evaluar(item, otro);
     assert.equal(ok, false, item.id);
-    assert.ok(!/\{[a-zA-Z]+\}/.test(texto), `${item.id}: hueco sin rellenar — ${texto}`);
-    if (/\baumenta\b/.test(item.enunciado)) {
-      assert.match(texto, /^❌ Mire lo que pasó/, `${item.id}: un «aumenta» no recibió el patrón A`);
+    assert.ok(!/{[a-zA-Z]+}/.test(texto), `${item.id}: hueco sin rellenar — ${texto}`);
+    if (tipoDeCuenta(item.cuenta) === ACTIVO) {
+      assert.equal(patron, "A", `${item.id}: un activo no recibió el patrón A`);
+      assert.equal(texto, IZQUIERDA_O_DERECHA.errorA);
       conA += 1;
     } else {
-      assert.equal(texto, IZQUIERDA_O_DERECHA.errorB, `${item.id}: un «disminuye» no recibió el patrón B`);
+      assert.equal(patron, "B", `${item.id}: un pasivo o patrimonio no recibió el patrón B`);
+      assert.equal(texto, IZQUIERDA_O_DERECHA.errorB);
       conB += 1;
     }
   }
-  assert.ok(conA >= 4 && conB >= 4, `el banco dejó de tener las dos direcciones: ${conA} y ${conB}`);
+  /* Y el banco tiene de sobra para el sorteo 4+4 de los dos bloques. */
+  assert.ok(conA >= 4 && conB >= 4, `el banco no da para 4+4: ${conA} y ${conB}`);
 });
 
-test("★ CU-1: el patrón A nombra la familia de ESA cuenta y su lado natural", () => {
+test("★ CU-1: cada patrón manda a mirar el lado de SU bloque", () => {
   /*
-   * El texto lleva dos huecos y los dos salen de las reglas, no de una tabla:
-   * si se rellenaran mal, el estudiante leería que los pasivos viven en el
-   * debe y nada fallaría.
+   * Los dos textos son literales y ya no llevan huecos, así que lo que hay
+   * que vigilar es que no se hayan cruzado: el del activo manda a la
+   * izquierda y el del otro bloque a la derecha. Cruzados, el estudiante
+   * leería que los pasivos crecen por el debe y nada fallaría.
    */
   const b = BANCO_IZQUIERDA_O_DERECHA;
-  const casos = [
-    ["cu1-01", "Los activos", "el debe"],
-    ["cu1-05", "Los pasivos", "el haber"],
-    ["cu1-09", "Los pasivos", "el haber"],
-  ];
-  for (const [id, familia, lado] of casos) {
-    const item = b.items.find((i) => i.id === id);
-    assert.ok(/\baumenta\b/.test(item.enunciado), `${id} dejó de ser un «aumenta»`);
+  for (const item of b.items) {
     const otro = item.categoria === DEBE ? HABER : DEBE;
     const { texto } = b.evaluar(item, otro);
-    assert.ok(texto.includes(familia), `${id}: no dice «${familia}» — ${texto}`);
-    assert.ok(texto.includes(lado), `${id}: no dice «${lado}» — ${texto}`);
+    const esActivo = tipoDeCuenta(item.cuenta) === ACTIVO;
+    assert.ok(texto.includes(esActivo ? "izquierda" : "derecha"),
+      `${item.id}: el texto manda a mirar el lado que no es — ${texto}`);
+    assert.ok(!texto.includes(esActivo ? "derecha" : "izquierda"),
+      `${item.id}: el texto nombra los dos lados y se vuelve ambiguo`);
   }
 });
 
