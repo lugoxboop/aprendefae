@@ -1,11 +1,11 @@
 import { FAE } from "../../../theme.js";
 import { MarcoLibros } from "../bloques/marcos.jsx";
 import { tipoDeCuenta } from "../../../data/contabilidad.js";
-import SaldoDeLaCuenta from "./SaldoDeLaCuenta.jsx";
 import SoltarEnUnLado from "./SoltarEnUnLado.jsx";
 import ArmaElBalance from "./ArmaElBalance.jsx";
 import CuadroDeDinamicas from "./CuadroDeDinamicas.jsx";
 import DebitaOAcreditaMecanica from "./DebitaOAcredita.jsx";
+import ElSaldoDeLaCuentaMecanica from "./ElSaldoDeLaCuenta.jsx";
 import SeisCuentasAbiertas from "./SeisCuentasAbiertas.jsx";
 import SimpleOCompuestoMecanica from "./SimpleOCompuesto.jsx";
 import ArmaElAsientoMecanica from "./ArmaElAsiento.jsx";
@@ -15,7 +15,8 @@ import LaMayorizacionMecanica from "./LaMayorizacion.jsx";
 import ElErrorEscondidoMecanica from "./ElErrorEscondido.jsx";
 import { SUBTEMA as SUBTEMA_CUADRO } from "../../../data/contabilidadCuadro.js";
 import { SUBTEMA as SUBTEMA_A4 } from "../../../data/contabilidadDebitaOAcredita.js";
-import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, MAYORIZACION, ERROR_ESCONDIDO, IZQUIERDA_O_DERECHA } from "../../../data/contabilidadActividades.js";
+import { SUBTEMA as SUBTEMA_A5 } from "../../../data/contabilidadSaldo.js";
+import { SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, MAYORIZACION, ERROR_ESCONDIDO, IZQUIERDA_O_DERECHA } from "../../../data/contabilidadActividades.js";
 import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA,
   BANCO_CORRIENTE_DE_CUENTAS,
@@ -83,10 +84,15 @@ export const DebitaOAcredita = ({ onCompletar }) => (
     rotulo="APLICACIÓN" titulo={SUBTEMA_A4} onCompletar={onCompletar} />
 );
 
-/* CU-5: la cuenta T con sus movimientos, y dos preguntas — la cifra y el lado. */
+/*
+ * CU-5: la cuenta T con sus movimientos, y dos preguntas —la cifra y el lado—
+ * que se confirman JUNTAS. Si el lado se preguntara despues de ver la
+ * cancelacion, la columna en pie seria la respuesta. Y en un primer error la
+ * cancelacion no corre: el reintento no tendria nada que calcular.
+ */
 export const ElSaldoDeLaCuenta = ({ onCompletar }) => (
-  <SaldoDeLaCuenta Marco={MarcoLibros} acento={A}
-    rotulo="APLICACIÓN" titulo={SALDO_DE_LA_CUENTA.subtema} onCompletar={onCompletar} />
+  <ElSaldoDeLaCuentaMecanica Marco={MarcoLibros} acento={A}
+    rotulo="ANÁLISIS" titulo={SUBTEMA_A5} onCompletar={onCompletar} />
 );
 
 /* CU-6: el estudiante arma el asiento — dos cuentas y el lado de cada una. */

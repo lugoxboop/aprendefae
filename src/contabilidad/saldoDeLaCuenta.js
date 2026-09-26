@@ -75,6 +75,15 @@ export const MODO_B = "B";
 export const MODO_C = "C";
 export const MODO_D = "D";
 
+/*
+ * ═══════════ EL ACIERTO SE MIRA PRIMERO, Y ESO NO ES ORNAMENTO ═══════════
+ *
+ * En una cuenta con un lado vacío —Acciones, en este banco— sumar los dos
+ * movimientos da EXACTAMENTE el saldo: sumar 0 + 6.000 y restar 6.000 − 0 son
+ * el mismo número. Ahí no hay modo A que detectar, porque el estudiante no se
+ * equivocó: acertó. Si la comprobación de la suma fuera antes, la actividad le
+ * diría «el saldo es una resta, no una suma» a quien puso la cifra correcta.
+ */
 export function modoDeLaCifra(cuenta, cifra) {
   if (cifra === cuenta.saldo) return null;
   if (cifra === cuenta.debito + cuenta.credito) return MODO_A;

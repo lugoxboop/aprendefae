@@ -35,32 +35,21 @@ export const CUENTAS_DE_CIMIENTOS = [
  */
 export const ACTIVIDADES = [
   { id: "cu-izquierda-o-derecha", nombre: "¿Izquierda o Derecha?", bloque: "CIMIENTOS",
-    dificultad: "facil", fpBase: 10, subtema: "Estructura de la cuenta T" },
+    dificultad: "facil", fpBase: 10, subtema: "Naturaleza del debe y el haber" },
   { id: "cu-de-que-familia", nombre: "¿De qué familia es?", bloque: "CIMIENTOS",
     dificultad: "facil", fpBase: 10, subtema: "Clasificación de cuentas reales" },
 
   { id: "cu-cuadro-dinamicas", nombre: "El Cuadro de Dinámicas", bloque: "APLICACIÓN",
-    dificultad: "medio", fpBase: 25, subtema: "Reglas de registro" },
+    dificultad: "medio", fpBase: 25, subtema: "Reglas de registro por familia" },
   { id: "cu-debita-o-acredita", nombre: "¿Se Debita o se Acredita?", bloque: "APLICACIÓN",
     dificultad: "medio", fpBase: 25, subtema: "Reglas de registro aplicadas" },
-  { id: "cu-saldo-de-la-cuenta", nombre: "El Saldo de la Cuenta", bloque: "APLICACIÓN",
-    dificultad: "medio", fpBase: 25, subtema: "Cálculo del saldo" },
-
+  { id: "cu-saldo-de-la-cuenta", nombre: "El Saldo de la Cuenta", bloque: "ANÁLISIS",
+    dificultad: "dificil", fpBase: 50, subtema: "Cálculo del saldo" },
   { id: "cu-arma-el-asiento", nombre: "Arma el Asiento", bloque: "ANÁLISIS",
     dificultad: "dificil", fpBase: 50, subtema: "Asiento contable simple" },
-  { id: "cu-simple-o-compuesto", nombre: "¿Simple o Compuesto?", bloque: "ANÁLISIS",
-    dificultad: "dificil", fpBase: 50, subtema: "Asiento simple y compuesto" },
-  { id: "cu-cuadra-o-no", nombre: "¿Cuadra o No Cuadra?", bloque: "ANÁLISIS",
-    dificultad: "dificil", fpBase: 50, subtema: "Partida doble" },
-  { id: "cu-corriente-de-cuentas", nombre: "Corriente de Cuentas", bloque: "ANÁLISIS",
-    dificultad: "dificil", fpBase: 50, subtema: "Interleaving — clasificación de las seis familias" },
 
   { id: "cu-asiento-compuesto", nombre: "El Asiento Compuesto", bloque: "MAESTRÍA",
     dificultad: "experto", fpBase: 90, subtema: "Asiento compuesto" },
-  { id: "cu-mayorizacion", nombre: "La Mayorización", bloque: "MAESTRÍA",
-    dificultad: "experto", fpBase: 90, subtema: "Mayorización" },
-  { id: "cu-error-escondido", nombre: "El Error Escondido", bloque: "MAESTRÍA",
-    dificultad: "experto", fpBase: 90, subtema: "Diagnóstico de errores de registro" },
 ];
 
 /* El desafío va aparte: no es la trece, está al lado del camino. */

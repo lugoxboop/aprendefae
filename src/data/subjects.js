@@ -513,16 +513,11 @@ export const SUBJECTS = {
           /* Aplicación */
           { id: "cu-cuadro-dinamicas", nombre: "El Cuadro de Dinámicas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "cu-debita-o-acredita", nombre: "¿Se Debita o se Acredita?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "cu-saldo-de-la-cuenta", nombre: "El Saldo de la Cuenta", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* Análisis */
+          { id: "cu-saldo-de-la-cuenta", nombre: "El Saldo de la Cuenta", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "cu-arma-el-asiento", nombre: "Arma el Asiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "cu-simple-o-compuesto", nombre: "¿Simple o Compuesto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "cu-cuadra-o-no", nombre: "¿Cuadra o No Cuadra?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "cu-corriente-de-cuentas", nombre: "Corriente de Cuentas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* Maestría */
           { id: "cu-asiento-compuesto", nombre: "El Asiento Compuesto", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
-          { id: "cu-mayorizacion", nombre: "La Mayorización", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
-          { id: "cu-error-escondido", nombre: "El Error Escondido", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
           {
             /*
              * EL DESAFÍO DEL TEMA, el tercero del sitio. Misma estructura y

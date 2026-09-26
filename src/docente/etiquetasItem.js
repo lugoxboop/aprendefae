@@ -41,6 +41,7 @@ import { LAVADO_DE_AUTOS, CALEJA, pesos as pesosContables } from "../data/contab
 import { BALANCES as BALANCES_DE_A2, cuentaHistorica } from "../contabilidad/armaElBalance.js";
 import { FILAS as FILAS_DE_A3 } from "../contabilidad/cuadroDinamicas.js";
 import { transaccionDe as transaccionDeA4 } from "../contabilidad/debitaOAcredita.js";
+import { cuentaDeItemDocente } from "../contabilidad/saldoDeLaCuenta.js";
 
 /* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
 const EMPRESAS = { lavado: LAVADO_DE_AUTOS.empresa, caleja: CALEJA.empresa };
@@ -492,12 +493,16 @@ Object.assign(REGLAS, {
    * distintas escritas exactamente igual.
    */
   "cu-saldo-de-la-cuenta": (id) => {
-    const [item, que] = String(id).split(":");
-    const i = SALDO_DE_LA_CUENTA.items.find((x) => x.id === item);
-    if (!i || (que !== "saldo" && que !== "lado")) return null;
-    const empresa = i.caso === "capitulo" ? "ejemplo del capítulo" : EMPRESAS[i.caso];
-    if (!empresa) return null;
-    return `${que === "saldo" ? "Cuánto es el saldo" : "De qué lado va"}: ${i.cuenta} (${empresa})`;
+    const que = String(id).split(":")[1];
+    if (que !== "saldo" && que !== "lado") return null;
+    /*
+     * Las dos cuentas que salieron del banco —Letras por pagar del lavado y
+     * Equipo de computación de Caleja— se siguen traduciendo: sus respuestas
+     * están en el servidor y el profesor tiene que poder leerlas.
+     */
+    const c = cuentaDeItemDocente(id);
+    if (!c) return null;
+    return `${que === "saldo" ? "Cuánto es el saldo" : "De qué lado va"}: ${c.cuenta} (${c.empresa})`;
   },
 
   /*

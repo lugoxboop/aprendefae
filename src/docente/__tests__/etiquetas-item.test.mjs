@@ -330,7 +330,26 @@ test("el recorte no parte palabras y marca que cortó", () => {
  * Y que las reglas no se queden huérfanas por el otro lado: una regla para una
  * actividad que ya no existe es código muerto que nadie va a borrar solo.
  */
-test("ninguna regla sobra", () => {
+/*
+ * ═══════════ UNA ACTIVIDAD RETIRADA SÍ CONSERVA SU REGLA ═══════════
+ *
+ * Y no es una excepción cómoda: es la razón por la que la regla existe. El
+ * panel docente lee `fp_detalle`, y las respuestas que los estudiantes ya
+ * dieron a una actividad retirada siguen ahí. Sin su regla, el profesor vería
+ * «cu9-03» crudo donde antes leía la pregunta.
+ *
+ * Lo que la prueba sigue cazando es una regla para un id que NUNCA existió —un
+ * nombre mal escrito, un copiar y pegar— porque ese no está en esta lista.
+ */
+const RETIRADAS_DE_CONTABILIDAD = [
+  "cu-simple-o-compuesto",
+  "cu-cuadra-o-no",
+  "cu-corriente-de-cuentas",
+  "cu-mayorizacion",
+  "cu-error-escondido",
+];
+
+test("ninguna regla sobra, salvo las de las actividades retiradas", () => {
   /*
    * "Vive" es lo que nombreDeActividad() sabe nombrar, no lo que está en el
    * camino de un tema. La diferencia es real y salió en esta prueba: el modo
@@ -341,6 +360,15 @@ test("ninguna regla sobra", () => {
    * Se usa esa función y no una lista de excepciones propia justamente para no
    * abrir una segunda opinión sobre qué ids existen: ya hay una, y está ahí.
    */
-  const sobran = Object.keys(REGLAS).filter((id) => nombreDeActividad(id) === null);
+  const sobran = Object.keys(REGLAS)
+    .filter((id) => nombreDeActividad(id) === null)
+    .filter((id) => !RETIRADAS_DE_CONTABILIDAD.includes(id));
   assert.deepEqual(sobran, [], `reglas de actividades que ya no existen: ${sobran.join(", ")}`);
+});
+
+test("★ las cinco retiradas conservan su regla, para las respuestas que ya existen", () => {
+  for (const id of RETIRADAS_DE_CONTABILIDAD) {
+    assert.ok(REGLAS[id], `${id} perdió su regla y el panel enseñaría el id crudo`);
+    assert.equal(nombreDeActividad(id), null, `${id} sigue en el camino: esta lista sobra`);
+  }
 });

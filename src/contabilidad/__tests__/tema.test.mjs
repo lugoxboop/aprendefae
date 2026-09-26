@@ -31,7 +31,7 @@ test("la materia dejó de estar vacía: tiene su primer tema", () => {
 });
 
 test("★ el registro dice exactamente lo mismo que la ficha del capítulo", () => {
-  assert.equal(JUEGOS.length, ACTIVIDADES.length, "no son doce en los dos sitios");
+  assert.equal(JUEGOS.length, ACTIVIDADES.length, "no son las mismas en los dos sitios");
   for (const ficha of ACTIVIDADES) {
     const registrada = JUEGOS.find((a) => a.id === ficha.id);
     assert.ok(registrada, `${ficha.id}: está en la ficha y no en subjects.js`);
@@ -41,14 +41,18 @@ test("★ el registro dice exactamente lo mismo que la ficha del capítulo", () 
   }
 });
 
-test("★ los FP del camino son los 565 de la ficha", () => {
+test("★ los FP del camino son los 260 de la ficha", () => {
   const suma = JUEGOS.reduce((s, a) => s + a.clasificacion.fpBase, 0);
   assert.equal(suma, FP_DEL_TEMA);
   /* Y el número escrito, para que la igualdad de arriba no sea circular. */
-  assert.equal(suma, 565);
-  /* 2×10 + 3×25 + 4×50 + 3×90, la distribución de los otros cuatro temas. */
+  assert.equal(suma, 260);
+  /*
+   * 2×10 + 2×25 + 2×50 + 1×90. Este tema deja de compartir la distribución de
+   * los otros cuatro —eran 2-3-4-3 y 565— porque el rediseño lo bajó a siete
+   * actividades. El desafío sigue valiendo 360 aparte.
+   */
   const cuenta = (d) => JUEGOS.filter((a) => a.clasificacion.dificultad === d).length;
-  assert.deepEqual([cuenta("facil"), cuenta("medio"), cuenta("dificil"), cuenta("experto")], [2, 3, 4, 3]);
+  assert.deepEqual([cuenta("facil"), cuenta("medio"), cuenta("dificil"), cuenta("experto")], [2, 2, 2, 1]);
 });
 
 test("★ el desafío está al lado del camino, no dentro", () => {
@@ -121,24 +125,24 @@ test("★ ninguna actividad pendiente llega al camino", () => {
    * olvida de actualizar.
    */
   assert.equal(CONSTRUIDAS.length + pendientes.length, todas.length);
-  assert.equal(todas.length, 13, "doce juegos y el desafío");
+  assert.equal(todas.length, 8, "siete juegos y el desafío");
 });
 
-test("★ «tema completo» pide las doce, y el desafío no cuenta", () => {
+test("★ «tema completo» pide las siete, y el desafío no cuenta", () => {
   /*
    * Mientras el tema se construía, esta prueba vigilaba lo contrario: que
    * nadie recortara la lista a lo que ya se podía jugar, porque entonces
-   * alguien se ganaría la medalla de tema completo con cinco juegos y al
-   * entrar los otros siete se la quitaríamos. Ya están las doce, así que lo
-   * que queda por vigilar es el otro extremo: que las doce sigan siendo
+   * alguien se ganaría la medalla de tema completo con la mitad de los juegos
+   * y al entrar el resto se la quitaríamos. Ya están las siete, así que lo
+   * que queda por vigilar es el otro extremo: que las siete sigan siendo
    * jugables y que el desafío NO se cuele en la cuenta.
    *
    * Un desafío opcional que cuenta para la medalla deja de ser opcional, y
    * esa es la regla del Kit — la misma del Comité de NOVA.
    */
-  assert.equal(JUEGOS.length, 12);
-  assert.deepEqual(JUEGOS.filter((a) => a.pendiente), [], "una de las doce volvió a quedar pendiente");
-  assert.equal(JUEGOS_DE_LA_VISTA.length, 12, "la vista no dibuja las doce");
+  assert.equal(JUEGOS.length, 7);
+  assert.deepEqual(JUEGOS.filter((a) => a.pendiente), [], "una de las siete volvió a quedar pendiente");
+  assert.equal(JUEGOS_DE_LA_VISTA.length, 7, "la vista no dibuja las siete");
   assert.ok(DESAFIO_MONTADO, "la vista no monta el desafío");
 
   const desafio = desafioDe(TEMA);

@@ -24,19 +24,30 @@ import { BASE_POR_DIFICULTAD, TOPE_ETAPAS } from "../../fp/motor.js";
 
 /* ─────────────────────────── la ficha del tema ─────────────────────────── */
 
-test("son doce actividades, repartidas 2-3-4-3 por bloque", () => {
-  assert.equal(ACTIVIDADES.length, 12);
+/*
+ * ═══════════ EL TEMA SON SIETE, NO DOCE ═══════════
+ *
+ * Decisión de Mateo, confirmada: el rediseño baja de doce actividades a siete
+ * y el tema de 565 FP a 260. Salen ¿Simple o Compuesto?, ¿Cuadra o No Cuadra?,
+ * Corriente de Cuentas, La Mayorización y El Error Escondido —330 FP—, y El
+ * Saldo de la Cuenta sube de Medio a Difícil.
+ *
+ * Libro diario y mayorización dejan de cubrirse aquí: eso ya lo trabaja el
+ * desafío «El Ciclo Completo», que no cambia.
+ */
+test("son siete actividades, repartidas 2-2-2-1 por bloque", () => {
+  assert.equal(ACTIVIDADES.length, 7);
   const porBloque = {};
   for (const a of ACTIVIDADES) porBloque[a.bloque] = (porBloque[a.bloque] ?? 0) + 1;
-  assert.deepEqual(porBloque, { "CIMIENTOS": 2, "APLICACIÓN": 3, "ANÁLISIS": 4, "MAESTRÍA": 3 });
+  assert.deepEqual(porBloque, { "CIMIENTOS": 2, "APLICACIÓN": 2, "ANÁLISIS": 2, "MAESTRÍA": 1 });
 });
 
-test("EL TEMA SUMA 565 FP: 2×10 + 3×25 + 4×50 + 3×90", () => {
+test("EL TEMA SUMA 260 FP: 2×10 + 2×25 + 2×50 + 1×90", () => {
   const cuenta = {};
   for (const a of ACTIVIDADES) cuenta[a.fpBase] = (cuenta[a.fpBase] ?? 0) + 1;
-  assert.deepEqual(cuenta, { 10: 2, 25: 3, 50: 4, 90: 3 });
-  assert.equal(FP_DEL_TEMA, 565);
-  assert.equal(2 * 10 + 3 * 25 + 4 * 50 + 3 * 90, 565, "la cuenta de la ficha");
+  assert.deepEqual(cuenta, { 10: 2, 25: 2, 50: 2, 90: 1 });
+  assert.equal(FP_DEL_TEMA, 260);
+  assert.equal(2 * 10 + 2 * 25 + 2 * 50 + 1 * 90, 260, "la cuenta de la ficha");
 });
 
 test("el fpBase de cada actividad es el de su dificultad en el motor, no un número suelto", () => {
@@ -47,8 +58,8 @@ test("el fpBase de cada actividad es el de su dificultad en el motor, no un núm
 });
 
 test("los ids y los nombres son únicos, y cada una trae su subtema", () => {
-  assert.equal(new Set(ACTIVIDADES.map((a) => a.id)).size, 12, "hay ids repetidos");
-  assert.equal(new Set(ACTIVIDADES.map((a) => a.nombre)).size, 12, "hay nombres repetidos");
+  assert.equal(new Set(ACTIVIDADES.map((a) => a.id)).size, ACTIVIDADES.length, "hay ids repetidos");
+  assert.equal(new Set(ACTIVIDADES.map((a) => a.nombre)).size, ACTIVIDADES.length, "hay nombres repetidos");
   for (const a of ACTIVIDADES) {
     assert.ok(a.subtema?.length > 3, `${a.id} no tiene subtema`);
   }
@@ -59,7 +70,7 @@ test("el desafío está FUERA del camino y vale base × etapas, con tope en cuat
   assert.equal(DESAFIO.fpBase, BASE_POR_DIFICULTAD.experto);
   assert.equal(DESAFIO.etapas, 4);
   assert.equal(DESAFIO.fpBase * Math.min(DESAFIO.etapas, TOPE_ETAPAS), 360);
-  /* Y no entra en los 565: si entrara, cerrar el tema exigiría hacerlo. */
+  /* Y no entra en los 260: si entrara, cerrar el tema exigiría hacerlo. */
   assert.ok(!ACTIVIDADES.some((a) => a.id === DESAFIO.id), "el desafío se coló en el camino");
 });
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../utils/barajar.js";
 import { FAE } from "../../../theme.js";
-import { DEBE, HABER, COLOR_LADO, pesos } from "../../../data/contabilidad.js";
+import { DEBE, HABER, pesos } from "../../../data/contabilidad.js";
 import {
   OBJETIVO, PREGUNTA_CIFRA, PREGUNTA_LADO, SUBTEMA,
 } from "../../../data/contabilidadSaldo.js";
@@ -160,6 +160,13 @@ export default function ElSaldoDeLaCuenta({ Marco, rotulo: rot, titulo, acento, 
     setRespuestas((xs) => [...xs,
       ...(!r.cifraOk ? [{ id: `${c.id}:saldo`, primeroOk: false, segundoOk: nuevo.cifraOk }] : []),
       ...(!r.ladoOk ? [{ id: `${c.id}:lado`, primeroOk: false, segundoOk: nuevo.ladoOk }] : [])]);
+    /*
+     * Y SE CIERRA EL REINTENTO. Sin esta línea el reintento era infinito: el
+     * estudiante podía seguir respondiendo, cada vuelta añadía otra entrada al
+     * detalle del docente, y el lado correcto no se destapaba nunca. Salió de
+     * una prueba, no de leer el código.
+     */
+    setIntento(2);
     /* En el reintento la cancelación corre siempre: la respuesta ya se revela. */
     setR({ ...nuevo, cancelar: true, camaraLenta: r.modoCifra === "A" });
   };
@@ -281,4 +288,4 @@ export default function ElSaldoDeLaCuenta({ Marco, rotulo: rot, titulo, acento, 
   );
 }
 
-export { SUBTEMA, COLOR_LADO };
+export { SUBTEMA };

@@ -9,9 +9,9 @@ import CaminoHacer from "./shared/CaminoHacer.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import {
-  IzquierdaODerecha, DeQueFamilia, CuadroDinamicas, DebitaOAcredita, CorrienteDeCuentas,
-  ElSaldoDeLaCuenta, SimpleOCompuesto, ArmaElAsiento, ElAsientoCompuesto, CuadraONoCuadra, LaMayorizacion,
-  ElErrorEscondido,
+  IzquierdaODerecha, DeQueFamilia, CuadroDinamicas, DebitaOAcredita, 
+  ElSaldoDeLaCuenta,  ArmaElAsiento, ElAsientoCompuesto,  
+  
 } from "./mecanicas/libros/actividades.jsx";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
@@ -66,12 +66,7 @@ const JUEGOS = [
   { id: "cu-debita-o-acredita", Mecanica: DebitaOAcredita },
   { id: "cu-saldo-de-la-cuenta", Mecanica: ElSaldoDeLaCuenta },
   { id: "cu-arma-el-asiento", Mecanica: ArmaElAsiento },
-  { id: "cu-simple-o-compuesto", Mecanica: SimpleOCompuesto },
-  { id: "cu-cuadra-o-no", Mecanica: CuadraONoCuadra },
-  { id: "cu-corriente-de-cuentas", Mecanica: CorrienteDeCuentas },
   { id: "cu-asiento-compuesto", Mecanica: ElAsientoCompuesto },
-  { id: "cu-mayorizacion", Mecanica: LaMayorizacion },
-  { id: "cu-error-escondido", Mecanica: ElErrorEscondido },
 ];
 
 const CLAS = Object.fromEntries(JUEGOS.map((j) => [j.id, clasificacionDe(MATERIA, TEMA, j.id)]));
