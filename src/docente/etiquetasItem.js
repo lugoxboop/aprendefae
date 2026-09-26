@@ -39,6 +39,7 @@ import { transaccionDe } from "../components/mecanicas/libros/ArmaElAsiento.jsx"
 import { transaccionDe as transaccionCompuesta } from "../components/mecanicas/libros/ElAsientoCompuesto.jsx";
 import { LAVADO_DE_AUTOS, CALEJA, pesos as pesosContables } from "../data/contabilidad.js";
 import { BALANCES as BALANCES_DE_A2, cuentaHistorica } from "../contabilidad/armaElBalance.js";
+import { FILAS as FILAS_DE_A3 } from "../contabilidad/cuadroDinamicas.js";
 
 /* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
 const EMPRESAS = { lavado: LAVADO_DE_AUTOS.empresa, caleja: CALEJA.empresa };
@@ -461,7 +462,16 @@ Object.assign(REGLAS, {
     if (nueva) return `${nueva.cuenta} — ${pesosContables(nueva.valor)}`;
     return cuentaHistorica(id);
   },
-  "cu-cuadro-dinamicas": (id) => porId(BANCO_CUADRO_DINAMICAS.items, "texto")[id] ?? null,
+  /*
+   * El cuadro pasó de doce combinaciones sueltas a seis filas, una por
+   * familia. Los ids nuevos son las filas; los doce viejos —que ya jugaron
+   * estudiantes— se siguen leyendo del banco anterior, igual que en A2.
+   */
+  "cu-cuadro-dinamicas": (id) => {
+    const fila = FILAS_DE_A3.find((f) => f.id === id);
+    if (fila) return `${fila.nombre}: ¿qué le hace un débito?`;
+    return porId(BANCO_CUADRO_DINAMICAS.items, "texto")[id] ?? null;
+  },
   "cu-debita-o-acredita": (id) => porId(BANCO_DEBITA_O_ACREDITA.items, "texto")[id] ?? null,
   "cu-corriente-de-cuentas": (id) => porId(BANCO_CORRIENTE_DE_CUENTAS.items, "texto")[id] ?? null,
 

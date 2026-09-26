@@ -4,7 +4,7 @@ import { tipoDeCuenta } from "../../../data/contabilidad.js";
 import SaldoDeLaCuenta from "./SaldoDeLaCuenta.jsx";
 import SoltarEnUnLado from "./SoltarEnUnLado.jsx";
 import ArmaElBalance from "./ArmaElBalance.jsx";
-import PredecirLaBarra from "./PredecirLaBarra.jsx";
+import CuadroDeDinamicas from "./CuadroDeDinamicas.jsx";
 import LaContrapartida from "./LaContrapartida.jsx";
 import SeisCuentasAbiertas from "./SeisCuentasAbiertas.jsx";
 import SimpleOCompuestoMecanica from "./SimpleOCompuesto.jsx";
@@ -13,9 +13,10 @@ import ElAsientoCompuestoMecanica from "./ElAsientoCompuesto.jsx";
 import CuadraONoCuadraMecanica from "./CuadraONoCuadra.jsx";
 import LaMayorizacionMecanica from "./LaMayorizacion.jsx";
 import ElErrorEscondidoMecanica from "./ElErrorEscondido.jsx";
+import { SUBTEMA as SUBTEMA_CUADRO } from "../../../data/contabilidadCuadro.js";
 import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, MAYORIZACION, ERROR_ESCONDIDO, IZQUIERDA_O_DERECHA } from "../../../data/contabilidadActividades.js";
 import {
-  BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
+  BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
 } from "../../../contabilidad/bancos.js";
 
@@ -59,13 +60,14 @@ export const DeQueFamilia = ({ onCompletar }) => (
 );
 
 /*
- * CU-3: prediccion-revelacion. La cuenta ensena su saldo previo, el estudiante
- * dice que va a hacer la barra, y SOLO ENTONCES cae la ficha. Al reves, la
- * respuesta estaria en la pantalla.
+ * CU-3: el cuadro resumen del capitulo, vacio. El estudiante coloca solo la
+ * casilla de debito de cada fila y la de credito se llena sola en espejo; al
+ * completar las seis, las filas se reordenan en dos bloques. Ese
+ * reordenamiento es la actividad: seis reglas que resultan ser dos.
  */
 export const CuadroDinamicas = ({ onCompletar }) => (
-  <PredecirLaBarra banco={BANCO_CUADRO_DINAMICAS} Marco={MarcoLibros} acento={A}
-    rotulo="APLICACIÓN" titulo={BANCO_CUADRO_DINAMICAS.subtema} onCompletar={onCompletar} />
+  <CuadroDeDinamicas Marco={MarcoLibros} acento={A}
+    rotulo="APLICACIÓN" titulo={SUBTEMA_CUADRO} onCompletar={onCompletar} />
 );
 
 /*

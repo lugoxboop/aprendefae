@@ -269,10 +269,18 @@ export default function ArmaElBalance({ Marco, rotulo, titulo, acento, onComplet
               display: "block", width: "100%", textAlign: "left", marginBottom: "9px",
               padding: "8px 9px", borderRadius: "11px",
               cursor: !retro || esperandoReintento ? "pointer" : "default",
-              /* Resaltado neutro de sección: fondo tenue + borde izquierdo sólido. */
+              /*
+               * Resaltado neutro de sección: fondo tenue + borde izquierdo
+               * sólido. Todo en propiedades largas: mezclar `border` con
+               * `borderLeft*` hacía que React avisara en cada repintado, y con
+               * razón —el orden en que se aplican no está garantizado—.
+               */
               background: resaltada ? "rgba(184,196,212,0.13)" : "rgba(10,20,34,0.3)",
-              borderLeft: resaltada ? "3px solid #B8C4D4" : "3px solid transparent",
-              border: rebotando === s.id ? `1px dashed ${FAE.coral}` : "1px solid rgba(248,249,250,0.1)",
+              borderTopWidth: "1px", borderRightWidth: "1px", borderBottomWidth: "1px",
+              borderStyle: rebotando === s.id ? "dashed" : "solid",
+              borderTopColor: rebotando === s.id ? FAE.coral : "rgba(248,249,250,0.1)",
+              borderRightColor: rebotando === s.id ? FAE.coral : "rgba(248,249,250,0.1)",
+              borderBottomColor: rebotando === s.id ? FAE.coral : "rgba(248,249,250,0.1)",
               borderLeftWidth: "3px",
               borderLeftColor: resaltada ? "#B8C4D4" : (rebotando === s.id ? FAE.coral : "transparent"),
               borderLeftStyle: "solid",
