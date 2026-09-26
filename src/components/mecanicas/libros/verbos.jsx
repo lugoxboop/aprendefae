@@ -346,7 +346,7 @@ export function FichaEnVuelo({ valor, lado, puntero, texto = null, color = null 
 export function CuentaDeValor({
   cuenta, debitos = [], creditos = [], cancelar = false, destinos = false,
   recien = null, tomada = null, alto = ALTO_COLUMNA, resaltar = null, onSoltar = null,
-  triangulo = null, flechas = false, tonoRotulo = null,
+  triangulo = null, flechas = false, tonoRotulo = null, sub = null,
 }) {
   const c = cancelacion(debitos, creditos);
   const referencia = referenciaDe(debitos, creditos);
@@ -444,11 +444,24 @@ export function CuentaDeValor({
       }}
     >
       <p style={{
-        margin: "0 0 9px", fontFamily: "Sora, sans-serif", fontWeight: 700,
+        margin: sub ? "0 0 1px" : "0 0 9px", fontFamily: "Sora, sans-serif", fontWeight: 700,
         fontSize: "14px", color: FAE.text, textAlign: "center",
       }}>
         {cuenta}
       </p>
+      {/*
+        De quién es esta cuenta, cuando hace falta decirlo. En «El Saldo de la
+        Cuenta» hay tres que se llaman «Caja» —la del ejemplo del capítulo, la
+        de Caleja y la del lavado— con movimientos distintos las tres: sin la
+        empresa debajo serían tres preguntas escritas exactamente igual.
+      */}
+      {sub && (
+        <p data-sub={sub} style={{
+          margin: "0 0 9px", fontSize: "10.5px", color: "rgba(248,249,250,0.5)", textAlign: "center",
+        }}>
+          {sub}
+        </p>
+      )}
       <div style={{ display: "flex", gap: "10px", borderTop: "1px solid rgba(248,249,250,0.22)", paddingTop: "9px" }}>
         {columna(DEBE, c.debe, totalDebe)}
         <div aria-hidden="true" style={{ width: "1px", background: "rgba(248,249,250,0.22)" }} />

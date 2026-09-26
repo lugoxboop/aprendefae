@@ -40,6 +40,7 @@ import { transaccionDe as transaccionCompuesta } from "../components/mecanicas/l
 import { LAVADO_DE_AUTOS, CALEJA, pesos as pesosContables } from "../data/contabilidad.js";
 import { BALANCES as BALANCES_DE_A2, cuentaHistorica } from "../contabilidad/armaElBalance.js";
 import { FILAS as FILAS_DE_A3 } from "../contabilidad/cuadroDinamicas.js";
+import { transaccionDe as transaccionDeA4 } from "../contabilidad/debitaOAcredita.js";
 
 /* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
 const EMPRESAS = { lavado: LAVADO_DE_AUTOS.empresa, caleja: CALEJA.empresa };
@@ -472,7 +473,14 @@ Object.assign(REGLAS, {
     if (fila) return `${fila.nombre}: ¿qué le hace un débito?`;
     return porId(BANCO_CUADRO_DINAMICAS.items, "texto")[id] ?? null;
   },
-  "cu-debita-o-acredita": (id) => porId(BANCO_DEBITA_O_ACREDITA.items, "texto")[id] ?? null,
+  /*
+   * Los diez ids son los mismos de siempre —misma transacción, misma cuenta
+   * preguntada—, así que las respuestas que ya existen se siguen leyendo. Lo
+   * que cambia es que ahora la etiqueta dice también por qué cuenta se
+   * preguntó: sin eso, «Compra de contado de una maquinaria» no distingue si
+   * la pregunta era por Caja o por Maquinaria.
+   */
+  "cu-debita-o-acredita": (id) => transaccionDeA4(id) ?? porId(BANCO_DEBITA_O_ACREDITA.items, "texto")[id] ?? null,
   "cu-corriente-de-cuentas": (id) => porId(BANCO_CORRIENTE_DE_CUENTAS.items, "texto")[id] ?? null,
 
   /*

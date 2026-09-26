@@ -5,7 +5,7 @@ import SaldoDeLaCuenta from "./SaldoDeLaCuenta.jsx";
 import SoltarEnUnLado from "./SoltarEnUnLado.jsx";
 import ArmaElBalance from "./ArmaElBalance.jsx";
 import CuadroDeDinamicas from "./CuadroDeDinamicas.jsx";
-import LaContrapartida from "./LaContrapartida.jsx";
+import DebitaOAcreditaMecanica from "./DebitaOAcredita.jsx";
 import SeisCuentasAbiertas from "./SeisCuentasAbiertas.jsx";
 import SimpleOCompuestoMecanica from "./SimpleOCompuesto.jsx";
 import ArmaElAsientoMecanica from "./ArmaElAsiento.jsx";
@@ -14,10 +14,11 @@ import CuadraONoCuadraMecanica from "./CuadraONoCuadra.jsx";
 import LaMayorizacionMecanica from "./LaMayorizacion.jsx";
 import ElErrorEscondidoMecanica from "./ElErrorEscondido.jsx";
 import { SUBTEMA as SUBTEMA_CUADRO } from "../../../data/contabilidadCuadro.js";
+import { SUBTEMA as SUBTEMA_A4 } from "../../../data/contabilidadDebitaOAcredita.js";
 import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUESTO, CUADRA_O_NO, MAYORIZACION, ERROR_ESCONDIDO, IZQUIERDA_O_DERECHA } from "../../../data/contabilidadActividades.js";
 import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA,
-  BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
+  BANCO_CORRIENTE_DE_CUENTAS,
 } from "../../../contabilidad/bancos.js";
 
 /*
@@ -72,12 +73,14 @@ export const CuadroDinamicas = ({ onCompletar }) => (
 
 /*
  * CU-4: la ficha va al debe o al haber de la cuenta preguntada, y SOLO al
- * acertar se materializa la contrapartida. Ensenarla tras un fallo regalaria
- * la logica: el estudiante deduciria su lado del de la otra sin razonarlo.
+ * acertar se materializa la contrapartida debajo, con su arco. Ensenarla tras
+ * un fallo regalaria la logica: el estudiante deduciria su lado del de la otra
+ * sin razonarlo. Su sitio esta reservado y liso desde el principio, porque un
+ * hueco que se note tambien delata que hay una segunda cuenta.
  */
 export const DebitaOAcredita = ({ onCompletar }) => (
-  <LaContrapartida banco={BANCO_DEBITA_O_ACREDITA} Marco={MarcoLibros} acento={A}
-    rotulo="APLICACIÓN" titulo={BANCO_DEBITA_O_ACREDITA.subtema} onCompletar={onCompletar} />
+  <DebitaOAcreditaMecanica Marco={MarcoLibros} acento={A}
+    rotulo="APLICACIÓN" titulo={SUBTEMA_A4} onCompletar={onCompletar} />
 );
 
 /* CU-5: la cuenta T con sus movimientos, y dos preguntas — la cifra y el lado. */
