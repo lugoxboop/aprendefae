@@ -39,10 +39,26 @@ function Capa({ numero, nombre, children }) {
  * DE MAQUINAS» diria que el estudiante esta en Politica Monetaria. El valor
  * por defecto conserva el de las tres piezas que ya existian.
  */
-export default function CuatroCapas({ pieza, Escena, Exploracion, rotulo = "SALA DE MÁQUINAS · APRENDER" }) {
+/*
+ * ═══════════ LO QUE UNA PIEZA PUEDE TRAER SUYO ═══════════
+ *
+ * `Capa2` sustituye el paso-a-paso por la máquina propia de esa pieza, y
+ * `pieza.opciones` cambia la capa 4 de «ver la respuesta de referencia» a un
+ * selector con devolución. Los dos van apagados por defecto: las cuatro
+ * piezas que ya existían no cambian ni un pixel.
+ *
+ * Se hizo así y no forkando el componente porque lo que comparten —el panel,
+ * los rótulos de capa, la capa 1— es justo lo que hace que todas las piezas
+ * de Aprender del sitio se sientan la misma cosa. Dos marcos parecidos se
+ * separan en el primer retoque.
+ */
+export default function CuatroCapas({
+  pieza, Escena, Exploracion, rotulo = "SALA DE MÁQUINAS · APRENDER",
+  Capa2 = null, Capa4 = null,
+}) {
   const [paso, setPaso] = useState(0);
   const [verRespuesta, setVerRespuesta] = useState(false);
-  const actual = pieza.pasos[paso];
+  const actual = pieza.pasos?.[paso] ?? null;
   const boton = (activo) => ({
     padding: "10px 16px", borderRadius: "999px", fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
     cursor: activo ? "pointer" : "default",
@@ -52,6 +68,16 @@ export default function CuatroCapas({ pieza, Escena, Exploracion, rotulo = "SALA
 
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
+      {/* El objetivo va ANTES de la capa 1: se sabe qué se va a aprender antes de empezar. */}
+      {pieza.objetivo && (
+        <p data-objetivo style={{
+          margin: "0 0 18px", padding: "11px 13px", borderRadius: "12px",
+          fontSize: "14px", lineHeight: 1.55, color: "rgba(248,249,250,0.88)",
+          background: "rgba(42,157,143,0.08)", borderLeft: `3px solid ${FAE.teal}`,
+        }}>
+          {pieza.objetivo}
+        </p>
+      )}
       <Capa numero={1} nombre="Primero, los nombres">
         <dl style={{ margin: 0, display: "flex", flexDirection: "column", gap: "9px" }}>
           {pieza.nombres.map((n) => (
@@ -64,17 +90,21 @@ export default function CuatroCapas({ pieza, Escena, Exploracion, rotulo = "SALA
       </Capa>
 
       <Capa numero={2} nombre="Mírelo funcionar">
-        <div style={{ borderRadius: "14px", background: "rgba(10,20,34,0.45)", border: "1px solid rgba(248,249,250,0.1)", padding: "10px" }}>
-          <Escena resaltar={actual.resaltar} />
-        </div>
-        <p style={{ margin: "12px 0 6px", fontFamily: "Sora, sans-serif", fontSize: "11.5px", fontWeight: 600, color: "rgba(248,249,250,0.55)" }}>
-          Paso {paso + 1} de {pieza.pasos.length}
-        </p>
-        <p data-texto-paso aria-live="polite" style={{ margin: 0, fontSize: "15px", lineHeight: 1.6, color: FAE.text }}>{actual.texto}</p>
-        <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
-          <button type="button" disabled={paso === 0} onClick={() => setPaso((p) => Math.max(0, p - 1))} style={boton(paso > 0)}>Anterior</button>
-          <button type="button" disabled={paso === pieza.pasos.length - 1} onClick={() => setPaso((p) => Math.min(pieza.pasos.length - 1, p + 1))} style={boton(paso < pieza.pasos.length - 1)}>Siguiente</button>
-        </div>
+        {Capa2 ? <Capa2 /> : (
+          <>
+            <div style={{ borderRadius: "14px", background: "rgba(10,20,34,0.45)", border: "1px solid rgba(248,249,250,0.1)", padding: "10px" }}>
+              <Escena resaltar={actual.resaltar} />
+            </div>
+            <p style={{ margin: "12px 0 6px", fontFamily: "Sora, sans-serif", fontSize: "11.5px", fontWeight: 600, color: "rgba(248,249,250,0.55)" }}>
+              Paso {paso + 1} de {pieza.pasos.length}
+            </p>
+            <p data-texto-paso aria-live="polite" style={{ margin: 0, fontSize: "15px", lineHeight: 1.6, color: FAE.text }}>{actual.texto}</p>
+            <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
+              <button type="button" disabled={paso === 0} onClick={() => setPaso((p) => Math.max(0, p - 1))} style={boton(paso > 0)}>Anterior</button>
+              <button type="button" disabled={paso === pieza.pasos.length - 1} onClick={() => setPaso((p) => Math.min(pieza.pasos.length - 1, p + 1))} style={boton(paso < pieza.pasos.length - 1)}>Siguiente</button>
+            </div>
+          </>
+        )}
       </Capa>
 
       <Capa numero={3} nombre="Ahora pruebe usted">
@@ -82,6 +112,7 @@ export default function CuatroCapas({ pieza, Escena, Exploracion, rotulo = "SALA
       </Capa>
 
       <Capa numero={4} nombre="En una frase">
+        {Capa4 ? <Capa4 /> : (<>
         <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "15px", fontWeight: 700, lineHeight: 1.45, color: FAE.text }}>{pieza.pregunta}</p>
         {!verRespuesta ? (
           <button type="button" onClick={() => setVerRespuesta(true)} style={{ ...boton(true), marginTop: "12px" }}>
@@ -92,6 +123,7 @@ export default function CuatroCapas({ pieza, Escena, Exploracion, rotulo = "SALA
             {pieza.respuesta}
           </p>
         )}
+        </>)}
       </Capa>
     </Panel>
   );

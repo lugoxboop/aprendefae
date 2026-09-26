@@ -69,12 +69,17 @@ const consumidoDe = (el) => Number.parseFloat(el.getAttribute("data-consumido"))
 
 /* ═══════════════ EL ENGANCHE CONTENIDO ↔ DIBUJO ═══════════════ */
 
-test("las cuatro piezas del contenido tienen escena y exploración, sin sobrantes", () => {
+test("cada pieza del contenido tiene lo que dibuja, sin sobrantes", () => {
   const declaradas = PIEZAS_APRENDER.map((p) => p.id).sort();
   assert.deepEqual(Object.keys(ESCENAS).sort(), declaradas);
   for (const id of declaradas) {
-    assert.equal(typeof ESCENAS[id].Escena, "function", `${id} sin escena`);
-    assert.equal(typeof ESCENAS[id].Exploracion, "function", `${id} sin exploración`);
+    const e = ESCENAS[id];
+    assert.equal(typeof e.Exploracion, "function", `${id} sin exploración`);
+    /* O la escena del paso a paso compartido, o una capa 2 propia. Nunca las dos. */
+    const conEscena = typeof e.Escena === "function";
+    const conCapa2 = typeof e.Capa2 === "function";
+    assert.ok(conEscena || conCapa2, `${id} no dibuja su capa 2`);
+    assert.ok(!(conEscena && conCapa2), `${id} trae escena Y capa 2 propia`);
   }
 });
 
@@ -85,7 +90,7 @@ test("★ ningún paso de la capa 2 se dibuja igual que otro paso de la misma pi
    * escena entiende, la pantalla se queda quieta y el paso miente. Como
    * ningún `resaltar` es opcional, dos pasos idénticos SIEMPRE son un error.
    */
-  for (const p of PIEZAS_APRENDER) {
+  for (const p of PIEZAS_APRENDER.filter((x) => Array.isArray(x.pasos))) {
     const { Escena } = ESCENAS[p.id];
     const vistos = new Map();
     for (const paso of p.pasos) {
@@ -102,7 +107,7 @@ test("★ ningún paso de la capa 2 se dibuja igual que otro paso de la misma pi
 });
 
 test("ninguna pieza de Aprender pinta coral: aquí nadie se equivoca todavía", () => {
-  for (const p of PIEZAS_APRENDER) {
+  for (const p of PIEZAS_APRENDER.filter((x) => Array.isArray(x.pasos))) {
     const { Escena } = ESCENAS[p.id];
     for (const paso of p.pasos) {
       const html = enElPaso(Escena, paso.resaltar, (c) => c.innerHTML);

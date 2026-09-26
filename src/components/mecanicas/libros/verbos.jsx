@@ -102,6 +102,12 @@ export function useNumeroQueSube(valor, ms = 420) {
 /* Cuánto hay que mover el dedo para que un toque se convierta en arrastre. */
 export const UMBRAL_ARRASTRE = 8;
 
+/* Texto que solo existe para el lector de pantalla, sin ocupar la pantalla. */
+export const SOLO_LECTOR = {
+  position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px",
+  overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0,
+};
+
 export function useArrastre({ onSoltar } = {}) {
   const [tomada, setTomada] = useState(null);
   const [puntero, setPuntero] = useState(null);
@@ -321,9 +327,26 @@ export function FichaEnVuelo({ valor, lado, puntero, texto = null, color = null 
  *   destinos           true para que los dos lados reciban fichas
  *   recien             el valor que acaba de caer, para que entre cayendo
  */
+/*
+ * ═══════════ EL ▲ Y LAS SEÑALES REDUNDANTES ═══════════
+ *
+ * `triangulo` marca el lado por el que ESA cuenta crece, y no es decoración:
+ * es la regla del capítulo codificada de forma permanente en la cuenta.
+ *
+ * Va apagado por defecto, y eso importa: en la pieza de Aprender está siempre
+ * visible porque ahí se está enseñando la regla; en las doce actividades
+ * saldría regalando la respuesta, así que solo aparece al corregir. Quien lo
+ * pide decide cuándo.
+ *
+ * `flechas` añade ← y → a los rótulos, y `tonoRotulo` permite subirles el
+ * contraste sin tocar el teal y el ámbar de marca, que siguen mandando en
+ * rellenos e iconos. Los dos también apagados por defecto: lo que ya está
+ * construido no cambia de aspecto porque una pieza nueva necesite más.
+ */
 export function CuentaDeValor({
   cuenta, debitos = [], creditos = [], cancelar = false, destinos = false,
   recien = null, tomada = null, alto = ALTO_COLUMNA, resaltar = null, onSoltar = null,
+  triangulo = null, flechas = false, tonoRotulo = null,
 }) {
   const c = cancelacion(debitos, creditos);
   const referencia = referenciaDe(debitos, creditos);
@@ -359,11 +382,35 @@ export function CuentaDeValor({
           transition: "background 180ms ease, border-color 180ms ease, opacity 220ms ease",
         }}
       >
-        <span style={{
+        {/*
+          El ▲ va ENCIMA del rótulo del lado por el que la cuenta crece. Es
+          una señal de FORMA, no de color: sobrevive a quien no distingue el
+          teal del ámbar, que es justo para quien las otras señales se le
+          quedan en menos.
+        */}
+        <span
+          data-triangulo={triangulo === lado ? lado : undefined}
+          aria-hidden="true"
+          style={{
+            height: "11px", lineHeight: "11px", fontSize: "10px", textAlign: "center",
+            color: COLOR_LADO[lado],
+          }}
+        >
+          {triangulo === lado ? "▲" : ""}
+        </span>
+        {/*
+          El glifo se le oculta al lector de pantalla —«triángulo apuntando
+          hacia arriba» no es información— y en su lugar va la frase que sí lo
+          es. Un símbolo que solo significa algo mirándolo no está dicho.
+        */}
+        {triangulo === lado && <span style={SOLO_LECTOR}>Esta cuenta crece por aquí.</span>}
+        <span data-rotulo={lado} style={{
           fontFamily: "Sora, sans-serif", fontSize: "10px", fontWeight: 700,
-          letterSpacing: "0.14em", color: COLOR_LADO[lado], textAlign: "center",
+          letterSpacing: "0.14em", color: tonoRotulo?.[lado] ?? COLOR_LADO[lado], textAlign: "center",
         }}>
+          {flechas && lado === DEBE ? "← " : ""}
           {lado === DEBE ? "DEBE" : "HABER"}
+          {flechas && lado === HABER ? " →" : ""}
         </span>
         <span style={{ flex: 1 }} />
         {fichas.length === 0

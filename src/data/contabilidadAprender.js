@@ -1,3 +1,4 @@
+import { PIEZA_DEBE_Y_HABER } from "./contabilidadDebeHaber.js";
 import { LAVADO_DE_AUTOS } from "./contabilidad.js";
 
 /*
@@ -165,9 +166,22 @@ export const DEL_DIARIO_AL_MAYOR = {
   respuesta: "En el libro diario. Por eso se llama libro de asientos originales: es el registro cronológico de lo que ocurrió. El mayor viene después, reordenando esos mismos datos por cuenta.",
 };
 
+/*
+ * ═══════════ EL ORDEN, Y POR QUE «EL DEBE Y EL HABER» VA TERCERA ═══════════
+ *
+ * Lo decide su propio contenido, no una preferencia: su capa 3 avisa que
+ * «cada operacion real tiene su contrapartida en otra cuenta — eso lo vas a
+ * armar en la siguiente pieza». La pieza donde se arma la contrapartida es La
+ * partida doble, asi que esta tiene que ir justo antes o esa frase miente.
+ *
+ * Su id lleva el 5 porque es la quinta que se construyo. Los ids son
+ * identificadores, no numeros de orden: renumerar los otros cuatro por una
+ * insercion seria cambiar la identidad de algo que no cambio.
+ */
 export const PIEZAS_APRENDER = [
   DE_QUE_ESTA_HECHA,
   LAS_DOS_FAMILIAS,
+  PIEZA_DEBE_Y_HABER,
   LA_PARTIDA_DOBLE,
   DEL_DIARIO_AL_MAYOR,
 ];

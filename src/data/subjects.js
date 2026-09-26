@@ -503,6 +503,7 @@ export const SUBJECTS = {
            */
           { id: "cu-a1-anatomia-de-una-cuenta", nombre: "De qué está hecha una cuenta", clasificacion: { tipo: APRENDER } },
           { id: "cu-a2-dos-familias", nombre: "Las dos familias de cuentas", clasificacion: { tipo: APRENDER } },
+          { id: "cu-a5-debe-y-haber", nombre: "El debe y el haber", clasificacion: { tipo: APRENDER } },
           { id: "cu-a3-partida-doble", nombre: "La partida doble y las dos reglas", clasificacion: { tipo: APRENDER } },
           { id: "cu-a4-diario-y-mayor", nombre: "Del diario al mayor", clasificacion: { tipo: APRENDER } },
 

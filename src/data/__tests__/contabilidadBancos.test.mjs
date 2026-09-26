@@ -384,20 +384,33 @@ test("CU-12: el peso de señalar la cuenta y decir el tipo suma uno", () => {
 
 /* ═══════════════════ LAS CUATRO PIEZAS DE APRENDER ═══════════════════ */
 
-test("son cuatro piezas, con la forma que espera CuatroCapas", () => {
-  assert.equal(PIEZAS_APRENDER.length, 4);
+test("★ cada pieza trae una capa 2 y una capa 4, de una de las dos formas", () => {
+  /*
+   * Las piezas del marco compartido traen `pasos` y una respuesta de
+   * referencia; «El debe y el haber» trae `segmentos` y un selector de
+   * opciones, porque necesita animaciones que se detienen y devolución por
+   * opción. Lo que NO puede pasar es que una pieza no traiga ninguna de las
+   * dos: se abriría con la capa 2 o la capa 4 en blanco.
+   */
+  assert.equal(PIEZAS_APRENDER.length, 5);
   for (const p of PIEZAS_APRENDER) {
     assert.ok(p.titulo?.length > 3, `${p.id}: sin título`);
     assert.ok(p.subtema?.length > 3, `${p.id}: sin subtema`);
     assert.ok(Array.isArray(p.nombres) && p.nombres.length >= 5, `${p.id}: la capa 1 está corta`);
-    assert.ok(Array.isArray(p.pasos) && p.pasos.length >= 4, `${p.id}: la capa 2 está corta`);
+
+    const conPasos = Array.isArray(p.pasos) && p.pasos.length >= 4;
+    const conSegmentos = Array.isArray(p.segmentos) && p.segmentos.length >= 4;
+    assert.ok(conPasos || conSegmentos, `${p.id}: la capa 2 está vacía`);
+    assert.ok(!(conPasos && conSegmentos), `${p.id}: trae las dos formas de capa 2`);
+
     assert.ok(p.pregunta?.endsWith("?"), `${p.id}: la capa 4 no pregunta nada`);
-    assert.ok(p.respuesta?.length > 40, `${p.id}: sin respuesta de referencia`);
+    const conOpciones = Array.isArray(p.opciones) && p.opciones.length >= 2;
+    assert.ok(conOpciones || p.respuesta?.length > 40, `${p.id}: la capa 4 no responde nada`);
   }
 });
 
 test("cada paso de la capa 2 resalta una parte distinta de su escena", () => {
-  for (const p of PIEZAS_APRENDER) {
+  for (const p of PIEZAS_APRENDER.filter((x) => Array.isArray(x.pasos))) {
     const resaltes = p.pasos.map((s) => s.resaltar);
     assert.equal(new Set(resaltes).size, resaltes.length, `${p.id}: dos pasos resaltan lo mismo`);
     for (const s of p.pasos) {

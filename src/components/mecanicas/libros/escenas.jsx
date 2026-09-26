@@ -9,6 +9,9 @@ import { inclinacionDe } from "../../../contabilidad/balanza.js";
 import {
   CuentaDeValor, Balanza, Ficha, EstilosDeVerbos, useArrastre, FichaEnVuelo,
 } from "./verbos.jsx";
+import MesaDeDosCasos from "./debeHaber/MesaDeDosCasos.jsx";
+import ExploraUnaCuenta from "./debeHaber/ExploraUnaCuenta.jsx";
+import EnUnaFrase from "./debeHaber/EnUnaFrase.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -539,10 +542,18 @@ export function ExploraMayorizar() {
   );
 }
 
-/* Las cuatro piezas, emparejadas con su escena y su exploración. */
+/*
+ * Cada pieza, emparejada con lo que dibuja.
+ *
+ * Cuatro traen `Escena` —una función de `resaltar`, que es el paso a paso del
+ * marco compartido— y una trae `Capa2` y `Capa4` propias: «El debe y el
+ * haber» necesita cinco segmentos que se detienen y un selector con
+ * devolución, y eso no cabe en el paso a paso sin desfigurarlo para las otras.
+ */
 export const ESCENAS = {
   "cu-a1-anatomia-de-una-cuenta": { Escena: EscenaAnatomia, Exploracion: ExploraCuenta },
   "cu-a2-dos-familias": { Escena: EscenaFamilias, Exploracion: ExploraCierre },
+  "cu-a5-debe-y-haber": { Capa2: MesaDeDosCasos, Exploracion: ExploraUnaCuenta, Capa4: EnUnaFrase },
   "cu-a3-partida-doble": { Escena: EscenaPartidaDoble, Exploracion: ExploraBalanza },
   "cu-a4-diario-y-mayor": { Escena: EscenaDiarioMayor, Exploracion: ExploraMayorizar },
 };

@@ -150,11 +150,11 @@ export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, 
           {esAprender && (
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
               {PIEZAS_APRENDER.map((pieza, k) => {
-                const { Escena, Exploracion } = ESCENAS[pieza.id];
+                const { Escena, Exploracion, Capa2, Capa4 } = ESCENAS[pieza.id];
                 return (
                   <section key={pieza.id} data-pieza={pieza.id}>
                     <p style={{ ...sectionLabel, marginBottom: "10px" }}>PIEZA {k + 1} DE {PIEZAS_APRENDER.length}</p>
-                    <CuatroCapas pieza={pieza} Escena={Escena} Exploracion={Exploracion} rotulo="EL LIBRO MAYOR · APRENDER" />
+                    <CuatroCapas pieza={pieza} Escena={Escena} Exploracion={Exploracion} Capa2={Capa2} Capa4={Capa4} rotulo="EL LIBRO MAYOR · APRENDER" />
                   </section>
                 );
               })}
