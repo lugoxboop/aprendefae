@@ -1,0 +1,89 @@
+import { ChevronLeft } from "lucide-react";
+import { FAE } from "../theme.js";
+import Logo from "./Logo.jsx";
+import FondoMateria from "./shared/FondoMateria.jsx";
+import ActivityBadge from "./shared/ActivityBadge.jsx";
+import { APRENDER } from "../data/subjects.js";
+import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
+import { PIEZAS_INTRO } from "../data/contabilidadIntro.js";
+import { ESCENAS_INTRO } from "./mecanicas/libros/intro/escenasIntro.jsx";
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * INTRODUCCIÓN A LA CONTABILIDAD — el primer tema de la materia.
+ *
+ * Es el capítulo 1, y va ANTES que «Las cuentas, el debe y el haber» aunque
+ * se haya construido después. Por ahora solo tiene mitad de Aprender: el
+ * índice no parte la tarjeta hasta que un tema tenga contenido de las dos, así
+ * que entrar aquí lleva derecho al material, sin un clic de más hacia el único
+ * destino que existe.
+ *
+ * Cuando lleguen actividades de Hacer, el tema se parte solo, sin tocar esta
+ * vista ni el índice.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+const MATERIA = "contabilidad";
+export const TITULO = "Introducción a la contabilidad";
+
+export default function IntroContabilidadView({ onBack }) {
+  return (
+    <FondoMateria materiaId={MATERIA}>
+      <div style={{
+        minHeight: "100vh", backgroundColor: "transparent", fontFamily: "Inter, sans-serif",
+        color: FAE.text,
+        backgroundImage: "radial-gradient(circle at 50% -10%, rgba(233,196,106,0.12), transparent 55%)",
+      }}>
+        <div style={{ maxWidth: "860px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) clamp(16px, 2vw, 24px) 56px" }}>
+          <div className="fae-cabecera-titulo" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
+            <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
+            <span aria-hidden="true" className="fae-cabecera-marca" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
+            <button
+              type="button"
+              onClick={onBack}
+              aria-label="Volver a Contabilidad"
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center", padding: "8px",
+                borderRadius: "999px", background: "rgba(248,249,250,0.06)",
+                border: "1px solid rgba(248,249,250,0.14)", cursor: "pointer",
+              }}
+            >
+              <ChevronLeft size={20} color={FAE.text} />
+            </button>
+            <h1 style={{
+              fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px",
+              letterSpacing: "-0.02em", margin: 0, lineHeight: 1,
+            }}>
+              {TITULO}
+            </h1>
+          </div>
+
+          <div className="fae-insignia-actividad"><ActivityBadge tipo={APRENDER} size="sm" /></div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+            {PIEZAS_INTRO.map((pieza, k) => {
+              const { Capa2, Exploracion, Capa4 } = ESCENAS_INTRO[pieza.id];
+              return (
+                <div key={pieza.id}>
+                  <p style={{
+                    fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700,
+                    letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px",
+                  }}>
+                    PIEZA {k + 1} DE {PIEZAS_INTRO.length}
+                  </p>
+                  <CuatroCapas
+                    pieza={pieza}
+                    Capa2={Capa2}
+                    Exploracion={Exploracion}
+                    Capa4={Capa4}
+                    rotulo="EL CICLO CONTABLE · APRENDER"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </FondoMateria>
+  );
+}

@@ -24,8 +24,15 @@ import { VISTAS, vistaDeTema } from "../../ruta.js";
 const TEMA = SUBJECTS.contabilidad.topics.find((t) => t.id === "cuentas-debe-haber");
 const JUEGOS = actividadesDeTipo(TEMA, HACER);
 
-test("la materia dejó de estar vacía: tiene su primer tema", () => {
-  assert.equal(SUBJECTS.contabilidad.topics.length, 1);
+test("★ la materia tiene sus dos temas, y el capítulo 1 va primero", () => {
+  /*
+   * El orden del índice es el del libro, no el de la obra: «Introducción a la
+   * contabilidad» es el capítulo 1 y se construyó DESPUÉS del capítulo 3, así
+   * que es justo el orden que se rompería solo si alguien añade un tema al
+   * final sin mirar.
+   */
+  const ids = SUBJECTS.contabilidad.topics.map((t) => t.id);
+  assert.deepEqual(ids, ["introduccion-contabilidad", "cuentas-debe-haber"]);
   assert.ok(TEMA, "no está «cuentas-debe-haber»");
   assert.equal(TEMA.title, "Las cuentas, el debe y el haber");
 });

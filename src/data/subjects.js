@@ -492,6 +492,22 @@ export const SUBJECTS = {
     id: "contabilidad",
     name: "Contabilidad",
     topics: [
+      /*
+       * EL CAPÍTULO 1, y va PRIMERO aunque se construyera después: el orden
+       * del índice es el del libro, no el de la obra.
+       *
+       * Por ahora solo tiene la mitad de Aprender. El índice no parte la
+       * tarjeta hasta que un tema tenga contenido de las dos mitades, así que
+       * entrar aquí lleva derecho al material — sin una opción apagada al lado.
+       * Cuando entren actividades de Hacer, se parte solo.
+       */
+      {
+        id: "introduccion-contabilidad",
+        title: "Introducción a la contabilidad",
+        actividades: [
+          { id: "cu0-a1-recorrido-de-un-hecho", nombre: "El recorrido de un hecho", clasificacion: { tipo: APRENDER } },
+        ],
+      },
       {
         id: "cuentas-debe-haber",
         title: "Las cuentas, el debe y el haber",

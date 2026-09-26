@@ -34,6 +34,7 @@ const PoliticaEconomicaView = lazy(() => import("./components/PoliticaEconomicaV
 const PoliticaFiscalView = lazy(() => import("./components/PoliticaFiscalView.jsx"));
 /* "La Sala de Máquinas": Política Monetaria, con sus dos mitades. */
 const PoliticaMonetariaView = lazy(() => import("./components/PoliticaMonetariaView.jsx"));
+const IntroContabilidadView = lazy(() => import("./components/IntroContabilidadView.jsx"));
 const CuentasDebeHaberView = lazy(() => import("./components/CuentasDebeHaberView.jsx"));
 const RepasoView = lazy(() => import("./components/repaso/RepasoView.jsx"));
 const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"));
@@ -82,6 +83,7 @@ const VISTAS_CON_TITULO = new Set([
   "camino-da", "grifos-da",
   "politica-economica", "politica-fiscal", "politica-monetaria",
   "pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter",
+  "introduccion-contabilidad",
   "cuentas-debe-haber",
   "repaso-diario",
 ]);
@@ -208,6 +210,14 @@ export default function App() {
   }
 
   /* El primer tema de Contabilidad, con sus dos mitades como los demás. */
+  if (view === "introduccion-contabilidad") {
+    return (
+      <Suspense fallback={null}>
+        <IntroContabilidadView onBack={() => setView("contabilidad")} />
+      </Suspense>
+    );
+  }
+
   if (view === "cuentas-debe-haber") {
     return wrap(
       <Suspense fallback={siteFallback}>

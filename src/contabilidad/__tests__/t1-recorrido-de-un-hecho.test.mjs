@@ -1,0 +1,376 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { JSDOM, VirtualConsole } from "jsdom";
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * TEMA 1 · «EL RECORRIDO DE UN HECHO».
+ *
+ * Aquí hay tres cosas que se rompen sin hacer ruido.
+ *
+ * La primera es el BALANCE. Cuentas por pagar vale 15.000 y no 25.000 aunque
+ * la deuda naciera en 25.000 con esta misma compra. Parece un descuadre y no
+ * lo es: una transacción posterior canceló 10.000. Quien lo «arregle» rompe el
+ * capítulo y el total deja de dar 415.000.
+ *
+ * La segunda es el AISLAMIENTO DEL VOCABULARIO. Esta pieza va ANTES del Tema
+ * 2: el ▲, el marcador de saldo, los arcos, la balanza y el teal/ámbar con
+ * significado de debe y haber no significan nada todavía para quien la ve.
+ * Colarlos aquí los gasta antes de tiempo, y no habría nada que fallara.
+ *
+ * La tercera es la REGLA DEL RETORNO: solo la administración cierra el ciclo,
+ * y con los otros siete el trazo queda atenuado — nunca invisible.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
+const w = dom.window;
+w.matchMedia = () => ({ matches: true, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+w.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 0);
+w.cancelAnimationFrame = (id) => clearTimeout(id);
+for (const [k, v] of Object.entries({
+  window: w, document: w.document, navigator: w.navigator,
+  HTMLElement: w.HTMLElement, Element: w.Element, Node: w.Node, SVGElement: w.SVGElement,
+  Event: w.Event, MouseEvent: w.MouseEvent, KeyboardEvent: w.KeyboardEvent,
+  getComputedStyle: w.getComputedStyle.bind(w), matchMedia: w.matchMedia,
+  requestAnimationFrame: w.requestAnimationFrame, cancelAnimationFrame: w.cancelAnimationFrame,
+})) {
+  Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
+}
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
+const React = await import("react");
+const { createRoot } = await import("react-dom/client");
+const act = React.act ?? (await import("react-dom/test-utils")).act;
+
+const ElRecorridoDeUnHecho = (await import("../../components/mecanicas/libros/intro/ElRecorridoDeUnHecho.jsx")).default;
+const ExploraUsuarios = (await import("../../components/mecanicas/libros/intro/ExploraUsuarios.jsx")).default;
+const UnaFraseIntro = (await import("../../components/mecanicas/libros/intro/UnaFraseIntro.jsx")).default;
+const {
+  HECHO, BALANCE, facturaDelHecho, camposDelLibro, anilloEn, retornoEn,
+  PASOS, PASO_DEL_CIERRE, retornoParaUsuario, usuarioPorId, QUIEN_CIERRA,
+  USUARIO_DEL_RECORRIDO, OTRAS_TRANSACCIONES, lineaResaltada, palabrasDe,
+  evaluarOpcion, internos, externos, ENCENDIDO, ATENUADO,
+} = await import("../recorridoDeUnHecho.js");
+const {
+  ESTACIONES, USUARIOS, OPCIONES, TEXTOS, CIERRE, ALTERNATIVOS, NOMBRES,
+  SIN_DATO, NEUTRO, PIEZAS_INTRO, ID,
+} = await import("../../data/contabilidadIntro.js");
+const { CALEJA } = await import("../../data/contabilidad.js");
+const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
+
+const montar = (Comp) => {
+  const caja = document.createElement("div");
+  document.body.appendChild(caja);
+  const raiz = createRoot(caja);
+  act(() => raiz.render(React.createElement(Comp)));
+  return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
+};
+const tocar = (el) => act(() => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+const siguiente = (caja) => caja.querySelector("[data-siguiente]");
+
+/* ═══════════════════ EL AVISO CRÍTICO ═══════════════════ */
+
+test("★★★ el balance NO está «corregido»: Cuentas por pagar vale 15.000, no 25.000", () => {
+  const cxp = BALANCE.cuentas.find((c) => c.cuenta === "Cuentas por pagar");
+  const eq = BALANCE.cuentas.find((c) => c.cuenta === "Equipo de computación");
+  assert.ok(cxp, "desapareció Cuentas por pagar del balance");
+  assert.equal(cxp.valor, 15000, "alguien «arregló» la deuda a 25.000 y rompió el capítulo");
+  assert.equal(eq.valor, 25000, "Equipo de computación tiene que seguir en 25.000");
+
+  /* Y el asiento que la originó sí dice 25.000: la diferencia es el punto. */
+  const enElRenglon = HECHO.renglon.find((r) => r.cuenta === "Cuentas por pagar");
+  assert.equal(enElRenglon.valor, 25000, "la deuda nació en 25.000");
+  assert.notEqual(cxp.valor, enElRenglon.valor, "si coincidieran, el aviso de la ficha sobraría");
+});
+
+test("★★★ y con ese 15.000 el balance cuadra en 415.000", () => {
+  assert.equal(BALANCE.activos, 415000);
+  assert.equal(BALANCE.pasivosMasPatrimonio, 415000);
+  assert.equal(BALANCE.cuadra, true);
+  /* La comprobación que importa: 10.000 de diferencia, ni más ni menos. */
+  const cxp = BALANCE.cuentas.find((c) => c.cuenta === "Cuentas por pagar");
+  assert.equal(25000 - cxp.valor, 10000, "la cancelación posterior dejó de ser de 10.000");
+});
+
+/* ═══════════════════ EL AISLAMIENTO DEL VOCABULARIO ═══════════════════ */
+
+test("★★★ ni un signo del Tema 2 se cuela en la pieza", () => {
+  const { caja, desmontar } = montar(ElRecorridoDeUnHecho);
+  /* Se recorre la pieza entera: si algo se cuela, es en alguno de los pasos. */
+  for (let k = 0; k < PASOS; k += 1) tocar(siguiente(caja));
+
+  const html = caja.innerHTML;
+  assert.ok(!html.includes("▲"), "se coló el ▲ de crecimiento, que aquí no significa nada todavía");
+  assert.equal(caja.querySelectorAll("[data-triangulo]").length, 0, "hay un ▲ marcado");
+  assert.equal(caja.querySelectorAll("[data-arco], [data-balanza], [data-saldo]").length, 0,
+    "se coló un arco, una balanza o un marcador de saldo");
+  /*
+   * El teal y el ámbar del Tema 2 no pueden estar DENTRO de la pieza — y se
+   * buscan en LAS DOS FORMAS en que pueden acabar escritos. La primera versión
+   * solo miraba el hex, y como React serializa los estilos en línea a
+   * rgb(82, 196, 176), un mutante que pintaba el renglón de teal le sobrevivió
+   * sin despeinarse.
+   */
+  const TEAL = /#52C4B0|rgba?\(\s*82,\s*196,\s*176/i;
+  const AMBAR = /#E9C46A|rgba?\(\s*233,\s*196,\s*106/i;
+  assert.ok(!TEAL.test(html), "se coló el teal de «debe», que aquí no significa nada todavía");
+  assert.ok(!AMBAR.test(html), "se coló el ámbar de «haber», que aquí no significa nada todavía");
+  /* Y el renglón del registro va SIN columnas de debe y haber. */
+  assert.equal(caja.querySelectorAll('[data-columna="debe"], [data-columna="haber"]').length, 0,
+    "el renglón trae columnas y eso enseña el Tema 2 de contrabando");
+  assert.ok(!/DEBE|HABER/.test(caja.textContent), "aparecen las palabras debe o haber");
+  desmontar();
+});
+
+test("★★ el único color con significado dentro de la pieza es el neutro", () => {
+  const { caja, desmontar } = montar(ElRecorridoDeUnHecho);
+  for (let k = 0; k < PASOS; k += 1) tocar(siguiente(caja));
+  /*
+   * En hex o en rgb: los estilos en línea acaban serializados como
+   * rgb(184, 196, 212), así que buscar solo «#B8C4D4» no encontraría nada y la
+   * prueba pasaría por el motivo equivocado.
+   */
+  const NEUTRO_EN_CUALQUIER_FORMA = /#B8C4D4|rgb\(\s*184,\s*196,\s*212/i;
+  assert.match(caja.innerHTML, NEUTRO_EN_CUALQUIER_FORMA, "el neutro tiene que estar: es el que marca el ciclo");
+  desmontar();
+});
+
+/* ═══════════════════ EL HECHO Y SUS CINCO FORMAS ═══════════════════ */
+
+test("★★ el hecho es una transacción de verdad del capítulo, no un invento", () => {
+  assert.ok(CALEJA.transacciones.some((t) => t.id === HECHO.transaccion.id));
+  assert.equal(HECHO.renglon.length, 2, "el hecho tiene que ser un asiento simple");
+  assert.equal(HECHO.renglon[0].valor, HECHO.renglon[1].valor, "las dos cifras del renglón son la misma");
+  assert.equal(HECHO.valor, 25000);
+});
+
+test("★★ la factura marca con un guion lo que el libro no da", () => {
+  const f = facturaDelHecho();
+  const genericos = f.filter((c) => !c.delLibro);
+  assert.equal(genericos.length, 3, "tienen que ser tres los campos que el capítulo no da");
+  for (const c of genericos) {
+    assert.equal(c.valor, SIN_DATO, `${c.campo}: un campo sin fuente va con guion, ni vacío ni inventado`);
+  }
+  assert.equal(camposDelLibro(f), 3);
+  /* Y el valor sale del hecho, no está escrito en el contenido. */
+  assert.equal(f.find((c) => c.campo === "Valor").valor, HECHO.valor);
+});
+
+test("★ «las otras cinco transacciones» se cuenta, no se escribe", () => {
+  assert.equal(OTRAS_TRANSACCIONES, 5);
+  assert.equal(OTRAS_TRANSACCIONES, CALEJA.transacciones.length - 1);
+  assert.ok(TEXTOS[4].includes("otras cinco"), "el texto y la cuenta dejaron de coincidir");
+});
+
+test("★ la línea resaltada del estado es la del computador", () => {
+  assert.equal(lineaResaltada().cuenta, "Equipo de computación");
+  assert.equal(lineaResaltada().valor, 25000);
+});
+
+/* ═══════════════════ EL ANILLO Y SU CIERRE ═══════════════════ */
+
+test("★★ nada se pierde en el camino: las formas anteriores se quedan", () => {
+  for (let paso = 1; paso <= PASOS; paso += 1) {
+    const anillo = anilloEn(paso);
+    assert.equal(anillo.filter((e) => e.encendida).length, paso, `paso ${paso}`);
+    /* Todas las anteriores siguen con su forma puesta. */
+    for (const e of anillo.filter((x) => x.n <= paso)) {
+      assert.equal(e.conForma, true, `paso ${paso}: la estación ${e.n} perdió su forma`);
+    }
+    assert.equal(anillo.filter((e) => e.actual).length, 1, `paso ${paso}: no hay una sola estación actual`);
+  }
+});
+
+test("★★ el trazo de retorno NO se dibuja hasta que el ciclo se cierra", () => {
+  for (let paso = 0; paso <= PASOS; paso += 1) {
+    assert.equal(retornoEn(paso), "apagado", `paso ${paso}: el retorno se adelantó`);
+  }
+  assert.equal(retornoEn(PASO_DEL_CIERRE), "encendido");
+});
+
+test("★★ las cinco estaciones están a la vista desde el primer momento", () => {
+  const { caja, desmontar } = montar(ElRecorridoDeUnHecho);
+  assert.equal(caja.querySelectorAll("[data-estacion]").length, ESTACIONES.length);
+  /* Pero solo la primera encendida. */
+  assert.equal(caja.querySelectorAll('[data-estacion][data-encendida="si"]').length, 1);
+  /* Y cada una lleva su número escrito, no solo su color. */
+  for (const e of ESTACIONES) {
+    assert.ok(caja.querySelector(`[data-numero="${e.n}"]`), `falta el número de la estación ${e.n}`);
+    assert.ok(caja.textContent.includes(e.nombre), `falta el nombre de la estación ${e.n}`);
+  }
+  desmontar();
+});
+
+test("★★ el recorrido llega al cierre y ahí se queda", () => {
+  const { caja, desmontar } = montar(ElRecorridoDeUnHecho);
+  for (let k = 0; k < PASOS; k += 1) tocar(siguiente(caja));
+  assert.equal(caja.querySelectorAll('[data-estacion][data-encendida="si"]').length, ESTACIONES.length);
+  assert.ok(caja.textContent.includes(CIERRE), "falta el texto de cierre");
+  assert.equal(siguiente(caja).disabled, true, "se puede seguir después del cierre");
+  assert.equal(caja.querySelector("[data-franja]").getAttribute("data-retorno"), "encendido");
+  desmontar();
+});
+
+test("★ cada segmento trae su texto, y el alternativo tal cual lo escribió la ficha", () => {
+  const { caja, desmontar } = montar(ElRecorridoDeUnHecho);
+  for (let paso = 1; paso <= PASOS; paso += 1) {
+    assert.equal(caja.querySelector("[data-texto-paso]").textContent, TEXTOS[paso], `paso ${paso}`);
+    assert.equal(caja.querySelector("[data-alternativo]").textContent, ALTERNATIVOS[paso], `alt ${paso}`);
+    if (paso < PASOS) tocar(siguiente(caja));
+  }
+  tocar(siguiente(caja));
+  assert.equal(caja.querySelector("[data-alternativo]").textContent, ALTERNATIVOS.cierre);
+  desmontar();
+});
+
+/* ═══════════════════ LA FRANJA ═══════════════════ */
+
+test("★★ la franja es un ciclo, no un borde: dos líneas distintas y dos fusiones", () => {
+  const { caja, desmontar } = montar(ElRecorridoDeUnHecho);
+  const franja = caja.querySelector("[data-franja]");
+  assert.ok(franja, "no hay franja");
+  const avance = franja.querySelector('[data-linea="avance"]');
+  const retorno = franja.querySelector('[data-linea="retorno"]');
+  assert.ok(avance && retorno, "faltan las dos líneas");
+  /* Lo que las distingue es sólido contra punteado, no el color. */
+  assert.equal(avance.getAttribute("stroke"), retorno.getAttribute("stroke"), "las líneas cambian de color");
+  assert.equal(avance.getAttribute("stroke-dasharray"), null, "el avance no puede ir punteado");
+  assert.ok(retorno.getAttribute("stroke-dasharray"), "el retorno tiene que ir punteado");
+  /* Y se cierra sobre sí misma arriba y abajo. */
+  assert.ok(franja.querySelector('[data-fusion="arriba"]'), "falta la curva en U de arriba");
+  assert.ok(franja.querySelector('[data-fusion="abajo"]'), "falta la curva en U de abajo");
+  desmontar();
+});
+
+test("★★ con movimiento reducido el pulso NO se dibuja", () => {
+  /* El matchMedia de estas pruebas devuelve siempre «reduce». */
+  const { caja, desmontar } = montar(ElRecorridoDeUnHecho);
+  for (let k = 0; k < PASOS; k += 1) tocar(siguiente(caja));
+  assert.equal(caja.querySelectorAll("[data-pulso]").length, 0,
+    "el pulso está en el árbol con movimiento reducido activo");
+  desmontar();
+});
+
+/* ═══════════════════ LA REGLA DEL RETORNO (CAPA 3) ═══════════════════ */
+
+test("★★★ solo la administración cierra el ciclo, y es una sola", () => {
+  assert.equal(QUIEN_CIERRA.length, 1, "o ninguno o más de uno cierra el ciclo");
+  assert.equal(QUIEN_CIERRA[0].id, "administradores");
+  assert.equal(USUARIO_DEL_RECORRIDO.id, "administradores",
+    "el usuario del recorrido guiado tiene que ser el mismo que cierra el ciclo");
+  for (const u of USUARIOS) {
+    assert.equal(retornoParaUsuario(u), u.cierraElCiclo ? ENCENDIDO : ATENUADO, u.id);
+  }
+});
+
+test("★★★ con los otros siete el retorno queda ATENUADO, nunca invisible", () => {
+  const { caja, desmontar } = montar(ExploraUsuarios);
+  for (const u of USUARIOS.filter((x) => !x.cierraElCiclo)) {
+    tocar(caja.querySelector(`[data-usuario="${u.id}"]`));
+    const franja = caja.querySelector("[data-franja]");
+    assert.equal(franja.getAttribute("data-retorno"), ATENUADO, u.id);
+    const retorno = franja.querySelector('[data-linea="retorno"]');
+    const op = parseFloat(retorno.getAttribute("opacity"));
+    assert.ok(op > 0, `${u.id}: el retorno se volvió invisible`);
+    assert.ok(op < 1, `${u.id}: el retorno quedó encendido y no le toca`);
+  }
+  tocar(caja.querySelector('[data-usuario="administradores"]'));
+  assert.equal(caja.querySelector("[data-franja]").getAttribute("data-retorno"), ENCENDIDO);
+  desmontar();
+});
+
+test("★★ los ocho consultan el MISMO resumen", () => {
+  const { caja, desmontar } = montar(ExploraUsuarios);
+  const antes = caja.querySelector('[data-forma="estado"]').textContent;
+  for (const u of USUARIOS) {
+    tocar(caja.querySelector(`[data-usuario="${u.id}"]`));
+    assert.equal(caja.querySelector('[data-forma="estado"]').textContent, antes,
+      `${u.id}: el resumen cambió, y tiene que ser el mismo para los ocho`);
+    assert.ok(caja.querySelector(`[data-pregunta="${u.id}"]`), `${u.id}: no salió su pregunta`);
+  }
+  desmontar();
+});
+
+test("★ los ocho traen su propósito textual, y cuatro son internos o externos", () => {
+  assert.equal(USUARIOS.length, 8);
+  assert.equal(internos().length, 3);
+  assert.equal(externos().length, 5);
+  for (const u of USUARIOS) {
+    assert.ok(u.proposito.length > 30, `${u.id}: el propósito textual se quedó corto`);
+    assert.ok(u.pregunta.startsWith("¿"), `${u.id}: la pregunta no es una pregunta`);
+  }
+  assert.equal(new Set(USUARIOS.map((u) => u.pregunta)).size, 8, "dos usuarios comparten pregunta");
+});
+
+test("★ el estado vacío invita, y no hay usuario elegido de salida", () => {
+  const { caja, desmontar } = montar(ExploraUsuarios);
+  assert.ok(caja.querySelector("[data-vacio]"), "falta el estado vacío");
+  assert.equal(caja.querySelectorAll('[data-usuario][data-elegido="si"]').length, 0);
+  desmontar();
+});
+
+/* ═══════════════════ LA CAPA 4 ═══════════════════ */
+
+test("★★ las cuatro opciones miden casi lo mismo: la correcta no se delata por su largo", () => {
+  const largos = OPCIONES.map((o) => palabrasDe(o.texto));
+  for (const n of largos) assert.ok(n >= 12 && n <= 13, `una opción tiene ${n} palabras`);
+  assert.equal(OPCIONES.filter((o) => o.correcta).length, 1, "tiene que haber una sola correcta");
+});
+
+test("★★ cada opción trae su devolución y su escena, y ninguna se repite", () => {
+  const textos = new Set();
+  for (const o of OPCIONES) {
+    const r = evaluarOpcion(o.id);
+    assert.ok(r.feedback.length > 60, `${o.id}: la devolución se quedó corta`);
+    assert.ok(r.escena?.tipo, `${o.id}: sin escena`);
+    textos.add(r.feedback);
+  }
+  assert.equal(textos.size, OPCIONES.length, "dos opciones comparten devolución");
+});
+
+test("★★ responder enciende lo que esa devolución dice, ni más ni menos", () => {
+  for (const o of OPCIONES) {
+    const { caja, desmontar } = montar(UnaFraseIntro);
+    tocar(caja.querySelector(`[data-opcion="${o.id}"]`));
+    assert.ok(caja.textContent.includes(o.feedback), `${o.id}: no salió su devolución`);
+
+    if (o.escena.tipo === "anillo-completo") {
+      assert.equal(caja.querySelectorAll('[data-escena] [data-encendida="si"]').length, ESTACIONES.length);
+      assert.ok(caja.querySelector("[data-trazo-retorno]"), "el anillo completo tiene que traer el trazo");
+    }
+    if (o.escena.tipo === "una-estacion") {
+      const encendidas = [...caja.querySelectorAll('[data-escena] [data-encendida="si"]')];
+      assert.equal(encendidas.length, 1, `${o.id}: tiene que encenderse una sola estación`);
+      assert.equal(encendidas[0].getAttribute("data-estacion"), String(o.escena.estacion));
+    }
+    if (o.escena.tipo === "ocho-usuarios") {
+      assert.equal(caja.querySelectorAll('[data-escena="ocho-usuarios"] [data-usuario]').length, 8);
+      const marcado = caja.querySelector('[data-escena="ocho-usuarios"] [data-marcado="si"]');
+      assert.equal(marcado.getAttribute("data-usuario"), o.escena.resaltar);
+    }
+    desmontar();
+  }
+});
+
+/* ═══════════════════ EL REGISTRO DE LA PIEZA ═══════════════════ */
+
+test("★★ la pieza es material teórico: entra sin FP y sin dificultad", () => {
+  const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "introduccion-contabilidad");
+  assert.ok(tema, "el tema no está registrado");
+  assert.equal(tema.actividades.length, 1);
+  const a = tema.actividades[0];
+  assert.equal(a.id, ID);
+  assert.equal(a.clasificacion.tipo, APRENDER);
+  assert.equal(a.clasificacion.fpBase, undefined, "una pieza de Aprender no puede dar FP");
+  assert.equal(a.clasificacion.dificultad, undefined, "una pieza de Aprender no tiene dificultad");
+});
+
+test("★ la pieza trae la capa 1 con las cuatro definiciones y la siembra de los verbos", () => {
+  const p = PIEZAS_INTRO[0];
+  assert.equal(p.id, ID);
+  assert.ok(p.objetivo.includes("ciclo"), "el objetivo dejó de hablar del ciclo");
+  assert.equal(p.nombres.length, NOMBRES.length + 1, "falta la siembra de los siete verbos");
+  const siembra = p.nombres[p.nombres.length - 1].definicion;
+  assert.ok(siembra.includes("Registrar es uno de siete"), "se perdió el remate de la siembra");
+});
