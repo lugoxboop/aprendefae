@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from "react";
 import { NEUTRO } from "../../../../data/contabilidadIntro.js";
 
 /*
@@ -63,10 +64,38 @@ function Chevron({ x, y, haciaAbajo, opacidad }) {
  */
 const ALTO_DE_RESERVA = 260;
 
+/*
+ * ═══════════ LA FRANJA NO PUEDE EMPUJAR LO QUE MIDE ═══════════
+ *
+ * La primera versión recibía el alto medido de la columna y se lo ponía al
+ * SVG. Y ahí había un bucle que no se ve leyendo el código: el SVG con alto
+ * propio estiraba el contenedor, el contenedor estiraba la columna, y la
+ * siguiente medición salía más grande. En pantalla la franja acababa
+ * colgando mucho más abajo de la última estación, con sus nodos repartidos
+ * por un vacío.
+ *
+ * Ahora la franja vive en su propio carril, que se estira solo —lo estira el
+ * contenido de al lado— y el SVG va dentro EN ABSOLUTO: hereda el alto y no
+ * aporta ninguno. La medición ya no se alimenta de sí misma.
+ */
 export default function FranjaDelCiclo({
-  alto, nodos = [], retorno = "atenuado", pulso = false, reducido = false,
+  nodos = [], retorno = "atenuado", pulso = false, reducido = false,
 }) {
-  const h = Math.max(Number(alto) || 0, ALTO_DE_RESERVA);
+  const carril = useRef(null);
+  const [alto, setAlto] = useState(0);
+
+  useLayoutEffect(() => {
+    const el = carril.current;
+    if (!el) return undefined;
+    const medir = () => setAlto(Math.round(el.getBoundingClientRect().height));
+    medir();
+    if (typeof ResizeObserver === "undefined") return undefined;
+    const ro = new ResizeObserver(medir);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const h = Math.max(alto, ALTO_DE_RESERVA);
   const arriba = RADIO_U + 2;
   const abajo = h - RADIO_U - 2;
   const opRetorno = OPACIDAD[retorno] ?? OPACIDAD.atenuado;
@@ -76,14 +105,16 @@ export default function FranjaDelCiclo({
   const marcas = Array.from({ length: cuantos }, (_, k) => arriba + ((abajo - arriba) * (k + 0.5)) / cuantos);
 
   return (
+    <div
+      ref={carril}
+      style={{ width: `${ANCHO}px`, flex: "none", alignSelf: "stretch", position: "relative" }}
+    >
     <svg
       data-franja
       data-retorno={retorno}
       aria-hidden="true"
-      width={ANCHO}
-      height={h}
       viewBox={`0 0 ${ANCHO} ${h}`}
-      style={{ flex: "none", display: "block", overflow: "visible" }}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", overflow: "visible" }}
     >
       {/* La U de arriba: el retorno entra y se convierte en el avance. */}
       <path
@@ -136,5 +167,6 @@ export default function FranjaDelCiclo({
         </>
       )}
     </svg>
+    </div>
   );
 }

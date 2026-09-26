@@ -107,7 +107,6 @@ export default function ElRecorridoDeUnHecho() {
    */
   const [repeticion, setRepeticion] = useState(0);
   const [transformando, setTransformando] = useState(false);
-  const [altoFranja, setAltoFranja] = useState(0);
   const [nodos, setNodos] = useState([]);
   const reloj = useRef(null);
   const columna = useRef(null);
@@ -128,11 +127,14 @@ export default function ElRecorridoDeUnHecho() {
     return () => clearTimeout(reloj.current);
   }, [paso, repeticion, reducido]);
 
-  /* La franja mide lo que mide la columna, y los nodos caen donde las cajas. */
+  /*
+   * Solo los nodos: dónde toca cada estación la franja. El ALTO ya no se
+   * calcula aquí — la franja se estira sola en su carril, y medirlo desde
+   * fuera era justo lo que hacía que creciera sin parar.
+   */
   useLayoutEffect(() => {
     const caja = columna.current?.getBoundingClientRect();
     if (!caja) return;
-    setAltoFranja(Math.round(caja.height));
     setNodos(ESTACIONES.map((e) => {
       const el = refs.current[e.n];
       if (!el) return null;
@@ -174,7 +176,6 @@ export default function ElRecorridoDeUnHecho() {
 
       <div style={{ display: "flex", gap: "6px", alignItems: "stretch" }}>
         <FranjaDelCiclo
-          alto={altoFranja}
           nodos={nodos}
           retorno={retornoEn(paso) === "encendido" ? "encendido" : "atenuado"}
           pulso={cerrado}

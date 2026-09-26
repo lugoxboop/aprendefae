@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   USUARIOS, TEXTO_DEL_SELECTOR, VACIO_CAPA_3, ALTERNATIVOS, NEUTRO, NAVY_DEL_CHIP,
 } from "../../../../data/contabilidadIntro.js";
@@ -35,16 +35,9 @@ const SORA = "Sora, sans-serif";
 export default function ExploraUsuarios() {
   const reducido = useMovimientoReducido();
   const [elegido, setElegido] = useState(null);
-  const [alto, setAlto] = useState(0);
-  const columna = useRef(null);
 
   const usuario = usuarioPorId(elegido);
   const retorno = retornoParaUsuario(usuario);
-
-  useLayoutEffect(() => {
-    const r = columna.current?.getBoundingClientRect();
-    if (r) setAlto(Math.round(r.height));
-  }, [elegido]);
 
   const chip = (u) => {
     const activo = u.id === elegido;
@@ -80,8 +73,8 @@ export default function ExploraUsuarios() {
       </div>
 
       <div style={{ display: "flex", gap: "6px", alignItems: "stretch", marginTop: "12px" }}>
-        <FranjaDelCiclo alto={alto} retorno={retorno} reducido={reducido} />
-        <div ref={columna} style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "7px" }}>
+        <FranjaDelCiclo retorno={retorno} reducido={reducido} />
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "7px" }}>
           {/* El resumen es el mismo para los ocho: no se mueve de aquí. */}
           <FormaEstado balance={BALANCE} />
           {usuario
