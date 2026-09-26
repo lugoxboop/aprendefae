@@ -3,7 +3,7 @@ import { MarcoLibros } from "../bloques/marcos.jsx";
 import { tipoDeCuenta } from "../../../data/contabilidad.js";
 import SaldoDeLaCuenta from "./SaldoDeLaCuenta.jsx";
 import SoltarEnUnLado from "./SoltarEnUnLado.jsx";
-import EscribirElBalance from "./EscribirElBalance.jsx";
+import ArmaElBalance from "./ArmaElBalance.jsx";
 import PredecirLaBarra from "./PredecirLaBarra.jsx";
 import LaContrapartida from "./LaContrapartida.jsx";
 import SeisCuentasAbiertas from "./SeisCuentasAbiertas.jsx";
@@ -54,8 +54,8 @@ export const IzquierdaODerecha = ({ onCompletar }) => (
  * escribir una deuda donde va una propiedad.
  */
 export const DeQueFamilia = ({ onCompletar }) => (
-  <EscribirElBalance banco={BANCO_DE_QUE_FAMILIA} Marco={MarcoLibros} acento={A}
-    rotulo="CIMIENTOS" titulo={BANCO_DE_QUE_FAMILIA.subtema} onCompletar={onCompletar} />
+  <ArmaElBalance Marco={MarcoLibros} acento={A}
+    rotulo="CIMIENTOS" titulo="Clasificación de cuentas reales" onCompletar={onCompletar} />
 );
 
 /*

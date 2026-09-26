@@ -38,6 +38,7 @@ import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUE
 import { transaccionDe } from "../components/mecanicas/libros/ArmaElAsiento.jsx";
 import { transaccionDe as transaccionCompuesta } from "../components/mecanicas/libros/ElAsientoCompuesto.jsx";
 import { LAVADO_DE_AUTOS, CALEJA, pesos as pesosContables } from "../data/contabilidad.js";
+import { BALANCES as BALANCES_DE_A2, cuentaHistorica } from "../contabilidad/armaElBalance.js";
 
 /* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
 const EMPRESAS = { lavado: LAVADO_DE_AUTOS.empresa, caleja: CALEJA.empresa };
@@ -446,7 +447,20 @@ Object.assign(REGLAS, {
    * gramática del id — escribirlas ahora sería adivinarla.
    */
   "cu-izquierda-o-derecha": (id) => porId(BANCO_IZQUIERDA_O_DERECHA.items, "texto")[id] ?? null,
-  "cu-de-que-familia": (id) => porId(BANCO_DE_QUE_FAMILIA.items, "texto")[id] ?? null,
+  /*
+   * A2 cambió de mecánica: era una lista de doce cuentas sueltas y ahora son
+   * dos balances. Los ítems nuevos se llaman `cu2-<banco>-<cuenta>`.
+   *
+   * LOS VIEJOS SE SIGUEN LEYENDO. Sus filas están en el servidor y el panel
+   * tiene que poder decir qué contestó cada estudiante; por eso el contenido
+   * conserva la tabla de qué cuenta era cada id antiguo. Sin ella, el docente
+   * vería «cu2-05» crudo en las respuestas que ya existen.
+   */
+  "cu-de-que-familia": (id) => {
+    const nueva = BALANCES_DE_A2.flatMap((b) => b.cuentas).find((c) => c.id === id);
+    if (nueva) return `${nueva.cuenta} — ${pesosContables(nueva.valor)}`;
+    return cuentaHistorica(id);
+  },
   "cu-cuadro-dinamicas": (id) => porId(BANCO_CUADRO_DINAMICAS.items, "texto")[id] ?? null,
   "cu-debita-o-acredita": (id) => porId(BANCO_DEBITA_O_ACREDITA.items, "texto")[id] ?? null,
   "cu-corriente-de-cuentas": (id) => porId(BANCO_CORRIENTE_DE_CUENTAS.items, "texto")[id] ?? null,
