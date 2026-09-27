@@ -49,7 +49,7 @@ const UnaFraseIntro = (await import("../../components/mecanicas/libros/intro/Una
 const {
   HECHO, BALANCE, facturaDelHecho, camposDelLibro, anilloEn, retornoEn,
   PASOS, PASO_DEL_CIERRE, retornoParaUsuario, usuarioPorId, QUIEN_CIERRA,
-  USUARIO_DEL_RECORRIDO, OTRAS_TRANSACCIONES, lineaResaltada, palabrasDe,
+  USUARIO_DEL_RECORRIDO, lineaResaltada, palabrasDe,
   evaluarOpcion, internos, externos, ENCENDIDO, ATENUADO,
 } = await import("../recorridoDeUnHecho.js");
 const {
@@ -157,10 +157,37 @@ test("★★ la factura marca con un guion lo que el libro no da", () => {
   assert.equal(f.find((c) => c.campo === "Valor").valor, HECHO.valor);
 });
 
-test("★ «las otras cinco transacciones» se cuenta, no se escribe", () => {
-  assert.equal(OTRAS_TRANSACCIONES, 5);
-  assert.equal(OTRAS_TRANSACCIONES, CALEJA.transacciones.length - 1);
-  assert.ok(TEXTOS[4].includes("otras cinco"), "el texto y la cuenta dejaron de coincidir");
+/*
+ * ═══════════ EL TEXTO NO PUEDE CONTAR TRANSACCIONES ═══════════
+ *
+ * Decía «se juntó con las otras cinco transacciones del mes», y eso afirmaba
+ * que Caleja tuvo seis en total. Es falso: en el capítulo 2 tiene ocho y
+ * cierra con 465.000 de activo. Este balance son las primeras seis, 415.000.
+ * La misma empresa en dos fotos, no dos cifras en pelea.
+ *
+ * Así que el texto dejó de contar, y el balance dice en qué momento está
+ * hecho. Esta prueba vigila las dos cosas.
+ */
+test("★★ el texto del resumen NO afirma cuántas transacciones tuvo la empresa", () => {
+  /*
+   * Sin expresiones regulares a propósito: una barra invertida perdida por el
+   * camino ya metió un byte de control en este archivo, y la guarda del repo
+   * lo cazó. Esto dice lo mismo y no tiene nada que se pueda corromper.
+   */
+  const PALABRAS = ["dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez"];
+  const enMinusculas = TEXTOS[4].toLowerCase();
+  const cuenta = PALABRAS.some((n) => ["transacci", "registro"]
+    .some((c) => enMinusculas.includes(`${n} ${c}`)));
+  assert.equal(cuenta, false, `el texto volvió a contar transacciones: «${TEXTOS[4]}»`);
+  assert.ok(TEXTOS[4].includes("los demás registros"), "se perdió la redacción corregida");
+});
+
+test("★★ el balance dice en qué momento de la empresa está hecho", () => {
+  assert.ok(BALANCE.subtitulo, "el balance de Caleja perdió su subtítulo");
+  assert.match(BALANCE.subtitulo, /seis transacciones/,
+    "el subtítulo tiene que decir cuántas transacciones lleva esta foto");
+  /* Y el número del subtítulo es el que de verdad tiene el caso. */
+  assert.equal(CALEJA.transacciones.length, 6);
 });
 
 test("★ la línea resaltada del estado es la del computador", () => {
@@ -358,12 +385,15 @@ test("★★ responder enciende lo que esa devolución dice, ni más ni menos", 
 test("★★ la pieza es material teórico: entra sin FP y sin dificultad", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "introduccion-contabilidad");
   assert.ok(tema, "el tema no está registrado");
-  assert.equal(tema.actividades.length, 1);
-  const a = tema.actividades[0];
-  assert.equal(a.id, ID);
-  assert.equal(a.clasificacion.tipo, APRENDER);
-  assert.equal(a.clasificacion.fpBase, undefined, "una pieza de Aprender no puede dar FP");
-  assert.equal(a.clasificacion.dificultad, undefined, "una pieza de Aprender no tiene dificultad");
+  const pieza = tema.actividades.find((x) => x.id === ID);
+  assert.ok(pieza, "la pieza salió del tema");
+  assert.equal(pieza.clasificacion.tipo, APRENDER);
+  assert.equal(pieza.clasificacion.fpBase, undefined, "una pieza de Aprender no puede dar FP");
+  assert.equal(pieza.clasificacion.dificultad, undefined, "una pieza de Aprender no tiene dificultad");
+  /* Y ninguna pieza de Aprender del tema puede haber ganado FP por el camino. */
+  for (const x of tema.actividades.filter((y) => y.clasificacion.tipo === APRENDER)) {
+    assert.equal(x.clasificacion.fpBase, undefined, `${x.id} da FP y es material teórico`);
+  }
 });
 
 test("★ la pieza trae la capa 1 con las cuatro definiciones y la siembra de los verbos", () => {

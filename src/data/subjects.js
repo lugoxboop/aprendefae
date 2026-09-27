@@ -506,6 +506,19 @@ export const SUBJECTS = {
         title: "Introducción a la contabilidad",
         actividades: [
           { id: "cu0-a1-recorrido-de-un-hecho", nombre: "El recorrido de un hecho", clasificacion: { tipo: APRENDER } },
+
+          /*
+           * Las dos que ya se pueden jugar. Dependen solo de la pieza 1 de
+           * Aprender, que existe — por eso entran al camino ahora.
+           *
+           * Las otras cuatro del Tema 1 (T1-4 a T1-7) están construidas y
+           * probadas, pero NO entran aquí: necesitan las piezas 2, 3 y 4 del
+           * Aprender, que todavía no están escritas. Publicarlas antes dejaría
+           * al estudiante con actividades que preguntan por cosas que nadie le
+           * ha explicado.
+           */
+          { id: "t1-desde-donde-preguntan", nombre: "¿Desde Dónde Preguntan?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "t1-que-entro-y-que-salio", nombre: "¿Qué Entró y Qué Salió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
         ],
       },
       {

@@ -64,6 +64,8 @@ export function montarBanco(id) {
     id: banco.id,
     empresa: banco.empresa,
     fecha: banco.fecha,
+    /* En qué momento de la empresa está hecha la foto, cuando hace falta decirlo. */
+    subtitulo: banco.subtitulo ?? null,
     cuentas,
     activos,
     pasivos,

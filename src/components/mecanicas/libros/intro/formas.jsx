@@ -142,12 +142,23 @@ export function FormaEstado({ balance }) {
       }}>
         {balance.empresa}
       </p>
-      <p style={{
-        margin: "0 0 7px", fontSize: "8.5px", textAlign: "center", color: "rgba(248,249,250,0.45)",
-        borderBottom: "1px solid rgba(248,249,250,0.14)", paddingBottom: "5px",
-      }}>
+      <p style={{ margin: "0 0 1px", fontSize: "8.5px", textAlign: "center", color: "rgba(248,249,250,0.45)" }}>
         Estado de situación financiera
       </p>
+      {/*
+        El mismo renglón que lleva el balance de «Arma el Balance»: en qué
+        momento está hecha la foto. Caleja cierra el capítulo 2 con 465.000 y
+        este balance dice 415.000 — son las primeras seis transacciones, no
+        una cifra distinta de la misma cosa.
+      */}
+      {balance.subtitulo && (
+        <p data-subtitulo style={{
+          margin: "0 0 7px", fontSize: "8px", textAlign: "center", color: "rgba(248,249,250,0.38)",
+          borderBottom: "1px solid rgba(248,249,250,0.14)", paddingBottom: "5px",
+        }}>
+          {balance.subtitulo}
+        </p>
+      )}
       <div style={{ display: "flex", gap: "9px" }}>
         {[["Activos", activos], ["Pasivos y Patrimonio", derecha]].map(([titulo, lista]) => (
           <div key={titulo} style={{ flex: "1 1 0", minWidth: 0 }}>

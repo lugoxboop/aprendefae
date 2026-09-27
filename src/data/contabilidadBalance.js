@@ -47,6 +47,17 @@ export const BANCOS_DE_BALANCE = [
     transacciones: CALEJA.transacciones,
     /* Sí lleva fecha: el ejercicio de Caleja no tiene la errata del otro. */
     fecha: null,
+    /*
+     * ═══════════ POR QUÉ ESTE BALANCE DICE «TRAS LAS PRIMERAS SEIS» ═══════════
+     *
+     * Caleja aparece en dos capítulos y en dos momentos: en el 2 lleva ocho
+     * transacciones y cierra con 465.000 de activo; en el 3 se la mira tras
+     * las seis primeras, con 415.000. No es una cifra en conflicto — es la
+     * misma empresa en dos fotos. Pero sin decirlo, este balance parece
+     * contradecir al del capítulo 2, y el estudiante que los vea juntos no
+     * tiene forma de saber cuál creer.
+     */
+    subtitulo: "tras las primeras seis transacciones",
     fuente: "p. 94",
   },
   {
@@ -140,6 +151,9 @@ export const ERROR_POR_CRUCE = {
 };
 
 export const TITULO_ESTADO = "Estado de situación financiera";
+
+/* El separador del encabezado, para que los dos sitios lo escriban igual. */
+export const SEPARADOR_ENCABEZADO = " · ";
 
 /*
  * ═══════════ LOS ÍTEMS QUE YA JUGARON ESTUDIANTES ═══════════

@@ -44,6 +44,7 @@ import { transaccionDe as transaccionDeA4 } from "../contabilidad/debitaOAcredit
 import { cuentaDeItemDocente } from "../contabilidad/saldoDeLaCuenta.js";
 import { textoDeItem as textoDeItemA6 } from "../contabilidad/armaElAsiento.js";
 import { textoDeItem as textoDeItemA7 } from "../contabilidad/asientoCompuesto.js";
+import { preguntaDeUsuario, empresaDeItem } from "../contabilidad/tema1.js";
 
 /* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
 const EMPRESAS = { lavado: LAVADO_DE_AUTOS.empresa, caleja: CALEJA.empresa };
@@ -516,6 +517,10 @@ Object.assign(REGLAS, {
    * $1.000 con asiento de $2.000— se sigue traduciendo, porque las respuestas
    * que ya recibió están en el servidor.
    */
+  /* Tema 1: la pregunta que le tocó, y la empresa con su par entrada-salida. */
+  "t1-desde-donde-preguntan": (id) => preguntaDeUsuario(id),
+  "t1-que-entro-y-que-salio": (id) => empresaDeItem(id),
+
   "cu-arma-el-asiento": (id) => textoDeItemA6(id),
 
   /*

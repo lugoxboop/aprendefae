@@ -64,13 +64,17 @@ export function facturaDelHecho(hecho = HECHO) {
 export const camposDelLibro = (factura = facturaDelHecho()) => factura.filter((c) => c.delLibro).length;
 
 /*
- * ═══════════ CUÁNTAS TRANSACCIONES SE JUNTARON ═══════════
+ * ═══════════ AQUÍ HABÍA UN RECUENTO, Y SOBRABA ═══════════
  *
- * El texto de la estación 4 dice «las otras cinco transacciones del mes». Ese
- * cinco no se escribe: es cuántas tiene el caso menos la del hecho. Si el
- * capítulo ganara o perdiera una, el texto lo seguiría.
+ * El texto de la estación 4 decía «las otras cinco transacciones del mes», y
+ * ese cinco salía de contar el caso. El cálculo era correcto y la afirmación
+ * falsa: las seis de este balance son las PRIMERAS seis de Caleja, que en el
+ * capítulo 2 tiene ocho. Decir «las otras cinco» daba por cerrada una empresa
+ * que sigue operando cuatro páginas después.
+ *
+ * El texto dejó de contar y el balance dice en qué momento está hecho. La
+ * constante se va con él: dejarla puesta invita a volver a usarla.
  */
-export const OTRAS_TRANSACCIONES = CALEJA.transacciones.length - 1;
 
 /* La línea del balance que se resalta, y las que quedan en segundo plano. */
 export function lineaResaltada(balance = BALANCE) {

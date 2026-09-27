@@ -283,6 +283,39 @@ test("★ el documento se lee de arriba abajo: las tres secciones son hermanas a
   } finally { desmontar(); }
 });
 
+/*
+ * ═══════════ EN QUÉ MOMENTO ESTÁ HECHA LA FOTO ═══════════
+ *
+ * Caleja sale en dos capítulos con dos cierres distintos: ocho transacciones y
+ * 465.000 en el capítulo 2, las primeras seis y 415.000 en el 3. Sin decirlo,
+ * un estudiante que vea los dos balances no tiene forma de saber cuál creer —
+ * y el que está aquí parece el equivocado, porque es el más pequeño.
+ *
+ * El lavado no lo necesita: sale una sola vez.
+ */
+test("★★ el balance de Caleja dice de qué momento es; el del lavado no lo necesita", () => {
+  const caleja = BALANCES.find((b) => b.id === "caleja");
+  const lavado = BALANCES.find((b) => b.id === "lavado");
+  assert.match(caleja.subtitulo ?? "", /seis transacciones/, "Caleja perdió su subtítulo");
+  assert.equal(lavado.subtitulo, null, "el lavado no tiene dos momentos que distinguir");
+  /* Y el número dicho es el que el caso tiene de verdad. */
+  assert.equal(CALEJA.transacciones.length, 6);
+  assert.equal(caleja.activos, 415000);
+});
+
+test("★ y ese subtítulo se pinta debajo del nombre del estado", () => {
+  const { caja, desmontar } = montar();
+  const balance = BALANCES.find((b) => b.empresa === caja.querySelector("[data-balance]").textContent.slice(0, b.empresa.length));
+  const sub = caja.querySelector("[data-subtitulo]");
+  if (balance?.subtitulo) {
+    assert.ok(sub, "el balance tiene subtítulo y no se pintó");
+    assert.equal(sub.textContent, balance.subtitulo);
+  } else {
+    assert.equal(sub, null, "se pintó un subtítulo que ese balance no tiene");
+  }
+  desmontar();
+});
+
 test("★ el encabezado en pantalla no enseña ninguna fecha", () => {
   const { caja, desmontar } = montar();
   try {

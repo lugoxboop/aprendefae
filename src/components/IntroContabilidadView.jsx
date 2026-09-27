@@ -3,7 +3,18 @@ import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
-import { APRENDER } from "../data/subjects.js";
+import { useState } from "react";
+import { APRENDER, HACER, SUBJECTS, clasificacionDe, actividadesDeTipo } from "../data/subjects.js";
+import CaminoHacer from "./shared/CaminoHacer.jsx";
+import { useCompletadas, nodosDe } from "../hacer/completadas.js";
+import { registrarActividadCompletada } from "../fp/registrarActividad.js";
+import { useAuth } from "../auth/AuthProvider.jsx";
+import { useRecompensa } from "./shared/RecompensaCierre.jsx";
+import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
+import { FAE as TEMA1_ACENTO } from "../theme.js";
+import DesdeDondePreguntan from "./mecanicas/libros/tema1/DesdeDondePreguntan.jsx";
+import QueEntroYQueSalio from "./mecanicas/libros/tema1/QueEntroYQueSalio.jsx";
+import { T1_1, T1_2 } from "../data/contabilidadTema1.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZAS_INTRO } from "../data/contabilidadIntro.js";
 import { ESCENAS_INTRO } from "./mecanicas/libros/intro/escenasIntro.jsx";
@@ -24,9 +35,41 @@ import { ESCENAS_INTRO } from "./mecanicas/libros/intro/escenasIntro.jsx";
  */
 
 const MATERIA = "contabilidad";
+const TEMA = "introduccion-contabilidad";
 export const TITULO = "Introducción a la contabilidad";
 
-export default function IntroContabilidadView({ onBack }) {
+/* Las que ya se pueden jugar, en el orden del camino. */
+/*
+ * Solo el bloque. `MarcoLibros` ya antepone «EL LIBRO MAYOR ·» por su cuenta,
+ * así que poner aquí un prefijo propio lo escribía dos veces seguidas.
+ * El título de cada juego es su subtema: lo que se está practicando.
+ */
+const ROTULO = "CIMIENTOS";
+const JUEGOS = [
+  { id: T1_1.id, Mecanica: DesdeDondePreguntan, titulo: T1_1.subtema },
+  { id: T1_2.id, Mecanica: QueEntroYQueSalio, titulo: T1_2.subtema },
+];
+
+export default function IntroContabilidadView({ modo = null, nodoInicial = null, onBack }) {
+  const esAprender = modo === APRENDER;
+  const [nodoAbierto, setNodoAbierto] = useState(nodoInicial ?? null);
+  const hechas = useCompletadas();
+  const { pedirCuenta } = useAuth();
+  const [recompensa, celebrar] = useRecompensa();
+
+  const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
+  const nodos = nodosDe(actividadesDeTipo(tema, HACER).filter((a) => !a.pendiente), hechas);
+  const juego = esAprender ? null : JUEGOS.find((j) => j.id === nodoAbierto);
+
+  const completar = async (actividadId, porcentaje, duracionMs, detalle = null) => {
+    const clas = clasificacionDe(MATERIA, TEMA, actividadId);
+    celebrar(clas?.dificultad, actividadId);
+    const res = await registrarActividadCompletada(clas, {
+      materiaId: MATERIA, temaId: TEMA, actividadId, porcentajeAciertos: porcentaje, duracionMs, detalle,
+    });
+    if (res?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
+  };
+
   return (
     <FondoMateria materiaId={MATERIA}>
       <div style={{
@@ -58,30 +101,56 @@ export default function IntroContabilidadView({ onBack }) {
             </h1>
           </div>
 
-          <div className="fae-insignia-actividad"><ActivityBadge tipo={APRENDER} size="sm" /></div>
+          {recompensa}
+          <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-            {PIEZAS_INTRO.map((pieza, k) => {
-              const { Capa2, Exploracion, Capa4 } = ESCENAS_INTRO[pieza.id];
-              return (
-                <div key={pieza.id}>
-                  <p style={{
-                    fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700,
-                    letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px",
-                  }}>
-                    PIEZA {k + 1} DE {PIEZAS_INTRO.length}
-                  </p>
-                  <CuatroCapas
-                    pieza={pieza}
-                    Capa2={Capa2}
-                    Exploracion={Exploracion}
-                    Capa4={Capa4}
-                    rotulo="EL CICLO CONTABLE · APRENDER"
-                  />
-                </div>
-              );
-            })}
-          </div>
+          {esAprender ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+              {PIEZAS_INTRO.map((pieza, k) => {
+                const { Capa2, Exploracion, Capa4 } = ESCENAS_INTRO[pieza.id];
+                return (
+                  <div key={pieza.id}>
+                    <p style={{
+                      fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700,
+                      letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px",
+                    }}>
+                      PIEZA {k + 1} DE {PIEZAS_INTRO.length}
+                    </p>
+                    <CuatroCapas
+                      pieza={pieza}
+                      Capa2={Capa2}
+                      Exploracion={Exploracion}
+                      Capa4={Capa4}
+                      rotulo="EL CICLO CONTABLE · APRENDER"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          ) : juego ? (
+            <div>
+              <button
+                type="button"
+                onClick={() => setNodoAbierto(null)}
+                style={{
+                  marginBottom: "16px", padding: "8px 14px", borderRadius: "999px",
+                  background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)",
+                  color: FAE.text, cursor: "pointer", fontFamily: "Sora, sans-serif", fontSize: "12.5px",
+                }}
+              >
+                ‹ Volver al camino
+              </button>
+              <juego.Mecanica
+                Marco={MarcoLibros}
+                acento={TEMA1_ACENTO.ambar}
+                rotulo={ROTULO}
+                titulo={juego.titulo}
+                onCompletar={(pct, ms, detalle) => completar(juego.id, pct, ms, detalle)}
+              />
+            </div>
+          ) : (
+            <CaminoHacer nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} />
+          )}
         </div>
       </div>
     </FondoMateria>

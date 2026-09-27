@@ -213,7 +213,7 @@ export default function App() {
   if (view === "introduccion-contabilidad") {
     return (
       <Suspense fallback={null}>
-        <IntroContabilidadView onBack={() => setView("contabilidad")} />
+        <IntroContabilidadView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }

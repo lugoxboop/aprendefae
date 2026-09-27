@@ -96,7 +96,7 @@ export const TEXTOS = {
   1: "Todo empieza afuera de la contabilidad. Alguien decidió comprar un computador, y eso pasó en el mundo real — no en un libro.",
   2: "Ese hecho dejó un papel. Sin el papel no hay nada que registrar — por eso el siguiente rótulo dice que los documentos son la base de los registros, y no al revés.",
   3: "Aquí es donde mucha gente cree que la contabilidad empieza y termina. Mira dónde estás: estación tres de cinco. Todavía falta más de lo que llevas.",
-  4: "Ese registro se juntó con las otras cinco transacciones del mes y se volvió un resumen. Tu computador ya no aparece solo: es una línea dentro de la fotografía completa de la empresa.",
+  4: "Ese registro se juntó con los demás registros del mes y se volvió un resumen. Tu computador ya no aparece solo: es una línea dentro de la fotografía completa de la empresa.",
   5: "Y aquí está el punto de todo: el resumen llegó a la mesa de quien dirige la empresa. Esa pregunta no se responde con el computador — se responde con el resumen completo, y de la respuesta sale lo que la empresa va a hacer.",
 };
 

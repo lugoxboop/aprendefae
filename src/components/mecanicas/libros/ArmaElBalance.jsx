@@ -247,9 +247,19 @@ export default function ArmaElBalance({ Marco, rotulo, titulo, acento, onComplet
         ejercicio que ocurre entero en enero. No se corrige por cuenta propia
         ni se muestra una fecha que puede ser errata.
       */}
-      <p style={{ margin: "0 0 11px", fontSize: "10.5px", textAlign: "center", color: "rgba(248,249,250,0.5)" }}>
+      <p style={{ margin: "0 0 2px", fontSize: "10.5px", textAlign: "center", color: "rgba(248,249,250,0.5)" }}>
         {TITULO_ESTADO}
       </p>
+      {/*
+        En qué momento de la empresa está hecha esta foto. Caleja sale en dos
+        capítulos con dos cierres distintos —465.000 y 415.000— y sin este
+        renglón los dos balances se leen como si uno de los dos estuviera mal.
+      */}
+      {balance.subtitulo && (
+        <p data-subtitulo style={{ margin: "0 0 11px", fontSize: "9.5px", textAlign: "center", color: "rgba(248,249,250,0.42)" }}>
+          {balance.subtitulo}
+        </p>
+      )}
 
       {SECCIONES.map((s) => {
         const renglones = escritas.filter((c) => c.seccion === s.id);
