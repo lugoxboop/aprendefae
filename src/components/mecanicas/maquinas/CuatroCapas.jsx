@@ -19,6 +19,15 @@ import { Panel } from "../salaDeControl/marco.jsx";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * El rótulo de una cita textual dentro de la capa 1. Vive aquí, en el
+ * componente que la pinta, y no en los datos de una materia: la capa 1 es lo
+ * que comparten todas las piezas de Aprender del sitio, y si la etiqueta
+ * viviera en Contabilidad, la siguiente materia que citara un libro escribiría
+ * la suya y habría dos formas de decir lo mismo.
+ */
+const ROTULO_DEL_LIBRO = "Así lo dice el libro";
+
 const ROTULO_CAPA = {
   fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em",
   color: FAE.teal, margin: "0 0 10px",
@@ -84,6 +93,34 @@ export default function CuatroCapas({
             <div key={n.termino}>
               <dt style={{ display: "inline", fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700, color: FAE.text }}>{n.termino}: </dt>
               <dd style={{ display: "inline", margin: 0, fontSize: "14px", lineHeight: 1.55, color: "rgba(248,249,250,0.8)" }}>{n.definicion}</dd>
+              {/*
+                ═══════════ LA CITA VA DEBAJO, Y NUNCA ABRE LA LÍNEA ═══════════
+
+                Cuando una línea trae `delLibro`, la idea simple se lee primero
+                y la frase textual del libro va debajo, rotulada. El orden es el
+                argumento: quien no entiende la frase del libro alcanza a
+                entender la línea de arriba, y solo entonces se topa con la
+                cita. Al revés, la cita lo detiene antes de empezar.
+
+                Las piezas que no traen `delLibro` no pintan nada de esto.
+              */}
+              {n.delLibro && (
+                <div data-del-libro style={{
+                  margin: "7px 0 0", padding: "9px 11px", borderRadius: "10px",
+                  background: "rgba(10,20,34,0.4)", borderLeft: "3px solid rgba(248,249,250,0.2)",
+                }}>
+                  <p style={{
+                    margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "10px",
+                    fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase",
+                    color: "rgba(248,249,250,0.5)",
+                  }}>
+                    {n.rotuloDelLibro ?? ROTULO_DEL_LIBRO}
+                  </p>
+                  <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.55, color: "rgba(248,249,250,0.72)" }}>
+                    {n.delLibro}
+                  </p>
+                </div>
+              )}
             </div>
           ))}
         </dl>

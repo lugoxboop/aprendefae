@@ -1,6 +1,6 @@
 import {
-  USUARIOS_T1_1, ZONA_DENTRO, ZONA_FUERA, ACIERTO_T1_1, ACIERTO_FUERA_GENERAL, ERROR_T1_1,
-  EMPRESAS, CLASES, MATRIZ, ERROR_T1_2, ACIERTO_T1_2, ACIERTO_POR_CLASE,
+  USUARIOS_T1_1, ZONA_DENTRO, ZONA_FUERA, ACIERTO_T1_1, ERROR_T1_1,
+  EMPRESAS, CLASES, MATRIZ, ERROR_T1_2, ACIERTO_T1_2,
   CLAVE_MARCO_SERVICIOS, CLAVE_ERA_SERVICIOS, SIN_INSUMO, T1_1, T1_2,
 } from "../data/contabilidadTema1.js";
 
@@ -42,9 +42,16 @@ export const PATRON_B = "B";
 export function evaluarT1_1(usuario, zona) {
   const ok = zona === usuario.zona;
   if (ok) {
+    /*
+     * Sin texto de repuesto. Los ocho aciertos están escritos; si alguno
+     * faltara, servir un genérico se leería igual de bien y nadie notaría que
+     * ese usuario perdió su devolución.
+     */
+    const texto = ACIERTO_T1_1[usuario.id];
+    if (!texto) throw new Error(`«${usuario.id}» no tiene devolución de acierto`);
     return {
       ok,
-      texto: ACIERTO_T1_1[usuario.id] ?? ACIERTO_FUERA_GENERAL,
+      texto,
       patron: null,
       /*
        * Dentro o fuera es una cosa; cerrar el ciclo es otra. Un propietario
@@ -100,20 +107,19 @@ export function claveDelError(marcada, real) {
 
 export function evaluarT1_2(empresa, clase) {
   if (clase === empresa.clase) {
+    const texto = ACIERTO_T1_2[empresa.id];
+    if (!texto) throw new Error(`«${empresa.id}» no tiene devolución de acierto`);
     return {
       ok: true,
-      texto: ACIERTO_T1_2[empresa.id] ?? ACIERTO_POR_CLASE[empresa.clase],
+      texto,
       clave: null,
       /* El trazo con su etiqueta es la pista: solo aparece al acertar. */
       relacion: empresa.relacion,
     };
   }
   const clave = claveDelError(clase, empresa.clase);
-  const texto = ERROR_T1_2[clave]
-    /* «lo que salió NO es lo mismo» o «SÍ es lo mismo», según el caso. */
-    .replace("{relacion}", empresa.relacion === "Lo mismo" ? "sí es" : "no es")
-    .replace("{entra}", `«${empresa.entra}»`);
-  return { ok: false, texto, clave, relacion: null };
+  /* Los textos nuevos son fijos: ya no se rellena nada con datos del ítem. */
+  return { ok: false, texto: ERROR_T1_2[clave], clave, relacion: null };
 }
 
 /** ¿Esta empresa no recibe ningún objeto? Se deduce, no se marca aparte. */

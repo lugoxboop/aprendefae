@@ -12,6 +12,7 @@ import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { useMovimientoReducido, SOLO_LECTOR } from "../verbos.jsx";
+import { Encabezado } from "./encabezado.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -173,6 +174,7 @@ export default function QueEntroYQueSalio({ Marco, rotulo, titulo, acento, onCom
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
+      <Encabezado objetivo={T1_2.objetivo} consigna={T1_2.consigna} />
       <div style={{ marginBottom: "12px" }}>
         <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} etiqueta="Empresa" />
       </div>

@@ -25,8 +25,15 @@ export const T1_1 = {
   dificultad: "facil",
   fpBase: 10,
   porPartida: 6,
-  objetivo: "Identifica si quien le hace una pregunta a la contabilidad pertenece a la empresa o la consulta desde afuera.",
-  pregunta: "¿Quién hace esta pregunta pertenece a la empresa o la consulta desde afuera?",
+  objetivo: "Decide si quien pregunta es parte de la empresa o la mira desde afuera.",
+  /*
+   * La consigna dice qué hacer con los dedos, y se queda fija debajo del
+   * objetivo durante toda la partida. El «vacío» es otra cosa: es la pregunta
+   * que encabeza la elección y desaparece cuando ya se eligió. Una no
+   * reemplaza a la otra.
+   */
+  consigna: "Toca la pregunta. Luego toca si esa persona está adentro o afuera de la empresa.",
+  pregunta: "¿Quién pregunta esto es parte de la empresa o no?",
 };
 
 /*
@@ -52,42 +59,45 @@ export const USUARIOS_T1_1 = USUARIOS.map((u) => ({
   zona: u.tipo === "interno" ? ZONA_DENTRO : ZONA_FUERA,
 }));
 
+/*
+ * Los rótulos solo marcan el lugar. El «de la empresa» que llevaba el primero
+ * salió de aquí porque esa idea ya está dicha dos veces —en la consigna y en el
+ * vacío—, y en un rótulo de 9,5 px repetirla solo gastaba ancho.
+ */
 export const ROTULO_ZONA = {
-  [ZONA_DENTRO]: "DENTRO DE LA EMPRESA",
-  [ZONA_FUERA]: "FUERA",
+  [ZONA_DENTRO]: "ADENTRO",
+  [ZONA_FUERA]: "AFUERA",
 };
 
 /*
- * Las devoluciones de acierto que la ficha escribe, por usuario. Las cuatro
- * que trae van textuales; a las otras cuatro les corresponde la general de su
- * zona, que también es de Gen.
+ * Las ocho devoluciones de acierto, una por usuario y todas de la ficha.
+ *
+ * No hay texto de respaldo para la zona: antes había uno general para los
+ * externos que a mí me tocó redactar, y ya no hace falta. Si algún día falta la
+ * de un usuario, `evaluarT1_1` se cae en vez de servir un genérico — una
+ * devolución de repuesto se lee igual de bien que la buena y no se nota que
+ * falta la buena.
  */
 export const ACIERTO_T1_1 = {
-  administradores: "✅ Dentro. Y fíjate en el trazo que se encendió: la administración decide, y esa decisión cambia lo que la empresa hace. Por eso está dentro del ciclo, no consultándolo.",
-  propietarios: "✅ Dentro. Los dueños pertenecen a la empresa. Fíjate en que el trazo de retorno no se encendió: deciden sobre su inversión, pero quien dirige la actividad día a día es la administración.",
-  empleados: "✅ Dentro. Los empleados trabajan en la empresa, así que son usuarios internos — aunque no dirijan ni sean dueños. Estar dentro no es lo mismo que decidir.",
-  estado: "✅ Fuera. El Estado tiene poder sobre la empresa, pero no la administra: consulta la información igual que un acreedor o un cliente.",
+  propietarios: "✅ Adentro. Los dueños son parte de la empresa. Pero la flecha no se prendió: el día a día lo manejan los jefes.",
+  administradores: "✅ Adentro. Y mira la flecha que se prendió: los jefes deciden, y eso cambia lo que la empresa hace.",
+  empleados: "✅ Adentro. Los empleados son parte de la empresa, aunque no manden ni sean dueños.",
+  acreedores: "✅ Afuera. Le prestó o le vendió a crédito, pero no es parte de la empresa.",
+  clientes: "✅ Afuera. Le compra a la empresa, pero no es parte de ella.",
+  inversionistas: "✅ Afuera. Todavía no ha puesto nada. Está mirando si le conviene.",
+  asociaciones: "✅ Afuera. Juntan números de muchas empresas para sacar cuentas del grupo.",
+  estado: "✅ Afuera. Tiene poder sobre la empresa, pero no es parte de ella. Lee el informe como los demás de afuera.",
 };
-
-/*
- * ── [ESCRITO POR CLAUDE, NO POR LA FICHA — PENDIENTE DE REVISIÓN] ──
- *
- * La ficha da el acierto de cuatro de los ocho usuarios. Los otros cuatro son
- * todos externos, y este texto repite el criterio del libro sin añadir nada:
- * consultan la información sin tener injerencia en la administración. La
- * redacción es mía.
- */
-export const ACIERTO_FUERA_GENERAL = "✅ Fuera. Usa la información para algo suyo, pero no tiene injerencia en la administración de la empresa: la consulta desde afuera.";
 
 export const ERROR_T1_1 = {
   /* A · un interno colocado afuera. */
   A: {
-    texto: "❌ Esa persona pertenece a la empresa. El libro es explícito: los usuarios internos son los propietarios, los administradores y los empleados — los tres. No importa si deciden o no: importa si están adentro.",
+    texto: "❌ Esa persona sí es parte de la empresa. Los de adentro son tres: dueños, jefes y empleados. No importa si trabajan ahí todos los días. Importa si son parte.",
     escena: "los-tres-internos",
   },
   /* B · un externo colocado adentro. */
   B: {
-    texto: "❌ Ese usuario no tiene injerencia en la administración de la empresa: la consulta desde afuera. Usará la información para algo suyo —prestar, comprar, invertir, cobrar impuestos— pero no pertenece a la empresa.",
+    texto: "❌ Esa persona no es parte de la empresa: la mira desde afuera. Lee el informe y lo usa para algo suyo.",
     escena: "zona-exterior",
     rotulo: "consultan desde afuera",
   },
@@ -107,7 +117,8 @@ export const T1_2 = {
   dificultad: "facil",
   fpBase: 10,
   porPartida: 6,
-  objetivo: "Clasifica una empresa por lo que hace, mirando qué recibe y qué entrega.",
+  objetivo: "Descubre qué hace cada empresa, mirando qué recibe y qué entrega.",
+  consigna: "Mira qué entra y qué sale. Luego toca qué clase de empresa es.",
   pregunta: "¿Qué le pasó adentro a lo que entró?",
 };
 
@@ -143,25 +154,23 @@ export const EMPRESAS = [
   { id: "t2-11", empresa: "Un cultivo de banano", entra: "Semillas y tierra", sale: "Banano", clase: "agropecuaria", relacion: "Cultivado" },
 ];
 
-export const ACIERTO_T1_2 = {
-  "t2-01": "✅ Industrial. Entró algodón y salió tela: no es lo mismo. El libro lo dice así — reciben insumos o materias primas y les agregan valor incorporándoles procesos.",
-  "t2-02": "✅ Comercial. Entraron mercancías y salieron las mismas mercancías. El libro es explícito: compran para vender después, sin cambiar sus características.",
-  "t2-08": "✅ Minera. Aquí no entró nada: el petróleo se sacó del subsuelo. Las mineras no compran ni transforman — explotan un recurso que ya estaba ahí.",
-};
-
 /*
- * ── [ESCRITO POR CLAUDE, NO POR LA FICHA — PENDIENTE DE REVISIÓN] ──
- *
- * La ficha da tres aciertos de muestra. Los otros ocho usan el general de su
- * clase, que repite el criterio del libro y la relación que ya está escrita en
- * el banco; no afirma nada nuevo, pero la redacción es mía.
+ * Los once aciertos, uno por empresa y todos de la ficha. Igual que en T1-1,
+ * aquí ya no hay texto general por clase —lo había, redactado por mí, mientras
+ * la ficha solo traía tres—: si falta el de una empresa, la evaluación se cae.
  */
-export const ACIERTO_POR_CLASE = {
-  comercial: "✅ Comercial. Lo que salió es lo mismo que entró: compran para vender después, sin cambiarle las características.",
-  industrial: "✅ Industrial. Entró una cosa y salió otra distinta: reciben insumos y les agregan valor incorporándoles procesos.",
-  servicios: "✅ De servicios. No entró ningún objeto — lo que esta empresa entrega es capacidad profesional, un producto intangible.",
-  agropecuaria: "✅ Agropecuaria. Lo que sale no se compró ni se transformó en una máquina: se crió o se cultivó. El libro las lleva aparte de las industriales.",
-  minera: "✅ Minera. No hubo insumo que comprar: se explotó un recurso que ya estaba en el suelo o el subsuelo.",
+export const ACIERTO_T1_2 = {
+  "t2-01": "✅ Industrial. Entró algodón y salió tela. No es lo mismo: adentro lo cambiaron.",
+  "t2-02": "✅ Comercial. Entró lo mismo que salió. La empresa solo lo revendió.",
+  "t2-03": "✅ De servicios. No entró ninguna cosa. Lo que vende el banco es lo que sabe hacer.",
+  "t2-04": "✅ Industrial. Entró caña. Salió azúcar. No es lo mismo: adentro la cambiaron.",
+  "t2-05": "✅ De servicios. No hay ninguna cosa que señalar. Venden lo que saben hacer.",
+  "t2-06": "✅ Agropecuaria. Los terneros crecieron adentro. Ni se compraron ni se sacaron del suelo.",
+  "t2-07": "✅ Comercial. Entraron productos y salieron los mismos. Solo cambiaron de dueño.",
+  "t2-08": "✅ Minera. Nadie le vendió el petróleo. Lo sacaron del subsuelo.",
+  "t2-09": "✅ Industrial. Entró una cosa. Salió otra muy distinta. Adentro la cambiaron.",
+  "t2-10": "✅ Minera. La piedra ya estaba en el suelo. Solo la sacaron.",
+  "t2-11": "✅ Agropecuaria. Nadie lo trajo ni lo sacó del suelo. El banano se sembró y creció aquí.",
 };
 
 /*
@@ -197,15 +206,29 @@ export const CLAVE_MARCO_SERVICIOS = "E";
 /* G: la real era Servicios y marcó otra — no había ningún objeto. */
 export const CLAVE_ERA_SERVICIOS = "G";
 
+/*
+ * ═══════════ YA NO HAY HUECOS QUE RELLENAR ═══════════
+ *
+ * Las explicaciones A y B llevaban `{relacion}` y `{entra}`, y se rellenaban
+ * con datos del ítem: A decía «lo que salió sí es / no es lo mismo» según el
+ * caso, y B citaba el recuadro de entrada de esa empresa. Los textos nuevos son
+ * fijos, así que esa interpolación se fue.
+ *
+ * Lo que se pierde con eso queda dicho: esas dos frases ya no están amarradas
+ * al banco. Si mañana una empresa cambia de relación o de insumo, el texto no
+ * lo va a reflejar y nada va a fallar. La G nombra «sin insumo físico» a mano,
+ * y hay una prueba que comprueba que esa frase es de verdad la que el banco
+ * escribe en el recuadro, para que al menos ese vínculo no se rompa en silencio.
+ */
 export const ERROR_T1_2 = {
-  A: "❌ Compara los dos recuadros otra vez: lo que salió {relacion} lo mismo que entró. Ese es todo el criterio. Una comercial vende lo que compró sin cambiarlo; una industrial le agrega valor transformándolo.",
-  B: "❌ Mira el recuadro de ENTRA: dice {entra}. Una industrial recibe materia prima y la transforma; una minera extrae del suelo o del subsuelo algo que ya estaba ahí, sin comprarle insumo a nadie.",
-  C: "❌ Las dos producen algo que antes no existía así, pero por caminos distintos: una industrial transforma con procesos; una agropecuaria cría o cultiva seres vivos. El libro las separa por eso — ganadería, pesca y agricultura van aparte.",
-  D: "❌ Una comercial compra para revender sin cambiar el producto. Aquí lo que sale no se compró: se crió o se cultivó dentro de la empresa.",
-  E: "❌ Fíjate en que aquí SÍ hay un objeto: algo entró o algo salió, y puedes señalarlo. Las de servicios comercializan capacidad profesional — productos intangibles, dice el libro.",
-  F: "❌ Una comercial le compra a un proveedor. Una minera no le compra a nadie: saca del suelo un recurso que ya estaba ahí. Mira el recuadro de ENTRA.",
-  G: "❌ Mira el recuadro de ENTRA: dice sin insumo físico. No hay nada que transformar, revender, criar ni extraer. Lo que esta empresa entrega es capacidad profesional, no una cosa.",
-  H: "❌ Las dos sacan algo de la tierra, pero no de la misma forma: una agropecuaria cría o cultiva seres vivos que crecen; una minera extrae un recurso mineral que ya estaba formado.",
+  A: "❌ Mira los dos cuadros otra vez. ¿Salió lo mismo que entró? Si sí, la empresa solo revende. Si no, lo cambió.",
+  B: "❌ Mira el cuadro de ENTRA. Una industrial recibe materia y la cambia. Una minera no le compra a nadie: saca del suelo algo que ya estaba.",
+  C: "❌ Las dos hacen algo nuevo, pero de forma distinta. Una cambia cosas con máquinas. La otra siembra o cría seres vivos.",
+  D: "❌ Una comercial compra para revender igual. Aquí lo que sale no se compró: se sembró o se crió adentro.",
+  E: "❌ Aquí sí hay una cosa que puedes señalar. Las de servicios no venden cosas. Venden lo que saben hacer.",
+  F: "❌ Una comercial le compra a alguien. Una minera no: saca del suelo algo que ya estaba ahí. Mira el cuadro de ENTRA.",
+  G: "❌ Mira el cuadro de ENTRA: dice sin insumo físico. No hay nada que cambiar, revender, criar ni sacar.",
+  H: "❌ Las dos sacan algo de la tierra. Pero una cría animales o siembra plantas. La otra saca piedra o petróleo, que ya estaban ahí.",
 };
 
 /* Qué se resalta con cada explicación. Los demás resaltan los dos recuadros. */

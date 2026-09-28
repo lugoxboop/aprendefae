@@ -13,6 +13,7 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { useMovimientoReducido, SOLO_LECTOR } from "../verbos.jsx";
 import FranjaDelCiclo from "../intro/FranjaDelCiclo.jsx";
+import { Encabezado } from "./encabezado.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -202,7 +203,18 @@ export default function DesdeDondePreguntan({ Marco, rotulo, titulo, acento, onC
         className={rebotando === cual ? "fae-t11-rebota" : undefined}
         aria-label={ROTULO_ZONA[cual]}
         style={{
-          display: "block", width: "100%", textAlign: "left",
+          display: "block", textAlign: "left",
+          /*
+           * ═══════════ NI «WIDTH: 100%» NI NADA PARECIDO ═══════════
+           *
+           * Llevaba `width: 100%`, y con el margen de la zona de fuera eso son
+           * 100% MÁS 26 px: la caja se salía del panel y el borde punteado
+           * quedaba cortado contra el filo de la pantalla. No se veía en las
+           * pruebas —el DOM no se queja— ni hacía aparecer barra de scroll.
+           *
+           * Sin ancho declarado, el flex de arriba la estira hasta el borde y
+           * el margen sale de dentro, que es lo que hay que hacer.
+           */
           /* La de dentro TOCA la franja; la de fuera se separa con un blanco. */
           marginLeft: esDentro ? 0 : "26px",
           padding: "9px 10px", borderRadius: "10px", cursor: activa ? "pointer" : "default",
@@ -233,6 +245,7 @@ export default function DesdeDondePreguntan({ Marco, rotulo, titulo, acento, onC
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
+      <Encabezado objetivo={T1_1.objetivo} consigna={T1_1.consigna} />
       <div style={{ marginBottom: "12px" }}>
         <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} etiqueta="Pregunta" />
       </div>

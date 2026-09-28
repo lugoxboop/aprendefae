@@ -51,7 +51,7 @@ const {
 } = await import("../tema1.js");
 const {
   USUARIOS_T1_1, EMPRESAS, CLASES, ERROR_T1_2, ERROR_T1_1, SIN_INSUMO,
-  ZONA_DENTRO, ZONA_FUERA, T1_1, T1_2, ACIERTO_T1_1, ACIERTO_POR_CLASE,
+  ZONA_DENTRO, ZONA_FUERA, T1_1, T1_2, ACIERTO_T1_1, ACIERTO_T1_2, ROTULO_ZONA,
 } = await import("../../data/contabilidadTema1.js");
 const { USUARIOS } = await import("../../data/contabilidadIntro.js");
 const { barajar } = await import("../../utils/barajar.js");
@@ -165,11 +165,19 @@ test("★★★ E y G no están intercambiadas: cada texto describe su propio ca
    */
   const e = claveDelError("servicios", "comercial");
   assert.equal(e, "E", "marcar servicios cuando era comercial tiene que ser E");
-  assert.ok(ERROR_T1_2.E.includes("SÍ hay un objeto"), "el texto de E dejó de hablar del objeto que sí existe");
+  assert.ok(ERROR_T1_2.E.includes("sí hay una cosa que puedes señalar"),
+    "el texto de E dejó de hablar de la cosa que sí existe");
 
   const g = claveDelError("comercial", "servicios");
   assert.equal(g, "G", "marcar comercial cuando era de servicios tiene que ser G");
-  assert.ok(ERROR_T1_2.G.includes("sin insumo físico"), "el texto de G dejó de hablar del recuadro vacío");
+  /*
+   * La G cita el recuadro de entrada a mano, ahora que no hay interpolación.
+   * Se comprueba contra la cadena que el banco de verdad escribe ahí: si
+   * `SIN_INSUMO` cambiara de redacción, esta explicación citaría una frase que
+   * no está en pantalla, y eso falla aquí en vez de pasar inadvertido.
+   */
+  assert.ok(ERROR_T1_2.G.includes(SIN_INSUMO),
+    `la G cita el recuadro de entrada y el banco escribe «${SIN_INSUMO}»`);
 
   /* Y cualquier cruce con servicios de un lado u otro cae en la que le toca. */
   for (const otra of CLASES_IDS.filter((c) => c !== "servicios")) {
@@ -237,11 +245,180 @@ test("★ acertar trae la relación; fallar no la trae nunca", () => {
   }
 });
 
-test("★ el hueco de la explicación A se rellena según lo que pasó de verdad", () => {
+/*
+ * ═══════════ YA NO QUEDA NINGÚN HUECO POR RELLENAR ═══════════
+ *
+ * Aquí había una prueba de que la explicación A se rellenaba con lo que había
+ * pasado de verdad: «lo que salió sí es / no es lo mismo» según la empresa. Los
+ * textos nuevos son fijos y esa interpolación se retiró.
+ *
+ * Lo que queda por vigilar es el resto que puede dejar una interpolación al
+ * irse: una llave sin rellenar se pinta tal cual en pantalla —«dice {entra}»—
+ * y no rompe nada.
+ */
+test("★★ ninguna explicación quedó con un hueco sin rellenar", () => {
+  for (const [clave, texto] of Object.entries(ERROR_T1_2)) {
+    assert.ok(!texto.includes("{"), `la explicación ${clave} conserva un hueco: «${texto}»`);
+  }
+  for (const [id, texto] of Object.entries(ACIERTO_T1_2)) {
+    assert.ok(!texto.includes("{"), `el acierto de ${id} conserva un hueco`);
+  }
+  /* Y las dos explicaciones que se rellenaban siguen siendo las de su cruce. */
   const comercial = EMPRESAS.find((e) => e.clase === "comercial");
   const industrial = EMPRESAS.find((e) => e.clase === "industrial");
-  assert.ok(evaluarT1_2(comercial, "industrial").texto.includes("sí es lo mismo"), "en una comercial, lo que salió SÍ es lo mismo");
-  assert.ok(evaluarT1_2(industrial, "comercial").texto.includes("no es lo mismo"), "en una industrial, NO lo es");
+  assert.equal(evaluarT1_2(comercial, "industrial").clave, "A");
+  assert.equal(evaluarT1_2(industrial, "comercial").clave, "A");
+  assert.equal(evaluarT1_2(comercial, "industrial").texto, ERROR_T1_2.A);
+});
+
+/*
+ * ═══════════ LAS DEVOLUCIONES ESTÁN TODAS, Y NO HAY REPUESTO ═══════════
+ *
+ * Antes faltaban y se servía un genérico —el de la zona en T1-1, el de la clase
+ * en T1-2—, los dos redactados por mí. Ahora la ficha trae las diecinueve, y
+ * evaluar sin la suya se cae en vez de disimular.
+ */
+test("★★ los ocho usuarios y las once empresas tienen su propia devolución", () => {
+  for (const u of USUARIOS_T1_1) {
+    const texto = evaluarT1_1(u, u.zona).texto;
+    assert.ok(texto.startsWith("✅"), `${u.id}: el acierto perdió su marca`);
+    assert.equal(texto, ACIERTO_T1_1[u.id], `${u.id}: no sirve su propio texto`);
+  }
+  for (const e of EMPRESAS) {
+    assert.equal(evaluarT1_2(e, e.clase).texto, ACIERTO_T1_2[e.id], `${e.id}: no sirve su propio texto`);
+  }
+  /* Y ninguna se repite: dos usuarios con el mismo acierto es una que falta. */
+  assert.equal(new Set(Object.values(ACIERTO_T1_1)).size, USUARIOS_T1_1.length);
+  assert.equal(new Set(Object.values(ACIERTO_T1_2)).size, EMPRESAS.length);
+});
+
+test("★★ si a un usuario le falta su devolución, evaluar se cae", () => {
+  const inventado = { id: "no-existe", zona: "dentro", cierraElCiclo: false };
+  assert.throws(() => evaluarT1_1(inventado, "dentro"), /no tiene devolución/,
+    "sirvió un texto de repuesto en vez de avisar");
+});
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * LITERALIDAD · lo que se pinta contra el archivo de contenido.
+ *
+ * Mismo espíritu que la prueba que fijó los ids de ítem: el texto del
+ * estudiante vive en un solo archivo y esto comprueba que en pantalla sale ESE
+ * y no otro. No compara contra cadenas escritas aquí —eso solo diría que dos
+ * copias coinciden—: compara la pantalla contra la fuente.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+test("★★ el objetivo y la consigna están, y se quedan toda la partida", () => {
+  for (const [Comp, a] of [[DesdeDondePreguntan, T1_1], [QueEntroYQueSalio, T1_2]]) {
+    const { caja, desmontar } = montar(Comp);
+    try {
+      /*
+       * Se comprueba que se VEN, no solo que están en el árbol. Un `hidden` o
+       * un `display: none` dejan el texto en `textContent` tal cual, así que
+       * una prueba que solo lea el texto da por buena una línea que el
+       * estudiante no tiene delante. Salió de un mutante que sobrevivió
+       * poniéndole `hidden` a la consigna.
+       */
+      const visible = (el, que) => {
+        assert.ok(el, `${a.id}: no hay ${que}`);
+        assert.equal(el.hidden, false, `${a.id}: ${que} está oculta con hidden`);
+        assert.notEqual(getComputedStyle(el).display, "none", `${a.id}: ${que} está en display none`);
+        assert.notEqual(getComputedStyle(el).visibility, "hidden", `${a.id}: ${que} está en visibility hidden`);
+        return el;
+      };
+      const enc = () => caja.querySelector("[data-encabezado]");
+      visible(enc(), "el encabezado");
+      assert.equal(visible(caja.querySelector("[data-objetivo]"), "el objetivo").textContent,
+        a.objetivo, `${a.id}: objetivo`);
+      assert.equal(visible(caja.querySelector("[data-consigna]"), "la consigna").textContent,
+        a.consigna, `${a.id}: consigna`);
+
+      /*
+       * Y siguen ahí después de responder. La consigna es una línea fija, no un
+       * aviso de bienvenida: quien se pierde a mitad de la tanda tiene que
+       * poder volver a leer qué le piden.
+       */
+      const primera = caja.querySelector("[data-zona], [data-clase]");
+      tocar(primera);
+      visible(enc(), "el encabezado después de responder");
+      assert.equal(visible(caja.querySelector("[data-consigna]"), "la consigna después de responder").textContent,
+        a.consigna, `${a.id}: la consigna cambió al responder`);
+    } finally { desmontar(); }
+  }
+});
+
+test("★★ la consigna no reemplaza al vacío: son dos líneas distintas", () => {
+  for (const a of [T1_1, T1_2]) {
+    assert.ok(a.consigna && a.pregunta, `${a.id}: falta una de las dos`);
+    assert.notEqual(a.consigna, a.pregunta, `${a.id}: la consigna y el vacío son el mismo texto`);
+  }
+  /* El vacío pregunta; la consigna manda hacer algo. */
+  for (const a of [T1_1, T1_2]) {
+    assert.ok(a.pregunta.includes("¿"), `${a.id}: el vacío dejó de preguntar`);
+    assert.ok(!a.consigna.includes("¿"), `${a.id}: la consigna se volvió una pregunta`);
+  }
+});
+
+test("★★ los rótulos de zona marcan el lugar y nada más", () => {
+  assert.equal(ROTULO_ZONA[ZONA_DENTRO], "ADENTRO");
+  assert.equal(ROTULO_ZONA[ZONA_FUERA], "AFUERA");
+  /*
+   * Y no repiten «de la empresa», que ya está dicho en la consigna y en el
+   * vacío. En un rótulo de 9,5 px esa coletilla solo gastaba ancho.
+   */
+  for (const cual of [ZONA_DENTRO, ZONA_FUERA]) {
+    assert.ok(!ROTULO_ZONA[cual].toLowerCase().includes("empresa"),
+      `el rótulo de ${cual} volvió a nombrar la empresa`);
+  }
+  const { caja, desmontar } = montar(DesdeDondePreguntan);
+  try {
+    for (const cual of [ZONA_DENTRO, ZONA_FUERA]) {
+      const z = caja.querySelector(`[data-zona="${cual}"]`);
+      assert.ok(z.textContent.includes(ROTULO_ZONA[cual]), `${cual}: el rótulo no sale en pantalla`);
+      assert.equal(z.getAttribute("aria-label"), ROTULO_ZONA[cual], `${cual}: aria-label`);
+    }
+  } finally { desmontar(); }
+});
+
+/*
+ * ═══════════ NADA SE SALE DEL PANEL ═══════════
+ *
+ * Salió de una captura a 375 px: la zona de fuera llevaba `width: 100%` y un
+ * margen izquierdo de 26 px, así que medía 26 px más que su sitio y el borde
+ * punteado se cortaba contra el filo de la pantalla. El DOM no tenía nada que
+ * decir al respecto y no aparecía barra de scroll, así que ninguna prueba lo
+ * veía.
+ *
+ * Esta lo mide. JSDOM no maqueta, así que no puede comprobar píxeles: lo que
+ * comprueba es la causa —que ninguna caja de la actividad declare a la vez un
+ * ancho completo y un margen—, que es la combinación que lo produjo.
+ */
+test("★★ ninguna zona pide el ancho entero y además un margen", () => {
+  const { caja, desmontar } = montar(DesdeDondePreguntan);
+  try {
+    for (const z of caja.querySelectorAll("[data-zona]")) {
+      const s = z.style;
+      const conMargen = s.marginLeft && s.marginLeft !== "0px" && s.marginLeft !== "0";
+      const anchoEntero = s.width === "100%";
+      assert.ok(!(conMargen && anchoEntero),
+        `la zona «${z.dataset.zona}» mide 100% y además se desplaza ${s.marginLeft}: se sale del panel`);
+    }
+  } finally { desmontar(); }
+});
+
+/*
+ * Los aciertos dicen «Adentro» y «Afuera», y los rótulos también. Antes decían
+ * «DENTRO DE LA EMPRESA» y «FUERA» mientras la devolución decía otra cosa, y
+ * quien acertaba leía dos palabras distintas para el mismo sitio.
+ */
+test("★★ el acierto nombra la zona con la misma palabra que el rótulo", () => {
+  for (const u of USUARIOS_T1_1) {
+    const palabra = ROTULO_ZONA[u.zona];
+    const texto = ACIERTO_T1_1[u.id];
+    assert.ok(texto.toUpperCase().includes(palabra),
+      `${u.id}: el acierto dice «${texto.slice(2, 12).trim()}» y el rótulo «${palabra}»`);
+  }
 });
 
 /* ═══════════════════ PUNTAJE Y PANEL ═══════════════════ */

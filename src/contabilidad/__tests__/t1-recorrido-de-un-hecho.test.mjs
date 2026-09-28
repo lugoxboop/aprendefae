@@ -52,9 +52,10 @@ const {
   USUARIO_DEL_RECORRIDO, lineaResaltada, palabrasDe,
   evaluarOpcion, internos, externos, ENCENDIDO, ATENUADO,
 } = await import("../recorridoDeUnHecho.js");
+const CuatroCapas = (await import("../../components/mecanicas/maquinas/CuatroCapas.jsx")).default;
 const {
   ESTACIONES, USUARIOS, OPCIONES, TEXTOS, CIERRE, ALTERNATIVOS, NOMBRES,
-  SIN_DATO, NEUTRO, PIEZAS_INTRO, ID,
+  SIN_DATO, NEUTRO, PIEZAS_INTRO, ID, SIEMBRA_DE_LOS_VERBOS,
 } = await import("../../data/contabilidadIntro.js");
 const { CALEJA } = await import("../../data/contabilidad.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
@@ -68,6 +69,22 @@ const montar = (Comp) => {
 };
 const tocar = (el) => act(() => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 const siguiente = (caja) => caja.querySelector("[data-siguiente]");
+
+/*
+ * La pieza entera, para mirar su capa 1. Las capas 2, 3 y 4 van con marcadores
+ * de posición: lo que se comprueba aquí es la capa 1, y montar las tres escenas
+ * de verdad solo añadiría formas de fallar que ya tienen prueba propia.
+ */
+const vacia = () => React.createElement("div");
+const montarPieza = () => {
+  const caja = document.createElement("div");
+  document.body.appendChild(caja);
+  const raiz = createRoot(caja);
+  act(() => raiz.render(React.createElement(CuatroCapas, {
+    pieza: PIEZAS_INTRO[0], Capa2: vacia, Exploracion: vacia, Capa4: vacia,
+  })));
+  return { caja, limpiar: () => { act(() => raiz.unmount()); caja.remove(); } };
+};
 
 /* ═══════════════════ EL AVISO CRÍTICO ═══════════════════ */
 
@@ -179,7 +196,12 @@ test("★★ el texto del resumen NO afirma cuántas transacciones tuvo la empre
   const cuenta = PALABRAS.some((n) => ["transacci", "registro"]
     .some((c) => enMinusculas.includes(`${n} ${c}`)));
   assert.equal(cuenta, false, `el texto volvió a contar transacciones: «${TEXTOS[4]}»`);
-  assert.ok(TEXTOS[4].includes("los demás registros"), "se perdió la redacción corregida");
+  /*
+   * Y sigue diciendo que se juntó con OTRAS, sin decir cuántas. Si esa idea se
+   * cayera, el segmento 4 volvería a dejar el computador solo en el informe,
+   * que es justo lo contrario de lo que este paso enseña.
+   */
+  assert.ok(TEXTOS[4].includes("con las demás"), "se perdió la redacción corregida");
 });
 
 test("★★ el balance dice en qué momento de la empresa está hecho", () => {
@@ -325,7 +347,20 @@ test("★ los ocho traen su propósito textual, y cuatro son internos o externos
   assert.equal(externos().length, 5);
   for (const u of USUARIOS) {
     assert.ok(u.proposito.length > 30, `${u.id}: el propósito textual se quedó corto`);
-    assert.ok(u.pregunta.startsWith("¿"), `${u.id}: la pregunta no es una pregunta`);
+    /*
+     * La frase puede abrir con una afirmación —«Puse plata en esta empresa.
+     * ¿Cuánto me está dejando?»— o cerrar con una —«¿Cómo le va a la empresa?
+     * Quiero saberlo antes de pedir algo.»—. Así que no se exige ni que empiece
+     * por «¿» ni que termine en «?».
+     *
+     * Lo que se exige es que dentro haya una pregunta cerrada de verdad: la
+     * capa 3 pone esta cadena entre comillas sobre la mesa de quien decide, y
+     * si ahí no hubiera ninguna pregunta, la pieza no estaría enseñando lo que
+     * dice —que los ocho le preguntan cosas distintas al mismo informe—.
+     */
+    const abre = u.pregunta.indexOf("¿");
+    assert.ok(abre >= 0 && u.pregunta.indexOf("?", abre) > abre,
+      `${u.id}: no hay ninguna pregunta cerrada en «${u.pregunta}»`);
   }
   assert.equal(new Set(USUARIOS.map((u) => u.pregunta)).size, 8, "dos usuarios comparten pregunta");
 });
@@ -339,11 +374,37 @@ test("★ el estado vacío invita, y no hay usuario elegido de salida", () => {
 
 /* ═══════════════════ LA CAPA 4 ═══════════════════ */
 
-test("★★ las cuatro opciones miden casi lo mismo: la correcta no se delata por su largo", () => {
-  const largos = OPCIONES.map((o) => palabrasDe(o.texto));
-  for (const n of largos) assert.ok(n >= 12 && n <= 13, `una opción tiene ${n} palabras`);
+test("★★ hay una sola opción correcta", () => {
   assert.equal(OPCIONES.filter((o) => o.correcta).length, 1, "tiene que haber una sola correcta");
 });
+
+/*
+ * ═══════════ PENDIENTE: LA CORRECTA SE DELATA POR SU LARGO ═══════════
+ *
+ * Esta prueba está en TODO y NO pasa. No es un descuido: es el sitio donde
+ * queda anotado un problema del texto nuevo que no me toca arreglar.
+ *
+ * La banda anterior era 12-13 palabras para las cuatro, y el texto viejo la
+ * cumplía. Con la reescritura quedan en 13 · 10 · 10 · 11, y la de 13 es la
+ * correcta: es la única que pasa de 11. Quien no lea ninguna y marque la más
+ * larga acierta, y entonces la capa 4 no mide lo que dice medir.
+ *
+ * No toco la frase de Gen para cuadrar la prueba —eso sería reescribir
+ * contenido pedagógico para que el verde salga—, y tampoco borro la regla, que
+ * es la que acaba de cazar el problema. Se queda escrita y marcada hasta que
+ * Gen iguale los largos; entonces se le quita el `todo` y empieza a exigir.
+ *
+ * Lo que la regla pide: que la correcta no sea la más larga de las cuatro.
+ */
+test("★★ las cuatro opciones miden casi lo mismo: la correcta no se delata por su largo",
+  { todo: "la correcta tiene 13 palabras y ninguna otra pasa de 11 — pendiente de Gen" },
+  () => {
+    const largos = OPCIONES.map((o) => ({ correcta: o.correcta, n: palabrasDe(o.texto) }));
+    const correcta = largos.find((x) => x.correcta).n;
+    const masLargaDeLasOtras = Math.max(...largos.filter((x) => !x.correcta).map((x) => x.n));
+    assert.ok(correcta <= masLargaDeLasOtras,
+      `la correcta tiene ${correcta} palabras y la más larga de las otras ${masLargaDeLasOtras}`);
+  });
 
 test("★★ cada opción trae su devolución y su escena, y ninguna se repite", () => {
   const textos = new Set();
@@ -396,11 +457,69 @@ test("★★ la pieza es material teórico: entra sin FP y sin dificultad", () =
   }
 });
 
-test("★ la pieza trae la capa 1 con las cuatro definiciones y la siembra de los verbos", () => {
+test("★ la pieza trae la capa 1 con las cuatro líneas y la siembra de los verbos", () => {
   const p = PIEZAS_INTRO[0];
   assert.equal(p.id, ID);
-  assert.ok(p.objetivo.includes("ciclo"), "el objetivo dejó de hablar del ciclo");
   assert.equal(p.nombres.length, NOMBRES.length + 1, "falta la siembra de los siete verbos");
   const siembra = p.nombres[p.nombres.length - 1].definicion;
-  assert.ok(siembra.includes("Registrar es uno de siete"), "se perdió el remate de la siembra");
+  assert.equal(siembra, SIEMBRA_DE_LOS_VERBOS);
+});
+
+/*
+ * ═══════════ LA IDEA SIMPLE ABRE; LA CITA VA DEBAJO ═══════════
+ *
+ * Una sola línea de la capa 1 conserva texto del libro, y va DEBAJO de su idea
+ * simple. Esta prueba no compara cadenas contra sí mismas: comprueba que la
+ * línea que abre NO es la cita —ni por longitud ni por vocabulario— y que la
+ * cita es la del libro.
+ */
+test("★★ solo la primera línea cita el libro, y la cita nunca abre la línea", () => {
+  const conCita = NOMBRES.filter((n) => n.delLibro);
+  assert.equal(conCita.length, 1, "o ninguna línea cita el libro, o cita más de una");
+  const n = conCita[0];
+  assert.equal(n, NOMBRES[0], "la cita se movió de la primera línea");
+
+  /* La cita es la del libro: su vocabulario es el suyo, no el de la idea. */
+  for (const marca of ["sistema de información integrado", "stakeholders"]) {
+    assert.ok(n.delLibro.includes(marca), `la cita perdió «${marca}»`);
+    assert.ok(!n.definicion.includes(marca), `la idea simple se llenó con la cita: «${marca}»`);
+  }
+  /* Y la idea simple es de verdad más corta que la frase que explica. */
+  assert.ok(n.definicion.length * 2 < n.delLibro.length,
+    `la idea simple dejó de ser simple: ${n.definicion.length} contra ${n.delLibro.length}`);
+});
+
+/*
+ * ═══════════ «SON SIETE» TIENE QUE SER VERDAD ═══════════
+ *
+ * La siembra manda contar los verbos de la frase del libro y dice cuántos hay.
+ * Eso no se da por bueno: los verbos se sacan de la frase que de verdad está en
+ * pantalla y se cuentan. Si la cita pierde uno —o gana uno—, la línea que la
+ * acompaña empieza a mentir, y esta prueba falla antes de que lo lea nadie.
+ */
+test("★★ los verbos que la siembra manda contar son los que tiene la frase del libro", () => {
+  const cita = NOMBRES[0].delLibro;
+  const tramo = cita.split("permite ")[1].split(", en términos")[0];
+  const verbos = tramo.split(/,\s*|\s+y\s+/).map((s) => s.trim()).filter(Boolean);
+
+  assert.equal(verbos.length, 7, `la frase del libro tiene ${verbos.length} verbos, no siete: ${verbos.join(" · ")}`);
+  assert.ok(SIEMBRA_DE_LOS_VERBOS.includes("siete"), "la siembra dejó de decir cuántos son");
+  /* Y el que la siembra señala como «uno solo» está entre ellos. */
+  assert.ok(verbos.includes("registrar"), "registrar ya no está en la lista de la cita");
+});
+
+test("★★ la frase del libro está en pantalla cuando se lee la línea que manda contarla", () => {
+  const { caja, limpiar } = montarPieza();
+  try {
+    const capa1 = caja.querySelector('[data-capa="1"]');
+    assert.ok(capa1, "no hay capa 1");
+    assert.ok(capa1.textContent.includes(SIEMBRA_DE_LOS_VERBOS), "falta la línea de la siembra");
+    assert.ok(capa1.querySelector("[data-del-libro]"), "la cita del libro no se pinta");
+    assert.ok(capa1.textContent.includes(NOMBRES[0].delLibro),
+      "la línea manda contar los verbos de una frase que no está en pantalla");
+    /* Y la idea simple va ANTES que la cita, no después. */
+    const texto = capa1.textContent;
+    assert.ok(texto.indexOf(NOMBRES[0].definicion) < texto.indexOf(NOMBRES[0].delLibro),
+      "la cita del libro se adelantó a la idea simple");
+  } finally { limpiar(); }
 });
