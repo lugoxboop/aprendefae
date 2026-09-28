@@ -526,3 +526,124 @@ export const PESO_INFORME = 0.6;
 export const PESO_SECCION = 0.4;
 
 export const ALT_T1_6 = "Una ficha con un concepto y dos pestañas: el informe de lo que la empresa tiene y debe hoy, y el de lo que vendió y gastó durante el año. Dentro del primero, tres secciones.";
+
+/* ═══════════════════ T1-7 · LA ARTICULACIÓN ═══════════════════ */
+
+export const T1_7 = {
+  id: "t1-la-articulacion",
+  nombre: "La Articulación",
+  subtema: "Cómo se articulan los estados financieros",
+  dificultad: "experto",
+  fpBase: 90,
+  /* Las cinco, siempre: solo hay cinco. */
+  porPartida: 5,
+  objetivo: "Descubre cómo los tres informes se pasan cifras entre ellos.",
+  consigna: "Toca la cifra de donde sale. Luego toca la línea a donde llega.",
+  pregunta: "¿De dónde sale cada cifra? Toca primero de dónde sale y luego a dónde llega.",
+};
+
+export const FLUJOS = "flujos";
+
+/* Los tres, con el término del libro de rótulo. El primero y el segundo son
+   los mismos de T1-6: se nombran igual en las dos actividades. */
+export const INFORMES_T1_7 = [
+  ...INFORMES,
+  { id: FLUJOS, idea: "De dónde entró y salió la plata", cuando: "1 ene – 31 dic", termino: "Estado de flujos de efectivo" },
+];
+
+/*
+ * ═══════════ LOS NOMBRES DE LÍNEA ═══════════
+ *
+ * ── [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] ──
+ *
+ * «Utilidad neta» y «Saldo final de efectivo» los nombra el encargo. Los otros
+ * siete los escribo yo: esta actividad no existía, así que no hay nada que
+ * «conservar como estaba». Son los nombres de línea del Gráfico 2.6 dichos en
+ * el registro del resto del tema, y ninguno afirma nada que el capítulo no
+ * diga — pero la redacción es mía y le toca a Gen confirmarla.
+ */
+export const LINEAS = [
+  /* El informe al que llegan todas. No sale ninguna flecha de aquí. */
+  { id: "l-caja", informe: PRIMERO, nombre: "Caja y bancos" },
+  { id: "l-cobrar-pagar", informe: PRIMERO, nombre: "Cuentas por cobrar y cuentas por pagar" },
+  { id: "l-propiedad", informe: PRIMERO, nombre: "Propiedad, planta y equipo" },
+  { id: "l-aportes", informe: PRIMERO, nombre: "Aportes de los dueños" },
+  { id: "l-utilidad-balance", informe: PRIMERO, nombre: "Utilidad del ejercicio" },
+  /* Lo que vendió y lo que gastó durante el año. */
+  { id: "l-utilidad-neta", informe: SEGUNDO, nombre: "Utilidad neta" },
+  /* De dónde entró y salió la plata. */
+  { id: "l-saldo-final", informe: FLUJOS, nombre: "Saldo final de efectivo" },
+  { id: "l-operacion", informe: FLUJOS, nombre: "Actividades de operación" },
+  { id: "l-inversion", informe: FLUJOS, nombre: "Actividades de inversión" },
+  { id: "l-financiacion", informe: FLUJOS, nombre: "Actividades de financiación" },
+];
+
+/*
+ * Las cinco flechas del Gráfico 2.6. Todas llegan al primer informe y ninguna
+ * sale de él: eso es lo que la actividad enseña, y por eso el cierre las pinta
+ * las cinco a la vez.
+ */
+export const FLECHAS = [
+  { id: "f1", desde: "l-utilidad-neta", hasta: "l-utilidad-balance" },
+  { id: "f2", desde: "l-saldo-final", hasta: "l-caja" },
+  { id: "f3", desde: "l-operacion", hasta: "l-cobrar-pagar" },
+  { id: "f4", desde: "l-inversion", hasta: "l-propiedad" },
+  { id: "f5", desde: "l-financiacion", hasta: "l-aportes" },
+];
+
+export const ERROR_T1_7 = {
+  /* A · esas dos no se pasan nada. */
+  A: "❌ Esas dos cifras no se pasan nada. Pregúntate: ¿una es la misma que la otra, o explica de dónde salió? Si no pasa ninguna, no hay flecha.",
+  /* B · la pareja es buena pero va al revés. */
+  B: "❌ La flecha va al revés. Esta sale y esta recibe. Mira la regla: todas llegan al mismo informe, ninguna sale de él.",
+  /* C · conectó los dos informes que no se hablan entre ellos. */
+  C: "❌ Esos dos informes no se conectan entre ellos. Cada uno le pasa sus cifras al tercero, no al otro.",
+};
+
+export const ACIERTO_T1_7 = {
+  f1: "✅ El informe de lo que vendió y gastó le pasa su resultado al otro. Lo que la empresa ganó o perdió cambia cómo queda al final.",
+  f2: "✅ La plata que queda al final es la misma que aparece en el otro informe. No son dos cifras parecidas: es la misma.",
+  f3: "✅ El movimiento del día a día explica lo que le deben y lo que debe. Lo que cobró y lo que pagó deja rastro ahí.",
+  f4: "✅ Lo que compró o vendió de sus cosas grandes explica esa línea.",
+  f5: "✅ De dónde sacó la plata para financiarse explica lo que pusieron los dueños.",
+};
+
+export const CIERRE_T1_7 = "Mira las cinco flechas. Todas llegan al mismo informe. Los otros dos cuentan qué pasó en el año. Ese guarda cómo quedó la empresa al final.";
+
+/*
+ * ═══════════ EL MODO INVERSO ═══════════
+ *
+ * Tres preguntas, sin FP. No califica: es para mirar la regla desde el otro
+ * lado una vez que ya se ha dibujado.
+ */
+export const INVERSO_T1_7 = [
+  {
+    id: "p1",
+    pregunta: "Si la plata que queda al final no fuera igual en los dos informes, ¿qué querría decir?",
+    opciones: [
+      { id: "p1a", correcta: true, texto: "Que hay un error. Las dos cifras tienen que ser la misma.", feedback: "✅ Correcto. No son dos cuentas que se parecen: es la misma cifra por dos caminos. Si no dan igual, uno de los dos está mal." },
+      { id: "p1b", correcta: false, texto: "Que la empresa gastó más plata de la que tenía.", feedback: "❌ No. Que quede con poca plata es posible y no es un error. Lo que no puede pasar es que los dos informes digan cifras distintas de lo mismo." },
+      { id: "p1c", correcta: false, texto: "Que los dos informes cubren tiempos distintos.", feedback: "❌ Los dos cierran el mismo día. Si cubrieran tiempos distintos, no se podrían conectar." },
+    ],
+  },
+  {
+    id: "p2",
+    pregunta: "Si el informe de lo que vendió y gastó no le pasara nada al otro, ¿qué le faltaría?",
+    opciones: [
+      { id: "p2a", correcta: true, texto: "El efecto de lo que la empresa ganó o perdió en el año.", feedback: "✅ Correcto. El otro informe muestra cómo quedó la empresa, y no puede quedar igual después de un año en que ganó o perdió." },
+      { id: "p2b", correcta: false, texto: "La lista de las cosas que compró en el año.", feedback: "❌ Eso lo explica otra flecha: la de lo que compró y vendió de sus cosas grandes." },
+      { id: "p2c", correcta: false, texto: "El detalle de las deudas que pidió.", feedback: "❌ Las deudas ya están en el otro informe. Su movimiento lo explican otras flechas." },
+    ],
+  },
+  {
+    id: "p3",
+    pregunta: "¿Por qué ninguna flecha sale del informe al que llegan todas?",
+    opciones: [
+      { id: "p3a", correcta: true, texto: "Porque guarda el resultado de lo que los otros explican.", feedback: "✅ Correcto. Los otros dos cuentan qué pasó durante el año. Ese guarda cómo quedó la empresa. La explicación va hacia el resultado." },
+      { id: "p3b", correcta: false, texto: "Porque se hace antes que los otros dos.", feedback: "❌ Al revés: necesita lo que los otros calculan. El que va primero es el informe del comienzo del año, que es otro." },
+      { id: "p3c", correcta: false, texto: "Porque no tiene nada que ver con los otros.", feedback: "❌ Sí tiene que ver, y mucho: las cinco flechas llegan a él. Lo que no hace es mandarles cifras a ellos." },
+    ],
+  },
+];
+
+export const ALT_T1_7 = "Tres informes con sus líneas. Cinco flechas van de las líneas de los otros dos hacia las del informe de lo que la empresa tiene y debe hoy. De ese informe no sale ninguna.";

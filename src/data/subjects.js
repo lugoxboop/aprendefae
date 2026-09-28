@@ -511,11 +511,19 @@ export const SUBJECTS = {
            * Las dos que ya se pueden jugar. Dependen solo de la pieza 1 de
            * Aprender, que existe — por eso entran al camino ahora.
            *
-           * Las otras cuatro del Tema 1 (T1-4 a T1-7) están construidas y
-           * probadas, pero NO entran aquí: necesitan las piezas 2, 3 y 4 del
-           * Aprender, que todavía no están escritas. Publicarlas antes dejaría
-           * al estudiante con actividades que preguntan por cosas que nadie le
-           * ha explicado.
+           * Las otras cuatro del Tema 1 —T1-4 «¿Qué Le Pasa a Cada Uno?», T1-5
+           * «La Ecuación en Movimiento», T1-6 «¿En Cuál Estado Aparece?» y T1-7
+           * «La Articulación»— SÍ están construidas y probadas, y NO entran
+           * aquí: necesitan las piezas 2, 3 y 4 del Aprender, que todavía no
+           * están escritas. Publicarlas antes dejaría al estudiante con
+           * actividades que preguntan por cosas que nadie le ha explicado.
+           *
+           * Tampoco están en el registro de `IntroContabilidadView`, que es la
+           * otra puerta: lo que está ahí se abre escribiendo el hash aunque no
+           * salga en el camino. Cada una tiene una prueba que vigila las dos
+           * listas.
+           *
+           * La T1-3 no existe: está retenida por revisión del profesor.
            */
           { id: "t1-desde-donde-preguntan", nombre: "¿Desde Dónde Preguntan?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "t1-que-entro-y-que-salio", nombre: "¿Qué Entró y Qué Salió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },

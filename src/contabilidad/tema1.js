@@ -6,6 +6,7 @@ import {
   ERROR_A_T1_4, ERROR_B_T1_4, ACIERTO_T1_4,
   T1_5, ERROR_T1_5, DESDE_EL_CORTO,
   T1_6, CONCEPTOS, PRIMERO, SEGUNDO, ERROR_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
+  LINEAS, FLECHAS, ERROR_T1_7, ACIERTO_T1_7,
 } from "../data/contabilidadTema1.js";
 import { ACTIVO, PASIVO, PATRIMONIO, tipoDeCuenta, pesos } from "../data/contabilidad.js";
 
@@ -378,6 +379,69 @@ export function valorDeItem(concepto, r) {
 export function puntuarT1_6(respuestas, cuantas) {
   if (!cuantas) return 0;
   return (respuestas.reduce((s, x) => s + x.valor, 0) / cuantas) * 100;
+}
+
+/* ═══════════════════ T1-7 · LA ARTICULACIÓN ═══════════════════ */
+
+export const lineaPorId = (id) => LINEAS.find((l) => l.id === id) ?? null;
+export const lineasDe = (informe) => LINEAS.filter((l) => l.informe === informe);
+
+/* El informe al que llegan todas y del que no sale ninguna, deducido. */
+export const informeQueRecibe = () => {
+  const llegan = new Set(FLECHAS.map((f) => lineaPorId(f.hasta).informe));
+  const salen = new Set(FLECHAS.map((f) => lineaPorId(f.desde).informe));
+  const soloRecibe = [...llegan].filter((i) => !salen.has(i));
+  if (soloRecibe.length !== 1) {
+    throw new Error(`hay ${soloRecibe.length} informes que solo reciben, y tiene que haber uno`);
+  }
+  return soloRecibe[0];
+};
+
+export const flechaEntre = (desde, hasta) => FLECHAS.find((f) => f.desde === desde && f.hasta === hasta) ?? null;
+
+/*
+ * La devolución de una flecha, en su propia función y no en línea dentro de
+ * `evaluarT1_7`. Así se puede pedir la de una flecha que no existe y comprobar
+ * que se cae en vez de servir un genérico — dentro de `evaluarT1_7` no se
+ * podía, porque la flecha la resuelve él mismo y nunca llega una inventada.
+ * Sobrevivió un mutante por eso.
+ */
+export function aciertoDeFlecha(id) {
+  const texto = ACIERTO_T1_7[id];
+  if (!texto) throw new Error(`«${id}» no tiene devolución de acierto`);
+  return texto;
+}
+
+/*
+ * ═══════════ LA PRIORIDAD ES C > B > A ═══════════
+ *
+ * C · unió los dos informes que no se hablan entre ellos. Es el error de
+ *     concepto: no ha visto que todo converge en el tercero.
+ * B · la pareja es buena y la dibujó al revés. Ya vio la relación; le falta el
+ *     sentido.
+ * A · esas dos no se pasan nada. Es el más común y el que menos dice, y por
+ *     eso va el último: si el estudiante cometió el error de concepto, decirle
+ *     «esas dos no se pasan nada» es verdad y no le sirve de nada.
+ */
+export function evaluarT1_7(desdeId, hastaId) {
+  const desde = lineaPorId(desdeId);
+  const hasta = lineaPorId(hastaId);
+  if (!desde || !hasta) throw new Error("una de las dos líneas no existe");
+
+  const buena = flechaEntre(desdeId, hastaId);
+  if (buena) return { ok: true, flecha: buena, texto: aciertoDeFlecha(buena.id), patron: null };
+
+  const receptor = informeQueRecibe();
+  /* C · ninguna de las dos está en el informe que recibe. */
+  if (desde.informe !== receptor && hasta.informe !== receptor) {
+    return { ok: false, flecha: null, texto: ERROR_T1_7.C, patron: "C" };
+  }
+  /* B · la misma pareja existe, pero al revés. */
+  const alReves = flechaEntre(hastaId, desdeId);
+  if (alReves) {
+    return { ok: false, flecha: null, texto: ERROR_T1_7.B, patron: "B", deberiaSer: alReves };
+  }
+  return { ok: false, flecha: null, texto: ERROR_T1_7.A, patron: "A" };
 }
 
 /* ═══════════════════ PUNTAJE, IGUAL EN LAS DOS ═══════════════════ */
