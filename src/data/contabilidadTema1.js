@@ -416,3 +416,113 @@ export const HISTORIAL_T1_5 = {
 export const ACIERTO_T1_5_FINAL = "✅ Y ahí está el mes completo. Lo que tiene la empresa y lo que debe más lo de los dueños dan lo mismo, hecho por hecho, desde cero.";
 
 export const ALT_T1_5 = "Tres casillas para escribir: lo que tiene, lo que debe y lo que es de los dueños. Debajo, la comprobación de que los dos lados dan igual, y el historial de los hechos ya anotados.";
+
+/* ═══════════════════ T1-6 · ¿EN CUÁL ESTADO APARECE? ═══════════════════ */
+
+export const T1_6 = {
+  id: "t1-en-cual-estado-aparece",
+  nombre: "¿En Cuál Estado Aparece?",
+  subtema: "Qué va en cada estado financiero",
+  dificultad: "dificil",
+  fpBase: 50,
+  porPartida: 10,
+  objetivo: "Decide en cuál de los dos informes va cada cosa.",
+  consigna: "Toca la ficha. Luego toca el informe donde va. Si es el primero, toca también en qué parte.",
+};
+
+export const PRIMERO = "primero";
+export const SEGUNDO = "segundo";
+
+/*
+ * ═══════════ LOS DOS INFORMES ═══════════
+ *
+ * La idea simple es la línea principal; la franja de tiempo, la segunda línea
+ * atenuada; y el término del libro va de rótulo en el encabezado del informe,
+ * dentro de la pestaña. Las tres cosas se ven siempre: ninguna se abrevia.
+ *
+ * ⚠️ El segundo informe se llama «Lo que vendió y lo que gastó durante el
+ * año», aquí y en cualquier otra actividad. El nombre anterior —el que hablaba
+ * de lo que la empresa «ganó»— está retirado del sitio entero, y hay una
+ * prueba que barre `src/` buscándolo. Por eso no se escribe ni en un
+ * comentario: la prueba no distingue, y hacerla distinguir la dejaría
+ * pasando por alto justo los sitios donde importa.
+ */
+export const INFORMES = [
+  {
+    id: PRIMERO,
+    idea: "Lo que la empresa tiene y debe hoy",
+    cuando: "a 31 dic",
+    termino: "Estado de situación financiera",
+  },
+  {
+    id: SEGUNDO,
+    idea: "Lo que vendió y lo que gastó durante el año",
+    cuando: "1 ene – 31 dic",
+    termino: "Estado de resultados",
+  },
+];
+
+/* Las tres secciones del primero. El segundo no se subdivide en esta actividad. */
+export const SECCIONES_T1_6 = PARTES;
+
+export const CONCEPTOS = [
+  { id: "c6-01", nombre: "Patentes", informe: PRIMERO, seccion: ACTIVO },
+  { id: "c6-02", nombre: "Ingresos operacionales", informe: SEGUNDO, seccion: null },
+  { id: "c6-03", nombre: "Cuentas por pagar – Proveedores", informe: PRIMERO, seccion: PASIVO },
+  { id: "c6-04", nombre: "Reservas", informe: PRIMERO, seccion: PATRIMONIO },
+  { id: "c6-05", nombre: "Caja o Bancos", informe: PRIMERO, seccion: ACTIVO },
+  { id: "c6-06", nombre: "Gastos de administración y ventas", informe: SEGUNDO, seccion: null },
+  { id: "c6-07", nombre: "Cuentas por cobrar – Clientes", informe: PRIMERO, seccion: ACTIVO },
+  { id: "c6-08", nombre: "Maquinaria y equipos", informe: PRIMERO, seccion: ACTIVO },
+  { id: "c6-09", nombre: "Ingresos no operacionales", informe: SEGUNDO, seccion: null },
+  { id: "c6-10", nombre: "Inversiones a corto plazo", informe: PRIMERO, seccion: ACTIVO },
+  { id: "c6-11", nombre: "Documentos por pagar a corto plazo", informe: PRIMERO, seccion: PASIVO },
+  { id: "c6-12", nombre: "Obligaciones financieras a corto plazo", informe: PRIMERO, seccion: PASIVO },
+  { id: "c6-13", nombre: "Inversiones a largo plazo", informe: PRIMERO, seccion: ACTIVO },
+  { id: "c6-14", nombre: "Provisión para garantías", informe: PRIMERO, seccion: PASIVO },
+  { id: "c6-15", nombre: "Impuesto de renta por pagar", informe: PRIMERO, seccion: PASIVO },
+  { id: "c6-16", nombre: "Prestaciones sociales por pagar", informe: PRIMERO, seccion: PASIVO },
+];
+
+export const ERROR_T1_6 = {
+  /* A · va en el segundo y lo puso en el primero. */
+  A: "❌ Eso no es algo que la empresa tenga hoy. Es algo que pasó durante el año. Un informe es una foto de un día. El otro cuenta todo el año.",
+  /* B · va en el primero y lo puso en el segundo. */
+  B: "❌ Eso la empresa lo tiene o lo debe, y mañana lo sigue teniendo. El otro informe solo cuenta lo que pasó dentro del año.",
+  /* C · el informe está bien y la sección no. */
+  C: "❌ El informe es el correcto, eso ya lo tienes. Ahora pregúntate: ¿la empresa lo tiene, lo debe, o es de los dueños?",
+};
+
+export const ACIERTO_T1_6 = {
+  "c6-01": "✅ Va en el primer informe, en lo que tiene. Una patente no se toca, pero es de la empresa y vale.",
+  "c6-02": "✅ Va en el segundo informe. No es algo que la empresa tenga: es lo que vendió durante el año.",
+  "c6-03": "✅ Va en el primer informe, en lo que debe. Es plata que le queda debiendo a un proveedor.",
+  "c6-04": "✅ Va en el primer informe, en lo de los dueños. Es una parte de las ganancias que no se repartió.",
+  "c6-05": "✅ Va en el primer informe, en lo que tiene. Es la plata que tiene disponible.",
+  "c6-06": "✅ Va en el segundo informe. Es lo que la empresa gastó durante el año.",
+  "c6-07": "✅ Va en el primer informe, en lo que tiene. Es plata que los clientes le quedaron debiendo.",
+  "c6-08": "✅ Va en el primer informe, en lo que tiene. Son cosas de la empresa que duran años.",
+  "c6-09": "✅ Va en el segundo informe. Es lo que obtuvo en el año por algo que no es su negocio de siempre.",
+  "c6-10": "✅ Va en el primer informe, en lo que tiene. Es plata que la empresa puso a producir en otra parte y puede recuperar pronto.",
+  "c6-11": "✅ Va en el primer informe, en lo que debe. Es una deuda con un papel firmado.",
+  "c6-12": "✅ Va en el primer informe, en lo que debe. Es lo que le debe a un banco este año.",
+  "c6-13": "✅ Va en el primer informe, en lo que tiene. Es plata que la empresa puso a producir en otra parte y va a tardar en volver.",
+  "c6-14": "✅ Va en el primer informe, en lo que debe. Es lo que la empresa calcula que va a tener que pagar por arreglos de lo que vendió.",
+  "c6-15": "✅ Va en el primer informe, en lo que debe. Es lo que le debe al Estado y todavía no le ha pagado.",
+  "c6-16": "✅ Va en el primer informe, en lo que debe. Es lo que les debe a sus empleados y todavía no les ha pagado.",
+};
+
+/*
+ * ═══════════ EL PUNTAJE: 60 % EL INFORME, 40 % LA SECCIÓN ═══════════
+ *
+ * ── [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN: la parte del segundo] ──
+ *
+ * El reparto 60/40 viene del encargo. Lo que no dice es qué pasa con las tres
+ * fichas del segundo informe, que no tienen sección que acertar. Las cuento
+ * completas al acertar el informe: no hay nada más que preguntarles, y
+ * dejarlas en 60 % penalizaría por una pregunta que no se les hizo.
+ */
+export const PESO_INFORME = 0.6;
+export const PESO_SECCION = 0.4;
+
+export const ALT_T1_6 = "Una ficha con un concepto y dos pestañas: el informe de lo que la empresa tiene y debe hoy, y el de lo que vendió y gastó durante el año. Dentro del primero, tres secciones.";

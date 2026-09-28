@@ -5,6 +5,7 @@ import {
   TRANSACCIONES_CAP2, T1_4, PARTES, SUBE, BAJA, IGUAL,
   ERROR_A_T1_4, ERROR_B_T1_4, ACIERTO_T1_4,
   T1_5, ERROR_T1_5, DESDE_EL_CORTO,
+  T1_6, CONCEPTOS, PRIMERO, SEGUNDO, ERROR_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
 } from "../data/contabilidadTema1.js";
 import { ACTIVO, PASIVO, PATRIMONIO, tipoDeCuenta, pesos } from "../data/contabilidad.js";
 
@@ -308,6 +309,75 @@ export function evaluarT1_5(indice, escrito) {
     ok, patron: "B", real, texto: ERROR_T1_5.B,
     resaltar: partes.filter((p) => escrito[p] !== real[p]),
   };
+}
+
+/* ═══════════════════ T1-6 · ¿EN CUÁL ESTADO APARECE? ═══════════════════ */
+
+/*
+ * ═══════════ LOS CUATRO GRUPOS DEL SORTEO ═══════════
+ *
+ * Diez de dieciséis, y los cuatro destinos posibles tienen que salir: las tres
+ * secciones del primer informe y el segundo entero. Sin estratificar, la
+ * única ficha de patrimonio —Reservas— se queda fuera cuatro de cada diez
+ * tandas y la explicación C sobre los dueños no la lee nadie.
+ *
+ * Es la misma razón que en T1-2 y T1-4: que cada camino de devolución sea
+ * alcanzable. No cambia qué se pregunta, solo garantiza que se pregunte.
+ */
+export const destinoDe = (c) => (c.informe === PRIMERO ? `${PRIMERO}-${c.seccion}` : SEGUNDO);
+export const DESTINOS_T1_6 = [...new Set(CONCEPTOS.map(destinoDe))];
+
+export function sortearT1_6(barajar, cuantos = T1_6.porPartida) {
+  const porDestino = DESTINOS_T1_6.map((d) => CONCEPTOS.filter((c) => destinoDe(c) === d));
+  for (const [i, lista] of porDestino.entries()) {
+    if (lista.length === 0) throw new Error(`no hay ninguna ficha para «${DESTINOS_T1_6[i]}»`);
+  }
+  const elegidas = porDestino.map((lista) => barajar(lista)[0]);
+  const resto = CONCEPTOS.filter((c) => !elegidas.includes(c));
+  return barajar([...elegidas, ...barajar(resto).slice(0, cuantos - elegidas.length)]);
+}
+
+/**
+ * `marcado` es { informe, seccion }. La sección va a null cuando se marcó el
+ * segundo informe, que no se subdivide.
+ */
+export function evaluarT1_6(concepto, marcado) {
+  const informeOk = marcado.informe === concepto.informe;
+  const pideSeccion = concepto.informe === PRIMERO;
+  const seccionOk = pideSeccion ? marcado.seccion === concepto.seccion : true;
+  const ok = informeOk && seccionOk;
+
+  if (ok) {
+    const texto = ACIERTO_T1_6[concepto.id];
+    if (!texto) throw new Error(`«${concepto.id}» no tiene devolución de acierto`);
+    return { ok, texto, patron: null, informeOk, seccionOk };
+  }
+  if (!informeOk) {
+    /*
+     * A y B no son la misma equivocación al revés: A dice «eso pasó durante el
+     * año» y B dice «eso lo sigue teniendo mañana». Cuál toca depende de dónde
+     * iba DE VERDAD, no de dónde lo puso.
+     */
+    const patron = concepto.informe === SEGUNDO ? "A" : "B";
+    return { ok, texto: ERROR_T1_6[patron], patron, informeOk, seccionOk: false };
+  }
+  return { ok, texto: ERROR_T1_6.C, patron: "C", informeOk, seccionOk: false };
+}
+
+/*
+ * El informe pesa 60 y la sección 40. Las fichas del segundo informe no tienen
+ * sección que acertar, así que valen entero al acertar el informe: dejarlas en
+ * 60 sería descontarles una pregunta que no se les hizo.
+ */
+export function valorDeItem(concepto, r) {
+  if (!r.informeOk) return 0;
+  if (concepto.informe === SEGUNDO) return 1;
+  return PESO_INFORME + (r.seccionOk ? PESO_SECCION : 0);
+}
+
+export function puntuarT1_6(respuestas, cuantas) {
+  if (!cuantas) return 0;
+  return (respuestas.reduce((s, x) => s + x.valor, 0) / cuantas) * 100;
 }
 
 /* ═══════════════════ PUNTAJE, IGUAL EN LAS DOS ═══════════════════ */
