@@ -367,12 +367,25 @@ test("★★ el coral solo sale cuando algo está mal", () => {
 
 /* ═══════════════════ EL CATÁLOGO ═══════════════════ */
 
-test("★★★ T1-5 NO está publicada, ni por el catálogo ni por el registro de la vista", async () => {
+/*
+ * Las dos puertas —el catálogo, que dibuja el camino, y el registro de la
+ * vista, que dice qué componente pinta cada id— tienen que decir lo mismo. Lo
+ * que solo está en el registro se abre por el hash y registra FP de una
+ * clasificación que no existe; lo que solo está en el catálogo sale en el
+ * camino y no abre nada.
+ *
+ * Esta prueba vigilaba que T1-5 estuviera fuera de las dos mientras faltaban
+ * las piezas del Aprender. Ahora vigila que esté en las dos.
+ */
+test("★★★ T1-5 está en las dos puertas, con la misma clasificación", async () => {
   const { SUBJECTS } = await import("../../data/subjects.js");
   const { JUEGOS } = await import("../../components/IntroContabilidadView.jsx");
   const tema = SUBJECTS.contabilidad.topics.find((x) => x.id === "introduccion-contabilidad");
-  assert.ok(!tema.actividades.some((a) => a.id === T1_5.id), "T1-5 entró al catálogo");
-  assert.ok(!JUEGOS.some((j) => j.id === T1_5.id), "T1-5 se abre escribiendo el hash");
+  const enCatalogo = tema.actividades.find((a) => a.id === T1_5.id);
+  assert.ok(enCatalogo, "T1-5 no está en el catálogo");
+  assert.equal(enCatalogo.clasificacion.dificultad, T1_5.dificultad);
+  assert.equal(enCatalogo.clasificacion.fpBase, T1_5.fpBase);
+  assert.ok(JUEGOS.some((j) => j.id === T1_5.id), "T1-5 sale en el camino y no la abre nadie");
 });
 
 test("difícil, 50 FP y los ocho hechos", () => {

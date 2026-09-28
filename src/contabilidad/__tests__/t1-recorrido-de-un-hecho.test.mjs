@@ -55,8 +55,11 @@ const {
 const CuatroCapas = (await import("../../components/mecanicas/maquinas/CuatroCapas.jsx")).default;
 const {
   ESTACIONES, USUARIOS, OPCIONES, TEXTOS, CIERRE, ALTERNATIVOS, NOMBRES,
-  SIN_DATO, NEUTRO, PIEZAS_INTRO, ID, SIEMBRA_DE_LOS_VERBOS,
+  SIN_DATO, NEUTRO, ID, SIEMBRA_DE_LOS_VERBOS,
 } = await import("../../data/contabilidadIntro.js");
+/* La lista de las cuatro piezas vive en el archivo del Aprender, no aquí:
+   armarla en `contabilidadIntro.js` cerraría un ciclo de imports. */
+const { PIEZAS_INTRO } = await import("../../data/contabilidadPiezas234.js");
 const { CALEJA } = await import("../../data/contabilidad.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 

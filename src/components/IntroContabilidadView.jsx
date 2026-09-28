@@ -14,9 +14,13 @@ import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
 import { FAE as TEMA1_ACENTO } from "../theme.js";
 import DesdeDondePreguntan from "./mecanicas/libros/tema1/DesdeDondePreguntan.jsx";
 import QueEntroYQueSalio from "./mecanicas/libros/tema1/QueEntroYQueSalio.jsx";
-import { T1_1, T1_2 } from "../data/contabilidadTema1.js";
+import QueLePasaACadaUno from "./mecanicas/libros/tema1/QueLePasaACadaUno.jsx";
+import LaEcuacionEnMovimiento from "./mecanicas/libros/tema1/LaEcuacionEnMovimiento.jsx";
+import EnCualEstadoAparece from "./mecanicas/libros/tema1/EnCualEstadoAparece.jsx";
+import LaArticulacion from "./mecanicas/libros/tema1/LaArticulacion.jsx";
+import { T1_1, T1_2, T1_4, T1_5, T1_6, T1_7 } from "../data/contabilidadTema1.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
-import { PIEZAS_INTRO } from "../data/contabilidadIntro.js";
+import { PIEZAS_INTRO } from "../data/contabilidadPiezas234.js";
 import { ESCENAS_INTRO } from "./mecanicas/libros/intro/escenasIntro.jsx";
 
 /*
@@ -54,11 +58,20 @@ export const TITULO = "Introducción a la contabilidad";
  * llamaría a registrar FP de una actividad que el catálogo no conoce.
  *
  * Hay una prueba que compara esta lista con el catálogo. Se exporta para eso.
+ *
+ * Las seis están abiertas desde que existen las piezas 2, 3 y 4 del Aprender.
+ * Hasta entonces las cuatro últimas estaban construidas y fuera de las dos
+ * puertas, porque preguntaban por cosas que nadie le había explicado todavía
+ * al estudiante.
  */
 const ROTULO = "CIMIENTOS";
 export const JUEGOS = [
   { id: T1_1.id, Mecanica: DesdeDondePreguntan, titulo: T1_1.subtema },
   { id: T1_2.id, Mecanica: QueEntroYQueSalio, titulo: T1_2.subtema },
+  { id: T1_4.id, Mecanica: QueLePasaACadaUno, titulo: T1_4.subtema },
+  { id: T1_5.id, Mecanica: LaEcuacionEnMovimiento, titulo: T1_5.subtema },
+  { id: T1_6.id, Mecanica: EnCualEstadoAparece, titulo: T1_6.subtema },
+  { id: T1_7.id, Mecanica: LaArticulacion, titulo: T1_7.subtema },
 ];
 
 export default function IntroContabilidadView({ modo = null, nodoInicial = null, onBack }) {

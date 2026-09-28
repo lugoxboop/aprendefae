@@ -54,6 +54,7 @@ const {
   ERROR_A_T1_4, ERROR_B_T1_4, ACIERTO_T1_4,
 } = await import("../../data/contabilidadTema1.js");
 const { CALEJA, ACTIVO, PASIVO, PATRIMONIO } = await import("../../data/contabilidad.js");
+const { APRENDER } = await import("../../data/subjects.js");
 const { barajar } = await import("../../utils/barajar.js");
 const { FAE } = await import("../../theme.js");
 
@@ -439,36 +440,34 @@ test("★★ el coral solo aparece cuando hay error", () => {
 
 /* ═══════════════════ EL CATÁLOGO ═══════════════════ */
 
-test("★★★ T1-4 NO está publicada: no entra al camino del estudiante", async () => {
-  const { SUBJECTS } = await import("../../data/subjects.js");
-  const tema = SUBJECTS.contabilidad.topics.find((x) => x.id === "introduccion-contabilidad");
-  const ids = tema.actividades.map((a) => a.id);
-  assert.ok(!ids.includes(T1_4.id),
-    "T1-4 entró al catálogo y las piezas 2, 3 y 4 del Aprender todavía no existen");
-});
-
 /*
- * ═══════════ NI POR LA PUERTA DE ATRÁS ═══════════
+ * ═══════════ LAS DOS PUERTAS TIENEN QUE DECIR LO MISMO ═══════════
  *
- * No basta con dejarla fuera del catálogo. La vista del tema tiene su propio
- * registro de «qué componente pinta qué id», y lo que esté ahí se puede abrir
- * escribiendo el hash aunque no aparezca en el camino. Una actividad que se
- * cuele por ahí termina llamando a registrar FP con una clasificación que el
- * catálogo no tiene.
+ * Una actividad se abre por dos sitios: el catálogo, que dibuja el camino, y
+ * el registro de la vista, que dice qué componente pinta cada id. Lo que está
+ * en el registro y no en el catálogo se puede abrir escribiendo el hash, y al
+ * terminarla llama a registrar FP con una clasificación que no existe. Lo que
+ * está en el catálogo y no en el registro sale en el camino y no abre nada.
  *
- * Esta prueba existe además por un motivo práctico: para mirar una actividad
- * sin publicar en el navegador hay que añadirla al registro un rato, y esto es
- * lo que impide que se quede ahí de recuerdo.
+ * Esta prueba vigiló durante cuatro commits que T1-4 estuviera fuera de las
+ * dos; ahora vigila que esté en las dos. La regla no cambió: las dos listas
+ * dicen lo mismo.
  */
-test("★★★ el registro de la vista no abre ninguna actividad que el catálogo no tenga", async () => {
+test("★★★ T1-4 está en el catálogo y en el registro de la vista, con la misma clasificación", async () => {
   const { SUBJECTS } = await import("../../data/subjects.js");
   const { JUEGOS } = await import("../../components/IntroContabilidadView.jsx");
   const tema = SUBJECTS.contabilidad.topics.find((x) => x.id === "introduccion-contabilidad");
-  const publicadas = new Set(tema.actividades.map((a) => a.id));
-  for (const j of JUEGOS) {
-    assert.ok(publicadas.has(j.id),
-      `«${j.id}» se puede abrir por el hash y no está en el catálogo`);
-  }
+
+  const enCatalogo = tema.actividades.find((a) => a.id === T1_4.id);
+  assert.ok(enCatalogo, "T1-4 no está en el catálogo");
+  assert.equal(enCatalogo.clasificacion.dificultad, T1_4.dificultad, "la dificultad del catálogo no es la del banco");
+  assert.equal(enCatalogo.clasificacion.fpBase, T1_4.fpBase, "los FP del catálogo no son los del banco");
+  assert.ok(JUEGOS.some((j) => j.id === T1_4.id), "T1-4 sale en el camino y no la abre nadie");
+
+  /* Y en general: ninguna de las dos listas tiene nada que la otra no tenga. */
+  const deHacer = tema.actividades.filter((a) => a.clasificacion.tipo !== APRENDER).map((a) => a.id);
+  assert.deepEqual([...JUEGOS.map((j) => j.id)].sort(), [...deHacer].sort(),
+    "el catálogo y el registro de la vista dejaron de decir lo mismo");
 });
 
 test("dificultad media y 25 FP, seis hechos por partida", () => {

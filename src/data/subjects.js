@@ -506,27 +506,31 @@ export const SUBJECTS = {
         title: "Introducción a la contabilidad",
         actividades: [
           { id: "cu0-a1-recorrido-de-un-hecho", nombre: "El recorrido de un hecho", clasificacion: { tipo: APRENDER } },
+          { id: "cu0-a2-la-ecuacion-contable", nombre: "La ecuación contable", clasificacion: { tipo: APRENDER } },
+          { id: "cu0-a3-la-foto-y-la-pelicula", nombre: "La foto y la película", clasificacion: { tipo: APRENDER } },
+          { id: "cu0-a4-como-se-articulan", nombre: "Cómo se articulan", clasificacion: { tipo: APRENDER } },
 
           /*
            * Las dos que ya se pueden jugar. Dependen solo de la pieza 1 de
            * Aprender, que existe — por eso entran al camino ahora.
            *
-           * Las otras cuatro del Tema 1 —T1-4 «¿Qué Le Pasa a Cada Uno?», T1-5
-           * «La Ecuación en Movimiento», T1-6 «¿En Cuál Estado Aparece?» y T1-7
-           * «La Articulación»— SÍ están construidas y probadas, y NO entran
-           * aquí: necesitan las piezas 2, 3 y 4 del Aprender, que todavía no
-           * están escritas. Publicarlas antes dejaría al estudiante con
-           * actividades que preguntan por cosas que nadie le ha explicado.
+           * Las otras cuatro —T1-4 «¿Qué Le Pasa a Cada Uno?», T1-5 «La
+           * Ecuación en Movimiento», T1-6 «¿En Cuál Estado Aparece?» y T1-7
+           * «La Articulación»— estuvieron construidas y fuera de las dos
+           * puertas —el catálogo y el registro de la vista— mientras faltaban
+           * las piezas 2, 3 y 4 del Aprender: preguntaban por cosas que nadie
+           * le había explicado al estudiante. Las piezas ya están, así que las
+           * cuatro entran.
            *
-           * Tampoco están en el registro de `IntroContabilidadView`, que es la
-           * otra puerta: lo que está ahí se abre escribiendo el hash aunque no
-           * salga en el camino. Cada una tiene una prueba que vigila las dos
-           * listas.
-           *
-           * La T1-3 no existe: está retenida por revisión del profesor.
+           * La T1-3 no existe: está retenida por revisión del profesor. Por
+           * eso el tema suma 235 FP y no 260.
            */
           { id: "t1-desde-donde-preguntan", nombre: "¿Desde Dónde Preguntan?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "t1-que-entro-y-que-salio", nombre: "¿Qué Entró y Qué Salió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "t1-que-le-pasa-a-cada-uno", nombre: "¿Qué Le Pasa a Cada Uno?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "t1-la-ecuacion-en-movimiento", nombre: "La Ecuación en Movimiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "t1-en-cual-estado-aparece", nombre: "¿En Cuál Estado Aparece?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "t1-la-articulacion", nombre: "La Articulación", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],
       },
       {

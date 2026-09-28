@@ -460,9 +460,35 @@ export function puntuar(respuestas, cuantas) {
 
 export const pesoDeCadaItem = (cuantas) => (cuantas ? 100 / cuantas : 0);
 
-/* Para el panel docente. */
+/*
+ * ═══════════════════ PARA EL PANEL DOCENTE ═══════════════════
+ *
+ * Qué pregunta le tocó a cada ítem, dicho en palabras. Sin esto el profesor ve
+ * el id crudo —«cal-4», «c6-11»— y no puede leer en qué se equivocó su curso,
+ * que es para lo único que sirve el panel. Hay una prueba que exige una regla
+ * por cada actividad publicada, y es la que avisó cuando estas cuatro salieron
+ * del cajón.
+ */
 export const preguntaDeUsuario = (id) => USUARIOS_T1_1.find((u) => u.id === id)?.pregunta ?? null;
 export const empresaDeItem = (id) => {
   const e = EMPRESAS.find((x) => x.id === id);
   return e ? `${e.empresa}: ${e.entra} → ${e.sale}` : null;
+};
+
+/* T1-4 y T1-5 comparten banco: el ítem es la transacción, y se lee tal cual. */
+export const hechoDeItem = (id) => TRANSACCIONES_CAP2.find((t) => t.id === id)?.texto ?? null;
+
+/* T1-6: la ficha que había que colocar. */
+export const conceptoDeItem = (id) => CONCEPTOS.find((c) => c.id === id)?.nombre ?? null;
+
+/*
+ * T1-7: el ítem es la pareja que dibujó, «desde>hasta», así que la etiqueta
+ * tiene que nombrar las DOS líneas. Con una sola, dos errores distintos —unir
+ * A con B y unir A con C— se leerían igual en el panel.
+ */
+export const flechaDeItem = (id) => {
+  const [desde, hasta] = String(id).split(">");
+  const a = lineaPorId(desde);
+  const b = lineaPorId(hasta);
+  return a && b ? `${a.nombre} → ${b.nombre}` : null;
 };

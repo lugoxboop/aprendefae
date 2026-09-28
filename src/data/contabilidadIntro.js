@@ -276,4 +276,11 @@ export const PIEZA_RECORRIDO = {
   nombres: [...NOMBRES, { termino: ROTULO_SIEMBRA, definicion: SIEMBRA_DE_LOS_VERBOS }],
 };
 
-export const PIEZAS_INTRO = [PIEZA_RECORRIDO];
+/*
+ * ═══════════ LA LISTA DE LAS CUATRO PIEZAS NO VIVE AQUÍ ═══════════
+ *
+ * Está en `contabilidadPiezas234.js`, que es quien conoce a las cuatro. Armarla
+ * aquí obligaría a este archivo a importar aquel, y aquel ya importa —a través
+ * de `contabilidadTema1.js`— los usuarios de ESTE. El ciclo no da error al
+ * cargar: da `USUARIOS` sin definir a mitad de la evaluación, que es peor.
+ */
