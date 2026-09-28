@@ -4,8 +4,9 @@ import {
   CLAVE_MARCO_SERVICIOS, CLAVE_ERA_SERVICIOS, SIN_INSUMO, T1_1, T1_2,
   TRANSACCIONES_CAP2, T1_4, PARTES, SUBE, BAJA, IGUAL,
   ERROR_A_T1_4, ERROR_B_T1_4, ACIERTO_T1_4,
+  T1_5, ERROR_T1_5, DESDE_EL_CORTO,
 } from "../data/contabilidadTema1.js";
-import { ACTIVO, PASIVO, PATRIMONIO, tipoDeCuenta } from "../data/contabilidad.js";
+import { ACTIVO, PASIVO, PATRIMONIO, tipoDeCuenta, pesos } from "../data/contabilidad.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -236,6 +237,77 @@ export function evaluarT1_4(transaccion, marcado) {
    */
   const caso = casoDe(transaccion);
   return { ok, texto: ERROR_A_T1_4[caso], patron: "A", caso, real, resaltar: seMueven };
+}
+
+/* ═══════════════════ T1-5 · LA ECUACIÓN EN MOVIMIENTO ═══════════════════ */
+
+export const EN_CERO = { [ACTIVO]: 0, [PASIVO]: 0, [PATRIMONIO]: 0 };
+
+/**
+ * Los tres totales después de las primeras `cuantas` transacciones. Se suman
+ * los efectos; no hay ninguna tabla de totales que pudiera discrepar.
+ */
+export function totalesTras(cuantas) {
+  const acum = { ...EN_CERO };
+  for (const t of TRANSACCIONES_CAP2.slice(0, cuantas)) {
+    const e = efectoDe(t);
+    for (const p of Object.keys(acum)) acum[p] += e.valores[p];
+  }
+  return acum;
+}
+
+/** Qué parte NO se mueve con este hecho: la que vale lo mismo que antes. */
+export function parteQuieta(indice) {
+  const antes = totalesTras(indice);
+  const ahora = totalesTras(indice + 1);
+  const quietas = Object.keys(antes).filter((p) => antes[p] === ahora[p]);
+  if (quietas.length !== 1) {
+    throw new Error(`el hecho ${indice + 1} deja ${quietas.length} partes quietas, no una`);
+  }
+  return quietas[0];
+}
+
+/* Desde el quinto hecho solo se piden las dos que cambian. */
+export const enModoCorto = (indice) => indice + 1 >= DESDE_EL_CORTO;
+
+/*
+ * ═══════════ LA PRIORIDAD ES A > C > B ═══════════
+ *
+ * A · los dos lados no dan igual. Es el error grande: se ha roto la ecuación,
+ *     y mientras eso pase no tiene sentido discutir de cuánto era cada cifra.
+ * C · una parte que no se movía, movida. Rompe el rastro de lo de atrás.
+ * B · los dos lados dan igual pero las cifras no son las de este hecho. Es el
+ *     más fino de los tres, y por eso va el último: decirlo antes que la A
+ *     sería corregir el detalle con la ecuación descuadrada.
+ */
+export function evaluarT1_5(indice, escrito) {
+  const real = totalesTras(indice + 1);
+  const antes = totalesTras(indice);
+  const partes = [ACTIVO, PASIVO, PATRIMONIO];
+  const ok = partes.every((p) => escrito[p] === real[p]);
+  if (ok) return { ok, patron: null, texto: null, real, resaltar: [] };
+
+  /* A · la ecuación no cuadra. Lo que falta se calcula, no se estima. */
+  const hueco = escrito[ACTIVO] - (escrito[PASIVO] + escrito[PATRIMONIO]);
+  if (hueco !== 0) {
+    return {
+      ok, patron: "A", real, hueco: Math.abs(hueco),
+      texto: ERROR_T1_5.A.replace("{Z}", pesos(Math.abs(hueco))),
+      resaltar: partes,
+    };
+  }
+
+  /* C · la parte que no se movía, movida. */
+  const quieta = parteQuieta(indice);
+  if (escrito[quieta] !== antes[quieta]) {
+    return { ok, patron: "C", real, texto: ERROR_T1_5.C, resaltar: [quieta] };
+  }
+
+  /* B · cuadra, respeta la quieta, y aun así no son las cifras de este hecho. */
+  return {
+    ok, patron: "B", real, texto: ERROR_T1_5.B,
+    resaltar: partes.filter((p) => escrito[p] !== real[p]),
+  };
 }
 
 /* ═══════════════════ PUNTAJE, IGUAL EN LAS DOS ═══════════════════ */

@@ -355,3 +355,64 @@ export const ACIERTO_T1_4 = {
 };
 
 export const ALT_T1_4 = "Tres barras: lo que tiene, lo que debe y lo que es de los dueños. Con este hecho suben dos de ellas y la tercera se queda igual.";
+
+/* ═══════════════════ T1-5 · LA ECUACIÓN EN MOVIMIENTO ═══════════════════ */
+
+export const T1_5 = {
+  id: "t1-la-ecuacion-en-movimiento",
+  nombre: "La Ecuación en Movimiento",
+  subtema: "La ecuación contable, hecho por hecho",
+  dificultad: "dificil",
+  fpBase: 50,
+  /* Las ocho, siempre, y en orden. Aquí no hay sorteo: es un recorrido. */
+  porPartida: 8,
+  objetivo: "Lleva las cuentas de la empresa desde cero hasta el final del mes, hecho por hecho.",
+  consigna: "Lee el hecho. Escribe los tres totales nuevos.",
+};
+
+/*
+ * ═══════════ DESDE EL QUINTO, EL MODO CORTO ═══════════
+ *
+ * A partir del quinto hecho solo se piden los totales que CAMBIAN; el que no
+ * se mueve se arrastra solo y se enseña arrastrado, con su rótulo.
+ *
+ * ── [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] ──
+ *
+ * El encargo anterior decía «modo corto desde la transacción 5» y no tengo el
+ * texto que lo definía. Esto es mi lectura: escribir veinticuatro cifras en un
+ * teléfono es la actividad más larga del tema con diferencia, y para el quinto
+ * hecho el estudiante ya demostró cuatro veces que sabe cuál no se mueve. Lo
+ * que se recorta es la mecanografía, no la pregunta. Si la lectura correcta
+ * era otra, esto es lo único que hay que cambiar.
+ */
+export const DESDE_EL_CORTO = 5;
+
+export const ERROR_T1_5 = {
+  A: "❌ Los dos lados no dan igual. Faltan {Z} de un lado. Vuelve al hecho: lo que entró tiene que venir de algún lado.",
+  C: "❌ Esa parte no cambia con este hecho. Tiene que quedar igual que antes. Si la mueves, se pierde el rastro de lo de atrás.",
+  B: "❌ Los dos lados dan igual, pero los números no son los de este hecho. Que dé igual no basta. Revisa cuánto entró o salió.",
+};
+
+/*
+ * ── [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] ──
+ *
+ * Los rótulos del pie de verificación y del historial. La reescritura no los
+ * trae y el repo no los tenía, porque esta actividad no existía. Ninguno
+ * afirma nada: nombran lo que ya está en pantalla.
+ */
+export const PIE_T1_5 = {
+  izquierda: "Lo que tiene",
+  derecha: "Lo que debe y lo de los dueños",
+  cuadra: "Los dos lados dan igual",
+  noCuadra: "Los dos lados no dan igual",
+  arrastrado: "se queda igual que antes",
+};
+
+export const HISTORIAL_T1_5 = {
+  titulo: "Lo que llevas",
+  vacio: "Todavía no has anotado ningún hecho.",
+};
+
+export const ACIERTO_T1_5_FINAL = "✅ Y ahí está el mes completo. Lo que tiene la empresa y lo que debe más lo de los dueños dan lo mismo, hecho por hecho, desde cero.";
+
+export const ALT_T1_5 = "Tres casillas para escribir: lo que tiene, lo que debe y lo que es de los dueños. Debajo, la comprobación de que los dos lados dan igual, y el historial de los hechos ya anotados.";
