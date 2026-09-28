@@ -44,8 +44,19 @@ export const TITULO = "Introducción a la contabilidad";
  * así que poner aquí un prefijo propio lo escribía dos veces seguidas.
  * El título de cada juego es su subtema: lo que se está practicando.
  */
+/*
+ * ═══════════ ESTA LISTA ES UNA PUERTA, NO UN ÍNDICE ═══════════
+ *
+ * Lo que está aquí se puede abrir escribiendo el hash a mano, aunque no salga
+ * en el camino: el camino lo dibuja `subjects.js` y esto es el registro de qué
+ * componente pinta cada id. Así que una actividad construida y NO publicada no
+ * puede entrar aquí — entraría por la puerta de atrás, y al terminarla
+ * llamaría a registrar FP de una actividad que el catálogo no conoce.
+ *
+ * Hay una prueba que compara esta lista con el catálogo. Se exporta para eso.
+ */
 const ROTULO = "CIMIENTOS";
-const JUEGOS = [
+export const JUEGOS = [
   { id: T1_1.id, Mecanica: DesdeDondePreguntan, titulo: T1_1.subtema },
   { id: T1_2.id, Mecanica: QueEntroYQueSalio, titulo: T1_2.subtema },
 ];

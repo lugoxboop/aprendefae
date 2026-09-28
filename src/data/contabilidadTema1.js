@@ -1,4 +1,5 @@
 import { USUARIOS } from "./contabilidadIntro.js";
+import { CALEJA, ACTIVO, PASIVO, PATRIMONIO } from "./contabilidad.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -242,3 +243,115 @@ export const ALT_T1_2 = "Una textilera. Entra: algodón. Sale: tela. El trazo en
 /* Rótulos de la interfaz. */
 export const ROTULO_ENTRA = "ENTRA";
 export const ROTULO_SALE = "SALE";
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * EL CASO DE CALEJA DEL CAPÍTULO 2 — las ocho transacciones.
+ *
+ * ═══════════ POR QUÉ HAY DOS LISTAS Y NO UNA ═══════════
+ *
+ * `CALEJA.transacciones` tiene SEIS y cierra con 415.000 de activo. El
+ * capítulo 2 tiene OCHO y cierra con 465.000. No es un conflicto: es la misma
+ * empresa en dos momentos, y el balance de A2 ya dice «tras las primeras seis
+ * transacciones» justamente por eso.
+ *
+ * Las seis de arriba las usan A2, A5, A6 y el desafío, todas calibradas a
+ * 415.000. Añadirles dos rompería las cuatro de golpe. Así que la lista de
+ * ocho se arma AQUÍ, y se arma extendiendo la de seis en vez de copiarla: eso
+ * garantiza que las seis son de verdad un prefijo de las ocho y que tocar una
+ * transacción del Tema 2 no deja las dos versiones diciendo cosas distintas.
+ *
+ * ── [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] ──
+ *
+ * El TEXTO de las dos últimas es mío. El repo no las tiene y no vienen en la
+ * reescritura. Lo que sí está comprobado es su efecto: con estas dos, y solo
+ * con estas dos, la ecuación cierra en 465.000 = 465.000, que es la cifra que
+ * el capítulo 2 pide. Hay una prueba que lo verifica. Lo que falta confirmar
+ * contra el libro es cómo están redactadas y de cuánto es cada una.
+ */
+export const TRANSACCIONES_CAP2 = [
+  ...CALEJA.transacciones,
+  {
+    id: "cal-7",
+    texto: "Reciben mercancía a crédito por valor de $60.000.",
+    asiento: { debe: [["Inventario de mercancías", 60000]], haber: [["Cuentas por pagar", 60000]] },
+  },
+  {
+    id: "cal-8",
+    texto: "Cancelan $10.000 de las obligaciones financieras con el banco.",
+    asiento: { debe: [["Obligaciones financieras", 10000]], haber: [["Caja", 10000]] },
+  },
+];
+
+/* ═══════════════════ T1-4 · ¿QUÉ LE PASA A CADA UNO? ═══════════════════ */
+
+export const T1_4 = {
+  id: "t1-que-le-pasa-a-cada-uno",
+  nombre: "¿Qué Le Pasa a Cada Uno?",
+  subtema: "El efecto de cada hecho sobre la ecuación",
+  dificultad: "medio",
+  fpBase: 25,
+  porPartida: 6,
+  objetivo: "Mira qué le pasa a las tres partes de la empresa con cada hecho.",
+  consigna: "Lee el hecho. Para cada parte, toca si sube, si baja o si queda igual.",
+};
+
+/*
+ * Las tres partes, con la idea simple delante y el término del libro al lado.
+ * Nunca el término dentro de una frase: va como rótulo, y las dos se ven.
+ */
+export const PARTES = [
+  { id: ACTIVO, idea: "Lo que tiene", termino: "Activo" },
+  { id: PASIVO, idea: "Lo que debe", termino: "Pasivo" },
+  { id: PATRIMONIO, idea: "Lo que es de los dueños", termino: "Patrimonio" },
+];
+
+export const SUBE = "sube";
+export const BAJA = "baja";
+export const IGUAL = "igual";
+
+/*
+ * Las palabras de los tres controles y el signo que los acompaña.
+ *
+ * El signo de subir es ↑, NUNCA el ▲. El triángulo es del Tema 2 y ahí
+ * significa una cosa concreta que este estudiante todavía no ha visto.
+ */
+export const CONTROLES = [
+  { id: SUBE, palabra: "sube", signo: "↑" },
+  { id: BAJA, palabra: "baja", signo: "↓" },
+  { id: IGUAL, palabra: "queda igual", signo: "=" },
+];
+
+/*
+ * ═══════════ LAS CUATRO VARIANTES DE LA EXPLICACIÓN A ═══════════
+ *
+ * La llave es «de dónde vino el movimiento» y «hacia dónde fue»: una deuda o
+ * un aporte, subiendo o bajando. Las dos mitades se DEDUCEN del asiento —si se
+ * mueve el pasivo es deuda, si se mueve el patrimonio es aporte; si el activo
+ * crece suben y si mengua bajan—, así que no hay una tabla de hechos que se
+ * pueda desincronizar del banco.
+ *
+ * Y la variante se elige por el HECHO, no por lo que marcó el estudiante: la
+ * explicación tiene que contar qué pasó de verdad, no glosar el error.
+ */
+export const ERROR_A_T1_4 = {
+  "deuda-sube": "❌ Marcaste que uno sube y el otro baja. Mira el hecho otra vez: entró algo y con eso nació una deuda. Nada se redujo. Los dos lados pueden subir juntos.",
+  "deuda-baja": "❌ Marcaste que uno sube y el otro baja. Mira el hecho otra vez: salió plata y con eso se pagó una deuda. Nada creció. Los dos lados pueden bajar juntos.",
+  "aporte-sube": "❌ Marcaste que uno sube y el otro baja. Mira el hecho otra vez: entró algo a la empresa y creció lo que ella les reconoce a los socios. Aquí no hay ninguna deuda. Los dos lados pueden subir juntos.",
+  "aporte-baja": "❌ Marcaste que uno sube y el otro baja. Mira el hecho otra vez: salió plata de la empresa y bajó lo que ella les reconoce a los socios. Aquí no hay ninguna deuda. Los dos lados pueden bajar juntos.",
+};
+
+export const ERROR_B_T1_4 = "❌ Esa parte no se mueve con este hecho. Pregúntate si algo de eso entró, salió o cambió.";
+
+export const ACIERTO_T1_4 = {
+  "cal-1": "✅ Sube lo que tiene y sube lo de los dueños. Entró plata a la empresa, y creció lo que ella les reconoce a los socios.",
+  "cal-2": "✅ Suben los dos. Entró un computador y nació una deuda por lo mismo. Ninguna cancela a la otra.",
+  "cal-3": "✅ Suben los dos. Entró una máquina y el banco prestó la plata. La deuda nació con la compra.",
+  "cal-4": "✅ Bajan los dos. Salió plata y con eso se pagó parte de la deuda.",
+  "cal-5": "✅ Sube lo que tiene y sube lo de los dueños. El local ya es de la empresa. Lo que creció es lo que ella les reconoce a los socios.",
+  "cal-6": "✅ Bajan los dos. Salió plata de la empresa y bajó lo que ella les reconoce a los socios.",
+  "cal-7": "✅ Suben los dos. Entró mercancía y nació una deuda con el proveedor.",
+  "cal-8": "✅ Bajan los dos. Salió plata y con eso se pagó parte del préstamo del banco.",
+};
+
+export const ALT_T1_4 = "Tres barras: lo que tiene, lo que debe y lo que es de los dueños. Con este hecho suben dos de ellas y la tercera se queda igual.";

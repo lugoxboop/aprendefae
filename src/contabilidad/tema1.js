@@ -2,7 +2,10 @@ import {
   USUARIOS_T1_1, ZONA_DENTRO, ZONA_FUERA, ACIERTO_T1_1, ERROR_T1_1,
   EMPRESAS, CLASES, MATRIZ, ERROR_T1_2, ACIERTO_T1_2,
   CLAVE_MARCO_SERVICIOS, CLAVE_ERA_SERVICIOS, SIN_INSUMO, T1_1, T1_2,
+  TRANSACCIONES_CAP2, T1_4, PARTES, SUBE, BAJA, IGUAL,
+  ERROR_A_T1_4, ERROR_B_T1_4, ACIERTO_T1_4,
 } from "../data/contabilidadTema1.js";
+import { ACTIVO, PASIVO, PATRIMONIO, tipoDeCuenta } from "../data/contabilidad.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -124,6 +127,116 @@ export function evaluarT1_2(empresa, clase) {
 
 /** ¿Esta empresa no recibe ningún objeto? Se deduce, no se marca aparte. */
 export const sinObjeto = (empresa) => empresa.entra === SIN_INSUMO;
+
+/* ═══════════════════ T1-4 · ¿QUÉ LE PASA A CADA UNO? ═══════════════════ */
+
+/*
+ * ═══════════ EL EFECTO SE DEDUCE DEL ASIENTO ═══════════
+ *
+ * Nada de una tabla de «en el hecho 3 sube el activo y sube el pasivo». Esa
+ * tabla es una segunda verdad: en cuanto alguien toque una cifra del asiento,
+ * las dos dejan de coincidir y nada falla. Aquí el efecto sale de la partida
+ * doble, que es de donde sale de verdad.
+ *
+ * Un activo crece por el debe; un pasivo y el patrimonio, por el haber.
+ */
+const CRECE_POR_EL_DEBE = { [ACTIVO]: true, [PASIVO]: false, [PATRIMONIO]: false };
+
+export function efectoDe(transaccion) {
+  const delta = { [ACTIVO]: 0, [PASIVO]: 0, [PATRIMONIO]: 0 };
+  const anotar = (cuenta, valor, esDebe) => {
+    const tipo = tipoDeCuenta(cuenta);
+    if (!(tipo in delta)) throw new Error(`«${cuenta}» no es activo, pasivo ni patrimonio`);
+    delta[tipo] += (CRECE_POR_EL_DEBE[tipo] === esDebe ? 1 : -1) * valor;
+  };
+  for (const [c, v] of transaccion.asiento.debe) anotar(c, v, true);
+  for (const [c, v] of transaccion.asiento.haber) anotar(c, v, false);
+
+  const signo = (n) => (n > 0 ? SUBE : n < 0 ? BAJA : IGUAL);
+  return {
+    [ACTIVO]: signo(delta[ACTIVO]),
+    [PASIVO]: signo(delta[PASIVO]),
+    [PATRIMONIO]: signo(delta[PATRIMONIO]),
+    valores: delta,
+  };
+}
+
+/*
+ * El caso del libro al que pertenece el hecho, también deducido: si se mueve
+ * el pasivo es una deuda, si se mueve el patrimonio es un aporte; y el sentido
+ * lo marca el activo. De aquí salen las cuatro variantes de la explicación A y
+ * los cuatro grupos del sorteo estratificado.
+ */
+export function casoDe(transaccion) {
+  const e = efectoDe(transaccion);
+  const tipo = e[PASIVO] !== IGUAL ? "deuda" : "aporte";
+  const sentido = e[ACTIVO] === SUBE ? SUBE : BAJA;
+  return `${tipo}-${sentido}`;
+}
+
+export const CASOS_T1_4 = [...new Set(TRANSACCIONES_CAP2.map(casoDe))];
+
+/*
+ * ═══════════ SEIS DE OCHO, CON LOS CUATRO CASOS DENTRO ═══════════
+ *
+ * Libre, seis de ocho puede dejar fuera entero uno de los cuatro casos —el
+ * aporte que baja es un solo hecho, el 6—, y entonces esa explicación no la
+ * lee nadie. Entra uno de cada caso y las dos restantes se sortean libres.
+ */
+export function sortearT1_4(barajar, cuantos = T1_4.porPartida) {
+  const porCaso = CASOS_T1_4.map((c) => TRANSACCIONES_CAP2.filter((t) => casoDe(t) === c));
+  for (const [i, lista] of porCaso.entries()) {
+    if (lista.length === 0) throw new Error(`no hay ningún hecho del caso «${CASOS_T1_4[i]}»`);
+  }
+  const elegidas = porCaso.map((lista) => barajar(lista)[0]);
+  const resto = TRANSACCIONES_CAP2.filter((t) => !elegidas.includes(t));
+  return barajar([...elegidas, ...barajar(resto).slice(0, cuantos - elegidas.length)]);
+}
+
+/*
+ * ═══════════ LA PRIORIDAD ES A > B, Y NO ES UN DETALLE ═══════════
+ *
+ * Quien marca «uno sube y el otro baja» cree que la ecuación es un balancín:
+ * que si algo crece, algo tiene que menguar. Ese es el error que hay que
+ * atacar, y se ataca aunque además haya movido la parte que no se mueve. Al
+ * revés —dándole primero la B— se le corrige lo accesorio y se le deja intacta
+ * la idea que lo tiene atascado.
+ */
+export function evaluarT1_4(transaccion, marcado) {
+  const real = efectoDe(transaccion);
+  const partes = PARTES.map((p) => p.id);
+  const ok = partes.every((p) => marcado[p] === real[p]);
+  if (ok) {
+    const texto = ACIERTO_T1_4[transaccion.id];
+    if (!texto) throw new Error(`«${transaccion.id}» no tiene devolución de acierto`);
+    return { ok, texto, patron: null, real };
+  }
+
+  /* A · las dos que SÍ se mueven, marcadas en sentidos contrarios. */
+  const seMueven = partes.filter((p) => real[p] !== IGUAL);
+  const enContra = seMueven.some((p) => marcado[p] === SUBE)
+    && seMueven.some((p) => marcado[p] === BAJA);
+  if (enContra) {
+    const caso = casoDe(transaccion);
+    const texto = ERROR_A_T1_4[caso];
+    if (!texto) throw new Error(`no hay explicación A para el caso «${caso}»`);
+    return { ok, texto, patron: "A", caso, real, resaltar: seMueven };
+  }
+
+  /* B · la parte que no se mueve, movida. */
+  const quieta = partes.find((p) => real[p] === IGUAL);
+  if (quieta && marcado[quieta] !== IGUAL) {
+    return { ok, texto: ERROR_B_T1_4, patron: "B", real, resaltar: [quieta] };
+  }
+
+  /*
+   * Queda el caso de las dos que se mueven marcadas las dos al revés, o una
+   * sola mal: no es el balancín ni es tocar la quieta. La A sirve igual —dice
+   * qué pasó de verdad con las dos— y es la única de las dos que lo cuenta.
+   */
+  const caso = casoDe(transaccion);
+  return { ok, texto: ERROR_A_T1_4[caso], patron: "A", caso, real, resaltar: seMueven };
+}
 
 /* ═══════════════════ PUNTAJE, IGUAL EN LAS DOS ═══════════════════ */
 
