@@ -465,14 +465,22 @@ export const situacionPorId = (id) => SITUACIONES_T1_8.find((s) => s.id === id) 
 export const puntoPorN = (n) => PUNTOS_T1_8.find((p) => p.n === n) ?? null;
 
 /*
- * A cuántos puntos no llega el hecho, DEDUCIDO: los que quedan después del
- * roto. El roto no cuenta — hasta ahí el hecho sí llegó —. Con el 5 da cero,
- * que es el caso que más enseña: nada se apaga y aun así algo falla.
+ * ═══════════ EL PUNTO ROTO TAMBIÉN SE APAGA ═══════════
+ *
+ * Regla de Levi y Mateo: el punto donde se rompe el ciclo cuenta como
+ * apagado, igual que los de después. Si no queda papel, el papel no pasó; el
+ * hecho no llegó ahí. Así ya no hay ninguna situación con cero apagados: la
+ * del punto 5 apaga el 5 y, además, la flecha de vuelta.
+ *
+ *   se rompe en 2 → 2, 3, 4, 5      se rompe en 4 → 4, 5
+ *   se rompe en 3 → 3, 4, 5         se rompe en 5 → 5 (+ la flecha)
+ *
+ * A cuántos puntos no llega el hecho, DEDUCIDO: el roto y los que siguen.
  */
-export const noAlcanzados = (rompe) => TOTAL_PUNTOS - rompe;
+export const noAlcanzados = (rompe) => TOTAL_PUNTOS - rompe + 1;
 
-/** Los puntos que se apagan, en el orden en que se apagan. */
-export const apagadosDe = (rompe) => PUNTOS_T1_8.filter((p) => p.n > rompe).map((p) => p.n);
+/** Los puntos que se apagan, en el orden en que se apagan: el roto primero. */
+export const apagadosDe = (rompe) => PUNTOS_T1_8.filter((p) => p.n >= rompe).map((p) => p.n);
 
 /** Solo en el punto 5 se apaga la flecha de vuelta, y es lo único que se apaga. */
 export const apagaLaFlecha = (rompe) => rompe === TOTAL_PUNTOS;
@@ -480,7 +488,8 @@ export const apagaLaFlecha = (rompe) => rompe === TOTAL_PUNTOS;
 /*
  * El texto del contador para `n` puntos no alcanzados. El número es lo único
  * que cambia; con uno solo, «punto» va en singular — «a 1 puntos» sería una
- * errata en pantalla. Con cero no hay nada que contar: el hecho llegó a todos.
+ * errata en pantalla. Con la regla del punto roto apagado ya no sale nunca el
+ * cero; la rama se queda por si alguien llama con él.
  */
 export function textoDelContador(n) {
   if (n === 0) return CONTADOR_LLEGO_A_TODOS;

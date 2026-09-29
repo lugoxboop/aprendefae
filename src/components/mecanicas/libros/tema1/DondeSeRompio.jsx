@@ -28,20 +28,24 @@ import { Encabezado } from "./encabezado.jsx";
  *
  * ═══════════ EL APAGÓN AGUAS ABAJO ═══════════
  *
- * Al acertar, el flujo sale del punto 1 y avanza hasta el roto. Ahí se para,
- * pregunta a cuántos puntos no va a llegar el hecho, y SOLO ENTONCES aparece
- * el corte y los puntos de después se apagan uno por uno, con un contador que
- * sube con cada apagón. Cada punto vale exactamente lo que sostiene después.
+ * Al acertar, el flujo sale del punto 1 y avanza hasta el hueco antes del
+ * roto. Ahí se para, pregunta a cuántos puntos no va a llegar el hecho, y SOLO
+ * ENTONCES aparece el corte y se apagan uno por uno el roto y los que siguen,
+ * con un contador que sube con cada apagón.
+ *
+ * ═══════════ CADA SEÑAL DICE UNA SOLA COSA ═══════════
+ *
+ * El chip «apagado» dice qué no pasó; la marca // dice dónde se rompió. Por
+ * eso el punto roto se ve EXACTAMENTE como cualquier otro apagado —sin borde
+ * ni fondo propio— y la // no va encima de ningún punto: va en el hueco entre
+ * el último encendido y el primer apagado. En el 5, entre el 4 y el 5.
  *
  * Un punto apagado NO es un paso que la empresa deja de hacer: es que ESTE
  * HECHO no llegó hasta ahí. Por eso ningún rótulo dice más que «apagado».
  *
  * ═══════════ EL PUNTO 5 ES DISTINTO, A PROPÓSITO ═══════════
  *
- * No se apaga ningún punto: el hecho llegó a los cinco. Lo que se apaga es la
- * flecha de vuelta, con «pero no cambió nada». Quien espera apagones no ve
- * ninguno y tiene que mirar la flecha — separa «el dato llegó» de «el dato
- * sirvió».
+ * Se apaga el 5 y, además, la flecha de vuelta, con «pero no cambió nada».
  *
  * ═══════════ EN UN ERROR NO CORRE NADA ═══════════
  *
@@ -91,9 +95,8 @@ const CSS = `
 `;
 
 const SORA = "Sora, sans-serif";
-/* Dónde corre la línea de avance de la franja, y la de retorno. */
+/* Dónde corre la línea de avance de la franja. */
 const X_AVANCE = 19;
-const X_RETORNO = 8;
 
 /*
  * Las fases de una situación. El error no es una fase: el anillo se queda en
@@ -118,9 +121,9 @@ function Corte({ x, y, animado }) {
   );
 }
 
-function Punto({ p, estado, onTocar, refCaja, fase }) {
+function Punto({ p, estado, onTocar, refCaja, fase, reducido }) {
   const tocable = esTocable(p.n);
-  const { apagado, atenuado, parpadea, roto } = estado;
+  const { apagado, atenuado, parpadea } = estado;
   const tenue = apagado || atenuado;
   const contenido = (
     <>
@@ -158,12 +161,18 @@ function Punto({ p, estado, onTocar, refCaja, fase }) {
   const estilo = {
     display: "flex", gap: "8px", alignItems: "center", width: "100%", textAlign: "left",
     padding: "9px 10px", borderRadius: "11px", boxSizing: "border-box",
-    background: roto ? "rgba(184,196,212,0.12)" : "rgba(184,196,212,0.06)",
+    /*
+     * Sin estado de «tocado»: al confirmar, el punto muestra solo su estado
+     * final real. El roto no lleva borde ni fondo propio — se apaga como
+     * cualquier otro.
+     */
+    background: "rgba(184,196,212,0.06)",
     border: parpadea
       ? `1.5px dashed ${FAE.coral}`
-      : `${roto ? 2 : 1.5}px solid ${tenue ? "rgba(248,249,250,0.18)" : NEUTRO}`,
+      : `1.5px solid ${tenue ? "rgba(248,249,250,0.18)" : NEUTRO}`,
     opacity: tenue ? 0.4 : 1,
-    transition: `opacity ${atenuado ? MS.atenua : MS.apagon}ms ease, border-color 200ms ease`,
+    /* Con movimiento reducido el estado final se pinta directo, sin transición. */
+    transition: reducido ? "none" : `opacity ${atenuado ? MS.atenua : MS.apagon}ms ease, border-color 200ms ease`,
     color: FAE.text, font: "inherit",
   };
 
@@ -172,7 +181,6 @@ function Punto({ p, estado, onTocar, refCaja, fase }) {
     "data-punto": p.n,
     "data-apagado": apagado ? "si" : "no",
     "data-atenuado": atenuado ? "si" : undefined,
-    "data-roto": roto ? "si" : undefined,
     "data-parpadea": parpadea ? "si" : undefined,
     className: parpadea ? "fae-t18-parpadea" : undefined,
   };
@@ -227,18 +235,17 @@ function Anillo({ estados, retorno, flujo, corte, onTocar, fase, reducido }) {
   });
 
   const y = (n) => centros[n] ?? 0;
-  /* El corte va entre el roto y el siguiente; en el 5, sobre la vuelta. */
-  const posCorte = corte == null ? null
-    : corte < TOTAL_PUNTOS
-      ? { x: X_AVANCE, y: (y(corte) + y(corte + 1)) / 2 }
-      : { x: X_RETORNO, y: y(TOTAL_PUNTOS) };
+  /*
+   * El hueco antes de un punto: entre él y el anterior. Ahí va la //, y ahí se
+   * para el flujo — nunca encima de un punto, porque el roto ya no se alcanzó.
+   */
+  const hueco = (n) => (y(n - 1) + y(n)) / 2;
+  const posCorte = corte == null ? null : { x: X_AVANCE, y: hueco(corte) };
 
   let punto = null;
   if (flujo && !reducido) {
     const y0 = y(PRIMER_PUNTO);
-    const y1 = flujo.tipo === "desvanece"
-      ? (y(flujo.hasta) + y(flujo.hasta + 1)) / 2
-      : y(flujo.hasta);
+    const y1 = flujo.tipo === "desvanece" ? hueco(flujo.hasta + 1) : hueco(flujo.hasta);
     punto = (
       <span
         key={flujo.clave}
@@ -266,6 +273,7 @@ function Anillo({ estados, retorno, flujo, corte, onTocar, fase, reducido }) {
             estado={estados[p.n]}
             onTocar={onTocar}
             fase={fase}
+            reducido={reducido}
             refCaja={(el) => { if (el) refs.current[p.n] = el; }}
           />
         ))}
@@ -273,8 +281,9 @@ function Anillo({ estados, retorno, flujo, corte, onTocar, fase, reducido }) {
       {posCorte && (
         <svg
           data-corte={corte}
+          data-corte-entre={`${corte - 1}-${corte}`}
           role="img"
-          aria-label={`Corte en el punto ${corte}`}
+          aria-label={`Corte entre el punto ${corte - 1} y el ${corte}`}
           style={{ position: "absolute", left: 0, top: 0, width: "28px", height: "100%", overflow: "visible", pointerEvents: "none" }}
         >
           <Corte x={posCorte.x} y={posCorte.y} animado={!reducido} />
@@ -319,22 +328,22 @@ function Tira({ situacion }) {
                 {apagado && <span style={SOLO_LECTOR}> {ROTULO_APAGADO}</span>}
               </span>
               {p.n < TOTAL_PUNTOS && (
-                <span aria-hidden="true" data-tira-tramo={p.n === rompe ? "corte" : "sigue"} style={{
+                <span aria-hidden="true" data-tira-tramo={p.n + 1 === rompe ? "corte" : "sigue"} style={{
                   width: "14px", textAlign: "center", fontFamily: SORA, fontSize: "11px", fontWeight: 700,
-                  color: NEUTRO, opacity: p.n === rompe ? 1 : apagado ? 0.35 : 0.7,
+                  color: NEUTRO, opacity: p.n + 1 === rompe ? 1 : apagado ? 0.35 : 0.7,
                 }}>
-                  {p.n === rompe ? "//" : "—"}
+                  {p.n + 1 === rompe ? "//" : "—"}
                 </span>
               )}
             </span>
           );
         })}
-        {/* La vuelta al punto 1: en el 5 es lo que se apaga, y ahí va el corte. */}
+        {/* La vuelta al punto 1: en el 5 también se apaga. El corte no va aquí. */}
         <span aria-hidden="true" data-tira-vuelta={apagaLaFlecha(rompe) ? "apagada" : "sigue"} style={{
           marginLeft: "2px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, color: NEUTRO,
-          opacity: apagaLaFlecha(rompe) ? 1 : 0.7,
+          opacity: apagaLaFlecha(rompe) ? 0.35 : 0.7,
         }}>
-          {apagaLaFlecha(rompe) ? "// ↺" : "↺"}
+          ↺
         </span>
       </div>
       <p data-tira-contador style={{ margin: "7px 0 0", fontSize: "11px", color: "rgba(248,249,250,0.72)" }}>
@@ -503,7 +512,6 @@ export default function DondeSeRompio({ Marco, rotulo, titulo, acento, onComplet
     apagado: apagadosAhora.includes(p.n),
     atenuado: atenuado === p.n,
     parpadea: parpadeo === p.n,
-    roto: verCorte && p.n === rompe,
   }]));
   const contador = fase === FIN || fase === REVELADO
     ? textoDelContador(noAlcanzados(rompe))
@@ -544,7 +552,12 @@ export default function DondeSeRompio({ Marco, rotulo, titulo, acento, onComplet
         <Anillo
           estados={estados}
           retorno={flechaApagada ? "apagado" : "encendido"}
-          flujo={fase === TOCAR || fase === FLUJO || fase === PREDICCION || fase === CORTE || fase === APAGANDO || fase === FIN ? flujo : null}
+          /*
+            El flujo se para en el hueco antes del roto y ahí se queda hasta
+            que llega el corte. Cuando aparece la //, el flujo se va: los dos
+            en el mismo hueco se taparían, y la // es la que dice dónde se rompió.
+          */
+          flujo={fase === TOCAR || fase === FLUJO || fase === PREDICCION ? flujo : null}
           corte={verCorte ? rompe : null}
           onTocar={tocar}
           fase={fase}

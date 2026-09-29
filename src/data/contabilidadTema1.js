@@ -756,7 +756,8 @@ export const ROTULO_FLECHA_APAGADA = "pero no cambió nada";
  */
 export const PREDICCION_T1_8 = {
   pregunta: "¿A cuántos puntos crees que no va a llegar este hecho?",
-  opciones: [0, 1, 2, 3],
+  /* De 1 a 4: con el punto roto apagado, ninguna situación deja cero ni cinco. */
+  opciones: [1, 2, 3, 4],
   acerto: "Lo predijiste bien. Mira hasta dónde alcanzó a llegar.",
   fallo: "No era lo que creías. Mira hasta dónde alcanzó a llegar.",
 };

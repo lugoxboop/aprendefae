@@ -106,14 +106,14 @@ test("★★★ los cinco rótulos son los simples, en el orden de la pieza 1, y
 
 test("★★★ las ocho situaciones, con su versión final y su punto de ruptura", () => {
   const TABLA = [
-    ["Un empleado compró tinta con plata de la caja. No pidió factura ni recibo.", 2, 3],
-    ["La empresa le entregó la mercancía a un cliente, pero no le hizo factura.", 2, 3],
-    ["La factura de un escritorio que compraron está en una carpeta. Nadie la pasó a los libros.", 3, 2],
-    ["Llegó el recibo del arriendo del mes. Sigue en un cajón sin anotar.", 3, 2],
-    ["La compra de papelería quedó anotada en los libros, pero la dejaron por fuera del informe del mes.", 4, 1],
-    ["El pago de la luz está anotado, pero no aparece en el informe que recibieron los jefes.", 4, 1],
-    ["Los informes se hicieron y se guardaron. Los jefes no los han abierto.", 5, 0],
-    ["El informe muestra que un producto está dando pérdida. Nadie lo ha leído.", 5, 0],
+    ["Un empleado compró tinta con plata de la caja. No pidió factura ni recibo.", 2, 4],
+    ["La empresa le entregó la mercancía a un cliente, pero no le hizo factura.", 2, 4],
+    ["La factura de un escritorio que compraron está en una carpeta. Nadie la pasó a los libros.", 3, 3],
+    ["Llegó el recibo del arriendo del mes. Sigue en un cajón sin anotar.", 3, 3],
+    ["La compra de papelería quedó anotada en los libros, pero la dejaron por fuera del informe del mes.", 4, 2],
+    ["El pago de la luz está anotado, pero no aparece en el informe que recibieron los jefes.", 4, 2],
+    ["Los informes se hicieron y se guardaron. Los jefes no los han abierto.", 5, 1],
+    ["El informe muestra que un producto está dando pérdida. Nadie lo ha leído.", 5, 1],
   ];
   assert.equal(SITUACIONES_T1_8.length, 8);
   for (const [k, [texto, rompe, faltan]] of TABLA.entries()) {
@@ -135,7 +135,7 @@ test("★★★ los aciertos, los errores y la predicción son el texto literal 
   assert.equal(ERROR_T1_8.B, "❌ Este hecho nunca llegó a ese punto. Se cortó antes, así que desde ahí ya no aparece.");
   assert.equal(ROTULO_ERROR_B_T1_8, "este hecho no llegó aquí");
   assert.equal(PREDICCION_T1_8.pregunta, "¿A cuántos puntos crees que no va a llegar este hecho?");
-  assert.deepEqual(PREDICCION_T1_8.opciones, [0, 1, 2, 3]);
+  assert.deepEqual(PREDICCION_T1_8.opciones, [1, 2, 3, 4], "la predicción no va de 1 a 4");
   assert.equal(PREDICCION_T1_8.acerto, "Lo predijiste bien. Mira hasta dónde alcanzó a llegar.");
   assert.equal(PREDICCION_T1_8.fallo, "No era lo que creías. Mira hasta dónde alcanzó a llegar.");
   assert.equal(CONTADOR_T1_8, "Este hecho no llegó a [N] puntos.");
@@ -213,11 +213,19 @@ test("★★★ la regla es el número: antes del roto es A, después es B", () 
   assert.ok(a > 0 && b > 0);
 });
 
-test("★★ el 5 no apaga ningún punto; apaga la flecha, y es el único que la apaga", () => {
-  assert.deepEqual(apagadosDe(5), []);
+test("★★★ el punto roto también se apaga: 2→4, 3→3, 4→2, 5→1, y nunca cero", () => {
+  assert.deepEqual(apagadosDe(2), [2, 3, 4, 5]);
+  assert.deepEqual(apagadosDe(3), [3, 4, 5]);
+  assert.deepEqual(apagadosDe(4), [4, 5]);
+  assert.deepEqual(apagadosDe(5), [5]);
+  for (const s of SITUACIONES_T1_8) {
+    assert.ok(apagadosDe(s.rompe).includes(s.rompe), `${s.id}: el punto roto no se apaga`);
+    assert.ok(noAlcanzados(s.rompe) >= 1, `${s.id}: quedó una situación con cero apagados`);
+    assert.ok(PREDICCION_T1_8.opciones.includes(noAlcanzados(s.rompe)), `${s.id}: la respuesta no está entre las opciones`);
+  }
+  /* Y la flecha solo se apaga en el 5, además de su punto. */
   assert.equal(apagaLaFlecha(5), true);
   for (const n of [2, 3, 4]) assert.equal(apagaLaFlecha(n), false);
-  assert.deepEqual(apagadosDe(2), [3, 4, 5]);
 });
 
 test("★★★ la predicción no puntúa: acertar las cinco da 100 % prediga lo que prediga", () => {
@@ -287,8 +295,8 @@ test("★★★ acertar: flujo, predicción, y SOLO DESPUÉS el corte y los apag
     assert.equal(caja.querySelectorAll('[data-apagado="si"]').length, 0, "se apagó algo antes de predecir");
     assert.equal(caja.querySelectorAll('[role="status"]').length, 0, "la devolución se adelantó a la cascada");
 
-    tocar(caja.querySelector('[data-prediccion-opcion="0"]'));
-    assert.equal(caja.querySelector('[data-prediccion-opcion="0"]').dataset.elegida, "si", "la elegida no queda marcada");
+    tocar(caja.querySelector('[data-prediccion-opcion="1"]'));
+    assert.equal(caja.querySelector('[data-prediccion-opcion="1"]').dataset.elegida, "si", "la elegida no queda marcada");
     assert.equal(caja.querySelector("[data-corte]")?.dataset.corte, String(s.rompe), "el corte no está en el roto");
 
     /* Uno por uno: a mitad de la cascada no están todos. */
@@ -301,13 +309,35 @@ test("★★★ acertar: flujo, predicción, y SOLO DESPUÉS el corte y los apag
     await esperar(cascadaDe(s.rompe));
     assert.equal(fase(caja), "fin");
     const apagados = [...caja.querySelectorAll('[data-punto][data-apagado="si"]')].map((x) => Number(x.dataset.punto));
-    assert.deepEqual(apagados, apagadosDe(s.rompe), "no se apagaron justo los de después del roto");
+    assert.deepEqual(apagados, apagadosDe(s.rompe), "no se apagaron justo el roto y los de después");
     for (const n of apagados) {
       assert.ok(punto(caja, n).textContent.includes(ROTULO_APAGADO), `el ${n} apagado no lo dice con palabras`);
     }
     assert.equal(caja.querySelector("[data-contador]").textContent, textoDelContador(noAlcanzados(s.rompe)));
     assert.ok(caja.textContent.includes(ACIERTO_T1_8[s.rompe].slice(2)), "no sale la devolución del punto");
   } finally { desmontar(); }
+});
+
+test("★★★ el roto se ve igual que cualquier apagado, sin borde de selección, y la // va en el hueco", async () => {
+  for (const rompe of [2, 3, 4, 5]) {
+    const { caja, desmontar } = montarCon((s) => s.rompe === rompe);
+    try {
+      await resolver(caja);
+      const apagados = [...caja.querySelectorAll('[data-punto][data-apagado="si"]')];
+      assert.equal(apagados.length, 6 - rompe);
+      /* Mismo estilo y mismo chip: nada distingue al roto de los demás apagados. */
+      const estilos = new Set(apagados.map((x) => x.getAttribute("style")));
+      assert.equal(estilos.size, 1, `punto ${rompe}: el roto se pinta distinto a los otros apagados`);
+      for (const x of apagados) assert.ok(x.querySelector("[data-rotulo-apagado]"), `punto ${x.dataset.punto} sin chip «apagado»`);
+      /* Y no queda ningún borde de selección: ni grueso ni en el punto tocado. */
+      const roto = punto(caja, rompe);
+      assert.ok(!/2px solid/.test(roto.getAttribute("style")), `punto ${rompe}: quedó el borde de selección`);
+      assert.equal(caja.querySelectorAll("[data-roto]").length, 0);
+      assert.equal(caja.querySelector("[data-corte]").dataset.corteEntre, `${rompe - 1}-${rompe}`);
+      /* Con la // en su hueco, el flujo ya no está: se taparían el uno al otro. */
+      assert.equal(caja.querySelectorAll("[data-flujo]").length, 0, `punto ${rompe}: el flujo sigue encima de la //`);
+    } finally { desmontar(); }
+  }
 });
 
 test("★★★ los dos cierres de la predicción, y ninguno dice el número", async () => {
@@ -334,11 +364,14 @@ test("★★★ el punto 5: cero apagados, la flecha apagada y «pero no cambió
       const s = actual(caja);
       if (s.rompe === 5) {
         await resolver(caja);
-        assert.equal(caja.querySelectorAll('[data-punto][data-apagado="si"]').length, 0, "en el 5 se apagó un punto");
+        assert.deepEqual([...caja.querySelectorAll('[data-punto][data-apagado="si"]')].map((x) => x.dataset.punto), ["5"],
+          "en el 5 no se apaga justo el 5");
         assert.equal(caja.querySelector("[data-anillo]").dataset.retorno, "apagado", "la flecha de vuelta no se apagó");
         assert.equal(caja.querySelector("[data-franja]").dataset.retorno, "apagado");
         assert.ok(caja.querySelector("[data-rotulo-flecha]").textContent.includes(ROTULO_FLECHA_APAGADA));
-        assert.equal(caja.querySelector("[data-contador]").textContent, CONTADOR_LLEGO_A_TODOS);
+        /* La // entre el 4 y el 5, no sobre la vuelta ni sobre el 5. */
+        assert.equal(caja.querySelector("[data-corte]").dataset.corteEntre, "4-5");
+        assert.equal(caja.querySelector("[data-contador]").textContent, textoDelContador(1));
         return;
       }
       await resolver(caja);
@@ -452,7 +485,10 @@ test("★★ el final: las cinco resueltas, cada una con su corte y su conteo, y
     for (const [k, f] of filas.entries()) {
       const s = vistas[k];
       assert.equal(f.dataset.resuelta, s.id);
-      assert.equal(f.querySelector('[data-tira-tramo="corte"]') ? 1 : 0, s.rompe < 5 ? 1 : 0, `${s.id}: el corte no está`);
+      /* La // va en el tramo que sale del último encendido: el del punto anterior al roto. */
+      const tramos = [...f.querySelectorAll("[data-tira-tramo]")].map((x) => x.dataset.tiraTramo);
+      assert.equal(tramos.filter((x) => x === "corte").length, 1, `${s.id}: no hay una sola //`);
+      assert.equal(tramos.indexOf("corte"), s.rompe - 2, `${s.id}: la // no está entre el ${s.rompe - 1} y el ${s.rompe}`);
       if (s.rompe === 5) assert.equal(f.querySelector("[data-tira-vuelta]").dataset.tiraVuelta, "apagada");
       assert.deepEqual(
         [...f.querySelectorAll('[data-tira-punto][data-apagado="si"]')].map((x) => Number(x.dataset.tiraPunto)),
@@ -479,6 +515,11 @@ test("★★ con movimiento reducido: sin flujo, y tres imágenes — entero, co
     assert.equal(fase(caja), "fin");
     assert.equal(caja.querySelectorAll('[data-punto][data-apagado="si"]').length, apagadosDe(s.rompe).length);
     assert.ok(caja.querySelector("[data-contador]"));
+    /* El estado final, directo: ningún punto con transición. */
+    for (const p of PUNTOS_T1_8) {
+      assert.ok(/transition: none/.test(punto(caja, p.n).getAttribute("style")), `punto ${p.n}: transiciona con movimiento reducido`);
+    }
+    assert.equal(caja.querySelector("[data-corte]").dataset.corteEntre, `${s.rompe - 1}-${s.rompe}`);
   } finally { desmontar(); reducir = false; }
 });
 
