@@ -1,0 +1,14 @@
+{
+  "name": "aprendefae-orquestador",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Orquesta la cadena Gen → Levi → Xeno → compilación y entrega un encargo maestro.",
+  "scripts": {
+    "test": "node --test \"src/**/*.test.mjs\"",
+    "correr": "node correr.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.70.0"
+  }
+}
