@@ -231,9 +231,13 @@ export const MAXIMO_NODOS = 14;
  * `hechos` no se puede saber si el ítem en pantalla ya se cerró: por eso lo
  * pasan aparte. Sin él, vale el nodo actual: `hechos + 1`, sin pasar del
  * total. La barra y `aria-valuenow` siguen contando los terminados.
+ *
+ * `cuenta` es la excepción: el rótulo dice los terminados, desde 0. Es para
+ * el Memorama, donde no hay un ítem «en curso» —las parejas se encuentran en
+ * cualquier orden— y lo que se lleva es cuántas van (Levi).
  */
-export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null }) {
-  const numero = Math.max(1, Math.min(enCurso ?? hechos + 1, total));
+export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cuenta = false }) {
+  const numero = cuenta ? hechos : Math.max(1, Math.min(enCurso ?? hechos + 1, total));
   const actual = hechos < total ? hechos : null;
   const hasta = total > 1 ? Math.min(hechos, total - 1) / (total - 1) : 0;
   const NODO = 10;

@@ -168,7 +168,8 @@ export default function Memorama({ pares, Marco, rotulo, titulo, acento, onCompl
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_MEMORAMA}</style>
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={pares.length} hechos={hechas.length} etiqueta="Parejas" />
+        {/* Cuenta las parejas encontradas: «Parejas 0 de N» al empezar, y sube de a una. */}
+        <Pulsos total={pares.length} hechos={hechas.length} etiqueta="Parejas" cuenta />
       </div>
 
       <div className="fae-mm-rejilla">

@@ -159,6 +159,30 @@ test("★★ avance: toda actividad que suma el ítem cerrado le pasa `enCurso`,
   assert.deepEqual(faltan, [], "hay avances que saltan al siguiente ítem al cerrar el actual");
 });
 
+test("★★★ memorama: el contador cuenta las parejas encontradas — «Parejas 0 de N» y sube de a una", async () => {
+  const Memorama = (await import("../bloques/Memorama.jsx")).default;
+  const pares = [
+    { id: "p1", termino: "Uno-T", definicion: "Uno-D" },
+    { id: "p2", termino: "Dos-T", definicion: "Dos-D" },
+    { id: "p3", termino: "Tres-T", definicion: "Tres-D" },
+  ];
+  const Marco = ({ children }) => React.createElement("div", null, children);
+  const m = montar(React.createElement(Memorama, { pares, Marco, onCompletar: () => {} }));
+  try {
+    const rotulo = () => m.caja.querySelector("[data-avance]").textContent.trim();
+    const carta = (texto) => [...m.caja.querySelectorAll("button")].find((b) => b.textContent.includes(texto));
+    const tocar = (b) => act(() => { b.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+    assert.equal(rotulo(), "Parejas 0 de 3", "al empezar no cuenta desde 0");
+    for (const [k, p] of pares.entries()) {
+      tocar(carta(p.termino));
+      tocar(carta(p.definicion));
+      assert.equal(rotulo(), `Parejas ${k + 1} de 3`, `tras la pareja ${k + 1} el contador no subió de a una`);
+    }
+  } finally {
+    m.desmontar();
+  }
+});
+
 /* ─────────────────────────────── La opción ─────────────────────────────── */
 
 function opcion(estado, props = {}) {
