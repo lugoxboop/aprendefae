@@ -10,6 +10,7 @@ import { ROLES, instruccionDeRuta } from "./src/roles.js";
 import { leerRuta, cuerpoSinRuta } from "./src/ruta.js";
 import { Contador } from "./src/topes.js";
 import { Registro, carpetaDeCorrida } from "./src/registro.js";
+import { cargarClave, comoArreglarlo } from "./src/clave.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -43,8 +44,10 @@ const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const REPO = raizDelRepo(path.join(AQUI, "src"));
 const CASOS = path.join(AQUI, "pruebas", "compilacion");
 
-if (!process.env.ANTHROPIC_API_KEY) {
-  console.error("Falta ANTHROPIC_API_KEY.\n");
+const __clave = cargarClave();
+if (!__clave.ok) {
+  console.error(`${comoArreglarlo(__clave)}
+`);
   console.error("Este banco corre contra el modelo de verdad: es lo único que");
   console.error("contesta si la compilación caza los errores o solo reescribe.\n");
   process.exit(1);
@@ -82,6 +85,19 @@ console.log(`Registro: ${path.relative(process.cwd(), carpeta)}\n`);
 const resultados = [];
 
 for (const caso of casos) {
+  /*
+   * El tope se mira ANTES de cada caso. La primera corrida real se fue a siete
+   * dólares porque este banco contaba el gasto y no lo miraba nunca: el
+   * contador existía, el límite existía, y nadie los puso a hablar.
+   */
+  const pasado = contador.motivoParaParar();
+  if (pasado) {
+    console.log(`⏹  ${pasado}`);
+    console.log("   Los casos que faltan no se corrieron.\n");
+    registro.parada("detenido-por-tope", pasado);
+    break;
+  }
+
   process.stdout.write(`→ ${caso.esperado.nombre}\n`);
 
   const herramientas = crearHerramientas(REPO, {

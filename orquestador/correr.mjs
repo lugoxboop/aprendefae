@@ -11,6 +11,7 @@ import { crearHerramientas, raizDelRepo } from "./src/herramientas.js";
 import { transporteReal, transporteSimulado } from "./src/transporte.js";
 import { MODELO_CAPAZ } from "./src/roles.js";
 import { TOPES } from "./src/topes.js";
+import { cargarClave, comoArreglarlo } from "./src/clave.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -36,13 +37,17 @@ if (!orden) {
   process.exit(1);
 }
 
-if (!simulado && !process.env.ANTHROPIC_API_KEY) {
-  console.error("Falta ANTHROPIC_API_KEY en el entorno.\n");
-  console.error("No hay autenticación por suscripción: la documentación del Agent SDK");
-  console.error("dice que el login de claude.ai no está permitido para productos");
-  console.error("construidos sobre él, y esta herramienta llama a la API directamente.\n");
-  console.error("Para ver la forma de una corrida sin gastar:  node correr.mjs --simulado \"…\"");
-  process.exit(1);
+if (!simulado) {
+  const clave = cargarClave();
+  if (!clave.ok) {
+    console.error(`${comoArreglarlo(clave)}\n`);
+    console.error("No hay autenticación por suscripción: la documentación del Agent SDK");
+    console.error("dice que el login de claude.ai no está permitido para productos");
+    console.error("construidos sobre él, y esta herramienta llama a la API directamente.\n");
+    console.error('Para ver la forma de una corrida sin gastar:  node correr.mjs --simulado "…"');
+    process.exit(1);
+  }
+  console.log(`Clave: leída del ${clave.origen}, ${clave.largo} caracteres.`);
 }
 
 const carpeta = carpetaDeCorrida(AQUI);

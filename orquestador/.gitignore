@@ -1,2 +1,7 @@
 corridas/
 node_modules/
+
+# La clave de API. NUNCA se sube: el .gitignore de la raíz ya la cubre,
+# y esto lo repite aquí para que no dependa de un archivo de otra carpeta.
+.env
+.env.*

@@ -34,7 +34,18 @@ import { pathToFileURL } from "node:url";
 
 const MS_TOPE = 20000;
 const SALIDA_TOPE = 20000;
-const ARCHIVO_TOPE = 400000;
+/*
+ * ═══════════ POR QUÉ 60.000 Y NO 400.000 ═══════════
+ *
+ * Cada archivo leído se queda en la conversación y se reenvía en todas las
+ * vueltas siguientes del bucle. Con el tope en 400.000 caracteres —unos 100.000
+ * tokens— un solo archivo grande pesa más que todo el Kit, en cada vuelta.
+ *
+ * 60.000 caracteres son unas 1.500 líneas: de sobra para cualquier archivo de
+ * este repositorio, y el recorte avisa de que hubo recorte para que se pueda
+ * buscar el resto con `buscar_en_repo` en vez de creerse que eso era todo.
+ */
+const ARCHIVO_TOPE = 60000;
 
 /* El repo es la raíz: dos niveles arriba de este archivo. */
 export const raizDelRepo = (aqui) => path.resolve(aqui, "..", "..");
