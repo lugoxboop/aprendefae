@@ -291,7 +291,7 @@ export default function LaMayorizacion({ Marco, rotulo, titulo, acento, onComple
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={pasos} hechos={hechos + (retro ? 1 : 0)} etiqueta={enMayorizar ? "Renglón" : "Saldo"} />
+        <Pulsos total={pasos} hechos={hechos + (retro ? 1 : 0)} enCurso={hechos + 1} etiqueta={enMayorizar ? "Renglón" : "Saldo"} />
       </div>
 
       <p style={{ margin: "0 0 10px", fontSize: "12.5px", color: "rgba(248,249,250,0.55)" }}>

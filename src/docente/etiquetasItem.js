@@ -45,7 +45,7 @@ import { cuentaDeItemDocente } from "../contabilidad/saldoDeLaCuenta.js";
 import { textoDeItem as textoDeItemA6 } from "../contabilidad/armaElAsiento.js";
 import { textoDeItem as textoDeItemA7 } from "../contabilidad/asientoCompuesto.js";
 import {
-  preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem,
+  preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
 
 /* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
@@ -522,6 +522,8 @@ Object.assign(REGLAS, {
   /* Tema 1: la pregunta que le tocó, y la empresa con su par entrada-salida. */
   "t1-desde-donde-preguntan": (id) => preguntaDeUsuario(id),
   "t1-que-entro-y-que-salio": (id) => empresaDeItem(id),
+  /* T1-8: la situación que había que leer, tal cual la vio el estudiante. */
+  "t1-donde-se-rompio": (id) => situacionDeItem(id),
   /*
    * Las cuatro que salieron del cajón cuando llegaron las piezas 2, 3 y 4 del
    * Aprender. T1-4 y T1-5 comparten el banco de Caleja, así que el ítem es la

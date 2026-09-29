@@ -39,9 +39,15 @@ const X_AVANCE = 19;
 const X_RETORNO = 8;
 const RADIO_U = 7;
 
-export const ESTADOS_DEL_RETORNO = ["encendido", "atenuado"];
+export const ESTADOS_DEL_RETORNO = ["encendido", "atenuado", "apagado"];
 
-const OPACIDAD = { encendido: 1, atenuado: 0.35 };
+/*
+ * `apagado` es de T1-8, y solo para el punto 5: el hecho llegó a los cinco
+ * puntos y aun así no cambió nada. No es `atenuado` —«con este usuario el
+ * ciclo no se cierra»— sino «esta vez la vuelta no ocurrió». Tampoco ahí
+ * desaparece la línea, y nunca va sola: la acompaña su rótulo escrito.
+ */
+const OPACIDAD = { encendido: 1, atenuado: 0.35, apagado: 0.14 };
 
 /** Un chevrón: dos trazos en pico. `haciaAbajo` invierte la punta. */
 function Chevron({ x, y, haciaAbajo, opacidad }) {

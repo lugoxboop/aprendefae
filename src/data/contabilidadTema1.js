@@ -1,4 +1,4 @@
-import { USUARIOS } from "./contabilidadIntro.js";
+import { USUARIOS, ESTACIONES } from "./contabilidadIntro.js";
 import { CALEJA, ACTIVO, PASIVO, PATRIMONIO } from "./contabilidad.js";
 
 /*
@@ -107,7 +107,7 @@ export const ERROR_T1_1 = {
 /* El rótulo que acompaña al trazo cuando se enciende. */
 export const ROTULO_DEL_TRAZO = "esta decisión cambia lo que la empresa hace";
 
-export const ALT_T1_1 = "Anillo de cinco estaciones. La pregunta sobre fortalezas y debilidades queda dentro del anillo, con la etiqueta Administradores, y el trazo de retorno hacia la primera estación se enciende.";
+export const ALT_T1_1 = "Cinco puntos en columna.";
 
 /* ═══════════════════ T1-2 · ¿QUÉ ENTRÓ Y QUÉ SALIÓ? ═══════════════════ */
 
@@ -166,7 +166,7 @@ export const ACIERTO_T1_2 = {
   "t2-03": "✅ De servicios. No entró ninguna cosa. Lo que vende el banco es lo que sabe hacer.",
   "t2-04": "✅ Industrial. Entró caña. Salió azúcar. No es lo mismo: adentro la cambiaron.",
   "t2-05": "✅ De servicios. No hay ninguna cosa que señalar. Venden lo que saben hacer.",
-  "t2-06": "✅ Agropecuaria. Los terneros crecieron adentro. Ni se compraron ni se sacaron del suelo.",
+  "t2-06": "✅ Agropecuaria. Entraron terneros y salió ganado. Ese ganado no se compró ni se sacó del suelo: se crió adentro.",
   "t2-07": "✅ Comercial. Entraron productos y salieron los mismos. Solo cambiaron de dueño.",
   "t2-08": "✅ Minera. Nadie le vendió el petróleo. Lo sacaron del subsuelo.",
   "t2-09": "✅ Industrial. Entró una cosa. Salió otra muy distinta. Adentro la cambiaron.",
@@ -238,7 +238,7 @@ export const ESCENA_ERROR = {
   G: "entra-vacio",
 };
 
-export const ALT_T1_2 = "Una textilera. Entra: algodón. Sale: tela. El trazo entre los dos dice: transformado. La clase marcada es industrial o de manufactura.";
+export const ALT_T1_2 = `Una textilera. Entra algodón y sale tela. El trazo entre los dos dice: transformado. La clase marcada es ${CLASES.find((c) => c.id === "industrial").nombre}.`;
 
 /* Rótulos de la interfaz. */
 export const ROTULO_ENTRA = "ENTRA";
@@ -341,7 +341,7 @@ export const ERROR_A_T1_4 = {
   "aporte-baja": "❌ Marcaste que uno sube y el otro baja. Mira el hecho otra vez: salió plata de la empresa y bajó lo que ella les reconoce a los socios. Aquí no hay ninguna deuda. Los dos lados pueden bajar juntos.",
 };
 
-export const ERROR_B_T1_4 = "❌ Esa parte no se mueve con este hecho. Pregúntate si algo de eso entró, salió o cambió.";
+export const ERROR_B_T1_4 = "❌ Esa parte queda igual con este hecho. Pregúntate si algo de eso entró, salió o cambió.";
 
 export const ACIERTO_T1_4 = {
   "cal-1": "✅ Sube lo que tiene y sube lo de los dueños. Entró plata a la empresa, y creció lo que ella les reconoce a los socios.",
@@ -354,7 +354,14 @@ export const ACIERTO_T1_4 = {
   "cal-8": "✅ Bajan los dos. Salió plata y con eso se pagó parte del préstamo del banco.",
 };
 
-export const ALT_T1_4 = "Tres barras: lo que tiene, lo que debe y lo que es de los dueños. Con este hecho suben dos de ellas y la tercera se queda igual.";
+/*
+ * Los alternativos de T1-4 y T1-5 nombran las tres partes con el rótulo que
+ * sale en pantalla, y nada más: sin cifras ni un caso concreto, porque se
+ * leen igual en todos los hechos (Levi). Salen de PARTES, que es de donde la
+ * pantalla saca sus rótulos.
+ */
+const enLista = (xs) => `${xs.slice(0, -1).join(", ")} y ${xs[xs.length - 1]}`;
+export const ALT_T1_4 = `Tres barras: ${enLista(PARTES.map((p) => p.idea))}.`;
 
 /* ═══════════════════ T1-5 · LA ECUACIÓN EN MOVIMIENTO ═══════════════════ */
 
@@ -403,19 +410,22 @@ export const ERROR_T1_5 = {
 export const PIE_T1_5 = {
   izquierda: "Lo que tiene",
   derecha: "Lo que debe y lo de los dueños",
-  cuadra: "Los dos lados dan igual",
-  noCuadra: "Los dos lados no dan igual",
+  /* [X] y [Z] los rellena la vista con la cifra de cada lado y la diferencia. */
+  cuadra: "Los dos lados dan igual: [X].",
+  noCuadra: "Los dos lados no dan igual. Hay [Z] de diferencia.",
   arrastrado: "se queda igual que antes",
 };
 
 export const HISTORIAL_T1_5 = {
   titulo: "Lo que llevas",
   vacio: "Todavía no has anotado ningún hecho.",
+  /* Una fila por hecho, con el desglose: [X] = [Y] + [Z]. Decisión de Levi. */
+  fila: "Hecho [n]: [X] = [Y] + [Z]",
 };
 
 export const ACIERTO_T1_5_FINAL = "✅ Y ahí está el mes completo. Lo que tiene la empresa y lo que debe más lo de los dueños dan lo mismo, hecho por hecho, desde cero.";
 
-export const ALT_T1_5 = "Tres casillas para escribir: lo que tiene, lo que debe y lo que es de los dueños. Debajo, la comprobación de que los dos lados dan igual, y el historial de los hechos ya anotados.";
+export const ALT_T1_5 = `Tres casillas para escribir: ${enLista(PARTES.map((p) => p.idea))}.`;
 
 /* ═══════════════════ T1-6 · ¿EN CUÁL ESTADO APARECE? ═══════════════════ */
 
@@ -525,7 +535,7 @@ export const ACIERTO_T1_6 = {
 export const PESO_INFORME = 0.6;
 export const PESO_SECCION = 0.4;
 
-export const ALT_T1_6 = "Una ficha con un concepto y dos pestañas: el informe de lo que la empresa tiene y debe hoy, y el de lo que vendió y gastó durante el año. Dentro del primero, tres secciones.";
+export const ALT_T1_6 = "Dos informes.";
 
 /* ═══════════════════ T1-7 · LA ARTICULACIÓN ═══════════════════ */
 
@@ -646,4 +656,134 @@ export const INVERSO_T1_7 = [
   },
 ];
 
-export const ALT_T1_7 = "Tres informes con sus líneas. Cinco flechas van de las líneas de los otros dos hacia las del informe de lo que la empresa tiene y debe hoy. De ese informe no sale ninguna.";
+export const ALT_T1_7 = "Tres informes. Cinco flechas llegan al informe de lo que la empresa tiene y debe. Una viene del informe de lo que vendió y gastó. Las otras cuatro vienen del informe de la plata.";
+
+/* ═══════════════════ T1-8 · ¿DÓNDE SE ROMPIÓ? ═══════════════════ */
+
+/*
+ * La tercera del camino, entre T1-2 y T1-3, aunque se construyó la última: el
+ * código es T1-8 y no se renumera nada de lo que ya existe. Depende solo de la
+ * pieza 1 del Aprender, así que sale publicada sin esperar a las otras tres.
+ *
+ * La pieza 1 es la única enseñanza del Tema 1 que ninguna actividad practica
+ * de frente —T1-1 reusa su anillo, pero practica usuarios—. Esta la practica:
+ * no pide repetir los cinco puntos, pide ver qué pasa cuando uno falta.
+ */
+export const T1_8 = {
+  id: "t1-donde-se-rompio",
+  nombre: "¿Dónde se Rompió?",
+  subtema: "El ciclo de la información contable",
+  dificultad: "medio",
+  fpBase: 25,
+  porPartida: 5,
+  objetivo: "Encuentra en qué punto se rompió el ciclo. Y mira qué se pierde de ahí en adelante.",
+  consigna: "Lee lo que pasó en la empresa. Toca el punto donde se rompió el ciclo.",
+  /* El vacío: encabeza el anillo hasta que se toca un punto. */
+  pregunta: "¿Hasta dónde llegó bien, y dónde se cortó?",
+};
+
+/*
+ * ═══════════ UN PUNTO APAGADO NO ES UN PASO QUE DEJA DE EXISTIR ═══════════
+ *
+ * Significa que ESTE HECHO no llegó hasta ahí. La empresa sigue anotando,
+ * sacando informes y decidiendo — sin este dato. La pieza 1 sigue un solo
+ * hecho por los cinco puntos, y si aquí se diera a entender que los puntos
+ * enteros desaparecen, esta actividad contradiría la pieza que la sostiene.
+ * Por eso todos los textos dicen «este hecho», nunca «la empresa se queda
+ * sin informe». Hay una prueba que barre el banco buscando esa frase.
+ *
+ * ═══════════ LOS RÓTULOS SON LOS DE LA PIEZA 1 ═══════════
+ *
+ * El número y el rótulo de cada punto salen de las estaciones de la pieza 1,
+ * que ya dicen los rótulos simples («Pasa algo en la empresa»…). Un solo
+ * sitio: si cambia allí, cambia aquí.
+ */
+export const PUNTOS_T1_8 = ESTACIONES.map((e) => ({ n: e.n, rotulo: e.nombre }));
+
+/*
+ * Las ocho situaciones, en su VERSIÓN FINAL: la 3, 4, 5 y 6 las reescribió
+ * Levi para que sigan UN hecho concreto en vez de un lote. Construcción de
+ * Gen, derivadas de la cadena causal del Gráfico 1.1 — no citables a página.
+ *
+ * `rompe` es el único dato de cada una. Cuántos puntos no alcanza el hecho NO
+ * se escribe aquí: se deduce de `rompe`, y la prueba lo compara con la tabla
+ * del encargo.
+ */
+export const SITUACIONES_T1_8 = [
+  { id: "t8-01", texto: "Un empleado compró tinta con plata de la caja. No pidió factura ni recibo.", rompe: 2 },
+  { id: "t8-02", texto: "La empresa le entregó la mercancía a un cliente, pero no le hizo factura.", rompe: 2 },
+  { id: "t8-03", texto: "La factura de un escritorio que compraron está en una carpeta. Nadie la pasó a los libros.", rompe: 3 },
+  { id: "t8-04", texto: "Llegó el recibo del arriendo del mes. Sigue en un cajón sin anotar.", rompe: 3 },
+  { id: "t8-05", texto: "La compra de papelería quedó anotada en los libros, pero la dejaron por fuera del informe del mes.", rompe: 4 },
+  { id: "t8-06", texto: "El pago de la luz está anotado, pero no aparece en el informe que recibieron los jefes.", rompe: 4 },
+  { id: "t8-07", texto: "Los informes se hicieron y se guardaron. Los jefes no los han abierto.", rompe: 5 },
+  { id: "t8-08", texto: "El informe muestra que un producto está dando pérdida. Nadie lo ha leído.", rompe: 5 },
+];
+
+/*
+ * Un acierto por punto, VERSIÓN FINAL: «este hecho no llegó a X puntos» (Gen)
+ * y «este hecho» en vez de «este gasto» (Levi — la 2 es una venta). El ✅ es
+ * la marca del sitio para el tono de la devolución, como en todo el tema.
+ */
+export const ACIERTO_T1_8 = {
+  2: "✅ Se rompió en el papel. Sin factura no queda un papel, así que este hecho no se anota, no llega al informe y los jefes deciden sin saberlo. Se apagaron cuatro puntos.",
+  3: "✅ Se rompió al anotar. El papel está. Pero nadie lo pasó a los libros, así que este hecho no llega al informe y los jefes deciden sin saberlo. Se apagaron tres puntos.",
+  4: "✅ Se rompió en el informe. Este hecho está anotado, pero lo dejaron por fuera del informe. Los jefes deciden sin ver este dato. Se apagaron dos puntos.",
+  5: "✅ El informe sí se hizo: los primeros cuatro puntos quedaron encendidos. Pero los jefes no decidieron nada con él. Por eso el último punto se apaga y la flecha de vuelta no se enciende.",
+};
+
+/*
+ * ═══════════ LA REGLA DEL ERROR ES UNA COMPARACIÓN, NADA MÁS ═══════════
+ *
+ * A · tocó un punto ANTERIOR al roto: hasta ahí todo funcionó.
+ * B · tocó un punto POSTERIOR: está mirando el síntoma, no la causa — el
+ *     mismo razonamiento que T1-7. Texto y rótulo en su versión de Levi.
+ */
+export const ERROR_T1_8 = {
+  A: "❌ Hasta ese punto todo funcionó bien. Mira más adelante: el corte está después.",
+  B: "❌ Este hecho nunca llegó a ese punto. Se cortó antes, así que desde ahí ya no aparece.",
+};
+export const ROTULO_ERROR_B_T1_8 = "este hecho no llegó aquí";
+
+/* El rótulo escrito de un punto apagado: apagado no se dice solo con opacidad. */
+export const ROTULO_APAGADO = "apagado";
+
+/*
+ * El contador, texto final de Levi: cuenta apagones, no puntos alcanzados.
+ * «Se apagaron [N] puntos.» y, con uno solo, «Se apagó 1 punto.».
+ */
+export const CONTADOR_T1_8 = "Se apagaron [N] puntos.";
+export const CONTADOR_UNO_T1_8 = "Se apagó 1 punto.";
+export const ROTULO_FLECHA_APAGADA = "pero no cambió nada";
+
+/*
+ * ═══════════ LA PREDICCIÓN ═══════════
+ *
+ * Solo después de acertar el punto y antes de que corra la cascada. Sin
+ * puntaje: es para comprometerse con una idea antes de verla. Los dos cierres
+ * no dicen el número — ya lo dice el contador.
+ */
+export const PREDICCION_T1_8 = {
+  pregunta: "¿Cuántos puntos se van a apagar?",
+  /* De 1 a 4: con el punto roto apagado, ninguna situación deja cero ni cinco. */
+  opciones: [1, 2, 3, 4],
+  acerto: "Lo predijiste bien. Mira hasta dónde alcanzó a llegar.",
+  fallo: "No era lo que creías. Mira hasta dónde alcanzó a llegar.",
+};
+
+export const CIERRE_T1_8 = "Mientras más temprano se rompe, a menos puntos llega el hecho. La empresa sigue andando. Pero decide sin saber lo que pasó.";
+
+/*
+ * Un texto alternativo por situación, de Levi. Cada uno dice lo que queda en
+ * pantalla con ESA situación, así que solo se lee el de la que está.
+ */
+export const ALT_T1_8 = {
+  "t8-01": "El hecho es la compra de tinta sin factura. Se apagan los últimos cuatro puntos: «Queda un papel», «Se anota», «Sale un informe» y «Los jefes deciden».",
+  "t8-02": "El hecho es la entrega de mercancía sin factura. Se apagan los últimos cuatro puntos: «Queda un papel», «Se anota», «Sale un informe» y «Los jefes deciden».",
+  "t8-03": "El hecho es la factura del escritorio que compraron y nadie pasó a los libros. Se apagan los últimos tres puntos: «Se anota», «Sale un informe» y «Los jefes deciden».",
+  "t8-04": "El hecho es el recibo del arriendo del mes que sigue sin anotar. Se apagan los últimos tres puntos: «Se anota», «Sale un informe» y «Los jefes deciden».",
+  "t8-05": "El hecho es la compra de papelería que quedó por fuera del informe del mes. Se apagan los últimos dos puntos: «Sale un informe» y «Los jefes deciden».",
+  "t8-06": "El hecho es el pago de la luz que no aparece en el informe. Se apagan los últimos dos puntos: «Sale un informe» y «Los jefes deciden».",
+  "t8-07": "El hecho son los informes guardados que los jefes no abrieron. Los cuatro primeros puntos quedan encendidos, se apaga «Los jefes deciden» y la flecha de vuelta no se enciende.",
+  "t8-08": "El hecho es el informe que muestra una pérdida y nadie lo leyó. Los cuatro primeros puntos quedan encendidos, se apaga «Los jefes deciden» y la flecha de vuelta no se enciende.",
+};

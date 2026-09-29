@@ -82,7 +82,7 @@ export default function PrediccionTasa({ banco, Marco, rotulo, titulo, acento, o
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_MAQUINAS}</style>
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={filas.length} hechos={i + (elegida ? 1 : 0)} etiqueta="Escenario" />
+        <Pulsos total={filas.length} hechos={i + (elegida ? 1 : 0)} enCurso={i + 1} etiqueta="Escenario" />
       </div>
       <Enunciado rotulo="EL ESCENARIO" acento={acento}>{fila.texto}</Enunciado>
       <svg viewBox="0 0 160 96" width="170" height="102" aria-hidden="true" style={{ display: "block", margin: "8px auto 0" }}>

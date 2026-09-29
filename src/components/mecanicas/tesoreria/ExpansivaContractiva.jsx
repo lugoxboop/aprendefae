@@ -88,7 +88,7 @@ export default function ExpansivaContractiva({ onCompletar }) {
   return (
     <Tesoreria rotulo={`TESORERÍA · ${caso.titulo.toUpperCase()}`} titulo="¿Cuál de las dos es mejor aquí?" acento={FAE.teal}>
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={duelos.length} hechos={i + (elegido ? 1 : 0)} etiqueta="Duelo" />
+        <Pulsos total={duelos.length} hechos={i + (elegido ? 1 : 0)} enCurso={i + 1} etiqueta="Duelo" />
       </div>
       <Enunciado rotulo="LA ECONOMÍA" acento={FAE.teal}>{caso.caso}</Enunciado>
       <Opciones>

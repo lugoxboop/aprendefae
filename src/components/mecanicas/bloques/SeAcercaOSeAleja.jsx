@@ -101,7 +101,7 @@ export default function SeAcercaOSeAleja({ filas, Marco, rotulo, titulo, acento,
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={orden.length} hechos={i + (elegida ? 1 : 0)} etiqueta="Cambio" />
+        <Pulsos total={orden.length} hechos={i + (elegida ? 1 : 0)} enCurso={i + 1} etiqueta="Cambio" />
       </div>
       <Enunciado rotulo="EL CAMBIO" acento={acento}>{fila.cambio}</Enunciado>
       <div style={{ marginTop: "10px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>

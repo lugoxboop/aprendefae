@@ -247,7 +247,7 @@ export default function DesdeDondePreguntan({ Marco, rotulo, titulo, acento, onC
       <style>{CSS}</style>
       <Encabezado objetivo={T1_1.objetivo} consigna={T1_1.consigna} />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} etiqueta="Pregunta" />
+        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
       </div>
 
       {/*

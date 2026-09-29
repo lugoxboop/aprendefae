@@ -106,7 +106,7 @@ export default function PartidaRepaso({ items, historial, onTerminar }) {
     <div data-partida-repaso>
       <style>{CSS_JUEGO}</style>
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={items.length} hechos={i + (elegida ? 1 : 0)} etiqueta="Ítem" />
+        <Pulsos total={items.length} hechos={i + (elegida ? 1 : 0)} enCurso={i + 1} etiqueta="Ítem" />
       </div>
 
       <div key={item.clave}>

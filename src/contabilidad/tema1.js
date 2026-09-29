@@ -7,6 +7,8 @@ import {
   T1_5, ERROR_T1_5, DESDE_EL_CORTO,
   T1_6, CONCEPTOS, PRIMERO, SEGUNDO, ERROR_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
   LINEAS, FLECHAS, ERROR_T1_7, ACIERTO_T1_7,
+  T1_8, PUNTOS_T1_8, SITUACIONES_T1_8, ACIERTO_T1_8, ERROR_T1_8, PREDICCION_T1_8,
+  CONTADOR_T1_8, CONTADOR_UNO_T1_8,
 } from "../data/contabilidadTema1.js";
 import { ACTIVO, PASIVO, PATRIMONIO, tipoDeCuenta, pesos } from "../data/contabilidad.js";
 
@@ -444,6 +446,110 @@ export function evaluarT1_7(desdeId, hastaId) {
   return { ok: false, flecha: null, texto: ERROR_T1_7.A, patron: "A" };
 }
 
+/* ═══════════════════ T1-8 · ¿DÓNDE SE ROMPIÓ? ═══════════════════ */
+
+export const TOTAL_PUNTOS = PUNTOS_T1_8.length;
+export const PRIMER_PUNTO = PUNTOS_T1_8[0].n;
+
+/*
+ * ═══════════ EL PUNTO 1 NO SE PUEDE TOCAR ═══════════
+ *
+ * Es la actividad de la empresa: o la empresa hace algo, o no hay ciclo del
+ * que hablar. Nunca es la respuesta, así que ofrecerlo sería una trampa sin
+ * valor. Los tocables se deducen del anillo, no se enumeran.
+ */
+export const TOCABLES_T1_8 = PUNTOS_T1_8.filter((p) => p.n !== PRIMER_PUNTO).map((p) => p.n);
+export const esTocable = (n) => TOCABLES_T1_8.includes(n);
+
+export const situacionPorId = (id) => SITUACIONES_T1_8.find((s) => s.id === id) ?? null;
+export const puntoPorN = (n) => PUNTOS_T1_8.find((p) => p.n === n) ?? null;
+
+/*
+ * ═══════════ EL PUNTO ROTO TAMBIÉN SE APAGA ═══════════
+ *
+ * Regla de Levi y Mateo: el punto donde se rompe el ciclo cuenta como
+ * apagado, igual que los de después. Si no queda papel, el papel no pasó; el
+ * hecho no llegó ahí. Así ya no hay ninguna situación con cero apagados: la
+ * del punto 5 apaga el 5 y, además, la flecha de vuelta.
+ *
+ *   se rompe en 2 → 2, 3, 4, 5      se rompe en 4 → 4, 5
+ *   se rompe en 3 → 3, 4, 5         se rompe en 5 → 5 (+ la flecha)
+ *
+ * A cuántos puntos no llega el hecho, DEDUCIDO: el roto y los que siguen.
+ */
+export const noAlcanzados = (rompe) => TOTAL_PUNTOS - rompe + 1;
+
+/** Los puntos que se apagan, en el orden en que se apagan: el roto primero. */
+export const apagadosDe = (rompe) => PUNTOS_T1_8.filter((p) => p.n >= rompe).map((p) => p.n);
+
+/** Solo en el punto 5 se apaga la flecha de vuelta, y es lo único que se apaga. */
+export const apagaLaFlecha = (rompe) => rompe === TOTAL_PUNTOS;
+
+/*
+ * El texto del contador para `n` puntos apagados. El número es lo único que
+ * cambia; con uno solo, la frase va en singular entera («Se apagó 1 punto.»).
+ * Con la regla del punto roto apagado nunca hay cero: pedirlo es un error.
+ */
+export function textoDelContador(n) {
+  if (!(n >= 1)) throw new Error(`no hay contador para ${n} puntos apagados`);
+  return n === 1 ? CONTADOR_UNO_T1_8 : CONTADOR_T1_8.replace("[N]", String(n));
+}
+
+/*
+ * ═══════════ UNA DE CADA PUNTO, Y UNA AL AZAR ═══════════
+ *
+ * Cinco de ocho, libre, puede dejar fuera entero el punto 5 —y con él la
+ * flecha apagada, que es la lección central—. Entra una situación de cada
+ * punto tocable y la quinta sale del resto.
+ */
+export function sortearT1_8(barajar, cuantos = T1_8.porPartida) {
+  const porPunto = TOCABLES_T1_8.map((n) => SITUACIONES_T1_8.filter((s) => s.rompe === n));
+  for (const [i, lista] of porPunto.entries()) {
+    if (lista.length === 0) throw new Error(`no hay ninguna situación que se rompa en el punto ${TOCABLES_T1_8[i]}`);
+  }
+  const elegidas = porPunto.map((lista) => barajar(lista)[0]);
+  const resto = SITUACIONES_T1_8.filter((s) => !elegidas.includes(s));
+  return barajar([...elegidas, ...barajar(resto).slice(0, cuantos - elegidas.length)]);
+}
+
+/*
+ * ═══════════ LA REGLA ES DETERMINÍSTICA ═══════════
+ *
+ * El número tocado contra el correcto. Antes es A, después es B. Nada más.
+ *
+ * Y en un error NO corre la cascada ni se apaga nada: una cascada desde el
+ * punto equivocado enseñaría algo falso. Lo único que cambia en el anillo es
+ * el punto tocado —parpadea; en la B, además, se atenúa con su rótulo, que es
+ * verdad: ese hecho no llegó ahí—.
+ */
+export function evaluarT1_8(situacion, tocado) {
+  if (!esTocable(tocado)) throw new Error(`el punto ${tocado} no se puede tocar`);
+  const rompe = situacion.rompe;
+  if (tocado === rompe) {
+    const texto = ACIERTO_T1_8[rompe];
+    if (!texto) throw new Error(`el punto ${rompe} no tiene devolución de acierto`);
+    return {
+      ok: true, patron: null, texto, rompe,
+      noAlcanzados: noAlcanzados(rompe),
+      apagados: apagadosDe(rompe),
+      flechaApagada: apagaLaFlecha(rompe),
+    };
+  }
+  const patron = tocado < rompe ? "A" : "B";
+  return {
+    ok: false, patron, texto: ERROR_T1_8[patron], tocado,
+    /* Solo la B marca el punto: ese hecho no llegó ahí. La A no revela nada. */
+    atenuado: patron === "B" ? tocado : null,
+  };
+}
+
+/** La predicción no puntúa: solo dice si coincidió, para elegir el cierre. */
+export function evaluarPrediccion(situacion, elegido) {
+  if (!PREDICCION_T1_8.opciones.includes(elegido)) throw new Error(`«${elegido}» no es una opción de la predicción`);
+  const acerto = elegido === noAlcanzados(situacion.rompe);
+  return { acerto, texto: acerto ? PREDICCION_T1_8.acerto : PREDICCION_T1_8.fallo };
+}
+
 /* ═══════════════════ PUNTAJE, IGUAL EN LAS DOS ═══════════════════ */
 
 export const VALOR_SEGUNDO = 0.5;
@@ -477,6 +583,9 @@ export const empresaDeItem = (id) => {
 
 /* T1-4 y T1-5 comparten banco: el ítem es la transacción, y se lee tal cual. */
 export const hechoDeItem = (id) => TRANSACCIONES_CAP2.find((t) => t.id === id)?.texto ?? null;
+
+/* T1-8: la situación que había que leer. */
+export const situacionDeItem = (id) => situacionPorId(id)?.texto ?? null;
 
 /* T1-6: la ficha que había que colocar. */
 export const conceptoDeItem = (id) => CONCEPTOS.find((c) => c.id === id)?.nombre ?? null;

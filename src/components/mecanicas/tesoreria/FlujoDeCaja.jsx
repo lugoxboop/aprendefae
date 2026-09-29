@@ -130,7 +130,7 @@ export default function FlujoDeCaja({ onCompletar }) {
   return (
     <Tesoreria rotulo="TESORERÍA · FLUJO DE CAJA" titulo="Etapa 1 · ¿Por qué canal llega a la Demanda Agregada?" acento={FAE.ambar}>
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={medidas.length} hechos={i + (elegido ? 1 : 0)} etiqueta="Medida" />
+        <Pulsos total={medidas.length} hechos={i + (elegido ? 1 : 0)} enCurso={i + 1} etiqueta="Medida" />
       </div>
       <Enunciado rotulo="LA MEDIDA" acento={FAE.ambar}>{medida.medida}</Enunciado>
       <Opciones>

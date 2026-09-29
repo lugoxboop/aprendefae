@@ -156,7 +156,7 @@ export default function LaEcuacionEnMovimiento({ Marco, rotulo, titulo, acento, 
       <style>{CSS}</style>
       <Encabezado objetivo={T1_5.objetivo} consigna={T1_5.consigna} />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={total} hechos={i + (r && !esperandoReintento ? 1 : 0)} etiqueta="Hecho" />
+        <Pulsos total={total} hechos={i + (r && !esperandoReintento ? 1 : 0)} enCurso={i + 1} etiqueta="Hecho" />
       </div>
 
       {/* Aquí dentro no entra el vocabulario del Tema 2. */}
@@ -241,7 +241,9 @@ export default function LaEcuacionEnMovimiento({ Marco, rotulo, titulo, acento, 
               margin: "5px 0 0", fontSize: "11.5px",
               color: cuadra ? "rgba(248,249,250,0.7)" : FAE.coral,
             }}>
-              {cuadra ? PIE_T1_5.cuadra : PIE_T1_5.noCuadra}
+              {cuadra
+                ? PIE_T1_5.cuadra.replace("[X]", pesos(izquierda))
+                : PIE_T1_5.noCuadra.replace("[Z]", pesos(Math.abs(izquierda - derecha)))}
             </p>
           )}
         </div>
@@ -270,15 +272,13 @@ export default function LaEcuacionEnMovimiento({ Marco, rotulo, titulo, acento, 
                     display: "flex", flexWrap: "wrap", gap: "2px 8px", alignItems: "baseline",
                     fontSize: "11px", color: "rgba(248,249,250,0.65)",
                   }}>
-                    <span style={{
-                      flex: "none", width: "15px", height: "15px", borderRadius: "999px",
-                      background: NEUTRO, color: NAVY_DEL_CHIP, fontFamily: SORA,
-                      fontSize: "9px", fontWeight: 700, lineHeight: "15px", textAlign: "center",
-                    }}>
-                      {k + 1}
-                    </span>
+                    {/* «Hecho [n]: [X] = [Y] + [Z]» — con el desglose de los dos lados. */}
                     <span style={{ ...CIFRA }}>
-                      {pesos(t[ACTIVO])} = {pesos(t[PASIVO])} + {pesos(t[PATRIMONIO])}
+                      {HISTORIAL_T1_5.fila
+                        .replace("[n]", String(k + 1))
+                        .replace("[X]", pesos(t[ACTIVO]))
+                        .replace("[Y]", pesos(t[PASIVO]))
+                        .replace("[Z]", pesos(t[PATRIMONIO]))}
                     </span>
                   </li>
                 );

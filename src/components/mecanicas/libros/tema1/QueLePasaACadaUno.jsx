@@ -216,7 +216,7 @@ export default function QueLePasaACadaUno({ Marco, rotulo, titulo, acento, onCom
       <style>{CSS}</style>
       <Encabezado objetivo={T1_4.objetivo} consigna={T1_4.consigna} />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} etiqueta="Hecho" />
+        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Hecho" />
       </div>
 
       {/* Aquí dentro no entra el vocabulario del Tema 2. Hay una prueba que mira

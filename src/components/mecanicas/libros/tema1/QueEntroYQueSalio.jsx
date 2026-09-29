@@ -176,7 +176,7 @@ export default function QueEntroYQueSalio({ Marco, rotulo, titulo, acento, onCom
       <style>{CSS}</style>
       <Encabezado objetivo={T1_2.objetivo} consigna={T1_2.consigna} />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} etiqueta="Empresa" />
+        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Empresa" />
       </div>
 
       {/*

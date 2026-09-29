@@ -280,7 +280,7 @@ export default function SoltarEnUnLado({ Marco, rotulo, titulo, acento, onComple
       <style>{CSS}</style>
       <EstilosDeVerbos />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={t.items.length} hechos={t.i + (retro && !esperandoReintento ? 1 : 0)} etiqueta="Registro" />
+        <Pulsos total={t.items.length} hechos={t.i + (retro && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Registro" />
       </div>
 
       {/* El enunciado: dos palabras, la cuenta y qué le pasa. */}

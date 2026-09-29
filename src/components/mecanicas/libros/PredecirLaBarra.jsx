@@ -131,7 +131,7 @@ export default function PredecirLaBarra({ banco, Marco, rotulo, titulo, acento, 
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <EstilosDeVerbos />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={t.items.length} hechos={t.i + (retro ? 1 : 0)} etiqueta="Combinación" />
+        <Pulsos total={t.items.length} hechos={t.i + (retro ? 1 : 0)} enCurso={t.i + 1} etiqueta="Combinación" />
       </div>
 
       <Enunciado rotulo="LO QUE VA A PASAR" acento={acento}>

@@ -161,7 +161,7 @@ export default function Electrocardiograma({ onCompletar }) {
       <style>{CSS_JUEGO}</style>
 
       <div style={{ marginBottom: "14px" }}>
-        <Pulsos total={total} hechos={i + (elegido ? 1 : 0)} etiqueta={etapa === 1 ? "Definición" : "Fragmento"} />
+        <Pulsos total={total} hechos={i + (elegido ? 1 : 0)} enCurso={i + 1} etiqueta={etapa === 1 ? "Definición" : "Fragmento"} />
       </div>
 
       {etapa === 1 ? (

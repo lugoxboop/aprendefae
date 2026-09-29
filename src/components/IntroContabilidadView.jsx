@@ -11,6 +11,7 @@ import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
+import { bloqueDeDificultad } from "../hacer/bloques.js";
 import { FAE as TEMA1_ACENTO } from "../theme.js";
 import DesdeDondePreguntan from "./mecanicas/libros/tema1/DesdeDondePreguntan.jsx";
 import QueEntroYQueSalio from "./mecanicas/libros/tema1/QueEntroYQueSalio.jsx";
@@ -18,7 +19,8 @@ import QueLePasaACadaUno from "./mecanicas/libros/tema1/QueLePasaACadaUno.jsx";
 import LaEcuacionEnMovimiento from "./mecanicas/libros/tema1/LaEcuacionEnMovimiento.jsx";
 import EnCualEstadoAparece from "./mecanicas/libros/tema1/EnCualEstadoAparece.jsx";
 import LaArticulacion from "./mecanicas/libros/tema1/LaArticulacion.jsx";
-import { T1_1, T1_2, T1_4, T1_5, T1_6, T1_7 } from "../data/contabilidadTema1.js";
+import DondeSeRompio from "./mecanicas/libros/tema1/DondeSeRompio.jsx";
+import { T1_1, T1_2, T1_4, T1_5, T1_6, T1_7, T1_8 } from "../data/contabilidadTema1.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZAS_INTRO } from "../data/contabilidadPiezas234.js";
 import { ESCENAS_INTRO } from "./mecanicas/libros/intro/escenasIntro.jsx";
@@ -59,20 +61,36 @@ export const TITULO = "Introducción a la contabilidad";
  *
  * Hay una prueba que compara esta lista con el catálogo. Se exporta para eso.
  *
- * Las seis están abiertas desde que existen las piezas 2, 3 y 4 del Aprender.
- * Hasta entonces las cuatro últimas estaban construidas y fuera de las dos
+ * Las siete están abiertas. T1-4 a T1-7 desde que existen las piezas 2, 3 y 4
+ * del Aprender; T1-8 dependía solo de la pieza 1 y salió con ella.
+ * Hasta entonces esas cuatro estaban construidas y fuera de las dos
  * puertas, porque preguntaban por cosas que nadie le había explicado todavía
  * al estudiante.
  */
-const ROTULO = "CIMIENTOS";
 export const JUEGOS = [
   { id: T1_1.id, Mecanica: DesdeDondePreguntan, titulo: T1_1.subtema },
   { id: T1_2.id, Mecanica: QueEntroYQueSalio, titulo: T1_2.subtema },
+  /* T1-8 va tercera: practica la pieza 1, así que no esperó a las otras tres. */
+  { id: T1_8.id, Mecanica: DondeSeRompio, titulo: T1_8.subtema },
   { id: T1_4.id, Mecanica: QueLePasaACadaUno, titulo: T1_4.subtema },
   { id: T1_5.id, Mecanica: LaEcuacionEnMovimiento, titulo: T1_5.subtema },
   { id: T1_6.id, Mecanica: EnCualEstadoAparece, titulo: T1_6.subtema },
   { id: T1_7.id, Mecanica: LaArticulacion, titulo: T1_7.subtema },
 ];
+
+/*
+ * ═══════════ EL RÓTULO DEL BLOQUE SALE DEL CATÁLOGO ═══════════
+ *
+ * Antes era una constante, «CIMIENTOS», para las siete: T1-8 decía Cimientos
+ * siendo de Aplicación, y T1-7 lo mismo siendo de Maestría. Ahora sale de la
+ * dificultad que la actividad trae en `subjects.js`, que es de donde el
+ * camino saca sus bloques. Así el rótulo del marco y el bloque del camino no
+ * pueden decir cosas distintas.
+ */
+export function rotuloDeBloque(actividadId) {
+  const b = bloqueDeDificultad(clasificacionDe(MATERIA, TEMA, actividadId)?.dificultad);
+  return b ? b.nombre.toUpperCase() : null;
+}
 
 export default function IntroContabilidadView({ modo = null, nodoInicial = null, onBack }) {
   const esAprender = modo === APRENDER;
@@ -167,7 +185,7 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
               <juego.Mecanica
                 Marco={MarcoLibros}
                 acento={TEMA1_ACENTO.ambar}
-                rotulo={ROTULO}
+                rotulo={rotuloDeBloque(juego.id)}
                 titulo={juego.titulo}
                 onCompletar={(pct, ms, detalle) => completar(juego.id, pct, ms, detalle)}
               />

@@ -104,7 +104,7 @@ export function EtapaDiario({ onTerminar, hilo }) {
 
   return (
     <div>
-      <Pulsos total={TRANSACCIONES.length} hechos={i + (retro ? 1 : 0)} etiqueta="Asiento" />
+      <Pulsos total={TRANSACCIONES.length} hechos={i + (retro ? 1 : 0)} enCurso={i + 1} etiqueta="Asiento" />
 
       <Superficie
         id="diario"
@@ -193,7 +193,7 @@ export function EtapaMayor({ onTerminar, hilo, diario }) {
 
   return (
     <div>
-      <Pulsos total={MOVIMIENTOS.length} hechos={i + (retro ? 1 : 0)} etiqueta="Valor" />
+      <Pulsos total={MOVIMIENTOS.length} hechos={i + (retro ? 1 : 0)} enCurso={i + 1} etiqueta="Valor" />
 
       <div style={{ display: "flex", flexDirection: "column", gap: "9px", marginTop: "12px" }}>
         {/* El renglón mayorizado NO se va del diario: recibe su marca y se queda.
@@ -290,7 +290,7 @@ export function EtapaSaldos({ onTerminar, hilo, diario }) {
 
   return (
     <div>
-      <Pulsos total={cuentas.length} hechos={i + (retro ? 1 : 0)} etiqueta="Cuenta" />
+      <Pulsos total={cuentas.length} hechos={i + (retro ? 1 : 0)} enCurso={i + 1} etiqueta="Cuenta" />
 
       <div style={{ display: "flex", flexDirection: "column", gap: "9px", marginTop: "12px" }}>
         <Superficie id="diario" titulo="LIBRO DIARIO" resumen={`${diario.length} asientos`}>
@@ -377,7 +377,7 @@ export function EtapaEstado({ onTerminar, hilo, diario }) {
 
   return (
     <div>
-      <Pulsos total={cuentas.length} hechos={i + (retro ? 1 : 0)} etiqueta="Cuenta" />
+      <Pulsos total={cuentas.length} hechos={i + (retro ? 1 : 0)} enCurso={i + 1} etiqueta="Cuenta" />
 
       <div style={{ display: "flex", flexDirection: "column", gap: "9px", marginTop: "12px" }}>
         <Superficie id="diario" titulo="LIBRO DIARIO" resumen={`${diario.length} asientos`}>
