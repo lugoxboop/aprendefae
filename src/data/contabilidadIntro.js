@@ -83,16 +83,25 @@ export const SIEMBRA_DE_LOS_VERBOS = "Cuenta los verbos de la frase del libro. S
 /* ═══════════════════ LAS CINCO ESTACIONES ═══════════════════ */
 
 /*
- * El nombre corto va en el anillo; el rótulo es el del Gráfico 1.1 y se lee
- * entero cuando la estación se enciende. Los dos van escritos: nada de esta
- * pieza se comunica solo con color o solo con posición.
+ * ═══════════ EL RÓTULO SIMPLE ES EL QUE SE LEE ═══════════
+ *
+ * `nombre` es lo que dice cada estación en pantalla, en todos los sitios donde
+ * aparece el anillo: la columna de esta pieza, T1-1 y T1-8. Son los rótulos
+ * simples del apéndice de Levi, y reemplazan en pantalla al texto largo del
+ * Gráfico 1.1.
+ *
+ * `delGrafico` es ese texto largo, textual del libro (p. 6). Se queda aquí
+ * como fuente del ciclo, pero NO se pinta: una prueba lo vigila.
+ *
+ * Nada de esta pieza se comunica solo con color o solo con posición: cada
+ * estación lleva su número y su rótulo escritos.
  */
 export const ESTACIONES = [
-  { n: 1, nombre: "La actividad de la empresa", rotulo: "La actividad de la empresa origina las operaciones administrativas", forma: "hecho" },
-  { n: 2, nombre: "El reflejo documental", rotulo: "Las operaciones tienen un reflejo documental", forma: "factura" },
-  { n: 3, nombre: "El registro contable", rotulo: "Los documentos son la base para los registros contables", forma: "renglon" },
-  { n: 4, nombre: "El resumen de la situación", rotulo: "La contabilidad suministra resúmenes de la situación de la empresa", forma: "estado" },
-  { n: 5, nombre: "El análisis orienta la decisión", rotulo: "El análisis de los datos orienta las decisiones de la administración", forma: "pregunta" },
+  { n: 1, nombre: "Pasa algo en la empresa", delGrafico: "La actividad de la empresa origina las operaciones administrativas", forma: "hecho" },
+  { n: 2, nombre: "Queda un papel", delGrafico: "Las operaciones tienen un reflejo documental", forma: "factura" },
+  { n: 3, nombre: "Se anota", delGrafico: "Los documentos son la base para los registros contables", forma: "renglon" },
+  { n: 4, nombre: "Sale un informe", delGrafico: "La contabilidad suministra resúmenes de la situación de la empresa", forma: "estado" },
+  { n: 5, nombre: "Los jefes deciden", delGrafico: "El análisis de los datos orienta las decisiones de la administración", forma: "pregunta" },
 ];
 
 /* ═══════════════════ CAPA 2 · LOS CINCO SEGMENTOS ═══════════════════ */

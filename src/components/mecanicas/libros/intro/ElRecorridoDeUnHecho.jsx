@@ -81,14 +81,7 @@ function Estacion({ e, contenido, refCaja, repeticion }) {
           }}>
             {e.nombre}
           </span>
-          {e.encendida && (
-            <span data-rotulo style={{
-              display: "block", marginTop: "2px", fontSize: "10px", lineHeight: 1.35,
-              color: "rgba(248,249,250,0.6)",
-            }}>
-              {e.rotulo}
-            </span>
-          )}
+          {/* Solo el rótulo simple. El texto largo del Gráfico 1.1 ya no se pinta. */}
         </span>
       </div>
       {contenido && <div key={repeticion} className="fae-t1-aparece" style={{ marginTop: "7px" }}>{contenido}</div>}

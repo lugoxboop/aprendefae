@@ -254,6 +254,23 @@ test("★★ las cinco estaciones están a la vista desde el primer momento", ()
   desmontar();
 });
 
+test("★★★ las estaciones dicen los rótulos simples, y el texto largo del Gráfico 1.1 no se pinta nunca", () => {
+  assert.deepEqual(ESTACIONES.map((e) => e.nombre), [
+    "Pasa algo en la empresa", "Queda un papel", "Se anota", "Sale un informe", "Los jefes deciden",
+  ]);
+  const { caja, desmontar } = montar(ElRecorridoDeUnHecho);
+  try {
+    /* Hasta el cierre, con las cinco encendidas: ahí es donde antes salía. */
+    for (let k = 0; k < PASOS; k += 1) {
+      for (const e of ESTACIONES) {
+        assert.ok(!caja.textContent.includes(e.delGrafico), `paso ${k + 1}: se pinta el texto del Gráfico de la estación ${e.n}`);
+      }
+      tocar(siguiente(caja));
+    }
+    for (const e of ESTACIONES) assert.ok(!caja.textContent.includes(e.delGrafico));
+  } finally { desmontar(); }
+});
+
 test("★★ el recorrido llega al cierre y ahí se queda", () => {
   const { caja, desmontar } = montar(ElRecorridoDeUnHecho);
   for (let k = 0; k < PASOS; k += 1) tocar(siguiente(caja));

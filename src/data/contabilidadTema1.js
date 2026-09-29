@@ -682,21 +682,13 @@ export const T1_8 = {
  * Por eso todos los textos dicen «este hecho», nunca «la empresa se queda
  * sin informe». Hay una prueba que barre el banco buscando esa frase.
  *
- * ═══════════ LOS RÓTULOS SIMPLES, NUNCA LOS DEL GRÁFICO ═══════════
+ * ═══════════ LOS RÓTULOS SON LOS DE LA PIEZA 1 ═══════════
  *
- * Los cinco rótulos cortos del encargo. El número de cada punto sale de las
- * estaciones de la pieza 1, así que no hay dos anillos que puedan contar
- * distinto; el texto crudo del Gráfico 1.1 (`rotulo` de la pieza) no entra.
+ * El número y el rótulo de cada punto salen de las estaciones de la pieza 1,
+ * que ya dicen los rótulos simples («Pasa algo en la empresa»…). Un solo
+ * sitio: si cambia allí, cambia aquí.
  */
-const ROTULOS_T1_8 = {
-  1: "Pasa algo en la empresa",
-  2: "Queda un papel",
-  3: "Se anota",
-  4: "Sale un informe",
-  5: "Los jefes deciden",
-};
-
-export const PUNTOS_T1_8 = ESTACIONES.map((e) => ({ n: e.n, rotulo: ROTULOS_T1_8[e.n] }));
+export const PUNTOS_T1_8 = ESTACIONES.map((e) => ({ n: e.n, rotulo: e.nombre }));
 
 /*
  * Las ocho situaciones, en su VERSIÓN FINAL: la 3, 4, 5 y 6 las reescribió

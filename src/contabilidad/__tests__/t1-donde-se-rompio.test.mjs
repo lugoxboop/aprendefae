@@ -97,8 +97,10 @@ test("★★★ los cinco rótulos son los simples, en el orden de la pieza 1, y
     "Pasa algo en la empresa", "Queda un papel", "Se anota", "Sale un informe", "Los jefes deciden",
   ]);
   assert.deepEqual(PUNTOS_T1_8.map((p) => p.n), ESTACIONES.map((e) => e.n), "el anillo cuenta distinto que la pieza 1");
+  /* Los mismos que dice la pieza 1, no una copia que pueda separarse. */
+  assert.deepEqual(PUNTOS_T1_8.map((p) => p.rotulo), ESTACIONES.map((e) => e.nombre));
   for (const e of ESTACIONES) {
-    assert.ok(!PUNTOS_T1_8.some((p) => p.rotulo === e.rotulo), `se coló el rótulo crudo del Gráfico 1.1: «${e.rotulo}»`);
+    assert.ok(!PUNTOS_T1_8.some((p) => p.rotulo === e.delGrafico), `se coló el rótulo crudo del Gráfico 1.1: «${e.delGrafico}»`);
   }
 });
 
@@ -538,6 +540,17 @@ test("★★★ T1-8 está en las dos puertas, tercera en el camino, con la mism
   assert.deepEqual(JUEGOS.map((j) => j.id), orden, "el registro de la vista va en otro orden");
   /* 260 FP mientras T1-3 siga retenida. */
   assert.equal(deHacer.reduce((x, a) => x + a.clasificacion.fpBase, 0), 260);
+});
+
+test("★★★ el marco de cada actividad dice su bloque: T1-8 es Aplicación, no Cimientos", async () => {
+  const { rotuloDeBloque, JUEGOS } = await import("../../components/IntroContabilidadView.jsx");
+  const esperado = {
+    "t1-desde-donde-preguntan": "CIMIENTOS", "t1-que-entro-y-que-salio": "CIMIENTOS",
+    "t1-donde-se-rompio": "APLICACIÓN", "t1-que-le-pasa-a-cada-uno": "APLICACIÓN",
+    "t1-la-ecuacion-en-movimiento": "ANÁLISIS", "t1-en-cual-estado-aparece": "ANÁLISIS",
+    "t1-la-articulacion": "MAESTRÍA",
+  };
+  assert.deepEqual(Object.fromEntries(JUEGOS.map((j) => [j.id, rotuloDeBloque(j.id)])), esperado);
 });
 
 test("medio, 25 FP y cinco situaciones por partida", () => {

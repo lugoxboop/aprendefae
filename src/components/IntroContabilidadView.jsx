@@ -11,6 +11,7 @@ import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
+import { bloqueDeDificultad } from "../hacer/bloques.js";
 import { FAE as TEMA1_ACENTO } from "../theme.js";
 import DesdeDondePreguntan from "./mecanicas/libros/tema1/DesdeDondePreguntan.jsx";
 import QueEntroYQueSalio from "./mecanicas/libros/tema1/QueEntroYQueSalio.jsx";
@@ -66,7 +67,6 @@ export const TITULO = "Introducción a la contabilidad";
  * puertas, porque preguntaban por cosas que nadie le había explicado todavía
  * al estudiante.
  */
-const ROTULO = "CIMIENTOS";
 export const JUEGOS = [
   { id: T1_1.id, Mecanica: DesdeDondePreguntan, titulo: T1_1.subtema },
   { id: T1_2.id, Mecanica: QueEntroYQueSalio, titulo: T1_2.subtema },
@@ -77,6 +77,20 @@ export const JUEGOS = [
   { id: T1_6.id, Mecanica: EnCualEstadoAparece, titulo: T1_6.subtema },
   { id: T1_7.id, Mecanica: LaArticulacion, titulo: T1_7.subtema },
 ];
+
+/*
+ * ═══════════ EL RÓTULO DEL BLOQUE SALE DEL CATÁLOGO ═══════════
+ *
+ * Antes era una constante, «CIMIENTOS», para las siete: T1-8 decía Cimientos
+ * siendo de Aplicación, y T1-7 lo mismo siendo de Maestría. Ahora sale de la
+ * dificultad que la actividad trae en `subjects.js`, que es de donde el
+ * camino saca sus bloques. Así el rótulo del marco y el bloque del camino no
+ * pueden decir cosas distintas.
+ */
+export function rotuloDeBloque(actividadId) {
+  const b = bloqueDeDificultad(clasificacionDe(MATERIA, TEMA, actividadId)?.dificultad);
+  return b ? b.nombre.toUpperCase() : null;
+}
 
 export default function IntroContabilidadView({ modo = null, nodoInicial = null, onBack }) {
   const esAprender = modo === APRENDER;
@@ -171,7 +185,7 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
               <juego.Mecanica
                 Marco={MarcoLibros}
                 acento={TEMA1_ACENTO.ambar}
-                rotulo={ROTULO}
+                rotulo={rotuloDeBloque(juego.id)}
                 titulo={juego.titulo}
                 onCompletar={(pct, ms, detalle) => completar(juego.id, pct, ms, detalle)}
               />
