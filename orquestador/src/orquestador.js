@@ -75,10 +75,17 @@ export async function correrCadena({
   registro,
   herramientas = null,
   topes = TOPES,
+  /*
+   * El contador se puede pasar desde fuera para que lo YA GASTADO cuente. El
+   * intérprete corre antes que la cadena y también llama al modelo: con un
+   * contador nuevo aquí, ese gasto no aparece en el total y el tope de dólares
+   * arranca creyendo que se lleva cero. Poco dinero, pero un total que no es
+   * el total es exactamente cómo se llega a una sorpresa en la factura.
+   */
+  contador = new Contador(topes),
 }) {
   if (!ROLES[arranque]) throw new Error(`«${arranque}» no es un rol`);
 
-  const contador = new Contador(topes);
   const historia = [];
   let rol = arranque;
   let anterior = null;

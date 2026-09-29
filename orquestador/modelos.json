@@ -1,0 +1,18 @@
+{
+  "_comentario": [
+    "Qué modelo corre cada paso. Se edita AQUÍ, no en el código.",
+    "Asignación de Stanley, aprobada por Mateo el 29 de septiembre de 2026.",
+    "Los modelos válidos son los que tienen precio en src/topes.js: si pones uno",
+    "que no está ahí, el orquestador se niega a arrancar en vez de correr y no",
+    "poder decirte cuánto gastó.",
+    "Un nombre de paso mal escrito también se rechaza: un typo que cayera en el",
+    "valor por defecto dejaría un paso en el modelo caro sin que se notara."
+  ],
+
+  "gen": "claude-sonnet-5",
+  "xeno": "claude-sonnet-5",
+  "levi": "claude-opus-5",
+  "compilacion": "claude-opus-5",
+
+  "interprete": "claude-opus-5"
+}

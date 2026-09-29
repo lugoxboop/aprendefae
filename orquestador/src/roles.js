@@ -1,56 +1,142 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { FORMATO_RUTA, PUEDE_ENTREGAR } from "./ruta.js";
+import { PRECIOS } from "./topes.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * LOS ROLES: quién corre con qué modelo, con cuánto esfuerzo y con qué manos.
+ *
+ * El QUÉ MODELO no vive aquí: vive en `modelos.json`, al lado. Este archivo
+ * dice qué pasos existen y qué puede hacer cada uno; el archivo de al lado dice
+ * en qué modelo corre cada uno, y se edita sin tocar código.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/*
- * ═══════════ POR QUÉ TODOS VAN EN EL MODELO CAPAZ, DE MOMENTO ═══════════
- *
- * El encargo pide reservar el modelo más capaz para la compilación y usar uno
- * más barato en «pasos mecánicos: reportes de Ukyo, chequeos de formato».
- *
- * En esta primera versión NO HAY ningún paso mecánico que baje de modelo:
- *
- *   · Ukyo no está conectado todavía.
- *   · Los chequeos de formato los hace el código —`ruta.js`, `topes.js`—, no un
- *     modelo. Gratis y determinista.
- *   · El intérprete parece mecánico y no lo es: su trabajo es NEGARSE a
- *     adivinar cuando la orden es ambigua. Una clasificación que se equivoca
- *     hacia «ya entendí» arranca una cadena entera hacia el tema equivocado, y
- *     eso cuesta mucho más que la diferencia de precio del paso.
- *
- * Y hay un costo que no se ve: la caché es por modelo. Un paso barato que
- * necesite el Kit paga su propia escritura de caché y puede salir más caro que
- * dejarlo donde estaba.
- *
- * Cuando Ukyo entre, ese sí baja. El campo está aquí para cambiarlo en una
- * línea cuando llegue el momento.
- */
-export const MODELO_CAPAZ = "claude-opus-5";
-export const MODELO_BARATO = "claude-sonnet-5";
+const AQUI = path.dirname(fileURLToPath(import.meta.url));
+export const RUTA_MODELOS = path.join(AQUI, "..", "modelos.json");
 
+/*
+ * ═══════════ LOS PASOS QUE HAY QUE ASIGNAR ═══════════
+ *
+ * Los cuatro roles de la cadena más el intérprete, que no es un rol —no tiene
+ * prompt ni ruta— pero sí es una llamada al modelo y por tanto una decisión de
+ * costo que tiene que ser visible en el mismo sitio que las demás.
+ */
+export const PASOS = ["gen", "levi", "xeno", "compilacion", "interprete"];
+
+/*
+ * ═══════════ POR QUÉ SE VALIDA TAN FUERTE ═══════════
+ *
+ * Las dos formas de que esto salga mal son silenciosas, y las dos cuestan
+ * dinero antes de notarse:
+ *
+ *   · Un modelo que no está en PRECIOS. La corrida arranca, gasta, y revienta
+ *     en `anotarUso` a mitad de camino —o peor, si alguien quita el `throw` de
+ *     allí, corre entera y reporta cero dólares.
+ *
+ *   · Un nombre de paso mal escrito («compilación» con tilde). Si se ignorara,
+ *     ese paso se quedaría en el modelo por defecto y el archivo diría una cosa
+ *     mientras la corrida hace otra. Eso es lo peor de todo: una configuración
+ *     que miente.
+ *
+ * Así que las dos se rechazan ANTES de la primera llamada, con el nombre del
+ * archivo que hay que arreglar.
+ */
+export function leerModelos(ruta = RUTA_MODELOS) {
+  if (!fs.existsSync(ruta)) {
+    throw new Error(`falta ${path.basename(ruta)}: no sé en qué modelo correr cada paso`);
+  }
+
+  let crudo;
+  try {
+    crudo = JSON.parse(fs.readFileSync(ruta, "utf8"));
+  } catch (e) {
+    throw new Error(`${path.basename(ruta)} no es un JSON válido: ${e.message}`);
+  }
+
+  const modelos = {};
+  const sobran = [];
+  for (const [clave, valor] of Object.entries(crudo)) {
+    /* Las claves que empiezan por «_» son comentarios para quien lo edite. */
+    if (clave.startsWith("_")) continue;
+    if (!PASOS.includes(clave)) {
+      sobran.push(clave);
+      continue;
+    }
+    if (!PRECIOS[valor]) {
+      throw new Error(
+        `${path.basename(ruta)}: «${valor}» (para ${clave}) no tiene precio en topes.js. `
+        + `Los que sí: ${Object.keys(PRECIOS).join(", ")}. `
+        + "Sin precio no se puede contar el gasto, así que no se arranca.",
+      );
+    }
+    modelos[clave] = valor;
+  }
+
+  if (sobran.length) {
+    throw new Error(
+      `${path.basename(ruta)}: no sé qué paso es «${sobran.join("», «")}». `
+      + `Los pasos son: ${PASOS.join(", ")}. `
+      + "Un nombre mal escrito dejaría ese paso en otro modelo sin avisar.",
+    );
+  }
+
+  const faltan = PASOS.filter((p) => !modelos[p]);
+  if (faltan.length) {
+    throw new Error(
+      `${path.basename(ruta)}: falta decir en qué modelo corre «${faltan.join("», «")}».`,
+    );
+  }
+
+  return modelos;
+}
+
+export const MODELOS = leerModelos();
+
+/*
+ * ═══════════ LA ASIGNACIÓN DE AHORA, Y LO QUE CUESTA ═══════════
+ *
+ * Gen y Xeno en Sonnet, Levi y compilación en Opus. Recomendación de Stanley,
+ * aprobada por Mateo el 29 de septiembre de 2026.
+ *
+ * Y hay un costo que no se ve y conviene dejar escrito donde se toma la
+ * decisión: LA CACHÉ ES POR MODELO. El Kit y las decisiones son el mismo texto
+ * para todos los roles, pero partir la cadena en dos modelos los cachea DOS
+ * VECES —una para el bloque de Sonnet, otra para el de Opus— en vez de una.
+ *
+ * Eso NO hace que la partición salga a perder: la escritura de caché se paga
+ * una vez por corrida y lo que se ahorra son todos los turnos de Gen y Xeno,
+ * que son los más numerosos. Pero es un gasto fijo extra al principio de cada
+ * corrida, y quien mire la factura tiene que saber de dónde sale.
+ *
+ * El intérprete se queda en el modelo capaz por una razón distinta: su trabajo
+ * es NEGARSE a adivinar cuando la orden es ambigua, y una clasificación que se
+ * equivoca hacia «ya entendí» arranca una cadena entera hacia el tema
+ * equivocado. Además no lleva el Kit —solo el catálogo—, así que no escribe
+ * caché y bajarlo de modelo no ahorraría casi nada.
+ */
 export const ROLES = {
   gen: {
     id: "gen",
     nombre: "Gen",
-    modelo: MODELO_CAPAZ,
+    modelo: MODELOS.gen,
     esfuerzo: "high",
     herramientas: [],
   },
   levi: {
     id: "levi",
     nombre: "Levi",
-    modelo: MODELO_CAPAZ,
+    modelo: MODELOS.levi,
     esfuerzo: "high",
     herramientas: [],
   },
   xeno: {
     id: "xeno",
     nombre: "Xeno",
-    modelo: MODELO_CAPAZ,
+    modelo: MODELOS.xeno,
     esfuerzo: "high",
     herramientas: [],
   },
@@ -62,11 +148,14 @@ export const ROLES = {
      * donde el razonamiento se paga solo, porque es el que tiene que notar que
      * dos documentos se contradicen antes de que nadie construya nada.
      */
-    modelo: MODELO_CAPAZ,
+    modelo: MODELOS.compilacion,
     esfuerzo: "xhigh",
     herramientas: ["leer_archivo", "buscar_en_repo", "calcular"],
   },
 };
+
+/** El modelo del intérprete. No es un rol: no tiene prompt ni declara ruta. */
+export const MODELO_INTERPRETE = MODELOS.interprete;
 
 /*
  * ═══════════ LA INSTRUCCIÓN DE RUTA VA EN EL MENSAJE, NO EN EL SYSTEM ═══════

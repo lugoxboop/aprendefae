@@ -9,8 +9,8 @@ import { correrCadena, encargoDe, MOTIVOS } from "./src/orquestador.js";
 import { Registro, carpetaDeCorrida } from "./src/registro.js";
 import { crearHerramientas, raizDelRepo } from "./src/herramientas.js";
 import { transporteReal, transporteSimulado } from "./src/transporte.js";
-import { MODELO_CAPAZ } from "./src/roles.js";
-import { TOPES } from "./src/topes.js";
+import { MODELO_INTERPRETE, MODELOS } from "./src/roles.js";
+import { TOPES, Contador } from "./src/topes.js";
 import { cargarClave, comoArreglarlo } from "./src/clave.js";
 
 /*
@@ -55,7 +55,14 @@ const registro = new Registro(carpeta, orden);
 
 console.log(`\n${simulado ? "◇ SIMULADO — no toca la red" : "◆ EN VIVO"}`);
 console.log(`Orden: ${orden}`);
-console.log(`Registro: ${path.relative(process.cwd(), carpeta)}\n`);
+console.log(`Registro: ${path.relative(process.cwd(), carpeta)}`);
+/*
+ * Qué modelo corre cada paso, ANTES de gastar. Va aquí y no en un comentario
+ * del código porque es lo que decide la factura, y se edita en modelos.json:
+ * si alguien lo cambia y no se imprime, la corrida cuesta otra cosa y nadie
+ * sabe por qué.
+ */
+console.log(`Modelos: ${Object.entries(MODELOS).map(([p, m]) => `${p}=${m.replace("claude-", "")}`).join(" · ")}\n`);
 
 const catalogo = await cargarCatalogo(REPO);
 
@@ -94,7 +101,15 @@ const transporte = simulado ? transporteSimulado(guionSimulado) : await transpor
 
 /* ───────────────────── 1 · entender la orden ───────────────────── */
 
-const leida = await interpretar({ orden, catalogo, transporte, modelo: MODELO_CAPAZ });
+/*
+ * El contador empieza AQUÍ, no en la cadena: el intérprete es una llamada al
+ * modelo como cualquier otra y su gasto tiene que contar en el total y en el
+ * tope. Se creaba dentro de `correrCadena` y esta llamada no aparecía por
+ * ninguna parte.
+ */
+const contador = new Contador(TOPES);
+const leida = await interpretar({ orden, catalogo, transporte, modelo: MODELO_INTERPRETE });
+contador.anotarUso(MODELO_INTERPRETE, leida.uso);
 
 if (!leida.entendida) {
   registro.pregunta(leida.pregunta);
@@ -131,6 +146,7 @@ const resultado = await correrCadena({
   registro,
   herramientas,
   topes: TOPES,
+  contador,
 });
 
 /* ───────────────────── 3 · el entregable ───────────────────── */
@@ -140,6 +156,16 @@ console.log("");
 
 const gasto = resultado.contador.resumen();
 console.log(`Saltos: ${gasto.saltos} · ${gasto.minutos} min · $${gasto.dolares.toFixed(2)}`);
+/*
+ * El desglose por modelo. Con la cadena partida, el total no deja ver si la
+ * escritura de caché del Kit —que se paga una vez POR MODELO— se comió lo que
+ * ahorró el modelo barato. Esto sí.
+ */
+for (const [modelo, m] of Object.entries(gasto.porModelo)) {
+  console.log(`  ${modelo.replace("claude-", "").padEnd(12)} ${String(m.saltos).padStart(2)} salto(s) · `
+    + `$${m.dolares.toFixed(2)} · caché escrita ${m.cacheEscritura.toLocaleString("es")} · `
+    + `leída ${m.cacheLectura.toLocaleString("es")}`);
+}
 if (gasto.tokens.cacheLectura > 0) {
   console.log(`Caché: ${gasto.tokens.cacheLectura.toLocaleString("es")} tokens leídos de caché.`);
 } else if (!simulado && gasto.saltos > 1) {

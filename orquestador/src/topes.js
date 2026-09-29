@@ -67,6 +67,13 @@ export class Contador {
     this.vueltas = new Map();
     this.costo = 0;
     this.tokens = { entrada: 0, salida: 0, cacheLectura: 0, cacheEscritura: 0 };
+    /*
+     * El gasto DESGLOSADO POR MODELO. Con la cadena partida en dos modelos, un
+     * total a secas no deja ver lo único que hay que vigilar: si la escritura
+     * de caché del Kit —que ahora se paga dos veces, una por modelo— se está
+     * comiendo lo que ahorra el modelo barato.
+     */
+    this.porModelo = new Map();
   }
 
   get minutos() {
@@ -102,9 +109,22 @@ export class Contador {
     this.tokens.cacheLectura += lectura;
     this.tokens.cacheEscritura += escritura;
 
-    this.costo += (entrada * p.entrada + salida * p.salida
+    const cuesta = (entrada * p.entrada + salida * p.salida
       + lectura * p.cacheLectura + escritura * p.cacheEscritura) / 1e6;
+
+    this.costo += cuesta;
     this.saltos += 1;
+
+    const antes = this.porModelo.get(modelo)
+      ?? { saltos: 0, dolares: 0, entrada: 0, salida: 0, cacheLectura: 0, cacheEscritura: 0 };
+    this.porModelo.set(modelo, {
+      saltos: antes.saltos + 1,
+      dolares: antes.dolares + cuesta,
+      entrada: antes.entrada + entrada,
+      salida: antes.salida + salida,
+      cacheLectura: antes.cacheLectura + lectura,
+      cacheEscritura: antes.cacheEscritura + escritura,
+    });
   }
 
   /**
@@ -136,6 +156,7 @@ export class Contador {
       dolares: Number(this.costo.toFixed(4)),
       tokens: { ...this.tokens },
       vueltas: Object.fromEntries(this.vueltas),
+      porModelo: Object.fromEntries(this.porModelo),
     };
   }
 }
