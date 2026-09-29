@@ -44,6 +44,27 @@ node correr.mjs --simulado "Gen, crea la pieza 5 del tema 1 de contabilidad"
 El modo simulado usa un transporte falso que no toca la red. Sirve para ver la
 forma de una corrida, no para juzgar contenido.
 
+## El banco de pruebas de la compilación
+
+Antes de confiar en la cadena, hay una pregunta que contestar: ¿el paso de
+compilación **caza** los errores que de verdad han llegado a producción, o solo
+reescribe documentos con buena letra?
+
+```
+node probar-compilacion.mjs                       # todos los casos
+node probar-compilacion.mjs conflicto-entre-documentos   # uno solo
+```
+
+Cada caso de `pruebas/compilacion/` es un **extracto real** de un encargo cuyo
+defecto ya se conoce, con lo que la compilación tiene que encontrar. Gasta: son
+llamadas al modelo capaz con herramientas, y el costo se imprime al final.
+
+**Un ✔ dice que miró donde había que mirar, no que lo entendiera.** La
+calificación es por señales —que el hallazgo mencione lo que tiene que
+mencionar— y eso es crudo a propósito: un suspenso es información dura, un
+aprobado es una invitación a leer la salida entera, que se guarda en la carpeta
+de la corrida.
+
 ## Qué hay dentro
 
 | | |

@@ -1,0 +1,17 @@
+{
+  "nombre": "Un conflicto dentro del mismo encargo",
+  "procedencia": "Extracto real del encargo de la reescritura de lenguaje del Tema 1. Las dos partes venían en el mismo mensaje.",
+  "queDebeEncontrar": [
+    {
+      "id": "reporta-el-conflicto",
+      "descripcion": "Que el encabezado aprueba tres cambios y el punto 5 dice que esos mismos textos se quedan: reportarlo con las dos versiones, sin elegir.",
+      "senales": ["conflicto", "fíjate", "fíjese"],
+      "comoSeVerifica": "Leyendo las dos partes del propio encargo. No hace falta el repo."
+    }
+  ],
+  "loQueNoDebeHacer": [
+    "Elegir una de las dos versiones y seguir como si no hubiera conflicto.",
+    "Decir que el encabezado gana «porque es más reciente» sin marcarlo como decisión de Mateo."
+  ],
+  "nota": "El repo dice cuál se aplicó al final, pero eso NO resuelve el conflicto del documento: saber qué se hizo no es lo mismo que saber qué había que hacer."
+}

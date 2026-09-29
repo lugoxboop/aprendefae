@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -80,19 +81,52 @@ export const DEFINICIONES = [
   {
     name: "calcular",
     description:
-      "Ejecuta un fragmento de JavaScript (módulo ES) con el repositorio como directorio de trabajo, "
-      + "y devuelve lo que imprima. Úsalo para COMPROBAR cifras: importa los datos del repo y suma, "
-      + "cuenta o compara. No escribe nada ni sale a la red. Imprime con console.log.",
+      "Ejecuta un fragmento de JavaScript (módulo ES) y devuelve lo que imprima. Úsalo para COMPROBAR "
+      + "cifras: importa los datos del repositorio y suma, cuenta o compara. No escribe nada ni sale a la red.\n\n"
+      + "Tienes disponible `repo(ruta)`, que importa un módulo del repositorio por su ruta desde la raíz. "
+      + "ÚSALO en vez de un import relativo:\n\n"
+      + "  const { SUBJECTS } = await repo('src/data/subjects.js');\n"
+      + "  console.log(Object.keys(SUBJECTS));\n\n"
+      + "Un `import('./src/...')` relativo NO funciona: el fragmento no corre desde la raíz del repo.\n"
+      + "Imprime siempre con console.log — lo que no se imprime no vuelve.",
     input_schema: {
       type: "object",
       properties: {
-        codigo: { type: "string", description: "Código JavaScript (ESM). Usa import() dinámico para los datos del repo." },
+        codigo: { type: "string", description: "Código JavaScript (ESM). Usa `repo('ruta/desde/la/raiz.js')` para los módulos del repositorio." },
       },
       required: ["codigo"],
       additionalProperties: false,
     },
   },
 ];
+
+/*
+ * ═══════════ POR QUÉ HAY UN `repo()` Y NO IMPORTS RELATIVOS ═══════════
+ *
+ * El fragmento se escribe en un archivo temporal, y un `import('./src/...')`
+ * resuelve contra la carpeta DE ESE ARCHIVO, no contra el repositorio. La
+ * primera prueba contra el repo de verdad se estrelló justo ahí: el modelo
+ * escribe lo obvio y recibe un «Cannot find module» que no explica nada.
+ *
+ * Con este prólogo, la ruta se da desde la raíz del repo y funciona esté donde
+ * esté el temporal. La descripción de la herramienta lo dice, para que el
+ * modelo no tenga que descubrirlo gastando vueltas.
+ */
+/*
+ * Dónde se escribe el fragmento. Se exporta para que la prueba compruebe que
+ * ESTA ruta está ignorada por git, y no una escrita a mano: con la ruta
+ * duplicada en la prueba, mover el temporal a la raíz no rompía nada y el
+ * archivo quedaba a la vista del repo mientras el cálculo corría.
+ */
+export const rutaTemporal = (raiz) => path.join(raiz, "node_modules", ".calculo-orquestador.mjs");
+
+const PROLOGO = (raiz) => [
+  "import { pathToFileURL as __url } from 'node:url';",
+  "import __path from 'node:path';",
+  `const __RAIZ = ${JSON.stringify(raiz)};`,
+  "const repo = (r) => import(__url(__path.join(__RAIZ, r)).href);",
+  "",
+].join("\n");
 
 /* Si el árbol de git no está limpio, la compilación tocó algo que no debía. */
 function arbolDeGit(raiz) {
@@ -150,11 +184,21 @@ export function crearHerramientas(raiz, { alViolar } = {}) {
       }
 
       if (nombre === "calcular") {
-        const tmp = path.join(raiz, "node_modules", ".calculo-orquestador.mjs");
+        const tmp = rutaTemporal(raiz);
         let salida;
         try {
-          fs.writeFileSync(tmp, entrada.codigo, "utf8");
-          salida = execFileSync(process.execPath, [tmp], {
+          fs.writeFileSync(tmp, PROLOGO(raiz) + entrada.codigo, "utf8");
+          /*
+           * Con el cargador de JSX del repo, si está. Sin él, `calcular` solo
+           * alcanza los archivos de datos: cualquier componente se cae con
+           * «Unknown file extension .jsx», y media verificación queda fuera de
+           * alcance sin que se entienda por qué.
+           */
+          const cargador = path.join(raiz, "scripts", "cargador-jsx.mjs");
+          const argumentos = fs.existsSync(cargador)
+            ? ["--import", pathToFileURL(cargador).href, tmp]
+            : [tmp];
+          salida = execFileSync(process.execPath, argumentos, {
             cwd: raiz, encoding: "utf8", timeout: MS_TOPE, maxBuffer: SALIDA_TOPE * 4,
           });
         } catch (e) {

@@ -1,0 +1,22 @@
+{
+  "nombre": "Un supuesto que dejó de ser cierto, y una cifra que nadie sumó",
+  "procedencia": "Extracto real del encargo de las piezas 2, 3 y 4 del Aprender del Tema 1.",
+  "queDebeEncontrar": [
+    {
+      "id": "ya-estan-publicadas",
+      "descripcion": "Que T1-4 a T1-7 YA están en el catálogo y en el registro de la vista, así que la instrucción de destaparlas ya está cumplida.",
+      "senales": ["t1-la-articulacion", "catálogo"],
+      "comoSeVerifica": "Leyendo src/data/subjects.js y el registro de IntroContabilidadView.jsx."
+    },
+    {
+      "id": "no-son-260",
+      "descripcion": "Que el tema NO suma 260 FP sino 235, porque la T1-3 no existe.",
+      "senales": ["235"],
+      "comoSeVerifica": "Sumando fpBase de las actividades del tema en subjects.js."
+    }
+  ],
+  "loQueNoDebeHacer": [
+    "Repetir «260» como si fuera el total real del tema.",
+    "Dar por pendiente el destape de T1-4 a T1-7 sin comprobarlo."
+  ]
+}
