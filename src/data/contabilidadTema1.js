@@ -1,4 +1,4 @@
-import { USUARIOS } from "./contabilidadIntro.js";
+import { USUARIOS, ESTACIONES } from "./contabilidadIntro.js";
 import { CALEJA, ACTIVO, PASIVO, PATRIMONIO } from "./contabilidad.js";
 
 /*
@@ -647,3 +647,131 @@ export const INVERSO_T1_7 = [
 ];
 
 export const ALT_T1_7 = "Tres informes con sus líneas. Cinco flechas van de las líneas de los otros dos hacia las del informe de lo que la empresa tiene y debe hoy. De ese informe no sale ninguna.";
+
+/* ═══════════════════ T1-8 · ¿DÓNDE SE ROMPIÓ? ═══════════════════ */
+
+/*
+ * La tercera del camino, entre T1-2 y T1-3, aunque se construyó la última: el
+ * código es T1-8 y no se renumera nada de lo que ya existe. Depende solo de la
+ * pieza 1 del Aprender, así que sale publicada sin esperar a las otras tres.
+ *
+ * La pieza 1 es la única enseñanza del Tema 1 que ninguna actividad practica
+ * de frente —T1-1 reusa su anillo, pero practica usuarios—. Esta la practica:
+ * no pide repetir los cinco puntos, pide ver qué pasa cuando uno falta.
+ */
+export const T1_8 = {
+  id: "t1-donde-se-rompio",
+  nombre: "¿Dónde se Rompió?",
+  subtema: "El ciclo de la información contable",
+  dificultad: "medio",
+  fpBase: 25,
+  porPartida: 5,
+  objetivo: "Encuentra en qué punto se rompió el ciclo. Y mira qué se pierde de ahí en adelante.",
+  consigna: "Lee lo que pasó en la empresa. Toca el punto donde se rompió el ciclo.",
+  /* El vacío: encabeza el anillo hasta que se toca un punto. */
+  pregunta: "¿Hasta dónde llegó bien, y dónde se cortó?",
+};
+
+/*
+ * ═══════════ UN PUNTO APAGADO NO ES UN PASO QUE DEJA DE EXISTIR ═══════════
+ *
+ * Significa que ESTE HECHO no llegó hasta ahí. La empresa sigue anotando,
+ * sacando informes y decidiendo — sin este dato. La pieza 1 sigue un solo
+ * hecho por los cinco puntos, y si aquí se diera a entender que los puntos
+ * enteros desaparecen, esta actividad contradiría la pieza que la sostiene.
+ * Por eso todos los textos dicen «este hecho», nunca «la empresa se queda
+ * sin informe». Hay una prueba que barre el banco buscando esa frase.
+ *
+ * ═══════════ LOS RÓTULOS SIMPLES, NUNCA LOS DEL GRÁFICO ═══════════
+ *
+ * Los cinco rótulos cortos del encargo. El número de cada punto sale de las
+ * estaciones de la pieza 1, así que no hay dos anillos que puedan contar
+ * distinto; el texto crudo del Gráfico 1.1 (`rotulo` de la pieza) no entra.
+ */
+const ROTULOS_T1_8 = {
+  1: "Pasa algo en la empresa",
+  2: "Queda un papel",
+  3: "Se anota",
+  4: "Sale un informe",
+  5: "Los jefes deciden",
+};
+
+export const PUNTOS_T1_8 = ESTACIONES.map((e) => ({ n: e.n, rotulo: ROTULOS_T1_8[e.n] }));
+
+/*
+ * Las ocho situaciones, en su VERSIÓN FINAL: la 3, 4, 5 y 6 las reescribió
+ * Levi para que sigan UN hecho concreto en vez de un lote. Construcción de
+ * Gen, derivadas de la cadena causal del Gráfico 1.1 — no citables a página.
+ *
+ * `rompe` es el único dato de cada una. Cuántos puntos no alcanza el hecho NO
+ * se escribe aquí: se deduce de `rompe`, y la prueba lo compara con la tabla
+ * del encargo.
+ */
+export const SITUACIONES_T1_8 = [
+  { id: "t8-01", texto: "Un empleado compró tinta con plata de la caja. No pidió factura ni recibo.", rompe: 2 },
+  { id: "t8-02", texto: "La empresa le entregó la mercancía a un cliente, pero no le hizo factura.", rompe: 2 },
+  { id: "t8-03", texto: "La factura de un escritorio que compraron está en una carpeta. Nadie la pasó a los libros.", rompe: 3 },
+  { id: "t8-04", texto: "Llegó el recibo del arriendo del mes. Sigue en el escritorio sin anotar.", rompe: 3 },
+  { id: "t8-05", texto: "La compra de papelería quedó anotada en los libros, pero la dejaron por fuera del informe del mes.", rompe: 4 },
+  { id: "t8-06", texto: "El pago de la luz está anotado, pero no aparece en el informe que recibieron los jefes.", rompe: 4 },
+  { id: "t8-07", texto: "Los informes se hicieron y se guardaron. Los jefes no los han abierto.", rompe: 5 },
+  { id: "t8-08", texto: "El informe muestra que un producto está dando pérdida. Nadie lo ha leído.", rompe: 5 },
+];
+
+/*
+ * Un acierto por punto, VERSIÓN FINAL: «este hecho no llegó a X puntos» (Gen)
+ * y «este hecho» en vez de «este gasto» (Levi — la 2 es una venta). El ✅ es
+ * la marca del sitio para el tono de la devolución, como en todo el tema.
+ */
+export const ACIERTO_T1_8 = {
+  2: "✅ Se rompió en el papel. Sin factura, este hecho no se anota, no llega al informe y los jefes deciden sin saberlo. Este hecho no llegó a tres puntos.",
+  3: "✅ Se rompió al anotar. El papel está. Pero si nadie lo pasa a los libros, este hecho no llega al informe y los jefes deciden sin saberlo. Este hecho no llegó a dos puntos.",
+  4: "✅ Se rompió en el informe. Este hecho está anotado, pero no lo pasaron al informe. Los jefes deciden sin ver este dato. Este hecho no llegó a un punto.",
+  5: "✅ Se rompió al final. Este hecho llegó a los cinco puntos. Pero si nadie lee el informe, no cambia ninguna decisión. Mira la flecha de vuelta: quedó apagada.",
+};
+
+/*
+ * ═══════════ LA REGLA DEL ERROR ES UNA COMPARACIÓN, NADA MÁS ═══════════
+ *
+ * A · tocó un punto ANTERIOR al roto: hasta ahí todo funcionó.
+ * B · tocó un punto POSTERIOR: está mirando el síntoma, no la causa — el
+ *     mismo razonamiento que T1-7. Texto y rótulo en su versión de Levi.
+ */
+export const ERROR_T1_8 = {
+  A: "❌ Hasta ese punto todo funcionó bien. Mira más adelante: el corte está después.",
+  B: "❌ Este hecho nunca llegó a ese punto. Se cortó antes, así que desde ahí ya no aparece.",
+};
+export const ROTULO_ERROR_B_T1_8 = "este hecho no llegó aquí";
+
+/* El rótulo escrito de un punto apagado: apagado no se dice solo con opacidad. */
+export const ROTULO_APAGADO = "apagado";
+
+/*
+ * El contador. «Este hecho no llegó a [N] puntos.» — el número es lo único que
+ * cambia. En el punto 5 no hay número que contar: el hecho llegó a los cinco,
+ * y lo que se apaga es la flecha de vuelta, con su propio rótulo.
+ */
+export const CONTADOR_T1_8 = "Este hecho no llegó a [N] puntos.";
+export const CONTADOR_LLEGO_A_TODOS = "Este hecho llegó a los cinco puntos";
+export const ROTULO_FLECHA_APAGADA = "pero no cambió nada";
+
+/*
+ * ═══════════ LA PREDICCIÓN ═══════════
+ *
+ * Solo después de acertar el punto y antes de que corra la cascada. Sin
+ * puntaje: es para comprometerse con una idea antes de verla. Los dos cierres
+ * no dicen el número — ya lo dice el contador.
+ */
+export const PREDICCION_T1_8 = {
+  pregunta: "¿A cuántos puntos crees que no va a llegar este hecho?",
+  opciones: [0, 1, 2, 3],
+  acerto: "Lo predijiste bien. Mira hasta dónde alcanzó a llegar.",
+  fallo: "No era lo que creías. Mira hasta dónde alcanzó a llegar.",
+};
+
+export const CIERRE_T1_8 = "Mientras más temprano se rompe, a menos puntos llega el hecho. La empresa sigue andando. Pero decide sin saber lo que pasó.";
+
+export const ALT_T1_8 = "Cinco puntos numerados en columna. La situación dice que no pidieron factura. El corte queda en el punto dos, donde queda un papel. Este hecho no alcanza los puntos tres, cuatro y cinco, que se ven apagados. El contador dice que no llegó a tres puntos.";
+
+/* La situación que describe el texto alternativo: solo se lee cuando es verdad. */
+export const SITUACION_DEL_ALT_T1_8 = "t8-01";

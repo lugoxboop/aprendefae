@@ -522,11 +522,18 @@ export const SUBJECTS = {
            * le había explicado al estudiante. Las piezas ya están, así que las
            * cuatro entran.
            *
+           * La T1-8 «¿Dónde se Rompió?» va tercera, entre T1-2 y T1-3, aunque
+           * se construyó la última: practica la pieza 1 y no depende de las
+           * otras tres. El orden completo es Cimientos (T1-1, T1-2) ·
+           * Aplicación (T1-8, T1-3, T1-4) · Análisis (T1-5, T1-6) · Maestría
+           * (T1-7).
+           *
            * La T1-3 no existe: está retenida por revisión del profesor. Por
-           * eso el tema suma 235 FP y no 260.
+           * eso el tema suma 260 FP y no 285.
            */
           { id: "t1-desde-donde-preguntan", nombre: "¿Desde Dónde Preguntan?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "t1-que-entro-y-que-salio", nombre: "¿Qué Entró y Qué Salió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "t1-donde-se-rompio", nombre: "¿Dónde se Rompió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "t1-que-le-pasa-a-cada-uno", nombre: "¿Qué Le Pasa a Cada Uno?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "t1-la-ecuacion-en-movimiento", nombre: "La Ecuación en Movimiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "t1-en-cual-estado-aparece", nombre: "¿En Cuál Estado Aparece?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
