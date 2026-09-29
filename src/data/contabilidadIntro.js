@@ -245,7 +245,7 @@ export const OPCIONES = [
  * y tienen que decir lo mismo que ella.
  */
 export const ALTERNATIVOS = {
-  1: "Cinco puntos en círculo. El primero está prendido. Dice que la empresa compró un computador de 25.000 a crédito.",
+  1: "Cinco puntos en columna. El primero está prendido. Dice que la empresa compró un computador de 25.000 a crédito.",
   2: "Se prende el segundo punto. El hecho ahora es una factura, con el concepto y el valor.",
   3: "Se prende el tercer punto. La factura ahora es un renglón de libro, con dos nombres y dos cifras. Faltan dos puntos.",
   4: "Se prende el cuarto punto. El renglón ahora es una línea dentro de un informe, entre muchas otras líneas.",

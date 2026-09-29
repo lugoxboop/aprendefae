@@ -4,7 +4,7 @@ import { FAE } from "../../../../theme.js";
 import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
 import {
   T1_8, PUNTOS_T1_8, PREDICCION_T1_8, ROTULO_ERROR_B_T1_8, ROTULO_APAGADO,
-  ROTULO_FLECHA_APAGADA, CIERRE_T1_8, ALT_T1_8, SITUACION_DEL_ALT_T1_8,
+  ROTULO_FLECHA_APAGADA, CIERRE_T1_8, ALT_T1_8,
 } from "../../../../data/contabilidadTema1.js";
 import {
   sortearT1_8, evaluarT1_8, evaluarPrediccion, esTocable, apagadosDe, noAlcanzados,
@@ -95,6 +95,18 @@ const CSS = `
 `;
 
 const SORA = "Sora, sans-serif";
+
+/*
+ * ═══════════ ATENUADO, PERO LEGIBLE: 4,5:1 ═══════════
+ *
+ * Un punto apagado se atenúa, y aun así todo su texto —número, rótulo y chip—
+ * tiene que medir al menos 4,5:1 contra el fondo del panel. Al 40 % el rótulo
+ * daba 3,6:1 y el número 2,6:1: se leía «apagado» como «ilegible». Medido en
+ * Chromium a 375 px, 0,66 deja el peor texto por encima de 4,5:1. Lo apagado
+ * se sigue distinguiendo por el borde tenue, el chip «apagado» y, en la tira,
+ * el círculo sin relleno — no solo por la opacidad.
+ */
+export const OPACIDAD_ATENUADA = 0.66;
 /* Dónde corre la línea de avance de la franja. */
 const X_AVANCE = 19;
 
@@ -170,7 +182,7 @@ function Punto({ p, estado, onTocar, refCaja, fase, reducido }) {
     border: parpadea
       ? `1.5px dashed ${FAE.coral}`
       : `1.5px solid ${tenue ? "rgba(248,249,250,0.18)" : NEUTRO}`,
-    opacity: tenue ? 0.4 : 1,
+    opacity: tenue ? OPACIDAD_ATENUADA : 1,
     /* Con movimiento reducido el estado final se pinta directo, sin transición. */
     transition: reducido ? "none" : `opacity ${atenuado ? MS.atenua : MS.apagon}ms ease, border-color 200ms ease`,
     color: FAE.text, font: "inherit",
@@ -320,7 +332,7 @@ function Tira({ situacion }) {
                 style={{
                   width: "20px", height: "20px", borderRadius: "999px", flex: "none",
                   border: `1.5px solid ${NEUTRO}`, color: apagado ? NEUTRO : NAVY_DEL_CHIP,
-                  background: apagado ? "transparent" : NEUTRO, opacity: apagado ? 0.35 : 1,
+                  background: apagado ? "transparent" : NEUTRO, opacity: apagado ? OPACIDAD_ATENUADA : 1,
                   fontFamily: SORA, fontSize: "10px", fontWeight: 700, lineHeight: "17px", textAlign: "center",
                 }}
               >
@@ -330,7 +342,7 @@ function Tira({ situacion }) {
               {p.n < TOTAL_PUNTOS && (
                 <span aria-hidden="true" data-tira-tramo={p.n + 1 === rompe ? "corte" : "sigue"} style={{
                   width: "14px", textAlign: "center", fontFamily: SORA, fontSize: "11px", fontWeight: 700,
-                  color: NEUTRO, opacity: p.n + 1 === rompe ? 1 : apagado ? 0.35 : 0.7,
+                  color: NEUTRO, opacity: p.n + 1 === rompe ? 1 : apagado ? OPACIDAD_ATENUADA : 0.7,
                 }}>
                   {p.n + 1 === rompe ? "//" : "—"}
                 </span>
@@ -341,7 +353,7 @@ function Tira({ situacion }) {
         {/* La vuelta al punto 1: en el 5 también se apaga. El corte no va aquí. */}
         <span aria-hidden="true" data-tira-vuelta={apagaLaFlecha(rompe) ? "apagada" : "sigue"} style={{
           marginLeft: "2px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, color: NEUTRO,
-          opacity: apagaLaFlecha(rompe) ? 0.35 : 0.7,
+          opacity: apagaLaFlecha(rompe) ? OPACIDAD_ATENUADA : 0.7,
         }}>
           ↺
         </span>
@@ -649,8 +661,8 @@ export default function DondeSeRompio({ Marco, rotulo, titulo, acento, onComplet
         </div>
       )}
 
-      {/* El texto alternativo describe una situación concreta: solo se lee cuando es la que está. */}
-      {s.id === SITUACION_DEL_ALT_T1_8 && cerrada && <p style={SOLO_LECTOR}>{ALT_T1_8}</p>}
+      {/* El texto alternativo de la situación que está, con el estado final ya en pantalla. */}
+      {cerrada && ALT_T1_8[s.id] && <p data-alt-t18 style={SOLO_LECTOR}>{ALT_T1_8[s.id]}</p>}
     </Marco>
   );
 }

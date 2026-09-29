@@ -44,7 +44,7 @@ const { createRoot } = await import("react-dom/client");
 const act = React.act ?? (await import("react-dom/test-utils")).act;
 
 const DondeSeRompio = (await import("../../components/mecanicas/libros/tema1/DondeSeRompio.jsx")).default;
-const { MS } = await import("../../components/mecanicas/libros/tema1/DondeSeRompio.jsx");
+const { MS, OPACIDAD_ATENUADA } = await import("../../components/mecanicas/libros/tema1/DondeSeRompio.jsx");
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const {
   sortearT1_8, evaluarT1_8, evaluarPrediccion, noAlcanzados, apagadosDe, apagaLaFlecha,
@@ -52,7 +52,7 @@ const {
 } = await import("../tema1.js");
 const {
   T1_8, PUNTOS_T1_8, SITUACIONES_T1_8, ACIERTO_T1_8, ERROR_T1_8, ROTULO_ERROR_B_T1_8,
-  PREDICCION_T1_8, CONTADOR_T1_8, CONTADOR_LLEGO_A_TODOS, ROTULO_FLECHA_APAGADA,
+  PREDICCION_T1_8, CONTADOR_T1_8, CONTADOR_UNO_T1_8, ROTULO_FLECHA_APAGADA,
   CIERRE_T1_8, ALT_T1_8, ROTULO_APAGADO,
 } = await import("../../data/contabilidadTema1.js");
 const { ESTACIONES } = await import("../../data/contabilidadIntro.js");
@@ -127,19 +127,20 @@ test("★★★ las ocho situaciones, con su versión final y su punto de ruptur
 });
 
 test("★★★ los aciertos, los errores y la predicción son el texto literal del encargo", () => {
-  assert.equal(ACIERTO_T1_8[2], "✅ Se rompió en el papel. Sin factura, este hecho no se anota, no llega al informe y los jefes deciden sin saberlo. Este hecho no llegó a tres puntos.");
-  assert.equal(ACIERTO_T1_8[3], "✅ Se rompió al anotar. El papel está. Pero si nadie lo pasa a los libros, este hecho no llega al informe y los jefes deciden sin saberlo. Este hecho no llegó a dos puntos.");
-  assert.equal(ACIERTO_T1_8[4], "✅ Se rompió en el informe. Este hecho está anotado, pero no lo pasaron al informe. Los jefes deciden sin ver este dato. Este hecho no llegó a un punto.");
-  assert.equal(ACIERTO_T1_8[5], "✅ Se rompió al final. Este hecho llegó a los cinco puntos. Pero si nadie lee el informe, no cambia ninguna decisión. Mira la flecha de vuelta: quedó apagada.");
+  /* Versión final de Levi. El ✅ es la marca de tono del sitio. */
+  assert.equal(ACIERTO_T1_8[2], "✅ Se rompió en el papel. Sin factura no queda un papel, así que este hecho no se anota, no llega al informe y los jefes deciden sin saberlo. Se apagaron cuatro puntos.");
+  assert.equal(ACIERTO_T1_8[3], "✅ Se rompió al anotar. El papel está. Pero nadie lo pasó a los libros, así que este hecho no llega al informe y los jefes deciden sin saberlo. Se apagaron tres puntos.");
+  assert.equal(ACIERTO_T1_8[4], "✅ Se rompió en el informe. Este hecho está anotado, pero lo dejaron por fuera del informe. Los jefes deciden sin ver este dato. Se apagaron dos puntos.");
+  assert.equal(ACIERTO_T1_8[5], "✅ El informe sí se hizo: los primeros cuatro puntos quedaron encendidos. Pero los jefes no decidieron nada con él. Por eso el último punto se apaga y la flecha de vuelta no se enciende.");
   assert.equal(ERROR_T1_8.A, "❌ Hasta ese punto todo funcionó bien. Mira más adelante: el corte está después.");
   assert.equal(ERROR_T1_8.B, "❌ Este hecho nunca llegó a ese punto. Se cortó antes, así que desde ahí ya no aparece.");
   assert.equal(ROTULO_ERROR_B_T1_8, "este hecho no llegó aquí");
-  assert.equal(PREDICCION_T1_8.pregunta, "¿A cuántos puntos crees que no va a llegar este hecho?");
+  assert.equal(PREDICCION_T1_8.pregunta, "¿Cuántos puntos se van a apagar?");
   assert.deepEqual(PREDICCION_T1_8.opciones, [1, 2, 3, 4], "la predicción no va de 1 a 4");
   assert.equal(PREDICCION_T1_8.acerto, "Lo predijiste bien. Mira hasta dónde alcanzó a llegar.");
   assert.equal(PREDICCION_T1_8.fallo, "No era lo que creías. Mira hasta dónde alcanzó a llegar.");
-  assert.equal(CONTADOR_T1_8, "Este hecho no llegó a [N] puntos.");
-  assert.equal(CONTADOR_LLEGO_A_TODOS, "Este hecho llegó a los cinco puntos");
+  assert.equal(CONTADOR_T1_8, "Se apagaron [N] puntos.");
+  assert.equal(CONTADOR_UNO_T1_8, "Se apagó 1 punto.");
   assert.equal(ROTULO_FLECHA_APAGADA, "pero no cambió nada");
   assert.equal(CIERRE_T1_8, "Mientras más temprano se rompe, a menos puntos llega el hecho. La empresa sigue andando. Pero decide sin saber lo que pasó.");
   assert.equal(T1_8.objetivo, "Encuentra en qué punto se rompió el ciclo. Y mira qué se pierde de ahí en adelante.");
@@ -149,24 +150,50 @@ test("★★★ los aciertos, los errores y la predicción son el texto literal 
 
 test("★★★ ningún texto dice que la empresa se queda sin informe o sin decisión", () => {
   const todo = [
-    ...Object.values(ACIERTO_T1_8), ...Object.values(ERROR_T1_8), CIERRE_T1_8, ALT_T1_8,
+    ...Object.values(ACIERTO_T1_8), ...Object.values(ERROR_T1_8), CIERRE_T1_8, ...Object.values(ALT_T1_8),
     PREDICCION_T1_8.acerto, PREDICCION_T1_8.fallo, ROTULO_ERROR_B_T1_8, ROTULO_FLECHA_APAGADA,
-    CONTADOR_LLEGO_A_TODOS, ...[1, 2, 3].map(textoDelContador),
+    ...[1, 2, 3, 4].map(textoDelContador),
   ].join(" ");
   assert.ok(!/(se queda|queda|quedan|está|están) sin (el |un |ningún |ninguna )?(informe|decisi|registro|libro)/i.test(todo),
     "un texto da a entender que el paso entero deja de existir");
   assert.ok(!/no hay (informe|decisi)/i.test(todo), "un texto dice que no hay informe o decisión");
-  assert.ok(!/se apagan (\w+ )?puntos/i.test(todo), "volvió la exageración «se apagan X puntos»");
   assert.ok(!/este gasto/i.test(todo), "volvió «este gasto»: la situación 2 es una venta");
-  /* Los aciertos de 2, 3 y 4 hablan del hecho, no del paso. */
-  for (const n of [2, 3, 4]) assert.ok(ACIERTO_T1_8[n].includes("Este hecho no llegó a"), `el ${n} dejó de hablar de «este hecho»`);
+  /* Los aciertos de 2, 3 y 4 dicen cuántos se apagaron, con la cifra del conteo. */
+  const enLetras = { 4: "cuatro", 3: "tres", 2: "dos" };
+  for (const n of [2, 3, 4]) {
+    assert.ok(ACIERTO_T1_8[n].endsWith(`Se apagaron ${enLetras[noAlcanzados(n)]} puntos.`), `el acierto del ${n} no cuadra con su conteo`);
+  }
 });
 
-test("★★ el contador cambia solo el número, y el 1 va en singular", () => {
-  assert.equal(textoDelContador(3), "Este hecho no llegó a 3 puntos.");
-  assert.equal(textoDelContador(2), "Este hecho no llegó a 2 puntos.");
-  assert.equal(textoDelContador(1), "Este hecho no llegó a 1 punto.");
-  assert.equal(textoDelContador(0), CONTADOR_LLEGO_A_TODOS);
+test("★★ el contador: «Se apagaron N puntos.», y con uno «Se apagó 1 punto.»", () => {
+  assert.equal(textoDelContador(4), "Se apagaron 4 puntos.");
+  assert.equal(textoDelContador(3), "Se apagaron 3 puntos.");
+  assert.equal(textoDelContador(2), "Se apagaron 2 puntos.");
+  assert.equal(textoDelContador(1), "Se apagó 1 punto.");
+  /* Con la regla nueva no hay cero: pedirlo es un error, no un texto de repuesto. */
+  assert.throws(() => textoDelContador(0), /no hay contador/);
+});
+
+test("★★★ un texto alternativo por situación, el de Levi, y solo se lee el de la que está", async () => {
+  assert.deepEqual(Object.keys(ALT_T1_8).sort(), SITUACIONES_T1_8.map((s) => s.id).sort());
+  assert.equal(ALT_T1_8["t8-01"], "El hecho es la compra de tinta sin factura. Se apagan los últimos cuatro puntos: «Queda un papel», «Se anota», «Sale un informe» y «Los jefes deciden».");
+  assert.equal(ALT_T1_8["t8-07"], "El hecho son los informes guardados que los jefes no abrieron. Los cuatro primeros puntos quedan encendidos, se apaga «Los jefes deciden» y la flecha de vuelta no se enciende.");
+  /* Cada alternativo nombra, con el rótulo de pantalla, justo los puntos que se apagan. */
+  for (const s of SITUACIONES_T1_8) {
+    for (const p of PUNTOS_T1_8) {
+      const nombra = ALT_T1_8[s.id].includes(`«${p.rotulo}»`);
+      assert.equal(nombra, apagadosDe(s.rompe).includes(p.n), `${s.id}: el alternativo ${nombra ? "nombra" : "no nombra"} «${p.rotulo}»`);
+    }
+  }
+  const { caja, desmontar } = montar();
+  try {
+    const s = actual(caja);
+    assert.equal(caja.querySelectorAll("[data-alt-t18]").length, 0, "el alternativo se lee antes de resolver");
+    await resolver(caja);
+    const alts = [...caja.querySelectorAll("[data-alt-t18]")];
+    assert.equal(alts.length, 1);
+    assert.equal(alts[0].textContent, ALT_T1_8[s.id], "se lee el alternativo de otra situación");
+  } finally { desmontar(); }
 });
 
 /* ═══════════════════ EL SORTEO Y LA REGLA ═══════════════════ */
@@ -318,6 +345,11 @@ test("★★★ acertar: flujo, predicción, y SOLO DESPUÉS el corte y los apag
   } finally { desmontar(); }
 });
 
+test("★★ lo atenuado no baja de la opacidad que deja el texto en 4,5:1", () => {
+  /* 0,66 es lo medido en Chromium a 375 px: el peor texto queda en 4,76:1. */
+  assert.ok(OPACIDAD_ATENUADA >= 0.66, `la opacidad atenuada bajó a ${OPACIDAD_ATENUADA}`);
+});
+
 test("★★★ el roto se ve igual que cualquier apagado, sin borde de selección, y la // va en el hueco", async () => {
   for (const rompe of [2, 3, 4, 5]) {
     const { caja, desmontar } = montarCon((s) => s.rompe === rompe);
@@ -334,6 +366,8 @@ test("★★★ el roto se ve igual que cualquier apagado, sin borde de selecci�
       assert.ok(!/2px solid/.test(roto.getAttribute("style")), `punto ${rompe}: quedó el borde de selección`);
       assert.equal(caja.querySelectorAll("[data-roto]").length, 0);
       assert.equal(caja.querySelector("[data-corte]").dataset.corteEntre, `${rompe - 1}-${rompe}`);
+      /* Atenuado, pero legible: nada por debajo de la opacidad medida para 4,5:1. */
+      for (const x of apagados) assert.match(x.getAttribute("style"), new RegExp(`opacity: ${OPACIDAD_ATENUADA}`));
       /* Con la // en su hueco, el flujo ya no está: se taparían el uno al otro. */
       assert.equal(caja.querySelectorAll("[data-flujo]").length, 0, `punto ${rompe}: el flujo sigue encima de la //`);
     } finally { desmontar(); }

@@ -8,7 +8,7 @@ import {
   T1_6, CONCEPTOS, PRIMERO, SEGUNDO, ERROR_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
   LINEAS, FLECHAS, ERROR_T1_7, ACIERTO_T1_7,
   T1_8, PUNTOS_T1_8, SITUACIONES_T1_8, ACIERTO_T1_8, ERROR_T1_8, PREDICCION_T1_8,
-  CONTADOR_T1_8, CONTADOR_LLEGO_A_TODOS,
+  CONTADOR_T1_8, CONTADOR_UNO_T1_8,
 } from "../data/contabilidadTema1.js";
 import { ACTIVO, PASIVO, PATRIMONIO, tipoDeCuenta, pesos } from "../data/contabilidad.js";
 
@@ -486,15 +486,13 @@ export const apagadosDe = (rompe) => PUNTOS_T1_8.filter((p) => p.n >= rompe).map
 export const apagaLaFlecha = (rompe) => rompe === TOTAL_PUNTOS;
 
 /*
- * El texto del contador para `n` puntos no alcanzados. El número es lo único
- * que cambia; con uno solo, «punto» va en singular — «a 1 puntos» sería una
- * errata en pantalla. Con la regla del punto roto apagado ya no sale nunca el
- * cero; la rama se queda por si alguien llama con él.
+ * El texto del contador para `n` puntos apagados. El número es lo único que
+ * cambia; con uno solo, la frase va en singular entera («Se apagó 1 punto.»).
+ * Con la regla del punto roto apagado nunca hay cero: pedirlo es un error.
  */
 export function textoDelContador(n) {
-  if (n === 0) return CONTADOR_LLEGO_A_TODOS;
-  const t = CONTADOR_T1_8.replace("[N]", String(n));
-  return n === 1 ? t.replace("puntos", "punto") : t;
+  if (!(n >= 1)) throw new Error(`no hay contador para ${n} puntos apagados`);
+  return n === 1 ? CONTADOR_UNO_T1_8 : CONTADOR_T1_8.replace("[N]", String(n));
 }
 
 /*

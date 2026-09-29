@@ -253,7 +253,9 @@ test("★★★ el pie comprueba mientras se escribe, sin esperar a enviar", () 
     const real = totalesTras(1);
     anotar(caja, { ...real, [PASIVO]: real[PASIVO] + 4000 });
     assert.equal(pie().getAttribute("data-cuadra"), "no", "el pie no avisa de que no cuadra");
-    contiene(caja.querySelector("[data-veredicto]").textContent, PIE_T1_5.noCuadra, "el veredicto");
+    /* «Hay [Z] de diferencia»: la diferencia es la que se escribió de más. */
+    assert.equal(caja.querySelector("[data-veredicto]").textContent,
+      PIE_T1_5.noCuadra.replace("[Z]", pesos(4000)), "el veredicto no dice cuánta diferencia hay");
     /*
      * Y el aviso va en coral EN EL PIE, no en cualquier parte de la pantalla:
      * un mutante que quitaba el borde del pie sobrevivía porque quedaba coral
@@ -265,7 +267,8 @@ test("★★★ el pie comprueba mientras se escribe, sin esperar a enviar", () 
 
     anotar(caja, real);
     assert.equal(pie().getAttribute("data-cuadra"), "si", "el pie no reconoce que cuadra");
-    contiene(caja.querySelector("[data-veredicto]").textContent, PIE_T1_5.cuadra, "el veredicto");
+    assert.equal(caja.querySelector("[data-veredicto]").textContent,
+      PIE_T1_5.cuadra.replace("[X]", pesos(real[ACTIVO])), "el veredicto no dice en cuánto dan igual");
     assert.ok(!CORAL.test(pie().getAttribute("style") ?? ""), "el pie sigue en coral aunque cuadre");
   } finally { desmontar(); }
 });
@@ -306,6 +309,8 @@ test("★★★ el historial va abierto desde el primer hecho anotado", () => {
       assert.ok(fila.textContent.includes(pesos(t[p.id])),
         `la fila no trae ${p.idea}: el historial dejó de desglosar los dos lados`);
     }
+    /* Y dice «Hecho 2: …», el texto que decidió Levi. */
+    assert.equal(fila.textContent, `Hecho 2: ${pesos(t[ACTIVO])} = ${pesos(t[PASIVO])} + ${pesos(t[PATRIMONIO])}`);
   } finally { desmontar(); }
 });
 
