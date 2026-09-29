@@ -109,7 +109,7 @@ test("★★★ las ocho situaciones, con su versión final y su punto de ruptur
     ["Un empleado compró tinta con plata de la caja. No pidió factura ni recibo.", 2, 3],
     ["La empresa le entregó la mercancía a un cliente, pero no le hizo factura.", 2, 3],
     ["La factura de un escritorio que compraron está en una carpeta. Nadie la pasó a los libros.", 3, 2],
-    ["Llegó el recibo del arriendo del mes. Sigue en el escritorio sin anotar.", 3, 2],
+    ["Llegó el recibo del arriendo del mes. Sigue en un cajón sin anotar.", 3, 2],
     ["La compra de papelería quedó anotada en los libros, pero la dejaron por fuera del informe del mes.", 4, 1],
     ["El pago de la luz está anotado, pero no aparece en el informe que recibieron los jefes.", 4, 1],
     ["Los informes se hicieron y se guardaron. Los jefes no los han abierto.", 5, 0],

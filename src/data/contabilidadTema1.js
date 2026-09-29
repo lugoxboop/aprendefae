@@ -107,7 +107,7 @@ export const ERROR_T1_1 = {
 /* El rótulo que acompaña al trazo cuando se enciende. */
 export const ROTULO_DEL_TRAZO = "esta decisión cambia lo que la empresa hace";
 
-export const ALT_T1_1 = "Anillo de cinco estaciones. La pregunta sobre fortalezas y debilidades queda dentro del anillo, con la etiqueta Administradores, y el trazo de retorno hacia la primera estación se enciende.";
+export const ALT_T1_1 = "Cinco puntos en círculo. La pregunta queda adentro, con el rótulo Administradores. La flecha de vuelta al primer punto se prende.";
 
 /* ═══════════════════ T1-2 · ¿QUÉ ENTRÓ Y QUÉ SALIÓ? ═══════════════════ */
 
@@ -166,7 +166,7 @@ export const ACIERTO_T1_2 = {
   "t2-03": "✅ De servicios. No entró ninguna cosa. Lo que vende el banco es lo que sabe hacer.",
   "t2-04": "✅ Industrial. Entró caña. Salió azúcar. No es lo mismo: adentro la cambiaron.",
   "t2-05": "✅ De servicios. No hay ninguna cosa que señalar. Venden lo que saben hacer.",
-  "t2-06": "✅ Agropecuaria. Los terneros crecieron adentro. Ni se compraron ni se sacaron del suelo.",
+  "t2-06": "✅ Agropecuaria. Entraron terneros y salió ganado. Ese ganado no se compró ni se sacó del suelo: se crió adentro.",
   "t2-07": "✅ Comercial. Entraron productos y salieron los mismos. Solo cambiaron de dueño.",
   "t2-08": "✅ Minera. Nadie le vendió el petróleo. Lo sacaron del subsuelo.",
   "t2-09": "✅ Industrial. Entró una cosa. Salió otra muy distinta. Adentro la cambiaron.",
@@ -341,7 +341,7 @@ export const ERROR_A_T1_4 = {
   "aporte-baja": "❌ Marcaste que uno sube y el otro baja. Mira el hecho otra vez: salió plata de la empresa y bajó lo que ella les reconoce a los socios. Aquí no hay ninguna deuda. Los dos lados pueden bajar juntos.",
 };
 
-export const ERROR_B_T1_4 = "❌ Esa parte no se mueve con este hecho. Pregúntate si algo de eso entró, salió o cambió.";
+export const ERROR_B_T1_4 = "❌ Esa parte queda igual con este hecho. Pregúntate si algo de eso entró, salió o cambió.";
 
 export const ACIERTO_T1_4 = {
   "cal-1": "✅ Sube lo que tiene y sube lo de los dueños. Entró plata a la empresa, y creció lo que ella les reconoce a los socios.",
@@ -354,7 +354,7 @@ export const ACIERTO_T1_4 = {
   "cal-8": "✅ Bajan los dos. Salió plata y con eso se pagó parte del préstamo del banco.",
 };
 
-export const ALT_T1_4 = "Tres barras: lo que tiene, lo que debe y lo que es de los dueños. Con este hecho suben dos de ellas y la tercera se queda igual.";
+export const ALT_T1_4 = "La empresa compró un computador a crédito por 25.000. La barra de lo que tiene crece. La de lo que debe crece igual. La de lo que es de los dueños queda igual.";
 
 /* ═══════════════════ T1-5 · LA ECUACIÓN EN MOVIMIENTO ═══════════════════ */
 
@@ -415,7 +415,7 @@ export const HISTORIAL_T1_5 = {
 
 export const ACIERTO_T1_5_FINAL = "✅ Y ahí está el mes completo. Lo que tiene la empresa y lo que debe más lo de los dueños dan lo mismo, hecho por hecho, desde cero.";
 
-export const ALT_T1_5 = "Tres casillas para escribir: lo que tiene, lo que debe y lo que es de los dueños. Debajo, la comprobación de que los dos lados dan igual, y el historial de los hechos ya anotados.";
+export const ALT_T1_5 = "Después del segundo hecho: lo que tiene 325.000, lo que debe 25.000, lo de los dueños 300.000. Al pie los dos lados dan 325.000. El historial lleva dos hechos revisados.";
 
 /* ═══════════════════ T1-6 · ¿EN CUÁL ESTADO APARECE? ═══════════════════ */
 
@@ -525,7 +525,7 @@ export const ACIERTO_T1_6 = {
 export const PESO_INFORME = 0.6;
 export const PESO_SECCION = 0.4;
 
-export const ALT_T1_6 = "Una ficha con un concepto y dos pestañas: el informe de lo que la empresa tiene y debe hoy, y el de lo que vendió y gastó durante el año. Dentro del primero, tres secciones.";
+export const ALT_T1_6 = "Dos informes. En el primero, lo que la empresa tiene y debe hoy, con Caja o Bancos escrito en la parte de lo que tiene. En el segundo, lo que vendió y gastó durante el año, con Ingresos operacionales escrito.";
 
 /* ═══════════════════ T1-7 · LA ARTICULACIÓN ═══════════════════ */
 
@@ -646,7 +646,7 @@ export const INVERSO_T1_7 = [
   },
 ];
 
-export const ALT_T1_7 = "Tres informes con sus líneas. Cinco flechas van de las líneas de los otros dos hacia las del informe de lo que la empresa tiene y debe hoy. De ese informe no sale ninguna.";
+export const ALT_T1_7 = "Tres informes. Cinco flechas llegan al informe de lo que la empresa tiene y debe. Una viene del informe de lo que vendió y gastó. Las otras cuatro vienen del informe de la plata.";
 
 /* ═══════════════════ T1-8 · ¿DÓNDE SE ROMPIÓ? ═══════════════════ */
 
@@ -703,7 +703,7 @@ export const SITUACIONES_T1_8 = [
   { id: "t8-01", texto: "Un empleado compró tinta con plata de la caja. No pidió factura ni recibo.", rompe: 2 },
   { id: "t8-02", texto: "La empresa le entregó la mercancía a un cliente, pero no le hizo factura.", rompe: 2 },
   { id: "t8-03", texto: "La factura de un escritorio que compraron está en una carpeta. Nadie la pasó a los libros.", rompe: 3 },
-  { id: "t8-04", texto: "Llegó el recibo del arriendo del mes. Sigue en el escritorio sin anotar.", rompe: 3 },
+  { id: "t8-04", texto: "Llegó el recibo del arriendo del mes. Sigue en un cajón sin anotar.", rompe: 3 },
   { id: "t8-05", texto: "La compra de papelería quedó anotada en los libros, pero la dejaron por fuera del informe del mes.", rompe: 4 },
   { id: "t8-06", texto: "El pago de la luz está anotado, pero no aparece en el informe que recibieron los jefes.", rompe: 4 },
   { id: "t8-07", texto: "Los informes se hicieron y se guardaron. Los jefes no los han abierto.", rompe: 5 },

@@ -211,28 +211,28 @@ export const OPCIONES = [
     id: "op1",
     correcta: true,
     texto: "Vuelve informe lo que pasa en la empresa, y alguien decide con él.",
-    feedback: "Correcto. Y hay algo más: quien decide es la administración, así que esa decisión cambia lo que la empresa hace después — y eso origina hechos nuevos. Por eso el registro es la estación tres de cinco, y por eso la definición del libro lista siete verbos: registrar es uno.",
+    feedback: "Correcto. Y hay algo más: los que deciden son los jefes, y eso cambia lo que la empresa hace. Así nacen hechos nuevos. Por eso anotar es el punto tres de cinco.",
     escena: { tipo: "anillo-completo" },
   },
   {
     id: "op2",
     correcta: false,
     texto: "Anota en libros lo que pasó, para que quede escrito.",
-    feedback: "Eso es una parte, y es la estación tres de cinco. Pero si la contabilidad terminara ahí, nadie usaría lo que produce. Después del registro vienen el resumen y la decisión — y esa decisión cambia la actividad que originó todo.",
+    feedback: "Eso es una parte, y es el punto tres de cinco. Si todo terminara ahí, nadie usaría lo que sale. Después vienen el informe y la decisión. Y esa decisión cambia lo que la empresa hace.",
     escena: { tipo: "una-estacion", estacion: 3, latenLasOtras: true },
   },
   {
     id: "op3",
     correcta: false,
     texto: "Saca la cuenta de los impuestos que hay que pagar.",
-    feedback: "El Estado sí es uno de los usuarios y esa es su pregunta. Pero es uno de ocho: los dueños preguntan por el rendimiento, los acreedores por la capacidad de pago, la administración por dónde están las debilidades. El mismo resumen responde las ocho.",
+    feedback: "El Estado sí pregunta eso. Pero es uno de ocho. Los dueños preguntan cuánto les deja. Los que prestaron, si les van a pagar. Los jefes, en qué van mal. El mismo informe responde las ocho.",
     escena: { tipo: "ocho-usuarios", resaltar: "estado" },
   },
   {
     id: "op4",
     correcta: false,
     texto: "Guarda los papeles de lo que la empresa compra y vende.",
-    feedback: "Los documentos son la estación dos, y son indispensables: sin ellos no hay nada que registrar. Pero guardarlos no es el trabajo — el trabajo es lo que pasa después, cuando esos documentos se vuelven registros, resúmenes y decisiones.",
+    feedback: "Los papeles son el punto dos, y hacen falta: sin ellos no hay nada que anotar. Pero guardarlos no es el trabajo. El trabajo es lo que pasa después.",
     escena: { tipo: "una-estacion", estacion: 2, trazoAMedias: true },
   },
 ];
@@ -245,12 +245,12 @@ export const OPCIONES = [
  * y tienen que decir lo mismo que ella.
  */
 export const ALTERNATIVOS = {
-  1: "Cinco estaciones en anillo. La primera está encendida y contiene el hecho: Caleja compra un computador de 25.000 a crédito.",
-  2: "La segunda estación se enciende y el hecho aparece ahora como una factura con fecha, concepto y valor.",
-  3: "La tercera estación se enciende y la factura aparece ahora como un renglón de libro con dos cuentas y dos cifras. Quedan dos estaciones después.",
-  4: "La cuarta estación se enciende y el renglón aparece ahora como una línea dentro de un estado financiero, rodeada de otras líneas.",
-  5: "La quinta estación se enciende y el resumen aparece ahora como una pregunta sobre la mesa de la administración de Caleja: ¿dónde están nuestras fortalezas y debilidades, y qué hay que planear?",
-  cierre: "Las cinco estaciones encendidas a la vez, cada una con su forma del mismo hecho, y un trazo que vuelve de la quinta a la primera cerrando el ciclo, porque la decisión de la administración cambia la actividad de la empresa.",
+  1: "Cinco puntos en círculo. El primero está prendido. Dice que la empresa compró un computador de 25.000 a crédito.",
+  2: "Se prende el segundo punto. El hecho ahora es una factura, con el concepto y el valor.",
+  3: "Se prende el tercer punto. La factura ahora es un renglón de libro, con dos nombres y dos cifras. Faltan dos puntos.",
+  4: "Se prende el cuarto punto. El renglón ahora es una línea dentro de un informe, entre muchas otras líneas.",
+  5: "Se prende el quinto punto. El informe ahora es una pregunta sobre la mesa de Administradores: ¿en qué vamos bien y en qué vamos mal?",
+  cierre: "Los cinco puntos prendidos a la vez. Cada uno tiene una forma distinta del mismo hecho. Una flecha vuelve del quinto al primero.",
   capa3: "Ocho usuarios consultan el resumen. Al elegir Administradores se enciende además el trazo de retorno hacia la primera estación; con los otros siete el trazo permanece atenuado.",
 };
 
