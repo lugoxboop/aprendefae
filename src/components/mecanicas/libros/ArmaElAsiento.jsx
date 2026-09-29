@@ -251,7 +251,7 @@ export default function ArmaElAsiento({ Marco, rotulo, titulo, acento, onComplet
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <EstilosDeVerbos />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={t.items.length} hechos={t.i + (retro ? 1 : 0)} etiqueta="Transacción" />
+        <Pulsos total={t.items.length} hechos={t.i + (retro ? 1 : 0)} enCurso={t.i + 1} etiqueta="Transacción" />
       </div>
 
       <Enunciado rotulo="LA TRANSACCIÓN" acento={acento}>{actual.transaccion.texto}</Enunciado>

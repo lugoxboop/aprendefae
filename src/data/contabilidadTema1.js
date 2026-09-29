@@ -354,7 +354,14 @@ export const ACIERTO_T1_4 = {
   "cal-8": "✅ Bajan los dos. Salió plata y con eso se pagó parte del préstamo del banco.",
 };
 
-export const ALT_T1_4 = "La empresa compró un computador a crédito por 25.000. La barra de lo que tiene crece. La de lo que debe crece igual. La de lo que es de los dueños queda igual.";
+/*
+ * Los alternativos de T1-4 y T1-5 nombran las tres partes con el rótulo que
+ * sale en pantalla, y nada más: sin cifras ni un caso concreto, porque se
+ * leen igual en todos los hechos (Levi). Salen de PARTES, que es de donde la
+ * pantalla saca sus rótulos.
+ */
+const enLista = (xs) => `${xs.slice(0, -1).join(", ")} y ${xs[xs.length - 1]}`;
+export const ALT_T1_4 = `Tres barras: ${enLista(PARTES.map((p) => p.idea))}.`;
 
 /* ═══════════════════ T1-5 · LA ECUACIÓN EN MOVIMIENTO ═══════════════════ */
 
@@ -418,7 +425,7 @@ export const HISTORIAL_T1_5 = {
 
 export const ACIERTO_T1_5_FINAL = "✅ Y ahí está el mes completo. Lo que tiene la empresa y lo que debe más lo de los dueños dan lo mismo, hecho por hecho, desde cero.";
 
-export const ALT_T1_5 = "Después del segundo hecho: lo que tiene 325.000, lo que debe 25.000, lo de los dueños 300.000. Al pie los dos lados dan 325.000. El historial lleva dos hechos revisados.";
+export const ALT_T1_5 = `Tres casillas para escribir: ${enLista(PARTES.map((p) => p.idea))}.`;
 
 /* ═══════════════════ T1-6 · ¿EN CUÁL ESTADO APARECE? ═══════════════════ */
 

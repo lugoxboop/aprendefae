@@ -114,7 +114,7 @@ export default function Triage({ onCompletar }) {
       <style>{CSS_JUEGO}</style>
 
       <div style={{ marginBottom: "14px" }}>
-        <Pulsos total={duelos.length} hechos={i + (elegido ? 1 : 0)} etiqueta="Duelo" />
+        <Pulsos total={duelos.length} hechos={i + (elegido ? 1 : 0)} enCurso={i + 1} etiqueta="Duelo" />
       </div>
 
       <Enunciado rotulo="SITUACIÓN" acento={FAE.teal}>{caso.caso}</Enunciado>

@@ -219,7 +219,21 @@ export function Retro({ texto }) {
  */
 export const MAXIMO_NODOS = 14;
 
-export function Pulsos({ total, hechos, etiqueta = "Avance" }) {
+/*
+ * ═══════════ EL RÓTULO DICE EL ÍTEM EN CURSO, NO LOS TERMINADOS ═══════════
+ *
+ * «Situación 0 de 5» en la primera pantalla se leía como «todavía no hay
+ * nada», cuando el estudiante ya está en la primera. El rótulo dice cuál
+ * tiene delante: 1 de 5 al empezar, 5 de 5 en la última (Levi).
+ *
+ * `enCurso` es ese número, 1 en adelante. Casi todas las actividades suman 1
+ * a `hechos` al cerrar un ítem —para que el nodo se llene—, así que desde
+ * `hechos` no se puede saber si el ítem en pantalla ya se cerró: por eso lo
+ * pasan aparte. Sin él, vale el nodo actual: `hechos + 1`, sin pasar del
+ * total. La barra y `aria-valuenow` siguen contando los terminados.
+ */
+export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null }) {
+  const numero = Math.max(1, Math.min(enCurso ?? hechos + 1, total));
   const actual = hechos < total ? hechos : null;
   const hasta = total > 1 ? Math.min(hechos, total - 1) / (total - 1) : 0;
   const NODO = 10;
@@ -249,7 +263,7 @@ export function Pulsos({ total, hechos, etiqueta = "Avance" }) {
           />
         </div>
         <span style={{ fontFamily: "Inter, sans-serif", fontSize: "11.5px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
-          {etiqueta} {hechos} de {total}
+          {etiqueta} {numero} de {total}
         </span>
       </div>
     );
@@ -293,7 +307,7 @@ export function Pulsos({ total, hechos, etiqueta = "Avance" }) {
         })}
       </div>
       <span style={{ fontFamily: "Inter, sans-serif", fontSize: "11.5px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
-        {etiqueta} {hechos} de {total}
+        {etiqueta} {numero} de {total}
       </span>
     </div>
   );

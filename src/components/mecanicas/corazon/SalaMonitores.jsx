@@ -101,7 +101,7 @@ export default function SalaMonitores({ onCompletar }) {
       <style>{CSS_JUEGO}</style>
 
       <div style={{ marginBottom: "14px" }}>
-        <Pulsos total={tanda.length} hechos={i + (elegido ? 1 : 0)} etiqueta="Alerta" />
+        <Pulsos total={tanda.length} hechos={i + (elegido ? 1 : 0)} enCurso={i + 1} etiqueta="Alerta" />
       </div>
 
       <Enunciado rotulo="ALERTA">{alerta.texto}</Enunciado>

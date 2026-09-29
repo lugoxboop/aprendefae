@@ -86,7 +86,7 @@ export default function DirectosIndirectos({ onCompletar }) {
   return (
     <Tesoreria rotulo="TESORERÍA · MESA DE SELLOS" titulo="¿Qué sello lleva este impuesto?" acento={FAE.teal}>
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={orden.length} hechos={i + (sello ? 1 : 0)} etiqueta="Impuesto" />
+        <Pulsos total={orden.length} hechos={i + (sello ? 1 : 0)} enCurso={i + 1} etiqueta="Impuesto" />
       </div>
 
       {/* El documento, con el sello estampado encima cuando ya se eligió. */}

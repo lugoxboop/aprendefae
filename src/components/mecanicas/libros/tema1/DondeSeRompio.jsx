@@ -535,7 +535,7 @@ export default function DondeSeRompio({ Marco, rotulo, titulo, acento, onComplet
       <style>{CSS}</style>
       <Encabezado objetivo={T1_8.objetivo} consigna={T1_8.consigna} />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (cerrada ? 1 : 0)} etiqueta="Situación" />
+        <Pulsos total={cuantas} hechos={t.i + (cerrada ? 1 : 0)} enCurso={t.i + 1} etiqueta="Situación" />
       </div>
 
       {/*

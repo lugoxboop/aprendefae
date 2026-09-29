@@ -247,7 +247,7 @@ export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompl
       <style>{CSS}</style>
       <EstilosDeVerbos />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (retro && !esperandoReintento ? 1 : 0)} etiqueta="Transacción" />
+        <Pulsos total={cuantas} hechos={t.i + (retro && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Transacción" />
       </div>
 
       <div style={{

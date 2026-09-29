@@ -291,7 +291,7 @@ export default function ElAsientoCompuestoNuevo({ Marco, rotulo, titulo, acento,
       <style>{CSS}</style>
       <EstilosDeVerbos />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} etiqueta="Asiento" />
+        <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Asiento" />
       </div>
 
       <div ref={lienzo} style={{ position: "relative" }}>

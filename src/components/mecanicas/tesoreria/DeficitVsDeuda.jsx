@@ -87,7 +87,7 @@ export default function DeficitVsDeuda({ onCompletar }) {
       {!terminado ? (
         <>
           <div style={{ marginBottom: "12px" }}>
-            <Pulsos total={tanda.length} hechos={i + (cerradoActual ? 1 : 0)} etiqueta="Papel" />
+            <Pulsos total={tanda.length} hechos={i + (cerradoActual ? 1 : 0)} enCurso={i + 1} etiqueta="Papel" />
           </div>
           <Pista
             itemKey={actual.id}

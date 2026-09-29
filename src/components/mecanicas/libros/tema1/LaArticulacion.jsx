@@ -273,7 +273,7 @@ export default function LaArticulacion({ Marco, rotulo, titulo, acento, onComple
       <style>{CSS}</style>
       <Encabezado objetivo={T1_7.objetivo} consigna={T1_7.consigna} />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} etiqueta="Flecha" />
+        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Flecha" />
       </div>
 
       {/* Aquí dentro no entra el vocabulario del Tema 2. */}

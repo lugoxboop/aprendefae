@@ -98,7 +98,7 @@ export default function DuelosRanking({ caso: casoUnico, casos, Marco, rotulo, t
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={duelos.length} hechos={i + (elegida ? 1 : 0)} etiqueta="Duelo" />
+        <Pulsos total={duelos.length} hechos={i + (elegida ? 1 : 0)} enCurso={i + 1} etiqueta="Duelo" />
       </div>
       <Enunciado rotulo="LA SITUACIÓN" acento={acento}>{caso.caso}</Enunciado>
       {caso.etiqueta && <RotuloEscenario texto={caso.etiqueta} />}

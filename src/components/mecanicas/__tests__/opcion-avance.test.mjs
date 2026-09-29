@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { JSDOM, VirtualConsole } from "jsdom";
 
 /*
@@ -63,8 +64,8 @@ test("avance: nodos unidos por una línea; hechos llenos teal, el actual con ani
     assert.ok(tramo, "hay tramo hecho");
     assert.equal(avance.querySelectorAll('[role="progressbar"] > span:not([data-nodo])').length, 2, "la línea de fondo y el tramo hecho: los nodos van unidos");
     assert.ok(tramo.style.width.includes("0.3333"), `el tramo llega al nodo 4 de 10: ${tramo.style.width}`);
-    /* El rótulo es parte de la misma pieza. */
-    assert.equal(avance.textContent.trim(), "Ítem 3 de 10");
+    /* El rótulo es parte de la misma pieza, y dice el ítem en curso: el del nodo actual. */
+    assert.equal(avance.textContent.trim(), "Ítem 4 de 10");
     const barra = avance.querySelector('[role="progressbar"]');
     assert.equal(barra.getAttribute("aria-valuenow"), "3");
     assert.equal(barra.getAttribute("aria-valuemax"), "10");
@@ -88,7 +89,7 @@ test("★ avance: por encima del tope los nodos dejan paso a una barra", () => {
     const tramo = avance.querySelector("[data-tramo-hecho]");
     assert.equal(tramo.style.width, "25%", "seis de veinticuatro es un cuarto");
     /* El rotulo sigue diciendo el numero exacto, que es lo que hace falta. */
-    assert.equal(avance.textContent.trim(), "Renglón 6 de 24");
+    assert.equal(avance.textContent.trim(), "Renglón 7 de 24");
     const barra = avance.querySelector('[role="progressbar"]');
     assert.equal(barra.getAttribute("aria-valuenow"), "6");
     assert.equal(barra.getAttribute("aria-valuemax"), "24");
@@ -115,6 +116,47 @@ test("avance: al terminar no queda nodo actual, y con uno solo no divide por cer
   const uno = montar(React.createElement(Pulsos, { total: 1, hechos: 0 }));
   assert.ok(!uno.caja.querySelector("[data-tramo-hecho]").style.width.includes("NaN"));
   uno.desmontar();
+});
+
+test("★★★ avance: el rótulo dice el ítem en curso — «1 de 5» al empezar, nunca «0 de 5»", () => {
+  const texto = (props) => {
+    const m = montar(React.createElement(Pulsos, { total: 5, etiqueta: "Situación", ...props }));
+    const t = m.caja.querySelector("[data-avance]").textContent.trim();
+    m.desmontar();
+    return t;
+  };
+  assert.equal(texto({ hechos: 0 }), "Situación 1 de 5", "la primera pantalla dice 0 de 5");
+  assert.equal(texto({ hechos: 5 }), "Situación 5 de 5", "al terminar se pasa del total");
+  /* Cerrar un ítem llena su nodo, pero el rótulo sigue en ese ítem: lo dice `enCurso`. */
+  assert.equal(texto({ hechos: 1, enCurso: 1 }), "Situación 1 de 5");
+  assert.equal(texto({ hechos: 5, enCurso: 5 }), "Situación 5 de 5");
+  /* Y la barra sigue contando los terminados. */
+  const m = montar(React.createElement(Pulsos, { total: 5, hechos: 0, enCurso: 1 }));
+  assert.equal(m.caja.querySelector('[role="progressbar"]').getAttribute("aria-valuenow"), "0");
+  m.desmontar();
+});
+
+test("★★ avance: toda actividad que suma el ítem cerrado le pasa `enCurso`, para no saltar al siguiente", () => {
+  /*
+   * Casi todas pasan `hechos={i + (cerrado ? 1 : 0)}`. Sin `enCurso`, al
+   * cerrar el primer ítem el rótulo diría «2 de 5» con el primero en
+   * pantalla. El Memorama es la excepción: sus parejas no van en orden y
+   * cuenta las encontradas, así que usa el valor por defecto.
+   */
+  const raiz = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
+  const faltan = [];
+  const recorrer = (dir) => {
+    for (const f of readdirSync(dir, { withFileTypes: true })) {
+      const p = join(dir, f.name);
+      if (f.isDirectory()) { if (f.name !== "__tests__" && f.name !== "node_modules") recorrer(p); continue; }
+      if (!p.endsWith(".jsx")) continue;
+      for (const m of readFileSync(p, "utf8").matchAll(/<Pulsos [^>]*>/g)) {
+        if (/\? 1 : 0\)/.test(m[0]) && !/enCurso=/.test(m[0])) faltan.push(`${p}: ${m[0]}`);
+      }
+    }
+  };
+  recorrer(join(raiz, "src"));
+  assert.deepEqual(faltan, [], "hay avances que saltan al siguiente ítem al cerrar el actual");
 });
 
 /* ─────────────────────────────── La opción ─────────────────────────────── */

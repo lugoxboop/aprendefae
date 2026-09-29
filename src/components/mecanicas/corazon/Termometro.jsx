@@ -97,7 +97,7 @@ export default function Termometro({ onCompletar }) {
       <style>{CSS_JUEGO}</style>
 
       <div style={{ marginBottom: "14px" }}>
-        <Pulsos total={tanda.length} hechos={i + (elegido ? 1 : 0)} etiqueta="Lectura" />
+        <Pulsos total={tanda.length} hechos={i + (elegido ? 1 : 0)} enCurso={i + 1} etiqueta="Lectura" />
       </div>
 
       <Enunciado rotulo="CAMBIO" acento={FAE.teal}>{ronda.cambio}</Enunciado>

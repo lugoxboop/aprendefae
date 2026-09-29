@@ -137,7 +137,7 @@ export default function SaldoDeLaCuenta({ Marco, rotulo, titulo, acento, onCompl
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <EstilosDeVerbos />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={t.items.length} hechos={t.i + (retro ? 1 : 0)} etiqueta="Cuenta" />
+        <Pulsos total={t.items.length} hechos={t.i + (retro ? 1 : 0)} enCurso={t.i + 1} etiqueta="Cuenta" />
       </div>
 
       {/*

@@ -156,7 +156,7 @@ export default function LaEcuacionEnMovimiento({ Marco, rotulo, titulo, acento, 
       <style>{CSS}</style>
       <Encabezado objetivo={T1_5.objetivo} consigna={T1_5.consigna} />
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={total} hechos={i + (r && !esperandoReintento ? 1 : 0)} etiqueta="Hecho" />
+        <Pulsos total={total} hechos={i + (r && !esperandoReintento ? 1 : 0)} enCurso={i + 1} etiqueta="Hecho" />
       </div>
 
       {/* Aquí dentro no entra el vocabulario del Tema 2. */}

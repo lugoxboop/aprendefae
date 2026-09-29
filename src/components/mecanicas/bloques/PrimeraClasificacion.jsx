@@ -98,7 +98,7 @@ export default function PrimeraClasificacion({ banco, Marco, rotulo, titulo, ace
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       {cae && <style>{CSS_CAE}</style>}
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={items.length} hechos={i + (elegida ? 1 : 0)} etiqueta="Enunciado" />
+        <Pulsos total={items.length} hechos={i + (elegida ? 1 : 0)} enCurso={i + 1} etiqueta="Enunciado" />
       </div>
       <div key={item.id} className={cae ? "fae-pc-cae" : undefined}>
         <Enunciado rotulo={banco.pregunta.toUpperCase()} acento={acento}>{item.texto}</Enunciado>

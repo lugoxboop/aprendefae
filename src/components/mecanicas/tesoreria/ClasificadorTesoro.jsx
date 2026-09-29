@@ -86,7 +86,7 @@ export default function ClasificadorTesoro({ onCompletar }) {
       {!terminado ? (
         <>
           <div style={{ marginBottom: "12px" }}>
-            <Pulsos total={tanda.length} hechos={i + (cerradaActual ? 1 : 0)} etiqueta="Documento" />
+            <Pulsos total={tanda.length} hechos={i + (cerradaActual ? 1 : 0)} enCurso={i + 1} etiqueta="Documento" />
           </div>
           <Pista
             itemKey={actual.id}

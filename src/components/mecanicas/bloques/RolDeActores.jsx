@@ -127,7 +127,7 @@ export default function RolDeActores({ rondas, Marco, rotulo, titulo, acento, on
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={rondas.length} hechos={ronda + (completa ? 1 : 0)} etiqueta="Ronda" />
+        <Pulsos total={rondas.length} hechos={ronda + (completa ? 1 : 0)} enCurso={ronda + 1} etiqueta="Ronda" />
       </div>
       <Enunciado rotulo={`RONDA ${ronda + 1} DE ${rondas.length}`} acento={acento}>{r.medida}</Enunciado>
       {r.etiqueta && <RotuloEscenario texto={r.etiqueta} />}
