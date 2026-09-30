@@ -33,7 +33,7 @@ export const T1_1 = {
    * que encabeza la elección y desaparece cuando ya se eligió. Una no
    * reemplaza a la otra.
    */
-  consigna: "Toca la pregunta. Luego toca si esa persona está adentro o afuera de la empresa.",
+  consigna: "Lee la pregunta. Luego toca si esa persona está adentro o afuera de la empresa.",
   /* Sin vacío: la pregunta de vacío salió con el Bloque 2 de «Así se juega». */
 };
 
@@ -422,7 +422,7 @@ export const HISTORIAL_T1_5 = {
   /* Una fila por hecho, con el desglose: [X] = [Y] + [Z]. Decisión de Levi. */
   fila: "Hecho [n]: [X] = [Y] + [Z]",
   /* Solo en el ejemplo de «Así se juega», que no parte de cero: de dónde arranca. */
-  filaInicio: "[X] = [Y] + [Z]",
+  filaInicio: "Al empezar: [X] = [Y] + [Z]",
 };
 
 export const ACIERTO_T1_5_FINAL = "✅ Y ahí está el mes completo. Lo que tiene la empresa y lo que debe más lo de los dueños dan lo mismo, hecho por hecho, desde cero.";

@@ -275,8 +275,12 @@ export default function LaEcuacionEnMovimiento({
             {HISTORIAL_T1_5.titulo.toUpperCase()}
           </p>
           {ejemplo ? (
-            /* El ejemplo no parte de cero: el historial dice de dónde arranca. */
-            <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+            /*
+             * El ejemplo no parte de cero: el historial dice de dónde arranca.
+             * Y como la demo no tiene «Siguiente hecho», la fila del hecho
+             * entra al anotarlo bien, que es donde termina la demo.
+             */
+            <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "4px" }}>
               <li data-fila-historial="inicio" style={{ fontSize: "11px", color: "rgba(248,249,250,0.65)" }}>
                 <span style={{ ...CIFRA }}>
                   {HISTORIAL_T1_5.filaInicio
@@ -285,6 +289,17 @@ export default function LaEcuacionEnMovimiento({
                     .replace("[Z]", pesos(antes[PATRIMONIO]))}
                 </span>
               </li>
+              {r?.ok && (
+                <li data-fila-historial={h.id} className="fae-t15-fila" style={{ fontSize: "11px", color: "rgba(248,249,250,0.65)" }}>
+                  <span style={{ ...CIFRA }}>
+                    {HISTORIAL_T1_5.fila
+                      .replace("[n]", "1")
+                      .replace("[X]", pesos(r.real[ACTIVO]))
+                      .replace("[Y]", pesos(r.real[PASIVO]))
+                      .replace("[Z]", pesos(r.real[PATRIMONIO]))}
+                  </span>
+                </li>
+              )}
             </ul>
           ) : i === 0 ? (
             <p data-historial-vacio style={{ margin: 0, fontSize: "11.5px", color: "rgba(248,249,250,0.45)" }}>

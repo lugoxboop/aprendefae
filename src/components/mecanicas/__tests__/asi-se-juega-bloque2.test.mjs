@@ -99,9 +99,12 @@ test("★★ el bloque 2 son T1-1, T1-2 y T1-5, con la consigna de cada activida
     assert.equal(ASI_TODAS[id].consigna, datos[id].consigna, `${id}: la consigna no es la de la actividad`);
     assert.equal(ASI_TODAS[id].titulo, datos[id].nombre);
   }
+  assert.equal(T1_1.consigna, "Lee la pregunta. Luego toca si esa persona está adentro o afuera de la empresa.");
   assert.deepEqual(ASI_TODAS[T1_1.id].pasos, [
-    "Lee la pregunta y piensa quién la haría.", "Toca la pregunta para tomarla.", "Toca después AFUERA o ADENTRO.",
+    "Lee la pregunta y piensa quién la haría.", "Toca ADENTRO o AFUERA.",
   ]);
+  /* La mano ya no toca la pregunta: solo AFUERA. */
+  assert.deepEqual(ASI_TODAS[T1_1.id].guion.toques.map((t) => t.en), [`[data-zona="${ZONA_FUERA}"]`]);
   /* Los nombres de las zonas, tal como salen en pantalla. */
   assert.equal(ROTULO_ZONA[ZONA_FUERA], "AFUERA");
   assert.equal(ROTULO_ZONA[ZONA_DENTRO], "ADENTRO");
@@ -109,8 +112,12 @@ test("★★ el bloque 2 son T1-1, T1-2 y T1-5, con la consigna de cada activida
     "Mira el cuadro de lo que entra.", "Mira el cuadro de lo que sale.", "Toca la clase de empresa que es.",
   ]);
   assert.deepEqual(ASI_TODAS[T1_5.id].pasos, [
-    "Lee el hecho de la panadería.", "Escribe cómo queda cada uno de los tres totales.", "Escribe los tres, aunque alguno no cambie.",
+    "Lee el hecho de la panadería.", "Escribe los tres totales, aunque alguno no cambie.", "Toca Anotar.",
   ]);
+  assert.equal(ASI_TODAS[T1_5.id].alt,
+    "la panadería compró un horno a crédito por $200.000. Al empezar tenía $500.000, debía $0 y lo de los dueños era $500.000. Se escriben $700.000 en «Lo que tiene», $200.000 en «Lo que debe» y $500.000 en «Lo que es de los dueños», y se toca «Anotar». El pie dice: «Los dos lados dan igual: $700.000.»");
+  assert.ok(ASI_TODAS[T1_5.id].guion.duracion <= 10000, "la demo de T1-5 pasa de 10 s");
+  assert.equal(ASI_TODAS[T1_5.id].guion.toques.at(-1).texto, "Anotar", "la demo de T1-5 no termina tocando «Anotar»");
   assert.equal(ASI_TODAS[T1_1.id].alt,
     "se toca la pregunta del cliente de la panadería y luego la zona AFUERA. La pregunta se ubica con el rótulo «Clientes» y la flecha de vuelta no se enciende.");
 });
@@ -222,7 +229,10 @@ for (const id of IDS) {
         assert.deepEqual([valor("activo"), valor("pasivo"), valor("patrimonio")], ["700.000", "200.000", "500.000"]);
         assert.equal(escenario().querySelector("[data-pie]").dataset.cuadra, "si");
         assert.equal(escenario().querySelector("[data-veredicto]").textContent, "Los dos lados dan igual: $700.000.");
-        assert.equal(escenario().querySelector('[data-fila-historial="inicio"]').textContent, "$500.000 = $0 + $500.000");
+        assert.equal(escenario().querySelector('[data-fila-historial="inicio"]').textContent, "Al empezar: $500.000 = $0 + $500.000");
+        /* Tocó «Anotar»: la fila nueva está en «Lo que llevas». */
+        assert.equal(escenario().querySelector(`[data-fila-historial="${EJEMPLO_T1_5.hecho.id}"]`)?.textContent,
+          "Hecho 1: $700.000 = $200.000 + $500.000");
         assert.equal(escenario().querySelector("[data-barra]"), null, "T1-5 no tiene barras");
       }
     } finally {
