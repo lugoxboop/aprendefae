@@ -107,6 +107,13 @@ const SORA = "Sora, sans-serif";
  * el círculo sin relleno — no solo por la opacidad.
  */
 export const OPACIDAD_ATENUADA = 0.66;
+/* Las opciones de predicción que no se eligieron. Solo en su borde. */
+export const OPACIDAD_NO_ELEGIDA = 0.5;
+const NEUTRO_RGB = "184,196,212";
+const BLANCO_RGB = "248,249,250";
+/* Un color con su alfa ya multiplicado por la opacidad atenuada: así se atenúa sin tocar el texto. */
+export const atenuar = (rgb, alfa, opacidad = OPACIDAD_ATENUADA) =>
+  `rgba(${rgb},${Math.round(alfa * opacidad * 1000) / 1000})`;
 /* Dónde corre la línea de avance de la franja. */
 const X_AVANCE = 19;
 
@@ -137,23 +144,31 @@ function Punto({ p, estado, onTocar, refCaja, fase, reducido }) {
   const tocable = esTocable(p.n);
   const { apagado, atenuado, parpadea } = estado;
   const tenue = apagado || atenuado;
+  const ms = atenuado ? MS.atenua : MS.apagon;
   const contenido = (
     <>
       <span data-numero={p.n} style={{
         flex: "none", width: "18px", height: "18px", borderRadius: "999px",
-        border: `1px solid ${NEUTRO}`, color: apagado ? TEXTO_ATENUADO : NEUTRO, fontFamily: SORA,
+        border: `1px solid ${tenue ? atenuar(NEUTRO_RGB, 1) : NEUTRO}`,
+        color: tenue ? TEXTO_ATENUADO : NEUTRO, fontFamily: SORA,
         fontSize: "10px", fontWeight: 700, lineHeight: "17px", textAlign: "center",
+        transition: reducido ? "none" : `color ${ms}ms ease, border-color ${ms}ms ease`,
       }}>
         {p.n}
       </span>
-      <span style={{ flex: 1, minWidth: 0, fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: 1.3, color: FAE.text }}>
+      {/* El rótulo conserva su atenuado de siempre: mide 5,6:1 y no estaba en la lista. */}
+      <span data-rotulo-punto style={{
+        flex: 1, minWidth: 0, fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: 1.3, color: FAE.text,
+        opacity: tenue ? OPACIDAD_ATENUADA : 1,
+        transition: reducido ? "none" : `opacity ${ms}ms ease`,
+      }}>
         {p.rotulo}
       </span>
       {/* Apagado se dice con opacidad Y con su palabra; nunca solo con tono. */}
       {apagado && (
         <span data-rotulo-apagado style={{
           flex: "none", fontSize: "9.5px", fontWeight: 600, letterSpacing: "0.06em",
-          color: TEXTO_ATENUADO, border: "1px solid rgba(248,249,250,0.35)",
+          color: TEXTO_ATENUADO, border: `1px solid ${atenuar(BLANCO_RGB, 0.35)}`,
           borderRadius: "999px", padding: "1px 7px",
         }}>
           {ROTULO_APAGADO}
@@ -162,7 +177,7 @@ function Punto({ p, estado, onTocar, refCaja, fase, reducido }) {
       {atenuado && !apagado && (
         <span data-rotulo-no-llego style={{
           flex: "none", maxWidth: "46%", fontSize: "10px", lineHeight: 1.3, textAlign: "right",
-          color: "rgba(248,249,250,0.85)",
+          color: "rgba(248,249,250,0.85)", opacity: OPACIDAD_ATENUADA,
         }}>
           {ROTULO_ERROR_B_T1_8}
         </span>
@@ -178,13 +193,17 @@ function Punto({ p, estado, onTocar, refCaja, fase, reducido }) {
      * final real. El roto no lleva borde ni fondo propio — se apaga como
      * cualquier otro.
      */
-    background: "rgba(184,196,212,0.06)",
+    /*
+     * Lo atenuado se atenúa en el borde y el fondo, NO en la tarjeta entera:
+     * una opacidad en el contenedor la heredaría el texto y lo dejaría por
+     * debajo de 4,5:1. El texto va en #A8B6C8 sólido. Lo aprobó Levi.
+     */
+    background: tenue ? atenuar(NEUTRO_RGB, 0.06) : "rgba(184,196,212,0.06)",
     border: parpadea
       ? `1.5px dashed ${FAE.coral}`
-      : `1.5px solid ${tenue ? "rgba(248,249,250,0.18)" : NEUTRO}`,
-    opacity: tenue ? OPACIDAD_ATENUADA : 1,
+      : `1.5px solid ${tenue ? atenuar(BLANCO_RGB, 0.18) : NEUTRO}`,
     /* Con movimiento reducido el estado final se pinta directo, sin transición. */
-    transition: reducido ? "none" : `opacity ${atenuado ? MS.atenua : MS.apagon}ms ease, border-color 200ms ease`,
+    transition: reducido ? "none" : `background-color ${ms}ms ease, border-color 200ms ease`,
     color: FAE.text, font: "inherit",
   };
 
@@ -626,8 +645,8 @@ export default function DondeSeRompio({
                       cursor: prediccion ? "default" : "pointer",
                       background: elegida ? NEUTRO : "transparent",
                       color: elegida ? NAVY_DEL_CHIP : prediccion ? TEXTO_ATENUADO : FAE.text,
-                      border: `${elegida ? 2 : 1}px solid ${elegida ? NEUTRO : "rgba(248,249,250,0.3)"}`,
-                      opacity: prediccion && !elegida ? 0.5 : 1,
+                      /* Las no elegidas se apagan en el borde; el número queda en #A8B6C8 sólido. */
+                      border: `${elegida ? 2 : 1}px solid ${elegida ? NEUTRO : prediccion ? atenuar(BLANCO_RGB, 0.3, OPACIDAD_NO_ELEGIDA) : "rgba(248,249,250,0.3)"}`,
                     }}
                   >
                     {n}

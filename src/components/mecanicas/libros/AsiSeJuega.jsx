@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Eye } from "lucide-react";
 import { FAE } from "../../../theme.js";
-import { NEUTRO, NAVY_DEL_CHIP } from "../../../data/contabilidadIntro.js";
+import { NEUTRO, NAVY_DEL_CHIP, TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
 import { CSS_SALA } from "../salaDeControl/marco.jsx";
 import { CSS_JUEGO } from "../corazon/juego.jsx";
 import { Responder } from "./piezas.jsx";
@@ -407,7 +407,7 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1 }) {
         position: "sticky", bottom: 0, zIndex: 5, marginTop: "6px", paddingBottom: "14px",
         background: `linear-gradient(to bottom, transparent, ${FAE.bg} 30%)`,
       }}>
-        <Responder onClick={onSiguiente} deshabilitado={!vista}>
+        <Responder onClick={onSiguiente} deshabilitado={!vista} colorApagado={TEXTO_ATENUADO}>
           {vista ? "Siguiente" : "Mira el ejemplo"}
         </Responder>
       </div>

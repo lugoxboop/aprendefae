@@ -341,6 +341,7 @@ for (const id of [T1_8.id, T1_7.id, T1_4.id]) {
       const sig = () => caja.querySelector("[data-asj-siguiente] button");
       assert.equal(sig().disabled, true, "«Siguiente» nace encendido");
       assert.equal(sig().textContent, "Mira el ejemplo");
+      assert.equal(sig().style.color, "rgb(168, 182, 200)", "«Mira el ejemplo» no va en #A8B6C8");
       assert.equal(caja.querySelector("[data-asj-control]").textContent, "Pausar");
       tocar(sig());
       assert.equal(siguiente, 0, "«Siguiente» apagado dejó pasar");
@@ -486,7 +487,10 @@ test("★★ T1-8 real: números apagados, chip «apagado» y predicción no ele
       assert.equal(p.querySelector("[data-rotulo-apagado]").style.color, "rgb(168, 182, 200)", `chip del ${n}`);
     }
     for (const n of [1, 2, 3]) {
-      assert.equal(caja.querySelector(`[data-prediccion-opcion="${n}"]`).style.color, "rgb(168, 182, 200)", `opción ${n}`);
+      const op = caja.querySelector(`[data-prediccion-opcion="${n}"]`);
+      assert.equal(op.style.color, "rgb(168, 182, 200)", `opción ${n}`);
+      assert.equal(op.style.opacity, "", `opción ${n}: el botón entero lleva opacidad`);
+      assert.equal(op.style.borderColor, "rgba(248, 249, 250, 0.15)", `opción ${n}: el borde no va al 0,5`);
     }
   } finally { desmontar(); }
 });
