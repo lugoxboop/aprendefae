@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
-import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
+import { NEUTRO, NAVY_DEL_CHIP, TEXTO_ATENUADO } from "../../../../data/contabilidadIntro.js";
 import {
   T1_8, PUNTOS_T1_8, PREDICCION_T1_8, ROTULO_ERROR_B_T1_8, ROTULO_APAGADO,
   ROTULO_FLECHA_APAGADA, CIERRE_T1_8, ALT_T1_8,
@@ -141,7 +141,7 @@ function Punto({ p, estado, onTocar, refCaja, fase, reducido }) {
     <>
       <span data-numero={p.n} style={{
         flex: "none", width: "18px", height: "18px", borderRadius: "999px",
-        border: `1px solid ${NEUTRO}`, color: NEUTRO, fontFamily: SORA,
+        border: `1px solid ${NEUTRO}`, color: apagado ? TEXTO_ATENUADO : NEUTRO, fontFamily: SORA,
         fontSize: "10px", fontWeight: 700, lineHeight: "17px", textAlign: "center",
       }}>
         {p.n}
@@ -153,7 +153,7 @@ function Punto({ p, estado, onTocar, refCaja, fase, reducido }) {
       {apagado && (
         <span data-rotulo-apagado style={{
           flex: "none", fontSize: "9.5px", fontWeight: 600, letterSpacing: "0.06em",
-          color: "rgba(248,249,250,0.8)", border: "1px solid rgba(248,249,250,0.35)",
+          color: TEXTO_ATENUADO, border: "1px solid rgba(248,249,250,0.35)",
           borderRadius: "999px", padding: "1px 7px",
         }}>
           {ROTULO_APAGADO}
@@ -625,7 +625,7 @@ export default function DondeSeRompio({
                       padding: "10px 0", borderRadius: "10px", fontFamily: SORA, fontSize: "15px", fontWeight: 700,
                       cursor: prediccion ? "default" : "pointer",
                       background: elegida ? NEUTRO : "transparent",
-                      color: elegida ? NAVY_DEL_CHIP : FAE.text,
+                      color: elegida ? NAVY_DEL_CHIP : prediccion ? TEXTO_ATENUADO : FAE.text,
                       border: `${elegida ? 2 : 1}px solid ${elegida ? NEUTRO : "rgba(248,249,250,0.3)"}`,
                       opacity: prediccion && !elegida ? 0.5 : 1,
                     }}

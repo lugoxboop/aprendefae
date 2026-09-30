@@ -457,6 +457,40 @@ test("★★★ movimiento reducido: tres cuadros, la mano quieta en el gesto, �
   } finally { movimientoReducido = false; }
 });
 
+/* ═══════════════════ EL TEXTO ATENUADO, #A8B6C8 EN EL COMPONENTE REAL ═══════════════════ */
+
+test("★★ T1-4 real: el «·» antes de revelar y «Marca las tres» apagado van en #A8B6C8", () => {
+  const { caja, desmontar } = montar(React.createElement(QueLePasaACadaUno, { Marco: MarcoLibros, onCompletar: () => {} }));
+  try {
+    const puntos = [...caja.querySelectorAll('[data-signo="sin"]')];
+    assert.equal(puntos.length, 3);
+    for (const x of puntos) assert.equal(x.style.color, "rgb(168, 182, 200)");
+    const marca = boton(caja, "Marca las tres");
+    assert.equal(marca.disabled, true);
+    assert.equal(marca.style.color, "rgb(168, 182, 200)");
+  } finally { desmontar(); }
+});
+
+test("★★ T1-8 real: números apagados, chip «apagado» y predicción no elegida van en #A8B6C8", async () => {
+  const { caja, desmontar } = montar(React.createElement(DondeSeRompio, {
+    Marco: MarcoLibros, onCompletar: () => {}, items: [EJEMPLO_T1_8],
+  }));
+  try {
+    tocar(caja.querySelector(`[data-punto="${EJEMPLO_T1_8.rompe}"]`));
+    await esperar(() => caja.querySelector('[data-prediccion-opcion="4"]'));
+    tocar(caja.querySelector('[data-prediccion-opcion="4"]'));
+    await esperar(() => caja.querySelectorAll('[data-apagado="si"]').length === 4);
+    for (const n of [2, 3, 4, 5]) {
+      const p = caja.querySelector(`[data-punto="${n}"]`);
+      assert.equal(p.querySelector("[data-numero]").style.color, "rgb(168, 182, 200)", `número ${n}`);
+      assert.equal(p.querySelector("[data-rotulo-apagado]").style.color, "rgb(168, 182, 200)", `chip del ${n}`);
+    }
+    for (const n of [1, 2, 3]) {
+      assert.equal(caja.querySelector(`[data-prediccion-opcion="${n}"]`).style.color, "rgb(168, 182, 200)", `opción ${n}`);
+    }
+  } finally { desmontar(); }
+});
+
 /* ═══════════════════ EL MODO DEMO, DIRECTO SOBRE LOS COMPONENTES ═══════════════════ */
 
 test("★★★ en modo demo, terminar el ítem no llama a onCompletar ni ofrece seguir", () => {
