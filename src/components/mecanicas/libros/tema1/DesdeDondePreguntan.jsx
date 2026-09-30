@@ -104,9 +104,20 @@ function Anillo({ retorno, reducido, resaltado }) {
   );
 }
 
-export default function DesdeDondePreguntan({ Marco, rotulo, titulo, acento, onCompletar }) {
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente, no una copia dibujada: `items` le da el ejemplo
+ * desde afuera en vez de sortearlo del banco, y `modoDemo` le quita lo que no
+ * es la zona de juego —el encabezado, el avance, el botón de seguir— y le
+ * corta la salida: no llama a `onCompletar`, así que no hay FP, ni intentos,
+ * ni progreso. Cómo se juega no cambia en nada; eso es lo que se enseña.
+ */
+export default function DesdeDondePreguntan({
+  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+}) {
   const reducido = useMovimientoReducido();
-  const t = useTanda(() => sortearT1_1(barajar));
+  const t = useTanda(() => items ?? sortearT1_1(barajar));
 
   const [r, setR] = useState(null);
   const [intento, setIntento] = useState(0);
@@ -123,11 +134,11 @@ export default function DesdeDondePreguntan({ Marco, rotulo, titulo, acento, onC
   const puedeResponder = !r || esperandoReintento;
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
   useEffect(() => () => clearTimeout(reloj.current), []);
   useEffect(() => {
-    if (r && !esperandoReintento) zonaBoton.current?.querySelector("button")?.focus();
+    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [r, esperandoReintento]);
 
   const responder = (zona) => {
@@ -245,10 +256,14 @@ export default function DesdeDondePreguntan({ Marco, rotulo, titulo, acento, onC
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
-      <Encabezado objetivo={T1_1.objetivo} consigna={T1_1.consigna} />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado objetivo={T1_1.objetivo} consigna={T1_1.consigna} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </div>
+        </>
+      )}
 
       {/*
         ═══════ AQUÍ DENTRO NO ENTRA EL VOCABULARIO DEL TEMA 2 ═══════
@@ -308,15 +323,22 @@ export default function DesdeDondePreguntan({ Marco, rotulo, titulo, acento, onC
         Ahora se quedan, deshabilitadas. Lo que sí se va es el rótulo de la
         pregunta, que ya no pide nada.
       */}
-      {/* Rótulo de sección: es interfaz de marca, no contenido de la actividad. */}
-      <p data-rotulo-seccion style={{
-        margin: "14px 0 8px", fontFamily: SORA, fontSize: "10.5px",
-        fontWeight: 700, letterSpacing: "0.16em", color: acento,
-      }}>
-        {esperandoReintento
-          ? "INTÉNTALO OTRA VEZ"
-          : puedeResponder ? T1_1.pregunta.toUpperCase() : "DONDE QUEDÓ"}
-      </p>
+      {/*
+        Rótulo de sección: es interfaz de marca, no contenido de la actividad.
+        Mientras se responde no dice nada: ahí iba la pregunta de vacío, que
+        salió con el Bloque 2 de «Así se juega». Queda el espacio, para que
+        las zonas no salten al aparecer el rótulo después.
+      */}
+      {esperandoReintento || !puedeResponder ? (
+        <p data-rotulo-seccion style={{
+          margin: "14px 0 8px", fontFamily: SORA, fontSize: "10.5px",
+          fontWeight: 700, letterSpacing: "0.16em", color: acento,
+        }}>
+          {esperandoReintento ? "INTÉNTALO OTRA VEZ" : "DONDE QUEDÓ"}
+        </p>
+      ) : (
+        <div style={{ height: "14px" }} />
+      )}
       <div
         style={{ display: "flex", flexDirection: "column", gap: "8px" }}
         onKeyDown={(ev) => {
@@ -352,7 +374,7 @@ export default function DesdeDondePreguntan({ Marco, rotulo, titulo, acento, onC
 
       {r && <Retro texto={r.texto} />}
 
-      {r && !esperandoReintento && (
+      {r && !esperandoReintento && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente pregunta"}
@@ -360,7 +382,7 @@ export default function DesdeDondePreguntan({ Marco, rotulo, titulo, acento, onC
         </div>
       )}
 
-      <p style={SOLO_LECTOR}>{ALT_T1_1}</p>
+      {!modoDemo && <p style={SOLO_LECTOR}>{ALT_T1_1}</p>}
     </Marco>
   );
 }

@@ -55,7 +55,8 @@ export function evaluarT1_1(usuario, zona) {
      * faltara, servir un genérico se leería igual de bien y nadie notaría que
      * ese usuario perdió su devolución.
      */
-    const texto = ACIERTO_T1_1[usuario.id];
+    /* El ejemplo de «Así se juega» no es del banco: trae su propia devolución. */
+    const texto = usuario.acierto ?? ACIERTO_T1_1[usuario.id];
     if (!texto) throw new Error(`«${usuario.id}» no tiene devolución de acierto`);
     return {
       ok,
@@ -115,7 +116,8 @@ export function claveDelError(marcada, real) {
 
 export function evaluarT1_2(empresa, clase) {
   if (clase === empresa.clase) {
-    const texto = ACIERTO_T1_2[empresa.id];
+    /* El ejemplo de «Así se juega» no es del banco: trae su propia devolución. */
+    const texto = empresa.acierto ?? ACIERTO_T1_2[empresa.id];
     if (!texto) throw new Error(`«${empresa.id}» no tiene devolución de acierto`);
     return {
       ok: true,
@@ -261,15 +263,27 @@ export function totalesTras(cuantas) {
   return acum;
 }
 
-/** Qué parte NO se mueve con este hecho: la que vale lo mismo que antes. */
-export function parteQuieta(indice) {
-  const antes = totalesTras(indice);
-  const ahora = totalesTras(indice + 1);
+/*
+ * Los totales después de un hecho suelto, partiendo de donde se diga. Lo usa
+ * el ejemplo de «Así se juega», que no está en el recorrido de ocho: parte de
+ * su propio estado y no de la suma de los hechos del banco.
+ */
+export function totalesDesde(antes, hecho) {
+  const e = efectoDe(hecho);
+  return Object.fromEntries(Object.keys(antes).map((p) => [p, antes[p] + e.valores[p]]));
+}
+
+function quietaEntre(antes, ahora, cual) {
   const quietas = Object.keys(antes).filter((p) => antes[p] === ahora[p]);
   if (quietas.length !== 1) {
-    throw new Error(`el hecho ${indice + 1} deja ${quietas.length} partes quietas, no una`);
+    throw new Error(`el hecho ${cual} deja ${quietas.length} partes quietas, no una`);
   }
   return quietas[0];
+}
+
+/** Qué parte NO se mueve con este hecho: la que vale lo mismo que antes. */
+export function parteQuieta(indice) {
+  return quietaEntre(totalesTras(indice), totalesTras(indice + 1), indice + 1);
 }
 
 /* Desde el quinto hecho solo se piden las dos que cambian. */
@@ -285,9 +299,10 @@ export const enModoCorto = (indice) => indice + 1 >= DESDE_EL_CORTO;
  *     más fino de los tres, y por eso va el último: decirlo antes que la A
  *     sería corregir el detalle con la ecuación descuadrada.
  */
-export function evaluarT1_5(indice, escrito) {
-  const real = totalesTras(indice + 1);
-  const antes = totalesTras(indice);
+export function evaluarT1_5(indice, escrito, ejemplo = null) {
+  /* `ejemplo` ({ hecho, antes }) solo lo pasa la demo de «Así se juega». */
+  const antes = ejemplo ? ejemplo.antes : totalesTras(indice);
+  const real = ejemplo ? totalesDesde(ejemplo.antes, ejemplo.hecho) : totalesTras(indice + 1);
   const partes = [ACTIVO, PASIVO, PATRIMONIO];
   const ok = partes.every((p) => escrito[p] === real[p]);
   if (ok) return { ok, patron: null, texto: null, real, resaltar: [] };
@@ -303,7 +318,7 @@ export function evaluarT1_5(indice, escrito) {
   }
 
   /* C · la parte que no se movía, movida. */
-  const quieta = parteQuieta(indice);
+  const quieta = quietaEntre(antes, real, ejemplo ? ejemplo.hecho.id : indice + 1);
   if (escrito[quieta] !== antes[quieta]) {
     return { ok, patron: "C", real, texto: ERROR_T1_5.C, resaltar: [quieta] };
   }

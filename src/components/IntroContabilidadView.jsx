@@ -25,7 +25,7 @@ import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZAS_INTRO } from "../data/contabilidadPiezas234.js";
 import { ESCENAS_INTRO } from "./mecanicas/libros/intro/escenasIntro.jsx";
 import AsiSeJuega from "./mecanicas/libros/AsiSeJuega.jsx";
-import { ASI_SE_JUEGA } from "../data/asiSeJuegaBloque1.js";
+import { ASI_SE_JUEGA } from "../data/asiSeJuega.js";
 import { yaLaVio, marcarVista } from "../hacer/asiSeJuega.js";
 
 /*

@@ -48,6 +48,8 @@ const SORA = "Sora, sans-serif";
 /* Lo que tarda la mano en llegar a su punto antes de tocarlo. */
 const VIAJE_MS = 700;
 const TIC_MS = 40;
+/* Entre tecla y tecla, cuando el guion escribe una cifra. */
+const TECLA_MS = 90;
 /* Dónde queda la punta del dedo dentro del dibujo de la mano (34 × 34). */
 const PUNTA = { x: 11, y: 3 };
 
@@ -122,14 +124,26 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1 }) {
   const transcurrido = useRef(0);
   const hechos = useRef(0);
 
-  /* El guion hecho eventos: para cada toque, primero el viaje y luego el toque. */
+  /*
+   * El guion hecho eventos: para cada toque, primero el viaje y luego el
+   * toque. Tres clases de toque:
+   *   tocar    (lo normal) la mano llega y hace clic
+   *   senala   la mano llega y marca el sitio, sin clic: «mira esto»
+   *   escribe  la mano llega y escribe la cifra, tecla por tecla
+   * Las teclas son eventos del mismo reloj, así que «Pausar» las para también.
+   */
   const toques = asi.guion.toques;
   const eventos = useRef([]);
   const pausado = !reducido && !corriendo && !terminada;
-  eventos.current = toques.flatMap((t, k) => [
-    { ms: Math.max(0, t.ms - VIAJE_MS) * escala, tipo: "viajar", k },
-    { ms: t.ms * escala, tipo: "tocar", k },
-  ]).concat({ ms: asi.guion.duracion * escala, tipo: "fin" });
+  eventos.current = toques.flatMap((t, k) => {
+    const viaje = { ms: Math.max(0, t.ms - VIAJE_MS) * escala, tipo: "viajar", k };
+    if (t.escribe) {
+      return [viaje, ...[...t.escribe].map((_, j) => ({
+        ms: (t.ms + j * TECLA_MS) * escala, tipo: "tecla", k, j, texto: t.escribe.slice(0, j + 1),
+      }))];
+    }
+    return [viaje, { ms: t.ms * escala, tipo: "tocar", k }];
+  }).concat({ ms: asi.guion.duracion * escala, tipo: "fin" });
 
   useEffect(() => {
     if (!globalThis.matchMedia) return undefined;
@@ -197,6 +211,29 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1 }) {
     }
   }, []);
 
+  /*
+   * Escribir en una casilla como si fuera el teclado: el valor por el setter
+   * nativo y un evento «input», que es lo que React escucha. Igual que el
+   * clic, con el `inert` fuera solo durante ese instante.
+   */
+  const escribirEn = useCallback((el, texto) => {
+    const raiz = escenario.current;
+    raiz?.removeAttribute("inert");
+    try {
+      const valor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value");
+      valor.set.call(el, texto);
+      el.dispatchEvent(new el.ownerDocument.defaultView.Event("input", { bubbles: true }));
+    } finally {
+      raiz?.setAttribute("inert", "");
+    }
+  }, []);
+
+  /* Lo que hace un toque del guion con su punto, sin el viaje de la mano. */
+  const aplicar = useCallback((toque, el) => {
+    if (toque.escribe) escribirEn(el, toque.escribe);
+    else if (!toque.senala) pulsar(el);
+  }, [escribirEn, pulsar]);
+
   /* Un evento del guion. Devuelve false si su punto todavía no está en pantalla. */
   const ejecutar = useCallback((ev) => {
     if (ev.tipo === "fin") {
@@ -212,10 +249,16 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1 }) {
       return true;
     }
     setMano({ pos, visible: true });
+    if (ev.tipo === "tecla") {
+      /* La onda solo en la primera tecla: es el toque que abre la casilla. */
+      if (ev.j === 0) setOnda({ ...pos, clave: `${vuelta}-${ev.k}` });
+      escribirEn(el, ev.texto);
+      return true;
+    }
     setOnda({ ...pos, clave: `${vuelta}-${ev.k}` });
-    pulsar(el);
+    if (!toques[ev.k].senala) pulsar(el);
     return true;
-  }, [buscar, centroDe, pulsar, toques, vuelta]);
+  }, [buscar, centroDe, pulsar, escribirEn, toques, vuelta]);
 
   /*
    * ═══════════ EL RELOJ ═══════════
@@ -269,7 +312,7 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1 }) {
       if (intentos > 0) reloj.current.push(setTimeout(() => enOrden(lista, alFinal, intentos - 1), 50));
       return;
     }
-    pulsar(el);
+    aplicar(toque, el);
     alFinal && resto.length === 0 ? alFinal(el) : enOrden(resto, alFinal);
   };
   const siguienteCuadro = () => {
