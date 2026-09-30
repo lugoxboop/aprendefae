@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
-import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
+import { NEUTRO, NAVY_DEL_CHIP, TEXTO_ATENUADO } from "../../../../data/contabilidadIntro.js";
 import {
   T1_4, PARTES, CONTROLES, SUBE, BAJA, IGUAL, ALT_T1_4,
 } from "../../../../data/contabilidadTema1.js";
@@ -106,7 +106,7 @@ function Barra({ parte, marcado, revelado, resaltada, reducido }) {
       </div>
       <span data-signo={estado ?? "sin"} style={{
         fontFamily: SORA, fontSize: "15px", fontWeight: 700, lineHeight: 1,
-        color: estado ? NEUTRO : "rgba(248,249,250,0.28)",
+        color: estado ? NEUTRO : TEXTO_ATENUADO,
       }}>
         {estado ? signoDe(estado) : "·"}
       </span>
@@ -330,7 +330,7 @@ export default function QueLePasaACadaUno({
       {r && <Retro texto={r.texto} />}
 
       {puedeResponder && (
-        <Responder onClick={enviar} deshabilitado={!completo}>
+        <Responder onClick={enviar} deshabilitado={!completo} colorApagado={TEXTO_ATENUADO}>
           {completo ? "Ver qué pasó" : "Marca las tres"}
         </Responder>
       )}

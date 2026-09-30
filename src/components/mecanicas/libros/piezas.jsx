@@ -288,7 +288,11 @@ export function ElegirLado({ elegido, correcto = null, onElegir, deshabilitado =
  * mientras la respuesta está incompleta en vez de desaparecer: un botón que
  * aparece de golpe mueve el resto de la pantalla mientras se escribe.
  */
-export function Responder({ children, onClick, deshabilitado = false }) {
+/*
+ * `colorApagado` cambia solo el color del texto mientras está apagado. Por
+ * defecto es el de siempre; T1-4 pasa el texto atenuado del Tema 1.
+ */
+export function Responder({ children, onClick, deshabilitado = false, colorApagado = "rgba(248,249,250,0.35)" }) {
   return (
     <button
       type="button"
@@ -298,7 +302,7 @@ export function Responder({ children, onClick, deshabilitado = false }) {
         marginTop: "14px", width: "100%", padding: "13px 18px", borderRadius: "999px",
         cursor: deshabilitado ? "default" : "pointer",
         background: deshabilitado ? "rgba(248,249,250,0.07)" : FAE.teal,
-        border: "none", color: deshabilitado ? "rgba(248,249,250,0.35)" : "#06202A",
+        border: "none", color: deshabilitado ? colorApagado : "#06202A",
         fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700,
       }}
     >

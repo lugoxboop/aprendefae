@@ -291,7 +291,7 @@ test("★★★ accesible: figura con su descripción, solo el componente inerte
   try {
     const figura = caja.querySelector("figure");
     assert.ok(figura, "la demo no es una figura");
-    assert.equal(figura.querySelector("figcaption").textContent, ASI_SE_JUEGA[T1_8.id].alt);
+    assert.equal(figura.querySelector("figcaption").textContent, `Ejemplo: ${ASI_SE_JUEGA[T1_8.id].alt}`);
     assert.equal(caja.querySelectorAll("[inert]").length, 1, "hay más de una cosa inerte, o ninguna");
     assert.ok(caja.querySelector("[inert]").matches("[data-asj-escenario]"), "lo inerte no es el componente");
     assert.equal(caja.querySelector("[data-mano]").getAttribute("aria-hidden"), "true");
@@ -304,6 +304,33 @@ test("★★★ accesible: figura con su descripción, solo el componente inerte
 });
 
 for (const id of [T1_8.id, T1_7.id, T1_4.id]) {
+  test(`★★ ${id}: el ejemplo se distingue — recuadro navy sólido, etiqueta centrada con ojo, y «Ejemplo: » en la descripción`, () => {
+    const { caja, desmontar } = montar(pantalla(id));
+    try {
+      const recuadro = caja.querySelector("[data-asj-demo]");
+      assert.equal(recuadro.style.background, "rgb(29, 53, 87)", "el fondo no es #1D3557");
+      assert.equal(recuadro.style.border, "1.5px dashed rgb(184, 196, 212)");
+      const etiqueta = recuadro.querySelector("[data-asj-etiqueta]");
+      assert.equal(etiqueta.textContent, "EJEMPLO");
+      assert.equal(etiqueta.style.left, "50%");
+      assert.equal(etiqueta.style.transform, "translate(-50%, -50%)");
+      assert.equal(etiqueta.style.fontSize, "14px");
+      assert.equal(etiqueta.style.fontWeight, "700");
+      assert.equal(etiqueta.style.letterSpacing, "0.12em");
+      assert.equal(etiqueta.style.padding, "6px 18px");
+      assert.equal(etiqueta.style.background, "rgb(184, 196, 212)");
+      assert.equal(etiqueta.style.color, "rgb(29, 53, 87)");
+      const ojo = etiqueta.querySelector("svg");
+      assert.ok(ojo, "falta el ojo");
+      assert.equal(ojo.getAttribute("width"), "14");
+      assert.equal(ojo.getAttribute("stroke"), "#1D3557");
+      assert.ok(etiqueta.firstElementChild === ojo, "el ojo no va a la izquierda del texto");
+      const alt = caja.querySelector("figure figcaption").textContent;
+      assert.ok(alt.startsWith("Ejemplo: "), `${id}: la descripción no empieza por «Ejemplo: »`);
+      assert.equal(alt, `Ejemplo: ${ASI_SE_JUEGA[id].alt}`);
+    } finally { desmontar(); }
+  });
+
   test(`★★★ ${id}: «Siguiente» apagado hasta que termina la primera pasada, y la demo no guarda nada`, async () => {
     w.localStorage.clear();
     const conteo = contarEscrituras();
@@ -314,6 +341,7 @@ for (const id of [T1_8.id, T1_7.id, T1_4.id]) {
       const sig = () => caja.querySelector("[data-asj-siguiente] button");
       assert.equal(sig().disabled, true, "«Siguiente» nace encendido");
       assert.equal(sig().textContent, "Mira el ejemplo");
+      assert.equal(sig().style.color, "rgb(168, 182, 200)", "«Mira el ejemplo» no va en #A8B6C8");
       assert.equal(caja.querySelector("[data-asj-control]").textContent, "Pausar");
       tocar(sig());
       assert.equal(siguiente, 0, "«Siguiente» apagado dejó pasar");
@@ -428,6 +456,43 @@ test("★★★ movimiento reducido: tres cuadros, la mano quieta en el gesto, �
       assert.equal(control().textContent, "Ver de nuevo");
     } finally { desmontar(); }
   } finally { movimientoReducido = false; }
+});
+
+/* ═══════════════════ EL TEXTO ATENUADO, #A8B6C8 EN EL COMPONENTE REAL ═══════════════════ */
+
+test("★★ T1-4 real: el «·» antes de revelar y «Marca las tres» apagado van en #A8B6C8", () => {
+  const { caja, desmontar } = montar(React.createElement(QueLePasaACadaUno, { Marco: MarcoLibros, onCompletar: () => {} }));
+  try {
+    const puntos = [...caja.querySelectorAll('[data-signo="sin"]')];
+    assert.equal(puntos.length, 3);
+    for (const x of puntos) assert.equal(x.style.color, "rgb(168, 182, 200)");
+    const marca = boton(caja, "Marca las tres");
+    assert.equal(marca.disabled, true);
+    assert.equal(marca.style.color, "rgb(168, 182, 200)");
+  } finally { desmontar(); }
+});
+
+test("★★ T1-8 real: números apagados, chip «apagado» y predicción no elegida van en #A8B6C8", async () => {
+  const { caja, desmontar } = montar(React.createElement(DondeSeRompio, {
+    Marco: MarcoLibros, onCompletar: () => {}, items: [EJEMPLO_T1_8],
+  }));
+  try {
+    tocar(caja.querySelector(`[data-punto="${EJEMPLO_T1_8.rompe}"]`));
+    await esperar(() => caja.querySelector('[data-prediccion-opcion="4"]'));
+    tocar(caja.querySelector('[data-prediccion-opcion="4"]'));
+    await esperar(() => caja.querySelectorAll('[data-apagado="si"]').length === 4);
+    for (const n of [2, 3, 4, 5]) {
+      const p = caja.querySelector(`[data-punto="${n}"]`);
+      assert.equal(p.querySelector("[data-numero]").style.color, "rgb(168, 182, 200)", `número ${n}`);
+      assert.equal(p.querySelector("[data-rotulo-apagado]").style.color, "rgb(168, 182, 200)", `chip del ${n}`);
+    }
+    for (const n of [1, 2, 3]) {
+      const op = caja.querySelector(`[data-prediccion-opcion="${n}"]`);
+      assert.equal(op.style.color, "rgb(168, 182, 200)", `opción ${n}`);
+      assert.equal(op.style.opacity, "", `opción ${n}: el botón entero lleva opacidad`);
+      assert.equal(op.style.borderColor, "rgba(248, 249, 250, 0.15)", `opción ${n}: el borde no va al 0,5`);
+    }
+  } finally { desmontar(); }
 });
 
 /* ═══════════════════ EL MODO DEMO, DIRECTO SOBRE LOS COMPONENTES ═══════════════════ */

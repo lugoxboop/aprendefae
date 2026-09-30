@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Eye } from "lucide-react";
 import { FAE } from "../../../theme.js";
-import { NEUTRO, NAVY_DEL_CHIP } from "../../../data/contabilidadIntro.js";
+import { NEUTRO, NAVY_DEL_CHIP, TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
 import { CSS_SALA } from "../salaDeControl/marco.jsx";
 import { CSS_JUEGO } from "../corazon/juego.jsx";
 import { Responder } from "./piezas.jsx";
@@ -336,19 +337,32 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1 }) {
         ))}
       </ol>
 
+      {/*
+        ═══════════ QUE EL EJEMPLO SE VEA COMO EJEMPLO ═══════════
+
+        Lo pidió Mateo y lo especificó Levi: el recuadro lleva fondo navy
+        #1D3557 sólido —solo el recuadro; el resto de la pantalla no cambia— y
+        la etiqueta «EJEMPLO» va centrada sobre el borde de arriba, con un ojo
+        delante. Así nadie confunde la demo con su propia partida, que va
+        sobre el fondo de siempre. Todo aquí, en el componente compartido:
+        vale para todas las actividades que tengan «Así se juega».
+      */}
       <div data-asj-demo style={{
-        position: "relative", padding: "16px 10px 12px", borderRadius: "14px",
-        border: `1.5px dashed ${NEUTRO}`, background: "rgba(10,20,34,0.3)",
+        position: "relative", padding: "24px 10px 12px", marginTop: "14px", borderRadius: "14px",
+        border: `1.5px dashed ${NEUTRO}`, background: NAVY_DEL_CHIP,
       }}>
-        <span aria-hidden="true" style={{
-          position: "absolute", top: "-10px", left: "12px", padding: "2px 9px", borderRadius: "999px",
-          background: NEUTRO, color: NAVY_DEL_CHIP, fontFamily: SORA, fontSize: "10px",
-          fontWeight: 700, letterSpacing: "0.16em",
+        <span data-asj-etiqueta aria-hidden="true" style={{
+          position: "absolute", top: 0, left: "50%", transform: "translate(-50%, -50%)", zIndex: 4,
+          display: "inline-flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap",
+          padding: "6px 18px", borderRadius: "999px", background: NEUTRO, color: NAVY_DEL_CHIP,
+          fontFamily: SORA, fontSize: "14px", fontWeight: 700, letterSpacing: "0.12em", lineHeight: 1,
         }}>
+          <Eye size={14} color={NAVY_DEL_CHIP} strokeWidth={2.4} aria-hidden="true" style={{ flex: "none" }} />
           EJEMPLO
         </span>
         <figure ref={figura} data-asj-figura style={{ position: "relative", margin: 0 }}>
-          <figcaption style={SOLO_LECTOR}>{asi.alt}</figcaption>
+          {/* «Ejemplo: » delante, para que el lector de pantalla también lo distinga. */}
+          <figcaption style={SOLO_LECTOR}>{`Ejemplo: ${asi.alt}`}</figcaption>
           <div
             key={vuelta}
             ref={escenario}
@@ -393,7 +407,7 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1 }) {
         position: "sticky", bottom: 0, zIndex: 5, marginTop: "6px", paddingBottom: "14px",
         background: `linear-gradient(to bottom, transparent, ${FAE.bg} 30%)`,
       }}>
-        <Responder onClick={onSiguiente} deshabilitado={!vista}>
+        <Responder onClick={onSiguiente} deshabilitado={!vista} colorApagado={TEXTO_ATENUADO}>
           {vista ? "Siguiente" : "Mira el ejemplo"}
         </Responder>
       </div>

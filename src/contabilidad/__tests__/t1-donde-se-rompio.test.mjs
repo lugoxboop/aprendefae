@@ -368,8 +368,22 @@ test("★★★ el roto se ve igual que cualquier apagado, sin borde de selecci�
       assert.ok(!/2px solid/.test(roto.getAttribute("style")), `punto ${rompe}: quedó el borde de selección`);
       assert.equal(caja.querySelectorAll("[data-roto]").length, 0);
       assert.equal(caja.querySelector("[data-corte]").dataset.corteEntre, `${rompe - 1}-${rompe}`);
-      /* Atenuado, pero legible: nada por debajo de la opacidad medida para 4,5:1. */
-      for (const x of apagados) assert.match(x.getAttribute("style"), new RegExp(`opacity: ${OPACIDAD_ATENUADA}`));
+      /*
+       * Atenuado, pero legible. La opacidad va en el borde y el fondo, no en la
+       * tarjeta: si la heredara el texto bajaría de 4,5:1. El número y el chip
+       * van en #A8B6C8 sólido.
+       */
+      for (const x of apagados) {
+        const n = x.dataset.punto;
+        assert.ok(!/(^|;)\s*opacity:/.test(x.getAttribute("style")), `punto ${n}: la tarjeta entera lleva opacidad`);
+        assert.equal(x.style.borderColor, `rgba(248, 249, 250, ${Math.round(0.18 * OPACIDAD_ATENUADA * 1000) / 1000})`, `punto ${n}: el borde no va atenuado`);
+        assert.equal(x.style.background, `rgba(184, 196, 212, ${Math.round(0.06 * OPACIDAD_ATENUADA * 1000) / 1000})`, `punto ${n}: el fondo no va atenuado`);
+        assert.equal(x.querySelector("[data-numero]").style.color, "rgb(168, 182, 200)", `punto ${n}: el número no es #A8B6C8 sólido`);
+        assert.equal(x.querySelector("[data-numero]").style.opacity, "", `punto ${n}: el número lleva opacidad`);
+        const chip = x.querySelector("[data-rotulo-apagado]");
+        assert.equal(chip.style.color, "rgb(168, 182, 200)", `punto ${n}: el chip no es #A8B6C8 sólido`);
+        assert.equal(chip.style.opacity, "", `punto ${n}: el chip lleva opacidad`);
+      }
       /* Con la // en su hueco, el flujo ya no está: se taparían el uno al otro. */
       assert.equal(caja.querySelectorAll("[data-flujo]").length, 0, `punto ${rompe}: el flujo sigue encima de la //`);
     } finally { desmontar(); }

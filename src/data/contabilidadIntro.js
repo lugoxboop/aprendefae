@@ -264,6 +264,14 @@ export const ALTERNATIVOS = {
  */
 export const NEUTRO = "#B8C4D4";
 export const NAVY_DEL_CHIP = "#1D3557";
+/*
+ * El texto atenuado del Tema 1: lo apagado, lo no elegido, lo que aún no se
+ * revela y el botón que todavía no se puede pulsar. Lo fijó Levi para que
+ * mida 4,5:1 contra el navy del ejemplo de «Así se juega» y contra el fondo
+ * normal de la actividad, y va en el componente real para que la actividad y
+ * su ejemplo se vean iguales.
+ */
+export const TEXTO_ATENUADO = "#A8B6C8";
 
 /* Rótulos de la interfaz. */
 export const ROTULO_PIEZA = "EL CICLO CONTABLE · APRENDER";
