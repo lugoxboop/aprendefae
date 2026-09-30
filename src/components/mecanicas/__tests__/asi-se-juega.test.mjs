@@ -291,7 +291,7 @@ test("★★★ accesible: figura con su descripción, solo el componente inerte
   try {
     const figura = caja.querySelector("figure");
     assert.ok(figura, "la demo no es una figura");
-    assert.equal(figura.querySelector("figcaption").textContent, ASI_SE_JUEGA[T1_8.id].alt);
+    assert.equal(figura.querySelector("figcaption").textContent, `Ejemplo: ${ASI_SE_JUEGA[T1_8.id].alt}`);
     assert.equal(caja.querySelectorAll("[inert]").length, 1, "hay más de una cosa inerte, o ninguna");
     assert.ok(caja.querySelector("[inert]").matches("[data-asj-escenario]"), "lo inerte no es el componente");
     assert.equal(caja.querySelector("[data-mano]").getAttribute("aria-hidden"), "true");
@@ -304,6 +304,33 @@ test("★★★ accesible: figura con su descripción, solo el componente inerte
 });
 
 for (const id of [T1_8.id, T1_7.id, T1_4.id]) {
+  test(`★★ ${id}: el ejemplo se distingue — recuadro navy sólido, etiqueta centrada con ojo, y «Ejemplo: » en la descripción`, () => {
+    const { caja, desmontar } = montar(pantalla(id));
+    try {
+      const recuadro = caja.querySelector("[data-asj-demo]");
+      assert.equal(recuadro.style.background, "rgb(29, 53, 87)", "el fondo no es #1D3557");
+      assert.equal(recuadro.style.border, "1.5px dashed rgb(184, 196, 212)");
+      const etiqueta = recuadro.querySelector("[data-asj-etiqueta]");
+      assert.equal(etiqueta.textContent, "EJEMPLO");
+      assert.equal(etiqueta.style.left, "50%");
+      assert.equal(etiqueta.style.transform, "translate(-50%, -50%)");
+      assert.equal(etiqueta.style.fontSize, "14px");
+      assert.equal(etiqueta.style.fontWeight, "700");
+      assert.equal(etiqueta.style.letterSpacing, "0.12em");
+      assert.equal(etiqueta.style.padding, "6px 18px");
+      assert.equal(etiqueta.style.background, "rgb(184, 196, 212)");
+      assert.equal(etiqueta.style.color, "rgb(29, 53, 87)");
+      const ojo = etiqueta.querySelector("svg");
+      assert.ok(ojo, "falta el ojo");
+      assert.equal(ojo.getAttribute("width"), "14");
+      assert.equal(ojo.getAttribute("stroke"), "#1D3557");
+      assert.ok(etiqueta.firstElementChild === ojo, "el ojo no va a la izquierda del texto");
+      const alt = caja.querySelector("figure figcaption").textContent;
+      assert.ok(alt.startsWith("Ejemplo: "), `${id}: la descripción no empieza por «Ejemplo: »`);
+      assert.equal(alt, `Ejemplo: ${ASI_SE_JUEGA[id].alt}`);
+    } finally { desmontar(); }
+  });
+
   test(`★★★ ${id}: «Siguiente» apagado hasta que termina la primera pasada, y la demo no guarda nada`, async () => {
     w.localStorage.clear();
     const conteo = contarEscrituras();
