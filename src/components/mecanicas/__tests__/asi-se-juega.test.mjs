@@ -56,6 +56,7 @@ const {
   T1_4, T1_7, T1_8, SITUACIONES_T1_8, TRANSACCIONES_CAP2, LINEAS, FLECHAS, INFORMES_T1_7,
 } = await import("../../../data/contabilidadTema1.js");
 const { yaLaVio, marcarVista, claveDe, PREFIJO } = await import("../../../hacer/asiSeJuega.js");
+const { ASI_SE_JUEGA: ASI_TODAS } = await import("../../../data/asiSeJuega.js");
 const { evaluarT1_7, evaluarT1_4 } = await import("../../../contabilidad/tema1.js");
 
 /* Ninguna llamada a la red en todo el archivo: la demo no guarda nada en ningún sitio. */
@@ -268,12 +269,12 @@ test("★★ si el navegador no deja guardar, la pantalla sale igual", () => {
   }
 });
 
-test("★★ solo estas tres llevan «¿Cómo se juega?»: las otras cuatro no tienen a dónde llevar", () => {
+test("★★ solo las que tienen «Así se juega» llevan «¿Cómo se juega?»: las demás no tienen a dónde llevar", () => {
   w.localStorage.clear();
   for (const j of JUEGOS) {
     const { caja, desmontar } = montar(tutorial(j.id));
     try {
-      const tiene = Boolean(ASI_SE_JUEGA[j.id]);
+      const tiene = Boolean(ASI_TODAS[j.id]);
       assert.equal(Boolean(caja.querySelector("[data-asi-se-juega]")), tiene, `${j.id}`);
       assert.equal(Boolean(caja.querySelector("[data-como-se-juega]")), tiene, `${j.id}`);
     } finally { desmontar(); }

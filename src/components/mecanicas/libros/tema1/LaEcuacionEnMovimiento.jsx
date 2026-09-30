@@ -57,8 +57,19 @@ const CIFRA = {
   fontVariantNumeric: "tabular-nums",
 };
 
-export default function LaEcuacionEnMovimiento({ Marco, rotulo, titulo, acento, onCompletar }) {
-  const total = TRANSACCIONES_CAP2.length;
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente. `ejemplo` ({ hecho, antes }) le da un hecho de
+ * fuera del recorrido y el estado del que parte —el recorrido de verdad parte
+ * de cero—; `modoDemo` le quita el encabezado, el avance y el botón de seguir,
+ * y no llama a `onCompletar`: ni FP, ni intentos, ni progreso. Con ejemplo se
+ * escriben las tres casillas, como en los primeros hechos de la partida.
+ */
+export default function LaEcuacionEnMovimiento({
+  Marco, rotulo, titulo, acento, onCompletar, ejemplo = null, modoDemo = false, onComoSeJuega = null,
+}) {
+  const total = ejemplo ? 1 : TRANSACCIONES_CAP2.length;
   const [i, setI] = useState(0);
   const [texto, setTexto] = useState({});
   const [r, setR] = useState(null);
@@ -69,10 +80,10 @@ export default function LaEcuacionEnMovimiento({ Marco, rotulo, titulo, acento, 
   const inicio = useRef(Date.now());
   const zonaBoton = useRef(null);
 
-  const h = TRANSACCIONES_CAP2[i];
-  const antes = totalesTras(i);
-  const quieta = parteQuieta(i);
-  const corto = enModoCorto(i);
+  const h = ejemplo ? ejemplo.hecho : TRANSACCIONES_CAP2[i];
+  const antes = ejemplo ? ejemplo.antes : totalesTras(i);
+  const corto = ejemplo ? false : enModoCorto(i);
+  const quieta = corto ? parteQuieta(i) : null;
   /* En modo corto la parte quieta no se escribe: se arrastra. */
   const seEscribe = (p) => !corto || p !== quieta;
 
@@ -93,15 +104,15 @@ export default function LaEcuacionEnMovimiento({ Marco, rotulo, titulo, acento, 
   const cuadra = completo && izquierda === derecha;
 
   useEffect(() => {
-    if (terminado) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
+    if (terminado && !modoDemo) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
   }, [terminado]);
   useEffect(() => {
-    if (r && !esperandoReintento) zonaBoton.current?.querySelector("button")?.focus();
+    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [r, esperandoReintento]);
 
   const enviar = () => {
     if (!completo || (r && !esperandoReintento)) return;
-    const nuevo = evaluarT1_5(i, escrito);
+    const nuevo = evaluarT1_5(i, escrito, ejemplo);
     const anotado = PARTES.map((p) => `${p.id}:${escrito[p.id]}`).join(" ");
 
     if (intento === 0) {
@@ -154,10 +165,14 @@ export default function LaEcuacionEnMovimiento({ Marco, rotulo, titulo, acento, 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
-      <Encabezado objetivo={T1_5.objetivo} consigna={T1_5.consigna} />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={total} hechos={i + (r && !esperandoReintento ? 1 : 0)} enCurso={i + 1} etiqueta="Hecho" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado objetivo={T1_5.objetivo} consigna={T1_5.consigna} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={total} hechos={i + (r && !esperandoReintento ? 1 : 0)} enCurso={i + 1} etiqueta="Hecho" />
+          </div>
+        </>
+      )}
 
       {/* Aquí dentro no entra el vocabulario del Tema 2. */}
       <div data-contenido>
@@ -259,7 +274,34 @@ export default function LaEcuacionEnMovimiento({ Marco, rotulo, titulo, acento, 
           }}>
             {HISTORIAL_T1_5.titulo.toUpperCase()}
           </p>
-          {i === 0 ? (
+          {ejemplo ? (
+            /*
+             * El ejemplo no parte de cero: el historial dice de dónde arranca.
+             * Y como la demo no tiene «Siguiente hecho», la fila del hecho
+             * entra al anotarlo bien, que es donde termina la demo.
+             */
+            <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "4px" }}>
+              <li data-fila-historial="inicio" style={{ fontSize: "11px", color: "rgba(248,249,250,0.65)" }}>
+                <span style={{ ...CIFRA }}>
+                  {HISTORIAL_T1_5.filaInicio
+                    .replace("[X]", pesos(antes[ACTIVO]))
+                    .replace("[Y]", pesos(antes[PASIVO]))
+                    .replace("[Z]", pesos(antes[PATRIMONIO]))}
+                </span>
+              </li>
+              {r?.ok && (
+                <li data-fila-historial={h.id} className="fae-t15-fila" style={{ fontSize: "11px", color: "rgba(248,249,250,0.65)" }}>
+                  <span style={{ ...CIFRA }}>
+                    {HISTORIAL_T1_5.fila
+                      .replace("[n]", "1")
+                      .replace("[X]", pesos(r.real[ACTIVO]))
+                      .replace("[Y]", pesos(r.real[PASIVO]))
+                      .replace("[Z]", pesos(r.real[PATRIMONIO]))}
+                  </span>
+                </li>
+              )}
+            </ul>
+          ) : i === 0 ? (
             <p data-historial-vacio style={{ margin: 0, fontSize: "11.5px", color: "rgba(248,249,250,0.45)" }}>
               {HISTORIAL_T1_5.vacio}
             </p>
@@ -295,7 +337,7 @@ export default function LaEcuacionEnMovimiento({ Marco, rotulo, titulo, acento, 
           {completo ? "Anotar" : "Escribe los totales"}
         </Responder>
       )}
-      {r && !esperandoReintento && (
+      {r && !esperandoReintento && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>
             {i + 1 === total ? "Ver el resultado" : "Siguiente hecho"}
@@ -303,11 +345,13 @@ export default function LaEcuacionEnMovimiento({ Marco, rotulo, titulo, acento, 
         </div>
       )}
 
-      <p style={SOLO_LECTOR}>{ALT_T1_5}</p>
-      <p style={SOLO_LECTOR}>
-        Antes de este hecho: {PARTES.map((p) => `${p.idea} ${pesos(antes[p.id])}`).join(", ")}.
-        {i === 0 ? ` La empresa arranca en ${pesos(EN_CERO[ACTIVO])}.` : ""}
-      </p>
+      {!modoDemo && <p style={SOLO_LECTOR}>{ALT_T1_5}</p>}
+      {!modoDemo && (
+        <p style={SOLO_LECTOR}>
+          Antes de este hecho: {PARTES.map((p) => `${p.idea} ${pesos(antes[p.id])}`).join(", ")}.
+          {i === 0 ? ` La empresa arranca en ${pesos(EN_CERO[ACTIVO])}.` : ""}
+        </p>
+      )}
     </Marco>
   );
 }

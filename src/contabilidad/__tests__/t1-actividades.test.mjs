@@ -349,12 +349,14 @@ test("★★ el objetivo y la consigna están, y se quedan toda la partida", () 
 });
 
 test("★★ la consigna no reemplaza al vacío: son dos líneas distintas", () => {
-  for (const a of [T1_1, T1_2]) {
+  /* T1-1 ya no tiene vacío (Bloque 2 de «Así se juega»); T1-2 lo conserva. */
+  assert.equal(T1_1.pregunta, undefined, "T1-1 volvió a tener pregunta de vacío");
+  for (const a of [T1_2]) {
     assert.ok(a.consigna && a.pregunta, `${a.id}: falta una de las dos`);
     assert.notEqual(a.consigna, a.pregunta, `${a.id}: la consigna y el vacío son el mismo texto`);
   }
   /* El vacío pregunta; la consigna manda hacer algo. */
-  for (const a of [T1_1, T1_2]) {
+  for (const a of [T1_2]) {
     assert.ok(a.pregunta.includes("¿"), `${a.id}: el vacío dejó de preguntar`);
     assert.ok(!a.consigna.includes("¿"), `${a.id}: la consigna se volvió una pregunta`);
   }
