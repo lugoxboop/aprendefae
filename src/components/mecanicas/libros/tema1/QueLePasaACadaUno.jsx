@@ -132,9 +132,20 @@ function Barra({ parte, marcado, revelado, resaltada, reducido }) {
   );
 }
 
-export default function QueLePasaACadaUno({ Marco, rotulo, titulo, acento, onCompletar }) {
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente, no una copia dibujada: `items` le da el ejemplo
+ * desde afuera en vez de sortearlo del banco, y `modoDemo` le quita lo que no
+ * es la zona de juego —el encabezado, el avance, el botón de seguir— y le
+ * corta la salida: no llama a `onCompletar`, así que no hay FP, ni intentos,
+ * ni progreso. Cómo se juega no cambia en nada; eso es lo que se enseña.
+ */
+export default function QueLePasaACadaUno({
+  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+}) {
   const reducido = useMovimientoReducido();
-  const t = useTanda(() => sortearT1_4(barajar));
+  const t = useTanda(() => items ?? sortearT1_4(barajar));
 
   const [marcado, setMarcado] = useState({});
   const [r, setR] = useState(null);
@@ -152,11 +163,11 @@ export default function QueLePasaACadaUno({ Marco, rotulo, titulo, acento, onCom
   const completo = PARTES.every((p) => marcado[p.id]);
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
   useEffect(() => () => clearTimeout(reloj.current), []);
   useEffect(() => {
-    if (r && !esperandoReintento) zonaBoton.current?.querySelector("button")?.focus();
+    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [r, esperandoReintento]);
 
   const enviar = () => {
@@ -214,10 +225,14 @@ export default function QueLePasaACadaUno({ Marco, rotulo, titulo, acento, onCom
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
-      <Encabezado objetivo={T1_4.objetivo} consigna={T1_4.consigna} />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Hecho" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado objetivo={T1_4.objetivo} consigna={T1_4.consigna} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Hecho" />
+          </div>
+        </>
+      )}
 
       {/* Aquí dentro no entra el vocabulario del Tema 2. Hay una prueba que mira
           exactamente dentro de esta caja. */}
@@ -319,7 +334,7 @@ export default function QueLePasaACadaUno({ Marco, rotulo, titulo, acento, onCom
           {completo ? "Ver qué pasó" : "Marca las tres"}
         </Responder>
       )}
-      {r && !esperandoReintento && (
+      {r && !esperandoReintento && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente hecho"}
@@ -327,7 +342,7 @@ export default function QueLePasaACadaUno({ Marco, rotulo, titulo, acento, onCom
         </div>
       )}
 
-      <p style={SOLO_LECTOR}>{ALT_T1_4}</p>
+      {!modoDemo && <p style={SOLO_LECTOR}>{ALT_T1_4}</p>}
       {revelado && (
         <p style={SOLO_LECTOR}>
           {PARTES.map((p) => `${p.idea}: ${palabraDe(revelado[p.id])}`).join(". ")}.

@@ -548,8 +548,8 @@ export const T1_7 = {
   /* Las cinco, siempre: solo hay cinco. */
   porPartida: 5,
   objetivo: "Descubre cómo los tres informes se pasan cifras entre ellos.",
-  consigna: "Toca la cifra de donde sale. Luego toca la línea a donde llega.",
-  pregunta: "¿De dónde sale cada cifra? Toca primero de dónde sale y luego a dónde llega.",
+  consigna: "Toca la línea de donde sale la flecha. Luego toca la línea a donde llega.",
+  /* Sin recuadro de vacío: salió con las correcciones de Levi al Bloque 1. */
 };
 
 export const FLUJOS = "flujos";
@@ -574,10 +574,15 @@ export const INFORMES_T1_7 = [
  */
 export const LINEAS = [
   /* El informe al que llegan todas. No sale ninguna flecha de aquí. */
-  { id: "l-caja", informe: PRIMERO, nombre: "Caja y bancos" },
+  { id: "l-caja", informe: PRIMERO, nombre: "Efectivo" },
   { id: "l-cobrar-pagar", informe: PRIMERO, nombre: "Cuentas por cobrar y cuentas por pagar" },
   { id: "l-propiedad", informe: PRIMERO, nombre: "Propiedad, planta y equipo" },
   { id: "l-aportes", informe: PRIMERO, nombre: "Aportes de los dueños" },
+  /*
+   * Adaptación del Gráfico 2.6: el libro agrupa la utilidad dentro del
+   * patrimonio. Aquí va como línea propia porque es el destino de la conexión 1
+   * (f1, desde «Utilidad neta»), y por eso se puede tocar como cualquier otra.
+   */
   { id: "l-utilidad-balance", informe: PRIMERO, nombre: "Utilidad del ejercicio" },
   /* Lo que vendió y lo que gastó durante el año. */
   { id: "l-utilidad-neta", informe: SEGUNDO, nombre: "Utilidad neta" },
@@ -617,6 +622,14 @@ export const ACIERTO_T1_7 = {
   f4: "✅ Lo que compró o vendió de sus cosas grandes explica esa línea.",
   f5: "✅ De dónde sacó la plata para financiarse explica lo que pusieron los dueños.",
 };
+
+/*
+ * Todo lo que la lógica de T1-7 necesita saber, en un paquete. Las funciones
+ * de `contabilidad/tema1.js` lo reciben con este de valor por defecto, así que
+ * el juego de verdad no cambia; la demo de «Así se juega» les pasa el suyo
+ * —dos hojas de la panadería— sin que ese ejemplo entre en el banco.
+ */
+export const BANCO_T1_7 = { informes: INFORMES_T1_7, lineas: LINEAS, flechas: FLECHAS, aciertos: ACIERTO_T1_7 };
 
 export const CIERRE_T1_7 = "Mira las cinco flechas. Todas llegan al mismo informe. Los otros dos cuentan qué pasó en el año. Ese guarda cómo quedó la empresa al final.";
 
@@ -678,8 +691,11 @@ export const T1_8 = {
   porPartida: 5,
   objetivo: "Encuentra en qué punto se rompió el ciclo. Y mira qué se pierde de ahí en adelante.",
   consigna: "Lee lo que pasó en la empresa. Toca el punto donde se rompió el ciclo.",
-  /* El vacío: encabeza el anillo hasta que se toca un punto. */
-  pregunta: "¿Hasta dónde llegó bien, y dónde se cortó?",
+  /*
+   * Sin vacío. La pregunta que encabezaba el anillo —hasta dónde llegó y dónde
+   * se cortó— salió en el Bloque 1 de «Así se juega»: repetía la consigna con
+   * otras palabras justo debajo de ella.
+   */
 };
 
 /*

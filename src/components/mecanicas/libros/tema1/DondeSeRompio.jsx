@@ -12,7 +12,7 @@ import {
 } from "../../../../contabilidad/tema1.js";
 import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
-import { Responder, useTanda } from "../piezas.jsx";
+import { Responder, useTanda, useRelojes } from "../piezas.jsx";
 import { useMovimientoReducido, SOLO_LECTOR } from "../verbos.jsx";
 import FranjaDelCiclo from "../intro/FranjaDelCiclo.jsx";
 import { Encabezado } from "./encabezado.jsx";
@@ -366,9 +366,22 @@ function Tira({ situacion }) {
   );
 }
 
-export default function DondeSeRompio({ Marco, rotulo, titulo, acento, onCompletar }) {
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente, no una copia dibujada: `items` le da el ejemplo
+ * desde afuera en vez de sortearlo del banco, y `modoDemo` le quita lo que no
+ * es la zona de juego —el encabezado, el avance, el botón de seguir— y le
+ * corta la salida: no llama a `onCompletar`, así que no hay FP, ni intentos,
+ * ni progreso. Cómo se juega no cambia en nada; eso es lo que se enseña.
+ */
+export default function DondeSeRompio({
+  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+  /* Solo la demo lo enciende: con «Pausar» la cascada se congela donde va. */
+  pausado = false,
+}) {
   const reducido = useMovimientoReducido();
-  const t = useTanda(() => sortearT1_8(barajar));
+  const t = useTanda(() => items ?? sortearT1_8(barajar));
 
   const [r, setR] = useState(null);
   const [intento, setIntento] = useState(0);
@@ -380,7 +393,6 @@ export default function DondeSeRompio({ Marco, rotulo, titulo, acento, onComplet
   const [atenuado, setAtenuado] = useState(null);
   const [flujo, setFlujo] = useState(null);
   const [resueltas, setResueltas] = useState([]);
-  const relojes = useRef([]);
   const zonaBoton = useRef(null);
 
   const s = t.items[t.i];
@@ -389,15 +401,13 @@ export default function DondeSeRompio({ Marco, rotulo, titulo, acento, onComplet
   const esperandoReintento = Boolean(r && !r.ok && intento === 1);
   const cerrada = fase === FIN || fase === REVELADO;
 
-  const despues = (ms, fn) => { relojes.current.push(setTimeout(fn, ms)); };
-  const limpiar = () => { relojes.current.forEach(clearTimeout); relojes.current = []; };
+  const { despues, limpiar } = useRelojes(pausado);
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
-  useEffect(() => () => limpiar(), []);
   useEffect(() => {
-    if (cerrada) zonaBoton.current?.querySelector("button")?.focus();
+    if (cerrada && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [cerrada]);
 
   /*
@@ -528,15 +538,18 @@ export default function DondeSeRompio({ Marco, rotulo, titulo, acento, onComplet
   const contador = fase === FIN || fase === REVELADO
     ? textoDelContador(noAlcanzados(rompe))
     : fase === APAGANDO && encendidos > 0 ? textoDelContador(encendidos) : null;
-  const vacio = fase === TOCAR && !r;
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
-      <Encabezado objetivo={T1_8.objetivo} consigna={T1_8.consigna} />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (cerrada ? 1 : 0)} enCurso={t.i + 1} etiqueta="Situación" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado objetivo={T1_8.objetivo} consigna={T1_8.consigna} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={cuantas} hechos={t.i + (cerrada ? 1 : 0)} enCurso={t.i + 1} etiqueta="Situación" />
+          </div>
+        </>
+      )}
 
       {/*
         ═══════ AQUÍ DENTRO NO ENTRA EL VOCABULARIO DEL TEMA 2 ═══════
@@ -552,14 +565,6 @@ export default function DondeSeRompio({ Marco, rotulo, titulo, acento, onComplet
         }}>
           {s.texto}
         </p>
-
-        {vacio && (
-          <p data-vacio style={{
-            margin: "0 0 9px", fontSize: "12.5px", textAlign: "center", color: "rgba(248,249,250,0.6)",
-          }}>
-            {T1_8.pregunta}
-          </p>
-        )}
 
         <Anillo
           estados={estados}
@@ -653,7 +658,7 @@ export default function DondeSeRompio({ Marco, rotulo, titulo, acento, onComplet
       {/* La devolución: la del error enseguida; la del acierto, al final de la cascada. */}
       {r && (!r.ok || fase === FIN) && <Retro texto={r.texto} />}
 
-      {cerrada && (
+      {cerrada && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente situación"}
@@ -662,7 +667,7 @@ export default function DondeSeRompio({ Marco, rotulo, titulo, acento, onComplet
       )}
 
       {/* El texto alternativo de la situación que está, con el estado final ya en pantalla. */}
-      {cerrada && ALT_T1_8[s.id] && <p data-alt-t18 style={SOLO_LECTOR}>{ALT_T1_8[s.id]}</p>}
+      {cerrada && !modoDemo && ALT_T1_8[s.id] && <p data-alt-t18 style={SOLO_LECTOR}>{ALT_T1_8[s.id]}</p>}
     </Marco>
   );
 }

@@ -6,7 +6,7 @@ import {
   ERROR_A_T1_4, ERROR_B_T1_4, ACIERTO_T1_4,
   T1_5, ERROR_T1_5, DESDE_EL_CORTO,
   T1_6, CONCEPTOS, PRIMERO, SEGUNDO, ERROR_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
-  LINEAS, FLECHAS, ERROR_T1_7, ACIERTO_T1_7,
+  ERROR_T1_7, BANCO_T1_7,
   T1_8, PUNTOS_T1_8, SITUACIONES_T1_8, ACIERTO_T1_8, ERROR_T1_8, PREDICCION_T1_8,
   CONTADOR_T1_8, CONTADOR_UNO_T1_8,
 } from "../data/contabilidadTema1.js";
@@ -212,7 +212,8 @@ export function evaluarT1_4(transaccion, marcado) {
   const partes = PARTES.map((p) => p.id);
   const ok = partes.every((p) => marcado[p] === real[p]);
   if (ok) {
-    const texto = ACIERTO_T1_4[transaccion.id];
+    /* Un hecho de fuera del banco —el ejemplo de «Así se juega»— trae el suyo. */
+    const texto = transaccion.acierto ?? ACIERTO_T1_4[transaccion.id];
     if (!texto) throw new Error(`«${transaccion.id}» no tiene devolución de acierto`);
     return { ok, texto, patron: null, real };
   }
@@ -385,13 +386,17 @@ export function puntuarT1_6(respuestas, cuantas) {
 
 /* ═══════════════════ T1-7 · LA ARTICULACIÓN ═══════════════════ */
 
-export const lineaPorId = (id) => LINEAS.find((l) => l.id === id) ?? null;
-export const lineasDe = (informe) => LINEAS.filter((l) => l.informe === informe);
+/*
+ * Todas reciben el banco al final, con el de verdad por defecto. Solo la demo
+ * de «Así se juega» pasa otro: el juego no cambia en nada.
+ */
+export const lineaPorId = (id, banco = BANCO_T1_7) => banco.lineas.find((l) => l.id === id) ?? null;
+export const lineasDe = (informe, banco = BANCO_T1_7) => banco.lineas.filter((l) => l.informe === informe);
 
 /* El informe al que llegan todas y del que no sale ninguna, deducido. */
-export const informeQueRecibe = () => {
-  const llegan = new Set(FLECHAS.map((f) => lineaPorId(f.hasta).informe));
-  const salen = new Set(FLECHAS.map((f) => lineaPorId(f.desde).informe));
+export const informeQueRecibe = (banco = BANCO_T1_7) => {
+  const llegan = new Set(banco.flechas.map((f) => lineaPorId(f.hasta, banco).informe));
+  const salen = new Set(banco.flechas.map((f) => lineaPorId(f.desde, banco).informe));
   const soloRecibe = [...llegan].filter((i) => !salen.has(i));
   if (soloRecibe.length !== 1) {
     throw new Error(`hay ${soloRecibe.length} informes que solo reciben, y tiene que haber uno`);
@@ -399,7 +404,8 @@ export const informeQueRecibe = () => {
   return soloRecibe[0];
 };
 
-export const flechaEntre = (desde, hasta) => FLECHAS.find((f) => f.desde === desde && f.hasta === hasta) ?? null;
+export const flechaEntre = (desde, hasta, banco = BANCO_T1_7) =>
+  banco.flechas.find((f) => f.desde === desde && f.hasta === hasta) ?? null;
 
 /*
  * La devolución de una flecha, en su propia función y no en línea dentro de
@@ -408,8 +414,8 @@ export const flechaEntre = (desde, hasta) => FLECHAS.find((f) => f.desde === des
  * podía, porque la flecha la resuelve él mismo y nunca llega una inventada.
  * Sobrevivió un mutante por eso.
  */
-export function aciertoDeFlecha(id) {
-  const texto = ACIERTO_T1_7[id];
+export function aciertoDeFlecha(id, banco = BANCO_T1_7) {
+  const texto = banco.aciertos[id];
   if (!texto) throw new Error(`«${id}» no tiene devolución de acierto`);
   return texto;
 }
@@ -425,21 +431,21 @@ export function aciertoDeFlecha(id) {
  *     eso va el último: si el estudiante cometió el error de concepto, decirle
  *     «esas dos no se pasan nada» es verdad y no le sirve de nada.
  */
-export function evaluarT1_7(desdeId, hastaId) {
-  const desde = lineaPorId(desdeId);
-  const hasta = lineaPorId(hastaId);
+export function evaluarT1_7(desdeId, hastaId, banco = BANCO_T1_7) {
+  const desde = lineaPorId(desdeId, banco);
+  const hasta = lineaPorId(hastaId, banco);
   if (!desde || !hasta) throw new Error("una de las dos líneas no existe");
 
-  const buena = flechaEntre(desdeId, hastaId);
-  if (buena) return { ok: true, flecha: buena, texto: aciertoDeFlecha(buena.id), patron: null };
+  const buena = flechaEntre(desdeId, hastaId, banco);
+  if (buena) return { ok: true, flecha: buena, texto: aciertoDeFlecha(buena.id, banco), patron: null };
 
-  const receptor = informeQueRecibe();
+  const receptor = informeQueRecibe(banco);
   /* C · ninguna de las dos está en el informe que recibe. */
   if (desde.informe !== receptor && hasta.informe !== receptor) {
     return { ok: false, flecha: null, texto: ERROR_T1_7.C, patron: "C" };
   }
   /* B · la misma pareja existe, pero al revés. */
-  const alReves = flechaEntre(hastaId, desdeId);
+  const alReves = flechaEntre(hastaId, desdeId, banco);
   if (alReves) {
     return { ok: false, flecha: null, texto: ERROR_T1_7.B, patron: "B", deberiaSer: alReves };
   }
