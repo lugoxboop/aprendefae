@@ -93,7 +93,7 @@ const ASI_T1_7 = {
     "Toca la línea a donde llega.",
     "Mira si la flecha queda trazada.",
   ],
-  alt: "Dos hojas de la panadería. Se toca «Total vendido» y luego «Ventas de la semana 1». Una flecha queda trazada entre las dos, con la marca «la misma cifra».",
+  alt: "Dos hojas de la panadería, con dos líneas cada una. Se toca «Total vendido» y luego «Ventas de la semana 1». Una flecha queda trazada entre las dos.",
   demo: { banco: BANCO_DEMO_T1_7, items: [...BANCO_DEMO_T1_7.flechas] },
   guion: {
     /* A los 4,0 s la flecha ya quedó fija: lo lleva el propio hilo. */

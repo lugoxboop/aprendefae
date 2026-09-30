@@ -120,6 +120,39 @@ test("★★ T1-7: «Caja y bancos» ahora se llama «Efectivo»", () => {
   assert.ok(!LINEAS.some((l) => l.nombre === "Caja y bancos"));
 });
 
+test("★★ T1-7: el texto alternativo de la demo es el de Levi, sin la marca retirada", () => {
+  assert.equal(ASI_SE_JUEGA[T1_7.id].alt,
+    "Dos hojas de la panadería, con dos líneas cada una. Se toca «Total vendido» y luego «Ventas de la semana 1». Una flecha queda trazada entre las dos.");
+});
+
+test("★★★ T1-7: al acertar, las líneas sin conectar se atenúan igual en la partida que en la demo", () => {
+  const opacidades = (caja, ids) => ids.map((id) => caja.querySelector(`[data-linea="${id}"]`).style.opacity);
+  const f = FLECHAS[0];
+  const otra = LINEAS.find((l) => l.id !== f.desde && l.id !== f.hasta).id;
+
+  /* La partida de verdad, sin modo demo: justo después de acertar. */
+  const real = montar(React.createElement(LaArticulacion, { Marco: MarcoLibros, onCompletar: () => {} }));
+  let enLaPartida;
+  try {
+    tocar(real.caja.querySelector(`[data-linea="${f.desde}"]`));
+    tocar(real.caja.querySelector(`[data-linea="${f.hasta}"]`));
+    enLaPartida = opacidades(real.caja, [f.desde, f.hasta, otra]);
+  } finally { real.desmontar(); }
+
+  /* La demo, con el mismo gesto. */
+  const demo = montar(React.createElement(LaArticulacion, {
+    Marco: MarcoLibros, modoDemo: true, ...ASI_SE_JUEGA[T1_7.id].demo,
+  }));
+  try {
+    tocar(demo.caja.querySelector('[data-linea="demo-total-vendido"]'));
+    tocar(demo.caja.querySelector('[data-linea="demo-ventas-semana-1"]'));
+    const enLaDemo = opacidades(demo.caja, ["demo-total-vendido", "demo-ventas-semana-1", "demo-pan-sobro"]);
+    assert.deepEqual(enLaDemo, enLaPartida, "la demo atenúa distinto que la partida");
+    assert.deepEqual(enLaDemo, ["1", "1", "0.55"]);
+    assert.equal(opacidades(demo.caja, ["demo-pedidos-proximo-mes"])[0], "0.55");
+  } finally { demo.desmontar(); }
+});
+
 test("★★ T1-7: «Utilidad del ejercicio» sigue siendo el destino de la conexión 1, y se puede tocar", () => {
   const f1 = FLECHAS.find((f) => f.id === "f1");
   assert.equal(f1.desde, "l-utilidad-neta");
