@@ -137,7 +137,8 @@ test("★★★ los aciertos, los errores y la predicción son el texto literal 
   assert.equal(ROTULO_ERROR_B_T1_8, "este hecho no llegó aquí");
   assert.equal(PREDICCION_T1_8.pregunta, "¿Cuántos puntos se van a apagar?");
   assert.deepEqual(PREDICCION_T1_8.opciones, [1, 2, 3, 4], "la predicción no va de 1 a 4");
-  assert.equal(PREDICCION_T1_8.acerto, "Lo predijiste bien. Mira hasta dónde alcanzó a llegar.");
+  assert.equal(PREDICCION_T1_8.acerto, "Acertaste. Mira hasta dónde llegó.");
+  assert.equal(PREDICCION_T1_8.regla, "Se apaga el punto donde se rompió y todos los que siguen.");
   assert.equal(PREDICCION_T1_8.fallo, "No era lo que creías. Mira hasta dónde alcanzó a llegar.");
   assert.equal(CONTADOR_T1_8, "Se apagaron [N] puntos.");
   assert.equal(CONTADOR_UNO_T1_8, "Se apagó 1 punto.");

@@ -625,8 +625,14 @@ export default function DondeSeRompio({
         */}
         {(fase === PREDICCION || (prediccion && fase !== TOCAR && fase !== REVELADO)) && (
           <div data-prediccion className="fae-t18-aparece" style={{ marginTop: "12px" }}>
-            <p style={{ margin: "0 0 8px", fontSize: "13px", lineHeight: 1.45, color: FAE.text }}>
+            <p style={{ margin: "0 0 3px", fontSize: "13px", lineHeight: 1.45, color: FAE.text }}>
               {PREDICCION_T1_8.pregunta}
+            </p>
+            {/* La regla, fija y en el gris secundario de la consigna. */}
+            <p data-regla-prediccion style={{
+              margin: "0 0 8px", fontSize: "12px", lineHeight: 1.45, color: "rgba(248,249,250,0.6)",
+            }}>
+              {PREDICCION_T1_8.regla}
             </p>
             <div role="group" aria-label={PREDICCION_T1_8.pregunta} style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "7px" }}>
               {PREDICCION_T1_8.opciones.map((n) => {

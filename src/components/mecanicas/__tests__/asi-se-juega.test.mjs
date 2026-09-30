@@ -95,7 +95,7 @@ const contarEscrituras = () => {
 test("★★ el Bloque 1 son tres actividades, con sus tres pasos y su texto alternativo", () => {
   assert.deepEqual(Object.keys(ASI_SE_JUEGA).sort(), [T1_4.id, T1_7.id, T1_8.id].sort());
   assert.deepEqual(ASI_SE_JUEGA[T1_8.id].pasos, [
-    "Lee lo que pasó en la panadería.", "Toca el punto donde se rompió.", "Elige cuántos puntos se van a apagar.",
+    "Lee lo que pasó en la panadería.", "Toca el punto donde se rompió.", "Elige cuántos se apagan: ese punto y los que siguen.",
   ]);
   assert.deepEqual(ASI_SE_JUEGA[T1_7.id].pasos, [
     "Toca la línea de donde sale.", "Toca la línea a donde llega.", "Mira si la flecha queda trazada.",
@@ -492,6 +492,55 @@ test("★★ T1-8 real: números apagados, chip «apagado» y predicción no ele
       assert.equal(op.style.opacity, "", `opción ${n}: el botón entero lleva opacidad`);
       assert.equal(op.style.borderColor, "rgba(248, 249, 250, 0.15)", `opción ${n}: el borde no va al 0,5`);
     }
+  } finally { desmontar(); }
+});
+
+/* ═══════════════════ T1-8: LA REGLA DE QUÉ SE APAGA ═══════════════════ */
+
+const REGLA = "Se apaga el punto donde se rompió y todos los que siguen.";
+const reglaBajoLaPregunta = (caja) => {
+  const regla = caja.querySelector("[data-prediccion] [data-regla-prediccion]");
+  assert.ok(regla, "no está la línea de la regla");
+  assert.equal(regla.textContent, REGLA);
+  assert.equal(regla.previousElementSibling.textContent, "¿Cuántos puntos se van a apagar?", "la regla no va justo debajo de la pregunta");
+  assert.equal(regla.style.color, "rgba(248, 249, 250, 0.6)", "la regla no va en el gris de la consigna");
+};
+
+test("★★★ T1-8 real: debajo de la pregunta de predicción, la regla fija; y acertar dice «Acertaste»", async () => {
+  const { caja, desmontar } = montar(React.createElement(DondeSeRompio, {
+    Marco: MarcoLibros, onCompletar: () => {}, items: [EJEMPLO_T1_8],
+  }));
+  try {
+    tocar(caja.querySelector(`[data-punto="${EJEMPLO_T1_8.rompe}"]`));
+    await esperar(() => caja.querySelector('[data-prediccion-opcion="4"]'));
+    reglaBajoLaPregunta(caja);
+    tocar(caja.querySelector('[data-prediccion-opcion="4"]'));
+    /* Fija: sigue ahí después de elegir. */
+    reglaBajoLaPregunta(caja);
+    await esperar(() => caja.querySelector("[data-cierre-prediccion]"));
+    assert.equal(caja.querySelector("[data-cierre-prediccion]").textContent, "Acertaste. Mira hasta dónde llegó.");
+  } finally { desmontar(); }
+});
+
+test("★★ T1-8: fallar la predicción conserva su texto de siempre", async () => {
+  const { caja, desmontar } = montar(React.createElement(DondeSeRompio, {
+    Marco: MarcoLibros, onCompletar: () => {}, items: [EJEMPLO_T1_8],
+  }));
+  try {
+    tocar(caja.querySelector(`[data-punto="${EJEMPLO_T1_8.rompe}"]`));
+    await esperar(() => caja.querySelector('[data-prediccion-opcion="1"]'));
+    tocar(caja.querySelector('[data-prediccion-opcion="1"]'));
+    await esperar(() => caja.querySelector("[data-cierre-prediccion]"));
+    assert.equal(caja.querySelector("[data-cierre-prediccion]").textContent, "No era lo que creías. Mira hasta dónde alcanzó a llegar.");
+  } finally { desmontar(); }
+});
+
+test("★★ T1-8 en la demo: la regla también se ve, porque es el componente real", async () => {
+  const { caja, desmontar } = montar(pantalla(T1_8.id));
+  try {
+    await esperar(() => caja.querySelector("[data-asj-escenario] [data-prediccion]"));
+    reglaBajoLaPregunta(caja.querySelector("[data-asj-escenario]"));
+    assert.equal(caja.querySelectorAll("ol[data-asj-pasos] li")[2].textContent, "3Elige cuántos se apagan: ese punto y los que siguen.");
   } finally { desmontar(); }
 });
 
