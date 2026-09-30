@@ -203,13 +203,15 @@ test("★★★ los diez nodos son el mismo: nada distingue un origen de un dest
   } finally { desmontar(); }
 });
 
-test("★★ el vacío invita, y se va al empezar a tocar", () => {
+test("★★ sin recuadro de vacío: la consigna de arriba dice qué tocar, y tocar marca el origen", () => {
   const { caja, desmontar } = montar();
   try {
-    assert.ok(caja.querySelector("[data-vacio]"), "no hay estado vacío");
-    assert.equal(caja.querySelector("[data-vacio]").textContent, T1_7.pregunta);
+    assert.equal(caja.querySelectorAll("[data-vacio]").length, 0, "volvió el recuadro de vacío");
+    assert.ok(!caja.textContent.includes("¿De dónde sale cada cifra?"), "volvió la pregunta del vacío");
+    assert.equal(T1_7.pregunta, undefined);
+    assert.equal(caja.querySelector("[data-encabezado] [data-consigna]").textContent,
+      "Toca la línea de donde sale la flecha. Luego toca la línea a donde llega.");
     clic(caja, FLECHAS[0].desde);
-    assert.equal(caja.querySelectorAll("[data-vacio]").length, 0, "el vacío sigue pidiendo lo que ya se hizo");
     assert.equal(caja.querySelector(`[data-linea="${FLECHAS[0].desde}"]`).dataset.estado, "desde");
   } finally { desmontar(); }
 });

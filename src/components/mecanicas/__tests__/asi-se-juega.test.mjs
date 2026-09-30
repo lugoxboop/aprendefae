@@ -98,7 +98,7 @@ test("★★ el Bloque 1 son tres actividades, con sus tres pasos y su texto alt
     "Lee lo que pasó en la panadería.", "Toca el punto donde se rompió.", "Elige cuántos puntos se van a apagar.",
   ]);
   assert.deepEqual(ASI_SE_JUEGA[T1_7.id].pasos, [
-    "Toca una línea.", "Toca la línea con la que se conecta.", "Mira si la flecha queda trazada.",
+    "Toca la línea de donde sale.", "Toca la línea a donde llega.", "Mira si la flecha queda trazada.",
   ]);
   assert.deepEqual(ASI_SE_JUEGA[T1_4.id].pasos, [
     "Lee el hecho de la panadería.", "Toca sube, baja o queda igual en cada parte.", "Mira cómo se mueven las tres barras.",
@@ -110,7 +110,7 @@ test("★★ el Bloque 1 son tres actividades, con sus tres pasos y su texto alt
     assert.equal(asi.titulo, datos.nombre, `${id}: el título no es el de la actividad`);
     assert.ok(asi.alt.length > 40, `${id}: sin texto alternativo`);
   }
-  assert.equal(T1_7.consigna, "Toca una línea de un informe. Luego toca la línea del otro informe con la que se conecta.");
+  assert.equal(T1_7.consigna, "Toca la línea de donde sale la flecha. Luego toca la línea a donde llega.");
   assert.equal(EJEMPLO_T1_8.texto, "La panadería compró harina y la pagó en efectivo. No pidió factura.");
   assert.equal(EJEMPLO_T1_4.texto, "La panadería compró un horno a crédito.");
 });
@@ -120,7 +120,16 @@ test("★★ T1-7: «Caja y bancos» ahora se llama «Efectivo»", () => {
   assert.ok(!LINEAS.some((l) => l.nombre === "Caja y bancos"));
 });
 
-test.todo("B4 · «Utilidad del ejercicio» visible pero no conectable — en pausa: en el repo es el destino de la flecha f1 (Utilidad neta → Utilidad del ejercicio); lo decide Levi");
+test("★★ T1-7: «Utilidad del ejercicio» sigue siendo el destino de la conexión 1, y se puede tocar", () => {
+  const f1 = FLECHAS.find((f) => f.id === "f1");
+  assert.equal(f1.desde, "l-utilidad-neta");
+  assert.equal(f1.hasta, "l-utilidad-balance");
+  assert.equal(evaluarT1_7("l-utilidad-neta", "l-utilidad-balance").ok, true);
+  const { caja, desmontar } = montar(React.createElement(LaArticulacion, { Marco: MarcoLibros, onCompletar: () => {} }));
+  try {
+    assert.equal(caja.querySelector('[data-linea="l-utilidad-balance"]').disabled, false);
+  } finally { desmontar(); }
+});
 
 /* ═══════════════════ LOS EJEMPLOS NO SON DEL BANCO ═══════════════════ */
 
@@ -142,7 +151,18 @@ test("★★ los ejemplos se resuelven con la lógica de verdad, y dicen lo que 
   assert.equal(t4.texto, EJEMPLO_T1_4.acierto);
   const t7 = evaluarT1_7("demo-total-vendido", "demo-ventas-semana-1", BANCO_DEMO_T1_7);
   assert.equal(t7.ok, true);
-  assert.equal(t7.flecha.marca, "la misma cifra");
+  assert.equal(t7.flecha.marca, undefined, "volvió la marca «la misma cifra»");
+  /* Las dos líneas de relleno están en su hoja y no se conectan con nada. */
+  const nombre = (id) => BANCO_DEMO_T1_7.lineas.find((l) => l.id === id);
+  assert.equal(nombre("demo-pan-sobro").nombre, "Pan que sobró");
+  assert.equal(nombre("demo-pan-sobro").informe, "demo-semana");
+  assert.equal(nombre("demo-pedidos-proximo-mes").nombre, "Pedidos del próximo mes");
+  assert.equal(nombre("demo-pedidos-proximo-mes").informe, "demo-mes");
+  assert.equal(BANCO_DEMO_T1_7.flechas.length, 1);
+  for (const id of ["demo-pan-sobro", "demo-pedidos-proximo-mes"]) {
+    assert.ok(!BANCO_DEMO_T1_7.flechas.some((f) => f.desde === id || f.hasta === id), `${id} se conecta`);
+  }
+  assert.equal(evaluarT1_7("demo-pan-sobro", "demo-pedidos-proximo-mes", BANCO_DEMO_T1_7).ok, false);
   /* Y sin su banco, la lógica de verdad no las conoce. */
   assert.throws(() => evaluarT1_7("demo-total-vendido", "demo-ventas-semana-1"));
 });
@@ -279,7 +299,8 @@ for (const id of [T1_8.id, T1_7.id, T1_4.id]) {
       }
       if (id === T1_7.id) {
         assert.ok(caja.querySelector("[data-hilo]").textContent.includes("Total vendido → Ventas de la semana 1"));
-        assert.equal(caja.querySelector("[data-hilo] [data-marca]").textContent, "la misma cifra");
+        assert.equal(caja.querySelector("[data-hilo]").textContent, "Total vendido → Ventas de la semana 1");
+        assert.equal(caja.querySelectorAll("[data-asj-escenario] [data-linea]").length, 4);
       }
       if (id === T1_4.id) {
         assert.equal(caja.querySelector('[data-barra="activo"]').dataset.alto, "62");
@@ -322,6 +343,27 @@ test("★★ «Pausar» detiene el guion, y «Ver de nuevo» lo vuelve a correr 
     assert.equal(control().textContent, "Pausar");
     /* La segunda pasada no apaga «Siguiente»: ya se vio una vez. */
     assert.equal(caja.querySelector("[data-asj-siguiente] button").disabled, false);
+  } finally { desmontar(); }
+});
+
+test("★★★ «Pausar» congela también la cascada de T1-8, y «Seguir» la retoma donde quedó", async () => {
+  /* A tiempo real: acelerado, el guion terminaría antes que la cascada. */
+  const { caja, desmontar } = montar(pantalla(T1_8.id, { escala: 1 }));
+  try {
+    const control = () => caja.querySelector("[data-asj-control]");
+    const apagados = () => caja.querySelectorAll('[data-asj-escenario] [data-apagado="si"]').length;
+    /* Hasta que la cascada vaya por la mitad. */
+    await esperar(() => apagados() >= 1 && apagados() < 4, 6000);
+    tocar(control());
+    assert.equal(control().textContent, "Seguir");
+    const congelados = apagados();
+    await act(async () => { await new Promise((r) => setTimeout(r, 900)); });
+    assert.equal(apagados(), congelados, "en pausa siguieron apagándose puntos");
+    assert.equal(caja.querySelector('[data-asj-escenario] [role="status"]'), null, "en pausa llegó al final");
+    tocar(control());
+    assert.equal(control().textContent, "Pausar");
+    await esperar(() => apagados() === 4, 3000);
+    assert.ok(apagados() > congelados, "«Seguir» no la retomó");
   } finally { desmontar(); }
 });
 

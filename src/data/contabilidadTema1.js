@@ -548,8 +548,8 @@ export const T1_7 = {
   /* Las cinco, siempre: solo hay cinco. */
   porPartida: 5,
   objetivo: "Descubre cómo los tres informes se pasan cifras entre ellos.",
-  consigna: "Toca una línea de un informe. Luego toca la línea del otro informe con la que se conecta.",
-  pregunta: "¿De dónde sale cada cifra? Toca primero de dónde sale y luego a dónde llega.",
+  consigna: "Toca la línea de donde sale la flecha. Luego toca la línea a donde llega.",
+  /* Sin recuadro de vacío: salió con las correcciones de Levi al Bloque 1. */
 };
 
 export const FLUJOS = "flujos";
@@ -578,6 +578,11 @@ export const LINEAS = [
   { id: "l-cobrar-pagar", informe: PRIMERO, nombre: "Cuentas por cobrar y cuentas por pagar" },
   { id: "l-propiedad", informe: PRIMERO, nombre: "Propiedad, planta y equipo" },
   { id: "l-aportes", informe: PRIMERO, nombre: "Aportes de los dueños" },
+  /*
+   * Adaptación del Gráfico 2.6: el libro agrupa la utilidad dentro del
+   * patrimonio. Aquí va como línea propia porque es el destino de la conexión 1
+   * (f1, desde «Utilidad neta»), y por eso se puede tocar como cualquier otra.
+   */
   { id: "l-utilidad-balance", informe: PRIMERO, nombre: "Utilidad del ejercicio" },
   /* Lo que vendió y lo que gastó durante el año. */
   { id: "l-utilidad-neta", informe: SEGUNDO, nombre: "Utilidad neta" },

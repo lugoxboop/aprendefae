@@ -28,7 +28,11 @@ import { SOLO_LECTOR } from "./verbos.jsx";
  * ═══════════ UNA VEZ, SIN BUCLE ═══════════
  *
  * La demo corre una vez. Fuera de ella, un control: «Pausar» mientras corre y
- * «Ver de nuevo» cuando termina. «Siguiente» está apagado —y lo dice: «Mira el
+ * «Ver de nuevo» cuando termina.
+ *
+ * «Pausar» congela TODO: el guion, la mano, las animaciones y transiciones de
+ * dentro de la figura, y los relojes del propio componente (le llega
+ * `pausado`; T1-8 congela su cascada con él). «Seguir» lo retoma donde quedó. «Siguiente» está apagado —y lo dice: «Mira el
  * ejemplo»— hasta que la primera pasada termina.
  *
  * ═══════════ MOVIMIENTO REDUCIDO: TRES CUADROS ═══════════
@@ -49,7 +53,6 @@ const PUNTA = { x: 11, y: 3 };
 const CSS = `
 @keyframes fae-asj-onda { from { transform: translate(-50%, -50%) scale(0.3); opacity: 0.85; } to { transform: translate(-50%, -50%) scale(1.6); opacity: 0; } }
 .fae-asj-onda { animation: fae-asj-onda 520ms ease-out both; }
-.fae-asj-pausa * { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) {
   .fae-asj-onda { animation: none !important; opacity: 0 !important; }
 }
@@ -121,6 +124,7 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1 }) {
   /* El guion hecho eventos: para cada toque, primero el viaje y luego el toque. */
   const toques = asi.guion.toques;
   const eventos = useRef([]);
+  const pausado = !reducido && !corriendo && !terminada;
   eventos.current = toques.flatMap((t, k) => [
     { ms: Math.max(0, t.ms - VIAJE_MS) * escala, tipo: "viajar", k },
     { ms: t.ms * escala, tipo: "tocar", k },
@@ -138,6 +142,25 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1 }) {
   useEffect(() => {
     escenario.current?.setAttribute("inert", "");
   }, [vuelta]);
+
+  /*
+   * Las animaciones CSS y las transiciones de la figura se congelan con la API
+   * de animaciones del navegador: `pause()` las para en su fotograma y `play()`
+   * las sigue. Solo se reanudan las que se pararon aquí; una que ya había
+   * terminado no vuelve a empezar.
+   */
+  const congeladas = useRef([]);
+  useEffect(() => {
+    const caja = figura.current;
+    if (!caja?.getAnimations) return;
+    if (pausado) {
+      congeladas.current = caja.getAnimations({ subtree: true }).filter((a) => a.playState === "running");
+      congeladas.current.forEach((a) => a.pause());
+    } else {
+      congeladas.current.forEach((a) => { try { a.play(); } catch { /* ya no existe */ } });
+      congeladas.current = [];
+    }
+  }, [pausado]);
 
   /* Al empezar, la mano espera abajo a la derecha, fuera de lo que va a tocar. */
   useEffect(() => {
@@ -330,10 +353,9 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1 }) {
             key={vuelta}
             ref={escenario}
             data-asj-escenario
-            className={!corriendo && !terminada && !reducido ? "fae-asj-pausa" : undefined}
             style={{ userSelect: "none" }}
           >
-            <Mecanica Marco={MarcoDemo} modoDemo acento={FAE.ambar} {...asi.demo} />
+            <Mecanica Marco={MarcoDemo} modoDemo pausado={pausado} acento={FAE.ambar} {...asi.demo} />
           </div>
           {onda && !reducido && (
             <span key={onda.clave} data-onda aria-hidden="true" className="fae-asj-onda" style={{

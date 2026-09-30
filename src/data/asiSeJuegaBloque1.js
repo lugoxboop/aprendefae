@@ -61,12 +61,9 @@ const ASI_T1_8 = {
 /* ═══════════════════ T1-7 · LA ARTICULACIÓN ═══════════════════ */
 
 /*
- * Las dos hojas de la panadería. Gen nombra una línea en cada una y esas son
- * las que hay: no se inventan más para rellenar.
- *
- * `marca` solo existe aquí. El juego de verdad no pinta ninguna marca sobre el
- * hilo; la demo enseña «la misma cifra» porque es lo que hace buena a ESTA
- * flecha, y el juego no se toca para enseñarlo.
+ * Las dos hojas de la panadería, con dos líneas cada una. «Pan que sobró» y
+ * «Pedidos del próximo mes» no se conectan con nada: están para que la demo
+ * tenga que elegir, igual que la partida.
  */
 export const BANCO_DEMO_T1_7 = {
   informes: [
@@ -75,10 +72,12 @@ export const BANCO_DEMO_T1_7 = {
   ],
   lineas: [
     { id: "demo-total-vendido", informe: "demo-semana", nombre: "Total vendido" },
+    { id: "demo-pan-sobro", informe: "demo-semana", nombre: "Pan que sobró" },
     { id: "demo-ventas-semana-1", informe: "demo-mes", nombre: "Ventas de la semana 1" },
+    { id: "demo-pedidos-proximo-mes", informe: "demo-mes", nombre: "Pedidos del próximo mes" },
   ],
   flechas: [
-    { id: "demo-f1", desde: "demo-total-vendido", hasta: "demo-ventas-semana-1", marca: "la misma cifra" },
+    { id: "demo-f1", desde: "demo-total-vendido", hasta: "demo-ventas-semana-1" },
   ],
   aciertos: {
     "demo-f1": "✅ «Total vendido» manda su cifra a «Ventas de la semana 1». Son la misma cifra en dos hojas, así que la flecha queda trazada.",
@@ -90,14 +89,14 @@ const ASI_T1_7 = {
   titulo: T1_7.nombre,
   consigna: T1_7.consigna,
   pasos: [
-    "Toca una línea.",
-    "Toca la línea con la que se conecta.",
+    "Toca la línea de donde sale.",
+    "Toca la línea a donde llega.",
     "Mira si la flecha queda trazada.",
   ],
   alt: "Dos hojas de la panadería. Se toca «Total vendido» y luego «Ventas de la semana 1». Una flecha queda trazada entre las dos, con la marca «la misma cifra».",
   demo: { banco: BANCO_DEMO_T1_7, items: [...BANCO_DEMO_T1_7.flechas] },
   guion: {
-    /* 4,0 s la flecha queda fija y 5,5 s sale la marca: lo lleva el propio hilo. */
+    /* A los 4,0 s la flecha ya quedó fija: lo lleva el propio hilo. */
     duracion: 7000,
     toques: [
       { ms: 1500, en: '[data-linea="demo-total-vendido"]' },

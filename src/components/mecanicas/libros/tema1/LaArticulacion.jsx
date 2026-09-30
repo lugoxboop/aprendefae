@@ -40,10 +40,9 @@ import { Encabezado, IdeaConTermino } from "./encabezado.jsx";
 const CSS = `
 @keyframes fae-t17-hilo { 0% { opacity: 0; } 25% { opacity: 1; } 75% { opacity: 1; } 100% { opacity: 0; } }
 .fae-t17-hilo { animation: fae-t17-hilo 1600ms ease-in-out both; }
-/* En la demo el hilo se queda: entra en un segundo y la marca, 1,5 s después. */
+/* En la demo el hilo se queda: entra en un segundo y ahí sigue. */
 @keyframes fae-t17-entra { from { opacity: 0; } to { opacity: 1; } }
 .fae-t17-hilo-fijo { animation: fae-t17-entra 1000ms ease-out both; }
-.fae-t17-marca { animation: fae-t17-entra 400ms ease-out 2500ms both; }
 @keyframes fae-t17-cierre { from { opacity: 0; } to { opacity: 1; } }
 .fae-t17-cierre { animation: fae-t17-cierre 600ms ease-out both; }
 @keyframes fae-t17-rebota {
@@ -52,7 +51,7 @@ const CSS = `
 }
 .fae-t17-rebota { animation: fae-t17-rebota 400ms ease-out 1; }
 @media (prefers-reduced-motion: reduce) {
-  .fae-t17-hilo, .fae-t17-cierre, .fae-t17-rebota, .fae-t17-hilo-fijo, .fae-t17-marca {
+  .fae-t17-hilo, .fae-t17-cierre, .fae-t17-rebota, .fae-t17-hilo-fijo {
     animation: none !important; opacity: 1 !important; transform: none !important;
   }
 }
@@ -115,8 +114,7 @@ function Linea({ linea, estado, onTocar, activo }) {
  * flecha del ejemplo; `modoDemo` le quita lo que no es la zona de juego y le
  * corta la salida: no llama a `onCompletar`, así que no hay FP, ni intentos,
  * ni progreso. Una sola diferencia en cómo se ve: en la demo el hilo no se
- * va, porque la demo termina justo en él. Si la flecha trae `marca`, el hilo
- * la enseña; las del juego no traen ninguna.
+ * va, porque la demo termina justo en él.
  */
 export default function LaArticulacion({
   Marco, rotulo, titulo, acento, onCompletar,
@@ -158,7 +156,7 @@ export default function LaArticulacion({
     const nuevo = evaluarT1_7(desde, id, b);
     if (nuevo.ok) {
       /* El hilo se dibuja y se va: no se queda acumulándose en pantalla. */
-      setHilo({ desde, hasta: id, marca: nuevo.flecha.marca ?? null, sello: Date.now() });
+      setHilo({ desde, hasta: id, sello: Date.now() });
       clearTimeout(reloj.current);
       if (!modoDemo) reloj.current = setTimeout(() => setHilo(null), reducido ? 1200 : 1600);
     } else {
@@ -301,16 +299,6 @@ export default function LaArticulacion({
 
       {/* Aquí dentro no entra el vocabulario del Tema 2. */}
       <div data-contenido>
-        {!desde && !r && !modoDemo && (
-          <p data-vacio style={{
-            margin: "0 0 11px", padding: "9px 11px", borderRadius: "11px",
-            fontSize: "12px", lineHeight: 1.45, color: "rgba(248,249,250,0.6)",
-            background: "rgba(10,20,34,0.4)", border: "1px solid rgba(248,249,250,0.14)",
-          }}>
-            {T1_7.pregunta}
-          </p>
-        )}
-
         <div
           data-informes
           className={rebotando ? "fae-t17-rebota" : undefined}
@@ -357,14 +345,6 @@ export default function LaArticulacion({
             fontFamily: SORA, fontWeight: 700,
           }}>
             {lineaPorId(hiloVivo.desde, b).nombre} → {lineaPorId(hiloVivo.hasta, b).nombre}
-            {hiloVivo.marca && (
-              <span data-marca className="fae-t17-marca" style={{
-                display: "block", marginTop: "3px", fontFamily: "Inter, sans-serif",
-                fontSize: "10.5px", fontWeight: 600, letterSpacing: "0.02em",
-              }}>
-                {hiloVivo.marca}
-              </span>
-            )}
           </p>
         )}
 

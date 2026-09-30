@@ -12,7 +12,7 @@ import {
 } from "../../../../contabilidad/tema1.js";
 import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
-import { Responder, useTanda } from "../piezas.jsx";
+import { Responder, useTanda, useRelojes } from "../piezas.jsx";
 import { useMovimientoReducido, SOLO_LECTOR } from "../verbos.jsx";
 import FranjaDelCiclo from "../intro/FranjaDelCiclo.jsx";
 import { Encabezado } from "./encabezado.jsx";
@@ -377,6 +377,8 @@ function Tira({ situacion }) {
  */
 export default function DondeSeRompio({
   Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+  /* Solo la demo lo enciende: con «Pausar» la cascada se congela donde va. */
+  pausado = false,
 }) {
   const reducido = useMovimientoReducido();
   const t = useTanda(() => items ?? sortearT1_8(barajar));
@@ -391,7 +393,6 @@ export default function DondeSeRompio({
   const [atenuado, setAtenuado] = useState(null);
   const [flujo, setFlujo] = useState(null);
   const [resueltas, setResueltas] = useState([]);
-  const relojes = useRef([]);
   const zonaBoton = useRef(null);
 
   const s = t.items[t.i];
@@ -400,13 +401,11 @@ export default function DondeSeRompio({
   const esperandoReintento = Boolean(r && !r.ok && intento === 1);
   const cerrada = fase === FIN || fase === REVELADO;
 
-  const despues = (ms, fn) => { relojes.current.push(setTimeout(fn, ms)); };
-  const limpiar = () => { relojes.current.forEach(clearTimeout); relojes.current = []; };
+  const { despues, limpiar } = useRelojes(pausado);
 
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
-  useEffect(() => () => limpiar(), []);
   useEffect(() => {
     if (cerrada && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [cerrada]);

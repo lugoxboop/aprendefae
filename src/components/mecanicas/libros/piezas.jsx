@@ -307,6 +307,54 @@ export function Responder({ children, onClick, deshabilitado = false }) {
   );
 }
 
+/*
+ * ═══════════ RELOJES QUE SE PUEDEN CONGELAR ═══════════
+ *
+ * `despues(ms, fn)` es un setTimeout con memoria: mientras `pausado` es
+ * verdadero, cada reloj pendiente se detiene y guarda lo que le faltaba, y al
+ * soltarlo sigue desde ahí — no vuelve a empezar ni se salta nada. Lo pide
+ * «Así se juega»: «Pausar» congela también lo que el componente tenía en
+ * marcha, como la cascada de puntos que se apagan en T1-8. Fuera de la demo
+ * `pausado` es siempre falso y esto es un setTimeout y nada más.
+ */
+export function useRelojes(pausado = false) {
+  const pendientes = useRef([]);
+  const congelado = useRef(pausado);
+
+  const arrancar = (p) => {
+    p.fin = Date.now() + p.resta;
+    p.id = setTimeout(() => {
+      pendientes.current = pendientes.current.filter((x) => x !== p);
+      p.fn();
+    }, p.resta);
+  };
+  const despues = (ms, fn) => {
+    const p = { fn, resta: ms, id: null, fin: 0 };
+    pendientes.current.push(p);
+    if (!congelado.current) arrancar(p);
+  };
+  const limpiar = () => {
+    pendientes.current.forEach((p) => clearTimeout(p.id));
+    pendientes.current = [];
+  };
+
+  useEffect(() => {
+    congelado.current = pausado;
+    for (const p of pendientes.current) {
+      if (pausado && p.id != null) {
+        clearTimeout(p.id);
+        p.id = null;
+        p.resta = Math.max(0, p.fin - Date.now());
+      } else if (!pausado && p.id == null) {
+        arrancar(p);
+      }
+    }
+  }, [pausado]);
+  useEffect(() => () => limpiar(), []);
+
+  return { despues, limpiar };
+}
+
 /** El estado compartido de «una tanda de ítems sorteados», que repiten todas. */
 export function useTanda(sortear) {
   const [items, setItems] = useState(sortear);
