@@ -1,4 +1,5 @@
 import { FAE } from "../../../../theme.js";
+import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -36,7 +37,41 @@ import { FAE } from "../../../../theme.js";
 
 const SORA = "Sora, sans-serif";
 
-export function Encabezado({ objetivo, consigna }) {
+/*
+ * ═══════════ «¿CÓMO SE JUEGA?» ═══════════
+ *
+ * Debajo de la consigna, y solo en las actividades que ya tienen su «Así se
+ * juega». Va en el mismo gris secundario de la consigna —es una ayuda, no una
+ * acción de la partida— y el icono es el círculo #B8C4D4 con el «?» navy del
+ * resto del tema. El área de toque mide al menos 40 × 40 aunque el texto se
+ * vea pequeño.
+ */
+export function BotonComoSeJuega({ onClick }) {
+  return (
+    <button
+      type="button"
+      data-como-se-juega
+      onClick={onClick}
+      style={{
+        display: "inline-flex", alignItems: "center", gap: "7px",
+        minHeight: "40px", minWidth: "40px", margin: "2px 0 -8px -6px", padding: "0 6px",
+        background: "transparent", border: "none", borderRadius: "10px", cursor: "pointer",
+        color: "rgba(248,249,250,0.6)", fontFamily: "Inter, sans-serif", fontSize: "12px",
+      }}
+    >
+      <span aria-hidden="true" style={{
+        flex: "none", width: "18px", height: "18px", borderRadius: "999px",
+        background: NEUTRO, color: NAVY_DEL_CHIP, fontFamily: SORA, fontSize: "11.5px",
+        fontWeight: 700, lineHeight: "18px", textAlign: "center",
+      }}>
+        ?
+      </span>
+      ¿Cómo se juega?
+    </button>
+  );
+}
+
+export function Encabezado({ objetivo, consigna, onComoSeJuega = null }) {
   return (
     <div data-encabezado style={{ margin: "0 0 14px" }}>
       <p data-objetivo style={{
@@ -50,6 +85,7 @@ export function Encabezado({ objetivo, consigna }) {
       }}>
         {consigna}
       </p>
+      {onComoSeJuega && <BotonComoSeJuega onClick={onComoSeJuega} />}
     </div>
   );
 }

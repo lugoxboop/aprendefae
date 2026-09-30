@@ -145,7 +145,8 @@ test("★★★ los aciertos, los errores y la predicción son el texto literal 
   assert.equal(CIERRE_T1_8, "Mientras más temprano se rompe, a menos puntos llega el hecho. La empresa sigue andando. Pero decide sin saber lo que pasó.");
   assert.equal(T1_8.objetivo, "Encuentra en qué punto se rompió el ciclo. Y mira qué se pierde de ahí en adelante.");
   assert.equal(T1_8.consigna, "Lee lo que pasó en la empresa. Toca el punto donde se rompió el ciclo.");
-  assert.equal(T1_8.pregunta, "¿Hasta dónde llegó bien, y dónde se cortó?");
+  /* La línea de vacío salió en el Bloque 1 de «Así se juega». */
+  assert.equal(T1_8.pregunta, undefined);
 });
 
 test("★★★ ningún texto dice que la empresa se queda sin informe o sin decisión", () => {
@@ -291,10 +292,11 @@ test("★★★ el punto 1 no es un botón ni entra en el Tab; los otros cuatro 
   } finally { desmontar(); }
 });
 
-test("★★ el vacío: el anillo entero encendido y la pregunta, que se va al responder", () => {
+test("★★ de salida: el anillo entero encendido y sin línea de vacío debajo de la consigna", () => {
   const { caja, desmontar } = montar();
   try {
-    assert.equal(caja.querySelector("[data-vacio]").textContent, T1_8.pregunta);
+    assert.equal(caja.querySelectorAll("[data-vacio]").length, 0, "volvió la línea de vacío");
+    assert.ok(!caja.textContent.includes("¿Hasta dónde llegó bien"), "volvió la pregunta del vacío");
     assert.equal(caja.querySelectorAll('[data-apagado="si"]').length, 0, "hay puntos apagados de salida");
     assert.equal(caja.querySelectorAll("[data-corte]").length, 0, "hay un corte de salida");
     assert.equal(caja.querySelector("[data-anillo]").dataset.retorno, "encendido");

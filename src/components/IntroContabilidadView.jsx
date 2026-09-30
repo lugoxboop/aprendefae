@@ -3,7 +3,7 @@ import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { APRENDER, HACER, SUBJECTS, clasificacionDe, actividadesDeTipo } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
@@ -24,6 +24,9 @@ import { T1_1, T1_2, T1_4, T1_5, T1_6, T1_7, T1_8 } from "../data/contabilidadTe
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZAS_INTRO } from "../data/contabilidadPiezas234.js";
 import { ESCENAS_INTRO } from "./mecanicas/libros/intro/escenasIntro.jsx";
+import AsiSeJuega from "./mecanicas/libros/AsiSeJuega.jsx";
+import { ASI_SE_JUEGA } from "../data/asiSeJuegaBloque1.js";
+import { yaLaVio, marcarVista } from "../hacer/asiSeJuega.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -92,11 +95,52 @@ export function rotuloDeBloque(actividadId) {
   return b ? b.nombre.toUpperCase() : null;
 }
 
+/*
+ * ═══════════ «ASÍ SE JUEGA» DELANTE DE LA PARTIDA ═══════════
+ *
+ * La primera vez que el estudiante abre una actividad en este navegador, sale
+ * su «Así se juega»; después, solo con «¿Cómo se juega?». La marca se lee al
+ * montar y se escribe en un efecto —no al calcular el estado, que React puede
+ * repetir en desarrollo y lo daría por visto antes de enseñarlo—.
+ *
+ * La partida se queda montada debajo, escondida: volver a mirar cómo se juega
+ * a media tanda no la reinicia.
+ */
+export function JuegoConTutorial({ juego, usuarioId = null, Marco, acento, rotulo, onCompletar }) {
+  const asi = ASI_SE_JUEGA[juego.id] ?? null;
+  const [viendo, setViendo] = useState(() => Boolean(asi) && !yaLaVio(juego.id, usuarioId));
+
+  useEffect(() => {
+    if (viendo) marcarVista(juego.id, usuarioId);
+  }, []);
+
+  const abrir = () => {
+    setViendo(true);
+    try { globalThis.scrollTo?.(0, 0); } catch { /* sin ventana, nada que subir */ }
+  };
+
+  return (
+    <>
+      {viendo && <AsiSeJuega asi={asi} Mecanica={juego.Mecanica} onSiguiente={() => setViendo(false)} />}
+      <div hidden={viendo} data-partida>
+        <juego.Mecanica
+          Marco={Marco}
+          acento={acento}
+          rotulo={rotulo}
+          titulo={juego.titulo}
+          onCompletar={onCompletar}
+          onComoSeJuega={asi ? abrir : null}
+        />
+      </div>
+    </>
+  );
+}
+
 export default function IntroContabilidadView({ modo = null, nodoInicial = null, onBack }) {
   const esAprender = modo === APRENDER;
   const [nodoAbierto, setNodoAbierto] = useState(nodoInicial ?? null);
   const hechas = useCompletadas();
-  const { pedirCuenta } = useAuth();
+  const { pedirCuenta, usuario } = useAuth();
   const [recompensa, celebrar] = useRecompensa();
 
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
@@ -182,11 +226,13 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
               >
                 ‹ Volver al camino
               </button>
-              <juego.Mecanica
+              <JuegoConTutorial
+                key={juego.id}
+                juego={juego}
+                usuarioId={usuario?.id ?? null}
                 Marco={MarcoLibros}
                 acento={TEMA1_ACENTO.ambar}
                 rotulo={rotuloDeBloque(juego.id)}
-                titulo={juego.titulo}
                 onCompletar={(pct, ms, detalle) => completar(juego.id, pct, ms, detalle)}
               />
             </div>
