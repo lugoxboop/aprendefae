@@ -781,9 +781,15 @@ export const ROTULO_FLECHA_APAGADA = "pero no cambió nada";
  */
 export const PREDICCION_T1_8 = {
   pregunta: "¿Cuántos puntos se van a apagar?",
+  /*
+   * La regla, fija debajo de la pregunta. Sin ella, «cuántos se apagan» se
+   * leía como «cuántos quedan encendidos» o dejaba fuera el punto roto: lo
+   * encontró Ukyo leyendo la pantalla «Así se juega».
+   */
+  regla: "Se apaga el punto donde se rompió y todos los que siguen.",
   /* De 1 a 4: con el punto roto apagado, ninguna situación deja cero ni cinco. */
   opciones: [1, 2, 3, 4],
-  acerto: "Lo predijiste bien. Mira hasta dónde alcanzó a llegar.",
+  acerto: "Acertaste. Mira hasta dónde llegó.",
   fallo: "No era lo que creías. Mira hasta dónde alcanzó a llegar.",
 };
 

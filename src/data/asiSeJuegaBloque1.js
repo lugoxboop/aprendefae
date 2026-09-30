@@ -44,7 +44,7 @@ const ASI_T1_8 = {
   pasos: [
     "Lee lo que pasó en la panadería.",
     "Toca el punto donde se rompió.",
-    "Elige cuántos puntos se van a apagar.",
+    "Elige cuántos se apagan: ese punto y los que siguen.",
   ],
   alt: "Cinco puntos en columna. Se toca «Queda un papel» y se elige 4. El corte queda ahí y se apagan «Queda un papel», «Se anota», «Sale un informe» y «Los jefes deciden».",
   demo: { items: [EJEMPLO_T1_8] },
