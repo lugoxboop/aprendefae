@@ -126,4 +126,6 @@ export const ROTULO_TRANSACCION = "LA TRANSACCIÓN";
 export const ROTULO_ESTANTE = "EL ESTANTE DE CUENTAS";
 export const COLECTOR = { debe: "TOTAL DEBE", haber: "TOTAL HABER" };
 export const TEXTO_CONFIRMAR = "Confirmar asiento";
+/* La línea fija junto al botón de confirmar, en la actividad real (Levi). */
+export const AVISO_UN_INTENTO = "Solo tienes un intento: revisa que los totales den igual antes de confirmar.";
 export const TEXTO_DIFERENCIA = "Diferencia";

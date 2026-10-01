@@ -290,15 +290,23 @@ test("★ los cuatro textos son distintos y todos marcan el error", () => {
   for (const t of [ERROR_A, ERROR_C, ERROR_D]) assert.ok(t.startsWith("❌"));
 });
 
-test("★ la cuenta sin nada que cancelar tiene su propia explicación", () => {
-  const sin = CUENTAS.find((c) => c.sinCancelar);
-  const con = CUENTAS.find((c) => !c.sinCancelar);
-  const a = evaluar(sin, sin.saldo, sin.lado, 0).textoCifra;
-  const b = evaluar(con, con.saldo, con.lado, 0).textoCifra;
-  assert.notEqual(a, b);
-  assert.ok(a.includes("nada que cancelar"));
-  assert.ok(a.includes(pesos(sin.saldo)), "no dice la cifra");
-  assert.ok(!/\{/.test(a) && !/\{/.test(b), "quedó un hueco sin llenar");
+test("★★ el acierto de la cifra es la resta de Levi, para todos los ítems, y el orden sigue al lado del saldo", () => {
+  for (const c of CUENTAS) {
+    const texto = evaluar(c, c.saldo, c.lado, 0).textoCifra;
+    const esperado = c.lado === DEBE
+      ? `✅ ${pesos(c.saldo)}. Suma del debe ${pesos(c.debito)} menos suma del haber ${pesos(c.credito)}.`
+      : `✅ ${pesos(c.saldo)}. Suma del haber ${pesos(c.credito)} menos suma del debe ${pesos(c.debito)}.`;
+    assert.equal(texto, esperado, c.id);
+  }
+  /* El banco tiene saldos de los dos lados: si no, la prueba no mira las dos frases. */
+  assert.ok(CUENTAS.some((c) => c.lado === DEBE) && CUENTAS.some((c) => c.lado === HABER));
+});
+
+test("★★ el acierto del lado: «[Debe/Haber]. El saldo va del lado que sumó más.»", () => {
+  for (const c of CUENTAS) {
+    const texto = evaluar(c, c.saldo, c.lado, 0).textoLado;
+    assert.equal(texto, `✅ ${c.lado === DEBE ? "Debe" : "Haber"}. El saldo va del lado que sumó más.`, c.id);
+  }
 });
 
 /* ═══════════════════ PUNTAJE Y PANEL ═══════════════════ */
@@ -443,4 +451,16 @@ test("★ el saldo que enseña la actividad es el mismo que calcula el capítulo
     assert.equal(c.saldo, s.saldo, `${c.id}`);
     assert.equal(c.lado, s.lado, `${c.id}`);
   }
+});
+
+test("★★ los dos totales resaltados se llaman «Suma del debe» y «Suma del haber»", () => {
+  const { caja, desmontar } = montarVista();
+  const c = avanzarHastaDosLados(caja);
+  responder(caja, c.saldo + 1, c.lado);
+  const totales = caja.querySelector("[data-totales]");
+  assert.ok(totales, "el modo D no enseñó los totales");
+  assert.ok(totales.textContent.includes("Suma del debe"));
+  assert.ok(totales.textContent.includes("Suma del haber"));
+  assert.doesNotMatch(totales.textContent, /d[ée]bito|cr[ée]dito/iu);
+  desmontar();
 });

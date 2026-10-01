@@ -68,15 +68,15 @@ export const ITEMS_RETIRADOS = {
  * Con huecos, porque las cifras son las de ESA cuenta. Escribir nueve
  * versiones a mano invitaría a que una llevara el número de otra.
  */
-export const ACIERTO_SALDO = "✅ {saldo}. Movimiento débito {debito} menos movimiento crédito {credito}.";
-export const ACIERTO_LADO = "✅ {Lado}. El marcador se sentó donde quedó algo en pie — el lado que pesó más.";
+/* Los de Levi. Si el saldo queda en el haber, la resta va en el orden inverso. */
+export const ACIERTO_SALDO = "✅ {saldo}. Suma del debe {debito} menos suma del haber {credito}.";
+export const ACIERTO_SALDO_HABER = "✅ {saldo}. Suma del haber {credito} menos suma del debe {debito}.";
+export const ACIERTO_LADO = "✅ {Lado}. El saldo va del lado que sumó más.";
 
 /*
- * Y el caso en que un lado está vacío, que es distinto: no hay resta que
- * hacer. En este banco pasa con Acciones, pero el texto no la nombra: vale
- * para cualquier cuenta que quede con un solo lado.
+ * El caso en que un lado está vacío (Acciones) ya no tiene acierto propio:
+ * Levi pidió la misma resta para todos los ítems («… menos suma del debe $0»).
  */
-export const ACIERTO_SIN_CANCELAR = "✅ {saldo} al {lado}. No hubo nada que cancelar, así que el saldo es el movimiento completo. Cuando un lado está vacío, el saldo es todo lo del otro.";
 
 /*
  * ═══════════ LOS CUATRO ERRORES ═══════════

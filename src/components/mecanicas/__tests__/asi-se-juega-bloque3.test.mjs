@@ -111,14 +111,14 @@ test("★★ las catorce actividades tienen «Así se juega»", () => {
 });
 
 test("★★ consignas: T1-6 cambia (la ficha no se toca) y las siete del Tema 2 son nuevas", () => {
-  assert.equal(T1_6.consigna, "Toca el informe donde va la ficha. Si es el primero, toca también en qué parte.");
+  assert.equal(T1_6.consigna, "Toca el informe donde va la ficha. Si es el de arriba, toca también en qué parte.");
   assert.deepEqual(CONSIGNA_TEMA2, {
     "cu-izquierda-o-derecha": "Lee si la cuenta sube o baja. Lleva la ficha al lado que corresponde.",
-    "cu-de-que-familia": "Arrastra cada cuenta a su sección del informe.",
-    "cu-cuadro-dinamicas": "Fila por fila, toca + o − para la casilla de débito.",
-    "cu-debita-o-acredita": "Lee la transacción. Lleva la ficha al lado de la cuenta que te preguntan.",
+    "cu-de-que-familia": "Arrastra cada cuenta a su familia.",
+    "cu-cuadro-dinamicas": "Fila por fila, toca + o − para la casilla del debe.",
+    "cu-debita-o-acredita": "Lee la transacción. Lleva la ficha al debe o al haber de la cuenta que te preguntan.",
     "cu-saldo-de-la-cuenta": "Escribe el saldo de la cuenta. Luego toca de qué lado va.",
-    "cu-arma-el-asiento": "Pon un nombre en cada cuenta. Luego pon cada valor en su lado.",
+    "cu-arma-el-asiento": "Ponle nombre a cada cuenta vacía. Luego pon cada valor en su lado.",
     "cu-asiento-compuesto": "Saca las cuentas que se mueven. Ponlas en su columna y escribe cada valor.",
   });
   for (const id of IDS) {
@@ -134,13 +134,13 @@ test("★★ consignas: T1-6 cambia (la ficha no se toca) y las siete del Tema 2
 test("★★ los pasos de Gen, palabra por palabra", () => {
   const pasos = Object.fromEntries(IDS.map((id) => [id, ASI_TODAS[id].pasos]));
   assert.deepEqual(pasos[T1_6.id], ["Lee la ficha de arriba.", "Toca el informe donde va esa ficha.", "Toca la parte y confirma con Colocar la ficha."]);
-  assert.deepEqual(pasos["cu-izquierda-o-derecha"], ["Lee si esa cuenta sube o baja.", "Arrastra la ficha al debe o al haber.", "Mira el ▲ que sale después de responder."]);
-  assert.deepEqual(pasos["cu-de-que-familia"], ["Lee el nombre de la cuenta.", "Pregúntate si lo tiene, lo debe, o es de los dueños.", "Arrastra la cuenta a esa sección."]);
-  assert.deepEqual(pasos["cu-cuadro-dinamicas"], ["Mira qué familia de cuentas dice la fila.", "Toca + o − y queda puesto en la casilla de débito.", "La casilla de crédito se llena sola, al revés."]);
-  assert.deepEqual(pasos["cu-debita-o-acredita"], ["Lee la transacción completa.", "Fíjate en cuál de las dos cuentas te preguntan.", "Arrastra la ficha al debe o al haber de esa cuenta."]);
-  assert.deepEqual(pasos["cu-saldo-de-la-cuenta"], ["Suma cada columna de la cuenta por separado.", "Escribe la diferencia entre las dos sumas.", "Toca el lado de la columna que sumó más."]);
+  assert.deepEqual(pasos["cu-izquierda-o-derecha"], ["Lee si esa cuenta sube o baja.", "Arrastra la ficha al debe o al haber.", "El ▲ marca el lado por donde esa cuenta crece."]);
+  assert.deepEqual(pasos["cu-de-que-familia"], ["Lee el nombre de la cuenta.", "Pregúntate: ¿la empresa la tiene, la debe o es de los dueños?", "Arrastra la cuenta a esa familia."]);
+  assert.deepEqual(pasos["cu-cuadro-dinamicas"], ["Piensa si esa familia crece por el debe o por el haber.", "Toca + o − y queda puesto en la casilla del debe.", "La casilla del haber se llena sola, con el signo contrario."]);
+  assert.deepEqual(pasos["cu-debita-o-acredita"], ["Lee la transacción completa.", "Mira por qué cuenta te preguntan.", "Arrastra la ficha: al debe es debitar, al haber es acreditar."]);
+  assert.deepEqual(pasos["cu-saldo-de-la-cuenta"], ["Suma cada columna de la cuenta por separado.", "Escribe el saldo: la diferencia entre las dos sumas.", "Toca el lado de la columna que sumó más."]);
   assert.deepEqual(pasos["cu-arma-el-asiento"], ["Lee la transacción y busca las dos cuentas.", "Toca un nombre y después la cuenta donde va.", "Toca el valor y después el lado de su cuenta."]);
-  assert.deepEqual(pasos["cu-asiento-compuesto"], ["Lee la transacción y cuenta cuántas cuentas se mueven.", "Saca cada cuenta al debe o al haber con los botones.", "Escribe cada valor y mira que la diferencia quede en cero."]);
+  assert.deepEqual(pasos["cu-asiento-compuesto"], ["Lee la transacción y cuenta cuántas cuentas se mueven.", "Saca cada cuenta al debe o al haber y escribe su valor.", "Revisa que los totales den igual: solo hay un intento."]);
 });
 
 /* ═══════════════════ LOS EJEMPLOS NO SON DEL BANCO, Y LAS CUENTAS EXISTEN ═══════════════════ */
@@ -206,7 +206,7 @@ const ACIERTO = {
   "cu-de-que-familia": "Activo. La maquinaria es algo que la panadería tiene.",
   "cu-cuadro-dinamicas": "Los activos crecen por el debe. Es la fila base: de aquí salen todas las demás.",
   "cu-debita-o-acredita": "Se acredita. La deuda con el proveedor nace, y los pasivos crecen por el haber.",
-  "cu-saldo-de-la-cuenta": "$700.000. Movimiento débito $1.000.000 menos movimiento crédito $300.000.",
+  "cu-saldo-de-la-cuenta": "$700.000. Suma del debe $1.000.000 menos suma del haber $300.000.",
   "cu-arma-el-asiento": "Asiento correcto",
   "cu-asiento-compuesto": "Tres cuentas, y lo que cuadra son los totales: $3.000.000 al debe contra $3.000.000 al haber. Un activo entra; se paga una parte y se debe el resto.",
 };
@@ -323,3 +323,88 @@ test("★★ T1-6: franjas de tiempo y término en #A8B6C8, y «Activo» en navy
     assert.equal(caja.querySelector('[data-seccion="activo"] [data-termino]').style.color, "rgb(29, 53, 87)");
   } finally { desmontar(); }
 });
+
+/* ═══════════════════ SIN «DÉBITO» NI «CRÉDITO» EN EL TEMA 2 (Levi) ═══════════════════ */
+
+/*
+ * Excepciones: el título «¿Se Debita o se Acredita?» y su paso 3 («al debe es
+ * debitar…») no llevan esas palabras, así que no hace falta saltarlos. Lo que
+ * sí se salta es «a crédito»: no es el lado del registro sino la forma de
+ * pago, y está en los enunciados y en los ejemplos de Levi («el resto a
+ * crédito»).
+ */
+const PALABRA_PROHIBIDA = /d[ée]bitos?|cr[ée]ditos?/iu;
+/* Los huecos «{debito}» de las plantillas se llenan con cifras: se prueban ya llenos, abajo. */
+const sinFormaDePago = (texto) => texto.replace(/\ba cr[ée]dito\b/giu, "").replace(/\{[^}]*\}/g, "");
+const prohibidaEn = (texto) => PALABRA_PROHIBIDA.test(sinFormaDePago(texto));
+
+/** Todo el texto que se ve o que se lee en voz alta en esa caja. */
+const textoVisible = (caja) => [
+  caja.textContent,
+  ...[...caja.querySelectorAll("[aria-label]")].map((x) => x.getAttribute("aria-label")),
+  ...[...caja.querySelectorAll("[title]")].map((x) => x.getAttribute("title")),
+].join("\n");
+
+/** Todas las cadenas de un módulo de datos, recorriendo objetos y listas. */
+const cadenasDe = (valor, vistas = new Set()) => {
+  /* Los ids («demo-horno-mitad-credito») no se ven: ni espacios ni tildes. */
+  if (typeof valor === "string") return /[\sÁÉÍÓÚáéíóú]/u.test(valor) ? [valor] : [];
+  if (!valor || typeof valor !== "object" || vistas.has(valor)) return [];
+  vistas.add(valor);
+  return Object.values(valor).flatMap((v) => cadenasDe(v, vistas));
+};
+
+test("★★★ ningún texto de los datos del Tema 2 dice «débito» ni «crédito»", async () => {
+  const modulos = {
+    consignas: await import("../../../data/contabilidadConsignas.js"),
+    cuadro: contabilidadCuadro,
+    debita: await import("../../../data/contabilidadDebitaOAcredita.js"),
+    saldo: await import("../../../data/contabilidadSaldo.js"),
+    arma: await import("../../../data/contabilidadArmaElAsiento.js"),
+    compuesto: await import("../../../data/contabilidadAsientoCompuesto.js"),
+    balance: await import("../../../data/contabilidadBalance.js"),
+  };
+  for (const [nombre, m] of Object.entries(modulos)) {
+    for (const texto of cadenasDe({ ...m })) {
+      assert.ok(!prohibidaEn(texto), `${nombre}: «${texto}»`);
+    }
+  }
+  /* Las siete «Así se juega»: título, consigna, pasos, alt y el acierto del ejemplo. */
+  for (const id of TEMA2) {
+    const a = ASI_TODAS[id];
+    for (const texto of [a.titulo, a.consigna, ...a.pasos, a.alt]) {
+      assert.ok(!prohibidaEn(texto), `${id}: «${texto}»`);
+    }
+  }
+  for (const texto of cadenasDe({ ...B3 })) assert.ok(!prohibidaEn(texto), `ejemplos: «${texto}»`);
+  /* Las devoluciones que arma El Saldo, para cada cuenta y cada respuesta posible. */
+  const { evaluar } = await import("../../../contabilidad/saldoDeLaCuenta.js");
+  for (const c of CUENTAS_SALDO) {
+    for (const cifra of [c.saldo, c.debito + c.credito, -c.saldo, c.saldo + 1]) {
+      for (const lado of ["debe", "haber"]) {
+        const r = evaluar(c, cifra, lado, 0);
+        assert.ok(!prohibidaEn(`${r.textoCifra} ${r.textoLado}`), `${c.id}: «${r.textoCifra} ${r.textoLado}»`);
+      }
+    }
+  }
+  /* Y el título de ¿Se Debita? y su paso 3 siguen siendo los de Levi. */
+  assert.equal(ASI_TODAS["cu-debita-o-acredita"].titulo, "¿Se Debita o se Acredita?");
+  assert.equal(ASI_TODAS["cu-debita-o-acredita"].pasos[2], "Arrastra la ficha: al debe es debitar, al haber es acreditar.");
+});
+
+for (const id of TEMA2) {
+  test(`★★★ ${id}: ni la actividad real ni su «Así se juega» dicen «débito» ni «crédito»`, async () => {
+    w.localStorage.clear();
+    const real = montar(React.createElement(JUEGOS[id].Mecanica, { onCompletar: () => {} }));
+    try {
+      const texto = textoVisible(real.caja);
+      assert.ok(!prohibidaEn(texto), `${id} (actividad): «${texto.match(PALABRA_PROHIBIDA)?.[0]}» en pantalla`);
+    } finally { real.desmontar(); }
+    const demo = montar(pantalla(id));
+    try {
+      await act(async () => { await new Promise((r) => setTimeout(r, 50)); });
+      const texto = textoVisible(demo.caja);
+      assert.ok(!prohibidaEn(texto), `${id} (demo): «${texto.match(PALABRA_PROHIBIDA)?.[0]}» en pantalla`);
+    } finally { demo.desmontar(); }
+  });
+}

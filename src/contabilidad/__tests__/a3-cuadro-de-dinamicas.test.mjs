@@ -40,7 +40,7 @@ const act = React.act ?? (await import("react-dom/test-utils")).act;
 const CuadroDeDinamicas = (await import("../../components/mecanicas/libros/CuadroDeDinamicas.jsx")).default;
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const {
-  FILAS, FILAS_AGRUPADAS, BLOQUES, MAS, MENOS, signoDe, evaluarCelda, puntuar, pesoDeCadaFila,
+  FILAS, FILAS_AGRUPADAS, FILAS_A_RESOLVER, FILA_BASE, BLOQUES, MAS, MENOS, signoDe, evaluarCelda, puntuar, pesoDeCadaFila,
 } = await import("../cuadroDinamicas.js");
 const {
   ACIERTO_POR_FAMILIA, ERRORES, PATRON_POR_FAMILIA, TEXTO_DE_AGRUPACION,
@@ -72,12 +72,12 @@ const CUADRO_DE_LA_FICHA = [
 ];
 const BLOQUES_DE_LA_FICHA = [[ACTIVO, GASTO, COSTO], [PASIVO, PATRIMONIO, INGRESO]];
 
-function montar() {
+function montar(extra = {}) {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
   act(() => raiz.render(React.createElement(CuadroDeDinamicas, {
-    Marco: MarcoLibros, rotulo: "PRUEBA", titulo: "Prueba", acento: FAE.ambar, onCompletar: () => {},
+    Marco: MarcoLibros, rotulo: "PRUEBA", titulo: "Prueba", acento: FAE.ambar, onCompletar: () => {}, ...extra,
   })));
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 }
@@ -216,9 +216,12 @@ test("★ el panel lee los ids nuevos y no pierde los doce del banco anterior", 
 
 /* ═══════════════════ EN PANTALLA ═══════════════════ */
 
+/* En la actividad, la fila de Activos viene puesta: se juegan las otras cinco. */
+const JUGABLES = FILAS_A_RESOLVER;
+
 test("★★ un error NO escribe el signo, ni en el débito ni en el espejo", () => {
   const { caja, desmontar } = montar();
-  const primera = FILAS[0];
+  const primera = JUGABLES[0];
   assert.equal(signoEn(caja, primera.tipo, DEBE), null);
 
   contestar(caja, primera, false);
@@ -231,7 +234,7 @@ test("★★ un error NO escribe el signo, ni en el débito ni en el espejo", ()
 
 test("★★ al acertar, el espejo se llena con el signo CONTRARIO", () => {
   const { caja, desmontar } = montar();
-  const primera = FILAS[0];
+  const primera = JUGABLES[0];
   contestar(caja, primera, true);
 
   const debe = signoEn(caja, primera.tipo, DEBE);
@@ -245,7 +248,7 @@ test("★★ al acertar, el espejo se llena con el signo CONTRARIO", () => {
 
 test("★★ el ▲ no está antes de responder, ni tras fallar, y luego señala una sola columna", () => {
   const { caja, desmontar } = montar();
-  const primera = FILAS[0];
+  const primera = JUGABLES[0];
   assert.deepEqual(triangulosDe(caja, primera.tipo), [], "el ▲ estaba puesto antes de responder");
 
   contestar(caja, primera, false);
@@ -258,7 +261,7 @@ test("★★ el ▲ no está antes de responder, ni tras fallar, y luego señala
 
 test("★ la casilla fallada queda marcada en coral y sigue vacía", () => {
   const { caja, desmontar } = montar();
-  const primera = FILAS[0];
+  const primera = JUGABLES[0];
   contestar(caja, primera, false);
 
   const c = celda(caja, primera.tipo, DEBE);
@@ -277,10 +280,11 @@ test("★ cada patrón de error enseña SU escena debajo del cuadro", () => {
     [ACTIVO, "ecuacion", ACTIVO],
   ];
   for (const [tipo, escena, resaltado] of casos) {
-    const { caja, desmontar } = montar();
+    /* La fila de Activos solo se juega en la demo: en la actividad ya viene puesta. */
+    const { caja, desmontar } = montar(tipo === FILA_BASE ? { modoDemo: true } : {});
     /* Se llega hasta esa fila acertando las anteriores. */
-    for (const f of FILAS) {
-      if (f.tipo === tipo) break;
+    for (const f of JUGABLES) {
+      if (f.tipo === tipo || tipo === FILA_BASE) break;
       contestar(caja, f, true);
       tocar(boton(caja, "Siguiente fila"));
     }
@@ -304,12 +308,12 @@ test("★ cada patrón de error enseña SU escena debajo del cuadro", () => {
 test("★ la flecha hacia abajo solo acompaña al patrón de gastos y costos", () => {
   const conFlecha = (tipo) => {
     const { caja, desmontar } = montar();
-    for (const f of FILAS) {
+    for (const f of JUGABLES) {
       if (f.tipo === tipo) break;
       contestar(caja, f, true);
       tocar(boton(caja, "Siguiente fila"));
     }
-    contestar(caja, FILAS.find((x) => x.tipo === tipo), false);
+    contestar(caja, JUGABLES.find((x) => x.tipo === tipo), false);
     const hay = Boolean(caja.querySelector('[data-flecha="abajo"]'));
     desmontar();
     return hay;
@@ -327,9 +331,9 @@ test("★★ al completar las seis, el cuadro se parte en los dos bloques", () =
    */
   assert.equal(Boolean(caja.querySelector("[data-agrupacion]")), false, "el cierre estaba escrito antes de tiempo");
 
-  for (let k = 0; k < FILAS.length; k += 1) {
-    contestar(caja, FILAS[k], true);
-    tocar(boton(caja, k + 1 === FILAS.length ? "Ver el cuadro completo" : "Siguiente fila"));
+  for (let k = 0; k < JUGABLES.length; k += 1) {
+    contestar(caja, JUGABLES[k], true);
+    tocar(boton(caja, k + 1 === JUGABLES.length ? "Ver el cuadro completo" : "Siguiente fila"));
   }
 
   assert.deepEqual(ordenEnPantalla(caja), BLOQUES_DE_LA_FICHA.flat(), "las filas no se reordenaron");
@@ -343,9 +347,9 @@ test("★ los dos bloques quedan separados por un hueco real, no solo por el tex
   const juntas = [...caja.querySelectorAll("[data-fila]")].map((f) => parseFloat(f.style.top)).sort((a, b) => a - b);
   const pasoNormal = juntas[1] - juntas[0];
 
-  for (let k = 0; k < FILAS.length; k += 1) {
-    contestar(caja, FILAS[k], true);
-    tocar(boton(caja, k + 1 === FILAS.length ? "Ver el cuadro completo" : "Siguiente fila"));
+  for (let k = 0; k < JUGABLES.length; k += 1) {
+    contestar(caja, JUGABLES[k], true);
+    tocar(boton(caja, k + 1 === JUGABLES.length ? "Ver el cuadro completo" : "Siguiente fila"));
   }
 
   const tops = [...caja.querySelectorAll("[data-fila]")].map((f) => parseFloat(f.style.top)).sort((a, b) => a - b);
@@ -359,7 +363,7 @@ test("★ los dos bloques quedan separados por un hueco real, no solo por el tex
 
 test("★ el reintento acierta y vale la mitad; el cuadro queda igual de completo", () => {
   const { caja, desmontar } = montar();
-  const primera = FILAS[0];
+  const primera = JUGABLES[0];
   contestar(caja, primera, false);
   assert.equal(signoEn(caja, primera.tipo, DEBE), null);
   contestar(caja, primera, true);
@@ -388,5 +392,74 @@ test("★ las dos fichas son botones de verdad, con su nombre dicho", () => {
     assert.equal(f.tagName, "BUTTON");
     assert.ok((f.getAttribute("aria-label") ?? "").length > 10, `la ficha ${s} no se anuncia`);
   }
+  desmontar();
+});
+
+/* ═══════════════════ LA FILA BASE (Levi) ═══════════════════ */
+
+test("★★★ la fila base de Activos viene puesta, marcada, y no se puede cambiar", () => {
+  const { caja, desmontar } = montar();
+  const base = FILAS.find((f) => f.tipo === FILA_BASE);
+  assert.equal(FILA_BASE, ACTIVO);
+  const fila = caja.querySelector(`[data-fila="${ACTIVO}"]`);
+  assert.equal(fila.getAttribute("data-fila-base"), "si");
+  assert.equal(fila.querySelector("[data-marca-fila-base]")?.textContent, "fila base");
+  assert.equal(signoEn(caja, ACTIVO, DEBE), base.debito);
+  assert.equal(signoEn(caja, ACTIVO, HABER), base.credito);
+  assert.equal(signoEn(caja, ACTIVO, DEBE), MAS);
+  assert.equal(signoEn(caja, ACTIVO, HABER), MENOS);
+  /* Sus casillas no son botones: no hay forma de tocarlas. */
+  assert.equal(caja.querySelectorAll(`[data-fila="${ACTIVO}"] button`).length, 0, "la fila base se puede tocar");
+  assert.equal(celda(caja, ACTIVO, DEBE).getAttribute("data-destino"), null);
+  /* Arranca en la segunda fila (Pasivos), y las fichas no cambian Activos. */
+  contestar(caja, JUGABLES[0], false);
+  assert.equal(signoEn(caja, ACTIVO, DEBE), MAS, "un toque cambió la fila base");
+  desmontar();
+});
+
+test("★★★ la fila base no cuenta en el puntaje: se puntúan las otras cinco", () => {
+  assert.equal(JUGABLES.length, 5);
+  assert.ok(!JUGABLES.some((f) => f.tipo === FILA_BASE));
+  let recibido = null;
+  const { caja, desmontar } = montar({ onCompletar: (pct, ms, detalle) => { recibido = { pct, detalle }; } });
+  /* Las cinco bien al primer intento: 100 %, no 5/6. */
+  for (let k = 0; k < JUGABLES.length; k += 1) {
+    contestar(caja, JUGABLES[k], true);
+    tocar(boton(caja, k + 1 === JUGABLES.length ? "Ver el cuadro completo" : "Siguiente fila"));
+  }
+  tocar(boton(caja, "Ver el resultado"));
+  assert.equal(recibido.pct, 100);
+  assert.equal(recibido.detalle.length, 5);
+  assert.ok(!recibido.detalle.some((d) => d.item === `cu3-fila-${FILA_BASE}`), "la fila base entró al detalle");
+  assert.ok(caja.textContent.includes("5 de 5 al primer intento"), "el cierre no cuenta sobre cinco");
+  desmontar();
+});
+
+test("★★ con un fallo en una de las cinco, cada fila pesa 20 %", () => {
+  let pct = null;
+  const { caja, desmontar } = montar({ onCompletar: (p) => { pct = p; } });
+  for (let k = 0; k < JUGABLES.length; k += 1) {
+    if (k === 0) contestar(caja, JUGABLES[k], false);
+    contestar(caja, JUGABLES[k], true);
+    tocar(boton(caja, k + 1 === JUGABLES.length ? "Ver el cuadro completo" : "Siguiente fila"));
+  }
+  tocar(boton(caja, "Ver el resultado"));
+  assert.equal(pct, (4 + 0.5) / 5 * 100);
+  desmontar();
+});
+
+test("★★ la demo de «Así se juega» sigue mostrando Activos: arranca vacía y sin marca de fila base", () => {
+  const { caja, desmontar } = montar({ modoDemo: true });
+  assert.equal(signoEn(caja, ACTIVO, DEBE), null);
+  assert.equal(caja.querySelector("[data-marca-fila-base]"), null);
+  contestar(caja, FILAS[0], true);
+  assert.equal(signoEn(caja, ACTIVO, DEBE), MAS);
+  desmontar();
+});
+
+test("★ las columnas dicen DEBE / HABER", () => {
+  const { caja, desmontar } = montar();
+  assert.equal(caja.querySelector(`[data-columna="${DEBE}"]`).textContent, "DEBE");
+  assert.equal(caja.querySelector(`[data-columna="${HABER}"]`).textContent, "HABER");
   desmontar();
 });

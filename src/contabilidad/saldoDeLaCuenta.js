@@ -2,7 +2,7 @@ import { DEBE, HABER, pesos, saldoDe, mayorizar, CALEJA, LAVADO_DE_AUTOS } from 
 import { CAJA_DEL_CAPITULO } from "../data/contabilidadActividades.js";
 import {
   ITEMS, ITEMS_RETIRADOS, POR_PARTIDA, EMPRESA_DEL_CASO,
-  ACIERTO_SALDO, ACIERTO_LADO, ACIERTO_SIN_CANCELAR,
+  ACIERTO_SALDO, ACIERTO_SALDO_HABER, ACIERTO_LADO,
   ERROR_A, ERROR_B, ERROR_B_CIFRA_BIEN, ERROR_C, ERROR_D,
 } from "../data/contabilidadSaldo.js";
 
@@ -120,7 +120,7 @@ const rellenar = (texto, cuenta) => texto
   .replace("{credito}", pesos(cuenta.credito))
   .replace("{Lado}", cuenta.lado === DEBE ? "Debe" : "Haber")
   .replace("{lado}", cuenta.lado === DEBE ? "debe" : "haber")
-  .replace("{movimiento}", cuenta.lado === DEBE ? "débito" : "crédito");
+  .replace("{movimiento}", cuenta.lado === DEBE ? "debe" : "haber");
 
 /*
  * Las dos devoluciones de una respuesta, y lo que hay que enseñar con ellas.
@@ -134,7 +134,8 @@ export function evaluar(cuenta, cifra, lado, intento = 0) {
   const modoLado = ladoOk ? null : MODO_B;
 
   const textoCifra = cifraOk
-    ? rellenar(cuenta.sinCancelar ? ACIERTO_SIN_CANCELAR : ACIERTO_SALDO, cuenta)
+    /* Para todos los ítems, también los de un lado vacío (Levi). */
+    ? rellenar(cuenta.lado === DEBE ? ACIERTO_SALDO : ACIERTO_SALDO_HABER, cuenta)
     : rellenar({ [MODO_A]: ERROR_A, [MODO_C]: ERROR_C, [MODO_D]: ERROR_D }[modoCifra], cuenta);
 
   const textoLado = ladoOk

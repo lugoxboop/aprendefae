@@ -48,7 +48,7 @@ export const NOMBRE_EN_EL_CUADRO = {
   [COSTO]: "Costos",
 };
 
-export const OBJETIVO = "Completa el cuadro que resume todo el capítulo: qué le hace un débito y qué le hace un crédito a cada tipo de cuenta.";
+export const OBJETIVO = "Completa el cuadro que resume todo el capítulo: qué le hace el debe y qué le hace el haber a cada tipo de cuenta.";
 
 export const SUBTEMA = "Reglas de registro por familia";
 
@@ -86,7 +86,7 @@ export const PATRON_POR_FAMILIA = {
 
 export const ERRORES = {
   A: {
-    texto: "❌ Aquí es donde casi todos se caen, y por una razón que tiene sentido: vender se siente como que algo entra. Y sí entra — pero lo que entra es la caja, y esa sí se debita. El ingreso que lo explica se acredita. Son dos cuentas distintas del mismo asiento.",
+    texto: "❌ Aquí es donde casi todos se caen, y por una razón que tiene sentido: vender se siente como que algo entra. Y sí entra — pero lo que entra es la caja, y esa va al debe. El ingreso que lo explica va al haber. Son dos cuentas distintas del mismo asiento.",
     escena: "contrapartida",
   },
   B: {
@@ -114,7 +114,7 @@ export const ERRORES = {
    * esa misma fila. La redacción es mía.
    */
   D: {
-    texto: "❌ Un débito en una cuenta de activo la aumenta: es la fila base del cuadro. El activo vive a la izquierda de la ecuación, y crece por el lado izquierdo de la cuenta.",
+    texto: "❌ Un registro en el debe de una cuenta de activo la aumenta: es la fila base del cuadro. El activo vive a la izquierda de la ecuación, y crece por el lado izquierdo de la cuenta.",
     escena: "ecuacion",
     resaltar: ACTIVO,
   },
@@ -137,4 +137,7 @@ export const TEXTO_DE_AGRUPACION = "Mira lo que acabas de armar: no son seis reg
  * débito», pendiente de revisión) la reemplazó la consigna de Gen, que vive
  * en `contabilidadConsignas.js`.
  */
-export const COLUMNAS = { debe: "DÉBITO", haber: "CRÉDITO" };
+export const COLUMNAS = { debe: "DEBE", haber: "HABER" };
+
+/* La marca de la fila de Activos en la actividad real (Levi). */
+export const MARCA_FILA_BASE = "fila base";
