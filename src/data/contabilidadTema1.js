@@ -440,7 +440,7 @@ export const T1_6 = {
   porPartida: 10,
   objetivo: "Decide en cuál de los dos informes va cada cosa.",
   /* La ficha no se toca: solo se lee. La consigna anterior decía lo contrario (Gen, bloques 3-5). */
-  consigna: "Toca el informe donde va la ficha. Si es el primero, toca también en qué parte.",
+  consigna: "Toca el informe donde va la ficha. Si es el de arriba, toca también en qué parte.",
 };
 
 export const PRIMERO = "primero";

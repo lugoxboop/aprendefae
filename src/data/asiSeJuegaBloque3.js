@@ -85,7 +85,7 @@ const ASI_IZQUIERDA = {
   pasos: [
     "Lee si esa cuenta sube o baja.",
     "Arrastra la ficha al debe o al haber.",
-    "Mira el ▲ que sale después de responder.",
+    "El ▲ marca el lado por donde esa cuenta crece.",
   ],
   alt: "la ficha de $1.000 se lleva a la columna «← DEBE» de Muebles y enseres. Después sale el ▲ sobre el debe.",
   demo: { items: [EJEMPLO_IZQUIERDA] },
@@ -116,8 +116,8 @@ const ASI_FAMILIA = {
   consigna: CONSIGNA_TEMA2["cu-de-que-familia"],
   pasos: [
     "Lee el nombre de la cuenta.",
-    "Pregúntate si lo tiene, lo debe, o es de los dueños.",
-    "Arrastra la cuenta a esa sección.",
+    "Pregúntate: ¿la empresa la tiene, la debe o es de los dueños?",
+    "Arrastra la cuenta a esa familia.",
   ],
   alt: "la ficha «Maquinaria · $3.000.000» se arrastra a la sección «ACTIVO» del estado de situación financiera de la panadería.",
   demo: { items: [EJEMPLO_FAMILIA], empresa: "Panadería" },
@@ -143,11 +143,11 @@ const ASI_CUADRO = {
   titulo: nombreDe("cu-cuadro-dinamicas"),
   consigna: CONSIGNA_TEMA2["cu-cuadro-dinamicas"],
   pasos: [
-    "Mira qué familia de cuentas dice la fila.",
-    "Toca + o − y queda puesto en la casilla de débito.",
-    "La casilla de crédito se llena sola, al revés.",
+    "Piensa si esa familia crece por el debe o por el haber.",
+    "Toca + o − y queda puesto en la casilla del debe.",
+    "La casilla del haber se llena sola, con el signo contrario.",
   ],
-  alt: "en la fila «Activos» se pone «+» en la casilla de DÉBITO, y la de CRÉDITO se llena sola con «−».",
+  alt: "en la fila «Activos» se pone «+» en la casilla del DEBE, y la del HABER se llena sola con «−».",
   demo: {},
   guion: {
     duracion: 8000,
@@ -181,8 +181,8 @@ const ASI_DEBITA = {
   consigna: CONSIGNA_TEMA2["cu-debita-o-acredita"],
   pasos: [
     "Lee la transacción completa.",
-    "Fíjate en cuál de las dos cuentas te preguntan.",
-    "Arrastra la ficha al debe o al haber de esa cuenta.",
+    "Mira por qué cuenta te preguntan.",
+    "Arrastra la ficha: al debe es debitar, al haber es acreditar.",
   ],
   alt: "la ficha de $500.000 se lleva a la columna «HABER» de Cuentas por pagar. Después sale la cuenta Inventario con su ficha en el «DEBE» y un arco entre las dos.",
   demo: { items: [EJEMPLO_DEBITA] },
@@ -212,7 +212,7 @@ const ASI_SALDO = {
   consigna: CONSIGNA_TEMA2["cu-saldo-de-la-cuenta"],
   pasos: [
     "Suma cada columna de la cuenta por separado.",
-    "Escribe la diferencia entre las dos sumas.",
+    "Escribe el saldo: la diferencia entre las dos sumas.",
     "Toca el lado de la columna que sumó más.",
   ],
   alt: "en la cuenta Caja de la panadería se escribe «$700.000» y se toca «Debe». Queda el saldo del lado del debe.",
@@ -232,10 +232,10 @@ const ASI_SALDO = {
 
 export const EJEMPLO_ASIENTO_SIMPLE = {
   a: montarAsientoSimple({
-    id: "demo-horno-de-contado",
-    texto: "La panadería compró un horno de $3.000.000 y lo pagó de contado.",
+    id: "demo-horno-en-efectivo",
+    texto: "La panadería compró un horno de $3.000.000 y lo pagó en efectivo.",
     asiento: { debe: [["Maquinaria", 3000000]], haber: [["Caja", 3000000]] },
-    anclajes: { "Maquinaria": "un horno", "Caja": "de contado" },
+    anclajes: { "Maquinaria": "un horno", "Caja": "en efectivo" },
   }),
   /* Los seis nombres de Gen, en su orden. */
   banco: ["Maquinaria", "Caja", "Bancos", "Cuentas por pagar", "Aportes sociales", "Muebles y enseres"],
@@ -250,7 +250,7 @@ const ASI_ASIENTO_SIMPLE = {
     "Toca un nombre y después la cuenta donde va.",
     "Toca el valor y después el lado de su cuenta.",
   ],
-  alt: "se ponen «Maquinaria» y «Caja» en las dos cuentas, el valor al «DEBE» de Maquinaria y el otro al «HABER» de Caja. Al confirmar se traza el arco.",
+  alt: "se toca «Maquinaria» y después la primera cuenta, y «Caja» y después la segunda. Se toca cada valor y después su lado: el «DEBE» de Maquinaria y el «HABER» de Caja. Al confirmar se traza el arco.",
   demo: { items: [EJEMPLO_ASIENTO_SIMPLE] },
   guion: {
     duracion: 9000,
@@ -273,9 +273,9 @@ const ASI_ASIENTO_SIMPLE = {
 
 const ASIENTO_COMPUESTO = montarAsientoCompuesto({
   id: "demo-horno-mitad-credito",
-  texto: "La panadería compró un horno de $3.000.000. Pagó $1.000.000 de contado y el resto a crédito.",
+  texto: "La panadería compró un horno de $3.000.000. Pagó $1.000.000 en efectivo y el resto a crédito.",
   asiento: { debe: [["Maquinaria", 3000000]], haber: [["Caja", 1000000], ["Cuentas por pagar", 2000000]] },
-  anclajes: { "Maquinaria": "un horno", "Caja": "de contado", "Cuentas por pagar": "a crédito" },
+  anclajes: { "Maquinaria": "un horno", "Caja": "en efectivo", "Cuentas por pagar": "a crédito" },
   acierto: "✅ Tres cuentas, y lo que cuadra son los totales: $3.000.000 al debe contra $3.000.000 al haber. Un activo entra; se paga una parte y se debe el resto.",
 });
 
@@ -291,8 +291,8 @@ const ASI_ASIENTO_COMPUESTO = {
   consigna: CONSIGNA_TEMA2["cu-asiento-compuesto"],
   pasos: [
     "Lee la transacción y cuenta cuántas cuentas se mueven.",
-    "Saca cada cuenta al debe o al haber con los botones.",
-    "Escribe cada valor y mira que la diferencia quede en cero.",
+    "Saca cada cuenta al debe o al haber y escribe su valor.",
+    "Revisa que los totales den igual: solo hay un intento.",
   ],
   alt: "se sacan «Maquinaria» al debe con $3.000.000, y «Caja» con $1.000.000 y «Cuentas por pagar» con $2.000.000 al haber. La diferencia llega a cero.",
   demo: { items: [EJEMPLO_ASIENTO_COMPUESTO] },

@@ -4,7 +4,7 @@ import { FAE } from "../../../theme.js";
 import { DEBE, HABER, COLOR_LADO, pesos } from "../../../data/contabilidad.js";
 import {
   OBJETIVO, ROTULO_TRANSACCION, ROTULO_ESTANTE, COLECTOR,
-  TEXTO_CONFIRMAR, TEXTO_DIFERENCIA, SUBTEMA,
+  TEXTO_CONFIRMAR, TEXTO_DIFERENCIA, SUBTEMA, AVISO_UN_INTENTO,
 } from "../../../data/contabilidadAsientoCompuesto.js";
 import {
   ASIENTOS, POR_PARTIDA, sortearEstratificado, estanteDe, evaluar,
@@ -427,7 +427,20 @@ export default function ElAsientoCompuestoNuevo({
       {r && <Retro texto={r.texto} />}
 
       {!r
-        ? <Responder onClick={confirmar} deshabilitado={!listo}>{TEXTO_CONFIRMAR}</Responder>
+        ? (
+          <>
+            <Responder onClick={confirmar} deshabilitado={!listo}>{TEXTO_CONFIRMAR}</Responder>
+            {/* Fija mientras se puede confirmar: hay un solo intento. La demo no la lleva. */}
+            {!modoDemo && (
+              <p data-un-intento style={{
+                margin: "9px 0 0", fontSize: "12px", lineHeight: 1.45,
+                color: "rgba(248,249,250,0.6)", textAlign: "center",
+              }}>
+                {AVISO_UN_INTENTO}
+              </p>
+            )}
+          </>
+        )
         : !modoDemo && (
           <div ref={zonaBoton}>
             <Responder onClick={avanzar}>

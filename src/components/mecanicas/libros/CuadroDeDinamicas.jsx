@@ -3,10 +3,10 @@ import { FAE } from "../../../theme.js";
 import { DEBE, HABER, COLOR_LADO, NOMBRE_TIPO } from "../../../data/contabilidad.js";
 import {
   COLUMNAS, OBJETIVO, TEXTO_DE_AGRUPACION,
-  CONTRAPARTIDA_DEL_INGRESO, MS_CONTRAPARTIDA,
+  CONTRAPARTIDA_DEL_INGRESO, MS_CONTRAPARTIDA, MARCA_FILA_BASE,
 } from "../../../data/contabilidadCuadro.js";
 import {
-  FILAS, FILAS_AGRUPADAS, BLOQUES, SIGNOS, MAS,
+  FILAS, FILAS_AGRUPADAS, FILAS_A_RESOLVER, FILA_BASE, BLOQUES, SIGNOS, MAS,
   evaluarCelda, puntuar, pesoDeCadaFila,
 } from "../../../contabilidad/cuadroDinamicas.js";
 import { Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
@@ -26,7 +26,7 @@ import { TONO_ROTULO } from "./debeHaber/piezasDebeHaber.jsx";
  * A3 · EL CUADRO DE DINÁMICAS.
  *
  * El cuadro resumen del capítulo, vacío, y el estudiante lo llena. Coloca UNA
- * celda por fila —la del débito— y la del crédito se llena sola con el signo
+ * celda por fila —la del debe— y la del haber se llena sola con el signo
  * contrario: ese reflejo es la lección de la mecánica, porque enseña que las
  * dos columnas no son dos reglas sino una leída de los dos lados.
  *
@@ -178,7 +178,7 @@ function AsientoDelIngreso() {
         <circle cx="75" cy="0" r="1.2" fill={COLOR_LADO[DEBE]} vectorEffect="non-scaling-stroke" />
       </svg>
       <p style={SOLO_LECTOR}>
-        Un mismo asiento: {c.debe} se debita y {c.haber} se acredita.
+        Un mismo asiento: {c.debe} va al debe y {c.haber} va al haber.
       </p>
     </div>
   );
@@ -234,7 +234,7 @@ function Celda({
       data-destino={destino ? lado : undefined}
       onClick={onClick}
       className={rebotando ? "fae-a3-rebota" : undefined}
-      aria-label={`Casilla de ${lado === DEBE ? COLUMNAS.debe.toLowerCase() : COLUMNAS.haber.toLowerCase()}`}
+      aria-label={`Casilla del ${lado === DEBE ? COLUMNAS.debe.toLowerCase() : COLUMNAS.haber.toLowerCase()}`}
       style={{ ...base, cursor: "pointer" }}
     >
       {cuerpo}
@@ -257,10 +257,20 @@ export default function CuadroDeDinamicas({
   Marco, rotulo, titulo, acento, onCompletar, modoDemo = false, onComoSeJuega = null,
 }) {
   const reducido = useMovimientoReducido();
-  const t = useTanda(() => FILAS);
+  /*
+   * En la actividad la fila de Activos ya viene puesta y no se juega: el
+   * estudiante resuelve las otras cinco y el puntaje sale de esas cinco. La
+   * demo, que no puntúa, sí la resuelve.
+   */
+  const t = useTanda(() => (modoDemo ? FILAS : FILAS_A_RESOLVER));
+  const puestasIniciales = () => {
+    if (modoDemo) return {};
+    const base = FILAS.find((f) => f.tipo === FILA_BASE);
+    return { [base.tipo]: base.debito };
+  };
 
-  /* Lo colocado, por familia. Solo el acierto escribe aquí. */
-  const [puestas, setPuestas] = useState({});
+  /* Lo colocado, por familia. Solo el acierto escribe aquí (y la fila base). */
+  const [puestas, setPuestas] = useState(puestasIniciales);
   const [retro, setRetro] = useState(null);
   const [intento, setIntento] = useState(0);
   const [respuestas, setRespuestas] = useState([]);
@@ -366,7 +376,7 @@ export default function CuadroDeDinamicas({
   };
 
   const reiniciar = () => {
-    t.reiniciar(); setRetro(null); setIntento(0); setPuestas({}); setRespuestas([]);
+    t.reiniciar(); setRetro(null); setIntento(0); setPuestas(puestasIniciales()); setRespuestas([]);
     setRebotando(false); setAgrupado(false); setEscenaViva(true); arrastre.limpiar();
   };
 
@@ -401,12 +411,14 @@ export default function CuadroDeDinamicas({
           const puesto = puestas[f.tipo] ?? null;
           const resuelta = puesto !== null;
           const activa = !cerrado && !agrupado && f.tipo === fila?.tipo;
+          const esBase = !modoDemo && f.tipo === FILA_BASE;
           /* Al agrupar, el segundo bloque baja: ese hueco ES la lección. */
           const arriba = k * PASO + (agrupado && k >= BLOQUES[0].filas.length ? SEPARACION : 0);
           return (
             <div
               key={f.tipo}
               data-fila={f.tipo}
+              data-fila-base={esBase ? "si" : undefined}
               style={{
                 position: "absolute", left: 0, right: 0, top: `${arriba}px`, height: `${PASO - 4}px`,
                 display: "flex", alignItems: "center", gap: "8px",
@@ -420,6 +432,13 @@ export default function CuadroDeDinamicas({
                 overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
               }}>
                 {f.nombre}
+                {esBase && (
+                  <span data-marca-fila-base style={{
+                    marginLeft: "7px", fontSize: "10.5px", fontWeight: 600, color: TEXTO_ATENUADO,
+                  }}>
+                    {MARCA_FILA_BASE}
+                  </span>
+                )}
               </span>
               <Celda
                 lado={DEBE}
@@ -538,7 +557,7 @@ export default function CuadroDeDinamicas({
                       tomada={arrastre.tomada === s}
                       onClick={() => tocarFicha(s)}
                       gestos={gestosDeFicha(s)}
-                      etiqueta={`Colocar ${s === MAS ? "más" : "menos"} en la casilla de ${COLUMNAS.debe.toLowerCase()} de ${fila.nombre}. Las flechas izquierda y derecha cambian de ficha.`}
+                      etiqueta={`Colocar ${s === MAS ? "más" : "menos"} en la casilla del ${COLUMNAS.debe.toLowerCase()} de ${fila.nombre}. Las flechas izquierda y derecha cambian de ficha.`}
                     />
                   </div>
                 ))}

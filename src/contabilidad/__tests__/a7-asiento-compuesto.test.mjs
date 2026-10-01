@@ -474,3 +474,30 @@ test("★ se juegan tres asientos y ninguno se repite", () => {
   assert.ok(vistos.some((id) => CON_FUSION_POSIBLE.includes(id)), "la tanda no trajo ninguno con fusión posible");
   desmontar();
 });
+
+/* ═══════════════════ UN SOLO INTENTO (Levi) ═══════════════════ */
+
+test("★★★ junto al botón de confirmar hay una línea fija: solo hay un intento", async () => {
+  const { AVISO_UN_INTENTO, TEXTO_CONFIRMAR } = await import("../../data/contabilidadAsientoCompuesto.js");
+  assert.equal(AVISO_UN_INTENTO, "Solo tienes un intento: revisa que los totales den igual antes de confirmar.");
+  const { caja, desmontar } = montarVista();
+  const linea = caja.querySelector("[data-un-intento]");
+  assert.ok(linea, "falta la línea de un solo intento");
+  assert.equal(linea.textContent, AVISO_UN_INTENTO);
+  /* Pegada al botón: es lo que viene justo después de él. */
+  const confirmar = [...caja.querySelectorAll("button")].find((b) => b.textContent.trim() === TEXTO_CONFIRMAR);
+  assert.ok(confirmar, "no está el botón de confirmar");
+  const siguiente = (el) => {
+    let n = el;
+    while (n && !n.nextElementSibling) n = n.parentElement;
+    return n?.nextElementSibling ?? null;
+  };
+  assert.equal(siguiente(confirmar), linea, "la línea no está junto al botón de confirmar");
+  /* En el gris secundario. */
+  assert.match(linea.style.color, /rgba\(248,\s*249,\s*250,\s*0\.6\)/);
+  /* Fija: sigue ahí después de sacar una cuenta. */
+  const a = asientoEnPantalla(caja);
+  sacar(caja, a.cuentas[0].cuenta, a.cuentas[0].lado);
+  assert.equal(caja.querySelector("[data-un-intento]")?.textContent, AVISO_UN_INTENTO, "la línea se fue al empezar a jugar");
+  desmontar();
+});

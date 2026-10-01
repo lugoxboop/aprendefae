@@ -86,7 +86,7 @@ function TotalesResaltados({ cuenta, operacion }) {
       background: "rgba(10,20,34,0.4)", border: "1px solid rgba(248,249,250,0.12)",
     }}>
       <div style={{ display: "flex", justifyContent: "center", gap: "10px", flexWrap: "wrap" }}>
-        {[["Movimiento débito", cuenta.debito, DEBE], ["Movimiento crédito", cuenta.credito, HABER]].map(([nombre, valor, lado]) => (
+        {[["Suma del debe", cuenta.debito, DEBE], ["Suma del haber", cuenta.credito, HABER]].map(([nombre, valor, lado]) => (
           <span key={lado} style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <span style={{ fontSize: "11px", color: "rgba(248,249,250,0.6)" }}>{nombre}</span>
             <span data-total-resaltado={lado} style={CHIP}>{pesos(valor)}</span>

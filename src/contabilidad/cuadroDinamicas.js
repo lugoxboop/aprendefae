@@ -38,6 +38,19 @@ export const FILAS = ORDEN_DEL_LIBRO.map((tipo) => ({
 }));
 
 /*
+ * ═══════════ LA FILA BASE ═══════════
+ *
+ * En la actividad, la fila de Activos ya viene resuelta (+ en el debe, − en
+ * el haber) y no se puede cambiar: es la regla de la que salen las otras
+ * cinco. El estudiante resuelve esas cinco y el puntaje se calcula sobre
+ * ellas. La demo de «Así se juega» sí resuelve la de Activos. Pedido de Levi.
+ */
+export const FILA_BASE = ORDEN_DEL_LIBRO[0];
+
+/** Las filas que el estudiante resuelve: todas menos la base. */
+export const FILAS_A_RESOLVER = FILAS.filter((f) => f.tipo !== FILA_BASE);
+
+/*
  * ═══════════ LA LECCIÓN, QUE ES UN filter ═══════════
  *
  * Los dos bloques del final no son una lista escrita a mano: son las filas
