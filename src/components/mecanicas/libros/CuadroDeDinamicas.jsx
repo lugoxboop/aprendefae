@@ -12,6 +12,7 @@ import {
 import { Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { Responder, useTanda } from "./piezas.jsx";
+import { TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
 import { Encabezado } from "./tema1/encabezado.jsx";
 import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import {
@@ -208,7 +209,7 @@ function Celda({
         className={signo ? (espejo ? "fae-a3-espejo" : "fae-a3-asienta") : undefined}
         style={{
           display: "block", fontFamily: SORA, fontSize: "17px", fontWeight: 700,
-          lineHeight: "20px", color: signo ? TONO_ROTULO[lado] : "rgba(248,249,250,0.2)",
+          lineHeight: "20px", color: signo ? TONO_ROTULO[lado] : TEXTO_ATENUADO,
         }}
       >
         {signo ?? "·"}

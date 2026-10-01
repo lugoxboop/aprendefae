@@ -9,6 +9,7 @@ import {
 import { Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { Responder, useTanda } from "./piezas.jsx";
+import { TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
 import { Encabezado } from "./tema1/encabezado.jsx";
 import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import {
@@ -333,7 +334,7 @@ export default function ArmaElBalance({
             </span>
 
             {renglones.length === 0
-              ? <span style={{ display: "block", fontSize: "11px", color: "rgba(248,249,250,0.28)" }}>— en blanco —</span>
+              ? <span data-vacia style={{ display: "block", fontSize: "11px", color: TEXTO_ATENUADO }}>— en blanco —</span>
               : renglones.map((c) => (
                 <span
                   key={c.id}

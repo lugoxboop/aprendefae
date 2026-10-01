@@ -49,7 +49,7 @@ const ASI_T1_6 = {
   titulo: T1_6.nombre,
   consigna: T1_6.consigna,
   pasos: [
-    "Lee la ficha que está en la mano.",
+    "Lee la ficha de arriba.",
     "Toca el informe donde va esa ficha.",
     "Toca la parte y confirma con Colocar la ficha.",
   ],
@@ -102,11 +102,12 @@ const ASI_IZQUIERDA = {
 /* ═══════════════════ TEMA 2 · 2 — ¿DE QUÉ FAMILIA ES? ═══════════════════ */
 
 export const EJEMPLO_FAMILIA = {
-  id: "demo-horno-familia",
-  cuenta: "Horno",
+  id: "demo-maquinaria-familia",
+  /* El nombre exacto del catálogo (Levi). */
+  cuenta: "Maquinaria",
   valor: 3000000,
   seccion: ACTIVO,
-  acierto: "✅ Activo. El horno es algo que la panadería tiene.",
+  acierto: "✅ Activo. La maquinaria es algo que la panadería tiene.",
 };
 
 const ASI_FAMILIA = {
@@ -118,7 +119,7 @@ const ASI_FAMILIA = {
     "Pregúntate si lo tiene, lo debe, o es de los dueños.",
     "Arrastra la cuenta a esa sección.",
   ],
-  alt: "la ficha «Horno · $3.000.000» se arrastra a la sección «ACTIVO» del estado de situación financiera de la panadería.",
+  alt: "la ficha «Maquinaria · $3.000.000» se arrastra a la sección «ACTIVO» del estado de situación financiera de la panadería.",
   demo: { items: [EJEMPLO_FAMILIA], empresa: "Panadería" },
   guion: {
     duracion: 7000,
@@ -143,7 +144,7 @@ const ASI_CUADRO = {
   consigna: CONSIGNA_TEMA2["cu-cuadro-dinamicas"],
   pasos: [
     "Mira qué familia de cuentas dice la fila.",
-    "Toca más o menos y ponlo en la casilla de débito.",
+    "Toca + o − y queda puesto en la casilla de débito.",
     "La casilla de crédito se llena sola, al revés.",
   ],
   alt: "en la fila «Activos» se pone «+» en la casilla de DÉBITO, y la de CRÉDITO se llena sola con «−».",
@@ -164,12 +165,14 @@ const ASI_CUADRO = {
 /* Pregunta por la contrapartida del ítem del banco (Inventario): la confusión más común. */
 export const EJEMPLO_DEBITA = montarDebita({
   id: "demo-harina-cuentas-por-pagar",
-  enunciado: "La panadería compra harina a crédito.",
+  enunciado: "La panadería compra harina a crédito por $500.000.",
   cuenta: "Cuentas por pagar",
   sube: true,
   contrapartida: "Inventario",
   acierto: "✅ Se acredita. La deuda con el proveedor nace, y los pasivos crecen por el haber.",
   patron: PATRON_A,
+  /* La ficha vale lo que dice el enunciado. */
+  valorFicha: 500000,
 });
 
 const ASI_DEBITA = {
@@ -181,12 +184,12 @@ const ASI_DEBITA = {
     "Fíjate en cuál de las dos cuentas te preguntan.",
     "Arrastra la ficha al debe o al haber de esa cuenta.",
   ],
-  alt: "la ficha de $500 se lleva a la columna «HABER» de Cuentas por pagar. Después sale la cuenta Inventario con su ficha en el «DEBE» y un arco entre las dos.",
+  alt: "la ficha de $500.000 se lleva a la columna «HABER» de Cuentas por pagar. Después sale la cuenta Inventario con su ficha en el «DEBE» y un arco entre las dos.",
   demo: { items: [EJEMPLO_DEBITA] },
   guion: {
     duracion: 8000,
     toques: [
-      { ms: 2000, en: '[data-ficha="500"]' },
+      { ms: 2000, en: `[data-ficha="${EJEMPLO_DEBITA.valorFicha}"]` },
       { ms: 4000, en: `[data-destino="${HABER}"]` },
     ],
   },
@@ -273,7 +276,7 @@ const ASIENTO_COMPUESTO = montarAsientoCompuesto({
   texto: "La panadería compró un horno de $3.000.000. Pagó $1.000.000 de contado y el resto a crédito.",
   asiento: { debe: [["Maquinaria", 3000000]], haber: [["Caja", 1000000], ["Cuentas por pagar", 2000000]] },
   anclajes: { "Maquinaria": "un horno", "Caja": "de contado", "Cuentas por pagar": "a crédito" },
-  acierto: "✅ Tres cuentas, y lo que cuadra son los totales: $3.000.000 al debe contra $3.000.000 al haber. Un activo entra y dos cosas lo pagan.",
+  acierto: "✅ Tres cuentas, y lo que cuadra son los totales: $3.000.000 al debe contra $3.000.000 al haber. Un activo entra; se paga una parte y se debe el resto.",
 });
 
 export const EJEMPLO_ASIENTO_COMPUESTO = {

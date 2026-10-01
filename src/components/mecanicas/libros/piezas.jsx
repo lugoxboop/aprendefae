@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../theme.js";
 import { DEBE, HABER, COLOR_LADO, pesos } from "../../../data/contabilidad.js";
+import { TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -289,10 +290,11 @@ export function ElegirLado({ elegido, correcto = null, onElegir, deshabilitado =
  * aparece de golpe mueve el resto de la pantalla mientras se escribe.
  */
 /*
- * `colorApagado` cambia solo el color del texto mientras está apagado. Por
- * defecto es el de siempre; T1-4 pasa el texto atenuado del Tema 1.
+ * Apagado, el texto va en #A8B6C8 sólido (el texto atenuado de Contabilidad);
+ * lo tenue lo pone el fondo. Antes iba al 35 % y medía 2,6:1. `colorApagado`
+ * queda para quien necesite otro.
  */
-export function Responder({ children, onClick, deshabilitado = false, colorApagado = "rgba(248,249,250,0.35)" }) {
+export function Responder({ children, onClick, deshabilitado = false, colorApagado = TEXTO_ATENUADO }) {
   return (
     <button
       type="button"

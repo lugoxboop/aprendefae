@@ -15,7 +15,7 @@ export const CONSIGNA_TEMA2 = {
   "cu-izquierda-o-derecha": "Lee si la cuenta sube o baja. Lleva la ficha al lado que corresponde.",
   "cu-de-que-familia": "Arrastra cada cuenta a su sección del informe.",
   /* Reemplaza a la línea «Coloca el signo en la casilla de débito», que estaba pendiente de revisión. */
-  "cu-cuadro-dinamicas": "Toca el signo y ponlo en la casilla de débito de cada fila.",
+  "cu-cuadro-dinamicas": "Fila por fila, toca + o − para la casilla de débito.",
   "cu-debita-o-acredita": "Lee la transacción. Lleva la ficha al lado de la cuenta que te preguntan.",
   "cu-saldo-de-la-cuenta": "Escribe el saldo de la cuenta. Luego toca de qué lado va.",
   "cu-arma-el-asiento": "Pon un nombre en cada cuenta. Luego pon cada valor en su lado.",

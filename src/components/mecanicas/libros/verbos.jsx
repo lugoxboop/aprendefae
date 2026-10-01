@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FAE } from "../../../theme.js";
 import { DEBE, HABER, COLOR_LADO, pesos } from "../../../data/contabilidad.js";
+import { TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
 import { cancelacion, alturaDe, referenciaDe, ALTO_COLUMNA } from "../../../contabilidad/cancelacion.js";
 import { gradosDe } from "../../../contabilidad/balanza.js";
 
@@ -311,7 +312,8 @@ export function Ficha({
         />
       )}
       {conTexto && (
-        <span style={{ position: "relative", opacity: comida >= 1 ? 0.28 : 1, lineHeight: 1.3 }}>{texto ?? pesos(valor)}</span>
+        /* Cancelada entera, la cifra se lee en #A8B6C8 sobre lo comido; nunca con opacidad. */
+        <span data-cifra-ficha style={{ position: "relative", color: comida >= 1 ? TEXTO_ATENUADO : undefined, lineHeight: 1.3 }}>{texto ?? pesos(valor)}</span>
       )}
     </Elemento>
   );
@@ -431,7 +433,7 @@ export function CuentaDeValor({
         </span>
         <span style={{ flex: 1 }} />
         {fichas.length === 0
-          ? <span style={{ ...CIFRA, fontSize: "12px", color: "rgba(248,249,250,0.3)", textAlign: "center" }}>—</span>
+          ? <span data-vacia style={{ ...CIFRA, fontSize: "12px", color: TEXTO_ATENUADO, textAlign: "center" }}>—</span>
           : fichas.map((f, k) => (
             <Ficha
               key={`${lado}-${k}`}

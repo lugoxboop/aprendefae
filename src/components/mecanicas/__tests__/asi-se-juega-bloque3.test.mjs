@@ -115,7 +115,7 @@ test("★★ consignas: T1-6 cambia (la ficha no se toca) y las siete del Tema 2
   assert.deepEqual(CONSIGNA_TEMA2, {
     "cu-izquierda-o-derecha": "Lee si la cuenta sube o baja. Lleva la ficha al lado que corresponde.",
     "cu-de-que-familia": "Arrastra cada cuenta a su sección del informe.",
-    "cu-cuadro-dinamicas": "Toca el signo y ponlo en la casilla de débito de cada fila.",
+    "cu-cuadro-dinamicas": "Fila por fila, toca + o − para la casilla de débito.",
     "cu-debita-o-acredita": "Lee la transacción. Lleva la ficha al lado de la cuenta que te preguntan.",
     "cu-saldo-de-la-cuenta": "Escribe el saldo de la cuenta. Luego toca de qué lado va.",
     "cu-arma-el-asiento": "Pon un nombre en cada cuenta. Luego pon cada valor en su lado.",
@@ -133,10 +133,10 @@ test("★★ consignas: T1-6 cambia (la ficha no se toca) y las siete del Tema 2
 
 test("★★ los pasos de Gen, palabra por palabra", () => {
   const pasos = Object.fromEntries(IDS.map((id) => [id, ASI_TODAS[id].pasos]));
-  assert.deepEqual(pasos[T1_6.id], ["Lee la ficha que está en la mano.", "Toca el informe donde va esa ficha.", "Toca la parte y confirma con Colocar la ficha."]);
+  assert.deepEqual(pasos[T1_6.id], ["Lee la ficha de arriba.", "Toca el informe donde va esa ficha.", "Toca la parte y confirma con Colocar la ficha."]);
   assert.deepEqual(pasos["cu-izquierda-o-derecha"], ["Lee si esa cuenta sube o baja.", "Arrastra la ficha al debe o al haber.", "Mira el ▲ que sale después de responder."]);
   assert.deepEqual(pasos["cu-de-que-familia"], ["Lee el nombre de la cuenta.", "Pregúntate si lo tiene, lo debe, o es de los dueños.", "Arrastra la cuenta a esa sección."]);
-  assert.deepEqual(pasos["cu-cuadro-dinamicas"], ["Mira qué familia de cuentas dice la fila.", "Toca más o menos y ponlo en la casilla de débito.", "La casilla de crédito se llena sola, al revés."]);
+  assert.deepEqual(pasos["cu-cuadro-dinamicas"], ["Mira qué familia de cuentas dice la fila.", "Toca + o − y queda puesto en la casilla de débito.", "La casilla de crédito se llena sola, al revés."]);
   assert.deepEqual(pasos["cu-debita-o-acredita"], ["Lee la transacción completa.", "Fíjate en cuál de las dos cuentas te preguntan.", "Arrastra la ficha al debe o al haber de esa cuenta."]);
   assert.deepEqual(pasos["cu-saldo-de-la-cuenta"], ["Suma cada columna de la cuenta por separado.", "Escribe la diferencia entre las dos sumas.", "Toca el lado de la columna que sumó más."]);
   assert.deepEqual(pasos["cu-arma-el-asiento"], ["Lee la transacción y busca las dos cuentas.", "Toca un nombre y después la cuenta donde va.", "Toca el valor y después el lado de su cuenta."]);
@@ -149,7 +149,9 @@ test("★★★ ningún ejemplo de los bloques 3-5 está en su banco", () => {
   const no = (lista, ej, campo) => assert.ok(!lista.some((x) => x.id === ej.id || (campo && x[campo] === ej[campo])), `${ej.id} está en el banco`);
   no(CONCEPTOS, B3.EJEMPLO_T1_6, "nombre");
   no(IZQUIERDA_O_DERECHA.items, B3.EJEMPLO_IZQUIERDA, "enunciado");
-  no(BALANCES.flatMap((b) => b.cuentas), B3.EJEMPLO_FAMILIA, "cuenta");
+  /* «Maquinaria» es del catálogo a propósito: el ejemplo no es del banco por su id. */
+  no(BALANCES.flatMap((b) => b.cuentas), B3.EJEMPLO_FAMILIA, null);
+  assert.ok(CUENTAS[B3.EJEMPLO_FAMILIA.cuenta], "la cuenta del ejemplo no es la del catálogo");
   no(ITEMS_DEBITA, B3.EJEMPLO_DEBITA, "enunciado");
   no(CUENTAS_SALDO, B3.EJEMPLO_SALDO, null);
   no(SIMPLES, B3.EJEMPLO_ASIENTO_SIMPLE.a, "texto");
@@ -201,12 +203,12 @@ test("★★ en el Tema 2 la pantalla no repite el nombre que ya está encima (q
 const ACIERTO = {
   [T1_6.id]: "Va en el primer informe, en lo que tiene. El horno es de la panadería y le dura años.",
   "cu-izquierda-o-derecha": "Debe. Muebles y enseres es un activo, y los activos crecen por la izquierda.",
-  "cu-de-que-familia": "Activo. El horno es algo que la panadería tiene.",
+  "cu-de-que-familia": "Activo. La maquinaria es algo que la panadería tiene.",
   "cu-cuadro-dinamicas": "Los activos crecen por el debe. Es la fila base: de aquí salen todas las demás.",
   "cu-debita-o-acredita": "Se acredita. La deuda con el proveedor nace, y los pasivos crecen por el haber.",
   "cu-saldo-de-la-cuenta": "$700.000. Movimiento débito $1.000.000 menos movimiento crédito $300.000.",
   "cu-arma-el-asiento": "Asiento correcto",
-  "cu-asiento-compuesto": "Tres cuentas, y lo que cuadra son los totales: $3.000.000 al debe contra $3.000.000 al haber. Un activo entra y dos cosas lo pagan.",
+  "cu-asiento-compuesto": "Tres cuentas, y lo que cuadra son los totales: $3.000.000 al debe contra $3.000.000 al haber. Un activo entra; se paga una parte y se debe el resto.",
 };
 
 for (const id of IDS) {
@@ -267,5 +269,57 @@ test("★★ T1-1: «DÓNDE QUEDÓ» con tilde, y los puntos 1 a 4 atenuados en 
     }
     tocar(caja.querySelector(`[data-zona="${ZONA_FUERA}"]`));
     assert.equal(caja.querySelector("[data-rotulo-seccion]").textContent, "DÓNDE QUEDÓ");
+  } finally { desmontar(); }
+});
+
+/* ═══════════════════ LAS CORRECCIONES DE LEVI AL PR #6 ═══════════════════ */
+
+test("★★ ejemplos corregidos: Maquinaria en «¿De qué familia es?» y la harina por $500.000 con su ficha", () => {
+  assert.equal(B3.EJEMPLO_FAMILIA.cuenta, "Maquinaria");
+  assert.equal(B3.EJEMPLO_FAMILIA.acierto, "✅ Activo. La maquinaria es algo que la panadería tiene.");
+  assert.ok(ASI_TODAS["cu-de-que-familia"].alt.includes("«Maquinaria · $3.000.000»"));
+  assert.equal(B3.EJEMPLO_DEBITA.enunciado, "La panadería compra harina a crédito por $500.000.");
+  assert.equal(B3.EJEMPLO_DEBITA.valorFicha, 500000);
+  assert.ok(ASI_TODAS["cu-debita-o-acredita"].alt.includes("$500.000"));
+});
+
+test("★★ ¿Se Debita?: la ficha del ejemplo vale $500.000, y antes de responder ya se ve por qué cuenta se pregunta", () => {
+  const { caja, desmontar } = montar(React.createElement(T2.DebitaOAcredita, {
+    modoDemo: true, items: [B3.EJEMPLO_DEBITA], onCompletar: () => {},
+  }));
+  try {
+    assert.ok(caja.querySelector('[data-ficha="500000"]'), "la ficha no vale $500.000");
+    assert.ok(caja.textContent.includes("¿SE DEBITA O SE ACREDITA CUENTAS POR PAGAR?"), "no se ve por qué cuenta se pregunta");
+  } finally { desmontar(); }
+});
+
+test("★★ texto atenuado en #A8B6C8: botón desactivado, marcas de vacío, «sin nombre» y la ayuda del estante", () => {
+  const A = "rgb(168, 182, 200)";
+  const s = montar(React.createElement(T2.ArmaElAsiento, { modoDemo: true, items: [B3.EJEMPLO_ASIENTO_SIMPLE], onCompletar: () => {} }));
+  try {
+    const confirmar = [...s.caja.querySelectorAll("button")].find((b) => b.textContent === "Confirmar asiento");
+    assert.equal(confirmar.disabled, true);
+    assert.equal(confirmar.style.color, A);
+    for (const v of s.caja.querySelectorAll("[data-vacia]")) assert.equal(v.style.color, A);
+    const sinNombre = [...s.caja.querySelectorAll("button")].find((b) => b.textContent.trim() === "sin nombre");
+    assert.equal(sinNombre.style.color, A);
+  } finally { s.desmontar(); }
+  const c = montar(React.createElement(T2.ElAsientoCompuesto, { modoDemo: true, items: [B3.EJEMPLO_ASIENTO_COMPUESTO], onCompletar: () => {} }));
+  try {
+    assert.equal(c.caja.querySelector("[data-ayuda]").style.color, A);
+    for (const v of c.caja.querySelectorAll("[data-vacia]")) assert.equal(v.style.color, A);
+  } finally { c.desmontar(); }
+});
+
+test("★★ T1-6: franjas de tiempo y término en #A8B6C8, y «Activo» en navy sobre la parte elegida", () => {
+  const { caja, desmontar } = montar(React.createElement(EnCualEstadoAparece, {
+    Marco: MarcoLibros, onCompletar: () => {}, items: [B3.EJEMPLO_T1_6],
+  }));
+  try {
+    tocar(caja.querySelector('[data-informe="primero"]'));
+    tocar(caja.querySelector('[data-seccion="activo"]'));
+    for (const x of caja.querySelectorAll('[data-linea="cuando"]')) assert.equal(x.style.color, "rgb(168, 182, 200)");
+    assert.equal(caja.querySelector("[data-termino-informe]").style.color, "rgb(168, 182, 200)");
+    assert.equal(caja.querySelector('[data-seccion="activo"] [data-termino]').style.color, "rgb(29, 53, 87)");
   } finally { desmontar(); }
 });

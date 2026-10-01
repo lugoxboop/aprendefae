@@ -13,6 +13,7 @@ import {
 import { Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { CampoCifra, Responder, leerCifra, useTanda } from "./piezas.jsx";
+import { TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
 import { Encabezado } from "./tema1/encabezado.jsx";
 import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import { EstilosDeVerbos, useNumeroQueSube, useMovimientoReducido, SOLO_LECTOR } from "./verbos.jsx";
@@ -291,7 +292,7 @@ export default function ElAsientoCompuestoNuevo({
         )
         : null))}
       {mesa.filter((m) => m.lado === lado).length === 0 && (
-        <p style={{ margin: 0, padding: "14px 4px", textAlign: "center", fontSize: "10.5px", color: "rgba(248,249,250,0.3)" }}>
+        <p data-vacia style={{ margin: 0, padding: "14px 4px", textAlign: "center", fontSize: "10.5px", color: TEXTO_ATENUADO }}>
           — vacía —
         </p>
       )}
@@ -436,7 +437,7 @@ export default function ElAsientoCompuestoNuevo({
         )}
 
       {!r && !listo && (
-        <p style={{ margin: "9px 0 0", fontSize: "12px", color: "rgba(248,249,250,0.45)", textAlign: "center" }}>
+        <p data-ayuda style={{ margin: "9px 0 0", fontSize: "12px", color: TEXTO_ATENUADO, textAlign: "center" }}>
           Saca del estante las cuentas que se mueven, ponlas en su columna y escribe cada valor.
         </p>
       )}

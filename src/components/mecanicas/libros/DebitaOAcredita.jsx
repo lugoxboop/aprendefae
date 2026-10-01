@@ -165,6 +165,8 @@ export default function DebitaOAcredita({
   const zonaBoton = useRef(null);
 
   const a = t.items[t.i];
+  /* El ejemplo de «Así se juega» trae su propia ficha; las del banco valen lo de siempre. */
+  const valorFicha = a?.valorFicha ?? VALOR_FICHA;
   const cuantas = t.items.length;
   const pct = puntuar(respuestas, cuantas);
   const esperandoReintento = Boolean(retro && !retro.ok && retro.primero);
@@ -239,10 +241,10 @@ export default function DebitaOAcredita({
   }
 
   const acertado = retro?.ok === true;
-  const debitos = puesta === DEBE ? [{ valor: VALOR_FICHA }] : [];
-  const creditos = puesta === HABER ? [{ valor: VALOR_FICHA }] : [];
-  const contraDebitos = a.ladoContrapartida === DEBE ? [{ valor: VALOR_FICHA }] : [];
-  const contraCreditos = a.ladoContrapartida === HABER ? [{ valor: VALOR_FICHA }] : [];
+  const debitos = puesta === DEBE ? [{ valor: valorFicha }] : [];
+  const creditos = puesta === HABER ? [{ valor: valorFicha }] : [];
+  const contraDebitos = a.ladoContrapartida === DEBE ? [{ valor: valorFicha }] : [];
+  const contraCreditos = a.ladoContrapartida === HABER ? [{ valor: valorFicha }] : [];
 
   /*
    * El ▲ llega tarde: no existe hasta que hay devolución en pantalla.
@@ -289,7 +291,7 @@ export default function DebitaOAcredita({
           destinos={puedeResponder}
           tomada={arrastre.tomada}
           onSoltar={responder}
-          recien={puesta ? VALOR_FICHA : null}
+          recien={puesta ? valorFicha : null}
           triangulo={triangulo}
           alto={92}
         />
@@ -320,7 +322,7 @@ export default function DebitaOAcredita({
                 cuenta={a.contrapartida}
                 debitos={contraDebitos}
                 creditos={contraCreditos}
-                recien={VALOR_FICHA}
+                recien={valorFicha}
                 triangulo={trianguloContra}
                 alto={92}
               />
@@ -345,13 +347,13 @@ export default function DebitaOAcredita({
                   >
                     <div className={rebotando ? "fae-a4-rebota" : "fae-a4-pulso"} style={{ width: "120px" }}>
                       <Ficha
-                        valor={VALOR_FICHA}
+                        valor={valorFicha}
                         lado={DEBE}
                         color="rgba(248,249,250,0.5)"
                         tomada={arrastre.tomada != null}
-                        onClick={() => arrastre.tocar(VALOR_FICHA)}
-                        gestos={arrastre.gestos(VALOR_FICHA)}
-                        etiqueta={`Ficha de ${pesos(VALOR_FICHA)}. Tómela y suéltela en el debe o en el haber de ${a.cuenta}. Con la ficha tomada, la flecha izquierda la lleva al debe y la derecha al haber.`}
+                        onClick={() => arrastre.tocar(valorFicha)}
+                        gestos={arrastre.gestos(valorFicha)}
+                        etiqueta={`Ficha de ${pesos(valorFicha)}. Tómela y suéltela en el debe o en el haber de ${a.cuenta}. Con la ficha tomada, la flecha izquierda la lleva al debe y la derecha al haber.`}
                       />
                     </div>
                   </div>
@@ -408,7 +410,7 @@ export default function DebitaOAcredita({
         </div>
       )}
 
-      <FichaEnVuelo valor={VALOR_FICHA} lado={DEBE} puntero={arrastre.puntero} />
+      <FichaEnVuelo valor={valorFicha} lado={DEBE} puntero={arrastre.puntero} />
       <p style={SOLO_LECTOR}>{OBJETIVO}</p>
     </Marco>
   );

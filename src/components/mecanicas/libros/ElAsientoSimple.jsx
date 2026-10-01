@@ -12,6 +12,7 @@ import {
 import { Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { Responder, useTanda } from "./piezas.jsx";
+import { TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
 import { Encabezado } from "./tema1/encabezado.jsx";
 import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import {
@@ -168,7 +169,7 @@ function CuentaT({
               {pesos(valor)}
             </span>
           )
-          : <span aria-hidden="true" style={{ display: "block", padding: "8px 2px", fontSize: "12px", color: "rgba(248,249,250,0.25)", textAlign: "center" }}>—</span>}
+          : <span data-vacia aria-hidden="true" style={{ display: "block", padding: "8px 2px", fontSize: "12px", color: TEXTO_ATENUADO, textAlign: "center" }}>—</span>}
       </button>
     );
   };
@@ -207,7 +208,7 @@ function CuentaT({
               display: "block", width: "100%", margin: "0 0 7px", minHeight: "28px",
               borderRadius: "8px", background: tomada != null ? "rgba(184,196,212,0.13)" : "transparent",
               border: `1px dashed ${tomada != null ? NEUTRO : "rgba(248,249,250,0.22)"}`,
-              color: "rgba(248,249,250,0.4)", fontFamily: SORA, fontSize: "10.5px",
+              color: TEXTO_ATENUADO, fontFamily: SORA, fontSize: "10.5px",
               cursor: destinoNombre ? "pointer" : "default",
             }}
           >
