@@ -133,8 +133,8 @@ export const TEXTO_DE_AGRUPACION = "Mira lo que acabas de armar: no son seis reg
 
 /*
  * Rótulos de la interfaz. No son de la ficha: son las dos columnas del cuadro
- * del libro, y la instrucción de qué hacer con las fichas.
- * [La instrucción la escribí yo — PENDIENTE DE REVISIÓN DE PEDAGOGÍA.]
+ * del libro. La instrucción que iba aquí («Coloca el signo en la casilla de
+ * débito», pendiente de revisión) la reemplazó la consigna de Gen, que vive
+ * en `contabilidadConsignas.js`.
  */
 export const COLUMNAS = { debe: "DÉBITO", haber: "CRÉDITO" };
-export const INSTRUCCION = "Coloca el signo en la casilla de débito";

@@ -109,7 +109,12 @@ function Mano({ pos, visible, reducido }) {
  *   onSiguiente  al pulsar «Siguiente»: se va a la partida
  *   escala       multiplica los tiempos del guion (las pruebas lo aceleran)
  */
-export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1 }) {
+/*
+ *   tituloVisible  false cuando la página ya muestra el nombre de la actividad
+ *                  justo encima (las del Tema 2): sigue ahí para el lector de
+ *                  pantalla, pero no se ve dos veces
+ */
+export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1, tituloVisible = true }) {
   const [reducido, setReducido] = useState(leerReducido);
   const [vuelta, setVuelta] = useState(0);
   const [corriendo, setCorriendo] = useState(true);
@@ -355,10 +360,10 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1 }) {
   return (
     <section data-asi-se-juega={asi.actividadId} aria-labelledby={`asj-${asi.actividadId}`}>
       <style>{CSS}</style>
-      <h2 id={`asj-${asi.actividadId}`} style={{
+      <h2 id={`asj-${asi.actividadId}`} style={tituloVisible ? {
         margin: "0 0 6px", fontFamily: SORA, fontSize: "21px", fontWeight: 700,
         lineHeight: 1.25, letterSpacing: "-0.01em", color: FAE.text,
-      }}>
+      } : SOLO_LECTOR}>
         {asi.titulo}
       </h2>
       <p data-asj-consigna style={{ margin: "0 0 14px", fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.6)" }}>

@@ -71,17 +71,24 @@ export function BotonComoSeJuega({ onClick }) {
   );
 }
 
-export function Encabezado({ objetivo, consigna, onComoSeJuega = null }) {
+/*
+ * `objetivo` es opcional: las actividades del Tema 2 solo tienen consigna (el
+ * objetivo lo lee el lector de pantalla). Sin objetivo, la consigna va sola,
+ * sin la raya que la separaba de él.
+ */
+export function Encabezado({ objetivo = null, consigna, onComoSeJuega = null }) {
   return (
     <div data-encabezado style={{ margin: "0 0 14px" }}>
-      <p data-objetivo style={{
-        margin: 0, fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.86)",
-      }}>
-        {objetivo}
-      </p>
+      {objetivo && (
+        <p data-objetivo style={{
+          margin: 0, fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.86)",
+        }}>
+          {objetivo}
+        </p>
+      )}
       <p data-consigna style={{
-        margin: "6px 0 0", paddingTop: "6px", fontSize: "12px", lineHeight: 1.45,
-        color: "rgba(248,249,250,0.6)", borderTop: "1px solid rgba(248,249,250,0.12)",
+        margin: objetivo ? "6px 0 0" : 0, paddingTop: objetivo ? "6px" : 0, fontSize: "12px", lineHeight: 1.45,
+        color: "rgba(248,249,250,0.6)", borderTop: objetivo ? "1px solid rgba(248,249,250,0.12)" : "none",
       }}>
         {consigna}
       </p>
@@ -96,7 +103,7 @@ export function Encabezado({ objetivo, consigna, onComoSeJuega = null }) {
  *   idea     lo que se lee primero y en grande
  *   termino  el nombre del libro, pequeño, al lado o debajo si no cabe
  */
-export function IdeaConTermino({ idea, termino, tamano = 13, color = FAE.text }) {
+export function IdeaConTermino({ idea, termino, tamano = 13, color = FAE.text, colorTermino = "rgba(248,249,250,0.55)" }) {
   return (
     <span data-idea={idea} style={{
       display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "1px 6px", minWidth: 0,
@@ -108,7 +115,7 @@ export function IdeaConTermino({ idea, termino, tamano = 13, color = FAE.text })
       </span>
       <span data-termino={termino} style={{
         fontSize: `${Math.max(9, tamano - 3.5)}px`, lineHeight: 1.25,
-        color: "rgba(248,249,250,0.55)", whiteSpace: "nowrap",
+        color: colorTermino, whiteSpace: "nowrap",
       }}>
         {termino}
       </span>

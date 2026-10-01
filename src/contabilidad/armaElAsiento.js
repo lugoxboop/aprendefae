@@ -78,6 +78,29 @@ export const ASIENTOS = ITEMS.map(montar);
 export { POR_PARTIDA, DECISIONES_POR_ITEM };
 
 /*
+ * Un asiento suelto, con su texto, su asiento y sus anclajes escritos a mano:
+ * el del ejemplo de «Así se juega», que no está en ningún caso ni entre las
+ * transacciones sueltas. Sale con la misma forma que `montar`, así que el
+ * componente y `evaluar` lo leen igual que a los del banco.
+ */
+export function montarSuelto({ id, texto, asiento, anclajes }) {
+  const cuentas = [
+    ...asiento.debe.map(([cuenta, valor]) => ({ cuenta, valor, lado: DEBE })),
+    ...asiento.haber.map(([cuenta, valor]) => ({ cuenta, valor, lado: HABER })),
+  ].map((c) => ({
+    ...c,
+    creceP: CRECE_POR[tipoDeCuenta(c.cuenta)],
+    sube: CRECE_POR[tipoDeCuenta(c.cuenta)] === c.lado,
+    ancla: anclajes[c.cuenta] ?? null,
+  }));
+  for (const c of cuentas) {
+    if (!c.ancla || !texto.includes(c.ancla)) throw new Error(`${id}: «${c.cuenta}» no tiene su anclaje en el texto`);
+  }
+  if (cuentas.length !== 2) throw new Error(`${id}: un asiento simple mueve dos cuentas`);
+  return { id, texto, cuentas, anclajes, valor: cuentas[0].valor };
+}
+
+/*
  * ═══════════════════════════════════════════════════════════════════════════
  * EL BANCO DE NOMBRES, Y LA REGLA QUE EXCLUYE A LA PAREJA
  *

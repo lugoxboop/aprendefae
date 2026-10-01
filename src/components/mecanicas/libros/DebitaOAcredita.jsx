@@ -11,6 +11,8 @@ import {
 import { Retro, Pulsos, Cierre, Enunciado } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { Responder, useTanda } from "./piezas.jsx";
+import { Encabezado } from "./tema1/encabezado.jsx";
+import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import {
   CuentaDeValor, Ficha, FichaEnVuelo, EstilosDeVerbos, useArrastre,
   useMovimientoReducido, SOLO_LECTOR,
@@ -138,9 +140,20 @@ function ArcoVertical({ desde, visible }) {
   );
 }
 
-export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompletar }) {
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente, no una copia dibujada: `items` le da el ejemplo
+ * desde afuera en vez de sortearlo del banco, y `modoDemo` le quita lo que no
+ * es la zona de juego —la consigna, el avance, el botón de seguir— y le corta
+ * la salida: no llama a `onCompletar`, así que no hay FP, ni intentos, ni
+ * progreso. Cómo se juega no cambia en nada; eso es lo que se enseña.
+ */
+export default function DebitaOAcredita({
+  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+}) {
   const reducido = useMovimientoReducido();
-  const t = useTanda(() => barajar(ASIENTOS).slice(0, POR_PARTIDA));
+  const t = useTanda(() => items ?? barajar(ASIENTOS).slice(0, POR_PARTIDA));
 
   /* Dónde cayó la ficha. Solo el acierto escribe aquí. */
   const [puesta, setPuesta] = useState(null);
@@ -152,19 +165,21 @@ export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompl
   const zonaBoton = useRef(null);
 
   const a = t.items[t.i];
+  /* El ejemplo de «Así se juega» trae su propia ficha; las del banco valen lo de siempre. */
+  const valorFicha = a?.valorFicha ?? VALOR_FICHA;
   const cuantas = t.items.length;
   const pct = puntuar(respuestas, cuantas);
   const esperandoReintento = Boolean(retro && !retro.ok && retro.primero);
   const puedeResponder = !retro || esperandoReintento;
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
 
   useEffect(() => () => clearTimeout(reloj.current), []);
 
   useEffect(() => {
-    if (retro && !esperandoReintento) zonaBoton.current?.querySelector("button")?.focus();
+    if (retro && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [retro, esperandoReintento]);
 
   const responder = (lado) => {
@@ -226,10 +241,10 @@ export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompl
   }
 
   const acertado = retro?.ok === true;
-  const debitos = puesta === DEBE ? [{ valor: VALOR_FICHA }] : [];
-  const creditos = puesta === HABER ? [{ valor: VALOR_FICHA }] : [];
-  const contraDebitos = a.ladoContrapartida === DEBE ? [{ valor: VALOR_FICHA }] : [];
-  const contraCreditos = a.ladoContrapartida === HABER ? [{ valor: VALOR_FICHA }] : [];
+  const debitos = puesta === DEBE ? [{ valor: valorFicha }] : [];
+  const creditos = puesta === HABER ? [{ valor: valorFicha }] : [];
+  const contraDebitos = a.ladoContrapartida === DEBE ? [{ valor: valorFicha }] : [];
+  const contraCreditos = a.ladoContrapartida === HABER ? [{ valor: valorFicha }] : [];
 
   /*
    * El ▲ llega tarde: no existe hasta que hay devolución en pantalla.
@@ -246,9 +261,14 @@ export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompl
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
       <EstilosDeVerbos />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (retro && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Transacción" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado consigna={CONSIGNA_TEMA2["cu-debita-o-acredita"]} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={cuantas} hechos={t.i + (retro && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Transacción" />
+          </div>
+        </>
+      )}
 
       <div style={{
         opacity: retro?.atenuarTransaccion ? 0.45 : 1,
@@ -271,7 +291,7 @@ export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompl
           destinos={puedeResponder}
           tomada={arrastre.tomada}
           onSoltar={responder}
-          recien={puesta ? VALOR_FICHA : null}
+          recien={puesta ? valorFicha : null}
           triangulo={triangulo}
           alto={92}
         />
@@ -302,7 +322,7 @@ export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompl
                 cuenta={a.contrapartida}
                 debitos={contraDebitos}
                 creditos={contraCreditos}
-                recien={VALOR_FICHA}
+                recien={valorFicha}
                 triangulo={trianguloContra}
                 alto={92}
               />
@@ -327,13 +347,13 @@ export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompl
                   >
                     <div className={rebotando ? "fae-a4-rebota" : "fae-a4-pulso"} style={{ width: "120px" }}>
                       <Ficha
-                        valor={VALOR_FICHA}
+                        valor={valorFicha}
                         lado={DEBE}
                         color="rgba(248,249,250,0.5)"
                         tomada={arrastre.tomada != null}
-                        onClick={() => arrastre.tocar(VALOR_FICHA)}
-                        gestos={arrastre.gestos(VALOR_FICHA)}
-                        etiqueta={`Ficha de ${pesos(VALOR_FICHA)}. Tómela y suéltela en el debe o en el haber de ${a.cuenta}. Con la ficha tomada, la flecha izquierda la lleva al debe y la derecha al haber.`}
+                        onClick={() => arrastre.tocar(valorFicha)}
+                        gestos={arrastre.gestos(valorFicha)}
+                        etiqueta={`Ficha de ${pesos(valorFicha)}. Tómela y suéltela en el debe o en el haber de ${a.cuenta}. Con la ficha tomada, la flecha izquierda la lleva al debe y la derecha al haber.`}
                       />
                     </div>
                   </div>
@@ -382,7 +402,7 @@ export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompl
         </p>
       )}
 
-      {retro && !esperandoReintento && (
+      {retro && !esperandoReintento && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente transacción"}
@@ -390,7 +410,7 @@ export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompl
         </div>
       )}
 
-      <FichaEnVuelo valor={VALOR_FICHA} lado={DEBE} puntero={arrastre.puntero} />
+      <FichaEnVuelo valor={valorFicha} lado={DEBE} puntero={arrastre.puntero} />
       <p style={SOLO_LECTOR}>{OBJETIVO}</p>
     </Marco>
   );

@@ -21,6 +21,7 @@ import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZAS_APRENDER } from "../data/contabilidadAprender.js";
 import { ESCENAS } from "./mecanicas/libros/escenas.jsx";
 import ElCicloCompleto from "./mecanicas/libros/ciclo/ElCicloCompleto.jsx";
+import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import EscritorioDelContador from "./mecanicas/libros/ciclo/EscritorioDelContador.jsx";
 
 /*
@@ -79,7 +80,7 @@ export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, 
   const esAprender = modo === APRENDER;
   const [nodoAbierto, setNodoAbierto] = useState(null);
   const hechas = useCompletadas();
-  const { pedirCuenta } = useAuth();
+  const { pedirCuenta, usuario } = useAuth();
   const [recompensa, celebrar] = useRecompensa();
 
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
@@ -203,7 +204,15 @@ export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, 
                 <ActivityBadge tipo={CLAS[juego.id]?.tipo} size="sm" />
               </div>
               <h2 style={h2}>{nombreDeActividad(juego.id)}</h2>
-              <juego.Mecanica onCompletar={(pct, ms, detalle) => completarJuego(juego.id, pct, ms, detalle)} />
+              {/* «Así se juega» delante la primera vez, y «¿Cómo se juega?» bajo la consigna. */}
+              <JuegoConTutorial
+                key={juego.id}
+                juego={juego}
+                usuarioId={usuario?.id ?? null}
+                /* El nombre ya está en el h2 de arriba: «Así se juega» no lo repite. */
+                tituloVisible={false}
+                onCompletar={(pct, ms, detalle) => completarJuego(juego.id, pct, ms, detalle)}
+              />
             </>
           )}
         </div>

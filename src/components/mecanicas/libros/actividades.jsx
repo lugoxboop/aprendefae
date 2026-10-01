@@ -49,9 +49,14 @@ const A = FAE.ambar;
  * CU-1: la ficha se lleva al lado que corresponde y cae dentro de la cuenta T.
  * El primer verbo visual del tema, en su forma más desnuda.
  */
-export const IzquierdaODerecha = ({ onCompletar }) => (
+/*
+ * Las siete del camino dejan pasar lo demás que reciban (`...resto`): el
+ * modo demo de «Así se juega», su ejemplo y su marco sin rótulos, y el botón
+ * «¿Cómo se juega?». Van al final para poder sustituir lo de arriba.
+ */
+export const IzquierdaODerecha = ({ onCompletar, ...resto }) => (
   <SoltarEnUnLado Marco={MarcoLibros} acento={A}
-    rotulo="CIMIENTOS" titulo={IZQUIERDA_O_DERECHA.subtema} onCompletar={onCompletar} />
+    rotulo="CIMIENTOS" titulo={IZQUIERDA_O_DERECHA.subtema} onCompletar={onCompletar} {...resto} />
 );
 
 /*
@@ -59,9 +64,9 @@ export const IzquierdaODerecha = ({ onCompletar }) => (
  * se va llenando: equivocarse deja de ser fallar una pregunta y pasa a ser
  * escribir una deuda donde va una propiedad.
  */
-export const DeQueFamilia = ({ onCompletar }) => (
+export const DeQueFamilia = ({ onCompletar, ...resto }) => (
   <ArmaElBalance Marco={MarcoLibros} acento={A}
-    rotulo="CIMIENTOS" titulo="Clasificación de cuentas reales" onCompletar={onCompletar} />
+    rotulo="CIMIENTOS" titulo="Clasificación de cuentas reales" onCompletar={onCompletar} {...resto} />
 );
 
 /*
@@ -70,9 +75,9 @@ export const DeQueFamilia = ({ onCompletar }) => (
  * completar las seis, las filas se reordenan en dos bloques. Ese
  * reordenamiento es la actividad: seis reglas que resultan ser dos.
  */
-export const CuadroDinamicas = ({ onCompletar }) => (
+export const CuadroDinamicas = ({ onCompletar, ...resto }) => (
   <CuadroDeDinamicas Marco={MarcoLibros} acento={A}
-    rotulo="APLICACIÓN" titulo={SUBTEMA_CUADRO} onCompletar={onCompletar} />
+    rotulo="APLICACIÓN" titulo={SUBTEMA_CUADRO} onCompletar={onCompletar} {...resto} />
 );
 
 /*
@@ -82,9 +87,9 @@ export const CuadroDinamicas = ({ onCompletar }) => (
  * sin razonarlo. Su sitio esta reservado y liso desde el principio, porque un
  * hueco que se note tambien delata que hay una segunda cuenta.
  */
-export const DebitaOAcredita = ({ onCompletar }) => (
+export const DebitaOAcredita = ({ onCompletar, ...resto }) => (
   <DebitaOAcreditaMecanica Marco={MarcoLibros} acento={A}
-    rotulo="APLICACIÓN" titulo={SUBTEMA_A4} onCompletar={onCompletar} />
+    rotulo="APLICACIÓN" titulo={SUBTEMA_A4} onCompletar={onCompletar} {...resto} />
 );
 
 /*
@@ -93,9 +98,9 @@ export const DebitaOAcredita = ({ onCompletar }) => (
  * cancelacion, la columna en pie seria la respuesta. Y en un primer error la
  * cancelacion no corre: el reintento no tendria nada que calcular.
  */
-export const ElSaldoDeLaCuenta = ({ onCompletar }) => (
+export const ElSaldoDeLaCuenta = ({ onCompletar, ...resto }) => (
   <ElSaldoDeLaCuentaMecanica Marco={MarcoLibros} acento={A}
-    rotulo="ANÁLISIS" titulo={SUBTEMA_A5} onCompletar={onCompletar} />
+    rotulo="ANÁLISIS" titulo={SUBTEMA_A5} onCompletar={onCompletar} {...resto} />
 );
 
 /*
@@ -104,9 +109,9 @@ export const ElSaldoDeLaCuenta = ({ onCompletar }) => (
  * y la linea al enunciado— aparecen SIEMPRE al confirmar: si alguna saliera
  * solo en el error, su presencia seria el veredicto.
  */
-export const ArmaElAsiento = ({ onCompletar }) => (
+export const ArmaElAsiento = ({ onCompletar, ...resto }) => (
   <ElAsientoSimpleMecanica Marco={MarcoLibros} acento={A}
-    rotulo="ANÁLISIS" titulo={SUBTEMA_A6} onCompletar={onCompletar} />
+    rotulo="ANÁLISIS" titulo={SUBTEMA_A6} onCompletar={onCompletar} {...resto} />
 );
 
 /* CU-7: la clase de asiento y cuántas cuentas toca. */
@@ -138,9 +143,9 @@ export const CorrienteDeCuentas = ({ onCompletar }) => (
  * cuando las dos sumas coinciden. Y una T con DOS lineas al enunciado es la
  * senal de haber fundido dos cuentas en una.
  */
-export const ElAsientoCompuesto = ({ onCompletar }) => (
+export const ElAsientoCompuesto = ({ onCompletar, ...resto }) => (
   <ElAsientoCompuestoNuevoMecanica Marco={MarcoLibros} acento={A}
-    rotulo="MAESTRÍA" titulo={SUBTEMA_A7} onCompletar={onCompletar} />
+    rotulo="MAESTRÍA" titulo={SUBTEMA_A7} onCompletar={onCompletar} {...resto} />
 );
 
 

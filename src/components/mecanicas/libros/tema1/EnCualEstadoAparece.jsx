@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
-import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
+import { NEUTRO, NAVY_DEL_CHIP, TEXTO_ATENUADO } from "../../../../data/contabilidadIntro.js";
 import {
   T1_6, INFORMES, SECCIONES_T1_6, PRIMERO, ALT_T1_6,
 } from "../../../../data/contabilidadTema1.js";
@@ -53,8 +53,19 @@ const CSS = `
 
 const SORA = "Sora, sans-serif";
 
-export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onCompletar }) {
-  const t = useTanda(() => sortearT1_6(barajar));
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente, no una copia dibujada: `items` le da el ejemplo
+ * desde afuera en vez de sortearlo del banco, y `modoDemo` le quita lo que no
+ * es la zona de juego —el encabezado, el avance, el botón de seguir— y le
+ * corta la salida: no llama a `onCompletar`, así que no hay FP, ni intentos,
+ * ni progreso. Cómo se juega no cambia en nada; eso es lo que se enseña.
+ */
+export default function EnCualEstadoAparece({
+  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+}) {
+  const t = useTanda(() => items ?? sortearT1_6(barajar));
 
   const [informe, setInforme] = useState(null);
   const [seccion, setSeccion] = useState(null);
@@ -74,11 +85,11 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
   const completo = informe === PRIMERO ? Boolean(seccion) : Boolean(informe);
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
   useEffect(() => () => clearTimeout(reloj.current), []);
   useEffect(() => {
-    if (r && !esperandoReintento) zonaBoton.current?.querySelector("button")?.focus();
+    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [r, esperandoReintento]);
 
   const enviar = () => {
@@ -141,10 +152,14 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
-      <Encabezado objetivo={T1_6.objetivo} consigna={T1_6.consigna} />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Ficha" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado objetivo={T1_6.objetivo} consigna={T1_6.consigna} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Ficha" />
+          </div>
+        </>
+      )}
 
       {/* Aquí dentro no entra el vocabulario del Tema 2. */}
       <div data-contenido>
@@ -169,6 +184,12 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
         <div data-pestanas style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           {INFORMES.map((inf) => {
             const activa = informe === inf.id;
+            /*
+             * La pestaña que ya no se puede elegir se atenúa en el borde y el
+             * fondo, no entera: heredada, la opacidad dejaba su franja de
+             * tiempo en 2,4:1. El texto va en #A8B6C8 sólido.
+             */
+            const tenue = !puedeResponder && !activa;
             return (
               <div key={inf.id}>
                 <button
@@ -182,11 +203,12 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
                     display: "block", textAlign: "left", width: "100%", boxSizing: "border-box",
                     padding: "9px 11px", borderRadius: activa ? "10px 10px 0 0" : "10px",
                     cursor: puedeResponder ? "pointer" : "default",
-                    background: activa ? "rgba(184,196,212,0.12)" : "rgba(10,20,34,0.4)",
-                    border: `${activa ? 2 : 1}px solid ${activa ? NEUTRO : "rgba(248,249,250,0.16)"}`,
-                    borderBottom: activa ? "none" : undefined,
-                    color: FAE.text,
-                    opacity: !puedeResponder && !activa ? 0.5 : 1,
+                    background: activa ? "rgba(184,196,212,0.12)" : tenue ? "rgba(10,20,34,0.2)" : "rgba(10,20,34,0.4)",
+                    /* Bordes en propiedades largas: mezclar `border` con `borderBottom` hace que React avise al repintar. */
+                    borderStyle: "solid",
+                    borderWidth: activa ? "2px 2px 0 2px" : "1px",
+                    borderColor: activa ? NEUTRO : tenue ? "rgba(248,249,250,0.08)" : "rgba(248,249,250,0.16)",
+                    color: tenue ? TEXTO_ATENUADO : FAE.text,
                   }}
                 >
                   <span data-linea="idea" style={{
@@ -197,7 +219,7 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
                   {/* La franja de tiempo: es el criterio, no un pie de página. */}
                   <span data-linea="cuando" style={{
                     display: "block", marginTop: "2px", fontSize: "10.5px",
-                    color: "rgba(248,249,250,0.55)",
+                    color: TEXTO_ATENUADO,
                   }}>
                     {inf.cuando}
                   </span>
@@ -212,7 +234,7 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
                     {/* El término del libro, de rótulo en el encabezado del informe. */}
                     <p data-termino-informe={inf.termino} style={{
                       margin: "0 0 7px", fontSize: "10px", letterSpacing: "0.06em",
-                      color: "rgba(248,249,250,0.55)",
+                      color: TEXTO_ATENUADO,
                     }}>
                       {inf.termino}
                     </p>
@@ -242,6 +264,8 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
                                 termino={s.termino}
                                 tamano={11.5}
                                 color={esta ? NAVY_DEL_CHIP : FAE.text}
+                                /* Sobre la parte elegida (fondo #B8C4D4), el término va en navy. */
+                                colorTermino={esta ? NAVY_DEL_CHIP : undefined}
                               />
                             </button>
                           );
@@ -279,7 +303,7 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
           {completo ? "Colocar la ficha" : informe === PRIMERO ? "Elige en qué parte" : "Elige un informe"}
         </Responder>
       )}
-      {r && !esperandoReintento && (
+      {r && !esperandoReintento && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente ficha"}
@@ -287,7 +311,7 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
         </div>
       )}
 
-      <p style={SOLO_LECTOR}>{ALT_T1_6}</p>
+      {!modoDemo && <p style={SOLO_LECTOR}>{ALT_T1_6}</p>}
     </Marco>
   );
 }
