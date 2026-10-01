@@ -13,6 +13,8 @@ import {
 import { Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { CampoCifra, Responder, leerCifra, useTanda } from "./piezas.jsx";
+import { Encabezado } from "./tema1/encabezado.jsx";
+import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import { EstilosDeVerbos, useNumeroQueSube, useMovimientoReducido, SOLO_LECTOR } from "./verbos.jsx";
 import { TONO_ROTULO } from "./debeHaber/piezasDebeHaber.jsx";
 import { partirPorFrases } from "./ElAsientoSimple.jsx";
@@ -138,9 +140,19 @@ function CuentaEnLaMesa({
   );
 }
 
-export default function ElAsientoCompuestoNuevo({ Marco, rotulo, titulo, acento, onCompletar }) {
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente. `items` le da el ejemplo ya montado, con su
+ * estante ({ a, estante }), en vez del sorteo estratificado; `modoDemo` le
+ * quita la consigna, el avance y el botón de seguir, y no llama a
+ * `onCompletar`: ni FP, ni intentos, ni progreso.
+ */
+export default function ElAsientoCompuestoNuevo({
+  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+}) {
   const reducido = useMovimientoReducido();
-  const t = useTanda(() => sortearEstratificado(barajar).map((a) => ({ a, estante: estanteDe(a, barajar) })));
+  const t = useTanda(() => items ?? sortearEstratificado(barajar).map((a) => ({ a, estante: estanteDe(a, barajar) })));
 
   /* Lo que hay en la mesa: [{ cuenta, lado, texto }]. */
   const [mesa, setMesa] = useState([]);
@@ -161,11 +173,11 @@ export default function ElAsientoCompuestoNuevo({ Marco, rotulo, titulo, acento,
   const pct = puntuar(notas, cuantos);
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
 
   useEffect(() => () => clearTimeout(reloj.current), []);
-  useEffect(() => { if (r) zonaBoton.current?.querySelector("button")?.focus(); }, [r]);
+  useEffect(() => { if (r && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [r]);
 
   const conValor = mesa.map((m) => ({ ...m, valor: leerCifra(m.texto) }));
   const totalDe = (lado) => conValor
@@ -290,9 +302,14 @@ export default function ElAsientoCompuestoNuevo({ Marco, rotulo, titulo, acento,
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
       <EstilosDeVerbos />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Asiento" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado consigna={CONSIGNA_TEMA2["cu-asiento-compuesto"]} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Asiento" />
+          </div>
+        </>
+      )}
 
       <div ref={lienzo} style={{ position: "relative" }}>
         <p style={{
@@ -410,7 +427,7 @@ export default function ElAsientoCompuestoNuevo({ Marco, rotulo, titulo, acento,
 
       {!r
         ? <Responder onClick={confirmar} deshabilitado={!listo}>{TEXTO_CONFIRMAR}</Responder>
-        : (
+        : !modoDemo && (
           <div ref={zonaBoton}>
             <Responder onClick={avanzar}>
               {t.i + 1 === cuantos ? "Ver el resultado" : "Siguiente asiento"}

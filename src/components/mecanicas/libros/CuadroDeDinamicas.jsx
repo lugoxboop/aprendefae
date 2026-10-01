@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../theme.js";
 import { DEBE, HABER, COLOR_LADO, NOMBRE_TIPO } from "../../../data/contabilidad.js";
 import {
-  COLUMNAS, INSTRUCCION, OBJETIVO, TEXTO_DE_AGRUPACION,
+  COLUMNAS, OBJETIVO, TEXTO_DE_AGRUPACION,
   CONTRAPARTIDA_DEL_INGRESO, MS_CONTRAPARTIDA,
 } from "../../../data/contabilidadCuadro.js";
 import {
@@ -12,6 +12,8 @@ import {
 import { Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { Responder, useTanda } from "./piezas.jsx";
+import { Encabezado } from "./tema1/encabezado.jsx";
+import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import {
   Ficha, FichaEnVuelo, EstilosDeVerbos, useArrastre,
   useMovimientoReducido, SOLO_LECTOR, UMBRAL_ARRASTRE,
@@ -241,7 +243,18 @@ function Celda({
 
 /* ═══════════════════ LA MECÁNICA ═══════════════════ */
 
-export default function CuadroDeDinamicas({ Marco, rotulo, titulo, acento, onCompletar }) {
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * El cuadro no admite un ejemplo de afuera: sus seis filas son las seis
+ * familias del libro y salen del módulo. La demo es el cuadro de verdad
+ * resolviendo su primera fila, la de Activos. `modoDemo` le quita el
+ * objetivo, la consigna, el avance y el botón de seguir, y no llama a
+ * `onCompletar`: ni FP, ni intentos, ni progreso.
+ */
+export default function CuadroDeDinamicas({
+  Marco, rotulo, titulo, acento, onCompletar, modoDemo = false, onComoSeJuega = null,
+}) {
   const reducido = useMovimientoReducido();
   const t = useTanda(() => FILAS);
 
@@ -265,14 +278,14 @@ export default function CuadroDeDinamicas({ Marco, rotulo, titulo, acento, onCom
   const esperandoReintento = Boolean(retro && !retro.ok && retro.primero);
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
 
   useEffect(() => () => { clearTimeout(relojRebote.current); clearTimeout(relojEscena.current); }, []);
 
   /* El foco avanza solo al botón cuando la fila queda resuelta. */
   useEffect(() => {
-    if (retro && !esperandoReintento) zonaBoton.current?.querySelector("button")?.focus();
+    if (retro && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [retro, esperandoReintento]);
 
   const responder = (signo) => {
@@ -463,19 +476,23 @@ export default function CuadroDeDinamicas({ Marco, rotulo, titulo, acento, onCom
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
       <EstilosDeVerbos />
-      <div style={{ marginBottom: "12px" }}>
-        {/* Al agrupar ya no queda fila activa: el avance está completo. */}
-        <Pulsos
-          total={cuantas}
-          hechos={agrupado ? cuantas : t.i + (retro && !esperandoReintento ? 1 : 0)}
-          etiqueta="Fila"
-        />
-      </div>
-
-      {!agrupado && (
-        <p style={{ margin: "0 0 11px", fontSize: "12.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.72)" }}>
-          {OBJETIVO}
-        </p>
+      {!modoDemo && (
+        <>
+          {/* El objetivo, y debajo la consigna de Gen con «¿Cómo se juega?». */}
+          <Encabezado
+            objetivo={agrupado ? null : OBJETIVO}
+            consigna={CONSIGNA_TEMA2["cu-cuadro-dinamicas"]}
+            onComoSeJuega={onComoSeJuega}
+          />
+          <div style={{ marginBottom: "12px" }}>
+            {/* Al agrupar ya no queda fila activa: el avance está completo. */}
+            <Pulsos
+              total={cuantas}
+              hechos={agrupado ? cuantas : t.i + (retro && !esperandoReintento ? 1 : 0)}
+              etiqueta="Fila"
+            />
+          </div>
+        </>
       )}
 
       {cuadro}
@@ -489,12 +506,15 @@ export default function CuadroDeDinamicas({ Marco, rotulo, titulo, acento, onCom
         <>
           {puedeResponder && (
             <>
-              <p style={{
-                margin: "16px 0 8px", fontFamily: SORA, fontSize: "10.5px",
-                fontWeight: 700, letterSpacing: "0.16em", color: acento,
-              }}>
-                {esperandoReintento ? "INTÉNTALO OTRA VEZ" : INSTRUCCION.toUpperCase()}
-              </p>
+              {/* La instrucción ya la da la consigna de arriba; aquí solo el reintento. */}
+              {esperandoReintento ? (
+                <p style={{
+                  margin: "16px 0 8px", fontFamily: SORA, fontSize: "10.5px",
+                  fontWeight: 700, letterSpacing: "0.16em", color: acento,
+                }}>
+                  INTÉNTALO OTRA VEZ
+                </p>
+              ) : <div style={{ height: "14px" }} />}
               <div
                 style={{ display: "flex", gap: "10px" }}
                 onKeyDown={(e) => {
@@ -547,7 +567,7 @@ export default function CuadroDeDinamicas({ Marco, rotulo, titulo, acento, onCom
           )}
           {retro && !retro.ok && escenaViva && retro.escena === "contrapartida" && <AsientoDelIngreso />}
 
-          {retro && !esperandoReintento && (
+          {retro && !esperandoReintento && !modoDemo && (
             <div ref={zonaBoton}>
               <Responder onClick={avanzar}>
                 {t.i + 1 === cuantas ? "Ver el cuadro completo" : "Siguiente fila"}

@@ -11,6 +11,8 @@ import {
 import { Retro, Pulsos, Cierre, Enunciado } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { Responder, useTanda } from "./piezas.jsx";
+import { Encabezado } from "./tema1/encabezado.jsx";
+import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import {
   CuentaDeValor, Ficha, FichaEnVuelo, EstilosDeVerbos, useArrastre,
   useMovimientoReducido, SOLO_LECTOR,
@@ -138,9 +140,20 @@ function ArcoVertical({ desde, visible }) {
   );
 }
 
-export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompletar }) {
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente, no una copia dibujada: `items` le da el ejemplo
+ * desde afuera en vez de sortearlo del banco, y `modoDemo` le quita lo que no
+ * es la zona de juego —la consigna, el avance, el botón de seguir— y le corta
+ * la salida: no llama a `onCompletar`, así que no hay FP, ni intentos, ni
+ * progreso. Cómo se juega no cambia en nada; eso es lo que se enseña.
+ */
+export default function DebitaOAcredita({
+  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+}) {
   const reducido = useMovimientoReducido();
-  const t = useTanda(() => barajar(ASIENTOS).slice(0, POR_PARTIDA));
+  const t = useTanda(() => items ?? barajar(ASIENTOS).slice(0, POR_PARTIDA));
 
   /* Dónde cayó la ficha. Solo el acierto escribe aquí. */
   const [puesta, setPuesta] = useState(null);
@@ -158,13 +171,13 @@ export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompl
   const puedeResponder = !retro || esperandoReintento;
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
 
   useEffect(() => () => clearTimeout(reloj.current), []);
 
   useEffect(() => {
-    if (retro && !esperandoReintento) zonaBoton.current?.querySelector("button")?.focus();
+    if (retro && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [retro, esperandoReintento]);
 
   const responder = (lado) => {
@@ -246,9 +259,14 @@ export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompl
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
       <EstilosDeVerbos />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (retro && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Transacción" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado consigna={CONSIGNA_TEMA2["cu-debita-o-acredita"]} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={cuantas} hechos={t.i + (retro && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Transacción" />
+          </div>
+        </>
+      )}
 
       <div style={{
         opacity: retro?.atenuarTransaccion ? 0.45 : 1,
@@ -382,7 +400,7 @@ export default function DebitaOAcredita({ Marco, rotulo, titulo, acento, onCompl
         </p>
       )}
 
-      {retro && !esperandoReintento && (
+      {retro && !esperandoReintento && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente transacción"}

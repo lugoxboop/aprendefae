@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
-import { ESTACIONES, NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
+import { ESTACIONES, NEUTRO, NAVY_DEL_CHIP, TEXTO_ATENUADO } from "../../../../data/contabilidadIntro.js";
 import {
   T1_1, ZONA_DENTRO, ZONA_FUERA, ROTULO_ZONA, ROTULO_DEL_TRAZO, ALT_T1_1,
 } from "../../../../data/contabilidadTema1.js";
@@ -72,6 +72,12 @@ function Anillo({ retorno, reducido, resaltado }) {
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "4px" }}>
         {ESTACIONES.map((e) => {
           const encendida = e.n === ESTACIONES.length;
+          /*
+           * Los puntos 1 a 4 van atenuados, pero la opacidad va en el borde
+           * y no en la fila entera: heredada, dejaba el número en 3,0:1 y el
+           * nombre en 2,2:1. El texto va en #A8B6C8 sólido, como en T1-8.
+           */
+          const tenue = !(encendida || resaltado);
           return (
             <div
               key={e.n}
@@ -81,19 +87,19 @@ function Anillo({ retorno, reducido, resaltado }) {
                 display: "flex", gap: "6px", alignItems: "center",
                 padding: "5px 7px", borderRadius: "9px",
                 background: resaltado ? "rgba(184,196,212,0.1)" : "transparent",
-                border: `${encendida ? 2 : 1}px solid ${encendida || resaltado ? NEUTRO : "rgba(248,249,250,0.14)"}`,
-                opacity: encendida || resaltado ? 1 : 0.45,
-                transition: "opacity 300ms ease, border-color 300ms ease, background 300ms ease",
+                border: `${encendida ? 2 : 1}px solid ${tenue ? "rgba(248,249,250,0.063)" : NEUTRO}`,
+                transition: "border-color 300ms ease, background 300ms ease",
               }}
             >
               <span style={{
                 flex: "none", width: "15px", height: "15px", borderRadius: "999px",
-                border: `1px solid ${NEUTRO}`, color: NEUTRO, fontFamily: SORA,
+                border: `1px solid ${tenue ? "rgba(184,196,212,0.45)" : NEUTRO}`,
+                color: tenue ? TEXTO_ATENUADO : NEUTRO, fontFamily: SORA,
                 fontSize: "9px", fontWeight: 700, lineHeight: "14px", textAlign: "center",
               }}>
                 {e.n}
               </span>
-              <span style={{ fontSize: "10.5px", color: encendida ? FAE.text : "rgba(248,249,250,0.55)" }}>
+              <span data-nombre-estacion style={{ fontSize: "10.5px", color: encendida ? FAE.text : TEXTO_ATENUADO }}>
                 {e.nombre}
               </span>
             </div>
@@ -334,7 +340,7 @@ export default function DesdeDondePreguntan({
           margin: "14px 0 8px", fontFamily: SORA, fontSize: "10.5px",
           fontWeight: 700, letterSpacing: "0.16em", color: acento,
         }}>
-          {esperandoReintento ? "INTÉNTALO OTRA VEZ" : "DONDE QUEDÓ"}
+          {esperandoReintento ? "INTÉNTALO OTRA VEZ" : "DÓNDE QUEDÓ"}
         </p>
       ) : (
         <div style={{ height: "14px" }} />

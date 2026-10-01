@@ -12,6 +12,8 @@ import {
 import { Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { Responder, useTanda } from "./piezas.jsx";
+import { Encabezado } from "./tema1/encabezado.jsx";
+import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import {
   Ficha, FichaEnVuelo, EstilosDeVerbos, useArrastre,
   useMovimientoReducido, SOLO_LECTOR,
@@ -151,7 +153,17 @@ function CuentaT({
               display: "block", padding: "8px 2px", borderRadius: "8px",
               background: `${COLOR_LADO[cual]}22`, border: `1px solid ${COLOR_LADO[cual]}`,
               fontFamily: "ui-monospace, Menlo, Consolas, monospace",
-              fontSize: "12px", fontWeight: 700, color: FAE.text, textAlign: "center",
+              /*
+               * Una cifra de millones («$3.000.000», la del ejemplo de «Así se
+               * juega») no cabía en la columna a 375 px y se salía de la
+               * ficha. Solo esas bajan de tamaño; las del banco, hasta
+               * «$300.000», se ven igual que siempre.
+               */
+              fontSize: pesos(valor).length > 8 ? "10px" : "12px",
+              letterSpacing: pesos(valor).length > 8 ? "-0.02em" : undefined,
+              fontWeight: 700, color: FAE.text, textAlign: "center", whiteSpace: "nowrap",
+              /* La ficha crece hasta su cifra (nunca menos que la columna), en vez de dejarla salir. */
+              boxSizing: "border-box", width: "max-content", minWidth: "100%", alignSelf: "center",
             }}>
               {pesos(valor)}
             </span>
@@ -215,9 +227,19 @@ function CuentaT({
 
 const vacia = () => ({ cuenta: null, lado: null });
 
-export default function ElAsientoSimple({ Marco, rotulo, titulo, acento, onCompletar }) {
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente. `items` le da el ejemplo ya montado, con su banco
+ * de nombres ({ a, banco }), en vez de sortearlo; `modoDemo` le quita la
+ * consigna, el avance y el botón de seguir, y no llama a `onCompletar`: ni
+ * FP, ni intentos, ni progreso.
+ */
+export default function ElAsientoSimple({
+  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+}) {
   const reducido = useMovimientoReducido();
-  const t = useTanda(() => barajar(ASIENTOS).slice(0, POR_PARTIDA)
+  const t = useTanda(() => items ?? barajar(ASIENTOS).slice(0, POR_PARTIDA)
     .map((a) => ({ a, banco: bancoDe(a, barajar) })));
 
   const [filas, setFilas] = useState([vacia(), vacia()]);
@@ -242,13 +264,13 @@ export default function ElAsientoSimple({ Marco, rotulo, titulo, acento, onCompl
   const puedeArmar = !r || esperandoReintento;
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
 
   useEffect(() => () => clearTimeout(reloj.current), []);
 
   useEffect(() => {
-    if (r && !esperandoReintento) zonaBoton.current?.querySelector("button")?.focus();
+    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [r, esperandoReintento]);
 
   /*
@@ -371,9 +393,14 @@ export default function ElAsientoSimple({ Marco, rotulo, titulo, acento, onCompl
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
       <EstilosDeVerbos />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Transacción" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado consigna={CONSIGNA_TEMA2["cu-arma-el-asiento"]} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Transacción" />
+          </div>
+        </>
+      )}
 
       <div ref={lienzo} style={{ position: "relative" }}>
         <p style={{
@@ -566,7 +593,7 @@ export default function ElAsientoSimple({ Marco, rotulo, titulo, acento, onCompl
 
       {puedeArmar
         ? <Responder onClick={confirmar} deshabilitado={!completo}>{TEXTO_CONFIRMAR}</Responder>
-        : (
+        : !modoDemo && (
           <div ref={zonaBoton}>
             <Responder onClick={avanzar}>
               {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente transacción"}

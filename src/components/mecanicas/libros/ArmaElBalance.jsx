@@ -9,6 +9,8 @@ import {
 import { Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { Responder, useTanda } from "./piezas.jsx";
+import { Encabezado } from "./tema1/encabezado.jsx";
+import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import {
   Ficha, FichaEnVuelo, EstilosDeVerbos, useArrastre, useNumeroQueSube,
   useMovimientoReducido, SOLO_LECTOR,
@@ -141,17 +143,30 @@ function LineaDeCierre({ activos, pasivosMasPatrimonio }) {
   );
 }
 
-export default function ArmaElBalance({ Marco, rotulo, titulo, acento, onCompletar }) {
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente. `items` le da las cuentas del ejemplo y `empresa`
+ * el encabezado del documento (el ejemplo no es de Caleja ni del lavadero);
+ * `modoDemo` le quita la consigna, el avance y el botón de seguir, y no llama
+ * a `onCompletar`: ni FP, ni intentos, ni progreso. Con una sola cuenta, el
+ * documento no está completo, así que tampoco se dibuja la línea de cierre.
+ */
+export default function ArmaElBalance({
+  Marco, rotulo, titulo, acento, onCompletar,
+  items = null, empresa = null, modoDemo = false, onComoSeJuega = null,
+}) {
   const reducido = useMovimientoReducido();
   const sortear = () => {
+    if (items) return items;
     const balance = barajar(BALANCES)[0];
     return barajar(balance.cuentas).map((c) => ({ ...c, balance: balance.id }));
   };
   const t = useTanda(sortear);
 
   const balance = useMemo(
-    () => BALANCES.find((b) => b.id === t.items[0]?.balance) ?? BALANCES[0],
-    [t.items],
+    () => (empresa ? { empresa } : BALANCES.find((b) => b.id === t.items[0]?.balance) ?? BALANCES[0]),
+    [t.items, empresa],
   );
 
   /* Lo escrito, en el orden en que se acertó. El error no escribe nunca. */
@@ -167,7 +182,7 @@ export default function ArmaElBalance({ Marco, rotulo, titulo, acento, onComplet
   const pct = puntuar(respuestas, cuantas);
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
 
   useEffect(() => () => clearTimeout(reloj.current), []);
@@ -228,7 +243,7 @@ export default function ArmaElBalance({ Marco, rotulo, titulo, acento, onComplet
   const rotuloDe = (s) => (retro?.resaltar ?? []).find((x) => x.seccion === s)?.rotulo ?? null;
 
   const cerrado = t.terminado;
-  const terminado = cerrado || escritas.length === cuantas;
+  const terminado = !modoDemo && (cerrado || escritas.length === cuantas);
 
   /* ── El documento, que se dibuja igual jugando y al cerrar ── */
   const documento = (
@@ -362,9 +377,14 @@ export default function ArmaElBalance({ Marco, rotulo, titulo, acento, onComplet
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
       <EstilosDeVerbos />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (retro && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Cuenta" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado consigna={CONSIGNA_TEMA2["cu-de-que-familia"]} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={cuantas} hechos={t.i + (retro && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Cuenta" />
+          </div>
+        </>
+      )}
 
       {documento}
 
@@ -418,7 +438,7 @@ export default function ArmaElBalance({ Marco, rotulo, titulo, acento, onComplet
 
       {retro && <Retro texto={retro.texto} />}
 
-      {retro && !esperandoReintento && (
+      {retro && !esperandoReintento && !modoDemo && (
         <Responder onClick={avanzar}>
           {t.i + 1 === cuantas ? "Ver el balance cerrado" : "Siguiente cuenta"}
         </Responder>

@@ -367,7 +367,8 @@ export function evaluarT1_6(concepto, marcado) {
   const ok = informeOk && seccionOk;
 
   if (ok) {
-    const texto = ACIERTO_T1_6[concepto.id];
+    /* El ejemplo de «Así se juega» no es del banco: trae su propia devolución. */
+    const texto = concepto.acierto ?? ACIERTO_T1_6[concepto.id];
     if (!texto) throw new Error(`«${concepto.id}» no tiene devolución de acierto`);
     return { ok, texto, patron: null, informeOk, seccionOk };
   }

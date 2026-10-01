@@ -53,8 +53,19 @@ const CSS = `
 
 const SORA = "Sora, sans-serif";
 
-export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onCompletar }) {
-  const t = useTanda(() => sortearT1_6(barajar));
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente, no una copia dibujada: `items` le da el ejemplo
+ * desde afuera en vez de sortearlo del banco, y `modoDemo` le quita lo que no
+ * es la zona de juego —el encabezado, el avance, el botón de seguir— y le
+ * corta la salida: no llama a `onCompletar`, así que no hay FP, ni intentos,
+ * ni progreso. Cómo se juega no cambia en nada; eso es lo que se enseña.
+ */
+export default function EnCualEstadoAparece({
+  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+}) {
+  const t = useTanda(() => items ?? sortearT1_6(barajar));
 
   const [informe, setInforme] = useState(null);
   const [seccion, setSeccion] = useState(null);
@@ -74,11 +85,11 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
   const completo = informe === PRIMERO ? Boolean(seccion) : Boolean(informe);
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
   useEffect(() => () => clearTimeout(reloj.current), []);
   useEffect(() => {
-    if (r && !esperandoReintento) zonaBoton.current?.querySelector("button")?.focus();
+    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [r, esperandoReintento]);
 
   const enviar = () => {
@@ -141,10 +152,14 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
-      <Encabezado objetivo={T1_6.objetivo} consigna={T1_6.consigna} />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Ficha" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado objetivo={T1_6.objetivo} consigna={T1_6.consigna} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Ficha" />
+          </div>
+        </>
+      )}
 
       {/* Aquí dentro no entra el vocabulario del Tema 2. */}
       <div data-contenido>
@@ -279,7 +294,7 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
           {completo ? "Colocar la ficha" : informe === PRIMERO ? "Elige en qué parte" : "Elige un informe"}
         </Responder>
       )}
-      {r && !esperandoReintento && (
+      {r && !esperandoReintento && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente ficha"}
@@ -287,7 +302,7 @@ export default function EnCualEstadoAparece({ Marco, rotulo, titulo, acento, onC
         </div>
       )}
 
-      <p style={SOLO_LECTOR}>{ALT_T1_6}</p>
+      {!modoDemo && <p style={SOLO_LECTOR}>{ALT_T1_6}</p>}
     </Marco>
   );
 }

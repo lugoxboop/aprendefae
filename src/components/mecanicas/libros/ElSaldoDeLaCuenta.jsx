@@ -11,6 +11,8 @@ import {
 import { Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { CampoCifra, ElegirLado, Responder, leerCifra, useTanda } from "./piezas.jsx";
+import { Encabezado } from "./tema1/encabezado.jsx";
+import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import { CuentaDeValor, EstilosDeVerbos, SOLO_LECTOR, useMovimientoReducido } from "./verbos.jsx";
 
 /*
@@ -103,9 +105,20 @@ function TotalesResaltados({ cuenta, operacion }) {
   );
 }
 
-export default function ElSaldoDeLaCuenta({ Marco, rotulo: rot, titulo, acento, onCompletar }) {
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente, no una copia dibujada: `items` le da el ejemplo
+ * desde afuera en vez de sortearlo del banco, y `modoDemo` le quita lo que no
+ * es la zona de juego —la consigna, el avance, el botón de seguir— y le corta
+ * la salida: no llama a `onCompletar`, así que no hay FP, ni intentos, ni
+ * progreso. Cómo se juega no cambia en nada; eso es lo que se enseña.
+ */
+export default function ElSaldoDeLaCuenta({
+  Marco, rotulo: rot, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+}) {
   const reducido = useMovimientoReducido();
-  const t = useTanda(() => barajar(CUENTAS).slice(0, POR_PARTIDA));
+  const t = useTanda(() => items ?? barajar(CUENTAS).slice(0, POR_PARTIDA));
 
   const [cifra, setCifra] = useState("");
   const [lado, setLado] = useState(null);
@@ -120,11 +133,11 @@ export default function ElSaldoDeLaCuenta({ Marco, rotulo: rot, titulo, acento, 
   const esperandoReintento = Boolean(r && !r.todoBien && intento === 1);
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
 
   useEffect(() => {
-    if (r && !esperandoReintento) zonaBoton.current?.querySelector("button")?.focus();
+    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [r, esperandoReintento]);
 
   const responder = () => {
@@ -204,9 +217,14 @@ export default function ElSaldoDeLaCuenta({ Marco, rotulo: rot, titulo, acento, 
     <Marco rotulo={rot} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
       <EstilosDeVerbos />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Cuenta" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado consigna={CONSIGNA_TEMA2["cu-saldo-de-la-cuenta"]} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Cuenta" />
+          </div>
+        </>
+      )}
 
       {/*
         LAS COLUMNAS DE VALOR, NO LA LISTA DE CIFRAS. Cada movimiento mide lo
@@ -236,7 +254,7 @@ export default function ElSaldoDeLaCuenta({ Marco, rotulo: rot, titulo, acento, 
         deshabilitado={Boolean(r) && !esperandoReintento}
         etiqueta={`Saldo de ${c.cuenta} de ${c.empresa}`}
         estado={r ? (r.cifraOk ? "correcta" : "incorrecta") : null}
-        autoFoco
+        autoFoco={!modoDemo}
       />
       {r?.quitarSigno && (
         <p data-signo-quitado style={{
@@ -268,7 +286,7 @@ export default function ElSaldoDeLaCuenta({ Marco, rotulo: rot, titulo, acento, 
             {esperandoReintento ? "Responder otra vez" : "Responder"}
           </Responder>
         )
-        : (
+        : !modoDemo && (
           <div ref={zonaBoton}>
             <Responder onClick={avanzar}>
               {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente cuenta"}

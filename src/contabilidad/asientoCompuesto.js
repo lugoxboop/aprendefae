@@ -67,6 +67,33 @@ export function montar(item) {
 export const ASIENTOS = ITEMS.map(montar);
 export { POR_PARTIDA };
 
+/*
+ * Un asiento compuesto suelto, escrito a mano: el del ejemplo de «Así se
+ * juega», que no está en ningún caso. Sale con la misma forma que `montar`
+ * —y con las mismas comprobaciones: anclajes en el texto y totales que
+ * cuadran—, así que el componente y `evaluar` lo leen igual.
+ */
+export function montarSuelto({ id, texto, asiento, anclajes, acierto = null }) {
+  const cuentas = [
+    ...asiento.debe.map(([cuenta, valor]) => ({ cuenta, valor, lado: DEBE })),
+    ...asiento.haber.map(([cuenta, valor]) => ({ cuenta, valor, lado: HABER })),
+  ].map((c) => ({
+    ...c,
+    creceP: CRECE_POR[tipoDeCuenta(c.cuenta)],
+    sube: CRECE_POR[tipoDeCuenta(c.cuenta)] === c.lado,
+    ancla: anclajes[c.cuenta] ?? null,
+  }));
+  for (const c of cuentas) {
+    if (!c.ancla || !texto.includes(c.ancla)) throw new Error(`${id}: «${c.cuenta}» no tiene su anclaje en el texto`);
+  }
+  const total = (lado) => cuentas.filter((c) => c.lado === lado).reduce((s, c) => s + c.valor, 0);
+  const totalDebe = total(DEBE);
+  const totalHaber = total(HABER);
+  if (totalDebe !== totalHaber) throw new Error(`${id}: el asiento no cuadra`);
+  const dosPorLado = cuentas.filter((c) => c.lado === DEBE).length > 1;
+  return { id, texto, cuentas, anclajes, totalDebe, totalHaber, dosPorLado, acierto };
+}
+
 /** Los que hacen producible la confusión de fundir dos cuentas del DEBE. */
 export const CON_FUSION_POSIBLE = ASIENTOS
   .filter((a) => a.cuentas.filter((c) => c.lado === DEBE).length > 1)
@@ -176,7 +203,8 @@ export function evaluar(asiento, puestas) {
   const faltan = asiento.cuentas.filter((c) => !hechas.some((p) => p.cuenta === c.cuenta));
 
   let patron = null;
-  let texto = ACIERTO_POR_ITEM[asiento.id]
+  /* El ejemplo de «Así se juega» trae su devolución, como las del banco la suya. */
+  let texto = asiento.acierto ?? ACIERTO_POR_ITEM[asiento.id]
     ?? ACIERTO_GENERAL
       .replace(/\{total\}/g, pesos(asiento.totalDebe))
       .replace("{cuentas}", String(cuentasEsperadas));

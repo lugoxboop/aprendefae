@@ -10,6 +10,8 @@ import {
 import { Retro, Pulsos, Cierre } from "../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../bloques/marcos.jsx";
 import { Responder, useTanda } from "./piezas.jsx";
+import { Encabezado } from "./tema1/encabezado.jsx";
+import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import {
   CuentaDeValor, Ficha, FichaEnVuelo, EstilosDeVerbos, useArrastre,
   useMovimientoReducido, SOLO_LECTOR,
@@ -128,9 +130,20 @@ function CuentaResuelta({ item, valor, destacar }) {
   );
 }
 
-export default function SoltarEnUnLado({ Marco, rotulo, titulo, acento, onCompletar }) {
+/*
+ * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
+ *
+ * Es este mismo componente, no una copia dibujada: `items` le da el ejemplo
+ * desde afuera en vez de sortearlo del banco, y `modoDemo` le quita lo que no
+ * es la zona de juego —la consigna, el avance, el botón de seguir— y le corta
+ * la salida: no llama a `onCompletar`, así que no hay FP, ni intentos, ni
+ * progreso. Cómo se juega no cambia en nada; eso es lo que se enseña.
+ */
+export default function SoltarEnUnLado({
+  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+}) {
   const reducido = useMovimientoReducido();
-  const sortear = () => sortearEstratificado(barajar);
+  const sortear = () => items ?? sortearEstratificado(barajar);
   const t = useTanda(sortear);
 
   /* Lo respondido, en orden, con los dos intentos de cada ítem. */
@@ -150,8 +163,9 @@ export default function SoltarEnUnLado({ Marco, rotulo, titulo, acento, onComple
    * refuerza que el lado lo elige la familia de la cuenta, no el tamaño.
    */
   const valor = useMemo(
-    () => B.valoresDeFicha[t.i % B.valoresDeFicha.length],
-    [t.i],
+    /* El ejemplo de «Así se juega» trae su ficha; el banco la toma del ciclo. */
+    () => item.valorFicha ?? B.valoresDeFicha[t.i % B.valoresDeFicha.length],
+    [t.i, item],
   );
 
   /* La ficha solo entra en la columna cuando la respuesta fue correcta. */
@@ -165,7 +179,7 @@ export default function SoltarEnUnLado({ Marco, rotulo, titulo, acento, onComple
   const pct = puntuar(respuestas);
 
   useEffect(() => {
-    if (t.terminado) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
+    if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
 
   /* La ficha quieta pide atención a los 4 s. */
@@ -279,9 +293,14 @@ export default function SoltarEnUnLado({ Marco, rotulo, titulo, acento, onComple
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
       <EstilosDeVerbos />
-      <div style={{ marginBottom: "12px" }}>
-        <Pulsos total={t.items.length} hechos={t.i + (retro && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Registro" />
-      </div>
+      {!modoDemo && (
+        <>
+          <Encabezado consigna={CONSIGNA_TEMA2["cu-izquierda-o-derecha"]} onComoSeJuega={onComoSeJuega} />
+          <div style={{ marginBottom: "12px" }}>
+            <Pulsos total={t.items.length} hechos={t.i + (retro && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Registro" />
+          </div>
+        </>
+      )}
 
       {/* El enunciado: dos palabras, la cuenta y qué le pasa. */}
       <p data-enunciado style={{
@@ -348,7 +367,7 @@ export default function SoltarEnUnLado({ Marco, rotulo, titulo, acento, onComple
 
       {retro && <Retro texto={retro.texto} />}
 
-      {retro && !esperandoReintento && (
+      {retro && !esperandoReintento && !modoDemo && (
         <Responder onClick={avanzar}>
           {t.i + 1 === t.items.length ? "Ver resultado" : "Siguiente registro"}
         </Responder>

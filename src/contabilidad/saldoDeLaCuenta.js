@@ -58,6 +58,22 @@ export function montar(item) {
 }
 
 export const CUENTAS = ITEMS.map(montar);
+
+/*
+ * Una cuenta suelta, con sus movimientos escritos a mano: la del ejemplo de
+ * «Así se juega», que no sale del mayor de ningún caso. Mismo montaje, para
+ * que el componente y el evaluador la lean igual que a las del banco.
+ */
+export function montarSuelta({ id, cuenta, empresa, debitos, creditos }) {
+  const c = { cuenta, debitos, creditos };
+  const s = saldoDe(c);
+  if (!s.lado) throw new Error(`${id}: un saldo en cero no tiene lado, y la actividad lo pide`);
+  return {
+    id, cuenta, empresa, cuentaT: c, debitos, creditos,
+    debito: s.debito, credito: s.credito, saldo: s.saldo, lado: s.lado,
+    sinCancelar: debitos.length === 0 || creditos.length === 0,
+  };
+}
 export { POR_PARTIDA };
 
 /*
