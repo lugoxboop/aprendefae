@@ -420,7 +420,8 @@ test("★★★ sin puntos nuevos no hay figura en pantalla", () => {
   }
 });
 
-test("★★ rica: diez facetas, nodos y destello; sobria: seis facetas, sin destello; las dos aria-hidden", () => {
+test("★★ rica: el marco Élite de las medallas con su pulso; sobria: el Intermedio, sin pulso; las dos aria-hidden", async () => {
+  const { LADOS } = await import("../Medalla.jsx");
   reducido = false;
   try {
     const a = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 100, detalle: filas(5, 0), registro: fila(25) }));
@@ -428,21 +429,42 @@ test("★★ rica: diez facetas, nodos y destello; sobria: seis facetas, sin des
       const f = figura(a.caja);
       assert.equal(f.getAttribute("data-figura-facetada"), "rica");
       assert.equal(f.getAttribute("aria-hidden"), "true");
-      assert.equal(f.querySelectorAll("[data-faceta]").length, 10);
-      assert.equal(f.querySelectorAll("circle:not([data-destello])").length, 10);
-      assert.ok(f.querySelector("[data-destello]"), "el perfecto no tiene pulso");
-      /* Un solo pulso, sin bucle. */
-      assert.doesNotMatch(f.querySelector("[data-destello]").style.animation, /infinite/);
-      assert.match(f.querySelector("[data-destello]").style.animation, /1500ms/);
+      assert.equal(f.querySelectorAll("[data-faceta]").length, LADOS.elite, "la rica no usa el marco Élite");
+      assert.ok(f.querySelector("[data-reticulado]"), "falta el anillo reticulado del Élite");
+      const destello = f.querySelector("[data-destello]");
+      assert.ok(destello, "el perfecto no tiene pulso");
+      /* Una sola pasada de 1,5 s, sin bucle. */
+      assert.match(destello.style.animation, /1500ms/);
+      assert.doesNotMatch(destello.style.animation + f.innerHTML, /infinite/);
     } finally { a.desmontar(); }
     const b = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 60, detalle: filas(3, 2), registro: fila(15) }));
     try {
       const f = figura(b.caja);
       assert.equal(f.getAttribute("data-figura-facetada"), "sobria");
       assert.equal(f.getAttribute("aria-hidden"), "true");
-      assert.equal(f.querySelectorAll("[data-faceta]").length, 6);
+      assert.equal(f.querySelectorAll("[data-faceta]").length, LADOS.intermedio, "la sobria no usa el marco Intermedio");
+      assert.ok(LADOS.intermedio < LADOS.elite, "la sobria debe tener menos facetas");
+      assert.equal(f.querySelector("[data-reticulado]"), null);
       assert.equal(f.querySelector("[data-destello]"), null, "el sobrio no debe pulsar");
     } finally { b.desmontar(); }
+  } finally { reducido = true; }
+});
+
+test("★★ la figura vive detrás de la tarjeta «Puntos ganados», que tiene fondo sólido (≥92 %)", () => {
+  reducido = false;
+  try {
+    const m = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 100, detalle: filas(5, 0), registro: fila(25) }));
+    try {
+      const f = figura(m.caja);
+      assert.equal(f.closest("[data-cifra]")?.getAttribute("data-cifra"), "puntos", "la figura no está en la tarjeta de puntos");
+      assert.equal(m.caja.querySelector('[data-cifra="bien"] [data-figura-facetada]'), null, "nunca detrás de «Bien a la primera»");
+      for (const t of m.caja.querySelectorAll("[data-tarjeta]")) {
+        const alfa = Number(t.style.background.match(/[\d.]+/g)?.[3] ?? 1);
+        assert.ok(alfa >= 0.92, `fondo de tarjeta con opacidad ${alfa}`);
+      }
+      assert.equal(FF.TAMANO, 260);
+      assert.equal(FF.DURACION, 1500);
+    } finally { m.desmontar(); }
   } finally { reducido = true; }
 });
 

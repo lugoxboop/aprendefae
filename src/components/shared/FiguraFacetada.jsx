@@ -1,87 +1,81 @@
 import { useEffect, useState } from "react";
+import { poligono, LADOS } from "./Medalla.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * LA FIGURA FACETADA DE LA PANTALLA DE RESUMEN.
  *
- * [PROVISIONAL — la especificación de Xeno no llegó con el paquete.] Está
- * hecha con las reglas de Levi y con el vocabulario «Facetado» que el sitio ya
- * tiene en los avatares (avatar/generador.js): polígono regular, facetas
- * triangulares que alternan opacidad 0,17 / 0,05, borde interior blanco. Si la
- * especificación dice otra cosa, se cambia aquí y en ningún otro sitio.
+ * La especificación es de Xeno; las correcciones de Levi mandan sobre ella en
+ * el color, en la repetición y en el contraste.
+ *
+ * NO ES UN LENGUAJE NUEVO: es el marco facetado del kit de medallas, la misma
+ * geometría (`poligono` y `LADOS` de Medalla.jsx) y la misma escala.
+ *
+ *   rica     el marco Élite —14 facetas y anillo reticulado— con UN pulso de
+ *            brillo. Solo para el perfecto (X = N).
+ *   sobria   el marco Intermedio —8 lados, anillo interior y nodos—, sin
+ *            pulso. Cualquier otra primera vez con puntos, exploratorias y
+ *            menos del 50 % incluidas.
+ *   ninguna  repetición sin puntos nuevos (eso lo decide hacer/pantallaResumen.js).
  *
  * Un solo tono: #B8C4D4 con blanco, y ningún otro color.
  *
- *   rica     diez lados, nodos, aristas blancas y UN pulso de brillo de 1,5 s
- *   sobria   seis lados, menos facetas, sin pulso
+ * ═══════════ DÓNDE VIVE ═══════════
  *
- * Va en su propio hueco, a la derecha de las cifras: ningún texto queda
- * encima de ella ni de su destello.
+ * Detrás de la tarjeta «Puntos ganados», centrada en ella. La tarjeta tiene su
+ * propio fondo sólido por encima: el contraste de su texto no depende de la
+ * figura. La pinta PantallaResumen.
  *
- * Es una capa de paso: entra, (pulsa), sale y se desmonta. No toma el puntero
- * —los botones de debajo funcionan desde el primer instante— y no existe para
- * el lector de pantalla. Con movimiento reducido aparece quieta, sin pulso,
- * 1,5 s, y se va.
+ * EL DIÁMETRO NO ES FIJO. Xeno pide ~260 px, pero a 375 px entre la tarjeta y
+ * el título —y entre la tarjeta y el recuadro— no caben: la figura los
+ * cruzaba y el texto caía a 1,4:1 en el pico. Con la regla de Levi («si no se
+ * cumple, reduce el tamaño»), PantallaResumen mide el espacio que hay y le
+ * pasa el mayor diámetro que no toca ningún texto fuera de las tarjetas, con
+ * 260 como tope.
+ *
+ * ═══════════ EL TIEMPO: UNA SOLA PASADA DE 1,5 s ═══════════
+ *
+ *      0–700 ms   crece desde un punto hasta su tamaño, con un leve giro
+ *    700–900 ms   tamaño completo; en la rica, el pulso de brillo (pico a 800)
+ *   900–1500 ms   se desvanece
+ *
+ * Luego se desmonta: la pantalla queda en su estado de siempre. Con
+ * movimiento reducido aparece directamente en su estado final, sin pulso,
+ * los mismos 1,5 s, y desaparece sin transición.
+ *
+ * aria-hidden y sin puntero: los botones funcionan desde el primer instante.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 export const TONO = "#B8C4D4";
 const BLANCO = "#FFFFFF";
 
-/* Tiempos, en ms. El pico del pulso es ENTRADA + PULSO / 2. */
-export const ENTRADA = 450;
-export const PULSO = 1500;
-export const SALIDA = 400;
-export const SOBRIA_QUIETA = 1000;
+export const DURACION = 1500;
+export const CRECE_MS = 700;
+export const PICO_MS = 800;
+export const DESVANECE_DESDE = 900;
 export const REDUCIDO_MS = 1500;
-export const PICO_MS = ENTRADA + PULSO / 2;
-export const DURACION = { rica: ENTRADA + PULSO + SALIDA, sobria: ENTRADA + SOBRIA_QUIETA + SALIDA };
+/* Diámetro máximo en pantalla (Xeno: ~260 px). */
+export const TAMANO = 260;
 
-/*
- * Radio del destello, en unidades del lienzo de 200. Se fijó midiendo en el
- * pico: con este radio todo el texto que queda encima conserva ≥4,5:1 (ver
- * las capturas del PR). Si se agranda, hay que volver a medir.
- */
-export const RADIO_DESTELLO = 46;
+export const LADOS_FIGURA = { rica: LADOS.elite, sobria: LADOS.intermedio };
 
-/* Lado de la figura en pantalla. Va en su propio hueco, a la derecha de las cifras. */
-export const TAMANO = 128;
-
-const vertices = (n, r, giro = -Math.PI / 2) =>
-  Array.from({ length: n }, (_, i) => {
-    const a = giro + (i * 2 * Math.PI) / n;
-    return [100 + r * Math.cos(a), 100 + r * Math.sin(a)];
-  });
-const puntos = (vs) => vs.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
-
-/** La geometría de cada nivel. Pura, para poder probarla sin montar nada. */
-export function geometria(nivel) {
-  const rica = nivel === "rica";
-  const n = rica ? 10 : 6;
-  const fuera = vertices(n, 92);
-  const dentro = vertices(n, rica ? 58 : 62);
-  /* El marco: un cuadrilátero por lado, entre el polígono de fuera y el de dentro. */
-  const facetas = fuera.map((v, i) => ({
-    pts: puntos([v, fuera[(i + 1) % n], dentro[(i + 1) % n], dentro[i]]),
-    op: rica ? (i % 2 ? 0.17 : 0.05) : (i % 2 ? 0.12 : 0.04),
-  }));
-  return {
-    n,
-    fuera: puntos(fuera),
-    dentro: puntos(dentro),
-    facetas,
-    aristas: rica ? fuera.map((v, i) => ({ x1: v[0], y1: v[1], x2: dentro[i][0], y2: dentro[i][1] })) : [],
-    nodos: rica ? fuera.map(([x, y]) => ({ x, y })) : [],
-  };
-}
-
+const pct = (ms) => `${((ms / DURACION) * 100).toFixed(2)}%`;
 const CSS = `
-@keyframes fae-ff-entra { from { opacity: 0; transform: scale(.86) rotate(-14deg); } to { opacity: 1; transform: none; } }
-@keyframes fae-ff-sale { to { opacity: 0; } }
-@keyframes fae-ff-pulso { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
-@keyframes fae-ff-aviva { 0%, 100% { opacity: .82; } 50% { opacity: 1; } }
-.fae-ff { position: absolute; right: 0; top: 50%; width: ${TAMANO}px; height: ${TAMANO}px; margin-top: -${TAMANO / 2}px; pointer-events: none; z-index: 0; overflow: visible; }
-.fae-ff-cuerpo { transform-origin: 100px 100px; transform-box: view-box; }
+@keyframes fae-ff-crece {
+  0% { opacity: 0; transform: scale(0) rotate(-24deg); }
+  8% { opacity: 1; }
+  ${pct(CRECE_MS)} { opacity: 1; transform: scale(1) rotate(0deg); }
+  ${pct(DESVANECE_DESDE)} { opacity: 1; transform: scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: scale(1) rotate(0deg); }
+}
+@keyframes fae-ff-brillo {
+  0%, ${pct(CRECE_MS)} { opacity: 0; }
+  ${pct(PICO_MS)} { opacity: 1; }
+  ${pct(DESVANECE_DESDE)}, 100% { opacity: 0; }
+}
+.fae-ff { position: absolute; left: 50%; top: 50%; pointer-events: none; z-index: -1; overflow: visible; }
+.fae-ff-cuerpo { transform-origin: 50px 50px; transform-box: view-box; }
 @media (prefers-reduced-motion: reduce) { .fae-ff, .fae-ff * { animation: none !important; } }
 `;
 
@@ -89,66 +83,114 @@ const reducidoAhora = () => {
   try { return Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches); } catch { return false; }
 };
 
-export default function FiguraFacetada({ nivel }) {
+/* Los vértices sueltos, con la punta arriba, igual que en Medalla.jsx. */
+const vertices = (n, r) => Array.from({ length: n }, (_, i) => {
+  const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+  return { x: 50 + r * Math.cos(a), y: 50 + r * Math.sin(a) };
+});
+
+export default function FiguraFacetada({ nivel, tamano = TAMANO }) {
   const [viva, setViva] = useState(Boolean(nivel));
   const [reducido] = useState(reducidoAhora);
 
   useEffect(() => {
     if (!nivel) return undefined;
-    const t = setTimeout(() => setViva(false), reducido ? REDUCIDO_MS : DURACION[nivel]);
+    const t = setTimeout(() => setViva(false), reducido ? REDUCIDO_MS : DURACION);
     return () => clearTimeout(t);
   }, [nivel, reducido]);
 
   if (!nivel || !viva) return null;
 
-  const g = geometria(nivel);
   const rica = nivel === "rica";
-  const total = DURACION[nivel];
-  const anim = (nombre, ms, retraso = 0, relleno = "both") =>
-    reducido ? undefined : `${nombre} ${ms}ms cubic-bezier(.3,.9,.4,1) ${retraso}ms ${relleno}`;
+  const n = LADOS_FIGURA[nivel];
+  const anim = (nombre) => (reducido ? undefined : `${nombre} ${DURACION}ms cubic-bezier(.3,.9,.4,1) both`);
+  /* Trazos fijos en píxeles: el lienzo de la medalla (100) se dibuja aquí a 260. */
+  const trazo = (px) => ({ strokeWidth: px, vectorEffect: "non-scaling-stroke" });
 
   return (
     <svg
       className="fae-ff"
       data-figura-facetada={nivel}
       data-reducido={reducido ? "si" : "no"}
-      viewBox="0 0 200 200"
+      viewBox="0 0 100 100"
       aria-hidden="true"
       focusable="false"
-      style={{ animation: anim("fae-ff-sale", SALIDA, total - SALIDA, "forwards") }}
+      width={tamano}
+      height={tamano}
+      style={{ width: `${tamano}px`, height: `${tamano}px`, margin: `-${tamano / 2}px 0 0 -${tamano / 2}px` }}
     >
       <style>{CSS}</style>
-      {rica && (
-        <defs>
-          <radialGradient id="fae-ff-destello" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={BLANCO} stopOpacity="0.55" />
-            <stop offset="55%" stopColor={TONO} stopOpacity="0.18" />
-            <stop offset="100%" stopColor={TONO} stopOpacity="0" />
-          </radialGradient>
-        </defs>
-      )}
-      <g className="fae-ff-cuerpo" style={{ animation: anim("fae-ff-entra", ENTRADA) }}>
-        <g style={{ animation: rica ? anim("fae-ff-aviva", PULSO, ENTRADA) : undefined, opacity: rica && !reducido ? 0.82 : 1 }}>
-          {g.facetas.map((f, i) => (
-            <polygon key={i} data-faceta points={f.pts} fill={TONO} fillOpacity={f.op} />
-          ))}
-          <polygon points={g.fuera} fill="none" stroke={TONO} strokeOpacity={rica ? 0.85 : 0.6} strokeWidth={rica ? 1.8 : 1.4} strokeLinejoin="round" />
-          <polygon points={g.dentro} fill="none" stroke={BLANCO} strokeOpacity={rica ? 0.38 : 0.22} strokeWidth="1.2" strokeLinejoin="round" />
-          {g.aristas.map((a, i) => (
-            <line key={i} x1={a.x1} y1={a.y1} x2={a.x2} y2={a.y2} stroke={BLANCO} strokeOpacity="0.22" strokeWidth="1" />
-          ))}
-          {g.nodos.map((p, i) => (
-            <circle key={i} cx={p.x} cy={p.y} r="2.6" fill={TONO} />
-          ))}
-        </g>
+      <defs>
+        <radialGradient id={`fae-ff-resplandor-${nivel}`} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={TONO} stopOpacity={rica ? 0.3 : 0.2} />
+          <stop offset="100%" stopColor={TONO} stopOpacity="0" />
+        </radialGradient>
+        {rica && (
+          <>
+            <linearGradient id="fae-ff-relleno" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor={BLANCO} stopOpacity="0.22" />
+              <stop offset="100%" stopColor={TONO} stopOpacity="0.08" />
+            </linearGradient>
+            <radialGradient id="fae-ff-brillo" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor={BLANCO} stopOpacity="0.7" />
+              <stop offset="60%" stopColor={TONO} stopOpacity="0.25" />
+              <stop offset="100%" stopColor={TONO} stopOpacity="0" />
+            </radialGradient>
+          </>
+        )}
+      </defs>
+      <g className="fae-ff-cuerpo" style={{ animation: anim("fae-ff-crece") }}>
+        {/* El resplandor que emana detrás de la tarjeta. */}
+        <circle cx="50" cy="50" r="50" fill={`url(#fae-ff-resplandor-${nivel})`} />
+
+        {/* Élite: el anillo reticulado exterior, con sus radios desde el centro. */}
+        {rica && (
+          <g data-reticulado stroke={TONO} fill="none" opacity="0.6">
+            <polygon points={poligono(n, 45)} style={trazo(1)} />
+            {vertices(n, 45).map((v, i) => (
+              <line key={i} x1="50" y1="50" x2={v.x} y2={v.y} opacity="0.5" style={trazo(0.8)} />
+            ))}
+          </g>
+        )}
+
+        {/* Las facetas, desde el centro, alternando como en el resto del kit. */}
+        {vertices(n, rica ? 38 : 40).map((v, i, vs) => {
+          const w = vs[(i + 1) % n];
+          return (
+            <polygon
+              key={i}
+              data-faceta
+              points={`50,50 ${v.x.toFixed(2)},${v.y.toFixed(2)} ${w.x.toFixed(2)},${w.y.toFixed(2)}`}
+              fill={rica ? "url(#fae-ff-relleno)" : TONO}
+              fillOpacity={rica ? 1 : (i % 2 ? 0.12 : 0.04)}
+            />
+          );
+        })}
+
+        {/* El marco. */}
+        <polygon
+          points={poligono(n, rica ? 38 : 40)}
+          fill="none"
+          stroke={TONO}
+          strokeLinejoin="round"
+          style={trazo(rica ? 2.4 : 2)}
+        />
+        {/* Anillo interior con relieve. */}
+        <polygon points={poligono(n, rica ? 31 : 33)} fill="none" stroke={BLANCO} opacity="0.45" style={trazo(1)} />
+        {/* Los nodos, como en el Intermedio de las medallas. */}
+        {!rica && vertices(n, 40).map((v, i) => (
+          <circle key={i} data-nodo-figura cx={v.x} cy={v.y} r="1.6" fill={TONO} />
+        ))}
+
+        {/* El pulso, solo en la rica y nunca con movimiento reducido. */}
         {rica && !reducido && (
           <circle
             data-destello
-            cx="100"
-            cy="100"
-            r={RADIO_DESTELLO}
-            fill="url(#fae-ff-destello)"
-            style={{ opacity: 0, animation: anim("fae-ff-pulso", PULSO, ENTRADA, "none") }}
+            cx="50"
+            cy="50"
+            r="46"
+            fill="url(#fae-ff-brillo)"
+            style={{ opacity: 0, animation: `fae-ff-brillo ${DURACION}ms linear both` }}
           />
         )}
       </g>
