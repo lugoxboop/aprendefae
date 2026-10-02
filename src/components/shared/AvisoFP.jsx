@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FAE } from "../../theme.js";
 import { escucharFP, motivoDelRecorte } from "../../fp/aviso.js";
+import { usaPantallaResumen } from "../../hacer/pantallaResumen.js";
 
 /*
  * Confirmación en pantalla al ganar FP.
@@ -25,6 +26,8 @@ export default function AvisoFP() {
 
   useEffect(() => {
     return escucharFP((datos) => {
+      /* Con la pantalla de resumen encendida, los puntos los dice ella. */
+      if (usaPantallaResumen(datos?.materiaId, datos?.actividadId)) return;
       /* Cero FP no se celebra: repetir por cuarta vez no da nada y decirlo con
          un "+0 FP" sería ruido. El motivo se enseña igual, que es lo útil. */
       setAviso({ ...datos, motivo: motivoDelRecorte(datos) });

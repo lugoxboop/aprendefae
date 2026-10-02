@@ -7,6 +7,7 @@ import EnlaceRendimiento from "./shared/EnlaceRendimiento.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
+import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
 import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import ClasificadorTesoro from "./mecanicas/tesoreria/ClasificadorTesoro.jsx";
 import DirectosIndirectos from "./mecanicas/tesoreria/DirectosIndirectos.jsx";
@@ -189,7 +190,9 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
   const hechas = useCompletadas();
   const { pedirCuenta } = useAuth();
   /* El cierre a la altura de la dificultad: sale al terminar, con o sin cuenta. */
-  const [recompensa, celebrar] = useRecompensa();
+  const [recompensa, celebrar, celebrando] = useRecompensa();
+  /* La pantalla de resumen. Apagada para esta materia: ver hacer/pantallaResumen.js. */
+  const resumen = useResumenDePartida(MATERIA, celebrando);
 
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
   const nodos = nodosDe(actividadesDeTipo(tema, HACER), hechas);
@@ -216,14 +219,17 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
   /* El mismo camino central que el resto del sitio: porcentaje, duración y detalle. */
   const completarJuego = async (actividadId, porcentajeAciertos, duracionMs, detalle = null) => {
     celebrar(CLAS[actividadId]?.dificultad, actividadId);
-    const resultado = await registrarActividadCompletada(CLAS[actividadId], {
-      materiaId: MATERIA,
-      temaId: TEMA,
-      actividadId,
-      porcentajeAciertos,
-      duracionMs,
-      detalle,
-    });
+    const resultado = await resumen.registrar(
+      { actividadId, clasificacion: CLAS[actividadId], pct: porcentajeAciertos, detalle },
+      () => registrarActividadCompletada(CLAS[actividadId], {
+        materiaId: MATERIA,
+        temaId: TEMA,
+        actividadId,
+        porcentajeAciertos,
+        duracionMs,
+        detalle,
+      }),
+    );
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
 
@@ -317,7 +323,7 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
             <>
               <button
                 type="button"
-                onClick={() => setNodoAbierto(null)}
+                onClick={() => { resumen.limpiar(); setNodoAbierto(null); }}
                 style={{
                   display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: "18px",
                   fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
@@ -355,7 +361,7 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
             <>
               <button
                 type="button"
-                onClick={() => setNodoAbierto(null)}
+                onClick={() => { resumen.limpiar(); setNodoAbierto(null); }}
                 style={{
                   display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: "18px",
                   fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
@@ -377,9 +383,11 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
               <h2 style={h2}>{juego.titulo}</h2>
               <p style={lead}>{juego.lead}</p>
 
-              <juego.Mecanica
-                onCompletar={(pct, ms, detalle) => completarJuego(juego.id, pct, ms, detalle)}
-              />
+              <ContextoResumen.Provider value={resumen.contexto(juego.id, () => setNodoAbierto(null))}>
+                <juego.Mecanica
+                  onCompletar={(pct, ms, detalle) => completarJuego(juego.id, pct, ms, detalle)}
+                />
+              </ContextoResumen.Provider>
             </>
           )}
         </div>

@@ -10,6 +10,7 @@ import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
+import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
 import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
 import { bloqueDeDificultad } from "../hacer/bloques.js";
 import { FAE as TEMA1_ACENTO } from "../theme.js";
@@ -101,7 +102,9 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
   const [nodoAbierto, setNodoAbierto] = useState(nodoInicial ?? null);
   const hechas = useCompletadas();
   const { pedirCuenta, usuario } = useAuth();
-  const [recompensa, celebrar] = useRecompensa();
+  const [recompensa, celebrar, celebrando] = useRecompensa();
+  /* La pantalla de resumen: solo muestra; el interruptor está en hacer/pantallaResumen.js. */
+  const resumen = useResumenDePartida(MATERIA, celebrando);
 
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
   const nodos = nodosDe(actividadesDeTipo(tema, HACER).filter((a) => !a.pendiente), hechas);
@@ -110,9 +113,10 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
   const completar = async (actividadId, porcentaje, duracionMs, detalle = null) => {
     const clas = clasificacionDe(MATERIA, TEMA, actividadId);
     celebrar(clas?.dificultad, actividadId);
-    const res = await registrarActividadCompletada(clas, {
-      materiaId: MATERIA, temaId: TEMA, actividadId, porcentajeAciertos: porcentaje, duracionMs, detalle,
-    });
+    const res = await resumen.registrar({ actividadId, clasificacion: clas, pct: porcentaje, detalle }, () =>
+      registrarActividadCompletada(clas, {
+        materiaId: MATERIA, temaId: TEMA, actividadId, porcentajeAciertos: porcentaje, duracionMs, detalle,
+      }));
     if (res?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
 
@@ -177,7 +181,7 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
             <div>
               <button
                 type="button"
-                onClick={() => setNodoAbierto(null)}
+                onClick={() => { resumen.limpiar(); setNodoAbierto(null); }}
                 style={{
                   marginBottom: "16px", padding: "8px 14px", borderRadius: "999px",
                   background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)",
@@ -186,15 +190,17 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
               >
                 ‹ Volver al camino
               </button>
-              <JuegoConTutorial
-                key={juego.id}
-                juego={juego}
-                usuarioId={usuario?.id ?? null}
-                Marco={MarcoLibros}
-                acento={TEMA1_ACENTO.ambar}
-                rotulo={rotuloDeBloque(juego.id)}
-                onCompletar={(pct, ms, detalle) => completar(juego.id, pct, ms, detalle)}
-              />
+              <ContextoResumen.Provider value={resumen.contexto(juego.id, () => setNodoAbierto(null))}>
+                <JuegoConTutorial
+                  key={juego.id}
+                  juego={juego}
+                  usuarioId={usuario?.id ?? null}
+                  Marco={MarcoLibros}
+                  acento={TEMA1_ACENTO.ambar}
+                  rotulo={rotuloDeBloque(juego.id)}
+                  onCompletar={(pct, ms, detalle) => completar(juego.id, pct, ms, detalle)}
+                />
+              </ContextoResumen.Provider>
             </div>
           ) : (
             <CaminoHacer nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} />

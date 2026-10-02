@@ -343,3 +343,28 @@ test("★ con la ficha tomada, ← la lleva al debe y → al haber", () => {
   conTecla("ArrowLeft", DEBE);
   conTecla("ArrowRight", HABER);
 });
+
+/*
+ * El aviso de patrón solo sale con esta firma, y por eso se le escapó a la
+ * prueba del PR #7 un «débito» que tenía dentro: ninguna partida de las
+ * pruebas lo hacía aparecer. Aquí se juega entera en pantalla con la firma
+ * exacta —los cuatro activos bien, los cuatro pasivos mal a la primera— y se
+ * mira el texto que queda.
+ */
+test("★★ con la firma exacta sale el aviso de patrón en pantalla, y no dice «débito» ni «crédito»", () => {
+  const { caja, desmontar } = montar();
+  try {
+    for (let k = 0; k < 8; k += 1) {
+      const item = itemEnPantalla(caja);
+      const otro = item.categoria === DEBE ? HABER : DEBE;
+      if (esDeActivo(item)) tocar(destino(caja, item.categoria));
+      else { tocar(destino(caja, otro)); tocar(destino(caja, item.categoria)); }
+      tocar([...caja.querySelectorAll("button")].find((b) => /Siguiente registro|Ver resultado/.test(b.textContent)));
+    }
+    const aviso = caja.querySelector("[data-mensaje-patron]");
+    assert.ok(aviso, "con la firma exacta no salió el aviso de patrón");
+    assert.equal(aviso.textContent, B.errorC);
+    assert.ok(aviso.textContent.includes("estás leyendo 'debe' como 'aumenta'"), aviso.textContent);
+    assert.doesNotMatch(aviso.textContent, /d[ée]bito|cr[ée]dito/iu);
+  } finally { desmontar(); }
+});
