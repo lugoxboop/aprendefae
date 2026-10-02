@@ -1,4 +1,5 @@
 import { FAE } from "../../../theme.js";
+import PantallaResumen, { useContextoResumen } from "../../shared/PantallaResumen.jsx";
 import { CSS_CORAZON } from "./circulatorio.jsx";
 import { CARD_SHELL } from "../../SubjectCard.jsx";
 
@@ -322,7 +323,19 @@ export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cue
  * el mismo número que viajó al servidor: no se recalcula aquí ni se redondea
  * otra vez.
  */
-export function Cierre({ pct, children, onReiniciar, textoReiniciar = "Jugar otra vez" }) {
+/*
+ * Con la pantalla de resumen encendida para la materia (ver
+ * hacer/pantallaResumen.js), el recuadro cede su sitio a ella: el texto propio
+ * de la actividad pasa a su recuadro y el reinicio, a su botón «Repetir». Sin
+ * proveedor o con el interruptor apagado, el recuadro es el de siempre.
+ */
+export function Cierre(props) {
+  const resumen = useContextoResumen();
+  if (resumen.activa) return <PantallaResumen texto={props.children} onRepetir={props.onReiniciar ?? null} />;
+  return <RecuadroDeResultado {...props} />;
+}
+
+function RecuadroDeResultado({ pct, children, onReiniciar, textoReiniciar = "Jugar otra vez" }) {
   return (
     <div
       className="fae-cz-entrar"

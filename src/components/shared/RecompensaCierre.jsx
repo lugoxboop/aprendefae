@@ -159,6 +159,8 @@ export default function RecompensaCierre({ dificultad, actividadId, onFin }) {
 /**
  * Para una vista: `const [recompensa, celebrar] = useRecompensa();`, pintar
  * `{recompensa}` y llamar `celebrar(dificultad, actividadId)` al completar.
+ * El tercer valor dice si la celebración sigue en pantalla: la pantalla de
+ * resumen espera a que se vaya.
  */
 export function useRecompensa() {
   const [disparo, setDisparo] = useState(null);
@@ -170,5 +172,5 @@ export function useRecompensa() {
   const elemento = disparo ? (
     <RecompensaCierre key={disparo.n} dificultad={disparo.dificultad} actividadId={disparo.actividadId} onFin={terminar} />
   ) : null;
-  return [elemento, celebrar];
+  return [elemento, celebrar, disparo !== null];
 }

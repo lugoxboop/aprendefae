@@ -7,6 +7,7 @@ import EnlaceRendimiento from "./shared/EnlaceRendimiento.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
+import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
 import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import {
@@ -71,7 +72,9 @@ export default function PoliticaMonetariaView({ modo = null, nodoInicial = null,
   const [nodoAbierto, setNodoAbierto] = useState(null);
   const hechas = useCompletadas();
   const { pedirCuenta } = useAuth();
-  const [recompensa, celebrar] = useRecompensa();
+  const [recompensa, celebrar, celebrando] = useRecompensa();
+  /* La pantalla de resumen. Apagada para esta materia: ver hacer/pantallaResumen.js. */
+  const resumen = useResumenDePartida(MATERIA, celebrando);
 
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
   const nodos = nodosDe(actividadesDeTipo(tema, HACER), hechas);
@@ -79,9 +82,12 @@ export default function PoliticaMonetariaView({ modo = null, nodoInicial = null,
 
   const completarJuego = async (actividadId, porcentajeAciertos, duracionMs, detalle = null) => {
     celebrar(CLAS[actividadId]?.dificultad, actividadId);
-    const resultado = await registrarActividadCompletada(CLAS[actividadId], {
-      materiaId: MATERIA, temaId: TEMA, actividadId, porcentajeAciertos, duracionMs, detalle,
-    });
+    const resultado = await resumen.registrar(
+      { actividadId, clasificacion: CLAS[actividadId], pct: porcentajeAciertos, detalle },
+      () => registrarActividadCompletada(CLAS[actividadId], {
+        materiaId: MATERIA, temaId: TEMA, actividadId, porcentajeAciertos, duracionMs, detalle,
+      }),
+    );
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
 
@@ -134,7 +140,7 @@ export default function PoliticaMonetariaView({ modo = null, nodoInicial = null,
             <>
               <button
                 type="button"
-                onClick={() => setNodoAbierto(null)}
+                onClick={() => { resumen.limpiar(); setNodoAbierto(null); }}
                 style={{ display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: "18px", fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, padding: "9px 15px", borderRadius: "999px", cursor: "pointer", background: "transparent", border: "1px solid rgba(248,249,250,0.22)", color: "rgba(248,249,250,0.7)" }}
               >
                 <ChevronLeft size={15} /> Volver al camino
@@ -145,7 +151,9 @@ export default function PoliticaMonetariaView({ modo = null, nodoInicial = null,
                 <ActivityBadge tipo={CLAS[juego.id]?.tipo} size="sm" />
               </div>
               <h2 style={h2}>{nombreDeActividad(juego.id)}</h2>
-              <juego.Mecanica onCompletar={(pct, ms, detalle) => completarJuego(juego.id, pct, ms, detalle)} />
+              <ContextoResumen.Provider value={resumen.contexto(juego.id, () => setNodoAbierto(null))}>
+                <juego.Mecanica onCompletar={(pct, ms, detalle) => completarJuego(juego.id, pct, ms, detalle)} />
+              </ContextoResumen.Provider>
             </>
           )}
         </div>

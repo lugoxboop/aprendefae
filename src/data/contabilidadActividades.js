@@ -162,7 +162,7 @@ export const IZQUIERDA_O_DERECHA = {
    * es 4+4: con un sorteo libre, el mismo estudiante podría sacar 75 % y el
    * resultado mentiría.
    */
-  errorC: "Fíjate en tu patrón: acertaste los cuatro activos y fallaste los cuatro pasivos. Eso no es mala suerte — es la señal de que estás leyendo 'débito' como 'aumenta'. Funciona con los activos y falla con todo lo demás. Vuelve a los ▲: cada familia tiene el suyo, y ahí está la diferencia.",
+  errorC: "Fíjate en tu patrón: acertaste los cuatro activos y fallaste los cuatro pasivos. Eso no es mala suerte — es la señal de que estás leyendo 'debe' como 'aumenta'. Funciona con los activos y falla con todo lo demás. Vuelve a los ▲: cada familia tiene el suyo, y ahí está la diferencia.",
 };
 
 /* ═══════════════════════ CU-2 · ¿De qué familia es? ═══════════════════════ */

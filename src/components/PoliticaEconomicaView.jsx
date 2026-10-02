@@ -20,6 +20,7 @@ import { SeAcerca, ExpedienteGabinete, ConsejoMinistros } from "./mecanicas/bloq
 import { clasificacionDe, APRENDER, HACER, actividadesDeTipo, SUBJECTS } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
+import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
 import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
@@ -124,7 +125,9 @@ export default function PoliticaEconomicaView({ modo = null, nodoInicial = null,
 
   const { pedirCuenta } = useAuth();
   /* El cierre a la altura de la dificultad: sale al terminar, con o sin cuenta. */
-  const [recompensa, celebrar] = useRecompensa();
+  const [recompensa, celebrar, celebrando] = useRecompensa();
+  /* La pantalla de resumen. Apagada para esta materia: ver hacer/pantallaResumen.js. */
+  const resumen = useResumenDePartida(MATERIA, celebrando);
 
   /*
    * Un solo camino para los dos juegos: la clasificación y el id son lo único
@@ -132,15 +135,16 @@ export default function PoliticaEconomicaView({ modo = null, nodoInicial = null,
    */
   const completarJuego = async (clasificacion, actividadId, porcentajeAciertos, duracionMs, detalle = null) => {
     celebrar(clasificacion?.dificultad, actividadId);
-    const resultado = await registrarActividadCompletada(clasificacion, {
-      materiaId: MATERIA,
-      temaId: TEMA,
-      actividadId,
-      porcentajeAciertos,
-      duracionMs,
-      /* Solo lo mandan las mecánicas ya instrumentadas; el resto va en null. */
-      detalle,
-    });
+    const resultado = await resumen.registrar({ actividadId, clasificacion, pct: porcentajeAciertos, detalle }, () =>
+      registrarActividadCompletada(clasificacion, {
+        materiaId: MATERIA,
+        temaId: TEMA,
+        actividadId,
+        porcentajeAciertos,
+        duracionMs,
+        /* Solo lo mandan las mecánicas ya instrumentadas; el resto va en null. */
+        detalle,
+      }));
     if (resultado?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
   };
 
@@ -243,10 +247,10 @@ export default function PoliticaEconomicaView({ modo = null, nodoInicial = null,
         )}
 
         {nodoAbierto && (
-        <>
+        <ContextoResumen.Provider value={resumen.contexto(nodoAbierto, () => setNodoAbierto(null))}>
         <button
           type="button"
-          onClick={() => setNodoAbierto(null)}
+          onClick={() => { resumen.limpiar(); setNodoAbierto(null); }}
           style={{
             display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: "18px",
             fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
@@ -400,7 +404,7 @@ export default function PoliticaEconomicaView({ modo = null, nodoInicial = null,
           </div>
         ))}
 
-        </>
+        </ContextoResumen.Provider>
         )}
         </>
         )}
