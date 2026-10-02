@@ -2,8 +2,10 @@ import { createContext, useCallback, useContext, useEffect, useLayoutEffect, use
 import { Children } from "react";
 import { FAE } from "../../theme.js";
 import FiguraFacetada, { TAMANO as TAMANO_MAXIMO } from "./FiguraFacetada.jsx";
+import { useAuthOpcional } from "../../auth/AuthProvider.jsx";
+import { escucharFP } from "../../fp/aviso.js";
 import {
-  usaPantallaResumen, resumenDe,
+  usaPantallaResumen, resumenDe, formatoDe, partidaValida, decidir, anunciarPartida,
   ROTULO_BIEN, ROTULO_PUNTOS, ROTULO_RESULTADO, NOTA_REPETICION,
   BOTON_VOLVER, BOTON_REPETIR, NOTA_REPETIR,
 } from "../../hacer/pantallaResumen.js";
@@ -13,13 +15,16 @@ import {
  * LA PANTALLA DE RESUMEN — el componente compartido.
  *
  * Cuando el interruptor de la materia está encendido, ocupa el sitio del
- * recuadro de resultado (`Cierre`, en corazon/juego.jsx) y el aviso de FP no
- * sale. La celebración de siempre se queda: esta pantalla espera a que acabe.
+ * recuadro de resultado (`Cierre`, en corazon/juego.jsx, o el cierre propio
+ * de una mecánica envuelto en `CierreConResumen`) y el aviso de FP no sale.
+ * La celebración de siempre se queda: esta pantalla espera a que acabe.
  *
- * SOLO MUESTRA. Los FP y la repetición son los de la fila que devolvió
- * registrar_fp; «bien a la primera» se cuenta sobre el detalle con el mismo
- * filtro con que el servidor lo guarda (ver hacer/pantallaResumen.js). Aquí no
- * se escribe nada.
+ * SOLO MUESTRA. Los puntos y la repetición son los del aviso de FP —el mismo
+ * valor que «+N FP» y la misma marca que «Ya completada»—; «bien a la
+ * primera» se cuenta sobre el detalle con el mismo filtro con que el servidor
+ * lo guarda. Si algo no es un número que se pueda enseñar, sale el cierre de
+ * siempre (ver la salvaguarda en hacer/pantallaResumen.js). Aquí no se
+ * escribe nada.
  *
  * Sin trofeos, coronas, cofres, gemas ni confeti; sin coral. Las cifras van en
  * blanco: ni verde azulado ni ámbar. El texto atenuado es #A8B6C8.
@@ -65,20 +70,41 @@ export const useContextoResumen = () => useContext(ContextoResumen);
 export function useResumenDePartida(materiaId, celebrando = false) {
   const [partida, setPartida] = useState(null);
   const contador = useRef(0);
+  const auth = useAuthOpcional();
+  const conCuenta = Boolean(auth?.usuario);
 
   const registrar = useCallback(async ({ actividadId, clasificacion, pct, detalle }, registrarEnServidor) => {
     if (!usaPantallaResumen(materiaId, actividadId)) return registrarEnServidor();
     contador.current += 1;
     const id = contador.current;
-    setPartida({ id, actividadId, clasificacion, pct, detalle, registro: null, listo: false });
+    const base = { id, actividadId, clasificacion, formato: formatoDe(actividadId, clasificacion), pct, detalle, conCuenta };
+
+    /* Lo que ya se sabe antes de registrar: si no vale, cierre de siempre desde ya. */
+    const previa = partidaValida(base);
+    if (!previa.valida) {
+      setPartida({ ...base, registro: null, aviso: null, listo: true, valida: false, motivo: previa.motivo });
+      return registrarEnServidor();
+    }
+
+    setPartida({ ...base, registro: null, aviso: null, listo: false });
+    /* El aviso de FP pregunta por esta partida mientras se registra (ver anunciarPartida). */
+    const soltar = anunciarPartida(actividadId, base);
+    let aviso = null;
+    const dejarDeEscuchar = escucharFP((d) => { if (d?.actividadId === actividadId) aviso = d; });
     let resultado = null;
     try {
       resultado = await registrarEnServidor();
       return resultado;
     } finally {
-      setPartida((p) => (p && p.id === id ? { ...p, registro: resultado?.registro ?? null, listo: true } : p));
+      dejarDeEscuchar();
+      soltar();
+      /* La misma decisión que tomó el aviso, con el mismo aviso. */
+      const decision = decidir({ ...base, aviso });
+      setPartida((p) => (p && p.id === id
+        ? { ...p, registro: resultado?.registro ?? null, aviso, listo: true, valida: decision.valida, motivo: decision.motivo }
+        : p));
     }
-  }, [materiaId]);
+  }, [materiaId, conCuenta]);
 
   const limpiar = useCallback(() => setPartida(null), []);
 
@@ -91,6 +117,39 @@ export function useResumenDePartida(materiaId, celebrando = false) {
   });
 
   return { registrar, limpiar, contexto };
+}
+
+/** ¿La partida cae al cierre de siempre? Solo cuando ya se decidió que no vale. */
+export const caeAlCierreDeSiempre = (ctx) => Boolean(ctx?.partida?.listo && ctx.partida.valida === false);
+
+/**
+ * ¿La pantalla ocupa el cierre de esta actividad? Para las mecánicas cuyo
+ * cierre tiene piezas fuera del bloque envuelto (un botón de «otra vez»
+ * aparte): mientras la pantalla está, esas piezas sobran.
+ */
+export function useResumenOcupaElCierre() {
+  const ctx = useContextoResumen();
+  return Boolean(ctx.activa && !caeAlCierreDeSiempre(ctx));
+}
+
+/*
+ * ═══════════ EL CIERRE, CON O SIN PANTALLA ═══════════
+ *
+ * Envuelve el cierre de siempre de una actividad. Sin contexto activo lo deja
+ * tal cual —el mismo marcado, nada alrededor—. Con el contexto activo pinta la
+ * pantalla de resumen, salvo que la salvaguarda diga que no: entonces vuelve
+ * el cierre de siempre, sin cambios.
+ *
+ * Al desmontarse (la actividad vuelve a empezar, o se sale) olvida la partida,
+ * para que la siguiente no herede la decisión de esta.
+ */
+export function CierreConResumen({ texto = null, onReiniciar = null, children }) {
+  const ctx = useContextoResumen();
+  const limpiar = useRef(null);
+  limpiar.current = ctx.activa ? ctx.limpiar : null;
+  useEffect(() => () => { limpiar.current?.(); }, []);
+  if (!ctx.activa || caeAlCierreDeSiempre(ctx)) return children;
+  return <PantallaResumen texto={texto} onRepetir={onReiniciar} />;
 }
 
 /* ═══════════ LAS CIFRAS QUE CUENTAN DESDE 0 ═══════════ */
@@ -180,7 +239,7 @@ export default function PantallaResumen({ texto = null, onRepetir = null }) {
   const tarjetaPuntos = useRef(null);
   const [tamanoFigura, setTamanoFigura] = useState(null);
   const partida = ctx.partida;
-  const visible = Boolean(partida && partida.listo && !ctx.celebrando);
+  const visible = Boolean(partida && partida.listo && partida.valida && !ctx.celebrando);
 
   useEffect(() => {
     if (!visible) return;

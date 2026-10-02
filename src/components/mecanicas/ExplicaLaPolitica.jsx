@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw, ChevronRight, Radio } from "lucide-react";
 import { FAE } from "../../theme.js";
+import { CierreConResumen, useResumenOcupaElCierre } from "../shared/PantallaResumen.jsx";
 import {
   OBJETIVO_EXPLICA, RANURAS_EXPLICA, ESCENARIOS_EXPLICA,
 } from "../../data/juegosPolitica2.js";
@@ -92,6 +93,8 @@ export function Onda({ limpia, animada }) {
 }
 
 export default function ExplicaLaPolitica({ onCompletar }) {
+  /* Con la pantalla de resumen, su «Repetir» sustituye a «Otro caso». */
+  const resumenOcupaElCierre = useResumenOcupaElCierre();
   const [empezado, setEmpezado] = useState(false);
   const [escenario, setEscenario] = useState(() => ESCENARIOS_EXPLICA[Math.floor(Math.random() * ESCENARIOS_EXPLICA.length)]);
   const [banco, setBanco] = useState(() => barajar(escenario.fragmentos));
@@ -269,6 +272,16 @@ export default function ExplicaLaPolitica({ onCompletar }) {
             {lleno ? "Transmitir" : `Faltan ${RANURAS_EXPLICA - puestos.length}`}
           </button>
         ) : (
+          <CierreConResumen
+            onReiniciar={reiniciar}
+            texto={
+              <p style={{ margin: 0 }}>
+                {ruido === 0
+                  ? "Cuatro frases claras, sin una sola de jerga ni una falsedad. Tu vecino lo entendió."
+                  : `${claros} ${claros === 1 ? "frase clara" : "frases claras"} y ${ruido} de ruido. La estática marca dónde se ensució el mensaje.`}
+              </p>
+            }
+          >
           <div className="fae-ep-entrar" style={{ marginTop: "14px" }}>
             <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "26px", color: FAE.text, margin: "0 0 4px", fontVariantNumeric: "tabular-nums" }}>
               {pct}%
@@ -279,6 +292,7 @@ export default function ExplicaLaPolitica({ onCompletar }) {
                 : `${claros} ${claros === 1 ? "frase clara" : "frases claras"} y ${ruido} de ruido. La estática marca dónde se ensució el mensaje.`}
             </p>
           </div>
+          </CierreConResumen>
         )}
       </div>
 
@@ -352,7 +366,7 @@ export default function ExplicaLaPolitica({ onCompletar }) {
             })}
           </div>
         </>
-      ) : (
+      ) : resumenOcupaElCierre ? null : (
         <button
           type="button"
           onClick={reiniciar}

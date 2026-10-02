@@ -3,21 +3,22 @@
  * LA PANTALLA DE RESUMEN AL CERRAR UNA ACTIVIDAD — reglas y textos.
  *
  * SOLO PRESENTACIÓN. Nada de aquí calcula ni guarda puntos, progreso ni
- * ranking: lee lo que la partida ya entregó (porcentaje y detalle) y lo que el
- * servidor ya devolvió al registrarla (la fila de fp_history). Si un número no
- * está en esos dos sitios, la pantalla no lo enseña.
+ * ranking: lee lo que la partida ya entregó (porcentaje y detalle), los
+ * puntos y la repetición del MISMO aviso que pinta «+N FP» / «Ya completada»,
+ * y el porcentaje que guardó el servidor. Si un número no está ahí, o no es
+ * un número que se pueda enseñar, la pantalla no sale: sale el cierre de
+ * siempre (ver la salvaguarda, más abajo).
  *
- * ═══════════ EL INTERRUPTOR, POR MATERIA ═══════════
+ * ═══════════ EL INTERRUPTOR, POR MATERIA: UNA LÍNEA CADA UNA ═══════════
  *
  * Apagado por defecto: una materia que no está aquí, o que está en `false`,
  * cierra exactamente como antes —el recuadro de resultado y el aviso de FP—.
- * Macroeconomía tiene estudiantes reales y queda apagada a propósito.
- * Encenderla es cambiar su línea aquí y nada más.
+ * Para apagar una materia, su línea pasa a `false`. Nada más.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 export const PANTALLA_RESUMEN = {
   contabilidad: true,
-  macroeconomia: false,
+  macroeconomia: true,
 };
 
 /*
@@ -101,26 +102,189 @@ export const BOTON_REPETIR = "Repetir";
 export const NOTA_REPETIR = "Repetir no suma puntos nuevos.";
 
 /*
+ * ═══════════ EL FORMATO DE CADA ACTIVIDAD ═══════════
+ *
+ *   x-de-n        «Bien a la primera: X de N». Cada fila del detalle es una
+ *                 pregunta contestada una vez.
+ *   porcentaje    «Resultado: P %». Las filas no son preguntas sueltas
+ *                 (frases elegidas, filtros, casillas con castigo por
+ *                 señuelos, un orden) o no hay detalle: X de N diría otra
+ *                 cosa que el resultado.
+ *   solo-puntos   solo la cifra de puntos (exploratorias).
+ *   panel-propio  la actividad tiene su propio cierre; no cambia.
+ *
+ * Macroeconomía, fijo y actividad por actividad: las 49. Hay una prueba que
+ * recorre subjects.js y falla si alguna queda sin formato.
+ */
+export const FORMATO = {
+  X_DE_N: "x-de-n",
+  PORCENTAJE: "porcentaje",
+  SOLO_PUNTOS: "solo-puntos",
+  PANEL_PROPIO: "panel-propio",
+};
+
+const X = FORMATO.X_DE_N;
+const P = FORMATO.PORCENTAJE;
+const PANEL = FORMATO.PANEL_PROPIO;
+
+export const FORMATO_MACRO = {
+  /* Demanda agregada */
+  "memorama-corazon": PANEL,
+  "cual-componente": X,
+  "electrocardiograma": X,
+  "termometro-reacciones": X,
+  "banco-transfusiones": X,
+  "biopsia-economica": X,
+  "triage-emergencias": X,
+  "cirugia-reconstruccion": P,
+  "sala-monitores": X,
+  "quien-beneficia-auge": X,
+  "explica-paciente": P,
+  "sala-espera-llena": P,
+  /* Política económica */
+  "memorama-tesoro": PANEL,
+  "que-rama-es": X,
+  "diagnostico-en-vivo": X,
+  "arma-grupo-logico": P,
+  "quien-gana-quien-pierde": X,
+  "corriente-titulares": X,
+  "explica-la-politica": P,
+  "tablero-decisiones": P,
+  "simulador-de-crisis": P,
+  "se-acerca-o-se-aleja": X,
+  "expediente-gabinete": X,
+  "consejo-ministros": X,
+  /* Política fiscal */
+  "memorama-tesoreria": PANEL,
+  "cobra-gasta-o-pide": X,
+  "clasificador-tesoro": X,
+  "directos-indirectos": X,
+  "flujo-de-caja": X,
+  "agujero-fiscal": X,
+  "expansiva-contractiva": X,
+  "disena-presupuesto": P,
+  "deficit-vs-deuda": X,
+  "quien-afecta-ajuste": X,
+  "explica-contribuyente": P,
+  "comite-presupuesto": P,
+  "comite-nova": PANEL,
+  /* Política monetaria */
+  "memorama-banco-central": PANEL,
+  "quien-decide-esto": X,
+  "volante-de-la-tasa": X,
+  "caja-de-herramientas": X,
+  "a-quien-le-pega-la-tasa": X,
+  "cadena-de-transmision": P,
+  "explicaselo-a-un-deudor": P,
+  "corriente-de-decisiones": X,
+  "el-rezago": P,
+  "dilema-banquero-central": X,
+  "duelo-de-instrumentos": X,
+  "disena-respuesta-monetaria": P,
+};
+
+/**
+ * El formato de una actividad. Fuera de Macroeconomía (Contabilidad) se
+ * deduce como hasta ahora: exploratoria → solo puntos; si no, X de N.
+ */
+export function formatoDe(actividadId, clasificacion = null) {
+  if (CON_PANEL_PROPIO.has(actividadId)) return FORMATO.PANEL_PROPIO;
+  if (FORMATO_MACRO[actividadId]) return FORMATO_MACRO[actividadId];
+  return clasificacion?.modalidad === "exploratoria" ? FORMATO.SOLO_PUNTOS : FORMATO.X_DE_N;
+}
+
+/*
+ * ═══════════ LA SALVAGUARDA: ANTE LA DUDA, EL CIERRE DE SIEMPRE ═══════════
+ *
+ * La pantalla solo sale si TODO lo que va a enseñar es un número válido. Si
+ * no, la actividad cierra exactamente como antes: su recuadro de resultado y
+ * el aviso de FP. Cae al cierre de siempre si:
+ *
+ *   · el estudiante no tiene cuenta
+ *   · no llegó el aviso de FP, o sus puntos no son un número, o son negativos,
+ *     o la marca de repetición no es un sí/no, o dice repetida con puntos
+ *   · X de N: N = 0 (sin filas), X > N, o X o N no son enteros ≥ 0
+ *   · Resultado: P %: P no es un número o está fuera de 0–100
+ *   · la actividad es de panel propio
+ */
+const esNumero = (v) => typeof v === "number" && Number.isFinite(v);
+
+/** Las dos cifras de «X de N», por separado: así se prueban también los casos que el conteo no produce. */
+export function cifrasValidas(x, n) {
+  return Number.isInteger(x) && Number.isInteger(n) && x >= 0 && n > 0 && x <= n;
+}
+
+/** El porcentaje que se enseña: el que guardó el servidor, o el de la partida si no llegó. */
+export function porcentajeDe({ registro, pct }) {
+  return esNumero(registro?.correct_pct) ? registro.correct_pct : pct;
+}
+
+export function avisoValido(aviso) {
+  if (!aviso || !esNumero(aviso.fp) || aviso.fp < 0) return false;
+  if (typeof aviso.repetida !== "boolean") return false;
+  if (aviso.repetida && aviso.fp > 0) return false;
+  return true;
+}
+
+/** Lo que se puede comprobar ANTES de registrar: la cuenta, el formato y las cifras. */
+export function partidaValida({ formato, detalle, pct, registro = null, conCuenta }) {
+  if (!conCuenta) return { valida: false, motivo: "sin-cuenta" };
+  if (formato === FORMATO.PANEL_PROPIO || !Object.values(FORMATO).includes(formato)) return { valida: false, motivo: "formato" };
+  if (formato === FORMATO.X_DE_N) {
+    const c = conteoGuardado(detalle);
+    if (!c) return { valida: false, motivo: "n-cero" };
+    if (!cifrasValidas(c.bien, c.n)) return { valida: false, motivo: "cifras" };
+  }
+  if (formato === FORMATO.PORCENTAJE) {
+    const p = porcentajeDe({ registro, pct });
+    if (!esNumero(p) || p < 0 || p > 100) return { valida: false, motivo: "porcentaje" };
+  }
+  return { valida: true, motivo: null };
+}
+
+/** La decisión completa, con el aviso de FP ya en la mano. */
+export function decidir(partida) {
+  const previa = partidaValida(partida);
+  if (!previa.valida) return previa;
+  if (!avisoValido(partida.aviso)) return { valida: false, motivo: "aviso" };
+  return { valida: true, motivo: null };
+}
+
+/*
+ * ═══════════ QUIÉN PINTA EL AVISO DE FP ═══════════
+ *
+ * El aviso sale en el mismo instante en que el servidor responde, antes de
+ * que la pantalla sepa nada. Por eso la vista anuncia aquí la partida antes
+ * de registrarla, y AvisoFP pregunta: «¿esta partida la cierra la pantalla?».
+ * La respuesta usa la MISMA decisión que la pantalla, con el mismo aviso: o
+ * sale la pantalla, o sale el aviso de siempre. Nunca los dos, nunca ninguno.
+ */
+const enCurso = new Map();
+
+export function anunciarPartida(actividadId, partida) {
+  enCurso.set(actividadId, partida);
+  return () => { if (enCurso.get(actividadId) === partida) enCurso.delete(actividadId); };
+}
+
+export function pantallaTomaElAviso(aviso) {
+  const partida = enCurso.get(aviso?.actividadId);
+  return Boolean(partida) && decidir({ ...partida, aviso }).valida;
+}
+
+/*
  * ═══════════ QUÉ ENSEÑA LA PANTALLA, DECIDIDO EN UN SOLO SITIO ═══════════
  *
- * Entra: la clasificación de la actividad (modalidad), el porcentaje y el
- * detalle que la partida entregó, y la fila que devolvió registrar_fp. Sale
- * todo lo que la pantalla pinta. Es una función pura para poder probarla sin
- * montar nada.
- *
- * Los FP son los de la fila guardada (`fp_awarded`) y la repetición es la que
- * contó el servidor (`repeat_index`). Sin fila —sin cuenta, o si la escritura
- * falló— no se ganó nada: la pantalla dice 0.
+ * Entra la partida ya validada. Los puntos son los del aviso de FP (el mismo
+ * valor que «+N FP») y la repetición, su marca («Ya completada»). Es una
+ * función pura para poder probarla sin montar nada.
  */
-export function resumenDe({ clasificacion, pct, detalle, registro }) {
-  const exploratoria = clasificacion?.modalidad === "exploratoria";
-  const repeticion = (registro?.repeat_index ?? 0) > 0;
-  const fp = repeticion ? 0 : Math.max(0, Number(registro?.fp_awarded ?? 0) || 0);
-  const conteo = conteoGuardado(detalle);
-  /* Sin detalle (El tablero de decisiones), el porcentaje que quedó guardado. */
-  const porcentaje = Math.round(
-    typeof registro?.correct_pct === "number" ? registro.correct_pct : Number(pct) || 0,
-  );
+export function resumenDe({ clasificacion, formato = null, pct, detalle, registro, aviso }) {
+  const f = formato ?? formatoDe(null, clasificacion);
+  const exploratoria = f === FORMATO.SOLO_PUNTOS || clasificacion?.modalidad === "exploratoria";
+  const repeticion = aviso?.repetida === true;
+  const fp = aviso?.fp ?? 0;
+  const conteo = f === FORMATO.X_DE_N ? conteoGuardado(detalle) : null;
+  const porcentaje = Math.round(porcentajeDe({ registro, pct }) ?? 0);
   const franja = franjaDe(conteo ? conteo.bien / conteo.n : porcentaje / 100);
 
   const titulo = repeticion ? TITULO.repeticion : exploratoria ? TITULO.exploratoria : TITULO[franja];
@@ -134,7 +298,7 @@ export function resumenDe({ clasificacion, pct, detalle, registro }) {
 
   const figura = nivelDeFigura({ exploratoria, repeticion, fp, conteo, porcentaje });
 
-  return { exploratoria, repeticion, fp, conteo, porcentaje, franja, titulo, mensaje, lector, figura };
+  return { formato: f, exploratoria, repeticion, fp, conteo, porcentaje, franja, titulo, mensaje, lector, figura };
 }
 
 /*

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw, FolderClosed } from "lucide-react";
 import { FAE } from "../../theme.js";
+import { CierreConResumen } from "../shared/PantallaResumen.jsx";
 import {
   PROBLEMAS, sortearTitulares, retroalimentacion, textoArchivado,
   PREGUNTA_BRECHA, BRECHAS,
@@ -411,6 +412,18 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
           </div>
         </div>
       ) : (
+        <CierreConResumen
+          onReiniciar={reiniciar}
+          texto={
+            <>
+              <p style={{ margin: "0 0 8px" }}>
+                {aciertos} de {orden.length} clasificados bien a la primera. Cuenta el primer intento: acertar
+                después de fallar enseña igual, pero no es lo mismo que reconocerlo de entrada.
+              </p>
+              <p style={{ margin: 0 }}>{BRECHAS.find((b) => b.id === brecha)?.feedback}</p>
+            </>
+          }
+        >
         <div className="fae-dv-entrar">
           <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "26px", color: FAE.text, margin: "0 0 6px", fontVariantNumeric: "tabular-nums" }}>
             {pct}%
@@ -456,6 +469,7 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
             <RotateCcw size={14} /> Otra ronda
           </button>
         </div>
+        </CierreConResumen>
       )}
     </div>
   );
