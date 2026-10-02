@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Children } from "react";
 import { FAE } from "../../theme.js";
+import FiguraFacetada, { TAMANO as TAMANO_FIGURA } from "./FiguraFacetada.jsx";
 import {
   usaPantallaResumen, resumenDe,
   ROTULO_BIEN, ROTULO_PUNTOS, ROTULO_RESULTADO, NOTA_REPETICION,
@@ -191,11 +192,14 @@ export default function PantallaResumen({ texto = null, onRepetir = null }) {
       data-repeticion={r.repeticion ? "si" : "no"}
       aria-labelledby="fae-resumen-titulo"
       style={{
+        position: "relative", overflow: "hidden",
+        /* Al desplazarse hasta aquí, el título queda por debajo del control de cuenta fijo. */
+        scrollMarginTop: "88px",
         marginTop: "18px", padding: "20px 18px", borderRadius: "18px",
         background: "rgba(10,20,34,0.55)", border: "1px solid rgba(248,249,250,0.14)",
-        display: "grid", gap: "18px",
       }}
     >
+      <div style={{ position: "relative", zIndex: 1, display: "grid", gap: "18px" }}>
       <p role="status" data-lector style={SOLO_LECTOR}>{r.lector}</p>
 
       <h3
@@ -207,7 +211,17 @@ export default function PantallaResumen({ texto = null, onRepetir = null }) {
         {r.titulo}
       </h3>
 
-      <div aria-hidden="true" style={{ display: "flex", flexWrap: "wrap", gap: "16px 20px", justifyContent: r.exploratoria ? "center" : "flex-start" }}>
+      {/*
+        La figura tiene su propio hueco a la derecha de las cifras: ningún
+        texto queda encima de ella. No toma el puntero y se va sola.
+      */}
+      <div aria-hidden="true" style={{
+        position: "relative", display: "flex", flexWrap: "wrap", gap: "16px 20px",
+        justifyContent: r.exploratoria ? "center" : "flex-start",
+        paddingRight: r.figura ? `${TAMANO_FIGURA + 8}px` : 0,
+        minHeight: r.figura ? `${TAMANO_FIGURA}px` : undefined,
+      }}>
+        <FiguraFacetada key={partida.id} nivel={r.figura} />
         {!r.exploratoria && (r.conteo ? (
           <Cifra rotulo={ROTULO_BIEN} dato="bien"><FiguraBien bien={r.conteo.bien} n={r.conteo.n} /></Cifra>
         ) : (
@@ -257,6 +271,7 @@ export default function PantallaResumen({ texto = null, onRepetir = null }) {
             <p data-nota-repetir style={{ margin: 0, fontSize: "12.5px", color: ATENUADO }}>{NOTA_REPETIR}</p>
           </div>
         )}
+      </div>
       </div>
     </section>
   );

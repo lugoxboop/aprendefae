@@ -132,5 +132,29 @@ export function resumenDe({ clasificacion, pct, detalle, registro }) {
   else if (conteo) lector = `Resultado: ${conteo.bien} de ${conteo.n} bien a la primera, ${fp} puntos ganados${sufijo}.`;
   else lector = `Resultado: ${porcentaje} %, ${fp} puntos ganados${sufijo}.`;
 
-  return { exploratoria, repeticion, fp, conteo, porcentaje, franja, titulo, mensaje, lector };
+  const figura = nivelDeFigura({ exploratoria, repeticion, fp, conteo, porcentaje });
+
+  return { exploratoria, repeticion, fp, conteo, porcentaje, franja, titulo, mensaje, lector, figura };
+}
+
+/*
+ * ═══════════ LA FIGURA FACETADA: QUÉ NIVEL TOCA ═══════════
+ *
+ * Las reglas de Levi:
+ *
+ *   rico     perfecto (X = N) y primera vez con puntos: marco rico y un pulso
+ *   sobrio   cualquier otra primera vez con puntos —también las exploratorias
+ *            y las de menos del 50 %—: menos facetas y sin pulso
+ *   null     repetición sin puntos nuevos: sin figura
+ *
+ * «Con puntos» es literal: sin FP ganados en esta partida (sin cuenta, o si
+ * la escritura falló) tampoco hay figura. Sin detalle, «perfecto» es el 100 %.
+ */
+export const FIGURA = { RICA: "rica", SOBRIA: "sobria" };
+
+export function nivelDeFigura({ exploratoria = false, repeticion, fp, conteo, porcentaje }) {
+  if (repeticion || !(fp > 0)) return null;
+  if (exploratoria) return FIGURA.SOBRIA;
+  const perfecto = conteo ? conteo.n > 0 && conteo.bien === conteo.n : porcentaje >= 100;
+  return perfecto ? FIGURA.RICA : FIGURA.SOBRIA;
 }
