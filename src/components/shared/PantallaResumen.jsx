@@ -1,6 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Children } from "react";
 import { FAE } from "../../theme.js";
+import FiguraFacetada, { TAMANO as TAMANO_MAXIMO } from "./FiguraFacetada.jsx";
 import {
   usaPantallaResumen, resumenDe,
   ROTULO_BIEN, ROTULO_PUNTOS, ROTULO_RESULTADO, NOTA_REPETICION,
@@ -33,6 +34,10 @@ const SOLO_LECTOR = {
   overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0,
 };
 const DURACION_CONTEO = 700;
+/* Lo que la figura se queda corta del título y del recuadro, en px. */
+const HOLGURA_FIGURA = 4;
+/* Aire alrededor de las tarjetas, para que la figura se vea al crecer. */
+const AIRE_TARJETAS = 30;
 
 /* ═══════════ EL CONTEXTO QUE PONE CADA VISTA ═══════════ */
 
@@ -112,9 +117,24 @@ function useConteo(objetivo) {
   return valor;
 }
 
-function Cifra({ rotulo, children, dato, centrada = false, nota = null }) {
+/*
+ * Cada cifra es una tarjeta con fondo sólido (≥92 % de opacidad). Es lo que
+ * protege su texto de la figura que crece detrás de «Puntos ganados»: el
+ * contraste no depende de cuánto brille la figura (especificación de Xeno).
+ */
+export const FONDO_TARJETA = "rgba(14,27,46,0.94)";
+
+function Cifra({ rotulo, children, dato, centrada = false, nota = null, figura = null, refTarjeta = null }) {
   return (
-    <div data-cifra={dato} style={{ flex: "1 1 140px", minWidth: 0, textAlign: centrada ? "center" : "left" }}>
+    <div ref={refTarjeta} data-cifra={dato} style={{ position: "relative", flex: "1 1 130px", minWidth: 0, textAlign: centrada ? "center" : "left" }}>
+      {figura}
+      <div
+        data-tarjeta
+        style={{
+          height: "100%", boxSizing: "border-box", padding: "12px 14px", borderRadius: "14px",
+          background: FONDO_TARJETA, border: "1px solid rgba(248,249,250,0.12)",
+        }}
+      >
       <p style={{ margin: "0 0 4px", fontSize: "13px", lineHeight: 1.3, color: ATENUADO }}>{rotulo}</p>
       <p
         data-valor
@@ -126,6 +146,7 @@ function Cifra({ rotulo, children, dato, centrada = false, nota = null }) {
         {children}
       </p>
       {nota}
+      </div>
     </div>
   );
 }
@@ -155,6 +176,9 @@ export default function PantallaResumen({ texto = null, onRepetir = null }) {
   const ctx = useContextoResumen();
   const titulo = useRef(null);
   const caja = useRef(null);
+  const recuadro = useRef(null);
+  const tarjetaPuntos = useRef(null);
+  const [tamanoFigura, setTamanoFigura] = useState(null);
   const partida = ctx.partida;
   const visible = Boolean(partida && partida.listo && !ctx.celebrando);
 
@@ -162,6 +186,23 @@ export default function PantallaResumen({ texto = null, onRepetir = null }) {
     if (!visible) return;
     try { caja.current?.scrollIntoView?.({ block: "start", behavior: movimientoReducido() ? "auto" : "smooth" }); } catch { /* sin scroll */ }
     titulo.current?.focus?.({ preventScroll: true });
+  }, [visible]);
+
+  /*
+   * El mayor diámetro de la figura que no toca ningún texto fuera de las
+   * tarjetas: ni el título de arriba ni el recuadro de abajo. Se mide antes de
+   * pintar, así que la figura nunca aparece más grande y luego encoge.
+   */
+  useLayoutEffect(() => {
+    if (!visible) return;
+    const t = tarjetaPuntos.current?.getBoundingClientRect();
+    const arriba = titulo.current?.getBoundingClientRect();
+    const abajo = recuadro.current?.getBoundingClientRect();
+    /* Sin maquetación (un entorno sin pantalla, como las pruebas) no hay nada que medir. */
+    if (!t || !arriba || !abajo || !t.height) { setTamanoFigura(TAMANO_MAXIMO); return; }
+    const centro = t.top + t.height / 2;
+    const radio = Math.min(centro - arriba.bottom, abajo.top - centro) - HOLGURA_FIGURA;
+    setTamanoFigura(Math.max(0, Math.min(TAMANO_MAXIMO, Math.floor(radio * 2))));
   }, [visible]);
 
   /* Mientras suena la celebración, nada: la pantalla llega cuando termina. */
@@ -191,11 +232,14 @@ export default function PantallaResumen({ texto = null, onRepetir = null }) {
       data-repeticion={r.repeticion ? "si" : "no"}
       aria-labelledby="fae-resumen-titulo"
       style={{
+        position: "relative", overflow: "hidden",
+        /* Al desplazarse hasta aquí, el título queda por debajo del control de cuenta fijo. */
+        scrollMarginTop: "88px",
         marginTop: "18px", padding: "20px 18px", borderRadius: "18px",
         background: "rgba(10,20,34,0.55)", border: "1px solid rgba(248,249,250,0.14)",
-        display: "grid", gap: "18px",
       }}
     >
+      <div style={{ position: "relative", zIndex: 1, display: "grid", gap: "18px" }}>
       <p role="status" data-lector style={SOLO_LECTOR}>{r.lector}</p>
 
       <h3
@@ -207,18 +251,35 @@ export default function PantallaResumen({ texto = null, onRepetir = null }) {
         {r.titulo}
       </h3>
 
-      <div aria-hidden="true" style={{ display: "flex", flexWrap: "wrap", gap: "16px 20px", justifyContent: r.exploratoria ? "center" : "flex-start" }}>
+      {/*
+        La figura crece detrás de la tarjeta «Puntos ganados», centrada en
+        ella; la tarjeta tapa su centro con su fondo sólido. No toma el
+        puntero y se va sola.
+      */}
+      <div aria-hidden="true" style={{
+        display: "flex", flexWrap: "wrap", gap: "12px",
+        justifyContent: r.exploratoria ? "center" : "flex-start",
+        margin: r.figura ? `${AIRE_TARJETAS - 18}px 0` : 0,
+      }}>
         {!r.exploratoria && (r.conteo ? (
           <Cifra rotulo={ROTULO_BIEN} dato="bien"><FiguraBien bien={r.conteo.bien} n={r.conteo.n} /></Cifra>
         ) : (
           <Cifra rotulo={ROTULO_RESULTADO} dato="resultado"><FiguraPorcentaje p={r.porcentaje} /></Cifra>
         ))}
-        <Cifra rotulo={ROTULO_PUNTOS} dato="puntos" centrada={r.exploratoria} nota={notaRepeticion}>
+        <Cifra
+          rotulo={ROTULO_PUNTOS}
+          dato="puntos"
+          centrada={r.exploratoria}
+          nota={notaRepeticion}
+          refTarjeta={tarjetaPuntos}
+          figura={tamanoFigura ? <FiguraFacetada key={partida.id} nivel={r.figura} tamano={tamanoFigura} /> : null}
+        >
           <FiguraPuntos fp={r.fp} />
         </Cifra>
       </div>
 
       <div
+        ref={recuadro}
         data-recuadro
         style={{
           padding: "13px 15px", borderRadius: "12px", fontSize: "13.5px", lineHeight: 1.55, color: BLANCO,
@@ -257,6 +318,7 @@ export default function PantallaResumen({ texto = null, onRepetir = null }) {
             <p data-nota-repetir style={{ margin: 0, fontSize: "12.5px", color: ATENUADO }}>{NOTA_REPETIR}</p>
           </div>
         )}
+      </div>
       </div>
     </section>
   );

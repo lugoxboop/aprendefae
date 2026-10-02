@@ -392,3 +392,132 @@ test("★★★ El Cuadro, de punta a punta: la celebración, luego la pantalla 
     assert.ok(m.caja.querySelector("[data-fila]"), "Repetir no volvió a la actividad");
   } finally { m.desmontar(); }
 });
+
+/* ═══════════════════ LA FIGURA FACETADA (Xeno, con las correcciones de Levi) ═══════════════════ */
+
+const FF = await import("../FiguraFacetada.jsx");
+const figura = (caja) => caja.querySelector("[data-figura-facetada]");
+const PROHIBIDOS = /#2a9d8f|#52c4b0|#e9c46a|rgb\(42,\s*157,\s*143\)|rgb\(82,\s*196,\s*176\)|rgb\(233,\s*196,\s*106\)|FAE\.teal|FAE\.ambar|\bambar\b|ámbar/i;
+
+test("★★★ qué figura toca: perfecto rica; otra primera vez con puntos sobria; repetición, ninguna", () => {
+  const caso = (detalle, registro, clasificacion = CLAS_EVALUATIVA) => R.resumenDe({ clasificacion, pct: 0, detalle, registro }).figura;
+  assert.equal(caso(filas(5, 0), fila(25)), "rica");
+  assert.equal(caso(filas(4, 1), fila(25)), "sobria");
+  assert.equal(caso(filas(1, 4), fila(13)), "sobria", "menos del 50 % con puntos también lleva marco sobrio");
+  assert.equal(caso(filas(3, 0), fila(10), CLAS_EXPLORATORIA), "sobria", "las exploratorias van siempre con el sobrio");
+  assert.equal(caso(filas(5, 0), fila(0, 1)), null, "una repetición no lleva figura");
+  assert.equal(caso(filas(5, 0), null), null, "sin puntos ganados no hay figura");
+  assert.equal(caso(null, fila(50, 0, 100)), "rica", "sin detalle, perfecto es el 100 %");
+});
+
+test("★★★ sin puntos nuevos no hay figura en pantalla", () => {
+  for (const registro of [fila(0, 1, 100), fila(0, 3, 40), null]) {
+    const m = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 100, detalle: filas(5, 0), registro }));
+    try {
+      assert.ok(m.caja.querySelector("[data-pantalla-resumen]"));
+      assert.equal(figura(m.caja), null, `salió una figura con ${JSON.stringify(registro)}`);
+    } finally { m.desmontar(); }
+  }
+});
+
+test("★★ rica: el marco Élite de las medallas con su pulso; sobria: el Intermedio, sin pulso; las dos aria-hidden", async () => {
+  const { LADOS } = await import("../Medalla.jsx");
+  reducido = false;
+  try {
+    const a = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 100, detalle: filas(5, 0), registro: fila(25) }));
+    try {
+      const f = figura(a.caja);
+      assert.equal(f.getAttribute("data-figura-facetada"), "rica");
+      assert.equal(f.getAttribute("aria-hidden"), "true");
+      assert.equal(f.querySelectorAll("[data-faceta]").length, LADOS.elite, "la rica no usa el marco Élite");
+      assert.ok(f.querySelector("[data-reticulado]"), "falta el anillo reticulado del Élite");
+      const destello = f.querySelector("[data-destello]");
+      assert.ok(destello, "el perfecto no tiene pulso");
+      /* Una sola pasada de 1,5 s, sin bucle. */
+      assert.match(destello.style.animation, /1500ms/);
+      assert.doesNotMatch(destello.style.animation + f.innerHTML, /infinite/);
+    } finally { a.desmontar(); }
+    const b = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 60, detalle: filas(3, 2), registro: fila(15) }));
+    try {
+      const f = figura(b.caja);
+      assert.equal(f.getAttribute("data-figura-facetada"), "sobria");
+      assert.equal(f.getAttribute("aria-hidden"), "true");
+      assert.equal(f.querySelectorAll("[data-faceta]").length, LADOS.intermedio, "la sobria no usa el marco Intermedio");
+      assert.ok(LADOS.intermedio < LADOS.elite, "la sobria debe tener menos facetas");
+      assert.equal(f.querySelector("[data-reticulado]"), null);
+      assert.equal(f.querySelector("[data-destello]"), null, "el sobrio no debe pulsar");
+    } finally { b.desmontar(); }
+  } finally { reducido = true; }
+});
+
+test("★★ la figura vive detrás de la tarjeta «Puntos ganados», que tiene fondo sólido (≥92 %)", () => {
+  reducido = false;
+  try {
+    const m = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 100, detalle: filas(5, 0), registro: fila(25) }));
+    try {
+      const f = figura(m.caja);
+      assert.equal(f.closest("[data-cifra]")?.getAttribute("data-cifra"), "puntos", "la figura no está en la tarjeta de puntos");
+      assert.equal(m.caja.querySelector('[data-cifra="bien"] [data-figura-facetada]'), null, "nunca detrás de «Bien a la primera»");
+      for (const t of m.caja.querySelectorAll("[data-tarjeta]")) {
+        const alfa = Number(t.style.background.match(/[\d.]+/g)?.[3] ?? 1);
+        assert.ok(alfa >= 0.92, `fondo de tarjeta con opacidad ${alfa}`);
+      }
+      assert.equal(FF.TAMANO, 260);
+      assert.equal(FF.DURACION, 1500);
+    } finally { m.desmontar(); }
+  } finally { reducido = true; }
+});
+
+test("★★★ en el componente de la figura no aparecen los colores prohibidos", () => {
+  const fuente = readFileSync(new URL("../FiguraFacetada.jsx", import.meta.url), "utf8");
+  assert.doesNotMatch(fuente, PROHIBIDOS);
+  assert.match(fuente, /#B8C4D4/);
+  reducido = false;
+  try {
+    for (const [detalle, registro] of [[filas(5, 0), fila(25)], [filas(3, 2), fila(15)]]) {
+      const m = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 0, detalle, registro }));
+      try { assert.doesNotMatch(figura(m.caja).outerHTML, PROHIBIDOS); } finally { m.desmontar(); }
+    }
+  } finally { reducido = true; }
+});
+
+test("★★★ los botones responden mientras la figura está en pantalla", () => {
+  reducido = false;
+  let volvio = 0; let repitio = 0;
+  try {
+    const m = montar(pantallaCon(
+      { clasificacion: CLAS_EVALUATIVA, pct: 100, detalle: filas(5, 0), registro: fila(25) },
+      { onVolver: () => { volvio += 1; }, onRepetir: () => { repitio += 1; } },
+    ));
+    try {
+      assert.ok(figura(m.caja), "la figura no estaba");
+      /* La capa no toma el puntero y va detrás del contenido. */
+      assert.match(FF.default.toString() + readFileSync(new URL("../FiguraFacetada.jsx", import.meta.url), "utf8"), /pointer-events:\s*none/);
+      tocar(m.caja.querySelector("[data-repetir]"));
+      tocar(m.caja.querySelector("[data-volver]"));
+      assert.equal(repitio, 1);
+      assert.equal(volvio, 1);
+      assert.ok(figura(m.caja), "la figura debía seguir en pantalla durante los clics");
+    } finally { m.desmontar(); }
+  } finally { reducido = true; }
+});
+
+test("★★ con movimiento reducido: la figura aparece quieta, sin pulso, 1,5 s, y desaparece", async () => {
+  reducido = true;
+  const m = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 100, detalle: filas(5, 0), registro: fila(25) }));
+  try {
+    const f = figura(m.caja);
+    assert.equal(f.getAttribute("data-reducido"), "si");
+    assert.equal(f.querySelector("[data-destello]"), null, "con movimiento reducido no hay pulso");
+    assert.equal(f.style.animation, "", "con movimiento reducido no se anima");
+    await new Promise((r) => setTimeout(r, FF.REDUCIDO_MS - 300));
+    assert.ok(figura(m.caja), "se fue antes de 1,5 s");
+    await esperar(() => figura(m.caja) === null, 1500);
+  } finally { m.desmontar(); }
+});
+
+test("★★ T1-4: la línea del 16.67 % ahora dice cuántos hechos hay y que valen lo mismo", () => {
+  const fuente = readFileSync(new URL("../../mecanicas/libros/tema1/QueLePasaACadaUno.jsx", import.meta.url), "utf8");
+  assert.doesNotMatch(fuente, /Cada hecho valía/);
+  assert.match(fuente, /Cada uno de los \{cuantas\} hechos vale lo mismo en tu resultado\./);
+});

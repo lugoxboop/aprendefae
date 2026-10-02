@@ -6,7 +6,7 @@ import {
   T1_4, PARTES, CONTROLES, SUBE, BAJA, IGUAL, ALT_T1_4,
 } from "../../../../data/contabilidadTema1.js";
 import {
-  sortearT1_4, evaluarT1_4, puntuar, pesoDeCadaItem,
+  sortearT1_4, evaluarT1_4, puntuar,
 } from "../../../../contabilidad/tema1.js";
 import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
@@ -208,7 +208,7 @@ export default function QueLePasaACadaUno({
         <style>{CSS}</style>
         <Cierre pct={Math.round(pct)} onReiniciar={reiniciar} textoReiniciar="Otra tanda">
           <p style={TEXTO_CIERRE}>
-            {bien} de {cuantas} al primer intento. Cada hecho valía {pesoDeCadaItem(cuantas).toFixed(2)} %.
+            {bien} de {cuantas} al primer intento. Cada uno de los {cuantas} hechos vale lo mismo en tu resultado.
           </p>
         </Cierre>
       </Marco>
