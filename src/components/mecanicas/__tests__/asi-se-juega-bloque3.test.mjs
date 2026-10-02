@@ -212,7 +212,7 @@ const ACIERTO = {
 };
 
 for (const id of IDS) {
-  test(`★★★ ${id}: la demo llega a su acierto con el componente real, «Siguiente» espera, y no guarda nada`, async () => {
+  test(`★★★ ${id}: la demo llega a su acierto con el componente real, «Siguiente» libre, y no guarda nada`, async () => {
     w.localStorage.clear();
     const conteo = contarEscrituras();
     const redAntes = llamadasARed.length;
@@ -220,10 +220,10 @@ for (const id of IDS) {
     try {
       const sig = () => caja.querySelector("[data-asj-siguiente] button");
       const escenario = () => caja.querySelector("[data-asj-escenario]");
-      assert.equal(sig().disabled, true);
+      assert.equal(sig().disabled, false);
       assert.equal(caja.querySelector("figure figcaption").textContent, `Ejemplo: ${ASI_TODAS[id].alt}`);
       assert.equal(caja.querySelectorAll("[inert]").length, 1);
-      await esperar(() => !sig().disabled, 8000);
+await esperar(() => caja.querySelector("[data-asj-control]").textContent === "Ver de nuevo", 8000);
       await esperar(() => escenario().querySelector('[role="status"]'));
       const retro = [...escenario().querySelectorAll('[role="status"]')].map((x) => x.textContent).join(" ");
       assert.ok(retro.includes(ACIERTO[id]), `${id}: la demo no terminó en su acierto («${retro}»)`);

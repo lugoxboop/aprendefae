@@ -332,7 +332,7 @@ for (const id of [T1_8.id, T1_7.id, T1_4.id]) {
     } finally { desmontar(); }
   });
 
-  test(`★★★ ${id}: «Siguiente» apagado hasta que termina la primera pasada, y la demo no guarda nada`, async () => {
+  test(`★★★ ${id}: «Siguiente» activo desde el primer instante, y la demo no guarda nada`, async () => {
     w.localStorage.clear();
     const conteo = contarEscrituras();
     const redAntes = llamadasARed.length;
@@ -340,18 +340,18 @@ for (const id of [T1_8.id, T1_7.id, T1_4.id]) {
     const { caja, desmontar } = montar(pantalla(id, { onSiguiente: () => { siguiente += 1; } }));
     try {
       const sig = () => caja.querySelector("[data-asj-siguiente] button");
-      assert.equal(sig().disabled, true, "«Siguiente» nace encendido");
-      assert.equal(sig().textContent, "Mira el ejemplo");
-      assert.equal(sig().style.color, "rgb(168, 182, 200)", "«Mira el ejemplo» no va en #A8B6C8");
+      assert.equal(sig().disabled, false, "«Siguiente» nace apagado");
+      assert.equal(sig().textContent, "Siguiente");
       assert.equal(caja.querySelector("[data-asj-control]").textContent, "Pausar");
+      /* A mitad de la demo, «Siguiente» ya responde. */
       tocar(sig());
-      assert.equal(siguiente, 0, "«Siguiente» apagado dejó pasar");
+      assert.equal(siguiente, 1, "«Siguiente» no respondió con la demo corriendo");
 
-      await esperar(() => !sig().disabled);
+      await esperar(() => caja.querySelector("[data-asj-control]").textContent === "Ver de nuevo");
       assert.equal(sig().textContent, "Siguiente");
       assert.equal(caja.querySelector("[data-asj-control]").textContent, "Ver de nuevo");
       tocar(sig());
-      assert.equal(siguiente, 1);
+      assert.equal(siguiente, 2);
 
       /* Lo que la demo enseña al terminar, pintado por el componente real. */
       if (id === T1_8.id) {
@@ -441,13 +441,14 @@ test("★★★ movimiento reducido: tres cuadros, la mano quieta en el gesto, �
       /* Sin reloj: medio segundo después sigue en el inicio. */
       await act(async () => { await new Promise((r) => setTimeout(r, 300)); });
       assert.equal(caja.querySelector('[data-prediccion-opcion]'), null, "la demo corrió sola");
-      assert.equal(sig().disabled, true);
+      assert.equal(sig().disabled, false, "con movimiento reducido «Siguiente» debe estar activo desde el primer cuadro");
+      assert.equal(sig().textContent, "Siguiente");
 
       tocar(control());
       assert.equal(caja.querySelector("[data-asj-cuadro]").textContent, "Cuadro 2 de 3");
       assert.ok(caja.querySelector('[data-prediccion-opcion="4"]'), "el cuadro del gesto no tocó el punto");
       assert.equal(caja.querySelector("[data-mano]").style.opacity, "0.92", "la mano no está sobre el gesto");
-      assert.equal(sig().disabled, true, "«Siguiente» se encendió antes del tercer cuadro");
+      assert.equal(sig().disabled, false);
 
       tocar(control());
       assert.equal(caja.querySelector("[data-asj-cuadro]").textContent, "Cuadro 3 de 3");
