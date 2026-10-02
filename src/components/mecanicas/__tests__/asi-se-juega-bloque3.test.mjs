@@ -339,8 +339,22 @@ const sinFormaDePago = (texto) => texto.replace(/\ba cr[ée]dito\b/giu, "").repl
 const prohibidaEn = (texto) => PALABRA_PROHIBIDA.test(sinFormaDePago(texto));
 
 /** Todo el texto que se ve o que se lee en voz alta en esa caja. */
+/*
+ * Los nodos de texto uno por uno, separados por un espacio. Con `textContent`
+ * a secas, dos elementos vecinos quedaban pegados —«…servicios a crédito» y
+ * debajo «Ingresos por servicios» daban «a créditoIngresos»—, la excepción de
+ * «a crédito» (forma de pago) no veía el final de palabra y la prueba fallaba
+ * una de cada nueve veces, según qué transacción saliera en el sorteo.
+ */
+const nodosDeTexto = (caja) => {
+  const recorrido = caja.ownerDocument.createTreeWalker(caja, 4 /* NodeFilter.SHOW_TEXT */);
+  const partes = [];
+  for (let n = recorrido.nextNode(); n; n = recorrido.nextNode()) partes.push(n.nodeValue);
+  return partes.join(" ");
+};
+
 const textoVisible = (caja) => [
-  caja.textContent,
+  nodosDeTexto(caja),
   ...[...caja.querySelectorAll("[aria-label]")].map((x) => x.getAttribute("aria-label")),
   ...[...caja.querySelectorAll("[title]")].map((x) => x.getAttribute("title")),
 ].join("\n");
@@ -408,3 +422,22 @@ for (const id of TEMA2) {
     } finally { demo.desmontar(); }
   });
 }
+
+/*
+ * El caso que fallaba al azar, fijo: «Prestación de servicios a crédito», con
+ * «Ingresos por servicios» justo debajo. «a crédito» es la forma de pago, no
+ * el lado del registro, y no debe contar como «crédito».
+ */
+test("★★ ¿Se Debita?: «a crédito» al final del enunciado no cuenta como «crédito», aunque lo siga otro texto", async () => {
+  const { ASIENTOS } = await import("../../../contabilidad/debitaOAcredita.js");
+  const conCredito = ASIENTOS.filter((a) => /a cr[ée]dito/iu.test(a.enunciado));
+  assert.ok(conCredito.length >= 2, "el banco ya no tiene enunciados «a crédito»: esta prueba sobra");
+  for (const a of conCredito) {
+    const m = montar(React.createElement(T2.DebitaOAcredita, { items: [a], onCompletar: () => {} }));
+    try {
+      const texto = textoVisible(m.caja);
+      assert.ok(texto.includes(a.enunciado), `${a.id}: no se ve el enunciado`);
+      assert.ok(!prohibidaEn(texto), `${a.id}: «${texto.match(PALABRA_PROHIBIDA)?.[0]}» en pantalla`);
+    } finally { m.desmontar(); }
+  }
+});
