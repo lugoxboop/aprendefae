@@ -51,6 +51,8 @@ const { useRecompensa } = await import("../RecompensaCierre.jsx");
 const { clasificacionDe } = await import("../../../data/subjects.js");
 const T2 = await import("../../mecanicas/libros/actividades.jsx");
 const { FILAS_A_RESOLVER } = await import("../../../contabilidad/cuadroDinamicas.js");
+const { AuthContext } = await import("../../../auth/AuthProvider.jsx");
+const CON_CUENTA = { usuario: { id: "u-prueba" } };
 
 const montar = (elemento) => {
   const caja = document.createElement("div");
@@ -76,9 +78,15 @@ const filas = (bien, mal) => [
 ];
 const fila = (fp, repeat = 0, pct = 50) => ({ id: 1, fp_awarded: fp, repeat_index: repeat, correct_pct: pct });
 
-/** La pantalla con una partida ya registrada, como la deja una vista. */
+/* El aviso de FP tal como lo emite otorgarFP a partir de la fila guardada. */
+const avisoDe = (registro, actividadId = "x") => (registro
+  ? { fp: registro.fp_awarded, repetida: (registro.repeat_index ?? 0) > 0, actividadId, materiaId: "contabilidad" }
+  : null);
+
+/** La pantalla con una partida ya registrada y validada, como la deja una vista. */
 function pantallaCon(partida, { texto = null, celebrando = false, onVolver = () => {}, onRepetir = () => {}, limpiar = () => {} } = {}) {
-  const valor = { activa: true, partida: { id: 1, actividadId: "x", listo: true, ...partida }, celebrando, limpiar, onVolver };
+  const completa = { id: 1, actividadId: "x", listo: true, valida: true, aviso: avisoDe(partida.registro), ...partida };
+  const valor = { activa: true, partida: completa, celebrando, limpiar, onVolver };
   return h(ContextoResumen.Provider, { value: valor }, h(PantallaResumen, { texto, onRepetir }));
 }
 
@@ -89,12 +97,16 @@ const TEAL_O_AMBAR = /#2a9d8f|rgb\(42,\s*157,\s*143\)|#e9c46a|rgb\(233,\s*196,\s
 
 /* ═══════════════════ EL INTERRUPTOR ═══════════════════ */
 
-test("★★★ interruptor por materia: encendido solo en Contabilidad, apagado por defecto", () => {
+test("★★★ interruptor por materia: encendido en Contabilidad y Macroeconomía, apagado por defecto", () => {
   assert.equal(R.pantallaResumenEncendida("contabilidad"), true);
-  assert.equal(R.pantallaResumenEncendida("macroeconomia"), false);
+  assert.equal(R.pantallaResumenEncendida("macroeconomia"), true);
   assert.equal(R.pantallaResumenEncendida("pensamiento-estrategico"), false, "una materia que no está en la lista debe quedar apagada");
   assert.equal(R.pantallaResumenEncendida("inventada"), false);
-  assert.equal(R.usaPantallaResumen("macroeconomia", "cual-componente"), false);
+  assert.equal(R.usaPantallaResumen("macroeconomia", "cual-componente"), true);
+  /* Una línea por materia: apagarla es poner su línea en false. */
+  const fuente = readFileSync(new URL("../../../hacer/pantallaResumen.js", import.meta.url), "utf8");
+  assert.match(fuente, /^  macroeconomia: true,$/m);
+  assert.match(fuente, /^  contabilidad: true,$/m);
   assert.equal(R.usaPantallaResumen("contabilidad", "cu-cuadro-dinamicas"), true);
   assert.equal(R.usaPantallaResumen("contabilidad", "t1-desde-donde-preguntan"), true);
 });
@@ -106,7 +118,7 @@ test("★★ las seis actividades con panel propio no cambian, aunque su materia
   assert.equal(R.usaPantallaResumen("contabilidad", "ciclo-completo"), false);
 });
 
-/* ═══════════════════ MACRO, IGUAL QUE HOY ═══════════════════ */
+/* ═══════════════════ CON EL INTERRUPTOR APAGADO, IGUAL QUE ANTES ═══════════════════ */
 
 /* Lo que pinta el recuadro de siempre, tal como estaba antes de esta rama. */
 const recuadro = (pct, texto) => h(Cierre, { pct, onReiniciar: () => {}, textoReiniciar: "Otra tanda" }, h("p", null, texto));
@@ -117,9 +129,15 @@ function VistaMacro({ hijo }) {
   return h(ContextoResumen.Provider, { value: resumen.contexto("cual-componente", () => {}) }, hijo);
 }
 
-test("★★★ con el interruptor apagado, el cierre de Macroeconomía es idéntico al de hoy", () => {
+/* Apaga Macroeconomía solo durante la prueba, como lo haría su línea en false. */
+const conMacroApagada = async (fn) => {
+  R.PANTALLA_RESUMEN.macroeconomia = false;
+  try { return await fn(); } finally { R.PANTALLA_RESUMEN.macroeconomia = true; }
+};
+
+test("★★★ con su línea en false, el cierre de Macroeconomía es idéntico al de antes", () => conMacroApagada(() => {
   const sin = montar(recuadro(67, "4 de 6 bien clasificados."));
-  const con = montar(h(VistaMacro, { hijo: recuadro(67, "4 de 6 bien clasificados.") }));
+  const con = montar(h(AuthContext.Provider, { value: CON_CUENTA }, h(VistaMacro, { hijo: recuadro(67, "4 de 6 bien clasificados.") })));
   try {
     assert.equal(con.caja.innerHTML, sin.caja.innerHTML, "el recuadro de Macro cambió");
     assert.ok(sin.caja.textContent.includes("RESULTADO"));
@@ -127,12 +145,12 @@ test("★★★ con el interruptor apagado, el cierre de Macroeconomía es idén
     assert.ok([...sin.caja.querySelectorAll("button")].some((b) => b.textContent === "Otra tanda"));
     assert.equal(con.caja.querySelector("[data-pantalla-resumen]"), null);
   } finally { sin.desmontar(); con.desmontar(); }
-});
+}));
 
-test("★★★ con el interruptor apagado, registrar llama al servidor una sola vez y devuelve lo mismo", async () => {
+test("★★★ con su línea en false, registrar llama al servidor una sola vez y devuelve lo mismo", () => conMacroApagada(async () => {
   let resumen = null;
   function Arnes() { resumen = useResumenDePartida("macroeconomia", false); return null; }
-  const m = montar(h(Arnes));
+  const m = montar(h(AuthContext.Provider, { value: CON_CUENTA }, h(Arnes)));
   try {
     let llamadas = 0;
     const devuelto = { ok: true, fp: 10, repetida: false, registro: fila(10) };
@@ -143,21 +161,32 @@ test("★★★ con el interruptor apagado, registrar llama al servidor una sola
     assert.equal(llamadas, 1);
     assert.equal(r, devuelto);
     assert.equal(resumen.contexto("cual-componente", () => {}).activa, false);
-    assert.equal(resumen.contexto("cual-componente", () => {}).partida, null, "Macro guardó una partida para la pantalla");
+    assert.equal(resumen.contexto("cual-componente", () => {}).partida, null, "guardó una partida para la pantalla");
   } finally { m.desmontar(); }
-});
+}));
 
-test("★★★ el aviso de FP sigue saliendo en Macro y en los paneles propios; en Contabilidad lo dice la pantalla", () => {
+test("★★★ el aviso de FP: sale si nadie lo reclama, si la partida cae a la salvaguarda y en los paneles propios", () => {
   const m = montar(h(AvisoFP));
   try {
+    /* Ninguna partida anunciada: el aviso de siempre. */
     act(() => emitirFP({ fp: 25, repetida: false, actividadId: "electrocardiograma", materiaId: "macroeconomia" }));
-    assert.ok(m.caja.textContent.includes("+25 FP"), "Macro perdió su aviso de FP");
+    assert.ok(m.caja.textContent.includes("+25 FP"));
   } finally { m.desmontar(); }
 
   const c = montar(h(AvisoFP));
+  const base = { actividadId: "cu-cuadro-dinamicas", formato: R.FORMATO.X_DE_N, pct: 80, detalle: filas(4, 1), conCuenta: true };
   try {
+    /* Una partida válida: el aviso lo calla la pantalla. */
+    const soltar = R.anunciarPartida("cu-cuadro-dinamicas", base);
     act(() => emitirFP({ fp: 25, repetida: false, actividadId: "cu-cuadro-dinamicas", materiaId: "contabilidad" }));
-    assert.equal(c.caja.textContent, "", "salió el aviso de FP con la pantalla de resumen encendida");
+    soltar();
+    assert.equal(c.caja.textContent, "", "salió el aviso con la pantalla de resumen");
+    /* Un aviso con puntos que no valen: la salvaguarda devuelve el aviso de siempre. */
+    const soltar2 = R.anunciarPartida("cu-cuadro-dinamicas", base);
+    act(() => emitirFP({ fp: -3, repetida: false, actividadId: "cu-cuadro-dinamicas", materiaId: "contabilidad" }));
+    soltar2();
+    assert.ok(c.caja.textContent.includes("FP") || c.caja.textContent.length > 0, "la salvaguarda se quedó sin aviso");
+    /* Un panel propio, aunque su materia esté encendida. */
     act(() => emitirFP({ fp: 90, repetida: false, actividadId: "ciclo-completo", materiaId: "contabilidad" }));
     assert.ok(c.caja.textContent.includes("+90 FP"), "el desafío con panel propio perdió su aviso");
   } finally { c.desmontar(); }
@@ -179,14 +208,6 @@ test("★★★ «bien a la primera» cuenta las filas como las guarda el servid
     assert.equal(valor(m.caja, "bien"), "2 de 4");
     assert.equal(valor(m.caja, "puntos"), "37");
     assert.equal(m.caja.querySelector("[data-lector]").textContent, "Resultado: 2 de 4 bien a la primera, 37 puntos ganados.");
-  } finally { m.desmontar(); }
-});
-
-test("★★ sin fila guardada (sin cuenta, o si la escritura falló) no se ganó nada: dice 0", () => {
-  const m = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 100, detalle: filas(5, 0), registro: null }));
-  try {
-    assert.equal(valor(m.caja, "puntos"), "0");
-    assert.equal(m.caja.querySelector("[data-nota-repeticion]"), null);
   } finally { m.desmontar(); }
 });
 
@@ -347,7 +368,7 @@ test("★★ estilo: sin coral, cifras en blanco (ni verde azulado ni ámbar), s
  * respuesta fija: la pantalla se arma con el detalle real de la partida y la
  * fila que «devolvió» registrar_fp. Nada aquí escribe en ningún sitio.
  */
-function VistaContabilidad({ respuesta, onRegistro }) {
+function VistaContabilidad({ respuesta, onRegistro, aviso = undefined }) {
   const [recompensa, celebrar, celebrando] = useRecompensa();
   const resumen = useResumenDePartida("contabilidad", celebrando);
   const clas = clasificacionDe("contabilidad", "cuentas-debe-haber", "cu-cuadro-dinamicas");
@@ -355,6 +376,9 @@ function VistaContabilidad({ respuesta, onRegistro }) {
     celebrar(clas.dificultad, "cu-cuadro-dinamicas");
     await resumen.registrar({ actividadId: "cu-cuadro-dinamicas", clasificacion: clas, pct, detalle }, async () => {
       onRegistro?.({ pct, detalle });
+      /* Lo que hace otorgarFP al volver del servidor: emitir el aviso. */
+      const datos = aviso !== undefined ? aviso : { fp: respuesta.fp, repetida: respuesta.repetida, actividadId: "cu-cuadro-dinamicas", materiaId: "contabilidad" };
+      if (respuesta.ok && datos) emitirFP(datos);
       return respuesta;
     });
   };
@@ -362,11 +386,12 @@ function VistaContabilidad({ respuesta, onRegistro }) {
     h(ContextoResumen.Provider, { value: resumen.contexto("cu-cuadro-dinamicas", () => {}) },
       h(T2.CuadroDinamicas, { onCompletar: completar })));
 }
+const vistaContabilidad = (props, auth = CON_CUENTA) => h(AuthContext.Provider, { value: auth }, h(VistaContabilidad, props));
 
 test("★★★ El Cuadro, de punta a punta: la celebración, luego la pantalla con lo guardado y su texto propio", async () => {
   let enviado = null;
   const respuesta = { ok: true, fp: 20, repetida: false, registro: fila(20, 0, 80) };
-  const m = montar(h(VistaContabilidad, { respuesta, onRegistro: (x) => { enviado = x; } }));
+  const m = montar(vistaContabilidad({ respuesta, onRegistro: (x) => { enviado = x; } }));
   try {
     const boton = (t) => [...m.caja.querySelectorAll("button")].find((b) => new RegExp(t).test(b.textContent));
     FILAS_A_RESOLVER.forEach((f, k) => {
@@ -400,7 +425,7 @@ const figura = (caja) => caja.querySelector("[data-figura-facetada]");
 const PROHIBIDOS = /#2a9d8f|#52c4b0|#e9c46a|rgb\(42,\s*157,\s*143\)|rgb\(82,\s*196,\s*176\)|rgb\(233,\s*196,\s*106\)|FAE\.teal|FAE\.ambar|\bambar\b|ámbar/i;
 
 test("★★★ qué figura toca: perfecto rica; otra primera vez con puntos sobria; repetición, ninguna", () => {
-  const caso = (detalle, registro, clasificacion = CLAS_EVALUATIVA) => R.resumenDe({ clasificacion, pct: 0, detalle, registro }).figura;
+  const caso = (detalle, registro, clasificacion = CLAS_EVALUATIVA) => R.resumenDe({ clasificacion, pct: registro?.correct_pct ?? 0, detalle, registro, aviso: avisoDe(registro), formato: detalle ? undefined : R.FORMATO.PORCENTAJE }).figura;
   assert.equal(caso(filas(5, 0), fila(25)), "rica");
   assert.equal(caso(filas(4, 1), fila(25)), "sobria");
   assert.equal(caso(filas(1, 4), fila(13)), "sobria", "menos del 50 % con puntos también lleva marco sobrio");
@@ -520,4 +545,142 @@ test("★★ T1-4: la línea del 16.67 % ahora dice cuántos hechos hay y que va
   const fuente = readFileSync(new URL("../../mecanicas/libros/tema1/QueLePasaACadaUno.jsx", import.meta.url), "utf8");
   assert.doesNotMatch(fuente, /Cada hecho valía/);
   assert.match(fuente, /Cada uno de los \{cuantas\} hechos vale lo mismo en tu resultado\./);
+});
+
+/* ═══════════════════ MACROECONOMÍA: LA SALVAGUARDA Y LA FUENTE DE LOS PUNTOS (Levi) ═══════════════════ */
+
+const { SUBJECTS, HACER } = await import("../../../data/subjects.js");
+
+/*
+ * Una actividad mínima: al tocar «Terminar» entrega lo que se le dé y pinta el
+ * Cierre compartido, como cualquier mecánica. La vista es la de siempre: la
+ * celebración, el hook y el registro, con el servidor sustituido.
+ */
+function MecanicaDePrueba({ onCompletar, pct, detalle }) {
+  const [fin, setFin] = React.useState(false);
+  if (fin) return h(Cierre, { pct: Math.round(Number(pct) || 0), onReiniciar: () => setFin(false), textoReiniciar: "Otra tanda" }, h("p", null, "Texto propio."));
+  return h("button", { type: "button", "data-terminar": true, onClick: () => { setFin(true); onCompletar(pct, 1000, detalle); } }, "Terminar");
+}
+function VistaPrueba({ materia, actividadId, clasificacion, pct, detalle, respuesta, aviso }) {
+  const [recompensa, celebrar, celebrando] = useRecompensa();
+  const resumen = useResumenDePartida(materia, celebrando);
+  const completar = (p, ms, d) => {
+    celebrar("facil", actividadId);
+    resumen.registrar({ actividadId, clasificacion, pct: p, detalle: d }, async () => {
+      if (aviso) emitirFP({ actividadId, materiaId: materia, ...aviso });
+      return respuesta;
+    });
+  };
+  return h("div", null, recompensa, h(AvisoFP),
+    h(ContextoResumen.Provider, { value: resumen.contexto(actividadId, () => {}) },
+      h(MecanicaDePrueba, { onCompletar: completar, pct, detalle })));
+}
+async function jugarPrueba({ materia = "macroeconomia", actividadId = "cual-componente", clasificacion = CLAS_EVALUATIVA, pct = 80, detalle = filas(4, 1), respuesta = { ok: true, fp: 8, repetida: false, registro: fila(8, 0, 80) }, aviso = { fp: 8, repetida: false }, auth = CON_CUENTA }) {
+  const m = montar(h(AuthContext.Provider, { value: auth }, h(VistaPrueba, { materia, actividadId, clasificacion, pct, detalle, respuesta, aviso })));
+  await act(async () => { m.caja.querySelector("[data-terminar]").dispatchEvent(new w.MouseEvent("click", { bubbles: true })); await new Promise((r) => setTimeout(r, 0)); });
+  /* Se espera a que acabe la celebración de Fácil (1,5 s) y a que algo se decida. */
+  await esperar(() => !m.caja.querySelector(".fae-rc") && (m.caja.querySelector("[data-pantalla-resumen]") || m.caja.textContent.includes("RESULTADO")), 6000);
+  return m;
+}
+const esCierreDeSiempre = (caja) => caja.textContent.includes("RESULTADO") && !caja.querySelector("[data-pantalla-resumen]")
+  && [...caja.querySelectorAll("button")].some((b) => b.textContent === "Otra tanda");
+
+test("★★★ salvaguarda: cada caso cae al cierre de siempre, con su recuadro y su aviso de FP", async () => {
+  const casos = [
+    ["N = 0 (sin filas)", { detalle: [] }],
+    ["X falta (sin detalle en un X de N)", { detalle: null }],
+    ["detalle inservible", { detalle: [{ item: "", ok: true }, { item: "a" }] }],
+    ["FP falta (no llegó el aviso)", { aviso: null }],
+    ["FP no es un número", { aviso: { fp: "8", repetida: false } }],
+    ["FP negativo", { aviso: { fp: -1, repetida: false } }],
+    ["FP NaN", { aviso: { fp: Number.NaN, repetida: false } }],
+    ["repetición que no es sí/no", { aviso: { fp: 0, repetida: "si" } }],
+    ["P fuera de 0–100", { actividadId: "tablero-decisiones", detalle: null, pct: 140, respuesta: { ok: true, fp: 10, repetida: false, registro: null } }],
+    ["P no es un número", { actividadId: "tablero-decisiones", detalle: null, pct: Number.NaN, respuesta: { ok: true, fp: 10, repetida: false, registro: null } }],
+    ["sin cuenta", { auth: { usuario: null }, aviso: null, respuesta: { ok: false, motivo: "sin-sesion" } }],
+  ];
+  for (const [nombre, caso] of casos) {
+    const m = await jugarPrueba(caso);
+    try {
+      assert.ok(esCierreDeSiempre(m.caja), `${nombre}: no salió el cierre de siempre`);
+      if (caso.aviso !== null && !nombre.startsWith("sin cuenta")) {
+        /* El aviso sale tal cual salía antes (o no sale, si antes tampoco salía). */
+        const fp = (caso.aviso ?? { fp: 8 }).fp;
+        if (typeof fp === "number" && fp > 0) assert.ok(m.caja.textContent.includes(`+${fp} FP`), `${nombre}: se perdió el aviso de FP`);
+      }
+    } finally { m.desmontar(); }
+  }
+  /* X > N: el conteo no lo produce nunca, pero la regla está. */
+  assert.equal(R.cifrasValidas(5, 4), false);
+  assert.equal(R.cifrasValidas(-1, 4), false);
+  assert.equal(R.cifrasValidas(1.5, 4), false);
+  assert.equal(R.cifrasValidas(0, 0), false);
+  assert.equal(R.cifrasValidas(4, 4), true);
+  /* Y con todo en regla, sale la pantalla y no el aviso. */
+  const bien = await jugarPrueba({});
+  try {
+    assert.ok(bien.caja.querySelector("[data-pantalla-resumen]"), "con datos válidos no salió la pantalla");
+    assert.ok(!bien.caja.textContent.includes("+8 FP"), "salieron la pantalla y el aviso a la vez");
+  } finally { bien.desmontar(); }
+});
+
+test("★★★ la salvaguarda vale también para Contabilidad", async () => {
+  const m = await jugarPrueba({ materia: "contabilidad", actividadId: "cu-debita-o-acredita", detalle: [] });
+  try { assert.ok(esCierreDeSiempre(m.caja)); } finally { m.desmontar(); }
+});
+
+test("★★★ los puntos de la pantalla son siempre los del aviso de FP, y la repetición, su marca", async () => {
+  for (const [fp, repetida] of [[8, false], [37, false], [0, true], [90, false]]) {
+    /* La fila guardada dice otra cosa a propósito: la pantalla no la lee para los puntos. */
+    const m = await jugarPrueba({ aviso: { fp, repetida }, respuesta: { ok: true, fp: 999, repetida: !repetida, registro: fila(999, repetida ? 0 : 5, 80) } });
+    try {
+      assert.ok(m.caja.querySelector("[data-pantalla-resumen]"), `fp ${fp}: no salió la pantalla`);
+      assert.equal(valor(m.caja, "puntos"), String(fp), "los puntos no son los del aviso");
+      assert.equal(m.caja.querySelector("[data-pantalla-resumen]").getAttribute("data-repeticion"), repetida ? "si" : "no");
+    } finally { m.desmontar(); }
+  }
+});
+
+test("★★★ ninguna de las 49 actividades de Macroeconomía queda sin formato", () => {
+  const ids = SUBJECTS.macroeconomia.topics.flatMap((t) => (t.actividades ?? t.activities ?? [])
+    .filter((a) => a.clasificacion?.tipo === HACER).map((a) => a.id));
+  assert.equal(ids.length, 49, `hay ${ids.length} actividades de Hacer en Macro`);
+  const validos = new Set(Object.values(R.FORMATO));
+  for (const id of ids) {
+    assert.ok(validos.has(R.FORMATO_MACRO[id]), `${id} no tiene formato`);
+    assert.equal(R.formatoDe(id), R.FORMATO_MACRO[id]);
+  }
+  assert.deepEqual(Object.keys(R.FORMATO_MACRO).sort(), [...ids].sort(), "hay formatos para actividades que no existen");
+  /* Los cinco paneles propios de Macro, como tales. */
+  for (const id of ["memorama-corazon", "memorama-tesoro", "memorama-tesoreria", "memorama-banco-central", "comite-nova"]) {
+    assert.equal(R.FORMATO_MACRO[id], R.FORMATO.PANEL_PROPIO, id);
+  }
+  assert.equal(R.FORMATO_MACRO["tablero-decisiones"], R.FORMATO.PORCENTAJE);
+});
+
+test("★★★ las 6 actividades con panel propio no cambian: sin pantalla, sin partida y con su aviso", async () => {
+  for (const id of R.CON_PANEL_PROPIO) {
+    assert.equal(R.usaPantallaResumen("macroeconomia", id), false, id);
+    assert.equal(R.usaPantallaResumen("contabilidad", id), false, id);
+  }
+  /* Su registro pasa tal cual, y el aviso sale como siempre. */
+  let resumen = null;
+  function Arnes() { resumen = useResumenDePartida("macroeconomia", false); return h(AvisoFP); }
+  const m = montar(h(AuthContext.Provider, { value: CON_CUENTA }, h(Arnes)));
+  try {
+    await act(async () => {
+      await resumen.registrar({ actividadId: "memorama-corazon", clasificacion: CLAS_EXPLORATORIA, pct: 100, detalle: filas(4, 0) }, async () => {
+        emitirFP({ fp: 10, repetida: false, actividadId: "memorama-corazon", materiaId: "macroeconomia" });
+        return { ok: true, fp: 10 };
+      });
+    });
+    assert.equal(resumen.contexto("memorama-corazon", () => {}).activa, false);
+    assert.equal(resumen.contexto("memorama-corazon", () => {}).partida, null);
+    assert.ok(m.caja.textContent.includes("+10 FP"));
+  } finally { m.desmontar(); }
+  /* Ninguno de sus cierres pasa por la pantalla: no usan el envoltorio. */
+  for (const archivo of ["../../mecanicas/bloques/Memorama.jsx", "../../mecanicas/libros/ciclo/ElCicloCompleto.jsx"]) {
+    const fuente = readFileSync(new URL(archivo, import.meta.url), "utf8");
+    assert.doesNotMatch(fuente, /CierreConResumen/, archivo);
+  }
 });

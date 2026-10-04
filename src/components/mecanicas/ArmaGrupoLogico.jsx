@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { FAE } from "../../theme.js";
+import { CierreConResumen } from "../shared/PantallaResumen.jsx";
 import { CASILLAS, CASOS_CADENA, sortearCaso, retroCadena } from "../../data/juegosPolitica.js";
 import { barajar } from "../../utils/barajar.js";
 
@@ -287,6 +288,17 @@ export default function ArmaGrupoLogico({ onCompletar }) {
           </div>
         </>
       ) : (
+        <CierreConResumen
+          onReiniciar={reiniciar}
+          texto={
+            <p style={{ margin: 0 }}>
+              La cadena está completa: del problema a la meta, todo del mismo caso.{" "}
+              {senuelosSoltados > 0
+                ? `Por el camino soltaste ${senuelosSoltados} ${senuelosSoltados === 1 ? "enunciado" : "enunciados"} de otra cadena, y eso descuenta.`
+                : "Y sin colocar ni un enunciado de otra cadena."}
+            </p>
+          }
+        >
         <div className="fae-gl-entrar">
           <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "26px", color: FAE.text, margin: "0 0 6px", fontVariantNumeric: "tabular-nums" }}>
             {pct}%
@@ -311,6 +323,7 @@ export default function ArmaGrupoLogico({ onCompletar }) {
             <RotateCcw size={14} /> Otra cadena
           </button>
         </div>
+        </CierreConResumen>
       )}
     </div>
   );

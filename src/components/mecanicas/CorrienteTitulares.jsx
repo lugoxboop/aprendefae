@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw, ChevronRight } from "lucide-react";
 import { FAE } from "../../theme.js";
+import { CierreConResumen } from "../shared/PantallaResumen.jsx";
 import {
   OBJETIVO_CORRIENTE, CATEGORIAS, BANCO_CORRIENTE, POR_CATEGORIA, CARTAS_POR_TANDA,
   retroCorriente,
@@ -348,6 +349,11 @@ export default function CorrienteTitulares({ onCompletar }) {
           </div>
         </>
       ) : (
+        <CierreConResumen
+          onReiniciar={reiniciar}
+          /* Trae más que un texto (la lista de fallos): va entero, el resumen debajo. */
+          completo
+        >
         <div className="fae-ct-entrar">
           <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "28px", color: FAE.text, margin: "0 0 6px", fontVariantNumeric: "tabular-nums" }}>
             {pct}%
@@ -375,6 +381,7 @@ export default function CorrienteTitulares({ onCompletar }) {
             <RotateCcw size={14} /> Otra tanda
           </button>
         </div>
+        </CierreConResumen>
       )}
     </div>
   );

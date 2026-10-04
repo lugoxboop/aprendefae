@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw, FolderClosed } from "lucide-react";
 import { FAE } from "../../theme.js";
+import { CierreConResumen } from "../shared/PantallaResumen.jsx";
 import {
   PROBLEMAS, sortearTitulares, retroalimentacion, textoArchivado,
   PREGUNTA_BRECHA, BRECHAS,
@@ -411,6 +412,11 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
           </div>
         </div>
       ) : (
+        <CierreConResumen
+          onReiniciar={reiniciar}
+          /* Trae más que un texto (la lista de fallos, el veredicto de la etapa 2): va entero, el resumen debajo. */
+          completo
+        >
         <div className="fae-dv-entrar">
           <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "26px", color: FAE.text, margin: "0 0 6px", fontVariantNumeric: "tabular-nums" }}>
             {pct}%
@@ -456,6 +462,7 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
             <RotateCcw size={14} /> Otra ronda
           </button>
         </div>
+        </CierreConResumen>
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw, ChevronRight, TrendingUp, TrendingDown } from "lucide-react";
 import { FAE } from "../../theme.js";
+import { CierreConResumen } from "../shared/PantallaResumen.jsx";
 import {
   OBJETIVO_GANADORES, RONDAS_GANADORES, PREGUNTA_DIRECTO, retroDirecto,
 } from "../../data/juegosPolitica2.js";
@@ -197,6 +198,15 @@ export default function QuienGanaQuienPierde({ onCompletar }) {
   /* ───────────────────────── cierre ───────────────────────── */
   if (terminado) {
     return (
+      <CierreConResumen
+        onReiniciar={reiniciar}
+        texto={
+          <p style={{ margin: 0 }}>
+            {aciertos} de {TOTAL_CLASIFICACIONES} clasificaciones y {directos} de {RONDAS_GANADORES.length} preguntas
+            de impacto directo. Casi ninguna medida deja a todo el mundo igual: siempre hay alguien del otro lado.
+          </p>
+        }
+      >
       <div className="fae-qg-entrar">
         <style>{CSS}</style>
         <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "30px", color: FAE.text, margin: "0 0 6px", fontVariantNumeric: "tabular-nums" }}>
@@ -214,6 +224,7 @@ export default function QuienGanaQuienPierde({ onCompletar }) {
           <RotateCcw size={14} /> Otra vuelta
         </button>
       </div>
+      </CierreConResumen>
     );
   }
 

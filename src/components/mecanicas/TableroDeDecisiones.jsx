@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw, TriangleAlert, Info } from "lucide-react";
 import { FAE } from "../../theme.js";
+import { CierreConResumen } from "../shared/PantallaResumen.jsx";
 import { simular, evaluar, INSTRUMENTOS, LIMITES, META, BASE } from "../../data/tableroDecisiones.js";
 
 /*
@@ -410,6 +411,18 @@ export default function TableroDeDecisiones({ onCompletar }) {
           {movida ? "Confirmar decisión" : "Mueve al menos una palanca"}
         </button>
       ) : (
+        <CierreConResumen
+          onReiniciar={reiniciar}
+          texto={
+            <>
+              <p style={{ margin: "0 0 8px" }}>{resultado.feedback}</p>
+              <p style={{ margin: 0, fontVariantNumeric: "tabular-nums" }}>
+                Desempleo {resultado.indicadores.desempleo.toFixed(1)}% · Inflación{" "}
+                {resultado.indicadores.inflacion.toFixed(1)}% · PIB {resultado.indicadores.pib.toFixed(1)}%
+              </p>
+            </>
+          }
+        >
         <div
           className="fae-td-entrar"
           style={{
@@ -437,6 +450,7 @@ export default function TableroDeDecisiones({ onCompletar }) {
             <RotateCcw size={14} /> Probar otra combinación
           </button>
         </div>
+        </CierreConResumen>
       )}
     </div>
   );

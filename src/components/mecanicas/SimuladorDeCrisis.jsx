@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw, ChevronRight, TriangleAlert } from "lucide-react";
 import { FAE } from "../../theme.js";
+import { CierreConResumen } from "../shared/PantallaResumen.jsx";
 import {
   OBJETIVO_CRISIS, AVISO_CRISIS, CASOS_CRISIS, RANURAS_CRISIS, NOMBRES_RANURA,
 } from "../../data/juegosPolitica2.js";
@@ -301,6 +302,17 @@ export default function SimuladorDeCrisis({ onCompletar }) {
           </div>
         </>
       ) : (
+        <CierreConResumen
+          onReiniciar={reiniciar}
+          texto={
+            <p style={{ margin: 0 }}>
+              Cadena completa, del problema a la meta.{" "}
+              {senuelosSoltados === 0
+                ? "Y sin colocar ni una pieza de otro caso: construiste la cadena entera sin tantear."
+                : `Por el camino probaste ${senuelosSoltados} ${senuelosSoltados === 1 ? "pieza" : "piezas"} de otros casos, y eso descuenta.`}
+            </p>
+          }
+        >
         <div className="fae-sc-entrar">
           <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "28px", color: FAE.text, margin: "0 0 6px", fontVariantNumeric: "tabular-nums" }}>
             {pct}%
@@ -319,6 +331,7 @@ export default function SimuladorDeCrisis({ onCompletar }) {
             <RotateCcw size={14} /> Otra crisis
           </button>
         </div>
+        </CierreConResumen>
       )}
     </div>
   );
