@@ -97,16 +97,16 @@ const TEAL_O_AMBAR = /#2a9d8f|rgb\(42,\s*157,\s*143\)|#e9c46a|rgb\(233,\s*196,\s
 
 /* ═══════════════════ EL INTERRUPTOR ═══════════════════ */
 
-test("★★★ interruptor por materia: encendido en Contabilidad, apagado en Macroeconomía y por defecto", () => {
+test("★★★ interruptor por materia: encendido en Contabilidad y Macroeconomía, apagado por defecto", () => {
   assert.equal(R.pantallaResumenEncendida("contabilidad"), true);
-  /* Apagada de nuevo por la regla con Levi: si algo se ve mal en Macro, se apaga. */
-  assert.equal(R.pantallaResumenEncendida("macroeconomia"), false);
+  /* Reencendida en su propio PR. Regla con Levi: si algo se ve mal en Macro, se apaga. */
+  assert.equal(R.pantallaResumenEncendida("macroeconomia"), true);
   assert.equal(R.pantallaResumenEncendida("pensamiento-estrategico"), false, "una materia que no está en la lista debe quedar apagada");
   assert.equal(R.pantallaResumenEncendida("inventada"), false);
-  assert.equal(R.usaPantallaResumen("macroeconomia", "cual-componente"), false);
+  assert.equal(R.usaPantallaResumen("macroeconomia", "cual-componente"), true);
   /* Una línea por materia: apagarla es poner su línea en false. */
   const fuente = readFileSync(new URL("../../../hacer/pantallaResumen.js", import.meta.url), "utf8");
-  assert.match(fuente, /^  macroeconomia: false,$/m);
+  assert.match(fuente, /^  macroeconomia: true,$/m);
   assert.match(fuente, /^  contabilidad: true,$/m);
   assert.equal(R.usaPantallaResumen("contabilidad", "cu-cuadro-dinamicas"), true);
   assert.equal(R.usaPantallaResumen("contabilidad", "t1-desde-donde-preguntan"), true);
@@ -201,8 +201,6 @@ test("★★★ el aviso de FP: sale si nadie lo reclama, si la partida cae a la
 });
 
 test("★★★ el aviso de FP de Macro se ve igual que antes de añadir `pctGuardado`", () => {
-  /* Macro está apagada: su aviso sale siempre, como antes de la pantalla. */
-  assert.equal(R.pantallaResumenEncendida("macroeconomia"), false);
   const pintar = (datos) => {
     const m = montar(h(AvisoFP));
     try {

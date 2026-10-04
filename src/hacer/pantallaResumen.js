@@ -18,7 +18,7 @@
  */
 export const PANTALLA_RESUMEN = {
   contabilidad: true,
-  macroeconomia: false,
+  macroeconomia: true,
 };
 
 /*
