@@ -414,15 +414,8 @@ export default function DiagnosticoEnVivo({ onCompletar }) {
       ) : (
         <CierreConResumen
           onReiniciar={reiniciar}
-          texto={
-            <>
-              <p style={{ margin: "0 0 8px" }}>
-                {aciertos} de {orden.length} clasificados bien a la primera. Cuenta el primer intento: acertar
-                después de fallar enseña igual, pero no es lo mismo que reconocerlo de entrada.
-              </p>
-              <p style={{ margin: 0 }}>{BRECHAS.find((b) => b.id === brecha)?.feedback}</p>
-            </>
-          }
+          /* Trae más que un texto (la lista de fallos, el veredicto de la etapa 2): va entero, el resumen debajo. */
+          completo
         >
         <div className="fae-dv-entrar">
           <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "26px", color: FAE.text, margin: "0 0 6px", fontVariantNumeric: "tabular-nums" }}>

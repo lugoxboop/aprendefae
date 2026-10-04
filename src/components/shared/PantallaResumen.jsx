@@ -122,16 +122,6 @@ export function useResumenDePartida(materiaId, celebrando = false) {
 /** ¿La partida cae al cierre de siempre? Solo cuando ya se decidió que no vale. */
 export const caeAlCierreDeSiempre = (ctx) => Boolean(ctx?.partida?.listo && ctx.partida.valida === false);
 
-/**
- * ¿La pantalla ocupa el cierre de esta actividad? Para las mecánicas cuyo
- * cierre tiene piezas fuera del bloque envuelto (un botón de «otra vez»
- * aparte): mientras la pantalla está, esas piezas sobran.
- */
-export function useResumenOcupaElCierre() {
-  const ctx = useContextoResumen();
-  return Boolean(ctx.activa && !caeAlCierreDeSiempre(ctx));
-}
-
 /*
  * ═══════════ EL CIERRE, CON O SIN PANTALLA ═══════════
  *
@@ -140,16 +130,48 @@ export function useResumenOcupaElCierre() {
  * pantalla de resumen, salvo que la salvaguarda diga que no: entonces vuelve
  * el cierre de siempre, sin cambios.
  *
+ * El cierre propio nunca pierde nada (regla de Levi):
+ *
+ *   texto      un cierre que es solo un texto corto: ese texto va dentro del
+ *              recuadro de la pantalla.
+ *   completo   un cierre que trae más (listas, diagnóstico por ítem): se
+ *              enseña entero, tal cual, y la pantalla va debajo, sin recuadro
+ *              —su texto ya está arriba—.
+ *
  * Al desmontarse (la actividad vuelve a empezar, o se sale) olvida la partida,
  * para que la siguiente no herede la decisión de esta.
  */
-export function CierreConResumen({ texto = null, onReiniciar = null, children }) {
-  const ctx = useContextoResumen();
+function useOlvidarAlSalir(ctx) {
   const limpiar = useRef(null);
   limpiar.current = ctx.activa ? ctx.limpiar : null;
   useEffect(() => () => { limpiar.current?.(); }, []);
+}
+
+export function CierreConResumen({ texto = null, completo = false, onReiniciar = null, children }) {
+  const ctx = useContextoResumen();
+  const cierrePropio = useRef(null);
+  useOlvidarAlSalir(ctx);
   if (!ctx.activa || caeAlCierreDeSiempre(ctx)) return children;
-  return <PantallaResumen texto={texto} onRepetir={onReiniciar} />;
+  if (!completo) return <PantallaResumen texto={texto} onRepetir={onReiniciar} />;
+  return (
+    <div ref={cierrePropio} data-cierre-propio style={{ scrollMarginTop: "88px" }}>
+      {children}
+      <PantallaResumen sinRecuadro desplazarA={cierrePropio} onRepetir={onReiniciar} />
+    </div>
+  );
+}
+
+/**
+ * Lo mismo que `completo`, para un cierre propio repartido por la actividad
+ * (Explica la política: el resultado en el panel, el detalle frase por frase
+ * y su botón debajo). Se pone al final de ese cierre; `desplazarA` es el
+ * comienzo del cierre, adonde se lleva la vista.
+ */
+export function ResumenDebajo({ onReiniciar = null, desplazarA = null }) {
+  const ctx = useContextoResumen();
+  useOlvidarAlSalir(ctx);
+  if (!ctx.activa || caeAlCierreDeSiempre(ctx)) return null;
+  return <PantallaResumen sinRecuadro desplazarA={desplazarA} onRepetir={onReiniciar} />;
 }
 
 /* ═══════════ LAS CIFRAS QUE CUENTAN DESDE 0 ═══════════ */
@@ -231,7 +253,7 @@ function FiguraPuntos({ fp }) {
  * cierre propio de la actividad (lo que antes iba dentro del recuadro) y
  * `onRepetir`, el reinicio de la actividad.
  */
-export default function PantallaResumen({ texto = null, onRepetir = null }) {
+export default function PantallaResumen({ texto = null, onRepetir = null, sinRecuadro = false, desplazarA = null }) {
   const ctx = useContextoResumen();
   const titulo = useRef(null);
   const caja = useRef(null);
@@ -243,7 +265,9 @@ export default function PantallaResumen({ texto = null, onRepetir = null }) {
 
   useEffect(() => {
     if (!visible) return;
-    try { caja.current?.scrollIntoView?.({ block: "start", behavior: movimientoReducido() ? "auto" : "smooth" }); } catch { /* sin scroll */ }
+    /* Con el cierre propio encima, se lleva la vista a su comienzo: se lee de arriba abajo. */
+    const destino = desplazarA?.current ?? caja.current;
+    try { destino?.scrollIntoView?.({ block: "start", behavior: movimientoReducido() ? "auto" : "smooth" }); } catch { /* sin scroll */ }
     titulo.current?.focus?.({ preventScroll: true });
   }, [visible]);
 
@@ -337,18 +361,21 @@ export default function PantallaResumen({ texto = null, onRepetir = null }) {
         </Cifra>
       </div>
 
-      <div
-        ref={recuadro}
-        data-recuadro
-        style={{
-          padding: "13px 15px", borderRadius: "12px", fontSize: "13.5px", lineHeight: 1.55, color: BLANCO,
-          background: "rgba(248,249,250,0.05)", border: "1px solid rgba(248,249,250,0.12)",
-        }}
-      >
-        {conTexto ? texto : <p style={{ margin: 0 }}>{r.mensaje}</p>}
-      </div>
+      {!sinRecuadro && (
+        <div
+          ref={recuadro}
+          data-recuadro
+          style={{
+            padding: "13px 15px", borderRadius: "12px", fontSize: "13.5px", lineHeight: 1.55, color: BLANCO,
+            background: "rgba(248,249,250,0.05)", border: "1px solid rgba(248,249,250,0.12)",
+          }}
+        >
+          {conTexto ? texto : <p style={{ margin: 0 }}>{r.mensaje}</p>}
+        </div>
+      )}
 
-      <div style={{ display: "grid", gap: "10px" }}>
+      {/* Sin recuadro, lo que queda debajo de la figura son los botones. */}
+      <div ref={sinRecuadro ? recuadro : null} style={{ display: "grid", gap: "10px" }}>
         <button
           type="button"
           data-volver

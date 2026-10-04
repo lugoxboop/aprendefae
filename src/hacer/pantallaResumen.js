@@ -144,7 +144,8 @@ export const FORMATO_MACRO = {
   /* Política económica */
   "memorama-tesoro": PANEL,
   "que-rama-es": X,
-  "diagnostico-en-vivo": X,
+  /* Levi: su resultado es el porcentaje guardado (las dos etapas), no X de N. */
+  "diagnostico-en-vivo": P,
   "arma-grupo-logico": P,
   "quien-gana-quien-pierde": X,
   "corriente-titulares": X,

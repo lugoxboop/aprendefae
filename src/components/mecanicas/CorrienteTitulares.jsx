@@ -351,12 +351,8 @@ export default function CorrienteTitulares({ onCompletar }) {
       ) : (
         <CierreConResumen
           onReiniciar={reiniciar}
-          texto={
-            <p style={{ margin: 0 }}>
-              {aciertos} de {tanda.length} a la primera. Las categorías vienen mezcladas a propósito: clasificar
-              con el contexto cambiando a cada carta es más duro y se recuerda mejor.
-            </p>
-          }
+          /* Trae más que un texto (la lista de fallos): va entero, el resumen debajo. */
+          completo
         >
         <div className="fae-ct-entrar">
           <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "28px", color: FAE.text, margin: "0 0 6px", fontVariantNumeric: "tabular-nums" }}>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw, ChevronRight, Radio } from "lucide-react";
 import { FAE } from "../../theme.js";
-import { CierreConResumen, useResumenOcupaElCierre } from "../shared/PantallaResumen.jsx";
+import { ResumenDebajo } from "../shared/PantallaResumen.jsx";
 import {
   OBJETIVO_EXPLICA, RANURAS_EXPLICA, ESCENARIOS_EXPLICA,
 } from "../../data/juegosPolitica2.js";
@@ -93,8 +93,8 @@ export function Onda({ limpia, animada }) {
 }
 
 export default function ExplicaLaPolitica({ onCompletar }) {
-  /* Con la pantalla de resumen, su «Repetir» sustituye a «Otro caso». */
-  const resumenOcupaElCierre = useResumenOcupaElCierre();
+  /* El comienzo del cierre propio: el resumen va al final y la vista sube aquí. */
+  const inicioCierre = useRef(null);
   const [empezado, setEmpezado] = useState(false);
   const [escenario, setEscenario] = useState(() => ESCENARIOS_EXPLICA[Math.floor(Math.random() * ESCENARIOS_EXPLICA.length)]);
   const [banco, setBanco] = useState(() => barajar(escenario.fragmentos));
@@ -272,17 +272,7 @@ export default function ExplicaLaPolitica({ onCompletar }) {
             {lleno ? "Transmitir" : `Faltan ${RANURAS_EXPLICA - puestos.length}`}
           </button>
         ) : (
-          <CierreConResumen
-            onReiniciar={reiniciar}
-            texto={
-              <p style={{ margin: 0 }}>
-                {ruido === 0
-                  ? "Cuatro frases claras, sin una sola de jerga ni una falsedad. Tu vecino lo entendió."
-                  : `${claros} ${claros === 1 ? "frase clara" : "frases claras"} y ${ruido} de ruido. La estática marca dónde se ensució el mensaje.`}
-              </p>
-            }
-          >
-          <div className="fae-ep-entrar" style={{ marginTop: "14px" }}>
+          <div ref={inicioCierre} className="fae-ep-entrar" style={{ marginTop: "14px", scrollMarginTop: "88px" }}>
             <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "26px", color: FAE.text, margin: "0 0 4px", fontVariantNumeric: "tabular-nums" }}>
               {pct}%
             </p>
@@ -292,7 +282,6 @@ export default function ExplicaLaPolitica({ onCompletar }) {
                 : `${claros} ${claros === 1 ? "frase clara" : "frases claras"} y ${ruido} de ruido. La estática marca dónde se ensució el mensaje.`}
             </p>
           </div>
-          </CierreConResumen>
         )}
       </div>
 
@@ -366,14 +355,18 @@ export default function ExplicaLaPolitica({ onCompletar }) {
             })}
           </div>
         </>
-      ) : resumenOcupaElCierre ? null : (
-        <button
-          type="button"
-          onClick={reiniciar}
-          style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, padding: "10px 16px", borderRadius: "999px", cursor: "pointer", background: "transparent", border: "1px solid rgba(248,249,250,0.22)", color: "rgba(248,249,250,0.7)" }}
-        >
-          <RotateCcw size={14} /> Otro caso
-        </button>
+      ) : (
+        <>
+          <button
+            type="button"
+            onClick={reiniciar}
+            style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, padding: "10px 16px", borderRadius: "999px", cursor: "pointer", background: "transparent", border: "1px solid rgba(248,249,250,0.22)", color: "rgba(248,249,250,0.7)" }}
+          >
+            <RotateCcw size={14} /> Otro caso
+          </button>
+          {/* El cierre trae el detalle frase por frase: va entero, el resumen debajo. */}
+          <ResumenDebajo onReiniciar={reiniciar} desplazarA={inicioCierre} />
+        </>
       )}
     </div>
   );
