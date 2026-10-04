@@ -1,7 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Children } from "react";
 import { FAE } from "../../theme.js";
-import FiguraFacetada, { TAMANO as TAMANO_MAXIMO } from "./FiguraFacetada.jsx";
+import FiguraFacetada, { TAMANO as TAMANO_FIGURA } from "./FiguraFacetada.jsx";
 import { useAuthOpcional } from "../../auth/AuthProvider.jsx";
 import { escucharFP } from "../../fp/aviso.js";
 import {
@@ -39,10 +39,21 @@ const SOLO_LECTOR = {
   overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0,
 };
 const DURACION_CONTEO = 700;
-/* Lo que la figura se queda corta del título y del recuadro, en px. */
-const HOLGURA_FIGURA = 4;
-/* Aire alrededor de las tarjetas, para que la figura se vea al crecer. */
-const AIRE_TARJETAS = 30;
+
+/*
+ * ═══════════ DÓNDE SE QUEDA LA FIGURA ═══════════
+ *
+ * Siempre en un hueco propio de 48 px, a la derecha: no comparte espacio con
+ * ningún texto, así que no puede bajar el contraste de nada (Xeno).
+ *
+ *   "titulo"  a la derecha del título. Es lo que va.
+ *   "cifras"  como tercera columna de la fila de cifras, tal cual la pide
+ *             Xeno. A 375 px esa fila mide 275 px y las dos tarjetas la
+ *             llenan: el hueco se lo quita a ellas (de 132 a ~102 px cada
+ *             una) y «5 de 5», «100 %» y «Bien a la primera:» pasan a dos
+ *             renglones. Queda a una línea por si Levi la prefiere.
+ */
+export const POSICION_FIGURA = "titulo";
 
 /* ═══════════ EL CONTEXTO QUE PONE CADA VISTA ═══════════ */
 
@@ -218,17 +229,12 @@ function useConteo(objetivo) {
   return valor;
 }
 
-/*
- * Cada cifra es una tarjeta con fondo sólido (≥92 % de opacidad). Es lo que
- * protege su texto de la figura que crece detrás de «Puntos ganados»: el
- * contraste no depende de cuánto brille la figura (especificación de Xeno).
- */
+/* Cada cifra es una tarjeta con fondo sólido (≥92 % de opacidad). */
 export const FONDO_TARJETA = "rgba(14,27,46,0.94)";
 
-function Cifra({ rotulo, children, dato, centrada = false, nota = null, figura = null, refTarjeta = null }) {
+function Cifra({ rotulo, children, dato, centrada = false, nota = null }) {
   return (
-    <div ref={refTarjeta} data-cifra={dato} style={{ position: "relative", flex: "1 1 130px", minWidth: 0, textAlign: centrada ? "center" : "left" }}>
-      {figura}
+    <div data-cifra={dato} style={{ position: "relative", flex: "1 1 0", minWidth: 0, textAlign: centrada ? "center" : "left" }}>
       <div
         data-tarjeta
         style={{
@@ -277,9 +283,6 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
   const ctx = useContextoResumen();
   const titulo = useRef(null);
   const caja = useRef(null);
-  const recuadro = useRef(null);
-  const tarjetaPuntos = useRef(null);
-  const [tamanoFigura, setTamanoFigura] = useState(null);
   const partida = ctx.partida;
   const visible = Boolean(partida && partida.listo && partida.valida && !ctx.celebrando);
 
@@ -289,23 +292,6 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
     const destino = desplazarA?.current ?? caja.current;
     try { destino?.scrollIntoView?.({ block: "start", behavior: movimientoReducido() ? "auto" : "smooth" }); } catch { /* sin scroll */ }
     titulo.current?.focus?.({ preventScroll: true });
-  }, [visible]);
-
-  /*
-   * El mayor diámetro de la figura que no toca ningún texto fuera de las
-   * tarjetas: ni el título de arriba ni el recuadro de abajo. Se mide antes de
-   * pintar, así que la figura nunca aparece más grande y luego encoge.
-   */
-  useLayoutEffect(() => {
-    if (!visible) return;
-    const t = tarjetaPuntos.current?.getBoundingClientRect();
-    const arriba = titulo.current?.getBoundingClientRect();
-    const abajo = recuadro.current?.getBoundingClientRect();
-    /* Sin maquetación (un entorno sin pantalla, como las pruebas) no hay nada que medir. */
-    if (!t || !arriba || !abajo || !t.height) { setTamanoFigura(TAMANO_MAXIMO); return; }
-    const centro = t.top + t.height / 2;
-    const radio = Math.min(centro - arriba.bottom, abajo.top - centro) - HOLGURA_FIGURA;
-    setTamanoFigura(Math.max(0, Math.min(TAMANO_MAXIMO, Math.floor(radio * 2))));
   }, [visible]);
 
   /* Mientras suena la celebración, nada: la pantalla llega cuando termina. */
@@ -320,6 +306,21 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
 
   const r = resumenDe(partida);
   const conTexto = Children.toArray(texto).length > 0;
+
+  /*
+   * El hueco de la figura: solo existe cuando hay figura (nunca en la
+   * repetición), mide lo que ella y no lleva texto. La figura crece, pulsa y
+   * se queda en reposo: no se desmonta.
+   */
+  const figura = r.figura ? (
+    <span
+      data-hueco-figura
+      aria-hidden="true"
+      style={{ flex: "none", alignSelf: "center", width: `${TAMANO_FIGURA}px`, height: `${TAMANO_FIGURA}px`, pointerEvents: "none" }}
+    >
+      <FiguraFacetada key={partida.id} nivel={r.figura} />
+    </span>
+  ) : null;
 
   const notaRepeticion = r.repeticion ? (
     <p data-nota-repeticion style={{ margin: "6px 0 0", fontSize: "13px", lineHeight: 1.4, color: ATENUADO }}>
@@ -345,25 +346,19 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
       <div style={{ position: "relative", zIndex: 1, display: "grid", gap: "18px" }}>
       <p role="status" data-lector style={SOLO_LECTOR}>{sinResultado ? r.lectorSoloPuntos : r.lector}</p>
 
-      <h3
-        id="fae-resumen-titulo"
-        ref={titulo}
-        tabIndex={-1}
-        style={{ margin: 0, fontFamily: SORA, fontSize: "20px", fontWeight: 700, lineHeight: 1.25, color: BLANCO, outline: "none" }}
-      >
-        {r.titulo}
-      </h3>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <h3
+          id="fae-resumen-titulo"
+          ref={titulo}
+          tabIndex={-1}
+          style={{ flex: "1 1 0", minWidth: 0, margin: 0, fontFamily: SORA, fontSize: "20px", fontWeight: 700, lineHeight: 1.25, color: BLANCO, outline: "none" }}
+        >
+          {r.titulo}
+        </h3>
+        {POSICION_FIGURA === "titulo" && figura}
+      </div>
 
-      {/*
-        La figura crece detrás de la tarjeta «Puntos ganados», centrada en
-        ella; la tarjeta tapa su centro con su fondo sólido. No toma el
-        puntero y se va sola.
-      */}
-      <div aria-hidden="true" style={{
-        display: "flex", flexWrap: "wrap", gap: "12px",
-        justifyContent: r.exploratoria ? "center" : "flex-start",
-        margin: r.figura ? `${AIRE_TARJETAS - 18}px 0` : 0,
-      }}>
+      <div aria-hidden="true" style={{ display: "flex", alignItems: "stretch", gap: "12px" }}>
         {/* Una sola cifra de resultado: si ya la enseña el cierre propio, aquí no va. */}
         {!r.exploratoria && !sinResultado && (r.conteo ? (
           <Cifra rotulo={ROTULO_BIEN} dato="bien"><FiguraBien bien={r.conteo.bien} n={r.conteo.n} /></Cifra>
@@ -375,16 +370,14 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
           dato="puntos"
           centrada={r.exploratoria}
           nota={notaRepeticion}
-          refTarjeta={tarjetaPuntos}
-          figura={tamanoFigura ? <FiguraFacetada key={partida.id} nivel={r.figura} tamano={tamanoFigura} /> : null}
         >
           <FiguraPuntos fp={r.fp} />
         </Cifra>
+        {POSICION_FIGURA === "cifras" && figura}
       </div>
 
       {!sinRecuadro && (
         <div
-          ref={recuadro}
           data-recuadro
           style={{
             padding: "13px 15px", borderRadius: "12px", fontSize: "13.5px", lineHeight: 1.55, color: BLANCO,
@@ -395,8 +388,7 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
         </div>
       )}
 
-      {/* Sin recuadro, lo que queda debajo de la figura son los botones. */}
-      <div ref={sinRecuadro ? recuadro : null} style={{ display: "grid", gap: "10px" }}>
+      <div style={{ display: "grid", gap: "10px" }}>
         <button
           type="button"
           data-volver

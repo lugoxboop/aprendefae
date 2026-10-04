@@ -520,7 +520,7 @@ test("★★★ sin puntos nuevos no hay figura en pantalla", () => {
   }
 });
 
-test("★★ rica: el marco Élite de las medallas con su pulso; sobria: el Intermedio, sin pulso; las dos aria-hidden", async () => {
+test("★★ rica: 12 facetas («Avanzado») con su pulso; sobria: 6 («Base»), sin pulso; 48 px, aria-hidden", async () => {
   const { LADOS } = await import("../Medalla.jsx");
   reducido = false;
   try {
@@ -529,8 +529,8 @@ test("★★ rica: el marco Élite de las medallas con su pulso; sobria: el Inte
       const f = figura(a.caja);
       assert.equal(f.getAttribute("data-figura-facetada"), "rica");
       assert.equal(f.getAttribute("aria-hidden"), "true");
-      assert.equal(f.querySelectorAll("[data-faceta]").length, LADOS.elite, "la rica no usa el marco Élite");
-      assert.ok(f.querySelector("[data-reticulado]"), "falta el anillo reticulado del Élite");
+      assert.equal(f.querySelectorAll("[data-faceta]").length, LADOS.avanzado, "la rica no tiene las 12 facetas del Avanzado");
+      assert.equal(f.getAttribute("width"), "48");
       const destello = f.querySelector("[data-destello]");
       assert.ok(destello, "el perfecto no tiene pulso");
       /* Una sola pasada de 1,5 s, sin bucle. */
@@ -542,28 +542,65 @@ test("★★ rica: el marco Élite de las medallas con su pulso; sobria: el Inte
       const f = figura(b.caja);
       assert.equal(f.getAttribute("data-figura-facetada"), "sobria");
       assert.equal(f.getAttribute("aria-hidden"), "true");
-      assert.equal(f.querySelectorAll("[data-faceta]").length, LADOS.intermedio, "la sobria no usa el marco Intermedio");
-      assert.ok(LADOS.intermedio < LADOS.elite, "la sobria debe tener menos facetas");
-      assert.equal(f.querySelector("[data-reticulado]"), null);
+      assert.equal(f.querySelectorAll("[data-faceta]").length, LADOS.base, "la sobria no tiene las 6 facetas del Base");
       assert.equal(f.querySelector("[data-destello]"), null, "el sobrio no debe pulsar");
     } finally { b.desmontar(); }
   } finally { reducido = true; }
 });
 
-test("★★ la figura vive detrás de la tarjeta «Puntos ganados», que tiene fondo sólido (≥92 %)", () => {
+test("★★★ para que no se lea como medalla: sin contorno, sin nada dentro, un tono, 30–45 %, fuera de la escala de medallas", () => {
+  assert.equal(FF.TAMANO, 48);
+  for (const tam of [96, 56, 36, 24]) assert.notEqual(FF.TAMANO, tam, "48 px, fuera de la escala de las medallas");
+  assert.deepEqual(FF.OPACIDAD_REPOSO, { rica: 0.45, sobria: 0.3 });
+  for (const [detalle, registro] of [[filas(5, 0), fila(25)], [filas(3, 2), fila(15)]]) {
+    const m = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 0, detalle, registro }));
+    try {
+      const f = figura(m.caja);
+      /* Ni marco ni anillo: ningún polígono con trazo, ningún círculo, rectángulo ni trazado de contorno. */
+      for (const pol of f.querySelectorAll("polygon")) assert.equal(pol.getAttribute("stroke"), "none", "una faceta lleva trazo en el perímetro");
+      assert.equal(f.querySelectorAll("circle[stroke], rect, path").length, 0, "hay un contorno o un marco");
+      /* Vacía: ni número ni icono. */
+      assert.equal(f.querySelectorAll("text, use, image").length, 0);
+      assert.ok(Number(f.getAttribute("data-reposo")) <= 0.45, "en reposo nunca a opacidad completa");
+    } finally { m.desmontar(); }
+  }
+});
+
+test("★★★ la figura se queda en un hueco propio, junto al título: fuera de las tarjetas y sin texto en su hueco", () => {
   reducido = false;
   try {
     const m = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 100, detalle: filas(5, 0), registro: fila(25) }));
     try {
       const f = figura(m.caja);
-      assert.equal(f.closest("[data-cifra]")?.getAttribute("data-cifra"), "puntos", "la figura no está en la tarjeta de puntos");
-      assert.equal(m.caja.querySelector('[data-cifra="bien"] [data-figura-facetada]'), null, "nunca detrás de «Bien a la primera»");
+      const hueco = f.closest("[data-hueco-figura]");
+      assert.ok(hueco, "la figura no está en su hueco");
+      assert.equal(f.closest("[data-cifra]"), null, "la figura no puede ir dentro ni detrás de una tarjeta");
+      const sinEstilo = hueco.cloneNode(true);
+      sinEstilo.querySelectorAll("style").forEach((x) => x.remove());
+      assert.equal(sinEstilo.textContent.trim(), "", "hay texto en el hueco de la figura");
+      assert.equal(hueco.style.width, "48px");
+      assert.equal(hueco.getAttribute("aria-hidden"), "true");
+      assert.equal(hueco.parentElement.querySelector("h3")?.id, "fae-resumen-titulo", "no está en la fila del título");
       for (const t of m.caja.querySelectorAll("[data-tarjeta]")) {
         const alfa = Number(t.style.background.match(/[\d.]+/g)?.[3] ?? 1);
         assert.ok(alfa >= 0.92, `fondo de tarjeta con opacidad ${alfa}`);
       }
-      assert.equal(FF.TAMANO, 260);
-      assert.equal(FF.DURACION, 1500);
+    } finally { m.desmontar(); }
+  } finally { reducido = true; }
+});
+
+test("★★★ la figura se queda: pasado 1,5 s sigue en pantalla, y su último fotograma es el reposo", async () => {
+  reducido = false;
+  try {
+    const m = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 60, detalle: filas(3, 2), registro: fila(15) }));
+    try {
+      const cuerpo = figura(m.caja).querySelector(".fae-ff-cuerpo");
+      /* «both»: al terminar se queda en el 100 %, que es la opacidad de reposo. */
+      assert.match(cuerpo.style.animation, /1500ms .* both/);
+      assert.match(figura(m.caja).innerHTML, /100% \{ opacity: var\(--fae-ff-reposo\)/);
+      assert.equal(figura(m.caja).style.getPropertyValue("--fae-ff-reposo"), "0.3");
+      await new Promise((r) => setTimeout(r, FF.DURACION + 300));
+      assert.ok(figura(m.caja), "la figura se fue: debe quedarse");
     } finally { m.desmontar(); }
   } finally { reducido = true; }
 });
@@ -602,17 +639,18 @@ test("★★★ los botones responden mientras la figura está en pantalla", () 
   } finally { reducido = true; }
 });
 
-test("★★ con movimiento reducido: la figura aparece quieta, sin pulso, 1,5 s, y desaparece", async () => {
+test("★★ con movimiento reducido: la figura aparece ya en reposo, sin crecer ni pulsar, y se queda", async () => {
   reducido = true;
   const m = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 100, detalle: filas(5, 0), registro: fila(25) }));
   try {
     const f = figura(m.caja);
     assert.equal(f.getAttribute("data-reducido"), "si");
     assert.equal(f.querySelector("[data-destello]"), null, "con movimiento reducido no hay pulso");
-    assert.equal(f.style.animation, "", "con movimiento reducido no se anima");
-    await new Promise((r) => setTimeout(r, FF.REDUCIDO_MS - 300));
-    assert.ok(figura(m.caja), "se fue antes de 1,5 s");
-    await esperar(() => figura(m.caja) === null, 1500);
+    const cuerpo = f.querySelector(".fae-ff-cuerpo");
+    assert.equal(cuerpo.style.animation, "", "con movimiento reducido no se anima");
+    assert.equal(cuerpo.style.opacity, "0.45", "debe aparecer directamente con la opacidad de reposo del perfecto");
+    await new Promise((r) => setTimeout(r, FF.DURACION + 300));
+    assert.ok(figura(m.caja), "con movimiento reducido también se queda");
   } finally { m.desmontar(); }
 });
 
