@@ -249,40 +249,65 @@ test("★★★ Explica la política: el detalle frase por frase sigue, y el res
   } finally { desmontar(); }
 });
 
-/* Lo que se ve en la tarjeta «Resultado:» —no la línea del lector—. */
-const pVisible = (caja) => caja.querySelector("[data-pantalla-resumen] [data-cifra='resultado'] [data-valor]")?.textContent ?? null;
-const fila = (pct, repetida) => ({ id: 1, fp_awarded: repetida ? 0 : 12, repeat_index: repetida ? 1 : 0, correct_pct: pct });
+/* Las cifras de resultado de la pantalla: «Resultado:» o «Bien a la primera:». */
+const cifrasDeResultado = (caja) => caja.querySelectorAll("[data-pantalla-resumen] [data-cifra='resultado'], [data-pantalla-resumen] [data-cifra='bien']").length;
+const textoPantalla = (caja) => {
+  const p = caja.querySelector("[data-pantalla-resumen]").cloneNode(true);
+  p.querySelectorAll("style, [data-recuadro]").forEach((x) => x.remove());
+  return p.textContent;
+};
 
-test("★★★ Diagnóstico en vivo: «Resultado: P %» con el porcentaje que el servidor guardó para esa partida", async () => {
-  assert.equal(R.formatoDe("diagnostico-en-vivo"), R.FORMATO.PORCENTAJE);
-  const { caja, desmontar, pct } = await jugarHastaElCierre("diagnostico-en-vivo", "DiagnosticoEnVivo.jsx",
-    ({ pct: p, detalle }) => ({ pct: p, detalle, registro: fila(Math.round(p), false) }), { conP: true });
-  try {
-    const pantalla = caja.querySelector("[data-pantalla-resumen]");
-    assert.ok(pantalla);
-    assert.ok(!pantalla.querySelector("[data-cifra='bien']"), "sigue diciendo «Bien a la primera: X de N»");
-    assert.equal(pVisible(caja), `${Math.round(pct)} %`);
-    assert.match(pantalla.querySelector("[data-lector]").textContent, new RegExp(`^Resultado: ${Math.round(pct)} %`));
-  } finally { desmontar(); }
-});
+/*
+ * ═══════════ UNA SOLA CIFRA DE RESULTADO (Levi) ═══════════
+ *
+ * Si el cierre propio ya enseña su resultado, la pantalla no enseña ningún
+ * porcentaje ni «X de N»: solo los puntos. Si no lo enseña, la tarjeta de la
+ * pantalla es la única cifra.
+ */
+const ENSENA_SU_RESULTADO = new Set(["diagnostico-en-vivo", "corriente-titulares", "explica-la-politica", "quien-gana-quien-pierde"]);
+
+for (const [id, archivo] of LAS_SIETE) {
+  test(`★★★ ${id}: una sola cifra de resultado (${ENSENA_SU_RESULTADO.has(id) ? "la del cierre propio" : "la de la pantalla"})`, async () => {
+    const { caja, desmontar } = await jugarHastaElCierre(id, archivo, valida, { conP: true });
+    try {
+      assert.ok(caja.querySelector("[data-pantalla-resumen]"), "no salió la pantalla");
+      if (ENSENA_SU_RESULTADO.has(id)) {
+        assert.equal(cifrasDeResultado(caja), 0, "la pantalla repite el resultado");
+        assert.doesNotMatch(textoPantalla(caja), /%| de \d/, "la pantalla enseña otro porcentaje o «X de N»");
+        assert.doesNotMatch(caja.querySelector("[data-lector]").textContent, /Resultado/, "el lector repite el resultado");
+      } else {
+        assert.equal(cifrasDeResultado(caja), 1, "la pantalla debe llevar la única cifra de resultado");
+      }
+    } finally { desmontar(); }
+  });
+}
 
 /*
  * ═══════════ EL CASO VISTO EN MACRO ═══════════
  *
  * Diagnóstico en vivo REPETIDO: la partida da 90 % (o la P que sea) y la
- * pantalla mostró «Resultado: 0 %». Una P de repetición se enseña solo si es
- * la que el servidor guardó para esa partida; nunca un 0.
+ * pantalla mostró «Resultado: 0 %». Ahora: el resultado es el del cierre
+ * propio y la pantalla solo dice los puntos, 0, con su nota.
  */
-test("★★★ caso de Macro: Diagnóstico en vivo repetido enseña su P real, nunca «0 %»", async () => {
+const fila = (pct, repetida) => ({ id: 1, fp_awarded: repetida ? 0 : 12, repeat_index: repetida ? 1 : 0, correct_pct: pct });
+
+test("★★★ caso de Macro: Diagnóstico en vivo repetido — su resultado, ningún otro porcentaje, 0 puntos con su nota", async () => {
   const { caja, desmontar, pct } = await jugarHastaElCierre("diagnostico-en-vivo", "DiagnosticoEnVivo.jsx",
     ({ pct: p, detalle }) => ({ pct: p, detalle, repetida: true, registro: fila(Math.round(p), true) }), { conP: true });
   try {
     const pantalla = caja.querySelector("[data-pantalla-resumen]");
     assert.ok(pantalla, "no salió la pantalla");
     assert.equal(pantalla.getAttribute("data-repeticion"), "si");
-    assert.equal(pVisible(caja), `${Math.round(pct)} %`, "la tarjeta no dice la P de la partida");
-    assert.notEqual(pVisible(caja), "0 %");
-    assert.match(pantalla.querySelector("[data-lector]").textContent, new RegExp(`^Resultado: ${Math.round(pct)} %, 0 puntos ganados, sin puntos nuevos`));
+    /* El resultado: el del cierre propio, el de la partida. */
+    assert.ok(caja.textContent.includes(`${Math.round(pct)}%`), "no está el resultado del cierre propio");
+    /* Ningún otro porcentaje. */
+    assert.equal(cifrasDeResultado(caja), 0);
+    assert.doesNotMatch(textoPantalla(caja), /%/);
+    assert.ok(!/0\s?%/.test(textoPantalla(caja)), "apareció «0 %»");
+    /* Los puntos en 0 con su nota. */
+    assert.equal(pantalla.querySelector("[data-cifra='puntos'] [data-valor]").textContent, "0");
+    assert.ok(pantalla.querySelector("[data-nota-repeticion]"), "falta la nota de la repetición");
+    assert.equal(pantalla.querySelector("[data-lector]").textContent, "0 puntos ganados, sin puntos nuevos.");
   } finally { desmontar(); }
 });
 

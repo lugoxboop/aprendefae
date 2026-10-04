@@ -138,6 +138,11 @@ export const caeAlCierreDeSiempre = (ctx) => Boolean(ctx?.partida?.listo && ctx.
  *              enseña entero, tal cual, y la pantalla va debajo, sin recuadro
  *              —su texto ya está arriba—.
  *
+ * Y UNA SOLA CIFRA DE RESULTADO (regla de Levi): si el cierre propio ya
+ * enseña su resultado —siempre con `completo`; con `texto`, cuando el texto
+ * lo dice (`conResultado`)—, la pantalla no enseña ningún porcentaje ni
+ * «X de N»: solo los puntos.
+ *
  * Al desmontarse (la actividad vuelve a empezar, o se sale) olvida la partida,
  * para que la siguiente no herede la decisión de esta.
  */
@@ -147,16 +152,16 @@ function useOlvidarAlSalir(ctx) {
   useEffect(() => () => { limpiar.current?.(); }, []);
 }
 
-export function CierreConResumen({ texto = null, completo = false, onReiniciar = null, children }) {
+export function CierreConResumen({ texto = null, completo = false, conResultado = false, onReiniciar = null, children }) {
   const ctx = useContextoResumen();
   const cierrePropio = useRef(null);
   useOlvidarAlSalir(ctx);
   if (!ctx.activa || caeAlCierreDeSiempre(ctx)) return children;
-  if (!completo) return <PantallaResumen texto={texto} onRepetir={onReiniciar} />;
+  if (!completo) return <PantallaResumen texto={texto} onRepetir={onReiniciar} sinResultado={conResultado} />;
   return (
     <div ref={cierrePropio} data-cierre-propio style={{ scrollMarginTop: "88px" }}>
       {children}
-      <PantallaResumen sinRecuadro desplazarA={cierrePropio} onRepetir={onReiniciar} />
+      <PantallaResumen sinRecuadro sinResultado desplazarA={cierrePropio} onRepetir={onReiniciar} />
     </div>
   );
 }
@@ -171,7 +176,7 @@ export function ResumenDebajo({ onReiniciar = null, desplazarA = null }) {
   const ctx = useContextoResumen();
   useOlvidarAlSalir(ctx);
   if (!ctx.activa || caeAlCierreDeSiempre(ctx)) return null;
-  return <PantallaResumen sinRecuadro desplazarA={desplazarA} onRepetir={onReiniciar} />;
+  return <PantallaResumen sinRecuadro sinResultado desplazarA={desplazarA} onRepetir={onReiniciar} />;
 }
 
 /* ═══════════ LAS CIFRAS QUE CUENTAN DESDE 0 ═══════════ */
@@ -268,7 +273,7 @@ function FiguraPuntos({ fp }) {
  * cierre propio de la actividad (lo que antes iba dentro del recuadro) y
  * `onRepetir`, el reinicio de la actividad.
  */
-export default function PantallaResumen({ texto = null, onRepetir = null, sinRecuadro = false, desplazarA = null }) {
+export default function PantallaResumen({ texto = null, onRepetir = null, sinRecuadro = false, desplazarA = null, sinResultado = false }) {
   const ctx = useContextoResumen();
   const titulo = useRef(null);
   const caja = useRef(null);
@@ -338,7 +343,7 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
       }}
     >
       <div style={{ position: "relative", zIndex: 1, display: "grid", gap: "18px" }}>
-      <p role="status" data-lector style={SOLO_LECTOR}>{r.lector}</p>
+      <p role="status" data-lector style={SOLO_LECTOR}>{sinResultado ? r.lectorSoloPuntos : r.lector}</p>
 
       <h3
         id="fae-resumen-titulo"
@@ -359,7 +364,8 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
         justifyContent: r.exploratoria ? "center" : "flex-start",
         margin: r.figura ? `${AIRE_TARJETAS - 18}px 0` : 0,
       }}>
-        {!r.exploratoria && (r.conteo ? (
+        {/* Una sola cifra de resultado: si ya la enseña el cierre propio, aquí no va. */}
+        {!r.exploratoria && !sinResultado && (r.conteo ? (
           <Cifra rotulo={ROTULO_BIEN} dato="bien"><FiguraBien bien={r.conteo.bien} n={r.conteo.n} /></Cifra>
         ) : (
           <Cifra rotulo={ROTULO_RESULTADO} dato="resultado"><FiguraPorcentaje p={r.porcentaje} /></Cifra>

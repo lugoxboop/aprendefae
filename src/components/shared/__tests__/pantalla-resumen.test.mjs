@@ -200,6 +200,29 @@ test("★★★ el aviso de FP: sale si nadie lo reclama, si la partida cae a la
   } finally { c.desmontar(); }
 });
 
+test("★★★ el aviso de FP de Macro se ve igual que antes de añadir `pctGuardado`", () => {
+  /* Macro está apagada: su aviso sale siempre, como antes de la pantalla. */
+  assert.equal(R.pantallaResumenEncendida("macroeconomia"), false);
+  const pintar = (datos) => {
+    const m = montar(h(AvisoFP));
+    try {
+      act(() => emitirFP(datos));
+      return m.caja.innerHTML;
+    } finally { m.desmontar(); }
+  };
+  for (const [fp, repetida] of [[25, false], [0, true], [0, false]]) {
+    /* Lo que emitía otorgarFP antes de este cambio, y lo que emite ahora. */
+    const antes = { fp, repetida, actividadId: "diagnostico-en-vivo", materiaId: "macroeconomia" };
+    const ahora = { ...antes, pctGuardado: 90 };
+    const htmlAntes = pintar(antes);
+    assert.ok(htmlAntes.length > 0, "no salió el aviso");
+    assert.equal(pintar(ahora), htmlAntes, `el aviso cambió (fp ${fp}, repetida ${repetida})`);
+  }
+  /* otorgarFP solo añade ese campo al aviso: los de siempre siguen, con los mismos nombres. */
+  const fuente = readFileSync(new URL("../../../fp/otorgarFP.js", import.meta.url), "utf8");
+  assert.match(fuente, /emitirFP\(\{ fp, repetida, actividadId, materiaId, pctGuardado \}\)/);
+});
+
 /* ═══════════════════ LAS CIFRAS, DE LO GUARDADO ═══════════════════ */
 
 test("★★★ «bien a la primera» cuenta las filas como las guarda el servidor, y los FP son los de la fila guardada", () => {
@@ -313,39 +336,49 @@ test("★★ las cifras cuentan desde 0, y con movimiento reducido salen ya quie
   try { assert.equal(valor(q.caja, "puntos"), "50"); } finally { q.desmontar(); }
 });
 
-test("★★★ la cifra que cuenta nunca se queda a medio camino: sin animación que avance, termina en su valor", async () => {
-  /* El caso de Macro: Diagnóstico repetido, 90 % en la línea del lector y «0 %» en la tarjeta. */
-  const partida = { clasificacion: CLAS_EVALUATIVA, formato: R.FORMATO.PORCENTAJE, pct: 90, detalle: null, registro: fila(0, 1, 90) };
-  const rafOriginal = globalThis.requestAnimationFrame;
-  reducido = false;
-  /* Un navegador que no pinta: los fotogramas no llegan nunca. */
-  globalThis.requestAnimationFrame = () => 0;
-  w.requestAnimationFrame = globalThis.requestAnimationFrame;
-  try {
-    const m = montar(pantallaCon(partida));
-    try {
-      assert.match(m.caja.querySelector("[data-lector]").textContent, /^Resultado: 90 %, 0 puntos ganados, sin puntos nuevos/);
-      await esperar(() => valor(m.caja, "resultado") === "90 %", 1500);
-    } finally { m.desmontar(); }
-  } finally {
-    globalThis.requestAnimationFrame = rafOriginal;
-    w.requestAnimationFrame = rafOriginal;
-    reducido = true;
-  }
-});
+/*
+ * ═══════════ NINGÚN CONTADOR TERMINA EN UN VALOR DISTINTO DEL REAL (Levi) ═══════════
+ *
+ * Las tres cifras que cuentan —puntos, «X de N» y «P %»— en las tres
+ * condiciones en que un contador puede quedarse a medias: la pestaña oculta,
+ * el movimiento reducido y una animación trabada (los fotogramas no llegan).
+ * El caso de Macro: Diagnóstico repetido, 90 % en el lector y «0 %» en la
+ * tarjeta.
+ */
+const CONDICIONES = {
+  "pestaña oculta": {
+    poner: () => { reducido = false; Object.defineProperty(w.document, "visibilityState", { value: "hidden", configurable: true }); },
+    quitar: () => { delete w.document.visibilityState; },
+  },
+  "movimiento reducido": { poner: () => { reducido = true; }, quitar: () => {} },
+  "animación trabada": {
+    poner: () => { reducido = false; globalThis.requestAnimationFrame = () => 0; w.requestAnimationFrame = globalThis.requestAnimationFrame; },
+    quitar: () => { globalThis.requestAnimationFrame = RAF_REAL; w.requestAnimationFrame = RAF_REAL; },
+  },
+};
+const RAF_REAL = globalThis.requestAnimationFrame;
+const CIFRAS = [
+  ["X de N y puntos", { clasificacion: CLAS_EVALUATIVA, pct: 80, detalle: filas(4, 1), registro: fila(25, 0, 80) }, { bien: "4 de 5", puntos: "25" }],
+  ["P % y puntos", { clasificacion: CLAS_EVALUATIVA, formato: R.FORMATO.PORCENTAJE, pct: 90, detalle: null, registro: fila(13, 0, 90) }, { resultado: "90 %", puntos: "13" }],
+  ["P % repetida (el caso de Macro)", { clasificacion: CLAS_EVALUATIVA, formato: R.FORMATO.PORCENTAJE, pct: 90, detalle: null, registro: fila(0, 1, 90) }, { resultado: "90 %", puntos: "0" }],
+];
 
-test("★★ con la pestaña oculta, las cifras salen ya en su valor", () => {
-  const partida = { clasificacion: CLAS_EVALUATIVA, formato: R.FORMATO.PORCENTAJE, pct: 90, detalle: null, registro: fila(0, 1, 90) };
-  reducido = false;
-  Object.defineProperty(w.document, "visibilityState", { value: "hidden", configurable: true });
-  try {
-    const m = montar(pantallaCon(partida));
-    try { assert.equal(valor(m.caja, "resultado"), "90 %"); } finally { m.desmontar(); }
-  } finally {
-    delete w.document.visibilityState;
-    reducido = true;
+for (const [condicion, { poner, quitar }] of Object.entries(CONDICIONES)) {
+  for (const [nombre, partida, esperado] of CIFRAS) {
+    test(`★★★ contadores con ${condicion}: ${nombre} terminan en su valor real`, async () => {
+      poner();
+      try {
+        const m = montar(pantallaCon(partida));
+        try {
+          await esperar(() => Object.entries(esperado).every(([dato, v]) => valor(m.caja, dato) === v), 1500);
+          /* Y se quedan ahí. */
+          await new Promise((r) => setTimeout(r, 900));
+          for (const [dato, v] of Object.entries(esperado)) assert.equal(valor(m.caja, dato), v, `${dato} no terminó en ${v}`);
+        } finally { m.desmontar(); }
+      } finally { quitar(); reducido = true; }
+    });
   }
-});
+}
 
 test("★★ espera a que termine la celebración, y mientras se guarda no inventa cifras", () => {
   const a = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 100, detalle: filas(5, 0), registro: fila(25) }, { celebrando: true }));

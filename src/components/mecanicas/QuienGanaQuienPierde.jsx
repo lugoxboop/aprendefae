@@ -200,6 +200,8 @@ export default function QuienGanaQuienPierde({ onCompletar }) {
     return (
       <CierreConResumen
         onReiniciar={reiniciar}
+        /* Su texto ya dice el resultado («X de N clasificaciones…»): una sola cifra. */
+        conResultado
         texto={
           <p style={{ margin: 0 }}>
             {aciertos} de {TOTAL_CLASIFICACIONES} clasificaciones y {directos} de {RONDAS_GANADORES.length} preguntas

@@ -319,9 +319,12 @@ export function resumenDe({ clasificacion, formato = null, pct, detalle, registr
   else if (conteo) lector = `Resultado: ${conteo.bien} de ${conteo.n} bien a la primera, ${fp} puntos ganados${sufijo}.`;
   else lector = `Resultado: ${porcentaje} %, ${fp} puntos ganados${sufijo}.`;
 
+  /* Cuando el resultado ya lo enseña el cierre propio: solo los puntos. */
+  const lectorSoloPuntos = `${fp} puntos ganados${sufijo}.`;
+
   const figura = nivelDeFigura({ exploratoria, repeticion, fp, conteo, porcentaje });
 
-  return { formato: f, exploratoria, repeticion, fp, conteo, porcentaje, franja, titulo, mensaje, lector, figura };
+  return { formato: f, exploratoria, repeticion, fp, conteo, porcentaje, franja, titulo, mensaje, lector, lectorSoloPuntos, figura };
 }
 
 /*
