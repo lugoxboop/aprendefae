@@ -131,9 +131,10 @@ function Vista({ Componente, actividadId, alterar, alTerminar }) {
   const clasificacion = clasificacionDe("macroeconomia", "politica-economica", actividadId);
   const completar = (pct, ms, detalle) => {
     const d = alterar({ pct, detalle });
-    alTerminar();
+    alTerminar(pct);
     resumen.registrar({ actividadId, clasificacion, pct: d.pct, detalle: d.detalle }, async () => {
-      emitirFP({ fp: 12, repetida: false, actividadId, materiaId: "macroeconomia" });
+      const repetida = d.repetida ?? false;
+      emitirFP({ fp: repetida ? 0 : 12, repetida, actividadId, materiaId: "macroeconomia", pctGuardado: d.registro?.correct_pct ?? null });
       return { ok: true, fp: 12, repetida: false, registro: d.registro };
     });
   };
@@ -143,10 +144,14 @@ function Vista({ Componente, actividadId, alterar, alTerminar }) {
       h(Componente, { onCompletar: completar })));
 }
 
-/** Juega hasta que la actividad entrega su resultado; deja la caja montada en el cierre. */
-async function jugarHastaElCierre(id, archivo, alterar) {
+/**
+ * Juega hasta que la actividad entrega su resultado; deja la caja montada en
+ * el cierre. `conP`: solo vale una partida con P ≥ 1 (una P de 0 cae, a
+ * propósito, al cierre de siempre).
+ */
+async function jugarHastaElCierre(id, archivo, alterar, { conP = false } = {}) {
   const Componente = (await import(MECANICAS + archivo)).default;
-  for (let semilla = 1; semilla <= 16; semilla++) {
+  for (let semilla = 1; semilla <= 40; semilla++) {
     const azar = mulberry32(semilla);
     const aleatorioOriginal = Math.random;
     Math.random = mulberry32(semilla * 7919 + 17);
@@ -154,10 +159,11 @@ async function jugarHastaElCierre(id, archivo, alterar) {
     document.body.appendChild(caja);
     const raiz = createRoot(caja);
     let terminada = false;
+    let pctPartida = null;
     const desmontar = () => { act(() => raiz.unmount()); caja.remove(); Math.random = aleatorioOriginal; };
     await act(async () => {
       raiz.render(h(AuthContext.Provider, { value: CON_CUENTA },
-        h(Vista, { Componente, actividadId: id, alterar, alTerminar: () => { terminada = true; } })));
+        h(Vista, { Componente, actividadId: id, alterar, alTerminar: (p) => { terminada = true; pctPartida = p; } })));
     });
     for (let k = 0; k < 2500 && !terminada; k++) {
       const r = azar();
@@ -166,15 +172,15 @@ async function jugarHastaElCierre(id, archivo, alterar) {
       else act(() => terminarAnimaciones(caja));
       if (k % 20 === 0) await act(async () => {});
     }
-    if (!terminada) { desmontar(); continue; }
+    if (!terminada || (conP && !(pctPartida >= 1))) { desmontar(); continue; }
     /* Sin tocar nada más: que corran los relojes del cierre y se resuelva el registro. */
     for (let k = 0; k < 10; k++) {
       act(() => { mock.timers.tick(500); });
       await act(async () => { await new Promise((r) => setImmediate(r)); });
     }
-    return { caja, desmontar };
+    return { caja, desmontar, pct: pctPartida };
   }
-  assert.fail(`el mono no terminó ${id} en 16 semillas: la prueba no la está jugando`);
+  assert.fail(`el mono no terminó ${id} en 40 semillas${conP ? " con P ≥ 1" : ""}: la prueba no la está jugando`);
 }
 
 /* Nunca se pasa un nodo a assert: al fallar, formatear un nodo de jsdom no termina. */
@@ -202,7 +208,7 @@ for (const [id, archivo, otraVez] of LAS_SIETE) {
 
 for (const [id, archivo, otraVez, forma] of LAS_SIETE) {
   test(`★★★ ${id}: con la pantalla, su cierre propio se conserva (${forma === "completo" ? "entero, el resumen debajo" : "su texto en el recuadro"})`, async () => {
-    const { caja, desmontar } = await jugarHastaElCierre(id, archivo, valida);
+    const { caja, desmontar } = await jugarHastaElCierre(id, archivo, valida, { conP: true });
     try {
       const pantalla = caja.querySelector("[data-pantalla-resumen]");
       assert.ok(pantalla, "no salió la pantalla");
@@ -224,7 +230,7 @@ for (const [id, archivo, otraVez, forma] of LAS_SIETE) {
 
 test("★★★ Diagnóstico en vivo: lo que no cabe en el recuadro sigue en pantalla (el veredicto de la etapa 2 y los fallos)", async () => {
   const { BRECHAS } = await import("../../../data/juegosPolitica.js");
-  const { caja, desmontar } = await jugarHastaElCierre("diagnostico-en-vivo", "DiagnosticoEnVivo.jsx", valida);
+  const { caja, desmontar } = await jugarHastaElCierre("diagnostico-en-vivo", "DiagnosticoEnVivo.jsx", valida, { conP: true });
   try {
     assert.ok(caja.querySelector("[data-pantalla-resumen]"));
     assert.ok(caja.querySelector("[aria-label^='Etapa 2: ']"), "se perdió el veredicto de la etapa 2");
@@ -233,7 +239,7 @@ test("★★★ Diagnóstico en vivo: lo que no cabe en el recuadro sigue en pan
 });
 
 test("★★★ Explica la política: el detalle frase por frase sigue, y el resumen va después de él", async () => {
-  const { caja, desmontar } = await jugarHastaElCierre("explica-la-politica", "ExplicaLaPolitica.jsx", valida);
+  const { caja, desmontar } = await jugarHastaElCierre("explica-la-politica", "ExplicaLaPolitica.jsx", valida, { conP: true });
   try {
     const pantalla = caja.querySelector("[data-pantalla-resumen]");
     const detalle = [...caja.querySelectorAll("p")].find((p) => p.textContent === "FRASE POR FRASE");
@@ -243,16 +249,92 @@ test("★★★ Explica la política: el detalle frase por frase sigue, y el res
   } finally { desmontar(); }
 });
 
-test("★★★ Diagnóstico en vivo: «Resultado: P %» con el porcentaje guardado, no «X de N»", async () => {
-  assert.equal(R.formatoDe("diagnostico-en-vivo"), R.FORMATO.PORCENTAJE);
-  /* La fila guardada dice 70 aunque la partida diga otra cosa: manda lo guardado. */
-  const guardado = ({ pct, detalle }) => ({ pct, detalle, registro: { id: 1, fp_awarded: 12, repeat_index: 0, correct_pct: 70 } });
-  const { caja, desmontar } = await jugarHastaElCierre("diagnostico-en-vivo", "DiagnosticoEnVivo.jsx", guardado);
+/* Las cifras de resultado de la pantalla: «Resultado:» o «Bien a la primera:». */
+const cifrasDeResultado = (caja) => caja.querySelectorAll("[data-pantalla-resumen] [data-cifra='resultado'], [data-pantalla-resumen] [data-cifra='bien']").length;
+const textoPantalla = (caja) => {
+  const p = caja.querySelector("[data-pantalla-resumen]").cloneNode(true);
+  p.querySelectorAll("style, [data-recuadro]").forEach((x) => x.remove());
+  return p.textContent;
+};
+
+/*
+ * ═══════════ UNA SOLA CIFRA DE RESULTADO (Levi) ═══════════
+ *
+ * Si el cierre propio ya enseña su resultado, la pantalla no enseña ningún
+ * porcentaje ni «X de N»: solo los puntos. Si no lo enseña, la tarjeta de la
+ * pantalla es la única cifra.
+ */
+const ENSENA_SU_RESULTADO = new Set(["diagnostico-en-vivo", "corriente-titulares", "explica-la-politica", "quien-gana-quien-pierde"]);
+
+for (const [id, archivo] of LAS_SIETE) {
+  test(`★★★ ${id}: una sola cifra de resultado (${ENSENA_SU_RESULTADO.has(id) ? "la del cierre propio" : "la de la pantalla"})`, async () => {
+    const { caja, desmontar } = await jugarHastaElCierre(id, archivo, valida, { conP: true });
+    try {
+      assert.ok(caja.querySelector("[data-pantalla-resumen]"), "no salió la pantalla");
+      if (ENSENA_SU_RESULTADO.has(id)) {
+        assert.equal(cifrasDeResultado(caja), 0, "la pantalla repite el resultado");
+        assert.doesNotMatch(textoPantalla(caja), /%| de \d/, "la pantalla enseña otro porcentaje o «X de N»");
+        assert.doesNotMatch(caja.querySelector("[data-lector]").textContent, /Resultado/, "el lector repite el resultado");
+      } else {
+        assert.equal(cifrasDeResultado(caja), 1, "la pantalla debe llevar la única cifra de resultado");
+      }
+    } finally { desmontar(); }
+  });
+}
+
+/*
+ * ═══════════ EL CASO VISTO EN MACRO ═══════════
+ *
+ * Diagnóstico en vivo REPETIDO: la partida da 90 % (o la P que sea) y la
+ * pantalla mostró «Resultado: 0 %». Ahora: el resultado es el del cierre
+ * propio y la pantalla solo dice los puntos, 0, con su nota.
+ */
+const fila = (pct, repetida) => ({ id: 1, fp_awarded: repetida ? 0 : 12, repeat_index: repetida ? 1 : 0, correct_pct: pct });
+
+test("★★★ caso de Macro: Diagnóstico en vivo repetido — su resultado, ningún otro porcentaje, 0 puntos con su nota", async () => {
+  const { caja, desmontar, pct } = await jugarHastaElCierre("diagnostico-en-vivo", "DiagnosticoEnVivo.jsx",
+    ({ pct: p, detalle }) => ({ pct: p, detalle, repetida: true, registro: fila(Math.round(p), true) }), { conP: true });
   try {
     const pantalla = caja.querySelector("[data-pantalla-resumen]");
-    assert.ok(pantalla);
-    assert.ok(pantalla.querySelector("[data-cifra='resultado']"), "no está «Resultado:»");
-    assert.ok(!pantalla.querySelector("[data-cifra='bien']"), "sigue diciendo «Bien a la primera: X de N»");
-    assert.match(pantalla.querySelector("[data-lector]").textContent, /^Resultado: 70 %/);
+    assert.ok(pantalla, "no salió la pantalla");
+    assert.equal(pantalla.getAttribute("data-repeticion"), "si");
+    /* El resultado: el del cierre propio, el de la partida. */
+    assert.ok(caja.textContent.includes(`${Math.round(pct)}%`), "no está el resultado del cierre propio");
+    /* Ningún otro porcentaje. */
+    assert.equal(cifrasDeResultado(caja), 0);
+    assert.doesNotMatch(textoPantalla(caja), /%/);
+    assert.ok(!/0\s?%/.test(textoPantalla(caja)), "apareció «0 %»");
+    /* Los puntos en 0 con su nota. */
+    assert.equal(pantalla.querySelector("[data-cifra='puntos'] [data-valor]").textContent, "0");
+    assert.ok(pantalla.querySelector("[data-nota-repeticion]"), "falta la nota de la repetición");
+    assert.equal(pantalla.querySelector("[data-lector]").textContent, "0 puntos ganados, sin puntos nuevos.");
   } finally { desmontar(); }
+});
+
+for (const [nombre, alterar] of [
+  ["el servidor guardó 0 para una partida de P ≥ 1", ({ pct, detalle }) => ({ pct, detalle, repetida: true, registro: fila(0, true) })],
+  ["el servidor guardó otra P", ({ pct, detalle }) => ({ pct, detalle, repetida: true, registro: fila(Math.round(pct) === 50 ? 51 : 50, true) })],
+  ["el servidor no devolvió la P", ({ pct, detalle }) => ({ pct, detalle, repetida: true, registro: null })],
+]) {
+  test(`★★★ repetición en «Resultado: P %» sin P confiable (${nombre}): cierre de siempre, sin línea de resultado, con su aviso`, async () => {
+    const { caja, desmontar } = await jugarHastaElCierre("diagnostico-en-vivo", "DiagnosticoEnVivo.jsx", alterar, { conP: true });
+    try {
+      assert.ok(!caja.querySelector("[data-pantalla-resumen]"), "salió la pantalla sin una P confiable");
+      assert.ok(!/Resultado:\s*0\s*%/.test(caja.textContent), "apareció «Resultado: 0 %»");
+      assert.ok(botones(caja).includes("Otra ronda"), "no está su cierre de siempre");
+      assert.ok(caja.querySelector("[role='status']")?.textContent.includes("Ya completada"), "se perdió el aviso de la repetición");
+    } finally { desmontar(); }
+  });
+}
+
+test("★★★ una P de 0 nunca se enseña como resultado, ni la primera vez ni en la repetición", () => {
+  for (const repetida of [false, true]) {
+    const aviso = { fp: repetida ? 0 : 12, repetida, actividadId: "arma-grupo-logico", materiaId: "macroeconomia", pctGuardado: 0 };
+    const partida = { formato: R.FORMATO.PORCENTAJE, pct: 0, detalle: null, conCuenta: true, aviso };
+    assert.equal(R.decidir(partida).valida, false, `repetida=${repetida}`);
+    assert.equal(R.porcentajeConfiable(partida), null);
+  }
+  /* Y una P de 1 o más, guardada y coincidente, sí. */
+  assert.equal(R.porcentajeConfiable({ pct: 90, aviso: { pctGuardado: 90 } }), 90);
+  assert.equal(R.porcentajeConfiable({ pct: 62.5, aviso: { pctGuardado: 63 } }), 63);
 });

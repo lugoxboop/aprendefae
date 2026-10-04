@@ -100,7 +100,13 @@ export async function otorgarFP({
   const fp = data?.fp_awarded ?? 0;
   const repetida = (data?.repeat_index ?? 0) > 0;
 
-  emitirFP({ fp, repetida, actividadId, materiaId });
+  /*
+   * `pctGuardado`: el porcentaje que quedó en la fila, solo para enseñarlo
+   * (la pantalla de resumen). No interviene en ningún cálculo.
+   */
+  const pctGuardado = typeof data?.correct_pct === "number" ? data.correct_pct : null;
+
+  emitirFP({ fp, repetida, actividadId, materiaId, pctGuardado });
 
   return { ok: true, fp, repetida, registro: data };
 }

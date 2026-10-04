@@ -205,7 +205,7 @@ export function formatoDe(actividadId, clasificacion = null) {
  *   · no llegó el aviso de FP, o sus puntos no son un número, o son negativos,
  *     o la marca de repetición no es un sí/no, o dice repetida con puntos
  *   · X de N: N = 0 (sin filas), X > N, o X o N no son enteros ≥ 0
- *   · Resultado: P %: P no es un número o está fuera de 0–100
+ *   · Resultado: P %: la P no es confiable (ver porcentajeConfiable)
  *   · la actividad es de panel propio
  */
 const esNumero = (v) => typeof v === "number" && Number.isFinite(v);
@@ -215,9 +215,28 @@ export function cifrasValidas(x, n) {
   return Number.isInteger(x) && Number.isInteger(n) && x >= 0 && n > 0 && x <= n;
 }
 
-/** El porcentaje que se enseña: el que guardó el servidor, o el de la partida si no llegó. */
-export function porcentajeDe({ registro, pct }) {
-  return esNumero(registro?.correct_pct) ? registro.correct_pct : pct;
+/*
+ * ═══════════ «RESULTADO: P %»: SOLO UNA P CONFIABLE ═══════════
+ *
+ * La P que se enseña es la que el servidor guardó PARA ESTA PARTIDA, y llega
+ * en el aviso de FP (`pctGuardado`), como los puntos: así el aviso y la
+ * pantalla deciden con el mismo dato. Cuenta solo si:
+ *
+ *   · es un número entre 1 y 100 —una P de 0 nunca se enseña como
+ *     resultado, ni la primera vez ni en la repetición—
+ *   · y coincide, redondeada, con la que entregó la partida.
+ *
+ * Si no, no hay P confiable: la partida cae al cierre de siempre, sin línea
+ * de resultado. Es el caso visto en Macro: un Diagnóstico en vivo repetido
+ * con 90 % cuya pantalla llegó a mostrar 0 %.
+ */
+export const P_MINIMA = 1;
+
+export function porcentajeConfiable({ aviso, pct }) {
+  const p = aviso?.pctGuardado;
+  if (!esNumero(p) || p < P_MINIMA || p > 100) return null;
+  if (!esNumero(pct) || Math.round(p) !== Math.round(pct)) return null;
+  return p;
 }
 
 export function avisoValido(aviso) {
@@ -237,8 +256,8 @@ export function partidaValida({ formato, detalle, pct, registro = null, conCuent
     if (!cifrasValidas(c.bien, c.n)) return { valida: false, motivo: "cifras" };
   }
   if (formato === FORMATO.PORCENTAJE) {
-    const p = porcentajeDe({ registro, pct });
-    if (!esNumero(p) || p < 0 || p > 100) return { valida: false, motivo: "porcentaje" };
+    /* Antes de registrar ya se sabe si la partida trae una P que se pueda enseñar. */
+    if (!esNumero(pct) || pct < P_MINIMA || pct > 100) return { valida: false, motivo: "porcentaje" };
   }
   return { valida: true, motivo: null };
 }
@@ -248,6 +267,9 @@ export function decidir(partida) {
   const previa = partidaValida(partida);
   if (!previa.valida) return previa;
   if (!avisoValido(partida.aviso)) return { valida: false, motivo: "aviso" };
+  if (partida.formato === FORMATO.PORCENTAJE && porcentajeConfiable(partida) === null) {
+    return { valida: false, motivo: "porcentaje-no-confiable" };
+  }
   return { valida: true, motivo: null };
 }
 
@@ -285,7 +307,7 @@ export function resumenDe({ clasificacion, formato = null, pct, detalle, registr
   const repeticion = aviso?.repetida === true;
   const fp = aviso?.fp ?? 0;
   const conteo = f === FORMATO.X_DE_N ? conteoGuardado(detalle) : null;
-  const porcentaje = Math.round(porcentajeDe({ registro, pct }) ?? 0);
+  const porcentaje = Math.round(porcentajeConfiable({ aviso, pct }) ?? 0);
   const franja = franjaDe(conteo ? conteo.bien / conteo.n : porcentaje / 100);
 
   const titulo = repeticion ? TITULO.repeticion : exploratoria ? TITULO.exploratoria : TITULO[franja];
@@ -297,9 +319,12 @@ export function resumenDe({ clasificacion, formato = null, pct, detalle, registr
   else if (conteo) lector = `Resultado: ${conteo.bien} de ${conteo.n} bien a la primera, ${fp} puntos ganados${sufijo}.`;
   else lector = `Resultado: ${porcentaje} %, ${fp} puntos ganados${sufijo}.`;
 
+  /* Cuando el resultado ya lo enseña el cierre propio: solo los puntos. */
+  const lectorSoloPuntos = `${fp} puntos ganados${sufijo}.`;
+
   const figura = nivelDeFigura({ exploratoria, repeticion, fp, conteo, porcentaje });
 
-  return { formato: f, exploratoria, repeticion, fp, conteo, porcentaje, franja, titulo, mensaje, lector, figura };
+  return { formato: f, exploratoria, repeticion, fp, conteo, porcentaje, franja, titulo, mensaje, lector, lectorSoloPuntos, figura };
 }
 
 /*
