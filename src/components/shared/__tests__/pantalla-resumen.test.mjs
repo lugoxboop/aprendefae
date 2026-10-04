@@ -97,15 +97,16 @@ const TEAL_O_AMBAR = /#2a9d8f|rgb\(42,\s*157,\s*143\)|#e9c46a|rgb\(233,\s*196,\s
 
 /* ═══════════════════ EL INTERRUPTOR ═══════════════════ */
 
-test("★★★ interruptor por materia: encendido en Contabilidad y Macroeconomía, apagado por defecto", () => {
+test("★★★ interruptor por materia: encendido en Contabilidad, apagado en Macroeconomía y por defecto", () => {
   assert.equal(R.pantallaResumenEncendida("contabilidad"), true);
-  assert.equal(R.pantallaResumenEncendida("macroeconomia"), true);
+  /* Apagada de nuevo por la regla con Levi: si algo se ve mal en Macro, se apaga. */
+  assert.equal(R.pantallaResumenEncendida("macroeconomia"), false);
   assert.equal(R.pantallaResumenEncendida("pensamiento-estrategico"), false, "una materia que no está en la lista debe quedar apagada");
   assert.equal(R.pantallaResumenEncendida("inventada"), false);
-  assert.equal(R.usaPantallaResumen("macroeconomia", "cual-componente"), true);
+  assert.equal(R.usaPantallaResumen("macroeconomia", "cual-componente"), false);
   /* Una línea por materia: apagarla es poner su línea en false. */
   const fuente = readFileSync(new URL("../../../hacer/pantallaResumen.js", import.meta.url), "utf8");
-  assert.match(fuente, /^  macroeconomia: true,$/m);
+  assert.match(fuente, /^  macroeconomia: false,$/m);
   assert.match(fuente, /^  contabilidad: true,$/m);
   assert.equal(R.usaPantallaResumen("contabilidad", "cu-cuadro-dinamicas"), true);
   assert.equal(R.usaPantallaResumen("contabilidad", "t1-desde-donde-preguntan"), true);
@@ -129,11 +130,18 @@ function VistaMacro({ hijo }) {
   return h(ContextoResumen.Provider, { value: resumen.contexto("cual-componente", () => {}) }, hijo);
 }
 
-/* Apaga Macroeconomía solo durante la prueba, como lo haría su línea en false. */
-const conMacroApagada = async (fn) => {
-  R.PANTALLA_RESUMEN.macroeconomia = false;
-  try { return await fn(); } finally { R.PANTALLA_RESUMEN.macroeconomia = true; }
+/*
+ * Cambia la línea de Macroeconomía solo durante una prueba y la deja como
+ * estaba. Encendida, se prueba el código que vuelve el día que se reencienda;
+ * apagada, que el cierre es el de siempre.
+ */
+const conMacro = async (encendida, fn) => {
+  const antes = R.PANTALLA_RESUMEN.macroeconomia;
+  R.PANTALLA_RESUMEN.macroeconomia = encendida;
+  try { return await fn(); } finally { R.PANTALLA_RESUMEN.macroeconomia = antes; }
 };
+const conMacroApagada = (fn) => conMacro(false, fn);
+const conMacroEncendida = (fn) => conMacro(true, fn);
 
 test("★★★ con su línea en false, el cierre de Macroeconomía es idéntico al de antes", () => conMacroApagada(() => {
   const sin = montar(recuadro(67, "4 de 6 bien clasificados."));
@@ -585,7 +593,7 @@ async function jugarPrueba({ materia = "macroeconomia", actividadId = "cual-comp
 const esCierreDeSiempre = (caja) => caja.textContent.includes("RESULTADO") && !caja.querySelector("[data-pantalla-resumen]")
   && [...caja.querySelectorAll("button")].some((b) => b.textContent === "Otra tanda");
 
-test("★★★ salvaguarda: cada caso cae al cierre de siempre, con su recuadro y su aviso de FP", async () => {
+test("★★★ salvaguarda: cada caso cae al cierre de siempre, con su recuadro y su aviso de FP", () => conMacroEncendida(async () => {
   const casos = [
     ["N = 0 (sin filas)", { detalle: [] }],
     ["X falta (sin detalle en un X de N)", { detalle: null }],
@@ -622,14 +630,14 @@ test("★★★ salvaguarda: cada caso cae al cierre de siempre, con su recuadro
     assert.ok(bien.caja.querySelector("[data-pantalla-resumen]"), "con datos válidos no salió la pantalla");
     assert.ok(!bien.caja.textContent.includes("+8 FP"), "salieron la pantalla y el aviso a la vez");
   } finally { bien.desmontar(); }
-});
+}));
 
 test("★★★ la salvaguarda vale también para Contabilidad", async () => {
   const m = await jugarPrueba({ materia: "contabilidad", actividadId: "cu-debita-o-acredita", detalle: [] });
   try { assert.ok(esCierreDeSiempre(m.caja)); } finally { m.desmontar(); }
 });
 
-test("★★★ los puntos de la pantalla son siempre los del aviso de FP, y la repetición, su marca", async () => {
+test("★★★ los puntos de la pantalla son siempre los del aviso de FP, y la repetición, su marca", () => conMacroEncendida(async () => {
   for (const [fp, repetida] of [[8, false], [37, false], [0, true], [90, false]]) {
     /* La fila guardada dice otra cosa a propósito: la pantalla no la lee para los puntos. */
     const m = await jugarPrueba({ aviso: { fp, repetida }, respuesta: { ok: true, fp: 999, repetida: !repetida, registro: fila(999, repetida ? 0 : 5, 80) } });
@@ -639,7 +647,7 @@ test("★★★ los puntos de la pantalla son siempre los del aviso de FP, y la 
       assert.equal(m.caja.querySelector("[data-pantalla-resumen]").getAttribute("data-repeticion"), repetida ? "si" : "no");
     } finally { m.desmontar(); }
   }
-});
+}));
 
 test("★★★ ninguna de las 49 actividades de Macroeconomía queda sin formato", () => {
   const ids = SUBJECTS.macroeconomia.topics.flatMap((t) => (t.actividades ?? t.activities ?? [])

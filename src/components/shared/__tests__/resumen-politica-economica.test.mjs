@@ -64,6 +64,13 @@ const { emitirFP } = await import("../../../fp/aviso.js");
 const { AuthContext } = await import("../../../auth/AuthProvider.jsx");
 const { clasificacionDe } = await import("../../../data/subjects.js");
 
+/*
+ * Macroeconomía tiene su línea en false (apagada por la regla con Levi). Aquí
+ * se enciende solo para este proceso de prueba: el cableado de las 7 se sigue
+ * probando para el día que se reencienda. No cambia nada en la app.
+ */
+R.PANTALLA_RESUMEN.macroeconomia = true;
+
 const MECANICAS = "../../mecanicas/";
 const CON_CUENTA = { usuario: { id: "u-prueba" } };
 
