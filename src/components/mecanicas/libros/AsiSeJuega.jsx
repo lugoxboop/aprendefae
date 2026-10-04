@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Eye } from "lucide-react";
 import { FAE } from "../../../theme.js";
-import { NEUTRO, NAVY_DEL_CHIP, TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
+import { NEUTRO, NAVY_DEL_CHIP } from "../../../data/contabilidadIntro.js";
 import { CSS_SALA } from "../salaDeControl/marco.jsx";
 import { CSS_JUEGO } from "../corazon/juego.jsx";
 import { Responder } from "./piezas.jsx";
@@ -33,14 +33,21 @@ import { SOLO_LECTOR } from "./verbos.jsx";
  *
  * «Pausar» congela TODO: el guion, la mano, las animaciones y transiciones de
  * dentro de la figura, y los relojes del propio componente (le llega
- * `pausado`; T1-8 congela su cascada con él). «Seguir» lo retoma donde quedó. «Siguiente» está apagado —y lo dice: «Mira el
- * ejemplo»— hasta que la primera pasada termina.
+ * `pausado`; T1-8 congela su cascada con él). «Seguir» lo retoma donde quedó.
+ *
+ * ═══════════ «SIGUIENTE» SIEMPRE LIBRE ═══════════
+ *
+ * «Siguiente» está activo desde el primer instante y siempre dice
+ * «Siguiente» (Mateo, por Levi): nadie tiene que esperar a que la demo
+ * termine. Tocarlo a mitad de camino desmonta la demo entera —el reloj del
+ * guion, los cuadros pendientes, la mano, la onda y el componente de
+ * ejemplo con sus propios relojes—: se para en el acto, sin dejar nada vivo.
  *
  * ═══════════ MOVIMIENTO REDUCIDO: TRES CUADROS ═══════════
  *
  * Sin animación, la demo son tres cuadros fijos —inicio, gesto, resultado—
  * que se pasan con «Siguiente cuadro». En el del gesto la mano se queda quieta
- * sobre el punto tocado. «Siguiente» se enciende en el tercero.
+ * sobre el punto tocado. «Siguiente» está activo desde el primer cuadro.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -119,7 +126,6 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1, tit
   const [vuelta, setVuelta] = useState(0);
   const [corriendo, setCorriendo] = useState(true);
   const [terminada, setTerminada] = useState(false);
-  const [vista, setVista] = useState(false);
   const [cuadro, setCuadro] = useState(1);
   const [mano, setMano] = useState({ pos: { x: 0, y: 0 }, visible: false });
   const [onda, setOnda] = useState(null);
@@ -243,7 +249,7 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1, tit
   const ejecutar = useCallback((ev) => {
     if (ev.tipo === "fin") {
       setMano((m) => ({ ...m, visible: false }));
-      setTerminada(true); setCorriendo(false); setVista(true);
+      setTerminada(true); setCorriendo(false);
       return true;
     }
     const el = buscar(toques[ev.k]);
@@ -308,7 +314,8 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1, tit
    * y quita la mano.
    */
   const reloj = useRef([]);
-  useEffect(() => () => reloj.current.forEach(clearTimeout), []);
+  /* Al desmontarse —también al saltar con «Siguiente»— no queda ningún cuadro pendiente. */
+  useEffect(() => () => { reloj.current.forEach(clearTimeout); reloj.current = []; }, []);
   const enOrden = (lista, alFinal, intentos = 60) => {
     if (lista.length === 0) { alFinal?.(); return; }
     const [toque, ...resto] = lista;
@@ -333,7 +340,6 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1, tit
       setCuadro(3);
       setMano((m) => ({ ...m, visible: false }));
       enOrden(toques.slice(gesto));
-      setVista(true);
     }
   };
   const deNuevoCuadros = () => {
@@ -455,9 +461,7 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1, tit
         position: "sticky", bottom: 0, zIndex: 5, marginTop: "6px", paddingBottom: "14px",
         background: `linear-gradient(to bottom, transparent, ${FAE.bg} 30%)`,
       }}>
-        <Responder onClick={onSiguiente} deshabilitado={!vista} colorApagado={TEXTO_ATENUADO}>
-          {vista ? "Siguiente" : "Mira el ejemplo"}
-        </Responder>
+        <Responder onClick={onSiguiente}>Siguiente</Responder>
       </div>
     </section>
   );

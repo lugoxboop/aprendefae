@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AsiSeJuega from "./AsiSeJuega.jsx";
 import { ASI_SE_JUEGA } from "../../../data/asiSeJuega.js";
 import { yaLaVio, marcarVista } from "../../../hacer/asiSeJuega.js";
@@ -28,6 +28,31 @@ export default function JuegoConTutorial({
     if (viendo) marcarVista(juego.id, usuarioId);
   }, []);
 
+  /*
+   * «Siguiente» está activo desde el primer instante (Levi). Tocarlo a mitad
+   * de la demo la desmonta entera —AsiSeJuega limpia sus relojes al
+   * desmontarse— y marca el tutorial como visto, aunque no haya terminado.
+   * La partida es otra instancia, montada aparte desde el principio: no
+   * hereda nada del ejemplo. El foco pasa a la consigna de la actividad, o a
+   * su título si no tiene consigna.
+   */
+  const partida = useRef(null);
+  const [enfocar, setEnfocar] = useState(false);
+  const siguiente = () => {
+    marcarVista(juego.id, usuarioId);
+    setViendo(false);
+    setEnfocar(true);
+  };
+  useEffect(() => {
+    if (!enfocar || viendo) return;
+    setEnfocar(false);
+    const caja = partida.current;
+    const blanco = caja?.querySelector("[data-encabezado] [data-consigna]") ?? caja?.querySelector("h1, h2, h3");
+    if (!blanco) return;
+    if (!blanco.hasAttribute("tabindex")) blanco.setAttribute("tabindex", "-1");
+    blanco.focus({ preventScroll: false });
+  }, [enfocar, viendo]);
+
   const abrir = () => {
     setViendo(true);
     try { globalThis.scrollTo?.(0, 0); } catch { /* sin ventana, nada que subir */ }
@@ -40,9 +65,9 @@ export default function JuegoConTutorial({
   return (
     <>
       {viendo && (
-        <AsiSeJuega asi={asi} Mecanica={juego.Mecanica} onSiguiente={() => setViendo(false)} tituloVisible={tituloVisible} />
+        <AsiSeJuega asi={asi} Mecanica={juego.Mecanica} onSiguiente={siguiente} tituloVisible={tituloVisible} />
       )}
-      <div hidden={viendo} data-partida>
+      <div ref={partida} hidden={viendo} data-partida>
         <juego.Mecanica
           {...presentacion}
           onCompletar={onCompletar}

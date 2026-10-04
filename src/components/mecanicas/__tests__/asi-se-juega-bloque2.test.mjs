@@ -187,7 +187,7 @@ for (const id of IDS) {
 /* ═══════════════════ LA DEMO NO GUARDA NADA, Y ENSEÑA LO QUE DEBE ═══════════════════ */
 
 for (const id of IDS) {
-  test(`★★★ ${id}: la demo corre con el componente real, «Siguiente» espera, y no guarda nada`, async () => {
+  test(`★★★ ${id}: la demo corre con el componente real, «Siguiente» libre desde el inicio, y no guarda nada`, async () => {
     w.localStorage.clear();
     const conteo = contarEscrituras();
     const redAntes = llamadasARed.length;
@@ -195,11 +195,11 @@ for (const id of IDS) {
     try {
       const sig = () => caja.querySelector("[data-asj-siguiente] button");
       const escenario = () => caja.querySelector("[data-asj-escenario]");
-      assert.equal(sig().disabled, true);
-      assert.equal(sig().textContent, "Mira el ejemplo");
+      assert.equal(sig().disabled, false);
+      assert.equal(sig().textContent, "Siguiente");
       assert.equal(caja.querySelector("figure figcaption").textContent, `Ejemplo: ${ASI_TODAS[id].alt}`);
       assert.equal(caja.querySelectorAll("[inert]").length, 1);
-      await esperar(() => !sig().disabled);
+await esperar(() => caja.querySelector("[data-asj-control]").textContent === "Ver de nuevo");
       assert.equal(sig().textContent, "Siguiente");
 
       /* Solo la zona de juego: ni encabezado, ni avance, ni botón de seguir. */
