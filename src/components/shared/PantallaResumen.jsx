@@ -180,20 +180,35 @@ function movimientoReducido() {
   try { return Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches); } catch { return false; }
 }
 
+/*
+ * La cifra cuenta desde 0 hasta su valor, pero NUNCA se queda a medio camino.
+ * Si el navegador no avanza la animación —pestaña en segundo plano, una
+ * lectura de la página sin pintarla—, la tarjeta se quedaba en 0 mientras la
+ * línea del lector ya decía el valor real: así se vio «0 %» en un Diagnóstico
+ * en vivo de 90 %. Ahora:
+ *   · con la pestaña oculta, sale directamente el valor final
+ *   · y un reloj de respaldo pone el valor final al acabar el conteo, avance
+ *     o no la animación.
+ */
+const pestanaOculta = () => {
+  try { return document.visibilityState === "hidden"; } catch { return false; }
+};
+
 function useConteo(objetivo) {
-  const [valor, setValor] = useState(() => (movimientoReducido() ? objetivo : 0));
+  const [valor, setValor] = useState(() => (movimientoReducido() || pestanaOculta() ? objetivo : 0));
   useEffect(() => {
-    if (movimientoReducido() || objetivo <= 0) { setValor(objetivo); return undefined; }
+    if (movimientoReducido() || pestanaOculta() || objetivo <= 0) { setValor(objetivo); return undefined; }
     let marco = null;
     const inicio = performance.now();
     const paso = (ahora) => {
-      const t = Math.min(1, (ahora - inicio) / DURACION_CONTEO);
+      const t = Math.min(1, Math.max(0, (ahora - inicio) / DURACION_CONTEO));
       /* Frena al final: el último número se lee quieto. */
       setValor(Math.round(objetivo * (1 - (1 - t) ** 3)));
       if (t < 1) marco = requestAnimationFrame(paso);
     };
     marco = requestAnimationFrame(paso);
-    return () => cancelAnimationFrame(marco);
+    const respaldo = setTimeout(() => { cancelAnimationFrame(marco); setValor(objetivo); }, DURACION_CONTEO + 100);
+    return () => { cancelAnimationFrame(marco); clearTimeout(respaldo); };
   }, [objetivo]);
   return valor;
 }

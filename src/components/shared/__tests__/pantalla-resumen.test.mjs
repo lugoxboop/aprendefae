@@ -80,7 +80,7 @@ const fila = (fp, repeat = 0, pct = 50) => ({ id: 1, fp_awarded: fp, repeat_inde
 
 /* El aviso de FP tal como lo emite otorgarFP a partir de la fila guardada. */
 const avisoDe = (registro, actividadId = "x") => (registro
-  ? { fp: registro.fp_awarded, repetida: (registro.repeat_index ?? 0) > 0, actividadId, materiaId: "contabilidad" }
+  ? { fp: registro.fp_awarded, repetida: (registro.repeat_index ?? 0) > 0, actividadId, materiaId: "contabilidad", pctGuardado: registro.correct_pct ?? null }
   : null);
 
 /** La pantalla con una partida ya registrada y validada, como la deja una vista. */
@@ -311,6 +311,40 @@ test("★★ las cifras cuentan desde 0, y con movimiento reducido salen ya quie
   } finally { m.desmontar(); reducido = true; }
   const q = montar(pantallaCon({ clasificacion: CLAS_EVALUATIVA, pct: 100, detalle: filas(8, 0), registro: fila(50) }));
   try { assert.equal(valor(q.caja, "puntos"), "50"); } finally { q.desmontar(); }
+});
+
+test("★★★ la cifra que cuenta nunca se queda a medio camino: sin animación que avance, termina en su valor", async () => {
+  /* El caso de Macro: Diagnóstico repetido, 90 % en la línea del lector y «0 %» en la tarjeta. */
+  const partida = { clasificacion: CLAS_EVALUATIVA, formato: R.FORMATO.PORCENTAJE, pct: 90, detalle: null, registro: fila(0, 1, 90) };
+  const rafOriginal = globalThis.requestAnimationFrame;
+  reducido = false;
+  /* Un navegador que no pinta: los fotogramas no llegan nunca. */
+  globalThis.requestAnimationFrame = () => 0;
+  w.requestAnimationFrame = globalThis.requestAnimationFrame;
+  try {
+    const m = montar(pantallaCon(partida));
+    try {
+      assert.match(m.caja.querySelector("[data-lector]").textContent, /^Resultado: 90 %, 0 puntos ganados, sin puntos nuevos/);
+      await esperar(() => valor(m.caja, "resultado") === "90 %", 1500);
+    } finally { m.desmontar(); }
+  } finally {
+    globalThis.requestAnimationFrame = rafOriginal;
+    w.requestAnimationFrame = rafOriginal;
+    reducido = true;
+  }
+});
+
+test("★★ con la pestaña oculta, las cifras salen ya en su valor", () => {
+  const partida = { clasificacion: CLAS_EVALUATIVA, formato: R.FORMATO.PORCENTAJE, pct: 90, detalle: null, registro: fila(0, 1, 90) };
+  reducido = false;
+  Object.defineProperty(w.document, "visibilityState", { value: "hidden", configurable: true });
+  try {
+    const m = montar(pantallaCon(partida));
+    try { assert.equal(valor(m.caja, "resultado"), "90 %"); } finally { m.desmontar(); }
+  } finally {
+    delete w.document.visibilityState;
+    reducido = true;
+  }
 });
 
 test("★★ espera a que termine la celebración, y mientras se guarda no inventa cifras", () => {
@@ -575,7 +609,7 @@ function VistaPrueba({ materia, actividadId, clasificacion, pct, detalle, respue
   const completar = (p, ms, d) => {
     celebrar("facil", actividadId);
     resumen.registrar({ actividadId, clasificacion, pct: p, detalle: d }, async () => {
-      if (aviso) emitirFP({ actividadId, materiaId: materia, ...aviso });
+      if (aviso) emitirFP({ actividadId, materiaId: materia, pctGuardado: respuesta?.registro?.correct_pct ?? null, ...aviso });
       return respuesta;
     });
   };
