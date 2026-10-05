@@ -158,19 +158,20 @@ test("★★ el patrón B es exactamente el de las cuentas «por cobrar» y «po
   }
 });
 
-test("★ el patrón A nombra la cuenta por la que SÍ se preguntó", () => {
+/* El texto ya no nombra la cuenta (lote 1 reescrito de Gen): la pantalla la resalta. */
+test("★ el patrón A resalta la cuenta por la que SÍ se preguntó", () => {
   for (const a of ASIENTOS.filter((x) => x.patron === PATRON_A)) {
     const r = evaluar(a, contrario(a.lado));
-    assert.ok(r.texto.includes(a.cuenta), `${a.id} no nombra ${a.cuenta}`);
+    assert.equal(r.texto, TEXTO_A, `${a.id}: no sale el texto del patrón A`);
     assert.equal(r.resaltarCuenta, a.cuenta);
     assert.equal(r.atenuarTransaccion, true);
   }
 });
 
-test("★ el patrón B dice la dirección real, deducida, no una escrita a mano", () => {
+test("★ el patrón B sale con su texto y resalta lo que engaña", () => {
   for (const a of ASIENTOS.filter((x) => x.patron === PATRON_B)) {
     const r = evaluar(a, contrario(a.lado));
-    assert.ok(r.texto.includes(a.efecto), `${a.id} no dice qué le pasa a la cuenta`);
+    assert.equal(r.texto, TEXTO_B, `${a.id}: no sale el texto del patrón B`);
     /* Las tres bajan; si alguna subiera, el texto lo diría al revés y se vería. */
     assert.equal(a.efecto, "disminuyendo", `${a.id} cambió de dirección`);
     assert.equal(r.resaltarParte, a.parteEngañosa);

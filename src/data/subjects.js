@@ -560,7 +560,7 @@ export const SUBJECTS = {
           { id: "cu-de-que-familia", nombre: "¿De qué familia es?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /* Aplicación */
           { id: "cu-cuadro-dinamicas", nombre: "El Cuadro de Dinámicas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "cu-debita-o-acredita", nombre: "¿Se Debita o se Acredita?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "cu-debita-o-acredita", nombre: "¿Debe o Haber?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* Análisis */
           { id: "cu-saldo-de-la-cuenta", nombre: "El Saldo de la Cuenta", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "cu-arma-el-asiento", nombre: "Arma el Asiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },

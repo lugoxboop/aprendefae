@@ -51,11 +51,11 @@ export const PATRON_A = "A";
 export const PATRON_B = "B";
 export const PATRON_B_BIS = "B-bis";
 
-export const TEXTO_A = "❌ No te equivocaste de lógica: te equivocaste de cuenta. Esa respuesta sería correcta para la otra mitad del asiento. Pero te pregunté por {cuenta}, y a esa le pasa lo contrario.";
+export const TEXTO_A = "❌ No fallaste el razonamiento: fallaste la cuenta. Esa respuesta sirve para la otra mitad del asiento, no para la que te preguntan.";
 
-export const TEXTO_B = "❌ El nombre te engañó. «{cuenta}» suena a que {sugiere}, pero en esta transacción está {efecto} — y eso es lo que decide el lado, no cómo se llama.";
+export const TEXTO_B = "❌ El nombre engaña. Suena a una cosa, pero en este hecho está pasando la contraria. Lee qué hizo la empresa, no cómo se llama la cuenta.";
 
-export const TEXTO_B_BIS = "❌ Cayó la trampa de la palabra: «a crédito» está en el enunciado, pero describe cómo se paga, no de qué lado va el registro. El inventario es un activo que entra.";
+export const TEXTO_B_BIS = "❌ Cayó la trampa de la palabra. «A crédito» dice cómo se paga, no de qué lado va el registro.";
 
 /*
  * Los diez ítems. `sube` es lo que dice el enunciado; el lado lo pone la regla.
@@ -71,7 +71,7 @@ export const ITEMS = [
     cuenta: "Inventario",
     sube: true,
     contrapartida: "Cuentas por pagar",
-    acierto: "✅ Se debita. El inventario entra al negocio. Y fíjate en la trampa: «a crédito» describe cómo se paga, no de qué lado va el registro.",
+    acierto: "✅ Debe. El inventario entra al negocio. Y ojo con la trampa: «a crédito» dice cómo se paga, no de qué lado va.",
     patron: PATRON_B_BIS,
     /* La palabra del enunciado que engaña, para poder señalarla. */
     palabraDelEnunciado: "a crédito",
@@ -82,7 +82,7 @@ export const ITEMS = [
     cuenta: "Aportes sociales",
     sube: false,
     contrapartida: "Caja",
-    acierto: "✅ Se debita. El patrimonio está disminuyendo, y el patrimonio disminuye por el debe.",
+    acierto: "✅ Debe. Se le devuelve el aporte a un socio, así que el patrimonio baja.",
     patron: PATRON_A,
   },
   {
@@ -91,7 +91,7 @@ export const ITEMS = [
     cuenta: "Caja",
     sube: false,
     contrapartida: "Maquinaria",
-    acierto: "✅ Se acredita. Salió dinero: el activo disminuye, y eso va por el haber.",
+    acierto: "✅ Haber. Sale plata para pagar la maquinaria, así que la caja baja.",
     patron: PATRON_A,
   },
   {
@@ -100,7 +100,7 @@ export const ITEMS = [
     cuenta: "Ingresos por servicios",
     sube: true,
     contrapartida: "Cuentas por cobrar",
-    acierto: "✅ Se acredita. Los ingresos crecen por el haber — aunque todavía no haya entrado un solo peso. Mira la contrapartida: lo que entró fue un derecho de cobro, no dinero.",
+    acierto: "✅ Haber. Los ingresos crecen por el haber, aunque todavía no haya entrado un peso.",
     patron: PATRON_A,
   },
   {
@@ -109,7 +109,7 @@ export const ITEMS = [
     cuenta: "Gastos de operación",
     sube: true,
     contrapartida: "Caja",
-    acierto: "✅ Se debita. Los gastos aumentan por el debe.",
+    acierto: "✅ Debe. Los gastos crecen por el debe, igual que los activos.",
     patron: PATRON_A,
   },
   {
@@ -118,7 +118,7 @@ export const ITEMS = [
     cuenta: "Caja",
     sube: true,
     contrapartida: "Aportes sociales",
-    acierto: "✅ Se debita. Entró dinero: el activo aumenta.",
+    acierto: "✅ Debe. Entra plata del socio nuevo, así que la caja sube.",
     patron: PATRON_A,
   },
   {
@@ -127,7 +127,7 @@ export const ITEMS = [
     cuenta: "Obligaciones financieras",
     sube: true,
     contrapartida: "Caja",
-    acierto: "✅ Se acredita. La deuda aumenta, y los pasivos aumentan por el haber.",
+    acierto: "✅ Haber. Nace la deuda con el banco, y los pasivos crecen por el haber.",
     patron: PATRON_A,
   },
   {
@@ -136,7 +136,7 @@ export const ITEMS = [
     cuenta: "Cuentas por cobrar",
     sube: false,
     contrapartida: "Caja",
-    acierto: "✅ Se acredita. Cobrar reduce lo que te deben. Entra dinero a Caja (esa se debita), y la cuenta por cobrar se extingue.",
+    acierto: "✅ Haber. Cobrar baja lo que a la empresa le deben.",
     patron: PATRON_B,
     parteEngañosa: "por cobrar",
     palabraDelEnunciado: "Cobros",
@@ -149,7 +149,7 @@ export const ITEMS = [
     cuenta: "Cuentas por pagar",
     sube: false,
     contrapartida: "Caja",
-    acierto: "✅ Se debita. Pagar reduce la deuda, y un pasivo se reduce por el debe.",
+    acierto: "✅ Debe. Pagar baja la deuda, y un pasivo baja por el debe.",
     patron: PATRON_B,
     parteEngañosa: "por pagar",
     palabraDelEnunciado: "Pago",
@@ -162,7 +162,7 @@ export const ITEMS = [
     cuenta: "Participaciones por pagar",
     sube: false,
     contrapartida: "Caja",
-    acierto: "✅ Se debita. Es un pasivo que se está cancelando.",
+    acierto: "✅ Debe. Pagar baja la deuda con los socios.",
     patron: PATRON_B,
     parteEngañosa: "por pagar",
     palabraDelEnunciado: "Pago",
