@@ -15,6 +15,7 @@ import {
   
 } from "./mecanicas/libros/actividades.jsx";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
+import { conIcono } from "../data/contabilidadIconos.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 import { SUBJECTS, HACER, APRENDER, clasificacionDe, actividadesDeTipo, desafioDe, nombreDeActividad } from "../data/subjects.js";
@@ -87,7 +88,8 @@ export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, 
   const resumen = useResumenDePartida(MATERIA, celebrando);
 
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
-  const nodos = nodosDe(actividadesDeTipo(tema, HACER).filter((a) => !a.pendiente), hechas);
+  /* Cada nodo con su ícono de Contabilidad, si ya lo tiene. */
+  const nodos = conIcono(nodosDe(actividadesDeTipo(tema, HACER).filter((a) => !a.pendiente), hechas));
 
   /*
    * El desafío va AL LADO del camino, no dentro: actividadesDeTipo() ya lo

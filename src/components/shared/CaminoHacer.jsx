@@ -279,6 +279,12 @@ const alPulsar = (onAbrir, id) => ({
   },
 });
 
+/*
+ * El color del rótulo de un nodo, por estado. El ícono de una actividad que
+ * trae el suyo (`nodo.icono`, hoy solo Contabilidad) usa este mismo color.
+ */
+const colorDelRotulo = (nodo) => (nodo.completada ? FAE.text : "rgba(248,249,250,0.72)");
+
 const etiquetaAria = (nodo, marcas, prefijo = "") =>
   `${prefijo}${nodo.nombre}${nodo.completada ? " · completada" : ""}${marcas?.[nodo.id] ? ` · ${marcas[nodo.id]}` : ""}`;
 
@@ -496,7 +502,7 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas }) {
             ...lugarDelRotulo(p[i]),
             fontFamily: "Inter, sans-serif",
             lineHeight: 1.3,
-            color: nodo.completada ? FAE.text : "rgba(248,249,250,0.72)",
+            color: colorDelRotulo(nodo),
             cursor: "pointer",
           }}
         >
@@ -618,7 +624,19 @@ function NodoSvg({ nodo, x, y, m, numero, sugerido, resaltado, marcas, onAbrir, 
         Hecha no es solo un color: además del relleno teal lleva un ✓ en su
         esquina.
       */}
-      {Icono ? (
+      {nodo.icono ? (
+        /*
+          El ícono propio de la actividad (Contabilidad): el SVG de Xeno tal
+          cual, en currentColor, con el color del rótulo del nodo. Lleva el ✓
+          de hecha igual que los demás íconos.
+        */
+        <>
+          <g transform={`translate(${(x - lado / 2).toFixed(1)} ${(y - lado / 2).toFixed(1)})`} pointerEvents="none" data-icono={nodo.id} data-icono-propio style={{ color: colorDelRotulo(nodo) }}>
+            <nodo.icono size={lado} />
+          </g>
+          {nodo.completada && <Hecha x={x + m.radio * 0.74} y={y - m.radio * 0.74} r={Math.max(7, m.radio * 0.36)} />}
+        </>
+      ) : Icono ? (
         <>
           <g transform={`translate(${(x - lado / 2).toFixed(1)} ${(y - lado / 2).toFixed(1)})`} pointerEvents="none" data-icono={nodo.id}>
             <Icono size={lado} color={nodo.completada ? FAE.bg : "rgba(248,249,250,0.9)"} strokeWidth={2} aria-hidden="true" />
@@ -787,7 +805,7 @@ function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas }) {
             ...alLado(puntos[i], m.radio, m.alto),
             fontFamily: "Inter, sans-serif",
             lineHeight: 1.3,
-            color: nodo.completada ? FAE.text : "rgba(248,249,250,0.72)",
+            color: colorDelRotulo(nodo),
             cursor: "pointer",
           }}
         >
@@ -840,7 +858,10 @@ function IconoEstatico({ nodo, numero }) {
         border: `2.5px solid ${FAE.teal}`, background: "rgba(14,27,46,0.85)", color: FAE.text,
       }}
     >
-      {Icono ? (
+      {nodo.icono ? (
+        /* El ícono propio, del color del título de la ventana (FAE.text, heredado). */
+        <nodo.icono size={36} />
+      ) : Icono ? (
         <Icono size={36} color="rgba(248,249,250,0.92)" strokeWidth={1.8} aria-hidden="true" />
       ) : (
         <span style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "26px" }}>{numero}</span>
