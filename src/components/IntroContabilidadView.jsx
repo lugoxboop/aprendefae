@@ -7,6 +7,7 @@ import { useState } from "react";
 import { APRENDER, HACER, SUBJECTS, clasificacionDe, actividadesDeTipo } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
+import { conIcono } from "../data/contabilidadIconos.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
@@ -107,7 +108,8 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
   const resumen = useResumenDePartida(MATERIA, celebrando);
 
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
-  const nodos = nodosDe(actividadesDeTipo(tema, HACER).filter((a) => !a.pendiente), hechas);
+  /* Cada nodo con su ícono de Contabilidad, si ya lo tiene. */
+  const nodos = conIcono(nodosDe(actividadesDeTipo(tema, HACER).filter((a) => !a.pendiente), hechas));
   const juego = esAprender ? null : JUEGOS.find((j) => j.id === nodoAbierto);
 
   const completar = async (actividadId, porcentaje, duracionMs, detalle = null) => {

@@ -16,6 +16,14 @@ import { transformSync } from "esbuild";
 
 registerHooks({
   load(url, context, nextLoad) {
+    /*
+     * `archivo?raw`: el texto tal cual, como hace Vite. Lo usan los íconos de
+     * Contabilidad, que viven en el repo como los .svg que entregó Xeno.
+     */
+    if (url.endsWith("?raw")) {
+      const texto = readFileSync(fileURLToPath(url.slice(0, -"?raw".length)), "utf8");
+      return { format: "module", shortCircuit: true, source: `export default ${JSON.stringify(texto)};` };
+    }
     if (!url.endsWith(".jsx")) return nextLoad(url, context);
 
     /*
