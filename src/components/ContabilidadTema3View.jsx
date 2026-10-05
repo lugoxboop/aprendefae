@@ -64,7 +64,7 @@ export default function ContabilidadTema3View({ modo = null, onBack }) {
                     <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
                       PIEZA {k + 1} DE {PIEZAS.length}
                     </p>
-                    <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} rotulo="INGRESOS Y CAJA · APRENDER" />
+                    <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} rotulo="INGRESOS, GASTOS Y AJUSTES · APRENDER" />
                   </div>
                 );
               })}

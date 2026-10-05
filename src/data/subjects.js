@@ -588,7 +588,7 @@ export const SUBJECTS = {
          * ficha del capítulo.
          */
         id: "ingresos-gastos-y-caja",
-        title: "Ingresos, gastos y caja",
+        title: "Ingresos, gastos y ajustes",
         actividades: [
           { id: "t3-a1-vender-no-es-cobrar", nombre: "Vender no es cobrar", clasificacion: { tipo: APRENDER } },
         ],

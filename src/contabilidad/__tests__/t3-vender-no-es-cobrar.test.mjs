@@ -44,6 +44,7 @@ const h = React.createElement;
 
 const D = await import("../dosLineas.js");
 const T3 = await import("../../data/contabilidadTema3.js");
+const { SUBJECTS } = await import("../../data/subjects.js");
 const { default: MiraloFuncionar } = await import("../../components/mecanicas/libros/tema3/MiraloFuncionar.jsx");
 const { default: PruebaUsted } = await import("../../components/mecanicas/libros/tema3/PruebaUsted.jsx");
 const { ESCENAS_TEMA3 } = await import("../../components/mecanicas/libros/tema3/escenasTema3.jsx");
@@ -130,6 +131,35 @@ test("★★★ los textos son los de Gen, y ninguno dice «ganar», «gana» ni
   assert.equal(T3.ROTULO_PISTA.caja, "Caja: entra y sale plata");
   assert.equal(T3.CONSIGNA_CAPA_3, "Toca cada hecho y mira qué línea se mueve.");
   assert.equal(T3.AVISO_CAMBIO, "Cambia la empresa, así que las dos líneas vuelven a cero.");
+});
+
+/* Los seis textos alternativos de Levi, textuales, y el nombre del tema. */
+const ALT_DE_LEVI = [
+  "Dos líneas. Arriba, ingresos y gastos. Abajo, la caja.",
+  "Ejemplo: los socios ponen $15.000 en plata y un equipo de $5.000. La línea de caja sube $15.000 y la de ingresos y gastos queda quieta.",
+  "Ejemplo: San Calixto presta un servicio y le pagan el mismo día. Las dos líneas se mueven.",
+  "Ejemplo: San Calixto manda una factura de $4.000 a JCC. La línea de arriba se mueve y la de abajo queda quieta.",
+  "Ejemplo: San Calixto usa una máquina alquilada cinco días y aún no la paga. La línea de arriba marca un gasto de $2.500 y la caja queda quieta.",
+  "Dos líneas. Arriba, ingresos y gastos. Abajo, la caja. No siempre se mueven juntas.",
+];
+
+test("★★★ los seis alternativos son los de Levi, y en el DOM se lee el de cada paso", async () => {
+  assert.deepEqual(T3.ALTERNATIVOS, ALT_DE_LEVI);
+  reducido = true;
+  const m = await montar(h(MiraloFuncionar));
+  try {
+    const grupo = m.caja.querySelector('[role="group"]');
+    const desc = () => document.getElementById(grupo.getAttribute("aria-describedby")).textContent;
+    for (let k = 0; k < 6; k++) {
+      assert.equal(desc(), ALT_DE_LEVI[k], `paso ${k + 1}`);
+      if (k < 5) await tocar(m.caja.querySelector("[data-siguiente]"));
+    }
+  } finally { m.desmontar(); }
+});
+
+test("★★ el Tema 3 se llama «Ingresos, gastos y ajustes», y el id no cambia", () => {
+  const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "ingresos-gastos-y-caja");
+  assert.equal(tema?.title, "Ingresos, gastos y ajustes");
 });
 
 /* ═══════════ LA CAPA 2, MONTADA ═══════════ */
