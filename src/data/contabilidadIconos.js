@@ -9,15 +9,16 @@ import * as I from "../contabilidad/iconos/iconos.jsx";
  * Sin ícono, a propósito:
  *   · T1-3: no existe (retenida por revisión del profesor).
  *   · El Ciclo Completo: el desafío ya tiene su propio dibujo (el escritorio).
- *   · T1-4, T1-5, T1-7 y T2-7: Xeno los está redibujando (auditoría de Levi);
- *     mientras tanto el nodo enseña su número, como hoy.
  */
 export const ICONO_POR_ACTIVIDAD = {
   /* Tema 1 */
   "t1-desde-donde-preguntan": I.DesdeDondePreguntan,
   "t1-que-entro-y-que-salio": I.QueEntroYQueSalio,
   "t1-donde-se-rompio": I.DondeSeRompio,
+  "t1-que-le-pasa-a-cada-uno": I.QueLePasaACadaUno,
+  "t1-la-ecuacion-en-movimiento": I.LaEcuacionEnMovimiento,
   "t1-en-cual-estado-aparece": I.EnCualEstadoAparece,
+  "t1-la-articulacion": I.LaArticulacion,
   /* Tema 2 */
   "cu-izquierda-o-derecha": I.IzquierdaODerecha,
   "cu-de-que-familia": I.DeQueFamiliaEs,
@@ -25,6 +26,7 @@ export const ICONO_POR_ACTIVIDAD = {
   "cu-debita-o-acredita": I.SeDebitaOSeAcredita,
   "cu-saldo-de-la-cuenta": I.ElSaldoDeLaCuenta,
   "cu-arma-el-asiento": I.ArmaElAsiento,
+  "cu-asiento-compuesto": I.ElAsientoCompuesto,
 };
 
 /** Los nodos del camino con su ícono, si lo tienen. */

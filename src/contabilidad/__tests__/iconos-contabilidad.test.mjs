@@ -59,12 +59,15 @@ test("★★★ los .svg siguen las reglas de Xeno: su raíz exacta, solo path/r
   assert.ok(ARCHIVOS.length >= 10, `solo hay ${ARCHIVOS.length} íconos`);
   for (const f of ARCHIVOS) {
     const texto = readFileSync(new URL(f, CARPETA), "utf8");
-    const lineas = texto.trimEnd().split("\n");
-    assert.equal(lineas[0], RAIZ, `${f}: la raíz no es la de Xeno`);
-    assert.equal(lineas.at(-1), "</svg>", f);
-    for (const l of lineas.slice(1, -1)) {
-      assert.match(l, /^ {2}<(path|rect|circle) [^>]*\/>$/, `${f}: «${l}» no es una pieza permitida`);
-      assert.doesNotMatch(l, /\bfill=/, `${f}: una pieza lleva relleno`);
+    /* En una línea o en varias, como venga: la raíz exacta, luego solo piezas permitidas. */
+    assert.ok(texto.startsWith(RAIZ), `${f}: la raíz no es la de Xeno`);
+    assert.equal(texto.trimEnd().slice(-6), "</svg>", f);
+    const cuerpo = texto.trimEnd().slice(RAIZ.length, -6).trim();
+    const piezas = cuerpo.match(/<[^>]+>/g) ?? [];
+    assert.equal(piezas.join("").replace(/\s/g, ""), cuerpo.replace(/\s/g, ""), `${f}: hay algo que no es una pieza`);
+    for (const p of piezas) {
+      assert.match(p, /^<(path|rect|circle) [^>]*\/>$/, `${f}: «${p}» no es una pieza permitida`);
+      assert.doesNotMatch(p, /\bfill=/, `${f}: una pieza lleva relleno`);
     }
     assert.doesNotMatch(texto, PROHIBIDO, `${f}: lleva algo prohibido`);
   }
@@ -94,6 +97,12 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
   assert.equal(ICONO_POR_ACTIVIDAD["ciclo-completo"], undefined, "el Ciclo Completo no lleva ícono");
   assert.ok(!Object.keys(ICONO_POR_ACTIVIDAD).some((id) => /t1-3\b/.test(id)));
   assert.equal(new Set(Object.values(ICONO_POR_ACTIVIDAD)).size, Object.keys(ICONO_POR_ACTIVIDAD).length, "un ícono repetido");
+  /* Las 14 de Hacer de Contabilidad (sin el desafío) tienen su ícono, y son 14 archivos. */
+  const conDesafio = new Set(SUBJECTS.contabilidad.topics.flatMap((t) => (t.actividades ?? []).filter((x) => x.clasificacion?.desafio).map((x) => x.id)));
+  const esperadas = [...hacer].filter((id) => !conDesafio.has(id));
+  assert.equal(esperadas.length, 14);
+  assert.deepEqual(Object.keys(ICONO_POR_ACTIVIDAD).sort(), esperadas.sort(), "falta o sobra un ícono");
+  assert.equal(ARCHIVOS.length, 14);
   /* «¿Dónde se Rompió?» es la T1-8: su archivo se llama así. */
   assert.ok(ARCHIVOS.includes("conta-t1-8-donde-se-rompio.svg"));
   assert.ok(!ARCHIVOS.some((f) => f.startsWith("conta-t1-3")));
