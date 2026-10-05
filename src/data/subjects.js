@@ -580,6 +580,19 @@ export const SUBJECTS = {
           },
         ],
       },
+      {
+        /*
+         * Tema 3. Por ahora solo su pieza 1 de Aprender, «Vender no es
+         * cobrar» (Gen, Xeno y Levi). Material teórico: cero FP, no entra al
+         * catálogo. El nombre del tema es provisional hasta que llegue la
+         * ficha del capítulo.
+         */
+        id: "ingresos-gastos-y-caja",
+        title: "Ingresos, gastos y caja",
+        actividades: [
+          { id: "t3-a1-vender-no-es-cobrar", nombre: "Vender no es cobrar", clasificacion: { tipo: APRENDER } },
+        ],
+      },
     ],
   },
   "pensamiento-estrategico": {

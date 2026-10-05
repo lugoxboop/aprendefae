@@ -58,6 +58,7 @@ export const VISTAS = new Set([
   "fuerzas-porter",
   "introduccion-contabilidad",
   "cuentas-debe-haber",
+  "ingresos-gastos-y-caja",
   /* Transversales: no son un tema, pero se entra igual desde el índice. */
   "repaso-diario",
   /*
