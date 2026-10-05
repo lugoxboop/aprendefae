@@ -36,6 +36,7 @@ const PoliticaFiscalView = lazy(() => import("./components/PoliticaFiscalView.js
 const PoliticaMonetariaView = lazy(() => import("./components/PoliticaMonetariaView.jsx"));
 const IntroContabilidadView = lazy(() => import("./components/IntroContabilidadView.jsx"));
 const CuentasDebeHaberView = lazy(() => import("./components/CuentasDebeHaberView.jsx"));
+const ContabilidadTema3View = lazy(() => import("./components/ContabilidadTema3View.jsx"));
 const RepasoView = lazy(() => import("./components/repaso/RepasoView.jsx"));
 const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"));
 
@@ -85,6 +86,7 @@ const VISTAS_CON_TITULO = new Set([
   "pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter",
   "introduccion-contabilidad",
   "cuentas-debe-haber",
+  "ingresos-gastos-y-caja",
   "repaso-diario",
 ]);
 
@@ -222,6 +224,15 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <CuentasDebeHaberView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
+      </Suspense>
+    );
+  }
+
+  /* El Tema 3 de Contabilidad: por ahora, su primera pieza de Aprender. */
+  if (view === "ingresos-gastos-y-caja") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <ContabilidadTema3View modo={modoTema} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }
