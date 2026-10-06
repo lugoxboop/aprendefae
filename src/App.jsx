@@ -232,7 +232,7 @@ export default function App() {
   if (view === "ingresos-gastos-y-caja") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <ContabilidadTema3View modo={modoTema} onBack={() => setView("contabilidad")} />
+        <ContabilidadTema3View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }

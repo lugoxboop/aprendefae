@@ -44,6 +44,7 @@ import { transaccionDe as transaccionDeA4 } from "../contabilidad/debitaOAcredit
 import { cuentaDeItemDocente } from "../contabilidad/saldoDeLaCuenta.js";
 import { textoDeItem as textoDeItemA6 } from "../contabilidad/armaElAsiento.js";
 import { textoDeItem as textoDeItemA7 } from "../contabilidad/asientoCompuesto.js";
+import { hechoDeItem as hechoDeAct1T3 } from "../contabilidad/ingresoOCobro.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -533,6 +534,12 @@ Object.assign(REGLAS, {
   "t1-la-ecuacion-en-movimiento": (id) => hechoDeItem(id),
   "t1-en-cual-estado-aparece": (id) => conceptoDeItem(id),
   "t1-la-articulacion": (id) => flechaDeItem(id),
+
+  /*
+   * Tema 3 · act. 1. El ítem es el hecho, con su empresa delante: dos hechos
+   * de San Calixto se distinguen solo por la fecha y el cliente.
+   */
+  "t3-ingreso-o-cobro": (id) => hechoDeAct1T3(id),
 
   "cu-arma-el-asiento": (id) => textoDeItemA6(id),
 

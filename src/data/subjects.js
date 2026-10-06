@@ -591,6 +591,8 @@ export const SUBJECTS = {
         title: "Ingresos, gastos y ajustes",
         actividades: [
           { id: "t3-a1-vender-no-es-cobrar", nombre: "Vender no es cobrar", clasificacion: { tipo: APRENDER } },
+          /* Actividad 1 de Hacer, después de la pieza 1 (Levi). */
+          { id: "t3-ingreso-o-cobro", nombre: "¿Ingreso o cobro?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
         ],
       },
     ],
