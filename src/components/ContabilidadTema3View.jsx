@@ -19,6 +19,9 @@ import IngresoOCobro from "./mecanicas/libros/tema3/IngresoOCobro.jsx";
 import { ACT1_T3 } from "../data/contabilidadTema3Act1.js";
 import CuandoSeCausa from "./mecanicas/libros/tema3/CuandoSeCausa.jsx";
 import { ACT2_T3 } from "../data/contabilidadTema3Act2.js";
+import { ArmaElAjusteAcumulado, ArmaElAjusteDiferido } from "./mecanicas/libros/tema3/ArmaElAjuste.jsx";
+import { ACT4_T3 } from "../data/contabilidadTema3Act4.js";
+import { ACT5_T3 } from "../data/contabilidadTema3Act5.js";
 import QueLeToca from "./mecanicas/libros/tema3/QueLeToca.jsx";
 import { ACT6_T3 } from "../data/contabilidadTema3Act6.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
@@ -56,6 +59,8 @@ const PUBLICADAS = PIEZAS.length;
 export const JUEGOS = [
   { id: ACT1_T3.id, Mecanica: IngresoOCobro, titulo: ACT1_T3.nombre },
   { id: ACT2_T3.id, Mecanica: CuandoSeCausa, titulo: ACT2_T3.nombre },
+  { id: ACT4_T3.id, Mecanica: ArmaElAjusteAcumulado, titulo: ACT4_T3.nombre },
+  { id: ACT5_T3.id, Mecanica: ArmaElAjusteDiferido, titulo: ACT5_T3.nombre },
   { id: ACT6_T3.id, Mecanica: QueLeToca, titulo: ACT6_T3.nombre },
 ];
 

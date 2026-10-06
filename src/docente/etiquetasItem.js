@@ -46,6 +46,7 @@ import { textoDeItem as textoDeItemA6 } from "../contabilidad/armaElAsiento.js";
 import { textoDeItem as textoDeItemA7 } from "../contabilidad/asientoCompuesto.js";
 import { hechoDeItem as hechoDeAct1T3 } from "../contabilidad/ingresoOCobro.js";
 import { hechoDeItem as hechoDeAct2T3 } from "../contabilidad/cuandoSeCausa.js";
+import { hechoDeItemAct4 as hechoDeAct4T3, hechoDeItemAct5 as hechoDeAct5T3 } from "../contabilidad/armaElAjuste.js";
 import { hechoDeItem as hechoDeAct6T3 } from "../contabilidad/queLeToca.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
@@ -543,6 +544,8 @@ Object.assign(REGLAS, {
    */
   "t3-ingreso-o-cobro": (id) => hechoDeAct1T3(id),
   "t3-cuando-se-causa": (id) => hechoDeAct2T3(id),
+  "t3-ajuste-acumulado": (id) => hechoDeAct4T3(id),
+  "t3-ajuste-diferido": (id) => hechoDeAct5T3(id),
   "t3-que-le-toca": (id) => hechoDeAct6T3(id),
 
   "cu-arma-el-asiento": (id) => textoDeItemA6(id),
