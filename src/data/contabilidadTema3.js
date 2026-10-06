@@ -127,17 +127,15 @@ export const CIERRE = "Las dos líneas no van pegadas. Por eso contar la plata d
 export const ENLACE_TEMA_1 = "En el Tema 1 viste que todo empieza con un hecho. Aquí ves que el hecho y la plata pueden ir en fechas distintas.";
 
 /*
- * Textos alternativos, uno por paso, en el orden de Levi. Los del paso de la
- * factura, la máquina y el cierre son los de Gen; los del paso 1, el aporte y
- * el servicio los redactó Xeno con las frases de Gen (pendientes de que Gen
- * los valide). La tabla de cinco de Levi no llegó en el paquete.
+ * Textos alternativos, uno por paso, en el orden de Levi y textuales de su
+ * tabla. El del paso 6 es el texto del cierre de Gen que Xeno pidió usar.
  */
 export const ALTERNATIVOS = [
   "Dos líneas. Arriba, ingresos y gastos. Abajo, la caja.",
-  "Ejemplo: los socios ponen 15.000 en plata y un equipo de 5.000. La línea de caja sube 15.000 y la de ingresos y gastos queda quieta.",
+  "Ejemplo: los socios ponen $15.000 en plata y un equipo de $5.000. La línea de caja sube $15.000 y la de ingresos y gastos queda quieta.",
   "Ejemplo: San Calixto presta un servicio y le pagan el mismo día. Las dos líneas se mueven.",
-  "Ejemplo: San Calixto manda una factura de 4.000 a JCC. La línea de ingresos y gastos se mueve y la de caja queda quieta.",
-  "Ejemplo: San Calixto usó una máquina alquilada cinco días sin pagarla. La línea de ingresos y gastos se mueve y la de caja queda quieta.",
+  "Ejemplo: San Calixto manda una factura de $4.000 a JCC. La línea de arriba se mueve y la de abajo queda quieta.",
+  "Ejemplo: San Calixto usa una máquina alquilada cinco días y aún no la paga. La línea de arriba marca un gasto de $2.500 y la caja queda quieta.",
   "Dos líneas. Arriba, ingresos y gastos. Abajo, la caja. No siempre se mueven juntas.",
 ];
 
