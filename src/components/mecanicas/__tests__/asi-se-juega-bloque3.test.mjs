@@ -135,7 +135,7 @@ test("★★ los pasos de Gen, palabra por palabra", () => {
   const pasos = Object.fromEntries(IDS.map((id) => [id, ASI_TODAS[id].pasos]));
   assert.deepEqual(pasos[T1_6.id], ["Lee la ficha de arriba.", "Toca el informe donde va esa ficha.", "Toca la parte y confirma con Colocar la ficha."]);
   assert.deepEqual(pasos["cu-izquierda-o-derecha"], ["Lee si esa cuenta sube o baja.", "Arrastra la ficha al debe o al haber.", "El ▲ marca el lado por donde esa cuenta crece."]);
-  assert.deepEqual(pasos["cu-de-que-familia"], ["Lee el nombre de la cuenta.", "Pregúntate: ¿la empresa la tiene, la debe o es de los dueños?", "Arrastra la cuenta a esa familia."]);
+  assert.deepEqual(pasos["cu-de-que-familia"], ["Lee el nombre de la cuenta.", "Pregúntate: ¿la empresa la tiene, la debe o es lo que la empresa les reconoce a los socios?", "Arrastra la cuenta a esa familia."]);
   assert.deepEqual(pasos["cu-cuadro-dinamicas"], ["Piensa si esa familia crece por el debe o por el haber.", "Toca + o − y queda puesto en la casilla del debe.", "La casilla del haber se llena sola, con el signo contrario."]);
   assert.deepEqual(pasos["cu-debita-o-acredita"], ["Lee la transacción completa.", "Mira por qué cuenta te preguntan.", "Arrastra la ficha: al debe es debitar, al haber es acreditar."]);
   assert.deepEqual(pasos["cu-saldo-de-la-cuenta"], ["Suma cada columna de la cuenta por separado.", "Escribe el saldo: la diferencia entre las dos sumas.", "Toca el lado de la columna que sumó más."]);

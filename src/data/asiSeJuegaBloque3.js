@@ -116,7 +116,7 @@ const ASI_FAMILIA = {
   consigna: CONSIGNA_TEMA2["cu-de-que-familia"],
   pasos: [
     "Lee el nombre de la cuenta.",
-    "Pregúntate: ¿la empresa la tiene, la debe o es de los dueños?",
+    "Pregúntate: ¿la empresa la tiene, la debe o es lo que la empresa les reconoce a los socios?",
     "Arrastra la cuenta a esa familia.",
   ],
   alt: "la ficha «Maquinaria · $3.000.000» se arrastra a la sección «ACTIVO» del estado de situación financiera de la panadería.",
