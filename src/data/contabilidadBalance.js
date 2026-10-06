@@ -81,17 +81,17 @@ export const BANCOS_DE_BALANCE = [
  */
 export const RAZON_POR_CUENTA = {
   /* ── De la ficha nueva, textuales ── */
-  "Caja": "✅ Activo. El efectivo es lo más básico que una empresa puede tener.",
-  "Bancos": "✅ Activo. Es dinero de la empresa, solo que depositado — mismo bolsillo, otro lugar.",
-  "Terrenos": "✅ Activo. Un bien que la empresa posee, aunque no se pueda gastar.",
-  "Cuentas por pagar": "✅ Pasivo. El «por pagar» lo delata: es una deuda pendiente con un tercero.",
-  "Hipoteca por pagar": "✅ Pasivo. Una deuda respaldada con un inmueble.",
-  "Aportes sociales": "✅ Patrimonio. Es lo que pusieron los dueños, no una deuda con alguien de afuera.",
-  "Acciones": "✅ Patrimonio. Representa la participación de los dueños en la empresa.",
+  "Caja": "✅ Activo. La plata en caja es lo más básico que una empresa puede tener.",
+  "Bancos": "✅ Activo. Es plata de la empresa, solo que guardada en el banco.",
+  "Terrenos": "✅ Activo. El terreno es de la empresa, aunque no se pueda gastar.",
+  "Cuentas por pagar": "✅ Pasivo. Es plata que la empresa le queda debiendo a alguien de afuera.",
+  "Hipoteca por pagar": "✅ Pasivo. Es una deuda respaldada con algo que la empresa tiene.",
+  "Aportes sociales": "✅ Patrimonio. Es lo que pusieron los socios, no una deuda con alguien de afuera.",
+  "Acciones": "✅ Patrimonio. Representa lo que la empresa les reconoce a los accionistas.",
 
   /* ── Del banco anterior de esta actividad, también de Gen ── */
-  "Obligaciones financieras": "✅ Pasivo. Es algo que la empresa debe a un banco.",
-  "Letras por pagar": "✅ Pasivo. Una deuda respaldada con un documento firmado.",
+  "Obligaciones financieras": "✅ Pasivo. Es lo que la empresa le debe a un banco.",
+  "Letras por pagar": "✅ Pasivo. Es una deuda con un papel firmado de por medio.",
 
   /*
    * ── [ESCRITO POR CLAUDE, NO POR LA FICHA — PENDIENTE DE REVISIÓN] ──
@@ -102,12 +102,12 @@ export const RAZON_POR_CUENTA = {
    * empresa posee»— y cada una añade lo que la distingue. Ninguna afirma nada
    * que el capítulo no diga, pero la redacción es mía.
    */
-  "Equipo de computación": "✅ Activo. La empresa lo tiene, aunque no sea dinero.",
-  "Maquinaria": "✅ Activo. Un bien que la empresa usa para producir, y que sigue siendo suyo.",
-  "Local comercial": "✅ Activo. Un inmueble de la empresa, igual que el terreno donde se levanta.",
-  "Flota y equipo de transporte": "✅ Activo. Los vehículos son de la empresa, y se quedan con ella.",
-  "Muebles y enseres": "✅ Activo. Lo que amobla el negocio también es algo que la empresa tiene.",
-  "Construcciones y edificaciones": "✅ Activo. Lo construido sobre el terreno es un bien aparte del terreno.",
+  "Equipo de computación": "✅ Activo. Es una cosa que la empresa tiene y le dura años.",
+  "Maquinaria": "✅ Activo. Es una cosa que la empresa tiene, aunque no se pueda gastar.",
+  "Local comercial": "✅ Activo. El local es de la empresa y le dura años.",
+  "Flota y equipo de transporte": "✅ Activo. Los vehículos son de la empresa y le duran años.",
+  "Muebles y enseres": "✅ Activo. Los muebles son de la empresa y le duran años.",
+  "Construcciones y edificaciones": "✅ Activo. Lo construido es de la empresa y le dura años.",
 };
 
 /*
@@ -123,7 +123,7 @@ export const RAZON_POR_CUENTA = {
  */
 export const ERROR_POR_CRUCE = {
   [`${ACTIVO}>${PASIVO}`]: {
-    texto: "❌ Pregúntate una sola cosa: ¿la empresa tiene esto o lo debe? Aquí lo tiene. Lo que tiene va al activo.",
+    texto: "❌ Pregúntate una sola cosa: ¿la empresa lo tiene, o lo debe? Aquí lo tiene.",
     resaltar: [{ seccion: ACTIVO, rotulo: "lo que tiene" }],
   },
   [`${ACTIVO}>${PATRIMONIO}`]: {
@@ -135,17 +135,17 @@ export const ERROR_POR_CRUCE = {
     resaltar: [{ seccion: PASIVO, rotulo: "lo que debe" }],
   },
   [`${PASIVO}>${PATRIMONIO}`]: {
-    texto: "❌ Cerca: las dos están del lado derecho del balance. Pero el pasivo se le debe a terceros —un banco, un proveedor— y el patrimonio a los dueños.",
+    texto: "❌ Casi. Las dos van del mismo lado del informe. Pero el pasivo se le debe a alguien de afuera, y el patrimonio es lo que la empresa les reconoce a los socios.",
     resaltar: [{ seccion: PASIVO, rotulo: "a terceros" }, { seccion: PATRIMONIO, rotulo: "a los dueños" }],
   },
   [`${PATRIMONIO}>${ACTIVO}`]: {
-    texto: "❌ El aporte de los dueños no es algo que la empresa tenga: es de dónde salió lo que tiene. El dinero que entró sí es activo; el aporte que lo explica es patrimonio.",
+    texto: "❌ El aporte de los socios no es una cosa que la empresa tenga. Es de dónde salió lo que tiene.",
     /* Si Caja ya está escrita, se resalta junto a la ficha: ahí se ve la pareja. */
     resaltar: [{ seccion: PATRIMONIO, rotulo: "de dónde salió" }],
     conectarCon: "Caja",
   },
   [`${PATRIMONIO}>${PASIVO}`]: {
-    texto: "❌ Cerca, pero esto no es una deuda con nadie de afuera: es lo que pusieron los dueños. Si aparece como pasivo, el balance está diciendo que la empresa le debe a su propio dueño.",
+    texto: "❌ Casi. Las dos van del mismo lado del informe. Pero el pasivo se le debe a alguien de afuera, y el patrimonio es lo que la empresa les reconoce a los socios.",
     resaltar: [{ seccion: PASIVO, rotulo: "a terceros" }, { seccion: PATRIMONIO, rotulo: "a los dueños" }],
   },
 };

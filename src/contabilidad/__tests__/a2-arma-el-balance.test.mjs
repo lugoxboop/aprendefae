@@ -147,7 +147,14 @@ test("las dieciocho cuentas tienen su razón propia, y ninguna es un «✅ Activ
 
 /* ═══════════════ LAS SEIS CONFUSIONES ═══════════════ */
 
-test("★ los SEIS cruces entre tres secciones tienen su devolución propia", () => {
+/*
+ * Pasivo y patrimonio confundidos comparten texto en las dos direcciones: es
+ * el error B de Gen (lote 1 reescrito), que habla de las dos secciones a la vez.
+ * Los otros cuatro cruces tienen el suyo.
+ */
+const MISMO_TEXTO = new Set([`${PASIVO}>${PATRIMONIO}`, `${PATRIMONIO}>${PASIVO}`]);
+
+test("★ los SEIS cruces entre tres secciones tienen su devolución, y solo pasivo↔patrimonio la comparte", () => {
   const sect = [ACTIVO, PASIVO, PATRIMONIO];
   const vistos = new Set();
   for (const de of sect) {
@@ -157,12 +164,13 @@ test("★ los SEIS cruces entre tres secciones tienen su devolución propia", ()
       assert.ok(!r.ok);
       assert.ok(r.texto?.startsWith("❌"), `${de}>${a}: no se ve como error`);
       assert.ok(r.texto.length > 40, `${de}>${a}: devolución demasiado corta`);
-      assert.ok(!vistos.has(r.texto), `${de}>${a}: repite la devolución de otro cruce`);
+      if (!MISMO_TEXTO.has(`${de}>${a}`)) assert.ok(!vistos.has(r.texto), `${de}>${a}: repite la devolución de otro cruce`);
       vistos.add(r.texto);
       assert.equal(r.cruce, `${de}>${a}`);
     }
   }
-  assert.equal(vistos.size, 6, "los seis cruces no dan seis textos distintos");
+  assert.equal(vistos.size, 5, "los seis cruces no dan cinco textos distintos");
+  assert.equal(ERROR_POR_CRUCE[`${PASIVO}>${PATRIMONIO}`].texto, ERROR_POR_CRUCE[`${PATRIMONIO}>${PASIVO}`].texto);
   assert.equal(Object.keys(ERROR_POR_CRUCE).length, 6);
 });
 

@@ -41,7 +41,7 @@ export const ACTIVIDADES = [
 
   { id: "cu-cuadro-dinamicas", nombre: "El Cuadro de Dinámicas", bloque: "APLICACIÓN",
     dificultad: "medio", fpBase: 25, subtema: "Reglas de registro por familia" },
-  { id: "cu-debita-o-acredita", nombre: "¿Se Debita o se Acredita?", bloque: "APLICACIÓN",
+  { id: "cu-debita-o-acredita", nombre: "¿Debe o Haber?", bloque: "APLICACIÓN",
     dificultad: "medio", fpBase: 25, subtema: "Reglas de registro aplicadas" },
   { id: "cu-saldo-de-la-cuenta", nombre: "El Saldo de la Cuenta", bloque: "ANÁLISIS",
     dificultad: "dificil", fpBase: 50, subtema: "Cálculo del saldo" },
@@ -106,29 +106,29 @@ export const IZQUIERDA_O_DERECHA = {
    */
   items: [
     { id: "cu1-01", enunciado: "Caja aumenta", cuenta: "Caja", categoria: DEBE,
-      acierto: "✅ Debe. Mira el ▲: Caja es un activo y crece por la izquierda." },
+      acierto: "✅ Debe. Caja es un activo, y los activos crecen por la izquierda. Mira el ▲." },
     { id: "cu1-02", enunciado: "Caja disminuye", cuenta: "Caja", categoria: HABER,
-      acierto: "✅ Haber. Si crece por la izquierda, decrece por la derecha. Siempre el lado contrario al ▲." },
+      acierto: "✅ Haber. Si crece por la izquierda, baja por la derecha. Siempre el lado contrario al ▲." },
     { id: "cu1-11", enunciado: "Bancos aumenta", cuenta: "Bancos", categoria: DEBE,
-      acierto: "✅ Debe. Bancos es un activo igual que Caja, aunque el dinero esté depositado." },
+      acierto: "✅ Debe. Bancos es un activo igual que Caja. La plata está en el banco, pero es de la empresa." },
     { id: "cu1-08", enunciado: "Bancos disminuye", cuenta: "Bancos", categoria: HABER,
-      acierto: "✅ Haber. Sale dinero de la cuenta: el activo se reduce." },
+      acierto: "✅ Haber. Sale plata de la cuenta, así que ese activo baja." },
     { id: "cu1-07", enunciado: "Equipo de computación aumenta", cuenta: "Equipo de computación", categoria: DEBE,
-      acierto: "✅ Debe. Es un activo aunque no sea dinero — la empresa lo tiene." },
+      acierto: "✅ Debe. Es un activo aunque no sea plata: la empresa lo tiene." },
     { id: "cu1-12", enunciado: "Maquinaria aumenta", cuenta: "Maquinaria", categoria: DEBE,
-      acierto: "✅ Debe. Todos los activos comparten el mismo ▲, sean dinero o no." },
+      acierto: "✅ Debe. Todos los activos tienen el ▲ del mismo lado, sean plata o cosas." },
     { id: "cu1-05", enunciado: "Obligaciones financieras aumenta", cuenta: "Obligaciones financieras", categoria: HABER,
-      acierto: "✅ Haber. Mira el ▲: los pasivos crecen por la derecha, al revés que los activos." },
+      acierto: "✅ Haber. Los pasivos crecen por la derecha, al revés que los activos. Mira el ▲." },
     { id: "cu1-06", enunciado: "Obligaciones financieras disminuye", cuenta: "Obligaciones financieras", categoria: DEBE,
-      acierto: "✅ Debe. Pagar reduce la deuda, y reducir un pasivo va por la izquierda." },
+      acierto: "✅ Debe. Pagar baja la deuda, y bajar un pasivo va por la izquierda." },
     { id: "cu1-09", enunciado: "Cuentas por pagar aumenta", cuenta: "Cuentas por pagar", categoria: HABER,
-      acierto: "✅ Haber. Deber más es aumentar un pasivo." },
+      acierto: "✅ Haber. Deber más es subir un pasivo, y los pasivos suben por la derecha." },
     { id: "cu1-10", enunciado: "Cuentas por pagar disminuye", cuenta: "Cuentas por pagar", categoria: DEBE,
-      acierto: "✅ Debe. Abonar a la deuda la reduce." },
+      acierto: "✅ Debe. Abonar a la deuda la baja, y bajar un pasivo va por la izquierda." },
     { id: "cu1-03", enunciado: "Aportes sociales aumenta", cuenta: "Aportes sociales", categoria: HABER,
-      acierto: "✅ Haber. El patrimonio lleva el ▲ del mismo lado que el pasivo: los dos viven a la derecha de la ecuación." },
+      acierto: "✅ Haber. El patrimonio tiene el ▲ del mismo lado que el pasivo. Los dos están a la derecha de la ecuación." },
     { id: "cu1-04", enunciado: "Aportes sociales disminuye", cuenta: "Aportes sociales", categoria: DEBE,
-      acierto: "✅ Debe. Devolver un aporte reduce el patrimonio." },
+      acierto: "✅ Debe. Devolverle el aporte a un socio baja el patrimonio." },
   ],
 
   /*
@@ -149,8 +149,8 @@ export const IZQUIERDA_O_DERECHA = {
    * es de qué familia era la cuenta que acaba de fallar, y eso es justo lo que
    * hay que explicarle.
    */
-  errorA: "❌ Mira el ▲ que acaba de aparecer: está a la izquierda. Los activos crecen por el debe y se reducen por el haber. No es 'lo que suba va a la izquierda' — es que esta familia crece por ahí.",
-  errorB: "❌ Mira el ▲: está a la derecha. Pasivos y patrimonio crecen por el haber. Es el espejo exacto de los activos, y por eso un mismo débito los mueve al revés.",
+  errorA: "❌ Mira el ▲ que acaba de salir: está a la izquierda. Los activos crecen por el debe y bajan por el haber. No es que todo lo que sube vaya a la izquierda: es que esta familia crece por ahí.",
+  errorB: "❌ Mira el ▲: está a la derecha. Los pasivos y el patrimonio crecen por el haber. Son el espejo de los activos, y por eso lo mismo los mueve al revés.",
 
   /*
    * ═══════════ EL TERCER MENSAJE NO ES DE UN ÍTEM: ES DE LA SESIÓN ═══════════
@@ -162,7 +162,7 @@ export const IZQUIERDA_O_DERECHA = {
    * es 4+4: con un sorteo libre, el mismo estudiante podría sacar 75 % y el
    * resultado mentiría.
    */
-  errorC: "Fíjate en tu patrón: acertaste los cuatro activos y fallaste los cuatro pasivos. Eso no es mala suerte — es la señal de que estás leyendo 'debe' como 'aumenta'. Funciona con los activos y falla con todo lo demás. Vuelve a los ▲: cada familia tiene el suyo, y ahí está la diferencia.",
+  errorC: "Mira tu patrón: te salieron los cuatro activos y no los cuatro pasivos. Eso no es mala suerte. Es que estás leyendo el debe como si fuera siempre subir.",
 };
 
 /* ═══════════════════════ CU-2 · ¿De qué familia es? ═══════════════════════ */

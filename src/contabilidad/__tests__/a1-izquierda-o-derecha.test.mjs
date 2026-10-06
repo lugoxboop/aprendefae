@@ -364,7 +364,7 @@ test("★★ con la firma exacta sale el aviso de patrón en pantalla, y no dice
     const aviso = caja.querySelector("[data-mensaje-patron]");
     assert.ok(aviso, "con la firma exacta no salió el aviso de patrón");
     assert.equal(aviso.textContent, B.errorC);
-    assert.ok(aviso.textContent.includes("estás leyendo 'debe' como 'aumenta'"), aviso.textContent);
+    assert.ok(aviso.textContent.includes("estás leyendo el debe como si fuera siempre subir"), aviso.textContent);
     assert.doesNotMatch(aviso.textContent, /d[ée]bito|cr[ée]dito/iu);
   } finally { desmontar(); }
 });

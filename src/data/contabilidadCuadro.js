@@ -60,12 +60,12 @@ export const SUBTEMA = "Reglas de registro por familia";
  * transcripción — queda anotado aquí porque el profesor lo pidió anotado.
  */
 export const ACIERTO_POR_FAMILIA = {
-  [ACTIVO]: "✅ Los activos crecen por el debe. Es la fila base: de aquí salen todas las demás.",
-  [PASIVO]: "✅ Espejo exacto de los activos. Viven al otro lado de la ecuación, y crecen por el otro lado de la cuenta.",
+  [ACTIVO]: "✅ Los activos crecen por el debe. Es la fila base: de aquí salen las demás.",
+  [PASIVO]: "✅ Es el espejo de los activos. Están al otro lado de la ecuación y crecen por el otro lado de la cuenta.",
   [PATRIMONIO]: "✅ Igual que el pasivo. Los dos están a la derecha de la ecuación.",
-  [INGRESO]: "✅ Y esta es la fila que tumba a más gente. Los ingresos crecen por el haber, igual que el patrimonio — porque un ingreso aumenta el patrimonio.",
-  [GASTO]: "✅ Los gastos van con los activos, crecen por el debe. La razón: un gasto disminuye el patrimonio, y lo que reduce el patrimonio va por el debe.",
-  [COSTO]: "✅ Los costos se comportan igual que los gastos. Misma lógica, misma fila.",
+  [INGRESO]: "✅ Esta es la fila que más cuesta. Los ingresos crecen por el haber, igual que el patrimonio, porque un ingreso sube el patrimonio.",
+  [GASTO]: "✅ Los gastos crecen por el debe, igual que los activos, pero por otra razón: un gasto baja el patrimonio, y lo que baja el patrimonio va por el debe.",
+  [COSTO]: "✅ Los costos se portan igual que los gastos. Misma razón, mismo lado.",
 };
 
 /*
@@ -86,18 +86,18 @@ export const PATRON_POR_FAMILIA = {
 
 export const ERRORES = {
   A: {
-    texto: "❌ Aquí es donde casi todos se caen, y por una razón que tiene sentido: vender se siente como que algo entra. Y sí entra — pero lo que entra es la caja, y esa va al debe. El ingreso que lo explica va al haber. Son dos cuentas distintas del mismo asiento.",
+    texto: "❌ Aquí se cae casi todo el mundo, y con razón: vender se siente como que algo entra. Y sí entra, pero lo que entra es la caja, y esa sí va al debe.",
     escena: "contrapartida",
   },
   B: {
-    texto: "❌ Los gastos crecen por el debe, igual que los activos — pero por una razón distinta. Un gasto disminuye el patrimonio, y el patrimonio disminuye por el debe. No es que el gasto sea un activo: es que reducir el patrimonio y aumentar un activo se registran del mismo lado.",
+    texto: "❌ Los gastos crecen por el debe igual que los activos, pero por otra razón: un gasto baja el patrimonio, y el patrimonio baja por el debe.",
     escena: "ecuacion",
     /* El término que se resalta es fijo: la explicación entera habla de él. */
     resaltar: PATRIMONIO,
     flechaAbajo: true,
   },
   C: {
-    texto: "❌ Pasivos y Patrimonio crecen por el haber. Los dos viven a la derecha de la ecuación, y crecen por el lado derecho de la cuenta. Es la misma posición, repetida.",
+    texto: "❌ Los pasivos y el patrimonio crecen por el haber. Los dos están a la derecha de la ecuación y crecen por la derecha de la cuenta.",
     escena: "ecuacion",
     /* Aquí el término resaltado es el de la fila que se falló, no uno fijo. */
     resaltar: null,

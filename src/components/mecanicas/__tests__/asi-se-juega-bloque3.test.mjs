@@ -204,7 +204,7 @@ const ACIERTO = {
   [T1_6.id]: "Va en el primer informe, en lo que tiene. El horno es de la panadería y le dura años.",
   "cu-izquierda-o-derecha": "Debe. Muebles y enseres es un activo, y los activos crecen por la izquierda.",
   "cu-de-que-familia": "Activo. La maquinaria es algo que la panadería tiene.",
-  "cu-cuadro-dinamicas": "Los activos crecen por el debe. Es la fila base: de aquí salen todas las demás.",
+  "cu-cuadro-dinamicas": "Los activos crecen por el debe. Es la fila base: de aquí salen las demás.",
   "cu-debita-o-acredita": "Se acredita. La deuda con el proveedor nace, y los pasivos crecen por el haber.",
   "cu-saldo-de-la-cuenta": "$700.000. Suma del debe $1.000.000 menos suma del haber $300.000.",
   "cu-arma-el-asiento": "Asiento correcto",
@@ -401,8 +401,8 @@ test("★★★ ningún texto de los datos del Tema 2 dice «débito» ni «cré
       }
     }
   }
-  /* Y el título de ¿Se Debita? y su paso 3 siguen siendo los de Levi. */
-  assert.equal(ASI_TODAS["cu-debita-o-acredita"].titulo, "¿Se Debita o se Acredita?");
+  /* Y el título de ¿Debe o Haber? y su paso 3 siguen siendo los de Levi. */
+  assert.equal(ASI_TODAS["cu-debita-o-acredita"].titulo, "¿Debe o Haber?");
   assert.equal(ASI_TODAS["cu-debita-o-acredita"].pasos[2], "Arrastra la ficha: al debe es debitar, al haber es acreditar.");
 });
 

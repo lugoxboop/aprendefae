@@ -9,7 +9,7 @@ import t18 from "./conta-t1-8-donde-se-rompio.svg?raw";
 import t21 from "./conta-t2-1-izquierda-o-derecha.svg?raw";
 import t22 from "./conta-t2-2-de-que-familia-es.svg?raw";
 import t23 from "./conta-t2-3-el-cuadro-de-dinamicas.svg?raw";
-import t24 from "./conta-t2-4-se-debita-o-se-acredita.svg?raw";
+import t24 from "./conta-t2-4-debe-o-haber.svg?raw";
 import t25 from "./conta-t2-5-el-saldo-de-la-cuenta.svg?raw";
 import t26 from "./conta-t2-6-arma-el-asiento.svg?raw";
 import t27 from "./conta-t2-7-el-asiento-compuesto.svg?raw";
