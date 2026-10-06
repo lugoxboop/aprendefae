@@ -29,7 +29,13 @@ const CSS = `
 @media (prefers-reduced-motion: reduce) { .fae-p3-asiento * { animation: none !important; } }
 `;
 
-function Mitad({ lado, cuenta, monto, compacto, anima, retraso, reducido, lineas = 2 }) {
+/*
+ * `partidas` y `montoAbajo` existen para «Cerrar el periodo»: el segundo
+ * asiento lleva cinco gastos en el haber, cada uno con su monto, y el debe
+ * deja su monto abajo para igualar el alto. Sin ellos, la mitad es la de
+ * siempre.
+ */
+function Mitad({ lado, cuenta, monto, compacto, anima, retraso, reducido, lineas = 2, partidas = null, montoAbajo = false }) {
   /* El monto cuenta desde $0 mientras su mitad se revela; el valor final queda siempre escrito. */
   const [objetivo, setObjetivo] = useState(anima ? 0 : monto);
   useEffect(() => {
@@ -48,6 +54,16 @@ function Mitad({ lado, cuenta, monto, compacto, anima, retraso, reducido, lineas
       <span data-lado style={{ fontFamily: SORA, fontSize: "13px", fontWeight: 700, color: TONO_ROTULO[lado] }}>
         {lado === DEBE ? "Debe" : "Haber"}
       </span>
+      {partidas ? (
+        <ul data-partidas style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "6px" }}>
+          {partidas.map((p) => (
+            <li key={p.cuenta} data-partida={p.cuenta} style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
+              <span data-cuenta style={{ fontFamily: INTER, fontSize: "13px", fontWeight: 600, lineHeight: 1.3, color: COLOR.blanco }}>{p.cuenta}</span>
+              <span data-monto-partida style={{ fontFamily: SORA, fontSize: "14px", fontWeight: 700, color: COLOR.blanco, ...CIFRAS }}>{pesos(p.monto)}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (<>
       <span data-cuenta style={{
         fontFamily: INTER, fontSize: compacto ? "13px" : "14px", fontWeight: 600, lineHeight: 1.3, color: COLOR.blanco,
         display: "-webkit-box", WebkitLineClamp: lineas, WebkitBoxOrient: "vertical", overflow: "hidden",
@@ -57,9 +73,11 @@ function Mitad({ lado, cuenta, monto, compacto, anima, retraso, reducido, lineas
       </span>
       <span data-monto-asiento data-final={pesos(monto)} style={{
         fontFamily: SORA, fontSize: compacto ? "18px" : "22px", fontWeight: 700, color: COLOR.blanco, ...CIFRAS,
+        ...(montoAbajo ? { marginTop: "auto" } : {}),
       }}>
         {pesos(v)}
       </span>
+      </>)}
     </div>
   );
 }
