@@ -33,7 +33,7 @@ import { ACTIVO, PASIVO, PATRIMONIO, CALEJA, LAVADO_DE_AUTOS } from "./contabili
 export const SECCIONES = [
   { id: ACTIVO, nombre: "Activo", pie: "lo que la empresa tiene" },
   { id: PASIVO, nombre: "Pasivo", pie: "lo que le debe a terceros" },
-  { id: PATRIMONIO, nombre: "Patrimonio", pie: "lo que es de los dueños" },
+  { id: PATRIMONIO, nombre: "Patrimonio", pie: "lo que la empresa les reconoce a los socios" },
 ];
 
 /*
@@ -87,7 +87,7 @@ export const RAZON_POR_CUENTA = {
   "Cuentas por pagar": "✅ Pasivo. Es plata que la empresa le queda debiendo a alguien de afuera.",
   "Hipoteca por pagar": "✅ Pasivo. Es una deuda respaldada con algo que la empresa tiene.",
   "Aportes sociales": "✅ Patrimonio. Es lo que pusieron los socios, no una deuda con alguien de afuera.",
-  "Acciones": "✅ Patrimonio. Representa lo que la empresa les reconoce a los accionistas.",
+  "Acciones": "✅ Patrimonio. Es lo que la empresa les reconoce a quienes compraron sus acciones.",
 
   /* ── Del banco anterior de esta actividad, también de Gen ── */
   "Obligaciones financieras": "✅ Pasivo. Es lo que la empresa le debe a un banco.",
@@ -127,8 +127,8 @@ export const ERROR_POR_CRUCE = {
     resaltar: [{ seccion: ACTIVO, rotulo: "lo que tiene" }],
   },
   [`${ACTIVO}>${PATRIMONIO}`]: {
-    texto: "❌ El patrimonio no son cosas: es la parte del negocio que pertenece a los dueños. Esto es un bien concreto que la empresa posee, y eso va al activo.",
-    resaltar: [{ seccion: ACTIVO, rotulo: "bienes" }, { seccion: PATRIMONIO, rotulo: "de los dueños" }],
+    texto: "❌ Esto sí es una cosa que la empresa tiene. El patrimonio no son cosas: es lo que la empresa les reconoce a los socios.",
+    resaltar: [{ seccion: ACTIVO, rotulo: "bienes" }, { seccion: PATRIMONIO, rotulo: "de los socios" }],
   },
   [`${PASIVO}>${ACTIVO}`]: {
     texto: "❌ Al revés: esto la empresa lo debe, no lo tiene. Es una obligación con alguien de afuera.",
@@ -136,7 +136,7 @@ export const ERROR_POR_CRUCE = {
   },
   [`${PASIVO}>${PATRIMONIO}`]: {
     texto: "❌ Casi. Las dos van del mismo lado del informe. Pero el pasivo se le debe a alguien de afuera, y el patrimonio es lo que la empresa les reconoce a los socios.",
-    resaltar: [{ seccion: PASIVO, rotulo: "a terceros" }, { seccion: PATRIMONIO, rotulo: "a los dueños" }],
+    resaltar: [{ seccion: PASIVO, rotulo: "a terceros" }, { seccion: PATRIMONIO, rotulo: "a los socios" }],
   },
   [`${PATRIMONIO}>${ACTIVO}`]: {
     texto: "❌ El aporte de los socios no es una cosa que la empresa tenga. Es de dónde salió lo que tiene.",
@@ -146,7 +146,7 @@ export const ERROR_POR_CRUCE = {
   },
   [`${PATRIMONIO}>${PASIVO}`]: {
     texto: "❌ Casi. Las dos van del mismo lado del informe. Pero el pasivo se le debe a alguien de afuera, y el patrimonio es lo que la empresa les reconoce a los socios.",
-    resaltar: [{ seccion: PASIVO, rotulo: "a terceros" }, { seccion: PATRIMONIO, rotulo: "a los dueños" }],
+    resaltar: [{ seccion: PASIVO, rotulo: "a terceros" }, { seccion: PATRIMONIO, rotulo: "a los socios" }],
   },
 };
 
