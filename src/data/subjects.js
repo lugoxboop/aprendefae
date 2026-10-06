@@ -605,6 +605,8 @@ export const SUBJECTS = {
           { id: "t3-ajuste-diferido", nombre: "Arma el ajuste diferido", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* Actividad 6 de Hacer, después de la pieza «Lo que ya se pagó y no ha pasado» (Levi). Análisis · 50 FP. */
           { id: "t3-que-le-toca", nombre: "¿Qué le toca a este periodo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* «Cerrar el periodo»: la cuarta y última pieza de Aprender, después de «Lo que ya se pagó y no ha pasado» (Levi). */
+          { id: "t3-a5-cerrar-el-periodo", nombre: "Cerrar el periodo", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],

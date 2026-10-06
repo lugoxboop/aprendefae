@@ -265,8 +265,9 @@ test("★★ la capa 3 con animación termina en el valor de su mes", async () =
 test("★★★ va después de la pieza 3, deja libre el lugar de la 2, y el contador cuenta las publicadas", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "ingresos-gastos-y-caja");
   assert.deepEqual(tema.actividades.filter((a) => a.clasificacion.tipo === APRENDER).map((a) => a.id),
-    ["t3-a1-vender-no-es-cobrar", "t3-a3-lo-que-ya-paso", "t3-a4-lo-que-ya-se-pago"]);
-  assert.deepEqual(PIEZAS.map((x) => x.numero), [1, 3, 4]);
+    ["t3-a1-vender-no-es-cobrar", "t3-a3-lo-que-ya-paso", "t3-a4-lo-que-ya-se-pago", "t3-a5-cerrar-el-periodo"]);
+  /* «Cerrar el periodo» se sumó al final (Levi): la pieza 4 sigue siendo la tercera. */
+  assert.deepEqual(PIEZAS.map((x) => x.numero).slice(0, 3), [1, 3, 4]);
   const vista = readFileSync(new URL("../../components/ContabilidadTema3View.jsx", import.meta.url), "utf8");
   assert.match(vista, /PIEZA \{k \+ 1\} DE \{PUBLICADAS\}/);
 });

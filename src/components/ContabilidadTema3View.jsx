@@ -28,6 +28,7 @@ import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZA_VENDER_NO_ES_COBRAR } from "../data/contabilidadTema3.js";
 import { PIEZA_LO_QUE_YA_PASO } from "../data/contabilidadTema3Pieza3.js";
 import { PIEZA_LO_QUE_YA_SE_PAGO } from "../data/contabilidadTema3Pieza4.js";
+import { PIEZA_CERRAR_EL_PERIODO } from "../data/contabilidadTema3Cierre.js";
 import { ESCENAS_TEMA3 } from "./mecanicas/libros/tema3/escenasTema3.jsx";
 
 /*
@@ -43,14 +44,16 @@ import { ESCENAS_TEMA3 } from "./mecanicas/libros/tema3/escenasTema3.jsx";
 const MATERIA = "contabilidad";
 const TEMA = "ingresos-gastos-y-caja";
 /*
- * En el orden del número de pieza, no de la lista: la pieza 2 todavía no
- * existe y su lugar queda libre (Levi). El rótulo «Pieza n de N» cuenta las
- * piezas publicadas: con 1, 3 y 4, dice «de 3».
+ * En el orden del número de pieza (Levi): «Vender no es cobrar», «Lo que ya
+ * pasó…», «Lo que ya se pagó…» y «Cerrar el periodo», la última. El rótulo
+ * «Pieza n de N» sale de la posición y cuenta las publicadas: «de 4».
  */
 export const PIEZAS = [
   { numero: 1, pieza: PIEZA_VENDER_NO_ES_COBRAR },
   { numero: PIEZA_LO_QUE_YA_PASO.numero, pieza: PIEZA_LO_QUE_YA_PASO },
   { numero: PIEZA_LO_QUE_YA_SE_PAGO.numero, pieza: PIEZA_LO_QUE_YA_SE_PAGO },
+  /* «Cerrar el periodo», la última (Levi). */
+  { numero: PIEZA_CERRAR_EL_PERIODO.numero, pieza: PIEZA_CERRAR_EL_PERIODO },
 ].sort((a, b) => a.numero - b.numero);
 /* El contador dice cuántas piezas hay publicadas, no el número más alto (Levi). */
 const PUBLICADAS = PIEZAS.length;
