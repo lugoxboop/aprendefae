@@ -19,6 +19,8 @@ import IngresoOCobro from "./mecanicas/libros/tema3/IngresoOCobro.jsx";
 import { ACT1_T3 } from "../data/contabilidadTema3Act1.js";
 import CuandoSeCausa from "./mecanicas/libros/tema3/CuandoSeCausa.jsx";
 import { ACT2_T3 } from "../data/contabilidadTema3Act2.js";
+import QueLeToca from "./mecanicas/libros/tema3/QueLeToca.jsx";
+import { ACT6_T3 } from "../data/contabilidadTema3Act6.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZA_VENDER_NO_ES_COBRAR } from "../data/contabilidadTema3.js";
 import { PIEZA_LO_QUE_YA_PASO } from "../data/contabilidadTema3Pieza3.js";
@@ -54,6 +56,7 @@ const PUBLICADAS = PIEZAS.length;
 export const JUEGOS = [
   { id: ACT1_T3.id, Mecanica: IngresoOCobro, titulo: ACT1_T3.nombre },
   { id: ACT2_T3.id, Mecanica: CuandoSeCausa, titulo: ACT2_T3.nombre },
+  { id: ACT6_T3.id, Mecanica: QueLeToca, titulo: ACT6_T3.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 1. */

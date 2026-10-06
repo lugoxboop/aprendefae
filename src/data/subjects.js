@@ -599,6 +599,8 @@ export const SUBJECTS = {
           { id: "t3-a4-lo-que-ya-se-pago", nombre: "Lo que ya se pagó y no ha pasado", clasificacion: { tipo: APRENDER } },
           /* Actividad 2 de Hacer, después de la pieza 3 (Levi). */
           { id: "t3-cuando-se-causa", nombre: "¿Cuándo se causa?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* Actividad 6 de Hacer, después de la pieza «Lo que ya se pagó y no ha pasado» (Levi). Análisis · 50 FP. */
+          { id: "t3-que-le-toca", nombre: "¿Qué le toca a este periodo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
     ],

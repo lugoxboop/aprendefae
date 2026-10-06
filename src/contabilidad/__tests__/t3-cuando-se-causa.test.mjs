@@ -261,7 +261,7 @@ test("★★ va después de la pieza 3 en el camino del Tema 3, y tiene regla do
   const ids = tema.actividades.map((a) => a.id);
   assert.ok(ids.indexOf("t3-cuando-se-causa") > ids.indexOf("t3-a3-lo-que-ya-paso"));
   assert.equal(tema.actividades.find((a) => a.id === "t3-cuando-se-causa").clasificacion.tipo, HACER);
-  assert.deepEqual(JUEGOS.map((j) => j.id), ["t3-ingreso-o-cobro", "t3-cuando-se-causa"]);
+  assert.deepEqual(JUEGOS.map((j) => j.id).slice(0, 2), ["t3-ingreso-o-cobro", "t3-cuando-se-causa"]);
   assert.equal(REGLAS["t3-cuando-se-causa"]("t3a2-jcc"), "San Calixto · Cotizó el 4 y le pidieron el trabajo el 6. Prestó el servicio a JCC el 8 y facturó el 12.");
   const dir = new URL("../../../supabase/migrations/", import.meta.url);
   const sql = readdirSync(dir).filter((f) => f.endsWith(".sql")).map((f) => readFileSync(new URL(f, dir), "utf8")).join("\n");

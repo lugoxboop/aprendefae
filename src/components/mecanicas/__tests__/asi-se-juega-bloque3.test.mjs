@@ -107,8 +107,8 @@ const pantalla = (id) => React.createElement(AsiSeJuega, {
 
 test("★★ las catorce actividades tienen «Así se juega»", () => {
   assert.deepEqual(Object.keys(B3.ASI_SE_JUEGA_BLOQUE3).sort(), [...IDS].sort());
-  /* Las catorce, más la del Tema 3 de Contabilidad (act. 2). */
-  assert.equal(Object.keys(ASI_TODAS).length, 15);
+  /* Las catorce, más las del Tema 3 de Contabilidad (acts. 2 y 6). */
+  assert.equal(Object.keys(ASI_TODAS).length, 16);
 });
 
 test("★★ consignas: T1-6 cambia (la ficha no se toca) y las siete del Tema 2 son nuevas", () => {
