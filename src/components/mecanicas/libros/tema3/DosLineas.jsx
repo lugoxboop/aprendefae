@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { COLOR, ROTULO_PISTA, RESULTADOS, CAJA, MARCAS, CONTADORES } from "../../../../data/contabilidadTema3.js";
 import { DIAS, ROTULO_CORCHETE, ROTULO_CORTE, ROTULO_RETARDO } from "../../../../data/contabilidadTema3Pieza3.js";
+import { MESES as MESES_P4, ROTULO_CIERRE, ROTULO_DIFERIDO } from "../../../../data/contabilidadTema3Pieza4.js";
 import { pesos } from "../../../../contabilidad/dosLineas.js";
 
 /*
@@ -158,9 +159,9 @@ function Marca({ marca, n, nueva, saliendo, salidaMs, reducido, xDe = null, sinM
   const m = MARCAS[marca.tipo];
   const color = marca.actual ? COLOR.blanco : COLOR.neutro;
   const colorMonto = marca.actual ? COLOR.blanco : COLOR.apagado;
-  const x = xDe ? xDe(marca.columna) : xDeColumna(marca.columna, n);
+  const x = marca.x ?? (xDe ? xDe(marca.columna) : xDeColumna(marca.columna, n));
   /* La cascada de la pieza 3: cada marca sale `escalon` ms después de la anterior. */
-  const d = escalon * marca.columna;
+  const d = marca.retraso ?? escalon * marca.columna;
   const centro = m.arriba ? BASE - CENTRO_CABEZA : BASE + CENTRO_CABEZA;
   const anima = nueva && !reducido && !saliendo;
   const sale = saliendo && !reducido ? `fae-dl-sale ${salidaMs}ms ${CAMBIO} forwards` : undefined;
@@ -186,7 +187,7 @@ function Marca({ marca, n, nueva, saliendo, salidaMs, reducido, xDe = null, sinM
       }} />
       {/* El monto, a la derecha de la cabeza y centrado con ella. La pieza 3 no lo lleva. */}
       {!sinMonto && <span data-monto-marca style={{
-        position: "absolute", left: `calc(${x} + 11px)`, top: `${centro - 7}px`,
+        position: "absolute", ...(marca.montoIzquierda ? { right: `calc(100% - ${x} + 9px)` } : { left: `calc(${x} + 11px)` }), top: `${centro - 7}px`,
         fontFamily: INTER, fontSize: "12px", lineHeight: "14px", fontWeight: 600, ...CIFRAS,
         color: colorMonto, whiteSpace: "nowrap",
         transition: `color 200ms ${CAMBIO}`,
@@ -399,6 +400,88 @@ function Futuro({ calendario, pista, anima, reducido }) {
 }
 
 /*
+ * ═══════════ EL CALENDARIO POR MESES DE LA PIEZA 4 (Xeno, P2) ═══════════
+ *
+ * Tres ranuras iguales —junio, julio, agosto— y un corte al borde derecho de
+ * cada una. Cada corte tiene tres estados: «por venir» (#8C9BB0, 5/5),
+ * «activo» (blanco, 6/4) y «pasado» (#A8B6C8, 6/4). Solo se dibujan sobre la
+ * regla y los carriles, nunca sobre rótulos ni contadores.
+ */
+const N_MESES = MESES_P4.length;
+const xDeMes = (i) => `calc(${((i + 0.5) * 100) / N_MESES}% - 1px)`;
+const xCorteMes = (i) => `calc(${((i + 1) * 100) / N_MESES}% - 2px)`;
+const ESTILO_CORTE = {
+  porVenir: { color: COLOR.quieto, raya: 5, hueco: 5 },
+  activo: { color: COLOR.blanco, raya: 6, hueco: 4 },
+  pasado: { color: COLOR.apagado, raya: 6, hueco: 4 },
+};
+const trazoCorteMes = (i, estadoCorte, alto, anima) => {
+  const e = ESTILO_CORTE[estadoCorte];
+  return {
+    position: "absolute", left: xCorteMes(i), width: "2px", height: alto,
+    backgroundImage: `repeating-linear-gradient(to bottom, ${e.color} 0 ${e.raya}px, transparent ${e.raya}px ${e.raya + e.hueco}px)`,
+    transformOrigin: "top",
+    animation: anima ? `fae-p3-baja 600ms cubic-bezier(0, 0, 0.2, 1) both` : undefined,
+  };
+};
+
+function ReglaMeses({ calendario, anima, reducido }) {
+  const ver = calendario.meses;
+  const fundido = anima.meses && !reducido ? `fae-dl-fundido 200ms ${ENTRADA} both` : undefined;
+  return (
+    <div aria-hidden="true" data-regla-meses={ver ? "si" : "no"} style={{ position: "relative", height: "54px", visibility: ver ? "visible" : "hidden" }}>
+      <style>{CSS_CAL}</style>
+      {MESES_P4.map((mes, i) => (
+        <span key={`c-${mes}`} data-rotulo-cierre={i} style={{
+          position: "absolute", right: `calc(100% - ${xCorteMes(i)} + 5px)`, top: 0, whiteSpace: "nowrap",
+          fontFamily: INTER, fontSize: "11px", fontWeight: 600, lineHeight: "16px", color: COLOR.apagado, animation: fundido,
+        }}>
+          {ROTULO_CIERRE}
+        </span>
+      ))}
+      {MESES_P4.map((mes, i) => (
+        <span key={mes} data-mes={mes} style={{
+          position: "absolute", left: `calc(${((i + 0.5) * 100) / N_MESES}%)`, top: "30px", transform: "translateX(-50%)",
+          height: "20px", padding: "0 8px", borderRadius: "5px", display: "grid", placeItems: "center", whiteSpace: "nowrap",
+          fontFamily: INTER, fontSize: "12px", fontWeight: 700, background: COLOR.neutro, color: COLOR.navy, animation: fundido,
+        }}>
+          {mes}
+        </span>
+      ))}
+      {calendario.cortes.map((c, i) => (
+        <span key={`k-${i}`} data-corte={i} data-estado-corte={c} style={{ ...trazoCorteMes(i, c, "36px", anima.cortes?.[i] && !reducido), top: "18px" }} />
+      ))}
+    </div>
+  );
+}
+
+function CortesMeses({ calendario, pista, anima, reducido }) {
+  if (!calendario.meses) return null;
+  return (
+    <>
+      {calendario.diferido && pista === RESULTADOS && (
+        <span data-diferido style={{
+          position: "absolute", left: 0, right: 0, top: 0, height: `${CARRIL}px`, borderRadius: "8px",
+          background: "rgba(184,196,212,0.12)",
+          animation: anima.diferido && !reducido ? `fae-dl-fundido 200ms ${ENTRADA} both` : undefined,
+        }}>
+          <span data-chip-diferido style={{
+            position: "absolute", left: "50%", top: `${BASE - 11}px`, transform: "translateX(-50%)",
+            height: "22px", padding: "0 12px", borderRadius: "11px", display: "grid", placeItems: "center",
+            background: COLOR.neutro, color: COLOR.navy, fontFamily: INTER, fontSize: "12px", fontWeight: 700,
+          }}>
+            {ROTULO_DIFERIDO}
+          </span>
+        </span>
+      )}
+      {calendario.cortes.map((c, i) => (
+        <span key={i} data-corte={i} data-estado-corte={c} style={{ ...trazoCorteMes(i, c, `${CARRIL}px`, anima.cortes?.[i] && !reducido), top: 0 }} />
+      ))}
+    </>
+  );
+}
+
+/*
  * ═══════════ EL BLOQUE ═══════════
  *
  * `encabezado` es lo que va entre la etiqueta de empresa y las pistas (la
@@ -466,12 +549,33 @@ export default function DosLineas({
   }
   const animaCal = cal.current.anima;
 
+  /* El calendario por meses de la pieza 4: los meses, el «Diferido» y cada corte que pasa a activo. */
+  const calM = useRef({ actual: calendario, anima: { cortes: [] } });
+  const mismaCal = (a, b) => Boolean(a?.meses) === Boolean(b?.meses) && Boolean(a?.diferido) === Boolean(b?.diferido)
+    && (a?.cortes ?? []).join() === (b?.cortes ?? []).join();
+  if (calendario?.tipo === "meses" && !mismaCal(calendario, calM.current.actual)) {
+    const prev = calM.current.actual;
+    calM.current = {
+      actual: calendario,
+      anima: {
+        meses: Boolean(calendario.meses && !prev?.meses),
+        diferido: Boolean(calendario.diferido && !prev?.diferido),
+        cortes: calendario.cortes.map((c, i) => c === "activo" && prev?.cortes?.[i] !== "activo"),
+      },
+    };
+  }
+  const animaMeses = calM.current.anima;
+  const porMeses = calendario?.tipo === "meses";
+
   const pistaProps = (pista, retraso) => ({
     pista, estado: estado.pistas[pista], columnas: estado.columnas, columnaActual: estado.columnaActual,
     marcas: estado.marcas.filter((m) => m.pista === pista), salientes: salientes.filter((m) => m.pista === pista),
     salidaMs, nuevas, contadores: estado.contadores, resaltados: estado.resaltados, reducido,
     trazar: trazar && !reducido, retraso, msContador,
-    ...(calendario ? {
+    ...(porMeses ? {
+      xDe: xDeMes, soloEncabezado: soloEncabezados,
+      extras: <CortesMeses calendario={calendario} pista={pista} anima={animaMeses} reducido={reducido} />,
+    } : calendario ? {
       xDe: xDeDia, sinMonto: true, escalon: ESCALON_DIA, soloEncabezado: soloEncabezados,
       finLinea: calendario.corte ? X_CORTE : null,
       extras: <Futuro calendario={calendario} pista={pista} anima={animaCal} reducido={reducido} />,
@@ -522,7 +626,8 @@ export default function DosLineas({
 
       {encabezado}
 
-      {calendario && <Regla calendario={calendario} anima={animaCal.regla && !reducido} animaCorte={animaCal.corte && !reducido} />}
+      {porMeses && <ReglaMeses calendario={calendario} anima={animaMeses} reducido={reducido} />}
+      {calendario && !porMeses && <Regla calendario={calendario} anima={animaCal.regla && !reducido} animaCorte={animaCal.corte && !reducido} />}
 
       {/* Los números de columna, alineados con el tallo. */}
       {!calendario && <div aria-hidden="true" style={{ position: "relative", height: "16px" }}>

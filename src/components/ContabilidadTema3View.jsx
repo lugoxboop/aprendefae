@@ -22,6 +22,7 @@ import { ACT2_T3 } from "../data/contabilidadTema3Act2.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZA_VENDER_NO_ES_COBRAR } from "../data/contabilidadTema3.js";
 import { PIEZA_LO_QUE_YA_PASO } from "../data/contabilidadTema3Pieza3.js";
+import { PIEZA_LO_QUE_YA_SE_PAGO } from "../data/contabilidadTema3Pieza4.js";
 import { ESCENAS_TEMA3 } from "./mecanicas/libros/tema3/escenasTema3.jsx";
 
 /*
@@ -38,13 +39,16 @@ const MATERIA = "contabilidad";
 const TEMA = "ingresos-gastos-y-caja";
 /*
  * En el orden del número de pieza, no de la lista: la pieza 2 todavía no
- * existe y la 3 deja su lugar (Levi). El rótulo dice el número de verdad.
+ * existe y su lugar queda libre (Levi). El rótulo «Pieza n de N» cuenta las
+ * piezas publicadas: con 1, 3 y 4, dice «de 3».
  */
 export const PIEZAS = [
   { numero: 1, pieza: PIEZA_VENDER_NO_ES_COBRAR },
   { numero: PIEZA_LO_QUE_YA_PASO.numero, pieza: PIEZA_LO_QUE_YA_PASO },
+  { numero: PIEZA_LO_QUE_YA_SE_PAGO.numero, pieza: PIEZA_LO_QUE_YA_SE_PAGO },
 ].sort((a, b) => a.numero - b.numero);
-const ULTIMA = Math.max(...PIEZAS.map((x) => x.numero));
+/* El contador dice cuántas piezas hay publicadas, no el número más alto (Levi). */
+const PUBLICADAS = PIEZAS.length;
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS = [
@@ -111,12 +115,12 @@ export default function ContabilidadTema3View({ modo = null, nodoInicial = null,
 
           {esAprender ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-              {PIEZAS.map(({ numero, pieza }) => {
+              {PIEZAS.map(({ pieza }, k) => {
                 const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA3[pieza.id];
                 return (
                   <div key={pieza.id}>
                     <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
-                      PIEZA {numero} DE {ULTIMA}
+                      PIEZA {k + 1} DE {PUBLICADAS}
                     </p>
                     <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} rotulo="INGRESOS, GASTOS Y AJUSTES · APRENDER" />
                   </div>

@@ -29,7 +29,7 @@ const CSS = `
 @media (prefers-reduced-motion: reduce) { .fae-p3-asiento * { animation: none !important; } }
 `;
 
-function Mitad({ lado, cuenta, monto, compacto, anima, retraso, reducido }) {
+function Mitad({ lado, cuenta, monto, compacto, anima, retraso, reducido, lineas = 2 }) {
   /* El monto cuenta desde $0 mientras su mitad se revela; el valor final queda siempre escrito. */
   const [objetivo, setObjetivo] = useState(anima ? 0 : monto);
   useEffect(() => {
@@ -50,7 +50,7 @@ function Mitad({ lado, cuenta, monto, compacto, anima, retraso, reducido }) {
       </span>
       <span data-cuenta style={{
         fontFamily: INTER, fontSize: compacto ? "13px" : "14px", fontWeight: 600, lineHeight: 1.3, color: COLOR.blanco,
-        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+        display: "-webkit-box", WebkitLineClamp: lineas, WebkitBoxOrient: "vertical", overflow: "hidden",
         minHeight: compacto ? undefined : "36px",
       }}>
         {cuenta}
@@ -69,14 +69,19 @@ function Mitad({ lado, cuenta, monto, compacto, anima, retraso, reducido }) {
  * las dos. Cada mitad se revela de izquierda a derecha en 300 ms; el Haber,
  * 400 ms después (B6). Con movimiento reducido, completa de una vez.
  */
-export default function AsientoTema3({ asiento, compacto = false, anima = false, reducido = false, conPastilla = false }) {
+/*
+ * `alto` y `lineas` existen para la pieza 4, cuyas cuentas son más largas
+ * («Arriendos pagados por anticipado» ocupa 4 líneas a 320 px). Por defecto,
+ * los de la pieza 3: 128 px y 2 líneas.
+ */
+export default function AsientoTema3({ asiento, compacto = false, anima = false, reducido = false, conPastilla = false, textoPastilla = "Cierre del mes", alto = 128, lineas = 2 }) {
   const a = anima && !reducido;
   return (
     <div className="fae-p3-asiento" aria-hidden="true" data-asiento>
       <style>{CSS}</style>
-      <div style={{ display: "flex", gap: "6px", minHeight: compacto ? undefined : "128px" }}>
-        <Mitad lado={DEBE} {...asiento.debe} compacto={compacto} anima={a} retraso={0} reducido={reducido} />
-        <Mitad lado={HABER} {...asiento.haber} compacto={compacto} anima={a} retraso={400} reducido={reducido} />
+      <div style={{ display: "flex", gap: "6px", minHeight: compacto ? undefined : `${alto}px` }}>
+        <Mitad lado={DEBE} {...asiento.debe} compacto={compacto} anima={a} retraso={0} reducido={reducido} lineas={lineas} />
+        <Mitad lado={HABER} {...asiento.haber} compacto={compacto} anima={a} retraso={400} reducido={reducido} lineas={lineas} />
       </div>
       {conPastilla && (
         <p style={{ margin: "8px 0 0", textAlign: "center" }}>
@@ -84,7 +89,7 @@ export default function AsientoTema3({ asiento, compacto = false, anima = false,
             display: "inline-block", padding: "2px 10px", borderRadius: "999px",
             background: COLOR.neutro, color: COLOR.navy, fontFamily: INTER, fontSize: "12px", fontWeight: 700,
           }}>
-            Cierre del mes
+            {textoPastilla}
           </span>
         </p>
       )}
@@ -92,14 +97,14 @@ export default function AsientoTema3({ asiento, compacto = false, anima = false,
   );
 }
 
-function CajaEspejo({ empresa, anima, reducido }) {
+function CajaEspejo({ empresa, anima, reducido, altoCaja = 144, lineas = 2 }) {
   return (
     <div data-espejo-empresa={empresa.id} style={{
-      border: `1px solid ${COLOR.quieto}`, borderRadius: "16px", padding: "9px 10px", minHeight: "144px", boxSizing: "border-box",
+      border: `1px solid ${COLOR.quieto}`, borderRadius: "16px", padding: "9px 10px", minHeight: `${altoCaja}px`, boxSizing: "border-box",
       animation: anima ? `fae-dl-fundido 200ms ${ENTRADA} both` : undefined,
     }}>
       <p style={{ margin: "0 0 7px", fontFamily: SORA, fontSize: "13px", fontWeight: 700, color: COLOR.blanco }}>{empresa.nombre}</p>
-      <AsientoTema3 asiento={empresa.asiento} compacto reducido={reducido} />
+      <AsientoTema3 asiento={empresa.asiento} compacto reducido={reducido} lineas={lineas} />
     </div>
   );
 }
@@ -108,12 +113,12 @@ function CajaEspejo({ empresa, anima, reducido }) {
  * El espejo del paso 9: San Calixto arriba, San Miguel abajo, y entre los
  * dos una X que une el Debe de uno con el Haber del otro (B7).
  */
-export function Espejo({ arriba, abajo, anima = false, reducido = false }) {
+export function Espejo({ arriba, abajo, anima = false, reducido = false, altoCaja = 144, lineas = 2 }) {
   const a = anima && !reducido;
   return (
     <div data-espejo aria-hidden="true">
       <style>{`@keyframes fae-p3-x { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }`}</style>
-      <CajaEspejo empresa={arriba} anima={a} reducido={reducido} />
+      <CajaEspejo empresa={arriba} anima={a} reducido={reducido} altoCaja={altoCaja} lineas={lineas} />
       {/* La X: Debe de arriba con Haber de abajo, y Haber de arriba con Debe de abajo. */}
       <div data-x style={{ position: "relative", height: "40px", animation: a ? `fae-p3-x 400ms ${ENTRADA} 200ms both` : undefined }}>
         <svg width="100%" height="40" viewBox="0 0 100 40" preserveAspectRatio="none" style={{ position: "absolute", inset: 0 }}>
@@ -129,7 +134,7 @@ export function Espejo({ arriba, abajo, anima = false, reducido = false }) {
           }} />
         ))}
       </div>
-      <CajaEspejo empresa={abajo} anima={a} reducido={reducido} />
+      <CajaEspejo empresa={abajo} anima={a} reducido={reducido} altoCaja={altoCaja} lineas={lineas} />
     </div>
   );
 }
