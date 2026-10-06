@@ -139,9 +139,14 @@ export const DESPUES = "Después";
 export const COMPROBAR = "Comprobar";
 export const SIGUIENTE_ITEM = "Siguiente ítem";
 export const VER_RESUMEN = "Ver mi resumen";
-export const BANDERA = (mes) => `Cierre · ${mes}`;
+/*
+ * Con más de 12 meses, la bandera y el valor del slider llevan el año, contado
+ * como el eje («Año 1» = los primeros 12 meses desde el inicio): hay varios
+ * diciembres y la etiqueta tiene que ser única en su rango (Levi).
+ */
+export const BANDERA = (mes, anio = null) => (anio ? `Cierre · ${mes} · año ${anio}` : `Cierre · ${mes}`);
 export const ANIO = (k) => `Año ${k}`;
-export const VALOR_CORTE = (mes) => `Cierre al final de ${mes.toLowerCase()}`;
+export const VALOR_CORTE = (mes, anio = null) => `Cierre al final de ${mes.toLowerCase()}${anio ? ` del año ${anio}` : ""}`;
 export const MOVER_ANTES = "Mover el corte un mes antes";
 export const MOVER_DESPUES = "Mover el corte un mes después";
 /* La pista de una línea: los pasos 2 y 3 de Gen, uno por vez. */
