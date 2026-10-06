@@ -1,5 +1,5 @@
 import {
-  ITEMS_ACT6, ERROR_POR_CASO, CASO_A, CASO_B, CASO_C, CASO_D, MESES, MESES_CORTOS, ANIO,
+  ITEMS_ACT6, ERROR_POR_CASO, CASO_A, CASO_B, CASO_C, CASO_D, MESES, MESES_CORTOS, ANIO, BANDERA, VALOR_CORTE,
 } from "../data/contabilidadTema3Act6.js";
 
 /*
@@ -45,6 +45,11 @@ export const acotar = (item, k) => Math.min(item.meses - 1, Math.max(1, k));
 export const mesDelCorte = (item, k) => (item.inicio + k - 1) % 12;
 export const mesLargoDelCorte = (item, k) => MESES[mesDelCorte(item, k)];
 export const mesCortoDelCorte = (item, k) => MESES_CORTOS[mesDelCorte(item, k)];
+/* El año del corte, contado como el eje; null si el ítem tiene 12 meses o menos. */
+export const anioDelCorte = (item, k) => (item.meses > 12 ? Math.ceil(k / 12) : null);
+/* La bandera visible y el valor del slider: los dos salen del mismo corte. */
+export const banderaDelCorte = (item, k) => BANDERA(mesCortoDelCorte(item, k), anioDelCorte(item, k));
+export const valorDelCorte = (item, k) => VALOR_CORTE(mesLargoDelCorte(item, k), anioDelCorte(item, k));
 
 /*
  * El teclado del slider (Xeno, §7): flechas = 1 mes; Re Pág y Av Pág = 12;

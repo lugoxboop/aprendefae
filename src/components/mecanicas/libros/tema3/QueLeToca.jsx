@@ -3,11 +3,11 @@ import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import {
   ACT6_T3, ITEMS_ACT6, COBRO, AL_PERIODO, QUEDA, ANTES, DESPUES, COMPROBAR, SIGUIENTE_ITEM, VER_RESUMEN,
-  BANDERA, VALOR_CORTE, MOVER_ANTES, MOVER_DESPUES, PISTA_CORTE, PISTA_CIFRAS,
+  MOVER_ANTES, MOVER_DESPUES, PISTA_CORTE, PISTA_CIFRAS,
 } from "../../../../data/contabilidadTema3Act6.js";
 import {
   evaluarAct6, puntuarAct6, acotar, corteConTecla, corteEnX, rotulosDeBarra, tocableDirecto,
-  mesCortoDelCorte, mesLargoDelCorte, formatearCampo, valorDeCampo, pesos,
+  banderaDelCorte, valorDelCorte, formatearCampo, valorDeCampo, pesos,
 } from "../../../../contabilidad/queLeToca.js";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
@@ -154,10 +154,21 @@ function Barra({ item, corte, onCorte, evaluado, r, reducido }) {
     const base = carril.current?.getBoundingClientRect();
     return Math.min(ancho, Math.max(0, e.clientX - (base?.left ?? 0)));
   };
-  /* La bandera no se sale del carril. */
+  /*
+   * Una sola bandera visible: la del corte puesto. Tras un error en el corte,
+   * el correcto se ve solo como línea fantasma (Levi). La bandera mide su
+   * propio ancho para no salirse del carril: «Cierre · Dic · año 1» es la
+   * más larga.
+   */
+  const refBandera = useRef(null);
+  const [medioBandera, setMedioBandera] = useState(44);
+  useLayoutEffect(() => {
+    const w = refBandera.current?.offsetWidth;
+    if (w && Math.abs(w / 2 - medioBandera) > 0.5) setMedioBandera(w / 2);
+  });
   const bandera = (x, texto, props) => (
-    <span {...props} style={{
-      position: "absolute", top: 0, left: `${Math.min(ancho - 44, Math.max(44, x))}px`, transform: "translateX(-50%)",
+    <span ref={refBandera} {...props} style={{
+      position: "absolute", top: 0, left: `${Math.min(ancho - medioBandera, Math.max(medioBandera, x))}px`, transform: "translateX(-50%)",
       whiteSpace: "nowrap", padding: "3px 9px", borderRadius: "999px", fontFamily: INTER, fontSize: "12px", fontWeight: 700,
       lineHeight: 1.2, ...props.style,
     }}>{texto}</span>
@@ -167,8 +178,8 @@ function Barra({ item, corte, onCorte, evaluado, r, reducido }) {
   return (
     <div data-barra data-tipo={item.tipo} style={{ position: "relative", padding: "0 8px", margin: "0 0 6px" }}>
       <div ref={carril} data-carril style={{ position: "relative", paddingTop: "30px" }}>
-        {/* La bandera del corte puesto, «Cierre · Dic». */}
-        {corteVivo !== null && bandera(xAsa, BANDERA(mesCortoDelCorte(item, corteVivo)), {
+        {/* La bandera del corte puesto: «Cierre · Dic», o «Cierre · Dic · año 1» con más de 12 meses. */}
+        {corteVivo !== null && bandera(xAsa, banderaDelCorte(item, corteVivo), {
           "data-bandera": "",
           "aria-hidden": "true",
           style: {
@@ -242,7 +253,7 @@ function Barra({ item, corte, onCorte, evaluado, r, reducido }) {
             aria-valuemin={1}
             aria-valuemax={n - 1}
             aria-valuenow={corte ?? undefined}
-            aria-valuetext={corte !== null ? VALOR_CORTE(mesLargoDelCorte(item, corte)) : PISTA_CORTE}
+            aria-valuetext={corte !== null ? valorDelCorte(item, corte) : PISTA_CORTE}
             aria-disabled={evaluado ? "true" : undefined}
             onKeyDown={(e) => {
               if (evaluado) return;
@@ -281,16 +292,6 @@ function Barra({ item, corte, onCorte, evaluado, r, reducido }) {
             </span>
           </div>
         </div>
-        {/* Tras un error en el corte, el correcto aparece fantasma, con su bandera en #A8B6C8 bajo el asa. */}
-        {errorCorte && (
-          <div style={{ position: "relative", height: "26px" }}>
-            {bandera(xDe(item.corte), BANDERA(mesCortoDelCorte(item, item.corte)), {
-              "data-bandera-correcta": "",
-              "aria-hidden": "true",
-              style: { background: FAE.bg, border: `1.5px solid ${COLOR.neutro}`, color: COLOR.apagado, animation: "fae-a6-fundido 150ms ease-out both" },
-            })}
-          </div>
-        )}
       </div>
     </div>
   );

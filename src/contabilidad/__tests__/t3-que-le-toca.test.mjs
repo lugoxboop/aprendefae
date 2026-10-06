@@ -168,7 +168,10 @@ test("★★★ corte mal y cifras bien: solo el corte se marca como error", asy
     assert.equal(m.caja.querySelectorAll('[data-insignia="visto"]').length, 2);
     assert.equal(m.caja.querySelector("[data-valor-correcto]"), null);
     assert.ok(m.caja.querySelector("[data-linea-correcta]"), "falta el corte correcto fantasma");
-    assert.equal(m.caja.querySelector("[data-bandera-correcta]").textContent, "Cierre · Dic");
+    /* Una sola bandera visible: la del corte puesto (Levi). */
+    assert.equal(m.caja.querySelector("[data-bandera-correcta]"), null);
+    assert.equal(m.caja.querySelectorAll("[data-barra] [data-bandera]").length, 1);
+    assert.equal(m.caja.querySelector("[data-bandera]").textContent, "Cierre · Nov · año 1");
     assert.equal(m.caja.querySelector("[data-panel]").dataset.caso, "A");
     assert.deepEqual(textosRetro(m.caja), [ERROR_POR_CASO.A, seguro.acierto]);
   } finally { m.desmontar(); }
@@ -220,8 +223,8 @@ test("★★★ teclado: flechas 1 mes, Re Pág / Av Pág 12, Inicio y Fin", asy
     assert.equal(asa.getAttribute("aria-valuenow"), "12");
     await tecla(asa, "ArrowLeft"); await tecla(asa, "ArrowLeft");
     assert.equal(asa.getAttribute("aria-valuenow"), "10");
-    assert.equal(asa.getAttribute("aria-valuetext"), "Cierre al final de diciembre");
-    assert.equal(m.caja.querySelector("[data-bandera]").textContent, "Cierre · Dic");
+    assert.equal(asa.getAttribute("aria-valuetext"), "Cierre al final de diciembre del año 1");
+    assert.equal(m.caja.querySelector("[data-bandera]").textContent, "Cierre · Dic · año 1");
   } finally { m.desmontar(); }
 });
 
@@ -370,6 +373,7 @@ test("★★★ el tutorial: el componente de siempre con la panadería de Gen; 
   assert.equal(ej.acierto, "Pasaron 3 de 9 meses. Al periodo le toca $300.000 y quedan $600.000 de bodega por usar.");
   assert.equal(L.mesLargoDelCorte(ej, ej.corte), "Diciembre");
   assert.ok(!ITEMS_ACT6.some((x) => x.id === ej.id), "el ejemplo está fuera del banco");
+  assert.equal(L.banderaDelCorte(ej, ej.corte), "Cierre · Dic", "el tutorial (9 meses) va sin año");
   /* El guion, a mano: cada toque sobre el componente en modo demo. */
   const m = await montar({ items: [ej], modoDemo: true });
   try {
@@ -413,4 +417,63 @@ test("★★★ colores: ni verde azulado ni ámbar; #B8C4D4 nunca es color de t
     assert.doesNotMatch(fuente, /#2a9d8f|#52c4b0|#e9c46a|FAE\.(teal|ambar)|TONO_ROTULO|COLOR_LADO/i, `${a}: teal o ámbar`);
     assert.doesNotMatch(fuente, /\bcolor:\s*(COLOR\.neutro|["']#B8C4D4)/i, `${a}: #B8C4D4 como texto`);
   }
+});
+
+/* ═══════════════════ ARREGLO: EL AÑO DEL CORTE (Levi) ═══════════════════ */
+
+test("★★★ seguro: los cortes 10, 22, 34 y 46 dicen «Dic · año 1» a «Dic · año 4», y solo el 10 es correcto", async () => {
+  const seguro = porId("t3a6-seguro");
+  const esperado = { 10: 1, 22: 2, 34: 3, 46: 4 };
+  for (const [k, anio] of Object.entries(esperado).map(([k, a]) => [Number(k), a])) {
+    assert.equal(L.banderaDelCorte(seguro, k), `Cierre · Dic · año ${anio}`);
+    assert.equal(L.valorDelCorte(seguro, k), `Cierre al final de diciembre del año ${anio}`);
+    const r = L.evaluarAct6(seguro, { corte: k, alPeriodo: 80000, queda: 400000 });
+    assert.equal(r.ok, k === 10, `corte ${k}`);
+    if (k !== 10) assert.equal(r.caso, CASO_A);
+  }
+  /* En pantalla, con el teclado: la bandera y el slider dicen lo mismo. */
+  const m = await montar({ items: [seguro] });
+  try {
+    const asa = m.caja.querySelector("[data-asa]");
+    await tecla(asa, "Home");
+    for (let i = 1; i < 10; i++) await tecla(asa, "ArrowRight");
+    for (const anio of [1, 2, 3, 4]) {
+      assert.equal(asa.getAttribute("aria-valuenow"), String(10 + 12 * (anio - 1)));
+      assert.equal(m.caja.querySelector("[data-bandera]").textContent, `Cierre · Dic · año ${anio}`);
+      assert.equal(asa.getAttribute("aria-valuetext"), `Cierre al final de diciembre del año ${anio}`);
+      await tecla(asa, "PageUp");
+    }
+  } finally { m.desmontar(); }
+});
+
+test("★★★ seguro: la etiqueta coincide siempre con la posición del corte", () => {
+  const seguro = porId("t3a6-seguro");
+  for (const ancho of [297, 242]) {
+    for (let k = 1; k < seguro.meses; k++) {
+      /* La posición donde se dibuja el corte vuelve al mismo corte… */
+      assert.equal(L.corteEnX(seguro, (k / seguro.meses) * ancho, ancho), k);
+      /* …y la etiqueta nombra el mes y el año del eje que terminan ahí. */
+      const mes = A6.MESES_CORTOS[(seguro.inicio + k - 1) % 12];
+      const anio = Math.floor((k - 1) / 12) + 1;
+      assert.equal(L.banderaDelCorte(seguro, k), `Cierre · ${mes} · año ${anio}`, `corte ${k}`);
+      /* El año de la etiqueta es el tramo «Año n» del eje que contiene el corte. */
+      const tramo = L.rotulosDeBarra(seguro, ancho).etiquetas.find((e) => k > e.desde && k <= e.hasta);
+      assert.equal(tramo.texto, `Año ${anio}`, `corte ${k}`);
+    }
+  }
+});
+
+test("★★ regresión: los ítems 2 a 5 y el tutorial siguen con su etiqueta sin año", () => {
+  for (const it of [...ITEMS_ACT6.slice(1), A6.EJEMPLO_PANADERIA_ACT6]) {
+    assert.ok(it.meses <= 12, it.id);
+    for (let k = 1; k < it.meses; k++) {
+      assert.doesNotMatch(L.banderaDelCorte(it, k), /año/, `${it.id} · ${k}`);
+      assert.doesNotMatch(L.valorDelCorte(it, k), /año/, `${it.id} · ${k}`);
+    }
+  }
+  assert.equal(L.banderaDelCorte(porId("t3a6-equipos"), 5), "Cierre · Dic");
+  assert.equal(L.banderaDelCorte(porId("t3a6-arriendo"), 7), "Cierre · Dic");
+  assert.equal(L.banderaDelCorte(porId("t3a6-san-calixto"), 1), "Cierre · Jun");
+  assert.equal(L.banderaDelCorte(porId("t3a6-costa"), 1), "Cierre · Jun");
+  assert.equal(L.valorDelCorte(porId("t3a6-equipos"), 5), "Cierre al final de diciembre");
 });
