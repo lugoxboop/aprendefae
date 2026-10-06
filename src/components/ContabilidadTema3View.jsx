@@ -22,6 +22,8 @@ import { ACT2_T3 } from "../data/contabilidadTema3Act2.js";
 import { ArmaElAjusteAcumulado, ArmaElAjusteDiferido } from "./mecanicas/libros/tema3/ArmaElAjuste.jsx";
 import { ACT4_T3 } from "../data/contabilidadTema3Act4.js";
 import { ACT5_T3 } from "../data/contabilidadTema3Act5.js";
+import ElCierreCompleto from "./mecanicas/libros/tema3/ElCierreCompleto.jsx";
+import { ACT7_T3 } from "../data/contabilidadTema3Act7.js";
 import QueLeToca from "./mecanicas/libros/tema3/QueLeToca.jsx";
 import { ACT6_T3 } from "../data/contabilidadTema3Act6.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
@@ -65,6 +67,7 @@ export const JUEGOS = [
   { id: ACT4_T3.id, Mecanica: ArmaElAjusteAcumulado, titulo: ACT4_T3.nombre },
   { id: ACT5_T3.id, Mecanica: ArmaElAjusteDiferido, titulo: ACT5_T3.nombre },
   { id: ACT6_T3.id, Mecanica: QueLeToca, titulo: ACT6_T3.nombre },
+  { id: ACT7_T3.id, Mecanica: ElCierreCompleto, titulo: ACT7_T3.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 1. */
