@@ -43,7 +43,7 @@ const h = React.createElement;
 
 const P3 = await import("../../data/contabilidadTema3Pieza3.js");
 const L = await import("../loQueYaPaso.js");
-const { SUBJECTS } = await import("../../data/subjects.js");
+const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: LoQueYaPaso } = await import("../../components/mecanicas/libros/tema3/LoQueYaPaso.jsx");
 const { default: CadaEmpresa } = await import("../../components/mecanicas/libros/tema3/CadaEmpresa.jsx");
 const { ESCENAS_TEMA3 } = await import("../../components/mecanicas/libros/tema3/escenasTema3.jsx");
@@ -141,7 +141,9 @@ test("★★ capa 1 en el orden corregido, objetivo y capa 4 de Gen", () => {
 
 test("★★ en Aprender va después de la pieza 1 y deja libre el lugar de la 2", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "ingresos-gastos-y-caja");
-  assert.deepEqual(tema.actividades.slice(0, 2).map((a) => a.id), ["t3-a1-vender-no-es-cobrar", "t3-a3-lo-que-ya-paso"]);
+  /* Aprender: pieza 1 y luego pieza 3. En la lista, la actividad 1 va entre las dos (después de la pieza 1). */
+  assert.deepEqual(tema.actividades.filter((a) => a.clasificacion.tipo === APRENDER).map((a) => a.id), ["t3-a1-vender-no-es-cobrar", "t3-a3-lo-que-ya-paso"]);
+  assert.deepEqual(tema.actividades.map((a) => a.id), ["t3-a1-vender-no-es-cobrar", "t3-ingreso-o-cobro", "t3-a3-lo-que-ya-paso"]);
   assert.deepEqual(PIEZAS.map((x) => x.numero), [1, 3]);
 });
 
