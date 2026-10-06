@@ -185,7 +185,7 @@ test("★★★ error, reintento y acierto: el error es el de su tipo y el ítem
 
 test("★★★ va en el Tema 3 después de la pieza 1, como Hacer fácil de 10 FP, y la vista la abre", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "ingresos-gastos-y-caja");
-  assert.deepEqual(tema.actividades.map((a) => a.id), ["t3-a1-vender-no-es-cobrar", "t3-ingreso-o-cobro"]);
+  assert.deepEqual(tema.actividades.slice(0, 2).map((a) => a.id), ["t3-a1-vender-no-es-cobrar", "t3-ingreso-o-cobro"]);
   assert.equal(tema.actividades[0].clasificacion.tipo, APRENDER);
   assert.deepEqual(tema.actividades[1].clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 });
   assert.equal(tema.actividades[1].nombre, "¿Ingreso o cobro?");

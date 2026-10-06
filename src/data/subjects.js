@@ -593,6 +593,8 @@ export const SUBJECTS = {
           { id: "t3-a1-vender-no-es-cobrar", nombre: "Vender no es cobrar", clasificacion: { tipo: APRENDER } },
           /* Actividad 1 de Hacer, después de la pieza 1 (Levi). */
           { id: "t3-ingreso-o-cobro", nombre: "¿Ingreso o cobro?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* La pieza 3; la 2 todavía no existe y su lugar queda libre. */
+          { id: "t3-a3-lo-que-ya-paso", nombre: "Lo que ya pasó y no se ha pagado", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],

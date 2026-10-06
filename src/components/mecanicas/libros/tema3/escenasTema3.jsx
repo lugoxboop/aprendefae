@@ -2,6 +2,9 @@ import UnaFrase from "../intro/UnaFrase.jsx";
 import { PREGUNTA_FINAL, OPCIONES_FINAL } from "../../../../data/contabilidadTema3.js";
 import MiraloFuncionar from "./MiraloFuncionar.jsx";
 import PruebaUsted from "./PruebaUsted.jsx";
+import { PREGUNTA_FINAL_P3, OPCIONES_FINAL_P3 } from "../../../../data/contabilidadTema3Pieza3.js";
+import LoQueYaPaso from "./LoQueYaPaso.jsx";
+import CadaEmpresa from "./CadaEmpresa.jsx";
 
 /*
  * Las capas propias de las piezas de Aprender del Tema 3. La capa 4 es el
@@ -18,6 +21,16 @@ function EnUnaFraseTema3() {
   return <UnaFrase pregunta={PREGUNTA_FINAL} opciones={OPCIONES_FINAL} Escena={SinEscena} evaluar={evaluar} />;
 }
 
+/* La pieza 3, con el mismo componente de pregunta y sin dibujo. */
+const evaluarP3 = (id) => {
+  const o = OPCIONES_FINAL_P3.find((x) => x.id === id);
+  return { correcta: Boolean(o?.correcta), feedback: o?.feedback ?? "", escena: null };
+};
+function EnUnaFrasePieza3() {
+  return <UnaFrase pregunta={PREGUNTA_FINAL_P3} opciones={OPCIONES_FINAL_P3} Escena={SinEscena} evaluar={evaluarP3} />;
+}
+
 export const ESCENAS_TEMA3 = {
   "t3-a1-vender-no-es-cobrar": { Capa2: MiraloFuncionar, Exploracion: PruebaUsted, Capa4: EnUnaFraseTema3 },
+  "t3-a3-lo-que-ya-paso": { Capa2: LoQueYaPaso, Exploracion: CadaEmpresa, Capa4: EnUnaFrasePieza3 },
 };
