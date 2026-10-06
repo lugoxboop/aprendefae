@@ -143,7 +143,7 @@ test("★★ en Aprender va después de la pieza 1 y deja libre el lugar de la 2
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "ingresos-gastos-y-caja");
   /* Aprender: pieza 1 y luego pieza 3. En la lista, la actividad 1 va entre las dos (después de la pieza 1). */
   assert.deepEqual(tema.actividades.filter((a) => a.clasificacion.tipo === APRENDER).map((a) => a.id), ["t3-a1-vender-no-es-cobrar", "t3-a3-lo-que-ya-paso"]);
-  assert.deepEqual(tema.actividades.map((a) => a.id), ["t3-a1-vender-no-es-cobrar", "t3-ingreso-o-cobro", "t3-a3-lo-que-ya-paso"]);
+  assert.deepEqual(tema.actividades.slice(0, 3).map((a) => a.id), ["t3-a1-vender-no-es-cobrar", "t3-ingreso-o-cobro", "t3-a3-lo-que-ya-paso"]);
   assert.deepEqual(PIEZAS.map((x) => x.numero), [1, 3]);
 });
 

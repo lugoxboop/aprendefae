@@ -30,7 +30,7 @@ export const CIERRE = "cierre";
 
 /* El texto de error de cada tipo de marca equivocada. */
 export const ERROR_POR_TIPO = {
-  /* Levi: «nace» pasa a «se causa» (un concepto, un nombre). */
+  /* Levi: un concepto, un nombre: «se causa». */
   [FACTURA]: "La factura es el papel, no el hecho. El ingreso se causa cuando el servicio queda prestado.",
   /* Gen, aprobados. */
   [DINERO]: "Esa es la fecha en que se mueve la plata. Se causa antes, cuando el hecho ya ocurrió.",

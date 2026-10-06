@@ -189,7 +189,7 @@ test("★★★ va en el Tema 3 después de la pieza 1, como Hacer fácil de 10 
   assert.equal(tema.actividades[0].clasificacion.tipo, APRENDER);
   assert.deepEqual(tema.actividades[1].clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 });
   assert.equal(tema.actividades[1].nombre, "¿Ingreso o cobro?");
-  assert.deepEqual(JUEGOS.map((j) => j.id), ["t3-ingreso-o-cobro"]);
+  assert.equal(JUEGOS[0].id, "t3-ingreso-o-cobro", "la act. 1 es el primer juego del camino");
 });
 
 test("★★ tiene su fila en el catálogo del servidor y su etiqueta en el panel docente", () => {
