@@ -591,6 +591,8 @@ export const SUBJECTS = {
         title: "Ingresos, gastos y ajustes",
         actividades: [
           { id: "t3-a1-vender-no-es-cobrar", nombre: "Vender no es cobrar", clasificacion: { tipo: APRENDER } },
+          /* La pieza 3; la 2 todavía no existe y su lugar queda libre. */
+          { id: "t3-a3-lo-que-ya-paso", nombre: "Lo que ya pasó y no se ha pagado", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],

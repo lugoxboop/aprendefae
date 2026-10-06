@@ -7,6 +7,7 @@ import { APRENDER, HACER, SUBJECTS } from "../data/subjects.js";
 import CaminoHacer from "./shared/CaminoHacer.jsx";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZA_VENDER_NO_ES_COBRAR } from "../data/contabilidadTema3.js";
+import { PIEZA_LO_QUE_YA_PASO } from "../data/contabilidadTema3Pieza3.js";
 import { ESCENAS_TEMA3 } from "./mecanicas/libros/tema3/escenasTema3.jsx";
 
 /*
@@ -20,7 +21,15 @@ import { ESCENAS_TEMA3 } from "./mecanicas/libros/tema3/escenasTema3.jsx";
 
 const MATERIA = "contabilidad";
 const TEMA = "ingresos-gastos-y-caja";
-const PIEZAS = [PIEZA_VENDER_NO_ES_COBRAR];
+/*
+ * En el orden del número de pieza, no de la lista: la pieza 2 todavía no
+ * existe y la 3 deja su lugar (Levi). El rótulo dice el número de verdad.
+ */
+export const PIEZAS = [
+  { numero: 1, pieza: PIEZA_VENDER_NO_ES_COBRAR },
+  { numero: PIEZA_LO_QUE_YA_PASO.numero, pieza: PIEZA_LO_QUE_YA_PASO },
+].sort((a, b) => a.numero - b.numero);
+const ULTIMA = Math.max(...PIEZAS.map((x) => x.numero));
 
 export default function ContabilidadTema3View({ modo = null, onBack }) {
   const esAprender = modo !== HACER;
@@ -57,12 +66,12 @@ export default function ContabilidadTema3View({ modo = null, onBack }) {
 
           {esAprender ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-              {PIEZAS.map((pieza, k) => {
+              {PIEZAS.map(({ numero, pieza }) => {
                 const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA3[pieza.id];
                 return (
                   <div key={pieza.id}>
                     <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
-                      PIEZA {k + 1} DE {PIEZAS.length}
+                      PIEZA {numero} DE {ULTIMA}
                     </p>
                     <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} rotulo="INGRESOS, GASTOS Y AJUSTES · APRENDER" />
                   </div>

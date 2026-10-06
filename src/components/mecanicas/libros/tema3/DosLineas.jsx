@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { COLOR, ROTULO_PISTA, RESULTADOS, CAJA, MARCAS, CONTADORES } from "../../../../data/contabilidadTema3.js";
+import { DIAS, ROTULO_CORCHETE, ROTULO_CORTE, ROTULO_RETARDO } from "../../../../data/contabilidadTema3Pieza3.js";
 import { pesos } from "../../../../contabilidad/dosLineas.js";
 
 /*
@@ -153,11 +154,13 @@ function Contador({ tipo, monto, resaltado, reducido, ms }) {
 }
 
 /* Una marca: tallo, cabeza y monto, en la columna de su hecho. */
-function Marca({ marca, n, nueva, saliendo, salidaMs, reducido }) {
+function Marca({ marca, n, nueva, saliendo, salidaMs, reducido, xDe = null, sinMonto = false, escalon = 0 }) {
   const m = MARCAS[marca.tipo];
   const color = marca.actual ? COLOR.blanco : COLOR.neutro;
   const colorMonto = marca.actual ? COLOR.blanco : COLOR.apagado;
-  const x = xDeColumna(marca.columna, n);
+  const x = xDe ? xDe(marca.columna) : xDeColumna(marca.columna, n);
+  /* La cascada de la pieza 3: cada marca sale `escalon` ms después de la anterior. */
+  const d = escalon * marca.columna;
   const centro = m.arriba ? BASE - CENTRO_CABEZA : BASE + CENTRO_CABEZA;
   const anima = nueva && !reducido && !saliendo;
   const sale = saliendo && !reducido ? `fae-dl-sale ${salidaMs}ms ${CAMBIO} forwards` : undefined;
@@ -169,7 +172,7 @@ function Marca({ marca, n, nueva, saliendo, salidaMs, reducido }) {
         top: m.arriba ? `${BASE - 1 - TALLO}px` : `${BASE + 1}px`,
         background: color, transformOrigin: m.arriba ? "bottom" : "top",
         transition: `background 200ms ${CAMBIO}`,
-        animation: saliendo && !reducido ? `fae-dl-retrae ${salidaMs}ms ${CAMBIO} forwards` : anima ? `fae-dl-tallo 200ms ${ENTRADA} both` : undefined,
+        animation: saliendo && !reducido ? `fae-dl-retrae ${salidaMs}ms ${CAMBIO} forwards` : anima ? `fae-dl-tallo 200ms ${ENTRADA}${d ? ` ${d}ms` : ""} both` : undefined,
       }} />
       {/* La cabeza: cuadrado (ingresos y gastos) o círculo (caja); llena suma, vacía resta. */}
       <span aria-hidden="true" style={{
@@ -179,10 +182,10 @@ function Marca({ marca, n, nueva, saliendo, salidaMs, reducido }) {
         background: m.llena ? color : "transparent",
         border: m.llena ? "none" : `2px solid ${color}`,
         transition: `background 200ms ${CAMBIO}, border-color 200ms ${CAMBIO}`,
-        animation: anima ? `fae-dl-cabeza 160ms ${ENTRADA} 200ms both` : undefined,
+        animation: anima ? `fae-dl-cabeza 160ms ${ENTRADA} ${200 + d}ms both` : undefined,
       }} />
-      {/* El monto, a la derecha de la cabeza y centrado con ella. */}
-      <span data-monto-marca style={{
+      {/* El monto, a la derecha de la cabeza y centrado con ella. La pieza 3 no lo lleva. */}
+      {!sinMonto && <span data-monto-marca style={{
         position: "absolute", left: `calc(${x} + 11px)`, top: `${centro - 7}px`,
         fontFamily: INTER, fontSize: "12px", lineHeight: "14px", fontWeight: 600, ...CIFRAS,
         color: colorMonto, whiteSpace: "nowrap",
@@ -190,7 +193,7 @@ function Marca({ marca, n, nueva, saliendo, salidaMs, reducido }) {
         animation: anima ? `fae-dl-fundido 140ms ${ENTRADA} 320ms both` : undefined,
       }}>
         {pesos(marca.monto)}
-      </span>
+      </span>}
     </div>
   );
 }
@@ -216,7 +219,11 @@ function useSalientes(marcas, { reducido, ms }) {
   return salientes;
 }
 
-function Pista({ pista, estado, columnas, columnaActual, marcas, salientes, salidaMs, nuevas, contadores, resaltados, reducido, trazar, retraso, msContador }) {
+function Pista({
+  pista, estado, columnas, columnaActual, marcas, salientes, salidaMs, nuevas, contadores, resaltados, reducido, trazar, retraso, msContador,
+  xDe = null, sinMonto = false, escalon = 0, finLinea = null, extras = null, soloEncabezado = false,
+}) {
+  const xRanura = (i) => (xDe ? xDe(i) : xDeColumna(i, columnas));
   const linea = estado === "activa"
     ? { color: COLOR.blanco, alto: 3 }
     : estado === "quieta" ? { color: COLOR.quieto, alto: 2 } : { color: COLOR.neutro, alto: 2 };
@@ -230,7 +237,7 @@ function Pista({ pista, estado, columnas, columnaActual, marcas, salientes, sali
           ))}
         </p>
       </div>
-      <div aria-hidden="true" data-carril style={{ position: "relative", height: `${CARRIL}px` }}>
+      {!soloEncabezado && <div aria-hidden="true" data-carril style={{ position: "relative", height: `${CARRIL}px` }}>
         {/* La banda de la columna actual, solo en la pista que se mueve. */}
         {columnaActual !== null && estado === "activa" && (
           <span data-banda style={{
@@ -241,7 +248,7 @@ function Pista({ pista, estado, columnas, columnaActual, marcas, salientes, sali
         )}
         {/* La línea base. */}
         <span data-linea style={{
-          position: "absolute", left: 0, right: 0, top: `${BASE - linea.alto / 2}px`, height: `${linea.alto}px`,
+          position: "absolute", left: 0, ...(finLinea ? { width: finLinea } : { right: 0 }), top: `${BASE - linea.alto / 2}px`, height: `${linea.alto}px`,
           borderRadius: "2px", background: linea.color, transformOrigin: "left",
           transition: `background 200ms ${CAMBIO}, height 200ms ${CAMBIO}, top 200ms ${CAMBIO}`,
           animation: trazar ? `fae-dl-trazo 400ms ${ENTRADA} ${retraso}ms both` : undefined,
@@ -249,17 +256,145 @@ function Pista({ pista, estado, columnas, columnaActual, marcas, salientes, sali
         {/* Una ranura por columna, en el x del tallo. */}
         {Array.from({ length: columnas }, (_, i) => (
           <span key={i} data-ranura style={{
-            position: "absolute", left: xDeColumna(i, columnas), top: `${BASE - 3}px`, width: "2px", height: "6px", background: COLOR.quieto,
+            position: "absolute", left: xRanura(i), top: `${BASE - 3}px`, width: "2px", height: "6px", background: COLOR.quieto,
           }} />
         ))}
+        {extras}
         {marcas.map((m) => (
-          <Marca key={claveMarca(m)} marca={m} n={columnas} nueva={nuevas.has(claveMarca(m))} reducido={reducido} />
+          <Marca key={claveMarca(m)} marca={m} n={columnas} nueva={nuevas.has(claveMarca(m))} reducido={reducido} xDe={xDe} sinMonto={sinMonto} escalon={escalon} />
         ))}
         {salientes.map((m) => (
-          <Marca key={`sale-${claveMarca(m)}`} marca={m} n={columnas} saliendo salidaMs={salidaMs} reducido={reducido} />
+          <Marca key={`sale-${claveMarca(m)}`} marca={m} n={columnas} saliendo salidaMs={salidaMs} reducido={reducido} xDe={xDe} sinMonto={sinMonto} />
         ))}
-      </div>
+      </div>}
     </div>
+  );
+}
+
+/*
+ * ═══════════ EL CALENDARIO DE LA PIEZA 3 (Xeno, A1) ═══════════
+ *
+ * Cinco ranuras de día, del 27 al 31, y a la derecha la zona del futuro.
+ * Todo va en proporciones del carril, con los mínimos de Xeno: ranura =
+ * 14,5 % (mín. 30 px), separación del corte ≈ 3,6 % (10 px a 375, 8 a 320),
+ * futuro = el resto.
+ */
+const RANURA = "max(30px, 14.5%)";
+const SEPARACION = "3.6%";
+const ESCALON_DIA = 140;
+/* El centro de la ranura i, menos 1 px: el tallo de 2 px queda centrado. */
+const xDeDia = (i) => `calc(${i} * ${RANURA} + ${RANURA} / 2 - 1px)`;
+const CENTRO_DIA = (i) => `calc(${i} * ${RANURA} + ${RANURA} / 2)`;
+const X_CORTE = `calc(5 * ${RANURA} + ${SEPARACION} / 2)`;
+const INICIO_FUTURO = `calc(5 * ${RANURA} + ${SEPARACION})`;
+const FIN_DIAS = `calc(5 * ${RANURA})`;
+
+const CSS_CAL = `
+@keyframes fae-p3-baja { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes fae-p3-dia { from { background: transparent; color: ${COLOR.apagado}; } to { background: ${COLOR.neutro}; color: ${COLOR.navy}; } }
+`;
+
+/* La línea del corte: blanca, 2 px, discontinua 6/4. Solo sobre la regla y los carriles. */
+const trazoCorte = (alto, anima, retraso = 0) => ({
+  position: "absolute", left: `calc(${X_CORTE} - 1px)`, width: "2px", height: alto,
+  backgroundImage: `repeating-linear-gradient(to bottom, ${COLOR.blanco} 0 6px, transparent 6px 10px)`,
+  transformOrigin: "top",
+  animation: anima ? `fae-p3-baja 600ms cubic-bezier(0, 0, 0.2, 1) ${retraso}ms both` : undefined,
+});
+
+function Regla({ calendario, anima, animaCorte }) {
+  const { regla, corchete, corte } = calendario;
+  return (
+    <div aria-hidden="true" data-regla={regla ? "si" : "no"} style={{ position: "relative", height: "54px" }}>
+      <style>{CSS_CAL}</style>
+      {/* Rótulos: «$500 por día» sobre los días, «Cierre del mes» sobre el corte. */}
+      {corchete && (
+        <span data-rotulo-corchete style={{
+          position: "absolute", left: CENTRO_DIA(2), top: 0, transform: "translateX(-50%)", whiteSpace: "nowrap",
+          fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px", color: COLOR.blanco,
+          animation: anima ? `fae-dl-fundido 150ms ${ENTRADA} 700ms both` : undefined,
+        }}>
+          {ROTULO_CORCHETE}
+        </span>
+      )}
+      {corte && (
+        <span data-rotulo-corte style={{
+          position: "absolute", left: X_CORTE, top: 0, transform: "translateX(-38%)", whiteSpace: "nowrap",
+          fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px", color: COLOR.blanco,
+          animation: animaCorte ? `fae-dl-fundido 200ms ${ENTRADA} 600ms both` : undefined,
+        }}>
+          {ROTULO_CORTE}
+        </span>
+      )}
+      {/* El corchete: 2 px #B8C4D4 con remates de 5 px. */}
+      {corchete && (
+        <span data-corchete style={{
+          position: "absolute", left: "3px", width: `calc(${FIN_DIAS} - 6px)`, top: "20px", height: "5px",
+          borderTop: `2px solid ${COLOR.neutro}`, borderLeft: `2px solid ${COLOR.neutro}`, borderRight: `2px solid ${COLOR.neutro}`,
+          boxSizing: "border-box", transformOrigin: "left",
+          animation: anima ? `fae-dl-trazo 300ms ${ENTRADA} 400ms both` : undefined,
+        }} />
+      )}
+      {/* Los cinco días: chips de 24 × 20, marcados. Ocultos hasta que sale la regla. */}
+      {DIAS.map((dia, i) => (
+        <span key={dia} data-dia={dia} style={{
+          position: "absolute", left: `calc(${CENTRO_DIA(i)} - 12px)`, top: "30px", width: "24px", height: "20px",
+          display: "grid", placeItems: "center", borderRadius: "5px", visibility: regla ? "visible" : "hidden",
+          fontFamily: INTER, fontSize: "12px", fontWeight: 700, ...CIFRAS,
+          background: COLOR.neutro, color: COLOR.navy,
+          animation: anima ? `fae-p3-dia 1ms linear ${i * 80}ms both` : undefined,
+        }}>
+          {dia}
+        </span>
+      ))}
+      {corte && <span data-corte style={{ ...trazoCorte("34px", animaCorte), top: "20px" }} />}
+    </div>
+  );
+}
+
+/*
+ * Lo que va dentro de cada carril en la pieza 3: el corte, el futuro
+ * discontinuo con su punta de flecha y, en la caja, el retardo.
+ */
+function Futuro({ calendario, pista, anima, reducido }) {
+  const { corte, retardo } = calendario;
+  const aCorte = anima.corte && !reducido;
+  const aRetardo = anima.retardo && !reducido;
+  return (
+    <>
+      {retardo && pista === CAJA && (
+        <span data-retardo style={{
+          position: "absolute", left: 0, width: FIN_DIAS, top: 0, height: `${CARRIL}px`, borderRadius: "8px",
+          background: "rgba(184,196,212,0.12)",
+          animation: aRetardo ? `fae-dl-fundido 200ms ${ENTRADA} ${aCorte ? 800 : 0}ms both` : undefined,
+        }}>
+          <span data-chip-retardo style={{
+            position: "absolute", left: "50%", top: `${BASE - 11}px`, transform: "translateX(-50%)",
+            width: "66px", height: "22px", borderRadius: "11px", display: "grid", placeItems: "center",
+            background: COLOR.neutro, color: COLOR.navy, fontFamily: INTER, fontSize: "12px", fontWeight: 700,
+          }}>
+            {ROTULO_RETARDO}
+          </span>
+        </span>
+      )}
+      {corte && (
+        <>
+          <span data-corte style={{ ...trazoCorte(`${CARRIL}px`, aCorte, pista === CAJA ? 0 : 0), top: 0 }} />
+          {/* El futuro: discontinuo #8C9BB0 5/5 y una punta de flecha de 16 px. */}
+          <span data-futuro style={{
+            position: "absolute", left: INICIO_FUTURO, right: "14px", top: `${BASE - 1}px`, height: "2px",
+            backgroundImage: `repeating-linear-gradient(to right, ${COLOR.quieto} 0 5px, transparent 5px 10px)`,
+            animation: aCorte ? `fae-dl-fundido 200ms ${ENTRADA} 600ms both` : undefined,
+          }} />
+          <svg data-punta width="16" height="16" viewBox="0 0 16 16" style={{
+            position: "absolute", right: 0, top: `${BASE - 8}px`,
+            animation: aCorte ? `fae-dl-fundido 200ms ${ENTRADA} 600ms both` : undefined,
+          }}>
+            <path d="M3 2 L14 8 L3 14" fill="none" stroke={COLOR.quieto} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </>
+      )}
+    </>
   );
 }
 
@@ -274,6 +409,7 @@ function Pista({ pista, estado, columnas, columnaActual, marcas, salientes, sali
 export default function DosLineas({
   estado, empresa, recienCambiada = false, cruzandoNombre = false, encabezado = null,
   descripcion = null, idDescripcion, chipRef = null, salidaMs = 160, msContador = 450,
+  calendario = null, soloEncabezados = false, pie = null, sinEmpresa = false,
 }) {
   const reducido = useReducido();
   const caja = useRef(null);
@@ -301,15 +437,45 @@ export default function DosLineas({
 
   /* Las marcas que acaban de aparecer, para animarlas una vez (A2). */
   const previas = useRef(new Set(estado.marcas.map(claveMarca)));
-  const nuevas = new Set(estado.marcas.map(claveMarca).filter((k) => !previas.current.has(k)));
+  const nuevasP1 = new Set(estado.marcas.map(claveMarca).filter((k) => !previas.current.has(k)));
   useEffect(() => { previas.current = new Set(estado.marcas.map(claveMarca)); }, [estado.marcas]);
+  /*
+   * En la pieza 3 la cascada dura ≈1,2 s: las nuevas se calculan una vez por
+   * estado (el padre lo memoriza por paso) y no se pierden si el padre vuelve
+   * a pintar a mitad de camino. La pieza 1 sigue con su cálculo de siempre.
+   */
+  const cascada = useRef({ marcas: estado.marcas, nuevas: new Set() });
+  if (calendario && cascada.current.marcas !== estado.marcas) {
+    const antesK = new Set(cascada.current.marcas.map(claveMarca));
+    cascada.current = { marcas: estado.marcas, nuevas: new Set(estado.marcas.map(claveMarca).filter((k) => !antesK.has(k))) };
+  }
+  const nuevas = calendario ? cascada.current.nuevas : nuevasP1;
   const salientes = useSalientes(estado.marcas, { reducido, ms: salidaMs });
+
+  /*
+   * El calendario de la pieza 3 (Xeno, A1): lo que es nuevo en este estado se
+   * anima una vez; lo que ya estaba, se queda quieto. Sin calendario —la
+   * pieza 1— nada de esto existe.
+   */
+  const cal = useRef({ actual: calendario, anima: {} });
+  const igual = (a, b) => ["regla", "corchete", "corte", "retardo"].every((k) => Boolean(a?.[k]) === Boolean(b?.[k]));
+  if (calendario && !igual(calendario, cal.current.actual)) {
+    const prev = cal.current.actual;
+    const nuevo = (k) => Boolean(calendario[k] && !prev?.[k]);
+    cal.current = { actual: calendario, anima: { regla: nuevo("regla"), corte: nuevo("corte"), retardo: nuevo("retardo") } };
+  }
+  const animaCal = cal.current.anima;
 
   const pistaProps = (pista, retraso) => ({
     pista, estado: estado.pistas[pista], columnas: estado.columnas, columnaActual: estado.columnaActual,
     marcas: estado.marcas.filter((m) => m.pista === pista), salientes: salientes.filter((m) => m.pista === pista),
     salidaMs, nuevas, contadores: estado.contadores, resaltados: estado.resaltados, reducido,
     trazar: trazar && !reducido, retraso, msContador,
+    ...(calendario ? {
+      xDe: xDeDia, sinMonto: true, escalon: ESCALON_DIA, soloEncabezado: soloEncabezados,
+      finLinea: calendario.corte ? X_CORTE : null,
+      extras: <Futuro calendario={calendario} pista={pista} anima={animaCal} reducido={reducido} />,
+    } : {}),
   });
 
   return (
@@ -326,7 +492,7 @@ export default function DosLineas({
       {descripcion && <p id={idDescripcion} data-alternativo hidden>{descripcion}</p>}
 
       {/* La etiqueta de empresa: fija, y resaltada mientras está «recién cambiada». */}
-      <p style={{ margin: "0 0 10px" }}>
+      {!sinEmpresa && <p style={{ margin: calendario ? "0 0 6px" : "0 0 10px" }}>
         <span
           ref={chipRef}
           tabIndex={-1}
@@ -352,12 +518,14 @@ export default function DosLineas({
             {empresa.nombre}
           </strong>
         </span>
-      </p>
+      </p>}
 
       {encabezado}
 
+      {calendario && <Regla calendario={calendario} anima={animaCal.regla && !reducido} animaCorte={animaCal.corte && !reducido} />}
+
       {/* Los números de columna, alineados con el tallo. */}
-      <div aria-hidden="true" style={{ position: "relative", height: "16px" }}>
+      {!calendario && <div aria-hidden="true" style={{ position: "relative", height: "16px" }}>
         {Array.from({ length: estado.columnas }, (_, i) => (
           <span key={i} style={{
             position: "absolute", left: `calc(${xDeColumna(i, estado.columnas)} - 3px)`, top: 0,
@@ -366,12 +534,14 @@ export default function DosLineas({
             {i + 1}
           </span>
         ))}
-      </div>
+      </div>}
 
       <Pista {...pistaProps(RESULTADOS, 0)} />
       <div style={{ height: "12px" }} />
       <Pista {...pistaProps(CAJA, 100)} />
-      <div style={{ height: "16px" }} />
+      {pie}
+      {/* La pieza 3 vive en un escenario de alto fijo: sin el aire final. */}
+      {!calendario && <div style={{ height: "16px" }} />}
     </div>
   );
 }
