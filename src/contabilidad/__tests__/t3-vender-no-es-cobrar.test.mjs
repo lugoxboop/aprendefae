@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 
 /*
@@ -334,7 +334,8 @@ test("★★ capa 3 con animación: el reinicio tarda ≈650 ms y la etiqueta qu
 test("★★★ #B8C4D4 nunca es color de texto, y en el componente no hay teal, ámbar ni coral", async () => {
   const carpeta = new URL("../../components/mecanicas/libros/tema3/", import.meta.url);
   const fuentes = [
-    ...readdirSync(carpeta).map((f) => readFileSync(new URL(f, carpeta), "utf8")),
+    /* Solo los de la pieza 1: la act. 1 vive en la misma carpeta y rebota en coral como T1-6. */
+    ...["DosLineas.jsx", "MiraloFuncionar.jsx", "PruebaUsted.jsx", "escenasTema3.jsx"].map((f) => readFileSync(new URL(f, carpeta), "utf8")),
     readFileSync(new URL("../dosLineas.js", import.meta.url), "utf8"),
     readFileSync(new URL("../../data/contabilidadTema3.js", import.meta.url), "utf8"),
   ].join("\n");
