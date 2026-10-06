@@ -607,6 +607,8 @@ export const SUBJECTS = {
           { id: "t3-que-le-toca", nombre: "¿Qué le toca a este periodo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* «Cerrar el periodo»: la cuarta y última pieza de Aprender, después de «Lo que ya se pagó y no ha pasado» (Levi). */
           { id: "t3-a5-cerrar-el-periodo", nombre: "Cerrar el periodo", clasificacion: { tipo: APRENDER } },
+          /* Actividad 7 de Hacer: después de «Cerrar el periodo», al final del camino (Levi). Maestría · 90 FP. */
+          { id: "t3-cierre-completo", nombre: "El cierre completo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],
       },
     ],

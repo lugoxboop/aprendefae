@@ -1,6 +1,7 @@
 import { ACT2_T3, EJEMPLO_PANADERIA, PASOS_ACT2, ALT_TUTORIAL_ACT2 } from "./contabilidadTema3Act2.js";
 import { ACT4_T3, EJEMPLO_ACT4, PASOS_ACT4, ALT_TUTORIAL_ACT4 } from "./contabilidadTema3Act4.js";
 import { ACT5_T3, EJEMPLO_ACT5, PASOS_ACT5, ALT_TUTORIAL_ACT5 } from "./contabilidadTema3Act5.js";
+import { ACT7_T3, EJEMPLO_ACT7, PASOS_ACT7, ALT_TUTORIAL_ACT7 } from "./contabilidadTema3Act7.js";
 import { ACT6_T3, EJEMPLO_PANADERIA_ACT6, PASOS_ACT6, ALT_TUTORIAL_ACT6 } from "./contabilidadTema3Act6.js";
 
 /*
@@ -105,4 +106,39 @@ const ASI_AJUSTE_DIFERIDO = {
   cuadros: { gesto: 4 },
 };
 
-export const ASI_SE_JUEGA_TEMA3 = Object.fromEntries([ASI_CUANDO_SE_CAUSA, ASI_AJUSTE_ACUMULADO, ASI_AJUSTE_DIFERIDO, ASI_QUE_LE_TOCA].map((a) => [a.actividadId, a]));
+/*
+ * Act. 7: la panadería de Gen. La mano arma el asiento 1 (ingresos al debe,
+ * Ganancias y pérdidas al haber), lo confirma, arma el 2, lo confirma y
+ * escribe el saldo. Con movimiento reducido, el cuadro del gesto deja el
+ * asiento 1 confirmado y el último, todo resuelto con la resolución de Gen.
+ */
+const ASI_CIERRE_COMPLETO = {
+  actividadId: ACT7_T3.id,
+  titulo: ACT7_T3.nombre,
+  consigna: ACT7_T3.consigna,
+  pasos: PASOS_ACT7,
+  alt: ALT_TUTORIAL_ACT7.replace(/^Ejemplo: /, ""),
+  demo: { items: [EJEMPLO_ACT7] },
+  guion: {
+    duracion: 25000,
+    toques: [
+      { ms: 1500, en: '[data-sacar="Ingresos por ventas:debe"]' },
+      { ms: 2700, en: '[data-campo-cifra="1:Ingresos por ventas"]', escribe: "800000" },
+      { ms: 4200, en: '[data-sacar="Ganancias y pérdidas:haber"]' },
+      { ms: 5400, en: '[data-campo-cifra="1:Ganancias y pérdidas"]', escribe: "800000" },
+      { ms: 6900, en: '[data-confirmar-parte="1"]' },
+      { ms: 8400, en: '[data-sacar="Ganancias y pérdidas:debe"]' },
+      { ms: 9600, en: '[data-campo-cifra="2:Ganancias y pérdidas"]', escribe: "500000" },
+      { ms: 11100, en: '[data-sacar="Gasto harina:haber"]' },
+      { ms: 12300, en: '[data-campo-cifra="2:Gasto harina"]', escribe: "300000" },
+      { ms: 13800, en: '[data-sacar="Gasto salarios:haber"]' },
+      { ms: 15000, en: '[data-campo-cifra="2:Gasto salarios"]', escribe: "200000" },
+      { ms: 16500, en: '[data-confirmar-parte="2"]' },
+      { ms: 18000, en: '[data-campo-cifra="saldo"]', escribe: "300000" },
+      { ms: 19500, en: '[data-confirmar-parte="3"]' },
+    ],
+  },
+  cuadros: { gesto: 5 },
+};
+
+export const ASI_SE_JUEGA_TEMA3 = Object.fromEntries([ASI_CUANDO_SE_CAUSA, ASI_AJUSTE_ACUMULADO, ASI_AJUSTE_DIFERIDO, ASI_QUE_LE_TOCA, ASI_CIERRE_COMPLETO].map((a) => [a.actividadId, a]));
