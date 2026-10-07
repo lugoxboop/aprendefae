@@ -515,6 +515,12 @@ export const ACTIVIDADES_FUERA_DEL_POOL = [
    * del Arca tampoco aporta, por lo mismo.
    */
   "comite-nova",
+  /*
+   * Las dos de Política Monetaria que entraron después de B2. Fuera hasta que
+   * alguien decida que aporten: meterlas cambiaría el Repaso Diario que ya
+   * tienen los estudiantes.
+   */
+  "por-cual-arteria-entra", "las-dos-entradas",
 ];
 
 /** Los ítems que salen de las actividades que el estudiante ya completó. */

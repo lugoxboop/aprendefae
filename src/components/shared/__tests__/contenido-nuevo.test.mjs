@@ -72,14 +72,14 @@ function espiarAlmacen({ falla = false } = {}) {
 }
 /* Mete entradas en la lista real (la que lee el gancho de «Empezar») mientras dura `fn`. */
 async function conLista(entradas, fn) {
-  N.NOVEDADES.push(...entradas);
-  try { return await fn(); } finally { N.NOVEDADES.splice(0, N.NOVEDADES.length); w.localStorage.clear(); }
+  const antes = N.NOVEDADES.splice(0, N.NOVEDADES.length, ...entradas);
+  try { return await fn(); } finally { N.NOVEDADES.splice(0, N.NOVEDADES.length, ...antes); w.localStorage.clear(); }
 }
 
 /* ═══════════════════ LA LÓGICA ═══════════════════ */
 
-test("★★★ este PR va con la lista VACÍA: no pinta nada en ningún tema y no toca el almacenamiento", () => {
-  assert.deepEqual(N.NOVEDADES, []);
+test("★★★ las entradas de la lista van con la fecha VACÍA: no pinta nada en ningún tema y no toca el almacenamiento", () => {
+  assert.ok(N.NOVEDADES.every((e) => e.publicada === ""), "una entrada con fecha antes del despliegue aprobado");
   const espia = espiarAlmacen();
   try {
     for (const materia of Object.values(SUBJECTS)) {

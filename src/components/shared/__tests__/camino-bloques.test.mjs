@@ -203,10 +203,15 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
    * acaba en el lado izquierdo, y el título va siempre al lado contrario del
    * nodo que lo precede. Es la regla, no una excepción; se fija aquí para que
    * un cambio de lado no pase sin que nadie lo vea.
+   *
+   * Política Monetaria va 2-4-5-3 desde sus dos actividades nuevas: Aplicación
+   * acaba ahora en el lado izquierdo, así que el título de Análisis pasa a la
+   * DERECHA. Misma regla.
    */
+  const LADOS = { "politica-monetaria": [-1, -1, 1, 1] };
   for (const temaId of TEMAS) {
     const nodos = nodosDelTema(temaId);
-    assert.deepEqual(disposicionPorBloques(bloquesDe(nodos), nodos.length).cabeceras.map((c) => c.lado), [-1, -1, -1, 1], temaId);
+    assert.deepEqual(disposicionPorBloques(bloquesDe(nodos), nodos.length).cabeceras.map((c) => c.lado), LADOS[temaId] ?? [-1, -1, -1, 1], temaId);
   }
 });
 

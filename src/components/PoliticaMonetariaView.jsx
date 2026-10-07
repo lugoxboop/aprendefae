@@ -18,6 +18,7 @@ import {
   CadenaDeTransmision, ExplicaseloADeudor, CorrienteDeDecisiones, ElRezago, DilemaBanqueroCentral,
   DueloDeInstrumentos, DisenaRespuestaMonetaria,
 } from "./mecanicas/maquinas/actividades.jsx";
+import { PorCualArteriaEntra, LasDosEntradas } from "./mecanicas/maquinas/monetariaRepaso.jsx";
 import { APRENDER_QUIEN_MANDA, APRENDER_INSTRUMENTOS, APRENDER_TRANSMISIONES } from "../data/politicaMonetaria.js";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
@@ -51,7 +52,9 @@ const JUEGOS = [
   { id: "volante-de-la-tasa", Mecanica: VolanteDeLaTasa },
   { id: "caja-de-herramientas", Mecanica: CajaDeHerramientas },
   { id: "a-quien-le-pega-la-tasa", Mecanica: AQuienLePegaLaTasa },
+  { id: "las-dos-entradas", Mecanica: LasDosEntradas },
   { id: "cadena-de-transmision", Mecanica: CadenaDeTransmision },
+  { id: "por-cual-arteria-entra", Mecanica: PorCualArteriaEntra },
   { id: "explicaselo-a-un-deudor", Mecanica: ExplicaseloADeudor },
   { id: "corriente-de-decisiones", Mecanica: CorrienteDeDecisiones },
   { id: "el-rezago", Mecanica: ElRezago },

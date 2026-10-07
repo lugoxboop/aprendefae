@@ -34,7 +34,10 @@ import { useEffect, useRef, useState } from "react";
  * `publicada` es la fecha del despliegue real (hora de Bogotá). Vacía hasta
  * que se publiquen las actividades nuevas, en su mismo PR.
  */
-export const NOVEDADES = [];
+export const NOVEDADES = [
+  /* Las dos de Política Monetaria. La fecha, vacía: se pone la del despliegue aprobado; vacía, no se pinta. */
+  { materia: "macroeconomia", tema: "politica-monetaria", tipo: "actividad", ids: ["las-dos-entradas", "por-cual-arteria-entra"], publicada: "" },
+];
 
 /*
  * Solo materias donde TODOS los temas abren sus actividades con «Empezar»
