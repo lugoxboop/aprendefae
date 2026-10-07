@@ -9,6 +9,7 @@ import Logo from "./Logo.jsx";
 import RankingFP from "./ranking/RankingFP.jsx";
 import LigaBoard from "./ligas/LigaBoard.jsx";
 import BannerRepaso from "./repaso/BannerRepaso.jsx";
+import { marcaDeTema } from "./shared/contenidoNuevo.jsx";
 
 /*
  * Plantilla del índice de temas, compartida por las dos materias.
@@ -164,6 +165,7 @@ export default function TopicIndexView({
                     onAbrir={() => setAbierta(topic.id)}
                     onCerrar={() => setAbierta(null)}
                     onElegirModo={onOpenTopic}
+                    marca={marcaDeTema(subjectId, topic.id)}
                   />
                 ) : (
                   <SubjectCard

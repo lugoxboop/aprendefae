@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { FAE } from "../theme.js";
 import { APRENDER, HACER, ETIQUETAS, actividadesDeTipo } from "../data/subjects.js";
 import { CARD_SHELL } from "./SubjectCard.jsx";
+import { ConMarca } from "./shared/contenidoNuevo.jsx";
 
 /*
  * Tarjeta de tema que se parte en dos al tocarla.
@@ -124,6 +125,8 @@ export default function TopicSplitCard({
   onAbrir,
   onCerrar,
   onElegirModo,
+  /* El aviso de contenido nuevo: opcional; sin él, la tarjeta es exactamente la de siempre. */
+  marca = null,
 }) {
   const contenedor = useRef(null);
   const opciones = useRef(null);
@@ -153,7 +156,7 @@ export default function TopicSplitCard({
     [HACER]: actividadesDeTipo(topic, HACER).length,
   };
 
-  return (
+  const tarjeta = (
     <div
       ref={contenedor}
       className="fae-card fae-split"
@@ -273,4 +276,5 @@ export default function TopicSplitCard({
       </div>
     </div>
   );
+  return marca ? <ConMarca marca={marca}>{tarjeta}</ConMarca> : tarjeta;
 }
