@@ -281,6 +281,11 @@ test("★★★ la tarjeta: sin marca, idéntica; con marca, la misma tarjeta de
     assert.equal(pastilla.style.right, "16px");
     assert.equal(pastilla.getAttribute("lang"), "es");
     assert.equal(pastilla.querySelector("svg").getAttribute("aria-hidden"), "true");
+    /* Sin borde (Levi): la silueta la da el relleno blanco; el texto, navy. */
+    const cuerpo = pastilla.querySelector("svg").parentElement;
+    assert.equal(cuerpo.style.border, "");
+    assert.equal(cuerpo.style.background, "rgb(255, 255, 255)");
+    assert.equal(cuerpo.style.color, "rgb(29, 53, 87)");
     const enfocables = (c) => [...c.querySelectorAll("button, a, input, [tabindex]")].map((x) => x.outerHTML.replace(/:r[0-9a-z]+:/g, ""));
     assert.deepEqual(enfocables(con.caja), enfocables(sin.caja), "el orden de tabulación no cambia");
   } finally { sin.desmontar(); con.desmontar(); }

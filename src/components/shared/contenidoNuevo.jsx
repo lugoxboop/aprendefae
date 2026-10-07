@@ -211,7 +211,8 @@ export function PastillaNovedad({ marca, caja }) {
       <span ref={pastilla} style={{
         position: "relative", display: "inline-flex", alignItems: "center", gap: "5px", minHeight: "24px", maxWidth: "100%",
         boxSizing: "border-box", padding: "2px 10px 2px 8px", borderRadius: radio, overflow: "hidden",
-        background: "#FFFFFF", border: `2px solid ${NAVY}`, color: NAVY,
+        /* Sin borde (Levi): lo que delimita la pastilla es el relleno blanco contra la tarjeta. */
+        background: "#FFFFFF", color: NAVY,
         fontFamily: "Inter, sans-serif", fontSize: "12px", fontWeight: 700, lineHeight: 1.2,
       }}>
         {/* La banda tenue que cruza el fondo por detrás del texto; el contraste no cambia. */}
