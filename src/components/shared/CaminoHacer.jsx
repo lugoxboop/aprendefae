@@ -3,6 +3,7 @@ import { FAE, ANCHO_ESTRECHO } from "../../theme.js";
 import { iconoDe } from "./iconosActividad.jsx";
 import PreviaActividad from "./previas/PreviaActividad.jsx";
 import { bloquesDe } from "../../hacer/bloques.js";
+import { registrarApertura } from "./contenidoNuevo.jsx";
 
 /*
  * Camino de actividades para la mitad "Hacer" de cualquier tema.
@@ -721,6 +722,7 @@ function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas }) {
           onEmpezar={() => {
             setDetalle(null);
             onAbrir?.(nodoDetalle.id);
+            registrarApertura(nodoDetalle.id);
           }}
         />
       )}
