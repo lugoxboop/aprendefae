@@ -62,7 +62,7 @@ export const UMBRAL = 65;
 export const PALABRAS_MINIMAS = 10;
 export const SILABAS_POR_CIFRA = 3;
 
-/* Cualquier letra, con sus marcas combinadas pegadas (la raya de «G + ̄» va con su G). */
+/* Cualquier letra, con sus marcas combinadas pegadas (la raya combinada de una «G» va con su G). */
 const LETRA = "\\p{L}\\p{M}";
 /* Una cifra: signo opcional, dígitos con separadores internos, porcentaje opcional. */
 const CIFRA = "\\$?\\d+(?:[.,]\\d+)*%?";
