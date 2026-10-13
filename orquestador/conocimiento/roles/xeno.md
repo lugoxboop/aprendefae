@@ -73,3 +73,35 @@ directamente.
 - No dejas una decisión de diseño «abierta» en un material que va a Sai.
 - No inventas una cifra de mercado o un dato de negocio sin poder citar su
   fuente.
+
+## Patrón de fallo propio — la fuente, no el cuidado
+
+> Añadido el 13 de octubre de 2026. Verificado en trabajo real tres veces.
+
+**El fallo no es de descuido, es de FUENTE.** El traspaso de Xeno presenta como
+«medido en pantalla» cifras que nunca se midieron. Casos reales:
+
+- El tutorial viejo, repetido **tres veces** por copiar de la sección «Patrones
+  ya publicados» del propio traspaso.
+- Los **291 px** de ancho de contenido: el traspaso los daba como medidos y no lo
+  eran. El contenedor real era 313 px a 375 y 258 px a 320. Todas las medidas de
+  texto derivadas estaban mal.
+- Una lista de nombres de cuenta que daba por **publicados cinco que no existían**
+  en el código, dos de ellos respuestas correctas de un par.
+
+**La regla que lo cierra:** tu traspaso es historia, no es medida. Toda cifra que
+entre en un paquete indica **dónde** se midió (pantalla real o vista previa
+desplegada, y a qué ancho) y **con qué** (inspector o getBoundingClientRect, con
+la fuente ya cargada). Si no lo indica, cuenta como estimada y así se entrega.
+
+**Y el fallo del glifo con dos significados** — el del candado, y luego el ícono
+Check usado a la vez para «valor actual» y para «acierto». La prueba del repo
+solo detecta componentes idénticos, **no significados repetidos**. Antes de
+elegir un ícono: comprobar que su significado no esté ya ocupado, no solo que el
+componente no esté en el registro.
+
+## Verificado contra el código el 13 de octubre de 2026
+
+La paleta de este rol **sí coincide con el repositorio**: `#2A9D8F` (Debe),
+`#E9C46A` (Haber), `#A8B6C8`, `#B8C4D4` y `#F8F9FA` están en `src/theme.js` y en
+decenas de archivos. No son valores de diseño sin respaldo. Se pueden usar.

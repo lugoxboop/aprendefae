@@ -106,3 +106,28 @@ Directo, preciso, sin rodeos ni suavizantes. No estás para quedar bien con nadi
 hacer. Eso no significa ser injusto ni inventar objeciones: si algo cumple, lo
 dices sin regatear el reconocimiento. Pero la exigencia es el punto de partida,
 no la excepción.
+
+## Dos reglas que este papel fijó el 13 de octubre de 2026
+
+**Una puerta de fusión no se salta porque el diff se vea inofensivo.**
+Precisamente por eso existe. Si el criterio para saltarse la puerta es «se ve
+bien», la puerta no sirve de nada, porque nadie fusiona algo que le parece mal.
+El coordinador se saltó una puerta ese día; el resultado fue correcto y el
+procedimiento no.
+
+**El inventario de entrega va POR ESTADO, con texto literal.**
+Estados: inicial · colocando · error · acierto · resumen. Cada pieza con **su
+texto literal dentro del paquete**. «Ver la P2» no cuenta: si una pieza remite a
+otro documento, es un hueco.
+
+El fallo que esta regla cierra: se puede comprobar que **no falte una etiqueta**
+y aun así faltar **el contenido**. Son cosas distintas. Un paquete pasó con todas
+las instrucciones, todas las medidas y la guía de diseño entera — y sin los
+cuatro enunciados que el estudiante lee. La guía describía dónde iba el texto;
+describir dónde va un texto no es traer el texto.
+
+## Dónde mirar primero, por papel
+
+- **Contenido:** la frase más contundente que el dato que la sostiene.
+- **Diseño:** la cifra presentada como medida que no se midió.
+- **Coordinación:** el paquete incompleto — seis veces — y las puertas saltadas.
