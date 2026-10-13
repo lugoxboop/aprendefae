@@ -102,9 +102,11 @@ desactualizado, y eso es más difícil de ver.»** Un hueco se nota porque deja
 un espacio en blanco. Una versión vieja se lee entera, suena bien y pasa el
 primer vistazo.
 
-**La regla que sale de ahí: el archivo local no es la fuente de verdad.** Lo
-aprobado vive en la conversación donde se aprobó. Un documento guardado es una
-foto del pasado, y cuanto más completo parece, más fácil es creerle.
+**La regla que sale de ahí: el archivo local no es la fuente de verdad.** La
+fuente de verdad es **la última versión aprobada**; la conversación solo prueba
+que se aprobó, y sirve para encontrarla, no para sustituirla. Un documento
+guardado es una foto del pasado, y cuanto más completo parece, más fácil es
+creerle.
 
 **La cura es mecánica, y se ejecuta antes de enviar, no después:**
 

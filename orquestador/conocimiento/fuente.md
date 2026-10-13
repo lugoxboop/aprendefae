@@ -75,12 +75,15 @@ desde fuera, y no es nuestro caso.
 Lo que el profesor evalúa manda sobre lo que el libro trae. Donde los dos
 difieren, se enseña lo del profesor y se anota aquí.
 
-| Tema | Qué pasa | Estado |
-|---|---|---|
-| Caída del consumo | El libro la explica por **sustitución**; el profesor la explica por **capacidad de gasto** | pendiente de confirmar con el profesor |
-| UEPS | No está permitido bajo NIIF, pero **el profesor lo sigue enseñando** | **cerrado: entra como lo trae el libro**, sin advertencias que el profesor no dio |
-| Tarifa de impuesto de renta | La p. 176 dice 33 % | propuesto cerrar en 33 % |
-| Conteo de días | La p. 197 cuenta excluyendo el día inicial | propuesto cerrar así |
+| Tema | Qué pasa | De dónde sale | Estado |
+|---|---|---|---|
+| Caída del consumo | El libro la explica por **sustitución**; el profesor la explica por **capacidad de gasto** | lo dijo Mateo citando a su profesor; las dos líneas del libro están en `politicaMonetaria.js` 127 y 320 | **abierto** — pendiente de confirmar con el profesor |
+| UEPS | No está permitido bajo NIIF, pero el profesor lo sigue enseñando | lo preguntó Near; lo confirmó Mateo | **cerrado** — entra como lo trae el libro, sin advertencias que el profesor no dio |
+| Tarifa de impuesto de renta | La p. 176 dice 33 % | Gen, leyendo el ejercicio 11 del cap. 4, dato g, texto literal | **abierto** — propuesto cerrar en 33 % |
+| Conteo de días | La p. 197 cuenta excluyendo el día inicial | Gen, del caso de la p. 197: venta el 10, plazo 15 días, pago el 25 | **abierto** — propuesto cerrar así |
+
+**Ninguna línea de esta tabla se da por cerrada sin el profesor, salvo la que
+dice «cerrado».**
 
 ## Preguntas abiertas al profesor, antes de construir
 
@@ -114,6 +117,9 @@ Aquí se registra solo lo que cruza células.
 - Futaba: las filas de Gloria Zea y Piedad Córdoba no cuadran, pero las columnas
   y el total de $2.655.000 sí. Lo marca con confianza baja porque la imagen está
   borrosa, y no se pronuncia sobre Moncayo.
+
+**ESTA ERRATA ESTÁ ABIERTA.** No está confirmada ni descartada: hay dos
+lecturas que no coinciden y una imagen que no se lee con seguridad.
 
 **Decisión de Sakuta, respaldada:** ninguna actividad se construye sobre esa
 tabla hasta tener un escaneo nítido de la p. 201.

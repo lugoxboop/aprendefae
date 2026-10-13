@@ -100,6 +100,9 @@ apoyaba en un dato incompleto.»**
 Sin esa comprobación se habrían abierto seis actividades publicadas para
 arreglar algo que no estaba roto.
 
-**Una comprobación en producción se juega, no se deduce.** Para saber si una
-actividad deja reintentar, se juega, se falla un ítem a propósito y se mira qué
-controles quedan en pantalla.
+**El texto se lee de lo desplegado; el comportamiento se juega.** No es la
+misma comprobación y no se hacen igual. Para saber qué dice una pantalla se
+abre el paquete desplegado y se lee literal. Para saber si una actividad deja
+reintentar hay que jugarla: se falla un ítem a propósito y se mira qué
+controles quedan. Deducir el comportamiento del código es el camino donde se
+cuela el «debería».
