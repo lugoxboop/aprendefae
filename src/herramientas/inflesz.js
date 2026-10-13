@@ -67,7 +67,7 @@ const esCifra = (t) => /\d/.test(t);
 
 /* Quita marcas que no cambian la vocal (por ejemplo, el macrón de «Ḡ»). */
 const base = (letra) => {
-  const sinMarca = letra.normalize("NFD").replace(/[̄̅]/g, "").normalize("NFC");
+  const sinMarca = letra.normalize("NFD").replace(/[\u0304\u0305]/g, "").normalize("NFC");
   return sinMarca.toLowerCase();
 };
 
