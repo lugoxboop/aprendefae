@@ -91,10 +91,20 @@ difieren, se enseña lo del profesor y se anota aquí.
    reales sobre un año de 360. El ejemplo de la p. 194 cuenta por meses y da
    $31.200, que no está entre las opciones.
 
-## Erratas encontradas, ninguna confirmada todavía
+## Erratas encontradas, ninguna confirmada con el profesor todavía
 
-Trece pendientes de confirmar con el profesor: seis del capítulo 4 y siete del
-capítulo 5 (pp. 191-206), halladas por Gen.
+**Son trece en las pp. 191-206, con veredicto de Shoko**, y no son de un solo
+agente: las encontraron entre Gen, Futaba y Shoko. Gen fichó siete en su
+primera lectura; Futaba leyó las mismas páginas sin haber visto esa ficha y
+sumó las suyas; Shoko las auditó en tres vueltas contra el PDF.
+
+**La lista con veredicto vive en `mapa-celula-b-pp191-206.md`, de la Célula B.**
+Aquí se registra solo lo que cruza células.
+
+> Esta cifra ya estuvo mal una vez en este archivo: decía siete y se las
+> atribuía a Gen. La corrigió Sakuta. Que una errata la encuentre una segunda
+> lectura independiente es la prueba de que la doble lectura sirve, y borrar
+> ese dato borra el argumento.
 
 **La de la p. 201 está en disputa entre dos lecturas** y por eso no se usa:
 
