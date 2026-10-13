@@ -67,6 +67,7 @@ ya tomó:
 |---|---|
 | Número de migración | Rango reservado por célula, asignado por el coordinador |
 | Prefijo de ids de actividad | Uno por célula |
+| **Prefijo de nombre de rama** | **Uno por célula.** Faltaba en el primer reparto y se añadió el mismo día: tres células construyendo sobre el mismo repositorio chocan ahí tarde o temprano |
 | Iconos y glifos | Reserva previa: se pide antes de elegir. La prueba detecta componentes repetidos, **no significados repetidos** |
 | Componentes compartidos (`CaminoHacer` y similares) | Un solo dueño. Ninguna célula los toca sin pasar por el coordinador |
 
@@ -82,3 +83,29 @@ es compartida con Macroeconomía, que tiene estudiantes reales.
 Que ninguna espere por él. Es el único punto por donde pasa todo y por tanto el
 cuello de botella y el punto único de falla del montaje. Si una célula se queda
 esperando un registro, el reparto falló.
+
+## Dos cosas que el montaje enseñó el primer día
+
+**El chat de un agente no es el agente.** Un mismo nombre puede existir en dos
+conversaciones distintas, cada una con su historia y su producto. El día que
+se montaron las células, dos generales quedaron duplicados: la versión
+capacitada vivía en un chat nuevo y la versión que el fundador tenía a la vista
+era otra. Dos conversaciones que creen mandar sobre la misma célula le dan
+órdenes distintas al mismo agente, y el agente obedece la última.
+
+La regla: **una célula, un general, una conversación.** Cuando haya que mover el
+rol, la conversación que se retira recibe un mensaje que lo dice, y no se borra
+hasta que la nueva esté andando, porque ahí vive el trabajo a medias.
+
+**Un agente no puede usar el navegador si su conversación no tiene un
+computador asociado.** No es un problema de permiso: sin computador no hay a
+quién pedirle autorización, así que no llega ninguna solicitud y repetir la
+orden no cambia nada. Se ve en la cabecera del chat, al lado del nombre: hay un
+icono de pantalla, o no lo hay. La conversación se crea desde la aplicación de
+escritorio con el computador seleccionado; desde el navegador no se puede
+añadir después.
+
+**Lo mismo vale para los repositorios de una sesión de código.** No se pueden
+quitar una vez abierta: el menú deja abrir el repositorio y copiar el nombre de
+la rama, pero no retirarlo. Si una sesión nace con un repositorio que no es
+suyo, la única defensa es la orden, y el general de esa célula la sostiene.
