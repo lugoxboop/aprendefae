@@ -21,7 +21,7 @@ export const ARTERIA = {
   nombre: "¿Por Cuál Arteria Entra?",
   regla: "Se llega a una arteria cuando alguien cambia cuánto gasta.",
   consigna: "Lee el eslabón. Toca la arteria a la que llega.",
-  cierre: "La tasa no reparte parejo. Entra directo por la inversión, llega al consumo y a las exportaciones netas por otros caminos, y en el modelo al gasto público no lo toca.",
+  cierre: "La tasa no reparte parejo. Entra fuerte por la inversión, llega al consumo porque las familias tienen menos con qué gastar y toca las exportaciones netas por el tipo de cambio. En el modelo, al gasto público no lo toca.",
 };
 
 export const PASOS_ARTERIA = [
@@ -30,7 +30,7 @@ export const PASOS_ARTERIA = [
   "Toca esa arteria, o toca que todavía no llega a ninguna.",
 ];
 
-/* En este orden, siempre: son las arterias del modelo, numeradas. */
+/* En este orden fijo: son las arterias del modelo, numeradas. */
 export const OPCIONES_ARTERIA = [
   { id: "c", nombre: "Arteria 1 · Consumo (C)" },
   { id: "i", nombre: "Arteria 2 · Inversión (I)" },
@@ -39,13 +39,16 @@ export const OPCIONES_ARTERIA = [
   { id: "ninguna", nombre: "Todavía no llega a ninguna" },
 ];
 
+const ACIERTO_CONSUMO = "Llega al Consumo (C). Con el crédito más caro, la familia tiene menos con qué consumir.";
+
 export const ESLABONES_ARTERIA = [
   { id: "fondos-mas-caros", texto: "Los bancos comerciales consiguen fondos más caros", respuesta: "ninguna", acierto: "Todavía no. Cambió un costo entre bancos, pero nadie ha cambiado aún cuánto gasta." },
-  { id: "entran-capitales", texto: "Entran capitales extranjeros buscando ese rendimiento", respuesta: "ninguna", acierto: "Todavía no. Entró plata al país, pero nadie ha cambiado aún cuánto gasta." },
-  { id: "guardar-mas-atractivo", texto: "Guardar la plata se vuelve más atractivo que gastarla", respuesta: "ninguna", acierto: "Todavía no. Cambió qué conviene más, pero nadie ha cambiado aún cuánto gasta." },
+  { id: "entran-capitales", texto: "Entran capitales extranjeros buscando mejores rendimientos", respuesta: "ninguna", acierto: "Todavía no. Entró plata al país, pero nadie ha cambiado aún cuánto gasta." },
+  { id: "rendimientos-suben", texto: "Los rendimientos de CDT y cuentas de ahorro suben", respuesta: "ninguna", acierto: "Todavía no. Cambió lo que paga el ahorro, pero nadie ha cambiado aún cuánto gasta." },
   { id: "peso-se-fortalece", texto: "El peso se fortalece frente al dólar", respuesta: "ninguna", acierto: "Todavía no. Cambió un precio, pero nadie ha cambiado aún cuánto gasta." },
-  { id: "prima-en-cdt", texto: "Una familia decide guardar la prima en un CDT en vez de gastarla", respuesta: "c", acierto: "Llega al Consumo (C). Es el eslabón de la cadena visto en una familia: guardar rinde más, así que gasta menos." },
-  { id: "electrodomesticos-a-cuotas", texto: "Las familias aplazan comprar electrodomésticos a cuotas", respuesta: "c", acierto: "Llega al Consumo (C). El crédito más caro cambia cuánto gastan los hogares." },
+  /* Los dos de Consumo, por capacidad de gasto (el motivo del profesor de Mateo), con el mismo acierto (Levi). */
+  { id: "credito-negado", texto: "A una familia le niegan el crédito de consumo que pensaba pedir.", respuesta: "c", acierto: ACIERTO_CONSUMO },
+  { id: "electrodomesticos-a-cuotas", texto: "Las familias aplazan comprar electrodomésticos a cuotas", respuesta: "c", acierto: ACIERTO_CONSUMO },
   { id: "pospone-maquinaria", texto: "Una empresa pospone comprar maquinaria porque el crédito está más caro", respuesta: "i", acierto: "Llega a la Inversión (I). En el modelo es la entrada directa: I = Ī − b · i." },
   { id: "congela-obra", texto: "Un constructor congela una obra nueva hasta que baje el costo del crédito", respuesta: "i", acierto: "Llega a la Inversión (I), por la misma válvula b que multiplica y resta." },
   { id: "no-amplia-planta", texto: "Una fábrica deja de ampliar su planta este año", respuesta: "i", acierto: "Llega a la Inversión (I). Al subir i, la válvula b le resta a Ī." },
@@ -60,16 +63,19 @@ export const ERRORES_ARTERIA = {
   C: "Esa no es. La tasa de interés (i) entra por la válvula de elasticidad (b), y esa válvula está en la arteria de la inversión.",
   D: "Esa no es. El canal cambiario mueve el tipo de cambio (tc), y el tc es el vaso de las exportaciones netas.",
   G: "El gasto público (Ḡ) es autónomo en el modelo: ninguna decisión de tasa lo mueve. Esa arteria nunca es la respuesta.",
+  /* Levi: era Consumo y tocó Inversión o Exportaciones netas. En lenguaje llano, a propósito: es el motivo del profesor. */
+  E: "Esa no es. Con el crédito más caro, son las familias las que tienen menos con qué consumir. Eso llega al consumo (C).",
 };
 
 /*
- * El tipo de error de una respuesta equivocada. null = no hay texto para ese
- * caso en la entrega (ver ERROR_PENDIENTE).
+ * El tipo de error de una respuesta equivocada. Todo fallo tiene texto: una
+ * prueba recorre cada combinación de respuesta correcta y opción tocada.
  *   G  tocó Gasto público: nunca es la respuesta, sea cual sea el eslabón
  *   A  dijo «ninguna» y sí llegaba a una arteria
  *   B  eligió una arteria y todavía no llegaba
  *   C  era Inversión y eligió otra arteria
  *   D  era Exportaciones netas y eligió otra arteria
+ *   E  era Consumo y eligió otra arteria
  */
 export function tipoDeErrorArteria(item, elegida) {
   if (elegida === item.respuesta) return null;
@@ -78,6 +84,7 @@ export function tipoDeErrorArteria(item, elegida) {
   if (item.respuesta === "ninguna") return "B";
   if (item.respuesta === "i") return "C";
   if (item.respuesta === "xn") return "D";
+  if (item.respuesta === "c") return "E";
   return null;
 }
 
@@ -102,6 +109,7 @@ export const ALT_TUTORIAL_ARTERIA = "Ejemplo: se lee el hecho del hotel y se toc
 export const DOS_ENTRADAS = {
   id: "las-dos-entradas",
   nombre: "Las Dos Entradas",
+  consigna: "Lee qué decide el Banco, el Gobierno o los dos, y toca la respuesta.",
   objetivo: "El Banco y el Gobierno empujan la misma demanda. Aquí ves si empujan para el mismo lado.",
   cierre: "El Banco y el Gobierno empujan la misma demanda. Pueden empujar juntos, o uno puede deshacer lo que hace el otro.",
 };

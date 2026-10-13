@@ -2,7 +2,7 @@ import {
   Link, Gauge, Scale, Siren,
   Activity, Thermometer, Droplet, Microscope, Cross,
   Stamp, Sheet, FileStack, ToggleLeft, ArrowRightLeft,
-  Folder, MessageSquarePlus,
+  Folder, MessageSquarePlus, Split, EqualNot,
 } from "lucide-react";
 
 /*
@@ -414,6 +414,14 @@ export const ICONOS_ACTIVIDAD = {
   "cadena-de-transmision": TresCorreas,
   "explicaselo-a-un-deudor": GloboPorcentaje,
   "corriente-de-decisiones": CorreaEnMovimiento,
+  /*
+   * Las dos nuevas (Xeno). Ninguna es una flecha: dos flechas opuestas ya son
+   * de «flujo-de-caja» (ArrowRightLeft) y a 24 px se confunden aunque estén
+   * giradas. Respaldos, en orden, si alguna dejara de existir: Route y
+   * GitFork para la primera; GitCompare para la segunda.
+   */
+  "por-cual-arteria-entra": Split,
+  "las-dos-entradas": EqualNot,
   "el-rezago": RelojCorrea,
   "dilema-banquero-central": BalanzaVolante,
   "duelo-de-instrumentos": EngranajesEnfrentados,

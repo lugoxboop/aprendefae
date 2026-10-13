@@ -11,7 +11,7 @@ import { Encabezado } from "../libros/tema1/encabezado.jsx";
  * ¿POR CUÁL ARTERIA ENTRA? — Análisis, 50 FP.
  *
  * El patrón de «Corriente de Decisiones» (PrimeraClasificacion): un eslabón a
- * la vez, sin reloj, las cinco opciones siempre a la vista. Es un componente
+ * la vez, sin reloj, las cinco opciones todo el tiempo a la vista. Es un componente
  * nuevo y no un banco más para aquel, porque aquel no tiene sitio para lo que
  * esta trae: la regla fija en pantalla, la consigna con «¿Cómo se juega?»,
  * los errores por tipo, el texto de cierre y el modo demo del tutorial.

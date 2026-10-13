@@ -7,7 +7,7 @@ import {
  * ═══════════════════════════════════════════════════════════════════════════
  * «ASÍ SE JUEGA» DE LAS DOS ACTIVIDADES NUEVAS DE POLÍTICA MONETARIA.
  *
- * El componente de siempre, sin cambios. Los ejemplos están fuera del banco
+ * El componente compartido, sin cambios. Los ejemplos están fuera del banco
  * y son los aprobados por Levi; la mano lee el hecho y toca una opción. Con
  * movimiento reducido: inicio, el hecho señalado, y la opción tocada.
  * ═══════════════════════════════════════════════════════════════════════════

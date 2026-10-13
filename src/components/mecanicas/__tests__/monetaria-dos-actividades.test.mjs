@@ -65,9 +65,9 @@ const textoDe = (caja, s) => caja.querySelector(s)?.textContent ?? null;
 const RESPUESTAS_A = {
   "fondos-mas-caros": "ninguna",
   "entran-capitales": "ninguna",
-  "guardar-mas-atractivo": "ninguna",
+  "rendimientos-suben": "ninguna",
   "peso-se-fortalece": "ninguna",
-  "prima-en-cdt": "c",
+  "credito-negado": "c",
   "electrodomesticos-a-cuotas": "c",
   "pospone-maquinaria": "i",
   "congela-obra": "i",
@@ -97,7 +97,7 @@ test("★★★ A: el acierto de cada eslabón y el error de su tipo", () => {
   const casos = [
     [por("pospone-maquinaria"), "ninguna", "A"],
     [por("mas-importados"), "ninguna", "A"],
-    [por("prima-en-cdt"), "ninguna", "A"],
+    [por("credito-negado"), "ninguna", "A"],
     [por("peso-se-fortalece"), "c", "B"],
     [por("fondos-mas-caros"), "xn", "B"],
     [por("congela-obra"), "c", "C"],
@@ -107,7 +107,10 @@ test("★★★ A: el acierto de cada eslabón y el error de su tipo", () => {
     /* Ḡ, sea cual sea el eslabón. */
     [por("pospone-maquinaria"), "g", "G"],
     [por("entran-capitales"), "g", "G"],
-    [por("prima-en-cdt"), "g", "G"],
+    [por("credito-negado"), "g", "G"],
+    /* Era Consumo y tocó Inversión o Exportaciones netas (Levi). */
+    [por("credito-negado"), "i", "E"],
+    [por("electrodomesticos-a-cuotas"), "xn", "E"],
   ];
   for (const [e, elegida, tipo] of casos) {
     assert.equal(M.tipoDeErrorArteria(e, elegida), tipo, `${e.id} → ${elegida}`);
@@ -115,17 +118,49 @@ test("★★★ A: el acierto de cada eslabón y el error de su tipo", () => {
   }
 });
 
-test("A: PENDIENTE — era Consumo y eligió Inversión o Exportaciones netas: la entrega no trae texto", () => {
-  for (const id of ["prima-en-cdt", "electrodomesticos-a-cuotas"]) {
-    const e = ESLABONES_ARTERIA.find((x) => x.id === id);
-    for (const elegida of ["i", "xn"]) assert.equal(M.retroArteria(e, elegida), null, `${id} → ${elegida}`);
+test("★★★ A: ningún caso mudo — toda combinación de respuesta correcta y opción tocada tiene texto", () => {
+  /*
+   * Cada respuesta posible, con los eslabones reales y con uno sintético por
+   * respuesta, por si el banco cambia. Ḡ no cuenta como respuesta posible: en
+   * el modelo nunca lo es, y otra prueba exige que ningún eslabón la tenga.
+   */
+  const posibles = OPCIONES_ARTERIA.filter((o) => o.id !== "g");
+  assert.equal(posibles.length, 4);
+  const items = [...ESLABONES_ARTERIA, ...posibles.map((o) => ({ id: `sintetico-${o.id}`, respuesta: o.id, acierto: "Acierto sintético." }))];
+  for (const e of items) {
+    for (const o of OPCIONES_ARTERIA) {
+      const texto = M.retroArteria(e, o.id);
+      assert.ok(typeof texto === "string" && texto.length > 3, `${e.id} (era ${e.respuesta}) → tocó ${o.id}: sin texto`);
+    }
+  }
+});
+
+test("★★★ A: el banco aprobado — consumo por capacidad de gasto, nada de sustitución", () => {
+  const por = (id) => ESLABONES_ARTERIA.find((e) => e.id === id);
+  assert.equal(por("credito-negado").texto, "A una familia le niegan el crédito de consumo que pensaba pedir.");
+  assert.equal(por("rendimientos-suben").texto, "Los rendimientos de CDT y cuentas de ahorro suben");
+  assert.equal(por("rendimientos-suben").acierto, "Todavía no. Cambió lo que paga el ahorro, pero nadie ha cambiado aún cuánto gasta.");
+  assert.equal(por("entran-capitales").texto, "Entran capitales extranjeros buscando mejores rendimientos");
+  for (const id of ["credito-negado", "electrodomesticos-a-cuotas"]) {
+    assert.equal(por(id).acierto, "Llega al Consumo (C). Con el crédito más caro, la familia tiene menos con qué consumir.", id);
+  }
+  assert.equal(ERRORES_ARTERIA.E, "Esa no es. Con el crédito más caro, son las familias las que tienen menos con qué consumir. Eso llega al consumo (C).");
+  assert.equal(por("prima-en-cdt"), undefined);
+  assert.equal(por("guardar-mas-atractivo"), undefined);
+});
+
+test("★★★ ninguna de las dos dice «CDT en vez de gastarla», «más atractivo que gastarla», «siempre» ni «una sola puerta»", () => {
+  const fuentes = ["../../../data/monetariaRepaso.js", "../../../data/asiSeJuegaMonetaria.js", "../maquinas/PorCualArteria.jsx", "../maquinas/DosEntradas.jsx", "../maquinas/monetariaRepaso.jsx"]
+    .map((f) => readFileSync(new URL(f, import.meta.url), "utf8")).join("\n");
+  for (const prohibida of ["CDT en vez de gastarla", "más atractivo que gastarla", "siempre", "una sola puerta"]) {
+    assert.ok(!fuentes.toLowerCase().includes(prohibida.toLowerCase()), `aparece «${prohibida}»`);
   }
 });
 
 test("★★★ A: los textos, tal cual", () => {
   assert.equal(ARTERIA.regla, "Se llega a una arteria cuando alguien cambia cuánto gasta.");
   assert.equal(ARTERIA.consigna, "Lee el eslabón. Toca la arteria a la que llega.");
-  assert.equal(ARTERIA.cierre, "La tasa no reparte parejo. Entra directo por la inversión, llega al consumo y a las exportaciones netas por otros caminos, y en el modelo al gasto público no lo toca.");
+  assert.equal(ARTERIA.cierre, "La tasa no reparte parejo. Entra fuerte por la inversión, llega al consumo porque las familias tienen menos con qué gastar y toca las exportaciones netas por el tipo de cambio. En el modelo, al gasto público no lo toca.");
   assert.deepEqual(M.PASOS_ARTERIA, [
     "Lee qué pasa en el eslabón y a quién le pasa.",
     "Pregúntate si alguien ya cambió cuánto gasta.",
@@ -227,6 +262,7 @@ test("★★★ B: cada explicación según la pregunta y el error", () => {
 });
 
 test("★★★ B: los textos, tal cual", () => {
+  assert.equal(DOS_ENTRADAS.consigna, "Lee qué decide el Banco, el Gobierno o los dos, y toca la respuesta.");
   assert.equal(DOS_ENTRADAS.objetivo, "El Banco y el Gobierno empujan la misma demanda. Aquí ves si empujan para el mismo lado.");
   assert.equal(DOS_ENTRADAS.cierre, "El Banco y el Gobierno empujan la misma demanda. Pueden empujar juntos, o uno puede deshacer lo que hace el otro.");
   assert.deepEqual(M.PASOS_DOS_ENTRADAS, ["Lee lo que decide el Banco, el Gobierno o los dos.", "Elige una de las dos respuestas."]);
@@ -322,7 +358,8 @@ test("★★ los registros: etiquetas del docente, formato del resumen, fuera de
   assert.equal(formatoDe(ARTERIA.id), FORMATO.X_DE_N);
   assert.equal(formatoDe(DOS_ENTRADAS.id), FORMATO.X_DE_N);
   for (const id of [ARTERIA.id, DOS_ENTRADAS.id]) assert.ok(ACTIVIDADES_FUERA_DEL_POOL.includes(id), id);
-  assert.deepEqual(NOVEDADES, [
-    { materia: "macroeconomia", tema: "politica-monetaria", tipo: "actividad", ids: ["las-dos-entradas", "por-cual-arteria-entra"], publicada: "" },
+  /* La fecha la pone el último commit, el día del despliegue: aquí solo la entrada. */
+  assert.deepEqual(NOVEDADES.map(({ publicada, ...resto }) => resto), [
+    { materia: "macroeconomia", tema: "politica-monetaria", tipo: "actividad", ids: ["las-dos-entradas", "por-cual-arteria-entra"] },
   ]);
 });

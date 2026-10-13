@@ -18,7 +18,7 @@ import { Encabezado } from "../libros/tema1/encabezado.jsx";
  *   dirección   una decisión  → «Hacia arriba» / «Hacia abajo»
  *   sentido     dos decisiones → «Van igual» / «Van en contra»
  *
- * Doce preguntas, 3 y 3 en cada tipo: responder siempre con el mismo botón da
+ * Doce preguntas, 3 y 3 en cada tipo: responder todas con el mismo botón da
  * 6 de 12. Los dos botones de cada tipo cambian de lado en cada partida, como
  * en el Volante. PrediccionTasa no se toca.
  *
