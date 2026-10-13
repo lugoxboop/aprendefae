@@ -39,14 +39,22 @@
  * El punto de miles de una cifra no cierra frase. Los dos puntos y el punto y
  * coma tampoco. Un texto sin punto final cuenta como una frase.
  *
- * ═══════════ PENDIENTE DE LEVI: «Ḡ» ═══════════
+ * ═══════════ LAS VARIABLES — NO SE CAMBIA SIN LEVI ═══════════
  *
- * Aquí «Ḡ» cuenta como cualquier variable de una letra («T», «i», «b»): una
- * palabra, una sílaba. Los números aprobados de tres textos de Macro que la
- * llevan salieron SIN contarla (72,2, 68,9 y 92,0 en vez de 74,7, 71,2 y 92,9);
- * los otros 40 textos de referencia coinciden exactos. Ningún veredicto cambia,
- * pero la regla la decide Levi. Si decide no contarla, se cambia aquí y en la
- * prueba que la fija.
+ * Las variables (T, TR, i, b, tc, Y, Ḡ…) cuentan como una palabra de una
+ * sílaba. Decisión de Levi (opción A), después de encontrar que su propia
+ * calculadora saltaba «Ḡ» sin avisar.
+ *
+ * ═══════════ ANTES DE CONTAR: NORMALIZAR, Y NO SALTAR NADA EN SILENCIO ═══════════
+ *
+ * «Ḡ» se escribe de dos formas: un solo carácter, o «G» más una raya
+ * combinada. El texto se normaliza (NFC) antes de contar, y una letra con
+ * marcas combinadas se cuenta como UNA letra, con sus marcas pegadas.
+ *
+ * Una letra que la calculadora no sabe leer (su base, sin tildes ni rayas, no
+ * es de la a a la z ni la ñ) no se salta callando: se cuenta como consonante
+ * y se REPORTA en `desconocidas`, y el comando lo avisa. Así fue como se
+ * perdió «Ḡ» la primera vez: una herramienta que la ignoraba sin decirlo.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -54,10 +62,11 @@ export const UMBRAL = 65;
 export const PALABRAS_MINIMAS = 10;
 export const SILABAS_POR_CIFRA = 3;
 
-const LETRA = "a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\u00C0-\\u024F\\u1E00-\\u1EFF";
+/* Cualquier letra, con sus marcas combinadas pegadas (la raya de «G + ̄» va con su G). */
+const LETRA = "\\p{L}\\p{M}";
 /* Una cifra: signo opcional, dígitos con separadores internos, porcentaje opcional. */
 const CIFRA = "\\$?\\d+(?:[.,]\\d+)*%?";
-const TOKEN = new RegExp(`${CIFRA}|[${LETRA}]+`, "gu");
+const TOKEN = new RegExp(`${CIFRA}|\\p{L}[${LETRA}]*`, "gu");
 
 const FUERTES = new Set([..."aeoáéó"]);
 const DEBILES_TILDADAS = new Set([..."íú"]);
@@ -65,15 +74,22 @@ const VOCALES = new Set([..."aeiouáéíóúü"]);
 
 const esCifra = (t) => /\d/.test(t);
 
-/* Quita marcas que no cambian la vocal (por ejemplo, el macrón de «Ḡ»). */
-const base = (letra) => {
-  const sinMarca = letra.normalize("NFD").replace(/[\u0304\u0305]/g, "").normalize("NFC");
-  return sinMarca.toLowerCase();
-};
+/* La letra en minúscula, sin marcas que no cambian la vocal (por ejemplo, la raya de «Ḡ»). */
+const base = (letra) => letra.normalize("NFD").replace(/[\u0304\u0305]/g, "").normalize("NFC").toLowerCase();
+
+/* ¿Sabe leerla? Su base, sin ninguna marca, es de la a a la z o la ñ. */
+const conocida = (letra) => /^[a-zñ]$/.test(letra.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase()) || letra.toLowerCase() === "ñ";
+
+/** Las letras que la calculadora no sabe leer, sin repetir. Nunca se saltan: se reportan. */
+export function letrasDesconocidas(texto) {
+  const letras = String(texto).normalize("NFC").match(/\p{L}\p{M}*/gu) ?? [];
+  return [...new Set(letras.filter((l) => !conocida(l)))];
+}
 
 /** Las sílabas de una palabra (no de una cifra). */
 export function silabasDePalabra(palabra) {
-  const letras = [...palabra].map(base);
+  /* Una letra con sus marcas combinadas es una sola letra. */
+  const letras = (palabra.normalize("NFC").match(/\p{L}\p{M}*/gu) ?? []).map(base);
   let nucleos = 0;
   let anterior = null; /* la vocal anterior, si la letra anterior era vocal */
   for (let k = 0; k < letras.length; k++) {
@@ -97,7 +113,7 @@ export function silabasDePalabra(palabra) {
 
 /** Las palabras de un texto, con sus sílabas. */
 export function palabrasDe(texto) {
-  return (String(texto).match(TOKEN) ?? []).map((t) => ({
+  return (String(texto).normalize("NFC").match(TOKEN) ?? []).map((t) => ({
     texto: t,
     cifra: esCifra(t),
     silabas: esCifra(t) ? SILABAS_POR_CIFRA : silabasDePalabra(t),
@@ -106,7 +122,7 @@ export function palabrasDe(texto) {
 
 /** Las frases: terminan en . ? ! (un punto dentro de una cifra no cuenta). */
 export function frasesDe(texto) {
-  const sinCifras = String(texto).replace(new RegExp(CIFRA, "gu"), "0");
+  const sinCifras = String(texto).normalize("NFC").replace(new RegExp(CIFRA, "gu"), "0");
   const trozos = sinCifras.split(/[.?!…]+/u).filter((t) => (t.match(TOKEN) ?? []).length > 0);
   return Math.max(1, trozos.length);
 }
@@ -120,11 +136,12 @@ export function frasesDe(texto) {
 export function inflesz(texto, { silabasPorCifra = SILABAS_POR_CIFRA } = {}) {
   const palabras = palabrasDe(texto).map((x) => (x.cifra ? { ...x, silabas: silabasPorCifra } : x));
   const p = palabras.length;
-  if (p === 0) return { palabras: 0, silabas: 0, frases: 0, exacto: null, valor: null, aplica: false, cumple: null };
+  const desconocidas = letrasDesconocidas(texto);
+  if (p === 0) return { palabras: 0, silabas: 0, frases: 0, exacto: null, valor: null, aplica: false, cumple: null, desconocidas };
   const s = palabras.reduce((n, x) => n + x.silabas, 0);
   const f = frasesDe(texto);
   const exacto = 206.835 - 62.3 * (s / p) - p / f;
   const valor = Math.round(exacto * 10) / 10;
   const aplica = p >= PALABRAS_MINIMAS;
-  return { palabras: p, silabas: s, frases: f, exacto, valor, aplica, cumple: aplica ? valor >= UMBRAL : null };
+  return { palabras: p, silabas: s, frases: f, exacto, valor, aplica, cumple: aplica ? valor >= UMBRAL : null, desconocidas };
 }

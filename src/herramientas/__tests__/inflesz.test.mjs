@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { inflesz, silabasDePalabra, palabrasDe, frasesDe, UMBRAL, PALABRAS_MINIMAS } from "../inflesz.js";
+import { inflesz, silabasDePalabra, palabrasDe, frasesDe, letrasDesconocidas, UMBRAL, PALABRAS_MINIMAS } from "../inflesz.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -65,16 +65,41 @@ test("★★★ da exactamente los 24 números aprobados de la act. 3 de Contabi
   for (const [t, aprobado] of ACT3) assert.equal(inflesz(t).valor, aprobado, t);
 });
 
-test("★★★ da exactamente los 14 números aprobados de Política Monetaria que no llevan «Ḡ»", () => {
+test("★★★ da exactamente los 14 números aprobados de Política Monetaria medidos sin «Ḡ»", () => {
   for (const [t, aprobado] of MACRO) assert.equal(inflesz(t).valor, aprobado, t);
 });
 
-test("PENDIENTE DE LEVI: «Ḡ» cuenta como una palabra de una sílaba; la medición aprobada no la contó", () => {
-  /* Hoy: 74,7. Aprobado: 72,2, que es lo que sale quitando «Ḡ» (una palabra y una sílaba menos). */
+test("★★★ las variables cuentan como una palabra de una sílaba, «Ḡ» incluida (Levi, opción A)", () => {
   const t = "El gasto público (Ḡ) es autónomo en el modelo: ninguna decisión de tasa lo mueve. Esa arteria nunca es la respuesta.";
   assert.equal(inflesz(t).valor, 74.7);
+  /* El número viejo (72,2) es el de una herramienta que saltaba «Ḡ»: una palabra y una sílaba menos. */
   assert.equal(inflesz(t.replace(" (Ḡ)", "")).valor, 72.2);
-  assert.deepEqual(palabrasDe("Ḡ, T y TR").map((x) => [x.texto, x.silabas]), [["Ḡ", 1], ["T", 1], ["y", 1], ["TR", 1]]);
+  assert.deepEqual(palabrasDe("Ḡ, T y TR, i, b, tc e Y").map((x) => [x.texto, x.silabas]),
+    [["Ḡ", 1], ["T", 1], ["y", 1], ["TR", 1], ["i", 1], ["b", 1], ["tc", 1], ["e", 1], ["Y", 1]]);
+});
+
+test("★★★ «Ḡ» da lo mismo escrita como un carácter o como «G» más la raya combinada", () => {
+  const junta = "El gasto público (\u1E20) es autónomo en el modelo: ninguna decisión de tasa lo mueve.";
+  const separada = "El gasto público (G\u0304) es autónomo en el modelo: ninguna decisión de tasa lo mueve.";
+  assert.notEqual(junta, separada, "las dos formas son cadenas distintas");
+  assert.deepEqual(inflesz(separada), inflesz(junta));
+  /* Falla si alguien quita la normalización: la forma separada tiene que salir como el carácter único. */
+  assert.deepEqual(palabrasDe("G\u0304").map((x) => x.texto), ["\u1E20"]);
+  /* Y una raya que no tiene carácter compuesto (U+0305) sigue pegada a su letra: una palabra, no dos. */
+  assert.deepEqual(palabrasDe("G\u0305 sube").map((x) => [x.texto.length, x.silabas]), [[2, 1], [4, 2]]);
+});
+
+test("★★★ nada se salta en silencio: una letra que no sabe leer se cuenta y se reporta", () => {
+  /* Lo que tiene base de la a a la z (tildes, ü, ñ, «Ḡ», «ç») se sabe leer; «ß» y «ø» no. */
+  assert.deepEqual(letrasDesconocidas("año, Ḡ, ü, Ñ, ç, ß y ø"), ["ß", "ø"]);
+  const r = inflesz("La tasa α sube y el consumo baja un poco este año en el país.");
+  assert.deepEqual(r.desconocidas, ["α"]);
+  assert.ok(palabrasDe("La tasa α sube").some((x) => x.texto === "α"), "α cuenta como palabra, no se salta");
+  assert.deepEqual(inflesz("Lee el hecho. Arma el asiento de las dos empresas.").desconocidas, []);
+  /* El comando lo avisa. */
+  const cli = fileURLToPath(new URL("../../../scripts/inflesz.mjs", import.meta.url));
+  const salida = execFileSync("node", [cli, "La tasa α sube y el consumo baja un poco este año en el país."], { encoding: "utf8" });
+  assert.match(salida, /AVISO: letras que no sé leer, contadas como consonante: α/);
 });
 
 test("★★★ la convención de las cifras: una palabra de tres sílabas, sin partir por el separador", () => {

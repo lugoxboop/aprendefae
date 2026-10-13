@@ -15,6 +15,8 @@
  * Sale con código 1 si algún texto que aplica queda por debajo de 65, para
  * que se pueda usar como comprobación.
  *
+ * Una letra que no sabe leer no se salta en silencio: sale un AVISO con ella.
+ *
  * El cálculo y sus convenciones (las cifras, las sílabas, las frases) están en
  * src/herramientas/inflesz.js. Este archivo solo lee y escribe.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -50,6 +52,7 @@ for (const t of textos) {
   const valor = r.valor === null ? "—" : r.valor.toFixed(1).replace(".", ",");
   console.log(`${valor.padStart(5)}  ${String(r.palabras).padStart(3)} p · ${String(r.silabas).padStart(3)} s · ${r.frases} f  ${veredicto}`);
   console.log(`       ${t}`);
+  if (r.desconocidas.length) console.log(`       AVISO: letras que no sé leer, contadas como consonante: ${r.desconocidas.join(" ")}`);
 }
 if (textos.length > 1) console.log(`\n${textos.length} textos, ${bajo} por debajo de ${UMBRAL}.`);
 process.exit(bajo > 0 ? 1 : 0);
