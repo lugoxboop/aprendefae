@@ -38,6 +38,15 @@
  * FRASE. Termina en punto, signo de cierre de interrogación o de exclamación.
  * El punto de miles de una cifra no cierra frase. Los dos puntos y el punto y
  * coma tampoco. Un texto sin punto final cuenta como una frase.
+ *
+ * ═══════════ PENDIENTE DE LEVI: «Ḡ» ═══════════
+ *
+ * Aquí «Ḡ» cuenta como cualquier variable de una letra («T», «i», «b»): una
+ * palabra, una sílaba. Los números aprobados de tres textos de Macro que la
+ * llevan salieron SIN contarla (72,2, 68,9 y 92,0 en vez de 74,7, 71,2 y 92,9);
+ * los otros 40 textos de referencia coinciden exactos. Ningún veredicto cambia,
+ * pero la regla la decide Levi. Si decide no contarla, se cambia aquí y en la
+ * prueba que la fija.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -105,9 +114,11 @@ export function frasesDe(texto) {
 /**
  * El INFLESZ de un texto, con todo lo que lo explica.
  * `valor` va con un decimal, como se reporta; `exacto`, sin redondear.
+ * `silabasPorCifra` existe solo para que las pruebas demuestren que la
+ * convención importa: nadie mide con otro valor.
  */
-export function inflesz(texto) {
-  const palabras = palabrasDe(texto);
+export function inflesz(texto, { silabasPorCifra = SILABAS_POR_CIFRA } = {}) {
+  const palabras = palabrasDe(texto).map((x) => (x.cifra ? { ...x, silabas: silabasPorCifra } : x));
   const p = palabras.length;
   if (p === 0) return { palabras: 0, silabas: 0, frases: 0, exacto: null, valor: null, aplica: false, cumple: null };
   const s = palabras.reduce((n, x) => n + x.silabas, 0);
