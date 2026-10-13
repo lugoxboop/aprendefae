@@ -9,6 +9,42 @@ Mapa consolidado de los lotes 1-3 de Near (Célula C) sobre *Contabilidad financ
 3. **Pista de la p. 177: se sostiene en parte.** En el objetivo del capítulo (p. 177), la viñeta del «impuesto a las ventas, la retención en la fuente, los fletes y los descuentos» va aparte de las viñetas de sistemas de inventario. En el cuerpo, fletes (p. 227), devoluciones (p. 230) y descuentos (p. 248) tienen título propio. El IVA y la retención no: se explican dentro del registro de compra (p. 210) y venta (p. 212) de cada sistema.
 4. **Registro interno de UEPS** (dato interno, sin comentario). Aparece en las pp. 215, 216-218, 220, 221, 222, 226, 227, 237-238, 238, 240 y 244, es decir en los bloques B, C, E y F. No aparece en D, G, H, I ni J. La NIC 2 (p. 259) lista como fórmulas la identificación específica, FIFO y el promedio ponderado.
 
+## Decisión de corte (L, general de la Célula C · 13 de octubre de 2026)
+
+Decide L con el análisis de dependencias de este mapa. Levi audita el resultado a ciegas, como audita todo lo demás.
+
+**Corte elegido: tres temas, con cortes en 232|233 y en 248.**
+
+| Tema | Páginas | Bloques | Ejemplos resueltos | Contenido |
+| --- | --- | --- | --- | --- |
+| T7-1 | 207-232 (26 pp.) | A, B, C, D | A-1, A-2, B-1, C-1, D-1, D-2, D-3 (7) | Cuenta de inventarios, sistema periódico, métodos de valoración, ejercicio San Calixto en periódico, fletes y devoluciones en periódico |
+| T7-2 | 233-248 (16 pp.) | E, F, G | E-1, E-2, F-1, G-1, G-2, G-3, G-4 (7) | Sistema permanente, kárdex, ejercicio San Calixto en permanente, fletes y devoluciones en permanente |
+| T7-3 | 248-261 (14 pp.) | H, I, J | H-1, H-2, H-3, I-1, I-2, I-3 (6) | Descuentos, ajustes por inventario físico, NIC 2 |
+
+Los nombres de los temas son provisionales; los propone Near.
+
+### Por qué este corte
+
+1. **Cada tema se termina de una sentada.** 26, 16 y 14 páginas, con 7, 7 y 6 ejemplos resueltos. Ningún tema pasa de 26 páginas.
+2. **Un sistema por tema.** T7-1 es todo periódico y T7-2 todo permanente. Es la misma frontera que pone el libro: la p. 233 abre «SISTEMA DE INVENTARIO PERMANENTE».
+3. **Cumple R1, R2 y la regla de Levi.** No parte ningún ejemplo (C-1 y F-1 quedan enteros). La única fusión real del mapa, E-1 → E-2, queda dentro de T7-2.
+4. **El precio, aceptado a sabiendas:** cruza cinco cadenas de cifras repetidas (X1, X2, X3a, X3b, X4), más que otras opciones. Las cinco son el mismo hecho contado en periódico y en permanente. Con el criterio de Mello, lo que se califica en T7-2 es la diferencia entre sistemas (qué cuenta cambia, el asiento de costo que no existía), y una cifra ya resuelta en T7-1 no se pide como respuesta en T7-2. Como los temas se abren en cualquier orden, esa regla aplica en las dos direcciones.
+
+### Por qué no las otras
+
+- **Corte en 246 (dos temas) y 246 + 248, 246 + 254 o 246 + 256 (tres temas).** Son las que cruzan menos cadenas (solo X4), pero dejan un primer tema de 40 páginas con 12 ejemplos (A-1 a G-2). No se termina de una sentada.
+- **227 + 248 (21 | 22 | 14, cruza 2 cadenas).** Equilibrada en páginas, pero el tema 2 mezcla los fletes y devoluciones del periódico (D) con todo el permanente y carga 10 ejemplos, entre ellos el ejercicio más largo del capítulo (F-1).
+- **232|233 en dos temas (26 | 29).** El segundo tema junta permanente, descuentos, ajustes y NIC 2: 29 páginas y 13 ejemplos.
+- **Cualquier opción con corte en 256.** Deja un tema solo con NIC 2, sin ningún ejemplo resuelto.
+- **Opciones con un tema de 2 a 6 páginas** (por ejemplo 227 + 229, 244|245 + 246, 246 + 247). Dejan temas de uno o dos ejemplos.
+
+### Consecuencias para la producción
+
+- **Tarifas.** Solo A-1, A-2, E-1 y E-2 traen sus tarifas en el enunciado. Todo enunciado nuestro trae sus cinco datos y sus tarifas escritas (16 %, 3,5 % y, en fletes, 1 %).
+- **Renta del 33 %.** Sigue como pregunta abierta al profesor en fuente.md. Un ítem calificado que dependa de ella no se publica hasta que el profesor responda.
+- **Errata 5.** Nuestro enunciado de F-1 escribe bien los totales de las ventas; no remite a C-1.
+- **Auditoría.** Mello audita las cinco cadenas que cruzan entre T7-1 y T7-2 con su criterio. Las cadenas internas (Y1 a Y5) se auditan por el orden de las piezas dentro de cada tema.
+
 ## Bloque A · Cuenta de inventarios y sistema periódico (pp. 207-215)
 
 **\[1\] Sección y subsecciones (títulos exactos):**
@@ -846,3 +882,5 @@ Se reescribieron 12 frases de los bloques que estaban escritas con la regla viej
 | F\[5\] | Es el mismo hueco de C-1. | Es el mismo hueco de suficiencia de C-1: por el criterio (b) no funde ni impide el corte. |
 | G\[5\] | Hacia D (cadena cerrada): | Hacia D (cifras repetidas; no funden por el criterio (a), solo riesgo de regalar la respuesta para Mello): |
 | H\[5\] | Un corte en la p. 251 (frontera limpia entre comercial y condicionado) rompe la cadena de H-2 a H-3. | Un corte en la p. 251 (frontera limpia entre comercial y condicionado) no queda impedido: H-3 trae su propio precio de lista y calcula su propio 5 % (p. 252), así que por el criterio (a) no funde. Que H-2 y H-3 compartan el 3.990.000 es solo riesgo de regalar la respuesta (Mello). |
+
+También se agregó, después de «Control», la sección «Decisión de corte (L)», con el corte elegido y por qué no las otras opciones.
