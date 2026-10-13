@@ -363,3 +363,50 @@ test("★★ los registros: etiquetas del docente, formato del resumen, fuera de
     { materia: "macroeconomia", tema: "politica-monetaria", tipo: "actividad", ids: ["las-dos-entradas", "por-cual-arteria-entra"] },
   ]);
 });
+
+/* ═══════════════════ EL PROGRESO NO DEPENDE DE LA POSICIÓN ═══════════════════ */
+
+test("★★★ insertar las dos no toca el progreso ni los FP de nadie: todo va por id de actividad, nunca por posición", async () => {
+  const { nodosDe } = await import("../../../hacer/completadas.js");
+  const tema = SUBJECTS.macroeconomia.topics.find((t) => t.id === "politica-monetaria");
+  const nuevas = new Set([ARTERIA.id, DOS_ENTRADAS.id]);
+  const actuales = actividadesDeTipo(tema, HACER);
+  /* El camino de antes: las doce de siempre, en su orden. */
+  const antes = actuales.filter((a) => !nuevas.has(a.id));
+  assert.equal(antes.length, 12);
+
+  /* Un estudiante que ya completó, por ejemplo, la 6.ª y la 7.ª de antes (Cadena y Explícaselo). */
+  const hechas = new Set([antes[5].id, antes[6].id, antes[0].id]);
+  const hechasAntes = nodosDe(antes, hechas).filter((n) => n.completada).map((n) => n.id).sort();
+  const hechasDespues = nodosDe(actuales, hechas).filter((n) => n.completada).map((n) => n.id).sort();
+  assert.deepEqual(hechasDespues, hechasAntes, "las mismas actividades siguen hechas");
+  for (const id of nuevas) assert.equal(nodosDe(actuales, hechas).find((n) => n.id === id).completada, false, `${id} no hereda nada`);
+  /* Y cambiaron de posición: la prueba sí cubre el caso que importa. */
+  assert.notEqual(actuales.findIndex((a) => a.id === antes[5].id), 5);
+
+  /* Los FP de las doce de antes no cambian: mismos valores que en su migración. */
+  const sql0031 = readFileSync(new URL("../../../../supabase/migrations/0031_politica_monetaria.sql", import.meta.url), "utf8");
+  for (const a of antes) {
+    const fila = new RegExp(`\\('${a.id}', 'macroeconomia', 'politica-monetaria', '(\\w+)', '(\\w+)', (\\d+)\\)`).exec(sql0031);
+    assert.ok(fila, `${a.id} en la 0031`);
+    assert.deepEqual([a.clasificacion.modalidad, a.clasificacion.dificultad, a.clasificacion.fpBase], [fila[1], fila[2], Number(fila[3])], a.id);
+  }
+  const sql0052 = readFileSync(new URL("../../../../supabase/migrations/0052_monetaria_dos_actividades.sql", import.meta.url), "utf8");
+  for (const a of antes) assert.ok(!sql0052.includes(`'${a.id}'`), `la 0052 no toca ${a.id}`);
+
+  /* En el servidor, el historial es por id de actividad en texto: no hay columna de posición. */
+  const sql0003 = readFileSync(new URL("../../../../supabase/migrations/0003_fp_history.sql", import.meta.url), "utf8");
+  assert.match(sql0003, /activity_id\s+text not null/);
+  assert.match(sql0003, /on public\.fp_history \(user_id, activity_id\)/);
+  assert.ok(!/posici|orden|position/i.test(sql0003.replace(/--.*$/gm, "")), "ninguna posición en fp_history");
+  /* Y el cliente manda el id, no el índice. */
+  const otorgar = readFileSync(new URL("../../../fp/otorgarFP.js", import.meta.url), "utf8");
+  assert.match(otorgar, /p_activity_id: actividadId/);
+});
+
+test("★★ el radio de los nodos no se encoge pasados 12, y con 12 o menos es el de siempre", async () => {
+  const { medidas } = await import("../../shared/CaminoHacer.jsx");
+  const antes = (n) => Math.max(17, Math.min(30, Math.round(34 - n * 0.9)));
+  for (let n = 1; n <= 12; n++) assert.equal(medidas(n).radio, antes(n), `n = ${n}`);
+  for (const n of [13, 14, 20]) assert.equal(medidas(n).radio, medidas(12).radio, `n = ${n}`);
+});
