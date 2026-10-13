@@ -10,7 +10,8 @@
     "test": "node --import ./scripts/cargador-jsx.mjs --test \"src/**/*.test.mjs\" \"supabase/functions/**/*.test.mjs\"",
     "medir-faciles": "node --import ./scripts/cargador-jsx.mjs scripts/medir-faciles.mjs",
     "barrido":"node --import ./scripts/cargador-jsx.mjs scripts/barrido-dashboard.mjs",
-    "verificar": "node scripts/verificar/verificar.mjs"
+    "verificar": "node scripts/verificar/verificar.mjs",
+    "inflesz": "node scripts/inflesz.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",
