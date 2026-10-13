@@ -1,6 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Check, ChevronDown, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import {
@@ -149,23 +149,21 @@ function Casilla({ empresa, lado, cuenta, monto, estado, correcta, abierta, eval
       )}
       {cuenta ? (
         <span key={cuenta} data-nombre-cuenta style={{
-          fontFamily: INTER, fontSize: "15px", lineHeight: "22px", fontWeight: 600, overflowWrap: "normal", wordBreak: "normal", hyphens: "manual",
+          fontFamily: INTER, fontSize: "14px", lineHeight: "20px", fontWeight: 600, overflowWrap: "normal", wordBreak: "normal", hyphens: "manual",
           color: error ? COLOR.apagado : COLOR.blanco, animation: !evaluado && !reducido ? `fae-a3-llena 160ms ${CURVA} both` : undefined,
         }}>{cuenta}</span>
       ) : (
-        <span data-elige style={{ fontFamily: INTER, fontSize: "15px", lineHeight: "22px", fontWeight: 600, color: COLOR.apagado }}>{UI.eligeLaCuenta}</span>
+        <span data-elige style={{ fontFamily: INTER, fontSize: "14px", lineHeight: "20px", fontWeight: 400, color: COLOR.apagado }}>{UI.eligeLaCuenta}</span>
       )}
       {error && (
         <>
           <span data-va style={{ fontFamily: INTER, fontSize: "13px", lineHeight: "18px", fontWeight: 600, color: CORAL_TEXTO, animation: animEstado }}>{UI.va}</span>
-          <span data-correcta style={{ fontFamily: INTER, fontSize: "15px", lineHeight: "22px", fontWeight: 600, color: COLOR.blanco, animation: animEstado }}>{correcta}</span>
+          <span data-correcta style={{ fontFamily: INTER, fontSize: "14px", lineHeight: "20px", fontWeight: 600, color: COLOR.blanco, animation: animEstado }}>{correcta}</span>
         </>
       )}
-      <span style={{ marginTop: "auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "4px" }}>
-        <span data-monto-casilla style={{ fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: COLOR.apagado, fontVariantNumeric: "tabular-nums" }}>
-          {UI.monto} {pesos(monto)}
-        </span>
-        {!evaluado && <ChevronDown size={16} color={COLOR.apagado} aria-hidden="true" style={{ flex: "none" }} />}
+      {/* La fila del monto: solo la cifra (Xeno). Sin «Monto:» y sin chevrón: con ellos no cabía en 97 px a 320. */}
+      <span data-monto-casilla style={{ marginTop: "auto", fontFamily: INTER, fontSize: "13px", lineHeight: "18px", fontWeight: 500, color: COLOR.apagado, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
+        {pesos(monto)}
       </span>
     </button>
   );

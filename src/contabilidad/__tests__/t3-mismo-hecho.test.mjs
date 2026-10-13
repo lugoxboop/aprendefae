@@ -276,6 +276,47 @@ test("★★ la hoja: el valor puesto dice «Elegida»; el de la otra casilla, �
   } finally { m.desmontar(); }
 });
 
+/* ═══════════════════ LA FILA DEL MONTO (Xeno) ═══════════════════ */
+
+/*
+ * Ancho de cada glifo del monto, medido en Chromium con Inter real (Google
+ * Fonts) a 13 px, peso 500, cifras tabulares, el 2026-10-13. Sirve para
+ * comprobar sin navegador que la fila cabe en el texto útil de la casilla a
+ * 320 px. Un glifo que no está aquí (por ejemplo, la «M» de «Monto:») hace
+ * fallar la prueba: la fila solo puede llevar la cifra.
+ */
+const GLIFO_MONTO = { $: 7.231, 0: 7.231, 1: 6.363, 2: 7.231, 3: 7.231, 4: 7.231, 5: 7.231, 6: 7.231, 7: 7.231, 8: 7.231, 9: 7.231, ".": 3.613 };
+/* Casilla de 117 px a 320 − 8 + 8 de relleno − 2 + 2 de borde. */
+const UTIL_320 = 97;
+const anchoMonto = (texto) => [...texto].reduce((w, g) => {
+  assert.ok(g in GLIFO_MONTO, `la fila del monto lleva «${g}», que no es parte de una cifra`);
+  return w + GLIFO_MONTO[g];
+}, 0);
+
+test("★★★ la fila del monto dice SOLO la cifra —sin «Monto:» ni chevrón— y cabe en los 97 px a 320", async () => {
+  const m = await montar();
+  try {
+    for (const estado of ["vacia", "llena"]) {
+      if (estado === "llena") await poner("0:debe", "Gasto alquiler");
+      const cas = q("[data-casilla='0:debe']");
+      assert.equal(cas.querySelector("[data-monto-casilla]").textContent, "$2.500", estado);
+      assert.ok(!cas.textContent.includes(UI.monto), `${estado}: «Monto:» dentro de la casilla`);
+      assert.equal(cas.querySelectorAll("svg").length, 0, `${estado}: un ícono (chevrón) dentro de la casilla`);
+    }
+    /* «Monto:» se queda en la tarjeta del hecho. */
+    assert.equal(q("[data-monto]").textContent, "Monto: $2.500");
+  } finally { m.desmontar(); }
+  /* Cada monto de la actividad, en el texto que pinta la casilla, cabe con margen. */
+  for (const par of [...PARES_ACT3, D.EJEMPLO_ACT3]) {
+    const { pesos } = await import("../queLeToca.js");
+    const w = anchoMonto(pesos(par.monto));
+    assert.ok(w < UTIL_320, `${pesos(par.monto)} mide ${w.toFixed(1)} px y no cabe en ${UTIL_320}`);
+  }
+  assert.ok(anchoMonto("$1.800.000") > 60, "la tabla de glifos mide de verdad");
+  /* Puede fallar: con «Monto: » delante, la prueba se cae. */
+  assert.throws(() => anchoMonto("Monto: $2.500"));
+});
+
 /* ═══════════════════ LOS REGISTROS ═══════════════════ */
 
 test("★★ en el camino: nodo 5, entre «Arma el ajuste diferido» y «¿Qué le toca…?»; Análisis 50; tutorial y docente", () => {
