@@ -109,3 +109,44 @@ añadir después.
 quitar una vez abierta: el menú deja abrir el repositorio y copiar el nombre de
 la rama, pero no retirarlo. Si una sesión nace con un repositorio que no es
 suyo, la única defensa es la orden, y el general de esa célula la sostiene.
+
+## Cuándo dos secciones del libro son un solo tema
+
+**Se funden si un saldo o una transacción que nace en una se usa en la otra.
+Compartir el nombre de una cuenta o de una empresa no cuenta.**
+
+La regla anterior decía «comparten un caso o una cuenta del libro», y así
+escrita daba el resultado contrario al que su autor quería. La corrigió él
+mismo cuando una agente de contenido señaló la diferencia: §5.3 y §5.4 usan las
+dos la cuenta Caja, pero las dos la toman de §5.1; y dos casos distintos se
+llaman igual, Santa Pacha, sin compartir una sola transacción. Eso es compartir
+un **símbolo**, no compartir **contenido**.
+
+Su imagen: dos recetas que usan sal no son un solo plato. Serían un solo plato
+si la salsa de la primera fuera ingrediente de la segunda.
+
+**La lección que vale más que la regla:** una regla puede estar mal escrita y
+aun así parecer que funciona, porque quien la aplica al pie de la letra llega a
+una conclusión defendible. El error solo aparece cuando alguien compara el
+texto de la regla con el ejemplo que su autor dio al escribirla.
+
+## Qué puede leer cada quien
+
+No es simétrico, y descubrirlo por las malas cuesta un turno:
+
+- **Los generales de célula pueden abrir los chats de sus agentes** y leer otras
+  conversaciones. Por eso el relevo dentro de una célula es del general.
+- **El auditor jefe no puede abrir otras conversaciones.** Lo que vaya para él
+  se le transcribe entero, aunque el documento sea largo y ya esté escrito en
+  otro sitio.
+- **Las sesiones de código leen el repositorio**, así que el canon es la vía
+  barata de pasarles algo: se escribe una vez y lo leen las tres células.
+
+Antes de mandar a alguien a leer algo «en la fuente», se comprueba que esa
+persona pueda llegar a la fuente.
+
+## Un tema corto no es un tema fallido
+
+T5 quedó con cinco páginas de libro y se construye así, corto a propósito. La
+alternativa —fundirlo con el siguiente para que midan parecido— es la otra
+forma de rellenar, y rellenar es lo que esta estructura existe para evitar.
