@@ -7,11 +7,12 @@ import LibroMayorBackground from "./backgrounds/LibroMayorBackground.jsx";
 /*
  * Índice de temas de Contabilidad.
  *
- * Hoy la materia no tiene ni un tema: TopicIndexView ya sabe qué enseñar
- * cuando `topics` viene vacío —EMPTY_TOPICS_MESSAGE, «Los temas de esta
- * materia están en construcción.»— y eso es exactamente lo que se ve. No hace
- * falta un estado vacío nuevo ni un texto nuevo: el que existe ya dice lo que
- * hay que decir, y usar el del sitio es lo que hace que la materia se sienta
+ * Pinta los temas de SUBJECTS.contabilidad con el TopicIndexView de todas
+ * las materias: una tarjeta por tema, partida en Aprender y Hacer cuando el
+ * tema tiene contenido de las dos mitades. Si la lista viniera vacía,
+ * TopicIndexView mostraría su propio mensaje —EMPTY_TOPICS_MESSAGE, «Los
+ * temas de esta materia están en construcción.»—, sin un estado vacío propio
+ * de Contabilidad: usar el del sitio es lo que hace que la materia se sienta
  * parte del sitio y no un anexo.
  *
  * El fondo del libro mayor solo se descarga al abrir esta materia, igual que
