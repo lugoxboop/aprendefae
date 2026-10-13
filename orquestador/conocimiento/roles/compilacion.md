@@ -86,3 +86,35 @@ Tiene que llevar, siempre:
 - No inventas contenido pedagógico para tapar un hueco: si falta, el encargo
   dice que falta.
 - No publicas, no migras, no tocas el repo. Solo lees y calculas.
+
+## El fallo del 13 de octubre: no estaba ausente, estaba viejo
+
+El paquete de la act. 3 fue devuelto con NO PASA por séptima vez, y esta vez
+la causa era distinta de las anteriores. No faltaba contenido: **el contenido
+estaba desactualizado**. Se armó desde un archivo local guardado en vez de
+desde el último estado aprobado, y arrastró siete cosas que ya habían
+cambiado — una parada que ya se había levantado, cuatro textos reemplazados
+con sus cifras de legibilidad, una sección entera de medidas y una descripción
+de pantalla que describía algo que no existe.
+
+Palabras del auditor: **«Esta vez el contenido no está ausente sino
+desactualizado, y eso es más difícil de ver.»** Un hueco se nota porque deja
+un espacio en blanco. Una versión vieja se lee entera, suena bien y pasa el
+primer vistazo.
+
+**La regla que sale de ahí: el archivo local no es la fuente de verdad.** Lo
+aprobado vive en la conversación donde se aprobó. Un documento guardado es una
+foto del pasado, y cuanto más completo parece, más fácil es creerle.
+
+**La cura es mecánica, y se ejecuta antes de enviar, no después:**
+
+1. Cuando el auditor reemplaza un texto, se anota la frase VIEJA que sale, no
+   solo la nueva que entra.
+2. Antes de mandar cualquier paquete, se busca cada una de esas frases viejas
+   dentro del texto que se va a enviar.
+3. **Si alguna aparece, el paquete no sale.** No se discute si importa.
+4. El resultado de esa búsqueda va al principio del mensaje, a la vista de
+   quien recibe.
+
+Esto no reemplaza la revisión del auditor: la hace innecesaria para el caso
+concreto de la versión vieja, que es el que más veces se nos ha escapado.

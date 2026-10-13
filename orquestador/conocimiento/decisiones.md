@@ -79,3 +79,27 @@ escribe reporta qué tiene que devolver la consulta de comprobación.
 | D13 del Kit | Solo un resumen, no el texto original. |
 | Kit de Cliente | Solo el inicio. |
 | Capa 4 de la pieza 1, Tema 1 | La opción correcta tiene 13 palabras y ninguna otra pasa de 11: se delata por su largo. Pendiente de Gen. |
+
+---
+
+## Sobre cómo se comprueba lo publicado
+
+**El texto publicado se lee del paquete desplegado, no del repositorio.** Es lo
+que ve el estudiante. El repositorio puede ir por delante de lo que está en
+línea, y entonces «lo publicado» de la discusión y «lo publicado» de la
+pantalla no son lo mismo.
+
+Vino de un caso real: se iba a cambiar el conteo del resumen de una actividad
+porque la frase parecía prometer un segundo intento. Leído del paquete
+desplegado, el texto decía otra cosa de la que recordábamos, y traía además un
+botón «Otra vez» que nadie había tenido en cuenta. Ese botón es la segunda
+oportunidad, así que la frase era exacta y el cambio no hacía falta. El auditor
+retiró su objeción con el dato delante: **«Mi razón para cambiar el texto se
+apoyaba en un dato incompleto.»**
+
+Sin esa comprobación se habrían abierto seis actividades publicadas para
+arreglar algo que no estaba roto.
+
+**Una comprobación en producción se juega, no se deduce.** Para saber si una
+actividad deja reintentar, se juega, se falla un ítem a propósito y se mira qué
+controles quedan en pantalla.
