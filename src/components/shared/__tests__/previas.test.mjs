@@ -85,7 +85,7 @@ const GESTOS = [
 /* Las cuatro de una sola decisión: mismo criterio, las cuatro quietas. */
 const QUIETAS = ["agujero-fiscal", "biopsia-economica", "dilema-banquero-central", "expediente-gabinete"];
 
-test("las 48 tienen su previsualización decidida: 37 gestos, el clip del tablero y cuatro quietas con su razón", () => {
+test("las 50 tienen su previsualización decidida: 37 gestos, el clip del tablero y cuatro quietas con su razón", () => {
   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
   assert.deepEqual(Object.keys(PREVIAS).sort(), [...ids].sort());
   assert.deepEqual(Object.entries(PREVIAS).filter(([, p]) => p.tipo === "gesto").map(([id]) => id).sort(), [...GESTOS].sort());

@@ -217,16 +217,17 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
 
 /* ─────────────────────────────── los iconos ─────────────────────────────── */
 
-test("las 48 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
+test("las 50 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
-  assert.equal(ids.length, 48);
+  assert.equal(ids.length, 50);
   for (const id of ids) assert.ok(iconoDe(id), `${id} sin icono`);
   assert.deepEqual(Object.keys(ICONOS_ACTIVIDAD).sort(), [...ids].sort(), "ni iconos de más ni de menos");
-  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 48, "ningún icono repetido entre dos actividades");
+  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 50, "ningún icono repetido entre dos actividades");
 
   for (const temaId of TEMAS) {
     const m = montar(camino(nodosDelTema(temaId)));
-    assert.equal(m.cont.querySelectorAll("[data-icono]").length, 12, temaId);
+    /* Uno por nodo del tema, sin número fijo: Política Monetaria tiene 14 desde sus dos actividades nuevas. */
+    assert.equal(m.cont.querySelectorAll("[data-icono]").length, nodosDelTema(temaId).length, temaId);
     m.desmontar();
   }
 
