@@ -145,6 +145,20 @@ No es simétrico, y descubrirlo por las malas cuesta un turno:
 Antes de mandar a alguien a leer algo «en la fuente», se comprueba que esa
 persona pueda llegar a la fuente.
 
+**Un documento largo viaja por el repositorio, no por el chat.** Es la regla que
+sale de ahí, y vale más que la asimetría que la causó. El primer mapa grande de
+una célula —58.000 caracteres— no cabía en un mensaje y su destinatario no podía
+abrir el enlace. Transcribirlo habría convertido al coordinador en el cuello de
+botella, y copiar a mano un documento auditado le añade una capa de error a algo
+que ya estaba verificado.
+
+Así que: la célula lo sube a una rama suya, en `orquestador/conocimiento/mapas/`,
+abre el PR y no lo fusiona. Quien tenga que leerlo lo lee con un comando. Queda
+además donde lo encontrará la célula que llegue después, en vez de en un
+documento que hay que saber que existe.
+
+El chat sirve para decidir, no para almacenar.
+
 ## Un tema corto no es un tema fallido
 
 T5 quedó con cinco páginas de libro y se construye así, corto a propósito. La
