@@ -88,7 +88,7 @@ const VISTAS_CON_TITULO = new Set([
   "introduccion-contabilidad",
   "cuentas-debe-haber",
   "ingresos-gastos-y-caja",
-  "b5-activos-financieros",
+  "activos-financieros",
   "repaso-diario",
 ]);
 
@@ -240,7 +240,7 @@ export default function App() {
   }
 
   /* El Tema 5 de Contabilidad (Célula B): por ahora, su pieza 1 de Aprender. Catálogo: decide Erwin. */
-  if (view === "b5-activos-financieros") {
+  if (view === "activos-financieros") {
     return wrap(
       <Suspense fallback={siteFallback}>
         <ContabilidadTema5View onBack={() => setView("contabilidad")} />

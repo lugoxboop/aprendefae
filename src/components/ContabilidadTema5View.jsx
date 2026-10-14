@@ -22,7 +22,7 @@ import { ESCENAS_TEMA5 } from "./mecanicas/libros/tema5/escenasTema5.jsx";
  */
 
 const MATERIA = "contabilidad";
-export const TEMA = "b5-activos-financieros";
+export const TEMA = "activos-financieros";
 
 export const PIEZAS = [{ numero: 1, pieza: PIEZA_DEL_EFECTIVO }];
 const PUBLICADAS = PIEZAS.length;

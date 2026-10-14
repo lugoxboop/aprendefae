@@ -34,7 +34,7 @@ test("★ la materia tiene sus cuatro temas, en el orden del libro", () => {
   const ids = SUBJECTS.contabilidad.topics.map((t) => t.id);
   /* El Tema 3, por ahora solo con su pieza 1 de Aprender, va después del 2. */
   /* El Tema 5 (Célula B) va después del 3. Catálogo: decide Erwin. */
-  assert.deepEqual(ids, ["introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja", "b5-activos-financieros"]);
+  assert.deepEqual(ids, ["introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja", "activos-financieros"]);
   assert.ok(TEMA, "no está «cuentas-debe-haber»");
   assert.equal(TEMA.title, "Las cuentas, el debe y el haber");
 });
