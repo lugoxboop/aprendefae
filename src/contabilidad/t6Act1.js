@@ -51,6 +51,9 @@ export function valorDeItemT6Act1(ficha, r) {
   return PESO_CUENTA + (r.ladoOk ? PESO_LADO : 0);
 }
 
+/* Para el panel docente: el ítem es la ficha, y se lee por su texto. */
+export const fichaDeItemT6Act1 = (id) => FICHAS_T6_ACT1.find((f) => f.id === id)?.texto ?? null;
+
 export function puntuarT6Act1(respuestas, cuantas) {
   if (!cuantas) return 0;
   return (respuestas.reduce((s, x) => s + x.valor, 0) / cuantas) * 100;
