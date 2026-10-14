@@ -352,7 +352,7 @@ test("★★★ el sitio en el camino, el nivel y los FP: A Análisis 50, B Apli
   assert.equal(actividadesDeTipo(tema, HACER).reduce((s, a) => s + a.clasificacion.fpBase, 0), 640);
 });
 
-test("★★ los registros: etiquetas del docente, formato del resumen, fuera del Repaso y en la lista de novedades sin fecha", () => {
+test("★★ los registros: etiquetas del docente, formato del resumen, fuera del Repaso y en la lista de novedades", () => {
   for (const e of ESLABONES_ARTERIA) assert.equal(REGLAS[ARTERIA.id](e.id), e.texto);
   for (const p of PREGUNTAS_DOS_ENTRADAS) assert.equal(REGLAS[DOS_ENTRADAS.id](p.id), p.texto);
   assert.equal(formatoDe(ARTERIA.id), FORMATO.X_DE_N);
