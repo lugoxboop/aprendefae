@@ -731,6 +731,8 @@ export const SUBJECTS = {
           { id: "t7-2-dos-asientos", nombre: "Arma los dos asientos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A3, después de A2 (regla 9): el kárdex con los tres métodos, con cifras construidas. Cero FP. */
           { id: "t7-2-a3-el-kardex", nombre: "El kárdex", clasificacion: { tipo: APRENDER } },
+          /* H3, justo después de A3 (orden final de T7-2): los tres kárdex de Laurel, casilla por casilla. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0100. */
+          { id: "t7-2-llena-el-kardex", nombre: "Llena el kárdex", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* A4, después de A3 (regla 9): F-1 del libro en el permanente, con la decisión de Mello casilla por casilla. H3 «Llena el kárdex» entra entre A3 y A4. Cero FP. */
           { id: "t7-2-a4-san-calixto", nombre: "San Calixto en permanente", clasificacion: { tipo: APRENDER } },
           /* A5, después de A4 por el orden del mapa (regla 9: usa la venta en dos asientos de A2). H4 «¿Periódico o permanente?» entra entre A4 y A5. Cero FP. */
