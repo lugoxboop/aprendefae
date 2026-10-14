@@ -459,8 +459,20 @@ test("★★★ fuera del catálogo de FP; id t7-; va en T7-1 después de AP1", 
   const a = tema.actividades.find((x) => x.id === A.A6_ID);
   assert.deepEqual(a.clasificacion, { tipo: APRENDER });
   assert.equal(a.nombre, P.titulo);
-  /* Orden final de T7-1 (mapa, decisión de L): a1, a2, h1, a3, a4, a5, a6, a7. H1 justo después de AP2; las piezas de la vista son solo las de Aprender. */
-  assert.deepEqual(tema.actividades.map((x) => x.id), ["t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a2-la-factura-completa", "t7-1-que-cuenta-se-mueve", "t7-1-a3-tres-formas", "t7-1-a4-el-cierre-en-periodico", "t7-1-a5-importados-y-fletes", A.A6_ID, "t7-1-a7-control-interno"]);
+  /*
+   * El orden final de T7-1, completo, tal como lo fija el mapa (decisión de L):
+   * cada Hacer va justo después de la pieza que enseña lo que usa. Catorce
+   * actividades: siete de Aprender y los siete juegos.
+   */
+  assert.deepEqual(tema.actividades.map((x) => x.id), [
+    "t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a2-la-factura-completa",
+    "t7-1-que-cuenta-se-mueve", "t7-1-arma-la-factura",
+    "t7-1-a3-tres-formas", "t7-1-cuanto-vale-lo-que-sobro",
+    "t7-1-a4-el-cierre-en-periodico", "t7-1-cierra-el-mes",
+    "t7-1-a5-importados-y-fletes", "t7-1-costo-o-gasto",
+    A.A6_ID, "t7-1-devolucion-dos-libros",
+    "t7-1-a7-control-interno", "t7-1-que-control-falta",
+  ]);
   assert.deepEqual(PIEZAS_T7_1.map((x) => x.pieza.id), ["t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a2-la-factura-completa", "t7-1-a3-tres-formas", "t7-1-a4-el-cierre-en-periodico", "t7-1-a5-importados-y-fletes", A.A6_ID, "t7-1-a7-control-interno"]);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A6_ID)), []);
