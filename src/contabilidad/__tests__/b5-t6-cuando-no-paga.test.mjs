@@ -241,6 +241,7 @@ test("★★★ cápsulas: «se debita» en teal y «se acredita» en ámbar, si
     "clientes25:debe:se debita", "ingresos25:haber:se acredita", "gasto:debe:se debita", "clientes31:haber:se acredita",
   ]);
   for (const n of lados) assert.equal(n.style.background, rgb(n.dataset.lado === "debe" ? FAE.teal : FAE.ambar));
+  for (const n of lados) assert.equal(n.parentElement.style.flexWrap, "wrap", "si no cabe junto al movimiento, la cápsula baja de línea (v1b: 73,63)");
   desmontar();
 });
 
