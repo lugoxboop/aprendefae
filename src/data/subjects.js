@@ -631,6 +631,7 @@ export const SUBJECTS = {
         title: "Activos financieros temporales",
         actividades: [
           { id: "b5-t5-a1-del-efectivo-de-sobra", nombre: "Del efectivo de sobra al activo financiero", clasificacion: { tipo: APRENDER } },
+          { id: "b5-t5-a2-los-tres-momentos-de-una-inversion", nombre: "Los tres momentos de una inversión", clasificacion: { tipo: APRENDER } },
         ],
       },
       /*
