@@ -123,3 +123,17 @@ lecturas que no coinciden y una imagen que no se lee con seguridad.
 
 **Decisión de Sakuta, respaldada:** ninguna actividad se construye sobre esa
 tabla hasta tener un escaneo nítido de la p. 201.
+
+## Cómo se cita un ejercicio
+
+**Nunca por su número suelto.** El libro reinicia la numeración en cada bloque,
+así que hay cuatro ejercicios «3» distintos en el mismo capítulo. Con tres
+células citando a la vez, «el ejercicio 3» no identifica nada y las referencias
+de una célula apuntan a otra cosa en la de al lado.
+
+La forma es **bloque + número + página**: «el 3 del bloque D, p. 231». Las tres
+piezas hacen falta: el bloque lo desambigua, el número lo localiza dentro del
+bloque y la página permite comprobarlo sin tener el índice delante.
+
+Lo encontró Gen armando el índice del banco de ejercicios, antes de que
+chocara: las células todavía no se habían pisado con esto.
