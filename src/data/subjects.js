@@ -741,6 +741,8 @@ export const SUBJECTS = {
           { id: "t7-3-descuentos-en-cadena", nombre: "Descuentos en cadena", clasificacion: { tipo: APRENDER } },
           /* A3, después de A2 (regla 9; depende de A1). H2 «La cadena de descuentos» entra entre A2 y A3. Ejemplo H-3, libro de quien vende, pp. 251-253. Cero FP. */
           { id: "t7-3-descuento-condicionado", nombre: "El descuento condicionado", clasificacion: { tipo: APRENDER } },
+          /* A4, justo después de A3 (orden final de T7-3): H-3 en el libro de quien compra, el cierre y el permanente, pp. 253-254. Cero FP. */
+          { id: "t7-3-descuento-en-dos-libros", nombre: "El descuento en los dos libros", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],
