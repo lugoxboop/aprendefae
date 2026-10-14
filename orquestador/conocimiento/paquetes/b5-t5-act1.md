@@ -7,6 +7,8 @@ Guardado por Kaede (construcción) el 14 de octubre de 2026, tal como llegó de 
 3. **Emojis.** Como en T1-6, el ❌ y el ✅ van al inicio del texto en los datos, y Retro los separa. El texto que sigue al emoji se copia literal.
 4. La devolución sale por Retro (`role="status"`), como en T1-6.
 
+**REGLA ÚNICA DEL SEGUNDO FALLO (decisión de Sakuta, 14-oct; reemplaza la corrección 1 y la columna «Tras el segundo fallo»):** tras el segundo fallo, en TODA ficha aparece su acierto sin «Sí.» y con «No es esa.» delante. Para que eso dé siempre la respuesta, tres aciertos de renta variable cambian (Futaba, PASA de Shoko): acciones, def-emisora y def-dividendos. Ya están aplicados en la tabla de aciertos de la §3.6. La columna «Tras el segundo fallo» de la §3.8 queda abajo solo como historia: ya no se pinta.
+
 **Cambio de datos del 14-oct (PASA de Shoko):** Futaba reescribió por INFLESZ los cuatro textos que no llegaban a 65: la ficha def-emisora (casi literal de la p. 192, sin «económicos»), la ficha caso-pactado (sin «durante un periodo determinado»), el acierto de def-interes y el párrafo del resumen. Están aplicados abajo, en sus tablas. Las líneas y altos medidos por Mai para esas cuatro filas ya no valen; los revalidó Kaede en el sitio.
 
 ---
@@ -203,9 +205,9 @@ Devoluciones de acierto (tras ✅). Las líneas dependen de la letra de la devol
 
 | Ficha | Texto literal (tras ✅) | Líneas a 320 · 375 [R] |
 |---|---|---|
-| acciones | «Sí. Lo que rinden depende de cómo le vaya a la empresa que las emitió.» | 3 · 2 |
-| def-emisora | «Sí. Esa es la marca de la renta variable: rinde según la empresa que lo emitió.» | 3 · 2 |
-| def-dividendos | «Sí. Así describe el libro a las acciones: sus dividendos siguen a quien las emitió.» | 3 · 2 |
+| acciones | «Sí. Son renta variable: lo que rinden depende de cómo le vaya a la empresa que las emitió.» | 3 · 2 |
+| def-emisora | «Sí. Es renta variable: rinde según cómo le vaya a la empresa que lo emitió.» | 3 · 2 |
+| def-dividendos | «Sí. Es renta variable: así describe el libro a las acciones, cuyos dividendos siguen a quien las emitió.» | 3 · 2 |
 | caso-resultados | «Sí. Si lo que recibe se decide según cómo le vaya a la empresa que lo emitió, es renta variable.» | 3 · 3 |
 | cdt | «Sí. El libro pone el CDT entre los títulos que pagan un interés fijo durante un periodo.» | 3 · 2 |
 | bonos | «Sí. El libro pone los bonos en la renta fija con interés.» | 2 · 2 |

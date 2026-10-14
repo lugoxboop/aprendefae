@@ -350,7 +350,7 @@ test("★★ sin el 33 % ni sus cifras, sin los asientos con IVA, sin nada inter
   for (const interno of ["≈", "glosa", "regla", "Near", "Mello", "Watari", "(p. ", "C-1", "X2", "1.330.77"]) assert.ok(!texto.includes(interno), interno);
 });
 
-test("★★★ fuera del catálogo de FP; id t7-; en T7-1 después de AP1 y antes de A6", () => {
+test("★★★ fuera del catálogo de FP; id t7-; en T7-1 después de AP2 y antes de A6", () => {
   assert.equal(A.AP4_ID, "t7-1-a4-el-cierre-en-periodico");
   assert.equal(P.numero, 4);
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_1);
@@ -358,7 +358,8 @@ test("★★★ fuera del catálogo de FP; id t7-; en T7-1 después de AP1 y ant
   assert.deepEqual(a.clasificacion, { tipo: APRENDER });
   assert.equal(a.nombre, P.titulo);
   const ids = tema.actividades.map((x) => x.id);
-  assert.ok(ids.indexOf(A.AP4_ID) > ids.indexOf("t7-1-a1-la-cuenta-que-no-se-mueve"));
+  /* Orden final de L: a1, a2, h1, a3, a4, a5, a6, a7. AP4 va después de AP2 (y de AP3, cuando exista). */
+  assert.ok(ids.indexOf(A.AP4_ID) > ids.indexOf("t7-1-a2-la-factura-completa"));
   assert.ok(ids.indexOf(A.AP4_ID) < ids.indexOf("t7-1-a6-devoluciones-en-periodico"));
   const piezas = PIEZAS_T7_1.map((x) => x.pieza.id);
   assert.ok(piezas.indexOf(A.AP4_ID) < piezas.indexOf("t7-1-a6-devoluciones-en-periodico"));

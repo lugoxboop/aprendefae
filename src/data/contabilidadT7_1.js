@@ -79,14 +79,14 @@ export const FIGURA_TEXTOS = {
   /*
    * Rótulo de la tarjeta de la factura (colocando y errores de la pantalla 4),
    * texto de interfaz de la v3.1 de Watari.
-   * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN]: opcional de Mello, escrito
-   * por L; falta que Near lo confirme o lo cambie.
+   * [REVISADO POR NEAR]: opcional de Mello, escrito por L; Near lo confirmó
+   * tal cual.
    */
   rotuloFactura: "La compra",
 };
 
 /* Los textos de la figura que todavía esperan confirmación. La figura los marca con data-revision. */
-export const FIGURA_PENDIENTES_DE_REVISION = ["rotuloFactura"];
+export const FIGURA_PENDIENTES_DE_REVISION = [];
 
 const TRES_FILAS = ["inicio", "durante", "cierre"];
 
