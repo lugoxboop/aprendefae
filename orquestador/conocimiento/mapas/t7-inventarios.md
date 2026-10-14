@@ -11,7 +11,7 @@ Mapa consolidado de los lotes 1-3 de Near (Célula C) sobre *Contabilidad financ
 
 ## Decisión de corte (L, general de la Célula C · 13 de octubre de 2026)
 
-Decide L con el análisis de dependencias de este mapa. Levi audita el resultado a ciegas, como audita todo lo demás.
+Decide L con el análisis de dependencias de este mapa. Versión 2: incorpora las auditorías de Levi y de Mello, las dos con veredicto PASA CON CORRECCIONES. El corte se mantiene; cambian la justificación y las reglas de producción.
 
 **Corte elegido: tres temas, con cortes en 232|233 y en 248.**
 
@@ -21,29 +21,54 @@ Decide L con el análisis de dependencias de este mapa. Levi audita el resultado
 | T7-2 | 233-248 (16 pp.) | E, F, G | E-1, E-2, F-1, G-1, G-2, G-3, G-4 (7) | Sistema permanente, kárdex, ejercicio San Calixto en permanente, fletes y devoluciones en permanente |
 | T7-3 | 248-261 (14 pp.) | H, I, J | H-1, H-2, H-3, I-1, I-2, I-3 (6) | Descuentos, ajustes por inventario físico, NIC 2 |
 
-Los nombres de los temas son provisionales; los propone Near.
+Títulos propuestos por Near: «Inventarios I: el sistema periódico», «Inventarios II: el sistema permanente», «Inventarios III: descuentos, ajustes y NIC 2».
 
 ### Por qué este corte
 
-1. **Cada tema se termina de una sentada.** 26, 16 y 14 páginas, con 7, 7 y 6 ejemplos resueltos. Ningún tema pasa de 26 páginas.
+1. **Carga medida en el libro, no en la plataforma.** 26, 16 y 14 páginas del libro, con 7, 7 y 6 ejemplos resueltos. El tiempo que tarda un estudiante en la plataforma no está medido; lo que se comparó entre opciones fueron páginas y ejemplos.
 2. **Un sistema por tema.** T7-1 es todo periódico y T7-2 todo permanente. Es la misma frontera que pone el libro: la p. 233 abre «SISTEMA DE INVENTARIO PERMANENTE».
 3. **Cumple R1, R2 y la regla de Levi.** No parte ningún ejemplo (C-1 y F-1 quedan enteros). La única fusión real del mapa, E-1 → E-2, queda dentro de T7-2.
-4. **El precio, aceptado a sabiendas:** cruza cinco cadenas de cifras repetidas (X1, X2, X3a, X3b, X4), más que otras opciones. Las cinco son el mismo hecho contado en periódico y en permanente. Con el criterio de Mello, lo que se califica en T7-2 es la diferencia entre sistemas (qué cuenta cambia, el asiento de costo que no existía), y una cifra ya resuelta en T7-1 no se pide como respuesta en T7-2. Como los temas se abren en cualquier orden, esa regla aplica en las dos direcciones.
+4. **Las cadenas que cruzan coinciden con lo que se enseña.** Como los temas y las piezas se abren en cualquier orden, una cadena dentro de un tema es igual de peligrosa que una que cruza: el corte no cambia el riesgo de regalar respuestas, porque las cadenas están en el libro con cualquier corte. Lo que sí hace este corte es que las cadenas que cruzan entre T7-1 y T7-2 son exactamente el mismo hecho contado en periódico y en permanente, que es la diferencia que la regla 3 de Mello deja calificar.
 
 ### Por qué no las otras
 
-- **Corte en 246 (dos temas) y 246 + 248, 246 + 254 o 246 + 256 (tres temas).** Son las que cruzan menos cadenas (solo X4), pero dejan un primer tema de 40 páginas con 12 ejemplos (A-1 a G-2). No se termina de una sentada.
-- **227 + 248 (21 | 22 | 14, cruza 2 cadenas).** Equilibrada en páginas, pero el tema 2 mezcla los fletes y devoluciones del periódico (D) con todo el permanente y carga 10 ejemplos, entre ellos el ejercicio más largo del capítulo (F-1).
+- **Corte en 246 (dos temas) y 246 + 248, 246 + 254 o 246 + 256 (tres temas).** Dejan un primer tema de 40 páginas con 12 ejemplos (A-1 a G-2).
+- **227 + 248 (21 | 22 | 14).** Equilibrada en páginas, pero el tema 2 mezcla los fletes y devoluciones del periódico (D) con todo el permanente y carga 10 ejemplos, entre ellos el ejercicio más largo del capítulo (F-1).
 - **232|233 en dos temas (26 | 29).** El segundo tema junta permanente, descuentos, ajustes y NIC 2: 29 páginas y 13 ejemplos.
 - **Cualquier opción con corte en 256.** Deja un tema solo con NIC 2, sin ningún ejemplo resuelto.
 - **Opciones con un tema de 2 a 6 páginas** (por ejemplo 227 + 229, 244|245 + 246, 246 + 247). Dejan temas de uno o dos ejemplos.
 
-### Consecuencias para la producción
+### Cadenas: las que cruzan y las internas
 
-- **Tarifas.** Solo A-1, A-2, E-1 y E-2 traen sus tarifas en el enunciado. Todo enunciado nuestro trae sus cinco datos y sus tarifas escritas (16 %, 3,5 % y, en fletes, 1 %).
-- **Renta del 33 %.** Sigue como pregunta abierta al profesor en fuente.md. Un ítem calificado que dependa de ella no se publica hasta que el profesor responda.
-- **Errata 5.** Nuestro enunciado de F-1 escribe bien los totales de las ventas; no remite a C-1.
-- **Auditoría.** Mello audita las cinco cadenas que cruzan entre T7-1 y T7-2 con su criterio. Las cadenas internas (Y1 a Y5) se auditan por el orden de las piezas dentro de cada tema.
+Cruzan entre T7-1 y T7-2 (cuatro cadenas del mapa; la X3 se parte en dos para auditarla):
+
+- **X1:** A-1 ↔ E-1.
+- **X2:** C-1 ↔ F-1.
+- **X3a:** D-1 ↔ G-1. **X3b:** D-2 ↔ G-2. (Son la X3 del mapa.)
+- **X4:** D-3 ↔ G-3 y G-4.
+
+Internas (lista de Mello, que reemplaza a Y1-Y5):
+
+- **T7-1:** D-1 con D-2 (la misma operación en espejo); D-3 (libro del comprador con libro del vendedor).
+- **T7-2:** E-1 con E-2 (el costo de E-2 es la compra de E-1); G-1 con G-2; G-3 con G-4.
+- **T7-3:** H-1, H-2 y H-3 (base de 4.200.000; el primer paso de H-2 es el descuento comercial de H-3); I-1 con I-2 (saldo de 465.000).
+- **Dentro de cada ejemplo largo (B-1, C-1, F-1):** si un ejemplo se reparte en varias piezas, una pieza no puede mostrar resuelto lo que otra pide.
+
+### Reglas de producción que salen de las auditorías
+
+1. **Un solo dueño por cifra-respuesta.** Cada cifra que se califica la puede pedir una sola pieza de la célula, y ninguna otra pieza, de Aprender incluida, puede mostrarla resuelta. El dueño de las cifras compartidas por las cadenas X es T7-1, porque el libro las resuelve primero en periódico.
+2. **Lista de control mecánica.** La lista de cifras prohibidas por cadena (de Mello) se cruza antes de cada entrega. Ningún ítem calificado tiene como respuesta una cifra de esa lista que esté resuelta en otra pieza.
+3. **T7-2 se entiende solo.** Su primera pieza trae un repaso del periódico que se sostiene sin T7-1, y todo ítem que pregunte por la diferencia entre sistemas muestra las dos versiones en su propio enunciado.
+4. **Suficiencia.** Todo enunciado trae sus cinco datos y, si la solución las usa, sus tarifas escritas como datos del ejercicio (16 %, 3,5 % y, en fletes, 1 %), nunca como «la tarifa vigente». El enunciado de E-2 repite la compra de 5.000.000. Cada enunciado nombra el sistema (periódico o permanente), porque San Calixto, Santa Martha y La Reventa se repiten con datos distintos.
+5. **Renta del 33 %.** Sigue como pregunta abierta al profesor en fuente.md. Nada que dependa de ella se publica hasta que responda, ni ítems calificados ni piezas de Aprender que la muestren.
+6. **UEPS.** Entra como lo trae el libro, por la decisión cerrada de fuente.md. Eso incluye el rótulo del propio libro «(No válido bajo NIIF)» en los títulos de las pp. 216, 220, 222 y 240, literal y sin advertencias añadidas. Levi pidió decir que la norma no lo admite; como la decisión está cerrada, reabrirla le toca a Mateo.
+7. **Erratas.** Las del T7 llevan el prefijo de la célula (C7-1 a C7-18). Las que tocan cifras que cruzan se resuelven igual en los dos temas, como decisión de L pendiente de confirmar con el profesor:
+   - **C7-1:** se usa 1.518.000 (24.220.000 − 22.702.000).
+   - **C7-5:** el enunciado de F-1 escribe bien los totales de las ventas, sin remitir a C-1.
+   - **C7-7:** la venta de La Popa se debita a Cuentas por cobrar – clientes; el flete pagado ese mismo día se acredita a Caja / Bancos en los dos sistemas.
+   - **C7-10:** la cuenta es «Compras».
+   - **C7-12:** la venta de San Calixto es del 6 de febrero, como dice el enunciado.
+   - **C7-15:** la devolución de compras se registra contra Cuentas por pagar – proveedores, como en el ejemplo de la p. 232.
 
 ## Bloque A · Cuenta de inventarios y sistema periódico (pp. 207-215)
 
@@ -286,7 +311,7 @@ Los nombres de los temas son provisionales; los propone Near.
 **\[8\] Cuentas:**
 
 - **D-1:** Compras · IVA por pagar · Retefuente por pagar · Cuentas por pagar - proveedores · Compras (fletes) · Caja / Bancos.
-- **D-2:** Cuentas por pagar - clientes (sic, errata 7) · Anticipo fiscal · IVA por pagar · Ventas · Gasto fletes en ventas · Retefuente por pagar · Caja / Bancos.
+- **D-2:** Cuentas por pagar - clientes (sic, errata C7-7) · Anticipo fiscal · IVA por pagar · Ventas · Gasto fletes en ventas · Retefuente por pagar · Caja / Bancos.
 - **D-3, comprador:** Compras · IVA por pagar · Retefuente por pagar · Cuentas por pagar - proveedores · Devoluciones de compras.
 - **D-3, vendedor:** Cuentas por cobrar - clientes · Anticipo fiscal · IVA por pagar · Ventas · Devoluciones de ventas.
 - **Asiento modelo de devolución de compras (p. 231):** Caja / Cuentas por cobrar - proveedores · Retefuentes por pagar · IVA por pagar · Devoluciones de compras.
@@ -324,7 +349,7 @@ Los nombres de los temas son provisionales; los propone Near.
 - **Dentro de E:** el costo de E-2 (5.000.000, p. 237) es **exactamente la compra de E-1**. El enunciado lo dice: «las mercancías compradas en abril 16 por $5.000.000». Supone que se vendió todo lo comprado. **Esto sí funde por la regla de Levi: el inventario que nace en la compra de E-1 se usa como costo en E-2. Impide cortar entre E-1 y E-2.**
 - **Hacia A (cifras repetidas; no funden por el criterio (a), solo riesgo de regalar la respuesta para Mello):**
   - E-1 repite A-1 cifra por cifra: **5.000.000 · 800.000 · 175.000 · 5.625.000**.
-  - Cambian la cuenta debitada (Inventario de mercancías en vez de «Cuentas de mercancías») y la fecha del asiento (ver errata 14).
+  - Cambian la cuenta debitada (Inventario de mercancías en vez de «Cuentas de mercancías») y la fecha del asiento (ver errata C7-14).
   - E-2 no repite A-2: la venta es de 8.000.000 en vez de 2.000.000, con IVA de 1.280.000, retención de 280.000 y valor adeudado de 9.000.000.
   - A-2 y E-2 comparten nombre, fecha (20 de abril) y estructura, con distinto monto. **Un estudiante que vea las dos puede confundirlas.**
 
@@ -391,7 +416,7 @@ Los nombres de los temas son provisionales; los propone Near.
   - El promedio pasa por 1.308,70 → 1.312,70 → 1.332,54 → 1.375,13 y da un costo de 22.707.354. También solo aparece en el estado.
   - El cálculo del 1.332,54 (feb-12) solo está en la tabla; el texto no lo muestra.
   - En la columna del promedio, algunas cifras quedan en parte tapadas por el doblez del libro. Los dígitos legibles coinciden con mi cálculo: 22.707.354 / 11.085.646 / 3.658.263 / 7.427.383.
-- **Hacia C (cifras repetidas; no funden por el criterio (a), salvo lo que dice el veredicto sobre la errata 5):**
+- **Hacia C (cifras repetidas; no funden por el criterio (a), salvo lo que dice el veredicto sobre la errata C7-5):**
   - **Los datos de compras y ventas son idénticos.**
   - Los montos de los asientos son idénticos. Las compras se debitan a Inventario de mercancías en vez de Compras.
   - Se repiten el inventario inicial (6.760.000), el disponible (24.220.000, total débito del mayor en la p. 243), las ventas (45.793.000) y los gastos (12.000.000).
@@ -426,7 +451,7 @@ Los nombres de los temas son provisionales; los propone Near.
 - «Devoluciones de compras y ventas bajo el sistema de inventario permanente» (p. 246).
 - Subtítulos de los asientos: «Registro de la compra y devolución de la mercancía» (p. 247) y «Registro de la venta y devolución de venta de las mercancías» (p. 248).
 
-**\[2\] Páginas:** de la p. 245 a la p. 248. Termina con el párrafo sobre la tabla del 18 y 22 de marzo, justo antes de «Descuentos».
+**\[2\] Páginas:** de la p. 245 a la p. 248. Termina con el párrafo sobre la tabla del 18 y 22 de marzo, justo antes de «Descuentos». Punto exacto en la p. 248: G-4 termina con la frase que empieza «En los anteriores registros se puede observar…» y acaba «…se cargó a la cuenta devoluciones de ventas.»; justo debajo, el título «Descuentos» abre el bloque H.
 
 **\[3\] Conceptos:**
 
@@ -476,7 +501,7 @@ Los nombres de los temas son provisionales; los propone Near.
 - Subtítulos de los asientos: «Registro de la venta y el descuento en los libros de la compañía San Calixto» (p. 252), «Registro de la compra y el descuento en los libros de la compañía Santa Martha» (p. 253).
 - Subtítulos del cierre: «Compañía San Calixto» y «Compañía Santa Martha» (p. 254).
 
-**\[2\] Páginas:** de la p. 248 (mitad) a la p. 254 (mitad), donde termina con el párrafo «Si las empresas del ejemplo anterior utilizaran el sistema de inventario permanente…», justo antes de «CONSIDERACIONES FINALES SOBRE EL INVENTARIO».
+**\[2\] Páginas:** de la p. 248 (mitad: empieza en el título «Descuentos» y su primera frase, «Es una práctica común, en las relaciones de tipo comercial…», justo debajo de la última frase de G-4) a la p. 254 (mitad), donde termina con el párrafo «Si las empresas del ejemplo anterior utilizaran el sistema de inventario permanente…», justo antes de «CONSIDERACIONES FINALES SOBRE EL INVENTARIO».
 
 **\[3\] Conceptos:**
 
@@ -614,30 +639,30 @@ Los nombres de los temas son provisionales; los propone Near.
 
 **\[8\] Cuentas:** ninguna.
 
-## Erratas del libro (1-18)
+## Erratas del libro (C7-1 a C7-18)
 
-17 de las 18 están confirmadas abriendo el pliego real, al menos en una de sus páginas (la 10 y la 13 tienen una página vista solo en el adjunto); la 3 solo se vio en el adjunto y no se reabrió. «Confirmada» = pliego abierto directamente del PDF en algún lote; las verificadas en lote 3 llevan esa marca.
+17 de las 18 están confirmadas abriendo el pliego real, al menos en una de sus páginas (la C7-10 y la C7-13 tienen una página vista solo en el adjunto); la C7-3 solo se vio en el adjunto y no se reabrió. «Confirmada» = pliego abierto directamente del PDF en algún lote; las verificadas en lote 3 llevan esa marca.
 
 | N.º | Página | Qué dice el libro | Estado |
 | --- | --- | --- | --- |
-| 1 | 243 | Mayor de inventarios con saldo 1.515.000; el correcto es 1.518.000 (24.220.000 − 22.702.000). | Confirmada (pliego 34) |
-| 2 | 250 | Escribe «× 0,7688»; el factor es 0,7866 y el resultado impreso (3.303.720) corresponde a 0,7866. | Confirmada (pliego 38), verificado en lote 3 |
-| 3 | 220 | El inventario final por UEPS aparece rotulado «(método PEPS)». | Vista en el adjunto, no reabierta |
-| 4 | 241 | El numerador de la fórmula dice «costo de amortización disponible», y en feb-04 el denominador aparece como «$1.312,70» en lugar de 9.200 + 3.000. | Confirmada (pliego 33) |
-| 5 | 238 | La tabla de ventas rotula los totales como precio por unidad («4.500 unidades a $11.800 c/u», etc.); el ejercicio usa los totales 11.880.000, etc. | Confirmada (pliego 32) |
-| 6 | 252 | El texto dice venta el 25 de marzo y pago el 4 de junio; los asientos dicen may-25 y jun-04. Con marzo no se cumple la condición 15/10. | Confirmada (pliego 39), verificado en lote 3 |
-| 7 | 229 y 246 | p. 229: la venta de La Popa debita «Cuentas por pagar – clientes». p. 246: el flete pagado «ese mismo día» se acredita a proveedores; en la p. 229, a Caja/Bancos. | Confirmada (pliegos 27 y 36) |
-| 8 | 213 y 237 | En ventas escribe «valor adeudado al proveedor», y en la p. 213 «hacer el registro de la compra». | Confirmada (pliegos 19 y 31) |
-| 9 | 253 y 243 | «5.98.500» en vez de 598.500 (p. 253) y «4.86.000» en vez de 4.860.000 (p. 243). | Confirmada (pliegos 39 y 34), verificado en lote 3 |
-| 10 | 211-212 | El texto dice que se debita «compra de mercancías»; el asiento modelo y el del 16 de abril dicen «Cuentas de mercancías». | Confirmada en p. 212 (pliego 19); p. 211 vista en el adjunto |
-| 11 | 213 | Asiento modelo de venta con «Caja / Cuentas por pagar -clientes». | Confirmada (pliego 19) |
-| 12 | 224, 225, 242, 243 | Venta registrada el feb-05 en diario y mayor; el enunciado dice feb-06 (pp. 221 y 238). | Confirmada (pliegos 25, 32 y 34) |
-| 13 | 211 y 213 | «Valor adecuado al proveedor» en lugar de «adeudado». | Confirmada en p. 213 (pliego 19); p. 211 vista en el adjunto |
-| 14 | 235 | Asiento de E-1 fechado Abr-18; el enunciado (p. 234) y E-2 (p. 236) dicen 16 de abril. | Confirmada (pliego 30) |
-| 15 | 231 | El asiento modelo de devolución de compras usa «Caja / Cuentas por cobrar - proveedores» y el ejemplo de la p. 232 usa «Cuentas por pagar - proveedores». No coinciden; no se afirma que el modelo esté mal. | Confirmada (pliegos 28 y 29) |
-| 16 | 228 y 245 | «La empresa comparadora» en vez de «compradora». Menor. | Confirmada (pliegos 27 y 35) |
-| 17 | 253 | La cuenta aparece como «Descuento comercial condicional»; en el resto es «condicionado». Menor. | Confirmada (pliego 39) |
-| 18 | 256 | El texto nombra «provisiones para pérdida de inventarios» y el asiento «Provisión para inventarios». Menor. | Confirmada (pliego 41) |
+| C7-1 | 243 | Mayor de inventarios con saldo 1.515.000; el correcto es 1.518.000 (24.220.000 − 22.702.000). | Confirmada (pliego 34) |
+| C7-2 | 250 | Escribe «× 0,7688»; el factor es 0,7866 y el resultado impreso (3.303.720) corresponde a 0,7866. | Confirmada (pliego 38), verificado en lote 3 |
+| C7-3 | 220 | El inventario final por UEPS aparece rotulado «(método PEPS)». | Vista en el adjunto, no reabierta |
+| C7-4 | 241 | El numerador de la fórmula dice «costo de amortización disponible», y en feb-04 el denominador aparece como «$1.312,70» en lugar de 9.200 + 3.000. | Confirmada (pliego 33) |
+| C7-5 | 238 | La tabla de ventas rotula los totales como precio por unidad («4.500 unidades a $11.800 c/u», etc.); el ejercicio usa los totales 11.880.000, etc. | Confirmada (pliego 32) |
+| C7-6 | 252 | El texto dice venta el 25 de marzo y pago el 4 de junio; los asientos dicen may-25 y jun-04. Con marzo no se cumple la condición 15/10. | Confirmada (pliego 39), verificado en lote 3 |
+| C7-7 | 229 y 246 | p. 229: la venta de La Popa debita «Cuentas por pagar – clientes». p. 246: el flete pagado «ese mismo día» se acredita a proveedores; en la p. 229, a Caja/Bancos. | Confirmada (pliegos 27 y 36) |
+| C7-8 | 213 y 237 | En ventas escribe «valor adeudado al proveedor», y en la p. 213 «hacer el registro de la compra». | Confirmada (pliegos 19 y 31) |
+| C7-9 | 253 y 243 | «5.98.500» en vez de 598.500 (p. 253) y «4.86.000» en vez de 4.860.000 (p. 243). | Confirmada (pliegos 39 y 34), verificado en lote 3 |
+| C7-10 | 211-212 | El texto dice que se debita «compra de mercancías»; el asiento modelo y el del 16 de abril dicen «Cuentas de mercancías». | Confirmada en p. 212 (pliego 19); p. 211 vista en el adjunto |
+| C7-11 | 213 | Asiento modelo de venta con «Caja / Cuentas por pagar -clientes». | Confirmada (pliego 19) |
+| C7-12 | 224, 225, 242, 243 | Venta registrada el feb-05 en diario y mayor; el enunciado dice feb-06 (pp. 221 y 238). | Confirmada (pliegos 25, 32 y 34) |
+| C7-13 | 211 y 213 | «Valor adecuado al proveedor» en lugar de «adeudado». | Confirmada en p. 213 (pliego 19); p. 211 vista en el adjunto |
+| C7-14 | 235 | Asiento de E-1 fechado Abr-18; el enunciado (p. 234) y E-2 (p. 236) dicen 16 de abril. | Confirmada (pliego 30) |
+| C7-15 | 231 | El asiento modelo de devolución de compras usa «Caja / Cuentas por cobrar - proveedores» y el ejemplo de la p. 232 usa «Cuentas por pagar - proveedores». No coinciden; no se afirma que el modelo esté mal. | Confirmada (pliegos 28 y 29) |
+| C7-16 | 228 y 245 | «La empresa comparadora» en vez de «compradora». Menor. | Confirmada (pliegos 27 y 35) |
+| C7-17 | 253 | La cuenta aparece como «Descuento comercial condicional»; en el resto es «condicionado». Menor. | Confirmada (pliego 39) |
+| C7-18 | 256 | El texto nombra «provisiones para pérdida de inventarios» y el asiento «Provisión para inventarios». Menor. | Confirmada (pliego 41) |
 
 ## Huecos de suficiencia por ejemplo
 
@@ -654,14 +679,14 @@ Solo A-1, A-2, E-1 y E-2 traen todas sus tarifas en el enunciado. Las tarifas de
 | D-3 Dajema / El Tajamar | 231-232 | Tarifa del IVA; no menciona la retención. | 16 % y 3,5 % |
 | E-1 La Reventa, compra | 234-235 | Completo | — |
 | E-2 La Reventa, venta | 236-237 | Completo | — |
-| F-1 San Calixto, permanente | 238-244 | Lo mismo que C-1, y además los precios por unidad de las ventas están mal rotulados (errata 5). | 16 %, 3,5 %, crédito, 33 % |
+| F-1 San Calixto, permanente | 238-244 | Lo mismo que C-1, y además los precios por unidad de las ventas están mal rotulados (errata C7-5). | 16 %, 3,5 %, crédito, 33 % |
 | G-1 Santa Martha, flete, permanente | 245 | Tarifa del IVA y retención del 3,5 % (solo trae el 1 % del transporte). | 16 % y 3,5 % |
 | G-2 La Popa, flete, permanente | 245-246 | Tarifa del IVA y retención del 3,5 % (solo trae el 1 % del transporte). | 16 % y 3,5 % |
 | G-3 Santa Martha / Tierra Bomba, compra devuelta | 246-247 | Tarifa del IVA; no menciona la retención. | 16 % y 3,5 % |
 | G-4 Tierra Bomba, venta devuelta | 247-248 | Tarifa del IVA; no menciona la retención. | 16 % y 3,5 % |
 | H-1 San Calixto, comercial 15 % | 249 | Tarifa del IVA; no menciona la retención. | 16 % y 3,5 % |
 | H-2 San Calixto, cadena | 249-250 | Tarifa del IVA; no menciona la retención. | 16 % y 3,5 % |
-| H-3 San Calixto / Santa Martha, condicionado | 252-254 | Tarifa del IVA; no menciona la retención. La fecha del texto (25 de marzo) no coincide con los asientos (errata 6). | 16 %, 3,5 %, fechas may-25 y jun-04 |
+| H-3 San Calixto / Santa Martha, condicionado | 252-254 | Tarifa del IVA; no menciona la retención. La fecha del texto (25 de marzo) no coincide con los asientos (errata C7-6). | 16 %, 3,5 %, fechas may-25 y jun-04 |
 | I-1, I-2, I-3 | 255-256 | Completos (sin impuestos) | — |
 
 ## Veredicto de corte (regla de Levi)
@@ -684,7 +709,7 @@ Solo A-1, A-2, E-1 y E-2 traen todas sus tarifas en el enunciado. Las tarifas de
 | Par | ¿Un saldo o transacción nace en uno y se usa en el otro? | Página y frase literal del enunciado | Veredicto |
 | --- | --- | --- | --- |
 | X1 · A-1 (p. 211) / E-1 (p. 234) | No. E-1 trae todos sus datos; ningún saldo de A-1 (periódico) entra a E-1. | p. 234: «adquiere a crédito, de un proveedor, mercancías por valor de $5.000.000» | No funde |
-| X2 · C-1 (pp. 221-227) / F-1 (pp. 238-244) | No por diseño: F-1 trae su inventario inicial, sus compras y sus gastos. **Pero** sus ventas están mal rotuladas (errata 5) y los totales que usa la solución solo están impresos en el enunciado de C-1. Los inventarios finales de F-1 no dependen de las ventas, solo de las unidades. | p. 238: «Inventario el 1 de febrero: 5.200 unidades a $1.300 cada una.» y «4.500 unidades a $ 11.800 c/u»; p. 221: «4.500 unidades por $ 11.880.000» | No funde. Con la errata tal como está impresa, las ventas de F-1 solo se reconstruyen con C-1; se resuelve escribiendo bien nuestro enunciado. Decisión de Levi. |
+| X2 · C-1 (pp. 221-227) / F-1 (pp. 238-244) | No por diseño: F-1 trae su inventario inicial, sus compras y sus gastos. **Pero** sus ventas están mal rotuladas (errata C7-5) y los totales que usa la solución solo están impresos en el enunciado de C-1. Los inventarios finales de F-1 no dependen de las ventas, solo de las unidades. | p. 238: «Inventario el 1 de febrero: 5.200 unidades a $1.300 cada una.» y «4.500 unidades a $ 11.800 c/u»; p. 221: «4.500 unidades por $ 11.880.000» | No funde. Con la errata C7-5 tal como está impresa, las ventas de F-1 solo se reconstruyen con C-1; se resuelve escribiendo bien nuestro enunciado. Decisión de Levi. |
 | X3 · D-1/D-2 (pp. 228-229) / G-1/G-2 (pp. 245-246) | No. G-1 y G-2 traen sus propias cifras; G-2 trae además su propio costo. | p. 245: «compró a crédito, a un proveedor de Cartagena, mercancías por valor de $7.500.000»; p. 246: «estima que el costo de la mercancía vendida es de $3.000.000» | No funde |
 | X4 · D-3 (pp. 231-232) / G-3/G-4 (pp. 246-248) | No. G-3 y G-4 traen unidades, precio y costo propios; no usan ningún saldo de Dajema. | p. 246: «1.900 unidades del producto ABX, a un precio de $8.000 cada unidad»; p. 247: «estima que el costo de cada unidad vendida es de $3.200» | No funde |
 
@@ -876,11 +901,16 @@ Se reescribieron 12 frases de los bloques que estaban escritas con la regla viej
 | D\[5\] | Si D queda separado de A, le faltan las tarifas. | Por el criterio (b) no funde: cortar entre A y D está permitido, y nuestro enunciado de D tendrá que escribir las tarifas (hueco de suficiencia). |
 | E\[5\] | Hacia A (cadena cerrada): | Hacia A (cifras repetidas; no funden por el criterio (a), solo riesgo de regalar la respuesta para Mello): |
 | E\[5\] | E-2 no se sostiene sin E-1. | Esto sí funde por la regla de Levi: el inventario que nace en la compra de E-1 se usa como costo en E-2. Impide cortar entre E-1 y E-2. |
-| F\[5\] | Hacia C (cadena cerrada): | Hacia C (cifras repetidas; no funden por el criterio (a), salvo lo que dice el veredicto sobre la errata 5): |
+| F\[5\] | Hacia C (cadena cerrada): | Hacia C (cifras repetidas; no funden por el criterio (a), salvo lo que dice el veredicto sobre la errata C7-5): |
 | F\[5\] | Cualquier pieza de C con PEPS regala F, y al revés. | No impide ningún corte: es solo riesgo de regalar la respuesta, que decide Mello. Una pieza de C con PEPS daría la respuesta de F, y al revés. |
 | F\[5\] | F también depende de las tarifas del 16 % y 3,5 % | F también usa las tarifas del 16 % y 3,5 % |
 | F\[5\] | Es el mismo hueco de C-1. | Es el mismo hueco de suficiencia de C-1: por el criterio (b) no funde ni impide el corte. |
 | G\[5\] | Hacia D (cadena cerrada): | Hacia D (cifras repetidas; no funden por el criterio (a), solo riesgo de regalar la respuesta para Mello): |
 | H\[5\] | Un corte en la p. 251 (frontera limpia entre comercial y condicionado) rompe la cadena de H-2 a H-3. | Un corte en la p. 251 (frontera limpia entre comercial y condicionado) no queda impedido: H-3 trae su propio precio de lista y calcula su propio 5 % (p. 252), así que por el criterio (a) no funde. Que H-2 y H-3 compartan el 3.990.000 es solo riesgo de regalar la respuesta (Mello). |
 
-También se agregó, después de «Control», la sección «Decisión de corte (L)», con el corte elegido y por qué no las otras opciones.
+**Correcciones de la auditoría de Levi (13 de octubre):**
+
+- Las erratas llevan el prefijo de la célula, C7-1 a C7-18, en su tabla y en cada lugar donde los bloques, las tablas y esta sección las citan.
+- G\[2\] y H\[2\] dicen el punto exacto de la p. 248 donde termina G-4 y empieza el bloque H: la última frase de G-4 y, justo debajo, el título «Descuentos» y su primera frase.
+
+Versión 3 del mapa en el repositorio: se agregó, después de «Control», la sección «Decisión de corte (L)», versión 2, con las auditorías de Levi y de Mello incorporadas; las erratas llevan el prefijo C7-; G[2] y H[2] dicen el punto exacto de la p. 248.
