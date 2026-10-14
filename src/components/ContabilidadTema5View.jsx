@@ -20,6 +20,8 @@ import { PIEZA_DEL_EFECTIVO } from "../data/contabilidadT5Pieza1.js";
 import { ESCENAS_TEMA5 } from "./mecanicas/libros/tema5/escenasTema5.jsx";
 import QueRentaDa from "./mecanicas/libros/tema5/QueRentaDa.jsx";
 import { T5_ACT1 } from "../data/contabilidadT5Act1.js";
+import CierreConDiario from "./mecanicas/libros/tema5/LibroDiario.jsx";
+import { T5_ACT2 } from "../data/contabilidadT5Act2.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -43,6 +45,7 @@ const PUBLICADAS = PIEZAS.length;
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS = [
   { id: T5_ACT1.id, Mecanica: QueRentaDa, titulo: T5_ACT1.nombre },
+  { id: T5_ACT2.id, Mecanica: CierreConDiario, titulo: T5_ACT2.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */

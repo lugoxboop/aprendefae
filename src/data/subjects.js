@@ -633,6 +633,8 @@ export const SUBJECTS = {
           { id: "b5-t5-a1-del-efectivo-de-sobra", nombre: "Del efectivo de sobra al activo financiero", clasificacion: { tipo: APRENDER } },
           /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (guía de Mai). Su fila del servidor es la migración 0070. */
           { id: "b5-t5-a1", nombre: "¿Qué renta da este título?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* El cierre del tema. Difícil · 50 FP (decisión de Sakuta). Su fila del servidor es la migración 0072. */
+          { id: "b5-t5-a2", nombre: "El cierre completo de Santa Pacha", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
       /*
