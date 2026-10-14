@@ -25,7 +25,7 @@ const TEMA = SUBJECTS.contabilidad.topics.find((t) => t.id === "activos-financie
 
 test("★★★ b5-t5-a1 está en el bloque de T5: evaluativa, fácil, 10 FP", () => {
   assert.ok(TEMA, "no está el tema activos-financieros");
-  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t5-a1"]);
+  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t5-a1", "b5-t5-a2"]);
   const c = clasificacionDe("contabilidad", "activos-financieros", "b5-t5-a1");
   assert.deepEqual({ modalidad: c.modalidad, dificultad: c.dificultad, fpBase: c.fpBase }, { modalidad: "evaluativa", dificultad: "facil", fpBase: 10 });
   assert.equal(actividadesDeTipo(TEMA, HACER)[0].nombre, "¿Qué renta da este título?");

@@ -85,6 +85,12 @@ export function LibroDiario({ asientos, abierto, onAlternar }) {
  * desde el camino. El tutorial («Así se juega») usa CierreSantaPacha solo.
  */
 export default function CierreConDiario(props) {
+  /* «Así se juega» monta este mismo componente en modo demo: la compra va sola, sin diario. */
+  if (props.modoDemo) return <CierreSantaPacha {...props} />;
+  return <ConDiario {...props} />;
+}
+
+function ConDiario(props) {
   const [asientos, setAsientos] = useState(() => [COMPRA_T5_ACT2]);
   const [abierto, setAbierto] = useState(false);
   const sumar = useCallback((parte) => setAsientos((xs) => (xs.some((x) => x.id === parte.id) ? xs : [...xs, parte])), []);
