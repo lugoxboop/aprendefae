@@ -765,6 +765,8 @@ export const SUBJECTS = {
           { id: "t7-3-provision-inventarios", nombre: "La provisión para inventarios", clasificacion: { tipo: APRENDER } },
           /* A7, después de A6 por el orden del mapa (depende de A1, por los descuentos). H5 entra entre A6 y A7. La NIC 2 del libro, pp. 256-258, con su frase fija a la vista. Cero FP. */
           { id: "t7-3-nic2-costo", nombre: "La NIC 2 del libro: el costo", clasificacion: { tipo: APRENDER } },
+          /* A8, la última de T7-3, después de A7 (orden del mapa: H6 y H7 entran entre A7 y A8; ningún Hacer depende de ella). La NIC 2 del libro, pp. 259-260: fórmulas y revelación, con su frase fija a la vista. Cero FP. */
+          { id: "t7-3-nic2-formulas", nombre: "La NIC 2 del libro: fórmulas y revelación", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],
