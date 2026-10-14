@@ -12,6 +12,8 @@ import DevolucionesEnPeriodico from "./mecanicas/libros/t7/DevolucionesEnPeriodi
 import { PIEZA_DEVOLUCIONES } from "../data/contabilidadT7_1_a6.js";
 import ImportadosYFletes from "./mecanicas/libros/t7/ImportadosYFletes.jsx";
 import { PIEZA_IMPORTADOS_Y_FLETES } from "../data/contabilidadT7_1_a5.js";
+import ControlInterno from "./mecanicas/libros/t7/ControlInterno.jsx";
+import { PIEZA_CONTROL_INTERNO } from "../data/contabilidadT7_1_a7.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -32,6 +34,7 @@ export const PIEZAS_T7_1 = [
   { numero: PIEZA_LA_FACTURA_COMPLETA.numero, pieza: PIEZA_LA_FACTURA_COMPLETA, Pieza: LaFacturaCompleta },
   { numero: PIEZA_IMPORTADOS_Y_FLETES.numero, pieza: PIEZA_IMPORTADOS_Y_FLETES, Pieza: ImportadosYFletes },
   { numero: PIEZA_DEVOLUCIONES.numero, pieza: PIEZA_DEVOLUCIONES, Pieza: DevolucionesEnPeriodico },
+  { numero: PIEZA_CONTROL_INTERNO.numero, pieza: PIEZA_CONTROL_INTERNO, Pieza: ControlInterno },
 ].sort((a, b) => a.numero - b.numero);
 
 export default function ContabilidadT7_1View({ onBack }) {
