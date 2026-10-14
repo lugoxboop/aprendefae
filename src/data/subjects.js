@@ -615,6 +615,22 @@ export const SUBJECTS = {
           { id: "t3-cierre-completo", nombre: "El cierre completo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],
       },
+      /*
+       * EL TEMA 5 (Célula B), por ahora con su pieza 1 de Aprender.
+       *
+       * CATÁLOGO: DECIDE ERWIN. El id y el título son una PROPUESTA de la
+       * célula: el id lleva el prefijo b5- reservado para la Célula B, y el
+       * título es el subtítulo literal de §5.3 en la p. 191 («Activos
+       * financieros temporales»). Sin ícono propio: el índice pinta el de la
+       * materia en todos los temas.
+       */
+      {
+        id: "b5-activos-financieros",
+        title: "Activos financieros temporales",
+        actividades: [
+          { id: "b5-t5-a1-del-efectivo-de-sobra", nombre: "Del efectivo de sobra al activo financiero", clasificacion: { tipo: APRENDER } },
+        ],
+      },
     ],
   },
   "pensamiento-estrategico": {

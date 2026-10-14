@@ -37,6 +37,7 @@ const PoliticaMonetariaView = lazy(() => import("./components/PoliticaMonetariaV
 const IntroContabilidadView = lazy(() => import("./components/IntroContabilidadView.jsx"));
 const CuentasDebeHaberView = lazy(() => import("./components/CuentasDebeHaberView.jsx"));
 const ContabilidadTema3View = lazy(() => import("./components/ContabilidadTema3View.jsx"));
+const ContabilidadTema5View = lazy(() => import("./components/ContabilidadTema5View.jsx"));
 const RepasoView = lazy(() => import("./components/repaso/RepasoView.jsx"));
 const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"));
 
@@ -87,6 +88,7 @@ const VISTAS_CON_TITULO = new Set([
   "introduccion-contabilidad",
   "cuentas-debe-haber",
   "ingresos-gastos-y-caja",
+  "b5-activos-financieros",
   "repaso-diario",
 ]);
 
@@ -233,6 +235,15 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <ContabilidadTema3View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
+      </Suspense>
+    );
+  }
+
+  /* El Tema 5 de Contabilidad (Célula B): por ahora, su pieza 1 de Aprender. Catálogo: decide Erwin. */
+  if (view === "b5-activos-financieros") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <ContabilidadTema5View onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }
