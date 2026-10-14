@@ -247,16 +247,16 @@ export default function App() {
   if (view === "activos-financieros") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <ContabilidadTema5View onBack={() => setView("contabilidad")} />
+        <ContabilidadTema5View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }
 
-  /* El Tema 6 de Contabilidad (Célula B): por ahora, su pieza 1 de Aprender. Catálogo: decide Erwin. */
+  /* El Tema 6 de Contabilidad (Célula B): su pieza 1 de Aprender y su act. 1 de Hacer. Catálogo: decide Erwin. */
   if (view === "cuentas-por-cobrar") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <ContabilidadTema6View onBack={() => setView("contabilidad")} />
+        <ContabilidadTema6View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }

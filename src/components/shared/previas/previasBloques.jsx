@@ -527,6 +527,10 @@ const GESTOS = {
   "por-cual-arteria-entra": () => <CorrienteGesto id="por-cual-arteria-entra" />,
   "las-dos-entradas": () => <VolanteGesto id="las-dos-entradas" />,
   "el-rezago": RezagoGesto,
+  "crea-o-cambia-de-manos": () => <Clasificacion id="crea-o-cambia-de-manos" forma="bandeja" categorias={2} destino={0} />,
+  "la-escalera-del-encaje": () => <FichaADestinos id="la-escalera-del-encaje" forma="ranura" n={3} destinos={[0, 1, 2]} />,
+  "en-que-talla-va": () => <FichaADestinos id="en-que-talla-va" forma="ranura" n={4} destinos={[1, 2]} />,
+  "que-toco-el-banco": () => <FichaADestinos id="que-toco-el-banco" forma="ranura" n={4} destinos={[0, 3]} />,
   "duelo-de-instrumentos": () => <Consejo id="duelo-de-instrumentos" figura="engranaje" />,
   "disena-respuesta-monetaria": PanelGesto,
 };
