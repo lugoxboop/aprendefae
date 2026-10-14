@@ -270,7 +270,10 @@ export default function CierreConMesa({
         </div>
 
         <section key={`${parte.id}-parte`} data-parte={parte.id} data-estado-parte={comprobada ? "comprobada" : "activa"}
-          style={{ margin: "18px 0 0", padding: "12px 10px", borderRadius: "13px", border: `1px solid ${comprobada ? COLOR.quieto : COLOR.neutro}` }}>
+          style={{
+            /* Sin relleno lateral, con el borde (Sakuta, salida 1): la réplica de Mai, auditada por Shoko, no lo tiene; así «1.725.000» cabe a 320. */
+            margin: "18px 0 0", padding: "12px 0", borderRadius: "13px", border: `1px solid ${comprobada ? COLOR.quieto : COLOR.neutro}`,
+          }}>
           {(parte.rotulo || s.resultado?.ok) && (
             <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", margin: "0 0 8px" }}>
               {s.resultado?.ok && <Visto />}
