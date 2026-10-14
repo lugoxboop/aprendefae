@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import {
-  CLAVE, PARAMETRO, MENSAJE, alFallarLaCarga, direccionLimpia, direccionSinCache, instalarRecargaTrasDespliegue,
+  CLAVE, PARAMETRO, MENSAJE, VENTANA_MS, alFallarLaCarga, reciente, direccionLimpia, direccionSinCache, instalarRecargaTrasDespliegue,
 } from "../recargaTrasDespliegue.js";
 
 /*
@@ -11,7 +11,8 @@ import {
  * LA PANTALLA EN BLANCO TRAS UN DESPLIEGUE (pedido de Erwin).
  *
  *   ·  1.er fallo de un import: recarga UNA vez, con una dirección nueva
- *   ·  2.º fallo en la misma sesión: NO recarga; muestra el aviso
+ *   ·  otro fallo POCO después de recargar: NO recarga; muestra el aviso
+ *   ·  otro fallo HORAS después (otro despliegue, misma pestaña): recarga otra vez
  *   ·  sin sessionStorage: aviso, nunca recarga (no hay cómo frenar un bucle)
  *   ·  el parámetro de la recarga se quita al volver a arrancar
  *
@@ -94,6 +95,51 @@ test("el 2.º fallo en la sesión NO recarga: muestra el aviso y deja pasar el e
   await assert.rejects(importar(segunda.win));
   assert.equal(segunda.recargas.length, 0);
   assert.equal(aviso(segunda.win).length, 1);
+});
+
+test("dos despliegues con la misma pestaña abierta: recarga en los dos (Erwin)", async () => {
+  /* 7:00 · primer despliegue: falla, recarga, se arregla. */
+  const siete = pestana("https://aprendefae.com/#/contabilidad/tema-3");
+  instalarRecargaTrasDespliegue(siete.win);
+  await importar(siete.win);
+  assert.equal(siete.recargas.length, 1);
+  const sesion = siete.win.sessionStorage;
+
+  /* La pestaña sigue abierta. 9:00 · segundo despliegue: la marca es de hace dos horas. */
+  sesion.setItem(CLAVE, String(Date.now() - 2 * 60 * 60 * 1000));
+  const nueve = pestana("https://aprendefae.com/#/contabilidad/tema-3", sesion);
+  instalarRecargaTrasDespliegue(nueve.win);
+  await importar(nueve.win); /* cancelado otra vez */
+  assert.equal(nueve.recargas.length, 1, "la marca vieja no silencia la recarga");
+  assert.equal(aviso(nueve.win).length, 0, "no le dice que revise una conexión que está bien");
+  assert.ok(Date.now() - Number(sesion.getItem(CLAVE)) < 1000, "la marca se renueva");
+
+  /* Y si tras ESA recarga vuelve a fallar enseguida, ahí sí: aviso, sin bucle. */
+  const despues = pestana(nueve.recargas[0], sesion);
+  instalarRecargaTrasDespliegue(despues.win);
+  await assert.rejects(importar(despues.win));
+  assert.equal(despues.recargas.length, 0);
+  assert.equal(aviso(despues.win).length, 1);
+});
+
+test("la ventana: dentro es un bucle (aviso), fuera es un despliegue nuevo (recarga)", () => {
+  const T = 1_800_000_000_000;
+  const caso = (marca, ahora) => {
+    const datos = new Map(marca === undefined ? [] : [[CLAVE, marca]]);
+    const almacen = { getItem: (k) => datos.get(k) ?? null, setItem: (k, v) => datos.set(k, v) };
+    return alFallarLaCarga(null, { almacen, href: "https://aprendefae.com/", recargar() {}, avisar() {}, ahora });
+  };
+  assert.equal(caso(undefined, T), "recarga", "sin marca");
+  assert.equal(caso(String(T), T + 3_000), "aviso", "3 s después: bucle");
+  assert.equal(caso(String(T), T + VENTANA_MS - 1), "aviso", "justo dentro");
+  assert.equal(caso(String(T), T + VENTANA_MS), "recarga", "justo fuera");
+  assert.equal(caso(String(T), T + 2 * 60 * 60 * 1000), "recarga", "dos horas: otro despliegue");
+  assert.equal(caso("dañada", T), "recarga", "marca que no es una hora");
+  assert.equal(caso("", T), "recarga");
+  assert.equal(caso(String(T + 30_000), T), "aviso", "reloj atrasado unos segundos: sigue siendo reciente");
+  assert.equal(caso(String(T + 2 * 60 * 60 * 1000), T), "recarga", "reloj atrasado horas: vieja");
+  assert.equal(VENTANA_MS, 5 * 60 * 1000);
+  assert.equal(reciente(null, T), false);
 });
 
 test("si el import funciona, no pasa nada", async () => {

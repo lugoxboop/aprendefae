@@ -13,32 +13,53 @@
  *
  * Vite dispara `vite:preloadError` justo en ese caso (y lo deja cancelar).
  *
- *   1.ª vez en la sesión  marca el intento en sessionStorage, cancela el
- *                         error y RECARGA, una sola vez, con un parámetro
- *                         nuevo en la dirección. Recargar a secas no basta: Erwin
- *                         lo probó y siguió viendo el índice viejo; una
- *                         dirección distinta no puede salir de ninguna caché.
- *   2.ª vez               NO recarga: si el trozo falta de verdad, recargar
- *                         sin más sería un bucle infinito. Muestra un aviso
- *                         en lenguaje de estudiante, fuera de React (el árbol
- *                         puede haber quedado vacío).
+ *   1.er fallo            guarda la hora en sessionStorage, cancela el error
+ *                         y RECARGA, una sola vez, con un parámetro nuevo en
+ *                         la dirección. Recargar a secas no basta: Erwin lo
+ *                         probó y siguió viendo el índice viejo; una dirección
+ *                         distinta no puede salir de ninguna caché.
+ *   otro fallo, PRONTO    (menos de VENTANA_MS desde la última recarga) NO
+ *                         recarga: es «recargué y volvió a fallar», el trozo
+ *                         falta de verdad y recargar sería un bucle. Muestra
+ *                         un aviso, fuera de React (el árbol puede haber
+ *                         quedado vacío).
+ *   otro fallo, DESPUÉS   (la marca es vieja) no es un bucle: es otro
+ *                         despliegue con la misma pestaña abierta, y merece su
+ *                         recarga. Una sesión larga de estudio cruza dos
+ *                         despliegues sin esfuerzo; la primera marca no puede
+ *                         silenciar las siguientes (Erwin).
+ *
+ * POR QUÉ CINCO MINUTOS. El bucle es cuestión de segundos; un despliegue
+ * nuevo, de horas. Si la ventana se queda corta, un celular lento que tarda
+ * más que ella en recargar entraría en bucle: ese es el error grave. Si se
+ * queda larga, lo peor es un aviso de más cuando dos despliegues caen en la
+ * misma ventana. Por eso se elige larga. En el peor caso, una recarga cada
+ * cinco minutos, y solo si el estudiante vuelve a abrir esa parte.
+ *
+ * Una marca que no es una hora (dañada) cuenta como vieja. Una marca en el
+ * futuro (el reloj del equipo se atrasó) cuenta por su distancia: si está
+ * lejos, es vieja.
  *
  * Sin sessionStorage (bloqueado o lleno) no hay forma de saber si ya se
  * recargó: se muestra el aviso y no se recarga. Mejor un aviso que un bucle.
  *
  * Al arrancar, si la dirección trae el parámetro de la recarga, se quita (sin
  * recargar ni tocar el hash de la ruta): la dirección queda limpia para
- * copiarla o guardarla. La marca de la sesión se queda: es la que impide el
- * bucle.
+ * copiarla o guardarla. La marca se queda: es la que distingue un
+ * bucle de un despliegue nuevo.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 export const CLAVE = "aprendefae-recarga-tras-despliegue";
 export const PARAMETRO = "recarga";
+export const VENTANA_MS = 5 * 60 * 1000;
 
 /*
- * PENDIENTE DE GEN. Es la propuesta de Erwin; el texto final lo aprueba Gen y
- * se cambia aquí, en una sola línea.
+ * PENDIENTE DE GEN. Es la propuesta inicial de Erwin; el texto final lo
+ * aprueba Gen y se cambia aquí, en una sola línea. Restricción de Erwin: NO
+ * puede mandar al estudiante a revisar su conexión. En el caso que lo dispara
+ * la conexión está bien; lo que falló es que la página quedó vieja o le falta
+ * una parte.
  */
 export const MENSAJE = "No pudimos cargar esta parte. Revisa tu conexión y vuelve a entrar.";
 
@@ -64,6 +85,13 @@ function marcar(almacen, valor) {
   try { almacen.setItem(CLAVE, valor); return true; } catch { return false; }
 }
 
+/* ¿La marca es de hace menos de VENTANA_MS? Una marca dañada no es reciente. */
+export function reciente(marca, ahora) {
+  if (marca === null || marca === undefined || marca === "") return false;
+  const t = Number(marca);
+  return Number.isFinite(t) && Math.abs(ahora - t) < VENTANA_MS;
+}
+
 /**
  * Qué hacer con un `vite:preloadError`. Devuelve "recarga" o "aviso".
  *   evento    el evento de Vite (cancelable)
@@ -73,7 +101,7 @@ function marcar(almacen, valor) {
  */
 export function alFallarLaCarga(evento, { almacen, href, recargar, avisar, ahora = Date.now() }) {
   const previo = leer(almacen);
-  if (previo.ok && !previo.valor && marcar(almacen, String(ahora))) {
+  if (previo.ok && !reciente(previo.valor, ahora) && marcar(almacen, String(ahora))) {
     evento?.preventDefault?.();
     recargar(direccionSinCache(href, ahora));
     return "recarga";
