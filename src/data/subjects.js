@@ -757,6 +757,8 @@ export const SUBJECTS = {
           { id: "t7-3-descuento-condicionado", nombre: "El descuento condicionado", clasificacion: { tipo: APRENDER } },
           /* A4, justo después de A3 (orden final de T7-3): H-3 en el libro de quien compra, el cierre y el permanente, pp. 253-254. Cero FP. */
           { id: "t7-3-descuento-en-dos-libros", nombre: "El descuento en los dos libros", clasificacion: { tipo: APRENDER } },
+          /* A5, después de A4 por el orden del mapa (no depende de los descuentos). H3 y H4 entran entre A4 y A5. Ejemplos I-1 e I-2, pp. 254-255, y la lista de pp. 207-208 (regla 5b). Cero FP. */
+          { id: "t7-3-sobrantes-y-faltantes", nombre: "Sobrantes y faltantes", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],
