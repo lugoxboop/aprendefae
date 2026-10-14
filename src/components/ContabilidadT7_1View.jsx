@@ -10,6 +10,8 @@ import LaFacturaCompleta from "./mecanicas/libros/t7/LaFacturaCompleta.jsx";
 import { PIEZA_LA_FACTURA_COMPLETA } from "../data/contabilidadT7_1_ap2.js";
 import DevolucionesEnPeriodico from "./mecanicas/libros/t7/DevolucionesEnPeriodico.jsx";
 import { PIEZA_DEVOLUCIONES } from "../data/contabilidadT7_1_a6.js";
+import ImportadosYFletes from "./mecanicas/libros/t7/ImportadosYFletes.jsx";
+import { PIEZA_IMPORTADOS_Y_FLETES } from "../data/contabilidadT7_1_a5.js";
 import ControlInterno from "./mecanicas/libros/t7/ControlInterno.jsx";
 import { PIEZA_CONTROL_INTERNO } from "../data/contabilidadT7_1_a7.js";
 
@@ -30,6 +32,7 @@ export const TEMA_T7_1 = "inventarios-periodico";
 export const PIEZAS_T7_1 = [
   { numero: PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE.numero, pieza: PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE, Pieza: LaCuentaQueNoSeMueve },
   { numero: PIEZA_LA_FACTURA_COMPLETA.numero, pieza: PIEZA_LA_FACTURA_COMPLETA, Pieza: LaFacturaCompleta },
+  { numero: PIEZA_IMPORTADOS_Y_FLETES.numero, pieza: PIEZA_IMPORTADOS_Y_FLETES, Pieza: ImportadosYFletes },
   { numero: PIEZA_DEVOLUCIONES.numero, pieza: PIEZA_DEVOLUCIONES, Pieza: DevolucionesEnPeriodico },
   { numero: PIEZA_CONTROL_INTERNO.numero, pieza: PIEZA_CONTROL_INTERNO, Pieza: ControlInterno },
 ].sort((a, b) => a.numero - b.numero);
