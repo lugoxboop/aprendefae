@@ -326,6 +326,39 @@ jobs:
       # función: Actions -> Desplegar a producción -> Run workflow. Ese es
       # exactamente el momento en que se rompió, y el único que no cubría nada.
       # ═══════════════════════════════════════════════════════════════════════
+      # ═══════════════════════════════════════════════════════════════════════
+      # SONDA DE POSTDESPLIEGUE — que el servidor pueda pagar lo que se publicó
+      #
+      # POR QUÉ EXISTE. El 14 de octubre de 2026 había TRECE actividades
+      # publicadas y jugables sin fila en actividad_catalogo: las dos de la 0052
+      # y las once del bloque 0045-0051. Las siete migraciones estaban escritas,
+      # correctas y en main; nunca se habían corrido. Un estudiante que jugara
+      # cualquiera de las trece veía su porcentaje y no recibía un solo FP.
+      #
+      # Y NINGUNA PRUEBA PODÍA VERLO: catalogo.test.mjs compara el cliente
+      # contra los ARCHIVOS de migración, y los archivos estaban todos. Una
+      # migración escrita y nunca corrida es invisible para la suite. Lo único
+      # que la caza es preguntarle a la base, y eso solo se puede hacer aquí.
+      #
+      # LA HERMANA DE LA SONDA DE ABAJO. Esa comprueba que registrar_fp sea
+      # ALCANZABLE; esta, que tenga a quién pagarle. Las dos juntas cubren el
+      # motor de FP por los dos lados.
+      #
+      # NO ESCRIBE NADA: una sola petición GET con la llave pública, que puede
+      # leer el catálogo desde la 0150 y no puede escribirlo (RLS lo niega con
+      # 42501, comprobado).
+      #
+      # SI VINIERA VACÍO, ES ROJO. Antes de la 0150, PostgREST respondía HTTP
+      # 200 con lista vacía: éxito con cero filas. La sonda distingue «no falta
+      # ninguna» de «no pude leer», porque confundirlos sería peor que no
+      # tenerla.
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: Sonda — el servidor puede pagar lo que el sitio ofrece
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: node --import ./scripts/cargador-jsx.mjs scripts/sonda-catalogo.mjs
+
       - name: Sonda — registrar_fp resuelve a una sola firma
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
