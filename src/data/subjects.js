@@ -765,6 +765,10 @@ export const SUBJECTS = {
           { id: "t7-3-comercial-o-condicionado", nombre: "¿Comercial o condicionado?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /* H4, después de H3 (orden final de T7-3; la sostienen A3 y A4): el pago a tiempo de Bambú, en los dos libros. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0106. */
           { id: "t7-3-pago-a-tiempo", nombre: "Pagó a tiempo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* A5, después de A4 por el orden del mapa (no depende de los descuentos). H3 y H4 entran entre A4 y A5. Ejemplos I-1 e I-2, pp. 254-255, y la lista de pp. 207-208 (regla 5b). Cero FP. */
+          { id: "t7-3-sobrantes-y-faltantes", nombre: "Sobrantes y faltantes", clasificacion: { tipo: APRENDER } },
+          /* A6, justo después de A5 (orden final de T7-3): la provisión del ejemplo I-3, p. 256. Cero FP. */
+          { id: "t7-3-provision-inventarios", nombre: "La provisión para inventarios", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],
