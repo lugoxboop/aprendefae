@@ -17,6 +17,7 @@ import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
 import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import { PIEZA_DEL_EFECTIVO } from "../data/contabilidadT5Pieza1.js";
+import { PIEZA_TRES_MOMENTOS } from "../data/contabilidadT5Pieza2.js";
 import { ESCENAS_TEMA5 } from "./mecanicas/libros/tema5/escenasTema5.jsx";
 import QueRentaDa from "./mecanicas/libros/tema5/QueRentaDa.jsx";
 import { T5_ACT1 } from "../data/contabilidadT5Act1.js";
@@ -39,7 +40,7 @@ import { T5_ACT2 } from "../data/contabilidadT5Act2.js";
 const MATERIA = "contabilidad";
 export const TEMA = "activos-financieros";
 
-export const PIEZAS = [{ numero: 1, pieza: PIEZA_DEL_EFECTIVO }];
+export const PIEZAS = [{ numero: 1, pieza: PIEZA_DEL_EFECTIVO }, { numero: 2, pieza: PIEZA_TRES_MOMENTOS }];
 const PUBLICADAS = PIEZAS.length;
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
