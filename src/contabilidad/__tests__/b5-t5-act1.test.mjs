@@ -149,44 +149,55 @@ test("★★★ las tres devoluciones de error (A, B, C) se ven literales en las
   m.desmontar();
 });
 
-test("★★★ fichas de nombre: las tres columnas se ven literales — nivel 1, nivel 2 y, en el segundo fallo, la lista del libro", async () => {
+/* La regla única del segundo fallo, calculada a mano desde la guía: «No es esa.» + el acierto sin «Sí.». */
+const segundoDeGuia = (id) => `❌No es esa. ${GUIA_ACIERTOS[id][0].replace(/^Sí\. /, "")}`;
+
+test("★★★ fichas de nombre: nivel 1 y nivel 2 se ven literales, y el segundo fallo es su acierto con «No es esa.» delante", async () => {
   for (const id of NOMBRES_FIJA) {
-    const [nivel1, nivel2, segundo] = GUIA_NOMBRES[id];
+    const [nivel1, nivel2] = GUIA_NOMBRES[id];
     const f = ficha(id);
     const otro = f.tipo === "interes" ? "descuento" : "interes";
-    /* Falla el nivel 1, y el segundo intento también falla (en el nivel 2): sale la lista del libro. */
     let m = await montar([id]);
     await marcar(m.caja, "variable");
     assert.equal(devolucion(m.caja), `❌${nivel1}`, `${id}: nivel 1`);
     await marcar(m.caja, "fija", otro);
-    assert.equal(devolucion(m.caja), `❌${segundo}`, `${id}: segundo fallo`);
+    assert.equal(devolucion(m.caja), segundoDeGuia(id), `${id}: segundo fallo`);
     m.desmontar();
-    /* Falla el nivel 2, y el segundo intento falla en el nivel 1: también la lista. */
     m = await montar([id]);
     await marcar(m.caja, "fija", otro);
     assert.equal(devolucion(m.caja), `❌${nivel2}`, `${id}: nivel 2`);
     await tocar(pestana(m.caja, "variable"));
     await tocar(botonColocar(m.caja));
-    assert.equal(devolucion(m.caja), `❌${segundo}`, `${id}: segundo fallo tras nivel 2`);
+    assert.equal(devolucion(m.caja), segundoDeGuia(id), `${id}: segundo fallo tras nivel 2`);
     m.desmontar();
   }
-  /* «acciones»: no tiene segundo nivel; tras el segundo fallo se repite la de nivel 1. */
-  const m = await montar(["acciones"]);
-  await marcar(m.caja, "fija", "interes");
-  assert.equal(devolucion(m.caja), `❌${GUIA_NOMBRES.acciones[0]}`);
-  await marcar(m.caja, "fija", "descuento");
-  assert.equal(devolucion(m.caja), `❌${GUIA_NOMBRES.acciones[0]}`);
-  m.desmontar();
+});
+
+test("★★★ regla única: tras el segundo fallo, TODA ficha muestra su acierto con «No es esa.», y ese texto dice la respuesta", async () => {
+  for (const id of IDS) {
+    const f = ficha(id);
+    /* Dos fallos seguidos, marcando siempre lo contrario de la renta correcta. */
+    const mal = f.renta === "variable" ? ["fija", "interes"] : ["variable", null];
+    const m = await montar([id]);
+    await marcar(m.caja, ...mal);
+    await marcar(m.caja, ...mal);
+    assert.equal(devolucion(m.caja), segundoDeGuia(id), id);
+    /* La respuesta está en el texto: el tipo de renta o la lista del libro. */
+    const t = devolucion(m.caja).toLowerCase();
+    const dice = f.renta === "variable" ? t.includes("renta variable") : (t.includes("interés") || t.includes("descuento"));
+    assert.ok(dice, `${id}: el segundo fallo no dice la respuesta: «${devolucion(m.caja)}»`);
+    m.desmontar();
+  }
 });
 
 /* ═══════════ LAS CORRECCIONES DE SHOKO ═══════════ */
 
-test("★★★ corrección 1: en el reintento, la devolución es la del error de ESE intento (A y luego C)", async () => {
+test("★★★ el primer fallo da el error de ESE intento (A); el segundo, la regla única (no C)", async () => {
   const { caja, desmontar } = await montar(["def-interes"]);
   await marcar(caja, "variable");
-  assert.equal(devolucion(caja), sinEmoji(D.ERROR_T5_ACT1.A).replace(/^/, "❌"));
+  assert.equal(devolucion(caja), `❌${GUIA_ERRORES.A[1]}`);
   await marcar(caja, "fija", "descuento");
-  assert.equal(devolucion(caja), `❌${GUIA_ERRORES.C[1]}`, "en el reintento falló el nivel 2: va C, no A");
+  assert.equal(devolucion(caja), segundoDeGuia("def-interes"), "el segundo fallo ya no da C: da la respuesta");
   desmontar();
 });
 
