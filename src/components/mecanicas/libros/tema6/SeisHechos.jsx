@@ -15,8 +15,8 @@ import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
  * se vuelve a cerrar. Con los seis abiertos aparece el bloque final. Sin color
  * de acierto ni de error y sin teal ni ámbar: el resultado lo dice la palabra.
  *
- * Los pies de fuente de esta capa están POR ESCRIBIR (Futaba): mientras el
- * dato sea null, no se pintan.
+ * Cada caja y el bloque final llevan su pie de fuente (★ de Futaba, en los
+ * datos); un pie en null no se pinta.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 

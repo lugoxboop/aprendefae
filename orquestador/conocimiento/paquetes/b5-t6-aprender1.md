@@ -2,9 +2,15 @@
 
 Guardado por Kaede (construcción) el 14-oct-2026, tal como llegó de Sakuta. Contenido de Futaba con el PASA de Shoko. Las marcas de auditoría ([p. X], [CONSTRUCCIÓN], ◆) no se pintan.
 
-**Orden de precedencia, de mayor a menor:** (1) la secuencia final de la capa 2 y el término 5 nuevo; (2) las tres líneas corregidas; (3) la pieza corregida.
+**Orden de precedencia, de mayor a menor:** (0) la versión que manda de Futaba del 14-oct, con PASA de Shoko (abajo); (1) la secuencia final de la capa 2 y el término 5 nuevo; (2) las tres líneas corregidas; (3) la pieza corregida.
 
 Diseño: guía v2 de Mai (8 pasos). La secuencia de Futaba tiene 9 (el paso 1 se partió en dos): lo que dependa del número de pasos lo corrige Mai en la v3 (decisión de Sakuta).
+
+## (0) Versión que manda (Futaba, 14-oct, PASA de Shoko)
+
+- Hecho 4 de la capa 3: «Un cliente devuelve mercancía que compró a crédito y aún no paga.» (reemplaza «…que había comprado a crédito y todavía no había pagado.»).
+- Devolución de la opción correcta de la capa 4: «Correcto. El 25 de enero, en los libros de Comercializadora Santa Pacha, Cuentas por cobrar – clientes baja: se acredita. No se anota ningún ingreso. Ese ya estaba desde el 10.» (reemplaza la línea corregida 3 de abajo).
+- ★ Pies de fuente de la capa 3, nuevos: en la tabla de la capa 3, columna «Etiqueta que ve». Criterio de Futaba: «Libro» si lo que dice la caja está en la página; «Basado» si la caja agrega una condición o una conclusión.
 
 ## (1) Capa 2 · secuencia final, del 1 al 9 (PASA de Shoko)
 
@@ -55,18 +61,18 @@ Nota: «El libro también la llama cartera; es lo mismo. Aquí la cuenta se llam
 
 Consigna: «Toca cada hecho y mira si lo que deben los clientes sube, baja o no cambia.»
 
-| Hecho | Al tocarlo |
-|---|---|
-| «La empresa le vende a crédito a un cliente.» | «Sube: se debita. El cliente queda debiendo lo que compró.» |
-| «Un cliente paga lo que debía.» | «Baja: se acredita. La deuda se cancela.» |
-| «El banco devuelve el cheque con el que un cliente había pagado.» | «Sube: se debita, con una nota débito. Ese pago no llegó a la empresa, así que la deuda vuelve.» |
-| «Un cliente devuelve mercancía que había comprado a crédito y todavía no había pagado.» | «Baja: se acredita. Es una devolución de ventas.» |
-| «La empresa le otorga a un cliente un descuento sobre lo que todavía le debe.» | «Baja: se acredita.» |
-| «La empresa le vende de contado a un cliente.» | «No cambia. El cliente pagó en el momento y no queda debiendo nada.» |
+| Hecho | Al tocarlo | Etiqueta que ve (★) |
+|---|---|---|
+| «La empresa le vende a crédito a un cliente.» | «Sube: se debita. El cliente queda debiendo lo que compró.» | «Libro, p. 197» |
+| «Un cliente paga lo que debía.» | «Baja: se acredita. La deuda se cancela.» | «Libro, p. 197» |
+| «El banco devuelve el cheque con el que un cliente había pagado.» | «Sube: se debita, con una nota débito. Ese pago no llegó a la empresa, así que la deuda vuelve.» | «Basado en el libro, pp. 191 y 197» |
+| «Un cliente devuelve mercancía que compró a crédito y aún no paga.» | «Baja: se acredita. Es una devolución de ventas.» | «Basado en el libro, p. 197» |
+| «La empresa le otorga a un cliente un descuento sobre lo que todavía le debe.» | «Baja: se acredita.» | «Basado en el libro, p. 197» |
+| «La empresa le vende de contado a un cliente.» | «No cambia. El cliente pagó en el momento y no queda debiendo nada.» | «Basado en el libro, p. 197» |
 
 Cuando ya tocó todos: «Fíjate: “venta a crédito” lleva la palabra crédito, pero a la cuenta del cliente se le hace un débito. El nombre del negocio no dice en qué lado se anota.»
 
-Pies de fuente de la capa 3 (siete ranuras): POR ESCRIBIR (Futaba).
+Etiqueta del bloque final (★): «Basado en el libro, p. 197».
 
 ### Capa 4
 
