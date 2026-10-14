@@ -70,6 +70,31 @@ Internas (lista de Mello, que reemplaza a Y1-Y5):
    - **C7-12:** la venta de San Calixto es del 6 de febrero, como dice el enunciado.
    - **C7-15:** la devolución de compras se registra contra Cuentas por pagar – proveedores, como en el ejemplo de la p. 232.
 
+## Orden final de T7-1 (decisión de L · 14 de octubre de 2026)
+
+Es la única fuente del orden de las piezas en subjects.js, en ContabilidadT7_1View.jsx y en las pruebas. Regla 9: cada pieza va después de la que enseña lo que usa. Cada Hacer va justo después de su pieza de Aprender (condición de Mello: se publica con ella o después), como en el Tema 3. Cada PR pone su pieza en esta posición, entre las que ya estén en main. Si una pieza nueva no está aquí, primero se agrega a esta lista.
+
+| # | id | Nombre | Tipo | Depende de |
+| --- | --- | --- | --- | --- |
+| 1 | t7-1-a1-la-cuenta-que-no-se-mueve | La cuenta que no se mueve | Aprender | Abre el tema. Usa las reglas de débito y crédito del Tema 2 |
+| 2 | t7-1-a2-la-factura-completa | La factura completa | Aprender | AP1: la cuenta Compras |
+| 3 | t7-1-que-cuenta-se-mueve | ¿Qué cuenta se mueve? | Hacer | AP1 y AP2 |
+| 4 | t7-1-arma-la-factura | Arma la factura | Hacer | AP2 |
+| 5 | t7-1-a3-tres-formas | Tres formas de ponerle precio a lo que quedó | Aprender | AP1: inventario final y conteo físico |
+| 6 | t7-1-cuanto-vale-lo-que-sobro | ¿Cuánto vale lo que sobró? | Hacer | AP3 |
+| 7 | t7-1-a4-el-cierre-en-periodico | El cierre en periódico | Aprender | AP1 y AP3: su P3 usa los tres métodos. «Ganancias y pérdidas» es del Tema 3 |
+| 8 | t7-1-cierra-el-mes | Cierra el mes | Hacer | AP4 |
+| 9 | t7-1-a5-importados-y-fletes | Importados y fletes | Aprender | AP2: IVA del 16 % y retención del 3,5 %. Va antes de A6 por el orden del libro (p. 228 antes de pp. 230-232) |
+| 10 | t7-1-costo-o-gasto | ¿Costo o gasto? | Hacer | A5 |
+| 11 | t7-1-a6-devoluciones-en-periodico | Devoluciones en periódico | Aprender | AP2: IVA y retención de la devolución |
+| 12 | t7-1-devolucion-dos-libros | La devolución en dos libros | Hacer | A6 |
+| 13 | t7-1-a7-control-interno | Control interno de los inventarios | Aprender | AP1: el conteo físico frente a los registros |
+| 14 | t7-1-que-control-falta | ¿Qué control falta? | Hacer | A7. Cuando se publique, A7 recupera su línea «Siguiente» |
+
+Los ids de las piezas que ya existen mandan sobre los del plan v3.2 (a4 y a6 llevan el nombre completo). Los demás son los del plan.
+
+Orden de fusión con lo que está abierto: #60 (A5) y después #66 (A7). #65 (AP4) va después del PR de AP3, porque AP4 usa AP3. #64 (H1) va cuando Mateo corra la 0090.
+
 ## Bloque A · Cuenta de inventarios y sistema periódico (pp. 207-215)
 
 **\[1\] Sección y subsecciones (títulos exactos):**
@@ -914,3 +939,5 @@ Se reescribieron 12 frases de los bloques que estaban escritas con la regla viej
 - G\[2\] y H\[2\] dicen el punto exacto de la p. 248 donde termina G-4 y empieza el bloque H: la última frase de G-4 y, justo debajo, el título «Descuentos» y su primera frase.
 
 Versión 3 del mapa en el repositorio: se agregó, después de «Control», la sección «Decisión de corte (L)», versión 2, con las auditorías de Levi y de Mello incorporadas; las erratas llevan el prefijo C7-; G[2] y H[2] dicen el punto exacto de la p. 248.
+
+**Orden final de T7-1 (L, 14 de octubre de 2026):** se agregó, justo antes de «## Bloque A», la sección «## Orden final de T7-1 (decisión de L · 14 de octubre de 2026)», tal cual la escribió L. Es la única fuente del orden de las piezas en subjects.js, en ContabilidadT7_1View.jsx y en las pruebas: 1 AP1 · 2 AP2 · 3 H1 · 4 Arma la factura · 5 AP3 · 6 ¿Cuánto vale lo que sobró? · 7 AP4 · 8 Cierra el mes · 9 A5 · 10 ¿Costo o gasto? · 11 A6 · 12 La devolución en dos libros · 13 A7 · 14 ¿Qué control falta?. No cambia ninguna cifra ni página.
