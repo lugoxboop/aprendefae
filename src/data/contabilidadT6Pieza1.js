@@ -9,6 +9,9 @@
  *   2. las tres líneas corregidas (la glosa de nota débito y la devolución
  *      correcta de la capa 4; la del término 5 la reemplaza la de arriba);
  *   3. la pieza corregida, para todo lo demás.
+ * Encima de todo, la «versión que manda» de Futaba del 14-oct (PASA de
+ * Shoko): el hecho 4 de la capa 3, la devolución correcta de la capa 4 y los
+ * siete pies de la capa 3 (★).
  * Las marcas de auditoría ([p. X], [CONSTRUCCIÓN], ◆) no se copian. De la
  * etiqueta del paso 1, solo «Libro, p. 197»: lo que iba después de «·» era
  * una nota interna.
@@ -121,21 +124,21 @@ export const CIERRE_T6 = {
 export const CONSIGNA_CAPA_3_T6 = "Toca cada hecho y mira si lo que deben los clientes sube, baja o no cambia.";
 
 /*
- * Los seis hechos. Sus pies de fuente (siete ranuras: una por caja y la del
- * bloque final) están POR ESCRIBIR (Futaba): mientras no lleguen, no se
- * pintan. Un hueco marcado, no uno relleno.
+ * Los seis hechos, con su pie de fuente (★, versión que manda de Futaba):
+ * «Libro» si lo que dice la caja está en la página; «Basado» si agrega una
+ * condición o una conclusión. Siete pies: uno por caja y el del bloque final.
  */
 export const HECHOS_T6 = [
-  { id: "venta-credito", hecho: "La empresa le vende a crédito a un cliente.", revela: "Sube: se debita. El cliente queda debiendo lo que compró.", pie: null },
-  { id: "pago", hecho: "Un cliente paga lo que debía.", revela: "Baja: se acredita. La deuda se cancela.", pie: null },
-  { id: "cheque-devuelto", hecho: "El banco devuelve el cheque con el que un cliente había pagado.", revela: "Sube: se debita, con una nota débito. Ese pago no llegó a la empresa, así que la deuda vuelve.", pie: null },
-  { id: "devolucion", hecho: "Un cliente devuelve mercancía que había comprado a crédito y todavía no había pagado.", revela: "Baja: se acredita. Es una devolución de ventas.", pie: null },
-  { id: "descuento", hecho: "La empresa le otorga a un cliente un descuento sobre lo que todavía le debe.", revela: "Baja: se acredita.", pie: null },
-  { id: "contado", hecho: "La empresa le vende de contado a un cliente.", revela: "No cambia. El cliente pagó en el momento y no queda debiendo nada.", pie: null },
+  { id: "venta-credito", hecho: "La empresa le vende a crédito a un cliente.", revela: "Sube: se debita. El cliente queda debiendo lo que compró.", pie: "Libro, p. 197" },
+  { id: "pago", hecho: "Un cliente paga lo que debía.", revela: "Baja: se acredita. La deuda se cancela.", pie: "Libro, p. 197" },
+  { id: "cheque-devuelto", hecho: "El banco devuelve el cheque con el que un cliente había pagado.", revela: "Sube: se debita, con una nota débito. Ese pago no llegó a la empresa, así que la deuda vuelve.", pie: "Basado en el libro, pp. 191 y 197" },
+  { id: "devolucion", hecho: "Un cliente devuelve mercancía que compró a crédito y aún no paga.", revela: "Baja: se acredita. Es una devolución de ventas.", pie: "Basado en el libro, p. 197" },
+  { id: "descuento", hecho: "La empresa le otorga a un cliente un descuento sobre lo que todavía le debe.", revela: "Baja: se acredita.", pie: "Basado en el libro, p. 197" },
+  { id: "contado", hecho: "La empresa le vende de contado a un cliente.", revela: "No cambia. El cliente pagó en el momento y no queda debiendo nada.", pie: "Basado en el libro, p. 197" },
 ];
 export const FINAL_CAPA_3_T6 = {
   texto: "Fíjate: “venta a crédito” lleva la palabra crédito, pero a la cuenta del cliente se le hace un débito. El nombre del negocio no dice en qué lado se anota.",
-  pie: null,
+  pie: "Basado en el libro, p. 197",
 };
 
 /* ═══════════ CAPA 4 · «EN UNA FRASE» (UnaFrase, sin cambios) ═══════════ */
@@ -147,7 +150,7 @@ export const OPCIONES_FINAL_T6 = [
     id: "b5-t6-baja",
     texto: "Baja, porque la deuda se paga; el ingreso ya estaba anotado.",
     correcta: true,
-    feedback: "Correcto. En los libros de Comercializadora Santa Pacha, el 25 de enero Cuentas por cobrar – clientes baja $1.350.000, se acredita, y no se anota ningún ingreso: ese estaba desde el 10.",
+    feedback: "Correcto. El 25 de enero, en los libros de Comercializadora Santa Pacha, Cuentas por cobrar – clientes baja: se acredita. No se anota ningún ingreso. Ese ya estaba desde el 10.",
   },
   {
     id: "b5-t6-sube",
