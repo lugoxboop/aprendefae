@@ -6,12 +6,14 @@ import ActivityBadge from "./shared/ActivityBadge.jsx";
 import { APRENDER, SUBJECTS } from "../data/subjects.js";
 import LaCuentaQueSiSeMueve from "./mecanicas/libros/t7/LaCuentaQueSiSeMueve.jsx";
 import { PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE } from "../data/contabilidadT7_2.js";
+import LaVentaEnDosAsientos from "./mecanicas/libros/t7/LaVentaEnDosAsientos.jsx";
+import { PIEZA_LA_VENTA_EN_DOS_ASIENTOS } from "../data/contabilidadT7_2_a2.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-2 DE CONTABILIDAD — «Inventarios II: el sistema permanente» (Célula C).
  *
- * Por ahora, su pieza 1 de Aprender. La misma cabecera que T7-1. El orden de
+ * Por ahora, sus piezas 1 y 2 de Aprender. La misma cabecera que T7-1. El orden de
  * las piezas es el de la sección «Orden final de T7-2» del mapa.
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -22,6 +24,7 @@ export const TEMA_T7_2 = "inventarios-permanente";
 /* En el orden del número de pieza. El rótulo «Pieza n de N» cuenta las publicadas. */
 export const PIEZAS_T7_2 = [
   { numero: PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE.numero, pieza: PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE, Pieza: LaCuentaQueSiSeMueve },
+  { numero: PIEZA_LA_VENTA_EN_DOS_ASIENTOS.numero, pieza: PIEZA_LA_VENTA_EN_DOS_ASIENTOS, Pieza: LaVentaEnDosAsientos },
 ].sort((a, b) => a.numero - b.numero);
 
 export default function ContabilidadT7_2View({ onBack }) {

@@ -272,7 +272,7 @@ export default function App() {
     );
   }
 
-  /* T7-2 de Contabilidad (Célula C): por ahora, su pieza 1 de Aprender. */
+  /* T7-2 de Contabilidad (Célula C): por ahora, sus piezas 1 y 2 de Aprender. */
   if (view === "inventarios-permanente") {
     return wrap(
       <Suspense fallback={siteFallback}>
