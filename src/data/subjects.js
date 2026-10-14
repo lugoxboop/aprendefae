@@ -640,6 +640,8 @@ export const SUBJECTS = {
           /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (guía de Mai). Su fila del servidor es la migración 0070. */
           { id: "b5-t5-a1", nombre: "¿Qué renta da este título?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "b5-t5-a2-los-tres-momentos-de-una-inversion", nombre: "Los tres momentos de una inversión", clasificacion: { tipo: APRENDER } },
+          /* El cierre del tema. Difícil · 50 FP (decisión de Sakuta). Su fila del servidor es la migración 0072. */
+          { id: "b5-t5-a2", nombre: "El cierre completo de Santa Pacha", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
       /*
