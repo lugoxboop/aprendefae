@@ -68,9 +68,9 @@ import { unidadDeH4 } from "../contabilidad/t7H4.js";
 import { unidadDeH5 } from "../contabilidad/t7H5.js";
 import { unidadDeH6 } from "../contabilidad/t7H6.js";
 import { unidadDeH7 } from "../contabilidad/t7H7.js";
-import { unidadDeH1 as unidadDeT73H1 } from "../contabilidad/t7_3H1.js";
 import { hechoDeItemH1 as hechoDeItemT72H1 } from "../contabilidad/t7_2H1.js";
 import { unidadDeH2 as unidadDeT72H2 } from "../contabilidad/t7_2H2.js";
+import { unidadDeH1 as unidadDeT73H1 } from "../contabilidad/t7_3H1.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -726,12 +726,12 @@ Object.assign(REGLAS, {
   "t7-1-costo-o-gasto": (id) => unidadDeH5(id),
   "t7-1-devolucion-dos-libros": (id) => unidadDeH6(id),
   "t7-1-que-control-falta": (id) => unidadDeH7(id),
-  /* T7-3 · H1. Un cálculo, por su pregunta; una línea, por su cuenta y su valor. */
-  "t7-3-descuento-en-factura": (id) => unidadDeT73H1(id),
   /* T7-2 · H1. El ítem es el hecho, y se lee por su texto. */
   "t7-2-debe-o-haber": (id) => hechoDeItemT72H1(id),
   /* T7-2 · H2. Un cálculo, por su pregunta; una línea, por su cuenta y su valor. */
   "t7-2-dos-asientos": (id) => unidadDeT72H2(id),
+  /* T7-3 · H1. Un cálculo, por su pregunta; una línea, por su cuenta y su valor. */
+  "t7-3-descuento-en-factura": (id) => unidadDeT73H1(id),
 });
 
 /*
