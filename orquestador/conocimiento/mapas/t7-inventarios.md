@@ -93,7 +93,7 @@ Es la única fuente del orden de las piezas en subjects.js, en ContabilidadT7_1V
 
 Los ids de las piezas que ya existen mandan sobre los del plan v3.2 (a4 y a6 llevan el nombre completo). Los demás son los del plan.
 
-Orden de fusión con lo que está abierto: #60 (A5) y después #66 (A7). #65 (AP4) va después del PR de AP3, porque AP4 usa AP3. #64 (H1) va cuando Mateo corra la 0090.
+En main hoy: a1, a2, a5, a6, a7 (#51, #59, #60, #56, #66). Abiertos: #65 (AP4), que va después del PR de AP3 porque AP4 usa AP3; #64 (H1), que va cuando Mateo corra la 0090.
 
 ## Bloque A · Cuenta de inventarios y sistema periódico (pp. 207-215)
 
