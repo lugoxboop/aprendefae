@@ -145,6 +145,7 @@ export default function ControlInterno({ pieza = PIEZA_CONTROL_INTERNO, rotulo }
           <div className="t7a7">
             {p.objetivo && <p className="t7a7-p" data-texto data-objetivo>{p.objetivo}</p>}
             {p.parrafos?.map((t) => <p key={t} className="t7a7-p" data-texto>{t}</p>)}
+            {p.siguiente && <p className="t7a7-nota" data-texto data-siguiente>{p.siguiente}</p>}
             {p.boton && <Boton nombre={p.tipo === "portada" ? "empezar" : "seguir"} texto={p.boton} onClick={seguir} />}
             <Pie texto={p.pie} />
           </div>
