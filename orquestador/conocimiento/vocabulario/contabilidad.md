@@ -21,8 +21,20 @@ construcción.
 
 | Orden | Tema | Estado |
 |---|---|---|
-| 1 | Introducción a la contabilidad (cap. 1 y 2) | Aprender ×4, Hacer ×6 |
+| 1 | Introducción a la contabilidad (cap. 1 y 2) | Aprender ×4, Hacer ×7 |
 | 2 | Las cuentas, el debe y el haber (cap. 3) | Aprender ×4, Hacer ×7 + desafío |
+| 3 | Ingresos, gastos y ajustes (cap. 4) | Aprender ×4, Hacer ×6 |
+
+> Contado en `subjects.js` el 13 de octubre de 2026, no de memoria. El Tema 1
+> decía Hacer ×6 y son siete: `t1-desde-donde-preguntan`,
+> `t1-que-entro-y-que-salio`, `t1-donde-se-rompio`, `t1-que-le-pasa-a-cada-uno`,
+> `t1-la-ecuacion-en-movimiento`, `t1-en-cual-estado-aparece` y
+> `t1-la-articulacion`. Lo levantó L, de la Célula C, comparando este archivo
+> con el catálogo.
+>
+> **El Tema 3 no estaba en esta tabla.** Su vocabulario visual tampoco está en
+> este archivo todavía: lo que sigue cubre los Temas 1 y 2. Quien construya
+> sobre el Tema 3 lo verifica en el código hasta que esto se complete.
 
 **El Tema 1 se construyó después del Tema 2 pero va antes.** Ese desfase es la
 causa de la regla siguiente.

@@ -605,6 +605,8 @@ export const SUBJECTS = {
           { id: "t3-ajuste-acumulado", nombre: "Arma el ajuste acumulado", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* Actividad 5 de Hacer: después de la pieza «Lo que ya se pagó…», delante de «¿Qué le toca a este periodo?» (Levi). Análisis · 50 FP. */
           { id: "t3-ajuste-diferido", nombre: "Arma el ajuste diferido", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* «El mismo hecho, dos empresas»: nodo 5, entre «Arma el ajuste diferido» y «¿Qué le toca a este periodo?» (Levi). Análisis · 50 FP. */
+          { id: "t3-mismo-hecho", nombre: "El mismo hecho, dos empresas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* Actividad 6 de Hacer, después de la pieza «Lo que ya se pagó y no ha pasado» (Levi). Análisis · 50 FP. */
           { id: "t3-que-le-toca", nombre: "¿Qué le toca a este periodo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* «Cerrar el periodo»: la cuarta y última pieza de Aprender, después de «Lo que ya se pagó y no ha pasado» (Levi). */

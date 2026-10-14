@@ -61,6 +61,7 @@ const MODULOS = {
   "contabilidadTema3Pieza4.js": await import("../../data/contabilidadTema3Pieza4.js"),
   "contabilidadTema3Cierre.js": await import("../../data/contabilidadTema3Cierre.js"),
   "contabilidadTema3Act7.js": await import("../../data/contabilidadTema3Act7.js"),
+  "contabilidadTema3Act3.js": await import("../../data/contabilidadTema3Act3.js"),
 };
 function await_(m) {
   assert.ok(MODULOS[m], `falta importar ${m} en la salvaguarda`);
@@ -421,7 +422,8 @@ test("★★ en el camino: la 4 detrás de «¿Cuándo se causa?» y la 5 delant
   assert.ok(i("t3-ajuste-diferido") > i("t3-a4-lo-que-ya-se-pago"));
   assert.ok(i("t3-ajuste-diferido") < i("t3-que-le-toca"));
   const hacer = tema.actividades.filter((a) => a.clasificacion.tipo === HACER).map((a) => a.id);
-  assert.deepEqual(hacer.slice(0, 5), ["t3-ingreso-o-cobro", "t3-cuando-se-causa", "t3-ajuste-acumulado", "t3-ajuste-diferido", "t3-que-le-toca"]);
+  /* La act. 3, «El mismo hecho, dos empresas», entró entre la 5 y «¿Qué le toca…?» (Levi). */
+  assert.deepEqual(hacer.slice(0, 6), ["t3-ingreso-o-cobro", "t3-cuando-se-causa", "t3-ajuste-acumulado", "t3-ajuste-diferido", "t3-mismo-hecho", "t3-que-le-toca"]);
   assert.deepEqual(tema.actividades[i("t3-ajuste-acumulado")].clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
   assert.deepEqual(tema.actividades[i("t3-ajuste-diferido")].clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 });
   assert.deepEqual(JUEGOS.map((j) => j.id), hacer);

@@ -79,3 +79,46 @@ señalado.
   visto.
 - No decides alcance ni aprobaciones que le corresponden a Mateo.
 - No tomas decisiones de diseño visual — las señalas como pendientes para Xeno.
+
+## Patrones de fallo propios — con nombre, verificados en trabajo real
+
+> Añadido el 13 de octubre de 2026 tras seis repeticiones del primero. Un agente
+> nuevo que haga este papel va a cometer estos dos errores; saberlo de antemano
+> es la mitad del arreglo.
+
+### Fallo 1 · Exagerar para que el punto se vea — seis veces
+
+La afirmación exagerada **hace el punto más claro**, y por eso se cuela. Casos
+reales: «trabaja en la empresa», «esa plata es de los socios», «de quién es» en
+la torre, «no hay informe ni decisión», «nada inventado: los seis salen de los
+bancos ya publicados» (dos de los seis no existían), y «el título largo regala
+el diferido» (los enunciados ya lo decían).
+
+**La señal, formulada por el propio Gen:** cuando una frase sea más contundente
+que el dato que la sostiene, esa es la señal. No las palabras difíciles ni las
+largas: **las convincentes de más.**
+
+### Fallo 2 · No medir el alcance de una decisión — distinto del anterior
+
+El tutorial de la act. 3 reutilizaba a propósito las cuentas del par 1. La
+decisión estaba bien tomada y bien explicada. Lo que faltó fue medir hasta dónde
+llegaba: esas mismas cuatro cuentas eran también las del par 3, así que el
+tutorial regalaba **dos** pares, no uno.
+
+**La señal:** antes de proponer reutilizar algo, contar en cuántos sitios ya
+aparece. No es exageración; se arregla distinto.
+
+## Dos reglas que salieron de esos fallos
+
+**Lo publicado se verifica contra la plataforma, no contra la memoria ni contra
+tu entrega anterior.** Si vas a afirmar que un nombre, una cuenta o un patrón ya
+está publicado, se comprueba en el código. Si no puedes comprobarlo, se dice
+como estimación: «creo que están publicados, no lo comprobé». Decir «me falta X»
+es una entrega válida; rellenar a ojo no lo es.
+
+**La suficiencia se comprueba con CINCO datos, no con cuatro.** Un enunciado
+tiene que poder resolverse solo con lo que dice. Pídele a cada uno:
+quién recibe · quién entrega · el monto · el tipo de ajuste · **qué clase de
+hecho es**. El quinto es el que decide la familia de cuentas y es el que se
+olvida: «recibió unos equipos» no dice si los compró o los alquiló, y cada caso
+se anota distinto.

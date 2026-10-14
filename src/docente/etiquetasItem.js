@@ -51,6 +51,7 @@ import { hechoDeItemAct4 as hechoDeAct4T3, hechoDeItemAct5 as hechoDeAct5T3 } fr
 import { hechoDeParte as hechoDeParteT3 } from "../contabilidad/elCierreCompleto.js";
 import { CASOS_ACT7 } from "../data/contabilidadTema3Act7.js";
 import { hechoDeItem as hechoDeAct6T3 } from "../contabilidad/queLeToca.js";
+import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -552,6 +553,7 @@ Object.assign(REGLAS, {
   "t3-cuando-se-causa": (id) => hechoDeAct2T3(id),
   "t3-ajuste-acumulado": (id) => hechoDeAct4T3(id),
   "t3-ajuste-diferido": (id) => hechoDeAct5T3(id),
+  "t3-mismo-hecho": (id) => hechoDeAct3T3(id),
   "t3-que-le-toca": (id) => hechoDeAct6T3(id),
   "t3-cierre-completo": (id) => hechoDeParteT3(CASOS_ACT7)(id),
 
