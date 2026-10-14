@@ -130,76 +130,131 @@ test("Aprender no paga: las tres piezas son APRENDER y no están en el catálogo
 
 /* ═══════════ LA FÁBRICA DEL DINERO · LO QUE SE PUEDE PONER ROJO ═══════════ */
 
-test("la-fabrica-del-dinero: la escalera — cada vuelta deposita lo prestado en la anterior, el total crece, y con más encaje es más corta", () => {
-  /* El ejemplo del encargo, literal: 100 → 190 → 271. */
+test("la-fabrica-del-dinero: la escalera — la partida no es vuelta; cada vuelta deposita lo prestado en la anterior; el total crece; con más encaje, más corta", () => {
+  /* El ejemplo de Juan, como lo cuentan los pasos: partida 100; vueltas 190, 271 y 343,9. */
   const juan = F.escaleraDe(100, 10, 3);
-  assert.deepEqual(juan.map((f) => [f.deposita, f.guarda, f.presta, f.total]), [[100, 10, 90, 100], [90, 9, 81, 190], [81, 8.1, 72.9, 271]]);
-  for (const encaje of [5, 10, 20, 30]) {
+  assert.deepEqual(juan.map((f) => [f.deposita, f.guarda, f.presta, f.total]), [[100, 10, 90, 190], [90, 9, 81, 271], [81, 8.1, 72.9, 343.9]]);
+  for (const encaje of [5, 10, 20, 50]) {
     const filas = F.escaleraDe(1000, encaje, 8);
     filas.forEach((f, k) => {
-      assert.equal(f.guarda + f.presta, f.deposita, `vuelta ${f.vuelta}: lo que entra se guarda o se presta`);
-      if (k > 0) {
-        assert.equal(f.deposita, filas[k - 1].presta, `vuelta ${f.vuelta}: deposita lo prestado en la anterior`);
-        assert.ok(f.total > filas[k - 1].total, "el total crece");
-        assert.ok(f.deposita < filas[k - 1].deposita, "cada peldaño es más bajo que el anterior");
-      }
+      assert.ok(Math.abs(f.guarda + f.presta - f.deposita) < 1e-6, `vuelta ${f.vuelta}: lo que entra se guarda o se presta`);
+      const antes = k > 0 ? filas[k - 1].total : 1000;
+      assert.ok(Math.abs(f.total - (antes + f.presta)) < 1e-6, `vuelta ${f.vuelta}: lo prestado vuelve como depósito y se suma`);
+      if (k > 0) assert.equal(f.deposita, filas[k - 1].presta, `vuelta ${f.vuelta}: deposita lo prestado en la anterior`);
+      assert.ok(f.total > antes, "el total crece");
     });
     assert.ok(filas.at(-1).total < F.techoDe(1000, encaje), "nunca pasa del techo que deduce el estudiante");
   }
-  /* El freno: con más encaje, la escalera es más corta en CADA vuelta (después de la primera). */
   const baja = F.escaleraDe(1000, 10, 6);
   const alta = F.escaleraDe(1000, 20, 6);
-  for (let k = 1; k < 6; k++) assert.ok(alta[k].total < baja[k].total, `vuelta ${k + 1}: subir el encaje acorta`);
+  for (let k = 0; k < 6; k++) assert.ok(alta[k].total < baja[k].total, `vuelta ${k + 1}: subir el encaje acorta`);
+  /* Los pasos cuentan lo mismo que la regla. */
+  const textos = F.APRENDER_FABRICA.pasos.map((p) => p.texto);
+  assert.ok(textos.some((t) => t.includes("Vuelta 1: total en depósitos, 190.")));
+  assert.ok(textos.some((t) => t.includes("Vuelta 2: total en depósitos, 271.")));
+  assert.ok(textos.some((t) => t.includes("en la vuelta 3, el total llega a 343,9.")));
 });
 
-test("la-fabrica-del-dinero: la escena tiene los 14 ids y pinta la escalera del ejemplo; la exploración la acorta al subir el encaje", () => {
-  const m = montar(React.createElement(FD.EscenaFabrica, { resaltar: [] }));
+const pasoActual = (capa2) => Number(capa2.textContent.match(/Paso (\d+) de/)[1]);
+const visibles = (caja, sel, attr) => [...caja.querySelectorAll(sel)].map((n) => n.getAttribute(attr));
+
+test("la-fabrica-del-dinero: cada cifra y cada peldaño aparecen con su paso, y «Anterior» los oculta", () => {
+  const m = montar(React.createElement(CuatroCapas, { pieza: F.APRENDER_FABRICA, Escena: FD.EscenaFabrica, Exploracion: FD.ExploraFabrica }));
   try {
-    const ids = [...m.caja.querySelectorAll("svg [data-parte]")].map((p) => p.getAttribute("data-parte"));
-    assert.deepEqual([...ids].sort(), [...F.IDS_ESCENA].sort(), "los 14 ids del encargo, ni uno más ni uno menos");
-    const peldanos = [...m.caja.querySelectorAll('[data-parte="escalera"] [data-peldano]')].map((g) => g.textContent);
-    assert.deepEqual(peldanos, ["100", "190", "271"]);
+    const capa2 = m.caja.querySelector('[data-capa="2"]');
+    const total = F.APRENDER_FABRICA.pasos.length;
+    for (let k = 1; k <= total; k++) {
+      assert.equal(pasoActual(capa2), k);
+      const cifras = visibles(capa2, "svg [data-cifra]", "data-cifra").sort();
+      assert.deepEqual(cifras, F.CIFRAS_ESCENA.filter((c) => c.paso <= k).map((c) => c.id).sort(), `paso ${k}: cifras`);
+      const peldanos = visibles(capa2, "svg [data-peldano]", "data-peldano");
+      const esperados = [...F.PELDANOS_ESCENA.filter((p) => p.paso <= k).map((p) => p.id), ...(k >= F.PASO_SIGUE ? ["sigue"] : [])];
+      assert.deepEqual(peldanos, esperados, `paso ${k}: peldaños`);
+      if (k < total) click(boton(capa2, "Siguiente"));
+    }
+    /* La escalera completa: 100, 190, 271 y 343,9, con «…». */
+    assert.deepEqual([...capa2.querySelectorAll("svg [data-peldano] text")].map((t) => t.textContent), ["100", "190", "271", "343,9"]);
+    /* Atrás hasta el paso 13: la vuelta 3 y sus cifras ya no están. */
+    for (let k = total; k > 13; k--) click(boton(capa2, "Anterior"));
+    assert.equal(pasoActual(capa2), 13);
+    assert.ok(!visibles(capa2, "svg [data-peldano]", "data-peldano").includes("vuelta-3"));
+    assert.ok(!visibles(capa2, "svg [data-cifra]", "data-cifra").includes("c-sale"));
+    assert.ok(visibles(capa2, "svg [data-cifra]", "data-cifra").includes("b-c"));
   } finally {
     m.desmontar();
   }
-  const x = montar(React.createElement(FD.ExploraFabrica));
+});
+
+test("la-fabrica-del-dinero: la escena tiene los 14 ids; ninguna correa une al Gobierno con el Banco de la República; nada en bucle; letra de 13,2 o más", () => {
+  const m = montar(React.createElement(CuatroCapas, { pieza: F.APRENDER_FABRICA, Escena: FD.EscenaFabrica, Exploracion: FD.ExploraFabrica }));
   try {
-    const ultimo = () => Number(x.caja.querySelector("[data-escalera-explora] [data-vuelta]:last-child").getAttribute("data-total"));
-    const totales = [];
-    for (const e of F.EXPLORA_ENCAJES) {
-      click(x.caja.querySelector(`[data-encaje="${e}"]`));
-      assert.equal(x.caja.querySelector(`[data-encaje="${e}"]`).getAttribute("aria-pressed"), "true");
-      totales.push(ultimo());
+    const capa2 = m.caja.querySelector('[data-capa="2"]');
+    const svg = () => capa2.querySelector("svg");
+    const ids = [...svg().querySelectorAll("[data-parte]")].map((p) => p.getAttribute("data-parte"));
+    assert.deepEqual([...new Set(ids)].sort(), [...F.IDS_ESCENA].sort(), "los 14 ids del encargo, ni uno más");
+    assert.equal(svg().querySelectorAll('[data-parte="encaje"] [data-cajita]').length, 3, "el encaje, en las tres cajitas");
+    for (const c of svg().querySelectorAll("[data-correa]")) {
+      for (const alt of c.getAttribute("data-une").split("|")) {
+        const une = alt.trim().split(/\s+/);
+        assert.ok(!(une.includes("gobierno") && une.includes("banco-republica")), `la correa ${c.getAttribute("data-correa")} une Gobierno y Banco`);
+      }
     }
-    for (let k = 1; k < totales.length; k++) assert.ok(totales[k] < totales[k - 1], `más encaje, escalera más corta: ${totales}`);
+    /* El paso de «Normalmente…»: se encienden Gobierno–TES y el mercado, por separado; el TES no baja al banco. */
+    const k20 = F.APRENDER_FABRICA.pasos.findIndex((p) => p.texto.startsWith("Normalmente"));
+    for (let k = 0; k < k20; k++) click(boton(capa2, "Siguiente"));
+    assert.deepEqual(visibles(capa2, "svg [data-correa][data-encendida]", "data-correa").sort(), ["gobierno-tes", "mercado"]);
+    assert.ok(svg().querySelector('[data-parte="banco-privado"]').getAttribute("class").includes("fae-sm-apagada"));
+    /* Ninguna animación en bucle, y ningún texto por debajo de 13,2 unidades. */
+    assert.doesNotMatch(svg().outerHTML, /infinite/);
+    for (const t of svg().querySelectorAll("text")) assert.ok(parseFloat(t.style.fontSize) >= 13.2, `«${t.textContent}» en ${t.style.fontSize}`);
   } finally {
-    x.desmontar();
+    m.desmontar();
   }
 });
 
-test("la-fabrica-del-dinero: cada vez que se ven cifras del ejemplo, «Escenario simulado» está en pantalla", () => {
+test("la-fabrica-del-dinero: «Escenario simulado» a la vista en la capa 2 (en cada paso) y en la capa 3 (en cada posición)", () => {
   const m = montar(React.createElement(CuatroCapas, { pieza: F.APRENDER_FABRICA, Escena: FD.EscenaFabrica, Exploracion: FD.ExploraFabrica }));
   try {
     const capa2 = m.caja.querySelector('[data-capa="2"]');
     const capa3 = m.caja.querySelector('[data-capa="3"]');
-    let vistas = 0;
     F.APRENDER_FABRICA.pasos.forEach((_, k) => {
-      const escena = capa2.querySelector("svg");
-      if (/\d/.test(escena.textContent)) {
-        vistas++;
-        assert.ok(escena.textContent.includes(F.ROTULO_SIMULADO), `paso ${k + 1}: hay cifras y no está el rótulo`);
-        /* El rótulo no se apaga con el resaltado: va fuera de toda parte. */
-        const rot = [...escena.querySelectorAll("text")].find((t) => t.textContent === F.ROTULO_SIMULADO);
-        assert.equal(rot.closest("[data-parte]"), null, "el rótulo no puede quedar apagado");
-      }
+      const rot = capa2.querySelector("svg [data-rotulo-simulado]");
+      assert.ok(rot && rot.textContent === F.ROTULO_SIMULADO, `paso ${k + 1}: sin rótulo`);
+      assert.equal(rot.closest("[data-parte]"), null, "el rótulo no puede quedar apagado");
       if (k < F.APRENDER_FABRICA.pasos.length - 1) click(boton(capa2, "Siguiente"));
     });
-    assert.ok(vistas > 0, "la escena pinta cifras del ejemplo");
-    for (const e of F.EXPLORA_ENCAJES) {
-      click(capa3.querySelector(`[data-encaje="${e}"]`));
-      assert.match(capa3.textContent, /\d/);
-      assert.ok(capa3.textContent.toLowerCase().includes(F.ROTULO_SIMULADO.toLowerCase()), `exploración con ${e}: cifras sin rótulo`);
+    const leer = () => ({
+      rot: capa3.querySelector("[data-rotulo-simulado]")?.textContent,
+      encaje: Number(capa3.querySelector("[data-encaje-actual]").getAttribute("data-encaje-actual")),
+      texto: capa3.querySelector("[data-texto-posicion]").textContent,
+      totales: [...capa3.querySelectorAll("[data-escalera-explora] [data-vuelta]")].map((r) => Number(r.getAttribute("data-total"))),
+    });
+    const vistas = [];
+    let x = leer();
+    assert.equal(x.encaje, F.EXPLORA.inicial);
+    assert.equal(capa3.querySelector("[data-texto-final]"), null, "el texto final, solo después de mover");
+    /* Empieza en 10, el nivel más bajo: «Bajar el encaje» no hace nada ahí. */
+    assert.ok(capa3.querySelector("[data-bajar]").disabled, "abajo del todo");
+    assert.equal(capa3.querySelector("[data-bajar]").getAttribute("aria-label"), "Bajar el encaje");
+    assert.equal(capa3.querySelector("[data-subir]").getAttribute("aria-label"), "Subir el encaje");
+    for (;;) {
+      x = leer();
+      vistas.push(x);
+      assert.equal(x.rot, F.ROTULO_SIMULADO, `encaje ${x.encaje}: cifras sin rótulo`);
+      if (capa3.querySelector("[data-subir]").disabled) break;
+      click(capa3.querySelector("[data-subir]"));
     }
+    assert.deepEqual(vistas.map((v) => v.encaje), [10, 20, 50]);
+    for (const v of vistas) {
+      /* El texto de Futaba dice lo mismo que la escalera que se pinta: el primer préstamo y el total tras dos vueltas. */
+      const f = F.escaleraDe(100, v.encaje, 3);
+      assert.equal(v.texto, F.EXPLORA.posiciones.find((p) => p.encaje === v.encaje).texto);
+      assert.ok(v.texto.includes(`El primer préstamo es de ${FD.cifra(f[0].presta)},`), v.texto);
+      assert.ok(v.texto.includes(`tras dos vueltas el total va en ${FD.cifra(f[1].total)}.`), v.texto);
+      assert.deepEqual(v.totales, [100, ...f.map((r) => r.total)]);
+    }
+    for (let k = 1; k < vistas.length; k++) assert.ok(vistas[k].totales.at(-1) < vistas[k - 1].totales.at(-1), "más encaje, escalera más corta");
+    assert.equal(capa3.querySelector("[data-texto-final]").textContent, F.EXPLORA.final);
   } finally {
     m.desmontar();
   }
