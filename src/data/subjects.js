@@ -751,16 +751,26 @@ export const SUBJECTS = {
         actividades: [
           /* A1: abre el tema, con su propio repaso (regla 3). Ejemplo H-1, pp. 248-249. Cero FP. */
           { id: "t7-3-descuento-comercial", nombre: "El descuento comercial", clasificacion: { tipo: APRENDER } },
+          /* H1, justo después de A1 (orden final de T7-3): la venta de Guadua con descuento comercial. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0103. */
+          { id: "t7-3-descuento-en-factura", nombre: "Descuento en la factura", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A2, después de A1 (regla 9). H1 «Descuento en la factura» entra entre A1 y A2. Ejemplo H-2, pp. 249-250. Cero FP. */
           { id: "t7-3-descuentos-en-cadena", nombre: "Descuentos en cadena", clasificacion: { tipo: APRENDER } },
+          /* H2, justo después de A2 (orden final de T7-3): la cadena de Palma, paso a paso y con el factor. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0104. */
+          { id: "t7-3-cadena-de-descuentos", nombre: "La cadena de descuentos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A3, después de A2 (regla 9; depende de A1). H2 «La cadena de descuentos» entra entre A2 y A3. Ejemplo H-3, libro de quien vende, pp. 251-253. Cero FP. */
           { id: "t7-3-descuento-condicionado", nombre: "El descuento condicionado", clasificacion: { tipo: APRENDER } },
           /* A4, justo después de A3 (orden final de T7-3): H-3 en el libro de quien compra, el cierre y el permanente, pp. 253-254. Cero FP. */
           { id: "t7-3-descuento-en-dos-libros", nombre: "El descuento en los dos libros", clasificacion: { tipo: APRENDER } },
+          /* H3, justo después de A4 (orden final de T7-3; la sostienen A1, A3 y A4): siete casos, sin cifras. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0105. */
+          { id: "t7-3-comercial-o-condicionado", nombre: "¿Comercial o condicionado?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* H4, después de H3 (orden final de T7-3; la sostienen A3 y A4): el pago a tiempo de Bambú, en los dos libros. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0106. */
+          { id: "t7-3-pago-a-tiempo", nombre: "Pagó a tiempo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* A5, después de A4 por el orden del mapa (no depende de los descuentos). H3 y H4 entran entre A4 y A5. Ejemplos I-1 e I-2, pp. 254-255, y la lista de pp. 207-208 (regla 5b). Cero FP. */
           { id: "t7-3-sobrantes-y-faltantes", nombre: "Sobrantes y faltantes", clasificacion: { tipo: APRENDER } },
           /* A6, justo después de A5 (orden final de T7-3): la provisión del ejemplo I-3, p. 256. Cero FP. */
           { id: "t7-3-provision-inventarios", nombre: "La provisión para inventarios", clasificacion: { tipo: APRENDER } },
+          /* H5, justo después de A6 (orden final de T7-3; la sostienen A5 y A6): el conteo de Olmo y la provisión de Pino. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0107. */
+          { id: "t7-3-ajuste-por-conteo", nombre: "Ajuste por conteo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A7, después de A6 por el orden del mapa (depende de A1, por los descuentos). H5 entra entre A6 y A7. La NIC 2 del libro, pp. 256-258, con su frase fija a la vista. Cero FP. */
           { id: "t7-3-nic2-costo", nombre: "La NIC 2 del libro: el costo", clasificacion: { tipo: APRENDER } },
         ],
