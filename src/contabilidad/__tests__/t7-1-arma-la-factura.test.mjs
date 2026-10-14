@@ -337,12 +337,29 @@ test("★★★ la 0092: del rango de la célula, un insert aditivo y repetible,
   assert.ok(n >= 90 && n <= 109, `la ${conElId[0]} está fuera del rango 0090-0109`);
 });
 
-test("★★ el panel docente lee cada unidad: un cálculo por su pregunta, una línea por su cuenta y su valor", () => {
-  for (const id of L.unidadesH2()) {
-    const texto = L.unidadDeH2(id);
-    assert.ok(texto, id);
-    assert.equal(etiquetaDeItem(D.H2_ID, id), recortar(texto), id);
+test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqueta, leída de los datos (recortada a 70, como todas)", async () => {
+  /* Los ids que de verdad llegan al panel: los del detalle de una partida entera. */
+  const m = await montar();
+  try {
+    await jugar(m, () => false);
+    const ids = m.completados[0][2].map((d) => d.item);
+    assert.equal(ids.length, 12);
+    for (const id of ids) {
+      const etiqueta = etiquetaDeItem(D.H2_ID, id);
+      assert.ok(typeof etiqueta === "string" && etiqueta.trim() !== "", `${id}: sin etiqueta en el panel`);
+      assert.equal(etiqueta, recortar(L.unidadDeH2(id)), id);
+    }
+  } finally {
+    m.desmontar();
   }
-  assert.equal(L.unidadDeH2("iva-compra"), "¿Cuánto es el IVA de la compra?");
-  assert.equal(L.unidadDeH2("asiento-venta:iva"), "IVA por pagar $768.000");
+  /* Un cálculo se lee por su pregunta; una línea, por su cuenta y su valor, tal como están en los datos. */
+  for (const it of D.ITEMS_H2) {
+    if (it.tipo === "calculo") assert.equal(L.unidadDeH2(it.id), it.pregunta);
+    else for (const l of it.lineas) assert.equal(L.unidadDeH2(L.idDeLinea(it, l)), `${l.cuenta} ${pesos(l.valor)}`);
+  }
+  /* La regla vive en el bloque de T7 del archivo, y lee los datos: no copia ninguna pregunta. */
+  const fuente = leer("src/docente/etiquetasItem.js");
+  const bloque = fuente.slice(fuente.indexOf("CONTABILIDAD · T7 «INVENTARIOS»"));
+  assert.match(bloque.slice(0, bloque.indexOf("});")), /"t7-1-arma-la-factura": \(id\) => unidadDeH2\(id\),/);
+  for (const it of D.ITEMS_H2) assert.ok(!fuente.includes(it.pregunta), `${it.id}: la pregunta está copiada en etiquetasItem.js`);
 });
