@@ -634,6 +634,22 @@ export const SUBJECTS = {
         ],
       },
       /*
+       * EL TEMA 6 (Célula B), por ahora con su pieza 1 de Aprender.
+       *
+       * CATÁLOGO: DECIDE ERWIN. El id y el título son una PROPUESTA de la
+       * célula: sin prefijo, como el Tema 5 (es la dirección que ve el
+       * estudiante), y el título es el de §5.4 en la p. 195, «Cuentas por
+       * cobrar». Va después del Tema 5 y antes del T7, por el orden del
+       * libro. Sin ícono propio.
+       */
+      {
+        id: "cuentas-por-cobrar",
+        title: "Cuentas por cobrar",
+        actividades: [
+          { id: "b5-t6-a1-lo-que-otros-le-deben", nombre: "Lo que otros le deben a la empresa", clasificacion: { tipo: APRENDER } },
+        ],
+      },
+      /*
        * ═══════════ T7 · CÉLULA C ═══════════
        *
        * T7-1, el inventario en el sistema periódico (pp. 207-232), después del
