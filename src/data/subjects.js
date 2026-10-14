@@ -650,6 +650,9 @@ export const SUBJECTS = {
           { id: "b5-t6-a1-lo-que-otros-le-deben", nombre: "Lo que otros le deben a la empresa", clasificacion: { tipo: APRENDER } },
           /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (Futaba). Su fila del servidor es la migración 0071. */
           { id: "b5-t6-a1", nombre: "¿Clientes o otra cuenta por cobrar?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* Actividades 2 y 3 de Hacer (mesa de asientos). Media · 25 y difícil · 50 FP (Sakuta). Sus filas del servidor son la migración 0074. */
+          { id: "b5-t6-a2", nombre: "La provisión de El Torito", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "b5-t6-a3", nombre: "Cuando la deuda castigada vuelve", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "b5-t6-a2-cuando-un-cliente-no-va-a-pagar", nombre: "Cuando un cliente no va a pagar", clasificacion: { tipo: APRENDER } },
         ],
       },

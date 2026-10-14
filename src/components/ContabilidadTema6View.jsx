@@ -21,6 +21,10 @@ import { PIEZA_NO_VA_A_PAGAR } from "../data/contabilidadT6Pieza2.js";
 import { ESCENAS_TEMA6 } from "./mecanicas/libros/tema6/escenasTema6.jsx";
 import ClientesOOtra from "./mecanicas/libros/tema6/ClientesOOtra.jsx";
 import { T6_ACT1 } from "../data/contabilidadT6Act1.js";
+import ProvisionDeElTorito from "./mecanicas/libros/tema6/ProvisionDeElTorito.jsx";
+import { T6_ACT2 } from "../data/contabilidadT6Act2.js";
+import DeudaQueVuelve from "./mecanicas/libros/tema6/DeudaQueVuelve.jsx";
+import { T6_ACT3 } from "../data/contabilidadT6Act3.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -43,6 +47,9 @@ const PUBLICADAS = PIEZAS.length;
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS = [
   { id: T6_ACT1.id, Mecanica: ClientesOOtra, titulo: T6_ACT1.nombre },
+  /* La mesa de asientos con el diario encima; en «Así se juega», la mesa sola. */
+  { id: T6_ACT2.id, Mecanica: ProvisionDeElTorito, titulo: T6_ACT2.nombre },
+  { id: T6_ACT3.id, Mecanica: DeudaQueVuelve, titulo: T6_ACT3.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */

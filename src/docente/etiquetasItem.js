@@ -52,6 +52,9 @@ import { hechoDeParte as hechoDeParteT3 } from "../contabilidad/elCierreCompleto
 import { CASOS_ACT7 } from "../data/contabilidadTema3Act7.js";
 import { hechoDeItem as hechoDeAct6T3 } from "../contabilidad/queLeToca.js";
 import { fichaDeItemT6Act1 } from "../contabilidad/t6Act1.js";
+import { parteDeItem as parteDeItemMesa } from "../contabilidad/cierreConMesa.js";
+import { PARTES_T6_ACT2 } from "../data/contabilidadT6Act2.js";
+import { PARTES_T6_ACT3 } from "../data/contabilidadT6Act3.js";
 import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
@@ -560,6 +563,9 @@ Object.assign(REGLAS, {
 
   /* Tema 6 · act. 1 (Célula B). El ítem es la ficha, y se lee por su texto, como T1-6. */
   "b5-t6-a1": (id) => fichaDeItemT6Act1(id),
+  /* Tema 6 · acts. 2 y 3. El ítem es la parte, y se lee por su rótulo y su instrucción. */
+  "b5-t6-a2": (id) => parteDeItemMesa(PARTES_T6_ACT2)(id),
+  "b5-t6-a3": (id) => parteDeItemMesa(PARTES_T6_ACT3)(id),
 
   "cu-arma-el-asiento": (id) => textoDeItemA6(id),
 
