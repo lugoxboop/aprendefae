@@ -49,7 +49,7 @@ export default function UnaFrase({ pregunta, opciones, Escena, evaluar }) {
                 textAlign: "left", padding: "10px 12px", borderRadius: "11px",
                 cursor: elegida ? "default" : "pointer",
                 background: esta ? "rgba(184,196,212,0.12)" : "rgba(10,20,34,0.4)",
-                border: `${esta ? 2 : 1}px solid ${esta ? NEUTRO : "rgba(248,249,250,0.16)"}`,
+                border: `${esta ? 2 : 1}px solid ${esta ? NEUTRO : "rgba(248,249,250,0.36)"}`,
                 color: FAE.text, fontSize: "12.5px", lineHeight: 1.45,
                 opacity: elegida && !esta ? 0.5 : 1,
               }}
@@ -78,7 +78,7 @@ export default function UnaFrase({ pregunta, opciones, Escena, evaluar }) {
           onClick={() => setElegida(null)}
           style={{
             marginTop: "10px", padding: "8px 14px", borderRadius: "999px", cursor: "pointer",
-            background: "transparent", border: "1px solid rgba(248,249,250,0.3)",
+            background: "transparent", border: "1px solid rgba(248,249,250,0.36)",
             color: FAE.text, fontFamily: SORA, fontSize: "12px", fontWeight: 600,
           }}
         >
