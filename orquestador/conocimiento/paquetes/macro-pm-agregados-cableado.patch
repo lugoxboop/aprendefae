@@ -15,14 +15,14 @@ más el conteo de previas animadas, 46 → 48) y la línea «las tres piezas» d
 monetaria-aprender, más la foto del camino (solo cambian las 6 variantes de
 Política Monetaria; las otras 36 quedan igual).
 
-Medido por Misa sobre la punta de la rama, con main al día: 1806 pruebas,
-1805 pasan, 0 fallan (1 TODO que ya estaba en main), build verde.
+Medido por Misa sobre la punta de la rama, con main al día: 1810 pruebas,
+1809 pasan, 0 fallan (1 TODO que ya estaba en main), build verde.
 
 LA 0091 LA CORRE MATEO, A MANO, DESPUÉS DEL DESPLIEGUE. Nadie más.
 
 git apply ignora este texto: empieza a leer en la primera línea «diff --git».
 diff --git a/src/components/PoliticaMonetariaView.jsx b/src/components/PoliticaMonetariaView.jsx
-index df3828b..467662c 100644
+index 1739bb5..5dcae30 100644
 --- a/src/components/PoliticaMonetariaView.jsx
 +++ b/src/components/PoliticaMonetariaView.jsx
 @@ -19,6 +19,9 @@ import {
@@ -36,7 +36,7 @@ index df3828b..467662c 100644
  import { useCompletadas, nodosDe } from "../hacer/completadas.js";
  import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 @@ -43,16 +46,19 @@ const PIEZAS = [
-   { pieza: APRENDER_QUIEN_MANDA, Escena: EscenaQuienManda, Exploracion: () => <ExploraVolante /> },
+   { pieza: APRENDER_QUIEN_MANDA, Escena: EscenaQuienManda, Exploracion: ExploraMargen },
    { pieza: APRENDER_INSTRUMENTOS, Escena: EscenaInstrumentos, Exploracion: ExploraInstrumentos },
    { pieza: APRENDER_TRANSMISIONES, Escena: EscenaTransmisiones, Exploracion: () => <ExploraVolante conReloj /> },
 +  { pieza: APRENDER_TALLAS, Escena: EscenaTallas, Exploracion: ExploraTallas },
@@ -56,7 +56,7 @@ index df3828b..467662c 100644
    { id: "por-cual-arteria-entra", Mecanica: PorCualArteriaEntra },
    { id: "explicaselo-a-un-deudor", Mecanica: ExplicaseloADeudor },
 diff --git a/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs b/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs
-index c185f5e..d090b0c 100644
+index 7166f77..67dc3f0 100644
 --- a/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs
 +++ b/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs
 @@ -116,10 +116,10 @@ test("la exploración de los cuatro instrumentos sigue las reglas de la pieza",
