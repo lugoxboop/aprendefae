@@ -20,13 +20,13 @@
  * agregados monetarios). Lo que no viene de la ficha va marcado
  * [ESCRITO POR CLAUDE, NO POR LA FICHA], como en politicaMonetaria.js.
  *
- * Dos decisiones de Near que el PR deja a la vista de L y Erwin:
- *   · M2 y M3 van separados (la ficha de Erwin los juntaba);
- *   · la cuenta de ahorros va en M2 por la clasificación oficial del Banco
- *     (cuasidinero), no por su liquidez.
+ * Versión 2 de Near, con las cinco correcciones obligatorias del PASA de
+ * Mello. M2 y M3 van separados (la ficha de Erwin los juntaba). La cuenta de
+ * ahorros va en M2 por liquidez, con la razón de la ficha del Banco: está un
+ * poco menos disponible que una cuenta corriente, a cambio de intereses.
  *
- * LAS CIFRAS: la única es la tasa de 12,0 %, de DATOS_VERIFICADOS. Ningún
- * saldo de M1 ni de M2, así que no hace falta el rótulo «Escenario simulado».
+ * LAS CIFRAS: ninguna. Ningún saldo de M1 ni de M2, así que no hace falta el
+ * rótulo «Escenario simulado»; la prueba de cifras lo vigila igual.
  *
  * COHERENCIA CON LO PUBLICADO: en QUIEN_DECIDE, «Emitir bonos de deuda pública
  * (TES)» es del gobierno. El Banco no emite TES: los compra o los vende. La
@@ -47,9 +47,10 @@ export const APRENDER_TALLAS = {
   nombres: [
     { termino: "Base monetaria", definicion: "El dinero que emite el Banco de la República. Es el efectivo en manos del público más la reserva de los bancos." },
     { termino: "Reserva bancaria", definicion: "Los billetes que los bancos tienen en su caja y lo que tienen depositado en el Banco de la República." },
-    // [ESCRITO POR CLAUDE, NO POR LA FICHA]
+    // Coincide con la definición de «Encaje bancario» ya publicada en el tema: la pieza «Los Cuatro Instrumentos»,
+    // y casi palabra por palabra la del Memorama del Banco Central (cotejo de Mello)
     { termino: "Encaje", definicion: "La parte de los depósitos que los bancos deben guardar y no pueden prestar." },
-    { termino: "M1", definicion: "El efectivo del público más las cuentas corrientes. Es la plata con la que usted paga hoy." },
+    { termino: "M1", definicion: "El efectivo del público más las cuentas corrientes. Es la plata más lista para pagar." },
     { termino: "M2", definicion: "M1 más las cuentas de ahorro y los CDT. El Banco de la República llama cuasidineros a esos ahorros y CDT." },
     { termino: "M3", definicion: "M2 más los bonos que emiten los bancos y otros depósitos." },
     { termino: "Liquidez", definicion: "Qué tan rápido una forma de dinero se puede volver un pago." },
@@ -57,7 +58,7 @@ export const APRENDER_TALLAS = {
   pasos: [
     {
       resaltar: ["banco-republica", "base"],
-      texto: "Empiece por abajo. El Banco de la República emite el dinero: los billetes y monedas, y la plata que los bancos guardan allá. Esa es la base monetaria.",
+      texto: "Empiece por abajo. El Banco de la República emite la base monetaria: los billetes y monedas, y la plata que los bancos guardan allá.",
     },
     {
       resaltar: ["persona", "m1"],
@@ -74,7 +75,7 @@ export const APRENDER_TALLAS = {
     },
     {
       resaltar: ["tes", "banco-republica", "base"],
-      texto: "Cuando el Banco de la República compra TES, los paga con pesos nuevos: crece la base. Ojo: el Banco no emite los TES. Los emite el Gobierno, y el Banco los compra o los vende.",
+      texto: "Cuando el Banco de la República compra TES, los paga con pesos nuevos: crece la base. Son las mismas operaciones de mercado abierto que usted vio en «Los Cuatro Instrumentos»: sirven para que la tasa del mercado se quede donde la Junta dijo. Ojo: el Banco no emite los TES. Los emite el Gobierno, y el Banco los compra o los vende.",
     },
     {
       resaltar: ["encaje", "bancos", "tasa"],
@@ -82,24 +83,20 @@ export const APRENDER_TALLAS = {
     },
   ],
   pregunta: "¿Cuál agregado crea directamente el Banco de la República, y cuál resulta de lo que hacen los bancos?",
-  // [ESCRITO POR CLAUDE, NO POR LA FICHA]: el mecanismo préstamo → depósito
-  respuesta: "El Banco crea directamente la base monetaria: el efectivo y la reserva de los bancos. La mayor parte de M1, M2 y M3 nace cuando los bancos prestan. Cada préstamo vuelve como un depósito, y una parte de ese depósito se presta otra vez. El encaje le pone límite a esa multiplicación.",
+  // Depósitos que nacen del crédito: Banrep, JDS-16276, puntos 13-14
+  respuesta: "El Banco crea directamente la base monetaria: el efectivo y la reserva de los bancos. Los depósitos de M1, M2 y M3 nacen cuando los bancos prestan. Cada préstamo vuelve como un depósito, y una parte de ese depósito se presta otra vez. El encaje le pone límite a esa multiplicación.",
 };
 
 /* ═══════════════════════════ BLOQUE 1 · CIMIENTOS ═══════════════════════════ */
 
-/*
- * Juego 1 — ¿En qué talla va? Fácil · 10 FP · evaluativa. Castiga el CDT en
- * M1. La regla del juego: cada forma de dinero va en la talla más pequeña que
- * la contiene (M1 está dentro de M2, y M2 dentro de M3).
- */
+/* Juego 1 — ¿En qué talla va? Fácil · 10 FP · evaluativa. Castiga el CDT en M1. */
 export const EN_QUE_TALLA_VA = {
   id: "en-que-talla-va",
   nombre: "¿En qué talla va?",
   subtema: "Las tallas del dinero",
   porPartida: 6,
   pregunta: "¿En qué talla va?",
-  consigna: "Elija dónde va cada forma de dinero. Si la plata es de un banco y no del público, va en la reserva: está en la base, pero no en M1.",
+  consigna: "Elija la talla más pequeña donde entra cada forma de dinero: M1, M2 o M3. Si va en M1, también está en M2 y en M3. Si la plata es de un banco y no del público, va en la reserva: está en la base, pero no en M1.",
   categorias: [
     { id: "reserva", nombre: "Reserva de los bancos (solo en la base)" },
     { id: "m1", nombre: "M1" },
@@ -125,7 +122,7 @@ export const EN_QUE_TALLA_VA = {
     },
     {
       id: "ahorro-semestre", texto: "La cuenta de ahorros donde usted guarda la plata del semestre.", respuesta: "m2",
-      retro: { ok: "✅ El Banco de la República clasifica el ahorro como cuasidinero, junto con los CDT. Va en M2.", mal: "❌ Aunque usted la puede usar cuando quiera, el Banco de la República la clasifica como cuasidinero, junto con los CDT. Por eso va en M2." },
+      retro: { ok: "✅ El ahorro está un poco menos disponible que una cuenta corriente, a cambio de intereses. Por eso el Banco de la República lo pone en M2.", mal: "❌ Usted la puede usar cuando quiera, pero está un poco menos disponible que una cuenta corriente, a cambio de intereses. Por eso va en M2, no en M1." },
     },
     // [ESCRITO POR CLAUDE, NO POR LA FICHA]: los ítems de la reserva y del bono
     {
@@ -188,10 +185,6 @@ export const QUE_TOCO_EL_BANCO = {
     {
       id: "baja-tasa", texto: "El Banco de la República baja su tasa de interés.", respuesta: "credito",
       retro: { ok: "✅ Los préstamos salen más baratos, así que se pide más crédito.", mal: "❌ La tasa pega primero en lo que cuesta un préstamo, y con eso en cuánto crédito se pide." },
-    },
-    {
-      id: "deja-tasa", texto: "El Banco de la República deja su tasa en 12,0 %, la que rige desde julio de 2026.", respuesta: "credito",
-      retro: { ok: "✅ La tasa pega en lo que cuestan los préstamos, y con eso en cuánto crédito se pide.", mal: "❌ Una decisión sobre la tasa pega primero en el crédito, no en la base." },
     },
     {
       id: "banco-requisitos", texto: "Un banco decide, por su lado, pedir más requisitos para prestar.", respuesta: "no-banco",
