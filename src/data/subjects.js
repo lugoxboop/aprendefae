@@ -696,6 +696,8 @@ export const SUBJECTS = {
           { id: "t7-1-costo-o-gasto", nombre: "¿Costo o gasto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A6, después de AP2 por dependencias (regla 9): muestra el IVA y la retención de la devolución, que enseña AP2. Cero FP. */
           { id: "t7-1-a6-devoluciones-en-periodico", nombre: "Devoluciones en periódico", clasificacion: { tipo: APRENDER } },
+          /* H6, después de A6 por dependencias (regla 9): registra una devolución en el libro del comprador y en el del vendedor, con el IVA y la retención proporcionales que enseña A6 (la sostiene A6). Antes de A7. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0096. */
+          { id: "t7-1-devolucion-dos-libros", nombre: "La devolución en dos libros", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* A7, después de AP1 por dependencias (regla 9): el conteo físico frente a los registros; última de Aprender según el plan. Cero FP. */
           { id: "t7-1-a7-control-interno", nombre: "Control interno de los inventarios", clasificacion: { tipo: APRENDER } },
         ],

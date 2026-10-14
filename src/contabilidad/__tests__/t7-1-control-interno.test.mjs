@@ -206,7 +206,10 @@ test("★★★ fuera del catálogo de FP; id t7-; en T7-1 después de A6; sin n
   assert.deepEqual(a.clasificacion, { tipo: APRENDER });
   assert.equal(a.nombre, P.titulo);
   const ids = tema.actividades.map((x) => x.id);
-  assert.equal(ids.indexOf(A.A7_ID), ids.indexOf("t7-1-a6-devoluciones-en-periodico") + 1);
+  /* Entre A6 y A7 solo cabe Hacer (H6), no otra pieza de Aprender. */
+  const aprender = tema.actividades.filter((x) => x.clasificacion.tipo === APRENDER).map((x) => x.id);
+  assert.equal(aprender.indexOf(A.A7_ID), aprender.indexOf("t7-1-a6-devoluciones-en-periodico") + 1);
+  assert.ok(ids.indexOf(A.A7_ID) > ids.indexOf("t7-1-a6-devoluciones-en-periodico"));
   const piezas = PIEZAS_T7_1.map((x) => x.pieza.id);
   assert.equal(piezas.indexOf(A.A7_ID), piezas.indexOf("t7-1-a6-devoluciones-en-periodico") + 1);
   const dir = new URL("supabase/migrations/", RAIZ);

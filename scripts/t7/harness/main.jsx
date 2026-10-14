@@ -4,8 +4,8 @@
  * recorra en Chromium. No es una página del sitio: Vite la sirve solo cuando
  * se mide.
  *
- * Con #h5 monta la vista en el modo Hacer, con H5 abierto (medir-t7-1-h5.mjs).
- *
+ * Con #h6 monta la vista en el modo Hacer, con H6 abierto (medir-t7-1-h6.mjs).
+ * Con #h5 monta la vista en el modo Hacer, con H5 abierto (medir-t7-1-h5.mjs). *
  * Con #sonda monta en cambio dos figuras en el estado del acierto de la
  * Con #h4 monta la vista en el modo Hacer, con H4 abierto (medir-t7-1-h4.mjs).
  *
@@ -35,6 +35,17 @@ if (location.hash === "#sonda") {
       ))}
     </div>,
   );
+} else if (location.hash === "#h6") {
+  /*
+   * H6 abierto en el modo Hacer, como lo abre #/inventarios-periodico/hacer/….
+   * Sin sesión: la vista pide un AuthContext y aquí basta uno vacío.
+   */
+  raiz.render(
+    <AuthContext.Provider value={{ usuario: null, pedirCuenta: () => {} }}>
+      <ContabilidadT7_1View modo="hacer" nodoInicial="t7-1-devolucion-dos-libros" onBack={() => {}} />
+    </AuthContext.Provider>,
+  );
+} else {
 } else if (location.hash === "#h5") {
   /*
    * H5 abierto en el modo Hacer, como lo abre #/inventarios-periodico/hacer/….
@@ -63,8 +74,7 @@ if (location.hash === "#sonda") {
         modo="hacer"
         nodoInicial={location.hash === "#h2" ? "t7-1-arma-la-factura" : "t7-1-que-cuenta-se-mueve"}
         onBack={() => {}}
-      />    </AuthContext.Provider>,  );} else {
-  /* Con o sin #a6, la vista entera: la medición de A6 busca su pieza dentro de ella. La vista pide un AuthContext. */
+      />    </AuthContext.Provider>,  );} else {  /* Con o sin #a6, la vista entera: la medición de A6 busca su pieza dentro de ella. La vista pide un AuthContext. */
   raiz.render(
     <AuthContext.Provider value={{ usuario: null, pedirCuenta: () => {} }}>
       <ContabilidadT7_1View onBack={() => {}} />
