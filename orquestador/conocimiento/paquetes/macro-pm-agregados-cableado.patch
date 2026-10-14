@@ -1,0 +1,421 @@
+Cableado de «Las tallas del dinero» (Política Monetaria) — encargo de Erwin.
+
+Se aplica DESPUÉS de fusionar el PR de feat/macro-pm-agregados-tallas, desde
+la raíz del repositorio:
+
+  git apply --check orquestador/conocimiento/paquetes/macro-pm-agregados-cableado.patch
+  git apply orquestador/conocimiento/paquetes/macro-pm-agregados-cableado.patch
+  npm test && npx vite build
+
+Qué toca: subjects.js (3 líneas), PoliticaMonetariaView.jsx (la pieza y los
+dos juegos), la migración 0091, los registros compartidos (icono, previa,
+formato del resumen, etiquetas del docente, fuera del Repaso), las 12
+pruebas compartidas que fijan el tema como está hoy (las 11 que se conocían
+más el conteo de previas animadas, 46 → 48) y la línea «las tres piezas» de
+monetaria-aprender, más la foto del camino (solo cambian las 6 variantes de
+Política Monetaria; las otras 36 quedan igual).
+
+Medido por Misa sobre la punta de la rama, con main al día: 1810 pruebas,
+1809 pasan, 0 fallan (1 TODO que ya estaba en main), build verde.
+
+LA 0091 LA CORRE MATEO, A MANO, DESPUÉS DEL DESPLIEGUE. Nadie más.
+
+git apply ignora este texto: empieza a leer en la primera línea «diff --git».
+diff --git a/src/components/PoliticaMonetariaView.jsx b/src/components/PoliticaMonetariaView.jsx
+index 1739bb5..5dcae30 100644
+--- a/src/components/PoliticaMonetariaView.jsx
++++ b/src/components/PoliticaMonetariaView.jsx
+@@ -19,6 +19,9 @@ import {
+   DueloDeInstrumentos, DisenaRespuestaMonetaria,
+ } from "./mecanicas/maquinas/actividades.jsx";
+ import { PorCualArteriaEntra, LasDosEntradas } from "./mecanicas/maquinas/monetariaRepaso.jsx";
++import { EscenaTallas, ExploraTallas } from "./mecanicas/maquinas/tallasDelDinero.jsx";
++import { EnQueTallaVa, QueTocoElBanco } from "./mecanicas/maquinas/actividadesAgregados.jsx";
++import { APRENDER_TALLAS } from "../data/pmAgregados.js";
+ import { APRENDER_QUIEN_MANDA, APRENDER_INSTRUMENTOS, APRENDER_TRANSMISIONES } from "../data/politicaMonetaria.js";
+ import { useCompletadas, nodosDe } from "../hacer/completadas.js";
+ import { registrarActividadCompletada } from "../fp/registrarActividad.js";
+@@ -43,16 +46,19 @@ const PIEZAS = [
+   { pieza: APRENDER_QUIEN_MANDA, Escena: EscenaQuienManda, Exploracion: ExploraMargen },
+   { pieza: APRENDER_INSTRUMENTOS, Escena: EscenaInstrumentos, Exploracion: ExploraInstrumentos },
+   { pieza: APRENDER_TRANSMISIONES, Escena: EscenaTransmisiones, Exploracion: () => <ExploraVolante conReloj /> },
++  { pieza: APRENDER_TALLAS, Escena: EscenaTallas, Exploracion: ExploraTallas },
+ ];
+ 
+ /* El orden es el del camino: por bloque, y dentro de cada uno el de la ficha. */
+ const JUEGOS = [
+   { id: "memorama-banco-central", Mecanica: MemoramaBancoCentral },
+   { id: "quien-decide-esto", Mecanica: QuienDecideEsto },
++  { id: "en-que-talla-va", Mecanica: EnQueTallaVa },
+   { id: "volante-de-la-tasa", Mecanica: VolanteDeLaTasa },
+   { id: "caja-de-herramientas", Mecanica: CajaDeHerramientas },
+   { id: "a-quien-le-pega-la-tasa", Mecanica: AQuienLePegaLaTasa },
+   { id: "las-dos-entradas", Mecanica: LasDosEntradas },
++  { id: "que-toco-el-banco", Mecanica: QueTocoElBanco },
+   { id: "cadena-de-transmision", Mecanica: CadenaDeTransmision },
+   { id: "por-cual-arteria-entra", Mecanica: PorCualArteriaEntra },
+   { id: "explicaselo-a-un-deudor", Mecanica: ExplicaseloADeudor },
+diff --git a/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs b/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs
+index 7166f77..67dc3f0 100644
+--- a/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs
++++ b/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs
+@@ -116,10 +116,10 @@ test("la exploración de los cuatro instrumentos sigue las reglas de la pieza",
+   }
+ });
+ 
+-test("Aprender no paga: las tres piezas son APRENDER y no están en el catálogo del servidor", () => {
++test("Aprender no paga: las cuatro piezas son APRENDER y no están en el catálogo del servidor", () => {
+   const tema = SUBJECTS.macroeconomia.topics.find((t) => t.id === "politica-monetaria");
+   const ids = actividadesDeTipo(tema, APRENDER).map((a) => a.id);
+-  assert.deepEqual(ids, ["quien-manda-aqui", "los-cuatro-instrumentos", "las-tres-transmisiones"]);
++  assert.deepEqual(ids, ["quien-manda-aqui", "los-cuatro-instrumentos", "las-tres-transmisiones", "las-tallas-del-dinero"]);
+   const sql = readdirSync("supabase/migrations").map((f) => readFileSync(`supabase/migrations/${f}`, "utf8")).join("\n");
+   for (const id of ids) assert.ok(!sql.includes(`'${id}'`), `${id} no puede tener fila en actividad_catalogo`);
+ });
+@@ -335,3 +335,19 @@ test("las tallas: Aprender no paga", () => {
+   assert.equal(AG.EN_QUE_TALLA_VA.id, "en-que-talla-va");
+   assert.equal(AG.QUE_TOCO_EL_BANCO.id, "que-toco-el-banco");
+ });
++
++const { HACER } = await import("../../../data/subjects.js");
++
++test("las tallas, cableadas: los dos juegos tienen su fila en la 0091, sin correr y repetible", () => {
++  const m91 = readFileSync("supabase/migrations/0091_monetaria_agregados.sql", "utf8");
++  assert.match(m91, /\('en-que-talla-va',\s*'macroeconomia',\s*'politica-monetaria',\s*'evaluativa',\s*'facil',\s*10,\s*1\)/);
++  assert.match(m91, /\('que-toco-el-banco',\s*'macroeconomia',\s*'politica-monetaria',\s*'evaluativa',\s*'medio',\s*25,\s*1\)/);
++  assert.match(m91, /on conflict \(activity_id\) do update set/);
++  const sentencias = m91.split("\n").filter((l) => !l.trim().startsWith("--")).join("\n");
++  assert.doesNotMatch(sentencias, /\b(alter|delete|drop|truncate)\b/i);
++  /* Y la clasificación del cliente es la misma de la fila. */
++  const tema = SUBJECTS.macroeconomia.topics.find((t) => t.id === "politica-monetaria");
++  const clas = (id) => tema.actividades.find((a) => a.id === id)?.clasificacion;
++  assert.deepEqual(clas("en-que-talla-va"), { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 });
++  assert.deepEqual(clas("que-toco-el-banco"), { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
++});
+diff --git a/src/components/mecanicas/__tests__/monetaria-dos-actividades.test.mjs b/src/components/mecanicas/__tests__/monetaria-dos-actividades.test.mjs
+index a870e24..996df66 100644
+--- a/src/components/mecanicas/__tests__/monetaria-dos-actividades.test.mjs
++++ b/src/components/mecanicas/__tests__/monetaria-dos-actividades.test.mjs
+@@ -341,7 +341,7 @@ test("★★★ el sitio en el camino, el nivel y los FP: A Análisis 50, B Apli
+     assert.equal(ids[k - 1], antes, `${id}: antes`);
+     assert.equal(ids[k + 1], despues, `${id}: después`);
+   };
+-  entre("las-dos-entradas", "a-quien-le-pega-la-tasa", "cadena-de-transmision");
++  entre("las-dos-entradas", "a-quien-le-pega-la-tasa", "que-toco-el-banco"); /* ¿Qué tocó el Banco? (0091) cierra Aplicación */
+   entre("por-cual-arteria-entra", "cadena-de-transmision", "explicaselo-a-un-deudor");
+   const clas = (id) => tema.actividades.find((a) => a.id === id).clasificacion;
+   assert.deepEqual(clas("por-cual-arteria-entra"), { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 });
+@@ -349,7 +349,7 @@ test("★★★ el sitio en el camino, el nivel y los FP: A Análisis 50, B Apli
+   const sql = readFileSync(new URL("../../../../supabase/migrations/0052_monetaria_dos_actividades.sql", import.meta.url), "utf8");
+   assert.match(sql, /\('las-dos-entradas',\s+'macroeconomia', 'politica-monetaria', 'evaluativa', 'medio',\s+25, 1\)/);
+   assert.match(sql, /\('por-cual-arteria-entra', 'macroeconomia', 'politica-monetaria', 'evaluativa', 'dificil', 50, 1\)/);
+-  assert.equal(actividadesDeTipo(tema, HACER).reduce((s, a) => s + a.clasificacion.fpBase, 0), 640);
++  assert.equal(actividadesDeTipo(tema, HACER).reduce((s, a) => s + a.clasificacion.fpBase, 0), 675); /* 640 + los 35 de la 0091 */
+ });
+ 
+ test("★★ los registros: etiquetas del docente, formato del resumen, fuera del Repaso y en la lista de novedades", () => {
+@@ -370,7 +370,9 @@ test("★★★ insertar las dos no toca el progreso ni los FP de nadie: todo va
+   const { nodosDe } = await import("../../../hacer/completadas.js");
+   const tema = SUBJECTS.macroeconomia.topics.find((t) => t.id === "politica-monetaria");
+   const nuevas = new Set([ARTERIA.id, DOS_ENTRADAS.id]);
+-  const actuales = actividadesDeTipo(tema, HACER);
++  /* Las dos de la 0091 entraron después: esta prueba es de la 0052. */
++  const posteriores = new Set(["en-que-talla-va", "que-toco-el-banco"]);
++  const actuales = actividadesDeTipo(tema, HACER).filter((a) => !posteriores.has(a.id));
+   /* El camino de antes: las doce de siempre, en su orden. */
+   const antes = actuales.filter((a) => !nuevas.has(a.id));
+   assert.equal(antes.length, 12);
+diff --git a/src/components/shared/__tests__/camino-bloques.test.mjs b/src/components/shared/__tests__/camino-bloques.test.mjs
+index 77daf82..ccd1826 100644
+--- a/src/components/shared/__tests__/camino-bloques.test.mjs
++++ b/src/components/shared/__tests__/camino-bloques.test.mjs
+@@ -98,7 +98,7 @@ test("Cimientos se pinta en los tres temas; quitarle sus Fácil del catálogo lo
+     assert.deepEqual(bloquesPintados(m.cont), LOS_CUATRO, `${temaId}: los cuatro bloques`);
+     assert.equal(m.cont.querySelector('[data-bloque="cimientos"] h3').textContent, "Cimientos");
+     const faciles = tema.actividades.filter((a) => a.clasificacion?.tipo === HACER && a.clasificacion.dificultad === "facil");
+-    assert.equal(faciles.length, 2, `${temaId}: dos Fácil`);
++    assert.equal(faciles.length, temaId === "politica-monetaria" ? 3 : 2, `${temaId}: sus Fácil`); /* Monetaria: tres desde la 0091 */
+     for (const f of faciles) {
+       assert.ok(m.cont.querySelector(`g[data-nodo="${f.id}"][data-bloque-de="cimientos"]`), `${temaId}: ${f.id} en Cimientos`);
+     }
+@@ -207,8 +207,11 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
+    * Política Monetaria va 2-4-5-3 desde sus dos actividades nuevas: Aplicación
+    * acaba ahora en el lado izquierdo, así que el título de Análisis pasa a la
+    * DERECHA. Misma regla.
++   *
++   * Con las dos de la 0091 va 3-5-5-3: Cimientos acaba a la izquierda y
++   * Aplicación también, así que los cuatro títulos vuelven a la izquierda.
+    */
+-  const LADOS = { "politica-monetaria": [-1, -1, 1, 1] };
++  const LADOS = { "politica-monetaria": [-1, -1, -1, -1] };
+   for (const temaId of TEMAS) {
+     const nodos = nodosDelTema(temaId);
+     assert.deepEqual(disposicionPorBloques(bloquesDe(nodos), nodos.length).cabeceras.map((c) => c.lado), LADOS[temaId] ?? [-1, -1, -1, 1], temaId);
+@@ -217,12 +220,12 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
+ 
+ /* ─────────────────────────────── los iconos ─────────────────────────────── */
+ 
+-test("las 50 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
++test("las 52 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
+   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
+-  assert.equal(ids.length, 50);
++  assert.equal(ids.length, 52);
+   for (const id of ids) assert.ok(iconoDe(id), `${id} sin icono`);
+   assert.deepEqual(Object.keys(ICONOS_ACTIVIDAD).sort(), [...ids].sort(), "ni iconos de más ni de menos");
+-  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 50, "ningún icono repetido entre dos actividades");
++  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 52, "ningún icono repetido entre dos actividades");
+ 
+   for (const temaId of TEMAS) {
+     const m = montar(camino(nodosDelTema(temaId)));
+diff --git a/src/components/shared/__tests__/camino-sin-cambios.foto.json b/src/components/shared/__tests__/camino-sin-cambios.foto.json
+index 6d05a58..9f49e81 100644
+--- a/src/components/shared/__tests__/camino-sin-cambios.foto.json
++++ b/src/components/shared/__tests__/camino-sin-cambios.foto.json
+@@ -17,12 +17,12 @@
+   "macroeconomia/politica-fiscal · hechas: una de cada tres · porBloques: true": "d8c8640dd281b1c81732ce95632c78d5695e3f38fafeb00ac8ff259a570461ee",
+   "macroeconomia/politica-fiscal · hechas: todas · porBloques: false": "b1ff733a589999bfd6fd121416b2342779df88c34cc6d43bbd308ef97393848d",
+   "macroeconomia/politica-fiscal · hechas: todas · porBloques: true": "482cd1c8687b2f54dd93a1f6024c8aac6284a1a3a5e8ac9e78a4ce6a5c21cd4d",
+-  "macroeconomia/politica-monetaria · hechas: ninguna · porBloques: false": "aff438c9da5bc152c8360f168ef6a423eb1b083bfdc7a276339b2701ef215d70",
+-  "macroeconomia/politica-monetaria · hechas: ninguna · porBloques: true": "4cc19454063d7b7fa9de23373ebad43493ab9d53789731b8a4035144444203cb",
+-  "macroeconomia/politica-monetaria · hechas: una de cada tres · porBloques: false": "1bf7ef3cd287703ca4b67bf69f1eaa986b5558df5cfbf6882bbac0a0e00abe69",
+-  "macroeconomia/politica-monetaria · hechas: una de cada tres · porBloques: true": "d373b3f99d8a3ff0d4ede08560ac5e4abc4044cb7a6289a9db4219d35f93761f",
+-  "macroeconomia/politica-monetaria · hechas: todas · porBloques: false": "22a2ce4238ad3b50a3dd00e0faa2a88ea05a26c116cf126832c44f86ceb0797e",
+-  "macroeconomia/politica-monetaria · hechas: todas · porBloques: true": "4bf500edb7c0c18939630f4eb9d7f7c84f0097687dec871129369b683753a5b9",
++  "macroeconomia/politica-monetaria · hechas: ninguna · porBloques: false": "8e5b03902f1db1b1adcb24dfbfce16b67c674752973d8045d7a514d384ac40b0",
++  "macroeconomia/politica-monetaria · hechas: ninguna · porBloques: true": "a49d80faacbbdd185d2cdacfc84e8bdf5c4ca6dd3594942dddbc7bd3b10b3f8f",
++  "macroeconomia/politica-monetaria · hechas: una de cada tres · porBloques: false": "8f6c4f0de80486cd5f3cb578dbba9b2336bbb04ed09dad4a4c576a8f2b7ddd4d",
++  "macroeconomia/politica-monetaria · hechas: una de cada tres · porBloques: true": "19973e7e93575a2960500c07e22c7c8f4d3647dffe8e905945472cfc2e97d111",
++  "macroeconomia/politica-monetaria · hechas: todas · porBloques: false": "dae406b607bed244a7d714f183d153e4c8180a454d446b3541f68f97724fa65c",
++  "macroeconomia/politica-monetaria · hechas: todas · porBloques: true": "611f8fb9195c1ba5f3758cbb48d0fe4ac5e4d4ebd0a30516f00bcb0c91056f04",
+   "pensamiento-estrategico/pensamiento-sistemico · hechas: ninguna · porBloques: false": "13e28c39c9b6f8432c7f038122c6dd737dd4cf282e2528908ec0828b77fec971",
+   "pensamiento-estrategico/pensamiento-sistemico · hechas: ninguna · porBloques: true": "d105ed98122802a789f057e49cb27e02dce372636158fb85c7b2661f6d7c978c",
+   "pensamiento-estrategico/pensamiento-sistemico · hechas: una de cada tres · porBloques: false": "8142515d291a013c022a76218f308d63aad81c3c1c10688a68fda1a633b9e953",
+diff --git a/src/components/shared/__tests__/pantalla-resumen.test.mjs b/src/components/shared/__tests__/pantalla-resumen.test.mjs
+index cd2ee77..6a8c8b8 100644
+--- a/src/components/shared/__tests__/pantalla-resumen.test.mjs
++++ b/src/components/shared/__tests__/pantalla-resumen.test.mjs
+@@ -752,10 +752,10 @@ test("★★★ los puntos de la pantalla son siempre los del aviso de FP, y la
+   }
+ }));
+ 
+-test("★★★ ninguna de las 51 actividades de Macroeconomía queda sin formato", () => {
++test("★★★ ninguna de las 53 actividades de Macroeconomía queda sin formato", () => {
+   const ids = SUBJECTS.macroeconomia.topics.flatMap((t) => (t.actividades ?? t.activities ?? [])
+     .filter((a) => a.clasificacion?.tipo === HACER).map((a) => a.id));
+-  assert.equal(ids.length, 51, `hay ${ids.length} actividades de Hacer en Macro`);
++  assert.equal(ids.length, 53, `hay ${ids.length} actividades de Hacer en Macro`);
+   const validos = new Set(Object.values(R.FORMATO));
+   for (const id of ids) {
+     assert.ok(validos.has(R.FORMATO_MACRO[id]), `${id} no tiene formato`);
+diff --git a/src/components/shared/__tests__/previas.test.mjs b/src/components/shared/__tests__/previas.test.mjs
+index 46f744b..524fe51 100644
+--- a/src/components/shared/__tests__/previas.test.mjs
++++ b/src/components/shared/__tests__/previas.test.mjs
+@@ -79,6 +79,8 @@ const GESTOS = [
+   "memorama-banco-central", "quien-decide-esto", "volante-de-la-tasa", "caja-de-herramientas", "a-quien-le-pega-la-tasa",
+   "cadena-de-transmision", "explicaselo-a-un-deudor", "corriente-de-decisiones", "el-rezago", "duelo-de-instrumentos", "disena-respuesta-monetaria",
+   "las-dos-entradas", "por-cual-arteria-entra",
++  /* «Las tallas del dinero» (0091) */
++  "en-que-talla-va", "que-toco-el-banco",
+ ];
+ 
+ /* ─────────────────────────────── el registro ─────────────────────────────── */
+@@ -86,7 +88,7 @@ const GESTOS = [
+ /* Las cuatro de una sola decisión: mismo criterio, las cuatro quietas. */
+ const QUIETAS = ["agujero-fiscal", "biopsia-economica", "dilema-banquero-central", "expediente-gabinete"];
+ 
+-test("las 50 tienen su previsualización decidida: 39 gestos, el clip del tablero y cuatro quietas con su razón", () => {
++test("las 52 tienen su previsualización decidida: 41 gestos, el clip del tablero y cuatro quietas con su razón", () => {
+   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
+   assert.deepEqual(Object.keys(PREVIAS).sort(), [...ids].sort());
+   assert.deepEqual(Object.entries(PREVIAS).filter(([, p]) => p.tipo === "gesto").map(([id]) => id).sort(), [...GESTOS].sort());
+@@ -214,7 +216,7 @@ const sinEstilos = (el) => {
+ 
+ test("ninguna previsualización enseña texto, y el coral solo aparece donde es de error", async () => {
+   const animadas = Object.entries(PREVIAS).filter(([, p]) => p.tipo !== "estatica").map(([id]) => id);
+-  assert.equal(animadas.length, 46);
++  assert.equal(animadas.length, 48); /* 46 + las dos de la 0091 */
+   for (const id of animadas) {
+     const m = montar(React.createElement(PreviaActividad, { actividadId: id, respaldo: React.createElement("i", { "data-respaldo": true }) }));
+     await esperar(120);
+diff --git a/src/components/shared/iconosActividad.jsx b/src/components/shared/iconosActividad.jsx
+index a59c159..830c317 100644
+--- a/src/components/shared/iconosActividad.jsx
++++ b/src/components/shared/iconosActividad.jsx
+@@ -2,7 +2,7 @@ import {
+   Link, Gauge, Scale, Siren,
+   Activity, Thermometer, Droplet, Microscope, Cross,
+   Stamp, Sheet, FileStack, ToggleLeft, ArrowRightLeft,
+-  Folder, MessageSquarePlus, Split, EqualNot,
++  Folder, MessageSquarePlus, Split, EqualNot, Layers, Target,
+ } from "lucide-react";
+ 
+ /*
+@@ -422,6 +422,9 @@ export const ICONOS_ACTIVIDAD = {
+    */
+   "por-cual-arteria-entra": Split,
+   "las-dos-entradas": EqualNot,
++  /* «Las tallas del dinero» (0091), de lucide mientras Watari no dibuje los suyos: las capas de la escalera y el punto donde pega. */
++  "en-que-talla-va": Layers,
++  "que-toco-el-banco": Target,
+   "el-rezago": RelojCorrea,
+   "dilema-banquero-central": BalanzaVolante,
+   "duelo-de-instrumentos": EngranajesEnfrentados,
+diff --git a/src/components/shared/previas/PreviaActividad.jsx b/src/components/shared/previas/PreviaActividad.jsx
+index 05d81cc..93cad02 100644
+--- a/src/components/shared/previas/PreviaActividad.jsx
++++ b/src/components/shared/previas/PreviaActividad.jsx
+@@ -126,6 +126,9 @@ export const PREVIAS = {
+   /* Las dos nuevas reusan el gesto de su hermana (Xeno): misma mecánica, mismo gesto. */
+   "por-cual-arteria-entra": { tema: "bloques", tipo: "gesto" },
+   "las-dos-entradas": { tema: "bloques", tipo: "gesto" },
++  /* Las dos de «Las tallas del dinero» (0091): clasificación, como ¿Quién decide esto? */
++  "en-que-talla-va": { tema: "bloques", tipo: "gesto" },
++  "que-toco-el-banco": { tema: "bloques", tipo: "gesto" },
+   "el-rezago": { tema: "bloques", tipo: "gesto" },
+   "dilema-banquero-central": {
+     tipo: "estatica",
+diff --git a/src/components/shared/previas/previasBloques.jsx b/src/components/shared/previas/previasBloques.jsx
+index f230fae..125d068 100644
+--- a/src/components/shared/previas/previasBloques.jsx
++++ b/src/components/shared/previas/previasBloques.jsx
+@@ -526,6 +526,9 @@ const GESTOS = {
+   /* Las dos nuevas, con el gesto de su hermana tal cual (Xeno); solo cambia su id. */
+   "por-cual-arteria-entra": () => <CorrienteGesto id="por-cual-arteria-entra" />,
+   "las-dos-entradas": () => <VolanteGesto id="las-dos-entradas" />,
++  /* Las dos de «Las tallas del dinero»: el gesto de ¿Quién decide esto?, con sus cuatro casillas. */
++  "en-que-talla-va": () => <FichaADestinos id="en-que-talla-va" forma="ranura" n={4} destinos={[1, 2]} />,
++  "que-toco-el-banco": () => <FichaADestinos id="que-toco-el-banco" forma="ranura" n={4} destinos={[0, 3]} />,
+   "el-rezago": RezagoGesto,
+   "duelo-de-instrumentos": () => <Consejo id="duelo-de-instrumentos" figura="engranaje" />,
+   "disena-respuesta-monetaria": PanelGesto,
+diff --git a/src/data/subjects.js b/src/data/subjects.js
+index 482586a..b5b790f 100644
+--- a/src/data/subjects.js
++++ b/src/data/subjects.js
+@@ -439,14 +439,17 @@ export const SUBJECTS = {
+           { id: "quien-manda-aqui", nombre: "¿Quién Manda Aquí?", clasificacion: { tipo: APRENDER } },
+           { id: "los-cuatro-instrumentos", nombre: "Los Cuatro Instrumentos", clasificacion: { tipo: APRENDER } },
+           { id: "las-tres-transmisiones", nombre: "Las Tres Transmisiones", clasificacion: { tipo: APRENDER } },
++          { id: "las-tallas-del-dinero", nombre: "Las Tallas del Dinero", clasificacion: { tipo: APRENDER } },
+           /* Cimientos */
+           { id: "memorama-banco-central", nombre: "Memorama del Banco Central", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
+           { id: "quien-decide-esto", nombre: "¿Quién Decide Esto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
++          { id: "en-que-talla-va", nombre: "¿En Qué Talla Va?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+           /* Aplicación */
+           { id: "volante-de-la-tasa", nombre: "El Volante de la Tasa", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+           { id: "caja-de-herramientas", nombre: "La Caja de Herramientas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+           { id: "a-quien-le-pega-la-tasa", nombre: "¿A Quién Le Pega la Tasa?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+           { id: "las-dos-entradas", nombre: "Las Dos Entradas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
++          { id: "que-toco-el-banco", nombre: "¿Qué Tocó el Banco?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+           /* Análisis */
+           { id: "cadena-de-transmision", nombre: "La Cadena de Transmisión", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+           { id: "por-cual-arteria-entra", nombre: "¿Por Cuál Arteria Entra?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+diff --git a/src/docente/etiquetasItem.js b/src/docente/etiquetasItem.js
+index 395689a..4918244 100644
+--- a/src/docente/etiquetasItem.js
++++ b/src/docente/etiquetasItem.js
+@@ -31,6 +31,7 @@ import {
+   CADENAS_TRANSMISION, EXPLICA_DEUDOR, CORRIENTE_DECISIONES, EL_REZAGO, DILEMA_BANQUERO,
+   DUELO_INSTRUMENTOS, DISENA_RESPUESTA, CASILLAS_RESPUESTA,
+ } from "../data/politicaMonetaria.js";
++import { EN_QUE_TALLA_VA, QUE_TOCO_EL_BANCO } from "../data/pmAgregados.js";
+ import {
+   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
+   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
+@@ -416,6 +417,8 @@ Object.assign(REGLAS, {
+     return p ? `${p.termino} — ${p.definicion}` : null;
+   },
+   "quien-decide-esto": (id) => porId(QUIEN_DECIDE.items, "texto")[id] ?? null,
++  "en-que-talla-va": (id) => porId(EN_QUE_TALLA_VA.items, "texto")[id] ?? null,
++  "que-toco-el-banco": (id) => porId(QUE_TOCO_EL_BANCO.items, "texto")[id] ?? null,
+   "volante-de-la-tasa": (id) => porId(VOLANTE_DE_LA_TASA.escenarios, "texto")[id] ?? null,
+   "caja-de-herramientas": (id) => porId(CAJA_DE_HERRAMIENTAS.items, "texto")[id] ?? null,
+   "a-quien-le-pega-la-tasa": (id) => actorDe(A_QUIEN_LE_PEGA.rondas, id),
+diff --git a/src/hacer/pantallaResumen.js b/src/hacer/pantallaResumen.js
+index b4180b0..28e7cd3 100644
+--- a/src/hacer/pantallaResumen.js
++++ b/src/hacer/pantallaResumen.js
+@@ -176,6 +176,8 @@ export const FORMATO_MACRO = {
+   "caja-de-herramientas": X,
+   "a-quien-le-pega-la-tasa": X,
+   "las-dos-entradas": X,
++  "en-que-talla-va": X,
++  "que-toco-el-banco": X,
+   "cadena-de-transmision": P,
+   "explicaselo-a-un-deudor": P,
+   "corriente-de-decisiones": X,
+diff --git a/src/repaso/items.js b/src/repaso/items.js
+index 471ba3a..71fa900 100644
+--- a/src/repaso/items.js
++++ b/src/repaso/items.js
+@@ -521,6 +521,8 @@ export const ACTIVIDADES_FUERA_DEL_POOL = [
+    * tienen los estudiantes.
+    */
+   "por-cual-arteria-entra", "las-dos-entradas",
++  /* Las dos de «Las tallas del dinero» (0091), por la misma razón. */
++  "en-que-talla-va", "que-toco-el-banco",
+ ];
+ 
+ /** Los ítems que salen de las actividades que el estudiante ya completó. */
+diff --git a/supabase/migrations/0091_monetaria_agregados.sql b/supabase/migrations/0091_monetaria_agregados.sql
+new file mode 100644
+index 0000000..0a2c191
+--- /dev/null
++++ b/supabase/migrations/0091_monetaria_agregados.sql
+@@ -0,0 +1,55 @@
++-- ---------------------------------------------------------------------------
++-- 0091 — POLÍTICA MONETARIA: LOS DOS JUEGOS DE «LAS TALLAS DEL DINERO»
++--
++--   en-que-talla-va      ¿En qué talla va?      Cimientos   ·  10
++--   que-toco-el-banco    ¿Qué tocó el Banco?    Aplicación  ·  25
++--
++-- Encargo de Erwin; clasificación decidida por L. Las dos valen 35 FP. El tema
++-- pasa de 14 filas y 640 FP (la 0031 y la 0052) a 16 filas y 675 FP.
++--
++-- Del rango de la Célula C (0090-0109). La escribe Misa y NO la corre: la
++-- corre Mateo a mano.
++--
++-- ADITIVA Y REPETIBLE, con el patrón de la 0052. Es UN insert con `on conflict
++-- do update`. Correrla dos veces deja exactamente lo mismo. No toca ninguna
++-- fila de ningún estudiante ni ninguna de las catorce actividades del tema que
++-- ya estaban.
++--
++-- QUÉ NECESITA PARA CORRER: actividad_catalogo con su columna `etapas` —la
++-- 0011 y la 0014—.
++--
++-- EL ORDEN, COMO SIEMPRE: primero la migración, después el despliegue que
++-- ofrece los juegos. Un estudiante que termine un juego antes de que exista su
++-- fila recibiría 22023 en vez de sus FP.
++--
++-- CÓMO COMPROBAR QUE PASÓ: la consulta del final tiene que devolver 16 filas y
++-- 675 FP. Si la Célula B agrega juegos al mismo tema antes, la cifra sube en
++-- lo que ellos sumen.
++--
++-- CÓMO DESHACERLA, si hiciera falta y ANTES de que nadie juegue (una fila por
++-- línea y con `=`, como la 0070: catalogo.test lee también los comentarios, y
++-- un `delete ... in (...)` aquí contaría como borrado):
++--   delete from public.actividad_catalogo where activity_id = 'en-que-talla-va';
++--   delete from public.actividad_catalogo where activity_id = 'que-toco-el-banco';
++-- ---------------------------------------------------------------------------
++
++insert into public.actividad_catalogo
++  (activity_id, subject_id, topic_id, modalidad, dificultad, fp_base, etapas) values
++  ('en-que-talla-va',   'macroeconomia', 'politica-monetaria', 'evaluativa', 'facil', 10, 1),
++  ('que-toco-el-banco', 'macroeconomia', 'politica-monetaria', 'evaluativa', 'medio', 25, 1)
++on conflict (activity_id) do update set
++  subject_id = excluded.subject_id,
++  topic_id   = excluded.topic_id,
++  modalidad  = excluded.modalidad,
++  dificultad = excluded.dificultad,
++  fp_base    = excluded.fp_base,
++  etapas     = excluded.etapas;
++
++-- ---------------------------------------------------------------------------
++-- Resumen: dieciséis filas y 675 FP.
++-- ---------------------------------------------------------------------------
++select
++  count(*) as filas,
++  sum(fp_base) as fp_del_tema
++from public.actividad_catalogo
++where topic_id = 'politica-monetaria';
