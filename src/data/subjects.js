@@ -678,6 +678,8 @@ export const SUBJECTS = {
           { id: "t7-1-a1-la-cuenta-que-no-se-mueve", nombre: "La cuenta que no se mueve", clasificacion: { tipo: APRENDER } },
           /* AP2, después de AP1: arma la factura completa de la misma compra. Cero FP. */
           { id: "t7-1-a2-la-factura-completa", nombre: "La factura completa", clasificacion: { tipo: APRENDER } },
+          /* H1, después de AP2 por dependencias (regla 9): se publica con AP1 y AP2 o después (condición de Mello). Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0090. */
+          { id: "t7-1-que-cuenta-se-mueve", nombre: "¿Qué cuenta se mueve?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
           /* AP3, después de AP2 por dependencias (regla 9): usa el inventario final y el conteo físico de AP1; va antes de AP4, que la cita. Cero FP. */
           { id: "t7-1-a3-tres-formas", nombre: "Tres formas de ponerle precio a lo que quedó", clasificacion: { tipo: APRENDER } },
           /* AP4, después de AP3 por dependencias (regla 9): cita «Tres formas de ponerle precio a lo que quedó». Antes de A5: cierra con «Siguiente: Importados y fletes». Cero FP. */
