@@ -62,14 +62,21 @@ export const VENTANA_MS = 30 * 1000;
 export const MAX_RECARGAS = 2;
 
 /*
- * PENDIENTE DE GEN, los dos textos. El mensaje es la propuesta inicial; el
- * final lo aprueba Gen y se cambia aquí. Restricciones (Erwin y Levi): NO
- * puede afirmar que el problema es la conexión, ni que volver a entrar lo
- * arregla, ni que el progreso está guardado, ni con certeza que hay una
- * versión nueva. Puede decir que algo no cargó y que se toque «Recargar». Sin
- * culpar al estudiante. El texto de hoy incumple la primera: es provisional.
+ * LOS DOS TEXTOS, DE GEN (verificados por Erwin: INFLESZ 97,5, 14 palabras,
+ * 2 frases; ninguna expresión prohibida). Son los mismos en el guardia de
+ * index.html, y una prueba lo vigila.
+ *
+ * NO SE CAMBIAN POR ALGO QUE «SUENE PARECIDO» (Erwin):
+ *   «Prueba con el botón»   invita a reintentar; NO promete que el botón lo
+ *                           arregle. El aviso sale justo cuando la recarga ya
+ *                           no funcionó: prometer un arreglo ahí sería falso.
+ *   «el fallo es nuestro»   es verdad en los tres casos en que sale el aviso,
+ *                           sin decir cuál de los tres es.
+ * Si alguna vez hay que recortarla, ese matiz no se puede perder. Tampoco
+ * puede culpar al estudiante, ni afirmar que es la conexión, que volver a
+ * entrar lo arregla, que hay una versión nueva o que el progreso está guardado.
  */
-export const MENSAJE = "No pudimos cargar esta parte. Revisa tu conexión y vuelve a entrar.";
+export const MENSAJE = "Esta parte no cargó y el fallo es nuestro. Prueba con el botón Recargar.";
 export const BOTON = "Recargar";
 
 /** La misma dirección, con el parámetro de la recarga puesto (o renovado). El hash de la ruta no se toca. */

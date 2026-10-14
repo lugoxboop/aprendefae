@@ -271,6 +271,14 @@ test("las direcciones: el parámetro se pone y se quita sin tocar lo demás", ()
   assert.equal(direccionLimpia("https://aprendefae.com/#/a"), null);
 });
 
+test("el texto del aviso: invita a reintentar sin prometer, y no dice nada de lo prohibido (Gen; Erwin)", () => {
+  assert.ok(MENSAJE.includes(`Prueba con el botón ${BOTON}.`), "invita a reintentar con el botón");
+  assert.ok(MENSAJE.includes("el fallo es nuestro"));
+  for (const prohibida of [/conexi[oó]n/i, /volver a entrar|vuelve a entrar/i, /versi[oó]n/i, /cach[eé]/i, /m[oó]dulo/i, /progreso/i, /guardad/i, /culpa/i, /arregl/i]) {
+    assert.doesNotMatch(MENSAJE, prohibida);
+  }
+});
+
 test("main.jsx lo instala antes de montar React", () => {
   const main = readFileSync(new URL("../../main.jsx", import.meta.url), "utf8");
   const instala = main.indexOf("instalarRecargaTrasDespliegue(window)");
