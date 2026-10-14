@@ -360,8 +360,10 @@ test("★★★ fuera del catálogo de FP; id t7-; en T7-1 después de AP2 (y de
   const ids = tema.actividades.map((x) => x.id);
   /* Orden final de L: a1, a2, h1, a3, a4, a5, a6, a7. AP4 va después de AP2 (y de AP3, cuando exista). */
   assert.ok(ids.indexOf(A.AP4_ID) > ids.indexOf("t7-1-a2-la-factura-completa"));
-  /* Antes de A5: AP4 cierra con «Siguiente: «Importados y fletes»». */
-  assert.equal(ids.indexOf(A.AP4_ID) + 1, ids.indexOf("t7-1-a5-importados-y-fletes"));
+  /* Antes de A5: AP4 cierra con «Siguiente: «Importados y fletes»». Entre las dos solo cabe Hacer (H4), no otra pieza de Aprender. */
+  const aprender = tema.actividades.filter((x) => x.clasificacion.tipo === APRENDER).map((x) => x.id);
+  assert.equal(aprender.indexOf(A.AP4_ID) + 1, aprender.indexOf("t7-1-a5-importados-y-fletes"));
+  assert.ok(ids.indexOf(A.AP4_ID) < ids.indexOf("t7-1-a5-importados-y-fletes"));
   const piezas = PIEZAS_T7_1.map((x) => x.pieza.id);
   assert.equal(piezas.indexOf(A.AP4_ID) + 1, piezas.indexOf("t7-1-a5-importados-y-fletes"));
   const dir = new URL("supabase/migrations/", RAIZ);
