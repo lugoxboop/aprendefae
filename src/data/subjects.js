@@ -741,6 +741,20 @@ export const SUBJECTS = {
           { id: "t7-2-a6-devoluciones", nombre: "Devoluciones en permanente", clasificacion: { tipo: APRENDER } },
         ],
       },
+      /*
+       * T7-3, descuentos, inventario físico y NIC 2 (pp. 248-261), justo
+       * después de T7-2. El id del tema va sin prefijo de célula, como los de
+       * T7-1 y T7-2. El orden de sus piezas es el de la sección «Orden final
+       * de T7-3» del mapa.
+       */
+      {
+        id: "inventarios-descuentos-nic2",
+        title: "Inventarios III: descuentos, inventario físico y NIC 2",
+        actividades: [
+          /* A1: abre el tema, con su propio repaso (regla 3). Ejemplo H-1, pp. 248-249. Cero FP. */
+          { id: "t7-3-descuento-comercial", nombre: "El descuento comercial", clasificacion: { tipo: APRENDER } },
+        ],
+      },
     ],
   },
   "pensamiento-estrategico": {

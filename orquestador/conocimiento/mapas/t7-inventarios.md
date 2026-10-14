@@ -115,6 +115,30 @@ Es la única fuente del orden de las piezas de T7-2 «Inventarios II: el sistema
 
 Después de A5 no hay Hacer: H5 cubre A5 y A6, así que va después de A6. Ningún nombre se repite: el Hacer #4 se llama «Arma los dos asientos» (decisión de L, 14 de octubre de 2026), porque el plan v1 le daba el mismo nombre que A2 y en el índice se verían dos actividades iguales. Su id no cambia. FP de las cinco de Hacer: 10 + 25 + 50 + 25 + 25 = 135.
 
+## Orden final de T7-3 (decisión de L · 14 de octubre de 2026)
+
+Es la única fuente del orden de las piezas de T7-3 «Inventarios III: descuentos, inventario físico y NIC 2» en subjects.js, en ContabilidadT7_3View.jsx y en las pruebas. Las mismas reglas que T7-1 y T7-2: regla 9 (cada pieza va después de la que enseña lo que usa) y cada Hacer justo después de su pieza de Aprender. Los ids son los del plan v1 de Near; el orden, el de su plan reordenado por la regla 9, con el PASA de Mello. Regla 3: T7-3 se sostiene solo; A1 trae su propio repaso y ninguna pieza muestra una cifra de X1-X4.
+
+| # | id | Nombre | Tipo | Depende de |
+| --- | --- | --- | --- | --- |
+| 1 | t7-3-descuento-comercial | El descuento comercial | Aprender | Abre el tema, con el repaso de la regla 3. Ejemplo H-1, pp. 248-249 |
+| 2 | t7-3-descuento-en-factura | Descuento en la factura | Hacer | A1 |
+| 3 | t7-3-descuentos-en-cadena | Descuentos en cadena | Aprender | A1. Ejemplo H-2, pp. 249-250 |
+| 4 | t7-3-cadena-de-descuentos | La cadena de descuentos | Hacer | A2 |
+| 5 | t7-3-descuento-condicionado | El descuento condicionado | Aprender | A1. Ejemplo H-3, libro de quien vende, pp. 251-253 |
+| 6 | t7-3-descuento-en-dos-libros | El descuento en los dos libros | Aprender | A3. Ejemplo H-3, libro de quien compra y cierre, pp. 253-254 |
+| 7 | t7-3-comercial-o-condicionado | ¿Comercial o condicionado? | Hacer | A1, A3 y A4 |
+| 8 | t7-3-pago-a-tiempo | Pagó a tiempo | Hacer | A3 y A4 |
+| 9 | t7-3-sobrantes-y-faltantes | Sobrantes y faltantes | Aprender | Ejemplos I-1 e I-2, pp. 254-255, y la lista de pp. 207-208 (regla 5b) |
+| 10 | t7-3-provision-inventarios | La provisión para inventarios | Aprender | A5. Ejemplo I-3, p. 256 |
+| 11 | t7-3-ajuste-por-conteo | Ajuste por conteo | Hacer | A5 y A6 |
+| 12 | t7-3-nic2-costo | La NIC 2 del libro: el costo | Aprender | A1 (enlace con los descuentos). Pp. 256-258 |
+| 13 | t7-3-que-entra-al-costo | ¿Entra al costo? | Hacer | A7 |
+| 14 | t7-3-costo-o-vnr | ¿Costo o valor neto realizable? | Hacer | A7. Construcción marcada |
+| 15 | t7-3-nic2-formulas | La NIC 2 del libro: fórmulas y revelación | Aprender | A7. Pp. 259-261 |
+
+Después de A4 van dos Hacer (H3 y H4) y después de A7 otros dos (H6 y H7); A8 va al final porque ningún Hacer la necesita. Las piezas de Aprender no dan FP; las siete de Hacer suman 25 + 25 + 10 + 50 + 25 + 10 + 25 = 170, con las migraciones 0103 a 0109, en ese orden. La frase fija de la NIC 2 va siempre a la vista en A7, A8, H6 y H7.
+
 ## Bloque A · Cuenta de inventarios y sistema periódico (pp. 207-215)
 
 **\[1\] Sección y subsecciones (títulos exactos):**
@@ -963,3 +987,5 @@ Versión 3 del mapa en el repositorio: se agregó, después de «Control», la s
 **Orden final de T7-1 (L, 14 de octubre de 2026):** se agregó, justo antes de «## Bloque A», la sección «## Orden final de T7-1 (decisión de L · 14 de octubre de 2026)», tal cual la escribió L. Es la única fuente del orden de las piezas en subjects.js, en ContabilidadT7_1View.jsx y en las pruebas: 1 AP1 · 2 AP2 · 3 H1 · 4 Arma la factura · 5 AP3 · 6 ¿Cuánto vale lo que sobró? · 7 AP4 · 8 Cierra el mes · 9 A5 · 10 ¿Costo o gasto? · 11 A6 · 12 La devolución en dos libros · 13 A7 · 14 ¿Qué control falta?. No cambia ninguna cifra ni página.
 
 **Orden final de T7-2 (L, 14 de octubre de 2026):** se agregó, justo antes de «## Bloque A», la sección «## Orden final de T7-2», con los ids y el orden del plan v1 de Near (con la corrección de Mello): 1 A1 · 2 ¿Debe o haber? · 3 A2 · 4 Arma los dos asientos (Hacer; el plan v1 lo llamaba como A2 y L lo renombró) · 5 A3 · 6 Llena el kárdex · 7 A4 · 8 ¿Periódico o permanente? · 9 A5 · 10 A6 · 11 Flete y devolución. No cambia ninguna cifra ni página.
+
+**Orden final de T7-3 (L, 14 de octubre de 2026):** se agregó, justo antes de «## Bloque A», la sección «## Orden final de T7-3», con los ids del plan v1 de Near y el orden de su plan reordenado por la regla 9: 1 A1 · 2 Descuento en la factura · 3 A2 · 4 La cadena de descuentos · 5 A3 · 6 A4 · 7 ¿Comercial o condicionado? · 8 Pagó a tiempo · 9 A5 · 10 A6 · 11 Ajuste por conteo · 12 A7 · 13 ¿Entra al costo? · 14 ¿Costo o valor neto realizable? · 15 A8. No cambia ninguna cifra ni página.
