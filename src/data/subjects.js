@@ -735,10 +735,14 @@ export const SUBJECTS = {
           { id: "t7-2-llena-el-kardex", nombre: "Llena el kárdex", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* A4, después de A3 (regla 9): F-1 del libro en el permanente, con la decisión de Mello casilla por casilla. H3 «Llena el kárdex» entra entre A3 y A4. Cero FP. */
           { id: "t7-2-a4-san-calixto", nombre: "San Calixto en permanente", clasificacion: { tipo: APRENDER } },
+          /* H4, justo después de A4 (orden final de T7-2): las dos versiones de un mismo hecho, sin cifras. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0101. */
+          { id: "t7-2-periodico-o-permanente", nombre: "¿Periódico o permanente?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A5, después de A4 por el orden del mapa (regla 9: usa la venta en dos asientos de A2). H4 «¿Periódico o permanente?» entra entre A4 y A5. Cero FP. */
           { id: "t7-2-a5-fletes", nombre: "Fletes en permanente", clasificacion: { tipo: APRENDER } },
           /* A6, justo después de A5 (orden final de T7-2): usa la venta en dos asientos de A2. Después va H5 «Flete y devolución», que cubre A5 y A6. Cero FP. */
           { id: "t7-2-a6-devoluciones", nombre: "Devoluciones en permanente", clasificacion: { tipo: APRENDER } },
+          /* H5, justo después de A6 (orden final de T7-2): cubre A5 y A6, con los cuatro hechos de Mangle. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0102. */
+          { id: "t7-2-flete-y-devolucion", nombre: "Flete y devolución", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
         ],
       },
       /*

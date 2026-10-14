@@ -21,6 +21,10 @@ import ArmaLosDosAsientos from "./mecanicas/libros/t7/ArmaLosDosAsientos.jsx";
 import { H2 } from "../data/contabilidadT7_2_h2.js";
 import LlenaElKardex from "./mecanicas/libros/t7/LlenaElKardex.jsx";
 import { H3 } from "../data/contabilidadT7_2_h3.js";
+import PeriodicoOPermanente from "./mecanicas/libros/t7/PeriodicoOPermanente.jsx";
+import { H4 } from "../data/contabilidadT7_2_h4.js";
+import FleteYDevolucion from "./mecanicas/libros/t7/FleteYDevolucion.jsx";
+import { H5 } from "../data/contabilidadT7_2_h5.js";
 import LaCuentaQueSiSeMueve from "./mecanicas/libros/t7/LaCuentaQueSiSeMueve.jsx";
 import { PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE } from "../data/contabilidadT7_2.js";
 import LaVentaEnDosAsientos from "./mecanicas/libros/t7/LaVentaEnDosAsientos.jsx";
@@ -62,6 +66,8 @@ export const JUEGOS_T7_2 = [
   { id: H1.id, Mecanica: DebeOHaber, titulo: H1.nombre },
   { id: H2.id, Mecanica: ArmaLosDosAsientos, titulo: H2.nombre },
   { id: H3.id, Mecanica: LlenaElKardex, titulo: H3.nombre },
+  { id: H4.id, Mecanica: PeriodicoOPermanente, titulo: H4.nombre },
+  { id: H5.id, Mecanica: FleteYDevolucion, titulo: H5.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
