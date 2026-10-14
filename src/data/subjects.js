@@ -650,6 +650,8 @@ export const SUBJECTS = {
           { id: "t7-1-a1-la-cuenta-que-no-se-mueve", nombre: "La cuenta que no se mueve", clasificacion: { tipo: APRENDER } },
           /* A6, la primera que llega después de AP1 (orden de construcción de Mello). Cero FP. */
           { id: "t7-1-a6-devoluciones-en-periodico", nombre: "Devoluciones en periódico", clasificacion: { tipo: APRENDER } },
+          /* H1, la primera de Hacer: Fácil · 10 FP, exploratoria (Near, PASA de Mello). Su fila del servidor es la migración 0090. */
+          { id: "t7-1-que-cuenta-se-mueve", nombre: "¿Qué cuenta se mueve?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
         ],
       },
     ],
