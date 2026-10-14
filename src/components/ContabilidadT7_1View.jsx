@@ -15,9 +15,10 @@ import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.j
 import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
 import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
+import QueControlFalta from "./mecanicas/libros/t7/QueControlFalta.jsx";
+import { H7 } from "../data/contabilidadT7_1_h7.js";
 import DevolucionDosLibros from "./mecanicas/libros/t7/DevolucionDosLibros.jsx";
-import { H6 } from "../data/contabilidadT7_1_h6.js";
-import LaCuentaQueNoSeMueve from "./mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx";
+import { H6 } from "../data/contabilidadT7_1_h6.js";import LaCuentaQueNoSeMueve from "./mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx";
 import { PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE } from "../data/contabilidadT7_1.js";
 import CostoOGasto from "./mecanicas/libros/t7/CostoOGasto.jsx";
 import { H5 } from "../data/contabilidadT7_1_h5.js";
@@ -69,6 +70,11 @@ export const PIEZAS_T7_1 = [
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS_T7_1 = [
+  { id: H7.id, Mecanica: QueControlFalta, titulo: H7.nombre },
+];
+
+/* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
+const rotuloDeBloque = (actividadId) => {
   { id: H6.id, Mecanica: DevolucionDosLibros, titulo: H6.nombre },
 ];
 
@@ -79,8 +85,7 @@ export const JUEGOS_T7_1 = [
 ];
   { id: H3.id, Mecanica: CuantoValeLoQueSobro, titulo: H3.nombre },
   { id: H1.id, Mecanica: QueCuentaSeMueve, titulo: H1.nombre },
-  { id: H2.id, Mecanica: ArmaLaFactura, titulo: H2.nombre },];/* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */const rotuloDeBloque = (actividadId) => {
-  const b = bloqueDeDificultad(clasificacionDe(MATERIA, TEMA_T7_1, actividadId)?.dificultad);
+  { id: H2.id, Mecanica: ArmaLaFactura, titulo: H2.nombre },];/* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */const rotuloDeBloque = (actividadId) => {  const b = bloqueDeDificultad(clasificacionDe(MATERIA, TEMA_T7_1, actividadId)?.dificultad);
   return b ? b.nombre.toUpperCase() : null;
 };
 

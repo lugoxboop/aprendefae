@@ -56,8 +56,8 @@ import { hechoDeItem as hechoDeAct6T3 } from "../contabilidad/queLeToca.js";
 import { fichaDeItemT5Act1 } from "../contabilidad/t5Act1.js";
 import { fichaDeItemT6Act1 } from "../contabilidad/t6Act1.js";
 import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
-import { unidadDeH6 } from "../contabilidad/t7H6.js";
-import {
+import { unidadDeH7 } from "../contabilidad/t7H7.js";
+import { unidadDeH6 } from "../contabilidad/t7H6.js";import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 import { unidadDeH5 } from "../contabilidad/t7H5.js";
 import { unidadDeH4 } from "../contabilidad/t7H4.js";import {
@@ -702,6 +702,12 @@ Object.assign(REGLAS, {
  * lo enseña cambiado sin tocar nada aquí.
  */
 Object.assign(REGLAS, {
+  /* T7-1 · H7. Cada caso, por su texto: el riesgo que se ve en la bodega. */
+  "t7-1-que-control-falta": (id) => unidadDeH7(id),
+});
+
+/*
+ * El Repaso Diario guarda cada ítem con su clave entera —`<actividad>:<item_id>`—,
   /* T7-1 · H6. Un cálculo o una cuenta, por su pregunta; una línea, por su libro, su cuenta y su valor. */
   "t7-1-devolucion-dos-libros": (id) => unidadDeH6(id),
 });
@@ -718,8 +724,7 @@ Object.assign(REGLAS, {
   /* T7-1 · H1. El ítem es el hecho, y se lee por su texto. */
   "t7-1-que-cuenta-se-mueve": (id) => hechoDeItemH1(id),
   /* T7-1 · H2. Un cálculo se lee por su pregunta; una línea del asiento, por su cuenta y su valor. */
-  "t7-1-arma-la-factura": (id) => unidadDeH2(id),});/* * El Repaso Diario guarda cada ítem con su clave entera —`<actividad>:<item_id>`—,
- * así que su etiqueta es la de la actividad de origen: se parte por el primer
+  "t7-1-arma-la-factura": (id) => unidadDeH2(id),});/* * El Repaso Diario guarda cada ítem con su clave entera —`<actividad>:<item_id>`—, * así que su etiqueta es la de la actividad de origen: se parte por el primer
  * «:» y se le pregunta a esa regla. Sin texto propio.
  */
 REGLAS["repaso-diario"] = (id) => {

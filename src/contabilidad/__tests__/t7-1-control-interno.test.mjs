@@ -64,7 +64,7 @@ const boton = (caja, n) => caja.querySelector(`[data-boton="${n}"]`);
 function textosVisibles() {
   const t = [P.titulo];
   for (const p of P.pantallas) {
-    for (const k of ["objetivo", "pregunta", "boton", "pie"]) if (p[k]) t.push(p[k]);
+    for (const k of ["objetivo", "pregunta", "boton", "pie", "siguiente"]) if (p[k]) t.push(p[k]);
     t.push(...(p.parrafos ?? []), ...(p.lista ?? []), ...(p.despues ?? []));
     if (p.error) t.push(p.error.pie);
     for (const o of p.opciones ?? []) { t.push(o.texto); if (o.devolucion) t.push(o.devolucion); }
@@ -99,14 +99,16 @@ test("★★★ cada texto de los datos está, letra por letra, en la v1", () =>
   assert.deepEqual(faltan.filter((t) => !Object.values(A.BOTON).includes(t)), [], "estos textos no están en la v1");
 });
 
-test("★★★ cada texto visible de la v1 está en los datos, salvo la línea «Siguiente» que quita la v2", () => {
+test("★★★ cada texto visible de la v1 está en los datos; la línea «Siguiente» volvió con H7, como dice la v2", () => {
   const datos = new Set([...textosVisibles(), ...Object.values(A.BOTON)]);
   const citas = citasVisibles(CONTENIDO);
   assert.ok(citas.length >= 30, `se leyeron solo ${citas.length} textos`);
-  assert.deepEqual(citas.filter((c) => !datos.has(c)), [SIGUIENTE_V1]);
+  assert.deepEqual(citas.filter((c) => !datos.has(c)), []);
   assert.ok(V2.includes("**Se quita la línea de P4 «Siguiente: «¿Qué control falta?»».**"));
-  assert.equal(pantalla("resumen").siguiente, undefined);
-  assert.ok(!JSON.stringify(P).includes("¿Qué control falta?"));
+  /* La v2 la quitó hasta que H7 estuviera publicada: vuelve solo si H7 está en el catálogo, y es la de la v1. */
+  const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_1);
+  assert.ok(tema.actividades.some((x) => x.id === "t7-1-que-control-falta"), "la línea volvió sin H7 publicada");
+  assert.equal(pantalla("resumen").siguiente, SIGUIENTE_V1);
 });
 
 test("★★ la lista de P3 es la del libro, en su orden, y va numerada", async () => {
@@ -141,7 +143,7 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos y su
     for (const p of P.pantallas) {
       assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, p.id);
       if (p.tipo !== "eleccion") {
-        assert.deepEqual(enPantalla(m.caja).textos, [p.objetivo, ...(p.parrafos ?? []), p.boton, p.pie].filter(Boolean), p.id);
+        assert.deepEqual(enPantalla(m.caja).textos, [p.objetivo, ...(p.parrafos ?? []), p.siguiente, p.boton, p.pie].filter(Boolean), p.id);
         vistos.push(p.id);
         if (p.boton) await tocar(m.caja.querySelector("[data-boton]"));
         continue;
