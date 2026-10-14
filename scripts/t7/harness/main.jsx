@@ -4,7 +4,8 @@
  * recorra en Chromium. No es una página del sitio: Vite la sirve solo cuando
  * se mide.
  *
- * Con #h1 monta la vista en el modo Hacer, con H1 abierto (medir-t7-1-h1.mjs).
+ * Con #h1 monta la vista en el modo Hacer, con H1 abierto (medir-t7-1-h1.mjs),
+ * y con #h2 lo mismo con H2 (medir-t7-1-h2.mjs).
  *
  * Con #sonda monta en cambio dos figuras en el estado del acierto de la
  * pantalla 4, de anchos elegidos para que la línea de la compra mida 119 y
@@ -31,14 +32,18 @@ if (location.hash === "#sonda") {
       ))}
     </div>,
   );
-} else if (location.hash === "#h1") {
+} else if (location.hash === "#h1" || location.hash === "#h2") {
   /*
-   * H1 abierto en el modo Hacer, como lo abre #/inventarios-periodico/hacer/….
+   * H1 o H2 abierto en el modo Hacer, como lo abre #/inventarios-periodico/hacer/….
    * Sin sesión: la vista pide un AuthContext y aquí basta uno vacío.
    */
   raiz.render(
     <AuthContext.Provider value={{ usuario: null, pedirCuenta: () => {} }}>
-      <ContabilidadT7_1View modo="hacer" nodoInicial="t7-1-que-cuenta-se-mueve" onBack={() => {}} />
+      <ContabilidadT7_1View
+        modo="hacer"
+        nodoInicial={location.hash === "#h2" ? "t7-1-arma-la-factura" : "t7-1-que-cuenta-se-mueve"}
+        onBack={() => {}}
+      />
     </AuthContext.Provider>,
   );
 } else {
