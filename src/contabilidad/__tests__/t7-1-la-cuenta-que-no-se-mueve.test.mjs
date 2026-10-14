@@ -563,7 +563,7 @@ test("★★★ en el colocando de la 5 el conteo pendiente no queda bajo Invent
   }
 });
 
-test("★★ la factura lleva el rótulo «La compra», marcado como pendiente de revisión, solo en el colocando y los errores de la 4", async () => {
+test("★★ la factura lleva el rótulo «La compra», ya revisado por Near, solo en el colocando y los errores de la 4", async () => {
   for (const clave of Object.keys(T7.FIGURA)) {
     const m = await montar(h(FiguraDosColumnas, { estado: clave }));
     try {
@@ -572,15 +572,17 @@ test("★★ la factura lleva el rótulo «La compra», marcado como pendiente d
       assert.equal(rot !== null, conFactura, clave);
       if (rot) {
         assert.equal(rot.textContent, "La compra");
-        /* Texto de interfaz que Near todavía no confirma: se ve en el código y en el PR. */
-        assert.equal(rot.dataset.revision, "pendiente");
+        /* Near lo confirmó: ya no lleva la marca de pendiente. */
+        assert.equal(rot.dataset.revision, undefined);
       }
     } finally {
       m.desmontar();
     }
   }
-  assert.deepEqual(T7.FIGURA_PENDIENTES_DE_REVISION, ["rotuloFactura"]);
-  assert.match(readFileSync(new URL("src/data/contabilidadT7_1.js", RAIZ), "utf8"), /ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN/);
+  assert.deepEqual(T7.FIGURA_PENDIENTES_DE_REVISION, []);
+  const fuente = readFileSync(new URL("src/data/contabilidadT7_1.js", RAIZ), "utf8");
+  assert.match(fuente, /REVISADO POR NEAR/);
+  assert.doesNotMatch(fuente, /PENDIENTE DE REVISIÓN/);
 });
 
 test("★ v3.1: el conteo pendiente va centrado y los encabezados se alinean por abajo", () => {

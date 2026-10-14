@@ -202,12 +202,16 @@ test("★★ los hechos se barajan en cada intento; las opciones, nunca", () => 
 
 /* ═══════════ 3 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
 
-test("★★★ en T7-1: exploratoria, fácil, 10 FP; las piezas de Aprender siguen sin FP", () => {
+test("★★★ en T7-1, justo después de AP2: exploratoria, fácil, 10 FP; las piezas de Aprender siguen sin FP", () => {
   assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), [D.H1_ID]);
   const c = clasificacionDe("contabilidad", TEMA_T7_1, D.H1_ID);
   assert.deepEqual(c, { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 });
   assert.equal(actividadesDeTipo(TEMA, HACER)[0].nombre, D.H1.nombre);
   for (const a of TEMA.actividades.filter((x) => x.clasificacion.tipo !== HACER)) assert.deepEqual(a.clasificacion, { tipo: APRENDER }, a.id);
+  /* Orden de L (regla 9): H1 justo después de AP2; se publica con AP1 y AP2 o después. */
+  const ids = TEMA.actividades.map((x) => x.id);
+  assert.equal(ids.indexOf(D.H1_ID), ids.indexOf("t7-1-a2-la-factura-completa") + 1);
+  assert.ok(ids.indexOf("t7-1-a1-la-cuenta-que-no-se-mueve") < ids.indexOf("t7-1-a2-la-factura-completa"));
 });
 
 test("★★★ la vista abre desde el camino exactamente lo que el catálogo ofrece, y registra con el motor compartido", () => {

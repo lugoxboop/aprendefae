@@ -634,6 +634,22 @@ export const SUBJECTS = {
         ],
       },
       /*
+       * EL TEMA 6 (Célula B), por ahora con su pieza 1 de Aprender.
+       *
+       * CATÁLOGO: DECIDE ERWIN. El id y el título son una PROPUESTA de la
+       * célula: sin prefijo, como el Tema 5 (es la dirección que ve el
+       * estudiante), y el título es el de §5.4 en la p. 195, «Cuentas por
+       * cobrar». Va después del Tema 5 y antes del T7, por el orden del
+       * libro. Sin ícono propio.
+       */
+      {
+        id: "cuentas-por-cobrar",
+        title: "Cuentas por cobrar",
+        actividades: [
+          { id: "b5-t6-a1-lo-que-otros-le-deben", nombre: "Lo que otros le deben a la empresa", clasificacion: { tipo: APRENDER } },
+        ],
+      },
+      /*
        * ═══════════ T7 · CÉLULA C ═══════════
        *
        * T7-1, el inventario en el sistema periódico (pp. 207-232), después del
@@ -648,10 +664,12 @@ export const SUBJECTS = {
         title: "Inventarios I: el sistema periódico",
         actividades: [
           { id: "t7-1-a1-la-cuenta-que-no-se-mueve", nombre: "La cuenta que no se mueve", clasificacion: { tipo: APRENDER } },
-          /* A6, la primera que llega después de AP1 (orden de construcción de Mello). Cero FP. */
-          { id: "t7-1-a6-devoluciones-en-periodico", nombre: "Devoluciones en periódico", clasificacion: { tipo: APRENDER } },
-          /* H1, la primera de Hacer: Fácil · 10 FP, exploratoria (Near, PASA de Mello). Su fila del servidor es la migración 0090. */
+          /* AP2, después de AP1: arma la factura completa de la misma compra. Cero FP. */
+          { id: "t7-1-a2-la-factura-completa", nombre: "La factura completa", clasificacion: { tipo: APRENDER } },
+          /* H1, después de AP2 por dependencias (regla 9): se publica con AP1 y AP2 o después (condición de Mello). Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0090. */
           { id: "t7-1-que-cuenta-se-mueve", nombre: "¿Qué cuenta se mueve?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
+          /* A6, después de AP2 por dependencias (regla 9): muestra el IVA y la retención de la devolución, que enseña AP2. Cero FP. */
+          { id: "t7-1-a6-devoluciones-en-periodico", nombre: "Devoluciones en periódico", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],
