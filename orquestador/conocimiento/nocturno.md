@@ -155,6 +155,42 @@ dos tareas más adelante.
 
 ---
 
+## Cuando CI no corre
+
+Un CI en rojo dice una de dos cosas, y confundirlas cuesta la noche entera:
+que el código falló una prueba, o que **la prueba nunca se ejecutó**. Lo
+segundo no es un defecto que arreglar: es una obra fuera del edificio.
+
+**Cómo se distinguen, sin adivinar.** El rojo que evaluó algo tiene pasos, un
+runner y una duración que se parece a la de los días anteriores. El rojo que no
+evaluó nada se ve así:
+
+- el trabajo dura **segundos**, no minutos;
+- `steps` viene **vacío**: ni «Traer el código» llegó a correr;
+- `runner_name` viene vacío y `runner_id` en cero: nadie recogió el trabajo;
+- y, la señal que lo cierra, **falla igual en todas las ramas y en los dos
+  flujos a la vez**, incluidos commits que ya habían salido en verde.
+
+Eso último es lo que lo prueba. Un defecto vive en un commit; una caída de
+cuenta cae sobre todos. Antes de tocar una línea de código, se mira si el
+commit de al lado —uno que ya pasó— también está rojo ahora.
+
+**Qué NO se hace.** No se investiga, no se «arregla» código que no está roto,
+no se debilita una prueba para ver si así pasa, y sobre todo no se espera el
+verde. Esperar el verde cuando no hay quién lo dé es pararse hasta la mañana.
+
+**Cuál es la barra mientras tanto.** La local, completa y sin recortar: la suite
+entera más el build. Lo que pasa eso, está entregado. El coordinador la repite
+antes de fusionar, y las fusiones y los despliegues se acumulan en cola hasta
+que CI vuelva. Una cola no es un bloqueo: es trabajo esperando un trámite.
+
+**Lo que sí se escala, una vez.** Que CI no corre, con la evidencia de arriba en
+tres líneas, porque restablecerlo suele ser cosa de la cuenta —límites, saldo,
+permisos— y eso no lo toca nadie más que Mateo. Se escribe y se sigue
+trabajando; no se pregunta dos veces ni se espera respuesta para continuar.
+
+---
+
 ## Cuando algo sale mal de verdad
 
 - **El navegador se cae o se pierde la conexión**: se reintenta, y el turno
