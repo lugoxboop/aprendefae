@@ -14,7 +14,8 @@ import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
  * acierto ni de error y sin teal ni ámbar: el resultado lo dice la palabra.
  * Cada caja y el bloque final llevan su pie de fuente; un pie en null no se
  * pinta. `estiloTitulo` deja que cada pieza escriba el nombre de la caja con
- * su letra (los hechos en Inter, los métodos en Sora 14/600).
+ * su letra (los hechos en Inter, los métodos en Sora 14/600). Con `cifras`
+ * (T5 · A2), la caja cerrada muestra bajo el nombre una línea por cifra.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -44,14 +45,28 @@ function Caja({ caja, abierto, onAbrir, estiloTitulo }) {
         aria-controls={id}
         onClick={() => { if (!abierto) onAbrir(); }}
         style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px",
+          display: caja.cifras ? "block" : "flex", alignItems: "center", justifyContent: "space-between", gap: "8px",
           width: "100%", minHeight: "44px", padding: "12px 14px", boxSizing: "border-box",
           background: "transparent", border: "none", borderRadius: "12px", textAlign: "left",
           cursor: abierto ? "default" : "pointer", color: FAE.text,
         }}
       >
-        <span style={estiloTitulo}>{caja.titulo}</span>
-        {!abierto && <Chevron />}
+        {caja.cifras ? (
+          <>
+            <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+              <span style={estiloTitulo}>{caja.titulo}</span>
+              {!abierto && <Chevron />}
+            </span>
+            <span data-cifras style={{ display: "block", marginTop: "4px" }}>
+              {caja.cifras.map((c) => <span key={c} style={{ ...LECTURA, display: "block" }}>{c}</span>)}
+            </span>
+          </>
+        ) : (
+          <>
+            <span style={estiloTitulo}>{caja.titulo}</span>
+            {!abierto && <Chevron />}
+          </>
+        )}
       </button>
       <div id={id} data-revela={caja.id} aria-live="polite">
         {abierto && (
