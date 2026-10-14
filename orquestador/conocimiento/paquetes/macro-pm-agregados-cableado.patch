@@ -1,7 +1,9 @@
 Cableado de «Las tallas del dinero» (Política Monetaria) — encargo de Erwin.
+VARIANTE A: sobre main, SIN la Fábrica del Dinero (#76). Úsela si las tallas
+se cablean antes que la Fábrica. Si el #76 ya está en main, use la variante
+sobre-76.
 
-Se aplica DESPUÉS de fusionar el PR de feat/macro-pm-agregados-tallas, desde
-la raíz del repositorio:
+Se aplica desde la raíz del repositorio:
 
   git apply --check orquestador/conocimiento/paquetes/macro-pm-agregados-cableado.patch
   git apply orquestador/conocimiento/paquetes/macro-pm-agregados-cableado.patch
@@ -9,18 +11,19 @@ la raíz del repositorio:
 
 Qué toca: subjects.js (3 líneas), PoliticaMonetariaView.jsx (la pieza y los
 dos juegos), la migración 0091, los registros compartidos (icono, previa,
-formato del resumen, etiquetas del docente, fuera del Repaso), las 12
-pruebas compartidas que fijan el tema como está hoy (las 11 que se conocían
-más el conteo de previas animadas, 46 → 48) y la línea «las tres piezas» de
+formato del resumen, etiquetas del docente, fuera del Repaso), las 12 pruebas
+compartidas que fijan el tema como está hoy y la línea «las tres piezas» de
 monetaria-aprender, más la foto del camino (solo cambian las 6 variantes de
-Política Monetaria; las otras 36 quedan igual).
+Política Monetaria). Y una prueba nueva con las tres guardias de la reforma
+del Aprender (#77) aplicadas a esta pieza.
 
-Medido por Misa sobre la punta de la rama, con main al día: 1810 pruebas,
-1809 pasan, 0 fallan (1 TODO que ya estaba en main), build verde.
+Medido por Misa sobre main (con #75 y #77): 1824 pruebas, 1823 pasan, 0
+fallan (1 TODO que ya estaba en main), build verde.
 
 LA 0091 LA CORRE MATEO, A MANO, DESPUÉS DEL DESPLIEGUE. Nadie más.
 
 git apply ignora este texto: empieza a leer en la primera línea «diff --git».
+
 diff --git a/src/components/PoliticaMonetariaView.jsx b/src/components/PoliticaMonetariaView.jsx
 index 1739bb5..5dcae30 100644
 --- a/src/components/PoliticaMonetariaView.jsx
@@ -56,7 +59,7 @@ index 1739bb5..5dcae30 100644
    { id: "por-cual-arteria-entra", Mecanica: PorCualArteriaEntra },
    { id: "explicaselo-a-un-deudor", Mecanica: ExplicaseloADeudor },
 diff --git a/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs b/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs
-index 7166f77..67dc3f0 100644
+index 7166f77..17409f3 100644
 --- a/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs
 +++ b/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs
 @@ -116,10 +116,10 @@ test("la exploración de los cuatro instrumentos sigue las reglas de la pieza",
@@ -72,7 +75,7 @@ index 7166f77..67dc3f0 100644
    const sql = readdirSync("supabase/migrations").map((f) => readFileSync(`supabase/migrations/${f}`, "utf8")).join("\n");
    for (const id of ids) assert.ok(!sql.includes(`'${id}'`), `${id} no puede tener fila en actividad_catalogo`);
  });
-@@ -335,3 +335,19 @@ test("las tallas: Aprender no paga", () => {
+@@ -335,3 +335,54 @@ test("las tallas: Aprender no paga", () => {
    assert.equal(AG.EN_QUE_TALLA_VA.id, "en-que-talla-va");
    assert.equal(AG.QUE_TOCO_EL_BANCO.id, "que-toco-el-banco");
  });
@@ -91,6 +94,41 @@ index 7166f77..67dc3f0 100644
 +  const clas = (id) => tema.actividades.find((a) => a.id === id)?.clasificacion;
 +  assert.deepEqual(clas("en-que-talla-va"), { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 });
 +  assert.deepEqual(clas("que-toco-el-banco"), { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
++});
++
++/*
++ * Las tres guardias de la reforma del Aprender (#77), aplicadas a la pieza de
++ * las tallas: la cifra se importa, la capa 3 explora SU escena, y la vista se
++ * lee como texto para que una pieza cableada distinto ponga esto en rojo.
++ */
++test("las tallas, cableadas: las tres guardias de la reforma — cifras importadas, su propia escena y la vista leída como texto", async () => {
++  /* 1 · Ningún porcentaje con decimal escrito a mano en el código de la pieza (los comentarios pueden explicar). */
++  for (const f of ["src/data/pmAgregados.js", "src/components/mecanicas/maquinas/tallasDelDinero.jsx", "src/components/mecanicas/maquinas/actividadesAgregados.jsx"]) {
++    const fuente = readFileSync(f, "utf8");
++    assert.ok(fuente.length > 1000, `${f}: ¿se leyó el archivo correcto?`);
++    const sinComentarios = fuente.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
++    assert.deepEqual(sinComentarios.match(/\d+,\d+\s?%/g) ?? [], [], `${f}: cifras copiadas a mano`);
++  }
++  /* 2 · La capa 3 pinta la escena de su pieza, la escalera, y no la máquina de otra. */
++  const etiqueta = (el) => {
++    const m = montar(el);
++    try { return [...m.caja.querySelectorAll("svg[aria-label]")].map((s) => s.getAttribute("aria-label")); } finally { m.desmontar(); }
++  };
++  const deLaEscena = etiqueta(React.createElement(ESC.EscenaTallas));
++  const deLaCapa3 = etiqueta(React.createElement(ESC.ExploraTallas));
++  assert.equal(deLaEscena.length, 1);
++  assert.deepEqual(deLaCapa3, deLaEscena, "la capa 3 no explora la escena de su pieza");
++  assert.match(deLaCapa3[0], /escalera de liquidez/i);
++  assert.ok(!/polea|Canal del|Casa de Nariño/i.test(deLaCapa3[0]), "pintó la máquina de otra pieza");
++  /* 3 · La vista, leída como texto: la pieza va con su escena y su capa 3, y PIEZAS sigue el orden del catálogo. */
++  const VISTA = readFileSync("src/components/PoliticaMonetariaView.jsx", "utf8");
++  assert.match(VISTA, /\{ pieza: APRENDER_TALLAS, Escena: EscenaTallas, Exploracion: ExploraTallas \}/);
++  const modulos = { ...D, ...AG };
++  try { Object.assign(modulos, await import("../../../data/pmFabricaDelDinero.js")); } catch { /* sin la Fábrica cableada */ }
++  const enLaVista = [...VISTA.matchAll(/\{ pieza: (APRENDER_\w+),/g)].map((m) => modulos[m[1]]?.id);
++  assert.ok(!enLaVista.includes(undefined), `una pieza de la vista no se encontró: ${enLaVista.join(", ")}`);
++  const tema = SUBJECTS.macroeconomia.topics.find((t) => t.id === "politica-monetaria");
++  assert.deepEqual(enLaVista, actividadesDeTipo(tema, APRENDER).map((a) => a.id), "PIEZAS de la vista y el catálogo no coinciden");
 +});
 diff --git a/src/components/mecanicas/__tests__/monetaria-dos-actividades.test.mjs b/src/components/mecanicas/__tests__/monetaria-dos-actividades.test.mjs
 index a870e24..996df66 100644
@@ -290,7 +328,7 @@ index f230fae..125d068 100644
    "duelo-de-instrumentos": () => <Consejo id="duelo-de-instrumentos" figura="engranaje" />,
    "disena-respuesta-monetaria": PanelGesto,
 diff --git a/src/data/subjects.js b/src/data/subjects.js
-index 482586a..b5b790f 100644
+index be6ad3e..6ea9339 100644
 --- a/src/data/subjects.js
 +++ b/src/data/subjects.js
 @@ -439,14 +439,17 @@ export const SUBJECTS = {
