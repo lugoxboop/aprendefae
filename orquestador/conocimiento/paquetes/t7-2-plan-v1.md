@@ -1,3 +1,5 @@
+> **Nota de la Célula C (decisión de L, 14 de octubre de 2026):** H2 `t7-2-dos-asientos` se llama «Arma los dos asientos», no «La venta en dos asientos», que es el nombre de A2. El id no cambia. Abajo va el plan de Near tal como llegó; el nombre que manda es el del mapa.
+
 **Plan de T7-2 «Inventarios II: el sistema permanente» · versión 1.** Lo armé con las pp. 233-248 abiertas hoy (pliegos 29 a 37) y la lista de las pp. 207-208.
 - Lleva una decisión de diseño que sale de la lista de control y que Mello debe auditar: **cómo mostrar F-1 sin mostrar las cifras de X2** (nota 3).
 - **Verifiqué las sumas de X4:** G-3 y G-4 suman 2.784.000, igual que D-3 (pp. 247-248). La prohibición que pusiste por prudencia se sostiene.
@@ -13,7 +15,7 @@
 | A5 · Fletes en permanente | `t7-2-a5-fletes` | «Registrar un flete en el permanente, según quién lo asume.» (≈79) | G-1 y G-2, pp. 245-246 | C7-7, C7-16 |
 | A6 · Devoluciones en permanente | `t7-2-a6-devoluciones` | «Registrar una devolución de compra y una de venta en el permanente.» (≈70) | G-3 y G-4, pp. 246-248 | — |
 | H1 · ¿Debe o haber? | `t7-2-debe-o-haber` | «Ubicar cada hecho en el debe o en el haber de Inventario de mercancías.» Fácil, exploratoria (≈77) | Lista de las pp. 207-208 | — |
-| H2 · La venta en dos asientos | `t7-2-dos-asientos` | «Registrar una venta en el permanente, con su asiento del costo.» Medio (≈77) | Cifras construidas | — |
+| H2 · La venta en dos asientos *(ahora «Arma los dos asientos»)* | `t7-2-dos-asientos` | «Registrar una venta en el permanente, con su asiento del costo.» Medio (≈77) | Cifras construidas | — |
 | H3 · Llena el kárdex | `t7-2-llena-el-kardex` | «Completar un kárdex con los tres métodos.» Difícil (7 palabras) | Cifras construidas | — |
 | H4 · ¿Periódico o permanente? | `t7-2-periodico-o-permanente` | «Decidir qué cuenta se mueve en cada sistema.» Medio (8 palabras). Cada ítem muestra las dos versiones (regla 3) | Sin cifras, o con cifras construidas | — |
 | H5 · Flete y devolución | `t7-2-flete-y-devolucion` | «Registrar un flete y una devolución en el permanente.» Medio (9 palabras) | Cifras construidas | — |

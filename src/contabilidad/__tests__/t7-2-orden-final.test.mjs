@@ -55,13 +55,17 @@ test("★★★ la lista tiene las 11 piezas del plan, sin repetir: 6 de Aprende
   assert.equal(ORDEN_T7_2.filter((id) => /^t7-2-a\d-/.test(id)).length, 6);
 });
 
-test("★★★ la lista es la tabla «Orden final de T7-2» del mapa, fila por fila", () => {
+test("★★★ la lista es la tabla «Orden final de T7-2» del mapa, fila por fila, sin nombres repetidos", () => {
   const i = MAPA.indexOf("## Orden final de T7-2");
   assert.ok(i >= 0, "el mapa no tiene la sección «Orden final de T7-2»");
   const seccion = MAPA.slice(i, MAPA.indexOf("\n## ", i + 1));
   const filas = seccion.split("\n").filter((l) => /^\| \d+ \|/.test(l)).map((l) => l.split("|").map((c) => c.trim()));
   assert.deepEqual(filas.map((f) => f[2]), ORDEN_T7_2);
   assert.deepEqual(filas.map((f) => Number(f[1])), ORDEN_T7_2.map((_, k) => k + 1));
+  /* Ningún nombre se repite: en el índice se verían dos actividades iguales (L renombró el Hacer #4). */
+  const nombres = filas.map((f) => f[3]);
+  assert.deepEqual(nombres.filter((n, k) => nombres.indexOf(n) !== k), [], "hay nombres repetidos en el orden de T7-2");
+  assert.equal(nombres[3], "Arma los dos asientos");
   /* Cada Hacer, justo después de su Aprender; después de A5 no hay Hacer: H5 cubre A5 y A6. */
   assert.deepEqual(filas.map((f) => f[4]), ["Aprender", "Hacer", "Aprender", "Hacer", "Aprender", "Hacer", "Aprender", "Hacer", "Aprender", "Aprender", "Hacer"]);
 });
