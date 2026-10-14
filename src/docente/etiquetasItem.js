@@ -558,9 +558,6 @@ Object.assign(REGLAS, {
   "t3-que-le-toca": (id) => hechoDeAct6T3(id),
   "t3-cierre-completo": (id) => hechoDeParteT3(CASOS_ACT7)(id),
 
-  /* T7-1 · H1 (Célula C). El ítem es el hecho, y se lee por su texto. */
-  "t7-1-que-cuenta-se-mueve": (id) => hechoDeItemH1(id),
-
   "cu-arma-el-asiento": (id) => textoDeItemA6(id),
 
   /*
@@ -678,6 +675,19 @@ Object.assign(REGLAS, {
     const pregunta = que === "cuenta" ? "Cuál cuenta no cuadra" : "Qué error tiene";
     return `${pregunta} — ${t ? t.texto : c.transaccion}`;
   },
+});
+
+/*
+ * ═══════════ CONTABILIDAD · T7 «INVENTARIOS» (Célula C) ═══════════
+ *
+ * Las actividades de Hacer de T7, cada una con su regla. Como las del Tema 3,
+ * LEEN el texto de los datos de su actividad —el mismo del que sale el id que
+ * guarda la mecánica—, no lo copian: si mañana cambia un enunciado, el panel
+ * lo enseña cambiado sin tocar nada aquí.
+ */
+Object.assign(REGLAS, {
+  /* T7-1 · H1. El ítem es el hecho, y se lee por su texto. */
+  "t7-1-que-cuenta-se-mueve": (id) => hechoDeItemH1(id),
 });
 
 /*

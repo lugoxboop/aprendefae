@@ -220,6 +220,9 @@ test("★★★ «Reproducir» como LoQueYaPaso: 3 000 + 450 ms por palabra, ari
 
 /* ═══════════ CAPA 3 ═══════════ */
 
+/* Lo que se lee en una caja, sin su pie de fuente. */
+const lectura = (n) => [...n.querySelectorAll("p:not([data-pie])")].map((p) => p.textContent).join("");
+
 test("★★★ capa 3: seis hechos; cada uno revela lo suyo y no se cierra; el bloque final, solo con los seis abiertos", async () => {
   const { caja, desmontar } = await montar(h(SeisHechos));
   const ids = D.HECHOS_T6.map((x) => x.id);
@@ -230,11 +233,46 @@ test("★★★ capa 3: seis hechos; cada uno revela lo suyo y no se cierra; el 
     await tocar(b);
     assert.equal(b.getAttribute("aria-expanded"), "true");
     assert.equal(Boolean(b.querySelector("svg")), false, "sin chevrón al abrirse");
-    assert.equal(caja.querySelector(`[data-revela="${id}"]`).textContent, D.HECHOS_T6.find((x) => x.id === id).revela);
-    assert.equal(caja.querySelector("[data-final]").textContent, i < 5 ? "" : D.FINAL_CAPA_3_T6.texto);
+    assert.equal(lectura(caja.querySelector(`[data-revela="${id}"]`)), D.HECHOS_T6.find((x) => x.id === id).revela);
+    assert.equal(lectura(caja.querySelector("[data-final]")), i < 5 ? "" : D.FINAL_CAPA_3_T6.texto);
   }
-  /* Sin pies mientras Futaba no los escriba. */
-  assert.equal(caja.querySelectorAll("[data-pie]").length, 0);
+  desmontar();
+});
+
+/* La tabla de la capa 3 del paquete: «hecho» | «revela» | «pie» (★, versión que manda). */
+const TABLA_CAPA_3 = (() => {
+  const fuente = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-aprender1.md", import.meta.url), "utf8");
+  const i = fuente.indexOf("| Hecho | Al tocarlo | Etiqueta que ve (★) |");
+  assert.ok(i >= 0, "el paquete no tiene la tabla de la capa 3 con pies");
+  const filas = [];
+  for (const linea of fuente.slice(i).split("\n").slice(2)) {
+    if (!linea.startsWith("| «")) break;
+    filas.push(linea.slice(2, -2).split(" | ").map((c) => c.replace(/^«(.*)»$/, "$1")));
+  }
+  const final = fuente.match(/Etiqueta del bloque final \(★\): «([^»]+)»/);
+  assert.ok(final, "el paquete no tiene el pie del bloque final");
+  return { filas, final: final[1] };
+})();
+
+test("★★★ capa 3: cada caja abierta y el bloque final muestran su pie (★), literal del paquete, con el estilo de fuente", async () => {
+  assert.equal(TABLA_CAPA_3.filas.length, 6, "la tabla de la capa 3 se leyó entera");
+  const { caja, desmontar } = await montar(h(SeisHechos));
+  assert.equal(caja.querySelectorAll("[data-pie]").length, 0, "cerradas, sin pies");
+  for (const [k, x] of D.HECHOS_T6.entries()) {
+    const [hecho, revela, pie] = TABLA_CAPA_3.filas[k];
+    const zona = caja.querySelector(`[data-hecho="${x.id}"]`);
+    assert.equal(zona.querySelector("button").textContent.includes(hecho), true, `hecho ${k + 1}: «${hecho}»`);
+    await tocar(zona.querySelector("button"));
+    assert.equal(lectura(caja.querySelector(`[data-revela="${x.id}"]`)), revela, `revela ${k + 1}`);
+    assert.equal(zona.querySelector("[data-pie]").textContent, pie, `pie ${k + 1}`);
+  }
+  const pies = [...caja.querySelectorAll("[data-pie]")];
+  assert.equal(pies.length, 7, "seis cajas y el bloque final");
+  assert.equal(caja.querySelector("[data-final] [data-pie]").textContent, TABLA_CAPA_3.final);
+  for (const n of pies) {
+    assert.equal(n.style.fontSize, "12px");
+    assert.equal(n.style.lineHeight, "16px");
+  }
   desmontar();
 });
 
@@ -250,7 +288,8 @@ test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola corr
     assert.equal(caja.querySelector("[data-devolucion]").textContent, o.feedback);
     await tocar(caja.querySelector("[data-otra-vez]"));
   }
-  assert.ok(D.OPCIONES_FINAL_T6[0].feedback.startsWith("Correcto. En los libros de Comercializadora Santa Pacha,"));
+  /* La versión que manda (Futaba, 14-oct), no la línea corregida anterior. */
+  assert.equal(D.OPCIONES_FINAL_T6[0].feedback, "Correcto. El 25 de enero, en los libros de Comercializadora Santa Pacha, Cuentas por cobrar – clientes baja: se acredita. No se anota ningún ingreso. Ese ya estaba desde el 10.");
   desmontar();
 });
 

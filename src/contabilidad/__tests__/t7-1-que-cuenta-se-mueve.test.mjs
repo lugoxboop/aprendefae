@@ -238,6 +238,27 @@ test("★★★ la 0090: del rango de la célula, un insert aditivo y repetible,
   assert.ok(n >= 90 && n <= 109, `la ${conElId[0]} está fuera del rango 0090-0109`);
 });
 
-test("★★ el panel docente lee cada ítem por su hecho (recortado a 70, como todos)", () => {
-  for (const it of D.ITEMS_H1) assert.equal(etiquetaDeItem(D.H1_ID, it.id), recortar(it.texto), it.id);
+test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqueta, leída del hecho (recortada a 70, como todas)", async () => {
+  /* Los ids que de verdad llegan al panel: los del detalle de una partida entera. */
+  const m = await montar();
+  try {
+    for (const it of D.ITEMS_H1) {
+      await tocar(opcion(m.caja, it.respuesta));
+      await tocar(siguiente(m.caja));
+    }
+    const ids = m.completados[0][2].map((d) => d.item);
+    assert.equal(ids.length, D.ITEMS_H1.length);
+    for (const id of ids) {
+      const etiqueta = etiquetaDeItem(D.H1_ID, id);
+      assert.ok(typeof etiqueta === "string" && etiqueta.trim() !== "", `${id}: sin etiqueta en el panel`);
+      assert.equal(etiqueta, recortar(D.ITEMS_H1.find((x) => x.id === id).texto), `${id}: la etiqueta no es su hecho`);
+    }
+  } finally {
+    m.desmontar();
+  }
+  /* La regla vive en el bloque de T7 del archivo, y lee los datos: no copia ningún hecho. */
+  const fuente = leer("src/docente/etiquetasItem.js");
+  const bloque = fuente.slice(fuente.indexOf("CONTABILIDAD · T7 «INVENTARIOS»"));
+  assert.match(bloque.slice(0, bloque.indexOf("});")), /"t7-1-que-cuenta-se-mueve": \(id\) => hechoDeItemH1\(id\),/);
+  for (const it of D.ITEMS_H1) assert.ok(!fuente.includes(it.texto), `${it.id}: el hecho está copiado en etiquetasItem.js`);
 });
