@@ -203,25 +203,31 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
    * acaba en el lado izquierdo, y el título va siempre al lado contrario del
    * nodo que lo precede. Es la regla, no una excepción; se fija aquí para que
    * un cambio de lado no pase sin que nadie lo vea.
+   *
+   * Política Monetaria va 2-4-5-3 desde sus dos actividades nuevas: Aplicación
+   * acaba ahora en el lado izquierdo, así que el título de Análisis pasa a la
+   * DERECHA. Misma regla.
    */
+  const LADOS = { "politica-monetaria": [-1, -1, 1, 1] };
   for (const temaId of TEMAS) {
     const nodos = nodosDelTema(temaId);
-    assert.deepEqual(disposicionPorBloques(bloquesDe(nodos), nodos.length).cabeceras.map((c) => c.lado), [-1, -1, -1, 1], temaId);
+    assert.deepEqual(disposicionPorBloques(bloquesDe(nodos), nodos.length).cabeceras.map((c) => c.lado), LADOS[temaId] ?? [-1, -1, -1, 1], temaId);
   }
 });
 
 /* ─────────────────────────────── los iconos ─────────────────────────────── */
 
-test("las 48 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
+test("las 50 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
-  assert.equal(ids.length, 48);
+  assert.equal(ids.length, 50);
   for (const id of ids) assert.ok(iconoDe(id), `${id} sin icono`);
   assert.deepEqual(Object.keys(ICONOS_ACTIVIDAD).sort(), [...ids].sort(), "ni iconos de más ni de menos");
-  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 48, "ningún icono repetido entre dos actividades");
+  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 50, "ningún icono repetido entre dos actividades");
 
   for (const temaId of TEMAS) {
     const m = montar(camino(nodosDelTema(temaId)));
-    assert.equal(m.cont.querySelectorAll("[data-icono]").length, 12, temaId);
+    /* Uno por nodo del tema, sin número fijo: Política Monetaria tiene 14 desde sus dos actividades nuevas. */
+    assert.equal(m.cont.querySelectorAll("[data-icono]").length, nodosDelTema(temaId).length, temaId);
     m.desmontar();
   }
 

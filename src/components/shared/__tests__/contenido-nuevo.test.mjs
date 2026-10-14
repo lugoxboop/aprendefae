@@ -72,18 +72,46 @@ function espiarAlmacen({ falla = false } = {}) {
 }
 /* Mete entradas en la lista real (la que lee el gancho de «Empezar») mientras dura `fn`. */
 async function conLista(entradas, fn) {
-  N.NOVEDADES.push(...entradas);
-  try { return await fn(); } finally { N.NOVEDADES.splice(0, N.NOVEDADES.length); w.localStorage.clear(); }
+  const antes = N.NOVEDADES.splice(0, N.NOVEDADES.length, ...entradas);
+  try { return await fn(); } finally { N.NOVEDADES.splice(0, N.NOVEDADES.length, ...antes); w.localStorage.clear(); }
 }
 
 /* ═══════════════════ LA LÓGICA ═══════════════════ */
 
-test("★★★ este PR va con la lista VACÍA: no pinta nada en ningún tema y no toca el almacenamiento", () => {
-  assert.deepEqual(N.NOVEDADES, []);
+/*
+ * Tres guardas sobre la lista real (Levi). Ninguna depende de cuántos días
+ * pasaron desde la fecha: se pondría roja sola a las dos semanas. El apagado a
+ * los 14 días lo cubren las pruebas de la lógica, con fechas simuladas.
+ */
+const conFecha = () => N.NOVEDADES.filter((e) => e.publicada !== "");
+
+test("★★★ toda entrada CON fecha tiene sus ids registrados como actividades del tema que indica", () => {
+  for (const e of conFecha()) {
+    const tema = SUBJECTS[e.materia]?.topics.find((t) => t.id === e.tema);
+    assert.ok(tema, `${e.materia}/${e.tema}: el tema no existe`);
+    const ids = new Set((tema.actividades ?? []).map((a) => a.id));
+    for (const id of e.ids) assert.ok(ids.has(id), `${id} no es una actividad de ${e.materia}/${e.tema}`);
+  }
+});
+
+test("★★★ si hay fecha, tiene formato AAAA-MM-DD, es un día real y no es futura (hora de Bogotá)", () => {
+  const hoyBogota = new Date(Date.now() - 5 * 3600 * 1000).toISOString().slice(0, 10);
+  for (const e of conFecha()) {
+    assert.match(e.publicada, /^\d{4}-\d{2}-\d{2}$/, `${e.ids}: formato`);
+    const d = new Date(`${e.publicada}T00:00:00Z`);
+    assert.equal(d.toISOString().slice(0, 10), e.publicada, `${e.publicada} no es un día real`);
+    assert.ok(e.publicada <= hoyBogota, `${e.publicada} es futura (hoy en Bogotá: ${hoyBogota})`);
+  }
+});
+
+test("★★★ la fecha vacía es válida y no pinta nada ni toca el almacenamiento", () => {
+  const vacias = N.NOVEDADES.filter((e) => e.publicada === "");
   const espia = espiarAlmacen();
   try {
     for (const materia of Object.values(SUBJECTS)) {
-      for (const tema of materia.topics ?? []) assert.equal(N.marcaDeTema(materia.id, tema.id), null, `${materia.id}/${tema.id}`);
+      for (const tema of materia.topics ?? []) {
+        assert.equal(N.marcaDeTema(materia.id, tema.id, { lista: vacias }), null, `${materia.id}/${tema.id}`);
+      }
     }
     N.registrarApertura(A);
     assert.deepEqual(espia.cuenta, { get: 0, set: 0 });

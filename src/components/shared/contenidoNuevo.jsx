@@ -34,7 +34,10 @@ import { useEffect, useRef, useState } from "react";
  * `publicada` es la fecha del despliegue real (hora de Bogotá). Vacía hasta
  * que se publiquen las actividades nuevas, en su mismo PR.
  */
-export const NOVEDADES = [];
+export const NOVEDADES = [
+  /* Las dos de Política Monetaria. Aprobadas por escrito por Mateo el 13 de octubre de 2026 (Bogotá); el aviso se apaga solo 14 días después. */
+  { materia: "macroeconomia", tema: "politica-monetaria", tipo: "actividad", ids: ["las-dos-entradas", "por-cual-arteria-entra"], publicada: "2026-10-13" },
+];
 
 /*
  * Solo materias donde TODOS los temas abren sus actividades con «Empezar»

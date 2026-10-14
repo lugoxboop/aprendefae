@@ -266,11 +266,11 @@ function FichaADestinos({ id, forma, n, destinos, segundos = 2 }) {
 }
 
 /* El volante de la tasa: un cuarto de vuelta (0,6 s), pausa, y vuelve apagándose (0,3 s); alterna el sentido. */
-function VolanteGesto() {
+function VolanteGesto({ id = "volante-de-la-tasa" }) {
   const rayos = Array.from({ length: 6 }, (_, k) => (k * Math.PI) / 3);
   return (
     <Lamina
-      id="volante-de-la-tasa"
+      id={id}
       css={`
 @keyframes fae-pv-vt-giro {
   0% { transform: rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(.3,.8,.4,1); }
@@ -323,13 +323,13 @@ function CadenaGesto() {
  * que los demás gestos: es la técnica (intercalado, Rohrer 2012), no un atajo.
  * No lo iguales al ritmo del resto.
  */
-function CorrienteGesto() {
+function CorrienteGesto({ id = "corriente-de-decisiones" }) {
   const bandejas = [10, 38, 66, 94];
   const destinos = [1, 3];
   const seg = 1.2;
   return (
     <Lamina
-      id="corriente-de-decisiones"
+      id={id}
       css={destinos.map((d, k) => {
         const i = k * 50;
         const dx = bandejas[d] + 8 - 10;
@@ -523,6 +523,9 @@ const GESTOS = {
   "cadena-de-transmision": CadenaGesto,
   "explicaselo-a-un-deudor": () => <Explicale id="explicaselo-a-un-deudor" />,
   "corriente-de-decisiones": CorrienteGesto,
+  /* Las dos nuevas, con el gesto de su hermana tal cual (Xeno); solo cambia su id. */
+  "por-cual-arteria-entra": () => <CorrienteGesto id="por-cual-arteria-entra" />,
+  "las-dos-entradas": () => <VolanteGesto id="las-dos-entradas" />,
   "el-rezago": RezagoGesto,
   "duelo-de-instrumentos": () => <Consejo id="duelo-de-instrumentos" figura="engranaje" />,
   "disena-respuesta-monetaria": PanelGesto,

@@ -21,6 +21,7 @@ import {
   CASOS_EXPANSIVA, CASILLAS_PRESUPUESTO, BANCO_DEFICIT,
 } from "../data/politicaFiscal.js";
 import { MEMORAMAS, CLASIFICACIONES } from "../data/cimientos.js";
+import { ESLABONES_ARTERIA, PREGUNTAS_DOS_ENTRADAS } from "../data/monetariaRepaso.js";
 import {
   CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
   EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
@@ -427,6 +428,9 @@ Object.assign(REGLAS, {
   },
   "explicaselo-a-un-deudor": (id) => porId(EXPLICA_DEUDOR.escenarios.flatMap((e) => e.fragmentos), "texto")[id] ?? null,
   "corriente-de-decisiones": (id) => porId(CORRIENTE_DECISIONES.items, "texto")[id] ?? null,
+  /* Las dos nuevas: cada ítem es su eslabón o su pregunta, por id. */
+  "por-cual-arteria-entra": (id) => porId(ESLABONES_ARTERIA, "texto")[id] ?? null,
+  "las-dos-entradas": (id) => porId(PREGUNTAS_DOS_ENTRADAS, "texto")[id] ?? null,
   "el-rezago": (id) => {
     if (id === "cierre") return EL_REZAGO.cierre.pregunta;
     const [caso, hecho] = String(id).split(":");

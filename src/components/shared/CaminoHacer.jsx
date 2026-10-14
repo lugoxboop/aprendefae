@@ -90,7 +90,7 @@ const entre = (min, valor, max) => Math.max(min, Math.min(max, valor));
  */
 export function medidas(n) {
   const separacion = n <= 1 ? 0 : entre(78, Math.round(760 / (n - 1)), 148);
-  const radio = entre(17, Math.round(34 - n * 0.9), 30);
+  const radio = entre(17, Math.round(34 - Math.min(n, 12) * 0.9), 30);
   const grosor = entre(2, Math.round(5 - n * 0.15), 4.5);
   /* La amplitud del serpenteo se abre con pocos nodos y se cierra con muchos. */
   const amplitud = n <= 1 ? 0 : entre(52, Math.round(ANCHO * 0.30 - n * 1.6), 132);

@@ -123,6 +123,9 @@ export const PREVIAS = {
   "cadena-de-transmision": { tema: "bloques", tipo: "gesto" },
   "explicaselo-a-un-deudor": { tema: "bloques", tipo: "gesto" },
   "corriente-de-decisiones": { tema: "bloques", tipo: "gesto" },
+  /* Las dos nuevas reusan el gesto de su hermana (Xeno): misma mecánica, mismo gesto. */
+  "por-cual-arteria-entra": { tema: "bloques", tipo: "gesto" },
+  "las-dos-entradas": { tema: "bloques", tipo: "gesto" },
   "el-rezago": { tema: "bloques", tipo: "gesto" },
   "dilema-banquero-central": {
     tipo: "estatica",
