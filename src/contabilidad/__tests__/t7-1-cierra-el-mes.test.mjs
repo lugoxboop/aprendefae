@@ -180,7 +180,7 @@ test("★★★ tocar una cifra y después la casilla la pone; tocar una casilla
     assert.equal(ficha(m.caja, c.valor).getAttribute("aria-pressed"), "true");
     await tocar(casilla(m.caja, c.id));
     assert.equal(casilla(m.caja, c.id).textContent, pesos(c.valor));
-    assert.equal(ficha(m.caja, c.valor), null, "la cifra puesta sigue en el banco");
+    assert.equal(ficha(m.caja, c.valor) === null, true, "la cifra puesta sigue en el banco");
     await tocar(casilla(m.caja, c.id));
     assert.equal(casilla(m.caja, c.id).textContent, "—", "tocar la casilla llena no la vació");
     assert.ok(ficha(m.caja, c.valor), "la cifra no volvió al banco");
@@ -206,7 +206,7 @@ test("★★★ la tanda entera: doce casillas calificadas una vez al confirmar,
     await tocar(boton(m.caja, D.BOTON_H4.confirmar));
     /* Bloqueadas: un segundo toque no cambia nada. */
     for (const c of L.CASILLAS_H4) assert.equal(casilla(m.caja, c.id).disabled, true, c.id);
-    assert.equal(boton(m.caja, D.BOTON_H4.confirmar), undefined, "«Confirmar» sigue ahí");
+    assert.equal(boton(m.caja, D.BOTON_H4.confirmar) === undefined, true, "«Confirmar» sigue ahí");
     /* Cada casilla mala: la línea del distractor primero, después la de su fila; la buena se enseña. */
     for (const [id, v] of Object.entries(malas)) {
       const textos = [...m.caja.querySelectorAll(`[data-retro-casilla="${id}"] [data-texto-retro]`)].map((p) => p.textContent);
