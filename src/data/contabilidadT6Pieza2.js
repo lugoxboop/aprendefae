@@ -1,0 +1,147 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * TEMA 6 · PIEZA 2 DE APRENDER — «Cuando un cliente no va a pagar».
+ *
+ * Célula B. Todo el texto que lee el estudiante vive en ESTE archivo, guardado
+ * entero en orquestador/conocimiento/paquetes/b5-t6-aprender2.md. Precedencia:
+ *   1. la versión que manda de Futaba (Dajema y Nancy Zea Cuesta; el castigo
+ *      es por los $312.500 completos, p. 200), con las comillas internas
+ *      “ ” que Futaba confirmó (término 4 y nota del término 2), y el
+ *      término 3 de Sakuta con PASA de Shoko («Castigar una deuda»);
+ *   2. la guía de Mai v1 con su cierre v1b (PASA de Shoko), y las dos
+ *      correcciones de Shoko: el rótulo de la escena es el fragmento literal
+ *      del paso 4, y la anotación de Clientes del 31 de diciembre lleva
+ *      «por $312.500».
+ * Las citas del libro conservan «» (son citas); las comillas internas de
+ * nuestros textos van “ ” (la regla fijada en T5 · A1).
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/* ═══════════ LA PIEZA (lo que lee CuatroCapas: título, objetivo y capa 1) ═══════════ */
+
+export const PIEZA_NO_VA_A_PAGAR = {
+  id: "b5-t6-a2-cuando-un-cliente-no-va-a-pagar",
+  numero: 2,
+  titulo: "Cuando un cliente no va a pagar",
+  objetivo: "Vas a ver qué es una cuenta incobrable y dos formas de anotar esa pérdida.",
+  nombres: [
+    {
+      termino: "Cuentas incobrables o de difícil cobro",
+      definicion: "Son deudas de clientes que probablemente no se van a cobrar. Nacen precisamente de las ventas a crédito. Pueden aparecer por quiebra del cliente, por su muerte o porque cambió de domicilio, entre otras razones. Cuando el cobro se vuelve imposible, esa deuda es una pérdida para el negocio.",
+      delLibro: "«Como todo negocio tiene sus riesgos, en este caso el riesgo es que algunos clientes no paguen las deudas.» (p. 198)",
+    },
+    {
+      termino: "Cómo se decide",
+      definicion: "Para saber si una deuda es de difícil cobro, la empresa mira, entre otras cosas, el tiempo de vencimiento. También mira los antecedentes del cliente, su situación financiera y las garantías que le pidió.",
+      delLibro: "En la tabla del libro (p. 201), las columnas se llaman “Cuentas vigentes” y “Cuentas vencidas”. Una cuenta vigente todavía está dentro de su plazo de pago. Una vencida ya lo pasó.",
+      rotuloDelLibro: "Nota",
+    },
+    {
+      termino: "Castigar una deuda",
+      definicion: "Castigar una deuda es darla de baja porque ya no se espera cobrarla. El libro dice “castigar la cuenta”.",
+    },
+    {
+      termino: "Método de anulación directa",
+      definicion: "Cuando la deuda se da por perdida, se saca de Cuentas por cobrar – clientes y su valor va al gasto. Se debita Gasto provisiones – cuentas incobrables y se acredita Cuentas por cobrar – clientes. Ojo: el nombre de ese gasto dice “provisiones”, pero este método no crea ninguna provisión. Es muy sencillo, pero no deja información sobre las deudas castigadas. Y esa información sirve para decidir las ventas a crédito futuras.",
+      delLibro: "«Este método es muy sencillo, pero presenta la desventaja de que no suministra información relacionada con la cartera castigada…» (p. 199)",
+    },
+    {
+      termino: "Método de provisiones",
+      definicion: "Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. Se debita Gasto provisiones – cuentas incobrables y se acredita una cuenta llamada Provisión para deudas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.",
+      delLibro: "«…para determinar el probable porcentaje de cartera que no se recuperará.» (p. 200)",
+    },
+  ],
+};
+
+/* ═══════════ CAPA 2 · «MÍRELO FUNCIONAR» · Dajema y Nancy Zea Cuesta ═══════════ */
+
+/* Los rótulos de la escena (Mai v1b): fragmentos literales de los pasos. */
+export const ESCENA_T6_A2 = {
+  dia25: "25 de mayo",
+  dia31: "31 de diciembre",
+  venta: "Vende mercancía a crédito a Nancy Zea Cuesta",
+  monto: "$312.500",
+  clientes: "Cuentas por cobrar – clientes",
+  ingresos: "Ingresos por ventas",
+  analiza: "Analiza lo que le deben sus clientes",
+  nancy: "La deuda de Nancy es prácticamente incobrable",
+  factura: "Se autoriza castigar la factura",
+  metodo: "Anulación directa",
+  gasto: "Gasto provisiones – cuentas incobrables",
+  aNombre: "A nombre de Nancy, por $312.500",
+  debita: "se debita",
+  acredita: "se acredita",
+};
+
+/* Los 10 pasos y el cierre, cada uno con su pie de fuente. */
+export const PASOS_T6_A2 = [
+  { texto: "El 25 de mayo, Dajema le vende mercancía a crédito a Nancy Zea Cuesta.", pie: "Libro, p. 199" },
+  { texto: "La venta es por $312.500.", pie: "Libro, p. 199" },
+  { texto: "Se debita Cuentas por cobrar – clientes y se acredita Ingresos por ventas.", pie: "Basado en el libro, p. 200" },
+  { texto: "El 31 de diciembre, la empresa analiza lo que le deben sus clientes.", pie: "Basado en el libro, p. 199" },
+  { texto: "Concluye que la deuda de Nancy es prácticamente incobrable, pese a toda la gestión de cobro.", pie: "Libro, p. 199" },
+  { texto: "Se autoriza castigar la factura.", pie: "Libro, p. 199" },
+  { texto: "Dajema usa la anulación directa: la deuda se saca de Cuentas por cobrar – clientes.", pie: "Basado en el libro, pp. 199-200" },
+  { texto: "Se debita Gasto provisiones – cuentas incobrables por $312.500.", pie: "Libro, p. 200" },
+  { texto: "Y se acredita Cuentas por cobrar – clientes, a nombre de Nancy, por $312.500.", pie: "Basado en el libro, p. 200" },
+  { texto: "La pérdida queda en el gasto el mismo día en que se castiga la deuda.", pie: "Basado en el libro, pp. 198-199" },
+];
+export const CIERRE_T6_A2 = {
+  texto: "Con la anulación directa, el gasto aparece cuando la deuda se da por perdida. Y la deuda se borra sin dejar información aparte.",
+  pie: "Basado en el libro, p. 199",
+};
+
+/* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · los dos métodos ═══════════ */
+
+export const CONSIGNA_CAPA_3_T6_A2 = "Toca cada método y mira cuándo se anota el gasto y qué se debita al castigar.";
+
+/* Las dos cajas se ven iguales: ningún método se ve como el «bueno» (Mai). */
+export const METODOS_T6_A2 = [
+  {
+    id: "anulacion-directa",
+    nombre: "Anulación directa",
+    revela: "Con este método no se anota nada por adelantado. Cada deuda se castiga cuando se da por perdida: se debita Gasto provisiones – cuentas incobrables y se acredita Cuentas por cobrar – clientes. El gasto aparece el día del castigo.",
+    pie: "Basado en el libro, p. 199",
+  },
+  {
+    id: "provisiones",
+    nombre: "Provisiones",
+    revela: "Al cerrar el periodo se estima qué parte no se recuperará. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables. Al castigar la deuda, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto ya se había anotado.",
+    pie: "Basado en el libro, p. 200",
+  },
+];
+export const FINAL_CAPA_3_T6_A2 = {
+  texto: "En los dos métodos, al castigar, se acredita Cuentas por cobrar – clientes. Lo que cambia es qué se debita y cuándo aparece el gasto.",
+  pie: "Basado en el libro, pp. 199-200",
+};
+
+/* ═══════════ CAPA 4 · «EN UNA FRASE» (UnaFrase, sin cambios) ═══════════ */
+
+export const PREGUNTA_FINAL_T6_A2 = "Con el método de provisiones, ¿qué se debita el día que se castiga una deuda?";
+/* En el orden de Futaba; UnaFrase las baraja una vez al cargar. */
+export const OPCIONES_FINAL_T6_A2 = [
+  {
+    id: "b5-t6-a2-provision",
+    texto: "La provisión, porque el gasto ya estaba anotado.",
+    correcta: true,
+    feedback: "Correcto. Con provisiones, el gasto se anota al cerrar el periodo. Al castigar, se debita la provisión.",
+  },
+  {
+    id: "b5-t6-a2-gasto",
+    texto: "El gasto, porque la deuda se perdió ese día.",
+    correcta: false,
+    feedback: "No es esa. Eso pasa con la anulación directa. Con provisiones, el gasto ya se anotó al cerrar el periodo.",
+  },
+  {
+    id: "b5-t6-a2-clientes",
+    texto: "Cuentas por cobrar – clientes, porque la deuda desaparece.",
+    correcta: false,
+    feedback: "No es esa. Cuentas por cobrar – clientes baja, así que se acredita. Lo que se debita es la provisión.",
+  },
+  {
+    id: "b5-t6-a2-ingresos",
+    texto: "Ingresos por ventas, porque nunca se cobró.",
+    correcta: false,
+    feedback: "No es esa. La venta sí ocurrió y su ingreso se queda. La pérdida se anota por otro lado: contra la provisión.",
+  },
+];

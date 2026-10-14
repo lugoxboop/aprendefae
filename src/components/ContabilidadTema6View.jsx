@@ -17,14 +17,15 @@ import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
 import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import { PIEZA_LO_QUE_LE_DEBEN } from "../data/contabilidadT6Pieza1.js";
+import { PIEZA_NO_VA_A_PAGAR } from "../data/contabilidadT6Pieza2.js";
 import { ESCENAS_TEMA6 } from "./mecanicas/libros/tema6/escenasTema6.jsx";
 import ClientesOOtra from "./mecanicas/libros/tema6/ClientesOOtra.jsx";
 import { T6_ACT1 } from "../data/contabilidadT6Act1.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * TEMA 6 DE CONTABILIDAD (Célula B) — su pieza 1 de Aprender y su primera
- * actividad de Hacer.
+ * TEMA 6 DE CONTABILIDAD (Célula B) — sus piezas 1 y 2 de Aprender y su
+ * primera actividad de Hacer.
  *
  * La misma cabecera, el mismo marco (CuatroCapas) y el mismo camino que el
  * Tema 5: el camino sale de `subjects.js` y JUEGOS dice qué componente pinta
@@ -36,7 +37,7 @@ import { T6_ACT1 } from "../data/contabilidadT6Act1.js";
 const MATERIA = "contabilidad";
 export const TEMA = "cuentas-por-cobrar";
 
-export const PIEZAS = [{ numero: 1, pieza: PIEZA_LO_QUE_LE_DEBEN }];
+export const PIEZAS = [{ numero: 1, pieza: PIEZA_LO_QUE_LE_DEBEN }, { numero: 2, pieza: PIEZA_NO_VA_A_PAGAR }];
 const PUBLICADAS = PIEZAS.length;
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */

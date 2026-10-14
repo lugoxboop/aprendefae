@@ -272,7 +272,7 @@ test("★★★ capa 4: UnaFrase con la pregunta y las cuatro opciones del paque
 test("★★★ todo identificador nuevo de la pieza empieza por b5-", () => {
   assert.match(D.PIEZA_DEL_EFECTIVO.id, /^b5-/);
   for (const o of D.OPCIONES_FINAL_T5) assert.match(o.id, /^b5-/);
-  assert.deepEqual(Object.keys(ESCENAS_TEMA5), [D.PIEZA_DEL_EFECTIVO.id]);
+  assert.equal(Object.keys(ESCENAS_TEMA5)[0], D.PIEZA_DEL_EFECTIVO.id, "la pieza 1 va primera en el tema");
 });
 
 /* ═══════════ EL PIE DE FUENTE Y «REPRODUCIR» (textos finales, 14-oct) ═══════════ */
