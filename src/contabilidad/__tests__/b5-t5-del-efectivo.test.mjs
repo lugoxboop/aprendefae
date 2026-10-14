@@ -326,3 +326,12 @@ test("★★★ «Reproducir» como LoQueYaPaso: avanza solo, «Pausa» con aria
   assert.equal(pasoDe(), "Paso 1 de 7", "«Ver de nuevo» vuelve al paso 1");
   desmontar();
 });
+
+test("★★ guía v5: la cápsula de los títulos de participación dice «Diferencia al redimir» y se pinta en una sola línea", async () => {
+  assert.equal(D.TITULOS.find((t) => t.id === "participacion").rinde, "Diferencia al redimir");
+  const { caja, desmontar } = await montar(h(EfectivoDeSobra));
+  const c = caja.querySelector('[data-elemento="rinde-participacion"]');
+  assert.equal(c.textContent, "Diferencia al redimir");
+  assert.equal(c.style.whiteSpace, "nowrap");
+  desmontar();
+});

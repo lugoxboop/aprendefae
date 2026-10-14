@@ -78,11 +78,14 @@ export const ROTULOS_ESCENA = {
   venta: "Vender por más de lo que costó",
 };
 
-/* Las tres tarjetas, en este orden. Las tres con el mismo estilo (guía §4.7). */
+/*
+ * Las tres tarjetas, en este orden. Las tres con el mismo estilo (guía §4.7).
+ * «Diferencia al redimir» es la cápsula de la guía v5 (corrección de Levi).
+ */
 export const TITULOS = [
   { id: "cdt", nombre: "CDT", tipo: "Renta fija con interés", rinde: "Interés fijo" },
   { id: "acciones", nombre: "Acciones de otra empresa", tipo: "Renta variable", rinde: "Dividendos" },
-  { id: "participacion", nombre: "Títulos de participación", tipo: "Renta fija con descuento", rinde: "Diferencia" },
+  { id: "participacion", nombre: "Títulos de participación", tipo: "Renta fija con descuento", rinde: "Diferencia al redimir" },
 ];
 
 export const PASOS_CAPA_2 = [
