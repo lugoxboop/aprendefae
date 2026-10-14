@@ -136,14 +136,31 @@ No es simétrico, y descubrirlo por las malas cuesta un turno:
 
 - **Los generales de célula pueden abrir los chats de sus agentes** y leer otras
   conversaciones. Por eso el relevo dentro de una célula es del general.
-- **El auditor jefe no puede abrir otras conversaciones.** Lo que vaya para él
-  se le transcribe entero, aunque el documento sea largo y ya esté escrito en
-  otro sitio.
+- **El auditor jefe no puede abrir otras conversaciones NI EL REPOSITORIO.**
+  Lo segundo lo dijo él mismo el 13 de octubre, y es la mitad que faltaba: ya
+  sabíamos que no servía mandarle un enlace, pero durante un tiempo se le
+  mandaron comandos de `git`, que tampoco le sirven. Lo que vaya para él se le
+  transcribe entero dentro del mensaje, aunque el documento sea largo, ya esté
+  escrito en otro sitio y exista un comando de dos líneas que lo saca. Si no
+  cabe en un mensaje, va partido en varios y numerados.
 - **Las sesiones de código leen el repositorio**, así que el canon es la vía
   barata de pasarles algo: se escribe una vez y lo leen las tres células.
 
+**Dónde está cada quien.** Los chats de los agentes viven en la cuenta de
+trabajo; el del auditor jefe es
+`https://claude.ai/chat/edb72638-0dbe-8888-bc1e-544b11270f84`. Queda escrito
+porque no aparece en la lista de chats fijados, y un coordinador llegó a
+concluir que no existía después de consultar un listado que se lo devolvió
+incompleto. **Un listado que no lo trae no prueba que no esté:** se abre el
+enlace y se mira. El coste de equivocarse aquí no es un rodeo, es que una
+célula entera se quede esperando una auditoría que nadie iba a empezar.
+
 Antes de mandar a alguien a leer algo «en la fuente», se comprueba que esa
-persona pueda llegar a la fuente.
+persona pueda llegar a la fuente. No basta con que exista un camino: tiene que
+existir **para esa persona**. Una célula abrió un PR explicando con todo detalle
+cómo leer su paquete sin fusionarlo, citando esta misma página, y el destinatario
+no podía ejecutar ni el primer comando. Nadie se equivocó de regla; se equivocaron
+de destinatario.
 
 **Un documento largo viaja por el repositorio, no por el chat.** Es la regla que
 sale de ahí, y vale más que la asimetría que la causó. El primer mapa grande de
@@ -158,6 +175,11 @@ además donde lo encontrará la célula que llegue después, en vez de en un
 documento que hay que saber que existe.
 
 El chat sirve para decidir, no para almacenar.
+
+**La excepción, y es una sola:** cuando el destinatario es el auditor jefe, manda
+su limitación y no esta regla. El PR se abre igual —para versionar el documento y
+para que la sesión de código construya desde ahí—, pero deja de ser el camino
+hacia él. A él se le pega el texto.
 
 ## Un tema corto no es un tema fallido
 
