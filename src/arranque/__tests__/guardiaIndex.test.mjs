@@ -138,13 +138,37 @@ test("si el main ya arrancó, se aparta; y nada fuera de /assets/ lo despierta",
   assert.equal(c.aviso().length, 0);
 });
 
-test("el módulo marca que el main arrancó", () => {
+test("el módulo marca que el main arrancó, y SOLO DESPUÉS de estar escuchando (Levi)", () => {
+  /*
+   * El orden, no solo que la marca exista. Si la marca va antes del oyente,
+   * hay un instante en que el guardia de index.html ya se apartó y este aún
+   * no escucha. La ventana de mentira anota cada paso; al poner la marca, el
+   * oyente de vite:preloadError tiene que estar ya registrado.
+   */
   const dom = new JSDOM("<!doctype html><body></body>", { url: "https://aprendefae.com/", virtualConsole: new VirtualConsole() });
-  const win = { addEventListener: () => {}, location: { href: "https://aprendefae.com/" }, history: null, document: dom.window.document };
+  const pasos = [];
+  const oyentes = new Map();
+  const win = {
+    addEventListener: (tipo, fn) => { pasos.push(`escucha ${tipo}`); oyentes.set(tipo, fn); },
+    location: { href: "https://aprendefae.com/" }, history: null, document: dom.window.document,
+  };
+  let marca;
+  Object.defineProperty(win, "__aprendefaeArranco", {
+    get: () => marca,
+    set: (v) => { pasos.push(`marca ${v}`); marca = v; assert.ok(oyentes.has("vite:preloadError"), "la marca se puso antes de registrar el oyente: queda un instante sin ningún guardia"); },
+  });
   instalarRecargaTrasDespliegue(win);
   assert.equal(win.__aprendefaeArranco, true);
+  assert.deepEqual(pasos, ["escucha vite:preloadError", "marca true"]);
 });
 
+/*
+ * LO QUE ESTA PRUEBA NO VE. Compara la PRIMERA línea `var NOMBRE = …;` del
+ * guardia con la constante del módulo. Si alguien escribe un texto directo en
+ * el código del aviso (por ejemplo, `boton.textContent = "Recargar"` sin pasar
+ * por la variable) o añade una segunda definición más abajo, esta prueba sigue
+ * en verde. Los textos del guardia tienen que vivir SOLO en esas variables.
+ */
 test("las claves, los límites y los textos del guardia son los del módulo, letra por letra", () => {
   const valor = (nombre) => {
     const m = CODIGO.match(new RegExp(`var ${nombre} = ([^;]+);`));

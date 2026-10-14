@@ -350,7 +350,7 @@ test("★★ sin el 33 % ni sus cifras, sin los asientos con IVA, sin nada inter
   for (const interno of ["≈", "glosa", "regla", "Near", "Mello", "Watari", "(p. ", "C-1", "X2", "1.330.77"]) assert.ok(!texto.includes(interno), interno);
 });
 
-test("★★★ fuera del catálogo de FP; id t7-; en T7-1 después de AP2 y antes de A6", () => {
+test("★★★ fuera del catálogo de FP; id t7-; en T7-1 después de AP2 (y de AP3) y justo antes de A5", () => {
   assert.equal(A.AP4_ID, "t7-1-a4-el-cierre-en-periodico");
   assert.equal(P.numero, 4);
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_1);
@@ -360,9 +360,10 @@ test("★★★ fuera del catálogo de FP; id t7-; en T7-1 después de AP2 y ant
   const ids = tema.actividades.map((x) => x.id);
   /* Orden final de L: a1, a2, h1, a3, a4, a5, a6, a7. AP4 va después de AP2 (y de AP3, cuando exista). */
   assert.ok(ids.indexOf(A.AP4_ID) > ids.indexOf("t7-1-a2-la-factura-completa"));
-  assert.ok(ids.indexOf(A.AP4_ID) < ids.indexOf("t7-1-a6-devoluciones-en-periodico"));
+  /* Antes de A5: AP4 cierra con «Siguiente: «Importados y fletes»». */
+  assert.equal(ids.indexOf(A.AP4_ID) + 1, ids.indexOf("t7-1-a5-importados-y-fletes"));
   const piezas = PIEZAS_T7_1.map((x) => x.pieza.id);
-  assert.ok(piezas.indexOf(A.AP4_ID) < piezas.indexOf("t7-1-a6-devoluciones-en-periodico"));
+  assert.equal(piezas.indexOf(A.AP4_ID) + 1, piezas.indexOf("t7-1-a5-importados-y-fletes"));
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.AP4_ID)), []);
   for (const f of ["src/components/mecanicas/libros/t7/ElCierreEnPeriodico.jsx", "src/data/contabilidadT7_1_ap4.js"]) {
