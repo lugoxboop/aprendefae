@@ -149,6 +149,26 @@ Los ids de las piezas que ya existen mandan sobre los del plan v3.2 (a4 y a6 lle
 
 En main hoy: a1, a2, a3, a5, a6, a7 (#51, #59, #71, #60, #56, #66). Abiertos: #65 (AP4), que va entre a3 y a5 y ya puede entrar porque AP3 está en main; #64 (H1), que va cuando Mateo corra la 0090.
 
+## Orden final de T7-2 (decisión de L · 14 de octubre de 2026)
+
+Es la única fuente del orden de las piezas de T7-2 «Inventarios II: el sistema permanente» en subjects.js, en ContabilidadT7_2View.jsx y en las pruebas. Las mismas reglas que T7-1: regla 9 (cada pieza va después de la que enseña lo que usa) y cada Hacer justo después de su pieza de Aprender. Los ids y el orden son los del plan v1 de Near, con la corrección de Mello. Regla 3: T7-2 se sostiene solo; no muestra ninguna cifra del periódico.
+
+| # | id | Nombre | Tipo | Depende de |
+| --- | --- | --- | --- | --- |
+| 1 | t7-2-a1-la-cuenta-que-si-se-mueve | La cuenta que sí se mueve | Aprender | Abre el tema. La lista del libro, pp. 207-208; pp. 209, 212 y 233-234 |
+| 2 | t7-2-debe-o-haber | ¿Debe o haber? | Hacer | A1: la lista de pp. 207-208 |
+| 3 | t7-2-a2-la-venta-en-dos-asientos | La venta en dos asientos | Aprender | A1. Ejemplos E-1 y E-2, pp. 234-237 |
+| 4 | t7-2-dos-asientos | Arma los dos asientos | Hacer | A2 |
+| 5 | t7-2-a3-el-kardex | El kárdex | Aprender | A2. Pp. 237-238, cifras construidas |
+| 6 | t7-2-llena-el-kardex | Llena el kárdex | Hacer | A3 |
+| 7 | t7-2-a4-san-calixto | San Calixto en permanente | Aprender | A3. Ejemplo F-1, pp. 238-244 |
+| 8 | t7-2-periodico-o-permanente | ¿Periódico o permanente? | Hacer | Todo el tema hasta A4 (F-1) |
+| 9 | t7-2-a5-fletes | Fletes en permanente | Aprender | A2. Ejemplos G-1 y G-2, pp. 245-246 |
+| 10 | t7-2-a6-devoluciones | Devoluciones en permanente | Aprender | A2. Ejemplos G-3 y G-4, pp. 246-248 |
+| 11 | t7-2-flete-y-devolucion | Flete y devolución | Hacer | A5 y A6 |
+
+Después de A5 no hay Hacer: H5 cubre A5 y A6, así que va después de A6. Ningún nombre se repite: el Hacer #4 se llama «Arma los dos asientos» (decisión de L, 14 de octubre de 2026), porque el plan v1 le daba el mismo nombre que A2 y en el índice se verían dos actividades iguales. Su id no cambia. FP de las cinco de Hacer: 10 + 25 + 50 + 25 + 25 = 135.
+
 ## Bloque A · Cuenta de inventarios y sistema periódico (pp. 207-215)
 
 **\[1\] Sección y subsecciones (títulos exactos):**
@@ -995,5 +1015,7 @@ Se reescribieron 12 frases de los bloques que estaban escritas con la regla viej
 Versión 3 del mapa en el repositorio: se agregó, después de «Control», la sección «Decisión de corte (L)», versión 2, con las auditorías de Levi y de Mello incorporadas; las erratas llevan el prefijo C7-; G[2] y H[2] dicen el punto exacto de la p. 248.
 
 **Orden final de T7-1 (L, 14 de octubre de 2026):** se agregó, justo antes de «## Bloque A», la sección «## Orden final de T7-1 (decisión de L · 14 de octubre de 2026)», tal cual la escribió L. Es la única fuente del orden de las piezas en subjects.js, en ContabilidadT7_1View.jsx y en las pruebas: 1 AP1 · 2 AP2 · 3 H1 · 4 Arma la factura · 5 AP3 · 6 ¿Cuánto vale lo que sobró? · 7 AP4 · 8 Cierra el mes · 9 A5 · 10 ¿Costo o gasto? · 11 A6 · 12 La devolución en dos libros · 13 A7 · 14 ¿Qué control falta?. No cambia ninguna cifra ni página.
+
+**Orden final de T7-2 (L, 14 de octubre de 2026):** se agregó, justo antes de «## Bloque A», la sección «## Orden final de T7-2», con los ids y el orden del plan v1 de Near (con la corrección de Mello): 1 A1 · 2 ¿Debe o haber? · 3 A2 · 4 Arma los dos asientos (Hacer; el plan v1 lo llamaba como A2 y L lo renombró) · 5 A3 · 6 Llena el kárdex · 7 A4 · 8 ¿Periódico o permanente? · 9 A5 · 10 A6 · 11 Flete y devolución. No cambia ninguna cifra ni página.
 
 **Decisión de corte v10.2 (L, 14 de octubre de 2026):** la sección «## Decisión de corte (L, general de la Célula C · 13 de octubre de 2026)», que estaba en la versión 2, se reemplazó con todas sus subsecciones por la versión 10.2 de L, tal cual. No cambia el corte (tres temas, con cortes en 232|233 y en 248); cambian la justificación, las reglas de producción y la lista de control de las cadenas que cruzan.

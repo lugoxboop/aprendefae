@@ -54,7 +54,7 @@ const G = {
     tasa: { cx: 280, cy: 370, r: 15, rx: 280, ry: 404, rAnchor: "middle", credito: [[278, 353], [266, 310]] },
     banrep: { x: 98, y: 370, w: 84, h: 36, rx: 140, ry: [422, 439] },
     pesos: { x: 140, de: 362, a: 320 },
-    tes: { x: 26, y: 368, w: 40, h: 38, flecha: [70, 96, 388] },
+    tes: { x: 26, y: 368, w: 40, h: 38, flecha: [70, 96, 388], oma: 424 },
     liquido: { menos: [10, 24, "start"], mas: [10, 342, "start"] },
     efectos: { base: [150, 344, "start"], multiplica: [226, 262, "start"], credito: [300, 438, "end"] },
   },
@@ -72,7 +72,7 @@ const G = {
     tasa: { cx: 596, cy: 140, r: 26, rx: 632, ry: 147, rAnchor: "start", credito: [[588, 168], [568, 264]] },
     banrep: { x: 76, y: 308, w: 104, h: 40, rx: 128, ry: [370, 394] },
     pesos: { horizontal: [184, 212] },
-    tes: { x: 10, y: 306, w: 50, h: 42, flecha: [62, 72, 327] },
+    tes: { x: 10, y: 306, w: 50, h: 42, flecha: [62, 72, 327], oma: 372 },
     liquido: { menos: [344, 20, "middle"], mas: [344, 376, "middle"] },
     efectos: { base: [204, 294, "end"], multiplica: [512, 238, "start"], credito: [596, 80, "middle"] },
   },
@@ -239,6 +239,8 @@ function Dibujo({ g, resaltar, efecto }) {
       <Parte id="tes" resaltar={resaltar}>
         <path d={`M${g.tes.x} ${g.tes.y} H${g.tes.x + g.tes.w - 10} L${g.tes.x + g.tes.w} ${g.tes.y + 10} V${g.tes.y + g.tes.h} H${g.tes.x} Z`} fill="none" stroke={LINEA} strokeWidth="2" strokeLinejoin="round" />
         <Texto g={g} x={g.tes.x + g.tes.w / 2} y={g.tes.y + g.tes.h / 2 + g.t * 0.36 + 2} anchor="middle" peso={700}>TES</Texto>
+        {/* La compra de TES es una operación de mercado abierto: el rótulo la ata a la OMA de la sala */}
+        <Texto g={g} x={g.tes.x + g.tes.w / 2} y={g.tes.oma} anchor="middle" color="rgba(248,249,250,0.62)">OMA</Texto>
         {/* El Banco compra los TES: el papel va hacia el Banco */}
         <Flecha d={`M${g.tes.flecha[0]} ${g.tes.flecha[2]} H${g.tes.flecha[1]}`} />
         <Punta x={g.tes.flecha[1]} y={g.tes.flecha[2]} dir="der" />
@@ -284,7 +286,9 @@ export function EscenaTallas({ resaltar = [], efecto = {} }) {
  *
  * Una palanca a la vez: la pregunta es qué reacciona PRIMERO. Cada palanca
  * enciende su instrumento y el punto de la escalera donde pega:
- *   TES     → la base (el Banco paga con pesos nuevos o los recoge)
+ *   TES     → la base (el Banco paga con pesos nuevos o los recoge). La compra y la
+ *             venta de TES son operaciones de mercado abierto (OMA), el mismo
+ *             instrumento de la escena de los instrumentos: no es una palanca nueva.
  *   encaje  → cuánto se multiplica la base hacia M1 y M2 (los bancos)
  *   tasa    → cuánto crédito se pide (la correa del crédito)
  * Sin cifras: el dibujo dice hacia dónde, no cuánto.
@@ -297,7 +301,7 @@ export function EscenaTallas({ resaltar = [], efecto = {} }) {
  * no les mide INFLESZ.
  */
 export const PALANCAS = [
-  { id: "tes", nombre: "Operaciones con TES", opciones: [["comprar", "Comprar TES"], ["vender", "Vender TES"]] },
+  { id: "tes", nombre: "Operaciones de Mercado Abierto", opciones: [["comprar", "Comprar TES"], ["vender", "Vender TES"]] },
   { id: "encaje", nombre: "Encaje", opciones: [["bajar", "Bajar"], ["subir", "Subir"]] },
   { id: "tasa", nombre: "Tasa de intervención", opciones: [["bajar", "Bajar"], ["subir", "Subir"]] },
 ];
@@ -310,8 +314,8 @@ export function reaccionTallas(sel) {
     return {
       resaltar: ["tes", "banco-republica", "base"], efecto: { base: s }, primero: "base",
       texto: s > 0
-        ? "Primero se mueve la base. El Banco paga los TES con pesos nuevos, y la base crece."
-        : "Primero se mueve la base. El Banco recibe pesos por los TES y los saca de circulación. La base se achica.",
+        ? "Primero se mueve la base. En una operación de mercado abierto, el Banco paga los TES con pesos nuevos, y la base crece."
+        : "Primero se mueve la base. En una operación de mercado abierto, el Banco vende TES y recibe pesos. Los saca de circulación, y la base se achica.",
     };
   }
   if (palanca === "encaje") {
