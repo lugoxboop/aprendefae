@@ -711,6 +711,28 @@ export const SUBJECTS = {
           { id: "t7-1-que-control-falta", nombre: "¿Qué control falta?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
         ],
       },
+      /*
+       * T7-2, el inventario en el sistema permanente (pp. 233-248), justo
+       * después de T7-1. El id del tema va sin prefijo de célula, como el de
+       * T7-1: es el segmento de la dirección que ve el estudiante. El orden de
+       * sus piezas es el de la sección «Orden final de T7-2» del mapa.
+       */
+      {
+        id: "inventarios-permanente",
+        title: "Inventarios II: el sistema permanente",
+        actividades: [
+          /* A1: abre el tema. La lista del libro de pp. 207-208 y el permanente de pp. 233-234. Cero FP. */
+          { id: "t7-2-a1-la-cuenta-que-si-se-mueve", nombre: "La cuenta que sí se mueve", clasificacion: { tipo: APRENDER } },
+          /* H1, justo después de A1 (orden final de T7-2): se publica con A1 o después. Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0098. */
+          { id: "t7-2-debe-o-haber", nombre: "¿Debe o haber?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
+          /* A2, después de A1 (regla 9): usa «Inventario de mercancías sí se mueve» y la glosa del costo de lo vendido. H1 «¿Debe o haber?» entra entre las dos. Cero FP. */
+          { id: "t7-2-a2-la-venta-en-dos-asientos", nombre: "La venta en dos asientos", clasificacion: { tipo: APRENDER } },
+          /* H2, justo después de A2 (orden final de T7-2). L la llamó «Arma los dos asientos» para no repetir el nombre de A2. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0099. */
+          { id: "t7-2-dos-asientos", nombre: "Arma los dos asientos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* A3, después de A2 (regla 9): el kárdex con los tres métodos, con cifras construidas. Cero FP. */
+          { id: "t7-2-a3-el-kardex", nombre: "El kárdex", clasificacion: { tipo: APRENDER } },
+        ],
+      },
     ],
   },
   "pensamiento-estrategico": {
