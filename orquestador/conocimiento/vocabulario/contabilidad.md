@@ -95,3 +95,26 @@ elemento gráfico no textual es 3:1.
   el profesor ve ids crudos.
 - Las cifras **se calculan, no se transcriben**: si un total sale de unos datos,
   sale de sumarlos.
+
+## Devoluciones: son DOS cuentas, no dos nombres
+
+**«Devoluciones de ventas»** en el libro de quien vende y **«devoluciones de
+compras»** en el de quien compra. Los dos nombres son del libro, literales de
+los subtítulos de los asientos modelo de la p. 231, y el mapa del T7 lo recoge
+con una frase que zanja la duda: *«las devoluciones en ventas y en compras son
+cuentas nominales separadas»*.
+
+No es el mismo hecho con dos nombres —eso sería un choque y habría que elegir
+uno—: son dos cuentas distintas, una en cada libro, y el estudiante tiene que
+ver las dos. Quien escriba del lado del comprador usa «de compras»; quien
+escriba del lado del vendedor, «de ventas». Ninguna célula tiene que pedir
+permiso para usar la suya.
+
+**Lo que sí está prohibido** es inventar un tercero. La p. 197 las menciona como
+«devoluciones de mercancías»: eso es una mención de paso, no el nombre de la
+cuenta. Donde se enseña es §5.5, y manda el nombre de donde se enseña.
+
+Quedó fijado la noche del 13 de octubre, cuando dos células escribían sobre el
+mismo concepto sin saberlo: una lo enseñaba desde el libro del comprador y la
+otra iba a necesitarlo desde el del vendedor. No chocaron por suerte, porque
+las dos siguieron al libro.
