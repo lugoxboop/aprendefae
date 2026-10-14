@@ -49,7 +49,9 @@
  * copiarla o guardarla.
  *
  * LO QUE ESTO NO CUBRE (Levi): que falle el archivo principal mismo. Este
- * guardia vive dentro de él; si no carga, no se ejecuta. Va en su propio PR.
+ * guardia vive dentro de él; si no carga, no se ejecuta. Eso lo cubre el
+ * guardia escrito en index.html, con las mismas claves y el mismo tope. Al
+ * instalarse, este marca window.__aprendefaeArranco para que aquel se aparte.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -169,6 +171,8 @@ export function mostrarAviso(doc, { texto = MENSAJE, alRecargar } = {}) {
  */
 export function instalarRecargaTrasDespliegue(win = globalThis.window, { reloj = () => Date.now() } = {}) {
   if (!win?.addEventListener) return;
+  /* El main arrancó: desde aquí manda este guardia, no el de index.html. */
+  win.__aprendefaeArranco = true;
   /* Quita el parámetro de una recarga anterior, sin recargar. */
   try {
     const limpia = direccionLimpia(win.location.href);

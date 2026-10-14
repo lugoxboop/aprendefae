@@ -7,6 +7,97 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/favicon-180.png" />
     <title>AprendeFAE</title>
+    <!--
+      EL GUARDIA DEL ARRANQUE (Levi, auditoría del #43, punto 4).
+
+      src/arranque/recargaTrasDespliegue.js cubre los trozos que se cargan bajo
+      demanda, pero vive DENTRO del archivo principal: si el que falla es ese
+      archivo —un index viejo en caché que apunta a un main que el despliegue
+      ya borró—, ese guardia nunca se ejecuta y la pantalla queda en blanco.
+
+      Este va escrito aquí, sin pedir nada a la red, antes de cualquier script.
+      Escucha el fallo de carga de un archivo de /assets/ (el main, su CSS o
+      un trozo que el main importa de entrada) y hace lo mismo que el otro, con
+      las MISMAS claves de sessionStorage, así que comparten el tope: recarga
+      con ?recarga=<hora>, como mucho una vez cada 30 s y dos por sesión; si no
+      puede, pinta el aviso con «Recargar». Una prueba comprueba que las
+      claves, los límites y los textos son los del módulo.
+
+      En cuanto el main arranca, marca window.__aprendefaeArranco y este se
+      aparta: lo que falle después (el CSS de una vista, por ejemplo) es del
+      otro guardia.
+    -->
+    <script data-guardia-arranque>
+      (function () {
+        var CLAVE = "aprendefae-recarga-tras-despliegue";
+        var CLAVE_VECES = "aprendefae-recarga-tras-despliegue-veces";
+        var PARAMETRO = "recarga";
+        var VENTANA_MS = 30000;
+        var MAX_RECARGAS = 2;
+        /* PENDIENTES DE GEN: los mismos dos textos del módulo. */
+        var MENSAJE = "No pudimos cargar esta parte. Revisa tu conexión y vuelve a entrar.";
+        var BOTON = "Recargar";
+        var recargando = false;
+
+        function sinCache(marca) {
+          var u = new URL(location.href);
+          u.searchParams.set(PARAMETRO, String(marca));
+          return u.toString();
+        }
+        function avisar() {
+          if (!document.body || document.querySelector("[data-aviso-carga]")) return;
+          var caja = document.createElement("div");
+          caja.setAttribute("role", "alert");
+          caja.setAttribute("data-aviso-carga", "");
+          caja.style.cssText = "position:fixed;left:16px;right:16px;top:16px;z-index:9999;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 12px 12px 16px;border-radius:12px;box-sizing:border-box;background:#1D3557;color:#FFFFFF;border:1px solid rgba(248,249,250,0.22);font-family:Inter,sans-serif;font-size:15px;line-height:22px;box-shadow:0 6px 24px rgba(0,0,0,0.35)";
+          var frase = document.createElement("span");
+          frase.textContent = MENSAJE;
+          frase.style.flex = "1 1 180px";
+          var boton = document.createElement("button");
+          boton.type = "button";
+          boton.textContent = BOTON;
+          boton.style.cssText = "min-height:44px;padding:0 18px;border-radius:10px;border:none;cursor:pointer;background:#FFFFFF;color:#1D3557;font-family:Inter,sans-serif;font-size:15px;font-weight:600";
+          /* Lo toca el estudiante: no mira la marca ni el tope. */
+          boton.addEventListener("click", function () { location.replace(sinCache(Date.now())); });
+          caja.appendChild(frase);
+          caja.appendChild(boton);
+          document.body.appendChild(caja);
+        }
+        function alFallar() {
+          if (recargando || window.__aprendefaeArranco) return;
+          var ahora = Date.now();
+          var puede = false;
+          try {
+            var hora = sessionStorage.getItem(CLAVE);
+            var veces = sessionStorage.getItem(CLAVE_VECES);
+            var t = Number(hora);
+            var reciente = hora !== null && hora !== "" && isFinite(t) && Math.abs(ahora - t) < VENTANA_MS;
+            var n = veces === null ? 0 : Number(veces);
+            if (!(n >= 0 && n % 1 === 0)) n = MAX_RECARGAS;
+            if (!reciente && n < MAX_RECARGAS) {
+              /* La cuenta primero: si no se puede contar, no se recarga. */
+              sessionStorage.setItem(CLAVE_VECES, String(n + 1));
+              sessionStorage.setItem(CLAVE, String(ahora));
+              puede = true;
+            }
+          } catch (e) { puede = false; }
+          if (puede) {
+            recargando = true;
+            location.replace(sinCache(ahora));
+            return;
+          }
+          /* Si falló algo del head, el body todavía no existe. */
+          if (document.body) avisar();
+          else document.addEventListener("DOMContentLoaded", avisar);
+        }
+        addEventListener("error", function (e) {
+          var el = e && e.target;
+          if (!el || !el.tagName) return;
+          var url = el.tagName === "SCRIPT" ? el.src : el.tagName === "LINK" ? el.href : "";
+          if (url && url.indexOf("/assets/") !== -1) alFallar();
+        }, true);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
