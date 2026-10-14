@@ -29,5 +29,6 @@ if (location.hash === "#sonda") {
     </div>,
   );
 } else {
+  /* Con o sin #a6, la vista entera: la medición de A6 busca su pieza dentro de ella. */
   raiz.render(<ContabilidadT7_1View onBack={() => {}} />);
 }
