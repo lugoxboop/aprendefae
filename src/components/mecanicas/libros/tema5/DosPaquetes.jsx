@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
-import { CONSIGNA_CAPA_3, CONTEXTO_CAPA_3, PAQUETES, FINAL_CAPA_3 } from "../../../../data/contabilidadTema5Pieza1.js";
+import { CONSIGNA_CAPA_3, CONTEXTO_CAPA_3, PAQUETES, FINAL_CAPA_3, PIE_FINAL_CAPA_3 } from "../../../../data/contabilidadT5Pieza1.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "./EstilosT5.jsx";
 
@@ -26,6 +26,8 @@ const INTER = "Inter, sans-serif";
 const TEXTO = FAE.text;
 const BORDES = COLOR.neutro; // #B8C4D4
 const ATENUADO = "rgba(184,196,212,.50)";
+/* El pie de fuente, con el estilo del Tema 3. */
+const PIE = { margin: "4px 0 0", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: COLOR.apagado };
 const LECTURA = { margin: 0, fontFamily: INTER, fontSize: "14px", lineHeight: 1.55, fontWeight: 400, color: TEXTO };
 
 function Chevron() {
@@ -62,9 +64,10 @@ function Paquete({ paquete, abierto, onAbrir }) {
       {/* La revelación va fuera del botón, en la misma caja; la región viva existe desde antes. */}
       <div id={id} data-revela={paquete.id} aria-live="polite">
         {abierto && (
-          <p style={{ ...LECTURA, margin: "0 14px 12px", paddingTop: "10px", borderTop: `1px solid ${ATENUADO}` }}>
-            {paquete.revela}
-          </p>
+          <div style={{ margin: "0 14px 12px", paddingTop: "10px", borderTop: `1px solid ${ATENUADO}` }}>
+            <p style={LECTURA}>{paquete.revela}</p>
+            <p data-pie style={PIE}>{paquete.pie}</p>
+          </div>
         )}
       </div>
     </div>
@@ -98,6 +101,7 @@ export default function DosPaquetes() {
             display: "flex", flexDirection: "column", gap: "8px",
           }}>
             {FINAL_CAPA_3.map((t) => <p key={t} style={LECTURA}>{t}</p>)}
+            <p data-pie style={{ ...PIE, margin: 0 }}>{PIE_FINAL_CAPA_3}</p>
           </div>
         )}
       </div>
