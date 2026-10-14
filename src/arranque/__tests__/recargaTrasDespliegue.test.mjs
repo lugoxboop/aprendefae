@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import {
-  CLAVE, PARAMETRO, MENSAJE, VENTANA_MS, alFallarLaCarga, reciente, direccionLimpia, direccionSinCache, instalarRecargaTrasDespliegue,
+  CLAVE, CLAVE_VECES, PARAMETRO, MENSAJE, BOTON, VENTANA_MS, MAX_RECARGAS, alFallarLaCarga, reciente, recargasHechas, direccionLimpia, direccionSinCache, instalarRecargaTrasDespliegue,
 } from "../recargaTrasDespliegue.js";
 
 /*
@@ -13,7 +13,10 @@ import {
  *   ·  1.er fallo de un import: recarga UNA vez, con una dirección nueva
  *   ·  otro fallo POCO después de recargar: NO recarga; muestra el aviso
  *   ·  otro fallo HORAS después (otro despliegue, misma pestaña): recarga otra vez
- *   ·  sin sessionStorage: aviso, nunca recarga (no hay cómo frenar un bucle)
+ *   ·  …hasta MAX_RECARGAS por sesión; el trozo que falla siempre no da bucle
+ *   ·  varios eventos de una misma navegación: una sola recarga, sin aviso
+ *   ·  el aviso trae «Recargar», que recarga siempre (lo toca el estudiante)
+ *   ·  sin sessionStorage: aviso, nunca recarga sola (no hay cómo frenar un bucle)
  *   ·  el parámetro de la recarga se quita al volver a arrancar
  *
  * El import que falla se simula como lo hace Vite (dist, preload helper):
@@ -88,7 +91,8 @@ test("el 2.º fallo en la sesión NO recarga: muestra el aviso y deja pasar el e
   assert.equal(segunda.recargas.length, 0, "no recarga: no hay bucle");
   const caja = aviso(segunda.win);
   assert.equal(caja.length, 1);
-  assert.equal(caja[0].textContent, MENSAJE);
+  assert.equal(caja[0].querySelector("span").textContent, MENSAJE);
+  assert.equal(caja[0].querySelector("button").textContent, BOTON);
   assert.equal(caja[0].getAttribute("role"), "alert");
 
   /* Un 3.er fallo no recarga ni duplica el aviso. */
@@ -136,10 +140,85 @@ test("la ventana: dentro es un bucle (aviso), fuera es un despliegue nuevo (reca
   assert.equal(caso(String(T), T + 2 * 60 * 60 * 1000), "recarga", "dos horas: otro despliegue");
   assert.equal(caso("dañada", T), "recarga", "marca que no es una hora");
   assert.equal(caso("", T), "recarga");
-  assert.equal(caso(String(T + 30_000), T), "aviso", "reloj atrasado unos segundos: sigue siendo reciente");
+  assert.equal(caso(String(T + 10_000), T), "aviso", "reloj atrasado unos segundos: sigue siendo reciente");
   assert.equal(caso(String(T + 2 * 60 * 60 * 1000), T), "recarga", "reloj atrasado horas: vieja");
-  assert.equal(VENTANA_MS, 5 * 60 * 1000);
+  assert.equal(VENTANA_MS, 30 * 1000, "30 s, de Levi");
+  assert.equal(MAX_RECARGAS, 2, "dos por sesión, de Levi");
   assert.equal(reciente(null, T), false);
+});
+
+test("varios eventos de la misma navegación (el JS y el CSS del trozo): una recarga, sin aviso (Levi)", async () => {
+  const { win, recargas } = pestana("https://aprendefae.com/#/macro/monetaria");
+  instalarRecargaTrasDespliegue(win);
+  await importar(win);
+  await importar(win); /* el segundo llega antes de que termine la navegación */
+  await importar(win);
+  assert.equal(recargas.length, 1);
+  assert.equal(aviso(win).length, 0, "no le pinta «no pudimos cargar» mientras se arregla");
+  assert.equal(win.sessionStorage.getItem(CLAVE_VECES), "1", "cuenta una recarga, no tres");
+});
+
+test("el trozo de la ruta inicial falla SIEMPRE: como mucho MAX_RECARGAS y después aviso, rápido o lento (Levi)", async () => {
+  /* Cada vuelta es una carga de la página; entre una y otra pasa `entre` ms. */
+  for (const entre of [500, 2_000, VENTANA_MS + 15_000, 10 * 60 * 1000]) {
+    const sesion = pestana("https://aprendefae.com/").win.sessionStorage;
+    let href = "https://aprendefae.com/#/ingresos-gastos-y-caja/hacer";
+    let t = 1_800_000_000_000;
+    let recargasTotales = 0;
+    let ultima = null;
+    for (let carga = 0; carga < 10; carga++) {
+      const tab = pestana(href, sesion);
+      instalarRecargaTrasDespliegue(tab.win, { reloj: () => t });
+      try { await importar(tab.win); } catch { /* el error sigue su curso: aviso */ }
+      ultima = tab;
+      if (!tab.recargas.length) break;
+      recargasTotales += tab.recargas.length;
+      href = tab.recargas[0];
+      t += entre;
+    }
+    assert.ok(recargasTotales <= MAX_RECARGAS, `cada ${entre} ms: ${recargasTotales} recargas`);
+    assert.ok(recargasTotales >= 1);
+    assert.equal(aviso(ultima.win).length, 1, `cada ${entre} ms: termina en aviso`);
+  }
+});
+
+test("el tope: tras MAX_RECARGAS despliegues en la sesión, el siguiente es aviso con botón", () => {
+  const datos = new Map();
+  const almacen = { getItem: (k) => datos.get(k) ?? null, setItem: (k, v) => datos.set(k, v) };
+  const r = [];
+  const op = (ahora) => ({ almacen, href: "https://aprendefae.com/", recargar: (d) => r.push(d), avisar: () => r.push("aviso"), ahora });
+  const H = 60 * 60 * 1000;
+  assert.equal(alFallarLaCarga(null, op(0 * H)), "recarga");
+  assert.equal(alFallarLaCarga(null, op(2 * H)), "recarga");
+  assert.equal(alFallarLaCarga(null, op(4 * H)), "aviso");
+  assert.equal(datos.get(CLAVE_VECES), String(MAX_RECARGAS));
+  /* Una cuenta dañada cuenta como el tope: ante la duda, no recargar sola. */
+  assert.equal(recargasHechas("x"), MAX_RECARGAS);
+  assert.equal(recargasHechas("-1"), MAX_RECARGAS);
+  assert.equal(recargasHechas("1.5"), MAX_RECARGAS);
+  assert.equal(recargasHechas(null), 0);
+  assert.equal(recargasHechas("1"), 1);
+});
+
+test("«Recargar» en el aviso: recarga sin caché y conserva la ruta, aunque se haya llegado al tope o no haya sessionStorage (Levi)", async () => {
+  for (const almacen of [null, { getItem() { throw new Error("bloqueado"); }, setItem() { throw new Error("bloqueado"); } }]) {
+    const base = pestana("https://aprendefae.com/");
+    const sesion = almacen ?? base.win.sessionStorage;
+    if (!almacen) { sesion.setItem(CLAVE, "1"); sesion.setItem(CLAVE_VECES, String(MAX_RECARGAS)); }
+    const { win, recargas } = pestana("https://aprendefae.com/#/contabilidad", sesion);
+    instalarRecargaTrasDespliegue(win, { reloj: () => 1_900_000_000_000 });
+    await assert.rejects(importar(win));
+    assert.equal(recargas.length, 0, "no recarga sola");
+    const boton = aviso(win)[0].querySelector("button");
+    assert.equal(boton.textContent, BOTON);
+    assert.equal(boton.type, "button");
+    boton.click();
+    assert.equal(recargas.length, 1, "el botón sí recarga");
+    const u = new URL(recargas[0]);
+    assert.equal(u.searchParams.get(PARAMETRO), "1900000000000");
+    assert.equal(u.hash, "#/contabilidad");
+    if (!almacen) assert.equal(sesion.getItem(CLAVE_VECES), String(MAX_RECARGAS), "el botón no toca la cuenta");
+  }
 });
 
 test("si el import funciona, no pasa nada", async () => {

@@ -13,55 +13,62 @@
  *
  * Vite dispara `vite:preloadError` justo en ese caso (y lo deja cancelar).
  *
- *   1.er fallo            guarda la hora en sessionStorage, cancela el error
- *                         y RECARGA, una sola vez, con un parámetro nuevo en
+ *   un fallo              guarda la hora y suma una recarga en sessionStorage,
+ *                         cancela el error y RECARGA con un parámetro nuevo en
  *                         la dirección. Recargar a secas no basta: Erwin lo
  *                         probó y siguió viendo el índice viejo; una dirección
  *                         distinta no puede salir de ninguna caché.
+ *   más eventos, mientras  una misma navegación puede disparar varios (el JS y
+ *   recarga               el CSS del mismo trozo). Se cancelan y se ignoran:
+ *                         sin esto, el segundo encontraba la marca y pintaba
+ *                         el aviso justo mientras todo se arreglaba (Levi).
  *   otro fallo, PRONTO    (menos de VENTANA_MS desde la última recarga) NO
- *                         recarga: es «recargué y volvió a fallar», el trozo
- *                         falta de verdad y recargar sería un bucle. Muestra
- *                         un aviso, fuera de React (el árbol puede haber
- *                         quedado vacío).
- *   otro fallo, DESPUÉS   (la marca es vieja) no es un bucle: es otro
- *                         despliegue con la misma pestaña abierta, y merece su
- *                         recarga. Una sesión larga de estudio cruza dos
- *                         despliegues sin esfuerzo; la primera marca no puede
- *                         silenciar las siguientes (Erwin).
+ *                         recarga: es «recargué y volvió a fallar». Aviso.
+ *   otro fallo, DESPUÉS   (la marca es vieja) es otro despliegue con la misma
+ *                         pestaña abierta: recarga otra vez (Erwin)…
+ *   …HASTA MAX_RECARGAS   por sesión. A partir de ahí, aviso. Tiempo Y cantidad
+ *                         (Levi): ni un bucle lento —un celular que tarda más
+ *                         que la ventana en recargar— se repite sin fin.
  *
- * POR QUÉ CINCO MINUTOS. El bucle es cuestión de segundos; un despliegue
- * nuevo, de horas. Si la ventana se queda corta, un celular lento que tarda
- * más que ella en recargar entraría en bucle: ese es el error grave. Si se
- * queda larga, lo peor es un aviso de más cuando dos despliegues caen en la
- * misma ventana. Por eso se elige larga. En el peor caso, una recarga cada
- * cinco minutos, y solo si el estudiante vuelve a abrir esa parte.
- *
- * Una marca que no es una hora (dañada) cuenta como vieja. Una marca en el
- * futuro (el reloj del equipo se atrasó) cuenta por su distancia: si está
- * lejos, es vieja.
+ * EL AVISO TRAE «Recargar» (Levi). Hace lo mismo que la recarga automática.
+ * Como lo toca el estudiante, no mira la marca ni el tope: no hay bucle
+ * posible, y nadie se queda atrapado, tampoco sin sessionStorage. Sin el
+ * botón, el aviso pedía algo que no funciona —volver a entrar sirve de la
+ * caché el mismo índice viejo— y tapaba la cabecera para siempre.
  *
  * Sin sessionStorage (bloqueado o lleno) no hay forma de saber si ya se
- * recargó: se muestra el aviso y no se recarga. Mejor un aviso que un bucle.
+ * recargó: aviso, nunca recarga automática. Mejor un aviso que un bucle.
+ *
+ * La marca NUNCA se borra al montar: es la que distingue un bucle de un
+ * despliegue nuevo y la que cuenta el tope. Una marca que no es una hora
+ * (dañada) cuenta como vieja; una en el futuro (reloj atrasado) cuenta por su
+ * distancia.
  *
  * Al arrancar, si la dirección trae el parámetro de la recarga, se quita (sin
  * recargar ni tocar el hash de la ruta): la dirección queda limpia para
- * copiarla o guardarla. La marca se queda: es la que distingue un
- * bucle de un despliegue nuevo.
+ * copiarla o guardarla.
+ *
+ * LO QUE ESTO NO CUBRE (Levi): que falle el archivo principal mismo. Este
+ * guardia vive dentro de él; si no carga, no se ejecuta. Va en su propio PR.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 export const CLAVE = "aprendefae-recarga-tras-despliegue";
+export const CLAVE_VECES = "aprendefae-recarga-tras-despliegue-veces";
 export const PARAMETRO = "recarga";
-export const VENTANA_MS = 5 * 60 * 1000;
+export const VENTANA_MS = 30 * 1000;
+export const MAX_RECARGAS = 2;
 
 /*
- * PENDIENTE DE GEN. Es la propuesta inicial de Erwin; el texto final lo
- * aprueba Gen y se cambia aquí, en una sola línea. Restricción de Erwin: NO
- * puede mandar al estudiante a revisar su conexión. En el caso que lo dispara
- * la conexión está bien; lo que falló es que la página quedó vieja o le falta
- * una parte.
+ * PENDIENTE DE GEN, los dos textos. El mensaje es la propuesta inicial; el
+ * final lo aprueba Gen y se cambia aquí. Restricciones (Erwin y Levi): NO
+ * puede afirmar que el problema es la conexión, ni que volver a entrar lo
+ * arregla, ni que el progreso está guardado, ni con certeza que hay una
+ * versión nueva. Puede decir que algo no cargó y que se toque «Recargar». Sin
+ * culpar al estudiante. El texto de hoy incumple la primera: es provisional.
  */
 export const MENSAJE = "No pudimos cargar esta parte. Revisa tu conexión y vuelve a entrar.";
+export const BOTON = "Recargar";
 
 /** La misma dirección, con el parámetro de la recarga puesto (o renovado). El hash de la ruta no se toca. */
 export function direccionSinCache(href, marca) {
@@ -78,11 +85,11 @@ export function direccionLimpia(href) {
   return u.toString();
 }
 
-function leer(almacen) {
-  try { return { ok: true, valor: almacen.getItem(CLAVE) }; } catch { return { ok: false, valor: null }; }
+function leer(almacen, clave) {
+  try { return { ok: true, valor: almacen.getItem(clave) }; } catch { return { ok: false, valor: null }; }
 }
-function marcar(almacen, valor) {
-  try { almacen.setItem(CLAVE, valor); return true; } catch { return false; }
+function marcar(almacen, clave, valor) {
+  try { almacen.setItem(clave, valor); return true; } catch { return false; }
 }
 
 /* ¿La marca es de hace menos de VENTANA_MS? Una marca dañada no es reciente. */
@@ -92,16 +99,33 @@ export function reciente(marca, ahora) {
   return Number.isFinite(t) && Math.abs(ahora - t) < VENTANA_MS;
 }
 
+/* Cuántas recargas automáticas lleva la sesión. Un valor dañado cuenta como el tope: ante la duda, no recargar. */
+export function recargasHechas(valor) {
+  if (valor === null || valor === undefined) return 0;
+  const n = Number(valor);
+  return Number.isInteger(n) && n >= 0 ? n : MAX_RECARGAS;
+}
+
 /**
- * Qué hacer con un `vite:preloadError`. Devuelve "recarga" o "aviso".
+ * Qué hacer con un `vite:preloadError`. Devuelve "recarga", "ignorado" o "aviso".
  *   evento    el evento de Vite (cancelable)
  *   almacen   sessionStorage
  *   recargar  (direccion) => void
  *   avisar    () => void
+ *   estado    { recargando }: uno por página. Mientras recarga, lo demás se ignora.
  */
-export function alFallarLaCarga(evento, { almacen, href, recargar, avisar, ahora = Date.now() }) {
-  const previo = leer(almacen);
-  if (previo.ok && !reciente(previo.valor, ahora) && marcar(almacen, String(ahora))) {
+export function alFallarLaCarga(evento, { almacen, href, recargar, avisar, ahora = Date.now(), estado = { recargando: false } }) {
+  if (estado.recargando) {
+    evento?.preventDefault?.();
+    return "ignorado";
+  }
+  const hora = leer(almacen, CLAVE);
+  const veces = leer(almacen, CLAVE_VECES);
+  const n = recargasHechas(veces.valor);
+  const puede = hora.ok && veces.ok && !reciente(hora.valor, ahora) && n < MAX_RECARGAS;
+  /* La cuenta se escribe primero: si no se puede contar, no se recarga. */
+  if (puede && marcar(almacen, CLAVE_VECES, String(n + 1)) && marcar(almacen, CLAVE, String(ahora))) {
+    estado.recargando = true;
     evento?.preventDefault?.();
     recargar(direccionSinCache(href, ahora));
     return "recarga";
@@ -110,25 +134,40 @@ export function alFallarLaCarga(evento, { almacen, href, recargar, avisar, ahora
   return "aviso";
 }
 
-/* El aviso: una franja fija arriba, fuera del árbol de React. Una sola vez. */
-export function mostrarAviso(doc, texto = MENSAJE) {
+/* El aviso: una franja fija arriba, fuera del árbol de React, con «Recargar». Una sola vez. */
+export function mostrarAviso(doc, { texto = MENSAJE, alRecargar } = {}) {
   if (!doc?.body || doc.querySelector?.("[data-aviso-carga]")) return;
   const caja = doc.createElement("div");
   caja.setAttribute("role", "alert");
   caja.setAttribute("data-aviso-carga", "");
-  caja.textContent = texto;
   Object.assign(caja.style, {
     position: "fixed", left: "16px", right: "16px", top: "16px", zIndex: "9999",
-    padding: "14px 16px", borderRadius: "12px", boxSizing: "border-box",
+    display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap",
+    padding: "12px 12px 12px 16px", borderRadius: "12px", boxSizing: "border-box",
     background: "#1D3557", color: "#FFFFFF", border: "1px solid rgba(248,249,250,0.22)",
     fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px",
     boxShadow: "0 6px 24px rgba(0,0,0,0.35)",
   });
+  const frase = doc.createElement("span");
+  frase.textContent = texto;
+  frase.style.flex = "1 1 180px";
+  const boton = doc.createElement("button");
+  boton.type = "button";
+  boton.textContent = BOTON;
+  Object.assign(boton.style, {
+    minHeight: "44px", padding: "0 18px", borderRadius: "10px", border: "none", cursor: "pointer",
+    background: "#FFFFFF", color: "#1D3557", fontFamily: "Inter, sans-serif", fontSize: "15px", fontWeight: "600",
+  });
+  boton.addEventListener("click", () => alRecargar?.());
+  caja.append(frase, boton);
   doc.body.appendChild(caja);
 }
 
-/** Lo instala en la ventana. Se llama una vez, al arrancar, antes de montar React. */
-export function instalarRecargaTrasDespliegue(win = globalThis.window) {
+/**
+ * Lo instala en la ventana. Se llama una vez, al arrancar, antes de montar React.
+ * `reloj` existe para las pruebas.
+ */
+export function instalarRecargaTrasDespliegue(win = globalThis.window, { reloj = () => Date.now() } = {}) {
   if (!win?.addEventListener) return;
   /* Quita el parámetro de una recarga anterior, sin recargar. */
   try {
@@ -136,14 +175,19 @@ export function instalarRecargaTrasDespliegue(win = globalThis.window) {
     if (limpia) win.history?.replaceState?.(win.history.state, "", limpia);
   } catch { /* sin history: la dirección se queda con el parámetro, nada más */ }
 
+  const estado = { recargando: false };
+  const recargar = (direccion) => win.location.replace(direccion);
   win.addEventListener("vite:preloadError", (evento) => {
     let almacen = null;
     try { almacen = win.sessionStorage; } catch { /* bloqueado */ }
     alFallarLaCarga(evento, {
       almacen: almacen ?? { getItem() { throw new Error("sin almacén"); }, setItem() { throw new Error("sin almacén"); } },
       href: win.location.href,
-      recargar: (direccion) => win.location.replace(direccion),
-      avisar: () => mostrarAviso(win.document),
+      recargar,
+      /* El botón lo toca el estudiante: no mira la marca ni el tope. */
+      avisar: () => mostrarAviso(win.document, { alRecargar: () => recargar(direccionSinCache(win.location.href, reloj())) }),
+      ahora: reloj(),
+      estado,
     });
   });
 }
