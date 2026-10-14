@@ -71,6 +71,8 @@ import { unidadDeH7 } from "../contabilidad/t7H7.js";
 import { unidadDeH1 as unidadDeT73H1 } from "../contabilidad/t7_3H1.js";
 import { unidadDeH2 as unidadDeT73H2 } from "../contabilidad/t7_3H2.js";
 import { unidadDeH3 as unidadDeT73H3 } from "../contabilidad/t7_3H3.js";
+import { hechoDeItemH1 as hechoDeItemT72H1 } from "../contabilidad/t7_2H1.js";
+import { unidadDeH2 as unidadDeT72H2 } from "../contabilidad/t7_2H2.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -732,6 +734,10 @@ Object.assign(REGLAS, {
   "t7-3-cadena-de-descuentos": (id) => unidadDeT73H2(id),
   /* T7-3 · H3. Cada ítem, por su caso o su pregunta. */
   "t7-3-comercial-o-condicionado": (id) => unidadDeT73H3(id),
+  /* T7-2 · H1. El ítem es el hecho, y se lee por su texto. */
+  "t7-2-debe-o-haber": (id) => hechoDeItemT72H1(id),
+  /* T7-2 · H2. Un cálculo, por su pregunta; una línea, por su cuenta y su valor. */
+  "t7-2-dos-asientos": (id) => unidadDeT72H2(id),
 });
 
 /*
