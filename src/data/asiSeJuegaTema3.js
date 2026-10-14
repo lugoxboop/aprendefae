@@ -3,6 +3,7 @@ import { ACT4_T3, EJEMPLO_ACT4, PASOS_ACT4, ALT_TUTORIAL_ACT4 } from "./contabil
 import { ACT5_T3, EJEMPLO_ACT5, PASOS_ACT5, ALT_TUTORIAL_ACT5 } from "./contabilidadTema3Act5.js";
 import { ACT7_T3, EJEMPLO_ACT7, PASOS_ACT7, ALT_TUTORIAL_ACT7 } from "./contabilidadTema3Act7.js";
 import { ACT6_T3, EJEMPLO_PANADERIA_ACT6, PASOS_ACT6, ALT_TUTORIAL_ACT6 } from "./contabilidadTema3Act6.js";
+import { ACT3_T3, EJEMPLO_ACT3, PASOS_ACT3, ALT_TUTORIAL_ACT3 } from "./contabilidadTema3Act3.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -141,4 +142,34 @@ const ASI_CIERRE_COMPLETO = {
   cuadros: { gesto: 5 },
 };
 
-export const ASI_SE_JUEGA_TEMA3 = Object.fromEntries([ASI_CUANDO_SE_CAUSA, ASI_AJUSTE_ACUMULADO, ASI_AJUSTE_DIFERIDO, ASI_QUE_LE_TOCA, ASI_CIERRE_COMPLETO].map((a) => [a.actividadId, a]));
+/*
+ * Act. 3: los intereses de la panadería y el Banco Andino (Gen; Levi). La
+ * mano toca una casilla y elige su cuenta en la hoja, cuatro veces, y toca
+ * «Comprobar»: sale la resolución. Con movimiento reducido, el cuadro del
+ * gesto deja la primera casilla puesta y el último, todo comprobado.
+ */
+const elegirEn = (casilla, cuenta, desde) => [
+  { ms: desde, en: `[data-casilla="${casilla}"]` },
+  { ms: desde + 900, en: `[data-opcion="${cuenta}"]` },
+];
+const ASI_MISMO_HECHO = {
+  actividadId: ACT3_T3.id,
+  titulo: ACT3_T3.nombre,
+  consigna: ACT3_T3.consigna,
+  pasos: PASOS_ACT3,
+  alt: ALT_TUTORIAL_ACT3.replace(/^Ejemplo: /, ""),
+  demo: { items: [EJEMPLO_ACT3] },
+  guion: {
+    duracion: 12500,
+    toques: [
+      ...elegirEn("0:debe", "Gasto interés", 1200),
+      ...elegirEn("0:haber", "Intereses por pagar", 3200),
+      ...elegirEn("1:debe", "Intereses por cobrar", 5200),
+      ...elegirEn("1:haber", "Ingresos por intereses", 7200),
+      { ms: 9400, en: "[data-comprobar]" },
+    ],
+  },
+  cuadros: { gesto: 2 },
+};
+
+export const ASI_SE_JUEGA_TEMA3 = Object.fromEntries([ASI_CUANDO_SE_CAUSA, ASI_AJUSTE_ACUMULADO, ASI_AJUSTE_DIFERIDO, ASI_MISMO_HECHO, ASI_QUE_LE_TOCA, ASI_CIERRE_COMPLETO].map((a) => [a.actividadId, a]));

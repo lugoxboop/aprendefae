@@ -100,7 +100,7 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
   /* Las 14 de Hacer de Contabilidad (sin el desafío) tienen su ícono, y son 14 archivos. */
   const conDesafio = new Set(SUBJECTS.contabilidad.topics.flatMap((t) => (t.actividades ?? []).filter((x) => x.clasificacion?.desafio).map((x) => x.id)));
   /* Actividades nuevas que todavía esperan su dibujo de Xeno: el camino las pinta sin ícono. */
-  const SIN_ICONO_TODAVIA = new Set(["t3-ingreso-o-cobro", "t3-cuando-se-causa", "t3-ajuste-acumulado", "t3-ajuste-diferido", "t3-que-le-toca", "t3-cierre-completo"]);
+  const SIN_ICONO_TODAVIA = new Set(["t3-ingreso-o-cobro", "t3-cuando-se-causa", "t3-ajuste-acumulado", "t3-ajuste-diferido", "t3-que-le-toca", "t3-cierre-completo", "t3-mismo-hecho"]);
   const esperadas = [...hacer].filter((id) => !conDesafio.has(id) && !SIN_ICONO_TODAVIA.has(id));
   assert.equal(esperadas.length, 14);
   assert.deepEqual(Object.keys(ICONO_POR_ACTIVIDAD).sort(), esperadas.sort(), "falta o sobra un ícono");
