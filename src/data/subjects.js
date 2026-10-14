@@ -773,6 +773,8 @@ export const SUBJECTS = {
           { id: "t7-3-ajuste-por-conteo", nombre: "Ajuste por conteo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A7, después de A6 por el orden del mapa (depende de A1, por los descuentos). H5 entra entre A6 y A7. La NIC 2 del libro, pp. 256-258, con su frase fija a la vista. Cero FP. */
           { id: "t7-3-nic2-costo", nombre: "La NIC 2 del libro: el costo", clasificacion: { tipo: APRENDER } },
+          /* H6, justo después de A7 (orden final de T7-3; la sostiene A7): qué entra en el costo de adquisición según la NIC 2 del libro, p. 258. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0108. */
+          { id: "t7-3-que-entra-al-costo", nombre: "¿Entra al costo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
         ],
       },
     ],
