@@ -437,7 +437,7 @@ test("★★ sin la renta del 33 %, sin cifras de medición, sin «D-1», «Caja
   for (const interno of ["≈", "glosa", "regla 8", "Near", "Mello", "Watari", "(p. ", "nacionalización", "TRM", "comparan", "comparadora"]) assert.ok(!texto.includes(interno), interno);
 });
 
-test("★★★ fuera del catálogo de FP; id t7-; va en T7-1 después de AP1 y antes de A6", () => {
+test("★★★ fuera del catálogo de FP; id t7-; va en T7-1 después de AP2 y antes de A6 (orden de L: a1, a2, a5, a6)", () => {
   assert.equal(A.A5_ID, "t7-1-a5-importados-y-fletes");
   assert.equal(P.numero, 5);
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_1);
@@ -449,6 +449,10 @@ test("★★★ fuera del catálogo de FP; id t7-; va en T7-1 después de AP1 y 
   assert.equal(ids.indexOf(A.A5_ID) + 1, ids.indexOf("t7-1-a6-devoluciones-en-periodico"));
   const piezas = PIEZAS_T7_1.map((x) => x.pieza.id);
   assert.equal(piezas.indexOf(A.A5_ID) + 1, piezas.indexOf("t7-1-a6-devoluciones-en-periodico"));
+  /* El orden por dependencias (regla 9): A5 trae el IVA y la retención que enseña AP2. */
+  const orden = ["t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a2-la-factura-completa", A.A5_ID, "t7-1-a6-devoluciones-en-periodico"];
+  assert.deepEqual(ids.filter((id) => orden.includes(id)), orden);
+  assert.deepEqual(piezas.filter((id) => orden.includes(id)), orden);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A5_ID)), []);
   for (const f of ["src/components/mecanicas/libros/t7/ImportadosYFletes.jsx", "src/data/contabilidadT7_1_a5.js"]) {
