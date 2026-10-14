@@ -9,6 +9,8 @@ import { MarcoMaquinas } from "../bloques/marcos.jsx";
  * toca. La mecánica es la de ¿Quién Decide Esto? (PrimeraClasificacion), tal
  * cual: un ítem a la vez, un solo toque, las categorías siempre a la vista y
  * la devolución del banco con ✅/❌. Cambian el banco y el rótulo del bloque.
+ * Las categorías van en orden fijo en los dos juegos (Watari): son peldaños
+ * y puntos de la escalera, y barajarlas rompería ese orden.
  *
  * La consigna de Near es más larga que un rótulo: PrimeraClasificacion no
  * tiene dónde ponerla, así que va en el marco, arriba de cada enunciado, sin
@@ -41,6 +43,6 @@ export const EnQueTallaVa = ({ onCompletar }) => (
 
 /* Aplicación · Medio · 25 FP. */
 export const QueTocoElBanco = ({ onCompletar }) => (
-  <PrimeraClasificacion banco={QUE_TOCO_EL_BANCO} Marco={MarcoToco} acento={T} barajarOpciones
+  <PrimeraClasificacion banco={QUE_TOCO_EL_BANCO} Marco={MarcoToco} acento={T}
     rotulo="APLICACIÓN" titulo={QUE_TOCO_EL_BANCO.subtema} onCompletar={onCompletar} />
 );

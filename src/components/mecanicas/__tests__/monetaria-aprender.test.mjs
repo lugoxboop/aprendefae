@@ -137,7 +137,9 @@ test("Aprender no paga: las tres piezas son APRENDER y no están en el catálogo
  *     encaje sube la multiplicación, bajar la tasa sube el crédito pedido;
  *   · el Banco compra TES, no los emite (los emite el gobierno: QUIEN_DECIDE);
  *   · cifras solo de DATOS_VERIFICADOS o rotuladas «Escenario simulado»;
- *   · la letra de la escena no baja de 10,5 px en el teléfono de 320;
+ *   · la letra de la escena de Watari no baja de 10,5 px en el teléfono de
+ *     320 (236 px de escena), ni en su forma ancha;
+ *   · cada partida trae todos los ítems, y las categorías van en orden fijo;
  *   · Aprender no paga. La fila de los dos juegos (la 0091) va en el parche de
  *     cableado, con su prueba: sin cablear, el servidor no puede pagar por
  *     juegos que el cliente no ofrece (catalogo.test).
@@ -148,7 +150,7 @@ test("Aprender no paga: las tres piezas son APRENDER y no están en el catálogo
  * ═══════════════════════════════════════════════════════════════════════════
  */
 const AG = await import("../../../data/pmAgregados.js");
-const ESC = await import("../maquinas/escaleraLiquidez.jsx");
+const ESC = await import("../maquinas/tallasDelDinero.jsx");
 
 /* Todo el texto de los datos nuevos, recorrido en profundidad. */
 function textosDe(x, out = []) {
@@ -170,8 +172,7 @@ test("las-tallas-del-dinero: no queda ningún texto pendiente", () => {
 test("las-tallas-del-dinero: cuatro capas, pasos literales con su resaltado en la escalera, y la referencia solo a pedido", () => {
   const pieza = AG.APRENDER_TALLAS;
   assert.ok(pieza.pasos.length > 0, "la pieza no tiene pasos");
-  for (const p of pieza.pasos) for (const id of p.resaltar) assert.ok(ESC.PARTES_ESCALERA.includes(id), `«${id}» no es una parte de la escalera`);
-  const m = montar(React.createElement(CuatroCapas, { pieza, Escena: ESC.EscenaEscalera, Exploracion: ESC.ExploraTallas }));
+  const m = montar(React.createElement(CuatroCapas, { pieza, Escena: ESC.EscenaTallas, Exploracion: ESC.ExploraTallas }));
   try {
     assert.deepEqual([...m.caja.querySelectorAll("[data-capa]")].map((c) => c.getAttribute("data-capa")), ["1", "2", "3", "4"]);
     for (const n of pieza.nombres) assert.ok(m.caja.textContent.includes(n.definicion), `capa 1: ${n.termino}`);
@@ -236,19 +237,27 @@ test("¿Qué tocó el Banco?: cada decisión pega en su punto de la escalera, y 
   for (const c of j.categorias) assert.ok(j.items.some((it) => it.respuesta === c.id), `ningún ítem pega en «${c.id}»`);
 });
 
-test("la exploración de las tallas sigue las tres reglas, cada instrumento en su punto", () => {
-  const e = (x) => ESC.efectosAgregados({ tes: "no", encaje: "no", tasa: "no", ...x });
-  assert.deepEqual(e({}), { base: 0, multiplicacion: 0, credito: 0 });
-  assert.deepEqual(e({ tes: "comprar" }), { base: 1, multiplicacion: 0, credito: 0 }, "comprar TES sube la base, y solo la base");
-  assert.deepEqual(e({ tes: "vender" }), { base: -1, multiplicacion: 0, credito: 0 });
-  assert.deepEqual(e({ encaje: "bajar" }), { base: 0, multiplicacion: 1, credito: 0 }, "bajar el encaje sube la multiplicación, y solo eso");
-  assert.deepEqual(e({ encaje: "subir" }), { base: 0, multiplicacion: -1, credito: 0 });
-  assert.deepEqual(e({ tasa: "bajar" }), { base: 0, multiplicacion: 0, credito: 1 }, "bajar la tasa sube el crédito pedido, y solo eso");
-  assert.deepEqual(e({ tasa: "subir" }), { base: 0, multiplicacion: 0, credito: -1 });
+test("la exploración de las tallas: cada palanca enciende el punto de la escalera donde pega primero", () => {
+  const r = (palanca, v) => ESC.reaccionTallas({ palanca, v });
+  assert.deepEqual(ESC.reaccionTallas(null).efecto, {}, "sin palanca no se mueve nada");
+  assert.deepEqual([r("tes", "comprar").efecto, r("tes", "comprar").primero], [{ base: 1 }, "base"], "comprar TES: la base crece, y solo la base");
+  assert.deepEqual(r("tes", "vender").efecto, { base: -1 });
+  assert.deepEqual([r("encaje", "bajar").efecto, r("encaje", "bajar").primero], [{ multiplica: 1 }, "multiplica"], "bajar el encaje: se multiplica más, y solo eso");
+  assert.deepEqual(r("encaje", "subir").efecto, { multiplica: -1 });
+  assert.deepEqual([r("tasa", "bajar").efecto, r("tasa", "bajar").primero], [{ credito: 1 }, "credito"], "bajar la tasa: se pide más crédito, y solo eso");
+  assert.deepEqual(r("tasa", "subir").efecto, { credito: -1 });
+  /* Los tres puntos son las tres categorías del Banco en el juego 2. */
+  const puntos = AG.QUE_TOCO_EL_BANCO.categorias.map((c) => c.id).filter((id) => id !== "no-banco");
+  assert.deepEqual([r("tes", "comprar").primero, r("encaje", "bajar").primero, r("tasa", "bajar").primero], puntos);
+  /* Lo que se enciende son partes de la escena. */
+  for (const [p, v] of [["tes", "comprar"], ["encaje", "bajar"], ["tasa", "bajar"]]) assert.ok(r(p, v).resaltar.length > 0, p);
   const m = montar(React.createElement(ESC.ExploraTallas));
   try {
-    click(boton(m.caja, "El Banco compra TES"));
-    assert.match(m.caja.querySelector("[data-efectos-tallas]").textContent, /Base monetaria: sube\. Multiplicación: sin cambio\. Crédito pedido: sin cambio\./);
+    click(boton(m.caja, "Comprar TES"));
+    assert.equal(m.caja.querySelector("[data-reaccion]").getAttribute("data-reaccion"), "base");
+    assert.match(m.caja.querySelector("[data-reaccion]").textContent, /^Primero se mueve la base\./);
+    assert.ok(m.caja.querySelector('[data-efecto="base"]'), "el rótulo del efecto sale junto a la base");
+    assert.ok(!/E76F51|231,\s*111,\s*81/i.test(m.caja.innerHTML), "ni coral");
   } finally {
     m.desmontar();
   }
@@ -280,18 +289,44 @@ test("las tallas: cifras solo de DATOS_VERIFICADOS o rotuladas «Escenario simul
   assert.deepEqual(sueltas, [], "cifra sin verificar y sin rótulo de escenario");
 });
 
-test("la letra de la escena de la escalera no baja de 10,5 px en el teléfono de 320 (236 px de escena)", () => {
-  assert.ok((ESC.LETRA_ESCENA * 236) / ESC.ANCHO_ESCENA >= 10.5, "la letra declarada baja de 10,5 px");
-  const m = montar(React.createElement(ESC.EscenaEscalera));
+/* Los textos de la escena, con todos los rótulos de efecto a la vista, y su lienzo. */
+function textosDeLaEscena(anchoCaja) {
+  const antes = globalThis.ResizeObserver;
+  /* Sin ResizeObserver (jsdom) la escena pinta la escalera angosta; con uno de mentira, la ancha. */
+  if (anchoCaja) globalThis.ResizeObserver = class { constructor(cb) { this.cb = cb; } observe() { this.cb([{ contentRect: { width: anchoCaja } }]); } disconnect() {} };
+  const m = montar(React.createElement(ESC.EscenaTallas, { resaltar: [], efecto: { base: 1, multiplica: 1, credito: 1 } }));
   try {
     const svg = m.caja.querySelector("svg");
-    assert.equal(svg.getAttribute("viewBox").split(/\s+/)[2], String(ESC.ANCHO_ESCENA));
-    const tamanos = [...svg.querySelectorAll("text")].map((t) => parseFloat(t.style.fontSize));
-    assert.ok(tamanos.length > 0);
-    for (const t of tamanos) assert.ok((t * 236) / ESC.ANCHO_ESCENA >= 10.5, `un texto de ${t} queda en ${((t * 236) / ESC.ANCHO_ESCENA).toFixed(1)} px`);
+    return {
+      forma: svg.getAttribute("data-forma"),
+      lienzo: Number(svg.getAttribute("viewBox").split(/\s+/)[2]),
+      tamanos: [...svg.querySelectorAll("text")].map((t) => parseFloat(t.style.fontSize)),
+      partes: [...svg.querySelectorAll("[data-parte]")].map((g) => g.getAttribute("data-parte")),
+    };
   } finally {
     m.desmontar();
+    globalThis.ResizeObserver = antes;
   }
+}
+
+test("la escena de Watari: letra de 10,5 px o más a 236 px de escena (teléfono de 320), y en la forma ancha desde su corte", () => {
+  const angosta = textosDeLaEscena(0);
+  assert.equal(angosta.forma, "angosta");
+  assert.ok(angosta.tamanos.length >= 20, "la escena tiene sus rótulos");
+  for (const t of angosta.tamanos) assert.ok((t * 236) / angosta.lienzo >= 10.5, `angosta: un texto de ${t} queda en ${((t * 236) / angosta.lienzo).toFixed(2)} px`);
+  const ancha = textosDeLaEscena(ESC.CORTE_ANCHO);
+  assert.equal(ancha.forma, "ancha");
+  for (const t of ancha.tamanos) assert.ok((t * ESC.CORTE_ANCHO) / ancha.lienzo >= 10.5, `ancha: un texto de ${t} queda en ${((t * ESC.CORTE_ANCHO) / ancha.lienzo).toFixed(2)} px`);
+  /* Las dos formas tienen las mismas partes, y son las que nombran los pasos de Near. */
+  assert.deepEqual([...new Set(ancha.partes)].sort(), [...new Set(angosta.partes)].sort());
+  const deLosPasos = new Set(AG.APRENDER_TALLAS.pasos.flatMap((p) => p.resaltar));
+  assert.deepEqual([...deLosPasos].sort(), [...new Set(angosta.partes)].sort(), "ni partes de más ni de menos");
+});
+
+test("los dos juegos: cada partida trae todos los ítems (el CDT sale siempre), y no barajan las categorías", () => {
+  for (const j of [AG.EN_QUE_TALLA_VA, AG.QUE_TOCO_EL_BANCO]) assert.equal(j.porPartida, j.items.length, j.id);
+  const fuente = readFileSync("src/components/mecanicas/maquinas/actividadesAgregados.jsx", "utf8");
+  assert.doesNotMatch(fuente, /barajarOpciones/, "las categorías van en orden fijo");
 });
 
 test("las tallas: Aprender no paga", () => {

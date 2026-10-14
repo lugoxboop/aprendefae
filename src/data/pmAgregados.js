@@ -93,8 +93,9 @@ export const APRENDER_TALLAS = {
 export const EN_QUE_TALLA_VA = {
   id: "en-que-talla-va",
   nombre: "¿En qué talla va?",
-  subtema: "Las tallas del dinero",
-  porPartida: 6,
+  // [ESCRITO POR CLAUDE, NO POR LA FICHA]: el subtema (Watari)
+  subtema: "Agregados monetarios",
+  porPartida: 8, // todos los ítems (Watari): el CDT sale siempre
   pregunta: "¿En qué talla va?",
   consigna: "Elija la talla más pequeña donde entra cada forma de dinero: M1, M2 o M3. Si va en M1, también está en M2 y en M3. Si la plata es de un banco y no del público, va en la reserva: está en la base, pero no en M1.",
   categorias: [
@@ -147,9 +148,10 @@ export const EN_QUE_TALLA_VA = {
 export const QUE_TOCO_EL_BANCO = {
   id: "que-toco-el-banco",
   nombre: "¿Qué tocó el Banco?",
-  subtema: "Las tallas del dinero",
-  porPartida: 6,
-  pregunta: "¿Qué tocó el Banco?",
+  // [ESCRITO POR CLAUDE, NO POR LA FICHA]: el subtema y el rótulo del enunciado (Watari)
+  subtema: "Agregados monetarios",
+  porPartida: 8, // todos los ítems (Watari)
+  pregunta: "¿Dónde pega primero?",
   consigna: "Para cada decisión, diga dónde pega primero en la escalera. Ojo: no todas las decisiones son del Banco de la República.",
   categorias: [
     { id: "base", nombre: "La base" },
