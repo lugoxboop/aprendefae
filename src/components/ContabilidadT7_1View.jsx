@@ -8,6 +8,8 @@ import LaCuentaQueNoSeMueve from "./mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx
 import { PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE } from "../data/contabilidadT7_1.js";
 import LaFacturaCompleta from "./mecanicas/libros/t7/LaFacturaCompleta.jsx";
 import { PIEZA_LA_FACTURA_COMPLETA } from "../data/contabilidadT7_1_ap2.js";
+import DevolucionesEnPeriodico from "./mecanicas/libros/t7/DevolucionesEnPeriodico.jsx";
+import { PIEZA_DEVOLUCIONES } from "../data/contabilidadT7_1_a6.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -26,6 +28,7 @@ export const TEMA_T7_1 = "inventarios-periodico";
 export const PIEZAS_T7_1 = [
   { numero: PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE.numero, pieza: PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE, Pieza: LaCuentaQueNoSeMueve },
   { numero: PIEZA_LA_FACTURA_COMPLETA.numero, pieza: PIEZA_LA_FACTURA_COMPLETA, Pieza: LaFacturaCompleta },
+  { numero: PIEZA_DEVOLUCIONES.numero, pieza: PIEZA_DEVOLUCIONES, Pieza: DevolucionesEnPeriodico },
 ].sort((a, b) => a.numero - b.numero);
 
 export default function ContabilidadT7_1View({ onBack }) {
