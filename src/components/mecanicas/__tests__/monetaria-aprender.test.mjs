@@ -38,7 +38,7 @@ const D = await import("../../../data/politicaMonetaria.js");
 const { SUBJECTS, APRENDER, actividadesDeTipo } = await import("../../../data/subjects.js");
 
 const PIEZAS = [
-  [D.APRENDER_QUIEN_MANDA, S.EscenaQuienManda, () => React.createElement(S.ExploraVolante)],
+  [D.APRENDER_QUIEN_MANDA, S.EscenaQuienManda, S.ExploraMargen],
   [D.APRENDER_INSTRUMENTOS, S.EscenaInstrumentos, S.ExploraInstrumentos],
   [D.APRENDER_TRANSMISIONES, S.EscenaTransmisiones, () => React.createElement(S.ExploraVolante, { conReloj: true })],
 ];
