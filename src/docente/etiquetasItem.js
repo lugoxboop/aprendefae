@@ -74,6 +74,7 @@ import { unidadDeH1 as unidadDeT73H1 } from "../contabilidad/t7_3H1.js";
 import { unidadDeH2 as unidadDeT73H2 } from "../contabilidad/t7_3H2.js";
 import { unidadDeH3 as unidadDeT73H3 } from "../contabilidad/t7_3H3.js";
 import { unidadDeH4 as unidadDeT73H4 } from "../contabilidad/t7_3H4.js";
+import { unidadDeH5 as unidadDeT73H5 } from "../contabilidad/t7_3H5.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -741,6 +742,8 @@ Object.assign(REGLAS, {
   "t7-3-comercial-o-condicionado": (id) => unidadDeT73H3(id),
   /* T7-3 · H4. Una elección, por su pregunta; una línea, por su libro, su cuenta y su valor. */
   "t7-3-pago-a-tiempo": (id) => unidadDeT73H4(id),
+  /* T7-3 · H5. Una elección, por su caso y su pregunta; una línea, por su caso, su cuenta y su valor. */
+  "t7-3-ajuste-por-conteo": (id) => unidadDeT73H5(id),
 });
 
 /*

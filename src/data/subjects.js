@@ -769,6 +769,8 @@ export const SUBJECTS = {
           { id: "t7-3-sobrantes-y-faltantes", nombre: "Sobrantes y faltantes", clasificacion: { tipo: APRENDER } },
           /* A6, justo después de A5 (orden final de T7-3): la provisión del ejemplo I-3, p. 256. Cero FP. */
           { id: "t7-3-provision-inventarios", nombre: "La provisión para inventarios", clasificacion: { tipo: APRENDER } },
+          /* H5, justo después de A6 (orden final de T7-3; la sostienen A5 y A6): el conteo de Olmo y la provisión de Pino. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0107. */
+          { id: "t7-3-ajuste-por-conteo", nombre: "Ajuste por conteo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
         ],
       },
     ],
