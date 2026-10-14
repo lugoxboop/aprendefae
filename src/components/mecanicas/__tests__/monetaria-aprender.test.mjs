@@ -265,6 +265,13 @@ test("la exploración de las tallas: cada palanca enciende el punto de la escale
   assert.deepEqual(ESC.reaccionTallas(null).efecto, {}, "sin palanca no se mueve nada");
   assert.deepEqual([r("tes", "comprar").efecto, r("tes", "comprar").primero], [{ base: 1 }, "base"], "comprar TES: la base crece, y solo la base");
   assert.deepEqual(r("tes", "vender").efecto, { base: -1 });
+  /* Corrección de Mello: la compra de TES es una operación de mercado abierto (la OMA de la sala), no una palanca suelta. */
+  assert.match(ESC.PALANCAS.find((p) => p.id === "tes").nombre, /^Operaciones de Mercado Abierto$/);
+  for (const v of ["comprar", "vender"]) assert.match(r("tes", v).texto, /operación de mercado abierto/, `TES ${v}`);
+  {
+    const esc = montar(React.createElement(ESC.EscenaTallas));
+    try { assert.match(esc.caja.querySelector('[data-parte="tes"]').textContent, /OMA/, "el papel de los TES lleva su rótulo OMA"); } finally { esc.desmontar(); }
+  }
   assert.deepEqual([r("encaje", "bajar").efecto, r("encaje", "bajar").primero], [{ multiplica: 1 }, "multiplica"], "bajar el encaje: se multiplica más, y solo eso");
   assert.deepEqual(r("encaje", "subir").efecto, { multiplica: -1 });
   assert.deepEqual([r("tasa", "bajar").efecto, r("tasa", "bajar").primero], [{ credito: 1 }, "credito"], "bajar la tasa: se pide más crédito, y solo eso");
