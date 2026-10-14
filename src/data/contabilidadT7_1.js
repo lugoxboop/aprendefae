@@ -46,6 +46,13 @@ export const BOTON = {
  *   compra   la tarjeta «16 de abril · DEBE · 5.000.000» en la segunda columna
  *   otras    «Las demás compras del periodo», sin cifra, debajo de la compra
  *   conteo   el cierre de Inventario ya en tarjeta: «Al día con el conteo físico»
+ *   pendiente  dónde va «Conteo físico» mientras no está en tarjeta:
+ *            "inventario", bajo esa columna; "fila", en la fila «Cierre» sin
+ *            quedar bajo ninguna columna. Desde la pantalla 3 hasta el
+ *            colocando de la 5 va en la fila: la figura no puede dibujar la
+ *            respuesta mientras pregunta (corrección de Mello). En los dos
+ *            errores de la 5 vuelve bajo Inventario, porque el mensaje ya lo
+ *            explica.
  *   foco     lo que se señala (blanco y negrita; nada más cambia)
  *   aparece  lo que entra con el fundido de 120 ms, solo en su pantalla
  * ═══════════════════════════════════════════════════════════════════════════
@@ -69,33 +76,43 @@ export const FIGURA_TEXTOS = {
   /* Sin «$», como todas las cifras de la célula dentro de una figura (Watari). */
   monto: "5.000.000",
   demasCompras: "Las demás compras del periodo",
+  /*
+   * Rótulo de la tarjeta de la factura (colocando y errores de la pantalla 4),
+   * texto de interfaz de la v3.1 de Watari.
+   * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN]: opcional de Mello, escrito
+   * por L; falta que Near lo confirme o lo cambie.
+   */
+  rotuloFactura: "La compra",
 };
+
+/* Los textos de la figura que todavía esperan confirmación. La figura los marca con data-revision. */
+export const FIGURA_PENDIENTES_DE_REVISION = ["rotuloFactura"];
 
 const TRES_FILAS = ["inicio", "durante", "cierre"];
 
 export const FIGURA = {
   F1: { col2: null, filas: ["inicio"], foco: [] },
-  F2: { col2: null, filas: TRES_FILAS, foco: ["inv-durante"] },
-  F3: { col2: "otra", filas: TRES_FILAS, foco: ["inv-durante"] },
-  F4c: { col2: "otra", filas: TRES_FILAS, factura: true, foco: ["fila-durante"] },
-  F4ei: { col2: "otra", filas: TRES_FILAS, factura: true, foco: ["fila-durante", "inv-durante"] },
-  F4eg: { col2: "otra", filas: TRES_FILAS, factura: true, foco: ["fila-durante"] },
-  F4a: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, foco: ["fila-durante", "compra"], aparece: "compra" },
-  F5c: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, foco: ["fila-cierre"] },
-  F5ec: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, foco: ["fila-cierre", "inv-cierre"] },
-  F5en: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, foco: ["fila-cierre", "inv-cierre"] },
+  F2: { col2: null, filas: TRES_FILAS, foco: ["inv-durante"], pendiente: "inventario" },
+  F3: { col2: "otra", filas: TRES_FILAS, foco: ["inv-durante"], pendiente: "fila" },
+  F4c: { col2: "otra", filas: TRES_FILAS, factura: true, foco: ["fila-durante"], pendiente: "fila" },
+  F4ei: { col2: "otra", filas: TRES_FILAS, factura: true, foco: ["fila-durante", "inv-durante"], pendiente: "fila" },
+  F4eg: { col2: "otra", filas: TRES_FILAS, factura: true, foco: ["fila-durante"], pendiente: "fila" },
+  F4a: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, foco: ["fila-durante", "compra"], aparece: "compra", pendiente: "fila" },
+  F5c: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, foco: ["fila-cierre"], pendiente: "fila" },
+  F5ec: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, foco: ["fila-cierre", "inv-cierre"], pendiente: "inventario" },
+  F5en: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, foco: ["fila-cierre", "inv-cierre"], pendiente: "inventario" },
   F5a: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, conteo: true, foco: ["fila-cierre", "conteo"], aparece: "conteo" },
   F6: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, conteo: true, foco: [] },
 };
 
-/* Los doce textos alternativos de Near, uno por estado, tal cual. Van en un figcaption oculto. */
+/* Los doce textos alternativos de Near (v2: #2 y #6 corregidos por Mello), uno por estado, tal cual. Van en un figcaption oculto. */
 export const FIGURA_ALT = {
   F1: "Una columna con la cuenta Inventario de mercancías. Muestra el valor que tenía al inicio del periodo.",
-  F2: "La misma columna de Inventario de mercancías. Mientras la tienda vende, su valor sigue igual al del inicio.",
+  F2: "La misma columna de Inventario de mercancías. Mientras la tienda vende, la cuenta sigue mostrando el valor del inicio.",
   F3: "Dos columnas. Inventario de mercancías sigue con el valor del inicio del periodo. Al lado aparece otra cuenta, todavía sin nombre y sin valores.",
   F4c: "Inventario de mercancías sigue con el valor del inicio del periodo. Al lado, la otra cuenta espera la compra del 16 de abril.",
   F4ei: "La compra no entra en Inventario de mercancías. Esa cuenta sigue con el valor del inicio del periodo.",
-  F4eg: "La compra tampoco va a un gasto. La otra cuenta sigue esperando la compra del 16 de abril.",
+  F4eg: "La compra no va a un gasto. La otra cuenta sigue esperando la compra del 16 de abril.",
   F4a: "La otra cuenta ahora se llama Compras. Tiene una línea: 16 de abril, debe, $5.000.000. Debajo hay una línea sin cifra para las demás compras del periodo. Inventario de mercancías sigue igual.",
   F5c: "Es el último día del periodo. Compras tiene la compra del 16 de abril y las demás. Inventario de mercancías sigue con el valor del inicio.",
   F5ec: "Compras guarda lo que se compró en el periodo. Lo que quedó en la bodega no va ahí.",
@@ -165,16 +182,16 @@ const PREGUNTA_COMPRA = {
   tipo: "pregunta",
   enunciado: "El 16 de abril, La Reventa Ltda. le compra mercancía a un proveedor por $5.000.000, a crédito. La empresa usa el sistema de inventario periódico.",
   /*
-   * Los cinco datos, con las palabras de la v5. La v3 los escribía en tabla y
-   * con mayúscula inicial («Un proveedor», «A crédito»); la v5, que es la
-   * aprobada, los escribe en minúscula. Se sigue la v5.
+   * Los cinco datos, de la tabla de la v3, con mayúscula inicial. La ficha no
+   * cambió desde la v3, que es su fuente; la v5 la escribió en línea y quedó en
+   * minúscula (decisión de L, corrección de Mello).
    */
   ficha: [
     { dato: "Quién recibe", texto: "La Reventa Ltda. recibe la mercancía" },
-    { dato: "Quién entrega", texto: "un proveedor" },
+    { dato: "Quién entrega", texto: "Un proveedor" },
     { dato: "Monto", texto: "$5.000.000 por la mercancía" },
-    { dato: "Tipo", texto: "a crédito" },
-    { dato: "Clase de hecho", texto: "compra de mercancía para volver a venderla" },
+    { dato: "Tipo", texto: "A crédito" },
+    { dato: "Clase de hecho", texto: "Compra de mercancía para volver a venderla" },
   ],
   pregunta: "¿En qué cuenta se anota en el debe el costo de la mercancía, $5.000.000?",
   ayuda: "Toca una cuenta y confirma.",

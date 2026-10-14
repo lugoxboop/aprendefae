@@ -5,7 +5,7 @@ La figura de la pieza 1, versión 3, con los textos definitivos de la v5 de Near
 
 Watari · 13 de octubre de 2026
 Texto: v5 de Near, aprobada por Mello (PASA)
-Figura v3: decisión de L sobre el Tema 1; textos de la figura de Near
+Figura v3.1: correcciones de Mello (PASA CON CORRECCIONES)
 Qué cambió
 La forma
 Pantalla por pantalla
@@ -39,7 +39,7 @@ Rótulos de fila: «Inicio», «Durante el periodo», «Cierre». Ninguna fecha.
 La forma
 Dos columnas, dos cuentas
 
-«Inventario de mercancías» a la izquierda; a la derecha, «Otra cuenta» y luego «Compras». Mismo ancho, separación de 8 px, nombre en Sora 600 de 13 px sobre una raya de 1 px #B8C4D4.
+«Inventario de mercancías» a la izquierda; a la derecha, «Otra cuenta» y luego «Compras». Mismo ancho, separación de 8 px, nombre en Sora 600 de 13 px sobre una raya de 1 px #B8C4D4. Los encabezados se alinean por abajo: las dos rayas quedan a la misma altura aunque «Inventario de mercancías» ocupe dos líneas.
 
 Tres filas
 
@@ -72,11 +72,11 @@ Se agregan «Durante el periodo», con «No se mueve hasta el cierre» señalado
 
 PANTALLA 3
 
-Aparece la segunda columna, «Otra cuenta», vacía. «No se mueve hasta el cierre» sigue señalado.
+Aparece la segunda columna, «Otra cuenta», vacía. «No se mueve hasta el cierre» sigue señalado. Desde aquí, «Conteo físico» va centrado en la fila «Cierre», bajo ninguna columna.
 
 PANTALLA 4 · COLOCANDO
 
-Sobre la figura, la factura: «16 de abril» y 5.000.000. Se señala «Durante el periodo». Ninguna columna tiene la compra todavía.
+Sobre la figura, la tarjeta de la factura con el rótulo «La compra», «16 de abril» y 5.000.000. Se señala «Durante el periodo». Ninguna columna tiene la compra todavía.
 
 PANTALLA 4 · ERROR INVENTARIO
 
@@ -92,15 +92,15 @@ La factura desaparece. «Otra cuenta» pasa a «Compras» y recibe la tarjeta «
 
 PANTALLA 5 · COLOCANDO
 
-Se señala «Cierre».
+Se señala «Cierre». «Conteo físico» sigue centrado en esa fila, bajo ninguna columna: dibujarlo bajo Inventario sería la respuesta de la pregunta.
 
 PANTALLA 5 · ERROR COMPRAS
 
-Se señala «Cierre» y «Conteo físico» bajo Inventario: el conteo va ahí, no a Compras.
+Se señala «Cierre», y «Conteo físico» pasa bajo Inventario, señalado: el mensaje ya explica que el conteo va ahí, no a Compras.
 
 PANTALLA 5 · ERROR NINGUNA
 
-La misma señal: ahí es donde el conteo sí se registra.
+Igual que el error Compras: «Conteo físico» bajo Inventario, señalado. Ahí es donde el conteo sí se registra.
 
 PANTALLA 5 · ACIERTO
 
@@ -119,6 +119,10 @@ En la 0, cualquier figura adelantaría una respuesta. En la 1 aparece solo la co
 La otra cuenta no se nombra antes de tiempo
 
 No existe en la pantalla 2. Aparece en la 3 como «Otra cuenta», que es como la llama la pantalla 3 («al de otra cuenta»). Se llama «Compras» desde el acierto de la pantalla 4. La columna no cambia de lugar ni de ancho.
+
+La figura no dibuja la respuesta mientras se pregunta
+
+Corrección de Mello. Desde la pantalla 3, el conteo pendiente va centrado en la fila «Cierre», bajo ninguna de las dos columnas. Así la pregunta de la pantalla 5 («¿qué cuenta se pone al día con ese conteo?») no llega contestada. Pasa bajo Inventario en los errores de la 5, donde el mensaje ya lo explica, y como tarjeta en el acierto.
 
 Ninguna respuesta equivocada se dibuja
 
@@ -147,11 +151,11 @@ Todos los textos de la figura están puestos. Arriba, los doce textos alternativ
 
 TEXTO ALTERNATIVO (NEAR)	ESTADO	INFLESZ OFICIAL
 «Una columna con la cuenta Inventario de mercancías. Muestra el valor que tenía al inicio del periodo.»	Pantalla 1	70,1
-«La misma columna de Inventario de mercancías. Mientras la tienda vende, su valor sigue igual al del inicio.»	Pantalla 2	76,7
+«La misma columna de Inventario de mercancías. Mientras la tienda vende, la cuenta sigue mostrando el valor del inicio.»	Pantalla 2	por medir
 «Dos columnas. Inventario de mercancías sigue con el valor del inicio del periodo. Al lado aparece otra cuenta, todavía sin nombre y sin valores.»	Pantalla 3	69,0
 «Inventario de mercancías sigue con el valor del inicio del periodo. Al lado, la otra cuenta espera la compra del 16 de abril.»	Pantalla 4 · colocando	76,2
 «La compra no entra en Inventario de mercancías. Esa cuenta sigue con el valor del inicio del periodo.»	Pantalla 4 · error Inventario	80,2
-«La compra tampoco va a un gasto. La otra cuenta sigue esperando la compra del 16 de abril.»	Pantalla 4 · error Gastos	87,1
+«La compra no va a un gasto. La otra cuenta sigue esperando la compra del 16 de abril.»	Pantalla 4 · error Gastos	por medir
 «La otra cuenta ahora se llama Compras. Tiene una línea: 16 de abril, debe, $5.000.000. Debajo hay una línea sin cifra para las demás compras del periodo. Inventario de mercancías sigue igual.»	Pantalla 4 · acierto	68,4
 «Es el último día del periodo. Compras tiene la compra del 16 de abril y las demás. Inventario de mercancías sigue con el valor del inicio.»	Pantalla 5 · colocando	83,2
 «Compras guarda lo que se compró en el periodo. Lo que quedó en la bodega no va ahí.»	Pantalla 5 · error Compras	104,4
@@ -167,7 +171,8 @@ LITERAL EN LA FIGURA	DE DÓNDE SALE
 «Al día con el conteo físico»	Etiqueta de Near para el acierto de la pantalla 5. Va en la tarjeta del cierre, que es lo que cambia en ese acierto. En la fila del periodo diría que la cuenta estuvo al día durante el periodo, que es lo que la pieza niega
 «Las demás compras del periodo»	Línea de Near, sin cifra, bajo la compra, desde el acierto de la pantalla 4
 «16 de abril» · «Debe» · «5.000.000»	La línea del acierto, «16 de abril · Compras · Debe $5.000.000», repartida en la tarjeta, sin «$» como todas las cifras de la célula
-«Conteo físico»	Pantallas 2 y 5. En gris y sin tarjeta mientras está pendiente; en tarjeta desde el acierto de la 5
+«Conteo físico»	Pantallas 2 y 5. En gris y sin tarjeta mientras está pendiente; desde la pantalla 3, centrado en la fila «Cierre» y bajo ninguna columna; pasa a la tarjeta «Al día con el conteo físico» bajo Inventario en el acierto de la 5
+«La compra»	Rótulo de la tarjeta de la factura, en el colocando y los errores de la pantalla 4. Texto de interfaz [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] hasta que Near lo confirme
 «Momento» (solo lector de pantalla)	Interfaz
 06
 Medidas y de dónde salen
@@ -187,6 +192,8 @@ Remisión de la pantalla 4 con el título «La factura completa», a 375 · 320	
 Remisión de la pantalla 5 con «Tres formas de ponerle precio a lo que quedó», a 375 · 320	2 · 3 líneas; 40,59 · 60,89 px de alto	MEDIDO EN PROTOTIPO con el texto de la v5; sin desborde
 Alto de la figura, 375 · 320: pantalla 2 · 4 colocando · 4 acierto · 6	262 · 262 / 309 · 309 / 284 · 300 / 326 · 359 px	MEDIDO EN PROTOTIPO
 Alto de la pantalla más alta: a 375, la 4 · error Inventario; a 320, la 4 · acierto	1295 · 1407 px	ESTIMACIÓN · WATARI incluye componentes existentes dibujados por mí
+Rayas bajo los encabezados: a la misma altura a 375 y a 320 (encabezados de 40,78 y 23,89 px de alto)	diferencia 0 px	MEDIDO EN PROTOTIPO pantallas 3 y 5
+«Conteo físico» pendiente, centrado en la fila del cierre: centro del texto frente a centro de la figura	diferencia 0 px	MEDIDO EN PROTOTIPO pantallas 3 y 5, a 375 y 320
 Desborde horizontal, elementos fuera de la actividad, puntos suspensivos, en 13 pantallas × 2 anchos	0 de 26	MEDIDO EN PROTOTIPO
 Contraste sobre #0E1B2E: texto · secundario · borde · debe	16,4 · 8,39 · 9,78 · 5,20	CALCULADO fórmula de WCAG 2.1
 07

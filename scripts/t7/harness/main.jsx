@@ -5,8 +5,8 @@
  * se mide.
  *
  * Con #sonda monta en cambio dos figuras en el estado del acierto de la
- * pantalla 4, de anchos elegidos para que la línea de la compra mida 125 y
- * 131 px: a los dos lados del corte de 129 px de Watari. A 320 y 375 la línea
+ * pantalla 4, de anchos elegidos para que la línea de la compra mida 119 y
+ * 123 px: a los dos lados del corte de 121 px de Mello. A 320 y 375 la línea
  * mide 103 y 130,5, y en ninguno de los dos se ve si el corte está bien puesto.
  */
 import { createRoot } from "react-dom/client";
@@ -21,7 +21,7 @@ const raiz = createRoot(document.getElementById("root"));
 if (location.hash === "#sonda") {
   raiz.render(
     <div style={{ padding: "16px", display: "grid", gap: "24px" }}>
-      {[125, 131].map((linea) => (
+      {[119, 123].map((linea) => (
         <div key={linea} data-sonda={linea} style={{ width: `${anchoParaLinea(linea)}px` }}>
           <FiguraDosColumnas estado="F4a" />
         </div>

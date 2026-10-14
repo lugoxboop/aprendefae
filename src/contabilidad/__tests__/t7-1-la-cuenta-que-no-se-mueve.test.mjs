@@ -52,8 +52,10 @@ const { VISTAS, vistaDeTema } = await import("../../ruta.js");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const PAQUETE = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-pieza1-v5.md", RAIZ), "utf8");
+/* La ficha no cambió desde la v3, que es su fuente (decisión de L): se compara con la tabla de la v3. */
+const PAQUETE_V3 = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-pieza1-v3.md", RAIZ), "utf8");
 const TEXTOS_FIGURA_NEAR = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-ap1-figura-textos.md", RAIZ), "utf8");
-const GUIA_WATARI = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-ap1-figura-watari-v3.md", RAIZ), "utf8");
+const GUIA_WATARI = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-ap1-figura-watari-v3-1.md", RAIZ), "utf8");
 const { default: FiguraDosColumnas, CSS_FIGURA } = await import("../../components/mecanicas/libros/t7/FiguraDosColumnas.jsx");
 const P = T7.PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
@@ -154,12 +156,18 @@ function citasDelContenido(md) {
 }
 
 test("★★★ cada texto de los datos está, letra por letra, en el paquete aprobado", () => {
-  const faltan = todosLosTextosVisibles().filter((t) => !PAQUETE.includes(t));
+  const ficha = new Set(pantalla("pregunta-compra").ficha.map(fichaComoTexto));
+  const faltan = todosLosTextosVisibles().filter((t) => !ficha.has(t)).filter((t) => !PAQUETE.includes(t));
   assert.deepEqual(faltan, [], "estos textos no están en la v5 tal cual");
-  /* El título y la ficha van sin comillas en la v5; lo demás va entre «». */
+  /* El título va sin comillas en la v5; lo demás va entre «». */
   assert.ok(PAQUETE.includes(`- Título: ${P.titulo}`));
-  const ficha = pantalla("pregunta-compra").ficha.map(fichaComoTexto).join(" · ");
-  assert.ok(PAQUETE.includes(`- Ficha: ${ficha}.`), "la ficha no coincide con la v5");
+});
+
+test("★★★ la ficha es la de la tabla de la v3, con mayúscula inicial", () => {
+  const filas = [...PAQUETE_V3.matchAll(/^\| (Quién recibe|Quién entrega|Monto|Tipo|Clase de hecho) \| (.+) \|$/gm)].map((x) => ({ dato: x[1], texto: x[2] }));
+  assert.equal(filas.length, 5);
+  assert.deepEqual(pantalla("pregunta-compra").ficha, filas);
+  assert.ok(pantalla("pregunta-compra").ficha.every((f) => /^[A-ZÁÉÍÓÚ$]/.test(f.texto)), "un dato empieza en minúscula");
 });
 
 test("★★★ cada texto del paquete está en los datos: no falta ninguno", () => {
@@ -366,20 +374,23 @@ test("★★ ids con el prefijo t7- y el tema al final del índice de Contabilid
  * La tabla de estados de la guía de Watari («Pantalla por pantalla»), escrita
  * aquí aparte de los datos para que un cambio en los datos no se dé por bueno
  * solo. `foco` es lo que se señala; `nueva`, lo que entra con fundido.
+ * `pendiente` es dónde va «Conteo físico» mientras no está en tarjeta, con la
+ * corrección de Mello: en la fila «Cierre», sin columna, desde la pantalla 3
+ * hasta el colocando de la 5; bajo Inventario en la 2 y en los errores de la 5.
  */
 const TABLA_WATARI = {
-  F1: { col2: "", filas: ["inicio"], factura: false, compra: false, otras: false, cierre: null, foco: [], nueva: null },
-  F2: { col2: "", filas: ["inicio", "durante", "cierre"], factura: false, compra: false, otras: false, cierre: "Conteo físico", foco: ["inv-durante"], nueva: null },
-  F3: { col2: "Otra cuenta", filas: ["inicio", "durante", "cierre"], factura: false, compra: false, otras: false, cierre: "Conteo físico", foco: ["inv-durante"], nueva: null },
-  F4c: { col2: "Otra cuenta", filas: ["inicio", "durante", "cierre"], factura: true, compra: false, otras: false, cierre: "Conteo físico", foco: ["fila-durante"], nueva: null },
-  F4ei: { col2: "Otra cuenta", filas: ["inicio", "durante", "cierre"], factura: true, compra: false, otras: false, cierre: "Conteo físico", foco: ["fila-durante", "inv-durante"], nueva: null },
-  F4eg: { col2: "Otra cuenta", filas: ["inicio", "durante", "cierre"], factura: true, compra: false, otras: false, cierre: "Conteo físico", foco: ["fila-durante"], nueva: null },
-  F4a: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Conteo físico", foco: ["fila-durante", "compra"], nueva: "compra" },
-  F5c: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Conteo físico", foco: ["fila-cierre"], nueva: null },
-  F5ec: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Conteo físico", foco: ["fila-cierre", "inv-cierre"], nueva: null },
-  F5en: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Conteo físico", foco: ["fila-cierre", "inv-cierre"], nueva: null },
-  F5a: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Al día con el conteo físico", foco: ["fila-cierre", "conteo"], nueva: "conteo" },
-  F6: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Al día con el conteo físico", foco: [], nueva: null },
+  F1: { col2: "", filas: ["inicio"], factura: false, compra: false, otras: false, cierre: null, pendiente: null, foco: [], nueva: null },
+  F2: { col2: "", filas: ["inicio", "durante", "cierre"], factura: false, compra: false, otras: false, cierre: "Conteo físico", pendiente: "inventario", foco: ["inv-durante"], nueva: null },
+  F3: { col2: "Otra cuenta", filas: ["inicio", "durante", "cierre"], factura: false, compra: false, otras: false, cierre: "Conteo físico", pendiente: "fila", foco: ["inv-durante"], nueva: null },
+  F4c: { col2: "Otra cuenta", filas: ["inicio", "durante", "cierre"], factura: true, compra: false, otras: false, cierre: "Conteo físico", pendiente: "fila", foco: ["fila-durante"], nueva: null },
+  F4ei: { col2: "Otra cuenta", filas: ["inicio", "durante", "cierre"], factura: true, compra: false, otras: false, cierre: "Conteo físico", pendiente: "fila", foco: ["fila-durante", "inv-durante"], nueva: null },
+  F4eg: { col2: "Otra cuenta", filas: ["inicio", "durante", "cierre"], factura: true, compra: false, otras: false, cierre: "Conteo físico", pendiente: "fila", foco: ["fila-durante"], nueva: null },
+  F4a: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Conteo físico", pendiente: "fila", foco: ["fila-durante", "compra"], nueva: "compra" },
+  F5c: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Conteo físico", pendiente: "fila", foco: ["fila-cierre"], nueva: null },
+  F5ec: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Conteo físico", pendiente: "inventario", foco: ["fila-cierre", "inv-cierre"], nueva: null },
+  F5en: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Conteo físico", pendiente: "inventario", foco: ["fila-cierre", "inv-cierre"], nueva: null },
+  F5a: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Al día con el conteo físico", pendiente: null, foco: ["fila-cierre", "conteo"], nueva: "conteo" },
+  F6: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Al día con el conteo físico", pendiente: null, foco: [], nueva: null },
 };
 
 /* El orden de la tabla de Near: P1, P2, P3, P4 colocando, error Inventario, error Gastos, acierto, P5 colocando, error Compras, error Ninguna, acierto, P6. */
@@ -390,7 +401,7 @@ function leerFigura(caja) {
   if (!fig) return null;
   const q = (x) => fig.querySelector(`[data-fg="${x}"]`);
   const filas = ["inicio", "durante", "cierre"].filter((x) => q(`fila-${x}`));
-  const cierre = q("conteo") ?? q("inv-cierre");
+  const cierre = q("conteo") ?? q("inv-cierre") ?? q("cierre-pendiente");
   return {
     clave: fig.dataset.figura,
     col2: q("col-2").textContent,
@@ -399,6 +410,7 @@ function leerFigura(caja) {
     compra: Boolean(q("compra")),
     otras: Boolean(q("demas-compras")),
     cierre: cierre ? cierre.textContent : null,
+    pendiente: q("cierre-pendiente") ? "fila" : q("inv-cierre") ? "inventario" : null,
     foco: [...fig.querySelectorAll(".t7fg-foco")].map((el) => el.dataset.fg).sort(),
     nueva: fig.querySelector(".t7fg-nueva")?.dataset.fg ?? null,
     alt: q("alt").textContent,
@@ -416,7 +428,7 @@ test("★★★ la portada no lleva figura, y cada uno de los doce estados lleva
       const t = TABLA_WATARI[f.clave];
       assert.ok(t, `estado de figura desconocido: ${f.clave}`);
       assert.deepEqual(
-        { col2: f.col2, filas: f.filas, factura: f.factura, compra: f.compra, otras: f.otras, cierre: f.cierre, foco: f.foco, nueva: f.nueva },
+        { col2: f.col2, filas: f.filas, factura: f.factura, compra: f.compra, otras: f.otras, cierre: f.cierre, pendiente: f.pendiente, foco: f.foco, nueva: f.nueva },
         { ...t, foco: [...t.foco].sort(), cierre: t.filas.includes("cierre") ? t.cierre : null },
         f.clave,
       );
@@ -521,5 +533,55 @@ test("★★ nada punteado ni discontinuo, y el fundido es de 120 ms y se apaga 
   assert.doesNotMatch(CSS_FIGURA, /dashed|dotted/);
   assert.match(CSS_FIGURA, /\.t7fg-nueva \{ animation: t7fg-aparece \.12s/);
   assert.match(CSS_FIGURA, /@media \(prefers-reduced-motion: reduce\) \{ \.t7fg-nueva \{ animation: none; \} \}/);
-  assert.match(CSS_FIGURA, /@container t7figmov \(max-width: 129px\)/);
+  /* El corte de Mello: 121 px (era 129). */
+  assert.match(CSS_FIGURA, /@container t7figmov \(max-width: 121px\)/);
+});
+
+test("★★★ en el colocando de la 5 el conteo pendiente no queda bajo Inventario: la figura no dibuja la respuesta", async () => {
+  /* Montado en la pieza, en el estado real: pantalla 5 sin responder. */
+  const pieza = { ...P, pantallas: [pantalla("pregunta-conteo")] };
+  const m = await montar(h(LaCuentaQueNoSeMueve, { pieza, rotulo: "R" }));
+  try {
+    const fig = m.caja.querySelector("[data-figura]");
+    assert.equal(fig.dataset.figura, "F5c");
+    const conteo = [...fig.querySelectorAll("p, div")].find((el) => el.textContent === "Conteo físico");
+    assert.ok(conteo !== undefined, "no está «Conteo físico»");
+    const celda = conteo.closest("[role=cell]");
+    /* Ni en la celda de Inventario ni en la de Compras: en una celda que ocupa la fila entera. */
+    assert.equal(celda.classList.contains("t7fg-ancha"), true, "el conteo quedó bajo una columna");
+    assert.equal(celda.closest("[role=row]").querySelectorAll("[role=cell]").length, 1);
+    assert.equal(fig.querySelector("[data-fg=inv-cierre]") === null, true, "hay un conteo bajo Inventario");
+    /* Y al equivocarse, vuelve bajo Inventario, señalado: el mensaje ya lo explica. */
+    await tocar(m.caja.querySelector('[data-opcion="ninguna"]'));
+    await tocar(boton(m.caja, "confirmar"));
+    const enInventario = m.caja.querySelector("[data-fg=inv-cierre]");
+    assert.equal(enInventario !== null && enInventario.classList.contains("t7fg-foco"), true);
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★ la factura lleva el rótulo «La compra», marcado como pendiente de revisión, solo en el colocando y los errores de la 4", async () => {
+  for (const clave of Object.keys(T7.FIGURA)) {
+    const m = await montar(h(FiguraDosColumnas, { estado: clave }));
+    try {
+      const rot = m.caja.querySelector("[data-fg=rotulo-factura]");
+      const conFactura = ["F4c", "F4ei", "F4eg"].includes(clave);
+      assert.equal(rot !== null, conFactura, clave);
+      if (rot) {
+        assert.equal(rot.textContent, "La compra");
+        /* Texto de interfaz que Near todavía no confirma: se ve en el código y en el PR. */
+        assert.equal(rot.dataset.revision, "pendiente");
+      }
+    } finally {
+      m.desmontar();
+    }
+  }
+  assert.deepEqual(T7.FIGURA_PENDIENTES_DE_REVISION, ["rotuloFactura"]);
+  assert.match(readFileSync(new URL("src/data/contabilidadT7_1.js", RAIZ), "utf8"), /ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN/);
+});
+
+test("★ v3.1: el conteo pendiente va centrado y los encabezados se alinean por abajo", () => {
+  assert.match(CSS_FIGURA, /\.t7fg-pend-libre \{ text-align: center; \}/);
+  assert.match(CSS_FIGURA, /\.t7fg-cab \{ align-items: end; \}/);
 });

@@ -18,8 +18,14 @@
  * Y en la figura de Watari («Dos columnas del periodo»):
  *
  *   · que la portada no la tenga y los otros doce estados sí
- *   · «DEBE» y el monto: con menos de 130 px de línea el monto baja (a 320),
- *     con más va en la misma línea (a 375), y nunca se tocan
+ *   · «DEBE» y el monto: con 121 px de línea o menos el monto baja (a 320),
+ *     con más va en la misma línea (a 375), y nunca se tocan. El corte es el
+ *     de Mello (121 px); la sonda lo prueba a 119 y 123 px de línea
+ *   · que «Conteo físico», mientras está pendiente desde la pantalla 3 hasta
+ *     el colocando de la 5, ocupe la fila entera, centrado, y no quede bajo
+ *     una columna
+ *   · que las rayas de los dos encabezados queden a la misma altura aunque
+ *     «Inventario de mercancías» ocupe dos líneas (v3.1)
  *   · que las dos columnas midan lo mismo y no cambien de ancho entre estados
  *   · que ningún borde de la figura sea punteado ni discontinuo
  *   · que el fundido sea de 120 ms y desaparezca con movimiento reducido
@@ -109,9 +115,22 @@ function medir() {
         montoAbajo: monto.top >= debe.bottom - 0.5,
       };
     }
+    const pend = fig.querySelector("[data-fg=cierre-pendiente]");
+    const colInv = fig.querySelector("[data-fg=col-inventario]").getBoundingClientRect();
+    const pendiente = pend ? {
+      ancho: Math.round(pend.getBoundingClientRect().width * 10) / 10,
+      columna: Math.round(colInv.width * 10) / 10,
+    } : null;
+    const rayas = [...fig.querySelectorAll(".t7fg-col")].map((c) => c.getBoundingClientRect().bottom);
+    if (fig.querySelector(".t7fg-col:not(.t7fg-col-vacia)") && fig.querySelectorAll(".t7fg-col:not(.t7fg-col-vacia)").length === 2 && Math.abs(rayas[0] - rayas[1]) > 0.5) {
+      problemas.push(`figura: las rayas de los encabezados no están a la misma altura (${rayas.map((r) => r.toFixed(1)).join(" / ")})`);
+    }
+    if (pend && getComputedStyle(pend).textAlign !== "center") problemas.push("figura: «Conteo físico» pendiente no va centrado");
+    if (pendiente && pendiente.ancho <= pendiente.columna + 0.5) problemas.push(`figura: «Conteo físico» pendiente mide ${pendiente.ancho} px y cabe bajo la columna de ${pendiente.columna}`);
     const nueva = fig.querySelector(".t7fg-nueva");
     figura = {
       clave: fig.dataset.figura,
+      pendiente,
       alto: Math.round(fig.getBoundingClientRect().height),
       cols,
       compra,
@@ -152,13 +171,15 @@ for (const ancho of ANCHOS) {
     if (nombre === "portada") { if (m.figura) mal("la portada tiene figura"); }
     else if (!m.figura) mal("falta la figura");
     if (m.figura) {
+      const enFila = ["F3", "F4c", "F4ei", "F4eg", "F4a", "F5c"].includes(m.figura.clave);
+      if (enFila !== Boolean(m.figura.pendiente)) mal(`«Conteo físico» ${m.figura.pendiente ? "ocupa la fila" : "no ocupa la fila"} en ${m.figura.clave}`);
       const [a, b] = m.figura.cols;
       if (Math.abs(a - b) > 0.5) mal(`las columnas miden distinto: ${a} y ${b}`);
       columnas[ancho] ??= a;
       if (Math.abs(columnas[ancho] - a) > 0.5) mal(`la columna cambió de ancho: ${columnas[ancho]} → ${a}`);
       const c = m.figura.compra;
       if (c) {
-        if (c.montoAbajo !== (c.contenedor < 130)) mal(`con ${c.contenedor} px de línea el monto ${c.montoAbajo ? "baja" : "no baja"}`);
+        if (c.montoAbajo !== (c.contenedor <= 121)) mal(`con ${c.contenedor} px de línea el monto ${c.montoAbajo ? "baja" : "no baja"}`);
         if (c.montoAbajo !== (ancho === 320)) mal(`a ${ancho} px el monto ${c.montoAbajo ? "baja" : "no baja"}`);
       }
       const esperado = { F4a: "compra", F5a: "conteo" }[m.figura.clave] ?? null;
@@ -199,7 +220,7 @@ for (const ancho of ANCHOS) {
   await pagina.close();
 }
 
-/* El corte de 129 px, a los dos lados: con 125 px de línea el monto baja; con 131, no. */
+/* El corte de 121 px, a los dos lados: con 119 px de línea el monto baja; con 123, no. */
 {
   const pagina = await navegador.newPage({ viewport: { width: 420, height: 900 } });
   await pagina.goto(`${URL_BANCO}#sonda`);
@@ -214,7 +235,7 @@ for (const ancho of ANCHOS) {
     return { linea: Number(d.dataset.sonda), util, montoAbajo: monto.top >= debe.bottom - 0.5 };
   }));
   for (const sd of sondas) {
-    const debeBajar = sd.util < 130;
+    const debeBajar = sd.util <= 121;
     console.log(`Sonda: línea de ${sd.util} px → el monto ${sd.montoAbajo ? "baja" : "va en la misma línea"}`);
     if (Math.abs(sd.util - sd.linea) > 0.5) fallos.push(`sonda: la línea mide ${sd.util} y debía medir ${sd.linea}`);
     if (sd.montoAbajo !== debeBajar) fallos.push(`sonda: con ${sd.util} px de línea el monto ${sd.montoAbajo ? "baja" : "no baja"}`);
