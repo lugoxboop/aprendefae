@@ -132,12 +132,15 @@ test("Aprender no paga: las tres piezas son APRENDER y no están en el catálogo
  *   · la pieza pinta sus cuatro capas: pasos literales con su resaltado sobre
  *     la escalera, y la referencia solo a pedido;
  *   · no queda ningún texto pendiente;
- *   · el CDT va en M2/M3 y nunca en M1, y meterlo en M1 se marca ❌;
+ *   · el CDT va en M2 y nunca en M1, y meterlo en M1 se marca ❌;
  *   · la exploración sigue las tres reglas: comprar TES sube la base, bajar el
  *     encaje sube la multiplicación, bajar la tasa sube el crédito pedido;
  *   · el Banco compra TES, no los emite (los emite el gobierno: QUIEN_DECIDE);
  *   · cifras solo de DATOS_VERIFICADOS o rotuladas «Escenario simulado»;
- *   · Aprender no paga; los dos juegos tienen su fila en la 0091.
+ *   · la letra de la escena no baja de 10,5 px en el teléfono de 320;
+ *   · Aprender no paga. La fila de los dos juegos (la 0091) va en el parche de
+ *     cableado, con su prueba: sin cablear, el servidor no puede pagar por
+ *     juegos que el cliente no ofrece (catalogo.test).
  *
  * OJO: la prueba de arriba «Aprender no paga…» afirma exactamente las tres
  * piezas que hay hoy. Cuando Erwin cablee la nueva en subjects.js, esa línea
@@ -193,28 +196,44 @@ test("las-tallas-del-dinero: cuatro capas, pasos literales con su resaltado en l
   }
 });
 
-test("¿En qué talla va?: el CDT va en M2/M3 y nunca en M1; meterlo en M1 es ❌", () => {
+test("¿En qué talla va?: el CDT va en M2 y nunca en M1; meterlo en M1 es ❌", () => {
   const j = AG.EN_QUE_TALLA_VA;
-  assert.deepEqual(j.categorias.map((c) => c.id), ["base", "m1", "m2m3"]);
+  assert.deepEqual(j.categorias.map((c) => c.id), ["reserva", "m1", "m2", "m3"]);
   const cdts = j.items.filter((it) => /\bCDT\b/.test(it.texto));
   assert.ok(cdts.length >= 1, "el banco no tiene ningún CDT");
   for (const it of cdts) {
-    assert.equal(it.respuesta, "m2m3", `${it.id}: un CDT es M2/M3`);
+    assert.equal(it.respuesta, "m2", `${it.id}: un CDT es M2`);
     assert.match(j.retro(it, "m1"), /^❌/, `${it.id}: meter el CDT en M1 tiene que marcarse ❌`);
-    assert.match(j.retro(it, "m2m3"), /^✅/);
+    assert.match(j.retro(it, "m2"), /^✅/);
   }
-  /* Ningún ítem de M1 es un CDT, y cada ítem tiene una respuesta que existe. */
+  /* Lo que es del banco y no del público no es M1: va en la reserva. */
+  for (const it of j.items.filter((x) => /\bun banco (guarda|tiene depositado)\b/.test(x.texto))) assert.equal(it.respuesta, "reserva", it.id);
   for (const it of j.items) assert.ok(j.categorias.some((c) => c.id === it.respuesta), `${it.id}: respuesta sin categoría`);
+  for (const c of j.categorias) assert.ok(j.items.some((it) => it.respuesta === c.id), `ningún ítem va en «${c.id}»`);
 });
 
-test("¿Qué tocó el Banco?: cada decisión pega en su punto de la escalera", () => {
+test("los dos juegos: cada ítem tiene id único y su devolución ✅ al acertar y ❌ al fallar", () => {
+  for (const j of [AG.EN_QUE_TALLA_VA, AG.QUE_TOCO_EL_BANCO]) {
+    const ids = j.items.map((it) => it.id);
+    assert.equal(new Set(ids).size, ids.length, `${j.id}: ids repetidos`);
+    assert.ok(j.consigna && j.consigna.length > 0, `${j.id}: sin consigna`);
+    for (const it of j.items) {
+      assert.match(j.retro(it, it.respuesta), /^✅/, `${j.id}/${it.id}: acierto`);
+      for (const c of j.categorias) if (c.id !== it.respuesta) assert.match(j.retro(it, c.id), /^❌/, `${j.id}/${it.id}: fallo en ${c.id}`);
+    }
+  }
+});
+
+test("¿Qué tocó el Banco?: cada decisión pega en su punto de la escalera, y lo que no es del Banco va aparte", () => {
   const j = AG.QUE_TOCO_EL_BANCO;
-  assert.deepEqual(j.categorias.map((c) => c.id), ["base", "multiplicacion", "credito"]);
+  assert.deepEqual(j.categorias.map((c) => c.id), ["base", "multiplica", "credito", "no-banco"]);
   const de = (re) => j.items.filter((it) => re.test(it.texto));
-  for (const it of de(/\bTES\b/)) assert.equal(it.respuesta, "base", `${it.id}: los TES mueven la base`);
-  for (const it of de(/encaje/i)) assert.equal(it.respuesta, "multiplicacion", `${it.id}: el encaje mueve la multiplicación`);
+  for (const it of de(/\bTES\b/)) assert.equal(it.respuesta, /^El Gobierno\b/.test(it.texto) ? "no-banco" : "base", `${it.id}: los TES que compra o vende el Banco mueven la base; los emite el Gobierno`);
+  assert.ok(de(/^El Gobierno emite TES/).length === 1, "falta el ítem que separa emitir de comprar");
+  for (const it of de(/encaje/i)) assert.equal(it.respuesta, "multiplica", `${it.id}: el encaje mueve cuánto se multiplica`);
   for (const it of de(/\btasa\b/i)) assert.equal(it.respuesta, "credito", `${it.id}: la tasa mueve el crédito pedido`);
-  for (const id of ["base", "multiplicacion", "credito"]) assert.ok(j.items.some((it) => it.respuesta === id), `ningún ítem pega en «${id}»`);
+  for (const it of j.items.filter((x) => x.respuesta !== "no-banco")) assert.match(it.texto, /^El Banco de la República\b/, `${it.id}: solo el Banco de la República pega en la escalera`);
+  for (const c of j.categorias) assert.ok(j.items.some((it) => it.respuesta === c.id), `ningún ítem pega en «${c.id}»`);
 });
 
 test("la exploración de las tallas sigue las tres reglas, cada instrumento en su punto", () => {
@@ -238,7 +257,12 @@ test("la exploración de las tallas sigue las tres reglas, cada instrumento en s
 test("el Banco compra TES, no los emite: coherente con ¿Quién Decide Esto?", () => {
   assert.equal(D.QUIEN_DECIDE.items.find((x) => x.id === "emite-tes").respuesta, "gobierno");
   const texto = textosDe(DATOS_NUEVOS).join("\n");
-  assert.doesNotMatch(texto, /Banco(?: de la República)?\s+(?:\w+\s+){0,3}emit\w*\s+(?:\w+\s+){0,3}TES/i, "un texto dice que el Banco emite TES");
+  /* «el Banco emite TES» es rojo; «el Banco no emite los TES» es justo lo que la pieza tiene que decir. */
+  const EMITE = /Banco(?: de la República)?\s+(?:(?!no\b|nunca\b)\p{L}+\s+){0,3}emit\p{L}*\s+(?:\p{L}+\s+){0,3}TES/iu;
+  assert.match("El Banco de la República emite TES.", EMITE, "la regla tiene que poder ponerse roja");
+  assert.match("Ahí el Banco también emite los TES.", EMITE);
+  assert.doesNotMatch("Ojo: el Banco no emite los TES.", EMITE);
+  assert.doesNotMatch(texto, EMITE, "un texto dice que el Banco emite TES");
   assert.match(texto, /compr\w*[^.]{0,40}\bTES\b|\bTES\b[^.]{0,40}compr\w*/i, "ningún texto dice que el Banco compra TES");
 });
 
@@ -256,15 +280,23 @@ test("las tallas: cifras solo de DATOS_VERIFICADOS o rotuladas «Escenario simul
   assert.deepEqual(sueltas, [], "cifra sin verificar y sin rótulo de escenario");
 });
 
-test("las tallas: Aprender no paga; los dos juegos tienen su fila en la 0091, sin correr y repetible", () => {
+test("la letra de la escena de la escalera no baja de 10,5 px en el teléfono de 320 (236 px de escena)", () => {
+  assert.ok((ESC.LETRA_ESCENA * 236) / ESC.ANCHO_ESCENA >= 10.5, "la letra declarada baja de 10,5 px");
+  const m = montar(React.createElement(ESC.EscenaEscalera));
+  try {
+    const svg = m.caja.querySelector("svg");
+    assert.equal(svg.getAttribute("viewBox").split(/\s+/)[2], String(ESC.ANCHO_ESCENA));
+    const tamanos = [...svg.querySelectorAll("text")].map((t) => parseFloat(t.style.fontSize));
+    assert.ok(tamanos.length > 0);
+    for (const t of tamanos) assert.ok((t * 236) / ESC.ANCHO_ESCENA >= 10.5, `un texto de ${t} queda en ${((t * 236) / ESC.ANCHO_ESCENA).toFixed(1)} px`);
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("las tallas: Aprender no paga", () => {
   const sql = readdirSync("supabase/migrations").map((f) => readFileSync(`supabase/migrations/${f}`, "utf8")).join("\n");
   assert.ok(!sql.includes(`'${AG.APRENDER_TALLAS.id}'`), "la pieza de Aprender no puede tener fila");
-  const m91 = readFileSync("supabase/migrations/0091_monetaria_agregados.sql", "utf8");
-  assert.match(m91, /\('en-que-talla-va',\s*'macroeconomia',\s*'politica-monetaria',\s*'evaluativa',\s*'facil',\s*10,\s*1\)/);
-  assert.match(m91, /\('que-toco-el-banco',\s*'macroeconomia',\s*'politica-monetaria',\s*'evaluativa',\s*'medio',\s*25,\s*1\)/);
-  assert.match(m91, /on conflict \(activity_id\) do update set/);
-  const sentencias = m91.split("\n").filter((l) => !l.trim().startsWith("--")).join("\n");
-  assert.doesNotMatch(sentencias, /\b(alter|delete|drop|truncate)\b/i);
   assert.equal(AG.EN_QUE_TALLA_VA.id, "en-que-talla-va");
   assert.equal(AG.QUE_TOCO_EL_BANCO.id, "que-toco-el-banco");
 });

@@ -10,11 +10,15 @@ import { Parte, CSS_MAQUINAS } from "./salaDeMaquinas.jsx";
  * CSS_MAQUINAS, tal cual, para que la escena resalte y apague como las otras
  * tres: data-parte, fae-sm-parte, fae-sm-apagada).
  *
- * LA ESCENA es un BORRADOR FUNCIONAL [ESCRITO POR CLAUDE, NO POR LA FICHA]:
- * cuatro peldaños, de lo más líquido arriba a lo menos líquido abajo, y los
- * tres puntos donde pega cada instrumento. Sirve para que la capa 2 resalte
- * las partes que nombran los pasos. Se reemplaza por la figura de Watari; los
- * ids de PARTES_ESCALERA son el contrato con los pasos de Near.
+ * LA ESCENA es un BORRADOR FUNCIONAL [ESCRITO POR CLAUDE, NO POR LA FICHA],
+ * con las dos notas de Watari: la base abajo y M3 arriba, y la base y M1 se
+ * cruzan (comparten el efectivo del público; M1 no contiene a la base: la
+ * reserva de los bancos está en la base y no en M1). Al lado, los tres puntos
+ * donde pega cada instrumento. Se reemplaza por la figura de Watari; los ids
+ * de PARTES_ESCALERA son el contrato con los pasos de Near.
+ *
+ * LA LETRA: viewBox de 320 de ancho y texto de 15. En el teléfono de 320 px la
+ * escena mide 236 px: 15 × 236 / 320 = 11,1 px, por encima del piso de 10,5.
  *
  * LA EXPLORACIÓN sigue las tres reglas del encargo, una por instrumento, cada
  * una en un punto distinto de la escalera:
@@ -26,53 +30,82 @@ import { Parte, CSS_MAQUINAS } from "./salaDeMaquinas.jsx";
  */
 
 /* Las partes que puede resaltar un paso. */
-export const PARTES_ESCALERA = ["banco-republica", "base", "m1", "m2", "m3", "tes", "encaje", "tasa", "multiplicacion", "credito"];
+export const PARTES_ESCALERA = ["banco-republica", "base", "m1", "m2", "m3", "persona", "bancos", "tes", "encaje", "tasa", "multiplicacion", "credito"];
+
+/* La letra más pequeña de la escena, en unidades del viewBox de ANCHO_ESCENA. */
+export const ANCHO_ESCENA = 320;
+export const LETRA_ESCENA = 15;
 
 const LINEA = "rgba(248,249,250,0.72)";
-const TEXTO = { fontFamily: "Inter, sans-serif", fontSize: "13.5px", fill: "rgba(248,249,250,0.82)" };
+const TEXTO = { fontFamily: "Inter, sans-serif", fontSize: `${LETRA_ESCENA}px`, fill: "rgba(248,249,250,0.86)" };
 
-function Rotulo({ x, y, children, anchor = "middle", peso = 400 }) {
+function Rotulo({ x, y, children, anchor = "start", peso = 400 }) {
   return <text x={x} y={y} textAnchor={anchor} style={{ ...TEXTO, fontWeight: peso }}>{children}</text>;
 }
 
-/* Cada peldaño, más ancho que el de arriba: se agrega a lo anterior. */
+/* Arriba, lo menos líquido; cada peldaño suma algo al de abajo. */
 const PELDANOS = [
-  { id: "base", nombre: "Base monetaria", y: 40, ancho: 120 },
-  { id: "m1", nombre: "M1", y: 90, ancho: 170 },
-  { id: "m2", nombre: "M2", y: 140, ancho: 220 },
-  { id: "m3", nombre: "M3", y: 190, ancho: 270 },
+  { id: "m3", nombre: "M3", suma: "bonos de bancos", y: 50 },
+  { id: "m2", nombre: "M2", suma: "ahorros y CDT", y: 88 },
 ];
 
 export function EscenaEscalera({ resaltar = [] }) {
   return (
-    <svg viewBox="0 0 360 262" role="img" aria-label="La escalera de liquidez: base monetaria, M1, M2 y M3, de lo más líquido a lo menos; y dónde pegan los TES, el encaje y la tasa" style={{ width: "100%", display: "block" }}>
+    <svg viewBox={`0 0 ${ANCHO_ESCENA} 248`} role="img" aria-label="La escalera de liquidez: abajo la base monetaria, que emite el Banco de la República; encima M1, que se cruza con la base en el efectivo; después M2 y arriba M3. Al lado, dónde pegan los TES, el encaje y la tasa" style={{ width: "100%", display: "block" }}>
       <style>{CSS_MAQUINAS}</style>
-      <Parte id="banco-republica" resaltar={resaltar}>
-        <rect x={10} y={8} width={110} height={22} rx="6" fill="none" stroke={FAE.teal} strokeWidth="2" />
-        <Rotulo x={65} y={24}>Banco de la República</Rotulo>
+      <defs>
+        <marker id="fae-esc-punta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill={LINEA} />
+        </marker>
+      </defs>
+      <Parte id="bancos" resaltar={resaltar}>
+        <rect x={10} y={8} width={80} height={30} rx="6" fill="none" stroke={LINEA} strokeWidth="2" />
+        <Rotulo x={50} y={28} anchor="middle">Bancos</Rotulo>
+      </Parte>
+      <Parte id="tasa" resaltar={resaltar}>
+        <rect x={100} y={8} width={54} height={30} rx="6" fill="none" stroke={FAE.ambar} strokeWidth="2" />
+        <Rotulo x={127} y={28} anchor="middle">Tasa</Rotulo>
+      </Parte>
+      <Parte id="credito" resaltar={resaltar}>
+        <path d="M158 23 H178" stroke={FAE.ambar} strokeWidth="2.4" strokeLinecap="round" markerEnd="url(#fae-esc-punta)" />
+        <Rotulo x={184} y={28}>Crédito pedido</Rotulo>
+      </Parte>
+      <Parte id="persona" resaltar={resaltar}>
+        <circle cx={50} cy={66} r={9} fill="none" stroke={LINEA} strokeWidth="2" />
+        <path d="M50 75 V104 M34 86 H66 M50 104 L38 122 M50 104 L62 122" fill="none" stroke={LINEA} strokeWidth="2" strokeLinecap="round" />
+        <Rotulo x={50} y={142} anchor="middle">Usted</Rotulo>
       </Parte>
       {PELDANOS.map((p) => (
         <Parte key={p.id} id={p.id} resaltar={resaltar}>
-          <rect x={10} y={p.y} width={p.ancho} height={34} rx="6" fill="none" stroke={LINEA} strokeWidth="2" />
-          <Rotulo x={20} y={p.y + 22} anchor="start" peso={700}>{p.nombre}</Rotulo>
+          <rect x={100} y={p.y} width={170} height={30} rx="6" fill="none" stroke={LINEA} strokeWidth="2" />
+          <Rotulo x={110} y={p.y + 20} peso={700}>{p.nombre}</Rotulo>
+          <Rotulo x={138} y={p.y + 20}>{p.suma}</Rotulo>
         </Parte>
       ))}
+      <Parte id="m1" resaltar={resaltar}>
+        <rect x={100} y={126} width={170} height={44} rx="6" fill="none" stroke={LINEA} strokeWidth="2" />
+        <Rotulo x={110} y={145} peso={700}>M1</Rotulo>
+        <Rotulo x={138} y={145}>cuentas corrientes</Rotulo>
+      </Parte>
+      <Parte id="base" resaltar={resaltar}>
+        <rect x={10} y={150} width={190} height={46} rx="6" fill="rgba(42,157,143,0.10)" stroke={FAE.teal} strokeWidth="2" />
+        <Rotulo x={18} y={165}>Reserva</Rotulo>
+        <Rotulo x={110} y={165}>Efectivo</Rotulo>
+        <Rotulo x={18} y={188} peso={700}>Base monetaria</Rotulo>
+      </Parte>
+      <Parte id="banco-republica" resaltar={resaltar}>
+        <rect x={10} y={210} width={190} height={30} rx="6" fill="none" stroke={FAE.teal} strokeWidth="2" />
+        <Rotulo x={105} y={230} anchor="middle">Banco de la República</Rotulo>
+      </Parte>
       <Parte id="tes" resaltar={resaltar}>
-        <path d="M140 57 H200" stroke={FAE.teal} strokeWidth="2.4" strokeLinecap="round" />
-        <Rotulo x={204} y={62} anchor="start">TES</Rotulo>
+        <path d="M262 186 H210" stroke={FAE.teal} strokeWidth="2.4" strokeLinecap="round" markerEnd="url(#fae-esc-punta)" />
+        <Rotulo x={238} y={205} anchor="middle">TES</Rotulo>
       </Parte>
       <Parte id="multiplicacion" resaltar={resaltar}>
-        <path d="M190 107 C 240 107, 250 157, 240 157" fill="none" stroke={LINEA} strokeWidth="2" strokeDasharray="4 4" />
+        <path d="M292 196 V58" fill="none" stroke={LINEA} strokeWidth="2" strokeDasharray="5 5" markerEnd="url(#fae-esc-punta)" />
       </Parte>
       <Parte id="encaje" resaltar={resaltar}>
-        <Rotulo x={256} y={130} anchor="start">Encaje</Rotulo>
-      </Parte>
-      <Parte id="tasa" resaltar={resaltar}>
-        <Rotulo x={296} y={212} anchor="start">Tasa</Rotulo>
-      </Parte>
-      <Parte id="credito" resaltar={resaltar}>
-        <path d="M290 230 H350" stroke={FAE.ambar} strokeWidth="2.4" strokeLinecap="round" />
-        <Rotulo x={350} y={250} anchor="end">Crédito pedido</Rotulo>
+        <Rotulo x={312} y={228} anchor="end">Encaje</Rotulo>
       </Parte>
     </svg>
   );
