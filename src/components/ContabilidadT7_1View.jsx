@@ -15,9 +15,10 @@ import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.j
 import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
 import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
+import CostoOGasto from "./mecanicas/libros/t7/CostoOGasto.jsx";
+import { H5 } from "../data/contabilidadT7_1_h5.js";
 import CierraElMes from "./mecanicas/libros/t7/CierraElMes.jsx";
-import { H4 } from "../data/contabilidadT7_1_h4.js";
-import LaCuentaQueNoSeMueve from "./mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx";
+import { H4 } from "../data/contabilidadT7_1_h4.js";import LaCuentaQueNoSeMueve from "./mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx";
 import CuantoValeLoQueSobro from "./mecanicas/libros/t7/CuantoValeLoQueSobro.jsx";
 import { H3 } from "../data/contabilidadT7_1_h3.js";
 import QueCuentaSeMueve from "./mecanicas/libros/t7/QueCuentaSeMueve.jsx";
@@ -65,12 +66,13 @@ export const PIEZAS_T7_1 = [
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS_T7_1 = [
+  { id: H5.id, Mecanica: CostoOGasto, titulo: H5.nombre },
+];
   { id: H4.id, Mecanica: CierraElMes, titulo: H4.nombre },
 ];
   { id: H3.id, Mecanica: CuantoValeLoQueSobro, titulo: H3.nombre },
   { id: H1.id, Mecanica: QueCuentaSeMueve, titulo: H1.nombre },
-  { id: H2.id, Mecanica: ArmaLaFactura, titulo: H2.nombre },];
-/* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
+  { id: H2.id, Mecanica: ArmaLaFactura, titulo: H2.nombre },];/* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
 const rotuloDeBloque = (actividadId) => {
   const b = bloqueDeDificultad(clasificacionDe(MATERIA, TEMA_T7_1, actividadId)?.dificultad);
   return b ? b.nombre.toUpperCase() : null;

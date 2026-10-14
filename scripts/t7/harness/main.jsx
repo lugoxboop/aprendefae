@@ -4,12 +4,14 @@
  * recorra en Chromium. No es una página del sitio: Vite la sirve solo cuando
  * se mide.
  *
+ * Con #h5 monta la vista en el modo Hacer, con H5 abierto (medir-t7-1-h5.mjs).
+ *
+ * Con #sonda monta en cambio dos figuras en el estado del acierto de la
  * Con #h4 monta la vista en el modo Hacer, con H4 abierto (medir-t7-1-h4.mjs).
  *
  * Con #h3 monta la vista en el modo Hacer, con H3 abierto (medir-t7-1-h3.mjs).
  * Con #h1 monta la vista en el modo Hacer, con H1 abierto (medir-t7-1-h1.mjs),
- * y con #h2 lo mismo con H2 (medir-t7-1-h2.mjs). * * Con #sonda monta en cambio dos figuras en el estado del acierto de la
- * pantalla 4, de anchos elegidos para que la línea de la compra mida 119 y
+ * y con #h2 lo mismo con H2 (medir-t7-1-h2.mjs). * * Con #sonda monta en cambio dos figuras en el estado del acierto de la * pantalla 4, de anchos elegidos para que la línea de la compra mida 119 y
  * 123 px: a los dos lados del corte de 121 px de Mello. A 320 y 375 la línea
  * mide 103 y 130,5, y en ninguno de los dos se ve si el corte está bien puesto.
  */
@@ -33,13 +35,18 @@ if (location.hash === "#sonda") {
       ))}
     </div>,
   );
+} else if (location.hash === "#h5") {
+  /*
+   * H5 abierto en el modo Hacer, como lo abre #/inventarios-periodico/hacer/….
 } else if (location.hash === "#h4") {
   /*
-   * H4 abierto en el modo Hacer, como lo abre #/inventarios-periodico/hacer/….
-   * Sin sesión: la vista pide un AuthContext y aquí basta uno vacío.
+   * H4 abierto en el modo Hacer, como lo abre #/inventarios-periodico/hacer/….   * Sin sesión: la vista pide un AuthContext y aquí basta uno vacío.
    */
   raiz.render(
     <AuthContext.Provider value={{ usuario: null, pedirCuenta: () => {} }}>
+      <ContabilidadT7_1View modo="hacer" nodoInicial="t7-1-costo-o-gasto" onBack={() => {}} />
+    </AuthContext.Provider>,
+  );
       <ContabilidadT7_1View modo="hacer" nodoInicial="t7-1-cierra-el-mes" onBack={() => {}} />
     </AuthContext.Provider>,
 } else if (location.hash === "#h3") {
@@ -56,8 +63,7 @@ if (location.hash === "#sonda") {
         modo="hacer"
         nodoInicial={location.hash === "#h2" ? "t7-1-arma-la-factura" : "t7-1-que-cuenta-se-mueve"}
         onBack={() => {}}
-      />    </AuthContext.Provider>,  );
-} else {
+      />    </AuthContext.Provider>,  );} else {
   /* Con o sin #a6, la vista entera: la medición de A6 busca su pieza dentro de ella. La vista pide un AuthContext. */
   raiz.render(
     <AuthContext.Provider value={{ usuario: null, pedirCuenta: () => {} }}>
