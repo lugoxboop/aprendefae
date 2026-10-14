@@ -688,6 +688,8 @@ export const SUBJECTS = {
           { id: "t7-1-cuanto-vale-lo-que-sobro", nombre: "¿Cuánto vale lo que sobró?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* AP4, después de AP3 por dependencias (regla 9): cita «Tres formas de ponerle precio a lo que quedó». Antes de A5: cierra con «Siguiente: Importados y fletes». Cero FP. */
           { id: "t7-1-a4-el-cierre-en-periodico", nombre: "El cierre en periódico", clasificacion: { tipo: APRENDER } },
+          /* H4, después de AP4 por dependencias (regla 9): cierra el mes con los tres métodos de AP3 y los asientos de cierre de AP4 (la sostienen A3 y A4). Antes de A5. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0094. */
+          { id: "t7-1-cierra-el-mes", nombre: "Cierra el mes", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* A5, después de AP2 por dependencias (regla 9): el enunciado trae el IVA del 16 % y la retención del 3,5 %, que enseña AP2, y la retención del 1 % del flete. Antes de A6, en el orden del libro (p. 228 antes de pp. 230-232) y del plan. AP3 y AP4 entran entre AP2 y A5: AP4 cierra con «Siguiente: Importados y fletes». */
           { id: "t7-1-a5-importados-y-fletes", nombre: "Importados y fletes", clasificacion: { tipo: APRENDER } },
           /* A6, después de AP2 por dependencias (regla 9): muestra el IVA y la retención de la devolución, que enseña AP2. Cero FP. */
