@@ -8,6 +8,7 @@ import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZA_LO_QUE_LE_DEBEN } from "../data/contabilidadT6Pieza1.js";
 import { PIEZA_NO_VA_A_PAGAR } from "../data/contabilidadT6Pieza2.js";
 import { PIEZA_LA_PROVISION } from "../data/contabilidadT6Pieza3.js";
+import { PIEZA_SI_PAGA } from "../data/contabilidadT6Pieza4.js";
 import { ESCENAS_TEMA6 } from "./mecanicas/libros/tema6/escenasTema6.jsx";
 
 /*
@@ -25,7 +26,7 @@ import { ESCENAS_TEMA6 } from "./mecanicas/libros/tema6/escenasTema6.jsx";
 const MATERIA = "contabilidad";
 export const TEMA = "cuentas-por-cobrar";
 
-export const PIEZAS = [{ numero: 1, pieza: PIEZA_LO_QUE_LE_DEBEN }, { numero: 2, pieza: PIEZA_NO_VA_A_PAGAR }, { numero: 3, pieza: PIEZA_LA_PROVISION }];
+export const PIEZAS = [{ numero: 1, pieza: PIEZA_LO_QUE_LE_DEBEN }, { numero: 2, pieza: PIEZA_NO_VA_A_PAGAR }, { numero: 3, pieza: PIEZA_LA_PROVISION }, { numero: 4, pieza: PIEZA_SI_PAGA }];
 const PUBLICADAS = PIEZAS.length;
 
 export default function ContabilidadTema6View({ onBack }) {

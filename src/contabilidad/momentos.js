@@ -15,11 +15,10 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-export function crearMomentos({ pasos, cierre, tramos, piezas, resaltado, nuncaAtenuadas = [] }) {
+export function crearMomentos({ pasos, cierre, tramos, piezas, resaltado }) {
   const PASOS = pasos.length;
   const CIERRE = PASOS + 1;
   const ELEMENTOS = Object.keys(piezas);
-  const quietas = new Set(nuncaAtenuadas);
   const tramoDe = (p) => tramos.findIndex(([a, b]) => p >= a && p <= b);
 
   function estadoPaso(paso) {
@@ -42,7 +41,7 @@ export function crearMomentos({ pasos, cierre, tramos, piezas, resaltado, nuncaA
         /* Una pieza pasada que no se conserva no está; una del momento abierto, invisible hasta su paso. */
         const presente = m === abierto || (pasado(m) && Boolean(conserva));
         const r = resaltados.has(id);
-        return [id, { presente, visible, resaltado: r, atenuado: hay && visible && !r && !quietas.has(id) }];
+        return [id, { presente, visible, resaltado: r, atenuado: hay && visible && !r }];
       })),
     };
   }
