@@ -11,7 +11,7 @@ import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.j
 import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import {
-  EscenaQuienManda, EscenaInstrumentos, EscenaTransmisiones, ExploraVolante, ExploraInstrumentos,
+  EscenaQuienManda, EscenaInstrumentos, EscenaTransmisiones, ExploraVolante, ExploraInstrumentos, ExploraMargen,
 } from "./mecanicas/maquinas/salaDeMaquinas.jsx";
 import {
   MemoramaBancoCentral, QuienDecideEsto, VolanteDeLaTasa, CajaDeHerramientas, AQuienLePegaLaTasa,
@@ -42,7 +42,7 @@ const MATERIA = "macroeconomia";
 const TEMA = "politica-monetaria";
 
 const PIEZAS = [
-  { pieza: APRENDER_QUIEN_MANDA, Escena: EscenaQuienManda, Exploracion: () => <ExploraVolante /> },
+  { pieza: APRENDER_QUIEN_MANDA, Escena: EscenaQuienManda, Exploracion: ExploraMargen },
   { pieza: APRENDER_INSTRUMENTOS, Escena: EscenaInstrumentos, Exploracion: ExploraInstrumentos },
   { pieza: APRENDER_TRANSMISIONES, Escena: EscenaTransmisiones, Exploracion: () => <ExploraVolante conReloj /> },
   { pieza: APRENDER_FABRICA, Escena: EscenaFabrica, Exploracion: ExploraFabrica },
