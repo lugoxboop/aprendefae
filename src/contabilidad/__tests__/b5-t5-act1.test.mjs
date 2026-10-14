@@ -61,8 +61,8 @@ const montar = async (ids) => {
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
 const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
-const pestana = (caja, id) => caja.querySelector(`[data-renta="${id}"]`);
-const opcion = (caja, id) => caja.querySelector(`[data-tipo="${id}"]`);
+const pestana = (caja, id) => caja.querySelector(`[data-nivel1="${id}"]`);
+const opcion = (caja, id) => caja.querySelector(`[data-nivel2="${id}"]`);
 const botonColocar = (caja) => caja.querySelector("[data-boton-colocar] button");
 const botonAvanzar = (caja) => caja.querySelector("[data-boton-avanzar] button");
 const rotuloBoton = (caja) => (botonColocar(caja) ?? botonAvanzar(caja) ?? [...caja.querySelectorAll("button")].at(-1)).textContent;
@@ -280,11 +280,11 @@ test("★★★ el rótulo del botón en cada estado es el de la guía, y cada u
 
 test("★★ pestañas: «Renta variable» no abre panel; cambiar de pestaña borra el segundo nivel; aria correcto", async () => {
   const { caja, desmontar } = await montar(["cdt"]);
-  assert.deepEqual([...caja.querySelectorAll("[data-rotulo-renta]")].map((n) => n.textContent), ["Renta variable", "Renta fija"]);
+  assert.deepEqual([...caja.querySelectorAll("[data-rotulo-nivel1]")].map((n) => n.textContent), ["Renta variable", "Renta fija"]);
   const fija = pestana(caja, "fija");
   assert.equal(fija.getAttribute("aria-expanded"), "false");
   await tocar(fija);
-  const panel = caja.querySelector("[data-panel-fija]");
+  const panel = caja.querySelector("[data-panel-segundo]");
   assert.equal(panel.getAttribute("role"), "group");
   assert.equal(fija.getAttribute("aria-controls"), panel.id);
   assert.equal(fija.getAttribute("aria-expanded"), "true");
@@ -292,10 +292,10 @@ test("★★ pestañas: «Renta variable» no abre panel; cambiar de pestaña bo
   await tocar(opcion(caja, "descuento"));
   assert.equal(opcion(caja, "descuento").getAttribute("aria-pressed"), "true");
   await tocar(pestana(caja, "variable"));
-  assert.equal(Boolean(caja.querySelector("[data-panel-fija]")), false, "con «Renta variable» no hay panel");
+  assert.equal(Boolean(caja.querySelector("[data-panel-segundo]")), false, "con «Renta variable» no hay panel");
   assert.equal(pestana(caja, "variable").hasAttribute("aria-expanded"), false);
   await tocar(pestana(caja, "fija"));
-  assert.equal(Boolean(caja.querySelector('[data-tipo][aria-pressed="true"]')), false, "el panel se abre sin nada elegido");
+  assert.equal(Boolean(caja.querySelector('[data-nivel2][aria-pressed="true"]')), false, "el panel se abre sin nada elegido");
   desmontar();
 });
 
