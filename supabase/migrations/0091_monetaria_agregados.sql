@@ -26,8 +26,11 @@
 -- 675 FP. Si la Célula B agrega juegos al mismo tema antes, la cifra sube en
 -- lo que ellos sumen.
 --
--- CÓMO DESHACERLA, si hiciera falta y ANTES de que nadie juegue:
---   delete from public.actividad_catalogo where activity_id in ('en-que-talla-va', 'que-toco-el-banco');
+-- CÓMO DESHACERLA, si hiciera falta y ANTES de que nadie juegue (una fila por
+-- línea y con `=`, como la 0070: catalogo.test lee también los comentarios, y
+-- un `delete ... in (...)` aquí contaría como borrado):
+--   delete from public.actividad_catalogo where activity_id = 'en-que-talla-va';
+--   delete from public.actividad_catalogo where activity_id = 'que-toco-el-banco';
 -- ---------------------------------------------------------------------------
 
 insert into public.actividad_catalogo
