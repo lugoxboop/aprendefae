@@ -15,6 +15,15 @@
  *   · que ningún elemento con texto se salga del panel de la pieza
  *   · que las fuentes que se midieron sean Inter y Sora, y no la de reserva
  *
+ * Y en la figura de Watari («Dos columnas del periodo»):
+ *
+ *   · que la portada no la tenga y los otros doce estados sí
+ *   · «DEBE» y el monto: con menos de 130 px de línea el monto baja (a 320),
+ *     con más va en la misma línea (a 375), y nunca se tocan
+ *   · que las dos columnas midan lo mismo y no cambien de ancho entre estados
+ *   · que ningún borde de la figura sea punteado ni discontinuo
+ *   · que el fundido sea de 120 ms y desaparezca con movimiento reducido
+ *
  * Sale con código 1 si algo falla, y escribe una tabla con las medidas.
  * Necesita Playwright (no es dependencia del repo): toma el que haya
  * instalado en la máquina, o el de PLAYWRIGHT_MODULE.
@@ -41,6 +50,7 @@ const URL_BANCO = `http://127.0.0.1:${port}/scripts/t7/harness/index.html`;
 
 const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const fallos = [];
+const columnas = {};
 const filas = [];
 
 /* Lo que se mide en cada estado. Corre dentro de la página. */
@@ -49,6 +59,7 @@ function medir() {
   const caja = panel.getBoundingClientRect();
   const problemas = [];
   const conTexto = [...document.querySelectorAll("h1, [data-pieza] *, section > header *")]
+    .filter((el) => !el.closest(".t7fg-sr") && !el.matches("style, script"))
     .filter((el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()));
   for (const el of conTexto) {
     const r = el.getBoundingClientRect();
@@ -73,7 +84,42 @@ function medir() {
     return el.clientWidth - parseFloat(e.paddingLeft) - parseFloat(e.paddingRight);
   };
   const lineaSpans = linea ? [...linea.children].map((s) => s.getBoundingClientRect()) : [];
+  const fig = document.querySelector("[data-figura]");
+  let figura = null;
+  if (fig) {
+    for (const el of fig.querySelectorAll("*")) {
+      const e = getComputedStyle(el);
+      for (const lado of ["Top", "Right", "Bottom", "Left"]) {
+        if (/dashed|dotted/.test(e[`border${lado}Style`])) problemas.push(`figura: borde ${e[`border${lado}Style`]} en ${el.className || el.tagName}`);
+      }
+    }
+    const cols = [...fig.querySelectorAll(".t7fg-col")].map((c) => Math.round(c.getBoundingClientRect().width * 10) / 10);
+    const mov = fig.querySelector(".t7fg-mov");
+    let compra = null;
+    if (mov) {
+      const debe = mov.querySelector(".t7fg-debe").getBoundingClientRect();
+      const monto = mov.querySelector(".t7fg-monto").getBoundingClientRect();
+      const lin = mov.querySelector(".t7fg-lin");
+      const se_tocan = !(debe.right <= monto.left || monto.right <= debe.left || debe.bottom <= monto.top || monto.bottom <= debe.top);
+      if (se_tocan) problemas.push(`figura: «DEBE» y el monto se tocan`);
+      compra = {
+        linea: Math.round(lin.getBoundingClientRect().width * 10) / 10,
+        contenedor: Math.round(anchoUtil(mov) * 10) / 10,
+        debeMasMonto: Math.round((debe.width + 8 + monto.width) * 100) / 100,
+        montoAbajo: monto.top >= debe.bottom - 0.5,
+      };
+    }
+    const nueva = fig.querySelector(".t7fg-nueva");
+    figura = {
+      clave: fig.dataset.figura,
+      alto: Math.round(fig.getBoundingClientRect().height),
+      cols,
+      compra,
+      fundido: nueva ? { que: nueva.dataset.fg, nombre: getComputedStyle(nueva).animationName, dura: getComputedStyle(nueva).animationDuration } : null,
+    };
+  }
   return {
+    figura,
     problemas,
     panel: Math.round(caja.width * 10) / 10,
     textos: conTexto.length,
@@ -102,6 +148,24 @@ for (const ancho of ANCHOS) {
     const m = await pagina.evaluate(medir);
     filas.push({ ancho, estado: nombre, ...m });
     for (const p of m.problemas) fallos.push(`${ancho} px · ${nombre} · ${p}`);
+    const mal = (t) => fallos.push(`${ancho} px · ${nombre} · ${t}`);
+    if (nombre === "portada") { if (m.figura) mal("la portada tiene figura"); }
+    else if (!m.figura) mal("falta la figura");
+    if (m.figura) {
+      const [a, b] = m.figura.cols;
+      if (Math.abs(a - b) > 0.5) mal(`las columnas miden distinto: ${a} y ${b}`);
+      columnas[ancho] ??= a;
+      if (Math.abs(columnas[ancho] - a) > 0.5) mal(`la columna cambió de ancho: ${columnas[ancho]} → ${a}`);
+      const c = m.figura.compra;
+      if (c) {
+        if (c.montoAbajo !== (c.contenedor < 130)) mal(`con ${c.contenedor} px de línea el monto ${c.montoAbajo ? "baja" : "no baja"}`);
+        if (c.montoAbajo !== (ancho === 320)) mal(`a ${ancho} px el monto ${c.montoAbajo ? "baja" : "no baja"}`);
+      }
+      const esperado = { F4a: "compra", F5a: "conteo" }[m.figura.clave] ?? null;
+      const f = m.figura.fundido;
+      if ((f?.que ?? null) !== esperado) mal(`fundido en ${f?.que ?? "nada"} y debía ser en ${esperado ?? "nada"}`);
+      if (f && (f.nombre !== "t7fg-aparece" || f.dura !== "0.12s")) mal(`fundido ${f.nombre} de ${f.dura}`);
+    }
     if (!m.fuentes.inter || !m.fuentes.sora) fallos.push(`${ancho} px · ${nombre} · no cargaron Inter o Sora: se habría medido la fuente de reserva`);
     if (CAPTURAS) await pagina.screenshot({ path: resolve(CAPTURAS, `${ancho}-${String(filas.filter((f) => f.ancho === ancho).length).padStart(2, "0")}-${nombre}.png`), fullPage: true });
   };
@@ -135,13 +199,59 @@ for (const ancho of ANCHOS) {
   await pagina.close();
 }
 
+/* El corte de 129 px, a los dos lados: con 125 px de línea el monto baja; con 131, no. */
+{
+  const pagina = await navegador.newPage({ viewport: { width: 420, height: 900 } });
+  await pagina.goto(`${URL_BANCO}#sonda`);
+  await pagina.waitForSelector("[data-sonda]");
+  await pagina.evaluate(() => document.fonts.ready);
+  const sondas = await pagina.$$eval("[data-sonda]", (ds) => ds.map((d) => {
+    const mov = d.querySelector(".t7fg-mov");
+    const e = getComputedStyle(mov);
+    const util = mov.clientWidth - parseFloat(e.paddingLeft) - parseFloat(e.paddingRight);
+    const debe = mov.querySelector(".t7fg-debe").getBoundingClientRect();
+    const monto = mov.querySelector(".t7fg-monto").getBoundingClientRect();
+    return { linea: Number(d.dataset.sonda), util, montoAbajo: monto.top >= debe.bottom - 0.5 };
+  }));
+  for (const sd of sondas) {
+    const debeBajar = sd.util < 130;
+    console.log(`Sonda: línea de ${sd.util} px → el monto ${sd.montoAbajo ? "baja" : "va en la misma línea"}`);
+    if (Math.abs(sd.util - sd.linea) > 0.5) fallos.push(`sonda: la línea mide ${sd.util} y debía medir ${sd.linea}`);
+    if (sd.montoAbajo !== debeBajar) fallos.push(`sonda: con ${sd.util} px de línea el monto ${sd.montoAbajo ? "baja" : "no baja"}`);
+  }
+  await pagina.close();
+}
+
+/* Con movimiento reducido, sin fundido: se juega hasta los dos aciertos y se mira la animación. */
+{
+  const pagina = await navegador.newPage({ viewport: { width: 375, height: 800 }, reducedMotion: "reduce" });
+  await pagina.goto(URL_BANCO);
+  await pagina.waitForSelector("[data-pieza]");
+  for (const b of ["empezar", "seguir", "seguir", "ver-el-caso"]) await pagina.click(`[data-boton="${b}"]`);
+  const fundido = () => pagina.$eval(".t7fg-nueva", (el) => ({ que: el.dataset.fg, nombre: getComputedStyle(el).animationName }));
+  await pagina.click('[data-opcion="compras"]');
+  await pagina.click('[data-boton="confirmar"]');
+  const f4 = await fundido();
+  await pagina.click('[data-boton="seguir"]');
+  await pagina.click('[data-opcion="inventario"]');
+  await pagina.click('[data-boton="confirmar"]');
+  const f5 = await fundido();
+  for (const f of [f4, f5]) {
+    if (f.nombre !== "none") fallos.push(`movimiento reducido · ${f.que} tiene la animación ${f.nombre}`);
+  }
+  console.log(`Movimiento reducido: ${f4.que} → ${f4.nombre}; ${f5.que} → ${f5.nombre}\n`);
+  await pagina.close();
+}
+
 await navegador.close();
 await servidor.close();
 
-console.log("ancho | estado | panel px | textos | fuente párrafo / título | línea: útil / contenido / renglones");
+console.log("ancho | estado | panel px | textos | fuentes | línea del acierto: útil / contenido / renglones | figura: alto · columnas · línea de la compra (contenedor) · DEBE+8+monto · monto abajo · fundido");
 for (const f of filas) {
   const l = f.linea ? `${f.linea.util} / ${f.linea.contenido} / ${f.linea.renglones}` : "—";
-  console.log(`${f.ancho} | ${f.estado} | ${f.panel} | ${f.textos} | ${f.fuentes.parrafo} / ${f.fuentes.titulo} | ${l}`);
+  const g = f.figura;
+  const fg = g ? `${g.clave} ${g.alto} px · ${g.cols.join(" / ")} · ${g.compra ? `${g.compra.linea} (${g.compra.contenedor}) · ${g.compra.debeMasMonto} · ${g.compra.montoAbajo ? "sí" : "no"}` : "—"} · ${g.fundido ? `${g.fundido.que} ${g.fundido.dura}` : "—"}` : "sin figura";
+  console.log(`${f.ancho} | ${f.estado} | ${f.panel} | ${f.textos} | ${f.fuentes.parrafo}/${f.fuentes.titulo} | ${l} | ${fg}`);
 }
 const estados = new Set(filas.map((f) => f.estado)).size;
 console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos).`);

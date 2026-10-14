@@ -3,9 +3,31 @@
  * estilos del sitio (Inter y Sora incluidas), para que medir-t7-1-ap1.mjs la
  * recorra en Chromium. No es una página del sitio: Vite la sirve solo cuando
  * se mide.
+ *
+ * Con #sonda monta en cambio dos figuras en el estado del acierto de la
+ * pantalla 4, de anchos elegidos para que la línea de la compra mida 125 y
+ * 131 px: a los dos lados del corte de 129 px de Watari. A 320 y 375 la línea
+ * mide 103 y 130,5, y en ninguno de los dos se ve si el corte está bien puesto.
  */
 import { createRoot } from "react-dom/client";
 import "../../../src/styles/global.css";
 import ContabilidadT7_1View from "../../../src/components/ContabilidadT7_1View.jsx";
+import FiguraDosColumnas from "../../../src/components/mecanicas/libros/t7/FiguraDosColumnas.jsx";
 
-createRoot(document.getElementById("root")).render(<ContabilidadT7_1View onBack={() => {}} />);
+/* Columna = (ancho − 8) / 2; línea = columna − 20 de relleno − 2 de borde. */
+const anchoParaLinea = (linea) => (linea + 22) * 2 + 8;
+
+const raiz = createRoot(document.getElementById("root"));
+if (location.hash === "#sonda") {
+  raiz.render(
+    <div style={{ padding: "16px", display: "grid", gap: "24px" }}>
+      {[125, 131].map((linea) => (
+        <div key={linea} data-sonda={linea} style={{ width: `${anchoParaLinea(linea)}px` }}>
+          <FiguraDosColumnas estado="F4a" />
+        </div>
+      ))}
+    </div>,
+  );
+} else {
+  raiz.render(<ContabilidadT7_1View onBack={() => {}} />);
+}

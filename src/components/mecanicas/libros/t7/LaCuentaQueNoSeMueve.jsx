@@ -3,7 +3,8 @@ import { FAE } from "../../../../theme.js";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { NEUTRO } from "../../../../data/contabilidadIntro.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
-import { PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE, BOTON, FIGURA_PENDIENTE } from "../../../../data/contabilidadT7_1.js";
+import { PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE, BOTON } from "../../../../data/contabilidadT7_1.js";
+import FiguraDosColumnas from "./FiguraDosColumnas.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -14,10 +15,16 @@ import { PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE, BOTON, FIGURA_PENDIENTE } from "../../
  *
  *   · colocando  se toca una cuenta y se confirma
  *   · error      la devolución de esa cuenta y «Probar otra»
- *   · acierto    el texto, la línea que aparece, la nota y «Seguir»
+ *   · acierto    el texto, la nota y «Seguir». La línea que aparece en la v5
+ *                («16 de abril · Compras · Debe $5.000.000») es la tarjeta de
+ *                la compra en la figura, repartida como la diseñó Watari
  *
  * Cada pantalla y cada estado lleva su pie de fuente, abajo, con el texto de
- * la v5. Las opciones se barajan en cada intento: «Probar otra» las vuelve a
+ * la v5. De la pantalla 1 a la 6, cada estado lleva además su figura (Watari,
+ * «Dos columnas del periodo»), en el lugar que le da la guía: bajo el texto en
+ * las de lectura, entre la ficha y la pregunta en la 4, entre la pregunta y
+ * las opciones en la 5, y entre el resumen y la remisión en la 6. La portada
+ * no lleva figura. Las opciones se barajan en cada intento: «Probar otra» las vuelve a
  * sortear, y nunca en el mismo orden que el intento anterior.
  *
  * NO CALIFICA y no da FP: es material de Aprender. No llama a registrar_fp.
@@ -63,23 +70,6 @@ function Parrafos({ lista }) {
   );
 }
 
-/* El hueco de la figura: marcado y sin dibujo, hasta que llegue el paquete de Watari. */
-function HuecoFigura() {
-  return (
-    <div
-      data-figura-pendiente
-      role="note"
-      style={{
-        margin: "0 0 16px", padding: "18px 12px", borderRadius: "12px", textAlign: "center",
-        border: "1px dashed rgba(248,249,250,0.36)", color: APAGADO, fontSize: "12px",
-        overflowWrap: "break-word",
-      }}
-    >
-      {FIGURA_PENDIENTE}
-    </div>
-  );
-}
-
 /* ═══════════ LA PREGUNTA ═══════════ */
 
 function Pregunta({ pantalla, onSeguir }) {
@@ -90,6 +80,7 @@ function Pregunta({ pantalla, onSeguir }) {
 
   const opcion = confirmada ? pantalla.opciones.find((o) => o.id === confirmada) : null;
   const estado = !opcion ? "colocando" : opcion.correcta ? "acierto" : "error";
+  const figura = estado === "error" ? pantalla.figura.error[opcion.id] : pantalla.figura[estado];
 
   useEffect(() => {
     if (estado !== "colocando") devolucionRef.current?.focus();
@@ -120,9 +111,12 @@ function Pregunta({ pantalla, onSeguir }) {
         </dl>
       )}
 
+      {pantalla.enunciado && <div style={{ marginTop: "14px" }}><FiguraDosColumnas key={figura} estado={figura} /></div>}
+
       <p data-texto data-enunciado-pregunta style={{ ...PARRAFO, marginTop: pantalla.enunciado ? "14px" : 0, fontFamily: SORA, fontWeight: 700, fontSize: "14px", lineHeight: 1.45 }}>
         {pantalla.pregunta}
       </p>
+      {!pantalla.enunciado && <div style={{ marginTop: "14px" }}><FiguraDosColumnas key={figura} estado={figura} /></div>}
       {pantalla.ayuda && (
         <p data-ayuda style={{ margin: "6px 0 0", fontSize: "12.5px", lineHeight: 1.45, color: APAGADO, overflowWrap: "break-word" }}>
           {pantalla.ayuda}
@@ -196,7 +190,6 @@ function Pregunta({ pantalla, onSeguir }) {
           }}>
             {pantalla.acierto.texto}
           </p>
-          {pantalla.acierto.linea && <LineaQueAparece linea={pantalla.acierto.linea} />}
           <p data-texto data-nota style={{ ...PARRAFO, marginTop: "10px", fontSize: "13px", color: "rgba(248,249,250,0.82)" }}>
             {pantalla.acierto.nota}
           </p>
@@ -207,27 +200,6 @@ function Pregunta({ pantalla, onSeguir }) {
         </div>
       )}
     </div>
-  );
-}
-
-/*
- * «16 de abril · Compras · Debe $5.000.000». Las tres partes van en una fila
- * que se parte en dos renglones si no cabe; ninguna se corta ni se sale.
- */
-function LineaQueAparece({ linea }) {
-  return (
-    <p data-linea style={{
-      margin: "10px 0 0", padding: "9px 12px", borderRadius: "10px",
-      display: "flex", flexWrap: "wrap", columnGap: "6px", rowGap: "2px",
-      fontFamily: SORA, fontSize: "13px", fontWeight: 600, lineHeight: 1.45, color: FAE.text,
-      background: "rgba(10,20,34,0.4)", border: "1px solid rgba(248,249,250,0.14)",
-    }}>
-      <span>{linea.fecha}</span>
-      <span aria-hidden="true">·</span>
-      <span>{linea.cuenta}</span>
-      <span aria-hidden="true">·</span>
-      <span>{linea.lado} {linea.monto}</span>
-    </p>
   );
 }
 
@@ -249,8 +221,6 @@ export default function LaCuentaQueNoSeMueve({ pieza = PIEZA_LA_CUENTA_QUE_NO_SE
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <div ref={marcoRef} tabIndex={-1} data-pieza={pieza.id} data-pantalla={pantalla.id} style={{ outline: "none" }}>
-        {pantalla.figura && <HuecoFigura />}
-
         {pantalla.tipo === "portada" && (
           <div style={{ display: "flex", flexDirection: "column" }}>
             <p data-texto data-objetivo style={{
@@ -260,6 +230,8 @@ export default function LaCuentaQueNoSeMueve({ pieza = PIEZA_LA_CUENTA_QUE_NO_SE
             }}>
               {pantalla.objetivo}
             </p>
+            {/* La portada no lleva figura (Watari); si los datos un día le ponen una, se pinta y la prueba lo caza. */}
+            {pantalla.figura && <div style={{ marginTop: "16px" }}><FiguraDosColumnas estado={pantalla.figura} /></div>}
             <button type="button" data-boton="empezar" onClick={seguir} style={{ ...boton(true), marginTop: "14px" }}>{pantalla.boton}</button>
             <Pie texto={pantalla.pie} />
           </div>
@@ -268,6 +240,8 @@ export default function LaCuentaQueNoSeMueve({ pieza = PIEZA_LA_CUENTA_QUE_NO_SE
         {(pantalla.tipo === "lectura" || pantalla.tipo === "resumen") && (
           <div style={{ display: "flex", flexDirection: "column" }}>
             <Parrafos lista={pantalla.parrafos} />
+            <div style={{ marginTop: "16px" }}><FiguraDosColumnas estado={pantalla.figura} /></div>
+            {pantalla.siguiente && <p data-texto data-siguiente style={{ ...PARRAFO, marginTop: "14px" }}>{pantalla.siguiente}</p>}
             {pantalla.boton && (
               <button
                 type="button"

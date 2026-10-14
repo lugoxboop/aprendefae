@@ -32,12 +32,77 @@ export const BOTON = {
 };
 
 /*
- * La figura todavía no está: la entrega Watari con sus capturas, medidas y
- * textos alternativos. Mientras tanto la pieza deja un hueco marcado y no
- * inventa ninguna. La v5 no dice en qué pantalla va, así que el hueco va en
- * la portada hasta que el paquete de diseño lo diga.
+ * ═══════════ LA FIGURA · «DOS COLUMNAS DEL PERIODO» (Watari, v3) ═══════════
+ *
+ * Columnas: Inventario de mercancías y la cuenta que recibe la compra, que
+ * empieza como «Otra cuenta» y desde el acierto de la pantalla 4 se llama
+ * «Compras». Filas: inicio, durante el periodo y cierre. La pantalla 0 no
+ * lleva figura; de la 1 a la 6, una en cada estado: doce.
+ *
+ * Cada estado dice qué se dibuja y qué se señala, con la tabla de Watari:
+ *   col2     null | "otra" | "compras"
+ *   filas    las filas que se ven (la pantalla 1 solo tiene «Inicio»)
+ *   factura  la factura del 16 de abril, encima de la figura, sin anotar
+ *   compra   la tarjeta «16 de abril · DEBE · 5.000.000» en la segunda columna
+ *   otras    «Las demás compras del periodo», sin cifra, debajo de la compra
+ *   conteo   el cierre de Inventario ya en tarjeta: «Al día con el conteo físico»
+ *   foco     lo que se señala (blanco y negrita; nada más cambia)
+ *   aparece  lo que entra con el fundido de 120 ms, solo en su pantalla
+ * ═══════════════════════════════════════════════════════════════════════════
  */
-export const FIGURA_PENDIENTE = "Figura pendiente: la entrega Watari.";
+
+/* Los textos que se ven dentro de la figura, de Near y de Watari. */
+export const FIGURA_TEXTOS = {
+  inventario: "Inventario de mercancías",
+  otraCuenta: "Otra cuenta",
+  compras: "Compras",
+  momento: "Momento",
+  inicio: "Inicio",
+  durante: "Durante el periodo",
+  cierre: "Cierre",
+  valorInicio: "Valor del inicio del periodo",
+  noSeMueve: "No se mueve hasta el cierre",
+  conteoPendiente: "Conteo físico",
+  conteoAlDia: "Al día con el conteo físico",
+  fecha: "16 de abril",
+  debe: "Debe",
+  /* Sin «$», como todas las cifras de la célula dentro de una figura (Watari). */
+  monto: "5.000.000",
+  demasCompras: "Las demás compras del periodo",
+};
+
+const TRES_FILAS = ["inicio", "durante", "cierre"];
+
+export const FIGURA = {
+  F1: { col2: null, filas: ["inicio"], foco: [] },
+  F2: { col2: null, filas: TRES_FILAS, foco: ["inv-durante"] },
+  F3: { col2: "otra", filas: TRES_FILAS, foco: ["inv-durante"] },
+  F4c: { col2: "otra", filas: TRES_FILAS, factura: true, foco: ["fila-durante"] },
+  F4ei: { col2: "otra", filas: TRES_FILAS, factura: true, foco: ["fila-durante", "inv-durante"] },
+  F4eg: { col2: "otra", filas: TRES_FILAS, factura: true, foco: ["fila-durante"] },
+  F4a: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, foco: ["fila-durante", "compra"], aparece: "compra" },
+  F5c: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, foco: ["fila-cierre"] },
+  F5ec: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, foco: ["fila-cierre", "inv-cierre"] },
+  F5en: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, foco: ["fila-cierre", "inv-cierre"] },
+  F5a: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, conteo: true, foco: ["fila-cierre", "conteo"], aparece: "conteo" },
+  F6: { col2: "compras", filas: TRES_FILAS, compra: true, otras: true, conteo: true, foco: [] },
+};
+
+/* Los doce textos alternativos de Near, uno por estado, tal cual. Van en un figcaption oculto. */
+export const FIGURA_ALT = {
+  F1: "Una columna con la cuenta Inventario de mercancías. Muestra el valor que tenía al inicio del periodo.",
+  F2: "La misma columna de Inventario de mercancías. Mientras la tienda vende, su valor sigue igual al del inicio.",
+  F3: "Dos columnas. Inventario de mercancías sigue con el valor del inicio del periodo. Al lado aparece otra cuenta, todavía sin nombre y sin valores.",
+  F4c: "Inventario de mercancías sigue con el valor del inicio del periodo. Al lado, la otra cuenta espera la compra del 16 de abril.",
+  F4ei: "La compra no entra en Inventario de mercancías. Esa cuenta sigue con el valor del inicio del periodo.",
+  F4eg: "La compra tampoco va a un gasto. La otra cuenta sigue esperando la compra del 16 de abril.",
+  F4a: "La otra cuenta ahora se llama Compras. Tiene una línea: 16 de abril, debe, $5.000.000. Debajo hay una línea sin cifra para las demás compras del periodo. Inventario de mercancías sigue igual.",
+  F5c: "Es el último día del periodo. Compras tiene la compra del 16 de abril y las demás. Inventario de mercancías sigue con el valor del inicio.",
+  F5ec: "Compras guarda lo que se compró en el periodo. Lo que quedó en la bodega no va ahí.",
+  F5en: "Sin el conteo, Inventario de mercancías no cambia. Seguiría con el valor del inicio del periodo.",
+  F5a: "Con el conteo físico, Inventario de mercancías se pone al día con el valor del inventario final. Compras no cambia.",
+  F6: "Durante el periodo, las compras van a Compras e Inventario de mercancías no se mueve. Al cierre, el conteo lo pone al día.",
+};
 
 /* ═══════════ LAS PANTALLAS, EN ORDEN ═══════════ */
 
@@ -47,7 +112,8 @@ const PORTADA = {
   objetivo: "Al terminar, sabrás en qué cuenta se anota la compra de mercancía en el sistema periódico. Y sabrás por qué Inventario de mercancías no se mueve hasta el cierre.",
   boton: BOTON.empezar,
   pie: "Basado en el libro, pp. 209 y 212",
-  figura: true,
+  /* Sin figura: cualquier versión adelantaría una respuesta (Watari). */
+  figura: null,
 };
 
 /* Pantalla 1 (interno: Lo que ya sabes). */
@@ -60,6 +126,7 @@ const LO_QUE_YA_SABES = {
   ],
   boton: BOTON.seguir,
   pie: "Basado en el libro, pp. 207 y 212",
+  figura: "F1",
 };
 
 /* Pantalla 2 (interno: El conteo al final). */
@@ -73,6 +140,7 @@ const EL_CONTEO_AL_FINAL = {
   ],
   boton: BOTON.seguir,
   pie: "Basado en el libro, pp. 209 y 210",
+  figura: "F2",
 };
 
 /* Pantalla 3 (interno: La consecuencia). */
@@ -85,6 +153,7 @@ const LA_CONSECUENCIA = {
   ],
   boton: BOTON.verElCaso,
   pie: "Basado en el libro, pp. 209 y 212",
+  figura: "F3",
 };
 
 /*
@@ -125,10 +194,17 @@ const PREGUNTA_COMPRA = {
     },
   ],
   pie: "Basado en el libro, p. 211",
+  /* La figura de cada estado; la del error depende de la cuenta elegida. */
+  figura: { colocando: "F4c", error: { inventario: "F4ei", gastos: "F4eg" }, acierto: "F4a" },
   error: { boton: BOTON.probarOtra, pie: "Basado en el libro, pp. 209, 210 y 212" },
   acierto: {
     texto: "Así es. En el sistema periódico, la compra de mercancía se anota en el debe de Compras, por su costo: $5.000.000. Inventario de mercancías no se toca. Como la compra no va al debe de su cuenta de activo, el libro dice que este registro se aparta de la norma.",
-    /* La línea que aparece, en sus tres partes. Se lee «16 de abril · Compras · Debe $5.000.000». */
+    /*
+     * La línea que aparece, en sus tres partes. Se lee «16 de abril · Compras
+     * · Debe $5.000.000». No se pinta aparte: es la tarjeta de la compra en la
+     * figura, repartida (Watari), con la cuenta en el encabezado de la columna
+     * y el monto sin «$».
+     */
     linea: { fecha: "16 de abril", cuenta: "Compras", lado: "Debe", monto: "$5.000.000" },
     nota: "La otra parte del asiento, lo que se le debe al proveedor, la armamos en «La factura completa».",
     boton: BOTON.seguir,
@@ -160,6 +236,7 @@ const PREGUNTA_CONTEO = {
     },
   ],
   pie: "Basado en el libro, p. 209",
+  figura: { colocando: "F5c", error: { compras: "F5ec", ninguna: "F5en" }, acierto: "F5a" },
   error: { boton: BOTON.probarOtra, pie: "Basado en el libro, pp. 209, 210, 212 y 214" },
   acierto: {
     texto: "Exacto. Al cierre, el conteo físico da el valor del inventario final, y con esa cifra se pone al día Inventario de mercancías. Esa es la cifra que aparece en el estado de situación financiera.",
@@ -178,10 +255,12 @@ const RESUMEN = {
     "En el sistema periódico, la mercancía no se anota día a día. Se revisa al final, con un conteo físico.",
     "Mientras tanto, las compras van a Compras. Inventario de mercancías no se mueve.",
     "Al cierre, el conteo pone al día Inventario de mercancías.",
-    "Siguiente: la factura completa de esta compra.",
   ],
+  /* La figura va bajo las líneas del resumen, y la remisión debajo de la figura (Watari). */
+  siguiente: "Siguiente: la factura completa de esta compra.",
   boton: null,
   pie: "Basado en el libro, pp. 209 y 212",
+  figura: "F6",
 };
 
 /* ═══════════ LA PIEZA ═══════════ */

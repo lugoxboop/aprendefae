@@ -15,6 +15,10 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · el error lleva a «Probar otra» y el acierto a «Seguir»
  *   · las opciones se barajan en cada intento
  *   · la pieza no entra al catálogo de FP
+ *   · la figura de Watari: la portada sin figura y una en cada uno de los
+ *     doce estados, con lo que dice su tabla de estados; cada figcaption con
+ *     el texto alternativo de Near, letra por letra; nada punteado; en los
+ *     errores la compra nunca se dibuja dentro de Inventario
  *
  * Que ningún texto se salga a 375 y a 320 px no se puede medir aquí: jsdom no
  * calcula diseño. Lo mide scripts/t7/medir-t7-1-ap1.mjs en Chromium.
@@ -48,6 +52,9 @@ const { VISTAS, vistaDeTema } = await import("../../ruta.js");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const PAQUETE = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-pieza1-v5.md", RAIZ), "utf8");
+const TEXTOS_FIGURA_NEAR = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-ap1-figura-textos.md", RAIZ), "utf8");
+const GUIA_WATARI = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-ap1-figura-watari-v3.md", RAIZ), "utf8");
+const { default: FiguraDosColumnas, CSS_FIGURA } = await import("../../components/mecanicas/libros/t7/FiguraDosColumnas.jsx");
 const P = T7.PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 
@@ -70,8 +77,8 @@ const fichaComoTexto = (f) => `${f.dato}: ${f.texto}`;
 
 /* Cada estado de cada pantalla, con su lista de textos visibles en el orden en que aparecen. */
 function textosEsperados(p, estado = null, opcionId = null) {
-  if (p.tipo === "portada") return [P.titulo, T7.FIGURA_PENDIENTE, p.objetivo, p.boton, p.pie];
-  if (p.tipo === "lectura" || p.tipo === "resumen") return [P.titulo, ...p.parrafos, ...(p.boton ? [p.boton] : []), p.pie];
+  if (p.tipo === "portada") return [P.titulo, p.objetivo, p.boton, p.pie];
+  if (p.tipo === "lectura" || p.tipo === "resumen") return [P.titulo, ...p.parrafos, ...(p.siguiente ? [p.siguiente] : []), ...(p.boton ? [p.boton] : []), p.pie];
   const cabeza = [
     P.titulo,
     ...(p.enunciado ? [p.enunciado] : []),
@@ -82,18 +89,12 @@ function textosEsperados(p, estado = null, opcionId = null) {
   const opciones = p.opciones.map((o) => o.texto).sort();
   if (estado === "colocando") return [...cabeza, ...opciones, T7.BOTON.confirmar, p.pie];
   if (estado === "error") return [...cabeza, ...opciones, p.opciones.find((o) => o.id === opcionId).devolucion, p.error.boton, p.error.pie];
-  return [
-    ...cabeza, ...opciones, p.acierto.texto,
-    ...(p.acierto.linea ? [lineaComoTexto(p.acierto.linea)] : []),
-    p.acierto.nota, p.acierto.boton, p.acierto.pie,
-  ];
+  return [...cabeza, ...opciones, p.acierto.texto, p.acierto.nota, p.acierto.boton, p.acierto.pie];
 }
 
 /* Lo que de verdad hay en pantalla, leído del DOM. Las opciones se ordenan: su orden es aleatorio. */
 function textosEnPantalla(caja) {
   const out = [caja.querySelector("h3").textContent];
-  const fig = caja.querySelector("[data-figura-pendiente]");
-  if (fig) out.push(fig.textContent);
   const marco = caja.querySelector("[data-pieza]");
   const opciones = [];
   const recorrer = (el) => {
@@ -106,16 +107,17 @@ function textosEnPantalla(caja) {
     if (el.matches("[role=group]")) { [...el.children].forEach(recorrer); out.push(...opciones.sort()); return; }
     [...el.children].forEach(recorrer);
   };
-  [...marco.children].filter((c) => !c.matches("[data-figura-pendiente]")).forEach(recorrer);
+  [...marco.children].forEach(recorrer);
   return out;
 }
 
 /* Todo el texto de la pieza, para comprobar que nada interno se cuela. */
 function todosLosTextosVisibles() {
-  const t = [P.titulo, T7.FIGURA_PENDIENTE];
+  const t = [P.titulo];
   for (const p of P.pantallas) {
     if (p.objetivo) t.push(p.objetivo);
     if (p.parrafos) t.push(...p.parrafos);
+    if (p.siguiente) t.push(p.siguiente);
     if (p.boton) t.push(p.boton);
     if (p.pie) t.push(p.pie);
     if (p.tipo !== "pregunta") continue;
@@ -152,9 +154,7 @@ function citasDelContenido(md) {
 }
 
 test("★★★ cada texto de los datos está, letra por letra, en el paquete aprobado", () => {
-  const faltan = todosLosTextosVisibles()
-    .filter((t) => t !== T7.FIGURA_PENDIENTE)
-    .filter((t) => !PAQUETE.includes(t));
+  const faltan = todosLosTextosVisibles().filter((t) => !PAQUETE.includes(t));
   assert.deepEqual(faltan, [], "estos textos no están en la v5 tal cual");
   /* El título y la ficha van sin comillas en la v5; lo demás va entre «». */
   assert.ok(PAQUETE.includes(`- Título: ${P.titulo}`));
@@ -360,13 +360,166 @@ test("★★ ids con el prefijo t7- y el tema al final del índice de Contabilid
   assert.equal(vistaDeTema(TEMA_T7_1), TEMA_T7_1);
 });
 
-test("★ el hueco de la figura está marcado y no trae dibujo", async () => {
+/* ═══════════ 6 · LA FIGURA (Watari, v3; textos alternativos de Near) ═══════════ */
+
+/*
+ * La tabla de estados de la guía de Watari («Pantalla por pantalla»), escrita
+ * aquí aparte de los datos para que un cambio en los datos no se dé por bueno
+ * solo. `foco` es lo que se señala; `nueva`, lo que entra con fundido.
+ */
+const TABLA_WATARI = {
+  F1: { col2: "", filas: ["inicio"], factura: false, compra: false, otras: false, cierre: null, foco: [], nueva: null },
+  F2: { col2: "", filas: ["inicio", "durante", "cierre"], factura: false, compra: false, otras: false, cierre: "Conteo físico", foco: ["inv-durante"], nueva: null },
+  F3: { col2: "Otra cuenta", filas: ["inicio", "durante", "cierre"], factura: false, compra: false, otras: false, cierre: "Conteo físico", foco: ["inv-durante"], nueva: null },
+  F4c: { col2: "Otra cuenta", filas: ["inicio", "durante", "cierre"], factura: true, compra: false, otras: false, cierre: "Conteo físico", foco: ["fila-durante"], nueva: null },
+  F4ei: { col2: "Otra cuenta", filas: ["inicio", "durante", "cierre"], factura: true, compra: false, otras: false, cierre: "Conteo físico", foco: ["fila-durante", "inv-durante"], nueva: null },
+  F4eg: { col2: "Otra cuenta", filas: ["inicio", "durante", "cierre"], factura: true, compra: false, otras: false, cierre: "Conteo físico", foco: ["fila-durante"], nueva: null },
+  F4a: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Conteo físico", foco: ["fila-durante", "compra"], nueva: "compra" },
+  F5c: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Conteo físico", foco: ["fila-cierre"], nueva: null },
+  F5ec: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Conteo físico", foco: ["fila-cierre", "inv-cierre"], nueva: null },
+  F5en: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Conteo físico", foco: ["fila-cierre", "inv-cierre"], nueva: null },
+  F5a: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Al día con el conteo físico", foco: ["fila-cierre", "conteo"], nueva: "conteo" },
+  F6: { col2: "Compras", filas: ["inicio", "durante", "cierre"], factura: false, compra: true, otras: true, cierre: "Al día con el conteo físico", foco: [], nueva: null },
+};
+
+/* El orden de la tabla de Near: P1, P2, P3, P4 colocando, error Inventario, error Gastos, acierto, P5 colocando, error Compras, error Ninguna, acierto, P6. */
+const ORDEN_NEAR = ["F1", "F2", "F3", "F4c", "F4ei", "F4eg", "F4a", "F5c", "F5ec", "F5en", "F5a", "F6"];
+
+function leerFigura(caja) {
+  const fig = caja.querySelector("[data-figura]");
+  if (!fig) return null;
+  const q = (x) => fig.querySelector(`[data-fg="${x}"]`);
+  const filas = ["inicio", "durante", "cierre"].filter((x) => q(`fila-${x}`));
+  const cierre = q("conteo") ?? q("inv-cierre");
+  return {
+    clave: fig.dataset.figura,
+    col2: q("col-2").textContent,
+    filas,
+    factura: Boolean(q("factura")),
+    compra: Boolean(q("compra")),
+    otras: Boolean(q("demas-compras")),
+    cierre: cierre ? cierre.textContent : null,
+    foco: [...fig.querySelectorAll(".t7fg-foco")].map((el) => el.dataset.fg).sort(),
+    nueva: fig.querySelector(".t7fg-nueva")?.dataset.fg ?? null,
+    alt: q("alt").textContent,
+    altEnlazado: fig.querySelector("[role=table]").getAttribute("aria-describedby") === q("alt").id,
+    compraEnInventario: [...fig.querySelectorAll("[data-fg=compra]")].some((el) => !el.closest("[data-fg=col2-durante]")),
+  };
+}
+
+test("★★★ la portada no lleva figura, y cada uno de los doce estados lleva la suya, como dice la tabla de Watari", async () => {
   const m = await montar(h(LaCuentaQueNoSeMueve, { rotulo: "R" }));
   try {
-    const hueco = m.caja.querySelector("[data-figura-pendiente]");
-    assert.ok(hueco !== null, "no hay hueco de figura");
-    assert.equal(hueco.querySelector("svg, img, canvas") === null, true, "el hueco trae un dibujo");
+    const vistos = [];
+    const comprobar = () => {
+      const f = leerFigura(m.caja);
+      const t = TABLA_WATARI[f.clave];
+      assert.ok(t, `estado de figura desconocido: ${f.clave}`);
+      assert.deepEqual(
+        { col2: f.col2, filas: f.filas, factura: f.factura, compra: f.compra, otras: f.otras, cierre: f.cierre, foco: f.foco, nueva: f.nueva },
+        { ...t, foco: [...t.foco].sort(), cierre: t.filas.includes("cierre") ? t.cierre : null },
+        f.clave,
+      );
+      assert.equal(f.altEnlazado, true, `${f.clave}: el figcaption no está enlazado con aria-describedby`);
+      assert.equal(f.compraEnInventario, false, `${f.clave}: la compra está fuera de su columna`);
+      vistos.push(f.clave);
+    };
+    for (const p of P.pantallas) {
+      if (p.tipo === "portada") {
+        assert.equal(m.caja.querySelector("[data-figura]") === null, true, "la portada trae figura");
+        assert.equal(p.figura, null, "los datos le ponen figura a la portada");
+        await tocar(boton(m.caja, "empezar"));
+        continue;
+      }
+      if (p.tipo !== "pregunta") {
+        comprobar();
+        const b = m.caja.querySelector("[data-boton]");
+        if (b) await tocar(b);
+        continue;
+      }
+      comprobar();
+      for (const o of p.opciones.filter((x) => !x.correcta)) {
+        await tocar(m.caja.querySelector(`[data-opcion="${o.id}"]`));
+        await tocar(boton(m.caja, "confirmar"));
+        comprobar();
+        await tocar(boton(m.caja, "probar-otra"));
+      }
+      await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((x) => x.correcta).id}"]`));
+      await tocar(boton(m.caja, "confirmar"));
+      comprobar();
+      await tocar(boton(m.caja, "seguir"));
+    }
+    assert.deepEqual(vistos, ORDEN_NEAR);
   } finally {
     m.desmontar();
   }
+});
+
+test("★★★ cada figcaption trae el texto alternativo de Near, letra por letra", async () => {
+  /* Las filas de la tabla de Near, en su orden: «| n | estado | «texto» |». */
+  const filas = [...TEXTOS_FIGURA_NEAR.matchAll(/^\| (\d+) \| [^|]+ \| «(.+)» \|$/gm)].map((x) => [Number(x[1]), x[2]]);
+  assert.deepEqual(filas.map((x) => x[0]), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+  for (const [n, texto] of filas) {
+    const clave = ORDEN_NEAR[n - 1];
+    const m = await montar(h(FiguraDosColumnas, { estado: clave }));
+    try {
+      assert.equal(m.caja.querySelector("figcaption").textContent, texto, clave);
+    } finally {
+      m.desmontar();
+    }
+  }
+});
+
+test("★★ los textos visibles de la figura son los de Near y Watari, letra por letra", () => {
+  for (const [k, t] of Object.entries(T7.FIGURA_TEXTOS)) {
+    assert.ok(GUIA_WATARI.includes(`«${t}»`), `${k}: «${t}» no está en la guía de Watari`);
+  }
+});
+
+test("★★★ la línea del acierto de la v5 es la tarjeta de la compra, con sus mismas partes", async () => {
+  const l = pantalla("pregunta-compra").acierto.linea;
+  assert.equal(lineaComoTexto(l), "16 de abril · Compras · Debe $5.000.000");
+  const m = await montar(h(FiguraDosColumnas, { estado: "F4a" }));
+  try {
+    const tarjeta = m.caja.querySelector("[data-fg=compra]");
+    assert.equal(tarjeta.querySelector(".t7fg-fecha").textContent, l.fecha);
+    assert.equal(tarjeta.querySelector(".t7fg-debe").textContent, l.lado);
+    /* Sin «$», como todas las cifras de la célula dentro de una figura (Watari). */
+    assert.equal(tarjeta.querySelector(".t7fg-monto").textContent, l.monto.replace("$", ""));
+    /* La cuenta es el encabezado de su columna, y la tarjeta está en esa columna. */
+    assert.equal(m.caja.querySelector("[data-fg=col-2]").textContent, l.cuenta);
+    assert.ok(tarjeta.closest("[data-fg=col2-durante]") !== null);
+  } finally {
+    m.desmontar();
+  }
+  /* Y no se pinta dos veces: fuera de la figura no hay otra línea. */
+  const m2 = await montar(h(LaCuentaQueNoSeMueve, { pieza: { ...P, pantallas: [pantalla("pregunta-compra")] }, rotulo: "R" }));
+  try {
+    await tocar(m2.caja.querySelector('[data-opcion="compras"]'));
+    await tocar(boton(m2.caja, "confirmar"));
+    assert.equal(m2.caja.querySelectorAll("[data-fg=compra]").length, 1);
+    assert.equal(m2.caja.querySelector("[data-linea]") === null, true);
+  } finally {
+    m2.desmontar();
+  }
+});
+
+test("★★ en los errores la compra no se dibuja, ni dentro de Inventario ni en ningún lado", async () => {
+  for (const clave of ["F4ei", "F4eg"]) {
+    const m = await montar(h(FiguraDosColumnas, { estado: clave }));
+    try {
+      assert.equal(m.caja.querySelector("[data-fg=compra]") === null, true, clave);
+      assert.equal(m.caja.querySelector("[data-fg=inv-durante]").textContent, "No se mueve hasta el cierre");
+      assert.doesNotMatch(m.caja.querySelector("[role=table]").textContent, /5\.000\.000|Compras/);
+    } finally {
+      m.desmontar();
+    }
+  }
+});
+
+test("★★ nada punteado ni discontinuo, y el fundido es de 120 ms y se apaga con movimiento reducido", () => {
+  assert.doesNotMatch(CSS_FIGURA, /dashed|dotted/);
+  assert.match(CSS_FIGURA, /\.t7fg-nueva \{ animation: t7fg-aparece \.12s/);
+  assert.match(CSS_FIGURA, /@media \(prefers-reduced-motion: reduce\) \{ \.t7fg-nueva \{ animation: none; \} \}/);
+  assert.match(CSS_FIGURA, /@container t7figmov \(max-width: 129px\)/);
 });
