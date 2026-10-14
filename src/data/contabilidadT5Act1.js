@@ -10,6 +10,12 @@
  *
  * Como en T1-6, el ✅ y el ❌ van al inicio de cada devolución y Retro los
  * separa; lo que sigue al emoji es literal de la guía.
+ *
+ * El segundo fallo sigue la REGLA ÚNICA de la célula (b5SegundoFallo.js): el
+ * acierto sin «Sí.» y con «No es esa.» delante. Por eso tres aciertos de
+ * renta variable (acciones, def-emisora, def-dividendos) dicen ahora el tipo
+ * de renta (Futaba, PASA de Shoko): sin eso, el segundo fallo no daba la
+ * respuesta. La antigua columna «tras el segundo fallo» ya no existe.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -69,19 +75,19 @@ export const FICHAS_T5_ACT1 = [
   {
     id: "acciones", clase: NOMBRE, renta: VARIABLE, tipo: null,
     texto: "Acciones de otra empresa",
-    acierto: "✅ Sí. Lo que rinden depende de cómo le vaya a la empresa que las emitió.",
+    acierto: "✅ Sí. Son renta variable: lo que rinden depende de cómo le vaya a la empresa que las emitió.",
     falloNivel1: "❌ No es esa. El libro pone las acciones en la renta variable: sus dividendos dependen de la empresa que las emitió.",
   },
   {
     id: "def-emisora", clase: DEFINICION, renta: VARIABLE, tipo: null,
     /* Definición casi literal del libro (p. 192), sin «económicos»: reescrita por INFLESZ, PASA de Shoko. */
     texto: "Su rendimiento depende de factores propios de la empresa que lo emitió.",
-    acierto: "✅ Sí. Esa es la marca de la renta variable: rinde según la empresa que lo emitió.",
+    acierto: "✅ Sí. Es renta variable: rinde según cómo le vaya a la empresa que lo emitió.",
   },
   {
     id: "def-dividendos", clase: DEFINICION, renta: VARIABLE, tipo: null,
     texto: "Sus dividendos dependen de la situación económica y de la liquidez de quien lo emitió.",
-    acierto: "✅ Sí. Así describe el libro a las acciones: sus dividendos siguen a quien las emitió.",
+    acierto: "✅ Sí. Es renta variable: así describe el libro a las acciones, cuyos dividendos siguen a quien las emitió.",
   },
   {
     id: "caso-resultados", clase: CASO, renta: VARIABLE, tipo: null,
@@ -94,7 +100,6 @@ export const FICHAS_T5_ACT1 = [
     acierto: "✅ Sí. El libro pone el CDT entre los títulos que pagan un interés fijo durante un periodo.",
     falloNivel1: "❌ No es esa. El libro pone el CDT en la renta fija, no en la variable.",
     falloNivel2: "❌ Vas bien: es renta fija. Recuerda la lista del libro: ¿el CDT estaba con los que pagan un interés fijo, o con los que ganan una diferencia al redimirse?",
-    segundoFallo: "❌ No es esa. El libro pone el CDT en la lista de renta fija con interés.",
   },
   {
     id: "bonos", clase: NOMBRE, renta: FIJA, tipo: INTERES,
@@ -102,7 +107,6 @@ export const FICHAS_T5_ACT1 = [
     acierto: "✅ Sí. El libro pone los bonos en la renta fija con interés.",
     falloNivel1: "❌ No es esa. El libro pone los bonos en la renta fija: su renta se pacta al invertir.",
     falloNivel2: "❌ Vas bien: es renta fija. Recuerda la lista del libro: ¿los bonos estaban con los que pagan un interés fijo, o con los que ganan una diferencia al redimirse?",
-    segundoFallo: "❌ No es esa. El libro pone los bonos en la lista de renta fija con interés.",
   },
   {
     id: "cedulas", clase: NOMBRE, renta: FIJA, tipo: INTERES,
@@ -110,7 +114,6 @@ export const FICHAS_T5_ACT1 = [
     acierto: "✅ Sí. Las cédulas hipotecarias van con el CDT y los bonos: renta fija con interés.",
     falloNivel1: "❌ No es esa. El libro pone las cédulas hipotecarias en la renta fija, no en la variable.",
     falloNivel2: "❌ Vas bien: es renta fija. Recuerda la lista del libro: ¿las cédulas hipotecarias estaban con los que pagan un interés fijo, o con los que ganan una diferencia al redimirse?",
-    segundoFallo: "❌ No es esa. El libro pone las cédulas hipotecarias en la lista de renta fija con interés.",
   },
   {
     id: "def-interes", clase: DEFINICION, renta: FIJA, tipo: INTERES,
@@ -128,7 +131,6 @@ export const FICHAS_T5_ACT1 = [
     acierto: "✅ Sí. El libro pone los títulos de participación entre los de descuento.",
     falloNivel1: "❌ No es esa. El libro pone los títulos de participación en la renta fija, no en la variable.",
     falloNivel2: "❌ Vas bien: es renta fija. Recuerda la lista del libro: ¿los títulos de participación estaban con los que pagan un interés fijo, o con los que ganan una diferencia al redimirse?",
-    segundoFallo: "❌ No es esa. El libro pone los títulos de participación en la lista de renta fija con descuento.",
   },
   {
     id: "cert", clase: NOMBRE, renta: FIJA, tipo: DESCUENTO,
@@ -136,7 +138,6 @@ export const FICHAS_T5_ACT1 = [
     acierto: "✅ Sí. El CERT está en la lista del libro de renta fija con descuento.",
     falloNivel1: "❌ No es esa. El libro pone el CERT en la renta fija: su renta se pacta al invertir.",
     falloNivel2: "❌ Vas bien: es renta fija. Recuerda la lista del libro: ¿el CERT estaba con los que pagan un interés fijo, o con los que ganan una diferencia al redimirse?",
-    segundoFallo: "❌ No es esa. El libro pone el CERT en la lista de renta fija con descuento.",
   },
   {
     id: "canjeables", clase: NOMBRE, renta: FIJA, tipo: DESCUENTO,
@@ -144,7 +145,6 @@ export const FICHAS_T5_ACT1 = [
     acierto: "✅ Sí. Los títulos canjeables están en la lista del libro de renta fija con descuento, que es una lista abierta.",
     falloNivel1: "❌ No es esa. El libro pone los títulos canjeables en la renta fija, no en la variable.",
     falloNivel2: "❌ Vas bien: es renta fija. Recuerda la lista del libro: ¿los títulos canjeables estaban con los que pagan un interés fijo, o con los que ganan una diferencia al redimirse?",
-    segundoFallo: "❌ No es esa. El libro pone los títulos canjeables en la lista de renta fija con descuento.",
   },
   {
     id: "def-descuento", clase: DEFINICION, renta: FIJA, tipo: DESCUENTO,

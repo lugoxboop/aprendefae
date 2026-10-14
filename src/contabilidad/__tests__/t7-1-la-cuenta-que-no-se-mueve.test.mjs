@@ -357,10 +357,11 @@ test("★★ ids con el prefijo t7- y el tema al final del índice de Contabilid
   assert.equal(temas.at(-1), TEMA_T7_1);
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_1);
   assert.equal(tema.title, "Inventarios I: el sistema periódico");
-  assert.deepEqual(tema.actividades.map((x) => x.id), [T7.AP1_ID]);
+  /* AP1 abre el tema; las piezas que llegan después van detrás. */
+  assert.equal(tema.actividades[0].id, T7.AP1_ID);
   assert.ok(tema.actividades.every((x) => x.id.startsWith("t7-")));
   /* La vista pinta lo que dice el catálogo, con el mismo título. */
-  assert.deepEqual(PIEZAS_T7_1.map((x) => x.pieza.id), [T7.AP1_ID]);
+  assert.equal(PIEZAS_T7_1[0].pieza.id, T7.AP1_ID);
   assert.equal(tema.actividades[0].nombre, P.titulo);
   /* El id del tema va sin prefijo (como el del Tema 5) y tiene ruta: si no, el índice lo dejaría muerto. */
   assert.equal(TEMA_T7_1, "inventarios-periodico");
@@ -561,7 +562,7 @@ test("★★★ en el colocando de la 5 el conteo pendiente no queda bajo Invent
   }
 });
 
-test("★★ la factura lleva el rótulo «La compra», marcado como pendiente de revisión, solo en el colocando y los errores de la 4", async () => {
+test("★★ la factura lleva el rótulo «La compra», ya revisado por Near, solo en el colocando y los errores de la 4", async () => {
   for (const clave of Object.keys(T7.FIGURA)) {
     const m = await montar(h(FiguraDosColumnas, { estado: clave }));
     try {
@@ -570,15 +571,17 @@ test("★★ la factura lleva el rótulo «La compra», marcado como pendiente d
       assert.equal(rot !== null, conFactura, clave);
       if (rot) {
         assert.equal(rot.textContent, "La compra");
-        /* Texto de interfaz que Near todavía no confirma: se ve en el código y en el PR. */
-        assert.equal(rot.dataset.revision, "pendiente");
+        /* Near lo confirmó: ya no lleva la marca de pendiente. */
+        assert.equal(rot.dataset.revision, undefined);
       }
     } finally {
       m.desmontar();
     }
   }
-  assert.deepEqual(T7.FIGURA_PENDIENTES_DE_REVISION, ["rotuloFactura"]);
-  assert.match(readFileSync(new URL("src/data/contabilidadT7_1.js", RAIZ), "utf8"), /ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN/);
+  assert.deepEqual(T7.FIGURA_PENDIENTES_DE_REVISION, []);
+  const fuente = readFileSync(new URL("src/data/contabilidadT7_1.js", RAIZ), "utf8");
+  assert.match(fuente, /REVISADO POR NEAR/);
+  assert.doesNotMatch(fuente, /PENDIENTE DE REVISIÓN/);
 });
 
 test("★ v3.1: el conteo pendiente va centrado y los encabezados se alinean por abajo", () => {

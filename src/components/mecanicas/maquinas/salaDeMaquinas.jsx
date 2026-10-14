@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { FAE } from "../../../theme.js";
+import { DATOS_VERIFICADOS } from "../../../data/politicaMonetaria.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -156,7 +157,7 @@ export function EscenaQuienManda({ resaltar = [] }) {
         */}
       <Parte id="volante" resaltar={resaltar}>
         <Volante cx={48} cy={212} r={24} giro={resaltar.includes("volante") ? 60 : 0} />
-        <Rotulo x={48} y={178} peso={700}>12,0%</Rotulo>
+        <Rotulo x={48} y={178} peso={700}>{DATOS_VERIFICADOS.tasaIntervencion}</Rotulo>
         <Rotulo x={6} y={258} anchor="start">tasa de intervención</Rotulo>
       </Parte>
       <Parte id="correa" resaltar={resaltar}>
@@ -272,7 +273,7 @@ const BOTON = (activo) => ({
 /*
  * ¿Quién manda aquí? y Las tres transmisiones: el volante se arrastra (o se
  * mueve con la barra, que es lo mismo para teclado) y las tres correas
- * reaccionan en el momento. La tasa de hoy (12,0%) no cambia de número: el
+ * reaccionan en el momento. La tasa de hoy se LEE de DATOS_VERIFICADOS y no
  * volante dice hacia dónde, no a cuánto. Así no sale ninguna cifra inventada.
  */
 export function ExploraVolante({ conReloj = false }) {
@@ -282,6 +283,12 @@ export function ExploraVolante({ conReloj = false }) {
   const arrastrando = useRef(false);
 
   const direccion = giro > 10 ? "apretar" : giro < -10 ? "soltar" : null;
+  /*
+   * Hacia dónde van consumo e inversión: soltar (+1) los sube, apretar (-1)
+   * los baja. SOLO EL SENTIDO, nunca una magnitud: la ficha no trae cuánto, y
+   * el reloj tampoco dice en qué trimestre llega cada canal.
+   */
+  const signo = direccion === "soltar" ? 1 : direccion === "apretar" ? -1 : 0;
 
   /* El reloj corre solo mientras el volante está fuera del centro. */
   useEffect(() => {
@@ -322,10 +329,15 @@ export function ExploraVolante({ conReloj = false }) {
         Gire el volante (o use esta barra)
         <input type="range" min={-90} max={90} step={5} value={giro} onChange={(e) => setGiro(Number(e.target.value))} style={{ display: "block", width: "100%", marginTop: "6px", accentColor: FAE.teal }} aria-label="Giro del volante: a la derecha aprieta, a la izquierda suelta" />
       </label>
+      <Barra nombre="CONSUMO" valor={signo} izquierda="Baja" derecha="Sube" />
+      <Barra nombre="INVERSIÓN" valor={signo} izquierda="Baja" derecha="Sube" />
+      <Barra nombre="COSTO DE LA DEUDA · SU CUOTA Y LA DEL GOBIERNO" valor={-signo} izquierda="Más barata" derecha="Más cara" />
       <p data-estado-volante style={{ margin: "8px 0 0", fontSize: "13.5px", lineHeight: 1.5, color: FAE.text }}>
         {direccion === "apretar" ? "Apretando: subir la tasa." : direccion === "soltar" ? "Soltando: bajar la tasa." : "Volante quieto."}
         {conReloj && direccion && ` Trimestre ${trimestre}.`}
-        {" "}Hoy la tasa está en 12,0%.
+        {direccion === "apretar" ? " El crédito se encarece: bajan el consumo y la inversión, y sube lo que cuesta la deuda que ya existe —su cuota y los intereses que paga el Gobierno por sus TES—." : direccion === "soltar" ? " El crédito se abarata: suben el consumo y la inversión, y baja lo que cuesta la deuda que ya existe —su cuota y los intereses que paga el Gobierno por sus TES—." : ""}
+        {conReloj && direccion && trimestre < 8 ? " Y esto todavía no se ve completo: las tres correas giran a ritmos distintos." : ""}
+        {" "}Hoy la tasa está en {DATOS_VERIFICADOS.tasaIntervencion}.
       </p>
     </div>
   );
@@ -390,6 +402,71 @@ export function ExploraInstrumentos() {
       <Barra nombre="EL PESO" valor={peso} izquierda="Más débil" derecha="Más fuerte" />
       <p data-efectos role="status" style={{ margin: "10px 0 0", fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.8)" }}>
         Liquidez: {texto(liquidez, "menos plata", "más plata")}. Peso: {texto(peso, "más débil", "más fuerte")}.
+      </p>
+    </div>
+  );
+}
+
+/*
+ * ═══════════════ EXPLORACIÓN DE LA PIEZA 1 · EL MARGEN ═══════════════
+ *
+ * POR QUÉ EXISTE. La capa 3 de «¿Quién Manda Aquí?» pintaba la máquina de las
+ * transmisiones: la misma de la pieza 3, con sus tres correas. Un estudiante
+ * que apenas va en la primera pieza jugaba con poleas que nadie le ha
+ * explicado, y la capa 2 y la capa 3 de la MISMA pieza le mostraban dos
+ * máquinas distintas. Esta exploración usa la escena de su propia pieza.
+ *
+ * QUÉ ENSEÑA. El remate del paso 4, que es lo que más se confunde del tema:
+ * la tasa de intervención NO es la que usted paga. Es lo que le cuesta al
+ * banco conseguir plata; el banco le suma su margen y le cobra a usted más.
+ *
+ * SIN MAGNITUDES, A PROPÓSITO. Se mueve el sentido —sube, quieta, baja— y la
+ * única cifra en pantalla es la de DATOS_VERIFICADOS. El margen de un banco
+ * concreto no está verificado, así que no se dibuja un número: se nombra.
+ */
+const ESLABONES = [
+  { id: "volante", titulo: "La Junta mueve la tasa de intervención", sube: "Sube. Es la decisión, y es lo único que hace el Banco.", baja: "Baja. Es la decisión, y es lo único que hace el Banco." },
+  { id: "correa", titulo: "Al banco comercial le cuesta más conseguir plata", sube: "Sube. Pedirle prestado al Banco de la República le sale más caro.", baja: "Baja. Conseguir plata le sale más barato." },
+  { id: "banco-comercial", titulo: "El banco le suma su margen", sube: "El margen sigue ahí: el banco no presta al costo.", baja: "El margen sigue ahí: bajar la tasa no lo borra." },
+  { id: "persona", titulo: "Lo que usted paga por su crédito", sube: "Sube, y queda por encima de la tasa de intervención.", baja: "Baja, y sigue por encima de la tasa de intervención." },
+];
+
+export function ExploraMargen() {
+  const [mov, setMov] = useState("quieta");
+  const activo = mov !== "quieta";
+  const resaltar = activo ? ESLABONES.map((e) => e.id) : [];
+  return (
+    <div>
+      <EscenaQuienManda resaltar={resaltar} />
+      <fieldset style={{ border: "none", padding: 0, margin: "12px 0 0" }}>
+        <legend style={{ fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 700, color: FAE.text, marginBottom: "7px" }}>
+          Qué hace la Junta con la tasa
+        </legend>
+        <div style={{ display: "flex", gap: "7px", flexWrap: "wrap" }}>
+          {[["baja", "La baja"], ["quieta", "La deja quieta"], ["sube", "La sube"]].map(([v, etiqueta]) => (
+            <button key={v} type="button" aria-pressed={mov === v} onClick={() => setMov(v)} style={BOTON(mov === v)}>{etiqueta}</button>
+          ))}
+        </div>
+      </fieldset>
+      <ol data-eslabones style={{ margin: "14px 0 0", padding: 0, listStyle: "none" }}>
+        {ESLABONES.map((e, k) => (
+          <li key={e.id} style={{ display: "flex", gap: "11px", padding: "9px 0", borderTop: k ? "1px solid rgba(248,249,250,0.1)" : "none" }}>
+            <span aria-hidden="true" style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, color: activo ? FAE.teal : "rgba(248,249,250,0.35)", paddingTop: "2px" }}>
+              {String(k + 1).padStart(2, "0")}
+            </span>
+            <span style={{ minWidth: 0 }}>
+              <span style={{ display: "block", fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 600, color: FAE.text }}>{e.titulo}</span>
+              <span style={{ display: "block", fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.75)" }}>
+                {activo ? (mov === "sube" ? e.sube : e.baja) : "Quieta."}
+              </span>
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p data-remate-margen role="status" style={{ margin: "12px 0 0", fontSize: "13.5px", lineHeight: 1.55, color: FAE.text }}>
+        {activo
+          ? `Los cuatro eslabones se mueven juntos, y ese es el punto: la tasa de intervención mueve su crédito sin ser su crédito. Hoy está en ${DATOS_VERIFICADOS.tasaIntervencion} —y eso no es lo que usted paga.`
+          : `Hoy la tasa de intervención está en ${DATOS_VERIFICADOS.tasaIntervencion}. Muévala y siga la cadena hasta su bolsillo.`}
       </p>
     </div>
   );

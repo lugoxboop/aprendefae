@@ -178,8 +178,6 @@ export function mostrarAviso(doc, { texto = MENSAJE, alRecargar } = {}) {
  */
 export function instalarRecargaTrasDespliegue(win = globalThis.window, { reloj = () => Date.now() } = {}) {
   if (!win?.addEventListener) return;
-  /* El main arrancó: desde aquí manda este guardia, no el de index.html. */
-  win.__aprendefaeArranco = true;
   /* Quita el parámetro de una recarga anterior, sin recargar. */
   try {
     const limpia = direccionLimpia(win.location.href);
@@ -201,4 +199,12 @@ export function instalarRecargaTrasDespliegue(win = globalThis.window, { reloj =
       estado,
     });
   });
+  /*
+   * El main arrancó: desde aquí manda este guardia, no el de index.html. Y
+   * POR ESO LA MARCA VA AQUÍ, DESPUÉS DE REGISTRARLO, y no arriba: puesta
+   * antes, dejaría un instante en que el de index.html ya se apartó y este
+   * todavía no escucha. Ningún guardia (Levi). No la subas por orden: una
+   * prueba lo vigila.
+   */
+  win.__aprendefaeArranco = true;
 }

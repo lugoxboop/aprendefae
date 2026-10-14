@@ -633,6 +633,24 @@ export const SUBJECTS = {
           { id: "b5-t5-a1-del-efectivo-de-sobra", nombre: "Del efectivo de sobra al activo financiero", clasificacion: { tipo: APRENDER } },
           /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (guía de Mai). Su fila del servidor es la migración 0070. */
           { id: "b5-t5-a1", nombre: "¿Qué renta da este título?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "b5-t5-a2-los-tres-momentos-de-una-inversion", nombre: "Los tres momentos de una inversión", clasificacion: { tipo: APRENDER } },
+        ],
+      },
+      /*
+       * EL TEMA 6 (Célula B), por ahora con su pieza 1 de Aprender.
+       *
+       * CATÁLOGO: DECIDE ERWIN. El id y el título son una PROPUESTA de la
+       * célula: sin prefijo, como el Tema 5 (es la dirección que ve el
+       * estudiante), y el título es el de §5.4 en la p. 195, «Cuentas por
+       * cobrar». Va después del Tema 5 y antes del T7, por el orden del
+       * libro. Sin ícono propio.
+       */
+      {
+        id: "cuentas-por-cobrar",
+        title: "Cuentas por cobrar",
+        actividades: [
+          { id: "b5-t6-a1-lo-que-otros-le-deben", nombre: "Lo que otros le deben a la empresa", clasificacion: { tipo: APRENDER } },
+          { id: "b5-t6-a2-cuando-un-cliente-no-va-a-pagar", nombre: "Cuando un cliente no va a pagar", clasificacion: { tipo: APRENDER } },
         ],
       },
       /*
@@ -650,6 +668,18 @@ export const SUBJECTS = {
         title: "Inventarios I: el sistema periódico",
         actividades: [
           { id: "t7-1-a1-la-cuenta-que-no-se-mueve", nombre: "La cuenta que no se mueve", clasificacion: { tipo: APRENDER } },
+          /* AP2, después de AP1: arma la factura completa de la misma compra. Cero FP. */
+          { id: "t7-1-a2-la-factura-completa", nombre: "La factura completa", clasificacion: { tipo: APRENDER } },
+          /* AP3, después de AP2 por dependencias (regla 9): usa el inventario final y el conteo físico de AP1; va antes de AP4, que la cita. Cero FP. */
+          { id: "t7-1-a3-tres-formas", nombre: "Tres formas de ponerle precio a lo que quedó", clasificacion: { tipo: APRENDER } },
+          /* AP4, después de AP3 por dependencias (regla 9): cita «Tres formas de ponerle precio a lo que quedó». Antes de A5: cierra con «Siguiente: Importados y fletes». Cero FP. */
+          { id: "t7-1-a4-el-cierre-en-periodico", nombre: "El cierre en periódico", clasificacion: { tipo: APRENDER } },
+          /* A5, después de AP2 por dependencias (regla 9): el enunciado trae el IVA del 16 % y la retención del 3,5 %, que enseña AP2, y la retención del 1 % del flete. Antes de A6, en el orden del libro (p. 228 antes de pp. 230-232) y del plan. AP3 y AP4 entran entre AP2 y A5: AP4 cierra con «Siguiente: Importados y fletes». */
+          { id: "t7-1-a5-importados-y-fletes", nombre: "Importados y fletes", clasificacion: { tipo: APRENDER } },
+          /* A6, después de AP2 por dependencias (regla 9): muestra el IVA y la retención de la devolución, que enseña AP2. Cero FP. */
+          { id: "t7-1-a6-devoluciones-en-periodico", nombre: "Devoluciones en periódico", clasificacion: { tipo: APRENDER } },
+          /* A7, después de AP1 por dependencias (regla 9): el conteo físico frente a los registros; última de Aprender según el plan. Cero FP. */
+          { id: "t7-1-a7-control-interno", nombre: "Control interno de los inventarios", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],
