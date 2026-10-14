@@ -15,6 +15,8 @@ import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.j
 import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
 import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
+import QueCuentaSeMueve from "./mecanicas/libros/t7/QueCuentaSeMueve.jsx";
+import { H1 } from "../data/contabilidadT7_1_h1.js";
 import ArmaLaFactura from "./mecanicas/libros/t7/ArmaLaFactura.jsx";
 import { H2 } from "../data/contabilidadT7_1_h2.js";
 import LaCuentaQueNoSeMueve from "./mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx";
@@ -60,6 +62,7 @@ export const PIEZAS_T7_1 = [
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS_T7_1 = [
+  { id: H1.id, Mecanica: QueCuentaSeMueve, titulo: H1.nombre },
   { id: H2.id, Mecanica: ArmaLaFactura, titulo: H2.nombre },
 ];
 
