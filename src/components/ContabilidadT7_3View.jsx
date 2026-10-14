@@ -27,6 +27,8 @@ import AjustePorConteo from "./mecanicas/libros/t7/AjustePorConteo.jsx";
 import { H5 } from "../data/contabilidadT7_3_h5.js";
 import EntraAlCosto from "./mecanicas/libros/t7/EntraAlCosto.jsx";
 import { H6 } from "../data/contabilidadT7_3_h6.js";
+import CostoOValorNeto from "./mecanicas/libros/t7/CostoOValorNeto.jsx";
+import { H7 } from "../data/contabilidadT7_3_h7.js";
 import PantallasT7_3 from "./mecanicas/libros/t7/PantallasT7_3.jsx";
 import { PIEZA_EL_DESCUENTO_COMERCIAL } from "../data/contabilidadT7_3.js";
 import { PIEZA_DESCUENTOS_EN_CADENA } from "../data/contabilidadT7_3_a2.js";
@@ -72,6 +74,7 @@ export const JUEGOS_T7_3 = [
   { id: H4.id, Mecanica: PagoATiempo, titulo: H4.nombre },
   { id: H5.id, Mecanica: AjustePorConteo, titulo: H5.nombre },
   { id: H6.id, Mecanica: EntraAlCosto, titulo: H6.nombre },
+  { id: H7.id, Mecanica: CostoOValorNeto, titulo: H7.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */

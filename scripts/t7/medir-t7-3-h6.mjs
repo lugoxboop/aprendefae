@@ -61,7 +61,7 @@ function medir() {
   for (const [k, r] of toques.entries()) if (r.height < 44) problemas.push(`el botón ${k + 1} mide ${r.height.toFixed(1)} px de alto`);
   const avisos = [...document.querySelectorAll("[data-aviso]")];
   if (avisos.length !== 1) problemas.push(`hay ${avisos.length} frases de la NIC 2 y es una`);
-  else { const r = avisos[0].getBoundingClientRect(); if (!r.height || r.top < 0) problemas.push("la frase de la NIC 2 no está a la vista"); }
+  else if (!avisos[0].checkVisibility({ opacityProperty: true, visibilityProperty: true }) || !avisos[0].getBoundingClientRect().height) problemas.push("la frase de la NIC 2 no se ve");
   const h6 = document.querySelector("[data-t7-3-h6]");
   return {
     problemas,

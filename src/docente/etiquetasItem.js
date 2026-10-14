@@ -76,6 +76,7 @@ import { unidadDeH3 as unidadDeT73H3 } from "../contabilidad/t7_3H3.js";
 import { unidadDeH4 as unidadDeT73H4 } from "../contabilidad/t7_3H4.js";
 import { unidadDeH5 as unidadDeT73H5 } from "../contabilidad/t7_3H5.js";
 import { unidadDeH6 as unidadDeT73H6 } from "../contabilidad/t7_3H6.js";
+import { unidadDeH7 as unidadDeT73H7 } from "../contabilidad/t7_3H7.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -747,6 +748,8 @@ Object.assign(REGLAS, {
   "t7-3-ajuste-por-conteo": (id) => unidadDeT73H5(id),
   /* T7-3 · H6. Cada cosa, por su texto. */
   "t7-3-que-entra-al-costo": (id) => unidadDeT73H6(id),
+  /* T7-3 · H7. Cada pregunta, por su caso (la pregunta se repite entre casos). */
+  "t7-3-costo-o-vnr": (id) => unidadDeT73H7(id),
 });
 
 /*
