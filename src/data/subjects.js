@@ -737,6 +737,8 @@ export const SUBJECTS = {
         actividades: [
           /* A1: abre el tema, con su propio repaso (regla 3). Ejemplo H-1, pp. 248-249. Cero FP. */
           { id: "t7-3-descuento-comercial", nombre: "El descuento comercial", clasificacion: { tipo: APRENDER } },
+          /* H1, justo después de A1 (orden final de T7-3): la venta de Guadua con descuento comercial. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0103. */
+          { id: "t7-3-descuento-en-factura", nombre: "Descuento en la factura", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
         ],
       },
     ],
