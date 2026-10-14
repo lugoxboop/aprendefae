@@ -5,7 +5,7 @@ import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import { APRENDER, SUBJECTS } from "../data/subjects.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
-import { PIEZA_DEL_EFECTIVO } from "../data/contabilidadTema5Pieza1.js";
+import { PIEZA_DEL_EFECTIVO } from "../data/contabilidadT5Pieza1.js";
 import { ESCENAS_TEMA5 } from "./mecanicas/libros/tema5/escenasTema5.jsx";
 
 /*
