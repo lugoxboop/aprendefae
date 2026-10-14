@@ -615,6 +615,24 @@ export const SUBJECTS = {
           { id: "t3-cierre-completo", nombre: "El cierre completo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],
       },
+      /*
+       * EL TEMA 5 (Célula B), por ahora con su pieza 1 de Aprender.
+       *
+       * CATÁLOGO: decidido por Erwin. El título es el subtítulo literal de
+       * §5.3 en la p. 191. El id va SIN el prefijo de la célula, al contrario
+       * de lo propuesto: el id de un tema es el segmento de la dirección que
+       * ve el estudiante —vistaDeTema lo usa tal cual—, y «b5» es un nombre
+       * interno nuestro. Los prefijos de célula van en ramas, migraciones e
+       * ids de actividad, que nadie de fuera lee. Sin ícono propio: el índice
+       * pinta el de la materia en todos los temas.
+       */
+      {
+        id: "activos-financieros",
+        title: "Activos financieros temporales",
+        actividades: [
+          { id: "b5-t5-a1-del-efectivo-de-sobra", nombre: "Del efectivo de sobra al activo financiero", clasificacion: { tipo: APRENDER } },
+        ],
+      },
     ],
   },
   "pensamiento-estrategico": {
