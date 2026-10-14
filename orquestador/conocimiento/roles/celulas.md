@@ -128,3 +128,41 @@ Entonces:
 - **Una búsqueda vacía no prueba ausencia.** Antes de concluir que algo no
   existe, comprueba que buscaste donde está: que el archivo existe, que la ruta
   es la correcta, que el listado no venía recortado.
+
+---
+
+## La regla que atraviesa las cuatro
+
+Las cuatro fichas dicen alguna versión de «compruébalo». Esto es lo que falta,
+y salió de tres errores seguidos del coordinador en una misma noche:
+
+**No construyas la comprobación con tus propias suposiciones.** Verificar no
+sirve de nada si la vara con la que mides te la inventaste tú.
+
+Los tres casos, que son el mismo:
+
+- Se concluyó que un agente no tenía chat, después de consultar un listado que
+  venía recortado. El listado era la vara, y estaba mal.
+- Se encargaron siete íconos pidiendo nombres de una librería, porque otra
+  materia usa esa librería. La regla era la vara, y venía de la materia
+  equivocada.
+- Se dio por rota una ruta de producción que estaba perfecta, porque la
+  dirección probada se había deducido del código en vez de sacarla de la propia
+  aplicación. La dirección era la vara, y era inventada.
+
+En los tres, la comprobación se hizo. En los tres, salió mal. Lo que falló no
+fue la diligencia: fue que el instrumento era una suposición disfrazada de dato.
+
+**Cómo se evita, en concreto:**
+
+- Para saber qué dice una pantalla, se lee lo publicado, no el código.
+- Para saber a qué dirección va un enlace, se pulsa el enlace, no se deduce la
+  ruta.
+- Para saber si algo existe, se abre; un listado que no lo trae no prueba nada.
+- Para saber qué convención usa una materia, se mira ESA materia, no la de al
+  lado.
+- Para saber si una prueba sirve, se rompe el código a propósito y se comprueba
+  que se pone roja.
+
+Y la señal de alarma, que es fácil de notar cuando se busca: **si la vara
+salió de tu cabeza, lo que verificaste es tu cabeza.**
