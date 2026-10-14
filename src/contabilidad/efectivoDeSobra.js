@@ -8,7 +8,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-import { PASOS_CAPA_2 } from "../data/contabilidadTema5Pieza1.js";
+import { PASOS_CAPA_2, CIERRE_CAPA_2 } from "../data/contabilidadT5Pieza1.js";
 
 export const PASOS = PASOS_CAPA_2.length; // 7
 export const CIERRE = PASOS + 1; // 8: el cierre, sin contador
@@ -68,3 +68,12 @@ export function estadoPaso(paso) {
     elementos: Object.fromEntries(ELEMENTOS.map((id) => [id, de(id)])),
   };
 }
+
+/* ═══════════ TIEMPOS ═══════════ */
+
+
+/* El texto que se lee en cada paso (el 8 es el cierre). */
+export const textoDelPaso = (paso) => (paso >= CIERRE ? CIERRE_CAPA_2 : PASOS_CAPA_2[paso - 1]);
+
+/** «Reproducir»: 3 000 ms + 450 ms por palabra del texto del paso, como LoQueYaPaso (loQueYaPaso.js). */
+export const duracionPaso = (paso) => 3000 + 450 * textoDelPaso(paso).trim().split(/\s+/).length;

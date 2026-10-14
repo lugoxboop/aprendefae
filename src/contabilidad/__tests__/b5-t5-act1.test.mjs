@@ -336,7 +336,7 @@ test("★★★ puntaje como T1-6: 60 % renta y 40 % tipo; variable entera; el s
   await tocar(botonAvanzar(caja));
   assert.equal(pct, 50);
   assert.equal(caja.querySelector("[data-resumen]").textContent,
-    "0 de 1 completas al primer intento. Cada ficha valía 100.00 %: elegir variable o fija pesa 60 %, y elegir con interés o con descuento, 40 %. En las de renta variable, acertar la primera elección vale la ficha entera.");
+    "0 de 1 completas al primer intento. Cada ficha valía 100.00 %. Elegir variable o fija pesa 60 %. Elegir con interés o con descuento pesa 40 %. En las de renta variable, la primera elección vale toda la ficha.");
   act(() => raiz.unmount());
   caja.remove();
 });
