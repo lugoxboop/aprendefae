@@ -18,6 +18,8 @@ import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
  * Cada pieza pone su escena (`escena(estado, refDe, reducido)`), su estado
  * por paso y sus textos (`todos`: los pasos y, al final, el cierre). Las
  * piezas de dibujo (caja, Anotacion, Lado) van exportadas para las escenas.
+ * `pintar` deja que una pieza pinte el texto del paso a su modo (T5 · A2: las
+ * cuentas sin partir); por defecto, el texto tal cual.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -94,7 +96,7 @@ export function Anotacion({ id, e, cuenta, linea, movimiento, lado, reducido, re
   );
 }
 
-export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atributos = {} }) {
+export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atributos = {}, pintar = (t) => t }) {
   const PASOS = todos.length - 1;
   const CIERRE = todos.length;
   const reducido = useReducido();
@@ -226,11 +228,11 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
         <div style={{ display: "grid" }}>
           <div aria-hidden="true" style={{ gridArea: "1 / 1", display: "grid", visibility: "hidden" }}>
             {todos.map((x, i) => (
-              <p key={`${i}-${x.texto}`} style={{ gridArea: "1 / 1", margin: 0, fontSize: "14px", lineHeight: 1.55, ...estiloTexto(i) }}>{x.texto}</p>
+              <p key={`${i}-${x.texto}`} style={{ gridArea: "1 / 1", margin: 0, fontSize: "14px", lineHeight: 1.55, ...estiloTexto(i) }}>{pintar(x.texto)}</p>
             ))}
           </div>
           <div ref={texto} data-texto-paso tabIndex={-1} aria-live="polite" style={{ gridArea: "1 / 1", outline: "none" }}>
-            <p style={{ margin: 0, fontSize: "14px", lineHeight: 1.55, color: TEXTO, ...estiloTexto(paso - 1) }}>{actual.texto}</p>
+            <p style={{ margin: 0, fontSize: "14px", lineHeight: 1.55, color: TEXTO, ...estiloTexto(paso - 1) }}>{pintar(actual.texto)}</p>
           </div>
         </div>
         <div style={{ display: "grid", marginTop: "4px" }}>
