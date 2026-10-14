@@ -81,10 +81,12 @@ export function Lado({ lado, textos }) {
   );
 }
 
-export function Anotacion({ id, e, cuenta, movimiento, lado, reducido, refDe, textos, partirNombre = false }) {
+/* `linea`: el nombre del cliente en su propia línea, bajo la cuenta (T6 · A3 v1b y A4). */
+export function Anotacion({ id, e, cuenta, linea, movimiento, lado, reducido, refDe, textos, partirNombre = false }) {
   return (
     <div ref={refDe(id)} data-elemento={id} data-resaltado={e.resaltado ? "si" : "no"} style={{ borderRadius: "10px", ...caja(e, [6, 8], reducido) }}>
       <p style={{ margin: 0, fontFamily: SORA, fontSize: "12.5px", fontWeight: 600, lineHeight: 1.3, whiteSpace: partirNombre ? "normal" : "nowrap", color: "inherit" }}>{cuenta}</p>
+      {linea && <p data-linea style={{ margin: "2px 0 0", fontFamily: INTER, fontSize: "12px", lineHeight: 1.35, color: "inherit" }}>{linea}</p>}
       {/* Si el movimiento y la cápsula no caben juntos, la cápsula baja de línea entera (Mai, T6 · A2 v1b: 73,63). */}
       <p data-movimiento style={{ margin: "3px 0 0", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px", fontFamily: INTER, fontSize: "12px", lineHeight: 1.35, color: "inherit" }}>
         <span>{movimiento}</span>
