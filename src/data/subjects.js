@@ -633,6 +633,23 @@ export const SUBJECTS = {
           { id: "b5-t5-a1-del-efectivo-de-sobra", nombre: "Del efectivo de sobra al activo financiero", clasificacion: { tipo: APRENDER } },
         ],
       },
+      /*
+       * ═══════════ T7 · CÉLULA C ═══════════
+       *
+       * T7-1, el inventario en el sistema periódico (pp. 207-232), después del
+       * Tema 5; por el orden del libro, el T4 y el T6 entran antes que este
+       * bloque cuando lleguen. Por ahora solo su pieza 1 de Aprender: material
+       * teórico, cero FP, no entra al catálogo. El título es el que propuso
+       * Near. El id del tema va sin prefijo de célula, como el del Tema 5: es
+       * el segmento de la dirección que ve el estudiante.
+       */
+      {
+        id: "inventarios-periodico",
+        title: "Inventarios I: el sistema periódico",
+        actividades: [
+          { id: "t7-1-a1-la-cuenta-que-no-se-mueve", nombre: "La cuenta que no se mueve", clasificacion: { tipo: APRENDER } },
+        ],
+      },
     ],
   },
   "pensamiento-estrategico": {
