@@ -8,7 +8,7 @@ Primer paquete completo de la Célula B. Parte 1: contenido final (Futaba, audit
 
 Redacción: Futaba. Auditoría de contenido: Shoko, tres vueltas (la última, PASA CON CORRECCIONES; las dos correcciones obligatorias están aplicadas). Cambio de la línea 3.2 decidido por Sakuta con la redacción de Futaba, a partir de una recomendación de Shoko. Forma: componente compartido CuatroCapas.
 
-Las marcas [p. X] y [CONSTRUCCIÓN] son para auditoría; el estudiante no las ve. Los rótulos «Así lo dice el libro» y «Nota» sí los ve. Legibilidad (INFLESZ): ningún texto está medido; la calculadora no existe todavía.
+Las marcas [p. X] y [CONSTRUCCIÓN] son para auditoría; el estudiante no las ve. Los rótulos «Así lo dice el libro» y «Nota» sí los ve. Legibilidad (INFLESZ): ningún texto está medido todavía. La calculadora ya está en main (`npm run inflesz`); Kaede la corre sobre esta pieza.
 
 **TÍTULO:** «Del efectivo de sobra al activo financiero» [CONSTRUCCIÓN]
 
@@ -25,14 +25,14 @@ Las marcas [p. X] y [CONSTRUCCIÓN] son para auditoría; el estudiante no las ve
 *Así lo dice el libro:* «Representan colocaciones de dinero sobre las cuales una empresa espera obtener algún rendimiento a futuro…» (p. 191)
 
 **2 · Activo financiero temporal**
-«Se compra con efectivo que la empresa no necesita de inmediato, en vez de dejar ese efectivo quieto. Para ser temporal tiene que cumplir dos condiciones: poder venderse rápido y con facilidad (el libro dice "negociables o realizables"), y estar destinado a volverse efectivo cuando se necesite, en un año o en un ciclo de operaciones (lo que tarda el negocio en comprar, vender y cobrar), el que sea más largo.»
+«Se compra con efectivo que la empresa no necesita de inmediato, en vez de dejar ese efectivo quieto. Para ser temporal tiene que cumplir dos condiciones: poder venderse rápido y con facilidad (el libro dice “negociables o realizables”), y estar destinado a volverse efectivo cuando se necesite, en un año o en un ciclo de operaciones (lo que tarda el negocio en comprar, vender y cobrar), el que sea más largo.»
 - [pp. 191-192. La p. 192 explica «negociables» como que el valor «se puede vender con facilidad».]
 - [Las glosas entre paréntesis son CONSTRUCCIÓN.]
 
 *Así lo dice el libro:* «1. Negociables o realizables rápidamente. 2. Destinados a convertirse en efectivo cuando se necesite, en el término de un año o de un ciclo de operaciones (el que sea más largo).» (p. 192)
 
 **3 · Título valor**
-«Un documento que permite captar y trasladar recursos entre inversionistas. Cuando el libro habla de "valores", como los valores negociables, se refiere a títulos valores.»
+«Un documento que permite captar y trasladar recursos entre inversionistas. Cuando el libro habla de “valores”, como los valores negociables, se refiere a títulos valores.»
 - [Primera frase: CONSTRUCCIÓN. «Un documento» es de Futaba; la p. 192 dice qué permiten «los títulos valores negociables».]
 - [Segunda frase: p. 192, que habla de «los títulos valores negociables» y dice «Valores de renta variable: son títulos valores…».]
 
@@ -51,7 +51,7 @@ Las marcas [p. X] y [CONSTRUCCIÓN] son para auditoría; el estudiante no las ve
 «Su rendimiento depende de cómo le vaya a la empresa que emitió el título. Ejemplo: las acciones, cuyos dividendos dependen de la situación económica y de la liquidez de esa empresa (su capacidad de tener efectivo para pagar).»
 - [p. 192. La glosa de «liquidez» es CONSTRUCCIÓN.]
 
-*Nota:* «Aquí, "renta variable" y "renta fija" son nombres de tipos de título, no de cuentas. Cuando la renta le llega a la empresa, sí se anota como un ingreso.»
+*Nota:* «Aquí, “renta variable” y “renta fija” son nombres de tipos de título, no de cuentas. Cuando la renta le llega a la empresa, sí se anota como un ingreso.»
 - [CONSTRUCCIÓN, puente con el Tema 2, donde «Renta por servicios» y «Renta por interés» son cuentas de ingreso. Se apoya en la p. 193 y las pp. 194-195. No nombra ninguna cuenta.]
 
 **7 · Renta fija**
