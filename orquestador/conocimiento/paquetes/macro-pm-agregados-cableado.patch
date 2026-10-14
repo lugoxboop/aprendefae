@@ -15,22 +15,21 @@ más el conteo de previas animadas, 46 → 48) y la línea «las tres piezas» d
 monetaria-aprender, más la foto del camino (solo cambian las 6 variantes de
 Política Monetaria; las otras 36 quedan igual).
 
-Medido por Misa sobre la punta de la rama, con main al día: 1805 pruebas,
-1804 pasan, 0 fallan (1 TODO que ya estaba en main), build verde.
+Medido por Misa sobre la punta de la rama, con main al día: 1806 pruebas,
+1805 pasan, 0 fallan (1 TODO que ya estaba en main), build verde.
 
 LA 0091 LA CORRE MATEO, A MANO, DESPUÉS DEL DESPLIEGUE. Nadie más.
 
 git apply ignora este texto: empieza a leer en la primera línea «diff --git».
-
 diff --git a/src/components/PoliticaMonetariaView.jsx b/src/components/PoliticaMonetariaView.jsx
-index df3828b..eff1dce 100644
+index df3828b..467662c 100644
 --- a/src/components/PoliticaMonetariaView.jsx
 +++ b/src/components/PoliticaMonetariaView.jsx
 @@ -19,6 +19,9 @@ import {
    DueloDeInstrumentos, DisenaRespuestaMonetaria,
  } from "./mecanicas/maquinas/actividades.jsx";
  import { PorCualArteriaEntra, LasDosEntradas } from "./mecanicas/maquinas/monetariaRepaso.jsx";
-+import { EscenaEscalera, ExploraTallas } from "./mecanicas/maquinas/escaleraLiquidez.jsx";
++import { EscenaTallas, ExploraTallas } from "./mecanicas/maquinas/tallasDelDinero.jsx";
 +import { EnQueTallaVa, QueTocoElBanco } from "./mecanicas/maquinas/actividadesAgregados.jsx";
 +import { APRENDER_TALLAS } from "../data/pmAgregados.js";
  import { APRENDER_QUIEN_MANDA, APRENDER_INSTRUMENTOS, APRENDER_TRANSMISIONES } from "../data/politicaMonetaria.js";
@@ -40,7 +39,7 @@ index df3828b..eff1dce 100644
    { pieza: APRENDER_QUIEN_MANDA, Escena: EscenaQuienManda, Exploracion: () => <ExploraVolante /> },
    { pieza: APRENDER_INSTRUMENTOS, Escena: EscenaInstrumentos, Exploracion: ExploraInstrumentos },
    { pieza: APRENDER_TRANSMISIONES, Escena: EscenaTransmisiones, Exploracion: () => <ExploraVolante conReloj /> },
-+  { pieza: APRENDER_TALLAS, Escena: EscenaEscalera, Exploracion: ExploraTallas },
++  { pieza: APRENDER_TALLAS, Escena: EscenaTallas, Exploracion: ExploraTallas },
  ];
  
  /* El orden es el del camino: por bloque, y dentro de cada uno el de la ficha. */
@@ -57,7 +56,7 @@ index df3828b..eff1dce 100644
    { id: "por-cual-arteria-entra", Mecanica: PorCualArteriaEntra },
    { id: "explicaselo-a-un-deudor", Mecanica: ExplicaseloADeudor },
 diff --git a/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs b/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs
-index d561d95..64ad9dd 100644
+index c185f5e..d090b0c 100644
 --- a/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs
 +++ b/src/components/mecanicas/__tests__/monetaria-aprender.test.mjs
 @@ -116,10 +116,10 @@ test("la exploración de los cuatro instrumentos sigue las reglas de la pieza",
@@ -73,7 +72,7 @@ index d561d95..64ad9dd 100644
    const sql = readdirSync("supabase/migrations").map((f) => readFileSync(`supabase/migrations/${f}`, "utf8")).join("\n");
    for (const id of ids) assert.ok(!sql.includes(`'${id}'`), `${id} no puede tener fila en actividad_catalogo`);
  });
-@@ -300,3 +300,19 @@ test("las tallas: Aprender no paga", () => {
+@@ -335,3 +335,19 @@ test("las tallas: Aprender no paga", () => {
    assert.equal(AG.EN_QUE_TALLA_VA.id, "en-que-talla-va");
    assert.equal(AG.QUE_TOCO_EL_BANCO.id, "que-toco-el-banco");
  });
