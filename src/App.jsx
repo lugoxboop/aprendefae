@@ -252,11 +252,11 @@ export default function App() {
     );
   }
 
-  /* El Tema 6 de Contabilidad (Célula B): por ahora, su pieza 1 de Aprender. Catálogo: decide Erwin. */
+  /* El Tema 6 de Contabilidad (Célula B): su pieza 1 de Aprender y su act. 1 de Hacer. Catálogo: decide Erwin. */
   if (view === "cuentas-por-cobrar") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <ContabilidadTema6View onBack={() => setView("contabilidad")} />
+        <ContabilidadTema6View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }
@@ -265,7 +265,7 @@ export default function App() {
   if (view === "inventarios-periodico") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <ContabilidadT7_1View onBack={() => setView("contabilidad")} />
+        <ContabilidadT7_1View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }
