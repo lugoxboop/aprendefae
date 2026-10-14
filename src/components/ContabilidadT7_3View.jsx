@@ -19,6 +19,8 @@ import DescuentoEnFactura from "./mecanicas/libros/t7/DescuentoEnFactura.jsx";
 import { H1 } from "../data/contabilidadT7_3_h1.js";
 import CadenaDeDescuentos from "./mecanicas/libros/t7/CadenaDeDescuentos.jsx";
 import { H2 } from "../data/contabilidadT7_3_h2.js";
+import ComercialOCondicionado from "./mecanicas/libros/t7/ComercialOCondicionado.jsx";
+import { H3 } from "../data/contabilidadT7_3_h3.js";
 import PantallasT7_3 from "./mecanicas/libros/t7/PantallasT7_3.jsx";
 import { PIEZA_EL_DESCUENTO_COMERCIAL } from "../data/contabilidadT7_3.js";
 import { PIEZA_DESCUENTOS_EN_CADENA } from "../data/contabilidadT7_3_a2.js";
@@ -54,6 +56,7 @@ export const PIEZAS_T7_3 = [
 export const JUEGOS_T7_3 = [
   { id: H1.id, Mecanica: DescuentoEnFactura, titulo: H1.nombre },
   { id: H2.id, Mecanica: CadenaDeDescuentos, titulo: H2.nombre },
+  { id: H3.id, Mecanica: ComercialOCondicionado, titulo: H3.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
