@@ -111,8 +111,8 @@ test("★★★ ningún componente de la pieza escribe texto que lea el estudian
 
 test("★★ la pieza va segunda en el tema: APRENDER (no paga) y en la vista", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "cuentas-por-cobrar");
-  assert.deepEqual(actividadesDeTipo(tema, APRENDER).map((a) => a.id), ["b5-t6-a1-lo-que-otros-le-deben", D.PIEZA_NO_VA_A_PAGAR.id]);
-  assert.deepEqual(PIEZAS.map((p) => p.pieza.id), ["b5-t6-a1-lo-que-otros-le-deben", D.PIEZA_NO_VA_A_PAGAR.id]);
+  assert.deepEqual(actividadesDeTipo(tema, APRENDER).map((a) => a.id).slice(0, 2), ["b5-t6-a1-lo-que-otros-le-deben", D.PIEZA_NO_VA_A_PAGAR.id]);
+  assert.deepEqual(PIEZAS.map((p) => p.pieza.id).slice(0, 2), ["b5-t6-a1-lo-que-otros-le-deben", D.PIEZA_NO_VA_A_PAGAR.id]);
   const { Capa2, Exploracion } = ESCENAS_TEMA6[D.PIEZA_NO_VA_A_PAGAR.id];
   assert.equal(Capa2, DosDias, "la capa 2 de la pieza 2 es DosDias");
   assert.equal(Exploracion, DosMetodos, "la capa 3 de la pieza 2 es DosMetodos");
