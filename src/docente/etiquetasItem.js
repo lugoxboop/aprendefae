@@ -70,6 +70,7 @@ import { unidadDeH6 } from "../contabilidad/t7H6.js";
 import { unidadDeH7 } from "../contabilidad/t7H7.js";
 import { hechoDeItemH1 as hechoDeItemT72H1 } from "../contabilidad/t7_2H1.js";
 import { unidadDeH2 as unidadDeT72H2 } from "../contabilidad/t7_2H2.js";
+import { unidadDeH3 as unidadDeT72H3 } from "../contabilidad/t7_2H3.js";
 import { unidadDeH1 as unidadDeT73H1 } from "../contabilidad/t7_3H1.js";
 import { unidadDeH2 as unidadDeT73H2 } from "../contabilidad/t7_3H2.js";
 import {
@@ -731,6 +732,8 @@ Object.assign(REGLAS, {
   "t7-2-debe-o-haber": (id) => hechoDeItemT72H1(id),
   /* T7-2 · H2. Un cálculo, por su pregunta; una línea, por su cuenta y su valor. */
   "t7-2-dos-asientos": (id) => unidadDeT72H2(id),
+  /* T7-2 · H3. Una casilla, por su método y su pregunta (la pregunta se repite entre métodos); la comparación, por su pregunta. */
+  "t7-2-llena-el-kardex": (id) => unidadDeT72H3(id),
   /* T7-3 · H1. Un cálculo, por su pregunta; una línea, por su cuenta y su valor. */
   "t7-3-descuento-en-factura": (id) => unidadDeT73H1(id),
   /* T7-3 · H2. Cada ítem, por su pregunta. */
