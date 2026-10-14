@@ -59,6 +59,7 @@ import { parteDeItemT5Act2 } from "../contabilidad/t5Act2.js";
 import { PARTES_T5_ACT2 } from "../data/contabilidadT5Act2.js";
 import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
 import { hechoDeItemH1 } from "../contabilidad/t7H1.js";
+import { unidadDeH2 } from "../contabilidad/t7H2.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -704,6 +705,8 @@ Object.assign(REGLAS, {
 Object.assign(REGLAS, {
   /* T7-1 · H1. El ítem es el hecho, y se lee por su texto. */
   "t7-1-que-cuenta-se-mueve": (id) => hechoDeItemH1(id),
+  /* T7-1 · H2. Un cálculo se lee por su pregunta; una línea del asiento, por su cuenta y su valor. */
+  "t7-1-arma-la-factura": (id) => unidadDeH2(id),
 });
 
 /*
