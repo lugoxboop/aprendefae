@@ -20,8 +20,8 @@ import Kardex from "./KardexT7_2.jsx";
  *                «Confirmar», y «Incorrecto.» con «Probar otra» o «Correcto.»
  *                con «Seguir». Antes de la pregunta, lo que la pantalla traiga
  *                (encabezado, textos, ficha, asientos, cálculos, la tabla de
- *                los tres métodos). Con el acierto, lo que se descubre: un
- *                asiento, un kárdex, más texto
+ *                los tres métodos, una lista de finales). Con el acierto, lo
+ *                que se descubre: un asiento, cálculos, un kárdex, más texto
  *   · lados      líneas con su monto, barajadas al entrar, cada una con
  *                «Debe» | «Haber», como P3 de A2; «Probar otra» devuelve solo
  *                las equivocadas
@@ -289,6 +289,7 @@ function Cuerpo({ p, kardexDe }) {
       {p.enunciado && <p className="t7bp-enunciado" data-texto data-enunciado>{p.enunciado}</p>}
       {p.ficha && <Ficha ficha={p.ficha} />}
       {p.estructura && <Estructura lista={p.estructura} />}
+      {p.finales && <ul className="t7bp-est" data-finales>{p.finales.map((t) => <li key={t} data-texto>{t}</li>)}</ul>}
       {p.movimientos && <Movimientos tabla={p.movimientos} />}
       <Asientos lista={p.asientos} />
       {p.cierre && <CierrePorNombres lista={p.cierre} />}
@@ -338,6 +339,7 @@ function Eleccion({ pantalla, onSeguir, kardexDe }) {
         <>
           <Mensaje ok textos={[a.texto]} refFoco={ref} />
           <Asientos lista={a.asientos} nuevo />
+          {a.calculos && <div className="t7bp-nueva"><Calculos lista={a.calculos} /></div>}
           {a.kardex && <div className="t7bp-nueva"><Kardex kardex={kardexDe(a.kardex)} nota={a.notaKardex ?? null} /></div>}
           <Textos lista={a.despues} nueva />
           <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />
