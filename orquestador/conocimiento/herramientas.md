@@ -70,3 +70,48 @@ rompe el código a propósito y se comprueba que la prueba lo caza.
 
 Una prueba marcada `todo` es **deuda conocida**, no una regresión. Se reporta
 como «not ok … # TODO» y no se arregla desde fuera del equipo que la debe.
+
+## Lo que las pruebas NO pueden ver
+
+La suite compara el cliente contra los **archivos** de migración. Nunca contra
+la base de datos. De ahí salen dos puntos ciegos, y los dos ya costaron:
+
+**1. Una migración escrita y nunca corrida es invisible.** El 14 de octubre de
+2026 había **trece actividades publicadas y jugables** sin fila en el catálogo
+de producción: las dos de la 0052 y las once del bloque 0045-0051. Las siete
+migraciones estaban escritas, correctas y en `main`. La prueba «toda actividad
+que da FP está en el catálogo del servidor» las encontraba todas —en los
+archivos— y salía en verde. Un estudiante que jugara cualquiera de las trece
+veía su porcentaje y no recibía un solo FP. Nada falló, nada se puso rojo, y
+llevaba semanas así.
+
+Lo único que caza eso es preguntarle **a la base**, no al repositorio. La
+consulta que lo midió, y que vale repetir después de cada despliegue:
+
+```sql
+with cliente(id) as (values ('…'),('…'))   -- los ids de Hacer del cliente
+select count(*) from cliente c
+left join public.actividad_catalogo k on k.activity_id = c.id
+where k.activity_id is null;               -- tiene que dar 0
+```
+
+Y para comprobar que el servidor paga lo MISMO que la pantalla promete, sin
+leer 80 filas a ojo: se construye `activity_id|modalidad|dificultad|fp_base`
+ordenado en los dos lados y se comparan los dos `md5`. Si coinciden, coinciden
+las ochenta.
+
+**2. La llave pública NO sirve para esa sonda, y falla de la peor manera.**
+`actividad_catalogo` tiene RLS: con la llave anónima, PostgREST responde
+**HTTP 200 con `[]`**. No un error —éxito con cero filas—. Una sonda escrita
+encima de eso diría «no falta ninguna» para siempre, sin haber mirado nada:
+sería peor que no tenerla, porque daría confianza.
+
+Para que la sonda exista hay que decidir CÓMO lee el catálogo, y eso lo decide
+Mateo: una política que permita `select` anónimo —no filtra nada, el cliente ya
+trae todos los ids y sus FP en el paquete—, una función `security definer` que
+reciba la lista y devuelva las que falten, o una llave privilegiada en los
+secretos del flujo. Mientras no esté, **la comprobación se hace a mano después
+de cada despliegue** con la consulta de arriba.
+
+**La regla que queda:** una prueba verde sobre archivos no dice nada del estado
+de producción. Lo que no se le pregunta a la base, no se sabe.
