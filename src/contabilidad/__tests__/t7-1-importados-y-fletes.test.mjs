@@ -446,7 +446,10 @@ test("★★★ fuera del catálogo de FP; id t7-; va en T7-1 después de AP2 y 
   assert.equal(a.nombre, P.titulo);
   const ids = tema.actividades.map((x) => x.id);
   assert.ok(ids.indexOf(A.A5_ID) > ids.indexOf("t7-1-a1-la-cuenta-que-no-se-mueve"));
-  assert.equal(ids.indexOf(A.A5_ID) + 1, ids.indexOf("t7-1-a6-devoluciones-en-periodico"));
+  /* Entre A5 y A6 solo cabe Hacer (H5), no otra pieza de Aprender. */
+  const aprender = tema.actividades.filter((x) => x.clasificacion.tipo === APRENDER).map((x) => x.id);
+  assert.equal(aprender.indexOf(A.A5_ID) + 1, aprender.indexOf("t7-1-a6-devoluciones-en-periodico"));
+  assert.ok(ids.indexOf(A.A5_ID) < ids.indexOf("t7-1-a6-devoluciones-en-periodico"));
   const piezas = PIEZAS_T7_1.map((x) => x.pieza.id);
   assert.equal(piezas.indexOf(A.A5_ID) + 1, piezas.indexOf("t7-1-a6-devoluciones-en-periodico"));
   /* El orden por dependencias (regla 9): A5 trae el IVA y la retención que enseña AP2. */
