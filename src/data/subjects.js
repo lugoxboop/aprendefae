@@ -741,6 +741,8 @@ export const SUBJECTS = {
           { id: "t7-3-descuento-en-factura", nombre: "Descuento en la factura", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A2, después de A1 (regla 9). H1 «Descuento en la factura» entra entre A1 y A2. Ejemplo H-2, pp. 249-250. Cero FP. */
           { id: "t7-3-descuentos-en-cadena", nombre: "Descuentos en cadena", clasificacion: { tipo: APRENDER } },
+          /* H2, justo después de A2 (orden final de T7-3): la cadena de Palma, paso a paso y con el factor. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0104. */
+          { id: "t7-3-cadena-de-descuentos", nombre: "La cadena de descuentos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
         ],
       },
     ],

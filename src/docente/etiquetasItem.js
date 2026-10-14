@@ -69,6 +69,7 @@ import { unidadDeH5 } from "../contabilidad/t7H5.js";
 import { unidadDeH6 } from "../contabilidad/t7H6.js";
 import { unidadDeH7 } from "../contabilidad/t7H7.js";
 import { unidadDeH1 as unidadDeT73H1 } from "../contabilidad/t7_3H1.js";
+import { unidadDeH2 as unidadDeT73H2 } from "../contabilidad/t7_3H2.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -726,6 +727,8 @@ Object.assign(REGLAS, {
   "t7-1-que-control-falta": (id) => unidadDeH7(id),
   /* T7-3 · H1. Un cálculo, por su pregunta; una línea, por su cuenta y su valor. */
   "t7-3-descuento-en-factura": (id) => unidadDeT73H1(id),
+  /* T7-3 · H2. Cada ítem, por su pregunta. */
+  "t7-3-cadena-de-descuentos": (id) => unidadDeT73H2(id),
 });
 
 /*
