@@ -70,7 +70,7 @@ export const CSS_KX = `
 .t7kx-punto { display: flex; justify-content: flex-end; align-items: center; }
 .t7kx-punto b { font: 700 15px/1.5 "Inter", sans-serif; color: ${P.texto}; }
 .t7kx-punto button { appearance: none; min-width: 44px; min-height: 44px; margin: 4px 0; padding: 0 8px; border: 1px dashed ${P.texto}; border-radius: 8px; background: transparent; color: ${P.texto}; font: 700 15px/1 "Inter", sans-serif; cursor: pointer; }
-.t7kx-punto button[aria-expanded="true"] { background: ${P.texto}; color: ${P.fondo}; border-style: solid; }
+.t7kx-punto button.t7kx-abierto { background: ${P.texto}; color: ${P.fondo}; border-style: solid; }
 .t7kx-punto button:focus-visible { outline: 2px solid ${P.texto}; outline-offset: 2px; }
 `;
 
@@ -79,7 +79,7 @@ function Punto({ pregunta }) {
   return (
     <span role="cell" className="t7kx-punto" data-punto={pregunta ? "activo" : "quieto"}>
       {pregunta
-        ? <button type="button" aria-label={pregunta.etiqueta} aria-expanded={pregunta.abierta} onClick={pregunta.onPunto}>●</button>
+        ? <button type="button" className={pregunta.abierta ? "t7kx-abierto" : undefined} aria-label={pregunta.etiqueta} aria-expanded={pregunta.abierta} onClick={pregunta.onPunto}>●</button>
         : <b aria-hidden="true">●</b>}
     </span>
   );

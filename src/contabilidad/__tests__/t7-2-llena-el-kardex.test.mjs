@@ -256,6 +256,8 @@ async function jugar(m, falla) {
       assert.equal(punto.getAttribute("aria-label"), it.pregunta);
       assert.equal(panel(m.caja).querySelectorAll('[data-punto="activo"]').length, 1);
       assert.ok(!panel(m.caja).textContent.includes(cifraK(it.correcta)), `${it.id}: la cifra se ve antes de responder`);
+      /* Sin «=», como en A3 y A4 (corrección de Mello): tampoco en la hoja de estilos que va dentro del kárdex. */
+      assert.ok(!panel(m.caja).textContent.includes("="), `${it.id}: el kárdex lleva «=»`);
       await tocar(punto);
       assert.equal(punto.getAttribute("aria-expanded"), "true");
     }
