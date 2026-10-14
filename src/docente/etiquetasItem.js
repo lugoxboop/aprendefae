@@ -56,14 +56,16 @@ import { hechoDeItem as hechoDeAct6T3 } from "../contabilidad/queLeToca.js";
 import { fichaDeItemT5Act1 } from "../contabilidad/t5Act1.js";
 import { fichaDeItemT6Act1 } from "../contabilidad/t6Act1.js";
 import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
-import { unidadDeH7 } from "../contabilidad/t7H7.js";
-import { unidadDeH6 } from "../contabilidad/t7H6.js";import {
-  preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
-import { unidadDeH5 } from "../contabilidad/t7H5.js";
-import { unidadDeH4 } from "../contabilidad/t7H4.js";import {
-import { unidadDeH3 } from "../contabilidad/t7H3.js";
 import { hechoDeItemH1 } from "../contabilidad/t7H1.js";
-import { unidadDeH2 } from "../contabilidad/t7H2.js";import {  preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,} from "../contabilidad/tema1.js";
+import { unidadDeH2 } from "../contabilidad/t7H2.js";
+import { unidadDeH3 } from "../contabilidad/t7H3.js";
+import { unidadDeH4 } from "../contabilidad/t7H4.js";
+import { unidadDeH5 } from "../contabilidad/t7H5.js";
+import { unidadDeH6 } from "../contabilidad/t7H6.js";
+import { unidadDeH7 } from "../contabilidad/t7H7.js";
+import {
+  preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
+} from "../contabilidad/tema1.js";
 
 /* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
 const EMPRESAS = { lavado: LAVADO_DE_AUTOS.empresa, caleja: CALEJA.empresa };
@@ -702,29 +704,21 @@ Object.assign(REGLAS, {
  * lo enseña cambiado sin tocar nada aquí.
  */
 Object.assign(REGLAS, {
-  /* T7-1 · H7. Cada caso, por su texto: el riesgo que se ve en la bodega. */
+  /* T7-1 · H1. El ítem es el hecho, y se lee por su texto. */
+  "t7-1-que-cuenta-se-mueve": (id) => hechoDeItemH1(id),
+  /* T7-1 · H2. Un cálculo se lee por su pregunta; una línea del asiento, por su cuenta y su valor. */
+  "t7-1-arma-la-factura": (id) => unidadDeH2(id),
+  /* T7-1 · H3 a H7, de la Célula C. Cada ítem se lee por su pregunta o por su línea del asiento. */
+  "t7-1-cuanto-vale-lo-que-sobro": (id) => unidadDeH3(id),
+  "t7-1-cierra-el-mes": (id) => unidadDeH4(id),
+  "t7-1-costo-o-gasto": (id) => unidadDeH5(id),
+  "t7-1-devolucion-dos-libros": (id) => unidadDeH6(id),
   "t7-1-que-control-falta": (id) => unidadDeH7(id),
 });
 
 /*
  * El Repaso Diario guarda cada ítem con su clave entera —`<actividad>:<item_id>`—,
-  /* T7-1 · H6. Un cálculo o una cuenta, por su pregunta; una línea, por su libro, su cuenta y su valor. */
-  "t7-1-devolucion-dos-libros": (id) => unidadDeH6(id),
-});
-
-/*
-  /* T7-1 · H5. Cada ítem, por su texto: el hecho que se clasifica o la pregunta del caso. */
-  "t7-1-costo-o-gasto": (id) => unidadDeH5(id),
-});
-  /* T7-1 · H4. Cada casilla, por su método y su fila; cada línea del cierre, por su texto. */
-  "t7-1-cierra-el-mes": (id) => unidadDeH4(id),
-});
-  /* T7-1 · H3. Cada ítem, por su pregunta, con el método delante cuando lo trae. */
-  "t7-1-cuanto-vale-lo-que-sobro": (id) => unidadDeH3(id),
-  /* T7-1 · H1. El ítem es el hecho, y se lee por su texto. */
-  "t7-1-que-cuenta-se-mueve": (id) => hechoDeItemH1(id),
-  /* T7-1 · H2. Un cálculo se lee por su pregunta; una línea del asiento, por su cuenta y su valor. */
-  "t7-1-arma-la-factura": (id) => unidadDeH2(id),});/* * El Repaso Diario guarda cada ítem con su clave entera —`<actividad>:<item_id>`—, * así que su etiqueta es la de la actividad de origen: se parte por el primer
+ * así que su etiqueta es la de la actividad de origen: se parte por el primer
  * «:» y se le pregunta a esa regla. Sin texto propio.
  */
 REGLAS["repaso-diario"] = (id) => {
