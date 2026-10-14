@@ -250,10 +250,10 @@ test("★★★ fuera del catálogo de FP; abre T7-3, que va justo después de T
   assert.equal(tema.actividades[0].id, A.A1_ID);
   assert.equal(PIEZAS_T7_3[0].pieza.id, A.A1_ID);
   assert.equal(PIEZAS_T7_3[0].Pieza, PantallasT7_3);
-  /* Sin FP: ninguna migración la nombra, y ni la pieza ni su vista llaman al motor. */
+  /* Sin FP: ninguna migración la nombra, y ni la pieza ni sus datos llaman al motor (la vista sí, por los Hacer). */
   const dir = new URL("supabase/migrations/", RAIZ);
-  assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes("t7-3-")), []);
-  for (const f of ["src/components/mecanicas/libros/t7/PantallasT7_3.jsx", "src/components/ContabilidadT7_3View.jsx", "src/data/contabilidadT7_3.js"]) {
+  assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A1_ID)), []);
+  for (const f of ["src/components/mecanicas/libros/t7/PantallasT7_3.jsx", "src/data/contabilidadT7_3.js"]) {
     assert.doesNotMatch(leer(f), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/, f);
   }
 });
