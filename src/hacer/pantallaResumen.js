@@ -180,6 +180,8 @@ export const FORMATO_MACRO = {
   "explicaselo-a-un-deudor": P,
   "corriente-de-decisiones": X,
   "por-cual-arteria-entra": X,
+  "crea-o-cambia-de-manos": X,
+  "la-escalera-del-encaje": X,
   "el-rezago": P,
   "dilema-banquero-central": X,
   "duelo-de-instrumentos": X,

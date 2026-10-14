@@ -507,6 +507,8 @@ export const ACTIVIDADES_FUERA_DEL_POOL = [
   "banco-transfusiones", "sala-espera-llena", "comite-presupuesto",
   "memorama-tesoro", "memorama-corazon", "memorama-tesoreria", "memorama-banco-central",
   "tablero-decisiones",
+  /* Las dos de la Fábrica del Dinero (0073): sus ítems no son preguntas sueltas. */
+  "crea-o-cambia-de-manos", "la-escalera-del-encaje",
   /*
    * El Comité de NOVA, el desafío de Política Fiscal. Fuera del pool y no por
    * olvido: sus ítems no son preguntas sueltas que se puedan repasar de a una

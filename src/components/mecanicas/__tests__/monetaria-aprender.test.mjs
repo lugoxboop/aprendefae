@@ -120,10 +120,10 @@ test("la exploración de los cuatro instrumentos sigue las reglas de la pieza", 
   }
 });
 
-test("Aprender no paga: las tres piezas son APRENDER y no están en el catálogo del servidor", () => {
+test("Aprender no paga: las cuatro piezas son APRENDER y no están en el catálogo del servidor", () => {
   const tema = SUBJECTS.macroeconomia.topics.find((t) => t.id === "politica-monetaria");
   const ids = actividadesDeTipo(tema, APRENDER).map((a) => a.id);
-  assert.deepEqual(ids, ["quien-manda-aqui", "los-cuatro-instrumentos", "las-tres-transmisiones"]);
+  assert.deepEqual(ids, ["quien-manda-aqui", "los-cuatro-instrumentos", "las-tres-transmisiones", "la-fabrica-del-dinero"]);
   const sql = readdirSync("supabase/migrations").map((f) => readFileSync(`supabase/migrations/${f}`, "utf8")).join("\n");
   for (const id of ids) assert.ok(!sql.includes(`'${id}'`), `${id} no puede tener fila en actividad_catalogo`);
 });

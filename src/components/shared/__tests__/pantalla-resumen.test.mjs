@@ -752,10 +752,10 @@ test("★★★ los puntos de la pantalla son siempre los del aviso de FP, y la 
   }
 }));
 
-test("★★★ ninguna de las 51 actividades de Macroeconomía queda sin formato", () => {
+test("★★★ ninguna de las 53 actividades de Macroeconomía queda sin formato", () => {
   const ids = SUBJECTS.macroeconomia.topics.flatMap((t) => (t.actividades ?? t.activities ?? [])
     .filter((a) => a.clasificacion?.tipo === HACER).map((a) => a.id));
-  assert.equal(ids.length, 51, `hay ${ids.length} actividades de Hacer en Macro`);
+  assert.equal(ids.length, 53, `hay ${ids.length} actividades de Hacer en Macro`);
   const validos = new Set(Object.values(R.FORMATO));
   for (const id of ids) {
     assert.ok(validos.has(R.FORMATO_MACRO[id]), `${id} no tiene formato`);

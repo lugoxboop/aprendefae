@@ -3,6 +3,7 @@ import {
   Activity, Thermometer, Droplet, Microscope, Cross,
   Stamp, Sheet, FileStack, ToggleLeft, ArrowRightLeft,
   Folder, MessageSquarePlus, Split, EqualNot,
+  HandCoins,
 } from "lucide-react";
 
 /*
@@ -372,6 +373,16 @@ export const RelojCorrea = propio("RelojCorrea", (
   </>
 ));
 
+/*
+ * Fábrica del Dinero · La escalera del encaje: tres peldaños que bajan.
+ * lucide no tiene escalera —se buscó Stairs y no existe en 0.469—, y el dibujo
+ * es la imagen propia de la pieza: la escalera que se acorta cuando sube el
+ * encaje. Tres peldaños y no cuatro porque a 24 px el cuarto se cierra.
+ */
+export const EscaleraDescendente = propio("EscaleraDescendente", (
+  <path d="M3 6h4v4h4v4h4v4h5" />
+));
+
 /* PM-10 · El dilema del banquero central: una balanza con un volante en un plato. */
 export const BalanzaVolante = propio("BalanzaVolante", (
   <>
@@ -423,6 +434,8 @@ export const ICONOS_ACTIVIDAD = {
   "por-cual-arteria-entra": Split,
   "las-dos-entradas": EqualNot,
   "el-rezago": RelojCorrea,
+  "crea-o-cambia-de-manos": HandCoins,
+  "la-escalera-del-encaje": EscaleraDescendente,
   "dilema-banquero-central": BalanzaVolante,
   "duelo-de-instrumentos": EngranajesEnfrentados,
   "disena-respuesta-monetaria": PanelPalanca,

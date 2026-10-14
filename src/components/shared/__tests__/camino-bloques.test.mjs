@@ -208,7 +208,7 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
    * acaba ahora en el lado izquierdo, así que el título de Análisis pasa a la
    * DERECHA. Misma regla.
    */
-  const LADOS = { "politica-monetaria": [-1, -1, 1, 1] };
+  const LADOS = { "politica-monetaria": [-1, -1, -1, 1] };
   for (const temaId of TEMAS) {
     const nodos = nodosDelTema(temaId);
     assert.deepEqual(disposicionPorBloques(bloquesDe(nodos), nodos.length).cabeceras.map((c) => c.lado), LADOS[temaId] ?? [-1, -1, -1, 1], temaId);
@@ -217,12 +217,12 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
 
 /* ─────────────────────────────── los iconos ─────────────────────────────── */
 
-test("las 50 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
+test("las 52 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
-  assert.equal(ids.length, 50);
+  assert.equal(ids.length, 52);
   for (const id of ids) assert.ok(iconoDe(id), `${id} sin icono`);
   assert.deepEqual(Object.keys(ICONOS_ACTIVIDAD).sort(), [...ids].sort(), "ni iconos de más ni de menos");
-  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 50, "ningún icono repetido entre dos actividades");
+  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 52, "ningún icono repetido entre dos actividades");
 
   for (const temaId of TEMAS) {
     const m = montar(camino(nodosDelTema(temaId)));

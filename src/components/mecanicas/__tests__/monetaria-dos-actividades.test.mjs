@@ -349,7 +349,7 @@ test("★★★ el sitio en el camino, el nivel y los FP: A Análisis 50, B Apli
   const sql = readFileSync(new URL("../../../../supabase/migrations/0052_monetaria_dos_actividades.sql", import.meta.url), "utf8");
   assert.match(sql, /\('las-dos-entradas',\s+'macroeconomia', 'politica-monetaria', 'evaluativa', 'medio',\s+25, 1\)/);
   assert.match(sql, /\('por-cual-arteria-entra', 'macroeconomia', 'politica-monetaria', 'evaluativa', 'dificil', 50, 1\)/);
-  assert.equal(actividadesDeTipo(tema, HACER).reduce((s, a) => s + a.clasificacion.fpBase, 0), 640);
+  assert.equal(actividadesDeTipo(tema, HACER).reduce((s, a) => s + a.clasificacion.fpBase, 0), 715);
 });
 
 test("★★ los registros: etiquetas del docente, formato del resumen, fuera del Repaso y en la lista de novedades", () => {
@@ -369,7 +369,7 @@ test("★★ los registros: etiquetas del docente, formato del resumen, fuera de
 test("★★★ insertar las dos no toca el progreso ni los FP de nadie: todo va por id de actividad, nunca por posición", async () => {
   const { nodosDe } = await import("../../../hacer/completadas.js");
   const tema = SUBJECTS.macroeconomia.topics.find((t) => t.id === "politica-monetaria");
-  const nuevas = new Set([ARTERIA.id, DOS_ENTRADAS.id]);
+  const nuevas = new Set([ARTERIA.id, DOS_ENTRADAS.id, "crea-o-cambia-de-manos", "la-escalera-del-encaje"]);
   const actuales = actividadesDeTipo(tema, HACER);
   /* El camino de antes: las doce de siempre, en su orden. */
   const antes = actuales.filter((a) => !nuevas.has(a.id));
