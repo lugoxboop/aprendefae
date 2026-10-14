@@ -350,11 +350,12 @@ test("★★★ la pieza no entra al catálogo de FP", () => {
   }
 });
 
-test("★★ ids con el prefijo t7- y el tema al final del índice de Contabilidad", () => {
+test("★★ ids con el prefijo t7- y el tema al final del índice de Contabilidad, seguido solo de T7-2", () => {
   assert.equal(T7.AP1_ID, "t7-1-a1-la-cuenta-que-no-se-mueve");
   assert.equal(P.id, T7.AP1_ID);
   const temas = SUBJECTS.contabilidad.topics.map((t) => t.id);
-  assert.equal(temas.at(-1), TEMA_T7_1);
+  /* T7-2 «Inventarios II» entró justo después: T7-1 queda penúltimo. */
+  assert.deepEqual(temas.slice(-2), [TEMA_T7_1, "inventarios-permanente"]);
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_1);
   assert.equal(tema.title, "Inventarios I: el sistema periódico");
   /* AP1 abre el tema; las piezas que llegan después van detrás. */

@@ -680,6 +680,20 @@ export const SUBJECTS = {
           { id: "t7-1-a7-control-interno", nombre: "Control interno de los inventarios", clasificacion: { tipo: APRENDER } },
         ],
       },
+      /*
+       * T7-2, el inventario en el sistema permanente (pp. 233-248), justo
+       * después de T7-1. El id del tema va sin prefijo de célula, como el de
+       * T7-1: es el segmento de la dirección que ve el estudiante. El orden de
+       * sus piezas es el de la sección «Orden final de T7-2» del mapa.
+       */
+      {
+        id: "inventarios-permanente",
+        title: "Inventarios II: el sistema permanente",
+        actividades: [
+          /* A1: abre el tema. La lista del libro de pp. 207-208 y el permanente de pp. 233-234. Cero FP. */
+          { id: "t7-2-a1-la-cuenta-que-si-se-mueve", nombre: "La cuenta que sí se mueve", clasificacion: { tipo: APRENDER } },
+        ],
+      },
     ],
   },
   "pensamiento-estrategico": {

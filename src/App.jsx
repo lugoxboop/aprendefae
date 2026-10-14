@@ -40,6 +40,7 @@ const ContabilidadTema3View = lazy(() => import("./components/ContabilidadTema3V
 const ContabilidadTema5View = lazy(() => import("./components/ContabilidadTema5View.jsx"));
 const ContabilidadTema6View = lazy(() => import("./components/ContabilidadTema6View.jsx"));
 const ContabilidadT7_1View = lazy(() => import("./components/ContabilidadT7_1View.jsx"));
+const ContabilidadT7_2View = lazy(() => import("./components/ContabilidadT7_2View.jsx"));
 const RepasoView = lazy(() => import("./components/repaso/RepasoView.jsx"));
 const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"));
 
@@ -93,6 +94,7 @@ const VISTAS_CON_TITULO = new Set([
   "activos-financieros",
   "cuentas-por-cobrar",
   "inventarios-periodico",
+  "inventarios-permanente",
   "repaso-diario",
 ]);
 
@@ -266,6 +268,15 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <ContabilidadT7_1View onBack={() => setView("contabilidad")} />
+      </Suspense>
+    );
+  }
+
+  /* T7-2 de Contabilidad (Célula C): por ahora, su pieza 1 de Aprender. */
+  if (view === "inventarios-permanente") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <ContabilidadT7_2View onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }
