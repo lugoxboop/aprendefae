@@ -357,10 +357,11 @@ test("★★ ids con el prefijo t7- y el tema al final del índice de Contabilid
   assert.equal(temas.at(-1), TEMA_T7_1);
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_1);
   assert.equal(tema.title, "Inventarios I: el sistema periódico");
-  assert.deepEqual(tema.actividades.map((x) => x.id), [T7.AP1_ID]);
+  /* AP1 abre el tema; las piezas que llegan después van detrás. */
+  assert.equal(tema.actividades[0].id, T7.AP1_ID);
   assert.ok(tema.actividades.every((x) => x.id.startsWith("t7-")));
   /* La vista pinta lo que dice el catálogo, con el mismo título. */
-  assert.deepEqual(PIEZAS_T7_1.map((x) => x.pieza.id), [T7.AP1_ID]);
+  assert.equal(PIEZAS_T7_1[0].pieza.id, T7.AP1_ID);
   assert.equal(tema.actividades[0].nombre, P.titulo);
   /* El id del tema va sin prefijo (como el del Tema 5) y tiene ruta: si no, el índice lo dejaría muerto. */
   assert.equal(TEMA_T7_1, "inventarios-periodico");
