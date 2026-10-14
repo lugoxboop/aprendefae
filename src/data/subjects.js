@@ -439,20 +439,26 @@ export const SUBJECTS = {
           { id: "quien-manda-aqui", nombre: "¿Quién Manda Aquí?", clasificacion: { tipo: APRENDER } },
           { id: "los-cuatro-instrumentos", nombre: "Los Cuatro Instrumentos", clasificacion: { tipo: APRENDER } },
           { id: "las-tres-transmisiones", nombre: "Las Tres Transmisiones", clasificacion: { tipo: APRENDER } },
+          { id: "la-fabrica-del-dinero", nombre: "La Fábrica del Dinero", clasificacion: { tipo: APRENDER } },
+          { id: "las-tallas-del-dinero", nombre: "Las Tallas del Dinero", clasificacion: { tipo: APRENDER } },
           /* Cimientos */
           { id: "memorama-banco-central", nombre: "Memorama del Banco Central", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
           { id: "quien-decide-esto", nombre: "¿Quién Decide Esto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "en-que-talla-va", nombre: "¿En Qué Talla Va?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /* Aplicación */
           { id: "volante-de-la-tasa", nombre: "El Volante de la Tasa", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "caja-de-herramientas", nombre: "La Caja de Herramientas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "crea-o-cambia-de-manos", nombre: "¿Crea o Cambia de Manos?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "a-quien-le-pega-la-tasa", nombre: "¿A Quién Le Pega la Tasa?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "las-dos-entradas", nombre: "Las Dos Entradas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "que-toco-el-banco", nombre: "¿Qué Tocó el Banco?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* Análisis */
           { id: "cadena-de-transmision", nombre: "La Cadena de Transmisión", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "por-cual-arteria-entra", nombre: "¿Por Cuál Arteria Entra?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "explicaselo-a-un-deudor", nombre: "Explícaselo a un Deudor", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "corriente-de-decisiones", nombre: "Corriente de Decisiones", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "el-rezago", nombre: "El Rezago", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "la-escalera-del-encaje", nombre: "La Escalera del Encaje", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* Maestría */
           { id: "dilema-banquero-central", nombre: "El Dilema del Banquero Central", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
           { id: "duelo-de-instrumentos", nombre: "Duelo de Instrumentos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
@@ -631,6 +637,11 @@ export const SUBJECTS = {
         title: "Activos financieros temporales",
         actividades: [
           { id: "b5-t5-a1-del-efectivo-de-sobra", nombre: "Del efectivo de sobra al activo financiero", clasificacion: { tipo: APRENDER } },
+          /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (guía de Mai). Su fila del servidor es la migración 0070. */
+          { id: "b5-t5-a1", nombre: "¿Qué renta da este título?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "b5-t5-a2-los-tres-momentos-de-una-inversion", nombre: "Los tres momentos de una inversión", clasificacion: { tipo: APRENDER } },
+          /* El cierre del tema. Difícil · 50 FP (decisión de Sakuta). Su fila del servidor es la migración 0072. */
+          { id: "b5-t5-a2", nombre: "El cierre completo de Santa Pacha", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
       /*
@@ -647,6 +658,14 @@ export const SUBJECTS = {
         title: "Cuentas por cobrar",
         actividades: [
           { id: "b5-t6-a1-lo-que-otros-le-deben", nombre: "Lo que otros le deben a la empresa", clasificacion: { tipo: APRENDER } },
+          /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (Futaba). Su fila del servidor es la migración 0071. */
+          { id: "b5-t6-a1", nombre: "¿Clientes o otra cuenta por cobrar?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* Actividades 2 y 3 de Hacer (mesa de asientos). Media · 25 y difícil · 50 FP (Sakuta). Sus filas del servidor son la migración 0074. */
+          { id: "b5-t6-a2", nombre: "La provisión de El Torito", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "b5-t6-a3", nombre: "Cuando la deuda castigada vuelve", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "b5-t6-a2-cuando-un-cliente-no-va-a-pagar", nombre: "Cuando un cliente no va a pagar", clasificacion: { tipo: APRENDER } },
+          { id: "b5-t6-a3-la-provision-de-un-ano-al-siguiente", nombre: "La provisión, de un año al siguiente", clasificacion: { tipo: APRENDER } },
+          { id: "b5-t6-a4-cuando-el-cliente-castigado-si-paga", nombre: "Cuando el cliente castigado sí paga", clasificacion: { tipo: APRENDER } },
         ],
       },
       /*
@@ -666,16 +685,58 @@ export const SUBJECTS = {
           { id: "t7-1-a1-la-cuenta-que-no-se-mueve", nombre: "La cuenta que no se mueve", clasificacion: { tipo: APRENDER } },
           /* AP2, después de AP1: arma la factura completa de la misma compra. Cero FP. */
           { id: "t7-1-a2-la-factura-completa", nombre: "La factura completa", clasificacion: { tipo: APRENDER } },
+          /* H1, después de AP2 por dependencias (regla 9): se publica con AP1 y AP2 o después (condición de Mello). Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0090. */
+          { id: "t7-1-que-cuenta-se-mueve", nombre: "¿Qué cuenta se mueve?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
+          /* H2, justo después de H1: así lo fija el mapa (3 H1 · 4 Arma la factura). Arma las facturas con el IVA del 16 % y la retención del 3,5 % que enseña AP2 (la sostiene A2). Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0092. */
+          { id: "t7-1-arma-la-factura", nombre: "Arma la factura", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* AP3, después de AP2 por dependencias (regla 9): usa el inventario final y el conteo físico de AP1; va antes de AP4, que la cita. Cero FP. */
           { id: "t7-1-a3-tres-formas", nombre: "Tres formas de ponerle precio a lo que quedó", clasificacion: { tipo: APRENDER } },
+          /* H3, después de AP3 por dependencias (regla 9): valora lo que quedó con PEPS, UEPS y el promedio ponderado, que enseña AP3 (la sostiene A3). Antes de AP4. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0093. */
+          { id: "t7-1-cuanto-vale-lo-que-sobro", nombre: "¿Cuánto vale lo que sobró?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* AP4, después de AP3 por dependencias (regla 9): cita «Tres formas de ponerle precio a lo que quedó». Antes de A5: cierra con «Siguiente: Importados y fletes». Cero FP. */
           { id: "t7-1-a4-el-cierre-en-periodico", nombre: "El cierre en periódico", clasificacion: { tipo: APRENDER } },
+          /* H4, después de AP4 por dependencias (regla 9): cierra el mes con los tres métodos de AP3 y los asientos de cierre de AP4 (la sostienen A3 y A4). Antes de A5. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0094. */
+          { id: "t7-1-cierra-el-mes", nombre: "Cierra el mes", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* A5, después de AP2 por dependencias (regla 9): el enunciado trae el IVA del 16 % y la retención del 3,5 %, que enseña AP2, y la retención del 1 % del flete. Antes de A6, en el orden del libro (p. 228 antes de pp. 230-232) y del plan. AP3 y AP4 entran entre AP2 y A5: AP4 cierra con «Siguiente: Importados y fletes». */
           { id: "t7-1-a5-importados-y-fletes", nombre: "Importados y fletes", clasificacion: { tipo: APRENDER } },
+          /* H5, después de A5 por dependencias (regla 9): clasifica lo que entra al costo de lo comprado y resuelve un caso con flete y su retención del 1 %, que enseña A5 (la sostiene A5). Antes de A6. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0095. */
+          { id: "t7-1-costo-o-gasto", nombre: "¿Costo o gasto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A6, después de AP2 por dependencias (regla 9): muestra el IVA y la retención de la devolución, que enseña AP2. Cero FP. */
           { id: "t7-1-a6-devoluciones-en-periodico", nombre: "Devoluciones en periódico", clasificacion: { tipo: APRENDER } },
+          /* H6, después de A6 por dependencias (regla 9): registra una devolución en el libro del comprador y en el del vendedor, con el IVA y la retención proporcionales que enseña A6 (la sostiene A6). Antes de A7. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0096. */
+          { id: "t7-1-devolucion-dos-libros", nombre: "La devolución en dos libros", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* A7, después de AP1 por dependencias (regla 9): el conteo físico frente a los registros; última de Aprender según el plan. Cero FP. */
           { id: "t7-1-a7-control-interno", nombre: "Control interno de los inventarios", clasificacion: { tipo: APRENDER } },
+          /* H7, después de A7 por dependencias (regla 9): relaciona cada riesgo de la bodega con el control que el libro propone, los de A7 (la sostiene A7). Última de T7-1. Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0097. */
+          { id: "t7-1-que-control-falta", nombre: "¿Qué control falta?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
+        ],
+      },
+      /*
+       * T7-2, el inventario en el sistema permanente (pp. 233-248), justo
+       * después de T7-1. El id del tema va sin prefijo de célula, como el de
+       * T7-1: es el segmento de la dirección que ve el estudiante. El orden de
+       * sus piezas es el de la sección «Orden final de T7-2» del mapa.
+       */
+      {
+        id: "inventarios-permanente",
+        title: "Inventarios II: el sistema permanente",
+        actividades: [
+          /* A1: abre el tema. La lista del libro de pp. 207-208 y el permanente de pp. 233-234. Cero FP. */
+          { id: "t7-2-a1-la-cuenta-que-si-se-mueve", nombre: "La cuenta que sí se mueve", clasificacion: { tipo: APRENDER } },
+          /* H1, justo después de A1 (orden final de T7-2): se publica con A1 o después. Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0098. */
+          { id: "t7-2-debe-o-haber", nombre: "¿Debe o haber?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
+          /* A2, después de A1 (regla 9): usa «Inventario de mercancías sí se mueve» y la glosa del costo de lo vendido. H1 «¿Debe o haber?» entra entre las dos. Cero FP. */
+          { id: "t7-2-a2-la-venta-en-dos-asientos", nombre: "La venta en dos asientos", clasificacion: { tipo: APRENDER } },
+          /* H2, justo después de A2 (orden final de T7-2). L la llamó «Arma los dos asientos» para no repetir el nombre de A2. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0099. */
+          { id: "t7-2-dos-asientos", nombre: "Arma los dos asientos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* A3, después de A2 (regla 9): el kárdex con los tres métodos, con cifras construidas. Cero FP. */
+          { id: "t7-2-a3-el-kardex", nombre: "El kárdex", clasificacion: { tipo: APRENDER } },
+          /* A4, después de A3 (regla 9): F-1 del libro en el permanente, con la decisión de Mello casilla por casilla. H3 «Llena el kárdex» entra entre A3 y A4. Cero FP. */
+          { id: "t7-2-a4-san-calixto", nombre: "San Calixto en permanente", clasificacion: { tipo: APRENDER } },
+          /* A5, después de A4 por el orden del mapa (regla 9: usa la venta en dos asientos de A2). H4 «¿Periódico o permanente?» entra entre A4 y A5. Cero FP. */
+          { id: "t7-2-a5-fletes", nombre: "Fletes en permanente", clasificacion: { tipo: APRENDER } },
+          /* A6, justo después de A5 (orden final de T7-2): usa la venta en dos asientos de A2. Después va H5 «Flete y devolución», que cubre A5 y A6. Cero FP. */
+          { id: "t7-2-a6-devoluciones", nombre: "Devoluciones en permanente", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],

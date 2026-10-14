@@ -40,6 +40,7 @@ const ContabilidadTema3View = lazy(() => import("./components/ContabilidadTema3V
 const ContabilidadTema5View = lazy(() => import("./components/ContabilidadTema5View.jsx"));
 const ContabilidadTema6View = lazy(() => import("./components/ContabilidadTema6View.jsx"));
 const ContabilidadT7_1View = lazy(() => import("./components/ContabilidadT7_1View.jsx"));
+const ContabilidadT7_2View = lazy(() => import("./components/ContabilidadT7_2View.jsx"));
 const RepasoView = lazy(() => import("./components/repaso/RepasoView.jsx"));
 const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"));
 
@@ -93,6 +94,7 @@ const VISTAS_CON_TITULO = new Set([
   "activos-financieros",
   "cuentas-por-cobrar",
   "inventarios-periodico",
+  "inventarios-permanente",
   "repaso-diario",
 ]);
 
@@ -247,16 +249,16 @@ export default function App() {
   if (view === "activos-financieros") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <ContabilidadTema5View onBack={() => setView("contabilidad")} />
+        <ContabilidadTema5View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }
 
-  /* El Tema 6 de Contabilidad (Célula B): por ahora, su pieza 1 de Aprender. Catálogo: decide Erwin. */
+  /* El Tema 6 de Contabilidad (Célula B): su pieza 1 de Aprender y su act. 1 de Hacer. Catálogo: decide Erwin. */
   if (view === "cuentas-por-cobrar") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <ContabilidadTema6View onBack={() => setView("contabilidad")} />
+        <ContabilidadTema6View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }
@@ -265,7 +267,16 @@ export default function App() {
   if (view === "inventarios-periodico") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <ContabilidadT7_1View onBack={() => setView("contabilidad")} />
+        <ContabilidadT7_1View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
+      </Suspense>
+    );
+  }
+
+  /* T7-2 de Contabilidad (Célula C): sus piezas de Aprender y sus actividades de Hacer. */
+  if (view === "inventarios-permanente") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <ContabilidadT7_2View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }

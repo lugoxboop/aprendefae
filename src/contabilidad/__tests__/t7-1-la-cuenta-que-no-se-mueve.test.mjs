@@ -342,19 +342,21 @@ test("★★★ la pieza no entra al catálogo de FP", () => {
   const dir = new URL("supabase/migrations/", RAIZ);
   const conElId = readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(T7.AP1_ID));
   assert.deepEqual(conElId, []);
-  /* Y ni la pieza ni la vista registran nada. */
-  for (const f of ["src/components/mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx", "src/components/ContabilidadT7_1View.jsx", "src/data/contabilidadT7_1.js"]) {
+  /* Y la pieza no registra nada. La vista registra solo los juegos de Hacer: a las piezas no les pasa con qué. */
+  assert.match(readFileSync(new URL("src/components/ContabilidadT7_1View.jsx", RAIZ), "utf8"), /<Pieza pieza=\{pieza\} rotulo=\{rotulo\} \/>/);
+  for (const f of ["src/components/mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx", "src/data/contabilidadT7_1.js"]) {
     const src = readFileSync(new URL(f, RAIZ), "utf8");
     /* Se miran las importaciones y las llamadas, no los comentarios: el componente dice en uno que no registra. */
     assert.doesNotMatch(src, /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/, f);
   }
 });
 
-test("★★ ids con el prefijo t7- y el tema al final del índice de Contabilidad", () => {
+test("★★ ids con el prefijo t7- y el tema al final del índice de Contabilidad, seguido solo de T7-2", () => {
   assert.equal(T7.AP1_ID, "t7-1-a1-la-cuenta-que-no-se-mueve");
   assert.equal(P.id, T7.AP1_ID);
   const temas = SUBJECTS.contabilidad.topics.map((t) => t.id);
-  assert.equal(temas.at(-1), TEMA_T7_1);
+  /* T7-2 «Inventarios II» entró justo después: T7-1 queda penúltimo. */
+  assert.deepEqual(temas.slice(-2), [TEMA_T7_1, "inventarios-permanente"]);
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_1);
   assert.equal(tema.title, "Inventarios I: el sistema periódico");
   /* AP1 abre el tema; las piezas que llegan después van detrás. */
