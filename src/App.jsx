@@ -243,7 +243,7 @@ export default function App() {
   if (view === "activos-financieros") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <ContabilidadTema5View onBack={() => setView("contabilidad")} />
+        <ContabilidadTema5View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }

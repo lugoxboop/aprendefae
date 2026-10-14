@@ -79,6 +79,9 @@ export function valorDeItemT5Act1(ficha, r) {
   return PESO_RENTA + (r.tipoOk ? PESO_TIPO : 0);
 }
 
+/* Para el panel docente: el ítem es la ficha, y se lee por su texto. */
+export const fichaDeItemT5Act1 = (id) => FICHAS_T5_ACT1.find((f) => f.id === id)?.texto ?? null;
+
 export function puntuarT5Act1(respuestas, cuantas) {
   if (!cuantas) return 0;
   return (respuestas.reduce((s, x) => s + x.valor, 0) / cuantas) * 100;
