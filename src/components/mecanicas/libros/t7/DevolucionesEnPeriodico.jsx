@@ -11,17 +11,20 @@ import { PIEZA_DEVOLUCIONES, BOTON, INTERFAZ, DEBE, HABER, cifra } from "../../.
  * Nueve pantallas, una a la vez. Cuatro tipos:
  *
  *   · lectura / portada / resumen   textos, botón y pie
- *   · caso       el enunciado, las tarifas, la ficha y los dos asientos del 1
- *                de junio en modo lectura, apilados
+ *   · caso       el enunciado, las tarifas, la ficha y la tabla espejo del 1
+ *                de junio, ya resuelta
  *   · eleccion   una pregunta con opciones (barajadas en cada intento),
  *                «Confirmar», y el mensaje «Incorrecto.» con «Probar otra» o
  *                «Correcto.» con «Seguir». En P7, con la tabla espejo arriba
- *   · lados      un asiento: cada línea con su cuenta y, debajo, las casillas
- *                Debe | Haber. Se toca el lado; las sumas se calculan solas al
- *                colocar (ayuda, no veredicto). «Confirmar» marca con la X cada
- *                línea en el lado equivocado y da su explicación; «Probar
- *                otra» devuelve solo esas. Al acertar, desaparece la casilla
- *                vacía de cada línea y el asiento se lee como cuenta T
+ *   · lados      el asiento del 5 de junio, como lo arma la «Figura de A6» de
+ *                Watari: cada línea con su cuenta (y su monto en el
+ *                encabezado mientras no se coloca) y, debajo, Debe | Haber.
+ *                Las líneas aparecen una por una, con fundido de 120 ms.
+ *                «Confirmar» marca con la X cada línea en el lado equivocado y
+ *                pone su explicación debajo de ella; «Probar otra» devuelve
+ *                solo esas. Las sumas aparecen solo al acertar: con cuatro
+ *                montos fijos, el cuadre regalaría la respuesta. Al acertar
+ *                desaparece la casilla vacía de cada línea
  *
  * Cada pantalla lleva su pie de fuente en todos sus estados. NO CALIFICA y no
  * da FP: es Aprender. Clases con el prefijo `t7a6-`, para no tocar nada del
@@ -85,14 +88,24 @@ export const CSS_A6 = `
 .t7a6-lect-r > span:first-child { font-size: 14px; overflow-wrap: anywhere; }
 .t7a6-sangria { padding-left: 24px; }
 .t7a6-lect-r .t7a6-g2 > span { text-align: right; padding-inline: 9px; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
-/* espejo */
-.t7a6-esp { display: grid; gap: 0; min-width: 0; }
-.t7a6-esp-cab { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; align-items: end; padding-bottom: 6px; }
-.t7a6-esp-cab span { font: 600 13px/1.3 "Sora", "Inter", sans-serif; padding-bottom: 6px; border-bottom: 1px solid ${P.borde}; overflow-wrap: anywhere; min-width: 0; }
-.t7a6-esp-f { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; row-gap: 4px; padding-block: 8px; border-bottom: 1px solid rgba(184,196,212,.35); }
-.t7a6-esp-monto { grid-column: 1 / -1; font: 600 15px/1.2 "Inter", sans-serif; font-variant-numeric: tabular-nums; }
-.t7a6-esp-c { display: grid; gap: 2px; align-content: start; min-width: 0; font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
+.t7a6-fecha { font: 600 13px/1.3 "Sora", "Inter", sans-serif; }
+.t7a6-err { margin-top: 2px; }
+.t7a6-nueva { animation: t7a6-aparece .12s ease-out; }
+@keyframes t7a6-aparece { from { opacity: 0; } to { opacity: 1; } }
+.t7a6-calcs { display: grid; gap: 4px; }
+.t7a6-calc-l { margin: 0; font: 400 14px/1.45 "Inter", sans-serif; font-variant-numeric: tabular-nums; color: ${P.texto2}; overflow-wrap: anywhere; }
+.t7a6-calc-l b { color: ${P.texto}; font-weight: 600; white-space: nowrap; }
+/* tabla espejo: el «Lado a lado» de AP2 con el monto como rótulo de fila (Watari, «Figura de A6») */
+.t7a6-esp { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); border: 1px solid ${P.borde}; border-radius: 10px; min-width: 0; }
+.t7a6-esp-fecha { padding: 10px 12px 0; font: 600 13px/1.3 "Sora", "Inter", sans-serif; }
+.t7a6-esp-cab, .t7a6-esp-f { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; row-gap: 6px; padding: 10px 12px; }
+.t7a6-esp-f { border-top: 1px solid ${P.borde}; }
+.t7a6-esp-cab > span:not(.t7a6-sr) { font: 600 13px/1.3 "Sora", "Inter", sans-serif; overflow-wrap: anywhere; min-width: 0; }
+.t7a6-esp-monto { grid-column: 1 / -1; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.t7a6-esp-c { display: grid; gap: 2px; align-content: start; min-width: 0; }
 .t7a6-esp-lado { font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+.t7a6-esp-c > span:last-child { font-size: 13px; line-height: 1.35; overflow-wrap: anywhere; }
+.t7a6-esp-foco .t7a6-esp-monto, .t7a6-esp-foco .t7a6-esp-c > span:last-child { font-weight: 600; }
 .t7a6-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { .t7a6 *, .t7a6 *::before, .t7a6 *::after { transition: none !important; animation: none !important; } }
 `;
@@ -109,14 +122,13 @@ function Boton({ nombre, texto, onClick, inactivo = false }) {
   );
 }
 
-function Mensaje({ ok, textos, calculos = [], refFoco }) {
+function Mensaje({ ok, textos, refFoco, clase = "" }) {
   return (
-    <div ref={refFoco} tabIndex={-1} role="status" className={`t7a6-msg ${ok ? "t7a6-msg-ok" : "t7a6-msg-error"}`} data-mensaje={ok ? "acierto" : "error"}>
+    <div ref={refFoco} tabIndex={-1} role="status" className={`t7a6-msg ${ok ? "t7a6-msg-ok" : "t7a6-msg-error"} ${clase}`} data-mensaje={ok ? "acierto" : "error"}>
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7a6-msg-cuerpo">
         <span className="t7a6-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
         {textos.map((t) => <p key={t} data-texto>{t}</p>)}
-        {calculos.map((c) => <p key={c} className="t7a6-calc" data-texto data-calculo>{c}</p>)}
       </div>
     </div>
   );
@@ -136,7 +148,7 @@ function Eleccion({ pantalla, onSeguir }) {
   return (
     <div className="t7a6" data-eleccion={pantalla.id} data-estado={estado}>
       {pantalla.parrafos.map((t) => <p key={t} className="t7a6-p" data-texto>{t}</p>)}
-      {pantalla.espejo && <Espejo espejo={pantalla.espejo} />}
+      {pantalla.espejo && <Espejo espejo={pantalla.espejo} acierto={estado === "acierto"} />}
       <p className="t7a6-p t7a6-preg" data-texto data-pregunta>{pantalla.pregunta}</p>
       <div className="t7a6-ops" role="group" aria-label={pantalla.pregunta}>
         {orden.map((o) => {
@@ -169,7 +181,16 @@ function Eleccion({ pantalla, onSeguir }) {
       )}
       {estado === "acierto" && (
         <>
-          <Mensaje ok textos={[pantalla.acierto.texto]} calculos={pantalla.acierto.calculos} refFoco={ref} />
+          <Mensaje ok textos={[pantalla.acierto.texto]} refFoco={ref} />
+          {pantalla.acierto.calculos.length > 0 && (
+            <div className="t7a6-calcs t7a6-nueva" data-calculos>
+              {pantalla.acierto.calculos.map((c) => {
+                /* El resultado, lo que va después del último «= », en blanco (Watari). */
+                const i = c.lastIndexOf("= ");
+                return <p key={c} className="t7a6-calc-l" data-texto data-calculo>{c.slice(0, i + 2)}<b>{c.slice(i + 2)}</b></p>;
+              })}
+            </div>
+          )}
           <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />
         </>
       )}
@@ -180,7 +201,12 @@ function Eleccion({ pantalla, onSeguir }) {
 
 /* ═══════════ LA TABLA ESPEJO ═══════════ */
 
-function Espejo({ espejo }) {
+/*
+ * Una fila por monto y, en cada libro, el lado (siempre con su palabra y su
+ * color) y la cuenta. Los encabezados y el nombre accesible de la tabla están
+ * pendientes de revisión: se marcan con data-revision.
+ */
+function Espejo({ espejo, acierto = false }) {
   const celda = (c) => (
     <span role="cell" className="t7a6-esp-c">
       <span className={`t7a6-esp-lado ${c.lado === DEBE ? "t7a6-d" : "t7a6-h"}`}>{nombreLado(c.lado)}</span>
@@ -188,13 +214,14 @@ function Espejo({ espejo }) {
     </span>
   );
   return (
-    <div className="t7a6-esp" role="table" data-espejo>
+    <div className="t7a6-esp" role="table" aria-label={espejo.nombre} data-espejo={espejo.fecha} data-revision="pendiente">
+      <span className="t7a6-esp-fecha" aria-hidden="true" data-fecha>{espejo.fecha}</span>
       <div className="t7a6-esp-cab" role="row">
-        <span className="t7a6-sr" role="columnheader" />
-        {espejo.libros.map((l) => <span key={l} role="columnheader">{l}</span>)}
+        <span className="t7a6-sr" role="columnheader">{INTERFAZ.monto}</span>
+        {espejo.libros.map((l) => <span key={l} role="columnheader" data-revision="pendiente">{l}</span>)}
       </div>
       {espejo.filas.map((f) => (
-        <div key={f.monto} className="t7a6-esp-f" role="row" data-fila-espejo={f.cifra}>
+        <div key={f.monto} className={`t7a6-esp-f${acierto && f.focoConAcierto ? " t7a6-esp-foco" : ""}`} role="row" data-fila-espejo={f.cifra}>
           <span className="t7a6-esp-monto" role="rowheader">{f.cifra}</span>
           {celda(f.comprador)}
           {celda(f.vendedor)}
@@ -204,45 +231,25 @@ function Espejo({ espejo }) {
   );
 }
 
-/* ═══════════ UN ASIENTO EN LECTURA ═══════════ */
-
-function AsientoLectura({ asiento }) {
-  return (
-    <div className="t7a6-u" data-asiento-lectura={asiento.libro}>
-      <span className="t7a6-u-tit">{asiento.libro}</span>
-      <div className="t7a6-lect" role="table">
-        <div className="t7a6-dh" role="row" aria-hidden="true"><span className="t7a6-d">{INTERFAZ.debe}</span><span className="t7a6-h">{INTERFAZ.haber}</span></div>
-        {asiento.lineas.map((l) => (
-          <div key={l.cuenta} className="t7a6-lect-r" role="row">
-            <span className={l.lado === HABER ? "t7a6-sangria" : ""} role="rowheader">{l.cuenta}</span>
-            <span className="t7a6-g2">
-              <span role="cell" aria-label={`${INTERFAZ.debe}: ${l.lado === DEBE ? cifra(l.monto) : "—"}`}>{l.lado === DEBE ? cifra(l.monto) : ""}</span>
-              <span role="cell" aria-label={`${INTERFAZ.haber}: ${l.lado === HABER ? cifra(l.monto) : "—"}`}>{l.lado === HABER ? cifra(l.monto) : ""}</span>
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 /* ═══════════ LADOS: COLOCAR CADA LÍNEA EN DEBE O EN HABER ═══════════ */
 
 function Lados({ pantalla, onSeguir }) {
   const [puesto, setPuesto] = useState({});
   const [veredicto, setVeredicto] = useState(null); // null | { malas: [ids] }
+  /* Cuántas líneas se ven: crece al colocar la última visible y nunca baja (Watari: una línea a la vez). */
+  const [visibles, setVisibles] = useState(1);
   const ref = useRef(null);
   const malas = veredicto?.malas ?? [];
   const estado = !veredicto ? "colocando" : malas.length ? "error" : "acierto";
   useEffect(() => { if (estado !== "colocando") ref.current?.focus(); }, [estado]);
 
   const completo = pantalla.lineas.every((l) => puesto[l.id]);
-  const algo = pantalla.lineas.some((l) => puesto[l.id]);
   const suma = (lado) => pantalla.lineas.filter((l) => puesto[l.id] === lado).reduce((t, l) => t + l.monto, 0);
 
-  const tocar = (l, lado) => {
+  const tocar = (l, k, lado) => {
     if (estado !== "colocando") return;
     setPuesto((p) => ({ ...p, [l.id]: p[l.id] === lado ? undefined : lado }));
+    if (k === visibles - 1) setVisibles((v) => Math.min(v + 1, pantalla.lineas.length));
   };
   const confirmar = () => setVeredicto({ malas: pantalla.lineas.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id) });
   const probarOtra = () => {
@@ -252,20 +259,30 @@ function Lados({ pantalla, onSeguir }) {
 
   return (
     <div className="t7a6" data-lados={pantalla.id} data-estado={estado}>
-      <div className="t7a6-u">
-        <span className="t7a6-u-tit">{pantalla.libro}</span>
-        <p className="t7a6-p" data-texto data-consigna>{pantalla.consigna}</p>
+      <p className="t7a6-p" data-texto data-consigna>{pantalla.consigna}</p>
+      <div className="t7a6-u" role="group" aria-label={`${pantalla.libro}, ${pantalla.fecha}`}>
+        <span className="t7a6-u-tit" data-libro data-revision="pendiente">{pantalla.libro}</span>
+        <span className="t7a6-fecha" data-fecha>{pantalla.fecha}</span>
         <div className="t7a6-dh" aria-hidden="true"><span className="t7a6-d">{INTERFAZ.debe}</span><span className="t7a6-h">{INTERFAZ.haber}</span></div>
-        {pantalla.lineas.map((l) => {
+        {pantalla.lineas.slice(0, visibles).map((l, k) => {
           const lado = puesto[l.id];
           const mala = malas.includes(l.id);
           const cas = (cual) => {
             const llena = lado === cual;
             let clase = "t7a6-cas";
-            if (estado === "acierto") clase += llena ? " t7a6-cas-ok" : " t7a6-cas-nada";
-            else if (llena) clase += mala ? " t7a6-cas-error" : " t7a6-cas-llena";
-            else if (algo) clase += " t7a6-cas-objetivo";
-            const nombre = `${l.cuenta}, ${nombreLado(cual)}${llena && mala ? ", incorrecto" : ""}`;
+            let nombre;
+            if (estado === "acierto") {
+              clase += llena ? " t7a6-cas-ok" : " t7a6-cas-nada";
+              nombre = llena ? `${nombreLado(cual)}, ${cifra(l.monto)}, correcto` : `${nombreLado(cual)}, vacía`;
+            } else if (llena) {
+              clase += mala ? " t7a6-cas-error" : " t7a6-cas-llena";
+              nombre = `${nombreLado(cual)}, ${cifra(l.monto)}${mala ? ", incorrecto" : ""}`;
+            } else if (!lado) {
+              clase += " t7a6-cas-objetivo";
+              nombre = `${nombreLado(cual)}, vacía, lista para recibir`;
+            } else {
+              nombre = `${nombreLado(cual)}, vacía`;
+            }
             return (
               <button
                 type="button"
@@ -273,11 +290,11 @@ function Lados({ pantalla, onSeguir }) {
                 data-linea={l.id}
                 data-lado={cual}
                 data-llena={llena ? "si" : "no"}
-                aria-label={nombre}
+                aria-label={`${l.cuenta}: ${nombre}`}
                 aria-pressed={llena}
                 tabIndex={estado === "acierto" ? -1 : 0}
                 aria-hidden={estado === "acierto" && !llena ? "true" : undefined}
-                onClick={() => tocar(l, cual)}
+                onClick={() => tocar(l, k, cual)}
               >
                 {llena && mala && <span className="t7a6-marca"><X size={16} aria-hidden="true" /></span>}
                 {llena ? cifra(l.monto) : ""}
@@ -285,30 +302,28 @@ function Lados({ pantalla, onSeguir }) {
             );
           };
           return (
-            <div key={l.id} className="t7a6-la" data-fila={l.id}>
+            <div key={l.id} className={`t7a6-la${k > 0 ? " t7a6-nueva" : ""}`} data-fila={l.id}>
               <span className="t7a6-cuenta">
                 <span>{l.cuenta}</span>
                 {!lado && <span className="t7a6-ficha-monto" data-monto-suelto>{cifra(l.monto)}</span>}
               </span>
               <span className="t7a6-g2">{cas(DEBE)}{cas(HABER)}</span>
+              {mala && estado === "error" && <Mensaje ok={false} textos={[l.devolucion]} clase="t7a6-err" refFoco={l.id === malas[0] ? ref : undefined} />}
             </div>
           );
         })}
-        <div className="t7a6-sumas" data-sumas>
-          <span className="t7a6-sumas-rot">{INTERFAZ.sumas}</span>
-          <span className="t7a6-g2">
-            <span className="t7a6-sum" data-suma={DEBE} aria-label={`${INTERFAZ.sumas}, ${INTERFAZ.debe}: ${cifra(suma(DEBE))}`}>{cifra(suma(DEBE))}</span>
-            <span className="t7a6-sum" data-suma={HABER} aria-label={`${INTERFAZ.sumas}, ${INTERFAZ.haber}: ${cifra(suma(HABER))}`}>{cifra(suma(HABER))}</span>
-          </span>
-        </div>
+        {estado === "acierto" && (
+          <div className="t7a6-sumas t7a6-nueva" data-sumas>
+            <span className="t7a6-sumas-rot">{INTERFAZ.sumas}</span>
+            <span className="t7a6-g2">
+              <span className="t7a6-sum" data-suma={DEBE} aria-label={`${INTERFAZ.sumas}, ${INTERFAZ.debe}: ${cifra(suma(DEBE))}`}>{cifra(suma(DEBE))}</span>
+              <span className="t7a6-sum" data-suma={HABER} aria-label={`${INTERFAZ.sumas}, ${INTERFAZ.haber}: ${cifra(suma(HABER))}`}>{cifra(suma(HABER))}</span>
+            </span>
+          </div>
+        )}
       </div>
       {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!completo} onClick={confirmar} />}
-      {estado === "error" && (
-        <>
-          <Mensaje ok={false} textos={pantalla.lineas.filter((l) => malas.includes(l.id)).map((l) => l.devolucion)} refFoco={ref} />
-          <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={probarOtra} />
-        </>
-      )}
+      {estado === "error" && <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={probarOtra} />}
       {estado === "acierto" && (
         <>
           <Mensaje ok textos={[pantalla.acierto.texto]} refFoco={ref} />
@@ -349,7 +364,7 @@ export default function DevolucionesEnPeriodico({ pieza = PIEZA_DEVOLUCIONES, ro
                 ))}
               </dl>
             )}
-            {(p.asientos ?? []).map((a) => <AsientoLectura key={a.libro} asiento={a} />)}
+            {p.tipo === "caso" && <Espejo espejo={p.espejo} />}
             {p.siguiente && <p className="t7a6-p" data-texto data-siguiente>{p.siguiente}</p>}
             {p.boton && <Boton nombre={p.tipo === "portada" ? "empezar" : "seguir"} texto={p.boton} onClick={seguir} />}
             <Pie texto={p.pie} />

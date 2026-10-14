@@ -68,9 +68,9 @@ function medir(sel) {
       if (!t) return 0;
       const rg = document.createRange(); rg.selectNodeContents(t); return rg.getBoundingClientRect().width;
     }));
-    casilla = { util: Math.round(util * 10) / 10, cifraMasAncha: Math.round(ancho * 100) / 100, alto: Math.round(cas.getBoundingClientRect().height) };
+    casilla = { util: Math.round(util * 10) / 10, bordeABorde: Math.round(cas.getBoundingClientRect().width * 10) / 10, cifraMasAncha: Math.round(ancho * 100) / 100, alto: Math.round(cas.getBoundingClientRect().height) };
   }
-  const cab = [...pieza.querySelectorAll(".t7a6-esp-cab [role=columnheader]")].filter((c) => c.textContent).map((c) => Math.round(c.getBoundingClientRect().width * 10) / 10);
+  const cab = [...pieza.querySelectorAll(".t7a6-esp-cab [role=columnheader]:not(.t7a6-sr)")].map((c) => Math.round(c.getBoundingClientRect().width * 10) / 10);
   if (cab.length === 2 && Math.abs(cab[0] - cab[1]) > 0.5) problemas.push(`espejo: columnas de ${cab[0]} y ${cab[1]} px`);
   /* En cada fila del espejo, el rótulo del lado va arriba de su celda en los dos libros: misma altura. */
   for (const f of pieza.querySelectorAll("[data-fila-espejo]")) {
@@ -135,8 +135,9 @@ for (const ancho of ANCHOS) {
     }
     if (await pg.$(en("[data-lados]"))) {
       await estado(`${id}-colocando`);
-      const lineas = await pg.$$eval(en("[data-fila]"), (fs) => fs.map((f) => f.dataset.fila));
       const lado = { "libro-del-comprador": { proveedores: "debe", retencion: "debe", iva: "haber", devoluciones: "haber" }, "libro-del-vendedor": { devoluciones: "debe", iva: "debe", anticipo: "haber", clientes: "haber" } }[id];
+      /* Las líneas aparecen una por una: se coloca cada una cuando aparece. */
+      const lineas = Object.keys(lado);
       for (const l of lineas) await clic(`[data-linea="${l}"][data-lado="${lado[l] === "debe" ? "haber" : "debe"}"]`);
       await estado(`${id}-colocando-lleno`);
       await clic('[data-boton="confirmar"]');
@@ -177,9 +178,9 @@ for (const ancho of ANCHOS) {
 await navegador.close();
 await servidor.close();
 
-console.log("ancho | estado | panel | alto pieza | casilla: útil · cifra más ancha · alto | espejo: columnas · alto");
+console.log("ancho | estado | panel | alto pieza | casilla: borde a borde (útil) · cifra más ancha · alto | espejo: columnas · alto");
 for (const f of filas) {
-  const c = f.casilla ? `${f.casilla.util} · ${f.casilla.cifraMasAncha} · ${f.casilla.alto}` : "—";
+  const c = f.casilla ? `${f.casilla.bordeABorde} (${f.casilla.util} útil) · ${f.casilla.cifraMasAncha} · ${f.casilla.alto}` : "—";
   const e = f.espejo ? `${f.espejo.columnas.join(" / ")} · ${f.espejo.alto}` : "—";
   console.log(`${f.ancho} | ${f.estado} | ${f.panel} | ${f.alto} | ${c} | ${e}`);
 }

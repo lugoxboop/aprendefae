@@ -9,11 +9,17 @@
  * Pieza de Aprender: cero FP, no entra al catálogo. Las preguntas no se
  * califican.
  *
- * Diseño: el patrón tabular de Watari (asiento con Debe | Haber, sumas,
- * mensajes «Correcto.» / «Incorrecto.») y su tabla espejo para comparar los
- * dos libros. Correcciones de Mello al patrón que ya aplican: en Aprender las
- * sumas se muestran como ayuda (se calculan al colocar, no son veredicto); la
- * renta del 33 % no aparece; ninguna cifra de medición es valor por defecto.
+ * Diseño: la «Figura de A6» de Watari, sobre el patrón tabular v3.1. Las
+ * pantallas 5 y 6 arman el asiento del 5 de junio línea por línea; las
+ * pantallas 3 y 7 leen los dos libros a la vez en la tabla espejo.
+ *
+ * Decisiones de Watari que se respetan aquí:
+ *   · las sumas aparecen solo al acertar (2.784.000 · 2.784.000), aunque sea
+ *     Aprender: con cuatro montos fijos el cuadre regalaría la respuesta
+ *   · la fila de las devoluciones de P7 va en negrita solo con el acierto
+ *   · los tres cálculos de P4 aparecen con el acierto
+ *   · el lado de cada celda va en teal o ámbar, siempre con DEBE o HABER
+ * La renta no aparece, y ninguna cifra de medición es valor por defecto.
  *
  * Lo que la v1 no trae y se toma de la convención de AP1 y AP2 (para revisar):
  * los botones «Empezar», «Seguir», «Confirmar» y «Probar otra», y el rótulo
@@ -35,9 +41,26 @@ export const INTERFAZ = {
   haber: "Haber",
   correcto: "Correcto.",
   incorrecto: "Incorrecto.",
-  /* La v1 no le da rótulo a las sumas; se usa el de la tabla de AP2. Pendiente de Near. */
+  /* Rótulo de las sumas, «igual que en AP2» (guía de Watari). */
   sumas: "Sumas",
+  /* La columna oculta de la tabla espejo: solo lector de pantalla (Watari). */
+  monto: "Monto",
 };
+
+/*
+ * Textos de interfaz de la tabla espejo que todavía esperan revisión.
+ * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] (guía de Watari): los dos
+ * encabezados y el nombre accesible de la tabla. La tabla los marca con
+ * data-revision="pendiente".
+ */
+export const ESPEJO_PENDIENTE_DE_REVISION = {
+  comprador: "Dajema (comprador)",
+  vendedor: "El Tajamar (vendedor)",
+  nombreTabla: (fecha) => `${fecha}: el libro del comprador y el del vendedor, lado a lado`,
+};
+
+/* Las fechas del caso, del enunciado de Near. */
+export const FECHA = { compra: "1 de junio", devolucion: "5 de junio" };
 
 export const DEBE = "debe";
 export const HABER = "haber";
@@ -45,8 +68,34 @@ export const HABER = "haber";
 /* Las cifras van sin «$» dentro de las tablas, como en el patrón. */
 export const cifra = (n) => n.toLocaleString("es-CO").replace(/,/g, ".");
 
-const COMPRADOR = "Dajema (comprador)";
-const VENDEDOR = "El Tajamar (vendedor)";
+const COMPRADOR = ESPEJO_PENDIENTE_DE_REVISION.comprador;
+const VENDEDOR = ESPEJO_PENDIENTE_DE_REVISION.vendedor;
+
+/*
+ * La tabla espejo de Watari: una fila por monto, en el orden del asiento del
+ * comprador, y en cada libro el lado y la cuenta. Sale de los dos asientos,
+ * no se escribe aparte: funciona porque los dos libros de D-3 tienen las
+ * mismas cifras en espejo. `foco` es la cuenta del comprador cuya fila se
+ * señala con el acierto.
+ */
+function tablaEspejo(fecha, comprador, vendedor, foco = null) {
+  const de = (lineas, m) => {
+    const l = lineas.find((x) => x.monto === m);
+    return { lado: l.lado, cuenta: l.cuenta };
+  };
+  return {
+    fecha,
+    libros: [COMPRADOR, VENDEDOR],
+    nombre: ESPEJO_PENDIENTE_DE_REVISION.nombreTabla(fecha),
+    filas: comprador.map((l) => ({
+      monto: l.monto,
+      cifra: cifra(l.monto),
+      comprador: de(comprador, l.monto),
+      vendedor: de(vendedor, l.monto),
+      focoConAcierto: l.cuenta === foco,
+    })),
+  };
+}
 
 /* ═══════════ LAS CIFRAS DEL CASO (se calculan, no se copian) ═══════════ */
 
@@ -138,7 +187,7 @@ const EL_CASO = {
     { dato: "Tipo", texto: "Se rebaja de la deuda de una compra a crédito" },
     { dato: "Clase de hecho", texto: "Devolución de mercancía que llegó en mal estado" },
   ],
-  /* Apilados, nunca lado a lado: dos asientos no caben juntos a 375 (patrón de Watari). */
+  /* Los dos asientos del 1 de junio: de aquí sale la tabla espejo de P3. */
   asientos: [
     {
       libro: COMPRADOR,
@@ -162,6 +211,9 @@ const EL_CASO = {
   boton: BOTON.seguir,
   pie: "Basado en el libro, pp. 210, 212 y 231-232",
 };
+
+/* P3 lee los dos asientos del 1 de junio en la tabla espejo (Watari): más corta y la misma forma de P7. */
+EL_CASO.espejo = tablaEspejo(FECHA.compra, EL_CASO.asientos[0].lineas, EL_CASO.asientos[1].lineas);
 
 /* P4 · Cuánto se reversa. Los cálculos aparecen en el acierto: antes darían la respuesta. */
 const CUANTO_SE_REVERSA = {
@@ -200,6 +252,7 @@ const LIBRO_COMPRADOR = {
   id: "libro-del-comprador",
   tipo: "lados",
   libro: COMPRADOR,
+  fecha: FECHA.devolucion,
   consigna: "Ahora el libro del comprador, Dajema. Toca Debe o Haber en cada línea.",
   lineas: [
     { id: "proveedores", cuenta: "Cuentas por pagar – proveedores", monto: CIFRAS.totalDevuelto, lado: DEBE, devolucion: "La devolución baja lo que Dajema le debe al proveedor. Un pasivo que disminuye va al debe." },
@@ -216,6 +269,7 @@ const LIBRO_VENDEDOR = {
   id: "libro-del-vendedor",
   tipo: "lados",
   libro: VENDEDOR,
+  fecha: FECHA.devolucion,
   consigna: "Ahora el libro del vendedor, El Tajamar. Toca Debe o Haber en cada línea.",
   lineas: [
     { id: "devoluciones", cuenta: "Devoluciones de ventas", monto: CIFRAS.devuelto, lado: DEBE, devolucion: "En la venta, Ingresos por ventas fue al haber. La devolución reversa ese lado, pero en su propia cuenta: Devoluciones de ventas, al debe." },
@@ -228,28 +282,14 @@ const LIBRO_VENDEDOR = {
 };
 
 /*
- * P7 · Lado a lado, con la tabla espejo de Watari: una fila por monto y, en
- * cada libro, el lado y la cuenta. Sale de los dos asientos de arriba, no se
- * escribe aparte: cada monto aparece una vez porque los dos libros de D-3
- * tienen las mismas cifras en espejo.
+ * P7 · Lado a lado, con la tabla espejo del 5 de junio. La fila de las
+ * devoluciones se señala solo con el acierto (Watari).
  */
-const espejo = () => {
-  const montos = [...new Set(LIBRO_COMPRADOR.lineas.map((l) => l.monto))].sort((a, b) => b - a);
-  const de = (pant, m) => {
-    const l = pant.lineas.find((x) => x.monto === m);
-    return { lado: l.lado, cuenta: l.cuenta };
-  };
-  return {
-    libros: [COMPRADOR, VENDEDOR],
-    filas: montos.map((m) => ({ monto: m, cifra: cifra(m), comprador: de(LIBRO_COMPRADOR, m), vendedor: de(LIBRO_VENDEDOR, m) })),
-  };
-};
-
 const LADO_A_LADO = {
   id: "lado-a-lado",
   tipo: "eleccion",
   parrafos: [],
-  espejo: espejo(),
+  espejo: tablaEspejo(FECHA.devolucion, LIBRO_COMPRADOR.lineas, LIBRO_VENDEDOR.lineas, "Devoluciones de compras"),
   pregunta: "¿Qué tienen en común los dos registros de la devolución?",
   opciones: [
     { id: "al-reves", texto: "Los dos hacen el registro al revés, con una cuenta de devoluciones.", correcta: true },

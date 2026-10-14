@@ -14,9 +14,13 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · cada pantalla y cada estado muestran exactamente sus textos
  *   · el error lleva a «Probar otra» y el acierto a «Seguir»; en los asientos,
  *     «Probar otra» devuelve solo las líneas mal puestas
- *   · las sumas se calculan al colocar (ayuda) y el lado vacío desaparece al
- *     acertar; los cálculos de P4 no se ven antes del acierto
- *   · la tabla espejo sale de los dos asientos
+ *   · la «Figura de A6» de Watari: las líneas del asiento aparecen una por
+ *     una; el error va debajo de su línea; las sumas aparecen solo al
+ *     acertar; el lado vacío desaparece al acertar; los cálculos de P4 llegan
+ *     con el acierto
+ *   · la tabla espejo sale de los dos asientos, en el orden del comprador; la
+ *     fila de las devoluciones va en negrita solo con el acierto; encabezados
+ *     y nombre de la tabla marcados como pendientes de revisión
  *   · fuera del catálogo de FP, sin la renta del 33 % ni cifras de medición
  *
  * El ancho a 375 y 320 lo mide scripts/t7/medir-t7-1-a6.mjs en Chromium.
@@ -249,7 +253,7 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos", as
       vistos.push(`${p.id}:colocando`);
       for (const l of p.lineas) await tocar(casilla(m.caja, l.id, l.lado === A.DEBE ? A.HABER : A.DEBE));
       await tocar(boton(m.caja, "confirmar"));
-      assert.deepEqual(enPantalla(m.caja).textos, [p.consigna, A.INTERFAZ.incorrecto, ...p.lineas.map((l) => l.devolucion), A.BOTON.probarOtra, p.pie], `${p.id} error`);
+      assert.deepEqual(enPantalla(m.caja).textos, [p.consigna, ...p.lineas.flatMap((l) => [A.INTERFAZ.incorrecto, l.devolucion]), A.BOTON.probarOtra, p.pie], `${p.id} error`);
       vistos.push(`${p.id}:error`);
       await tocar(boton(m.caja, "probar-otra"));
       for (const l of p.lineas) await tocar(casilla(m.caja, l.id, l.lado));
@@ -284,35 +288,47 @@ test("★★★ el error lleva a «Probar otra» y el acierto a «Seguir», en l
   }
 });
 
-test("★★★ asiento: las sumas se calculan al colocar, «Probar otra» devuelve solo las mal puestas y al acertar el lado vacío desaparece", async () => {
+test("★★★ asiento: una línea a la vez, el error debajo de su línea, «Probar otra» devuelve solo las mal puestas, sumas solo al acertar", async () => {
   const p = pantalla("libro-del-comprador");
   const m = await montar(h(Devoluciones, { pieza: conPieza("libro-del-comprador", "resumen"), rotulo: "R" }));
+  const filas = () => [...m.caja.querySelectorAll("[data-fila]")].map((f) => f.dataset.fila);
   try {
-    assert.deepEqual(sumas(m.caja), ["0", "0"]);
+    /* Una línea a la vez (Watari): se ve la primera, y cada colocación abre la siguiente. */
+    assert.deepEqual(filas(), ["proveedores"]);
+    assert.equal(m.caja.querySelector("[data-fecha]").textContent, "5 de junio");
+    assert.match(casilla(m.caja, "proveedores", A.DEBE).getAttribute("aria-label"), /Debe, vacía, lista para recibir$/);
     assert.equal(boton(m.caja, "confirmar").getAttribute("aria-disabled"), "true");
-    /* Tres bien y la retención al revés: las sumas no cuadran, y lo dejan ver antes de confirmar. */
-    for (const l of p.lineas) await tocar(casilla(m.caja, l.id, l.id === "retencion" ? A.HABER : l.lado));
-    assert.deepEqual(sumas(m.caja), ["2.700.000", "2.868.000"]);
-    assert.equal(estado(m.caja), "colocando", "las sumas no son veredicto");
+    for (const [k, l] of p.lineas.entries()) {
+      await tocar(casilla(m.caja, l.id, l.id === "retencion" ? A.HABER : l.lado));
+      assert.equal(filas().length, Math.min(k + 2, 4));
+    }
+    /* Sin sumas mientras se coloca: con cuatro montos fijos, el cuadre regalaría la respuesta. */
+    assert.equal(m.caja.querySelector("[data-sumas]") === null, true, "las sumas se ven antes del acierto");
     await tocar(boton(m.caja, "confirmar"));
     assert.equal(estado(m.caja), "error");
+    assert.equal(m.caja.querySelector("[data-sumas]") === null, true, "las sumas se ven en el error");
     const mala = casilla(m.caja, "retencion", A.HABER);
     assert.ok(mala.classList.contains("t7a6-cas-error"));
     assert.ok(mala.querySelector(".t7a6-marca svg"), "la casilla mala no lleva la X");
-    assert.match(mala.getAttribute("aria-label"), /incorrecto$/);
-    assert.deepEqual([...m.caja.querySelectorAll("[data-mensaje=error] p")].map((x) => x.textContent), [p.lineas.find((l) => l.id === "retencion").devolucion]);
+    assert.match(mala.getAttribute("aria-label"), /Haber, 84\.000, incorrecto$/);
+    /* El mensaje va debajo de su línea, y solo el de esa línea. */
+    const enLinea = m.caja.querySelector('[data-fila="retencion"] [data-mensaje=error]');
+    assert.ok(enLinea, "el error no está en su línea");
+    assert.equal(enLinea.querySelector("p").textContent, p.lineas.find((l) => l.id === "retencion").devolucion);
+    assert.equal(m.caja.querySelectorAll("[data-mensaje=error]").length, 1);
     await tocar(boton(m.caja, "probar-otra"));
-    /* Solo la mala vuelve; las tres buenas se quedan donde estaban. */
+    assert.deepEqual(filas(), ["proveedores", "retencion", "iva", "devoluciones"], "las líneas visibles no se esconden al reintentar");
     assert.equal(casilla(m.caja, "retencion", A.HABER).dataset.llena, "no");
     assert.ok(p.lineas.filter((l) => l.id !== "retencion").every((l) => casilla(m.caja, l.id, l.lado).dataset.llena === "si"));
     await tocar(casilla(m.caja, "retencion", A.DEBE));
-    assert.deepEqual(sumas(m.caja), ["2.784.000", "2.784.000"]);
     await tocar(boton(m.caja, "confirmar"));
     assert.equal(estado(m.caja), "acierto");
+    assert.deepEqual(sumas(m.caja), ["2.784.000", "2.784.000"]);
+    assert.equal(m.caja.querySelector("[data-sumas] .t7a6-sumas-rot").textContent, "Sumas");
     for (const l of p.lineas) {
       const vacia = casilla(m.caja, l.id, l.lado === A.DEBE ? A.HABER : A.DEBE);
       assert.ok(vacia.classList.contains("t7a6-cas-nada"), `${l.id}: el lado vacío sigue a la vista`);
-      assert.equal(casilla(m.caja, l.id, l.lado).textContent, A.cifra(l.monto));
+      assert.match(casilla(m.caja, l.id, l.lado).getAttribute("aria-label"), /, correcto$/);
     }
   } finally {
     m.desmontar();
@@ -331,6 +347,8 @@ test("★★ en P4 los cálculos no se ven antes del acierto: darían la respues
     await tocar(m.caja.querySelector('[data-opcion="proporcional"]'));
     await tocar(boton(m.caja, "confirmar"));
     assert.deepEqual([...m.caja.querySelectorAll("[data-calculo]")].map((c) => c.textContent), p.acierto.calculos);
+    /* El resultado de cada cálculo en blanco: lo que va después del último «= ». */
+    assert.deepEqual([...m.caja.querySelectorAll("[data-calculo] b")].map((b) => b.textContent), ["$384.000", "$84.000", "$2.700.000"]);
   } finally {
     m.desmontar();
   }
@@ -353,34 +371,71 @@ test("★★ las opciones se barajan en cada intento", async () => {
   }
 });
 
-test("★★★ la tabla espejo sale de los dos asientos: cada monto una vez, con su lado y su cuenta en cada libro", async () => {
+test("★★★ la tabla espejo sale de los dos asientos, en el orden del comprador, y la fila de las devoluciones se señala solo al acertar", async () => {
   const esp = pantalla("lado-a-lado").espejo;
   const comp = pantalla("libro-del-comprador").lineas;
   const vend = pantalla("libro-del-vendedor").lineas;
-  assert.equal(esp.filas.length, 4);
+  assert.equal(esp.fecha, "5 de junio");
+  assert.deepEqual(esp.filas.map((f) => f.monto), comp.map((l) => l.monto), "las filas no van en el orden del comprador");
   for (const f of esp.filas) {
     const c = comp.find((l) => l.monto === f.monto);
     const v = vend.find((l) => l.monto === f.monto);
     assert.deepEqual(f.comprador, { lado: c.lado, cuenta: c.cuenta });
     assert.deepEqual(f.vendedor, { lado: v.lado, cuenta: v.cuenta });
-    /* En espejo: lo que un libro anota en un lado, el otro lo anota en el contrario. */
-    assert.notEqual(f.comprador.lado, f.vendedor.lado);
+    assert.notEqual(f.comprador.lado, f.vendedor.lado, "no está en espejo");
   }
+  const p = pantalla("lado-a-lado");
   const m = await montar(h(Devoluciones, { pieza: conPieza("lado-a-lado"), rotulo: "R" }));
+  const foco = () => [...m.caja.querySelectorAll("[data-fila-espejo].t7a6-esp-foco")].map((f) => f.dataset.filaEspejo);
   try {
-    const filas = [...m.caja.querySelectorAll("[data-fila-espejo]")].map((f) => f.textContent);
-    assert.deepEqual(filas, esp.filas.map((f) => `${f.cifra}${f.comprador.lado === A.DEBE ? "Debe" : "Haber"}${f.comprador.cuenta}${f.vendedor.lado === A.DEBE ? "Debe" : "Haber"}${f.vendedor.cuenta}`));
-    assert.deepEqual([...m.caja.querySelectorAll("[data-espejo] [role=columnheader]")].map((x) => x.textContent).filter(Boolean), ["Dajema (comprador)", "El Tajamar (vendedor)"]);
+    const t = m.caja.querySelector("[data-espejo]");
+    assert.equal(t.getAttribute("aria-label"), "5 de junio: el libro del comprador y el del vendedor, lado a lado");
+    assert.equal(t.dataset.revision, "pendiente");
+    assert.deepEqual([...t.querySelectorAll("[role=columnheader][data-revision=pendiente]")].map((x) => x.textContent), ["Dajema (comprador)", "El Tajamar (vendedor)"]);
+    assert.equal(t.querySelector("[data-fecha]").textContent, "5 de junio");
+    assert.deepEqual(
+      [...t.querySelectorAll("[data-fila-espejo]")].map((f) => f.textContent),
+      esp.filas.map((f) => `${f.cifra}${f.comprador.lado === A.DEBE ? "Debe" : "Haber"}${f.comprador.cuenta}${f.vendedor.lado === A.DEBE ? "Debe" : "Haber"}${f.vendedor.cuenta}`),
+    );
+    /* Mientras elige, nada señalado; en el error, tampoco; con el acierto, solo la fila de las devoluciones. */
+    assert.deepEqual(foco(), []);
+    await tocar(m.caja.querySelector('[data-opcion="en-el-debe"]'));
+    await tocar(boton(m.caja, "confirmar"));
+    assert.deepEqual(foco(), []);
+    await tocar(boton(m.caja, "probar-otra"));
+    await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`));
+    await tocar(boton(m.caja, "confirmar"));
+    assert.deepEqual(foco(), ["2.400.000"]);
   } finally {
     m.desmontar();
   }
 });
 
-test("★★ P3 muestra los dos asientos del 1 de junio apilados y sin sumas (la v1 no las muestra)", async () => {
+test("★★ el lado de cada celda del espejo va siempre en su color y con su palabra", async () => {
+  const m = await montar(h(Devoluciones, { pieza: conPieza("lado-a-lado"), rotulo: "R" }));
+  try {
+    for (const l of m.caja.querySelectorAll(".t7a6-esp-lado")) {
+      const debe = l.textContent === "Debe";
+      assert.ok(["Debe", "Haber"].includes(l.textContent));
+      assert.ok(l.classList.contains(debe ? "t7a6-d" : "t7a6-h"), `«${l.textContent}» sin su color`);
+    }
+  } finally {
+    m.desmontar();
+  }
+  assert.match(CSS_A6, /\.t7a6-d \{ color: #2A9D8F; \} \.t7a6-h \{ color: #E9C46A; \}/);
+});
+
+test("★★ P3: la tabla espejo del 1 de junio, ya resuelta, en el orden del comprador y sin sumas", async () => {
+  const esp = pantalla("el-caso").espejo;
+  assert.equal(esp.fecha, "1 de junio");
+  assert.deepEqual(esp.filas.map((f) => f.cifra), ["15.200.000", "2.432.000", "532.000", "17.100.000"]);
   const m = await montar(h(Devoluciones, { pieza: conPieza("el-caso"), rotulo: "R" }));
   try {
-    assert.equal(m.caja.querySelectorAll("[data-asiento-lectura]").length, 2);
+    assert.equal(m.caja.querySelectorAll("[data-espejo]").length, 1);
+    assert.equal(m.caja.querySelector("[data-espejo]").getAttribute("aria-label"), "1 de junio: el libro del comprador y el del vendedor, lado a lado");
+    assert.equal(m.caja.querySelectorAll("[data-fila-espejo]").length, 4);
     assert.equal(m.caja.querySelector("[data-sumas]") === null, true);
+    assert.equal(m.caja.querySelector("[data-linea]") === null, true, "en P3 nada se toca");
     assert.ok(!m.caja.textContent.includes("17.632.000"));
   } finally {
     m.desmontar();
