@@ -648,6 +648,8 @@ export const SUBJECTS = {
         title: "Inventarios I: el sistema periódico",
         actividades: [
           { id: "t7-1-a1-la-cuenta-que-no-se-mueve", nombre: "La cuenta que no se mueve", clasificacion: { tipo: APRENDER } },
+          /* AP4, después de AP3 por dependencias (regla 9): cita «Tres formas de ponerle precio a lo que quedó». Cero FP. */
+          { id: "t7-1-a4-el-cierre-en-periodico", nombre: "El cierre en periódico", clasificacion: { tipo: APRENDER } },
           /* A6, la primera que llega después de AP1 (orden de construcción de Mello). Cero FP. */
           { id: "t7-1-a6-devoluciones-en-periodico", nombre: "Devoluciones en periódico", clasificacion: { tipo: APRENDER } },
         ],

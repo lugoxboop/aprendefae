@@ -459,8 +459,8 @@ test("★★★ fuera del catálogo de FP; id t7-; va en T7-1 después de AP1", 
   const a = tema.actividades.find((x) => x.id === A.A6_ID);
   assert.deepEqual(a.clasificacion, { tipo: APRENDER });
   assert.equal(a.nombre, P.titulo);
-  assert.deepEqual(tema.actividades.map((x) => x.id), ["t7-1-a1-la-cuenta-que-no-se-mueve", A.A6_ID]);
-  assert.deepEqual(PIEZAS_T7_1.map((x) => x.pieza.id), ["t7-1-a1-la-cuenta-que-no-se-mueve", A.A6_ID]);
+  assert.deepEqual(tema.actividades.map((x) => x.id), ["t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a4-el-cierre-en-periodico", A.A6_ID]);
+  assert.deepEqual(PIEZAS_T7_1.map((x) => x.pieza.id), ["t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a4-el-cierre-en-periodico", A.A6_ID]);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A6_ID)), []);
   for (const f of ["src/components/mecanicas/libros/t7/DevolucionesEnPeriodico.jsx", "src/data/contabilidadT7_1_a6.js"]) {
