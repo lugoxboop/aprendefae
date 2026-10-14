@@ -13,7 +13,8 @@ import { BOTON, INTERFAZ, DEBE, HABER, PENDIENTE_DE_REVISION } from "../../../..
  * Watari, va con el patrón tabular v3.2. Tres tipos:
  *
  *   · portada / lectura / resumen   el objetivo, los textos, una ficha de
- *                cinco datos y lo que venga después; el «Siguiente» del
+ *                cinco datos, lo que venga después, un asiento y el texto que
+ *                lo sigue (`tras`); el «Siguiente» del
  *                resumen; botón y pie. El resumen, que es la última pantalla,
  *                no lleva botón
  *   · eleccion   antes de la pregunta, lo que la pantalla traiga (textos,
@@ -165,6 +166,7 @@ function Cuerpo({ p }) {
       {p.ficha && <Ficha ficha={p.ficha} />}
       <Textos lista={p.despues} />
       <Asientos lista={p.asientos} />
+      <Textos lista={p.tras} />
     </>
   );
 }

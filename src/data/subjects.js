@@ -739,6 +739,8 @@ export const SUBJECTS = {
           { id: "t7-3-descuento-comercial", nombre: "El descuento comercial", clasificacion: { tipo: APRENDER } },
           /* H1, justo después de A1 (orden final de T7-3): la venta de Guadua con descuento comercial. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0103. */
           { id: "t7-3-descuento-en-factura", nombre: "Descuento en la factura", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* A2, después de A1 (regla 9). H1 «Descuento en la factura» entra entre A1 y A2. Ejemplo H-2, pp. 249-250. Cero FP. */
+          { id: "t7-3-descuentos-en-cadena", nombre: "Descuentos en cadena", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],
