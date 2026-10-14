@@ -29,6 +29,10 @@ import { BOTON, INTERFAZ, DEBE, HABER, PENDIENTE_DE_REVISION } from "../../../..
  * (el libro pone «xxxx») no la muestra. Una cuenta T lleva su titular, el
  * nombre de la cuenta, y cada movimiento con su fecha en su lado.
  *
+ * Una pieza puede traer un aviso fijo (`aviso`), a la vista en todas sus
+ * pantallas: la frase de la NIC 2 en A7 y A8. Una pantalla puede traer una
+ * lista con viñetas (`lista`) después de sus textos.
+ *
  * Cada pantalla lleva su pie en todos sus estados. NO CALIFICA y no da FP:
  * es Aprender. Clases con el prefijo `t73p-`.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -92,6 +96,10 @@ export const CSS_T73P = `
 .t73p-t-mov { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0 6px; }
 .t73p-t-mov span:first-child { font-size: 12px; color: ${P.texto2}; font-variant-numeric: tabular-nums; }
 .t73p-t-mov span:last-child { margin-left: auto; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.t73p-lista { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 15px; line-height: 1.45; }
+/* La hoja global del sitio quita el estilo de lista: aquí vuelven las viñetas. */
+.t73p-lista li { overflow-wrap: anywhere; list-style: disc; }
+.t73p-aviso { margin: 0 0 12px; padding: 10px 12px; border: 1px solid ${P.borde}; border-left-width: 3px; border-radius: 8px; font-size: 14px; line-height: 1.45; color: ${P.texto}; overflow-wrap: anywhere; }
 .t73p-nueva { animation: t73p-aparece .12s ease-out; }
 @keyframes t73p-aparece { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .t73p *, .t73p *::before, .t73p *::after { transition: none !important; animation: none !important; } }
@@ -201,6 +209,7 @@ function Cuerpo({ p }) {
     <>
       {p.objetivo && <p className="t73p-p" data-texto data-objetivo>{p.objetivo}</p>}
       <Textos lista={p.parrafos} />
+      {p.lista && <ul className="t73p-lista" data-lista>{p.lista.map((t) => <li key={t} data-texto>{t}</li>)}</ul>}
       {p.ficha && <Ficha ficha={p.ficha} />}
       <Textos lista={p.despues} />
       <Asientos lista={p.asientos} />
@@ -273,6 +282,7 @@ export default function PantallasT7_3({ pieza, rotulo }) {
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <style>{CSS_T73P}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
+        {pieza.aviso && <p className="t73p-aviso" role="note" data-aviso>{pieza.aviso}</p>}
         {p.tipo === "eleccion" ? (
           <Eleccion key={p.id} pantalla={p} onSeguir={ultima ? null : seguir} />
         ) : (

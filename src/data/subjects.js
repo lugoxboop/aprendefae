@@ -761,6 +761,8 @@ export const SUBJECTS = {
           { id: "t7-3-sobrantes-y-faltantes", nombre: "Sobrantes y faltantes", clasificacion: { tipo: APRENDER } },
           /* A6, justo después de A5 (orden final de T7-3): la provisión del ejemplo I-3, p. 256. Cero FP. */
           { id: "t7-3-provision-inventarios", nombre: "La provisión para inventarios", clasificacion: { tipo: APRENDER } },
+          /* A7, después de A6 por el orden del mapa (depende de A1, por los descuentos). H5 entra entre A6 y A7. La NIC 2 del libro, pp. 256-258, con su frase fija a la vista. Cero FP. */
+          { id: "t7-3-nic2-costo", nombre: "La NIC 2 del libro: el costo", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],
