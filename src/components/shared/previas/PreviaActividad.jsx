@@ -129,6 +129,8 @@ export const PREVIAS = {
   "el-rezago": { tema: "bloques", tipo: "gesto" },
   "crea-o-cambia-de-manos": { tema: "bloques", tipo: "gesto" },
   "la-escalera-del-encaje": { tema: "bloques", tipo: "gesto" },
+  "en-que-talla-va": { tema: "bloques", tipo: "gesto" },
+  "que-toco-el-banco": { tema: "bloques", tipo: "gesto" },
   "dilema-banquero-central": {
     tipo: "estatica",
     /*

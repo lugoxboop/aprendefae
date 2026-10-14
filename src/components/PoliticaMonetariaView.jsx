@@ -21,7 +21,10 @@ import {
 import { PorCualArteriaEntra, LasDosEntradas } from "./mecanicas/maquinas/monetariaRepaso.jsx";
 import { EscenaFabrica, ExploraFabrica, CreaOCambiaDeManos, LaEscaleraDelEncaje } from "./mecanicas/maquinas/fabricaDelDinero.jsx";
 import { APRENDER_QUIEN_MANDA, APRENDER_INSTRUMENTOS, APRENDER_TRANSMISIONES } from "../data/politicaMonetaria.js";
+import { EscenaTallas, ExploraTallas } from "./mecanicas/maquinas/tallasDelDinero.jsx";
+import { EnQueTallaVa, QueTocoElBanco } from "./mecanicas/maquinas/actividadesAgregados.jsx";
 import { APRENDER_FABRICA } from "../data/pmFabricaDelDinero.js";
+import { APRENDER_TALLAS } from "../data/pmAgregados.js";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
@@ -46,17 +49,20 @@ const PIEZAS = [
   { pieza: APRENDER_INSTRUMENTOS, Escena: EscenaInstrumentos, Exploracion: ExploraInstrumentos },
   { pieza: APRENDER_TRANSMISIONES, Escena: EscenaTransmisiones, Exploracion: () => <ExploraVolante conReloj /> },
   { pieza: APRENDER_FABRICA, Escena: EscenaFabrica, Exploracion: ExploraFabrica },
+  { pieza: APRENDER_TALLAS, Escena: EscenaTallas, Exploracion: ExploraTallas },
 ];
 
 /* El orden es el del camino: por bloque, y dentro de cada uno el de la ficha. */
 const JUEGOS = [
   { id: "memorama-banco-central", Mecanica: MemoramaBancoCentral },
   { id: "quien-decide-esto", Mecanica: QuienDecideEsto },
+  { id: "en-que-talla-va", Mecanica: EnQueTallaVa },
   { id: "volante-de-la-tasa", Mecanica: VolanteDeLaTasa },
   { id: "caja-de-herramientas", Mecanica: CajaDeHerramientas },
   { id: "crea-o-cambia-de-manos", Mecanica: CreaOCambiaDeManos },
   { id: "a-quien-le-pega-la-tasa", Mecanica: AQuienLePegaLaTasa },
   { id: "las-dos-entradas", Mecanica: LasDosEntradas },
+  { id: "que-toco-el-banco", Mecanica: QueTocoElBanco },
   { id: "cadena-de-transmision", Mecanica: CadenaDeTransmision },
   { id: "por-cual-arteria-entra", Mecanica: PorCualArteriaEntra },
   { id: "explicaselo-a-un-deudor", Mecanica: ExplicaseloADeudor },

@@ -182,6 +182,8 @@ export const FORMATO_MACRO = {
   "por-cual-arteria-entra": X,
   "crea-o-cambia-de-manos": X,
   "la-escalera-del-encaje": X,
+  "en-que-talla-va": X,
+  "que-toco-el-banco": X,
   "el-rezago": P,
   "dilema-banquero-central": X,
   "duelo-de-instrumentos": X,

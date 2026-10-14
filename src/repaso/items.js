@@ -509,6 +509,8 @@ export const ACTIVIDADES_FUERA_DEL_POOL = [
   "tablero-decisiones",
   /* Las dos de la Fábrica del Dinero (0073): sus ítems no son preguntas sueltas. */
   "crea-o-cambia-de-manos", "la-escalera-del-encaje",
+  /* «Las tallas del dinero» (0091) */
+  "en-que-talla-va", "que-toco-el-banco",
   /*
    * El Comité de NOVA, el desafío de Política Fiscal. Fuera del pool y no por
    * olvido: sus ítems no son preguntas sueltas que se puedan repasar de a una

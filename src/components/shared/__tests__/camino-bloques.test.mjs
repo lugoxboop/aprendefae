@@ -98,7 +98,8 @@ test("Cimientos se pinta en los tres temas; quitarle sus Fácil del catálogo lo
     assert.deepEqual(bloquesPintados(m.cont), LOS_CUATRO, `${temaId}: los cuatro bloques`);
     assert.equal(m.cont.querySelector('[data-bloque="cimientos"] h3').textContent, "Cimientos");
     const faciles = tema.actividades.filter((a) => a.clasificacion?.tipo === HACER && a.clasificacion.dificultad === "facil");
-    assert.equal(faciles.length, 2, `${temaId}: dos Fácil`);
+    /* Monetaria tiene tres desde la 0091: «¿En qué talla va?» entra a Cimientos. */
+    assert.equal(faciles.length, temaId === "politica-monetaria" ? 3 : 2, `${temaId}: sus Fácil`);
     for (const f of faciles) {
       assert.ok(m.cont.querySelector(`g[data-nodo="${f.id}"][data-bloque-de="cimientos"]`), `${temaId}: ${f.id} en Cimientos`);
     }
@@ -208,7 +209,8 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
    * acaba ahora en el lado izquierdo, así que el título de Análisis pasa a la
    * DERECHA. Misma regla.
    */
-  const LADOS = { "politica-monetaria": [-1, -1, -1, 1] };
+  /* Con las cuatro nuevas (0073 y 0091) el reparto queda 3-6-6-3: medido, no supuesto. */
+const LADOS = { "politica-monetaria": [-1, -1, 1, -1] };
   for (const temaId of TEMAS) {
     const nodos = nodosDelTema(temaId);
     assert.deepEqual(disposicionPorBloques(bloquesDe(nodos), nodos.length).cabeceras.map((c) => c.lado), LADOS[temaId] ?? [-1, -1, -1, 1], temaId);
@@ -217,12 +219,12 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
 
 /* ─────────────────────────────── los iconos ─────────────────────────────── */
 
-test("las 52 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
+test("las 54 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
-  assert.equal(ids.length, 52);
+  assert.equal(ids.length, 54);
   for (const id of ids) assert.ok(iconoDe(id), `${id} sin icono`);
   assert.deepEqual(Object.keys(ICONOS_ACTIVIDAD).sort(), [...ids].sort(), "ni iconos de más ni de menos");
-  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 52, "ningún icono repetido entre dos actividades");
+  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 54, "ningún icono repetido entre dos actividades");
 
   for (const temaId of TEMAS) {
     const m = montar(camino(nodosDelTema(temaId)));

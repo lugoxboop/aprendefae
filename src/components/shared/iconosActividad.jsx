@@ -3,7 +3,7 @@ import {
   Activity, Thermometer, Droplet, Microscope, Cross,
   Stamp, Sheet, FileStack, ToggleLeft, ArrowRightLeft,
   Folder, MessageSquarePlus, Split, EqualNot,
-  HandCoins,
+  HandCoins, Layers, Target,
 } from "lucide-react";
 
 /*
@@ -436,6 +436,9 @@ export const ICONOS_ACTIVIDAD = {
   "el-rezago": RelojCorrea,
   "crea-o-cambia-de-manos": HandCoins,
   "la-escalera-del-encaje": EscaleraDescendente,
+  /* «Las tallas del dinero» (0091), de lucide mientras Watari no dibuje los suyos. */
+  "en-que-talla-va": Layers,
+  "que-toco-el-banco": Target,
   "dilema-banquero-central": BalanzaVolante,
   "duelo-de-instrumentos": EngranajesEnfrentados,
   "disena-respuesta-monetaria": PanelPalanca,
