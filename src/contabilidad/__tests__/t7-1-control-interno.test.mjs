@@ -209,6 +209,10 @@ test("★★★ fuera del catálogo de FP; id t7-; en T7-1 después de A6; sin n
   assert.equal(ids.indexOf(A.A7_ID), ids.indexOf("t7-1-a6-devoluciones-en-periodico") + 1);
   const piezas = PIEZAS_T7_1.map((x) => x.pieza.id);
   assert.equal(piezas.indexOf(A.A7_ID), piezas.indexOf("t7-1-a6-devoluciones-en-periodico") + 1);
+  /* Orden final de T7-1 (mapa, decisión de L): A7 es la última de Aprender. */
+  const orden = ["t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a2-la-factura-completa", "t7-1-a5-importados-y-fletes", "t7-1-a6-devoluciones-en-periodico", A.A7_ID];
+  assert.deepEqual(ids.filter((id) => orden.includes(id)), orden);
+  assert.deepEqual(piezas, orden);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A7_ID)), []);
   for (const f of ["src/components/mecanicas/libros/t7/ControlInterno.jsx", "src/data/contabilidadT7_1_a7.js"]) {
