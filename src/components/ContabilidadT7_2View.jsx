@@ -26,6 +26,7 @@ import { PIEZA_LA_VENTA_EN_DOS_ASIENTOS } from "../data/contabilidadT7_2_a2.js";
 import PantallasT7_2 from "./mecanicas/libros/t7/PantallasT7_2.jsx";
 import { PIEZA_EL_KARDEX } from "../data/contabilidadT7_2_a3.js";
 import { PIEZA_SAN_CALIXTO } from "../data/contabilidadT7_2_a4.js";
+import { PIEZA_FLETES } from "../data/contabilidadT7_2_a5.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -49,6 +50,7 @@ export const PIEZAS_T7_2 = [
   { numero: PIEZA_LA_VENTA_EN_DOS_ASIENTOS.numero, pieza: PIEZA_LA_VENTA_EN_DOS_ASIENTOS, Pieza: LaVentaEnDosAsientos },
   { numero: PIEZA_EL_KARDEX.numero, pieza: PIEZA_EL_KARDEX, Pieza: PantallasT7_2 },
   { numero: PIEZA_SAN_CALIXTO.numero, pieza: PIEZA_SAN_CALIXTO, Pieza: PantallasT7_2 },
+  { numero: PIEZA_FLETES.numero, pieza: PIEZA_FLETES, Pieza: PantallasT7_2 },
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
