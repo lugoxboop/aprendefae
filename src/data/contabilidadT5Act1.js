@@ -74,7 +74,8 @@ export const FICHAS_T5_ACT1 = [
   },
   {
     id: "def-emisora", clase: DEFINICION, renta: VARIABLE, tipo: null,
-    texto: "Su rendimiento depende de los factores económicos propios de la empresa que emitió el título.",
+    /* Definición casi literal del libro (p. 192), sin «económicos»: reescrita por INFLESZ, PASA de Shoko. */
+    texto: "Su rendimiento depende de factores propios de la empresa que lo emitió.",
     acierto: "✅ Sí. Esa es la marca de la renta variable: rinde según la empresa que lo emitió.",
   },
   {
@@ -114,11 +115,11 @@ export const FICHAS_T5_ACT1 = [
   {
     id: "def-interes", clase: DEFINICION, renta: FIJA, tipo: INTERES,
     texto: "Le paga un interés fijo durante un periodo determinado.",
-    acierto: "✅ Sí. Interés fijo durante un periodo determinado: así define el libro la renta fija con interés.",
+    acierto: "✅ Sí. Un interés fijo durante un periodo determinado. Así define el libro la renta fija con interés.",
   },
   {
     id: "caso-pactado", clase: CASO, renta: FIJA, tipo: INTERES,
-    texto: "Desde el día de la compra se sabe qué interés pagará la empresa que lo emitió durante un periodo determinado.",
+    texto: "Desde el día de la compra se sabe qué interés pagará la empresa que lo emitió.",
     acierto: "✅ Sí. El interés quedó fijo al invertir, aunque lo pague una empresa: es renta fija con interés.",
   },
   {
@@ -175,6 +176,6 @@ export const PESO_TIPO = 0.4;
 
 /* El resumen (guía §3, estado 5). {X} lo formatea el componente, como T1-6. */
 export const resumenT5Act1 = (bien, cuantas, x) =>
-  `${bien} de ${cuantas} completas al primer intento. Cada ficha valía ${x} %: elegir variable o fija pesa 60 %, y elegir con interés o con descuento, 40 %. En las de renta variable, acertar la primera elección vale la ficha entera.`;
+  `${bien} de ${cuantas} completas al primer intento. Cada ficha valía ${x} %. Elegir variable o fija pesa 60 %. Elegir con interés o con descuento pesa 40 %. En las de renta variable, la primera elección vale toda la ficha.`;
 
 export const ALT_T5_ACT1 = "Actividad de clasificación. Aparece una ficha con el nombre de un título o con una pista de cómo rinde. Elige Renta variable o Renta fija. Si eliges Renta fija, elige también Con interés o Con descuento. Luego pulsa Colocar la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.";
