@@ -17,11 +17,17 @@ import { cifraK } from "../../../../contabilidad/t7_2Kardex.js";
  *   · un total que da Near va en una fila «Total» con raya encima; el saldo
  *     final, en negrita
  *
- * Solo lectura: no se toca nada. Sin teal ni ámbar (esos colores son el debe
- * y el haber). Clases con el prefijo `t7kx-`.
+ * En A3 y A4, solo lectura: no se toca nada. Sin teal ni ámbar (esos colores
+ * son el debe y el haber). Clases con el prefijo `t7kx-`.
  *
- * kardex = { titulo, nota?, filas: [{ f, en?, sa?, saT?, sal, salT?, fin? }] }
- * capa   = [cantidad, costo unitario, costo total | null]
+ * H3 («Llena el kárdex») la usa con casillas por llenar: un costo unitario o
+ * un total que vale PUNTO ("?") se pinta como un punto. Si es la casilla del
+ * ítem en curso (`punto`), el punto es un botón que abre las opciones
+ * (`onPunto`); si no, es solo el punto. Sin `punto` ni PUNTO, la tabla es la
+ * misma de A3 y A4.
+ *
+ * kardex = { titulo, nota?, filas: [{ f, en?, sa?, saT?, sal?, salT?, fin? }] }
+ * capa   = [cantidad, costo unitario | PUNTO, costo total | null]
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -38,6 +44,8 @@ export const ROTULOS_KX = {
 
 /* El nombre accesible de la casilla vacía: de Watari, marcado por ella como pendiente de revisión. */
 export const PENDIENTE_DE_REVISION_KX = { sinTotal: "Costo total: no se da" };
+
+export const PUNTO = "?";
 
 const P = { fondo: "#0E1B2E", texto: "#F8F9FA", texto2: "#A8B6C8", borde: "#B8C4D4", raya: "#33445E" };
 
@@ -59,14 +67,32 @@ export const CSS_KX = `
 .t7kx-fin > span { font-weight: 700; }
 .t7kx-sin { display: flex; align-items: center; }
 .t7kx-sin i { display: block; width: 100%; height: 18px; border: 1px dashed ${P.borde}; border-radius: 4px; }
+.t7kx-punto { display: flex; justify-content: flex-end; align-items: center; }
+.t7kx-punto b { font: 700 15px/1.5 "Inter", sans-serif; color: ${P.texto}; }
+.t7kx-punto button { appearance: none; min-width: 44px; min-height: 44px; margin: 4px 0; padding: 0 8px; border: 1px dashed ${P.texto}; border-radius: 8px; background: transparent; color: ${P.texto}; font: 700 15px/1 "Inter", sans-serif; cursor: pointer; }
+.t7kx-punto button[aria-expanded="true"] { background: ${P.texto}; color: ${P.fondo}; border-style: solid; }
+.t7kx-punto button:focus-visible { outline: 2px solid ${P.texto}; outline-offset: 2px; }
 `;
 
-function Capa({ capa, fin }) {
+/* La casilla por llenar: el punto, tocable solo si es la del ítem en curso. */
+function Punto({ pregunta }) {
+  return (
+    <span role="cell" className="t7kx-punto" data-punto={pregunta ? "activo" : "quieto"}>
+      {pregunta
+        ? <button type="button" aria-label={pregunta.etiqueta} aria-expanded={pregunta.abierta} onClick={pregunta.onPunto}>●</button>
+        : <b aria-hidden="true">●</b>}
+    </span>
+  );
+}
+
+function Capa({ capa, fin, pregunta }) {
   const [q, cu, t] = capa;
   return (
     <div className={`t7kx-capa${fin ? " t7kx-fin" : ""}`} role="row" data-capa>
       <span role="cell" aria-label={`${ROTULOS_KX.cantidad} ${cifraK(q)}`}>{cifraK(q)}</span>
-      <span role="cell" aria-label={`${ROTULOS_KX.costoUnitario} ${cifraK(cu)}`}>{cifraK(cu)}</span>
+      {cu === PUNTO
+        ? <Punto pregunta={pregunta} />
+        : <span role="cell" aria-label={`${ROTULOS_KX.costoUnitario} ${cifraK(cu)}`}>{cifraK(cu)}</span>}
       {t === null
         ? <span role="cell" className="t7kx-sin" data-sin-total data-revision="pendiente" aria-label={PENDIENTE_DE_REVISION_KX.sinTotal}><i aria-hidden="true" /></span>
         : <span role="cell" aria-label={`${ROTULOS_KX.costoTotal} ${cifraK(t)}`}>{cifraK(t)}</span>}
@@ -74,27 +100,30 @@ function Capa({ capa, fin }) {
   );
 }
 
-function Total({ valor, fin }) {
+function Total({ valor, fin, pregunta }) {
   return (
     <div className={`t7kx-capa t7kx-total${fin ? " t7kx-fin" : ""}`} role="row" data-total>
       <span role="cell" className="t7kx-total-rot">{ROTULOS_KX.total}</span>
-      <span role="cell" aria-label={`${ROTULOS_KX.costoTotal} ${cifraK(valor)}`}>{cifraK(valor)}</span>
+      {valor === PUNTO
+        ? <Punto pregunta={pregunta} />
+        : <span role="cell" aria-label={`${ROTULOS_KX.costoTotal} ${cifraK(valor)}`}>{cifraK(valor)}</span>}
     </div>
   );
 }
 
-function Bloque({ rot, cual, capas, total, fin, fecha }) {
+function Bloque({ rot, cual, capas, total, fin, fecha, pregunta }) {
   if (!capas) return null;
   return (
     <div className="t7kx-bloque" role="rowgroup" aria-label={rot} data-bloque={cual}>
       <span className="t7kx-rot" aria-hidden="true">{fecha && <><span className="t7kx-fecha">{fecha}</span> · </>}{rot}</span>
-      {capas.map((c, k) => <Capa key={k} capa={c} fin={fin && !total} />)}
-      {total != null && <Total valor={total} fin={fin} />}
+      {capas.map((c, k) => <Capa key={k} capa={c} fin={fin && !total} pregunta={pregunta} />)}
+      {total != null && <Total valor={total} fin={fin} pregunta={pregunta} />}
     </div>
   );
 }
 
-export default function Kardex({ kardex, nota = null }) {
+/* pregunta (solo H3): { etiqueta, abierta, onPunto }, para el punto de la casilla en curso. */
+export default function Kardex({ kardex, nota = null, pregunta = null }) {
   return (
     <figure className="t7kx" role="table" aria-label={`Kárdex · ${kardex.titulo}`} data-kardex={kardex.titulo}>
       <style>{CSS_KX}</style>
@@ -105,11 +134,12 @@ export default function Kardex({ kardex, nota = null }) {
       </div>
       {kardex.filas.map((r) => {
         const primero = r.en ? "en" : r.sa ? "sa" : "sal";
+        const p = kardex.punto ? pregunta : null;
         return (
           <section key={r.f} className="t7kx-mov" aria-label={r.f} data-fecha={r.f}>
             <Bloque rot={ROTULOS_KX.entradas} cual="entradas" capas={r.en} fecha={primero === "en" ? r.f : null} />
-            <Bloque rot={ROTULOS_KX.salidas} cual="salidas" capas={r.sa} total={r.saT} fecha={primero === "sa" ? r.f : null} />
-            <Bloque rot={ROTULOS_KX.saldos} cual="saldos" capas={r.sal} total={r.salT} fin={r.fin} fecha={primero === "sal" ? r.f : null} />
+            <Bloque rot={ROTULOS_KX.salidas} cual="salidas" capas={r.sa} total={r.saT} fecha={primero === "sa" ? r.f : null} pregunta={p} />
+            <Bloque rot={ROTULOS_KX.saldos} cual="saldos" capas={r.sal} total={r.salT} fin={r.fin} fecha={primero === "sal" ? r.f : null} pregunta={p} />
           </section>
         );
       })}

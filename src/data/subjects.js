@@ -726,6 +726,8 @@ export const SUBJECTS = {
           { id: "t7-2-dos-asientos", nombre: "Arma los dos asientos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A3, después de A2 (regla 9): el kárdex con los tres métodos, con cifras construidas. Cero FP. */
           { id: "t7-2-a3-el-kardex", nombre: "El kárdex", clasificacion: { tipo: APRENDER } },
+          /* H3, justo después de A3 (orden final de T7-2): los tres kárdex de Laurel, casilla por casilla. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0100. */
+          { id: "t7-2-llena-el-kardex", nombre: "Llena el kárdex", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
     ],
