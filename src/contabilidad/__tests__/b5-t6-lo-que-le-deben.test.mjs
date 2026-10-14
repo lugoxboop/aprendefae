@@ -167,16 +167,37 @@ test("★★ capa 2: «Anterior» devuelve el estado exacto de cada paso", async
   desmontar();
 });
 
-test("★★★ el bloque de control va pegado (sticky, abajo) y lleva el texto, el pie y los controles", async () => {
-  const { caja, desmontar } = await montar(h(DosMomentos));
-  const b = caja.querySelector("[data-bloque-control]");
-  assert.equal(b.style.position, "sticky");
-  assert.equal(b.style.bottom, "0px");
+test("★★★ el bloque de control lleva el texto, el pie y los controles, y se FIJA cuando su sitio queda bajo la ventana (modo B)", async () => {
+  /* El Panel y su capa, como los pinta CuatroCapas; el bloque busca el Panel como padre de su capa. */
+  const marco = document.createElement("section");
+  const capa = document.createElement("section");
+  capa.setAttribute("data-capa", "2");
+  const host = document.createElement("div");
+  marco.appendChild(capa); capa.appendChild(host); document.body.appendChild(marco);
+  marco.getBoundingClientRect = () => ({ top: 0, left: 16, width: 288, height: 3000, bottom: 3000, right: 304 });
+  const raiz = createRoot(host);
+  await act(async () => { raiz.render(h(DosMomentos)); });
+  const b = host.querySelector("[data-bloque-control]");
   for (const sel of ["[data-texto-paso]", "[data-pie]", "[data-anterior]", "[data-siguiente]", "[data-reproducir]", "[data-paso-de]"]) {
     assert.ok(b.querySelector(sel), `${sel} fuera del bloque`);
   }
-  assert.equal(caja.querySelector("[data-escena]").getAttribute("aria-hidden"), "true");
-  desmontar();
+  assert.equal(host.querySelector("[data-escena]").getAttribute("aria-hidden"), "true");
+  /* En su sitio, mientras cabe. */
+  assert.equal(b.style.position, "relative");
+  /* JSDOM no maqueta: se simula que el sitio del bloque queda 2 000 px abajo y la capa está en pantalla. */
+  host.querySelector("[data-hueco-bloque]").getBoundingClientRect = () => ({ top: 2000, bottom: 2000, left: 16, width: 288, height: 0, right: 304 });
+  host.querySelector("[data-capa2-t6]").getBoundingClientRect = () => ({ top: 100, bottom: 2300, left: 31, width: 258, height: 2200, right: 289 });
+  await act(async () => { window.dispatchEvent(new w.Event("scroll")); await new Promise((r) => setTimeout(r, 40)); });
+  assert.equal(b.style.position, "fixed");
+  assert.equal(b.style.left, "17px", "borde izquierdo del Panel + 1");
+  assert.equal(b.style.width, "286px", "ancho del Panel − 2");
+  assert.equal(b.dataset.modo, "B-fijo");
+  /* Y vuelve a su sitio cuando el sitio ya está en pantalla. */
+  host.querySelector("[data-hueco-bloque]").getBoundingClientRect = () => ({ top: 100, bottom: 100, left: 16, width: 288, height: 0, right: 304 });
+  await act(async () => { window.dispatchEvent(new w.Event("scroll")); await new Promise((r) => setTimeout(r, 40)); });
+  assert.equal(b.style.position, "relative");
+  act(() => raiz.unmount());
+  marco.remove();
 });
 
 test("★★★ «Reproducir» como LoQueYaPaso: 3 000 + 450 ms por palabra, aria-pressed, y «Ver de nuevo» en el cierre", async () => {

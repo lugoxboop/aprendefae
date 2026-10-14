@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { ESCENA_T6, PASOS_T6, CIERRE_T6 } from "../../../../data/contabilidadT6Pieza1.js";
@@ -13,9 +13,10 @@ import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
  *
  * La escena (decorativa: el texto del paso dice cada movimiento, incluidos
  * «se debita» y «se acredita») y, debajo, el bloque de control PEGADO
- * (§4.4, modo A: sticky), porque la máquina no cabe en una pantalla. Los
- * modos B y C de la v2 solo hacen falta si A falla en el sitio; la prueba de
- * la regla dio A, así que no se construyen.
+ * (§4.4), porque la máquina no cabe en una pantalla. La regla de la v2 se
+ * corrió en el sitio: el modo A (sticky) FALLA, porque un contenedor de la
+ * página tiene overflow: hidden (no es nuestro y no se toca); el modo B
+ * (fixed por script) pasa. Así que esto es el modo B, y el C no hace falta.
  *
  * Teal es Debe y ámbar es Haber, siempre en cápsula rellena con su palabra;
  * las cápsulas no se atenúan. Los controles son los de LoQueYaPaso, como en
@@ -104,10 +105,45 @@ export default function DosMomentos() {
   const piezas = useRef({});
   const foco = useRef(null);
   const primeraVez = useRef(true);
+  const hueco = useRef(null);
+  /* Modo B: null mientras el bloque va en su sitio; { top, left, width, alto } cuando va fijo. */
+  const [fijo, setFijo] = useState(null);
   const refDe = (id) => (n) => { piezas.current[id] = n; };
 
   const estado = estadoPasoT6(paso);
   const el = estado.elementos;
+
+  /*
+   * ═══════════ MODO B: EL BLOQUE PEGADO POR SCRIPT (guía v2 §D) ═══════════
+   * Se fija cuando su sitio natural queda por debajo de la ventana y la capa
+   * está en pantalla. top = el mayor entre (alto de la ventana − alto del
+   * bloque) y la cima de la máquina; left y width, los del interior del
+   * Panel. Deja en su sitio un hueco del mismo alto: la página no se mueve.
+   * Se recalcula en scroll y resize, una vez por cuadro.
+   */
+  useLayoutEffect(() => {
+    let cuadro = null;
+    const calcular = () => {
+      cuadro = null;
+      const h = hueco.current; const m = maquina.current; const b = bloque.current;
+      if (!h || !m || !b) return;
+      const sitio = h.getBoundingClientRect();
+      const cima = m.getBoundingClientRect().top;
+      const alto = b.offsetHeight;
+      const panel = m.closest("section[data-capa]")?.parentElement?.getBoundingClientRect();
+      const va = sitio.top + alto > window.innerHeight && cima < window.innerHeight && panel;
+      setFijo((antes) => {
+        if (!va) return antes === null ? antes : null;
+        const nuevo = { top: Math.max(window.innerHeight - alto, cima), left: panel.left + 1, width: panel.width - 2, alto };
+        return antes && ["top", "left", "width", "alto"].every((k) => Math.abs(antes[k] - nuevo[k]) < 0.5) ? antes : nuevo;
+      });
+    };
+    const pedir = () => { if (cuadro === null) cuadro = requestAnimationFrame(calcular); };
+    calcular();
+    window.addEventListener("scroll", pedir, { passive: true });
+    window.addEventListener("resize", pedir);
+    return () => { window.removeEventListener("scroll", pedir); window.removeEventListener("resize", pedir); if (cuadro !== null) cancelAnimationFrame(cuadro); };
+  }, []);
 
   /* «Reproducir», copiado de LoQueYaPaso. */
   useEffect(() => {
@@ -212,14 +248,18 @@ export default function DosMomentos() {
       </div>
 
       {/*
-        ═══ EL BLOQUE DE CONTROL, PEGADO (guía v2 §4.4, modo A) ═══
-        Llega a los bordes del Panel con el margen negativo de su relleno
-        (el mismo clamp de marco.jsx), y lleva sus radios inferiores.
+        ═══ EL BLOQUE DE CONTROL, PEGADO (guía v2 §4.4, modo B) ═══
+        En su sitio, llega a los bordes del Panel con el margen negativo de su
+        relleno (el mismo clamp de marco.jsx). Fijo, toma el interior del
+        Panel. Lleva los radios inferiores del Panel.
       */}
-      <div ref={bloque} data-bloque-control style={{
-        position: "sticky", bottom: 0, zIndex: 2, marginTop: "14px",
+      <div ref={hueco} data-hueco-bloque style={{
+        marginTop: "14px", height: fijo ? `${fijo.alto}px` : undefined,
         marginLeft: "calc(-1 * clamp(14px, 2.2vw, 20px))", marginRight: "calc(-1 * clamp(14px, 2.2vw, 20px))",
-        padding: "12px 14px 14px", background: FONDO, borderTop: "1px solid rgba(248,249,250,0.14)",
+      }}>
+      <div ref={bloque} data-bloque-control data-modo={fijo ? "B-fijo" : "B-en-su-sitio"} style={{
+        ...(fijo ? { position: "fixed", top: `${fijo.top}px`, left: `${fijo.left}px`, width: `${fijo.width}px`, boxSizing: "border-box" } : { position: "relative" }),
+        zIndex: 20, padding: "12px 14px 14px", background: FONDO, borderTop: "1px solid rgba(248,249,250,0.14)",
         borderRadius: "0 0 20px 20px",
       }}>
         {/* El texto del paso: reserva el alto del más largo, a este ancho. */}
@@ -283,6 +323,7 @@ export default function DosMomentos() {
             Paso {Math.min(paso, PASOS)} de {PASOS}
           </span>
         </div>
+      </div>
       </div>
     </div>
   );
