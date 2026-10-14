@@ -46,7 +46,7 @@ function Movimiento({ m }) {
 export function LibroDiario({ asientos, abierto, onAlternar, textos, agrupar = false }) {
   const idCuerpo = useId();
   /* Agrupar (b5-t6-a3): un asiento con la misma etiqueta que el anterior no la repite ni lleva filete entre los dos. */
-  const sigue = (k) => agrupar && k > 0 && asientos[k].fecha === asientos[k - 1].fecha;
+  const sigue = (k) => agrupar && k > 0 && k < asientos.length && asientos[k].fecha === asientos[k - 1].fecha;
   return (
     <div data-libro-diario style={{ marginBottom: "12px", border: `1px solid ${COLOR.neutro}`, borderRadius: "12px" }}>
       <button type="button" data-diario-alternar aria-expanded={abierto} aria-controls={idCuerpo} onClick={onAlternar} style={{
