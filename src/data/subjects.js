@@ -739,6 +739,8 @@ export const SUBJECTS = {
           { id: "t7-3-descuento-comercial", nombre: "El descuento comercial", clasificacion: { tipo: APRENDER } },
           /* A2, después de A1 (regla 9). H1 «Descuento en la factura» entra entre A1 y A2. Ejemplo H-2, pp. 249-250. Cero FP. */
           { id: "t7-3-descuentos-en-cadena", nombre: "Descuentos en cadena", clasificacion: { tipo: APRENDER } },
+          /* A3, después de A2 (regla 9; depende de A1). H2 «La cadena de descuentos» entra entre A2 y A3. Ejemplo H-3, libro de quien vende, pp. 251-253. Cero FP. */
+          { id: "t7-3-descuento-condicionado", nombre: "El descuento condicionado", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],

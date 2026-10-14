@@ -7,6 +7,7 @@ import { APRENDER, SUBJECTS } from "../data/subjects.js";
 import PantallasT7_3 from "./mecanicas/libros/t7/PantallasT7_3.jsx";
 import { PIEZA_EL_DESCUENTO_COMERCIAL } from "../data/contabilidadT7_3.js";
 import { PIEZA_DESCUENTOS_EN_CADENA } from "../data/contabilidadT7_3_a2.js";
+import { PIEZA_EL_DESCUENTO_CONDICIONADO } from "../data/contabilidadT7_3_a3.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -25,6 +26,7 @@ export const TEMA_T7_3 = "inventarios-descuentos-nic2";
 export const PIEZAS_T7_3 = [
   { numero: PIEZA_EL_DESCUENTO_COMERCIAL.numero, pieza: PIEZA_EL_DESCUENTO_COMERCIAL, Pieza: PantallasT7_3 },
   { numero: PIEZA_DESCUENTOS_EN_CADENA.numero, pieza: PIEZA_DESCUENTOS_EN_CADENA, Pieza: PantallasT7_3 },
+  { numero: PIEZA_EL_DESCUENTO_CONDICIONADO.numero, pieza: PIEZA_EL_DESCUENTO_CONDICIONADO, Pieza: PantallasT7_3 },
 ].sort((a, b) => a.numero - b.numero);
 
 export default function ContabilidadT7_3View({ onBack }) {
