@@ -146,6 +146,15 @@ No es simétrico, y descubrirlo por las malas cuesta un turno:
 - **Las sesiones de código leen el repositorio**, así que el canon es la vía
   barata de pasarles algo: se escribe una vez y lo leen las tres células.
 
+**Dónde está cada quien.** Los chats de los agentes viven en la cuenta de
+trabajo; el del auditor jefe es
+`https://claude.ai/chat/edb72638-0dbe-8888-bc1e-544b11270f84`. Queda escrito
+porque no aparece en la lista de chats fijados, y un coordinador llegó a
+concluir que no existía después de consultar un listado que se lo devolvió
+incompleto. **Un listado que no lo trae no prueba que no esté:** se abre el
+enlace y se mira. El coste de equivocarse aquí no es un rodeo, es que una
+célula entera se quede esperando una auditoría que nadie iba a empezar.
+
 Antes de mandar a alguien a leer algo «en la fuente», se comprueba que esa
 persona pueda llegar a la fuente. No basta con que exista un camino: tiene que
 existir **para esa persona**. Una célula abrió un PR explicando con todo detalle
