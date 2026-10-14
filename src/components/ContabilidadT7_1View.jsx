@@ -17,6 +17,18 @@ import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import QueCuentaSeMueve from "./mecanicas/libros/t7/QueCuentaSeMueve.jsx";
 import { H1 } from "../data/contabilidadT7_1_h1.js";
+import ArmaLaFactura from "./mecanicas/libros/t7/ArmaLaFactura.jsx";
+import { H2 } from "../data/contabilidadT7_1_h2.js";
+import CuantoValeLoQueSobro from "./mecanicas/libros/t7/CuantoValeLoQueSobro.jsx";
+import { H3 } from "../data/contabilidadT7_1_h3.js";
+import CierraElMes from "./mecanicas/libros/t7/CierraElMes.jsx";
+import { H4 } from "../data/contabilidadT7_1_h4.js";
+import CostoOGasto from "./mecanicas/libros/t7/CostoOGasto.jsx";
+import { H5 } from "../data/contabilidadT7_1_h5.js";
+import DevolucionDosLibros from "./mecanicas/libros/t7/DevolucionDosLibros.jsx";
+import { H6 } from "../data/contabilidadT7_1_h6.js";
+import QueControlFalta from "./mecanicas/libros/t7/QueControlFalta.jsx";
+import { H7 } from "../data/contabilidadT7_1_h7.js";
 import LaCuentaQueNoSeMueve from "./mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx";
 import { PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE } from "../data/contabilidadT7_1.js";
 import LaFacturaCompleta from "./mecanicas/libros/t7/LaFacturaCompleta.jsx";
@@ -61,6 +73,12 @@ export const PIEZAS_T7_1 = [
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS_T7_1 = [
   { id: H1.id, Mecanica: QueCuentaSeMueve, titulo: H1.nombre },
+  { id: H2.id, Mecanica: ArmaLaFactura, titulo: H2.nombre },
+  { id: H3.id, Mecanica: CuantoValeLoQueSobro, titulo: H3.nombre },
+  { id: H4.id, Mecanica: CierraElMes, titulo: H4.nombre },
+  { id: H5.id, Mecanica: CostoOGasto, titulo: H5.nombre },
+  { id: H6.id, Mecanica: DevolucionDosLibros, titulo: H6.nombre },
+  { id: H7.id, Mecanica: QueControlFalta, titulo: H7.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */

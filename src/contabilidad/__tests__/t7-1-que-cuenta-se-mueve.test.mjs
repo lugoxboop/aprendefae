@@ -203,7 +203,11 @@ test("★★ los hechos se barajan en cada intento; las opciones, nunca", () => 
 /* ═══════════ 3 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
 
 test("★★★ en T7-1, justo después de AP2: exploratoria, fácil, 10 FP; las piezas de Aprender siguen sin FP", () => {
-  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), [D.H1_ID]);
+  /* T7-1 cerrado: los siete juegos, en el orden del mapa de L. */
+  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), [
+    D.H1_ID, "t7-1-arma-la-factura", "t7-1-cuanto-vale-lo-que-sobro", "t7-1-cierra-el-mes",
+    "t7-1-costo-o-gasto", "t7-1-devolucion-dos-libros", "t7-1-que-control-falta",
+  ]);
   const c = clasificacionDe("contabilidad", TEMA_T7_1, D.H1_ID);
   assert.deepEqual(c, { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 });
   assert.equal(actividadesDeTipo(TEMA, HACER)[0].nombre, D.H1.nombre);
