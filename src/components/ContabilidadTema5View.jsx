@@ -6,6 +6,7 @@ import ActivityBadge from "./shared/ActivityBadge.jsx";
 import { APRENDER, SUBJECTS } from "../data/subjects.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZA_DEL_EFECTIVO } from "../data/contabilidadT5Pieza1.js";
+import { PIEZA_TRES_MOMENTOS } from "../data/contabilidadT5Pieza2.js";
 import { ESCENAS_TEMA5 } from "./mecanicas/libros/tema5/escenasTema5.jsx";
 
 /*
@@ -24,7 +25,7 @@ import { ESCENAS_TEMA5 } from "./mecanicas/libros/tema5/escenasTema5.jsx";
 const MATERIA = "contabilidad";
 export const TEMA = "activos-financieros";
 
-export const PIEZAS = [{ numero: 1, pieza: PIEZA_DEL_EFECTIVO }];
+export const PIEZAS = [{ numero: 1, pieza: PIEZA_DEL_EFECTIVO }, { numero: 2, pieza: PIEZA_TRES_MOMENTOS }];
 const PUBLICADAS = PIEZAS.length;
 
 export default function ContabilidadTema5View({ onBack }) {
