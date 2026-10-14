@@ -342,8 +342,9 @@ test("★★★ la pieza no entra al catálogo de FP", () => {
   const dir = new URL("supabase/migrations/", RAIZ);
   const conElId = readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(T7.AP1_ID));
   assert.deepEqual(conElId, []);
-  /* Y ni la pieza ni la vista registran nada. */
-  for (const f of ["src/components/mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx", "src/components/ContabilidadT7_1View.jsx", "src/data/contabilidadT7_1.js"]) {
+  /* Y la pieza no registra nada. La vista registra solo los juegos de Hacer: a las piezas no les pasa con qué. */
+  assert.match(readFileSync(new URL("src/components/ContabilidadT7_1View.jsx", RAIZ), "utf8"), /<Pieza pieza=\{pieza\} rotulo=\{rotulo\} \/>/);
+  for (const f of ["src/components/mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx", "src/data/contabilidadT7_1.js"]) {
     const src = readFileSync(new URL(f, RAIZ), "utf8");
     /* Se miran las importaciones y las llamadas, no los comentarios: el componente dice en uno que no registra. */
     assert.doesNotMatch(src, /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/, f);
