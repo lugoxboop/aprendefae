@@ -4,8 +4,8 @@
  * recorra en Chromium. No es una página del sitio: Vite la sirve solo cuando
  * se mide.
  *
- * Con #h1 monta la vista en el modo Hacer, con H1 abierto (medir-t7-1-h1.mjs),
- * y con #h2 lo mismo con H2 (medir-t7-1-h2.mjs).
+ * Con #h1 … #h7 monta la vista en el modo Hacer con ese juego abierto, como lo
+ * abren medir-t7-1-h1.mjs … medir-t7-1-h7.mjs.
  *
  * Con #sonda monta en cambio dos figuras en el estado del acierto de la
  * pantalla 4, de anchos elegidos para que la línea de la compra mida 119 y
@@ -32,16 +32,24 @@ if (location.hash === "#sonda") {
       ))}
     </div>,
   );
-} else if (location.hash === "#h1" || location.hash === "#h2") {
+} else if (/^#h[1-7]$/.test(location.hash)) {
   /*
-   * H1 o H2 abierto en el modo Hacer, como lo abre #/inventarios-periodico/hacer/….
+   * El juego del hash, abierto en el modo Hacer, como lo abre #/inventarios-periodico/hacer/….
    * Sin sesión: la vista pide un AuthContext y aquí basta uno vacío.
    */
   raiz.render(
     <AuthContext.Provider value={{ usuario: null, pedirCuenta: () => {} }}>
       <ContabilidadT7_1View
         modo="hacer"
-        nodoInicial={location.hash === "#h2" ? "t7-1-arma-la-factura" : "t7-1-que-cuenta-se-mueve"}
+        nodoInicial={{
+          "#h1": "t7-1-que-cuenta-se-mueve",
+          "#h2": "t7-1-arma-la-factura",
+          "#h3": "t7-1-cuanto-vale-lo-que-sobro",
+          "#h4": "t7-1-cierra-el-mes",
+          "#h5": "t7-1-costo-o-gasto",
+          "#h6": "t7-1-devolucion-dos-libros",
+          "#h7": "t7-1-que-control-falta",
+        }[location.hash]}
         onBack={() => {}}
       />
     </AuthContext.Provider>,

@@ -7,7 +7,8 @@
  * una prueba compara cada texto de aquí contra ellas, letra por letra.
  *
  * Lo que cambia la v2: P4 cierra SIN la línea «Siguiente: «¿Qué control
- * falta?»». Vuelve cuando H7 esté publicada.
+ * falta?»». Vuelve cuando H7 esté publicada: H7 entra con este PR, así que
+ * la línea vuelve, tal cual la v1 (commit aparte, declarado en el PR).
  *
  * Pieza de Aprender: cero FP, no entra al catálogo. Cinco pantallas, sin
  * figura: dos casos con preguntas de opción, como las de A5.
@@ -124,7 +125,7 @@ const SEGURIDAD = {
   },
 };
 
-/* P4 · Resumen, sin botón y, por la v2, sin la línea «Siguiente». */
+/* P4 · Resumen, sin botón. La línea «Siguiente» de la v1 vuelve con H7, como dice la v2. */
 const RESUMEN = {
   id: "resumen",
   tipo: "resumen",
@@ -134,6 +135,7 @@ const RESUMEN = {
     "Para cuidar el inventario, el libro pide conteos y revisiones. También pide un almacén con techo y puertas, un seguro y entregas con permiso.",
   ],
   boton: null,
+  siguiente: "Siguiente: «¿Qué control falta?».",
   pie: "Basado en el libro, pp. 208-209",
 };
 
