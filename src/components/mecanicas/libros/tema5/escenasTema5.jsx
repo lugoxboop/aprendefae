@@ -1,5 +1,5 @@
 import UnaFrase from "../intro/UnaFrase.jsx";
-import { PIEZA_DEL_EFECTIVO, PREGUNTA_FINAL_T5, OPCIONES_FINAL_T5 } from "../../../../data/contabilidadTema5Pieza1.js";
+import { PIEZA_DEL_EFECTIVO, PREGUNTA_FINAL_T5, OPCIONES_FINAL_T5 } from "../../../../data/contabilidadT5Pieza1.js";
 import EfectivoDeSobra from "./EfectivoDeSobra.jsx";
 import DosPaquetes from "./DosPaquetes.jsx";
 

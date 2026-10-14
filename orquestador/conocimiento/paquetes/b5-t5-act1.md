@@ -7,7 +7,7 @@ Guardado por Kaede (construcción) el 14 de octubre de 2026, tal como llegó de 
 3. **Emojis.** Como en T1-6, el ❌ y el ✅ van al inicio del texto en los datos, y Retro los separa. El texto que sigue al emoji se copia literal.
 4. La devolución sale por Retro (`role="status"`), como en T1-6.
 
-Pendiente de Futaba (por INFLESZ < 65): def-emisora, caso-pactado, el acierto de def-interes y el párrafo del resumen. Se construye con los actuales; el cambio será solo de datos.
+**Cambio de datos del 14-oct (PASA de Shoko):** Futaba reescribió por INFLESZ los cuatro textos que no llegaban a 65: la ficha def-emisora (casi literal de la p. 192, sin «económicos»), la ficha caso-pactado (sin «durante un periodo determinado»), el acierto de def-interes y el párrafo del resumen. Están aplicados abajo, en sus tablas. Las líneas y altos medidos por Mai para esas cuatro filas ya no valen; los revalidó Kaede en el sitio.
 
 ---
 
@@ -170,7 +170,7 @@ Todos caben en una línea; el botón no salta al abrir el panel.
 - El recuadro compartido «RESULTADO» con el porcentaje.
 - Párrafo propio, literal:
 
-«{bien} de {cuantas} completas al primer intento. Cada ficha valía {X} %: elegir variable o fija pesa 60 %, y elegir con interés o con descuento, 40 %. En las de renta variable, acertar la primera elección vale la ficha entera.»
+«{bien} de {cuantas} completas al primer intento. Cada ficha valía {X} %. Elegir variable o fija pesa 60 %. Elegir con interés o con descuento pesa 40 %. En las de renta variable, la primera elección vale toda la ficha.»
 
 Con 9 fichas, {X} = 100 / 9 = 11,1… El redondeo y el separador decimal los pone el componente, igual que en T1-6. En la réplica, con un decimal, ocupa 6 líneas a 320 y 5 a 375 [R].
 
@@ -183,14 +183,14 @@ Texto de la ficha en Sora 14/700 [S], a 230 / 285 de ancho [M]. El alto incluye 
 | Id | Texto literal de la ficha | Respuesta | Tipo | Líneas · alto a 320 | a 375 |
 |---|---|---|---|---|---|
 | acciones | «Acciones de otra empresa» | Renta variable | Nombre | 1 · 42,19 | 1 · 42,19 |
-| def-emisora | «Su rendimiento depende de los factores económicos propios de la empresa que emitió el título.» | Renta variable | Definición | 4 · 96,75 | 3 · 78,56 |
+| def-emisora | «Su rendimiento depende de factores propios de la empresa que lo emitió.» | Renta variable | Definición | 4 · 96,75 | 3 · 78,56 |
 | def-dividendos | «Sus dividendos dependen de la situación económica y de la liquidez de quien lo emitió.» | Renta variable | Definición, casi literal | 3 · 78,56 | 3 · 78,56 |
 | caso-resultados | «Lo que recibe quien lo tiene se decide según los resultados de la empresa que lo emitió.» | Renta variable | CONSTRUCCIÓN | 3 · 78,56 | 3 · 78,56 |
 | cdt | «CDT (certificado de depósito a término)» | Renta fija → Con interés | Nombre | 2 · 60,38 | 2 · 60,38 |
 | bonos | «Bonos» | Renta fija → Con interés | Nombre | 1 · 42,19 | 1 · 42,19 |
 | cedulas | «Cédulas hipotecarias» | Renta fija → Con interés | Nombre | 1 · 42,19 | 1 · 42,19 |
 | def-interes | «Le paga un interés fijo durante un periodo determinado.» | Renta fija → Con interés | Definición | 2 · 60,38 | 2 · 60,38 |
-| caso-pactado | «Desde el día de la compra se sabe qué interés pagará la empresa que lo emitió durante un periodo determinado.» | Renta fija → Con interés | CONSTRUCCIÓN | 4 · 96,75 | 3 · 78,56 |
+| caso-pactado | «Desde el día de la compra se sabe qué interés pagará la empresa que lo emitió.» | Renta fija → Con interés | CONSTRUCCIÓN | 4 · 96,75 | 3 · 78,56 |
 | participacion | «Títulos de participación» | Renta fija → Con descuento | Nombre | 1 · 42,19 | 1 · 42,19 |
 | cert | «CERT (certificado de reembolso tributario)» | Renta fija → Con descuento | Nombre | 2 · 60,38 | 2 · 60,38 |
 | canjeables | «Títulos canjeables» | Renta fija → Con descuento | Nombre | 1 · 42,19 | 1 · 42,19 |
@@ -210,7 +210,7 @@ Devoluciones de acierto (tras ✅). Las líneas dependen de la letra de la devol
 | cdt | «Sí. El libro pone el CDT entre los títulos que pagan un interés fijo durante un periodo.» | 3 · 2 |
 | bonos | «Sí. El libro pone los bonos en la renta fija con interés.» | 2 · 2 |
 | cedulas | «Sí. Las cédulas hipotecarias van con el CDT y los bonos: renta fija con interés.» | 3 · 2 |
-| def-interes | «Sí. Interés fijo durante un periodo determinado: así define el libro la renta fija con interés.» | 3 · 3 |
+| def-interes | «Sí. Un interés fijo durante un periodo determinado. Así define el libro la renta fija con interés.» | 3 · 3 |
 | caso-pactado | «Sí. El interés quedó fijo al invertir, aunque lo pague una empresa: es renta fija con interés.» | 3 · 3 |
 | participacion | «Sí. El libro pone los títulos de participación entre los de descuento.» | 2 · 2 |
 | cert | «Sí. El CERT está en la lista del libro de renta fija con descuento.» | 2 · 2 |

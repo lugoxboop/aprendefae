@@ -41,7 +41,7 @@ const { createRoot } = await import("react-dom/client");
 const act = React.act;
 const h = React.createElement;
 
-const D = await import("../../data/contabilidadTema5Pieza1.js");
+const D = await import("../../data/contabilidadT5Pieza1.js");
 const E = await import("../efectivoDeSobra.js");
 const { default: EfectivoDeSobra } = await import("../../components/mecanicas/libros/tema5/EfectivoDeSobra.jsx");
 const { default: DosPaquetes } = await import("../../components/mecanicas/libros/tema5/DosPaquetes.jsx");
@@ -55,6 +55,7 @@ const montar = async (el) => {
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
 const tocar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
+const dormir = async (ms) => { for (let t = 0; t < ms; t += 100) await act(async () => { await new Promise((r) => setTimeout(r, Math.min(100, ms - t))); }); };
 /* El estado visual de la escena: cada nodo con sus estilos ordenados (React no garantiza el orden al actualizar). */
 const fotoEscena = (caja) => [...caja.querySelectorAll("[data-escena] *")].map((n) => {
   const s = [...Array(n.style.length)].map((_, i) => n.style[i]).sort().map((k) => `${k}:${n.style.getPropertyValue(k)}`).join(";");
@@ -102,7 +103,8 @@ test("★★★ capa 1: las dos citas van entre «» con su página; las dos not
   assert.ok(!n["Activo financiero temporal"].delLibro.includes("\n"));
   /* Comillas internas curvas, tal cual. */
   assert.ok(n["Activo financiero temporal"].definicion.includes("“negociables o realizables”"));
-  assert.ok(n["Título valor"].definicion.includes("“valores”"));
+  /* Desde los textos finales, la definición 3 ya no lleva comillas internas. */
+  assert.ok(!n["Título valor"].definicion.includes("“"));
   assert.ok(n["Renta variable"].delLibro.includes("“renta variable” y “renta fija”"));
 });
 
@@ -226,13 +228,13 @@ for (const orden of [["a", "b"], ["b", "a"]]) {
     assert.equal(final(), "");
     assert.equal(boton(orden[0]).getAttribute("aria-expanded"), "true");
     assert.equal(boton(orden[0]).getAttribute("aria-disabled"), "true");
-    assert.equal(boton(orden[0]).querySelector("svg"), null, "al abrirse, el chevrón desaparece");
+    assert.equal(Boolean(boton(orden[0]).querySelector("svg")), false, "al abrirse, el chevrón desaparece");
     const p = D.PAQUETES.find((x) => x.id === orden[0]);
-    assert.equal(caja.querySelector(`[data-revela="${orden[0]}"]`).textContent, p.revela);
+    assert.equal(caja.querySelector(`[data-revela="${orden[0]}"]`).textContent, p.revela + p.pie);
     await tocar(boton(orden[0])); // no se vuelve a cerrar
     assert.equal(boton(orden[0]).getAttribute("aria-expanded"), "true");
     await tocar(boton(orden[1]));
-    assert.equal(final(), D.FINAL_CAPA_3.join(""));
+    assert.equal(final(), D.FINAL_CAPA_3.join("") + D.PIE_FINAL_CAPA_3);
     desmontar();
   });
 }
@@ -252,7 +254,7 @@ test("★★ capa 3: A y B se ven idénticos antes y después de tocarlos (sin c
 test("★★★ capa 4: UnaFrase con la pregunta y las cuatro opciones del paquete; una sola correcta", async () => {
   assert.equal(D.OPCIONES_FINAL_T5.length, 4);
   assert.deepEqual(D.OPCIONES_FINAL_T5.filter((o) => o.correcta).map((o) => o.texto),
-    ["Que se venda con facilidad y vaya a volverse efectivo cuando se necesite."]);
+    ["Que se pueda vender fácil y vaya a volverse efectivo cuando haga falta."]);
   const { Capa4 } = ESCENAS_TEMA5[D.PIEZA_DEL_EFECTIVO.id];
   const { caja, desmontar } = await montar(h(Capa4));
   assert.ok(caja.querySelector("[data-una-frase]"));
@@ -271,4 +273,56 @@ test("★★★ todo identificador nuevo de la pieza empieza por b5-", () => {
   assert.match(D.PIEZA_DEL_EFECTIVO.id, /^b5-/);
   for (const o of D.OPCIONES_FINAL_T5) assert.match(o.id, /^b5-/);
   assert.deepEqual(Object.keys(ESCENAS_TEMA5), [D.PIEZA_DEL_EFECTIVO.id]);
+});
+
+/* ═══════════ EL PIE DE FUENTE Y «REPRODUCIR» (textos finales, 14-oct) ═══════════ */
+
+test("★★★ capa 2: cada paso y el cierre llevan su pie de fuente, el de Futaba (el cierre, corregido)", async () => {
+  assert.deepEqual([...D.PIES_CAPA_2, D.PIE_CIERRE_CAPA_2], [
+    "Basado en el libro, p. 192", "Basado en el libro, pp. 192-193", "Libro, p. 193", "Libro, p. 192",
+    "Libro, p. 192", "Libro, p. 193", "Basado en el libro, pp. 191 y 193", "Basado en el libro, pp. 192-193",
+  ]);
+  const { caja, desmontar } = await montar(h(EfectivoDeSobra));
+  const pies = [];
+  for (let p = 1; p <= 8; p++) {
+    pies.push(caja.querySelector("[data-pie]").textContent);
+    if (p < 8) await tocar(caja.querySelector("[data-siguiente]"));
+  }
+  assert.deepEqual(pies, [...D.PIES_CAPA_2, D.PIE_CIERRE_CAPA_2]);
+  desmontar();
+});
+
+test("★★★ capa 3: los pies de fuente de las dos cajas y del bloque final se ven al abrirse", async () => {
+  const { caja, desmontar } = await montar(h(DosPaquetes));
+  assert.equal(caja.querySelectorAll("[data-pie]").length, 0, "cerradas, sin pie");
+  await tocar(caja.querySelector('[data-paquete="a"] button'));
+  assert.equal(caja.querySelector('[data-paquete="a"] [data-pie]').textContent, "Basado en el libro, p. 192");
+  await tocar(caja.querySelector('[data-paquete="b"] button'));
+  assert.equal(caja.querySelector('[data-paquete="b"] [data-pie]').textContent, "Basado en el libro, p. 192");
+  assert.equal(caja.querySelector("[data-final] [data-pie]").textContent, "Basado en el libro, pp. 191-192");
+  desmontar();
+});
+
+test("★★★ «Reproducir» como LoQueYaPaso: avanza solo, «Pausa» con aria-pressed, Siguiente lo pasa a manual, y en el cierre «Ver de nuevo»", async () => {
+  const E2 = await import("../efectivoDeSobra.js");
+  /* 3 000 ms + 450 ms por palabra (loQueYaPaso.js). */
+  assert.equal(E2.duracionPaso(1), 3000 + 450 * D.PASOS_CAPA_2[0].split(/\s+/).length);
+  const { caja, desmontar } = await montar(h(EfectivoDeSobra));
+  const rep = () => caja.querySelector("[data-reproducir]");
+  const pasoDe = () => caja.querySelector("[data-paso-de]").textContent;
+  assert.equal(rep().textContent, "Reproducir");
+  assert.equal(rep().getAttribute("aria-pressed"), "false");
+  await tocar(rep());
+  assert.equal(rep().textContent, "Pausa");
+  assert.equal(rep().getAttribute("aria-pressed"), "true");
+  await dormir(E2.duracionPaso(1) + 150);
+  assert.equal(pasoDe(), "Paso 2 de 7", "avanzó solo");
+  await tocar(caja.querySelector("[data-siguiente]"));
+  assert.equal(rep().textContent, "Reproducir", "Siguiente lo pasa a manual");
+  for (let p = 3; p <= 8; p++) await tocar(caja.querySelector("[data-siguiente]"));
+  assert.equal(rep().textContent, "Ver de nuevo");
+  assert.equal(rep().hasAttribute("aria-pressed"), false);
+  await tocar(rep());
+  assert.equal(pasoDe(), "Paso 1 de 7", "«Ver de nuevo» vuelve al paso 1");
+  desmontar();
 });

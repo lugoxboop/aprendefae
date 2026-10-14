@@ -1,8 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
-import { TITULOS, ROTULOS_ESCENA, PASOS_CAPA_2, CIERRE_CAPA_2 } from "../../../../data/contabilidadTema5Pieza1.js";
-import { estadoPaso, PASOS, CIERRE } from "../../../../contabilidad/efectivoDeSobra.js";
+import { TITULOS, ROTULOS_ESCENA, PASOS_CAPA_2, CIERRE_CAPA_2, PIES_CAPA_2, PIE_CIERRE_CAPA_2 } from "../../../../data/contabilidadT5Pieza1.js";
+import { estadoPaso, PASOS, CIERRE, duracionPaso } from "../../../../contabilidad/efectivoDeSobra.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "./EstilosT5.jsx";
 
@@ -12,13 +12,13 @@ import EstilosT5, { CLASE_T5 } from "./EstilosT5.jsx";
  * de sobra. Siete pasos y el cierre (guía de Mai v3, §4).
  *
  * De arriba abajo: la escena (decorativa: el texto del paso dice todo lo que
- * muestra), el texto del paso y la fila de botones.
+ * muestra), el texto del paso, su pie de fuente y los controles.
  *
- * Los botones son los de LoQueYaPaso —mismas palabras, píldora de 44 px,
- * «Siguiente» relleno neutro y el desactivado que se ve, no desaparece—:
- * la guía (§4.5) dice que, si LoQueYaPaso usa otro estilo de botón, manda
- * LoQueYaPaso, por coherencia entre piezas. La fila sigue la guía:
- * «Anterior» · contador · «Siguiente».
+ * Los controles se copian tal cual de LoQueYaPaso (decisión de Sakuta,
+ * adelantando la guía v5): «Anterior» y «Siguiente» en una fila, y debajo
+ * «Reproducir» / «Pausa» / «Ver de nuevo» con su aria-pressed y el contador.
+ * El aria-pressed con rótulo cambiante lo objetó Shoko: va a Erwin como deuda
+ * de lo publicado, y aquí se copia lo publicado.
  *
  * Nada avanza solo. Ningún texto vive aquí: todo sale del archivo de datos.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -38,10 +38,13 @@ const FONDO_SOLIDO = FAE.bg; // #0E1B2E
 
 /* LoQueYaPaso: la píldora, el «Siguiente» relleno y el desactivado. */
 const botonBase = {
-  width: "100%", minWidth: 0, height: "44px", borderRadius: "999px", fontFamily: SORA, fontSize: "14px", fontWeight: 600,
+  flex: "1 1 0", minWidth: 0, height: "44px", borderRadius: "999px", fontFamily: SORA, fontSize: "14px", fontWeight: 600,
   cursor: "pointer", boxSizing: "border-box",
 };
 const DESACTIVADO = { background: "transparent", border: `2px solid ${COLOR.quieto}`, color: COLOR.apagado, cursor: "default" };
+
+/* El pie de fuente, con el estilo del Tema 3 (CuandoSeCausa, MismoHecho). */
+const PIE = { margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: COLOR.apagado };
 
 /* El tronco va en x = 11; el grupo empieza en x = 24 (guía §4.2). */
 const X_TRONCO = 11;
@@ -90,6 +93,8 @@ export default function EfectivoDeSobra() {
   const anterior = useRef(null);
   const siguiente = useRef(null);
   const [lineas, setLineas] = useState(null);
+  const [reproduciendo, setReproduciendo] = useState(false);
+  const bloque = useRef(null);
 
   const estado = estadoPaso(paso);
   const el = estado.elementos;
@@ -125,7 +130,33 @@ export default function EfectivoDeSobra() {
     foco.current = null;
   }, [paso]);
 
+  /*
+   * «Reproducir», copiado de LoQueYaPaso: nada arranca solo; avanza cada
+   * 3 000 ms + 450 ms por palabra; se pausa si el bloque queda a menos del
+   * 30 % visible o si la pestaña se oculta; Anterior o Siguiente lo pasan a
+   * manual.
+   */
+  useEffect(() => {
+    if (!reproduciendo) return undefined;
+    if (paso >= CIERRE) { setReproduciendo(false); return undefined; }
+    const t = setTimeout(() => setPaso((p) => Math.min(CIERRE, p + 1)), duracionPaso(paso));
+    return () => clearTimeout(t);
+  }, [reproduciendo, paso]);
+
+  useEffect(() => {
+    if (!reproduciendo) return undefined;
+    const alOcultar = () => { if (document.visibilityState === "hidden") setReproduciendo(false); };
+    document.addEventListener("visibilitychange", alOcultar);
+    let io = null;
+    if (typeof IntersectionObserver !== "undefined" && bloque.current) {
+      io = new IntersectionObserver((es) => { if (es.some((e) => e.intersectionRatio < 0.3)) setReproduciendo(false); }, { threshold: [0, 0.3] });
+      io.observe(bloque.current);
+    }
+    return () => { document.removeEventListener("visibilitychange", alOcultar); io?.disconnect(); };
+  }, [reproduciendo]);
+
   const ir = (nuevo) => {
+    setReproduciendo(false);
     const destino = Math.min(CIERRE, Math.max(1, nuevo));
     if (destino === CIERRE) foco.current = "texto";
     if (destino === 1) foco.current = "siguiente";
@@ -136,12 +167,14 @@ export default function EfectivoDeSobra() {
   const ultimo = paso === CIERRE;
   const linea = (e) => (e.atenuado ? ATENUADO : BORDES);
   const textos = [...PASOS_CAPA_2, CIERRE_CAPA_2];
+  const pies = [...PIES_CAPA_2, PIE_CIERRE_CAPA_2];
+  const etiquetaReproducir = ultimo ? "Ver de nuevo" : reproduciendo ? "Pausa" : "Reproducir";
   const estiloTexto = (i) => (i === PASOS
     ? { fontFamily: SORA, fontWeight: 600 }
     : { fontFamily: INTER, fontWeight: 400 });
 
   return (
-    <div data-capa2-t5 className={CLASE_T5}>
+    <div ref={bloque} data-capa2-t5 className={CLASE_T5}>
       <EstilosT5 />
       {/* ═══ LA ESCENA ═══ */}
       <div ref={escena} data-escena aria-hidden="true" style={{ position: "relative" }}>
@@ -259,8 +292,16 @@ export default function EfectivoDeSobra() {
         </div>
       </div>
 
-      {/* ═══ LOS BOTONES: «Anterior» · contador · «Siguiente» ═══ */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "8px", alignItems: "center", marginTop: "12px" }}>
+      {/* El pie de fuente del paso, con el estilo del Tema 3. Reserva el alto del más largo, como el texto. */}
+      <div style={{ display: "grid", marginTop: "4px" }}>
+        <div aria-hidden="true" style={{ gridArea: "1 / 1", display: "grid", visibility: "hidden" }}>
+          {pies.map((t, i) => <p key={`${i}-${t}`} style={{ gridArea: "1 / 1", ...PIE }}>{t}</p>)}
+        </div>
+        <p data-pie style={{ gridArea: "1 / 1", ...PIE }}>{pies[paso - 1]}</p>
+      </div>
+
+      {/* ═══ LOS CONTROLES, COPIADOS DE LOQUEYAPASO ═══ */}
+      <div style={{ display: "flex", gap: "9px", marginTop: "12px" }}>
         <button
           ref={anterior}
           type="button"
@@ -271,9 +312,6 @@ export default function EfectivoDeSobra() {
         >
           Anterior
         </button>
-        <span data-paso-de style={{ fontFamily: INTER, fontSize: "12px", lineHeight: 1.4, color: SECUNDARIO, whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums", visibility: ultimo ? "hidden" : "visible" }}>
-          Paso {Math.min(paso, PASOS)} de {PASOS}
-        </span>
         <button
           ref={siguiente}
           type="button"
@@ -284,6 +322,27 @@ export default function EfectivoDeSobra() {
         >
           Siguiente
         </button>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "44px", marginTop: "4px" }}>
+        <button
+          type="button"
+          data-reproducir
+          aria-pressed={ultimo ? undefined : reproduciendo}
+          onClick={() => {
+            if (ultimo) { ir(1); return; }
+            setReproduciendo((r) => !r);
+          }}
+          style={{
+            minHeight: "44px", padding: "0 4px", background: "transparent", border: "none", cursor: "pointer",
+            fontFamily: SORA, fontSize: "13px", fontWeight: 600, color: COLOR.blanco, textDecoration: "underline", textUnderlineOffset: "3px",
+          }}
+        >
+          {etiquetaReproducir}
+        </button>
+        {/* En el cierre el contador queda vacío y conserva su sitio (guía v3). */}
+        <span data-paso-de style={{ fontFamily: INTER, fontSize: "12px", color: COLOR.apagado, fontVariantNumeric: "tabular-nums", visibility: ultimo ? "hidden" : "visible" }}>
+          Paso {Math.min(paso, PASOS)} de {PASOS}
+        </span>
       </div>
     </div>
   );
