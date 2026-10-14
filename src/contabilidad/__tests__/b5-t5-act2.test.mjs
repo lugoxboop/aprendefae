@@ -16,7 +16,8 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · el asiento revelado tras el error, y el acierto sin texto
  *   · el libro diario: cerrado, «Ver» / «Ocultar», crece con cada parte
  *   · ninguna cifra del estante ni del diario fuera de las pp. 194-195
- *   · «1.725.000» cabe en el campo a 320
+ *   · «1.725.000» cabe en el campo a 320, con el marco de la parte sin
+ *     relleno lateral (salida 1 de Sakuta)
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -387,9 +388,12 @@ const px = (v) => Number.parseFloat(v) || 0;
 /* A 320: 258 de ancho útil del Panel (medido en b5-t5-a1). */
 const UTIL_320 = 258;
 
-test("★★★ «1.725.000», la cifra más larga de las respuestas, cabe en el campo a 320",
-  { todo: "NO CABE: en el sitio el hueco mide 69,88 (el marco de la parte, copiado de T3, resta 22) y la cifra 73,91; Mai midió 80,88 sin ese marco — pendiente de Sakuta y Mai" },
-  async () => {
+/*
+ * Salida 1 de Sakuta (14-oct): el marco de cada parte en la mesa de la célula
+ * va SIN relleno lateral (el borde se conserva), como en la réplica de Mai que
+ * auditó Shoko. Con el relleno de 10 px, el hueco era 69,88 y no cabía.
+ */
+test("★★★ «1.725.000», la cifra más larga de las respuestas, cabe en el campo a 320, con el marco de la parte sin relleno lateral", async () => {
   const { caja, desmontar } = await montar({ items: [parte(2)] });
   await armar(caja, parte(2).asiento, false);
   const mesa = caja.querySelector("[data-mesa]");
@@ -399,20 +403,22 @@ test("★★★ «1.725.000», la cifra más larga de las respuestas, cabe en el
   /* El hueco se calcula con los estilos que el componente pinta, desde el Panel: el marco de la parte, la mesa, la tarjeta y el campo. */
   const seccion = caja.querySelector("[data-parte]");
   const [, phs] = seccion.style.padding.split(" ").map(px);
+  assert.equal(phs, 0, "el marco de la parte, sin relleno lateral (salida 1)");
+  assert.match(seccion.style.border, /^1px solid /, "y con su borde");
   const util = UTIL_320 - 2 * phs - 2 * px(seccion.style.border);
   const columna = (util - px(mesa.style.gap)) / 2;
   const [pv, ph] = tarjeta.style.padding.split(" ").map(px);
   const tarjetaUtil = columna - 2 * ph - 2 * px(tarjeta.style.border);
   const [, phc] = campo.style.padding.split(" ").map(px);
   const hueco = tarjetaUtil - 2 * phc - 2 * px(campo.style.border) - GLIFOS_CIFRA.$ - px(signo.style.marginRight);
-  /* Medido en Chromium a 320 (14-oct): el input mide 69,88. */
-  assert.ok(pv >= 0 && Math.abs(hueco - 69.88) < 1, `hueco ${hueco}`);
+  /* Medido en Chromium a 320 (14-oct, con la salida 1): el input mide 79,88. */
+  assert.ok(pv >= 0 && Math.abs(hueco - 79.88) < 1, `hueco ${hueco}`);
   const respuestas = PARTES.flatMap((p) => p.asiento.map((e) => e.valor));
   const mayor = respuestas.map((v) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ".")).sort((a, b) => ancho(b) - ancho(a))[0];
   assert.equal(mayor, "1.725.000");
   assert.equal(caja.querySelector('[data-campo-cifra="Caja"]').value, "1.725.000", "el campo pinta la cifra con puntos");
   assert.ok(Math.abs(ancho(mayor) - 73.91) < 0.5, "la tabla de glifos mide de verdad");
-  assert.ok(ancho(mayor) <= hueco, `«${mayor}» mide ${ancho(mayor).toFixed(2)} y el hueco ${hueco.toFixed(2)}`);
+  assert.ok(ancho(mayor) <= hueco - 5, `«${mayor}» mide ${ancho(mayor).toFixed(2)} y el hueco ${hueco.toFixed(2)}: cabe con al menos 5 px de sobra`);
   desmontar();
 });
 
