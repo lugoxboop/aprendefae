@@ -52,6 +52,7 @@ import { hechoDeParte as hechoDeParteT3 } from "../contabilidad/elCierreCompleto
 import { CASOS_ACT7 } from "../data/contabilidadTema3Act7.js";
 import { hechoDeItem as hechoDeAct6T3 } from "../contabilidad/queLeToca.js";
 import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
+import { unidadDeH3 } from "../contabilidad/t7H3.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -674,6 +675,19 @@ Object.assign(REGLAS, {
     const pregunta = que === "cuenta" ? "Cuál cuenta no cuadra" : "Qué error tiene";
     return `${pregunta} — ${t ? t.texto : c.transaccion}`;
   },
+});
+
+/*
+ * ═══════════ CONTABILIDAD · T7 «INVENTARIOS» (Célula C) ═══════════
+ *
+ * Las actividades de Hacer de T7, cada una con su regla. Como las del Tema 3,
+ * LEEN el texto de los datos de su actividad —el mismo del que sale el id que
+ * guarda la mecánica—, no lo copian: si mañana cambia un enunciado, el panel
+ * lo enseña cambiado sin tocar nada aquí.
+ */
+Object.assign(REGLAS, {
+  /* T7-1 · H3. Cada ítem, por su pregunta, con el método delante cuando lo trae. */
+  "t7-1-cuanto-vale-lo-que-sobro": (id) => unidadDeH3(id),
 });
 
 /*
