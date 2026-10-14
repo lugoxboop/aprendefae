@@ -704,6 +704,8 @@ export const SUBJECTS = {
         actividades: [
           /* A1: abre el tema. La lista del libro de pp. 207-208 y el permanente de pp. 233-234. Cero FP. */
           { id: "t7-2-a1-la-cuenta-que-si-se-mueve", nombre: "La cuenta que sí se mueve", clasificacion: { tipo: APRENDER } },
+          /* H1, justo después de A1 (orden final de T7-2): se publica con A1 o después. Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0098. */
+          { id: "t7-2-debe-o-haber", nombre: "¿Debe o haber?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
           /* A2, después de A1 (regla 9): usa «Inventario de mercancías sí se mueve» y la glosa del costo de lo vendido. H1 «¿Debe o haber?» entra entre las dos. Cero FP. */
           { id: "t7-2-a2-la-venta-en-dos-asientos", nombre: "La venta en dos asientos", clasificacion: { tipo: APRENDER } },
         ],

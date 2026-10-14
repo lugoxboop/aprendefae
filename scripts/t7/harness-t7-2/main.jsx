@@ -3,9 +3,20 @@
  * estilos del sitio (Inter y Sora incluidas), para que los scripts
  * medir-t7-2-*.mjs la recorran en Chromium. No es una página del sitio: Vite
  * la sirve solo cuando se mide. Va aparte del banco de T7-1 para no tocarlo.
+ *
+ * Con #h1 monta la vista en el modo Hacer, con H1 abierto (medir-t7-2-h1.mjs).
+ * Sin sesión: la vista pide un AuthContext y aquí basta uno vacío.
  */
 import { createRoot } from "react-dom/client";
 import "../../../src/styles/global.css";
 import ContabilidadT7_2View from "../../../src/components/ContabilidadT7_2View.jsx";
+import { AuthContext } from "../../../src/auth/AuthProvider.jsx";
 
-createRoot(document.getElementById("root")).render(<ContabilidadT7_2View onBack={() => {}} />);
+const ABIERTO = { "#h1": "t7-2-debe-o-haber" };
+const nodo = ABIERTO[location.hash] ?? null;
+
+createRoot(document.getElementById("root")).render(
+  <AuthContext.Provider value={{ usuario: null, pedirCuenta: () => {} }}>
+    {nodo ? <ContabilidadT7_2View modo="hacer" nodoInicial={nodo} onBack={() => {}} /> : <ContabilidadT7_2View onBack={() => {}} />}
+  </AuthContext.Provider>,
+);

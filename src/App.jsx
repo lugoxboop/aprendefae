@@ -272,11 +272,11 @@ export default function App() {
     );
   }
 
-  /* T7-2 de Contabilidad (Célula C): por ahora, sus piezas 1 y 2 de Aprender. */
+  /* T7-2 de Contabilidad (Célula C): sus piezas de Aprender y sus actividades de Hacer. */
   if (view === "inventarios-permanente") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <ContabilidadT7_2View onBack={() => setView("contabilidad")} />
+        <ContabilidadT7_2View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }
