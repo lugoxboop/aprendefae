@@ -3,6 +3,7 @@ import App from "./App.jsx";
 import PrivacidadView from "./components/PrivacidadView.jsx";
 import { NavigationContext } from "./navigation.js";
 import { AuthProvider } from "./auth/AuthProvider.jsx";
+import { instalarRecargaTrasDespliegue } from "./arranque/recargaTrasDespliegue.js";
 
 
 import "./styles/global.css";
@@ -17,6 +18,13 @@ import "./styles/home.css";
 const isPrivacidad = window.location.pathname.replace(/\/+$/, "") === "/privacidad";
 
 const navigation = { goHome: () => { window.location.href = "/"; } };
+
+/*
+ * Antes de montar nada: si un despliegue deja esta pestaña pidiendo trozos que
+ * ya no existen, recarga una vez; si vuelve a fallar, avisa en vez de quedarse
+ * en blanco. Ver arranque/recargaTrasDespliegue.js.
+ */
+instalarRecargaTrasDespliegue(window);
 
 /* Al llegar por el fallback, el título viene del index del SPA: se corrige. */
 if (isPrivacidad) document.title = "Política de privacidad · AprendeFAE";
