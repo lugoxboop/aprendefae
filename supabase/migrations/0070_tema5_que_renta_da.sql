@@ -12,8 +12,13 @@
 -- EL TEMA: `activos-financieros`, el id que decidió Erwin al fusionar el #46
 -- (sin el prefijo de la célula).
 --
--- QUÉ NECESITA PARA CORRER: actividad_catalogo con su columna `etapas` —la
--- 0011 y la 0014—.
+-- DE QUÉ DEPENDE: de la 0011 (crea actividad_catalogo) y de la 0014 (le añade
+-- la columna `etapas`). Nada más.
+--
+-- DE QUÉ NO DEPENDE: de ninguna otra. En particular, no de la 0052
+-- (Política Monetaria) ni de la 0053 (Tema 3, act. 3): no lee ni toca sus
+-- filas. Un número que falta en medio (0054 a 0069) no rompe nada: las
+-- migraciones se aplican por orden de nombre.
 --
 -- EL ORDEN: Mateo la corre en producción ANTES de fusionar el PR que la trae.
 -- Un estudiante que termine la actividad antes de que exista su fila
