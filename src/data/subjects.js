@@ -666,6 +666,8 @@ export const SUBJECTS = {
           { id: "t7-1-a1-la-cuenta-que-no-se-mueve", nombre: "La cuenta que no se mueve", clasificacion: { tipo: APRENDER } },
           /* AP2, después de AP1: arma la factura completa de la misma compra. Cero FP. */
           { id: "t7-1-a2-la-factura-completa", nombre: "La factura completa", clasificacion: { tipo: APRENDER } },
+          /* H2, después de AP2 por dependencias (regla 9): arma las facturas con el IVA del 16 % y la retención del 3,5 % que enseña AP2 (la sostiene A2). Mientras H1 no entre, va justo después de AP2; cuando entre, H1 va antes. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0092. */
+          { id: "t7-1-arma-la-factura", nombre: "Arma la factura", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* AP3, después de AP2 por dependencias (regla 9): usa el inventario final y el conteo físico de AP1; va antes de AP4, que la cita. Cero FP. */
           { id: "t7-1-a3-tres-formas", nombre: "Tres formas de ponerle precio a lo que quedó", clasificacion: { tipo: APRENDER } },
           /* A5, después de AP2 por dependencias (regla 9): el enunciado trae el IVA del 16 % y la retención del 3,5 %, que enseña AP2, y la retención del 1 % del flete. Antes de A6, en el orden del libro (p. 228 antes de pp. 230-232) y del plan. AP3 y AP4 entran entre AP2 y A5: AP4 cierra con «Siguiente: Importados y fletes». */

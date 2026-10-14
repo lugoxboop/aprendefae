@@ -52,6 +52,7 @@ import { hechoDeParte as hechoDeParteT3 } from "../contabilidad/elCierreCompleto
 import { CASOS_ACT7 } from "../data/contabilidadTema3Act7.js";
 import { hechoDeItem as hechoDeAct6T3 } from "../contabilidad/queLeToca.js";
 import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
+import { unidadDeH2 } from "../contabilidad/t7H2.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -556,6 +557,9 @@ Object.assign(REGLAS, {
   "t3-mismo-hecho": (id) => hechoDeAct3T3(id),
   "t3-que-le-toca": (id) => hechoDeAct6T3(id),
   "t3-cierre-completo": (id) => hechoDeParteT3(CASOS_ACT7)(id),
+
+  /* T7-1 · H2 (Célula C). Un cálculo se lee por su pregunta; una línea del asiento, por su cuenta y su valor. */
+  "t7-1-arma-la-factura": (id) => unidadDeH2(id),
 
   "cu-arma-el-asiento": (id) => textoDeItemA6(id),
 
