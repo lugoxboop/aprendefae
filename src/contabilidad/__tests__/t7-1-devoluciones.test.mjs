@@ -459,9 +459,11 @@ test("★★★ fuera del catálogo de FP; id t7-; va en T7-1 después de AP1", 
   const a = tema.actividades.find((x) => x.id === A.A6_ID);
   assert.deepEqual(a.clasificacion, { tipo: APRENDER });
   assert.equal(a.nombre, P.titulo);
+  /* Orden final de T7-1 (mapa, decisión de L): a1, a2, a3, a4, a5, a6, a7. */
+  /* H3 (Hacer) va entre AP3 y AP4; las piezas de la vista son solo las de Aprender. */
+  assert.deepEqual(tema.actividades.map((x) => x.id), ["t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a2-la-factura-completa", "t7-1-a3-tres-formas", "t7-1-cuanto-vale-lo-que-sobro", "t7-1-a4-el-cierre-en-periodico", "t7-1-a5-importados-y-fletes", A.A6_ID, "t7-1-a7-control-interno"]);
   /* Orden final de T7-1 (mapa, decisión de L): a1, a2, h1, h2, a3, a4, a5, a6, a7. H1 y H2 van después de AP2, en ese orden; las piezas de la vista son solo las de Aprender. */
-  assert.deepEqual(tema.actividades.map((x) => x.id), ["t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a2-la-factura-completa", "t7-1-que-cuenta-se-mueve", "t7-1-arma-la-factura", "t7-1-a3-tres-formas", "t7-1-a4-el-cierre-en-periodico", "t7-1-a5-importados-y-fletes", A.A6_ID, "t7-1-a7-control-interno"]);
-  assert.deepEqual(PIEZAS_T7_1.map((x) => x.pieza.id), ["t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a2-la-factura-completa", "t7-1-a3-tres-formas", "t7-1-a4-el-cierre-en-periodico", "t7-1-a5-importados-y-fletes", A.A6_ID, "t7-1-a7-control-interno"]);
+  assert.deepEqual(tema.actividades.map((x) => x.id), ["t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a2-la-factura-completa", "t7-1-que-cuenta-se-mueve", "t7-1-arma-la-factura", "t7-1-a3-tres-formas", "t7-1-a4-el-cierre-en-periodico", "t7-1-a5-importados-y-fletes", A.A6_ID, "t7-1-a7-control-interno"]);  assert.deepEqual(PIEZAS_T7_1.map((x) => x.pieza.id), ["t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a2-la-factura-completa", "t7-1-a3-tres-formas", "t7-1-a4-el-cierre-en-periodico", "t7-1-a5-importados-y-fletes", A.A6_ID, "t7-1-a7-control-interno"]);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A6_ID)), []);
   for (const f of ["src/components/mecanicas/libros/t7/DevolucionesEnPeriodico.jsx", "src/data/contabilidadT7_1_a6.js"]) {
