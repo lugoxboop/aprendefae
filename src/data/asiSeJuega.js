@@ -5,6 +5,7 @@ import { ASI_SE_JUEGA_TEMA3 as TEMA_3 } from "./asiSeJuegaTema3.js";
 import { ASI_SE_JUEGA_MONETARIA as MONETARIA } from "./asiSeJuegaMonetaria.js";
 import { ASI_SE_JUEGA_FABRICA as FABRICA } from "./pmFabricaDelDinero.js";
 import { ASI_SE_JUEGA_TEMA5 as TEMA_5 } from "./asiSeJuegaTema5.js";
+import { ASI_SE_JUEGA_TEMA6 as TEMA_6 } from "./asiSeJuegaTema6.js";
 
 /*
  * Todas las actividades que tienen «Así se juega», por id. Cada bloque vive en
@@ -12,4 +13,4 @@ import { ASI_SE_JUEGA_TEMA5 as TEMA_5 } from "./asiSeJuegaTema5.js";
  * tiene pantalla ni botón «¿Cómo se juega?». Con el bloque 3 están las
  * catorce: las siete del Tema 1 y las siete del Tema 2.
  */
-export const ASI_SE_JUEGA = { ...BLOQUE_1, ...BLOQUE_2, ...BLOQUE_3, ...TEMA_3, ...MONETARIA, ...FABRICA, ...TEMA_5 };
+export const ASI_SE_JUEGA = { ...BLOQUE_1, ...BLOQUE_2, ...BLOQUE_3, ...TEMA_3, ...MONETARIA, ...FABRICA, ...TEMA_5, ...TEMA_6 };

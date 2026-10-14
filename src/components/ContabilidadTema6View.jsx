@@ -18,9 +18,15 @@ import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import { PIEZA_LO_QUE_LE_DEBEN } from "../data/contabilidadT6Pieza1.js";
 import { PIEZA_NO_VA_A_PAGAR } from "../data/contabilidadT6Pieza2.js";
+import { PIEZA_LA_PROVISION } from "../data/contabilidadT6Pieza3.js";
+import { PIEZA_SI_PAGA } from "../data/contabilidadT6Pieza4.js";
 import { ESCENAS_TEMA6 } from "./mecanicas/libros/tema6/escenasTema6.jsx";
 import ClientesOOtra from "./mecanicas/libros/tema6/ClientesOOtra.jsx";
 import { T6_ACT1 } from "../data/contabilidadT6Act1.js";
+import ProvisionDeElTorito from "./mecanicas/libros/tema6/ProvisionDeElTorito.jsx";
+import { T6_ACT2 } from "../data/contabilidadT6Act2.js";
+import DeudaQueVuelve from "./mecanicas/libros/tema6/DeudaQueVuelve.jsx";
+import { T6_ACT3 } from "../data/contabilidadT6Act3.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -37,12 +43,15 @@ import { T6_ACT1 } from "../data/contabilidadT6Act1.js";
 const MATERIA = "contabilidad";
 export const TEMA = "cuentas-por-cobrar";
 
-export const PIEZAS = [{ numero: 1, pieza: PIEZA_LO_QUE_LE_DEBEN }, { numero: 2, pieza: PIEZA_NO_VA_A_PAGAR }];
+export const PIEZAS = [{ numero: 1, pieza: PIEZA_LO_QUE_LE_DEBEN }, { numero: 2, pieza: PIEZA_NO_VA_A_PAGAR }, { numero: 3, pieza: PIEZA_LA_PROVISION }, { numero: 4, pieza: PIEZA_SI_PAGA }];
 const PUBLICADAS = PIEZAS.length;
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS = [
   { id: T6_ACT1.id, Mecanica: ClientesOOtra, titulo: T6_ACT1.nombre },
+  /* La mesa de asientos con el diario encima; en «Así se juega», la mesa sola. */
+  { id: T6_ACT2.id, Mecanica: ProvisionDeElTorito, titulo: T6_ACT2.nombre },
+  { id: T6_ACT3.id, Mecanica: DeudaQueVuelve, titulo: T6_ACT3.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
