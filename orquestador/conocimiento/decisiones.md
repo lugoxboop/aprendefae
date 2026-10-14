@@ -50,6 +50,25 @@ modalidad, y no entran al catálogo de FP.
 
 **No se usa vocabulario visual de un tema que el estudiante todavía no vio.**
 
+**Un término nuevo puede aparecer por primera vez como opción de una pregunta,
+pero solo en Aprender y solo si todos los caminos lo explican.** Pedido por la
+Célula C y aceptado por su auditor para el nivel Básico de D13. Las tres
+condiciones son parte de la decisión, no matices:
+
+1. **Solo en piezas de Aprender.** En un Hacer calificado, un término presentado
+   así cuenta como NO enseñado. La diferencia es entre enseñar y examinar: en
+   Aprender el estudiante puede equivocarse y aprender de la respuesta; en un
+   Hacer, equivocarse le cuesta FP por algo que nadie le explicó.
+2. **Todos los caminos lo explican**, no solo el acierto: cada error nombra el
+   término y dice qué es. Si solo lo explica el acierto, el estudiante que falla
+   —que es justo el que no lo sabía— se queda sin la explicación.
+3. **Queda escrito como interpretación del Básico de D13**, no como el D13
+   mismo, porque el texto de D13 que hay en el kit es una reconstrucción y no el
+   original. Quien tenga el original algún día puede confirmarla o tumbarla.
+
+El caso que la originó: la cuenta «Compras» en la primera pieza de Aprender del
+T7.
+
 ---
 
 ## Sobre la publicación
