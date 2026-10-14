@@ -43,7 +43,8 @@ export const CSS_A5 = `
 .t7a5-nota { margin: 0; font-size: 14px; line-height: 1.45; color: ${P.texto2}; overflow-wrap: anywhere; }
 .t7a5-preg { font: 600 15px/1.45 "Sora", "Inter", sans-serif; }
 .t7a5-lista { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15px; line-height: 1.45; }
-.t7a5-lista li { overflow-wrap: anywhere; }
+/* La hoja global del sitio quita el estilo de lista: aquí vuelven las viñetas que pide Watari. */
+.t7a5-lista li { overflow-wrap: anywhere; list-style: disc; }
 .t7a5-pie { margin: 4px 0 0; font-size: 12px; line-height: 1.4; color: ${P.texto2}; overflow-wrap: anywhere; }
 .t7a5-btn { appearance: none; min-height: 44px; width: 100%; border-radius: 8px; border: 1px solid ${P.texto}; background: ${P.texto}; color: ${P.fondo}; font: 600 15px "Inter", sans-serif; cursor: pointer; }
 .t7a5-btn[aria-disabled="true"] { background: transparent; color: ${P.texto2}; border-color: ${P.texto2}; cursor: default; }

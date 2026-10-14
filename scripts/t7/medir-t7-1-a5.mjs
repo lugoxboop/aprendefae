@@ -17,6 +17,7 @@
  *     relleno; y anota la holgura más justa (Watari midió 47,9 y 19,9)
  *   · en el lado a lado, que las dos columnas midan lo mismo y queden una al
  *     lado de la otra
+ *   · en P2, que cada ítem de la lista lleve su viñeta
  *   · con movimiento reducido, que la tarjeta llegue sin fundido
  *
  * Sale con código 1 si algo falla. Necesita Playwright (no es dependencia del
@@ -58,6 +59,12 @@ function medir(sel) {
     if (r.right > caja.right + 0.5 || r.left < caja.left - 0.5) problemas.push(`${nombre}: se sale del panel`);
   }
   if (document.documentElement.scrollWidth > window.innerWidth) problemas.push(`la página mide ${document.documentElement.scrollWidth} px en ${window.innerWidth}`);
+
+  /* P2: cada ítem de la lista lleva su viñeta. La hoja global del sitio quita el estilo de lista. */
+  for (const li of pieza.querySelectorAll("ul[data-lista] li")) {
+    const e = getComputedStyle(li);
+    if (e.display !== "list-item" || e.listStyleType !== "disc") problemas.push(`el ítem «${li.textContent.slice(0, 30)}» no lleva su viñeta (${e.display}, ${e.listStyleType})`);
+  }
 
   /* Tarjeta: cada cifra dentro del área útil de su celda; la holgura más justa. */
   let tarjeta = null;
