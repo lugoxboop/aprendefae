@@ -650,7 +650,7 @@ export const SUBJECTS = {
           { id: "t7-1-a1-la-cuenta-que-no-se-mueve", nombre: "La cuenta que no se mueve", clasificacion: { tipo: APRENDER } },
           /* AP2, después de AP1: arma la factura completa de la misma compra. Cero FP. */
           { id: "t7-1-a2-la-factura-completa", nombre: "La factura completa", clasificacion: { tipo: APRENDER } },
-          /* A6, después de AP2 en el tema (se construyó antes, por el orden de Mello). Cero FP. */
+          /* A6, después de AP2 por dependencias (regla 9): muestra el IVA y la retención de la devolución, que enseña AP2. Cero FP. */
           { id: "t7-1-a6-devoluciones-en-periodico", nombre: "Devoluciones en periódico", clasificacion: { tipo: APRENDER } },
         ],
       },
