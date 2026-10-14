@@ -1,24 +1,37 @@
+import { useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
 import ActivityBadge from "./shared/ActivityBadge.jsx";
-import { APRENDER, SUBJECTS } from "../data/subjects.js";
+import { APRENDER, HACER, SUBJECTS, clasificacionDe, actividadesDeTipo } from "../data/subjects.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
+import CaminoHacer from "./shared/CaminoHacer.jsx";
+import { useCompletadas, nodosDe } from "../hacer/completadas.js";
+import { conIcono } from "../data/contabilidadIconos.js";
+import { registrarActividadCompletada } from "../fp/registrarActividad.js";
+import { useAuth } from "../auth/AuthProvider.jsx";
+import { useRecompensa } from "./shared/RecompensaCierre.jsx";
+import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
+import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
+import { bloqueDeDificultad } from "../hacer/bloques.js";
+import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import { PIEZA_DEL_EFECTIVO } from "../data/contabilidadT5Pieza1.js";
 import { PIEZA_TRES_MOMENTOS } from "../data/contabilidadT5Pieza2.js";
 import { ESCENAS_TEMA5 } from "./mecanicas/libros/tema5/escenasTema5.jsx";
+import QueRentaDa from "./mecanicas/libros/tema5/QueRentaDa.jsx";
+import { T5_ACT1 } from "../data/contabilidadT5Act1.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * TEMA 5 DE CONTABILIDAD (Célula B) — por ahora, su pieza 1 de Aprender.
+ * TEMA 5 DE CONTABILIDAD (Célula B) — su pieza 1 de Aprender y su primera
+ * actividad de Hacer.
  *
- * La misma cabecera y el mismo marco (CuatroCapas) que el Tema 3. Todavía no
- * hay actividades de Hacer, así que el índice entra directo aquí, sin partir
- * la tarjeta. Cuando lleguen, el camino se arma como en el Tema 3.
- *
- * Catálogo: decide Erwin. El id del tema y su título viven en subjects.js y
- * están ahí como propuesta; esta vista los lee de allí.
+ * La misma cabecera, el mismo marco (CuatroCapas) y el mismo camino que el
+ * Tema 3: el camino sale de `subjects.js` y JUEGOS dice qué componente pinta
+ * cada id. Al terminar una partida, la vista registra con el motor compartido
+ * (registrarActividadCompletada → otorgarFP), igual que el Tema 3, sin
+ * tocarlo.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -28,9 +41,38 @@ export const TEMA = "activos-financieros";
 export const PIEZAS = [{ numero: 1, pieza: PIEZA_DEL_EFECTIVO }, { numero: 2, pieza: PIEZA_TRES_MOMENTOS }];
 const PUBLICADAS = PIEZAS.length;
 
-export default function ContabilidadTema5View({ onBack }) {
+/* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
+export const JUEGOS = [
+  { id: T5_ACT1.id, Mecanica: QueRentaDa, titulo: T5_ACT1.nombre },
+];
+
+/* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
+const rotuloDeBloque = (actividadId) => {
+  const b = bloqueDeDificultad(clasificacionDe(MATERIA, TEMA, actividadId)?.dificultad);
+  return b ? b.nombre.toUpperCase() : null;
+};
+
+export default function ContabilidadTema5View({ modo = null, nodoInicial = null, onBack }) {
+  const esAprender = modo !== HACER;
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA);
   const rotulo = `${tema.title.toUpperCase()} · APRENDER`;
+  const [nodoAbierto, setNodoAbierto] = useState(nodoInicial ?? null);
+  const hechas = useCompletadas();
+  const { pedirCuenta, usuario } = useAuth();
+  const [recompensa, celebrar, celebrando] = useRecompensa();
+  const resumen = useResumenDePartida(MATERIA, celebrando);
+  const nodos = conIcono(nodosDe(actividadesDeTipo(tema, HACER).filter((a) => !a.pendiente), hechas));
+  const juego = esAprender ? null : JUEGOS.find((j) => j.id === nodoAbierto);
+
+  const completar = async (actividadId, porcentaje, duracionMs, detalle = null) => {
+    const clas = clasificacionDe(MATERIA, TEMA, actividadId);
+    celebrar(clas?.dificultad, actividadId);
+    const res = await resumen.registrar({ actividadId, clasificacion: clas, pct: porcentaje, detalle }, () =>
+      registrarActividadCompletada(clas, {
+        materiaId: MATERIA, temaId: TEMA, actividadId, porcentajeAciertos: porcentaje, duracionMs, detalle,
+      }));
+    if (res?.motivo === "sin-sesion") pedirCuenta("guardar tus FP");
+  };
 
   return (
     <FondoMateria materiaId={MATERIA}>
@@ -59,21 +101,51 @@ export default function ContabilidadTema5View({ onBack }) {
             </h1>
           </div>
 
-          <div className="fae-insignia-actividad"><ActivityBadge tipo={APRENDER} size="sm" /></div>
+          {recompensa}
+          <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-            {PIEZAS.map(({ pieza }, k) => {
-              const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA5[pieza.id];
-              return (
-                <div key={pieza.id}>
-                  <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
-                    PIEZA {k + 1} DE {PUBLICADAS}
-                  </p>
-                  <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} rotulo={rotulo} />
-                </div>
-              );
-            })}
-          </div>
+          {esAprender ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+              {PIEZAS.map(({ pieza }, k) => {
+                const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA5[pieza.id];
+                return (
+                  <div key={pieza.id}>
+                    <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
+                      PIEZA {k + 1} DE {PUBLICADAS}
+                    </p>
+                    <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} rotulo={rotulo} />
+                  </div>
+                );
+              })}
+            </div>
+          ) : juego ? (
+            <div>
+              <button
+                type="button"
+                onClick={() => { resumen.limpiar(); setNodoAbierto(null); }}
+                style={{
+                  marginBottom: "16px", padding: "8px 14px", borderRadius: "999px",
+                  background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)",
+                  color: FAE.text, cursor: "pointer", fontFamily: "Sora, sans-serif", fontSize: "12.5px",
+                }}
+              >
+                ‹ Volver al camino
+              </button>
+              <ContextoResumen.Provider value={resumen.contexto(juego.id, () => setNodoAbierto(null))}>
+                <JuegoConTutorial
+                  key={juego.id}
+                  juego={juego}
+                  usuarioId={usuario?.id ?? null}
+                  Marco={MarcoLibros}
+                  acento={FAE.ambar}
+                  rotulo={rotuloDeBloque(juego.id)}
+                  onCompletar={(pct, ms, detalle) => completar(juego.id, pct, ms, detalle)}
+                />
+              </ContextoResumen.Provider>
+            </div>
+          ) : (
+            <CaminoHacer nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} vacio="Este tema todavía no tiene juegos." />
+          )}
         </div>
       </div>
     </FondoMateria>

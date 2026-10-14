@@ -22,6 +22,8 @@ import {
 } from "../data/politicaFiscal.js";
 import { MEMORAMAS, CLASIFICACIONES } from "../data/cimientos.js";
 import { ESLABONES_ARTERIA, PREGUNTAS_DOS_ENTRADAS } from "../data/monetariaRepaso.js";
+import { hechoDeItemCreaOCambia, casillaDeItemEscalera } from "../data/pmFabricaDelDinero.js";
+import { EN_QUE_TALLA_VA, QUE_TOCO_EL_BANCO } from "../data/pmAgregados.js";
 import {
   CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
   EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
@@ -51,11 +53,14 @@ import { hechoDeItemAct4 as hechoDeAct4T3, hechoDeItemAct5 as hechoDeAct5T3 } fr
 import { hechoDeParte as hechoDeParteT3 } from "../contabilidad/elCierreCompleto.js";
 import { CASOS_ACT7 } from "../data/contabilidadTema3Act7.js";
 import { hechoDeItem as hechoDeAct6T3 } from "../contabilidad/queLeToca.js";
+import { fichaDeItemT5Act1 } from "../contabilidad/t5Act1.js";
 import { fichaDeItemT6Act1 } from "../contabilidad/t6Act1.js";
 import { parteDeItem as parteDeItemMesa } from "../contabilidad/cierreConMesa.js";
 import { PARTES_T6_ACT2 } from "../data/contabilidadT6Act2.js";
 import { PARTES_T6_ACT3 } from "../data/contabilidadT6Act3.js";
 import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
+import { hechoDeItemH1 } from "../contabilidad/t7H1.js";
+import { unidadDeH2 } from "../contabilidad/t7H2.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -435,6 +440,10 @@ Object.assign(REGLAS, {
   /* Las dos nuevas: cada ítem es su eslabón o su pregunta, por id. */
   "por-cual-arteria-entra": (id) => porId(ESLABONES_ARTERIA, "texto")[id] ?? null,
   "las-dos-entradas": (id) => porId(PREGUNTAS_DOS_ENTRADAS, "texto")[id] ?? null,
+  "crea-o-cambia-de-manos": (id) => hechoDeItemCreaOCambia(id),
+  "la-escalera-del-encaje": (id) => casillaDeItemEscalera(id),
+  "en-que-talla-va": (id) => porId(EN_QUE_TALLA_VA.items, "texto")[id] ?? null,
+  "que-toco-el-banco": (id) => porId(QUE_TOCO_EL_BANCO.items, "texto")[id] ?? null,
   "el-rezago": (id) => {
     if (id === "cierre") return EL_REZAGO.cierre.pregunta;
     const [caso, hecho] = String(id).split(":");
@@ -561,7 +570,8 @@ Object.assign(REGLAS, {
   "t3-que-le-toca": (id) => hechoDeAct6T3(id),
   "t3-cierre-completo": (id) => hechoDeParteT3(CASOS_ACT7)(id),
 
-  /* Tema 6 · act. 1 (Célula B). El ítem es la ficha, y se lee por su texto, como T1-6. */
+  /* Temas 5 y 6 · act. 1 (Célula B). El ítem es la ficha, y se lee por su texto, como T1-6. */
+  "b5-t5-a1": (id) => fichaDeItemT5Act1(id),
   "b5-t6-a1": (id) => fichaDeItemT6Act1(id),
   /* Tema 6 · acts. 2 y 3. El ítem es la parte, y se lee por su rótulo y su instrucción. */
   "b5-t6-a2": (id) => parteDeItemMesa(PARTES_T6_ACT2)(id),
@@ -684,6 +694,21 @@ Object.assign(REGLAS, {
     const pregunta = que === "cuenta" ? "Cuál cuenta no cuadra" : "Qué error tiene";
     return `${pregunta} — ${t ? t.texto : c.transaccion}`;
   },
+});
+
+/*
+ * ═══════════ CONTABILIDAD · T7 «INVENTARIOS» (Célula C) ═══════════
+ *
+ * Las actividades de Hacer de T7, cada una con su regla. Como las del Tema 3,
+ * LEEN el texto de los datos de su actividad —el mismo del que sale el id que
+ * guarda la mecánica—, no lo copian: si mañana cambia un enunciado, el panel
+ * lo enseña cambiado sin tocar nada aquí.
+ */
+Object.assign(REGLAS, {
+  /* T7-1 · H1. El ítem es el hecho, y se lee por su texto. */
+  "t7-1-que-cuenta-se-mueve": (id) => hechoDeItemH1(id),
+  /* T7-1 · H2. Un cálculo se lee por su pregunta; una línea del asiento, por su cuenta y su valor. */
+  "t7-1-arma-la-factura": (id) => unidadDeH2(id),
 });
 
 /*
