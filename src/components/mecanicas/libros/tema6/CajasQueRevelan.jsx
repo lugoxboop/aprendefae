@@ -23,7 +23,7 @@ const INTER = "Inter, sans-serif";
 const BORDES = COLOR.neutro;
 const ATENUADO = "rgba(184,196,212,.50)";
 export const LECTURA = { margin: 0, fontFamily: INTER, fontSize: "14px", lineHeight: 1.55, fontWeight: 400, color: FAE.text };
-const PIE = { margin: "8px 0 0", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: COLOR.apagado };
+export const PIE = { margin: "8px 0 0", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: COLOR.apagado };
 
 function Chevron() {
   return (
@@ -33,7 +33,7 @@ function Chevron() {
   );
 }
 
-function Caja({ caja, abierto, onAbrir, estiloTitulo }) {
+export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA }) {
   const id = useId();
   return (
     <div data-hecho={caja.id} style={{ border: `1px solid ${BORDES}`, borderRadius: "12px" }}>

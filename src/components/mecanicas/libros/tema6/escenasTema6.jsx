@@ -5,6 +5,9 @@ import SeisHechos from "./SeisHechos.jsx";
 import { PIEZA_NO_VA_A_PAGAR, PREGUNTA_FINAL_T6_A2, OPCIONES_FINAL_T6_A2 } from "../../../../data/contabilidadT6Pieza2.js";
 import DosDias from "./DosDias.jsx";
 import DosMetodos from "./DosMetodos.jsx";
+import { PIEZA_LA_PROVISION, PREGUNTA_FINAL_T6_A3, OPCIONES_FINAL_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
+import LaProvision from "./LaProvision.jsx";
+import CuentaT from "./CuentaT.jsx";
 
 /*
  * Las capas propias de las piezas de Aprender del Tema 6, como las de los
@@ -28,7 +31,16 @@ function EnUnaFraseT6A2() {
   return <UnaFrase pregunta={PREGUNTA_FINAL_T6_A2} opciones={OPCIONES_FINAL_T6_A2} Escena={SinEscena} evaluar={evaluarA2} />;
 }
 
+const evaluarA3 = (id) => {
+  const o = OPCIONES_FINAL_T6_A3.find((x) => x.id === id);
+  return { correcta: Boolean(o?.correcta), feedback: o?.feedback ?? "", escena: null };
+};
+export function EnUnaFraseT6A3() {
+  return <UnaFrase pregunta={PREGUNTA_FINAL_T6_A3} opciones={OPCIONES_FINAL_T6_A3} Escena={SinEscena} evaluar={evaluarA3} />;
+}
+
 export const ESCENAS_TEMA6 = {
   [PIEZA_LO_QUE_LE_DEBEN.id]: { Capa2: DosMomentos, Exploracion: SeisHechos, Capa4: EnUnaFraseT6 },
   [PIEZA_NO_VA_A_PAGAR.id]: { Capa2: DosDias, Exploracion: DosMetodos, Capa4: EnUnaFraseT6A2 },
+  [PIEZA_LA_PROVISION.id]: { Capa2: LaProvision, Exploracion: CuentaT, Capa4: EnUnaFraseT6A3 },
 };

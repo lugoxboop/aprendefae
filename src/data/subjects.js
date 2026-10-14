@@ -648,6 +648,7 @@ export const SUBJECTS = {
         actividades: [
           { id: "b5-t6-a1-lo-que-otros-le-deben", nombre: "Lo que otros le deben a la empresa", clasificacion: { tipo: APRENDER } },
           { id: "b5-t6-a2-cuando-un-cliente-no-va-a-pagar", nombre: "Cuando un cliente no va a pagar", clasificacion: { tipo: APRENDER } },
+          { id: "b5-t6-a3-la-provision-de-un-ano-al-siguiente", nombre: "La provisión, de un año al siguiente", clasificacion: { tipo: APRENDER } },
         ],
       },
       /*
