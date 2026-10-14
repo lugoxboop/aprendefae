@@ -10,9 +10,8 @@
  * Pieza de Aprender: cero FP, no entra al catálogo. Las preguntas son
  * predicciones, no se califican.
  *
- * Aquí solo hay datos. La mecánica (predecir el lado de cada línea, mostrar
- * las líneas una por una, comparar lado a lado) y la figura son del paquete de
- * Watari, que todavía no llega: no se construyen hasta entonces.
+ * Aquí solo hay datos. La mecánica y la figura son de la «Figura de AP2» de
+ * Watari («El asiento que se arma» y «Lado a lado»), medida a 315/260.
  *
  * Lo que la v2 marca como interno no se muestra: los subtítulos «(interno:
  * …)», las citas de página entre paréntesis, «[construcción]», «(nuevo)»,
@@ -39,6 +38,26 @@ export const BOTON = {
 
 export const DEBE = "debe";
 export const HABER = "haber";
+
+/* Textos de interfaz de la figura de Watari, literales. */
+export const INTERFAZ = {
+  debe: "Debe",
+  haber: "Haber",
+  correcto: "Correcto.",
+  incorrecto: "Incorrecto.",
+  sumas: "Sumas",
+  /* El total, mientras no hay acierto. */
+  interrogacion: "?",
+  /* Solo lector de pantalla: la columna de los rótulos y el nombre de la tabla lado a lado. */
+  impuesto: "Impuesto",
+  nombreLadoALado: "La compra y la venta, lado a lado",
+};
+
+/* Las fechas de los dos asientos, de los enunciados. */
+export const FECHA = { compra: "16 de abril", venta: "20 de abril" };
+
+/* La línea que viene de AP1, ya resuelta en el asiento de la compra («Compras · Debe $5.000.000»). */
+export const COMPRAS_RESUELTA = { id: "compras", cuenta: "Compras", lado: "debe", monto: 5000000 };
 
 /* Las cifras del asiento, sin «$», como en las tablas de la v2. */
 const cifra = (n) => n.toLocaleString("es-CO").replace(/,/g, ".");
@@ -99,6 +118,9 @@ const BASE_DE_LA_RETENCION = {
   /* La línea ya resuelta, que viene de AP1. */
   lineaResuelta: "Compras · Debe $5.000.000",
   calculos: ["IVA = $5.000.000 × 16 % = $800.000"],
+  fecha: FECHA.compra,
+  /* El asiento de la pregunta ya trae la línea de AP1, resuelta (Watari). */
+  resuelta: COMPRAS_RESUELTA,
   pregunta: "¿Sobre qué valor se calcula la retención?",
   opciones: [
     { id: "sin-iva", texto: "$5.000.000", correcta: true },
@@ -113,6 +135,8 @@ const BASE_DE_LA_RETENCION = {
   error: { boton: BOTON.probarOtra, pie: "Basado en el libro, p. 211" },
   acierto: {
     textos: ["Así es. Retención = $5.000.000 × 3,5 % = $175.000."],
+    /* El cálculo de la retención aparece con el acierto, debajo del del IVA (Watari). */
+    calculos: ["Retención = $5.000.000 × 3,5 % = $175.000"],
     boton: BOTON.seguir,
     pie: "Libro, p. 211",
   },
@@ -147,8 +171,18 @@ const LADOS_DE_LA_COMPRA = {
     },
   ],
   pie: "Basado en el libro, pp. 210-212",
+  fecha: FECHA.compra,
+  /* La línea de Compras viene resuelta de AP1 y abre el asiento, en gris (Watari). */
+  resuelta: COMPRAS_RESUELTA,
   error: { boton: BOTON.probarOtra, pie: "Basado en el libro, pp. 210 y 212" },
   acierto: {
+    /*
+     * La primera frase va en el mensaje; las demás, debajo de su línea (Watari:
+     * cada explicación junto a lo que explica). `notas` dice qué frase va con
+     * qué línea; `orden`, cómo quedan las líneas al acertar.
+     */
+    notas: { iva: 1, retencion: 2, proveedores: 3 },
+    orden: ["iva", "retencion", "proveedores"],
     textos: [
       "Así es. Lo que se le queda debiendo al proveedor es el valor de la mercancía, más el IVA, menos la retención: $5.000.000 + $800.000 − $175.000 = $5.625.000.",
       "IVA por pagar es lo que la empresa le debe al Estado por IVA, y va al debe porque el IVA de la compra baja esa deuda.",
@@ -208,8 +242,13 @@ const LA_VENTA = {
     },
   ],
   pie: "Basado en el libro, pp. 212-214",
+  fecha: FECHA.venta,
+  resuelta: null,
   error: { boton: BOTON.probarOtra, pie: "Basado en el libro, pp. 212 y 214" },
   acierto: {
+    /* Al acertar, las líneas pasan al orden de su asiento completo, débitos primero, que es el de sus frases (Watari). */
+    notas: { clientes: 1, anticipo: 2, iva: 3, ingresos: 4 },
+    orden: ["clientes", "anticipo", "iva", "ingresos"],
     textos: [
       "Así es. El valor adeudado por el cliente es la mercancía, más el IVA, menos la retención: $2.000.000 + $320.000 − $70.000 = $2.250.000.",
       "Cuentas por cobrar – clientes es lo que el cliente le queda debiendo a La Reventa, y va al debe porque es un activo que aumenta.",
