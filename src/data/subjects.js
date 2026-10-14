@@ -680,16 +680,28 @@ export const SUBJECTS = {
           { id: "t7-1-a2-la-factura-completa", nombre: "La factura completa", clasificacion: { tipo: APRENDER } },
           /* H1, después de AP2 por dependencias (regla 9): se publica con AP1 y AP2 o después (condición de Mello). Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0090. */
           { id: "t7-1-que-cuenta-se-mueve", nombre: "¿Qué cuenta se mueve?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
+          /* H2, justo después de H1: así lo fija el mapa (3 H1 · 4 Arma la factura). Arma las facturas con el IVA del 16 % y la retención del 3,5 % que enseña AP2 (la sostiene A2). Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0092. */
+          { id: "t7-1-arma-la-factura", nombre: "Arma la factura", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* AP3, después de AP2 por dependencias (regla 9): usa el inventario final y el conteo físico de AP1; va antes de AP4, que la cita. Cero FP. */
           { id: "t7-1-a3-tres-formas", nombre: "Tres formas de ponerle precio a lo que quedó", clasificacion: { tipo: APRENDER } },
+          /* H3, después de AP3 por dependencias (regla 9): valora lo que quedó con PEPS, UEPS y el promedio ponderado, que enseña AP3 (la sostiene A3). Antes de AP4. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0093. */
+          { id: "t7-1-cuanto-vale-lo-que-sobro", nombre: "¿Cuánto vale lo que sobró?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* AP4, después de AP3 por dependencias (regla 9): cita «Tres formas de ponerle precio a lo que quedó». Antes de A5: cierra con «Siguiente: Importados y fletes». Cero FP. */
           { id: "t7-1-a4-el-cierre-en-periodico", nombre: "El cierre en periódico", clasificacion: { tipo: APRENDER } },
+          /* H4, después de AP4 por dependencias (regla 9): cierra el mes con los tres métodos de AP3 y los asientos de cierre de AP4 (la sostienen A3 y A4). Antes de A5. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0094. */
+          { id: "t7-1-cierra-el-mes", nombre: "Cierra el mes", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* A5, después de AP2 por dependencias (regla 9): el enunciado trae el IVA del 16 % y la retención del 3,5 %, que enseña AP2, y la retención del 1 % del flete. Antes de A6, en el orden del libro (p. 228 antes de pp. 230-232) y del plan. AP3 y AP4 entran entre AP2 y A5: AP4 cierra con «Siguiente: Importados y fletes». */
           { id: "t7-1-a5-importados-y-fletes", nombre: "Importados y fletes", clasificacion: { tipo: APRENDER } },
+          /* H5, después de A5 por dependencias (regla 9): clasifica lo que entra al costo de lo comprado y resuelve un caso con flete y su retención del 1 %, que enseña A5 (la sostiene A5). Antes de A6. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0095. */
+          { id: "t7-1-costo-o-gasto", nombre: "¿Costo o gasto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A6, después de AP2 por dependencias (regla 9): muestra el IVA y la retención de la devolución, que enseña AP2. Cero FP. */
           { id: "t7-1-a6-devoluciones-en-periodico", nombre: "Devoluciones en periódico", clasificacion: { tipo: APRENDER } },
+          /* H6, después de A6 por dependencias (regla 9): registra una devolución en el libro del comprador y en el del vendedor, con el IVA y la retención proporcionales que enseña A6 (la sostiene A6). Antes de A7. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0096. */
+          { id: "t7-1-devolucion-dos-libros", nombre: "La devolución en dos libros", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* A7, después de AP1 por dependencias (regla 9): el conteo físico frente a los registros; última de Aprender según el plan. Cero FP. */
           { id: "t7-1-a7-control-interno", nombre: "Control interno de los inventarios", clasificacion: { tipo: APRENDER } },
+          /* H7, después de A7 por dependencias (regla 9): relaciona cada riesgo de la bodega con el control que el libro propone, los de A7 (la sostiene A7). Última de T7-1. Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0097. */
+          { id: "t7-1-que-control-falta", nombre: "¿Qué control falta?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
         ],
       },
       /*
