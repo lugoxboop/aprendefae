@@ -172,7 +172,8 @@ test("★★ los hechos se barajan en cada intento; las opciones, nunca", () => 
 /* ═══════════ 3 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
 
 test("★★★ en T7-2, justo después de A1: exploratoria, fácil, 10 FP; las de Aprender siguen sin FP", () => {
-  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), [D.H1_ID]);
+  /* H1 es el primer Hacer de T7-2; los demás van detrás, en el orden del mapa. */
+  assert.equal(actividadesDeTipo(TEMA, HACER)[0].id, D.H1_ID);
   assert.deepEqual(clasificacionDe("contabilidad", TEMA_T7_2, D.H1_ID), { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 });
   assert.equal(actividadesDeTipo(TEMA, HACER)[0].nombre, D.H1.nombre);
   for (const a of TEMA.actividades.filter((x) => x.clasificacion.tipo !== HACER)) assert.deepEqual(a.clasificacion, { tipo: APRENDER }, a.id);

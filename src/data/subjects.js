@@ -708,6 +708,8 @@ export const SUBJECTS = {
           { id: "t7-2-debe-o-haber", nombre: "¿Debe o haber?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
           /* A2, después de A1 (regla 9): usa «Inventario de mercancías sí se mueve» y la glosa del costo de lo vendido. H1 «¿Debe o haber?» entra entre las dos. Cero FP. */
           { id: "t7-2-a2-la-venta-en-dos-asientos", nombre: "La venta en dos asientos", clasificacion: { tipo: APRENDER } },
+          /* H2, justo después de A2 (orden final de T7-2). L la llamó «Arma los dos asientos» para no repetir el nombre de A2. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0099. */
+          { id: "t7-2-dos-asientos", nombre: "Arma los dos asientos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
         ],
       },
     ],
