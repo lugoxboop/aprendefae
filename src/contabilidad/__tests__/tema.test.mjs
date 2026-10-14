@@ -35,7 +35,8 @@ test("★ la materia tiene sus cinco temas, en el orden del libro", () => {
   /* El Tema 3, por ahora solo con su pieza 1 de Aprender, va después del 2. */
   /* El Tema 5 (Célula B) va después del 3. Catálogo: decide Erwin. */
   /* T7-1 (Célula C) va después del 5; el T4 y el T6 entran antes que él, en el orden del libro. */
-  assert.deepEqual(ids, ["introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja", "activos-financieros", "cuentas-por-cobrar", "inventarios-periodico"]);
+  /* T7-2 (Célula C) va justo después de T7-1. */
+  assert.deepEqual(ids, ["introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja", "activos-financieros", "cuentas-por-cobrar", "inventarios-periodico", "inventarios-permanente"]);
   assert.ok(TEMA, "no está «cuentas-debe-haber»");
   assert.equal(TEMA.title, "Las cuentas, el debe y el haber");
 });
