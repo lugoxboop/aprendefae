@@ -39,6 +39,8 @@ import t722 from "./conta-t7-2-2-arma-los-dos-asientos.svg?raw";
 import t723 from "./conta-t7-2-3-llena-el-kardex.svg?raw";
 import t724 from "./conta-t7-2-4-periodico-o-permanente.svg?raw";
 import t725 from "./conta-t7-2-5-flete-y-devolucion.svg?raw";
+import t51 from "./conta-t5-1-que-renta-da-este-titulo.svg?raw";
+import t52 from "./conta-t5-2-el-cierre-completo-de-santa-pacha.svg?raw";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -128,3 +130,5 @@ export const ArmaLosDosAsientos = icono("ArmaLosDosAsientos", t722);
 export const LlenaElKardex = icono("LlenaElKardex", t723);
 export const PeriodicoOPermanente = icono("PeriodicoOPermanente", t724);
 export const FleteYDevolucion = icono("FleteYDevolucion", t725);
+export const QueRentaDaEsteTitulo = icono("QueRentaDaEsteTitulo", t51);
+export const ElCierreCompletoDeSantaPacha = icono("ElCierreCompletoDeSantaPacha", t52);

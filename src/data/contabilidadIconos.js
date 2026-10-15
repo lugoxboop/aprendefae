@@ -57,6 +57,9 @@ export const ICONO_POR_ACTIVIDAD = {
   "t7-2-llena-el-kardex": I.LlenaElKardex,
   "t7-2-periodico-o-permanente": I.PeriodicoOPermanente,
   "t7-2-flete-y-devolucion": I.FleteYDevolucion,
+  /* Tema 5 · Inversiones */
+  "b5-t5-a1": I.QueRentaDaEsteTitulo,
+  "b5-t5-a2": I.ElCierreCompletoDeSantaPacha,
 };
 
 /** Los nodos del camino con su ícono, si lo tienen. */
