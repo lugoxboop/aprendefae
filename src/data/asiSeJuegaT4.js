@@ -1,6 +1,7 @@
 import { H1, PASOS_H1, EJEMPLO_H1, ALT_H1, HABER } from "./contabilidadT4H1.js";
 import { H2, PASOS_H2, EJEMPLO_H2, ALT_H2 } from "./contabilidadT4H2.js";
 import { H3, PASOS_H3, EJEMPLO_H3, ALT_H3, BOTON_H3 } from "./contabilidadT4H3.js";
+import { H4, PASOS_H4, EJEMPLO_H4, ALT_H4, BOTON_H4, CUADRA } from "./contabilidadT4H4.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -25,6 +26,10 @@ import { H3, PASOS_H3, EJEMPLO_H3, ALT_H3, BOTON_H3 } from "./contabilidadT4H3.j
  * al debe, saca «Bancos» y la pone al haber, y toca «Comprobar». Los
  * selectores son los de ConstructorAsiento, sin cambiarlo: la cuenta es un
  * botón de la paleta (por su texto) y el lado, el botón de su fila.
+ *
+ * t4-el-arqueo-de-rosa (H4): un mes cualquiera que cuadra (construido, no
+ * es ninguna de las seis rondas). La mano responde «Cuadra», sigue (no hay
+ * pregunta de la diferencia) y en la pregunta del cheque toca «$420.000».
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -80,8 +85,27 @@ const ASI_CAJA_MENOR = {
   cuadros: { gesto: 2 },
 };
 
+const ASI_ARQUEO = {
+  actividadId: H4.id,
+  titulo: H4.nombre,
+  consigna: H4.consigna.join(" "),
+  pasos: PASOS_H4,
+  alt: ALT_H4,
+  demo: { items: [EJEMPLO_H4] },
+  guion: {
+    duracion: 9000,
+    toques: [
+      { ms: 2200, en: `[data-opcion="${CUADRA}"] button` },
+      { ms: 4000, texto: BOTON_H4.siguientePregunta },
+      { ms: 6000, en: '[data-opcion="cheque"] button' },
+    ],
+  },
+  cuadros: { gesto: 2 },
+};
+
 export const ASI_SE_JUEGA_T4 = {
   [ASI_ENTRA_O_SALE.actividadId]: ASI_ENTRA_O_SALE,
   [ASI_CONTROL.actividadId]: ASI_CONTROL,
   [ASI_CAJA_MENOR.actividadId]: ASI_CAJA_MENOR,
+  [ASI_ARQUEO.actividadId]: ASI_ARQUEO,
 };

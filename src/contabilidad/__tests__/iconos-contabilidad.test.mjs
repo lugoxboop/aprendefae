@@ -101,7 +101,7 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
   const conDesafio = new Set(SUBJECTS.contabilidad.topics.flatMap((t) => (t.actividades ?? []).filter((x) => x.clasificacion?.desafio).map((x) => x.id)));
   /* Actividades nuevas que todavía esperan su dibujo de Xeno: el camino las pinta sin ícono. */
   /* T4 · H1 y H2 (Célula D): los íconos los reserva el coordinador; se pidieron, no se eligieron. */
-  const SIN_ICONO_TODAVIA = new Set(["t4-entra-o-sale-de-caja", "t4-el-control-que-se-saltaron", "t4-se-mueve-la-caja-menor"]);
+  const SIN_ICONO_TODAVIA = new Set(["t4-entra-o-sale-de-caja", "t4-el-control-que-se-saltaron", "t4-se-mueve-la-caja-menor", "t4-el-arqueo-de-rosa"]);
   const esperadas = [...hacer].filter((id) => !conDesafio.has(id) && !SIN_ICONO_TODAVIA.has(id));
   assert.equal(esperadas.length, 46);
   assert.deepEqual(Object.keys(ICONO_POR_ACTIVIDAD).sort(), esperadas.sort(), "falta o sobra un ícono");

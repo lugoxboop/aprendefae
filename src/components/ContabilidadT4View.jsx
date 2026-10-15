@@ -33,6 +33,10 @@ import {
   H3, CUENTAS_H3, BOTON_H3, CIERRE_H3, CORRECTO as CORRECTO_H3, INCORRECTO as INCORRECTO_H3, MISMO_LADO, ROTULO_ASIENTO_H3, resumenH3,
   sortearH3, evaluarH3, puntuarH3, ESTA_LISTO, mismoLado,
 } from "../data/contabilidadT4H3.js";
+import {
+  H4, BOTON_H4, CIERRE_H4, CORRECTO as CORRECTO_H4, INCORRECTO as INCORRECTO_H4, CUADRA as CUADRA_H4,
+  encabezadoH4, resumenH4, lectorErrorH4, sortearH4, opcionesEnOrden as opcionesH4, evaluarH4, reveladoH4, puntuarH4, itemH4,
+} from "../data/contabilidadT4H4.js";
 import { Opcion, Opciones, Pulsos, Cierre } from "./mecanicas/corazon/juego.jsx";
 import { TEXTO_CIERRE } from "./mecanicas/bloques/marcos.jsx";
 import { Responder, useTanda, AsientoEnLineas } from "./mecanicas/libros/piezas.jsx";
@@ -74,6 +78,7 @@ export const JUEGOS_T4 = [
   { id: H1.id, Mecanica: EntraOSaleDeCaja, titulo: H1.nombre },
   { id: H2.id, Mecanica: ElControlQueSeSaltaron, titulo: H2.nombre },
   { id: H3.id, Mecanica: SeMueveLaCajaMenor, titulo: H3.nombre },
+  { id: H4.id, Mecanica: ElArqueoDeRosa, titulo: H4.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
@@ -1284,6 +1289,187 @@ export function SeMueveLaCajaMenor({ Marco, rotulo, titulo, acento, onCompletar,
       {r && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H3.verResumen : BOTON_H3.siguiente}</Responder>
+        </div>
+      )}
+    </Marco>
+  );
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · HACER 4 · EL ARQUEO DE ROSA (Célula D)
+ *
+ * Desde la especificación de Hanayama (celula-d/hanayama-h4-pantalla-v1.md
+ * con la v1.1 encima; PH4-1 de Shibukawa) y el paquete vigente de Katsumi,
+ * no desde el prototipo. Piezas compartidas, sin cambiarlas: Encabezado,
+ * Pulsos, Opciones, Opcion, Responder y Cierre.
+ *
+ *   · el enunciado de la ronda, en texto, y debajo EL SOBRE de A2/A3
+ *     (SobreCajaMenor, del carril de T4), sin cheque: fondo, billetes y
+ *     soportes siempre; «Suman» aparece al responder la pregunta 1 y la
+ *     diferencia al responder la 2 (con la 1 si cuadra). Las dos guardan su
+ *     sitio desde el principio, con huecos vacíos (PH8-2)
+ *   · la tarjeta de la pregunta, con «PREGUNTA n» SIN TOTAL (v1.1, PH4-1): el
+ *     total delataría si la ronda cuadra. Cuenta las preguntas que se ven
+ *   · tres opciones barajadas, un toque, «era esta» si falla; la devolución
+ *     y, tras la última pregunta de la ronda, su cierre, debajo
+ *   · la diferencia sin coral: coral solo en la opción y la devolución de error
+ *
+ * Al terminar: onCompletar(pct, ms, detalle), con una línea de detalle por
+ * pregunta jugada. Evaluativa: el motor escala los 25 FP. En modo demo no
+ * reporta nada.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/* El sobre de H4: el de A3 en arqueo, sin cheque, con lo que la ronda ya reveló. */
+function estadoSobreH4(ronda, respondidas) {
+  const v = reveladoH4(ronda, respondidas);
+  return {
+    cheque: null, fondo: ronda.fondo,
+    billetes: ronda.efectivo, soportes: ronda.gastos,
+    suman: v.suman ? ronda.suma : null, sumanOculto: !v.suman,
+    diferencia: v.diferencia ? { tipo: ronda.tipo === CUADRA_H4 ? "cero" : ronda.tipo, monto: ronda.diferencia } : { oculta: true },
+    libro: null, foco: [],
+  };
+}
+/* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El texto alternativo del sobre de H4, armado con lo que se ve. */
+function altSobreH4(ronda, respondidas) {
+  const v = reveladoH4(ronda, respondidas);
+  const base = `El sobre de la caja menor: el fondo es de ${cifra(ronda.fondo)}, con ${cifra(ronda.efectivo)} en billetes y ${cifra(ronda.gastos)} en soportes.`;
+  const suma = v.suman ? ` Suman ${cifra(ronda.suma)}.` : "";
+  const dif = v.diferencia ? (ronda.tipo === CUADRA_H4 ? " No hay diferencia." : ` Hay un ${ronda.tipo} de caja menor de ${cifra(ronda.diferencia)}.`) : "";
+  return base + suma + dif;
+}
+
+export function ElArqueoDeRosa({ Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null }) {
+  const t = useTanda(() => items ?? sortearH4(barajar));
+  const [k, setK] = useState(0);
+  const [elegida, setElegida] = useState(null);
+  const [r, setR] = useState(null);
+  const [bien, setBien] = useState(0);
+  const [jugadas, setJugadas] = useState(0);
+  const zonaBoton = useRef(null);
+  const tarjeta = useRef(null);
+
+  const ronda = t.items[t.i];
+  const pregunta = ronda.preguntas[k];
+  const cuantas = t.items.length;
+  const ultimaDeLaRonda = k + 1 === ronda.preguntas.length;
+  const respondidas = k + (r ? 1 : 0);
+
+  useEffect(() => {
+    if (t.terminado && !modoDemo) onCompletar?.(puntuarH4(bien, jugadas), Date.now() - t.inicio.current, t.detalle.current);
+  }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (r && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [r]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const responder = (id) => {
+    if (r) return;
+    const nuevo = evaluarH4(pregunta, id);
+    t.anotar(itemH4(ronda.id, pregunta.id), nuevo.ok, id);
+    if (nuevo.ok) setBien((n) => n + 1);
+    setJugadas((n) => n + 1);
+    setElegida(id);
+    setR(nuevo);
+  };
+
+  const avanzar = () => {
+    setElegida(null); setR(null);
+    if (!ultimaDeLaRonda) setK(k + 1);
+    else if (t.i + 1 < cuantas) { setK(0); t.setI(t.i + 1); }
+    else { t.setTerminado(true); return; }
+    requestAnimationFrame(() => tarjeta.current?.focus());
+  };
+
+  const reiniciar = () => { t.reiniciar(); setK(0); setElegida(null); setR(null); setBien(0); setJugadas(0); };
+
+  if (t.terminado) {
+    return (
+      <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+        <Cierre pct={Math.round(puntuarH4(bien, jugadas))} onReiniciar={reiniciar} textoReiniciar={BOTON_H4.otraVez}>
+          <p data-resumen style={TEXTO_CIERRE}>{resumenH4(bien, jugadas)}</p>
+          {CIERRE_H4.textos.map((x) => <p key={x} data-cierre style={{ ...TEXTO_CIERRE, marginTop: "8px" }}>{x}</p>)}
+          <p data-pie-cierre style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{CIERRE_H4.pie}</p>
+        </Cierre>
+      </Marco>
+    );
+  }
+
+  const estadoDe = (id) => {
+    if (!r) return null;
+    if (id === elegida) return r.ok ? "correcta" : "incorrecta";
+    if (id === r.correcta) return "revelada";
+    return null;
+  };
+
+  return (
+    <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+      <style>{CSS_T4H1 + CSS_T4F + CSS_T4S}</style>
+      {/* Como en H1-H3: la partida lleva `data-t4-h4` y la demo, `data-t4-h4-demo`. */}
+      <div {...(modoDemo ? { "data-t4-h4-demo": "" } : { "data-t4-h4": "" })}>
+        <Encabezado consigna={H4.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
+        <div style={{ marginBottom: "12px" }}>
+          <Pulsos total={cuantas} hechos={t.i + (r && ultimaDeLaRonda ? 1 : 0)} enCurso={t.i + 1} etiqueta="Ronda" />
+        </div>
+
+        <p key={ronda.id} className="fae-t4h1-entra" data-enunciado={ronda.id} style={{ margin: "0 0 12px", fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "21px", color: FAE.text }}>
+          {ronda.enunciado}
+        </p>
+
+        <div data-sobre-h4 style={{ marginBottom: "14px" }}>
+          <SobreCajaMenor estado={`${ronda.id}-${respondidas}`} s={estadoSobreH4(ronda, respondidas)} alt={altSobreH4(ronda, respondidas)} F={FIGURA_SOBRE_A3} />
+        </div>
+
+        {/* La tarjeta de la pregunta: «PREGUNTA n», sin total (PH4-1). */}
+        <div key={`${ronda.id}-${pregunta.id}`} className="fae-t4h1-entra" data-tarjeta-pregunta={pregunta.id} style={{
+          margin: "0 0 12px", padding: "11px 13px", borderRadius: "11px",
+          background: "rgba(184,196,212,0.12)", borderLeft: "3px solid #B8C4D4",
+        }}>
+          <p data-encabezado-pregunta style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.1em", color: FAE.ambar }}>
+            {encabezadoH4(k + 1).toUpperCase()}
+          </p>
+          <p ref={tarjeta} tabIndex={-1} data-pregunta style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, outline: "none" }}>
+            {pregunta.pregunta}
+          </p>
+        </div>
+
+        <div role="group" aria-label={pregunta.pregunta}>
+          <Opciones columnas="minmax(0, 1fr)">
+            {opcionesH4(pregunta).map((id) => (
+              <span key={id} data-opcion={id} style={{ display: "contents" }}>
+                <Opcion ancho deshabilitada={Boolean(r)} estado={estadoDe(id)} onClick={() => responder(id)}>
+                  {pregunta.texto(id)}
+                </Opcion>
+              </span>
+            ))}
+          </Opciones>
+        </div>
+
+        {/* La devolución y, tras la última pregunta de la ronda, su cierre. Vacías mientras se pregunta. */}
+        <div data-retro aria-live="polite" aria-atomic="true">
+          {r && (
+            <div className="fae-t4h1-entra" data-panel={r.ok ? "acierto" : "error"} style={{
+              marginTop: "12px", padding: "11px 13px", borderRadius: "11px",
+              background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
+              borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
+            }}>
+              {!r.ok && <span style={SOLO_LECTOR}>{lectorErrorH4(pregunta.texto(r.correcta))} </span>}
+              <p data-palabra style={{ margin: "0 0 4px", fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", fontWeight: 700, color: r.ok ? FAE.text : FAE.coral }}>{r.ok ? CORRECTO_H4 : INCORRECTO_H4}</p>
+              <p data-texto-retro style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text }}>{r.texto}</p>
+            </div>
+          )}
+          {r && ultimaDeLaRonda && (
+            <p className="fae-t4h1-entra" data-cierre-ronda style={{ margin: "12px 0 0", fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text }}>{ronda.cierre}</p>
+          )}
+          {r && ultimaDeLaRonda && (
+            <p data-pie-ronda style={{ margin: "4px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{ronda.pie}</p>
+          )}
+        </div>
+      </div>
+
+      {/* También en la demo: la mano pasa de la pregunta 1 a la siguiente. */}
+      {r && (
+        <div ref={zonaBoton}>
+          <Responder onClick={avanzar}>{!ultimaDeLaRonda ? BOTON_H4.siguientePregunta : t.i + 1 === cuantas ? BOTON_H4.verResumen : BOTON_H4.siguienteRonda}</Responder>
         </div>
       )}
     </Marco>

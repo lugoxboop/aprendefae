@@ -2,10 +2,10 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * ¿CABEN LOS HACER DE T4 A 375 Y 320, Y NO DELATAN NADA?
  *
- *   node scripts/t4/medir-t4-hacer.mjs h1|h2|h3 [carpeta-de-capturas]
+ *   node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4 [carpeta-de-capturas]
  *
  * Chromium de verdad, la vista de T4 en modo Hacer con ese juego abierto
- * (banco scripts/t4/harness-t4, #h1, #h2 o #h3). Salta el «Así se juega» y
+ * (banco scripts/t4/harness-t4, #h1 a #h4). Salta el «Así se juega» y
  * juega todas las tarjetas: en cada una, antes de tocar, mira el DOM; después
  * toca la primera opción (acierta en unas y falla en otras) y mide. En H3 no
  * hay opciones: arma el asiento con el constructor —las dos primeras cuentas
@@ -20,6 +20,10 @@
  *     menos 36 px (son los del constructor compartido, Tema 2) y que el
  *     asiento completo quepa sin partir la cifra. La ✕ de cada fila mide
  *     26 px: es del constructor compartido, no se mide aquí y se reporta
+ *   · H4: cada ronda tiene dos o tres preguntas; se miden todas. Además, que
+ *     el sobre mida lo mismo y la tarjeta de la pregunta arranque a la misma
+ *     altura en todas las preguntas de una ronda, antes y después de
+ *     responder (Hanayama H4 v1 §2: nada salta)
  *   · PH8-2: antes de tocar, el DOM no trae ni la devolución ni la página
  *   · con movimiento reducido, nada de la actividad tiene animación en curso
  *
@@ -39,9 +43,11 @@ const JUEGOS = {
   h1: { raiz: "[data-t4-h1]", tarjeta: "[data-tarjeta-hecho]", siguiente: "Siguiente hecho", rotulos: true, total: 8 },
   h2: { raiz: "[data-t4-h2]", tarjeta: "[data-tarjeta-caso]", siguiente: "Siguiente caso", rotulos: false, total: 7 },
   h3: { raiz: "[data-t4-h3]", tarjeta: "[data-tarjeta-operacion]", siguiente: "Siguiente operación", rotulos: false, total: 4, armar: true },
+  /* H4: 3 rondas de 2 o 3 preguntas; el bucle sigue mientras haya pregunta. */
+  h4: { raiz: "[data-t4-h4]", tarjeta: "[data-tarjeta-pregunta]", siguiente: "Siguiente pregunta", otros: ["Siguiente ronda"], rotulos: false, total: 8, rondas: true },
 };
 const J = JUEGOS[CUAL];
-if (!J) { console.error("uso: node scripts/t4/medir-t4-hacer.mjs h1|h2|h3 [carpeta]"); process.exit(2); }
+if (!J) { console.error("uso: node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4 [carpeta]"); process.exit(2); }
 const CAPTURAS = process.argv[3] ?? null;
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 const ANCHOS = [375, 320];
@@ -53,8 +59,9 @@ const URL_BANCO = `http://127.0.0.1:${servidor.httpServer.address().port}/script
 const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const fallos = [];
 const filas = [];
+const h4 = {};
 
-function medir({ antes, raiz, rotulos, siguiente }) {
+function medir({ antes, raiz, rotulos, siguiente, otros = [] }) {
   const zona = document.querySelector(raiz);
   const marco = zona.closest("section") ?? zona.parentElement;
   const caja = marco.getBoundingClientRect();
@@ -62,13 +69,14 @@ function medir({ antes, raiz, rotulos, siguiente }) {
   for (const el of [...marco.querySelectorAll("*")].filter((e) => !e.matches("style, script") && [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()))) {
     const r = el.getBoundingClientRect();
     if (!r.width) continue;
-    if (el.closest('[style*="clip: rect"]')) continue;
+    /* Lo que solo oye el lector de pantalla mide 1 px a propósito: el SOLO_LECTOR compartido y el texto alternativo de las figuras (.t4f-sr). */
+    if (el.closest('[style*="clip: rect"], .t4f-sr')) continue;
     const nombre = `${el.tagName.toLowerCase()} «${el.textContent.trim().slice(0, 40)}»`;
     if (getComputedStyle(el).display !== "inline" && el.scrollWidth > el.clientWidth + 0.5) problemas.push(`${nombre}: mide ${el.scrollWidth} px en ${el.clientWidth}`);
     if (r.right > caja.right + 0.5 || r.left < caja.left - 0.5) problemas.push(`${nombre}: se sale del marco`);
   }
   if (document.documentElement.scrollWidth > window.innerWidth) problemas.push(`la página mide ${document.documentElement.scrollWidth} px en ${window.innerWidth}`);
-  const botones = [...marco.querySelectorAll("[data-opcion] button"), ...[...document.querySelectorAll("button")].filter((b) => b.textContent === siguiente || b.textContent === "Ver mi resumen")];
+  const botones = [...marco.querySelectorAll("[data-opcion] button"), ...[...document.querySelectorAll("button")].filter((b) => b.textContent === siguiente || otros.includes(b.textContent) || b.textContent === "Ver mi resumen")];
   for (const b of botones) {
     const h = b.getBoundingClientRect().height;
     if (h < 44) problemas.push(`«${b.textContent.trim().slice(0, 30)}» mide ${h.toFixed(1)} px de alto`);
@@ -102,7 +110,12 @@ function medir({ antes, raiz, rotulos, siguiente }) {
     if (new Set([...rango.getClientRects()].map((x) => Math.round(x.top))).size > 1) problemas.push(`la cifra «${c.textContent}» del asiento completo se parte`);
   }
   const animado = [...zona.querySelectorAll("*")].filter((el) => el.getAnimations().some((a) => a.playState === "running")).length;
-  return { problemas, ancho: Math.round(caja.width * 10) / 10, alto: Math.round(zona.getBoundingClientRect().height), animado };
+  /* H4: el sobre y dónde arranca la pregunta, desde el tope de la zona. */
+  const sobre = zona.querySelector("[data-sobre-h4] [data-figura]");
+  const preg = zona.querySelector("[data-tarjeta-pregunta]");
+  const top = zona.getBoundingClientRect().top;
+  const h4 = sobre && preg ? { sobre: Math.round(sobre.getBoundingClientRect().height * 100) / 100, pregunta: Math.round((preg.getBoundingClientRect().top - top) * 100) / 100, ronda: zona.querySelector("[data-enunciado]")?.dataset.enunciado } : null;
+  return { problemas, ancho: Math.round(caja.width * 10) / 10, alto: Math.round(zona.getBoundingClientRect().height), animado, h4 };
 }
 
 for (const reducido of [false, true]) {
@@ -118,7 +131,8 @@ for (const reducido of [false, true]) {
     const estado = async (nombre, antes) => {
       await pg.evaluate(() => document.fonts.ready);
       if (reducido) await pg.waitForTimeout(50);
-      const m = await pg.evaluate(medir, { antes, raiz: J.raiz, rotulos: J.rotulos, siguiente: J.siguiente });
+      const m = await pg.evaluate(medir, { antes, raiz: J.raiz, rotulos: J.rotulos, siguiente: J.siguiente, otros: J.otros ?? [] });
+      if (m.h4 && !reducido) ((h4[ancho] ??= {})[m.h4.ronda] ??= []).push([nombre, m.h4]);
       const marca = `${reducido ? "reducido · " : ""}${ancho} px · ${nombre}`;
       if (reducido) { if (m.animado) fallos.push(`${marca} · ${m.animado} animaciones en curso`); return; }
       filas.push({ ancho, estado: nombre, marco: m.ancho, alto: m.alto });
@@ -126,7 +140,8 @@ for (const reducido of [false, true]) {
       if (CAPTURAS) await (await pg.$(H1)).evaluateHandle((x) => x.closest("section") ?? x.parentElement).then((m) => m.asElement().screenshot({ path: resolve(CAPTURAS, `t4-${CUAL}-${ancho}-${String(++n).padStart(2, "0")}-${nombre}.png`) }));
     };
     for (let k = 0; k < J.total; k++) {
-      const id = await pg.getAttribute(J.tarjeta, J.tarjeta.slice(1, -1));
+      if (J.rondas && await pg.$("[data-resumen]")) break;
+      const id = `${J.rondas ? `${await pg.getAttribute("[data-enunciado]", "data-enunciado")}-` : ""}${await pg.getAttribute(J.tarjeta, J.tarjeta.slice(1, -1))}`;
       await estado(`${id}-colocando`, true);
       if (J.armar) {
         /* Las dos primeras cuentas, la primera al debe y la segunda al haber: acierta en unas y falla en otras. */
@@ -143,10 +158,18 @@ for (const reducido of [false, true]) {
       }
       const panel = await pg.getAttribute("[data-panel]", "data-panel");
       await estado(`${id}-${panel}`, false);
-      for (const b of await pg.$$("button")) { const t = (await b.textContent())?.trim(); if (t === J.siguiente || t === "Ver mi resumen") { await b.click(); break; } }
+      for (const b of await pg.$$("button")) { const t = (await b.textContent())?.trim(); if (t === J.siguiente || (J.otros ?? []).includes(t) || t === "Ver mi resumen") { await b.click(); break; } }
     }
     await pg.waitForSelector("[data-resumen]");
     await pg.close();
+  }
+}
+
+/* H4: dentro de cada ronda, el sobre mide lo mismo y la pregunta arranca en el mismo sitio en todos los estados. */
+for (const [ancho, rondas] of Object.entries(h4)) for (const [ronda, lista] of Object.entries(rondas)) {
+  for (const clave of ["sobre", "pregunta"]) {
+    const v = new Set(lista.map(([, x]) => x[clave]));
+    if (v.size !== 1) fallos.push(`${ancho} px · ${ronda}: ${clave} cambia (${lista.map(([e, x]) => `${e} ${x[clave]}`).join(", ")})`);
   }
 }
 
@@ -154,5 +177,6 @@ await navegador.close();
 await servidor.close();
 console.log("ancho | estado | marco | alto");
 for (const f of filas) console.log(`${f.ancho} | ${f.estado} | ${f.marco} | ${f.alto}`);
+for (const [ancho, rondas] of Object.entries(h4)) for (const [ronda, lista] of Object.entries(rondas)) console.log(`H4 ${ancho} | ${ronda} | sobre ${[...new Set(lista.map(([, x]) => x.sobre))].join("/")} | pregunta a ${[...new Set(lista.map(([, x]) => x.pregunta))].join("/")} | ${lista.length} estados`);
 console.log(fallos.length ? `\n${fallos.length} FALLAN:\n${fallos.join("\n")}` : `\nTodo cabe en los ${filas.length} estados, nada se delata antes de responder, y con movimiento reducido nada se anima.`);
 process.exit(fallos.length ? 1 : 0);

@@ -312,7 +312,11 @@ test("★★★ se sortea la serie, no las operaciones; al terminar, el cierre y
   assert.equal(D.sortearH3(() => 0), D.SERIE_1);
   assert.equal(D.sortearH3(() => 0.99), D.SERIE_2);
   assert.match(VISTA, /useTanda\(\(\) => items \?\? sortearH3\(\)\)/);
-  assert.doesNotMatch(VISTA.slice(VISTA.indexOf("export function SeMueveLaCajaMenor")), /barajar/);
+  const deH3 = VISTA.slice(VISTA.indexOf("export function SeMueveLaCajaMenor"));
+  /* Solo el componente de H3: lo que viene después es de otra pieza. */
+  const soloH3 = deH3.slice(0, deH3.indexOf("\n/*\n * ═══", 10) > 0 ? deH3.indexOf("\n/*\n * ═══", 10) : undefined);
+  assert.ok(soloH3.length > 1000 && soloH3.includes("ConstructorAsiento"), "no se encontró el componente de H3");
+  assert.doesNotMatch(soloH3, /barajar/);
   const m = await montar();
   try {
     for (const [k, op] of D.SERIE_1.entries()) {

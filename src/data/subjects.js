@@ -651,6 +651,8 @@ export const SUBJECTS = {
           { id: "t4-se-mueve-la-caja-menor", nombre: "¿Se mueve la caja menor?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A3, pp. 182-186, justo después de H3 (plan de Yujiro). Aprender: cero FP, no entra al catálogo. */
           { id: "t4-a3-el-arqueo", nombre: "El arqueo", clasificacion: { tipo: APRENDER } },
+          /* H4, justo después de A3, que la sostiene. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0203. */
+          { id: "t4-el-arqueo-de-rosa", nombre: "El arqueo de Rosa", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
         ],
       },
       /*
