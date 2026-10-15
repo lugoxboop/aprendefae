@@ -1,17 +1,18 @@
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * ¿CABE T4 · H1 «¿ENTRA O SALE DE CAJA?» A 375 Y 320, Y NO DELATA NADA?
+ * ¿CABEN LOS HACER DE T4 A 375 Y 320, Y NO DELATAN NADA?
  *
- *   node scripts/t4/medir-t4-h1.mjs [carpeta-de-capturas]
+ *   node scripts/t4/medir-t4-hacer.mjs h1|h2 [carpeta-de-capturas]
  *
- * Chromium de verdad, la vista de T4 en modo Hacer con H1 abierto (banco
- * scripts/t4/harness-t4, #h1). Salta el «Así se juega» y juega los ocho
- * hechos: en cada uno, antes de tocar, mira el DOM y después falla o acierta
- * (alterna) y mide. En cada estado comprueba:
+ * Chromium de verdad, la vista de T4 en modo Hacer con ese juego abierto
+ * (banco scripts/t4/harness-t4, #h1 o #h2). Salta el «Así se juega» y juega
+ * todas las tarjetas: en cada una, antes de tocar, mira el DOM; después toca
+ * la primera opción (acierta en unas y falla en otras) y mide. Comprueba:
  *
  *   · que la página no tenga barra horizontal y ningún texto se salga
  *   · que cada destino y cada botón midan al menos 44 px de alto
- *   · que ningún destino se parta en dos líneas antes de responder
+ *   · H1: que ningún destino se parta en dos líneas (son rótulos). En H2 las
+ *     opciones son frases y se parten por espacios (Hanayama H2 v1 §2)
  *   · PH8-2: antes de tocar, el DOM no trae ni la devolución ni la página
  *   · con movimiento reducido, nada de la actividad tiene animación en curso
  *
@@ -26,20 +27,27 @@ import { resolve } from "node:path";
 const RAIZ = resolve(import.meta.dirname, "../..");
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? "/opt/node-tools/node_modules/playwright");
-const CAPTURAS = process.argv[2] ?? null;
+const CUAL = process.argv[2];
+const JUEGOS = {
+  h1: { raiz: "[data-t4-h1]", tarjeta: "[data-tarjeta-hecho]", siguiente: "Siguiente hecho", rotulos: true, total: 8 },
+  h2: { raiz: "[data-t4-h2]", tarjeta: "[data-tarjeta-caso]", siguiente: "Siguiente caso", rotulos: false, total: 7 },
+};
+const J = JUEGOS[CUAL];
+if (!J) { console.error("uso: node scripts/t4/medir-t4-hacer.mjs h1|h2 [carpeta]"); process.exit(2); }
+const CAPTURAS = process.argv[3] ?? null;
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 const ANCHOS = [375, 320];
-const H1 = "[data-t4-h1]";
+const H1 = J.raiz;
 
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
 await servidor.listen();
-const URL_BANCO = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/t4/harness-t4/index.html#h1`;
+const URL_BANCO = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/t4/harness-t4/index.html#${CUAL}`;
 const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const fallos = [];
 const filas = [];
 
-function medir({ antes }) {
-  const zona = document.querySelector("[data-t4-h1]");
+function medir({ antes, raiz, rotulos, siguiente }) {
+  const zona = document.querySelector(raiz);
   const marco = zona.closest("section") ?? zona.parentElement;
   const caja = marco.getBoundingClientRect();
   const problemas = [];
@@ -52,14 +60,14 @@ function medir({ antes }) {
     if (r.right > caja.right + 0.5 || r.left < caja.left - 0.5) problemas.push(`${nombre}: se sale del marco`);
   }
   if (document.documentElement.scrollWidth > window.innerWidth) problemas.push(`la página mide ${document.documentElement.scrollWidth} px en ${window.innerWidth}`);
-  const botones = [...marco.querySelectorAll("[data-opcion] button"), ...[...document.querySelectorAll("button")].filter((b) => /Siguiente hecho|Ver mi resumen/.test(b.textContent))];
+  const botones = [...marco.querySelectorAll("[data-opcion] button"), ...[...document.querySelectorAll("button")].filter((b) => b.textContent === siguiente || b.textContent === "Ver mi resumen")];
   for (const b of botones) {
     const h = b.getBoundingClientRect().height;
     if (h < 44) problemas.push(`«${b.textContent.trim().slice(0, 30)}» mide ${h.toFixed(1)} px de alto`);
   }
   if (antes) {
     /* El rótulo del destino: su nodo de texto, no el botón entero (el marcador va a otra altura). */
-    for (const b of marco.querySelectorAll("[data-opcion] button")) {
+    for (const b of rotulos ? marco.querySelectorAll("[data-opcion] button") : []) {
       const texto = [...b.querySelectorAll("*"), b].flatMap((e) => [...e.childNodes]).find((n) => n.nodeType === 3 && n.textContent.trim());
       const rango = document.createRange(); rango.selectNodeContents(texto);
       const lineas = new Set([...rango.getClientRects()].filter((x) => x.width > 1).map((x) => Math.round(x.top))).size;
@@ -87,21 +95,21 @@ for (const reducido of [false, true]) {
     const estado = async (nombre, antes) => {
       await pg.evaluate(() => document.fonts.ready);
       if (reducido) await pg.waitForTimeout(50);
-      const m = await pg.evaluate(medir, { antes });
+      const m = await pg.evaluate(medir, { antes, raiz: J.raiz, rotulos: J.rotulos, siguiente: J.siguiente });
       const marca = `${reducido ? "reducido · " : ""}${ancho} px · ${nombre}`;
       if (reducido) { if (m.animado) fallos.push(`${marca} · ${m.animado} animaciones en curso`); return; }
       filas.push({ ancho, estado: nombre, marco: m.ancho, alto: m.alto });
       for (const p of m.problemas) fallos.push(`${marca} · ${p}`);
-      if (CAPTURAS) await (await pg.$(H1)).evaluateHandle((x) => x.closest("section") ?? x.parentElement).then((m) => m.asElement().screenshot({ path: resolve(CAPTURAS, `t4-h1-${ancho}-${String(++n).padStart(2, "0")}-${nombre}.png`) }));
+      if (CAPTURAS) await (await pg.$(H1)).evaluateHandle((x) => x.closest("section") ?? x.parentElement).then((m) => m.asElement().screenshot({ path: resolve(CAPTURAS, `t4-${CUAL}-${ancho}-${String(++n).padStart(2, "0")}-${nombre}.png`) }));
     };
-    for (let k = 0; k < 8; k++) {
-      const id = await pg.getAttribute("[data-tarjeta-hecho]", "data-tarjeta-hecho");
+    for (let k = 0; k < J.total; k++) {
+      const id = await pg.getAttribute(J.tarjeta, J.tarjeta.slice(1, -1));
       await estado(`${id}-colocando`, true);
-      /* Siempre «Debe de Caja»: acierta en tres hechos y falla en cinco, así se miden los dos paneles. */
-      await pg.click('[data-opcion="debe"] button');
+      /* Siempre la primera opción: acierta en unas y falla en otras, así se miden los dos paneles. */
+      await pg.click(`${J.raiz} [data-opcion] button`);
       const panel = await pg.getAttribute("[data-panel]", "data-panel");
       await estado(`${id}-${panel}`, false);
-      for (const b of await pg.$$("button")) { const t = (await b.textContent())?.trim(); if (t === "Siguiente hecho" || t === "Ver mi resumen") { await b.click(); break; } }
+      for (const b of await pg.$$("button")) { const t = (await b.textContent())?.trim(); if (t === J.siguiente || t === "Ver mi resumen") { await b.click(); break; } }
     }
     await pg.waitForSelector("[data-resumen]");
     await pg.close();

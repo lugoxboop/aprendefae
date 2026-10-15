@@ -23,6 +23,10 @@ import {
   H1, DESTINOS_H1, BOTON_H1, CIERRE_H1, resumenH1, lectorErrorH1,
   sortearH1, evaluarH1, puntuarH1, nombreDeDestinoH1,
 } from "../data/contabilidadT4H1.js";
+import {
+  H2, PIE_CASO_H2, PREGUNTA_H2, BOTON_H2, CIERRE_H2, resumenH2, lectorErrorH2,
+  controlH2, sortearH2, opcionesEnOrden, evaluarH2, puntuarH2,
+} from "../data/contabilidadT4H2.js";
 import { Opcion, Opciones, Pulsos, Cierre } from "./mecanicas/corazon/juego.jsx";
 import { TEXTO_CIERRE } from "./mecanicas/bloques/marcos.jsx";
 import { Responder, useTanda } from "./mecanicas/libros/piezas.jsx";
@@ -59,6 +63,7 @@ export const PIEZAS_T4 = [
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS_T4 = [
   { id: H1.id, Mecanica: EntraOSaleDeCaja, titulo: H1.nombre },
+  { id: H2.id, Mecanica: ElControlQueSeSaltaron, titulo: H2.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
@@ -704,6 +709,141 @@ export function EntraOSaleDeCaja({ Marco, rotulo, titulo, acento, onCompletar, i
       {r && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H1.verResumen : BOTON_H1.siguiente}</Responder>
+        </div>
+      )}
+    </Marco>
+  );
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · HACER 2 · EL CONTROL QUE SE SALTARON (Célula D)
+ *
+ * Desde la especificación de Hanayama (celula-d/hanayama-h2-pantalla-v1.md,
+ * PASA de Shibukawa) y el paquete vigente de Katsumi, no desde el prototipo.
+ * La forma de H1, con las piezas compartidas sin cambiarlas:
+ *
+ *   · la tarjeta del caso lleva el pie «Caso construido», igual en los siete:
+ *     no delata nada. La página va en la devolución, la del control correcto
+ *   · una línea de pregunta entre el caso y las opciones
+ *   · tres opciones apiladas —el control que falla y dos distractores—,
+ *     barajadas por caso. Un solo toque; si falla, «era esta». Coral solo en
+ *     el error
+ *   · mientras se pregunta, nada de la respuesta está en el DOM (PH8-2)
+ *
+ * Al terminar: onCompletar(pct, ms, detalle). Evaluativa: el motor escala los
+ * 10 FP con el porcentaje. En modo demo no reporta nada.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+export function ElControlQueSeSaltaron({ Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null }) {
+  const t = useTanda(() => items ?? sortearH2(barajar));
+  const [elegida, setElegida] = useState(null);
+  const [r, setR] = useState(null);
+  const [bien, setBien] = useState(0);
+  const zonaBoton = useRef(null);
+  const tarjeta = useRef(null);
+
+  const caso = t.items[t.i];
+  const cuantos = t.items.length;
+
+  useEffect(() => {
+    if (t.terminado && !modoDemo) onCompletar?.(puntuarH2(bien, cuantos), Date.now() - t.inicio.current, t.detalle.current);
+  }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (r && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [r]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const responder = (id) => {
+    if (r) return;
+    const nuevo = evaluarH2(caso, id);
+    /* En el error se guarda el control elegido: eso le dice algo al docente. */
+    t.anotar(caso.id, nuevo.ok, id);
+    if (nuevo.ok) setBien((n) => n + 1);
+    setElegida(id);
+    setR(nuevo);
+  };
+
+  const avanzar = () => {
+    setElegida(null); setR(null);
+    if (t.i + 1 < cuantos) { t.setI(t.i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); }
+    else t.setTerminado(true);
+  };
+
+  const reiniciar = () => { t.reiniciar(); setElegida(null); setR(null); setBien(0); };
+
+  if (t.terminado) {
+    return (
+      <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+        <Cierre pct={Math.round(puntuarH2(bien, cuantos))} onReiniciar={reiniciar} textoReiniciar={BOTON_H2.otraVez}>
+          <p data-resumen style={TEXTO_CIERRE}>{resumenH2(bien, cuantos)}</p>
+          <p data-cierre style={{ ...TEXTO_CIERRE, marginTop: "8px" }}>{CIERRE_H2.texto}</p>
+          <p data-pie-cierre style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{CIERRE_H2.pie}</p>
+        </Cierre>
+      </Marco>
+    );
+  }
+
+  const estadoDe = (id) => {
+    if (!r) return null;
+    if (id === elegida) return r.ok ? "correcta" : "incorrecta";
+    if (id === r.correcta) return "revelada";
+    return null;
+  };
+
+  return (
+    <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+      <style>{CSS_T4H1}</style>
+      <div data-t4-h2>
+        <Encabezado consigna={H2.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
+        <div style={{ marginBottom: "12px" }}>
+          <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Caso" />
+        </div>
+
+        {/* El caso y su pie neutro, igual en los siete. */}
+        <div key={caso.id} className="fae-t4h1-entra" data-tarjeta-caso={caso.id} style={{
+          margin: "0 0 12px", padding: "11px 13px", borderRadius: "11px",
+          background: "rgba(184,196,212,0.12)", borderLeft: "3px solid #B8C4D4",
+        }}>
+          <p ref={tarjeta} tabIndex={-1} data-caso style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, outline: "none" }}>
+            {caso.caso}
+          </p>
+          <p data-pie style={{ margin: "4px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{PIE_CASO_H2}</p>
+        </div>
+
+        <p data-pregunta style={{ margin: "0 0 10px", fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, lineHeight: 1.4, color: FAE.text }}>{PREGUNTA_H2}</p>
+
+        <div role="group" aria-label={PREGUNTA_H2}>
+          <Opciones columnas="minmax(0, 1fr)">
+            {opcionesEnOrden(caso).map((id) => (
+              <span key={id} data-opcion={id} style={{ display: "contents" }}>
+                <Opcion ancho deshabilitada={Boolean(r)} estado={estadoDe(id)} onClick={() => responder(id)}>
+                  {controlH2(id).texto}
+                </Opcion>
+              </span>
+            ))}
+          </Opciones>
+        </div>
+
+        {/* La devolución: región viva, vacía mientras se pregunta. */}
+        <div data-retro aria-live="polite" aria-atomic="true">
+          {r && (
+            <div className="fae-t4h1-entra" data-panel={r.ok ? "acierto" : "error"} style={{
+              marginTop: "12px", padding: "11px 13px", borderRadius: "11px",
+              background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
+              borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
+            }}>
+              {!r.ok && <span style={SOLO_LECTOR}>{lectorErrorH2(controlH2(r.correcta).texto)} </span>}
+              {r.textos.filter(Boolean).map((x) => (
+                <p key={x} data-texto-retro style={{ margin: "0 0 4px", fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, fontWeight: x === r.textos[0] && r.ok ? 700 : 400 }}>{x}</p>
+              ))}
+              <p data-pagina style={{ margin: "4px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{r.pagina}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {r && !modoDemo && (
+        <div ref={zonaBoton}>
+          <Responder onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H2.verResumen : BOTON_H2.siguiente}</Responder>
         </div>
       )}
     </Marco>

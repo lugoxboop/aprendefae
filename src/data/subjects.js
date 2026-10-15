@@ -643,6 +643,8 @@ export const SUBJECTS = {
           { id: "t4-a1-la-caja", nombre: "La caja", clasificacion: { tipo: APRENDER } },
           /* H1, justo después de A1, que la sostiene. Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0200. */
           { id: "t4-entra-o-sale-de-caja", nombre: "¿Entra o sale de Caja?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
+          /* H2, justo después de H1: también la sostiene A1 (los siete controles). Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0201. */
+          { id: "t4-el-control-que-se-saltaron", nombre: "El control que se saltaron", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
         ],
       },
       /*

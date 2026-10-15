@@ -94,9 +94,9 @@ test("★★★ cada id del tema lleva t4- y está en la vista; la vista no trae
   const hacer = actividadesDeTipo(TEMA, HACER).filter((a) => !a.pendiente).map((a) => a.id);
   const enPiezas = PIEZAS_T4.map((p) => p.pieza.id);
   const enJuegos = JUEGOS_T4.map((j) => j.id);
-  /* La guarda: hoy, A0 y A1 de Aprender, y H1 de Hacer. Cada pieza nueva la sube a propósito. */
-  assert.deepEqual([ids.length, enPiezas.length, enJuegos.length], [3, 2, 1], "cambió el número de piezas de T4: súbelo aquí a propósito");
-  assert.deepEqual(ids, ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-entra-o-sale-de-caja"]);
+  /* La guarda: hoy, A0 y A1 de Aprender, y H1 y H2 de Hacer. Cada pieza nueva la sube a propósito. */
+  assert.deepEqual([ids.length, enPiezas.length, enJuegos.length], [4, 2, 2], "cambió el número de piezas de T4: súbelo aquí a propósito");
+  assert.deepEqual(ids, ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-entra-o-sale-de-caja", "t4-el-control-que-se-saltaron"]);
   assert.deepEqual(ids.filter((id) => !id.startsWith("t4-")), [], "ids sin el prefijo t4-");
   assert.deepEqual(enPiezas.sort(), [...aprender].sort(), "PIEZAS_T4 no coincide con las de Aprender del tema");
   assert.deepEqual(enJuegos.sort(), [...hacer].sort(), "JUEGOS_T4 no coincide con las de Hacer del tema");
@@ -171,7 +171,7 @@ test("★★★ el índice: con Aprender y Hacer, la tarjeta lleva las dos insig
     act(() => { tarjeta.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
     assert.deepEqual(abiertos, [], "tocar la tarjeta partida no abre el tema: abre la elección");
     const modo = (n) => [...m.caja.querySelectorAll("button.fae-modo")].find((b) => b.getAttribute("aria-label") === n);
-    for (const [etiqueta, quiere] of [["Aprender — 2 actividades", "aprender"], ["Hacer — 1 actividad", "hacer"]]) {
+    for (const [etiqueta, quiere] of [["Aprender — 2 actividades", "aprender"], ["Hacer — 2 actividades", "hacer"]]) {
       const b = modo(etiqueta);
       assert.ok(b, `no está la mitad «${etiqueta}»`);
       act(() => { b.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
