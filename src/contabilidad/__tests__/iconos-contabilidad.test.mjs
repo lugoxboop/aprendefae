@@ -97,14 +97,14 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
   assert.equal(ICONO_POR_ACTIVIDAD["ciclo-completo"], undefined, "el Ciclo Completo no lleva ícono");
   assert.ok(!Object.keys(ICONO_POR_ACTIVIDAD).some((id) => /t1-3\b/.test(id)));
   assert.equal(new Set(Object.values(ICONO_POR_ACTIVIDAD)).size, Object.keys(ICONO_POR_ACTIVIDAD).length, "un ícono repetido");
-  /* Las 40 de Hacer de Contabilidad con dibujo (sin el desafío) tienen su ícono, y son 40 archivos. */
+  /* Las 46 de Hacer de Contabilidad con dibujo (sin el desafío) tienen su ícono, y son 46 archivos. */
   const conDesafio = new Set(SUBJECTS.contabilidad.topics.flatMap((t) => (t.actividades ?? []).filter((x) => x.clasificacion?.desafio).map((x) => x.id)));
   /* Actividades nuevas que todavía esperan su dibujo de Xeno: el camino las pinta sin ícono. */
-  const SIN_ICONO_TODAVIA = new Set(["b5-t5-a1", "b5-t5-a2", "b5-t6-a1", "b5-t6-a2", "b5-t6-a3", "r5-1", "t5-temporal-o-largo-plazo"]);
+  const SIN_ICONO_TODAVIA = new Set(["t5-temporal-o-largo-plazo"]);
   const esperadas = [...hacer].filter((id) => !conDesafio.has(id) && !SIN_ICONO_TODAVIA.has(id));
-  assert.equal(esperadas.length, 40);
+  assert.equal(esperadas.length, 46);
   assert.deepEqual(Object.keys(ICONO_POR_ACTIVIDAD).sort(), esperadas.sort(), "falta o sobra un ícono");
-  assert.equal(ARCHIVOS.length, 40);
+  assert.equal(ARCHIVOS.length, 46);
   /* «¿Dónde se Rompió?» es la T1-8: su archivo se llama así. */
   assert.ok(ARCHIVOS.includes("conta-t1-8-donde-se-rompio.svg"));
   assert.ok(!ARCHIVOS.some((f) => f.startsWith("conta-t1-3")));
