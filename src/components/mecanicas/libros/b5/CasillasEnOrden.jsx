@@ -63,6 +63,9 @@ const ESTILO_REGLA = {
 const PIE = { display: "block", margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px", color: SECUNDARIO };
 const CELDA = { padding: "4px 2px", fontSize: "13px", lineHeight: 1.4, color: FAE.text };
 const BORDE_FUERTE = "rgba(248,249,250,0.32)";
+const BORDE_TENUE = "rgba(248,249,250,0.08)";
+const NODO = "#CBDCF2";
+const LINEA_PIE = { margin: 0, fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px" };
 const CIFRA = { ...CELDA, textAlign: "right", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" };
 
 const textoDe = (op) => (op.valor !== undefined ? pesos(op.valor) : op.texto);
@@ -83,7 +86,7 @@ const PORCIENTO = { ...CELDA, textAlign: "right", fontFamily: "Inter, sans-serif
  * escenario y el pie del porcentaje. Así el rótulo queda siempre entre la
  * tabla y la casilla. Cada fila lleva `data-fila` para el desplazamiento.
  */
-function TablaRegla({ filas, pie, datos, rotulo }) {
+function TablaRegla({ filas, pie, datos, rotulo, refRotulo }) {
   const montos = datos ? Object.fromEntries(datos.filas.filter((f) => !f.total).map((f) => [f.nombre, f.valor])) : null;
   const total = datos?.filas.find((f) => f.total);
   const columnas = montos ? 3 : 2;
@@ -117,9 +120,18 @@ function TablaRegla({ filas, pie, datos, rotulo }) {
             )}
           </tbody>
         </table>
+        {/*
+         * El pie de la tabla, dentro de su borde (hoja de Mai, calidad 1): bajo un filete atenuado, dos
+         * líneas sin cajas. El rótulo en 600 nodo y la fuente del porcentaje en 400 secundario; cada una
+         * dice su fuente con su primera palabra. La caja solo añadía bordes donde ya hay uno.
+         */}
+        {(rotulo || pie) && (
+          <div data-pie-tabla="" style={{ margin: "6px 0 0", padding: "6px 0 0", borderTop: `1px solid ${BORDE_TENUE}` }}>
+            {rotulo && <p ref={refRotulo} data-rotulo-simulado="" style={{ ...LINEA_PIE, fontWeight: 600, color: NODO }}>{rotulo}</p>}
+            {pie && <p data-pie-porcentaje="" style={{ ...LINEA_PIE, fontWeight: 400, color: SECUNDARIO }}>{pie}</p>}
+          </div>
+        )}
       </div>
-      {rotulo}
-      {pie && <span style={PIE}><PieDeFuente texto={pie} /></span>}
     </div>
   );
 }
@@ -217,17 +229,25 @@ export default function CasillasEnOrden({
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       {!modoDemo && <Encabezado consigna={config.consigna} onComoSeJuega={onComoSeJuega} />}
       {config.rotuloSimulado && !config.reglaTabla && <div ref={rotuloRef} style={{ margin: "0 0 10px" }}><RotuloSimulado texto={config.rotuloSimulado} /></div>}
+      {/* Con la regla en tabla, la nota va encima, como su presentación (hoja de Mai, calidad 1). */}
+      {config.nota && config.reglaTabla && (
+        <p data-nota-regla style={{ margin: "0 0 10px", fontFamily: "Inter, sans-serif", fontSize: "13px", lineHeight: 1.45, color: "rgba(248,249,250,0.75)" }}>
+          {config.nota.texto}
+          {config.nota.pie && <span style={PIE}><PieDeFuente texto={config.nota.pie} /></span>}
+        </p>
+      )}
       {config.reglaTabla
         ? (
           <TablaRegla
             filas={config.reglaTabla.filas}
             pie={config.reglaTabla.pie}
             datos={modoDemo ? null : parte.datos}
-            rotulo={config.rotuloSimulado && <div ref={rotuloRef} style={{ margin: "8px 0 0" }}><RotuloSimulado texto={config.rotuloSimulado} /></div>}
+            rotulo={config.rotuloSimulado}
+            refRotulo={rotuloRef}
           />
         )
         : <p data-regla style={ESTILO_REGLA}>{config.regla}</p>}
-      {config.nota && (
+      {config.nota && !config.reglaTabla && (
         <p data-nota-regla style={{ margin: "-4px 0 12px", fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.75)" }}>
           {config.nota.texto}
           {config.nota.pie && <span style={PIE}><PieDeFuente texto={config.nota.pie} /></span>}
