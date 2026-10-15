@@ -134,3 +134,32 @@ con su causa y la regla que la evita.
   dejaban de ser creíbles (Takamura). *Regla:* la figura muestra los
   insumos y las consecuencias; el resultado que se evalúa solo aparece
   después de responder.
+
+## Lo que encontró la Célula C en su autodiagnóstico (15 de octubre)
+
+Son 44 piezas: T7-1, T7-2, T7-3 y las suyas de T5. Se midieron con Playwright a 320 y 375 px y se jugaron pieza por pieza. El detalle y la evidencia están en `calidad/c7.md`. Las barras B1 a B5 ya cubrían los muros de texto. Lo de abajo es lo que no cubrían.
+
+- **C1 · La respuesta viaja en la pantalla anterior.** La pregunta llega después de una pantalla que ya dijo la respuesta, y responder es recordar lo de hace diez segundos.
+  - *Causa:* cada texto se auditó por separado y nadie leyó la secuencia.
+  - *Regla:* la cadena de la opción correcta no aparece en las dos pantallas anteriores a su pregunta, salvo como dato del enunciado. Se comprueba con una prueba automática por pieza.
+- **C2 · El primer error regala la respuesta.** En Aprender, el primer fallo explicaba la solución completa y el «Probar otra» quedaba vacío.
+  - *Regla:* escalera de ayuda.
+    - Al primer error, una **pista** de 20 palabras como máximo que orienta sin nombrar la respuesta.
+    - Al segundo error, la respuesta con su porqué.
+  - El campo `pista` es obligatorio en toda pregunta de Aprender, y una prueba lo exige.
+- **C3 · Hacer calcados.** Nueve Hacer repetían el mismo esqueleto: elegir la cifra entre 3 y después el lado de cada línea, con la cuenta y el monto ya puestos. Elegir el lado con la cuenta a la vista es 50/50.
+  - *Regla:*
+    - En un asiento calificado, el estudiante elige la **cuenta** (entre la correcta y dos distractores verosímiles) y además el **lado**.
+    - Si el objetivo de un ítem es calcular, la cifra se **escribe**. La opción múltiple queda para los conceptos.
+    - Dos Hacer seguidos de un tema no pueden tener la misma secuencia de mecánicas.
+- **C4 · La misma decisión en tres temas.** «¿Entra al costo?» repetía la decisión de «¿Costo o gasto?» y la del flete de T7-2, con los mismos ejemplos.
+  - *Regla:* antes de abrir un Hacer, se busca en la materia una decisión igual. Si existe, la pieza nueva sube el nivel (un caso que engaña, una variable más) o no se abre.
+- **C5 · Reglas del juego dentro de la consigna.** «Tienes un solo intento por pregunta» aparecía en casi todas las consignas, y en una era toda la consigna.
+  - *Regla:* la consigna dice qué hacer con este caso. Las reglas del juego van en un distintivo junto al contador, una sola vez.
+- **C6 · Dos piezas que son una.** T7-2 A5 y A6 enseñaban la misma regla («en el permanente no existe Compras») con otro hecho. Dos Hacer binarios repetían listas que ya se habían colocado en Aprender.
+  - *Regla:* si dos piezas enseñan la misma regla y solo cambia el hecho, son una pieza con dos casos. Un Hacer que se resuelve al 50 % o buscando una palabra del Aprender no se abre.
+- **C7 · El resumen que borra el límite.** «Almacenamiento» pasó a ser «lo que cuesta guardarla», sin el «directamente atribuible a la adquisición» de la p. 258. La frase quedó más corta y dejó de ser cierta.
+  - *Regla:* al resumir una definición del libro, se conserva la condición que la limita («directamente», «solo si», «cuando»). Si no cabe, se cita entera. El auditor compara cada resumen con su página, no solo las cifras.
+  - *Corolario:* esa condición tampoco se pliega detrás de «¿Por qué?». Lo plegado solo lo ve quien acierta y lo abre, y una condición que solo ve quien acertó no protege a quien se equivocó.
+- **C8 · Lo que sí engancha: la figura que crece y se queda.** La única pieza de la célula que enganchó por su mecánica fue «Llena el kárdex». Cada respuesta añade una fila, la tabla sigue a la vista y el estudiante ve su trabajo acumularse.
+  - *Regla:* en un Hacer de varios ítems sobre un mismo caso, cada respuesta deja su huella en una figura que sigue en pantalla mientras se responde lo siguiente (una tabla, un asiento, una cuenta). Un ítem que borra lo anterior para preguntar lo siguiente desperdicia el caso.
