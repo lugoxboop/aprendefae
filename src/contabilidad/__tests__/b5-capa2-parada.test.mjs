@@ -219,3 +219,10 @@ for (const p of PIEZAS) {
     }
   });
 }
+
+test("★★ T6 A5: el paso juntado 9 + 10 lleva «Basado en el libro, p. 202», como sus dos pasos de origen (Shoko, #245)", async () => {
+  const D = await import("../../data/contabilidadT6Pieza5.js");
+  const k = D.FUSION_T6_A5.grupos.findIndex((g) => g.length === 2 && g[0] === 9 && g[1] === 10);
+  assert.equal(D.FUSION_T6_A5.pies[k], "Basado en el libro, p. 202");
+  assert.ok([8, 9].every((i) => D.PASOS_T6_A5[i].pie === "Basado en el libro, p. 202"), "los pasos de origen llevan ese pie");
+});
