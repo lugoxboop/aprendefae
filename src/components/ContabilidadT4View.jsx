@@ -23,6 +23,13 @@ import { PIEZA_EL_FONDO_FIJO, FIGURA_SOBRE, ESTADOS_SOBRE_A2, ALT_SOBRE_A2 } fro
 import { PIEZA_EL_ARQUEO, FIGURA_SOBRE_A3, ESTADOS_SOBRE_A3, ALT_SOBRE_A3 } from "../data/contabilidadT4A3.js";
 import { PIEZA_BANCOS_Y_NOTAS, FIGURA_LIBRETAS, ESTADOS_LIBRETAS, ALT_LIBRETAS } from "../data/contabilidadT4A4.js";
 import {
+  PIEZA_SAN_CALIXTO, FIGURA_CONCILIA, ESTADOS_CONCILIA, NOTAS_A5, CHEQUES_A5, NOTAS_CREDITO_A5, NOTAS_DEBITO_A5,
+  EXTRACTO as EXTRACTO_A5, LIBROS as LIBROS_A5, CONSIGNACION_EN_TRANSITO as CONSIGNACION_EN_TRANSITO_A5,
+  TOTAL_CHEQUES as TOTAL_CHEQUES_A5, TOTAL_NOTAS_CREDITO as TOTAL_NOTAS_CREDITO_A5, TOTAL_NOTAS_DEBITO as TOTAL_NOTAS_DEBITO_A5,
+  CONCILIADO_BANCO as CONCILIADO_BANCO_A5, CONCILIADO_LIBROS as CONCILIADO_LIBROS_A5,
+  SUMA_DEBE_MAYOR as SUMA_DEBE_MAYOR_A5, SALDO_MAYOR as SALDO_MAYOR_A5,
+} from "../data/contabilidadT4A5.js";
+import {
   H1, DESTINOS_H1, BOTON_H1, CIERRE_H1, resumenH1, lectorErrorH1,
   sortearH1, evaluarH1, puntuarH1, nombreDeDestinoH1,
 } from "../data/contabilidadT4H1.js";
@@ -81,6 +88,7 @@ export const PIEZAS_T4 = [
   { numero: PIEZA_EL_FONDO_FIJO.numero, pieza: PIEZA_EL_FONDO_FIJO, Pieza: PantallasT4 },
   { numero: PIEZA_EL_ARQUEO.numero, pieza: PIEZA_EL_ARQUEO, Pieza: PantallasT4 },
   { numero: PIEZA_BANCOS_Y_NOTAS.numero, pieza: PIEZA_BANCOS_Y_NOTAS, Pieza: PantallasT4 },
+  { numero: PIEZA_SAN_CALIXTO.numero, pieza: PIEZA_SAN_CALIXTO, Pieza: PantallasT4 },
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
@@ -220,6 +228,7 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
  *     «girar» en su primera aparición)
  *   · `trasAcertar.grupos`: listas con título que salen solo con el acierto,
  *     numeradas de corrido (A4, las seis causas agrupadas)
+ *   · `glosaDeParrafo`: una glosa debajo de un párrafo (A5, «sobregiro»)
  *
  * Las figuras de Hanayama: una pantalla que traiga `figura` la pinta entre sus
  * textos y su asiento (texto → figura → asiento → botón → pie). En una
@@ -383,7 +392,11 @@ function CuerpoT4({ p, estadoFigura = null }) {
   return (
     <>
       {p.objetivo && <p className="t4p-p" data-texto data-objetivo>{p.objetivo}</p>}
-      <TextosT4 lista={p.parrafos} />
+      {/* Con `glosaDeParrafo`, la glosa va justo debajo de su párrafo (A5, «sobregiro» en P4). */}
+      {(p.parrafos ?? []).flatMap((t, k) => [
+        <p key={t} className="t4p-p" data-texto>{t}</p>,
+        ...(p.glosaDeParrafo?.parrafo === k ? [<p key={`glosa-${t}`} className="t4p-nota" data-texto data-glosa>{p.glosaDeParrafo.texto}</p>] : []),
+      ])}
       {p.listaNumerada && (
         <ol className="t4p-lista" data-lista>
           {p.listaNumerada.map((t, k) => (p.glosaDeLista?.renglon === k
@@ -453,7 +466,7 @@ export function PantallasT4({ pieza, rotulo }) {
 
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
-      <style>{CSS_T4P + CSS_T4F + CSS_T4S + CSS_T4L}</style>
+      <style>{CSS_T4P + CSS_T4F + CSS_T4S + CSS_T4L + CSS_T4C}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
         {p.tipo === "eleccion" ? (
           <EleccionT4 key={p.id} pantalla={p} onSeguir={ultima ? null : seguir} />
@@ -571,6 +584,7 @@ function FiguraT4({ tipo, estado }) {
   if (tipo === "cajon") return <CajonDePaso estado={estado} />;
   if (tipo === "raya") return <RayaDelAno estado={estado} />;
   if (tipo === "libretas") return <LasDosLibretas estado={estado} />;
+  if (tipo === "concilia") return <ConciliacionSanCalixto estado={estado} />;
   const sobre = SOBRES[tipo];
   return <SobreCajaMenor estado={estado} s={sobre.estados[estado]} alt={sobre.alt[estado]} F={sobre.F} />;
 }
@@ -1028,6 +1042,261 @@ export function LasDosLibretas({ estado }) {
         </tbody>
       </table>
       <figcaption id={idAlt} className="t4f-sr">{ALT_LIBRETAS[estado]}</figcaption>
+    </figure>
+  );
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · «LA CONCILIACIÓN DE DOS LADOS» (Hanayama, A5 v1 con la v1.1 y la
+ * v1.2 encima). Tres piezas, una por idea:
+ *
+ *   · el PAR «el banco / la empresa», fijo arriba: los dos saldos, y el «=»
+ *     solo cuando son iguales (lo calcula la figura, no lo dice el estado)
+ *   · cada LADO de la conciliación, la presentación de la p. 190: «Más» y
+ *     «Menos» sin color (no son debe ni haber, ni un error), cada concepto en
+ *     dos renglones fijos y su monto a la base del último; el detalle de
+ *     cada partida alineado con la columna de conceptos, con su filete. Un
+ *     lado por pantalla; los dos, compactos, en P6
+ *   · las CINCO NOTAS (P7), como tarjetas de asiento (aquí sí DEBE teal y
+ *     HABER ámbar: es un asiento), y el MAYOR de Bancos (P8), con los
+ *     rótulos encima del monto
+ *
+ * Las cifras se calculan de las partidas (contabilidadT4A5.js). Un signo o
+ * una marca de P6 que todavía no se ve guarda su sitio SIN su texto: es la
+ * respuesta (PH8-2). Para el lector de pantalla, el par se lee en una frase
+ * y cada lado, las notas y el mayor son tablas; el dibujo de las notas y el
+ * del mayor van aria-hidden. Clases `t4cn-`, `t4na-` y `t4my-`.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+export const CSS_T4C = `
+.t4cn { position: relative; margin: 0; display: grid; gap: 14px; min-width: 0; color: ${COLOR.texto}; font-family: "Inter", sans-serif; }
+.t4cn * { box-sizing: border-box; }
+.t4cn-par { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); align-items: end; border: 1px solid ${COLOR.borde}; border-radius: 10px; padding: 8px 12px; min-width: 0; }
+.t4cn-parl { display: grid; min-width: 0; }
+.t4cn-parl + .t4cn-igual + .t4cn-parl { justify-items: end; text-align: right; }
+.t4cn-parl > span:first-child { font: 500 12px/1.3 "Inter", sans-serif; letter-spacing: .04em; color: ${COLOR.texto2}; white-space: nowrap; }
+.t4cn-m { font: 500 15px/1.2 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; color: ${COLOR.texto2}; text-align: right; }
+.t4cn-parl .t4cn-m { color: ${COLOR.texto}; }
+.t4cn-igual { text-align: center; font: 600 15px/1.2 "Inter", sans-serif; }
+.t4cn-lado { display: grid; min-width: 0; border: 1px solid ${COLOR.borde}; border-radius: 10px; padding: 4px 12px 8px; }
+.t4cn-cab { padding: 6px 0; font: 600 13px/1.3 "Sora", "Inter", sans-serif; white-space: nowrap; border-bottom: 1px solid ${COLOR.borde}; }
+.t4cn-tabla { display: grid; min-width: 0; }
+.t4cn-fila, .t4cn-det { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; column-gap: 8px; align-items: end; min-width: 0; }
+.t4cn-fila { padding: 6px 0; }
+.t4cn-fila + .t4cn-fila, .t4cn-det + .t4cn-fila { border-top: 1px solid rgba(184,196,212,0.35); }
+.t4cn-det { padding: 2px 0; }
+.t4cn-signo { align-self: start; padding-top: 1px; font: 600 12px/1.3 "Inter", sans-serif; letter-spacing: .04em; white-space: nowrap; color: ${COLOR.texto2}; }
+.t4cn-con { display: grid; min-width: 0; font: 400 13px/1.3 "Inter", sans-serif; color: ${COLOR.texto2}; }
+.t4cn-con > span, .t4cn-dn > span { white-space: nowrap; }
+.t4cn-dn { display: grid; min-width: 0; padding-left: 8px; border-left: 1px solid ${COLOR.borde}; font: 400 12px/1.35 "Inter", sans-serif; color: ${COLOR.texto2}; }
+.t4cn-det .t4cn-m { font-size: 13px; }
+.t4cn-total { border-top: 1px solid ${COLOR.borde} !important; }
+.t4cn-total .t4cn-con, .t4cn-total .t4cn-m { color: ${COLOR.texto}; font-weight: 600; }
+.t4cn-foco .t4cn-con, .t4cn-foco .t4cn-signo, .t4cn-foco .t4cn-dn { color: ${COLOR.texto}; }
+.t4cn-foco .t4cn-m, .t4cn-parl.t4cn-foco .t4cn-m { color: ${COLOR.texto}; font-weight: 600; }
+.t4cn-marca { padding: 6px 0 2px; border-top: 1px solid ${COLOR.borde}; font: 500 12px/1.3 "Inter", sans-serif; color: ${COLOR.texto}; white-space: nowrap; }
+.t4cn-oculto { visibility: hidden; }
+.t4na { margin: 0; display: grid; gap: 8px; min-width: 0; color: ${COLOR.texto}; font-family: "Inter", sans-serif; }
+.t4na * { box-sizing: border-box; }
+.t4na-cab { font: 500 12px/1.3 "Inter", sans-serif; letter-spacing: .04em; color: ${COLOR.texto2}; white-space: nowrap; }
+.t4na-n { display: grid; gap: 4px; min-width: 0; border: 1px solid ${COLOR.borde}; border-radius: 10px; padding: 8px 12px; }
+.t4na-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: start; min-width: 0; }
+.t4na-nom { display: grid; min-width: 0; font: 400 13px/1.35 "Inter", sans-serif; color: ${COLOR.texto2}; }
+.t4na-nom > span, .t4na-cta > span { white-space: nowrap; }
+.t4na-top .t4cn-m { color: ${COLOR.texto}; }
+.t4na-l { display: grid; grid-template-columns: 52px minmax(0, 1fr); column-gap: 8px; align-items: baseline; min-width: 0; }
+.t4na-lado { font: 600 12px/1.3 "Inter", sans-serif; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.t4na-cta { display: grid; min-width: 0; font: 600 13px/1.3 "Sora", "Inter", sans-serif; }
+.t4my { margin: 0; display: grid; min-width: 0; border: 1px solid ${COLOR.borde}; border-radius: 10px; padding: 8px 12px; color: ${COLOR.texto}; font-family: "Inter", sans-serif; }
+.t4my * { box-sizing: border-box; }
+.t4my-n { padding-bottom: 6px; text-align: center; font: 600 13px/1.3 "Sora", "Inter", sans-serif; white-space: nowrap; }
+.t4my-g { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid ${COLOR.borde}; min-width: 0; }
+.t4my-c { display: grid; justify-items: end; align-content: end; min-width: 0; padding: 3px 8px; }
+.t4my-g > .t4my-c:nth-child(even) { border-left: 1px solid ${COLOR.borde}; }
+.t4my-lado { justify-self: start; padding-top: 3px; font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.t4my-g > .t4my-c:nth-child(2) .t4my-lado { justify-self: end; }
+.t4my-r { justify-self: start; font: 400 12px/1.3 "Inter", sans-serif; color: ${COLOR.texto2}; white-space: nowrap; }
+.t4my-c .t4cn-m { color: ${COLOR.texto}; }
+.t4my-suma { border-top: 1px solid ${COLOR.borde}; margin-top: 2px; }
+.t4my-saldo .t4cn-m, .t4my-saldo .t4my-r { font-weight: 600; color: ${COLOR.texto}; }
+@media (prefers-reduced-motion: reduce) { .t4cn, .t4cn *, .t4na, .t4na *, .t4my, .t4my * { transition: none !important; animation: none !important; } }
+`;
+
+/* Un signo de la p. 190: «Más» o «Menos», o su sitio sin texto (es la respuesta). */
+function SignoConcilia({ signo, visible, estado, id }) {
+  return visible
+    ? <span key={`${estado}-${id}`} role="cell" className="t4cn-signo t4f-nueva" data-signo="visible">{signo}</span>
+    : <span role="cell" className="t4cn-signo t4cn-oculto" data-signo="oculto"><span aria-hidden="true">{VACIO}</span></span>;
+}
+
+/* Una fila de un lado: signo, concepto en renglones fijos y monto. */
+function FilaConcilia({ id, signo = null, visible = false, concepto, monto, foco, total = false, estado }) {
+  return (
+    <div role="row" className={`t4cn-fila${total ? " t4cn-total" : ""}${foco ? " t4cn-foco" : ""}`} data-fila={id}>
+      {signo ? <SignoConcilia signo={signo} visible={visible} estado={estado} id={id} /> : <span role="cell" className="t4cn-signo" />}
+      <span role="rowheader" className="t4cn-con">{concepto.map((t) => <span key={t}>{t}</span>)}</span>
+      <span role="cell" className="t4cn-m" data-monto={id}>{cifra(monto)}</span>
+    </div>
+  );
+}
+
+/* Un renglón del detalle: alineado con la columna de conceptos, con su filete. */
+function DetalleConcilia({ id, renglones, monto, foco }) {
+  return (
+    <div role="row" className={`t4cn-det${foco ? " t4cn-foco" : ""}`} data-detalle={id}>
+      <span role="cell" />
+      <span role="rowheader" className="t4cn-dn">{renglones.map((t) => <span key={t}>{t}</span>)}</span>
+      <span role="cell" className="t4cn-m" data-monto={id}>{cifra(monto)}</span>
+    </div>
+  );
+}
+
+/* Los datos de cada lado, sacados de las partidas: nada se transcribe. */
+const LADOS_CONCILIA = {
+  banco: {
+    inicial: EXTRACTO_A5,
+    mas: { monto: CONSIGNACION_EN_TRANSITO_A5, detalle: [] },
+    menos: { monto: TOTAL_CHEQUES_A5, detalle: CHEQUES_A5.map((c) => ({ id: c.beneficiario, renglones: [c.beneficiario], monto: c.monto })) },
+    conciliado: CONCILIADO_BANCO_A5,
+  },
+  empresa: {
+    inicial: LIBROS_A5,
+    mas: { monto: TOTAL_NOTAS_CREDITO_A5, detalle: NOTAS_CREDITO_A5.map((n) => ({ id: n.id, renglones: n.detalle, monto: n.monto })) },
+    menos: { monto: TOTAL_NOTAS_DEBITO_A5, detalle: NOTAS_DEBITO_A5.map((n) => ({ id: n.id, renglones: n.detalle, monto: n.monto })) },
+    conciliado: CONCILIADO_LIBROS_A5,
+  },
+};
+
+function LadoConcilia({ lado, ver, s, estado }) {
+  const F = FIGURA_CONCILIA;
+  const L = LADOS_CONCILIA[lado];
+  const T = F[lado];
+  const foco = (id) => (s.foco ?? []).includes(id);
+  const detalle = (parte, id) => !s.compacto && L[parte].detalle.map((d) => <DetalleConcilia key={d.id} id={d.id} renglones={d.renglones} monto={d.monto} foco={foco(id)} />);
+  return (
+    <div className="t4cn-lado" data-lado={lado} data-ver={ver}>
+      <span className="t4cn-cab" aria-hidden="true">{T.cabecera}</span>
+      <div className="t4cn-tabla" role="table" aria-label={T.cabecera}>
+        <FilaConcilia id={`inicial-${lado}`} concepto={T.inicial} monto={L.inicial} estado={estado} />
+        <FilaConcilia id={T.mas.id} signo={F.mas} visible={s.signos.includes(T.mas.id)} concepto={T.mas.concepto} monto={L.mas.monto} foco={foco(T.mas.id)} estado={estado} />
+        {detalle("mas", T.mas.id)}
+        <FilaConcilia id={T.menos.id} signo={F.menos} visible={s.signos.includes(T.menos.id)} concepto={T.menos.concepto} monto={L.menos.monto} foco={foco(T.menos.id)} estado={estado} />
+        {detalle("menos", T.menos.id)}
+        {ver === "todo" && <FilaConcilia id={`conciliado-${lado}`} concepto={F.conciliado} monto={L.conciliado} foco={foco(`conciliado-${lado}`)} total estado={estado} />}
+      </div>
+      {/* P6: la marca de qué se asienta guarda su sitio sin decirlo hasta el acierto. */}
+      {s.compacto && (s.marcas
+        ? <span key={`${estado}-marca`} className="t4cn-marca t4f-nueva" data-marca={lado}>{T.marca}</span>
+        : <span className="t4cn-marca t4cn-oculto" aria-hidden="true" data-marca-oculta={lado}>{VACIO}</span>)}
+    </div>
+  );
+}
+
+/* Las cinco notas (P7): tarjetas de asiento, en el orden de la p. 191. Una cuenta con raya se parte en la raya. */
+const partirEnLaRaya = (c) => { const i = c.indexOf(" – "); return i < 0 ? [c] : [c.slice(0, i), c.slice(i + 1)]; };
+
+function NotasConcilia() {
+  const F = FIGURA_CONCILIA;
+  return (
+    <figure className="t4na t4f-nueva" data-figura="concilia" data-estado="notas">
+      <div aria-hidden="true" style={{ display: "grid", gap: "8px", minWidth: 0 }}>
+        <span className="t4na-cab">{F.notas.cabecera}</span>
+        {NOTAS_A5.map((n) => (
+          <div key={n.id} className="t4na-n" data-nota={n.id}>
+            <div className="t4na-top">
+              <span className="t4na-nom" data-nombre-nota>{n.tarjeta.map((t) => <span key={t}>{t}</span>)}</span>
+              <span className="t4cn-m" data-monto={n.id}>{cifra(n.monto)}</span>
+            </div>
+            {[[DEBE, n.debe, "t4p-d", INTERFAZ.debe], [HABER, n.haber, "t4p-hb", INTERFAZ.haber]].map(([lado, cuenta, clase, rotulo]) => (
+              <div key={lado} className="t4na-l" data-lado-nota={lado}>
+                <span className={`t4na-lado ${clase}`}>{rotulo}</span>
+                <span className="t4na-cta" data-cuenta-nota={cuenta}>{partirEnLaRaya(cuenta).map((t) => <span key={t}>{t}</span>)}</span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      {/* Para el lector de pantalla: la tabla de P7 del paquete. */}
+      <table className="t4f-sr" data-tabla-notas>
+        <caption>{F.lector.notas}</caption>
+        <thead><tr>{["Nota", INTERFAZ.debe, INTERFAZ.haber, "Valor"].map((c) => <th key={c} scope="col">{c}</th>)}</tr></thead>
+        <tbody>{NOTAS_A5.map((n) => <tr key={n.id}><th scope="row">{n.nombre}</th><td>{n.debe}</td><td>{n.haber}</td><td>{cifra(n.monto)}</td></tr>)}</tbody>
+      </table>
+    </figure>
+  );
+}
+
+/*
+ * El mayor de Bancos (P8). Una rejilla de dos columnas, fila por fila, para
+ * que los renglones del debe y del haber queden a la misma altura; si un
+ * lado lleva rótulo en una fila, el otro guarda ese renglón vacío.
+ */
+function MayorConcilia() {
+  const F = FIGURA_CONCILIA;
+  const filasDebe = [{ rotulo: F.mayor.saldo, monto: LIBROS_A5 }, ...NOTAS_CREDITO_A5.map((n) => ({ monto: n.monto })), { rotulo: F.mayor.suma, monto: SUMA_DEBE_MAYOR_A5, clase: "t4my-suma" }, { rotulo: F.mayor.conciliado, monto: SALDO_MAYOR_A5, clase: "t4my-saldo" }];
+  const filasHaber = [...NOTAS_DEBITO_A5.map((n) => ({ monto: n.monto })), { rotulo: F.mayor.suma, monto: TOTAL_NOTAS_DEBITO_A5, clase: "t4my-suma" }];
+  const n = Math.max(filasDebe.length, filasHaber.length);
+  const celda = (f, otra, lado, k) => {
+    const conRotulo = Boolean(f?.rotulo || otra?.rotulo);
+    return (
+      <div key={`${lado}-${k}`} className={`t4my-c ${f?.clase ?? otra?.clase ?? ""}`} data-mayor={f ? lado : undefined} data-fila-mayor={k}>
+        {conRotulo && <span className="t4my-r">{f?.rotulo ?? VACIO}</span>}
+        {f ? <span className="t4cn-m" data-monto={`mayor-${lado}-${k}`}>{cifra(f.monto)}</span> : <span className="t4cn-m">{VACIO}</span>}
+      </div>
+    );
+  };
+  return (
+    <figure className="t4my t4f-nueva" data-figura="concilia" data-estado="mayor">
+      <div aria-hidden="true" style={{ display: "grid", minWidth: 0 }}>
+        <span className="t4my-n">{F.mayor.titulo}</span>
+        <div className="t4my-g">
+          <div className="t4my-c"><span className="t4my-lado t4p-d">{INTERFAZ.debe}</span></div>
+          <div className="t4my-c"><span className="t4my-lado t4p-hb">{INTERFAZ.haber}</span></div>
+          {Array.from({ length: n }, (_, k) => [celda(filasDebe[k], filasHaber[k], DEBE, k), celda(filasHaber[k], filasDebe[k], HABER, k)])}
+        </div>
+      </div>
+      {/* Para el lector de pantalla: el mayor como tabla de dos columnas. */}
+      <table className="t4f-sr" data-tabla-mayor>
+        <caption>{F.lector.mayor}</caption>
+        <thead><tr><th scope="col">{INTERFAZ.debe}</th><th scope="col">{INTERFAZ.haber}</th></tr></thead>
+        <tbody>
+          {Array.from({ length: n }, (_, k) => (
+            <tr key={k}>{[filasDebe[k], filasHaber[k]].map((f, j) => <td key={j}>{f ? [f.rotulo, cifra(f.monto)].filter(Boolean).join(" ") : ""}</td>)}</tr>
+          ))}
+        </tbody>
+      </table>
+    </figure>
+  );
+}
+
+export function ConciliacionSanCalixto({ estado }) {
+  const s = ESTADOS_CONCILIA[estado];
+  if (s.tipo === "notas") return <NotasConcilia />;
+  if (s.tipo === "mayor") return <MayorConcilia />;
+  const F = FIGURA_CONCILIA;
+  const [banco, empresa] = s.par;
+  const iguales = banco === empresa;
+  const foco = (id) => ((s.foco ?? []).includes(id) ? " t4cn-foco" : "");
+  return (
+    <figure className="t4cn t4f-nueva" data-figura="concilia" data-estado={estado}>
+      <div className="t4cn-par" data-par>
+        <span className="t4f-sr" data-par-lector>{F.lector.par(cifra(banco), cifra(empresa))}{iguales ? ` ${F.lector.iguales}` : ""}</span>
+        <div className={`t4cn-parl${foco("par-banco")}`} aria-hidden="true">
+          <span>{F.par.banco}</span>
+          <span key={`${estado}-b`} className="t4cn-m t4f-nueva" data-monto="par-banco" data-par-monto="banco">{cifra(banco)}</span>
+        </div>
+        {/* El «=» guarda su sitio, sin texto, hasta que los dos saldos son iguales. */}
+        {iguales
+          ? <span key={`${estado}-igual`} className="t4cn-igual t4f-nueva" aria-hidden="true" data-igual="visible">{F.par.igual}</span>
+          : <span className="t4cn-igual t4cn-oculto" aria-hidden="true" data-igual="oculto">{VACIO}</span>}
+        <div className={`t4cn-parl${foco("par-empresa")}`} aria-hidden="true">
+          <span>{F.par.empresa}</span>
+          <span key={`${estado}-e`} className="t4cn-m t4f-nueva" data-monto="par-empresa" data-par-monto="empresa">{cifra(empresa)}</span>
+        </div>
+      </div>
+      {s.lados.map(({ lado, ver }) => <LadoConcilia key={lado} lado={lado} ver={ver} s={s} estado={estado} />)}
     </figure>
   );
 }

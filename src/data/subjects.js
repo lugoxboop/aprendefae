@@ -659,6 +659,8 @@ export const SUBJECTS = {
           { id: "t4-a4-bancos-y-notas", nombre: "Bancos y notas del banco", clasificacion: { tipo: APRENDER } },
           /* H6, justo después de A4, que la sostiene. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0205. */
           { id: "t4-quien-se-entero-primero", nombre: "¿Quién se enteró primero?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* A5, pp. 188-191, después de H6 (plan de Yujiro). Aprender: cero FP, no entra al catálogo. La conciliación completa de San Calixto. */
+          { id: "t4-a5-san-calixto", nombre: "San Calixto", clasificacion: { tipo: APRENDER } },
         ],
       },
       /*

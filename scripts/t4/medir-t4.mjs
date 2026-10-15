@@ -1,12 +1,12 @@
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * ¿CABE CADA TEXTO DE T4 · A0 A A4 A 375 Y 320, CON SUS FIGURAS?
+ * ¿CABE CADA TEXTO DE T4 · A0 A A5 A 375 Y 320, CON SUS FIGURAS?
  *
  *   node scripts/t4/medir-t4.mjs [carpeta-de-capturas]
  *
  * Como medir-t7-3-a1.mjs: Chromium de verdad, la vista de T4 montada tal
  * cual con la hoja de estilos del sitio (banco scripts/t4/harness-t4). Juega
- * A0, A1, A2, A3 y A4 enteras —en cada pregunta falla con cada opción equivocada y
+ * A0, A1, A2, A3, A4 y A5 enteras —en cada pregunta falla con cada opción equivocada y
  * después acierta— y en cada estado comprueba:
  *
  *   · que la página no tenga barra horizontal
@@ -30,6 +30,12 @@
  *   · en A4 (las dos libretas): que el renglón k tenga el mismo `top` en las
  *     dos libretas, que las dos midan lo mismo, y que en P7 la figura mida lo
  *     mismo en colocando, en cada error y en el acierto
+ *   · en A5 (la conciliación de dos lados): que cada renglón fijo del par,
+ *     de los conceptos, del detalle, de las notas y del mayor quede en una
+ *     línea; que cada monto quede en su fila, contra el borde derecho, a la
+ *     base del último renglón de su concepto; que en P2, P4 y P6 la figura
+ *     mida lo mismo en colocando, en cada error y en el acierto; que en el
+ *     mayor cada fila del debe y del haber arranque a la misma altura
  *   · con movimiento reducido, que nada de la pieza tenga animación ni
  *     transición en curso
  *
@@ -56,6 +62,7 @@ const PIEZAS = [
   { sel: '[data-pieza="t4-a2-el-fondo-fijo"]', nombre: "a2", correctas: { "cuanto-queda": "lo-que-queda", "y-caja-menor": "no-se-mueve" } },
   { sel: '[data-pieza="t4-a3-el-arqueo"]', nombre: "a3", correctas: { "el-sobrante": "sobrante", "el-cheque": "menos", "camino-1": "cxc-empleados" } },
   { sel: '[data-pieza="t4-a4-bancos-y-notas"]', nombre: "a4", correctas: { "lo-que-baja": "se-acredita", "por-que-no-coinciden": "la-empresa" } },
+  { sel: '[data-pieza="t4-a5-san-calixto"]', nombre: "a5", correctas: { "lo-que-el-banco-no-sabe": "se-suman", "lo-que-la-empresa-no-sabe": "se-restan", "que-se-asienta": "no" } },
 ];
 
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
@@ -88,9 +95,9 @@ function medir(sel) {
     const h = b.getBoundingClientRect().height;
     if (h < 44) problemas.push(`«${b.textContent.trim().slice(0, 30)}» mide ${h.toFixed(1)} px de alto`);
   }
-  /* La cifra: el texto mide lo que ocupa (un Range), la celda lo que tiene; en una sola línea. */
+  /* La cifra: el texto mide lo que ocupa (un Range), la celda lo que tiene; en una sola línea. Los montos de la conciliación de A5 los mide su propio bloque, más abajo. */
   const medidas = [];
-  for (const c of pieza.querySelectorAll("[data-asiento] [data-cifra], [data-tabla] [data-cifra], [data-figura] [data-monto]")) {
+  for (const c of pieza.querySelectorAll('[data-asiento] [data-cifra], [data-tabla] [data-cifra], [data-figura]:not([data-figura="concilia"]) [data-monto]')) {
     const rango = document.createRange();
     rango.selectNodeContents(c);
     const lineas = rango.getClientRects().length;
@@ -143,6 +150,56 @@ function medir(sel) {
     }
     lib = { alto: Math.round(libretas.getBoundingClientRect().height * 100) / 100, estado: libretas.dataset.estado };
   }
+  /* La conciliación de A5: renglones fijos en una línea, y cada monto en su fila, contra el borde y a la base del concepto. */
+  const concilia = pieza.querySelector('[data-figura="concilia"]');
+  let con = null;
+  if (concilia) {
+    for (const r of concilia.querySelectorAll(".t4cn-parl > span, .t4cn-cab, .t4cn-signo, .t4cn-con > span, .t4cn-dn > span, .t4cn-marca, .t4cn-m, .t4na-cab, .t4na-nom > span, .t4na-lado, .t4na-cta > span, .t4my-n, .t4my-lado, .t4my-r")) {
+      const rango = document.createRange(); rango.selectNodeContents(r);
+      const ls = new Set([...rango.getClientRects()].filter((x) => x.width > 1).map((x) => Math.round(x.top))).size;
+      if (ls > 1) problemas.push(`el renglón «${r.textContent}» de la conciliación ocupa ${ls} líneas`);
+      if (r.scrollWidth > r.clientWidth + 0.5 && getComputedStyle(r).display !== "inline") problemas.push(`el renglón «${r.textContent}» mide ${r.scrollWidth} px en ${r.clientWidth}`);
+    }
+    /* El texto más ancho de un bloque de renglones, medido con un Range (lo que ocupa, no lo que tiene). */
+    const anchoTexto = (el) => Math.max(...[...el.children].map((x) => { const g = document.createRange(); g.selectNodeContents(x); return g.getBoundingClientRect().width; }));
+    const inicioTexto = (el) => el.getBoundingClientRect().left + parseFloat(getComputedStyle(el).paddingLeft) + parseFloat(getComputedStyle(el).borderLeftWidth);
+    let holguraC = null;
+    const anotar = (libre, que) => {
+      if (libre < 0) problemas.push(`${que}: el concepto choca con su monto (${libre.toFixed(2)} px)`);
+      holguraC = holguraC == null ? libre : Math.min(holguraC, libre);
+    };
+    for (const fila of concilia.querySelectorAll(".t4cn-fila, .t4cn-det")) {
+      const [, con2, m] = fila.children;
+      const rf = fila.getBoundingClientRect(), rm = m.getBoundingClientRect();
+      const ultimo = [...con2.children].at(-1).getBoundingClientRect();
+      if (Math.abs(rm.right - rf.right) > 0.5) problemas.push(`fila «${fila.textContent}»: el monto no va contra el borde derecho`);
+      if (Math.abs(rm.bottom - ultimo.bottom) > 3) problemas.push(`fila «${fila.textContent}»: el monto no va a la base del último renglón`);
+      anotar(rm.left - inicioTexto(con2) - anchoTexto(con2), `fila «${fila.textContent}»`);
+    }
+    for (const nota of concilia.querySelectorAll(".t4na-top")) {
+      const [nom, m] = nota.children;
+      anotar(m.getBoundingClientRect().left - inicioTexto(nom) - anchoTexto(nom), `la nota «${nom.textContent}»`);
+    }
+    /* El mayor: la fila k del debe y la del haber, a la misma altura. */
+    const mayor = concilia.matches(".t4my") ? concilia : null;
+    if (mayor) {
+      const ks = new Set([...mayor.querySelectorAll("[data-fila-mayor]")].map((x) => x.dataset.filaMayor));
+      for (const k of ks) {
+        const c = [...mayor.querySelectorAll(`[data-fila-mayor="${k}"]`)].map((x) => Math.round(x.getBoundingClientRect().top * 100) / 100);
+        if (new Set(c).size !== 1) problemas.push(`mayor: la fila ${k} no está a la misma altura en el debe y el haber`);
+      }
+      /* Con el rótulo encima, lo que importa es que rótulo y monto quepan, cada uno, en su columna. */
+      for (const c of mayor.querySelectorAll(".t4my-c")) {
+        const util = c.clientWidth - parseFloat(getComputedStyle(c).paddingLeft) - parseFloat(getComputedStyle(c).paddingRight);
+        for (const x of c.querySelectorAll(".t4my-r, .t4cn-m")) {
+          if (!x.textContent.trim()) continue;
+          const g = document.createRange(); g.selectNodeContents(x);
+          anotar(util - g.getBoundingClientRect().width, `mayor «${x.textContent}»`);
+        }
+      }
+    }
+    con = { alto: Math.round(concilia.getBoundingClientRect().height * 100) / 100, estado: concilia.dataset.estado, holgura: holguraC == null ? null : Math.round(holguraC * 100) / 100 };
+  }
   const raya = pieza.querySelector("[data-raya]");
   const animado = [...pieza.querySelectorAll("*")].filter((el) => el.getAnimations().length > 0).length;
   return {
@@ -150,6 +207,7 @@ function medir(sel) {
     medidas,
     raya: raya ? Math.round((raya.getBoundingClientRect().top - pieza.querySelector("[data-figura]").getBoundingClientRect().top) * 100) / 100 : null,
     lib,
+    con,
     sobre: sobre ? {
       alto: Math.round(sobre.getBoundingClientRect().height * 100) / 100,
       libro: sobre.querySelector("[data-libro]") ? Math.round((sobre.querySelector("[data-libro]").getBoundingClientRect().top - sobre.getBoundingClientRect().top) * 100) / 100 : null,
@@ -169,6 +227,7 @@ const rayas = {};
 const sobres = {};
 const sobresA3 = {};
 const libs = {};
+const cons = {};
 
 for (const reducido of [false, true]) {
 for (const ancho of ANCHOS) {
@@ -192,6 +251,7 @@ for (const { sel, nombre: pz, correctas } of PIEZAS) {
     if (nombre.startsWith("cual-es-corriente")) (rayas[ancho] ??= []).push([nombre, m.raya]);
     if (m.sobre) ((pz === "a3" ? sobresA3 : sobres)[ancho] ??= []).push([nombre, m.sobre]);
     if (m.lib) (libs[ancho] ??= []).push([nombre, m.lib]);
+    if (m.con) (cons[ancho] ??= []).push([nombre, m.con]);
     if (CAPTURAS) {
       const panel = await (await pg.$(sel)).evaluateHandle((x) => x.closest("section"));
       await panel.asElement().screenshot({ path: resolve(CAPTURAS, `t4-${pz}-${ancho}-${String(++n).padStart(2, "0")}-${nombre}.png`) });
@@ -199,7 +259,7 @@ for (const { sel, nombre: pz, correctas } of PIEZAS) {
   };
   const en = (s) => `${sel} ${s}`;
   const clic = (s) => pg.click(en(s));
-  for (let vuelta = 0; vuelta < 12; vuelta++) {
+  for (let vuelta = 0; vuelta < 14; vuelta++) {
     const id = await pg.getAttribute(sel, "data-pantalla");
     if (await pg.$(en("[data-eleccion]"))) {
       await estado(`${id}-colocando`);
@@ -259,6 +319,15 @@ for (const [ancho, lista] of Object.entries(libs)) {
   if (new Set(p7.map(([, x]) => x.alto)).size !== 1) fallos.push(`${ancho} px · A4 P7: el alto cambia (${p7.map(([e, x]) => `${e} ${x.alto}`).join(", ")})`);
 }
 
+/* La conciliación de A5: en P2, P4 y P6 nada salta al confirmar (Hanayama v1 §3). */
+for (const [ancho, lista] of Object.entries(cons)) {
+  for (const [p, nEst] of [["lo-que-el-banco-no-sabe", 4], ["lo-que-la-empresa-no-sabe", 4], ["que-se-asienta", 4]]) {
+    const g = lista.filter(([e]) => e.startsWith(p));
+    if (g.length !== nEst) fallos.push(`${ancho} px · A5 ${p}: ${g.length} estados, no ${nEst}`);
+    if (new Set(g.map(([, x]) => x.alto)).size !== 1) fallos.push(`${ancho} px · A5 ${p}: el alto cambia (${g.map(([e, x]) => `${e} ${x.alto}`).join(", ")})`);
+  }
+}
+
 /* El sobre de A3: en P3, P4 y P8 nada salta al confirmar; entre P8 y P9 el 6.700 no se mueve. */
 for (const [ancho, lista] of Object.entries(sobresA3)) {
   const grupo = (p) => lista.filter(([e]) => e.startsWith(p));
@@ -291,5 +360,7 @@ console.log("\nA3 · el sobre: estado, alto, dónde arranca el sobre, dónde arr
 for (const [ancho, lista] of Object.entries(sobresA3)) for (const [e, s] of lista) console.log(`${ancho} | ${e} | ${s.estado} | ${s.alto} | ${s.envoltorio} | ${s.libro} | ${s.seisSetecientos} | ${s.holgura}`);
 console.log("\nA4 · las libretas: estado y alto");
 for (const [ancho, lista] of Object.entries(libs)) for (const [e, x] of lista) console.log(`${ancho} | ${e} | ${x.estado} | ${x.alto}`);
+console.log("\nA5 · la conciliación: estado, alto y holgura mínima (concepto o rótulo frente a su monto)");
+for (const [ancho, lista] of Object.entries(cons)) for (const [e, x] of lista) console.log(`${ancho} | ${e} | ${x.estado} | ${x.alto} | ${x.holgura}`);
 console.log(fallos.length ? `\n${fallos.length} FALLAN:\n${fallos.join("\n")}` : `\nTodo cabe en los ${filas.length} estados, y con movimiento reducido nada se anima.`);
 process.exit(fallos.length ? 1 : 0);

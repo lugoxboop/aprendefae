@@ -45,7 +45,9 @@ export function cambiosDe(pieza) {
 /* Lo que una pantalla de los datos dice, en el orden en que la vista lo pinta (pregunta y opciones al final). */
 export function textosDeDatos(p) {
   return [
-    p.objetivo, ...(p.parrafos ?? []),
+    p.objetivo,
+    /* La glosa de un párrafo va justo debajo de él (A5, «sobregiro»). */
+    ...(p.parrafos ?? []).flatMap((t, k) => (p.glosaDeParrafo?.parrafo === k ? [t, p.glosaDeParrafo.texto] : [t])),
     /* La glosa de un renglón de la lista va justo debajo de él (A4, «girar»). */
     ...(p.listaNumerada ?? []).flatMap((t, k) => (p.glosaDeLista?.renglon === k ? [t, p.glosaDeLista.texto] : [t])),
     ...(p.despues ?? []), ...(p.tras ?? []),
