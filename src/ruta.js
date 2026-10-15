@@ -63,6 +63,7 @@ export const VISTAS = new Set([
   "cuentas-por-cobrar",
   "inventarios-periodico",
   "inventarios-permanente",
+  "inventarios-descuentos-nic2",
   /* Transversales: no son un tema, pero se entra igual desde el índice. */
   "repaso-diario",
   /*
