@@ -20,6 +20,13 @@ import t34 from "./conta-t3-4-arma-el-ajuste-diferido.svg?raw";
 import t35 from "./conta-t3-5-el-mismo-hecho-dos-empresas.svg?raw";
 import t36 from "./conta-t3-6-que-le-toca-a-este-periodo.svg?raw";
 import t37 from "./conta-t3-7-el-cierre-completo.svg?raw";
+import t711 from "./conta-t7-1-1-que-cuenta-se-mueve.svg?raw";
+import t712 from "./conta-t7-1-2-arma-la-factura.svg?raw";
+import t713 from "./conta-t7-1-3-cuanto-vale-lo-que-sobro.svg?raw";
+import t714 from "./conta-t7-1-4-cierra-el-mes.svg?raw";
+import t715 from "./conta-t7-1-5-costo-o-gasto.svg?raw";
+import t716 from "./conta-t7-1-6-la-devolucion-en-dos-libros.svg?raw";
+import t717 from "./conta-t7-1-7-que-control-falta.svg?raw";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -90,3 +97,10 @@ export const ArmaElAjusteDiferido = icono("ArmaElAjusteDiferido", t34);
 export const ElMismoHechoDosEmpresas = icono("ElMismoHechoDosEmpresas", t35);
 export const QueLeTocaAEstePeriodo = icono("QueLeTocaAEstePeriodo", t36);
 export const ElCierreCompleto = icono("ElCierreCompleto", t37);
+export const QueCuentaSeMueve = icono("QueCuentaSeMueve", t711);
+export const ArmaLaFactura = icono("ArmaLaFactura", t712);
+export const CuantoValeLoQueSobro = icono("CuantoValeLoQueSobro", t713);
+export const CierraElMes = icono("CierraElMes", t714);
+export const CostoOGasto = icono("CostoOGasto", t715);
+export const LaDevolucionEnDosLibros = icono("LaDevolucionEnDosLibros", t716);
+export const QueControlFalta = icono("QueControlFalta", t717);

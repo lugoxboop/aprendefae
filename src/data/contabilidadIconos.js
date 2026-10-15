@@ -35,6 +35,14 @@ export const ICONO_POR_ACTIVIDAD = {
   "t3-mismo-hecho": I.ElMismoHechoDosEmpresas,
   "t3-que-le-toca": I.QueLeTocaAEstePeriodo,
   "t3-cierre-completo": I.ElCierreCompleto,
+  /* Tema 7 · Inventarios I */
+  "t7-1-que-cuenta-se-mueve": I.QueCuentaSeMueve,
+  "t7-1-arma-la-factura": I.ArmaLaFactura,
+  "t7-1-cuanto-vale-lo-que-sobro": I.CuantoValeLoQueSobro,
+  "t7-1-cierra-el-mes": I.CierraElMes,
+  "t7-1-costo-o-gasto": I.CostoOGasto,
+  "t7-1-devolucion-dos-libros": I.LaDevolucionEnDosLibros,
+  "t7-1-que-control-falta": I.QueControlFalta,
 };
 
 /** Los nodos del camino con su ícono, si lo tienen. */
