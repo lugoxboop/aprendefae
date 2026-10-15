@@ -60,6 +60,10 @@ import { PARTES_T5_ACT2 } from "../data/contabilidadT5Act2.js";
 import { parteDeItem as parteDeItemMesa } from "../contabilidad/cierreConMesa.js";
 import { PARTES_T6_ACT2 } from "../data/contabilidadT6Act2.js";
 import { PARTES_T6_ACT3 } from "../data/contabilidadT6Act3.js";
+import { hechoDeItemT6Act4 } from "../contabilidad/t6Act4.js";
+import { fichaDeItemT6Act7 } from "../contabilidad/t6Act7.js";
+import { CASILLAS_T6_ACT5 } from "../data/contabilidadT6Act5.js";
+import { PARTES_T6_ACT6 } from "../data/contabilidadT6Act6.js";
 import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
 import { hechoDeItemH1 } from "../contabilidad/t7H1.js";
 import { unidadDeH2 } from "../contabilidad/t7H2.js";
@@ -84,6 +88,7 @@ import { unidadDeR5_1 } from "../data/repasoCap5Cruzado.js";
 import { unidadDeN1 as unidadDeT5N1 } from "../contabilidad/t5N1.js";
 import { unidadDeN3 as unidadDeT5N3 } from "../contabilidad/t5N3.js";
 import { unidadDeN4 as unidadDeT5N4 } from "../contabilidad/t5N4.js";
+import { hechoDeItemH1 as hechoDeItemT4H1 } from "../data/contabilidadT4H1.js";
 import { unidadDeN5 as unidadDeT5N5 } from "../contabilidad/t5N5.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
@@ -607,6 +612,11 @@ Object.assign(REGLAS, {
   "t5-revision-que-falta": (id) => unidadDeT5N3(id),
   /* T5 · N4 (Célula C). Una elección, por su pregunta; una línea, por su cuenta y su valor. */
   "t5-el-interes-del-periodo": (id) => unidadDeT5N4(id),
+  /* Tema 6 · acts. 4 a 7: el hecho, la casilla (por su enunciado) o la ficha. */
+  "b5-t6-a4": (id) => hechoDeItemT6Act4(id),
+  "b5-t6-a5": (id) => CASILLAS_T6_ACT5.find((c) => c.id === id)?.enunciado ?? null,
+  "b5-t6-a6": (id) => PARTES_T6_ACT6.flatMap((p) => p.casillas).find((c) => c.id === id)?.enunciado ?? null,
+  "b5-t6-a7": (id) => fichaDeItemT6Act7(id),
   /* T5 · N5 (Célula C). Una elección, por su pregunta; una línea, por su cuenta y su valor. */
   "t5-gano-o-perdio": (id) => unidadDeT5N5(id),
 
@@ -772,6 +782,9 @@ Object.assign(REGLAS, {
   "t7-3-que-entra-al-costo": (id) => unidadDeT73H6(id),
   /* T7-3 · H7. Cada pregunta, por su caso (la pregunta se repite entre casos). */
   "t7-3-costo-o-vnr": (id) => unidadDeT73H7(id),
+  /* ── T4 «Efectivo, caja menor y bancos» (Célula D) ── */
+  /* T4 · H1. El ítem es el hecho, y se lee por su texto. */
+  "t4-entra-o-sale-de-caja": (id) => hechoDeItemT4H1(id),
   /* ── Repaso del capítulo 5 (Célula E) ── */
   /* r5-1. Cada pantalla, por su subtema (Inversiones, Cartera, Inventarios) y su enunciado. */
   "r5-1": (id) => unidadDeR5_1(id),

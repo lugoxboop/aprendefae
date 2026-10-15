@@ -622,6 +622,30 @@ export const SUBJECTS = {
         ],
       },
       /*
+       * ═══════════ T4 · CÉLULA D ═══════════
+       *
+       * T4, efectivo, caja menor y bancos: §5.1 y §5.2 del capítulo 5 (pp.
+       * 179-191), entre el Tema 3 y el Tema 5 por el orden del libro. El id
+       * del tema va sin prefijo de célula, como los de T5, T6 y T7: es el
+       * segmento de la dirección que ve el estudiante. El id y el lugar los
+       * fijó el coordinador en nocturno.md (PR #138).
+       *
+       * El orden de sus piezas es el del plan de Yujiro: A0, y después A1 → H1
+       * → H2 → A2…
+       */
+      {
+        id: "efectivo-caja-menor-bancos",
+        title: "Efectivo, caja menor y bancos",
+        actividades: [
+          /* A0, pp. 177-179. Abre el tema. Aprender: cero FP, no entra al catálogo. */
+          { id: "t4-a0-el-activo-corriente", nombre: "El activo corriente", clasificacion: { tipo: APRENDER } },
+          /* A1, pp. 179-180. Aprender: cero FP, no entra al catálogo. */
+          { id: "t4-a1-la-caja", nombre: "La caja", clasificacion: { tipo: APRENDER } },
+          /* H1, justo después de A1, que la sostiene. Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0200. */
+          { id: "t4-entra-o-sale-de-caja", nombre: "¿Entra o sale de Caja?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
+        ],
+      },
+      /*
        * EL TEMA 5 (Célula B), por ahora con su pieza 1 de Aprender.
        *
        * CATÁLOGO: decidido por Erwin. El título es el subtítulo literal de
@@ -673,6 +697,10 @@ export const SUBJECTS = {
           /* Actividades 2 y 3 de Hacer (mesa de asientos). Media · 25 y difícil · 50 FP (Sakuta). Sus filas del servidor son la migración 0074. */
           { id: "b5-t6-a2", nombre: "La provisión de El Torito", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "b5-t6-a3", nombre: "Cuando la deuda castigada vuelve", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "b5-t6-a4", nombre: "¿Qué se debita?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "b5-t6-a5", nombre: "La cuenta de la provisión", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "b5-t6-a6", nombre: "Provisión por edades", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "b5-t6-a7", nombre: "¿Qué método y cuándo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "b5-t6-a2-cuando-un-cliente-no-va-a-pagar", nombre: "Cuando un cliente no va a pagar", clasificacion: { tipo: APRENDER } },
           { id: "b5-t6-a3-la-provision-de-un-ano-al-siguiente", nombre: "La provisión, de un año al siguiente", clasificacion: { tipo: APRENDER } },
           { id: "b5-t6-a4-cuando-el-cliente-castigado-si-paga", nombre: "Cuando el cliente castigado sí paga", clasificacion: { tipo: APRENDER } },
