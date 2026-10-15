@@ -27,6 +27,30 @@ export const ICONO_POR_ACTIVIDAD = {
   "cu-saldo-de-la-cuenta": I.ElSaldoDeLaCuenta,
   "cu-arma-el-asiento": I.ArmaElAsiento,
   "cu-asiento-compuesto": I.ElAsientoCompuesto,
+  /* Tema 3 */
+  "t3-ingreso-o-cobro": I.IngresoOCobro,
+  "t3-cuando-se-causa": I.CuandoSeCausa,
+  "t3-ajuste-acumulado": I.ArmaElAjusteAcumulado,
+  "t3-ajuste-diferido": I.ArmaElAjusteDiferido,
+  "t3-mismo-hecho": I.ElMismoHechoDosEmpresas,
+  "t3-que-le-toca": I.QueLeTocaAEstePeriodo,
+  "t3-cierre-completo": I.ElCierreCompleto,
+  /* Tema 7 · Inventarios I */
+  "t7-1-que-cuenta-se-mueve": I.QueCuentaSeMueve,
+  "t7-1-arma-la-factura": I.ArmaLaFactura,
+  "t7-1-cuanto-vale-lo-que-sobro": I.CuantoValeLoQueSobro,
+  "t7-1-cierra-el-mes": I.CierraElMes,
+  "t7-1-costo-o-gasto": I.CostoOGasto,
+  "t7-1-devolucion-dos-libros": I.LaDevolucionEnDosLibros,
+  "t7-1-que-control-falta": I.QueControlFalta,
+  /* Tema 7 · Inventarios III */
+  "t7-3-descuento-en-factura": I.DescuentoEnLaFactura,
+  "t7-3-cadena-de-descuentos": I.LaCadenaDeDescuentos,
+  "t7-3-comercial-o-condicionado": I.ComercialOCondicionado,
+  "t7-3-pago-a-tiempo": I.PagoATiempo,
+  "t7-3-ajuste-por-conteo": I.AjustePorConteo,
+  "t7-3-que-entra-al-costo": I.EntraAlCosto,
+  "t7-3-costo-o-vnr": I.CostoOValorNetoRealizable,
 };
 
 /** Los nodos del camino con su ícono, si lo tienen. */
