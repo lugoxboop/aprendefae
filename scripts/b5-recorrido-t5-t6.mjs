@@ -41,6 +41,7 @@ import * as P61 from "../src/data/contabilidadT6Pieza1.js";
 import * as P62 from "../src/data/contabilidadT6Pieza2.js";
 import * as P63 from "../src/data/contabilidadT6Pieza3.js";
 import * as P64 from "../src/data/contabilidadT6Pieza4.js";
+import * as P65 from "../src/data/contabilidadT6Pieza5.js";
 import * as H51 from "../src/data/contabilidadT5Act1.js";
 import * as H52 from "../src/data/contabilidadT5Act2.js";
 import * as H61 from "../src/data/contabilidadT6Act1.js";
@@ -170,11 +171,23 @@ const CAPAS = {
     pregunta: P64.PREGUNTA_FINAL_T6_A4,
     opciones: P64.OPCIONES_FINAL_T6_A4,
   },
+  [P65.PIEZA_COMO_SE_CALCULA.id]: {
+    escena: { rotulo: P65.ROTULO_SIMULADO_T6_A5, ...P65.ESCENA_T6_A5 },
+    pasos: P65.PASOS_T6_A5,
+    cierre: P65.CIERRE_T6_A5,
+    consigna: P65.CONSIGNA_CAPA_3_T6_A5,
+    tablero: [P65.ROTULO_SIMULADO_T6_A5, P65.TABLERO_T6_A5.cabecera, ...P65.TABLERO_T6_A5.celdas, P65.TABLERO_T6_A5.total, P65.TABLERO_T6_A5.suma],
+    /* Cerrada, cada caja dice «nombre · monto» (CuatroGrupos.jsx). */
+    cajas: P65.GRUPOS_T6_A5.map((g) => ({ nombre: `${g.nombre} · ${g.monto}`, revela: g.revela, pie: g.pie })),
+    final: [P65.FINAL_CAPA_3_T6_A5],
+    pregunta: P65.PREGUNTA_FINAL_T6_A5,
+    opciones: P65.OPCIONES_FINAL_T6_A5,
+  },
 };
 
 const DATOS_PIEZAS = [
   P51.PIEZA_DEL_EFECTIVO, P52.PIEZA_TRES_MOMENTOS,
-  P61.PIEZA_LO_QUE_LE_DEBEN, P62.PIEZA_NO_VA_A_PAGAR, P63.PIEZA_LA_PROVISION, P64.PIEZA_SI_PAGA,
+  P61.PIEZA_LO_QUE_LE_DEBEN, P62.PIEZA_NO_VA_A_PAGAR, P63.PIEZA_LA_PROVISION, P64.PIEZA_SI_PAGA, P65.PIEZA_COMO_SE_CALCULA,
 ];
 /* Lo que está en los datos y el estudiante no ve. */
 const SIN_PINTAR = [];
@@ -219,10 +232,14 @@ function piezaDeAprender(tema, pieza, k, total) {
     md(`${i + 1}. **${lit(n.termino)}.** ${lit(n.definicion)}`);
     if (n.delLibro) md(`   - *${lit(n.rotuloDelLibro ?? ROTULO_DEL_LIBRO)}:* ${lit(n.delLibro)}`);
     if (n.notaDebajo) md(`   - *${lit(n.notaDebajo.rotulo)}* (debajo de la cita, en el mismo bloque): ${lit(n.notaDebajo.texto)}`);
-    if (n.pie) {
+    /* La vista pinta el pie si le pasa la definición ya compuesta con él (tema6/PiesDeTermino.jsx). */
+    const pintado = typeof pieza.nombres[i].definicion !== "string";
+    if (n.pie && pintado) md(`   - *Pie de fuente (bajo la definición):* ${lit(n.pie)}`);
+    if (n.pie && !pintado) {
       md(`   - *Pie de fuente, en datos y sin pintar (CuatroCapas no pinta pies en la capa 1):* ${n.pie}`);
       SIN_PINTAR.push(`${piezaActual}, término ${i + 1}: el pie de fuente «${n.pie}».`);
     }
+    if (n.pieDelLibro) md(`   - *Pie de la ${(n.rotuloDelLibro ?? ROTULO_DEL_LIBRO).toLowerCase()} (dentro de su caja):* ${lit(n.pieDelLibro)}`);
   });
   md();
 
