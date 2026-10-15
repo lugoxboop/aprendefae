@@ -151,7 +151,7 @@ no trae clave.
 |---|---|---|---|---|
 | D.1 | Tabo Racho S. A., conciliación a sep-30, pp. 266-268 | §5.2, pp. 187-191 | §5.2 → T4 | ESPERA T4. **Cuadra**: los dos lados concilian en **$6.843.000**. Trae algo que el ejemplo del libro no muestra: un error de la propia empresa (cheque de $876.500 registrado por $687.500, diferencia $189.000). La p. 188 lo nombra como causa y ningún ejemplo resuelve su asiento |
 | D.2 | La Trompeta Ltda., caja menor de $1.600.000, p. 268 | §5.1, pp. 181-186 | §5.1 → T4 | ESPERA T4. Gastos **$1.531.200**; efectivo esperado **$68.800**; caso 1 ($68.000): faltante **$800**; caso 2 ($70.200): sobrante **$1.400**. El enunciado no dice si el faltante va al cajero o al gasto: la p. 183 da los dos caminos |
-| D.3 | El Toro Negro, provisión, castigo y recuperación, pp. 268-269 | §5.4, pp. 199-206 | §5.4 → T6 | **PARCIAL** (corregido por Takamura, comprobado en el código): el T6 nunca **calcula** la provisión por edades de vencimiento; siempre la da hecha («El análisis pide una provisión de $153.400», `contabilidadT6Act2.js` l. 76), y la tabla de antigüedad de la p. 201 no aparece ni va a aparecer (Mateo). **Decisión final:** r5-2 da la provisión como dato del análisis y pide el resto. Errata E-1 resuelta. Provisión **$2.283.400**. Los castigos de marzo suman **$2.450.000** y superan la provisión en **$166.600**: es el caso de la provisión subestimada de las pp. 202-203, que el T6 enseña en su pieza 3 |
+| D.3 | El Toro Negro, provisión, castigo y recuperación, pp. 268-269 | §5.4, pp. 199-206 | §5.4 → T6 | **LISTO** desde #136. Historia: estuvo PARCIAL porque el T6 daba la provisión hecha (hallazgo de Takamura) y la p. 201 no aparece; la pieza 5 del T6, «Cómo se calcula la provisión», enseña ahora el método por grupos, así que r5-2 pide el cálculo con los porcentajes del ejercicio y solo los totales por grupo. Errata E-1 resuelta. Provisión **$2.283.400**. Los castigos de marzo suman **$2.450.000** y superan la provisión en **$166.600**: es el caso de la provisión subestimada de las pp. 202-203, que el T6 enseña en su pieza 3 |
 | D.4 | Comercializadora Mate Ltda., marzo, periódico y promedio, pp. 269-271 | §5.5 completo, pp. 210-254 | condicionado p. 252 → T7-3 | **PARCIAL**: ver abajo |
 | D.5 | Distribuciones Ltda., marzo, permanente y PEPS, con ajustes, pp. 271-273 | §5.5 + ajustes del cap. 4 + depreciación | depreciación → **ningún tema** | ESPERA. El balance de febrero **cuadra** ($9.920.000 = $2.718.000 + $7.202.000) y el inventario coincide (300 × $2.600 = $780.000) |
 | D.6 | Comercializadora Barranquilla Ltda., septiembre, los dos sistemas, pp. 273-274 | §5.5 completo | condicionado p. 252 → T7-3 | **PARCIAL**: ver abajo |
@@ -205,8 +205,10 @@ bien:
 | Pieza | Ejercicios | Temas que la sostienen | Mecánica (decisión de Kamogawa) | Dificultad · FP |
 |---|---|---|---|---|
 | `r5-1` | C.3, C.5, C.6, C.8, C.9, C.10 | T5, T6, T7-1 | Repaso cruzado: seis preguntas que saltan de tema; el estudiante sabe de qué le hablan por la escena, no por un rótulo. Opciones en orden aleatorio en cada intento | Medio · 25 |
-| `r5-2` | D.3, sin el cálculo por edades | T6 | Caso en tres etapas: registra el ajuste con la provisión que da el análisis ($2.283.400, como hace el T6); castiga a Roja y Negra y ve la provisión quedar con saldo débito; revive y cobra a Roja | Difícil · 50 |
+| `r5-2` | D.3 completo | T6 | Siete ítems: calcula la provisión por grupos (a0); el ajuste (a); los dos castigos y el saldo de la provisión (b); revive y cobra a la Cía. Roja (c) | Difícil · 50 |
 | `r5-3` | D.4: las seis transacciones de «r5-3 · decisiones» (ocho asientos) | T7-1, T7-3 | Diario de la Comercializadora Mate, un asiento por pantalla, con el armador de r5-2 | Experto · 90 |
+| `r5-4` | D.6, solo el sistema periódico | T7-1, T7-3 | Diario de Comercializadora Barranquilla, con datos declarados (ver «r5-4 · decisiones») | Experto · 90 |
+| `r5-5` | D.6, el kárdex del sistema permanente | T7-2 | Pendiente de diagnóstico propio: la diferencia de costo entre los dos sistemas necesita una pantalla que la explique | — |
 
 Lo demás espera. Al entrar cada pieza ajena, se reabre su fila aquí.
 
@@ -224,11 +226,15 @@ nadie lo vuelva a descubrir.
    IVA en la compra de un activo fijo y la depreciación de D.4 y D.5; si los
    «clientes varios» de D.4 practican retención; la retención de IVA de un
    gran contribuyente; si D.6 lleva IVA; y el C.4.
-4. **La provisión por edades es FINAL, no pendiente.** Mateo confirmó que la
-   p. 201 no aparece ni va a aparecer. r5-2 entrega la provisión como dato y
-   así se queda. La única puerta es que la Célula B enseñe el método con cifras
-   construidas; si lo hace, Erwin avisa. No se espera.
-5. **Íconos** de `r5-1`, `r5-2` y `r5-3`: se piden a Erwin por significado.
+4. **La provisión por edades ya se enseña.** La p. 201 no aparece, pero la Célula B
+   publicó en el Tema 6 «Cómo se calcula la provisión» (#136): grupos por
+   vencimiento, el porcentaje que fija la empresa y la suma, con el Decreto 1625
+   de 2016, art. 1.2.1.18.21 como referencia. Con eso **D.3 vuelve a LISTO** y
+   r5-2 gana la etapa (a0) «Calcula la provisión» con los porcentajes del propio
+   ejercicio (los de la empresa, no los del decreto) y solo los totales por
+   grupo: la fila de la Cía. Negra (errata E-1) no aparece.
+5. **Íconos** de tema, `r5-1` y `r5-2`: reservados por Erwin con los significados
+   de Itagaki; los dibuja Xeno.
 
 ## r5-3 · decisiones de Kamogawa sobre D.4
 
@@ -247,6 +253,28 @@ transacciones sin IVA incluido ni activo fijo: 1, 10, 15 (compra y flete), 20,
   estos dos no las traen.
 - El flete de ventas va a «Gasto de venta – fletes» con retención del 1 %,
   como lo enseña Inventarios I (`contabilidadT7_1_a5.js`, libro p. 229).
+- En el flete del 15 se aceptan como correctas «Compras (fletes)» y «Compras»
+  (asiento completo con una o con la otra, nunca mezclado): las dos son
+  defendibles en el periódico. Los dos fletes se declaran visibles: el servicio
+  vale $240.000 / $200.000 y sobre ese valor se calcula la retención.
+- Hoja de doce cuentas fija, sin Bancos ni IVA descontable. Cada asiento: un
+  hecho de hasta 90 caracteres más hasta 5 renglones «etiqueta · valor».
+
+## r5-4 · decisiones de Kamogawa sobre D.6
+
+Diagnóstico de Miyata. Solo el periódico; el permanente va aparte (r5-5).
+Datos declarados y visibles:
+
+- El enunciado no trae IVA ni retención en ninguna parte: se arma sin ellos y
+  se dice en pantalla.
+- «5 %» es comercial; «10/15» y «5/15» son condicionados.
+- Nadie enseña a descontar sobre una factura con devolución parcial: el hecho
+  da el saldo de la factura ya restada la devolución ($9.395.500 y
+  $52.200.000) y el estudiante aplica el descuento sobre ese saldo.
+- El pago del 17 y el cobro del 25 caen a los 15 días: con el conteo publicado
+  (sin el día inicial, y el descuento aplica el día del límite) ganan el
+  descuento. La convención sigue abierta con el profesor en `fuente.md`.
+- La venta del 10 no dice «clientes varios»: se toma como un solo cliente.
 
 ## Anexo · el script del cuadre
 
