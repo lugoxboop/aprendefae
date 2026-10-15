@@ -63,6 +63,8 @@ export const ERRORES_T6_ACT4 = {
   E7: "Este hecho no anota ningún gasto. Mira si entra plata o si cambia lo que deben los clientes.",
   E8: "Aquí no se castiga ninguna deuda, así que la provisión no baja.",
   E9: "En este hecho no entra plata ni sube lo que deben los clientes. Mira si se anota un gasto o si baja la provisión.",
+  /* Entrega 1 de Futaba (calidad): la devolución propia de qd-09, solo cuando elige Caja. E5 sigue para qd-01 y qd-04. */
+  E10: "Todavía no entra plata: primero se revive la deuda. Caja se debita en el asiento siguiente, con el pago.",
 };
 
 /*
@@ -127,7 +129,7 @@ export const HECHOS_T6_ACT4 = [
     acierto: "Gasto provisiones – cuentas incobrables. Ajustar la provisión es otro gasto del año, igual que al crearla.",
   },
   {
-    id: "qd-09", respuesta: A_CLIENTES, errores: REVIVIR,
+    id: "qd-09", respuesta: A_CLIENTES, errores: { ...REVIVIR, [A_CAJA]: "E10" },
     texto: "Pablo Moncayo vuelve y paga. Primero se revive su deuda.",
     acierto: "Cuentas por cobrar – clientes. Revivir es reversar el castigo: la deuda vuelve a subir.",
   },

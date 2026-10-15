@@ -22,8 +22,11 @@ import { DEBE, HABER } from "../data/contabilidad.js";
  *     «No van {X} ni {W}: en su lugar van {Y} y {Z}.»;
  *   · si no: «Sobra {X}.» / «Sobran {X} y {Y}.», y si además faltan,
  *     «Falta {Y}.» / «Faltan {Y} y {Z}.».
- * Le sigue el texto D de los datos sin su primera frase, «Sobra una
- * cuenta.». Los nombres van como en el estante.
+ * Le sigue la RAZÓN de cada cuenta que puso y no va (`errores.razones`,
+ * Futaba, entrega 1): el estudiante oye la razón de la que puso, no una lista
+ * de cuentas que no tocó. Si alguna no tiene razón, el texto D de los datos
+ * sin su primera frase, «Sobra una cuenta.». Los nombres van como en el
+ * estante.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -50,6 +53,8 @@ export function textoD(parte, puestas) {
     cuales = `${varias(sobran) ? "Sobran" : "Sobra"} ${enLista(sobran)}.`;
     if (faltan.length) cuales += ` ${varias(faltan) ? "Faltan" : "Falta"} ${enLista(faltan)}.`;
   }
+  const razones = sobran.map((c) => parte.errores.razones?.[c]);
+  if (razones.every(Boolean)) return `${cuales} ${razones.join(" ")}`;
   const resto = parte.errores.D.startsWith(SOBRA_UNA) ? parte.errores.D.slice(SOBRA_UNA.length) : parte.errores.D;
   return `${cuales} ${resto}`;
 }

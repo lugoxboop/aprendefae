@@ -118,3 +118,15 @@ El distractor nuevo, $44.000, no aparece en el capítulo ni en T6 A5.
 Para Kaede: la parte 1 tiene cuatro opciones por casilla, una por grupo. Confirma que la mecánica de la Escalera las admite. Si solo admite tres, quito el grupo más lejano de cada casilla: para la deuda de 2 meses, «más de 1 año»; para las de 6 y 14 meses, «vigentes o hasta 3 meses».
 
 Kaede: la admite (CasillasEnOrden acepta cualquier número de opciones por casilla); quedan las cuatro.
+
+
+## (3) Futaba · entrega 1 de calidad: G0 por casilla (versión final, con PASA de Shoko; pegada tal cual)
+
+En a6, G0 deja de ser un solo texto: va uno por cada pareja de casilla y opción. La clave es de Kaede, «G0-{casilla}-{grupo}».
+Clave · casilla · opción elegida	Campo	Devolución
+G0-u1-g3 · u1 (2 meses) · Más de 6 meses hasta 1 año	Devolución	Ese grupo es para deudas de más de seis meses hasta un año. Esta lleva 2 meses vencida.
+G0-u1-g4 · u1 · Más de 1 año	Devolución	Ese grupo es para deudas de más de un año. Esta lleva 2 meses vencida.
+G0-u2-g1 · u2 (6 meses) · Vigentes o hasta 3 meses	Devolución	Ese grupo es para deudas vigentes o de hasta tres meses. Esta lleva 6 meses vencida.
+G0-u2-g4 · u2 · Más de 1 año	Devolución	Ese grupo es para deudas de más de un año. Esta lleva 6 meses vencida.
+G0-u3-g1 · u3 (14 meses) · Vigentes o hasta 3 meses	Devolución	Ese grupo es para deudas vigentes o de hasta tres meses. Esta lleva 14 meses vencida.
+G0-u3-g2 · u3 · Más de 3 hasta 6 meses	Devolución	Ese grupo es para deudas de más de tres hasta seis meses. Esta lleva 14 meses vencida.

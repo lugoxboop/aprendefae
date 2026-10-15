@@ -208,10 +208,14 @@ test("★★★ la prioridad D > C > A > B con su texto en el panel, las B espec
 
 test("★★★ el libro diario, AGRUPADO por caso: un solo «Caso a» para sus dos asientos y sin filete entre ellos; la cuenta sigue contando asientos", async () => {
   const { caja, desmontar } = await montar();
-  await tocar(caja.querySelector("[data-diario-alternar]"));
   const fechas = () => [...caja.querySelectorAll("[data-fecha-diario]")].map((n) => n.textContent);
-  assert.deepEqual(fechas(), ["Marzo del año siguiente"]);
-  for (const p of PARTES) { await armar(caja, p.asiento); if (p !== PARTES[4]) await avanzar(caja); }
+  assert.equal(caja.querySelector("[data-libro-diario]"), null, "no ocupa sitio hasta el primer asiento (hallazgo 9 de Shoko)");
+  for (const p of PARTES) {
+    await armar(caja, p.asiento);
+    /* Con el primero, aparece abierto: el castigo de marzo y el caso a. */
+    if (p === PARTES[0]) assert.deepEqual(fechas(), ["Marzo del año siguiente", "Caso a"]);
+    if (p !== PARTES[4]) await avanzar(caja);
+  }
   assert.deepEqual(fechas(), ["Marzo del año siguiente", "Caso a", "Caso b", "Caso c"]);
   assert.equal(caja.querySelector("[data-diario-cuenta]").textContent, "6 asientos");
   const filas = [...caja.querySelectorAll("[data-asiento-diario]")];

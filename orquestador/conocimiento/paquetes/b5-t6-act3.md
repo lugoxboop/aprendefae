@@ -387,3 +387,16 @@ Responder
 
 Claude es una IA y puede cometer errores.
 Opus 5.5 Alto
+
+
+## (5) Futaba · entrega 1 de calidad: razones por cuenta (versión final, con PASA de Shoko; pegada tal cual)
+
+Cada razón va detrás de la plantilla «Sobra X.» o «No va X: en su lugar va Y.». El estudiante ve solo la razón de la cuenta que puso. Reemplaza la cola genérica del texto D (Sakuta).
+
+Parte	Cuenta	Razón
+1, 3 y 5 (revivir)	Caja	Revivir la deuda es reversar el castigo, y el castigo no movió plata. El pago se anota en otro asiento.
+1, 3 y 5	Gasto provisiones – cuentas incobrables	El castigo no tocó el gasto: fue contra la provisión. Por eso, al revivir la deuda, el gasto tampoco se toca.
+1, 3 y 5	Ingresos por ventas	Revivir la deuda no es una venta nueva: la factura es la de antes.
+2 y 4 (pago)	Provisión para deudas incobrables	La provisión ya se movió en el asiento anterior, al revivir la deuda.
+2 y 4	Gasto provisiones – cuentas incobrables	Cobrar no es un gasto: lo que debía el cliente se vuelve plata.
+2 y 4	Ingresos por ventas	Cobrar no es vender: se cobra la factura que ya existía.

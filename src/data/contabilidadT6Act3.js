@@ -49,11 +49,22 @@ const REVIVIR = {
   D: "Sobra una cuenta. Revivir la deuda solo mueve Cuentas por cobrar – clientes y la provisión. El gasto no se toca, la plata todavía no entra y no hay ningún ingreso.",
   C: "Están al revés. Revivir es reversar el castigo: Cuentas por cobrar – clientes vuelve a subir y va al Debe. La provisión va al Haber.",
   A: "Falta una cuenta. Revivir la deuda mueve dos: Cuentas por cobrar – clientes y la provisión.",
+  /* Las razones por cuenta de la D (Futaba, entrega 1): detrás de «Sobra X.» o «No va X: en su lugar va Y.». */
+  razones: {
+    [CAJA]: "Revivir la deuda es reversar el castigo, y el castigo no movió plata. El pago se anota en otro asiento.",
+    [GASTO]: "El castigo no tocó el gasto: fue contra la provisión. Por eso, al revivir la deuda, el gasto tampoco se toca.",
+    [INGRESOS]: "Revivir la deuda no es una venta nueva: la factura es la de antes.",
+  },
 };
 const PAGO = {
   D: "Sobra una cuenta. El pago solo mueve Caja y Cuentas por cobrar – clientes. La provisión ya se movió al revivir la deuda, y no hay ningún ingreso.",
   C: "Están al revés. La plata entra a Caja, que va al Debe. La deuda se cancela: Cuentas por cobrar – clientes va al Haber.",
   A: "Falta una cuenta. El pago mueve dos: Caja y Cuentas por cobrar – clientes.",
+  razones: {
+    [PROVISION]: "La provisión ya se movió en el asiento anterior, al revivir la deuda.",
+    [GASTO]: "Cobrar no es un gasto: lo que debía el cliente se vuelve plata.",
+    [INGRESOS]: "Cobrar no es vender: se cobra la factura que ya existía.",
+  },
 };
 
 /* ═══════════ LAS CINCO PARTES ═══════════ */
