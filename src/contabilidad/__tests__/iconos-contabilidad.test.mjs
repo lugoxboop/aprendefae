@@ -103,11 +103,13 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
   /* T4 · H1 (Célula D): los íconos los reserva el coordinador; se pidió, no se eligió.
    * T5 · N1, N3, N4 y N5 (Célula C): igual, pedido al coordinador. */
   /* T6 · Hacer 4 a 7 (Célula B) y T4 · H1 (Célula D): los íconos los reserva el coordinador; se pidió, no se eligió. */
-  const SIN_ICONO_TODAVIA = new Set(["t5-temporal-o-largo-plazo", "t5-revision-que-falta", "t5-el-interes-del-periodo", "t5-gano-o-perdio", "t4-entra-o-sale-de-caja", "b5-t6-a4", "b5-t6-a5", "b5-t6-a6", "b5-t6-a7"]);
+  /* Repaso del capítulo 5: r5-2 ya tiene el suyo (el ciclo de la deuda).
+     r5-3 entra a subjects.js con el #196 y su ícono está pedido al coordinador. */
+  const SIN_ICONO_TODAVIA = new Set(["t5-temporal-o-largo-plazo", "t5-revision-que-falta", "t5-el-interes-del-periodo", "t4-entra-o-sale-de-caja", "b5-t6-a4", "b5-t6-a5", "b5-t6-a6", "b5-t6-a7", "r5-3", "t5-gano-o-perdio"]);
   const esperadas = [...hacer].filter((id) => !conDesafio.has(id) && !SIN_ICONO_TODAVIA.has(id));
-  assert.equal(esperadas.length, 46);
+  assert.equal(esperadas.length, 47);
   assert.deepEqual(Object.keys(ICONO_POR_ACTIVIDAD).sort(), esperadas.sort(), "falta o sobra un ícono");
-  assert.equal(ARCHIVOS.length, 46);
+  assert.equal(ARCHIVOS.length, 47);
   /* «¿Dónde se Rompió?» es la T1-8: su archivo se llama así. */
   assert.ok(ARCHIVOS.includes("conta-t1-8-donde-se-rompio.svg"));
   assert.ok(!ARCHIVOS.some((f) => f.startsWith("conta-t1-3")));

@@ -5,20 +5,23 @@ import { JSDOM, VirtualConsole } from "jsdom";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T7-1 · PIEZA 1 — «La cuenta que no se mueve» (Célula C).
+ * T7-1 · PIEZA 1 — «La cuenta que no se mueve» (Célula C), RECORTADA.
  *
- *   · cada texto de los datos está, letra por letra, en el paquete aprobado
- *     (la v5 de Near, con PASA de Mello), y cada texto del paquete está en los
- *     datos: ni falta ni sobra
+ *   · los datos son, letra por letra, la sección de la pieza en el recorte
+ *     del lote 1 de Near (lote1-recortes-t71-v1.md) con las cuatro
+ *     correcciones obligatorias de Mello (mello-recortes-v1.md): ni falta ni
+ *     sobra ningún texto, y cada «¿Por qué? (plegado)» va aparte
+ *   · cuatro pantallas: portada, pregunta-compra, pregunta-conteo y resumen
  *   · cada pantalla y cada estado muestra exactamente sus textos, tomados de
- *     los datos, y nada de lo que la v5 marca como interno
+ *     los datos, y nada de lo que el paquete marca como interno
+ *   · lo plegado sale cerrado, con «¿Por qué?» (aria-expanded) que lo abre
  *   · el error lleva a «Probar otra» y el acierto a «Seguir»
  *   · las opciones se barajan en cada intento
  *   · la pieza no entra al catálogo de FP
  *   · la figura de Watari: la portada sin figura y una en cada uno de los
- *     doce estados, con lo que dice su tabla de estados; cada figcaption con
- *     el texto alternativo de Near, letra por letra; nada punteado; en los
- *     errores la compra nunca se dibuja dentro de Inventario
+ *     nueve estados (F4, F5 y F6), con lo que dice su tabla de estados; cada
+ *     figcaption con el texto alternativo de Near, letra por letra; nada
+ *     punteado; en los errores la compra nunca se dibuja dentro de Inventario
  *
  * Que ningún texto se salga a 375 y a 320 px no se puede medir aquí: jsdom no
  * calcula diseño. Lo mide scripts/t7/medir-t7-1-ap1.mjs en Chromium.
@@ -49,13 +52,16 @@ const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: LaCuentaQueNoSeMueve } = await import("../../components/mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx");
 const { TEMA_T7_1, PIEZAS_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
 const { VISTAS, vistaDeTema } = await import("../../ruta.js");
+const { textosDelError, sinAsiEs } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
 
 const RAIZ = new URL("../../../", import.meta.url);
-const PAQUETE = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-pieza1-v5.md", RAIZ), "utf8");
-/* La ficha no cambió desde la v3, que es su fuente (decisión de L): se compara con la tabla de la v3. */
-const PAQUETE_V3 = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-pieza1-v3.md", RAIZ), "utf8");
-const TEXTOS_FIGURA_NEAR = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-ap1-figura-textos.md", RAIZ), "utf8");
-const GUIA_WATARI = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-ap1-figura-watari-v3-1.md", RAIZ), "utf8");
+const PAQUETES = new URL("orquestador/conocimiento/paquetes/", RAIZ);
+const RECORTE_MD = readFileSync(new URL("lote1-recortes-t71-v1.md", PAQUETES), "utf8");
+const MELLO_MD = readFileSync(new URL("mello-recortes-v1.md", PAQUETES), "utf8");
+/* Los pies de fuente y los botones no los trae el recorte: siguen los de la v5. */
+const PAQUETE_V5 = readFileSync(new URL("t7-1-pieza1-v5.md", PAQUETES), "utf8");
+const TEXTOS_FIGURA_NEAR = readFileSync(new URL("t7-1-ap1-figura-textos.md", PAQUETES), "utf8");
+const GUIA_WATARI = readFileSync(new URL("t7-1-ap1-figura-watari-v3-1.md", PAQUETES), "utf8");
 const { default: FiguraDosColumnas, CSS_FIGURA } = await import("../../components/mecanicas/libros/t7/FiguraDosColumnas.jsx");
 const P = T7.PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
@@ -70,28 +76,214 @@ const montar = async (el) => {
 const tocar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
 const boton = (caja, nombre) => caja.querySelector(`[data-boton="${nombre}"]`);
 const opcionesEnPantalla = (caja) => [...caja.querySelectorAll("[data-opcion]")].map((b) => b.dataset.opcion);
-const botonesActivos = (caja) => [...caja.querySelectorAll("button")].filter((b) => !b.disabled).map((b) => b.textContent);
+/* Los botones de la pieza, sin el «¿Por qué?» del texto plegado (lote 1), que no es un paso de la pieza. */
+const botonesActivos = (caja) => [...caja.querySelectorAll("button:not([data-por-que])")].filter((b) => !b.disabled).map((b) => b.textContent);
 
-/* ═══════════ LO QUE EL ESTUDIANTE VE, SACADO DE LOS DATOS ═══════════ */
+/* ═══════════ 1 · EL RECORTE DE NEAR, CON LAS CORRECCIONES DE MELLO ═══════════ */
 
-const lineaComoTexto = (l) => `${l.fecha} · ${l.cuenta} · ${l.lado} ${l.monto}`;
-const fichaComoTexto = (f) => `${f.dato}: ${f.texto}`;
+/* Los «…» de primer nivel de una línea, con el anidamiento («…la armas en «La factura completa».»). */
+function citas(linea) {
+  const out = [];
+  let nivel = 0;
+  let actual = "";
+  for (const c of linea) {
+    if (c === "«") { if (nivel > 0) actual += c; nivel++; continue; }
+    if (c === "»") { nivel--; if (nivel > 0) actual += c; else { out.push(actual); actual = ""; } continue; }
+    if (nivel > 0) actual += c;
+  }
+  assert.equal(nivel, 0, `las comillas no cierran: ${linea}`);
+  return out;
+}
 
-/* Cada estado de cada pantalla, con su lista de textos visibles en el orden en que aparecen. */
-function textosEsperados(p, estado = null, opcionId = null) {
+/* La sección de la pieza en el recorte, pantalla por pantalla, tal como la escribió Near. */
+function seccionDelRecorte() {
+  const desde = RECORTE_MD.indexOf(`## ${T7.AP1_ID} · «`);
+  assert.ok(desde >= 0, "la pieza no está en el recorte");
+  const hasta = RECORTE_MD.indexOf("\n## ", desde + 1);
+  const pantallas = [];
+  let p = null;
+  let ultimo = null;
+  for (const l of RECORTE_MD.slice(desde, hasta < 0 ? undefined : hasta).split("\n")) {
+    const cab = l.match(/^\*\*P(\d+) · `([^`]+)`\*\* \((\w+)\)(?: · figura: (.+))?$/);
+    if (cab) {
+      p = { k: Number(cab[1]), id: cab[2], tipo: cab[3], figura: cab[4]?.replace(/\s+/g, "") ?? null, textos: [], opciones: [], errores: {}, pista: null, acierto: null };
+      pantallas.push(p);
+      continue;
+    }
+    if (!p) continue;
+    let m;
+    if ((m = l.match(/^- Opciones o líneas: (.+)$/))) { p.opciones = citas(m[1]); continue; }
+    if ((m = l.match(/^- \*pista \(1\.er error\):\* (.+)$/))) { p.pista = citas(m[1])[0]; continue; }
+    if ((m = l.match(/^- \*error · ([^:*]+):\* (.+)$/))) { ultimo = p.errores[m[1]] = { texto: citas(m[2])[0], porque: null }; continue; }
+    if ((m = l.match(/^- \*acierto:\* (.+)$/))) {
+      const [texto, figura = null] = citas(m[1]);
+      ultimo = p.acierto = { texto, porque: null, figura };
+      continue;
+    }
+    if ((m = l.match(/^ {2}- ¿Por qué\? \(plegado\): (.+)$/))) { ultimo.porque = citas(m[1])[0]; continue; }
+    if ((m = l.match(/^- «/))) { p.textos.push(citas(l)[0]); ultimo = null; }
+  }
+  return pantallas;
+}
+
+/*
+ * Las cuatro correcciones obligatorias de Mello a A1, [texto de Near, texto
+ * de Mello]. Cada una se comprueba en los dos documentos, así que si uno
+ * cambia la prueba lo dice.
+ */
+const MELLO = {
+  errorInventario: ["Esa sería la regla del Tema 2. En el periódico no se cumple.", "Sí va al debe, pero no de esa cuenta: en el periódico se queda quieta hasta el cierre."],
+  casoCompra: ["La Reventa usa el sistema periódico. No mira su mercancía cada día, sino al final.", "La Reventa usa el sistema periódico. No anota su mercancía a diario: la revisa al final."],
+  aciertoConteo: ["Exacto: el conteo pone al día Inventario de mercancías. Esa es la cifra del estado de situación financiera.", "Exacto: con el conteo, Inventario de mercancías se pone al día. Esa cifra es la que va al cierre."],
+  casoConteo: ["Llega el último día del periodo. La Reventa mira la bodega y anota lo que quedó.", "Llega el último día del periodo. La Reventa hace el conteo físico de lo que quedó en la bodega."],
+};
+/*
+ * Las pistas nuevas de Mello para A1, posteriores a su auditoría: llegaron por
+ * el coordinador y no están en ningún documento del repo todavía. Ganan sobre
+ * las del recorte, [pista del recorte, pista de Mello].
+ */
+const PISTAS_MELLO = {
+  "pregunta-compra": ["Busca la cuenta que recoge lo comprado en el periodo.", "En el periódico, ¿qué cuenta junta en el periodo la mercancía que se trae para vender?"],
+  "pregunta-conteo": ["El conteo dice cuánto vale lo que quedó en la bodega. Piensa en qué cuenta estuvo quieta todo el periodo.", "El conteo dice cuánto vale lo que quedó en la bodega. ¿Qué cuenta debería mostrar ese valor?"],
+};
+
+/* Lo que Mello pasa al plegado del acierto del conteo: va delante del plegado de Near. */
+const MELLO_AL_PLEGADO = "Esa cifra es la que aparece en el estado de situación financiera.";
+const A1_MELLO = MELLO_MD.slice(MELLO_MD.indexOf("**A1 «La cuenta que no se mueve»"), MELLO_MD.indexOf("**A3 «"));
+
+test("★★★ las cuatro correcciones de Mello están en su auditoría (A1) y reemplazan un texto que sí está en el recorte", () => {
+  assert.ok(A1_MELLO.length > 200, "no se encontró la sección A1 de Mello");
+  for (const [clave, [near, mello]] of Object.entries(MELLO)) {
+    assert.ok(RECORTE_MD.includes(`«${near}»`), `${clave}: «${near}» no está en el recorte`);
+    assert.ok(A1_MELLO.includes(`«${mello}»`), `${clave}: «${mello}» no está en la A1 de Mello`);
+  }
+  assert.ok(A1_MELLO.includes(`Al plegado pasa: «${MELLO_AL_PLEGADO}»`));
+  /* El error que Mello corrige es el de Inventario, y su «conteo físico» vuelve a la pregunta del conteo. */
+  assert.match(A1_MELLO, /El error «Inventario» deshace/);
+  assert.match(A1_MELLO, /P2 perdió el término «conteo físico»/);
+});
+
+/* El recorte con Mello encima: lo que la pieza debe llevar. */
+function esperado() {
+  const vigente = (t) => Object.values(MELLO).find(([near]) => near === t)?.[1] ?? t;
+  return seccionDelRecorte().map((s) => {
+    const textos = s.textos.map(vigente);
+    if (s.tipo === "portada") return { id: s.id, tipo: s.tipo, objetivo: textos[0], figura: null };
+    if (s.tipo === "resumen") return { id: s.id, tipo: s.tipo, parrafos: textos.slice(0, -1), siguiente: textos.at(-1), figura: s.figura };
+    const errorDe = (texto) => Object.entries(s.errores).find(([nombre]) => texto.startsWith(nombre))?.[1];
+    const conteo = s.acierto.texto === MELLO.aciertoConteo[0];
+    return {
+      id: s.id,
+      tipo: s.tipo,
+      enunciado: textos.slice(0, -1),
+      pregunta: textos.at(-1),
+      pista: PISTAS_MELLO[s.id] ? (assert.equal(s.pista, PISTAS_MELLO[s.id][0], `${s.id}: la pista del recorte cambió`), PISTAS_MELLO[s.id][1]) : s.pista,
+      opciones: s.opciones.map((texto) => {
+        const e = errorDe(texto);
+        return e ? { texto, devolucion: vigente(e.texto), porque: e.porque } : { texto, devolucion: null, porque: null };
+      }),
+      acierto: {
+        texto: vigente(s.acierto.texto),
+        porque: conteo ? `${MELLO_AL_PLEGADO} ${s.acierto.porque}` : s.acierto.porque,
+        figura: s.acierto.figura,
+      },
+      figura: s.figura,
+    };
+  });
+}
+
+/* Los datos en la misma forma. */
+const lineaComoTexto = (l) => `${l.fecha} · ${l.cuenta} · ${l.lado} · ${l.monto}`;
+function proyeccion() {
+  return P.pantallas.map((s) => {
+    if (s.tipo === "portada") return { id: s.id, tipo: s.tipo, objetivo: s.objetivo, figura: s.figura };
+    if (s.tipo === "resumen") return { id: s.id, tipo: s.tipo, parrafos: s.parrafos, siguiente: s.siguiente, figura: s.figura };
+    /* «F4 (c · ei · eg · a)»: el estado de cada momento de la pregunta. */
+    const f = s.figura;
+    const estados = [f.colocando, ...Object.values(f.error), f.acierto];
+    const base = f.colocando.replace(/c$/, "");
+    return {
+      id: s.id,
+      tipo: s.tipo,
+      enunciado: s.enunciado,
+      pregunta: s.pregunta,
+      pista: s.pista,
+      opciones: s.opciones.map((o) => ({ texto: o.texto, devolucion: o.devolucion ?? null, porque: o.porque ?? null })),
+      acierto: { texto: s.acierto.texto, porque: s.acierto.porque ?? null, figura: s.acierto.linea ? lineaComoTexto(s.acierto.linea) : null },
+      figura: `${base}(${estados.map((e) => e.slice(base.length)).join("·")})`,
+    };
+  });
+}
+
+test("★★★ cada pantalla es la del recorte con Mello encima, letra por letra: ids, tipos, textos, opciones en su orden, pista, errores, aciertos y plegados", () => {
+  const e = esperado();
+  assert.deepEqual(e.map((s) => s.id), ["portada", "pregunta-compra", "pregunta-conteo", "resumen"]);
+  /* La figura se compara sin espacios: el recorte escribe «F4 (c · ei · eg · a)». */
+  assert.deepEqual(proyeccion(), e);
+});
+
+test("★★★ lo correcto es lo del acierto, y cada error es de su opción", () => {
+  assert.deepEqual(P.pantallas.filter((s) => s.opciones).map((s) => s.opciones.find((o) => o.correcta).texto), ["Compras", "Inventario de mercancías"]);
+  for (const s of P.pantallas.filter((x) => x.opciones)) {
+    assert.equal(s.opciones.filter((o) => o.correcta).length, 1, s.id);
+    for (const o of s.opciones) assert.equal(Boolean(o.devolucion), !o.correcta, `${s.id} · ${o.id}`);
+  }
+});
+
+/* Todo texto de los datos de la pieza, con su clave: no se cuela nada que no venga del recorte, de Mello o de la v5. */
+function cadenas(v, clave = null, out = []) {
+  if (typeof v === "string") out.push([clave, v]);
+  else if (Array.isArray(v)) v.forEach((x) => cadenas(x, clave, out));
+  else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) cadenas(x, k, out);
+  return out;
+}
+
+test("★★★ nada sobra: todo texto de los datos sale del recorte, de Mello, o es pie, botón, id o figura de la v5", () => {
+  const delRecorte = new Set();
+  const meter = (v) => { for (const [, t] of cadenas(v)) delRecorte.add(t); };
+  meter(esperado());
+  const linea = pantalla("pregunta-compra").acierto.linea;
+  const sobran = cadenas(P.pantallas).filter(([clave, t]) => {
+    if (delRecorte.has(t)) return false;
+    if (clave === "pie" || clave === "boton") return !PAQUETE_V5.includes(`«${t}»`);
+    if (clave === "id" || clave === "tipo") return false;
+    /* La figura de cada estado y las partes de la tarjeta de la compra, que el acierto nombra. */
+    if (Object.hasOwn(T7.FIGURA, t)) return false;
+    if (Object.values(linea).includes(t)) return false;
+    return true;
+  });
+  assert.deepEqual(sobran, []);
+  assert.equal(P.titulo, "La cuenta que no se mueve");
+  assert.ok(RECORTE_MD.includes(`## ${T7.AP1_ID} · «${P.titulo}»`));
+});
+
+test("★★★ salen las pantallas de lectura del recorte: lo-que-ya-sabes, el-conteo-al-final y la-consecuencia", () => {
+  for (const id of ["lo-que-ya-sabes", "el-conteo-al-final", "la-consecuencia"]) {
+    assert.equal(pantalla(id), undefined, id);
+    assert.ok(RECORTE_MD.includes(`\`${id}\``), `el recorte no nombra ${id}`);
+  }
+  assert.equal(P.pantallas.length, 4);
+});
+
+/* ═══════════ 2 · CADA PANTALLA Y CADA ESTADO, MONTADOS ═══════════ */
+
+/* Un texto con su plegado escrito aparte: en el DOM van los dos, lo plegado oculto. */
+const conPlegado = (texto, porque) => (porque ? `${texto} ${porque}` : texto);
+
+/* Cada estado de cada pantalla, con su lista de textos visibles en el orden en que aparecen.
+ * En el error, `fallos` es cuántas veces se ha fallado ya esa pregunta (la escalera de ayuda del lote 2). */
+function textosEsperados(p, estado = null, opcionId = null, fallos = 1) {
   if (p.tipo === "portada") return [P.titulo, p.objetivo, p.boton, p.pie];
-  if (p.tipo === "lectura" || p.tipo === "resumen") return [P.titulo, ...p.parrafos, ...(p.siguiente ? [p.siguiente] : []), ...(p.boton ? [p.boton] : []), p.pie];
-  const cabeza = [
-    P.titulo,
-    ...(p.enunciado ? [p.enunciado] : []),
-    ...(p.ficha ? p.ficha.map(fichaComoTexto) : []),
-    p.pregunta,
-    ...(p.ayuda ? [p.ayuda] : []),
-  ];
+  if (p.tipo === "resumen") return [P.titulo, ...p.parrafos, p.siguiente, p.pie];
+  const cabeza = [P.titulo, ...p.enunciado, p.pregunta];
   const opciones = p.opciones.map((o) => o.texto).sort();
   if (estado === "colocando") return [...cabeza, ...opciones, T7.BOTON.confirmar, p.pie];
-  if (estado === "error") return [...cabeza, ...opciones, p.opciones.find((o) => o.id === opcionId).devolucion, p.error.boton, p.error.pie];
-  return [...cabeza, ...opciones, p.acierto.texto, p.acierto.nota, p.acierto.boton, p.acierto.pie];
+  if (estado === "error") {
+    const o = p.opciones.find((x) => x.id === opcionId);
+    const t = textosDelError(p, o, fallos).join(" ");
+    return [...cabeza, ...opciones, t === o.devolucion ? conPlegado(t, o.porque) : t, p.error.boton, p.error.pie];
+  }
+  return [...cabeza, ...opciones, conPlegado(p.acierto.texto, p.acierto.porque), p.acierto.boton, p.acierto.pie];
 }
 
 /* Lo que de verdad hay en pantalla, leído del DOM. Las opciones se ordenan: su orden es aleatorio. */
@@ -101,9 +293,9 @@ function textosEnPantalla(caja) {
   const opciones = [];
   const recorrer = (el) => {
     if (el.matches("[data-opcion]")) { opciones.push(el.textContent); return; }
+    if (el.matches("[data-figura]")) return;
     if (el.matches("[data-texto], [data-ayuda], [data-pie], [data-dato], [data-linea], [data-boton]")) {
-      if (el.matches("[data-linea]")) out.push(el.textContent.replace(/·/g, " · ").replace(/\s+/g, " ").trim());
-      else out.push(el.textContent);
+      out.push(el.textContent);
       return;
     }
     if (el.matches("[role=group]")) { [...el.children].forEach(recorrer); out.push(...opciones.sort()); return; }
@@ -113,74 +305,8 @@ function textosEnPantalla(caja) {
   return out;
 }
 
-/* Todo el texto de la pieza, para comprobar que nada interno se cuela. */
-function todosLosTextosVisibles() {
-  const t = [P.titulo];
-  for (const p of P.pantallas) {
-    if (p.objetivo) t.push(p.objetivo);
-    if (p.parrafos) t.push(...p.parrafos);
-    if (p.siguiente) t.push(p.siguiente);
-    if (p.boton) t.push(p.boton);
-    if (p.pie) t.push(p.pie);
-    if (p.tipo !== "pregunta") continue;
-    if (p.enunciado) t.push(p.enunciado);
-    if (p.ficha) t.push(...p.ficha.map(fichaComoTexto));
-    t.push(p.pregunta);
-    if (p.ayuda) t.push(p.ayuda);
-    for (const o of p.opciones) { t.push(o.texto); if (o.devolucion) t.push(o.devolucion); }
-    t.push(T7.BOTON.confirmar, p.error.boton, p.error.pie, p.acierto.texto, p.acierto.nota, p.acierto.boton, p.acierto.pie);
-    if (p.acierto.linea) t.push(lineaComoTexto(p.acierto.linea));
-  }
-  return t;
-}
-
-/* ═══════════ 1 · LOS DATOS CONTRA EL PAQUETE APROBADO ═══════════ */
-
-/*
- * Los «…» de primer nivel de la sección «Contenido» de la v5. Se lleva la
- * cuenta del anidamiento porque la nota cita otras piezas por su título
- * («…la armamos en «La factura completa».»).
- */
-function citasDelContenido(md) {
-  const contenido = md.slice(md.indexOf("## Contenido"), md.indexOf("## Cambios de la versión 4"));
-  const citas = [];
-  let nivel = 0;
-  let actual = "";
-  for (const c of contenido) {
-    if (c === "«") { if (nivel > 0) actual += c; nivel++; continue; }
-    if (c === "»") { nivel--; if (nivel > 0) actual += c; else { citas.push(actual); actual = ""; } continue; }
-    if (nivel > 0) actual += c;
-  }
-  assert.equal(nivel, 0, "las comillas del paquete no cierran");
-  return citas;
-}
-
-test("★★★ cada texto de los datos está, letra por letra, en el paquete aprobado", () => {
-  const ficha = new Set(pantalla("pregunta-compra").ficha.map(fichaComoTexto));
-  const faltan = todosLosTextosVisibles().filter((t) => !ficha.has(t)).filter((t) => !PAQUETE.includes(t));
-  assert.deepEqual(faltan, [], "estos textos no están en la v5 tal cual");
-  /* El título va sin comillas en la v5; lo demás va entre «». */
-  assert.ok(PAQUETE.includes(`- Título: ${P.titulo}`));
-});
-
-test("★★★ la ficha es la de la tabla de la v3, con mayúscula inicial", () => {
-  const filas = [...PAQUETE_V3.matchAll(/^\| (Quién recibe|Quién entrega|Monto|Tipo|Clase de hecho) \| (.+) \|$/gm)].map((x) => ({ dato: x[1], texto: x[2] }));
-  assert.equal(filas.length, 5);
-  assert.deepEqual(pantalla("pregunta-compra").ficha, filas);
-  assert.ok(pantalla("pregunta-compra").ficha.every((f) => /^[A-ZÁÉÍÓÚ$]/.test(f.texto)), "un dato empieza en minúscula");
-});
-
-test("★★★ cada texto del paquete está en los datos: no falta ninguno", () => {
-  const datos = new Set(todosLosTextosVisibles());
-  const citas = citasDelContenido(PAQUETE);
-  assert.ok(citas.length >= 40, `se leyeron solo ${citas.length} textos del paquete`);
-  const faltan = citas.filter((c) => !datos.has(c));
-  assert.deepEqual(faltan, [], "estos textos de la v5 no están en los datos");
-});
-
-/* ═══════════ 2 · CADA PANTALLA Y CADA ESTADO, MONTADOS ═══════════ */
-
-/* Recorre la pieza: en cada pregunta falla primero con cada opción equivocada y después acierta. */
+/* Recorre la pieza: en cada pregunta falla primero con cada opción equivocada, luego otra vez con la primera
+ * (el 2.º peldaño de la escalera de ayuda del lote 2), y después acierta. */
 test("★★★ cada pantalla y cada estado muestran exactamente sus textos", async () => {
   const m = await montar(h(LaCuentaQueNoSeMueve, { rotulo: "R" }));
   try {
@@ -196,11 +322,17 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos", as
       }
       assert.deepEqual(textosEnPantalla(m.caja), textosEsperados(p, "colocando"), `${p.id} · colocando`);
       vistos.push(`${p.id}:colocando`);
-      for (const o of p.opciones.filter((x) => !x.correcta)) {
+      assert.ok(p.pista, `${p.id} sin pista`);
+      const malas = p.opciones.filter((x) => !x.correcta);
+      let fallos = 0;
+      for (const o of [...malas, malas[0]]) {
         await tocar(m.caja.querySelector(`[data-opcion="${o.id}"]`));
         await tocar(boton(m.caja, "confirmar"));
-        assert.deepEqual(textosEnPantalla(m.caja), textosEsperados(p, "error", o.id), `${p.id} · error ${o.id}`);
-        vistos.push(`${p.id}:error:${o.id}`);
+        fallos++;
+        /* 1.er error: la pista. 2.º y siguientes: la respuesta y su porqué (el acierto sin «Así es:» ni «Exacto:»). */
+        assert.deepEqual(textosDelError(p, o, fallos), fallos === 1 ? [p.pista] : [`La respuesta es «${p.opciones.find((x) => x.correcta).texto}».`, sinAsiEs(p.acierto.texto)], `${p.id} escalera ${fallos}`);
+        assert.deepEqual(textosEnPantalla(m.caja), textosEsperados(p, "error", o.id, fallos), `${p.id} · error ${fallos} ${o.id}`);
+        vistos.push(`${p.id}:error${fallos}:${o.id}`);
         await tocar(boton(m.caja, "probar-otra"));
       }
       await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((x) => x.correcta).id}"]`));
@@ -209,14 +341,57 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos", as
       vistos.push(`${p.id}:acierto`);
       await tocar(boton(m.caja, "seguir"));
     }
-    /* Las siete pantallas y los once estados, todos recorridos. */
-    assert.equal(vistos.length, 5 + 3 + 3 + 2);
+    /* Las cuatro pantallas: 2 sin pregunta, y las 2 preguntas con colocando, 2 errores, el 2.º peldaño y el acierto. */
+    assert.equal(vistos.length, 2 + 2 * 5);
   } finally {
     m.desmontar();
   }
 });
 
-test("★★ nada de lo que la v5 marca como interno llega a la pantalla", async () => {
+test("★★★ el plegado de cada acierto sale cerrado: se ve el texto, «¿Por qué?» lo abre y entonces se lee el plegado del recorte", async () => {
+  for (const id of ["pregunta-compra", "pregunta-conteo"]) {
+    const p = pantalla(id);
+    const m = await montar(h(LaCuentaQueNoSeMueve, { pieza: { ...P, pantallas: [p] }, rotulo: "R" }));
+    try {
+      await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((x) => x.correcta).id}"]`));
+      await tocar(boton(m.caja, "confirmar"));
+      const msg = m.caja.querySelector('[data-devolucion="acierto"]');
+      assert.ok(document.activeElement === msg, `${id}: el foco no fue al mensaje`);
+      const plegado = msg.querySelector("[data-plegado]");
+      assert.ok(plegado, `${id}: el acierto no trae plegado`);
+      assert.equal(plegado.hidden, true, `${id}: el plegado sale abierto`);
+      assert.equal(plegado.textContent, ` ${p.acierto.porque}`);
+      /* Lo visible es el acierto, entero y solo él. */
+      assert.equal(msg.querySelector("[data-texto]").textContent.slice(0, -plegado.textContent.length), p.acierto.texto);
+      const porQue = msg.querySelector("[data-por-que]");
+      assert.equal(porQue.getAttribute("aria-expanded"), "false");
+      assert.equal(porQue.getAttribute("aria-label"), "¿Por qué?");
+      await tocar(porQue);
+      assert.equal(msg.querySelector("[data-plegado]").hidden, false, `${id}: «¿Por qué?» no abre`);
+    } finally {
+      m.desmontar();
+    }
+  }
+});
+
+test("★★ el plegado de una devolución, si se llega a mostrar, es el suyo (el de Inventario en la compra)", async () => {
+  /* Con la escalera del lote 2 la devolución no se ve mientras la pregunta tenga pista: se prueba la pantalla sin pista. */
+  const p = { ...pantalla("pregunta-compra"), pista: null };
+  const m = await montar(h(LaCuentaQueNoSeMueve, { pieza: { ...P, pantallas: [p] }, rotulo: "R" }));
+  try {
+    const o = p.opciones.find((x) => x.id === "inventario");
+    await tocar(m.caja.querySelector('[data-opcion="inventario"]'));
+    await tocar(boton(m.caja, "confirmar"));
+    const msg = m.caja.querySelector('[data-devolucion="error"]');
+    assert.equal(msg.querySelector("[data-texto]").textContent, `${o.devolucion} ${o.porque}`);
+    assert.equal(msg.querySelector("[data-plegado]").hidden, true);
+    assert.equal(msg.querySelector("[data-plegado]").textContent, ` ${o.porque}`);
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★ nada de lo que el paquete marca como interno llega a la pantalla", async () => {
   const m = await montar(h(LaCuentaQueNoSeMueve, { rotulo: "R" }));
   try {
     const textos = [];
@@ -239,9 +414,11 @@ test("★★ nada de lo que la v5 marca como interno llega a la pantalla", async
       }
     }
     const todo = textos.join("\n");
-    for (const interno of ["interno", "construcción", "Cambia en v", "cambia en v", "(p. ", "(pp. ", "Lo que ya sabes", "El conteo al final", "La consecuencia", "Mello", "Near"]) {
+    for (const interno of ["interno", "construcción", "Cambia en v", "cambia en v", "(p. ", "(pp. ", "no aplica", "plegado", "Figura:", "Lo que ya sabes", "El conteo al final", "La consecuencia", "Mello", "Near"]) {
       assert.ok(!todo.includes(interno), `se muestra «${interno}»`);
     }
+    /* Ni las cifras de INFLESZ del paquete. */
+    assert.doesNotMatch(todo, /\(\d{2},\d\)/);
     /* Ni «contar» ni sus formas (convención de la v5). */
     assert.doesNotMatch(todo, /(?<!\p{L})cont(ar|ó|amos|aron|aste)(?!\p{L})/iu);
   } finally {
@@ -265,6 +442,7 @@ test("★★★ el error lleva a «Probar otra» y el acierto a «Seguir»", asy
         assert.equal(boton(m.caja, "confirmar").disabled, false);
         await tocar(boton(m.caja, "confirmar"));
         assert.equal(m.caja.querySelector("[data-pregunta]").dataset.estado, "error");
+        assert.ok(document.activeElement === m.caja.querySelector('[data-devolucion="error"]'), "el foco no fue al mensaje");
         /* En el error, el único botón que sirve es «Probar otra»; no hay «Seguir». */
         assert.deepEqual(botonesActivos(m.caja), ["Probar otra"], `${id} · ${o.id}`);
         assert.equal(boton(m.caja, "seguir") === null, true, "en el error hay un botón «Seguir»");
@@ -286,19 +464,22 @@ test("★★★ el error lleva a «Probar otra» y el acierto a «Seguir»", asy
   }
 });
 
-test("★★ los botones de lectura son los de la v5, y el resumen no lleva ninguno", async () => {
+test("★★ la portada lleva «Empezar» y va a la primera pregunta; el resumen no lleva botón", async () => {
   const m = await montar(h(LaCuentaQueNoSeMueve, { rotulo: "R" }));
   try {
-    const vistos = [];
-    for (const p of P.pantallas.slice(0, 4)) {
-      vistos.push(botonesActivos(m.caja));
-      await tocar(m.caja.querySelector("[data-boton]"));
-    }
-    assert.deepEqual(vistos, [["Empezar"], ["Seguir"], ["Seguir"], ["Ver el caso"]]);
+    assert.deepEqual(botonesActivos(m.caja), ["Empezar"]);
+    await tocar(boton(m.caja, "empezar"));
+    assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, "pregunta-compra");
   } finally {
     m.desmontar();
   }
   assert.equal(pantalla("resumen").boton, null);
+  const r = await montar(h(LaCuentaQueNoSeMueve, { pieza: { ...P, pantallas: [pantalla("resumen")] }, rotulo: "R" }));
+  try {
+    assert.deepEqual(botonesActivos(r.caja), []);
+  } finally {
+    r.desmontar();
+  }
 });
 
 /* ═══════════ 4 · EL ORDEN DE LAS OPCIONES ═══════════ */
@@ -393,7 +574,7 @@ test("★★ ids con el prefijo t7- y los tres temas de inventarios consecutivos
  * solo. `foco` es lo que se señala; `nueva`, lo que entra con fundido.
  * `pendiente` es dónde va «Conteo físico» mientras no está en tarjeta, con la
  * corrección de Mello: en la fila «Cierre», sin columna, desde la pantalla 3
- * hasta el colocando de la 5; bajo Inventario en la 2 y en los errores de la 5.
+ * hasta el colocando del conteo; bajo Inventario en F2 y en los errores del conteo.
  */
 const TABLA_WATARI = {
   F1: { col2: "", filas: ["inicio"], factura: false, compra: false, otras: false, cierre: null, pendiente: null, foco: [], nueva: null },
@@ -412,6 +593,8 @@ const TABLA_WATARI = {
 
 /* El orden de la tabla de Near: P1, P2, P3, P4 colocando, error Inventario, error Gastos, acierto, P5 colocando, error Compras, error Ninguna, acierto, P6. */
 const ORDEN_NEAR = ["F1", "F2", "F3", "F4c", "F4ei", "F4eg", "F4a", "F5c", "F5ec", "F5en", "F5a", "F6"];
+/* Los que recorre la pieza recortada: sin F1, F2 ni F3, que eran de las pantallas de lectura que salieron. */
+const ORDEN_PIEZA = ORDEN_NEAR.slice(3);
 
 function leerFigura(caja) {
   const fig = caja.querySelector("[data-figura]");
@@ -436,7 +619,7 @@ function leerFigura(caja) {
   };
 }
 
-test("★★★ la portada no lleva figura, y cada uno de los doce estados lleva la suya, como dice la tabla de Watari", async () => {
+test("★★★ la portada no lleva figura, y cada uno de los nueve estados lleva la suya, como dice la tabla de Watari", async () => {
   const m = await montar(h(LaCuentaQueNoSeMueve, { rotulo: "R" }));
   try {
     const vistos = [];
@@ -478,7 +661,7 @@ test("★★★ la portada no lleva figura, y cada uno de los doce estados lleva
       comprobar();
       await tocar(boton(m.caja, "seguir"));
     }
-    assert.deepEqual(vistos, ORDEN_NEAR);
+    assert.deepEqual(vistos, ORDEN_PIEZA);
   } finally {
     m.desmontar();
   }
@@ -505,9 +688,9 @@ test("★★ los textos visibles de la figura son los de Near y Watari, letra po
   }
 });
 
-test("★★★ la línea del acierto de la v5 es la tarjeta de la compra, con sus mismas partes", async () => {
+test("★★★ lo que la figura muestra al acertar la compra (recorte: «Figura: …») es la tarjeta de la compra, con sus mismas partes", async () => {
   const l = pantalla("pregunta-compra").acierto.linea;
-  assert.equal(lineaComoTexto(l), "16 de abril · Compras · Debe $5.000.000");
+  assert.equal(lineaComoTexto(l), "16 de abril · Compras · Debe · $5.000.000");
   const m = await montar(h(FiguraDosColumnas, { estado: "F4a" }));
   try {
     const tarjeta = m.caja.querySelector("[data-fg=compra]");
@@ -554,8 +737,8 @@ test("★★ nada punteado ni discontinuo, y el fundido es de 120 ms y se apaga 
   assert.match(CSS_FIGURA, /@container t7figmov \(max-width: 121px\)/);
 });
 
-test("★★★ en el colocando de la 5 el conteo pendiente no queda bajo Inventario: la figura no dibuja la respuesta", async () => {
-  /* Montado en la pieza, en el estado real: pantalla 5 sin responder. */
+test("★★★ en el colocando del conteo el conteo pendiente no queda bajo Inventario: la figura no dibuja la respuesta", async () => {
+  /* Montado en la pieza, en el estado real: la pregunta del conteo sin responder. */
   const pieza = { ...P, pantallas: [pantalla("pregunta-conteo")] };
   const m = await montar(h(LaCuentaQueNoSeMueve, { pieza, rotulo: "R" }));
   try {

@@ -1,29 +1,32 @@
-import { useEffect, useRef, useState } from "react";
-import { Check, X } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
+import { Check, ChevronDown, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_EL_CIERRE, BOTON, INTERFAZ, PENDIENTE_DE_REVISION, FECHA, DEBE, HABER, cifra } from "../../../../data/contabilidadT7_1_ap4.js";
+import { Plegable } from "./plegable.jsx";
+import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDeLineas, puestoTrasProbarOtra, sinAsiEs } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T7-1 · AP4 «El cierre en periódico», con el patrón tabular v3.2 de Watari.
+ * T7-1 · AP4 «El cierre en periódico» — el RECORTE del lote 1 de Near, con
+ * las correcciones de Mello. Ocho pantallas, una a la vez. Cinco tipos:
  *
- * Nueve pantallas, una a la vez. Tres tipos:
- *
- *   · lectura    textos y, según la pantalla, la ficha (P2), los tres métodos
- *                (P3) o los cálculos (P2, P6); botón y pie
- *   · lados      P4: los seis asientos dados del cierre, en lectura, y las
- *                dos líneas de Inventario de mercancías, cada una con Debe |
- *                Haber. «Confirmar» marca con la X cada línea en el lado
- *                equivocado y pone su explicación debajo; «Probar otra»
- *                devuelve solo esas. Con el acierto, las dos líneas pasan a
- *                la tabla con su contrapartida (de 6 a 10 filas, con fundido)
- *                y aparece el saldo de Ganancias y pérdidas
- *   · eleccion   P5 y P7: pregunta con opciones barajadas en cada intento. En
- *                P7, arriba, lo que es igual con los tres métodos y la tabla
- *                de lo que cambia: el estado de resultados de tres columnas
- *                del patrón, apilado por método cuando el contenido mide
- *                341 px o menos (los dos teléfonos)
+ *   · lectura      P0, P2 (la ficha de totales; las 10 operaciones del mes,
+ *                  plegadas tras «Ver las operaciones del mes») y P7 (la
+ *                  cuenta en una línea, como figura)
+ *   · prediccion   P1: la apuesta. Sin calificar y sin puntos: al elegir sale
+ *                  «Guardamos tu apuesta…» y el botón para seguir. Lo elegido
+ *                  vive en el estado de la pieza y marca su columna en P6
+ *   · lados        P3: «Inventario de mercancías» una sola vez, arriba de sus
+ *                  dos líneas, cada una con Debe | Haber; los otros asientos
+ *                  del cierre, plegados. El error va bajo su línea; «Probar
+ *                  otra» devuelve solo las mal puestas
+ *   · eleccion     P4 y P6: opciones barajadas en cada intento. En P6, la
+ *                  tabla de los tres métodos muestra solo «Inventario final»
+ *                  hasta el acierto (Mello); la columna de la apuesta va con
+ *                  borde, sin texto
+ *   · tocar-filas  P5: el estado de resultados en filas; cada utilidad es un
+ *                  botón que abre su definición, una a la vez
  *
  * NO CALIFICA y no da FP: es Aprender. Clases con el prefijo `t7a4-`.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -45,7 +48,6 @@ export const CSS_AP4 = `
 .t7a4-ficha { margin: 0; display: grid; gap: 6px; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; }
 .t7a4-ficha dt { font: 500 12px/1.2 "Inter", sans-serif; color: ${P.texto2}; letter-spacing: .02em; }
 .t7a4-ficha dd { margin: 0 0 4px; display: grid; gap: 2px; font-size: 15px; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
-.t7a4-total { font-weight: 600; }
 .t7a4-ops { display: grid; gap: 8px; }
 .t7a4-op { appearance: none; text-align: left; min-height: 44px; padding: 10px 14px; border: 1px solid ${P.borde}; border-radius: 12px; background: transparent; color: ${P.texto}; font: 400 15px/1.35 "Inter", sans-serif; cursor: pointer; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
 .t7a4-op[aria-pressed="true"] { background: ${P.texto}; color: ${P.fondo}; border-color: ${P.texto}; }
@@ -62,9 +64,7 @@ export const CSS_AP4 = `
 .t7a4-err { margin-top: 2px; }
 .t7a4-calcs { display: grid; gap: 4px; }
 .t7a4-calc-l { margin: 0; font: 400 14px/1.45 "Inter", sans-serif; font-variant-numeric: tabular-nums; color: ${P.texto2}; overflow-wrap: anywhere; }
-/* Sin nowrap: en P5 el resultado es «Costo de mercancía disponible $24.220.000» y a 320 empujaba el panel. Una cifra no se parte igual. */
 .t7a4-calc-l b { color: ${P.texto}; font-weight: 600; }
-.t7a4-metodo { display: grid; gap: 6px; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; }
 /* asientos en lectura (modo RESUMEN del patrón, con borde de tarjeta) */
 .t7a4-as { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; }
 .t7a4-g2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
@@ -75,24 +75,17 @@ export const CSS_AP4 = `
 .t7a4-as-r > span:first-child { font-size: 14px; overflow-wrap: anywhere; min-width: 0; }
 .t7a4-as-r .t7a4-g2 > span { text-align: right; padding-inline: 9px; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 0; }
 .t7a4-sangria { padding-left: 24px; }
-.t7a4-saldo { margin: 0; font: 600 14px/1.45 "Inter", sans-serif; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 /* las dos líneas que se colocan */
 .t7a4-u { border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; display: grid; gap: 10px; min-width: 0; }
 .t7a4-dh { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .t7a4-la { display: grid; gap: 6px; min-width: 0; }
 .t7a4-la + .t7a4-la { padding-top: 8px; }
 .t7a4-cuenta { display: grid; gap: 2px; font-size: 15px; overflow-wrap: anywhere; min-width: 0; }
-.t7a4-accion { font-size: 13px; color: ${P.texto2}; }
-.t7a4-monto { color: ${P.texto2}; font-variant-numeric: tabular-nums; white-space: nowrap; justify-self: end; }
 .t7a4-cas { position: relative; appearance: none; display: flex; align-items: center; justify-content: flex-end; min-height: 44px; min-width: 0; padding: 0 8px; border: 1px dashed ${P.borde}; border-radius: 6px; background: transparent; color: ${P.texto}; font: 500 15px/1 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; cursor: pointer; transition: box-shadow .12s, border-color .12s; }
 .t7a4-cas-objetivo { border-style: solid; border-color: ${P.texto}; box-shadow: inset 0 0 0 1px ${P.texto}; }
 .t7a4-cas-llena { border-style: solid; border-color: ${P.borde}; }
 .t7a4-cas-error { border-style: solid; border-color: ${P.error}; box-shadow: inset 0 0 0 1px ${P.error}; }
 .t7a4-marca { position: absolute; top: -7px; left: -7px; width: 16px; height: 16px; border-radius: 50%; background: ${P.fondo}; display: block; line-height: 0; color: ${P.error}; }
-/* lo igual con los tres métodos */
-.t7a4-fijo { display: grid; gap: 6px; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; }
-.t7a4-fijo-f { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; font-size: 14px; }
-.t7a4-fijo-f > span:last-child { margin-left: auto; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* estado de resultados de tres columnas (patrón v3.2): tres columnas iguales; apilado con 341 px o menos */
 .t7a4-er { display: grid; grid-template-columns: minmax(0, 1fr); border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; min-width: 0; }
 .t7a4-er-head { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding-bottom: 6px; }
@@ -115,7 +108,34 @@ export const CSS_AP4 = `
 @keyframes t7a4-aparece { from { opacity: 0; } to { opacity: 1; } }
 .t7a4-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { .t7a4 *, .t7a4 *::before, .t7a4 *::after { transition: none !important; animation: none !important; } }
-`;
+
+/* P1 y P2: la figura de valores y la ficha de totales */
+.t7a4-fig { margin: 0; display: grid; gap: 6px; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; min-width: 0; }
+.t7a4-fig-f { margin: 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; font-size: 15px; line-height: 1.4; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.t7a4-fig-f > b { margin-left: auto; font-weight: 600; white-space: nowrap; }
+.t7a4-fig-f + .t7a4-fig-f { border-top: 1px solid ${P.borde}; padding-top: 6px; }
+.t7a4-rot { color: ${P.texto2}; }
+.t7a4-una { margin: 0; font: 600 16px/1.45 "Sora", "Inter", sans-serif; overflow-wrap: anywhere; }
+/* lo plegado: «Ver las operaciones del mes», «Ver los otros asientos del cierre» */
+.t7a4-plegar { appearance: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid ${P.borde}; background: transparent; color: ${P.texto}; font: 600 15px/1.3 "Inter", sans-serif; text-align: left; cursor: pointer; }
+.t7a4-plegar svg { flex: none; transition: transform .12s; }
+.t7a4-plegar[aria-expanded="true"] svg { transform: rotate(180deg); }
+.t7a4-plegar:focus-visible, .t7a4-res-btn:focus-visible { outline: 2px solid ${P.texto}; outline-offset: 2px; }
+/* P3: el nombre de la cuenta, una sola vez */
+.t7a4-cuenta-h { margin: 0; font: 600 15px/1.35 "Sora", "Inter", sans-serif; overflow-wrap: anywhere; }
+.t7a4-guardada { padding: 10px 12px; border-radius: 8px; border: 1px solid ${P.borde}; outline: none; }
+.t7a4-guardada p { margin: 0; font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+/* P5: el estado de resultados en filas; las utilidades se tocan */
+.t7a4-res { margin: 0; display: grid; border: 1px solid ${P.borde}; border-radius: 10px; padding: 4px 12px; min-width: 0; }
+.t7a4-res-f { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; padding-block: 8px; font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
+.t7a4-res-f + .t7a4-res-f { border-top: 1px solid ${P.borde}; }
+.t7a4-res-f > b, .t7a4-res-btn > b { margin-left: auto; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.t7a4-res-u { display: grid; gap: 4px; padding-block: 4px; }
+.t7a4-res-btn { appearance: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 8px; min-height: 44px; padding: 6px 8px; margin-inline: -8px; width: calc(100% + 16px); border: 1px dashed ${P.borde}; border-radius: 8px; background: transparent; color: ${P.texto}; font: 600 14px/1.35 "Inter", sans-serif; text-align: left; cursor: pointer; overflow-wrap: anywhere; }
+.t7a4-res-btn[aria-expanded="true"] { border-style: solid; border-color: ${P.texto}; }
+.t7a4-def { margin: 0 0 4px; font-size: 14px; line-height: 1.45; color: ${P.texto}; overflow-wrap: anywhere; }
+/* P6: la columna de la apuesta, con borde y sin texto */
+.t7a4-er-apuesta { box-shadow: inset 0 0 0 2px ${P.texto}; border-radius: 6px; padding-inline: 6px; }`;
 
 const nombreLado = (lado) => (lado === DEBE ? INTERFAZ.debe : INTERFAZ.haber);
 
@@ -129,13 +149,14 @@ function Boton({ nombre, texto, onClick, inactivo = false }) {
   );
 }
 
-function Mensaje({ ok, textos, refFoco, clase = "" }) {
+/* `porques`: el plegado escrito aparte de un texto (de Near), por texto. */
+function Mensaje({ ok, textos, porques = {}, refFoco, clase = "" }) {
   return (
     <div ref={refFoco} tabIndex={-1} role="status" className={`t7a4-msg ${ok ? "t7a4-msg-ok" : "t7a4-msg-error"} ${clase}`} data-mensaje={ok ? "acierto" : "error"}>
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7a4-msg-cuerpo">
         <span className="t7a4-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} porque={porques[t] ?? null} /></p>)}
       </div>
     </div>
   );
@@ -156,36 +177,41 @@ function Calculos({ lista, nueva = false }) {
   );
 }
 
-function Ficha({ ficha }) {
+/* Un botón que abre y cierra lo plegado, con aria-expanded. */
+function Plegar({ nombre, texto, abierto, controla, onClick }) {
   return (
-    <dl className="t7a4-ficha" data-ficha>
+    <button type="button" className="t7a4-plegar" data-plegar={nombre} aria-expanded={abierto} aria-controls={controla} onClick={onClick}>
+      <span data-texto>{texto}</span>
+      <ChevronDown size={18} aria-hidden="true" />
+    </button>
+  );
+}
+
+/* Las operaciones del mes (P2), plegadas: como la ficha de la v2.1. */
+function Ficha({ ficha, id }) {
+  return (
+    <dl className="t7a4-ficha" id={id} data-operaciones>
       {ficha.map((f) => (
         <div key={f.dato} data-dato>
-          <dt>{f.dato}</dt>
-          <dd>
-            {f.partes.map((x) => <span key={x} data-parte>{x}</span>)}
-            {f.total && <span className="t7a4-total" data-parte data-total>{f.total}</span>}
-          </dd>
+          <dt data-texto>{f.dato}</dt>
+          <dd>{f.partes.map((x) => <span key={x} data-texto data-parte>{x}</span>)}</dd>
         </div>
       ))}
     </dl>
   );
 }
 
+/* «Inventario inicial: 5.200 unidades, $6.760.000»: el rótulo, en gris. El texto del renglón es el original. */
+function Total({ texto }) {
+  const i = texto.indexOf(": ");
+  return <p className="t7a4-fig-f" data-texto data-total><span className="t7a4-rot">{texto.slice(0, i + 1)}</span>{" "}<span>{texto.slice(i + 2)}</span></p>;
+}
+
 /* ═══════════ LOS ASIENTOS, EN LECTURA ═══════════ */
 
-export function Asientos({ lineas, nuevas = [] }) {
-  const fila = (l, k, nueva) => (
-    <div key={`${nueva ? "n" : "d"}-${k}`} className={`t7a4-as-r${nueva ? " t7a4-nueva" : ""}`} role="row" data-linea={l.cuenta} data-lado={l.lado} data-nueva={nueva ? "si" : undefined}>
-      <span role="rowheader" className={l.lado === DEBE ? undefined : "t7a4-sangria"}>{l.cuenta}</span>
-      <span className="t7a4-g2">
-        <span role="cell">{l.lado === DEBE ? cifra(l.monto) : ""}</span>
-        <span role="cell">{l.lado === DEBE ? "" : cifra(l.monto)}</span>
-      </span>
-    </div>
-  );
+export function Asientos({ lineas, id }) {
   return (
-    <div className="t7a4-as" role="table" aria-label={PENDIENTE_DE_REVISION.nombreAsientos(FECHA)} data-asientos data-revision="pendiente">
+    <div className="t7a4-as" role="table" id={id} aria-label={PENDIENTE_DE_REVISION.nombreAsientos(FECHA)} data-asientos data-revision="pendiente">
       <div className="t7a4-as-h" role="row">
         <span role="columnheader" data-fecha>{FECHA}</span>
         <span className="t7a4-g2">
@@ -193,27 +219,36 @@ export function Asientos({ lineas, nuevas = [] }) {
           <span className="t7a4-hb" role="columnheader">{INTERFAZ.haber}</span>
         </span>
       </div>
-      {lineas.map((l, k) => fila(l, k, false))}
-      {nuevas.map((l, k) => fila(l, k, true))}
+      {lineas.map((l, k) => (
+        <div key={k} className="t7a4-as-r" role="row" data-linea={l.cuenta} data-lado={l.lado}>
+          <span role="rowheader" className={l.lado === DEBE ? undefined : "t7a4-sangria"}>{l.cuenta}</span>
+          <span className="t7a4-g2">
+            <span role="cell">{l.lado === DEBE ? cifra(l.monto) : ""}</span>
+            <span role="cell">{l.lado === DEBE ? "" : cifra(l.monto)}</span>
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
 
-/* ═══════════ LOS TRES MÉTODOS, LADO A LADO (P7) ═══════════ */
+/* ═══════════ LOS TRES MÉTODOS, LADO A LADO (P6) ═══════════ */
 
-export function TresMetodos({ tabla }) {
+/* `todas`: con el acierto llegan las filas de costo y utilidad. `apuesta`: la columna marcada (o null). */
+export function TresMetodos({ tabla, todas, apuesta = null }) {
+  const marca = (i) => (i === apuesta ? { className: "t7a4-er-apuesta", "data-apuesta": "si" } : {});
   return (
-    <div className="t7a4-er" role="table" aria-label={tabla.nombre} data-metodos data-revision="pendiente">
+    <div className="t7a4-er" role="table" aria-label={tabla.nombre} data-metodos data-figura data-revision="pendiente">
       <div className="t7a4-er-head" role="row">
         <span className="t7a4-sr" role="columnheader" data-revision="pendiente">{PENDIENTE_DE_REVISION.rubro}</span>
-        {tabla.metodos.map((m) => <span key={m} role="columnheader">{m}</span>)}
+        {tabla.metodos.map((m, i) => <span key={m} role="columnheader" {...marca(i)}>{m}</span>)}
       </div>
-      {tabla.filas.map((f) => (
-        <div key={f.rubro} className="t7a4-er-r" role="row" data-rubro={f.rubro}>
+      {tabla.filas.filter((f) => todas || !f.despues).map((f) => (
+        <div key={f.rubro} className={`t7a4-er-r${f.despues ? " t7a4-nueva" : ""}`} role="row" data-rubro={f.rubro}>
           <span className="t7a4-er-rubro" role="rowheader">{f.rubro}</span>
           <span className="t7a4-er-v">
             {f.valores.map((v, i) => (
-              <span key={i} className="t7a4-er-c" role="cell">
+              <span key={i} role="cell" {...marca(i)} className={`t7a4-er-c${i === apuesta ? " t7a4-er-apuesta" : ""}`}>
                 <span className="t7a4-er-cap" aria-hidden="true">{tabla.metodos[i]}</span>
                 <span className="t7a4-er-dato" data-dato-metodo={i}>{v}</span>
               </span>
@@ -225,31 +260,89 @@ export function TresMetodos({ tabla }) {
   );
 }
 
+/* ═══════════ PREDICCIÓN: LA APUESTA (P1) ═══════════ */
+
+function Prediccion({ pantalla, apuesta, onApostar, onSeguir }) {
+  const ref = useRef(null);
+  const elegida = useRef(apuesta);
+  useEffect(() => { if (apuesta && apuesta !== elegida.current) { elegida.current = apuesta; ref.current?.focus(); } }, [apuesta]);
+  return (
+    <div className="t7a4" data-prediccion={pantalla.id} data-estado={apuesta ? "apostada" : "eligiendo"}>
+      {pantalla.parrafos.map((t) => <p key={t} className="t7a4-p" data-texto><Plegable texto={t} /></p>)}
+      <figure className="t7a4-fig" data-figura data-valores>
+        {pantalla.valores.map((v) => <p key={v.metodo} className="t7a4-fig-f" data-texto data-valor><span>{v.metodo}</span>{" "}<b>{v.valor}</b></p>)}
+      </figure>
+      <p className="t7a4-p t7a4-preg" data-texto data-pregunta>{pantalla.pregunta}</p>
+      <div className="t7a4-ops" role="group" aria-label={pantalla.pregunta}>
+        {pantalla.opciones.map((o) => (
+          <button key={o.id} type="button" className="t7a4-op" data-opcion={o.id} aria-pressed={o.id === apuesta} onClick={() => onApostar(o.id)}>
+            {o.texto}
+          </button>
+        ))}
+      </div>
+      {apuesta && (
+        <>
+          <div ref={ref} tabIndex={-1} role="status" className="t7a4-guardada" data-mensaje="apuesta">
+            <p data-texto>{pantalla.guardada}</p>
+          </div>
+          <Boton nombre="seguir" texto={pantalla.boton} onClick={onSeguir} />
+        </>
+      )}
+      <Pie texto={pantalla.pie} />
+    </div>
+  );
+}
+
+/* ═══════════ TOCAR FILAS: LAS UTILIDADES (P5) ═══════════ */
+
+function TocarFilas({ pantalla, onSeguir }) {
+  const [abierta, setAbierta] = useState(null);
+  const base = useId();
+  return (
+    <div className="t7a4" data-tocar-filas={pantalla.id} data-estado={abierta ?? "cerradas"}>
+      <p className="t7a4-p" data-texto data-consigna>{pantalla.consigna}</p>
+      <figure className="t7a4-res" data-figura data-resultados>
+        {pantalla.filas.map((f) => {
+          if (!f.definicion) return <p key={f.id} className="t7a4-res-f" data-texto data-fila-er={f.id}><span>{f.rubro}</span>{" "}<b>{f.valor}</b></p>;
+          const abre = abierta === f.id;
+          const id = `${base}-${f.id}`;
+          return (
+            <div key={f.id} className="t7a4-res-u">
+              <button type="button" className="t7a4-res-btn" data-texto data-fila-er={f.id} data-utilidad={f.id} aria-expanded={abre} aria-controls={id} onClick={() => setAbierta(abre ? null : f.id)}>
+                <span>{f.rubro}</span>{" "}<b>{f.valor}</b>
+              </button>
+              {abre && <p id={id} className="t7a4-def t7a4-nueva" data-texto data-definicion={f.id}>{f.definicion}</p>}
+            </div>
+          );
+        })}
+      </figure>
+      <Boton nombre="seguir" texto={pantalla.boton} onClick={onSeguir} />
+      <Pie texto={pantalla.pie} />
+    </div>
+  );
+}
+
 /* ═══════════ ELECCIÓN ═══════════ */
 
-function Eleccion({ pantalla, onSeguir }) {
+function Eleccion({ pantalla, onSeguir, apuesta = null }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
   const [confirmada, setConfirmada] = useState(null);
+  /* Cuántas veces se ha fallado esta pregunta: la escalera de ayuda (escaleraAyuda.js). */
+  const [fallos, setFallos] = useState(0);
   const ref = useRef(null);
   const opcion = confirmada ? pantalla.opciones.find((o) => o.id === confirmada) : null;
   const estado = !opcion ? "colocando" : opcion.correcta ? "acierto" : "error";
   useEffect(() => { if (estado !== "colocando") ref.current?.focus(); }, [estado]);
   const pie = estado === "colocando" ? pantalla.pie : estado === "error" ? pantalla.error.pie : pantalla.acierto.pie;
+  /* El acierto lleva su «¿Por qué?» escrito aparte; también cuando llega tras el segundo error, sin el «Así es:». */
+  const porques = pantalla.acierto.porque ? { [pantalla.acierto.texto]: pantalla.acierto.porque, [sinAsiEs(pantalla.acierto.texto)]: pantalla.acierto.porque } : {};
 
   return (
     <div className="t7a4" data-eleccion={pantalla.id} data-estado={estado}>
-      {pantalla.bloqueFijo && (
-        <div className="t7a4-fijo" data-fijo>
-          <p className="t7a4-h" data-texto>{pantalla.bloqueFijo.rotulo}</p>
-          {pantalla.bloqueFijo.filas.map((f) => (
-            <div key={f.rubro} className="t7a4-fijo-f" data-fijo-fila><span>{f.rubro}</span><span>{f.valor}</span></div>
-          ))}
-        </div>
-      )}
-      {(pantalla.parrafos ?? []).map((t) => <p key={t} className="t7a4-p" data-texto>{t}</p>)}
       <Calculos lista={pantalla.calculos} />
-      {pantalla.tabla && <TresMetodos tabla={pantalla.tabla} />}
+      {(pantalla.parrafos ?? []).map((t) => <p key={t} className="t7a4-p" data-texto><Plegable texto={t} /></p>)}
+      {pantalla.tabla && <TresMetodos tabla={pantalla.tabla} todas={estado === "acierto"} apuesta={apuesta} />}
       <p className="t7a4-p t7a4-preg" data-texto data-pregunta>{pantalla.pregunta}</p>
       <div className="t7a4-ops" role="group" aria-label={pantalla.pregunta}>
         {orden.map((o) => {
@@ -261,16 +354,16 @@ function Eleccion({ pantalla, onSeguir }) {
           );
         })}
       </div>
-      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => setConfirmada(elegida)} />}
+      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }} />}
       {estado === "error" && (
         <>
-          <Mensaje ok={false} textos={[opcion.devolucion]} refFoco={ref} />
+          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} porques={porques} refFoco={ref} />
           <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((a) => barajarDistinto(pantalla.opciones, a, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
         </>
       )}
       {estado === "acierto" && (
         <>
-          <Mensaje ok textos={[pantalla.acierto.texto]} refFoco={ref} />
+          <Mensaje ok textos={[pantalla.acierto.texto]} porques={porques} refFoco={ref} />
           <Calculos lista={pantalla.acierto.calculos} nueva />
           <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />
         </>
@@ -280,11 +373,15 @@ function Eleccion({ pantalla, onSeguir }) {
   );
 }
 
-/* ═══════════ LADOS: EL INVENTARIO DEL CIERRE (P4) ═══════════ */
+/* ═══════════ LADOS: EL INVENTARIO DEL CIERRE (P3) ═══════════ */
 
 function Lados({ pantalla, onSeguir }) {
   const [puesto, setPuesto] = useState({});
   const [veredicto, setVeredicto] = useState(null);
+  const [fallosLinea, setFallosLinea] = useState({});
+  const [otros, setOtros] = useState(false);
+  const idOtros = useId();
+  const cerrada = (l) => lineaCerrada(pantalla, l, fallosLinea[l.id]);
   const ref = useRef(null);
   const malas = veredicto?.malas ?? [];
   const estado = !veredicto ? "colocando" : malas.length ? "error" : "acierto";
@@ -293,62 +390,60 @@ function Lados({ pantalla, onSeguir }) {
   const pie = estado === "colocando" ? pantalla.pie : estado === "error" ? pantalla.error.pie : pantalla.acierto.pie;
 
   const tocar = (l, lado) => {
-    if (estado !== "colocando") return;
+    if (estado !== "colocando" || cerrada(l)) return;
     setPuesto((p) => ({ ...p, [l.id]: p[l.id] === lado ? undefined : lado }));
   };
-  const confirmar = () => setVeredicto({ malas: pantalla.lineas.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id) });
+  const confirmar = () => {
+    const malas = pantalla.lineas.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id);
+    setFallosLinea((f) => sumarFallosDeLineas(f, malas));
+    setVeredicto({ malas });
+  };
   const probarOtra = () => {
-    setPuesto((p) => { const n = { ...p }; for (const id of malas) delete n[id]; return n; });
+    setPuesto((p) => puestoTrasProbarOtra(p, malas, pantalla.lineas, cerrada));
     setVeredicto(null);
   };
 
   return (
     <div className="t7a4" data-lados={pantalla.id} data-estado={estado}>
-      {pantalla.parrafos.map((t) => <p key={t} className="t7a4-p" data-texto>{t}</p>)}
-      <Asientos lineas={pantalla.dados} nuevas={estado === "acierto" ? pantalla.acierto.suman : []} />
-      {estado !== "acierto" && (
-        <>
-          <p className="t7a4-p" data-texto data-consigna>{pantalla.consigna}</p>
-          <div className="t7a4-u" role="group" aria-label={pantalla.consigna}>
-            <div className="t7a4-dh" aria-hidden="true"><span className="t7a4-d">{INTERFAZ.debe}</span><span className="t7a4-hb">{INTERFAZ.haber}</span></div>
-            {pantalla.lineas.map((l) => {
-              const lado = puesto[l.id];
-              const mala = malas.includes(l.id);
-              const cas = (cual) => {
-                const llena = lado === cual;
-                let clase = "t7a4-cas";
-                let nombre;
-                if (llena) { clase += mala ? " t7a4-cas-error" : " t7a4-cas-llena"; nombre = `${nombreLado(cual)}, ${cifra(l.monto)}${mala ? ", incorrecto" : ""}`; }
-                else if (!lado) { clase += " t7a4-cas-objetivo"; nombre = `${nombreLado(cual)}, vacía, lista para recibir`; }
-                else nombre = `${nombreLado(cual)}, vacía`;
-                return (
-                  <button type="button" className={clase} data-linea={l.id} data-lado={cual} data-llena={llena ? "si" : "no"} aria-label={`${l.cuenta}, ${l.accion}: ${nombre}`} aria-pressed={llena} onClick={() => tocar(l, cual)}>
-                    {llena && mala && <span className="t7a4-marca"><X size={16} aria-hidden="true" /></span>}
-                    {llena ? cifra(l.monto) : ""}
-                  </button>
-                );
-              };
-              return (
-                <div key={l.id} className="t7a4-la" data-fila={l.id}>
-                  <span className="t7a4-cuenta">
-                    <span>{l.cuenta}</span>
-                    <span className="t7a4-accion">{l.accion}</span>
-                    {!lado && <span className="t7a4-monto" data-monto-suelto>{cifra(l.monto)}</span>}
-                  </span>
-                  <span className="t7a4-g2">{cas(DEBE)}{cas(HABER)}</span>
-                  {mala && estado === "error" && <Mensaje ok={false} textos={[l.devolucion]} clase="t7a4-err" refFoco={l.id === malas[0] ? ref : undefined} />}
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
+      {pantalla.parrafos.map((t) => <p key={t} className="t7a4-p" data-texto><Plegable texto={t} /></p>)}
+      <p className="t7a4-p" data-texto data-consigna>{pantalla.consigna}</p>
+      <div className="t7a4-u" role="group" aria-label={pantalla.consigna}>
+        <p className="t7a4-cuenta-h" data-texto data-cuenta>{pantalla.cuenta}</p>
+        <div className="t7a4-dh" aria-hidden="true"><span className="t7a4-d">{INTERFAZ.debe}</span><span className="t7a4-hb">{INTERFAZ.haber}</span></div>
+        {pantalla.lineas.map((l) => {
+          const lado = puesto[l.id];
+          const mala = malas.includes(l.id);
+          const cas = (cual) => {
+            const llena = lado === cual;
+            let clase = "t7a4-cas";
+            let nombre;
+            if (llena) { clase += mala ? " t7a4-cas-error" : " t7a4-cas-llena"; nombre = `${nombreLado(cual)}, ${cifra(l.monto)}${mala ? ", incorrecto" : ""}`; }
+            else if (!lado) { clase += " t7a4-cas-objetivo"; nombre = `${nombreLado(cual)}, vacía, lista para recibir`; }
+            else nombre = `${nombreLado(cual)}, vacía`;
+            return (
+              <button type="button" className={clase} data-linea={l.id} data-lado={cual} data-llena={llena ? "si" : "no"} aria-label={`${pantalla.cuenta}, ${l.texto}: ${nombre}`} aria-pressed={llena} aria-disabled={cerrada(l) || estado === "acierto" ? "true" : undefined} onClick={() => tocar(l, cual)}>
+                {llena && mala && <span className="t7a4-marca"><X size={16} aria-hidden="true" /></span>}
+                {llena ? cifra(l.monto) : ""}
+              </button>
+            );
+          };
+          return (
+            <div key={l.id} className="t7a4-la" data-fila={l.id}>
+              {/* El monto va con la línea hasta que se coloca; puesto, va en su casilla. */}
+              <span className="t7a4-cuenta" data-texto data-texto-linea>{l.texto}{!lado && ` · $${cifra(l.monto)}`}</span>
+              <span className="t7a4-g2">{cas(DEBE)}{cas(HABER)}</span>
+              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} porques={{ [l.devolucion]: l.porque }} clase="t7a4-err" refFoco={l.id === malas[0] ? ref : undefined} />}
+            </div>
+          );
+        })}
+      </div>
+      <Plegar nombre="otros" texto={pantalla.verOtros} abierto={otros} controla={idOtros} onClick={() => setOtros((x) => !x)} />
+      {otros && <Asientos lineas={pantalla.otros} id={idOtros} />}
       {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!completo} onClick={confirmar} />}
       {estado === "error" && <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={probarOtra} />}
       {estado === "acierto" && (
         <>
-          <Mensaje ok textos={[pantalla.acierto.texto]} refFoco={ref} />
-          <p className="t7a4-saldo t7a4-nueva" data-texto data-saldo>{pantalla.acierto.saldo}</p>
+          <Mensaje ok textos={[pantalla.acierto.texto]} porques={{ [pantalla.acierto.texto]: pantalla.acierto.porque }} refFoco={ref} />
           <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />
         </>
       )}
@@ -357,41 +452,53 @@ function Lados({ pantalla, onSeguir }) {
   );
 }
 
+/* ═══════════ LECTURA ═══════════ */
+
+function Lectura({ p, primera, onSeguir }) {
+  const [operaciones, setOperaciones] = useState(false);
+  const idOps = useId();
+  return (
+    <div className="t7a4">
+      {p.objetivo && <p className="t7a4-p" data-texto data-objetivo>{p.objetivo}</p>}
+      {p.cuentaEnUnaLinea && <figure className="t7a4-fig" data-figura><p className="t7a4-una" data-texto data-cuenta-una>{p.cuentaEnUnaLinea}</p></figure>}
+      {p.parrafos.map((t) => <p key={t} className="t7a4-p" data-texto><Plegable texto={t} /></p>)}
+      {p.totales && <figure className="t7a4-fig" data-figura data-totales>{p.totales.map((t) => <Total key={t} texto={t} />)}</figure>}
+      {p.operaciones && (
+        <>
+          <Plegar nombre="operaciones" texto={p.verOperaciones} abierto={operaciones} controla={idOps} onClick={() => setOperaciones((x) => !x)} />
+          {operaciones && <Ficha ficha={p.operaciones} id={idOps} />}
+        </>
+      )}
+      {p.siguiente && <p className="t7a4-nota" data-texto data-siguiente>{p.siguiente}</p>}
+      {p.boton && <Boton nombre={primera ? "empezar" : "seguir"} texto={p.boton} onClick={onSeguir} />}
+      <Pie texto={p.pie} />
+    </div>
+  );
+}
+
 /* ═══════════ LA PIEZA ═══════════ */
 
 export default function ElCierreEnPeriodico({ pieza = PIEZA_EL_CIERRE, rotulo }) {
   const [k, setK] = useState(0);
+  /* La apuesta de P1: estado de la pieza, en memoria; sin calificar y sin puntos. */
+  const [apuesta, setApuesta] = useState(null);
   const p = pieza.pantallas[k];
   const marco = useRef(null);
   const primera = useRef(true);
   const seguir = () => setK((x) => Math.min(x + 1, pieza.pantallas.length - 1));
   useEffect(() => { if (primera.current) { primera.current = false; return; } marco.current?.focus(); }, [k]);
+  const prediccion = pieza.pantallas.find((x) => x.tipo === "prediccion") ?? PIEZA_EL_CIERRE.pantallas.find((x) => x.tipo === "prediccion");
+  const columna = prediccion?.opciones.find((o) => o.id === apuesta)?.columna ?? null;
 
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <style>{CSS_AP4}</style>
-      <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
-        {p.tipo === "lectura" && (
-          <div className="t7a4">
-            {p.objetivo && <p className="t7a4-p" data-texto data-objetivo>{p.objetivo}</p>}
-            {p.parrafos.map((t) => <p key={t} className="t7a4-p" data-texto>{t}</p>)}
-            {p.ficha && <Ficha ficha={p.ficha} />}
-            {p.metodos?.map((m) => (
-              <div key={m.encabezado} className="t7a4-metodo" data-metodo>
-                <p className="t7a4-h" data-texto data-encabezado>{m.encabezado}</p>
-                <p className="t7a4-p" data-texto>{m.texto}</p>
-                <Calculos lista={m.calculos} />
-              </div>
-            ))}
-            <Calculos lista={p.calculos} />
-            {p.cierre && <p className="t7a4-p" data-texto>{p.cierre}</p>}
-            {p.siguiente && <p className="t7a4-nota" data-texto data-siguiente>{p.siguiente}</p>}
-            {p.boton && <Boton nombre={k === 0 ? "empezar" : "seguir"} texto={p.boton} onClick={seguir} />}
-            <Pie texto={p.pie} />
-          </div>
-        )}
-        {p.tipo === "eleccion" && <Eleccion key={p.id} pantalla={p} onSeguir={seguir} />}
+      <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} data-apuesta={apuesta ?? undefined} style={{ outline: "none" }}>
+        {p.tipo === "lectura" && <Lectura key={p.id} p={p} primera={k === 0} onSeguir={seguir} />}
+        {p.tipo === "prediccion" && <Prediccion key={p.id} pantalla={p} apuesta={apuesta} onApostar={setApuesta} onSeguir={seguir} />}
+        {p.tipo === "eleccion" && <Eleccion key={p.id} pantalla={p} onSeguir={seguir} apuesta={columna} />}
         {p.tipo === "lados" && <Lados key={p.id} pantalla={p} onSeguir={seguir} />}
+        {p.tipo === "tocar-filas" && <TocarFilas key={p.id} pantalla={p} onSeguir={seguir} />}
       </div>
     </Panel>
   );

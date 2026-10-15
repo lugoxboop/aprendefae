@@ -3,6 +3,8 @@ import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_LA_VENTA_EN_DOS_ASIENTOS, BOTON, INTERFAZ, PENDIENTE_DE_REVISION, DEBE, HABER, cifra } from "../../../../data/contabilidadT7_2_a2.js";
+import { Plegable } from "./plegable.jsx";
+import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDeLineas, puestoTrasProbarOtra } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -17,7 +19,7 @@ import { PIEZA_LA_VENTA_EN_DOS_ASIENTOS, BOTON, INTERFAZ, PENDIENTE_DE_REVISION,
  *                En P1, antes de la pregunta, el enunciado de E-1, su ficha y
  *                el repaso de IVA y retención; con el acierto, el asiento de
  *                la compra: Inventario de mercancías con su monto y las otras
- *                tres líneas sin él (●, X1), y las dos líneas que las explican
+ *                tres líneas sin él (casilla vacía, X1), y las dos líneas que las explican
  *   · lados      P3: las dos líneas del asiento del costo, barajadas al
  *                entrar, cada una con «Debe» | «Haber», como P3 de A1
  *   · resumen    la lista numerada, la línea «Siguiente» y el pie
@@ -76,8 +78,9 @@ export const CSS_T7B2 = `
 .t7b2-as-r > span:first-child { font-size: 14px; overflow-wrap: anywhere; min-width: 0; }
 .t7b2-as-r .t7b2-g2 > span { text-align: right; padding-inline: 9px; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 0; }
 .t7b2-sangria { padding-left: 24px; }
-/* el monto que no se muestra (X1): un punto gris en su lado; Watari decide la forma final */
-.t7b2-oculto { color: ${P.texto2}; }
+/* el monto que no se muestra (X1): la casilla discontinua vacía del patrón, la misma del kárdex (KardexT7_2.jsx, .t7kx-sin) */
+.t7b2-oculto { display: flex; align-items: center; height: 100%; }
+.t7b2-oculto i { display: block; width: 100%; height: 18px; border: 1px dashed ${P.borde}; border-radius: 4px; }
 /* P3: las dos líneas del asiento del costo */
 .t7b2-lineas { display: grid; gap: 10px; }
 .t7b2-la { display: grid; gap: 8px; min-width: 0; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; }
@@ -123,7 +126,7 @@ function Mensaje({ ok, textos, refFoco }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7b2-msg-cuerpo">
         <span className="t7b2-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
@@ -162,7 +165,7 @@ export function Asiento({ asiento, nuevo = false }) {
     if (l.monto === null) {
       return (
         <span className="t7b2-oculto" data-oculto data-revision="pendiente">
-          <span aria-hidden="true">●</span>
+          <i aria-hidden="true" />
           <span className="t7b2-sr">{PENDIENTE_DE_REVISION.montoOculto}</span>
         </span>
       );
@@ -197,6 +200,8 @@ function Eleccion({ pantalla, onSeguir }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
   const [confirmada, setConfirmada] = useState(null);
+  /* Cuántas veces se ha fallado esta pregunta: la escalera de ayuda (escaleraAyuda.js). */
+  const [fallos, setFallos] = useState(0);
   const ref = useRef(null);
   const opcion = confirmada ? pantalla.opciones.find((o) => o.id === confirmada) : null;
   const estado = !opcion ? "colocando" : opcion.correcta ? "acierto" : "error";
@@ -205,7 +210,7 @@ function Eleccion({ pantalla, onSeguir }) {
 
   return (
     <div className="t7b2" data-eleccion={pantalla.id} data-estado={estado}>
-      {pantalla.parrafos.map((t) => <p key={t} className="t7b2-p" data-texto>{t}</p>)}
+      {pantalla.parrafos.map((t) => <p key={t} className="t7b2-p" data-texto><Plegable texto={t} /></p>)}
       {pantalla.enunciado && <p className="t7b2-enunciado" data-texto data-enunciado>{pantalla.enunciado}</p>}
       {pantalla.ficha && <Ficha ficha={pantalla.ficha} />}
       {pantalla.repaso && <p className="t7b2-p" data-texto data-repaso>{pantalla.repaso}</p>}
@@ -220,10 +225,10 @@ function Eleccion({ pantalla, onSeguir }) {
           );
         })}
       </div>
-      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => setConfirmada(elegida)} />}
+      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }} />}
       {estado === "error" && (
         <>
-          <Mensaje ok={false} textos={[opcion.devolucion]} refFoco={ref} />
+          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} refFoco={ref} />
           <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((a) => barajarDistinto(pantalla.opciones, a, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
         </>
       )}
@@ -231,7 +236,7 @@ function Eleccion({ pantalla, onSeguir }) {
         <>
           <Mensaje ok textos={[pantalla.acierto.texto]} refFoco={ref} />
           {pantalla.acierto.asiento && <Asiento asiento={pantalla.acierto.asiento} nuevo />}
-          {(pantalla.acierto.despues ?? []).map((t) => <p key={t} className="t7b2-p t7b2-nueva" data-texto>{t}</p>)}
+          {(pantalla.acierto.despues ?? []).map((t) => <p key={t} className="t7b2-p t7b2-nueva" data-texto><Plegable texto={t} /></p>)}
           <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />
         </>
       )}
@@ -246,6 +251,8 @@ function Lados({ pantalla, onSeguir }) {
   const [orden] = useState(() => barajar(pantalla.lineas));
   const [puesto, setPuesto] = useState({});
   const [veredicto, setVeredicto] = useState(null);
+  const [fallosLinea, setFallosLinea] = useState({});
+  const cerrada = (l) => lineaCerrada(pantalla, l, fallosLinea[l.id]);
   const ref = useRef(null);
   const malas = veredicto?.malas ?? [];
   const estado = !veredicto ? "colocando" : malas.length ? "error" : "acierto";
@@ -254,12 +261,16 @@ function Lados({ pantalla, onSeguir }) {
   const pie = estado === "colocando" ? pantalla.pie : estado === "error" ? pantalla.error.pie : pantalla.acierto.pie;
 
   const tocar = (l, lado) => {
-    if (estado !== "colocando") return;
+    if (estado !== "colocando" || cerrada(l)) return;
     setPuesto((p) => ({ ...p, [l.id]: p[l.id] === lado ? undefined : lado }));
   };
-  const confirmar = () => setVeredicto({ malas: orden.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id) });
+  const confirmar = () => {
+    const malas = orden.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id);
+    setFallosLinea((f) => sumarFallosDeLineas(f, malas));
+    setVeredicto({ malas });
+  };
   const probarOtra = () => {
-    setPuesto((p) => { const n = { ...p }; for (const id of malas) delete n[id]; return n; });
+    setPuesto((p) => puestoTrasProbarOtra(p, malas, pantalla.lineas, cerrada));
     setVeredicto(null);
   };
 
@@ -280,7 +291,7 @@ function Lados({ pantalla, onSeguir }) {
                 data-linea={l.id}
                 data-lado={cual}
                 aria-pressed={esta}
-                aria-disabled={estado !== "colocando" ? "true" : undefined}
+                aria-disabled={estado !== "colocando" || cerrada(l) ? "true" : undefined}
                 aria-label={`${l.cuenta}, ${cifra(l.monto)}: ${nombreLado(cual)}${error ? ", incorrecto" : ""}`}
                 onClick={() => tocar(l, cual)}
               >
@@ -296,7 +307,7 @@ function Lados({ pantalla, onSeguir }) {
                 <span className="t7b2-monto" data-monto>{cifra(l.monto)}</span>
               </p>
               <span className="t7b2-g2">{boton(DEBE)}{boton(HABER)}</span>
-              {mala && estado === "error" && <Mensaje ok={false} textos={[l.devolucion]} refFoco={l.id === malas[0] ? ref : undefined} />}
+              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} refFoco={l.id === malas[0] ? ref : undefined} />}
             </div>
           );
         })}
@@ -335,7 +346,7 @@ export default function LaVentaEnDosAsientos({ pieza = PIEZA_LA_VENTA_EN_DOS_ASI
             {p.objetivo && <p className="t7b2-p" data-texto data-objetivo>{p.objetivo}</p>}
             {p.enunciado && <p className="t7b2-enunciado" data-texto data-enunciado>{p.enunciado}</p>}
             {p.ficha && <Ficha ficha={p.ficha} />}
-            {p.parrafos?.map((t) => <p key={t} className="t7b2-p" data-texto>{t}</p>)}
+            {p.parrafos?.map((t) => <p key={t} className="t7b2-p" data-texto><Plegable texto={t} /></p>)}
             {p.calculos && <Calculos lista={p.calculos} />}
             {p.asiento && <Asiento asiento={p.asiento} />}
             {p.estructura && (

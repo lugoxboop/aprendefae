@@ -28,6 +28,8 @@ export const CONFIG_T5_ACT1 = {
   alt: ALT_T5_ACT1,
   sortear: sortearT5Act1,
   evaluar: (ficha, m, intento) => evaluarT5Act1(ficha, { renta: m.n1, tipo: m.n2 }, intento),
+  /* El cajón correcto de la ficha, en el estante (calidad, hoja 3). */
+  destino: (ficha) => ({ n1: ficha.renta, n2: ficha.renta === FIJA ? ficha.tipo : null }),
   valor: valorDeItemT5Act1,
   puntuar: puntuarT5Act1,
   resumen: resumenT5Act1,

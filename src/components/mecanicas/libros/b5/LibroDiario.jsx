@@ -53,7 +53,7 @@ export function LibroDiario({ asientos, abierto, onAlternar, textos, agrupar = f
         display: "flex", alignItems: "center", gap: "10px", width: "100%", minHeight: "44px", padding: "0 12px", boxSizing: "border-box",
         background: "transparent", border: "none", borderRadius: "12px", cursor: "pointer", color: FAE.text, textAlign: "left",
       }}>
-        <span data-diario-cabecera style={{ flex: "1 1 auto", fontFamily: SORA, fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.16em", color: COLOR.apagado }}>{textos.cabecera}</span>
+        <span data-diario-cabecera style={{ flex: "1 1 auto", fontFamily: SORA, fontSize: "12px", fontWeight: 700, letterSpacing: "0.16em", color: COLOR.apagado }}>{textos.cabecera}</span>
         <span data-diario-cuenta style={{ fontFamily: INTER, fontSize: "12px", color: COLOR.apagado }}>{textos.cuenta(asientos.length)}</span>
         <span data-diario-boton style={{ fontFamily: SORA, fontSize: "12px", fontWeight: 600, color: FAE.text, textDecoration: "underline", textUnderlineOffset: "3px" }}>
           {abierto ? textos.ocultar : textos.ver}
@@ -64,7 +64,7 @@ export function LibroDiario({ asientos, abierto, onAlternar, textos, agrupar = f
           <>
             <div style={{ display: "flex", gap: "8px", paddingBottom: "4px", borderBottom: `1px solid ${FILETE}` }}>
               {[[DEBE, textos.debe], [HABER, textos.haber]].map(([lado, rot]) => (
-                <span key={lado} data-diario-columna={lado} style={{ flex: "1 1 0", textAlign: "right", fontFamily: SORA, fontSize: "9px", fontWeight: 700, letterSpacing: "0.1em", color: TONO_ROTULO[lado] }}>{rot}</span>
+                <span key={lado} data-diario-columna={lado} style={{ flex: "1 1 0", textAlign: "right", fontFamily: SORA, fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", color: TONO_ROTULO[lado] }}>{rot}</span>
               ))}
             </div>
             {asientos.map((a, k) => (
@@ -84,18 +84,32 @@ export function LibroDiario({ asientos, abierto, onAlternar, textos, agrupar = f
   );
 }
 
-/* La mesa con el diario encima: `inicial` es el asiento del ejemplo; cada parte comprobada suma la suya. */
-export function MesaConDiario({ Juego, inicial, textos, agrupar = false, ...props }) {
+/*
+ * El diario de una mesa (hallazgo 9 de Shoko, decidido por Mai): no ocupa
+ * sitio hasta que se confirma el primer asiento; entonces aparece ABIERTO, ya
+ * con ese asiento escrito. Después se abre y se cierra como siempre.
+ */
+export function useDiario(inicial) {
   const [asientos, setAsientos] = useState(() => [inicial]);
   const [abierto, setAbierto] = useState(false);
-  const sumar = useCallback((parte) => setAsientos((xs) => (xs.some((x) => x.id === parte.id) ? xs : [...xs, parte])), []);
-  const reiniciar = useCallback(() => setAsientos([inicial]), [inicial]);
+  const [visible, setVisible] = useState(false);
+  const sumar = useCallback((parte) => {
+    setAsientos((xs) => (xs.some((x) => x.id === parte.id) ? xs : [...xs, parte]));
+    setVisible((v) => { if (!v) setAbierto(true); return true; });
+  }, []);
+  const reiniciar = useCallback(() => { setAsientos([inicial]); setVisible(false); setAbierto(false); }, [inicial]);
+  return { asientos, abierto, visible, alternar: () => setAbierto((x) => !x), sumar, reiniciar };
+}
+
+/* La mesa con el diario encima: `inicial` es el asiento del ejemplo; cada parte comprobada suma la suya. */
+export function MesaConDiario({ Juego, inicial, textos, agrupar = false, ...props }) {
+  const d = useDiario(inicial);
   return (
     <Juego
       {...props}
-      encima={<LibroDiario asientos={asientos} abierto={abierto} onAlternar={() => setAbierto((x) => !x)} textos={textos} agrupar={agrupar} />}
-      onParteComprobada={sumar}
-      onReiniciar={reiniciar}
+      encima={d.visible ? <LibroDiario asientos={d.asientos} abierto={d.abierto} onAlternar={d.alternar} textos={textos} agrupar={agrupar} /> : null}
+      onParteComprobada={d.sumar}
+      onReiniciar={d.reiniciar}
     />
   );
 }

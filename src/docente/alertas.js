@@ -1,4 +1,5 @@
 import { SUBJECTS, HACER, actividadesDeTipo, desafioDe } from "../data/subjects.js";
+import { nombreDeRetirada } from "../data/retiradas.js";
 
 /*
  * Alertas del panel docente.
@@ -129,8 +130,16 @@ export function avancePorTema(subjectId, actividadesHechas = []) {
     });
   }
 
-  /* Actividades registradas que ya no existen en el catálogo: no se pierden. */
-  for (const id of hechas) if (!mapa.has(id)) porTema.set(`?${id}`, { id, titulo: id, total: 1, hechas: 1, huerfana: true });
+  /*
+   * Actividades registradas que ya no existen en el catálogo: no se pierden.
+   *
+   * Y CON SU NOMBRE, si se conoce. Antes el título era el id crudo, así que
+   * al profesor le salía `t7-2-debe-o-haber` en vez de «¿Debe o haber?» —el
+   * trabajo del estudiante estaba, pero ilegible—. `nombreDeRetirada`
+   * devuelve el id cuando no sabe, que es exactamente lo que se veía antes:
+   * se gana nombre donde lo hay y no se pierde nada donde no.
+   */
+  for (const id of hechas) if (!mapa.has(id)) porTema.set(`?${id}`, { id, titulo: nombreDeRetirada(id), total: 1, hechas: 1, huerfana: true });
 
   return [...porTema.values()];
 }

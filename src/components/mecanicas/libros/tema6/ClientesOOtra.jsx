@@ -28,6 +28,8 @@ export const CONFIG_T6_ACT1 = {
   alt: ALT_T6_ACT1,
   sortear: sortearT6Act1,
   evaluar: (ficha, m, intento) => evaluarT6Act1(ficha, { cuenta: m.n1, lado: m.n2 }, intento),
+  /* El cajón correcto de la ficha, en el estante (calidad, hoja 3). */
+  destino: (ficha) => ({ n1: ficha.cuenta, n2: ficha.cuenta === CLIENTES ? ficha.lado : null }),
   valor: valorDeItemT6Act1,
   puntuar: puntuarT6Act1,
   resumen: resumenT6Act1,

@@ -6,7 +6,8 @@ import PreguntasConAsientoT5 from "./PreguntasConAsientoT5.jsx";
  * ═══════════════════════════════════════════════════════════════════════════
  * T5 · N4 · EL INTERÉS DEL PERIODO (Célula C)
  *
- * Cuatro elecciones y el asiento del cobro (PreguntasConAsientoT5.jsx). Los
+ * Dos elecciones, dos casillas de cifra y el asiento del cobro, con «Arma la
+ * línea» (lote 3), en PreguntasConAsientoT5.jsx. Los
  * textos y las cifras, en data/contabilidadT5_n4.js; la lógica, en
  * contabilidad/t5N4.js.
  * ═══════════════════════════════════════════════════════════════════════════

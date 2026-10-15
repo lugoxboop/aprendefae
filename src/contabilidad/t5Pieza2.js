@@ -1,4 +1,5 @@
-import { PASOS_T5_A2, CIERRE_T5_A2 } from "../data/contabilidadT5Pieza2.js";
+import { PASOS_T5_A2, CIERRE_T5_A2, FUSION_T5_A2 } from "../data/contabilidadT5Pieza2.js";
+import { fusionar } from "./fusionar.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -71,3 +72,6 @@ export const pasoT5A2 = (paso) => (paso >= CIERRE ? CIERRE_T5_A2 : PASOS_T5_A2[p
 
 /** «Reproducir»: 3 000 ms + 450 ms por palabra, como LoQueYaPaso. */
 export const duracionPasoT5A2 = (paso) => 3000 + 450 * pasoT5A2(paso).texto.trim().split(/\s+/).length;
+
+/* La capa 2 que se ve: los 21 pasos de antes contados en 14 (hoja 7 de Mai). */
+export const T5_A2_JUNTO = fusionar({ ...FUSION_T5_A2, estadoPaso: estadoPasoT5A2, paso: pasoT5A2, cierreViejo: CIERRE });
