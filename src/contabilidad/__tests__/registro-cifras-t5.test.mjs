@@ -87,8 +87,8 @@ test("★★★ cada «calculo» da su «cifra»", () => {
 
 test("★★★ cada cifra de una pieza publicada está en sus datos, como valor numérico", async () => {
   const publicadas = PIEZAS.filter((id) => TEMA.actividades.some((a) => a.id === id));
-  /* N4 entra con este registro; N5 entra después, y desde entonces se comprueba igual. */
-  assert.ok(publicadas.includes("t5-el-interes-del-periodo"));
+  /* N4 entró con este registro; N5, después. Desde N5, las dos se comprueban. */
+  assert.deepEqual(publicadas, PIEZAS);
   const faltan = [];
   for (const id of publicadas) {
     const archivos = archivosDe(id);
