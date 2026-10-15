@@ -19,6 +19,15 @@ import { Panel } from "./mecanicas/salaDeControl/marco.jsx";
 import { barajar, barajarDistinto } from "../utils/barajar.js";
 import { BOTON, INTERFAZ, DEBE, HABER, PIEZA_LA_CAJA, FIGURA_CAJON, ESTADOS_CAJON, SUS_SERVICIOS } from "../data/contabilidadT4.js";
 import { PIEZA_EL_ACTIVO_CORRIENTE, FIGURA_RAYA, ESTADOS_RAYA } from "../data/contabilidadT4A0.js";
+import {
+  H1, DESTINOS_H1, BOTON_H1, CIERRE_H1, resumenH1, lectorErrorH1,
+  sortearH1, evaluarH1, puntuarH1, nombreDeDestinoH1,
+} from "../data/contabilidadT4H1.js";
+import { Opcion, Opciones, Pulsos, Cierre } from "./mecanicas/corazon/juego.jsx";
+import { TEXTO_CIERRE } from "./mecanicas/bloques/marcos.jsx";
+import { Responder, useTanda } from "./mecanicas/libros/piezas.jsx";
+import { SOLO_LECTOR } from "./mecanicas/libros/verbos.jsx";
+import { Encabezado } from "./mecanicas/libros/tema1/encabezado.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -48,7 +57,9 @@ export const PIEZAS_T4 = [
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
-export const JUEGOS_T4 = [];
+export const JUEGOS_T4 = [
+  { id: H1.id, Mecanica: EntraOSaleDeCaja, titulo: H1.nombre },
+];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
 const rotuloDeBloque = (actividadId) => {
@@ -552,5 +563,154 @@ export function RayaDelAno({ estado }) {
       </div>
       <figcaption id={idAlt} className="t4f-sr">{F.alt[estado]}</figcaption>
     </figure>
+  );
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · HACER 1 · ¿ENTRA O SALE DE CAJA? (Célula D)
+ *
+ * Construida desde la especificación de Hanayama (celula-d/hanayama-h1-
+ * pantalla-v1.md con la v1.1 encima) y el paquete vigente de Katsumi, no
+ * desde el prototipo. La forma de T7-2 H1 «¿Debe o haber?», con tres
+ * destinos apilados a todo el ancho en vez de dos, y con las piezas
+ * compartidas sin cambiarlas (Encabezado, Pulsos, Opciones, Opcion,
+ * Responder, Cierre).
+ *
+ *   · la tarjeta trae SOLO el hecho: sin pie (v1.1, PH1-1). La página va en la
+ *     devolución, debajo de su texto, y H1-8 no la lleva
+ *   · los tres destinos, siempre en el mismo orden; lo que se baraja son los
+ *     hechos
+ *   · UN SOLO TOQUE por tarjeta: al tocar se bloquean los tres; si falló, el
+ *     correcto se enseña («era esta»). Coral solo en el error
+ *   · mientras se pregunta, nada de la respuesta está en el DOM (PH8-2): ni la
+ *     devolución ni la página existen hasta tocar
+ *
+ * Al terminar: onCompletar(pct, ms, detalle). Exploratoria: el motor paga los
+ * 10 FP al terminar; el porcentaje va para el panel docente. En modo demo
+ * («Así se juega») no reporta nada.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+const APAGADO_H1 = "rgba(248,249,250,0.6)";
+const CSS_T4H1 = `
+@keyframes fae-t4h1-fundido { from { opacity: 0; } to { opacity: 1; } }
+.fae-t4h1-entra { animation: fae-t4h1-fundido 150ms ease-out both; }
+@media (prefers-reduced-motion: reduce) { .fae-t4h1-entra { animation: none !important; } }
+`;
+
+export function EntraOSaleDeCaja({ Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null }) {
+  const t = useTanda(() => items ?? sortearH1(barajar));
+  const [elegido, setElegido] = useState(null);
+  const [r, setR] = useState(null);
+  const [bien, setBien] = useState(0);
+  const zonaBoton = useRef(null);
+  const tarjeta = useRef(null);
+
+  const item = t.items[t.i];
+  const cuantos = t.items.length;
+
+  useEffect(() => {
+    if (t.terminado && !modoDemo) onCompletar?.(puntuarH1(bien, cuantos), Date.now() - t.inicio.current, t.detalle.current);
+  }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (r && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [r]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const responder = (id) => {
+    if (r) return;
+    const nuevo = evaluarH1(item, id);
+    /* En el error se guarda el destino elegido: eso le dice algo al docente. */
+    t.anotar(item.id, nuevo.ok, id);
+    if (nuevo.ok) setBien((n) => n + 1);
+    setElegido(id);
+    setR(nuevo);
+  };
+
+  const avanzar = () => {
+    setElegido(null); setR(null);
+    if (t.i + 1 < cuantos) { t.setI(t.i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); }
+    else t.setTerminado(true);
+  };
+
+  const reiniciar = () => { t.reiniciar(); setElegido(null); setR(null); setBien(0); };
+
+  if (t.terminado) {
+    return (
+      <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+        <Cierre pct={Math.round(puntuarH1(bien, cuantos))} onReiniciar={reiniciar} textoReiniciar={BOTON_H1.otraVez}>
+          <p data-resumen style={TEXTO_CIERRE}>{resumenH1(bien, cuantos)}</p>
+          <p data-cierre style={{ ...TEXTO_CIERRE, marginTop: "8px" }}>{CIERRE_H1.texto}</p>
+          <p data-pie-cierre style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{CIERRE_H1.pie}</p>
+        </Cierre>
+      </Marco>
+    );
+  }
+
+  const estadoDe = (id) => {
+    if (!r) return null;
+    if (id === elegido) return r.ok ? "correcta" : "incorrecta";
+    if (id === r.correcta) return "revelada";
+    return null;
+  };
+
+  return (
+    <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+      <style>{CSS_T4H1}</style>
+      {/*
+        La raíz del juego lleva `data-t4-h1`; la de la demo de «Así se juega»,
+        `data-t4-h1-demo`. Así, en la página del juego, `[data-t4-h1]` encuentra
+        exactamente una: la partida, nunca el ejemplo (Shibukawa, juego de H1).
+      */}
+      <div {...(modoDemo ? { "data-t4-h1-demo": "" } : { "data-t4-h1": "" })}>
+        <Encabezado consigna={H1.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
+        <div style={{ marginBottom: "12px" }}>
+          <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Hecho" />
+        </div>
+
+        {/* El hecho, y nada más: la página va en la devolución (Hanayama v1.1, PH1-1). */}
+        <div key={item.id} className="fae-t4h1-entra" data-tarjeta-hecho={item.id} style={{
+          margin: "0 0 12px", padding: "11px 13px", borderRadius: "11px",
+          background: "rgba(184,196,212,0.12)", borderLeft: "3px solid #B8C4D4",
+        }}>
+          <p ref={tarjeta} tabIndex={-1} data-hecho style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, outline: "none" }}>
+            {item.texto}
+          </p>
+        </div>
+
+        <div role="group" aria-label={H1.nombre}>
+          <Opciones columnas="minmax(0, 1fr)">
+            {DESTINOS_H1.map((d) => (
+              <span key={d.id} data-opcion={d.id} style={{ display: "contents" }}>
+                <Opcion ancho deshabilitada={Boolean(r)} estado={estadoDe(d.id)} onClick={() => responder(d.id)}>
+                  {d.nombre}
+                </Opcion>
+              </span>
+            ))}
+          </Opciones>
+        </div>
+
+        {/* La devolución: región viva. Vacía mientras se pregunta: ni su texto ni su página están en el DOM. */}
+        <div data-retro aria-live="polite" aria-atomic="true">
+          {r && (
+            <div className="fae-t4h1-entra" data-panel={r.ok ? "acierto" : "error"} style={{
+              marginTop: "12px", padding: "11px 13px", borderRadius: "11px",
+              background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
+              borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
+            }}>
+              {!r.ok && <span style={SOLO_LECTOR}>{lectorErrorH1(nombreDeDestinoH1(r.correcta))} </span>}
+              {r.textos.map((x) => (
+                <p key={x} data-texto-retro style={{ margin: "0 0 4px", fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, fontWeight: x === r.textos[0] && r.ok ? 700 : 400 }}>{x}</p>
+              ))}
+              {r.pagina && <p data-pagina style={{ margin: "4px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{r.pagina}</p>}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {r && !modoDemo && (
+        <div ref={zonaBoton}>
+          <Responder onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H1.verResumen : BOTON_H1.siguiente}</Responder>
+        </div>
+      )}
+    </Marco>
   );
 }
