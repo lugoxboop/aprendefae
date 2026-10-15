@@ -3,7 +3,8 @@
  * TEMA 6 · HACER 7 — «¿Qué método y cuándo?» (Célula B, b5-t6-a7).
  *
  * Todo el texto que lee el estudiante vive en ESTE archivo, guardado entero
- * en orquestador/conocimiento/paquetes/b5-t6-act7.md (versión de Futaba).
+ * en orquestador/conocimiento/paquetes/b5-t6-act7.md: la versión de Futaba,
+ * con las líneas que cambiaron tras la auditoría de Shoko (sección 2).
  * Las cifras de legibilidad entre paréntesis no se copian.
  *
  * La clasificación de dos niveles de la célula (la de b5-t6-a1): primer nivel,
@@ -75,8 +76,9 @@ export const FICHAS_T6_ACT7 = [
   },
   {
     id: "mc-04", metodo: DIRECTA, momento: null,
-    texto: "El libro lo llama muy sencillo, pero con una desventaja.",
-    acierto: "✅ Sí. Así describe el libro la anulación directa.",
+    /* Auditoría de Shoko: de la capa 3 de T6 · A2. mc-03 prueba la desventaja; mc-04, cuándo se anota el gasto. */
+    texto: "No se anota nada por adelantado.",
+    acierto: "✅ Sí. La anulación directa no anota nada antes: el gasto aparece al castigar.",
   },
   {
     id: "mc-05", metodo: PROVISIONES, momento: CIERRE,

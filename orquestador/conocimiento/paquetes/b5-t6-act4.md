@@ -80,3 +80,16 @@ Error	La devolución del tipo que corresponda; se marca la cuenta correcta
 Acierto	La devolución de acierto del hecho
 Reintento y segundo fallo	N/A: un intento por hecho
 Cierre	El texto de cierre y el porcentaje (aciertos ÷ 10 × 100)
+
+## (2) Futaba · líneas que cambian, con PASA de Shoko (pegadas tal cual)
+
+Mandan sobre (1). Decisión de Sakuta: se aplican tal cual, por actividad e id. Del texto pegado se quitaron las líneas de la interfaz del chat.
+
+b5-t6-a4 · «¿Qué se debita?»
+Id	Campo	Texto nuevo (literal)	Estim.	Motivo
+qd-06	Hecho	En marzo, El Torito castiga la deuda de Pablo Moncayo. Ya tiene una provisión.	80	Obligatoria: ya no nombra la cuenta que hay que elegir.
+qd-03	Hecho	Un cliente cancela con plata la factura que tenía pendiente.	72	Ya no copia la ficha 8 de b5-t6-a1.
+qd-04	Hecho	Un cliente pagó con un cheque, pero el banco lo devolvió.	94	Ya no copia la ficha 7 de b5-t6-a1.
+qd-09	Hecho	Pablo Moncayo vuelve y paga. Primero se revive su deuda.	77	Usa la forma publicada, «vuelve y paga».
+
+Los aciertos y los errores de esos cuatro hechos no cambian.

@@ -65,11 +65,19 @@ const devolucion = (caja) => {
 /* ═══════════ EL PAQUETE ═══════════ */
 
 const GUIA = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-act4.md", import.meta.url), "utf8");
-const FUTABA = GUIA.slice(GUIA.indexOf("## (1) Futaba"));
+const FUTABA = GUIA.slice(GUIA.indexOf("## (1) Futaba"), GUIA.indexOf("## (2) Futaba"));
+/* La sección (2): las líneas que Shoko pasó y Futaba aplicó. Mandan sobre (1), por id y campo. */
+const SECCION_2 = GUIA.slice(GUIA.indexOf("## (2) Futaba"));
+const cambio = (id, campo) => SECCION_2.split("\n").map((l) => l.split("\t")).find((c) => c[0] === id && c[1] === campo)?.[2];
 const filas = FUTABA.split("\n").map((l) => l.split("\t"));
 const fila = (primera) => filas.find((c) => c[0] === primera);
 const filaError = (tipo) => filas.find((c) => c[0] === tipo || c[0].startsWith(`${tipo} ·`));
 const NOMBRE_CORTO = { [D.A_CLIENTES]: "Clientes", [D.A_CAJA]: "Caja", [D.A_GASTO]: "Gasto", [D.A_PROVISION]: "Provisión" };
+
+test("auditoría: qd-03, qd-04, qd-06 y qd-09 llevan el hecho de la sección (2); qd-06 ya no nombra la provisión como cuenta", () => {
+  for (const id of ["qd-03", "qd-04", "qd-06", "qd-09"]) assert.equal(hecho(id).texto, cambio(id, "Hecho"), id);
+  assert.doesNotMatch(hecho("qd-06").texto, /Provisión para deudas/);
+});
 
 test("guarda: el paquete trae los 10 hechos y los 9 errores, y una fila inventada no aparece", () => {
   for (const id of IDS) assert.ok(fila(id), id);
@@ -93,7 +101,8 @@ test("★★★ los textos fijos son los del paquete: consigna, nota, regla, opc
 test("★★★ los 10 hechos: el texto, la correcta y el acierto son los del paquete; 3 de Clientes, 3 de Caja, 2 de Gasto y 2 de Provisión", () => {
   assert.deepEqual(D.HECHOS_T6_ACT4.map((x) => x.id), IDS);
   for (const id of IDS) {
-    const [, texto, correcta, acierto] = fila(id);
+    const [, original, correcta, acierto] = fila(id);
+    const texto = cambio(id, "Hecho") ?? original;
     const x = hecho(id);
     assert.deepEqual([x.texto, NOMBRE_CORTO[x.respuesta], x.acierto], [texto, correcta, acierto], id);
   }

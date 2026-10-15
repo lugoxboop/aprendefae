@@ -5,7 +5,8 @@ import { GASTO, PROVISION, CLIENTES, CAJA } from "./contabilidadT6Act2.js";
  * TEMA 6 · HACER 4 — «¿Qué se debita?» (Célula B, b5-t6-a4).
  *
  * Todo el texto que lee el estudiante vive en ESTE archivo, guardado entero
- * en orquestador/conocimiento/paquetes/b5-t6-act4.md (versión de Futaba).
+ * en orquestador/conocimiento/paquetes/b5-t6-act4.md: la versión de Futaba,
+ * con las líneas que cambiaron tras la auditoría de Shoko (sección 2).
  * Los nombres de cuenta son los publicados (contabilidadT6Act2.js). Sin
  * cifras.
  *
@@ -95,12 +96,12 @@ export const HECHOS_T6_ACT4 = [
   },
   {
     id: "qd-03", respuesta: A_CAJA, errores: COBRO,
-    texto: "Un cliente paga lo que debía.",
+    texto: "Un cliente cancela con plata la factura que tenía pendiente.",
     acierto: "Caja. La plata entra a Caja; lo que deben los clientes baja y se acredita.",
   },
   {
     id: "qd-04", respuesta: A_CLIENTES, errores: VENTA,
-    texto: "El banco devuelve el cheque con el que un cliente había pagado.",
+    texto: "Un cliente pagó con un cheque, pero el banco lo devolvió.",
     acierto: "Cuentas por cobrar – clientes. Ese pago no llegó a la empresa, así que la deuda vuelve.",
   },
   {
@@ -110,7 +111,7 @@ export const HECHOS_T6_ACT4 = [
   },
   {
     id: "qd-06", respuesta: A_PROVISION, errores: CONTRA_PROVISION,
-    texto: "En marzo, El Torito castiga la deuda de Pablo Moncayo contra la provisión.",
+    texto: "En marzo, El Torito castiga la deuda de Pablo Moncayo. Ya tiene una provisión.",
     acierto: "Provisión para deudas incobrables. El gasto ya se anotó en diciembre; al castigar, la provisión baja.",
   },
   {
@@ -125,7 +126,7 @@ export const HECHOS_T6_ACT4 = [
   },
   {
     id: "qd-09", respuesta: A_CLIENTES, errores: REVIVIR,
-    texto: "Pablo Moncayo vuelve a pagar. Primero se revive su deuda.",
+    texto: "Pablo Moncayo vuelve y paga. Primero se revive su deuda.",
     acierto: "Cuentas por cobrar – clientes. Revivir es reversar el castigo: la deuda vuelve a subir.",
   },
   {
