@@ -5,6 +5,7 @@ import { TITULOS, ROTULOS_ESCENA, PASOS_CAPA_2, CIERRE_CAPA_2, PIES_CAPA_2, PIE_
 import { estadoPaso, PASOS, CIERRE, duracionPaso } from "../../../../contabilidad/efectivoDeSobra.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "./EstilosT5.jsx";
+import { aparicion } from "../tema6/MaquinaPegada.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -57,16 +58,7 @@ function transicion(reducido) {
   ].join(", ");
 }
 
-/* Lo que aún no ha aparecido ocupa su sitio, invisible: la escena no salta. */
-function aparicion(e, reducido) {
-  return {
-    visibility: e.visible ? "visible" : "hidden",
-    opacity: e.visible ? 1 : 0,
-    transform: e.visible || reducido ? "none" : "translateY(4px)",
-    transition: transicion(reducido),
-  };
-}
-
+/* Lo que aún no ha aparecido ocupa su sitio, como silueta (hoja 5 de Mai): la de MaquinaPegada. */
 /* Borde y relleno de una caja según su estado. `fino` es el grosor en reposo. */
 function caja(e, fino, relleno, reducido) {
   const [v, h] = relleno;
@@ -265,7 +257,7 @@ export default function EfectivoDeSobra() {
               borderRadius: "999px", padding: "2px 10px", border: `2px solid ${NODO}`, background: FONDO_SOLIDO,
               fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: 1.35, color: TEXTO,
               ...aparicion(el.venta, reducido),
-              transform: `translate(-50%, 50%)${el.venta.visible || reducido ? "" : " translateY(4px)"}`,
+              transform: "translate(-50%, 50%)",
             }}
           >
             {ROTULOS_ESCENA.venta}
