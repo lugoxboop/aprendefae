@@ -64,6 +64,8 @@ export const VISTAS = new Set([
   "inventarios-periodico",
   "inventarios-permanente",
   "inventarios-descuentos-nic2",
+  /* El repaso del capítulo 5 (Célula E): siempre el último tema de Contabilidad. */
+  "repaso-capitulo-5",
   /* Transversales: no son un tema, pero se entra igual desde el índice. */
   "repaso-diario",
   /*
