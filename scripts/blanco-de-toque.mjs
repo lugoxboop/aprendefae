@@ -26,6 +26,22 @@
  * `<figure>` es ilustración y se salta, diciendo cuántos se saltó —callarlo
  * sería esconder lo que no miró.
  *
+ * SE MIDE CON LA VENTANA ALTA, Y NO ES UN DETALLE. `elementFromPoint` solo
+ * responde sobre lo que está en pantalla: un control bajo el pliegue devuelve
+ * `null` y sale informado como defecto. La primera versión declaró 37
+ * defectos en el índice de Contabilidad, casi todos tarjetas de 239×139 px
+ * perfectamente sanas que estaban más abajo.
+ *
+ * La salida NO es ir desplazando y medir de a uno: al hacer eso, las
+ * coordenadas de unos y otros quedan tomadas en momentos distintos y la
+ * comprobación de solapes compara posiciones que nunca existieron a la vez
+ * —da pares a «0×0 px entre centros» entre elementos que están lejos—.
+ *
+ * La salida es una ventana de 320 de ancho y muy alta: el ancho es lo que
+ * decide el diseño a móvil, y el alto solo tiene que alcanzar para que todo
+ * se pueda tocar sin desplazar. Si aun así algo queda fuera, se cuenta
+ * aparte en vez de darse por malo.
+ *
  * Y SEPARA DOS FALLOS QUE NO SON EL MISMO: «pequeño» es que el blanco no
  * llega a 44 px; «tapado» es que otro elemento recibe el toque. El segundo
  * puede ser un defecto grave (un control inalcanzable) o un panel legítimo
@@ -40,7 +56,7 @@ const BASE = process.env.BASE ?? "http://127.0.0.1:8099";
 const pasos = process.argv.slice(2);
 
 const navegador = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium" });
-const pagina = await navegador.newPage({ viewport: { width: 320, height: 820 } });
+const pagina = await navegador.newPage({ viewport: { width: 320, height: 4000 } });
 await pagina.goto(`${BASE}/`, { waitUntil: "networkidle" });
 /*
  * Los pasos no siempre son botones: en la lista de Hacer cada actividad es un
@@ -69,6 +85,13 @@ const informe = await pagina.evaluate((MIN) => {
       return { el, nombre: el.getAttribute("aria-label") || (el.textContent || "").trim().slice(0, 28) || "(sin nombre)",
                cx: c.left + c.width / 2, cy: c.top + c.height / 2, w: c.width, h: c.height };
     }).filter(Boolean);
+
+  /* Lo que ni con la ventana alta cabe entero no se mide: se cuenta aparte. */
+  const r0 = MIN / 2 - 1;
+  const medibles = controles.filter((x) => x.cy - r0 > 0 && x.cy + r0 < window.innerHeight && x.cx - r0 > 0 && x.cx + r0 < window.innerWidth);
+  const fueraDePantalla = controles.length - medibles.length;
+  controles.length = 0;
+  controles.push(...medibles);
 
   const r = MIN / 2 - 1;
   const medidos = [];
@@ -114,7 +137,7 @@ const informe = await pagina.evaluate((MIN) => {
       if (dx < MIN && dy < MIN) solapes.push(`«${controles[i].nombre}» ↔ «${controles[j].nombre}» (${Math.round(dx)}×${Math.round(dy)} px entre centros)`);
     }
   }
-  return { medidos, solapes, ilustraciones };
+  return { medidos, solapes, ilustraciones, fueraDePantalla };
 }, MINIMO);
 
 let malos = 0;
@@ -123,6 +146,9 @@ for (const m of informe.medidos) {
   if (!ok) malos++;
   const causa = m.causa ? `  ← ${m.causa}` : "";
   console.log(`${ok ? "✅" : "⚠️ "} dibujo ${m.dibujo.padEnd(8)} toque ${m.aciertos}/4 bordes   «${m.nombre}»${causa}`);
+}
+if (informe.fueraDePantalla > 0) {
+  console.log(`\n(${informe.fueraDePantalla} control(es) no se midieron: no caben enteros con su margen de ${MINIMO} px ni en una ventana de 320×4000. No se dan por buenos ni por malos.)`);
 }
 if (informe.ilustraciones > 0) {
   console.log(`\n(${informe.ilustraciones} botón/es de dentro de un <figure> no se midieron: son dibujo de un panel de ejemplo, no controles.)`);
