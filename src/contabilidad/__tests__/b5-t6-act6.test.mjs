@@ -196,16 +196,73 @@ test("★★★ el rótulo fijo se ve en pantalla en cada una de las ocho casill
     const rotulo = caja.querySelector("[data-rotulo-simulado]");
     assert.ok(rotulo, `casilla ${k + 1}: sin rótulo`);
     assert.equal(rotulo.textContent, "Escenario simulado · no es la tabla del libro");
-    /* La regla: la fila 1, pie del escenario; las filas 2 a 4, un solo pie de la norma debajo de su grupo. */
-    assert.deepEqual([...caja.querySelectorAll("[data-regla] [data-tipo-pie]")].map((p) => p.dataset.tipoPie), ["escenario", "norma"]);
+    /*
+     * Hoja de Mai (§3.1): el rótulo va al pie de la tabla, entre ella y la
+     * casilla; debajo, un solo pie, el de la norma (las tres filas con
+     * porcentaje). La fila 1 se cubre con el pie del escenario de la nota.
+     */
+    const regla = caja.querySelector("[data-regla]");
+    const tabla = regla.querySelector("table");
+    const sigue = (a, b) => Boolean(a.compareDocumentPosition(b) & 4);
+    assert.ok(regla.contains(rotulo) && sigue(tabla, rotulo), `casilla ${k + 1}: el rótulo, al pie de la tabla`);
+    assert.ok(sigue(rotulo, caja.querySelector("[data-hecho]")), `casilla ${k + 1}: el rótulo, antes de la casilla`);
+    assert.deepEqual([...regla.querySelectorAll("[data-tipo-pie]")].map((p) => p.dataset.tipoPie), ["norma"]);
+    assert.ok(sigue(rotulo, regla.querySelector("[data-tipo-pie]")), "el pie del porcentaje, bajo el rótulo");
     assert.equal(caja.querySelector("[data-nota-regla] [data-tipo-pie]").dataset.tipoPie, "escenario");
+    /* La parte 2: los montos dentro de la tabla de la regla, una sola tabla, y el total abajo. */
     const datos = caja.querySelector("[data-datos-parte]");
-    assert.equal(Boolean(datos), k >= 3, `casilla ${k + 1}: la tabla de datos solo en la parte 2`);
-    if (datos) assert.equal(datos.querySelector("[data-tipo-pie]").dataset.tipoPie, "escenario");
+    assert.equal(Boolean(datos), k >= 3, `casilla ${k + 1}: los montos solo en la parte 2`);
+    assert.equal(caja.querySelectorAll("table").length, 1, `casilla ${k + 1}: una sola tabla`);
+    if (datos) {
+      const filasT = [...datos.querySelectorAll("tr")];
+      assert.ok(filasT.at(-1).hasAttribute("data-total"), "el total, en la última fila");
+      assert.deepEqual([...datos.querySelectorAll("[data-monto]")].map((td) => td.textContent), ["$620.000", "$560.000", "$160.000", "$60.000"]);
+    }
+    /* Las opciones, en una columna (Mai: en fila de tres no caben las cifras de 7 dígitos a 320). */
+    assert.equal(caja.querySelector("[data-opcion]").closest("[style*='grid-template-columns']").style.gridTemplateColumns, "minmax(0, 1fr)");
     await tocar(opcion(caja, correcta(CASILLAS[k])));
     await siguiente(caja);
   }
   desmontar();
+});
+
+test("★★ la fila 1 de la regla: su texto en una segunda línea, sin columna de porcentaje; las demás, con el «%» en su columna", async () => {
+  const { caja, desmontar } = await montar();
+  const filas1 = [...caja.querySelectorAll('[data-regla] tr[data-fila="g1"]')];
+  assert.equal(filas1.length, 2);
+  assert.equal(filas1[1].textContent, D.GRUPOS_T6_ACT6[0].porcentaje);
+  for (const g of D.GRUPOS_T6_ACT6.slice(1)) {
+    assert.equal(caja.querySelectorAll(`[data-regla] tr[data-fila="${g.id}"]`).length, 1, g.id);
+    assert.ok(caja.querySelector(`[data-regla] tr[data-fila="${g.id}"]`).textContent.endsWith(g.porcentaje.replace(" ", NBSP)), g.id);
+  }
+  desmontar();
+});
+
+test("★★ al pasar de casilla la página se mueve lo justo para ver la casilla, el rótulo y la fila que usa", async () => {
+  const { caja, desmontar } = await montar();
+  const movidas = [];
+  const antes = window.scrollBy;
+  window.scrollBy = (o) => movidas.push(o.top);
+  /* Una pantalla de 568; la casilla 4 se ve, pero el rótulo y la fila del 5 % quedaron arriba, fuera. */
+  const alto = window.innerHeight;
+  Object.defineProperty(window, "innerHeight", { value: 568, configurable: true });
+  const original = window.HTMLElement.prototype.getBoundingClientRect;
+  window.HTMLElement.prototype.getBoundingClientRect = function () {
+    if (this.querySelector?.("[data-hecho]") || this.hasAttribute?.("data-hecho")) return { top: 100, bottom: 300, height: 200 };
+    if (this.querySelector?.("[data-rotulo-simulado]") && !this.querySelector("table")) return { top: 0, bottom: 30, height: 30 };
+    if (this.getAttribute?.("data-fila") === "g2") return { top: -200, bottom: -180, height: 20 };
+    return original.call(this);
+  };
+  try {
+    for (let k = 0; k < 3; k++) { await tocar(opcion(caja, correcta(CASILLAS[k]))); await siguiente(caja); }
+    /* Casilla 4: de la fila (−200) al fondo de la casilla (300) son 500 y caben en 568 − 16; se sube hasta dejar la fila a 8 del borde. */
+    assert.equal(movidas.at(-1), -208);
+  } finally {
+    window.HTMLElement.prototype.getBoundingClientRect = original;
+    window.scrollBy = antes;
+    Object.defineProperty(window, "innerHeight", { value: alto, configurable: true });
+    desmontar();
+  }
 });
 
 test("★★★ cada error se ve literal; la correcta queda marcada; y el valor correcto entra al registro para seguir", async () => {

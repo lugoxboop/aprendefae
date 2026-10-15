@@ -622,6 +622,28 @@ export const SUBJECTS = {
         ],
       },
       /*
+       * ═══════════ T4 · CÉLULA D ═══════════
+       *
+       * T4, efectivo, caja menor y bancos: §5.1 y §5.2 del capítulo 5 (pp.
+       * 179-191), entre el Tema 3 y el Tema 5 por el orden del libro. El id
+       * del tema va sin prefijo de célula, como los de T5, T6 y T7: es el
+       * segmento de la dirección que ve el estudiante. El id y el lugar los
+       * fijó el coordinador en nocturno.md (PR #138).
+       *
+       * El orden de sus piezas es el del plan de Yujiro: A0, y después A1 → H1
+       * → H2 → A2…
+       */
+      {
+        id: "efectivo-caja-menor-bancos",
+        title: "Efectivo, caja menor y bancos",
+        actividades: [
+          /* A0, pp. 177-179. Abre el tema. Aprender: cero FP, no entra al catálogo. */
+          { id: "t4-a0-el-activo-corriente", nombre: "El activo corriente", clasificacion: { tipo: APRENDER } },
+          /* A1, pp. 179-180. Aprender: cero FP, no entra al catálogo. */
+          { id: "t4-a1-la-caja", nombre: "La caja", clasificacion: { tipo: APRENDER } },
+        ],
+      },
+      /*
        * EL TEMA 5 (Célula B), por ahora con su pieza 1 de Aprender.
        *
        * CATÁLOGO: decidido por Erwin. El título es el subtítulo literal de
@@ -639,6 +661,8 @@ export const SUBJECTS = {
           { id: "b5-t5-a1-del-efectivo-de-sobra", nombre: "Del efectivo de sobra al activo financiero", clasificacion: { tipo: APRENDER } },
           /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (guía de Mai). Su fila del servidor es la migración 0070. */
           { id: "b5-t5-a1", nombre: "¿Qué renta da este título?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* N2 de la Célula C, después de b5-t5-a1 (decisión de corte de T5, punto 6: N1 entra entre b5-t5-a1 y N2, y N3 justo después de N2). Las cuatro acciones de control de la p. 193; sostiene a N3. Cero FP. */
+          { id: "t5-a1-cuidar-las-inversiones", nombre: "Cómo se cuidan las inversiones", clasificacion: { tipo: APRENDER } },
           { id: "b5-t5-a2-los-tres-momentos-de-una-inversion", nombre: "Los tres momentos de una inversión", clasificacion: { tipo: APRENDER } },
           /* El cierre del tema. Difícil · 50 FP (decisión de Sakuta). Su fila del servidor es la migración 0072. */
           { id: "b5-t5-a2", nombre: "El cierre completo de Santa Pacha", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
