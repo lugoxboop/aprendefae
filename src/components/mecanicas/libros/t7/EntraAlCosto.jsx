@@ -6,13 +6,14 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
-import AvisoNIC2 from "./AvisoNIC2.jsx";
+import { FranjaNIC2, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-3 · HACER 6 · ¿ENTRA AL COSTO? (Célula C)
  *
- * Arriba, siempre a la vista, la frase fija de la NIC 2; luego la consigna.
+ * Arriba, siempre a la vista, la frase fija de la NIC 2 en la franja del
+ * Patrón T7-3; luego la consigna.
  * Debajo, una cosa a la vez, en el orden de la tabla, con sus tres opciones
  * en el orden de la v1 (Se suma · Se resta · No entra): UN SOLO TOQUE; la
  * buena se enseña.
@@ -59,7 +60,8 @@ export default function EntraAlCosto({ Marco, rotulo, titulo, acento, onCompleta
   if (t.terminado) {
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-        <AvisoNIC2 texto={H6.aviso} />
+        <style>{CSS_T73_PATRON}</style>
+        <FranjaNIC2 texto={H6.aviso} />
         <Cierre pct={Math.round(puntuarH6(bien))} onReiniciar={reiniciar} textoReiniciar="Otra vez">
           <p data-resumen style={TEXTO_CIERRE}>{resumenH6(bien, TOTAL_H6)}</p>
         </Cierre>
@@ -69,9 +71,9 @@ export default function EntraAlCosto({ Marco, rotulo, titulo, acento, onCompleta
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T7_HACER}</style>
-      <div data-t7-3-h6>
-        <AvisoNIC2 texto={H6.aviso} />
+      <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
+      <div data-t7-3-h6 className="t73pt-pieza">
+        <FranjaNIC2 texto={H6.aviso} />
         <Encabezado consigna={H6.consigna} onComoSeJuega={onComoSeJuega} />
         <div style={{ marginBottom: "12px" }}>
           <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />

@@ -47,6 +47,8 @@ function medir(sel) {
   const problemas = [];
   const conTexto = [...panel.querySelectorAll("*")]
     .filter((el) => !el.matches("style, script"))
+    /* Lo que solo oye el lector de pantalla («menos», «igual a») mide 1 px a propósito. */
+    .filter((el) => !el.closest(".sr"))
     .filter((el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()));
   for (const el of conTexto) {
     const r = el.getBoundingClientRect();
@@ -55,6 +57,27 @@ function medir(sel) {
     if (getComputedStyle(el).display !== "inline" && el.scrollWidth > el.clientWidth + 0.5) problemas.push(`${nombre}: mide ${el.scrollWidth} px en una caja de ${el.clientWidth}`);
     if (r.right > caja.right + 0.5 || r.left < caja.left - 0.5) problemas.push(`${nombre}: se sale del panel`);
   }
+  /* Patrón T7-3: las etiquetas de la franja de plazos no se tocan entre sí ni se salen de la franja. */
+  for (const f of document.querySelectorAll("[data-plazos]")) {
+    const caja = f.getBoundingClientRect();
+    const et = [...f.querySelectorAll(".pz-et, .pz-pago")].map((e) => [e.textContent, e.getBoundingClientRect()]);
+    for (const [t, r] of et) if (r.left < caja.left - 0.5 || r.right > caja.right + 0.5) problemas.push(`la etiqueta «${t}» se sale de la franja`);
+    for (let i = 0; i < et.length; i++) for (let j = i + 1; j < et.length; j++) {
+      const [ta, a] = et[i]; const [tb, b] = et[j];
+      if (a.left < b.right - 0.5 && b.left < a.right - 0.5 && a.top < b.bottom - 0.5 && b.top < a.bottom - 0.5) problemas.push(`las etiquetas de la franja «${ta}» y «${tb}» se tocan`);
+    }
+  }
+  /* Patrón T7-3: en cada renglón, el rótulo no toca su cifra (salvo la cifra que baja a su propia línea). */
+  for (const f of document.querySelectorAll("[data-renglon]")) {
+    const rot = f.querySelector(".rg-rot").getBoundingClientRect();
+    const v = f.querySelector(".rg-v").getBoundingClientRect();
+    if (v.top < rot.bottom - 1 && rot.right > v.left - 4) problemas.push(`el renglón «${f.querySelector(".rg-rot").textContent}» toca su cifra`);
+    if (v.right > f.getBoundingClientRect().right + 0.5) problemas.push(`la cifra «${f.querySelector(".rg-v").textContent}» se sale de su renglón`);
+  }
+  /* Patrón T7-3: la franja de la NIC 2 es lo primero de la pieza. (Pegada arriba al bajar no se mide: el
+     contenedor de fondo de la app tiene overflow: hidden, que anula el sticky; cambiarlo es un compartido.) */
+  const franja = document.querySelector(".t73pt-nic2");
+  if (franja && franja.parentElement.firstElementChild !== franja) problemas.push("la frase de la NIC 2 no es lo primero de la pieza");
   if (document.documentElement.scrollWidth > window.innerWidth) problemas.push(`la página mide ${document.documentElement.scrollWidth} px en ${window.innerWidth}`);
   for (const b of pieza.querySelectorAll("button")) {
     const h = b.getBoundingClientRect().height;
