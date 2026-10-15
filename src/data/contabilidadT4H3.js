@@ -49,10 +49,11 @@ export const GASTOS = "Gastos generales";
 export const CUENTAS_H3 = [CAJA_MENOR, BANCOS, CAJA, GASTOS];
 
 /*
- * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] Textos de interfaz que el
- * paquete no trae. «Comprobar» es de la pantalla de Hanayama (H3 v1 §1); los
- * demás, la convención de los Hacer de T4. MISMO_LADO es mío: el paquete no
- * tiene mensaje para dos cuentas del mismo lado (ver ESTA_LISTO).
+ * Textos de interfaz que el paquete no traía. «Comprobar» es de la pantalla
+ * de Hanayama (H3 v1 §1); los demás, la convención de los Hacer de T4.
+ * MISMO_LADO es mío: el paquete no tenía mensaje para dos cuentas del mismo
+ * lado (ver ESTA_LISTO). Katsumi los aprobó tal cual: la fuente es
+ * d4-t4-h3-v1.md, «Textos de interfaz».
  */
 export const BOTON_H3 = { comprobar: "Comprobar", siguiente: "Siguiente operación", verResumen: "Ver mi resumen", otraVez: "Otra vez" };
 export const CORRECTO = "Correcto.";
@@ -167,9 +168,9 @@ export const PASOS_H3 = [
 export const ALT_H3 = "Para abrir la caja menor, Caja menor va al debe y Bancos va al haber, las dos por $200.000. La plata pasa del banco al fondo.";
 /*
  * La apertura de Papelería Arcoíris (construida, no está en ninguna serie).
- * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El paquete trae el enunciado y
- * el texto alternativo; el acierto de la demo es ese texto alternativo, y sus
- * errores son los de la apertura (la demo nunca falla).
+ * El paquete trae el enunciado y el texto alternativo; el acierto de la demo
+ * es ese texto alternativo (aprobado por Katsumi), y sus errores son los de
+ * la apertura (la demo nunca falla).
  */
 export const EJEMPLO_H3 = {
   id: "demo", subtema: SUBTEMAS_H3[0],
