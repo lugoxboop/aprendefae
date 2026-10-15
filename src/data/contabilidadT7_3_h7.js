@@ -1,5 +1,5 @@
 import { pesos } from "./contabilidad.js";
-import { FRASE_NIC2 } from "./contabilidadT7_3_a7.js";
+import { FRASE_NIC2, cuentaVnr, cuentaMenor } from "./contabilidadT7_3_a7.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -111,6 +111,17 @@ export const ITEMS_H7 = CASOS_H7.flatMap((c, k) => [
     acierto: c.acierto,
     distractores: [{ valor: Math.max(c.costo, vnr(c)), retro: c.errorMedida }],
   },
+]);
+
+/*
+ * Patrón T7-3 (Watari): en cada caso, la cuenta del valor neto realizable
+ * después de su ítem, y «Se mide por el menor» después del ítem de medición;
+ * las dos se van cuando empieza otro caso. Títulos y rótulos de Watari, por
+ * confirmar con Near.
+ */
+export const FIGURAS_H7 = CASOS_H7.flatMap((c, k) => [
+  { ...cuentaVnr(c.quien, c.precio, c.terminar, c.vender), clave: `vnr-${k + 1}`, desde: 2 * k + 1, hasta: 2 * k + 2 },
+  { ...cuentaMenor(c.costo, vnr(c)), clave: `menor-${k + 1}`, desde: 2 * k + 2, hasta: 2 * k + 2 },
 ]);
 
 /* El resumen del cierre, con la frase de los Hacer de la célula. */

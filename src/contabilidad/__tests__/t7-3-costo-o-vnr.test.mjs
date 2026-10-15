@@ -273,3 +273,32 @@ test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqu
   const bloque = fuente.slice(fuente.indexOf("CONTABILIDAD · T7 «INVENTARIOS»"));
   assert.match(bloque.slice(0, bloque.indexOf("});")), /"t7-3-costo-o-vnr": \(id\) => unidadDeT73H7\(id\),/);
 });
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+test("★★★ Patrón T7-3: la franja de la NIC 2 primero; en cada caso, la cuenta y «el menor» después de su ítem", async () => {
+  const vistas = (caja) => [...caja.querySelectorAll("[data-figuras] figure")].map((f) => `${f.querySelector("figcaption").textContent}: ${[...f.querySelectorAll("[data-renglon]")].map((r) => `${r.querySelector(".rg-op").textContent}${r.querySelector(".rg-v").textContent}${r.classList.contains("rg-fuerte") ? "!" : ""}`).join(" ")}`);
+  const V1 = "Una tienda: 710.000 −85.000 =625.000";
+  const M1 = "Se mide por el menor: 665.000 625.000!";
+  const V2 = "Otra tienda: 1.110.000 −130.000 =980.000";
+  const M2 = "Se mide por el menor: 920.000! 980.000";
+  const V3 = "Una fábrica: 1.520.000 −160.000 −95.000 =1.265.000";
+  const M3 = "Se mide por el menor: 1.315.000 1.265.000!";
+  const antes = [[], [V1], [], [V2], [], [V3]];
+  const despues = [[V1], [V1, M1], [V2], [V2, M2], [V3], [V3, M3]];
+  const m = await montar();
+  try {
+    const raiz = m.caja.querySelector("[data-t7-3-h7]");
+    assert.equal(raiz.firstElementChild.matches("p.t73pt-nic2[data-aviso]"), true);
+    for (const [k, it] of EN_ORDEN.entries()) {
+      assert.deepEqual(vistas(m.caja), antes[k], `antes del ítem ${k + 1}`);
+      await tocar(opcion(m.caja, k % 2 ? it.distractores.at(-1).valor : it.correcta));
+      assert.deepEqual(vistas(m.caja), despues[k], `al responder el ítem ${k + 1}`);
+      await tocar(boton(m.caja, k === 5 ? D.BOTON_H7.verResumen : D.BOTON_H7.siguiente));
+    }
+    /* También en el cierre. */
+    assert.equal(m.caja.querySelector("p.t73pt-nic2[data-aviso]").textContent, A7.FRASE_NIC2);
+  } finally {
+    m.desmontar();
+  }
+});
