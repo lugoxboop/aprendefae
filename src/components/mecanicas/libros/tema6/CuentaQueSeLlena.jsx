@@ -2,6 +2,7 @@ import { FAE } from "../../../../theme.js";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { ESCENA_T6_A3, MOMENTOS_T6_A3, CUENTA_T_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
 import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES } from "./MaquinaPegada.jsx";
+import { CASTIGO_DADO_T6_ACT5 } from "../../../../data/contabilidadT6Act5.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -52,18 +53,25 @@ export function Entra({ reducido, children }) {
 export const KEYFRAMES_ENTRA = "@keyframes b5-entra { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }";
 
 /* Los pasos de la cuenta: qué se ve con `respondidas` casillas respondidas y la casilla `abierta` (o null). */
+/*
+ * Las cuatro casillas (decisión de a5, entrega 5): 0 · el neto; 1 · lo que le
+ * falta; 2 · el registro del año siguiente; 3 · el saldo final. El castigo de
+ * marzo es un DATO DADO: entra al DEBE, sin encenderse, al responder la
+ * casilla 1.
+ */
 export function estadoDeLaCuenta(respondidas, abierta) {
   const r = (k) => respondidas > k;
   return {
     neto: { valor: r(0) ? E.valorNeto : null, activo: abierta === 0 },
-    debe: abierta === 1 || r(1) ? [{ ...MARZO, monto: r(1) ? MARZO.monto : null, activo: abierta === 1 }] : [],
+    castigo: r(0),
+    debe: r(0) ? [{ ...MARZO, activo: false }] : [],
     haber: [
       { ...DIC_2007, activo: false },
-      ...(abierta === 3 || r(3) ? [{ ...DIC_SIGUIENTE, monto: r(3) ? DIC_SIGUIENTE.monto : null, activo: abierta === 3 }] : []),
+      ...(abierta === 2 || r(2) ? [{ ...DIC_SIGUIENTE, monto: r(2) ? DIC_SIGUIENTE.monto : null, activo: abierta === 2 }] : []),
     ],
     /* El saldo: el de 2007 hasta el castigo; después, vacío hasta que se pregunta; en contra hasta el ajuste; al final, el del año siguiente. */
-    saldo: r(4) ? DIC_SIGUIENTE.saldo : r(2) ? MARZO.saldo : r(1) ? null : DIC_2007.saldo,
-    huecoSaldo: abierta === 2 || abierta === 4,
+    saldo: r(3) ? DIC_SIGUIENTE.saldo : r(1) ? MARZO.saldo : r(0) ? null : DIC_2007.saldo,
+    huecoSaldo: abierta === 1 || abierta === 3,
   };
 }
 
@@ -106,6 +114,17 @@ export default function CuentaQueSeLlena({ respondidas, abierta, reducido, anunc
         </div>
       </div>
 
+      {/*
+        * El castigo de marzo, como dato (decisión de a5): entra al responder la casilla 1. Su sitio está
+        * reservado desde el principio, invisible: la T no salta cuando llega.
+        */}
+      <p data-castigo-dado={c.castigo ? "si" : "no"} aria-hidden={c.castigo ? undefined : "true"} style={{
+        margin: 0, padding: "8px 10px", borderRadius: "10px", background: "rgba(184,196,212,0.13)",
+        fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: TEXTO, visibility: c.castigo ? "visible" : "hidden",
+      }}>
+        {c.castigo ? <Entra reducido={reducido}>{CASTIGO_DADO_T6_ACT5.texto}</Entra> : CASTIGO_DADO_T6_ACT5.texto}
+      </p>
+
       {/* La cuenta T de la provisión (capa 3 de T6 · A3). */}
       <div data-cuenta-t style={{ border: `1px solid ${BORDES}`, borderRadius: "12px", padding: "10px 12px 12px" }}>
         <p style={{ margin: 0, textAlign: "center", fontFamily: SORA, fontSize: "13px", fontWeight: 600, lineHeight: 1.3, color: TEXTO }}>{CUENTA_T_T6_A3.nombre}</p>
@@ -127,7 +146,7 @@ export default function CuentaQueSeLlena({ respondidas, abierta, reducido, anunc
         {c.saldo && !c.saldo.enContra && !c.huecoSaldo && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", marginTop: "8px" }}>
             <p data-saldo="normal" style={{ ...SALDO, gridColumn: "2", paddingTop: "4px", borderTop: `1px solid ${BORDES}`, textAlign: "right" }}>
-              {respondidas > 4 ? <Entra reducido={reducido}>{c.saldo.texto}</Entra> : c.saldo.texto}
+              {respondidas > 3 ? <Entra reducido={reducido}>{c.saldo.texto}</Entra> : c.saldo.texto}
             </p>
           </div>
         )}
@@ -144,9 +163,9 @@ export function anuncioDe(k) {
   const lado = (l) => CUENTA_T_T6_A3[l].charAt(0) + CUENTA_T_T6_A3[l].slice(1).toLowerCase();
   /* La fecha va en mitad de la frase: en minúscula («marzo del año siguiente»). Se nota en braille (Shoko). */
   const enFrase = (t) => t.charAt(0).toLowerCase() + t.slice(1);
-  if (k === 0) return `${E.neto}, ${E.valorNeto}`;
-  if (k === 1) return `${lado(MARZO.lado)}, ${MARZO.monto}, ${enFrase(MARZO.nombre)}`;
-  if (k === 2) return MARZO.saldo.texto;
-  if (k === 3) return `${lado(DIC_SIGUIENTE.lado)}, ${DIC_SIGUIENTE.monto}, ${enFrase(DIC_SIGUIENTE.nombre)}`;
+  /* Con la casilla 1 entra también el castigo, ya anotado: se anuncia con las palabras de Futaba. */
+  if (k === 0) return `${E.neto}, ${E.valorNeto}. ${CASTIGO_DADO_T6_ACT5.anuncio}`;
+  if (k === 1) return MARZO.saldo.texto;
+  if (k === 2) return `${lado(DIC_SIGUIENTE.lado)}, ${DIC_SIGUIENTE.monto}, ${enFrase(DIC_SIGUIENTE.nombre)}`;
   return DIC_SIGUIENTE.saldo.texto;
 }

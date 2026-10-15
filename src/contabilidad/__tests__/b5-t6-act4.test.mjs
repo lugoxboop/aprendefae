@@ -68,7 +68,8 @@ const GUIA = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5
 const FUTABA = GUIA.slice(GUIA.indexOf("## (1) Futaba"), GUIA.indexOf("## (2) Futaba"));
 /* La sección (2): las líneas que Shoko pasó y Futaba aplicó. Mandan sobre (1), por id y campo. */
 const SECCION_2 = GUIA.slice(GUIA.indexOf("## (2) Futaba"));
-const cambio = (id, campo) => SECCION_2.split("\n").map((l) => l.split("\t")).find((c) => c[0] === id && c[1] === campo)?.[2];
+/* La línea más nueva manda: la sección (2) y, después, la entrega 5 de calidad. */
+const cambio = (id, campo) => SECCION_2.split("\n").map((l) => l.split("\t")).findLast((c) => c[0] === id && c[1] === campo)?.[2];
 const filas = FUTABA.split("\n").map((l) => l.split("\t"));
 const fila = (primera) => filas.find((c) => c[0] === primera);
 const filaError = (tipo) => filas.find((c) => c[0] === tipo || c[0].startsWith(`${tipo} ·`));

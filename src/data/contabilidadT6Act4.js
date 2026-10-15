@@ -130,12 +130,13 @@ export const HECHOS_T6_ACT4 = [
   },
   {
     id: "qd-09", respuesta: A_CLIENTES, errores: { ...REVIVIR, [A_CAJA]: "E10" },
-    texto: "Pablo Moncayo vuelve y paga. Primero se revive su deuda.",
+    /* Entrega 5 de Futaba: los $180.000 y Pablo Moncayo quedan como hueco fuera de a2, a3, T6 · A3 y A4. */
+    texto: "Un cliente cuya deuda ya se castigó vuelve y paga. Primero se revive su deuda.",
     acierto: "Cuentas por cobrar – clientes. Revivir es reversar el castigo: la deuda vuelve a subir.",
   },
   {
     id: "qd-10", respuesta: A_CAJA, errores: COBRO,
-    texto: "Ya revivida la deuda, entra el pago de Pablo Moncayo.",
+    texto: "Ya revivida la deuda, entra el pago del cliente.",
     acierto: "Caja. Entra la plata, y la deuda que se había revivido se cancela.",
   },
 ];
