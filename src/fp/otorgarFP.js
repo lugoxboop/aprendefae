@@ -73,8 +73,29 @@ export async function otorgarFP({
   const argumentos = {
     p_activity_id: actividadId,
     p_duration_ms: duracionMs === null ? null : Math.round(duracionMs),
-    /* El motor del servidor trabaja en porcentaje, no en proporción. */
-    p_correct_pct: aciertos === null ? null : Math.round(aciertos * 100),
+    /*
+     * El motor del servidor trabaja en porcentaje, no en proporción — pero SIN
+     * REDONDEAR, y esa es la corrección.
+     *
+     * Antes iba `Math.round(aciertos * 100)`, un entero, y la 0036 divide ese
+     * entero entre 100 para sacar el rendimiento. El navegador, en cambio,
+     * calcula su vista previa con la proporción exacta. Resultado: el número
+     * que el estudiante VE y el que se GUARDA no eran el mismo.
+     *
+     * 5 aciertos de 8 en una actividad de 90 FP: la proporción exacta es
+     * 0,625 y da 56. Redondeada al 63 %, el servidor calcula 90 × 0,63 = 56,7
+     * y guarda 57. Con 7 de 12 pasa al revés: 53 en pantalla, 52 guardados.
+     *
+     * Mandar el porcentaje con sus decimales lo cierra: `correct_pct` es
+     * `numeric` desde la 0003, así que los acepta, y el servidor ya redondea
+     * UNA vez al final (`round(v_base * v_rend * v_tiempo)`), que es donde hay
+     * que redondear. No hace falta migración y no se toca ninguna fila ya
+     * guardada.
+     *
+     * Lo encontró la Célula E (Kamogawa) revisando el repaso; toca a las 137
+     * actividades evaluativas, no solo a las suyas.
+     */
+    p_correct_pct: aciertos === null ? null : aciertos * 100,
   };
   if (detalle && detalle.length) argumentos.p_detalle = detalle;
 

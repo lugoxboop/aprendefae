@@ -122,7 +122,7 @@ export default function CuantoValeLoQueSobro({ Marco, rotulo, titulo, acento, on
           background: "rgba(184,196,212,0.12)", borderLeft: "3px solid #B8C4D4",
         }}>
           {item.encabezado && (
-            <p data-encabezado-metodo style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.1em", color: FAE.ambar }}>
+            <p data-encabezado-metodo style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", color: FAE.ambar }}>
               {item.encabezado.toUpperCase()}
             </p>
           )}

@@ -142,7 +142,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
 
             {!revision && (
               <div data-banco style={{ margin: "0 0 14px" }}>
-                <p style={{ margin: "0 0 7px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", color: APAGADO }}>CIFRAS</p>
+                <p style={{ margin: "0 0 7px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: APAGADO }}>CIFRAS</p>
                 <div className="t7h4-banco" role="group" aria-label="Cifras para poner en la tabla">
                   {enBanco.map((v) => (
                     <button key={v} type="button" data-ficha-cifra={v} aria-pressed={seleccion === v}
@@ -196,7 +196,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
                   <div key={c.id} data-retro-casilla={c.id} data-panel="error" style={{
                     padding: "11px 13px", borderRadius: "11px", background: "rgba(231,111,81,0.13)", borderLeft: `3px solid ${FAE.coral}`,
                   }}>
-                    <p style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", color: APAGADO }}>
+                    <p style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.08em", color: APAGADO }}>
                       {`${c.metodo.nombre} · ${c.fila.nombre}`.toUpperCase()}
                     </p>
                     <span style={SOLO_LECTOR}>{`Incorrecto. Era ${pesos(c.valor)}. `}</span>

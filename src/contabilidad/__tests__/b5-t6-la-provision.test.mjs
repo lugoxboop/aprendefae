@@ -49,6 +49,7 @@ const h = React.createElement;
 const D = await import("../../data/contabilidadT6Pieza3.js");
 const E = await import("../t6Pieza3.js");
 const { default: LaProvision } = await import("../../components/mecanicas/libros/tema6/LaProvision.jsx");
+const { decidir } = await import("./b5-capa3.mjs");
 const { default: CuentaT } = await import("../../components/mecanicas/libros/tema6/CuentaT.jsx");
 const { ESCENAS_TEMA6 } = await import("../../components/mecanicas/libros/tema6/escenasTema6.jsx");
 const { PIEZAS } = await import("../../components/ContabilidadTema6View.jsx");
@@ -69,7 +70,7 @@ const rgb = (hex) => `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 1
 const textosDeDatos = () => {
   const out = [];
   const recoger = (v, k) => {
-    if (typeof v === "string") { if (!["id", "lado"].includes(k)) out.push(v); }
+    if (typeof v === "string") { if (!["id", "correcta", "lado"].includes(k)) out.push(v); }
     else if (Array.isArray(v)) v.forEach((x) => recoger(x, k));
     else if (v && typeof v === "object") for (const [kk, x] of Object.entries(v)) recoger(x, kk);
   };
@@ -348,7 +349,7 @@ test("★★ «Reproducir»: 3 000 + 450 ms por palabra; la tabla de Mai §4.4 y
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: la T se llena en orden; el saldo en contra bajo DEBE en recuadro, el normal bajo HABER bajo un filete; el final, con los tres", async () => {
+test("★★★ capa 3: la T se llena en orden al decidir, con el valor correcto aunque se falle; el saldo en contra bajo DEBE en recuadro, el normal bajo HABER bajo un filete; el final, con los tres", async () => {
   const { caja, desmontar } = await montar(h(CuentaT));
   const t = caja.querySelector("[data-cuenta-t]");
   assert.equal(caja.querySelector("p").textContent, D.CONSIGNA_CAPA_3_T6_A3);
@@ -366,8 +367,10 @@ test("★★★ capa 3: la T se llena en orden; el saldo en contra bajo DEBE en 
     { debe: ["$180.000Marzo del año siguiente"], haber: ["$148.80031 de diciembre de 2007", "$184.60031 de diciembre del año siguiente"], saldo: ["normal", "El saldo queda en $153.400"] },
   ];
   for (const [k, m] of D.MOMENTOS_T6_A3.entries()) {
-    await tocar(caja.querySelector(`[data-hecho="${m.id}"] button`));
-    assert.equal(lectura(caja.querySelector(`[data-revela="${m.id}"]`)), m.revela);
+    /* Con error a propósito: la T se llena igual, con el valor correcto (hoja 6, indispensable 5). */
+    const mala = m.opciones.find((o) => o.id !== m.correcta).id;
+    await decidir(tocar, caja.querySelector(`[data-hecho="${m.id}"]`), mala);
+    assert.equal(lectura(caja.querySelector(`[data-revela="${m.id}"]`)), (typeof m.falla === "string" ? m.falla : m.falla[mala]) + m.revela);
     assert.equal(caja.querySelector(`[data-revela="${m.id}"] [data-pie]`).textContent, m.pie);
     assert.deepEqual(columna("debe"), esperado[k].debe, `momento ${k + 1}: DEBE`);
     assert.deepEqual(columna("haber"), esperado[k].haber, `momento ${k + 1}: HABER`);

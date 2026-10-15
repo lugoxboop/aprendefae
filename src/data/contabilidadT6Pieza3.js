@@ -111,7 +111,8 @@ export const CIERRE_T6_A3 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · la cuenta T en tres momentos ═══════════ */
 
-export const CONSIGNA_CAPA_3_T6_A3 = "Toca cada momento y mira cómo cambia el saldo de la provisión.";
+/* Consigna y las tres decisiones, una por momento: entrega 2 de Futaba. */
+export const CONSIGNA_CAPA_3_T6_A3 = "Toca cada momento y decide qué le pasa a la provisión. Después, mira cómo queda la T.";
 
 /*
  * Los tres momentos, en orden (se abren en orden: guía v1 §5.1). Cada uno
@@ -127,6 +128,10 @@ export const MOMENTOS_T6_A3 = [
     lado: "haber",
     monto: "$148.800",
     saldo: { texto: "El saldo queda en $148.800", enContra: false },
+    pregunta: "¿En qué columna de la T se anota la provisión que se crea?",
+    opciones: [{ id: "debe", texto: "Debe" }, { id: "haber", texto: "Haber" }],
+    correcta: "haber",
+    falla: "La provisión sube por el Haber.",
   },
   {
     id: "marzo",
@@ -136,6 +141,13 @@ export const MOMENTOS_T6_A3 = [
     lado: "debe",
     monto: "$180.000",
     saldo: { texto: "Le faltan $31.200", enContra: true },
+    pregunta: "¿Qué le pasa al saldo?",
+    opciones: [{ id: "cero", texto: "Queda en $0" }, { id: "faltan", texto: "Le faltan $31.200" }, { id: "sigue", texto: "Sigue en $148.800" }],
+    correcta: "faltan",
+    falla: {
+      cero: "No queda en cero: el castigo es más grande que la provisión.",
+      sigue: "El castigo se debita a la provisión, así que el saldo baja.",
+    },
   },
   {
     id: "diciembre-siguiente",
@@ -145,6 +157,13 @@ export const MOMENTOS_T6_A3 = [
     lado: "haber",
     monto: "$184.600",
     saldo: { texto: "El saldo queda en $153.400", enContra: false },
+    pregunta: "¿Por cuánto se registra la provisión?",
+    opciones: [{ id: "analisis", texto: "$153.400" }, { id: "suma", texto: "$184.600" }, { id: "faltante", texto: "$31.200" }],
+    correcta: "suma",
+    falla: {
+      analisis: "$153.400 es el saldo que debe quedar. Para llegar ahí, también hay que cubrir lo que faltó en marzo.",
+      faltante: "Eso solo cubre lo que faltó. Falta lo que pide el análisis.",
+    },
   },
 ];
 /* La T: su nombre y las palabras publicadas de sus columnas (ElCierreCompleto). */

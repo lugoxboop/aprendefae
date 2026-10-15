@@ -6,6 +6,7 @@ import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE, BOTON } from "../../../../data/contabilidadT7_1.js";
 import FiguraDosColumnas from "./FiguraDosColumnas.jsx";
 import { Plegable } from "./plegable.jsx";
+import { textosDelError, contarFallo } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -57,7 +58,7 @@ function boton(principal) {
 
 function Pie({ texto }) {
   return (
-    <p data-pie style={{ margin: "18px 0 0", fontSize: "11.5px", lineHeight: 1.45, color: APAGADO, overflowWrap: "break-word" }}>
+    <p data-pie style={{ margin: "18px 0 0", fontSize: "12px", lineHeight: 1.45, color: APAGADO, overflowWrap: "break-word" }}>
       {texto}
     </p>
   );
@@ -77,6 +78,8 @@ function Pregunta({ pantalla, onSeguir }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
   const [confirmada, setConfirmada] = useState(null);
+  /* Cuántas veces se ha fallado esta pregunta: la escalera de ayuda (escaleraAyuda.js). */
+  const [fallos, setFallos] = useState(0);
   const devolucionRef = useRef(null);
 
   const opcion = confirmada ? pantalla.opciones.find((o) => o.id === confirmada) : null;
@@ -157,7 +160,7 @@ function Pregunta({ pantalla, onSeguir }) {
             type="button"
             data-boton="confirmar"
             disabled={!elegida}
-            onClick={() => setConfirmada(elegida)}
+            onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }}
             style={{ ...boton(true), cursor: elegida ? "pointer" : "default", opacity: elegida ? 1 : 0.5 }}
           >
             {BOTON.confirmar}
@@ -173,7 +176,7 @@ function Pregunta({ pantalla, onSeguir }) {
             color: "rgba(248,249,250,0.92)", background: "rgba(184,196,212,0.1)", borderLeft: `3px solid ${NEUTRO}`,
             overflowWrap: "break-word",
           }}>
-            <Plegable texto={opcion.devolucion} />
+            <Plegable texto={textosDelError(pantalla, opcion, fallos).join(" ")} />
           </p>
           <button type="button" data-boton="probar-otra" onClick={probarOtra} style={{ ...boton(false), marginTop: "10px" }}>
             {pantalla.error.boton}

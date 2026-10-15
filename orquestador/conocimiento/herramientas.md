@@ -239,3 +239,46 @@ comentarios.** Las pestañas son mi vista, no su existencia. Y el canal que
 sobrevive a que se cierre un navegador es el que ellos ya usan entre sí: **un
 comentario en su propio PR**, que queda escrito y no depende de que yo tenga
 una ventana abierta.
+
+## Cómo se le manda un mensaje a otro agente, y la trampa de darlo por enviado
+
+El chat de otro agente se abre por su enlace (están todos en `celulas.md`) y
+el mensaje se escribe así:
+
+```js
+const el = document.querySelector('div[contenteditable="true"]');
+el.focus();
+const sel = window.getSelection(); const r = document.createRange();
+r.selectNodeContents(el); sel.removeAllRanges(); sel.addRange(r);
+document.execCommand('insertText', false, texto);
+```
+
+**Y el clic de enviar va en OTRA ejecución, no en la misma.** Esto cuesta un
+mensaje perdido la primera vez que pasa:
+
+```js
+// segunda llamada, aparte
+document.querySelector('button[aria-label="Enviar mensaje"]').click();
+```
+
+Metido junto al `insertText`, el clic sale antes de que la página registre lo
+escrito y **no envía nada**. Lo peor es que parece que sí: el texto está en la
+pantalla —en el cuadro de escritura— y una comprobación que solo busque el
+texto en la página lo da por entregado.
+
+**Así que se comprueba con las dos condiciones, no con una:**
+
+1. el cuadro de escritura quedó **vacío**, y
+2. el texto aparece en la conversación.
+
+Si el cuadro sigue lleno, no se envió, por mucho que el texto se vea. El 15 de
+octubre un mensaje a Xeno dio «llegó: true» estando entero sin mandar.
+
+**Dos avisos más del mismo sitio:**
+
+- Los acentos graves dentro de una plantilla de JavaScript rompen la llamada.
+  Si el mensaje lleva código, va sin ellos o por otra vía.
+- Un nombre que se ve idéntico puede no serlo: comparar con `===` los títulos
+  de la lista de chats devolvió cero coincidencias sobre nombres que se leían
+  exactamente iguales. Hay caracteres invisibles de por medio; se busca por
+  `indexOf` o se lee la lista entera y se filtra a ojo.

@@ -4,6 +4,7 @@ import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_EL_CIERRE, BOTON, INTERFAZ, PENDIENTE_DE_REVISION, FECHA, DEBE, HABER, cifra } from "../../../../data/contabilidadT7_1_ap4.js";
 import { Plegable } from "./plegable.jsx";
+import { textosDelError, contarFallo } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -232,6 +233,8 @@ function Eleccion({ pantalla, onSeguir }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
   const [confirmada, setConfirmada] = useState(null);
+  /* Cuántas veces se ha fallado esta pregunta: la escalera de ayuda (escaleraAyuda.js). */
+  const [fallos, setFallos] = useState(0);
   const ref = useRef(null);
   const opcion = confirmada ? pantalla.opciones.find((o) => o.id === confirmada) : null;
   const estado = !opcion ? "colocando" : opcion.correcta ? "acierto" : "error";
@@ -262,10 +265,10 @@ function Eleccion({ pantalla, onSeguir }) {
           );
         })}
       </div>
-      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => setConfirmada(elegida)} />}
+      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }} />}
       {estado === "error" && (
         <>
-          <Mensaje ok={false} textos={[opcion.devolucion]} refFoco={ref} />
+          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} refFoco={ref} />
           <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((a) => barajarDistinto(pantalla.opciones, a, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
         </>
       )}

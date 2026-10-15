@@ -5,6 +5,7 @@ import { Panel } from "../../salaDeControl/marco.jsx";
 import { cifraK } from "../../../../contabilidad/t7_2Kardex.js";
 import Kardex from "./KardexT7_2.jsx";
 import { Plegable } from "./plegable.jsx";
+import { textosDelError, contarFallo } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -308,6 +309,8 @@ function Eleccion({ pantalla, onSeguir, kardexDe }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
   const [confirmada, setConfirmada] = useState(null);
+  /* Cuántas veces se ha fallado esta pregunta: la escalera de ayuda (escaleraAyuda.js). */
+  const [fallos, setFallos] = useState(0);
   const ref = useRef(null);
   const opcion = confirmada ? pantalla.opciones.find((o) => o.id === confirmada) : null;
   const estado = !opcion ? "colocando" : opcion.correcta ? "acierto" : "error";
@@ -329,10 +332,10 @@ function Eleccion({ pantalla, onSeguir, kardexDe }) {
           );
         })}
       </div>
-      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => setConfirmada(elegida)} />}
+      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }} />}
       {estado === "error" && (
         <>
-          <Mensaje ok={false} textos={[opcion.devolucion]} refFoco={ref} />
+          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} refFoco={ref} />
           <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((x) => barajarDistinto(pantalla.opciones, x, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
         </>
       )}
