@@ -81,6 +81,8 @@ const FUENTE = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/
 const FUTABA = FUENTE.slice(FUENTE.indexOf("## (1) Futaba"), FUENTE.indexOf("## (2) Mai"));
 const viva = (caja) => caja.querySelector("[data-escena-viva]");
 const de = (caja, id) => viva(caja).querySelector(`[data-elemento="${id}"]`);
+/* Lo que todavía no llega se ve en silueta (hoja 5 de Mai): a la vista, atenuado y marcado con --b5-silueta. */
+const enSilueta = (n) => n.style.visibility === "visible" && Boolean(n.style.getPropertyValue("--b5-silueta"));
 const siguiente = (caja) => tocar(caja.querySelector("[data-siguiente]"));
 const colorVisto = (n) => {
   while (n && (!n.style.color || n.style.color === "inherit")) n = n.parentElement;
@@ -193,7 +195,7 @@ test("★★★ los cinco hechos: uno abierto a la vez, los anteriores plegados 
   const { caja, desmontar } = await montar(h(TresMomentos));
   const H = D.ESCENA_T5_A2.hechos;
   for (let p = 1; p <= 22; p++) {
-    const hechos = [...viva(caja).querySelectorAll("[data-hecho-t5]")];
+    const hechos = [...viva(caja).querySelectorAll("[data-hecho-t5]:not([data-futuro])")];
     const abierto = ABIERTO(p);
     assert.equal(hechos.length, abierto === null ? 5 : abierto + 1, `paso ${p}: hechos a la vista`);
     hechos.forEach((n, i) => {
@@ -225,7 +227,7 @@ test("★★★ dentro del hecho abierto, cada pieza se ve desde su paso; antes 
     for (const [id, desde] of Object.entries(APARECE)) {
       const n = de(caja, id);
       if (HECHO(id) !== ABIERTO(p)) { assert.equal(n, null, `paso ${p}: ${id} no está (su hecho no va abierto)`); continue; }
-      assert.equal(n.style.visibility, p >= desde ? "visible" : "hidden", `paso ${p}: ${id}`);
+      assert.equal(enSilueta(n), p < desde, `paso ${p}: ${id} ${p < desde ? "en silueta" : "a la vista"}`);
     }
     await siguiente(caja);
   }

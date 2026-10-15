@@ -79,6 +79,8 @@ const FUENTE = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/
 const FUTABA = FUENTE.slice(FUENTE.indexOf("## (1) Futaba"), FUENTE.indexOf("## (2) Futaba"));
 const viva = (caja) => caja.querySelector("[data-escena-viva]");
 const de = (caja, id) => viva(caja).querySelector(`[data-elemento="${id}"]`);
+/* Lo que todavía no llega se ve en silueta (hoja 5 de Mai): a la vista, atenuado y marcado con --b5-silueta. */
+const enSilueta = (n) => n.style.visibility === "visible" && Boolean(n.style.getPropertyValue("--b5-silueta"));
 const siguiente = (caja) => tocar(caja.querySelector("[data-siguiente]"));
 const colorVisto = (n) => {
   while (n && (!n.style.color || n.style.color === "inherit")) n = n.parentElement;
@@ -190,7 +192,7 @@ test("★★★ los momentos: la cabecera solo con la fecha; el castigo se conse
   const { caja, desmontar } = await montar(h(SiPaga));
   const M = D.ESCENA_T6_A4.momentos;
   for (let p = 1; p <= CIERRE; p++) {
-    const ms = [...viva(caja).querySelectorAll("[data-momento]")];
+    const ms = [...viva(caja).querySelectorAll("[data-momento]:not([data-futuro])")];
     const abierto = ABIERTO(p);
     assert.equal(ms.length, abierto === null ? 2 : abierto + 1, `paso ${p}`);
     ms.forEach((n, i) => {
@@ -211,7 +213,7 @@ test("★★★ en el momento abierto, cada pieza se ve desde su paso; antes ocu
   for (let p = 1; p <= PASOS; p++) {
     for (const [id, desde] of Object.entries(APARECE)) {
       if (ABIERTO(desde) !== ABIERTO(p)) continue;
-      assert.equal(de(caja, id).style.visibility, p >= desde ? "visible" : "hidden", `paso ${p}: ${id}`);
+      assert.equal(enSilueta(de(caja, id)), p < desde, `paso ${p}: ${id} ${p < desde ? "en silueta" : "a la vista"}`);
     }
     await siguiente(caja);
   }
