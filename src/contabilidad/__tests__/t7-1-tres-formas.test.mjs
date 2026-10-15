@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -56,8 +57,8 @@ const GLOSA = leer("t7-1-ap3-glosa-renta.md");
 const OPC = leer("t7-1-ap3-opcionales.md");
 const CAPAS = [V1, V2, GLOSA, OPC];
 /* Lote 2 de la revisión de calidad (Near): las pistas del primer error y el anexo de la tercera opción. */
-const LOTE2_PISTAS = leer("lote2-pistas-v1.md");
-const LOTE2_ANEXO = leer("lote2-anexo-v1.md");
+const LOTE2_PISTAS = conCorreccionesDeMello(leer("lote2-pistas-v1.md"));
+const LOTE2_ANEXO = conCorreccionesDeMello(leer("lote2-anexo-v1.md"));
 const CONTENIDO_V1 = V1.slice(V1.indexOf("## Contenido por pantalla y estado"), V1.indexOf("## Erratas C7 que toca"));
 const COBERTURA_V2 = V2.slice(V2.indexOf("## Corrección 1"), V2.indexOf("## Corrección 2"));
 const P = A.PIEZA_TRES_FORMAS;

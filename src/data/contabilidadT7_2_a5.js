@@ -158,7 +158,7 @@ const EL_COSTO = {
 const PIE_PERIODICO = "Basado en el libro, pp. 228 y 245-246";
 const FRENTE = {
   id: "frente-al-periodico",
-  pista: "En los dos sistemas, ese flete se suma al costo. ¿Qué es lo distinto entre uno y otro?",
+  pista: "Compara la cuenta donde va ese flete en el periódico con las cuentas que existen en el permanente.",
   tipo: "eleccion",
   /* «Línea fija»: se ve en todos los estados. */
   despues: ["Si el flete lo asume el vendedor, es un gasto de venta en los dos sistemas."],

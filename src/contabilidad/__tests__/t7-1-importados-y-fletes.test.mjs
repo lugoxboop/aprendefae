@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -56,8 +57,8 @@ const V1 = leer("t7-1-a5-v1.md");
 const V2 = leer("t7-1-a5-v2-cambios.md");
 const WATARI = leer("t7-1-a5-figura-watari.md");
 /* Lote 2 de la revisión de calidad (Near): las pistas del primer error y el anexo de la tercera opción. */
-const LOTE2_PISTAS = leer("lote2-pistas-v1.md");
-const LOTE2_ANEXO = leer("lote2-anexo-v1.md");
+const LOTE2_PISTAS = conCorreccionesDeMello(leer("lote2-pistas-v1.md"));
+const LOTE2_ANEXO = conCorreccionesDeMello(leer("lote2-anexo-v1.md"));
 const CONTENIDO = V1.slice(V1.indexOf("## Contenido"), V1.indexOf("## Erratas que toca"));
 const P = A.PIEZA_IMPORTADOS_Y_FLETES;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);

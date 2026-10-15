@@ -151,7 +151,7 @@ const EL_VENDEDOR = {
 const PIE_FRENTE = "Basado en el libro, pp. 230 y 246";
 const FRENTE = {
   id: "frente-al-periodico",
-  pista: "Mira a qué cuenta fue la compra en el permanente. La devolución reversa ese mismo registro.",
+  pista: "Piensa qué cuentas existen en el permanente y cuáles no.",
   tipo: "eleccion",
   pregunta: "En el periódico, la devolución de compras va a Devoluciones de compras. ¿Por qué en el permanente va a Inventario de mercancías?",
   opciones: [

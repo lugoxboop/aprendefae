@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -56,8 +57,8 @@ const citas = (t) => [...t.matchAll(/«([^»]+)»/g)].map((m) => m[1]);
  * tercera opción, con su devolución, y el cambio en el texto de una opción
  * correcta). Un texto nuevo de los datos sale de aquí o del paquete de la pieza.
  */
-const PISTAS_L2 = leer("orquestador/conocimiento/paquetes/lote2-pistas-v1.md");
-const ANEXO_L2 = leer("orquestador/conocimiento/paquetes/lote2-anexo-v1.md");
+const PISTAS_L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-pistas-v1.md"));
+const ANEXO_L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-anexo-v1.md"));
 const sinComillas = (t) => t.trim().replace(/ \|$/, "").replace(/^«/, "").replace(/»$/, "");
 const idEnCelda = (celda) => celda.match(/`([^`]+)`/)[1];
 /* id de pantalla → pista. */

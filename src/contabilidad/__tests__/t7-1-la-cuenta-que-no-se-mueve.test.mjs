@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -58,8 +59,8 @@ const PAQUETE_V3 = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-
 const TEXTOS_FIGURA_NEAR = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-ap1-figura-textos.md", RAIZ), "utf8");
 const GUIA_WATARI = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-ap1-figura-watari-v3-1.md", RAIZ), "utf8");
 /* Lote 2 de la revisión de calidad (Near): las pistas del primer error y el anexo de la tercera opción. */
-const LOTE2_PISTAS = readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-pistas-v1.md", RAIZ), "utf8");
-const LOTE2_ANEXO = readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-anexo-v1.md", RAIZ), "utf8");
+const LOTE2_PISTAS = conCorreccionesDeMello(readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-pistas-v1.md", RAIZ), "utf8"));
+const LOTE2_ANEXO = conCorreccionesDeMello(readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-anexo-v1.md", RAIZ), "utf8"));
 const { default: FiguraDosColumnas, CSS_FIGURA } = await import("../../components/mecanicas/libros/t7/FiguraDosColumnas.jsx");
 const P = T7.PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
