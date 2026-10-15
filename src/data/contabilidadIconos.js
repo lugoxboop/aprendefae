@@ -57,6 +57,15 @@ export const ICONO_POR_ACTIVIDAD = {
   "t7-2-llena-el-kardex": I.LlenaElKardex,
   "t7-2-periodico-o-permanente": I.PeriodicoOPermanente,
   "t7-2-flete-y-devolucion": I.FleteYDevolucion,
+  /* Tema 5 · Inversiones */
+  "b5-t5-a1": I.QueRentaDaEsteTitulo,
+  "b5-t5-a2": I.ElCierreCompletoDeSantaPacha,
+  /* Tema 6 · Cuentas por cobrar */
+  "b5-t6-a1": I.ClientesOOtraCuentaPorCobrar,
+  "b5-t6-a2": I.LaProvisionDeElTorito,
+  "b5-t6-a3": I.CuandoLaDeudaCastigadaVuelve,
+  /* Repaso del capítulo 5 */
+  "r5-1": I.RepasoCruzado,
 };
 
 /** Los nodos del camino con su ícono, si lo tienen. */
