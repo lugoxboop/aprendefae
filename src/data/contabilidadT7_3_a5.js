@@ -27,6 +27,27 @@ export const A5_ID = "t7-3-sobrantes-y-faltantes";
 /* I-1 e I-2 (p. 255). */
 export const I_LIBRO = { libros: 465_000, conteoSobra: 495_000, sobrante: 30_000, conteoFalta: 430_000, faltante: 35_000 };
 const C = I_LIBRO;
+/*
+ * Patrón T7-3 (Watari): el conteo en renglones, siempre el mayor arriba (la
+ * diferencia nunca sale negativa, y su nombre dice qué pasó). Rótulos y
+ * títulos de Watari, por confirmar con Near ([ESCRITO POR CLAUDE —
+ * PENDIENTE DE REVISIÓN], dice su patrón). Los usa también H5.
+ */
+export const ROTULOS_A5 = {
+  conteo: "Conteo físico", libros: "Saldo en libros", sobrante: "Sobrante", faltante: "Faltante",
+  ejemplo: "Ejemplo del libro · 31 de diciembre", otroConteo: "El mismo ejemplo, otro conteo",
+};
+/* Sobrante: conteo − libros. Faltante: libros − conteo. */
+export const cuentaDeConteo = (titulo, libros, conteo) => {
+  const R = ROTULOS_A5;
+  const sobra = conteo > libros;
+  const [mayor, menor] = sobra ? [[R.conteo, conteo], [R.libros, libros]] : [[R.libros, libros], [R.conteo, conteo]];
+  return {
+    tipo: "renglones", titulo,
+    filas: [{ rot: mayor[0], v: mayor[1] }, { op: "−", rot: menor[0], v: menor[1] }, { op: "=", rot: sobra ? R.sobrante : R.faltante, v: mayor[1] - menor[1], res: true }],
+  };
+};
+
 const INV = "Inventario de mercancías";
 const CMV = "Costo de mercancía vendida";
 
@@ -78,6 +99,8 @@ const SOBRANTE = {
   ],
   acierto: {
     texto: "Así es: $495.000 − $465.000 = $30.000. El conteo dio más que los libros.",
+    /* La pantalla pregunta por el sobrante: la cuenta llega con el acierto. */
+    figuras: [cuentaDeConteo(ROTULOS_A5.ejemplo, C.libros, C.conteoSobra)],
     asientos: [{ fecha: "31 de diciembre", lineas: [{ cuenta: INV, lado: DEBE, monto: C.sobrante }, { cuenta: CMV, lado: HABER, monto: C.sobrante }] }],
     pie: "Basado en el libro, p. 255",
   },
@@ -93,6 +116,8 @@ const FALTANTE = {
     "Ahí es al revés: el faltante va al debe de Costo de mercancía vendida y al haber de Inventario de mercancías. El faltante sube el costo.",
     "En el mismo ejemplo, ahora el conteo da $430.000. Los libros siguen en $465.000. Hay un faltante de $35.000.",
   ],
+  /* El texto ya da el faltante: la cuenta va con él. */
+  figuras: [cuentaDeConteo(ROTULOS_A5.otroConteo, C.libros, C.conteoFalta)],
   pregunta: "En el ajuste por faltante, ¿a qué lado va Inventario de mercancías?",
   opciones: [
     { id: "debe", texto: "Debe", devolucion: "Falta mercancía en la bodega, así que el activo baja. Inventario de mercancías va al haber." },

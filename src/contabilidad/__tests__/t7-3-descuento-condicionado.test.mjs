@@ -237,3 +237,60 @@ test("★★★ fuera del catálogo de FP; en T7-3, después de A2 (y de H2 si y
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A3_ID)), []);
   assert.doesNotMatch(leer("src/data/contabilidadT7_3_a3.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);
 });
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+/* Lo que se ve de las figuras: [«plazos» con o sin pago | título de renglones, cifras]. */
+const figuras = (c) => [...c.querySelectorAll("[data-plazos], figure[data-renglones]")].map((f) => (f.matches("[data-plazos]")
+  ? ["plazos", f.querySelector("[data-pago]")?.textContent ?? "sin pago", [...f.querySelectorAll(".pz-et b")].map((b) => b.textContent).join(" ")]
+  : [f.querySelector("figcaption").textContent, [...f.querySelectorAll(".rg-v")].map((x) => x.textContent)]));
+
+test("★★★ Patrón T7-3: la franja y las cuentas, cada una cuando ya no da la respuesta", async () => {
+  const C = A.H3_LIBRO;
+  assert.equal(C.lista - C.comercial, C.factura);
+  assert.equal(C.factura * 0.15, C.condicionado);
+  assert.equal(C.cliente - C.condicionado, C.pago);
+  const m = await montar();
+  try {
+    const c = m.caja;
+    const visto = {};
+    const mirar = (estado) => { visto[`${c.querySelector("[data-pantalla]").dataset.pantalla}:${estado}`] = figuras(c); };
+    for (let k = 0; k < 12; k++) {
+      const id = c.querySelector("[data-pantalla]").dataset.pantalla;
+      const p = pantalla(id);
+      if (p.opciones) {
+        mirar("antes");
+        const mala = p.opciones.find((o) => !o.correcta);
+        await tocar(c.querySelector(`[data-opcion="${mala.id}"]`)); await tocar(boton(c, "confirmar"));
+        mirar("error");
+        await tocar(boton(c, "probar-otra"));
+        await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`)); await tocar(boton(c, "confirmar"));
+        mirar("acierto");
+        await tocar(boton(c, "seguir"));
+      } else {
+        mirar("lectura");
+        const b = boton(c, "seguir") ?? boton(c, "empezar");
+        if (!b) break;
+        await tocar(b);
+      }
+    }
+    const libres = ["plazos", "sin pago", "Venta 10 días 20 días 30 días:"];
+    const conPago = ["plazos", "Pago · 4 jun", "Venta 10 días 20 días 30 días:"];
+    assert.deepEqual(visto, {
+      "portada:lectura": [], "que-es:antes": [], "que-es:error": [], "que-es:acierto": [], "un-gasto:lectura": [],
+      /* «30 días: sin descuento» es la respuesta de esta pantalla: la franja llega con el acierto. */
+      "condiciones:antes": [], "condiciones:error": [], "condiciones:acierto": [libres],
+      "ejemplo:lectura": [libres, ["Factura de San Calixto", ["4.200.000", "210.000", "3.990.000"]]],
+      /* «10 días: 15 %» también: el pago llega con el acierto. */
+      "cual-le-toca:antes": [], "cual-le-toca:error": [], "cual-le-toca:acierto": [conPago],
+      "sobre-que:antes": [], "sobre-que:error": [],
+      "sobre-que:acierto": [["El descuento condicionado", ["3.990.000", "15 %", "598.500"]], ["El pago del 4 de junio", ["4.488.750", "598.500", "3.890.250"]]],
+      "resumen:lectura": [],
+    });
+    /* El pago, en el día 10 de 30. */
+    await act(async () => {});
+  } finally {
+    m.desmontar();
+  }
+  assert.deepEqual(A.PLAZOS_A3(true).pago, { dia: 10, fecha: "4 jun" });
+});
