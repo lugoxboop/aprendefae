@@ -347,6 +347,11 @@ const RETIRADAS_DE_CONTABILIDAD = [
   "cu-corriente-de-cuentas",
   "cu-mayorizacion",
   "cu-error-escondido",
+  /* Los cuatro Hacer de T7 que retiró la 0115. */
+  "t7-2-debe-o-haber",
+  "t7-2-periodico-o-permanente",
+  "t7-3-comercial-o-condicionado",
+  "t7-3-que-entra-al-costo",
 ];
 
 test("ninguna regla sobra, salvo las de las actividades retiradas", () => {
@@ -366,7 +371,7 @@ test("ninguna regla sobra, salvo las de las actividades retiradas", () => {
   assert.deepEqual(sobran, [], `reglas de actividades que ya no existen: ${sobran.join(", ")}`);
 });
 
-test("★ las cinco retiradas conservan su regla, para las respuestas que ya existen", () => {
+test("★ las nueve retiradas conservan su regla, para las respuestas que ya existen", () => {
   for (const id of RETIRADAS_DE_CONTABILIDAD) {
     assert.ok(REGLAS[id], `${id} perdió su regla y el panel enseñaría el id crudo`);
     assert.equal(nombreDeActividad(id), null, `${id} sigue en el camino: esta lista sobra`);

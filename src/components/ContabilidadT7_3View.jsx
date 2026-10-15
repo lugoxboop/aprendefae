@@ -72,10 +72,8 @@ export const PIEZAS_T7_3 = [
 export const JUEGOS_T7_3 = [
   { id: H1.id, Mecanica: DescuentoEnFactura, titulo: H1.nombre },
   { id: H2.id, Mecanica: CadenaDeDescuentos, titulo: H2.nombre },
-  { id: H3.id, Mecanica: ComercialOCondicionado, titulo: H3.nombre },
   { id: H4.id, Mecanica: PagoATiempo, titulo: H4.nombre },
   { id: H5.id, Mecanica: AjustePorConteo, titulo: H5.nombre },
-  { id: H6.id, Mecanica: EntraAlCosto, titulo: H6.nombre },
   { id: H7.id, Mecanica: CostoOValorNeto, titulo: H7.nombre },
 ];
 

@@ -252,10 +252,10 @@ test("★★ las opciones, las líneas y su banco de cuentas se barajan; «Debe�
 
 /* ═══════════ 4 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
 
-test("★★★ en T7-3, justo después de H3: evaluativa, difícil, 50 FP", () => {
+test("★★★ en T7-3, justo después de A4 (H3 se retiró en la 0115): evaluativa, difícil, 50 FP", () => {
   assert.deepEqual(clasificacionDe("contabilidad", TEMA_T7_3, D.H4_ID), { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 });
   const ids = TEMA.actividades.map((x) => x.id);
-  assert.equal(ids.indexOf(D.H4_ID), ids.indexOf("t7-3-comercial-o-condicionado") + 1);
+  assert.equal(ids.indexOf(D.H4_ID), ids.indexOf("t7-3-descuento-en-dos-libros") + 1);
   for (const a of TEMA.actividades.filter((x) => x.clasificacion.tipo !== HACER)) assert.deepEqual(a.clasificacion, { tipo: APRENDER }, a.id);
 });
 

@@ -93,6 +93,14 @@ test("★★★ el componente pinta exactamente el SVG de Xeno: mismas piezas, m
 
 test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el Ciclo Completo, cada ícono una vez", () => {
   const hacer = new Set(SUBJECTS.contabilidad.topics.flatMap((t) => actividadesDeTipo(t, HACER).map((a) => a.id)));
+  /* Los cuatro Hacer que retiró la 0115 conservan su ícono: el retiro es blando,
+     y si vuelven al camino vuelven con su dibujo. */
+  const RETIRADAS_0115 = ["t7-2-debe-o-haber", "t7-2-periodico-o-permanente", "t7-3-comercial-o-condicionado", "t7-3-que-entra-al-costo"];
+  for (const id of RETIRADAS_0115) {
+    assert.ok(!hacer.has(id), `${id} sigue en el camino: sácala de RETIRADAS_0115`);
+    assert.ok(ICONO_POR_ACTIVIDAD[id], `${id} perdió su ícono`);
+    hacer.add(id);
+  }
   for (const id of Object.keys(ICONO_POR_ACTIVIDAD)) assert.ok(hacer.has(id), `${id} no es una actividad de Hacer de Contabilidad`);
   assert.equal(ICONO_POR_ACTIVIDAD["ciclo-completo"], undefined, "el Ciclo Completo no lleva ícono");
   assert.ok(!Object.keys(ICONO_POR_ACTIVIDAD).some((id) => /t1-3\b/.test(id)));

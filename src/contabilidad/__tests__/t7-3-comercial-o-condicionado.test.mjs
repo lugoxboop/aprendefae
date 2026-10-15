@@ -145,18 +145,20 @@ test("★★★ la tanda entera: siete ítems, un intento cada uno, y el porcent
 
 /* ═══════════ 3 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
 
-test("★★★ en T7-3, justo después de A4: evaluativa, fácil, 10 FP", () => {
-  assert.deepEqual(clasificacionDe("contabilidad", TEMA_T7_3, D.H3_ID), { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 });
-  assert.equal(TEMA.actividades.find((a) => a.id === D.H3_ID).nombre, D.H3.nombre);
+test("★★★ retirada por la 0115: ya no está en el camino de T7-3 ni la ofrece la vista; su pieza, sus datos y la 0105 se quedan", () => {
+  /* Retiro blando: sale de subjects.js y de la vista, pero no se borra nada. */
+  assert.equal(TEMA.actividades.find((a) => a.id === D.H3_ID), undefined, "sigue en el camino");
+  assert.ok(!JUEGOS_T7_3.some((j) => j.id === D.H3_ID), "la vista todavía la ofrece");
+  assert.equal(typeof ComercialOCondicionado, "function", "la pieza se borró");
   for (const a of TEMA.actividades.filter((x) => x.clasificacion.tipo !== HACER)) assert.deepEqual(a.clasificacion, { tipo: APRENDER }, a.id);
-  const ids = TEMA.actividades.map((x) => x.id);
-  assert.equal(ids.indexOf(D.H3_ID), ids.indexOf("t7-3-descuento-en-dos-libros") + 1);
+  const retiro = leer("supabase/migrations/0115_c7_retira_cuatro_hacer.sql");
+  assert.match(retiro, new RegExp(`update public\\.actividad_catalogo\\s+set retirada = true\\s+where activity_id in \\([^)]*'${D.H3_ID}'`));
 });
 
 test("★★★ la vista abre lo que el catálogo ofrece y registra con el motor compartido", () => {
   const ofrecidas = actividadesDeTipo(TEMA, HACER).filter((a) => !a.pendiente).map((a) => a.id).sort();
   assert.deepEqual(JUEGOS_T7_3.map((j) => j.id).sort(), ofrecidas);
-  assert.equal(JUEGOS_T7_3.find((j) => j.id === D.H3_ID).Mecanica, ComercialOCondicionado);
+  assert.ok(!JUEGOS_T7_3.some((j) => j.id === D.H3_ID), "retirada: la vista no la ofrece");
   assert.match(VISTA, /registrarActividadCompletada\(clas, \{\s*materiaId: MATERIA, temaId: TEMA_T7_3, actividadId, porcentajeAciertos: porcentaje, duracionMs, detalle,/);
 });
 
@@ -167,7 +169,7 @@ test("★★★ la 0105: del rango de la célula, aditiva y repetible, sin corre
   assert.doesNotMatch(sentencias, /\b(alter|update|delete|drop|truncate)\b/i);
   assert.match(sentencias, /select activity_id[\s\S]*where activity_id = 't7-3-comercial-o-condicionado';/);
   const dir = new URL("supabase/migrations/", RAIZ);
-  assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(D.H3_ID)), ["0105_t7_3_comercial_o_condicionado.sql"]);
+  assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(D.H3_ID)), ["0105_t7_3_comercial_o_condicionado.sql", "0115_c7_retira_cuatro_hacer.sql"]);
   assert.deepEqual(readdirSync(dir).filter((f) => f.startsWith("0105")), ["0105_t7_3_comercial_o_condicionado.sql"]);
 });
 

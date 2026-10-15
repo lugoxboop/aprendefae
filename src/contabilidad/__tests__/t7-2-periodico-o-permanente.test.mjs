@@ -196,20 +196,20 @@ test("★★ qué sistema va en «Versión 1» se baraja en cada intento; los í
 
 /* ═══════════ 3 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
 
-test("★★★ en T7-2, justo después de A4: evaluativa, medio, 25 FP", () => {
-  assert.deepEqual(clasificacionDe("contabilidad", TEMA_T7_2, D.H4_ID), { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
-  assert.equal(TEMA.actividades.find((a) => a.id === D.H4_ID).nombre, D.H4.nombre);
+test("★★★ retirada por la 0115: ya no está en el camino de T7-2 ni la ofrece la vista; su pieza, sus datos y la 0101 se quedan", () => {
+  /* Retiro blando: sale de subjects.js y de la vista, pero no se borra nada. */
+  assert.equal(TEMA.actividades.find((a) => a.id === D.H4_ID), undefined, "sigue en el camino");
+  assert.ok(!JUEGOS_T7_2.some((j) => j.id === D.H4_ID), "la vista todavía la ofrece");
+  assert.equal(typeof PeriodicoOPermanente, "function", "la pieza se borró");
   for (const a of TEMA.actividades.filter((x) => x.clasificacion.tipo !== HACER)) assert.deepEqual(a.clasificacion, { tipo: APRENDER }, a.id);
-  const ids = TEMA.actividades.map((x) => x.id);
-  assert.equal(ids.indexOf(D.H4_ID), ids.indexOf("t7-2-a4-san-calixto") + 1);
-  const nombres = TEMA.actividades.map((a) => a.nombre);
-  assert.equal(new Set(nombres).size, nombres.length);
+  const retiro = leer("supabase/migrations/0115_c7_retira_cuatro_hacer.sql");
+  assert.match(retiro, new RegExp(`update public\\.actividad_catalogo\\s+set retirada = true\\s+where activity_id in \\([^)]*'${D.H4_ID}'`));
 });
 
 test("★★★ la vista abre lo que el catálogo ofrece y registra con el motor compartido", () => {
   const ofrecidas = actividadesDeTipo(TEMA, HACER).filter((a) => !a.pendiente).map((a) => a.id).sort();
   assert.deepEqual(JUEGOS_T7_2.map((j) => j.id).sort(), ofrecidas);
-  assert.equal(JUEGOS_T7_2.find((j) => j.id === D.H4_ID).Mecanica, PeriodicoOPermanente);
+  assert.ok(!JUEGOS_T7_2.some((j) => j.id === D.H4_ID), "retirada: la vista no la ofrece");
   assert.match(VISTA, /registrarActividadCompletada\(clas, \{\s*materiaId: MATERIA, temaId: TEMA_T7_2, actividadId, porcentajeAciertos: porcentaje, duracionMs, detalle,/);
 });
 
@@ -220,7 +220,7 @@ test("★★★ la 0101: del rango de la célula, aditiva y repetible, sin corre
   assert.doesNotMatch(sentencias, /\b(alter|update|delete|drop|truncate)\b/i);
   assert.match(sentencias, /select activity_id[\s\S]*where activity_id = 't7-2-periodico-o-permanente';/);
   const dir = new URL("supabase/migrations/", RAIZ);
-  assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(D.H4_ID)), ["0101_t7_2_periodico_o_permanente.sql"]);
+  assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(D.H4_ID)), ["0101_t7_2_periodico_o_permanente.sql", "0115_c7_retira_cuatro_hacer.sql"]);
   assert.deepEqual(readdirSync(dir).filter((f) => f.startsWith("0101")), ["0101_t7_2_periodico_o_permanente.sql"]);
 });
 
