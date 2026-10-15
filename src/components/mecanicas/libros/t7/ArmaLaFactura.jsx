@@ -57,7 +57,7 @@ const TEXTO = { margin: 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22p
 function Fichas() {
   const ficha = (f) => (
     <div key={f.titulo} data-ficha={f.titulo} style={{ padding: "10px 12px", borderRadius: "11px", border: "1px solid rgba(248,249,250,0.12)", background: "rgba(10,20,34,0.35)" }}>
-      <p style={{ margin: "0 0 6px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar }}>{f.titulo.toUpperCase()}</p>
+      <p style={{ margin: "0 0 6px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar }}>{f.titulo.toUpperCase()}</p>
       <dl style={{ margin: 0, display: "grid", gridTemplateColumns: "auto minmax(0, 1fr)", columnGap: "10px", rowGap: "3px" }}>
         {FICHAS_H2.campos.map((c, k) => (
           <div key={c} style={{ display: "contents" }}>
