@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -54,7 +55,7 @@ const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.j
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
 const V1 = leer("orquestador/conocimiento/paquetes/t7-3-h4-v1.md");
-const LOTE3 = leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md");
+const LOTE3 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md"));
 const MAPA = leer("orquestador/conocimiento/mapas/t7-inventarios.md");
 const VISTA = leer("src/components/ContabilidadT7_3View.jsx");
 const MIGRACION = leer("supabase/migrations/0106_t7_3_pago_a_tiempo.sql");

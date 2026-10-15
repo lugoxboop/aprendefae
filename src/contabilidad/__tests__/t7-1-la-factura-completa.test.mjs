@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -28,8 +29,8 @@ const RAIZ = new URL("../../../", import.meta.url);
 const PAQUETE = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-pieza2-v2.md", RAIZ), "utf8");
 const CONTENIDO = PAQUETE.slice(PAQUETE.indexOf("## Contenido por pantalla y estado"), PAQUETE.indexOf("## Erratas C7"));
 /* Lote 2 de la revisión de calidad (Near): las pistas del primer error y el anexo de la tercera opción. */
-const LOTE2_PISTAS = readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-pistas-v1.md", RAIZ), "utf8");
-const LOTE2_ANEXO = readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-anexo-v1.md", RAIZ), "utf8");
+const LOTE2_PISTAS = conCorreccionesDeMello(readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-pistas-v1.md", RAIZ), "utf8"));
+const LOTE2_ANEXO = conCorreccionesDeMello(readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-anexo-v1.md", RAIZ), "utf8"));
 const P = A.PIEZA_LA_FACTURA_COMPLETA;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 const fichaComoTexto = (f) => `${f.dato}: ${f.texto}`;

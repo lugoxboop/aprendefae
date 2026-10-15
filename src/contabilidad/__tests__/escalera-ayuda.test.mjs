@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -225,8 +226,8 @@ test("★★★ ninguna pista de línea dice el lado: pregunta por él", () => {
 /* ═══════════ 3b · LAS PISTAS Y EL ANEXO, LETRA POR LETRA CONTRA NEAR ═══════════ */
 
 const PAQUETES = new URL("orquestador/conocimiento/paquetes/", RAIZ);
-const PISTAS_MD = readFileSync(new URL("lote2-pistas-v1.md", PAQUETES), "utf8");
-const ANEXO_MD = readFileSync(new URL("lote2-anexo-v1.md", PAQUETES), "utf8");
+const PISTAS_MD = conCorreccionesDeMello(readFileSync(new URL("lote2-pistas-v1.md", PAQUETES), "utf8"));
+const ANEXO_MD = conCorreccionesDeMello(readFileSync(new URL("lote2-anexo-v1.md", PAQUETES), "utf8"));
 
 /* Cada fila de la tabla de Near: pieza, índice, pantalla, línea (si la hay) y la pista. */
 function filasDeNear() {

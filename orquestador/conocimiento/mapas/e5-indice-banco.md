@@ -275,6 +275,14 @@ Datos declarados y visibles:
   (sin el día inicial, y el descuento aplica el día del límite) ganan el
   descuento. La convención sigue abierta con el profesor en `fuente.md`.
 - La venta del 10 no dice «clientes varios»: se toma como un solo cliente.
+- **Diez asientos, no doce** (re-auditoría de Takamura, 15 de octubre): se
+  omiten a propósito los fletes del 25 y del 28 del libro. Repetían
+  exactamente los del 2 y del 10 (dos renglones contra Caja, el mismo
+  distractor) sin pedir ninguna decisión nueva, y alargaban la pieza para un
+  estudiante cansado. Con diez asientos, 9 FP por acierto: sin mitades.
+- **«El mes en dos cuentas»** (B3 de `enganche.md`): Caja y Descuento comercial
+  condicionado se mueven con cada asiento; paquete común con r5-3,
+  `paquetes/e5-mes-en-dos-cuentas.md`.
 
 ## Anexo · el script del cuadre
 

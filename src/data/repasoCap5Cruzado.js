@@ -396,10 +396,26 @@ export function evaluarC8(pantalla, clasificacion) {
   return { ok: false, fichas, textos: mal.length > 1 ? [primera.retro, INTERFAZ_R5_1.hayMas] : [primera.retro] };
 }
 
-/* Lo que se guarda como respuesta de la pantalla 4: la clasificación entera. */
+/*
+ * Lo que se guarda como respuesta de la pantalla 4 (solo cuando falla): las
+ * fichas mal puestas y el botón que eligió el estudiante, en el orden del
+ * estado de resultados. El servidor guarda 120 caracteres de `respuesta`
+ * (0036: left(…, 120)); la clasificación entera llegaba a 159 y se cortaba a
+ * media ficha. Si las mal puestas no caben, se corta en una ficha entera y se
+ * agrega « · …».
+ */
+export const LARGO_RESPUESTA = 120;
 export function respuestaDeC8(pantalla, clasificacion) {
   const nombre = { suma: INTERFAZ_R5_1.suma, resta: INTERFAZ_R5_1.resta, fuera: INTERFAZ_R5_1.noEntra };
-  return pantalla.datos.map((d) => `${d.etiqueta}: ${nombre[clasificacion[d.id]]}`).join(" · ");
+  const mal = pantalla.datos.filter((d) => clasificacion[d.id] !== botonCorrectoDe(d)).map((d) => `${d.etiqueta}: ${nombre[clasificacion[d.id]]}`);
+  let texto = "";
+  for (const [k, parte] of mal.entries()) {
+    const siguiente = k ? `${texto} · ${parte}` : parte;
+    const resto = k < mal.length - 1 ? " · …" : "";
+    if ((siguiente + resto).length > LARGO_RESPUESTA) return `${texto} · …`;
+    texto = siguiente;
+  }
+  return texto;
 }
 
 /*

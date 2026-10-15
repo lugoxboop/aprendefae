@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -25,7 +26,7 @@ import { readFileSync } from "node:fs";
  */
 
 const RAIZ = new URL("../../../", import.meta.url);
-const MD = readFileSync(new URL("orquestador/conocimiento/paquetes/lote3-distractores-v1.md", RAIZ), "utf8");
+const MD = conCorreccionesDeMello(readFileSync(new URL("orquestador/conocimiento/paquetes/lote3-distractores-v1.md", RAIZ), "utf8"));
 const datos = async (f, k) => (await import(new URL(`src/data/${f}.js`, RAIZ).href))[k];
 
 const HACER = {

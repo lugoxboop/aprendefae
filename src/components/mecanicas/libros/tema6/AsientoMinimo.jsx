@@ -100,7 +100,7 @@ export default function AsientoMinimo({ hecho, elegida, reducido }) {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "8px" }}>
         {["debe", "haber"].map((lado) => (
           <div key={lado} style={{ minWidth: 0 }}>
-            <p style={{ margin: "0 0 4px", paddingBottom: "3px", borderBottom: `1px solid ${ATENUADO}`, textAlign: "center", fontFamily: SORA, fontSize: "9px", fontWeight: 700, lineHeight: 1.3, letterSpacing: "0.1em", color: TONO_ROTULO[lado] }}>
+            <p style={{ margin: "0 0 4px", paddingBottom: "3px", borderBottom: `1px solid ${ATENUADO}`, textAlign: "center", fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: 1.3, letterSpacing: "0.1em", color: TONO_ROTULO[lado] }}>
               {CUENTA_T_T6_A3[lado]}
             </p>
             <Ranura lado={lado} cuenta={a[lado]} encendida={lado === "debe" && !elegida} reducido={reducido} />
