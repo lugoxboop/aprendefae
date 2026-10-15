@@ -228,6 +228,45 @@ const PAQUETES = new URL("orquestador/conocimiento/paquetes/", RAIZ);
 const PISTAS_MD = readFileSync(new URL("lote2-pistas-v1.md", PAQUETES), "utf8");
 const ANEXO_MD = readFileSync(new URL("lote2-anexo-v1.md", PAQUETES), "utf8");
 
+/*
+ * LOS RECORTES DEL LOTE 1 (lote1-recortes-*.md) GANAN. Cada entrega trae una
+ * tabla «Cambios al lote 2…» con el texto viejo y el nuevo: se aplica como
+ * reemplazo a las pistas del lote 2 y a su anexo. Y cada pieza recortada trae
+ * su sección completa («## <id> · «…»»): de ahí salen las pistas de sus
+ * preguntas, por id e índice, porque pantallas e ids pueden haber cambiado.
+ */
+const RECORTES_MD = readdirSync(PAQUETES).filter((f) => /^lote1-recortes-.*\.md$/.test(f)).sort().map((f) => readFileSync(new URL(f, PAQUETES), "utf8"));
+const CAMBIOS = new Map(RECORTES_MD.flatMap((md) => [...md.matchAll(/^\| (?:Pista|Anexo) · [^|]+ \| «(.+?)» \| «(.+?)» \|$/gm)].map((m) => [m[1], m[2]])));
+/*
+ * Las correcciones de Mello a los recortes (mello-recortes-v1.md) que cambian
+ * una pista: también ganan. Cada una se comprueba contra la auditoría.
+ */
+const MELLO_MD = readFileSync(new URL("mello-recortes-v1.md", PAQUETES), "utf8");
+const CORRECCIONES_MELLO = [
+  ["Santa Martha es quien recibe el descuento. Recuerda de qué lado lo anota quien lo recibe.", "Para quien vende, la cuenta fue al debe. Santa Martha está del otro lado del negocio."],
+];
+for (const [, nuevo] of CORRECCIONES_MELLO) assert.ok(MELLO_MD.includes(`«${nuevo}»`), `no está en la auditoría de Mello: «${nuevo}»`);
+if (RECORTES_MD.length) for (const [viejo, nuevo] of CORRECCIONES_MELLO) CAMBIOS.set(viejo, nuevo);
+const vigente = (t) => CAMBIOS.get(t) ?? t;
+
+/* Las secciones de las piezas recortadas: por pantalla, su índice, su pista y las pistas de línea con nombre. */
+function recortadas() {
+  const out = {};
+  for (const md of RECORTES_MD) {
+    let pieza = null, pant = null;
+    for (const l of md.split("\n")) {
+      const t = l.match(/^## (t[\d-]+\S*) · «/);
+      if (t) { pieza = t[1]; out[pieza] = []; pant = null; continue; }
+      const p = l.match(/^\*\*P(\d+) · `([^`]+)`\*\*/);
+      if (p && pieza) { pant = { k: Number(p[1]), id: p[2], pista: null, lineas: {} }; out[pieza].push(pant); continue; }
+      const q = l.match(/^- \*pista(?: · ([^(]+?))? \(1\.er error(?:, las cinco líneas)?\):\* «(.+)»/);
+      if (q && pant) { if (q[1]) pant.lineas[q[1].trim()] = q[2]; else pant.pista = q[2]; }
+    }
+  }
+  return out;
+}
+const RECORTADAS = recortadas();
+
 /* Cada fila de la tabla de Near: pieza, índice, pantalla, línea (si la hay) y la pista. */
 function filasDeNear() {
   const filas = [];
@@ -241,34 +280,60 @@ function filasDeNear() {
   return filas;
 }
 
-test("★★★ las 80 pistas de Near están en los datos, letra por letra, en su pantalla (por índice y por id) o en su línea", () => {
+/* Una línea por su nombre en los recortes: su id, o el comienzo de su texto («quitar» → «Quitar el inventario inicial…»). */
+const lineaPorNombre = (s, nombre) => s.lineas?.find((l) => l.id === nombre || String(l.texto ?? l.cuenta ?? "").toLowerCase().startsWith(nombre.toLowerCase()));
+
+/* Lo que debe haber en los datos: [pieza, k, pantalla, línea|null, pista]. */
+function pistasEsperadas() {
+  const esperadas = [];
+  for (const f of filasDeNear()) {
+    /* De una pieza recortada, las preguntas las da su sección; las líneas, el lote 2 con sus cambios. */
+    if (RECORTADAS[f.pieza] && !f.linea) continue;
+    esperadas.push({ ...f, pista: vigente(f.pista) });
+  }
+  for (const [pieza, pantallas] of Object.entries(RECORTADAS)) {
+    for (const p of pantallas) {
+      if (p.pista) esperadas.push({ pieza, k: p.k, pantalla: p.id, linea: null, pista: vigente(p.pista) });
+      for (const [nombre, pista] of Object.entries(p.lineas)) esperadas.push({ pieza, k: p.k, pantalla: p.id, linea: nombre, pista: vigente(pista), porNombre: true });
+    }
+  }
+  /* Una línea con pista propia en los recortes reemplaza a la del lote 2. */
+  return esperadas.filter((e, _, todas) => e.porNombre || !e.linea || !todas.some((x) => x.porNombre && x.pieza === e.pieza && x.pantalla === e.pantalla));
+}
+
+test("★★★ el paquete del lote 2 trae sus 80 pistas (56 de preguntas)", () => {
   const filas = filasDeNear();
   assert.equal(filas.length, 80);
   assert.equal(filas.filter((f) => !f.linea).length, 56);
+});
+
+test("★★★ las pistas de Near están en los datos, letra por letra, en su pantalla (por índice y por id) o en su línea; los recortes del lote 1 ganan", () => {
   const porId = Object.fromEntries(PIEZAS.map((p) => [p.id, p]));
-  for (const f of filas) {
+  const esperadas = pistasEsperadas();
+  for (const f of esperadas) {
     const pz = porId[f.pieza];
     assert.ok(pz, `no está la pieza ${f.pieza}`);
     const s = pz.pantallas[f.k];
     assert.equal(s?.id, f.pantalla, `${f.pieza}: P${f.k}`);
-    const dato = !f.linea ? s.pista : f.linea === "las 5 líneas" ? s.pista : s.lineas.find((l) => l.id === f.linea)?.pista;
+    const dato = !f.linea || f.linea === "las 5 líneas" ? s.pista : f.porNombre ? lineaPorNombre(s, f.linea)?.pista : s.lineas.find((l) => l.id === f.linea)?.pista;
     assert.equal(dato, f.pista, `${f.pieza} · ${f.pantalla}${f.linea ? ` · ${f.linea}` : ""}`);
   }
   /* Y al revés: en los datos no hay pistas que Near no escribió. */
   const enDatos = [...PREGUNTAS.map((x) => x.pantalla.pista), ...LINEAS.map((x) => x.linea.pista).filter(Boolean)];
-  for (const p of enDatos) assert.ok(filas.some((f) => f.pista === p), `pista sin fila en el paquete: «${p}»`);
+  for (const p of enDatos) assert.ok(esperadas.some((f) => f.pista === p), `pista sin fila en los paquetes: «${p}»`);
 });
 
-test("★★★ anexo: las 10 preguntas que tenían dos opciones tienen tres, con la tercera de Near letra por letra", () => {
+test("★★★ anexo: las 10 preguntas que tenían dos opciones tienen tres, con la tercera de Near letra por letra (o la de los recortes)", () => {
   const filas = [...ANEXO_MD.matchAll(/^\| (t7-\S+) \| P\d+ · `([^`]+)` \| .*? \| \*\*(.+?)\*\* \| «(.+?)» \| [\d,]+ \|$/gm)];
   assert.equal(filas.length, 10);
   const porId = Object.fromEntries(PIEZAS.map((p) => [p.id, p]));
   for (const [, pieza, pantalla, texto, devolucion] of filas) {
     const s = porId[pieza].pantallas.find((x) => x.id === pantalla);
+    assert.ok(s, `${pieza} · ${pantalla}: ya no está`);
     assert.equal(s.opciones.length, 3, `${pieza} · ${pantalla}`);
-    const nueva = s.opciones.find((o) => o.texto === texto);
-    assert.ok(nueva && !nueva.correcta, `${pieza} · ${pantalla}: falta «${texto}»`);
-    assert.equal(nueva.devolucion, devolucion);
+    const nueva = s.opciones.find((o) => o.texto === vigente(texto));
+    assert.ok(nueva && !nueva.correcta, `${pieza} · ${pantalla}: falta «${vigente(texto)}»`);
+    assert.equal(nueva.devolucion, vigente(devolucion));
   }
   /* El cambio de texto de una opción correcta. */
   const cadena = porId["t7-3-descuentos-en-cadena"].pantallas.find((x) => x.id === "ejemplo");
@@ -276,6 +341,12 @@ test("★★★ anexo: las 10 preguntas que tenían dos opciones tienen tres, co
   assert.ok(ANEXO_MD.includes("| t7-3-descuentos-en-cadena · P2 · opción correcta | «No» | «No: le rebaja menos del 23 %» |"));
   /* Ninguna pregunta de opción de Aprender se queda en dos. */
   assert.deepEqual(PREGUNTAS.filter((x) => x.pantalla.opciones.length < 3).map((x) => `${x.pieza.id} · ${x.pantalla.id}`), []);
+});
+
+test("★★ los recortes se leen: las nueve piezas recortadas de T7-1 y T7-3, y su tabla de cambios", () => {
+  /* Cada entrega se suma con su PR; esta prueba crece con ellas. */
+  for (const id of Object.keys(RECORTADAS)) assert.ok(PIEZAS.some((p) => p.id === id), `${id}: la sección no es de una pieza publicada`);
+  for (const [viejo, nuevo] of CAMBIOS) assert.notEqual(viejo, nuevo);
 });
 
 /* ═══════════ 4 · LA RESPUESTA NO SE ADELANTA ═══════════ */
