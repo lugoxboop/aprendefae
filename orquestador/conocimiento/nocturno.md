@@ -116,10 +116,10 @@ que está repartido y lo que no.
 
 | | Célula B | Célula C | Célula D | Célula E |
 |---|---|---|---|---|
-| Secciones | §5.3 y §5.4, pp. 191-206 | §5.5 y §5.6, pp. 207-261 | §5.1 y §5.2, pp. 179-190 | banco de ejercicios, pp. 262-274 |
-| Temas | T5 y T6 | T7-1, T7-2 y T7-3 | T4 | `repaso-capitulo-5` |
+| Secciones | §5.4, pp. 199-206 | §5.3 y §5.5-§5.6, pp. 191-198 y 207-261 | §5.0-§5.2, pp. 177-190 | banco de ejercicios, pp. 262-274 |
+| Temas | T6 | T5 y T7-1, T7-2, T7-3 | T4 | `repaso-capitulo-5` |
 | Prefijo de rama | `feat/conta-b5-` | `feat/conta-c7-` | `feat/conta-d4-` | `feat/conta-e5-` |
-| Prefijo de id | `t5-`, `t6-` | `t7-` | `t4-` | `r5-` |
+| Prefijo de id | `t6-` (y sus `b5-t5-*` ya publicados) | `t7-`, y `t5-` para lo nuevo de T5 | `t4-` | `r5-` |
 | Migraciones | 0070 a 0089 | 0090 a **0149** | **0200 a 0249** | **0250 a 0299** |
 | Su vista | la del tema que construye | la del tema que construye | `ContabilidadT4View` | `RepasoCapitulo5View` |
 | Sus datos | `src/data/contabilidadT5*`, `T6*` | `src/data/contabilidadT7*` | `src/data/contabilidadT4*` | `src/data/repasoCap5*` |
