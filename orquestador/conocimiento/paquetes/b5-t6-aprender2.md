@@ -185,3 +185,26 @@ Para Kaede, a 375:
 La correcta cabe en una línea por 0,05 px (286,95 de ancho en un hueco de 287). Si en el sitio pasa a dos, lo paso a Futaba.
 La opción C es la única de dos líneas. Es incorrecta, así que no delata la respuesta.
 §11 · ME FALTA: nada.
+
+## (3) Futaba · entrega 2: predecir antes de revelar, capa 3 (pegada tal cual)
+
+
+Cómo funciona (para Mai):
+
+El estudiante toca la caja, elige y se revela el texto de siempre.
+Si falla, la devolución va antes de ese texto. Si acierta, el texto sale directo, sin «Sí.».
+Hay un intento por caja y no da puntaje.
+Los textos que se revelan y el texto final de cada capa no cambian.
+
+T6 A2 ★ (Basado en el libro, pp. 199-200). Ya no repite la capa 4.
+
+Consigna: «Toca cada método y decide cuándo aparece el gasto. Después, mira qué se debita al castigar.» (70)
+Opciones de las dos cajas: El día del castigo · Al cerrar el periodo.
+Anulación directa, correcta «El día del castigo». Si falla: «Con este método, el gasto se anota cuando la deuda se da por perdida.» (86)
+Provisiones, correcta «Al cerrar el periodo». Si falla: «Con provisiones, el gasto ya se anotó al cerrar el periodo.» (83)
+
+## (4) Kaede · la pregunta de la caja, para Shoko
+
+La hoja 6 de Mai propone «¿Qué se debita al castigar la deuda?», pero no responde a las opciones de Futaba. Mientras Shoko decide, la pregunta sale de la consigna nueva («decide cuándo aparece el gasto»):
+
+¿Cuándo aparece el gasto?

@@ -483,3 +483,26 @@ Si quieres certeza total, que Kaede o la Célula E las busquen en el banco digit
 - «Se debita Gasto provisiones – cuentas incobrables por $74.000.»
 - «Cálculo: $1.300.000 − $74.000 = $1.226.000, el valor neto.»
 - «Una deuda de $380.000 lleva ocho meses vencida. Con los porcentajes del ejemplo, ¿cuánto se provisiona por ella?»
+
+## (6) Futaba · entrega 2: predecir antes de revelar, capa 3 (pegada tal cual)
+
+
+Cómo funciona (para Mai):
+
+El estudiante toca la caja, elige y se revela el texto de siempre.
+Si falla, la devolución va antes de ese texto. Si acierta, el texto sale directo, sin «Sí.».
+Hay un intento por caja y no da puntaje.
+Los textos que se revelan y el texto final de cada capa no cambian.
+
+T6 A5
+
+Consigna: «Toca cada grupo y decide qué porcentaje le toca. Después, mira cuánto se provisiona.» (71)
+Grupo	Opciones	Correcta	Devolución si falla	Pie
+g1 ★	Nada · 5 % · 10 %	Nada	En este ejemplo, las vigentes y las de hasta tres meses no llevan provisión. (86)	Escenario simulado
+g2	Nada · 5 % · 10 %	5 %	Más de tres meses, sin pasar de seis: es el 5 %.	Decreto 1625 de 2016
+g3	5 % · 10 % · 15 %	10 %	Más de seis meses, sin pasar de un año: es el 10 %.	Decreto 1625 de 2016
+g4	5 % · 10 % · 15 %	15 %	Más de un año: es el 15 %, el más alto.	Decreto 1625 de 2016
+
+## (7) Mai · hoja 6: la pregunta de la caja (la revisa Shoko)
+
+«¿Qué porcentaje le toca?»
