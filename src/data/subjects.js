@@ -630,15 +630,18 @@ export const SUBJECTS = {
        * segmento de la dirección que ve el estudiante. El id y el lugar los
        * fijó el coordinador en nocturno.md (PR #138).
        *
-       * ANDAMIO, SIN ACTIVIDADES. Con la lista vacía, el índice pinta una
-       * tarjeta sin insignias que abre una mitad Aprender en blanco: por eso
-       * el bloque no entra a main solo, sino junto con la pieza A1
-       * (t4-a1-la-caja), que es la primera que se escribe aquí.
+       * El orden de sus piezas es el del plan de Yujiro: A0, y después A1 → H1
+       * → H2 → A2…
        */
       {
         id: "efectivo-caja-menor-bancos",
         title: "Efectivo, caja menor y bancos",
-        actividades: [],
+        actividades: [
+          /* A0, pp. 177-179. Abre el tema. Aprender: cero FP, no entra al catálogo. */
+          { id: "t4-a0-el-activo-corriente", nombre: "El activo corriente", clasificacion: { tipo: APRENDER } },
+          /* A1, pp. 179-180. Aprender: cero FP, no entra al catálogo. */
+          { id: "t4-a1-la-caja", nombre: "La caja", clasificacion: { tipo: APRENDER } },
+        ],
       },
       /*
        * EL TEMA 5 (Célula B), por ahora con su pieza 1 de Aprender.

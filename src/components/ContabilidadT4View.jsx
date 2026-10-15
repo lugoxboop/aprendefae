@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ChevronLeft } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, Check, X } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
@@ -15,20 +15,26 @@ import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.j
 import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
 import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
+import { Panel } from "./mecanicas/salaDeControl/marco.jsx";
+import { barajar, barajarDistinto } from "../utils/barajar.js";
+import { BOTON, INTERFAZ, DEBE, HABER, PIEZA_LA_CAJA, FIGURA_CAJON, ESTADOS_CAJON, SUS_SERVICIOS } from "../data/contabilidadT4.js";
+import { PIEZA_EL_ACTIVO_CORRIENTE, FIGURA_RAYA, ESTADOS_RAYA } from "../data/contabilidadT4A0.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * T4 DE CONTABILIDAD — «Efectivo, caja menor y bancos» (Célula D).
  *
- * ANDAMIO: la cabecera, las dos mitades y el camino, con la misma forma que
- * T7-3, y todavía sin una sola pieza. El camino sale de `subjects.js` y
- * JUEGOS_T4 dice qué componente pinta cada id. Al terminar una partida, la
- * vista registra con el motor compartido (registrarActividadCompletada →
- * otorgarFP), sin tocarlo.
+ * La cabecera, las dos mitades y el camino, con la misma forma que T7-3. El
+ * camino sale de `subjects.js` y JUEGOS_T4 dice qué componente pinta cada
+ * id. Al terminar una partida, la vista registra con el motor compartido
+ * (registrarActividadCompletada → otorgarFP), sin tocarlo.
  *
- * Cómo entra A1 (t4-a1-la-caja, src/data/contabilidadT4.js): una fila en
- * PIEZAS_T4 con su componente de pantallas, y su línea en el bloque T4 de
- * subjects.js. Las de Hacer entran igual en JUEGOS_T4.
+ * Las piezas de Aprender se pintan con PantallasT4, que vive aquí y no en una
+ * carpeta de mecánicas: es el carril de la Célula D y nadie más lo usa.
+ *
+ * EL ORDEN DE PIEZAS_T4 LO DA `numero`, no la posición en la lista: A0 «El
+ * activo corriente» = 0, A1 «La caja» = 1, A2 = 2… La prueba t4-andamio lo
+ * afirma.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -36,7 +42,10 @@ const MATERIA = "contabilidad";
 export const TEMA_T4 = "efectivo-caja-menor-bancos";
 
 /* En el orden del número de pieza. El rótulo «Pieza n de N» cuenta las publicadas. */
-export const PIEZAS_T4 = [].sort((a, b) => a.numero - b.numero);
+export const PIEZAS_T4 = [
+  { numero: PIEZA_EL_ACTIVO_CORRIENTE.numero, pieza: PIEZA_EL_ACTIVO_CORRIENTE, Pieza: PantallasT4 },
+  { numero: PIEZA_LA_CAJA.numero, pieza: PIEZA_LA_CAJA, Pieza: PantallasT4 },
+].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS_T4 = [];
@@ -141,5 +150,401 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
         </div>
       </div>
     </FondoMateria>
+  );
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · LAS PANTALLAS DE APRENDER.
+ *
+ * La forma de PantallasT7_3, sin lo que T4 no usa (fichas, cuentas T y las
+ * figuras de Watari): una pantalla a la vez; portada, lectura y resumen con
+ * su botón y su pie; elección con opciones barajadas en cada intento,
+ * «Confirmar», y «Incorrecto.» con «Probar otra» o «Correcto.» con «Seguir».
+ *
+ * Dos cosas propias de A1:
+ *   · `listaNumerada`: los siete controles y el resumen van numerados, como
+ *     en el paquete
+ *   · `trasAcertar`: lo que se muestra solo con el acierto, debajo del
+ *     mensaje (el asiento 2 de la p. 180: es la respuesta, A1 v5)
+ *
+ * Las figuras de Hanayama: una pantalla que traiga `figura` la pinta entre sus
+ * textos y su asiento (texto → figura → asiento → botón → pie). En una
+ * elección, la figura sigue el estado de la pregunta y no dibuja la respuesta
+ * mientras se pregunta. NO CALIFICA y no da FP: es Aprender. Clases `t4p-`.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+const COLOR = { fondo: "#0E1B2E", texto: "#F8F9FA", texto2: "#A8B6C8", borde: "#B8C4D4", debe: "#2A9D8F", haber: "#E9C46A", error: "#E76F51" };
+
+/* Las cifras con el formato del libro: miles con punto. */
+export const cifra = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+export const CSS_T4P = `
+.t4p { display: grid; gap: 12px; min-width: 0; color: ${COLOR.texto}; font-family: "Inter", sans-serif; font-size: 15px; line-height: 1.4; }
+.t4p * { box-sizing: border-box; }
+.t4p-p { margin: 0; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
+.t4p-nota { margin: 0; font-size: 14px; line-height: 1.45; color: ${COLOR.texto2}; overflow-wrap: anywhere; }
+.t4p-preg { font: 600 15px/1.45 "Sora", "Inter", sans-serif; }
+.t4p-pie { margin: 4px 0 0; font-size: 12px; line-height: 1.4; color: ${COLOR.texto2}; overflow-wrap: anywhere; }
+.t4p-btn { appearance: none; min-height: 44px; width: 100%; border-radius: 8px; border: 1px solid ${COLOR.texto}; background: ${COLOR.texto}; color: ${COLOR.fondo}; font: 600 15px "Inter", sans-serif; cursor: pointer; }
+.t4p-btn[aria-disabled="true"] { background: transparent; color: ${COLOR.texto2}; border-color: ${COLOR.texto2}; cursor: default; }
+.t4p-btn:focus-visible, .t4p-op:focus-visible { outline: 2px solid ${COLOR.texto}; outline-offset: 2px; }
+.t4p-ops { display: grid; gap: 8px; }
+.t4p-op { appearance: none; text-align: left; min-height: 44px; padding: 10px 14px; border: 1px solid ${COLOR.borde}; border-radius: 12px; background: transparent; color: ${COLOR.texto}; font: 400 15px/1.35 "Inter", sans-serif; cursor: pointer; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.t4p-op[aria-pressed="true"] { background: ${COLOR.texto}; color: ${COLOR.fondo}; border-color: ${COLOR.texto}; }
+.t4p-op:disabled { cursor: default; }
+.t4p-op-error { border-color: ${COLOR.error}; box-shadow: inset 0 0 0 1px ${COLOR.error}; }
+.t4p-msg { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 8px; align-items: start; padding: 10px 12px; border-radius: 8px; border: 1px solid; outline: none; }
+.t4p-msg-error { border-color: ${COLOR.error}; }
+.t4p-msg-ok { border-color: ${COLOR.borde}; }
+.t4p-msg svg { margin-top: 2px; }
+.t4p-msg-cuerpo { display: grid; gap: 6px; min-width: 0; }
+.t4p-msg-palabra { font: 600 14px/1.35 "Inter", sans-serif; }
+.t4p-msg-error .t4p-msg-palabra { color: ${COLOR.error}; }
+.t4p-msg p { margin: 0; font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+.t4p-as { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; border: 1px solid ${COLOR.borde}; border-radius: 10px; padding: 12px; }
+.t4p-g2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.t4p-as-h { display: grid; gap: 6px; padding-bottom: 6px; font: 600 13px "Sora", "Inter", sans-serif; }
+.t4p-as-h .t4p-g2 > span { font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .06em; text-transform: uppercase; text-align: right; padding-inline: 9px; }
+.t4p-d { color: ${COLOR.debe}; } .t4p-hb { color: ${COLOR.haber}; }
+.t4p-as-r { display: grid; gap: 4px; padding-block: 8px; border-top: 1px solid ${COLOR.borde}; }
+.t4p-as-r > span:first-child { font-size: 14px; overflow-wrap: anywhere; min-width: 0; }
+.t4p-as-r .t4p-g2 > span { text-align: right; padding-inline: 9px; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 0; }
+.t4p-sangria { padding-left: 24px; }
+.t4p-lista { margin: 0; padding-left: 26px; display: grid; gap: 6px; font-size: 15px; line-height: 1.45; }
+/* La hoja global del sitio quita el estilo de lista: aquí vuelven los números. */
+.t4p-lista li { overflow-wrap: anywhere; list-style: decimal; }
+.t4p-nueva { animation: t4p-aparece .12s ease-out; }
+@keyframes t4p-aparece { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .t4p *, .t4p *::before, .t4p *::after { transition: none !important; animation: none !important; } }
+`;
+
+/* Una pantalla sin pie (el paquete de A0 deja una así) no pinta el párrafo vacío. */
+function PieT4({ texto }) { return texto ? <p className="t4p-pie" data-pie>{texto}</p> : null; }
+
+function BotonT4({ nombre, texto, onClick, inactivo = false }) {
+  return (
+    <button type="button" className="t4p-btn" data-boton={nombre} aria-disabled={inactivo ? "true" : undefined} onClick={inactivo ? undefined : onClick}>
+      {texto}
+    </button>
+  );
+}
+
+function MensajeT4({ ok, texto, refFoco }) {
+  return (
+    <div ref={refFoco} tabIndex={-1} role="status" className={`t4p-msg ${ok ? "t4p-msg-ok" : "t4p-msg-error"}`} data-mensaje={ok ? "acierto" : "error"}>
+      {ok ? <Check size={16} color={COLOR.texto} aria-hidden="true" /> : <X size={16} color={COLOR.error} aria-hidden="true" />}
+      <div className="t4p-msg-cuerpo">
+        <span className="t4p-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
+        <p data-texto data-devolucion>{texto}</p>
+      </div>
+    </div>
+  );
+}
+
+const TextosT4 = ({ lista, nueva = false }) => (lista ?? []).map((t) => <p key={t} className={`t4p-p${nueva ? " t4p-nueva" : ""}`} data-texto>{t}</p>);
+
+/* Un asiento en lectura, sin fecha: el libro pone «xxxx». */
+export function AsientoT4({ asiento, nuevo = false }) {
+  return (
+    <div className={`t4p-as${nuevo ? " t4p-nueva" : ""}`} role="table" aria-label={asiento.nombre} data-asiento={asiento.nombre}>
+      <div className="t4p-as-h" role="row">
+        <span className="t4p-g2">
+          <span className="t4p-d" role="columnheader">{INTERFAZ.debe}</span>
+          <span className="t4p-hb" role="columnheader">{INTERFAZ.haber}</span>
+        </span>
+      </div>
+      {asiento.lineas.map((l) => (
+        <div key={l.cuenta} className="t4p-as-r" role="row" data-linea={l.cuenta} data-lado={l.lado}>
+          <span role="rowheader" className={l.lado === DEBE ? undefined : "t4p-sangria"}>{l.cuenta}</span>
+          <span className="t4p-g2">
+            <span role="cell" data-cifra={l.lado === DEBE ? cifra(l.monto) : undefined}>{l.lado === DEBE ? cifra(l.monto) : ""}</span>
+            <span role="cell" data-cifra={l.lado === HABER ? cifra(l.monto) : undefined}>{l.lado === HABER ? cifra(l.monto) : ""}</span>
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const AsientosT4 = ({ lista, nuevo = false }) => (lista ?? []).map((a) => <AsientoT4 key={a.nombre} asiento={a} nuevo={nuevo} />);
+
+function CuerpoT4({ p, estadoFigura = null }) {
+  return (
+    <>
+      {p.objetivo && <p className="t4p-p" data-texto data-objetivo>{p.objetivo}</p>}
+      <TextosT4 lista={p.parrafos} />
+      {p.listaNumerada && <ol className="t4p-lista" data-lista>{p.listaNumerada.map((t) => <li key={t} data-texto>{t}</li>)}</ol>}
+      <TextosT4 lista={p.despues} />
+      {p.figura && <FiguraT4 tipo={p.figura.tipo} estado={estadoFigura ?? p.figura.estado} />}
+      <AsientosT4 lista={p.asientos} />
+      <TextosT4 lista={p.tras} />
+    </>
+  );
+}
+
+function EleccionT4({ pantalla, onSeguir }) {
+  const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
+  const [elegida, setElegida] = useState(null);
+  const [confirmada, setConfirmada] = useState(null);
+  const ref = useRef(null);
+  const opcion = confirmada ? pantalla.opciones.find((o) => o.id === confirmada) : null;
+  const estado = !opcion ? "colocando" : opcion.correcta ? "acierto" : "error";
+  useEffect(() => { if (estado !== "colocando") ref.current?.focus(); }, [estado]);
+  const pie = estado === "colocando" ? pantalla.pie : estado === "error" ? pantalla.error.pie : pantalla.acierto.pie;
+  const despues = pantalla.trasAcertar;
+  /* La figura de una elección: por estado de la pregunta, y en el error, por la opción elegida. */
+  const porEstado = pantalla.figura?.estados?.[estado];
+  const estadoFigura = porEstado && typeof porEstado === "object" ? porEstado[opcion.id] : porEstado ?? null;
+
+  return (
+    <div className="t4p" data-eleccion={pantalla.id} data-estado={estado}>
+      <CuerpoT4 p={pantalla} estadoFigura={estadoFigura} />
+      <p className="t4p-p t4p-preg" data-texto data-pregunta>{pantalla.pregunta}</p>
+      <div className="t4p-ops" role="group" aria-label={pantalla.pregunta}>
+        {orden.map((o) => {
+          const esta = o.id === (confirmada ?? elegida);
+          return (
+            <button key={o.id} type="button" className={`t4p-op${estado === "error" && esta ? " t4p-op-error" : ""}`} data-opcion={o.id} aria-pressed={esta} disabled={Boolean(confirmada)} onClick={() => setElegida(o.id)}>
+              {o.texto}
+            </button>
+          );
+        })}
+      </div>
+      {estado === "colocando" && <BotonT4 nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => setConfirmada(elegida)} />}
+      {estado !== "colocando" && <MensajeT4 ok={estado === "acierto"} texto={estado === "acierto" ? pantalla.acierto.texto : opcion.devolucion} refFoco={ref} />}
+      {estado === "acierto" && despues && <AsientosT4 lista={despues.asientos} nuevo />}
+      {estado === "error" && (
+        <BotonT4 nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((x) => barajarDistinto(pantalla.opciones, x, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
+      )}
+      {estado === "acierto" && onSeguir && <BotonT4 nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />}
+      <PieT4 texto={pie} />
+    </div>
+  );
+}
+
+export function PantallasT4({ pieza, rotulo }) {
+  const [k, setK] = useState(0);
+  const p = pieza.pantallas[k];
+  const ultima = k === pieza.pantallas.length - 1;
+  const marco = useRef(null);
+  const primera = useRef(true);
+  const seguir = () => setK((x) => Math.min(x + 1, pieza.pantallas.length - 1));
+  useEffect(() => { if (primera.current) { primera.current = false; return; } marco.current?.focus(); }, [k]);
+
+  return (
+    <Panel rotulo={rotulo} titulo={pieza.titulo}>
+      <style>{CSS_T4P + CSS_T4F}</style>
+      <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
+        {p.tipo === "eleccion" ? (
+          <EleccionT4 key={p.id} pantalla={p} onSeguir={ultima ? null : seguir} />
+        ) : (
+          <div className="t4p">
+            <CuerpoT4 p={p} />
+            {p.siguiente && <p className="t4p-nota" data-texto data-siguiente>{p.siguiente}</p>}
+            {p.boton && !ultima && <BotonT4 nombre={p.tipo === "portada" ? "empezar" : "seguir"} texto={p.boton} onClick={seguir} />}
+            <PieT4 texto={p.pie} />
+          </div>
+        )}
+      </div>
+    </Panel>
+  );
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · LAS FIGURAS DE HANAYAMA.
+ *
+ * Construidas desde la especificación (celula-d/hanayama-a1-figura-v1.md con
+ * la v1.1 encima, y hanayama-a0-figura-v1.md), no desde los prototipos. Viven
+ * aquí, en el carril de la Célula D: no son componentes compartidos.
+ *
+ *   · «El cajón de paso» (A1): el dinero entra a Caja por el Debe y sale por
+ *     el Haber hacia Bancos o hacia un pago en efectivo
+ *   · «La raya del año» (A0): cada activo cae arriba (corriente) o abajo de
+ *     una sola raya
+ *
+ * Cada figura es una función de su estado. Solo cambia el color de lo
+ * señalado, y lo que aparece lo hace con un fundido de 120 ms; con movimiento
+ * reducido, nada se mueve. Ni coral, ni círculos, ni trazos discontinuos. Las
+ * cifras van sin «$» y sin partirse. El texto alternativo va en un
+ * figcaption oculto, enlazado con aria-describedby. Clases `t4cj-` y `t4ry-`.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+const BOCA = 40;
+
+export const CSS_T4F = `
+.t4f-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.t4f-nueva { animation: t4f-aparece .12s ease-out; }
+@keyframes t4f-aparece { from { opacity: 0; } to { opacity: 1; } }
+/* cajón de paso */
+.t4cj { position: relative; margin: 0; display: grid; min-width: 0; color: ${COLOR.texto}; font-family: "Inter", sans-serif; }
+.t4cj * { box-sizing: border-box; }
+.t4cj-origen { display: grid; gap: 2px; border: 1px solid ${COLOR.borde}; border-radius: 8px; padding: 8px 12px; }
+.t4cj-rot { font: 500 12px/1.3 "Inter", sans-serif; letter-spacing: .04em; color: ${COLOR.texto2}; overflow-wrap: anywhere; }
+.t4cj-lin { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 10px; }
+.t4cj-hecho { font-size: 13px; line-height: 1.35; white-space: nowrap; }
+.t4cj-monto { margin-left: auto; font: 500 15px/1.2 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; color: ${COLOR.texto2}; }
+.t4cj-monto.t4cj-foco { color: ${COLOR.texto}; font-weight: 600; }
+.t4cj-tubo { position: relative; height: 16px; }
+.t4cj-v { position: absolute; width: 2px; background: ${COLOR.borde}; }
+.t4cj-h { position: absolute; height: 2px; background: ${COLOR.borde}; }
+.t4cj-vivo { background: ${COLOR.texto}; }
+.t4cj-cajon { position: relative; padding: 10px 12px; border-left: 1px solid ${COLOR.borde}; border-right: 1px solid ${COLOR.borde}; border-radius: 12px; display: grid; gap: 8px; }
+.t4cj-borde { position: absolute; left: -1px; right: -1px; height: 12px; display: flex; justify-content: space-between; pointer-events: none; }
+.t4cj-borde > span { border-color: ${COLOR.borde}; border-style: solid; border-width: 0; }
+.t4cj-nombre { margin: 0; text-align: center; font: 600 13px/1.3 "Sora", "Inter", sans-serif; }
+.t4cj-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; }
+.t4cj-col { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.t4cj-col-h { justify-items: end; text-align: right; }
+.t4cj-lado { font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+.t4cj-glosa { display: grid; font-size: 12px; line-height: 1.35; color: ${COLOR.texto2}; min-width: 0; }
+.t4cj-glosa > span { white-space: nowrap; }
+.t4cj-mcol { min-height: 18px; display: flex; }
+.t4cj-col-h .t4cj-mcol { justify-content: flex-end; }
+.t4cj-rama { position: relative; height: 24px; }
+.t4cj-dest { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; }
+.t4cj-caja2 { display: grid; gap: 4px; align-content: start; min-width: 0; border: 1px solid ${COLOR.borde}; border-radius: 8px; padding: 8px 10px; min-height: 76px; }
+.t4cj-caja2-n { font: 600 13px/1.3 "Sora", "Inter", sans-serif; overflow-wrap: anywhere; }
+.t4cj-caja2-n > span { white-space: nowrap; }
+.t4cj-caja2 .t4cj-monto { margin-left: 0; justify-self: end; }
+.t4cj-d { color: ${COLOR.debe}; } .t4cj-hb { color: ${COLOR.haber}; }
+/* raya del año */
+.t4ry { position: relative; margin: 0; display: grid; min-width: 0; color: ${COLOR.texto}; font-family: "Inter", sans-serif; }
+.t4ry * { box-sizing: border-box; }
+.t4ry-esc { display: grid; grid-template-columns: 44px 2px minmax(0, 1fr); }
+.t4ry-mar { font: 600 13px/1.2 "Sora", "Inter", sans-serif; color: ${COLOR.texto2}; text-align: right; padding-right: 8px; white-space: nowrap; }
+.t4ry-eje { background: ${COLOR.borde}; }
+.t4ry-zona { display: grid; gap: 6px; align-content: start; padding: 10px 0 12px; min-width: 0; margin: 0; list-style: none; }
+.t4ry-zrot { display: grid; padding: 0 0 2px 12px; font: 500 12px/1.3 "Inter", sans-serif; letter-spacing: .04em; color: ${COLOR.texto2}; }
+.t4ry-zrot > span { white-space: nowrap; }
+.t4ry-zrot > span:first-child { font-weight: 600; color: ${COLOR.texto}; letter-spacing: 0; }
+.t4ry-item { display: grid; grid-template-columns: 12px minmax(0, 1fr); align-items: center; min-width: 0; list-style: none; }
+.t4ry-tick { height: 2px; background: ${COLOR.borde}; }
+.t4ry-tarj { display: grid; border: 1px solid ${COLOR.borde}; border-radius: 8px; padding: 5px 10px; font-size: 13px; line-height: 1.35; color: ${COLOR.texto2}; min-width: 0; }
+.t4ry-tarj > span { white-space: nowrap; }
+.t4ry-tarj > span + span { font-size: 12px; }
+.t4ry-foco .t4ry-tarj { color: ${COLOR.texto}; border-color: ${COLOR.texto}; }
+.t4ry-foco .t4ry-tarj > span:first-child { font-weight: 600; }
+.t4ry-foco .t4ry-tick { background: ${COLOR.texto}; }
+.t4ry-raya { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: center; }
+.t4ry-raya .t4ry-mar { color: ${COLOR.texto}; }
+.t4ry-raya > span:last-child { height: 2px; background: ${COLOR.texto}; }
+@media (prefers-reduced-motion: reduce) { .t4cj *, .t4ry *, .t4f-nueva { transition: none !important; animation: none !important; } }
+`;
+
+function FiguraT4({ tipo, estado }) {
+  return tipo === "cajon" ? <CajonDePaso estado={estado} /> : <RayaDelAno estado={estado} />;
+}
+
+/* El borde de arriba o de abajo del cajón, con su boca de 40 px en el 25 % (arriba) o el 75 % (abajo). */
+function BordeCajon({ arriba }) {
+  const centro = arriba ? "25%" : "75%";
+  const lado = arriba ? "borderTopWidth" : "borderBottomWidth";
+  return (
+    <span className="t4cj-borde" aria-hidden="true" style={arriba ? { top: 0 } : { bottom: 0 }}>
+      <span style={{ width: `calc(${centro} - ${BOCA / 2}px)`, [lado]: "1px", borderLeftWidth: "1px", borderRadius: arriba ? "12px 0 0 0" : "0 0 0 12px" }} />
+      <span style={{ width: `calc(100% - ${centro} - ${BOCA / 2}px)`, [lado]: "1px", borderRightWidth: "1px", borderRadius: arriba ? "0 12px 0 0" : "0 0 12px 0" }} />
+    </span>
+  );
+}
+
+export function CajonDePaso({ estado }) {
+  const s = ESTADOS_CAJON[estado];
+  const F = FIGURA_CAJON;
+  const monto = cifra(SUS_SERVICIOS);
+  const foco = (k) => (s.foco.includes(k) ? " t4cj-foco" : "");
+  const vivo = (k) => (s.vivo.includes(k) ? " t4cj-vivo" : "");
+  /* Lo que aparece, aparece con fundido; la key por estado lo vuelve a montar al cambiar. */
+  const Monto = ({ k }) => <span key={`${estado}-${k}`} className={`t4cj-monto t4f-nueva${foco(k)}`} data-monto={k}>{monto}</span>;
+  const idAlt = `t4cj-alt-${estado}`;
+  return (
+    <figure className="t4cj t4f-nueva" data-figura="cajon" data-estado={estado} aria-describedby={idAlt}>
+      {s.origen && (
+        <div className="t4cj-origen t4f-nueva" data-origen>
+          <span className="t4cj-rot">{F.rotuloOrigen}</span>
+          <span className="t4cj-lin">
+            <span className="t4cj-hecho">{F.hecho}</span>
+            <Monto k="origen" />
+          </span>
+        </div>
+      )}
+      <div className="t4cj-tubo" aria-hidden="true"><span className={`t4cj-v${vivo("entrada")}`} data-trazo="entrada" style={{ left: "calc(25% - 1px)", top: 0, bottom: 0 }} /></div>
+      <div className="t4cj-cajon">
+        <BordeCajon arriba />
+        <BordeCajon />
+        <p className="t4cj-nombre">{F.cuenta}</p>
+        <div className="t4cj-cols">
+          <div className="t4cj-col" data-columna={DEBE}>
+            <span className="t4cj-lado t4cj-d">{INTERFAZ.debe}</span>
+            <span className="t4cj-glosa">{F.glosaDebe.map((t) => <span key={t}>{t}</span>)}</span>
+            <span className="t4cj-mcol">{s.debe && <Monto k="debe" />}</span>
+          </div>
+          <div className="t4cj-col t4cj-col-h" data-columna={HABER}>
+            <span className="t4cj-lado t4cj-hb">{INTERFAZ.haber}</span>
+            <span className="t4cj-glosa">{F.glosaHaber.map((t) => <span key={t}>{t}</span>)}</span>
+            <span className="t4cj-mcol">{s.haber && <Monto k="haber" />}</span>
+          </div>
+        </div>
+      </div>
+      <div className="t4cj-rama" aria-hidden="true">
+        <span className={`t4cj-v${vivo("salida")}`} data-trazo="salida" style={{ left: "calc(75% - 1px)", top: 0, height: "13px" }} />
+        <span className={`t4cj-h${vivo("bancos")}`} data-trazo="cruce" style={{ left: "calc(25% - 1px)", width: "calc(50% + 2px)", top: "11px" }} />
+        <span className={`t4cj-v${vivo("bancos")}`} data-trazo="a-bancos" style={{ left: "calc(25% - 1px)", top: "11px", bottom: 0 }} />
+        <span className="t4cj-v" data-trazo="a-pago" style={{ left: "calc(75% - 1px)", top: "11px", bottom: 0 }} />
+      </div>
+      <div className="t4cj-dest">
+        <div className="t4cj-caja2" data-destino="bancos">
+          <span className="t4cj-caja2-n">{F.destino}</span>
+          {s.bancos && <Monto k="bancos" />}
+        </div>
+        <div className="t4cj-caja2" data-destino="pago">
+          <span className="t4cj-caja2-n">{F.pago.map((t, k) => <span key={t}>{k ? " " : ""}{t}</span>)}</span>
+        </div>
+      </div>
+      <figcaption id={idAlt} className="t4f-sr">{F.alt[estado]}</figcaption>
+    </figure>
+  );
+}
+
+/* El alto que reservan las dos zonas en los cuatro estados de P4 (Hanayama v1, §3): la raya no salta. */
+const ALTO_P4 = { antes: "122.52px", despues: "174.25px" };
+
+function ZonaRaya({ id, rotulo, s }) {
+  return (
+    <ul className="t4ry-zona" data-zona={id} aria-label={rotulo.join(" ")} style={{ minHeight: s.p4 ? ALTO_P4[id] : undefined }}>
+      <li className="t4ry-zrot" aria-hidden="true">{rotulo.map((t) => <span key={t}>{t}</span>)}</li>
+      {s[id].map((it) => (
+        <li key={it.id} className={`t4ry-item t4f-nueva${s.foco.includes(it.id) ? " t4ry-foco" : ""}`} data-tarjeta={it.id} data-foco={s.foco.includes(it.id) ? "si" : undefined}>
+          <span className="t4ry-tick" aria-hidden="true" />
+          <span className="t4ry-tarj"><span>{it.texto}</span>{it.glosa && <span>{it.glosa}</span>}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function RayaDelAno({ estado }) {
+  const s = ESTADOS_RAYA[estado];
+  const F = FIGURA_RAYA;
+  const idAlt = `t4ry-alt-${estado}`;
+  return (
+    <figure className="t4ry t4f-nueva" data-figura="raya" data-estado={estado} aria-describedby={idAlt}>
+      <div className="t4ry-esc">
+        <span className="t4ry-mar" style={{ paddingTop: "9px" }} aria-hidden="true">{F.hoy}</span>
+        <span className="t4ry-eje" aria-hidden="true" />
+        <ZonaRaya id="antes" rotulo={F.zonaSi} s={s} conEje />
+      </div>
+      <div className="t4ry-raya" data-raya aria-hidden="true"><span className="t4ry-mar">{F.unAno}</span><span /></div>
+      {/* Hanayama v1 §2.4: debajo de la raya «el mismo eje sigue», y las tarjetas cuelgan de él igual. */}
+      <div className="t4ry-esc">
+        <span />
+        <span className="t4ry-eje" aria-hidden="true" />
+        <ZonaRaya id="despues" rotulo={F.zonaNo} s={s} />
+      </div>
+      <figcaption id={idAlt} className="t4f-sr">{F.alt[estado]}</figcaption>
+    </figure>
   );
 }
