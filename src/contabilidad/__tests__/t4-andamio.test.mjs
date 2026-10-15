@@ -31,12 +31,16 @@ w.ResizeObserver = Observador;
 w.IntersectionObserver = Observador;
 w.Element.prototype.scrollIntoView = () => {};
 w.scrollTo = () => {};
+/* Las figuras del rediseño de enganche cuentan cifras y pasan el año con requestAnimationFrame. */
+w.requestAnimationFrame = (f) => setTimeout(() => f(performance.now()), 0);
+w.cancelAnimationFrame = (id) => clearTimeout(id);
 for (const [k, v] of Object.entries({
   window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
   HTMLElement: w.HTMLElement, Element: w.Element, Node: w.Node, SVGElement: w.SVGElement,
   Event: w.Event, MouseEvent: w.MouseEvent, KeyboardEvent: w.KeyboardEvent,
   getComputedStyle: w.getComputedStyle.bind(w), matchMedia: w.matchMedia,
   ResizeObserver: Observador, IntersectionObserver: Observador, scrollTo: w.scrollTo,
+  requestAnimationFrame: w.requestAnimationFrame, cancelAnimationFrame: w.cancelAnimationFrame,
 })) {
   Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
 }

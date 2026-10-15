@@ -1,0 +1,55 @@
+{
+ "_": "Cómo juega la sonda las pantallas de Aprender con figura operable (A0 y A1 del rediseño de enganche). Por pieza y pantalla, en orden: click (selector dentro de la pieza) o arrastra (selector y fracción del ancho), espera en ms, mide (el nombre del momento) y veredicto (acierto o error: si la pantalla da otro, la sonda sale con 2). Se miden los errores y los aciertos. Ver README.",
+ "t4-a0-el-activo-corriente": {
+  "la-prueba": [
+   {"arrastra": "[data-pista]", "hasta": 0.35, "espera": 300, "mide": "arrastre a medio año"},
+   {"click": "[data-accion=pasar]", "espera": 3200, "mide": "fin del año"}
+  ],
+  "el-efectivo": [{"click": "[data-accion=pasar]", "espera": 3200, "mide": "fin del año"}],
+  "los-otros-tres": [{"click": "[data-accion=pasar]", "espera": 3200, "mide": "fin del año"}],
+  "cual-cruza": [
+   {"click": "[data-fila=mercancia] [data-seg=despues]"},
+   {"click": "[data-fila=deuda] [data-seg=antes]"},
+   {"click": "[data-fila=edificio] [data-seg=despues]", "mide": "marcado"},
+   {"click": "[data-accion=pasar]", "espera": 3200, "mide": "error", "veredicto": "error"},
+   {"click": "[data-accion=otra-vez]", "espera": 200},
+   {"click": "[data-fila=mercancia] [data-seg=antes]"},
+   {"click": "[data-fila=deuda] [data-seg=despues]"},
+   {"click": "[data-fila=edificio] [data-seg=despues]"},
+   {"click": "[data-accion=pasar]", "espera": 3200, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "los-fijos": [{"click": "[data-accion=pasar]", "espera": 3200, "mide": "fin del año"}],
+  "se-consume": [{"click": "[data-accion=pasar]", "espera": 3200, "mide": "fin del año"}]
+ },
+ "t4-a1-la-caja": {
+  "cobra": [{"click": "[data-accion=cobrar]", "espera": 700, "mide": "cobrado"}],
+  "consigna": [
+   {"click": "[data-destino=debe]", "espera": 400, "mide": "error al debe", "veredicto": "error"},
+   {"click": "[data-destino=no-se-mueve]", "espera": 400, "mide": "error a la bandeja", "veredicto": "error"},
+   {"click": "[data-destino=haber]", "espera": 700, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "dos-salidas": [
+   {"click": "[data-accion=consignar]", "espera": 700, "mide": "consignado"},
+   {"click": "[data-accion=otra-vez]", "espera": 300},
+   {"click": "[data-accion=pagar]", "espera": 700, "mide": "pagado"}
+  ],
+  "cheques": [
+   {"click": "[data-destino=haber]", "espera": 400, "mide": "cheque recibido · error al haber", "veredicto": "error"},
+   {"click": "[data-destino=no-se-mueve]", "espera": 400, "mide": "cheque recibido · error a la bandeja", "veredicto": "error"},
+   {"click": "[data-destino=debe]", "espera": 500, "mide": "cheque recibido · acierto", "veredicto": "acierto"},
+   {"espera": 1600, "mide": "cheque propio · llega"},
+   {"click": "[data-destino=debe]", "espera": 400, "mide": "cheque propio · error al debe", "veredicto": "error"},
+   {"click": "[data-destino=haber]", "espera": 400, "mide": "cheque propio · error al haber", "veredicto": "error"},
+   {"click": "[data-destino=no-se-mueve]", "espera": 600, "mide": "cheque propio · acierto", "veredicto": "acierto"}
+  ],
+  "controles": [
+   {"click": "[data-control='1']", "mide": "control 1"},
+   {"click": "[data-control='2']", "mide": "control 2"},
+   {"click": "[data-control='3']", "mide": "control 3"},
+   {"click": "[data-control='4']", "mide": "control 4"},
+   {"click": "[data-control='5']", "mide": "control 5"},
+   {"click": "[data-control='6']", "mide": "control 6"},
+   {"click": "[data-control='7']", "mide": "control 7"}
+  ]
+ }
+}
