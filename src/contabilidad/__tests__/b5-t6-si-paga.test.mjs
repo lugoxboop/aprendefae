@@ -69,7 +69,7 @@ const rgb = (hex) => `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 1
 const textosDeDatos = () => {
   const out = [];
   const recoger = (v, k) => {
-    if (typeof v === "string") { if (!["id", "correcta", "lado"].includes(k)) out.push(v); }
+    if (typeof v === "string") { if (!["id", "lado", "correcta", "resaltados"].includes(k)) out.push(v); }
     else if (Array.isArray(v)) v.forEach((x) => recoger(x, k));
     else if (v && typeof v === "object") for (const [kk, x] of Object.entries(v)) recoger(x, kk);
   };
@@ -82,7 +82,14 @@ const viva = (caja) => caja.querySelector("[data-escena-viva]");
 const de = (caja, id) => viva(caja).querySelector(`[data-elemento="${id}"]`);
 /* Lo que todavía no llega se ve en silueta (hoja 5 de Mai): a la vista, atenuado y marcado con --b5-silueta. */
 const enSilueta = (n) => n.style.visibility === "visible" && Boolean(n.style.getPropertyValue("--b5-silueta"));
-const siguiente = (caja) => tocar(caja.querySelector("[data-siguiente]"));
+/* Un paso adelante; la parada entre el 4 y el 5 (hoja 7) se cruza eligiendo la correcta: no es un paso. */
+const siguiente = async (caja) => {
+  await tocar(caja.querySelector("[data-siguiente]"));
+  if (caja.querySelector("[data-parada]")) {
+    await tocar(caja.querySelector(`[data-parada] [data-opcion="${D.PARADA_T6_A4.correcta}"]`));
+    await tocar(caja.querySelector("[data-siguiente]"));
+  }
+};
 const colorVisto = (n) => {
   while (n && (!n.style.color || n.style.color === "inherit")) n = n.parentElement;
   return n?.style.color;

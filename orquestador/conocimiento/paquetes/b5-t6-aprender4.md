@@ -493,3 +493,23 @@ Ojo, Shoko: al abrir el caso b en la capa 3 se lee «Los otros $80.000 quedan en
 ## (5) Mai · hoja 6: la pregunta de la caja (la revisa Shoko)
 
 «¿Cuánto se revive?»
+
+## (6) Futaba · entrega 3: pasos que se juntan y predicción a mitad de la escena (pegada tal cual)
+
+Cada fusión pega dos textos ya aprobados sin cambiar una palabra.
+
+Para Kaede: el estado de la escena de cada paso fusionado es el del segundo paso. En t6Pieza3.js hay que volver a numerar las vueltas atrás (el paso 11 pasa a ser el 7).
+
+T6 A4: de 9 pasos a 6
+
+Se juntan 2 + 3 (Basado en el libro, p. 204), 5 + 6 (Basado en el libro, p. 204) y 7 + 8 (Libro, p. 204).
+Predicción, después del paso 4 nuevo (Basado en el libro, p. 204):
+Pregunta: «Pablo Moncayo vuelve y paga. ¿Qué se anota primero?»
+Opciones: Revivir la deuda ✓ · La plata que entra a Caja.
+Si falla: «Primero se reversa el castigo, para que la deuda vuelva. Después se anota el pago.» (83)
+
+## (7) Mai · hoja 7: qué pasos se juntan y dónde va la parada (resumen; manda sobre la entrega 3)
+
+T6 A4 no se fusiona (regla 3: cualquiera de las tres sube el texto reservado y el último paso deja de caber a 320). 9 pasos, como hoy. La predicción va entre el 4 («vuelve y paga») y el 5.
+
+El contador de la parada dice «Antes del paso N» (nuevo, para Shoko).

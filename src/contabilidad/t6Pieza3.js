@@ -1,4 +1,5 @@
-import { PASOS_T6_A3, CIERRE_T6_A3 } from "../data/contabilidadT6Pieza3.js";
+import { PASOS_T6_A3, CIERRE_T6_A3, FUSION_T6_A3 } from "../data/contabilidadT6Pieza3.js";
+import { fusionar } from "./fusionar.js";
 import { crearMomentos } from "./momentos.js";
 
 /*
@@ -33,3 +34,6 @@ export const T6_A3 = crearMomentos({
   resaltado: RESALTADO,
 });
 export const { PASOS, CIERRE, estadoPaso: estadoPasoT6A3, duracion: duracionPasoT6A3 } = T6_A3;
+
+/* La capa 2 que se ve: los 19 pasos de antes contados en 15 (hoja 7 de Mai, al ancho del sitio). La vuelta atrás del paso 11 de antes cae en el 10. */
+export const T6_A3_JUNTO = fusionar({ ...FUSION_T6_A3, estadoPaso: T6_A3.estadoPaso, paso: T6_A3.paso, cierreViejo: T6_A3.CIERRE });
