@@ -39,6 +39,7 @@ const C = H2_LIBRO;
  * Las figuras del «Patrón T7-3» de Watari: la cadena y el atajo del factor,
  * como en H2. Rótulos y títulos de Watari, por confirmar con Near
  * ([ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN], dice su patrón).
+ * como en H2. Rótulos y títulos de Watari, revisados por Near.
  */
 export const ROTULOS_A2 = {
   cadena: "Cadena de descuentos de San Calixto",
