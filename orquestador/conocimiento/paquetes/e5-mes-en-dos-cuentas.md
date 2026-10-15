@@ -2,7 +2,7 @@
 id: e5-mes-en-dos-cuentas
 titulo: «El mes en dos cuentas» — panel común de r5-3 y r5-4
 celula: E · Hajime no Ippo
-procedencia: aprobado por Kamogawa; auditoría de Takamura pendiente
+procedencia: aprobado. Takamura: PASA CON CORRECCIONES; sus cinco obligatorias y su recomendación, aplicadas (abajo, «Correcciones de la auditoría»)
 ---
 
 # «El mes en dos cuentas» — panel común de r5-3 y r5-4
@@ -13,6 +13,44 @@ procedencia: aprobado por Kamogawa; auditoría de Takamura pendiente
 > Cuentas: **r5-3 · Caja e IVA por pagar**; **r5-4 · Caja y Descuento comercial
 > condicionado**. Lo que entra es SIEMPRE la cifra del asiento correcto, aunque
 > el estudiante falle (como el libro de r5-2: el error no se cobra dos veces).
+
+### Correcciones de la auditoría de Takamura (mandan sobre el resto)
+
+1. **El panel va DESPUÉS de la devolución**, sin desplazamiento forzado:
+   armador → ERA ESTE → devolución → **el mes en dos cuentas** → Siguiente.
+   Quien falló ve juntos el asiento correcto y la devolución. La animación del
+   panel **arranca cuando el panel entra en la ventana** (IntersectionObserver;
+   con reduced-motion, estado final directo), así que lo que se mueve sigue a la
+   vista (E2). Esto reemplaza el orden y el desplazamiento de §b y §c.
+2. **Las rayas son `#0E1B2E`**, no `#CBDCF2`: sobre `#CBDCF2` quedaban a ~1,2:1 en
+   el ámbar. Rayas de 2 px con 2 px de hueco, en `#0E1B2E` sobre el color de su
+   lado (10,3:1 sobre ámbar, 5,2:1 sobre teal). La muestra de la leyenda usa la
+   misma textura sobre `#CBDCF2`.
+3. **Asientos que no tocan ninguna cuenta: versión compacta** (unos 60 px, sin
+   barras): la marca «EL MES EN DOS CUENTAS» y la línea de Miyata, con su
+   franja de 3 px `#CBDCF2`. El panel completo aparece por primera vez en el
+   primer asiento que mueve algo. Reemplaza §d.
+4. **Los estados del armador, completos** (reemplazan la regla de r5-3 v3 §4
+   que pintaba el renglón entero): cada renglón calificado lleva DOS marcas, una
+   por pieza, cada una con su forma (punto relleno `#CBDCF2` de 10 px si está
+   bien, anillo coral de 10 px si está mal) y su palabra en Inter 12/600:
+   - **la cuenta**, a la derecha de la línea del nombre: «Correcta» o «No va
+     aquí»;
+   - **el valor**, a la izquierda de la línea del valor: «Correcto» o «No es
+     este valor».
+   Casos: renglón que sobra → cuenta «No va aquí» y el valor sin marca;
+   cuenta correcta en el lado equivocado → cuenta «No va aquí»; cuenta correcta
+   con valor equivocado → cuenta «Correcta» y valor «No es este valor». El
+   borde del renglón es coral si alguna de sus dos piezas está mal y `#CBDCF2`
+   si las dos están bien. Si a 320 la palabra no cabe en la línea del nombre,
+   va en una línea propia debajo y el renglón crece: manda lo medido.
+5. **La línea del asiento 4 de r5-4 decía algo falso** («nada se mueve», tras un
+   asiento que movió la cartera y los ingresos). Queda: «Vendes hoy y cobras
+   luego. Caja y descuento esperan.»
+6. Opcional aceptada: una prueba que compruebe que, en cada cuenta, el lado
+   dibujado más largo es siempre el de la cifra mayor (el mínimo de 8 px por
+   tramo infla algunas barras). La versión con línea mide unos 362 px; manda lo
+   medido.
 
 ### Decisión sobre §0 de Itagaki (estados del armador)
 
@@ -150,7 +188,7 @@ Asientos que no tocan ninguna de las dos cuentas (r5-4):
 |---|---|
 | 1 · Compra, día 2 | Lo pagarás después; Caja y descuento esperan ese día. |
 | 3 · Devuelves, día 8 | La factura se achica antes de pagarla. Caja no se entera. |
-| 4 · Venta, día 10 | Vendes hoy y cobras luego. Hasta entonces, nada se mueve. |
+| 4 · Venta, día 10 | Vendes hoy y cobras luego. Caja y descuento esperan. |
 | 6 · Te devuelven, día 15 | Se corrige una venta que aún no se ha cobrado. |
 
 Rótulos fijos de interfaz: EL MES EN DOS CUENTAS · Lo de este asiento · DEBE ·
