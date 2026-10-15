@@ -1,9 +1,11 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
-import { C, INTER, SORA, MARCA, SOLO_LECTOR, Devolucion, BotonSiguiente } from "./comun.jsx";
+/* Los estados de calificación, el «ERA ESTE», los puntos y la palabra: de comun.jsx (B4, E3). */
+import { C, INTER, SORA, MARCA, SOLO_LECTOR, Devolucion, BotonSiguiente, ESTADOS, MARCA_ERA_ESTE, Punto, Veredicto } from "./comun.jsx";
+import { VEREDICTO } from "../../data/repasoCap5Comun.js";
 import { cifra, leerCifra } from "./ToroNegro.jsx";
 import {
-  ASIENTOS_MATE, HOJA_MATE, ENTRADA_MATE, DATOS_DEL_LIBRO, DATOS_DECLARADOS, ROTULOS_MATE as RM,
+  R5_3, ASIENTOS_MATE, HOJA_MATE, ENTRADA_MATE, DATOS_DEL_LIBRO, DATOS_DECLARADOS, ROTULOS_MATE as RM,
 } from "../../data/repasoCap5MateTextos.js";
 import { evaluarMate, puedeRevisarMate, sumasDe, puntuarR5_3, MAXIMO_POR_LADO } from "../../data/repasoCap5MateJuego.js";
 
@@ -29,11 +31,6 @@ import { evaluarMate, puedeRevisarMate, sumasDe, puntuarR5_3, MAXIMO_POR_LADO } 
 const LECTOR = { acierto: "Correcto: ", error: "Incorrecto: " };
 export const DIGITOS_DEL_CAMPO = 9;
 const DIVISORIA = "1px solid rgba(184,196,212,0.25)";
-const ESTADO = {
-  ok: { border: `2px solid ${C.teal}`, background: "rgba(42,157,143,0.14)" },
-  mal: { border: `2px solid ${C.coral}`, background: "rgba(231,111,81,0.13)" },
-  revelada: { border: `1px solid ${C.teal}88`, background: C.fondo },
-};
 const CSS_MATE = `
 .mate-campo:focus { outline: none; border: 2px solid ${C.ambar} !important; }
 `;
@@ -168,6 +165,8 @@ function HojaDatosDeMarzo({ onCerrar }) {
 function Entrada({ onEmpezar }) {
   return (
     <div data-r5-3 data-paso="entrada">
+      {/* E1: el objetivo aprobado de Miyata, como en r5-2: encima de la entrada, solo aquí. */}
+      <p data-objetivo style={{ margin: "0 0 16px", fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.atenuado }}>{R5_3.objetivo}</p>
       <p style={{ ...MARCA, margin: 0 }}>{ENTRADA_MATE.marca}</p>
       <h3 style={{ margin: "8px 0 0", fontFamily: SORA, fontSize: "24px", lineHeight: "32px", fontWeight: 600, color: C.texto }}>{ENTRADA_MATE.titulo}</h3>
       <p data-apertura style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{ENTRADA_MATE.apertura}</p>
@@ -241,13 +240,16 @@ function BotonDatos({ onAbrir }) {
 
 /* ═══════════ EL ARMADOR COMPUESTO (§4) ═══════════ */
 
-function Renglon({ r, estado = null, onTocar, soloLectura = false }) {
-  const visto = estado ? ESTADO[estado] : { border: `1px solid ${C.atenuado}`, background: C.fondo };
+function Renglon({ r, estado = null, pieza = null, onTocar, soloLectura = false }) {
+  const visto = estado ? ESTADOS[estado] : { border: `1px solid ${C.atenuado}`, background: C.fondo };
   const contenido = (
     <>
       <span style={SOLO_LECTOR}>{r.lado === "debe" ? RM.debe : RM.haber}: </span>
       <span style={{ display: "block", fontFamily: INTER, fontSize: "14px", lineHeight: "20px", fontWeight: 600, color: C.texto }}>{r.cuenta}</span>
+      {/* E3: cada pieza calificada dice con palabras si quedó bien. */}
+      <Veredicto estado={pieza?.cuenta} textos={VEREDICTO.cuenta} />
       <span style={{ display: "block", marginTop: "4px", textAlign: "right", fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>{cifra(r.valor)}</span>
+      <Veredicto estado={pieza?.valor} textos={VEREDICTO.valor} />
     </>
   );
   const estilo = { display: "block", width: "100%", boxSizing: "border-box", textAlign: "left", borderRadius: "10px", padding: "10px", ...visto };
@@ -255,14 +257,14 @@ function Renglon({ r, estado = null, onTocar, soloLectura = false }) {
   return <button type="button" data-renglon={r.lado} data-estado="libre" onClick={onTocar} style={{ ...estilo, cursor: "pointer" }}>{contenido}</button>;
 }
 
-function Grupo({ lado, renglones, estados, onAnadir, onEditar, bloqueado, soloLectura }) {
+function Grupo({ lado, renglones, estados, piezas, onAnadir, onEditar, bloqueado, soloLectura }) {
   const mios = renglones.filter((r) => r.lado === lado);
   return (
     <div data-grupo={lado} style={{ paddingLeft: lado === "haber" ? "16px" : 0, marginTop: lado === "haber" ? "16px" : 0 }}>
       <p style={{ ...MARCA, margin: "0 0 6px" }}>{lado === "debe" ? RM.debe : RM.haber}</p>
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         {mios.map((r) => (
-          <Renglon key={r.id} r={r} estado={soloLectura ? "revelada" : estados?.[r.id] ?? null} soloLectura={soloLectura} onTocar={() => onEditar(r)} />
+          <Renglon key={r.id} r={r} estado={soloLectura ? "revelada" : estados?.[r.id] ?? null} pieza={soloLectura ? null : piezas?.[r.id] ?? null} soloLectura={soloLectura} onTocar={() => onEditar(r)} />
         ))}
       </div>
       {!bloqueado && !soloLectura && mios.length < MAXIMO_POR_LADO && (
@@ -282,7 +284,7 @@ function Grupo({ lado, renglones, estados, onAnadir, onEditar, bloqueado, soloLe
   );
 }
 
-function Sumas({ renglones }) {
+function Sumas({ renglones, conCuadre = true }) {
   const s = sumasDe(renglones);
   return (
     <>
@@ -296,20 +298,26 @@ function Sumas({ renglones }) {
         ))}
       </div>
       {/* Sin color: aquí todavía nada es error. No cuadrar no bloquea «Revisar». */}
-      <p data-cuadre style={{ margin: "4px 0 0", minHeight: "20px", fontFamily: INTER, fontSize: "13px", color: C.atenuado }}>
-        {s.cuadran ? RM.cuadran : RM.diferencia(cifra(s.diferencia))}
-      </p>
+      {/*
+        * B5: en ERA ESTE las sumas siempre cuadran y la frase salía dos veces en
+        * la pantalla (la del estudiante y esta). Ahí se quedan solo las sumas.
+        */}
+      {conCuadre && (
+        <p data-cuadre style={{ margin: "4px 0 0", minHeight: "20px", fontFamily: INTER, fontSize: "13px", color: C.atenuado }}>
+          {s.cuadran ? RM.cuadran : RM.diferencia(cifra(s.diferencia))}
+        </p>
+      )}
     </>
   );
 }
 
-function Armador({ renglones, estados = null, onAnadir, onEditar, bloqueado = false, soloLectura = false, marca = RM.tuAsiento, datos = {} }) {
+function Armador({ renglones, estados = null, piezas = null, onAnadir, onEditar, bloqueado = false, soloLectura = false, marca = RM.tuAsiento, datos = {} }) {
   return (
-    <div {...datos} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? { border: ESTADO.revelada.border } : {}) }}>
-      <p style={{ ...MARCA, margin: "0 0 8px", ...(soloLectura ? { color: C.teal } : {}) }}>{marca}</p>
-      <Grupo lado="debe" renglones={renglones} estados={estados} onAnadir={onAnadir} onEditar={onEditar} bloqueado={bloqueado} soloLectura={soloLectura} />
-      <Grupo lado="haber" renglones={renglones} estados={estados} onAnadir={onAnadir} onEditar={onEditar} bloqueado={bloqueado} soloLectura={soloLectura} />
-      <Sumas renglones={renglones} />
+    <div {...datos} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? { border: ESTADOS.revelada.border } : {}) }}>
+      <p {...(soloLectura ? { "data-era-este": true } : {})} style={{ ...(soloLectura ? MARCA_ERA_ESTE : MARCA), margin: "0 0 8px" }}>{marca}</p>
+      <Grupo lado="debe" renglones={renglones} estados={estados} piezas={piezas} onAnadir={onAnadir} onEditar={onEditar} bloqueado={bloqueado} soloLectura={soloLectura} />
+      <Grupo lado="haber" renglones={renglones} estados={estados} piezas={piezas} onAnadir={onAnadir} onEditar={onEditar} bloqueado={bloqueado} soloLectura={soloLectura} />
+      <Sumas renglones={renglones} conCuadre={!soloLectura} />
     </div>
   );
 }
@@ -446,6 +454,7 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
           datos={{ "data-armador": "tu-asiento" }}
           renglones={renglones}
           estados={r ? r.estados : null}
+          piezas={r ? r.piezas : null}
           bloqueado={Boolean(r)}
           onAnadir={(lado) => setHoja({ lado, inicial: null })}
           onEditar={(x) => setHoja({ lado: x.lado, inicial: x })}
@@ -497,11 +506,7 @@ function MarzoEnOcho({ resultados }) {
             <span style={{ flex: 1, minWidth: 0, fontFamily: INTER, fontSize: "14px", color: C.texto }}>{a.operacion}</span>
             {/* Forma, color y palabra (decisión 7). */}
             <span data-resultado={ok ? "acierto" : "error"} style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
-              <span
-                aria-hidden="true"
-                data-punto={ok ? "acierto" : "error"}
-                style={{ width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box", ...(ok ? { background: C.teal } : { background: "transparent", border: `2px solid ${C.coral}` }) }}
-              />
+              <Punto ok={ok} />
               <span style={{ fontFamily: INTER, fontSize: "13px", fontWeight: 600, color: C.texto }}>{ok ? RM.acierto : RM.error}</span>
             </span>
           </div>
@@ -513,8 +518,9 @@ function MarzoEnOcho({ resultados }) {
 
 /* ═══════════ LA ACTIVIDAD ═══════════ */
 
-export function Mate({ onCompletar }) {
-  const [paso, setPaso] = useState(-1); // -1: entrada; 0..7: asientos
+/* `pasoInicial`: −1 abre en la entrada (la partida); las pruebas abren un asiento directo. */
+export function Mate({ onCompletar, pasoInicial = -1 }) {
+  const [paso, setPaso] = useState(pasoInicial); // -1: entrada; 0..7: asientos
   const [r, setR] = useState(null);
   const [resultados, setResultados] = useState({});
   const [terminado, setTerminado] = useState(false);
