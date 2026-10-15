@@ -89,7 +89,7 @@ test("★★★ ningún componente de la pieza escribe texto que lea el estudian
   }
 });
 
-test("★★ capa 1: cinco términos; las citas con «» y página; la glosa de nota débito bajo el término 4", () => {
+test("★★ capa 1: cinco términos; las citas con «» y página; la nota de nota débito bajo el término 4", () => {
   const n = D.PIEZA_LO_QUE_LE_DEBEN.nombres;
   assert.deepEqual(n.map((x) => x.termino), [
     "Cuentas por cobrar", "Clientes", "Otras cuentas por cobrar",
@@ -97,7 +97,9 @@ test("★★ capa 1: cinco términos; las citas con «» y página; la glosa de 
   ]);
   assert.match(n[0].delLibro, /^«.*» \(p\. 195\)$/);
   assert.match(n[1].delLibro, /^«.*» \(p\. 196\)$/);
-  assert.equal(n[3].delLibro, D.GLOSA_NOTA_DEBITO.texto);
+  assert.equal(n[3].delLibro, D.NOTA_DEBITO_T6.texto);
+  assert.equal(n[3].rotuloDelLibro, "Nota");
+  assert.equal(n[3].glosa, undefined, "la glosa provisional se retiró: el término 4 ya no lleva id de glosa");
   /* La nota de «cartera» va debajo de la cita del término 2 (auditoría integral). */
   assert.equal(n[1].notaDebajo, D.NOTA_CLIENTES);
   assert.equal(n.filter((x) => x.notaDebajo).length, 1);
@@ -328,5 +330,4 @@ test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola corr
 test("★★ identificadores nuevos con b5-", () => {
   assert.match(D.PIEZA_LO_QUE_LE_DEBEN.id, /^b5-t6-/);
   for (const o of D.OPCIONES_FINAL_T6) assert.match(o.id, /^b5-t6-/);
-  assert.match(D.GLOSA_NOTA_DEBITO.id, /^b5-t6-/);
 });
