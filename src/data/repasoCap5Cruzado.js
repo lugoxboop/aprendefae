@@ -51,6 +51,7 @@ export const INTERFAZ_R5_1 = {
   marcaPista: "PISTA",
   noEntra: "no entra al costo",
   marcaCuenta: "LA CUENTA",
+  disponible: "Disponible para vender",
   tenias: (u, total) => `Tenías ${u} u por ${pesos(total)}`,
   cadaUna: (total, u, promedio) => `Cada una: ${pesos(total)} ÷ ${u} = ${promedio}`,
   quedan: (u, promedio, valor) => `Quedan ${u} u × ${promedio} = ${pesos(valor)}`,
@@ -183,7 +184,7 @@ export const PANTALLAS_R5_1 = [
     enunciado: "Una empresa tiene estos datos del periodo. ¿Cuál es el Costo de mercancía vendida?",
     datos: DATOS_C8,
     opciones: [
-      { id: "c8-a", correcta: true, valor: 3400, retro: "Bien. Lo que tú tenías para vender era $4.200. De eso, quedaron $800 en la bodega. Lo que sí vendiste costó $3.400. Las ventas no van aquí." },
+      { id: "c8-a", correcta: true, valor: 3400, retro: "Bien. Las ventas no van aquí. El costo sale de lo que compraste y guardaste." },
       { id: "c8-b", valor: 2400, retro: "Restaste las devoluciones de ventas. Esas no tocan el costo: afectan las ventas. El costo solo usa inventarios, compras y devoluciones de compras." },
       { id: "c8-c", valor: 6400, retro: "Esa cifra es imposible. Lo más que pudiste vender es lo que tenías disponible: 500 + 4.000 − 300 = $4.200. Ningún costo de lo vendido pasa de ahí. Revisa si usaste las ventas: no entran al cálculo." },
       { id: "c8-d", valor: 6000, retro: "Esta cifra también pasa del disponible ($4.200), así que no puede ser. Revisa dos cosas. El inventario final se resta: es lo que no se vendió. Y las devoluciones de ventas no entran al costo." },
@@ -203,7 +204,7 @@ export const PANTALLAS_R5_1 = [
       { id: "c9-a", valor: 625, retro: "Valoraste las 25 unidades con la última compra ($25). Eso es lo que daría PEPS. El promedio ponderado mezcla todos los costos." },
       { id: "c9-b", valor: 450, retro: "Valoraste las 25 unidades con el precio más viejo ($18). Eso es lo que daría UEPS. El promedio ponderado mezcla todos los costos." },
       { id: "c9-c", valor: 525, retro: "Usaste $21, el promedio simple de los tres precios. Pero no compraste la misma cantidad a cada precio. El ponderado pesa cada precio por sus unidades." },
-      { id: "c9-d", correcta: true, valor: 526, retro: "Bien. Todo te costó $5.260. Eran 250 en total. Así, cada una vale $21,04. Te quedan 25. Y 25 por $21,04 da $526." },
+      { id: "c9-d", correcta: true, valor: 526, retro: "Bien. Cada precio pesa según las unidades que compraste a ese precio." },
     ],
     pista: "¿Cuántas unidades tuviste? ¿Y cuánto te costaron todas?",
   },
@@ -240,6 +241,24 @@ export function pesosConCentavos(valor) {
 /* La cuenta de la pantalla 4, desde los signos de los datos. */
 export function cuentaDeC8(pantalla) {
   return pantalla.datos.reduce((t, d) => t + (d.signo === "+" ? d.valor : d.signo === "−" ? -d.valor : 0), 0);
+}
+
+/*
+ * Los renglones de LA CUENTA de la pantalla 4: los datos que entran, en su
+ * orden, con «Disponible para vender» antes de restar el inventario final (el
+ * tope en que se apoyan las devoluciones de $6.000 y $6.400) y el resultado.
+ */
+export function pasosDeC8(pantalla) {
+  const entran = pantalla.datos.filter((d) => d.signo);
+  const final = entran.find((d) => d.id === "inventario-final");
+  const antes = entran.filter((d) => d !== final);
+  const disponible = antes.reduce((t, d) => t + (d.signo === "+" ? d.valor : -d.valor), 0);
+  return [
+    ...antes.map((d, k) => ({ id: d.id, etiqueta: d.etiqueta, signo: k ? d.signo : "", valor: d.valor })),
+    { id: "disponible", etiqueta: INTERFAZ_R5_1.disponible, signo: "=", valor: disponible, total: true },
+    { id: final.id, etiqueta: final.etiqueta, signo: final.signo, valor: final.valor },
+    { id: "resultado", etiqueta: RESULTADO_C8, signo: "=", valor: cuentaDeC8(pantalla), total: true },
+  ];
 }
 
 /* La cuenta de la pantalla 5, desde los lotes: lo que se tuvo, el promedio y lo que queda. */

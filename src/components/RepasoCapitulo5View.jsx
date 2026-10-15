@@ -20,7 +20,7 @@ import { R5_2 } from "../data/repasoCap5ToroNegroTextos.js";
 import {
   R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, ORDEN_SUBTEMAS, UNIDADES_POR_CAJA,
   prepararR5_1, evaluarR5_1, puntuarR5_1, porTema, textoDeOpcion,
-  RESULTADO_C8, cuentaDeC8, cuentaDeC9, pesosConCentavos,
+  pasosDeC8, cuentaDeC9, pesosConCentavos,
 } from "../data/repasoCap5Cruzado.js";
 
 /*
@@ -175,32 +175,25 @@ const DIVISORIA = "1px solid rgba(184,196,212,0.25)";
  * abajo aparece el renglón del resultado. En blanco y negro se lee igual: los
  * signos, el tachado y las palabras llevan todo, el color no lleva nada.
  */
-function ListaDeDatos({ datos, resuelta = false, resultado = null }) {
+function ListaDeDatos({ datos, resuelta = false }) {
   return (
     <div data-datos="lista" data-resuelta={resuelta ? "si" : "no"} style={CONTENEDOR}>
       {datos.map((d, k) => {
         const fuera = resuelta && !d.signo;
         return (
-          <div key={d.id} data-dato={d.id} data-entra={resuelta ? (d.signo ?? "no") : undefined} style={{ display: "flex", alignItems: "center", minHeight: "40px", gap: "8px", borderTop: k ? DIVISORIA : "none", opacity: fuera ? 0.6 : 1 }}>
+          <div key={d.id} data-dato={d.id} data-entra={resuelta ? (d.signo ?? "no") : undefined} style={{ display: "flex", alignItems: "center", minHeight: "40px", gap: "8px", borderTop: k ? DIVISORIA : "none" }}>
             <span style={{ flex: 1, minWidth: 0, fontFamily: INTER, fontSize: "14px", color: C.atenuado }}>
-              <span style={{ textDecoration: fuera ? "line-through" : "none" }}>{d.etiqueta}</span>
+              {/* Lo tachado a 0,75 (Takamura: a 0,6 daba unos 3,6:1); «no entra al costo», entero. */}
+              <span style={{ textDecoration: fuera ? "line-through" : "none", opacity: fuera ? 0.75 : 1 }}>{d.etiqueta}</span>
               {fuera && <span data-no-entra style={{ display: "block", fontSize: "12px", fontWeight: 600, color: C.texto }}>{INTERFAZ_R5_1.noEntra}</span>}
             </span>
-            <span style={{ width: "112px", flexShrink: 0, textAlign: "right", fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, textDecoration: fuera ? "line-through" : "none", whiteSpace: "nowrap" }}>
+            <span style={{ width: "112px", flexShrink: 0, textAlign: "right", fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, textDecoration: fuera ? "line-through" : "none", opacity: fuera ? 0.75 : 1, whiteSpace: "nowrap" }}>
               {resuelta && d.signo && <span data-signo style={{ marginRight: "6px", fontFamily: SORA, fontWeight: 700 }}>{d.signo}</span>}
               {pesos(d.valor)}
             </span>
           </div>
         );
       })}
-      {resuelta && (
-        <div data-dato="resultado" className="r5-escena" style={{ display: "flex", alignItems: "center", minHeight: "44px", gap: "8px", borderTop: `2px solid ${C.hecho}` }}>
-          <span style={{ flex: 1, minWidth: 0, fontFamily: INTER, fontSize: "14px", fontWeight: 700, color: C.texto }}>{RESULTADO_C8}</span>
-          <span style={{ width: "112px", flexShrink: 0, textAlign: "right", fontFamily: SORA, fontSize: "16px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: C.texto }}>
-            <span style={{ marginRight: "6px" }}>=</span>{pesos(resultado)}
-          </span>
-        </div>
-      )}
     </div>
   );
 }
@@ -222,12 +215,11 @@ function Cajas({ n }) {
 /*
  * v1.3: el rótulo de cada lote es contenido, no una marca: va a 12 px y en
  * minúscula de frase (el suelo de 10,5 en mayúsculas es solo para marcas como
- * «PREGUNTA 5 DE 6»). Después de responder aparece LA CUENTA: lo que se tuvo,
- * lo que vale cada una y lo que queda, con sus cajas (25 u son dos y media).
+ * «PREGUNTA 5 DE 6»).
  */
-function BloqueDeLotes({ lotes, vendidas, cuenta = null }) {
+function BloqueDeLotes({ lotes, vendidas }) {
   return (
-    <div data-datos="lotes" data-resuelta={cuenta ? "si" : "no"} style={CONTENEDOR}>
+    <div data-datos="lotes" style={CONTENEDOR}>
       {lotes.map((l, k) => (
         <div key={l.marca} data-lote={k + 1} style={{ minHeight: "48px", padding: "6px 0", boxSizing: "border-box", borderTop: k ? DIVISORIA : "none" }}>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "8px" }}>
@@ -243,21 +235,51 @@ function BloqueDeLotes({ lotes, vendidas, cuenta = null }) {
         {INTERFAZ_R5_1.vendidas(vendidas)}
       </div>
       <p style={{ margin: "0 0 8px", fontFamily: INTER, fontSize: "12px", color: C.atenuado }}>{INTERFAZ_R5_1.leyendaCajas}</p>
-      {cuenta && (
-        <div data-cuenta className="r5-escena" style={{ borderTop: `2px solid ${C.hecho}`, padding: "10px 0 12px" }}>
-          <p style={{ ...MARCA, margin: "0 0 8px" }}>{INTERFAZ_R5_1.marcaCuenta}</p>
-          {[
-            ["tenias", INTERFAZ_R5_1.tenias(cuenta.unidades, cuenta.total)],
-            ["cada-una", INTERFAZ_R5_1.cadaUna(cuenta.total, cuenta.unidades, pesosConCentavos(cuenta.promedio))],
-          ].map(([id, t]) => (
-            <p key={id} data-renglon-cuenta={id} style={{ margin: "0 0 6px", fontFamily: INTER, fontSize: "14px", fontVariantNumeric: "tabular-nums", color: C.texto }}>{t}</p>
-          ))}
-          <p data-renglon-cuenta="quedan" style={{ margin: "8px 0 6px", fontFamily: INTER, fontSize: "15px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: C.texto }}>
-            {INTERFAZ_R5_1.quedan(cuenta.quedan, pesosConCentavos(cuenta.promedio), cuenta.valor)}
-          </p>
-          <Cajas n={cuenta.quedan / UNIDADES_POR_CAJA} />
-        </div>
-      )}
+    </div>
+  );
+}
+
+/*
+ * v1.3 · LA CUENTA, DONDE SE ESTÁ MIRANDO. Al responder, el estudiante tiene
+ * el dedo en las opciones y el foco baja a «Siguiente»: los datos ya están
+ * fuera de la pantalla (Takamura; medido en Chromium). Por eso la cuenta va
+ * entre las opciones y la devolución, y arriba, en los datos, solo quedan los
+ * signos y el tachado. Las cifras salen de los datos.
+ */
+const RENGLON_CUENTA = { display: "flex", alignItems: "baseline", gap: "8px", minHeight: "28px", fontFamily: INTER, fontSize: "14px", fontVariantNumeric: "tabular-nums", color: C.texto };
+const CIFRA_CUENTA = { width: "80px", flexShrink: 0, textAlign: "right", whiteSpace: "nowrap", fontWeight: 600 };
+
+function LaCuenta({ pantalla }) {
+  if (pantalla.datos) {
+    const pasos = pasosDeC8(pantalla);
+    return (
+      <div data-cuenta="c8" className="r5-escena" style={{ ...CONTENEDOR, padding: "12px 16px" }}>
+        <p style={{ ...MARCA, margin: "0 0 6px" }}>{INTERFAZ_R5_1.marcaCuenta}</p>
+        {pasos.map((x) => (
+          <div key={x.id} data-renglon-cuenta={x.id} style={{ ...RENGLON_CUENTA, ...(x.total ? { borderTop: `2px solid ${C.hecho}`, paddingTop: "4px", marginTop: "2px", fontWeight: 700 } : {}) }}>
+            <span style={{ width: "14px", flexShrink: 0, fontFamily: SORA, fontWeight: 700 }}>{x.signo}</span>
+            <span style={{ flex: 1, minWidth: 0 }}>{x.etiqueta}</span>
+            <span style={{ ...CIFRA_CUENTA, ...(x.total ? { fontFamily: SORA, fontWeight: 700 } : {}) }}>{pesos(x.valor)}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  const c = cuentaDeC9(pantalla);
+  const promedio = pesosConCentavos(c.promedio);
+  return (
+    <div data-cuenta="c9" className="r5-escena" style={{ ...CONTENEDOR, padding: "12px 16px" }}>
+      <p style={{ ...MARCA, margin: "0 0 8px" }}>{INTERFAZ_R5_1.marcaCuenta}</p>
+      {[
+        ["tenias", INTERFAZ_R5_1.tenias(c.unidades, c.total)],
+        ["cada-una", INTERFAZ_R5_1.cadaUna(c.total, c.unidades, promedio)],
+      ].map(([id, t]) => (
+        <p key={id} data-renglon-cuenta={id} style={{ margin: "0 0 6px", fontFamily: INTER, fontSize: "14px", fontVariantNumeric: "tabular-nums", color: C.texto }}>{t}</p>
+      ))}
+      <p data-renglon-cuenta="quedan" style={{ margin: "8px 0 6px", fontFamily: INTER, fontSize: "15px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: C.texto }}>
+        {INTERFAZ_R5_1.quedan(c.quedan, promedio, c.valor)}
+      </p>
+      <Cajas n={c.quedan / UNIDADES_POR_CAJA} />
     </div>
   );
 }
@@ -468,8 +490,8 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
       <p ref={enunciado} tabIndex={-1} data-enunciado style={{ margin: "20px 0 0", fontFamily: INTER, fontSize: "17px", lineHeight: "26px", fontWeight: 600, color: C.texto, outline: "none" }}>
         {pantalla.enunciado}
       </p>
-      {pantalla.datos && <ListaDeDatos datos={pantalla.datos} resuelta={Boolean(r)} resultado={cuentaDeC8(pantalla)} />}
-      {pantalla.lotes && <BloqueDeLotes lotes={pantalla.lotes} vendidas={pantalla.vendidas} cuenta={r ? cuentaDeC9(pantalla) : null} />}
+      {pantalla.datos && <ListaDeDatos datos={pantalla.datos} resuelta={Boolean(r)} />}
+      {pantalla.lotes && <BloqueDeLotes lotes={pantalla.lotes} vendidas={pantalla.vendidas} />}
       {!r && pantalla.pista && <Pista key={pantalla.id} texto={pantalla.pista} abierta={pistaAbierta} onAbrir={() => setPistaAbierta(true)} />}
       {pantalla.columnas && <CabeceraDeTabla columnas={pantalla.columnas} />}
       <Opciones columnas="1fr">
@@ -481,6 +503,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
           </div>
         ))}
       </Opciones>
+      {r && (pantalla.datos || pantalla.lotes) && <LaCuenta pantalla={pantalla} />}
       <Devolucion r={r && { ok: r.ok, textos: [r.texto] }} lector={LECTOR_R5_1} />
       {r && <BotonSiguiente onClick={siguiente} botonRef={boton} texto={INTERFAZ_R5_1.siguiente} />}
     </div>

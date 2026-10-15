@@ -568,7 +568,20 @@ test("★★★ v1.3: en la pantalla 4 la cuenta se ve al responder —acierte o
       const fila = lista.querySelector(`[data-dato="${id}"]`);
       assert.equal(fila.querySelector("span span").style.textDecoration, "line-through", id);
     }
-    assert.equal(lista.querySelector('[data-dato="resultado"]').textContent, `Costo de mercancía vendida=${pesos(esperado)}`);
+    assert.equal(lista.querySelector('[data-dato="resultado"]'), null, "el resultado va en LA CUENTA, no arriba");
+    /* LA CUENTA, entre las opciones y la devolución: donde se está mirando al responder. */
+    const cuenta = caja.querySelector('[data-cuenta="c8"]');
+    assert.ok(cuenta, eleccion);
+    const opciones = caja.querySelector("[data-opcion]").parentElement;
+    assert.ok(opciones.compareDocumentPosition(cuenta) & w.Node.DOCUMENT_POSITION_FOLLOWING, "la cuenta va después de las opciones");
+    assert.ok(cuenta.compareDocumentPosition(caja.querySelector("[data-devolucion]")) & w.Node.DOCUMENT_POSITION_FOLLOWING, "y antes de la devolución");
+    const renglones = [...cuenta.querySelectorAll("[data-renglon-cuenta]")];
+    assert.deepEqual(renglones.map((x) => x.dataset.renglonCuenta), ["inventario-inicial", "compras", "devoluciones-compras", "disponible", "inventario-final", "resultado"]);
+    /* A mano: 500 + 4.000 − 300 = 4.200 disponible; 4.200 − 800 = 3.400. */
+    assert.deepEqual(renglones.map((x) => x.textContent), [
+      "Inventario inicial$500", "+Compras$4.000", "−Devoluciones de compras$300",
+      "=Disponible para vender$4.200", "−Inventario final$800", `=Costo de mercancía vendida${pesos(esperado)}`,
+    ]);
     desmontar();
   }
 });
@@ -585,8 +598,9 @@ test("★★★ v1.3: en la pantalla 5 LA CUENTA sale al responder, con 25 u en 
     await irA(caja, "c9");
     assert.equal(caja.querySelector("[data-cuenta]"), null, "antes de responder no hay cuenta");
     await tocar(opcion(caja, eleccion));
-    const cuenta = caja.querySelector("[data-cuenta]");
+    const cuenta = caja.querySelector('[data-cuenta="c9"]');
     assert.ok(cuenta, eleccion);
+    assert.ok(cuenta.compareDocumentPosition(caja.querySelector("[data-devolucion]")) & w.Node.DOCUMENT_POSITION_FOLLOWING, "la cuenta va antes de la devolución");
     assert.deepEqual([...cuenta.querySelectorAll("[data-renglon-cuenta]")].map((x) => x.textContent),
       ["Tenías 250 u por $5.260", "Cada una: $5.260 ÷ 250 = $21,04", "Quedan 25 u × $21,04 = $526"]);
     const cajas = cuenta.querySelector("[data-cajas]");
@@ -609,16 +623,16 @@ test("★★ v1.3: el rótulo del lote es contenido: 12 px, sin mayúsculas forz
   desmontar();
 });
 
-test("★★ v1.3: cada texto nuevo está, literal, en la tabla «v1.3 · textos nuevos» del paquete (guarda: 8)", () => {
+test("★★ v1.3: cada texto nuevo está, literal, en la tabla «v1.3 · textos nuevos» del paquete (guarda: 9)", () => {
   const seccion = PAQUETE.slice(PAQUETE.indexOf("## v1.3 · textos nuevos"));
   const c = D.cuentaDeC9(pantalla("c9"));
   const I = D.INTERFAZ_R5_1;
   const nuevos = [
-    I.verPista, I.marcaPista, I.noEntra, D.RESULTADO_C8, I.marcaCuenta,
+    I.verPista, I.marcaPista, I.noEntra, D.RESULTADO_C8, I.marcaCuenta, I.disponible,
     I.tenias(c.unidades, c.total), I.cadaUna(c.total, c.unidades, D.pesosConCentavos(c.promedio)),
     I.quedan(c.quedan, D.pesosConCentavos(c.promedio), c.valor),
   ];
-  assert.equal(nuevos.length, 8);
+  assert.equal(nuevos.length, 9);
   for (const t of nuevos) {
     assert.ok(seccion.includes(`| ${t} |`), t);
     assert.ok(palabrasDe(t).length < 10, `${t}: llega a 10 palabras y habría que medirlo`);
@@ -651,4 +665,38 @@ test("★★ el título del tema puede partir en dos renglones: no se corta con 
   const fuente = leer("src/components/RepasoCapitulo5View.jsx");
   const h1 = fuente.slice(fuente.indexOf("<h1 data-titulo-tema"), fuente.indexOf(">", fuente.indexOf("<h1 data-titulo-tema")));
   for (const d of ['whiteSpace: "normal"', 'overflow: "visible"', 'textOverflow: "clip"', "minWidth: 0"]) assert.ok(h1.includes(d), d);
+});
+
+/*
+ * ═══════════ TODO LO DEL PAQUETE LLEGA A LA PANTALLA ═══════════
+ *
+ * La pista estuvo en el paquete y en los datos y nunca se pintó, y ninguna
+ * prueba lo notó: las pruebas miraban los datos, no la pantalla (Takamura,
+ * auditoría del autodiagnóstico). Esta juega cada pantalla una vez por opción,
+ * con la pista abierta, y exige que cada texto del estudiante haya salido en
+ * el DOM en algún estado. Un campo que nadie pinta, la rompe.
+ */
+test("★★★ cada texto del paquete sale en la pantalla en algún estado: enunciados, opciones, datos, pistas y cada devolución (guarda: 81)", async () => {
+  const visto = new Set();
+  const mirar = (caja) => visto.add(caja.textContent);
+  for (const [k, p] of P.entries()) {
+    for (const o of p.opciones) {
+      const { caja, desmontar } = await montar(h(RepasoCruzado, { pantallas: P, onCompletar: () => {} }));
+      for (const antes of P.slice(0, k)) {
+        await tocar(opcion(caja, clave(antes).id));
+        await tocar(caja.querySelector("[data-siguiente]"));
+      }
+      mirar(caja);
+      await tocar(caja.querySelector("[data-ver-pista]"));
+      mirar(caja);
+      await tocar(opcion(caja, o.id));
+      mirar(caja);
+      desmontar();
+    }
+  }
+  const todo = [...visto].join("\n");
+  const textos = textosDeLosDatos();
+  assert.equal(textos.length, 81, "no recorrió los textos que dice recorrer");
+  const faltan = textos.filter((t) => !todo.includes(t));
+  assert.deepEqual(faltan, [], `no salen en pantalla: ${faltan.join(" | ")}`);
 });
