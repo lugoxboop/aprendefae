@@ -257,3 +257,46 @@ test("★★★ el panel docente: todo item_id tiene etiqueta, leída de los dat
   const bloque = fuente.slice(fuente.indexOf("CONTABILIDAD · T7 «INVENTARIOS»"));
   assert.match(bloque.slice(0, bloque.indexOf("});")), /"t7-3-pago-a-tiempo": \(id\) => unidadDeT73H4\(id\),/);
 });
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+test("★★★ Patrón T7-3: cada figura después de su ítem, y el asiento de Totumo arriba del de Bambú", async () => {
+  assert.equal(C.lista - C.comercial, C.factura);
+  assert.equal((C.factura * 4) / 100, C.condicionado);
+  assert.equal(C.deuda - C.condicionado, C.pago);
+  const vistas = (caja) => [...caja.querySelectorAll("[data-figuras] > div > figure")].map((f) => (f.matches("[data-plazos]")
+    ? `plazos ${f.querySelector("[data-pago]")?.textContent ?? "sin pago"}`
+    : `${f.querySelector("figcaption").textContent}: ${[...f.querySelectorAll(".rg-v")].map((x) => x.textContent).join(" ")}`));
+  const F = "Factura de Totumo: 2.125.000 170.000 1.955.000";
+  const Z = "plazos Pago · 23 oct";
+  const DC = "El descuento condicionado: 1.955.000 4 % 78.200";
+  const PG = "El pago del 23 de octubre: 2.199.375 78.200 2.121.175";
+  /* Lo que se ve con N ítems respondidos (las muestras de Watari: la factura hasta el 2, la franja hasta el 3). */
+  const esperado = [[], [F], [F, Z], [Z, DC], [DC, PG], [DC, PG], [DC, PG], [DC, PG]];
+  const m = await montar();
+  try {
+    for (const [k, it] of EN_ORDEN.entries()) {
+      assert.deepEqual(vistas(m.caja), esperado[k], `antes del ítem ${k + 1}`);
+      /* El asiento de arriba, solo en el ítem 6, y ya resuelto. */
+      const arriba = m.caja.querySelector("[data-asiento-arriba]");
+      assert.equal(Boolean(arriba), it.id === "libro-de-bambu", `asiento arriba en el ítem ${k + 1}`);
+      if (arriba) {
+        assert.equal(arriba.querySelector("p").textContent, "Libro de Totumo");
+        assert.ok(arriba.compareDocumentPosition(m.caja.querySelector("[data-pregunta]")) & w.Node.DOCUMENT_POSITION_FOLLOWING, "Totumo arriba, Bambú abajo");
+        for (const l of D.ITEMS_H4.find((x) => x.id === "libro-de-totumo").lineas) assert.ok(arriba.textContent.includes(l.cuenta), l.cuenta);
+      }
+      if (it.tipo === "eleccion") {
+        await tocar(opcion(m.caja, it.opciones.at(-1).valor));
+      } else {
+        for (const l of it.lineas) await tocar(lado(m.caja, l.id, l.lado));
+        await tocar(boton(m.caja, "Comprobar"));
+      }
+      assert.deepEqual(vistas(m.caja), esperado[k + 1], `al responder el ítem ${k + 1}`);
+      /* El pago del 23 de octubre: a los 20 días del 3 de octubre, en la franja de 30. */
+      if (k === 1) assert.equal(m.caja.querySelector("[data-plazos] .pz-mark").style.left, `${(20 / 30) * 100}%`);
+      await tocar(boton(m.caja, k === EN_ORDEN.length - 1 ? D.BOTON_H4.verResumen : D.BOTON_H4.siguiente));
+    }
+  } finally {
+    m.desmontar();
+  }
+});
