@@ -12,6 +12,7 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, Ficha, LineasConComprobar, TEXTO, INTER, APAGADO } from "./hacerT7.jsx";
+import { Plegable } from "./plegable.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -199,7 +200,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
                       {`${c.metodo.nombre} · ${c.fila.nombre}`.toUpperCase()}
                     </p>
                     <span style={SOLO_LECTOR}>{`Incorrecto. Era ${pesos(c.valor)}. `}</span>
-                    {revision[c.id].textos.map((x) => <p key={x} data-texto-retro style={{ ...TEXTO, margin: "0 0 4px" }}>{x}</p>)}
+                    {revision[c.id].textos.map((x) => <p key={x} data-texto-retro style={{ ...TEXTO, margin: "0 0 4px" }}><Plegable texto={x} /></p>)}
                   </div>
                 ))}
                 <p data-cierre-parte1 style={{ ...TEXTO, padding: "11px 13px", borderRadius: "11px", background: "rgba(184,196,212,0.13)", borderLeft: "3px solid #B8C4D4" }}>

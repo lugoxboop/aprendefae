@@ -5,6 +5,7 @@ import { NEUTRO } from "../../../../data/contabilidadIntro.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE, BOTON } from "../../../../data/contabilidadT7_1.js";
 import FiguraDosColumnas from "./FiguraDosColumnas.jsx";
+import { Plegable } from "./plegable.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -65,7 +66,7 @@ function Pie({ texto }) {
 function Parrafos({ lista }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-      {lista.map((t) => <p key={t} data-texto style={PARRAFO}>{t}</p>)}
+      {lista.map((t) => <p key={t} data-texto style={PARRAFO}><Plegable texto={t} /></p>)}
     </div>
   );
 }
@@ -172,7 +173,7 @@ function Pregunta({ pantalla, onSeguir }) {
             color: "rgba(248,249,250,0.92)", background: "rgba(184,196,212,0.1)", borderLeft: `3px solid ${NEUTRO}`,
             overflowWrap: "break-word",
           }}>
-            {opcion.devolucion}
+            <Plegable texto={opcion.devolucion} />
           </p>
           <button type="button" data-boton="probar-otra" onClick={probarOtra} style={{ ...boton(false), marginTop: "10px" }}>
             {pantalla.error.boton}
@@ -188,7 +189,7 @@ function Pregunta({ pantalla, onSeguir }) {
             color: "rgba(248,249,250,0.92)", background: "rgba(184,196,212,0.1)", borderLeft: `3px solid ${NEUTRO}`,
             overflowWrap: "break-word",
           }}>
-            {pantalla.acierto.texto}
+            <Plegable texto={pantalla.acierto.texto} />
           </p>
           <p data-texto data-nota style={{ ...PARRAFO, marginTop: "10px", fontSize: "13px", color: "rgba(248,249,250,0.82)" }}>
             {pantalla.acierto.nota}

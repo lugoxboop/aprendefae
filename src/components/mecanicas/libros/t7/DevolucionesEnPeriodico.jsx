@@ -3,6 +3,7 @@ import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_DEVOLUCIONES, BOTON, INTERFAZ, DEBE, HABER, cifra } from "../../../../data/contabilidadT7_1_a6.js";
+import { Plegable } from "./plegable.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -128,7 +129,7 @@ function Mensaje({ ok, textos, refFoco, clase = "" }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7a6-msg-cuerpo">
         <span className="t7a6-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
@@ -147,7 +148,7 @@ function Eleccion({ pantalla, onSeguir }) {
 
   return (
     <div className="t7a6" data-eleccion={pantalla.id} data-estado={estado}>
-      {pantalla.parrafos.map((t) => <p key={t} className="t7a6-p" data-texto>{t}</p>)}
+      {pantalla.parrafos.map((t) => <p key={t} className="t7a6-p" data-texto><Plegable texto={t} /></p>)}
       {pantalla.espejo && <Espejo espejo={pantalla.espejo} acierto={estado === "acierto"} />}
       <p className="t7a6-p t7a6-preg" data-texto data-pregunta>{pantalla.pregunta}</p>
       <div className="t7a6-ops" role="group" aria-label={pantalla.pregunta}>
@@ -353,7 +354,7 @@ export default function DevolucionesEnPeriodico({ pieza = PIEZA_DEVOLUCIONES, ro
           <div className="t7a6">
             {p.objetivo && <p className="t7a6-p" data-texto data-objetivo>{p.objetivo}</p>}
             {p.enunciado && <p className="t7a6-p" data-texto data-enunciado>{p.enunciado}</p>}
-            {(p.parrafos ?? []).map((t) => <p key={t} className="t7a6-p" data-texto>{t}</p>)}
+            {(p.parrafos ?? []).map((t) => <p key={t} className="t7a6-p" data-texto><Plegable texto={t} /></p>)}
             {p.ficha && (
               <dl className="t7a6-ficha" data-ficha>
                 {p.ficha.map((f) => (

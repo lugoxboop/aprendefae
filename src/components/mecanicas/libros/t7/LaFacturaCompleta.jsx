@@ -3,6 +3,7 @@ import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_LA_FACTURA_COMPLETA, BOTON, INTERFAZ, DEBE, HABER } from "../../../../data/contabilidadT7_1_ap2.js";
+import { Plegable } from "./plegable.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -128,7 +129,7 @@ function Mensaje({ ok, textos, refFoco, clase = "" }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7a2-msg-cuerpo">
         <span className="t7a2-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
@@ -423,7 +424,7 @@ export default function LaFacturaCompleta({ pieza = PIEZA_LA_FACTURA_COMPLETA, r
         {(p.tipo === "portada" || p.tipo === "lectura" || p.tipo === "resumen") && (
           <div className="t7a2">
             {p.objetivo && <p className="t7a2-p" data-texto data-objetivo>{p.objetivo}</p>}
-            {(p.parrafos ?? []).map((t) => <p key={t} className="t7a2-p" data-texto>{t}</p>)}
+            {(p.parrafos ?? []).map((t) => <p key={t} className="t7a2-p" data-texto><Plegable texto={t} /></p>)}
             {p.tipo === "resumen" && <LadoALado tabla={tablaResumen} foco={false} />}
             {p.siguiente && <p className="t7a2-p" data-texto data-siguiente>{p.siguiente}</p>}
             {p.boton && <Boton nombre={p.tipo === "portada" ? "empezar" : "seguir"} texto={p.boton} onClick={seguir} />}
