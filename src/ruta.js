@@ -59,6 +59,7 @@ export const VISTAS = new Set([
   "introduccion-contabilidad",
   "cuentas-debe-haber",
   "ingresos-gastos-y-caja",
+  "efectivo-caja-menor-bancos",
   "activos-financieros",
   "cuentas-por-cobrar",
   "inventarios-periodico",
