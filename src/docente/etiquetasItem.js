@@ -72,6 +72,7 @@ import { hechoDeItemH1 as hechoDeItemT72H1 } from "../contabilidad/t7_2H1.js";
 import { unidadDeH2 as unidadDeT72H2 } from "../contabilidad/t7_2H2.js";
 import { unidadDeH3 as unidadDeT72H3 } from "../contabilidad/t7_2H3.js";
 import { unidadDeH4 as unidadDeT72H4 } from "../contabilidad/t7_2H4.js";
+import { unidadDeH1 as unidadDeT73H1 } from "../contabilidad/t7_3H1.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -735,6 +736,8 @@ Object.assign(REGLAS, {
   "t7-2-llena-el-kardex": (id) => unidadDeT72H3(id),
   /* T7-2 · H4. Por su subtema y su pregunta (la de los ítems 3 y 5 es la misma). */
   "t7-2-periodico-o-permanente": (id) => unidadDeT72H4(id),
+  /* T7-3 · H1. Un cálculo, por su pregunta; una línea, por su cuenta y su valor. */
+  "t7-3-descuento-en-factura": (id) => unidadDeT73H1(id),
 });
 
 /*
