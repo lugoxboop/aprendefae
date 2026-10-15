@@ -314,6 +314,42 @@ distingue la cuenta del objeto. «Entra o sale de caja» es una caja de cartón;
 para aplicar la excepción 2. Los de la política monetaria, T1 y «las cuentas»
 no tienen célula dueña: los toma el coordinador.
 
+### El alcance, medido — y por qué NO se hizo la noche del 15
+
+Empecé a hacerlo y lo deshice. La medición es lo que vale de ese rato:
+
+```
+nombres con el estilo viejo:  43
+ocurrencias en src/:         182
+archivos tocados:             67   (incluidas pruebas que afirman el nombre)
+```
+
+**El nombre no vive en un sitio.** Está en `subjects.js`, otra vez en el
+archivo de datos del tema (`politicaMonetaria.js`, `contabilidadTema1.js`,
+`contabilidadActividades.js`…), a veces en el componente de la mecánica, y
+además **afirmado en pruebas**. Cambiar solo `subjects.js` —que es lo que
+parece el arreglo— deja el producto diciendo dos nombres distintos para la
+misma actividad.
+
+**Por qué se deshizo:** esos 67 archivos cruzan el territorio de las cuatro
+células, que estaban empujando esa misma noche. Un cambio **cosmético** que
+fabrica conflictos en el trabajo en curso de otros no vale lo que cuesta. No
+hay ningún estudiante peor atendido esta noche por un nombre en mayúsculas;
+sí lo habría por una cadena de PR trabada en conflictos.
+
+**Cómo se hace cuando toque**, y las dos no son lo mismo:
+
+1. **Por dueño**, cada célula los suyos cuando ya esté tocando esos archivos.
+   Es lo barato y es lo que se prefiere.
+2. **De una pasada**, solo con la cola vacía y avisando antes. Quien la haga:
+   los 182 sitios de golpe, no `subjects.js` primero; y las pruebas que
+   afirman el nombre se actualizan en el mismo commit, nunca después.
+
+**Y la lección que queda, que vale más que los nombres:** antes de empezar un
+arreglo que parece de un archivo, cuenta en cuántos está. `grep -rl` sobre el
+primer nombre de la lista habría dado la respuesta en diez segundos — yo la
+busqué después de haber hecho los 34 cambios.
+
 Cambiar el `nombre` **no toca el `id`**, así que no hay migración, no se mueve
 ninguna fila del catálogo y ningún estudiante pierde FP. Es texto de pantalla.
 
