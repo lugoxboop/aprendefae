@@ -46,7 +46,8 @@ export const LECTOR_ERROR = "Incorrecto.";
  * Las marcas con palabra de los destinos (canon, enganche.md E3: en blanco y
  * negro se sabe cuál falló). Katsumi, decisión 2.
  */
-export const MARCA = { bien: ["✓", "Correcto"], mal: ["✗", "No va aquí"], era: ["", "Iba aquí"] };
+export const MARCA = { bien: ["✓", "Correcto"], mal: ["✗", "No va aquí"], era: ["", "Iba aquí"], "cifra-mal": ["✗", "Cifra errada"] };
+/* «✗ Cifra errada»: la marca de un campo de cifra mal escrito (H7 y H8; Katsumi, katsumi-texto-hacer.md). «No va aquí» no sirve para una cifra. */
 
 /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El nombre de cada asiento para el lector de pantalla: el libro no les pone fecha. */
 export const NOMBRE_ASIENTO = { cobro: "Asiento del cobro", consignacion: "Asiento de la consignación" };
