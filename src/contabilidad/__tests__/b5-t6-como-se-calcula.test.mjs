@@ -43,6 +43,7 @@ const CAMBIO_CAPA_4 = { "$200.000": "$380.000", "$20.000": "$38.000", "$10.000":
 const conCifrasNuevas = (t, mapa) => t.replace(/\$\d{1,3}(?:\.\d{3})*/g, (m) => mapa[m] ?? m);
 const I4 = FUTABA.indexOf("Capa 4 · En una frase");
 const FUTABA_NUEVA = conCifrasNuevas(FUTABA.slice(0, I4), CAMBIO) + conCifrasNuevas(FUTABA.slice(I4), CAMBIO_CAPA_4);
+const ENTREGA_2 = FUENTE.slice(FUENTE.indexOf("Futaba · entrega 2"));
 const CIFRAS_NUEVAS = FUENTE.slice(FUENTE.indexOf("## (5) Futaba"));
 const E = D.ESCENARIO_T6_A5;
 const N = D.PIEZA_COMO_SE_CALCULA.nombres;
@@ -126,7 +127,7 @@ test("★★★ manda Futaba: los 11 pasos y el cierre, cada uno con su pie", ()
 test("★★★ manda Futaba: las cuatro cajas (nombre · monto), lo que revelan, el final y la capa 4", () => {
   for (const g of D.GRUPOS_T6_A5) assert.ok(FUTABA_NUEVA.includes(`${g.nombre} · ${g.monto}\t✎ ${g.revela}\t${g.pie}\t`) || FUTABA_NUEVA.includes(`${g.nombre} · ${g.monto}\t${g.revela}\t${g.pie}\t`), g.id);
   assert.ok(FUTABA_NUEVA.includes(`Cuando tocó las cuatro\t${D.FINAL_CAPA_3_T6_A5.texto}\t${D.FINAL_CAPA_3_T6_A5.pie}\t`));
-  assert.ok(FUTABA.includes(`Consigna: ${D.CONSIGNA_CAPA_3_T6_A5} (85)`));
+  assert.ok(ENTREGA_2.includes(`Consigna: «${D.CONSIGNA_CAPA_3_T6_A5}» (71)`), "la consigna de la entrega 2");
   assert.ok(FUTABA_NUEVA.includes(`Pregunta: ${D.PREGUNTA_FINAL_T6_A5} (70)`));
   for (const o of D.OPCIONES_FINAL_T6_A5) {
     const marca = o.correcta ? "✓" : "✗";
@@ -187,7 +188,8 @@ test("★★★ un porcentaje aplicado en el ejemplo («Al N %») lleva el pie d
 /* ═══════════ NINGUNA CIFRA DE EL TORITO ═══════════ */
 
 /* La lista negra: cada monto de El Torito en nuestras piezas de la provisión (pp. 200-203, tabla de la p. 201 incluida). */
-const LISTA_NEGRA = [...new Set([...textosDe(TORITO), ...textosDe(TORITO_MESA)].flatMap(cifras))];
+/* $0 no es una cifra del libro: es «nada» (la opción «Queda en $0» de T6 · A3, entrega 2, y el grupo 1 de A5). */
+const LISTA_NEGRA = [...new Set([...textosDe(TORITO), ...textosDe(TORITO_MESA)].flatMap(cifras))].filter((c) => c !== 0);
 
 test("★★★ ninguna cifra de El Torito ni de la tabla de la p. 201 entra en la pieza", () => {
   for (const c of [2655000, 148800, 2506200, 180000, 31200, 153400, 184600]) assert.ok(LISTA_NEGRA.includes(c), `la lista negra no tiene ${pesos(c)}`);
@@ -247,6 +249,7 @@ test("★★★ la lista negra: ninguna cifra construida coincide con una cifra 
     const mod = await import(`../../data/${f}`);
     for (const c of [...textosDe(mod).flatMap(cifras), ...valoresDe(mod)]) negra.add(c);
   }
+  negra.delete(0); // $0 no es una cifra del libro: es «nada»
   /* La guarda: la lista negra trae cifras de cada historia del libro. */
   for (const c of [2655000, 148800, 312500, 1350000, 1725000, 468750, 180000]) assert.ok(negra.has(c), `la lista negra no tiene ${pesos(c)}`);
   /* El banco digitado de la Célula E (El Toro Negro, D-3): todas sus cifras. */

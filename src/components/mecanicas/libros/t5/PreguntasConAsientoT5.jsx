@@ -5,6 +5,8 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "../t7/hacerT7.jsx";
+import { ContadorConIntento } from "../t7/armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -86,10 +88,12 @@ export default function PreguntasConAsientoT5({ config, Marco, rotulo, titulo, a
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER}</style>
       <div {...{ [`data-${marca}`]: true }}>
-        <Encabezado consigna={consigna} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(consigna)} onComoSeJuega={onComoSeJuega} />
         {resto.length > 0 && <div style={{ marginBottom: "12px" }}><Parrafos textos={resto} /></div>}
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </ContadorConIntento>
         </div>
         {item.intro && <div style={{ marginBottom: "12px" }}><Parrafos textos={[item.intro]} dato="intro" /></div>}
         <TarjetaPregunta id={item.id} pregunta={item.pregunta} pie={datos.pie} tarjetaRef={tarjeta} />

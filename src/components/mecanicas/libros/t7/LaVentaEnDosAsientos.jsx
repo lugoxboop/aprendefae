@@ -3,6 +3,8 @@ import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_LA_VENTA_EN_DOS_ASIENTOS, BOTON, INTERFAZ, PENDIENTE_DE_REVISION, DEBE, HABER, cifra } from "../../../../data/contabilidadT7_2_a2.js";
+import { Plegable } from "./plegable.jsx";
+import { textosDelError, contarFallo } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -123,7 +125,7 @@ function Mensaje({ ok, textos, refFoco }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7b2-msg-cuerpo">
         <span className="t7b2-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
@@ -197,6 +199,8 @@ function Eleccion({ pantalla, onSeguir }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
   const [confirmada, setConfirmada] = useState(null);
+  /* Cuántas veces se ha fallado esta pregunta: la escalera de ayuda (escaleraAyuda.js). */
+  const [fallos, setFallos] = useState(0);
   const ref = useRef(null);
   const opcion = confirmada ? pantalla.opciones.find((o) => o.id === confirmada) : null;
   const estado = !opcion ? "colocando" : opcion.correcta ? "acierto" : "error";
@@ -205,7 +209,7 @@ function Eleccion({ pantalla, onSeguir }) {
 
   return (
     <div className="t7b2" data-eleccion={pantalla.id} data-estado={estado}>
-      {pantalla.parrafos.map((t) => <p key={t} className="t7b2-p" data-texto>{t}</p>)}
+      {pantalla.parrafos.map((t) => <p key={t} className="t7b2-p" data-texto><Plegable texto={t} /></p>)}
       {pantalla.enunciado && <p className="t7b2-enunciado" data-texto data-enunciado>{pantalla.enunciado}</p>}
       {pantalla.ficha && <Ficha ficha={pantalla.ficha} />}
       {pantalla.repaso && <p className="t7b2-p" data-texto data-repaso>{pantalla.repaso}</p>}
@@ -220,10 +224,10 @@ function Eleccion({ pantalla, onSeguir }) {
           );
         })}
       </div>
-      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => setConfirmada(elegida)} />}
+      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }} />}
       {estado === "error" && (
         <>
-          <Mensaje ok={false} textos={[opcion.devolucion]} refFoco={ref} />
+          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} refFoco={ref} />
           <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((a) => barajarDistinto(pantalla.opciones, a, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
         </>
       )}
@@ -231,7 +235,7 @@ function Eleccion({ pantalla, onSeguir }) {
         <>
           <Mensaje ok textos={[pantalla.acierto.texto]} refFoco={ref} />
           {pantalla.acierto.asiento && <Asiento asiento={pantalla.acierto.asiento} nuevo />}
-          {(pantalla.acierto.despues ?? []).map((t) => <p key={t} className="t7b2-p t7b2-nueva" data-texto>{t}</p>)}
+          {(pantalla.acierto.despues ?? []).map((t) => <p key={t} className="t7b2-p t7b2-nueva" data-texto><Plegable texto={t} /></p>)}
           <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />
         </>
       )}
@@ -335,7 +339,7 @@ export default function LaVentaEnDosAsientos({ pieza = PIEZA_LA_VENTA_EN_DOS_ASI
             {p.objetivo && <p className="t7b2-p" data-texto data-objetivo>{p.objetivo}</p>}
             {p.enunciado && <p className="t7b2-enunciado" data-texto data-enunciado>{p.enunciado}</p>}
             {p.ficha && <Ficha ficha={p.ficha} />}
-            {p.parrafos?.map((t) => <p key={t} className="t7b2-p" data-texto>{t}</p>)}
+            {p.parrafos?.map((t) => <p key={t} className="t7b2-p" data-texto><Plegable texto={t} /></p>)}
             {p.calculos && <Calculos lista={p.calculos} />}
             {p.asiento && <Asiento asiento={p.asiento} />}
             {p.estructura && (

@@ -19,18 +19,17 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { createServer } from "vite";
-import { createRequire } from "node:module";
 import { resolve } from "node:path";
+import { abrirNavegador } from "./navegador.mjs";
 
 const RAIZ = resolve(import.meta.dirname, "../..");
-const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? "/opt/node-tools/node_modules/playwright");
 const { OPCIONES_T6_ACT4 } = await import("../../src/data/contabilidadT6Act4.js");
 
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
 await servidor.listen();
 const URL = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/b5/harness-a4/index.html`;
-const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+/* Con la barra de desplazamiento a la vista: el ancho del sitio en el Chromium de escritorio (navegador.mjs). */
+const navegador = await abrirNavegador();
 const fallos = [];
 const informe = [];
 
@@ -49,7 +48,8 @@ function medir() {
   const pulsos = document.querySelector("[data-hecho]").previousElementSibling.getBoundingClientRect();
   const lineas = [...document.querySelectorAll("[data-ranura='debe'] [aria-hidden='true']")].map((p) => `${p.textContent.split(" ")[0]} ${Math.round(p.getBoundingClientRect().height / 16)}`);
   return {
-    problemas, asiento: asiento.height, primera: opciones[0].top, juego: opciones.at(-1).bottom - pulsos.top, lineas,
+    /* En la página, no en la ventana: al elegir, la página puede bajar lo justo para mostrar la devolución (a 320, 2 px). */
+    problemas, asiento: asiento.height, primera: opciones[0].top + scrollY, juego: opciones.at(-1).bottom - pulsos.top, lineas,
     animaciones: [...document.querySelectorAll("[data-ranura] [data-cuenta]")].map((p) => getComputedStyle(p).animationName),
     cuentas: [...document.querySelectorAll("[data-ranura]")].map((r) => r.querySelector("[data-cuenta]")?.textContent ?? "—"),
   };
