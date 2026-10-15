@@ -84,11 +84,11 @@ export const FICHA_H2 = [
  * Patrón T7-3 (Watari): la cuenta en renglones, cada parte DESPUÉS de su
  * ítem. La cadena crece en la misma tarjeta (ítems 1 y 2); el atajo del
  * factor llega con el ítem 3 y la rebaja de verdad con el 4. Rótulos de
- * Watari, por confirmar con Near.
+ * Watari, revisados por Near.
  *
- * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN]: la primera frase de la nota
- * de la rebaja («La suma de los porcentajes da 19 %.») es de Watari; la
- * segunda es de Near (la retroalimentación del ítem 4). Falta su INFLESZ.
+ * La nota de la rebaja: la primera frase es de Watari y la segunda de Near
+ * (la retroalimentación del ítem 4). Near la revisó: va tal cual (INFLESZ
+ * 82,6).
  */
 const decimal = (x) => String(x).replace(".", ",");
 export const ROTULOS_H2 = {
