@@ -164,6 +164,13 @@ const v = (cuenta, valor, texto) => ({ cuenta, valor, texto });
  *   valorMal[]        cuenta del asiento con un valor previsto
  *   generica, acierto
  */
+/*
+ * B5 de enganche.md (Kamogawa): el renglón «IVA · 16 %» salía en el hecho y en
+ * «Datos de marzo», que está a la vista en cada asiento. Sale de los hechos;
+ * las tasas quedan solo en «Datos de marzo». La decisión nombra los asientos
+ * 1, 2, 3 y 6, pero el renglón estaba en seis (también el 5 y el 7): se quitó
+ * de los seis, de forma provisional, y está reportado.
+ */
 export const ASIENTOS_MATE = [
   {
     id: "a1",
@@ -171,7 +178,7 @@ export const ASIENTOS_MATE = [
     fecha: "1 DE MARZO",
     operacion: "Compra de contado",
     hecho: "Marzo 1: compra de contado con descuento comercial. Arma su asiento.",
-    renglones: [["Unidades", "1.000"], ["Precio por unidad", cifraConSigno(25000)], ["IVA", "16 %"], ["Descuento comercial", "5 %"]],
+    renglones: [["Unidades", "1.000"], ["Precio por unidad", cifraConSigno(25000)], ["Descuento comercial", "5 %"]],
     correctos: [[d(COMPRAS, M.a1.compras), d(IVA, M.a1.iva), h(RETENCION, M.a1.retencion), h(CAJA, M.a1.pago)]],
     cruzado: {
       [IVA]: "En la compra pagas IVA, así que va al debe. Al haber va el IVA que cobras al vender.",
@@ -203,7 +210,7 @@ export const ASIENTOS_MATE = [
     operacion: "Venta a crédito",
     hecho: "Marzo 10: venta a crédito a clientes varios. Arma su asiento.",
     /* Decisión 2: el valor corto, sin la marca de dato declarado. */
-    renglones: [["Unidades", "2.000"], ["Precio por unidad", cifraConSigno(45000)], ["IVA", "16 %"], ["Retención de los clientes", "no retienen"]],
+    renglones: [["Unidades", "2.000"], ["Precio por unidad", cifraConSigno(45000)], ["Retención de los clientes", "no retienen"]],
     correctos: [[d(CLIENTES, M.a2.total), h(IVA, M.a2.iva), h(INGRESOS, M.a2.ingresos)]],
     cruzado: {
       [IVA]: "Al vender, cobras IVA para el Estado. Es una deuda: va al haber.",
@@ -232,7 +239,7 @@ export const ASIENTOS_MATE = [
     fecha: "15 DE MARZO",
     operacion: "Compra de contado",
     hecho: "Marzo 15: compra de contado. Arma el asiento de la compra.",
-    renglones: [["Unidades", "600"], ["Precio de lista", cifraConSigno(30000)], ["IVA", "16 %"], ["Descuento", "4 %, comercial"]],
+    renglones: [["Unidades", "600"], ["Precio de lista", cifraConSigno(30000)], ["Descuento", "4 %, comercial"]],
     fleteEnElSiguiente: true,
     correctos: [[d(COMPRAS, M.a3.compras), d(IVA, M.a3.iva), h(RETENCION, M.a3.retencion), h(CAJA, M.a3.pago)]],
     cruzado: {
@@ -305,7 +312,7 @@ export const ASIENTOS_MATE = [
     operacion: "Devolución de venta",
     hecho: "Marzo 20: vuelven unidades de las vendidas el día 10. Arma su asiento.",
     /* Decisión 3: tres renglones normales y el precio del día 10 aparte, al final. */
-    renglones: [["Unidades devueltas", "300"], ["IVA", "16 %"], ["La venta del día 10 fue", "a crédito"]],
+    renglones: [["Unidades devueltas", "300"], ["La venta del día 10 fue", "a crédito"]],
     deOtraOperacion: ["Precio de venta del día 10", cifraConSigno(45000)],
     correctos: [[d(DEVOLUCIONES, M.a5.ingresos), d(IVA, M.a5.iva), h(CLIENTES, M.a5.total)]],
     cruzado: {
@@ -336,7 +343,7 @@ export const ASIENTOS_MATE = [
     operacion: "Compra a crédito",
     hecho: "Marzo 25: compra a crédito. Arma su asiento.",
     /* Decisión 2: la etiqueta es «Plazo del proveedor». */
-    renglones: [["Unidades", "400"], ["Precio por unidad", cifraConSigno(32000)], ["IVA", "16 %"], ["Plazo del proveedor", "5/15, n/30"]],
+    renglones: [["Unidades", "400"], ["Precio por unidad", cifraConSigno(32000)], ["Plazo del proveedor", "5/15, n/30"]],
     correctos: [[d(COMPRAS, M.a6.compras), d(IVA, M.a6.iva), h(RETENCION, M.a6.retencion), h(PROVEEDORES, M.a6.pago)]],
     cruzado: {
       [IVA]: "En una compra, el IVA que pagas va al debe.",
@@ -367,7 +374,7 @@ export const ASIENTOS_MATE = [
     fecha: "31 DE MARZO",
     operacion: "Venta de contado",
     hecho: "Marzo 31: venta de contado a clientes varios, que no retienen. Arma su asiento.",
-    renglones: [["Unidades", "1.250"], ["Precio de lista", cifraConSigno(45000)], ["IVA", "16 %"], ["Descuento", "5 %, comercial"]],
+    renglones: [["Unidades", "1.250"], ["Precio de lista", cifraConSigno(45000)], ["Descuento", "5 %, comercial"]],
     fleteEnElSiguiente: true,
     correctos: [[d(CAJA, M.a7.total), h(IVA, M.a7.iva), h(INGRESOS, M.a7.ingresos)]],
     cruzado: {
