@@ -30,8 +30,8 @@ const C = I_LIBRO;
 /*
  * Patrón T7-3 (Watari): el conteo en renglones, siempre el mayor arriba (la
  * diferencia nunca sale negativa, y su nombre dice qué pasó). Rótulos y
- * títulos de Watari, por confirmar con Near ([ESCRITO POR CLAUDE —
- * PENDIENTE DE REVISIÓN], dice su patrón). Los usa también H5.
+ * títulos de Watari, revisados por Near.
+ * Los usa también H5.
  */
 export const ROTULOS_A5 = {
   conteo: "Conteo físico", libros: "Saldo en libros", sobrante: "Sobrante", faltante: "Faltante",
