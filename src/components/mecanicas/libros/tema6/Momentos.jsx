@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES, ATENUADO, caja, aparicion, transicion, Anotacion } from "./MaquinaPegada.jsx";
+import { RotuloSimulado } from "./FuentesT6A5.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -34,6 +35,85 @@ function Fila({ fila, e, marca, reducido }) {
     }}>
       <span>{fila.nombre}</span>
       <span data-valor style={{ whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>{fila.valor}</span>
+    </div>
+  );
+}
+
+/*
+ * ═══════════ LA TABLA DEL EJEMPLO (T6 · A5, guía de Mai v1 §5.2) ═══════════
+ * Borde 1 neutro, radio 10, relleno 6/8/8. Primera línea, el rótulo fijo, que
+ * nunca se atenúa. Una fila por grupo, resaltable sin moverse (borde 2
+ * transparente, relleno 3/4, −6 de margen), en dos líneas: el nombre; y lo
+ * que suma a la izquierda, la pastilla del porcentaje y el resultado a la
+ * derecha, sin partir. Con su fila resaltada, lo de dentro no se atenúa. La
+ * pastilla se resalta sola (paso 3) con un contorno que no cambia su alto.
+ * Al final, la suma bajo un filete neutro.
+ */
+const CIFRA = { ...NOMBRE, whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" };
+
+function Pastilla({ texto, e, marca, id, reducido }) {
+  return (
+    <span {...marca(id)} style={{
+      display: "inline-block", padding: "0 5px", borderRadius: "6px", whiteSpace: "nowrap",
+      fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: 1.35,
+      border: `1px solid ${e.resaltado ? NODO : e.atenuado ? ATENUADO : BORDES}`,
+      boxShadow: e.resaltado ? `0 0 0 1px ${NODO}` : "none",
+      background: e.resaltado ? NAVY : "transparent", color: e.atenuado ? SECUNDARIO : TEXTO,
+      transition: transicion(reducido), ...aparicion(e, reducido),
+    }}>
+      {texto}
+    </span>
+  );
+}
+
+function FilaGrupo({ fila, el, marca, reducido }) {
+  const f = el[fila.id];
+  /* Con la fila resaltada, su suma y su resultado no se atenúan. */
+  const de = (id) => (f.resaltado ? { ...el[id], atenuado: false } : el[id]);
+  const color = (e) => (e.atenuado ? SECUNDARIO : TEXTO);
+  const s = de(fila.suma.id);
+  const r = de(fila.resultado.id);
+  return (
+    <div {...marca(fila.id)} data-fila-grupo style={{
+      margin: "0 -6px", padding: "3px 4px", borderRadius: "8px",
+      border: `2px solid ${f.resaltado ? NODO : "transparent"}`, background: f.resaltado ? NAVY : "transparent",
+      color: color(f), transition: transicion(reducido), ...aparicion(f, reducido),
+    }}>
+      <p data-nombre-grupo style={{ margin: 0, ...NOMBRE, color: "inherit" }}>{fila.nombre}</p>
+      <div style={{ marginTop: "2px", display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "8px" }}>
+        <span {...marca(fila.suma.id)} style={{ ...CIFRA, color: color(s), transition: transicion(reducido), ...aparicion(s, reducido) }}>{fila.suma.texto}</span>
+        <span style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+          {fila.porcentaje && <Pastilla texto={fila.porcentaje.texto} id={fila.porcentaje.id} e={el[fila.porcentaje.id]} marca={marca} reducido={reducido} />}
+          <span {...marca(fila.resultado.id)} style={{
+            fontFamily: INTER, fontSize: "12px", lineHeight: 1.35, whiteSpace: "nowrap", color: color(r),
+            transition: transicion(reducido), ...aparicion(r, reducido),
+          }}>{fila.resultado.texto}</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function Tabla({ pieza, el, marca, reducido }) {
+  const t = el[pieza.id];
+  const total = el[pieza.total.id];
+  const borde = t.atenuado ? ATENUADO : BORDES;
+  return (
+    <div {...marca(pieza.id)} data-tabla-ejemplo style={{
+      border: `1px solid ${borde}`, borderRadius: "10px", padding: "6px 8px 8px",
+      display: "flex", flexDirection: "column", gap: "6px", transition: transicion(reducido), ...aparicion(t, reducido),
+    }}>
+      <div {...marca(pieza.rotulo.id)}><RotuloSimulado texto={pieza.rotulo.texto} /></div>
+      {pieza.filas.map((f) => <FilaGrupo key={f.id} fila={f} el={el} marca={marca} reducido={reducido} />)}
+      <div style={{ borderTop: `1px solid ${borde}`, paddingTop: "6px" }}>
+        <div {...marca(pieza.total.id)} data-suma style={{
+          display: "flex", justifyContent: "flex-end", margin: "0 -6px", padding: "2px 4px", borderRadius: "8px", ...CIFRA,
+          border: `2px solid ${total.resaltado ? NODO : "transparent"}`, background: total.resaltado ? NAVY : "transparent",
+          color: total.atenuado ? SECUNDARIO : TEXTO, transition: transicion(reducido), ...aparicion(total, reducido),
+        }}>
+          {pieza.total.texto}
+        </div>
+      </div>
     </div>
   );
 }
@@ -79,6 +159,8 @@ function Pieza({ pieza, el, marca, reducido, refDe, textos, prefijo }) {
         </div>
       );
     }
+    case "tabla":
+      return <Tabla pieza={pieza} el={el} marca={marca} reducido={reducido} />;
     default:
       throw new Error(`pieza desconocida: ${pieza.tipo}`);
   }
