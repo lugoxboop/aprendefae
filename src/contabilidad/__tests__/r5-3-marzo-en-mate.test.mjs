@@ -644,6 +644,31 @@ test("★★★ E3 · en la pantalla, cada renglón calificado lleva «Correcta�
     [VEREDICTO.cuenta.mal],
   ]);
   assert.deepEqual([VEREDICTO.cuenta.ok, VEREDICTO.cuenta.mal, VEREDICTO.valor.ok, VEREDICTO.valor.mal], ["Correcta", "No va aquí", "Correcto", "No es este valor"]);
+  /*
+   * Auditoría de Takamura (e5-mes-en-dos-cuentas, punto 4): dos marcas, una por
+   * pieza, cada una con su forma; la de la cuenta en la línea del nombre, a la
+   * derecha; la del valor en la línea del valor, a la izquierda. Borde coral si
+   * alguna pieza está mal; #CBDCF2 si las dos están bien.
+   */
+  const renglones = [...tuAsiento.querySelectorAll("[data-renglon]")];
+  const marcas = renglones.map((x) => [...x.querySelectorAll("[data-marca-pieza]")].map((m) => `${m.dataset.marcaPieza}:${m.querySelector("[data-punto]").dataset.forma}`));
+  assert.deepEqual(marcas, [
+    ["cuenta:relleno", "valor:relleno"],
+    ["cuenta:relleno", "valor:anillo"],
+    ["cuenta:anillo", "valor:relleno"],
+    ["cuenta:relleno", "valor:relleno"],
+    ["cuenta:anillo"],
+  ]);
+  for (const x of renglones) {
+    const [linNombre, linValor] = [...x.children].filter((c) => !c.getAttribute("style")?.includes("position: absolute"));
+    const cuenta = x.querySelector('[data-marca-pieza="cuenta"]');
+    const valor = x.querySelector('[data-marca-pieza="valor"]');
+    assert.equal(Boolean(cuenta) && linNombre.contains(cuenta) && linNombre.lastElementChild.contains(cuenta), true, "la marca de la cuenta va a la derecha del nombre");
+    if (valor) assert.equal(linValor.firstElementChild === valor, true, "la marca del valor va a la izquierda del valor");
+  }
+  assert.deepEqual(renglones.map((x) => x.style.border), [
+    "2px solid rgb(203, 220, 242)", "2px solid rgb(231, 111, 81)", "2px solid rgb(231, 111, 81)", "2px solid rgb(203, 220, 242)", "2px solid rgb(231, 111, 81)",
+  ]);
   /* ERA ESTE no se califica: sin palabras, y su marca en blanco, no en teal. */
   const era = caja.querySelector('[data-armador="era-este"]');
   assert.equal(era.querySelectorAll("[data-veredicto]").length, 0);

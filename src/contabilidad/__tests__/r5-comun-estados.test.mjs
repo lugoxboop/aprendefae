@@ -78,11 +78,11 @@ const PROPIOS = [
   [/\b(ok|mal|revelada|correcta|incorrecta|bien)\s*:\s*\{[^}\n]*\d(\.\d+)?px (solid|dashed)/, "escribe el borde de un estado"],
   [/calif === "(mal|bien)"[^\n]*\d(\.\d+)?px (solid|dashed)/, "escribe el borde de un estado"],
   [/data-punto[\s\S]{0,200}?(C\.teal|C\.hecho \}|2px solid \$\{C\.coral\})/, "pinta sus propios puntos del final"],
-  [/function Veredicto\b/, "tiene su propio Veredicto"],
+  [/function (Veredicto|MarcaPieza|Punto)\b/, "tiene su propia palabra o su propio punto"],
 ];
 
-test("★★★ ningún archivo de repasoCap5/ vuelve a definir sus estados: los importa de comun.jsx (guarda: 10 archivos)", () => {
-  assert.equal(ARCHIVOS.length, 10, `los archivos cambiaron: ${ARCHIVOS.join(", ")}`);
+test("★★★ ningún archivo de repasoCap5/ vuelve a definir sus estados: los importa de comun.jsx (guarda: 11 archivos)", () => {
+  assert.equal(ARCHIVOS.length, 11, `los archivos cambiaron: ${ARCHIVOS.join(", ")}`);
   const malos = [];
   for (const f of ARCHIVOS) {
     const fuente = leer(CARPETA + f);
@@ -93,8 +93,10 @@ test("★★★ ningún archivo de repasoCap5/ vuelve a definir sus estados: los
   for (const f of ["ToroNegro.jsx", "Mate.jsx", "OpcionR5.jsx", "Fichas.jsx"]) {
     assert.match(leer(CARPETA + f), /import \{[^}]*\bESTADOS\b[^}]*\} from "\.\/comun\.jsx"/, f);
   }
+  /* La palabra: r5-2 con Veredicto; r5-3 con las dos marcas por renglón (MarcaPieza). */
+  assert.match(leer(CARPETA + "ToroNegro.jsx"), /import \{[^}]*\bVeredicto\b[^}]*\} from "\.\/comun\.jsx"/, "ToroNegro: Veredicto");
+  assert.match(leer(CARPETA + "Mate.jsx"), /import \{[^}]*\bMarcaPieza\b[^}]*\} from "\.\/comun\.jsx"/, "Mate: MarcaPieza");
   for (const f of ["ToroNegro.jsx", "Mate.jsx"]) {
-    assert.match(leer(CARPETA + f), /import \{[^}]*\bVeredicto\b[^}]*\bfrom "\.\/comun\.jsx"|import \{[^}]*\bVeredicto\b[^}]*\} from "\.\/comun\.jsx"/, `${f}: Veredicto`);
     assert.match(leer(CARPETA + f), /import \{[^}]*\bPunto\b[^}]*\} from "\.\/comun\.jsx"/, `${f}: Punto`);
   }
   /* Los puntos del final de r5-1 también. */
@@ -114,6 +116,16 @@ test("★★★ Veredicto dice la palabra debajo de cada pieza calificada, y nad
   assert.deepEqual([...caja.querySelectorAll("[data-veredicto]")].map((x) => `${x.dataset.veredicto}:${x.textContent}`), [
     "ok:Correcta", "mal:No va aquí", "ok:Correcto", "mal:No es este valor",
   ]);
+  /* MarcaPieza: el punto (o el anillo) y la palabra de UNA pieza; nada si no se calificó. */
+  const marcas = await montar(h("div", null,
+    h(K.MarcaPieza, { pieza: "cuenta", estado: "ok", textos: VEREDICTO.cuenta }),
+    h(K.MarcaPieza, { pieza: "valor", estado: "mal", textos: VEREDICTO.valor }),
+    h(K.MarcaPieza, { pieza: "valor", estado: null, textos: VEREDICTO.valor }),
+  ));
+  assert.deepEqual([...marcas.querySelectorAll("[data-marca-pieza]")].map((x) => `${x.dataset.marcaPieza}:${x.querySelector("[data-punto]").dataset.forma}:${x.textContent}`), [
+    "cuenta:relleno:Correcta", "valor:anillo:No es este valor",
+  ]);
+  assert.ok([...marcas.querySelectorAll("[data-punto]")].every((x) => x.style.width === "10px"));
   /* El punto: forma además de color. */
   const puntos = await montar(h("div", null, h(K.Punto, { ok: true }), h(K.Punto, { ok: false })));
   assert.deepEqual([...puntos.querySelectorAll("[data-punto]")].map((x) => `${x.dataset.punto}:${x.dataset.forma}:${x.getAttribute("aria-hidden")}`), ["acierto:relleno:true", "error:anillo:true"]);

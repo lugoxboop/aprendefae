@@ -1,11 +1,13 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 /* Los estados de calificación, el «ERA ESTE», los puntos y la palabra: de comun.jsx (B4, E3). */
-import { C, INTER, SORA, MARCA, SOLO_LECTOR, Devolucion, BotonSiguiente, ESTADOS, MARCA_ERA_ESTE, Punto, Veredicto } from "./comun.jsx";
+import { C, INTER, SORA, MARCA, SOLO_LECTOR, Devolucion, BotonSiguiente, ESTADOS, MARCA_ERA_ESTE, Punto, MarcaPieza } from "./comun.jsx";
 import { VEREDICTO } from "../../data/repasoCap5Comun.js";
 import { cifra, leerCifra } from "./ToroNegro.jsx";
+import { MesEnDosCuentas } from "./MesEnDosCuentas.jsx";
+import { movimientosDelMes } from "../../data/repasoCap5Mes.js";
 import {
-  R5_3, ASIENTOS_MATE, HOJA_MATE, ENTRADA_MATE, DATOS_DEL_LIBRO, DATOS_DECLARADOS, ROTULOS_MATE as RM,
+  R5_3, MES_MATE, ASIENTOS_MATE, HOJA_MATE, ENTRADA_MATE, DATOS_DEL_LIBRO, DATOS_DECLARADOS, ROTULOS_MATE as RM,
 } from "../../data/repasoCap5MateTextos.js";
 import { evaluarMate, puedeRevisarMate, sumasDe, puntuarR5_3, MAXIMO_POR_LADO } from "../../data/repasoCap5MateJuego.js";
 
@@ -31,6 +33,8 @@ import { evaluarMate, puedeRevisarMate, sumasDe, puntuarR5_3, MAXIMO_POR_LADO } 
 const LECTOR = { acierto: "Correcto: ", error: "Incorrecto: " };
 export const DIGITOS_DEL_CAMPO = 9;
 const DIVISORIA = "1px solid rgba(184,196,212,0.25)";
+/* El mes en dos cuentas (Caja e IVA por pagar): siempre la cifra del asiento correcto. */
+const MOVIMIENTOS_MATE = movimientosDelMes(ASIENTOS_MATE, MES_MATE.cuentas);
 const CSS_MATE = `
 .mate-campo:focus { outline: none; border: 2px solid ${C.ambar} !important; }
 `;
@@ -242,14 +246,23 @@ function BotonDatos({ onAbrir }) {
 
 function Renglon({ r, estado = null, pieza = null, onTocar, soloLectura = false }) {
   const visto = estado ? ESTADOS[estado] : { border: `1px solid ${C.atenuado}`, background: C.fondo };
+  /*
+   * Auditoría de Takamura (e5-mes-en-dos-cuentas, punto 4): dos marcas, una por
+   * pieza. La de la cuenta, a la derecha de la línea del nombre; la del valor,
+   * a la izquierda de la línea del valor. Si a 320 la palabra no cabe junto al
+   * nombre, baja a su propia línea y el renglón crece (flex-wrap).
+   */
   const contenido = (
     <>
       <span style={SOLO_LECTOR}>{r.lado === "debe" ? RM.debe : RM.haber}: </span>
-      <span style={{ display: "block", fontFamily: INTER, fontSize: "14px", lineHeight: "20px", fontWeight: 600, color: C.texto }}>{r.cuenta}</span>
-      {/* E3: cada pieza calificada dice con palabras si quedó bien. */}
-      <Veredicto estado={pieza?.cuenta} textos={VEREDICTO.cuenta} />
-      <span style={{ display: "block", marginTop: "4px", textAlign: "right", fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>{cifra(r.valor)}</span>
-      <Veredicto estado={pieza?.valor} textos={VEREDICTO.valor} />
+      <span style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "2px 8px" }}>
+        <span style={{ fontFamily: INTER, fontSize: "14px", lineHeight: "20px", fontWeight: 600, color: C.texto }}>{r.cuenta}</span>
+        <span style={{ marginLeft: "auto" }}><MarcaPieza pieza="cuenta" estado={pieza?.cuenta} textos={VEREDICTO.cuenta} /></span>
+      </span>
+      <span style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "2px 8px", marginTop: "4px" }}>
+        <MarcaPieza pieza="valor" estado={pieza?.valor} textos={VEREDICTO.valor} />
+        <span style={{ marginLeft: "auto", fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>{cifra(r.valor)}</span>
+      </span>
     </>
   );
   const estilo = { display: "block", width: "100%", boxSizing: "border-box", textAlign: "left", borderRadius: "10px", padding: "10px", ...visto };
@@ -481,6 +494,8 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
         </button>
       )}
       <Devolucion r={r && { ok: r.ok, textos: r.textos }} lector={LECTOR} />
+      {/* Después de la devolución, sin desplazamiento forzado (corrección 1 de Takamura). */}
+      {r && <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={i} />}
       {r && <BotonSiguiente onClick={onSiguiente} botonRef={botonRef} texto={RM.siguiente} />}
       {hoja && <HojaRenglon lado={hoja.lado} inicial={hoja.inicial} renglones={renglones} onListo={listo} onQuitar={quitar} onCancelar={() => setHoja(null)} />}
       {datos && <HojaDatosDeMarzo onCerrar={() => setDatos(false)} />}
@@ -533,7 +548,8 @@ export function Mate({ onCompletar, pasoInicial = -1 }) {
   useEffect(() => {
     if (terminado) onCompletar?.(puntuarR5_3(bien, total), Date.now() - inicio.current, detalle.current);
   }, [terminado]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (r) boton.current?.focus(); }, [r]);
+  /* El foco baja a «Siguiente» SIN mover la página (corrección 1 de Takamura): se ven juntos ERA ESTE y la devolución. */
+  useEffect(() => { if (r) boton.current?.focus({ preventScroll: true }); }, [r]);
 
   const responder = (a) => (veredicto, renglones) => {
     const respuesta = renglones.map((x) => `${x.lado === "debe" ? "D" : "H"} ${x.cuenta} ${x.valor}`).join(" | ");
@@ -556,7 +572,8 @@ export function Mate({ onCompletar, pasoInicial = -1 }) {
     return (
       <div data-r5-3 data-cierre>
         <style>{CSS_JUEGO + CSS_MATE}</style>
-        <MarzoEnOcho resultados={resultados} />
+        <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={null} final={MES_MATE.final} />
+        <div style={{ marginTop: "16px" }}><MarzoEnOcho resultados={resultados} /></div>
         <Cierre pct={Math.round(puntuarR5_3(bien, total))} onReiniciar={reiniciar} />
       </div>
     );

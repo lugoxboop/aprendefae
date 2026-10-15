@@ -10,3 +10,15 @@ export const VEREDICTO = {
   cuenta: { ok: "Correcta", mal: "No va aquí" },
   valor: { ok: "Correcto", mal: "No es este valor" },
 };
+
+/*
+ * «El mes en dos cuentas» (paquete e5-mes-en-dos-cuentas): los rótulos fijos
+ * de interfaz del panel común de r5-3 y r5-4.
+ */
+export const MES_COMUN = {
+  marca: "EL MES EN DOS CUENTAS",
+  leyenda: "Lo de este asiento",
+  debe: "DEBE",
+  haber: "HABER",
+  sinDiferencia: "Sin diferencia",
+};
