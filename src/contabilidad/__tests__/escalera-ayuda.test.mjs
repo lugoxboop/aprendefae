@@ -238,15 +238,18 @@ const ANEXO_MD = readFileSync(new URL("lote2-anexo-v1.md", PAQUETES), "utf8");
 const RECORTES_MD = readdirSync(PAQUETES).filter((f) => /^lote1-recortes-.*\.md$/.test(f)).sort().map((f) => readFileSync(new URL(f, PAQUETES), "utf8"));
 const CAMBIOS = new Map(RECORTES_MD.flatMap((md) => [...md.matchAll(/^\| (?:Pista|Anexo) · [^|]+ \| «(.+?)» \| «(.+?)» \|$/gm)].map((m) => [m[1], m[2]])));
 /*
- * Las correcciones de Mello a los recortes (mello-recortes-v1.md) que cambian
- * una pista: también ganan. Cada una se comprueba contra la auditoría.
+ * Las correcciones de Mello que cambian una pista de una pieza recortada
+ * también ganan: las de los recortes (mello-recortes-v1.md) y las de su
+ * auditoría de pistas (mello-pistas-distractores-v1.md). Cada una se comprueba
+ * contra la auditoría, y se aplica solo cuando el recorte de su pieza está.
  */
-const MELLO_MD = readFileSync(new URL("mello-recortes-v1.md", PAQUETES), "utf8");
+const MELLO_MD = ["mello-recortes-v1.md", "mello-pistas-distractores-v1.md"].map((f) => readFileSync(new URL(f, PAQUETES), "utf8")).join("\n");
 const CORRECCIONES_MELLO = [
-  ["Santa Martha es quien recibe el descuento. Recuerda de qué lado lo anota quien lo recibe.", "Para quien vende, la cuenta fue al debe. Santa Martha está del otro lado del negocio."],
+  ["t7-3-descuento-en-dos-libros", "Santa Martha es quien recibe el descuento. Recuerda de qué lado lo anota quien lo recibe.", "Para quien vende, la cuenta fue al debe. Santa Martha está del otro lado del negocio."],
+  ["t7-1-a1-la-cuenta-que-no-se-mueve", "Busca la cuenta que recoge lo comprado en el periodo.", "En el periódico, ¿qué cuenta junta en el periodo la mercancía que se trae para vender?"],
+  ["t7-1-a1-la-cuenta-que-no-se-mueve", "El conteo dice cuánto vale lo que quedó en la bodega. Piensa en qué cuenta estuvo quieta todo el periodo.", "El conteo dice cuánto vale lo que quedó en la bodega. ¿Qué cuenta debería mostrar ese valor?"],
 ];
-for (const [, nuevo] of CORRECCIONES_MELLO) assert.ok(MELLO_MD.includes(`«${nuevo}»`), `no está en la auditoría de Mello: «${nuevo}»`);
-if (RECORTES_MD.length) for (const [viejo, nuevo] of CORRECCIONES_MELLO) CAMBIOS.set(viejo, nuevo);
+for (const [, , nuevo] of CORRECCIONES_MELLO) assert.ok(MELLO_MD.includes(`«${nuevo}»`), `no está en la auditoría de Mello: «${nuevo}»`);
 const vigente = (t) => CAMBIOS.get(t) ?? t;
 
 /* Las secciones de las piezas recortadas: por pantalla, su índice, su pista y las pistas de línea con nombre. */
@@ -266,6 +269,7 @@ function recortadas() {
   return out;
 }
 const RECORTADAS = recortadas();
+for (const [pieza, viejo, nuevo] of CORRECCIONES_MELLO) if (RECORTADAS[pieza]) CAMBIOS.set(viejo, nuevo);
 
 /* Cada fila de la tabla de Near: pieza, índice, pantalla, línea (si la hay) y la pista. */
 function filasDeNear() {
@@ -288,7 +292,17 @@ function pistasEsperadas() {
   const esperadas = [];
   for (const f of filasDeNear()) {
     /* De una pieza recortada, las preguntas las da su sección; las líneas, el lote 2 con sus cambios. */
-    if (RECORTADAS[f.pieza] && !f.linea) continue;
+    if (RECORTADAS[f.pieza]) {
+      if (!f.linea) continue;
+      /* La línea sigue en su pantalla, que en el recorte puede haber cambiado de índice o haber salido. */
+      const p = RECORTADAS[f.pieza].find((x) => x.id === f.pantalla);
+      if (!p) continue;
+      /* Y si el recorte le da pista propia a esa misma línea, gana la del recorte. */
+      const s = PIEZAS.find((x) => x.id === f.pieza)?.pantallas[p.k];
+      if (Object.keys(p.lineas).some((n) => lineaPorNombre(s, n)?.id === f.linea)) continue;
+      esperadas.push({ ...f, k: p.k, pista: vigente(f.pista) });
+      continue;
+    }
     esperadas.push({ ...f, pista: vigente(f.pista) });
   }
   for (const [pieza, pantallas] of Object.entries(RECORTADAS)) {
@@ -297,8 +311,7 @@ function pistasEsperadas() {
       for (const [nombre, pista] of Object.entries(p.lineas)) esperadas.push({ pieza, k: p.k, pantalla: p.id, linea: nombre, pista: vigente(pista), porNombre: true });
     }
   }
-  /* Una línea con pista propia en los recortes reemplaza a la del lote 2. */
-  return esperadas.filter((e, _, todas) => e.porNombre || !e.linea || !todas.some((x) => x.porNombre && x.pieza === e.pieza && x.pantalla === e.pantalla));
+  return esperadas;
 }
 
 test("★★★ el paquete del lote 2 trae sus 80 pistas (56 de preguntas)", () => {
@@ -380,7 +393,6 @@ function adelantos() {
 
 /* Lo publicado que hoy lo viola (medido el 15 de octubre de 2026): deuda conocida, en revisión. Se quita de aquí al corregirse. */
 const DEUDA = [
-  "t7-1-a1-la-cuenta-que-no-se-mueve · pregunta-conteo ← la-consecuencia.parrafos",
   "t7-1-a1-la-cuenta-que-no-se-mueve · pregunta-conteo ← pregunta-compra.texto",
   "t7-3-descuento-comercial · dos-clases ← portada.objetivo",
   "t7-3-descuento-condicionado · cual-le-toca ← condiciones.lleva",
