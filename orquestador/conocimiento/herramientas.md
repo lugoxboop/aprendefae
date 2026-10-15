@@ -392,3 +392,22 @@ desfasada, re-lanzar el CI, el guardián de migraciones— antes de leer qué
 ejecuta de verdad el trabajo del CI. **Cuando el CI y tu máquina no coinciden,
 lo primero que se mira no es el código: es si los dos están corriendo lo
 mismo.**
+
+### Qué paso del CI falló, sin poder leer el registro
+
+El proxy de este entorno **no deja descargar los registros** de GitHub
+Actions: `gh run view --log-failed` devuelve «Forbidden». Eso parece dejarte a
+ciegas, y no es verdad. Esto sí pasa, y dice el paso exacto:
+
+```
+gh run view <id> --json jobs --jq '.jobs[]|"\(.name): \(.conclusion)", (.steps[]|"   \(.number). \(.name) → \(.conclusion)")'
+```
+
+Devuelve los siete pasos del trabajo con su resultado, así que distingues en
+un segundo entre «fallaron las pruebas», «falló la compilación», «falló el
+guardián» y «ni siquiera instaló».
+
+**Y la duración es una pista antes incluso de mirar eso.** La suite tarda
+unos once minutos. Un trabajo que falla en **dos** no corrió las pruebas: se
+cayó antes, o se cayó cargando algo. Esa sola cuenta —cuánto tardó contra
+cuánto debería— orienta la búsqueda antes de abrir nada.
