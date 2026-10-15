@@ -215,3 +215,11 @@ test("★★ la mecánica de Macro no se toca: b5/EligeUnaOpcion.jsx es la copia
   assert.deepEqual([D.T6_ACT4.id, D.T6_ACT4.dificultad, D.T6_ACT4.fpBase], ["b5-t6-a4", "medio", 25]);
   assert.match(GUIA, /medio · 25 FP/);
 });
+
+test("★★ hoja de Mai: las cuatro opciones van en una columna, en el orden de Futaba", async () => {
+  const { caja, desmontar } = await montar([D.HECHOS_T6_ACT4[0]]);
+  const spans = [...caja.querySelectorAll("[data-opcion]")];
+  assert.deepEqual(spans.map((s) => s.dataset.opcion), D.OPCIONES_T6_ACT4.map((o) => o.id));
+  assert.equal(spans[0].closest("[style*='grid-template-columns']").style.gridTemplateColumns, "minmax(0, 1fr)");
+  desmontar();
+});
