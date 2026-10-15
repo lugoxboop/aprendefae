@@ -379,3 +379,8 @@ test("★★ el texto alternativo, el objetivo, la consigna y las reglas son los
   assert.equal(D.T6_ACT1.id, "b5-t6-a1");
   desmontar();
 });
+
+test("★★ auditoría integral: la C5 cita la palabra con comillas internas “crédito”, no con «»", () => {
+  assert.ok(D.ERROR_T6_ACT1.C5.includes("Ojo con la palabra “crédito”:"));
+  assert.ok(!D.ERROR_T6_ACT1.C5.includes("«"));
+});

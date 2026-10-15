@@ -93,3 +93,15 @@ Pregunta: «¿Qué le pasa a Cuentas por cobrar – clientes el día que el clie
 
 - Los textos INFLESZ todavía por llegar: hecho 4 y devolución correcta (el término 5 y los pasos ya llegaron en la secuencia final).
 - Las siete etiquetas de fuente de la capa 3.
+
+## (4) Auditoría integral de T5 y T6 (Shoko, 15-oct, PASA CON CORRECCIONES)
+
+Corrección de lo aprobado, no contenido nuevo. Manda sobre (1), (2) y (3).
+
+1. La nota de «cartera» se pinta: rótulo «Nota», debajo de la cita del término 2, en el mismo bloque.
+   Nota: «El libro también la llama cartera; es lo mismo. Aquí la cuenta se llama “Cuentas por cobrar – clientes”.»
+
+2. Término 5, texto de Futaba (p. 197 y pp. 199-200). Ya no menciona el traslado a difícil cobro (hueco marcado):
+
+5 · Cuándo baja lo que deben los clientes: «Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. También baja cuando devuelve mercancía que había comprado a crédito y todavía no había pagado: es una devolución de ventas. Baja cuando la empresa le otorga un descuento sobre lo que todavía le debe. Y baja cuando la deuda se da por perdida, algo que se explica más adelante.»
+Pie de fuente: «Basado en el libro, pp. 197 y 199-200»

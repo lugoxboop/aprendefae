@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
-import { H1, FICHA_H1, BOTON_H1, resumenH1 } from "../../../../data/contabilidadT7_3_h1.js";
+import { H1, FICHA_H1, FIGURAS_H1, BOTON_H1, resumenH1 } from "../../../../data/contabilidadT7_3_h1.js";
 import { prepararH1, evaluarH1, idLineaH1, puntuarH1, TOTAL_H1 } from "../../../../contabilidad/t7_3H1.js";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "./hacerT7.jsx";
 
 /*
@@ -82,11 +83,12 @@ export default function DescuentoEnFactura({ Marco, rotulo, titulo, acento, onCo
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T7_HACER}</style>
+      <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h1>
         <Encabezado consigna={H1.consigna} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H1.enunciado} />
         <Ficha filas={FICHA_H1} />
+        <FigurasHacer figuras={FIGURAS_H1} respondidos={t.i + (listo ? 1 : 0)} listo={listo} />
         <div style={{ marginBottom: "12px" }}>
           <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
         </div>

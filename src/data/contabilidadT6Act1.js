@@ -132,8 +132,8 @@ export const ERROR_T6_ACT1 = {
   B: "❌ No es esa. Es un préstamo, no una venta a crédito. Cuentas por cobrar – clientes solo recoge lo que deben los clientes por ventas a crédito. Este va en otra cuenta por cobrar.",
   /* C · acertó «Clientes» y falló el lado. */
   C: "❌ Vas bien: es Clientes. Ahora pregúntate si con este hecho lo que deben los clientes sube o baja. Si sube, se debita. Si baja, se acredita.",
-  /* C5 · una venta a crédito puesta en «Se acredita»: la palabra «crédito» engaña. */
-  C5: "❌ Vas bien: es Clientes. Ojo con la palabra «crédito»: el nombre del negocio no dice en qué lado se anota. Pregúntate si lo que deben los clientes sube o baja.",
+  /* C5 · una venta a crédito puesta en «Se acredita»: la palabra engaña. Comillas internas “ ” (auditoría integral). */
+  C5: "❌ Vas bien: es Clientes. Ojo con la palabra “crédito”: el nombre del negocio no dice en qué lado se anota. Pregúntate si lo que deben los clientes sube o baja.",
 };
 
 /* ═══════════ EL PUNTAJE: 60 % LA CUENTA, 40 % EL LADO (como T1-6) ═══════════ */

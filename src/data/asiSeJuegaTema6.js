@@ -1,5 +1,6 @@
 import { T6_ACT2, REGLAS_T6_ACT2, PROVISION_2007_T6_ACT2, ALT_TUTORIAL_T6_ACT2, GASTO, PROVISION } from "./contabilidadT6Act2.js";
 import { T6_ACT3, REGLAS_T6_ACT3, CASTIGO_T6_ACT3, ALT_TUTORIAL_T6_ACT3, CLIENTES } from "./contabilidadT6Act3.js";
+import { T6_ACT1, REGLAS_T6_ACT1, FICHAS_T6_ACT1, CUENTAS, LADOS, CLIENTES as A_CLIENTES, ACREDITA, BOTON_T6_ACT1 } from "./contabilidadT6Act1.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -14,6 +15,11 @@ import { T6_ACT3, REGLAS_T6_ACT3, CASTIGO_T6_ACT3, ALT_TUTORIAL_T6_ACT3, CLIENTE
  *
  * El texto alternativo es el de Futaba sin «Ejemplo resuelto.», porque el
  * componente compartido ya antepone «Ejemplo:».
+ *
+ * b5-t6-a1 (auditoría integral de Shoko, 15-oct): como b5-t5-a1, el patrón
+ * de T1-6, para que sus tres reglas aprobadas se vean. La ficha de la demo
+ * es una del banco (el pago del cliente) con su acierto aprobado, y abre los
+ * dos niveles. El texto alternativo se arma con los rótulos de los botones.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -50,7 +56,29 @@ const ASI_DEUDA_QUE_VUELVE = {
   cuadros: { gesto: 4 },
 };
 
+/* b5-t6-a1: la ficha del pago, Clientes que se acredita. */
+export const DEMO_T6_ACT1 = FICHAS_T6_ACT1.find((f) => f.id === "pago");
+const rotulo = (lista, id) => lista.find((x) => x.id === id).rotulo;
+const ASI_CLIENTES_O_OTRA = {
+  actividadId: T6_ACT1.id,
+  titulo: T6_ACT1.nombre,
+  consigna: T6_ACT1.consigna,
+  pasos: REGLAS_T6_ACT1,
+  alt: `la ficha «${DEMO_T6_ACT1.texto}» va en «${rotulo(CUENTAS, A_CLIENTES)}» y, dentro, en «${rotulo(LADOS, ACREDITA)}».`,
+  demo: { items: [DEMO_T6_ACT1] },
+  guion: {
+    duracion: 7500,
+    toques: [
+      { ms: 2000, en: `[data-nivel1="${A_CLIENTES}"]` },
+      { ms: 3500, en: `[data-nivel2="${ACREDITA}"]` },
+      { ms: 5000, texto: BOTON_T6_ACT1.colocar },
+    ],
+  },
+  cuadros: { gesto: 2 },
+};
+
 export const ASI_SE_JUEGA_TEMA6 = {
   [ASI_PROVISION.actividadId]: ASI_PROVISION,
   [ASI_DEUDA_QUE_VUELVE.actividadId]: ASI_DEUDA_QUE_VUELVE,
+  [ASI_CLIENTES_O_OTRA.actividadId]: ASI_CLIENTES_O_OTRA,
 };

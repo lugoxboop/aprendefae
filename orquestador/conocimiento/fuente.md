@@ -45,10 +45,21 @@ Nueve capítulos, 570 páginas, más anexo.
 
 | Tema | Sección | Páginas | Célula |
 |---|---|---|---|
-| T4 · Efectivo, caja menor y bancos | §5.1 y §5.2 | 179-190 | A |
+| T4 · Efectivo, caja menor y bancos | §5.0, §5.1 y §5.2 | **177**-190 | **D** |
 | T5 y T6 (o uno solo) · Activos financieros y cuentas por cobrar | §5.3 y §5.4 | 191-206 | B |
 | T7 · Inventario de mercancías | §5.5 y §5.6 | 207-261 | C |
-| Banco común de ejercicios | — | 262-274 | de nadie: Gen indexa, Levi asigna |
+| Banco de ejercicios del capítulo | — | 262-274 | **E** |
+
+**Las pp. 177-178 pasan a la Célula D el 15 de octubre de 2026.** No eran de
+nadie: T4 empezaba en la 179 y esas dos páginas —qué es un activo corriente y
+el criterio de un año— se quedaban fuera del reparto. Lo encontró Kamogawa al
+indexar el banco: tres ejercicios (C.1, A.1 y B.1) las necesitan para
+resolverse, y hoy el Tema 2 solo clasifica Caja, Bancos y activos fijos.
+Van a D y no a E porque son la apertura del capítulo que define la categoría
+que D construye, y porque la Célula E no enseña: comprueba.
+
+**El banco de ejercicios deja de ser «de nadie».** Con tres células, «de
+nadie» funcionaba; con cinco es una invitación a que dos lo tomen.
 
 **Dónde se parte cada bloque lo decide Levi sobre el mapa de la fuente.**
 Ninguna célula propone su propio corte.
@@ -93,6 +104,11 @@ dice «cerrado».**
 2. **Ejercicio C.4, p. 264.** La respuesta del libro ($31.460) cuenta días
    reales sobre un año de 360. El ejemplo de la p. 194 cuenta por meses y da
    $31.200, que no está entre las opciones.
+3. **Ejercicios 4, 5 y 6 del bloque D, banco del capítulo.** Hallazgo de la
+   Célula E al indexar el banco. El 4 y el 5 usan precios con IVA incluido,
+   IVA en la compra de un activo fijo y depreciación: tres cosas que el
+   capítulo 5 no enseña. El 6 no dice si lleva IVA. Sin urgencia, pero
+   decide si esos tres entran al repaso o se dejan fuera.
 
 ## Erratas encontradas, ninguna confirmada con el profesor todavía
 
@@ -118,11 +134,51 @@ Aquí se registra solo lo que cruza células.
   y el total de $2.655.000 sí. Lo marca con confianza baja porque la imagen está
   borrosa, y no se pronuncia sobre Moncayo.
 
-**ESTA ERRATA ESTÁ ABIERTA.** No está confirmada ni descartada: hay dos
-lecturas que no coinciden y una imagen que no se lee con seguridad.
+**ESTA ERRATA ESTÁ CERRADA, Y SE CIERRA SIN RESOLVERSE.** El 15 de octubre de
+2026 Mateo confirmó que esa página no aparece y que no va a aparecer: «o
+tendrán que encontrar otra o simplemente omitirlo». No hay escaneo nítido que
+esperar.
 
-**Decisión de Sakuta, respaldada:** ninguna actividad se construye sobre esa
-tabla hasta tener un escaneo nítido de la p. 201.
+**La decisión de Sakuta se mantiene y deja de ser provisional:** ninguna
+actividad se construye sobre la tabla de la p. 201. No es una pausa, es el
+estado final. Reconstruir esa tabla desde dos lecturas que no coinciden sería
+inventar cifras y presentarlas como del libro, que es justo lo que este
+proyecto no hace.
+
+**Pero la tabla no es el tema: el tema es el método.** Que la provisión se
+estima mirando cuánto lleva vencida cada deuda se puede enseñar sin esa tabla,
+con cifras construidas, igual que T7-2 enseña el kárdex con cifras construidas
+(ver el orden final de T7-2 en el mapa de T7). **La decisión de enseñarlo así
+es de Sakuta, porque T6 es su tema**, y si lo hace, sus cifras entran al
+registro de cifras construidas con la misma disciplina que usa la Célula C: se
+cruzan contra el libro y **contra los ejercicios del banco, que ahora son de la
+Célula E y cuentan como cifras del libro en ese cruce**. Una cifra construida
+de T6 que coincida con una respuesta del banco le regala el resultado a un
+estudiante que haga las dos.
+
+Y lo que esto significa para la Célula E, para que no quede esperando: `r5-2`
+entrega la provisión como dato **de forma definitiva**, no «hasta que llegue el
+escaneo». Si algún día T6 enseña el método, entonces y solo entonces `r5-2`
+puede ganar su etapa de cálculo.
+
+**Y esa decisión ya cruzó a otra célula, que es la razón de registrarla aquí.**
+El 15 de octubre de 2026 la Célula E auditó el Tema 6 contra el código y
+encontró que nunca enseña a CALCULAR la provisión por edades de vencimiento:
+siempre la entrega hecha —«El análisis pide una provisión de $153.400»,
+`contabilidadT6Act2.js`—. Es cierto, y no es un descuido de la Célula B: es
+esta congelación. La tabla de la p. 201 es justamente lo que habría que
+enseñar.
+
+La consecuencia, para que nadie la descubra dos veces: el ejercicio 3 del
+bloque D pasa a parcial, y `r5-2` entrega la provisión como dato en vez de
+pedir que se calcule. **El día que llegue un escaneo nítido de la p. 201, se
+destraban las dos cosas a la vez:** la Célula B puede enseñar el cálculo y
+`r5-2` gana su etapa de cálculo. Ninguna de las dos células puede ver eso
+desde su lado; por eso vive aquí.
+
+**Nueva errata, de la Célula E, sin confirmar (pp. 189-190):** en el ejemplo
+resuelto de conciliación, el cheque de Laura García aparece como n.º 146 en la
+p. 189 y como n.º 145 en la p. 190. Cae en T4, así que es de la Célula D.
 
 ## Cómo se cita un ejercicio
 

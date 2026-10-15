@@ -28,10 +28,31 @@ va a conseguir.
 | Célula | General | Contenido | Diseño | Auditoría | Construcción | Alcance |
 |---|---|---|---|---|---|---|
 | **A** Attack on Titan | Erwin | Gen | Xeno | Levi | Sai | Coordinación, íconos y el índice del banco de ejercicios |
-| **B** Bunny Girl Senpai | Sakuta | Futaba | Mai | Shoko | Kaede | **T5 y T6** · §5.3 y §5.4 · pp. 191-206 |
-| **C** Death Note | L | Near | Watari | Mello | Misa | **T7 Inventarios** · §5.5-§5.6 · pp. 207-261 |
+| **B** Bunny Girl Senpai | Sakuta | Futaba | Mai | Shoko | Kaede | **T6 Cuentas por cobrar** · §5.4 · pp. 199-206 |
+| **C** Death Note | L | Near | Watari | Mello | Misa | T7 Inventarios (**terminado**) y **T5 Activos financieros** · §5.3 · pp. 191-198 |
 | **D** Baki Hanma | Yujiro | Katsumi | Hanayama | Shibukawa | Baki | **T4 Efectivo, caja menor y bancos** · §5.1 y §5.2 · pp. 179-190 |
 | **E** Hajime no Ippo | Kamogawa | Miyata | Itagaki | Takamura | Ippo | **Repaso del capítulo 5**: el banco de ejercicios · pp. 262-274 |
+
+**El Tema 5 pasa de la Célula B a la Célula C el 15 de octubre de 2026, y la
+razón es aritmética, no de desempeño.** Esa noche la Célula C cerró T7 entero
+—T7-1 con 14 piezas, T7-2 con 11 y T7-3 con 15, cuarenta en total— y se quedó
+sin territorio. Al mismo tiempo T5 era el tema más flaco de la materia: 4
+piezas y 60 FP, contra las 11 a 15 de los temas maduros. Dejar a una célula
+sin trabajo mientras el tema más flaco avanza despacio es un error de
+coordinación, y se corrige moviendo el territorio, no pidiéndole a nadie que
+corra más.
+
+El corte cae donde el libro ya lo tenía: §5.3 (pp. 191-198) a C, §5.4
+(pp. 199-206) a B. Las cuatro piezas que ya existen en T5 son de la Célula B,
+se llaman `b5-t5-*`, se quedan publicadas y nadie las renombra; C construye lo
+nuevo con prefijo `t5-`. B conserva T6 entero y el #40.
+
+**Desde el 15 de octubre de 2026 cada general fusiona el trabajo de su
+célula.** El coordinador dejó de ser la puerta por la que pasa todo: se queda
+con lo compartido, los choques entre células, los datos de estudiantes, las
+migraciones y destrabar generales. Si un general fusiona algo que rompe `main`
+o que pisa a otra célula, el coordinador se lo devuelve para que lo arregle
+él. Ver «Cada general fusiona lo suyo» en nocturno.md.
 
 **Ukyo es el probador general y no pertenece a ninguna célula.** Es común a las
 cinco: a él se le lleva una pieza cuando hay que saber si un estudiante la

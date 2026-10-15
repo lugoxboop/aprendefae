@@ -742,6 +742,8 @@ export const SUBJECTS = {
           { id: "t7-2-a5-fletes", nombre: "Fletes en permanente", clasificacion: { tipo: APRENDER } },
           /* A6, justo después de A5 (orden final de T7-2): usa la venta en dos asientos de A2. Después va H5 «Flete y devolución», que cubre A5 y A6. Cero FP. */
           { id: "t7-2-a6-devoluciones", nombre: "Devoluciones en permanente", clasificacion: { tipo: APRENDER } },
+          /* H5, justo después de A6 (orden final de T7-2): cubre A5 y A6, con los cuatro hechos de Mangle. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0102. */
+          { id: "t7-2-flete-y-devolucion", nombre: "Flete y devolución", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
         ],
       },
       /*
@@ -760,6 +762,30 @@ export const SUBJECTS = {
           { id: "t7-3-descuento-en-factura", nombre: "Descuento en la factura", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A2, después de A1 (regla 9). H1 «Descuento en la factura» entra entre A1 y A2. Ejemplo H-2, pp. 249-250. Cero FP. */
           { id: "t7-3-descuentos-en-cadena", nombre: "Descuentos en cadena", clasificacion: { tipo: APRENDER } },
+          /* H2, justo después de A2 (orden final de T7-3): la cadena de Palma, paso a paso y con el factor. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0104. */
+          { id: "t7-3-cadena-de-descuentos", nombre: "La cadena de descuentos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* A3, después de A2 (regla 9; depende de A1). H2 «La cadena de descuentos» entra entre A2 y A3. Ejemplo H-3, libro de quien vende, pp. 251-253. Cero FP. */
+          { id: "t7-3-descuento-condicionado", nombre: "El descuento condicionado", clasificacion: { tipo: APRENDER } },
+          /* A4, justo después de A3 (orden final de T7-3): H-3 en el libro de quien compra, el cierre y el permanente, pp. 253-254. Cero FP. */
+          { id: "t7-3-descuento-en-dos-libros", nombre: "El descuento en los dos libros", clasificacion: { tipo: APRENDER } },
+          /* H3, justo después de A4 (orden final de T7-3; la sostienen A1, A3 y A4): siete casos, sin cifras. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0105. */
+          { id: "t7-3-comercial-o-condicionado", nombre: "¿Comercial o condicionado?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* H4, después de H3 (orden final de T7-3; la sostienen A3 y A4): el pago a tiempo de Bambú, en los dos libros. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0106. */
+          { id: "t7-3-pago-a-tiempo", nombre: "Pagó a tiempo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* A5, después de A4 por el orden del mapa (no depende de los descuentos). H3 y H4 entran entre A4 y A5. Ejemplos I-1 e I-2, pp. 254-255, y la lista de pp. 207-208 (regla 5b). Cero FP. */
+          { id: "t7-3-sobrantes-y-faltantes", nombre: "Sobrantes y faltantes", clasificacion: { tipo: APRENDER } },
+          /* A6, justo después de A5 (orden final de T7-3): la provisión del ejemplo I-3, p. 256. Cero FP. */
+          { id: "t7-3-provision-inventarios", nombre: "La provisión para inventarios", clasificacion: { tipo: APRENDER } },
+          /* H5, justo después de A6 (orden final de T7-3; la sostienen A5 y A6): el conteo de Olmo y la provisión de Pino. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0107. */
+          { id: "t7-3-ajuste-por-conteo", nombre: "Ajuste por conteo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* A7, después de A6 por el orden del mapa (depende de A1, por los descuentos). H5 entra entre A6 y A7. La NIC 2 del libro, pp. 256-258, con su frase fija a la vista. Cero FP. */
+          { id: "t7-3-nic2-costo", nombre: "La NIC 2 del libro: el costo", clasificacion: { tipo: APRENDER } },
+          /* H6, justo después de A7 (orden final de T7-3; la sostiene A7): qué entra en el costo de adquisición según la NIC 2 del libro, p. 258. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0108. */
+          { id: "t7-3-que-entra-al-costo", nombre: "¿Entra al costo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* H7, justo después de H6 (orden final de T7-3; la sostiene A7): costo o valor neto realizable, el menor, con la regla del libro, pp. 257-258. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0109. */
+          { id: "t7-3-costo-o-vnr", nombre: "¿Costo o valor neto realizable?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* A8, la última de T7-3, después de A7 (orden del mapa: H6 y H7 entran entre A7 y A8; ningún Hacer depende de ella). La NIC 2 del libro, pp. 259-260: fórmulas y revelación, con su frase fija a la vista. Cero FP. */
+          { id: "t7-3-nic2-formulas", nombre: "La NIC 2 del libro: fórmulas y revelación", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],
