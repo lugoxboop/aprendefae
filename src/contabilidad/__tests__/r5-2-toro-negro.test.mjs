@@ -56,11 +56,14 @@ const { barajadorDe } = await import("../../utils/barajar.js");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
-const PAQUETE = leer("orquestador/conocimiento/paquetes/e5-r5-2-v2.md");
+/* El paquete v2 y su delta (a0): los dos son la fuente de verdad. */
+const PAQUETE = leer("orquestador/conocimiento/paquetes/e5-r5-2-v2.md") + "\n" + leer("orquestador/conocimiento/paquetes/e5-r5-2-a0.md");
+const DELTA = leer("orquestador/conocimiento/paquetes/e5-r5-2-a0.md");
 const P = T.PREGUNTAS_R5_2;
 const pregunta = (id) => P.find((p) => p.id === id);
 const ASIENTOS = P.filter((p) => p.tipo === "asiento");
 const HOJA = T.HOJA_DE_CUENTAS;
+const pesosConSigno = (n) => `$${cifra(n)}`;
 
 /* ═══════════ LO QUE LEE EL ESTUDIANTE ═══════════ */
 
@@ -69,49 +72,75 @@ function textosDelEstudiante() {
   for (const p of P) {
     t.push(p.hecho, p.enunciado, p.acierto);
     if (p.tipo === "asiento") t.push(p.alReves, ...Object.values(p.debeMal), ...Object.values(p.haberMal), ...p.valorMal.map((v) => v.texto), p.valorGenerica);
-    else t.push(p.ladoMal, ...p.valorMal.map((v) => v.texto), p.generica);
+    else if (p.tipo === "saldo") t.push(p.ladoMal, ...p.valorMal.map((v) => v.texto), p.generica);
+    else t.push(...p.valorMal.map((v) => v.texto), p.coma, p.compensado, p.generica);
   }
   for (const c of Object.values(T.CORTES_R5_2)) t.push(...c.parrafos);
   return [...new Set(t)];
 }
 
-test("★★★ cada texto del estudiante está entero en el paquete (guarda: 87 textos distintos)", () => {
+test("★★★ cada texto del estudiante está entero en el paquete o en su delta (guarda: 96 textos distintos)", () => {
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 87);
-  /* Entero: tras «: », un salto de línea o «Hecho:», y hasta el fin del renglón. */
+  assert.equal(textos.length, 96);
+  /*
+   * Entero: tras «: » o un salto de línea y hasta el fin del renglón; o, si
+   * lo fija una decisión de Kamogawa, entre «» (con los saltos de línea del
+   * párrafo vueltos espacios).
+   */
   const escapar = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const fuera = textos.filter((t) => !new RegExp(`(?:: |\\n)${escapar(t)}\\n`).test(PAQUETE));
+  const plano = PAQUETE.replace(/\s+/g, " ");
+  const entero = (t) => new RegExp(`(?:: |\\n)${escapar(t)}\\n`).test(PAQUETE) || plano.includes(`«${t}»`);
+  const fuera = textos.filter((t) => !entero(t));
   assert.deepEqual(fuera, [], `no están en el paquete: ${fuera.join(" | ")}`);
+  /* El objetivo es el del delta, no el de v2. */
+  assert.ok(new RegExp(`Objetivo de r5-2 \\(cambia\\):\\n${escapar(T.R5_2.objetivo)}\\n`).test(DELTA), "el objetivo no es el del delta");
+  /* Lo que el delta quitó no vuelve: ni «análisis» ni la de 2.759.400. */
+  assert.ok(!textos.some((t) => /análisis/.test(t)), "queda un «análisis» en r5-2");
+  assert.ok(!textos.includes("A ese grupo le pusiste 10 %. Aún va al 3 %. El 10 % empieza en 61 días."));
   /* Los rótulos del diseño también están en el paquete, entre comillas. */
   const R = T.ROTULOS_R5_2;
   for (const r of [R.revisarAsiento, R.revisarSaldo, R.vacio, R.cerrar, R.eraEste, R.ladoDelSaldo, R.tituloCorte, R.casoEnTresTiempos, R.sinMovimientos, R.sinSaldo, R.saldoDebito, R.saldoCredito, R.cuentaDel.debe, R.cuentaDel.haber, R.enElOtro.debe, R.enElOtro.haber, R.debito, R.credito, R.valor]) {
     assert.ok(PAQUETE.includes(`«${r}»`), r);
   }
+  const A = T.ROTULOS_A0;
+  for (const r of [A.grupoYSaldo, A.tuProvision, A.marcador, A.revisar, A.correcta, A.era("2.283.400"), A.cifrasEnPesos, "Porcentaje que fija la empresa"]) assert.ok(DELTA.includes(`«${r}»`), r);
+  assert.ok(DELTA.includes(A.total), A.total);
   for (const c of Object.values(T.CONCEPTOS)) assert.ok(PAQUETE.includes(`«${c}»`), c);
   for (const c of HOJA) assert.ok(PAQUETE.includes(`\n${c}\n`), c);
+  /* Los grupos, con los rótulos de Miyata (decisión 1), y sus cifras, en la tabla del delta. */
+  for (const g of T.GRUPOS_A0) assert.ok(DELTA.includes(`\n${g.grupo}\t${pesosConSigno(g.saldo)}\t${g.porcentaje} %\n`), g.grupo);
 });
 
 /* ═══════════ LAS RESPUESTAS, CALCULADAS DESDE repasoCap5ToroNegro.js ═══════════ */
 
-test("★★★ los seis ítems y sus respuestas salen de la tabla de la p. 269, no se copian", () => {
+test("★★★ los siete ítems y sus respuestas salen de la tabla de la p. 269, no se copian", () => {
   const celdas = N.COMPANIAS.flatMap((c) => c.celdas);
   const total = celdas.reduce((s, v) => s + v, 0);
   const provision = N.COLUMNAS.reduce((s, col, i) => s + (N.COMPANIAS.reduce((t, c) => t + c.celdas[i], 0) * N.PORCENTAJES[col]) / 100, 0);
   const castigo = (c) => N.CASTIGOS_MARZO.find((x) => x.compania === c).valor;
   assert.equal(total, 38230000);
   assert.equal(provision, 2283400);
-  assert.deepEqual(P.map((p) => p.id), ["p1", "p2", "p3", "p4", "p5", "p6"]);
-  assert.deepEqual(P.map((p) => p.tipo), ["asiento", "asiento", "asiento", "saldo", "asiento", "asiento"]);
+  assert.deepEqual(P.map((p) => p.id), ["a0", "p1", "p2", "p3", "p4", "p5", "p6"]);
+  assert.deepEqual(P.map((p) => p.tipo), ["calculo", "asiento", "asiento", "asiento", "saldo", "asiento", "asiento"]);
   assert.deepEqual(P.map((p) => J.correctoDe(p).valor), [
-    provision, castigo("roja"), castigo("negra"), castigo("roja") + castigo("negra") - provision, N.RECUPERACION_MAYO.valor, N.RECUPERACION_MAYO.valor,
+    provision, provision, castigo("roja"), castigo("negra"), castigo("roja") + castigo("negra") - provision, N.RECUPERACION_MAYO.valor, N.RECUPERACION_MAYO.valor,
   ]);
   assert.equal(pregunta("p4").correcto.lado, "debito");
+  /* (a0): cada grupo, su saldo por su porcentaje; la lista del delta. */
+  const porGrupo = N.COLUMNAS.map((col, i) => (N.COMPANIAS.reduce((t, c) => t + c.celdas[i], 0) * N.PORCENTAJES[col]) / 100);
+  assert.deepEqual(T.GRUPOS_A0.map((g) => g.provision), porGrupo);
+  assert.ok(DELTA.includes(`(${porGrupo.map((v) => cifra(v)).join(" · ")})`), "la lista del delta");
+  assert.deepEqual(pregunta("a0").valorMal.map((v) => v.valor), [
+    provision + (T.GRUPOS_A0[0].saldo * 3) / 100, provision - porGrupo[2], total,
+  ]);
+  assert.deepEqual(pregunta("a0").valoresComa, [provision * 10, provision / 10, provision * 100]);
+  assert.deepEqual(pregunta("a0").valoresComa, [22834000, 228340, 228340000]);
   /* Los valores equivocados previstos, también calculados. */
   assert.deepEqual(pregunta("p1").valorMal.map((v) => v.valor), [total]);
   assert.deepEqual(pregunta("p3").valorMal.map((v) => v.valor), [provision - castigo("roja"), castigo("roja") + castigo("negra"), castigo("roja")]);
   assert.deepEqual(pregunta("p4").valorMal.map((v) => v.valor), [provision - castigo("roja"), provision - castigo("negra"), provision + castigo("roja") + castigo("negra"), 0]);
   /* Y ningún valor previsto coincide con la respuesta de su pantalla. */
-  for (const p of P) for (const v of p.valorMal) assert.notEqual(v.valor, J.correctoDe(p).valor, `${p.id}: ${v.valor}`);
+  for (const p of P) for (const v of [...p.valorMal, ...(p.valoresComa ?? []).map((x) => ({ valor: x }))]) assert.notEqual(v.valor, J.correctoDe(p).valor, `${p.id}: ${v.valor}`);
   /* Las cuentas correctas. */
   assert.deepEqual(ASIENTOS.map((p) => [p.correcto.debe, p.correcto.haber]), [
     [T.GASTO, T.PROVISION], [T.PROVISION, T.CLIENTES], [T.PROVISION, T.CLIENTES], [T.CLIENTES, T.PROVISION], [T.CAJA, T.CLIENTES],
@@ -335,7 +364,7 @@ test("★★ las barras del medidor son las que Itagaki calculó para 375 y 320 
 
 /* ═══════════ INFLESZ ═══════════ */
 
-test("★★★ INFLESZ: los 82 textos de 10 palabras o más pasan 65; los rótulos no se miden", () => {
+test("★★★ INFLESZ: los 89 textos de 10 palabras o más pasan 65; los rótulos no se miden", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of textosDelEstudiante()) {
@@ -345,32 +374,40 @@ test("★★★ INFLESZ: los 82 textos de 10 palabras o más pasan 65; los rótu
     medidos++;
     if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
-  assert.equal(medidos, 82);
+  assert.equal(medidos, 89);
   assert.deepEqual(bajos, []);
   /* Los rótulos son marcas cortas: ninguno llega a 10 palabras. */
-  const rotulos = [...Object.values(T.ROTULOS_R5_2).flatMap((x) => (typeof x === "string" ? [x] : typeof x === "object" ? Object.values(x) : [])), ...Object.values(T.CONCEPTOS)];
+  const rotulosDe = (o) => Object.values(o).flatMap((x) => (typeof x === "string" ? [x] : typeof x === "object" ? Object.values(x) : typeof x === "function" ? [x(25)] : []));
+  const rotulos = [...rotulosDe(T.ROTULOS_R5_2), ...rotulosDe(T.ROTULOS_A0), ...Object.values(T.CONCEPTOS), ...T.GRUPOS_A0.map((g) => g.grupo)];
   assert.ok(rotulos.length >= 25);
   for (const r of rotulos) assert.equal(inflesz(r).aplica, false, r);
 });
 
 /* ═══════════ LOS FP ═══════════ */
 
-test("★★★ los FP salen de calcularFP: 3 de 6 da 25 (50 × ½ exactos), 6 de 6 da 50, y nunca menos de 25", () => {
+test("★★★ los FP de 0 a 7 aciertos salen de calcularFP y son los que paga el servidor (0017, round sobre numeric)", () => {
   const fp = (bien) => calcularFP({ dificultad: T.R5_2.dificultad, modalidad: T.R5_2.modalidad, aciertos: J.puntuarR5_2(bien) / 100, duracionMs: 200_000 }).fp;
-  assert.equal(J.puntuarR5_2(3), 50);
-  assert.equal(fp(3), 25);
-  assert.equal(fp(6), 50);
-  assert.equal(fp(0), 25);
+  /*
+   * El servidor, en enteros para no arrastrar la coma flotante: el cliente le
+   * manda el % redondeado y él hace round(50 × pct / 100) sobre numeric, que
+   * lleva la mitad hacia arriba. Piso del 50 %.
+   */
+  const servidor = (bien) => {
+    const pct = Math.round(J.puntuarR5_2(bien));
+    return Math.round((50 * Math.max(50, Math.min(100, pct))) / 100);
+  };
+  const tabla = [];
+  for (let bien = 0; bien <= J.TOTAL_R5_2; bien++) {
+    assert.equal(fp(bien), servidor(bien), `${bien} de 7`);
+    tabla.push(fp(bien));
+  }
+  assert.equal(J.TOTAL_R5_2, 7);
+  assert.deepEqual(tabla, [25, 25, 25, 25, 29, 36, 43, 50]);
+  /* 4 de 7 es una mitad exacta en el servidor: 50 × 57 / 100 = 28,5 → 29. */
+  assert.equal((50 * Math.round(J.puntuarR5_2(4))) / 100, 28.5);
   for (const f of ["src/components/repasoCap5/ToroNegro.jsx", "src/data/repasoCap5ToroNegroJuego.js"]) {
     assert.doesNotMatch(leer(f).replace(/^\s*(\/\*|\*|\/\/).*$/gm, ""), /fpBase\s*\*|\*\s*fpBase/, f);
   }
-});
-
-test("4 de 6: calcularFP da lo mismo que el servidor", { todo: "calcularFP da 33 y el servidor 34 (el cliente manda el 67 % redondeado; 50 × 0,67 = 33,5 → 34). Código compartido: reportado a Kamogawa" }, () => {
-  const pct = J.puntuarR5_2(4);
-  const cliente = calcularFP({ dificultad: "dificil", modalidad: "evaluativa", aciertos: pct / 100, duracionMs: 200_000 }).fp;
-  const servidor = Math.round(50 * Math.max(0.5, Math.min(1, Math.round(pct) / 100)));
-  assert.equal(cliente, servidor);
 });
 
 /* ═══════════ LAS DOS PUERTAS ═══════════ */
@@ -394,25 +431,84 @@ test("★★★ catálogo, registro de la vista, etiqueta y migración 0251 dice
 
   assert.ok(hayReglaPara("r5-2"));
   const etiquetas = P.map((p) => etiquetaDeItem("r5-2", p.id));
-  assert.equal(new Set(etiquetas).size, 6, "dos ítems se leen igual");
-  assert.deepEqual(etiquetas.map((e) => e.split(" · ")[0]), ["31 DIC", "MARZO", "MARZO", "MARZO", "MAYO", "MAYO"]);
+  assert.equal(new Set(etiquetas).size, 7, "dos ítems se leen igual");
+  assert.deepEqual(etiquetas.map((e) => e.split(" · ")[0]), ["31 DIC", "31 DIC", "MARZO", "MARZO", "MARZO", "MAYO", "MAYO"]);
 });
 
-/* ═══════════ EL SITIO PARA LA ETAPA a0 ═══════════ */
+/* ═══════════ (a0) CALCULA LA PROVISIÓN ═══════════ */
 
-test("★★ la etapa a0 cabe sin reescribir: el recorrido, el total y el final salen de la lista", () => {
+const A0 = pregunta("a0");
+const FILAS_BIEN = Object.fromEntries(T.GRUPOS_A0.map((g) => [g.id, g.provision]));
+
+test("★★★ a0 en el recorrido: dos ítems en 31 DIC antes del corte, siete en total", () => {
   assert.deepEqual(J.PASOS_R5_2.map((x) => x.tipo === "pregunta" ? P[x.i].id : x.tipo === "corte" ? `corte-${x.etapa}` : x.tipo),
-    ["entrada", "p1", "corte-dic", "p2", "p3", "p4", "corte-marzo", "p5", "p6", "corte-mayo"]);
-  /* Una pregunta más en 31 DIC, antes del ajuste, que da el total calculado. */
-  const a0 = { id: "a0", etapa: "dic", tipo: "calculo", hecho: "x", enunciado: "y", correcto: { valor: 2283400 } };
-  const p1 = { ...pregunta("p1"), hecho: (resp) => `calculaste ${resp.a0?.valor}`, correcto: { ...pregunta("p1").correcto, valor: (resp) => resp.a0?.valor } };
-  const siete = [a0, p1, ...P.slice(1)];
-  assert.deepEqual(J.pasosDe(siete).slice(0, 4).map((x) => x.tipo === "pregunta" ? siete[x.i].id : x.tipo), ["entrada", "a0", "p1", "corte"]);
-  assert.deepEqual(J.porEtapa({}, siete).map((f) => f.total), [2, 3, 2]);
-  const resp = { a0: { valor: 2283400 } };
-  assert.equal(J.resolver(p1.hecho, resp), "calculaste 2283400");
-  assert.equal(J.evaluarAsiento(p1, { debe: T.GASTO, haber: T.PROVISION, valor: 2283400 }, resp).ok, true);
-  assert.equal(J.puntuarR5_2(7, siete.length), 100);
+    ["entrada", "a0", "p1", "corte-dic", "p2", "p3", "p4", "corte-marzo", "p5", "p6", "corte-mayo"]);
+  assert.deepEqual(J.porEtapa({}).map((f) => f.total), [2, 3, 2]);
+  assert.equal(A0.sinLibro, true);
+});
+
+test("★★★ a0 · acierto: el total bien, con o sin filas", () => {
+  for (const filas of [{}, FILAS_BIEN, { "1-30": 249900 }]) {
+    const r = J.evaluarCalculo(A0, { filas, total: 2283400 });
+    assert.equal(r.ok, true);
+    assert.equal(r.camino, "acierto");
+    assert.deepEqual(r.textos, [A0.acierto]);
+  }
+});
+
+test("★★★ a0 · total bien con filas mal: el ítem cuenta, y el texto pide revisar las filas (decisión 6)", () => {
+  const r = J.evaluarCalculo(A0, { filas: { ...FILAS_BIEN, "1-30": 259900, "31-60": 194000 }, total: 2283400 });
+  assert.equal(r.ok, true);
+  assert.equal(r.camino, "compensado");
+  assert.deepEqual(r.textos, ["Tu total está bien, pero revisa las filas marcadas: una se compensó con otra."]);
+  assert.equal(r.filas["1-30"], "mal");
+  assert.equal(r.filas["61-120"], "ok");
+});
+
+test("★★★ a0 · los totales previstos: vigentes, la omisión de 31 a 60 y la cartera entera", () => {
+  const casos = [[2670400, "Le pusiste porcentaje a las vigentes."], [2079400, "Te faltó el grupo de 31 a 60 días. Revisa que sumaste los siete."], [38230000, "Sumaste los saldos."]];
+  for (const [total, empieza] of casos) {
+    const r = J.evaluarCalculo(A0, { filas: {}, total });
+    assert.equal(r.camino, "valor-previsto", String(total));
+    assert.ok(r.textos[0].startsWith(empieza), r.textos[0]);
+  }
+  /* La de 2.759.400 salió (decisión 3): cae en la genérica. */
+  assert.equal(J.evaluarCalculo(A0, { filas: {}, total: 2759400 }).camino, "generica");
+});
+
+test("★★★ a0 · la coma: el total por diez, por la décima o por cien, y cualquier fila corrida (decisiones 4 y 5)", () => {
+  for (const total of [22834000, 228340, 228340000]) {
+    const r = J.evaluarCalculo(A0, { filas: {}, total });
+    assert.equal(r.camino, "coma-total", String(total));
+    assert.deepEqual(r.textos, [A0.coma]);
+  }
+  /* Una sola fila corrida, con un total que no es ninguno de los previstos. */
+  for (const v of [2499000, 24990]) {
+    const r = J.evaluarCalculo(A0, { filas: { ...FILAS_BIEN, "1-30": v }, total: 4532500 });
+    assert.equal(r.camino, "coma-fila", String(v));
+    assert.deepEqual(r.textos, [A0.coma]);
+  }
+  /* Las vigentes valen 0: diez veces 0 no es una coma. */
+  assert.equal(J.evaluarCalculo(A0, { filas: { vigentes: 0 }, total: 5 }).camino, "generica");
+});
+
+test("★★★ a0 · la genérica, y «Revisar cálculo» solo con un total mayor que 0 (las filas son opcionales)", () => {
+  const r = J.evaluarCalculo(A0, { filas: { "1-30": 1 }, total: 5 });
+  assert.equal(r.camino, "generica");
+  assert.deepEqual(r.textos, [A0.generica]);
+  assert.equal(J.puedeRevisarCalculo({ total: null }), false);
+  assert.equal(J.puedeRevisarCalculo({ total: 0 }), false);
+  assert.equal(J.puedeRevisarCalculo({ total: 1 }), true);
+  assert.deepEqual(J.evaluarCalculo(A0, { filas: {}, total: 1 }).filas, Object.fromEntries(T.GRUPOS_A0.map((g) => [g.id, "vacia"])));
+});
+
+test("★★★ (a) muestra siempre 2.283.400, aunque a0 haya salido mal: el error no se cobra dos veces", () => {
+  const p1 = pregunta("p1");
+  const malo = { a0: { total: 228340, filas: {} } };
+  assert.equal(J.correctoDe(p1, malo).valor, 2283400);
+  assert.equal(J.resolver(p1.hecho, malo), "31 de diciembre. La provisión que calculaste es de $2.283.400. No trae saldo de antes.");
+  assert.equal(p1.valorGenerica, "Usa la provisión que calculaste: $2.283.400.");
+  assert.equal(J.evaluarAsiento(p1, { debe: T.GASTO, haber: T.PROVISION, valor: 2283400 }, malo).ok, true);
 });
 
 /* ═══════════ LA HOJA DE CUENTAS ═══════════ */
@@ -426,10 +522,12 @@ test("★★ la hoja se baraja una vez por intento y queda fija; con semilla, re
   assert.ok(ordenes.size > 1, "la hoja no se baraja");
 });
 
-test("★★ el campo de valor: solo dígitos, hasta 8, con puntos de miles", () => {
+test("★★ el campo de valor: solo dígitos, hasta 8 (9 en a0), con puntos de miles", () => {
   assert.equal(leerCifra("2.283.400"), 2283400);
   assert.equal(leerCifra("12a3"), 123);
   assert.equal(leerCifra("123456789"), 12345678);
+  /* En a0, nueve (decisión 4 del delta): cabe 228.340.000. */
+  assert.equal(leerCifra("2283400000", 9), 228340000);
   assert.equal(leerCifra(""), null);
   assert.equal(leerCifra("0"), 0);
   assert.equal(cifra(38230000), "38.230.000");
@@ -446,9 +544,17 @@ const elegir = async (caja, lado, cuenta) => {
 };
 const campo = (caja) => caja.querySelector("[data-tarjeta-asiento='armador'] input, [data-tarjeta-saldo='respuesta'] input");
 const sig = (caja) => caja.querySelector("[data-siguiente]");
+/* a0: escribe el total (y las filas que se den), revisa y sigue. */
+const jugarA0 = async (caja, total, filas = {}) => {
+  for (const [id, v] of Object.entries(filas)) await escribir(caja.querySelector(`[data-fila-grupo="${id}"] input`), String(v));
+  await escribir(caja.querySelector("[data-fila-total] input"), String(total));
+  await tocar(caja.querySelector("[data-revisar]"));
+};
 
 test("★★★ la hoja: llena el hueco activo, pasa al HABER, marca «EN EL DEBE», mueve la cuenta y el velo cierra", async () => {
   const { caja, desmontar } = await montar(h(ToroNegro, { preparar: () => ({ hoja: HOJA }) }));
+  await tocar(sig(caja));
+  await jugarA0(caja, 2283400);
   await tocar(sig(caja));
   assert.equal(Boolean(caja.querySelector("[data-hoja]")), false);
   assert.equal(hueco(caja, "debe").textContent, "DEBE: Toca para elegir la cuenta");
@@ -501,9 +607,45 @@ test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0
   const progreso = () => caja.querySelector("[data-progreso]").textContent;
   const nodos = () => [...caja.querySelectorAll("[data-nodo]")].map((n) => n.dataset.estado).join(",");
 
-  /* P1 bien. Libro sin movimientos. */
-  assert.equal(progreso(), "PREGUNTA 1 DE 6");
+  /* a0 mal: una fila con la coma corrida, una bien, cinco vacías. Sin libro. */
+  assert.equal(progreso(), "PREGUNTA 1 DE 7");
   assert.equal(nodos(), "actual,pendiente,pendiente");
+  assert.equal(Boolean(caja.querySelector("[data-libro]")), false, "a0 no lleva libro");
+  const filasA0 = [...caja.querySelectorAll("[data-fila-grupo]")];
+  assert.deepEqual(filasA0.map((f) => [f.querySelector("[data-grupo]").textContent, f.querySelector("[data-saldo-grupo]").textContent, f.querySelector("[data-porcentaje]").textContent]),
+    T.GRUPOS_A0.map((g) => [g.grupo, cifra(g.saldo), `Porcentaje que fija la empresa: ${g.porcentaje}\u00a0%`]));
+  const campos = [...caja.querySelectorAll("[data-tarjeta-calculo] input")];
+  assert.equal(campos.length, 8);
+  assert.deepEqual(campos.map((c) => c.getAttribute("enterkeyhint")), [...Array(7).fill("next"), "done"]);
+  assert.ok(campos.every((c) => c.getAttribute("inputmode") === "numeric" && c.getAttribute("placeholder") === "Provisión"));
+  /* «Siguiente» del teclado pasa a la fila de abajo, y de la última al total. */
+  campos[0].focus();
+  await act(async () => { campos[0].dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true })); });
+  assert.equal(document.activeElement === campos[1], true, "Enter no pasó a la fila siguiente");
+  campos[6].focus();
+  await act(async () => { campos[6].dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true })); });
+  assert.equal(document.activeElement === campos[7], true, "Enter no pasó de la última fila al total");
+  assert.ok(caja.querySelector("[data-revisar]").disabled, "«Revisar cálculo» sin total");
+  /* El campo admite nueve dígitos en esta pantalla (decisión 4). */
+  await escribir(caja.querySelector("[data-fila-total] input"), "2283400000");
+  assert.equal(caja.querySelector("[data-fila-total] input").value, "228.340.000");
+  assert.equal(caja.querySelector("[data-revisar]").textContent, "Revisar cálculo");
+  await jugarA0(caja, 4532500, { "1-30": 2499000, "31-60": 204000 });
+  assert.equal(caja.querySelector("[data-devolucion]").textContent.endsWith(pregunta("a0").coma), true);
+  const bajo = (id) => caja.querySelector(`[data-fila-grupo="${id}"] [data-bajo]`);
+  assert.deepEqual([bajo("1-30").dataset.bajo, bajo("1-30").textContent], ["mal", "Era 249.900"]);
+  assert.deepEqual([bajo("31-60").dataset.bajo, bajo("31-60").textContent], ["ok", "Correcta"]);
+  assert.deepEqual([bajo("vigentes").dataset.bajo, bajo("vigentes").textContent], ["vacia", "Era 0"]);
+  assert.equal(caja.querySelector('[data-fila-grupo="vigentes"] input').dataset.campoValor, "vacia");
+  assert.equal(caja.querySelector('[data-fila-grupo="1-30"] input').dataset.campoValor, "mal");
+  assert.equal(caja.querySelector("[data-fila-total] [data-bajo]").textContent, "Era 2.283.400");
+  assert.ok(campos.every((c) => c.readOnly), "después de revisar, todo queda bloqueado");
+  await tocar(sig(caja));
+
+  /* P1 bien. Libro sin movimientos; el hecho dice 2.283.400 aunque a0 salió mal. */
+  assert.equal(progreso(), "PREGUNTA 2 DE 7");
+  assert.equal(nodos(), "actual,pendiente,pendiente");
+  assert.equal(caja.querySelector("[data-hecho]").textContent, `31 DIC${pregunta("p1").hecho}`);
   assert.ok(caja.querySelector("[data-sin-movimientos]"));
   await asiento(T.GASTO, T.PROVISION, 2283400);
   assert.equal(caja.querySelector("[data-devolucion]").dataset.devolucion, "acierto");
@@ -536,7 +678,7 @@ test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0
   await tocar(sig(caja));
 
   /* P4: el libro sigue en 2.283.400 CRÉDITO; nunca muestra el saldo de marzo. Se responde 0, sin lado. */
-  assert.equal(progreso(), "PREGUNTA 4 DE 6");
+  assert.equal(progreso(), "PREGUNTA 5 DE 7");
   assert.equal(caja.querySelector("[data-saldo='credito']").textContent, "SALDO CRÉDITO2.283.400");
   assert.ok(!caja.querySelector("[data-libro]").textContent.includes("166.600"));
   const lados = [...caja.querySelectorAll("[data-tarjeta-saldo='respuesta'] [data-lado]")];
@@ -578,15 +720,19 @@ test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0
     f.dataset.filaEtapa, [...f.querySelectorAll("[data-punto]")].map((x) => x.dataset.punto).join(","), f.querySelector("[data-n-de-m]").textContent, f.querySelector("[data-rotulo-saldo]").textContent,
   ]);
   assert.deepEqual(filas, [
-    ["dic", "acierto", "1 de 1", "2.283.400CRÉDITO"],
+    ["dic", "error,acierto", "1 de 2", "2.283.400CRÉDITO"],
     ["marzo", "error,error,error", "0 de 3", "166.600DÉBITO"],
     ["mayo", "error,acierto", "1 de 2", "783.400CRÉDITO"],
   ]);
-  assert.ok(caja.textContent.includes("33%"));
+  assert.ok(caja.textContent.includes("29%"));
+  /* Los puntos: relleno si acertó, anillo si falló (decisión 9), leído del estilo pintado. */
+  const forma = (el) => (el.style.background === "transparent" && /solid/.test(el.style.border) ? "anillo" : el.style.background && !el.style.border ? "relleno" : "otra");
+  assert.deepEqual([...caja.querySelectorAll("[data-punto]")].map(forma), ["anillo", "relleno", "anillo", "anillo", "anillo", "anillo", "relleno"]);
+  assert.ok([...caja.querySelectorAll("[data-punto]")].every((x) => x.closest("[aria-hidden='true']")));
   assert.equal(fin.length, 1);
   const [pct, , detalle] = fin[0];
-  assert.equal(pct, (2 / 6) * 100);
-  assert.deepEqual(detalle.map((d) => [d.item, d.ok]), [["p1", true], ["p2", false], ["p3", false], ["p4", false], ["p5", false], ["p6", true]]);
-  assert.equal(detalle[3].respuesta, "0 | sin lado");
+  assert.equal(pct, (2 / 7) * 100);
+  assert.deepEqual(detalle.map((d) => [d.item, d.ok]), [["a0", false], ["p1", true], ["p2", false], ["p3", false], ["p4", false], ["p5", false], ["p6", true]]);
+  assert.equal(detalle[4].respuesta, "0 | sin lado");
   desmontar();
 });

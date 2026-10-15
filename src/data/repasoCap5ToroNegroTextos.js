@@ -1,4 +1,4 @@
-import { CIFRAS, CASTIGOS_MARZO, RECUPERACION_MAYO } from "./repasoCap5ToroNegro.js";
+import { CIFRAS, CASTIGOS_MARZO, RECUPERACION_MAYO, COLUMNAS, PORCENTAJES } from "./repasoCap5ToroNegro.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -15,8 +15,8 @@ import { CIFRAS, CASTIGOS_MARZO, RECUPERACION_MAYO } from "./repasoCap5ToroNegro
  * («Caja (saltarse el revivir)», «$1.333.400 (partir el castigo)») es una
  * nota para quien construye, no texto de pantalla: no se guarda.
  *
- * La línea de la pantalla 1 «Etapa ajustada por la célula: …» tampoco se
- * pinta: es una nota de la célula sobre el ejercicio. Reportado a Kamogawa.
+ * El delta e5-r5-2-a0 (Calcula la provisión) se suma: siete ítems. Sus
+ * decisiones de Kamogawa mandan sobre el contenido y el diseño del delta.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -48,7 +48,8 @@ export const R5_2 = {
   dificultad: "dificil",
   fpBase: 50,
   modalidad: "evaluativa",
-  objetivo: "Arma los asientos de una provisión y sigue qué le pasa en tres momentos del año.",
+  /* Delta a0: el objetivo cambia. */
+  objetivo: "Calcula una provisión, arma sus asientos y sigue qué le pasa en tres momentos del año.",
   entrada: "El Toro Negro vende a crédito. A 31 de diciembre, sus clientes le deben $38.230.000. No todo se podrá cobrar. Sigue su cartera de diciembre a mayo.",
 };
 
@@ -113,10 +114,79 @@ export const CONCEPTOS = {
  *   alReves → debeMal[cuenta] + haberMal[cuenta] (los dos si fallan los dos)
  *   → debeMal → haberMal → valorMal[cifra] → valorGenerica.
  */
+/* ═══════════ (a0) CALCULA LA PROVISIÓN (delta e5-r5-2-a0) ═══════════ */
+
+/*
+ * Los siete grupos, con los rótulos de Miyata («1 a 30 días», con «a»: decisión
+ * 1). Saldo, porcentaje y provisión de cada grupo salen de repasoCap5ToroNegro.js
+ * por su columna: no se copian.
+ */
+const ROTULO_GRUPO = {
+  vigentes: "Vigentes",
+  "1-30": "1 a 30 días",
+  "31-60": "31 a 60 días",
+  "61-120": "61 a 120 días",
+  "121-180": "121 a 180 días",
+  "181-360": "181 a 360 días",
+  "mas-de-360": "Más de 360 días",
+};
+export const GRUPOS_A0 = COLUMNAS.map((col) => ({
+  id: col,
+  grupo: ROTULO_GRUPO[col],
+  saldo: CIFRAS.totalesColumna[col],
+  porcentaje: PORCENTAJES[col],
+  provision: CIFRAS.provisionColumna[col],
+}));
+
+const CALCULO_A0 = {
+  id: "a0",
+  etapa: "dic",
+  tipo: "calculo",
+  /* Itagaki: esta pantalla no lleva libro. */
+  sinLibro: true,
+  hecho: "31 de diciembre. El Toro Negro agrupó su cartera por vencimiento. Cada grupo lleva el porcentaje que fija la empresa.",
+  /* Decisión 1: el enunciado de Miyata. */
+  enunciado: "Calcula la provisión de cada grupo. Luego súmalas.",
+  correcto: { valor: VALORES.provision },
+  /* Por el total. La de 2.759.400 sale (decisión 3); la de 2.079.400 pasa a ser una omisión. */
+  valorMal: [
+    { valor: VALORES.provision + (CIFRAS.totalesColumna.vigentes * 3) / 100, texto: "Le pusiste porcentaje a las vigentes. Esas deudas aún no se vencen: la empresa les fija 0 %." },
+    { valor: VALORES.provision - CIFRAS.provisionColumna["31-60"], texto: "Te faltó el grupo de 31 a 60 días. Revisa que sumaste los siete." },
+    { valor: VALORES.cartera, texto: "Sumaste los saldos. Eso es toda la cartera. La provisión es solo la parte que quizá no cobres." },
+  ],
+  /* La coma: el total diez veces, la décima parte o cien veces (por 3 en vez de por 0,03: decisión 4). */
+  coma: "Revisa la coma. El 3 % es 3 de cada 100: multiplica por 0,03.",
+  valoresComa: [VALORES.provision * 10, VALORES.provision / 10, VALORES.provision * 100],
+  /* Decisión 6: total bien con filas mal. */
+  compensado: "Tu total está bien, pero revisa las filas marcadas: una se compensó con otra.",
+  generica: "Revisa grupo por grupo: saldo por el porcentaje que fija la empresa. Luego suma los siete.",
+  acierto: "Bien. Cada grupo aporta según lo vencido que está. Juntos dan $2.283.400: esa es la provisión.",
+};
+
+/* Los rótulos de la pantalla (a0), de Itagaki, con el del porcentaje de Miyata (decisión 1). */
+export const ROTULOS_A0 = {
+  grupoYSaldo: "GRUPO Y SALDO",
+  tuProvision: "TU PROVISIÓN",
+  /* La cifra y el «%» no se separan al partir el renglón (espacio de no separación). */
+  porcentaje: (p) => `Porcentaje que fija la empresa: ${p}\u00a0%`,
+  marcador: "Provisión",
+  total: "Provisión total",
+  cifrasEnPesos: "CIFRAS EN PESOS",
+  revisar: "Revisar cálculo",
+  correcta: "Correcta",
+  era: (cifra) => `Era ${cifra}`,
+};
+
 const ASIENTO_1 = {
   id: "p1",
   etapa: "dic",
-  hecho: "31 de diciembre. El análisis de la cartera da una provisión de $2.283.400. La provisión no trae saldo de antes.",
+  /*
+   * Delta a0: «la provisión que calculaste», siempre con la cifra correcta,
+   * aunque (a0) haya salido mal (Miyata e Itagaki: el error de (a0) no se
+   * cobra dos veces). «No trae saldo de antes» es un DATO DECLARADO POR LA
+   * CÉLULA: el libro no lo dice (decisión 8).
+   */
+  hecho: "31 de diciembre. La provisión que calculaste es de $2.283.400. No trae saldo de antes.",
   enunciado: "Arma el asiento del ajuste de la provisión.",
   correcto: { debe: GASTO, haber: PROVISION, valor: VALORES.provision },
   alReves: "Va al revés. El gasto va al debe. La provisión crece por el haber.",
@@ -135,7 +205,8 @@ const ASIENTO_1 = {
   valorMal: [
     { valor: VALORES.cartera, texto: "Esa es toda la cartera. La provisión es solo la parte que quizá no cobres: $2.283.400." },
   ],
-  valorGenerica: "Revisa el valor. Usa el que da el análisis de la cartera.",
+  /* Decisión 7: ningún «análisis» en r5-2. */
+  valorGenerica: "Usa la provisión que calculaste: $2.283.400.",
   acierto: "Bien. Reconoces el gasto del año y creas la provisión. La cartera no se toca: nadie ha dejado de pagar todavía.",
 };
 
@@ -281,8 +352,9 @@ const SALDO_4 = {
   acierto: "Correcto. Todo el castigo va contra la provisión. Como no alcanzó, queda en débito por $166.600.",
 };
 
-/* Las seis preguntas, en orden. */
+/* Las siete preguntas, en orden: (a0) y las seis de v2. */
 export const PREGUNTAS_R5_2 = [
+  CALCULO_A0,
   { ...ASIENTO_1, tipo: "asiento" },
   { ...ASIENTO_2, tipo: "asiento" },
   { ...ASIENTO_3, tipo: "asiento" },

@@ -1,6 +1,6 @@
 import { barajar } from "../utils/barajar.js";
 import {
-  R5_2, VALORES, ETAPAS, PREGUNTAS_R5_2, CONCEPTOS, HOJA_DE_CUENTAS,
+  R5_2, VALORES, ETAPAS, PREGUNTAS_R5_2, CONCEPTOS, HOJA_DE_CUENTAS, GRUPOS_A0,
 } from "./repasoCap5ToroNegroTextos.js";
 
 /*
@@ -84,6 +84,43 @@ export function evaluarAsiento(p, { debe, haber, valor }, respuestas = {}) {
     textos = [previsto ? previsto.texto : p.valorGenerica];
   }
   return { ok, piezas, camino, textos };
+}
+
+/* ═══════════ (a0) EL CÁLCULO DE LA PROVISIÓN ═══════════ */
+
+/* Se activa cuando el total es mayor que 0; las filas son opcionales (Itagaki). */
+export const puedeRevisarCalculo = ({ total }) => Number(total) > 0;
+
+/* Una fila «vale diez veces o la décima parte» de lo correcto (decisión 5). */
+const comaCorrida = (v, c) => c !== 0 && v !== null && (v === c * 10 || v * 10 === c);
+
+/*
+ * Se califica el total; las filas solo informan. Cada fila llena queda «ok»
+ * o «mal»; una vacía no se marca («vacia»). Prioridad de los textos:
+ * total bien con alguna fila mal → «compensado» (decisión 6); total bien →
+ * acierto; total previsto → su texto; total con la coma corrida → coma;
+ * alguna fila con la coma corrida → coma (decisión 5); si no, la genérica.
+ */
+export function evaluarCalculo(p, { filas = {}, total }, respuestas = {}) {
+  const c = correctoDe(p, respuestas);
+  const estadoFilas = Object.fromEntries(GRUPOS_A0.map((g) => {
+    const v = filas[g.id] ?? null;
+    return [g.id, v === null ? "vacia" : v === g.provision ? "ok" : "mal"];
+  }));
+  const ok = total === c.valor;
+  const algunaMal = Object.values(estadoFilas).includes("mal");
+  let camino;
+  let texto;
+  if (ok && algunaMal) { camino = "compensado"; texto = p.compensado; }
+  else if (ok) { camino = "acierto"; texto = p.acierto; }
+  else {
+    const previsto = p.valorMal.find((v) => v.valor === total);
+    if (previsto) { camino = "valor-previsto"; texto = previsto.texto; }
+    else if (p.valoresComa.includes(total)) { camino = "coma-total"; texto = p.coma; }
+    else if (GRUPOS_A0.some((g) => comaCorrida(filas[g.id] ?? null, g.provision))) { camino = "coma-fila"; texto = p.coma; }
+    else { camino = "generica"; texto = p.generica; }
+  }
+  return { ok, piezas: { total: ok }, filas: estadoFilas, camino, textos: [texto] };
 }
 
 /* ═══════════ EL SALDO ═══════════ */

@@ -2,9 +2,9 @@ import { useEffect, useId, useRef, useState } from "react";
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 import { pesos } from "../../data/contabilidad.js";
 import { C, INTER, SORA, MARCA, SOLO_LECTOR, Devolucion, BotonSiguiente } from "./comun.jsx";
-import { R5_2, ETAPAS, PREGUNTAS_R5_2, CORTES_R5_2, ROTULOS_R5_2 as RT } from "../../data/repasoCap5ToroNegroTextos.js";
+import { R5_2, ETAPAS, PREGUNTAS_R5_2, CORTES_R5_2, ROTULOS_R5_2 as RT, GRUPOS_A0, ROTULOS_A0 as RA } from "../../data/repasoCap5ToroNegroTextos.js";
 import {
-  prepararR5_2, evaluarAsiento, evaluarSaldo, puedeRevisarAsiento, puedeRevisarSaldo,
+  prepararR5_2, evaluarAsiento, evaluarSaldo, evaluarCalculo, puedeRevisarAsiento, puedeRevisarSaldo, puedeRevisarCalculo,
   MOVIMIENTOS, libroAntesDe, saldoDe, naturaleza, fraccionDeBarra, porEtapa, puntuarR5_2,
   PASOS_R5_2, resolver, correctoDe,
 } from "../../data/repasoCap5ToroNegroJuego.js";
@@ -216,28 +216,36 @@ export function LibroProvision({ movimientos, saldo = saldoDe(movimientos), fant
 
 /* ═══════════ EL CAMPO DE VALOR ═══════════ */
 
-/* Solo dígitos, hasta 8, con puntos de miles mientras se escribe. */
-export const leerCifra = (texto) => {
-  const digitos = String(texto).replace(/\D/g, "").slice(0, 8);
+/* Solo dígitos, hasta 8 (9 en la pantalla a0: decisión 4 del delta), con puntos de miles mientras se escribe. */
+export const leerCifra = (texto, maximo = 8) => {
+  const digitos = String(texto).replace(/\D/g, "").slice(0, maximo);
   return digitos === "" ? null : Number(digitos);
 };
 
-function CampoValor({ id, valor, onCambiar, estado = null, soloLectura = false }) {
+function CampoValor({
+  id, valor, onCambiar, estado = null, soloLectura = false,
+  maximo = 8, alto = "48px", placeholder, enterKeyHint, onEnter, inputRef, etiqueta,
+}) {
   const base = { border: `1.5px solid ${C.atenuado}`, background: C.fondo };
-  const visto = estado ? ESTADO_PIEZA[estado] : base;
+  const visto = estado && estado !== "vacia" ? ESTADO_PIEZA[estado] : base;
   return (
     <input
       id={id}
+      ref={inputRef}
       data-campo-valor={estado ?? "libre"}
       className="r52-campo"
       type="text"
       inputMode="numeric"
       autoComplete="off"
+      aria-label={etiqueta}
+      placeholder={placeholder}
+      enterKeyHint={enterKeyHint}
       readOnly={soloLectura || Boolean(estado)}
       value={valor === null ? "" : cifra(valor)}
-      onChange={(e) => onCambiar?.(leerCifra(e.target.value))}
+      onChange={(e) => onCambiar?.(leerCifra(e.target.value, maximo))}
+      onKeyDown={onEnter ? (e) => { if (e.key === "Enter") { e.preventDefault(); onEnter(); } } : undefined}
       style={{
-        width: "100%", height: "48px", boxSizing: "border-box", borderRadius: "10px", padding: "0 14px",
+        width: "100%", height: alto, boxSizing: "border-box", borderRadius: "10px", padding: "0 12px",
         fontFamily: INTER, fontSize: "17px", fontWeight: 600, fontVariantNumeric: "tabular-nums", textAlign: "right", color: C.texto,
         ...visto,
       }}
@@ -475,6 +483,96 @@ function PreguntaSaldo({ p, onRespondida, r, respuestas = {} }) {
   );
 }
 
+/* ═══════════ (a0) CALCULA LA PROVISIÓN ═══════════ */
+
+/* Debajo del campo, después de revisar: «Correcta» o «Era …», la palabra siempre con el color. */
+function Bajo({ estado, era }) {
+  if (!estado) return null;
+  const calificado = estado !== "vacia";
+  return (
+    <span data-bajo={estado} style={{ display: "block", marginTop: "4px", textAlign: "right", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", fontWeight: 600, color: calificado ? C.texto : C.atenuado }}>
+      {estado === "ok" ? RA.correcta : RA.era(cifra(era))}
+    </span>
+  );
+}
+
+function PreguntaCalculo({ p, onRespondida, r, respuestas = {} }) {
+  const [filas, setFilas] = useState({});
+  const [total, setTotal] = useState(null);
+  const refs = useRef([]);
+  const base = useId();
+  /* «Siguiente» del teclado: de una fila a la siguiente y de la última al total. */
+  const pasar = (k) => () => refs.current[k + 1]?.focus();
+  const DIVISORIA = "1px solid rgba(184,196,212,0.25)";
+  return (
+    <>
+      <div data-tarjeta-calculo style={{ background: C.navy, borderRadius: "12px", padding: "16px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", minHeight: "24px", marginBottom: "8px", gap: "8px" }}>
+          <span style={MARCA}>{RA.grupoYSaldo}</span>
+          <span style={MARCA}>{RA.tuProvision}</span>
+        </div>
+        {GRUPOS_A0.map((g, k) => {
+          const estado = r ? r.filas[g.id] : null;
+          return (
+            <div key={g.id} data-fila-grupo={g.id} style={{ display: "flex", alignItems: "center", gap: "8px", minHeight: "72px", padding: "6px 0", boxSizing: "border-box", borderTop: k ? DIVISORIA : "none" }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <span data-grupo style={{ display: "block", fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: C.texto }}>{g.grupo}</span>
+                <span data-saldo-grupo style={{ display: "block", fontFamily: INTER, fontSize: "15px", lineHeight: "20px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>{cifra(g.saldo)}</span>
+                <span data-porcentaje style={{ display: "block", fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: C.atenuado }}>{RA.porcentaje(g.porcentaje)}</span>
+              </div>
+              <div style={{ width: "136px", flexShrink: 0 }}>
+                <CampoValor
+                  id={`${base}-${g.id}`}
+                  inputRef={(el) => { refs.current[k] = el; }}
+                  etiqueta={`${RA.tuProvision}: ${g.grupo}`}
+                  valor={filas[g.id] ?? null}
+                  onCambiar={(v) => setFilas((x) => ({ ...x, [g.id]: v }))}
+                  estado={estado}
+                  maximo={9}
+                  alto="44px"
+                  placeholder={RA.marcador}
+                  enterKeyHint="next"
+                  onEnter={pasar(k)}
+                />
+                <Bajo estado={estado} era={g.provision} />
+              </div>
+            </div>
+          );
+        })}
+        <div aria-hidden="true" style={{ height: "1px", background: C.atenuado, margin: "16px 0" }} />
+        <div data-fila-total style={{ display: "flex", alignItems: "center", gap: "8px", minHeight: "48px" }}>
+          <label htmlFor={`${base}-total`} style={{ flex: 1, minWidth: 0, fontFamily: INTER, fontSize: "15px", fontWeight: 600, color: C.texto }}>{RA.total}</label>
+          <div style={{ width: "136px", flexShrink: 0 }}>
+            <CampoValor
+              id={`${base}-total`}
+              inputRef={(el) => { refs.current[GRUPOS_A0.length] = el; }}
+              valor={total}
+              onCambiar={setTotal}
+              estado={r ? (r.ok ? "ok" : "mal") : null}
+              maximo={9}
+              placeholder={RA.marcador}
+              enterKeyHint="done"
+            />
+            <Bajo estado={r ? (r.ok ? "ok" : "mal") : null} era={correctoDe(p, respuestas).valor} />
+          </div>
+        </div>
+        <p style={{ ...MARCA, margin: "12px 0 0" }}>{RA.cifrasEnPesos}</p>
+      </div>
+      {!r && (
+        <BotonRevisar
+          activo={puedeRevisarCalculo({ total })}
+          texto={RA.revisar}
+          onClick={() => onRespondida(
+            evaluarCalculo(p, { filas, total }, respuestas),
+            `${total} | ${GRUPOS_A0.map((g) => filas[g.id] ?? "-").join(" ")}`,
+            { filas, total },
+          )}
+        />
+      )}
+    </>
+  );
+}
+
 /* ═══════════ LAS PANTALLAS DE CORTE ═══════════ */
 
 /*
@@ -546,7 +644,15 @@ function CasoEnTresTiempos({ filas }) {
                 <span style={MARCA}>{f.marca}</span>
                 <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                   <span aria-hidden="true" style={{ display: "flex", gap: "6px" }}>
-                    {f.puntos.map((x) => <span key={x.id} data-punto={x.ok ? "acierto" : "error"} style={{ width: "10px", height: "10px", borderRadius: "50%", background: x.ok ? C.teal : C.coral }} />)}
+                    {/* Forma además de color (decisión 9 del delta): relleno si acertó, anillo si falló. */}
+                    {f.puntos.map((x) => (
+                      <span
+                        key={x.id}
+                        data-punto={x.ok ? "acierto" : "error"}
+                        data-forma={x.ok ? "relleno" : "anillo"}
+                        style={{ width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box", ...(x.ok ? { background: C.teal } : { background: "transparent", border: `2px solid ${C.coral}` }) }}
+                      />
+                    ))}
                   </span>
                   <span data-n-de-m style={{ fontFamily: SORA, fontSize: "15px", fontWeight: 600, color: C.texto, whiteSpace: "nowrap" }}>{RT.nDeM(f.bien, f.total)}</span>
                 </span>
@@ -571,10 +677,10 @@ function CasoEnTresTiempos({ filas }) {
 /* ═══════════ LA ACTIVIDAD ═══════════ */
 
 /*
- * Cada tipo de pregunta, con el componente que la pinta. La etapa a0
- * («calculo») entra aquí con su componente cuando llegue el delta.
+ * Cada tipo de pregunta, con el componente que la pinta. «calculo» es la
+ * etapa a0 del delta e5-r5-2-a0.
  */
-const PREGUNTA_POR_TIPO = { asiento: PreguntaAsiento, saldo: PreguntaSaldo };
+const PREGUNTA_POR_TIPO = { calculo: PreguntaCalculo, asiento: PreguntaAsiento, saldo: PreguntaSaldo };
 
 export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_R5_2, pasos = PASOS_R5_2 }) {
   const [tanda, setTanda] = useState(() => preparar?.() ?? prepararR5_2());
@@ -658,7 +764,7 @@ export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_
       <div style={{ marginTop: "8px" }}><LineaDeTiempo estados={estadosDeTiempo(p.etapa)} /></div>
       <div style={{ marginTop: "16px" }}><TarjetaHecho marca={etapa.marca} texto={resolver(p.hecho, respuestas)} /></div>
       {/* El libro como estaba al empezar la etapa (la regla del libro). */}
-      <div style={{ marginTop: "16px" }}><LibroProvision movimientos={libroAntesDe(p.etapa)} /></div>
+      {!p.sinLibro && <div style={{ marginTop: "16px" }}><LibroProvision movimientos={libroAntesDe(p.etapa)} /></div>}
       <p data-enunciado tabIndex={-1} style={{ margin: "16px 0", fontFamily: INTER, fontSize: "17px", lineHeight: "26px", fontWeight: 600, color: C.texto, outline: "none" }}>{p.enunciado}</p>
       <Pregunta key={p.id} p={p} hoja={tanda.hoja} r={r} respuestas={respuestas} onRespondida={responder(p)} />
       <Devolucion r={r} lector={LECTOR} />

@@ -7,8 +7,9 @@
  * Chromium de verdad, con la hoja de estilos del sitio (banco
  * scripts/e5/harness-r5) y prefers-reduced-motion, para medir los cortes en
  * su estado final. Juega la partida entera con un camino de cada clase:
- * P1 bien, P2 con las dos cuentas mal, P3 con el valor mal, P4 con 0,
- * P5 al revés y P6 bien. Mide cada estado y la hoja de cuentas abierta:
+ * a0 con la coma (el total de 9 dígitos, 228.340.000, y filas llenas y
+ * vacías), P1 bien, P2 con las dos cuentas mal, P3 con el valor mal, P4 con
+ * 0, P5 al revés y P6 bien. Mide cada estado y la hoja de cuentas abierta:
  *
  *   · que la página no tenga barra horizontal y ningún texto se salga
  *   · que se hayan medido Inter y Sora
@@ -17,6 +18,8 @@
  *     columna, «SALDO CRÉDITO», «CRÉDITO» en el selector, la hoja de cuentas
  *     sin scroll interno y por debajo del 70 %, y la fila de 31 DIC de la
  *     pantalla final (si no cabe, cede el medidor, nunca el texto)
+ *   · lo que pide el delta a0 (§5): la fila de 112 + 8 + 136 a 320, el
+ *     campo con 9 dígitos, «Era 2.283.400» y las marcas de la cabecera
  *
  * Sale con código 1 si algo falla. Necesita Playwright (no es dependencia del
  * repo): el de la máquina, o el de PLAYWRIGHT_MODULE.
@@ -41,6 +44,7 @@ const { PREGUNTAS_R5_2: P, GASTO, PROVISION, CLIENTES, CAJA, INGRESOS } = T;
 
 /* Las respuestas que se juegan: una de cada camino. */
 const JUGADA = {
+  a0: { filas: { "1-30": "2499000", "31-60": "204000" }, valor: "228340000" },
   p1: { debe: GASTO, haber: PROVISION, valor: "2283400" },
   p2: { debe: CAJA, haber: INGRESOS, valor: "950000" },
   p3: { debe: PROVISION, haber: CLIENTES, valor: "1333400" },
@@ -84,6 +88,21 @@ function medir() {
     if (c.right > col.right - 8 + 0.5) problemas.push(`el concepto «${m.firstElementChild.textContent}» se sale de su columna`);
   }
   const negra = [...document.querySelectorAll("[data-movimiento='castigo-negra'] span")][0];
+  /* a0: cada fila y el total, con su campo de 136 px a la derecha; la columna izquierda no se sale. */
+  let a0 = null;
+  const filasA0 = [...document.querySelectorAll("[data-fila-grupo], [data-fila-total]")];
+  if (filasA0.length) {
+    const izq = [];
+    for (const f of filasA0) {
+      const campoA0 = f.querySelector("input").getBoundingClientRect();
+      const fila = f.getBoundingClientRect();
+      if (Math.abs(campoA0.width - 136) > 0.5) problemas.push(`un campo de a0 mide ${campoA0.width} y son 136`);
+      if (campoA0.right > fila.right + 0.5) problemas.push("un campo de a0 se sale de su fila");
+      const col = f.firstElementChild.getBoundingClientRect();
+      izq.push(Math.round(col.width));
+    }
+    a0 = `columna izq. ${Math.min(...izq)} px + 8 + 136`;
+  }
   const final31 = document.querySelector("[data-fila-etapa='dic']");
   let fila31 = null;
   if (final31) {
@@ -99,7 +118,7 @@ function medir() {
     actividad: act ? Math.round(act.getBoundingClientRect().width * 10) / 10 : null,
     alto: Math.round(document.documentElement.scrollHeight),
     negra: negra ? `${Math.round(negra.getBoundingClientRect().height)} px de alto` : null,
-    fila31,
+    fila31: fila31 ?? a0,
     fuentes: document.fonts.check("15px Inter") && document.fonts.check("700 14px Sora"),
   };
 }
@@ -143,6 +162,17 @@ for (const ancho of ANCHOS) {
   for (const p of P) {
     await estado(`${p.id}-antes`);
     const j = JUGADA[p.id];
+    if (p.tipo === "calculo") {
+      for (const [id, v] of Object.entries(j.filas)) await pg.fill(`[data-fila-grupo="${id}"] input`, v);
+      await pg.fill("[data-fila-total] input", j.valor);
+      const visto = await pg.inputValue("[data-fila-total] input");
+      if (visto !== "228.340.000") fallos.push(`${ancho} px · a0 · el total dice «${visto}» y son 9 dígitos`);
+      await estado(`${p.id}-lleno`);
+      await pg.click("[data-revisar]");
+      await estado(`${p.id}-revisado`);
+      await pg.click("[data-siguiente]");
+      continue;
+    }
     if (p.tipo === "asiento") {
       await elegir("debe", j.debe, p.id === "p1");
       await elegir("haber", j.haber);
@@ -170,7 +200,7 @@ console.log("ancho | estado | contenido | alto | «Castigo Cía. Negra» | fila 
 for (const f of filas) console.log(`${f.ancho} | ${f.estado} | ${f.actividad ?? "—"} | ${f.alto} | ${f.negra ?? "—"} | ${f.fila31 ?? "—"}`);
 const estados = filas.filter((f) => !f.estado.startsWith("hoja")).length / ANCHOS.length;
 console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos, más la hoja).`);
-if (estados !== 23) fallos.push(`se recorrieron ${estados} estados y son 23`);
+if (estados !== 26) fallos.push(`se recorrieron ${estados} estados y son 26`);
 if (fallos.length) {
   console.log(`\nFALLA: ${fallos.length} problema(s)`);
   for (const f of fallos) console.log(`  · ${f}`);
