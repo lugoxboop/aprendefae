@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -297,7 +298,7 @@ test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqu
 
 /* ═══════════ LOTE 3 · «ARMA LA LÍNEA» Y LA CASILLA ═══════════ */
 
-const NEAR = leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md");
+const NEAR = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md"));
 
 test("★★★ lote 3: el ítem 3 va con casilla; los dos libros, con banco de cuentas; los ítems 4 y 6 ya no están (de 13 a 11)", () => {
   assert.deepEqual(D.ITEMS_H6.map((x) => [x.id, x.tipo]), [["iva-reversa", "eleccion"], ["retencion-reversa", "eleccion"], ["baja-deuda", "cifra"], ["libro-garza", "asiento"], ["libro-nogal", "asiento"]]);

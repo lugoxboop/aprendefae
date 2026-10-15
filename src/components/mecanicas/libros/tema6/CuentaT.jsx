@@ -41,7 +41,7 @@ const NOMBRE_CAJA = { ...LECTURA, fontFamily: SORA, fontWeight: 600, lineHeight:
 function Columna({ lado, movimientos }) {
   return (
     <div data-columna={lado} style={{ padding: "6px 8px 4px", textAlign: "right", borderLeft: lado === "haber" ? LINEA_T : "none" }}>
-      <p style={{ margin: "0 0 4px", textAlign: "center", fontFamily: SORA, fontSize: "9px", fontWeight: 700, lineHeight: 1.3, letterSpacing: "0.1em", color: TONO_ROTULO[lado] }}>
+      <p style={{ margin: "0 0 4px", textAlign: "center", fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: 1.3, letterSpacing: "0.1em", color: TONO_ROTULO[lado] }}>
         {CUENTA_T_T6_A3[lado]}
       </p>
       {movimientos.map((m) => (

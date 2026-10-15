@@ -77,7 +77,7 @@ const REPASO = {
 
 const EL_PAGO = {
   id: "el-pago",
-  pista: "Santa Martha es quien recibe el descuento. Recuerda de qué lado lo anota quien lo recibe.",
+  pista: "Para quien vende, la cuenta fue al debe. Santa Martha está del otro lado del negocio.",
   tipo: "eleccion",
   pregunta: "El 4 de junio, Santa Martha paga y recibe el descuento. ¿A qué lado va Descuento comercial condicionado en su libro?",
   opciones: [

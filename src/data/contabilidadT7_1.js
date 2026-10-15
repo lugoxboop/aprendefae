@@ -153,7 +153,7 @@ const PORTADA = {
  */
 const PREGUNTA_COMPRA = {
   id: "pregunta-compra",
-  /* Pista nueva de Mello, posterior a su auditoría (llegó por el coordinador): gana sobre la del recorte. */
+  /* Pista de Mello (mello-pistas-distractores-v1.md): gana sobre la del recorte. */
   pista: "En el periódico, ¿qué cuenta junta en el periodo la mercancía que se trae para vender?",
   tipo: "pregunta",
   /* El caso, un párrafo por texto del recorte. La primera frase, corregida por Mello (A1 · 2): el periódico no deja de mirar, deja de anotar. */
@@ -201,7 +201,7 @@ const PREGUNTA_COMPRA = {
 /* Pantalla 2 · pregunta 2. */
 const PREGUNTA_CONTEO = {
   id: "pregunta-conteo",
-  /* Pista nueva de Mello, posterior a su auditoría (llegó por el coordinador): gana sobre la del recorte. */
+  /* Pista de Mello (mello-pistas-distractores-v1.md): gana sobre la del recorte. */
   pista: "El conteo dice cuánto vale lo que quedó en la bodega. ¿Qué cuenta debería mostrar ese valor?",
   tipo: "pregunta",
   /* Mello (A1 · 4): vuelve «conteo físico», que usan A3, A4, H1 y el rótulo de la figura. */

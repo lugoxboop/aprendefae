@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -45,8 +46,8 @@ const leer = (f) => readFileSync(new URL(`orquestador/conocimiento/paquetes/${f}
 const V1 = leer("t7-1-a7-v1.md");
 const V2 = leer("t7-1-a7-v2-cambios.md");
 /* Lote 2 de la revisión de calidad: las pistas del primer error (Near). */
-const LOTE2_PISTAS = leer("lote2-pistas-v1.md");
-const LOTE2_ANEXO = leer("lote2-anexo-v1.md");
+const LOTE2_PISTAS = conCorreccionesDeMello(leer("lote2-pistas-v1.md"));
+const LOTE2_ANEXO = conCorreccionesDeMello(leer("lote2-anexo-v1.md"));
 const CONTENIDO = V1.slice(V1.indexOf("## Contenido"), V1.indexOf("## Términos"));
 const P = A.PIEZA_CONTROL_INTERNO;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
