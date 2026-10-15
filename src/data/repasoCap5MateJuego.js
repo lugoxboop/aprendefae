@@ -51,13 +51,15 @@ const cuentasDelAsiento = (a) => new Set(a.correctos.flat().map((c) => c.cuenta)
 function contra(a, correcto, renglones) {
   const usados = new Set();
   const estados = Object.fromEntries(renglones.map((r) => [r.id, "mal"]));
+  /* E3: la palabra de cada pieza del renglón (la cuenta y el valor). */
+  const piezas = Object.fromEntries(renglones.map((r) => [r.id, { cuenta: "mal", valor: null }]));
   const problemas = [];
   const pendientes = [];
 
   /* 1. Los renglones exactos. */
   for (const c of correcto) {
     const r = renglones.find((x) => !usados.has(x.id) && x.lado === c.lado && x.cuenta === c.cuenta && x.valor === c.valor);
-    if (r) { usados.add(r.id); estados[r.id] = "ok"; } else pendientes.push(c);
+    if (r) { usados.add(r.id); estados[r.id] = "ok"; piezas[r.id] = { cuenta: "ok", valor: "ok" }; } else pendientes.push(c);
   }
   /* 2. Lo que falta del asiento correcto: con otro valor, cruzado o ausente. */
   for (const c of pendientes) {
@@ -65,10 +67,12 @@ function contra(a, correcto, renglones) {
     const otroLado = renglones.find((x) => !usados.has(x.id) && x.cuenta === c.cuenta && x.lado !== c.lado);
     if (mismoLado) {
       usados.add(mismoLado.id);
+      piezas[mismoLado.id] = { cuenta: "ok", valor: "mal" };
       const previsto = a.valorMal.find((v) => v.cuenta === c.cuenta && v.valor === mismoLado.valor);
       problemas.push({ clase: "valor", cuenta: c.cuenta, lado: c.lado, texto: previsto ? previsto.texto : a.generica });
     } else if (otroLado) {
       usados.add(otroLado.id);
+      piezas[otroLado.id] = { cuenta: "mal", valor: otroLado.valor === c.valor ? "ok" : "mal" };
       problemas.push({ clase: "cruzado", cuenta: c.cuenta, lado: otroLado.lado, texto: a.cruzado[c.cuenta] ?? a.generica });
     } else {
       problemas.push({ clase: "falta", cuenta: c.cuenta, lado: c.lado, texto: a.falta[c.cuenta] ?? a.generica });
@@ -86,7 +90,7 @@ function contra(a, correcto, renglones) {
     }
   }
   const ok = problemas.length === 0 && renglones.length === correcto.length;
-  return { ok, estados, problemas };
+  return { ok, estados, piezas, problemas };
 }
 
 /* Los textos de la devolución, con la regla de la decisión 4. */
@@ -105,7 +109,7 @@ export function evaluarMate(a, renglones) {
   /* La variante que acierta; si ninguna, la de menos problemas (a igualdad, la primera). */
   const elegida = intentos.find((x) => x.ok) ?? [...intentos].sort((x, y) => x.problemas.length - y.problemas.length || x.variante - y.variante)[0];
   const textos = elegida.ok ? [a.acierto[elegida.variante]] : textosDe(elegida.problemas);
-  return { ok: elegida.ok, variante: elegida.variante, estados: elegida.estados, problemas: elegida.problemas, textos, correcto: a.correctos[elegida.variante] };
+  return { ok: elegida.ok, variante: elegida.variante, estados: elegida.estados, piezas: elegida.piezas, problemas: elegida.problemas, textos, correcto: a.correctos[elegida.variante] };
 }
 
 export const puntuarR5_3 = (aciertos, total = TOTAL_R5_3) => (total ? (aciertos / total) * 100 : 0);

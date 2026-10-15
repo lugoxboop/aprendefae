@@ -543,8 +543,10 @@ test("★★★ se juega entera: hechos, ERA ESTE, la devolución, y el final co
     assert.ok(!caja.querySelector("[data-hecho]").textContent.includes("declarado"), `${a.id}: marca de dato declarado en el hecho`);
     if (a.id === "a5") {
       assert.ok(caja.querySelector("[data-otra-operacion]").textContent.includes("DE LA OPERACIÓN DEL 10 DE MARZO"));
-      assert.equal(caja.querySelectorAll("[data-renglon-hecho]").length, 3);
+      assert.equal(caja.querySelectorAll("[data-renglon-hecho]").length, 2);
     }
+    /* B5: el IVA va solo en «Datos de marzo», no en el hecho (Kamogawa). */
+    assert.ok(![...caja.querySelectorAll("[data-renglon-hecho]")].some((x) => /16 %/.test(x.textContent)), `${a.id}: «IVA · 16 %» en el hecho`);
     if (a.fleteEnElSiguiente) assert.equal(caja.querySelector('[data-renglon-hecho="flete"]').textContent, "Fleteen el asiento siguiente");
     let renglones = a.correctos[0];
     if (a.id === "a6") renglones = renglones.map((c) => (c.cuenta === T.PROVEEDORES ? { ...c, valor: 14848000 } : c));
@@ -595,4 +597,210 @@ test("★★★ se juega entera: hechos, ERA ESTE, la devolución, y el final co
   assert.equal(pct, 75);
   assert.deepEqual(detalle.map((d) => [d.item, d.ok]), A.map((a) => [a.id, !["a4", "a6"].includes(a.id)]));
   assert.ok(detalle[5].respuesta.includes("H Cuentas por pagar – proveedores 14848000"));
+});
+
+/* ═══════════ E3 · CADA RENGLÓN CALIFICADO LLEVA SU PALABRA ═══════════ */
+
+const { VEREDICTO } = await import("../../data/repasoCap5Comun.js");
+
+test("★★★ E3 · cada pieza del renglón dice con palabras si quedó bien: la cuenta y el valor (lógica)", () => {
+  const a1 = asiento("a1");
+  const M = N.CIFRAS_MATE.a1;
+  const compras = R("debe", T.COMPRAS, M.compras);
+  const iva = R("debe", T.IVA, 1);
+  const retencion = R("debe", T.RETENCION, M.retencion);
+  const caja = R("haber", T.CAJA, M.pago);
+  const sobra = R("haber", T.INVENTARIO, 5);
+  const r = J.evaluarMate(a1, [compras, iva, retencion, caja, sobra]);
+  assert.deepEqual(
+    [compras, iva, retencion, caja, sobra].map((x) => r.piezas[x.id]),
+    [{ cuenta: "ok", valor: "ok" }, { cuenta: "ok", valor: "mal" }, { cuenta: "mal", valor: "ok" }, { cuenta: "ok", valor: "ok" }, { cuenta: "mal", valor: null }],
+  );
+  /* El renglón cruzado con otro valor: la cuenta no va aquí y el valor tampoco es. */
+  const otro = R("debe", T.RETENCION, 9);
+  assert.deepEqual(J.evaluarMate(a1, [compras, R("debe", T.IVA, M.iva), otro, caja]).piezas[otro.id], { cuenta: "mal", valor: "mal" });
+  /* Todo bien: todas las piezas «ok». */
+  const todo = bien(a1);
+  const ok = J.evaluarMate(a1, todo);
+  assert.ok(todo.every((x) => ok.piezas[x.id].cuenta === "ok" && ok.piezas[x.id].valor === "ok"));
+});
+
+test("★★★ E3 · en la pantalla, cada renglón calificado lleva «Correcta» / «No va aquí» y «Correcto» / «No es este valor»", async () => {
+  const { caja } = await montar(h(Mate, { pasoInicial: 0 }));
+  const M = N.CIFRAS_MATE.a1;
+  await anadir(caja, "debe", T.COMPRAS, M.compras);
+  await anadir(caja, "debe", T.IVA, 1);
+  await anadir(caja, "debe", T.RETENCION, M.retencion);
+  await anadir(caja, "haber", T.CAJA, M.pago);
+  await anadir(caja, "haber", T.INVENTARIO, 5);
+  await tocar(caja.querySelector("[data-revisar]"));
+  const tuAsiento = caja.querySelector('[data-armador="estudiante"]') ?? caja.querySelector("[data-armador]:not([data-armador='era-este'])");
+  const palabras = [...tuAsiento.querySelectorAll("[data-renglon]")].map((x) => [x.querySelector("span:not([style*='position'])")?.textContent ?? "", [...x.querySelectorAll("[data-veredicto]")].map((v) => v.textContent)]);
+  assert.deepEqual(palabras.map((p) => p[1]), [
+    [VEREDICTO.cuenta.ok, VEREDICTO.valor.ok],
+    [VEREDICTO.cuenta.ok, VEREDICTO.valor.mal],
+    [VEREDICTO.cuenta.mal, VEREDICTO.valor.ok],
+    [VEREDICTO.cuenta.ok, VEREDICTO.valor.ok],
+    [VEREDICTO.cuenta.mal],
+  ]);
+  assert.deepEqual([VEREDICTO.cuenta.ok, VEREDICTO.cuenta.mal, VEREDICTO.valor.ok, VEREDICTO.valor.mal], ["Correcta", "No va aquí", "Correcto", "No es este valor"]);
+  /*
+   * Auditoría de Takamura (e5-mes-en-dos-cuentas, punto 4): dos marcas, una por
+   * pieza, cada una con su forma; la de la cuenta en la línea del nombre, a la
+   * derecha; la del valor en la línea del valor, a la izquierda. Borde coral si
+   * alguna pieza está mal; #CBDCF2 si las dos están bien.
+   */
+  const renglones = [...tuAsiento.querySelectorAll("[data-renglon]")];
+  const marcas = renglones.map((x) => [...x.querySelectorAll("[data-marca-pieza]")].map((m) => `${m.dataset.marcaPieza}:${m.querySelector("[data-punto]").dataset.forma}`));
+  assert.deepEqual(marcas, [
+    ["cuenta:relleno", "valor:relleno"],
+    ["cuenta:relleno", "valor:anillo"],
+    ["cuenta:anillo", "valor:relleno"],
+    ["cuenta:relleno", "valor:relleno"],
+    ["cuenta:anillo"],
+  ]);
+  for (const x of renglones) {
+    const [linNombre, linValor] = [...x.children].filter((c) => !c.getAttribute("style")?.includes("position: absolute"));
+    const cuenta = x.querySelector('[data-marca-pieza="cuenta"]');
+    const valor = x.querySelector('[data-marca-pieza="valor"]');
+    assert.equal(Boolean(cuenta) && linNombre.contains(cuenta) && linNombre.lastElementChild.contains(cuenta), true, "la marca de la cuenta va a la derecha del nombre");
+    if (valor) assert.equal(linValor.firstElementChild === valor, true, "la marca del valor va a la izquierda del valor");
+  }
+  assert.deepEqual(renglones.map((x) => x.style.border), [
+    "2px solid rgb(203, 220, 242)", "2px solid rgb(231, 111, 81)", "2px solid rgb(231, 111, 81)", "2px solid rgb(203, 220, 242)", "2px solid rgb(231, 111, 81)",
+  ]);
+  /* ERA ESTE no se califica: sin palabras, y su marca en blanco, no en teal. */
+  const era = caja.querySelector('[data-armador="era-este"]');
+  assert.equal(era.querySelectorAll("[data-veredicto]").length, 0);
+  assert.equal(era.querySelector("[data-era-este]").textContent, "ERA ESTE");
+  assert.equal(era.querySelector("[data-era-este]").style.color, "rgb(248, 249, 250)");
+});
+
+/* ═══════════ E1 · EL OBJETIVO SE PINTA ═══════════ */
+
+test("★★★ E1 · el «Objetivo» de Miyata se pinta encima de la entrada, como en r5-2, y solo ahí", async () => {
+  const { caja } = await montar(h(Mate, {}));
+  const objetivo = caja.querySelector("[data-objetivo]");
+  assert.equal(Boolean(objetivo), true, "la entrada no pinta el objetivo");
+  assert.equal(objetivo.textContent, T.R5_3.objetivo);
+  assert.ok(PAQUETE.includes(`Objetivo: ${T.R5_3.objetivo}`));
+  /* Encima de todo lo demás de la entrada. */
+  assert.equal(caja.querySelector('[data-paso="entrada"]').firstElementChild === objetivo, true);
+  /* El mismo estilo que el de r5-2. */
+  const toro = leer("src/components/repasoCap5/ToroNegro.jsx");
+  const mate = leer("src/components/repasoCap5/Mate.jsx");
+  const estilo = (f) => f.match(/<p data-objetivo style=\{\{([^}]*)\}\}/)[1];
+  assert.equal(estilo(mate), estilo(toro));
+  await tocar(caja.querySelector("[data-empezar]"));
+  assert.equal(Boolean(caja.querySelector("[data-objetivo]")), false, "el objetivo sigue en los asientos");
+});
+
+/* ═══════════ E1 · TODO LO DEL PAQUETE LLEGA A LA PANTALLA ═══════════ */
+
+/*
+ * Los caminos que alcanzan cada texto de un asiento (los del barrido), y de
+ * ellos los pocos que los cubren todos: se juegan en la pantalla, armando el
+ * asiento con la hoja de verdad, y se anota todo lo que sale en el DOM.
+ */
+function caminosDe(a) {
+  const c = [];
+  a.correctos.forEach((_, v) => c.push(bien(a, v)));
+  for (const x of a.correctos.flat()) {
+    c.push(bien(a).map((y) => (y.cuenta === x.cuenta ? { ...y, lado: otroLado(y.lado) } : y)));
+    c.push(bien(a).filter((y) => y.cuenta !== x.cuenta));
+    c.push(bien(a).map((y) => (y.cuenta === x.cuenta ? { ...y, valor: 7 } : y)));
+  }
+  for (const cuenta of T.HOJA_MATE) c.push([...bien(a), R("haber", cuenta, 5)]);
+  for (const v of a.valorMal) {
+    const variante = a.correctos.findIndex((cc) => cc.some((y) => y.cuenta === v.cuenta));
+    c.push(bien(a, variante).map((y) => (y.cuenta === v.cuenta ? { ...y, valor: v.valor } : y)));
+  }
+  /* El asiento al revés, y cada par de cuentas cruzado (cruzar una sola puede dejar un lado vacío). */
+  const cuentas = a.correctos[0].map((y) => y.cuenta);
+  c.push(bien(a).map((y) => ({ ...y, lado: otroLado(y.lado) })));
+  for (const [i, x] of cuentas.entries()) for (const z of cuentas.slice(i + 1)) c.push(bien(a).map((y) => (y.cuenta === x || y.cuenta === z ? { ...y, lado: otroLado(y.lado) } : y)));
+  /* Tres errores distintos a la vez: «Y hay más renglones por revisar.». */
+  const v0 = a.valorMal[0];
+  c.push([...bien(a).filter((y) => y.cuenta !== T.IVA).map((y) => (y.cuenta === v0.cuenta ? { ...y, valor: v0.valor } : y)), R("debe", T.HOJA_MATE.find((x) => !cuentas.includes(x)), 5)]);
+  /* Lo que la pantalla deja revisar: hasta 3 renglones por lado y ninguno vacío. */
+  return c.filter((x) => J.puedeRevisarMate(x) && ["debe", "haber"].every((l) => x.filter((y) => y.lado === l).length <= J.MAXIMO_POR_LADO));
+}
+function cubrir(a) {
+  const caminos = caminosDe(a).map((c) => ({ c, textos: new Set(J.evaluarMate(a, c).textos) }));
+  const faltan = new Set(caminos.flatMap((x) => [...x.textos]));
+  const elegidos = [];
+  while (faltan.size) {
+    const mejor = caminos.reduce((m, x) => ([...x.textos].filter((t) => faltan.has(t)).length > [...m.textos].filter((t) => faltan.has(t)).length ? x : m));
+    elegidos.push(mejor.c);
+    for (const t of mejor.textos) faltan.delete(t);
+  }
+  return elegidos;
+}
+
+const vistas = [];
+async function jugarCamino(k, renglones) {
+  const { caja, desmontar } = await montar(h(Mate, { pasoInicial: k }));
+  for (const r of renglones) await anadir(caja, r.lado, r.cuenta, r.valor);
+  vistas.push(document.body.textContent);
+  await tocar(caja.querySelector("[data-revisar]"));
+  vistas.push(document.body.textContent);
+  const pantalla = document.body.cloneNode(true);
+  desmontar();
+  return pantalla;
+}
+
+test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 125 textos, 98 caminos)", async () => {
+  vistas.length = 0;
+  /* La entrada y la hoja «Datos de marzo». */
+  const entrada = await montar(h(Mate, {}));
+  vistas.push(document.body.textContent);
+  entrada.desmontar();
+  const asiento1 = await montar(h(Mate, { pasoInicial: 0 }));
+  await tocar(asiento1.caja.querySelector("[data-boton-datos]"));
+  vistas.push(document.body.textContent);
+  asiento1.desmontar();
+  /* Cada asiento, por los caminos que cubren sus textos. */
+  let caminos = 0;
+  for (const [k, a] of A.entries()) {
+    for (const c of cubrir(a)) { await jugarCamino(k, c); caminos++; }
+  }
+  const todo = vistas.join("\n");
+  const textos = textosDelEstudiante();
+  assert.equal(textos.length, 125);
+  const faltan = textos.filter((t) => !todo.includes(t));
+  assert.deepEqual(faltan, [], `no salen en pantalla: ${faltan.join(" | ")}`);
+  assert.equal(caminos, 98, "no jugó los caminos que dice jugar");
+});
+
+/* ═══════════ B5 · NINGUNA FRASE DOS VECES EN LA MISMA PANTALLA ═══════════ */
+
+test("★★ B5 de enganche.md: ninguna frase sale dos veces en la misma pantalla (los nombres de cuenta no cuentan)", async () => {
+  const cuentas = new Set(T.HOJA_MATE);
+  const palabrasSueltas = new Set([VEREDICTO.cuenta.ok, VEREDICTO.cuenta.mal, VEREDICTO.valor.ok, VEREDICTO.valor.mal]);
+  const repetidas = (raiz) => {
+    const hojas = [...raiz.querySelectorAll("p, span, button, h3, li, div")].filter((el) => !el.children.length).map((el) => el.textContent.trim())
+      .filter((t) => t.split(/\s+/).length >= 3 && !cuentas.has(t) && !palabrasSueltas.has(t));
+    return hojas.filter((t, k) => hojas.indexOf(t) !== k);
+  };
+  let estados = 0;
+  /* La entrada. */
+  const entrada = await montar(h(Mate, {}));
+  assert.deepEqual(repetidas(document.body), [], "entrada");
+  entrada.desmontar();
+  estados++;
+  /* Cada asiento antes de responder, con «Datos de marzo» abierta, y después de responder bien y mal. */
+  for (const [k, a] of A.entries()) {
+    const abierto = await montar(h(Mate, { pasoInicial: k }));
+    assert.deepEqual(repetidas(document.body), [], `${a.id} antes`);
+    await tocar(abierto.caja.querySelector("[data-boton-datos]"));
+    assert.deepEqual(repetidas(document.body), [], `${a.id} con «Datos de marzo»`);
+    abierto.desmontar();
+    for (const c of [bien(a), bien(a).map((y) => ({ ...y, valor: 7 }))]) {
+      const pantalla = await jugarCamino(k, c);
+      assert.deepEqual(repetidas(pantalla), [], `${a.id} después`);
+      estados++;
+    }
+    estados += 2;
+  }
+  assert.equal(estados, 33);
 });
