@@ -85,7 +85,7 @@
 - **Texto alternativo (`alt`):** «La empresa anotó el cheque al girarlo, pero el banco no sabe de él hasta que lo cobren. La tarjeta va a «Todavía no lo tiene el banco».» (88,3)
 - **Lo que hace la mano (para el guion de Baki):** La mano arrastra la tarjeta a «Todavía no lo tiene el banco».
 
-## H7 · Concilia Los Cerezos (`t4-concilia-los-cerezos`)
+## H7 · Concilia la cuenta (`t4-concilia-la-cuenta`)
 
 - **Mecánica que demuestra:** Cada partida a un lado y con un signo; después, los dos saldos.
 - **Pasos:**
