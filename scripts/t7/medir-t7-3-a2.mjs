@@ -47,6 +47,8 @@ function medir(sel) {
   const problemas = [];
   const conTexto = [...panel.querySelectorAll("*")]
     .filter((el) => !el.matches("style, script"))
+    /* Lo que solo oye el lector de pantalla («menos», «igual a») mide 1 px a propósito. */
+    .filter((el) => !el.closest(".sr"))
     .filter((el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()));
   for (const el of conTexto) {
     const r = el.getBoundingClientRect();
@@ -54,6 +56,13 @@ function medir(sel) {
     const nombre = `${el.tagName.toLowerCase()} «${el.textContent.trim().slice(0, 40)}»`;
     if (getComputedStyle(el).display !== "inline" && el.scrollWidth > el.clientWidth + 0.5) problemas.push(`${nombre}: mide ${el.scrollWidth} px en una caja de ${el.clientWidth}`);
     if (r.right > caja.right + 0.5 || r.left < caja.left - 0.5) problemas.push(`${nombre}: se sale del panel`);
+  }
+  /* Patrón T7-3: en cada renglón, el rótulo no toca su cifra (salvo la cifra que baja a su propia línea). */
+  for (const f of document.querySelectorAll("[data-renglon]")) {
+    const rot = f.querySelector(".rg-rot").getBoundingClientRect();
+    const v = f.querySelector(".rg-v").getBoundingClientRect();
+    if (v.top < rot.bottom - 1 && rot.right > v.left - 4) problemas.push(`el renglón «${f.querySelector(".rg-rot").textContent}» toca su cifra`);
+    if (v.right > f.getBoundingClientRect().right + 0.5) problemas.push(`la cifra «${f.querySelector(".rg-v").textContent}» se sale de su renglón`);
   }
   if (document.documentElement.scrollWidth > window.innerWidth) problemas.push(`la página mide ${document.documentElement.scrollWidth} px en ${window.innerWidth}`);
   for (const b of pieza.querySelectorAll("button")) {

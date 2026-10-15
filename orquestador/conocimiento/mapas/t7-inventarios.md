@@ -108,7 +108,7 @@ Es la única fuente del orden de las piezas de T7-2 «Inventarios II: el sistema
 | 5 | t7-2-a3-el-kardex | El kárdex | Aprender | A2. Pp. 237-238, cifras construidas |
 | 6 | t7-2-llena-el-kardex | Llena el kárdex | Hacer | A3 |
 | 7 | t7-2-a4-san-calixto | San Calixto en permanente | Aprender | A3. Ejemplo F-1, pp. 238-244 |
-| 8 | t7-2-periodico-o-permanente | ¿Periódico o permanente? | Hacer | Todo el tema hasta A4 (F-1) |
+| 8 | t7-2-periodico-o-permanente | ¿Periódico o permanente? | Hacer | A1 y A2 (corrección de Near con el PASA de Mello; va después de A4 por el orden del mapa) |
 | 9 | t7-2-a5-fletes | Fletes en permanente | Aprender | A2. Ejemplos G-1 y G-2, pp. 245-246 |
 | 10 | t7-2-a6-devoluciones | Devoluciones en permanente | Aprender | A2. Ejemplos G-3 y G-4, pp. 246-248 |
 | 11 | t7-2-flete-y-devolucion | Flete y devolución | Hacer | A5 y A6 |
