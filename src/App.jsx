@@ -37,6 +37,7 @@ const PoliticaMonetariaView = lazy(() => import("./components/PoliticaMonetariaV
 const IntroContabilidadView = lazy(() => import("./components/IntroContabilidadView.jsx"));
 const CuentasDebeHaberView = lazy(() => import("./components/CuentasDebeHaberView.jsx"));
 const ContabilidadTema3View = lazy(() => import("./components/ContabilidadTema3View.jsx"));
+const ContabilidadT4View = lazy(() => import("./components/ContabilidadT4View.jsx"));
 const ContabilidadTema5View = lazy(() => import("./components/ContabilidadTema5View.jsx"));
 const ContabilidadTema6View = lazy(() => import("./components/ContabilidadTema6View.jsx"));
 const ContabilidadT7_1View = lazy(() => import("./components/ContabilidadT7_1View.jsx"));
@@ -94,6 +95,7 @@ const VISTAS_CON_TITULO = new Set([
   "introduccion-contabilidad",
   "cuentas-debe-haber",
   "ingresos-gastos-y-caja",
+  "efectivo-caja-menor-bancos",
   "activos-financieros",
   "cuentas-por-cobrar",
   "inventarios-periodico",
@@ -246,6 +248,15 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <ContabilidadTema3View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
+      </Suspense>
+    );
+  }
+
+  /* T4 de Contabilidad (Célula D): sus piezas de Aprender, A0 y A1. */
+  if (view === "efectivo-caja-menor-bancos") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <ContabilidadT4View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }
