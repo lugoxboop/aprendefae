@@ -14,7 +14,9 @@
  * Monta la vista de T4 tal cual (banco scripts/t4/harness-t4), recorre cada
  * pieza de Aprender pantalla por pantalla (en una elección, colocando) y, en
  * cada pantalla con figura, mide el tope de la figura desde el tope de su
- * tarjeta (la <section> del Panel). Una pantalla sin figura no cuenta para
+ * tarjeta (la <section> del Panel), y cuenta TODAS las palabras visibles antes
+ * de ella, con el rótulo y el título de la tarjeta (alineado con el canon y
+ * con la sonda de enganche). Una pantalla sin figura no cuenta para
  * B1: B3 (que haya figura y acción) es otra regla.
  *
  * Y los Hacer: el tope de la primera opción (la interacción) desde el tope de
@@ -63,7 +65,13 @@ function medir({ raiz, objetivo }) {
     if (n.nodeType === 3) {
       const el = n.parentElement;
       const r = el?.getBoundingClientRect();
-      const visible = el && r.width > 1 && r.height > 1 && getComputedStyle(el).visibility !== "hidden" && !el.closest('button, header, [data-pie], [aria-hidden="true"], .t4f-sr');
+      /*
+       * Todo lo que se VE antes de la figura cuenta, como en la barra del canon y
+       * en la sonda: también el rótulo y el título de la tarjeta, la consigna, el
+       * avance y los botones. Solo queda fuera lo que no se ve (oculto o solo
+       * para el lector de pantalla).
+       */
+      const visible = el && r.width > 1 && r.height > 1 && getComputedStyle(el).visibility !== "hidden" && !el.closest('.t4f-sr, [style*="clip"], figcaption');
       if (visible) antes += palabras(n.textContent);
       return false;
     }
@@ -125,7 +133,8 @@ function medir({ raiz, objetivo }) {
     await pg.reload();
     await pg.waitForSelector("[data-partida]", { state: "attached", timeout: 120000 });
     for (const b of await pg.$$("button")) if ((await b.textContent())?.trim() === "Siguiente") { await b.click(); break; }
-    await pg.waitForSelector("[data-partida]:not([hidden]) [data-opcion], [data-partida]:not([hidden]) [data-constructor]", { timeout: 30000 });
+    /* La interacción: una opción, un constructor, o la figura misma cuando es el tablero (el cajón de H1). */
+    await pg.waitForSelector("[data-partida]:not([hidden]) [data-opcion], [data-partida]:not([hidden]) [data-constructor], [data-partida]:not([hidden]) [data-figura]", { timeout: 30000 });
     await pg.evaluate(() => document.fonts.ready);
     const m = await pg.evaluate(medir, { raiz: "[data-partida]", objetivo: "[data-opcion], [data-constructor], [data-figura]" });
     filas.push(`${id} · interacción a ${m.tope} px · ${m.antes} palabras antes`);

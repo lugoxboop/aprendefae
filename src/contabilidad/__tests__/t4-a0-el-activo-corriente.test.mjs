@@ -1,340 +1,271 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { JSDOM, VirtualConsole } from "jsdom";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T4 · A0 «El activo corriente» (Célula D) · Aprender.
+ * T4 · A0 «El activo corriente» (Célula D) · REDISEÑO DE ENGANCHE.
  *
- *   · cada pantalla dice EXACTAMENTE los textos del paquete de Katsumi, en su
- *     orden, letra por letra; si llega un archivo de cambios de A0, la prueba
- *     se pone roja hasta aplicarlo
- *   · lo que se ve: cada pantalla montada en jsdom, en cada estado —cada
- *     opción equivocada y la correcta de su pregunta— pinta sus textos, su
- *     retroalimentación y su pie
- *   · la figura «La raya del año»: en qué pantalla va, qué cae a cada lado de
- *     la raya, que no dibuja la respuesta mientras pregunta, sin colores de
- *     Debe/Haber ni coral, y nada se mueve con movimiento reducido
- *   · INFLESZ con la herramienta oficial, y el número del paquete
- *   · Aprender: sin catálogo, sin migración y sin llamar al motor de FP
+ *   · cada texto es el del paquete vigente (d4-t4-a0-v3-rediseno.md, los
+ *     textos de Katsumi aprobados por Yujiro), letra por letra, en su lugar
+ *   · la figura «El año en marcha» de Hanayama: todo es una función del mes.
+ *     Al pasar el año la mercancía se vuelve plata y el edificio cruza la
+ *     raya; si el año vuelve, se apagan otra vez
+ *   · el juego (P3): «Pasar el año» espera a las tres marcas; la raya decide;
+ *     ✓ en la bien elegida, ✗ y coral en la mal elegida, borde blanco en la
+ *     que era. Antes de pasar el año, nada de la devolución está en el DOM
+ *   · sin teal ni ámbar en ninguna parte de A0; coral solo en el error
+ *   · Aprender: sin FP
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
-const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
-for (const [k, v] of Object.entries({
-  window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
-  HTMLElement: w.HTMLElement, Element: w.Element, Node: w.Node, SVGElement: w.SVGElement,
-  Event: w.Event, MouseEvent: w.MouseEvent, KeyboardEvent: w.KeyboardEvent,
-  getComputedStyle: w.getComputedStyle.bind(w), matchMedia: w.matchMedia,
-})) {
-  Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
-}
-globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-
-const React = await import("react");
-const { createRoot } = await import("react-dom/client");
-const act = React.act;
-const h = React.createElement;
-
+const { w, h, montar, tocar, tecla, esperar, movimientoReducido, conColor, TEAL_AMBAR, CORAL, visible } = await import("./t4-dom.mjs");
 const Z = await import("../../data/contabilidadT4A0.js");
-const { BOTON, INTERFAZ } = await import("../../data/contabilidadT4.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
-const { PantallasT4, CSS_T4F, PIEZAS_T4, TEMA_T4 } = await import("../../components/ContabilidadT4View.jsx");
+const { PantallasT4, PIEZAS_T4, TEMA_T4 } = await import("../../components/ContabilidadT4View.jsx");
 const { inflesz } = await import("../../herramientas/inflesz.js");
-const { leer, leerSecciones, cambiosDe, textosDeDatos, PAQUETES, RAIZ, CITA } = await import("./t4-paquete.mjs");
+const { leer, PAQUETES, RAIZ } = await import("./t4-paquete.mjs");
+const { pantallasDe, seccionDe, renglones, textoDe } = await import("./t4-rediseno-canon.mjs");
 
-const V1 = leer(`${PAQUETES}d4-t4-a0-v1.md`);
+const CANON = "d4-t4-a0-v3-rediseno.md";
+const PAQ = leer(`${PAQUETES}${CANON}`);
+const CANON_P = pantallasDe(PAQ);
 const P = Z.PIEZA_EL_ACTIVO_CORRIENTE;
-const pantalla = (id) => P.pantallas.find((x) => x.id === id);
-const S = leerSecciones(V1);
+const pantalla = (id) => P.pantallas.find((p) => p.id === id);
 
-/*
- * Desde el commit 4d22017 de Katsumi, el paquete base ES la versión vigente
- * (ya trae la v2). Se compara contra él. El archivo de cambios se queda como
- * registro: todo texto que sustituye tiene que NO estar ni en la base ni en
- * los datos. Uno nuevo pone la primera prueba en rojo hasta mirarlo.
- */
-const APLICADOS = ["d4-t4-a0-v2-cambios.md"];
-const V2 = leer(`${PAQUETES}d4-t4-a0-v2-cambios.md`);
-const ES_VIGENTE = /\*\*Este archivo es la versión vigente\*\*/.test(V1);
+/* Lo que la pantalla de los datos dice, por lugar del paquete. */
+function porLugar(p) {
+  const r = [];
+  for (const t of p.antes ?? []) r.push(["Antes de la figura", t]);
+  for (const t of p.despues ?? []) r.push(["Después de la figura", t]);
+  if ("acierto" in p) r.push(["Acierto (tras «Correcto.»)", p.acierto]);
+  if (p.error) r.push(["Error (✗ y el texto)", p.error]);
+  (p.resumen ?? []).forEach((t, i) => r.push([`Resumen ${i + 1}`, t]));
+  if (p.siguiente) r.push(["Siguiente", p.siguiente]);
+  r.push(["Pie", p.pie]);
+  return r;
+}
 
-/* Lo que la v2 sustituye (pares «v1/v2» y su tabla), y lo que añade a P1. */
-const V2_PARES = [...V2.matchAll(new RegExp(`^- v1: ${CITA}[^\\n]*\\n- \\*\\*v2:\\*\\* ${CITA}`, "gm"))].map((m) => ({ viejo: m[1], nuevo: m[2] }));
-const V2_TABLA = [...V2.matchAll(new RegExp(`^\\| (?:Opción correcta|Acierto) \\| ${CITA} \\([^)]*\\) \\| ${CITA} \\([^)]*\\) \\|$`, "gm"))].map((m) => ({ viejo: m[1], nuevo: m[2] }));
-const OBLIGATORIA_3 = V2.slice(V2.indexOf("## Obligatoria 3"), V2.indexOf("\n## ", V2.indexOf("## Obligatoria 3") + 5));
-const V2_NUEVAS_P1 = [...OBLIGATORIA_3.matchAll(new RegExp(`^- ${CITA} \\(\\d+,\\d\\)$`, "gm"))].map((m) => m[1]);
-const V2_PIE_P1 = OBLIGATORIA_3.match(new RegExp(`Pie de P1: pasa de ${CITA} a ${CITA}`));
-
-/* El paquete vigente, en su orden: P0…P8 del archivo base. */
-const IDS = ["portada", "prueba-del-ano", "analogia", "ejemplos", "cual-es-corriente", "activos-fijos", "por-que-importan", "efectivo-primero", "resumen"];
-const PAQUETE = IDS.map((id, k) => ({ id, ...S[`P${k}`] }));
+/* Monta la pieza y avanza hasta la pantalla k. */
+function abrir(k = 0) {
+  const m = montar(h(PantallasT4, { pieza: P, rotulo: "T4 · APRENDER" }));
+  for (let i = 0; i < k; i++) tocar(m.caja.querySelector('[data-boton="seguir"]'));
+  return m;
+}
+const filas = (caja) => Object.fromEntries([...caja.querySelectorAll("[data-fila]")].map((f) => [f.dataset.fila, f.dataset.estado]));
 
 /* ═══════════ 1 · EL TEXTO, CONTRA EL PAQUETE ═══════════ */
 
-test("★★★ el paquete base es la versión vigente, la v2 está dentro y ningún texto que sustituye sigue", () => {
-  assert.ok(ES_VIGENTE, "el paquete base de A0 no dice que es la versión vigente");
-  assert.deepEqual(cambiosDe("a0"), APLICADOS, "hay un archivo de cambios de A0 que esta pieza no ha mirado todavía");
-  assert.deepEqual([V2_PARES.length, V2_TABLA.length, V2_NUEVAS_P1.length, Boolean(V2_PIE_P1)], [2, 2, 2, true], "la lectura de la v2 no encontró sus cambios");
-  const datos = P.pantallas.flatMap(textosDeDatos);
-  const base = PAQUETE.flatMap((x) => x.textos);
-  for (const r of [...V2_PARES, ...V2_TABLA]) {
-    assert.ok(datos.includes(r.nuevo), `falta el texto de la v2: «${r.nuevo}»`);
-    assert.ok(base.includes(r.nuevo), `el paquete base no trae el texto de la v2: «${r.nuevo}»`);
-    assert.ok(!datos.includes(r.viejo), `los datos traen un texto que la v2 sustituye: «${r.viejo}»`);
-    assert.ok(!base.includes(r.viejo), `el paquete base trae un texto que la v2 sustituye: «${r.viejo}»`);
-  }
-  /* Las dos líneas nuevas van al final de P1, después de «Esa es la prueba…», y su pie cambia. */
-  assert.deepEqual(pantalla("prueba-del-ano").parrafos.slice(-2), V2_NUEVAS_P1);
-  assert.equal(pantalla("prueba-del-ano").pie, V2_PIE_P1[2]);
+test("★★★ el paquete vigente es el del rediseño (v3) y lo dice; los datos lo nombran", () => {
+  assert.match(PAQ, /\*\*Este archivo es la versión vigente de A0\.\*\*/);
+  assert.match(PAQ, /hanayama-a0-rediseno\.md/);
+  assert.match(PAQ, /katsumi-texto-rediseno\.md/);
+  assert.match(leer("src/data/contabilidadT4A0.js"), new RegExp(CANON.replace(/\./g, "\\.")));
 });
 
-test("★★★ las 9 pantallas, en el orden del paquete; título e id", () => {
-  assert.equal(Object.keys(S).length, 9, "la v1 no trae sus nueve pantallas P0-P8: la lectura del paquete está mal");
-  assert.deepEqual(P.pantallas.map((x) => x.id), IDS);
-  assert.equal(P.titulo, V1.match(/- Título: «([^»]+)»/)[1]);
+test("★★★ las 8 pantallas, en el orden del paquete; título e id; todas con la figura «ano»", () => {
   assert.equal(P.id, "t4-a0-el-activo-corriente");
-  assert.equal(P.numero, 0);
+  assert.equal(P.titulo, "El activo corriente");
+  assert.deepEqual(P.pantallas.map((p) => p.id), CANON_P.map((p) => p.id));
+  assert.equal(P.pantallas.length, 8);
+  for (const p of P.pantallas) assert.equal(p.figura, "ano", p.id);
 });
 
-for (const { id, textos, pies } of PAQUETE) {
-  test(`★★★ ${id}: los textos son los del paquete, letra por letra, ni uno más ni uno menos`, () => {
-    assert.ok(textos.length >= 1, `${id}: no se leyó ningún texto del paquete`);
-    assert.deepEqual([...textosDeDatos(pantalla(id))].sort(), [...textos].sort());
-    /* La analogía no tiene pie: el paquete dice «Pie: ninguno (es construcción)». */
-    assert.equal(pies[0] ?? null, pantalla(id).pie ?? null, `${id}: pie`);
+for (const c of CANON_P) {
+  test(`★★★ ${c.id}: cada texto es el del paquete, letra por letra y en su lugar, ni uno más ni uno menos`, () => {
+    assert.deepEqual(porLugar(pantalla(c.id)), c.textos.map((x) => [x.lugar, x.texto]));
   });
 }
 
-test("★★★ la analogía no lleva pie, porque es construcción; las demás sí", () => {
-  assert.match(S.P2.bloque, /- Pie: ninguno \(es construcción\)\./);
-  assert.deepEqual(P.pantallas.filter((p) => !p.pie).map((p) => p.id), ["analogia"]);
-});
-
-test("★★ INFLESZ con la herramienta oficial: todo texto de 10 palabras o más da 65 o más, y lo que dice el paquete", () => {
-  const textos = P.pantallas.flatMap(textosDeDatos);
-  const medidos = textos.map((t) => ({ t, r: inflesz(t) })).filter((x) => x.r.aplica);
-  assert.ok(medidos.length >= 25, `solo ${medidos.length} textos de 10 palabras o más: algo no se leyó`);
-  assert.deepEqual(medidos.filter((x) => !x.r.cumple).map((x) => `${x.r.valor} · ${x.t}`), []);
-  for (const { t, r } of medidos) {
-    const m = V1.match(new RegExp(`«${t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}»\\s*\\((\\d+,\\d)`));
-    if (m) assert.equal(r.valor, Number(m[1].replace(",", ".")), `INFLESZ de «${t.slice(0, 40)}…»`);
+test("★★ INFLESZ con la herramienta oficial: todo texto de 10 palabras o más da 65 o más, y da lo que dice el paquete", () => {
+  for (const c of CANON_P) {
+    for (const x of c.textos.filter((y) => y.medida)) {
+      const r = inflesz(x.texto);
+      if (r.aplica) {
+        assert.ok(r.valor >= 65, `${c.id} · ${x.lugar}: ${r.valor}`);
+        assert.equal(x.medida, r.valor.toFixed(1).replace(".", ","), `${c.id} · ${x.lugar}`);
+      } else assert.equal(x.medida, "<10", `${c.id} · ${x.lugar}`);
+    }
   }
-  /* Sin cifras: los porcentajes de la p. 179 no entran. */
-  assert.deepEqual(textos.filter((t) => /\$|\d+ ?%/.test(t)), []);
 });
 
-/* ═══════════ 2 · LO QUE SE VE ═══════════ */
+test("★★★ la interfaz común: «Correcto.» en el acierto; el error sin palabra visible; «Incorrecto.» solo para el lector", () => {
+  const com = renglones(seccionDe(PAQ, "Interfaz común del rediseño (A0, A1 y H1)"));
+  assert.equal(textoDe(com, "Palabra del acierto (va antes del texto)"), "Correcto.");
+  assert.equal(textoDe(com, "Solo para el lector de pantalla, delante del texto del error"), "Incorrecto.");
+});
 
-function montar() {
-  const caja = document.createElement("div");
-  document.body.appendChild(caja);
-  const raiz = createRoot(caja);
-  act(() => raiz.render(h(PantallasT4, { pieza: P, rotulo: "EFECTIVO, CAJA MENOR Y BANCOS · APRENDER" })));
-  return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
-}
-const tocar = (el) => act(() => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
-const visibles = (c) => [...c.querySelectorAll("[data-pieza] [data-texto]")].map((x) => x.textContent);
-const boton = (c, nombre) => c.querySelector(`[data-boton="${nombre}"]`);
-const pieDe = (c) => c.querySelector("[data-pie]")?.textContent ?? null;
-const INTERFAZ_MARCADA = new Set([...Object.values(BOTON), ...Object.values(INTERFAZ)]);
+/* ═══════════ 2 · LA PANTALLA Y LA FIGURA ═══════════ */
 
-function irA(c, id) {
-  for (let n = 0; n < 20 && c.querySelector("[data-pieza]").dataset.pantalla !== id; n++) {
-    const el = c.querySelector("[data-eleccion]");
-    if (el) {
-      const p = pantalla(el.dataset.eleccion);
-      tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`));
-      tocar(boton(c, "confirmar"));
-      tocar(boton(c, "seguir"));
-    } else tocar(boton(c, "empezar") ?? boton(c, "seguir"));
+test("★★★ cada pantalla, en el orden de Hanayama: antes → figura → después → resumen → siguiente → «Seguir» → pie", () => {
+  const m = abrir();
+  try {
+    for (const [k, p] of P.pantallas.entries()) {
+      const zona = m.caja.querySelector("[data-pieza]");
+      assert.equal(zona.dataset.pantalla, p.id);
+      const orden = [...zona.querySelectorAll("[data-texto], [data-figura], [data-boton], [data-pie]")]
+        .filter((e) => !e.parentElement.closest("[data-figura]"))
+        .map((e) => (e.matches("[data-figura]") ? "FIGURA" : e.matches("[data-boton]") ? "SEGUIR" : e.matches("[data-pie]") ? "PIE" : e.textContent));
+      const esperado = [...(p.antes ?? []), "FIGURA", ...(p.despues ?? []), ...(p.resumen ?? []), ...(p.siguiente ? [p.siguiente] : []), ...(k < 7 ? ["SEGUIR"] : []), "PIE"];
+      assert.deepEqual(orden, esperado, p.id);
+      assert.equal(zona.querySelector("[data-pie]").textContent, p.pie);
+      if (k < 7) tocar(zona.querySelector('[data-boton="seguir"]'));
+    }
+  } finally { m.desmontar(); }
+});
+
+test("★★★ P0: el año se arrastra con el teclado; en el mes 1 la mercancía es plata, en la raya el edificio cruza; si vuelve, se apaga", () => {
+  const m = abrir(0);
+  try {
+    const pista = m.caja.querySelector('[data-pista][role="slider"]');
+    assert.ok(pista, "la pista no es un slider");
+    assert.equal(pista.getAttribute("aria-valuenow"), "0");
+    assert.deepEqual(filas(m.caja), { mercancia: "espera", edificio: "espera" });
+    tecla(pista, "ArrowRight");
+    assert.equal(pista.getAttribute("aria-valuenow"), "1");
+    assert.deepEqual(filas(m.caja), { mercancia: "plata", edificio: "espera" });
+    assert.equal(m.caja.querySelector('[data-fila="mercancia"] [data-marca-fila]').textContent, "plata");
+    tecla(pista, "End");
+    assert.deepEqual(filas(m.caja), { mercancia: "plata", edificio: "despues" });
+    assert.ok(m.caja.querySelector('[data-fila="edificio"] [data-cruza]'), "el edificio no cruza la raya");
+    tecla(pista, "Home");
+    assert.deepEqual(filas(m.caja), { mercancia: "espera", edificio: "espera" });
+    assert.equal(m.caja.querySelector("[data-cruza]"), null);
+  } finally { m.desmontar(); }
+});
+
+test("★★★ «Pasar el año» lo recorre solo y cambia la figura; con movimiento reducido salta al mes 12 sin animar", async () => {
+  for (const reducido of [false, true]) {
+    movimientoReducido(reducido);
+    const m = abrir(2);
+    try {
+      await esperar(0);
+      assert.deepEqual(filas(m.caja), { inversiones: "espera", cartera: "espera", inventarios: "espera" });
+      tocar(m.caja.querySelector("[data-accion=pasar]"));
+      if (reducido) assert.equal(m.caja.querySelector("[data-figura]").dataset.mes, "12", "con movimiento reducido no saltó");
+      await esperar(reducido ? 0 : 3000);
+      assert.equal(m.caja.querySelector("[data-figura]").dataset.mes, "12");
+      assert.deepEqual(filas(m.caja), { inversiones: "plata", cartera: "plata", inventarios: "plata" });
+      assert.ok(m.caja.querySelector("[data-accion=volver]"), "no aparece «Volver a hoy»");
+    } finally { m.desmontar(); movimientoReducido(false); }
   }
-  assert.equal(c.querySelector("[data-pieza]").dataset.pantalla, id, `no se llegó a «${id}»`);
-}
+});
 
-test("★★★ cada pantalla de lectura muestra sus textos en orden, su pie y su botón; nada más fuera de la figura", () => {
-  const m = montar();
+test("★★★ P1: el efectivo y los depósitos ya son plata en «hoy»; P4: los cuatro fijos cruzan la raya; P5: el arriendo «se consumió»", () => {
+  const p1 = abrir(1);
+  try { assert.deepEqual(filas(p1.caja), { caja: "plata", bancos: "plata" }); } finally { p1.desmontar(); }
+  const p4 = abrir(4);
   try {
-    const lecturas = P.pantallas.filter((p) => p.tipo !== "eleccion");
-    assert.equal(lecturas.length, 8);
-    for (const p of lecturas) {
-      irA(m.caja, p.id);
-      assert.deepEqual(visibles(m.caja), textosDeDatos(p), `${p.id}: textos en pantalla`);
-      assert.equal(pieDe(m.caja), p.pie, `${p.id}: pie`);
-      const botones = [...m.caja.querySelectorAll("[data-boton]")].map((b) => b.textContent);
-      assert.deepEqual(botones, p.id === "resumen" ? [] : [p.tipo === "portada" ? "Empezar" : "Seguir"], `${p.id}: botones`);
-      const sueltos = [...m.caja.querySelectorAll("[data-pieza] *")]
-        .filter((el) => !el.matches("style") && !el.closest("[data-figura]") && [...el.childNodes].some((x) => x.nodeType === 3 && x.textContent.trim()))
-        .map((el) => el.textContent.trim());
-      assert.deepEqual(sueltos.filter((t) => !textosDeDatos(p).includes(t) && t !== p.pie && !INTERFAZ_MARCADA.has(t)), [], `${p.id}: texto que no viene del paquete`);
-      if (p.listaNumerada) {
-        assert.equal(m.caja.querySelector("[data-lista]").tagName, "OL", `${p.id}: lista sin numerar`);
-        assert.equal(m.caja.querySelectorAll("[data-lista] li").length, p.listaNumerada.length);
-      }
+    tecla(p4.caja.querySelector("[data-pista]"), "End");
+    assert.deepEqual(filas(p4.caja), { "un-edificio": "despues", terreno: "despues", maquina: "despues", vehiculo: "despues" });
+  } finally { p4.desmontar(); }
+  const p5 = abrir(5);
+  try {
+    const pista = p5.caja.querySelector("[data-pista]");
+    for (let i = 0; i < 5; i++) tecla(pista, "ArrowRight");
+    assert.deepEqual(filas(p5.caja), { arriendo: "espera" });
+    tecla(pista, "ArrowRight");
+    assert.deepEqual(filas(p5.caja), { arriendo: "consumio" });
+    assert.equal(p5.caja.querySelector("[data-marca-fila]").textContent, "se consumió");
+  } finally { p5.desmontar(); }
+});
+
+test("★★★ P6 y P7: la figura quieta en el mes 12, sin pista ni acción", () => {
+  for (const k of [6, 7]) {
+    const m = abrir(k);
+    try {
+      const fig = m.caja.querySelector("[data-figura]");
+      assert.equal(fig.dataset.mes, "12");
+      assert.equal(fig.querySelector("button, [role=slider]"), null);
+    } finally { m.desmontar(); }
+  }
+});
+
+/* ═══════════ 3 · EL JUEGO (P3) ═══════════ */
+
+const seg = (caja, fila, lado) => caja.querySelector(`[data-fila="${fila}"] [data-seg="${lado}"]`);
+
+test("★★★ P3: «Pasar el año» espera a las tres marcas, y antes de pasarlo nada de la devolución está en el DOM (PH8-2)", () => {
+  const p = pantalla("cual-cruza");
+  const m = abrir(3);
+  try {
+    const pasar = m.caja.querySelector("[data-accion=pasar]");
+    assert.equal(pasar.getAttribute("aria-disabled"), "true");
+    tocar(seg(m.caja, "mercancia", "antes"));
+    tocar(seg(m.caja, "deuda", "despues"));
+    assert.equal(pasar.getAttribute("aria-disabled"), "true");
+    tocar(seg(m.caja, "edificio", "despues"));
+    assert.equal(m.caja.querySelector("[data-accion=pasar]").getAttribute("aria-disabled"), null);
+    const zona = m.caja.querySelector("[data-pieza]");
+    for (const x of [p.error, "Correcto.", "Incorrecto."]) {
+      assert.ok(!zona.textContent.includes(x), `«${x}» está en el DOM antes de pasar el año`);
+      assert.ok(!zona.outerHTML.includes(x), `«${x}» está en el HTML antes de pasar el año`);
     }
+    assert.equal(zona.querySelector("[data-mensaje], [data-veredicto]"), null);
+    /* Las casillas no llevan texto: su nombre es para el lector. */
+    assert.equal(seg(m.caja, "mercancia", "antes").textContent, "");
+    assert.equal(seg(m.caja, "mercancia", "antes").getAttribute("aria-label"), "Mercancía: corriente, antes de la raya");
   } finally { m.desmontar(); }
 });
 
-const raya = (c) => c.querySelector('[data-figura="raya"]');
-const lado = (f, id) => [...f.querySelectorAll(`[data-zona="${id}"] [data-tarjeta]`)].map((x) => x.dataset.tarjeta);
-const señaladas = (f) => [...f.querySelectorAll("[data-tarjeta][data-foco]")].map((x) => x.dataset.tarjeta);
-
-test("★★★ la pregunta: cada opción equivocada muestra «Incorrecto.» y SU retroalimentación; la figura no dibuja la respuesta mientras pregunta", () => {
-  const p = pantalla("cual-es-corriente");
-  const m = montar();
+test("★★★ P3 mal: la raya decide; ✗ y coral en la mal elegida, borde blanco en la que era; el error, ✗ y su texto, «Incorrecto.» solo para el lector", async () => {
+  movimientoReducido(true);
+  const p = pantalla("cual-cruza");
+  const m = abrir(3);
   try {
-    irA(m.caja, p.id);
-    assert.equal(m.caja.querySelector("[data-pregunta]").textContent, p.pregunta);
-    assert.deepEqual([...m.caja.querySelectorAll("[data-opcion]")].map((b) => b.textContent).sort(), p.opciones.map((o) => o.texto).sort());
-    /* Colocando: la raya y sus zonas, sin una sola tarjeta. */
-    let f = raya(m.caja);
-    assert.equal(f.dataset.estado, "p4-colocando");
-    assert.equal(f.querySelectorAll("[data-tarjeta]").length, 0, "colocando: la figura ya trae tarjetas");
-    const esperado = { edificio: "edificio", "deuda-tres-anos": "deuda" };
-    for (const o of p.opciones.filter((x) => !x.correcta)) {
-      tocar(m.caja.querySelector(`[data-opcion="${o.id}"]`));
-      tocar(boton(m.caja, "confirmar"));
-      const msg = m.caja.querySelector('[data-mensaje="error"]');
-      assert.equal(msg.querySelector("[data-palabra]").textContent, "Incorrecto.");
-      assert.equal(msg.querySelector("[data-devolucion]").textContent, o.devolucion, `${o.id}: retroalimentación`);
-      assert.equal(pieDe(m.caja), p.error.pie);
-      /* El error: solo la tarjeta del distractor elegido, señalada, en su sitio verdadero (debajo de la raya). */
-      f = raya(m.caja);
-      assert.deepEqual([lado(f, "antes"), lado(f, "despues"), señaladas(f)], [[], [esperado[o.id]], [esperado[o.id]]], `${o.id}: figura`);
-      assert.equal(f.querySelector(".t4ry-op-error, [class*=error]"), null, "la figura no pinta el error");
-      tocar(boton(m.caja, "probar-otra"));
-      assert.equal(raya(m.caja).querySelectorAll("[data-tarjeta]").length, 0, "«Probar otra» vuelve a la raya vacía");
-    }
-    tocar(m.caja.querySelector('[data-opcion="mercancia"]'));
-    tocar(boton(m.caja, "confirmar"));
-    const ok = m.caja.querySelector('[data-mensaje="acierto"]');
-    assert.equal(ok.querySelector("[data-palabra]").textContent, "Correcto.");
-    assert.equal(ok.querySelector("[data-devolucion]").textContent, p.acierto.texto);
-    f = raya(m.caja);
-    assert.deepEqual([lado(f, "antes"), lado(f, "despues"), señaladas(f)], [["mercancia"], ["deuda", "edificio"], ["mercancia"]]);
-  } finally { m.desmontar(); }
+    tocar(seg(m.caja, "mercancia", "despues"));
+    tocar(seg(m.caja, "deuda", "antes"));
+    tocar(seg(m.caja, "edificio", "despues"));
+    tocar(m.caja.querySelector("[data-accion=pasar]"));
+    await esperar(0);
+    const ver = (f, l) => seg(m.caja, f, l).dataset.veredicto ?? null;
+    assert.deepEqual([ver("mercancia", "despues"), ver("mercancia", "antes")], ["mal", "era"]);
+    assert.deepEqual([ver("deuda", "antes"), ver("deuda", "despues")], ["mal", "era"]);
+    assert.deepEqual([ver("edificio", "despues"), ver("edificio", "antes")], ["bien", null]);
+    const msg = m.caja.querySelector("[data-mensaje]");
+    assert.equal(msg.dataset.mensaje, "error");
+    assert.equal(visible(msg), `✗${p.error}`);
+    assert.equal(msg.querySelector(".t4f-sr").textContent.trim(), "Incorrecto.");
+    assert.ok(CORAL.test(w.getComputedStyle(seg(m.caja, "deuda", "antes")).borderTopColor), "la mal elegida no va en coral");
+    assert.ok(!CORAL.test(w.getComputedStyle(seg(m.caja, "deuda", "despues")).borderTopColor), "la que era va en coral");
+    /* «Otra vez» limpia las marcas y vuelve a hoy. */
+    tocar(m.caja.querySelector("[data-accion=otra-vez]"));
+    assert.equal(m.caja.querySelector("[data-veredicto], [data-mensaje]"), null);
+    assert.equal(m.caja.querySelector("[data-figura]").dataset.mes, "0");
+  } finally { m.desmontar(); movimientoReducido(false); }
 });
 
-test("★★★ en P4 las zonas reservan el mismo alto en los cuatro estados, para que la raya no salte", () => {
-  for (const e of ["p4-colocando", "p4-error-edificio", "p4-error-deuda", "p4-acierto"]) assert.equal(Z.ESTADOS_RAYA[e].p4, true, e);
-  const m = montar();
+test("★★★ P3 bien: «Correcto.» y nada más; ✓ blanco en las tres; ni teal ni ámbar en ninguna parte de A0", async () => {
+  movimientoReducido(true);
+  const m = abrir(3);
   try {
-    irA(m.caja, "cual-es-corriente");
-    const altos = () => [...raya(m.caja).querySelectorAll("[data-zona]")].map((z) => z.style.minHeight);
-    assert.deepEqual(altos(), ["122.52px", "174.25px"]);
-    tocar(m.caja.querySelector('[data-opcion="edificio"]'));
-    tocar(boton(m.caja, "confirmar"));
-    assert.deepEqual(altos(), ["122.52px", "174.25px"]);
-  } finally { m.desmontar(); }
+    tocar(seg(m.caja, "mercancia", "antes"));
+    tocar(seg(m.caja, "deuda", "despues"));
+    tocar(seg(m.caja, "edificio", "despues"));
+    tocar(m.caja.querySelector("[data-accion=pasar]"));
+    await esperar(0);
+    const msg = m.caja.querySelector("[data-mensaje]");
+    assert.equal(msg.dataset.mensaje, "acierto");
+    assert.equal(visible(msg), "✓Correcto.");
+    assert.deepEqual([...m.caja.querySelectorAll("[data-veredicto]")].map((x) => x.dataset.veredicto), ["bien", "bien", "bien"]);
+    const zona = m.caja.querySelector("[data-pieza]");
+    assert.deepEqual(conColor(zona, TEAL_AMBAR).map((e) => e.outerHTML.slice(0, 60)), []);
+    assert.deepEqual(conColor(zona, CORAL), [], "hay coral en un acierto");
+  } finally { m.desmontar(); movimientoReducido(false); }
 });
 
-test("★★★ la figura va donde la pide Hanayama, con lo que cae a cada lado de la raya", () => {
-  const esperado = {
-    portada: null, "prueba-del-ano": [[], [], []], analogia: null,
-    ejemplos: [["caja", "bancos", "inversiones", "cartera", "inventarios"], [], []],
-    "activos-fijos": [["caja", "bancos", "inversiones", "cartera", "inventarios"], ["un-edificio", "terreno", "maquina", "vehiculo"], ["un-edificio", "terreno", "maquina", "vehiculo"]],
-    "por-que-importan": null,
-    "efectivo-primero": [["caja", "bancos", "inversiones", "cartera", "inventarios"], ["un-edificio", "terreno", "maquina", "vehiculo"], ["caja", "bancos"]],
-    resumen: [["caja", "bancos", "inversiones", "cartera", "inventarios"], ["un-edificio", "terreno", "maquina", "vehiculo"], []],
-  };
-  const m = montar();
-  try {
-    for (const [id, quiere] of Object.entries(esperado)) {
-      irA(m.caja, id);
-      const f = raya(m.caja);
-      if (!quiere) { assert.equal(f, null, `${id}: no lleva figura`); continue; }
-      assert.ok(f, `${id}: falta la figura`);
-      assert.deepEqual([lado(f, "antes"), lado(f, "despues"), señaladas(f)], quiere, `${id}: tarjetas`);
-      assert.equal(f.querySelector("figcaption").textContent, Z.FIGURA_RAYA.alt[f.dataset.estado], `${id}: texto alternativo`);
-      assert.equal(f.getAttribute("aria-describedby"), f.querySelector("figcaption").id);
-      /* Los rótulos de las dos zonas y del margen, del único sitio donde viven. */
-      assert.deepEqual([...f.querySelectorAll(".t4ry-zrot")].map((r) => [...r.children].map((x) => x.textContent)), [Z.FIGURA_RAYA.zonaSi, Z.FIGURA_RAYA.zonaNo]);
-      assert.deepEqual([...f.querySelectorAll(".t4ry-mar")].map((x) => x.textContent).filter(Boolean), ["hoy", "1 año"]);
-      /* Arriba, cada tarjeta cuelga del eje con su muesca. */
-      assert.equal(f.querySelectorAll('[data-zona="antes"] [data-tarjeta] .t4ry-tick').length, f.querySelectorAll('[data-zona="antes"] [data-tarjeta]').length, `${id}: tarjeta de arriba sin muesca`);
-      /* La figura es otra cosa que A1: ni Debe ni Haber. */
-      assert.doesNotMatch(f.textContent, /Debe|Haber/);
-    }
-  } finally { m.desmontar(); }
+test("★★★ los rótulos de la figura van en renglones fijos que no se parten; sin círculos ni trazos discontinuos", async () => {
+  const { CSS_ANO } = await import("../../components/t4/AnoEnMarcha.jsx");
+  assert.match(CSS_ANO, /\.t4an-nom > span \{ white-space: nowrap; \}/);
+  assert.match(CSS_ANO, /\.t4an-zona > span \{ white-space: nowrap; \}/);
+  assert.doesNotMatch(CSS_ANO, /dashed|dotted|border-radius: 50%/);
+  /* Los renglones fijos de Hanayama §3.1 (que caben en el 70 % lo mide la sonda en Chromium, no jsdom). */
+  const F = Z.FILAS_A0;
+  assert.deepEqual([F.edificioOficina.texto, F.bancos.texto, F.inversiones.texto, F.deuda.texto, F.arriendo.texto, F.mercancia.glosa],
+    [["Edificio de", "la oficina"], ["Depósitos", "en bancos"], ["Inversiones", "a corto plazo"], ["Deuda de", "un cliente"], ["Arriendo pagado", "por adelantado"], ["se vende y se cobra", "este mes"]]);
 });
 
-/* Hanayama v1.1, prueba 6: el rótulo de abajo es el complemento exacto del de arriba, y no habla de «después». */
-test("★★★ v1.1 · el rótulo de abajo es «No es corriente / no se vuelve plata / antes de un año», sin «tarda» ni «más»", () => {
-  assert.deepEqual(Z.FIGURA_RAYA.zonaNo, ["No es corriente", "no se vuelve plata", "antes de un año"]);
-  /* El complemento exacto: los mismos renglones de arriba, con el «no». */
-  assert.deepEqual(Z.FIGURA_RAYA.zonaNo.slice(1), ["no " + Z.FIGURA_RAYA.zonaSi[1], Z.FIGURA_RAYA.zonaSi[2]]);
-  const m = montar();
-  try {
-    for (const id of ["prueba-del-ano", "cual-es-corriente", "activos-fijos", "resumen"]) {
-      irA(m.caja, id);
-      /*
-       * Renglón por renglón: el textContent del rótulo los pega sin espacio
-       * («…corrientetarda más…»). Y sin \b, que en JavaScript no reconoce la «á».
-       */
-      const renglones = [...raya(m.caja).querySelector('[data-zona="despues"] .t4ry-zrot').children].map((x) => x.textContent);
-      assert.equal(renglones.length, 3, `${id}: el rótulo de abajo no tiene sus tres renglones`);
-      const palabras = renglones.flatMap((r) => r.split(/\s+/));
-      assert.deepEqual(palabras.filter((p) => p === "tarda" || p === "más"), [], `${id}: el rótulo de abajo dice «${renglones.join(" / ")}»`);
-    }
-  } finally { m.desmontar(); }
-  /* Y ningún texto alternativo dice que lo de abajo «cae después» o «tarda». */
-  assert.deepEqual(Object.entries(Z.FIGURA_RAYA.alt).filter(([, t]) => /tarda|caen? después|después de la raya/.test(t)).map(([e]) => e), []);
-});
-
-/* Hanayama v1.1, prueba 7: el eje del tiempo termina en la raya; debajo, ni eje ni muescas. */
-test("★★★ v1.1 · el eje no sigue debajo de la raya, y las tarjetas de abajo no llevan muesca", () => {
-  const m = montar();
-  try {
-    let vistas = 0;
-    for (const id of ["prueba-del-ano", "ejemplos", "activos-fijos", "efectivo-primero", "resumen"]) {
-      irA(m.caja, id);
-      const f = raya(m.caja);
-      const linea = f.querySelector("[data-raya]");
-      const ejes = [...f.querySelectorAll(".t4ry-eje")];
-      assert.equal(ejes.length, 1, `${id}: hay ${ejes.length} ejes`);
-      /* El único eje está antes de la raya en el documento: va de «hoy» a la raya. */
-      assert.ok(ejes[0].compareDocumentPosition(linea) & w.Node.DOCUMENT_POSITION_FOLLOWING, `${id}: el eje está debajo de la raya`);
-      const abajo = f.querySelector('[data-zona="despues"]');
-      assert.equal(abajo.querySelectorAll(".t4ry-tick").length, 0, `${id}: hay muescas debajo de la raya`);
-      vistas += abajo.querySelectorAll("[data-tarjeta]").length;
-    }
-    /* La guarda: abajo hubo tarjetas que mirar (los cuatro fijos en tres pantallas). */
-    assert.equal(vistas, 12);
-  } finally { m.desmontar(); }
-  /* Y en P4, con las dos tarjetas de abajo del acierto. */
-  const m2 = montar();
-  try {
-    irA(m2.caja, "cual-es-corriente");
-    tocar(m2.caja.querySelector('[data-opcion="mercancia"]'));
-    tocar(boton(m2.caja, "confirmar"));
-    const f = raya(m2.caja);
-    assert.equal(f.querySelectorAll(".t4ry-eje").length, 1);
-    assert.equal(f.querySelectorAll('[data-zona="despues"] [data-tarjeta]').length, 2);
-    assert.equal(f.querySelectorAll('[data-zona="despues"] .t4ry-tick').length, 0);
-  } finally { m2.desmontar(); }
-});
-
-test("★★ la tarjeta de la mercancía dice «se vende y se cobra este mes», como la opción de la v2", () => {
-  assert.match(pantalla("cual-es-corriente").opciones.find((o) => o.correcta).texto, /vender y cobrar/);
-  assert.deepEqual(Z.ESTADOS_RAYA["p4-acierto"].antes.map((t) => [t.texto, t.glosa]), [["Mercancía", "se vende y se cobra este mes"]]);
-});
-
-test("★★★ la figura: sin teal, ámbar ni coral, sin trazos discontinuos; los renglones no se parten; nada se mueve con movimiento reducido", () => {
-  const fig = CSS_T4F.slice(CSS_T4F.indexOf("/* raya del año */"), CSS_T4F.indexOf("@media"));
-  assert.ok(fig.length > 500, "no se encontró la hoja de la figura");
-  assert.doesNotMatch(fig, /#2A9D8F|#E9C46A|#E76F51|dashed|dotted|border-radius: 50%/i);
-  assert.match(fig, /\.t4ry-tarj > span \{ white-space: nowrap; \}/);
-  assert.match(fig, /\.t4ry-zrot > span \{ white-space: nowrap; \}/);
-  assert.match(fig, /\.t4ry-mar \{[^}]*white-space: nowrap;/);
-  assert.match(CSS_T4F, /@media \(prefers-reduced-motion: reduce\) \{ \.t4cj \*, \.t4ry \*, \.t4f-nueva \{ transition: none !important; animation: none !important; \} \}/);
-  /* El rótulo de la zona de abajo vive en un solo sitio, para que la v1.1 de Hanayama lo cambie fácil. */
-  const datos = leer("src/data/contabilidadT4A0.js");
-  assert.equal(datos.split(JSON.stringify(Z.FIGURA_RAYA.zonaNo[1])).length - 1, 1);
-});
-
-/* ═══════════ 3 · APRENDER NO DA FP ═══════════ */
+/* ═══════════ 4 · APRENDER NO DA FP ═══════════ */
 
 test("★★★ fuera del catálogo de FP: Aprender en subjects.js, primera del tema, ninguna migración la nombra, y sus datos no llaman al motor", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T4);
@@ -346,5 +277,7 @@ test("★★★ fuera del catálogo de FP: Aprender en subjects.js, primera del 
   const migraciones = readdirSync(dir);
   assert.ok(migraciones.includes("0001_profiles.sql"), "la ruta de las migraciones está mal");
   assert.deepEqual(migraciones.filter((f) => readFileSync(new URL(f, dir), "utf8").includes(Z.A0_ID)), []);
-  assert.doesNotMatch(leer("src/data/contabilidadT4A0.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);
+  for (const f of ["src/data/contabilidadT4A0.js", "src/components/t4/AnoEnMarcha.jsx"]) {
+    assert.doesNotMatch(leer(f), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/, f);
+  }
 });

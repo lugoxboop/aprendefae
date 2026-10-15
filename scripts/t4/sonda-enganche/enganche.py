@@ -18,6 +18,12 @@ etapas: al llegar, tras acertar y, en una segunda partida con la misma semilla, 
  B5 ninguna frase (>= 5 palabras) dos veces en la misma pantalla
 
 Sale con código 1 si alguna pieza FALLA (para usarla como guardia).
+
+Aprender con figura operable (rediseño de enganche de A0 y A1, 15 oct 2026): la pantalla no es una
+elección de radios, así que la sonda no adivina qué tocar. Lo lee de enganche_planes.json: por pieza y
+pantalla, los gestos (tocar, arrastrar, esperar), el momento que se mide tras cada uno y el veredicto que
+tiene que dar. Una pantalla cuya figura trae controles y no tiene plan es «no medida» (código 2). La
+medición (enganche_mide.js) y el juicio (juzga) no cambian.
 """
 import sys, os, json, re, time, base64
 # <dir-de-la-sonda> es opcional: si el primer argumento no es un directorio, la sonda usa el suyo
@@ -30,6 +36,7 @@ _cl = [a.split("=", 1)[1] for a in sys.argv[4:] if a.startswith("--clave=")]
 CLAVE = json.load(open(_cl[0])) if _cl else {}
 U = f"http://localhost:{PORT}"
 MIDE = open(D + "/enganche_mide.js").read()
+PLANES = json.load(open(D + "/enganche_planes.json")) if os.path.isfile(D + "/enganche_planes.json") else {}
 FIG = "figure, [data-par], [data-tabla-h7], [data-lado-h7]"  # el par y la tabla de H7/H8 cuentan como figura con significado
 
 def b64(o): return base64.urlsafe_b64encode(json.dumps(o).encode()).decode().rstrip("=")
@@ -63,6 +70,36 @@ def mide(pg, raiz, tarjeta=None):
     return pg.evaluate(MIDE, {"raiz": raiz, "tarjeta": tarjeta, "figura": FIG})
 
 # ───────────────────────────── Aprender ─────────────────────────────
+class SinClave(Exception): pass
+
+# ¿La figura de esta pantalla trae algo que tocar? (sin plan, la sonda no lo adivina: código 2)
+CONTROLES_FIG = """(r) => [...document.querySelectorAll(r + ' figure button, ' + r + ' figure [role=slider], ' + r + ' figure input')]
+  .filter((e) => { const c = getComputedStyle(e); return c.display !== 'none' && c.visibility !== 'hidden'; }).length"""
+
+def jugar_plan(pg, R, pid_p, plan, llegada, regs):
+    """Juega los gestos del plan de una pantalla y mide tras cada uno. La acción cambia la figura si el DOM de la
+    figura medido tras algún gesto difiere del de la llegada. Cada gesto con «veredicto» lo comprueba."""
+    cambio = False
+    for paso in plan:
+        if "click" in paso:
+            loc = pg.locator(f"{R} {paso['click']}")
+            if loc.count() == 0: raise SinClave(f"{pid_p}: el plan toca {paso['click']!r} y no está")
+            loc.first.click()
+        if "arrastra" in paso:
+            bx = pg.locator(f"{R} {paso['arrastra']}").first.bounding_box()
+            x0 = bx["x"] + 2; y0 = bx["y"] + bx["height"] / 2
+            pg.mouse.move(x0, y0); pg.mouse.down(); pg.mouse.move(x0 + bx["width"] * paso["hasta"], y0, steps=8); pg.mouse.up()
+        pg.wait_for_timeout(paso.get("espera", 120))
+        if "mide" in paso:
+            m = mide(pg, R); m.update(pantalla=pid_p, momento=paso["mide"], eleccion=False)
+            if "veredicto" in paso:
+                v = pg.evaluate(f"(()=>{{const xs=document.querySelectorAll('{R} [data-mensaje], {R} [data-panel]'); const p=xs[xs.length-1]; return p? (p.dataset.mensaje||p.dataset.panel): null}})()")
+                if v != paso["veredicto"]: raise SinClave(f"{pid_p} · {paso['mide']}: el plan esperaba «{paso['veredicto']}» y la pantalla dio «{v}»")
+            if bool(llegada["figHTML"]) and m["figHTML"] != llegada["figHTML"]: cambio = True
+            regs.append(m)
+    for r in regs:
+        if r["pantalla"] == pid_p: r["figuraCambiaConLaAccion"] = cambio
+
 def aprender(b, sigla):
     pid = APRENDER[sigla]; R = f'[data-pieza="{pid}"]'
     ctx, pg, errs = abrir(b, "/#/efectivo-caja-menor-bancos")
@@ -71,8 +108,13 @@ def aprender(b, sigla):
     for _ in range(20):
         pid_p = pg.evaluate(f"document.querySelector('{R}').dataset.pantalla")
         est = pg.evaluate(f"(document.querySelector('{R} [data-eleccion]')||{{}}).dataset?.estado||null")
-        m = mide(pg, R); m.update(pantalla=pid_p, momento="al llegar" if est else "lectura", eleccion=bool(est))
+        plan = PLANES.get(pid, {}).get(pid_p)
+        m = mide(pg, R); m.update(pantalla=pid_p, momento="al llegar" if (est or plan) else "lectura", eleccion=bool(est))
         regs.append(m)
+        if plan is not None:
+            jugar_plan(pg, R, pid_p, plan, m, regs)
+        elif not est and pg.evaluate(CONTROLES_FIG, R):
+            raise SinClave(f"{pid_p}: la figura trae controles y enganche_planes.json no dice cómo jugarla")
         if est == "colocando":
             fig0 = m["figHTML"]
             ids = pg.evaluate(f"[...document.querySelectorAll('{R} [data-opcion]')].map(e=>e.dataset.opcion)")
@@ -100,8 +142,6 @@ SIGUIENTE = ("Siguiente hecho", "Siguiente caso", "Siguiente operación", "Sigui
              "Siguiente partida", "Siguiente asiento", "Ir a los saldos", "Ir a los asientos", "Ir al mayor")
 norm = lambda s: re.sub(r"\s+", " ", s or "").strip()
 exacto = lambda s: re.compile(r"^\s*" + r"\s+".join(re.escape(p) for p in norm(s).split(" ")) + r"\s*$")
-
-class SinClave(Exception): pass
 
 def hacer(b, sigla, modo, clave):
     """Juega la partida entera con la clave: modo «bien» responde todo bien; «mal», todo mal con el mismo gesto.
@@ -150,6 +190,10 @@ def hacer(b, sigla, modo, clave):
         if modo == "bien": regs.append(m0)
         if "opcion" in resp:
             pg.locator(f'{R} [data-opcion="{resp["opcion"]}"] button').click(); pg.wait_for_timeout(300)
+        elif "destino" in resp:
+            # el cajón como tablero (H1 rediseñado): un toque en el destino; en el error la plata llega
+            # a su sitio a los 0,7 s, así que se espera a que la figura quede quieta antes de medir
+            pg.locator(f'{R} [data-destino="{resp["destino"]}"]').click(); pg.wait_for_timeout(900)
         elif "asiento" in resp:
             for i, linea in enumerate(resp["asiento"]):
                 cuenta, lado = linea[0], linea[1]
