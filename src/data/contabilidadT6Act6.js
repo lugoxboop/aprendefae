@@ -120,6 +120,12 @@ export const PARTES_T6_ACT6 = [
   },
 ];
 
+/*
+ * Los rótulos de la barra del total (hoja 2 de Mai, calidad). Salen de los
+ * enunciados de las casillas 7 y 8. PARA SHOKO: son nuevos en pantalla.
+ */
+export const ROTULOS_TOTAL_T6_ACT6 = { neto: "El valor neto", provision: "La provisión" };
+
 /* ═══════════ LOS ERRORES POR TIPO ═══════════ */
 
 export const ERRORES_T6_ACT6 = {

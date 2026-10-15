@@ -45,9 +45,11 @@ const resalte = (activo) => ({
 const marcaActivo = (activo) => (activo ? { "data-renglon-activo": "" } : {});
 
 /* Una cifra que entra: aparece con opacidad y 4 px en 240 ms; con movimiento reducido, sin animación. */
-function Entra({ reducido, children }) {
+export function Entra({ reducido, children }) {
   return <span data-entra="" style={{ display: "inline-block", animation: reducido ? "none" : "b5-entra 240ms ease-out both" }}>{children}</span>;
 }
+
+export const KEYFRAMES_ENTRA = "@keyframes b5-entra { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }";
 
 /* Los pasos de la cuenta: qué se ve con `respondidas` casillas respondidas y la casilla `abierta` (o null). */
 export function estadoDeLaCuenta(respondidas, abierta) {
@@ -85,7 +87,7 @@ export default function CuentaQueSeLlena({ respondidas, abierta, reducido, anunc
   const c = estadoDeLaCuenta(respondidas, abierta);
   return (
     <div data-cuenta-que-se-llena style={{ display: "flex", flexDirection: "column", gap: "10px", margin: "0 0 12px" }}>
-      <style>{"@keyframes b5-entra { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }"}</style>
+      <style>{KEYFRAMES_ENTRA}</style>
 
       {/* El estado de situación financiera (T6 · A3): Clientes, la provisión restada y, bajo un filete, el neto. */}
       <div data-bloque-estado style={{ border: `1px solid ${BORDES}`, borderRadius: "10px", padding: "6px 8px 8px", display: "flex", flexDirection: "column", gap: "6px" }}>
