@@ -156,12 +156,70 @@ test("★★★ cada error se ve literal; la correcta queda marcada; un solo int
       assert.equal(opcion(caja, correctaDe(C[k])).dataset.estado, "revelada");
       await tocar(opcion(caja, correctaDe(C[k])));
       assert.equal(opcion(caja, correctaDe(C[k])).dataset.estado, "revelada", "un solo intento");
-      const reg = caja.querySelector(`[data-resuelta="${C[k].id}"]`);
-      assert.equal(reg.dataset.acierto, "no");
-      assert.ok(reg.textContent.includes(pesos(correctaDe(C[k]))), "el valor correcto, en el registro");
+      /* La cuenta es el registro (hoja 1 de Mai): entra el valor correcto aunque se haya fallado. */
+      const cuenta = caja.querySelector("[data-cuenta-que-se-llena]");
+      const entraron = [...cuenta.querySelectorAll("[data-entra]")].map((e) => e.textContent).join(" | ");
+      assert.ok(entraron.includes(pesos(correctaDe(C[k]))), `casilla ${k + 1}: entró «${entraron}»`);
+      /* Lo que se anuncia es lo que entró: el valor correcto (el elegido mal puede estar ya en la cuenta, como el ajuste de la T9). */
+      assert.ok(cuenta.querySelector("[data-anuncio]").textContent.includes(pesos(correctaDe(C[k]))), `casilla ${k + 1}: el anuncio`);
       desmontar();
     }
   }
+});
+
+/* ═══════════ LA CUENTA QUE SE LLENA (hoja 1 de Mai, calidad) ═══════════ */
+
+const P3 = await import("../../data/contabilidadT6Pieza3.js");
+const { estadoDeLaCuenta, anuncioDe: anuncioDeLaCuenta } = await import("../../components/mecanicas/libros/tema6/CuentaQueSeLlena.jsx");
+
+test("★★★ la cuenta se llena casilla a casilla con las cifras de las casillas, y sus palabras son las publicadas de T6 · A3", async () => {
+  const [dic, marzo, sig] = P3.MOMENTOS_T6_A3;
+  /* Lo que entra en cada casilla es su valor correcto: neto, castigo, lo que falta, el ajuste y el saldo final. */
+  assert.deepEqual([P3.ESCENA_T6_A3.valorNeto, marzo.monto, marzo.saldo.texto, sig.monto, sig.saldo.texto].map((t) => cifras(t)[0]), C.map(correctaDe));
+  assert.equal(cifras(dic.monto)[0], 148800, "arranca con el tutorial");
+  const { caja, desmontar } = await montar();
+  const cuenta = () => caja.querySelector("[data-cuenta-que-se-llena]");
+  const activo = () => cuenta().querySelector("[data-renglon-activo]");
+  const saldo = () => cuenta().querySelector("[data-saldo]");
+  /* Casilla 1: se enciende la fila del neto; el saldo es el de 2007, bajo HABER. */
+  assert.ok(activo().hasAttribute("data-fila-neto"));
+  assert.equal(saldo().dataset.saldo, "normal");
+  assert.equal(saldo().textContent, dic.saldo.texto);
+  await tocar(opcion(caja, correctaDe(C[0]))); await siguiente(caja);
+  /* Casilla 2: un renglón nuevo del DEBE, encendido, con su momento y sin monto. */
+  assert.equal(activo().closest("[data-columna]").dataset.columna, "debe");
+  assert.equal(activo().textContent, marzo.nombre);
+  await tocar(opcion(caja, correctaDe(C[1]))); await siguiente(caja);
+  /* Casilla 3: el hueco del saldo a todo el ancho, sin lado. */
+  assert.equal(activo().dataset.saldo, "hueco");
+  assert.equal(activo().closest("[data-columna]"), null, "el hueco no está bajo ningún lado");
+  await tocar(opcion(caja, correctaDe(C[2])));
+  assert.equal(cuenta().querySelector("[data-saldo]").dataset.saldo, "en-contra");
+  assert.equal(cuenta().querySelector("[data-saldo]").textContent, marzo.saldo.texto);
+  await siguiente(caja);
+  /* Casilla 4: un renglón nuevo del HABER. */
+  assert.equal(activo().closest("[data-columna]").dataset.columna, "haber");
+  await tocar(opcion(caja, correctaDe(C[3]))); await siguiente(caja);
+  /* Casilla 5: el hueco otra vez; al responder, el saldo bajo HABER y el recuadro en contra se va. */
+  assert.equal(activo().dataset.saldo, "hueco");
+  await tocar(opcion(caja, correctaDe(C[4])));
+  assert.deepEqual([...cuenta().querySelectorAll("[data-saldo]")].map((x) => x.dataset.saldo), ["normal"]);
+  assert.equal(saldo().textContent, sig.saldo.texto);
+  assert.equal(cuenta().querySelector("[data-renglon-activo]"), null, "respondida, nada encendido");
+  desmontar();
+});
+
+test("★★ el lado se lee por la palabra y la columna, no solo por el color; el anuncio dice lo que entró", () => {
+  const e = estadoDeLaCuenta(2, 2);
+  assert.equal(e.huecoSaldo, true);
+  assert.equal(e.saldo, null, "mientras se pregunta, ningún saldo con lado");
+  assert.deepEqual([0, 1, 2, 3, 4].map(anuncioDeLaCuenta), [
+    "El valor neto, $2.506.200",
+    "Debe, $180.000, Marzo del año siguiente",
+    "Le faltan $31.200",
+    "Haber, $184.600, 31 de diciembre del año siguiente",
+    "El saldo queda en $153.400",
+  ]);
 });
 
 test("★★★ pct = aciertos / 5 × 100 y el cierre literal", async () => {

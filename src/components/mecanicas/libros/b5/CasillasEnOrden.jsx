@@ -32,6 +32,8 @@ import { useReducido } from "../tema3/DosLineas.jsx";
  *     partida ya resuelto y, si la actividad es un escenario simulado, su
  *     rótulo fijo y los pies de fuente en su forma. Con regla en tabla, los
  *     datos de la parte van dentro de ella y el rótulo, a su pie (Mai);
+ *   · un visual propio, si la actividad lo trae (`visual: { Componente,
+ *     anuncio }`): va encima de la casilla y hace de registro (b5-t6-a5);
  *   · las opciones, en una columna; al pasar de casilla, la página se mueve
  *     para que se vean la casilla, el rótulo y la fila que usa;
  *   · pct = aciertos / casillas × 100, y el texto de cierre.
@@ -157,7 +159,10 @@ export default function CasillasEnOrden({
     const rect = (el) => el?.getBoundingClientRect();
     const casilla = rect(casillaRef.current);
     const rotuloR = rect(rotuloRef.current);
-    const filaR = actual.fila ? rect(casillaRef.current.ownerDocument.querySelector(`[data-regla] [data-fila="${actual.fila}"]`)) : null;
+    const doc = casillaRef.current.ownerDocument;
+    /* La fila de la tabla que usa la casilla (a6) o, con un visual propio, su renglón encendido (a5). */
+    const filaR = actual.fila ? rect(doc.querySelector(`[data-regla] [data-fila="${actual.fila}"]`))
+      : config.visual ? rect(doc.querySelector("[data-renglon-activo]")) : null;
     const arriba = 8;
     const abajo = window.innerHeight - 8;
     const union = (rs) => ({ top: Math.min(...rs.map((r) => r.top)), bottom: Math.max(...rs.map((r) => r.bottom)) });
@@ -239,7 +244,12 @@ export default function CasillasEnOrden({
         </div>
       )}
 
-      {resueltas.length > 0 && (
+      {/* Con un visual propio (b5-t6-a5: la cuenta que se llena), el visual es el registro. */}
+      {config.visual && !modoDemo && (
+        <config.visual.Componente respondidas={resueltas.length} abierta={elegida ? null : n} reducido={reducido}
+          anuncio={elegida ? config.visual.anuncio(n) : ""} />
+      )}
+      {resueltas.length > 0 && !(config.visual && !modoDemo) && (
         <ol data-registro style={{ margin: "0 0 12px", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "4px" }}>
           {resueltas.map((c, k) => {
             const bien = respuestas[k]?.ok;
