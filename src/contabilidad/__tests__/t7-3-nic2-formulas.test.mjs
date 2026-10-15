@@ -204,3 +204,16 @@ test("★★★ Patrón T7-3: solo la franja de la NIC 2, lo primero de la pieza
     m.desmontar();
   }
 });
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+test("★★★ Patrón T7-3: solo la franja de la NIC 2, lo primero de la pieza; ninguna figura", async () => {
+  const m = await montar();
+  try {
+    const pieza = m.caja.querySelector("[data-pieza]");
+    assert.equal(pieza.firstElementChild.matches("p.t73pt-nic2[data-aviso]"), true);
+    assert.equal(m.caja.querySelectorAll("figure").length, 0);
+  } finally {
+    m.desmontar();
+  }
+});
