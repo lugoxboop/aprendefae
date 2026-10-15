@@ -783,6 +783,8 @@ export const SUBJECTS = {
           { id: "t7-3-que-entra-al-costo", nombre: "¿Entra al costo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /* H7, justo después de H6 (orden final de T7-3; la sostiene A7): costo o valor neto realizable, el menor, con la regla del libro, pp. 257-258. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0109. */
           { id: "t7-3-costo-o-vnr", nombre: "¿Costo o valor neto realizable?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* A8, la última de T7-3, después de A7 (orden del mapa: H6 y H7 entran entre A7 y A8; ningún Hacer depende de ella). La NIC 2 del libro, pp. 259-260: fórmulas y revelación, con su frase fija a la vista. Cero FP. */
+          { id: "t7-3-nic2-formulas", nombre: "La NIC 2 del libro: fórmulas y revelación", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],
