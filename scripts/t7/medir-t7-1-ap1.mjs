@@ -6,24 +6,25 @@
  *
  * jsdom no calcula diseño, así que esto no puede vivir en `npm test`: se mide
  * en Chromium de verdad, con la vista del tema montada tal cual y la hoja de
- * estilos del sitio (Inter y Sora). Recorre las siete pantallas y los once
- * estados —en cada pregunta falla con cada opción equivocada y después
- * acierta— a 375 y a 320 px, y en cada estado comprueba:
+ * estilos del sitio (Inter y Sora). Recorre las cuatro pantallas del recorte
+ * del lote 1 y sus diez estados —en cada pregunta falla con cada opción
+ * equivocada y después acierta— a 375 y a 320 px, y en cada estado comprueba:
  *
  *   · que la página no tenga barra horizontal
  *   · que ningún elemento con texto se salga de su caja (scrollWidth)
  *   · que ningún elemento con texto se salga del panel de la pieza
  *   · que las fuentes que se midieron sean Inter y Sora, y no la de reserva
+ *   · que cada botón de la pieza mida 44 px de alto o más
  *
  * Y en la figura de Watari («Dos columnas del periodo»):
  *
- *   · que la portada no la tenga y los otros doce estados sí
+ *   · que la portada no la tenga y los otros nueve estados sí
  *   · «DEBE» y el monto: con 121 px de línea o menos el monto baja (a 320),
  *     con más va en la misma línea (a 375), y nunca se tocan. El corte es el
  *     de Mello (121 px); la sonda lo prueba a 119 y 123 px de línea
- *   · que «Conteo físico», mientras está pendiente desde la pantalla 3 hasta
- *     el colocando de la 5, ocupe la fila entera, centrado, y no quede bajo
- *     una columna
+ *   · que «Conteo físico», mientras está pendiente desde la primera pregunta
+ *     hasta el colocando del conteo, ocupe la fila entera, centrado, y no
+ *     quede bajo una columna
  *   · que las rayas de los dos encabezados queden a la misma altura aunque
  *     «Inventario de mercancías» ocupe dos líneas (v3.1)
  *   · que las dos columnas midan lo mismo y no cambien de ancho entre estados
@@ -32,12 +33,14 @@
  *
  * Sale con código 1 si algo falla, y escribe una tabla con las medidas.
  * Necesita Playwright (no es dependencia del repo): toma el que haya
- * instalado en la máquina, o el de PLAYWRIGHT_MODULE.
+ * instalado en la máquina, o el de PLAYWRIGHT_MODULE. Si Google Fonts no
+ * responde, FUENTES_DIR (una carpeta con fuentes.css y los .woff2) las sirve
+ * desde disco.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { createServer } from "vite";
 import { createRequire } from "node:module";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
 const RAIZ = resolve(import.meta.dirname, "../..");
@@ -55,6 +58,22 @@ const { port } = servidor.httpServer.address();
 const URL_BANCO = `http://127.0.0.1:${port}/scripts/t7/harness/index.html`;
 
 const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+
+/* Las fuentes de Google desde disco, si hay carpeta: la letra medida es la real. */
+const FUENTES = process.env.FUENTES_DIR ?? null;
+async function nuevaPagina(opciones) {
+  const pagina = await navegador.newPage(opciones);
+  if (FUENTES && existsSync(`${FUENTES}/fuentes.css`)) {
+    const css = readFileSync(`${FUENTES}/fuentes.css`, "utf8");
+    await pagina.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (ruta) => {
+      const u = ruta.request().url();
+      if (u.includes("googleapis")) return ruta.fulfill({ status: 200, contentType: "text/css", body: css });
+      const f = `${FUENTES}/${u.replace("https://fonts.gstatic.com/", "").replace(/\//g, "_")}`;
+      return existsSync(f) ? ruta.fulfill({ status: 200, contentType: "font/woff2", body: readFileSync(f) }) : ruta.abort();
+    });
+  }
+  return pagina;
+}
 const fallos = [];
 const columnas = {};
 const filas = [];
@@ -65,7 +84,8 @@ function medir() {
   const caja = panel.getBoundingClientRect();
   const problemas = [];
   const conTexto = [...document.querySelectorAll("h1, [data-pieza] *, section > header *")]
-    .filter((el) => !el.closest(".t7fg-sr") && !el.matches("style, script"))
+    /* Lo plegado tras «¿Por qué?» está oculto (hidden) y no ocupa sitio: no se mide. */
+    .filter((el) => !el.closest(".t7fg-sr") && !el.closest("[hidden]") && !el.matches("style, script"))
     .filter((el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()));
   for (const el of conTexto) {
     const r = el.getBoundingClientRect();
@@ -77,6 +97,10 @@ function medir() {
     if (el.closest("[data-pieza], section > header") && (r.right > caja.right + 0.5 || r.left < caja.left - 0.5)) {
       problemas.push(`${nombre}: se sale del panel (${r.left.toFixed(1)}–${r.right.toFixed(1)} contra ${caja.left.toFixed(1)}–${caja.right.toFixed(1)})`);
     }
+  }
+  for (const b of document.querySelectorAll("[data-pieza] button:not([data-por-que])")) {
+    const alto = b.getBoundingClientRect().height;
+    if (alto < 43.5) problemas.push(`botón «${b.textContent.trim().slice(0, 30)}» mide ${alto.toFixed(1)} px de alto`);
   }
   const raiz = document.documentElement;
   if (raiz.scrollWidth > window.innerWidth) problemas.push(`la página mide ${raiz.scrollWidth} px de ancho en una ventana de ${window.innerWidth}`);
@@ -157,7 +181,7 @@ function medir() {
 }
 
 for (const ancho of ANCHOS) {
-  const pagina = await navegador.newPage({ viewport: { width: ancho, height: 800 }, deviceScaleFactor: 2 });
+  const pagina = await nuevaPagina({ viewport: { width: ancho, height: 800 }, deviceScaleFactor: 2 });
   await pagina.goto(URL_BANCO);
   await pagina.waitForSelector("[data-pieza]");
   await pagina.evaluate(() => document.fonts.ready);
@@ -193,7 +217,7 @@ for (const ancho of ANCHOS) {
   const clic = (sel) => pagina.click(sel);
   const pantalla = () => pagina.getAttribute("[data-pieza]", "data-pantalla");
 
-  for (let vuelta = 0; vuelta < 7; vuelta++) {
+  for (let vuelta = 0; vuelta < 4; vuelta++) {
     const id = await pantalla();
     const pregunta = await pagina.$("[data-pregunta]");
     if (!pregunta) {
@@ -222,7 +246,7 @@ for (const ancho of ANCHOS) {
 
 /* El corte de 121 px, a los dos lados: con 119 px de línea el monto baja; con 123, no. */
 {
-  const pagina = await navegador.newPage({ viewport: { width: 420, height: 900 } });
+  const pagina = await nuevaPagina({ viewport: { width: 420, height: 900 } });
   await pagina.goto(`${URL_BANCO}#sonda`);
   await pagina.waitForSelector("[data-sonda]");
   await pagina.evaluate(() => document.fonts.ready);
@@ -245,10 +269,10 @@ for (const ancho of ANCHOS) {
 
 /* Con movimiento reducido, sin fundido: se juega hasta los dos aciertos y se mira la animación. */
 {
-  const pagina = await navegador.newPage({ viewport: { width: 375, height: 800 }, reducedMotion: "reduce" });
+  const pagina = await nuevaPagina({ viewport: { width: 375, height: 800 }, reducedMotion: "reduce" });
   await pagina.goto(URL_BANCO);
   await pagina.waitForSelector("[data-pieza]");
-  for (const b of ["empezar", "seguir", "seguir", "ver-el-caso"]) await pagina.click(`[data-boton="${b}"]`);
+  await pagina.click('[data-boton="empezar"]');
   const fundido = () => pagina.$eval(".t7fg-nueva", (el) => ({ que: el.dataset.fg, nombre: getComputedStyle(el).animationName }));
   await pagina.click('[data-opcion="compras"]');
   await pagina.click('[data-boton="confirmar"]');
@@ -276,7 +300,7 @@ for (const f of filas) {
 }
 const estados = new Set(filas.map((f) => f.estado)).size;
 console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos).`);
-if (estados !== 13) fallos.push(`se recorrieron ${estados} estados y son 13`);
+if (estados !== 10) fallos.push(`se recorrieron ${estados} estados y son 10`);
 if (fallos.length) {
   console.log(`\nFALLA: ${fallos.length} problema(s)`);
   for (const f of fallos) console.log(`  · ${f}`);
