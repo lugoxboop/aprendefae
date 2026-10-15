@@ -212,6 +212,7 @@ for (const [ancho, alto] of VENTANAS) {
     for (const p of problemas) fallos.push(`${ancho} · ${p}`);
     const barras = await pagina.evaluate(() => Math.round(document.querySelector("[data-barras]").getBoundingClientRect().top));
     notas.push(`${ancho} · p3: tras la cuarta, las barras quedan en ${barras} px (pedido: 56 + 16 = 72)`);
+    if (barras !== 72) fallos.push(`${ancho} · p3: las barras quedan en ${barras} px, no en 72`);
     await medir("p3 tabla");
     await captura("p3-3-tabla");
     await pagina.click('[data-opcion="c6-a"] button');
@@ -265,8 +266,12 @@ for (const [ancho, alto] of VENTANAS) {
     await pagina.waitForSelector("[data-opciones-lotes]");
     await pagina.waitForTimeout(400);
     for (const p of problemas) fallos.push(`${ancho} · ${p}`);
-    const costo = await pagina.evaluate(() => Math.round(document.querySelector('[data-rotulo-lotes="costo"]').getBoundingClientRect().top));
-    notas.push(`${ancho} · p5: tras la salida, «Costo total» queda en ${costo} px (pedido: 72)`);
+    const { costo, tope } = await pagina.evaluate(() => ({
+      costo: Math.round(document.querySelector('[data-rotulo-lotes="costo"]').getBoundingClientRect().top),
+      tope: Math.round(document.documentElement.scrollHeight - window.innerHeight - window.scrollY) <= 1,
+    }));
+    notas.push(`${ancho} · p5: tras la salida, «Costo total» queda en ${costo} px (pedido: 72)${tope ? "; la página ya no da más desplazamiento" : ""}`);
+    if (costo !== 72 && !tope) fallos.push(`${ancho} · p5: «Costo total» en ${costo} px y la página aún podía desplazarse`);
     await medir("p5 opciones");
     await captura("p5-3-opciones");
     await pagina.click('[data-opcion="c9-c"] button');

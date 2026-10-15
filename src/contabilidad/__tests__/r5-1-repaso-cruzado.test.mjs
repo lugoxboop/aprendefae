@@ -621,6 +621,7 @@ test("★★★ 6 · con movimiento: recoge, la figura reproduce la ELEGIDA, pau
   assert.equal(caja.querySelector("[data-opciones-titulo]").dataset.fase, "titulo", "la pausa");
   await pasar(700);
   assert.equal(caja.querySelector("[data-opciones-titulo]").dataset.fase, "correcta");
+  await pasar(20);
   assert.deepEqual(filasVisibles(caja), [["c3-a", "incorrecta", "no"], ["c3-c", "revelada", "si"]]);
   assert.equal(caja.querySelector("[data-figura]").dataset.flujo, "descuento");
   /* El desplazamiento de la elegida, en pasos de un cuadro (no de golpe). */
@@ -1089,4 +1090,11 @@ test("★★ el título del tema puede partir en dos renglones: no se corta con 
   const fuente = leer("src/components/RepasoCapitulo5View.jsx");
   const h1 = fuente.slice(fuente.indexOf("<h1 data-titulo-tema"), fuente.indexOf(">", fuente.indexOf("<h1 data-titulo-tema")));
   for (const d of ['whiteSpace: "normal"', 'overflow: "visible"', 'textOverflow: "clip"', "minWidth: 0"]) assert.ok(h1.includes(d), d);
+});
+
+test("★★ §d · el anillo de foco es de 2 px #F8F9FA, separado 2 px, y se pinta en la tarjeta", async () => {
+  const { CSS_R5_1 } = await import("../../components/RepasoCapitulo5View.jsx");
+  assert.match(CSS_R5_1, /\[data-r5-1\] button:focus-visible[^{]*\{\s*outline: 2px solid #F8F9FA; outline-offset: 2px; \}/);
+  const { caja } = await montar(h(RepasoCruzado, { pantallas: [pantalla("c8")] }));
+  assert.ok([...caja.querySelectorAll("style")].some((x) => x.textContent === CSS_R5_1), "la hoja del anillo no se pinta");
 });

@@ -54,6 +54,11 @@ export const TEMA_REPASO_CAP5 = "repaso-capitulo-5";
 
 const LECTOR_R5_1 = { acierto: PENDIENTE_DE_REVISION_R5_1.lectorAcierto, error: PENDIENTE_DE_REVISION_R5_1.lectorError };
 
+/* §d · el anillo de foco de r5-1: 2 px #F8F9FA, separado 2 px. */
+export const CSS_R5_1 = `
+[data-r5-1] button:focus-visible, [data-r5-1] [tabindex]:focus-visible { outline: 2px solid #F8F9FA; outline-offset: 2px; }
+`;
+
 /* ═══════════ LAS TRES SILUETAS (HTML/CSS a px reales, trazo de 2) ═══════════ */
 
 const TRAZO = `2px solid ${C.hecho}`;
@@ -351,6 +356,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
 
   return (
     <div ref={tarjeta} data-r5-1 data-pantalla={pantalla.id} data-forma={pantalla.forma} style={{ paddingTop: "12px" }}>
+      <style>{CSS_R5_1}</style>
       <Cabecera actual={i} total={total} escena={SUBTEMAS[pantalla.subtema].escena} />
       <p ref={enunciado} tabIndex={-1} data-enunciado style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "16px", lineHeight: "24px", fontWeight: 600, color: C.texto, outline: "none" }}>
         {pantalla.enunciado}

@@ -1,9 +1,9 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { C, INTER } from "./comun.jsx";
 import { OpcionR5 } from "./OpcionR5.jsx";
 import { pesos } from "../../data/contabilidad.js";
 import { INTERFAZ_R5_1, costoDeLatas, textoDeOpcion } from "../../data/repasoCap5Cruzado.js";
-import { useReducido, useTemporizadores, terminarAnimaciones, llevarArriba, asomarAbajo, volarDesde } from "./movimiento.js";
+import { useReducido, terminarAnimaciones, llevarArriba, volarDesde } from "./movimiento.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -79,7 +79,6 @@ function Barra({ id, rotulo, valor, escala, relleno, ueps, conUeps, reducido }) 
 
 export function Latas({ pantalla, onCalificar }) {
   const reducido = useReducido();
-  const { despues } = useTemporizadores();
   const [vendidas, setVendidas] = useState([]);
   const [aviso, setAviso] = useState(false);
   const [elegida, setElegida] = useState(null);
@@ -128,16 +127,6 @@ export function Latas({ pantalla, onCalificar }) {
   };
 
   /* El vuelo de la lata vendida, y el despliegue de la tabla tras la cuarta. */
-  /*
-   * E2 de enganche.md: al tocar, la figura entera se mueve (lo de arriba y las
-   * barras o los rótulos de abajo). A 320 su borde inferior queda bajo el
-   * pliegue: al entrar en la pantalla, la página se desplaza lo justo para
-   * que quepa, antes de que nada se mueva. El enunciado sigue a la vista.
-   */
-  useEffect(() => {
-    despues(60, () => asomarAbajo(figura.current, reducido));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   useLayoutEffect(() => {
     const v = vuelo.current;
     if (v) {

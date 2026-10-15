@@ -115,6 +115,9 @@ export function OpcionesTitulo({ opciones, figura, contenido, etiqueta, onCalifi
       if (!reducido && el?.animate) {
         el.animate([{ height: "0px", opacity: 0, overflow: "hidden" }, { height: `${el.offsetHeight}px`, opacity: 1, overflow: "hidden" }], { duration: DESPLEGAR_MS, easing: "ease-out" });
         despues(DESPLEGAR_MS, () => reproducir(correcta.id));
+      } else if (!reducido) {
+        /* Sin la API de animaciones (navegador viejo): sin desplegar, pero la correcta se reproduce. */
+        reproducir(correcta.id);
       } else {
         llevarArriba(filas.current[elegida], true);
         asomarAbajo(cajaFigura.current, true);

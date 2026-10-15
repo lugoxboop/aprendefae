@@ -1,9 +1,9 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { C, INTER, SORA } from "./comun.jsx";
 import { OpcionR5 } from "./OpcionR5.jsx";
 import { pesos } from "../../data/contabilidad.js";
 import { INTERFAZ_R5_1, UNIDADES_POR_CAJA, acumuladosDeC9, cuentaDeC9, pesosConCentavos } from "../../data/repasoCap5Cruzado.js";
-import { useReducido, useTemporizadores, useCifra, terminarAnimaciones, llevarArriba, asomarAbajo, volarDesde } from "./movimiento.js";
+import { useReducido, useTemporizadores, useCifra, terminarAnimaciones, llevarArriba, volarDesde } from "./movimiento.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -87,16 +87,6 @@ export function Lotes({ pantalla, onCalificar }) {
       });
     }
   };
-
-  /*
-   * E2 de enganche.md: al tocar, la figura entera se mueve (lo de arriba y las
-   * barras o los rótulos de abajo). A 320 su borde inferior queda bajo el
-   * pliegue: al entrar en la pantalla, la página se desplaza lo justo para
-   * que quepa, antes de que nada se mueva. El enunciado sigue a la vista.
-   */
-  useEffect(() => {
-    despues(60, () => asomarAbajo(figura.current, reducido));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useLayoutEffect(() => {
     const v = vuelo.current;

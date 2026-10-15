@@ -86,7 +86,13 @@ function Cuenta({ c, fase, g }) {
     ? enFase(fase, { opacity: 0, transform: "translateY(-16px)" }, { opacity: 1, transform: "none" }, { ms: CIFRA_MS, retraso: c.entra.lado === "debe" ? g.debe : g.haber })
     : null;
   const raya = enFase(fase, { transform: "scaleX(0)" }, { transform: "scaleX(1)" }, { ms: RAYA_MS, retraso: g.raya });
-  const despliega = c.nueva
+  /*
+   * Quieta (preparándose), la cuenta nueva ya ocupa su alto final, invisible:
+   * así la página se desplaza sabiendo cuánto va a crecer la figura (E2).
+   */
+  const despliega = c.nueva && fase === "quieta"
+    ? { opacity: 0 }
+    : c.nueva
     ? enFase(fase, { maxHeight: "0px", opacity: 0 }, { maxHeight: fase === "final" ? "none" : "160px", opacity: 1 }, { ms: NUEVA_MS, retraso: g.nueva, propiedades: "max-height, opacity" })
     : null;
   return (
