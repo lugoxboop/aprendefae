@@ -66,7 +66,15 @@ export const fallaDe = (decide, elegida) => (elegida && elegida !== decide.corre
   ? (typeof decide.falla === "string" ? decide.falla : decide.falla[elegida])
   : null);
 
-function Opcion({ opcion, forma, elegida, correcta, reducido, onElegir }) {
+/*
+ * La opción de decidir (hoja 6). No es la Opcion de corazon/juego.jsx, la de
+ * las pantallas de opción múltiple: aquella marca con teal y coral, lleva
+ * marcador y se desactiva con disabled; esta tiene la forma de las de
+ * UnaFrase, sin coral (en la capa 3 no hay patrón de error), y queda con
+ * aria-disabled para no perder el foco. La comparten la capa 3 y la parada
+ * de la capa 2.
+ */
+export function OpcionDecidir({ opcion, forma, elegida, correcta, reducido, onElegir }) {
   const decidida = elegida !== null;
   const esCorrecta = decidida && opcion.id === correcta;
   const tachada = decidida && opcion.id === elegida && !esCorrecta;
@@ -158,7 +166,7 @@ export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "
             display: "flex", flexDirection: forma === "fila" ? "row" : "column", gap: forma === "fila" ? "4px" : "6px", marginTop: "8px",
           }}>
             {decide.opciones.map((o) => (
-              <Opcion key={o.id} opcion={o} forma={forma} elegida={elegida} correcta={decide.correcta} reducido={reducido} onElegir={onElegir} />
+              <OpcionDecidir key={o.id} opcion={o} forma={forma} elegida={elegida} correcta={decide.correcta} reducido={reducido} onElegir={onElegir} />
             ))}
           </div>
         </div>

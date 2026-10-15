@@ -17,7 +17,7 @@ const CAJAS = METODOS_T6_A2.map((m) => ({
   decide: { pregunta: PREGUNTA_CAPA_3_T6_A2, opciones: OPCIONES_CAPA_3_T6_A2, correcta: m.correcta, falla: m.falla },
 }));
 const NOMBRE = { ...LECTURA, fontFamily: "Sora, sans-serif", fontWeight: 600 };
-/* La regla de Mai (§2): en fila solo si todas caben en un renglón a 320. «Al cerrar el periodo» se parte a 320 (medido en Chromium): columna. */
+/* La regla de Mai (§2): en fila solo si todas caben en un renglón a 320. La segunda opción se parte a 320 (medido en Chromium): columna. */
 const FORMA = "columna";
 
 export default function DosMetodos() {
