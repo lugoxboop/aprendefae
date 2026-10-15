@@ -5,6 +5,7 @@ import { Opcion, Opciones, Retro, Pulsos, Cierre, Enunciado } from "../../corazo
 import { Avanzar, TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
+import { useReducido } from "../tema3/DosLineas.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -31,7 +32,9 @@ import { SOLO_LECTOR } from "../verbos.jsx";
  * nada, no hay encabezado y nunca se llama a `onCompletar`.
  *
  * config: { consigna, nota?, regla, opciones: [{ id, nombre }], banco,
- *           retro(hecho, elegida), cierre, alt, etiqueta }
+ *           retro(hecho, elegida), cierre, alt, etiqueta, visual? }
+ * `visual` es un componente que va entre el hecho y las opciones y recibe
+ * { hecho, elegida, reducido } (b5-t6-a4: el asiento mínimo).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -49,6 +52,7 @@ export default function EligeUnaOpcion({
   const [hechos, setHechos] = useState(sortear);
   const [i, setI] = useState(0);
   const [elegida, setElegida] = useState(null);
+  const reducido = useReducido();
   const [aciertos, setAciertos] = useState(0);
   const [terminado, setTerminado] = useState(false);
 
@@ -113,6 +117,8 @@ export default function EligeUnaOpcion({
         <Enunciado acento={acento}>{hecho.texto}</Enunciado>
       </div>
       {/* Una columna, siempre a la vista y en el orden de Futaba (hoja de Mai). */}
+      {/* Un visual propio entre el hecho y las opciones (b5-t6-a4: el asiento mínimo, hoja 4 de Mai). */}
+      {config.visual && <config.visual hecho={hecho} elegida={elegida} reducido={reducido} />}
       <Opciones columnas="minmax(0, 1fr)">
         {config.opciones.map((o) => (
           <Opcion
