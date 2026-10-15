@@ -67,7 +67,11 @@ const correctaDe = (c) => c.opciones.find((o) => o.tipo === null).valor;
 /* ═══════════ EL PAQUETE ═══════════ */
 
 const GUIA = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-act5.md", import.meta.url), "utf8");
-const FUTABA = GUIA.slice(GUIA.indexOf("## (1) Futaba"));
+const FUTABA = GUIA.slice(GUIA.indexOf("## (1) Futaba"), GUIA.indexOf("## (2) Futaba"));
+/* La sección (2): las líneas que Shoko pasó y Futaba aplicó. Mandan sobre (1), por id y campo. */
+const SECCION_2 = GUIA.slice(GUIA.indexOf("## (2) Futaba"));
+const filas2 = SECCION_2.split("\n").map((l) => l.split("\t"));
+const cambio = (id, campo) => filas2.find((c) => c[0] === id && c[1] === campo)?.slice(2);
 const filas = FUTABA.split("\n").map((l) => l.split("\t"));
 const fila = (primera) => filas.find((c) => c[0] === primera);
 const filaTipo = (t) => filas.find((c) => c[0] === t || c[0].startsWith(`${t} ·`));
@@ -85,7 +89,7 @@ test("★★★ los textos fijos son los del paquete: consigna, regla, reglas, p
   assert.equal(D.T6_ACT5.consigna, fila("Consigna")[1]);
   assert.equal(D.T6_ACT5.regla, fila("Regla fija")[1]);
   D.REGLAS_T6_ACT5.forEach((r, k) => assert.equal(r, fila(`Así se juega, ${k + 1}`)[1]));
-  assert.equal(D.T6_ACT5.partida, fila("Tutorial (pp. 200 y 202)")[1]);
+  assert.equal(D.T6_ACT5.partida, cambio("Tutorial", "Punto de partida")[0]);
   assert.equal(D.T6_ACT5.cierre, fila("Cierre")[1]);
   assert.equal(D.ALT_T6_ACT5, fila("Texto alternativo")[1]);
 });
@@ -97,10 +101,18 @@ test("★★★ las cinco casillas: el enunciado, la correcta y los dos distract
     assert.equal(c.enunciado, sinCifra(enunciado), `casilla ${k + 1}: enunciado`);
     assert.deepEqual(c.opciones, [opcionDe(bien), opcionDe(mal1), opcionDe(mal2)], `casilla ${k + 1}: opciones`);
   });
-  for (let k = 1; k <= 10; k++) assert.equal(D.ERRORES_T6_ACT5[`T${k}`], filaTipo(`T${k}`)[1], `T${k}`);
+  /* T3, T7 y T9, de la sección (2); los demás, de (1). */
+  const nuevo = (t) => filas2.find((c) => c[0] === t || c[0].startsWith(`${t} ·`))?.[2];
+  for (let k = 1; k <= 10; k++) assert.equal(D.ERRORES_T6_ACT5[`T${k}`], nuevo(`T${k}`) ?? filaTipo(`T${k}`)[1], `T${k}`);
   /* Cada tipo de error se usa en una casilla, y solo en una. */
   const usados = C.flatMap((c) => c.opciones.map((o) => o.tipo).filter(Boolean));
   assert.deepEqual([...usados].sort(), Object.keys(D.ERRORES_T6_ACT5).sort());
+});
+
+test("auditoría: las devoluciones T3 y T7 ya no copian B·C15 ni B·C12 de b5-t6-a2", async () => {
+  const A2 = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-act2.md", import.meta.url), "utf8");
+  for (const t of ["T3", "T7", "T9"]) assert.ok(!A2.includes(D.ERRORES_T6_ACT5[t]), `${t} está en el paquete de b5-t6-a2`);
+  assert.match(D.T6_ACT5.partida, /El Torito Currambero/);
 });
 
 test("★★★ las cuentas cuadran con el libro: neto, lo que faltó, el ajuste y el saldo final", () => {

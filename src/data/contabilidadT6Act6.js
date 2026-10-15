@@ -5,7 +5,8 @@ import { PIE_SIMULADO, PIE_PORCENTAJE, ROTULO_SIMULADO_T6_A5 } from "./contabili
  * TEMA 6 · HACER 6 — «Provisión por edades» (Célula B, b5-t6-a6).
  *
  * Todo el texto que lee el estudiante vive en ESTE archivo, guardado entero
- * en orquestador/conocimiento/paquetes/b5-t6-act6.md (versión de Futaba).
+ * en orquestador/conocimiento/paquetes/b5-t6-act6.md: la versión de Futaba,
+ * con las líneas que cambiaron tras la auditoría de Shoko (sección 2).
  * Las cifras de legibilidad entre paréntesis no se copian.
  *
  * Casillas en orden (b5/CasillasEnOrden.jsx), en dos partes: ubicar tres
@@ -31,7 +32,7 @@ export const T6_ACT6 = {
   cierre: "Primero se ubica cada deuda en su grupo por los meses que lleva vencida. Después, cada grupo con su porcentaje, y la suma es la provisión.",
 };
 
-/* Los pies de fuente (Futaba): los porcentajes, de la norma; las cifras y la decisión, del escenario. */
+/* Los pies de fuente (Futaba): los porcentajes, de la norma; las cifras y la decisión, del escenario. Los de la regla van por fila (GRUPOS_T6_ACT6). */
 export const PIES_T6_ACT6 = { regla: PIE_PORCENTAJE, nota: PIE_SIMULADO, datos: PIE_SIMULADO };
 
 /* Las tres líneas de «¿Cómo se juega?». */
@@ -43,11 +44,16 @@ export const REGLAS_T6_ACT6 = [
 
 /* ═══════════ LA REGLA FIJA: LOS CUATRO GRUPOS Y SU PORCENTAJE ═══════════ */
 
+/*
+ * Auditoría de Shoko: el 0 % no es del Decreto. La fila 1 dice «no se
+ * provisiona, en este ejemplo» y lleva el pie del escenario; las filas 2 a 4,
+ * el de la norma. Cada fila trae su pie.
+ */
 export const GRUPOS_T6_ACT6 = [
-  { id: "g1", nombre: "Vigentes o hasta 3 meses", porcentaje: "0 %" },
-  { id: "g2", nombre: "Más de 3 hasta 6 meses", porcentaje: "5 %" },
-  { id: "g3", nombre: "Más de 6 meses hasta 1 año", porcentaje: "10 %" },
-  { id: "g4", nombre: "Más de 1 año", porcentaje: "15 %" },
+  { id: "g1", nombre: "Vigentes o hasta 3 meses", porcentaje: "no se provisiona, en este ejemplo", pie: PIE_SIMULADO },
+  { id: "g2", nombre: "Más de 3 hasta 6 meses", porcentaje: "5 %", pie: PIE_PORCENTAJE },
+  { id: "g3", nombre: "Más de 6 meses hasta 1 año", porcentaje: "10 %", pie: PIE_PORCENTAJE },
+  { id: "g4", nombre: "Más de 1 año", porcentaje: "15 %", pie: PIE_PORCENTAJE },
 ];
 
 /* ═══════════ EL ESCENARIO SIMULADO, EN NÚMEROS ═══════════ */
@@ -71,7 +77,7 @@ export const ESCENARIO_T6_ACT6 = {
  */
 export const CIFRAS_CONSTRUIDAS_T6_ACT6 = [9000, 16000, 28000, 53000, 60000, 160000, 560000, 620000, 1347000, 1400000];
 /* Los distractores (opciones erradas). Cinco están en el libro como cifras sueltas de otros temas (Futaba). */
-export const DISTRACTORES_T6_ACT6 = [900, 2800, 6000, 8000, 24000, 56000, 84000, 1453000];
+export const DISTRACTORES_T6_ACT6 = [900, 2800, 6000, 8000, 24000, 44000, 56000, 84000, 1453000];
 export const DISTRACTORES_EN_EL_LIBRO_T6_ACT6 = [2800, 8000, 24000, 6000, 84000];
 
 /* ═══════════ LAS DOS PARTES ═══════════ */
@@ -108,7 +114,7 @@ export const PARTES_T6_ACT6 = [
       { id: "p4", enunciado: "¿Cuánta provisión lleva el grupo de más de tres hasta seis meses?", opciones: [op(28000), op(56000, "P1"), op(2800, "P2")] },
       { id: "p5", enunciado: "¿Cuánta provisión lleva el grupo de más de seis meses hasta un año?", opciones: [op(16000), op(8000, "P1"), op(24000, "P1")] },
       { id: "p6", enunciado: "¿Cuánta provisión lleva el grupo de más de un año?", opciones: [op(9000), op(6000, "P1"), op(900, "P2")] },
-      { id: "p7", enunciado: "¿Cuál es el total de la provisión?", opciones: [op(53000), op(1347000, "P3"), op(84000, "P4")] },
+      { id: "p7", enunciado: "¿Cuál es el total de la provisión?", opciones: [op(53000), op(44000, "P7"), op(84000, "P4")] },
       { id: "p8", enunciado: "¿Cuál es el valor neto de lo que deben los clientes?", opciones: [op(1347000), op(1400000, "P5"), op(1453000, "P6")] },
     ],
   },
@@ -123,11 +129,12 @@ export const ERRORES_T6_ACT6 = {
   G0: "Mira cuántos meses lleva vencida y busca el grupo que los cubre.",
   P1: "Ese es el porcentaje de otro grupo. Mira el rango del grupo y usa su porcentaje.",
   P2: "Revisa la cuenta: te sobra o te falta un cero.",
-  P3: "Ese es el valor neto. La provisión es solo la suma de lo calculado en cada grupo.",
   /* «En este ejemplo»: no provisionar ese grupo es una decisión del escenario, no de la norma. */
   P4: "Las vigentes y las de hasta tres meses no llevan provisión en este ejemplo. Suma solo los otros tres grupos.",
   P5: "Falta restar la provisión: el valor neto es lo que deben los clientes menos la provisión.",
   P6: "La provisión no se suma: se resta.",
+  /* Auditoría de Shoko: sustituye a P3 en la casilla 7 ($44.000 = 28.000 + 16.000). */
+  P7: "Te falta un grupo. Suma la provisión de los tres grupos que sí la llevan.",
 };
 
 export const ALT_T6_ACT6 = "Actividad de casillas. Primero ubicas tres deudas en su grupo según los meses que llevan vencidas. Después calculas la provisión de tres grupos, el total y el valor neto. Tienes un intento por casilla; si fallas, se muestra la razón y el valor correcto.";
