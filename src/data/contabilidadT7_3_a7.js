@@ -105,6 +105,7 @@ const QUE_ES = {
 
 const COMO_SE_MIDE = {
   id: "como-se-mide",
+  pista: "La NIC 2 del libro pide el menor de dos valores. ¿Cuáles son esos dos aquí?",
   tipo: "eleccion",
   parrafos: [
     "Según el libro, los inventarios se miden al costo o al valor neto realizable, el que sea menor.",
@@ -128,6 +129,7 @@ const COMO_SE_MIDE = {
 
 const EL_COSTO = {
   id: "el-costo",
+  pista: "El costo sube con lo que hace falta para tener la mercancía. ¿Cuál de estos lo hace bajar?",
   tipo: "eleccion",
   parrafos: [
     "Según el libro, el costo de los inventarios incluye todo lo que costó adquirirlos y transformarlos. También los otros costos que se hicieron para dejarlos en su condición y su lugar actuales.",

@@ -63,6 +63,7 @@ const QUE_ES = {
 const PIE_G3 = "Basado en el libro, pp. 246-247";
 const EL_COMPRADOR = {
   id: "libro-del-comprador",
+  pista: "En el permanente, la compra entró a una cuenta. La devolución saca la mercancía de esa misma cuenta.",
   tipo: "eleccion",
   enunciado: "El 18 de marzo, Santa Martha le compra a crédito a Tierra Bomba 1.900 unidades del producto ABX, a $8.000 cada una, más el IVA. El 22 de marzo le devuelve 300 unidades que llegaron en mal estado, y le pide que se las rebaje de lo que le debe. Usa el sistema de inventario permanente.",
   ficha: [
@@ -138,8 +139,8 @@ const EL_VENDEDOR = {
   despues: ["Esta cuenta se resta de Ingresos por ventas en el estado de resultados."],
   consigna: "La devolución de una venta lleva un segundo asiento. Toca Debe o Haber en cada línea.",
   lineas: [
-    { id: "inventario", cuenta: "Inventario de mercancías", monto: COSTO_DEVUELTO, lado: DEBE, devolucion: "Vuelve mercancía a la bodega, así que el activo aumenta: va al debe." },
-    { id: "costo", cuenta: "Costo de mercancía vendida", monto: COSTO_DEVUELTO, lado: HABER, devolucion: "Se reversa el costo de lo que volvió: el costo de la mercancía vendida baja, y va al haber." },
+    { id: "inventario", cuenta: "Inventario de mercancías", monto: COSTO_DEVUELTO, lado: DEBE, pista: "Vuelve mercancía a la bodega. ¿De qué lado sube un activo?", devolucion: "Vuelve mercancía a la bodega, así que el activo aumenta: va al debe." },
+    { id: "costo", cuenta: "Costo de mercancía vendida", monto: COSTO_DEVUELTO, lado: HABER, pista: "Lo devuelto ya no es una venta, así que su costo baja. ¿De qué lado baja un costo?", devolucion: "Se reversa el costo de lo que volvió: el costo de la mercancía vendida baja, y va al haber." },
   ],
   pie: PIE_G4,
   error: { pie: PIE_G4 },
@@ -150,6 +151,7 @@ const EL_VENDEDOR = {
 const PIE_FRENTE = "Basado en el libro, pp. 230 y 246";
 const FRENTE = {
   id: "frente-al-periodico",
+  pista: "Mira a qué cuenta fue la compra en el permanente. La devolución reversa ese mismo registro.",
   tipo: "eleccion",
   pregunta: "En el periódico, la devolución de compras va a Devoluciones de compras. ¿Por qué en el permanente va a Inventario de mercancías?",
   opciones: [

@@ -17,7 +17,9 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · los aciertos de P4 y P5 son los originales de la v1 (decisión anotada)
  *   · la ficha, la tabla de P6 y las tarjetas de P7 son las de Near; las
  *     cifras se calculan
- *   · cada pantalla y cada estado muestran exactamente sus textos y su pie
+ *   · cada pantalla y cada estado muestran exactamente sus textos y su pie,
+ *     con la escalera de ayuda del lote 2 (pista; luego respuesta y porqué)
+ *   · lote 2: las pistas y la tercera opción de P3 y P4 son las de Near
  *   · UEPS con su rótulo; sin el 33 %; en T7-1 en la posición 5
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -44,6 +46,7 @@ const A = await import("../../data/contabilidadT7_1_ap3.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: TresFormas, CSS_AP3 } = await import("../../components/mecanicas/libros/t7/TresFormas.jsx");
 const { PIEZAS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
+const { textosDelError, sinAsiEs } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(`orquestador/conocimiento/paquetes/${f}`, RAIZ), "utf8");
@@ -52,6 +55,9 @@ const V2 = leer("t7-1-ap3-v2-cambios.md");
 const GLOSA = leer("t7-1-ap3-glosa-renta.md");
 const OPC = leer("t7-1-ap3-opcionales.md");
 const CAPAS = [V1, V2, GLOSA, OPC];
+/* Lote 2 de la revisión de calidad (Near): las pistas del primer error y el anexo de la tercera opción. */
+const LOTE2_PISTAS = leer("lote2-pistas-v1.md");
+const LOTE2_ANEXO = leer("lote2-anexo-v1.md");
 const CONTENIDO_V1 = V1.slice(V1.indexOf("## Contenido por pantalla y estado"), V1.indexOf("## Erratas C7 que toca"));
 const COBERTURA_V2 = V2.slice(V2.indexOf("## Corrección 1"), V2.indexOf("## Corrección 2"));
 const P = A.PIEZA_TRES_FORMAS;
@@ -78,6 +84,7 @@ function textosVisibles() {
     for (const k of ["objetivo", "encabezado", "pregunta", "siguiente", "boton", "pie", "cierre"]) if (p[k]) t.push(p[k]);
     t.push(...p.parrafos, ...(p.calculos ?? []));
     if (p.error) t.push(p.error.pie);
+    if (p.pista) t.push(p.pista);
     for (const o of p.opciones ?? []) { t.push(o.texto); if (o.devolucion) t.push(o.devolucion); }
     if (p.tarjetas) for (const m of p.tarjetas.metodos) t.push(m.aFavor, m.enContra);
     if (p.acierto) t.push(p.acierto.texto, p.acierto.pie, ...p.acierto.calculos);
@@ -121,8 +128,8 @@ const SIN_USAR_V1 = [
 
 /* ═══════════ 1 · TEXTOS CONTRA LAS CUATRO CAPAS ═══════════ */
 
-test("★★★ cada texto de los datos está, letra por letra, en alguna de las cuatro capas", () => {
-  const faltan = textosVisibles().filter((t) => !CAPAS.some((c) => c.includes(t)));
+test("★★★ cada texto de los datos está, letra por letra, en alguna de las cuatro capas (o, si es del lote 2, en su paquete)", () => {
+  const faltan = textosVisibles().filter((t) => !CAPAS.some((c) => c.includes(t)) && !LOTE2_PISTAS.includes(t) && !LOTE2_ANEXO.includes(t));
   assert.deepEqual(faltan.filter((t) => !Object.values(A.BOTON).includes(t)), []);
 });
 
@@ -166,6 +173,51 @@ test("★★ la glosa de «impuesto de renta»: en P7, justo después de «lo ve
   assert.ok(!JSON.stringify(pantalla("la-recomendacion")).includes(glosa));
   assert.match(pantalla("la-recomendacion").parrafos.join(" "), /impuesto de renta/);
   for (const p of P.pantallas.slice(0, 7)) assert.doesNotMatch(JSON.stringify(p), /impuesto de renta/i, `${p.id}: el término aparece antes de su glosa`);
+});
+
+/* Las filas del anexo del lote 2 de una pieza: su pantalla, las opciones que tenía (✓ = correcta), la tercera y su devolución. */
+function filasDelAnexo(pieza) {
+  return LOTE2_ANEXO.split("\n").filter((l) => l.startsWith(`| ${pieza} |`)).map((l) => {
+    const c = l.slice(1, -1).split("|").map((x) => x.trim());
+    return {
+      pantalla: c[1].match(/`([^`]+)`/)[1],
+      opciones: c[2].split(" · ").map((x) => ({ texto: x.replace(/ ✓$/, ""), correcta: x.endsWith(" ✓") })),
+      tercera: c[3].match(/^\*\*(.+)\*\*$/)[1],
+      devolucion: c[4].match(/^«(.+)»$/)[1],
+    };
+  });
+}
+
+test("★★★ lote 2 · anexo: P3 y P4 pasan de dos a tres opciones; las dos de la v1 siguen y la tercera es, letra por letra, la del anexo", () => {
+  const filas = filasDelAnexo(A.AP3_ID);
+  assert.deepEqual(filas.map((f) => f.pantalla), ["peps", "ueps"]);
+  for (const f of filas) {
+    const p = pantalla(f.pantalla);
+    assert.equal(p.opciones.length, 3, f.pantalla);
+    const nueva = p.opciones.find((o) => o.texto === f.tercera);
+    assert.ok(nueva, `${f.pantalla}: falta la tercera opción del anexo`);
+    assert.deepEqual({ correcta: nueva.correcta, devolucion: nueva.devolucion }, { correcta: false, devolucion: f.devolucion }, f.pantalla);
+    /* El anexo las nombra en corto («De las 30 compradas, a $25.000»): cada trozo del nombre corto está en la opción, y la ✓ sigue siendo la correcta. */
+    const viejas = p.opciones.filter((o) => o !== nueva);
+    assert.equal(viejas.length, f.opciones.length, f.pantalla);
+    for (const corta of f.opciones) {
+      const o = viejas.filter((x) => corta.texto.split(", ").every((trozo) => x.texto.includes(trozo)));
+      assert.equal(o.length, 1, `${f.pantalla}: «${corta.texto}»`);
+      assert.equal(o[0].correcta, corta.correcta, `${f.pantalla}: «${corta.texto}»`);
+    }
+    /* Las dos de antes, con su devolución de la v1 o la v2. */
+    for (const o of p.opciones.filter((x) => x !== nueva && !x.correcta)) assert.ok(CAPAS.some((c) => c.includes(`«${o.devolucion}»`)), o.devolucion);
+  }
+});
+
+test("★★★ lote 2 · pistas: cada pregunta lleva la suya, letra por letra la de Near para su pantalla", () => {
+  const seccion = LOTE2_PISTAS.slice(LOTE2_PISTAS.indexOf(`### ${A.AP3_ID} `), LOTE2_PISTAS.indexOf("\n### ", LOTE2_PISTAS.indexOf(`### ${A.AP3_ID} `)));
+  const deNear = Object.fromEntries(seccion.split("\n").filter((l) => /^\| P\d/.test(l)).map((l) => {
+    const c = l.slice(1, -1).split("|").map((x) => x.trim());
+    return [c[0].match(/`([^`]+)`/)[1], c[2].match(/^«(.+)»$/)[1]];
+  }));
+  const preguntas = P.pantallas.filter((p) => p.tipo === "eleccion");
+  assert.deepEqual(Object.fromEntries(preguntas.map((p) => [p.id, p.pista])), deNear);
 });
 
 /* ═══════════ 2 · TABLAS Y CIFRAS ═══════════ */
@@ -235,11 +287,19 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos y su
       const ops = p.opciones.map((o) => o.texto).sort();
       assert.deepEqual(enPantalla(m.caja), { textos: [...cab, A.BOTON.confirmar, p.pie], opciones: ops }, `${p.id} colocando`);
       vistos.push(`${p.id}:colocando`);
-      for (const o of p.opciones.filter((x) => !x.correcta)) {
+      /* La escalera de ayuda (lote 2): el 1.er error da la pista; el 2.º y siguientes, la respuesta con su porqué.
+       * Se recorren todas las incorrectas y luego se falla otra vez la primera, para ver los dos peldaños. */
+      assert.ok(p.pista, `${p.id} sin pista del lote 2`);
+      const malas = p.opciones.filter((x) => !x.correcta);
+      let fallos = 0;
+      for (const o of [...malas, malas[0]]) {
         await tocar(m.caja.querySelector(`[data-opcion="${o.id}"]`));
         await tocar(boton(m.caja, "confirmar"));
-        assert.deepEqual(enPantalla(m.caja), { textos: [...cab, A.INTERFAZ.incorrecto, o.devolucion, A.BOTON.probarOtra, p.error.pie], opciones: ops }, `${p.id} error ${o.id}`);
-        vistos.push(`${p.id}:error:${o.id}`);
+        fallos++;
+        const esperados = textosDelError(p, o, fallos);
+        assert.deepEqual(esperados, fallos === 1 ? [p.pista] : [`La respuesta es «${p.opciones.find((x) => x.correcta).texto.replace(/\.$/, "")}».`, sinAsiEs(p.acierto.texto)].filter(Boolean), `${p.id} escalera ${fallos}`);
+        assert.deepEqual(enPantalla(m.caja), { textos: [...cab, A.INTERFAZ.incorrecto, ...esperados, A.BOTON.probarOtra, p.error.pie], opciones: ops }, `${p.id} error ${fallos} ${o.id}`);
+        vistos.push(`${p.id}:error${fallos}:${o.id}`);
         await tocar(boton(m.caja, "probar-otra"));
       }
       await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((x) => x.correcta).id}"]`));
@@ -248,8 +308,9 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos y su
       vistos.push(`${p.id}:acierto`);
       await tocar(boton(m.caja, "seguir"));
     }
-    /* 4 de lectura; P3 y P4 con 3 estados; P5 a P8 con 4. */
-    assert.equal(vistos.length, 4 + 2 * 3 + 4 * 4);
+    /* 4 de lectura; P3 a P8, con tres opciones (P3 y P4 desde el anexo del lote 2):
+     * colocando, las 2 incorrectas, la 1.ª otra vez (2.º peldaño) y el acierto. */
+    assert.equal(vistos.length, 4 + 6 * 5);
     assert.equal(m.caja.querySelector("[data-boton]") === null, true, "el resumen no lleva botón");
   } finally {
     m.desmontar();

@@ -91,6 +91,7 @@ const PORTADA = {
 
 const QUE_ES = {
   id: "que-es",
+  pista: "El comercial ya viene restado en la factura. ¿Cuál de los dos ocurre después de facturar?",
   tipo: "eleccion",
   parrafos: [
     "El descuento condicionado depende de una condición. Por ejemplo, que el cliente pague dentro de un plazo.",
@@ -101,6 +102,8 @@ const QUE_ES = {
   opciones: [
     { id: "comercial", texto: "El comercial", devolucion: "El comercial ya viene restado en la factura, así que no se registra. El que se registra es el condicionado, cuando el cliente cumple." },
     { id: "condicionado", texto: "El condicionado", correcta: true },
+    /* Tercera opción: anexo del lote 2 (Near). */
+    { id: "los-dos", texto: "Los dos", devolucion: "El comercial ya viene restado en la factura, así que no tiene un asiento propio." },
   ],
   acierto: { texto: "Así es. El comercial no se registra, porque ya viene restado en la factura. El condicionado sí, cuando el cliente cumple.", pie: "Basado en el libro, pp. 248 y 251" },
   error: { pie: "Basado en el libro, pp. 248 y 251" },
@@ -122,6 +125,7 @@ const NINGUNO_30 = "A los treinta días ya no aplica ningún descuento. Paga el 
 
 const CONDICIONES = {
   id: "condiciones",
+  pista: "Lee la condición que tiene el plazo de treinta días. ¿Trae algún porcentaje?",
   tipo: "eleccion",
   parrafos: [
     "Una venta puede traer varias condiciones a la vez, y cada una tiene su forma de escribirse. Mira las del libro: 5 %, 15/10, 5/20 y n/30.",
@@ -184,6 +188,7 @@ const EJEMPLO = {
 
 const CUAL_LE_TOCA = {
   id: "cual-le-toca",
+  pista: "Calcula los días que pasaron y compáralos con el plazo de cada condición, de la más corta en adelante.",
   tipo: "eleccion",
   pregunta: "El 4 de junio, Santa Martha paga. Del 25 de mayo al 4 de junio pasaron diez días. ¿Qué descuento condicionado le toca?",
   opciones: [
@@ -199,6 +204,7 @@ const CUAL_LE_TOCA = {
 
 const SOBRE_QUE = {
   id: "sobre-que",
+  pista: "El descuento condicionado no toca el IVA. Y la rebaja comercial ya se restó antes.",
   tipo: "eleccion",
   pregunta: "¿Sobre qué valor se calcula el 15 %?",
   opciones: [

@@ -106,6 +106,7 @@ const DOS_IMPUESTOS = {
 /* Pantalla 2 · pregunta 1 (interno: La compra · base de la retención). */
 const BASE_DE_LA_RETENCION = {
   id: "base-de-la-retencion",
+  pista: "Piensa si el IVA es parte de lo que vale la mercancía o es un impuesto aparte.",
   tipo: "eleccion",
   enunciado: "El 16 de abril, La Reventa Ltda. le compra mercancía a un proveedor por $5.000.000, a crédito. La empresa usa el sistema de inventario periódico.",
   ficha: [
@@ -130,6 +131,13 @@ const BASE_DE_LA_RETENCION = {
       correcta: false,
       devolucion: "Ese valor ya incluye el IVA. La retención se calcula sobre el valor de la mercancía, sin el impuesto a las ventas: $5.000.000.",
     },
+    {
+      id: "solo-iva",
+      texto: "$800.000",
+      correcta: false,
+      /* Tercera opción: anexo del lote 2 (Near). */
+      devolucion: "En este ejercicio, la retención se calcula sobre el valor de la mercancía. No se calcula sobre el IVA.",
+    },
   ],
   pie: "Basado en el libro, p. 211",
   error: { boton: BOTON.probarOtra, pie: "Basado en el libro, p. 211" },
@@ -151,18 +159,21 @@ const LADOS_DE_LA_COMPRA = {
   lineas: [
     {
       id: "iva",
+      pista: "Este IVA baja lo que la empresa le debe al Estado. ¿De qué lado baja un pasivo?",
       texto: "IVA por pagar · $800.000",
       lado: DEBE,
       devolucion: "En la compra, el libro anota el IVA en el debe de IVA por pagar. Así baja lo que la empresa le debe al Estado por IVA.",
     },
     {
       id: "retencion",
+      pista: "La Reventa se quedó con ese dinero y ahora se lo debe al Estado. ¿Esa deuda sube o baja?",
       texto: "Retención en la fuente por pagar · $175.000",
       lado: HABER,
       devolucion: "La Reventa le descontó ese valor al proveedor y ahora se lo debe a la Dirección de Impuestos. Es un pasivo que aumenta: va al haber.",
     },
     {
       id: "proveedores",
+      pista: "La Reventa queda debiendo la factura. ¿Esa deuda sube o baja?",
       texto: "Cuentas por pagar – proveedores · $?",
       /* Lo que se ve cuando la línea queda bien ubicada. */
       textoResuelto: "Cuentas por pagar – proveedores · $5.625.000",
@@ -217,24 +228,28 @@ const LA_VENTA = {
   lineas: [
     {
       id: "iva",
+      pista: "Ahora La Reventa cobra el IVA y se lo debe al Estado. ¿Esa deuda sube o baja?",
       texto: "IVA por pagar · $320.000",
       lado: HABER,
       devolucion: "En la venta es al revés que en la compra: La Reventa cobró el IVA y se lo debe al Estado. El libro lo anota en el haber de IVA por pagar.",
     },
     {
       id: "anticipo",
+      pista: "Para La Reventa, ese dinero es un impuesto que ya pagó por adelantado. Es algo a su favor.",
       texto: "Anticipo fiscal · $70.000",
       lado: DEBE,
       devolucion: "Esta vez el cliente le descontó la retención a La Reventa. Para La Reventa es un impuesto pagado por adelantado: el libro lo anota en el debe de Anticipo fiscal.",
     },
     {
       id: "ingresos",
+      pista: "La venta es un ingreso. Recuerda de qué lado aumenta un ingreso.",
       texto: "Ingresos por ventas · $2.000.000",
       lado: HABER,
       devolucion: "La venta es un ingreso para La Reventa. Un ingreso que aumenta va al haber: por eso la venta se anota en el haber de Ingresos por ventas.",
     },
     {
       id: "clientes",
+      pista: "El cliente le queda debiendo a La Reventa. ¿Eso es algo que La Reventa debe o que le deben?",
       texto: "Cuentas por cobrar – clientes · $?",
       textoResuelto: "Cuentas por cobrar – clientes · $2.250.000",
       lado: DEBE,
@@ -270,6 +285,7 @@ const LA_VENTA = {
 /* Pantalla 5 · pregunta 4 (interno: Lado a lado). */
 const LADO_A_LADO = {
   id: "lado-a-lado",
+  pista: "Fíjate en quién descuenta la retención en cada caso: ¿La Reventa o su cliente?",
   tipo: "eleccion",
   tabla: {
     columnas: ["", "En la compra", "En la venta"],

@@ -7,7 +7,9 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-1 · AP2 «La factura completa», montada con la «Figura de AP2» de Watari.
  *
- *   · cada pantalla y cada estado muestran exactamente sus textos
+ *   · cada pantalla y cada estado muestran exactamente sus textos, con la
+ *     escalera de ayuda del lote 2: en la pregunta, pista y luego respuesta;
+ *     en cada línea, pista y luego respuesta con su porqué, y la línea cerrada
  *   · P2: el asiento trae «Compras · 5.000.000» resuelta; el cálculo de la
  *     retención aparece con el acierto
  *   · P3 y P4: una línea a la vez; el total con «?» hasta el acierto; el error
@@ -45,6 +47,7 @@ const A = await import("../../data/contabilidadT7_1_ap2.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: Factura } = await import("../../components/mecanicas/libros/t7/LaFacturaCompleta.jsx");
 const { PIEZAS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
+const { textosDelError, textosDeLinea, anunciarRespuesta, sinAsiEs } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const P = A.PIEZA_LA_FACTURA_COMPLETA;
@@ -68,6 +71,7 @@ const estado = (caja) => caja.querySelector("[data-estado]")?.dataset.estado ?? 
 const casilla = (caja, linea, lado) => caja.querySelector(`[data-linea="${linea}"][data-lado="${lado}"]`);
 const filas = (caja) => [...caja.querySelectorAll("[data-fila]")].map((f) => f.dataset.fila);
 const otro = (lado) => (lado === A.DEBE ? A.HABER : A.DEBE);
+const nombreLado = (lado) => (lado === A.DEBE ? "Debe" : "Haber");
 
 function enPantalla(caja) {
   const out = [];
@@ -98,11 +102,20 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos", as
         const ops = p.opciones.map((o) => o.texto).sort();
         assert.deepEqual(enPantalla(m.caja), { textos: [...cab, p.pregunta, A.BOTON.confirmar, p.pie], opciones: ops }, `${p.id} colocando`);
         vistos.push(`${p.id}:colocando`);
-        for (const o of p.opciones.filter((x) => !x.correcta)) {
+        /* La escalera de ayuda (lote 2): el 1.er error da la pista; el 2.º y siguientes, «La respuesta es «…».».
+         * Se recorren todas las incorrectas y luego se falla otra vez la primera, para ver los dos peldaños. */
+        assert.ok(p.pista, `${p.id} sin pista del lote 2`);
+        const malas = p.opciones.filter((x) => !x.correcta);
+        let fallos = 0;
+        for (const o of [...malas, malas[0]]) {
           await tocar(m.caja.querySelector(`[data-opcion="${o.id}"]`));
           await tocar(boton(m.caja, "confirmar"));
-          assert.deepEqual(enPantalla(m.caja), { textos: [...cab, p.pregunta, A.INTERFAZ.incorrecto, o.devolucion, A.BOTON.probarOtra, p.error.pie], opciones: ops }, `${p.id} error ${o.id}`);
-          vistos.push(`${p.id}:error:${o.id}`);
+          fallos++;
+          const esperados = textosDelError(p, o, fallos);
+          if (fallos === 1) assert.deepEqual(esperados, [p.pista], `${p.id} 1.er error`);
+          else assert.equal(esperados[0], anunciarRespuesta(p.opciones.find((x) => x.correcta).texto), `${p.id} 2.º error`);
+          assert.deepEqual(enPantalla(m.caja), { textos: [...cab, p.pregunta, A.INTERFAZ.incorrecto, ...esperados, A.BOTON.probarOtra, p.error.pie], opciones: ops }, `${p.id} error ${fallos} ${o.id}`);
+          vistos.push(`${p.id}:error${fallos}:${o.id}`);
           await tocar(boton(m.caja, "probar-otra"));
         }
         await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((x) => x.correcta).id}"]`));
@@ -112,23 +125,38 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos", as
         await tocar(boton(m.caja, "seguir"));
         continue;
       }
-      /* Asiento: todo al revés, luego todo bien. */
+      /* Asiento: todo al revés dos veces (1.er error: la pista de cada línea; 2.º: la respuesta y su porqué, y la
+       * línea se cierra en su lado); luego, con todas cerradas, se confirma y es el acierto. */
       assert.deepEqual(enPantalla(m.caja).textos, [...cab, p.consigna, A.BOTON.confirmar, p.pie], `${p.id} colocando`);
       vistos.push(`${p.id}:colocando`);
+      for (const fallos of [1, 2]) {
+        for (const l of p.lineas) await tocar(casilla(m.caja, l.id, otro(l.lado)));
+        await tocar(boton(m.caja, "confirmar"));
+        for (const l of p.lineas) {
+          assert.ok(l.pista, `${p.id} · ${l.id} sin pista del lote 2`);
+          assert.deepEqual(textosDeLinea(p, l, fallos), fallos === 1 ? [l.pista] : [`La respuesta es «${nombreLado(l.lado)}».`, l.devolucion], `${p.id} · ${l.id} escalera ${fallos}`);
+        }
+        assert.deepEqual(enPantalla(m.caja).textos, [...cab, p.consigna, ...p.lineas.flatMap((l) => [A.INTERFAZ.incorrecto, ...textosDeLinea(p, l, fallos)]), A.BOTON.probarOtra, p.error.pie], `${p.id} error ${fallos}`);
+        vistos.push(`${p.id}:error${fallos}`);
+        await tocar(boton(m.caja, "probar-otra"));
+        /* Tras el 1.er error las malas se vacían; tras el 2.º, cada línea queda cerrada en su lado. */
+        for (const l of p.lineas) {
+          assert.equal(casilla(m.caja, l.id, l.lado).dataset.llena, fallos === 1 ? "no" : "si", `${p.id} · ${l.id} tras probar otra ${fallos}`);
+          assert.equal(casilla(m.caja, l.id, otro(l.lado)).dataset.llena, "no", `${p.id} · ${l.id} tras probar otra ${fallos}`);
+        }
+      }
+      /* Cerradas: tocar el otro lado no las mueve. */
       for (const l of p.lineas) await tocar(casilla(m.caja, l.id, otro(l.lado)));
-      await tocar(boton(m.caja, "confirmar"));
-      assert.deepEqual(enPantalla(m.caja).textos, [...cab, p.consigna, ...p.lineas.flatMap((l) => [A.INTERFAZ.incorrecto, l.devolucion]), A.BOTON.probarOtra, p.error.pie], `${p.id} error`);
-      vistos.push(`${p.id}:error`);
-      await tocar(boton(m.caja, "probar-otra"));
-      for (const l of p.lineas) await tocar(casilla(m.caja, l.id, l.lado));
+      for (const l of p.lineas) assert.equal(casilla(m.caja, l.id, l.lado).dataset.llena, "si", `${p.id} · ${l.id} cerrada se movió`);
       await tocar(boton(m.caja, "confirmar"));
       const notas = p.acierto.orden.map((id) => p.acierto.textos[p.acierto.notas[id]]);
       assert.deepEqual(enPantalla(m.caja).textos, [...cab, p.consigna, ...notas, A.INTERFAZ.correcto, p.acierto.textos[0], A.BOTON.seguir, p.acierto.pie], `${p.id} acierto`);
       vistos.push(`${p.id}:acierto`);
       await tocar(boton(m.caja, "seguir"));
     }
-    /* Portada, P1 y resumen + 2 preguntas (P2: 3 estados; P5: 4) + 2 asientos (3 estados). */
-    assert.equal(vistos.length, 3 + 3 + 4 + 6);
+    /* Portada, P1 y resumen + 2 preguntas de tres opciones (P2 desde el anexo del lote 2: colocando, 2 errores,
+     * el 2.º peldaño y el acierto) + 2 asientos (colocando, 1.er error, 2.º error y acierto). */
+    assert.equal(vistos.length, 3 + 2 * 5 + 2 * 4);
   } finally {
     m.desmontar();
   }
@@ -158,6 +186,22 @@ test("★★★ el error lleva a «Probar otra» y el acierto a «Seguir»", asy
     } finally {
       m.desmontar();
     }
+  }
+});
+
+/*
+ * POR ARREGLAR EN EL COMPONENTE (no en la prueba): tras «La respuesta es «…».», la escalera pone el acierto sin
+ * «Así es.» (escaleraAyuda.js, textosDelError, lee `pantalla.acierto.texto`). En esta pieza el acierto es
+ * `acierto.textos` (una lista), así que el 2.º error de P2 y P5 sale sin su porqué. Queda como «todo».
+ */
+test("★★ lote 2 · el 2.º error de una pregunta trae la respuesta y su porqué (el acierto sin «Así es.»)", () => {
+  for (const p of P.pantallas.filter((x) => x.tipo === "eleccion")) {
+    const o = p.opciones.find((x) => !x.correcta);
+    const r = textosDelError(p, o, 2);
+    assert.equal(r[0], anunciarRespuesta(p.opciones.find((x) => x.correcta).texto), p.id);
+    /* Después del anuncio, el porqué: textos del acierto, sin «Así es.». */
+    assert.ok(r.length > 1, `${p.id}: el 2.º error sale sin su porqué`);
+    assert.ok(r.slice(1).every((t) => p.acierto.textos.map(sinAsiEs).includes(t)), p.id);
   }
 });
 
@@ -209,14 +253,27 @@ test("★★★ asiento: una línea a la vez, «?» hasta el acierto, error en s
     assert.equal(estado(m.caja), "error");
     assert.equal(m.caja.querySelector("[data-sumas]") === null, true, "sumas en el error");
     assert.equal(casilla(m.caja, "proveedores", A.HABER).textContent, "?", "el total se ve en el error");
-    const enLinea = m.caja.querySelector('[data-fila="retencion"] [data-mensaje=error] p');
-    assert.equal(enLinea.textContent, p.lineas.find((l) => l.id === "retencion").devolucion);
+    /* 1.er error de la línea: su pista (lote 2). */
+    const retencion = p.lineas.find((l) => l.id === "retencion");
+    const enLinea = () => [...m.caja.querySelectorAll('[data-fila="retencion"] [data-mensaje=error] p')].map((x) => x.textContent);
+    assert.deepEqual(enLinea(), [retencion.pista]);
     assert.equal(m.caja.querySelectorAll("[data-mensaje=error]").length, 1);
     assert.match(casilla(m.caja, "retencion", A.DEBE).getAttribute("aria-label"), /incorrecto$/);
     await tocar(boton(m.caja, "probar-otra"));
     assert.equal(casilla(m.caja, "retencion", A.DEBE).dataset.llena, "no");
     assert.equal(casilla(m.caja, "iva", A.DEBE).dataset.llena, "si", "«Probar otra» devolvió una línea bien puesta");
-    await tocar(casilla(m.caja, "retencion", A.HABER));
+    /* 2.º error de la misma línea: la respuesta y su porqué; «Probar otra» la deja cerrada en su lado. */
+    await tocar(casilla(m.caja, "retencion", A.DEBE));
+    await tocar(boton(m.caja, "confirmar"));
+    assert.equal(estado(m.caja), "error");
+    assert.deepEqual(enLinea(), ["La respuesta es «Haber».", retencion.devolucion]);
+    assert.equal(m.caja.querySelectorAll("[data-mensaje=error]").length, 1);
+    await tocar(boton(m.caja, "probar-otra"));
+    assert.equal(casilla(m.caja, "retencion", A.HABER).dataset.llena, "si", "la línea cerrada no quedó en su lado");
+    assert.equal(casilla(m.caja, "iva", A.DEBE).dataset.llena, "si", "«Probar otra» devolvió una línea bien puesta");
+    await tocar(casilla(m.caja, "retencion", A.DEBE));
+    assert.equal(casilla(m.caja, "retencion", A.HABER).dataset.llena, "si", "la línea cerrada se pudo mover");
+    assert.equal(casilla(m.caja, "retencion", A.DEBE).dataset.llena, "no", "la línea cerrada se pudo mover");
     await tocar(boton(m.caja, "confirmar"));
     assert.equal(estado(m.caja), "acierto");
     assert.equal(casilla(m.caja, "proveedores", A.HABER).textContent, "5.625.000");
