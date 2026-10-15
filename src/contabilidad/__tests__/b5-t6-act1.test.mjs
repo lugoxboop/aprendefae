@@ -101,10 +101,16 @@ const filas = (texto) => {
 const GUIA_INICIAL = filas(seccion("### 2.1", "### 2.2"));
 const GUIA_COLOCANDO = filas(seccion("### 2.2", "### 2.3"));
 const GUIA_CIERRE = filas(seccion("### 2.3", "## 3 "));
-const GUIA_FICHAS = filas(seccion("### 3.1", "### 3.2"));
-const GUIA_ACIERTOS = filas(seccion("### 3.2", "### 3.3"));
+/* La entrega 4 de Futaba (sección 6) manda sobre 3.1, 3.2 y 3.4, ficha por ficha. */
+const conEntrega4 = (base, desde, hasta) => {
+  const nuevas = filas(seccion(desde, hasta));
+  for (const [id, celdas] of Object.entries(nuevas)) if (base[id]) base[id] = [celdas[0], ...base[id].slice(1)];
+  return base;
+};
+const GUIA_FICHAS = conEntrega4(filas(seccion("### 3.1", "### 3.2")), "### 6.1", "### 6.2");
+const GUIA_ACIERTOS = conEntrega4(filas(seccion("### 3.2", "### 3.3")), "### 6.2", "### 6.3");
 const GUIA_ERRORES = filas(seccion("### 3.3", "### 3.4"));
-const GUIA_SEGUNDO = filas(seccion("### 3.4", "## 4 "));
+const GUIA_SEGUNDO = conEntrega4(filas(seccion("### 3.4", "## 4 ")), "### 6.3", "Para Shoko, el cruce");
 
 const IDS = ["socio", "trabajador", "particular", "prestamo-cliente", "venta-mercancia", "venta-servicio", "cheque", "pago", "devolucion", "descuento"];
 const RESPUESTA = { otra: "Otra", "clientes/debita": "Clientes → Se debita", "clientes/acredita": "Clientes → Se acredita" };

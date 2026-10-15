@@ -225,8 +225,25 @@ export function AsientoEnLineas({ lineas, rotulo = null, acento = FAE.teal, tota
       )}
       {lineas.map((l, k) => (
         <div key={`${l.cuenta}-${l.lado}-${k}`} style={{ display: "flex", gap: "8px", alignItems: "baseline", padding: "3px 0" }}>
+          {/*
+            12 px, no 10. La Célula C midió las 44 piezas de T7 a 320 px y
+            encontró este rótulo entre los textos por debajo de 12. Importa
+            más de lo que parece: el lado de la línea se dice con la PALABRA
+            y con el color, y a 10 px la palabra deja de leerse — entonces el
+            único aviso que queda es el color, que es justo lo que no puede
+            pasar (ver la revisión de daltonismo en kit.md).
+
+            Y `minWidth` en vez de `width`: a 12 px «HABER» mide 47,5 de los
+            50 que había fijos. Intenté comprobar que también cupiera si Sora
+            no carga y la medición me dio el MISMO número en cuatro
+            tipografías distintas — o sea, que la sustitución no ocurría y la
+            comprobación no comprobaba nada. En vez de apostar a una medida
+            que no pude validar, el ancho deja de ser un techo: si alguna vez
+            no cabe, empuja en lugar de recortar, y el nombre de la cuenta de
+            al lado ya sabe encogerse (`flex: 1, minWidth: 0`).
+          */}
           <span style={{
-            flexShrink: 0, width: "50px", fontFamily: "Sora, sans-serif", fontSize: "10px",
+            flexShrink: 0, minWidth: "50px", fontFamily: "Sora, sans-serif", fontSize: "12px",
             fontWeight: 700, letterSpacing: "0.08em", color: COLOR_LADO[l.lado],
           }}>
             {l.lado === DEBE ? "DEBE" : "HABER"}

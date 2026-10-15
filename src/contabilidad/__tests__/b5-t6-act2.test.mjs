@@ -205,18 +205,15 @@ test("★★★ la prioridad D > C > A > B con su texto en el panel, las B espec
   }
 });
 
-test("★★★ el libro diario: cerrado al cargar; empieza con la provisión de 2007; suma el asiento correcto de cada parte, acierte o falle", async () => {
+test("★★★ el libro diario: no ocupa sitio hasta confirmar el primer asiento; entonces aparece abierto, con la provisión de 2007 y ese asiento (lo correcto, acierte o falle)", async () => {
   const { caja, desmontar } = await montar();
-  const alternar = caja.querySelector("[data-diario-alternar]");
-  assert.equal(alternar.getAttribute("aria-expanded"), "false");
-  assert.equal(caja.querySelector("[data-diario-cabecera]").textContent, "LIBRO DIARIO");
-  assert.equal(caja.querySelector("[data-diario-cuenta]").textContent, "1 asiento");
-  await tocar(alternar);
+  assert.equal(caja.querySelector("[data-libro-diario]"), null, "antes del primer asiento, no ocupa sitio (hallazgo 9 de Shoko)");
   const fechas = () => [...caja.querySelectorAll("[data-fecha-diario]")].map((n) => n.textContent);
   const lineas = () => [...caja.querySelectorAll("[data-movimiento]")].map((n) => n.dataset.movimiento);
-  assert.deepEqual(fechas(), ["31 de diciembre de 2007"]);
-  assert.deepEqual(lineas(), [`debe:${GASTO}`, `haber:${PROVISION}`]);
   await armar(caja, [d(GASTO, 180000), hb(CLIENTES, 180000)]); // falla (D): el diario suma lo correcto
+  assert.equal(caja.querySelector("[data-diario-alternar]").getAttribute("aria-expanded"), "true", "aparece abierto");
+  assert.equal(caja.querySelector("[data-diario-cabecera]").textContent, "LIBRO DIARIO");
+  assert.deepEqual(lineas().slice(0, 2), [`debe:${GASTO}`, `haber:${PROVISION}`], "empieza con la provisión de 2007");
   assert.deepEqual(fechas(), ["31 de diciembre de 2007", "Marzo del año siguiente"]);
   assert.deepEqual(lineas().slice(2), [`debe:${PROVISION}`, `haber:${CLIENTES}`]);
   await avanzar(caja);

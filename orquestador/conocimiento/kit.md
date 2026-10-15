@@ -271,3 +271,208 @@ Prerrequisitos recuperados (posiblemente incompletos):
 | Kit de Cliente | Solo el inicio: un prerrequisito completo y otro a medias. |
 
 Cuando aparezcan, se actualiza este archivo y se anota en `decisiones.md`.
+
+## Cómo se escribe el nombre de una actividad
+
+En la pantalla de Hacer conviven hoy **dos estilos**, y un estudiante los ve
+juntos en la misma lista:
+
+```
+¿Desde Dónde Preguntan?     ← estilo viejo (T1, «las cuentas», política monetaria)
+¿Se asienta o no?           ← estilo nuevo (T3 a T7 y el repaso)
+```
+
+**El bueno es el segundo.** En español solo lleva mayúscula la primera palabra;
+poner mayúscula en cada una es una convención del inglés que aquí se cuela por
+traducción. Medido el 15 de octubre: **38 actividades** con el estilo viejo
+—toda la política monetaria, las siete de T1 y seis de «las cuentas»—; las
+demás ya están bien.
+
+**Pero no se arregla con un reemplazo masivo, y por eso esto es una regla y no
+un parche.** Tres cosas que un `lowercase` automático rompería:
+
+| Nombre | Por qué la mayúscula es correcta |
+|---|---|
+| «¿Entra o sale de **Caja**?» | *Caja* es el nombre de una cuenta |
+| «La provisión de **El Torito**» | nombre propio de la empresa del caso |
+| «**NIC** 2», «**IVA**», «**FP**» | siglas |
+
+En contabilidad los nombres de cuenta van en mayúscula —Caja, Bancos,
+Clientes, Inventarios— y esa mayúscula **es información**, no adorno:
+distingue la cuenta del objeto. «Entra o sale de caja» es una caja de cartón;
+«Entra o sale de Caja» es la cuenta.
+
+**La regla:**
+
+1. Mayúscula solo en la primera palabra del nombre.
+2. **Salvo** nombres de cuenta, nombres propios de empresas o personas del
+   caso, y siglas, que la conservan.
+3. Se revisa a mano, nombre por nombre. No hay regla automática que distinga
+   «caja» de «Caja»: hay que saber contabilidad para decidirlo.
+
+**Quién lo arregla:** cada célula los suyos, porque hay que entender el caso
+para aplicar la excepción 2. Los de la política monetaria, T1 y «las cuentas»
+no tienen célula dueña: los toma el coordinador.
+
+### El alcance, medido — y por qué NO se hizo la noche del 15
+
+Empecé a hacerlo y lo deshice. La medición es lo que vale de ese rato:
+
+```
+nombres con el estilo viejo:  43
+ocurrencias en src/:         182
+archivos tocados:             67   (incluidas pruebas que afirman el nombre)
+```
+
+**El nombre no vive en un sitio.** Está en `subjects.js`, otra vez en el
+archivo de datos del tema (`politicaMonetaria.js`, `contabilidadTema1.js`,
+`contabilidadActividades.js`…), a veces en el componente de la mecánica, y
+además **afirmado en pruebas**. Cambiar solo `subjects.js` —que es lo que
+parece el arreglo— deja el producto diciendo dos nombres distintos para la
+misma actividad.
+
+**Por qué se deshizo:** esos 67 archivos cruzan el territorio de las cuatro
+células, que estaban empujando esa misma noche. Un cambio **cosmético** que
+fabrica conflictos en el trabajo en curso de otros no vale lo que cuesta. No
+hay ningún estudiante peor atendido esta noche por un nombre en mayúsculas;
+sí lo habría por una cadena de PR trabada en conflictos.
+
+**Cómo se hace cuando toque**, y las dos no son lo mismo:
+
+1. **Por dueño**, cada célula los suyos cuando ya esté tocando esos archivos.
+   Es lo barato y es lo que se prefiere.
+2. **De una pasada**, solo con la cola vacía y avisando antes. Quien la haga:
+   los 182 sitios de golpe, no `subjects.js` primero; y las pruebas que
+   afirman el nombre se actualizan en el mismo commit, nunca después.
+
+**Y la lección que queda, que vale más que los nombres:** antes de empezar un
+arreglo que parece de un archivo, cuenta en cuántos está. `grep -rl` sobre el
+primer nombre de la lista habría dado la respuesta en diez segundos — yo la
+busqué después de haber hecho los 34 cambios.
+
+Cambiar el `nombre` **no toca el `id`**, así que no hay migración, no se mueve
+ninguna fila del catálogo y ningún estudiante pierde FP. Es texto de pantalla.
+
+## El blanco de toque: 44 px, y cómo se mide sin engañarse
+
+A 320 px un dedo acierta un blanco de **44×44**. Por debajo, el estudiante no
+concluye que apuntó mal: concluye que **la página no responde**.
+
+Medido el 15 de octubre jugando en la página servida, los controles que
+aparecen en *todas* las actividades de las tres materias estaban por debajo:
+
+| control | medía | estado |
+|---|---|---|
+| marca AprendeFAE (cabecera) | 26×26 | ✅ arreglado en `global.css` |
+| volver al tema (cabecera) | 38×38 | ✅ arreglado en `global.css` |
+| «Pausar» (`AsiSeJuega`) | 40 de alto | ✅ 44 |
+| **«‹ Volver al camino»** | 129×**37** | ⏳ **lo arregla cada célula** |
+
+### Lo que le toca a cada célula
+
+«‹ Volver al camino» está escrito **a mano en 16 vistas**, no en un componente.
+Cuando toques una vista tuya, súbele el alto a ese botón:
+
+```jsx
+/* 44 px: el mínimo que un dedo acierta a 320 px (kit.md). */
+minHeight: "44px",
+```
+
+Si el botón queda apretado contra otro, **no lo agrandes**: separa primero.
+
+### La regla al arreglar: medir la separación ANTES
+
+Agrandar dos blancos vecinos puede **solaparlos**, y entonces el estudiante va
+al inicio cuando quería volver al tema. **Eso es peor que el defecto.** En la
+cabecera se midió antes: 61 px entre centros, así que los dos cuadros de 44 no
+se tocan. Si hubieran estado a menos de 44, lo correcto no era agrandar sino
+mover.
+
+### Cómo se mide sin engañarse
+
+```
+npx vite build && cd dist && python3 -m http.server 8099
+node scripts/blanco-de-toque.mjs "Contabilidad" "Las cuentas, el debe y el haber" "Los juegos que dan FP" "¿Debe o Haber?"
+```
+
+Mide el **toque**, no el dibujo: la zona que escucha puede ser mayor que lo
+pintado, y un medidor que solo mire el rectángulo da rojos falsos sobre
+controles que están bien.
+
+**Tres trampas que ya costaron un rato, escritas para que no las repitas:**
+
+1. **Los paneles de EJEMPLO dibujan botones falsos.** La primera versión del
+   medidor los contó y declaró cuatro defectos donde había dos. Lo que está
+   dentro de un `<figure>` es ilustración: no se mide.
+2. **«Pequeño» y «tapado» no son el mismo fallo.** Uno se arregla con tamaño;
+   el otro puede ser un control inalcanzable —grave— o un panel legítimo
+   delante. El medidor dice cuál ve; el juicio es de quien mira.
+3. **Las esquinas no se miden: se miden los puntos medios de los lados.** Casi
+   todo aquí es una píldora (`border-radius: 999px`) y la esquina de un
+   cuadrado cae fuera de una píldora **por geometría, no por defecto**.
+   Midiendo esquinas, el medidor marcaba en rojo todos los botones redondeados
+   del producto. **Un medidor que llora siempre se apaga** — y entonces deja de
+   avisar el día que hay algo de verdad.
+
+## La revisión de daltonismo de lo compartido: pasa, y por qué
+
+Comisión de Xeno: comprobar que **ninguna información viaje solo en el color**
+en las piezas compartidas. Hecha el 15 de octubre. **Resultado: lo compartido
+pasa.** Se escribe con las pruebas, porque un resultado negativo comprobado
+también es un resultado — y porque el que viene detrás no tiene por qué
+volver a mirarlo.
+
+| pieza | lo que tenía que comprobarse | cómo lo resuelve |
+|---|---|---|
+| `CaminoHacer` | si una actividad hecha se distingue de una pendiente | **forma**: la hecha lleva palomita dibujada, además del color; y la etiqueta dice «· completada» |
+| `Medalla` | si el nivel se distingue sin color | **geometría**: hexágono de 6 nodos → octágono de 8 → 12 facetas → 14 más anillo. El color cambia con el nivel, pero no es lo que lo dice |
+| rejilla de medallas | si «obtenida» se distingue sin color | **palabras**: «Conseguida» · «Por conseguir» · «Aún no disponible» debajo de cada una |
+| `PantallaResumen` | si el resultado se entiende sin ver | `role="status"` con un párrafo solo para lector, y lo decorativo con `aria-hidden` |
+
+**El patrón que siguen las cuatro, y que vale como regla:** el color es la
+**segunda** señal, nunca la única. La primera es una forma (palomita, número
+de facetas) o una palabra. Cuando la primera señal es una forma, el SVG va
+`aria-hidden="true"` **y** el texto que lo acompaña dice el estado — no al
+revés: un SVG con `aria-label` y sin texto visible deja fuera a quien ve pero
+no distingue el color.
+
+**Lo que NO se comprobó aquí:** las mecánicas de cada célula. Lo compartido
+pasa; los aciertos y errores dentro de cada actividad los revisa su célula con
+este mismo criterio. Si tu mecánica marca bien y mal solo con verde y rojo,
+tiene el defecto que estas cuatro no tienen.
+
+## El piso de la letra: 12 px para lo que el estudiante lee
+
+Lo encontró la Célula C midiendo sus 44 piezas (#206): 26 de ellas tenían
+texto por debajo de 12 px, y **casi todos esos textos eran de piezas
+compartidas**, no suyas. Es el mejor ejemplo de para qué sirve que cada célula
+mida lo suyo: midiendo T7 se destapó un defecto de todos.
+
+**La regla: 12 px es el piso de lo que el estudiante lee para entender.**
+
+Arreglados en lo compartido el 15 de octubre:
+
+| texto | medía | ahora |
+|---|---|---|
+| `DEBE` / `HABER` de `AsientoEnLineas` | 10 px | **12** |
+| «Pregunta n de N» de `Pulsos` (2 sitios) | 11,5 px | **12** |
+
+**Por qué el primero importaba más de lo que parecía.** El lado de cada línea
+se dice dos veces: con la **palabra** y con el **color**. A 10 px la palabra
+deja de leerse, y el único aviso que queda en pie es el color — justo lo que
+la revisión de daltonismo dice que no puede pasar. **La letra pequeña
+convierte una señal de texto en una señal de color.** Los dos hallazgos eran
+el mismo.
+
+**La excepción, para no arreglar lo que no está roto:** un rótulo de cejilla
+—«RESULTADO» sobre un número de 28 px, «HACER» sobre el título— puede ir por
+debajo de 12. No es lo que se lee para entender: es la etiqueta de algo que
+está justo debajo y se entiende sin ella. Si al taparlo con el dedo la
+pantalla sigue diciendo lo mismo, es cejilla. Si al taparlo se pierde algo,
+es texto y va a 12.
+
+**Y antes de subir un tamaño, mide la holgura.** Es la misma regla que el
+blanco de toque: crecer puede romper. «HABER» a 12 px ocupa 47,5 de los 50 px
+que la columna tenía fijos —cabe—, y el contador de avance tenía 169 px de
+sobra en su fila. Las dos cosas se midieron en la página servida antes de
+tocar nada.

@@ -139,3 +139,38 @@ Medidos en Chromium (headless shell 141) con Sora 700 real de Google Fonts, el 1
 | Colocar la ficha | 111,73 | sí |
 
 Glifos nuevos frente a la tabla de b5-t5-a1: «m» 13,76 y «ó» 9,53. Pestaña más larga, a 12,5 px: «Otra cuenta por cobrar», 146,64 px; el hueco de la pestaña a 320 es 258 − 22 de relleno − 4 de borde = 232.
+
+
+## 6 · Entrega 4 de Futaba (calidad): los cinco hechos de Clientes con otras palabras (PASA de Shoko)
+
+Mandan sobre 3.1, 3.2 y 3.4. «Sin cambio»: el acierto de 3.2 se queda. El segundo fallo sigue la regla única de la célula (el acierto sin «Sí.», con «No es esa.» delante).
+
+### 6.1 Fichas
+
+| Id | Ficha |
+|---|---|
+| venta-mercancia | «Un cliente se lleva un pedido de mercancía a crédito, para pagarlo a fin de mes.» |
+| cheque | «El banco no le paga a la empresa el cheque de un cliente: se lo devuelve.» |
+| pago | «Un cliente abona una parte de lo que debe.» |
+| devolucion | «Un cliente que todavía debe una compra regresa parte de la mercancía.» |
+| descuento | «La empresa le rebaja a un cliente una parte de lo que le debe.» |
+
+### 6.2 Aciertos
+
+| Id | ✅ Acierto |
+|---|---|
+| venta-mercancia | «Sí. Es una venta a crédito: el cliente queda debiendo, así que se debita.» |
+| cheque | «Sí. Sube: se debita. Como el cheque no se cobró, el cliente vuelve a deber.» |
+| pago | «Sí. Baja: se acredita. Lo que abonó ya no lo debe.» |
+| devolucion | «Sí. Baja: se acredita. Lo que regresó ya no lo tiene que pagar.» |
+
+### 6.3 Tras el segundo fallo
+
+| Id | Texto |
+|---|---|
+| venta-mercancia | «No es esa. Es una venta a crédito: el cliente queda debiendo, así que se debita.» |
+| cheque | «No es esa. Sube: se debita. Como el cheque no se cobró, el cliente vuelve a deber.» |
+| pago | «No es esa. Baja: se acredita. Lo que abonó ya no lo debe.» |
+| devolucion | «No es esa. Baja: se acredita. Lo que regresó ya no lo tiene que pagar.» |
+
+Para Shoko, el cruce con a4: ninguno de los cinco hechos repite las palabras de qd-03 ni de qd-04. El cheque de a1 lo cuenta el banco; el de a4, el cliente.

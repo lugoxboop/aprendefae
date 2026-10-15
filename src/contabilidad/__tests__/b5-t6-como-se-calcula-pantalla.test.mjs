@@ -69,9 +69,9 @@ const pegado = (t) => t.replace(/(\d) %/g, `$1${NBSP}%`);
 const viva = (caja) => caja.querySelector("[data-escena-viva]");
 const de = (caja, id) => viva(caja).querySelector(`[data-elemento="${id}"]`);
 const siguiente = (caja) => tocar(caja.querySelector("[data-siguiente]"));
-/* Visible: ni la pieza ni nada por encima de ella va oculto. */
+/* Visible: ni la pieza ni nada por encima de ella va oculto ni en silueta (hoja 5 de Mai: lo que no llega, atenuado y marcado con --b5-silueta). */
 const visible = (n) => {
-  for (let x = n; x && x !== document.body; x = x.parentElement) if (x.style?.visibility === "hidden") return false;
+  for (let x = n; x && x !== document.body; x = x.parentElement) if (x.style?.visibility === "hidden" || x.style?.getPropertyValue("--b5-silueta")) return false;
   return true;
 };
 const PASOS = 11;

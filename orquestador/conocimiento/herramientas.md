@@ -169,3 +169,73 @@ de cada despliegue** con la consulta de arriba.
 
 **La regla que queda:** una prueba verde sobre archivos no dice nada del estado
 de producción. Lo que no se le pregunta a la base, no se sabe.
+
+## El falso verde: un extractor que no extrae nada dice que todo está bien
+
+Hermano del resultado vacío, y más peligroso, porque sale **en verde**.
+
+El 15 de octubre quise saber cuáles de los 18 PR abiertos esperaban una
+migración mía. Escribí un cruce rápido: sacar los `activity_id` de cada archivo
+con `grep` y mirar si estaban en el servidor. Salió esto:
+
+```
+#190  feat/conta-d4-h8    ✅ CORRIDA
+```
+
+Era mentira. La 0207 **no** estaba corrida. El `grep` no extrajo ningún id de
+ese archivo, la lista de faltantes quedó vacía, y «no falta nada» se imprimió
+como «todo bien». Si lo mando así, la Célula D fusiona una actividad de 90 FP
+cuyo estudiante habría cobrado 22023.
+
+Lo arreglé, y el arreglo falló al revés: un patrón más ancho se tragó
+`contabilidad`, `evaluativa`, `facil` —todos los literales de la fila— y
+entonces **todo** salía en rojo. Un cruce que marca los 18 PR es tan inútil
+como uno que no marca ninguno; los dos hacen que lo apagues.
+
+**Las dos reglas que salen de ahí:**
+
+1. **«No encontré nada» y «comprobé que no falta nada» son estados distintos y
+   se imprimen distinto.** Si el extractor devuelve cero elementos, la salida
+   dice `NO EXTRAJE NADA (revisar a mano)`, nunca un visto bueno. Un resumen
+   que no puede decir *cuántas* cosas miró no está diciendo nada.
+2. **Ya existe un parser probado: úsalo.** `filasDeCatalogo`, de
+   `scripts/guardian-migraciones.mjs`, hace exactamente esto y está comprobado
+   con mutaciones. Lo correcto no era afinar mi `grep` por tercera vez, era
+   importar el que ya pasó por pruebas:
+
+```js
+import { filasDeCatalogo } from "./scripts/guardian-migraciones.mjs";
+for (const f of filasDeCatalogo(sql)) {
+  console.log(servidor.has(f.activity_id) ? "EN_SERVIDOR" : "FALTA", f.activity_id);
+}
+```
+
+Con el parser bueno el cruce dio la verdad a la primera: de 18 PR, dos
+esperaban migración —la 0207 y la 0113— y las dieciséis restantes ya estaban.
+
+**Y lo que no hay que aprender de esto:** que los scripts rápidos sean malos.
+El cruce de 18 PR en un comando es lo que destrabó la noche. Lo que no puede
+pasar es que un script rápido **informe** como si fuera una comprobación.
+
+---
+
+## Una pestaña cerrada no prueba que el otro no esté trabajando
+
+Misma familia que la lista de chats incompleta de `celulas.md`, en otra
+superficie. A media noche mi navegador tenía **una** pestaña: el editor SQL.
+Las de los cuatro generales no estaban. La lectura fácil —«se cayeron las
+células, hay que avisar a Mateo»— era falsa.
+
+Lo que sí probaba su estado estaba en el repositorio:
+
+```
+git for-each-ref --sort=-committerdate --format='%(committerdate:relative)|%(refname:short)' refs/remotes/origin | head
+```
+
+Habían empujado hace 2, 5, 7 y 8 minutos. Los cuatro vivos y trabajando.
+
+**La regla: antes de reportar que una célula se cayó, mira sus ramas y sus
+comentarios.** Las pestañas son mi vista, no su existencia. Y el canal que
+sobrevive a que se cierre un navegador es el que ellos ya usan entre sí: **un
+comentario en su propio PR**, que queda escrito y no depende de que yo tenga
+una ventana abierta.

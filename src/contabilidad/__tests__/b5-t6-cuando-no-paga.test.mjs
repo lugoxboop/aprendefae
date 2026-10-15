@@ -76,6 +76,8 @@ const textosDeDatos = () => {
   return out;
 };
 const FUENTE = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-aprender2.md", import.meta.url), "utf8");
+/* Lo que todavía no llega se ve en silueta (hoja 5 de Mai): a la vista, atenuado y marcado con --b5-silueta. */
+const enSilueta = (n) => n.style.visibility === "visible" && Boolean(n.style.getPropertyValue("--b5-silueta"));
 
 /* ═══════════ TEXTOS ═══════════ */
 
@@ -146,7 +148,7 @@ test("★★★ cada pieza de la escena se ve desde su paso, y antes ocupa su si
   for (let p = 1; p <= 11; p++) {
     for (const [id, desde] of Object.entries(APARECE)) {
       const n = caja.querySelector(`[data-elemento="${id}"]`);
-      assert.equal(n.style.visibility, p >= desde ? "visible" : "hidden", `paso ${p}: ${id}`);
+      assert.equal(enSilueta(n), p < desde, `paso ${p}: ${id} ${p < desde ? "en silueta" : "a la vista"}`);
     }
     if (p < 11) await tocar(caja.querySelector("[data-siguiente]"));
   }
@@ -247,7 +249,7 @@ test("★★★ cápsulas: «se debita» en teal y «se acredita» en ámbar, si
 
 test("★★ capa 2: «Anterior» devuelve el estado exacto de cada paso", async () => {
   const { caja, desmontar } = await montar(h(DosDias));
-  const foto = () => [...caja.querySelectorAll("[data-elemento]")].map((n) => `${n.dataset.elemento}:${n.dataset.resaltado ?? ""}:${n.style.visibility}`).join("|");
+  const foto = () => [...caja.querySelectorAll("[data-elemento]")].map((n) => `${n.dataset.elemento}:${n.dataset.resaltado ?? ""}:${n.style.visibility}:${enSilueta(n)}`).join("|");
   const fotos = {};
   for (let p = 1; p <= 11; p++) { fotos[p] = foto(); if (p < 11) await tocar(caja.querySelector("[data-siguiente]")); }
   for (let p = 10; p >= 1; p--) { await tocar(caja.querySelector("[data-anterior]")); assert.equal(foto(), fotos[p], `paso ${p}`); }
