@@ -17,6 +17,17 @@ import {
  *   porEtapa(resultados)      las filas de «EL CASO EN TRES TIEMPOS»
  *   puntuarR5_2(aciertos)     aciertos / 6 × 100 (evaluativa: el motor escala)
  *   unidadDeR5_2(id)          el texto de cada ítem para el panel docente
+ *   pasosDe(preguntas)        el recorrido: entrada, y por etapa sus preguntas
+ *                             y su corte
+ *   resolver(x, respuestas)   un dato fijo, o una función de las respuestas
+ *
+ * EL SITIO PARA LA ETAPA a0 «Calcula la provisión» (Kamogawa, delta pendiente
+ * del paquete): una pregunta más de tipo «calculo» en la etapa 31 DIC, antes
+ * del asiento del ajuste. Nada de aquí cuenta seis a mano: el total, el
+ * recorrido, la línea de tiempo y las filas del final salen de la lista. Y el
+ * hecho y el valor correcto del ajuste se pueden escribir como funciones de
+ * las respuestas anteriores, para que tome el total calculado en vez de
+ * darlo como dato.
  *
  * Los FP no se calculan aquí: la vista entrega el porcentaje y el motor
  * compartido (src/fp) hace el resto.
@@ -25,14 +36,29 @@ import {
 
 export const TOTAL_R5_2 = PREGUNTAS_R5_2.length;
 
+/* Un dato fijo, o uno que sale de lo que el estudiante ya respondió. */
+export const resolver = (x, respuestas = {}) => (typeof x === "function" ? x(respuestas) : x);
+export const correctoDe = (p, respuestas = {}) => ({ ...p.correcto, valor: resolver(p.correcto.valor, respuestas) });
+
+/* El recorrido: la entrada y, por cada etapa, sus preguntas en orden y su corte. */
+export function pasosDe(preguntas) {
+  const pasos = [{ tipo: "entrada" }];
+  for (const e of ETAPAS) {
+    preguntas.forEach((p, i) => { if (p.etapa === e.id) pasos.push({ tipo: "pregunta", i }); });
+    pasos.push({ tipo: "corte", etapa: e.id });
+  }
+  return pasos;
+}
+export const PASOS_R5_2 = pasosDe(PREGUNTAS_R5_2);
+
 export const prepararR5_2 = (barajador = barajar) => ({ hoja: barajador(HOJA_DE_CUENTAS) });
 
 /* ═══════════ LOS ASIENTOS ═══════════ */
 
 export const puedeRevisarAsiento = ({ debe, haber, valor }) => Boolean(debe) && Boolean(haber) && Number(valor) > 0;
 
-export function evaluarAsiento(p, { debe, haber, valor }) {
-  const c = p.correcto;
+export function evaluarAsiento(p, { debe, haber, valor }, respuestas = {}) {
+  const c = correctoDe(p, respuestas);
   const piezas = { debe: debe === c.debe, haber: haber === c.haber, valor: valor === c.valor };
   const ok = piezas.debe && piezas.haber && piezas.valor;
   let camino;
@@ -65,8 +91,8 @@ export function evaluarAsiento(p, { debe, haber, valor }) {
 /* Con un valor escrito, aunque sea 0; con 0 no se exige lado (decisión 2). */
 export const puedeRevisarSaldo = ({ valor, lado }) => valor !== null && valor !== undefined && (valor === 0 || Boolean(lado));
 
-export function evaluarSaldo(p, { valor, lado }) {
-  const c = p.correcto;
+export function evaluarSaldo(p, { valor, lado }, respuestas = {}) {
+  const c = correctoDe(p, respuestas);
   const piezas = { valor: valor === c.valor, lado: lado === c.lado };
   const ok = piezas.valor && piezas.lado;
   let camino;
@@ -123,9 +149,9 @@ export const fraccionDeBarra = (saldo) => Math.abs(saldo) / ESCALA_MEDIDOR;
 
 export const puntuarR5_2 = (aciertos, total = TOTAL_R5_2) => (total ? (aciertos / total) * 100 : 0);
 
-export function porEtapa(resultados) {
+export function porEtapa(resultados, preguntas = PREGUNTAS_R5_2) {
   return ETAPAS.map((e) => {
-    const puntos = PREGUNTAS_R5_2.filter((p) => p.etapa === e.id).map((p) => ({ id: p.id, ok: Boolean(resultados[p.id]) }));
+    const puntos = preguntas.filter((p) => p.etapa === e.id).map((p) => ({ id: p.id, ok: Boolean(resultados[p.id]) }));
     const saldo = saldoDe(libroTras(e.id));
     return { ...e, puntos, bien: puntos.filter((x) => x.ok).length, total: puntos.length, saldo };
   });

@@ -6,6 +6,7 @@ import { R5_2, ETAPAS, PREGUNTAS_R5_2, CORTES_R5_2, ROTULOS_R5_2 as RT } from ".
 import {
   prepararR5_2, evaluarAsiento, evaluarSaldo, puedeRevisarAsiento, puedeRevisarSaldo,
   MOVIMIENTOS, libroAntesDe, saldoDe, naturaleza, fraccionDeBarra, porEtapa, puntuarR5_2,
+  PASOS_R5_2, resolver, correctoDe,
 } from "../../data/repasoCap5ToroNegroJuego.js";
 
 /*
@@ -371,7 +372,7 @@ function BotonRevisar({ activo, onClick, texto }) {
 }
 
 /* Una pantalla de asiento (preguntas 1, 2, 3, 5 y 6). */
-function PreguntaAsiento({ p, hoja, onRespondida, r }) {
+function PreguntaAsiento({ p, hoja, onRespondida, r, respuestas = {} }) {
   const [debe, setDebe] = useState(null);
   const [haber, setHaber] = useState(null);
   const [valor, setValor] = useState(null);
@@ -402,10 +403,10 @@ function PreguntaAsiento({ p, hoja, onRespondida, r }) {
       <TarjetaAsiento debe={debe} haber={haber} valor={valor} activo={r ? null : activo} estados={estados} onTocar={tocar} onValor={setValor} refs={refs} idCampo={idCampo} />
       {r && !r.ok && (
         <div style={{ marginTop: "12px" }}>
-          <TarjetaAsiento soloLectura marca={RT.eraEste} debe={p.correcto.debe} haber={p.correcto.haber} valor={p.correcto.valor} idCampo={`${idCampo}-era`} />
+          <TarjetaAsiento soloLectura marca={RT.eraEste} debe={p.correcto.debe} haber={p.correcto.haber} valor={correctoDe(p, respuestas).valor} idCampo={`${idCampo}-era`} />
         </div>
       )}
-      {!r && <BotonRevisar activo={puedeRevisarAsiento({ debe, haber, valor })} texto={RT.revisarAsiento} onClick={() => onRespondida(evaluarAsiento(p, { debe, haber, valor }), `${debe} | ${haber} | ${valor}`)} />}
+      {!r && <BotonRevisar activo={puedeRevisarAsiento({ debe, haber, valor })} texto={RT.revisarAsiento} onClick={() => onRespondida(evaluarAsiento(p, { debe, haber, valor }, respuestas), `${debe} | ${haber} | ${valor}`, { debe, haber, valor })} />}
       {abierta && <HojaDeCuentas lado={abierta} hoja={hoja} puestas={{ debe, haber }} onElegir={elegir} onCerrar={cerrar} />}
     </>
   );
@@ -456,7 +457,7 @@ function TarjetaSaldo({ valor, lado, onValor, onLado, estados = null, soloLectur
   );
 }
 
-function PreguntaSaldo({ p, onRespondida, r }) {
+function PreguntaSaldo({ p, onRespondida, r, respuestas = {} }) {
   const [valor, setValor] = useState(null);
   const [lado, setLado] = useState(null);
   const idCampo = useId();
@@ -466,10 +467,10 @@ function PreguntaSaldo({ p, onRespondida, r }) {
       <TarjetaSaldo valor={valor} lado={lado} onValor={setValor} onLado={setLado} estados={estados} idCampo={idCampo} />
       {r && !r.ok && (
         <div style={{ marginTop: "12px" }}>
-          <TarjetaSaldo soloLectura marca={RT.eraEste} valor={p.correcto.valor} lado={p.correcto.lado} idCampo={`${idCampo}-era`} />
+          <TarjetaSaldo soloLectura marca={RT.eraEste} valor={correctoDe(p, respuestas).valor} lado={p.correcto.lado} idCampo={`${idCampo}-era`} />
         </div>
       )}
-      {!r && <BotonRevisar activo={puedeRevisarSaldo({ valor, lado })} texto={RT.revisarSaldo} onClick={() => onRespondida(evaluarSaldo(p, { valor, lado }), `${valor} | ${lado ?? "sin lado"}`)} />}
+      {!r && <BotonRevisar activo={puedeRevisarSaldo({ valor, lado })} texto={RT.revisarSaldo} onClick={() => onRespondida(evaluarSaldo(p, { valor, lado }, respuestas), `${valor} | ${lado ?? "sin lado"}`, { valor, lado })} />}
     </>
   );
 }
@@ -569,26 +570,26 @@ function CasoEnTresTiempos({ filas }) {
 
 /* ═══════════ LA ACTIVIDAD ═══════════ */
 
-/* El recorrido: entrada, preguntas y cortes, en orden. */
-export const PASOS_R5_2 = [
-  { tipo: "entrada" },
-  { tipo: "pregunta", i: 0 }, { tipo: "corte", etapa: "dic" },
-  { tipo: "pregunta", i: 1 }, { tipo: "pregunta", i: 2 }, { tipo: "pregunta", i: 3 }, { tipo: "corte", etapa: "marzo" },
-  { tipo: "pregunta", i: 4 }, { tipo: "pregunta", i: 5 }, { tipo: "corte", etapa: "mayo" },
-];
+/*
+ * Cada tipo de pregunta, con el componente que la pinta. La etapa a0
+ * («calculo») entra aquí con su componente cuando llegue el delta.
+ */
+const PREGUNTA_POR_TIPO = { asiento: PreguntaAsiento, saldo: PreguntaSaldo };
 
-export function ToroNegro({ onCompletar, preparar = null }) {
+export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_R5_2, pasos = PASOS_R5_2 }) {
   const [tanda, setTanda] = useState(() => preparar?.() ?? prepararR5_2());
   const [paso, setPaso] = useState(0);
   const [r, setR] = useState(null);
   const [resultados, setResultados] = useState({});
+  /* Lo que respondió en cada ítem: el ajuste puede tomar de aquí el total calculado. */
+  const [respuestas, setRespuestas] = useState({});
   const [terminado, setTerminado] = useState(false);
   const detalle = useRef([]);
   const inicio = useRef(Date.now());
   const boton = useRef(null);
   const raiz = useRef(null);
 
-  const total = PREGUNTAS_R5_2.length;
+  const total = preguntas.length;
   const bien = Object.values(resultados).filter(Boolean).length;
 
   useEffect(() => {
@@ -598,13 +599,14 @@ export function ToroNegro({ onCompletar, preparar = null }) {
 
   const avanzar = () => {
     setR(null);
-    if (paso + 1 < PASOS_R5_2.length) {
+    if (paso + 1 < pasos.length) {
       setPaso(paso + 1);
       requestAnimationFrame(() => raiz.current?.querySelector("[data-enunciado], h3")?.focus());
     } else setTerminado(true);
   };
 
-  const responder = (p) => (veredicto, respuesta) => {
+  const responder = (p) => (veredicto, respuesta, valores = null) => {
+    setRespuestas((x) => ({ ...x, [p.id]: valores }));
     detalle.current.push({ item: p.id, ok: veredicto.ok, intentos: 1, respuesta: veredicto.ok ? null : respuesta, orden: detalle.current.length + 1 });
     setResultados((x) => ({ ...x, [p.id]: veredicto.ok }));
     setR(veredicto);
@@ -612,7 +614,7 @@ export function ToroNegro({ onCompletar, preparar = null }) {
 
   const reiniciar = () => {
     setTanda(preparar?.() ?? prepararR5_2());
-    setPaso(0); setR(null); setResultados({}); setTerminado(false);
+    setPaso(0); setR(null); setResultados({}); setRespuestas({}); setTerminado(false);
     detalle.current = []; inicio.current = Date.now();
   };
 
@@ -620,13 +622,13 @@ export function ToroNegro({ onCompletar, preparar = null }) {
     return (
       <div data-r5-2 data-cierre>
         <style>{CSS_JUEGO + CSS_R5_2}</style>
-        <CasoEnTresTiempos filas={porEtapa(resultados)} />
+        <CasoEnTresTiempos filas={porEtapa(resultados, preguntas)} />
         <Cierre pct={Math.round(puntuarR5_2(bien, total))} onReiniciar={reiniciar} />
       </div>
     );
   }
 
-  const ahora = PASOS_R5_2[paso];
+  const ahora = pasos[paso];
   if (ahora.tipo === "entrada") {
     return (
       <div data-r5-2 data-paso="entrada" ref={raiz}>
@@ -646,20 +648,19 @@ export function ToroNegro({ onCompletar, preparar = null }) {
     );
   }
 
-  const p = PREGUNTAS_R5_2[ahora.i];
+  const p = preguntas[ahora.i];
   const etapa = ETAPAS.find((e) => e.id === p.etapa);
+  const Pregunta = PREGUNTA_POR_TIPO[p.tipo];
   return (
     <div data-r5-2 data-paso={p.id} ref={raiz}>
       <style>{CSS_JUEGO + CSS_R5_2}</style>
       <p data-progreso style={{ ...MARCA, margin: 0 }}>{RT.progreso(ahora.i + 1, total)}</p>
       <div style={{ marginTop: "8px" }}><LineaDeTiempo estados={estadosDeTiempo(p.etapa)} /></div>
-      <div style={{ marginTop: "16px" }}><TarjetaHecho marca={etapa.marca} texto={p.hecho} /></div>
+      <div style={{ marginTop: "16px" }}><TarjetaHecho marca={etapa.marca} texto={resolver(p.hecho, respuestas)} /></div>
       {/* El libro como estaba al empezar la etapa (la regla del libro). */}
       <div style={{ marginTop: "16px" }}><LibroProvision movimientos={libroAntesDe(p.etapa)} /></div>
       <p data-enunciado tabIndex={-1} style={{ margin: "16px 0", fontFamily: INTER, fontSize: "17px", lineHeight: "26px", fontWeight: 600, color: C.texto, outline: "none" }}>{p.enunciado}</p>
-      {p.tipo === "saldo"
-        ? <PreguntaSaldo key={p.id} p={p} r={r} onRespondida={responder(p)} />
-        : <PreguntaAsiento key={p.id} p={p} hoja={tanda.hoja} r={r} onRespondida={responder(p)} />}
+      <Pregunta key={p.id} p={p} hoja={tanda.hoja} r={r} respuestas={respuestas} onRespondida={responder(p)} />
       <Devolucion r={r} lector={LECTOR} />
       {r && <BotonSiguiente onClick={avanzar} botonRef={boton} texto={RT.siguiente} />}
     </div>

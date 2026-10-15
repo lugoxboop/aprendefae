@@ -799,6 +799,8 @@ export const SUBJECTS = {
         actividades: [
           /* r5-1: el bloque C, ejercicios 3, 5, 6, 8, 9 y 10, pp. 264-266. Medio · 25 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0250. */
           { id: "r5-1", nombre: "Repaso cruzado", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* r5-2: el 3 del bloque D, pp. 268-269, provisión, castigo y recuperación. Difícil · 50 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0251. */
+          { id: "r5-2", nombre: "El Toro Negro", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
     ],

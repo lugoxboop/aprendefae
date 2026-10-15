@@ -15,6 +15,8 @@ import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.j
 import { CSS_JUEGO, Opcion, Opciones, Cierre } from "./mecanicas/corazon/juego.jsx";
 import { pesos } from "../data/contabilidad.js";
 import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente } from "./repasoCap5/comun.jsx";
+import { ToroNegro } from "./repasoCap5/ToroNegro.jsx";
+import { R5_2 } from "../data/repasoCap5ToroNegroTextos.js";
 import {
   R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, UNIDADES_POR_CAJA,
   prepararR5_1, evaluarR5_1, puntuarR5_1, porTema, textoDeOpcion,
@@ -391,6 +393,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS_REPASO_CAP5 = [
   { id: R5_1.id, Mecanica: RepasoCruzado, titulo: R5_1.nombre },
+  { id: R5_2.id, Mecanica: ToroNegro, titulo: R5_2.nombre },
 ];
 
 /* ═══════════ LA VISTA DEL TEMA ═══════════ */

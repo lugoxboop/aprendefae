@@ -81,6 +81,7 @@ import { unidadDeH5 as unidadDeT73H5 } from "../contabilidad/t7_3H5.js";
 import { unidadDeH6 as unidadDeT73H6 } from "../contabilidad/t7_3H6.js";
 import { unidadDeH7 as unidadDeT73H7 } from "../contabilidad/t7_3H7.js";
 import { unidadDeR5_1 } from "../data/repasoCap5Cruzado.js";
+import { unidadDeR5_2 } from "../data/repasoCap5ToroNegroJuego.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -763,6 +764,8 @@ Object.assign(REGLAS, {
   /* ── Repaso del capítulo 5 (Célula E) ── */
   /* r5-1. Cada pantalla, por su subtema (Inversiones, Cartera, Inventarios) y su enunciado. */
   "r5-1": (id) => unidadDeR5_1(id),
+  /* r5-2. Cada ítem, por su etapa (31 DIC, MARZO, MAYO) y su enunciado. */
+  "r5-2": (id) => unidadDeR5_2(id),
 });
 
 /*

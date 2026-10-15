@@ -300,10 +300,10 @@ test("★★★ catálogo, registro de la vista y migración dicen lo mismo; el 
   assert.equal(tema.title, "Repaso del capítulo 5");
   const enCatalogo = actividadesDeTipo(tema, HACER);
   assert.deepEqual(enCatalogo.map((a) => a.id), JUEGOS_REPASO_CAP5.map((j) => j.id));
-  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1"], "solo r5-1 está publicada");
-  const a = enCatalogo[0];
+  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2"], "r5-1 abre el tema y r5-2 va detrás");
+  const a = enCatalogo.find((x) => x.id === "r5-1");
   assert.equal(a.nombre, D.R5_1.nombre);
-  assert.equal(JUEGOS_REPASO_CAP5[0].titulo, D.R5_1.nombre);
+  assert.equal(JUEGOS_REPASO_CAP5.find((j) => j.id === "r5-1").titulo, D.R5_1.nombre);
   assert.deepEqual(a.clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
   assert.ok(tema.actividades.every((x) => x.id.startsWith("r5-")));
 
@@ -364,7 +364,7 @@ test("★★★ se juega: progreso, escena, datos, devolución con «era esta»,
       assert.ok(a.textContent.startsWith("DEBE"));
     }
     if (p.forma === "tabla") assert.equal(caja.querySelector("[data-cabecera-tabla]").textContent, "Inventario finalCosto de mercancía vendidaUtilidad");
-    assert.equal(caja.querySelector("[data-siguiente]"), null, "«Siguiente» antes de responder");
+    assert.equal(Boolean(caja.querySelector("[data-siguiente]")), false, "«Siguiente» antes de responder");
     assert.equal(caja.querySelector("[data-devolucion]").dataset.devolucion, "vacia");
 
     await tocar(opcion(caja, eleccion[p.id]));
@@ -417,10 +417,11 @@ test("★★ la escena solo se mueve cuando cambia el tema", async () => {
     await tocar(caja.querySelector("[data-siguiente]"));
   }
   /* Inversiones → Cartera → Inventarios ×4: tres montajes, el mismo nodo en las cuatro de bodega. */
-  assert.notEqual(escenas[0], escenas[1]);
-  assert.notEqual(escenas[1], escenas[2]);
-  assert.equal(escenas[2], escenas[3]);
-  assert.equal(escenas[3], escenas[5]);
+  /* Booleanos: si falla, imprimir dos nodos de jsdom cuelga a node:assert. */
+  assert.equal(escenas[0] === escenas[1], false, "Inversiones → Cartera no se movió");
+  assert.equal(escenas[1] === escenas[2], false, "Cartera → Inventarios no se movió");
+  assert.equal(escenas[2] === escenas[3], true, "Inventarios → Inventarios se movió");
+  assert.equal(escenas[3] === escenas[5], true, "Inventarios → Inventarios se movió");
   desmontar();
 });
 
