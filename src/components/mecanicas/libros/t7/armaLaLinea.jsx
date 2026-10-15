@@ -6,6 +6,7 @@ import { AsientoEnLineas, ElegirLado, Responder } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { TEXTOS_ARMA } from "../../../../contabilidad/armaLaLinea.js";
 import { TEXTO, LADOS_T7, BOTONES_T7 } from "./hacerT7.jsx";
+import { Plegable } from "./plegable.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -148,7 +149,7 @@ export function LineasConCuenta({ lineas, asiento = null, onComprobar, comprobad
                   }}>
                     <span style={SOLO_LECTOR}>Incorrecto. </span>
                     <p data-era style={{ ...TEXTO, margin: "0 0 6px", fontWeight: 600 }}>{TEXTOS_ARMA.era(l.cuenta, LADOS_T7[l.lado])}</p>
-                    <p data-texto-retro style={TEXTO}>{l.retro}</p>
+                    <p data-texto-retro style={TEXTO}><Plegable texto={l.retro} /></p>
                   </div>
                 )}
               </div>

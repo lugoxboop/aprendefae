@@ -3,6 +3,7 @@ import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_CONTROL_INTERNO, BOTON, INTERFAZ } from "../../../../data/contabilidadT7_1_a7.js";
+import { Plegable } from "./plegable.jsx";
 import { textosDelError, contarFallo } from "./escaleraAyuda.js";
 
 /*
@@ -74,7 +75,7 @@ function Mensaje({ ok, textos, refFoco }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7a7-msg-cuerpo">
         <span className="t7a7-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
@@ -94,13 +95,13 @@ function Eleccion({ pantalla, onSeguir }) {
 
   return (
     <div className="t7a7" data-eleccion={pantalla.id} data-estado={estado}>
-      {pantalla.parrafos.map((t) => <p key={t} className="t7a7-p" data-texto>{t}</p>)}
+      {pantalla.parrafos.map((t) => <p key={t} className="t7a7-p" data-texto><Plegable texto={t} /></p>)}
       {pantalla.lista && (
         <ol className="t7a7-lista" data-lista>
           {pantalla.lista.map((t) => <li key={t} data-texto>{t}</li>)}
         </ol>
       )}
-      {(pantalla.despues ?? []).map((t) => <p key={t} className="t7a7-p" data-texto>{t}</p>)}
+      {(pantalla.despues ?? []).map((t) => <p key={t} className="t7a7-p" data-texto><Plegable texto={t} /></p>)}
       <p className="t7a7-p t7a7-preg" data-texto data-pregunta>{pantalla.pregunta}</p>
       <div className="t7a7-ops" role="group" aria-label={pantalla.pregunta}>
         {orden.map((o) => {
@@ -147,7 +148,7 @@ export default function ControlInterno({ pieza = PIEZA_CONTROL_INTERNO, rotulo }
         ) : (
           <div className="t7a7">
             {p.objetivo && <p className="t7a7-p" data-texto data-objetivo>{p.objetivo}</p>}
-            {p.parrafos?.map((t) => <p key={t} className="t7a7-p" data-texto>{t}</p>)}
+            {p.parrafos?.map((t) => <p key={t} className="t7a7-p" data-texto><Plegable texto={t} /></p>)}
             {p.siguiente && <p className="t7a7-nota" data-texto data-siguiente>{p.siguiente}</p>}
             {p.boton && <Boton nombre={p.tipo === "portada" ? "empezar" : "seguir"} texto={p.boton} onClick={seguir} />}
             <Pie texto={p.pie} />

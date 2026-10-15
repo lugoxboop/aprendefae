@@ -3,6 +3,7 @@ import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_TRES_FORMAS, BOTON, INTERFAZ } from "../../../../data/contabilidadT7_1_ap3.js";
+import { Plegable } from "./plegable.jsx";
 import { textosDelError, contarFallo } from "./escaleraAyuda.js";
 
 /*
@@ -90,7 +91,7 @@ function Mensaje({ ok, textos, refFoco }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7a3-msg-cuerpo">
         <span className="t7a3-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
@@ -165,7 +166,7 @@ function Eleccion({ pantalla, onSeguir }) {
   return (
     <div className="t7a3" data-eleccion={pantalla.id} data-estado={estado}>
       {pantalla.encabezado && <p className="t7a3-h" data-texto data-encabezado>{pantalla.encabezado}</p>}
-      {pantalla.parrafos.map((t) => <p key={t} className="t7a3-p" data-texto>{t}</p>)}
+      {pantalla.parrafos.map((t) => <p key={t} className="t7a3-p" data-texto><Plegable texto={t} /></p>)}
       <Calculos lista={pantalla.calculos} />
       {pantalla.metodos && <TarjetasMetodos metodos={pantalla.metodos} />}
       {pantalla.tarjetas && <TarjetasAFavor tarjetas={pantalla.tarjetas} />}
@@ -216,7 +217,7 @@ export default function TresFormas({ pieza = PIEZA_TRES_FORMAS, rotulo }) {
         ) : (
           <div className="t7a3">
             {p.objetivo && <p className="t7a3-p" data-texto data-objetivo>{p.objetivo}</p>}
-            {p.parrafos.map((t) => <p key={t} className="t7a3-p" data-texto>{t}</p>)}
+            {p.parrafos.map((t) => <p key={t} className="t7a3-p" data-texto><Plegable texto={t} /></p>)}
             {p.ficha && (
               <dl className="t7a3-ficha" data-ficha>
                 {p.ficha.map((f) => (
