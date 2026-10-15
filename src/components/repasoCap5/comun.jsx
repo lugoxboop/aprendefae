@@ -131,3 +131,19 @@ export function Veredicto({ estado, textos }) {
     </span>
   );
 }
+
+/*
+ * La marca de UNA pieza de un renglón calificado (auditoría de Takamura,
+ * paquete e5-mes-en-dos-cuentas, punto 4): su forma (punto relleno #CBDCF2 de
+ * 10 px si está bien, anillo coral si está mal) y su palabra, en Inter 12/600.
+ * Cada renglón lleva dos: la de la cuenta y la del valor.
+ */
+export function MarcaPieza({ estado, textos, pieza }) {
+  if (estado !== "ok" && estado !== "mal") return null;
+  return (
+    <span data-marca-pieza={pieza} data-veredicto={estado} style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px", color: C.texto, whiteSpace: "nowrap" }}>
+      <Punto ok={estado === "ok"} />
+      {textos[estado]}
+    </span>
+  );
+}

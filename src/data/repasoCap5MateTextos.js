@@ -432,3 +432,23 @@ export const ASIENTOS_MATE = [
     acierto: ["Correcto. Lo que cuesta vender es gasto. Y al transporte, como el día 15, se le retiene el 1 %."],
   },
 ];
+
+/*
+ * ═══════════ «EL MES EN DOS CUENTAS» EN r5-3 (paquete e5-mes-en-dos-cuentas) ═══════════
+ *
+ * Caja e IVA por pagar, con los rótulos de Miyata. «Pagado o devuelto» y no
+ * «Pagaste al comprar»: el debe del IVA también lleva los $2.160.000 de la
+ * devolución del 20. En la pantalla final, la diferencia del IVA se cambia
+ * por la frase final, con la cifra desde los datos.
+ */
+export const MES_MATE = {
+  cuentas: [
+    { cuenta: CAJA, nombre: "Caja", debe: "Entradas", haber: "Salidas", difDebe: "Entró más que salió", difHaber: "Salió más que entró" },
+    { cuenta: IVA, nombre: "IVA por pagar", debe: "Pagado o devuelto", haber: "Cobrado al vender", difDebe: "Te queda a favor", difHaber: "Le debes al Estado" },
+  ],
+  final: {
+    cuenta: IVA,
+    haber: (x) => `Marzo: ${pesos(x)} de IVA son del Estado.`,
+    debe: (x) => `Marzo: ${pesos(x)} más de IVA pagado que cobrado.`,
+  },
+};
