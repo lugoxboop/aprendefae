@@ -320,7 +320,8 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
   const calificar = ({ ok, elegida = null, textos = null, respuesta = null }) => {
     if (r) return;
     const texto = textos ?? [pantalla.opciones.find((o) => o.id === elegida).retro];
-    detalle.current.push({ item: pantalla.id, ok, intentos: 1, respuesta: ok ? null : (respuesta ?? elegida), orden: detalle.current.length + 1 });
+    /* `pista`: si el estudiante la abrió antes de responder (Mateo). No cambia los FP. */
+    detalle.current.push({ item: pantalla.id, ok, intentos: 1, respuesta: ok ? null : (respuesta ?? elegida), orden: detalle.current.length + 1, pista: pistaAbierta });
     setResultados((x) => ({ ...x, [pantalla.id]: ok }));
     setR({ ok, textos: texto });
   };
