@@ -41,10 +41,11 @@ const MIGRACION = readFileSync(new URL("../../../supabase/migrations/0072_tema5_
 const TEMA = SUBJECTS.contabilidad.topics.find((t) => t.id === "activos-financieros");
 
 test("★★★ b5-t5-a2 está en el bloque de T5, después de b5-t5-a1: evaluativa, difícil, 50 FP", () => {
-  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t5-a1", "b5-t5-a2"]);
+  /* Desde N1 de la Célula C (decisión de corte de T5, punto 6), N1 va entre las dos de B. */
+  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t5-a1", "t5-temporal-o-largo-plazo", "b5-t5-a2"]);
   const c = clasificacionDe("contabilidad", "activos-financieros", "b5-t5-a2");
   assert.deepEqual({ modalidad: c.modalidad, dificultad: c.dificultad, fpBase: c.fpBase }, { modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 });
-  assert.equal(actividadesDeTipo(TEMA, HACER)[1].nombre, D.T5_ACT2.nombre);
+  assert.equal(actividadesDeTipo(TEMA, HACER).find((a) => a.id === "b5-t5-a2").nombre, D.T5_ACT2.nombre);
 });
 
 test("★★★ la vista abre b5-t5-a2 con el diario encima", async () => {

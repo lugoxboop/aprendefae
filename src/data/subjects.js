@@ -639,6 +639,8 @@ export const SUBJECTS = {
           { id: "b5-t5-a1-del-efectivo-de-sobra", nombre: "Del efectivo de sobra al activo financiero", clasificacion: { tipo: APRENDER } },
           /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (guía de Mai). Su fila del servidor es la migración 0070. */
           { id: "b5-t5-a1", nombre: "¿Qué renta da este título?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* N1 de la Célula C, después de b5-t5-a1 (decisión de corte de T5, punto 6; la sostiene b5-t5-a1-del-efectivo-de-sobra). Temporal o a largo plazo, el grupo y la intención, pp. 191-192. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0110. */
+          { id: "t5-temporal-o-largo-plazo", nombre: "¿Temporal o a largo plazo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /* N2 de la Célula C, después de b5-t5-a1 (decisión de corte de T5, punto 6: N1 entra entre b5-t5-a1 y N2, y N3 justo después de N2). Las cuatro acciones de control de la p. 193; sostiene a N3. Cero FP. */
           { id: "t5-a1-cuidar-las-inversiones", nombre: "Cómo se cuidan las inversiones", clasificacion: { tipo: APRENDER } },
           { id: "b5-t5-a2-los-tres-momentos-de-una-inversion", nombre: "Los tres momentos de una inversión", clasificacion: { tipo: APRENDER } },
