@@ -159,6 +159,6 @@ HABER · Sin diferencia.
 **Cifras del mes** (Miyata; Ippo las calcula desde los datos y la prueba las
 compara): r5-3 · Caja entradas $61.987.500, salidas $46.594.350, diferencia
 $15.393.150 débito; IVA haber $22.950.000, debe $10.772.800, diferencia
-$12.177.200 crédito. r5-4 · Caja entradas $105.710.000, salidas $27.899.700,
-diferencia $77.810.300 débito; descuento debe $2.610.000, haber $939.550,
+$12.177.200 crédito. r5-4 (diez asientos, sin los fletes del 25 y del 28) · Caja entradas
+$105.710.000, salidas $25.730.950, diferencia $79.979.050 débito; descuento debe $2.610.000, haber $939.550,
 diferencia $1.670.450 débito.
