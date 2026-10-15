@@ -161,3 +161,57 @@ test("★★★ fuera del catálogo de FP; en T7-3, después de A6 entre las de 
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A7_ID)), []);
 });
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+/* Recorre la pieza: en cada pantalla con pregunta, antes, con un error y con el acierto. Devuelve qué figuras se vieron en cada estado. */
+async function figurasPorEstado(m) {
+  const c = m.caja;
+  const figs = () => [...c.querySelectorAll("[data-plazos], figure[data-renglones]")].map((f) => (f.matches("[data-plazos]")
+    ? `plazos ${f.querySelector("[data-pago]")?.textContent ?? "sin pago"}`
+    : `${f.querySelector("figcaption").textContent}: ${[...f.querySelectorAll("[data-renglon]")].map((r) => `${r.querySelector(".rg-op").textContent}${r.querySelector(".rg-rot").textContent.replace(/^(menos|por|igual a) /, "")} ${r.querySelector(".rg-v").textContent}${r.classList.contains("rg-res") ? " =" : ""}${r.classList.contains("rg-fuerte") ? " !" : ""}`).join(" | ")}`));
+  const visto = {};
+  for (let k = 0; k < 15; k++) {
+    const id = c.querySelector("[data-pantalla]").dataset.pantalla;
+    const p = pantalla(id);
+    if (p.opciones) {
+      visto[`${id}:antes`] = figs();
+      await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => !o.correcta).id}"]`)); await tocar(boton(c, "confirmar"));
+      visto[`${id}:error`] = figs();
+      await tocar(boton(c, "probar-otra"));
+      await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`)); await tocar(boton(c, "confirmar"));
+      visto[`${id}:acierto`] = figs();
+      const s = boton(c, "seguir");
+      if (!s) break;
+      await tocar(s);
+    } else {
+      visto[`${id}:lectura`] = figs();
+      const b = boton(c, "seguir") ?? boton(c, "empezar");
+      if (!b) break;
+      await tocar(b);
+    }
+  }
+  /* Solo los estados con figuras. */
+  return Object.fromEntries(Object.entries(visto).filter(([, v]) => v.length));
+}
+
+test("★★★ Patrón T7-3: la franja de la NIC 2 pegada arriba; el ejemplo en renglones con su texto, y el menor con el acierto", async () => {
+  const E = A.EJEMPLO_A7;
+  const m = await montar();
+  try {
+    /* La franja: la primera cosa de la pieza, con la clase del patrón (sticky en su CSS). */
+    const pieza = m.caja.querySelector("[data-pieza]");
+    assert.equal(pieza.firstElementChild.matches("p.t73pt-nic2[data-aviso]"), true);
+    assert.ok(pieza.classList.contains("t73pt-pieza"), "la pieza es el contenedor de la franja");
+    const V = `Ejemplo que no es del libro: Precio esperado de venta 610.000 | −Lo que cuesta vender 60.000 | =Valor neto realizable ${"550.000"} =`;
+    assert.deepEqual(await figurasPorEstado(m), {
+      "como-se-mide:antes": [V],
+      "como-se-mide:error": [V],
+      "como-se-mide:acierto": [V, "Se mide por el menor: Costo 580.000 | Valor neto realizable El menor 550.000 !"],
+    });
+  } finally {
+    m.desmontar();
+  }
+  assert.equal(E.precio - E.vender, E.vnr);
+  assert.equal(Math.min(E.costo, E.vnr), E.vnr);
+});

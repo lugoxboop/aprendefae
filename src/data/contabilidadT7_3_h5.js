@@ -1,4 +1,5 @@
 import { DEBE, HABER, pesos } from "./contabilidad.js";
+import { cuentaDeConteo } from "./contabilidadT7_3_a5.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -52,6 +53,16 @@ export const H5 = {
   enunciado: ["La empresa Olmo usa el sistema permanente. Al cierre del año, el 31 de diciembre, hace su conteo físico."],
   pie: "Basado en el libro, pp. 254-256",
 };
+
+/*
+ * Patrón T7-3 (Watari): la cuenta del conteo de Olmo en renglones, DESPUÉS
+ * de su ítem (2: el sobrante; 5: el faltante), y solo mientras dura su caso.
+ * El caso de Pino no lleva cuenta: solo asiento. Títulos de Watari, revisados por Near.
+ */
+export const FIGURAS_H5 = [
+  { ...cuentaDeConteo("Olmo · 31 de diciembre", OLMO_1.libros, OLMO_1.conteo), desde: 2, hasta: 4 },
+  { ...cuentaDeConteo("Olmo · otro año", OLMO_2.libros, OLMO_2.conteo), desde: 5, hasta: 6 },
+];
 
 export const BOTON_H5 = { siguiente: "Siguiente ítem", verResumen: "Ver mi resumen" };
 

@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
-import { H7, CASOS_H7, BOTON_H7, fichaH7, resumenH7 } from "../../../../data/contabilidadT7_3_h7.js";
+import { H7, CASOS_H7, FIGURAS_H7, BOTON_H7, fichaH7, resumenH7 } from "../../../../data/contabilidadT7_3_h7.js";
 import { prepararH7, evaluarH7, puntuarH7, TOTAL_H7 } from "../../../../contabilidad/t7_3H7.js";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
-import AvisoNIC2 from "./AvisoNIC2.jsx";
+import { FranjaNIC2, FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -61,7 +61,8 @@ export default function CostoOValorNeto({ Marco, rotulo, titulo, acento, onCompl
   if (t.terminado) {
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-        <AvisoNIC2 texto={H7.aviso} />
+        <style>{CSS_T73_PATRON}</style>
+        <FranjaNIC2 texto={H7.aviso} />
         <Cierre pct={Math.round(puntuarH7(bien))} onReiniciar={reiniciar} textoReiniciar="Otra vez">
           <p data-resumen style={TEXTO_CIERRE}>{resumenH7(bien, TOTAL_H7)}</p>
         </Cierre>
@@ -72,9 +73,9 @@ export default function CostoOValorNeto({ Marco, rotulo, titulo, acento, onCompl
   const caso = CASOS_H7[item.caso];
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T7_HACER}</style>
-      <div data-t7-3-h7>
-        <AvisoNIC2 texto={H7.aviso} />
+      <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
+      <div data-t7-3-h7 className="t73pt-pieza">
+        <FranjaNIC2 texto={H7.aviso} />
         <Encabezado consigna={H7.consigna} onComoSeJuega={onComoSeJuega} />
         <div style={{ marginBottom: "12px" }}>
           <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
@@ -83,6 +84,7 @@ export default function CostoOValorNeto({ Marco, rotulo, titulo, acento, onCompl
           <Parrafos textos={[caso.texto]} dato="caso" />
           <Ficha filas={fichaH7(caso)} />
         </div>
+        <FigurasHacer figuras={FIGURAS_H7} respondidos={t.i + (listo ? 1 : 0)} listo={listo} />
         <TarjetaPregunta id={item.id} encabezado={caso.encabezado} pregunta={item.pregunta} pie={H7.pie} tarjetaRef={tarjeta} />
         <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
         <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es ${r.textoCorrecta}. ` : null} />

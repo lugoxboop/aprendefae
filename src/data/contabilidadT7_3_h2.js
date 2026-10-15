@@ -1,3 +1,5 @@
+import { ROTULOS_PATRON } from "./contabilidadT7_3.js";
+import { ROTULOS_A2 } from "./contabilidadT7_3_a2.js";
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-3 · H2 DE HACER — «La cadena de descuentos» (Célula C).
@@ -76,6 +78,58 @@ export const FICHA_H2 = [
   ["Monto", "$2.750.000 de lista, con 10 %, 5 % y 4 %"],
   ["Tipo", "A crédito"],
   ["Clase de hecho", "Venta de mercancía"],
+];
+
+/*
+ * Patrón T7-3 (Watari): la cuenta en renglones, cada parte DESPUÉS de su
+ * ítem. La cadena crece en la misma tarjeta (ítems 1 y 2); el atajo del
+ * factor llega con el ítem 3 y la rebaja de verdad con el 4. Rótulos de
+ * Watari, revisados por Near.
+ *
+ * La nota de la rebaja: la primera frase es de Watari y la segunda de Near
+ * (la retroalimentación del ítem 4). Near la revisó: va tal cual (INFLESZ
+ * 82,6).
+ */
+const decimal = (x) => String(x).replace(".", ",");
+export const ROTULOS_H2 = {
+  cadena: "Cadena de descuentos de Palma",
+  rebaja: "La rebaja de verdad",
+  rebajaFila: "Rebaja",
+  partePrecio: "Parte del precio de lista",
+  nota: `La suma de los porcentajes da ${C.suma} %. Cada descuento va sobre un saldo más pequeño, así que la rebaja real es menor.`,
+};
+const [d10, d5, d4] = CADENA_H2;
+export const FIGURAS_H2 = [
+  {
+    tipo: "renglones", desde: 1, titulo: ROTULOS_H2.cadena,
+    filas: [
+      { rot: ROTULOS_PATRON.precioLista, v: C.lista },
+      { op: "−", rot: ROTULOS_A2.descuento(d10), v: C.descuentos[0] },
+      { op: "=", rot: ROTULOS_A2.saldo, v: C.saldos[1], res: true },
+      { op: "−", rot: ROTULOS_A2.delSaldo(d5), v: C.descuentos[1], desde: 2 },
+      { op: "=", rot: ROTULOS_A2.saldo, v: C.saldos[2], res: true, desde: 2 },
+      { op: "−", rot: ROTULOS_A2.delSaldo(d4), v: C.descuentos[2], desde: 2 },
+      { op: "=", rot: ROTULOS_PATRON.valorFacturar, v: C.factura, res: true, desde: 2 },
+    ],
+  },
+  {
+    tipo: "renglones", desde: 3, titulo: ROTULOS_A2.atajo,
+    filas: [
+      { rot: ROTULOS_A2.complementos, v: CADENA_H2.map((p) => decimal((100 - p) / 100).padEnd(4, "0")).join(" × "), apila: true },
+      { op: "=", rot: ROTULOS_A2.factor, v: decimal(C.factor), res: true },
+      { op: "×", rot: ROTULOS_PATRON.precioLista, v: C.lista },
+      { op: "=", rot: ROTULOS_PATRON.valorFacturar, v: C.factura, res: true },
+    ],
+  },
+  {
+    tipo: "renglones", desde: 4, titulo: ROTULOS_H2.rebaja, nota: ROTULOS_H2.nota,
+    filas: [
+      { rot: ROTULOS_PATRON.precioLista, v: C.lista },
+      { op: "−", rot: ROTULOS_PATRON.valorFacturar, v: C.factura },
+      { op: "=", rot: ROTULOS_H2.rebajaFila, v: C.rebaja, res: true },
+      { rot: ROTULOS_H2.partePrecio, v: `${decimal(C.pctRebaja)} %`, fuerte: true },
+    ],
+  },
 ];
 
 export const BOTON_H2 = { siguiente: "Siguiente ítem", verResumen: "Ver mi resumen" };

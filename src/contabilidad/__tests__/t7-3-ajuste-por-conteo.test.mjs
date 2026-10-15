@@ -248,3 +248,49 @@ test("★★★ el panel docente: todo item_id tiene etiqueta, leída de los dat
   const bloque = fuente.slice(fuente.indexOf("CONTABILIDAD · T7 «INVENTARIOS»"));
   assert.match(bloque.slice(0, bloque.indexOf("});")), /"t7-3-ajuste-por-conteo": \(id\) => unidadDeT73H5\(id\),/);
 });
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+/* Juega la tanda (un error en los ítems impares de elección) y anota qué figuras se ven antes y después de cada ítem. */
+async function figurasPorItem(m, botonFinal, botonSiguiente) {
+  const vistas = () => [...m.caja.querySelectorAll("[data-figuras] figure")].map((f) => (f.matches("[data-plazos]")
+    ? `plazos ${f.querySelector("[data-pago]")?.textContent ?? "sin pago"}`
+    : `${f.querySelector("figcaption").textContent}: ${[...f.querySelectorAll("[data-renglon]")].map((r) => `${r.querySelector(".rg-op").textContent}${r.querySelector(".rg-rot").textContent.replace(/^(menos|por|igual a) /, "")} ${r.querySelector(".rg-v").textContent}${r.classList.contains("rg-res") ? " =" : ""}${r.classList.contains("rg-fuerte") ? " !" : ""}`).join(" | ")}`));
+  const r = [];
+  for (const [k, it] of EN_ORDEN.entries()) {
+    const antes = vistas();
+    if (it.lineas) {
+      for (const l of it.lineas) await tocar(lado(m.caja, l.id, l.lado));
+      await tocar(boton(m.caja, "Comprobar"));
+    } else {
+      const v = k % 2 ? it.opciones.find((o) => o.valor !== it.correcta).valor : it.correcta;
+      await tocar(opcion(m.caja, v));
+    }
+    r.push({ item: it.id, antes, despues: vistas() });
+    await tocar(boton(m.caja, k === EN_ORDEN.length - 1 ? botonFinal : botonSiguiente));
+  }
+  return r;
+}
+
+test("★★★ Patrón T7-3: la cuenta de Olmo después de los ítems 2 y 5, mientras dura su caso; Pino sin cuenta", async () => {
+  assert.equal(D.OLMO_1.conteo - D.OLMO_1.libros, 36_000);
+  assert.equal(D.OLMO_2.libros - D.OLMO_2.conteo, 44_000);
+  const S = "Olmo · 31 de diciembre: Conteo físico 648.000 | −Saldo en libros 612.000 | =Sobrante 36.000 =";
+  const F = "Olmo · otro año: Saldo en libros 738.000 | −Conteo físico 694.000 | =Faltante 44.000 =";
+  const m = await montar();
+  try {
+    const r = await figurasPorItem(m, D.BOTON_H5.verResumen, D.BOTON_H5.siguiente);
+    assert.deepEqual(r.map((x) => [x.item, x.antes, x.despues]), [
+      ["sobrante-o-faltante", [], []],
+      ["el-sobrante", [], [S]],
+      ["ajuste-sobrante", [S], [S]],
+      ["que-pasa-con-el-costo", [S], [S]],
+      ["el-faltante", [], [F]],
+      ["ajuste-faltante", [F], [F]],
+      ["estimar-provision", [], []],
+      ["perdida-real", [], []],
+    ]);
+  } finally {
+    m.desmontar();
+  }
+});

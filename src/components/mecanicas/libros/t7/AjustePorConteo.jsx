@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
-import { H5, CASOS_H5, BOTON_H5, resumenH5 } from "../../../../data/contabilidadT7_3_h5.js";
+import { H5, CASOS_H5, FIGURAS_H5, BOTON_H5, resumenH5 } from "../../../../data/contabilidadT7_3_h5.js";
 import { prepararH5, evaluarH5, idLineaH5, puntuarH5, TOTAL_H5 } from "../../../../contabilidad/t7_3H5.js";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "./hacerT7.jsx";
 
 /*
@@ -81,7 +82,7 @@ export default function AjustePorConteo({ Marco, rotulo, titulo, acento, onCompl
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T7_HACER}</style>
+      <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h5>
         <Encabezado consigna={H5.consigna} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H5.enunciado} />
@@ -92,6 +93,7 @@ export default function AjustePorConteo({ Marco, rotulo, titulo, acento, onCompl
           <Parrafos textos={CASOS_H5[item.caso].textos} dato="caso" />
           <Ficha filas={CASOS_H5[item.caso].ficha} />
         </div>
+        <FigurasHacer figuras={FIGURAS_H5} respondidos={t.i + (listo ? 1 : 0)} listo={listo} />
         <TarjetaPregunta id={item.id} encabezado={CASOS_H5[item.caso].encabezado} pregunta={item.pregunta} pie={H5.pie} tarjetaRef={tarjeta} />
         {item.tipo === "eleccion" ? (
           <>

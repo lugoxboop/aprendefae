@@ -29,6 +29,42 @@ export const FRASE_NIC2 = "Lo que ves aquí de la NIC 2 es lo que trae el libro.
 /* El ejemplo construido de Near (registro 5c, T73-A7). */
 export const EJEMPLO_A7 = { precio: 610_000, vender: 60_000, vnr: 550_000, costo: 580_000 };
 
+/*
+ * Patrón T7-3 (Watari): el valor neto realizable en renglones, y «Se mide
+ * por el menor» (el menor en negrita, sin raya, con la marca «El menor»).
+ * Rótulos y títulos de Watari, revisados por Near (L, 15 de octubre), con
+ * sus tres cambios: «Lo que falta para terminar», «Lo que cuesta vender» y
+ * «El menor». Los usa también H7.
+ */
+export const ROTULOS_A7 = {
+  precio: "Precio esperado de venta", terminar: "Lo que falta para terminar", vender: "Lo que cuesta vender",
+  vnr: "Valor neto realizable", costo: "Costo", menorTit: "Se mide por el menor", menor: "El menor",
+  ejemplo: "Ejemplo que no es del libro",
+};
+export const cuentaVnr = (titulo, precio, terminar, vender) => {
+  const R = ROTULOS_A7;
+  return {
+    tipo: "renglones", titulo,
+    filas: [
+      { rot: R.precio, v: precio },
+      ...(terminar ? [{ op: "−", rot: R.terminar, v: terminar }] : []),
+      { op: "−", rot: R.vender, v: vender },
+      { op: "=", rot: R.vnr, v: precio - (terminar ?? 0) - vender, res: true },
+    ],
+  };
+};
+export const cuentaMenor = (costo, vnr) => {
+  const R = ROTULOS_A7;
+  const gana = costo < vnr ? "costo" : "vnr";
+  return {
+    tipo: "renglones", titulo: R.menorTit,
+    filas: [
+      { rot: R.costo, v: costo, fuerte: gana === "costo", marca: gana === "costo" ? R.menor : null },
+      { rot: R.vnr, v: vnr, fuerte: gana === "vnr", marca: gana === "vnr" ? R.menor : null },
+    ],
+  };
+};
+
 const PORTADA = {
   id: "portada",
   tipo: "portada",
@@ -77,13 +113,15 @@ const COMO_SE_MIDE = {
     "Ahora mira un ejemplo que no es del libro. Una tienda espera vender una mercancía en $610.000.",
     "Venderla le cuesta $60.000. Así que su valor neto realizable es de $550.000.",
   ],
+  /* El texto ya da el valor neto realizable: la cuenta va con él. «Se mide por el menor» es la respuesta: llega con el acierto. */
+  figuras: [cuentaVnr(ROTULOS_A7.ejemplo, EJEMPLO_A7.precio, null, EJEMPLO_A7.vender)],
   pregunta: "Esa mercancía costó $580.000. ¿Por qué valor se mide, según la NIC 2 del libro?",
   opciones: [
     { id: "costo", texto: "$580.000", devolucion: "Se mide por el menor entre el costo, $580.000, y el valor neto realizable, $550.000. Aquí el menor es $550.000." },
     { id: "vnr", texto: "$550.000", correcta: true },
     { id: "precio", texto: "$610.000", devolucion: "Se mide por el menor entre el costo, $580.000, y el valor neto realizable, $550.000. Aquí el menor es $550.000." },
   ],
-  acierto: { texto: "Así es. Se mide por el menor de los dos: el valor neto realizable, $550.000.", pie: "Basado en el libro, p. 258" },
+  acierto: { texto: "Así es. Se mide por el menor de los dos: el valor neto realizable, $550.000.", figuras: [cuentaMenor(EJEMPLO_A7.costo, EJEMPLO_A7.vnr)], pie: "Basado en el libro, p. 258" },
   error: { pie: "Basado en el libro, p. 258" },
   pie: "Basado en el libro, pp. 257-258",
 };

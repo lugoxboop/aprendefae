@@ -204,3 +204,19 @@ test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqu
   const bloque = fuente.slice(fuente.indexOf("CONTABILIDAD · T7 «INVENTARIOS»"));
   assert.match(bloque.slice(0, bloque.indexOf("});")), /"t7-3-que-entra-al-costo": \(id\) => unidadDeT73H6\(id\),/);
 });
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+test("★★★ Patrón T7-3: la frase de la NIC 2 va en la franja de Watari, lo primero de la actividad", async () => {
+  const m = await montar();
+  try {
+    const raiz = m.caja.querySelector("[data-t7-3-h6]");
+    assert.equal(raiz.firstElementChild.matches("p.t73pt-nic2[data-aviso]"), true);
+    assert.ok(raiz.classList.contains("t73pt-pieza"));
+    assert.ok([...m.caja.querySelectorAll("style")].some((s) => s.textContent.includes(".t73pt-nic2 { position: sticky;")));
+    /* Lo demás lo cubre la clasificación que ya existe: sin figuras. */
+    assert.equal(m.caja.querySelectorAll("figure").length, 0);
+  } finally {
+    m.desmontar();
+  }
+});
