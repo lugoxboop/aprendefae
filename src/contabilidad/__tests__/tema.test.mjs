@@ -37,7 +37,8 @@ test("★ la materia tiene sus cinco temas, en el orden del libro", () => {
   /* T7-1 (Célula C) va después del 5; el T4 y el T6 entran antes que él, en el orden del libro. */
   /* T7-2 (Célula C) va justo después de T7-1, y T7-3 justo después de T7-2. */
   /* El repaso del capítulo 5 (Célula E) va siempre al final (nocturno.md). */
-  assert.deepEqual(ids, ["introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja", "activos-financieros", "cuentas-por-cobrar", "inventarios-periodico", "inventarios-permanente", "inventarios-descuentos-nic2", "repaso-capitulo-5"]);
+  /* T4 (Célula D) va entre el Tema 3 y el Tema 5: §5.1-5.2 antes de §5.3. */
+  assert.deepEqual(ids, ["introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja", "efectivo-caja-menor-bancos", "activos-financieros", "cuentas-por-cobrar", "inventarios-periodico", "inventarios-permanente", "inventarios-descuentos-nic2", "repaso-capitulo-5"]);
   assert.ok(TEMA, "no está «cuentas-debe-haber»");
   assert.equal(TEMA.title, "Las cuentas, el debe y el haber");
 });
