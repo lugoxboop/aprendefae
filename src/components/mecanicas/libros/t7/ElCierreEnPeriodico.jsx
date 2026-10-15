@@ -4,7 +4,7 @@ import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_EL_CIERRE, BOTON, INTERFAZ, PENDIENTE_DE_REVISION, FECHA, DEBE, HABER, cifra } from "../../../../data/contabilidadT7_1_ap4.js";
 import { Plegable } from "./plegable.jsx";
-import { textosDelError, contarFallo } from "./escaleraAyuda.js";
+import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDeLineas, puestoTrasProbarOtra } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -289,6 +289,8 @@ function Eleccion({ pantalla, onSeguir }) {
 function Lados({ pantalla, onSeguir }) {
   const [puesto, setPuesto] = useState({});
   const [veredicto, setVeredicto] = useState(null);
+  const [fallosLinea, setFallosLinea] = useState({});
+  const cerrada = (l) => lineaCerrada(pantalla, l, fallosLinea[l.id]);
   const ref = useRef(null);
   const malas = veredicto?.malas ?? [];
   const estado = !veredicto ? "colocando" : malas.length ? "error" : "acierto";
@@ -297,12 +299,16 @@ function Lados({ pantalla, onSeguir }) {
   const pie = estado === "colocando" ? pantalla.pie : estado === "error" ? pantalla.error.pie : pantalla.acierto.pie;
 
   const tocar = (l, lado) => {
-    if (estado !== "colocando") return;
+    if (estado !== "colocando" || cerrada(l)) return;
     setPuesto((p) => ({ ...p, [l.id]: p[l.id] === lado ? undefined : lado }));
   };
-  const confirmar = () => setVeredicto({ malas: pantalla.lineas.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id) });
+  const confirmar = () => {
+    const malas = pantalla.lineas.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id);
+    setFallosLinea((f) => sumarFallosDeLineas(f, malas));
+    setVeredicto({ malas });
+  };
   const probarOtra = () => {
-    setPuesto((p) => { const n = { ...p }; for (const id of malas) delete n[id]; return n; });
+    setPuesto((p) => puestoTrasProbarOtra(p, malas, pantalla.lineas, cerrada));
     setVeredicto(null);
   };
 
@@ -326,7 +332,7 @@ function Lados({ pantalla, onSeguir }) {
                 else if (!lado) { clase += " t7a4-cas-objetivo"; nombre = `${nombreLado(cual)}, vacía, lista para recibir`; }
                 else nombre = `${nombreLado(cual)}, vacía`;
                 return (
-                  <button type="button" className={clase} data-linea={l.id} data-lado={cual} data-llena={llena ? "si" : "no"} aria-label={`${l.cuenta}, ${l.accion}: ${nombre}`} aria-pressed={llena} onClick={() => tocar(l, cual)}>
+                  <button type="button" className={clase} data-linea={l.id} data-lado={cual} data-llena={llena ? "si" : "no"} aria-label={`${l.cuenta}, ${l.accion}: ${nombre}`} aria-pressed={llena} aria-disabled={cerrada(l) ? "true" : undefined} onClick={() => tocar(l, cual)}>
                     {llena && mala && <span className="t7a4-marca"><X size={16} aria-hidden="true" /></span>}
                     {llena ? cifra(l.monto) : ""}
                   </button>
@@ -340,7 +346,7 @@ function Lados({ pantalla, onSeguir }) {
                     {!lado && <span className="t7a4-monto" data-monto-suelto>{cifra(l.monto)}</span>}
                   </span>
                   <span className="t7a4-g2">{cas(DEBE)}{cas(HABER)}</span>
-                  {mala && estado === "error" && <Mensaje ok={false} textos={[l.devolucion]} clase="t7a4-err" refFoco={l.id === malas[0] ? ref : undefined} />}
+                  {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} clase="t7a4-err" refFoco={l.id === malas[0] ? ref : undefined} />}
                 </div>
               );
             })}

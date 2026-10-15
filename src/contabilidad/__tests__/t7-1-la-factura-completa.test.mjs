@@ -14,6 +14,8 @@ import { readFileSync, readdirSync } from "node:fs";
  *     muestran en el acierto
  *   · los totales que aparecen al ubicar bien una línea son los del asiento
  *   · ninguna cifra prohibida de otra cadena se cuela; no entra al catálogo
+ *   · lote 2: las pistas (de cada pregunta y de cada línea) y la tercera
+ *     opción de P2 son, letra por letra, las de Near
  *
  * La mecánica y la figura llegan con el paquete de Watari: cuando estén, las
  * pruebas de pantalla y de ancho se agregan aquí y en scripts/t7/.
@@ -25,6 +27,9 @@ const A = await import("../../data/contabilidadT7_1_ap2.js");
 const RAIZ = new URL("../../../", import.meta.url);
 const PAQUETE = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-pieza2-v2.md", RAIZ), "utf8");
 const CONTENIDO = PAQUETE.slice(PAQUETE.indexOf("## Contenido por pantalla y estado"), PAQUETE.indexOf("## Erratas C7"));
+/* Lote 2 de la revisión de calidad (Near): las pistas del primer error y el anexo de la tercera opción. */
+const LOTE2_PISTAS = readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-pistas-v1.md", RAIZ), "utf8");
+const LOTE2_ANEXO = readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-anexo-v1.md", RAIZ), "utf8");
 const P = A.PIEZA_LA_FACTURA_COMPLETA;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 const fichaComoTexto = (f) => `${f.dato}: ${f.texto}`;
@@ -37,7 +42,8 @@ function textosVisibles() {
     if (p.parrafos) t.push(...p.parrafos);
     if (p.calculos) t.push(...p.calculos);
     for (const o of p.opciones ?? []) { t.push(o.texto); if (o.devolucion) t.push(o.devolucion); }
-    for (const l of p.lineas ?? []) { t.push(l.texto, l.devolucion); }
+    if (p.pista) t.push(p.pista);
+    for (const l of p.lineas ?? []) { t.push(l.texto, l.devolucion); if (l.pista) t.push(l.pista); }
     if (p.error) t.push(p.error.boton, p.error.pie);
     if (p.acierto) t.push(...p.acierto.textos, p.acierto.boton, p.acierto.pie);
     if (p.tipo === "eleccion" || p.tipo === "lados") t.push(A.BOTON.confirmar);
@@ -85,9 +91,9 @@ function tablaDespuesDe(md, marca) {
 
 /* ═══════════ 1 · LOS TEXTOS CONTRA LA v2 ═══════════ */
 
-test("★★★ cada texto de los datos está, letra por letra, en la v2 aprobada", () => {
-  const faltan = textosVisibles().filter((t) => !PAQUETE.includes(t));
-  assert.deepEqual(faltan, [], "estos textos no están en la v2 tal cual");
+test("★★★ cada texto de los datos está, letra por letra, en la v2 aprobada (o, si es del lote 2, en su paquete)", () => {
+  const faltan = textosVisibles().filter((t) => !PAQUETE.includes(t) && !LOTE2_PISTAS.includes(t) && !LOTE2_ANEXO.includes(t));
+  assert.deepEqual(faltan, [], "estos textos no están en la v2 (ni en el lote 2) tal cual");
   /* La prueba 2 quita los paréntesis del paquete: ningún texto visible puede llevarlos. */
   assert.deepEqual(textosVisibles().filter((t) => /[()]/.test(t)), []);
   assert.ok(PAQUETE.includes(`- Título: ${P.titulo}`));
@@ -107,6 +113,72 @@ test("★★ nada interno de la v2 en los textos, y sin el verbo «contar»", ()
     assert.ok(!todo.includes(interno), `se colaría «${interno}»`);
   }
   assert.doesNotMatch(todo, /(?<!\p{L})cont(ar|ó|amos|aron|aste)(?!\p{L})/iu);
+});
+
+/* ═══════════ LOTE 2 · LAS PISTAS Y EL ANEXO DE NEAR ═══════════ */
+
+/* Las pistas del lote 2 de una pieza, por pantalla («id») o por línea («id · línea»). */
+function pistasDeNear(pieza) {
+  const desde = LOTE2_PISTAS.indexOf(`### ${pieza} `);
+  assert.ok(desde >= 0, `la pieza ${pieza} no está en el lote 2`);
+  const hasta = LOTE2_PISTAS.indexOf("\n### ", desde);
+  return Object.fromEntries(LOTE2_PISTAS.slice(desde, hasta < 0 ? undefined : hasta).split("\n").filter((l) => /^\| P\d/.test(l)).map((l) => {
+    const c = l.slice(1, -1).split("|").map((x) => x.trim());
+    const [, id, linea] = c[0].match(/`([^`]+)`(?: · (\S+))?/);
+    return [linea && linea !== "²" ? `${id} · ${linea}` : id, c[2].match(/^«(.+)»$/)[1]];
+  }));
+}
+
+/* Las pistas que llevan los datos de una pieza, con las mismas claves. */
+function pistasDeLosDatos(pieza) {
+  const out = {};
+  for (const p of pieza.pantallas) {
+    if (p.opciones) out[p.id] = p.pista;
+    for (const l of p.lineas ?? []) out[`${p.id} · ${l.id}`] = l.pista ?? p.pista;
+  }
+  return out;
+}
+
+/* Las filas del anexo del lote 2 de una pieza: su pantalla, las opciones que tenía (✓ = correcta), la tercera y su devolución. */
+function filasDelAnexo(pieza) {
+  return LOTE2_ANEXO.split("\n").filter((l) => l.startsWith(`| ${pieza} |`)).map((l) => {
+    const c = l.slice(1, -1).split("|").map((x) => x.trim());
+    return {
+      pantalla: c[1].match(/`([^`]+)`/)[1],
+      opciones: c[2].split(" · ").map((x) => ({ texto: x.replace(/ ✓$/, ""), correcta: x.endsWith(" ✓") })),
+      tercera: c[3].match(/^\*\*(.+)\*\*$/)[1],
+      devolucion: c[4].match(/^«(.+)»$/)[1],
+    };
+  });
+}
+
+/* Una pregunta del anexo: tres opciones; las dos de antes siguen (el anexo las nombra en corto) y la tercera es la suya. */
+function comprobarAnexo(p, f) {
+  assert.equal(p.opciones.length, 3, f.pantalla);
+  const nueva = p.opciones.find((o) => o.texto === f.tercera);
+  assert.ok(nueva, `${f.pantalla}: falta la tercera opción del anexo`);
+  assert.deepEqual({ correcta: nueva.correcta, devolucion: nueva.devolucion }, { correcta: false, devolucion: f.devolucion }, f.pantalla);
+  const viejas = p.opciones.filter((o) => o !== nueva);
+  assert.equal(viejas.length, f.opciones.length, f.pantalla);
+  for (const corta of f.opciones) {
+    const o = viejas.filter((x) => corta.texto.split(", ").every((trozo) => x.texto.includes(trozo)));
+    assert.equal(o.length, 1, `${f.pantalla}: «${corta.texto}»`);
+    assert.equal(o[0].correcta, corta.correcta, `${f.pantalla}: «${corta.texto}»`);
+  }
+}
+
+test("★★★ lote 2 · pistas: cada pregunta y cada línea de Debe o Haber lleva la suya, letra por letra la de Near", () => {
+  assert.deepEqual(pistasDeLosDatos(P), pistasDeNear(A.AP2_ID));
+});
+
+test("★★★ lote 2 · anexo: P2 pasa de dos a tres opciones; las dos de la v2 siguen y la tercera es, letra por letra, la del anexo", () => {
+  const filas = filasDelAnexo(A.AP2_ID);
+  assert.deepEqual(filas.map((f) => f.pantalla), ["base-de-la-retencion"]);
+  for (const f of filas) comprobarAnexo(pantalla(f.pantalla), f);
+  /* Las dos de antes, con su devolución de la v2. */
+  for (const o of pantalla("base-de-la-retencion").opciones.filter((x) => x.texto !== filas[0].tercera && !x.correcta)) assert.ok(PAQUETE.includes(`«${o.devolucion}»`), o.devolucion);
+  /* La otra pregunta ya tenía tres: no la toca el anexo. */
+  assert.equal(pantalla("lado-a-lado").opciones.length, 3);
 });
 
 /* ═══════════ 2 · LAS TABLAS ═══════════ */
@@ -189,8 +261,10 @@ test("★★ IVA y retención: 16 % y 3,5 % sobre la mercancía, sin el IVA", ()
   assert.equal(ret(5000000), 175000);
   assert.equal(iva(2000000), 320000);
   assert.equal(ret(2000000), 70000);
-  /* La opción falsa de la pregunta 1 es la base con IVA. */
-  assert.equal(numero(pantalla("base-de-la-retencion").opciones.find((o) => !o.correcta).texto), 5000000 + iva(5000000));
+  /* Las opciones falsas de la pregunta 1: la base con IVA (v2) y el IVA solo (anexo del lote 2). */
+  assert.equal(numero(pantalla("base-de-la-retencion").opciones.find((o) => o.id === "con-iva").texto), 5000000 + iva(5000000));
+  assert.equal(numero(pantalla("base-de-la-retencion").opciones.find((o) => o.id === "solo-iva").texto), iva(5000000));
+  assert.deepEqual(pantalla("base-de-la-retencion").opciones.filter((o) => !o.correcta).map((o) => o.id).sort(), ["con-iva", "solo-iva"]);
 });
 
 /* ═══════════ 4 · LISTA DE CONTROL, CATÁLOGO E IDS ═══════════ */

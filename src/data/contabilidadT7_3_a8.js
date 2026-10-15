@@ -58,6 +58,7 @@ const SISTEMAS = {
 
 const FORMULAS = {
   id: "formulas",
+  pista: "Recuerda que uno de los métodos que viste no es válido bajo NIIF.",
   tipo: "eleccion",
   parrafos: [
     "Ahora vienen las fórmulas del costo, que son tres. La primera es la identificación específica.",

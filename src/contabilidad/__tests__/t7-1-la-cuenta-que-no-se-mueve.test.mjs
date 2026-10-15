@@ -49,6 +49,7 @@ const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: LaCuentaQueNoSeMueve } = await import("../../components/mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx");
 const { TEMA_T7_1, PIEZAS_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
 const { VISTAS, vistaDeTema } = await import("../../ruta.js");
+const { textosDelError, sinAsiEs } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const PAQUETE = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-pieza1-v5.md", RAIZ), "utf8");
@@ -56,6 +57,9 @@ const PAQUETE = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-pie
 const PAQUETE_V3 = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-pieza1-v3.md", RAIZ), "utf8");
 const TEXTOS_FIGURA_NEAR = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-ap1-figura-textos.md", RAIZ), "utf8");
 const GUIA_WATARI = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-ap1-figura-watari-v3-1.md", RAIZ), "utf8");
+/* Lote 2 de la revisión de calidad (Near): las pistas del primer error y el anexo de la tercera opción. */
+const LOTE2_PISTAS = readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-pistas-v1.md", RAIZ), "utf8");
+const LOTE2_ANEXO = readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-anexo-v1.md", RAIZ), "utf8");
 const { default: FiguraDosColumnas, CSS_FIGURA } = await import("../../components/mecanicas/libros/t7/FiguraDosColumnas.jsx");
 const P = T7.PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
@@ -78,8 +82,9 @@ const botonesActivos = (caja) => [...caja.querySelectorAll("button:not([data-por
 const lineaComoTexto = (l) => `${l.fecha} · ${l.cuenta} · ${l.lado} ${l.monto}`;
 const fichaComoTexto = (f) => `${f.dato}: ${f.texto}`;
 
-/* Cada estado de cada pantalla, con su lista de textos visibles en el orden en que aparecen. */
-function textosEsperados(p, estado = null, opcionId = null) {
+/* Cada estado de cada pantalla, con su lista de textos visibles en el orden en que aparecen.
+ * En el error, `fallos` es cuántas veces se ha fallado ya esa pregunta (la escalera de ayuda del lote 2). */
+function textosEsperados(p, estado = null, opcionId = null, fallos = 1) {
   if (p.tipo === "portada") return [P.titulo, p.objetivo, p.boton, p.pie];
   if (p.tipo === "lectura" || p.tipo === "resumen") return [P.titulo, ...p.parrafos, ...(p.siguiente ? [p.siguiente] : []), ...(p.boton ? [p.boton] : []), p.pie];
   const cabeza = [
@@ -91,7 +96,7 @@ function textosEsperados(p, estado = null, opcionId = null) {
   ];
   const opciones = p.opciones.map((o) => o.texto).sort();
   if (estado === "colocando") return [...cabeza, ...opciones, T7.BOTON.confirmar, p.pie];
-  if (estado === "error") return [...cabeza, ...opciones, p.opciones.find((o) => o.id === opcionId).devolucion, p.error.boton, p.error.pie];
+  if (estado === "error") return [...cabeza, ...opciones, textosDelError(p, p.opciones.find((o) => o.id === opcionId), fallos).join(" "), p.error.boton, p.error.pie];
   return [...cabeza, ...opciones, p.acierto.texto, p.acierto.nota, p.acierto.boton, p.acierto.pie];
 }
 
@@ -128,6 +133,7 @@ function todosLosTextosVisibles() {
     if (p.ficha) t.push(...p.ficha.map(fichaComoTexto));
     t.push(p.pregunta);
     if (p.ayuda) t.push(p.ayuda);
+    if (p.pista) t.push(p.pista);
     for (const o of p.opciones) { t.push(o.texto); if (o.devolucion) t.push(o.devolucion); }
     t.push(T7.BOTON.confirmar, p.error.boton, p.error.pie, p.acierto.texto, p.acierto.nota, p.acierto.boton, p.acierto.pie);
     if (p.acierto.linea) t.push(lineaComoTexto(p.acierto.linea));
@@ -158,10 +164,41 @@ function citasDelContenido(md) {
 
 test("★★★ cada texto de los datos está, letra por letra, en el paquete aprobado", () => {
   const ficha = new Set(pantalla("pregunta-compra").ficha.map(fichaComoTexto));
-  const faltan = todosLosTextosVisibles().filter((t) => !ficha.has(t)).filter((t) => !PAQUETE.includes(t));
-  assert.deepEqual(faltan, [], "estos textos no están en la v5 tal cual");
+  /* Las pistas del lote 2 están en su paquete, no en la v5. */
+  const faltan = todosLosTextosVisibles().filter((t) => !ficha.has(t)).filter((t) => !PAQUETE.includes(t) && !LOTE2_PISTAS.includes(t) && !LOTE2_ANEXO.includes(t));
+  assert.deepEqual(faltan, [], "estos textos no están en la v5 (ni en el lote 2) tal cual");
   /* El título va sin comillas en la v5; lo demás va entre «». */
   assert.ok(PAQUETE.includes(`- Título: ${P.titulo}`));
+});
+
+/* ═══════════ LOTE 2 · LAS PISTAS Y EL ANEXO DE NEAR ═══════════ */
+
+/* Las pistas del lote 2 de una pieza, por pantalla («id») o por línea («id · línea»). */
+function pistasDeNear(pieza) {
+  const desde = LOTE2_PISTAS.indexOf(`### ${pieza} `);
+  assert.ok(desde >= 0, `la pieza ${pieza} no está en el lote 2`);
+  const hasta = LOTE2_PISTAS.indexOf("\n### ", desde);
+  return Object.fromEntries(LOTE2_PISTAS.slice(desde, hasta < 0 ? undefined : hasta).split("\n").filter((l) => /^\| P\d/.test(l)).map((l) => {
+    const c = l.slice(1, -1).split("|").map((x) => x.trim());
+    const [, id, linea] = c[0].match(/`([^`]+)`(?: · (\S+))?/);
+    return [linea && linea !== "²" ? `${id} · ${linea}` : id, c[2].match(/^«(.+)»$/)[1]];
+  }));
+}
+
+/* Las pistas que llevan los datos de una pieza, con las mismas claves. */
+function pistasDeLosDatos(pieza) {
+  const out = {};
+  for (const p of pieza.pantallas) {
+    if (p.opciones) out[p.id] = p.pista;
+    for (const l of p.lineas ?? []) out[`${p.id} · ${l.id}`] = l.pista ?? p.pista;
+  }
+  return out;
+}
+
+test("★★★ lote 2 · pistas: cada pregunta lleva la suya, letra por letra la de Near para su pantalla", () => {
+  assert.deepEqual(pistasDeLosDatos(P), pistasDeNear(T7.AP1_ID));
+  /* Sin preguntas de dos opciones: el anexo no toca esta pieza. */
+  assert.ok(!LOTE2_ANEXO.includes(`| ${T7.AP1_ID} |`));
 });
 
 test("★★★ la ficha es la de la tabla de la v3, con mayúscula inicial", () => {
@@ -181,7 +218,8 @@ test("★★★ cada texto del paquete está en los datos: no falta ninguno", ()
 
 /* ═══════════ 2 · CADA PANTALLA Y CADA ESTADO, MONTADOS ═══════════ */
 
-/* Recorre la pieza: en cada pregunta falla primero con cada opción equivocada y después acierta. */
+/* Recorre la pieza: en cada pregunta falla primero con cada opción equivocada, luego otra vez con la primera
+ * (el 2.º peldaño de la escalera de ayuda del lote 2), y después acierta. */
 test("★★★ cada pantalla y cada estado muestran exactamente sus textos", async () => {
   const m = await montar(h(LaCuentaQueNoSeMueve, { rotulo: "R" }));
   try {
@@ -197,11 +235,17 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos", as
       }
       assert.deepEqual(textosEnPantalla(m.caja), textosEsperados(p, "colocando"), `${p.id} · colocando`);
       vistos.push(`${p.id}:colocando`);
-      for (const o of p.opciones.filter((x) => !x.correcta)) {
+      assert.ok(p.pista, `${p.id} sin pista del lote 2`);
+      const malas = p.opciones.filter((x) => !x.correcta);
+      let fallos = 0;
+      for (const o of [...malas, malas[0]]) {
         await tocar(m.caja.querySelector(`[data-opcion="${o.id}"]`));
         await tocar(boton(m.caja, "confirmar"));
-        assert.deepEqual(textosEnPantalla(m.caja), textosEsperados(p, "error", o.id), `${p.id} · error ${o.id}`);
-        vistos.push(`${p.id}:error:${o.id}`);
+        fallos++;
+        /* 1.er error: la pista. 2.º y siguientes: la respuesta y su porqué (el acierto sin «Así es.»). */
+        assert.deepEqual(textosDelError(p, o, fallos), fallos === 1 ? [p.pista] : [`La respuesta es «${p.opciones.find((x) => x.correcta).texto.replace(/\.$/, "")}».`, sinAsiEs(p.acierto.texto)].filter(Boolean), `${p.id} escalera ${fallos}`);
+        assert.deepEqual(textosEnPantalla(m.caja), textosEsperados(p, "error", o.id, fallos), `${p.id} · error ${fallos} ${o.id}`);
+        vistos.push(`${p.id}:error${fallos}:${o.id}`);
         await tocar(boton(m.caja, "probar-otra"));
       }
       await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((x) => x.correcta).id}"]`));
@@ -210,8 +254,8 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos", as
       vistos.push(`${p.id}:acierto`);
       await tocar(boton(m.caja, "seguir"));
     }
-    /* Las siete pantallas y los once estados, todos recorridos. */
-    assert.equal(vistos.length, 5 + 3 + 3 + 2);
+    /* Las siete pantallas: 5 sin pregunta, y las 2 preguntas con colocando, 2 errores, el 2.º peldaño y el acierto. */
+    assert.equal(vistos.length, 5 + 2 * 5);
   } finally {
     m.desmontar();
   }

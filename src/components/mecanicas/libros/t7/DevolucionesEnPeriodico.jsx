@@ -4,7 +4,7 @@ import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_DEVOLUCIONES, BOTON, INTERFAZ, DEBE, HABER, cifra } from "../../../../data/contabilidadT7_1_a6.js";
 import { Plegable } from "./plegable.jsx";
-import { textosDelError, contarFallo } from "./escaleraAyuda.js";
+import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDeLineas, puestoTrasProbarOtra } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -240,6 +240,8 @@ function Espejo({ espejo, acierto = false }) {
 function Lados({ pantalla, onSeguir }) {
   const [puesto, setPuesto] = useState({});
   const [veredicto, setVeredicto] = useState(null); // null | { malas: [ids] }
+  const [fallosLinea, setFallosLinea] = useState({});
+  const cerrada = (l) => lineaCerrada(pantalla, l, fallosLinea[l.id]);
   /* Cuántas líneas se ven: crece al colocar la última visible y nunca baja (Watari: una línea a la vez). */
   const [visibles, setVisibles] = useState(1);
   const ref = useRef(null);
@@ -251,13 +253,17 @@ function Lados({ pantalla, onSeguir }) {
   const suma = (lado) => pantalla.lineas.filter((l) => puesto[l.id] === lado).reduce((t, l) => t + l.monto, 0);
 
   const tocar = (l, k, lado) => {
-    if (estado !== "colocando") return;
+    if (estado !== "colocando" || cerrada(l)) return;
     setPuesto((p) => ({ ...p, [l.id]: p[l.id] === lado ? undefined : lado }));
     if (k === visibles - 1) setVisibles((v) => Math.min(v + 1, pantalla.lineas.length));
   };
-  const confirmar = () => setVeredicto({ malas: pantalla.lineas.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id) });
+  const confirmar = () => {
+    const malas = pantalla.lineas.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id);
+    setFallosLinea((f) => sumarFallosDeLineas(f, malas));
+    setVeredicto({ malas });
+  };
   const probarOtra = () => {
-    setPuesto((p) => { const n = { ...p }; for (const id of malas) delete n[id]; return n; });
+    setPuesto((p) => puestoTrasProbarOtra(p, malas, pantalla.lineas, cerrada));
     setVeredicto(null);
   };
 
@@ -297,6 +303,7 @@ function Lados({ pantalla, onSeguir }) {
                 aria-label={`${l.cuenta}: ${nombre}`}
                 aria-pressed={llena}
                 tabIndex={estado === "acierto" ? -1 : 0}
+                aria-disabled={cerrada(l) ? "true" : undefined}
                 aria-hidden={estado === "acierto" && !llena ? "true" : undefined}
                 onClick={() => tocar(l, k, cual)}
               >
@@ -312,7 +319,7 @@ function Lados({ pantalla, onSeguir }) {
                 {!lado && <span className="t7a6-ficha-monto" data-monto-suelto>{cifra(l.monto)}</span>}
               </span>
               <span className="t7a6-g2">{cas(DEBE)}{cas(HABER)}</span>
-              {mala && estado === "error" && <Mensaje ok={false} textos={[l.devolucion]} clase="t7a6-err" refFoco={l.id === malas[0] ? ref : undefined} />}
+              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} clase="t7a6-err" refFoco={l.id === malas[0] ? ref : undefined} />}
             </div>
           );
         })}

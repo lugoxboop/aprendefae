@@ -137,6 +137,7 @@ const LOS_DATOS = {
 const PIE_PEPS = "Basado en el libro, pp. 215 y 238-239";
 const CON_PEPS = {
   id: "peps",
+  pista: "Con PEPS sale primero lo más antiguo. Empieza por lo que había al inicio y sigue en orden de fechas.",
   tipo: "eleccion",
   encabezado: "Método PEPS",
   parrafos: ["PEPS quiere decir: primeras en entrar, primeras en salir. El método supone que lo primero que se compró es lo primero que se vende."],
@@ -158,6 +159,7 @@ const CON_PEPS = {
 const PIE_UEPS = "Basado en el libro, pp. 216 y 240";
 const CON_UEPS = {
   id: "ueps",
+  pista: "Con UEPS sale primero lo último que entró antes de esa venta. Mira cuál fue la compra más reciente.",
   tipo: "eleccion",
   encabezado: `Método ${UEPS}`,
   parrafos: [
@@ -183,6 +185,7 @@ const CON_UEPS = {
 const PIE_PROMEDIO = "Basado en el libro, pp. 218 y 240-241";
 const CON_PROMEDIO = {
   id: "promedio",
+  pista: "Junta el valor del saldo con el de la compra, y divide entre todas las unidades que hay ahora.",
   tipo: "eleccion",
   encabezado: "Método del costo promedio ponderado",
   parrafos: [
@@ -211,6 +214,7 @@ const CON_PROMEDIO = {
 const PIE_LADO = "Basado en el libro, pp. 222, 233-234 y 239-241";
 const LADO_A_LADO = {
   id: "lado-a-lado",
+  pista: "Piensa en qué método el orden de salida no depende de cuándo se hizo cada venta.",
   tipo: "eleccion",
   parrafos: ["Así quedan los tres kárdex al final de julio."],
   tabla: {
