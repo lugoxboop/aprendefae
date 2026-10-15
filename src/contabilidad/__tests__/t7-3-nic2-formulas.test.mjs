@@ -191,3 +191,16 @@ test("★★★ fuera del catálogo de FP; la última de T7-3, y la vista la mue
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A8_ID)), []);
 });
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+test("★★★ Patrón T7-3: solo la franja de la NIC 2, lo primero de la pieza; ninguna figura", async () => {
+  const m = await montar();
+  try {
+    const pieza = m.caja.querySelector("[data-pieza]");
+    assert.equal(pieza.firstElementChild.matches("p.t73pt-nic2[data-aviso]"), true);
+    assert.equal(m.caja.querySelectorAll("figure").length, 0);
+  } finally {
+    m.desmontar();
+  }
+});
