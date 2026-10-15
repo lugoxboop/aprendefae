@@ -46,6 +46,7 @@ const { default: CierreConDiario } = await import("../../components/mecanicas/li
 const { default: CierreSantaPacha } = await import("../../components/mecanicas/libros/tema5/CierreSantaPacha.jsx");
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const L = await import("../t5Act2.js");
+const { textoD } = await import("../cierreConMesa.js");
 const D = await import("../../data/contabilidadT5Act2.js");
 const { FAE } = await import("../../theme.js");
 
@@ -186,7 +187,9 @@ test("★★★ prioridad D > C > A > B en las cuatro partes, cada una con su te
       const { caja, desmontar } = await montar({ items: [parte(n)] });
       await armar(caja, puestas);
       assert.equal(caja.querySelector("[data-panel]").dataset.error, tipo, `parte ${n}: ${tipo}`);
-      assert.equal(textoRetro(caja), errorDe(n, tipo), `parte ${n}: texto ${tipo}`);
+      /* La D nombra la cuenta que sobra y sigue con el texto del paquete (Sakuta, calidad 1). */
+      const esperado = tipo === "D" ? textoD({ asiento: ok, errores: { D: errorDe(n, "D") } }, puestas) : errorDe(n, tipo);
+      assert.equal(textoRetro(caja), esperado, `parte ${n}: texto ${tipo}`);
       desmontar();
     }
   }

@@ -271,8 +271,11 @@ export default function CierreConMesa({
 
         <section key={`${parte.id}-parte`} data-parte={parte.id} data-estado-parte={comprobada ? "comprobada" : "activa"}
           style={{
-            /* Sin relleno lateral, con el borde (Sakuta, salida 1): la réplica de Mai, auditada por Shoko, no lo tiene; así «1.725.000» cabe a 320. */
-            margin: "18px 0 0", padding: "12px 0", borderRadius: "13px", border: `1px solid ${comprobada ? COLOR.quieto : COLOR.neutro}`,
+            /*
+             * Sin borde y sin relleno lateral (hoja de Mai, calidad 1): un borde nunca toca el texto, y con
+             * relleno «1.725.000» no cabe a 320. Lo que agrupaba el borde lo agrupan 16 px de aire.
+             */
+            margin: "16px 0 0", padding: 0,
           }}>
           {(parte.rotulo || s.resultado?.ok) && (
             <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", margin: "0 0 8px" }}>
