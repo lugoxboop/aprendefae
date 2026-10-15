@@ -360,7 +360,11 @@ function RecuadroDeResultado({ pct, children, onReiniciar, textoReiniciar = "Jug
           onClick={onReiniciar}
           style={{
             marginTop: "12px", fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600,
-            padding: "9px 15px", borderRadius: "999px", cursor: "pointer",
+            /* 44 px: el mínimo que un dedo acierta a 320 px (kit.md). Este botón
+               cierra TODA actividad que use Cierre, así que el defecto se
+               multiplicaba por el catálogo entero. Va solo al final de la
+               tarjeta, así que crecer no empuja nada. */
+            minHeight: "44px", padding: "9px 15px", borderRadius: "999px", cursor: "pointer",
             background: "transparent", border: "1px solid rgba(248,249,250,0.22)", color: "rgba(248,249,250,0.72)",
           }}
         >
