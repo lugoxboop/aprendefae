@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, Check, X } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
@@ -16,9 +16,10 @@ import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
 import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import { Panel } from "./mecanicas/salaDeControl/marco.jsx";
+import { PIEZA_LA_CAJA, BOTON, INTERFAZ } from "../data/contabilidadT4.js";
+import { PIEZA_EL_ACTIVO_CORRIENTE } from "../data/contabilidadT4A0.js";
+import { H1 } from "../data/contabilidadT4H1.js";
 import { barajar, barajarDistinto } from "../utils/barajar.js";
-import { BOTON, INTERFAZ, DEBE, HABER, PIEZA_LA_CAJA, FIGURA_CAJON, ESTADOS_CAJON, SUS_SERVICIOS } from "../data/contabilidadT4.js";
-import { PIEZA_EL_ACTIVO_CORRIENTE, FIGURA_RAYA, ESTADOS_RAYA } from "../data/contabilidadT4A0.js";
 import { PIEZA_EL_FONDO_FIJO, FIGURA_SOBRE, ESTADOS_SOBRE_A2, ALT_SOBRE_A2 } from "../data/contabilidadT4A2.js";
 import { PIEZA_EL_ARQUEO, FIGURA_SOBRE_A3, ESTADOS_SOBRE_A3, ALT_SOBRE_A3 } from "../data/contabilidadT4A3.js";
 import { PIEZA_BANCOS_Y_NOTAS, FIGURA_LIBRETAS, ESTADOS_LIBRETAS, ALT_LIBRETAS } from "../data/contabilidadT4A4.js";
@@ -29,10 +30,6 @@ import {
   CONCILIADO_BANCO as CONCILIADO_BANCO_A5, CONCILIADO_LIBROS as CONCILIADO_LIBROS_A5,
   SUMA_DEBE_MAYOR as SUMA_DEBE_MAYOR_A5, SALDO_MAYOR as SALDO_MAYOR_A5,
 } from "../data/contabilidadT4A5.js";
-import {
-  H1, DESTINOS_H1, BOTON_H1, CIERRE_H1, resumenH1, lectorErrorH1,
-  sortearH1, evaluarH1, puntuarH1, nombreDeDestinoH1,
-} from "../data/contabilidadT4H1.js";
 import {
   H2, PIE_CASO_H2, PREGUNTA_H2, BOTON_H2, CIERRE_H2, resumenH2, lectorErrorH2,
   controlH2, sortearH2, opcionesEnOrden, evaluarH2, puntuarH2,
@@ -69,6 +66,14 @@ import { Responder, useTanda, AsientoEnLineas, leerCifra, CampoCifra } from "./m
 import ConstructorAsiento, { filaVacia } from "./mecanicas/libros/ConstructorAsiento.jsx";
 import { SOLO_LECTOR } from "./mecanicas/libros/verbos.jsx";
 import { Encabezado } from "./mecanicas/libros/tema1/encabezado.jsx";
+import { CSS_T4R } from "./t4/comun.jsx";
+import { CSS_CAJON } from "./t4/Cajon.jsx";
+import { CSS_ANO, CuerpoA0 } from "./t4/AnoEnMarcha.jsx";
+import { CSS_A1, CuerpoA1 } from "./t4/LaCaja.jsx";
+import EntraOSaleDeCaja from "./t4/EntraOSaleDeCaja.jsx";
+
+export { cifra } from "./t4/comun.jsx";
+export { EntraOSaleDeCaja };
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -80,11 +85,12 @@ import { Encabezado } from "./mecanicas/libros/tema1/encabezado.jsx";
  * (registrarActividadCompletada → otorgarFP), sin tocarlo.
  *
  * Las piezas de Aprender se pintan con PantallasT4, que vive aquí y no en una
- * carpeta de mecánicas: es el carril de la Célula D y nadie más lo usa.
+ * carpeta de mecánicas: es el carril de la Célula D y nadie más lo usa. Sus
+ * figuras y H1 viven en src/components/t4/ (rediseño de enganche, B1-B5).
  *
  * EL ORDEN DE PIEZAS_T4 LO DA `numero`, no la posición en la lista: A0 «El
- * activo corriente» = 0, A1 «La caja» = 1, A2 «El fondo fijo» = 2… La
- * prueba t4-andamio lo afirma.
+ * activo corriente» = 0, A1 «La caja» = 1, A2 = 2… La prueba t4-andamio lo
+ * afirma.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -197,7 +203,10 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
               <button
                 type="button"
                 onClick={() => { resumen.limpiar(); setNodoAbierto(null); }}
+                data-volver-camino
                 style={{
+                  /* 44 px de alto como mínimo: el blanco táctil de la casa (medía 129×37). */
+                  display: "inline-flex", alignItems: "center", minHeight: "44px",
                   marginBottom: "16px", padding: "8px 14px", borderRadius: "999px",
                   background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)",
                   color: FAE.text, cursor: "pointer", fontFamily: "Sora, sans-serif", fontSize: "12.5px",
@@ -228,14 +237,66 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T4 · LAS PANTALLAS DE APRENDER.
+ * T4 · LAS PANTALLAS DE APRENDER (rediseño de enganche).
  *
- * La forma de PantallasT7_3, sin lo que T4 no usa (fichas, cuentas T y las
- * figuras de Watari): una pantalla a la vez; portada, lectura y resumen con
- * su botón y su pie; elección con opciones barajadas en cada intento,
- * «Confirmar», y «Incorrecto.» con «Probar otra» o «Correcto.» con «Seguir».
+ * Una pantalla a la vez, siempre en el mismo orden (Hanayama, rediseños de
+ * A0 y A1): el texto de antes (corto: la figura queda en los primeros 280 px a
+ * 320), la figura con lo que el estudiante hace en ella, el texto de después,
+ * el resumen, «Siguiente…», «Seguir» y el pie. «Seguir» está siempre activo:
+ * es Aprender, no califica ni da FP, y la figura ya muestra la verdad.
  *
- * Lo que traen los paquetes de T4:
+ * Lo propio de cada pieza es su cuerpo: CuerpoA0 («El año en marcha») y
+ * CuerpoA1 (el cajón operable), en src/components/t4/. Clases `t4r-`.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+const CUERPOS = { [PIEZA_EL_ACTIVO_CORRIENTE.id]: CuerpoA0, [PIEZA_LA_CAJA.id]: CuerpoA1 };
+const CSS_PANTALLAS = CSS_T4R + CSS_CAJON + CSS_ANO + CSS_A1;
+
+const TextosR = ({ lista }) => (lista ?? []).map((t) => <p key={t} className="t4r-p" data-texto>{t}</p>);
+
+function PantallasRediseno({ pieza, rotulo }) {
+  const [k, setK] = useState(0);
+  const p = pieza.pantallas[k];
+  const ultima = k === pieza.pantallas.length - 1;
+  const marco = useRef(null);
+  const primera = useRef(true);
+  const seguir = () => setK((x) => Math.min(x + 1, pieza.pantallas.length - 1));
+  useEffect(() => { if (primera.current) { primera.current = false; return; } marco.current?.focus(); }, [k]);
+  const Cuerpo = CUERPOS[pieza.id];
+
+  return (
+    <Panel rotulo={rotulo} titulo={pieza.titulo}>
+      <style>{CSS_PANTALLAS}</style>
+      <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
+        <div className="t4r" key={p.id}>
+          <TextosR lista={p.antes} />
+          <Cuerpo p={p} />
+          <TextosR lista={p.despues} />
+          {p.resumen && <ol className="t4r-lista" data-lista>{p.resumen.map((t) => <li key={t} data-texto>{t}</li>)}</ol>}
+          {p.siguiente && <p className="t4r-sig" data-texto data-siguiente>{p.siguiente}</p>}
+          {!ultima && <button type="button" className="t4r-btn" data-boton="seguir" onClick={seguir}>{pieza.boton ?? BOTON.seguir}</button>}
+          {p.pie && <p className="t4r-pie" data-pie>{p.pie}</p>}
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
+/*
+ * A0 y A1 ya van con el rediseño (su cuerpo, en src/components/t4/). A2-A5
+ * siguen con las pantallas de la pila hasta su rediseño, que entra en esta
+ * misma rama: PantallasPila, más abajo.
+ */
+export function PantallasT4({ pieza, rotulo }) {
+  return CUERPOS[pieza.id] ? <PantallasRediseno pieza={pieza} rotulo={rotulo} /> : <PantallasPila pieza={pieza} rotulo={rotulo} />;
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · LAS PANTALLAS DE LA PILA (A2-A5), hasta su rediseño.
+ *
+ * Lo que traen los paquetes de A2-A5:
  *   · `listaNumerada`: los siete controles y el resumen van numerados, como
  *     en el paquete
  *   · `trasAcertar`: lo que se muestra solo con el acierto, debajo del
@@ -259,10 +320,9 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+
 const COLOR = { fondo: "#0E1B2E", texto: "#F8F9FA", texto2: "#A8B6C8", borde: "#B8C4D4", debe: "#2A9D8F", haber: "#E9C46A", error: "#E76F51" };
 
-/* Las cifras con el formato del libro: miles con punto. */
-export const cifra = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 export const CSS_T4P = `
 .t4p { display: grid; gap: 12px; min-width: 0; color: ${COLOR.texto}; font-family: "Inter", sans-serif; font-size: 15px; line-height: 1.4; }
@@ -477,7 +537,7 @@ function EleccionT4({ pantalla, onSeguir }) {
   );
 }
 
-export function PantallasT4({ pieza, rotulo }) {
+function PantallasPila({ pieza, rotulo }) {
   const [k, setK] = useState(0);
   const p = pieza.pantallas[k];
   const ultima = k === pieza.pantallas.length - 1;
@@ -530,8 +590,6 @@ export function PantallasT4({ pieza, rotulo }) {
  * figcaption oculto, enlazado con aria-describedby. Clases `t4cj-` y `t4ry-`.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-
-const BOCA = 40;
 
 export const CSS_T4F = `
 .t4f-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -603,126 +661,10 @@ const SOBRES = {
 };
 
 function FiguraT4({ tipo, estado }) {
-  if (tipo === "cajon") return <CajonDePaso estado={estado} />;
-  if (tipo === "raya") return <RayaDelAno estado={estado} />;
   if (tipo === "libretas") return <LasDosLibretas estado={estado} />;
   if (tipo === "concilia") return <ConciliacionSanCalixto estado={estado} />;
   const sobre = SOBRES[tipo];
   return <SobreCajaMenor estado={estado} s={sobre.estados[estado]} alt={sobre.alt[estado]} F={sobre.F} />;
-}
-
-/* El borde de arriba o de abajo del cajón, con su boca de 40 px en el 25 % (arriba) o el 75 % (abajo). */
-function BordeCajon({ arriba }) {
-  const centro = arriba ? "25%" : "75%";
-  const lado = arriba ? "borderTopWidth" : "borderBottomWidth";
-  return (
-    <span className="t4cj-borde" aria-hidden="true" style={arriba ? { top: 0 } : { bottom: 0 }}>
-      <span style={{ width: `calc(${centro} - ${BOCA / 2}px)`, [lado]: "1px", borderLeftWidth: "1px", borderRadius: arriba ? "12px 0 0 0" : "0 0 0 12px" }} />
-      <span style={{ width: `calc(100% - ${centro} - ${BOCA / 2}px)`, [lado]: "1px", borderRightWidth: "1px", borderRadius: arriba ? "0 12px 0 0" : "0 0 12px 0" }} />
-    </span>
-  );
-}
-
-export function CajonDePaso({ estado }) {
-  const s = ESTADOS_CAJON[estado];
-  const F = FIGURA_CAJON;
-  const monto = cifra(SUS_SERVICIOS);
-  const foco = (k) => (s.foco.includes(k) ? " t4cj-foco" : "");
-  const vivo = (k) => (s.vivo.includes(k) ? " t4cj-vivo" : "");
-  /* Lo que aparece, aparece con fundido; la key por estado lo vuelve a montar al cambiar. */
-  const Monto = ({ k }) => <span key={`${estado}-${k}`} className={`t4cj-monto t4f-nueva${foco(k)}`} data-monto={k}>{monto}</span>;
-  const idAlt = `t4cj-alt-${estado}`;
-  return (
-    <figure className="t4cj t4f-nueva" data-figura="cajon" data-estado={estado} aria-describedby={idAlt}>
-      {s.origen && (
-        <div className="t4cj-origen t4f-nueva" data-origen>
-          <span className="t4cj-rot">{F.rotuloOrigen}</span>
-          <span className="t4cj-lin">
-            <span className="t4cj-hecho">{F.hecho}</span>
-            <Monto k="origen" />
-          </span>
-        </div>
-      )}
-      <div className="t4cj-tubo" aria-hidden="true"><span className={`t4cj-v${vivo("entrada")}`} data-trazo="entrada" style={{ left: "calc(25% - 1px)", top: 0, bottom: 0 }} /></div>
-      <div className="t4cj-cajon">
-        <BordeCajon arriba />
-        <BordeCajon />
-        <p className="t4cj-nombre">{F.cuenta}</p>
-        <div className="t4cj-cols">
-          <div className="t4cj-col" data-columna={DEBE}>
-            <span className="t4cj-lado t4cj-d">{INTERFAZ.debe}</span>
-            <span className="t4cj-glosa">{F.glosaDebe.map((t) => <span key={t}>{t}</span>)}</span>
-            <span className="t4cj-mcol">{s.debe && <Monto k="debe" />}</span>
-          </div>
-          <div className="t4cj-col t4cj-col-h" data-columna={HABER}>
-            <span className="t4cj-lado t4cj-hb">{INTERFAZ.haber}</span>
-            <span className="t4cj-glosa">{F.glosaHaber.map((t) => <span key={t}>{t}</span>)}</span>
-            <span className="t4cj-mcol">{s.haber && <Monto k="haber" />}</span>
-          </div>
-        </div>
-      </div>
-      <div className="t4cj-rama" aria-hidden="true">
-        <span className={`t4cj-v${vivo("salida")}`} data-trazo="salida" style={{ left: "calc(75% - 1px)", top: 0, height: "13px" }} />
-        <span className={`t4cj-h${vivo("bancos")}`} data-trazo="cruce" style={{ left: "calc(25% - 1px)", width: "calc(50% + 2px)", top: "11px" }} />
-        <span className={`t4cj-v${vivo("bancos")}`} data-trazo="a-bancos" style={{ left: "calc(25% - 1px)", top: "11px", bottom: 0 }} />
-        <span className="t4cj-v" data-trazo="a-pago" style={{ left: "calc(75% - 1px)", top: "11px", bottom: 0 }} />
-      </div>
-      <div className="t4cj-dest">
-        <div className="t4cj-caja2" data-destino="bancos">
-          <span className="t4cj-caja2-n">{F.destino}</span>
-          {s.bancos && <Monto k="bancos" />}
-        </div>
-        <div className="t4cj-caja2" data-destino="pago">
-          <span className="t4cj-caja2-n">{F.pago.map((t, k) => <span key={t}>{k ? " " : ""}{t}</span>)}</span>
-        </div>
-      </div>
-      <figcaption id={idAlt} className="t4f-sr">{F.alt[estado]}</figcaption>
-    </figure>
-  );
-}
-
-/* El alto que reservan las dos zonas en los cuatro estados de P4 (Hanayama v1, §3): la raya no salta. */
-const ALTO_P4 = { antes: "122.52px", despues: "174.25px" };
-
-function ZonaRaya({ id, rotulo, s, conEje = true }) {
-  return (
-    <ul className="t4ry-zona" data-zona={id} aria-label={rotulo.join(" ")} style={{ minHeight: s.p4 ? ALTO_P4[id] : undefined }}>
-      <li className="t4ry-zrot" aria-hidden="true">{rotulo.map((t) => <span key={t}>{t}</span>)}</li>
-      {s[id].map((it) => (
-        <li key={it.id} className={`t4ry-item t4f-nueva${s.foco.includes(it.id) ? " t4ry-foco" : ""}`} data-tarjeta={it.id} data-foco={s.foco.includes(it.id) ? "si" : undefined}>
-          {conEje ? <span className="t4ry-tick" aria-hidden="true" /> : <span aria-hidden="true" />}
-          <span className="t4ry-tarj"><span>{it.texto}</span>{it.glosa && <span>{it.glosa}</span>}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-export function RayaDelAno({ estado }) {
-  const s = ESTADOS_RAYA[estado];
-  const F = FIGURA_RAYA;
-  const idAlt = `t4ry-alt-${estado}`;
-  return (
-    <figure className="t4ry t4f-nueva" data-figura="raya" data-estado={estado} aria-describedby={idAlt}>
-      <div className="t4ry-esc">
-        <span className="t4ry-mar" style={{ paddingTop: "9px" }} aria-hidden="true">{F.hoy}</span>
-        <span className="t4ry-eje" aria-hidden="true" />
-        <ZonaRaya id="antes" rotulo={F.zonaSi} s={s} conEje />
-      </div>
-      <div className="t4ry-raya" data-raya aria-hidden="true"><span className="t4ry-mar">{F.unAno}</span><span /></div>
-      {/*
-        Hanayama v1.1, cambio 2: el eje del tiempo termina en la raya. Debajo
-        no hay eje ni muescas: las tarjetas van en la misma columna, sueltas.
-        La zona dice «no cumple la prueba», no «cuándo».
-      */}
-      <div className="t4ry-esc">
-        <span />
-        <span />
-        <ZonaRaya id="despues" rotulo={F.zonaNo} s={s} conEje={false} />
-      </div>
-      <figcaption id={idAlt} className="t4f-sr">{F.alt[estado]}</figcaption>
-    </figure>
-  );
 }
 
 /*
@@ -1356,121 +1298,7 @@ const CSS_T4H1 = `
 @media (prefers-reduced-motion: reduce) { .fae-t4h1-entra { animation: none !important; } }
 `;
 
-export function EntraOSaleDeCaja({ Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null }) {
-  const t = useTanda(() => items ?? sortearH1(barajar));
-  const [elegido, setElegido] = useState(null);
-  const [r, setR] = useState(null);
-  const [bien, setBien] = useState(0);
-  const zonaBoton = useRef(null);
-  const tarjeta = useRef(null);
 
-  const item = t.items[t.i];
-  const cuantos = t.items.length;
-
-  useEffect(() => {
-    if (t.terminado && !modoDemo) onCompletar?.(puntuarH1(bien, cuantos), Date.now() - t.inicio.current, t.detalle.current);
-  }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (r && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [r]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const responder = (id) => {
-    if (r) return;
-    const nuevo = evaluarH1(item, id);
-    /* En el error se guarda el destino elegido: eso le dice algo al docente. */
-    t.anotar(item.id, nuevo.ok, id);
-    if (nuevo.ok) setBien((n) => n + 1);
-    setElegido(id);
-    setR(nuevo);
-  };
-
-  const avanzar = () => {
-    setElegido(null); setR(null);
-    if (t.i + 1 < cuantos) { t.setI(t.i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); }
-    else t.setTerminado(true);
-  };
-
-  const reiniciar = () => { t.reiniciar(); setElegido(null); setR(null); setBien(0); };
-
-  if (t.terminado) {
-    return (
-      <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-        <Cierre pct={Math.round(puntuarH1(bien, cuantos))} onReiniciar={reiniciar} textoReiniciar={BOTON_H1.otraVez}>
-          <p data-resumen style={TEXTO_CIERRE}>{resumenH1(bien, cuantos)}</p>
-          <p data-cierre style={{ ...TEXTO_CIERRE, marginTop: "8px" }}>{CIERRE_H1.texto}</p>
-          <p data-pie-cierre style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{CIERRE_H1.pie}</p>
-        </Cierre>
-      </Marco>
-    );
-  }
-
-  const estadoDe = (id) => {
-    if (!r) return null;
-    if (id === elegido) return r.ok ? "correcta" : "incorrecta";
-    if (id === r.correcta) return "revelada";
-    return null;
-  };
-
-  return (
-    <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T4H1}</style>
-      {/*
-        La raíz del juego lleva `data-t4-h1`; la de la demo de «Así se juega»,
-        `data-t4-h1-demo`. Así, en la página del juego, `[data-t4-h1]` encuentra
-        exactamente una: la partida, nunca el ejemplo (Shibukawa, juego de H1).
-      */}
-      <div {...(modoDemo ? { "data-t4-h1-demo": "" } : { "data-t4-h1": "" })}>
-        <Encabezado consigna={H1.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
-        <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Hecho" />
-        </div>
-
-        {/* El hecho, y nada más: la página va en la devolución (Hanayama v1.1, PH1-1). */}
-        <div key={item.id} className="fae-t4h1-entra" data-tarjeta-hecho={item.id} style={{
-          margin: "0 0 12px", padding: "11px 13px", borderRadius: "11px",
-          background: "rgba(184,196,212,0.12)", borderLeft: "3px solid #B8C4D4",
-        }}>
-          <p ref={tarjeta} tabIndex={-1} data-hecho style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, outline: "none" }}>
-            {item.texto}
-          </p>
-        </div>
-
-        <div role="group" aria-label={H1.nombre}>
-          <Opciones columnas="minmax(0, 1fr)">
-            {DESTINOS_H1.map((d) => (
-              <span key={d.id} data-opcion={d.id} style={{ display: "contents" }}>
-                <Opcion ancho deshabilitada={Boolean(r)} estado={estadoDe(d.id)} onClick={() => responder(d.id)}>
-                  {d.nombre}
-                </Opcion>
-              </span>
-            ))}
-          </Opciones>
-        </div>
-
-        {/* La devolución: región viva. Vacía mientras se pregunta: ni su texto ni su página están en el DOM. */}
-        <div data-retro aria-live="polite" aria-atomic="true">
-          {r && (
-            <div className="fae-t4h1-entra" data-panel={r.ok ? "acierto" : "error"} style={{
-              marginTop: "12px", padding: "11px 13px", borderRadius: "11px",
-              background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
-              borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
-            }}>
-              {!r.ok && <span style={SOLO_LECTOR}>{lectorErrorH1(nombreDeDestinoH1(r.correcta))} </span>}
-              {r.textos.map((x) => (
-                <p key={x} data-texto-retro style={{ margin: "0 0 4px", fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, fontWeight: x === r.textos[0] && r.ok ? 700 : 400 }}>{x}</p>
-              ))}
-              {r.pagina && <p data-pagina style={{ margin: "4px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{r.pagina}</p>}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {r && !modoDemo && (
-        <div ref={zonaBoton}>
-          <Responder onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H1.verResumen : BOTON_H1.siguiente}</Responder>
-        </div>
-      )}
-    </Marco>
-  );
-}
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════

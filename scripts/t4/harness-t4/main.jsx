@@ -6,7 +6,7 @@
  * aquí basta uno vacío.
  *
  * Con #h1 a #h8 monta la vista en el modo Hacer, con ese juego abierto
- * (medir-t4-hacer.mjs).
+ * (medir-t4.mjs y guardia-enganche.mjs).
  */
 import { createRoot } from "react-dom/client";
 import "../../../src/styles/global.css";
