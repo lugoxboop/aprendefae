@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
-import { H4, FICHA_H4, BOTON_H4, resumenH4 } from "../../../../data/contabilidadT7_3_h4.js";
+import { H4, FICHA_H4, FIGURAS_H4, ARRIBA_H4, ITEMS_H4, BOTON_H4, resumenH4 } from "../../../../data/contabilidadT7_3_h4.js";
 import { prepararH4, evaluarH4, idLineaH4, puntuarH4, TOTAL_H4 } from "../../../../contabilidad/t7_3H4.js";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
-import { Responder, useTanda } from "../piezas.jsx";
+import { AsientoEnLineas, Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "./hacerT7.jsx";
 
 /*
@@ -82,14 +83,21 @@ export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T7_HACER}</style>
+      <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h4>
         <Encabezado consigna={H4.consigna} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H4.enunciado} />
         <Ficha filas={FICHA_H4} />
+        <FigurasHacer figuras={FIGURAS_H4} respondidos={t.i + (listo ? 1 : 0)} listo={listo} />
         <div style={{ marginBottom: "12px" }}>
           <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
         </div>
+        {item.id === ARRIBA_H4.item && (
+          <div data-asiento-arriba style={{ marginBottom: "12px" }}>
+            <p style={{ margin: "0 0 6px", font: "600 13px/1.3 Sora, Inter, sans-serif", color: "#F8F9FA" }}>{ARRIBA_H4.titulo}</p>
+            <AsientoEnLineas lineas={ITEMS_H4.find((x) => x.id === ARRIBA_H4.de).lineas.map((l) => ({ cuenta: l.cuenta, lado: l.lado, valor: l.valor }))} totales />
+          </div>
+        )}
         <TarjetaPregunta id={item.id} encabezado={item.encabezado ?? null} pregunta={item.pregunta} pie={H4.pie} tarjetaRef={tarjeta} />
         {item.tipo === "eleccion" ? (
           <>

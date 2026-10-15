@@ -1,4 +1,6 @@
 import { DEBE, HABER } from "./contabilidad.js";
+import { ROTULOS_PATRON } from "./contabilidadT7_3.js";
+import { ROTULOS_A3 } from "./contabilidadT7_3_a3.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -71,6 +73,50 @@ export const FICHA_H4 = [
   ["Clase de hecho", "Venta y compra de mercancía"],
   ["Sistema", "Periódico"],
 ];
+
+/*
+ * Patrón T7-3 (Watari), cada figura DESPUÉS de su ítem, como en sus muestras:
+ *   ítem 1  la factura de Totumo (hasta el ítem 2)
+ *   ítem 2  la franja de plazos con el pago del 23 de octubre, día 20 (hasta el 3)
+ *   ítem 3  el descuento condicionado
+ *   ítem 4  el pago
+ * Y en el ítem 6, el asiento de Totumo ya resuelto queda arriba, en lectura,
+ * con el de Bambú debajo (patrón 06 b). Rótulos y títulos de Watari, por
+ * confirmar con Near. «Libro de Totumo», el título del asiento de arriba, es
+ * convención: sale de la pregunta del ítem 5.
+ */
+export const FIGURAS_H4 = [
+  {
+    tipo: "renglones", desde: 1, hasta: 2, titulo: ROTULOS_PATRON.factura("Totumo"),
+    filas: [
+      { rot: ROTULOS_PATRON.precioLista, v: C.lista },
+      { op: "−", rot: ROTULOS_PATRON.descuentoComercial(COMERCIAL_H4), v: C.comercial },
+      { op: "=", rot: ROTULOS_PATRON.valorFacturar, v: C.factura, res: true },
+    ],
+  },
+  {
+    tipo: "plazos", desde: 2, hasta: 3, venta: "3 oct",
+    condiciones: [{ cond: `${COMERCIAL_H4} %` }, { cond: "10/10", dia: 10, lleva: "10 %" }, { cond: "4/20", dia: 20, lleva: "4 %" }, { cond: "n/30", dia: 30, lleva: ROTULOS_A3.sinDescuento }],
+    pago: { dia: 20, fecha: "23 oct" },
+  },
+  {
+    tipo: "renglones", desde: 3, titulo: ROTULOS_A3.descuentoCondicionadoTit,
+    filas: [
+      { rot: ROTULOS_A3.facturado, v: C.factura },
+      { op: "×", rot: ROTULOS_A3.condicion("4/20"), v: `${CONDICIONADO_H4} %` },
+      { op: "=", rot: ROTULOS_A3.descuentoCondicionado, v: C.condicionado, res: true },
+    ],
+  },
+  {
+    tipo: "renglones", desde: 4, titulo: ROTULOS_A3.pagoDel("23 de octubre"),
+    filas: [
+      { rot: ROTULOS_A3.loQueDebia("Bambú"), v: C.deuda },
+      { op: "−", rot: ROTULOS_A3.descuentoCondicionado, v: C.condicionado },
+      { op: "=", rot: ROTULOS_A3.paga, v: C.pago, res: true },
+    ],
+  },
+];
+export const ARRIBA_H4 = { item: "libro-de-bambu", de: "libro-de-totumo", titulo: "Libro de Totumo" };
 
 export const BOTON_H4 = { siguiente: "Siguiente ítem", verResumen: "Ver mi resumen" };
 
