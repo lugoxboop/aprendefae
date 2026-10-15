@@ -57,8 +57,7 @@ export const H5 = {
 /*
  * Patrón T7-3 (Watari): la cuenta del conteo de Olmo en renglones, DESPUÉS
  * de su ítem (2: el sobrante; 5: el faltante), y solo mientras dura su caso.
- * El caso de Pino no lleva cuenta: solo asiento. Títulos de Watari, por
- * confirmar con Near.
+ * El caso de Pino no lleva cuenta: solo asiento. Títulos de Watari, revisados por Near.
  */
 export const FIGURAS_H5 = [
   { ...cuentaDeConteo("Olmo · 31 de diciembre", OLMO_1.libros, OLMO_1.conteo), desde: 2, hasta: 4 },
