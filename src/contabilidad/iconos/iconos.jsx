@@ -34,6 +34,11 @@ import t734 from "./conta-t7-3-4-pago-a-tiempo.svg?raw";
 import t735 from "./conta-t7-3-5-ajuste-por-conteo.svg?raw";
 import t736 from "./conta-t7-3-6-entra-al-costo.svg?raw";
 import t737 from "./conta-t7-3-7-costo-o-valor-neto-realizable.svg?raw";
+import t721 from "./conta-t7-2-1-debe-o-haber.svg?raw";
+import t722 from "./conta-t7-2-2-arma-los-dos-asientos.svg?raw";
+import t723 from "./conta-t7-2-3-llena-el-kardex.svg?raw";
+import t724 from "./conta-t7-2-4-periodico-o-permanente.svg?raw";
+import t725 from "./conta-t7-2-5-flete-y-devolucion.svg?raw";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -118,3 +123,8 @@ export const PagoATiempo = icono("PagoATiempo", t734);
 export const AjustePorConteo = icono("AjustePorConteo", t735);
 export const EntraAlCosto = icono("EntraAlCosto", t736);
 export const CostoOValorNetoRealizable = icono("CostoOValorNetoRealizable", t737);
+export const DebeOHaber = icono("DebeOHaber", t721);
+export const ArmaLosDosAsientos = icono("ArmaLosDosAsientos", t722);
+export const LlenaElKardex = icono("LlenaElKardex", t723);
+export const PeriodicoOPermanente = icono("PeriodicoOPermanente", t724);
+export const FleteYDevolucion = icono("FleteYDevolucion", t725);
