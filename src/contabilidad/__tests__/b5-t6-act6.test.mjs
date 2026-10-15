@@ -197,18 +197,24 @@ test("★★★ el rótulo fijo se ve en pantalla en cada una de las ocho casill
     assert.ok(rotulo, `casilla ${k + 1}: sin rótulo`);
     assert.equal(rotulo.textContent, "Escenario simulado · no es la tabla del libro");
     /*
-     * Hoja de Mai (§3.1): el rótulo va al pie de la tabla, entre ella y la
-     * casilla; debajo, un solo pie, el de la norma (las tres filas con
-     * porcentaje). La fila 1 se cubre con el pie del escenario de la nota.
+     * Hoja de Mai (calidad 1): la nota encima de la tabla y sin pie; el pie de
+     * la tabla, dentro de su borde: el rótulo y la fuente del porcentaje, dos
+     * líneas sin cajas. «Escenario simulado» se lee una sola vez.
      */
     const regla = caja.querySelector("[data-regla]");
     const tabla = regla.querySelector("table");
+    const nota = caja.querySelector("[data-nota-regla]");
+    const pie = regla.querySelector("[data-pie-tabla]");
     const sigue = (a, b) => Boolean(a.compareDocumentPosition(b) & 4);
-    assert.ok(regla.contains(rotulo) && sigue(tabla, rotulo), `casilla ${k + 1}: el rótulo, al pie de la tabla`);
+    assert.ok(sigue(nota, tabla), `casilla ${k + 1}: la nota, encima de la tabla`);
+    assert.equal(nota.textContent, D.T6_ACT6.nota, "la nota, sin pie");
+    assert.equal(tabla.parentElement, pie.parentElement, "el pie, dentro del borde de la tabla");
+    assert.ok(sigue(tabla, pie) && pie.contains(rotulo), `casilla ${k + 1}: el rótulo, al pie de la tabla`);
+    assert.deepEqual([...pie.children].map((p) => p.textContent), [D.T6_ACT6.rotulo, D.PIES_T6_ACT6.regla]);
+    assert.equal(pie.querySelectorAll("[data-tipo-pie]").length, 0, "sin cajas");
+    assert.equal(caja.querySelectorAll("[data-tipo-pie]").length, 0, "ningún pie en caja en la actividad");
+    assert.equal((caja.textContent.match(/Escenario simulado/g) ?? []).length, 1, "«Escenario simulado», una sola vez");
     assert.ok(sigue(rotulo, caja.querySelector("[data-hecho]")), `casilla ${k + 1}: el rótulo, antes de la casilla`);
-    assert.deepEqual([...regla.querySelectorAll("[data-tipo-pie]")].map((p) => p.dataset.tipoPie), ["norma"]);
-    assert.ok(sigue(rotulo, regla.querySelector("[data-tipo-pie]")), "el pie del porcentaje, bajo el rótulo");
-    assert.equal(caja.querySelector("[data-nota-regla] [data-tipo-pie]").dataset.tipoPie, "escenario");
     /* La parte 2: los montos dentro de la tabla de la regla, una sola tabla, y el total abajo. */
     const datos = caja.querySelector("[data-datos-parte]");
     assert.equal(Boolean(datos), k >= 3, `casilla ${k + 1}: los montos solo en la parte 2`);
@@ -249,7 +255,7 @@ test("★★ al pasar de casilla la página se mueve lo justo para ver la casill
   const original = window.HTMLElement.prototype.getBoundingClientRect;
   window.HTMLElement.prototype.getBoundingClientRect = function () {
     if (this.querySelector?.("[data-hecho]") || this.hasAttribute?.("data-hecho")) return { top: 100, bottom: 300, height: 200 };
-    if (this.querySelector?.("[data-rotulo-simulado]") && !this.querySelector("table")) return { top: 0, bottom: 30, height: 30 };
+    if (this.hasAttribute?.("data-rotulo-simulado")) return { top: 0, bottom: 30, height: 30 };
     if (this.getAttribute?.("data-fila") === "g2") return { top: -200, bottom: -180, height: 20 };
     return original.call(this);
   };

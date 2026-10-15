@@ -118,14 +118,21 @@ export default function ContabilidadTema6View({ modo = null, nodoInicial = null,
               onClick={onBack}
               aria-label="Volver a Contabilidad"
               style={{
-                display: "flex", alignItems: "center", justifyContent: "center", padding: "8px",
+                /* 44 × 44: el mínimo del pulgar (calidad, 15-oct). Con 8 px de relleno medía 38. */
+                display: "flex", alignItems: "center", justifyContent: "center", padding: "11px",
                 borderRadius: "999px", background: "rgba(248,249,250,0.06)",
                 border: "1px solid rgba(248,249,250,0.14)", cursor: "pointer",
               }}
             >
               <ChevronLeft size={20} color={FAE.text} />
             </button>
-            <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1 }}>
+            {/*
+              * El título puede encogerse o romper en dos líneas, pero no desaparecer
+              * (regla de Erwin, herramientas.md). La regla compartida del header
+              * compacto lo trunca con «…»; aquí se le deja romper: a 320 se leía
+              * «Cuentas por co…». El estilo en línea gana a la clase.
+              */}
+            <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "break-word" }}>
               {tema.title}
             </h1>
           </div>
@@ -153,7 +160,7 @@ export default function ContabilidadTema6View({ modo = null, nodoInicial = null,
                 type="button"
                 onClick={() => { resumen.limpiar(); setNodoAbierto(null); }}
                 style={{
-                  marginBottom: "16px", padding: "8px 14px", borderRadius: "999px",
+                  marginBottom: "16px", padding: "8px 14px", minHeight: "44px", borderRadius: "999px",
                   background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)",
                   color: FAE.text, cursor: "pointer", fontFamily: "Sora, sans-serif", fontSize: "12.5px",
                 }}
