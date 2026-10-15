@@ -103,7 +103,7 @@
 
 ## Los dos saldos conciliados
 
-Cuando las nueve partidas están puestas, el estudiante calcula cada saldo. Se pide como **número escrito**, no como elección, para que no se adivine.
+Cuando las nueve partidas están puestas, **la tabla las muestra en su lado correcto, aunque el estudiante haya fallado alguna en la fase 1** (decisión de Yujiro con Shibukawa), y el estudiante solo suma. Cada saldo se pide como **número escrito**, no como elección, para que no se adivine. Por eso ningún mensaje de esta fase habla de una partida mal puesta: los errores son de cálculo.
 
 **Lado del banco:** 3.216.800 + 947.500 − 786.800 = **3.377.500**
 **Lado de los libros:** 3.090.900 + 798.100 − 511.500 = **3.377.500**
@@ -117,7 +117,7 @@ Retroalimentación, según lo que escriba:
 - **Libros = $2.804.300** (signos de las notas al revés): «Ese saldo resta lo que el banco abonó y suma lo que el banco cobró. Revisa qué hace cada nota.» (90,9)
 - **Libros = $3.889.000** (no restó las notas débito): «A ese saldo le faltan las notas débito del banco: la plata que el banco ya cobró.» (90,9)
 - **Libros = $2.579.400** (no sumó las notas crédito): «A ese saldo le faltan las notas crédito del banco: la plata que el banco ya abonó.» (87,2)
-- **Cualquier otro saldo que no coincida:** «Los dos saldos tienen que dar lo mismo. Si no dan, alguna partida está en el lado o con el signo equivocados.» (93,9)
+- **Cualquier otro saldo que no coincida:** «Los dos saldos tienen que dar lo mismo. Mira en la tabla qué suma y qué resta en cada lado, y vuelve a hacer la cuenta.» (102,8)
 
 *[Los seis errores con cifra son los más esperables: signos al revés o una partida olvidada. Si la mecánica no permite reconocer el valor escrito, basta el texto general.]*
 
