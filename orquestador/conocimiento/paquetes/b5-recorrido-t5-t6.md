@@ -1,6 +1,6 @@
 # Recorrido del estudiante · Temas 5 y 6 de Contabilidad (Célula B)
 
-> Documento generado por `scripts/b5-recorrido-t5-t6.mjs` desde los archivos de datos del commit `cb2eb88`. No se edita a mano: si cambia un texto, se cambia en su archivo de datos y se vuelve a generar.
+> Documento generado por `scripts/b5-recorrido-t5-t6.mjs` desde los archivos de datos del commit `eca6218`. No se edita a mano: si cambia un texto, se cambia en su archivo de datos y se vuelve a generar.
 >
 > Orden: el de la vista. Primero Aprender (las piezas en el orden de `PIEZAS`, cada una con sus cuatro capas). Después el camino de Hacer (el orden de `subjects.js`), cada actividad con su «Así se juega» y su partida.
 >
@@ -412,9 +412,9 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
 
 ## T6 · Cuentas por cobrar · Aprender
 
-### Pieza 1 de 4 · Lo que otros le deben a la empresa
+### Pieza 1 de 5 · Lo que otros le deben a la empresa
 
-*Encima del panel:* PIEZA 1 DE 4 · *rótulo del panel:* CUENTAS POR COBRAR · APRENDER
+*Encima del panel:* PIEZA 1 DE 5 · *rótulo del panel:* CUENTAS POR COBRAR · APRENDER
 
 - **Objetivo:** Vas a ver qué cabe en las cuentas por cobrar y qué hace subir o bajar lo que los clientes le deben a la empresa.
 
@@ -505,9 +505,9 @@ Opciones (en el orden del archivo; el juego las baraja una vez al cargar):
 - ✘ Baja, y ese mismo día se anota también el ingreso por la venta.
   - *Devolución:* No es esa. El ingreso se anotó el día de la venta, el 10 de enero. El día del pago no hay un ingreso nuevo: solo entra la plata y baja la deuda.
 
-### Pieza 2 de 4 · Cuando un cliente no va a pagar
+### Pieza 2 de 5 · Cuando un cliente no va a pagar
 
-*Encima del panel:* PIEZA 2 DE 4 · *rótulo del panel:* CUENTAS POR COBRAR · APRENDER
+*Encima del panel:* PIEZA 2 DE 5 · *rótulo del panel:* CUENTAS POR COBRAR · APRENDER
 
 - **Objetivo:** Vas a ver qué es una cuenta incobrable y dos formas de anotar esa pérdida.
 
@@ -586,9 +586,9 @@ Opciones (en el orden del archivo; el juego las baraja una vez al cargar):
 - ✘ Ingresos por ventas, porque nunca se cobró.
   - *Devolución:* No es esa. La venta sí ocurrió y su ingreso se queda. La pérdida se anota por otro lado: contra la provisión.
 
-### Pieza 3 de 4 · La provisión, de un año al siguiente
+### Pieza 3 de 5 · La provisión, de un año al siguiente
 
-*Encima del panel:* PIEZA 3 DE 4 · *rótulo del panel:* CUENTAS POR COBRAR · APRENDER
+*Encima del panel:* PIEZA 3 DE 5 · *rótulo del panel:* CUENTAS POR COBRAR · APRENDER
 
 - **Objetivo:** Vas a ver cómo se crea la provisión, cómo se castiga una deuda contra ella y cómo se ajusta al año siguiente.
 
@@ -699,9 +699,9 @@ Opciones (en el orden del archivo; el juego las baraja una vez al cargar):
 - ✘ Porque los $31.200 que faltaron se pierden sin anotarse.
   - *Devolución:* No es esa. Los $31.200 no se pierden: se suman a la provisión del año siguiente, que por eso es de $184.600.
 
-### Pieza 4 de 4 · Cuando el cliente castigado sí paga
+### Pieza 4 de 5 · Cuando el cliente castigado sí paga
 
-*Encima del panel:* PIEZA 4 DE 4 · *rótulo del panel:* CUENTAS POR COBRAR · APRENDER
+*Encima del panel:* PIEZA 4 DE 5 · *rótulo del panel:* CUENTAS POR COBRAR · APRENDER
 
 - **Objetivo:** Vas a ver cómo se anota el pago de una deuda que ya se había castigado, según cuánto pague el cliente.
 
@@ -785,6 +785,105 @@ Opciones (en el orden del archivo; el juego las baraja una vez al cargar):
   - *Devolución:* No es esa. Esos $80.000 no se van a pagar, así que siguen castigados. Se revive lo que sí pagó.
 - ✘ Por nada: el pago va directo a un ingreso.
   - *Devolución:* No es esa. En el libro no hay ningún ingreso: primero se revive la deuda y después se anota el pago.
+
+### Pieza 5 de 5 · Cómo se calcula la provisión
+
+*Encima del panel:* PIEZA 5 DE 5 · *rótulo del panel:* CUENTAS POR COBRAR · APRENDER
+
+- **Objetivo:** Vas a ver cómo se calcula la provisión: se agrupan las deudas según su vencimiento y a cada grupo se le aplica un porcentaje.
+
+#### Capa 1 · Primero, los nombres
+
+1. **Análisis de vencimiento.** Al cierre, la empresa agrupa lo que le deben sus clientes. Separa las deudas vigentes de las vencidas, y a estas según cuánto tiempo llevan vencidas.
+   - *Así lo dice el libro:* «Lo primero que se deba hacer para realizar el ajuste por cuentas incobrables a diciembre 31 es calcular la probable pérdida de cartera con base en el porcentaje de pérdida establecido por la empresa.» (p. 201)
+   - *Pie de fuente (bajo la definición):* Basado en el libro, pp. 200-201
+2. **Un porcentaje por grupo.** A cada grupo se le aplica el porcentaje que la empresa espera perder. Los porcentajes los fija la propia empresa.
+   - *Pie de fuente (bajo la definición):* Basado en el libro, p. 201
+3. **La provisión.** Se suman los cálculos de todos los grupos. Ese total es la provisión. Se anota como ya viste: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables.
+   - *Pie de fuente (bajo la definición):* Basado en el libro, pp. 200-202
+4. **Una referencia colombiana.** En Colombia, la norma del impuesto de renta trae una provisión general con tres porcentajes. Es el 5 % para deudas con más de tres meses de vencidas, sin pasar de seis. Es el 10 % para más de seis meses, sin pasar de un año. Y es el 15 % para más de un año.
+   - *Nota:* Esos porcentajes son el máximo que la empresa puede restar como gasto al calcular su impuesto de renta. No son una regla para todas las empresas: cada una fija los suyos.
+   - *Pie de fuente (bajo la definición):* Fuente: Decreto 1625 de 2016, art. 1.2.1.18.21
+   - *Pie de la nota (dentro de su caja):* Fuente: Decreto 1625 de 2016, art. 1.2.1.18.21 · Libro, p. 201
+
+#### Capa 2 · Mírelo funcionar
+
+Rótulos de la escena:
+
+- `rotulo` Escenario simulado · no es la tabla del libro
+- `fecha` 31 de diciembre
+- `deben` Lo que le deben sus clientes
+- `total` $1.300.000
+- `grupos[1].suma` $460.000
+- `grupos[1].resultado` no se provisiona nada
+- `grupos[2].suma` $340.000
+- `grupos[2].porcentaje` Al 5 %
+- `grupos[2].resultado` son $17.000
+- `grupos[3].suma` $360.000
+- `grupos[3].porcentaje` Al 10 %
+- `grupos[3].resultado` son $36.000
+- `grupos[4].suma` $140.000
+- `grupos[4].porcentaje` Al 15 %
+- `grupos[4].resultado` son $21.000
+- `suma` $74.000
+- `gasto` Gasto provisiones – cuentas incobrables
+- `provision` Provisión para deudas incobrables
+- `neto` El valor neto
+- `valorNeto` $1.226.000
+- `debita` se debita
+- `acredita` se acredita
+
+Pasos:
+
+1. El 31 de diciembre, una empresa revisa lo que le deben sus clientes: $1.300.000. *[Escenario simulado]*
+2. Agrupa las deudas según cuánto tiempo llevan vencidas. *[Basado en el libro, p. 200]*
+3. En este ejemplo, la empresa decide usar como suyos los porcentajes de la norma de renta. *[Escenario simulado]*
+4. Las que están vigentes o llevan hasta tres meses de vencidas suman $460.000. En este ejemplo, por ellas no se provisiona nada. *[Escenario simulado]*
+5. Las que llevan más de tres meses, sin pasar de seis, suman $340.000. Al 5 %, son $17.000. *[Fuente del porcentaje: Decreto 1625 de 2016]*
+6. Las que llevan más de seis meses, sin pasar de un año, suman $360.000. Al 10 %, son $36.000. *[Fuente del porcentaje: Decreto 1625 de 2016]*
+7. Las que llevan más de un año suman $140.000. Al 15 %, son $21.000. *[Fuente del porcentaje: Decreto 1625 de 2016]*
+8. Cálculo: $17.000 + $36.000 + $21.000 = $74.000. *[Escenario simulado]*
+9. Se debita Gasto provisiones – cuentas incobrables por $74.000. *[Basado en el libro, p. 202]*
+10. Y se acredita Provisión para deudas incobrables, por el mismo valor. *[Basado en el libro, p. 202]*
+11. Cálculo: $1.300.000 − $74.000 = $1.226.000, el valor neto. *[Basado en el libro, p. 202]*
+
+**Cierre:** Cada grupo con su porcentaje, y la suma de todos es la provisión. *[Basado en el libro, pp. 200-201]*
+
+#### Capa 3 · Ahora pruebe usted
+
+- **Consigna:** Toca cada grupo y mira cuánto se provisiona por él.
+- **Tablero:** Escenario simulado · no es la tabla del libro · Se provisiona · $0 · $17.000 · $36.000 · $21.000 · La provisión · $74.000
+- **Vigentes o hasta 3 meses · $460.000**
+  - *Al tocarla:* En este ejemplo, por las deudas vigentes o con hasta tres meses de vencidas no se provisiona nada: $0.
+  - *Pie:* Escenario simulado
+- **Más de 3 hasta 6 meses · $340.000**
+  - *Al tocarla:* Al 5 %, los $340.000 dan $17.000.
+  - *Pie:* Fuente del porcentaje: Decreto 1625 de 2016
+- **Más de 6 meses hasta 1 año · $360.000**
+  - *Al tocarla:* Al 10 %, los $360.000 dan $36.000.
+  - *Pie:* Fuente del porcentaje: Decreto 1625 de 2016
+- **Más de 1 año · $140.000**
+  - *Al tocarla:* Al 15 %, los $140.000 dan $21.000.
+  - *Pie:* Fuente del porcentaje: Decreto 1625 de 2016
+
+**Al abrir todas:**
+
+- La provisión es la suma de los cuatro grupos: $74.000. Mientras más tiempo lleva vencido un grupo, mayor es su porcentaje en este ejemplo. *[Escenario simulado]*
+
+#### Capa 4 · En una frase
+
+- **Pregunta:** Una deuda de $380.000 lleva ocho meses vencida. Con los porcentajes del ejemplo, ¿cuánto se provisiona por ella?
+
+Opciones (en el orden del archivo; el juego las baraja una vez al cargar):
+
+- ✔︎ $38.000
+  - *Devolución:* Correcto. Ocho meses es más de seis y no pasa de un año: le toca el 10 %. El 10 % de $380.000 es $38.000.
+- ✘ $19.000
+  - *Devolución:* No es esa. Ese sería el 5 %, que es para deudas de más de tres hasta seis meses. Ocho meses ya pasó de seis.
+- ✘ $57.000
+  - *Devolución:* No es esa. Ese sería el 15 %, que es para deudas de más de un año. Ocho meses no llega a un año.
+- ✘ Nada
+  - *Devolución:* No es esa. Una deuda con más de tres meses de vencida sí entra en la provisión del ejemplo.
 
 ## T6 · Cuentas por cobrar · Hacer (camino)
 
@@ -1063,23 +1162,23 @@ Cada nombre de cuenta que aparece, en qué piezas y cuántas veces (nombre exact
 | Cuentas por cobrar – clientes | T6 · Aprender 1 (8) · T6 · Aprender 2 (11) · T6 · Aprender 3 (8) · T6 · Aprender 4 (8) · b5-t6-a1 (12) · b5-t6-a2 (6) · b5-t6-a3 (27) | 80 |
 | Cuentas por cobrar a socios y accionistas *(solo en prosa)* | b5-t6-a1 (2) | 2 |
 | Cuentas por cobrar a trabajadores *(solo en prosa)* | b5-t6-a1 (2) | 2 |
-| Gasto provisiones – cuentas incobrables | T6 · Aprender 2 (6) · T6 · Aprender 3 (4) · b5-t6-a2 (7) · b5-t6-a3 (2) | 19 |
+| Gasto provisiones – cuentas incobrables | T6 · Aprender 2 (6) · T6 · Aprender 3 (4) · T6 · Aprender 5 (3) · b5-t6-a2 (7) · b5-t6-a3 (2) | 22 |
 | Gastos financieros – pérdida en venta de títulos | T5 · Aprender 2 (2) · b5-t5-a2 (3) | 5 |
 | Ingresos financieros – ganancia en venta de títulos | T5 · Aprender 2 (2) · b5-t5-a2 (3) | 5 |
 | Ingresos por intereses | T5 · Aprender 2 (4) · b5-t5-a2 (6) | 10 |
 | Ingresos por ventas | T6 · Aprender 1 (2) · T6 · Aprender 2 (3) · b5-t6-a3 (2) | 7 |
 | Inversiones – títulos | T5 · Aprender 2 (9) · b5-t5-a2 (18) | 27 |
 | Préstamos a particulares *(solo en prosa)* | b5-t6-a1 (2) | 2 |
-| Provisión para deudas incobrables | T6 · Aprender 2 (2) · T6 · Aprender 3 (8) · T6 · Aprender 4 (4) · b5-t6-a2 (8) · b5-t6-a3 (8) | 30 |
+| Provisión para deudas incobrables | T6 · Aprender 2 (2) · T6 · Aprender 3 (8) · T6 · Aprender 4 (4) · T6 · Aprender 5 (3) · b5-t6-a2 (8) · b5-t6-a3 (8) | 33 |
 
 ### Formas cortas y variantes
 
 | Forma | Piezas (apariciones) | Total |
 |---|---|---|
 | «Clientes» suelto (sin «Cuentas por cobrar –» delante) | T6 · Aprender 1 (1) · b5-t6-a1 (18) | 19 |
-| «la provisión» / «La provisión» | T6 · Aprender 2 (6) · T6 · Aprender 3 (25) · b5-t6-a2 (15) · b5-t6-a3 (13) | 59 |
+| «la provisión» / «La provisión» | T6 · Aprender 2 (6) · T6 · Aprender 3 (25) · T6 · Aprender 5 (9) · b5-t6-a2 (15) · b5-t6-a3 (13) | 68 |
 | «el gasto» / «El gasto» | T6 · Aprender 2 (11) · T6 · Aprender 3 (5) · b5-t6-a2 (3) · b5-t6-a3 (3) | 22 |
 | «Inversiones» sin «– títulos» | — | 0 |
-| «cartera» | T6 · Aprender 1 (1) · T6 · Aprender 2 (2) | 3 |
+| «cartera» | T6 · Aprender 1 (1) · T6 · Aprender 2 (2) · T6 · Aprender 5 (1) | 4 |
 | «la ganancia» / «la pérdida» | T5 · Aprender 2 (4) · b5-t5-a2 (9) | 13 |
 

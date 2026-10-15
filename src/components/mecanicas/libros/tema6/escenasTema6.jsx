@@ -11,6 +11,10 @@ import CuentaT from "./CuentaT.jsx";
 import { PIEZA_SI_PAGA, PREGUNTA_FINAL_T6_A4, OPCIONES_FINAL_T6_A4 } from "../../../../data/contabilidadT6Pieza4.js";
 import SiPaga from "./SiPaga.jsx";
 import TresCasos from "./TresCasos.jsx";
+import { PIEZA_COMO_SE_CALCULA, PREGUNTA_FINAL_T6_A5, OPCIONES_FINAL_T6_A5 } from "../../../../data/contabilidadT6Pieza5.js";
+import { pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
+import LaTablaDelEjemplo from "./LaTablaDelEjemplo.jsx";
+import CuatroGrupos from "./CuatroGrupos.jsx";
 
 /*
  * Las capas propias de las piezas de Aprender del Tema 6, como las de los
@@ -50,9 +54,20 @@ export function EnUnaFraseT6A4() {
   return <UnaFrase pregunta={PREGUNTA_FINAL_T6_A4} opciones={OPCIONES_FINAL_T6_A4} Escena={SinEscena} evaluar={evaluarA4} />;
 }
 
+/* T6 · A5: el «%» pegado a su número también en la pregunta y las devoluciones (Mai §7). */
+const OPCIONES_A5 = OPCIONES_FINAL_T6_A5.map((o) => ({ ...o, texto: pegarPorcentaje(o.texto), feedback: pegarPorcentaje(o.feedback) }));
+const evaluarA5 = (id) => {
+  const o = OPCIONES_A5.find((x) => x.id === id);
+  return { correcta: Boolean(o?.correcta), feedback: o?.feedback ?? "", escena: null };
+};
+export function EnUnaFraseT6A5() {
+  return <UnaFrase pregunta={pegarPorcentaje(PREGUNTA_FINAL_T6_A5)} opciones={OPCIONES_A5} Escena={SinEscena} evaluar={evaluarA5} />;
+}
+
 export const ESCENAS_TEMA6 = {
   [PIEZA_LO_QUE_LE_DEBEN.id]: { Capa2: DosMomentos, Exploracion: SeisHechos, Capa4: EnUnaFraseT6 },
   [PIEZA_NO_VA_A_PAGAR.id]: { Capa2: DosDias, Exploracion: DosMetodos, Capa4: EnUnaFraseT6A2 },
   [PIEZA_LA_PROVISION.id]: { Capa2: LaProvision, Exploracion: CuentaT, Capa4: EnUnaFraseT6A3 },
   [PIEZA_SI_PAGA.id]: { Capa2: SiPaga, Exploracion: TresCasos, Capa4: EnUnaFraseT6A4 },
+  [PIEZA_COMO_SE_CALCULA.id]: { Capa2: LaTablaDelEjemplo, Exploracion: CuatroGrupos, Capa4: EnUnaFraseT6A5 },
 };
