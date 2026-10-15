@@ -145,3 +145,8 @@ Son 44 piezas: T7-1, T7-2, T7-3 y las suyas de T5. Se midieron con Playwright a 
   - *Regla:* antes de abrir un Hacer, se busca en la materia una decisión igual. Si existe, la pieza nueva sube el nivel (un caso que engaña, una variable más) o no se abre.
 - **C5 · Reglas del juego dentro de la consigna.** «Tienes un solo intento por pregunta» aparecía en casi todas las consignas, y en una era toda la consigna.
   - *Regla:* la consigna dice qué hacer con este caso. Las reglas del juego van en un distintivo junto al contador, una sola vez.
+- **C6 · Dos piezas que son una.** T7-2 A5 y A6 enseñaban la misma regla («en el permanente no existe Compras») con otro hecho. Dos Hacer binarios repetían listas que ya se habían colocado en Aprender.
+  - *Regla:* si dos piezas enseñan la misma regla y solo cambia el hecho, son una pieza con dos casos. Un Hacer que se resuelve al 50 % o buscando una palabra del Aprender no se abre.
+- **C7 · El resumen que borra el límite.** «Almacenamiento» pasó a ser «lo que cuesta guardarla», sin el «directamente atribuible a la adquisición» de la p. 258. La frase quedó más corta y dejó de ser cierta.
+  - *Regla:* al resumir una definición del libro, se conserva la condición que la limita («directamente», «solo si», «cuando»). Si no cabe, se cita entera. El auditor compara cada resumen con su página, no solo las cifras.
+
