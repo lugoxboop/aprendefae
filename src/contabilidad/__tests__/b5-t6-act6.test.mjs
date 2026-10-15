@@ -130,7 +130,12 @@ test("★★★ parte 1: cada deuda, su grupo correcto y el error de cada grupo 
     const elegido = resto.join(" ").replace(/[«»]/g, "");
     const cerca = c.opciones.find((o) => o.tipo === tipo);
     assert.ok(cerca && cerca.texto.toLowerCase().startsWith(elegido.toLowerCase()), `casilla ${k + 1}: ${tipo} va con «${elegido}»`);
-    assert.ok(c.opciones.filter((o) => o.tipo && o !== cerca).every((o) => o.tipo === "G0"), `casilla ${k + 1}: los demás, G0`);
+    /* Entrega 1: los demás, cada uno con su G0 por casilla y opción, que nombra el rango elegido. */
+    for (const o of c.opciones.filter((x) => x.tipo && x !== cerca)) {
+      const g = D.GRUPOS_T6_ACT6.find((x) => x.nombre === o.texto).id;
+      assert.equal(o.tipo, `G0-${c.id}-${g}`, `casilla ${k + 1}: ${o.texto}`);
+      assert.ok(D.ERRORES_T6_ACT6[o.tipo], `casilla ${k + 1}: ${o.tipo} sin texto`);
+    }
     /* Las opciones son los cuatro grupos, en el orden de la regla. */
     assert.deepEqual(c.opciones.map((o) => o.texto), D.GRUPOS_T6_ACT6.map((g) => g.nombre));
   });

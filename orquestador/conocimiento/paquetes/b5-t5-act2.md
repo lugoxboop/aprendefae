@@ -149,3 +149,31 @@ Lista armada con las fuentes que da Futaba para cada asiento y cada enunciado. N
 | 750 | precio de venta del 1 de noviembre | p. 195 |
 | 468.750 | lo recibido en la segunda venta | p. 195 |
 | 31.250 | pérdida | p. 195 |
+
+
+## (1) Futaba · entrega 1 de calidad: razones por cuenta (versión final, con PASA de Shoko; pegada tal cual)
+
+Cada razón va detrás de la plantilla «Sobra X.» o «No va X: en su lugar va Y.». El estudiante ve solo la razón de la cuenta que puso. Reemplaza la cola genérica del texto D (Sakuta).
+
+Parte	Cuenta	Razón
+Asiento 1	Bancos	En el ejemplo, el interés entra a Caja. Bancos solo se movió el día de la compra.
+Asiento 1	Inversiones – títulos	Cobrar el interés no cambia la inversión: los títulos siguen siendo los mismos.
+Asiento 1	Ganancia	Aquí no se vende ningún título, así que no hay ganancia.
+Asiento 1	Pérdida	Aquí no se vende ningún título, así que no hay pérdida.
+Asiento 2	Bancos	En el ejemplo, lo de la venta entra a Caja. Bancos solo se movió el día de la compra.
+Asiento 2	Ingresos por intereses	El precio de $920 no incluye el interés. El interés se anota en su propio asiento.
+Asiento 2	Pérdida	Vendió a $920 lo que le costó $800: hay ganancia, no pérdida.
+Asiento 3	Bancos	Como en agosto, el interés llega a Caja.
+Asiento 3	Inversiones – títulos	Cobrar el interés no cambia la inversión: siguen los mismos 625 títulos.
+Asiento 3	Ganancia	Este asiento es solo el interés. La venta de noviembre va en el asiento 4.
+Asiento 3	Pérdida	Este asiento es solo el interés. La pérdida es de la venta, que va en el asiento 4.
+Asiento 4	Bancos	Como en agosto, lo de la venta entra a Caja.
+Asiento 4	Ingresos por intereses	El interés de noviembre ya se anotó en el asiento 3. Esta venta va aparte.
+Asiento 4	Ganancia	Vendió a $750 lo que le costó $800: hay pérdida, no ganancia.
+
+b5-t5-a2 · C7 en dos ramas
+
+C7-recibido (sin cambio): sale cuando Inversiones – títulos lleva lo recibido, $1.725.000 en el asiento 2 o $468.750 en el asiento 4.
+C7-otro: sale con cualquier otro valor que no sea el costo.
+Asiento 2	C7-otro	Inversiones – títulos baja por lo que costaron los títulos que vendió. Son 1.875 × $800 = $1.500.000. Lo demás que recibió es la ganancia.
+Asiento 4	C7-otro	Inversiones – títulos baja por lo que costaron los títulos que vendió. Son 625 × $800 = $500.000. Lo que le faltó para llegar a ese costo es la pérdida.

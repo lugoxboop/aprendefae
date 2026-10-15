@@ -51,6 +51,13 @@ export const ESTANTE_T5_ACT2 = [CAJA, BANCOS, INVERSIONES, INTERESES, GANANCIA, 
 const d = (cuenta, valor) => ({ cuenta, lado: DEBE, valor });
 const h = (cuenta, valor) => ({ cuenta, lado: HABER, valor });
 
+/*
+ * Las razones por cuenta de la D (Futaba, entrega 1, con PASA de Shoko): van
+ * detrás de «Sobra X.» o «No va X: en su lugar va Y.», en lugar de la cola
+ * del texto D. El estudiante ve solo la razón de la cuenta que puso.
+ */
+const NO_SE_VENDE = (que) => `Aquí no se vende ningún título, así que no hay ${que}.`;
+
 /* La B · C7 de las dos ventas y la B «otro valor», iguales en las dos (Futaba). */
 const OTRO_VALOR = "Revisa los valores. Compara lo que recibió con lo que costaron los títulos.";
 
@@ -74,6 +81,12 @@ export const PARTES_T5_ACT2 = [
       C: "Están al revés. El interés entra a Caja, que sube: va al Debe. El ingreso va al Haber.",
       A: "Falta una cuenta. El interés entra a Caja y, a la vez, es un ingreso.",
       B: "Revisa el valor. El interés se calcula sobre $2.000.000, al 24 % al año, por un solo trimestre.",
+      razones: {
+        [BANCOS]: "En el ejemplo, el interés entra a Caja. Bancos solo se movió el día de la compra.",
+        [INVERSIONES]: "Cobrar el interés no cambia la inversión: los títulos siguen siendo los mismos.",
+        [GANANCIA]: NO_SE_VENDE("ganancia"),
+        [PERDIDA]: NO_SE_VENDE("pérdida"),
+      },
     },
   },
   {
@@ -88,7 +101,14 @@ export const PARTES_T5_ACT2 = [
       C: "Hay cuentas al revés. Caja sube y va al Debe. Inversiones – títulos baja y la ganancia es un ingreso: los dos van al Haber.",
       A: "Falta una cuenta. Esta venta mueve tres: Caja, Inversiones – títulos y la ganancia. Inversiones – títulos se acredita por lo que costaron los títulos, no por lo que se recibió. Por eso queda una diferencia, y esa diferencia es la ganancia.",
       C7: "Inversiones – títulos no se acredita por lo que se recibió. En el ejemplo del libro, se acredita por lo que costaron: 1.875 × $800 = $1.500.000. La diferencia, $225.000, es la ganancia.",
+      /* La C7 en dos ramas (entrega 1): `C7` si lleva lo recibido; `C7otro` con cualquier otro valor que no sea el costo. */
+      C7otro: "Inversiones – títulos baja por lo que costaron los títulos que vendió. Son 1.875 × $800 = $1.500.000. Lo demás que recibió es la ganancia.",
       B: OTRO_VALOR,
+      razones: {
+        [BANCOS]: "En el ejemplo, lo de la venta entra a Caja. Bancos solo se movió el día de la compra.",
+        [INTERESES]: "El precio de $920 no incluye el interés. El interés se anota en su propio asiento.",
+        [PERDIDA]: "Vendió a $920 lo que le costó $800: hay ganancia, no pérdida.",
+      },
     },
   },
   {
@@ -103,6 +123,12 @@ export const PARTES_T5_ACT2 = [
       C: "Están al revés. Como en agosto, Caja va al Debe y el ingreso va al Haber.",
       A: "Falta una cuenta. El interés entra a Caja y, a la vez, es un ingreso.",
       B: "Revisa el valor. El interés se calcula sobre los títulos que quedan, al 24 % al año, por un solo trimestre.",
+      razones: {
+        [BANCOS]: "Como en agosto, el interés llega a Caja.",
+        [INVERSIONES]: "Cobrar el interés no cambia la inversión: siguen los mismos 625 títulos.",
+        [GANANCIA]: "Este asiento es solo el interés. La venta de noviembre va en el asiento 4.",
+        [PERDIDA]: "Este asiento es solo el interés. La pérdida es de la venta, que va en el asiento 4.",
+      },
     },
   },
   {
@@ -117,7 +143,13 @@ export const PARTES_T5_ACT2 = [
       C: "Hay cuentas al revés. La pérdida va al Debe, junto a Caja. Inversiones – títulos baja y va al Haber.",
       A: "Falta una cuenta. Esta venta mueve tres: Caja, Inversiones – títulos y la pérdida. Inversiones – títulos se acredita por lo que costaron los títulos, no por lo que se recibió. Por eso queda una diferencia, y esa diferencia es la pérdida.",
       C7: "Inversiones – títulos no se acredita por lo que se recibió. En el ejemplo del libro, se acredita por lo que costaron: 625 × $800 = $500.000. La diferencia, $31.250, es la pérdida.",
+      C7otro: "Inversiones – títulos baja por lo que costaron los títulos que vendió. Son 625 × $800 = $500.000. Lo que le faltó para llegar a ese costo es la pérdida.",
       B: OTRO_VALOR,
+      razones: {
+        [BANCOS]: "Como en agosto, lo de la venta entra a Caja.",
+        [INTERESES]: "El interés de noviembre ya se anotó en el asiento 3. Esta venta va aparte.",
+        [GANANCIA]: "Vendió a $750 lo que le costó $800: hay pérdida, no ganancia.",
+      },
     },
   },
 ];
