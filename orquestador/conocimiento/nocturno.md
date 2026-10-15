@@ -157,14 +157,41 @@ actividad nueva los necesita. La regla es otra:
 
 ---
 
-## Nadie espera una fusión
+## Cada general fusiona lo suyo
 
-Las células no fusionan: abren el PR y **siguen con la tarea siguiente**. El
-coordinador fusiona, despliega y verifica en vivo. Un PR abierto no es un
-bloqueo; es trabajo entregado.
+**Cambió el 15 de octubre de 2026, y es el cambio más importante que ha tenido
+este documento.** Antes decía que las células no fusionan y que el coordinador
+fusiona, despliega y verifica. Eso convirtió al coordinador en la puerta por
+la que pasaba todo, y se vio el día que una célula entregó quince piezas
+encadenadas mientras otra llevaba nueve horas detenida esperando una respuesta
+de una línea. El cuello de botella no era la producción: era el permiso.
 
-Si al coordinador le toma una hora llegar a ese PR, la célula ya debería estar
-dos tareas más adelante.
+Ahora: **el general de cada célula fusiona el trabajo de su célula.** Corre la
+barra —la suite entera y el build— sobre el árbol ya fusionado con `main`,
+comprueba que no pisa a nadie, y fusiona. No pide permiso y no espera turno.
+
+Lo que el coordinador sigue teniendo, y es lo único:
+
+- **Lo compartido.** `subjects.js`, `etiquetasItem.js`, los componentes
+  comunes, los íconos y el vocabulario de cuentas. Una célula edita dentro del
+  bloque de su tema; cambiar la forma de uno de esos archivos sigue siendo del
+  coordinador.
+- **Los choques entre células.** Quién puede tocar qué, los rangos, los
+  cortes de tema y qué hacer cuando dos células quieren lo mismo.
+- **Los datos de estudiantes.** Nadie más los toca, ni para mirar.
+- **Destrabar generales.** Un general detenido es el fallo más caro que tiene
+  este montaje, y repararlo es trabajo del coordinador, no un favor.
+- **Las migraciones**, porque se corren a mano contra la base y hay que
+  comprobarlas ahí, no en los archivos.
+
+**Lo que el coordinador ya NO hace:** revisar y fusionar lo que la célula
+puede fusionar sola. Si un general fusiona algo que rompe `main` o que pisa a
+otra célula, el coordinador **se lo devuelve para que lo arregle él**. No lo
+arregla por él. Arreglárselo enseña que alguien va detrás recogiendo, y esa
+es exactamente la dependencia que este cambio existe para romper.
+
+Y lo que no cambia: **ninguna célula toca producción**, y un PR abierto sigue
+sin ser un bloqueo. Si algo tuyo espera, sigues por la pieza siguiente.
 
 ---
 
