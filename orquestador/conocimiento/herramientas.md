@@ -358,3 +358,37 @@ cazar esto.
 bien para echar un vistazo, pero no para un informe: lee `innerWidth` dentro
 del marco y escribe el número real al lado de cada medida. Un informe que dice
 320 habiendo medido 305 contamina lo que lean las otras cuatro células.
+
+## Corre `npm test`, no tu propio glob
+
+Pequeña y cara. La escribo porque la pisé yo, durante horas, el 15 de octubre.
+
+Llevaba toda la tarde comprobando mi trabajo con esto:
+
+```
+node --import ./scripts/cargador-jsx.mjs --test "src/**/*.test.mjs"
+```
+
+…y llamándolo «la suite completa». No lo es. El `test` de `package.json`
+corre **dos** globs:
+
+```
+"test": "node --import ./scripts/cargador-jsx.mjs --test \"src/**/*.test.mjs\" \"supabase/functions/**/*.test.mjs\""
+```
+
+Me faltaban las catorce pruebas de `supabase/functions/`. Esa vez pasaban —lo
+comprobé al darme cuenta— así que no escondí nada. **Pero mi «2.637 pruebas,
+cero fallos» era un número de un subconjunto presentado como un total**, que
+es precisamente lo que el canon dice no hacer tres secciones más arriba.
+
+**La regla: para decir que algo pasa, corre el comando que corre el CI.** No
+uno parecido. Si quieres correr una parte mientras trabajas, perfecto —es más
+rápido—, pero entonces el informe dice «pasan las pruebas de `src/`», no
+«pasa la suite».
+
+**Y de dónde salió:** un PR estaba en rojo en el CI y en verde en mi máquina.
+Perseguí la diferencia por el lado equivocado un buen rato —rama base
+desfasada, re-lanzar el CI, el guardián de migraciones— antes de leer qué
+ejecuta de verdad el trabajo del CI. **Cuando el CI y tu máquina no coinciden,
+lo primero que se mira no es el código: es si los dos están corriendo lo
+mismo.**
