@@ -121,6 +121,7 @@ con su causa y la regla que la evita.
   o más.
 - **E7 · Lo que el kit no mide: r5-1 es una cadena de selección.** Con la barra
   B3 de este archivo, cuatro de sus seis pantallas son marcar una opción de
+<<<<<<< HEAD
   radio y no mueven nada. Cumple el kit y no cumple la barra. Va una v2 de
   mecánica; mientras, sigue publicada con las correcciones de arriba.
 
@@ -153,3 +154,18 @@ Son 44 piezas: T7-1, T7-2, T7-3 y las suyas de T5. Se midieron con Playwright a 
 - **C8 · Lo que sí engancha: la figura que crece y se queda.** La única pieza de la célula que enganchó por su mecánica fue «Llena el kárdex». Cada respuesta añade una fila, la tabla sigue a la vista y el estudiante ve su trabajo acumularse.
   - *Regla:* en un Hacer de varios ítems sobre un mismo caso, cada respuesta deja su huella en una figura que sigue en pantalla mientras se responde lo siguiente (una tabla, un asiento, una cuenta). Un ítem que borra lo anterior para preguntar lo siguiente desperdicia el caso.
 
+=======
+  radio y no mueven nada. Cumple el kit y no cumple la barra. *Corregido en la
+  v2 (#250, paquete `e5-r5-1-v2`):* el flujo del título se reproduce, el
+  asiento entra en las cuentas T, las latas se venden, las fichas arman el
+  costo con un contador en vivo y los lotes se mezclan. *Regla:* antes de
+  escribir contenido, el general fija la mecánica de cada pantalla con la
+  pregunta «¿qué se mueve cuando el estudiante decide?»; si la respuesta es
+  «nada», la pantalla no está diseñada.
+- **E8 · La figura no hace la cuenta que se califica.** En el primer diseño de
+  la v2, el rótulo «Costo de cada unidad» calculaba en vivo el promedio que
+  la pregunta pedía; la elección se reducía a multiplicar y los distractores
+  dejaban de ser creíbles (Takamura). *Regla:* la figura muestra los
+  insumos y las consecuencias; el resultado que se evalúa solo aparece
+  después de responder.
+>>>>>>> origin/main

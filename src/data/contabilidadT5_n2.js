@@ -105,6 +105,7 @@ const COMPROBAR = {
 /* P6 · Práctica. Caso construido; opciones en orden aleatorio. */
 const PRACTICA = {
   id: "practica",
+  pista: "Piensa si el problema está en un dato del CDT, en un movimiento o en algo que no ha terminado.",
   tipo: "eleccion",
   parrafos: [],
   pregunta: "La empresa guarda un CDT, pero nadie sabe cuándo vence. ¿Qué acción del libro falta?",

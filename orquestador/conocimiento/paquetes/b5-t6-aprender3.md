@@ -399,3 +399,62 @@ El límite de C a 320×568 es el mismo: «Siguiente» queda bajo el borde en el 
 §9 · Kaede
 
 Las filas 2 y 4 de la tabla de Kaede cambian a 738,38 · 657,13 y 959,23 · 877,98.
+
+## (4) Futaba · entrega 2: predecir antes de revelar, capa 3 (pegada tal cual)
+
+
+Cómo funciona (para Mai):
+
+El estudiante toca la caja, elige y se revela el texto de siempre.
+Si falla, la devolución va antes de ese texto. Si acierta, el texto sale directo, sin «Sí.».
+Hay un intento por caja y no da puntaje.
+Los textos que se revelan y el texto final de cada capa no cambian.
+
+T6 A3 (pp. 202-203; las cajas se abren en orden). Sin cambios.
+
+Consigna: «Toca cada momento y decide qué le pasa a la provisión. Después, mira cómo queda la T.» (88)
+Diciembre de 2007: ¿En qué columna de la T se anota la provisión que se crea? Debe · Haber ✓. Si falla: «La provisión sube por el Haber.»
+Marzo: ¿Qué le pasa al saldo? Queda en $0 · Le faltan $31.200 ✓ · Sigue en $148.800.
+Si elige $0: «No queda en cero: el castigo es más grande que la provisión.» (96)
+Si elige $148.800: «El castigo se debita a la provisión, así que el saldo baja.» (86)
+Diciembre siguiente: ¿Por cuánto se registra la provisión? $153.400 · $184.600 ✓ · $31.200.
+Si elige $153.400: «$153.400 es el saldo que debe quedar. Para llegar ahí, también hay que cubrir lo que faltó en marzo.» (96)
+Si elige $31.200: «Eso solo cubre lo que faltó. Falta lo que pide el análisis.» (92)
+
+## (5) Futaba · entrega 3: pasos que se juntan y predicción a mitad de la escena (pegada tal cual)
+
+Cada fusión pega dos textos ya aprobados sin cambiar una palabra.
+
+Para Kaede: el estado de la escena de cada paso fusionado es el del segundo paso. En t6Pieza3.js hay que volver a numerar las vueltas atrás (el paso 11 pasa a ser el 7).
+
+T6 A3: de 19 pasos a 12
+
+Paso nuevo	Pasos actuales	Pie
+1	1 + 2	Basado en el libro, pp. 200 y 202
+2	3 + 4	Libro, p. 202
+3	5	Libro, p. 202
+4	6 + 7	Libro, p. 202
+5	8	Basado en el libro, p. 202
+6	9 + 10	Basado en el libro, p. 202
+7	11	Basado en el libro, p. 202
+8	12 + 13	Libro, p. 202
+9	14 + 15	Libro, p. 203
+10	16	Libro, p. 203
+11	17 + 18	Basado en el libro, p. 203
+12	19	Libro, p. 203
+
+Predicción, entre los pasos 6 y 7 (Basado en el libro, p. 202):
+
+Pregunta: «Al castigar la deuda, ¿se anota otra vez el gasto?»
+Opciones: Sí · No ✓.
+Si falla: «El gasto se anotó en diciembre. Ahora solo se usa la provisión.» (81)
+
+## (6) Mai · hoja 7: qué pasos se juntan y dónde va la parada (resumen; manda sobre la entrega 3)
+
+De 19 pasos a 13: las fusiones de Futaba menos 6 + 7 (regla 2: ocupa 5 renglones a 320). Los pasos 4 y 5 conservan el suyo: «Libro, p. 202» los dos. La predicción va entre el 7 y el 8 (la que Futaba llamó «entre 6 y 7»). La vuelta atrás del paso 11 actual pasa a ser el 8.
+
+El contador de la parada dice «Antes del paso N» (nuevo, para Shoko).
+
+## (7) Kaede · al ancho del sitio, dos fusiones más no entran (para Sakuta y Mai)
+
+Al ancho del sitio (Chromium de escritorio a 320, con la barra de desplazamiento; Mai midió sin ella), 1 + 2 y 9 + 10 ocupan 5 renglones a 320: no cumplen la regla 2 y subían el bloque 21,69 en toda la pieza. Quedan separados: 15 pasos. Los pasos sueltos conservan su pie de hoy. La parada queda entre el 9 y el 10 (la misma posición: después del paso 10 de antes). La vuelta atrás del paso 11 de antes es el 10.

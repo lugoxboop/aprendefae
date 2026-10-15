@@ -1,4 +1,4 @@
-import { CONSIGNA_CAPA_3_T6, HECHOS_T6, FINAL_CAPA_3_T6 } from "../../../../data/contabilidadT6Pieza1.js";
+import { CONSIGNA_CAPA_3_T6, PREGUNTA_CAPA_3_T6, OPCIONES_CAPA_3_T6, HECHOS_T6, FINAL_CAPA_3_T6 } from "../../../../data/contabilidadT6Pieza1.js";
 import CajasQueRevelan from "./CajasQueRevelan.jsx";
 
 /*
@@ -12,8 +12,12 @@ import CajasQueRevelan from "./CajasQueRevelan.jsx";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const CAJAS = HECHOS_T6.map((h) => ({ id: h.id, titulo: h.hecho, revela: h.revela, pie: h.pie }));
+/* Hoja 6: abierta, cada caja pregunta qué pasa con lo que deben los clientes (en fila) antes de revelar. */
+const CAJAS = HECHOS_T6.map((h) => ({
+  id: h.id, titulo: h.hecho, revela: h.revela, pie: h.pie,
+  decide: { pregunta: PREGUNTA_CAPA_3_T6, opciones: OPCIONES_CAPA_3_T6, correcta: h.correcta, falla: h.falla },
+}));
 
 export default function SeisHechos() {
-  return <CajasQueRevelan consigna={CONSIGNA_CAPA_3_T6} cajas={CAJAS} final={FINAL_CAPA_3_T6} atributos={{ "data-capa3-t6": true }} />;
+  return <CajasQueRevelan consigna={CONSIGNA_CAPA_3_T6} cajas={CAJAS} final={FINAL_CAPA_3_T6} forma="fila" atributos={{ "data-capa3-t6": true }} />;
 }

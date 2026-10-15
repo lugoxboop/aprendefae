@@ -4,6 +4,7 @@ import { pesos } from "../../../../data/contabilidad.js";
 import { Opcion, Opciones } from "../../corazon/juego.jsx";
 import { AsientoEnLineas, ElegirLado, Responder } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
+import { Plegable } from "./plegable.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -67,7 +68,7 @@ export function TarjetaPregunta({ id, encabezado = null, pregunta, pie, tarjetaR
       background: "rgba(184,196,212,0.12)", borderLeft: "3px solid #B8C4D4",
     }}>
       {encabezado && (
-        <p data-encabezado-item style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.1em", color: FAE.ambar }}>
+        <p data-encabezado-item style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", color: FAE.ambar }}>
           {encabezado.toUpperCase()}
         </p>
       )}
@@ -88,7 +89,7 @@ export function Devolucion({ r, lectorError = null }) {
           borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
         }}>
           {!r.ok && lectorError && <span style={SOLO_LECTOR}>{lectorError}</span>}
-          {r.textos.map((x, k) => <p key={k} data-texto-retro style={{ ...TEXTO, margin: k ? "6px 0 0" : 0 }}>{x}</p>)}
+          {r.textos.map((x, k) => <p key={k} data-texto-retro style={{ ...TEXTO, margin: k ? "6px 0 0" : 0 }}><Plegable texto={x} /></p>)}
         </div>
       )}
     </div>
@@ -160,7 +161,7 @@ export function LineasConComprobar({ lineas, asiento = null, onComprobar, compro
                     background: "rgba(231,111,81,0.13)", borderLeft: `3px solid ${FAE.coral}`,
                   }}>
                     <span style={SOLO_LECTOR}>{`Incorrecto. Va al ${LADOS_T7[l.lado].toLowerCase()}. `}</span>
-                    <p data-texto-retro style={TEXTO}>{l.retro}</p>
+                    <p data-texto-retro style={TEXTO}><Plegable texto={l.retro} /></p>
                   </div>
                 )}
               </div>

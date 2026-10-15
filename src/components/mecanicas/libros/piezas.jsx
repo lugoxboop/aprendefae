@@ -51,7 +51,17 @@ export function CuentaT({ cuenta, saldo = null, resaltar = null, marcar = null, 
   const columna = (lado, movimientos) => (
     <div style={{ flex: 1, minWidth: 0, opacity: atenuado(lado), transition: "opacity 220ms ease" }}>
       <p style={{
-        margin: "0 0 6px", fontFamily: "Sora, sans-serif", fontSize: "10.5px", fontWeight: 700,
+        /*
+         * 12 px, por lo mismo que en AsientoEnLineas: esto NO es una cejilla,
+         * es la cabecera de la columna, y tapándola se pierde cuál es cuál.
+         * Y además el lado se dice aquí dos veces —con la palabra y con el
+         * color—, así que a 10,5 la palabra deja de leerse y queda el color
+         * solo, que es justo lo que no puede pasar (kit.md).
+         *
+         * Se me había escapado: arreglé las líneas del asiento y dejé las
+         * columnas de la cuenta T, que dicen exactamente lo mismo.
+         */
+        margin: "0 0 6px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700,
         letterSpacing: "0.14em", color: COLOR_LADO[lado], textAlign: lado === DEBE ? "left" : "right",
       }}>
         {lado === DEBE ? "DEBE" : "HABER"}

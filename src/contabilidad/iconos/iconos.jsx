@@ -45,6 +45,7 @@ import t61 from "./conta-t6-1-clientes-o-otra-cuenta-por-cobrar.svg?raw";
 import t62 from "./conta-t6-2-la-provision-de-el-torito.svg?raw";
 import t63 from "./conta-t6-3-cuando-la-deuda-castigada-vuelve.svg?raw";
 import r51 from "./conta-r5-1-repaso-cruzado.svg?raw";
+import r52 from "./conta-r5-2-el-toro-negro.svg?raw";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -140,3 +141,13 @@ export const ClientesOOtraCuentaPorCobrar = icono("ClientesOOtraCuentaPorCobrar"
 export const LaProvisionDeElTorito = icono("LaProvisionDeElTorito", t62);
 export const CuandoLaDeudaCastigadaVuelve = icono("CuandoLaDeudaCastigadaVuelve", t63);
 export const RepasoCruzado = icono("RepasoCruzado", r51);
+
+/*
+ * r5-2 «El Toro Negro» · provisión, castigo y recuperación de UNA misma
+ * deuda. El ciclo lo dice la flecha que da la vuelta entera y vuelve a
+ * empezar; que sea el MISMO dinero el que da esa vuelta lo dice el peso
+ * quieto en el centro. No es un toro: el nombre es de la empresa del caso, y
+ * un toro no le enseñaría nada a nadie.
+ */
+export const ElToroNegro = icono("ElToroNegro", r52);
+

@@ -8,6 +8,9 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { Plegable } from "./plegable.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -92,9 +95,11 @@ export default function DebeOHaber({ Marco, rotulo, titulo, acento, onCompletar,
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
       <div data-t7-2-h1>
-        <Encabezado consigna={H1.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H1.consigna.join(" "))} onComoSeJuega={onComoSeJuega} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Hecho" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Hecho" />
+          </ContadorConIntento>
         </div>
 
         {/* El hecho y su pie. */}
@@ -130,7 +135,7 @@ export default function DebeOHaber({ Marco, rotulo, titulo, acento, onCompletar,
             }}>
               {!r.ok && <span style={SOLO_LECTOR}>{`Incorrecto. La respuesta es ${nombreDeOpcionH1(r.correcta)}. `}</span>}
               {r.textos.map((x) => (
-                <p key={x} data-texto-retro style={{ margin: "0 0 4px", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: FAE.text, fontWeight: x === r.textos[0] && r.ok ? 700 : 400 }}>{x}</p>
+                <p key={x} data-texto-retro style={{ margin: "0 0 4px", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: FAE.text, fontWeight: x === r.textos[0] && r.ok ? 700 : 400 }}><Plegable texto={x} /></p>
               ))}
             </div>
           )}

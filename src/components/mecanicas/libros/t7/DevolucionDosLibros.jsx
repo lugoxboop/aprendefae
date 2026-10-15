@@ -7,7 +7,9 @@ import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { AsientoEnLineas, Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
-import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "./hacerT7.jsx";
+import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
+import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -17,13 +19,18 @@ import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion, L
  * resuelto en los dos libros (en modo lectura) y la ficha de la devolución.
  * Debajo, un ítem a la vez, en el orden de la tabla:
  *
- *   PREGUNTA  tres opciones barajadas, UN SOLO TOQUE; la buena se enseña.
- *   ASIENTO   cuatro líneas barajadas; se elige el lado de cada una y
- *             «Comprobar» las califica UNA vez. El texto de cada línea mal
- *             ubicada va debajo de ella, y las sumas (986.000 = 986.000)
- *             aparecen después de comprobar, como pide el patrón.
+ *   PREGUNTA  tres opciones barajadas, UN SOLO TOQUE; la buena se enseña
+ *             (ítems 1 y 2).
+ *   CIFRA     casilla de cifra (ítem 3): «Comprobar» la califica UNA vez.
+ *   ASIENTO   «Arma la línea»: cuatro líneas barajadas; en cada una se elige
+ *             la cuenta de su banco (la correcta y dos distractores de Near)
+ *             y el lado, y «Comprobar» las califica UNA vez. Bajo cada línea
+ *             mal armada, cuál era y por qué no era la elegida; las sumas
+ *             (986.000 = 986.000) aparecen después de comprobar.
  *
- * Trece unidades; la forma y las piezas son las de H1-H5 (hacerT7.jsx).
+ * Once unidades (lote 3: los ítems 4 y 6 de la v1 se quitaron, la mesa ya
+ * pide esa cuenta); la forma y las piezas son las de H1-H5 (hacerT7.jsx) y
+ * las de «Arma la línea» (armaLaLinea.jsx), con T7-3 H1 de molde.
  * Al terminar: onCompletar(pct, ms, detalle).
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -39,7 +46,7 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
 
   const item = t.items[t.i];
   const cuantos = t.items.length;
-  const listo = item && (item.tipo === "eleccion" ? Boolean(r) : comprobado);
+  const listo = item && (item.tipo === "asiento" ? comprobado : Boolean(r));
 
   useEffect(() => {
     if (t.terminado) onCompletar?.(puntuarH6(bien), Date.now() - t.inicio.current, t.detalle.current);
@@ -85,7 +92,7 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER}</style>
       <div data-h6>
-        <Encabezado consigna={H6.consigna} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H6.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H6.enunciado} />
         <div data-compra-resuelta style={{ display: "grid", gap: "8px", margin: "0 0 12px" }}>
           <AsientoEnLineas lineas={COMPRA_RESUELTA_H6.comprador} rotulo="COMPRADOR" acento={FAE.ambar} />
@@ -93,16 +100,25 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
         </div>
         <Ficha filas={FICHA_H6} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </ContadorConIntento>
         </div>
         <TarjetaPregunta id={item.id} encabezado={item.encabezado ?? null} pregunta={item.pregunta} pie={H6.pie} tarjetaRef={tarjeta} />
-        {item.tipo === "eleccion" ? (
+        {item.tipo === "eleccion" && (
           <>
             <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
             <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es ${r.textoCorrecta}. ` : null} />
           </>
-        ) : (
-          <LineasConComprobar key={item.id} lineas={item.orden.map((id) => item.lineas.find((l) => l.id === id))}
+        )}
+        {item.tipo === "cifra" && (
+          <>
+            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} />
+            <Devolucion r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
+          </>
+        )}
+        {item.tipo === "asiento" && (
+          <LineasConCuenta key={item.id} lineas={item.orden.map((id) => item.lineas.find((l) => l.id === id))}
             asiento={item.lineas} onComprobar={comprobar} comprobado={comprobado} />
         )}
       </div>

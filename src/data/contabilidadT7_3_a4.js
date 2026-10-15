@@ -77,11 +77,14 @@ const REPASO = {
 
 const EL_PAGO = {
   id: "el-pago",
+  pista: "Santa Martha es quien recibe el descuento. Recuerda de qué lado lo anota quien lo recibe.",
   tipo: "eleccion",
   pregunta: "El 4 de junio, Santa Martha paga y recibe el descuento. ¿A qué lado va Descuento comercial condicionado en su libro?",
   opciones: [
     { id: "debe", texto: "Debe", devolucion: "En el libro de quien recibe el descuento, la cuenta va al haber. Santa Martha lo recibe." },
     { id: "haber", texto: "Haber", correcta: true },
+    /* Tercera opción: anexo del lote 2 (Near). */
+    { id: "no-se-anota", texto: "No se anota en su libro", devolucion: "Sí se anota. Quien recibe el descuento también lo registra en su libro, porque paga menos de lo que debía." },
   ],
   acierto: {
     texto: "Así es. Santa Martha recibe el descuento, así que la cuenta va al haber.",
@@ -107,6 +110,7 @@ const EL_PAGO = {
 
 const CIERRE = {
   id: "cierre",
+  pista: "Para dejar una cuenta en cero, su saldo se anota en el lado contrario al que tiene.",
   tipo: "eleccion",
   parrafos: ["Al final del periodo, esta cuenta se cierra contra Ganancias y pérdidas. Cerrarla es dejarla en cero: su saldo pasa a Ganancias y pérdidas."],
   /* Las cuentas T de la p. 254, con las fechas como las escribe el libro. */
@@ -118,6 +122,8 @@ const CIERRE = {
   opciones: [
     { id: "debe", texto: "Debe", devolucion: "La cuenta tenía saldo en el debe. Para dejarla en cero, se anota al lado contrario: al haber." },
     { id: "haber", texto: "Haber", correcta: true },
+    /* Tercera opción: anexo del lote 2 (Near). */
+    { id: "no-se-cierra", texto: "No se cierra: queda con su saldo", devolucion: "Al final del periodo, esta cuenta se cierra contra Ganancias y pérdidas. No se queda con su saldo." },
   ],
   acierto: {
     texto: "Así es. Para dejarla en cero, se anota al lado contrario de su saldo: al haber. Ganancias y pérdidas va al debe.",

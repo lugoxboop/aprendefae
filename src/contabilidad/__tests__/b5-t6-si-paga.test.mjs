@@ -48,6 +48,7 @@ const h = React.createElement;
 const D = await import("../../data/contabilidadT6Pieza4.js");
 const E = await import("../t6Pieza4.js");
 const { default: SiPaga } = await import("../../components/mecanicas/libros/tema6/SiPaga.jsx");
+const { decidir } = await import("./b5-capa3.mjs");
 const { default: TresCasos } = await import("../../components/mecanicas/libros/tema6/TresCasos.jsx");
 const { ESCENAS_TEMA6 } = await import("../../components/mecanicas/libros/tema6/escenasTema6.jsx");
 const { PIEZAS } = await import("../../components/ContabilidadTema6View.jsx");
@@ -68,7 +69,7 @@ const rgb = (hex) => `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 1
 const textosDeDatos = () => {
   const out = [];
   const recoger = (v, k) => {
-    if (typeof v === "string") { if (!["id", "lado"].includes(k)) out.push(v); }
+    if (typeof v === "string") { if (!["id", "lado", "correcta", "resaltados"].includes(k)) out.push(v); }
     else if (Array.isArray(v)) v.forEach((x) => recoger(x, k));
     else if (v && typeof v === "object") for (const [kk, x] of Object.entries(v)) recoger(x, kk);
   };
@@ -81,7 +82,14 @@ const viva = (caja) => caja.querySelector("[data-escena-viva]");
 const de = (caja, id) => viva(caja).querySelector(`[data-elemento="${id}"]`);
 /* Lo que todavía no llega se ve en silueta (hoja 5 de Mai): a la vista, atenuado y marcado con --b5-silueta. */
 const enSilueta = (n) => n.style.visibility === "visible" && Boolean(n.style.getPropertyValue("--b5-silueta"));
-const siguiente = (caja) => tocar(caja.querySelector("[data-siguiente]"));
+/* Un paso adelante; la parada entre el 4 y el 5 (hoja 7) se cruza eligiendo la correcta: no es un paso. */
+const siguiente = async (caja) => {
+  await tocar(caja.querySelector("[data-siguiente]"));
+  if (caja.querySelector("[data-parada]")) {
+    await tocar(caja.querySelector(`[data-parada] [data-opcion="${D.PARADA_T6_A4.correcta}"]`));
+    await tocar(caja.querySelector("[data-siguiente]"));
+  }
+};
 const colorVisto = (n) => {
   while (n && (!n.style.color || n.style.color === "inherit")) n = n.parentElement;
   return n?.style.color;
@@ -295,7 +303,7 @@ test("★★ «Reproducir»: 3 000 + 450 ms por palabra; la tabla de Mai §3.4 y
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: el tablero es una tabla; cada caso llena su fila al abrirse, en cualquier orden; la cifra revivida, destacada; el final, con los tres", async () => {
+test("★★★ capa 3: el tablero es una tabla; cada caso llena su fila al decidirse, con el valor correcto aunque se falle, en cualquier orden; la cifra revivida, destacada; el final, con los tres", async () => {
   const { caja, desmontar } = await montar(h(TresCasos));
   assert.equal(caja.querySelector("p").textContent, D.CONSIGNA_CAPA_3_T6_A4);
   const t = caja.querySelector("[data-tablero] table");
@@ -307,8 +315,10 @@ test("★★★ capa 3: el tablero es una tabla; cada caso llena su fila al abri
   assert.deepEqual([...caja.querySelectorAll("[data-hecho]")].map((n) => n.dataset.hecho), ["a", "b", "c"], "las tres cajas desde el principio");
   const lectura = (n) => [...n.querySelectorAll("p:not([data-pie])")].map((p) => p.textContent).join("");
   for (const [k, c] of [D.CASOS_T6_A4[2], D.CASOS_T6_A4[0], D.CASOS_T6_A4[1]].entries()) {
-    await tocar(caja.querySelector(`[data-hecho="${c.id}"] button`));
-    assert.equal(lectura(caja.querySelector(`[data-revela="${c.id}"]`)), c.revela);
+    /* Con error a propósito: la fila se llena igual, con el valor correcto (hoja 6, indispensable 5). */
+    const mala = D.OPCIONES_CAPA_3_T6_A4.find((o) => o.id !== c.correcta).id;
+    await decidir(tocar, caja.querySelector(`[data-hecho="${c.id}"]`), mala);
+    assert.equal(lectura(caja.querySelector(`[data-revela="${c.id}"]`)), (typeof c.falla === "string" ? c.falla : c.falla[mala]) + c.revela);
     assert.equal(caja.querySelector(`[data-revela="${c.id}"] [data-pie]`).textContent, c.pie);
     assert.deepEqual(fila(c.id), [c.revive, c.entran]);
     const [rev, ent] = t.querySelectorAll(`[data-fila="${c.id}"] td div`);
@@ -325,8 +335,9 @@ test("★★★ capa 3: el tablero es una tabla; cada caso llena su fila al abri
 
 /* ═══════════ CAPA 4 ═══════════ */
 
-test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola correcta y la devolución de cada una", async () => {
-  assert.deepEqual(D.OPCIONES_FINAL_T6_A4.filter((o) => o.correcta).map((o) => o.texto), ["Por $100.000, solo la parte que sí pagó."]);
+test("★★★ capa 4 nueva (entrega 2, PASA de Shoko): UnaFrase con la pregunta del caso b, cuatro opciones, una sola correcta, la devolución de cada una y su pie", async () => {
+  assert.equal(D.PREGUNTA_FINAL_T6_A4, "En el caso b, ¿dónde quedan los $80.000 que faltan?");
+  assert.deepEqual(D.OPCIONES_FINAL_T6_A4.filter((o) => o.correcta).map((o) => o.texto), ["En Cuentas por cobrar – clientes, como deuda pendiente."]);
   const { Capa4 } = ESCENAS_TEMA6[D.PIEZA_SI_PAGA.id];
   const { caja, desmontar } = await montar(h(Capa4));
   assert.ok(caja.textContent.startsWith(D.PREGUNTA_FINAL_T6_A4));
@@ -337,10 +348,11 @@ test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola corr
     assert.equal(caja.querySelector("[data-devolucion]").dataset.devolucion, o.correcta ? "correcta" : "incorrecta");
     await tocar(caja.querySelector("[data-otra-vez]"));
   }
+  assert.equal(caja.querySelector("[data-pie]").textContent, "Basado en el libro, p. 205");
   desmontar();
 });
 
-test("★★ identificadores nuevos con b5-", () => {
+test("★★ identificadores nuevos con b5-; los de la capa 4 nueva, con el prefijo de las demás opciones de capa 4 de la pieza y los sufijos de Shoko", () => {
   assert.match(D.PIEZA_SI_PAGA.id, /^b5-t6-a4-/);
-  for (const o of D.OPCIONES_FINAL_T6_A4) assert.match(o.id, /^b5-t6-a4-/);
+  assert.deepEqual(D.OPCIONES_FINAL_T6_A4.map((o) => o.id), ["pendiente", "castigados", "provision", "caja"].map((x) => `b5-t6-a4-${x}`));
 });

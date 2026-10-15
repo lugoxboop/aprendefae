@@ -15,7 +15,9 @@ import { Caja, LECTURA, PIE } from "./CajasQueRevelan.jsx";
  * provisión en tres momentos (guía de Mai v1 §5).
  *
  * Los momentos se abren EN ORDEN: al principio solo se ve la caja de 2007, y
- * cada caja aparece cuando se abre la anterior (si marzo se abriera primero,
+ * cada caja aparece cuando se DECIDE la anterior (hoja 6: cada momento hace
+ * su pregunta antes de revelar; la T se llena al decidir, siempre con el
+ * valor correcto, se acierte o no) (si marzo se abriera primero,
  * la T mostraría un saldo que nunca existió). Sin cajas bloqueadas ni texto
  * nuevo. Cada momento abierto deja su monto en su columna, con el nombre del
  * momento debajo, y el saldo que queda:
@@ -81,9 +83,12 @@ function Saldo({ saldo }) {
 export default function CuentaT() {
   const reducido = useReducido();
   const [abiertos, setAbiertos] = useState(0);
+  const [elecciones, setElecciones] = useState(() => ({}));
   const bloqueFinal = useRef(null);
-  const todos = abiertos === MOMENTOS_T6_A3.length;
-  const hechos = MOMENTOS_T6_A3.slice(0, abiertos);
+  const decididos = MOMENTOS_T6_A3.findIndex((m) => elecciones[m.id] === undefined);
+  const n = decididos === -1 ? MOMENTOS_T6_A3.length : decididos;
+  const todos = n === MOMENTOS_T6_A3.length;
+  const hechos = MOMENTOS_T6_A3.slice(0, n);
   const saldo = hechos.length ? hechos[hechos.length - 1].saldo : null;
 
   useEffect(() => {
@@ -105,11 +110,13 @@ export default function CuentaT() {
         <Saldo saldo={saldo} />
       </div>
 
-      {/* Las cajas, en orden: cada una aparece cuando se abre la anterior. */}
+      {/* Las cajas, en orden: cada una aparece cuando se decide la anterior. Opciones en columna (Mai §2). */}
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
-        {MOMENTOS_T6_A3.slice(0, Math.min(abiertos + 1, MOMENTOS_T6_A3.length)).map((m, i) => (
-          <Caja key={m.id} caja={{ id: m.id, titulo: m.nombre, revela: m.revela, pie: m.pie }} estiloTitulo={NOMBRE_CAJA}
-            abierto={i < abiertos} onAbrir={() => setAbiertos((n) => Math.max(n, i + 1))} />
+        {MOMENTOS_T6_A3.slice(0, Math.min(n + 1, MOMENTOS_T6_A3.length)).map((m, i) => (
+          <Caja key={m.id} estiloTitulo={NOMBRE_CAJA} forma="columna"
+            caja={{ id: m.id, titulo: m.nombre, revela: m.revela, pie: m.pie, decide: { pregunta: m.pregunta, opciones: m.opciones, correcta: m.correcta, falla: m.falla } }}
+            abierto={i < abiertos} onAbrir={() => setAbiertos((k) => Math.max(k, i + 1))}
+            elegida={elecciones[m.id] ?? null} onElegir={(o) => setElecciones((e) => ({ ...e, [m.id]: o }))} />
         ))}
       </div>
 
