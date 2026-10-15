@@ -660,11 +660,38 @@ test("★★ v1.3: la portada del tema dice de dónde viene el repaso, con las t
   desmontar();
 });
 
-test("★★ el título del tema puede partir en dos renglones: no se corta con «…» (herramientas.md, 15 oct.)", () => {
-  /* La vista entera necesita sesión y FP; el h1 se comprueba en su fuente, y su ancho real a 320 en Chromium. */
+test("★★ el título del tema no se corta, y de eso se encarga la hoja compartida: esta vista no se mete", () => {
+  /*
+   * La regla es la misma de siempre (herramientas.md): el título puede
+   * encogerse o romper de renglón, pero no desaparecer. Lo que cambió es quién
+   * la cumple.
+   *
+   * Esto exigía los estilos EN LÍNEA del h1 —whiteSpace normal, overflow
+   * visible, textOverflow clip, minWidth 0— porque la hoja compartida de la
+   * cabecera compacta le ponía `nowrap` y elipsis, y cada vista se defendía
+   * sola. Tres células escribieron esta misma prueba sobre siete vistas.
+   *
+   * La hoja ya no corta: recorta por renglones para toda
+   * `.fae-cabecera-titulo > h1`. Así que el rodeo sobra, y exigirlo era pedir
+   * que volviera el defecto. Ahora se comprueba al revés: que esta vista NO
+   * traiga en línea nada que venza a la hoja —un `overflow: "visible"` suelto
+   * anula el recorte sin que se note— y que la hoja siga recortando.
+   *
+   * La vista entera necesita sesión y FP, así que el h1 se mira en su fuente.
+   * El ancho real, a 320 px en Chromium: ahí se vio que «Repaso del capítulo
+   * 5» entra en dos renglones y no pierde nada.
+   */
   const fuente = leer("src/components/RepasoCapitulo5View.jsx");
   const h1 = fuente.slice(fuente.indexOf("<h1 data-titulo-tema"), fuente.indexOf(">", fuente.indexOf("<h1 data-titulo-tema")));
-  for (const d of ['whiteSpace: "normal"', 'overflow: "visible"', 'textOverflow: "clip"', "minWidth: 0"]) assert.ok(h1.includes(d), d);
+  for (const d of ["whiteSpace", "overflow", "textOverflow", "minWidth", "flexShrink", "overflowWrap", "WebkitLineClamp"]) {
+    assert.ok(!new RegExp(`\\b${d}\\s*:`).test(h1), `${d} en línea vence a la hoja compartida y anula su recorte`);
+  }
+  assert.ok(/fontFamily:/.test(h1), "la tipografía sí es de la vista y se queda");
+
+  const regla = leer("src/components/auth/AccountControl.jsx").match(/\.fae-cabecera-titulo > h1 \{([^}]*)\}/)?.[1];
+  assert.ok(regla, "la hoja compartida ya no tiene regla para el título");
+  assert.match(regla, /-webkit-line-clamp:\s*4;/, "cambió el tope de renglones: hay que volver a medir a 320 px");
+  assert.doesNotMatch(regla, /nowrap|text-overflow:\s*ellipsis/, "volvió el corte: el título perderá palabras");
 });
 
 /*
