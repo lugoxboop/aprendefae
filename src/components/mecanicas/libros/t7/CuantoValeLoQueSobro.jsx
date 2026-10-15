@@ -8,6 +8,7 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { Plegable } from "./plegable.jsx";
 import { ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
@@ -151,7 +152,7 @@ export default function CuantoValeLoQueSobro({ Marco, rotulo, titulo, acento, on
               borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
             }}>
               {!r.ok && <span style={SOLO_LECTOR}>{`Incorrecto. La respuesta es ${textoDeOpcionH3(item, r.correcta)}. `}</span>}
-              <p data-texto-retro style={TEXTO}>{r.texto}</p>
+              <p data-texto-retro style={TEXTO}><Plegable texto={r.texto} /></p>
             </div>
           )}
         </div>

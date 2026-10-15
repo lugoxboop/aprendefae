@@ -4,6 +4,7 @@ import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { cifraK } from "../../../../contabilidad/t7_2Kardex.js";
 import Kardex from "./KardexT7_2.jsx";
+import { Plegable } from "./plegable.jsx";
 import { textosDelError, contarFallo } from "./escaleraAyuda.js";
 
 /*
@@ -166,13 +167,13 @@ function Mensaje({ ok, textos, refFoco }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7bp-msg-cuerpo">
         <span className="t7bp-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
 }
 
-const Textos = ({ lista, clase = "t7bp-p", nueva = false }) => (lista ?? []).map((t) => <p key={t} className={`${clase}${nueva ? " t7bp-nueva" : ""}`} data-texto>{t}</p>);
+const Textos = ({ lista, clase = "t7bp-p", nueva = false }) => (lista ?? []).map((t) => <p key={t} className={`${clase}${nueva ? " t7bp-nueva" : ""}`} data-texto><Plegable texto={t} /></p>);
 
 function Ficha({ ficha }) {
   return (
