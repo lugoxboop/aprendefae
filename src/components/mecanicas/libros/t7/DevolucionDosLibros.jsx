@@ -8,6 +8,8 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { AsientoEnLineas, Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "./hacerT7.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -85,7 +87,7 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER}</style>
       <div data-h6>
-        <Encabezado consigna={H6.consigna} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H6.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H6.enunciado} />
         <div data-compra-resuelta style={{ display: "grid", gap: "8px", margin: "0 0 12px" }}>
           <AsientoEnLineas lineas={COMPRA_RESUELTA_H6.comprador} rotulo="COMPRADOR" acento={FAE.ambar} />
@@ -93,7 +95,9 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
         </div>
         <Ficha filas={FICHA_H6} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </ContadorConIntento>
         </div>
         <TarjetaPregunta id={item.id} encabezado={item.encabezado ?? null} pregunta={item.pregunta} pie={H6.pie} tarjetaRef={tarjeta} />
         {item.tipo === "eleccion" ? (

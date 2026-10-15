@@ -7,6 +7,8 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -72,7 +74,7 @@ export default function CostoOGasto({ Marco, rotulo, titulo, acento, onCompletar
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER}</style>
       <div data-h5>
-        <Encabezado consigna={H5.consigna} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H5.consigna)} onComoSeJuega={onComoSeJuega} />
         {item.parte === 2 && (
           <div data-caso>
             <Parrafos textos={H5.caso} dato="enunciado" />
@@ -80,7 +82,9 @@ export default function CostoOGasto({ Marco, rotulo, titulo, acento, onCompletar
           </div>
         )}
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </ContadorConIntento>
         </div>
         <TarjetaPregunta id={item.id} pregunta={item.pregunta} pie={H5.pie} tarjetaRef={tarjeta} />
         <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />

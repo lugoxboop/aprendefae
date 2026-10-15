@@ -7,6 +7,8 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, TEXTO, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "./hacerT7.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -84,10 +86,12 @@ export default function FleteYDevolucion({ Marco, rotulo, titulo, acento, onComp
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER}</style>
       <div data-t7-2-h5>
-        <Encabezado consigna={H5.consigna} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H5.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H5.enunciado} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </ContadorConIntento>
         </div>
         <p key={`hecho-${item.hecho}`} className="fae-t7h-entra" data-hecho={item.hecho + 1} style={{ ...TEXTO, margin: "0 0 10px" }}>{HECHOS_H5[item.hecho]}</p>
         <TarjetaPregunta id={item.id} encabezado={encabezadoDeHecho(item.hecho)} pregunta={item.pregunta} pie={H5.pie} tarjetaRef={tarjeta} />

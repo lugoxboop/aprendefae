@@ -49,6 +49,7 @@ const h = React.createElement;
 const D = await import("../../data/contabilidadT5Pieza2.js");
 const E = await import("../t5Pieza2.js");
 const { default: TresMomentos } = await import("../../components/mecanicas/libros/tema5/TresMomentos.jsx");
+const { decidir } = await import("./b5-capa3.mjs");
 const { default: DosVentas } = await import("../../components/mecanicas/libros/tema5/DosVentas.jsx");
 const { ESCENAS_TEMA5 } = await import("../../components/mecanicas/libros/tema5/escenasTema5.jsx");
 const { PIEZAS } = await import("../../components/ContabilidadTema5View.jsx");
@@ -354,7 +355,7 @@ test("★★ «Reproducir»: 3 000 + 450 ms por palabra; la tabla de la v2b y su
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: las dos ventas se ven iguales, con lo recibido y lo que costaron; cada una revela lo suyo con su pie; el final, con las dos", async () => {
+test("★★★ capa 3: las dos ventas se ven iguales, con lo recibido y lo que costaron; cada una revela lo suyo con su pie; el final, con las dos decididas", async () => {
   const { caja, desmontar } = await montar(h(DosVentas));
   assert.equal(caja.querySelector("p").textContent, D.CONSIGNA_CAPA_3_T5_A2);
   const cajas = [...caja.querySelectorAll("[data-hecho]")];
@@ -365,8 +366,8 @@ test("★★★ capa 3: las dos ventas se ven iguales, con lo recibido y lo que 
   const lectura = (n) => [...n.querySelectorAll("p:not([data-pie])")].map((p) => p.textContent).join("");
   for (const [k, v] of D.VENTAS_T5_A2.entries()) {
     assert.equal(cajas[k].querySelectorAll("svg").length, 1, "cerrada, con su chevrón");
-    await tocar(caja.querySelector(`[data-hecho="${v.id}"] button`));
-    assert.equal(cajas[k].querySelectorAll("svg").length, 0, "abierta, sin chevrón");
+    await decidir(tocar, caja.querySelector(`[data-hecho="${v.id}"]`), v.correcta);
+    assert.equal(cajas[k].querySelectorAll("svg").length, 1, "decidida, con su chevrón girado (hoja 6)");
     assert.equal(lectura(caja.querySelector(`[data-revela="${v.id}"]`)), v.revela);
     assert.equal(caja.querySelector(`[data-revela="${v.id}"] [data-pie]`).textContent, v.pie);
     assert.equal(lectura(caja.querySelector("[data-final]")), k === 0 ? "" : D.FINAL_CAPA_3_T5_A2.texto);

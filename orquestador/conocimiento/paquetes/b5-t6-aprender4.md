@@ -455,6 +455,45 @@ Un script cotejó los 55 textos de la pieza contra el mensaje de Futaba: los 55 
 
 Nada de contenido. Solo lo que Kaede mide en el sitio (§8).
 
+## (4) Futaba · entrega 2: predecir antes de revelar, capa 3 (pegada tal cual)
+
+
+Cómo funciona (para Mai):
+
+El estudiante toca la caja, elige y se revela el texto de siempre.
+Si falla, la devolución va antes de ese texto. Si acierta, el texto sale directo, sin «Sí.».
+Hay un intento por caja y no da puntaje.
+Los textos que se revelan y el texto final de cada capa no cambian.
+
+T6 A4 (pp. 204-206). La capa 3 no cambia; cambia la capa 4.
+
+Consigna: «Toca cada caso y decide cuánto se revive. Después, mira cuánta plata entra a Caja.» (79)
+Opciones de las tres cajas: $180.000 · $100.000 · $80.000.
+Caso a, correcta $180.000. Si falla: «En el caso a paga toda la factura: se revive toda.» (88)
+Caso b, correcta $180.000.
+Si elige $100.000: «Como promete pagar el resto, la deuda vuelve completa.»
+Si elige $80.000: «$80.000 es lo que queda pendiente. Como lo va a pagar, la deuda vuelve completa.» (91)
+Caso c, correcta $100.000.
+Si elige $180.000: «Como no pagará más, solo vuelve lo que abonó.»
+Si elige $80.000: «$80.000 es lo que no va a pagar: eso sigue castigado.» (88)
+
+T6 A4 · capa 4 nueva ★ (UnaFrase; la pregunta es de Shoko). Vuelve a ella para auditoría.
+
+Pregunta: «En el caso b, ¿dónde quedan los $80.000 que faltan?» (97)
+
+Id	Opción	✓	Devolución	Est.
+b5-t6-a4-pendiente	En Cuentas por cobrar – clientes, como deuda pendiente.	✓	Correcto. Como promete pagar el resto, se revivió toda la deuda. Lo que todavía no paga sigue como deuda pendiente en Cuentas por cobrar – clientes.	79
+b5-t6-a4-castigados	Siguen castigados, como en el caso c: no se reviven.		No es esa. Eso pasa en el caso c, cuando avisa que no pagará más. En el caso b promete pagar, así que la deuda volvió completa.	94
+b5-t6-a4-provision	En la provisión, hasta que el cliente los pague.		No es esa. La provisión no guarda deudas: lo que el cliente todavía debe está en Cuentas por cobrar – clientes.	91
+b5-t6-a4-caja	En Caja, porque el cliente ya prometió pagarlos.		No es esa. A Caja solo entra lo que paga. Una promesa no es plata.	102
+Largo de las opciones: 54, 52, 48 y 48 caracteres.
+Pie: «Basado en el libro, p. 205».
+Ojo, Shoko: al abrir el caso b en la capa 3 se lee «Los otros $80.000 quedan en Cuentas por cobrar – clientes, como deuda pendiente». La capa 4 entonces pide recordar, no decidir. Es menos grave que antes, porque ya no es la misma pregunta.
+
+## (5) Mai · hoja 6: la pregunta de la caja (la revisa Shoko)
+
+«¿Cuánto se revive?»
+
 ## (6) Futaba · entrega 3: pasos que se juntan y predicción a mitad de la escena (pegada tal cual)
 
 Cada fusión pega dos textos ya aprobados sin cambiar una palabra.

@@ -56,7 +56,7 @@ const E6 = await import("../t6Pieza5.js");
 /* Cada pieza: su componente, cuántos pasos quedan, su parada y su estado por paso (el que se ve). */
 const PIEZAS = [
   { nombre: "T5 · A2", Componente: await C("tema5/TresMomentos"), pasos: 14, parada: D5.PARADA_T5_A2, estado: E5.T5_A2_JUNTO.estadoPaso, duracion: E5.T5_A2_JUNTO.duracion },
-  { nombre: "T6 · A3", Componente: await C("tema6/LaProvision"), pasos: 13, parada: D3.PARADA_T6_A3, estado: E3.T6_A3_JUNTO.estadoPaso, duracion: E3.T6_A3_JUNTO.duracion },
+  { nombre: "T6 · A3", Componente: await C("tema6/LaProvision"), pasos: 15, parada: D3.PARADA_T6_A3, estado: E3.T6_A3_JUNTO.estadoPaso, duracion: E3.T6_A3_JUNTO.duracion },
   { nombre: "T6 · A4", Componente: await C("tema6/SiPaga"), pasos: 9, parada: D4.PARADA_T6_A4, estado: E4.T6_A4.estadoPaso, duracion: E4.T6_A4.duracion },
   { nombre: "T6 · A5", Componente: await C("tema6/LaTablaDelEjemplo"), pasos: 10, parada: D6.PARADA_T6_A5, estado: E6.T6_A5_JUNTO.estadoPaso, duracion: E6.T6_A5_JUNTO.duracion, pegar: pegarPorcentaje },
 ];
@@ -78,34 +78,35 @@ const hastaAntes = async (caja, p) => { for (let n = 1; n < p.parada.antes - 1; 
 const pegar = (p, t) => (p.pegar ? p.pegar(t) : t);
 const falloDe = (par, o) => (typeof par.falla === "string" ? par.falla : par.falla[o]);
 
-test("★★★ los pasos que quedan (Mai §1): T5 · A2 14, T6 · A3 13, T6 · A4 9 (sin fusiones) y T6 · A5 10; las vueltas atrás de T6 · A3", () => {
-  assert.deepEqual([E5.T5_A2_JUNTO.PASOS, E3.T6_A3_JUNTO.PASOS, E4.T6_A4.PASOS, E6.T6_A5_JUNTO.PASOS], [14, 13, 9, 10]);
-  /* Las fusiones que Mai deja fuera: T5 · A2 4 + 5 y T6 · A3 6 + 7. */
-  assert.ok(D5.FUSION_T5_A2.grupos.some((g) => g.length === 1 && g[0] === 4) && D5.FUSION_T5_A2.grupos.some((g) => g.length === 1 && g[0] === 5));
-  assert.ok(D3.FUSION_T6_A3.grupos.some((g) => g.length === 1 && g[0] === 6) && D3.FUSION_T6_A3.grupos.some((g) => g.length === 1 && g[0] === 7));
+test("★★★ los pasos que quedan (Mai §1): T5 · A2 14, T6 · A3 15 (al ancho del sitio), T6 · A4 9 (sin fusiones) y T6 · A5 10; las vueltas atrás de T6 · A3", () => {
+  assert.deepEqual([E5.T5_A2_JUNTO.PASOS, E3.T6_A3_JUNTO.PASOS, E4.T6_A4.PASOS, E6.T6_A5_JUNTO.PASOS], [14, 15, 9, 10]);
+  /* Las fusiones que no entran: T5 · A2 4 + 5 y T6 · A3 6 + 7 (Mai); T6 · A3 1 + 2 y 9 + 10 (5 renglones al ancho del sitio). */
+  const suelto = (f, n) => f.grupos.some((g) => g.length === 1 && g[0] === n);
+  for (const n of [4, 5]) assert.ok(suelto(D5.FUSION_T5_A2, n), `T5 · A2, ${n}`);
+  for (const n of [1, 2, 6, 7, 9, 10]) assert.ok(suelto(D3.FUSION_T6_A3, n), `T6 · A3, ${n}`);
   /* Cada paso de antes, en un solo paso nuevo y en orden. */
   for (const [f, n] of [[D5.FUSION_T5_A2, 21], [D3.FUSION_T6_A3, 19], [D6.FUSION_T6_A5, 11]]) {
     assert.deepEqual(f.grupos.flat(), Array.from({ length: n }, (_, k) => k + 1));
     assert.equal(f.pies.length, f.grupos.length);
   }
-  /* La vuelta atrás de T6 · A3: el paso 11 de antes (el gasto de diciembre, un momento pasado) es el 8. */
-  assert.equal(E3.T6_A3_JUNTO.viejo(8), 11);
-  assert.deepEqual(E3.T6_A3_JUNTO.estadoPaso(8).resaltados, ["gasto1"]);
+  /* La vuelta atrás de T6 · A3: el paso 11 de antes (el gasto de diciembre, un momento pasado) es el 10. */
+  assert.equal(E3.T6_A3_JUNTO.viejo(10), 11);
+  assert.deepEqual(E3.T6_A3_JUNTO.estadoPaso(10).resaltados, ["gasto1"]);
 });
 
 test("★★★ un paso juntado: la escena del segundo paso, la unión de lo resaltado con lo que llega primero, y la duración de siempre", () => {
   const J = E3.T6_A3_JUNTO;
-  /* T6 · A3, paso 9 = 12 + 13: llega «quedó subestimada»; las dos provisiones del 12, después. */
-  assert.deepEqual(J.estadoPaso(9).resaltados, ["subestimada", "provision1", "provision2"]);
-  const e = J.estadoPaso(9);
+  /* T6 · A3, paso 11 = 12 + 13: llega «quedó subestimada»; las dos provisiones del 12, después. */
+  assert.deepEqual(J.estadoPaso(11).resaltados, ["subestimada", "provision1", "provision2"]);
+  const e = J.estadoPaso(11);
   assert.deepEqual(Object.fromEntries(Object.entries(e.elementos).map(([id, x]) => [id, x.visible])),
     Object.fromEntries(Object.entries(E3.T6_A3.estadoPaso(13).elementos).map(([id, x]) => [id, x.visible])), "la escena del 13");
   for (const id of ["subestimada", "provision1", "provision2"]) assert.deepEqual([e.elementos[id].resaltado, e.elementos[id].atenuado], [true, false]);
   assert.equal(e.elementos.clientes2.atenuado, true, "lo demás, atenuado");
   /* El texto: los dos de antes, seguidos y sin cambiar una palabra. */
-  assert.equal(J.TODOS[8].texto, `${D3.PASOS_T6_A3[11].texto} ${D3.PASOS_T6_A3[12].texto}`);
+  assert.equal(J.TODOS[10].texto, `${D3.PASOS_T6_A3[11].texto} ${D3.PASOS_T6_A3[12].texto}`);
   /* «Reproducir»: 3 000 ms + 450 ms por palabra del texto juntado. */
-  assert.equal(J.duracion(9), 3000 + 450 * J.TODOS[8].texto.split(/\s+/).length);
+  assert.equal(J.duracion(11), 3000 + 450 * J.TODOS[10].texto.split(/\s+/).length);
 });
 
 for (const p of PIEZAS) {

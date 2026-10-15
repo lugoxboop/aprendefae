@@ -49,6 +49,7 @@ const D = await import("../../data/contabilidadT6Pieza5.js");
 const E = await import("../t6Pieza5.js");
 const { T6_A5_JUNTO } = E;
 const { default: LaTablaDelEjemplo } = await import("../../components/mecanicas/libros/tema6/LaTablaDelEjemplo.jsx");
+const { decidir } = await import("./b5-capa3.mjs");
 const { default: CuatroGrupos } = await import("../../components/mecanicas/libros/tema6/CuatroGrupos.jsx");
 const { tipoDePie } = await import("../../components/mecanicas/libros/tema6/FuentesT6A5.jsx");
 const { ESCENAS_TEMA6 } = await import("../../components/mecanicas/libros/tema6/escenasTema6.jsx");
@@ -241,7 +242,7 @@ test("★★★ cada tipo de pie tiene su forma: libro llano, escenario en caja 
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: el tablero es una tabla; cada caja llena su celda en cualquier orden; con las cuatro, «La provisión» y el final", async () => {
+test("★★★ capa 3: el tablero es una tabla; cada caja llena su celda al decidir, en cualquier orden y con el valor correcto aunque se falle; con las cuatro, «La provisión» y el final", async () => {
   const { caja, desmontar } = await montar(h(CuatroGrupos));
   assert.equal(caja.querySelector("[data-capa3-t6-a5] > p").textContent, D.CONSIGNA_CAPA_3_T6_A5);
   const tabla = caja.querySelector("[data-tablero] table");
@@ -250,18 +251,22 @@ test("★★★ capa 3: el tablero es una tabla; cada caja llena su celda en cua
   const celdas = () => [...tabla.querySelectorAll("tbody [data-celda]")].map((c) => c.textContent);
   assert.deepEqual(celdas(), ["", "", "", ""]);
   /* Las cajas cerradas: «nombre · monto», como el rótulo de Futaba. */
-  assert.deepEqual([...caja.querySelectorAll("[data-hecho] button")].map((b) => b.textContent), D.GRUPOS_T6_A5.map((g) => `${g.nombre} · ${g.monto}`));
+  assert.deepEqual([...caja.querySelectorAll("[data-hecho] button[aria-expanded]")].map((b) => b.textContent), D.GRUPOS_T6_A5.map((g) => `${g.nombre} · ${g.monto}`));
   for (const [k, id] of [[2, "g3"], [0, "g1"], [3, "g4"]]) {
-    await tocar(caja.querySelector(`[data-hecho="${id}"] button`));
-    assert.equal(celdas()[k], D.TABLERO_T6_A5.celdas[k]);
     const g = D.GRUPOS_T6_A5[k];
+    await tocar(caja.querySelector(`[data-hecho="${id}"] button[aria-expanded]`));
+    assert.equal(celdas()[k], "", "abierta sin decidir: la celda espera");
+    /* Con error a propósito: la celda se llena igual, con el valor correcto (hoja 6, indispensable 5). */
+    await decidir(tocar, caja.querySelector(`[data-hecho="${id}"]`), g.opciones.find((o) => o.id !== g.correcta).id);
+    assert.equal(celdas()[k], D.TABLERO_T6_A5.celdas[k]);
     const revela = caja.querySelector(`[data-revela="${id}"]`);
-    assert.equal(revela.querySelector("p").textContent, pegado(g.revela));
+    assert.equal(revela.querySelector("[data-devolucion]").textContent, pegado(g.falla));
+    assert.equal(revela.querySelector("p:not([data-devolucion])").textContent, pegado(g.revela));
     assert.equal(revela.querySelector("[data-tipo-pie]").dataset.tipoPie, k === 0 ? "escenario" : "norma");
     assert.equal(caja.querySelector("[data-fila-total]"), null, "la suma espera a las cuatro");
     assert.equal(caja.querySelector("[data-final]").textContent, "");
   }
-  await tocar(caja.querySelector('[data-hecho="g2"] button'));
+  await decidir(tocar, caja.querySelector('[data-hecho="g2"]'), "5");
   assert.deepEqual(celdas(), D.TABLERO_T6_A5.celdas);
   assert.equal(caja.querySelector("[data-fila-total]").textContent, `${D.TABLERO_T6_A5.total}${D.TABLERO_T6_A5.suma}`);
   const final = caja.querySelector("[data-final]");
@@ -290,9 +295,10 @@ test("★★★ el «%» nunca se separa de su número: capas 1, 2, 3 y 4", asyn
     await siguiente(c2.caja);
   }
   c2.desmontar();
-  /* Capa 3, con las cuatro abiertas. */
+  /* Capa 3, con las cuatro decididas con error: opciones, devoluciones y textos. */
   const c3 = await montar(h(CuatroGrupos));
-  for (const b of [...c3.caja.querySelectorAll("[data-hecho] button")]) await tocar(b);
+  for (const g of D.GRUPOS_T6_A5) await decidir(tocar, c3.caja.querySelector(`[data-hecho="${g.id}"]`), g.opciones.find((o) => o.id !== g.correcta).id);
+  assert.equal(c3.caja.querySelectorAll("[data-devolucion]").length, 4);
   assert.ok(c3.caja.textContent.includes(`5${NBSP}%`) && sinPartir(c3.caja.textContent));
   c3.desmontar();
   /* Capa 4: la pregunta, las opciones y cada devolución. */

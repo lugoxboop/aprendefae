@@ -81,7 +81,10 @@ export const CIERRE_T6_A4 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · los tres casos, con la misma deuda ═══════════ */
 
-export const CONSIGNA_CAPA_3_T6_A4 = "Toca cada caso y mira cuánto se revive y cuánta plata entra a Caja.";
+/* Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja es de Mai (hoja 6), para Shoko. */
+export const CONSIGNA_CAPA_3_T6_A4 = "Toca cada caso y decide cuánto se revive. Después, mira cuánta plata entra a Caja.";
+export const PREGUNTA_CAPA_3_T6_A4 = "¿Cuánto se revive?";
+export const OPCIONES_CAPA_3_T6_A4 = [{ id: "toda", texto: "$180.000" }, { id: "abono", texto: "$100.000" }, { id: "resto", texto: "$80.000" }];
 
 /* El tablero (guía §4.1): sus dos cabeceras; cada caso llena su fila al abrirse. */
 export const TABLERO_T6_A4 = { revive: "Se revive", entran: "A Caja entran" };
@@ -94,6 +97,8 @@ export const CASOS_T6_A4 = [
     pie: "Libro, p. 204",
     revive: "$180.000",
     entran: "$180.000",
+    correcta: "toda",
+    falla: "En el caso a paga toda la factura: se revive toda.",
   },
   {
     id: "b",
@@ -103,6 +108,11 @@ export const CASOS_T6_A4 = [
     pie: "Basado en el libro, p. 205",
     revive: "$180.000",
     entran: "$100.000",
+    correcta: "toda",
+    falla: {
+      abono: "Como promete pagar el resto, la deuda vuelve completa.",
+      resto: "$80.000 es lo que queda pendiente. Como lo va a pagar, la deuda vuelve completa.",
+    },
   },
   {
     id: "c",
@@ -112,6 +122,11 @@ export const CASOS_T6_A4 = [
     pie: "Basado en el libro, p. 206",
     revive: "$100.000",
     entran: "$100.000",
+    correcta: "abono",
+    falla: {
+      toda: "Como no pagará más, solo vuelve lo que abonó.",
+      resto: "$80.000 es lo que no va a pagar: eso sigue castigado.",
+    },
   },
 ];
 export const FINAL_CAPA_3_T6_A4 = {
@@ -121,34 +136,36 @@ export const FINAL_CAPA_3_T6_A4 = {
 
 /* ═══════════ CAPA 4 · «EN UNA FRASE» (UnaFrase, sin cambios) ═══════════ */
 
-export const PREGUNTA_FINAL_T6_A4 = "Pablo Moncayo abona $100.000 y avisa que no pagará más. ¿Por cuánto se revive su deuda?";
-/* En el orden de Futaba; UnaFrase las baraja una vez al cargar. */
+export const PREGUNTA_FINAL_T6_A4 = "En el caso b, ¿dónde quedan los $80.000 que faltan?";
+/* La capa 4 nueva (entrega 2 de Futaba, PASA de Shoko). En el orden de Futaba; UnaFrase las baraja una vez al cargar. */
 export const OPCIONES_FINAL_T6_A4 = [
   {
-    id: "b5-t6-a4-cien",
-    texto: "Por $100.000, solo la parte que sí pagó.",
+    id: "b5-t6-a4-pendiente",
+    texto: "En Cuentas por cobrar – clientes, como deuda pendiente.",
     correcta: true,
-    feedback: "Correcto. Como no pagará más, se revive solo lo que pagó. Los otros $80.000 siguen castigados.",
+    feedback: "Correcto. Como promete pagar el resto, se revivió toda la deuda. Lo que todavía no paga sigue como deuda pendiente en Cuentas por cobrar – clientes.",
   },
   {
-    id: "b5-t6-a4-toda",
-    texto: "Por $180.000, toda la deuda castigada.",
+    id: "b5-t6-a4-castigados",
+    texto: "Siguen castigados, como en el caso c: no se reviven.",
     correcta: false,
-    feedback: "No es esa. Toda la deuda se revive cuando el cliente paga todo o promete pagar el resto. Aquí avisó que no pagará más.",
+    feedback: "No es esa. Eso pasa en el caso c, cuando avisa que no pagará más. En el caso b promete pagar, así que la deuda volvió completa.",
   },
   {
-    id: "b5-t6-a4-ochenta",
-    texto: "Por $80.000, lo que le falta pagar.",
+    id: "b5-t6-a4-provision",
+    texto: "En la provisión, hasta que el cliente los pague.",
     correcta: false,
-    feedback: "No es esa. Esos $80.000 no se van a pagar, así que siguen castigados. Se revive lo que sí pagó.",
+    feedback: "No es esa. La provisión no guarda deudas: lo que el cliente todavía debe está en Cuentas por cobrar – clientes.",
   },
   {
-    id: "b5-t6-a4-ingreso",
-    texto: "Por nada: el pago va directo a un ingreso.",
+    id: "b5-t6-a4-caja",
+    texto: "En Caja, porque el cliente ya prometió pagarlos.",
     correcta: false,
-    feedback: "No es esa. En el libro no hay ningún ingreso: primero se revive la deuda y después se anota el pago.",
+    feedback: "No es esa. A Caja solo entra lo que paga. Una promesa no es plata.",
   },
 ];
+/* Su pie, bajo la pregunta (UnaFrase no lleva pie: lo pinta la escena de la pieza). */
+export const PIE_FINAL_T6_A4 = "Basado en el libro, p. 205";
 
 /* ═══════════ CAPA 2: LA PARADA (hoja 7 de Mai, entrega 3 de Futaba) ═══════════ */
 

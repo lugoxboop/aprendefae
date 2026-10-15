@@ -49,6 +49,7 @@ const h = React.createElement;
 const D = await import("../../data/contabilidadT6Pieza3.js");
 const E = await import("../t6Pieza3.js");
 const { default: LaProvision } = await import("../../components/mecanicas/libros/tema6/LaProvision.jsx");
+const { decidir } = await import("./b5-capa3.mjs");
 const { default: CuentaT } = await import("../../components/mecanicas/libros/tema6/CuentaT.jsx");
 const { ESCENAS_TEMA6 } = await import("../../components/mecanicas/libros/tema6/escenasTema6.jsx");
 const { PIEZAS } = await import("../../components/ContabilidadTema6View.jsx");
@@ -82,7 +83,7 @@ const viva = (caja) => caja.querySelector("[data-escena-viva]");
 const de = (caja, id) => viva(caja).querySelector(`[data-elemento="${id}"]`);
 /* Lo que todavía no llega se ve en silueta (hoja 5 de Mai): a la vista, atenuado y marcado con --b5-silueta. */
 const enSilueta = (n) => n.style.visibility === "visible" && Boolean(n.style.getPropertyValue("--b5-silueta"));
-/* Un paso adelante; la parada entre el 7 y el 8 (hoja 7) se cruza eligiendo la correcta: no es un paso. */
+/* Un paso adelante; la parada entre el 9 y el 10 (hoja 7) se cruza eligiendo la correcta: no es un paso. */
 const siguiente = async (caja) => {
   await tocar(caja.querySelector("[data-siguiente]"));
   if (caja.querySelector("[data-parada]")) {
@@ -91,7 +92,7 @@ const siguiente = async (caja) => {
   }
 };
 /*
- * Los pasos juntados (hoja 7 de Mai): 13 pasos que muestran los estados de los 19 de antes. `viejo(n)` es el paso
+ * Los pasos juntados (hoja 7 de Mai): 15 pasos que muestran los estados de los 19 de antes. `viejo(n)` es el paso
  * de antes cuyo estado muestra el paso n; `nuevoDe(p)`, el paso nuevo que contiene el paso p de antes.
  */
 const J = E.T6_A3_JUNTO;
@@ -102,8 +103,8 @@ const colorVisto = (n) => {
   while (n && (!n.style.color || n.style.color === "inherit")) n = n.parentElement;
   return n?.style.color;
 };
-const PASOS = 13;
-const CIERRE = 14;
+const PASOS = 15;
+const CIERRE = 16;
 
 /* ═══════════ TEXTOS ═══════════ */
 
@@ -177,7 +178,7 @@ const RESALTADOS = {
   14: ["fecha2"], 15: ["pide"], 16: ["suman"], 17: ["gasto3"], 18: ["provision3"], 19: ["queda"], 20: [],
 };
 
-test("★★★ capa 2: el texto, el pie y lo resaltado de los 13 pasos (los 19 de antes, juntados) y del cierre, sin avisos de React", async () => {
+test("★★★ capa 2: el texto, el pie y lo resaltado de los 15 pasos (los 19 de antes, juntados) y del cierre, sin avisos de React", async () => {
   const avisos = [];
   const antes = console.error;
   console.error = (...a) => avisos.push(a.join(" "));
@@ -191,7 +192,7 @@ test("★★★ capa 2: el texto, el pie y lo resaltado de los 13 pasos (los 19 
       assert.equal(caja.querySelector("[data-texto-paso]").textContent, texto, `texto, paso ${p}`);
       assert.equal(caja.querySelector("[data-pie]").textContent, p <= PASOS ? D.FUSION_T6_A3.pies[p - 1] : D.CIERRE_T6_A3.pie, `pie, paso ${p}`);
       assert.deepEqual(res(), [...new Set(grupo.flatMap((v) => RESALTADOS[v]))].sort(), `resaltados, paso ${p}`);
-      if (p <= PASOS) assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de 13`);
+      if (p <= PASOS) assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de 15`);
       if (p < CIERRE) await siguiente(caja);
     }
     desmontar();
@@ -277,7 +278,7 @@ test("★★★ los seis lados de los tres asientos: cuenta, cliente (v1b, en su
   desmontar();
 });
 
-test("★★★ lo que se ve: lo resaltado en claro sobre navy, también en un momento pasado (los pasos 11 y 12 de antes, hoy 8 y 9); lo demás, atenuado; en el cierre, nada", async () => {
+test("★★★ lo que se ve: lo resaltado en claro sobre navy, también en un momento pasado (los pasos 11 y 12 de antes, hoy 10 y 11); lo demás, atenuado; en el cierre, nada", async () => {
   const { caja, desmontar } = await montar(h(LaProvision));
   for (let n = 1; n <= CIERRE; n++) {
     const p = J.viejo(n);
@@ -364,15 +365,15 @@ test("★★ «Reproducir»: 3 000 + 450 ms por palabra; la tabla de Mai §4.4 y
   const ms = Array.from({ length: 19 }, (_, k) => E.duracionPasoT6A3(k + 1));
   assert.deepEqual(ms, [10650, 7500, 7050, 7950, 6150, 10200, 7050, 9750, 6600, 8850, 7950, 7500, 5700, 9300, 6150, 7500, 7050, 7950, 8850]);
   assert.equal(ms.reduce((a, b) => a + b, 0), 149700);
-  /* Hoja 7: con los pasos juntados, la fórmula no cambia; cada fusión ahorra los 3 000 ms de un paso (Mai: de 159,9 s a 141,9 s con el cierre). */
+  /* Hoja 7: con los pasos juntados, la fórmula no cambia; cada fusión ahorra los 3 000 ms de un paso (Mai, con sus seis fusiones: de 159,9 s a 141,9 s con el cierre; quedan cuatro: 147,9 s). */
   const juntos = Array.from({ length: PASOS }, (_, k) => J.duracion(k + 1));
   assert.deepEqual(juntos, D.FUSION_T6_A3.grupos.map((g) => g.reduce((t, v) => t + ms[v - 1], 0) - 3000 * (g.length - 1)));
-  assert.equal(juntos.reduce((a, b) => a + b, 0) + J.duracion(CIERRE), 141900);
+  assert.equal(juntos.reduce((a, b) => a + b, 0) + J.duracion(CIERRE), 147900);
 });
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: la T se llena en orden; el saldo en contra bajo DEBE en recuadro, el normal bajo HABER bajo un filete; el final, con los tres", async () => {
+test("★★★ capa 3: la T se llena en orden al decidir, con el valor correcto aunque se falle; el saldo en contra bajo DEBE en recuadro, el normal bajo HABER bajo un filete; el final, con los tres", async () => {
   const { caja, desmontar } = await montar(h(CuentaT));
   const t = caja.querySelector("[data-cuenta-t]");
   assert.equal(caja.querySelector("p").textContent, D.CONSIGNA_CAPA_3_T6_A3);
@@ -390,8 +391,10 @@ test("★★★ capa 3: la T se llena en orden; el saldo en contra bajo DEBE en 
     { debe: ["$180.000Marzo del año siguiente"], haber: ["$148.80031 de diciembre de 2007", "$184.60031 de diciembre del año siguiente"], saldo: ["normal", "El saldo queda en $153.400"] },
   ];
   for (const [k, m] of D.MOMENTOS_T6_A3.entries()) {
-    await tocar(caja.querySelector(`[data-hecho="${m.id}"] button`));
-    assert.equal(lectura(caja.querySelector(`[data-revela="${m.id}"]`)), m.revela);
+    /* Con error a propósito: la T se llena igual, con el valor correcto (hoja 6, indispensable 5). */
+    const mala = m.opciones.find((o) => o.id !== m.correcta).id;
+    await decidir(tocar, caja.querySelector(`[data-hecho="${m.id}"]`), mala);
+    assert.equal(lectura(caja.querySelector(`[data-revela="${m.id}"]`)), (typeof m.falla === "string" ? m.falla : m.falla[mala]) + m.revela);
     assert.equal(caja.querySelector(`[data-revela="${m.id}"] [data-pie]`).textContent, m.pie);
     assert.deepEqual(columna("debe"), esperado[k].debe, `momento ${k + 1}: DEBE`);
     assert.deepEqual(columna("haber"), esperado[k].haber, `momento ${k + 1}: HABER`);

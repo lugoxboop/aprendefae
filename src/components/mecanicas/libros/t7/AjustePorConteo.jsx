@@ -8,6 +8,8 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "./hacerT7.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -84,10 +86,12 @@ export default function AjustePorConteo({ Marco, rotulo, titulo, acento, onCompl
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h5>
-        <Encabezado consigna={H5.consigna} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H5.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H5.enunciado} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </ContadorConIntento>
         </div>
         <div key={`caso-${item.caso}`} className="fae-t7h-entra" data-caso={item.caso + 1}>
           <Parrafos textos={CASOS_H5[item.caso].textos} dato="caso" />

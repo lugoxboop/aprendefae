@@ -149,7 +149,13 @@ export const CIERRE_T6_A5 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · los cuatro grupos ═══════════ */
 
-export const CONSIGNA_CAPA_3_T6_A5 = "Toca cada grupo y mira cuánto se provisiona por él.";
+/* Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja es de Mai (hoja 6), para Shoko. */
+export const CONSIGNA_CAPA_3_T6_A5 = "Toca cada grupo y decide qué porcentaje le toca. Después, mira cuánto se provisiona.";
+export const PREGUNTA_CAPA_3_T6_A5 = "¿Qué porcentaje le toca?";
+const NADA = { id: "nada", texto: "Nada" };
+const P5 = { id: "5", texto: "5 %" };
+const P10 = { id: "10", texto: "10 %" };
+const P15 = { id: "15", texto: "15 %" };
 
 /* Cerrada, cada caja muestra su nombre y su monto (el rótulo de Futaba, «nombre · monto»). */
 export const GRUPOS_T6_A5 = [
@@ -159,6 +165,9 @@ export const GRUPOS_T6_A5 = [
     monto: "$460.000",
     revela: "En este ejemplo, por las deudas vigentes o con hasta tres meses de vencidas no se provisiona nada: $0.",
     pie: PIE_SIMULADO,
+    opciones: [NADA, P5, P10],
+    correcta: "nada",
+    falla: "En este ejemplo, las vigentes y las de hasta tres meses no llevan provisión.",
   },
   {
     id: "g2",
@@ -166,6 +175,9 @@ export const GRUPOS_T6_A5 = [
     monto: "$340.000",
     revela: "Al 5 %, los $340.000 dan $17.000.",
     pie: PIE_PORCENTAJE,
+    opciones: [NADA, P5, P10],
+    correcta: "5",
+    falla: "Más de tres meses, sin pasar de seis: es el 5 %.",
   },
   {
     id: "g3",
@@ -173,6 +185,9 @@ export const GRUPOS_T6_A5 = [
     monto: "$360.000",
     revela: "Al 10 %, los $360.000 dan $36.000.",
     pie: PIE_PORCENTAJE,
+    opciones: [P5, P10, P15],
+    correcta: "10",
+    falla: "Más de seis meses, sin pasar de un año: es el 10 %.",
   },
   {
     id: "g4",
@@ -180,6 +195,9 @@ export const GRUPOS_T6_A5 = [
     monto: "$140.000",
     revela: "Al 15 %, los $140.000 dan $21.000.",
     pie: PIE_PORCENTAJE,
+    opciones: [P5, P10, P15],
+    correcta: "15",
+    falla: "Más de un año: es el 15 %, el más alto.",
   },
 ];
 /* El tablero (Mai §6.1): la cabecera de su columna, la celda de cada grupo y la fila de la suma. */

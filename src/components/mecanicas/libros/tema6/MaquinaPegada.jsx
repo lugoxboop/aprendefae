@@ -5,6 +5,7 @@ import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { estadoParada } from "../../../../contabilidad/fusionar.js";
+import { OpcionDecidir, fallaDe } from "./CajasQueRevelan.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -71,41 +72,7 @@ const ESTILOS_PARADA = `
 .b5-parada-aparece { animation: b5-parada-aparece 240ms ease-out both; }
 @media (prefers-reduced-motion: reduce) { .b5-parada-aparece { animation: none; } }
 `;
-const fallaDe = (parada, elegida) => (elegida && elegida !== parada.correcta
-  ? (typeof parada.falla === "string" ? parada.falla : parada.falla[elegida])
-  : null);
 const fallas = (parada) => (typeof parada.falla === "string" ? [parada.falla] : Object.values(parada.falla));
-
-/* Una opción de la parada, con las marcas de la capa 3 (hoja 6): correcta, tachada o apagada. */
-function OpcionParada({ opcion, elegida, correcta, reducido, pintar, onElegir }) {
-  const decidida = elegida !== null;
-  const esCorrecta = decidida && opcion.id === correcta;
-  const tachada = decidida && opcion.id === elegida && !esCorrecta;
-  const d = esCorrecta ? 1 : 0;
-  return (
-    <button
-      type="button"
-      data-opcion={opcion.id}
-      data-marca={!decidida ? "" : esCorrecta ? "correcta" : tachada ? "tachada" : "apagada"}
-      aria-pressed={opcion.id === elegida}
-      aria-disabled={decidida || undefined}
-      onClick={() => { if (!decidida) onElegir(opcion.id); }}
-      style={{
-        flex: "1 1 0", minWidth: 0, minHeight: "44px", boxSizing: "border-box", borderRadius: "11px", textAlign: "center",
-        padding: `${10 - d}px ${3 - d}px`,
-        border: esCorrecta ? `2px solid ${NODO}` : "1px solid rgba(248,249,250,0.36)",
-        background: esCorrecta ? NAVY : "rgba(10,20,34,0.4)",
-        color: TEXTO, fontFamily: INTER, fontSize: "12.5px", fontWeight: 400, lineHeight: 1.45,
-        textDecoration: tachada ? "line-through" : "none", textDecorationThickness: tachada ? "1.5px" : undefined,
-        opacity: decidida && !esCorrecta && !tachada ? 0.5 : 1,
-        transition: reducido ? "none" : "opacity 240ms ease",
-        cursor: decidida ? "default" : "pointer",
-      }}
-    >
-      {pintar(opcion.texto)}
-    </button>
-  );
-}
 
 export function transicion(reducido) {
   if (reducido) return "none";
@@ -386,7 +353,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
   const primero = paso === 1 && !enParada;
   const ultimo = paso === CIERRE;
   const etiquetaReproducir = ultimo ? "Ver de nuevo" : reproduciendo ? "Pausa" : "Reproducir";
-  const falla = enParada ? fallaDe(parada, eleccion) : null;
+  const falla = enParada ? fallaDe(parada, eleccion) : null; // la misma regla que la capa 3
   const aparece = reducido ? undefined : "b5-parada-aparece";
   const actual = todos[paso - 1];
   const estiloTexto = (i) => (i === PASOS ? { fontFamily: SORA, fontWeight: 600 } : { fontFamily: INTER, fontWeight: 400 });
@@ -437,7 +404,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
           <div data-parada={parada.antes} role="group" aria-label={parada.pregunta} style={{ display: "flex", gap: "4px", marginTop: "8px" }}>
             <style>{ESTILOS_PARADA}</style>
             {parada.opciones.map((o) => (
-              <OpcionParada key={o.id} opcion={o} elegida={eleccion} correcta={parada.correcta} reducido={reducido} pintar={pintar} onElegir={setEleccion} />
+              <OpcionDecidir key={o.id} opcion={o} forma="fila" elegida={eleccion} correcta={parada.correcta} reducido={reducido} onElegir={setEleccion} />
             ))}
           </div>
         )}

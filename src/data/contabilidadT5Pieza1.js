@@ -112,7 +112,14 @@ export const CIERRE_CAPA_2 = "Un mismo efectivo, tres títulos y tres tipos de r
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» ═══════════ */
 
-export const CONSIGNA_CAPA_3 = "Toca cada paquete de acciones y mira si cumple las condiciones para ser temporal.";
+/* Consigna y decisión de cada caja: entrega 2 de Futaba (hoja 6 de Mai, predecir antes de revelar). */
+export const CONSIGNA_CAPA_3 = "Toca cada paquete y decide si puede ser temporal. Después, mira la razón.";
+export const PREGUNTA_CAPA_3 = "¿Puede ser temporal?";
+export const OPCIONES_CAPA_3 = [
+  { id: "si", texto: "Sí: cumple las dos condiciones" },
+  { id: "no-facil", texto: "No: no se vende fácil" },
+  { id: "no-intencion", texto: "No: no hay intención de venderlo" },
+];
 export const CONTEXTO_CAPA_3 = "Una empresa compra dos paquetes de acciones de otras empresas.";
 export const PAQUETES = [
   {
@@ -121,6 +128,8 @@ export const PAQUETES = [
     descripcion: "Acciones que se negocian públicamente. La empresa ya había hecho otras inversiones así. Y las vendió cuando le faltó efectivo.",
     pie: "Basado en el libro, p. 192",
     revela: "Se venden fácil. Y su historia de inversiones respalda que se volverán efectivo cuando haga falta. Cumple las dos condiciones.",
+    correcta: "si",
+    falla: "Sí se vende fácil: se negocia públicamente. Y ya vendió inversiones así cuando le faltó efectivo.",
   },
   {
     id: "b",
@@ -128,6 +137,11 @@ export const PAQUETES = [
     descripcion: "Acciones muy restringidas. No se negocian públicamente.",
     pie: "Basado en el libro, p. 192",
     revela: "Puede que no tengan mercado, o que sea muy pequeño. Entonces puede ser mejor clasificarlas como activos financieros a largo plazo. Es decir, no temporales.",
+    correcta: "no-facil",
+    falla: {
+      si: "Si no se negocia públicamente, puede que no tenga mercado. Falla la primera condición: venderse fácil.",
+      "no-intencion": "El paquete no dice nada de la intención. Lo que falla es que no se negocia públicamente.",
+    },
   },
 ];
 /* Solo aparece con los dos paquetes abiertos, en cualquier orden. Su pie va debajo. */

@@ -111,7 +111,8 @@ export const CIERRE_T6_A3 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · la cuenta T en tres momentos ═══════════ */
 
-export const CONSIGNA_CAPA_3_T6_A3 = "Toca cada momento y mira cómo cambia el saldo de la provisión.";
+/* Consigna y las tres decisiones, una por momento: entrega 2 de Futaba. */
+export const CONSIGNA_CAPA_3_T6_A3 = "Toca cada momento y decide qué le pasa a la provisión. Después, mira cómo queda la T.";
 
 /*
  * Los tres momentos, en orden (se abren en orden: guía v1 §5.1). Cada uno
@@ -127,6 +128,10 @@ export const MOMENTOS_T6_A3 = [
     lado: "haber",
     monto: "$148.800",
     saldo: { texto: "El saldo queda en $148.800", enContra: false },
+    pregunta: "¿En qué columna de la T se anota la provisión que se crea?",
+    opciones: [{ id: "debe", texto: "Debe" }, { id: "haber", texto: "Haber" }],
+    correcta: "haber",
+    falla: "La provisión sube por el Haber.",
   },
   {
     id: "marzo",
@@ -136,6 +141,13 @@ export const MOMENTOS_T6_A3 = [
     lado: "debe",
     monto: "$180.000",
     saldo: { texto: "Le faltan $31.200", enContra: true },
+    pregunta: "¿Qué le pasa al saldo?",
+    opciones: [{ id: "cero", texto: "Queda en $0" }, { id: "faltan", texto: "Le faltan $31.200" }, { id: "sigue", texto: "Sigue en $148.800" }],
+    correcta: "faltan",
+    falla: {
+      cero: "No queda en cero: el castigo es más grande que la provisión.",
+      sigue: "El castigo se debita a la provisión, así que el saldo baja.",
+    },
   },
   {
     id: "diciembre-siguiente",
@@ -145,6 +157,13 @@ export const MOMENTOS_T6_A3 = [
     lado: "haber",
     monto: "$184.600",
     saldo: { texto: "El saldo queda en $153.400", enContra: false },
+    pregunta: "¿Por cuánto se registra la provisión?",
+    opciones: [{ id: "analisis", texto: "$153.400" }, { id: "suma", texto: "$184.600" }, { id: "faltante", texto: "$31.200" }],
+    correcta: "suma",
+    falla: {
+      analisis: "$153.400 es el saldo que debe quedar. Para llegar ahí, también hay que cubrir lo que faltó en marzo.",
+      faltante: "Eso solo cubre lo que faltó. Falta lo que pide el análisis.",
+    },
   },
 ];
 /* La T: su nombre y las palabras publicadas de sus columnas (ElCierreCompleto). */
@@ -188,20 +207,24 @@ export const OPCIONES_FINAL_T6_A3 = [
 /* ═══════════ CAPA 2 LARGA: LOS PASOS QUE SE JUNTAN Y LA PARADA (hoja 7 de Mai, entrega 3 de Futaba) ═══════════ */
 
 /*
- * De 19 pasos a 13 (Mai §1): las fusiones de Futaba menos 6 + 7, que pasa de
- * 4 renglones a 320 (regla 2). Los pies, los de Futaba; los pasos 4 y 5
- * conservan el suyo. La vuelta atrás del paso 11 de antes es ahora el 8.
+ * De 19 pasos a 15 (Mai §1): las fusiones de Futaba menos tres. 6 + 7 pasa de
+ * 4 renglones a 320 (regla 2, medido por Mai). 1 + 2 y 9 + 10 también, al
+ * ancho del sitio (5 renglones a 320 con la barra de desplazamiento,
+ * scripts/b5/navegador.mjs; Mai midió sin ella): subían el bloque 21,69 en
+ * toda la pieza. Los pies, los de Futaba; los pasos que no se juntan
+ * conservan el suyo. La vuelta atrás del paso 11 de antes es ahora el 10.
  */
 export const FUSION_T6_A3 = {
-  grupos: [[1, 2], [3, 4], [5], [6], [7], [8], [9, 10], [11], [12, 13], [14, 15], [16], [17, 18], [19]],
+  grupos: [[1], [2], [3, 4], [5], [6], [7], [8], [9], [10], [11], [12, 13], [14, 15], [16], [17, 18], [19]],
   pies: [
-    "Basado en el libro, pp. 200 y 202", "Libro, p. 202", "Libro, p. 202", "Libro, p. 202", "Libro, p. 202", "Basado en el libro, p. 202",
-    "Basado en el libro, p. 202", "Basado en el libro, p. 202", "Libro, p. 202", "Libro, p. 203", "Libro, p. 203", "Basado en el libro, p. 203", "Libro, p. 203",
+    "Basado en el libro, p. 200", "Basado en el libro, p. 202", "Libro, p. 202", "Libro, p. 202", "Libro, p. 202", "Libro, p. 202",
+    "Basado en el libro, p. 202", "Libro, p. 202", "Basado en el libro, p. 202", "Basado en el libro, p. 202", "Libro, p. 202",
+    "Libro, p. 203", "Libro, p. 203", "Basado en el libro, p. 203", "Libro, p. 203",
   ],
 };
-/* La predicción entre los pasos 7 y 8 (la que Futaba llamó «entre 6 y 7»). */
+/* La predicción después del paso 10 de antes y antes del 11 (la que Futaba llamó «entre 6 y 7»; Mai, «entre 7 y 8»): hoy, entre el 9 y el 10. */
 export const PARADA_T6_A3 = {
-  antes: 8,
+  antes: 10,
   pregunta: "Al castigar la deuda, ¿se anota otra vez el gasto?",
   opciones: [{ id: "si", texto: "Sí" }, { id: "no", texto: "No" }],
   correcta: "no",
