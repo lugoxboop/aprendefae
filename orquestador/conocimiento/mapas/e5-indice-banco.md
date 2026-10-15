@@ -138,7 +138,7 @@ no trae clave.
 | C.2 | Saldo correcto en libros de Bancos | **b · $5.800** = 5.000 − 400 + 1.200 | §5.2, pp. 188-191 | §5.2 → T4 | ESPERA T4 |
 | C.3 | Qué son las inversiones con descuento | **c** | §5.3, p. 193 | §5.3 → T5 | **LISTO** (`contabilidadT5Pieza1.js` l. 68) |
 | C.4 | Interés de $520.000 al 18 % del 1-mar al 30-jun | libro: **d · $31.460** (121 días / 360) | §5.3, p. 194 | §5.3 → T5 | **ABIERTO** · pregunta 2 de `fuente.md`: el ejemplo de la p. 194 cuenta por meses y daría $31.200, que no está entre las opciones. La a ($31.029) es 121/365. No entra hasta que conteste el profesor |
-| C.5 | Asiento del castigo con el método de provisión | **c** | §5.4, p. 200 | §5.4 → T6 | **LISTO** (`contabilidadT6Act3.js`) |
+| C.5 | Asiento del castigo con el método de provisión | **c** | §5.4, p. 200 | §5.4 → T6 | **LISTO** (`contabilidadT6Pieza3.js` y `contabilidadT6Act2.js`, el castigo contra la provisión) |
 | C.6 | Qué produce PEPS frente a los otros | **c** | §5.5, pp. 215 y 227 | §5.5 → T7-1 | **LISTO** (AP3, AP4) |
 | C.7 | Devolución de ventas en permanente | libro: **b** | §5.5, pp. 247-248 | §5.5 → T7-2 | **PARCIAL** · errata E-2: con el asiento de la p. 248 la **a** también es cierta. Entra solo con el enunciado ajustado y marcado |
 | C.8 | Costo de la mercancía vendida | **a · $3.400** = 500 + 4.000 − 300 − 800 | §5.5, pp. 214 y 230 | §5.5 → T7-1 | **LISTO** (AP4 + A6). Las devoluciones de ventas ($1.000) y las ventas ($11.400) son distractores: no entran al costo |
@@ -151,7 +151,7 @@ no trae clave.
 |---|---|---|---|---|
 | D.1 | Tabo Racho S. A., conciliación a sep-30, pp. 266-268 | §5.2, pp. 187-191 | §5.2 → T4 | ESPERA T4. **Cuadra**: los dos lados concilian en **$6.843.000**. Trae algo que el ejemplo del libro no muestra: un error de la propia empresa (cheque de $876.500 registrado por $687.500, diferencia $189.000). La p. 188 lo nombra como causa y ningún ejemplo resuelve su asiento |
 | D.2 | La Trompeta Ltda., caja menor de $1.600.000, p. 268 | §5.1, pp. 181-186 | §5.1 → T4 | ESPERA T4. Gastos **$1.531.200**; efectivo esperado **$68.800**; caso 1 ($68.000): faltante **$800**; caso 2 ($70.200): sobrante **$1.400**. El enunciado no dice si el faltante va al cajero o al gasto: la p. 183 da los dos caminos |
-| D.3 | El Toro Negro, provisión, castigo y recuperación, pp. 268-269 | §5.4, pp. 199-206 | §5.4 → T6 | **LISTO**, con la errata E-1 resuelta. Provisión **$2.283.400**. Los castigos de marzo suman **$2.450.000** y superan la provisión en **$166.600**: es el caso de la provisión subestimada de las pp. 202-203, que el T6 enseña en su pieza 3 |
+| D.3 | El Toro Negro, provisión, castigo y recuperación, pp. 268-269 | §5.4, pp. 199-206 | §5.4 → T6 | **PARCIAL** (corregido por Takamura, comprobado en el código): el T6 nunca **calcula** la provisión por edades de vencimiento; siempre la da hecha («El análisis pide una provisión de $153.400», `contabilidadT6Act2.js` l. 76), y la tabla de antigüedad de la p. 201 está retenida por la Célula B. r5-2 da la provisión como dato del análisis y pide el resto. Errata E-1 resuelta. Provisión **$2.283.400**. Los castigos de marzo suman **$2.450.000** y superan la provisión en **$166.600**: es el caso de la provisión subestimada de las pp. 202-203, que el T6 enseña en su pieza 3 |
 | D.4 | Comercializadora Mate Ltda., marzo, periódico y promedio, pp. 269-271 | §5.5 completo, pp. 210-254 | condicionado p. 252 → T7-3 | **PARCIAL**: ver abajo |
 | D.5 | Distribuciones Ltda., marzo, permanente y PEPS, con ajustes, pp. 271-273 | §5.5 + ajustes del cap. 4 + depreciación | depreciación → **ningún tema** | ESPERA. El balance de febrero **cuadra** ($9.920.000 = $2.718.000 + $7.202.000) y el inventario coincide (300 × $2.600 = $780.000) |
 | D.6 | Comercializadora Barranquilla Ltda., septiembre, los dos sistemas, pp. 273-274 | §5.5 completo | condicionado p. 252 → T7-3 | **PARCIAL**: ver abajo |
@@ -205,7 +205,7 @@ bien:
 | Pieza | Ejercicios | Temas que la sostienen | Mecánica (decisión de Kamogawa) | Dificultad · FP |
 |---|---|---|---|---|
 | `r5-1` | C.3, C.5, C.6, C.8, C.9, C.10 | T5, T6, T7-1 | Repaso cruzado: seis preguntas que saltan de tema; el estudiante sabe de qué le hablan por la escena, no por un rótulo. Opciones en orden aleatorio en cada intento | Medio · 25 |
-| `r5-2` | D.3 completo | T6 | Caso en tres etapas: arma la provisión desde la tabla de vencimientos; castiga a Roja y Negra y ve la provisión quedar con saldo débito; revive y cobra a Roja | Difícil · 50 |
+| `r5-2` | D.3, sin el cálculo por edades | T6 | Caso en tres etapas: registra el ajuste con la provisión que da el análisis ($2.283.400, como hace el T6); castiga a Roja y Negra y ve la provisión quedar con saldo débito; revive y cobra a Roja | Difícil · 50 |
 | `r5-3` | D.4 parcial (1, 10, 15, 20, 25 y 31 de marzo) | T7-1, T7-3 | Diario de la Comercializadora Mate, solo con esas transacciones | Difícil · 50 |
 
 Lo demás espera. Al entrar cada pieza ajena, se reabre su fila aquí.
@@ -222,6 +222,7 @@ Lo demás espera. Al entrar cada pieza ajena, se reabre su fila aquí.
    dice si lleva IVA. O el profesor los da por vistos en otra parte del curso,
    o esas transacciones no entran.
 4. **Íconos** para `r5-1`, `r5-2` y `r5-3`, cuando se abran sus PR.
+5. **Para la Célula B:** el cálculo de la provisión por edades de vencimiento (pp. 200-201) no lo enseña ningún tema publicado. Cuando el T6 lo enseñe, r5-2 gana su etapa de cálculo con la tabla de la p. 269.
 
 ## Anexo · el script del cuadre
 
