@@ -2,10 +2,10 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * ¿CABEN LOS HACER DE T4 A 375 Y 320, Y NO DELATAN NADA?
  *
- *   node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4|h5 [carpeta-de-capturas]
+ *   node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4|h5|h6 [carpeta-de-capturas]
  *
  * Chromium de verdad, la vista de T4 en modo Hacer con ese juego abierto
- * (banco scripts/t4/harness-t4, #h1 a #h5). Salta el «Así se juega» y
+ * (banco scripts/t4/harness-t4, #h1 a #h6). Salta el «Así se juega» y
  * juega todas las tarjetas: en cada una, antes de tocar, mira el DOM; después
  * toca la primera opción (acierta en unas y falla en otras) y mide. En H3 no
  * hay opciones: arma el asiento con el constructor —las dos primeras cuentas
@@ -28,6 +28,9 @@
  *     armado y confirmado. Además, que cada nombre de cuenta con raya, en la
  *     paleta y en la fila, ocupe una línea o se parta justo después de «–»
  *     (Hanayama H5 v1 §2)
+ *   · H6: cada destino va en dos renglones fijos («Todavía no lo tiene» /
+ *     «el banco»): que cada renglón ocupe UNA línea y que los dos queden en
+ *     dos alturas distintas (Hanayama H6 v1 §1). Ninguna cifra en la zona
  *   · PH8-2: antes de tocar, el DOM no trae ni la devolución ni la página
  *   · con movimiento reducido, nada de la actividad tiene animación en curso
  *
@@ -50,9 +53,10 @@ const JUEGOS = {
   /* H4: 3 rondas de 2 o 3 preguntas; el bucle sigue mientras haya pregunta. */
   h4: { raiz: "[data-t4-h4]", tarjeta: "[data-tarjeta-pregunta]", siguiente: "Siguiente pregunta", otros: ["Siguiente ronda"], rotulos: false, total: 8, rondas: true },
   h5: { raiz: "[data-t4-h5]", tarjeta: "[data-tarjeta-caso]", siguiente: "Siguiente caso", rotulos: false, total: 2, conCifras: true },
+  h6: { raiz: "[data-t4-h6]", tarjeta: "[data-tarjeta-partida]", siguiente: "Siguiente partida", rotulos: false, renglones: true, total: 8 },
 };
 const J = JUEGOS[CUAL];
-if (!J) { console.error("uso: node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4|h5 [carpeta]"); process.exit(2); }
+if (!J) { console.error("uso: node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4|h5|h6 [carpeta]"); process.exit(2); }
 const CAPTURAS = process.argv[3] ?? null;
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 const ANCHOS = [375, 320];
@@ -66,7 +70,7 @@ const fallos = [];
 const filas = [];
 const h4 = {};
 
-function medir({ antes, raiz, rotulos, siguiente, otros = [] }) {
+function medir({ antes, raiz, rotulos, renglones, siguiente, otros = [] }) {
   const zona = document.querySelector(raiz);
   const marco = zona.closest("section") ?? zona.parentElement;
   const caja = marco.getBoundingClientRect();
@@ -94,6 +98,17 @@ function medir({ antes, raiz, rotulos, siguiente, otros = [] }) {
       const lineas = new Set([...rango.getClientRects()].filter((x) => x.width > 1).map((x) => Math.round(x.top))).size;
       if (lineas !== 1) problemas.push(`el destino «${b.textContent.trim()}» ocupa ${lineas} líneas`);
     }
+    /* H6: cada renglón fijo del destino, en una sola línea, y los dos a alturas distintas. */
+    for (const d of renglones ? marco.querySelectorAll("[data-opcion] [data-destino-renglones]") : []) {
+      const tops = [...d.children].map((r) => {
+        const rango = document.createRange(); rango.selectNodeContents(r);
+        const ls = [...new Set([...rango.getClientRects()].filter((x) => x.width > 1).map((x) => Math.round(x.top)))];
+        if (ls.length !== 1) problemas.push(`el renglón «${r.textContent}» del destino ocupa ${ls.length} líneas`);
+        return ls[0];
+      });
+      if (tops.length !== 2 || tops[0] === tops[1]) problemas.push(`el destino «${d.textContent}» no va en dos renglones`);
+    }
+    if (renglones && /\$|\d{1,3}\.\d{3}/.test(zona.textContent)) problemas.push("hay una cifra en la zona del juego");
     /* PH8-2: con textContent y outerHTML, que ven también lo escondido por CSS. */
     const dom = zona.textContent + zona.outerHTML;
     if (zona.querySelector("[data-panel], [data-pagina], [data-texto-retro]")) problemas.push("antes de responder ya hay devolución en el DOM");
@@ -153,7 +168,7 @@ for (const reducido of [false, true]) {
     const estado = async (nombre, antes) => {
       await pg.evaluate(() => document.fonts.ready);
       if (reducido) await pg.waitForTimeout(50);
-      const m = await pg.evaluate(medir, { antes, raiz: J.raiz, rotulos: J.rotulos, siguiente: J.siguiente, otros: J.otros ?? [] });
+      const m = await pg.evaluate(medir, { antes, raiz: J.raiz, rotulos: J.rotulos, renglones: J.renglones ?? false, siguiente: J.siguiente, otros: J.otros ?? [] });
       if (m.h4 && !reducido) ((h4[ancho] ??= {})[m.h4.ronda] ??= []).push([nombre, m.h4]);
       const marca = `${reducido ? "reducido · " : ""}${ancho} px · ${nombre}`;
       if (reducido) { if (m.animado) fallos.push(`${marca} · ${m.animado} animaciones en curso`); return; }

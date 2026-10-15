@@ -657,6 +657,8 @@ export const SUBJECTS = {
           { id: "t4-al-empleado-o-al-gasto", nombre: "¿Al empleado o al gasto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* A4, pp. 186-188, después de H5 (plan de Yujiro). Aprender: cero FP, no entra al catálogo. Define «nota débito» y «nota crédito» del banco. */
           { id: "t4-a4-bancos-y-notas", nombre: "Bancos y notas del banco", clasificacion: { tipo: APRENDER } },
+          /* H6, justo después de A4, que la sostiene. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0205. */
+          { id: "t4-quien-se-entero-primero", nombre: "¿Quién se enteró primero?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
         ],
       },
       /*

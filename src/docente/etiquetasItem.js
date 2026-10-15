@@ -86,6 +86,7 @@ import { casoDeItemH2 as casoDeItemT4H2 } from "../data/contabilidadT4H2.js";
 import { operacionDeItemH3 as operacionDeItemT4H3 } from "../data/contabilidadT4H3.js";
 import { preguntaDeItemH4 as preguntaDeItemT4H4 } from "../data/contabilidadT4H4.js";
 import { casoDeItemH5 as casoDeItemT4H5 } from "../data/contabilidadT4H5.js";
+import { partidaDeItemH6 as partidaDeItemT4H6 } from "../data/contabilidadT4H6.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -776,6 +777,8 @@ Object.assign(REGLAS, {
   "t4-el-arqueo-de-rosa": (id) => preguntaDeItemT4H4(id),
   /* T4 · H5. El ítem es el caso, y se lee por la empresa y la decisión. */
   "t4-al-empleado-o-al-gasto": (id) => casoDeItemT4H5(id),
+  /* T4 · H6. El ítem es la partida, y se lee por su texto. */
+  "t4-quien-se-entero-primero": (id) => partidaDeItemT4H6(id),
   /* ── Repaso del capítulo 5 (Célula E) ── */
   /* r5-1. Cada pantalla, por su subtema (Inversiones, Cartera, Inventarios) y su enunciado. */
   "r5-1": (id) => unidadDeR5_1(id),

@@ -3,6 +3,7 @@ import { H2, PASOS_H2, EJEMPLO_H2, ALT_H2 } from "./contabilidadT4H2.js";
 import { H3, PASOS_H3, EJEMPLO_H3, ALT_H3, BOTON_H3 } from "./contabilidadT4H3.js";
 import { H4, PASOS_H4, EJEMPLO_H4, ALT_H4, BOTON_H4, CUADRA } from "./contabilidadT4H4.js";
 import { H5, PASOS_H5, EJEMPLO_H5, ALT_H5, BOTON_H5 } from "./contabilidadT4H5.js";
+import { H6, PASOS_H6, EJEMPLO_H6, ALT_H6 } from "./contabilidadT4H6.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -37,6 +38,11 @@ import { H5, PASOS_H5, EJEMPLO_H5, ALT_H5, BOTON_H5 } from "./contabilidadT4H5.j
  * generales al debe con 251.000, Cuentas por cobrar – empleados al debe con
  * 4.000 y Bancos al haber con 255.000, y confirma. Escribe cada cifra tecla
  * por tecla en el campo de su fila del constructor compartido.
+ *
+ * t4-quien-se-entero-primero (H6): el cheque de la luz (construido, no es
+ * ninguna de las ocho partidas). La mano TOCA «Todavía no lo tiene el
+ * banco»: los destinos son de un toque (Hanayama H6 v1 §1), aunque el
+ * paquete diga «arrastra».
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -136,10 +142,27 @@ const ASI_EMPLEADO_O_GASTO = {
   cuadros: { gesto: 2 },
 };
 
+const ASI_QUIEN_PRIMERO = {
+  actividadId: H6.id,
+  titulo: H6.nombre,
+  consigna: H6.consigna.join(" "),
+  pasos: PASOS_H6,
+  alt: ALT_H6,
+  demo: { items: [EJEMPLO_H6] },
+  guion: {
+    duracion: 6500,
+    toques: [
+      { ms: 2200, en: `[data-opcion="${EJEMPLO_H6.respuesta}"] button` },
+    ],
+  },
+  cuadros: { gesto: 1 },
+};
+
 export const ASI_SE_JUEGA_T4 = {
   [ASI_ENTRA_O_SALE.actividadId]: ASI_ENTRA_O_SALE,
   [ASI_CONTROL.actividadId]: ASI_CONTROL,
   [ASI_CAJA_MENOR.actividadId]: ASI_CAJA_MENOR,
   [ASI_ARQUEO.actividadId]: ASI_ARQUEO,
   [ASI_EMPLEADO_O_GASTO.actividadId]: ASI_EMPLEADO_O_GASTO,
+  [ASI_QUIEN_PRIMERO.actividadId]: ASI_QUIEN_PRIMERO,
 };
