@@ -54,6 +54,9 @@ export const INTERFAZ_R5_1 = {
   tenias: (u, total) => `Tenías ${u} u por ${pesos(total)}`,
   cadaUna: (total, u, promedio) => `Cada una: ${pesos(total)} ÷ ${u} = ${promedio}`,
   quedan: (u, promedio, valor) => `Quedan ${u} u × ${promedio} = ${pesos(valor)}`,
+  /* La portada del tema (v1.3): de dónde viene lo que se repasa. */
+  marcaPortada: "FIN DEL CAPÍTULO 5",
+  portada: "Repasa los tres temas antes de seguir.",
 };
 
 /*

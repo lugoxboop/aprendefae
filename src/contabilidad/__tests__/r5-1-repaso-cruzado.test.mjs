@@ -624,3 +624,31 @@ test("★★ v1.3: cada texto nuevo está, literal, en la tabla «v1.3 · textos
     assert.ok(palabrasDe(t).length < 10, `${t}: llega a 10 palabras y habría que medirlo`);
   }
 });
+
+test("★★ v1.3: la portada del tema dice de dónde viene el repaso, con las tres siluetas de las preguntas y sus nombres", async () => {
+  const { PortadaRepaso } = await import("../../components/RepasoCapitulo5View.jsx");
+  const { caja, desmontar } = await montar(h(PortadaRepaso));
+  const portada = caja.querySelector("[data-portada-repaso]");
+  assert.ok(portada);
+  assert.equal(portada.querySelector("p").textContent, "FIN DEL CAPÍTULO 5");
+  assert.equal(portada.querySelector("#r5-portada-titulo").textContent, "Repasa los tres temas antes de seguir.");
+  const temas = [...portada.querySelectorAll("[data-portada-tema]")];
+  assert.deepEqual(temas.map((t) => t.dataset.portadaTema), ["inversiones", "cartera", "inventarios"]);
+  assert.deepEqual(temas.map((t) => t.textContent), ["Inversiones", "Cartera", "Inventarios"]);
+  /* El mismo dibujo que en las preguntas, y solo decorativo. */
+  for (const [t, escena] of [["inversiones", "titulo-valor"], ["cartera", "facturas"], ["inventarios", "bodega"]]) {
+    const li = portada.querySelector(`[data-portada-tema="${t}"]`);
+    assert.ok(li.querySelector(`[data-silueta="${escena}"]`), t);
+    assert.equal(li.querySelector(`[data-silueta="${escena}"]`).closest("[aria-hidden]").getAttribute("aria-hidden"), "true");
+  }
+  const seccion = PAQUETE.slice(PAQUETE.indexOf("## v1.3 · textos nuevos"));
+  for (const t of [D.INTERFAZ_R5_1.marcaPortada, D.INTERFAZ_R5_1.portada]) assert.ok(seccion.includes(`| ${t} |`), t);
+  desmontar();
+});
+
+test("★★ el título del tema puede partir en dos renglones: no se corta con «…» (herramientas.md, 15 oct.)", () => {
+  /* La vista entera necesita sesión y FP; el h1 se comprueba en su fuente, y su ancho real a 320 en Chromium. */
+  const fuente = leer("src/components/RepasoCapitulo5View.jsx");
+  const h1 = fuente.slice(fuente.indexOf("<h1 data-titulo-tema"), fuente.indexOf(">", fuente.indexOf("<h1 data-titulo-tema")));
+  for (const d of ['whiteSpace: "normal"', 'overflow: "visible"', 'textOverflow: "clip"', "minWidth: 0"]) assert.ok(h1.includes(d), d);
+});

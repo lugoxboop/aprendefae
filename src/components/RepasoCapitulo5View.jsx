@@ -18,7 +18,7 @@ import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente } from "./repasoCap5/
 import { ToroNegro } from "./repasoCap5/ToroNegro.jsx";
 import { R5_2 } from "../data/repasoCap5ToroNegroTextos.js";
 import {
-  R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, UNIDADES_POR_CAJA,
+  R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, ORDEN_SUBTEMAS, UNIDADES_POR_CAJA,
   prepararR5_1, evaluarR5_1, puntuarR5_1, porTema, textoDeOpcion,
   RESULTADO_C8, cuentaDeC8, cuentaDeC9, pesosConCentavos,
 } from "../data/repasoCap5Cruzado.js";
@@ -493,6 +493,48 @@ export const JUEGOS_REPASO_CAP5 = [
   { id: R5_2.id, Mecanica: ToroNegro, titulo: R5_2.nombre },
 ];
 
+/*
+ * ═══════════ LA PORTADA DEL REPASO ═══════════
+ *
+ * Autodiagnóstico del 15 de octubre (Erwin a 320 px): con pocas piezas en
+ * Hacer, la vista era un nodo arriba y el resto fondo. Es la primera
+ * impresión del tema al que se llega cansado, al final del capítulo. La
+ * portada dice qué se cruza aquí con las tres siluetas que el estudiante va a
+ * volver a ver en las preguntas: el mismo dibujo es el mismo tema.
+ */
+export function PortadaRepaso() {
+  const temas = ORDEN_SUBTEMAS.map((id) => SUBTEMAS[id]);
+  return (
+    <section data-portada-repaso aria-labelledby="r5-portada-titulo" style={{ background: C.navy, borderRadius: "16px", padding: "18px 16px 16px", margin: "4px 0 20px" }}>
+      <p style={{ ...MARCA, margin: 0 }}>{INTERFAZ_R5_1.marcaPortada}</p>
+      <p id="r5-portada-titulo" style={{ margin: "6px 0 0", fontFamily: SORA, fontSize: "17px", fontWeight: 700, lineHeight: 1.3, color: C.texto }}>
+        {INTERFAZ_R5_1.portada}
+      </p>
+      <ul style={{ listStyle: "none", margin: "16px 0 0", padding: 0, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "8px" }}>
+        {temas.map((t) => (
+          <li key={t.id} data-portada-tema={t.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", minWidth: 0 }}>
+            <span aria-hidden="true" style={{ height: "28px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+              <span style={{ transform: `scale(${ESCALA_PORTADA})`, transformOrigin: "center" }}><EscenaSola escena={t.escena} /></span>
+            </span>
+            <span style={{ fontFamily: INTER, fontSize: "13px", fontWeight: 600, color: C.texto, textAlign: "center" }}>{t.nombre}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/*
+ * A 320 cada columna mide 80 px ((288 − 32 − 16) / 3). A 0,38 la silueta más
+ * ancha (200 px) queda en 76 y no se recorta; a 0,42 medía 84 y perdía los
+ * postes de la bodega (medido en Chromium).
+ */
+const ESCALA_PORTADA = 0.38;
+function EscenaSola({ escena }) {
+  const Silueta = SILUETAS[escena];
+  return <Silueta />;
+}
+
 /* ═══════════ LA VISTA DEL TEMA ═══════════ */
 
 export default function RepasoCapitulo5View({ nodoInicial = null, onBack }) {
@@ -537,8 +579,15 @@ export default function RepasoCapitulo5View({ nodoInicial = null, onBack }) {
             >
               <ChevronLeft size={20} color={FAE.text} />
             </button>
-            <h1 style={{ fontFamily: SORA, fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2 }}>
-              {tema.title}
+            {/*
+              * El nombre del tema no se corta (herramientas.md, 15 oct.): a 320
+              * la regla compartida .fae-cabecera-titulo lo truncaba en «Repaso
+              * del capít…» y se perdía justo el número. Aquí puede encoger y
+              * partir en dos renglones; el estilo en línea gana a la clase.
+              */}
+            <h1 data-titulo-tema style={{ fontFamily: SORA, fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, flexShrink: 1, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "anywhere" }}>
+              {/* «capítulo 5» no se separa: si parte, parte antes. */}
+              {tema.title.replace(/ (\S+)$/, "\u00a0$1")}
             </h1>
           </div>
 
@@ -563,7 +612,10 @@ export default function RepasoCapitulo5View({ nodoInicial = null, onBack }) {
               </ContextoResumen.Provider>
             </div>
           ) : (
-            <CaminoHacer nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} vacio="Este tema todavía no tiene juegos." />
+            <>
+              <PortadaRepaso />
+              <CaminoHacer nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} vacio="Este tema todavía no tiene juegos." />
+            </>
           )}
         </div>
       </div>
