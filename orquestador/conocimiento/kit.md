@@ -183,6 +183,34 @@ sobrecargan la memoria de trabajo y perjudican el aprendizaje.
 | Avanzado | Respeta `prefers-reduced-motion`. |
 | Élite | Cumple WCAG 2.1 AA de forma verificable en la actividad completa. |
 
+**`aria-hidden` NO resuelve el nivel Básico, y confundirlo cuesta una
+actividad.** Son dos personas distintas con dos problemas distintos:
+
+- Quien usa **lector de pantalla** necesita que la información exista en
+  texto. `aria-hidden` sobre un adorno es correcto para ella.
+- Quien **ve la pantalla y no distingue los colores** no usa lector de
+  pantalla. A ella `aria-hidden` no le da nada: necesita **forma**, no texto
+  alternativo.
+
+**El caso que lo enseñó (r5-1, 15 de octubre de 2026).** La pantalla final
+pintaba un punto por ítem, teal el acierto y coral el error, con los puntos
+marcados `aria-hidden` y un «3 de 5» en palabras al lado. El comentario del
+archivo decía «el color nunca va solo». Era verdad para el TOTAL y falso para
+cada punto: quien no distingue los colores lee «3 de 5» y no puede saber
+cuáles tres. Lo encontró la auditoría de la Célula E.
+
+**La comprobación que hay que hacerse, y es una sola pregunta:** si esta
+pantalla se viera en blanco y negro, ¿se perdería algo que el estudiante
+necesita? Si la respuesta es sí, falta forma o falta palabra. Un total en
+texto no cubre el detalle por ítem.
+
+**Pendiente de plataforma, sin repartir todavía:** hay bastantes sitios que
+pintan acierto y error con teal y coral. En casi todos el color acompaña a un
+texto que ya dice el resultado, que es correcto. Cuáles son de verdad «solo
+color» se sabe mirándolos uno por uno, no con un grep, y varios están en
+componentes compartidos, que son del coordinador. Queda anotado aquí para que
+nadie lo dé por auditado.
+
 ### Dimensión 13 — Comprensión de la consigna — RECONSTRUIDO (resumido, no verbatim)
 
 Exige verbos de acción, ningún término técnico no enseñado, y para textos de 10+
