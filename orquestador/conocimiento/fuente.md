@@ -180,6 +180,38 @@ desde su lado; por eso vive aquí.
 resuelto de conciliación, el cheque de Laura García aparece como n.º 146 en la
 p. 189 y como n.º 145 en la p. 190. Cae en T4, así que es de la Célula D.
 
+## Fuentes de fuera del libro
+
+**El 15 de octubre de 2026 el proyecto citó por primera vez una fuente que no
+es el libro.** Pasó en T6, Aprender 5: la tabla de la p. 201 quedó cerrada sin
+resolverse y la Célula B, con autorización de Mateo, enseñó el método con el
+**Decreto 1625 de 2016, art. 1.2.1.18.21** (provisión general de cartera), en
+vez de con cifras construidas. Es mejor solución que la que había sobre la
+mesa: la norma es pública, verificable y es la que de verdad usan las empresas
+colombianas.
+
+**Comprobado por el coordinador, y conviene saber hasta dónde.** El artículo
+1.2.1.18.21 regula la provisión general y establece 5 % para la cartera
+vencida entre tres y seis meses, 10 % entre seis y doce, y 15 % de doce en
+adelante. Coincide con lo que cita la pieza. Lo verifiqué contra una fuente
+especializada en tributación colombiana; **el texto oficial no lo pude abrir
+directamente**: la compilación de la DIAN se corta antes de ese artículo y la
+del Gestor Normativo de Función Pública no permite la lectura automática. Así
+que la cifra está cotejada, no leída en el diario oficial. Si el profesor la
+va a dar por buena en clase, que la confirme él.
+
+**La regla que sale de aquí, para las cinco células:**
+
+- Una fuente de fuera del libro se cita **con su nombre y su artículo**, nunca
+  como «la norma dice».
+- Se muestra **separada de la cita del libro**, para que el estudiante sepa
+  cuál es cuál. T6 A5 lo hace bien: «Fuente: Decreto 1625 de 2016,
+  art. 1.2.1.18.21 · Libro, p. 201».
+- **Una fuente externa se trae cuando el libro no alcanza, no cuando el libro
+  incomoda.** Aquí se trajo porque una página quedó ilegible para siempre.
+- Y se verifica antes de publicarla. Una cifra legal mal citada no es una
+  errata: es enseñarle a un estudiante algo falso con cara de norma.
+
 ## Cómo se cita un ejercicio
 
 **Nunca por su número suelto.** El libro reinicia la numeración en cada bloque,

@@ -172,6 +172,13 @@ const CAPAS = {
   },
 };
 
+const DATOS_PIEZAS = [
+  P51.PIEZA_DEL_EFECTIVO, P52.PIEZA_TRES_MOMENTOS,
+  P61.PIEZA_LO_QUE_LE_DEBEN, P62.PIEZA_NO_VA_A_PAGAR, P63.PIEZA_LA_PROVISION, P64.PIEZA_SI_PAGA,
+];
+/* Lo que está en los datos y el estudiante no ve. */
+const SIN_PINTAR = [];
+
 /* Los rótulos de una escena, aplanados en «clave: texto», en el orden del archivo. */
 function aplanar(obj, prefijo = "") {
   return Object.entries(obj).flatMap(([k, v]) => {
@@ -206,9 +213,16 @@ function piezaDeAprender(tema, pieza, k, total) {
 
   md(`#### Capa 1 · ${lit(NOMBRES_CAPAS[1])}`);
   md();
-  pieza.nombres.forEach((n, i) => {
+  /* Los textos, de los datos: la vista puede traer la cita ya pintada con su nota (b5/NotaDebajo.jsx). */
+  const datos = DATOS_PIEZAS.find((x) => x.id === pieza.id);
+  datos.nombres.forEach((n, i) => {
     md(`${i + 1}. **${lit(n.termino)}.** ${lit(n.definicion)}`);
     if (n.delLibro) md(`   - *${lit(n.rotuloDelLibro ?? ROTULO_DEL_LIBRO)}:* ${lit(n.delLibro)}`);
+    if (n.notaDebajo) md(`   - *${lit(n.notaDebajo.rotulo)}* (debajo de la cita, en el mismo bloque): ${lit(n.notaDebajo.texto)}`);
+    if (n.pie) {
+      md(`   - *Pie de fuente, en datos y sin pintar (CuatroCapas no pinta pies en la capa 1):* ${n.pie}`);
+      SIN_PINTAR.push(`${piezaActual}, término ${i + 1}: el pie de fuente «${n.pie}».`);
+    }
   });
   md();
 
@@ -326,6 +340,15 @@ function asiSeJuega(id) {
   md(`- **Pasos:**`);
   asi.pasos.forEach((p, i) => md(`  ${i + 1}. ${lit(p)}`));
   for (const demo of asi.demo.items) {
+    if (!demo.asiento) {
+      /* La clasificación: la ficha, lo que toca la mano y el acierto que queda. */
+      item("Ficha del ejemplo", demo.texto);
+      const c = CLASIFICACIONES[id];
+      const rotuloDe = (sel) => [...c.nivel1, ...c.nivel2].find((x) => x.id === sel.match(/"([^"]+)"/)[1]).rotulo;
+      md(`- **La mano toca:** ${asi.guion.toques.map((t) => t.texto ?? rotuloDe(t.en)).join(" → ")}`);
+      item("Queda escrito", demo.acierto);
+      continue;
+    }
     item("Hecho del ejemplo", demo.hecho);
     md(`- **La mano arma el asiento:**`);
     asientoEnLineas(demo.asiento);
@@ -416,6 +439,7 @@ function actividad(tema, a, juegos) {
       md();
       CLASIFICACIONES[a.id].reglas.forEach((r, i) => md(`${i + 1}. ${r}`));
       md();
+      SIN_PINTAR.push(`${a.id}: las reglas de «${ENCABEZADO}».`);
     }
   } else if (MESAS[a.id]) {
     mesa(MESAS[a.id]);
@@ -435,7 +459,7 @@ const sha = execSync("git rev-parse --short HEAD", { cwd: RAIZ }).toString().tri
 
 md("# Recorrido del estudiante · Temas 5 y 6 de Contabilidad (Célula B)");
 md();
-md(`> Documento generado por \`scripts/b5-recorrido-t5-t6.mjs\` desde los archivos de datos de main (\`${sha}\`). No se edita a mano: si cambia un texto, se cambia en su archivo de datos y se vuelve a generar.`);
+md(`> Documento generado por \`scripts/b5-recorrido-t5-t6.mjs\` desde los archivos de datos del commit \`${sha}\`. No se edita a mano: si cambia un texto, se cambia en su archivo de datos y se vuelve a generar.`);
 md(">");
 md("> Orden: el de la vista. Primero Aprender (las piezas en el orden de `PIEZAS`, cada una con sus cuatro capas). Después el camino de Hacer (el orden de `subjects.js`), cada actividad con su «Así se juega» y su partida.");
 md(">");
@@ -474,8 +498,8 @@ md();
 
 md("## En datos, pero sin pintar");
 md();
-md(`- \`NOTA_CLIENTES_PENDIENTE\` (T6 · Aprender 1, bajo el término 2; espera la decisión de Mai): ${P61.NOTA_CLIENTES_PENDIENTE}`);
-md(`- Las reglas de «${ENCABEZADO}» de b5-t5-a1 y b5-t6-a1: están en sus secciones, marcadas «sin pintar».`);
+if (!SIN_PINTAR.length) md("Nada.");
+for (const x of SIN_PINTAR) md(`- ${x}`);
 md();
 
 /* ═══════════ LA TABLA DE CUENTAS ═══════════ */
