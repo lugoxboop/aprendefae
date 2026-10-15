@@ -407,3 +407,29 @@ test("★★ identificadores nuevos con b5-", () => {
   assert.match(D.PIEZA_LA_PROVISION.id, /^b5-t6-a3-/);
   for (const o of D.OPCIONES_FINAL_T6_A3) assert.match(o.id, /^b5-t6-a3-/);
 });
+
+/* D12 (Sakuta, #222): lo que está en silueta no lo lee el lector ni se enfoca; lo que llega, ya no lleva esa marca. */
+const MUDOS = '[style*="--b5-silueta"], [data-futuro], [data-silueta-futura]';
+const callado = (n) => n.closest('[aria-hidden="true"]') !== null;
+const marcaPropia = (n) => n.getAttribute("aria-hidden") === "true" && n.hasAttribute("inert");
+test("★★★ D12: en el paso 1 ninguna silueta es legible ni enfocable; en el paso 2, lo que llegó pierde la marca", async () => {
+  const { caja, desmontar } = await montar(h(LaProvision));
+  const siluetas = [...caja.querySelectorAll(MUDOS)];
+  assert.ok(siluetas.length > 0, "hay siluetas en el paso 1");
+  for (const n of siluetas) {
+    assert.ok(callado(n), "aria-hidden en ella o en un ancestro");
+    assert.ok(marcaPropia(n), "y su propia marca: aria-hidden e inert, aunque la escena cambie");
+  }
+  const vivas = () => [...viva(caja).querySelectorAll("[data-elemento]")];
+  const antes = new Set(vivas().filter((n) => enSilueta(n)));
+  await siguiente(caja);
+  const llegaron = vivas().filter((n) => antes.has(n) && !enSilueta(n));
+  assert.ok(llegaron.length > 0, "algo llegó en el paso 2");
+  for (const n of llegaron) {
+    assert.equal(n.hasAttribute("inert"), false, `${n.dataset.elemento}: sin inert`);
+    assert.equal(n.getAttribute("aria-hidden"), null, `${n.dataset.elemento}: sin su aria-hidden`);
+    assert.equal(n.closest("[data-b5-mudo]"), null, `${n.dataset.elemento}: ni un ancestro en silueta`);
+  }
+  for (const n of caja.querySelectorAll(MUDOS)) assert.ok(marcaPropia(n), "lo que sigue en silueta, callado");
+  desmontar();
+});

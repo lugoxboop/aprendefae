@@ -5,7 +5,7 @@ import { TITULOS, ROTULOS_ESCENA, PASOS_CAPA_2, CIERRE_CAPA_2, PIES_CAPA_2, PIE_
 import { estadoPaso, PASOS, CIERRE, duracionPaso } from "../../../../contabilidad/efectivoDeSobra.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "./EstilosT5.jsx";
-import { aparicion } from "../tema6/MaquinaPegada.jsx";
+import { aparicion, useSiluetasMudas } from "../tema6/MaquinaPegada.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -90,6 +90,7 @@ export default function EfectivoDeSobra() {
 
   const estado = estadoPaso(paso);
   const el = estado.elementos;
+  useSiluetasMudas(bloque);
 
   /* El tronco y las ramas se miden en vivo: siguen a las tarjetas a cualquier ancho y con cualquier fuente. */
   useLayoutEffect(() => {

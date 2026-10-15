@@ -78,6 +78,35 @@ export function aparicion(e, reducido) {
 export const enSilueta = (nodo) => Boolean(nodo?.style?.getPropertyValue(SILUETA));
 
 /*
+ * Lo que está en silueta no ha llegado: el lector de pantalla no lo lee ni se
+ * puede enfocar (D12; antes lo callaba visibility: hidden). En cada render, a
+ * todo lo marcado con --b5-silueta y a los [data-futuro] / [data-silueta-futura]
+ * de `raiz` se les pone aria-hidden="true" e inert; cuando llega su paso, se les
+ * quitan. Solo se quita lo que se puso aquí (data-b5-mudo): un aria-hidden que
+ * ya traía el nodo se queda.
+ */
+const MUDOS = `[style*="${SILUETA}"], [data-futuro], [data-silueta-futura]`;
+export function useSiluetasMudas(raiz) {
+  useLayoutEffect(() => {
+    const r = raiz.current;
+    if (!r) return;
+    const ahora = new Set(r.querySelectorAll(MUDOS));
+    for (const n of r.querySelectorAll("[data-b5-mudo]")) {
+      if (ahora.has(n)) continue;
+      if (n.dataset.b5Mudo === "propio") n.removeAttribute("aria-hidden");
+      n.removeAttribute("inert");
+      delete n.dataset.b5Mudo;
+    }
+    for (const n of ahora) {
+      if (n.dataset.b5Mudo) continue;
+      n.dataset.b5Mudo = n.getAttribute("aria-hidden") === "true" ? "previo" : "propio";
+      n.setAttribute("aria-hidden", "true");
+      n.setAttribute("inert", "");
+    }
+  });
+}
+
+/*
  * Las siluetas de lo que todavía no llega (momentos futuros: T5 · A2, T6 · A3
  * y A4) se dibujan mientras quepan enteras en el alto reservado de la escena:
  * la que no cabe no se dibuja, empezando por la última: primero los cuerpos,
@@ -168,6 +197,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
   const refDe = (id) => (n) => { piezas.current[id] = n; };
 
   const estado = estadoPaso(paso);
+  useSiluetasMudas(maquina);
 
   /*
    * ═══════════ MODO B: EL BLOQUE PEGADO POR SCRIPT (guía v2 §D) ═══════════
