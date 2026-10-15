@@ -1,6 +1,6 @@
 # Recorrido del estudiante · Temas 5 y 6 de Contabilidad (Célula B)
 
-> Documento generado por `scripts/b5-recorrido-t5-t6.mjs` desde los archivos de datos de main (`56b8cde`). No se edita a mano: si cambia un texto, se cambia en su archivo de datos y se vuelve a generar.
+> Documento generado por `scripts/b5-recorrido-t5-t6.mjs` desde los archivos de datos del commit `cb2eb88`. No se edita a mano: si cambia un texto, se cambia en su archivo de datos y se vuelve a generar.
 >
 > Orden: el de la vista. Primero Aprender (las piezas en el orden de `PIEZAS`, cada una con sus cuatro capas). Después el camino de Hacer (el orden de `subjects.js`), cada actividad con su «Así se juega» y su partida.
 >
@@ -226,7 +226,16 @@ Orden del camino: `b5-t5-a1` → `b5-t5-a2`.
 
 #### «Así se juega» (la primera vez que se abre)
 
-*No tiene. Tampoco se ve el botón «¿Cómo se juega?».*
+- **Título:** ¿Qué renta da este título?
+- **Consigna:** Lee la ficha. Elige qué tipo de renta da.
+- **Pasos:**
+  1. Elige primero si el título es de renta variable o de renta fija.
+  2. Si es de renta fija, elige también si es con interés o con descuento.
+  3. Pulsa el botón para colocar la ficha; si fallas, tienes un intento más.
+- **Ficha del ejemplo:** CDT (certificado de depósito a término)
+- **La mano toca:** Renta fija → Con interés → Colocar la ficha
+- **Queda escrito:** ✅ Sí. El libro pone el CDT entre los títulos que pagan un interés fijo durante un periodo.
+- **Para lector de pantalla:** Ejemplo: la ficha «CDT (certificado de depósito a término)» va en «Renta fija» y, dentro, en «Con interés».
 
 #### La partida
 
@@ -308,12 +317,6 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
 
 - **Resumen:** {bien} de {cuantas} completas al primer intento. Cada ficha valía {x} %. Elegir variable o fija pesa 60 %. Elegir con interés o con descuento pesa 40 %. En las de renta variable, la primera elección vale toda la ficha.
 - **Para lector de pantalla:** Actividad de clasificación. Aparece una ficha con el nombre de un título o con una pista de cómo rinde. Elige Renta variable o Renta fija. Si eliges Renta fija, elige también Con interés o Con descuento. Luego pulsa Colocar la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.
-
-*En datos y sin pintar (no hay «¿Cómo se juega?» sin «Así se juega»):*
-
-1. Elige primero si el título es de renta variable o de renta fija.
-2. Si es de renta fija, elige también si es con interés o con descuento.
-3. Pulsa el botón para colocar la ficha; si fallas, tienes un intento más.
 
 ### b5-t5-a2 · El cierre completo de Santa Pacha
 
@@ -421,10 +424,12 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
    - *Así lo dice el libro:* «En la cuenta cuentas por cobrar se contabilizan los valores que terceras personas le adeudan a la empresa.» (p. 195)
 2. **Clientes.** Quizás es la parte más importante de las cuentas por cobrar: lo que deben los clientes por bienes y servicios que la empresa les vendió a crédito y que todavía no han pagado.
    - *Así lo dice el libro:* «Los clientes son quizás el concepto más importante dentro de lo que se clasifica como cuentas por cobrar.» (p. 196)
+   - *Nota* (debajo de la cita, en el mismo bloque): El libro también la llama cartera; es lo mismo. Aquí la cuenta se llama “Cuentas por cobrar – clientes”.
 3. **Otras cuentas por cobrar.** No solo los clientes le deben a la empresa. También caben, entre otras, las deudas de socios y accionistas, las de trabajadores y los préstamos a particulares. Cualquier cosa que alguien le deba a la empresa va en las cuentas por cobrar, en la cuenta que mejor le corresponda.
 4. **Cuándo sube lo que deben los clientes.** Cuentas por cobrar – clientes es una cuenta de activo: cuando lo que deben los clientes sube, se debita. Sube, entre otras causas, por una venta a crédito de bienes o servicios, o por una nota débito cuando el banco devuelve el cheque con el que un cliente había pagado.
    - *Nota:* Con una nota débito, el banco le resta un valor a la cuenta bancaria de la empresa; por ejemplo, cuando devuelve el cheque con el que un cliente había pagado.
-5. **Cuándo baja lo que deben los clientes.** Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. También baja cuando devuelve mercancía que había comprado a crédito y todavía no había pagado: es una devolución de ventas. Baja cuando la empresa le otorga un descuento sobre lo que todavía le debe. Y baja cuando la deuda pasa a difícil cobro, que se explica más adelante.
+5. **Cuándo baja lo que deben los clientes.** Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. También baja cuando devuelve mercancía que había comprado a crédito y todavía no había pagado: es una devolución de ventas. Baja cuando la empresa le otorga un descuento sobre lo que todavía le debe. Y baja cuando la deuda se da por perdida, algo que se explica más adelante.
+   - *Pie de fuente, en datos y sin pintar (CuatroCapas no pinta pies en la capa 1):* Basado en el libro, pp. 197 y 199-200
 
 #### Capa 2 · Mírelo funcionar
 
@@ -791,7 +796,16 @@ Orden del camino: `b5-t6-a1` → `b5-t6-a2` → `b5-t6-a3`.
 
 #### «Así se juega» (la primera vez que se abre)
 
-*No tiene. Tampoco se ve el botón «¿Cómo se juega?».*
+- **Título:** ¿Clientes o otra cuenta por cobrar?
+- **Consigna:** Lee el hecho. Elige la cuenta y, si es Clientes, cómo se anota.
+- **Pasos:**
+  1. Elige si el hecho va en Clientes o en otra cuenta por cobrar.
+  2. Si va en Clientes, elige también si se debita o se acredita.
+  3. Pulsa el botón para colocar la ficha; si fallas, tienes un intento más.
+- **Ficha del ejemplo:** Un cliente paga lo que debía.
+- **La mano toca:** Clientes → Se acredita → Colocar la ficha
+- **Queda escrito:** ✅ Sí. Baja: se acredita. La deuda se cancela.
+- **Para lector de pantalla:** Ejemplo: la ficha «Un cliente paga lo que debía.» va en «Clientes» y, dentro, en «Se acredita».
 
 #### La partida
 
@@ -823,12 +837,12 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
 5. **La empresa le vende mercancía a crédito a un cliente.**
    - *Al acertar:* ✅ Sí. Sube: se debita. El cliente queda debiendo lo que compró.
    - *Primer fallo (Otra cuenta por cobrar):* ❌ No es esa. En este hecho cambia lo que un cliente le debe a la empresa. Eso se anota en Cuentas por cobrar – clientes.
-   - *Primer fallo (Clientes · Se acredita):* ❌ Vas bien: es Clientes. Ojo con la palabra «crédito»: el nombre del negocio no dice en qué lado se anota. Pregúntate si lo que deben los clientes sube o baja.
+   - *Primer fallo (Clientes · Se acredita):* ❌ Vas bien: es Clientes. Ojo con la palabra “crédito”: el nombre del negocio no dice en qué lado se anota. Pregúntate si lo que deben los clientes sube o baja.
    - *Segundo fallo:* ❌ No es esa. Sube: se debita. El cliente queda debiendo lo que compró.
 6. **La empresa le presta un servicio a crédito a un cliente.**
    - *Al acertar:* ✅ Sí. Un servicio vendido a crédito también hace subir la deuda: se debita.
    - *Primer fallo (Otra cuenta por cobrar):* ❌ No es esa. En este hecho cambia lo que un cliente le debe a la empresa. Eso se anota en Cuentas por cobrar – clientes.
-   - *Primer fallo (Clientes · Se acredita):* ❌ Vas bien: es Clientes. Ojo con la palabra «crédito»: el nombre del negocio no dice en qué lado se anota. Pregúntate si lo que deben los clientes sube o baja.
+   - *Primer fallo (Clientes · Se acredita):* ❌ Vas bien: es Clientes. Ojo con la palabra “crédito”: el nombre del negocio no dice en qué lado se anota. Pregúntate si lo que deben los clientes sube o baja.
    - *Segundo fallo:* ❌ No es esa. Un servicio vendido a crédito también hace subir la deuda: se debita.
 7. **El banco devuelve el cheque con el que un cliente había pagado.**
    - *Al acertar:* ✅ Sí. Sube: se debita. Ese pago no llegó a la empresa, así que la deuda vuelve.
@@ -853,12 +867,6 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
 
 - **Resumen:** {bien} de {cuantas} completas al primer intento. Cada ficha valía {x} %. Elegir la cuenta pesa 60 %. Elegir si se debita o se acredita pesa 40 %. En las de otra cuenta por cobrar, la primera elección vale toda la ficha.
 - **Para lector de pantalla:** Actividad de clasificación. Aparece un hecho. Elige si va en Clientes o en otra cuenta por cobrar. Si eliges Clientes, elige también si se debita o se acredita. Luego pulsa Colocar la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.
-
-*En datos y sin pintar (no hay «¿Cómo se juega?» sin «Así se juega»):*
-
-1. Elige si el hecho va en Clientes o en otra cuenta por cobrar.
-2. Si va en Clientes, elige también si se debita o se acredita.
-3. Pulsa el botón para colocar la ficha; si fallas, tienes un intento más.
 
 ### b5-t6-a2 · La provisión de El Torito
 
@@ -1042,8 +1050,7 @@ Leídos del código fuente, no de los datos. Valen para todas las piezas y activ
 
 ## En datos, pero sin pintar
 
-- `NOTA_CLIENTES_PENDIENTE` (T6 · Aprender 1, bajo el término 2; espera la decisión de Mai): El libro también la llama cartera; es lo mismo. Aquí la cuenta se llama “Cuentas por cobrar – clientes”.
-- Las reglas de «¿Cómo se juega?» de b5-t5-a1 y b5-t6-a1: están en sus secciones, marcadas «sin pintar».
+- T6 · Aprender 1, término 5: el pie de fuente «Basado en el libro, pp. 197 y 199-200».
 
 ## Tabla de cuentas
 
@@ -1053,7 +1060,7 @@ Cada nombre de cuenta que aparece, en qué piezas y cuántas veces (nombre exact
 |---|---|---|
 | Bancos | T5 · Aprender 2 (2) · b5-t5-a2 (10) · T6 · Aprender 3 (1) | 13 |
 | Caja | T5 · Aprender 2 (6) · b5-t5-a2 (22) · T6 · Aprender 1 (6) · T6 · Aprender 3 (2) · T6 · Aprender 4 (9) · b5-t6-a2 (2) · b5-t6-a3 (15) | 62 |
-| Cuentas por cobrar – clientes | T6 · Aprender 1 (7) · T6 · Aprender 2 (11) · T6 · Aprender 3 (8) · T6 · Aprender 4 (8) · b5-t6-a1 (12) · b5-t6-a2 (6) · b5-t6-a3 (27) | 79 |
+| Cuentas por cobrar – clientes | T6 · Aprender 1 (8) · T6 · Aprender 2 (11) · T6 · Aprender 3 (8) · T6 · Aprender 4 (8) · b5-t6-a1 (12) · b5-t6-a2 (6) · b5-t6-a3 (27) | 80 |
 | Cuentas por cobrar a socios y accionistas *(solo en prosa)* | b5-t6-a1 (2) | 2 |
 | Cuentas por cobrar a trabajadores *(solo en prosa)* | b5-t6-a1 (2) | 2 |
 | Gasto provisiones – cuentas incobrables | T6 · Aprender 2 (6) · T6 · Aprender 3 (4) · b5-t6-a2 (7) · b5-t6-a3 (2) | 19 |
@@ -1069,10 +1076,10 @@ Cada nombre de cuenta que aparece, en qué piezas y cuántas veces (nombre exact
 
 | Forma | Piezas (apariciones) | Total |
 |---|---|---|
-| «Clientes» suelto (sin «Cuentas por cobrar –» delante) | T6 · Aprender 1 (1) · b5-t6-a1 (13) | 14 |
+| «Clientes» suelto (sin «Cuentas por cobrar –» delante) | T6 · Aprender 1 (1) · b5-t6-a1 (18) | 19 |
 | «la provisión» / «La provisión» | T6 · Aprender 2 (6) · T6 · Aprender 3 (25) · b5-t6-a2 (15) · b5-t6-a3 (13) | 59 |
 | «el gasto» / «El gasto» | T6 · Aprender 2 (11) · T6 · Aprender 3 (5) · b5-t6-a2 (3) · b5-t6-a3 (3) | 22 |
 | «Inversiones» sin «– títulos» | — | 0 |
-| «cartera» | T6 · Aprender 2 (2) | 2 |
+| «cartera» | T6 · Aprender 1 (1) · T6 · Aprender 2 (2) | 3 |
 | «la ganancia» / «la pérdida» | T5 · Aprender 2 (4) · b5-t5-a2 (9) | 13 |
 
