@@ -9,7 +9,7 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { useReducido } from "../tema3/DosLineas.jsx";
-import EstanteDeCajones, { claveDe, nombreLeido, cuantasFichas } from "./EstanteDeCajones.jsx";
+import EstanteDeCajones, { claveDe, lecturaDe, BIEN, SEGUNDO } from "./EstanteDeCajones.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -112,11 +112,13 @@ export default function ClasificaDosNiveles({
       const clave = fin ? claveDe(d.n1, d.n2) : claveDe(marcado.n1, marcado.n2);
       const vuelo = estante.current?.volar(clave, ficha.current, { rebote: !fin }) ?? Promise.resolve();
       if (fin) {
+        /* Tras el segundo fallo, la lámina llega distinta (Shoko). */
+        const lamina = nuevo.ok ? BIEN : SEGUNDO;
         vuelo.then(() => {
           setCuentas((x) => {
-            const n = (x[clave] ?? 0) + 1;
-            setAnuncio(`${nombreLeido(config, clave)}: ${cuantasFichas(n)}`);
-            return { ...x, [clave]: n };
+            const laminas = [...(x[clave] ?? []), lamina];
+            setAnuncio(lecturaDe(config, clave, laminas));
+            return { ...x, [clave]: laminas };
           });
         });
       }

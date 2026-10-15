@@ -14,21 +14,31 @@ import { NEUTRO } from "../../../../data/contabilidadIntro.js";
  *
  * Cada cajón lleva una pila de láminas (una por ficha colocada, 4 px de alto,
  * 2 de separación, crece hacia arriba; caben cuatro a la vista) y el número.
- * Sin color: la pila y el número dicen cuántas lleva. Todas las láminas son
- * iguales: el estante no pone nota.
+ * Sin color: la pila y el número dicen cuántas lleva. La lámina de una ficha
+ * que llegó tras el SEGUNDO fallo va con contorno punteado y sin relleno
+ * (Shoko): así el estante no dice «todo bien» cuando no lo fue.
  *
  * Lo elegido se ilumina (borde 2 nodo y relleno navy): el cajón suelto o la
  * tapa, y bajo la tapa el cajón del segundo nivel. Una copia de la ficha
  * vuela a su cajón (340 ms) o, en el primer fallo, va al elegido y rebota
  * (340 + 340 ms). Con movimiento reducido no hay vuelo: cambia al instante.
  *
- * Textos fijos (PARA SHOKO): el nombre del grupo, «Fichas colocadas», y la
- * lectura de cada cajón, «{nombre}: N fichas».
+ * Textos fijos (PASA de Shoko): el nombre del grupo, «Fichas colocadas», y la
+ * lectura de cada cajón, «{nombre}: N fichas», con «, M tras el segundo
+ * intento» si alguna llegó así.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 export const FICHAS_COLOCADAS = "Fichas colocadas";
 export const cuantasFichas = (n) => `${n} ${n === 1 ? "ficha" : "fichas"}`;
+/* Las láminas de un cajón: una por ficha, «bien» o «segundo» (llegó tras el segundo fallo). */
+export const BIEN = "bien";
+export const SEGUNDO = "segundo";
+/* «Clientes, se debita: 2 fichas, 1 tras el segundo intento». */
+export function lecturaDe(config, clave, laminas = []) {
+  const tras = laminas.filter((l) => l === SEGUNDO).length;
+  return `${nombreLeido(config, clave)}: ${cuantasFichas(laminas.length)}${tras ? `, ${tras} tras el segundo intento` : ""}`;
+}
 
 const SORA = "Sora, sans-serif";
 const INTER = "Inter, sans-serif";
@@ -54,9 +64,10 @@ const encendido = (si) => ({
   background: si ? NAVY : "transparent",
 });
 
-function Cajon({ clave, nombre, cuantas, encendido: si, refDe, config }) {
+function Cajon({ clave, nombre, laminas = [], encendido: si, refDe, config }) {
+  const cuantas = laminas.length;
   return (
-    <div ref={refDe(clave)} data-cajon={clave} data-cuantas={cuantas} role="img" aria-label={`${nombreLeido(config, clave)}: ${cuantasFichas(cuantas)}`}
+    <div ref={refDe(clave)} data-cajon={clave} data-cuantas={cuantas} role="img" aria-label={lecturaDe(config, clave, laminas)}
       style={{
         boxSizing: "border-box", minHeight: "70px", padding: si ? "5px" : "6px", borderRadius: "10px", minWidth: 0,
         display: "flex", flexDirection: "column", justifyContent: "space-between", gap: "4px", ...encendido(si),
@@ -65,8 +76,11 @@ function Cajon({ clave, nombre, cuantas, encendido: si, refDe, config }) {
       <span aria-hidden="true" style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
         {/* La pila: crece hacia arriba; caben cuatro a la vista. */}
         <span data-pila style={{ display: "flex", flexDirection: "column-reverse", gap: "2px", width: "16px", minHeight: `${VISIBLES * 4 + (VISIBLES - 1) * 2}px` }}>
-          {Array.from({ length: Math.min(cuantas, VISIBLES) }, (_, k) => (
-            <span key={k} data-lamina style={{ display: "block", height: "4px", borderRadius: "1px", background: FAE.text }} />
+          {laminas.slice(-VISIBLES).map((l, k) => (
+            <span key={k} data-lamina={l} style={{
+              display: "block", height: "4px", boxSizing: "border-box", borderRadius: "1px",
+              ...(l === SEGUNDO ? { border: `1px dashed ${FAE.text}`, background: "transparent" } : { background: FAE.text }),
+            }} />
           ))}
         </span>
         <span data-numero style={{ fontFamily: SORA, fontSize: "14px", fontWeight: 700, lineHeight: 1, fontVariantNumeric: "tabular-nums", color: FAE.text }}>{cuantas}</span>
@@ -76,7 +90,7 @@ function Cajon({ clave, nombre, cuantas, encendido: si, refDe, config }) {
 }
 
 /*
- * El estante. `cuentas` es { clave: n }; `n1` y `n2`, lo elegido. Por la ref
+ * El estante. `cuentas` es { clave: [láminas] }; `n1` y `n2`, lo elegido. Por la ref
  * expone `volar(clave, { rebote })`: una copia de `origen` (la ficha) vuela
  * al cajón y, con rebote, vuelve. Devuelve una promesa que se cumple al
  * llegar (o al instante, con movimiento reducido o sin animaciones).
@@ -118,7 +132,7 @@ const EstanteDeCajones = forwardRef(function EstanteDeCajones({ config, cuentas,
       display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", columnGap: "6px", alignItems: "end", margin: "0 0 10px",
     }}>
       <div style={{ gridColumn: "1", gridRow: "2" }}>
-        <Cajon clave={suelta.id} nombre={suelta.rotulo} cuantas={cuentas[suelta.id] ?? 0} encendido={sueltaOn} refDe={refDe} config={config} />
+        <Cajon clave={suelta.id} nombre={suelta.rotulo} laminas={cuentas[suelta.id]} encendido={sueltaOn} refDe={refDe} config={config} />
       </div>
       {/* La tapa del grupo: una pestaña sin borde inferior, apoyada sobre sus dos cajones. */}
       <div data-tapa={grupo.id} aria-hidden="true" style={{
@@ -132,7 +146,7 @@ const EstanteDeCajones = forwardRef(function EstanteDeCajones({ config, cuentas,
         const clave = claveDe(grupo.id, o.id);
         return (
           <div key={o.id} style={{ gridColumn: String(k + 2), gridRow: "2" }}>
-            <Cajon clave={clave} nombre={o.rotulo} cuantas={cuentas[clave] ?? 0} encendido={tapaOn && n2 === o.id} refDe={refDe} config={config} />
+            <Cajon clave={clave} nombre={o.rotulo} laminas={cuentas[clave]} encendido={tapaOn && n2 === o.id} refDe={refDe} config={config} />
           </div>
         );
       })}

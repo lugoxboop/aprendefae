@@ -12,7 +12,10 @@
  *   · el juego, del contador al botón, con el panel abierto: cuánto mide y si
  *     cabe en la ventana (menos 8 arriba y abajo);
  *   · al colocar, que haya vuelo (una copia que viaja) y, con movimiento
- *     reducido, que no lo haya; y que la lámina entre a su cajón correcto.
+ *     reducido, que no lo haya; y que la lámina entre a su cajón correcto;
+ *   · en escala de grises (filter: grayscale), que la lámina que llegó tras
+ *     el segundo fallo se distinga de la acertada por la forma: contorno
+ *     punteado y sin relleno, frente a la llena (Shoko).
  *
  * Sale con código 1 si algo falla. Necesita Playwright (no es dependencia del
  * repo): el de la máquina, o el de PLAYWRIGHT_MODULE.
@@ -88,7 +91,17 @@ for (const juego of ["#t5a1", "#t6a1", "#t6a7"]) {
         if (/resultado/.test(texto)) break;
         await siguiente.click();
       }
-      informe.push(`${tag}: estante ${alturaEstante.toFixed(2)} · juego con el panel abierto, el mayor ${mayor.toFixed(2)} (${mayor <= alto - 16 ? "cabe" : "NO cabe"} en ${alto - 16})${ancho === 320 && !reducido ? ` · líneas: ${lineas.join(" · ")}` : ""}`);
+      /* Al final de la tanda, en gris: cada lámina por su forma. */
+      await p.addStyleTag({ content: "html { filter: grayscale(1); }" });
+      const formas = await p.evaluate(() => [...document.querySelectorAll("[data-lamina]")].map((l) => {
+        const cs = getComputedStyle(l);
+        return { tipo: l.dataset.lamina, borde: cs.borderTopStyle, relleno: cs.backgroundColor };
+      }));
+      const segundas = formas.filter((f) => f.tipo === "segundo");
+      if (segundas.some((f) => f.borde !== "dashed" || f.relleno !== "rgba(0, 0, 0, 0)")) fallos.push(`${tag}: una lámina tras el segundo fallo no es punteada y vacía`);
+      if (formas.filter((f) => f.tipo === "bien").some((f) => f.borde === "dashed" || f.relleno === "rgba(0, 0, 0, 0)")) fallos.push(`${tag}: una lámina acertada no es llena`);
+      if (ancho === 320 && !reducido && process.env.CAPTURAS) await p.locator("[data-estante]").screenshot({ path: `${process.env.CAPTURAS}/estante-${juego.slice(1)}.png` });
+      informe.push(`${tag}: láminas ${formas.length - segundas.length} llenas y ${segundas.length} punteadas · estante ${alturaEstante.toFixed(2)} · juego con el panel abierto, el mayor ${mayor.toFixed(2)} (${mayor <= alto - 16 ? "cabe" : "NO cabe"} en ${alto - 16})${ancho === 320 && !reducido ? ` · líneas: ${lineas.join(" · ")}` : ""}`);
       await p.close();
     }
   }

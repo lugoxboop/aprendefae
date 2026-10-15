@@ -121,15 +121,25 @@ test("★★★ lo elegido se ilumina; al acertar, la lámina entra a su cajón;
   await tocar(botonColocar(caja));
   await espera();
   assert.deepEqual(cuantas(caja), { [D.DIRECTA]: 0, [`${D.PROVISIONES}/${D.CIERRE}`]: 1, [`${D.PROVISIONES}/${D.CASTIGAR}`]: 0 });
-  assert.equal(cajon(caja, `${D.PROVISIONES}/${D.CIERRE}`).querySelectorAll("[data-lamina]").length, 1);
-  assert.equal(cajon(caja, `${D.PROVISIONES}/${D.CIERRE}`).getAttribute("aria-label"), "Provisiones, al cierre: 1 ficha");
-  assert.equal(caja.querySelector("[data-anuncio-estante]").textContent, "Provisiones, al cierre: 1 ficha");
+  /* Shoko: la lámina que llega tras el segundo fallo se ve distinta, sin color: contorno punteado y sin relleno. */
+  const tras = cajon(caja, `${D.PROVISIONES}/${D.CIERRE}`).querySelectorAll("[data-lamina]");
+  assert.equal(tras.length, 1);
+  assert.equal(tras[0].dataset.lamina, "segundo");
+  assert.match(tras[0].style.border, /dashed/);
+  assert.equal(tras[0].style.background, "transparent");
+  assert.equal(cajon(caja, `${D.PROVISIONES}/${D.CIERRE}`).getAttribute("aria-label"), "Provisiones, al cierre: 1 ficha, 1 tras el segundo intento");
+  assert.equal(caja.querySelector("[data-anuncio-estante]").textContent, "Provisiones, al cierre: 1 ficha, 1 tras el segundo intento");
   /* Siguiente ficha: el brillo se apaga y lo colocado se queda. mc-01 es de anulación directa: se acierta. */
   await tocar(caja.querySelector("[data-boton-avanzar] button"));
   assert.ok(![...caja.querySelectorAll("[data-cajon]")].some(encendido), "brillo apagado");
   await marcar(caja, D.DIRECTA);
   await espera();
   assert.deepEqual(cuantas(caja), { [D.DIRECTA]: 1, [`${D.PROVISIONES}/${D.CIERRE}`]: 1, [`${D.PROVISIONES}/${D.CASTIGAR}`]: 0 });
+  /* La acertada: lámina llena y, sin ninguna tras el segundo intento, la lectura no añade nada. */
+  const llena = cajon(caja, D.DIRECTA).querySelector("[data-lamina]");
+  assert.equal(llena.dataset.lamina, "bien");
+  assert.doesNotMatch(llena.style.border, /dashed/);
+  assert.equal(cajon(caja, D.DIRECTA).getAttribute("aria-label"), "Anulación directa: 1 ficha");
   desmontar();
 });
 
