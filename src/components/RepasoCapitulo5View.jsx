@@ -14,6 +14,7 @@ import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
 import { CSS_JUEGO, Opcion, Opciones, Cierre } from "./mecanicas/corazon/juego.jsx";
 import { pesos } from "../data/contabilidad.js";
+import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente } from "./repasoCap5/comun.jsx";
 import {
   R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, UNIDADES_POR_CAJA,
   prepararR5_1, evaluarR5_1, puntuarR5_1, porTema, textoDeOpcion,
@@ -42,24 +43,7 @@ import {
 const MATERIA = "contabilidad";
 export const TEMA_REPASO_CAP5 = "repaso-capitulo-5";
 
-/* Los colores del paquete, con su nombre. */
-const C = {
-  hecho: "#CBDCF2",
-  navy: "#1D3557",
-  atenuado: "#B8C4D4",
-  texto: FAE.text,
-  ambar: FAE.ambar,
-  teal: FAE.teal,
-  coral: FAE.coral,
-};
-
-const INTER = "Inter, sans-serif";
-const SORA = "Sora, sans-serif";
-const MARCA = { fontFamily: INTER, fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: C.atenuado };
-const SOLO_LECTOR = {
-  position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px",
-  overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0,
-};
+const LECTOR_R5_1 = { acierto: PENDIENTE_DE_REVISION_R5_1.lectorAcierto, error: PENDIENTE_DE_REVISION_R5_1.lectorError };
 
 const CSS_R5 = `
 @keyframes r5-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -276,47 +260,6 @@ function ContenidoDeOpcion({ pantalla, opcion }) {
   return <span>{textoDeOpcion(pantalla, opcion)}</span>;
 }
 
-/* ═══════════ EL PANEL DE DEVOLUCIÓN ═══════════ */
-
-function Devolucion({ r }) {
-  const ok = r?.ok;
-  return (
-    <div aria-live="polite" data-devolucion={r ? (ok ? "acierto" : "error") : "vacia"}>
-      {r && (
-        <div
-          style={{
-            marginTop: "14px", padding: "12px 14px", borderRadius: "12px",
-            background: ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
-            borderLeft: `3px solid ${ok ? C.atenuado : C.coral}`,
-          }}
-        >
-          <p style={{ margin: 0, fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.texto }}>
-            <span style={SOLO_LECTOR}>{ok ? PENDIENTE_DE_REVISION_R5_1.lectorAcierto : PENDIENTE_DE_REVISION_R5_1.lectorError}</span>
-            {r.texto}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function BotonSiguiente({ onClick, botonRef }) {
-  return (
-    <button
-      ref={botonRef}
-      type="button"
-      onClick={onClick}
-      data-siguiente
-      style={{
-        marginTop: "14px", width: "100%", minHeight: "44px", padding: "13px 18px", borderRadius: "999px", cursor: "pointer",
-        background: C.ambar, border: "none", color: C.navy, fontFamily: SORA, fontSize: "14px", fontWeight: 700,
-      }}
-    >
-      {INTERFAZ_R5_1.siguiente}
-    </button>
-  );
-}
-
 /* ═══════════ EL BLOQUE «POR TEMA» DEL FINAL ═══════════ */
 
 function PorTema({ filas }) {
@@ -439,8 +382,8 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
           </div>
         ))}
       </Opciones>
-      <Devolucion r={r} />
-      {r && <BotonSiguiente onClick={siguiente} botonRef={boton} />}
+      <Devolucion r={r && { ok: r.ok, textos: [r.texto] }} lector={LECTOR_R5_1} />
+      {r && <BotonSiguiente onClick={siguiente} botonRef={boton} texto={INTERFAZ_R5_1.siguiente} />}
     </div>
   );
 }
