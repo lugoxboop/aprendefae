@@ -77,6 +77,9 @@ const FUTABA = GUIA.slice(GUIA.indexOf("## (1) Futaba"), GUIA.indexOf("## (2) Fu
 /* La sección (2): las líneas que Shoko pasó y Futaba aplicó. Mandan sobre (1), por id y campo. */
 const SECCION_2 = GUIA.slice(GUIA.indexOf("## (2) Futaba"));
 const filas2 = SECCION_2.split("\n").map((l) => l.split("\t"));
+/* «La casilla 7 queda así: ✓ $53.000 · ✗ $44.000 (P7) · ✗ $84.000 (P4).» → las tres celdas, en la forma de (1). */
+const CASILLA_7 = SECCION_2.match(/La casilla 7 queda así: (.*)\.\n/)[1].split(" · ")
+  .map((c) => c.replace(/^[✓✗] /, "").replace(/ \((P\d)\)$/, " → $1"));
 const cambio = (id, campo) => filas2.find((c) => c[0] === id && c[1] === campo)?.slice(2);
 const filas = FUTABA.split("\n").map((l) => l.split("\t"));
 const fila = (primera) => filas.find((c) => c[0] === primera);
@@ -87,8 +90,8 @@ test("guarda: el paquete trae las ocho casillas y los diez errores, y una invent
   for (let k = 1; k <= 8; k++) assert.ok(fila(String(k)), `casilla ${k}`);
   for (const t of ["G0", "G1", "G2", "G3", "P1", "P2", "P4", "P5", "P6"]) assert.ok(filaTipo(t), t);
   /* La sección (2): P3 se retira y entra P7. */
-  assert.equal(cambio("P3", "Error")[0], "Se retira.");
-  assert.ok(cambio("P7 · falta un grupo", "Error"));
+  assert.match(cambio("P3", "—")[0], /^Se elimina\./);
+  assert.ok(cambio("P7 · falta un grupo", "Devolución"));
   assert.equal(fila("9"), undefined);
 });
 
@@ -96,8 +99,11 @@ test("★★★ los textos fijos son los del paquete: consigna, regla en tabla, 
   assert.equal(D.T6_ACT6.consigna, fila("Consigna")[1]);
   /* La fila 1 cambia (sección 2); las filas 2 a 4 siguen como en (1). */
   const [, ...resto] = fila("Regla fija (tabla)")[1].split(" · ");
-  assert.deepEqual(D.GRUPOS_T6_ACT6.map((g) => `${g.nombre}: ${g.porcentaje}`), [cambio("Regla fija, fila 1", "Texto")[0], ...resto]);
-  assert.deepEqual(D.GRUPOS_T6_ACT6.map((g) => g.pie), [cambio("Regla fija, fila 1", "Pie")[0], ...Array(3).fill(cambio("Regla fija, filas 2 a 4", "Pie")[0])]);
+  const [fila1, pie1] = cambio("Regla fija · fila 1", "Tabla");
+  const [sinCambios, pie2a4] = cambio("Regla fija · filas 2 a 4", "Tabla");
+  assert.equal(sinCambios, `Sin cambios: ${resto.map((r) => r.split(": ")[1]).join(", ").replace(/, ([^,]*)$/, " y $1")}`);
+  assert.deepEqual(D.GRUPOS_T6_ACT6.map((g) => `${g.nombre}: ${g.porcentaje}`), [fila1, ...resto]);
+  assert.deepEqual(D.GRUPOS_T6_ACT6.map((g) => g.pie), [pie1, pie2a4, pie2a4, pie2a4]);
   assert.doesNotMatch(D.GRUPOS_T6_ACT6[0].porcentaje, /0 %/, "el 0 % no es del Decreto");
   assert.equal(D.T6_ACT6.nota, fila("Nota bajo la regla")[1]);
   D.REGLAS_T6_ACT6.forEach((r, k) => assert.equal(r, fila(`Así se juega, ${k + 1}`)[1]));
@@ -134,12 +140,12 @@ test("★★★ parte 1: cada deuda, su grupo correcto y el error de cada grupo 
 test("★★★ parte 2: cada casilla, su correcta y sus distractores con su tipo; los diez errores literales", () => {
   D.PARTES_T6_ACT6[1].casillas.forEach((c, k) => {
     const [, enunciado] = fila(String(k + 4));
-    const [bien, mal1, mal2] = cambio(String(k + 4), "Opciones") ?? fila(String(k + 4)).slice(2);
+    const [bien, mal1, mal2] = k + 4 === 7 ? CASILLA_7 : fila(String(k + 4)).slice(2);
     assert.equal(c.enunciado, sinCifra(enunciado), `casilla ${k + 4}`);
     const op = (celda) => { const [v, t] = celda.split(" → "); return { valor: cifras(v)[0], tipo: t ?? null }; };
     assert.deepEqual(c.opciones, [op(bien), op(mal1), op(mal2)], `casilla ${k + 4}: opciones`);
   });
-  const nuevo = (t) => filas2.find((c) => c[0].startsWith(`${t} ·`))?.[2];
+  const nuevo = (t) => filas2.find((c) => c[0].startsWith(`${t} ·`))?.[2]?.replace(/ \(\d+\)$/, "");
   for (const t of Object.keys(D.ERRORES_T6_ACT6)) assert.equal(D.ERRORES_T6_ACT6[t], nuevo(t) ?? filaTipo(t)[1], t);
   assert.equal(D.ERRORES_T6_ACT6.P3, undefined, "P3 se retira");
   /* Cada tipo de error de la parte 2 se usa en alguna casilla. */

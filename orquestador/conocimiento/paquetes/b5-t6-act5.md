@@ -70,13 +70,17 @@ Cierre	El texto de cierre y el porcentaje
 
 ## (2) Futaba · líneas que cambian, con PASA de Shoko (pegadas tal cual)
 
-Mandan sobre (1). Decisión de Sakuta: b5-t6-a5 se queda como repaso del caso de El Torito, con sus devoluciones reescritas (ya no copian B·C15 ni B·C12 de b5-t6-a2). Se aplican tal cual, por actividad e id. Del texto pegado se quitaron las líneas de la interfaz del chat.
+Mandan sobre (1). Decisión de Sakuta: se aplican tal cual, por actividad e id; b5-t6-a5 se queda como repaso del caso de El Torito, con sus devoluciones reescritas (ya no copian las de b5-t6-a2). Del texto pegado se quitaron las líneas de la interfaz del chat.
 
-b5-t6-a5 · «La cuenta de la provisión»
-Id	Campo	Texto nuevo (literal)
-Tutorial	Punto de partida	El 31 de diciembre de 2007, El Torito Currambero revisa lo que le deben sus clientes: $2.655.000. Calcula que una parte no se va a recuperar: $148.800. Al crear la provisión, su saldo queda en $148.800.
-T3 · C15	Error	La provisión no pone el límite: lo que manda es la deuda de Pablo Moncayo. Por eso se debita la provisión por los $180.000 completos, aunque solo tuviera $148.800.
-T7 · C12	Error	El análisis dice cuánto debe quedar en la provisión, pero en marzo quedó corta. Para llegar a esa cifra, al registro hay que sumarle los $31.200 que faltaron.
-T9	Error	Ese es el valor del ajuste, no el saldo. Antes del ajuste, a la provisión le faltaban $31.200.
+Id	Campo	Texto nuevo (literal)	Estim.	Motivo
+Tutorial	Texto	El 31 de diciembre de 2007, El Torito Currambero revisa lo que le deben sus clientes: $2.655.000. Calcula que una parte no se va a recuperar: $148.800. Al crear la provisión, su saldo queda en $148.800.	75	Nombre completo en la primera mención.
+T3 · C15	Devolución	La provisión no pone el límite: lo que manda es la deuda de Pablo Moncayo. Por eso se debita la provisión por los $180.000 completos, aunque solo tuviera $148.800.	76	Tu decisión: es el mismo error que en a2, con otras palabras.
+T7 · C12	Devolución	El análisis dice cuánto debe quedar en la provisión, pero en marzo quedó corta. Para llegar a esa cifra, al registro hay que sumarle los $31.200 que faltaron.	75	Tu decisión: es el mismo error que en a2, con otras palabras.
+T9	Devolución	Ese es el valor del ajuste, no el saldo. Antes del ajuste, a la provisión le faltaban $31.200.	87	Obligatoria: es el texto de Shoko. Ya no deja la pista para restar 184.600 − 180.000.
 
-Para Mai, pendiente: las cifras de siete dígitos del paso 11 de T6 A5.
+Comparación con b5-t6-a2:
+
+T3 frente a la B·C15 de a2. La de a2 dice «Se castiga toda la deuda… aunque la provisión sea menor». La nueva explica quién pone el límite: la deuda, no la provisión.
+T7 frente a la B·C12 de a2. La de a2 da la suma. La nueva explica para qué se suma: para llegar a lo que pide el análisis.
+
+Para Mai, pendiente: el largo del paso 11 de T6 A5 (las cifras de siete dígitos, 1.300.000 y 1.226.000).

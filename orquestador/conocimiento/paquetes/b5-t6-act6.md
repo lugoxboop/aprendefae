@@ -101,13 +101,20 @@ Para Kaede: en a5 y a6 la mecánica de casillas tiene que revelar el valor corre
 
 Mandan sobre (1). Decisión de Sakuta: se aplican tal cual, por actividad e id. Del texto pegado se quitaron las líneas de la interfaz del chat.
 
-b5-t6-a6 · «Provisión por edades»
-Id	Campo	Texto nuevo (literal)
-Regla fija, fila 1	Texto	Vigentes o hasta 3 meses: no se provisiona, en este ejemplo
-Regla fija, fila 1	Pie	Escenario simulado
-Regla fija, filas 2 a 4	Pie	Fuente del porcentaje: Decreto 1625 de 2016
-7	Opciones	$53.000	$44.000 → P7	$84.000 → P4
-P7 · falta un grupo	Error	Te falta un grupo. Suma la provisión de los tres grupos que sí la llevan.
-P3	Error	Se retira.
+Id	Campo	Texto nuevo (literal)	Pie	Motivo
+Regla fija · fila 1	Tabla	Vigentes o hasta 3 meses: no se provisiona, en este ejemplo	Escenario simulado	Obligatoria 1: el 0 % no es del Decreto.
+Regla fija · filas 2 a 4	Tabla	Sin cambios: 5 %, 10 % y 15 %	Fuente del porcentaje: Decreto 1625 de 2016	—
+Casilla 7	Distractor	$44.000 (28.000 + 16.000) → P7, en lugar de $1.347.000	—	Obligatoria 2: la casilla 7 ya no delata la casilla 8.
+P7 · falta un grupo	Devolución	Te falta un grupo. Suma la provisión de los tres grupos que sí la llevan. (108)	—	Error nuevo.
+P3	—	Se elimina. Ya no hay ninguna opción que la use.	—	—
 
-El 0 % no es del Decreto: la fila 1 lleva el pie del escenario. Las filas 2 a 4 no cambian (5 %, 10 % y 15 %). En la casilla 7, el distractor $44.000 (28.000 + 16.000) sustituye a $1.347.000.
+La casilla 7 queda así: ✓ $53.000 · ✗ $44.000 (P7) · ✗ $84.000 (P4).
+
+Cruce, rehecho:
+
+La búsqueda de las cifras de a6 ya excluía las cifras de T6 A5 que van en el PR #136: 1.300.000, 460.000, 340.000, 360.000, 140.000, 17.000, 36.000, 21.000, 74.000, 1.226.000, 380.000, 19.000, 38.000 y 57.000. Ninguna coincide.
+El distractor nuevo, $44.000, no aparece en el capítulo ni en T6 A5.
+
+Para Kaede: la parte 1 tiene cuatro opciones por casilla, una por grupo. Confirma que la mecánica de la Escalera las admite. Si solo admite tres, quito el grupo más lejano de cada casilla: para la deuda de 2 meses, «más de 1 año»; para las de 6 y 14 meses, «vigentes o hasta 3 meses».
+
+Kaede: la admite (CasillasEnOrden acepta cualquier número de opciones por casilla); quedan las cuatro.
