@@ -35,8 +35,8 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 
 ## Bloque 0 · Apertura del capítulo (pp. 177-179, hasta el título de §5.1) → pieza A0
 
-- **Portada (p. 177).** Capítulo «5 ACTIVOS CORRIENTES». Objetivos: conocer el grupo de bienes que conforman el activo corriente; manejar correctamente los movimientos del efectivo; manejar el movimiento de la cuenta deudores; saber los sistemas de inventarios; contabilizar compraventas con esos sistemas; contabilizar el impuesto a las ventas, la retención en la fuente, los fletes y los descuentos; hacer el estado de resultados de las empresas comerciales. Sin cifras ni cuentas.
-- **Definición (p. 178), en paráfrasis:** un activo es corriente si puede volverse efectivo en menos de un año (frase clave del libro: «en un periodo inferior a un año»). Ejemplos del libro: el efectivo en caja, los depósitos en bancos, las inversiones a corto plazo, la cartera y los inventarios.
+- **Portada (p. 177).** Capítulo «5 ACTIVOS CORRIENTES». Objetivos, en paráfrasis: saber qué bienes forman el activo corriente; manejar el efectivo y la cuenta de deudores; conocer los sistemas de inventario y registrar con ellos compras y ventas; registrar el IVA, la retención, los fletes y los descuentos; preparar el estado de resultados de una empresa comercial. Sin cifras ni cuentas.
+- **Definición (p. 178), en paráfrasis:** un activo es corriente si puede volverse efectivo en menos de un año (frase clave del libro: «en un periodo inferior a un año»). Ejemplos del libro: efectivo en caja, depósitos en bancos, cartera, inventarios e inversiones a corto plazo.
 - **Qué afirma.** Los activos corrientes permiten operar (comprar mercancías, pagar gastos, adquirir activos fijos, pagar pasivos). Del volumen de activos corrientes depende el capital de trabajo, que es activo corriente menos pasivo corriente (p. 178). Son los que pueden convertirse en efectivo en menos de un año: caja, bancos, inversiones a corto plazo, cartera e inventarios (p. 178). A los acreedores les interesa más la capacidad de pago que los activos fijos (pp. 178-179). El activo corriente no debe ser más del necesario para operar al 100 %: operar con activos para el 120 % significa un 20 % subutilizado; operar al 90 % significa que falta liquidez y hay que cubrirla con financiación externa o aportes, con su costo (p. 179).
 - **Cifras.** 100 %, 120 %, 20 %, 90 % (p. 179). Son ilustrativas, sin cálculo.
 - **Cuentas.** Ninguna.
@@ -61,7 +61,7 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
    6. Pólizas de manejo para quienes manejan el dinero (p. 180).
    7. Una caja menor para los pagos pequeños (p. 180).
 3. **Regla (p. 180), en paráfrasis.** Como Caja es un activo, se debita al recibir dinero y se acredita al consignarlo o al pagar en efectivo.
-4. **Ejemplo Sus Servicios Ltda. (p. 180).** Durante el día presta el servicio de mantenimiento de computadoras a varios clientes por **$435.000**; todos pagan de contado. El dinero se deposita ese mismo día en la cuenta corriente.
+4. **Ejemplo Sus Servicios Ltda. (p. 180).** En un día arregla computadoras de varios clientes, que le pagan de contado en total **$435.000**. El dinero se deposita ese mismo día en la cuenta corriente.
    - Asiento 1, «Contabilización del recibo del dinero»: Caja 435.000 al debe / Ingresos por servicios 435.000 al haber. Fecha «xxxx».
    - Asiento 2, «Consignación del dinero en la cuenta corriente»: Bancos 435.000 al debe / Caja 435.000 al haber. Fecha «xxxx».
    - Que esta consignación sale de Caja lo muestra el asiento 2. En pantalla se presenta como «mira el asiento de la p. 180» (decisión de Yujiro, I5). La regla general de la p. 180 («acreditar cuando los dineros se consignan») también lo sostiene.
@@ -78,7 +78,7 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 
 **[2] Qué afirma el libro:**
 
-1. **Definición (p. 181), en paráfrasis.** La caja menor es un fondo en efectivo «fijo y renovable» para gastos pequeños, urgentes o imprevistos. La maneja una sola persona designada, que responde por él en varios planos, entre ellos el disciplinario y el penal.
+1. **Definición (p. 181), en paráfrasis.** La caja menor es un fondo de efectivo «fijo y renovable» para gastos pequeños, urgentes o imprevistos. La maneja una sola persona designada, que responde por él en varios planos, entre ellos el disciplinario y el penal.
 2. **Funciones del responsable (p. 181), en paráfrasis:** pagar lo autorizado; guardar la plata y los soportes; aplicar las retenciones de ley; pedir el reembolso a tiempo.
 3. **Regla (p. 181), en paráfrasis.** Se debita al crear o aumentar el fondo y se acredita al disminuirlo o cancelarlo. El texto dice «la cuenta de caja», pero los asientos mueven Caja menor (errata D4-7).
 4. **Manejo contable, cuatro pasos numerados:**
@@ -123,7 +123,7 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
   Recalculado: 34.000 + 32.000 + 28.300 + 63.400 + 107.200 + 34.100 + 47.100 + 132.000 = **478.100. Cuadra**, y las tres copias de la lista son idénticas.
 
 - **Situación 1 · cuadra (p. 184).** Efectivo en billetes y monedas: **$21.900**. 478.100 + 21.900 = 500.000: ni sobrante de caja menor ni faltante de caja menor. Reembolso «en mayo 31»: may-01 [D4-2] · Gastos generales 478.100 / Bancos 478.100. **Cuadra.**
-- **Situación 2 · sobrante de caja menor (pp. 184-185).** Efectivo: **$24.000**. Suma 478.100 + 24.000 = 502.100; sobrante de caja menor **$2.100**. Asiento may-01 [D4-2]: Gastos generales 478.100 al debe / Ingresos no operacionales -sobrante de caja menor 2.100 al haber / Bancos 476.000 al haber. «A pesar de que los gastos son $478.100, solo se reembolsa $476.000». Recalculado: 502.100 − 500.000 = 2.100; 478.100 − 2.100 = 476.000; 2.100 + 476.000 = 478.100. **Cuadra.**
+- **Situación 2 · sobrante de caja menor (pp. 184-185).** Efectivo: **$24.000**. Suma 478.100 + 24.000 = 502.100; sobrante de caja menor **$2.100**. Asiento may-01 [D4-2]: Gastos generales 478.100 al debe / Ingresos no operacionales -sobrante de caja menor 2.100 al haber / Bancos 476.000 al haber. El libro subraya que el reembolso (476.000) es menor que los gastos (478.100). Recalculado: 502.100 − 500.000 = 2.100; 478.100 − 2.100 = 476.000; 2.100 + 476.000 = 478.100. **Cuadra.**
 - **Situación 3 · faltante de caja menor (pp. 185-186).** Efectivo: **$15.200**. Suma 478.100 + 15.200 = 493.300; faltante de caja menor **$6.700**.
   - Cargado al cajero (p. 186): xxxx · Gastos generales 478.100 al debe / Cuentas por cobrar -empleados 6.700 al debe / Bancos 484.800 al haber. «Aunque los gastos son $478.100, se debe reembolsar $484.800».
   - Llevado a gastos (p. 186): may-01 [D4-2] · Gastos generales 478.100 al debe / Gastos no operacinales [sic, D4-3] -faltante de caja menor 6.700 al debe / Bancos 484.800 al haber.
@@ -188,7 +188,7 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 | n.º 146 (p. 189) / n.º 145 (p. 190) [D4-5] | mar-30 | 125.000 | Laura García |
 
 - d. Consignaciones del 31 de marzo por **$2.758.000** no abonadas por el banco.
-- e. Notas crédito: 18 de marzo, **$645.000**, pago de la factura 1234 hecho directamente al banco por el cliente Efraín Martínez; 30 de marzo, **$342.000**, intereses de las inversiones que la empresa tiene en el banco.
+- e. Notas crédito: 18 de marzo, **$645.000**, el cliente Efraín Martínez pagó la factura 1234 directo en el banco; 30 de marzo, **$342.000**, intereses de las inversiones que la empresa tiene en el banco.
 - f. Notas débito: «del día 14», **$43.500**, chequera; «del día 20», **$236.000**, intereses de sobregiro; «del día 26», **$468.000**, cheque devuelto del cliente Humberto Gómez. (El mes no se escribe; por el contexto es marzo.)
 - Las notas débito y crédito no se han contabilizado en los libros de la empresa.
 
@@ -262,14 +262,14 @@ Cuando esté aprobado, esto pasa a `vocabulario/contabilidad.md` por quien lo ad
 | D4-7 | 181 | En la sección de caja menor, la regla habla de «la cuenta de caja» al describir cuándo se debita y se acredita el fondo, pero los asientos de apertura y aumento debitan **Caja menor**, y el de disminución (p. 182) acredita Caja menor y debita **Caja**. La frase solo es coherente si «caja» quiere decir «caja menor». **Decisión de Yujiro: se enseña lo que hacen los asientos (Caja menor); si se cita la frase, va con la aclaración.** | Media: puede leerse como uso genérico, pero tal cual confunde las dos cuentas |
 | D4-8 | 183 | En el modelo de faltante de caja menor al cajero, «Cuentas por cobrar -empleados» va **sangrado como un crédito**, pero su valor está en la columna Debe. En el ejemplo de la p. 186 no va sangrado. Además, en la plantilla del sobrante de caja menor, «Bancos» va **sin sangría** aunque es un crédito (añadido en segunda lectura por Shibukawa, su E8). | Media: la columna manda |
 | D4-9 | 187 | La enumeración de movimientos del libro auxiliar repite «las consignaciones» (al principio y al final). | Alta, sin efecto |
-| D4-10 | 188 | «Por lo general, el saldo del extracto bancario **nunca** coincide»: «por lo general» y «nunca» se contradicen. No se debe enseñar «nunca». | Media (redacción, no cifra) |
+| D4-10 | 188 | La frase sobre si coinciden los saldos dice a la vez «por lo general» y «nunca», y las dos cosas se contradicen. No se debe enseñar «nunca». | Media (redacción, no cifra) |
 | D4-11 | 185, 186 | El ejemplo dice «la cajera menor» (Rosa Primorosa) y los textos de los asientos dicen «el **cajero** menor» y «cargado al **cajero**». | Baja: puede ser masculino genérico |
 | D4-12 | 178 (ahora dentro de T4, pieza A0) | «**ente** otros aspectos» dos veces, por «entre». El primer párrafo de la introducción se repite casi literal en el cuarto, y el segundo con el quinto (lo segundo, comprobado por Shibukawa). | Alta, sin efecto en cifras |
 | D4-13 | 189 | «correspondientes a **el** pago de la factura número 1234» por «al pago». Encontrada en segunda lectura (Shibukawa, su E9). | Alta, sin efecto |
 | D4-14 | 190 | «Total Notas **créditos**» frente a «Notas de crédito» y «Total Notas débito» de la misma tabla. Encontrada en segunda lectura (Shibukawa, su E10). | Alta, sin efecto |
 | D4-15 | 190 | «Cheques devueltos, cliente Humberto Gómez», en plural, cuando la p. 189 habla de **un** cheque devuelto. Encontrada en segunda lectura (Shibukawa, su E11). | Alta, sin efecto en cifras |
 | D4-16 | 191 | Mayúsculas desiguales en los nombres de cuenta de los ajustes («Ingresos Financieros -interés», «Gastos financieros -Interés», «Gastos financieros -chequera»). Encontrada en segunda lectura (Shibukawa, su E13). | Alta, sin efecto |
-| D4-17 | 186 | «si se decide llevar **al** faltante a los gastos del periodo» por «llevar **el** faltante». Encontrada en segunda lectura (Shibukawa, su E14, a 400 ppp; ninguno de los dos la vio en la primera). | Alta, sin efecto |
+| D4-17 | 186 | «llevar **al** faltante» por «llevar **el** faltante», en la frase que introduce el segundo tratamiento del faltante de caja menor. Encontrada en segunda lectura (Shibukawa, su E14, a 400 ppp; ninguno de los dos la vio en la primera). | Alta, sin efecto |
 
 **Cómo se tratan (canon de Erwin, 15 de octubre):** ninguna se corrige en silencio. Cada paquete lleva una sección «Erratas que toca esta pieza» con la lectura que usamos, la razón y dónde queda anotada. Esta tabla es la lista canónica de T4. Equivalencia con la lista de Shibukawa: E1=D4-1, E2=D4-2, E3=D4-5, E4=D4-6, E5=D4-3, E6=D4-4, E7=D4-9, E8=D4-8, E9=D4-13, E10=D4-14, E11=D4-15, E12=D4-11, E13=D4-16, E14=D4-17; I1=D4-7, I3=D4-10.
 
