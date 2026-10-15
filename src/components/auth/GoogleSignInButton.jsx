@@ -141,6 +141,12 @@ export default function GoogleSignInButton({ size = "large", adaptable = false }
             border: "1px solid rgba(248,249,250,0.28)",
             borderRadius: "999px",
             padding: "10px 18px",
+            /* 44 px: el mínimo que un dedo acierta a 320 px (kit.md). Con el
+               rótulo corto de móvil («Entrar») el relleno solo daba 40. */
+            minHeight: "44px",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
             cursor: "pointer",
           }}
         >

@@ -94,9 +94,17 @@ const informe = await pagina.evaluate((MIN) => {
         tapaQuien = ot ? `«${(ot.getAttribute("aria-label") || ot.textContent || "").trim().slice(0, 20)}»` : `<${encima.tagName.toLowerCase()}>`;
       }
     }
-    const cabeEnElDibujo = x.w >= MIN && x.h >= MIN;
+    /*
+     * «Tapado» manda sobre «pequeño», mida lo que mida. Antes se exigía que
+     * el dibujo ya llegara a 44 para poder decir «tapado», y entonces las
+     * caras traseras de las tarjetas plegadas del índice —58×28, perfectamente
+     * sanas, simplemente debajo de la cara de delante— salían NUEVE VECES como
+     * defecto de tamaño. Si otro elemento recibe el toque, eso es lo que hay
+     * que informar: un control pequeño se arregla con tamaño y uno tapado no,
+     * y confundirlos manda a arreglar lo que no está roto.
+     */
     medidos.push({ nombre: x.nombre, dibujo: `${Math.round(x.w)}×${Math.round(x.h)}`, aciertos,
-      causa: aciertos === 4 ? null : (cabeEnElDibujo && tapaQuien ? `tapado por ${tapaQuien}` : "pequeño") });
+      causa: aciertos === 4 ? null : (tapaQuien ? `tapado por ${tapaQuien}` : "pequeño") });
   }
 
   const solapes = [];
