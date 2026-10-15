@@ -15,7 +15,7 @@
 
 /* El rótulo, igual al de «Así lo dice el libro» en CuatroCapas. */
 const ROTULO = {
-  display: "block", margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "10px",
+  display: "block", margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "12px",
   fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(248,249,250,0.5)",
 };
 
