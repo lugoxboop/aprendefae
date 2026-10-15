@@ -197,6 +197,18 @@ test("★★ el cierre y su pie; INFLESZ de todo texto de 10 palabras o más, 65
   assert.deepEqual(medidos.filter((x) => !x.r.cumple).map((x) => `${x.r.valor} · ${x.t}`), []);
 });
 
+test("★★★ los textos de interfaz son los que aprobó Katsumi en el paquete («Textos de interfaz»), y no queda ninguna marca de pendiente", () => {
+  const i = S1.indexOf("## Textos de interfaz");
+  assert.ok(i > 0, "el paquete de H3 no trae la sección de textos de interfaz revisados");
+  const sec = S1.slice(i, S1.indexOf("\n## ", i + 5));
+  const citas = new Set([...sec.matchAll(new RegExp(CITA, "g"))].map((m) => m[1]));
+  for (const t of [D.MISMO_LADO, ...Object.values(D.BOTON_H3), D.CORRECTO, D.INCORRECTO, D.ROTULO_ASIENTO_H3]) assert.ok(citas.has(t), `«${t}» no está entre los textos aprobados`);
+  assert.ok(citas.has(D.resumenH3("N", 4)), "el resumen no es el aprobado");
+  assert.match(sec, /\*\*Demo de Así se juega:\*\* su acierto es el texto alternativo de la apertura de Papelería Arcoíris\. Aprobado\./);
+  assert.equal(D.EJEMPLO_H3.acierto, D.ALT_H3);
+  assert.doesNotMatch(leer("src/data/contabilidadT4H3.js"), /PENDIENTE DE REVISIÓN/);
+});
+
 /* ═══════════ 2 · LO QUE SE VE ═══════════ */
 
 const Marco = ({ children }) => h("div", { "data-marco": true }, children);

@@ -167,6 +167,31 @@ test("★★★ las opciones de las dos preguntas son las del paquete, con su re
   }
 });
 
+/*
+ * Los textos de interfaz de la figura, revisados por Katsumi: desde el #181,
+ * su fuente es la sección «Textos de interfaz…» del paquete base. Cada texto
+ * alternativo, rótulo y nombre de los datos tiene que estar allí, letra por
+ * letra.
+ */
+const INTERFAZ_A2 = (() => {
+  const i = V1.indexOf("## Textos de interfaz de la figura");
+  return i < 0 ? "" : V1.slice(i, V1.indexOf("\n## ", i + 5));
+})();
+test("★★★ los textos de interfaz (alternativos, rótulos, nombres para el lector) son los que aprobó Katsumi en el paquete", () => {
+  assert.ok(INTERFAZ_A2.length > 500, "el paquete de A2 no trae la sección de textos de interfaz revisados");
+  const citas = new Set([...INTERFAZ_A2.matchAll(new RegExp(CITA, "g"))].map((m) => m[1]));
+  /* «  - *apertura:* «…»» o «  - *gastos* (P4 y P5…): «…»». */
+  const alt = [...INTERFAZ_A2.matchAll(new RegExp(`^  - \\*([a-z0-9-]+):?\\*[^«\\n]*${CITA}`, "gm"))].map((m) => [m[1], m[2]]);
+  assert.equal(alt.length, 5, "no se leyeron los cinco textos alternativos del paquete");
+  for (const [estado, texto] of alt) assert.equal(Z.ALT_SOBRE_A2[estado], texto, `alternativo de ${estado}`);
+  const F = Z.FIGURA_SOBRE;
+  for (const t of [F.rotuloSobre, F.rotuloLibro, F.fondo, F.billetes, F.soportes, F.suman, F.sinContar, F.cheque, F.chequeSale, ...Object.values(F.notas), ...Object.values(Z.NOMBRE_ASIENTO_A2), Z.NOMBRE_TABLA_GASTOS, Z.SIGNO_MODELO.visible, Z.SIGNO_MODELO.lector]) {
+    assert.ok(citas.has(t), `«${t}» no está entre los textos aprobados`);
+  }
+  /* Ninguna marca de pendiente queda en los datos de A2. */
+  assert.doesNotMatch(leer("src/data/contabilidadT4A2.js"), /PENDIENTE DE REVISIÓN/);
+});
+
 /* ═══════════ 2 · LAS CIFRAS SE CALCULAN, Y LOS ASIENTOS SON LOS DEL PAQUETE ═══════════ */
 
 const num = (t) => (t ? Number(t.replace(/\./g, "")) : null);
