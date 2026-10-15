@@ -27,6 +27,14 @@ export const ICONO_POR_ACTIVIDAD = {
   "cu-saldo-de-la-cuenta": I.ElSaldoDeLaCuenta,
   "cu-arma-el-asiento": I.ArmaElAsiento,
   "cu-asiento-compuesto": I.ElAsientoCompuesto,
+  /* Tema 3 */
+  "t3-ingreso-o-cobro": I.IngresoOCobro,
+  "t3-cuando-se-causa": I.CuandoSeCausa,
+  "t3-ajuste-acumulado": I.ArmaElAjusteAcumulado,
+  "t3-ajuste-diferido": I.ArmaElAjusteDiferido,
+  "t3-mismo-hecho": I.ElMismoHechoDosEmpresas,
+  "t3-que-le-toca": I.QueLeTocaAEstePeriodo,
+  "t3-cierre-completo": I.ElCierreCompleto,
 };
 
 /** Los nodos del camino con su ícono, si lo tienen. */

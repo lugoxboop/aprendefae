@@ -13,6 +13,13 @@ import t24 from "./conta-t2-4-debe-o-haber.svg?raw";
 import t25 from "./conta-t2-5-el-saldo-de-la-cuenta.svg?raw";
 import t26 from "./conta-t2-6-arma-el-asiento.svg?raw";
 import t27 from "./conta-t2-7-el-asiento-compuesto.svg?raw";
+import t31 from "./conta-t3-1-ingreso-o-cobro.svg?raw";
+import t32 from "./conta-t3-2-cuando-se-causa.svg?raw";
+import t33 from "./conta-t3-3-arma-el-ajuste-acumulado.svg?raw";
+import t34 from "./conta-t3-4-arma-el-ajuste-diferido.svg?raw";
+import t35 from "./conta-t3-5-el-mismo-hecho-dos-empresas.svg?raw";
+import t36 from "./conta-t3-6-que-le-toca-a-este-periodo.svg?raw";
+import t37 from "./conta-t3-7-el-cierre-completo.svg?raw";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -76,3 +83,10 @@ export const SeDebitaOSeAcredita = icono("SeDebitaOSeAcredita", t24);
 export const ElSaldoDeLaCuenta = icono("ElSaldoDeLaCuenta", t25);
 export const ArmaElAsiento = icono("ArmaElAsiento", t26);
 export const ElAsientoCompuesto = icono("ElAsientoCompuesto", t27);
+export const IngresoOCobro = icono("IngresoOCobro", t31);
+export const CuandoSeCausa = icono("CuandoSeCausa", t32);
+export const ArmaElAjusteAcumulado = icono("ArmaElAjusteAcumulado", t33);
+export const ArmaElAjusteDiferido = icono("ArmaElAjusteDiferido", t34);
+export const ElMismoHechoDosEmpresas = icono("ElMismoHechoDosEmpresas", t35);
+export const QueLeTocaAEstePeriodo = icono("QueLeTocaAEstePeriodo", t36);
+export const ElCierreCompleto = icono("ElCierreCompleto", t37);
