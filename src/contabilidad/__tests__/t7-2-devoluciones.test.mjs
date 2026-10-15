@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -54,7 +55,7 @@ const P = A.PIEZA_DEVOLUCIONES;
  * El lote 2 de Near (pistas y anexo): sus textos valen como los del paquete,
  * pero solo los de esta pieza (su sección de pistas y sus filas del anexo).
  */
-const LOTE2 = (f) => readFileSync(new URL(`orquestador/conocimiento/paquetes/lote2-${f}-v1.md`, RAIZ), "utf8");
+const LOTE2 = (f) => conCorreccionesDeMello(readFileSync(new URL(`orquestador/conocimiento/paquetes/lote2-${f}-v1.md`, RAIZ), "utf8"));
 let l2;
 function L2() {
   if (l2 !== undefined) return l2;

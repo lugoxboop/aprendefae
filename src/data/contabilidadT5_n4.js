@@ -109,7 +109,7 @@ export const ITEMS_N4 = [
     id: "asiento-del-cobro", tipo: "asiento",
     pregunta: "Ubica cada línea del asiento del cobro: Debe o Haber.",
     lineas: [
-      { id: "caja", cuenta: "Caja", valor: C.interes1, lado: DEBE, retro: "Caoba recibe el dinero en Caja. Es un activo que aumenta: va al debe.", distractores: [{ cuenta: "Inversiones – títulos", retro: "El interés no cambia la inversión: Caoba sigue con los mismos títulos." }, { cuenta: "Ingresos por intereses", retro: "Esa cuenta sí se mueve en este cobro, pero en la otra línea. Un ingreso que aumenta no va al debe." }] },
+      { id: "caja", cuenta: "Caja", valor: C.interes1, lado: DEBE, retro: "Caoba recibe el dinero en Caja. Es un activo que aumenta: va al debe.", distractores: [{ cuenta: "Inversiones – títulos", retro: "El interés no cambia la inversión: Caoba sigue con los mismos títulos." }, { cuenta: "Ingresos financieros – ganancia en venta de títulos", retro: "No se vendió ningún título. Este valor es el dinero que entra por el interés." }] },
       { id: "ingresos", cuenta: "Ingresos por intereses", valor: C.interes1, lado: HABER, retro: "El interés es un ingreso que aumenta: va al haber de Ingresos por intereses.", distractores: [{ cuenta: "Ingresos financieros – ganancia en venta de títulos", retro: "Esa cuenta es para lo que se gana al vender títulos por más de lo que costaron. Aquí no se vendió nada." }, { cuenta: "Inversiones – títulos", retro: "El interés no aumenta la inversión: Caoba sigue con los mismos títulos." }] },
     ],
   },

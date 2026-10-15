@@ -76,7 +76,7 @@ const EL_CONTEO = {
 
 const SOBRANTE = {
   id: "sobrante",
-  pista: "El sobrante es la diferencia entre lo que hay en la bodega y lo que dicen los libros.",
+  pista: "El sobrante no es todo lo que hay en la bodega. ¿Qué parte de lo contado es?",
   tipo: "eleccion",
   parrafos: [
     "Hay un sobrante cuando el conteo da más que los libros.",
