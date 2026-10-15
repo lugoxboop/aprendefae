@@ -196,7 +196,7 @@ test("★★★ la prioridad D > C > A > B con su texto en el panel, las B espec
     const { caja, desmontar } = await montar({ items: [p] });
     await armar(caja, puestas);
     assert.equal(caja.querySelector("[data-panel]").dataset.error, tipo, `${p.id}: ${nota}`);
-    const esperado = tipo.startsWith("C1") ? p.errores.especificas.find((e) => e.clave === tipo).texto : p.errores[tipo];
+    const esperado = tipo === "D" ? M.textoD(p, puestas) : tipo.startsWith("C1") ? p.errores.especificas.find((e) => e.clave === tipo).texto : p.errores[tipo];
     assert.equal(textoRetro(caja), esperado, `${p.id} ${tipo}: el texto`);
     assert.deepEqual(mesaVista(caja).sort((a, b) => a.cuenta.localeCompare(b.cuenta)),
       p.asiento.map((m) => ({ cuenta: m.cuenta, lado: m.lado, texto: m.valor.toLocaleString("es-CO").replace(/,/g, ".") })).sort((a, b) => a.cuenta.localeCompare(b.cuenta)),
