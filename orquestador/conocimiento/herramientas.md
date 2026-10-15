@@ -282,3 +282,40 @@ octubre un mensaje a Xeno dio «llegó: true» estando entero sin mandar.
   de la lista de chats devolvió cero coincidencias sobre nombres que se leían
   exactamente iguales. Hay caracteres invisibles de por medio; se busca por
   `indexOf` o se lee la lista entera y se filtra a ojo.
+
+## Un marco de 320 px no mide 320 px
+
+Lo corrigió Sakuta el 15 de octubre, sobre su propio método, y vale para las
+cinco porque al menos dos células medían así.
+
+Meter un `iframe` de 320 px dentro de la página es cómodo: no hace falta
+compilar ni servir nada. Pero **el marco lleva su propia barra de
+desplazamiento**, y en un navegador de escritorio esa barra ocupa espacio
+real:
+
+```
+iframe de 320 px  →  ~305 px útiles
+iframe de 375 px  →  ~360 px útiles
+```
+
+En un teléfono la barra **flota encima** y la página tiene sus 320 enteros.
+Así que medir con marcos no da un resultado aproximado: da un resultado
+**sistemáticamente 15 px más estrecho** que el real.
+
+**Las dos consecuencias, y la segunda es la peligrosa:**
+
+1. Un defecto que solo aparece por debajo de 320 px se informa como si pasara
+   en un teléfono. Sakuta encontró así una mesa que se rompía a 305 y la
+   retiró del informe al darse cuenta: **en un teléfono no pasa.**
+2. Y al revés, lo más caro: algo que **sí** falla justo a 320 px puede salir
+   bien en un marco de 375, porque en realidad se midió a 360.
+
+**El método bueno sigue siendo el de arriba** —compilar, servir en local y
+Playwright con `viewport` fijo—, y por eso lleva escrito que se compruebe
+`window.innerWidth` **antes** de medir: ese paso existe exactamente para
+cazar esto.
+
+**Si vas a usar marcos de todos modos** porque quieres mirar deprisa, está
+bien para echar un vistazo, pero no para un informe: lee `innerWidth` dentro
+del marco y escribe el número real al lado de cada medida. Un informe que dice
+320 habiendo medido 305 contamina lo que lean las otras cuatro células.
