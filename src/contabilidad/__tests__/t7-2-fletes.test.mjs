@@ -287,7 +287,12 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos y su
       assert.deepEqual(enPantalla(m.caja), { textos: [...cab, INTERFAZ.correcto, p.acierto.texto, BOTON.seguir, p.acierto.pie], opciones: ops }, `${p.id} acierto`);
       if (p.acierto.asientos) {
         assert.deepEqual(filasDeAsiento(m.caja), enTabla(p.acierto.asientos[0]));
-        for (const o of m.caja.querySelectorAll("[data-oculto]")) assert.equal(o.textContent, `●${PENDIENTE_DE_REVISION.montoOculto}`);
+        /* El monto oculto es la casilla vacía discontinua, como la del kárdex: nunca un «●» suelto. */
+        for (const o of m.caja.querySelectorAll("[data-oculto]")) {
+          assert.equal(o.textContent, PENDIENTE_DE_REVISION.montoOculto, "el monto oculto vuelve a pintarse «●»");
+          assert.ok(o.querySelector("i[aria-hidden=true]"), "el monto oculto no lleva su casilla vacía");
+        }
+        assert.equal(m.caja.querySelector("[data-asiento]").closest("[data-pieza]").textContent.includes("●"), false, "un «●» suelto en la pieza");
       }
       vistos.push(`${p.id}:acierto`);
       await tocar(boton(m.caja, "seguir"));

@@ -328,7 +328,7 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos y su
   }
 });
 
-test("★★ el monto que no se muestra: punto oculto al lector, y el lector oye que no se muestra", async () => {
+test("★★ el monto que no se muestra: casilla vacía oculta al lector, y el lector oye que no se muestra", async () => {
   const m = await montar(h(LaVentaEnDosAsientos, { pieza: { ...P, pantallas: [COMPRA] }, rotulo: "R" }));
   try {
     await tocar(m.caja.querySelector('[data-opcion="inventario"]'));
@@ -336,8 +336,12 @@ test("★★ el monto que no se muestra: punto oculto al lector, y el lector oye
     const ocultos = [...m.caja.querySelectorAll("[data-oculto]")];
     assert.equal(ocultos.length, 3);
     for (const o of ocultos) {
-      assert.equal(o.querySelector("[aria-hidden=true]").textContent, "●");
-      assert.equal(o.textContent, `●${A.PENDIENTE_DE_REVISION.montoOculto}`);
+      /* La casilla discontinua vacía del patrón, como la del kárdex: nunca un «●» suelto (L, tras el juego de Watari). */
+      const casilla = o.querySelector("i[aria-hidden=true]");
+      assert.ok(casilla, "el monto oculto no lleva su casilla vacía");
+      assert.equal(casilla.textContent, "", "la casilla vacía no lleva texto");
+      assert.equal(o.textContent.includes("●"), false, "el monto oculto vuelve a pintarse «●»");
+      assert.equal(o.textContent, A.PENDIENTE_DE_REVISION.montoOculto);
       assert.equal(o.closest("[data-linea]").dataset.lado === A.DEBE ? o.closest("[role=cell]") === o.closest("[data-linea]").querySelectorAll("[role=cell]")[0] : o.closest("[role=cell]") === o.closest("[data-linea]").querySelectorAll("[role=cell]")[1], true, "el punto no va en el lado de su cuenta");
     }
   } finally {

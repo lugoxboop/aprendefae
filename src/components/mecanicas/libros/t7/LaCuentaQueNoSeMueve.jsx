@@ -49,7 +49,8 @@ const PARRAFO = { margin: 0, fontSize: "14.5px", lineHeight: 1.6, color: FAE.tex
 
 function boton(principal) {
   return {
-    alignSelf: "flex-start", padding: "10px 18px", borderRadius: "999px", cursor: "pointer",
+    /* 44 px de alto como mínimo, el blanco de un dedo (L, tras el juego de Watari: medían 41,5). */
+    alignSelf: "flex-start", minHeight: "44px", padding: "10px 18px", borderRadius: "999px", cursor: "pointer",
     fontFamily: SORA, fontSize: "13px", fontWeight: 600,
     background: principal ? "rgba(248,249,250,0.1)" : "transparent",
     border: "1px solid rgba(248,249,250,0.36)", color: FAE.text,
@@ -140,7 +141,7 @@ function Pregunta({ pantalla, onSeguir }) {
               disabled={Boolean(confirmada)}
               onClick={() => setElegida(o.id)}
               style={{
-                textAlign: "left", padding: "10px 12px", borderRadius: "11px",
+                textAlign: "left", minHeight: "44px", padding: "10px 12px", borderRadius: "11px",
                 cursor: confirmada ? "default" : "pointer",
                 background: esta ? "rgba(184,196,212,0.12)" : "rgba(10,20,34,0.4)",
                 border: `${esta ? 2 : 1}px solid ${esta ? NEUTRO : "rgba(248,249,250,0.36)"}`,
