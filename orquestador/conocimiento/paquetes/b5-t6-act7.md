@@ -68,3 +68,15 @@ Reintento	Sin texto propio: las elecciones se quedan
 Segundo fallo	El acierto de la ficha, con «No es esa.» delante
 Acierto	✅ y el acierto, después «Siguiente ficha» o «Ver el resultado»
 Resumen	El párrafo de resumen y el botón «Otra tanda»
+
+## (2) Futaba · líneas que cambian, con PASA de Shoko (pegadas tal cual)
+
+Mandan sobre (1). Decisión de Sakuta: se aplican tal cual, por actividad e id. Del texto pegado se quitaron las líneas de la interfaz del chat.
+
+b5-t6-a7 · «¿Qué método y cuándo?»
+Id	Campo	Texto nuevo (literal)	Estim.
+mc-04	Ficha	No se anota nada por adelantado.	<10
+mc-04	✅ Acierto	Sí. La anulación directa no anota nada antes: el gasto aparece al castigar.	66
+mc-04	Segundo fallo	No es esa. La anulación directa no anota nada antes: el gasto aparece al castigar.	—
+
+La ficha viene de la capa 3 de T6 A2. Ahora mc-03 prueba la desventaja y mc-04 prueba cuándo se anota el gasto.

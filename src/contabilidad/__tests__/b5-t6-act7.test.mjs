@@ -79,12 +79,22 @@ const sinEmoji = (t) => t.replace(/^(✅|❌) /, "");
 /* ═══════════ EL PAQUETE ═══════════ */
 
 const GUIA = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-act7.md", import.meta.url), "utf8");
-const FUTABA = GUIA.slice(GUIA.indexOf("## (1) Futaba"));
+const FUTABA = GUIA.slice(GUIA.indexOf("## (1) Futaba"), GUIA.indexOf("## (2) Futaba"));
+/* La sección (2): las líneas que Shoko pasó y Futaba aplicó. Mandan sobre (1), por id y campo. */
+const SECCION_2 = GUIA.slice(GUIA.indexOf("## (2) Futaba"));
+const cambio = (id, campo) => SECCION_2.split("\n").map((l) => l.split("\t")).find((c) => c[0] === id && c[1] === campo)?.[2];
 const fila = (primera) => FUTABA.split("\n").find((l) => l.split("\t")[0] === primera)?.split("\t");
 /* «(71)» y las demás cifras de legibilidad no se pintan. */
 const sinCifra = (t) => t.replace(/ \(\d+\)$/, "");
 const RESPUESTA = { directa: "Anulación directa", "provisiones/cierre": "Provisiones · Al cierre", "provisiones/castigar": "Provisiones · Al castigar" };
 const clave = (f) => (f.momento ? `${f.metodo}/${f.momento}` : f.metodo);
+
+test("auditoría: mc-04 lleva la ficha y el acierto de la sección (2), y su segundo fallo es el acierto con «No es esa.»", () => {
+  const f = ficha("mc-04");
+  assert.equal(f.texto, cambio("mc-04", "Ficha"));
+  assert.equal(sinEmoji(f.acierto), cambio("mc-04", "✅ Acierto"));
+  assert.equal(`No es esa. ${sinEmoji(f.acierto).replace(/^Sí\. /, "")}`, cambio("mc-04", "Segundo fallo"));
+});
 
 test("guarda: el paquete trae las 10 fichas, los 3 errores, y una fila inventada no aparece", () => {
   for (const id of IDS) assert.ok(fila(id), `falta ${id}`);
@@ -96,7 +106,9 @@ test("★★★ las 10 fichas: el texto, la respuesta y el acierto son los del p
   assert.deepEqual(D.FICHAS_T6_ACT7.map((f) => f.id), IDS);
   for (const id of IDS) {
     const f = ficha(id);
-    const [, texto, respuesta, acierto] = fila(id);
+    const [, ficha1, respuesta, acierto1] = fila(id);
+    const texto = cambio(id, "Ficha") ?? ficha1;
+    const acierto = cambio(id, "✅ Acierto") ?? acierto1;
     assert.equal(f.texto, sinCifra(texto), `${id}: texto`);
     assert.equal(RESPUESTA[clave(f)], respuesta, `${id}: respuesta`);
     assert.ok(f.acierto.startsWith("✅ Sí. "), `${id}: el acierto empieza con «✅ Sí.»`);
