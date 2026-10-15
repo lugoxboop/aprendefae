@@ -442,7 +442,8 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1, tit
           data-asj-control
           onClick={control.accion}
           style={{
-            minHeight: "40px", padding: "0 16px", borderRadius: "999px", cursor: "pointer",
+            /* 44 px: el mínimo que un dedo acierta a 320 px. Medido el 15-oct con scripts/blanco-de-toque.mjs. */
+            minHeight: "44px", padding: "0 16px", borderRadius: "999px", cursor: "pointer",
             background: "transparent", border: "1px solid rgba(248,249,250,0.22)",
             color: "rgba(248,249,250,0.82)", fontFamily: SORA, fontSize: "12.5px", fontWeight: 600,
           }}
