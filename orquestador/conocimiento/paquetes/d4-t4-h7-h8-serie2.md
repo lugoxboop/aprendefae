@@ -146,9 +146,10 @@ Retroalimentación, según lo que escriba:
 
 # H8, serie 2
 
-- «El Mirador ya concilió su cuenta: el saldo del banco y el de los libros, corregidos, dan $3.377.500. Ahora la empresa tiene que corregir sus libros.» (81,2)
-  - *[Dice quién concilió, la empresa, y no el estudiante: H8 no supone que se jugó H7.]*
-- La consigna 2 es la misma de la serie 1.
+- **Datos de partida (decisión de Yujiro, v3):** las nueve partidas y el saldo en libros. **El saldo conciliado no se muestra**; aparece solo al acertar la etapa 3.
+- «El Mirador comparó su cuenta con el extracto del banco y encontró nueve partidas. El saldo de sus libros es $3.090.900.» (83,6)
+  - *[Dice que la empresa comparó su cuenta, no que lo hizo el estudiante: H8 no supone que se jugó H7. No da el saldo conciliado.]*
+- «Ahora la empresa tiene que corregir sus libros. Primero, elige qué partidas se asientan. Después, arma cada asiento. Al final, calcula el saldo de Bancos en el mayor.» (77,5)
 
 ## Etapa 1 · ¿Se asienta o no?
 
@@ -234,11 +235,12 @@ El estudiante escribe el saldo de Bancos en el mayor después de los cinco asien
 
 - **Dato a la vista:** «Saldo de Bancos en los libros antes de los ajustes: $3.090.900.» (88,2)
 - **Cálculo:** 3.090.900 + 798.100 − 511.500 = **3.377.500**
-- **Acierto:** «Así es. Es el mismo saldo conciliado. Ahora los libros de El Mirador dicen lo mismo que el banco corregido.» (84,9)
+- **Acierto:** «Así es. Y fíjate en algo: el extracto decía $3.216.800. Si le sumas la consignación pendiente y le restas los cheques sin cobrar, también da $3.377.500. Es el saldo conciliado: los libros ya dicen la verdad.» (85,3)
+  - *[La confirmación solo sale con el acierto. 3.216.800 + 947.500 − 786.800 = 3.377.500, calculado por el script.]*
 - **Si escribe $3.889.000** (olvidó las notas débito): «Ese saldo tiene las notas crédito, pero no las débito. Al mayor le falta lo que el banco descontó.» (89,1)
 - **Si escribe $2.579.400** (olvidó las notas crédito): «Ese saldo tiene las notas débito, pero no las crédito. Al mayor le falta lo que el banco abonó.» (89,1)
 - **Si escribe $3.538.200 u otra cifra con cheques o consignación** (asentó lo que no se asienta, además de las notas): «Ese saldo mete partidas que la empresa ya tenía. Al mayor solo entran las notas del banco.» (84,7)
-- **Cualquier otra cifra:** «El saldo del mayor tiene que dar lo mismo que el saldo conciliado, que está a la vista. Revisa los cinco asientos.» (91,1)
+- **Cualquier otra cifra:** «El saldo del mayor es el de los libros, más lo que el banco sumó y menos lo que el banco restó. Revisa los cinco asientos.» (100,4)
 
 *[El tercer error es la cifra de quien asienta las cinco notas y además las cuatro partidas del banco, con los signos de la conciliación: 3.090.900 + 798.100 − 511.500 − 786.800 + 947.500 = 3.538.200. Misma regla que la serie 1 tras la corrección H8-b.]*
 
