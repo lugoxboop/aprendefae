@@ -116,8 +116,7 @@ export const ITEMS_H7 = CASOS_H7.flatMap((c, k) => [
 /*
  * Patrón T7-3 (Watari): en cada caso, la cuenta del valor neto realizable
  * después de su ítem, y «Se mide por el menor» después del ítem de medición;
- * las dos se van cuando empieza otro caso. Títulos y rótulos de Watari, por
- * confirmar con Near.
+ * las dos se van cuando empieza otro caso. Títulos y rótulos de Watari, revisados por Near.
  */
 export const FIGURAS_H7 = CASOS_H7.flatMap((c, k) => [
   { ...cuentaVnr(c.quien, c.precio, c.terminar, c.vender), clave: `vnr-${k + 1}`, desde: 2 * k + 1, hasta: 2 * k + 2 },
