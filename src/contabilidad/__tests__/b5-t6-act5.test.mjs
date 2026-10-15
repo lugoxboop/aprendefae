@@ -89,7 +89,7 @@ test("★★★ los textos fijos son los del paquete: consigna, regla, reglas, p
   assert.equal(D.T6_ACT5.consigna, fila("Consigna")[1]);
   assert.equal(D.T6_ACT5.regla, fila("Regla fija")[1]);
   D.REGLAS_T6_ACT5.forEach((r, k) => assert.equal(r, fila(`Así se juega, ${k + 1}`)[1]));
-  assert.equal(D.T6_ACT5.partida, cambio("Tutorial", "Punto de partida")[0]);
+  assert.equal(D.T6_ACT5.partida, cambio("Tutorial", "Texto")[0]);
   assert.equal(D.T6_ACT5.cierre, fila("Cierre")[1]);
   assert.equal(D.ALT_T6_ACT5, fila("Texto alternativo")[1]);
 });
