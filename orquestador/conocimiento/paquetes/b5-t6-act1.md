@@ -102,7 +102,9 @@ Criterio de T1-6: si falla el primer nivel, la devolución puede dar la respuest
 | A | Puso un hecho de Clientes en «Otra cuenta por cobrar» | «No es esa. En este hecho cambia lo que un cliente le debe a la empresa. Eso se anota en Cuentas por cobrar – clientes.» |
 | B | Puso un préstamo en «Clientes» | «No es esa. Es un préstamo, no una venta a crédito. Cuentas por cobrar – clientes solo recoge lo que deben los clientes por ventas a crédito. Este va en otra cuenta por cobrar.» |
 | C | Acertó «Clientes» y falló el lado | «Vas bien: es Clientes. Ahora pregúntate si con este hecho lo que deben los clientes sube o baja. Si sube, se debita. Si baja, se acredita.» |
-| C5 | venta-mercancia y venta-servicio, si eligió «Se acredita» (prioridad sobre la C) | «Vas bien: es Clientes. Ojo con la palabra «crédito»: el nombre del negocio no dice en qué lado se anota. Pregúntate si lo que deben los clientes sube o baja.» |
+| C5 | venta-mercancia y venta-servicio, si eligió «Se acredita» (prioridad sobre la C) | «Vas bien: es Clientes. Ojo con la palabra “crédito”: el nombre del negocio no dice en qué lado se anota. Pregúntate si lo que deben los clientes sube o baja.» |
+
+> Auditoría integral (Shoko, 15-oct): en la C5, «crédito» pasa a “crédito”, con las comillas internas de nuestros textos (la regla de T5 · A1).
 
 ### 3.4 Tras el segundo fallo (columna de Futaba, literal)
 
