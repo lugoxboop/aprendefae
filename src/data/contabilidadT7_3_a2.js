@@ -1,4 +1,4 @@
-import { BOTON, DEBE, HABER, FRASE_TARIFAS } from "./contabilidadT7_3.js";
+import { BOTON, DEBE, HABER, FRASE_TARIFAS, ROTULOS_PATRON } from "./contabilidadT7_3.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -34,6 +34,45 @@ export const H2_LIBRO = {
   rebaja: 896_280, rebaja23: 966_000, factor: 0.7866, iva: 528_595, retencion: 115_630, cliente: 3_716_685, sumas: 3_832_315,
 };
 const C = H2_LIBRO;
+
+/*
+ * Las figuras del «Patrón T7-3» de Watari: la cadena y el atajo del factor,
+ * como en H2. Rótulos y títulos de Watari, por confirmar con Near
+ * ([ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN], dice su patrón).
+ */
+export const ROTULOS_A2 = {
+  cadena: "Cadena de descuentos de San Calixto",
+  descuento: (pct) => `Descuento ${pct} %`,
+  delSaldo: (pct) => `Descuento ${pct} % del saldo`,
+  saldo: "Saldo",
+  atajo: "El atajo del factor",
+  complementos: "Complementos",
+  factor: "Factor",
+};
+const R = ROTULOS_A2;
+const CADENA = {
+  tipo: "renglones",
+  titulo: R.cadena,
+  filas: [
+    { rot: ROTULOS_PATRON.precioLista, v: C.lista },
+    { op: "−", rot: R.descuento(5), v: C.d1 },
+    { op: "=", rot: R.saldo, v: C.s1, res: true },
+    { op: "−", rot: R.delSaldo(8), v: C.d2 },
+    { op: "=", rot: R.saldo, v: C.s2, res: true },
+    { op: "−", rot: R.delSaldo(10), v: C.d3 },
+    { op: "=", rot: ROTULOS_PATRON.valorFacturar, v: C.factura, res: true },
+  ],
+};
+const FACTOR = {
+  tipo: "renglones",
+  titulo: R.atajo,
+  filas: [
+    { rot: R.complementos, v: "0,95 × 0,92 × 0,90", apila: true },
+    { op: "=", rot: R.factor, v: "0,7866", res: true },
+    { op: "×", rot: ROTULOS_PATRON.precioLista, v: C.lista },
+    { op: "=", rot: ROTULOS_PATRON.valorFacturar, v: C.factura, res: true },
+  ],
+};
 
 const PORTADA = {
   id: "portada",
@@ -94,6 +133,8 @@ const PASOS = {
       "El valor a facturar es $3.670.800 − $367.080 = $3.303.720.",
       "En total, San Calixto rebajó $896.280. Es el 21,34 % del precio de lista. Con el 23 %, la rebaja habría sido de $966.000.",
     ],
+    /* Patrón T7-3: la pantalla pregunta por el saldo, así que la cadena llega con el acierto. */
+    figuras: [CADENA],
     pie: "Basado en el libro, pp. 249-250",
   },
   error: { pie: "Basado en el libro, pp. 249-250" },
@@ -110,6 +151,8 @@ const ATAJO = {
     /* Con la C7-2 resuelta: el libro escribe 0,7688 en esta línea. La pantalla no la menciona. */
     "Y $4.200.000 × 0,7866 = $3.303.720: el mismo valor a facturar, con menos pasos.",
   ],
+  /* Patrón T7-3: el texto ya da las cifras; el atajo va con él. */
+  figuras: [FACTOR],
   boton: BOTON.seguir,
   pie: "Basado en el libro, p. 250",
 };
