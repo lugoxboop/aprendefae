@@ -134,7 +134,7 @@ no trae clave.
 
 | Ej. | Qué evalúa | Respuesta calculada | Secciones | Última → tema | Estado |
 |---|---|---|---|---|---|
-| C.1 | Qué grupo es activo corriente | **d** | intro p. 178 | intro → T4 (Célula D) | ESPERA T4 · el Tema 2 solo clasifica Caja, Bancos y activos fijos; la b se separa de la d por «largo / corto plazo» en cuentas por cobrar, que nadie enseña |
+| C.1 | Qué grupo es activo corriente | **d** | intro p. 178 | intro → T4 (Célula D) | **LISTO** desde T4 · A0 «El activo corriente» (`contabilidadT4A0.js`): la prueba del año, y la deuda de un cliente que vence en tres años como no corriente, que es lo que separa la b de la d. Candidato a pantalla de r5-1 (abre el capítulo); entra después de r5-3 y r5-4 |
 | C.2 | Saldo correcto en libros de Bancos | **b · $5.800** = 5.000 − 400 + 1.200 | §5.2, pp. 188-191 | §5.2 → T4 | ESPERA T4 |
 | C.3 | Qué son las inversiones con descuento | **c** | §5.3, p. 193 | §5.3 → T5 | **LISTO** (`contabilidadT5Pieza1.js` l. 68) |
 | C.4 | Interés de $520.000 al 18 % del 1-mar al 30-jun | libro: **d · $31.460** (121 días / 360) | §5.3, p. 194 | §5.3 → T5 | **ABIERTO** · pregunta 2 de `fuente.md`: el ejemplo de la p. 194 cuenta por meses y daría $31.200, que no está entre las opciones. La a ($31.029) es 121/365. No entra hasta que conteste el profesor |
