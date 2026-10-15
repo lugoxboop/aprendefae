@@ -401,19 +401,30 @@ test("★★★ FP de 2 de 8 y 6 de 8 con calcularFP: 45 (el piso del 50 %) y 68
   assert.equal(servidor(6), 68);
   const tabla = Array.from({ length: 9 }, (_, k) => fp(k));
   assert.deepEqual(tabla, [45, 45, 45, 45, 45, 56, 68, 79, 90]);
-  /* Con el servidor coinciden todos menos 5 de 8 (prueba aparte, en todo). */
-  for (const k of [0, 1, 2, 3, 4, 6, 7, 8]) assert.equal(tabla[k], servidor(k), `${k} de 8`);
+  /* Con el servidor coinciden los nueve. El 5 tenía prueba aparte y ya pasa. */
+  for (const k of [0, 1, 2, 3, 4, 5, 6, 7, 8]) assert.equal(tabla[k], servidor(k), `${k} de 8`);
 });
 
 /*
- * El servidor (0017) en enteros: el cliente le manda el % redondeado y él hace
- * round(90 × max(50, pct) / 100) sobre numeric, con la mitad hacia arriba.
+ * El servidor (0036, la definición vigente de registrar_fp): hace
+ * round(90 × max(0,5, pct/100) × tiempo) sobre numeric, con la mitad hacia
+ * arriba.
+ *
+ * SIN REDONDEAR EL PORCENTAJE, y antes aquí sí se redondeaba. Esta función es
+ * un modelo del servidor, y el modelo se quedó viejo el día que se arregló la
+ * paridad: el cliente mandaba Math.round(aciertos × 100) —un entero— y ahora
+ * manda la proporción exacta. Con el redondeo, 5 de 8 daba 63 % en el servidor
+ * y 62,5 % en el cliente: 57 contra 56. Sin él, los dos ven 62,5 y dan 56.
+ *
+ * La divergencia que documentaba el `todo` de abajo ya no existe, así que el
+ * `todo` se fue con ella. Queda la comprobación, que es lo que vale: si alguien
+ * vuelve a redondear en cualquiera de los dos lados, esta prueba se pone roja.
  */
 function servidor(bien) {
-  return Math.round((90 * Math.max(50, Math.round(J.puntuarR5_3(bien)))) / 100);
+  return Math.round((90 * Math.max(50, J.puntuarR5_3(bien))) / 100);
 }
 
-test("5 de 8: calcularFP da lo mismo que el servidor", { todo: "calcularFP da 56 y el servidor 57 (el cliente manda 63 %; 90 × 0,63 = 56,7 → 57). Código compartido: reportado a Kamogawa" }, () => {
+test("★★★ 5 de 8 —la mitad que se partía— calcularFP da lo mismo que el servidor", () => {
   const cliente = calcularFP({ dificultad: "experto", modalidad: "evaluativa", aciertos: J.puntuarR5_3(5) / 100, duracionMs: 300_000 }).fp;
   assert.equal(cliente, servidor(5));
 });
