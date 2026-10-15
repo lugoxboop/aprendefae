@@ -79,9 +79,10 @@ const FIJOS = [
   { id: "vehiculo", texto: "Un vehículo" },
 ];
 /*
- * Abreviados de las opciones de P4 de Katsumi. Las glosas: [ESCRITO POR CLAUDE
- * — PENDIENTE DE REVISIÓN]. La de la mercancía sigue a la v2 de A0 («vender y
- * cobrar»): cotejo de Hanayama con la v2 de Katsumi y FA0-2 de Shibukawa.
+ * Abreviados de las opciones de P4 de Katsumi. La glosa de la mercancía sigue
+ * a la v2 de A0 («vender y cobrar»): cotejo de Hanayama, FA0-2 de Shibukawa,
+ * y APROBADA por Yujiro el 15 de octubre de 2026. Las otras dos: [ESCRITO POR
+ * CLAUDE — PENDIENTE DE REVISIÓN].
  */
 const DE_P4 = {
   mercancia: { id: "mercancia", texto: "Mercancía", glosa: "se vende y se cobra este mes" },
