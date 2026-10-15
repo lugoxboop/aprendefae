@@ -27,6 +27,7 @@ import { evaluarMate, puedeRevisarMate, sumasDe, puntuarR5_3, MAXIMO_POR_LADO } 
  */
 
 const LECTOR = { acierto: "Correcto: ", error: "Incorrecto: " };
+export const DIGITOS_DEL_CAMPO = 9;
 const DIVISORIA = "1px solid rgba(184,196,212,0.25)";
 const ESTADO = {
   ok: { border: `2px solid ${C.teal}`, background: "rgba(42,157,143,0.14)" },
@@ -261,7 +262,7 @@ function Grupo({ lado, renglones, estados, onAnadir, onEditar, bloqueado, soloLe
       <p style={{ ...MARCA, margin: "0 0 6px" }}>{lado === "debe" ? RM.debe : RM.haber}</p>
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         {mios.map((r) => (
-          <Renglon key={r.id} r={r} estado={estados?.[r.id] ?? null} soloLectura={soloLectura} onTocar={() => onEditar(r)} />
+          <Renglon key={r.id} r={r} estado={soloLectura ? "revelada" : estados?.[r.id] ?? null} soloLectura={soloLectura} onTocar={() => onEditar(r)} />
         ))}
       </div>
       {!bloqueado && !soloLectura && mios.length < MAXIMO_POR_LADO && (
@@ -397,7 +398,13 @@ function HojaRenglon({ lado, inicial = null, renglones, onListo, onQuitar, onCan
               autoComplete="off"
               enterKeyHint="done"
               value={valor === null ? "" : cifra(valor)}
-              onChange={(e) => setValor(leerCifra(e.target.value))}
+              /*
+               * Nueve dígitos, no ocho: el asiento 2 pide 104.400.000. Con el tope de
+               * ocho del §4 el campo la cortaría y el asiento no tendría respuesta.
+               * Decisión de Ippo, reportada a Kamogawa (el precedente es la decisión 4
+               * del delta a0 de r5-2).
+               */
+              onChange={(e) => setValor(leerCifra(e.target.value, DIGITOS_DEL_CAMPO))}
               onKeyDown={(e) => { if (e.key === "Enter" && Number(valor) > 0) { e.preventDefault(); onListo({ lado, cuenta, valor }); } }}
               style={{
                 width: "100%", height: "48px", boxSizing: "border-box", borderRadius: "10px", padding: "0 12px", background: C.fondo,

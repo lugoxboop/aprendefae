@@ -300,7 +300,7 @@ test("★★★ catálogo, registro de la vista y migración dicen lo mismo; el 
   assert.equal(tema.title, "Repaso del capítulo 5");
   const enCatalogo = actividadesDeTipo(tema, HACER);
   assert.deepEqual(enCatalogo.map((a) => a.id), JUEGOS_REPASO_CAP5.map((j) => j.id));
-  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2"], "r5-1 abre el tema y r5-2 va detrás");
+  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2", "r5-3"], "r5-1 abre el tema; r5-2 y r5-3 van detrás");
   const a = enCatalogo.find((x) => x.id === "r5-1");
   assert.equal(a.nombre, D.R5_1.nombre);
   assert.equal(JUEGOS_REPASO_CAP5.find((j) => j.id === "r5-1").titulo, D.R5_1.nombre);
