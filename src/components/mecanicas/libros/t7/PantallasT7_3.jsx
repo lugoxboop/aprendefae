@@ -3,6 +3,7 @@ import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { BOTON, INTERFAZ, DEBE, HABER, PENDIENTE_DE_REVISION } from "../../../../data/contabilidadT7_3.js";
+import { Renglones, Plazos, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -22,6 +23,10 @@ import { BOTON, INTERFAZ, DEBE, HABER, PENDIENTE_DE_REVISION } from "../../../..
  *                «Confirmar», y «Incorrecto.» con «Probar otra» o «Correcto.»
  *                con «Seguir». Con el acierto se descubre lo que sigue: más
  *                texto, un asiento y otro texto
+ *
+ * Las figuras del «Patrón T7-3» de Watari (renglones y franja de plazos)
+ * van con el texto de la pantalla (`figuras`) si el texto ya da la cifra, o
+ * con el acierto (`acierto.figuras`) si la pantalla la pregunta.
  *
  * Los asientos van en el modo lectura del patrón tabular (DEBE en verde
  * azulado, HABER en ámbar, sangría en el haber) y, si la pieza lo pide, con
@@ -192,6 +197,10 @@ function CuentaT({ t }) {
     </div>
   );
 }
+/* Las figuras del Patrón T7-3: { tipo: "renglones", titulo, filas, nota } o { tipo: "plazos", venta, condiciones, pago }. */
+const Figuras = ({ lista, nuevo = false }) => (lista ?? []).map((f, k) => (f.tipo === "plazos"
+  ? <Plazos key={k} {...f} nuevo={nuevo} />
+  : <Renglones key={k} titulo={f.titulo} filas={f.filas} nota={f.nota ?? null} nuevo={nuevo} />));
 
 const Asientos = ({ lista, nuevo = false }) => (lista ?? []).map((a, k) => <Asiento key={k} asiento={a} nuevo={nuevo} />);
 
@@ -203,6 +212,7 @@ function Cuerpo({ p }) {
       <Textos lista={p.parrafos} />
       {p.ficha && <Ficha ficha={p.ficha} />}
       <Textos lista={p.despues} />
+      <Figuras lista={p.figuras} />
       <Asientos lista={p.asientos} />
       {p.cuentasT && <div className="t73p-ts" data-cuentas-t>{p.cuentasT.map((t) => <CuentaT key={t.titular} t={t} />)}</div>}
       <Textos lista={p.tras} />
@@ -247,6 +257,7 @@ function Eleccion({ pantalla, onSeguir }) {
       {estado === "acierto" && (
         <>
           <Mensaje ok textos={[a.texto]} refFoco={ref} />
+          <Figuras lista={a.figuras} nuevo />
           <Textos lista={a.parrafos} nueva />
           <Asientos lista={a.asientos} nuevo />
           <Textos lista={a.despues} nueva />
@@ -271,7 +282,7 @@ export default function PantallasT7_3({ pieza, rotulo }) {
 
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
-      <style>{CSS_T73P}</style>
+      <style>{CSS_T73P + CSS_T73_PATRON}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
         {p.tipo === "eleccion" ? (
           <Eleccion key={p.id} pantalla={p} onSeguir={ultima ? null : seguir} />
