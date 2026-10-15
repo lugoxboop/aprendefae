@@ -1,4 +1,5 @@
 import { DEBE, HABER } from "./contabilidad.js";
+import { ROTULOS_PATRON } from "./contabilidadT7_3.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -67,6 +68,21 @@ export const FICHA_H1 = [
   ["Tipo", "A crédito"],
   ["Clase de hecho", "Venta de mercancía"],
 ];
+
+/*
+ * Patrón T7-3 (Watari): la cuenta de la factura en renglones, DESPUÉS del
+ * ítem 1 (antes, el «−» daría la respuesta). Rótulos de Watari, por
+ * confirmar con Near.
+ */
+export const FIGURAS_H1 = [{
+  tipo: "renglones", desde: 1,
+  titulo: ROTULOS_PATRON.factura("Guadua"),
+  filas: [
+    { rot: ROTULOS_PATRON.precioLista, v: C.lista },
+    { op: "−", rot: ROTULOS_PATRON.descuentoComercial(DESCUENTO_H1), v: C.descuento },
+    { op: "=", rot: ROTULOS_PATRON.valorFacturar, v: C.factura, res: true },
+  ],
+}];
 
 export const BOTON_H1 = { siguiente: "Siguiente ítem", verResumen: "Ver mi resumen" };
 
