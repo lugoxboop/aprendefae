@@ -203,11 +203,11 @@ test("★★★ Patrón T7-3: la franja de la NIC 2 pegada arriba; el ejemplo en
     const pieza = m.caja.querySelector("[data-pieza]");
     assert.equal(pieza.firstElementChild.matches("p.t73pt-nic2[data-aviso]"), true);
     assert.ok(pieza.classList.contains("t73pt-pieza"), "la pieza es el contenedor de la franja");
-    const V = `Ejemplo que no es del libro: Precio esperado de venta 610.000 | −Lo que cuesta venderlo 60.000 | =Valor neto realizable ${"550.000"} =`;
+    const V = `Ejemplo que no es del libro: Precio esperado de venta 610.000 | −Lo que cuesta vender 60.000 | =Valor neto realizable ${"550.000"} =`;
     assert.deepEqual(await figurasPorEstado(m), {
       "como-se-mide:antes": [V],
       "como-se-mide:error": [V],
-      "como-se-mide:acierto": [V, "Se mide por el menor: Costo 580.000 | Valor neto realizable el menor 550.000 !"],
+      "como-se-mide:acierto": [V, "Se mide por el menor: Costo 580.000 | Valor neto realizable El menor 550.000 !"],
     });
   } finally {
     m.desmontar();

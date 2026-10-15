@@ -31,13 +31,14 @@ export const EJEMPLO_A7 = { precio: 610_000, vender: 60_000, vnr: 550_000, costo
 
 /*
  * Patrón T7-3 (Watari): el valor neto realizable en renglones, y «Se mide
- * por el menor» (el menor en negrita, sin raya, con la marca «el menor»).
- * Rótulos y títulos de Watari, por confirmar con Near ([ESCRITO POR
- * CLAUDE — PENDIENTE DE REVISIÓN], dice su patrón). Los usa también H7.
+ * por el menor» (el menor en negrita, sin raya, con la marca «El menor»).
+ * Rótulos y títulos de Watari, revisados por Near (L, 15 de octubre), con
+ * sus tres cambios: «Lo que falta para terminar», «Lo que cuesta vender» y
+ * «El menor». Los usa también H7.
  */
 export const ROTULOS_A7 = {
-  precio: "Precio esperado de venta", terminar: "Lo que falta para terminarlo", vender: "Lo que cuesta venderlo",
-  vnr: "Valor neto realizable", costo: "Costo", menorTit: "Se mide por el menor", menor: "el menor",
+  precio: "Precio esperado de venta", terminar: "Lo que falta para terminar", vender: "Lo que cuesta vender",
+  vnr: "Valor neto realizable", costo: "Costo", menorTit: "Se mide por el menor", menor: "El menor",
   ejemplo: "Ejemplo que no es del libro",
 };
 export const cuentaVnr = (titulo, precio, terminar, vender) => {

@@ -71,8 +71,7 @@ export const FICHA_H1 = [
 
 /*
  * Patrón T7-3 (Watari): la cuenta de la factura en renglones, DESPUÉS del
- * ítem 1 (antes, el «−» daría la respuesta). Rótulos de Watari, por
- * confirmar con Near.
+ * ítem 1 (antes, el «−» daría la respuesta). Rótulos de Watari, revisados por Near.
  */
 export const FIGURAS_H1 = [{
   tipo: "renglones", desde: 1,
