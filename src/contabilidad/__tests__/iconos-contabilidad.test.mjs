@@ -100,8 +100,7 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
   /* Las 45 de Hacer de Contabilidad con dibujo (sin el desafío) tienen su ícono, y son 45 archivos. */
   const conDesafio = new Set(SUBJECTS.contabilidad.topics.flatMap((t) => (t.actividades ?? []).filter((x) => x.clasificacion?.desafio).map((x) => x.id)));
   /* Actividades nuevas que todavía esperan su dibujo de Xeno: el camino las pinta sin ícono. */
-  /* Hoy está vacía: las 45 tienen dibujo. Una actividad de Hacer nueva entra aquí hasta que Xeno la dibuje. */
-  const SIN_ICONO_TODAVIA = new Set([]);
+  const SIN_ICONO_TODAVIA = new Set(["r5-1"]);
   const esperadas = [...hacer].filter((id) => !conDesafio.has(id) && !SIN_ICONO_TODAVIA.has(id));
   assert.equal(esperadas.length, 45);
   assert.deepEqual(Object.keys(ICONO_POR_ACTIVIDAD).sort(), esperadas.sort(), "falta o sobra un ícono");

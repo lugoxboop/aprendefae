@@ -42,6 +42,8 @@ const ContabilidadTema6View = lazy(() => import("./components/ContabilidadTema6V
 const ContabilidadT7_1View = lazy(() => import("./components/ContabilidadT7_1View.jsx"));
 const ContabilidadT7_2View = lazy(() => import("./components/ContabilidadT7_2View.jsx"));
 const ContabilidadT7_3View = lazy(() => import("./components/ContabilidadT7_3View.jsx"));
+/* El repaso del capítulo 5 (Célula E): el banco de ejercicios, solo Hacer. */
+const RepasoCapitulo5View = lazy(() => import("./components/RepasoCapitulo5View.jsx"));
 const RepasoView = lazy(() => import("./components/repaso/RepasoView.jsx"));
 const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"));
 
@@ -97,6 +99,7 @@ const VISTAS_CON_TITULO = new Set([
   "inventarios-periodico",
   "inventarios-permanente",
   "inventarios-descuentos-nic2",
+  "repaso-capitulo-5",
   "repaso-diario",
 ]);
 
@@ -288,6 +291,15 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <ContabilidadT7_3View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
+      </Suspense>
+    );
+  }
+
+  /* El repaso del capítulo 5 (Célula E): solo Hacer, así que no lleva modo. */
+  if (view === "repaso-capitulo-5") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <RepasoCapitulo5View nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }
