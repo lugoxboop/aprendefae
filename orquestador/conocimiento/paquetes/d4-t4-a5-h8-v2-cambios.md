@@ -46,6 +46,7 @@
 - H8-3, usó Ingresos por intereses: «La chequera la cobró el banco: la empresa no ganó nada. Piensa en qué tipo de cuenta registra lo que se paga.» (93,9)
 - H8-4, usó Cuentas por cobrar – clientes: «El banco cobró intereses por el sobregiro: ningún cliente quedó debiendo nada. Piensa en qué tipo de cuenta registra lo que se paga.» (78,9)
 
+- **Nota posterior (commit 6242645, S2-1 de Shibukawa):** en los dos mensajes de H8-1 de arriba, «cuando ella pagó» pasó a «cuando el cliente pagó» y a «cuando pagó». El texto vigente está en `d4-t4-h8-v1.md`.
 - *[Los mensajes nuevos no nombran la cuenta correcta. Los mensajes de cuenta de la v1 sí dicen el tipo de cuenta, por ejemplo «es un ingreso»; la auditoría no los objetó y los dejo.]*
 
 ## H8-b · La cifra del tercer error de la etapa 3
