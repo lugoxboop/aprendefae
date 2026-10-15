@@ -1,4 +1,5 @@
 import { T5_ACT2, REGLAS_T5_ACT2, COMPRA_T5_ACT2, ALT_TUTORIAL_T5_ACT2 } from "./contabilidadT5Act2.js";
+import { T5_ACT1, REGLAS_T5_ACT1, FICHAS_T5_ACT1, RENTAS, TIPOS_FIJA, FIJA, INTERES, BOTON_T5_ACT1 } from "./contabilidadT5Act1.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -9,8 +10,12 @@ import { T5_ACT2, REGLAS_T5_ACT2, COMPRA_T5_ACT2, ALT_TUTORIAL_T5_ACT2 } from ".
  * asiento (Inversiones – títulos al debe, Bancos al haber, $2.000.000 cada
  * uno), lo confirma y queda la explicación de Futaba en cuatro líneas.
  *
- * b5-t5-a1 sigue sin «Así se juega»: le falta una ficha de demostración
- * fuera del banco, que es contenido.
+ * b5-t5-a1 (auditoría integral de Shoko, 15-oct): sus tres reglas
+ * aprobadas solo vivían en los datos, porque sin «Así se juega» no hay
+ * botón «¿Cómo se juega?». Lleva el patrón de T1-6: «Así se juega» con los
+ * pasos y una ficha de demostración. La ficha es una del banco (el CDT), con
+ * su acierto aprobado, para no escribir contenido nuevo; abre los dos
+ * niveles. El texto alternativo se arma con los rótulos de los botones.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -34,6 +39,28 @@ const ASI_CIERRE_SANTA_PACHA = {
   cuadros: { gesto: 4 },
 };
 
+/* b5-t5-a1: la ficha del CDT, renta fija con interés. */
+export const DEMO_T5_ACT1 = FICHAS_T5_ACT1.find((f) => f.id === "cdt");
+const rotulo = (lista, id) => lista.find((x) => x.id === id).rotulo;
+const ASI_QUE_RENTA_DA = {
+  actividadId: T5_ACT1.id,
+  titulo: T5_ACT1.nombre,
+  consigna: T5_ACT1.consigna,
+  pasos: REGLAS_T5_ACT1,
+  alt: `la ficha «${DEMO_T5_ACT1.texto}» va en «${rotulo(RENTAS, FIJA)}» y, dentro, en «${rotulo(TIPOS_FIJA, INTERES)}».`,
+  demo: { items: [DEMO_T5_ACT1] },
+  guion: {
+    duracion: 7500,
+    toques: [
+      { ms: 2000, en: `[data-nivel1="${FIJA}"]` },
+      { ms: 3500, en: `[data-nivel2="${INTERES}"]` },
+      { ms: 5000, texto: BOTON_T5_ACT1.colocar },
+    ],
+  },
+  cuadros: { gesto: 2 },
+};
+
 export const ASI_SE_JUEGA_TEMA5 = {
   [ASI_CIERRE_SANTA_PACHA.actividadId]: ASI_CIERRE_SANTA_PACHA,
+  [ASI_QUE_RENTA_DA.actividadId]: ASI_QUE_RENTA_DA,
 };

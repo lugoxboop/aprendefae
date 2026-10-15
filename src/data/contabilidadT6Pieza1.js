@@ -42,11 +42,16 @@ export const GLOSA_NOTA_DEBITO = {
 /* ═══════════ LA PIEZA (lo que lee CuatroCapas: título, objetivo y capa 1) ═══════════ */
 
 /*
- * La nota de «cartera» del término 2. La guía v1 (§3) la pone DEBAJO de la
- * cita, pero CuatroCapas admite un solo bloque bajo cada término, y el
- * componente no se toca. Queda aquí, sin pintarse, hasta que Mai decida.
+ * La nota de «cartera» del término 2, DEBAJO de la cita (guía v1 §3).
+ * CuatroCapas admite un solo bloque bajo cada término y no se toca: la nota
+ * viaja en `notaDebajo` y la pinta b5/NotaDebajo.jsx dentro del mismo
+ * bloque, bajo la cita, con su rótulo. Decisión de la auditoría integral de
+ * Shoko (15-oct): va.
  */
-export const NOTA_CLIENTES_PENDIENTE = "El libro también la llama cartera; es lo mismo. Aquí la cuenta se llama “Cuentas por cobrar – clientes”.";
+export const NOTA_CLIENTES = {
+  rotulo: "Nota",
+  texto: "El libro también la llama cartera; es lo mismo. Aquí la cuenta se llama “Cuentas por cobrar – clientes”.",
+};
 
 export const PIEZA_LO_QUE_LE_DEBEN = {
   id: "b5-t6-a1-lo-que-otros-le-deben",
@@ -63,6 +68,7 @@ export const PIEZA_LO_QUE_LE_DEBEN = {
       termino: "Clientes",
       definicion: "Quizás es la parte más importante de las cuentas por cobrar: lo que deben los clientes por bienes y servicios que la empresa les vendió a crédito y que todavía no han pagado.",
       delLibro: "«Los clientes son quizás el concepto más importante dentro de lo que se clasifica como cuentas por cobrar.» (p. 196)",
+      notaDebajo: NOTA_CLIENTES,
     },
     {
       termino: "Otras cuentas por cobrar",
@@ -77,7 +83,13 @@ export const PIEZA_LO_QUE_LE_DEBEN = {
     },
     {
       termino: "Cuándo baja lo que deben los clientes",
-      definicion: "Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. También baja cuando devuelve mercancía que había comprado a crédito y todavía no había pagado: es una devolución de ventas. Baja cuando la empresa le otorga un descuento sobre lo que todavía le debe. Y baja cuando la deuda pasa a difícil cobro, que se explica más adelante.",
+      /*
+       * Auditoría integral (Shoko, 15-oct): texto de Futaba (p. 197 y pp. 199-200).
+       * Ya no habla del traslado a difícil cobro: queda como hueco marcado.
+       * CuatroCapas no pinta pies en la capa 1: el pie queda en los datos.
+       */
+      definicion: "Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. También baja cuando devuelve mercancía que había comprado a crédito y todavía no había pagado: es una devolución de ventas. Baja cuando la empresa le otorga un descuento sobre lo que todavía le debe. Y baja cuando la deuda se da por perdida, algo que se explica más adelante.",
+      pie: "Basado en el libro, pp. 197 y 199-200",
     },
   ],
 };

@@ -21,6 +21,7 @@ import { PIEZA_NO_VA_A_PAGAR } from "../data/contabilidadT6Pieza2.js";
 import { PIEZA_LA_PROVISION } from "../data/contabilidadT6Pieza3.js";
 import { PIEZA_SI_PAGA } from "../data/contabilidadT6Pieza4.js";
 import { ESCENAS_TEMA6 } from "./mecanicas/libros/tema6/escenasTema6.jsx";
+import { conNotasDebajo } from "./mecanicas/libros/b5/NotaDebajo.jsx";
 import ClientesOOtra from "./mecanicas/libros/tema6/ClientesOOtra.jsx";
 import { T6_ACT1 } from "../data/contabilidadT6Act1.js";
 import ProvisionDeElTorito from "./mecanicas/libros/tema6/ProvisionDeElTorito.jsx";
@@ -43,7 +44,8 @@ import { T6_ACT3 } from "../data/contabilidadT6Act3.js";
 const MATERIA = "contabilidad";
 export const TEMA = "cuentas-por-cobrar";
 
-export const PIEZAS = [{ numero: 1, pieza: PIEZA_LO_QUE_LE_DEBEN }, { numero: 2, pieza: PIEZA_NO_VA_A_PAGAR }, { numero: 3, pieza: PIEZA_LA_PROVISION }, { numero: 4, pieza: PIEZA_SI_PAGA }];
+/* La pieza 1 lleva la nota de «cartera» bajo la cita del término 2 (b5/NotaDebajo.jsx). */
+export const PIEZAS = [{ numero: 1, pieza: conNotasDebajo(PIEZA_LO_QUE_LE_DEBEN) }, { numero: 2, pieza: PIEZA_NO_VA_A_PAGAR }, { numero: 3, pieza: PIEZA_LA_PROVISION }, { numero: 4, pieza: PIEZA_SI_PAGA }];
 const PUBLICADAS = PIEZAS.length;
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
