@@ -2,7 +2,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * T4 · LECTURA DE LOS PAQUETES DE KATSUMI Y RECORRIDO DE UNA PIEZA.
  *
- * Lo comparten las pruebas de A0 y de A1. No es una prueba: no termina en
+ * Lo comparten las pruebas de A0, A1 y A2. No es una prueba: no termina en
  * .test.mjs.
  *
  *   · leerSecciones(md)  las pantallas «**Pn · …**» de la sección «Contenido,
@@ -12,7 +12,7 @@
  *     carpeta de paquetes. Las pruebas exigen conocerlos TODOS: un archivo de
  *     cambios nuevo pone la prueba en rojo hasta que alguien lo aplique
  *   · textosDeDatos(p)   lo que dice una pantalla de los datos, en el orden
- *     en que la vista lo pinta
+ *     en que la vista lo pinta (con lo que sale solo al acertar)
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { readFileSync, readdirSync } from "node:fs";
@@ -31,7 +31,8 @@ export const piesDe = (bloque) => [...bloque.matchAll(new RegExp(`^- Pie[^:]*: $
 /* Las pantallas de la v1, por su clave («P0»…), cada una con sus textos y sus pies. */
 export function leerSecciones(md) {
   const contenido = md.slice(md.indexOf("## Contenido, pantalla por pantalla"), md.indexOf("\n## ", md.indexOf("## Contenido, pantalla por pantalla") + 5));
-  return Object.fromEntries(contenido.split(/\n(?=\*\*P\d)/).slice(1).map((s) => [s.match(/^\*\*(P\d)/)[1], { bloque: s, textos: textosConMedida(s), pies: piesDe(s) }]));
+  /* P\d+: A2 llega a P10. */
+  return Object.fromEntries(contenido.split(/\n(?=\*\*P\d)/).slice(1).map((s) => [s.match(/^\*\*(P\d+)/)[1], { bloque: s, textos: textosConMedida(s), pies: piesDe(s) }]));
 }
 
 /* Los archivos de cambios de una pieza («d4-t4-a1-v2-cambios.md»…), en orden de versión. */
@@ -46,6 +47,7 @@ export function textosDeDatos(p) {
   return [
     p.objetivo, ...(p.parrafos ?? []), ...(p.listaNumerada ?? []), ...(p.despues ?? []), ...(p.tras ?? []),
     p.pregunta, ...(p.opciones ?? []).flatMap((o) => [o.texto, o.correcta ? p.acierto.texto : o.devolucion]),
+    ...(p.trasAcertar?.textos ?? []),
     p.siguiente,
   ].filter(Boolean);
 }

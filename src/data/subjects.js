@@ -645,6 +645,8 @@ export const SUBJECTS = {
           { id: "t4-entra-o-sale-de-caja", nombre: "¿Entra o sale de Caja?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
           /* H2, justo después de H1: también la sostiene A1 (los siete controles). Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0201. */
           { id: "t4-el-control-que-se-saltaron", nombre: "El control que se saltaron", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* A2, pp. 181-184, justo después de H2 (plan de Yujiro). Aprender: cero FP, no entra al catálogo. */
+          { id: "t4-a2-el-fondo-fijo", nombre: "El fondo fijo", clasificacion: { tipo: APRENDER } },
         ],
       },
       /*

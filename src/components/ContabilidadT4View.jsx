@@ -19,6 +19,7 @@ import { Panel } from "./mecanicas/salaDeControl/marco.jsx";
 import { barajar, barajarDistinto } from "../utils/barajar.js";
 import { BOTON, INTERFAZ, DEBE, HABER, PIEZA_LA_CAJA, FIGURA_CAJON, ESTADOS_CAJON, SUS_SERVICIOS } from "../data/contabilidadT4.js";
 import { PIEZA_EL_ACTIVO_CORRIENTE, FIGURA_RAYA, ESTADOS_RAYA } from "../data/contabilidadT4A0.js";
+import { PIEZA_EL_FONDO_FIJO, FIGURA_SOBRE, ESTADOS_SOBRE_A2, ALT_SOBRE_A2 } from "../data/contabilidadT4A2.js";
 import {
   H1, DESTINOS_H1, BOTON_H1, CIERRE_H1, resumenH1, lectorErrorH1,
   sortearH1, evaluarH1, puntuarH1, nombreDeDestinoH1,
@@ -46,8 +47,8 @@ import { Encabezado } from "./mecanicas/libros/tema1/encabezado.jsx";
  * carpeta de mecánicas: es el carril de la Célula D y nadie más lo usa.
  *
  * EL ORDEN DE PIEZAS_T4 LO DA `numero`, no la posición en la lista: A0 «El
- * activo corriente» = 0, A1 «La caja» = 1, A2 = 2… La prueba t4-andamio lo
- * afirma.
+ * activo corriente» = 0, A1 «La caja» = 1, A2 «El fondo fijo» = 2… La
+ * prueba t4-andamio lo afirma.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -58,6 +59,7 @@ export const TEMA_T4 = "efectivo-caja-menor-bancos";
 export const PIEZAS_T4 = [
   { numero: PIEZA_EL_ACTIVO_CORRIENTE.numero, pieza: PIEZA_EL_ACTIVO_CORRIENTE, Pieza: PantallasT4 },
   { numero: PIEZA_LA_CAJA.numero, pieza: PIEZA_LA_CAJA, Pieza: PantallasT4 },
+  { numero: PIEZA_EL_FONDO_FIJO.numero, pieza: PIEZA_EL_FONDO_FIJO, Pieza: PantallasT4 },
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
@@ -178,11 +180,17 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
  * su botón y su pie; elección con opciones barajadas en cada intento,
  * «Confirmar», y «Incorrecto.» con «Probar otra» o «Correcto.» con «Seguir».
  *
- * Dos cosas propias de A1:
+ * Lo que traen los paquetes de T4:
  *   · `listaNumerada`: los siete controles y el resumen van numerados, como
  *     en el paquete
  *   · `trasAcertar`: lo que se muestra solo con el acierto, debajo del
- *     mensaje (el asiento 2 de la p. 180: es la respuesta, A1 v5)
+ *     mensaje: sus textos y sus asientos (el asiento 2 de la p. 180 en A1 v5;
+ *     en A2 v2, la línea del libro de P5 y el asiento del reembolso de P7)
+ *   · `tabla`: una lista de dos columnas con su total sumado (los gastos de
+ *     mayo de A2)
+ *   · un asiento con `fecha` la pone en su cabecera (A2: «1 de mayo», «31 de
+ *     mayo»); uno con `signo` es un asiento modelo sin cifras, y su lado lleva
+ *     el signo («xxxx», Hanayama A2 v1 §4) con su texto para el lector
  *
  * Las figuras de Hanayama: una pantalla que traiga `figura` la pinta entre sus
  * textos y su asiento (texto → figura → asiento → botón → pie). En una
@@ -261,11 +269,28 @@ function MensajeT4({ ok, texto, refFoco }) {
 
 const TextosT4 = ({ lista, nueva = false }) => (lista ?? []).map((t) => <p key={t} className={`t4p-p${nueva ? " t4p-nueva" : ""}`} data-texto>{t}</p>);
 
-/* Un asiento en lectura, sin fecha: el libro pone «xxxx». */
+/*
+ * Un asiento en lectura. Sin `fecha` no la muestra (en A1 el libro pone
+ * «xxxx»); con ella, va en la cabecera. Con `signo`, es un asiento modelo: el
+ * lado de cada cuenta lleva el signo y no una cifra.
+ */
 export function AsientoT4({ asiento, nuevo = false }) {
+  const celda = (l, lado) => {
+    if (l.lado !== lado) return <span role="cell" />;
+    if (asiento.signo) {
+      return (
+        <span role="cell" data-signo={lado}>
+          <span className="t4p-signo" aria-hidden="true">{asiento.signo.visible}</span>
+          <span className="t4f-sr">{asiento.signo.lector}</span>
+        </span>
+      );
+    }
+    return <span role="cell" data-cifra={cifra(l.monto)}>{cifra(l.monto)}</span>;
+  };
   return (
     <div className={`t4p-as${nuevo ? " t4p-nueva" : ""}`} role="table" aria-label={asiento.nombre} data-asiento={asiento.nombre}>
       <div className="t4p-as-h" role="row">
+        {asiento.fecha && <span role="columnheader" data-fecha>{asiento.fecha}</span>}
         <span className="t4p-g2">
           <span className="t4p-d" role="columnheader">{INTERFAZ.debe}</span>
           <span className="t4p-hb" role="columnheader">{INTERFAZ.haber}</span>
@@ -275,8 +300,8 @@ export function AsientoT4({ asiento, nuevo = false }) {
         <div key={l.cuenta} className="t4p-as-r" role="row" data-linea={l.cuenta} data-lado={l.lado}>
           <span role="rowheader" className={l.lado === DEBE ? undefined : "t4p-sangria"}>{l.cuenta}</span>
           <span className="t4p-g2">
-            <span role="cell" data-cifra={l.lado === DEBE ? cifra(l.monto) : undefined}>{l.lado === DEBE ? cifra(l.monto) : ""}</span>
-            <span role="cell" data-cifra={l.lado === HABER ? cifra(l.monto) : undefined}>{l.lado === HABER ? cifra(l.monto) : ""}</span>
+            {celda(l, DEBE)}
+            {celda(l, HABER)}
           </span>
         </div>
       ))}
@@ -286,6 +311,28 @@ export function AsientoT4({ asiento, nuevo = false }) {
 
 const AsientosT4 = ({ lista, nuevo = false }) => (lista ?? []).map((a) => <AsientoT4 key={a.nombre} asiento={a} nuevo={nuevo} />);
 
+/* Una tabla de dos columnas del paquete, con su total: lo calcula la suma, no se transcribe. */
+export function TablaT4({ tabla }) {
+  const total = tabla.filas.reduce((x, f) => x + f.monto, 0);
+  return (
+    <div className="t4p-tb" role="table" aria-label={tabla.nombre} data-tabla={tabla.nombre}>
+      <div className="t4p-tb-r t4p-tb-h" role="row">
+        {tabla.columnas.map((c) => <span key={c} role="columnheader">{c}</span>)}
+      </div>
+      {tabla.filas.map((f) => (
+        <div key={f.texto} className="t4p-tb-r" role="row" data-fila-tabla={f.texto}>
+          <span role="rowheader">{f.texto}</span>
+          <span role="cell" data-cifra={cifra(f.monto)}>{cifra(f.monto)}</span>
+        </div>
+      ))}
+      <div className="t4p-tb-r t4p-tb-total" role="row" data-total>
+        <span role="rowheader">{tabla.total}</span>
+        <span role="cell" data-cifra={cifra(total)}>{cifra(total)}</span>
+      </div>
+    </div>
+  );
+}
+
 function CuerpoT4({ p, estadoFigura = null }) {
   return (
     <>
@@ -293,6 +340,7 @@ function CuerpoT4({ p, estadoFigura = null }) {
       <TextosT4 lista={p.parrafos} />
       {p.listaNumerada && <ol className="t4p-lista" data-lista>{p.listaNumerada.map((t) => <li key={t} data-texto>{t}</li>)}</ol>}
       <TextosT4 lista={p.despues} />
+      {p.tabla && <TablaT4 tabla={p.tabla} />}
       {p.figura && <FiguraT4 tipo={p.figura.tipo} estado={estadoFigura ?? p.figura.estado} />}
       <AsientosT4 lista={p.asientos} />
       <TextosT4 lista={p.tras} />
@@ -330,6 +378,7 @@ function EleccionT4({ pantalla, onSeguir }) {
       </div>
       {estado === "colocando" && <BotonT4 nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => setConfirmada(elegida)} />}
       {estado !== "colocando" && <MensajeT4 ok={estado === "acierto"} texto={estado === "acierto" ? pantalla.acierto.texto : opcion.devolucion} refFoco={ref} />}
+      {estado === "acierto" && despues && <TextosT4 lista={despues.textos} nueva />}
       {estado === "acierto" && despues && <AsientosT4 lista={despues.asientos} nuevo />}
       {estado === "error" && (
         <BotonT4 nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((x) => barajarDistinto(pantalla.opciones, x, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
@@ -351,7 +400,7 @@ export function PantallasT4({ pieza, rotulo }) {
 
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
-      <style>{CSS_T4P + CSS_T4F}</style>
+      <style>{CSS_T4P + CSS_T4F + CSS_T4S}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
         {p.tipo === "eleccion" ? (
           <EleccionT4 key={p.id} pantalla={p} onSeguir={ultima ? null : seguir} />
@@ -382,6 +431,9 @@ export function PantallasT4({ pieza, rotulo }) {
  *   · «La raya del año» (A0): cada activo cae arriba (corriente) o abajo (no
  *     corriente) de una sola raya. El eje del tiempo va solo de «hoy» a la
  *     raya: abajo no hay «después», hay «no cumple la prueba»
+ *   · «El sobre y el libro» (A2, y después A3 y H4): lo que tiene Rosa en el
+ *     sobre de la caja menor frente a lo que dice el libro. Más abajo, con su
+ *     propia hoja (CSS_T4S, clases `t4sb-`)
  *
  * Cada figura es una función de su estado. Solo cambia el color de lo
  * señalado, y lo que aparece lo hace con un fundido de 120 ms; con movimiento
@@ -453,8 +505,17 @@ export const CSS_T4F = `
 @media (prefers-reduced-motion: reduce) { .t4cj *, .t4ry *, .t4f-nueva { transition: none !important; animation: none !important; } }
 `;
 
+/*
+ * Los sobres de cada pieza: el mismo dibujo, con los estados y el texto
+ * alternativo de la pieza que lo usa. A3 añade el suyo aquí.
+ */
+const SOBRES = { "sobre-a2": { estados: ESTADOS_SOBRE_A2, alt: ALT_SOBRE_A2 } };
+
 function FiguraT4({ tipo, estado }) {
-  return tipo === "cajon" ? <CajonDePaso estado={estado} /> : <RayaDelAno estado={estado} />;
+  if (tipo === "cajon") return <CajonDePaso estado={estado} />;
+  if (tipo === "raya") return <RayaDelAno estado={estado} />;
+  const sobre = SOBRES[tipo];
+  return <SobreCajaMenor estado={estado} s={sobre.estados[estado]} alt={sobre.alt[estado]} />;
 }
 
 /* El borde de arriba o de abajo del cajón, con su boca de 40 px en el 25 % (arriba) o el 75 % (abajo). */
@@ -567,6 +628,161 @@ export function RayaDelAno({ estado }) {
         <ZonaRaya id="despues" rotulo={F.zonaNo} s={s} conEje={false} />
       </div>
       <figcaption id={idAlt} className="t4f-sr">{F.alt[estado]}</figcaption>
+    </figure>
+  );
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · «EL SOBRE Y EL LIBRO» (Hanayama, A2 v1 con la v1.1 y la v1.2 encima).
+ *
+ * Arriba, lo que tiene Rosa: el sobre de la caja menor, con el cheque que
+ * entra cuando lo hay. Abajo, lo que dice el libro: la cuenta Caja menor y,
+ * en el reembolso, Gastos generales. La trampa de A2 se ve en las dos
+ * superficies: el cheque vuelve a llenar el sobre y Caja menor sigue en el
+ * mismo valor.
+ *
+ * ES UNA PIEZA REUTILIZABLE DE T4, no un componente compartido: A3 usa el
+ * mismo sobre con el mismo significado (Yujiro; Hanayama A3 v1 §0). Recibe
+ * el estado ya resuelto (`s`) y su texto alternativo, así que cada pieza trae
+ * los suyos en sus datos; lo que A3 añada (la fila de la diferencia, el
+ * cálculo, la tercera fila del libro) entra como datos nuevos, no como copia.
+ *
+ *   · «sin contar» en una fila es un dato que todavía no se conoce: #A8B6C8
+ *     500, nunca señalado (v1.2, FA2-1)
+ *   · el cheque, en dos renglones fijos: «Cheque» con el monto, y «sale de
+ *     Bancos» (v1.2, FA2-2), a todo el ancho; el tubo sale del centro
+ *   · cuando el libro es la respuesta (`libro.oculto`), su sitio se reserva
+ *     con la misma forma y SIN su contenido: cada renglón es un espacio duro.
+ *     Mientras se pregunta, la respuesta no está en el DOM (PH8-2)
+ *
+ * Señalar es pasar de #A8B6C8 500 a #F8F9FA 600. Sin teal, ámbar ni coral,
+ * sin «Debe»/«Haber», sin círculos, sin trazos discontinuos y sin «✓». Lo que
+ * aparece lo hace con el fundido de 120 ms; con movimiento reducido, nada.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+export const CSS_T4S = `
+/* tabla de dos columnas (A2, P4) */
+.t4p-tb { display: grid; min-width: 0; border: 1px solid ${COLOR.borde}; border-radius: 10px; padding: 4px 12px; }
+.t4p-tb-r { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: baseline; padding-block: 7px; }
+.t4p-tb-r + .t4p-tb-r { border-top: 1px solid ${COLOR.borde}; }
+.t4p-tb-r > span:first-child { font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; min-width: 0; }
+.t4p-tb-r > span:last-child { text-align: right; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.t4p-tb-h > span, .t4p-tb-h > span:first-child, .t4p-tb-h > span:last-child { font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: ${COLOR.texto2}; }
+.t4p-tb-total > span:first-child, .t4p-tb-total > span:last-child { font-weight: 600; }
+/* el signo de un asiento modelo (A2, P8 y P9) */
+.t4p-signo { color: ${COLOR.texto2}; }
+/* sobre y libro */
+.t4sb { position: relative; margin: 0; display: grid; gap: 8px; min-width: 0; color: ${COLOR.texto}; font-family: "Inter", sans-serif; }
+.t4sb * { box-sizing: border-box; }
+.t4sb-rot { display: block; font: 500 12px/1.3 "Inter", sans-serif; letter-spacing: .04em; color: ${COLOR.texto2}; white-space: nowrap; }
+.t4sb-zona { display: grid; gap: 6px; min-width: 0; }
+.t4sb-paso { display: grid; min-width: 0; }
+.t4sb-cheque { display: grid; gap: 2px; border: 1px solid ${COLOR.texto}; border-radius: 8px; padding: 6px 12px; min-width: 0; }
+.t4sb-cheque-n { font: 600 13px/1.3 "Sora", "Inter", sans-serif; white-space: nowrap; }
+.t4sb-cheque-m { margin-left: auto; font: 400 15px/1.2 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; color: ${COLOR.texto}; }
+.t4sb-cheque-s { font: 500 12px/1.3 "Inter", sans-serif; letter-spacing: .04em; color: ${COLOR.texto2}; white-space: nowrap; }
+.t4sb-tubo { width: 2px; height: 16px; margin: 0 auto; background: ${COLOR.texto}; }
+.t4sb-sobre { position: relative; display: grid; gap: 6px; min-width: 0; border: 1px solid ${COLOR.borde}; border-top: 0; border-radius: 0 0 10px 10px; padding: 26px 12px 10px; }
+.t4sb-solapa { position: absolute; top: 0; left: -1px; width: calc(100% + 2px); height: 18px; overflow: visible; }
+.t4sb-solapa path { fill: none; stroke: ${COLOR.borde}; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.t4sb-lin { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 10px; min-width: 0; }
+.t4sb-nom { font: 400 13px/1.35 "Inter", sans-serif; color: ${COLOR.texto2}; white-space: nowrap; }
+.t4sb-monto { margin-left: auto; font: 500 15px/1.2 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; color: ${COLOR.texto2}; }
+.t4sb-titulo .t4sb-nom { font: 600 13px/1.3 "Sora", "Inter", sans-serif; color: ${COLOR.texto}; }
+.t4sb-titulo .t4sb-monto { color: ${COLOR.texto}; }
+.t4sb-suman { border-top: 1px solid ${COLOR.borde}; padding-top: 6px; }
+.t4sb-suman .t4sb-monto { color: ${COLOR.texto}; }
+.t4sb-suman .t4sb-monto.t4sb-sin { color: ${COLOR.texto2}; }
+.t4sb-libro { display: grid; min-width: 0; border: 1px solid ${COLOR.borde}; border-radius: 10px; }
+.t4sb-cta { display: grid; gap: 2px; padding: 8px 12px; min-width: 0; }
+.t4sb-cta + .t4sb-cta { border-top: 1px solid ${COLOR.borde}; }
+.t4sb-cta-n { font: 600 13px/1.3 "Sora", "Inter", sans-serif; color: ${COLOR.texto}; white-space: nowrap; }
+.t4sb-nota { font: 400 12px/1.3 "Inter", sans-serif; color: ${COLOR.texto2}; white-space: nowrap; }
+.t4sb-oculto { visibility: hidden; }
+.t4sb-monto.t4sb-foco { color: ${COLOR.texto}; font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .t4sb, .t4sb * { transition: none !important; animation: none !important; } }
+`;
+
+/* Un espacio duro: ocupa su renglón entero sin decir nada. */
+const VACIO = " ";
+
+/* Una fila del sobre: el nombre a la izquierda y el monto a la derecha; sin cifra, «sin contar». */
+function FilaSobre({ id, nombre, monto, estado, foco, clase = "" }) {
+  const sin = monto == null;
+  return (
+    <div className={`t4sb-lin ${clase}`} data-fila={id}>
+      <span className="t4sb-nom">{nombre}</span>
+      <span key={`${estado}-${id}`} className={`t4sb-monto t4f-nueva${sin ? " t4sb-sin" : ""}${foco ? " t4sb-foco" : ""}`} data-monto={sin ? undefined : id} data-sin-contar={sin ? "" : undefined}>
+        {sin ? FIGURA_SOBRE.sinContar : cifra(monto)}
+      </span>
+    </div>
+  );
+}
+
+export function SobreCajaMenor({ estado, s, alt }) {
+  const F = FIGURA_SOBRE;
+  const foco = (k) => s.foco.includes(k);
+  const idAlt = `t4sb-alt-${estado}`;
+  return (
+    <figure className="t4sb t4f-nueva" data-figura="sobre" data-estado={estado} aria-describedby={idAlt}>
+      <div className="t4sb-zona" data-zona="sobre">
+        <span className="t4sb-rot">{F.rotuloSobre}</span>
+        <div className="t4sb-paso">
+          {s.cheque != null && (
+            <>
+              <div key={`cheque-${estado}`} className="t4sb-cheque t4f-nueva" data-cheque>
+                <span className="t4sb-lin"><span className="t4sb-cheque-n">{F.cheque}</span><span className="t4sb-cheque-m" data-monto="cheque">{cifra(s.cheque)}</span></span>
+                <span className="t4sb-cheque-s">{F.chequeSale}</span>
+              </div>
+              <div className="t4sb-tubo" aria-hidden="true" data-tubo />
+            </>
+          )}
+          <div className="t4sb-sobre" data-sobre>
+            <svg className="t4sb-solapa" viewBox="0 0 100 18" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+              <path d="M0 0.5 H100 M0 0.5 L50 17.5 L100 0.5" />
+            </svg>
+            <div className="t4sb-lin t4sb-titulo" data-fila="fondo">
+              <span className="t4sb-nom">{F.fondo}</span>
+              <span className="t4sb-monto" data-monto="fondo">{cifra(s.fondo)}</span>
+            </div>
+            <FilaSobre id="billetes" nombre={F.billetes} monto={s.billetes} estado={estado} foco={foco("billetes")} />
+            <FilaSobre id="soportes" nombre={F.soportes} monto={s.soportes} estado={estado} foco={foco("soportes")} />
+            <FilaSobre id="suman" nombre={F.suman} monto={s.suman} estado={estado} foco={foco("suman")} clase="t4sb-suman" />
+          </div>
+        </div>
+      </div>
+      {s.libro.oculto ? (
+        /* El libro es la respuesta: guarda su sitio, con la misma forma y sin decir nada (PH8-2). */
+        <div className="t4sb-zona t4sb-oculto" aria-hidden="true" data-libro="oculto">
+          <span className="t4sb-rot">{VACIO}</span>
+          <div className="t4sb-libro">
+            {s.libro.oculto.map((f, k) => (
+              <div key={k} className="t4sb-cta">
+                <span className="t4sb-lin"><span className="t4sb-cta-n">{VACIO}</span><span className="t4sb-monto">{VACIO}</span></span>
+                {f.nota && <span className="t4sb-nota">{VACIO}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div key={`libro-${estado}`} className="t4sb-zona t4f-nueva" data-libro="visible">
+          <span className="t4sb-rot">{F.rotuloLibro}</span>
+          <div className="t4sb-libro">
+            {s.libro.filas.map((f) => (
+              <div key={f.id} className="t4sb-cta" data-cuenta={f.id}>
+                <span className="t4sb-lin">
+                  <span className="t4sb-cta-n">{F.cuentas[f.id]}</span>
+                  <span className={`t4sb-monto${foco(f.id) ? " t4sb-foco" : ""}`} data-monto={f.id}>{cifra(f.monto)}</span>
+                </span>
+                {f.nota && <span className="t4sb-nota" data-nota={f.nota}>{F.notas[f.nota]}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <figcaption id={idAlt} className="t4f-sr">{alt}</figcaption>
     </figure>
   );
 }
