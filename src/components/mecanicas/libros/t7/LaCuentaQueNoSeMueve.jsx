@@ -56,7 +56,7 @@ function boton(principal) {
 
 function Pie({ texto }) {
   return (
-    <p data-pie style={{ margin: "18px 0 0", fontSize: "11.5px", lineHeight: 1.45, color: APAGADO, overflowWrap: "break-word" }}>
+    <p data-pie style={{ margin: "18px 0 0", fontSize: "12px", lineHeight: 1.45, color: APAGADO, overflowWrap: "break-word" }}>
       {texto}
     </p>
   );
