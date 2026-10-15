@@ -16,8 +16,43 @@ import { DEBE, HABER } from "../data/contabilidad.js";
  * que cumple su condición: de esa `cuenta` (cualquier valor equivocado: la
  * C7 de T5) o ese `valor` (la C12, C14 y C15 del Tema 6), o los dos. Si
  * ninguna se cumple, va la B general.
+ *
+ * La D nombra la cuenta (Sakuta, calidad 1; condición de Shoko):
+ *   · tantas de más como de menos: «No va {X}: en su lugar va {Y}.», o
+ *     «No van {X} ni {W}: en su lugar van {Y} y {Z}.»;
+ *   · si no: «Sobra {X}.» / «Sobran {X} y {Y}.», y si además faltan,
+ *     «Falta {Y}.» / «Faltan {Y} y {Z}.».
+ * Le sigue el texto D de los datos sin su primera frase, «Sobra una
+ * cuenta.». Los nombres van como en el estante.
  * ═══════════════════════════════════════════════════════════════════════════
  */
+
+const SOBRA_UNA = "Sobra una cuenta. ";
+/* «y» se vuelve «e» ante el sonido i («Caja e Inversiones – títulos»), salvo en diptongo («y hielo»). */
+const conjuncion = (siguiente) => (/^h?i(?![aeoáéó])/i.test(siguiente) ? "e" : "y");
+/* «X ni W», «X, W ni V»: la negación de «No van». */
+const enNi = (xs) => `${xs.slice(0, -1).join(", ")} ni ${xs.at(-1)}`;
+const enLista = (xs) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} ${conjuncion(xs.at(-1))} ${xs.at(-1)}`);
+
+/* La devolución D: qué cuenta no va (y, si es una por una, cuál va en su lugar), y después el texto D de los datos. */
+export function textoD(parte, puestas) {
+  const real = new Set(parte.asiento.map((e) => e.cuenta));
+  const sobran = puestas.map((p) => p.cuenta).filter((c) => !real.has(c));
+  const faltan = parte.asiento.map((e) => e.cuenta).filter((c) => !puestas.some((p) => p.cuenta === c));
+  const varias = (xs) => xs.length > 1;
+  let cuales;
+  if (sobran.length === faltan.length) {
+    /* Cambió tantas cuentas como puso de más: se dice cuáles no van y cuáles van en su lugar. */
+    cuales = varias(sobran)
+      ? `No van ${enNi(sobran)}: en su lugar van ${enLista(faltan)}.`
+      : `No va ${sobran[0]}: en su lugar va ${faltan[0]}.`;
+  } else {
+    cuales = `${varias(sobran) ? "Sobran" : "Sobra"} ${enLista(sobran)}.`;
+    if (faltan.length) cuales += ` ${varias(faltan) ? "Faltan" : "Falta"} ${enLista(faltan)}.`;
+  }
+  const resto = parte.errores.D.startsWith(SOBRA_UNA) ? parte.errores.D.slice(SOBRA_UNA.length) : parte.errores.D;
+  return `${cuales} ${resto}`;
+}
 
 /* Una parte armada: `puestas` es [{ cuenta, lado, valor }]. */
 export function evaluarParte(parte, puestas) {
@@ -37,6 +72,7 @@ export function evaluarParte(parte, puestas) {
       texto = especifica ? especifica.texto : parte.errores.B;
     }
   }
+  if (error === "D") texto = textoD(parte, puestas);
   if (error && texto === null) texto = parte.errores[error];
   return { ok: error === null, error, deValor: Boolean(error) && !["D", "C", "A"].includes(error), texto, esperado };
 }
