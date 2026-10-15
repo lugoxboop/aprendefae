@@ -180,10 +180,10 @@ export const ALT_H5 = "Faltan $4.000. Gastos generales va al debe por $251.000 y
  * El caso construido del paquete, sin empresa ni nombre: fondo 300.000,
  * soportes 251.000, efectivo 45.000, la empresa cobra. No es ninguno de los
  * cuatro.
- * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El paquete trae su texto
- * entero en una frase; la demo lo usa como enunciado, sin decisión ni pedido
- * aparte (la frase ya dice qué decidió la empresa). Su acierto es el texto
- * alternativo de Katsumi.
+ * El paquete trae su texto entero en una frase; la demo lo usa como
+ * enunciado, sin decisión ni pedido aparte (la frase ya dice qué decidió la
+ * empresa). Su acierto es el texto alternativo de Katsumi. Ella lo aprobó
+ * (d4-t4-h5-v1.md, «Textos de interfaz», demo de Así se juega).
  */
 const DEMO = caso({ n: "demo", empresa: "", persona: "quien la maneja", mes: "", dia: "", decision: EMPLEADO, fondo: 300_000, gastos: 251_000, efectivo: 45_000 });
 export const EJEMPLO_H5 = {

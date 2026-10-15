@@ -163,6 +163,24 @@ test("★★★ el detector de la Célula B reconoce nuestra definición: con A4
   assert.equal(defineNotaDebito({ ...Z.NOTA_DEBITO, termino: "Nota débito del banco" }), false);
 });
 
+test("★★★ los textos de interfaz son los que revisó Katsumi en el paquete, con sus dos cambios (p7-colocando y comparar)", () => {
+  const i = V1.indexOf("## Textos de interfaz de la figura");
+  assert.ok(i > 0, "el paquete de A4 no trae la sección de textos de interfaz revisados");
+  const sec = V1.slice(i, V1.indexOf("\n## ", i + 5) > 0 ? V1.indexOf("\n## ", i + 5) : undefined);
+  const citas = new Set([...sec.matchAll(new RegExp(CITA, "g"))].map((m) => m[1]));
+  const alt = [...sec.matchAll(new RegExp(`^  - \\*([a-z0-9-]+)[:,]?\\*[^«\\n]*${CITA}`, "gm"))].map((m) => [m[1], m[2]]);
+  assert.equal(alt.length, 5, "no se leyeron los cinco textos alternativos del paquete");
+  for (const [estado, texto] of alt) assert.equal(Z.ALT_LIBRETAS[estado], texto, `alternativo de ${estado}`);
+  assert.deepEqual(Object.keys(Z.ALT_LIBRETAS).sort(), alt.map(([e]) => e).sort());
+  /* El que Katsumi cambió por la pista falsa: ya no dice que ninguno lo tiene. */
+  assert.doesNotMatch(Z.ALT_LIBRETAS["p7-colocando"], /todavía sin ese renglón/);
+  const F = Z.FIGURA_LIBRETAS;
+  for (const t of [...Object.values(Z.NOMBRE_ASIENTO_A4), F.empresa.nombre, F.empresa.registro, F.banco.nombre, F.banco.registro, F.suma, F.resta, ...F.noLoSabe, F.saldo, F.tarjetaP7.cuando, ...F.tarjetaP7.renglones, ...Object.values(F.hechos).flatMap((x) => x.nombre)]) {
+    assert.ok(citas.has(t), `«${t}» no está entre los textos aprobados`);
+  }
+  assert.doesNotMatch(leer("src/data/contabilidadT4A4.js"), /PENDIENTE DE REVISIÓN/);
+});
+
 /* ═══════════ 3 · LAS CIFRAS Y LOS ASIENTOS ═══════════ */
 
 test("★★★ los dos asientos son las tablas del paquete y cuadran; las únicas cifras son las de la p. 187", () => {
