@@ -32,14 +32,31 @@ jobs:
     name: Compilar y publicar
     runs-on: ubuntu-latest
 
+    # CERROJO DE REPOSITORIO. Desde que el repositorio es público, cualquiera
+    # puede bifurcarlo y activar Actions en su copia. Sin esta condición, esa
+    # copia intentaría desplegar a NUESTRO destino con los secretos que su
+    # dueño ponga, o fallar ruidosamente contra una cuenta FTP que no es suya.
+    #
+    # Esto NO es lo que protege los secretos —eso ya lo hace GitHub, que nunca
+    # entrega los secretos de este repositorio a una propuesta de cambio desde
+    # una bifurcación— ni lo que impide que alguien de fuera dispare el
+    # despliegue, que solo corre con un empujón a main y eso exige permiso de
+    # escritura. Es el tercer cerrojo, el que atiende la copia ajena.
+    if: github.repository == 'lugoxboop/aprendefae'
+
     env:
       # Raíz de aprendefae.com dentro de la cuenta FTP.
       #
       # NO es /public_html/. Esa es la del dominio principal de la cuenta;
-      # aprendefae.com es un dominio adicional y cuelga de domains/. La ruta
-      # absoluta en el servidor es
-      # /home/u448249998/domains/aprendefae.com/public_html, y como el usuario
-      # FTP entra enjaulado en su home, aquí se escribe relativa a él.
+      # aprendefae.com es un dominio adicional y cuelga de domains/. En el
+      # servidor la ruta absoluta cuelga del home del usuario FTP, y como ese
+      # usuario entra enjaulado en su home, aquí se escribe relativa a él.
+      #
+      # El nombre de ese usuario estaba escrito aquí y se quitó el 15 de
+      # octubre de 2026, al abrir el repositorio. Un nombre de usuario no es
+      # una contraseña, pero tampoco hace falta que esté a la vista. Sigue en
+      # el historial de git, que no se reescribe: si alguna vez importa, lo
+      # que se cambia es la contraseña en Hostinger, no este comentario.
       #
       # Subir a la carpeta equivocada NO da error: FTP crea lo que le pidan y
       # la ejecución sale en verde con el sitio intacto. Por eso el destino
