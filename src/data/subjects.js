@@ -661,6 +661,8 @@ export const SUBJECTS = {
           { id: "t4-quien-se-entero-primero", nombre: "¿Quién se enteró primero?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A5, pp. 188-191, después de H6 (plan de Yujiro). Aprender: cero FP, no entra al catálogo. La conciliación completa de San Calixto. */
           { id: "t4-a5-san-calixto", nombre: "San Calixto", clasificacion: { tipo: APRENDER } },
+          /* H7, justo después de A5, que la sostiene. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0206. */
+          { id: "t4-concilia-la-cuenta", nombre: "Concilia la cuenta", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
       /*

@@ -53,9 +53,13 @@ import {
   H6, DESTINOS_H6, BOTON_H6, CIERRE_H6, resumenH6, lectorErrorH6, nombreDeDestinoH6,
   sortearH6, evaluarH6, puntuarH6,
 } from "../data/contabilidadT4H6.js";
+import {
+  H7, DESTINOS_H7, BOTON_H7, TABLA_H7, FALTAN_SALDOS, PIE_DATOS_H7, PIE_CIERRE_H7, CORRECTO as CORRECTO_H7, INCORRECTO as INCORRECTO_H7,
+  resumenH7, lectorErrorH7, nombreDeDestinoH7, sortearH7, evaluarPartidaH7, tablaH7, leerSaldo, evaluarSaldosH7, puntuarH7,
+} from "../data/contabilidadT4H7.js";
 import { Opcion, Opciones, Pulsos, Cierre } from "./mecanicas/corazon/juego.jsx";
 import { TEXTO_CIERRE } from "./mecanicas/bloques/marcos.jsx";
-import { Responder, useTanda, AsientoEnLineas, leerCifra } from "./mecanicas/libros/piezas.jsx";
+import { Responder, useTanda, AsientoEnLineas, leerCifra, CampoCifra } from "./mecanicas/libros/piezas.jsx";
 import ConstructorAsiento, { filaVacia } from "./mecanicas/libros/ConstructorAsiento.jsx";
 import { SOLO_LECTOR } from "./mecanicas/libros/verbos.jsx";
 import { Encabezado } from "./mecanicas/libros/tema1/encabezado.jsx";
@@ -99,6 +103,7 @@ export const JUEGOS_T4 = [
   { id: H4.id, Mecanica: ElArqueoDeRosa, titulo: H4.nombre },
   { id: H5.id, Mecanica: AlEmpleadoOAlGasto, titulo: H5.nombre },
   { id: H6.id, Mecanica: QuienSeEnteroPrimero, titulo: H6.nombre },
+  { id: H7.id, Mecanica: ConciliaLaCuenta, titulo: H7.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
@@ -2204,6 +2209,286 @@ export function QuienSeEnteroPrimero({ Marco, rotulo, titulo, acento, onCompleta
       {r && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H6.verResumen : BOTON_H6.siguiente}</Responder>
+        </div>
+      )}
+    </Marco>
+  );
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · HACER 7 · CONCILIA LA CUENTA (Célula D)
+ *
+ * Desde la especificación de Hanayama (celula-d/hanayama-h7-pantalla-v1.md
+ * con la v1.1 y la v1.2 encima; PASA de Shibukawa) y el paquete vigente de
+ * Katsumi (serie 1 y serie 2). Las piezas compartidas, sin cambiarlas
+ * (Encabezado, Pulsos, Opciones, Opcion, Responder, CampoCifra, Cierre).
+ *
+ * Cada intento sortea UNA serie (Los Cerezos o El Mirador), por su cuenta:
+ * nada se comparte con H8. Dos fases:
+ *
+ *   · FASE 1 · las nueve partidas, barajadas. Arriba, el PAR de A5 con los
+ *     dos saldos de partida (sin «=»); la razón social y el pie, debajo. La
+ *     tarjeta trae solo la partida. Cuatro destinos en 2×2, en orden fijo
+ *     (Banco suma, Banco resta / Libros suma, Libros resta), cada uno en dos
+ *     renglones fijos con el lado en 600. Un toque; «era esta»; coral solo
+ *     en el error
+ *   · FASE 2 · la tabla, con las nueve partidas EN SU LADO CORRECTO y su
+ *     signo (v1.1), cada rótulo en sus renglones fijos (v1.2), sin totales
+ *     ni saldo conciliado: el estudiante suma. Dos CampoCifra y «Comprobar
+ *     los saldos», un intento. Si falta un campo, un aviso gris que no gasta
+ *     el intento. Después: cada campo bien o mal, el mensaje de Katsumi y,
+ *     en el par, los dos saldos conciliados y el «=» si coinciden
+ *
+ * Al terminar: onCompletar(pct, ms, detalle), con once puntos (nueve
+ * partidas y dos saldos). En modo demo («Así se juega»), una sola partida
+ * y sin fase 2.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+const CSS_T4H7 = `
+.t4h7-dest { display: grid; min-width: 0; }
+.t4h7-dest > span { white-space: nowrap; }
+.t4h7-dest > span:first-child { font-weight: 600; }
+.t4h7-tb { display: grid; gap: 10px; min-width: 0; }
+`;
+
+/* El par de A5 en H7: los dos saldos, el «=» solo si son iguales. */
+function ParH7({ banco, libros, foco = false }) {
+  const T = TABLA_H7;
+  const iguales = banco === libros;
+  return (
+    <div className="t4cn-par" data-par>
+      <span className="t4f-sr" data-par-lector>{T.lectorPar(cifra(banco), cifra(libros))}{iguales ? ` ${T.lectorIguales}` : ""}</span>
+      <div className={`t4cn-parl${foco ? " t4cn-foco" : ""}`} aria-hidden="true">
+        <span>{T.par.banco}</span>
+        <span className="t4cn-m" data-par-monto="banco">{cifra(banco)}</span>
+      </div>
+      {iguales
+        ? <span className="t4cn-igual" aria-hidden="true" data-igual="visible">{T.par.igual}</span>
+        : <span className="t4cn-igual t4cn-oculto" aria-hidden="true" data-igual="oculto">{VACIO}</span>}
+      <div className={`t4cn-parl${foco ? " t4cn-foco" : ""}`} aria-hidden="true">
+        <span>{T.par.libros}</span>
+        <span className="t4cn-m" data-par-monto="libros">{cifra(libros)}</span>
+      </div>
+    </div>
+  );
+}
+
+/* Un lado de la tabla de la fase 2: saldo de partida, «Más» con sus partidas, «Menos» con las suyas. Sin totales. */
+function LadoH7({ id, cabecera, inicial, rotuloInicial, mas, menos }) {
+  const T = TABLA_H7;
+  const fila = (p, signo, primera) => (
+    <div key={p.id} role="row" className="t4cn-fila" data-partida-tabla={p.id} data-signo-tabla={signo}>
+      <span role="cell" className="t4cn-signo">{primera ? (signo === 1 ? T.mas : T.menos) : ""}</span>
+      <span role="rowheader" className="t4cn-con">{p.rotulo.map((t) => <span key={t}>{t}</span>)}</span>
+      <span role="cell" className="t4cn-m" data-monto={p.id}>{cifra(p.monto)}</span>
+    </div>
+  );
+  return (
+    <div className="t4cn-lado" data-lado-h7={id}>
+      <span className="t4cn-cab" aria-hidden="true">{cabecera}</span>
+      <div className="t4cn-tabla" role="table" aria-label={cabecera}>
+        <div role="row" className="t4cn-fila" data-inicial={id}>
+          <span role="cell" className="t4cn-signo" />
+          <span role="rowheader" className="t4cn-con">{rotuloInicial.map((t) => <span key={t}>{t}</span>)}</span>
+          <span role="cell" className="t4cn-m">{cifra(inicial)}</span>
+        </div>
+        {mas.map((p, k) => fila(p, 1, k === 0))}
+        {menos.map((p, k) => fila(p, -1, k === 0))}
+      </div>
+    </div>
+  );
+}
+
+export function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null }) {
+  /* `items` (demo o prueba): { serie, partidas }. Si no llega, se sortea una serie. */
+  const sortear = () => items ?? sortearH7((xs) => xs[Math.floor(Math.random() * xs.length)], barajar);
+  const [tanda, setTanda] = useState(sortear);
+  const [i, setI] = useState(0);
+  const [elegido, setElegido] = useState(null);
+  const [r, setR] = useState(null);
+  const [bien, setBien] = useState(0);
+  const [fase, setFase] = useState(1);
+  const [campos, setCampos] = useState({ banco: "", libros: "" });
+  const [rs, setRs] = useState(null);
+  const [aviso, setAviso] = useState(false);
+  const [terminado, setTerminado] = useState(false);
+  const detalle = useRef([]);
+  const inicio = useRef(Date.now());
+  const zonaBoton = useRef(null);
+  const tarjeta = useRef(null);
+
+  const { serie: s, partidas } = tanda;
+  const item = partidas[i];
+  const cuantos = partidas.length;
+  const saldosBien = rs ? Number(rs.bien.banco) + Number(rs.bien.libros) : 0;
+
+  useEffect(() => {
+    if (terminado && !modoDemo) onCompletar?.(puntuarH7(bien, saldosBien), Date.now() - inicio.current, detalle.current);
+  }, [terminado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if ((r || rs) && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [r, rs]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const anotar = (id, ok, respuesta) => detalle.current.push({ item: id, ok, intentos: 1, respuesta: ok ? null : respuesta, orden: detalle.current.length + 1 });
+
+  const responder = (id) => {
+    if (r) return;
+    const nuevo = evaluarPartidaH7(item, id);
+    anotar(item.id, nuevo.ok, id);
+    if (nuevo.ok) setBien((n) => n + 1);
+    setElegido(id);
+    setR(nuevo);
+  };
+
+  const avanzar = () => {
+    setElegido(null); setR(null);
+    if (i + 1 < cuantos) { setI(i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); }
+    else setFase(2);
+  };
+
+  const comprobar = () => {
+    if (rs) return;
+    const [b, l] = [leerSaldo(campos.banco), leerSaldo(campos.libros)];
+    /* Un campo vacío no gasta el intento: aviso gris. */
+    if (b === null || l === null) { setAviso(true); return; }
+    setAviso(false);
+    const nuevo = evaluarSaldosH7(s, b, l);
+    anotar("saldo-banco", nuevo.bien.banco, cifra(b));
+    anotar("saldo-libros", nuevo.bien.libros, cifra(l));
+    setRs(nuevo);
+  };
+
+  const reiniciar = () => {
+    setTanda(sortear()); setI(0); setElegido(null); setR(null); setBien(0); setFase(1);
+    setCampos({ banco: "", libros: "" }); setRs(null); setAviso(false); setTerminado(false);
+    detalle.current = []; inicio.current = Date.now();
+  };
+
+  if (terminado) {
+    return (
+      <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+        <Cierre pct={Math.round(puntuarH7(bien, saldosBien))} onReiniciar={reiniciar} textoReiniciar={BOTON_H7.otraVez}>
+          <p data-resumen style={TEXTO_CIERRE}>{resumenH7(bien)}</p>
+          <p data-cierre style={{ ...TEXTO_CIERRE, marginTop: "8px" }}>{s.cierre}</p>
+          <p data-pie-cierre style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{PIE_CIERRE_H7}</p>
+        </Cierre>
+      </Marco>
+    );
+  }
+
+  const estadoDe = (id) => {
+    if (!r) return null;
+    if (id === elegido) return r.ok ? "correcta" : "incorrecta";
+    if (id === r.correcta) return "revelada";
+    return null;
+  };
+  const tabla = fase === 2 ? tablaH7(s) : null;
+  const T = TABLA_H7;
+  const marcaCampo = (lado) => (rs ? (rs.bien[lado] ? "correcta" : "incorrecta") : null);
+
+  return (
+    <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+      {/* CSS_T4F trae .t4f-sr: sin ella, lo que solo oye el lector de pantalla se ve. */}
+      <style>{CSS_T4H1 + CSS_T4F + CSS_T4C + CSS_T4H7}</style>
+      {/* Como en H1-H6: la partida lleva `data-t4-h7` y la demo, `data-t4-h7-demo`. */}
+      <div {...(modoDemo ? { "data-t4-h7-demo": "" } : { "data-t4-h7": "" })} data-fase={fase} data-serie={s?.id}>
+        <Encabezado consigna={H7.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
+
+        {/* Los datos de partida, siempre a la vista: el par, y debajo la empresa y el pie. La demo no trae serie. */}
+        {s && <div style={{ margin: "0 0 12px", display: "grid", gap: "6px" }} className="t4cn">
+          {rs?.ok
+            ? <ParH7 banco={s.conciliadoBanco} libros={s.conciliadoLibros} foco />
+            : rs
+              ? <ParH7 banco={s.conciliadoBanco} libros={s.conciliadoLibros} />
+              : <ParH7 banco={s.extracto} libros={s.libros} />}
+          <div data-datos>
+            {s.datos.map((d) => <p key={d} data-dato style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: 1.4, color: APAGADO_H1 }}>{d}</p>)}
+            <p data-pie-datos style={{ margin: "2px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: 1.4, color: APAGADO_H1 }}>{PIE_DATOS_H7}</p>
+          </div>
+        </div>}
+
+        {fase === 1 && (
+          <>
+            <div style={{ marginBottom: "12px" }}>
+              <Pulsos total={cuantos} hechos={i + (r ? 1 : 0)} enCurso={i + 1} etiqueta="Partida" />
+            </div>
+            <div key={item.id} className="fae-t4h1-entra" data-tarjeta-partida={item.id} style={{
+              margin: "0 0 12px", padding: "11px 13px", borderRadius: "11px",
+              background: "rgba(184,196,212,0.12)", borderLeft: "3px solid #B8C4D4",
+            }}>
+              <p ref={tarjeta} tabIndex={-1} data-partida-texto style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, outline: "none" }}>
+                {item.texto}
+              </p>
+            </div>
+            <div role="group" aria-label={H7.nombre}>
+              <Opciones columnas="repeat(2, minmax(0, 1fr))">
+                {DESTINOS_H7.map((d) => (
+                  <span key={d.id} data-opcion={d.id} style={{ display: "contents" }}>
+                    <Opcion ancho deshabilitada={Boolean(r)} estado={estadoDe(d.id)} onClick={() => responder(d.id)}>
+                      <span className="t4h7-dest" data-destino-renglones>{d.renglones.map((x) => <span key={x}>{x}</span>)}</span>
+                    </Opcion>
+                  </span>
+                ))}
+              </Opciones>
+            </div>
+            <div data-retro aria-live="polite" aria-atomic="true">
+              {r && (
+                <div className="fae-t4h1-entra" data-panel={r.ok ? "acierto" : "error"} style={{
+                  marginTop: "12px", padding: "11px 13px", borderRadius: "11px",
+                  background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
+                  borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
+                }}>
+                  {!r.ok && <span style={SOLO_LECTOR}>{lectorErrorH7(nombreDeDestinoH7(r.correcta))} </span>}
+                  {r.textos.map((x) => (
+                    <p key={x} data-texto-retro style={{ margin: "0 0 4px", fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, fontWeight: x === r.textos[0] && r.ok ? 700 : 400 }}>{x}</p>
+                  ))}
+                  <p data-pagina style={{ margin: "4px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{item.pagina}</p>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {fase === 2 && (
+          <div className="t4h7-tb t4cn" data-tabla-h7>
+            <LadoH7 id="banco" cabecera={T.banco} inicial={tabla.banco.inicial} rotuloInicial={T.inicialBanco} mas={tabla.banco.mas} menos={tabla.banco.menos} />
+            <div data-campo="banco" style={{ display: "grid", gap: "6px" }}>
+              <span style={{ fontFamily: "Inter, sans-serif", fontSize: "13px", fontWeight: 600, color: FAE.text }}>{T.campoBanco}</span>
+              <CampoCifra valor={campos.banco} onCambio={(v) => setCampos((c) => ({ ...c, banco: v }))} onEnviar={comprobar} deshabilitado={Boolean(rs)} etiqueta={T.campoBanco} estado={marcaCampo("banco")} />
+            </div>
+            <LadoH7 id="libros" cabecera={T.libros} inicial={tabla.libros.inicial} rotuloInicial={T.inicialLibros} mas={tabla.libros.mas} menos={tabla.libros.menos} />
+            <div data-campo="libros" style={{ display: "grid", gap: "6px" }}>
+              <span style={{ fontFamily: "Inter, sans-serif", fontSize: "13px", fontWeight: 600, color: FAE.text }}>{T.campoLibros}</span>
+              <CampoCifra valor={campos.libros} onCambio={(v) => setCampos((c) => ({ ...c, libros: v }))} onEnviar={comprobar} deshabilitado={Boolean(rs)} etiqueta={T.campoLibros} estado={marcaCampo("libros")} />
+            </div>
+            <div data-retro aria-live="polite" aria-atomic="true">
+              {rs && (
+                <div className="fae-t4h1-entra" data-panel={rs.ok ? "acierto" : "error"} style={{
+                  padding: "11px 13px", borderRadius: "11px",
+                  background: rs.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
+                  borderLeft: `3px solid ${rs.ok ? "#B8C4D4" : FAE.coral}`,
+                }}>
+                  <p data-palabra style={{ margin: "0 0 4px", fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", fontWeight: 700, color: rs.ok ? FAE.text : FAE.coral }}>{rs.ok ? CORRECTO_H7 : INCORRECTO_H7}</p>
+                  <p data-texto-retro style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text }}>{rs.texto}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {fase === 1 && r && !modoDemo && (
+        <div ref={zonaBoton}>
+          <Responder onClick={avanzar}>{i + 1 === cuantos ? BOTON_H7.aLosSaldos : BOTON_H7.siguiente}</Responder>
+        </div>
+      )}
+      {fase === 2 && !rs && <Responder onClick={comprobar}>{BOTON_H7.comprobar}</Responder>}
+      {fase === 2 && !rs && aviso && (
+        <p data-aviso style={{ margin: "9px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12.5px", color: APAGADO_H1, textAlign: "center" }}>{FALTAN_SALDOS}</p>
+      )}
+      {fase === 2 && rs && !modoDemo && (
+        <div ref={zonaBoton}>
+          <Responder onClick={() => setTerminado(true)}>{BOTON_H7.verResumen}</Responder>
         </div>
       )}
     </Marco>

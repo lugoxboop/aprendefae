@@ -2,10 +2,10 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * ¿CABEN LOS HACER DE T4 A 375 Y 320, Y NO DELATAN NADA?
  *
- *   node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4|h5|h6 [carpeta-de-capturas]
+ *   node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4|h5|h6|h7 [carpeta-de-capturas]
  *
  * Chromium de verdad, la vista de T4 en modo Hacer con ese juego abierto
- * (banco scripts/t4/harness-t4, #h1 a #h6). Salta el «Así se juega» y
+ * (banco scripts/t4/harness-t4, #h1 a #h7). Salta el «Así se juega» y
  * juega todas las tarjetas: en cada una, antes de tocar, mira el DOM; después
  * toca la primera opción (acierta en unas y falla en otras) y mide. En H3 no
  * hay opciones: arma el asiento con el constructor —las dos primeras cuentas
@@ -31,6 +31,11 @@
  *   · H6: cada destino va en dos renglones fijos («Todavía no lo tiene» /
  *     «el banco»): que cada renglón ocupe UNA línea y que los dos queden en
  *     dos alturas distintas (Hanayama H6 v1 §1). Ninguna cifra en la zona
+ *   · H7: las nueve partidas (cuatro destinos en 2×2, cada renglón en una
+ *     línea); después la fase 2: la tabla, cada concepto en sus renglones
+ *     fijos y su monto a la base, contra el borde; los dos campos con el
+ *     saldo conciliado (de la serie que tocó), y el panel comprobado. Mide la
+ *     fase 2 antes y después de comprobar
  *   · PH8-2: antes de tocar, el DOM no trae ni la devolución ni la página
  *   · con movimiento reducido, nada de la actividad tiene animación en curso
  *
@@ -54,9 +59,10 @@ const JUEGOS = {
   h4: { raiz: "[data-t4-h4]", tarjeta: "[data-tarjeta-pregunta]", siguiente: "Siguiente pregunta", otros: ["Siguiente ronda"], rotulos: false, total: 8, rondas: true },
   h5: { raiz: "[data-t4-h5]", tarjeta: "[data-tarjeta-caso]", siguiente: "Siguiente caso", rotulos: false, total: 2, conCifras: true },
   h6: { raiz: "[data-t4-h6]", tarjeta: "[data-tarjeta-partida]", siguiente: "Siguiente partida", rotulos: false, renglones: true, total: 8 },
+  h7: { raiz: "[data-t4-h7]", tarjeta: "[data-tarjeta-partida]", siguiente: "Siguiente partida", otros: ["Ir a los saldos"], rotulos: false, renglones: true, total: 9, saldos: true },
 };
 const J = JUEGOS[CUAL];
-if (!J) { console.error("uso: node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4|h5|h6 [carpeta]"); process.exit(2); }
+if (!J) { console.error("uso: node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4|h5|h6|h7 [carpeta]"); process.exit(2); }
 const CAPTURAS = process.argv[3] ?? null;
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 const ANCHOS = [375, 320];
@@ -108,7 +114,7 @@ function medir({ antes, raiz, rotulos, renglones, siguiente, otros = [] }) {
       });
       if (tops.length !== 2 || tops[0] === tops[1]) problemas.push(`el destino «${d.textContent}» no va en dos renglones`);
     }
-    if (renglones && /\$|\d{1,3}\.\d{3}/.test(zona.textContent)) problemas.push("hay una cifra en la zona del juego");
+    if (renglones && raiz === "[data-t4-h6]" && /\$|\d{1,3}\.\d{3}/.test(zona.textContent)) problemas.push("hay una cifra en la zona del juego");
     /* PH8-2: con textContent y outerHTML, que ven también lo escondido por CSS. */
     const dom = zona.textContent + zona.outerHTML;
     if (zona.querySelector("[data-panel], [data-pagina], [data-texto-retro]")) problemas.push("antes de responder ya hay devolución en el DOM");
@@ -128,6 +134,24 @@ function medir({ antes, raiz, rotulos, renglones, siguiente, otros = [] }) {
   for (const c of zona.querySelectorAll("[data-asiento-completo] [data-asiento] > div > span:last-child")) {
     const rango = document.createRange(); rango.selectNodeContents(c);
     if (new Set([...rango.getClientRects()].map((x) => Math.round(x.top))).size > 1) problemas.push(`la cifra «${c.textContent}» del asiento completo se parte`);
+  }
+  /* H7, fase 2: cada renglón fijo en una línea, y el monto contra el borde y a la base del último renglón. */
+  for (const fila of zona.querySelectorAll("[data-tabla-h7] .t4cn-fila")) {
+    const [, con, m] = fila.children;
+    for (const r of con.children) {
+      const g = document.createRange(); g.selectNodeContents(r);
+      if (new Set([...g.getClientRects()].filter((x) => x.width > 1).map((x) => Math.round(x.top))).size > 1) problemas.push(`el renglón «${r.textContent}» de la tabla ocupa más de una línea`);
+    }
+    const rf = fila.getBoundingClientRect(), rm = m.getBoundingClientRect(), ul = [...con.children].at(-1).getBoundingClientRect();
+    if (Math.abs(rm.right - rf.right) > 0.5) problemas.push(`fila «${fila.textContent}»: el monto no va contra el borde`);
+    if (Math.abs(rm.bottom - ul.bottom) > 3) problemas.push(`fila «${fila.textContent}»: el monto no va a la base`);
+    const ancho = Math.max(...[...con.children].map((x) => { const g = document.createRange(); g.selectNodeContents(x); return g.getBoundingClientRect().width; }));
+    if (rm.left - con.getBoundingClientRect().left - ancho < 0) problemas.push(`fila «${fila.textContent}»: el concepto choca con el monto`);
+  }
+  /* Lo que solo oye el lector de pantalla mide 1 px: si se ve, falta su hoja de estilos. */
+  for (const sr of zona.querySelectorAll(".t4f-sr")) {
+    const r = sr.getBoundingClientRect();
+    if (r.width > 1.5 || r.height > 1.5) problemas.push(`el texto para el lector de pantalla «${sr.textContent.slice(0, 40)}» se ve (${r.width.toFixed(0)}×${r.height.toFixed(0)} px)`);
   }
   const animado = [...zona.querySelectorAll("*")].filter((el) => el.getAnimations().some((a) => a.playState === "running")).length;
   /* H5: un nombre con raya, en una línea o partido justo después de «–». */
@@ -206,6 +230,18 @@ for (const reducido of [false, true]) {
       const panel = await pg.getAttribute("[data-panel]", "data-panel");
       await estado(`${id}-${panel}`, false);
       for (const b of await pg.$$("button")) { const t = (await b.textContent())?.trim(); if (t === J.siguiente || (J.otros ?? []).includes(t) || t === "Ver mi resumen") { await b.click(); break; } }
+    }
+    if (J.saldos) {
+      /* La fase 2: la tabla, los dos campos con el saldo conciliado de la serie que tocó, y comprobar. */
+      await pg.waitForSelector("[data-tabla-h7]");
+      await estado("saldos-colocando", false);
+      const serie = await pg.getAttribute(J.raiz, "data-serie");
+      const saldo = await pg.evaluate(async (id) => (await import("/src/data/contabilidadT4H7.js")).SERIES_H7.find((x) => x.id === id).conciliadoBanco, serie);
+      await pg.fill(`${J.raiz} [data-campo="banco"] input`, String(saldo));
+      await pg.fill(`${J.raiz} [data-campo="libros"] input`, String(saldo + 1));
+      for (const b of await pg.$$("button")) { if ((await b.textContent())?.trim() === "Comprobar los saldos") { await b.click(); break; } }
+      await estado(`saldos-${await pg.getAttribute("[data-panel]", "data-panel")}`, false);
+      for (const b of await pg.$$("button")) { if ((await b.textContent())?.trim() === "Ver mi resumen") { await b.click(); break; } }
     }
     await pg.waitForSelector("[data-resumen]");
     await pg.close();

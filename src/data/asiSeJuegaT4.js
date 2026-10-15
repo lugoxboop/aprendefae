@@ -4,6 +4,7 @@ import { H3, PASOS_H3, EJEMPLO_H3, ALT_H3, BOTON_H3 } from "./contabilidadT4H3.j
 import { H4, PASOS_H4, EJEMPLO_H4, ALT_H4, BOTON_H4, CUADRA } from "./contabilidadT4H4.js";
 import { H5, PASOS_H5, EJEMPLO_H5, ALT_H5, BOTON_H5 } from "./contabilidadT4H5.js";
 import { H6, PASOS_H6, EJEMPLO_H6, ALT_H6 } from "./contabilidadT4H6.js";
+import { H7, PASOS_H7, EJEMPLO_H7, ALT_H7 } from "./contabilidadT4H7.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -43,6 +44,11 @@ import { H6, PASOS_H6, EJEMPLO_H6, ALT_H6 } from "./contabilidadT4H6.js";
  * ninguna de las ocho partidas). La mano TOCA «Todavía no lo tiene el
  * banco»: los destinos son de un toque (Hanayama H6 v1 §1), aunque el
  * paquete diga «arrastra».
+ *
+ * t4-concilia-la-cuenta (H7): la comisión de $12.000 (construida, sin
+ * serie). Solo el primer gesto, como pide Katsumi: la mano TOCA «Libros:
+ * resta». La demo no trae serie, así que no pinta el par ni los datos de
+ * partida, y no llega a la fase 2.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -158,6 +164,22 @@ const ASI_QUIEN_PRIMERO = {
   cuadros: { gesto: 1 },
 };
 
+const ASI_CONCILIA = {
+  actividadId: H7.id,
+  titulo: H7.nombre,
+  consigna: H7.consigna.join(" "),
+  pasos: PASOS_H7,
+  alt: ALT_H7,
+  demo: { items: { serie: null, partidas: [EJEMPLO_H7] } },
+  guion: {
+    duracion: 6500,
+    toques: [
+      { ms: 2200, en: `[data-opcion="${EJEMPLO_H7.respuesta}"] button` },
+    ],
+  },
+  cuadros: { gesto: 1 },
+};
+
 export const ASI_SE_JUEGA_T4 = {
   [ASI_ENTRA_O_SALE.actividadId]: ASI_ENTRA_O_SALE,
   [ASI_CONTROL.actividadId]: ASI_CONTROL,
@@ -165,4 +187,5 @@ export const ASI_SE_JUEGA_T4 = {
   [ASI_ARQUEO.actividadId]: ASI_ARQUEO,
   [ASI_EMPLEADO_O_GASTO.actividadId]: ASI_EMPLEADO_O_GASTO,
   [ASI_QUIEN_PRIMERO.actividadId]: ASI_QUIEN_PRIMERO,
+  [ASI_CONCILIA.actividadId]: ASI_CONCILIA,
 };
