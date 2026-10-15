@@ -26,9 +26,9 @@ import { Entra, KEYFRAMES_ENTRA } from "./CuentaQueSeLlena.jsx";
  *     «6 meses» queda en «Más de 3 hasta 6 meses» sin tocar la marca;
  *   · parte 2: cada fila gana una barra del mismo largo, con la porción
  *     provisionada rellena al final (5, 10 y 15 % del largo) y la provisión
- *     del grupo, que entra al responder. En la casilla 7 aparece la barra
- *     del total, con su porción (la provisión) y, debajo, «El valor neto» y
- *     «La provisión».
+ *     del grupo, que entra al responder. En la casilla 7 aparece la fila
+ *     del total con su barra y su porción (la provisión) y, debajo, «El
+ *     valor neto» y «La provisión» (lote 3: antes de la 7, ni la fila).
  *
  * Lo que entra es siempre el valor correcto. En blanco y negro: los cajones
  * se leen por sus marcas y su orden; la porción es relleno y el resto
@@ -197,33 +197,32 @@ function FilaGrupo({ g, k, parte2, valor, activo, reducido }) {
   );
 }
 
-function Total({ respondidas, abierta, enCurso, reducido }) {
+function Total({ respondidas, abierta, reducido }) {
   const i7 = N1 + CALCULAR.casillas.indexOf(P7);
   const i8 = N1 + CALCULAR.casillas.indexOf(P8);
-  const conBarra = enCurso >= i7;
   const activo = abierta === i7 || abierta === i8;
+  /* Entra entera en la casilla 7 (fila y barra), con la aparición de la serie; con movimiento reducido, al instante. */
   return (
-    <div data-fila="total" data-total="" {...(activo ? { "data-renglon-activo": "" } : {})} style={{ borderTop: `1px solid ${BORDE_FUERTE}`, marginTop: "4px", ...resalte(activo) }}>
+    <div data-fila="total" data-total="" {...(activo ? { "data-renglon-activo": "" } : {})} style={{
+      borderTop: `1px solid ${BORDE_FUERTE}`, marginTop: "4px", ...resalte(activo), animation: reducido ? "none" : "b5-entra 240ms ease-out both",
+    }}>
       <div style={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: "8px", alignItems: "baseline" }}>
         <span style={{ ...PEQUENO, color: SECUNDARIO }}>{TOTAL.nombre}</span>
         <span style={CIFRA}>{TOTAL.valor}</span>
       </div>
-      {/* La barra del total: no se dibuja antes de la casilla 7, la primera que la usa. */}
-      {conBarra && (
-        <div data-barra-total style={{ marginTop: "6px" }}>
-          <div style={{ display: "flex" }}><Barra porcentaje={(ESCENARIO_T6_ACT6.provision / ESCENARIO_T6_ACT6.total) * 100} alto={14} /></div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", marginTop: "4px" }}>
-            <div>
-              <p style={{ margin: 0, ...PEQUENO, color: SECUNDARIO }}>{ROTULOS_TOTAL_T6_ACT6.neto}</p>
-              <p data-valor-neto style={{ ...CIFRA, margin: 0, minHeight: "16px" }}>{respondidas > i8 && <Entra reducido={reducido}>{pesos(correcta(P8).valor)}</Entra>}</p>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <p style={{ margin: 0, ...PEQUENO, color: SECUNDARIO }}>{ROTULOS_TOTAL_T6_ACT6.provision}</p>
-              <p data-valor-provision style={{ ...CIFRA, margin: 0, minHeight: "16px" }}>{respondidas > i7 && <Entra reducido={reducido}>{pesos(correcta(P7).valor)}</Entra>}</p>
-            </div>
+      <div data-barra-total style={{ marginTop: "6px" }}>
+        <div style={{ display: "flex" }}><Barra porcentaje={(ESCENARIO_T6_ACT6.provision / ESCENARIO_T6_ACT6.total) * 100} alto={14} /></div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", marginTop: "4px" }}>
+          <div>
+            <p style={{ margin: 0, ...PEQUENO, color: SECUNDARIO }}>{ROTULOS_TOTAL_T6_ACT6.neto}</p>
+            <p data-valor-neto style={{ ...CIFRA, margin: 0, minHeight: "16px" }}>{respondidas > i8 && <Entra reducido={reducido}>{pesos(correcta(P8).valor)}</Entra>}</p>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <p style={{ margin: 0, ...PEQUENO, color: SECUNDARIO }}>{ROTULOS_TOTAL_T6_ACT6.provision}</p>
+            <p data-valor-provision style={{ ...CIFRA, margin: 0, minHeight: "16px" }}>{respondidas > i7 && <Entra reducido={reducido}>{pesos(correcta(P7).valor)}</Entra>}</p>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -248,7 +247,12 @@ export default function CajonesDelTiempo({ respondidas, abierta, reducido, anunc
           {GRUPOS_T6_ACT6.map((g, k) => (
             <FilaGrupo key={g.id} g={g} k={k} parte2={parte2} valor={parte2 ? valorDe(g) : null} activo={parte2 && activoDe(g)} reducido={reducido} />
           ))}
-          {parte2 && <Total respondidas={respondidas} abierta={abierta} enCurso={enCurso} reducido={reducido} />}
+          {/*
+            * La fila del total («$1.400.000») y su barra no se dibujan antes de la casilla 7, la primera que
+            * las usa (hoja de Mai, lote 3 · B): las casillas 4 a 6 usan solo la fila de su grupo, y así la
+            * casilla 4 cabe a 320×568 con su rótulo y su fila.
+            */}
+          {parte2 && enCurso >= N1 + CALCULAR.casillas.indexOf(P7) && <Total respondidas={respondidas} abierta={abierta} reducido={reducido} />}
         </div>
         {/* El pie de la tabla (calidad 1): el rótulo y la fuente del porcentaje, dos líneas sin cajas. */}
         <div data-pie-tabla="" style={{ margin: "6px 0 0", padding: "6px 0 0", borderTop: `1px solid ${BORDE_TENUE}` }}>

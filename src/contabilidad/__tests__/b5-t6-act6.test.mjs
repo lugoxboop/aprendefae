@@ -222,7 +222,9 @@ test("★★★ el rótulo fijo se ve en pantalla en cada una de las ocho casill
     assert.equal(Boolean(datos), k >= 3, `casilla ${k + 1}: los montos solo en la parte 2`);
     assert.equal(Boolean(caja.querySelector("[data-eje]")), k < 3, `casilla ${k + 1}: el eje solo en la parte 1`);
     if (datos) {
-      assert.ok(datos.lastElementChild.hasAttribute("data-total"), "el total, al final");
+      /* Lote 3 · B (hoja de Mai): la fila del total no se dibuja antes de la casilla 7, la primera que la usa. */
+      assert.equal(Boolean(datos.querySelector("[data-total]")), k >= 6, `casilla ${k + 1}: la fila del total, desde la 7`);
+      if (k >= 6) assert.ok(datos.lastElementChild.hasAttribute("data-total"), "el total, al final");
       assert.deepEqual([...datos.querySelectorAll("[data-monto]")].map((td) => td.textContent), ["$620.000", "$560.000", "$160.000", "$60.000"]);
     }
     /* Las opciones, en una columna (Mai: en fila de tres no caben las cifras de 7 dígitos a 320). */
