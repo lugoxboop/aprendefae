@@ -3,7 +3,9 @@
  * TEMA 6 · HACER 5 — «La cuenta de la provisión» (Célula B, b5-t6-a5).
  *
  * Todo el texto que lee el estudiante vive en ESTE archivo, guardado entero
- * en orquestador/conocimiento/paquetes/b5-t6-act5.md (versión de Futaba).
+ * en orquestador/conocimiento/paquetes/b5-t6-act5.md: la versión de Futaba,
+ * con las líneas que cambiaron tras la auditoría de Shoko (sección 2). Es un
+ * repaso del caso de El Torito; sus devoluciones ya no copian las de b5-t6-a2.
  * Las cifras de legibilidad entre paréntesis no se copian.
  *
  * Casillas en orden (b5/CasillasEnOrden.jsx, la Escalera del Encaje de la
@@ -21,8 +23,8 @@ export const T6_ACT5 = {
   fpBase: 25,
   consigna: "Sigue la cuenta de la provisión de El Torito, casilla por casilla.",
   regla: "La provisión sube cuando se acredita y baja cuando se debita.",
-  /* El punto de partida, ya resuelto (pp. 200 y 202). */
-  partida: "El 31 de diciembre de 2007, El Torito revisa lo que le deben sus clientes: $2.655.000. Calcula que una parte no se va a recuperar: $148.800. Al crear la provisión, su saldo queda en $148.800.",
+  /* El punto de partida, ya resuelto (pp. 200 y 202). Auditoría de Shoko: «El Torito Currambero». */
+  partida: "El 31 de diciembre de 2007, El Torito Currambero revisa lo que le deben sus clientes: $2.655.000. Calcula que una parte no se va a recuperar: $148.800. Al crear la provisión, su saldo queda en $148.800.",
   cierre: "La provisión sube al crearla, baja al castigar y se corrige al año siguiente. Por eso el saldo final es justo lo que pidió el análisis.",
 };
 
@@ -73,14 +75,14 @@ export const DISTRACTORES_PROPIOS_T6_ACT5 = [122200, 328800, 333400, 2803800];
 export const ERRORES_T6_ACT5 = {
   T1: "Falta restar la provisión. El valor neto es lo que deben los clientes menos la provisión.",
   T2: "La provisión no se suma: se resta de Cuentas por cobrar – clientes.",
-  T3: "Se castiga toda la deuda, aunque la provisión sea menor. Así lo hace el libro.",
+  T3: "La provisión no pone el límite: lo que manda es la deuda de Pablo Moncayo. Por eso se debita la provisión por los $180.000 completos, aunque solo tuviera $148.800.",
   T4: "Esos $31.200 son lo que faltó, no lo que se castiga. Se castiga toda la deuda de Pablo Moncayo.",
   T5: "La provisión era menor que lo castigado, así que no alcanzó. Resta $148.800 de $180.000.",
   T6: "El castigo baja la provisión: se resta, no se suma.",
-  T7: "A lo que pide el análisis se le suma lo que faltó el año anterior.",
+  T7: "El análisis dice cuánto debe quedar en la provisión, pero en marzo quedó corta. Para llegar a esa cifra, al registro hay que sumarle los $31.200 que faltaron.",
   /* «Se pasó»: la glosa de T6 · A3 para la provisión sobrestimada. */
   T8: "Lo que faltó se suma, no se resta. Se resta solo cuando la provisión se pasó.",
-  T9: "Falta el castigo de marzo. La provisión había bajado $180.000 antes del ajuste.",
+  T9: "Ese es el valor del ajuste, no el saldo. Antes del ajuste, a la provisión le faltaban $31.200.",
   T10: "Falta restar el castigo de marzo. Son $148.800 menos $180.000, más $184.600.",
 };
 

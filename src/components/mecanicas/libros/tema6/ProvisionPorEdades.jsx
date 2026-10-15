@@ -22,7 +22,8 @@ const conPorcentaje = (casillas) => casillas.map((c) => ({ ...c, enunciado: pega
 export const CONFIG_T6_ACT6 = {
   consigna: T6_ACT6.consigna,
   rotuloSimulado: T6_ACT6.rotulo,
-  reglaTabla: { filas: GRUPOS_T6_ACT6.map((g) => ({ nombre: g.nombre, valor: pegarPorcentaje(g.porcentaje) })), pie: PIES_T6_ACT6.regla },
+  /* Cada fila con su pie: la 1, del escenario; las 2 a 4, de la norma (auditoría de Shoko). */
+  reglaTabla: { filas: GRUPOS_T6_ACT6.map((g) => ({ nombre: g.nombre, valor: pegarPorcentaje(g.porcentaje), pie: g.pie })) },
   nota: { texto: T6_ACT6.nota, pie: PIES_T6_ACT6.nota },
   partida: pegarPorcentaje(T6_ACT6.partida),
   partes: PARTES_T6_ACT6.map((p) => ({

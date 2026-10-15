@@ -96,3 +96,18 @@ Reintento y segundo fallo	N/A: un intento por casilla
 Cierre	El texto de cierre y el porcentaje (aciertos ÷ 8 × 100)
 
 Para Kaede: en a5 y a6 la mecánica de casillas tiene que revelar el valor correcto después de un error, igual que «La Escalera del Encaje». En a6 eso es indispensable, porque el total y el valor neto dependen de las casillas anteriores.
+
+## (2) Futaba · líneas que cambian, con PASA de Shoko (pegadas tal cual)
+
+Mandan sobre (1). Decisión de Sakuta: se aplican tal cual, por actividad e id. Del texto pegado se quitaron las líneas de la interfaz del chat.
+
+b5-t6-a6 · «Provisión por edades»
+Id	Campo	Texto nuevo (literal)
+Regla fija, fila 1	Texto	Vigentes o hasta 3 meses: no se provisiona, en este ejemplo
+Regla fija, fila 1	Pie	Escenario simulado
+Regla fija, filas 2 a 4	Pie	Fuente del porcentaje: Decreto 1625 de 2016
+7	Opciones	$53.000	$44.000 → P7	$84.000 → P4
+P7 · falta un grupo	Error	Te falta un grupo. Suma la provisión de los tres grupos que sí la llevan.
+P3	Error	Se retira.
+
+El 0 % no es del Decreto: la fila 1 lleva el pie del escenario. Las filas 2 a 4 no cambian (5 %, 10 % y 15 %). En la casilla 7, el distractor $44.000 (28.000 + 16.000) sustituye a $1.347.000.

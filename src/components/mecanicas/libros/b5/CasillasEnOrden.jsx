@@ -37,7 +37,7 @@ import { RotuloSimulado, PieDeFuente } from "../tema6/FuentesT6A5.jsx";
  * MODO DEMO («Así se juega»): llega `items` con el ejemplo (una casilla), no
  * se baraja nada, no hay encabezado y nunca se llama a `onCompletar`.
  *
- * config: { consigna, regla | reglaTabla{ filas, pie }, nota?{ texto, pie },
+ * config: { consigna, regla | reglaTabla{ filas[{ nombre, valor, pie? }], pie? }, nota?{ texto, pie },
  *           rotuloSimulado?, partida?, partes: [{ id, datos?{ filas, pie },
  *           casillas: [{ id, enunciado, opciones: [{ valor | texto, tipo }] }] }],
  *           errores, cierre, alt, etiqueta }
@@ -63,18 +63,28 @@ const claveDe = (op) => String(op.valor ?? op.texto);
 /* Las opciones de cifras se barajan; las de texto (los grupos de una regla) van en su orden. */
 const ordenar = (casillas, conBarajar) => casillas.map((c) => (conBarajar && c.opciones.every((o) => o.valor !== undefined) ? barajar(c.opciones) : c.opciones));
 
-/* Una tabla de dos columnas (nombre | valor), con su pie en su forma. */
+/*
+ * Una tabla de dos columnas (nombre | valor), con su pie en su forma. Si las
+ * filas traen su propio pie (`f.pie`), las seguidas con el mismo pie se agrupan
+ * y el pie va debajo de su grupo.
+ */
 function Tabla({ filas, pie, marca }) {
   return (
     <div {...{ [marca]: "" }} style={{ ...ESTILO_REGLA, padding: "8px 11px" }}>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <tbody>
-          {filas.map((f) => (
-            <tr key={f.nombre} style={{ borderTop: f.total ? "none" : `1px solid ${BORDE}` }}>
-              <th scope="row" style={{ ...CELDA, textAlign: "left", fontWeight: f.total ? 600 : 400 }}>{f.nombre}</th>
-              <td style={{ ...CIFRA, fontWeight: f.total ? 600 : 400 }}>{f.valor}</td>
-            </tr>
-          ))}
+          {filas.flatMap((f, k) => {
+            const fila = (
+              <tr key={f.nombre} style={{ borderTop: f.total ? "none" : `1px solid ${BORDE}` }}>
+                <th scope="row" style={{ ...CELDA, textAlign: "left", fontWeight: f.total ? 600 : 400 }}>{f.nombre}</th>
+                <td style={{ ...CIFRA, fontWeight: f.total ? 600 : 400 }}>{f.valor}</td>
+              </tr>
+            );
+            const cierraGrupo = f.pie && filas[k + 1]?.pie !== f.pie;
+            return cierraGrupo
+              ? [fila, <tr key={`${f.nombre}-pie`} data-pie-grupo=""><td colSpan={2} style={{ padding: "0 0 6px" }}><span style={PIE}><PieDeFuente texto={f.pie} /></span></td></tr>]
+              : [fila];
+          })}
         </tbody>
       </table>
       {pie && <span style={PIE}><PieDeFuente texto={pie} /></span>}
