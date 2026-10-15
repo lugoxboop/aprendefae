@@ -58,7 +58,9 @@ const medir = () => {
   const union = rects.length ? { top: Math.min(...rects.map((r) => r.top)), bottom: Math.max(...rects.map((r) => r.bottom)) } : null;
   return {
     modo: bloque.dataset.modo, siguiente: sig.getBoundingClientRect().top, bloqueTop: b.top, bloqueAlto: b.height, textoReservado,
-    contador: capa.querySelector("[data-paso-de]").textContent, union, primero: rects[0] ? { top: rects[0].top, bottom: rects[0].bottom } : null,
+    /* Lo que llega en un paso juntado es lo del segundo paso: lo de más abajo en la escena (el momento o el hecho más nuevo). */
+    contador: capa.querySelector("[data-paso-de]").textContent, union, llega: rects.length ? rects.reduce((x, r) => (r.bottom > x.bottom ? r : x)) : null,
+    modoYScroll: `${bloque.dataset.modo} @${Math.round(window.scrollY)}`,
     horizontal: document.documentElement.scrollWidth > window.innerWidth + 0.5,
   };
 };
@@ -104,7 +106,7 @@ async function recorrer(pieza, ancho, alto, reducido) {
   if (enParada.contador !== `Antes del paso ${parada.antes}`) fallos.push(`${tag}: el contador de la parada dice «${enParada.contador}»`);
   if (antes.modo !== "B-fijo") fallos.push(`${tag}: el bloque no quedó pegado (${antes.modo})`);
   for (const [nombre, m] of [["en la parada", enParada], ["al responder", decidida], ["al salir", despues]]) {
-    if (Math.abs(m.siguiente - antes.siguiente) > 0.5) fallos.push(`${tag}: «Siguiente» se mueve ${nombre} (${r2(antes.siguiente)} → ${r2(m.siguiente)})`);
+    if (Math.abs(m.siguiente - antes.siguiente) > 0.5) fallos.push(`${tag}: «Siguiente» se mueve ${nombre} (${r2(antes.siguiente)} → ${r2(m.siguiente)}; ${antes.modoYScroll} → ${m.modoYScroll})`);
   }
   if (Math.abs(decidida.bloqueAlto - enParada.bloqueAlto) > 0.5) fallos.push(`${tag}: el bloque crece otra vez al responder (${r2(enParada.bloqueAlto)} → ${r2(decidida.bloqueAlto)})`);
   if (Math.abs(despues.bloqueAlto - antes.bloqueAlto) > 0.5) fallos.push(`${tag}: el bloque no vuelve a su alto al salir (${r2(antes.bloqueAlto)} → ${r2(despues.bloqueAlto)})`);
@@ -112,10 +114,10 @@ async function recorrer(pieza, ancho, alto, reducido) {
     fallos.push(`${tag}: lo resaltado en la parada no queda entero sobre el bloque (${enParada.union ? `${r2(enParada.union.top)}–${r2(enParada.union.bottom)}` : "nada"}, bloque en ${r2(enParada.bloqueTop)})`);
   }
   if ([antes, enParada, decidida, despues, ...pasos].some((m) => m.horizontal)) fallos.push(`${tag}: barra horizontal`);
-  /* Los pasos juntados: lo resaltado junto, o lo que llega (el primero) entero sobre el bloque. */
+  /* Los pasos juntados: lo resaltado junto, o lo que llega (lo de más abajo) entero sobre el bloque. */
   for (const m of pasos.filter((x) => x.modo === "B-fijo" && x.union)) {
     const junto = m.union.top >= -0.5 && m.union.bottom <= m.bloqueTop + 0.5;
-    const llega = m.primero.top >= -0.5 && m.primero.bottom <= m.bloqueTop + 0.5;
+    const llega = m.llega.top >= -0.5 && m.llega.bottom <= m.bloqueTop + 0.5;
     if (!junto && !llega) fallos.push(`${tag} · ${m.contador}: lo que llega no queda entero sobre el bloque`);
     if (!junto) informe.push(`  ${tag} · ${m.contador}: no cabe junto (${r2(m.union.bottom - m.union.top)}); lo que llega, sí`);
   }

@@ -277,7 +277,8 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
       if (!h || !m || !b) return;
       const sitio = h.getBoundingClientRect();
       const cima = m.getBoundingClientRect().top;
-      const alto = b.offsetHeight;
+      /* El alto con sus decimales: con offsetHeight (entero), el bloque fijo quedaba hasta 0,85 px corrido (T6 · A4 en la parada, a 375). */
+      const alto = b.getBoundingClientRect().height;
       const panel = m.closest("section[data-capa]")?.parentElement?.getBoundingClientRect();
       const va = sitio.top + alto > window.innerHeight && cima < window.innerHeight && panel;
       setFijo((antes) => {
@@ -291,7 +292,10 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     recalcular.current = calcular;
     window.addEventListener("scroll", pedir, { passive: true });
     window.addEventListener("resize", pedir);
-    return () => { window.removeEventListener("scroll", pedir); window.removeEventListener("resize", pedir); if (cuadro !== null) cancelAnimationFrame(cuadro); };
+    /* Y cada vez que el bloque cambia de alto (al entrar y salir de la parada, a veces en dos cuadros): fijo, crece hacia arriba. */
+    const ro = typeof ResizeObserver !== "undefined" && bloque.current ? new ResizeObserver(pedir) : null;
+    ro?.observe(bloque.current);
+    return () => { window.removeEventListener("scroll", pedir); window.removeEventListener("resize", pedir); ro?.disconnect(); if (cuadro !== null) cancelAnimationFrame(cuadro); };
   }, []);
 
   /* La parada cambia el alto del bloque: se vuelve a fijar (crece hacia arriba; «Siguiente» no se mueve). */
