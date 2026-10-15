@@ -16,6 +16,7 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 
 | Qué | Dónde ya está | Consecuencia para T4 |
 |---|---|---|
+| En el Tema 3, «caja» es el dinero de la empresa en sentido amplio (rótulo «Caja: entra y sale plata»; «Cobro es la plata que entra a la caja») | Tema 3: `contabilidadTema3.js` | T4 parte ese dinero en Caja y Bancos. A1 hace ese puente con palabras, sin contradecir el Tema 3 (decisión de Yujiro, C5). El título publicado del Tema 3 es «Ingresos, gastos y ajustes» |
 | Caja y Bancos son activos; un activo que aumenta va al debe | Tema 2: `contabilidadActividades.js` (cu1-11 «Bancos aumenta», cu2-09, cu2-10) | La regla de la p. 180 y la de la p. 186 son **repaso**: se dicen como «la regla que ya conoces», no como nuevas |
 | Consignar mueve plata de Caja a Bancos | Tema 2: cu7-05 «Se consignó en la cuenta corriente $800», cu12-02, `consignar` en los errores | El asiento 2 de Sus Servicios (p. 180) y el ejemplo 1 de Bancos (p. 187) ya los vio el estudiante con otras cifras |
 | «Con cheque» o «se consignó» → Bancos; «de contado» o «en efectivo» → Caja | Tema 2: `contabilidadArmaElAsiento.js` (`PALABRAS_DE_CAJA`, `PALABRAS_DE_BANCOS`, `COLETILLA_CAJA_BANCOS`) | **Choque aparente** con la p. 179, que dice que Caja guarda «dinero en efectivo o en cheques». Hay que explicarlo (ver A1, P2) |
@@ -24,7 +25,9 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 | «Ingresos por servicios» | Temas 2 y 3 (13 archivos) | Se usa sin definir |
 | «Ingresos no operacionales» | Tema 1: `contabilidadTema1.js` (c6-09, como línea del estado de resultados) | Nombrado, no explicado. Para A3 hace falta una glosa corta |
 | «Gastos generales», «Caja menor», «Gastos no operacionales», «arqueo» | **En ningún archivo** | Términos nuevos de T4 |
-| «Nota débito» | Solo en la glosa **provisional** de la Célula B (`contabilidadT6Pieza1.js`, `GLOSA_NOTA_DEBITO`), que dice esperar a que T4 la defina | **Cruce con la Célula B**: ver la sección de cruces |
+| «Nota débito» | Solo en la glosa **provisional** de la Célula B (`contabilidadT6Pieza1.js`, `GLOSA_NOTA_DEBITO`), que dice esperar a que T4 la defina | **Término que T4 define en A4**, como «nota débito del banco». Ver cruces |
+| «Nota crédito» | T7-1 A6 (`contabilidadT7_1_a6.js`), con otro sentido: la que el vendedor le da al comprador | **Término que T4 define en A4**, como «nota crédito del banco». Ver cruces |
+| «Ingresos por intereses» · «Gasto interés» | Tema 3 (`asiSeJuegaTema3.js`) y T5 (`contabilidadT5Act2.js`, `contabilidadT5Pieza2.js`) | Nombres que T4 usa para los intereses de San Calixto (decisión de Yujiro, C1-C2) |
 | «Cuentas por pagar – proveedores», «Cuentas por cobrar – clientes», «Gastos financieros – …», «Ingresos financieros – …» | T5, T6 y T7 (con raya «–» y espacios) | Nombres que T4 debe usar con esa misma forma |
 
 ## Bloque 0 · Introducción del capítulo (p. 178 y mitad de arriba de la p. 179) — contexto, fuera de §5.1
@@ -54,6 +57,7 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 4. **Ejemplo Sus Servicios Ltda. (p. 180).** Durante el día presta el servicio de mantenimiento de computadoras a varios clientes por **$435.000**; todos pagan de contado. El dinero se deposita ese mismo día en la cuenta corriente.
    - Asiento 1, «Contabilización del recibo del dinero»: Caja 435.000 al debe / Ingresos por servicios 435.000 al haber. Fecha «xxxx».
    - Asiento 2, «Consignación del dinero en la cuenta corriente»: Bancos 435.000 al debe / Caja 435.000 al haber. Fecha «xxxx».
+   - Que esta consignación sale de Caja lo muestra el asiento 2. En pantalla se presenta como «mira el asiento de la p. 180» (decisión de Yujiro, I5). La regla general de la p. 180 («acreditar cuando los dineros se consignan») también lo sostiene.
 
 **[3] Cuentas, nombre literal:** Caja · Ingresos por servicios · Bancos (p. 180).
 
@@ -72,7 +76,7 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 3. **Regla (p. 181).** «La cuenta de caja se debe debitar cuando se recibe el dinero para crear el fondo o cuando se incrementa el valor del mismo, y acreditar cuando se disminuye el valor del fondo o cuando se cancela definitivamente.» (Ver errata D4-7: por los asientos, se refiere a la cuenta Caja menor.)
 4. **Manejo contable, cuatro pasos numerados:**
    1. **Apertura (p. 181).** Se gira un cheque a nombre del encargado. Asiento modelo: Caja menor al debe / Bancos al haber, valores «xxxx».
-   2. **Reembolso y contabilización de los gastos (p. 182).** El encargado relaciona todos los pagos con sus comprobantes y los envía a contabilidad, que los aprueba y gira el cheque del reembolso. Asiento modelo: Gastos generales al debe / Bancos al haber. **Caja menor no se mueve.**
+   2. **Reembolso y contabilización de los gastos (p. 182).** El encargado relaciona todos los pagos con sus comprobantes y los envía a contabilidad, que los aprueba y gira el cheque del reembolso. Asiento modelo: Gastos generales al debe / Bancos al haber. **Caja menor no se mueve**: esto lo dice el asiento de la p. 182, no el texto. En pantalla se presenta como «mira el asiento de la p. 182» (decisión de Yujiro, I4).
    3. **Aumentos y disminuciones (p. 182).** Se aumenta cuando los desembolsos superan ampliamente el fondo y hay que reembolsarlo con frecuencia; se disminuye cuando permanece mucho tiempo con fondos ociosos. Aumentar: Caja menor al debe / Bancos al haber. Disminuir: **Caja** al debe / Caja menor al haber.
    4. **Arqueos** (p. 182) → bloque 3.
 
@@ -84,13 +88,13 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 
 **[6] Lo que el bloque no tiene: ninguna cifra.** La primera cifra de caja menor es la apertura de Rosa Primorosa (p. 183), que el libro pone después de los modelos de arqueo. Esto pesa en mi opinión sobre el corte.
 
-## Bloque 3 · Arqueos, sobrantes y faltantes (pp. 182-186) → pieza A3
+## Bloque 3 · Arqueos, sobrantes de caja menor y faltantes de caja menor (pp. 182-186) → pieza A3
 
 **[2] Qué afirma el libro:**
 
 1. **Arqueo (p. 182).** «Frecuentemente, y sin previo aviso», se audita la caja menor para determinar si el valor de los comprobantes de soporte de los desembolsos y el efectivo en la caja son iguales al valor del fondo.
-2. **Sobrantes (p. 183).** «Se llevan a los fondos de la empresa como aprovechamientos». Asiento modelo: Gastos al debe / Ingresos no operacionales -sobrante de caja menor al haber / Bancos al haber.
-3. **Faltantes (p. 183).** «Generalmente, cuando los faltantes son representativos, se le cobran al encargado de manejar el fondo.» Asiento modelo: Gastos generales al debe / Cuentas por cobrar -empleados al debe / Bancos al haber. Si el faltante «sea considerado como no representativo, se puede cargar a los gastos del periodo»: Gastos generales al debe / Gastos no operacionales -faltante de caja menor al debe / Bancos al haber.
+2. **Sobrantes de caja menor (p. 183).** «Se llevan a los fondos de la empresa como aprovechamientos». Asiento modelo: Gastos al debe / Ingresos no operacionales -sobrante de caja menor al haber / Bancos al haber.
+3. **Faltantes de caja menor (p. 183).** «Generalmente, cuando los faltantes son representativos, se le cobran al encargado de manejar el fondo.» (cita literal; se refiere a los faltantes de caja menor) Asiento modelo: Gastos generales al debe / Cuentas por cobrar -empleados al debe / Bancos al haber. Y «en caso de que el faltante sea considerado como no representativo, se puede cargar a los gastos del periodo» (literal; faltante de caja menor): Gastos generales al debe / Gastos no operacionales -faltante de caja menor al debe / Bancos al haber.
 
 **[4] Ejemplo Rosa Primorosa · Sus Servicios Ltda. (pp. 183-186).** El 1 de mayo Sus Servicios establece una caja menor de **$500.000** con un cheque a nombre de Rosa Primorosa (p. 183).
 
@@ -111,14 +115,14 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 
   Recalculado: 34.000 + 32.000 + 28.300 + 63.400 + 107.200 + 34.100 + 47.100 + 132.000 = **478.100. Cuadra**, y las tres copias de la lista son idénticas.
 
-- **Situación 1 · cuadra (p. 184).** Efectivo en billetes y monedas: **$21.900**. 478.100 + 21.900 = 500.000: ni sobrante ni faltante. Reembolso «en mayo 31»: may-01 [D4-2] · Gastos generales 478.100 / Bancos 478.100. **Cuadra.**
-- **Situación 2 · sobrante (pp. 184-185).** Efectivo: **$24.000**. Suma 478.100 + 24.000 = 502.100; sobrante **$2.100**. Asiento may-01 [D4-2]: Gastos generales 478.100 al debe / Ingresos no operacionales -sobrante de caja menor 2.100 al haber / Bancos 476.000 al haber. «A pesar de que los gastos son $478.100, solo se reembolsa $476.000». Recalculado: 502.100 − 500.000 = 2.100; 478.100 − 2.100 = 476.000; 2.100 + 476.000 = 478.100. **Cuadra.**
-- **Situación 3 · faltante (pp. 185-186).** Efectivo: **$15.200**. Suma 478.100 + 15.200 = 493.300; faltante **$6.700**.
+- **Situación 1 · cuadra (p. 184).** Efectivo en billetes y monedas: **$21.900**. 478.100 + 21.900 = 500.000: ni sobrante de caja menor ni faltante de caja menor. Reembolso «en mayo 31»: may-01 [D4-2] · Gastos generales 478.100 / Bancos 478.100. **Cuadra.**
+- **Situación 2 · sobrante de caja menor (pp. 184-185).** Efectivo: **$24.000**. Suma 478.100 + 24.000 = 502.100; sobrante de caja menor **$2.100**. Asiento may-01 [D4-2]: Gastos generales 478.100 al debe / Ingresos no operacionales -sobrante de caja menor 2.100 al haber / Bancos 476.000 al haber. «A pesar de que los gastos son $478.100, solo se reembolsa $476.000». Recalculado: 502.100 − 500.000 = 2.100; 478.100 − 2.100 = 476.000; 2.100 + 476.000 = 478.100. **Cuadra.**
+- **Situación 3 · faltante de caja menor (pp. 185-186).** Efectivo: **$15.200**. Suma 478.100 + 15.200 = 493.300; faltante de caja menor **$6.700**.
   - Cargado al cajero (p. 186): xxxx · Gastos generales 478.100 al debe / Cuentas por cobrar -empleados 6.700 al debe / Bancos 484.800 al haber. «Aunque los gastos son $478.100, se debe reembolsar $484.800».
   - Llevado a gastos (p. 186): may-01 [D4-2] · Gastos generales 478.100 al debe / Gastos no operacinales [sic, D4-3] -faltante de caja menor 6.700 al debe / Bancos 484.800 al haber.
   - Recalculado: 500.000 − 493.300 = 6.700; 478.100 + 6.700 = 484.800; los dos asientos cuadran. **Cuadra.**
 
-**Deducción mía, no del libro:** en las tres situaciones, efectivo + reembolso = 500.000 (21.900 + 478.100; 24.000 + 476.000; 15.200 + 484.800). Es decir, el reembolso deja el fondo otra vez en su valor fijo, con el sobrante quedándose dentro y el faltante repuesto. El libro no lo dice con esas palabras; la aritmética sí lo sostiene, y es la mejor forma de explicar por qué el cheque no es igual a los gastos.
+**Deducción mía, no del libro:** en las tres situaciones, efectivo + reembolso = 500.000 (21.900 + 478.100; 24.000 + 476.000; 15.200 + 484.800). Es decir, el reembolso deja el fondo otra vez en su valor fijo, con el sobrante de caja menor quedándose dentro y el faltante de caja menor repuesto. El libro no lo dice con esas palabras; la aritmética sí lo sostiene, y es la mejor forma de explicar por qué el cheque no es igual a los gastos.
 
 **[3] Cuentas, nombre literal:** Gastos (sic, modelo p. 183) · Gastos generales · Ingresos no operacionales -sobrante de caja menor · Cuentas por cobrar -empleados · Gastos no operacionales -faltante de caja menor (p. 183; «operacinales» en la p. 186) · Caja menor · Bancos.
 
@@ -140,7 +144,7 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 
 **[4] Sumas.** Los dos asientos cuadran. El libro no da saldo de Bancos; no hay total que comprobar.
 
-**[5] Dependencias.** Todo el ejemplo 1 es repaso del Tema 2 (consignar, pagar con cheque). Nuevo: **nota débito** y **nota crédito** (el libro no las define en la p. 186; la descripción útil llega en la p. 188), **tasa representativa del mercado** (sin ejemplo).
+**[5] Dependencias.** Todo el ejemplo 1 es repaso del Tema 2 (consignar, pagar con cheque). Nuevo: **nota débito** y **nota crédito**, **términos que T4 define en A4**, siempre como «nota débito del banco» y «nota crédito del banco» (decisión de Yujiro). El libro no las define en la p. 186; la descripción útil llega en la p. 188, **tasa representativa del mercado** (sin ejemplo).
 
 ## Bloque 5 · Conciliación bancaria: qué es y por qué no cuadra (pp. 187-188) → pieza A4 (o A4 de la versión partida)
 
@@ -166,6 +170,8 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 - a. Saldo según extracto a marzo 31: **$2.435.600**.
 - b. Saldo en libros a marzo 31: **$4.373.100**.
 - c. Cheques sin pagar:
+
+*Los números de cheque se transcriben aquí solo como dato de la fuente. **Ninguna pieza los muestra** (decisión de Yujiro, E3): los cheques se identifican por beneficiario y valor.*
 
 | Cheque | Fecha | Valor | Beneficiario |
 |---|---|---|---|
@@ -227,24 +233,27 @@ Regla: el nombre del libro, con la raya «–» y los espacios que ya usa lo pub
 | Gastos no operacionales -faltante de caja menor | Gastos no operacionales – faltante de caja menor | forma de la raya; corrige D4-3 |
 | Cuentas por cobrar -empleados | Cuentas por cobrar – empleados | forma de la raya; nuevo |
 | Cuentas por pagar -proveedores | Cuentas por pagar – proveedores | ya publicado así (T7) |
-| Cuentas por cobrar -Efraín Martínez / -Humberto Gómez | Cuentas por cobrar – clientes | ya publicado así (T6, también para el cheque devuelto con nota débito) |
-| Ingresos Financieros -interés | Ingresos financieros – interés | minúscula como en T5 |
-| Gastos financieros -chequera / -Interés | Gastos financieros – chequera / Gastos financieros – interés | forma de la raya; minúscula |
+| Cuentas por cobrar -Efraín Martínez / -Humberto Gómez | Cuentas por cobrar – clientes | ya publicado así (T6, también para el cheque devuelto con nota débito); el cliente queda en el enunciado (decisión de Yujiro, C3) |
+| Ingresos Financieros -interés | Ingresos por intereses | nombre ya publicado del mismo concepto, Tema 3 y T5 (decisión de Yujiro, C1) |
+| Gastos financieros -Interés (intereses de sobregiro) | Gasto interés | nombre ya publicado del mismo concepto, Tema 3 (decisión de Yujiro, C2) |
+| Gastos financieros -chequera | Gastos financieros – chequera | concepto nuevo: nombre del libro con raya (decisión de Yujiro) |
 
-Cuando esté aprobado, esto pasa a `vocabulario/contabilidad.md` por quien lo administre; yo no toco ese archivo.
+Cuando esté aprobado, esto pasa a `vocabulario/contabilidad.md` por quien lo administre (Yujiro lo reporta a Erwin); yo no toco ese archivo.
+
+**Regla de redacción (decisión de Yujiro, C5):** en T4 nunca se escribe «sobrante» ni «faltante» a secas, sino «sobrante de caja menor» y «faltante de caja menor», porque en T7 el sobrante de inventario va a otra cuenta. Este mapa ya está escrito así, salvo en las citas literales del libro, que se marcan.
 
 ## Erratas e incoherencias (D4-1 a D4-12), ninguna confirmada con el profesor
 
 | Id | Página | Qué | Confianza |
 |---|---|---|---|
-| D4-1 | 183 | Apertura de la caja menor: el Debe dice **500.00** y el Haber 500.000. Falta un cero. | Alta (ampliado al 200 %) |
-| D4-2 | 184, 185, 186 | El texto dice que el reembolso es «en mayo 31», pero los asientos de reembolso van fechados **may-01** (situación 1 p. 184, sobrante p. 185, faltante a gastos p. 186); el de faltante al empleado (p. 186) va «xxxx». Un reembolso de gastos de todo mayo no puede ser del 1 de mayo. | Alta |
+| D4-1 | 183 | Apertura de la caja menor: el Debe dice **500.00** y el Haber 500.000. Falta un cero. **Decisión de Yujiro: se usa 500.000.** | Alta (ampliado al 200 %) |
+| D4-2 | 184, 185, 186 | El texto dice que el reembolso es «en mayo 31», pero los asientos de reembolso van fechados **may-01** (situación 1 p. 184, sobrante de caja menor p. 185, faltante de caja menor a gastos p. 186); el de faltante de caja menor al empleado (p. 186) va «xxxx». Un reembolso de gastos de todo mayo no puede ser del 1 de mayo. **Decisión de Yujiro: se usa el 31 de mayo, que es lo que dice el texto de la p. 184.** | Alta |
 | D4-3 | 186 | «Gastos no **operacinales** -faltante de caja menor» por «operacionales» (el modelo de la p. 183 lo escribe bien). | Alta |
-| D4-4 | 183 | El modelo del sobrante debita «**Gastos**»; todos los demás asientos de reembolso (p. 182, los dos modelos de faltante de la p. 183 y los ejemplos de las pp. 184-186) debitan «Gastos generales». | Media-alta: puede ser abreviatura, no cambia ninguna cifra |
-| D4-5 | 189 vs 190 | El cheque de Laura García es el **n.º 146** en la tabla de la p. 189 y el **n.º 145** en la conciliación de la p. 190. El valor (125.000) es el mismo, así que no cambia ningún total. | Alta |
+| D4-4 | 183 | El modelo del sobrante de caja menor debita «**Gastos**»; todos los demás asientos de reembolso (p. 182, los dos modelos de faltante de caja menor de la p. 183 y los ejemplos de las pp. 184-186) debitan «Gastos generales». | Media-alta: puede ser abreviatura, no cambia ninguna cifra |
+| D4-5 | 189 vs 190 | El cheque de Laura García es el **n.º 146** en la tabla de la p. 189 y el **n.º 145** en la conciliación de la p. 190. El valor (125.000) es el mismo, así que no cambia ningún total. **Decisión de Yujiro: no se elige número; ninguna pieza muestra números de cheque.** | Alta |
 | D4-6 | 186 | «debitar la **cuanta** de bancos» por «cuenta». | Alta, sin efecto |
-| D4-7 | 181 | En la sección de caja menor, la regla dice «La cuenta **de caja** se debe debitar cuando se recibe el dinero para crear el fondo…», pero los asientos de apertura y aumento debitan **Caja menor**, y el de disminución (p. 182) acredita Caja menor y debita **Caja**. La frase solo es coherente si «caja» quiere decir «caja menor». | Media: puede leerse como uso genérico, pero tal cual confunde las dos cuentas |
-| D4-8 | 183 | En el modelo de faltante al cajero, «Cuentas por cobrar -empleados» va **sangrado como un crédito**, pero su valor está en la columna Debe. En el ejemplo de la p. 186 no va sangrado. | Media: la columna manda, es un débito |
+| D4-7 | 181 | En la sección de caja menor, la regla dice «La cuenta **de caja** se debe debitar cuando se recibe el dinero para crear el fondo…», pero los asientos de apertura y aumento debitan **Caja menor**, y el de disminución (p. 182) acredita Caja menor y debita **Caja**. La frase solo es coherente si «caja» quiere decir «caja menor». **Decisión de Yujiro: se enseña lo que hacen los asientos (Caja menor); si se cita la frase, va con la aclaración.** | Media: puede leerse como uso genérico, pero tal cual confunde las dos cuentas |
+| D4-8 | 183 | En el modelo de faltante de caja menor al cajero, «Cuentas por cobrar -empleados» va **sangrado como un crédito**, pero su valor está en la columna Debe. En el ejemplo de la p. 186 no va sangrado. | Media: la columna manda, es un débito |
 | D4-9 | 187 | La enumeración de movimientos del libro auxiliar repite «las consignaciones» (al principio y al final). | Alta, sin efecto |
 | D4-10 | 188 | «Por lo general, el saldo del extracto bancario **nunca** coincide»: «por lo general» y «nunca» se contradicen. No se debe enseñar «nunca». | Media (redacción, no cifra) |
 | D4-11 | 185, 186 | El ejemplo dice «la cajera menor» (Rosa Primorosa) y los textos de los asientos dicen «el **cajero** menor» y «cargado al **cajero**». | Baja: puede ser masculino genérico |
@@ -259,8 +268,8 @@ Cuando esté aprobado, esto pasa a `vocabulario/contabilidad.md` por quien lo ad
 | HD4-3 | 180 | No define **póliza de manejo**. |
 | HD4-4 | 181 | Nombra «aplicar las **retenciones de ley**» como función del responsable, sin explicarla; la retención se explica en la p. 210 (T7). |
 | HD4-5 | 182 | No dice por qué la disminución del fondo va a **Caja** y el aumento sale de **Bancos**. |
-| HD4-6 | 183 | No da **criterio de «representativo»** para un faltante. Un ítem no puede pedirle al estudiante que lo juzgue: el enunciado debe decir qué decidió la empresa. |
-| HD4-7 | 183 | El sobrante «se lleva a los fondos de la empresa como aprovechamientos», pero no dice dónde queda la plata. La deducción del bloque 3 (efectivo + reembolso = fondo) es mía. |
+| HD4-6 | 183 | No da **criterio de «representativo»** para un faltante de caja menor. Un ítem no puede pedirle al estudiante que lo juzgue: el enunciado debe decir qué decidió la empresa. |
+| HD4-7 | 183 | El sobrante de caja menor «se lleva a los fondos de la empresa como aprovechamientos», pero no dice dónde queda la plata. La deducción del bloque 3 (efectivo + reembolso = fondo) es mía. |
 | HD4-8 | 183, 186 | No hay asiento del **cobro posterior** al empleado (cómo se cancela Cuentas por cobrar – empleados). |
 | HD4-9 | 186 | La conversión a pesos con la **tasa representativa del mercado** no tiene ejemplo, ni cuenta para la diferencia. |
 | HD4-10 | 186 | «Cheques anulados con posterioridad a su contabilización» y «cargos por abono o cancelación de préstamos»: sin ejemplo. |
@@ -271,21 +280,33 @@ Cuando esté aprobado, esto pasa a `vocabulario/contabilidad.md` por quien lo ad
 
 ## Cruces con otras células
 
-1. **Célula B · nota débito.** `contabilidadT6Pieza1.js` trae una glosa provisional de «nota débito» porque espera que la defina T4, y su prueba `src/contabilidad/__tests__/b5-t6-glosa-nota-debito.test.mjs` **se pone roja el día que cualquier otro tema defina el término**. La pieza de T4 que defina «nota débito» (A4) rompe esa prueba en main a propósito. Hay que coordinarlo con B antes del PR: su glosa dice «el banco le resta un valor a la cuenta bancaria de la empresa; por ejemplo, cuando devuelve el cheque con el que un cliente había pagado», y es compatible con la p. 188 y con el asiento de Humberto Gómez de la p. 191.
+1. **Célula B · nota débito.** *Decisión de Yujiro (C4): cuando T4 la defina en A4, B retira su glosa en el mismo momento; Yujiro lo coordina con Erwin y B antes de ese PR. A1-A3 no la tocan.* `contabilidadT6Pieza1.js` trae una glosa provisional de «nota débito» porque espera que la defina T4, y su prueba `src/contabilidad/__tests__/b5-t6-glosa-nota-debito.test.mjs` **se pone roja el día que cualquier otro tema defina el término**. La pieza de T4 que defina «nota débito» (A4) rompe esa prueba en main a propósito. Hay que coordinarlo con B antes del PR: su glosa dice «el banco le resta un valor a la cuenta bancaria de la empresa; por ejemplo, cuando devuelve el cheque con el que un cliente había pagado», y es compatible con la p. 188 y con el asiento de Humberto Gómez de la p. 191.
 2. **Célula B · p. 191.** T6 ya cita la p. 191 para el cheque devuelto (Cuentas por cobrar – clientes se debita con una nota débito). Coincide con nuestro asiento de Humberto Gómez; no hay contradicción, pero la cifra 468.000 no aparece en T6, y conviene que siga así.
-3. **Célula C · «nota crédito» con otro sentido.** T7-1 A6 (`contabilidadT7_1_a6.js`) ya publicó «nota crédito» como el documento que **el vendedor le da al comprador** en una devolución. En §5.2 la nota crédito la expide **el banco** y aumenta Bancos. Son dos documentos distintos con el mismo nombre; T4 va antes en el índice, así que la pieza que la defina debe decir «nota crédito del banco» y no presentarla como la única. Que T7 no la contradice lo deduzco yo leyendo las dos; ninguna de las dos páginas habla de la otra.
-4. **Célula C · nombre «¿Qué control falta?».** Ya existe en T7-1 (`t7-1-que-control-falta`). Si T4 hace un Hacer de controles del efectivo (idea H2 abajo), necesita otro nombre para que el índice no muestre dos iguales.
+3. **Célula C · «nota crédito» con otro sentido.** T7-1 A6 (`contabilidadT7_1_a6.js`) ya publicó «nota crédito» como el documento que **el vendedor le da al comprador** en una devolución. En §5.2 la nota crédito la expide **el banco** y aumenta Bancos. Son dos documentos distintos con el mismo nombre; T4 va antes en el índice. **Decidido por Yujiro: en T4 es siempre «nota crédito del banco» y «nota débito del banco».** Que T7 no la contradice lo deduzco yo leyendo las dos; ninguna de las dos páginas habla de la otra.
+4. **Célula C · nombre «¿Qué control falta?».** Ya existe en T7-1 (`t7-1-que-control-falta`). **Decidido por Yujiro: ningún Hacer de T4 se llama «¿Qué control falta?».**
 5. **San Calixto.** El Tema 3 y T7 ya usan «San Calixto» con otras cifras. Nuestro enunciado debe decir «Compañía San Calixto Ltda.», «conciliación de marzo» y traer todos sus datos.
 6. **Sus Servicios Ltda.** Aparece en A1 (p. 180), en caja menor (p. 183) y en Bancos (p. 187), con hechos y cifras distintos. Cada enunciado trae sus datos completos.
 
-## Opinión sobre el corte A1-A4 (decide Yujiro)
+## Corte definitivo (decisión de Yujiro, 14 de octubre de 2026)
+
+Cinco piezas, como se propuso abajo. Manda la sección «CORTE DEFINITIVO» de la orden de la célula.
+
+| Pieza | Qué cubre | Páginas |
+|---|---|---|
+| A1 | La caja | 179-180 |
+| A2 | El fondo fijo, con la apertura de Rosa Primorosa y la situación que cuadra | 181-184 |
+| A3 | El arqueo: sobrante de caja menor y faltante de caja menor | 182-186 |
+| A4 | Bancos y notas del banco | 186-188 |
+| A5 | La conciliación de San Calixto | 188-191 |
+
+## Opinión sobre el corte A1-A4 (la que llevó al corte definitivo)
 
 **A1 sirve tal cual** (pp. 179-180): una definición, una regla, un ejemplo de dos asientos y siete controles. Es corta y no hace falta estirarla.
 
 **A2 y A3: mover la frontera, no fundir.** Tal como está, A2 (pp. 181-182) no tiene ni una cifra: todos sus asientos son «xxxx». La apertura de Rosa Primorosa ($500.000, p. 183) y la situación 1, la que cuadra (efectivo $21.900, reembolso $478.100, p. 184), son exactamente lo que A2 enseña: el fondo fijo y el reembolso que no toca Caja menor. Propongo:
 
 - **A2 «El fondo fijo»:** definición, apertura con Rosa Primorosa, reembolso con la situación 1, aumentar y disminuir (solo los modelos, sin cifras). Págs. 181-184.
-- **A3 «El arqueo»:** qué es, el sobrante (situación 2) y el faltante con sus dos tratamientos (situación 3). Págs. 182-186. Reutiliza la lista de gastos como dato del enunciado, sin pedirla.
+- **A3 «El arqueo»:** qué es, el sobrante de caja menor (situación 2) y el faltante de caja menor con sus dos tratamientos (situación 3). Págs. 182-186. Reutiliza la lista de gastos como dato del enunciado, sin pedirla.
 - Con la regla de la Célula C de un solo dueño por cifra: **478.100 y 500.000 son de A2**; 2.100, 476.000, 6.700 y 484.800 son de A3.
 
 **A4: partirla en dos.** A4 carga dos listas, el ejemplo 1, la definición de conciliación, seis causas, un ejemplo de ocho partidas con presentación de dos lados, cinco asientos y un mayor: el doble que cualquier otra pieza. Propongo:
@@ -300,13 +321,14 @@ En resumen: **5 piezas en lugar de 4**, con la frontera A2|A3 corrida a la p. 18
 | # | Idea | Contenido que evalúa | La sostiene | Notas |
 |---|---|---|---|---|
 | H1 | ¿Entra o sale de Caja? | Ante un hecho (cobrar de contado, consignar, pagar en efectivo, pagar con cheque, recibir un cheque de un cliente), decidir si Caja va al debe, al haber o no se mueve | A1 (p. 180; cheque → Bancos, p. 187) | Hechos construidos salvo Sus Servicios. «Pagar con cheque: Caja no se mueve» es la confusión que más rinde |
-| H2 | El control que se saltaron | Casos cortos, cada uno rompe uno de los siete controles de las pp. 179-180; elegir cuál | A1 | Casos construidos. **No puede llamarse «¿Qué control falta?»** (choca con T7-1) |
+| H2 | El control que se saltaron | Casos cortos, cada uno rompe uno de los siete controles de las pp. 179-180; elegir cuál | A1 | Casos construidos. Ningún Hacer de T4 se llama «¿Qué control falta?» (decisión de Yujiro) |
 | H3 | ¿Se mueve la caja menor? | Apertura, reembolso, aumento y disminución: qué cuentas se mueven y de qué lado. La trampa es el reembolso, que no toca Caja menor | A2 (pp. 181-182) | Sin cifras o con las de Rosa (500.000, 478.100) |
 | H4 | El arqueo de Rosa | Con fondo, gastos y efectivo, decir si cuadra, sobra o falta, cuánto, y por cuánto sale el cheque del reembolso | A3 (pp. 184-186) | Las tres situaciones del libro, más variantes con otro efectivo **marcadas como construidas** |
-| H5 | ¿Al empleado o al gasto? | Armar el asiento del faltante en los dos tratamientos | A3 (pp. 183, 186) | El enunciado dice qué decidió la empresa (HD4-6): el estudiante no juzga si es «representativo» |
+| H5 | ¿Al empleado o al gasto? | Armar el asiento del faltante de caja menor en los dos tratamientos | A3 (pp. 183, 186) | El enunciado dice qué decidió la empresa (HD4-6): el estudiante no juzga si es «representativo» |
 | H6 | ¿De qué lado va? | Clasificar las partidas de San Calixto: suma o resta al saldo del banco, suma o resta al de libros, y armar los dos saldos conciliados | A5 (pp. 189-190) | Si el corte queda en 4 piezas, la sostiene A4 |
 | H7 | ¿Se asienta o no? | De las ocho partidas, cuáles generan asiento en los libros de la empresa, y armarlos | A5 (pp. 190-191) | Cuidado con la cadena: si H6 pide 4.612.600, H7 no puede mostrarlo resuelto |
 
 ## Cambios de esta versión
 
-v1, primera lectura completa de las pp. 178-191.
+- v1, primera lectura completa de las pp. 178-191.
+- v1.1, con las decisiones de Yujiro del 14 de octubre: «sobrante/faltante de caja menor» en todo el mapa; nombres de cuenta «Ingresos por intereses», «Gasto interés» y «Cuentas por cobrar – clientes»; nota débito y nota crédito marcadas como términos que T4 define en A4, siempre «del banco»; ninguna pieza muestra números de cheque; las reglas que solo están en los asientos se presentan como «mira el asiento de la p. X»; erratas D4-1, D4-2, D4-5 y D4-7 con su decisión; corte definitivo en cinco piezas. Mapa hecho sin leer el informe de Shibukawa.
