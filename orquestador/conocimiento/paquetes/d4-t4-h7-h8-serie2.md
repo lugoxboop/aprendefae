@@ -1,8 +1,8 @@
-**T4 · H7 «Concilia Los Cerezos» y H8 «¿Se asienta o no?» · serie 2 · contenido completo.**
+**T4 · H7 «Concilia la cuenta» y H8 «¿Se asienta o no?» · serie 2 · contenido completo.**
 - Autora: Katsumi. Encargo de Yujiro: una segunda conciliación construida, para que en cada intento se sortee una serie (D8 Avanzado).
 - **Serie 1:** Comercializadora Los Cerezos Ltda., en `d4-t4-h7-v1.md` y `d4-t4-h8-v1.md` con sus cambios. **Serie 2:** esta.
-- **H7 y H8 usan la misma serie dentro de un intento**, igual que en la serie 1, porque H8 parte de la conciliación de H7. *[La forma de sortear la decide Yujiro. Si H7 y H8 se juegan por separado, cada una sortea la suya; el contenido sirve igual.]*
-- **Nombre en pantalla de H7 con la serie 2.** El nombre aprobado, «Concilia Los Cerezos», nombra la empresa de la serie 1. Propongo que el nombre del ítem no dependa de la serie: la actividad se sigue llamando «Concilia Los Cerezos» en el índice, porque el id `t4-concilia-los-cerezos` está aprobado, y la serie 2 dice su empresa en los datos de partida. Así el índice no cambia entre intentos. **Decides tú**; la alternativa es un nombre neutro como «Concilia la cuenta».
+- **H7 y H8 sortean su serie por separado** (decisión de Yujiro). Son actividades distintas: H8 no supone que el estudiante acaba de hacer H7, y no se guarda estado entre ellas. H8 trae como dato de partida los dos saldos conciliados de su propia serie.
+- **Nombre de H7: «Concilia la cuenta»**, con id `t4-concilia-la-cuenta` (decisión de Yujiro). Es neutro: vale para las dos series. Cada serie dice su empresa en los datos de partida.
 - **Igual que la serie 1:** la mecánica, los destinos, las reglas de error y su cobertura (los cambios v2 de H8 ya están incluidos), y las clases de partidas: 3 cheques sin cobrar, 1 consignación en tránsito, 2 notas crédito y 3 notas débito del banco.
 - **Cambia:** la empresa, la fecha de cierre (31 de octubre), las personas, las cifras y los textos que las nombran.
 - **Cifras:** todas construidas, y la cuenta la hizo un script (`scratchpad/katsumi/gen2/datos2.py`). Los dos saldos conciliados dan lo mismo. El script comprueba que ninguna cifra, incluidas las de los errores con cifra, coincide con las del libro (pp. 177-191) ni con las de Los Cerezos.
@@ -146,12 +146,13 @@ Retroalimentación, según lo que escriba:
 
 # H8, serie 2
 
-- «La conciliación de El Mirador ya está hecha: los dos saldos dan $3.377.500. Ahora la empresa tiene que corregir sus libros.» (80,6)
+- «El Mirador ya concilió su cuenta: el saldo del banco y el de los libros, corregidos, dan $3.377.500. Ahora la empresa tiene que corregir sus libros.» (81,2)
+  - *[Dice quién concilió, la empresa, y no el estudiante: H8 no supone que se jugó H7.]*
 - La consigna 2 es la misma de la serie 1.
 
 ## Etapa 1 · ¿Se asienta o no?
 
-Las nueve partidas son las de H7, serie 2. **Los textos de acierto y error de la etapa 1 son los de la serie 1**, porque van por tipo de partida y no nombran cifra ni persona.
+Las nueve partidas son los mismos datos de H7, serie 2, mostrados por H8 por su cuenta. **Los textos de acierto y error de la etapa 1 son los de la serie 1**, porque van por tipo de partida y no nombran cifra ni persona.
 
 ## Etapa 2 · Arma los asientos
 
@@ -277,7 +278,7 @@ Ninguna de estas cifras está en el libro (pp. 177-191) ni en la serie 1:
 
 ## Lo que es mío
 
-La empresa, las personas, la fecha y todas las cifras de la serie 2. La propuesta sobre el nombre de H7.
+La empresa, las personas, la fecha y todas las cifras de la serie 2. 
 
 ## Erratas que tocan esta serie
 
