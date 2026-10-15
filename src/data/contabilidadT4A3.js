@@ -51,7 +51,7 @@ export const CHEQUE_CON_DIFERENCIA = GASTADO + SOBRANTE;
 
 /* ═══════════ TEXTOS DE INTERFAZ QUE EL PAQUETE NO TRAE ═══════════ */
 
-/* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El nombre de cada asiento para el lector de pantalla. */
+/* El nombre de cada asiento para el lector de pantalla. Revisado por Katsumi (d4-t4-a3-v1.md, «Textos de interfaz»). */
 export const NOMBRE_ASIENTO_A3 = {
   sobrante: "Asiento del reembolso con sobrante de caja menor",
   empleado: "Asiento del reembolso con faltante de caja menor cobrado a Rosa",
@@ -72,7 +72,7 @@ const GASTOS_FALTANTE = "Gastos no operacionales – faltante de caja menor";
  */
 export const FIGURA_SOBRE_A3 = {
   ...FIGURA_SOBRE,
-  /* De Katsumi (C5: nunca a secas). «Diferencia» es de Hanayama: [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN]. */
+  /* De Katsumi (C5: nunca a secas). «Diferencia» es de Hanayama, aprobado por Katsumi. */
   diferencias: { cero: "Diferencia", sobrante: "Sobrante de caja menor", faltante: "Faltante de caja menor" },
   cuentas: {
     ...FIGURA_SOBRE.cuentas,
@@ -83,15 +83,12 @@ export const FIGURA_SOBRE_A3 = {
 };
 
 /*
- * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El texto alternativo, uno por
- * estado (Hanayama A3 v1 §4, con `p1-cuadra` de la v1.2). Tres ajustes míos,
- * que van en el informe del PR:
- *   · `p4-colocando` no tiene texto en la especificación: se ve lo mismo que
- *     en `p3-respuesta` (el cheque está oculto), así que dice lo mismo
- *   · «El cheque de Bancos sale por 476.000» pasa a «El cheque sale de Bancos
- *     por 476.000», como el rótulo de la v1.2 (FA2-2)
- *   · en `p5-asiento`, «Ingresos no operacionales – sobrante de caja menor,
- *     2.100» pasa a «… lleva 2.100», para que se oiga como las demás
+ * El texto alternativo, uno por estado (Hanayama A3 v1 §4, con `p1-cuadra` de
+ * la v1.2). La fuente es d4-t4-a3-v1.md, «Textos de interfaz de la figura»:
+ * Katsumi aprobó los míos tal cual, menos dos que cambió y que van aquí:
+ *   · `p5-asiento`: partido en oraciones (el mío daba INFLESZ 57,2)
+ *   · `p6-faltante`: «El cheque sale de Bancos por 484.800», como la tarjeta
+ *     y `p4-respuesta`
  */
 export const ALT_SOBRE_A3 = {
   "p1-cuadra": "El sobre de la caja menor: 21.900 en billetes y 478.100 en soportes suman 500.000, el fondo.",
@@ -99,8 +96,8 @@ export const ALT_SOBRE_A3 = {
   "p3-respuesta": "Suman 502.100: hay un sobrante de caja menor de 2.100.",
   "p4-colocando": "Suman 502.100: hay un sobrante de caja menor de 2.100.",
   "p4-respuesta": "El cheque sale de Bancos por 476.000. Con los 24.000 de la caja, el fondo vuelve a 500.000.",
-  "p5-asiento": "El sobre vuelve a tener 500.000. En el libro, Caja menor no aparece; Gastos generales lleva 478.100 e Ingresos no operacionales – sobrante de caja menor lleva 2.100.",
-  "p6-faltante": "El sobre tiene 15.200 en billetes y 478.100 en soportes: suman 493.300, y hay un faltante de caja menor de 6.700. El cheque sale por 484.800, y con los 15.200 el fondo vuelve a 500.000.",
+  "p5-asiento": "El sobre vuelve a tener 500.000. Caja menor no aparece en el libro. Los 478.100 van a Gastos generales. Los 2.100 van a Ingresos no operacionales – sobrante de caja menor.",
+  "p6-faltante": "El sobre tiene 15.200 en billetes y 478.100 en soportes: suman 493.300, y hay un faltante de caja menor de 6.700. El cheque sale de Bancos por 484.800, y con los 15.200 el fondo vuelve a 500.000.",
   "p8-colocando": "El sobre vuelve a tener 500.000 con un cheque de 484.800.",
   "p8-respuesta": "En el libro, los 6.700 van a Cuentas por cobrar – empleados.",
   "p9-gasto": "En el libro, los 6.700 van a Gastos no operacionales – faltante de caja menor.",

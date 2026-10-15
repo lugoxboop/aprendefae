@@ -157,6 +157,32 @@ test("★★★ las opciones de las tres preguntas son las del paquete, con su r
   }
 });
 
+/*
+ * Los textos de interfaz de la figura, revisados por Katsumi (#181): la
+ * sección «Textos de interfaz…» del paquete base es su fuente. Dos los
+ * cambió (CAMBIA): p5-asiento y p6-faltante.
+ */
+const INTERFAZ_A3 = (() => {
+  const i = V1.indexOf("## Textos de interfaz de la figura");
+  return i < 0 ? "" : V1.slice(i, V1.indexOf("\n## ", i + 5) > 0 ? V1.indexOf("\n## ", i + 5) : undefined);
+})();
+test("★★★ los textos de interfaz son los que aprobó Katsumi en el paquete, con sus dos cambios (p5-asiento y p6-faltante)", () => {
+  assert.ok(INTERFAZ_A3.length > 500, "el paquete de A3 no trae la sección de textos de interfaz revisados");
+  const citas = new Set([...INTERFAZ_A3.matchAll(new RegExp(CITA, "g"))].map((m) => m[1]));
+  /* «  - *p1-cuadra:* «…»», «  - *p3-respuesta* y *p4-colocando:* «…»» o «  - *p5-asiento,* **CAMBIA:** «…»». */
+  const alt = [...INTERFAZ_A3.matchAll(new RegExp(`^  - \\*([a-z0-9-]+)[:,]?\\*(?: y \\*([a-z0-9-]+)[:,]?\\*)?[^«\\n]*${CITA}`, "gm"))].flatMap((m) => [[m[1], m[3]], ...(m[2] ? [[m[2], m[3]]] : [])]);
+  assert.equal(alt.length, 10, "no se leyeron los diez textos alternativos del paquete");
+  for (const [estado, texto] of alt) assert.equal(Z.ALT_SOBRE_A3[estado], texto, `alternativo de ${estado}`);
+  assert.deepEqual(Object.keys(Z.ALT_SOBRE_A3).sort(), alt.map(([e]) => e).sort());
+  /* Los dos que Katsumi cambió. */
+  assert.match(INTERFAZ_A3, /\*p5-asiento,\* \*\*CAMBIA:\*\*/);
+  assert.match(Z.ALT_SOBRE_A3["p6-faltante"], /El cheque sale de Bancos por 484\.800/);
+  for (const t of [...Object.values(Z.NOMBRE_ASIENTO_A3), ...Object.values(Z.FIGURA_SOBRE_A3.diferencias)]) assert.ok(citas.has(t), `«${t}» no está entre los textos aprobados`);
+  /* Y el alternativo de p5 pasa de 65, contado bien. */
+  assert.ok(inflesz(Z.ALT_SOBRE_A3["p5-asiento"]).cumple, "el alternativo de p5-asiento no pasa de 65");
+  assert.doesNotMatch(leer("src/data/contabilidadT4A3.js"), /PENDIENTE DE REVISIÓN/);
+});
+
 /* ═══════════ 2 · LAS CIFRAS SE CALCULAN, Y LOS ASIENTOS SON LOS DEL PAQUETE ═══════════ */
 
 const num = (t) => (t ? Number(t.replace(/\./g, "")) : null);

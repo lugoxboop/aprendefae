@@ -52,14 +52,14 @@ export const QUEDA = FONDO - GASTADO;
 
 /* ═══════════ TEXTOS DE INTERFAZ QUE EL PAQUETE NO TRAE ═══════════ */
 
-/* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El nombre de cada asiento para el lector de pantalla. */
+/* El nombre de cada asiento para el lector de pantalla. Revisado por Katsumi (d4-t4-a2-v1.md, «Textos de interfaz»). */
 export const NOMBRE_ASIENTO_A2 = {
   apertura: "Asiento de la apertura",
   reembolso: "Asiento del reembolso",
   aumento: "Asiento para aumentar el fondo",
   disminucion: "Asiento para disminuir el fondo",
 };
-/* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El nombre de la tabla de gastos para el lector de pantalla. */
+/* El nombre de la tabla de gastos para el lector de pantalla. Revisado por Katsumi (ídem). */
 export const NOMBRE_TABLA_GASTOS = "Los gastos de mayo";
 
 /*
@@ -67,7 +67,7 @@ export const NOMBRE_TABLA_GASTOS = "Los gastos de mayo";
  * el signo: «xxxx», literal de la p. 182, y no «✓», que en la materia ya
  * significa acierto. El paquete trae «✓» y dice que, si diseño prefiere otro
  * signo, el contenido no cambia.
- * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] lo que oye el lector de pantalla.
+ * Lo que oye el lector de pantalla lo revisó Katsumi (ídem).
  */
 export const SIGNO_MODELO = { visible: "xxxx", lector: "valor que el libro no da" };
 
@@ -78,32 +78,30 @@ export const SIGNO_MODELO = { visible: "xxxx", lector: "valor que el libro no da
  * «billetes y monedas» (p. 184). Lo demás está marcado.
  */
 export const FIGURA_SOBRE = {
-  /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] Rótulos de Hanayama; los cierra Katsumi. */
+  /* Rótulos de Hanayama, revisados por Katsumi (d4-t4-a2-v1.md, «Textos de interfaz de la figura»). */
   rotuloSobre: "LO QUE TIENE ROSA",
   rotuloLibro: "LO QUE DICE EL LIBRO",
-  /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] v1.2, FA2-2: el cheque en dos renglones fijos, «Cheque» / «sale de Bancos». Lo propone Shibukawa y lo cierra Katsumi. */
+  /* v1.2, FA2-2: el cheque en dos renglones fijos, «Cheque» / «sale de Bancos». Aprobado por Katsumi. */
   cheque: "Cheque",
   chequeSale: "sale de Bancos",
-  /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] */
   fondo: "Fondo de caja menor",
   /* Del libro (p. 184). */
   billetes: "Billetes y monedas",
-  /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] «soportes» es la glosa de Katsumi en P2. */
+  /* «Soportes» es la glosa de Katsumi en P2. */
   soportes: "Soportes de gastos",
-  /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] v1.1: la última fila se llama «Suman» (antes «Fondo fijo»), igual que en A3. */
+  /* v1.1: la última fila se llama «Suman» (antes «Fondo fijo»), igual que en A3. */
   suman: "Suman",
-  /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] v1.2, FA2-1: ni los billetes ni lo que suman se conocen antes del arqueo. */
+  /* v1.2, FA2-1: ni los billetes ni lo que suman se conocen antes del arqueo. */
   sinContar: "sin contar",
   /* Del libro. */
   cuentas: { "caja-menor": "Caja menor", "gastos-generales": "Gastos generales" },
-  /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] */
   notas: { quieta: "no se ha movido desde el 1 de mayo", reembolso: "no aparece en el reembolso" },
 };
 
 /*
- * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El texto alternativo, uno por
- * estado (Hanayama v1, §5), con dos ajustes míos para que diga lo mismo que
- * el dibujo de la v1.2 (van en el informe del PR):
+ * El texto alternativo, uno por estado (Hanayama v1, §5), con dos ajustes
+ * para que diga lo mismo que el dibujo de la v1.2. Katsumi los aprobó tal
+ * cual: la fuente es d4-t4-a2-v1.md, «Textos de interfaz de la figura».
  *   · `gastos` ya no dice «Siempre suman el fondo fijo, 500.000»: en la v1.2
  *     la suma está «sin contar» (FA2-1), y P5 pregunta justo eso
  *   · «un cheque de Bancos» pasa a «un cheque que sale de Bancos» (FA2-2)
