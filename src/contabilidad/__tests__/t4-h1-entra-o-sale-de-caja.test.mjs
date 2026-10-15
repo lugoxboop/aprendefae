@@ -41,7 +41,8 @@ const h = React.createElement;
 
 const D = await import("../../data/contabilidadT4H1.js");
 const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await import("../../data/subjects.js");
-const { EntraOSaleDeCaja, JUEGOS_T4, TEMA_T4 } = await import("../../components/ContabilidadT4View.jsx");
+const { default: ContabilidadT4View, EntraOSaleDeCaja, JUEGOS_T4, TEMA_T4 } = await import("../../components/ContabilidadT4View.jsx");
+const { AuthContext } = await import("../../auth/AuthProvider.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
 const { ASI_SE_JUEGA } = await import("../../data/asiSeJuega.js");
 const { inflesz } = await import("../../herramientas/inflesz.js");
@@ -287,6 +288,35 @@ test("★★ en modo demo no reporta nada ni pide el botón de seguir", async ()
     assert.equal(siguiente(m.caja), undefined);
     assert.equal(m.completados.length, 0);
   } finally { m.desmontar(); }
+});
+
+test("★★★ en la página del juego hay exactamente UN [data-t4-h1]: la partida; la demo de «Así se juega» lleva el suyo propio", async () => {
+  /*
+   * La vista real en modo Hacer con H1 abierto. La primera vez sale el «Así se
+   * juega» con la demo (el componente real en modo demo) y, debajo y
+   * escondida, la partida. Las dos montadas a la vez: es el caso que importa.
+   */
+  try { globalThis.localStorage.clear(); } catch { /* sin almacenamiento, sale igual */ }
+  const caja = document.createElement("div");
+  document.body.appendChild(caja);
+  const raiz = createRoot(caja);
+  await act(async () => {
+    raiz.render(h(AuthContext.Provider, { value: { usuario: null, pedirCuenta: () => {} } },
+      h(ContabilidadT4View, { modo: HACER, nodoInicial: D.H1_ID, onBack: () => {} })));
+  });
+  try {
+    assert.ok(caja.querySelector("[data-asj-demo]"), "no salió el «Así se juega»: la prueba no está mirando el caso de las dos");
+    assert.equal(caja.querySelectorAll("[data-t4-h1-demo]").length, 1, "la demo no lleva su propio atributo");
+    assert.equal(caja.querySelectorAll("[data-t4-h1]").length, 1, "hay más de un [data-t4-h1] en la página");
+    const juego = caja.querySelector("[data-t4-h1]");
+    assert.ok(juego.closest("[data-partida]"), "el [data-t4-h1] no es el de la partida");
+    assert.equal(juego.closest("[data-asj-demo]"), null, "el [data-t4-h1] está dentro de la demo");
+    /* Y cerrado el «Así se juega», sigue habiendo uno. */
+    const siguienteAsj = [...caja.querySelectorAll("button")].find((b) => b.textContent.trim() === "Siguiente");
+    await act(async () => { siguienteAsj.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+    assert.equal(caja.querySelectorAll("[data-t4-h1-demo]").length, 0);
+    assert.equal(caja.querySelectorAll("[data-t4-h1]").length, 1);
+  } finally { act(() => raiz.unmount()); caja.remove(); }
 });
 
 /* ═══════════ 3 · CAMINO, CATÁLOGO, PANEL Y «ASÍ SE JUEGA» ═══════════ */
