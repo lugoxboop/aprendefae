@@ -788,6 +788,19 @@ export const SUBJECTS = {
           { id: "t7-3-nic2-formulas", nombre: "La NIC 2 del libro: fórmulas y revelación", clasificacion: { tipo: APRENDER } },
         ],
       },
+      /*
+       * Repaso del capítulo 5 (Célula E): el banco de ejercicios de las
+       * pp. 262-274. Va siempre al final de Contabilidad, después de
+       * T7-3, porque repasa todo lo anterior (nocturno.md). Solo Hacer.
+       */
+      {
+        id: "repaso-capitulo-5",
+        title: "Repaso del capítulo 5",
+        actividades: [
+          /* r5-1: el bloque C, ejercicios 3, 5, 6, 8, 9 y 10, pp. 264-266. Medio · 25 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0250. */
+          { id: "r5-1", nombre: "Repaso cruzado", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+        ],
+      },
     ],
   },
   "pensamiento-estrategico": {
