@@ -377,3 +377,30 @@ controles que están bien.
    Midiendo esquinas, el medidor marcaba en rojo todos los botones redondeados
    del producto. **Un medidor que llora siempre se apaga** — y entonces deja de
    avisar el día que hay algo de verdad.
+
+## La revisión de daltonismo de lo compartido: pasa, y por qué
+
+Comisión de Xeno: comprobar que **ninguna información viaje solo en el color**
+en las piezas compartidas. Hecha el 15 de octubre. **Resultado: lo compartido
+pasa.** Se escribe con las pruebas, porque un resultado negativo comprobado
+también es un resultado — y porque el que viene detrás no tiene por qué
+volver a mirarlo.
+
+| pieza | lo que tenía que comprobarse | cómo lo resuelve |
+|---|---|---|
+| `CaminoHacer` | si una actividad hecha se distingue de una pendiente | **forma**: la hecha lleva palomita dibujada, además del color; y la etiqueta dice «· completada» |
+| `Medalla` | si el nivel se distingue sin color | **geometría**: hexágono de 6 nodos → octágono de 8 → 12 facetas → 14 más anillo. El color cambia con el nivel, pero no es lo que lo dice |
+| rejilla de medallas | si «obtenida» se distingue sin color | **palabras**: «Conseguida» · «Por conseguir» · «Aún no disponible» debajo de cada una |
+| `PantallaResumen` | si el resultado se entiende sin ver | `role="status"` con un párrafo solo para lector, y lo decorativo con `aria-hidden` |
+
+**El patrón que siguen las cuatro, y que vale como regla:** el color es la
+**segunda** señal, nunca la única. La primera es una forma (palomita, número
+de facetas) o una palabra. Cuando la primera señal es una forma, el SVG va
+`aria-hidden="true"` **y** el texto que lo acompaña dice el estado — no al
+revés: un SVG con `aria-label` y sin texto visible deja fuera a quien ve pero
+no distingue el color.
+
+**Lo que NO se comprobó aquí:** las mecánicas de cada célula. Lo compartido
+pasa; los aciertos y errores dentro de cada actividad los revisa su célula con
+este mismo criterio. Si tu mecánica marca bien y mal solo con verde y rojo,
+tiene el defecto que estas cuatro no tienen.
