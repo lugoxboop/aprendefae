@@ -119,7 +119,11 @@ export const CIERRE_T5_A2 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · las dos ventas ═══════════ */
 
-export const CONSIGNA_CAPA_3_T5_A2 = "Toca cada venta y compara lo que se recibió con lo que costó.";
+/* Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja, para Shoko (ver el paquete). */
+export const CONSIGNA_CAPA_3_T5_A2 = "Toca cada venta y decide si dejó ganancia o pérdida. Después, mira por cuánto se acredita la inversión.";
+export const PREGUNTA_CAPA_3_T5_A2 = "¿Dejó ganancia o pérdida?";
+export const OPCIONES_CAPA_3_T5_A2 = [{ id: "ganancia", texto: "Ganancia" }, { id: "perdida", texto: "Pérdida" }];
+export const FALLA_CAPA_3_T5_A2 = "Compara las dos cifras de la caja: lo que recibió y lo que costaron.";
 
 /* Cerradas, cada una muestra su nombre y dos cifras: lo recibido y lo que costaron. */
 export const VENTAS_T5_A2 = [
@@ -129,6 +133,7 @@ export const VENTAS_T5_A2 = [
     cifras: ["Recibió $1.725.000", "Costaron $1.500.000"],
     revela: "Recibió más de lo que costaron: ganancia de $225.000. Inversiones – títulos se acredita por el costo, no por lo recibido.",
     pie: "Libro, pp. 194-195",
+    correcta: "ganancia",
   },
   {
     id: "venta-noviembre",
@@ -136,6 +141,7 @@ export const VENTAS_T5_A2 = [
     cifras: ["Recibió $468.750", "Costaron $500.000"],
     revela: "Recibió menos de lo que costaron: pérdida de $31.250. Inversiones – títulos también se acredita por el costo.",
     pie: "Libro, p. 195",
+    correcta: "perdida",
   },
 ];
 export const FINAL_CAPA_3_T5_A2 = {
