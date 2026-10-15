@@ -50,5 +50,6 @@ export async function listaNegraDelLibro({ conT6A5 = false } = {}) {
     const a5 = await import("../../data/contabilidadT6Pieza5.js");
     for (const c of a5.CIFRAS_CONSTRUIDAS_T6_A5) if (c) negra.add(c);
   }
+  negra.delete(0); // $0 no es una cifra del libro: es «nada» (la opción «Queda en $0» de T6 · A3, entrega 2)
   return negra;
 }

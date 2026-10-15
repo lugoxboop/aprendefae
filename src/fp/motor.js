@@ -106,7 +106,26 @@ export function calcularFP({
   //    escala con los aciertos, con piso del 50%.
   let factorRendimiento = 1;
   if (modalidad === "evaluativa") {
-    const proporcion = typeof aciertos === "number" ? Math.max(0, Math.min(1, aciertos)) : 0;
+    /*
+     * EL MISMO NÚMERO QUE VIAJA, NO UNO EQUIVALENTE.
+     *
+     * El servidor no recibe la proporción: recibe el PORCENTAJE y lo divide
+     * entre 100 (`0036:681`). Ese viaje de ida y vuelta —×100 y ÷100— no
+     * devuelve siempre el mismo double con el que se salió, y basta un último
+     * bit de diferencia para voltear un redondeo que cae justo en el filo.
+     *
+     * Con 11 aciertos de 12 sobre 90 FP, el producto queda en 82,5 por un lado
+     * y en 82,49999999999999 por el otro: el estudiante veía 83 y se guardaban
+     * 82. Un FP, pero cada vez que caiga en ese filo, y sin forma de que nadie
+     * entienda por qué.
+     *
+     * Así que aquí se hace el mismo viaje a propósito. No es redundante: es lo
+     * que garantiza que las dos cuentas parten del número idéntico. Si algún
+     * día el servidor recibe la proporción directamente, esto sobra y se quita
+     * en el mismo cambio.
+     */
+    const bruto = typeof aciertos === "number" ? (aciertos * 100) / 100 : 0;
+    const proporcion = Math.max(0, Math.min(1, bruto));
     factorRendimiento = Math.max(proporcion, PISO_EVALUATIVA);
   }
 
