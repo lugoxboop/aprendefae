@@ -15,7 +15,9 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · INFLESZ ≥ 65 en todo texto de 10 palabras o más, con guarda de
  *     recorrido; el enunciado de C.9 da 61,3 y queda como TODO reportado
  *   · ningún renglón de asiento de las pantallas 2 y 6 llega a 10 palabras
- *   · el barajado cambia el orden y conserva la clave
+ *   · el barajado, con semilla fija, cambia el orden y conserva la clave
+ *   · los FP de una partida parcial salen de calcularFP (src/fp/motor.js),
+ *     que replica el round() del servidor (0017); la vista no tiene fórmula
  *   · a 320 px la fila de 10 cajas cabe (147 de 256); el ancho del texto lo
  *     mide en Chromium scripts/e5/medir-r5-1.mjs
  *   · las dos puertas dicen lo mismo, con la migración en 0250-0299
@@ -133,8 +135,12 @@ test("★★★ C.8: 3.400 = 500 + 4.000 − 300 − 800, calculado desde los da
   const valor = (letra) => c8.opciones.find((o) => o.id === `c8-${letra}`).valor;
   assert.equal(valor("b"), costo - v["Devoluciones de ventas"]);
   assert.equal(valor("d"), disponible + v["Inventario final"] + v["Devoluciones de ventas"]);
+  assert.equal(valor("b"), 2400);
+  assert.equal(valor("d"), 6000);
   /* $6.400 no se reconstruye (Miyata): su devolución se apoya en el tope del disponible. */
   for (const l of ["c", "d"]) assert.ok(valor(l) > disponible);
+  /* Ningún distractor coincide con la clave. */
+  for (const l of ["b", "c", "d"]) assert.notEqual(valor(l), costo, `c8-${l}`);
 });
 
 test("★★★ C.9: 526 = 25 × (5.260 / 250), calculado desde los lotes; y de dónde salen 625, 450 y 525", () => {
@@ -152,6 +158,9 @@ test("★★★ C.9: 526 = 25 × (5.260 / 250), calculado desde los lotes; y de 
   assert.equal(valor("a"), quedan * precios[2]);
   assert.equal(valor("b"), quedan * precios[0]);
   assert.equal(valor("c"), quedan * (precios.reduce((s, x) => s + x, 0) / precios.length));
+  assert.deepEqual([valor("a"), valor("b"), valor("c")], [625, 450, 525]);
+  /* Ningún distractor coincide con la clave. */
+  for (const l of ["a", "b", "c"]) assert.notEqual(valor(l), clave(c9).valor, `c9-${l}`);
 });
 
 test("★★★ cada opción incorrecta tiene una devolución propia, distinta de las demás de su pantalla", () => {
@@ -213,25 +222,49 @@ test("★★ ningún renglón de asiento de las pantallas 2 y 6 tiene 10 palabra
 
 /* ═══════════ EL BARAJADO ═══════════ */
 
-test("★★★ el barajado cambia el orden en cada intento y conserva la clave (guarda: 6 pantallas × 40 intentos)", () => {
-  const orden = (tanda, id) => tanda.find((x) => x.id === id).opciones.map((o) => o.id).join("|");
+/*
+ * Con semilla fija (v1.1, Takamura): con azar de verdad hay 1 caso en 24 de
+ * que salga el mismo orden, y una prueba así fallaría sola de vez en cuando.
+ */
+const { barajadorDe } = await import("../../utils/barajar.js");
+const SEMILLAS = ["r5-1-a", "r5-1-b", "r5-1-c"];
+const orden = (tanda, id) => tanda.find((x) => x.id === id).opciones.map((o) => o.id).join("|");
+const corrida = (semilla, intentos = 40) => {
+  const barajador = barajadorDe(semilla);
+  const tandas = [];
   let anterior = null;
+  for (let k = 0; k < intentos; k++) { anterior = D.prepararR5_1(anterior, barajador); tandas.push(anterior); }
+  return tandas;
+};
+
+test("★★★ el barajado, con semilla fija: es reproducible, cambia el orden y conserva la clave (guarda: 3 × 40 × 6)", () => {
   let revisadas = 0;
-  for (let intento = 0; intento < 40; intento++) {
-    const tanda = D.prepararR5_1(anterior);
-    assert.deepEqual(tanda.map((x) => x.id), P.map((x) => x.id), "las pantallas no se barajan");
+  for (const semilla of SEMILLAS) {
+    const tandas = corrida(semilla);
+    /* Reproducible: la misma semilla da exactamente las mismas tandas. */
+    assert.deepEqual(corrida(semilla).map((t) => P.map((p) => orden(t, p.id))), tandas.map((t) => P.map((p) => orden(t, p.id))));
+    tandas.forEach((tanda, k) => {
+      assert.deepEqual(tanda.map((x) => x.id), P.map((x) => x.id), "las pantallas no se barajan");
+      for (const p of P) {
+        revisadas++;
+        const antes = k ? orden(tandas[k - 1], p.id) : p.opciones.map((o) => o.id).join("|");
+        assert.notEqual(orden(tanda, p.id), antes, `${semilla} · intento ${k + 1} · ${p.id}: el mismo orden que antes`);
+        const t = tanda.find((x) => x.id === p.id);
+        assert.deepEqual(t.opciones.map((o) => o.id).sort(), p.opciones.map((o) => o.id).sort());
+        /* La clave sigue siendo la misma opción, en el sitio al que fue a parar. */
+        const sitio = t.opciones.findIndex((o) => o.id === clave(p).id);
+        assert.equal(t.opciones.findIndex((o) => o.correcta), sitio, `${p.id}: el barajado perdió el índice de la clave`);
+        assert.equal(D.evaluarR5_1(t, t.opciones[sitio].id).ok, true);
+        assert.equal(t.opciones.filter((o) => o.correcta).length, 1);
+      }
+    });
+    /* La clave no se queda quieta: en una corrida pasa por los cuatro sitios. */
     for (const p of P) {
-      revisadas++;
-      const antes = anterior ? orden(anterior, p.id) : p.opciones.map((o) => o.id).join("|");
-      assert.notEqual(orden(tanda, p.id), antes, `${p.id}: el mismo orden que el intento anterior`);
-      const t = tanda.find((x) => x.id === p.id);
-      assert.deepEqual(t.opciones.map((o) => o.id).sort(), p.opciones.map((o) => o.id).sort());
-      assert.equal(clave(t).id, clave(p).id, `${p.id}: la clave cambió al barajar`);
-      assert.equal(D.evaluarR5_1(t, clave(p).id).ok, true);
+      const sitios = new Set(tandas.map((t) => t.find((x) => x.id === p.id).opciones.findIndex((o) => o.correcta)));
+      assert.equal(sitios.size, 4, `${semilla} · ${p.id}: la clave solo pasó por ${[...sitios]}`);
     }
-    anterior = tanda;
   }
-  assert.equal(revisadas, 240);
+  assert.equal(revisadas, 720);
   /* Los datos del módulo no se tocan al barajar. */
   assert.deepEqual(P.map((p) => clave(p).id), ["c3-c", "c5-c", "c6-c", "c8-a", "c9-d", "c10-c"]);
 });
@@ -328,7 +361,7 @@ test("★★★ se juega: progreso, escena, datos, devolución con «era esta»,
       assert.equal(a.querySelector('[data-renglon="haber"]').textContent, p.opciones[0].asiento.haber);
       assert.ok(a.textContent.startsWith("DEBE"));
     }
-    if (p.forma === "tabla") assert.equal(caja.querySelector("[data-cabecera-tabla]").textContent, "Inventario finalCosto de ventasUtilidad");
+    if (p.forma === "tabla") assert.equal(caja.querySelector("[data-cabecera-tabla]").textContent, "Inventario finalCosto de mercancía vendidaUtilidad");
     assert.equal(caja.querySelector("[data-siguiente]"), null, "«Siguiente» antes de responder");
     assert.equal(caja.querySelector("[data-devolucion]").dataset.devolucion, "vacia");
 
@@ -387,4 +420,30 @@ test("★★ la escena solo se mueve cuando cambia el tema", async () => {
   assert.equal(escenas[2], escenas[3]);
   assert.equal(escenas[3], escenas[5]);
   desmontar();
+});
+
+/* ═══════════ LOS FP DE UNA PARTIDA PARCIAL ═══════════ */
+
+const { calcularFP } = await import("../../fp/motor.js");
+
+test("★★★ los FP de 0 a 6 aciertos salen de calcularFP y son los que da la regla del servidor (0017)", () => {
+  const SQL = leer("supabase/migrations/0017_detalle_por_item.sql");
+  assert.match(SQL, /v_rend := greatest\(0\.5, least\(1, coalesce\(p_correct_pct, 0\) \/ 100\.0\)\);/);
+  assert.match(SQL, /v_fp := round\(v_base \* v_rend \* v_tiempo\);/);
+  /* La regla del servidor, escrita aquí aparte: otorgarFP manda el % redondeado a entero. */
+  const delServidor = (pct) => Math.round(25 * Math.max(0.5, Math.min(1, Math.round(pct) / 100)) * 1);
+  const fps = [];
+  for (let bien = 0; bien <= D.TOTAL_R5_1; bien++) {
+    const pct = D.puntuarR5_1(bien);
+    const { fp } = calcularFP({ dificultad: D.R5_1.dificultad, modalidad: D.R5_1.modalidad, aciertos: pct / 100, duracionMs: 60_000 });
+    assert.equal(fp, delServidor(pct), `${bien} de 6`);
+    fps.push(fp);
+  }
+  assert.equal(fps.length, 7);
+  /* 4 de 6: 66,67 % → 67 → 25 × 0,67 = 16,75 → 17. */
+  assert.deepEqual(fps, [13, 13, 13, 13, 17, 21, 25]);
+  /* La pantalla no se escribe una fórmula propia: solo entrega el porcentaje. */
+  for (const f of ["src/components/RepasoCapitulo5View.jsx", "src/data/repasoCap5Cruzado.js"]) {
+    assert.doesNotMatch(leer(f).replace(/^\s*(\/\*|\*|\/\/).*$/gm, ""), /fpBase\s*\*|\*\s*fpBase|Math\.round\([^)]*fp/i, f);
+  }
 });

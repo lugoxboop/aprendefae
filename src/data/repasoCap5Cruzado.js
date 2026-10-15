@@ -1,5 +1,5 @@
 import { pesos } from "./contabilidad.js";
-import { barajarDistinto } from "../utils/barajar.js";
+import { barajar } from "../utils/barajar.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -121,7 +121,7 @@ export const PANTALLAS_R5_1 = [
     enunciado: "Hay inversiones de renta fija que se compran con descuento. ¿Qué las define?",
     opciones: [
       { id: "c3-a", texto: "Pagan un interés fijo durante un periodo determinado.", retro: "Eso describe las inversiones con interés: pagan un porcentaje fijo cada periodo. Las de descuento ganan de otra forma. Compras por debajo y al vencer te pagan más." },
-      { id: "c3-b", texto: "Lo que gana depende de cómo le vaya a quien emite el título.", retro: "Eso no es renta fija. En renta fija, lo que ganas no depende de cómo le vaya a quien emite el título." },
+      { id: "c3-b", texto: "Lo que ganan depende de cómo le vaya a quien emite el título.", retro: "Eso no es renta fija. En renta fija, lo que ganas no depende de cómo le vaya a quien emite el título." },
       { id: "c3-c", correcta: true, texto: "Dan una renta por la diferencia entre el valor de compra y el valor de redención.", retro: "Exacto. Pagas menos de lo que te devolverán al vencer. Esa diferencia es tu ganancia." },
       { id: "c3-d", texto: "Dan una renta constante, que se pacta cuando se hace la inversión.", retro: "Es cierto, pero vale para toda la renta fija, no solo para las de descuento. La pregunta pide lo que las distingue." },
     ],
@@ -149,11 +149,11 @@ export const PANTALLAS_R5_1 = [
     subtema: "inventarios",
     forma: "tabla",
     enunciado: "Los precios de compra han venido subiendo. Frente a los otros métodos, ¿qué muestra PEPS (primeras en entrar, primeras en salir)?",
-    columnas: ["Inventario final", "Costo de ventas", "Utilidad"],
+    columnas: ["Inventario final", "Costo de mercancía vendida", "Utilidad"],
     opciones: [
       { id: "c6-a", celdas: ["Más bajo", "Más bajo", "Mayor"], retro: "El fallo está en el inventario. Con PEPS sale primero lo viejo, que es lo barato. Lo caro y reciente se queda en bodega, así que el inventario queda alto." },
       { id: "c6-b", celdas: ["Más alto", "Más alto", "Menor"], retro: "Inventario y costo no pueden subir juntos. Los dos se reparten la misma mercancía disponible. Lo que no queda en bodega pasó al costo: si uno sube, el otro baja." },
-      { id: "c6-c", correcta: true, celdas: ["Más alto", "Más bajo", "Mayor"], retro: "Correcto. Sale primero lo barato: el costo de ventas baja y la utilidad sube. Lo caro queda en bodega: el inventario queda alto." },
+      { id: "c6-c", correcta: true, celdas: ["Más alto", "Más bajo", "Mayor"], retro: "Correcto. Sale primero lo barato: el costo de lo vendido baja y la utilidad sube. Lo caro queda en bodega: el inventario queda alto." },
       { id: "c6-d", celdas: ["Más bajo", "Más bajo", "Menor"], retro: "Aquí hay dos fallos. PEPS deja en bodega lo más caro, así que el inventario no queda bajo. Y si el costo baja, la utilidad sube, no baja." },
     ],
     pista: "Imagina una tienda que vende primero las latas viejas, que compró más baratas. ¿Qué latas quedan en el estante?",
@@ -170,7 +170,7 @@ export const PANTALLAS_R5_1 = [
       { id: "c8-a", correcta: true, valor: 3400, retro: "Bien. Lo que tú tenías para vender era $4.200. De eso, quedaron $800 en la bodega. Lo que sí vendiste costó $3.400. Las ventas no van aquí." },
       { id: "c8-b", valor: 2400, retro: "Restaste las devoluciones de ventas. Esas no tocan el costo: afectan las ventas. El costo solo usa inventarios, compras y devoluciones de compras." },
       { id: "c8-c", valor: 6400, retro: "Esa cifra es imposible. Lo más que pudiste vender es lo que tenías disponible: 500 + 4.000 − 300 = $4.200. Ningún costo de lo vendido pasa de ahí. Revisa si usaste las ventas: no entran al cálculo." },
-      { id: "c8-d", valor: 6000, retro: "Esta cifra también pasa del disponible ($4.200), así que no puede ser. Lo más probable es que sumaste el inventario final. Ese se resta: es lo que no se vendió." },
+      { id: "c8-d", valor: 6000, retro: "Esta cifra también pasa del disponible ($4.200), así que no puede ser. Revisa dos cosas. El inventario final se resta: es lo que no se vendió. Y las devoluciones de ventas no entran al costo." },
     ],
     pista: "Separa los datos en dos grupos: los de comprar y guardar, y los de vender. Solo un grupo sirve.",
   },
@@ -185,7 +185,7 @@ export const PANTALLAS_R5_1 = [
     vendidas: VENDIDAS_C9,
     opciones: [
       { id: "c9-a", valor: 625, retro: "Valoraste las 25 unidades con la última compra ($25). Eso es lo que daría PEPS. El promedio ponderado mezcla todos los costos." },
-      { id: "c9-b", valor: 450, retro: "Valoraste las 25 unidades con el precio más viejo ($18). Ese es el costo del inventario inicial, no el promedio." },
+      { id: "c9-b", valor: 450, retro: "Valoraste las 25 unidades con el precio más viejo ($18). Eso es lo que daría UEPS. El promedio ponderado mezcla todos los costos." },
       { id: "c9-c", valor: 525, retro: "Usaste $21, el promedio simple de los tres precios. Pero no compraste la misma cantidad a cada precio. El ponderado pesa cada precio por sus unidades." },
       { id: "c9-d", correcta: true, valor: 526, retro: "Bien. Todo te costó $5.260. Eran 250 en total. Así, cada una vale $21,04. Te quedan 25. Y 25 por $21,04 da $526." },
     ],
@@ -228,11 +228,25 @@ export const claveDe = (pantalla) => pantalla.opciones.find((o) => o.correcta);
  * cada pantalla sale distinto del que tuvo la vez anterior, y en el primer
  * intento distinto del orden del libro. Así la clave nunca vuelve al mismo
  * sitio por costumbre.
+ *
+ * `barajador` es `barajar` (al azar) en la partida; la prueba le pasa uno con
+ * semilla fija (`barajadorDe`), para que sea reproducible (v1.1, Takamura).
+ * Es la misma idea de `barajarDistinto`, con el barajador inyectado.
  */
-export function prepararR5_1(anterior = null, barajarOpciones = barajarDistinto) {
+function distinto(xs, antes, barajador) {
+  const huella = (lista) => lista.map((o) => o.id).join("|");
+  for (let intento = 0; intento < 12; intento++) {
+    const c = barajador(xs);
+    if (huella(c) !== huella(antes)) return c;
+  }
+  /* Salida de emergencia: rotar garantiza un orden distinto. */
+  return [...antes.slice(1), antes[0]];
+}
+
+export function prepararR5_1(anterior = null, barajador = barajar) {
   return PANTALLAS_R5_1.map((p) => {
     const antes = anterior?.find((x) => x.id === p.id)?.opciones ?? p.opciones;
-    return { ...p, opciones: barajarOpciones(p.opciones, antes, (o) => o.id) };
+    return { ...p, opciones: distinto(p.opciones, antes, barajador) };
   });
 }
 
