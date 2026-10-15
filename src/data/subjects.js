@@ -641,6 +641,8 @@ export const SUBJECTS = {
           { id: "t4-a0-el-activo-corriente", nombre: "El activo corriente", clasificacion: { tipo: APRENDER } },
           /* A1, pp. 179-180. Aprender: cero FP, no entra al catálogo. */
           { id: "t4-a1-la-caja", nombre: "La caja", clasificacion: { tipo: APRENDER } },
+          /* H1, justo después de A1, que la sostiene. Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0200. */
+          { id: "t4-entra-o-sale-de-caja", nombre: "¿Entra o sale de Caja?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
         ],
       },
       /*
