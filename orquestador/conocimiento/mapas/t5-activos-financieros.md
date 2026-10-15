@@ -1,6 +1,19 @@
 # Mapa T5 · Activos financieros temporales · §5.3
 
-Célula C · Near · 14 de octubre de 2026 · versión 1. Encargo de L: levantar el mapa de §5.3 antes de escribir piezas.
+Célula C · Near · versión 1.1, 15 de octubre de 2026 (la v1 es del 14). Encargo de L: levantar el mapa de §5.3 antes de escribir piezas.
+
+**Qué cambia en la v1.1.** Aplica las seis correcciones obligatorias del punto 1 de la auditoría de Mello, que L aceptó en la decisión T5 v1.1:
+
+| # | Campo | v1 | v1.1 |
+| --- | --- | --- | --- |
+| 1 | Cifras derivadas | 1.875, 625, 500.000, 1.725.000, 375.000 y 343.750 | Solo 375.000 y 343.750. El libro imprime 1.875 (p. 194), 625 (p. 195) y 500.000 (p. 195), y también 1.725.000 y 500.000 como montos de los asientos |
+| 2 | C.4 | «el libro responde 31.460» | El libro no marca la respuesta y no hay solucionario entre las pp. 262 y 275. 31.460 es la única opción que sale con 121 días sobre 360 |
+| 3 | Asientos del ejemplo | Cuatro | Cinco: la compra, los dos intereses y las dos ventas |
+| 4 | Fechas de §5.4 | «Ene-01, Ene-10 y Ene-25» | El texto dice «enero 10» (p. 197). Los asientos dicen «Ene-01» y «Ene-25» (p. 198). Ene-01 contradice el enunciado: errata de T6, para B |
+| 5 | Índice de la p. 192 | Faltaba | Un fondo de contingencia o el efectivo temporalmente ocioso por el ritmo del negocio justifican la intención de convertir en efectivo |
+| 6 | Erratas | C5-a a C5-e; en la p. 191 corregí en silencio | Entran C5-f (p. 191, «un interés dividendo») y C5-g (p. 192, «principio muy difícil»). La p. 191 ya no se corrige por debajo |
+
+Las secciones 3, 6 y 7 quedan como estaban en la v1, como historia de la propuesta. Lo que manda ahora es la decisión de corte T5 v1.1 de L: 7 piezas, N6 con el id `t5-a2-lo-que-el-ejemplo-no-trae` y N4 con meses y no fechas.
 
 Fuente: *Contabilidad financiera para contaduría y administración*, cap. 5, leído en las imágenes del PDF (pliego n = pp. 2n+174 y 2n+175). El repositorio es público: este mapa trae índice, análisis, cifras, páginas, títulos de sección y citas cortas con su página. No trae párrafos del autor. INFLESZ: no medido (no es texto para el estudiante).
 
@@ -10,10 +23,12 @@ Fuente: *Contabilidad financiera para contaduría y administración*, cap. 5, le
 
 | Página | Título exacto | Contenido (índice, sin texto del autor) |
 | --- | --- | --- |
-| 191 | «5.3 ACTIVOS FINANCIEROS» | Definición de activos financieros: colocación de dinero con rendimiento esperado (interés, dividendo o venta por más del costo). |
+| 191 | «5.3 ACTIVOS FINANCIEROS» | Definición de activos financieros: colocación de dinero con rendimiento esperado. El libro imprime «un interés dividendo», sin la «o» (C5-f), o la venta por más del costo de adquisición. |
 | 191-192 | «ACTIVOS FINANCIEROS TEMPORALES» | Tres grupos: documentos a corto plazo (certificados de depósito, bonos de tesorería, documentos negociables), valores negociables de deuda (bonos del Gobierno y de compañías) y valores negociables de capital (acciones preferentes y comunes). Se compran con efectivo que no se necesita de inmediato. |
 | 192 | (sigue) | Dos condiciones: negociables o realizables rápidamente, y destinados a convertirse en efectivo en un año o un ciclo de operaciones, el que sea más largo. |
-| 192 | (sigue) | Acciones restringidas, sin mercado: puede ser más apropiado clasificarlas como *activos financieros a largo plazo*. La intención de la gerencia se apoya en evidencias (historia de inversiones, hechos posteriores, naturaleza y propósito). |
+| 192 | (sigue) | Acciones restringidas (no se negocian públicamente), sin mercado o con mercado limitado: «puede ser más apropiado» clasificarlas como *activos financieros a largo plazo*. Es una cautela del libro, no una regla. Sigue una frase que no se entiende («un principio muy difícil en la práctica», C5-g); ninguna pieza la parafrasea. |
+| 192 | (sigue) | Qué justifica la intención de convertir en efectivo: un **fondo de contingencia** para usar cuando sea necesario, o una inversión hecha con **efectivo temporalmente ocioso por el ritmo del negocio**. N1 se apoya en esto. |
+| 192 | (sigue) | La intención de la gerencia se apoya en evidencias: historia de las actividades de inversión, hechos posteriores a la fecha del estado de situación financiera, naturaleza y propósito de la inversión. |
 | 192 | (sigue) | Los títulos valores: su valor depende de rentabilidad, liquidez, riesgo y crecimiento. |
 | 192-193 | (sigue) | Clasificación: 1. renta variable (rendimiento según la empresa emisora; acciones y dividendos). 2. renta fija, en dos tipos: a. con interés (CDT, bonos, cédulas hipotecarias); b. con descuento (renta por la diferencia entre compra y redención: títulos de participación, CERT, títulos canjeables). |
 | 193 | (sigue) | Control: cuatro acciones (verificar los documentos y sus datos; examinar los movimientos de compraventa; confirmar las operaciones en tránsito; comprobar los fondos fiduciarios cuando aplique). |
@@ -35,7 +50,9 @@ Fuente: *Contabilidad financiera para contaduría y administración*, cap. 5, le
 | Interés del segundo trimestre | nov-01 | I = 500.000 × 0,24 × 3/12 = 30.000 | Caja 30.000 D · Ingresos financieros -interés 30.000 H |
 | Venta del 25 % | nov-01 | 625 × 750 = 468.750; costo 625 × 800 = 500.000; pérdida 31.250 | Caja 468.750 D · Gasto financieros -pérdida en venta de títulos 31.250 D · Inversiones -títulos 500.000 H |
 
-**Cifras derivadas que el libro no imprime pero salen del ejemplo:** 1.875 y 625 títulos; saldo de Inversiones después del 1 de agosto, 500.000; sumas de los asientos: 1.725.000 (venta del 75 %) y 500.000 (venta del 25 %); ingresos financieros totales 120.000 + 30.000 + 225.000 = 375.000; resultado neto del ciclo 375.000 − 31.250 = 343.750.
+**Cifras impresas en el ejemplo, aunque salgan de un cálculo:** 1.875 títulos (p. 194), 625 títulos (p. 195) y 500.000 (p. 195). También 1.725.000 y 500.000, como montos de los asientos.
+
+**Cifras derivadas (el libro no las imprime):** solo dos. Ingresos financieros totales, 120.000 + 30.000 + 225.000 = 375.000, y resultado neto del ciclo, 375.000 − 31.250 = 343.750. Las dos quedan prohibidas en las piezas nuevas (v1.1, punto 8).
 
 ### Cuentas, con su nombre exacto del libro
 
@@ -49,7 +66,7 @@ Fuente: *Contabilidad financiera para contaduría y administración*, cap. 5, le
 
 ### Tablas y figuras
 
-- Cuatro asientos de diario y los cálculos de interés, venta y costo (pp. 194-195). No hay cuentas T, kárdex ni tablas de clasificación: la clasificación va en texto.
+- Cinco asientos de diario: la compra, los dos intereses y las dos ventas. Van con los cálculos de interés, venta y costo (pp. 194-195). No hay cuentas T, kárdex ni tablas de clasificación: la clasificación va en texto.
 
 ### Erratas candidatas (prefijo C5-, numeración provisional)
 
@@ -62,6 +79,11 @@ Fuente: *Contabilidad financiera para contaduría y administración*, cap. 5, le
 | C5-c | 193 / 194 | El texto manda la compra a la cuenta *activos financieros*; el asiento usa «Inversiones -títulos». | Un solo nombre (regla 8). Ver qué publicó B. |
 | C5-d | 194 / 195 | «Ingreso financieros -interés» (p. 194) frente a «Ingresos financieros -interés» (p. 195) | Concordancia. |
 | C5-e | 194 / 195 | El texto nombra *ganancia* y *pérdida en venta de activos financieros*; los asientos usan «Ingresos financieros -ganancia en venta de títulos» y «Gasto financieros -pérdida en venta de títulos» («Gasto» sin concordar). | Un solo nombre por cuenta. |
+| C5-f | 191 | «la realización de un interés dividendo»: falta la «o» entre las dos palabras. En la v1 lo corregí en silencio. | Errata, no se arregla por debajo. Ninguna pieza copia la frase. |
+| C5-g | 192 | «Intentar convertirlos es un principio muy difícil en la práctica»: no se entiende qué quiere decir. | Ninguna pieza la parafrasea. |
+| (menor) | 195 | «Pérdida en Venta», con mayúscula, en el cálculo. | No sale en pantalla. Lo vio Mello. |
+
+También confirmadas por Mello en la imagen: C5-a a C5-e. Las C5 siguen con letra hasta cruzarlas con las trece de B.
 | (ya abierta) | 193 / 194-195 | Venta «por el valor pactado» frente al ejemplo, que acredita por el costo. | Pregunta 1 de fuente.md. Decidido: por el costo, como B. |
 
 ### Huecos de suficiencia
@@ -71,7 +93,7 @@ Fuente: *Contabilidad financiera para contaduría y administración*, cap. 5, le
 3. **Renta variable y dividendos:** el texto los nombra (pp. 192-193), pero no hay ejemplo con acciones ni con la cuenta de ingresos por dividendos.
 4. **Renta fija con descuento:** solo se define (p. 193). No hay ejemplo de compra y redención.
 5. **Interés y venta el mismo día:** el 1 de agosto el libro registra el interés de todo el trimestre sobre 2.000.000 y la venta del 75 % «sin incluir los intereses». La pieza que lo enseñe debe seguir ese orden y no inventar el reparto de intereses entre comprador y vendedor.
-6. **Tiempo del rendimiento:** el ejemplo cuenta por meses (3/12). C.4 del banco (p. 264) no cuadra por meses (pregunta 2 de fuente.md).
+6. **Tiempo del rendimiento:** el ejemplo calcula por meses (3/12). C.4 del banco (p. 264) no cuadra por meses (pregunta 2 de fuente.md). Por eso N4 da el número de meses y no un rango de fechas (v1.1).
 7. **Largo plazo:** «activos financieros a largo plazo» (p. 192) se nombra y no se desarrolla en §5.3.
 
 ## 2. Lo que ya existe (Célula B, en main y publicado)
@@ -128,19 +150,21 @@ Fuente: `src/data/subjects.js` (tema `activos-financieros`), los cuatro archivos
 
 2.000.000 · 2.500 · 800 · 24 % · 920 · 750 · 75 % · 25 % · 120.000 · 1.875 · 1.725.000 · 1.500.000 · 225.000 · 500.000 · 30.000 · 625 · 468.750 · 31.250 · 3/12 · fechas 1 de mayo, 1 de agosto y 1 de noviembre.
 
-**Derivadas, no impresas, que conviene prohibir por prudencia:** 375.000 (los tres ingresos) · 343.750 (resultado neto del ciclo).
+**Derivadas, no impresas:** 375.000 (los tres ingresos) · 343.750 (resultado neto del ciclo).
+
+**Prohibidas en las piezas nuevas (v1.1, punto 8):** todas las de Santa Pacha, 375.000, 343.750, todo C.4 (520.000, 18 %, 31.200 y las cuatro opciones) y D.1 e (831.000 y 224.000).
 
 ### Vecinas en las mismas páginas (de otras secciones)
 
 - **p. 191, §5.2 (conciliación de San Calixto, Célula A):** 645.000 · 342.000 («Ingresos Financieros -interés», interés sobre inversiones abonado por el banco) · 43.500 · 236.000 · 468.000 · 4.373.100 · 5.360.100 · 747.500 · 4.612.600.
-- **pp. 195-198, §5.4 (Célula B, T6):** 1.350.000 · 15 días · fechas Ene-01, Ene-10 y Ene-25.
+- **pp. 195-198, §5.4 (Célula B, T6):** 1.350.000 · 15 días. Fechas: el texto dice «enero 10» y el 25 del mismo mes (p. 197); los asientos dicen «Ene-01» y «Ene-25» (p. 198). **Ene-01 contradice el enunciado: es una errata de T6 que hay que pasarle a B.**
 
 ### Banco del capítulo que usa §5.3 (Célula E, cuentan como del libro)
 
 | Ítem | Página | Cifras | Nota |
 | --- | --- | --- | --- |
 | C.3 | 264 | Sin cifras | Pregunta por las inversiones con descuento. La opción c repite la definición de la p. 193. |
-| C.4 | 264 | 520.000 · 18 % · 1 de marzo · 30 de junio · opciones 31.029 · 93.600 · 23.336 · 31.460 | Por meses (4/12, como en la p. 194) da **31.200**, que no está entre las opciones. Por días: 121/365 = 31.029 (a); 121/360 = 31.460 (d); 91/365 = 23.336 (c); 93.600 es el año completo (b). Pregunta 2 de fuente.md: el libro responde 31.460. |
+| C.4 | 264 | 520.000 · 18 % · 1 de marzo · 30 de junio · opciones 31.029 · 93.600 · 23.336 · 31.460 | Por meses (4/12, como en la p. 194) da **31.200**, que no está entre las opciones. Por días: 121/365 = 31.029 (a); 121/360 = 31.460 (d); 91/365 = 23.336 (c); 93.600 es el año completo (b). **El libro no marca la respuesta** y no hay solucionario entre las pp. 262 y 275. 31.460 es la única opción que sale con 121 días sobre 360. **fuente.md, pregunta 2 (línea 104), dice «La respuesta del libro ($31.460)»: hay que corregirlo en el canon (Erwin).** |
 | D.1 e | 267 | 831.000 (intereses de inversiones abonados por el banco) · 224.000 (rendimientos de inversiones en otras compañías) | Es de conciliación (§5.2), pero son rendimientos de inversiones. |
 
 ## 5. Nombres de empresa ya usados
@@ -222,3 +246,18 @@ Decide L sobre el mapa v1 de Near (§5.3) y la verificación de Mello contra el 
 10. **Ramas, ids y migraciones.** Ramas `feat/conta-c5-`, ids `t5-` y migraciones desde la 0110, una por Hacer: 0110 N1, 0111 N3, 0112 N4, 0113 N5 y 0114 N7. Cada migración se le pasa a Erwin con su número y lo que hace, porque las corre él contra la base.
 11. **Archivos de B.** `ContabilidadTema5View.jsx` pasa a la célula C con el tema, pero solo se le añade. Lo que comparte con T6 (`mecanicas/libros/b5/`) no se cambia: se usa como está.
 12. **Repositorio público.** El mapa y los paquetes llevan índice, análisis, cifras, páginas y citas cortas. Nunca párrafos del libro.
+
+### v1.1 · correcciones de la auditoría de Mello (L, 15 de octubre de 2026)
+
+Se aplican todas las obligatorias:
+
+- **N1.** De cada grupo, solo los ejemplos que el libro pone en ese grupo (p. 191). «Bonos de tesorería» va en documentos a corto plazo y «bonos del Gobierno» en deuda; ningún caso dice «un bono del Estado». Las acciones restringidas a largo plazo van con la misma cautela del libro, «puede ser más apropiado», sin volverlo regla. La intención de convertirlas en efectivo se sostiene en lo que da la p. 192: un fondo de contingencia o el efectivo ocioso por el ritmo del negocio.
+- **N3.** La unión entre riesgo y control la construye Near; el libro no la hace. Cada caso tiene una sola acción defendible entre las cuatro de la p. 193. De «fondos fiduciarios» el libro solo da el nombre: no se le inventa contenido.
+- **N4.** El enunciado da el número de meses, no fechas. No se usan 520.000, el 18 %, 31.200 ni 31.460.
+- **N6.** La renta con descuento queda en una sola línea que remite a b5-t5-a1, porque B ya la enseña y la califica. Lo nuevo de N6: los gastos de compra sumados al costo y el dividendo hacia «Ingresos por dividendos».
+- **Dividendos (N6 y N7).** Se registran solo cuando se reciben: Caja contra Ingresos por dividendos. No hay «dividendos por cobrar» ni dividendo por acción.
+- **Gastos de compra (N6 y N7).** Con gastos, el costo ya no es igual al valor nominal (hueco 2). Por eso la pieza que lleve gastos no pide además interés, costo por título ni ganancia o pérdida en la venta: solo el asiento de compra o la clasificación.
+- **N7.** Sin hechos de descuento, y sin la venta, porque eso ya lo pide N5. Clasifica por cuenta y lado tres clases de hecho: la compra con gastos, el interés y el dividendo.
+- **Cifras prohibidas (punto 8).** Se añaden 375.000, 343.750, 31.200, 520.000 y el 18 %, además de todas las de Santa Pacha y de C.4 y D.1 del banco.
+- **Erratas.** C5-f (p. 191, «un interés dividendo») y C5-g (p. 192, la frase del «principio muy difícil», que ninguna pieza parafrasea). Las C5 quedan con letra hasta cruzarlas con las trece de B.
+- **FP.** Subir el tema de 60 a 155 FP no toca ningún dato guardado: el progreso va por id de actividad, comprobado en `src/hacer/completadas.js`. Lo que sube es el total que se puede ganar. Se informa a Erwin con las migraciones.
