@@ -17,8 +17,27 @@ import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import DescuentoEnFactura from "./mecanicas/libros/t7/DescuentoEnFactura.jsx";
 import { H1 } from "../data/contabilidadT7_3_h1.js";
+import CadenaDeDescuentos from "./mecanicas/libros/t7/CadenaDeDescuentos.jsx";
+import { H2 } from "../data/contabilidadT7_3_h2.js";
+import ComercialOCondicionado from "./mecanicas/libros/t7/ComercialOCondicionado.jsx";
+import { H3 } from "../data/contabilidadT7_3_h3.js";
+import PagoATiempo from "./mecanicas/libros/t7/PagoATiempo.jsx";
+import { H4 } from "../data/contabilidadT7_3_h4.js";
+import AjustePorConteo from "./mecanicas/libros/t7/AjustePorConteo.jsx";
+import { H5 } from "../data/contabilidadT7_3_h5.js";
+import EntraAlCosto from "./mecanicas/libros/t7/EntraAlCosto.jsx";
+import { H6 } from "../data/contabilidadT7_3_h6.js";
+import CostoOValorNeto from "./mecanicas/libros/t7/CostoOValorNeto.jsx";
+import { H7 } from "../data/contabilidadT7_3_h7.js";
 import PantallasT7_3 from "./mecanicas/libros/t7/PantallasT7_3.jsx";
 import { PIEZA_EL_DESCUENTO_COMERCIAL } from "../data/contabilidadT7_3.js";
+import { PIEZA_DESCUENTOS_EN_CADENA } from "../data/contabilidadT7_3_a2.js";
+import { PIEZA_EL_DESCUENTO_CONDICIONADO } from "../data/contabilidadT7_3_a3.js";
+import { PIEZA_EL_DESCUENTO_EN_DOS_LIBROS } from "../data/contabilidadT7_3_a4.js";
+import { PIEZA_SOBRANTES_Y_FALTANTES } from "../data/contabilidadT7_3_a5.js";
+import { PIEZA_LA_PROVISION } from "../data/contabilidadT7_3_a6.js";
+import { PIEZA_NIC2_COSTO } from "../data/contabilidadT7_3_a7.js";
+
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-3 DE CONTABILIDAD — «Inventarios III: descuentos, inventario físico y
@@ -39,11 +58,23 @@ export const TEMA_T7_3 = "inventarios-descuentos-nic2";
 /* En el orden del número de pieza. El rótulo «Pieza n de N» cuenta las publicadas. */
 export const PIEZAS_T7_3 = [
   { numero: PIEZA_EL_DESCUENTO_COMERCIAL.numero, pieza: PIEZA_EL_DESCUENTO_COMERCIAL, Pieza: PantallasT7_3 },
+  { numero: PIEZA_DESCUENTOS_EN_CADENA.numero, pieza: PIEZA_DESCUENTOS_EN_CADENA, Pieza: PantallasT7_3 },
+  { numero: PIEZA_EL_DESCUENTO_CONDICIONADO.numero, pieza: PIEZA_EL_DESCUENTO_CONDICIONADO, Pieza: PantallasT7_3 },
+  { numero: PIEZA_EL_DESCUENTO_EN_DOS_LIBROS.numero, pieza: PIEZA_EL_DESCUENTO_EN_DOS_LIBROS, Pieza: PantallasT7_3 },
+  { numero: PIEZA_SOBRANTES_Y_FALTANTES.numero, pieza: PIEZA_SOBRANTES_Y_FALTANTES, Pieza: PantallasT7_3 },
+  { numero: PIEZA_LA_PROVISION.numero, pieza: PIEZA_LA_PROVISION, Pieza: PantallasT7_3 },
+  { numero: PIEZA_NIC2_COSTO.numero, pieza: PIEZA_NIC2_COSTO, Pieza: PantallasT7_3 },
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS_T7_3 = [
   { id: H1.id, Mecanica: DescuentoEnFactura, titulo: H1.nombre },
+  { id: H2.id, Mecanica: CadenaDeDescuentos, titulo: H2.nombre },
+  { id: H3.id, Mecanica: ComercialOCondicionado, titulo: H3.nombre },
+  { id: H4.id, Mecanica: PagoATiempo, titulo: H4.nombre },
+  { id: H5.id, Mecanica: AjustePorConteo, titulo: H5.nombre },
+  { id: H6.id, Mecanica: EntraAlCosto, titulo: H6.nombre },
+  { id: H7.id, Mecanica: CostoOValorNeto, titulo: H7.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
