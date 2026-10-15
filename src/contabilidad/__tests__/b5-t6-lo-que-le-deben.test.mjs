@@ -98,8 +98,40 @@ test("★★ capa 1: cinco términos; las citas con «» y página; la glosa de 
   assert.match(n[0].delLibro, /^«.*» \(p\. 195\)$/);
   assert.match(n[1].delLibro, /^«.*» \(p\. 196\)$/);
   assert.equal(n[3].delLibro, D.GLOSA_NOTA_DEBITO.texto);
-  /* La nota de «cartera» espera a Mai: CuatroCapas admite un solo bloque por término. */
-  assert.ok(D.NOTA_CLIENTES_PENDIENTE.includes("cartera"));
+  /* La nota de «cartera» va debajo de la cita del término 2 (auditoría integral). */
+  assert.equal(n[1].notaDebajo, D.NOTA_CLIENTES);
+  assert.equal(n.filter((x) => x.notaDebajo).length, 1);
+});
+
+test("★★★ auditoría integral: el término 5 de Futaba, con su pie, sin el traslado a difícil cobro", () => {
+  const t5 = D.PIEZA_LO_QUE_LE_DEBEN.nombres[4];
+  assert.equal(t5.definicion, "Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. También baja cuando devuelve mercancía que había comprado a crédito y todavía no había pagado: es una devolución de ventas. Baja cuando la empresa le otorga un descuento sobre lo que todavía le debe. Y baja cuando la deuda se da por perdida, algo que se explica más adelante.");
+  assert.equal(t5.pie, "Basado en el libro, pp. 197 y 199-200");
+  assert.ok(!/difícil cobro/.test(t5.definicion));
+});
+
+test("★★★ auditoría integral: la nota de «cartera» se ve en pantalla, debajo de la cita del término 2", async () => {
+  const { default: CuatroCapas } = await import("../../components/mecanicas/maquinas/CuatroCapas.jsx");
+  const { PIEZAS } = await import("../../components/ContabilidadTema6View.jsx");
+  const pieza = PIEZAS[0].pieza;
+  const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA6[pieza.id];
+  const { caja, desmontar } = await montar(h(CuatroCapas, { pieza, Capa2, Exploracion, Capa4, rotulo: "R" }));
+  const terminos = [...caja.querySelectorAll('[data-capa="1"] dl > div')];
+  assert.equal(terminos.length, 5);
+  /* Solo el término 2 la lleva, y dentro del bloque de la cita. */
+  assert.deepEqual(terminos.map((t) => Boolean(t.querySelector("[data-nota-debajo]"))), [false, true, false, false, false]);
+  const bloque = terminos[1].querySelector("[data-del-libro]");
+  const cita = bloque.querySelector("[data-cita]");
+  const nota = bloque.querySelector("[data-nota-debajo]");
+  assert.equal(cita.textContent, D.PIEZA_LO_QUE_LE_DEBEN.nombres[1].delLibro);
+  assert.equal(nota.querySelector("[data-rotulo-nota]").textContent, "Nota");
+  assert.equal(nota.textContent, `Nota${D.NOTA_CLIENTES.texto}`);
+  /* La cita se lee primero; la nota, después. */
+  assert.ok(cita.compareDocumentPosition(nota) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+  assert.equal(getComputedStyle(nota).display, "block");
+  /* El término 5 nuevo, en pantalla. */
+  assert.ok(terminos[4].textContent.includes("Y baja cuando la deuda se da por perdida, algo que se explica más adelante."));
+  desmontar();
 });
 
 /* ═══════════ CAPA 2 ═══════════ */
