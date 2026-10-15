@@ -47,7 +47,9 @@ export function evaluarCifra(item, valor) {
   const ok = valor === item.correcta;
   if (ok) return { ok, correcta: item.correcta, textos: [item.acierto], textoCorrecta: pesos(item.correcta) };
   const d = (item.distractores ?? []).find((x) => x.valor === valor);
-  const porque = String(item.acierto ?? "").replace(/^Así es[.:]\s*/, "");
+  const sin = String(item.acierto ?? "").replace(/^(Así es|Exacto)[.:]\s*/, "");
+  /* Lo que queda abre su frase: «Así es: el 16 %…» → «El 16 %…». */
+  const porque = sin.charAt(0).toUpperCase() + sin.slice(1);
   const textos = d ? [d.retro, TEXTOS_ARMA.respuesta(item.correcta)] : [TEXTOS_ARMA.respuesta(item.correcta), porque];
   return { ok, correcta: item.correcta, textos: textos.filter(Boolean), textoCorrecta: pesos(item.correcta) };
 }
