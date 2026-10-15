@@ -56,6 +56,60 @@ sin procedencia que viaja de un documento a otro acaba usándose como medida, y
 ya pasó: el ancho de 258 px llegó a dos paquetes de construcción sin que nadie
 supiera de dónde salía.
 
+## La revisión a 320 px, y cómo se hace de verdad
+
+**El 15 de octubre de 2026 Mateo pidió a las cinco células revisar lo
+publicado jugándolo en la página real, a 320 y 375 px.** Al intentarlo, el
+coordinador se topó con dos cosas que conviene no volver a descubrir.
+
+**La extensión del navegador dice que redimensiona y no redimensiona.** La
+llamada responde «Successfully resized to 320x780» y `window.innerWidth`
+sigue devolviendo 1366. Una revisión hecha así no es una revisión a 320 px:
+es una revisión a 1366 px con un informe que miente. **Compruébalo siempre
+leyendo `window.innerWidth` antes de mirar nada.**
+
+**Lo que sí funciona:** servir el sitio en local y abrirlo con un navegador
+que obedezca el ancho.
+
+```
+VITE_SUPABASE_URL=https://ejemplo.supabase.co \
+VITE_SUPABASE_ANON_KEY=clave-de-mentira \
+VITE_GOOGLE_CLIENT_ID=000.apps.googleusercontent.com npx vite build
+cd dist && python3 -m http.server 8099
+```
+
+y luego Playwright (`/opt/npm-tools/node_modules/playwright-core`, con
+`executablePath: '/opt/pw-browsers/chromium'`) con
+`viewport: { width: 320, height: 820 }`. Las claves de mentira bastan: lo que
+se revisa es la pantalla, no el servidor. Además, midiendo en código se
+detecta de una vez lo que el ojo no ve: comparar `scrollWidth` con
+`clientWidth` y recorrer los elementos cuyo borde derecho se sale, que es el
+desbordamiento horizontal que a simple vista solo se nota si uno arrastra.
+
+**Dos trampas de esa medición**, las dos aprendidas en la primera pasada:
+
+- Los `fae-mesh-blob` del fondo se salen del ancho **a propósito**: son el
+  degradado decorativo. Hay que excluirlos o todo sale «roto».
+- El camino de un tema con una sola actividad mide 232 unidades de alto
+  (`CaminoHacer`, la línea del `alto`), así que el vacío que se ve en esos
+  temas **no es el camino**: es la vista alrededor. Atribuirlo al camino
+  manda a arreglar el sitio equivocado.
+
+### La regla que salió de la primera pasada: el título del tema se corta
+
+A 320 px, el encabezado de cada tema corta su propio nombre: «Repaso del
+capítul…», «Inventarios III: des…». El `h1` vive en una fila flex junto al
+botón de volver y **no tiene permiso para romper en dos líneas**. Se comprobó
+en las seis vistas de tema que existen y ninguna lo tiene.
+
+El nombre del tema es la principal señal de orientación de esa pantalla.
+Cortado, un estudiante en un teléfono estrecho no sabe dónde está.
+
+**La regla: un título puede encogerse o romper en dos líneas, pero no
+desaparecer.** En una fila flex, el elemento que lleva texto necesita
+`minWidth: 0` para poder encogerse, y hay que dejarle romper. Cada célula lo
+arregla en la vista de su tema; no es un componente compartido.
+
 ## Verificación contra lo publicado
 
 - **El texto** se lee del **paquete desplegado**, no del repositorio: es lo que
