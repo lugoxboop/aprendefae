@@ -3,6 +3,7 @@ import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
+import { SOLO_LECTOR } from "../verbos.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -22,7 +23,10 @@ import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
  * cuentas sin partir); por defecto, el texto tal cual. `pintarPie`, lo mismo
  * con el pie (T6 · A5: los cuatro tipos de pie). Si el estado trae
  * `tambienEnVista` (T6 · A5: el rótulo fijo), el desplazamiento intenta que se
- * vea junto con lo resaltado; si no cabe, manda lo resaltado.
+ * vea junto con lo resaltado; si no cabe, manda lo resaltado. `lector(paso)`
+ * (T6 · A5) da lo que el lector de pantalla oye después del texto del paso,
+ * dentro de la misma región viva (el pie, y en un paso el rótulo fijo); el
+ * pie visible se le oculta entonces al lector para que no se lea dos veces.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -99,7 +103,7 @@ export function Anotacion({ id, e, cuenta, linea, movimiento, lado, reducido, re
   );
 }
 
-export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atributos = {}, pintar = (t) => t, pintarPie = (t) => t }) {
+export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atributos = {}, pintar = (t) => t, pintarPie = (t) => t, lector = null }) {
   const PASOS = todos.length - 1;
   const CIERRE = todos.length;
   const reducido = useReducido();
@@ -182,7 +186,13 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     if (foco.current === "siguiente") siguiente.current?.focus({ preventScroll: true });
     foco.current = null;
     const rects = estado.resaltados.map((id) => piezas.current[id]?.getBoundingClientRect()).filter(Boolean);
-    const tope = bloque.current?.getBoundingClientRect().top;
+    /*
+     * Con el bloque pegado, su tope es el de cuando la página ya se movió:
+     * el borde inferior menos su alto. Medirlo antes de mover daba la cima de
+     * la máquina cuando esta empezaba baja en la pantalla (T6 · A5, medido).
+     */
+    const caja = bloque.current?.getBoundingClientRect();
+    const tope = caja && (fijo ? window.innerHeight - caja.height : caja.top);
     if (!rects.length || tope === undefined) return;
     const arriba = 8;
     const abajo = Math.min(tope, window.innerHeight) - 8;
@@ -240,13 +250,14 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
           </div>
           <div ref={texto} data-texto-paso tabIndex={-1} aria-live="polite" style={{ gridArea: "1 / 1", outline: "none" }}>
             <p style={{ margin: 0, fontSize: "14px", lineHeight: 1.55, color: TEXTO, ...estiloTexto(paso - 1) }}>{pintar(actual.texto)}</p>
+            {lector && lector(paso).map((t) => <span key={t} data-lector style={SOLO_LECTOR}>{` ${t}`}</span>)}
           </div>
         </div>
         <div style={{ display: "grid", marginTop: "4px" }}>
           <div aria-hidden="true" style={{ gridArea: "1 / 1", display: "grid", visibility: "hidden" }}>
             {todos.map((x, i) => <p key={`${i}-${x.pie}`} style={{ gridArea: "1 / 1", ...PIE }}>{pintarPie(x.pie)}</p>)}
           </div>
-          <p data-pie style={{ gridArea: "1 / 1", ...PIE }}>{pintarPie(actual.pie)}</p>
+          <p data-pie aria-hidden={lector ? "true" : undefined} style={{ gridArea: "1 / 1", ...PIE }}>{pintarPie(actual.pie)}</p>
         </div>
 
         {/* Los controles, copiados de LoQueYaPaso. */}

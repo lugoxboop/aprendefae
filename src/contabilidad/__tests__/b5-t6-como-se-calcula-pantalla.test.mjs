@@ -137,7 +137,7 @@ test("★★★ capa 2: el texto (con el «%» pegado), el pie y su tipo, lo res
   const vistos = new Set();
   for (let p = 1; p <= CIERRE; p++) {
     const esperado = p <= PASOS ? D.PASOS_T6_A5[p - 1] : D.CIERRE_T6_A5;
-    assert.equal(caja.querySelector("[data-texto-paso]").textContent, pegado(esperado.texto), `texto, paso ${p}`);
+    assert.equal(caja.querySelector("[data-texto-paso] p").textContent, pegado(esperado.texto), `texto, paso ${p}`);
     const pie = caja.querySelector("[data-pie]");
     assert.equal(pie.textContent, esperado.pie, `pie, paso ${p}`);
     assert.equal(pie.querySelector("[data-tipo-pie]").dataset.tipoPie, TIPOS_CAPA_2[p - 1], `tipo de pie, paso ${p}`);
@@ -347,4 +347,61 @@ test("★★ la pieza va quinta en el tema: la vista dice «PIEZA 5 DE 5» y le 
   assert.match(vista, /PIEZA \{k \+ 1\} DE \{PUBLICADAS\}/);
   assert.match(vista, /const PUBLICADAS = PIEZAS\.length;/);
   assert.deepEqual(ESCENAS_TEMA6[D.PIEZA_COMO_SE_CALCULA.id], { Capa2: LaTablaDelEjemplo, Exploracion: CuatroGrupos, Capa4: ESCENAS_TEMA6[D.PIEZA_COMO_SE_CALCULA.id].Capa4 });
+});
+
+/* ═══════════ LAS CONDICIONES DE SHOKO ═══════════ */
+
+test("★★★ condición 3 (Shoko): el lector de pantalla oye el pie de cada paso con su texto, y el rótulo fijo una vez, cuando aparece la tabla", async () => {
+  const { caja, desmontar } = await montar(h(LaTablaDelEjemplo));
+  const viva = caja.querySelector("[data-texto-paso]");
+  assert.equal(viva.getAttribute("aria-live"), "polite");
+  /* La escena, oculta al lector: el rótulo no se oye ahí. */
+  assert.equal(caja.querySelector("[data-escena]").getAttribute("aria-hidden"), "true");
+  for (let p = 1; p <= CIERRE; p++) {
+    const esperado = p <= PASOS ? D.PASOS_T6_A5[p - 1] : D.CIERRE_T6_A5;
+    const oye = [...viva.querySelectorAll("[data-lector]")].map((n) => n.textContent.trim());
+    assert.deepEqual(oye, [...(p === 2 ? [D.ROTULO_SIMULADO_T6_A5] : []), pegado(esperado.pie)], `paso ${p}`);
+    /* Todo dentro de la misma región viva, después del texto. */
+    assert.ok(viva.textContent.startsWith(pegado(esperado.texto)));
+    /* El pie visible no se lee dos veces. */
+    assert.equal(caja.querySelector("[data-pie]").getAttribute("aria-hidden"), "true");
+    if (p < CIERRE) await siguiente(caja);
+  }
+  desmontar();
+});
+
+test("★★★ condición 3: en los pasos 5 a 7 se oye la fuente del porcentaje junto al porcentaje", async () => {
+  const { caja, desmontar } = await montar(h(LaTablaDelEjemplo));
+  for (let p = 1; p < 5; p++) await siguiente(caja);
+  for (let p = 5; p <= 7; p++) {
+    const oye = caja.querySelector("[data-texto-paso]").textContent;
+    assert.match(oye, /Al \d+\u00A0%/);
+    assert.ok(oye.endsWith(D.PIE_PORCENTAJE), `paso ${p}: «${oye.slice(-60)}»`);
+    await siguiente(caja);
+  }
+  desmontar();
+});
+
+test("★★ las otras piezas de T6 no cambian: sin `lector`, el pie visible se sigue leyendo y no hay nada solo para el lector", async () => {
+  const { default: LaProvision } = await import("../../components/mecanicas/libros/tema6/LaProvision.jsx");
+  const { caja, desmontar } = await montar(h(LaProvision));
+  assert.equal(caja.querySelector("[data-lector]"), null);
+  assert.equal(caja.querySelector("[data-pie]").getAttribute("aria-hidden"), null);
+  desmontar();
+});
+
+test("★★★ condición 1 (Shoko): el Decreto nunca queda rotulado «Así lo dice el libro» en la capa 1; la nota del término 4 va rotulada «Nota»", async () => {
+  const pieza = PIEZAS.find((p) => p.pieza.id === D.PIEZA_COMO_SE_CALCULA.id).pieza;
+  const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA6[pieza.id];
+  const { caja, desmontar } = await montar(h(CuatroCapas, { pieza, Capa2, Exploracion, Capa4, rotulo: "R" }));
+  const bloques = [...caja.querySelectorAll('[data-capa="1"] [data-del-libro]')];
+  assert.equal(bloques.length, 2, "la cita del término 1 y la nota del término 4");
+  const rotulos = bloques.map((b) => b.firstElementChild.textContent);
+  assert.deepEqual(rotulos, ["Así lo dice el libro", "Nota"]);
+  /* La cita del libro es del libro; lo de la norma no entra en un bloque «Así lo dice el libro». */
+  for (const b of bloques) {
+    if (b.firstElementChild.textContent === "Así lo dice el libro") assert.doesNotMatch(b.textContent, /Decreto|norma|renta/i);
+  }
+  assert.doesNotMatch(bloques[0].textContent, /Decreto/);
+  desmontar();
 });

@@ -71,6 +71,9 @@ export const conPorcentajePegado = (pieza) => ({
   })),
 });
 
-export const T6_A5 = { ...BASE, estadoPaso, reservas: [BASE.PASOS, BASE.CIERRE] };
+/* El paso en que aparece la tabla, y con ella el rótulo fijo (desde PIEZAS). */
+const PASO_TABLA = PIEZAS.tabla[1];
+
+export const T6_A5 = { ...BASE, estadoPaso, reservas: [BASE.PASOS, BASE.CIERRE], PASO_TABLA };
 export const { PASOS, CIERRE, duracion: duracionPasoT6A5 } = T6_A5;
 export const estadoPasoT6A5 = estadoPaso;

@@ -387,3 +387,13 @@ Un script cotejó los 66 textos de la pieza, pies incluidos, contra la versión 
 Para Futaba, sin bloqueo: el paso 3 resalta «los cuatro porcentajes», pero el grupo 1 no tiene porcentaje escrito, así que resalto tres (§5.3); el paso 4 ocupa 4 líneas a 320 y es el que fija el alto del bloque (§5.3).
 Lo que Kaede mide en el sitio (§8), sobre todo el n.º 7: cómo pinta CuatroCapas el pie de un término.
 Si Shoko cambia algún texto, rehago lo que toque.
+
+## (3) Shoko · revisión de la guía de Mai: PASA CON CONDICIONES (resumen fiel)
+
+Pasan los textos (los 66), los rótulos (los 27), que nada dibujado deje de existir (tres pastillas en el paso 3, sin «0 %»), que nada delate la respuesta y que el pie de la norma no se confunda con «Libro». Las condiciones las verifica Kaede en el sitio:
+
+1. **Pies de la capa 1.** Si CuatroCapas no admite pies por término, va a Erwin, y la capa 1 no se publica sin el pie del Decreto. Lo que no puede pasar: que la referencia al Decreto 1625 quede en el bloque rotulado «Así lo dice el libro».
+2. **El rótulo fijo, a la vista.** Si con la cabecera real el rótulo desaparece en algún paso con el pie del Decreto (pasos 5 a 7), la pieza NO PASA hasta rediseñar.
+3. **El lector de pantalla.** El pie de cada paso tiene que leerse junto con su texto; lo mínimo es que el paso 2 anuncie el rótulo una vez, cuando aparece la tabla.
+
+Recomendada, para Futaba: el «Resalta» del paso 3 pasa a «Los tres porcentajes» (no cambia nada visible).

@@ -50,10 +50,19 @@ export const MOMENTOS_ESCENA_T6_A5 = [
 
 const Escena = escenaDeMomentos({ momentos: MOMENTOS_ESCENA_T6_A5, estadoPaso: T6_A5.estadoPaso, reservas: T6_A5.reservas, textos: E });
 const pintarPie = (pie) => <PieDeFuente texto={pie} />;
+/*
+ * Lo que oye el lector de pantalla tras el texto de cada paso (condición 3 de
+ * Shoko): la escena le va oculta, así que el pie se lee con el texto y, en el
+ * paso en que aparece la tabla, el rótulo fijo, una sola vez.
+ */
+const lector = (paso) => [
+  ...(paso === T6_A5.PASO_TABLA ? [ROTULO_SIMULADO_T6_A5] : []),
+  pegarPorcentaje(TODOS[paso - 1].pie),
+];
 
 export default function LaTablaDelEjemplo() {
   return (
     <MaquinaPegada todos={TODOS} estadoPaso={T6_A5.estadoPaso} duracion={T6_A5.duracion} escena={Escena}
-      pintar={pegarPorcentaje} pintarPie={pintarPie} atributos={{ "data-capa2-t6-a5": true }} />
+      pintar={pegarPorcentaje} pintarPie={pintarPie} lector={lector} atributos={{ "data-capa2-t6-a5": true }} />
   );
 }
