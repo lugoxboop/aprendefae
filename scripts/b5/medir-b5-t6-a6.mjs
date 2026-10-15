@@ -26,12 +26,10 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { createServer } from "vite";
-import { createRequire } from "node:module";
 import { resolve } from "node:path";
+import { abrirNavegador } from "./navegador.mjs";
 
 const RAIZ = resolve(import.meta.dirname, "../..");
-const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? "/opt/node-tools/node_modules/playwright");
 const { PARTES_T6_ACT6 } = await import("../../src/data/contabilidadT6Act6.js");
 const CASILLAS = PARTES_T6_ACT6.flatMap((p) => p.casillas);
 const clave = (o) => String(o.valor ?? o.texto);
@@ -39,7 +37,8 @@ const clave = (o) => String(o.valor ?? o.texto);
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
 await servidor.listen();
 const URL = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/b5/harness-a6/index.html`;
-const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+/* Con la barra de desplazamiento a la vista: el ancho del sitio en el Chromium de escritorio (navegador.mjs). */
+const navegador = await abrirNavegador();
 const fallos = [];
 const informe = [];
 
@@ -92,8 +91,12 @@ function medir() {
 }
 
 for (const reducido of [false, true]) {
-  /* 300: en el sitio, a 320, la columna es más angosta que en este banco (Sakuta midió 5,5 px entre «3 meses» y «6 meses»); a 300 el banco llega a ese caso y prueba el escalón. */
-  for (const [ancho, alto] of [[320, 568], [375, 667], [300, 568]]) {
+  /*
+   * Con la barra a la vista (navegador.mjs), a 320 la columna es la del sitio: Sakuta midió allí 5,5 px entre
+   * «3 meses» y «6 meses», así que el eje tiene que salir escalonado. Ya no hace falta el ancho de 300 que se
+   * usaba para llegar a ese caso con un banco más ancho que el sitio.
+   */
+  for (const [ancho, alto] of [[320, 568], [375, 667]]) {
     const p = await navegador.newPage({ viewport: { width: ancho, height: alto }, reducedMotion: reducido ? "reduce" : "no-preference" });
     await p.goto(URL);
     await p.waitForSelector("[data-cajones-del-tiempo]");
@@ -112,6 +115,7 @@ for (const reducido of [false, true]) {
       await p.waitForTimeout(reducido ? 50 : 450);
       const respondida = await p.evaluate(medir);
       if (k === 0) informe.push(`${tag} · eje: hueco horizontal entre rótulos ${abierta.huecoEje?.toFixed(2)} px · escalonado ${abierta.escalonado}`);
+      if (k === 0 && ancho === 320 && abierta.escalonado !== "si") fallos.push(`${tag}: a 320 el eje no sale escalonado (el banco no tiene el ancho del sitio)`);
       informe.push(`${tag} · casilla ${k + 1}: casilla, rótulo y renglón ${abierta.juntos ? "juntos" : "NO juntos"} (${abierta.alto.toFixed(2)} px) · ${k % 2 === 0 ? "falla" : "acierta"}${respondida.porciones.length ? ` · porciones ${respondida.porciones.join(" / ")} %` : ""}`);
       for (const x of [...abierta.problemas, ...respondida.problemas]) fallos.push(`${tag} · casilla ${k + 1}: ${x}`);
       /* Si no cabe todo en la ventana (menos 8 arriba y abajo), el renglón queda arriba con el rótulo (hoja 2 de Mai §3). */

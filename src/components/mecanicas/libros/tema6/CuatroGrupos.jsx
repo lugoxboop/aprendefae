@@ -7,7 +7,7 @@ import {
 import { pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
-import { Caja, LECTURA, PIE } from "./CajasQueRevelan.jsx";
+import { Caja, LECTURA, PIE, useFormaQueCabe } from "./CajasQueRevelan.jsx";
 import { RotuloSimulado, PieDeFuente } from "./FuentesT6A5.jsx";
 
 /*
@@ -54,6 +54,8 @@ export default function CuatroGrupos() {
   const reducido = useReducido();
   const [abiertos, setAbiertos] = useState(() => new Set());
   const [elecciones, setElecciones] = useState(() => ({}));
+  /* En fila, salvo que alguna opción se parta donde se pinta (Sakuta, 15-oct). */
+  const [forma, seParte, vuelta] = useFormaQueCabe("fila");
   const bloqueFinal = useRef(null);
   const decidido = (g) => elecciones[g.id] !== undefined;
   const todos = GRUPOS_T6_A5.every(decidido);
@@ -117,7 +119,7 @@ export default function CuatroGrupos() {
                 opciones: g.opciones.map((o) => ({ ...o, texto: pegarPorcentaje(o.texto) })),
               },
             }}
-            estiloTitulo={NOMBRE_CAJA} forma="fila" abierto={abiertos.has(g.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(g.id))}
+            estiloTitulo={NOMBRE_CAJA} forma={forma} onSeParte={seParte} vuelta={vuelta} abierto={abiertos.has(g.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(g.id))}
             elegida={elecciones[g.id] ?? null} onElegir={(o) => setElecciones((e) => ({ ...e, [g.id]: o }))} />
         ))}
       </div>

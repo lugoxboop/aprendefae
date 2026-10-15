@@ -6,7 +6,7 @@ import {
 } from "../../../../data/contabilidadT6Pieza4.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
-import { Caja, LECTURA, PIE } from "./CajasQueRevelan.jsx";
+import { Caja, LECTURA, PIE, useFormaQueCabe } from "./CajasQueRevelan.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -54,6 +54,8 @@ export default function TresCasos() {
   const reducido = useReducido();
   const [abiertos, setAbiertos] = useState(() => new Set());
   const [elecciones, setElecciones] = useState(() => ({}));
+  /* En fila, salvo que alguna opción se parta donde se pinta (Sakuta, 15-oct). */
+  const [forma, seParte, vuelta] = useFormaQueCabe("fila");
   const bloqueFinal = useRef(null);
   const decidido = (c) => elecciones[c.id] !== undefined;
   const todos = CASOS_T6_A4.every(decidido);
@@ -95,7 +97,7 @@ export default function TresCasos() {
 
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
         {CASOS_T6_A4.map((c) => (
-          <Caja key={c.id} estiloTitulo={NOMBRE_CAJA} forma="fila"
+          <Caja key={c.id} estiloTitulo={NOMBRE_CAJA} forma={forma} onSeParte={seParte} vuelta={vuelta}
             caja={{ id: c.id, titulo: c.nombre, revela: c.revela, pie: c.pie, decide: { pregunta: PREGUNTA_CAPA_3_T6_A4, opciones: OPCIONES_CAPA_3_T6_A4, correcta: c.correcta, falla: c.falla } }}
             abierto={abiertos.has(c.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(c.id))}
             elegida={elecciones[c.id] ?? null} onElegir={(o) => setElecciones((e) => ({ ...e, [c.id]: o }))} />
