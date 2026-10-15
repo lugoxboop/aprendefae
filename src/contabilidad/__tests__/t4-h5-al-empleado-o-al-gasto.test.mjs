@@ -190,6 +190,18 @@ test("★★★ los textos de interfaz son los que revisó Katsumi en el paquete
   assert.match(sec, /con al menos dos filas completas, una al debe y otra al haber, y ninguna fila a medias\. No con tres\./);
 });
 
+test("★★★ la demo de «Así se juega» es la que aprobó Katsumi (enunciado y acierto), y no queda ninguna marca de pendiente", () => {
+  const i = PAQ.indexOf("- **Demo de Así se juega:**");
+  assert.ok(i > 0, "el paquete de H5 no trae la aprobación de la demo");
+  const sec = PAQ.slice(i, PAQ.indexOf("\n\n", i) > 0 ? PAQ.indexOf("\n\n", i) : undefined);
+  const citas = [...sec.matchAll(new RegExp(CITA, "g"))].map((m) => m[1]);
+  assert.ok(citas.includes(D.EJEMPLO_H5.enunciado), "el enunciado de la demo no es el aprobado");
+  assert.ok(citas.includes(D.EJEMPLO_H5.acierto), "el acierto de la demo no es el aprobado");
+  assert.equal(D.EJEMPLO_H5.decisionTexto, null);
+  assert.equal(D.EJEMPLO_H5.pedido, null);
+  assert.doesNotMatch(leer("src/data/contabilidadT4H5.js"), /PENDIENTE DE REVISIÓN/);
+});
+
 /* ═══════════ 2 · LO QUE SE VE ═══════════ */
 
 const Marco = ({ children }) => h("div", { "data-marco": true }, children);

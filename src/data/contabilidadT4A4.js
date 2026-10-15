@@ -51,7 +51,7 @@ export const TERMINOS_A4 = [NOTA_DEBITO, NOTA_CREDITO];
 
 /* ═══════════ TEXTOS DE INTERFAZ QUE EL PAQUETE NO TRAE ═══════════ */
 
-/* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El nombre de cada asiento para el lector de pantalla. */
+/* El nombre de cada asiento para el lector de pantalla. Revisado por Katsumi (d4-t4-a4-v1.md, «Textos de interfaz de la figura»). */
 export const NOMBRE_ASIENTO_A4 = { consignacion: "Asiento de la consignación", cheque: "Asiento del cheque al proveedor" };
 
 /* ═══════════ LA FIGURA: «LAS DOS LIBRETAS» (Hanayama v1 + v1.1) ═══════════ */
@@ -63,7 +63,7 @@ export const NOMBRE_ASIENTO_A4 = { consignacion: "Asiento de la consignación", 
  * sobre la pregunta de Shibukawa).
  */
 export const FIGURA_LIBRETAS = {
-  /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] */
+  /* Revisados por Katsumi (ídem). */
   empresa: { nombre: "La empresa", registro: "libro auxiliar" },
   banco: { nombre: "El banco", registro: "extracto del mes" },
   suma: "suma",
@@ -77,17 +77,26 @@ export const FIGURA_LIBRETAS = {
     "nota-debito": { nombre: [NOTA_DEBITO.termino], efecto: "resta", quien: "banco" },
     "nota-credito": { nombre: [NOTA_CREDITO.termino], efecto: "suma", quien: "banco" },
   },
-  /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] La tarjeta del hecho de P7, del enunciado de la pregunta. */
+  /* La tarjeta del hecho de P7, del enunciado de la pregunta. Revisada por Katsumi. */
   tarjetaP7: { cuando: "El 30 del mes", renglones: ["La empresa gira un cheque", "nadie lo ha cobrado"] },
 };
 
-/* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El texto alternativo, uno por estado (Hanayama v1 §5, `notas` de la v1.1). */
+/*
+ * El texto alternativo, uno por estado (Hanayama v1 §5, `notas` de la v1.1).
+ * La fuente es d4-t4-a4-v1.md, «Textos de interfaz de la figura»: Katsumi
+ * aprobó los míos tal cual, menos dos que cambió y que van aquí:
+ *   · `p7-colocando`: el mío terminaba en «Los dos registros, todavía sin ese
+ *     renglón.», una pista falsa para el lector de pantalla contra la
+ *     respuesta «Solo la empresa»
+ *   · `comparar`: «renglones que al otro todavía le faltan» (un renglón no se
+ *     sabe)
+ */
 export const ALT_LIBRETAS = {
   notas: "Dos registros de la misma cuenta, el de la empresa y el del banco. En el del banco, una nota débito resta y una nota crédito suma. En el de la empresa, esos renglones todavía no están.",
   "dos-libros": "Dos registros de la misma cuenta: el libro auxiliar de la empresa y el extracto del banco.",
-  "p7-colocando": "La empresa gira un cheque el 30 del mes y nadie lo ha cobrado. Los dos registros, todavía sin ese renglón.",
+  "p7-colocando": "La empresa gira un cheque el 30 del mes y nadie lo ha cobrado. La figura muestra los dos registros de la misma cuenta.",
   "p7-acierto": "El cheque está en el libro de la empresa, que resta. En el extracto del banco todavía no está.",
-  comparar: "En el libro de la empresa: el cheque girado y la consignación. En el extracto del banco: la nota débito y la nota crédito. Cada uno tiene renglones que el otro todavía no sabe.",
+  comparar: "En el libro de la empresa: el cheque girado y la consignación. En el extracto del banco: la nota débito y la nota crédito. Cada uno tiene renglones que al otro todavía le faltan.",
 };
 
 /*
