@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { BookOpen, Zap } from "lucide-react";
 import { FAE } from "../theme.js";
 import { APRENDER, HACER, ETIQUETAS, actividadesDeTipo } from "../data/subjects.js";
 import { CARD_SHELL } from "./SubjectCard.jsx";
@@ -22,22 +23,27 @@ import { ConMarca } from "./shared/contenidoNuevo.jsx";
  * esconde. Un tema a medio construir se ve a medio construir.
  */
 
+/*
+ * Dos opciones del MISMO peso, distintas por forma. Es una elección, no un
+ * rótulo: si una fuera llena y la otra de contorno (como en la insignia), la
+ * que pesa más empujaría la elección sin que nadie lo decida. Por eso el
+ * botón es idéntico y lo único que cambia es el dibujo de 18 px —de contorno
+ * para Aprender, lleno para Hacer, el mismo código que la insignia— y la
+ * palabra.
+ *
+ * Sin teal ni coral: el coral es «error» en todo el sitio y el teal es
+ * «correcto» y «debe»; ninguno puede rotular también una mitad. Los títulos
+ * en teal y coral medían 3,7:1 y 3,9:1 sobre su tinte, por debajo del 4,5 que
+ * pide un texto de 17 px; en blanco miden 11,7:1. Lo comprueba
+ * __tests__/tarjeta-partida.test.mjs sobre el DOM montado.
+ */
 const OPCIONES = [
-  {
-    tipo: APRENDER,
-    color: FAE.teal,
-    fondo: "rgba(42,157,143,0.14)",
-    borde: "rgba(42,157,143,0.55)",
-    descripcion: "El material que explica el tema",
-  },
-  {
-    tipo: HACER,
-    color: FAE.coral,
-    fondo: "rgba(231,111,81,0.16)",
-    borde: "rgba(231,111,81,0.62)",
-    descripcion: "Los juegos que dan FP",
-  },
+  { tipo: APRENDER, Glifo: BookOpen, lleno: false, descripcion: "El material que explica el tema" },
+  { tipo: HACER, Glifo: Zap, lleno: true, descripcion: "Los juegos que dan FP" },
 ];
+const FONDO = "rgba(203,220,242,0.08)";
+const BORDE = "rgba(203,220,242,0.55)";
+const FONDO_HOVER = "rgba(203,220,242,0.15)";
 
 function contar(n) {
   return n === 1 ? "1 actividad" : `${n} actividades`;
@@ -69,22 +75,15 @@ function BotonModo({ opcion, cantidad, onClick }) {
         cursor: disponible ? "pointer" : "default",
         font: "inherit",
         textAlign: "left",
-        background: disponible ? opcion.fondo : "rgba(248,249,250,0.03)",
-        border: `1px solid ${disponible ? opcion.borde : "rgba(248,249,250,0.12)"}`,
+        background: disponible ? FONDO : "rgba(248,249,250,0.03)",
+        border: `1px solid ${disponible ? BORDE : "rgba(248,249,250,0.12)"}`,
         color: FAE.text,
-        "--fae-modo-hover-bg": opcion.fondo,
-        "--fae-modo-hover-border": opcion.color,
+        "--fae-modo-hover-bg": FONDO_HOVER,
+        "--fae-modo-hover-border": FAE.node,
       }}
     >
-      <span
-        style={{
-          fontFamily: "Sora, sans-serif",
-          fontWeight: 700,
-          fontSize: "clamp(15px, 1.7vw, 17px)",
-          letterSpacing: "-0.01em",
-          color: disponible ? opcion.color : "rgba(248,249,250,0.4)",
-        }}
-      >
+      <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "clamp(15px, 1.7vw, 17px)", letterSpacing: "-0.01em", color: disponible ? FAE.text : "rgba(248,249,250,0.4)" }}>
+        <opcion.Glifo size={18} strokeWidth={2} aria-hidden="true" focusable="false" color={disponible ? FAE.node : "rgba(248,249,250,0.4)"} fill={opcion.lleno ? "currentColor" : "none"} style={{ flexShrink: 0 }} />
         {ETIQUETAS[opcion.tipo]}
       </span>
       {/*

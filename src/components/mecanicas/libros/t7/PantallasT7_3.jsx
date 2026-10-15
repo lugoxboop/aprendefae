@@ -4,6 +4,7 @@ import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { BOTON, INTERFAZ, DEBE, HABER, PENDIENTE_DE_REVISION } from "../../../../data/contabilidadT7_3.js";
 import { Renglones, Plazos, FranjaNIC2, CSS_T73_PATRON } from "./PatronT7_3.jsx";
+import { Plegable } from "./plegable.jsx";
 import { textosDelError, contarFallo } from "./escaleraAyuda.js";
 
 /*
@@ -127,13 +128,13 @@ function Mensaje({ ok, textos, refFoco }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t73p-msg-cuerpo">
         <span className="t73p-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
 }
 
-const Textos = ({ lista, clase = "t73p-p", nueva = false }) => (lista ?? []).map((t) => <p key={t} className={`${clase}${nueva ? " t73p-nueva" : ""}`} data-texto>{t}</p>);
+const Textos = ({ lista, clase = "t73p-p", nueva = false }) => (lista ?? []).map((t) => <p key={t} className={`${clase}${nueva ? " t73p-nueva" : ""}`} data-texto><Plegable texto={t} /></p>);
 
 function Ficha({ ficha }) {
   return (

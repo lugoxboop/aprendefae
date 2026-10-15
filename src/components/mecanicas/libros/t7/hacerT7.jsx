@@ -4,6 +4,7 @@ import { pesos } from "../../../../data/contabilidad.js";
 import { Opcion, Opciones } from "../../corazon/juego.jsx";
 import { AsientoEnLineas, ElegirLado, Responder } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
+import { Plegable } from "./plegable.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -88,7 +89,7 @@ export function Devolucion({ r, lectorError = null }) {
           borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
         }}>
           {!r.ok && lectorError && <span style={SOLO_LECTOR}>{lectorError}</span>}
-          {r.textos.map((x, k) => <p key={k} data-texto-retro style={{ ...TEXTO, margin: k ? "6px 0 0" : 0 }}>{x}</p>)}
+          {r.textos.map((x, k) => <p key={k} data-texto-retro style={{ ...TEXTO, margin: k ? "6px 0 0" : 0 }}><Plegable texto={x} /></p>)}
         </div>
       )}
     </div>
@@ -160,7 +161,7 @@ export function LineasConComprobar({ lineas, asiento = null, onComprobar, compro
                     background: "rgba(231,111,81,0.13)", borderLeft: `3px solid ${FAE.coral}`,
                   }}>
                     <span style={SOLO_LECTOR}>{`Incorrecto. Va al ${LADOS_T7[l.lado].toLowerCase()}. `}</span>
-                    <p data-texto-retro style={TEXTO}>{l.retro}</p>
+                    <p data-texto-retro style={TEXTO}><Plegable texto={l.retro} /></p>
                   </div>
                 )}
               </div>

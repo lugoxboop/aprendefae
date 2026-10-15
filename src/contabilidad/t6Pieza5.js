@@ -1,4 +1,5 @@
-import { PASOS_T6_A5, CIERRE_T6_A5 } from "../data/contabilidadT6Pieza5.js";
+import { PASOS_T6_A5, CIERRE_T6_A5, FUSION_T6_A5 } from "../data/contabilidadT6Pieza5.js";
+import { fusionar } from "./fusionar.js";
 import { crearMomentos } from "./momentos.js";
 
 /*
@@ -77,3 +78,6 @@ const PASO_TABLA = PIEZAS.tabla[1];
 export const T6_A5 = { ...BASE, estadoPaso, reservas: [BASE.PASOS, BASE.CIERRE], PASO_TABLA };
 export const { PASOS, CIERRE, duracion: duracionPasoT6A5 } = T6_A5;
 export const estadoPasoT6A5 = estadoPaso;
+
+/* La capa 2 que se ve: los 11 pasos de antes contados en 10 (se juntan el 9 y el 10). */
+export const T6_A5_JUNTO = fusionar({ ...FUSION_T6_A5, estadoPaso, paso: BASE.paso, cierreViejo: BASE.CIERRE });

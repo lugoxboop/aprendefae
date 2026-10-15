@@ -121,5 +121,16 @@ con su causa y la regla que la evita.
   o más.
 - **E7 · Lo que el kit no mide: r5-1 es una cadena de selección.** Con la barra
   B3 de este archivo, cuatro de sus seis pantallas son marcar una opción de
-  radio y no mueven nada. Cumple el kit y no cumple la barra. Va una v2 de
-  mecánica; mientras, sigue publicada con las correcciones de arriba.
+  radio y no mueven nada. Cumple el kit y no cumple la barra. *Corregido en la
+  v2 (#250, paquete `e5-r5-1-v2`):* el flujo del título se reproduce, el
+  asiento entra en las cuentas T, las latas se venden, las fichas arman el
+  costo con un contador en vivo y los lotes se mezclan. *Regla:* antes de
+  escribir contenido, el general fija la mecánica de cada pantalla con la
+  pregunta «¿qué se mueve cuando el estudiante decide?»; si la respuesta es
+  «nada», la pantalla no está diseñada.
+- **E8 · La figura no hace la cuenta que se califica.** En el primer diseño de
+  la v2, el rótulo «Costo de cada unidad» calculaba en vivo el promedio que
+  la pregunta pedía; la elección se reducía a multiplicar y los distractores
+  dejaban de ser creíbles (Takamura). *Regla:* la figura muestra los
+  insumos y las consecuencias; el resultado que se evalúa solo aparece
+  después de responder.

@@ -1,6 +1,6 @@
 import { Fragment, useRef } from "react";
-import { ESCENA_T5_A2, PASOS_T5_A2, CIERRE_T5_A2 } from "../../../../data/contabilidadT5Pieza2.js";
-import { estadoPasoT5A2, duracionPasoT5A2, TRAMOS } from "../../../../contabilidad/t5Pieza2.js";
+import { ESCENA_T5_A2, PARADA_T5_A2 } from "../../../../data/contabilidadT5Pieza2.js";
+import { estadoPasoT5A2, T5_A2_JUNTO, TRAMOS } from "../../../../contabilidad/t5Pieza2.js";
 import MaquinaPegada, {
   SORA, INTER, TEXTO, SECUNDARIO, NODO, BORDES, ATENUADO, caja, aparicion, transicion, useSiluetasQueCaben, Anotacion as AnotacionBase,
 } from "../tema6/MaquinaPegada.jsx";
@@ -26,7 +26,8 @@ import MaquinaPegada, {
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const TODOS = [...PASOS_T5_A2, CIERRE_T5_A2];
+/* Los pasos juntados (hoja 7 de Mai: 21 → 14); la reserva de la escena sigue con los estados de siempre. */
+const TODOS = T5_A2_JUNTO.TODOS;
 const E = ESCENA_T5_A2;
 const LINEA_SORA = { fontFamily: SORA, fontSize: "13px", fontWeight: 600, lineHeight: 1.3 };
 const LINEA_INTER = { fontFamily: INTER, fontSize: "12px", lineHeight: 1.35 };
@@ -194,7 +195,7 @@ function Escena(estado, refDe, reducido) {
 
 export default function TresMomentos() {
   return (
-    <MaquinaPegada todos={TODOS} estadoPaso={estadoPasoT5A2} duracion={duracionPasoT5A2} escena={Escena}
+    <MaquinaPegada todos={TODOS} estadoPaso={T5_A2_JUNTO.estadoPaso} duracion={T5_A2_JUNTO.duracion} escena={Escena} parada={PARADA_T5_A2}
       pintar={pintarCuentas} atributos={{ "data-capa2-t5-a2": true }} />
   );
 }
