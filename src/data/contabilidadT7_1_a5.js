@@ -129,7 +129,7 @@ const LA_REGLA = {
 /* P2 · Importados. La lista va con viñeta (Watari); su primer ítem, con la glosa de la v2. */
 const IMPORTADOS = {
   id: "importados",
-  pista: "Piensa en lo que hay que pagar para tener la mercancía en la bodega, no en gastos de oficina.",
+  pista: "El costo incluye todo lo que hay que pagar para tener lista la mercancía. ¿Cuál de estos lo cumple?",
   tipo: "eleccion",
   parrafos: ["Cuando la mercancía viene del exterior, el libro suma al costo varias cosas."],
   lista: [
@@ -196,7 +196,7 @@ const CONDICIONES = {
 /* P4 · El flete lo asume el comprador (D-1). Enunciado y ficha con los cambios obligatorios de la v2. */
 const FLETE_COMPRADOR = {
   id: "flete-del-comprador",
-  pista: "Santa Martha paga el flete para traer su mercancía. Busca la cuenta que lo suma a lo comprado.",
+  pista: "Para Santa Martha, este flete es parte del costo de su mercancía. Piensa qué cuenta guarda ese costo en el periódico.",
   tipo: "eleccion",
   enunciado: "El 18 de marzo, Santa Martha compra mercancía a crédito a un proveedor. La mercancía vale $7.500.000, más el IVA. El flete vale $650.000 y lo asume Santa Martha, que le paga a la transportadora ese mismo día. Usa el sistema de inventario periódico.",
   parrafos: ["En este ejercicio, el IVA es del 16 % y la retención del 3,5 %, sobre la mercancía. La retención por transporte terrestre es del 1 %."],
@@ -310,7 +310,7 @@ const FLETE_VENDEDOR = {
  */
 const LADO_A_LADO = {
   id: "lado-a-lado",
-  pista: "Los dos fletes valían lo mismo y se pagaron igual. ¿Qué cambió entre Santa Martha y La Popa?",
+  pista: "Compara las dos columnas de la tabla: ¿qué dato cambia de una a otra?",
   tipo: "eleccion",
   parrafos: [],
   tabla: {

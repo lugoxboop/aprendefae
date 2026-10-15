@@ -40,9 +40,9 @@ const S = seccion(RECORTE, P.id);
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 
 /*
- * ENTREGA 6 DE NEAR (llegó por L el 15 de octubre de 2026; no está en un
- * archivo del repositorio): en P1 `ejemplo`, la pregunta, las opciones (la
- * correcta es «Menor que 23 %») y los dos errores. Gana sobre el recorte.
+ * ENTREGA 6 DE NEAR (lote1-entrega6-v1.md): en P1 `ejemplo`, la pregunta, las
+ * opciones (la correcta es «Menor que 23 %») y los dos errores; el de «Mayor»
+ * es el del anexo del lote 2. Gana sobre el recorte.
  */
 const ENTREGA_6 = {
   pregunta: "Suman 23 %. ¿La rebaja total será mayor, igual o menor que el 23 %?",
@@ -52,6 +52,15 @@ const ENTREGA_6 = {
     { clave: "Mayor", texto: "Cada descuento se calcula sobre un saldo más pequeño que el anterior. Así, la rebaja total no puede pasar del 23 %." },
   ],
 };
+{
+  const E6 = leer("orquestador/conocimiento/paquetes/lote1-entrega6-v1.md");
+  const fila = (campo) => E6.split("\n").find((l) => l.startsWith(`| ${campo} | `)) ?? "";
+  assert.ok(fila("`descuentos-en-cadena` · `ejemplo` · pregunta").endsWith(`| «${ENTREGA_6.pregunta}» |`));
+  assert.ok(fila("Opciones").includes(`| ${ENTREGA_6.opciones.map((o) => `«${o}»`).join(" · ")} (correcta) |`));
+  assert.ok(fila("Error de «Igual» (nuevo; reemplaza el de «Sí»)").endsWith(`| «${ENTREGA_6.errores[0].texto}» |`));
+  assert.ok(fila("Error de «Mayor»").endsWith("| El texto del anexo, igual. |"));
+  assert.ok(leer("orquestador/conocimiento/paquetes/lote2-anexo-v1.md").includes(`«${ENTREGA_6.errores[1].texto}»`));
+}
 {
   const e = S.pantallas[1];
   assert.equal(e.id, "ejemplo");

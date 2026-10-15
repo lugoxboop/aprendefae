@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -54,7 +55,7 @@ const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.j
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
 const V1 = leer("orquestador/conocimiento/paquetes/t7-3-h4-v1.md");
-const LOTE3 = leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md");
+const LOTE3 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md"));
 const MAPA = leer("orquestador/conocimiento/mapas/t7-inventarios.md");
 const VISTA = leer("src/components/ContabilidadT7_3View.jsx");
 const MIGRACION = leer("supabase/migrations/0106_t7_3_pago_a_tiempo.sql");
@@ -102,7 +103,8 @@ test("★★★ los textos son los de la v1, letra por letra", () => {
   assert.equal(D.H4.enunciado[1], citas(en[1])[0]);
   assert.ok(en[2].startsWith("- Línea de tarifas («…Las dos se calculan sobre lo facturado.») y la frase fija."));
   assert.ok(D.H4.enunciado[2].endsWith("Las dos se calculan sobre lo facturado."));
-  assert.ok(A3.PIEZA_EL_DESCUENTO_CONDICIONADO.pantallas.find((p) => p.id === "ejemplo").despues.includes(D.H4.enunciado[2]));
+  /* La línea de tarifas es la de A3 de T7-3 en su v1: el recorte del lote 1 quitó la pantalla `ejemplo` que la mostraba. */
+  assert.ok(leer("orquestador/conocimiento/paquetes/t7-3-a3-v1.md").includes(D.H4.enunciado[2]));
   assert.equal(D.H4.enunciado[3], H1.H1.enunciado[2]);
   assert.equal(D.H4.consigna, citas(en[3])[0]);
   const ficha = en[4].replace("- **Ficha:** ", "").match(/^(.+?)\. Sistema: (.+)\.$/);

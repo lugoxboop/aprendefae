@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -314,7 +315,7 @@ test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqu
 
 /* ═══════════ LOTE 3 · «ARMA LA LÍNEA», LA CASILLA Y EL DISTINTIVO ═══════════ */
 
-const NEAR = leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md");
+const NEAR = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md"));
 /* Las filas de Near de esta pieza: asiento, cuenta correcta, lado, distractor y su retroalimentación. */
 const filasNear = () => {
   const seccion = NEAR.slice(NEAR.indexOf("### T7-2 H5 · `t7-2-flete-y-devolucion`"), NEAR.indexOf("### T7-3 H4"));

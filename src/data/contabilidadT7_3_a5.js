@@ -69,7 +69,7 @@ const PORTADA = {
 
 const SOBRANTE = {
   id: "sobrante",
-  /* Pista de Mello (llega por L): gana sobre la del paquete. */
+  /* Pista de Mello (mello-pistas-distractores-v1.md): gana sobre la del recorte. */
   pista: "El sobrante no es todo lo que hay en la bodega. ¿Qué parte de lo contado es?",
   tipo: "eleccion",
   parrafos: ["Una empresa usa el sistema permanente. El 31 de diciembre mira lo que hay en la bodega."],

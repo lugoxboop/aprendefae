@@ -117,7 +117,7 @@ const CONDICIONES = {
 
 const QUE_ES = {
   id: "que-es",
-  /* Pista de Mello (llega por L): gana sobre la del paquete. */
+  /* Pista de Mello (mello-pistas-distractores-v1.md): gana sobre la del recorte. */
   pista: "Un descuento se registra cuando se sabe cuánto es. ¿Cuándo se sabe cada uno?",
   tipo: "eleccion",
   parrafos: ["El descuento condicionado no va en la factura: se factura el valor completo, porque no se sabe si el cliente va a cumplir."],
@@ -163,7 +163,7 @@ const CUAL_LE_TOCA = {
 
 const SOBRE_QUE = {
   id: "sobre-que",
-  /* Pista de Mello (llega por L): gana sobre la del paquete. */
+  /* Pista de Mello (mello-pistas-distractores-v1.md): gana sobre la del recorte. */
   pista: "Piensa qué parte de lo que debe Santa Martha es de la mercancía y qué parte es de otra cosa.",
   tipo: "eleccion",
   pregunta: "¿Sobre qué valor se calcula el 15 %?",

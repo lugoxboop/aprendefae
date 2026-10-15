@@ -35,7 +35,7 @@ const PORTADA = {
 
 const EL_PAGO = {
   id: "el-pago",
-  /* Pista de Mello: la del recorte pedía recordar algo que no se enseñó. */
+  /* Pista de Mello (mello-pistas-distractores-v1.md): gana sobre la del recorte. */
   pista: "Para quien vende, la cuenta fue al debe. Santa Martha está del otro lado del negocio.",
   tipo: "eleccion",
   parrafos: ["Santa Martha pagó a tiempo y recibió un descuento de $598.500."],

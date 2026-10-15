@@ -89,7 +89,7 @@ function Colector({ lado, total }) {
       padding: "7px 6px", borderRadius: "10px", textAlign: "center",
       background: `${COLOR_LADO[lado]}1A`, border: `1px solid ${COLOR_LADO[lado]}`,
     }}>
-      <p style={{ margin: 0, fontFamily: SORA, fontSize: "9px", fontWeight: 700, letterSpacing: "0.1em", color: TONO_ROTULO[lado] }}>
+      <p style={{ margin: 0, fontFamily: SORA, fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", color: TONO_ROTULO[lado] }}>
         {lado === DEBE ? COLECTOR.debe : COLECTOR.haber}
       </p>
       <p data-total={lado} style={{ margin: "2px 0 0", ...CIFRA, fontSize: "13px", fontWeight: 700, color: COLOR.blanco, whiteSpace: "nowrap" }}>
@@ -113,13 +113,13 @@ function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante
           padding: "7px 6px", borderRadius: "11px", background: "rgba(10,20,34,0.45)", border: "1px solid rgba(248,249,250,0.14)",
           animation: "fae-b5k-entra 200ms ease-out both",
         }}>
-          <p data-nombre-mesa style={{ margin: "0 0 5px", fontFamily: SORA, fontWeight: 700, fontSize: "11px", lineHeight: 1.25, color: COLOR.blanco, textAlign: "center" }}>{m.cuenta}</p>
+          <p data-nombre-mesa style={{ margin: "0 0 5px", fontFamily: SORA, fontWeight: 700, fontSize: "12px", lineHeight: 1.25, color: COLOR.blanco, textAlign: "center" }}>{m.cuenta}</p>
           <Campo id={m.cuenta} valor={m.texto} onCambio={(v) => onCifra(m.cuenta, v)} bloqueado={!activa}
             etiqueta={`Valor de ${m.cuenta}`} error={conError && leerCifra(m.texto) !== resultado.esperado.find((e) => e.cuenta === m.cuenta)?.valor} />
           {activa && (
             <button type="button" data-devolver={m.cuenta} onClick={() => onDevolver(m.cuenta)} style={{
               display: "block", width: "100%", minHeight: "32px", marginTop: "3px", background: "none", border: "none", cursor: "pointer",
-              color: COLOR.apagado, fontFamily: SORA, fontSize: "10px",
+              color: COLOR.apagado, fontFamily: SORA, fontSize: "12px",
             }}>
               devolver al estante
             </button>
@@ -141,7 +141,7 @@ function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante
           {cierra && <circle cx="50" cy="5" r="2" fill={FAE.teal} vectorEffect="non-scaling-stroke" />}
         </svg>
         {!cierra && (t.debe > 0 || t.haber > 0) && (
-          <p data-diferencia={Math.abs(t.debe - t.haber)} style={{ margin: "4px 0 0", ...CIFRA, fontSize: "11.5px", color: COLOR.apagado }}>
+          <p data-diferencia={Math.abs(t.debe - t.haber)} style={{ margin: "4px 0 0", ...CIFRA, fontSize: "12px", color: COLOR.apagado }}>
             {TEXTO_DIFERENCIA}: {pesos(Math.abs(t.debe - t.haber))}
           </p>
         )}
@@ -153,20 +153,20 @@ function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante
       </p>
       {activa && (
         <>
-          <p style={{ margin: "14px 0 8px", fontFamily: SORA, fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.16em", color: COLOR.apagado }}>
+          <p style={{ margin: "14px 0 8px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, letterSpacing: "0.16em", color: COLOR.apagado }}>
             {ROTULO_ESTANTE}
           </p>
           <div data-estante style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             {enEstante.map((c) => (
-              <div key={c} data-en-estante={c} style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+              <div key={c} data-en-estante={c} style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                 <span data-nombre-estante style={{ flex: "1 1 auto", minWidth: 0, fontFamily: INTER, fontSize: "12.5px", fontWeight: 600, lineHeight: 1.25, color: COLOR.blanco }}>{c}</span>
                 {[DEBE, HABER].map((lado) => (
                   <button key={lado} type="button" data-sacar={`${c}:${lado}`} onClick={() => onSacar(c, lado)}
                     aria-label={`${c} ${lado === DEBE ? "al debe" : "al haber"}`}
                     style={{
-                      flex: "none", minHeight: "40px", padding: "5px 8px", borderRadius: "8px", cursor: "pointer",
+                      flex: "none", minHeight: "44px", padding: "5px 8px", borderRadius: "8px", cursor: "pointer",
                       background: `${COLOR_LADO[lado]}14`, border: `1px solid ${COLOR_LADO[lado]}66`,
-                      color: TONO_ROTULO[lado], fontFamily: SORA, fontSize: "9.5px", fontWeight: 700, letterSpacing: "0.08em",
+                      color: TONO_ROTULO[lado], fontFamily: SORA, fontSize: "12px", fontWeight: 700, letterSpacing: "0.08em",
                     }}>
                     {lado === DEBE ? "AL DEBE" : "AL HABER"}
                   </button>

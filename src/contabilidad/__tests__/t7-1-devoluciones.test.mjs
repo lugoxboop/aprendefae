@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -55,8 +56,8 @@ const RAIZ = new URL("../../../", import.meta.url);
 const PAQUETE = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-a6-v1.md", RAIZ), "utf8");
 const CONTENIDO = PAQUETE.slice(PAQUETE.indexOf("## Contenido"), PAQUETE.indexOf("## Erratas y nombres"));
 /* Lote 2 de la revisión de calidad (Near): las pistas del primer error y el anexo de la tercera opción. */
-const LOTE2_PISTAS = readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-pistas-v1.md", RAIZ), "utf8");
-const LOTE2_ANEXO = readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-anexo-v1.md", RAIZ), "utf8");
+const LOTE2_PISTAS = conCorreccionesDeMello(readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-pistas-v1.md", RAIZ), "utf8"));
+const LOTE2_ANEXO = conCorreccionesDeMello(readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-anexo-v1.md", RAIZ), "utf8"));
 const P = A.PIEZA_DEVOLUCIONES;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 const seccion = (marca, siguiente) => CONTENIDO.slice(CONTENIDO.indexOf(marca), siguiente ? CONTENIDO.indexOf(siguiente) : undefined);

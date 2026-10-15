@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -54,7 +55,7 @@ const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.j
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
 const V1 = leer("orquestador/conocimiento/paquetes/t7-3-h5-v1.md");
-const LOTE3 = leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md");
+const LOTE3 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md"));
 const MAPA = leer("orquestador/conocimiento/mapas/t7-inventarios.md");
 const VISTA = leer("src/components/ContabilidadT7_3View.jsx");
 const MIGRACION = leer("supabase/migrations/0107_t7_3_ajuste_por_conteo.sql");
@@ -96,11 +97,13 @@ test("★★★ los textos son los de la v1, letra por letra; las fichas, las de
   for (const k of [0, 1]) {
     const [quien, libros, conteo, fecha, sistema] = fichaV1(k);
     assert.deepEqual(D.CASOS_H5[k].ficha.map(([, x]) => x.toLowerCase()), [quien, libros.replace("libros ", ""), conteo.replace("conteo ", ""), fecha, sistema].map((x) => x.toLowerCase()));
-    assert.deepEqual(D.CASOS_H5[k].ficha.map(([r]) => r), A5.PIEZA_SOBRANTES_Y_FALTANTES.pantallas.find((p) => p.ficha).ficha.map((f) => f.dato));
+    /* Los rótulos de la ficha 10b de A5 de T7-3. El recorte del lote 1 quitó esa ficha de A5; los rótulos se quedan. */
+    assert.deepEqual(D.CASOS_H5[k].ficha.map(([r]) => r), ["Quién", "Saldo en libros", "Valor del conteo", "Fecha", "Sistema"]);
   }
   const [quien, prov, perdida, fecha] = fichaV1(2);
   assert.deepEqual(D.CASOS_H5[2].ficha.slice(0, 4).map(([, x]) => x.toLowerCase()), [quien, prov.replace("provisión estimada ", ""), perdida.replace("pérdida real ", ""), fecha].map((x) => x.toLowerCase()));
-  assert.deepEqual(D.CASOS_H5[2].ficha.map(([r]) => r), A6.PIEZA_LA_PROVISION.pantallas.find((p) => p.ficha).ficha.map((f) => f.dato));
+  /* Los rótulos de la ficha 10b de A6 de T7-3. El recorte del lote 1 quitó esa ficha de A6; los rótulos se quedan. */
+  assert.deepEqual(D.CASOS_H5[2].ficha.map(([r]) => r), ["Quién", "Provisión estimada", "Pérdida real", "Fecha", "Sistema"]);
   /* El sistema de Pino: la propuesta de Near, pendiente de L. */
   assert.ok(V1.includes(`**Propongo que la ficha de Pino diga «Sistema: ${D.SISTEMA_PINO.charAt(0).toLowerCase()}${D.SISTEMA_PINO.slice(1)}»**`));
   assert.equal(D.CASOS_H5[2].ficha[4][1], D.SISTEMA_PINO);

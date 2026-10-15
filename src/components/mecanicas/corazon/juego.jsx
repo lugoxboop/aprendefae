@@ -173,26 +173,38 @@ export function Opcion({ children, onClick, estado = null, deshabilitada = false
  *
  * El primer carácter es ✅ o ❌ y de ahí sale el tono: no se pasa un booleano
  * aparte que pudiera contradecir al texto.
+ *
+ * Son TRES casos, no dos. Antes todo lo que no empezaba por ✅ salía en coral y
+ * con «Incorrecto:» para quien escucha la pantalla: un aviso, una pista o una
+ * nota cualquiera se leía como un error. El veredicto lo dice el emoji, que se
+ * ve en blanco y negro; el color es la segunda señal. Un texto sin ✅ ni ❌ es
+ * neutro: borde y fondo en el tono neutro del sitio, sin rótulo de veredicto y
+ * entero —no se le parte el principio, que es lo que se hace con el emoji.
  */
 export function Retro({ texto }) {
   if (!texto) return null;
   const ok = texto.startsWith("✅");
-  const emoji = texto.slice(0, 2).trim();
-  const resto = texto.slice(2);
+  const mal = texto.startsWith("❌");
+  const veredicto = ok || mal;
+  const emoji = veredicto ? texto.slice(0, 2).trim() : "";
+  const resto = veredicto ? texto.slice(2) : texto;
+  const tono = ok ? FAE.teal : mal ? FAE.coral : FAE.node;
+  const fondo = ok ? "rgba(42,157,143,0.10)" : mal ? "rgba(231,111,81,0.10)" : "rgba(203,220,242,0.08)";
 
   return (
     <p
       role="status"
+      data-retro={ok ? "ok" : mal ? "mal" : "neutro"}
       style={{
         margin: "12px 0 0", padding: "11px 13px", borderRadius: "12px",
         fontSize: "13px", lineHeight: 1.55,
-        background: ok ? "rgba(42,157,143,0.10)" : "rgba(231,111,81,0.10)",
-        border: `1px solid ${ok ? FAE.teal : FAE.coral}55`,
+        background: fondo,
+        border: `1px solid ${tono}55`,
         color: "rgba(248,249,250,0.82)",
       }}
     >
-      <span className="fae-jg-oculto">{ok ? "Correcto: " : "Incorrecto: "}</span>
-      <span aria-hidden="true">{emoji}</span>
+      {veredicto && <span className="fae-jg-oculto">{ok ? "Correcto: " : "Incorrecto: "}</span>}
+      {veredicto && <span aria-hidden="true">{emoji}</span>}
       {resto}
     </p>
   );

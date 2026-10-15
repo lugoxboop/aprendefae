@@ -47,9 +47,10 @@ const MELLO_A5 = MELLO.slice(MELLO.indexOf("**«Sobrantes y faltantes»"), MELLO
 const LINEA_MELLO = citas(MELLO_A5.split("\n").find((l) => l.includes("Al resumen se agrega")))[0];
 assert.equal(LINEA_MELLO, "Estos ajustes son del sistema permanente.");
 s("resumen").lineas.splice(s("resumen").lineas.length - 1, 0, LINEA_MELLO);
-/* Llegada por L (corrección de Mello del 15 de octubre de 2026; no está en un archivo del repositorio): la pista de P1. */
+/* La pista de P1, de la auditoría de pistas de Mello (mello-pistas-distractores-v1.md). */
 assert.equal(s("sobrante").pista, "El sobrante es la diferencia entre lo que hay en la bodega y lo que dicen los libros.");
 s("sobrante").pista = "El sobrante no es todo lo que hay en la bodega. ¿Qué parte de lo contado es?";
+assert.ok(leer("orquestador/conocimiento/paquetes/mello-pistas-distractores-v1.md").includes(`«${s("sobrante").pista}»`));
 
 /* ═══════════ 1 · DATOS ═══════════ */
 

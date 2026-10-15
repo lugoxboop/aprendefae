@@ -358,3 +358,56 @@ cazar esto.
 bien para echar un vistazo, pero no para un informe: lee `innerWidth` dentro
 del marco y escribe el número real al lado de cada medida. Un informe que dice
 320 habiendo medido 305 contamina lo que lean las otras cuatro células.
+
+## Corre `npm test`, no tu propio glob
+
+Pequeña y cara. La escribo porque la pisé yo, durante horas, el 15 de octubre.
+
+Llevaba toda la tarde comprobando mi trabajo con esto:
+
+```
+node --import ./scripts/cargador-jsx.mjs --test "src/**/*.test.mjs"
+```
+
+…y llamándolo «la suite completa». No lo es. El `test` de `package.json`
+corre **dos** globs:
+
+```
+"test": "node --import ./scripts/cargador-jsx.mjs --test \"src/**/*.test.mjs\" \"supabase/functions/**/*.test.mjs\""
+```
+
+Me faltaban las catorce pruebas de `supabase/functions/`. Esa vez pasaban —lo
+comprobé al darme cuenta— así que no escondí nada. **Pero mi «2.637 pruebas,
+cero fallos» era un número de un subconjunto presentado como un total**, que
+es precisamente lo que el canon dice no hacer tres secciones más arriba.
+
+**La regla: para decir que algo pasa, corre el comando que corre el CI.** No
+uno parecido. Si quieres correr una parte mientras trabajas, perfecto —es más
+rápido—, pero entonces el informe dice «pasan las pruebas de `src/`», no
+«pasa la suite».
+
+**Y de dónde salió:** un PR estaba en rojo en el CI y en verde en mi máquina.
+Perseguí la diferencia por el lado equivocado un buen rato —rama base
+desfasada, re-lanzar el CI, el guardián de migraciones— antes de leer qué
+ejecuta de verdad el trabajo del CI. **Cuando el CI y tu máquina no coinciden,
+lo primero que se mira no es el código: es si los dos están corriendo lo
+mismo.**
+
+### Qué paso del CI falló, sin poder leer el registro
+
+El proxy de este entorno **no deja descargar los registros** de GitHub
+Actions: `gh run view --log-failed` devuelve «Forbidden». Eso parece dejarte a
+ciegas, y no es verdad. Esto sí pasa, y dice el paso exacto:
+
+```
+gh run view <id> --json jobs --jq '.jobs[]|"\(.name): \(.conclusion)", (.steps[]|"   \(.number). \(.name) → \(.conclusion)")'
+```
+
+Devuelve los siete pasos del trabajo con su resultado, así que distingues en
+un segundo entre «fallaron las pruebas», «falló la compilación», «falló el
+guardián» y «ni siquiera instaló».
+
+**Y la duración es una pista antes incluso de mirar eso.** La suite tarda
+unos once minutos. Un trabajo que falla en **dos** no corrió las pruebas: se
+cayó antes, o se cayó cargando algo. Esa sola cuenta —cuánto tardó contra
+cuánto debería— orienta la búsqueda antes de abrir nada.

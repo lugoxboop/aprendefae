@@ -48,16 +48,18 @@ assert.ok(MELLO.includes(`«${ACIERTO_MELLO}»`));
 assert.equal(s("que-es").acierto.texto, "Así es: se registra cuando el cliente cumple.");
 s("que-es").acierto.texto = ACIERTO_MELLO;
 /*
- * Llegadas por L (correcciones de Mello del 15 de octubre de 2026; no están
- * en un archivo del repositorio): las pistas de P2 y P4, y los pies del
- * acierto y del error de P4.
+ * Las pistas de P2 y P4 son las de la auditoría de pistas de Mello
+ * (mello-pistas-distractores-v1.md). Los pies del acierto y del error de P4
+ * llegaron por L con la entrega 6 (no están en un archivo del repositorio).
  */
+const MELLO_PISTAS = leer("orquestador/conocimiento/paquetes/mello-pistas-distractores-v1.md");
 const PISTAS_MELLO = {
   "que-es": ["El comercial ya viene restado en la factura. ¿Cuál de los dos ocurre después de facturar?", "Un descuento se registra cuando se sabe cuánto es. ¿Cuándo se sabe cada uno?"],
   "sobre-que": ["El descuento condicionado no toca el IVA. Y la rebaja comercial ya se restó antes.", "Piensa qué parte de lo que debe Santa Martha es de la mercancía y qué parte es de otra cosa."],
 };
 for (const [id, [viejo, nuevo]] of Object.entries(PISTAS_MELLO)) {
   assert.equal(s(id).pista, viejo);
+  assert.ok(MELLO_PISTAS.includes(`«${nuevo}»`), `no está en la auditoría de Mello: «${nuevo}»`);
   s(id).pista = nuevo;
 }
 const PIES_SOBRE_QUE = "Basado en el libro, pp. 252-253";

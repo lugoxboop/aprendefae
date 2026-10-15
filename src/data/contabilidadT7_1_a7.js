@@ -52,7 +52,7 @@ const POR_QUE = {
 /* P2 · Al recibir. */
 const AL_RECIBIR = {
   id: "al-recibir",
-  pista: "Piensa en qué momento están a la mano, al mismo tiempo, la factura y la orden de compra.",
+  pista: "El libro pide que el control empiece lo antes posible. ¿Cuál de estos momentos llega primero?",
   tipo: "eleccion",
   parrafos: [
     "Cuando llega la mercancía, se compara la factura con la orden de compra. Así se ve si hay diferencias en precios, cantidades o referencias.",
