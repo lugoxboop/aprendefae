@@ -157,6 +157,8 @@ async function jugar(m, falla) {
   for (const [k, it] of EN_ORDEN.entries()) {
     assert.equal(m.caja.querySelector("[data-pregunta]").textContent, it.pregunta, `orden: el ítem ${k + 1}`);
     assert.equal(m.caja.querySelector("[data-item] [data-pie]").textContent, D.H1.pie);
+    /* Patrón T7-3: la cuenta de la factura no está antes de responder el ítem 1; después, se queda. */
+    assert.equal(m.caja.querySelectorAll("figure[data-renglones]").length, k === 0 ? 0 : 1, `figuras antes del ítem ${k + 1}`);
     if (it.tipo === "eleccion") {
       const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
       await tocar(opcion(m.caja, v));
@@ -164,6 +166,7 @@ async function jugar(m, falla) {
       const ok = v === it.correcta;
       assert.deepEqual([...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent), L.evaluarH1(it, v).textos);
       if (!ok) assert.equal(opcion(m.caja, it.correcta).dataset.estado, "revelada");
+      assert.equal(m.caja.querySelectorAll("figure[data-renglones]").length, 1, `figuras al responder el ítem ${k + 1}`);
       detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
     } else {
       for (const l of it.lineas) {
@@ -267,4 +270,26 @@ test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqu
   const fuente = leer("src/docente/etiquetasItem.js");
   const bloque = fuente.slice(fuente.indexOf("CONTABILIDAD · T7 «INVENTARIOS»"));
   assert.match(bloque.slice(0, bloque.indexOf("});")), /"t7-3-descuento-en-factura": \(id\) => unidadDeT73H1\(id\),/);
+});
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+test("★★★ Patrón T7-3: la factura de Guadua en renglones llega al responder el ítem 1, con acierto o con error", async () => {
+  for (const v of [C.factura, C.lista]) {
+    const m = await montar();
+    try {
+      assert.equal(m.caja.querySelectorAll("figure[data-renglones]").length, 0);
+      await tocar(opcion(m.caja, v));
+      const fig = m.caja.querySelector("figure[data-renglones]");
+      assert.equal(fig.querySelector("figcaption").textContent, "Factura de Guadua");
+      assert.deepEqual([...fig.querySelectorAll("[data-renglon]")].map((r) => [r.querySelector(".rg-op").textContent, r.querySelector(".rg-v").textContent, r.classList.contains("rg-res")]),
+        [["", "2.050.000", false], ["−", "246.000", false], ["=", "1.804.000", true]]);
+      assert.ok(fig.classList.contains("rg-nuevo"), "entra con el fundido");
+      assert.equal(C.lista - C.descuento, C.factura);
+      await tocar(boton(m.caja, D.BOTON_H1.siguiente));
+      assert.equal(m.caja.querySelector("figure[data-renglones]").classList.contains("rg-nuevo"), false, "en el ítem 2 ya no se funde");
+    } finally {
+      m.desmontar();
+    }
+  }
 });
