@@ -33,6 +33,13 @@ va a conseguir.
 | **D** Baki Hanma | Yujiro | Katsumi | Hanayama | Shibukawa | Baki | **T4 Efectivo, caja menor y bancos** · §5.1 y §5.2 · pp. 179-190 |
 | **E** Hajime no Ippo | Kamogawa | Miyata | Itagaki | Takamura | Ippo | **Repaso del capítulo 5**: el banco de ejercicios · pp. 262-274 |
 
+**Desde el 15 de octubre de 2026 cada general fusiona el trabajo de su
+célula.** El coordinador dejó de ser la puerta por la que pasa todo: se queda
+con lo compartido, los choques entre células, los datos de estudiantes, las
+migraciones y destrabar generales. Si un general fusiona algo que rompe `main`
+o que pisa a otra célula, el coordinador se lo devuelve para que lo arregle
+él. Ver «Cada general fusiona lo suyo» en nocturno.md.
+
 **Ukyo es el probador general y no pertenece a ninguna célula.** Es común a las
 cinco: a él se le lleva una pieza cuando hay que saber si un estudiante la
 entiende sin que nadie se la explique al lado.
