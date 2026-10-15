@@ -185,11 +185,12 @@ test("★★★ A1: la cuenta de la factura de San Calixto va con su texto, ante
   }
 });
 
-test("★★★ los rótulos de las figuras son los de Watari, marcados como pendientes de revisión", () => {
+test("★★★ los rótulos de las figuras son los de Watari, ya revisados por Near: sin la marca de pendiente", () => {
   const R = A1.ROTULOS_PATRON;
   assert.deepEqual([R.factura("X"), R.precioLista, R.descuentoComercial(15), R.valorFacturar], ["Factura de X", "Precio de lista", "Descuento comercial 15 %", "Valor a facturar"]);
   const fuente = readFileSync(new URL("../../data/contabilidadT7_3.js", import.meta.url), "utf8");
-  assert.match(fuente, /\[ESCRITO POR CLAUDE — PENDIENTE DE\s+\* REVISIÓN\]/);
+  assert.match(fuente, /Los puso\s+\* Watari y los revisó Near/);
+  assert.doesNotMatch(fuente, /PENDIENTE DE\s+(\* )?REVISIÓN\], dice su patrón/);
 });
 
 test("★★★ Hacer: cada figura aparece después de responder su ítem, crece o se va", async () => {
