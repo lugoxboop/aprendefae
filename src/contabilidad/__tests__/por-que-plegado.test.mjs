@@ -135,5 +135,6 @@ test("★★★ en t7/, todos los aciertos, errores y bloques de texto pasan por
     for (const m of s.matchAll(/<p key=\{t\}[^>]*\bdata-texto\b[^>]*>\{t\}<\/p>|<p[^>]*\bdata-texto-retro\b[^>]*>\{[\w.]+\}<\/p>/g)) sueltos.push(`${f}: ${m[0].slice(0, 70)}`);
   }
   assert.deepEqual(sueltos, []);
-  assert.ok(usos >= 41, `solo ${usos} usos`);
+  /* 40 desde el lote 3: los dos de ArmaLaFactura pasaron a la mecánica compartida de la célula (armaLaLinea.jsx y la Devolucion de hacerT7), que ya pliega. */
+  assert.ok(usos >= 40, `solo ${usos} usos`);
 });

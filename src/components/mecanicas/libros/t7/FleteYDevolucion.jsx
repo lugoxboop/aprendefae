@@ -6,8 +6,8 @@ import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
-import { CSS_T7_HACER, TEXTO, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "./hacerT7.jsx";
-import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { CSS_T7_HACER, TEXTO, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
+import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
@@ -26,6 +26,11 @@ import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
  *
  * Siete unidades; la forma y las piezas son las de H2 (hacerT7.jsx, sin
  * cambiarlo). Al terminar: onCompletar(pct, ms, detalle).
+ *
+ * LOTE 3 («Arma la línea», con T7-3 H1 de molde): los ítems 2 y 5 van con
+ * casilla de cifra; el 1, el 3 y el 4 se quedan en elección. En el ítem 6,
+ * cada línea elige su cuenta del banco (la correcta y dos distractores de
+ * Near) y su lado.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -40,7 +45,7 @@ export default function FleteYDevolucion({ Marco, rotulo, titulo, acento, onComp
 
   const item = t.items[t.i];
   const cuantos = t.items.length;
-  const listo = item && (item.tipo === "eleccion" ? Boolean(r) : comprobado);
+  const listo = item && (item.tipo === "asiento" ? comprobado : Boolean(r));
 
   useEffect(() => {
     if (t.terminado) onCompletar?.(puntuarH5(bien), Date.now() - t.inicio.current, t.detalle.current);
@@ -95,13 +100,20 @@ export default function FleteYDevolucion({ Marco, rotulo, titulo, acento, onComp
         </div>
         <p key={`hecho-${item.hecho}`} className="fae-t7h-entra" data-hecho={item.hecho + 1} style={{ ...TEXTO, margin: "0 0 10px" }}>{HECHOS_H5[item.hecho]}</p>
         <TarjetaPregunta id={item.id} encabezado={encabezadoDeHecho(item.hecho)} pregunta={item.pregunta} pie={H5.pie} tarjetaRef={tarjeta} />
-        {item.tipo === "eleccion" ? (
+        {item.tipo === "eleccion" && (
           <>
             <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
             <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es ${r.textoCorrecta}. ` : null} />
           </>
-        ) : (
-          <LineasConComprobar key={item.id} lineas={item.orden.map((id) => item.lineas.find((l) => l.id === id))}
+        )}
+        {item.tipo === "cifra" && (
+          <>
+            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} />
+            <Devolucion r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
+          </>
+        )}
+        {item.tipo === "asiento" && (
+          <LineasConCuenta key={item.id} lineas={item.orden.map((id) => item.lineas.find((l) => l.id === id))}
             asiento={item.lineas} onComprobar={comprobar} comprobado={comprobado} />
         )}
       </div>

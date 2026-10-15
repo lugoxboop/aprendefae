@@ -121,9 +121,18 @@ export const BOTON_H4 = { siguiente: "Siguiente ítem", verResumen: "Ver mi resu
 
 const DCC = "Descuento comercial condicionado";
 
+/*
+ * LOTE 3 DE LA REVISIÓN (L, 15 de octubre de 2026): «Arma la línea». Los
+ * ítems 1, 3 y 4, cuyo objetivo es calcular, van con casilla de cifra (tipo
+ * "cifra"): si la cifra escrita es la de un distractor, sale su
+ * retroalimentación. Los ítems 2 y 7 se quedan en elección. En cada asiento,
+ * cada línea trae su banco de cuentas: la correcta y sus `distractores`, con
+ * su retroalimentación, de Near (orquestador/conocimiento/paquetes/
+ * lote3-distractores-v1.md).
+ */
 export const ITEMS_H4 = [
   {
-    id: "lo-facturado", tipo: "eleccion", pesos: true,
+    id: "lo-facturado", tipo: "cifra", pesos: true,
     pregunta: "¿Cuánto se factura por la mercancía?",
     correcta: C.factura,
     acierto: "Así es. El 8 % es comercial y se resta en la factura: $2.125.000 − $170.000 = $1.955.000.",
@@ -143,7 +152,7 @@ export const ITEMS_H4 = [
     ],
   },
   {
-    id: "el-descuento", tipo: "eleccion", pesos: true,
+    id: "el-descuento", tipo: "cifra", pesos: true,
     pregunta: "¿Cuánto es el descuento condicionado?",
     correcta: C.condicionado,
     acierto: "Así es. El 4 % va sobre lo facturado por la mercancía, sin el IVA: $1.955.000 × 4 % = $78.200.",
@@ -153,7 +162,7 @@ export const ITEMS_H4 = [
     ],
   },
   {
-    id: "el-pago", tipo: "eleccion", pesos: true,
+    id: "el-pago", tipo: "cifra", pesos: true,
     pregunta: "¿Cuánto le paga Bambú a Totumo el 23 de octubre?",
     correcta: C.pago,
     acierto: "Así es. Bambú debía $2.199.375. Le restan $78.200 de descuento, así que paga $2.121.175.",
@@ -166,18 +175,18 @@ export const ITEMS_H4 = [
     id: "libro-de-totumo", tipo: "asiento",
     pregunta: "Ubica cada línea del pago en el libro de Totumo: Debe o Haber.",
     lineas: [
-      { id: "caja", cuenta: "Caja o Bancos", valor: C.pago, lado: DEBE, retro: "Totumo recibe el dinero en Caja o Bancos. Es un activo que aumenta: va al debe." },
-      { id: "descuento", cuenta: DCC, valor: C.condicionado, lado: DEBE, retro: "Totumo da el descuento. Quien da el descuento lo anota en el debe de Descuento comercial condicionado." },
-      { id: "clientes", cuenta: "Cuentas por cobrar – clientes", valor: C.deuda, lado: HABER, retro: "Bambú ya no le debe nada a Totumo. La cuenta por cobrar sale completa: va al haber." },
+      { id: "caja", cuenta: "Caja o Bancos", valor: C.pago, lado: DEBE, retro: "Totumo recibe el dinero en Caja o Bancos. Es un activo que aumenta: va al debe.", distractores: [{ cuenta: "Cuentas por cobrar – clientes", retro: "Bambú pagó, así que entra dinero. Lo que el cliente debe no sube con un pago." }, { cuenta: "Ingresos por ventas", retro: "La venta ya se anotó el 3 de octubre. Este hecho es el pago." }] },
+      { id: "descuento", cuenta: DCC, valor: C.condicionado, lado: DEBE, retro: "Totumo da el descuento. Quien da el descuento lo anota en el debe de Descuento comercial condicionado.", distractores: [{ cuenta: "Ingresos por ventas", retro: "El libro no resta este descuento directo de la venta. Lo anota en una cuenta propia." }, { cuenta: "Gastos de administración y ventas", retro: "El libro tiene una cuenta propia para este descuento. No lo mezcla con los gastos del mes." }] },
+      { id: "clientes", cuenta: "Cuentas por cobrar – clientes", valor: C.deuda, lado: HABER, retro: "Bambú ya no le debe nada a Totumo. La cuenta por cobrar sale completa: va al haber.", distractores: [{ cuenta: "Cuentas por pagar – proveedores", retro: "Esa cuenta es lo que la empresa debe. Totumo no queda debiendo nada con este pago." }, { cuenta: "Caja o Bancos", retro: "El dinero que entra va en otra línea, por $2.121.175. Esta línea va por $2.199.375." }] },
     ],
   },
   {
     id: "libro-de-bambu", tipo: "asiento",
     pregunta: "Ahora ubica cada línea del mismo pago en el libro de Bambú: Debe o Haber.",
     lineas: [
-      { id: "proveedores", cuenta: "Cuentas por pagar – proveedores", valor: C.deuda, lado: DEBE, retro: "Bambú ya no le debe nada a Totumo. La deuda baja completa: Cuentas por pagar – proveedores va al debe." },
-      { id: "descuento", cuenta: DCC, valor: C.condicionado, lado: HABER, retro: "Bambú recibe el descuento. Quien lo recibe lo anota en el haber de Descuento comercial condicionado." },
-      { id: "caja", cuenta: "Caja o Bancos", valor: C.pago, lado: HABER, retro: "Sale dinero de Caja o Bancos. Es un activo que disminuye: va al haber." },
+      { id: "proveedores", cuenta: "Cuentas por pagar – proveedores", valor: C.deuda, lado: DEBE, retro: "Bambú ya no le debe nada a Totumo. La deuda baja completa: Cuentas por pagar – proveedores va al debe.", distractores: [{ cuenta: "Cuentas por cobrar – clientes", retro: "Esa cuenta es del libro de Totumo, que vendió. Bambú es quien compró." }, { cuenta: "Compras", retro: "La compra ya se anotó el 3 de octubre. Este hecho es el pago." }] },
+      { id: "descuento", cuenta: DCC, valor: C.condicionado, lado: HABER, retro: "Bambú recibe el descuento. Quien lo recibe lo anota en el haber de Descuento comercial condicionado.", distractores: [{ cuenta: "Compras", retro: "El libro no resta este descuento directo de Compras. Lo anota en una cuenta propia." }, { cuenta: "Devoluciones de compras", retro: "Bambú no le devolvió mercancía a nadie. Esto es una rebaja por pagar a tiempo." }] },
+      { id: "caja", cuenta: "Caja o Bancos", valor: C.pago, lado: HABER, retro: "Sale dinero de Caja o Bancos. Es un activo que disminuye: va al haber.", distractores: [{ cuenta: "Cuentas por pagar – proveedores", retro: "Esta línea va por $2.121.175, lo que Bambú paga de verdad. La deuda baja por otro valor." }, { cuenta: "IVA por pagar", retro: "El IVA ya se anotó con la compra, y el descuento no lo toca. El pago no lo cambia." }] },
     ],
   },
   {
