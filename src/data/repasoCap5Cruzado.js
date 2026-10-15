@@ -46,6 +46,14 @@ export const INTERFAZ_R5_1 = {
   leyendaCajas: "Cada caja = 10 u",
   unidadesACosto: (u, c) => `${u} u a ${pesos(c)}`,
   nDeM: (n, m) => `${n} de ${m}`,
+  /* v1.3 · autodiagnóstico (Kamogawa): la pista se pide y la cuenta se ve. */
+  verPista: "Ver pista",
+  marcaPista: "PISTA",
+  noEntra: "no entra",
+  marcaCuenta: "LA CUENTA",
+  tenias: (u, total) => `Tenías ${u} u por ${pesos(total)}`,
+  cadaUna: (total, u, promedio) => `Cada una: ${pesos(total)} ÷ ${u} = ${promedio}`,
+  quedan: (u, promedio, valor) => `Quedan ${u} u × ${promedio} = ${pesos(valor)}`,
 };
 
 /*
@@ -86,20 +94,25 @@ const asiento = (debe, haber) => ({ debe, haber });
 /* ═══════════ LOS DATOS DE LAS PANTALLAS 4 Y 5 ═══════════ */
 
 /* Pantalla 4: en el orden del estado de resultados (Itagaki, confirmado por Kamogawa). */
+/*
+ * `signo` dice cómo entra cada dato al costo (v1.3): «+» suma, «−» resta y
+ * null no entra. Solo se ve después de responder; antes, apartarlos
+ * regalaría la respuesta. La prueba saca 3.400 de aquí.
+ */
 const DATOS_C8 = [
-  { id: "ventas", etiqueta: "Ventas", valor: 11400 },
-  { id: "devoluciones-ventas", etiqueta: "Devoluciones de ventas", valor: 1000 },
-  { id: "inventario-inicial", etiqueta: "Inventario inicial", valor: 500 },
-  { id: "compras", etiqueta: "Compras", valor: 4000 },
-  { id: "devoluciones-compras", etiqueta: "Devoluciones de compras", valor: 300 },
-  { id: "inventario-final", etiqueta: "Inventario final", valor: 800 },
+  { id: "ventas", etiqueta: "Ventas", valor: 11400, signo: null },
+  { id: "devoluciones-ventas", etiqueta: "Devoluciones de ventas", valor: 1000, signo: null },
+  { id: "inventario-inicial", etiqueta: "Inventario inicial", valor: 500, signo: "+" },
+  { id: "compras", etiqueta: "Compras", valor: 4000, signo: "+" },
+  { id: "devoluciones-compras", etiqueta: "Devoluciones de compras", valor: 300, signo: "−" },
+  { id: "inventario-final", etiqueta: "Inventario final", valor: 800, signo: "−" },
 ];
 
 /* Pantalla 5: el inventario inicial primero, como ocurre en el tiempo (Miyata). */
 const LOTES_C9 = [
-  { marca: "LOTE 1 · Al inicio", unidades: 70, costo: 18 },
-  { marca: "LOTE 2 · Primera compra", unidades: 100, costo: 20 },
-  { marca: "LOTE 3 · Segunda compra", unidades: 80, costo: 25 },
+  { marca: "Lote 1 · Al inicio", unidades: 70, costo: 18 },
+  { marca: "Lote 2 · Primera compra", unidades: 100, costo: 20 },
+  { marca: "Lote 3 · Segunda compra", unidades: 80, costo: 25 },
 ];
 const VENDIDAS_C9 = 225;
 
@@ -211,6 +224,29 @@ export const PANTALLAS_R5_1 = [
 /* ═══════════ LA LÓGICA, SIN REACT ═══════════ */
 
 export const TOTAL_R5_1 = PANTALLAS_R5_1.length;
+
+/* El rótulo de la fila final de la pantalla 4: la cuenta que se pidió. */
+export const RESULTADO_C8 = CMV;
+
+/* Pesos con dos decimales y coma: 21,04 → «$21,04». */
+export function pesosConCentavos(valor) {
+  const centavos = Math.round(valor * 100);
+  return `${pesos(Math.trunc(centavos / 100))},${String(centavos % 100).padStart(2, "0")}`;
+}
+
+/* La cuenta de la pantalla 4, desde los signos de los datos. */
+export function cuentaDeC8(pantalla) {
+  return pantalla.datos.reduce((t, d) => t + (d.signo === "+" ? d.valor : d.signo === "−" ? -d.valor : 0), 0);
+}
+
+/* La cuenta de la pantalla 5, desde los lotes: lo que se tuvo, el promedio y lo que queda. */
+export function cuentaDeC9(pantalla) {
+  const unidades = pantalla.lotes.reduce((t, l) => t + l.unidades, 0);
+  const total = pantalla.lotes.reduce((t, l) => t + l.unidades * l.costo, 0);
+  const quedan = unidades - pantalla.vendidas;
+  const promedio = total / unidades;
+  return { unidades, total, promedio, quedan, valor: Math.round(quedan * promedio) };
+}
 
 /* El texto de una opción, como lo lee quien no ve la pantalla. */
 export function textoDeOpcion(pantalla, opcion) {
