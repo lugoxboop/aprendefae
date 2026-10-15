@@ -97,14 +97,14 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
   assert.equal(ICONO_POR_ACTIVIDAD["ciclo-completo"], undefined, "el Ciclo Completo no lleva ícono");
   assert.ok(!Object.keys(ICONO_POR_ACTIVIDAD).some((id) => /t1-3\b/.test(id)));
   assert.equal(new Set(Object.values(ICONO_POR_ACTIVIDAD)).size, Object.keys(ICONO_POR_ACTIVIDAD).length, "un ícono repetido");
-  /* Las 28 de Hacer de Contabilidad con dibujo (sin el desafío) tienen su ícono, y son 28 archivos. */
+  /* Las 35 de Hacer de Contabilidad con dibujo (sin el desafío) tienen su ícono, y son 35 archivos. */
   const conDesafio = new Set(SUBJECTS.contabilidad.topics.flatMap((t) => (t.actividades ?? []).filter((x) => x.clasificacion?.desafio).map((x) => x.id)));
   /* Actividades nuevas que todavía esperan su dibujo de Xeno: el camino las pinta sin ícono. */
-  const SIN_ICONO_TODAVIA = new Set(["b5-t5-a1", "b5-t5-a2", "b5-t6-a1", "b5-t6-a2", "b5-t6-a3", "t7-2-debe-o-haber", "t7-2-dos-asientos", "t7-2-llena-el-kardex", "t7-2-periodico-o-permanente", "t7-2-flete-y-devolucion", "t7-3-descuento-en-factura", "t7-3-cadena-de-descuentos", "t7-3-comercial-o-condicionado", "t7-3-pago-a-tiempo", "t7-3-ajuste-por-conteo", "t7-3-que-entra-al-costo", "t7-3-costo-o-vnr"]);
+  const SIN_ICONO_TODAVIA = new Set(["b5-t5-a1", "b5-t5-a2", "b5-t6-a1", "b5-t6-a2", "b5-t6-a3", "t7-2-debe-o-haber", "t7-2-dos-asientos", "t7-2-llena-el-kardex", "t7-2-periodico-o-permanente", "t7-2-flete-y-devolucion"]);
   const esperadas = [...hacer].filter((id) => !conDesafio.has(id) && !SIN_ICONO_TODAVIA.has(id));
-  assert.equal(esperadas.length, 28);
+  assert.equal(esperadas.length, 35);
   assert.deepEqual(Object.keys(ICONO_POR_ACTIVIDAD).sort(), esperadas.sort(), "falta o sobra un ícono");
-  assert.equal(ARCHIVOS.length, 28);
+  assert.equal(ARCHIVOS.length, 35);
   /* «¿Dónde se Rompió?» es la T1-8: su archivo se llama así. */
   assert.ok(ARCHIVOS.includes("conta-t1-8-donde-se-rompio.svg"));
   assert.ok(!ARCHIVOS.some((f) => f.startsWith("conta-t1-3")));

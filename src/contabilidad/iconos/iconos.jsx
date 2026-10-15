@@ -27,6 +27,13 @@ import t714 from "./conta-t7-1-4-cierra-el-mes.svg?raw";
 import t715 from "./conta-t7-1-5-costo-o-gasto.svg?raw";
 import t716 from "./conta-t7-1-6-la-devolucion-en-dos-libros.svg?raw";
 import t717 from "./conta-t7-1-7-que-control-falta.svg?raw";
+import t731 from "./conta-t7-3-1-descuento-en-la-factura.svg?raw";
+import t732 from "./conta-t7-3-2-la-cadena-de-descuentos.svg?raw";
+import t733 from "./conta-t7-3-3-comercial-o-condicionado.svg?raw";
+import t734 from "./conta-t7-3-4-pago-a-tiempo.svg?raw";
+import t735 from "./conta-t7-3-5-ajuste-por-conteo.svg?raw";
+import t736 from "./conta-t7-3-6-entra-al-costo.svg?raw";
+import t737 from "./conta-t7-3-7-costo-o-valor-neto-realizable.svg?raw";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -104,3 +111,10 @@ export const CierraElMes = icono("CierraElMes", t714);
 export const CostoOGasto = icono("CostoOGasto", t715);
 export const LaDevolucionEnDosLibros = icono("LaDevolucionEnDosLibros", t716);
 export const QueControlFalta = icono("QueControlFalta", t717);
+export const DescuentoEnLaFactura = icono("DescuentoEnLaFactura", t731);
+export const LaCadenaDeDescuentos = icono("LaCadenaDeDescuentos", t732);
+export const ComercialOCondicionado = icono("ComercialOCondicionado", t733);
+export const PagoATiempo = icono("PagoATiempo", t734);
+export const AjustePorConteo = icono("AjustePorConteo", t735);
+export const EntraAlCosto = icono("EntraAlCosto", t736);
+export const CostoOValorNetoRealizable = icono("CostoOValorNetoRealizable", t737);

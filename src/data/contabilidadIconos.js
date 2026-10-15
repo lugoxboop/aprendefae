@@ -43,6 +43,14 @@ export const ICONO_POR_ACTIVIDAD = {
   "t7-1-costo-o-gasto": I.CostoOGasto,
   "t7-1-devolucion-dos-libros": I.LaDevolucionEnDosLibros,
   "t7-1-que-control-falta": I.QueControlFalta,
+  /* Tema 7 · Inventarios III */
+  "t7-3-descuento-en-factura": I.DescuentoEnLaFactura,
+  "t7-3-cadena-de-descuentos": I.LaCadenaDeDescuentos,
+  "t7-3-comercial-o-condicionado": I.ComercialOCondicionado,
+  "t7-3-pago-a-tiempo": I.PagoATiempo,
+  "t7-3-ajuste-por-conteo": I.AjustePorConteo,
+  "t7-3-que-entra-al-costo": I.EntraAlCosto,
+  "t7-3-costo-o-vnr": I.CostoOValorNetoRealizable,
 };
 
 /** Los nodos del camino con su ícono, si lo tienen. */
