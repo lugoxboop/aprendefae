@@ -238,6 +238,62 @@ sin ser un bloqueo. Si algo tuyo espera, sigues por la pieza siguiente.
 
 ---
 
+## La prueba de guardia: cómo se entrega un término de una célula a otra
+
+**Es de la Célula B, y es la mejor pieza de coordinación que ha producido este
+montaje.** Se escribe aquí para que las cinco la usen.
+
+**El problema.** Un término solo puede estar definido en un sitio. Pero la
+célula que lo necesita hoy no siempre es la que va a ser su dueña mañana: T6
+necesitaba «nota débito» mucho antes de que existiera T4, que es el tema al
+que de verdad pertenece. Las salidas malas son dos: definirlo dos veces, y que
+un estudiante lea dos definiciones distintas del mismo término; o no definirlo
+y dejar un hueco.
+
+**Lo que hizo la Célula B.** Puso una glosa provisional en su tema **y** una
+prueba que se pone roja el día que otro tema defina ese término:
+
+```
+src/contabilidad/__tests__/b5-t6-glosa-nota-debito.test.mjs
+★★★ GUARDIA: ningún tema fuera de T6 define «nota débito»
+```
+
+El 15 de octubre de 2026 la Célula D publicó A4 de T4, que define «nota
+débito», y la guardia saltó. Exactamente el día que tenía que saltar.
+
+**Lo que la hace buena de verdad no es la prueba: es el mensaje de fallo.**
+Lleva dentro las instrucciones de qué hacer cuando salte, y a quién le toca:
+
+```
+══ OTRO TEMA YA DEFINE «NOTA DÉBITO» ══
+Qué hacer (Célula B):
+  1. Reemplazar la glosa provisional por la definición publicada, o quitarla
+     y remitir a ese tema.
+  2. Pasar el cambio por auditoría: es contenido publicado.
+  3. No debilitar ni borrar esta prueba: cuando la glosa ya no exista, se
+     retira con ella, en el mismo PR.
+```
+
+Quien se encuentra ese rojo —que puede ser otra célula, meses después— no
+tiene que entender el contexto ni preguntar a nadie: lo lee.
+
+**Y la otra mitad: la Célula D no tocó esa prueba.** Tenía una prueba ajena en
+rojo bloqueándole la entrega y la dejó en paz, explicó por qué en el PR y
+esperó. Si la hubiera aflojado, nadie se habría enterado hasta que un
+estudiante leyera las dos definiciones.
+
+**La regla, para las cinco:**
+
+- Si necesitas un término que pertenece a un tema que todavía no existe,
+  defínelo provisionalmente **y escribe la guardia**.
+- La guardia lleva las instrucciones dentro del mensaje de fallo, nombrando a
+  la célula a la que le tocará actuar.
+- La guardia se retira en el mismo PR que retira la glosa, nunca antes.
+- **Una prueba ajena en rojo no se toca.** Se reporta y se sigue por otra
+  pieza. Aflojarla es la única manera de que este mecanismo falle.
+
+---
+
 ## Las migraciones se aplican solas, y quién es la mirada ahora
 
 **Cambió el 15 de octubre de 2026.** Hasta esa mañana cada migración la pegaba
