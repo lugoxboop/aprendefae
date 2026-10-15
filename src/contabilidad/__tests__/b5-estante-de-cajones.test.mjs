@@ -5,8 +5,8 @@ import { JSDOM, VirtualConsole } from "jsdom";
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * EL ESTANTE DE CAJONES (hoja 3 de Mai, calidad) — en las tres de fichas de
- * la célula (ClasificaDosNiveles): se prueba con b5-t6-a7 y se comprueba la
- * forma en b5-t5-a1 y b5-t6-a1.
+ * la célula (ClasificaDosNiveles): se prueba con b5-t6-a1 y se comprueba la
+ * forma en b5-t5-a1. (Se probaba con b5-t6-a7, que se retiró en el lote 4.)
  *
  *   · un cajón por respuesta final, con la forma del árbol: el suelto y el
  *     grupo de dos bajo su tapa; los nombres, los de las pestañas;
@@ -37,22 +37,21 @@ const { createRoot } = await import("react-dom/client");
 const act = React.act;
 const h = React.createElement;
 
-const { default: QueMetodoYCuando } = await import("../../components/mecanicas/libros/tema6/QueMetodoYCuando.jsx");
+const { default: ClientesOOtra } = await import("../../components/mecanicas/libros/tema6/ClientesOOtra.jsx");
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
-const L = await import("../t6Act7.js");
-const D = await import("../../data/contabilidadT6Act7.js");
+const D = await import("../../data/contabilidadT6Act1.js");
 const { FAE } = await import("../../theme.js");
 
-const ficha = (id) => D.FICHAS_T6_ACT7.find((f) => f.id === id);
-const IDS = ["mc-01", "mc-02", "mc-03", "mc-04", "mc-05", "mc-06", "mc-07", "mc-08", "mc-09", "mc-10"];
+const ficha = (id) => D.FICHAS_T6_ACT1.find((f) => f.id === id);
+const IDS = D.FICHAS_T6_ACT1.map((f) => f.id);
 
 const montar = async (ids, onCompletar = () => {}) => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
-  const items = ids.map((id) => (id === D.EJEMPLO_T6_ACT7.id ? D.EJEMPLO_T6_ACT7 : ficha(id)));
+  const items = ids.map(ficha);
   await act(async () => {
-    raiz.render(h(QueMetodoYCuando, { Marco: MarcoLibros, rotulo: "PRUEBA", titulo: "Prueba", acento: FAE.ambar, onCompletar, items }));
+    raiz.render(h(ClientesOOtra, { Marco: MarcoLibros, rotulo: "PRUEBA", titulo: "Prueba", acento: FAE.ambar, onCompletar, items }));
   });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
@@ -65,9 +64,9 @@ const devolucion = (caja) => {
   if (!p) return null;
   return [...p.childNodes].filter((n) => !(n.classList?.contains("fae-jg-oculto"))).map((n) => n.textContent).join("");
 };
-const marcar = async (caja, metodo, momento = null) => {
-  if (pestana(caja, metodo).dataset.elegido !== "si") await tocar(pestana(caja, metodo));
-  if (momento) await tocar(opcion(caja, momento));
+const marcar = async (caja, cuenta, lado = null) => {
+  if (pestana(caja, cuenta).dataset.elegido !== "si") await tocar(pestana(caja, cuenta));
+  if (lado) await tocar(opcion(caja, lado));
   await tocar(botonColocar(caja));
 };
 /* Sin el emoji y su espacio: así va en el paquete. */
@@ -75,14 +74,13 @@ const sinEmoji = (t) => t.replace(/^(✅|❌) /, "");
 const E = await import("../../components/mecanicas/libros/b5/EstanteDeCajones.jsx");
 const { CONFIG_T5_ACT1 } = await import("../../components/mecanicas/libros/tema5/QueRentaDa.jsx");
 const { CONFIG_T6_ACT1 } = await import("../../components/mecanicas/libros/tema6/ClientesOOtra.jsx");
-const { CONFIG_T6_ACT7 } = await import("../../components/mecanicas/libros/tema6/QueMetodoYCuando.jsx");
 const espera = () => act(async () => { await new Promise((r) => setTimeout(r, 0)); });
 const cajon = (caja, clave) => caja.querySelector(`[data-cajon="${clave}"]`);
 const cuantas = (caja) => Object.fromEntries([...caja.querySelectorAll("[data-cajon]")].map((c) => [c.dataset.cajon, Number(c.querySelector("[data-numero]").textContent)]));
 const encendido = (el) => el.style.border.startsWith("2px");
 
-test("★★★ la forma del árbol: el cajón suelto y, bajo la tapa, los dos del segundo nivel, con los nombres de las pestañas (las tres actividades)", async () => {
-  for (const config of [CONFIG_T5_ACT1, CONFIG_T6_ACT1, CONFIG_T6_ACT7]) {
+test("★★★ la forma del árbol: el cajón suelto y, bajo la tapa, los dos del segundo nivel, con los nombres de las pestañas (las dos actividades)", async () => {
+  for (const config of [CONFIG_T5_ACT1, CONFIG_T6_ACT1]) {
     const suelta = config.nivel1.find((x) => x.id !== config.abre);
     const grupo = config.nivel1.find((x) => x.id === config.abre);
     const claves = [suelta.id, ...config.nivel2.map((o) => E.claveDe(grupo.id, o.id))];
@@ -99,60 +97,60 @@ test("★★★ la forma del árbol: el cajón suelto y, bajo la tapa, los dos d
   const estante = caja.querySelector("[data-estante]");
   assert.equal(estante.getAttribute("aria-label"), "Fichas colocadas");
   assert.ok(estante.compareDocumentPosition(caja.querySelector("[data-ficha]")) & 4, "el estante, entre el contador y la ficha");
-  assert.equal(caja.querySelector(`[data-tapa="${D.PROVISIONES}"]`).textContent, "Provisiones");
-  assert.deepEqual([...estante.querySelectorAll("[data-cajon] > span:first-child")].map((s) => s.textContent), ["Anulación directa", "Al cierre", "Al castigar"]);
+  assert.equal(caja.querySelector(`[data-tapa="${D.CLIENTES}"]`).textContent, "Clientes");
+  assert.deepEqual([...estante.querySelectorAll("[data-cajon] > span:first-child")].map((s) => s.textContent), ["Otra cuenta por cobrar", "Se debita", "Se acredita"]);
   desmontar();
 });
 
 test("★★★ lo elegido se ilumina; al acertar, la lámina entra a su cajón; el primer fallo no coloca nada y el segundo la lleva al cajón correcto", async () => {
-  /* mc-05: provisiones, al cierre. */
-  const { caja, desmontar } = await montar(["mc-05", "mc-01"]);
-  await tocar(pestana(caja, D.PROVISIONES));
-  assert.ok(encendido(caja.querySelector(`[data-tapa="${D.PROVISIONES}"]`)), "la tapa, encendida");
-  await tocar(opcion(caja, D.CASTIGAR));
-  assert.ok(encendido(cajon(caja, `${D.PROVISIONES}/${D.CASTIGAR}`)));
+  /* venta-servicio: Clientes, se debita. */
+  const { caja, desmontar } = await montar(["venta-servicio", "socio"]);
+  await tocar(pestana(caja, D.CLIENTES));
+  assert.ok(encendido(caja.querySelector(`[data-tapa="${D.CLIENTES}"]`)), "la tapa, encendida");
+  await tocar(opcion(caja, D.ACREDITA));
+  assert.ok(encendido(cajon(caja, `${D.CLIENTES}/${D.ACREDITA}`)));
   await tocar(botonColocar(caja));
   await espera();
   /* Primer fallo: nada colocado y el brillo se queda. */
   assert.deepEqual(Object.values(cuantas(caja)), [0, 0, 0]);
-  assert.ok(encendido(cajon(caja, `${D.PROVISIONES}/${D.CASTIGAR}`)), "el reintento conserva lo elegido");
+  assert.ok(encendido(cajon(caja, `${D.CLIENTES}/${D.ACREDITA}`)), "el reintento conserva lo elegido");
   /* Segundo fallo: la lámina va a su cajón correcto, no al elegido. */
-  await tocar(pestana(caja, D.DIRECTA));
+  await tocar(pestana(caja, D.OTRA));
   await tocar(botonColocar(caja));
   await espera();
-  assert.deepEqual(cuantas(caja), { [D.DIRECTA]: 0, [`${D.PROVISIONES}/${D.CIERRE}`]: 1, [`${D.PROVISIONES}/${D.CASTIGAR}`]: 0 });
+  assert.deepEqual(cuantas(caja), { [D.OTRA]: 0, [`${D.CLIENTES}/${D.DEBITA}`]: 1, [`${D.CLIENTES}/${D.ACREDITA}`]: 0 });
   /* Shoko: la lámina que llega tras el segundo fallo se ve distinta, sin color: contorno punteado y sin relleno. */
-  const tras = cajon(caja, `${D.PROVISIONES}/${D.CIERRE}`).querySelectorAll("[data-lamina]");
+  const tras = cajon(caja, `${D.CLIENTES}/${D.DEBITA}`).querySelectorAll("[data-lamina]");
   assert.equal(tras.length, 1);
   assert.equal(tras[0].dataset.lamina, "segundo");
   assert.match(tras[0].style.border, /dashed/);
   assert.equal(tras[0].style.background, "transparent");
-  assert.equal(cajon(caja, `${D.PROVISIONES}/${D.CIERRE}`).getAttribute("aria-label"), "Provisiones, al cierre: 1 ficha, 1 tras el segundo intento");
-  assert.equal(caja.querySelector("[data-anuncio-estante]").textContent, "Provisiones, al cierre: 1 ficha, 1 tras el segundo intento");
-  /* Siguiente ficha: el brillo se apaga y lo colocado se queda. mc-01 es de anulación directa: se acierta. */
+  assert.equal(cajon(caja, `${D.CLIENTES}/${D.DEBITA}`).getAttribute("aria-label"), "Clientes, se debita: 1 ficha, 1 tras el segundo intento");
+  assert.equal(caja.querySelector("[data-anuncio-estante]").textContent, "Clientes, se debita: 1 ficha, 1 tras el segundo intento");
+  /* Siguiente ficha: el brillo se apaga y lo colocado se queda. «socio» es otra cuenta por cobrar: se acierta. */
   await tocar(caja.querySelector("[data-boton-avanzar] button"));
   assert.ok(![...caja.querySelectorAll("[data-cajon]")].some(encendido), "brillo apagado");
-  await marcar(caja, D.DIRECTA);
+  await marcar(caja, D.OTRA);
   await espera();
-  assert.deepEqual(cuantas(caja), { [D.DIRECTA]: 1, [`${D.PROVISIONES}/${D.CIERRE}`]: 1, [`${D.PROVISIONES}/${D.CASTIGAR}`]: 0 });
+  assert.deepEqual(cuantas(caja), { [D.OTRA]: 1, [`${D.CLIENTES}/${D.DEBITA}`]: 1, [`${D.CLIENTES}/${D.ACREDITA}`]: 0 });
   /* La acertada: lámina llena y, sin ninguna tras el segundo intento, la lectura no añade nada. */
-  const llena = cajon(caja, D.DIRECTA).querySelector("[data-lamina]");
+  const llena = cajon(caja, D.OTRA).querySelector("[data-lamina]");
   assert.equal(llena.dataset.lamina, "bien");
   assert.doesNotMatch(llena.style.border, /dashed/);
-  assert.equal(cajon(caja, D.DIRECTA).getAttribute("aria-label"), "Anulación directa: 1 ficha");
+  assert.equal(cajon(caja, D.OTRA).getAttribute("aria-label"), "Otra cuenta por cobrar: 1 ficha");
   desmontar();
 });
 
 test("★★ la pila muestra cuatro láminas como máximo; el número sigue contando", async () => {
-  const directas = D.FICHAS_T6_ACT7.filter((f) => f.metodo === D.DIRECTA).map((f) => f.id);
+  const directas = D.FICHAS_T6_ACT1.filter((f) => f.cuenta === D.OTRA).map((f) => f.id);
   assert.equal(directas.length, 4);
-  const { caja, desmontar } = await montar([...directas, "mc-05"]);
+  const { caja, desmontar } = await montar([...directas, "venta-servicio"]);
   for (let k = 0; k < 4; k++) {
-    await marcar(caja, D.DIRECTA);
+    await marcar(caja, D.OTRA);
     await espera();
     await tocar(caja.querySelector("[data-boton-avanzar] button"));
   }
-  const c = cajon(caja, D.DIRECTA);
+  const c = cajon(caja, D.OTRA);
   assert.equal(c.querySelectorAll("[data-lamina]").length, 4);
   assert.equal(c.querySelector("[data-numero]").textContent, "4");
   desmontar();

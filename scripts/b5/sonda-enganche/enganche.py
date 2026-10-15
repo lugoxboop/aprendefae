@@ -4,7 +4,7 @@ SONDA DE ENGANCHE · B1-B5 · CÉLULA B (copia de la de Shibukawa, scripts/t4/so
 Uso:  node --import ./scripts/cargador-jsx.mjs scripts/b5/sonda-enganche/enganche_clave.mjs > clave.json
       python3 enganche.py [<dir-de-la-sonda>] <puerto-vite> <salida.json> <pieza> [<pieza> ...] --clave=clave.json [--anchos=320,375]
       pieza = T5A1 | T5A3 | T6A1 ... T6A5   (Aprender: la pieza k de la página del tema)
-            | b5-t5-a1 | b5-t5-a2 | b5-t6-a1 ... b5-t6-a7   (Hacer)
+            | b5-t5-a1 | b5-t5-a2 | b5-t6-a1 ... b5-t6-a6   (Hacer; b5-t6-a7 se retiró en el lote 4)
 Ver README.md.
 
 Lo que cambia frente a la de D es el recorrido, no la medición ni la barra:
@@ -12,7 +12,7 @@ Lo que cambia frente a la de D es el recorrido, no la medición ni la barra:
    paso y, en la parada, se elige la opción buena; capa 3 abre cada caja y elige la buena; capa 4 prueba
    las frases en orden. B3 cuenta por capa: una capa «tiene acción» si una elección cambia su figura.
  · Hacer: la mesa del diario (a2, a3, t5-a2), la elección y las casillas (a4, a5, a6) y el estante de
-   cajones (t5-a1, t6-a1, t6-a7). Cada tarjeta, una vez bien y otra mal con la misma semilla.
+   cajones (t5-a1, t6-a1). Cada tarjeta, una vez bien y otra mal con la misma semilla.
  · La figura de B no es un <figure>: son la escena, la cuenta T, el tablero, la mesa, el asiento mínimo,
    la cuenta que se llena, los cajones del tiempo, el estante con cajones y el registro (FIG, abajo).
 Mide sin barra de desplazamiento, como un teléfono, a cada ancho de --anchos (por defecto 320 y 375).
@@ -57,8 +57,7 @@ T5H, T6H = "/#/activos-financieros/hacer", "/#/cuentas-por-cobrar/hacer"
 HACER = {"b5-t5-a1": (T5H, "¿Qué renta da este título?"), "b5-t5-a2": (T5H, "El cierre completo de Santa Pacha"),
          "b5-t6-a1": (T6H, "¿Clientes o otra cuenta por cobrar?"), "b5-t6-a2": (T6H, "La provisión de El Torito"),
          "b5-t6-a3": (T6H, "Cuando la deuda castigada vuelve"), "b5-t6-a4": (T6H, "¿Qué se debita?"),
-         "b5-t6-a5": (T6H, "La cuenta de la provisión"), "b5-t6-a6": (T6H, "Provisión por edades"),
-         "b5-t6-a7": (T6H, "¿Qué método y cuándo?")}
+         "b5-t6-a5": (T6H, "La cuenta de la provisión"), "b5-t6-a6": (T6H, "Provisión por edades")}
 
 def abrir(b, ruta, sem=7, ancho=320):
     ctx, pg, errs = pagina(b, ancho, False)

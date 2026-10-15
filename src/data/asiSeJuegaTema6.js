@@ -4,7 +4,6 @@ import { T6_ACT1, REGLAS_T6_ACT1, FICHAS_T6_ACT1, CUENTAS, LADOS, CLIENTES as A_
 import { T6_ACT4, REGLAS_T6_ACT4, EJEMPLO_T6_ACT4 } from "./contabilidadT6Act4.js";
 import { T6_ACT5, REGLAS_T6_ACT5, CASILLAS_T6_ACT5 } from "./contabilidadT6Act5.js";
 import { T6_ACT6, REGLAS_T6_ACT6, GRUPOS_T6_ACT6 } from "./contabilidadT6Act6.js";
-import { T6_ACT7, REGLAS_T6_ACT7, EJEMPLO_T6_ACT7, METODOS, MOMENTOS, PROVISIONES, CIERRE, BOTON_T6_ACT7 } from "./contabilidadT6Act7.js";
 import { pegarPorcentaje } from "../contabilidad/t6Pieza5.js";
 
 /*
@@ -83,7 +82,7 @@ const ASI_CLIENTES_O_OTRA = {
 };
 
 /*
- * ═══════════ LOS CUATRO HACER NUEVOS (b5-t6-a4 a b5-t6-a7) ═══════════
+ * ═══════════ LOS HACER NUEVOS (b5-t6-a4 a b5-t6-a6) ═══════════
  *
  * Cada «Así se juega» lleva las tres reglas aprobadas y un ejemplo resuelto.
  * Los ejemplos se arman SOLO con textos que ya existen: el tutorial de Futaba,
@@ -93,7 +92,7 @@ const ASI_CLIENTES_O_OTRA = {
  *   · a5: el punto de partida de 2007; la mano toca el saldo de la provisión
  *     ($148.800), entre dos cifras de la misma historia.
  *   · a6: la deuda de nueve meses del tutorial; la mano toca su grupo.
- *   · a7: la ficha del tutorial, fuera del banco, como b5-t6-a1.
+ * (b5-t6-a7 se retiró en el lote 4, y con él su «Así se juega».)
  */
 const unToque = (en) => ({ duracion: 7500, toques: [{ ms: 2500, en }] });
 
@@ -147,26 +146,6 @@ const ASI_PROVISION_POR_EDADES = {
   cuadros: { gesto: 1 },
 };
 
-/* a7: como b5-t6-a1. */
-const rotuloA7 = (lista, id) => lista.find((x) => x.id === id).rotulo;
-const ASI_QUE_METODO = {
-  actividadId: T6_ACT7.id,
-  titulo: T6_ACT7.nombre,
-  consigna: T6_ACT7.consigna,
-  pasos: REGLAS_T6_ACT7,
-  alt: `la ficha «${EJEMPLO_T6_ACT7.texto}» va en «${rotuloA7(METODOS, PROVISIONES)}» y, dentro, en «${rotuloA7(MOMENTOS, CIERRE)}».`,
-  demo: { items: [EJEMPLO_T6_ACT7] },
-  guion: {
-    duracion: 7500,
-    toques: [
-      { ms: 2000, en: `[data-nivel1="${PROVISIONES}"]` },
-      { ms: 3500, en: `[data-nivel2="${CIERRE}"]` },
-      { ms: 5000, texto: BOTON_T6_ACT7.colocar },
-    ],
-  },
-  cuadros: { gesto: 2 },
-};
-
 export const ASI_SE_JUEGA_TEMA6 = {
   [ASI_PROVISION.actividadId]: ASI_PROVISION,
   [ASI_DEUDA_QUE_VUELVE.actividadId]: ASI_DEUDA_QUE_VUELVE,
@@ -174,5 +153,4 @@ export const ASI_SE_JUEGA_TEMA6 = {
   [ASI_QUE_SE_DEBITA.actividadId]: ASI_QUE_SE_DEBITA,
   [ASI_CUENTA_DE_LA_PROVISION.actividadId]: ASI_CUENTA_DE_LA_PROVISION,
   [ASI_PROVISION_POR_EDADES.actividadId]: ASI_PROVISION_POR_EDADES,
-  [ASI_QUE_METODO.actividadId]: ASI_QUE_METODO,
 };

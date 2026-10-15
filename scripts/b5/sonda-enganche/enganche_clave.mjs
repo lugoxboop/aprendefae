@@ -8,7 +8,7 @@
  * paradas de la capa 2 de los Aprender. La equivocada se comete con el mismo gesto que la buena:
  *   · mesa (b5-t5-a2, b5-t6-a2, a3): las mismas cuentas en sus lados, con el primer valor mal;
  *   · casillas y elección (b5-t6-a4, a5, a6): otra opción de la misma tarjeta;
- *   · clasificar en dos niveles (b5-t5-a1, b5-t6-a1, a7): el otro primer nivel, dos veces.
+ *   · clasificar en dos niveles (b5-t5-a1, b5-t6-a1): el otro primer nivel, dos veces. (b5-t6-a7 se retiró en el lote 4.)
  * Las fichas de clasificar salen de sortear: se juntan todas las que puede dar (cada id, su destino).
  */
 const C = async (p, k) => (await import(new URL(`../../../src/components/mecanicas/libros/${p}`, import.meta.url)))[k];
@@ -42,7 +42,7 @@ for (const [id, p, k] of [["b5-t6-a5", "tema6/LaCuentaDeLaProvision.jsx", "CONFI
 
 /* Clasificar en dos niveles: por ficha, su destino {n1, n2} y un primer nivel equivocado. */
 const barajar = (xs) => { const a = [...xs]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-for (const [id, p, k] of [["b5-t5-a1", "tema5/QueRentaDa.jsx", "CONFIG_T5_ACT1"], ["b5-t6-a1", "tema6/ClientesOOtra.jsx", "CONFIG_T6_ACT1"], ["b5-t6-a7", "tema6/QueMetodoYCuando.jsx", "CONFIG_T6_ACT7"]]) {
+for (const [id, p, k] of [["b5-t5-a1", "tema5/QueRentaDa.jsx", "CONFIG_T5_ACT1"], ["b5-t6-a1", "tema6/ClientesOOtra.jsx", "CONFIG_T6_ACT1"]]) {
   const cfg = await C(p, k);
   const fichas = new Map();
   for (let i = 0; i < 400; i++) for (const f of cfg.sortear(barajar)) fichas.set(f.id, f);

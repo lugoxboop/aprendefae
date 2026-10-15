@@ -4,7 +4,7 @@
  *
  *   node --import ./scripts/cargador-jsx.mjs scripts/b5/medir-b5-fichas.mjs
  *
- * En b5-t5-a1, b5-t6-a1 y b5-t6-a7, a 320×568 y 375×667, con y sin
+ * En b5-t5-a1 y b5-t6-a1 (b5-t6-a7 se retiró en el lote 4), a 320×568 y 375×667, con y sin
  * movimiento reducido, juega la tanda entera y en cada ficha comprueba:
  *
  *   · sin barra horizontal; ningún nombre de cajón fuera de su cajón;
@@ -53,7 +53,7 @@ function medir() {
   return { problemas, estante: estante.height, juego: boton.bottom - pulsos.top, lineas: [...document.querySelectorAll("[data-cajon] > span:first-child, [data-tapa]")].map((s) => `${s.textContent} ${Math.round(s.getBoundingClientRect().height / 15)}`) };
 }
 
-for (const juego of ["#t5a1", "#t6a1", "#t6a7"]) {
+for (const juego of ["#t5a1", "#t6a1"]) {
   for (const reducido of [false, true]) {
     for (const [ancho, alto] of [[320, 568], [375, 667]]) {
       const p = await navegador.newPage({ viewport: { width: ancho, height: alto }, reducedMotion: reducido ? "reduce" : "no-preference" });
