@@ -81,3 +81,45 @@ viewport fijo (ver herramientas.md), nunca leyendo el código. La extensión de
 Chrome dice que redimensionó la ventana y no lo hace: compruebe
 `window.innerWidth` antes de medir, o use marcos del ancho exacto dentro del
 propio sitio.
+
+## Lo que encontró la Célula E en su autodiagnóstico (15 de octubre)
+
+Repaso del capítulo 5: r5-1 «Repaso cruzado» y r5-2 «El Toro Negro», jugadas
+en la página y en el build local con Playwright a 320 y 375 px. Cada falla,
+con su causa y la regla que la evita.
+
+- **E1 · Contenido aprobado que no llegó a la pantalla.** Las seis pistas de
+  r5-1 estaban en el paquete y en los datos, y la vista no las pintaba.
+  *Causa:* las pruebas miraban los datos, no el DOM, y la lista de pruebas del
+  paquete no pedía «se ve». *Regla:* cada paquete pide una prueba de cobertura
+  de pantalla que juega cada estado (cada opción, la pista abierta) y falla si
+  un texto del estudiante no sale en el DOM en ninguno.
+- **E2 · Lo que cambia al responder pasaba fuera de la vista.** La cuenta de
+  las pantallas de cálculo transformaba los datos, que al responder quedan a
+  0 px de la vista (medido a 375×667 y 320×568): el foco baja a «Siguiente».
+  *Causa:* se diseñó en una captura de página entera, no en la ventana del
+  teléfono. *Regla:* lo que aparece o cambia al responder va entre lo que se
+  tocó y el botón de seguir, y se mide en el viewport, no en la captura.
+- **E3 · Acierto y error solo con el borde.** En el armador de asientos de
+  r5-2, el debe, el haber, el valor y el lado calificados decían bien o mal
+  solo con teal o coral; la pantalla vecina (a0) sí tenía palabras. *Causa:*
+  la regla D12 se aplicó pantalla por pantalla, no pieza por pieza.
+  *Regla:* toda pieza calificada lleva su palabra («Correcta», «No va aquí»).
+  La prueba: en blanco y negro, ¿se sabe cuál pieza falló?
+- **E4 · El estado elegido se perdía al calificar.** El botón del lado del
+  saldo perdía su relleno al revisar y los dos quedaban iguales salvo un
+  borde. *Regla:* la elección del estudiante conserva su forma (relleno)
+  después de calificarse; la calificación se suma, no la reemplaza.
+- **E5 · Una frase repetida en cada fila.** «Porcentaje que fija la empresa:
+  N %» siete veces; a 320 partía en tres renglones y la tabla medía 1.618 px.
+  *Regla:* lo que vale para todas las filas se dice una vez (en el hecho o la
+  cabecera); en la fila queda solo lo que cambia, mejor si es la cuenta que
+  hay que hacer («× 3 %»).
+- **E6 · Contenido escrito como marca.** Rótulos de lote a 10,5 px en
+  mayúsculas. *Regla:* 10,5 px en mayúsculas es solo para marcas de
+  interfaz («PREGUNTA 2 DE 6»); lo que el estudiante necesita leer va a 12 px
+  o más.
+- **E7 · Lo que el kit no mide: r5-1 es una cadena de selección.** Con la barra
+  B3 de este archivo, cuatro de sus seis pantallas son marcar una opción de
+  radio y no mueven nada. Cumple el kit y no cumple la barra. Va una v2 de
+  mecánica; mientras, sigue publicada con las correcciones de arriba.

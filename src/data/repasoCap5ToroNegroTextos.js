@@ -84,6 +84,15 @@ export const ROTULOS_R5_2 = {
   revisarAsiento: "Revisar asiento",
   revisarSaldo: "Revisar saldo",
   ladoDelSaldo: "LADO DEL SALDO",
+  /*
+   * v2.1 (autodiagnóstico): después de revisar, cada pieza dice con palabras
+   * si quedó bien. Antes solo lo decía el color del borde (D12).
+   */
+  veredicto: {
+    cuenta: { ok: "Correcta", mal: "No va aquí" },
+    valor: { ok: "Correcto", mal: "No es este valor" },
+    lado: { ok: "Lado correcto", mal: "No es este lado" },
+  },
   debito: "DÉBITO",
   credito: "CRÉDITO",
   eraEste: "ERA ESTE",
@@ -167,8 +176,14 @@ const CALCULO_A0 = {
 export const ROTULOS_A0 = {
   grupoYSaldo: "GRUPO Y SALDO",
   tuProvision: "TU PROVISIÓN",
-  /* La cifra y el «%» no se separan al partir el renglón (espacio de no separación). */
-  porcentaje: (p) => `Porcentaje que fija la empresa: ${p}\u00a0%`,
+  /*
+   * v2.1 (autodiagnóstico, Kamogawa): «Porcentaje que fija la empresa: N %»
+   * se repetía siete veces y a 320 partía en tres renglones por fila; la
+   * tabla medía 1.618 px. La frase ya está en el hecho; en cada fila queda la
+   * cuenta que hay que hacer: «× 3 %», junto al saldo. La cifra y el «%» no
+   * se separan (espacio de no separación).
+   */
+  porcentaje: (p) => `×\u00a0${p}\u00a0%`,
   marcador: "Provisión",
   total: "Provisión total",
   cifrasEnPesos: "CIFRAS EN PESOS",

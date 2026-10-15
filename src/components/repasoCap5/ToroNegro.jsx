@@ -31,10 +31,15 @@ export const cifra = (n) => pesos(Math.abs(n)).replace("$", "");
 const LECTOR = { acierto: "Correcto: ", error: "Incorrecto: " };
 
 const ESTADO_PIEZA = {
-  ok: { border: `2px solid ${C.teal}`, background: "rgba(42,157,143,0.14)" },
+  /*
+   * v2.1 · B4 de enganche.md: en Contabilidad el teal es DEBE (lo es en el
+   * libro de esta misma pantalla). El acierto va en neutro y lo dice la
+   * palabra de debajo («Correcta», «Correcto»), no el color.
+   */
+  ok: { border: `2px solid ${C.hecho}`, background: "rgba(203,220,242,0.10)" },
   mal: { border: `2px solid ${C.coral}`, background: "rgba(231,111,81,0.13)" },
-  /* El «revelada» de Opcion: borde teal translúcido, sin celebrarlo. */
-  revelada: { border: `1px solid ${C.teal}88`, background: C.fondo },
+  /* «ERA ESTE»: borde neutro discontinuo, sin celebrarlo y sin teal (B4). */
+  revelada: { border: `1.5px dashed ${C.hecho}`, background: C.fondo },
 };
 
 const CSS_R5_2 = `
@@ -253,6 +258,20 @@ function CampoValor({
   );
 }
 
+/*
+ * v2.1 · LA PALABRA DEBAJO DE CADA PIEZA. Después de revisar, el borde teal o
+ * coral iba solo: en blanco y negro no se sabía qué renglón estaba mal. Ahora
+ * cada pieza lleva su palabra, como las filas de a0 («Correcta», «Era …»).
+ */
+function Veredicto({ estado, textos }) {
+  if (estado !== "ok" && estado !== "mal") return null;
+  return (
+    <span data-veredicto={estado} style={{ display: "block", marginTop: "4px", textAlign: "right", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", fontWeight: 600, color: C.texto }}>
+      {textos[estado]}
+    </span>
+  );
+}
+
 /* ═══════════ EL ARMADOR DE ASIENTOS ═══════════ */
 
 function Hueco({ lado, cuenta, activo, estado, onTocar, huecoRef, soloLectura = false }) {
@@ -292,16 +311,19 @@ function Hueco({ lado, cuenta, activo, estado, onTocar, huecoRef, soloLectura = 
 function TarjetaAsiento({ debe, haber, valor, activo, estados = null, onTocar, onValor, refs, soloLectura = false, marca = null, idCampo }) {
   return (
     <div data-tarjeta-asiento={soloLectura ? "era-este" : "armador"} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? ESTADO_PIEZA.revelada : {}), ...(soloLectura ? { background: C.navy } : {}) }}>
-      {marca && <p data-era-este style={{ ...MARCA, color: C.teal, margin: "0 0 10px" }}>{marca}</p>}
+      {marca && <p data-era-este style={{ ...MARCA, color: C.texto, margin: "0 0 10px" }}>{marca}</p>}
       <p style={{ ...MARCA, margin: "0 0 4px" }}>{RT.debe}</p>
       <Hueco lado="debe" cuenta={debe} activo={activo === "debe"} estado={estados?.debe} onTocar={() => onTocar?.("debe")} huecoRef={refs?.debe} soloLectura={soloLectura} />
+      <Veredicto estado={estados?.debe} textos={RT.veredicto.cuenta} />
       <div style={{ marginTop: "12px", paddingLeft: "16px" }}>
         <p style={{ ...MARCA, margin: "0 0 4px" }}>{RT.haber}</p>
         <Hueco lado="haber" cuenta={haber} activo={activo === "haber"} estado={estados?.haber} onTocar={() => onTocar?.("haber")} huecoRef={refs?.haber} soloLectura={soloLectura} />
+        <Veredicto estado={estados?.haber} textos={RT.veredicto.cuenta} />
       </div>
       <div aria-hidden="true" style={{ height: "1px", background: "rgba(184,196,212,0.25)", margin: "16px 0" }} />
       <label htmlFor={idCampo} style={{ ...MARCA, display: "block", margin: "0 0 4px" }}>{RT.valor}</label>
       <CampoValor id={idCampo} valor={valor} onCambiar={onValor} estado={soloLectura ? "revelada" : estados?.valor} soloLectura={soloLectura} />
+      <Veredicto estado={soloLectura ? null : estados?.valor} textos={RT.veredicto.valor} />
     </div>
   );
 }
@@ -423,7 +445,15 @@ function PreguntaAsiento({ p, hoja, onRespondida, r, respuestas = {} }) {
 /* ═══════════ LA PANTALLA DE SALDO (pregunta 4) ═══════════ */
 
 function BotonLado({ lado, elegido, estado, onClick, soloLectura }) {
-  const visto = estado ? ESTADO_PIEZA[estado] : elegido ? { background: C.hecho, border: `1.5px solid ${C.hecho}` } : { background: C.fondo, border: `1.5px solid ${C.atenuado}` };
+  /*
+   * v2.1: el lado elegido sigue relleno después de revisar, y en «ERA ESTE» el
+   * lado correcto va relleno: relleno contra contorno es forma, no solo color.
+   * Antes, al revisar, el relleno se perdía y los dos lados quedaban iguales
+   * salvo el color de un borde.
+   */
+  const relleno = elegido || estado === "revelada";
+  const borde = estado ? ESTADO_PIEZA[estado].border : relleno ? `1.5px solid ${C.hecho}` : `1.5px solid ${C.atenuado}`;
+  const visto = { background: relleno ? C.hecho : C.fondo, border: borde };
   return (
     <button
       type="button"
@@ -434,7 +464,7 @@ function BotonLado({ lado, elegido, estado, onClick, soloLectura }) {
       onClick={onClick}
       style={{
         flex: 1, minWidth: 0, minHeight: "48px", borderRadius: "10px", cursor: soloLectura || estado ? "default" : "pointer",
-        fontFamily: INTER, fontSize: "15px", fontWeight: 600, color: elegido && !estado ? C.fondo : C.texto, ...visto,
+        fontFamily: INTER, fontSize: "15px", fontWeight: 600, color: relleno ? C.fondo : C.texto, ...visto,
       }}
     >
       {lado === "debito" ? RT.debito : RT.credito}
@@ -445,9 +475,10 @@ function BotonLado({ lado, elegido, estado, onClick, soloLectura }) {
 function TarjetaSaldo({ valor, lado, onValor, onLado, estados = null, soloLectura = false, marca = null, idCampo }) {
   return (
     <div data-tarjeta-saldo={soloLectura ? "era-este" : "respuesta"} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? { border: ESTADO_PIEZA.revelada.border } : {}) }}>
-      {marca && <p data-era-este style={{ ...MARCA, color: C.teal, margin: "0 0 10px" }}>{marca}</p>}
+      {marca && <p data-era-este style={{ ...MARCA, color: C.texto, margin: "0 0 10px" }}>{marca}</p>}
       <label htmlFor={idCampo} style={{ ...MARCA, display: "block", margin: "0 0 4px" }}>{RT.valor}</label>
       <CampoValor id={idCampo} valor={valor} onCambiar={onValor} estado={soloLectura ? "revelada" : estados?.valor} soloLectura={soloLectura} />
+      <Veredicto estado={soloLectura ? null : estados?.valor} textos={RT.veredicto.valor} />
       <p style={{ ...MARCA, margin: "12px 0 4px" }}>{RT.ladoDelSaldo}</p>
       <div role="group" aria-label={RT.ladoDelSaldo} style={{ display: "flex", gap: "8px" }}>
         {["debito", "credito"].map((l) => (
@@ -461,6 +492,8 @@ function TarjetaSaldo({ valor, lado, onValor, onLado, estados = null, soloLectur
           />
         ))}
       </div>
+      {/* Con 0 no se pide lado: si no eligió ninguno, no hay lado que calificar. */}
+      <Veredicto estado={soloLectura || !lado ? null : estados?.lado} textos={RT.veredicto.lado} />
     </div>
   );
 }
@@ -517,8 +550,10 @@ function PreguntaCalculo({ p, onRespondida, r, respuestas = {} }) {
             <div key={g.id} data-fila-grupo={g.id} style={{ display: "flex", alignItems: "center", gap: "8px", minHeight: "72px", padding: "6px 0", boxSizing: "border-box", borderTop: k ? DIVISORIA : "none" }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <span data-grupo style={{ display: "block", fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: C.texto }}>{g.grupo}</span>
-                <span data-saldo-grupo style={{ display: "block", fontFamily: INTER, fontSize: "15px", lineHeight: "20px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>{cifra(g.saldo)}</span>
-                <span data-porcentaje style={{ display: "block", fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: C.atenuado }}>{RA.porcentaje(g.porcentaje)}</span>
+                <span data-saldo-grupo style={{ display: "block", fontFamily: INTER, fontSize: "15px", lineHeight: "20px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>
+                  {cifra(g.saldo)}{" "}
+                  <span data-porcentaje style={{ whiteSpace: "nowrap", fontWeight: 600, color: C.atenuado }}>{RA.porcentaje(g.porcentaje)}</span>
+                </span>
               </div>
               <div style={{ width: "136px", flexShrink: 0 }}>
                 <CampoValor
@@ -650,7 +685,7 @@ function CasoEnTresTiempos({ filas }) {
                         key={x.id}
                         data-punto={x.ok ? "acierto" : "error"}
                         data-forma={x.ok ? "relleno" : "anillo"}
-                        style={{ width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box", ...(x.ok ? { background: C.teal } : { background: "transparent", border: `2px solid ${C.coral}` }) }}
+                        style={{ width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box", ...(x.ok ? { background: C.hecho } : { background: "transparent", border: `2px solid ${C.coral}` }) }}
                       />
                     ))}
                   </span>
