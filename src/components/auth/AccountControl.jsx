@@ -177,12 +177,32 @@ const CSS_CUENTA = `
    * se puede pulsar.
    */
   .fae-cabecera-titulo > * { flex-shrink: 0; }
+  /*
+   * DOS RENGLONES ANTES QUE PUNTOS SUSPENSIVOS.
+   *
+   * Esto truncaba a una línea, y a 320 px «Las cuentas, el debe y el haber»
+   * se leía «Las cuentas, el debe…» e «Ingresos, gastos y ajustes» quedaba a
+   * medias. El orden de Xeno de arriba —qué cede primero— sigue intacto: el
+   * título sigue siendo lo ÚLTIMO que cede. Lo que cambia es cómo cede: en
+   * vez de perder palabras, usa un segundo renglón.
+   *
+   * Tres células llegaron a esto por su cuenta y lo resolvieron cada una con
+   * estilos propios en su vista (T4, T6, T7). Tres rodeos para el mismo
+   * defecto: puesto aquí, los tres sobran, y las vistas que nadie ha tocado
+   * —«las cuentas» e «ingresos, gastos y ajustes»— dejan de cortar sin que
+   * nadie más tenga que enterarse.
+   *
+   * El tope de dos se queda: sin él, un título muy largo empujaría el resto
+   * de la pantalla hacia abajo, y la cabecera dejaría de ser una cabecera.
+   */
   .fae-cabecera-titulo > h1 {
     flex-shrink: 1;
     min-width: 0;
+    white-space: normal;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 
   .fae-gsi-ancho { display: none; }
