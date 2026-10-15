@@ -23,6 +23,8 @@ import QueRentaDa from "./mecanicas/libros/tema5/QueRentaDa.jsx";
 import { T5_ACT1 } from "../data/contabilidadT5Act1.js";
 import CierreConDiario from "./mecanicas/libros/tema5/LibroDiario.jsx";
 import { T5_ACT2 } from "../data/contabilidadT5Act2.js";
+import ControlInterno from "./mecanicas/libros/t7/ControlInterno.jsx";
+import { PIEZA_CUIDAR_LAS_INVERSIONES } from "../data/contabilidadT5_n2.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -40,7 +42,16 @@ import { T5_ACT2 } from "../data/contabilidadT5Act2.js";
 const MATERIA = "contabilidad";
 export const TEMA = "activos-financieros";
 
-export const PIEZAS = [{ numero: 1, pieza: PIEZA_DEL_EFECTIVO }, { numero: 2, pieza: PIEZA_TRES_MOMENTOS }];
+/*
+ * En el orden del tema (decisión de corte de T5, punto 6). Las de la Célula C
+ * traen `Pieza`, su propio componente; las de B se pintan con CuatroCapas y
+ * sus escenas, como siempre.
+ */
+export const PIEZAS = [
+  { numero: 1, pieza: PIEZA_DEL_EFECTIVO },
+  { numero: 2, pieza: PIEZA_CUIDAR_LAS_INVERSIONES, Pieza: ControlInterno },
+  { numero: 3, pieza: PIEZA_TRES_MOMENTOS },
+];
 const PUBLICADAS = PIEZAS.length;
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
@@ -109,7 +120,17 @@ export default function ContabilidadTema5View({ modo = null, nodoInicial = null,
 
           {esAprender ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-              {PIEZAS.map(({ pieza }, k) => {
+              {PIEZAS.map(({ pieza, Pieza }, k) => {
+                if (Pieza) {
+                  return (
+                    <div key={pieza.id}>
+                      <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
+                        PIEZA {k + 1} DE {PUBLICADAS}
+                      </p>
+                      <Pieza pieza={pieza} rotulo={rotulo} />
+                    </div>
+                  );
+                }
                 const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA5[pieza.id];
                 return (
                   <div key={pieza.id}>
