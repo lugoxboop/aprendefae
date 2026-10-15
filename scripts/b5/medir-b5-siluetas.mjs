@@ -22,15 +22,14 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { createServer } from "vite";
-import { createRequire } from "node:module";
 import { resolve } from "node:path";
+import { abrirNavegador } from "./navegador.mjs";
 
 const RAIZ = resolve(import.meta.dirname, "../..");
 const OTRA = process.argv[2] ? resolve(process.argv[2]) : null;
-const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? "/opt/node-tools/node_modules/playwright");
 const PIEZAS = (process.env.PIEZAS ?? "t5a1,t5a2,t6a1,t6a2,t6a3,t6a4,t6a5").split(",");
-const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+/* Con la barra de desplazamiento a la vista: el ancho del sitio en el Chromium de escritorio (navegador.mjs). */
+const navegador = await abrirNavegador();
 const fallos = [];
 const informe = [];
 

@@ -9,6 +9,8 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { Plegable } from "./plegable.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -94,9 +96,11 @@ export default function QueCuentaSeMueve({ Marco, rotulo, titulo, acento, onComp
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
       <div data-h1>
-        <Encabezado consigna={H1.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H1.consigna.join(" "))} onComoSeJuega={onComoSeJuega} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Hecho" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Hecho" />
+          </ContadorConIntento>
         </div>
 
         {/* El hecho y su pie. */}

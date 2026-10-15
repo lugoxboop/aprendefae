@@ -212,3 +212,45 @@ test("★★ movimiento: con reducido, sin transición ni animación; sin reduci
   }
   reducido = true;
 });
+
+test("★★★ fila o columna en vivo (Sakuta, 15-oct): si en la fila una opción se parte, la pieza entera pasa a columna; al cambiar el ancho se vuelve a medir", async () => {
+  const p = PIEZAS.find((x) => x.nombre === "T6 · A1");
+  /* Cuántos renglones ocupa cada texto, como lo diría el navegador: «No cambia» se parte mientras `estrecho`. */
+  let estrecho = true;
+  const original = w.Element.prototype.getClientRects;
+  w.Element.prototype.getClientRects = function () {
+    if (this.hasAttribute?.("data-texto-opcion")) return Array.from({ length: estrecho && this.textContent === "No cambia" ? 2 : 1 }, () => ({}));
+    return original.call(this);
+  };
+  try {
+    const { caja, desmontar } = await montar(h(p.Componente));
+    const [a, b] = p.cajas;
+    await tocar(zonaDe(caja, a.id).querySelector("button[aria-expanded]"));
+    const forma = (id) => zonaDe(caja, id).querySelector("[role='group']").dataset.opciones;
+    assert.equal(forma(a.id), "columna", "«No cambia» se parte: columna");
+    assert.equal(zonaDe(caja, a.id).querySelector("[role='group']").style.flexDirection, "column");
+    assert.equal(zonaDe(caja, a.id).querySelector("[data-opcion]").style.padding, "10px 12px", "con el relleno de la columna");
+    await tocar(zonaDe(caja, b.id).querySelector("button[aria-expanded]"));
+    assert.equal(forma(b.id), "columna", "una sola forma por pieza");
+    /* Más ancho: se prueba otra vez la fila y cabe. */
+    estrecho = false;
+    await act(async () => { w.dispatchEvent(new w.Event("resize")); });
+    assert.deepEqual([forma(a.id), forma(b.id)], ["fila", "fila"]);
+    /* Otra vez estrecho: columna. */
+    estrecho = true;
+    await act(async () => { w.dispatchEvent(new w.Event("resize")); });
+    assert.deepEqual([forma(a.id), forma(b.id)], ["columna", "columna"]);
+    desmontar();
+  } finally {
+    w.Element.prototype.getClientRects = original;
+  }
+});
+
+test("★★ las piezas en columna (T5 · A1, T6 · A2, T6 · A3) no se miden: siguen en columna", async () => {
+  for (const p of PIEZAS.filter((x) => x.forma === "columna")) {
+    const { caja, desmontar } = await montar(h(p.Componente));
+    await tocar(zonaDe(caja, p.cajas[0].id).querySelector("button[aria-expanded]"));
+    assert.equal(zonaDe(caja, p.cajas[0].id).querySelector("[role='group']").dataset.opciones, "columna", p.nombre);
+    desmontar();
+  }
+});
