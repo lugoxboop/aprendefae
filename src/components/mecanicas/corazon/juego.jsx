@@ -267,7 +267,7 @@ export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cue
             }}
           />
         </div>
-        <span style={{ fontFamily: "Inter, sans-serif", fontSize: "11.5px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: "12px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
           {etiqueta} {numero} de {total}
         </span>
       </div>
@@ -311,7 +311,7 @@ export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cue
           );
         })}
       </div>
-      <span style={{ fontFamily: "Inter, sans-serif", fontSize: "11.5px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
+      <span style={{ fontFamily: "Inter, sans-serif", fontSize: "12px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
         {etiqueta} {numero} de {total}
       </span>
     </div>

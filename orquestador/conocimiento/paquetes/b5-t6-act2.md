@@ -299,3 +299,14 @@ Descargar
 
 Descargar todo
 Has dicho:
+
+
+## (4) Futaba · entrega 1 de calidad: razones por cuenta (versión final, con PASA de Shoko; pegada tal cual)
+
+Cada razón va detrás de la plantilla «Sobra X.» o «No va X: en su lugar va Y.». El estudiante ve solo la razón de la cuenta que puso. Reemplaza la cola genérica del texto D (Sakuta).
+
+Parte	Cuenta	Razón
+Asiento 1	Gasto provisiones – cuentas incobrables	El gasto se anotó en diciembre, al crear la provisión. Lo que le faltó se suma a la provisión del año siguiente.
+Asiento 1	Caja	En un castigo no entra plata.
+Asiento 2	Cuentas por cobrar – clientes	Crear la provisión del año no cambia lo que deben los clientes: nadie paga y no se castiga ninguna deuda.
+Asiento 2	Caja	La provisión es un cálculo: no entra ni sale plata.

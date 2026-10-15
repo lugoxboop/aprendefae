@@ -100,17 +100,29 @@ input:focus-visible {
  * defecto que arregla.
  */
 .fae-cabecera-marca button,
-.fae-cabecera-titulo > button {
+.fae-cabecera-titulo > button,
+.fae-logo-boton,
+.fae-split__cerrar {
   position: relative;
 }
 
+/*
+ * `max(100%, 44px)` y no `44px` a secas, porque hay dos formas de quedarse
+ * corto y el cuadrado solo arregla una. El símbolo de la cabecera mide 26×26
+ * y necesita crecer en los dos sentidos; el logotipo del inicio mide 272×30
+ * y solo le falta ALTO —un cuadrado de 44 centrado le dejaría fuera 228 px
+ * de logotipo que hoy sí responden al toque—. `max(100%, 44px)` nunca
+ * encoge lo que ya era grande.
+ */
 .fae-cabecera-marca button::after,
-.fae-cabecera-titulo > button::after {
+.fae-cabecera-titulo > button::after,
+.fae-logo-boton::after,
+.fae-split__cerrar::after {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 44px;
-  height: 44px;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
   transform: translate(-50%, -50%);
 }

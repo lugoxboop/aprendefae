@@ -83,6 +83,8 @@ test("auditoría: qd-03, qd-04, qd-06 y qd-09 llevan el hecho de la sección (2)
 test("guarda: el paquete trae los 10 hechos y los 9 errores, y una fila inventada no aparece", () => {
   for (const id of IDS) assert.ok(fila(id), id);
   for (let k = 1; k <= 9; k++) assert.ok(filaError(`E${k}`), `E${k}`);
+  /* E10 (entrega 1), en su sección del paquete, literal. */
+  assert.ok(GUIA.includes(`E10 · qd-09 con Caja\tCaja en qd-09\t${D.ERRORES_T6_ACT4.E10}`));
   assert.equal(fila("qd-99"), undefined);
 });
 
@@ -135,6 +137,8 @@ test("★★★ los 9 errores son los del paquete, y cada uno va donde dice la c
     assert.ok(elegidas.length, `${tipo}: no sé qué opción nombra «${cuando}»`);
     for (const id of idsDe(cuando)) {
       for (const e of elegidas) {
+        /* Entrega 1 de Futaba: qd-09 con Caja deja E5 y pasa a E10, su devolución propia. */
+        if (id === "qd-09" && e === D.A_CAJA && tipo === "E5") { assert.equal(hecho(id).errores[e], "E10"); cubiertas.add(`${id}:${e}`); continue; }
         assert.equal(hecho(id).errores[e], tipo, `${id} con ${NOMBRE_CORTO[e]}`);
         cubiertas.add(`${id}:${e}`);
       }
