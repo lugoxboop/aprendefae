@@ -60,6 +60,10 @@ export const ICONO_POR_ACTIVIDAD = {
   /* Tema 5 · Inversiones */
   "b5-t5-a1": I.QueRentaDaEsteTitulo,
   "b5-t5-a2": I.ElCierreCompletoDeSantaPacha,
+  /* Tema 6 · Cuentas por cobrar */
+  "b5-t6-a1": I.ClientesOOtraCuentaPorCobrar,
+  "b5-t6-a2": I.LaProvisionDeElTorito,
+  "b5-t6-a3": I.CuandoLaDeudaCastigadaVuelve,
 };
 
 /** Los nodos del camino con su ícono, si lo tienen. */

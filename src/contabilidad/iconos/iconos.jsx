@@ -41,6 +41,9 @@ import t724 from "./conta-t7-2-4-periodico-o-permanente.svg?raw";
 import t725 from "./conta-t7-2-5-flete-y-devolucion.svg?raw";
 import t51 from "./conta-t5-1-que-renta-da-este-titulo.svg?raw";
 import t52 from "./conta-t5-2-el-cierre-completo-de-santa-pacha.svg?raw";
+import t61 from "./conta-t6-1-clientes-o-otra-cuenta-por-cobrar.svg?raw";
+import t62 from "./conta-t6-2-la-provision-de-el-torito.svg?raw";
+import t63 from "./conta-t6-3-cuando-la-deuda-castigada-vuelve.svg?raw";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -132,3 +135,6 @@ export const PeriodicoOPermanente = icono("PeriodicoOPermanente", t724);
 export const FleteYDevolucion = icono("FleteYDevolucion", t725);
 export const QueRentaDaEsteTitulo = icono("QueRentaDaEsteTitulo", t51);
 export const ElCierreCompletoDeSantaPacha = icono("ElCierreCompletoDeSantaPacha", t52);
+export const ClientesOOtraCuentaPorCobrar = icono("ClientesOOtraCuentaPorCobrar", t61);
+export const LaProvisionDeElTorito = icono("LaProvisionDeElTorito", t62);
+export const CuandoLaDeudaCastigadaVuelve = icono("CuandoLaDeudaCastigadaVuelve", t63);
