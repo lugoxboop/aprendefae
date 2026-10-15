@@ -1,6 +1,6 @@
 # Recorrido del estudiante · Temas 5 y 6 de Contabilidad (Célula B)
 
-> Documento generado por `scripts/b5-recorrido-t5-t6.mjs` desde los archivos de datos del commit `dba05e3`. No se edita a mano: si cambia un texto, se cambia en su archivo de datos y se vuelve a generar.
+> Documento generado por `scripts/b5-recorrido-t5-t6.mjs` desde los archivos de datos del commit `eca6218`. No se edita a mano: si cambia un texto, se cambia en su archivo de datos y se vuelve a generar.
 >
 > Orden: el de la vista. Primero Aprender (las piezas en el orden de `PIEZAS`, cada una con sus cuatro capas). Después el camino de Hacer (el orden de `subjects.js`), cada actividad con su «Así se juega» y su partida.
 >
@@ -813,74 +813,74 @@ Rótulos de la escena:
 - `rotulo` Escenario simulado · no es la tabla del libro
 - `fecha` 31 de diciembre
 - `deben` Lo que le deben sus clientes
-- `total` $1.000.000
-- `grupos[1].suma` $400.000
+- `total` $1.300.000
+- `grupos[1].suma` $460.000
 - `grupos[1].resultado` no se provisiona nada
-- `grupos[2].suma` $200.000
+- `grupos[2].suma` $340.000
 - `grupos[2].porcentaje` Al 5 %
-- `grupos[2].resultado` son $10.000
-- `grupos[3].suma` $300.000
+- `grupos[2].resultado` son $17.000
+- `grupos[3].suma` $360.000
 - `grupos[3].porcentaje` Al 10 %
-- `grupos[3].resultado` son $30.000
-- `grupos[4].suma` $100.000
+- `grupos[3].resultado` son $36.000
+- `grupos[4].suma` $140.000
 - `grupos[4].porcentaje` Al 15 %
-- `grupos[4].resultado` son $15.000
-- `suma` $55.000
+- `grupos[4].resultado` son $21.000
+- `suma` $74.000
 - `gasto` Gasto provisiones – cuentas incobrables
 - `provision` Provisión para deudas incobrables
 - `neto` El valor neto
-- `valorNeto` $945.000
+- `valorNeto` $1.226.000
 - `debita` se debita
 - `acredita` se acredita
 
 Pasos:
 
-1. El 31 de diciembre, una empresa revisa lo que le deben sus clientes: $1.000.000. *[Escenario simulado]*
+1. El 31 de diciembre, una empresa revisa lo que le deben sus clientes: $1.300.000. *[Escenario simulado]*
 2. Agrupa las deudas según cuánto tiempo llevan vencidas. *[Basado en el libro, p. 200]*
 3. En este ejemplo, la empresa decide usar como suyos los porcentajes de la norma de renta. *[Escenario simulado]*
-4. Las que están vigentes o llevan hasta tres meses de vencidas suman $400.000. En este ejemplo, por ellas no se provisiona nada. *[Escenario simulado]*
-5. Las que llevan más de tres meses, sin pasar de seis, suman $200.000. Al 5 %, son $10.000. *[Fuente del porcentaje: Decreto 1625 de 2016]*
-6. Las que llevan más de seis meses, sin pasar de un año, suman $300.000. Al 10 %, son $30.000. *[Fuente del porcentaje: Decreto 1625 de 2016]*
-7. Las que llevan más de un año suman $100.000. Al 15 %, son $15.000. *[Fuente del porcentaje: Decreto 1625 de 2016]*
-8. Cálculo: $10.000 + $30.000 + $15.000 = $55.000. *[Escenario simulado]*
-9. Se debita Gasto provisiones – cuentas incobrables por $55.000. *[Basado en el libro, p. 202]*
+4. Las que están vigentes o llevan hasta tres meses de vencidas suman $460.000. En este ejemplo, por ellas no se provisiona nada. *[Escenario simulado]*
+5. Las que llevan más de tres meses, sin pasar de seis, suman $340.000. Al 5 %, son $17.000. *[Fuente del porcentaje: Decreto 1625 de 2016]*
+6. Las que llevan más de seis meses, sin pasar de un año, suman $360.000. Al 10 %, son $36.000. *[Fuente del porcentaje: Decreto 1625 de 2016]*
+7. Las que llevan más de un año suman $140.000. Al 15 %, son $21.000. *[Fuente del porcentaje: Decreto 1625 de 2016]*
+8. Cálculo: $17.000 + $36.000 + $21.000 = $74.000. *[Escenario simulado]*
+9. Se debita Gasto provisiones – cuentas incobrables por $74.000. *[Basado en el libro, p. 202]*
 10. Y se acredita Provisión para deudas incobrables, por el mismo valor. *[Basado en el libro, p. 202]*
-11. Cálculo: $1.000.000 − $55.000 = $945.000, el valor neto. *[Basado en el libro, p. 202]*
+11. Cálculo: $1.300.000 − $74.000 = $1.226.000, el valor neto. *[Basado en el libro, p. 202]*
 
 **Cierre:** Cada grupo con su porcentaje, y la suma de todos es la provisión. *[Basado en el libro, pp. 200-201]*
 
 #### Capa 3 · Ahora pruebe usted
 
 - **Consigna:** Toca cada grupo y mira cuánto se provisiona por él.
-- **Tablero:** Escenario simulado · no es la tabla del libro · Se provisiona · $0 · $10.000 · $30.000 · $15.000 · La provisión · $55.000
-- **Vigentes o hasta 3 meses · $400.000**
+- **Tablero:** Escenario simulado · no es la tabla del libro · Se provisiona · $0 · $17.000 · $36.000 · $21.000 · La provisión · $74.000
+- **Vigentes o hasta 3 meses · $460.000**
   - *Al tocarla:* En este ejemplo, por las deudas vigentes o con hasta tres meses de vencidas no se provisiona nada: $0.
   - *Pie:* Escenario simulado
-- **Más de 3 hasta 6 meses · $200.000**
-  - *Al tocarla:* Al 5 %, los $200.000 dan $10.000.
+- **Más de 3 hasta 6 meses · $340.000**
+  - *Al tocarla:* Al 5 %, los $340.000 dan $17.000.
   - *Pie:* Fuente del porcentaje: Decreto 1625 de 2016
-- **Más de 6 meses hasta 1 año · $300.000**
-  - *Al tocarla:* Al 10 %, los $300.000 dan $30.000.
+- **Más de 6 meses hasta 1 año · $360.000**
+  - *Al tocarla:* Al 10 %, los $360.000 dan $36.000.
   - *Pie:* Fuente del porcentaje: Decreto 1625 de 2016
-- **Más de 1 año · $100.000**
-  - *Al tocarla:* Al 15 %, los $100.000 dan $15.000.
+- **Más de 1 año · $140.000**
+  - *Al tocarla:* Al 15 %, los $140.000 dan $21.000.
   - *Pie:* Fuente del porcentaje: Decreto 1625 de 2016
 
 **Al abrir todas:**
 
-- La provisión es la suma de los cuatro grupos: $55.000. Mientras más tiempo lleva vencido un grupo, mayor es su porcentaje en este ejemplo. *[Escenario simulado]*
+- La provisión es la suma de los cuatro grupos: $74.000. Mientras más tiempo lleva vencido un grupo, mayor es su porcentaje en este ejemplo. *[Escenario simulado]*
 
 #### Capa 4 · En una frase
 
-- **Pregunta:** Una deuda de $200.000 lleva ocho meses vencida. Con los porcentajes del ejemplo, ¿cuánto se provisiona por ella?
+- **Pregunta:** Una deuda de $380.000 lleva ocho meses vencida. Con los porcentajes del ejemplo, ¿cuánto se provisiona por ella?
 
 Opciones (en el orden del archivo; el juego las baraja una vez al cargar):
 
-- ✔︎ $20.000
-  - *Devolución:* Correcto. Ocho meses es más de seis y no pasa de un año: le toca el 10 %. El 10 % de $200.000 es $20.000.
-- ✘ $10.000
+- ✔︎ $38.000
+  - *Devolución:* Correcto. Ocho meses es más de seis y no pasa de un año: le toca el 10 %. El 10 % de $380.000 es $38.000.
+- ✘ $19.000
   - *Devolución:* No es esa. Ese sería el 5 %, que es para deudas de más de tres hasta seis meses. Ocho meses ya pasó de seis.
-- ✘ $30.000
+- ✘ $57.000
   - *Devolución:* No es esa. Ese sería el 15 %, que es para deudas de más de un año. Ocho meses no llega a un año.
 - ✘ Nada
   - *Devolución:* No es esa. Una deuda con más de tres meses de vencida sí entra en la provisión del ejemplo.
