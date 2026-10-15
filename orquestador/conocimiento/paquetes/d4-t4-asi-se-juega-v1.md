@@ -1,4 +1,5 @@
-**T4 · Textos de «Así se juega» para H1-H8 · versión 1.**
+**T4 · Textos de «Así se juega» para H1-H8 · versión vigente.**
+- **Este archivo es la versión vigente**: ya incluye el cambio de H1 de `d4-t4-a3-h1-h2-v3-cambios.md` y el nombre neutro de H7.
 - Autora: Katsumi. Para Yujiro, que decide la mecánica, y para Baki, que construye.
 - Modelo: `src/data/asiSeJuegaTema5.js`, `asiSeJuegaTema6.js` y `asiSeJuegaTema3.js`. Allí, cada «Así se juega» lleva estas partes:
   - `titulo` y `consigna`, que salen de la actividad;
@@ -19,9 +20,10 @@
   1. «Lee el hecho de la tarjeta.» (<10)
   2. «Pregúntate si entra plata a la caja, si sale, o si no la toca.» (94,9)
   3. «Manda la tarjeta al debe de Caja, al haber de Caja o a «Caja no se mueve».» (94,6)
-- **Ejemplo (`demo`):** «Una cafetería paga en efectivo, con billetes de la caja, la leche del día.» (68,2)
+- **Ejemplo (`demo`):** «Una tienda le paga de contado al proveedor, con plata de la caja, las neveras que le compró.» (81,5)
   - *[Hecho construido, que no está en el banco de H1 (sus ocho hechos son otros).]*
-- **Texto alternativo (`alt`):** «La tarjeta dice que una cafetería paga la leche con billetes de la caja. Sale plata de la caja, así que la tarjeta va al haber de Caja.» (83,8)
+- **Texto alternativo (`alt`):** «La tarjeta dice que una tienda paga las neveras con plata de la caja. Sale plata de la caja, así que la tarjeta va al haber de Caja.» (90,5)
+  - *[v3, por H1-a: la cafetería y la leche rozaban la caja menor. Construido; no es el hecho H1-3.]*
 - **Lo que hace la mano (para el guion de Baki):** Una sola tarjeta. La mano la arrastra a «Haber de Caja» y aparece la retroalimentación de acierto.
 
 ## H2 · El control que se saltaron (`t4-el-control-que-se-saltaron`)
