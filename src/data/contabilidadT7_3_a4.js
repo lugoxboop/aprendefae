@@ -1,5 +1,5 @@
 import { BOTON, DEBE, HABER } from "./contabilidadT7_3.js";
-import { H3_LIBRO } from "./contabilidadT7_3_a3.js";
+import { H3_LIBRO, PLAZOS_A3 } from "./contabilidadT7_3_a3.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -47,6 +47,8 @@ const QUIEN_COMPRA = {
     "Ahora mira el mismo hecho desde el libro de Santa Martha, que es quien compra.",
     "Para quien compra, el descuento es un ingreso: había comprado por un valor y, al final, paga menos.",
   ],
+  /* Patrón T7-3: la misma franja de A3, con el pago del 4 de junio. Es el mismo hecho, y el texto ya lo cuenta. */
+  figuras: [PLAZOS_A3(true)],
   boton: BOTON.seguir,
   pie: "Basado en el libro, pp. 251-253",
 };
