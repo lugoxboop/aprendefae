@@ -193,9 +193,24 @@ la que pasaba todo, y se vio el día que una célula entregó quince piezas
 encadenadas mientras otra llevaba nueve horas detenida esperando una respuesta
 de una línea. El cuello de botella no era la producción: era el permiso.
 
-Ahora: **el general de cada célula fusiona el trabajo de su célula.** Corre la
-barra —la suite entera y el build— sobre el árbol ya fusionado con `main`,
-comprueba que no pisa a nadie, y fusiona. No pide permiso y no espera turno.
+Ahora: **el general de cada célula fusiona el trabajo de su célula.** Abre el
+PR, **espera el verde de CI**, comprueba que no pisa a nadie, y fusiona. No
+pide permiso y no espera turno.
+
+**La barra es CI, no la suite local. Cambió el 15 de octubre de 2026, por la
+tarde.** Durante dieciocho horas CI estuvo caída y la barra fue correr la
+suite entera y el build en la máquina de cada quien. CI volvió, y mantener la
+barra local además de CI es pagar dos veces por la misma comprobación: son los
+mismos archivos de prueba, y CI corre además las pruebas SQL sobre un Postgres
+limpio, que en local no existen. Con cinco células, eso eran cuatro suites
+completas de ocho minutos por cada entrega, cada noche.
+
+Así que: **la suite local se corre mientras se construye, no como ceremonia
+antes de fusionar.** Se corre entera en local solo cuando CI no está
+disponible —y entonces se dice en el PR que la barra fue local, como se hizo
+toda la noche del 14 de octubre—. Lo que NO cambia: no se fusiona nada sin
+verde, y el verde de CI es el que manda. Un PR fusionado sin esperar a CI es
+exactamente el agujero que esta regla deja abierto; no lo uses.
 
 Lo que el coordinador sigue teniendo, y es lo único:
 
