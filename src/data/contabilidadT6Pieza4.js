@@ -149,3 +149,20 @@ export const OPCIONES_FINAL_T6_A4 = [
     feedback: "No es esa. En el libro no hay ningún ingreso: primero se revive la deuda y después se anota el pago.",
   },
 ];
+
+/* ═══════════ CAPA 2: LA PARADA (hoja 7 de Mai, entrega 3 de Futaba) ═══════════ */
+
+/*
+ * T6 · A4 no se fusiona (Mai §1: cualquiera de las tres fusiones sube el
+ * texto reservado y el último paso deja de caber a 320). La predicción va
+ * entre el paso 4 («vuelve y paga») y el 5.
+ */
+export const PARADA_T6_A4 = {
+  antes: 5,
+  pregunta: "Pablo Moncayo vuelve y paga. ¿Qué se anota primero?",
+  opciones: [{ id: "revivir", texto: "Revivir la deuda" }, { id: "caja", texto: "La plata que entra a Caja" }],
+  correcta: "revivir",
+  falla: "Primero se reversa el castigo, para que la deuda vuelva. Después se anota el pago.",
+  pie: "Basado en el libro, p. 204",
+  resaltados: ["vuelve"],
+};

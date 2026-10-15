@@ -276,7 +276,10 @@ test("★★★ las cuentas cuadran: los grupos suman el total, cada provisión 
 test("★★★ cada cifra de los textos sale del escenario (ni una suelta), y cada paso dice las suyas", () => {
   /* Las de la capa 4: la deuda, lo que da al 10 % y los dos distractores (el 5 % y el 15 %). */
   const capa4 = [E.pregunta.monto, E.pregunta.provision, (E.pregunta.monto * 5) / 100, (E.pregunta.monto * 15) / 100];
-  const validas = new Set([E.total, E.provision, E.neto, 0, ...E.grupos.flatMap((g) => [g.monto, provisionDe(g)]), ...capa4]);
+  /* Las de la parada de la capa 2 (hoja 7): lo que da el grupo 2 al 5 % y sus dos distractores, con un cero de menos y uno de más. */
+  const g2 = provisionDe(E.grupos[1]);
+  const parada = [g2, g2 / 10, g2 * 10];
+  const validas = new Set([E.total, E.provision, E.neto, 0, ...E.grupos.flatMap((g) => [g.monto, provisionDe(g)]), ...capa4, ...parada]);
   for (const t of textosDe(D)) for (const c of cifras(t)) assert.ok(validas.has(c), `${pesos(c)} no sale del escenario: «${t.slice(0, 50)}»`);
   const P = D.PASOS_T6_A5.map((p) => p.texto);
   assert.deepEqual(cifras(P[0]), [E.total]);

@@ -748,3 +748,39 @@ Rehago solo esas filas: líneas, duraciones y, si cambian, los rótulos de la §
 De Futaba, para ti, sin tocar el diseño:
 si «Bancos» está publicado;
 la concordancia de «Gastos financieros».
+
+## (8) Futaba · entrega 3: pasos que se juntan y predicción a mitad de la escena (pegada tal cual)
+
+Cada fusión pega dos textos ya aprobados sin cambiar una palabra.
+
+Para Kaede: el estado de la escena de cada paso fusionado es el del segundo paso. En t6Pieza3.js hay que volver a numerar las vueltas atrás (el paso 11 pasa a ser el 7).
+
+T5 A2: de 21 pasos a 13
+
+Paso nuevo	Pasos actuales	Pie
+1	1 + 2	Libro, p. 194
+2	3	Libro, p. 194
+3	4 + 5	Libro, p. 194
+4	6 + 7	Basado en el libro, p. 194
+5	8 + 9	Libro, p. 194
+6	10 + 11	Libro, pp. 194-195
+7	12 + 13	Libro, pp. 194-195
+8	14	Libro, p. 195
+9	15	Libro, p. 195
+10	16 + 17	Basado en el libro, p. 195
+11	18 + 19	Libro, p. 195
+12	20	Libro, p. 195
+13	21	Basado en el libro, p. 195
+
+Predicción, entre los pasos 9 y 10 (Libro, p. 195):
+
+Pregunta: «Ya solo quedan 625 títulos. ¿Sobre qué valor se calcula el interés de noviembre?» (75)
+Opciones ★: $2.000.000 · $1.500.000 · $500.000 ✓. Agregué $1.500.000, como recomendó Shoko.
+Si elige $2.000.000: «Ya no hay 2.500 títulos: quedan 625. Son 625 × $800 = $500.000.» (65)
+Si elige $1.500.000 ★: «Eso costaron los títulos que vendió. El interés se paga sobre los que quedan: 625 × $800 = $500.000.» (74)
+
+## (9) Mai · hoja 7: qué pasos se juntan y dónde va la parada (resumen; manda sobre la entrega 3)
+
+De 21 pasos a 14: las fusiones de Futaba menos 4 + 5 (regla 1: en el estado del paso 5, la tasa del paso 4 ya no se ve). Los pasos 3 y 4 (los actuales 4 y 5) conservan su pie de hoy: «Libro, p. 194» los dos. La predicción va entre el 10 y el 11, la misma posición que Futaba llamó «entre 9 y 10».
+
+El contador de la parada dice «Antes del paso N» (nuevo, para Shoko).

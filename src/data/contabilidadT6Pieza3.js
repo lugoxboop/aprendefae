@@ -184,3 +184,28 @@ export const OPCIONES_FINAL_T6_A3 = [
     feedback: "No es esa. Los $31.200 no se pierden: se suman a la provisión del año siguiente, que por eso es de $184.600.",
   },
 ];
+
+/* ═══════════ CAPA 2 LARGA: LOS PASOS QUE SE JUNTAN Y LA PARADA (hoja 7 de Mai, entrega 3 de Futaba) ═══════════ */
+
+/*
+ * De 19 pasos a 13 (Mai §1): las fusiones de Futaba menos 6 + 7, que pasa de
+ * 4 renglones a 320 (regla 2). Los pies, los de Futaba; los pasos 4 y 5
+ * conservan el suyo. La vuelta atrás del paso 11 de antes es ahora el 8.
+ */
+export const FUSION_T6_A3 = {
+  grupos: [[1, 2], [3, 4], [5], [6], [7], [8], [9, 10], [11], [12, 13], [14, 15], [16], [17, 18], [19]],
+  pies: [
+    "Basado en el libro, pp. 200 y 202", "Libro, p. 202", "Libro, p. 202", "Libro, p. 202", "Libro, p. 202", "Basado en el libro, p. 202",
+    "Basado en el libro, p. 202", "Basado en el libro, p. 202", "Libro, p. 202", "Libro, p. 203", "Libro, p. 203", "Basado en el libro, p. 203", "Libro, p. 203",
+  ],
+};
+/* La predicción entre los pasos 7 y 8 (la que Futaba llamó «entre 6 y 7»). */
+export const PARADA_T6_A3 = {
+  antes: 8,
+  pregunta: "Al castigar la deuda, ¿se anota otra vez el gasto?",
+  opciones: [{ id: "si", texto: "Sí" }, { id: "no", texto: "No" }],
+  correcta: "no",
+  falla: "El gasto se anotó en diciembre. Ahora solo se usa la provisión.",
+  pie: "Basado en el libro, p. 202",
+  resaltados: ["provision2", "clientes2"],
+};

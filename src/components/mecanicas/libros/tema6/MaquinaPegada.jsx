@@ -4,6 +4,7 @@ import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
+import { estadoParada } from "../../../../contabilidad/fusionar.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -27,6 +28,16 @@ import { SOLO_LECTOR } from "../verbos.jsx";
  * (T6 · A5) da lo que el lector de pantalla oye después del texto del paso,
  * dentro de la misma región viva (el pie, y en un paso el rótulo fijo); el
  * pie visible se le oculta entonces al lector para que no se lea dos veces.
+ *
+ * `parada` (hoja 7 de Mai): la predicción entre dos pasos, dentro del mismo
+ * bloque. No es un paso: el contador dice «Antes del paso N» (N = `antes`, el
+ * paso que viene). En el hueco del texto, la pregunta; debajo, las opciones
+ * en fila; «Siguiente» desactivado hasta elegir. Un intento, sin puntaje: las
+ * opciones se marcan como en la capa 3 y, si falló, la devolución ocupa el
+ * sitio de la pregunta. La escena es la del paso anterior, con el resalte en
+ * lo que nombra la pregunta. El bloque crece una sola vez, al entrar, hacia
+ * arriba («Siguiente» no se mueve). «Reproducir» se pausa al llegar. La
+ * decisión se conserva al volver y con «Ver de nuevo».
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -48,6 +59,53 @@ const botonBase = {
 };
 const DESACTIVADO = { background: "transparent", border: `2px solid ${COLOR.quieto}`, color: COLOR.apagado, cursor: "default" };
 export const PIE = { margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: COLOR.apagado };
+
+/* La parada: la pregunta en el estilo del texto de cierre; la devolución, con la forma de la de UnaFrase (sin coral). */
+const PREGUNTA_PARADA = { margin: 0, fontFamily: SORA, fontSize: "14px", fontWeight: 600, lineHeight: 1.55, color: TEXTO };
+const DEVOLUCION_PARADA = {
+  margin: 0, padding: "11px 13px", borderRadius: "12px", fontFamily: INTER, fontSize: "13px", lineHeight: 1.55,
+  color: "rgba(248,249,250,0.88)", background: "rgba(184,196,212,0.1)", borderLeft: `3px solid ${BORDES}`,
+};
+const ESTILOS_PARADA = `
+@keyframes b5-parada-aparece { from { opacity: 0; } to { opacity: 1; } }
+.b5-parada-aparece { animation: b5-parada-aparece 240ms ease-out both; }
+@media (prefers-reduced-motion: reduce) { .b5-parada-aparece { animation: none; } }
+`;
+const fallaDe = (parada, elegida) => (elegida && elegida !== parada.correcta
+  ? (typeof parada.falla === "string" ? parada.falla : parada.falla[elegida])
+  : null);
+const fallas = (parada) => (typeof parada.falla === "string" ? [parada.falla] : Object.values(parada.falla));
+
+/* Una opción de la parada, con las marcas de la capa 3 (hoja 6): correcta, tachada o apagada. */
+function OpcionParada({ opcion, elegida, correcta, reducido, pintar, onElegir }) {
+  const decidida = elegida !== null;
+  const esCorrecta = decidida && opcion.id === correcta;
+  const tachada = decidida && opcion.id === elegida && !esCorrecta;
+  const d = esCorrecta ? 1 : 0;
+  return (
+    <button
+      type="button"
+      data-opcion={opcion.id}
+      data-marca={!decidida ? "" : esCorrecta ? "correcta" : tachada ? "tachada" : "apagada"}
+      aria-pressed={opcion.id === elegida}
+      aria-disabled={decidida || undefined}
+      onClick={() => { if (!decidida) onElegir(opcion.id); }}
+      style={{
+        flex: "1 1 0", minWidth: 0, minHeight: "44px", boxSizing: "border-box", borderRadius: "11px", textAlign: "center",
+        padding: `${10 - d}px ${3 - d}px`,
+        border: esCorrecta ? `2px solid ${NODO}` : "1px solid rgba(248,249,250,0.36)",
+        background: esCorrecta ? NAVY : "rgba(10,20,34,0.4)",
+        color: TEXTO, fontFamily: INTER, fontSize: "12.5px", fontWeight: 400, lineHeight: 1.45,
+        textDecoration: tachada ? "line-through" : "none", textDecorationThickness: tachada ? "1.5px" : undefined,
+        opacity: decidida && !esCorrecta && !tachada ? 0.5 : 1,
+        transition: reducido ? "none" : "opacity 240ms ease",
+        cursor: decidida ? "default" : "pointer",
+      }}
+    >
+      {pintar(opcion.texto)}
+    </button>
+  );
+}
 
 export function transicion(reducido) {
   if (reducido) return "none";
@@ -178,11 +236,15 @@ export function Anotacion({ id, e, cuenta, linea, movimiento, lado, reducido, re
   );
 }
 
-export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atributos = {}, pintar = (t) => t, pintarPie = (t) => t, lector = null }) {
+export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atributos = {}, pintar = (t) => t, pintarPie = (t) => t, lector = null, parada = null }) {
   const PASOS = todos.length - 1;
   const CIERRE = todos.length;
   const reducido = useReducido();
   const [paso, setPaso] = useState(1);
+  /* La parada: si se está en ella (siempre después del paso `antes − 1`) y lo elegido, que se conserva. */
+  const [enParada, setEnParada] = useState(false);
+  const [eleccion, setEleccion] = useState(null);
+  const recalcular = useRef(null);
   const [reproduciendo, setReproduciendo] = useState(false);
   const maquina = useRef(null);
   const bloque = useRef(null);
@@ -196,7 +258,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
   const [fijo, setFijo] = useState(null);
   const refDe = (id) => (n) => { piezas.current[id] = n; };
 
-  const estado = estadoPaso(paso);
+  const estado = enParada ? estadoParada(estadoPaso, parada.antes, parada.resaltados) : estadoPaso(paso);
   useSiluetasMudas(maquina);
 
   /*
@@ -226,18 +288,36 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     };
     const pedir = () => { if (cuadro === null) cuadro = requestAnimationFrame(calcular); };
     calcular();
+    recalcular.current = calcular;
     window.addEventListener("scroll", pedir, { passive: true });
     window.addEventListener("resize", pedir);
     return () => { window.removeEventListener("scroll", pedir); window.removeEventListener("resize", pedir); if (cuadro !== null) cancelAnimationFrame(cuadro); };
   }, []);
 
-  /* «Reproducir», copiado de LoQueYaPaso. */
+  /* La parada cambia el alto del bloque: se vuelve a fijar (crece hacia arriba; «Siguiente» no se mueve). */
+  useLayoutEffect(() => { recalcular.current?.(); }, [enParada, eleccion]);
+
+  /* Un paso adelante, con la parada entre `antes − 1` y `antes`. Devuelve si quedó en la parada. */
+  const avanzar = () => {
+    if (parada && !enParada && paso === parada.antes - 1) { setEnParada(true); return true; }
+    if (enParada) { setEnParada(false); setPaso(parada.antes); return false; }
+    setPaso((p) => Math.min(CIERRE, p + 1));
+    return false;
+  };
+
+  /* «Reproducir», copiado de LoQueYaPaso. Se pausa al llegar a la parada; la parada no tiene duración. */
   useEffect(() => {
     if (!reproduciendo) return undefined;
     if (paso >= CIERRE) { setReproduciendo(false); return undefined; }
-    const t = setTimeout(() => setPaso((p) => Math.min(CIERRE, p + 1)), duracion(paso));
+    if (enParada) {
+      /* Sin elegir, no sigue; ya elegida, sigue desde el paso que viene. */
+      if (eleccion === null) { setReproduciendo(false); return undefined; }
+      avanzar();
+      return undefined;
+    }
+    const t = setTimeout(() => { if (avanzar()) setReproduciendo(false); }, duracion(paso));
     return () => clearTimeout(t);
-  }, [reproduciendo, paso]);
+  }, [reproduciendo, paso, enParada]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!reproduciendo) return undefined;
     const alOcultar = () => { if (document.visibilityState === "hidden") setReproduciendo(false); };
@@ -282,19 +362,28 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     if (objetivo.bottom > abajo) delta = objetivo.bottom - abajo;
     if (objetivo.top - delta < arriba) delta = objetivo.top - arriba;
     if (Math.abs(delta) > 0.5) window.scrollBy({ top: delta, behavior: reducido ? "auto" : "smooth" });
-  }, [paso]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [paso, enParada]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const ir = (nuevo) => {
     setReproduciendo(false);
     const destino = Math.min(CIERRE, Math.max(1, nuevo));
+    if (parada) {
+      /* Desde la parada: «Siguiente» va al paso que viene; «Anterior», al de antes. Al foco no se le toca. */
+      if (enParada) { setEnParada(false); if (destino > paso) setPaso(parada.antes); return; }
+      /* Hacia la parada, desde el paso de antes (adelante) o desde el que viene (atrás): vuelve ya decidida. */
+      if (paso === parada.antes - 1 && destino === parada.antes) { setEnParada(true); return; }
+      if (paso === parada.antes && destino === parada.antes - 1) { setEnParada(true); setPaso(destino); return; }
+    }
     if (destino === CIERRE) foco.current = "texto";
     if (destino === 1) foco.current = "siguiente";
     setPaso(destino);
   };
 
-  const primero = paso === 1;
+  const primero = paso === 1 && !enParada;
   const ultimo = paso === CIERRE;
   const etiquetaReproducir = ultimo ? "Ver de nuevo" : reproduciendo ? "Pausa" : "Reproducir";
+  const falla = enParada ? fallaDe(parada, eleccion) : null;
+  const aparece = reducido ? undefined : "b5-parada-aparece";
   const actual = todos[paso - 1];
   const estiloTexto = (i) => (i === PASOS ? { fontFamily: SORA, fontWeight: 600 } : { fontFamily: INTER, fontWeight: 400 });
   return (
@@ -323,17 +412,37 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
             {todos.map((x, i) => (
               <p key={`${i}-${x.texto}`} style={{ gridArea: "1 / 1", margin: 0, fontSize: "14px", lineHeight: 1.55, ...estiloTexto(i) }}>{pintar(x.texto)}</p>
             ))}
+            {/* En la parada (y solo en ella) se reserva también la pregunta y cada devolución: el bloque crece una vez, al entrar. */}
+            {enParada && [
+              <p key="pregunta" style={{ gridArea: "1 / 1", ...PREGUNTA_PARADA }}>{pintar(parada.pregunta)}</p>,
+              ...fallas(parada).map((t) => <p key={t} style={{ gridArea: "1 / 1", ...DEVOLUCION_PARADA }}>{pintar(t)}</p>),
+            ]}
           </div>
           <div ref={texto} data-texto-paso tabIndex={-1} aria-live="polite" style={{ gridArea: "1 / 1", outline: "none" }}>
-            <p style={{ margin: 0, fontSize: "14px", lineHeight: 1.55, color: TEXTO, ...estiloTexto(paso - 1) }}>{pintar(actual.texto)}</p>
-            {lector && lector(paso).map((t) => <span key={t} data-lector style={SOLO_LECTOR}>{` ${t}`}</span>)}
+            {enParada ? (
+              falla
+                ? <p data-devolucion className={aparece} style={DEVOLUCION_PARADA}>{pintar(falla)}</p>
+                : <p data-pregunta style={PREGUNTA_PARADA}>{pintar(parada.pregunta)}</p>
+            ) : (
+              <p style={{ margin: 0, fontSize: "14px", lineHeight: 1.55, color: TEXTO, ...estiloTexto(paso - 1) }}>{pintar(actual.texto)}</p>
+            )}
+            {lector && (enParada ? [pintar(parada.pie)] : lector(paso)).map((t) => <span key={t} data-lector style={SOLO_LECTOR}>{` ${t}`}</span>)}
           </div>
         </div>
+        {enParada && (
+          <div data-parada={parada.antes} role="group" aria-label={parada.pregunta} style={{ display: "flex", gap: "4px", marginTop: "8px" }}>
+            <style>{ESTILOS_PARADA}</style>
+            {parada.opciones.map((o) => (
+              <OpcionParada key={o.id} opcion={o} elegida={eleccion} correcta={parada.correcta} reducido={reducido} pintar={pintar} onElegir={setEleccion} />
+            ))}
+          </div>
+        )}
         <div style={{ display: "grid", marginTop: "4px" }}>
           <div aria-hidden="true" style={{ gridArea: "1 / 1", display: "grid", visibility: "hidden" }}>
             {todos.map((x, i) => <p key={`${i}-${x.pie}`} style={{ gridArea: "1 / 1", ...PIE }}>{pintarPie(x.pie)}</p>)}
+            {enParada && <p style={{ gridArea: "1 / 1", ...PIE }}>{pintarPie(parada.pie)}</p>}
           </div>
-          <p data-pie aria-hidden={lector ? "true" : undefined} style={{ gridArea: "1 / 1", ...PIE }}>{pintarPie(actual.pie)}</p>
+          <p data-pie aria-hidden={lector ? "true" : undefined} style={{ gridArea: "1 / 1", ...PIE }}>{pintarPie(enParada ? parada.pie : actual.pie)}</p>
         </div>
 
         {/* Los controles, copiados de LoQueYaPaso. */}
@@ -351,9 +460,9 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
             ref={siguiente}
             type="button"
             data-siguiente
-            disabled={ultimo}
+            disabled={ultimo || (enParada && eleccion === null)}
             onClick={() => ir(paso + 1)}
-            style={{ ...botonBase, ...(ultimo ? DESACTIVADO : { background: COLOR.neutro, border: `2px solid ${COLOR.neutro}`, color: COLOR.navy }) }}
+            style={{ ...botonBase, ...(ultimo || (enParada && eleccion === null) ? DESACTIVADO : { background: COLOR.neutro, border: `2px solid ${COLOR.neutro}`, color: COLOR.navy }) }}
           >
             Siguiente
           </button>
@@ -376,7 +485,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
           </button>
           {/* «Paso N de M». En el cierre, vacío. */}
           <span data-paso-de style={{ fontFamily: INTER, fontSize: "12px", color: COLOR.apagado, fontVariantNumeric: "tabular-nums", visibility: ultimo ? "hidden" : "visible" }}>
-            Paso {Math.min(paso, PASOS)} de {PASOS}
+            {enParada ? `Antes del paso ${parada.antes}` : `Paso ${Math.min(paso, PASOS)} de ${PASOS}`}
           </span>
         </div>
       </div>
