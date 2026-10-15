@@ -561,7 +561,7 @@ test("★★★ v1.3: en la pantalla 4 la cuenta se ve al responder —acierte o
     await tocar(opcion(caja, eleccion));
     assert.equal(lista.dataset.resuelta, "si", eleccion);
     assert.deepEqual([...lista.querySelectorAll("[data-entra]")].map((d) => d.dataset.entra), ["no", "no", "+", "+", "−", "−"]);
-    assert.deepEqual([...lista.querySelectorAll("[data-no-entra]")].map((d) => d.textContent), ["no entra", "no entra"]);
+    assert.deepEqual([...lista.querySelectorAll("[data-no-entra]")].map((d) => d.textContent), ["no entra al costo", "no entra al costo"]);
     /* Lo que no entra va tachado: la forma lo dice, no el color. */
     for (const id of ["ventas", "devoluciones-ventas"]) {
       const fila = lista.querySelector(`[data-dato="${id}"]`);

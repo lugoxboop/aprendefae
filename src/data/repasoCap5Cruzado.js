@@ -49,7 +49,7 @@ export const INTERFAZ_R5_1 = {
   /* v1.3 · autodiagnóstico (Kamogawa): la pista se pide y la cuenta se ve. */
   verPista: "Ver pista",
   marcaPista: "PISTA",
-  noEntra: "no entra",
+  noEntra: "no entra al costo",
   marcaCuenta: "LA CUENTA",
   tenias: (u, total) => `Tenías ${u} u por ${pesos(total)}`,
   cadaUna: (total, u, promedio) => `Cada una: ${pesos(total)} ÷ ${u} = ${promedio}`,
