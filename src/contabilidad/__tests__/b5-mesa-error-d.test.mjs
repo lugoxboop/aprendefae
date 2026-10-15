@@ -37,6 +37,12 @@ test("★★★ solo sobran: «Sobra {X}.» con una, «Sobran {X} y {Y}.» con d
   assert.equal(dos.texto, "Sobran Caja y Gasto provisiones – cuentas incobrables. Este castigo solo mueve la provisión y Cuentas por cobrar – clientes. Todo el castigo va contra la provisión, aunque sea mayor que ella. Y aquí no entra plata.");
 });
 
+test("★★ «Sobran X e Y» cuando la segunda empieza por i: «Caja e Inversiones – títulos»", () => {
+  const p = T5.PARTES_T5_ACT2[1];
+  const t = textoD(p, [...p.asiento, d("Bancos", 0), d("Ingresos por intereses", 0)]);
+  assert.ok(t.startsWith("Sobran Bancos e Ingresos por intereses. "), t);
+});
+
 test("★★ los textos D de la mesa: los del Tema 6 empiezan con «Sobra una cuenta.»; los dos del T5 que no, se dejan enteros detrás de la cuenta", () => {
   const partes = [...A2.PARTES_T6_ACT2, ...A3.PARTES_T6_ACT3, ...T5.PARTES_T5_ACT2];
   const distintos = partes.filter((p) => !p.errores.D.startsWith("Sobra una cuenta. ")).map((p) => p.errores.D);

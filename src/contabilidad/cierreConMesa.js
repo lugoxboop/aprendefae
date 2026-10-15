@@ -25,7 +25,9 @@ import { DEBE, HABER } from "../data/contabilidad.js";
  */
 
 const SOBRA_UNA = "Sobra una cuenta. ";
-const enLista = (xs) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} y ${xs.at(-1)}`);
+/* «y» se vuelve «e» ante el sonido i («Caja e Inversiones – títulos»), salvo en diptongo («y hielo»). */
+const conjuncion = (siguiente) => (/^h?i(?![aeoáéó])/i.test(siguiente) ? "e" : "y");
+const enLista = (xs) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} ${conjuncion(xs.at(-1))} ${xs.at(-1)}`);
 
 /* La devolución D: qué cuenta no va (y, si es una por una, cuál va en su lugar), y después el texto D de los datos. */
 export function textoD(parte, puestas) {
