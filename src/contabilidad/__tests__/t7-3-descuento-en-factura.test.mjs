@@ -1,0 +1,270 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync, readdirSync } from "node:fs";
+import { JSDOM, VirtualConsole } from "jsdom";
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T7-3 · H1 «Descuento en la factura» (Célula C) · Hacer.
+ *
+ *   · las cifras se recalculan en centavos desde la lista, el 12 % y las
+ *     tarifas, y son las del registro 5c de Near; el asiento cuadra
+ *   · cada texto es, letra por letra, el de la v1
+ *   · un solo intento por unidad: un toque en cada cálculo; en el asiento,
+ *     «Comprobar» califica las cuatro líneas una vez, y las sumas aparecen
+ *     después (2.092.640 también es un distractor del ítem 3)
+ *   · ocho unidades; el porcentaje es aciertos / 8
+ *   · evaluativa, medio, 25 FP, en el cliente y en la migración 0103; la
+ *     vista de T7-3 lo abre y registra con el motor; el panel docente lee
+ *     cada unidad
+ *   · ninguna cifra del libro (las de H-1 son de A1) ni de X1-X4
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
+const w = dom.window;
+w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+w.requestAnimationFrame = (f) => setTimeout(f, 0);
+for (const [k, v] of Object.entries({
+  window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
+  HTMLElement: w.HTMLElement, Element: w.Element, Node: w.Node, SVGElement: w.SVGElement,
+  Event: w.Event, MouseEvent: w.MouseEvent, KeyboardEvent: w.KeyboardEvent,
+  getComputedStyle: w.getComputedStyle.bind(w), matchMedia: w.matchMedia, requestAnimationFrame: w.requestAnimationFrame,
+})) {
+  Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
+}
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
+const React = await import("react");
+const { createRoot } = await import("react-dom/client");
+const act = React.act;
+const h = React.createElement;
+
+const D = await import("../../data/contabilidadT7_3_h1.js");
+const L = await import("../t7_3H1.js");
+const A1 = await import("../../data/contabilidadT7_3.js");
+const { DEBE, HABER, pesos } = await import("../../data/contabilidad.js");
+const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await import("../../data/subjects.js");
+const { default: DescuentoEnFactura } = await import("../../components/mecanicas/libros/t7/DescuentoEnFactura.jsx");
+const { JUEGOS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
+const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
+
+const RAIZ = new URL("../../../", import.meta.url);
+const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
+const V1 = leer("orquestador/conocimiento/paquetes/t7-3-h1-v1.md");
+const MAPA = leer("orquestador/conocimiento/mapas/t7-inventarios.md");
+const VISTA = leer("src/components/ContabilidadT7_3View.jsx");
+const MIGRACION = leer("supabase/migrations/0103_t7_3_descuento_en_factura.sql");
+const TEMA = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_3);
+const miles = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const item = (id) => D.ITEMS_H1.find((x) => x.id === id);
+const C = D.CIFRAS_H1;
+
+/* ═══════════ 1 · LAS CIFRAS ═══════════ */
+
+test("★★★ las cifras se recalculan en centavos desde la lista, el 12 % y las tarifas, y son las del registro de Near", () => {
+  const de = (base, milesimas) => (base * 100 * milesimas) / 100_000 / 100;
+  const descuento = de(2_050_000, 12_000);
+  const factura = 2_050_000 - descuento;
+  const iva = de(factura, 16_000);
+  const ret = de(factura, 3_500);
+  assert.deepEqual([descuento, factura, iva, ret, factura + iva - ret], [246_000, 1_804_000, 288_640, 63_140, 2_029_500]);
+  assert.deepEqual([C.lista, C.descuento, C.factura, C.iva, C.retencion, C.cliente, C.sumas], [2_050_000, descuento, factura, iva, ret, factura + iva - ret, factura + iva]);
+  /* El registro 5c de la v1 trae, una por una, todas las que se ven. */
+  const registro = V1.split("\n").find((l) => l.startsWith("- Registro 5c, T73-H1: ")).replace("- Registro 5c, T73-H1: ", "").replace(/\.$/, "").split(" · ").map((x) => Number(x.replace(/\./g, "")));
+  const usadas = new Set([C.lista, C.descuento, C.factura, C.iva, C.retencion, C.cliente, C.sumas, ...D.ITEMS_H1.flatMap((it) => (it.distractores ?? []).map((d) => d.valor))]);
+  assert.deepEqual([...usadas].sort((a, b) => a - b), [...registro].sort((a, b) => a - b));
+  /* Distractores: el precio de lista, sumar el descuento; el IVA sobre la lista y la otra tarifa; no restar o sumar la retención. */
+  assert.deepEqual(item("valor-a-facturar").distractores.map((d) => d.valor), [2_050_000, 2_296_000]);
+  assert.deepEqual(item("iva").distractores.map((d) => d.valor), [328_000, 63_140]);
+  assert.deepEqual(item("debe-el-cliente").distractores.map((d) => d.valor), [2_092_640, 2_155_780]);
+  assert.deepEqual(item("ingresos-por-ventas").distractores.map((d) => d.valor), [2_050_000, 2_029_500]);
+  const suma = (l) => item("asiento").lineas.filter((x) => x.lado === l).reduce((s, x) => s + x.valor, 0);
+  assert.equal(suma(DEBE), suma(HABER));
+  assert.ok(V1.includes(`Después de comprobar se ven las sumas: ${miles(suma(DEBE))} = ${miles(suma(HABER))}`));
+});
+
+test("★★★ ninguna cifra del libro (las de H-1 son de A1) ni de X1-X4", () => {
+  const prohibidas = [...Object.values(A1.H1_LIBRO), 800_000, 175_000, 5_625_000, 5_800_000, 1_200_000, 262_500, 8_437_500, 643_500, 8_700_000, 2_432_000, 532_000, 384_000, 84_000, 2_700_000, 2_784_000, 17_632_000];
+  const todo = JSON.stringify(D.ITEMS_H1) + D.H1.enunciado.join(" ") + JSON.stringify(D.FICHA_H1);
+  const numeros = new Set([...todo.matchAll(/\d[\d.]*/g)].map((m) => Number(m[0].replace(/\./g, ""))));
+  for (const x of D.ITEMS_H1.flatMap((it) => [it.correcta, ...(it.distractores ?? []).map((d) => d.valor), ...(it.lineas ?? []).map((l) => l.valor)])) numeros.add(x);
+  for (const x of prohibidas) assert.ok(!numeros.has(x), miles(x));
+});
+
+/* ═══════════ 2 · TEXTOS CONTRA NEAR ═══════════ */
+
+const citas = (celda) => [...celda.matchAll(/«([^»]+)»/g)].map((m) => m[1]);
+const filas = () => V1.split("\n").filter((l) => /^\| \d \|/.test(l)).map((l) => l.split(" | ").map((c) => c.replace(/^\| | \|$/g, "")));
+
+test("★★★ los textos son los de la v1, letra por letra", () => {
+  assert.ok(V1.includes(`id \`${D.H1_ID}\``));
+  assert.ok(V1.startsWith(`**T7-3 · H1 «${D.H1.nombre}» · versión 1.**`));
+  assert.ok(MAPA.includes(`| 2 | ${D.H1_ID} | ${D.H1.nombre} | Hacer |`));
+  const enunciado = V1.slice(V1.indexOf("## Enunciado")).split("\n").filter((l) => l.startsWith("- «"));
+  assert.equal(D.H1.enunciado[0], citas(enunciado[0])[0]);
+  assert.equal(D.H1.enunciado[1], citas(enunciado[1])[0]);
+  assert.ok(enunciado[1].endsWith("Después, la frase de tarifas literal."));
+  assert.equal(D.H1.enunciado[2], A1.FRASE_TARIFAS);
+  assert.equal(D.H1.consigna, citas(enunciado[2])[0]);
+  assert.ok(V1.includes(`**Pie de todos los ítems:** «${D.H1.pie}».`));
+  /* La ficha: los cinco datos de la v1, en su orden, con los rótulos de A1 de T7-3. */
+  const ficha = V1.split("\n").find((l) => l.startsWith("- **Ficha en pantalla:** ")).replace("- **Ficha en pantalla:** ", "").replace(/\.$/, "").split(" · ").map((t) => t.replace(/^(entrega|recibe) /, ""));
+  assert.deepEqual(D.FICHA_H1.map(([, t]) => t.toLowerCase()), ficha.map((t) => t.toLowerCase()));
+  assert.deepEqual(D.FICHA_H1.map(([r]) => r), A1.PIEZA_EL_DESCUENTO_COMERCIAL.pantallas.find((p) => p.ficha).ficha.map((f) => f.dato));
+  const fs = filas();
+  assert.equal(fs.length, 5);
+  for (const [k, it] of D.ITEMS_H1.entries()) {
+    const [n, pregunta, correcta, distractores, acierto] = fs[k];
+    assert.equal(n, String(k + 1));
+    assert.equal(it.pregunta, citas(pregunta)[0], it.id);
+    if (it.tipo === "eleccion") {
+      assert.equal(pesos(it.correcta), correcta, it.id);
+      assert.equal(it.acierto, citas(acierto)[0], it.id);
+      const partes = distractores.split(" · ").map((p) => p.match(/^(\$[\d.]+): «([^»]+)»/));
+      assert.deepEqual(it.distractores.map((d) => [pesos(d.valor), d.retro]), partes.map((p) => [p[1], p[2]]), it.id);
+    } else {
+      const lineasV1 = [...correcta.matchAll(/([^·]+?) \$([\d.]+) → (Debe|Haber)/g)].map((m) => [m[1].trim(), Number(m[2].replace(/\./g, "")), m[3] === "Debe" ? DEBE : HABER]);
+      assert.deepEqual(it.lineas.map((l) => [l.cuenta, l.valor, l.lado]), lineasV1, it.id);
+      assert.deepEqual(it.lineas.map((l) => l.retro), citas(distractores), `${it.id}: un texto por línea`);
+    }
+  }
+});
+
+/* ═══════════ 3 · LA MECÁNICA, MONTADA ═══════════ */
+
+const EN_ORDEN = L.prepararH1((xs) => [...xs]);
+const Marco = ({ children }) => h("div", { "data-marco": true }, children);
+const montar = async (props = {}) => {
+  const caja = document.createElement("div");
+  document.body.appendChild(caja);
+  const raiz = createRoot(caja);
+  const completados = [];
+  await act(async () => { raiz.render(h(DescuentoEnFactura, { Marco, items: EN_ORDEN, onCompletar: (...a) => completados.push(a), ...props })); });
+  return { caja, completados, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
+};
+const tocar = async (el) => {
+  assert.ok(el, "no está el elemento que se quería tocar");
+  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+};
+const opcion = (caja, v) => caja.querySelector(`[data-opcion="${v}"] button`);
+const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent === texto);
+const lado = (caja, lineaId, l) => [...caja.querySelectorAll(`[data-linea="${lineaId}"] button`)].find((b) => b.textContent === (l === DEBE ? "Debe" : "Haber"));
+const otro = (l) => (l === DEBE ? HABER : DEBE);
+
+async function jugar(m, falla) {
+  const detalle = [];
+  for (const [k, it] of EN_ORDEN.entries()) {
+    assert.equal(m.caja.querySelector("[data-pregunta]").textContent, it.pregunta, `orden: el ítem ${k + 1}`);
+    assert.equal(m.caja.querySelector("[data-item] [data-pie]").textContent, D.H1.pie);
+    if (it.tipo === "eleccion") {
+      const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
+      await tocar(opcion(m.caja, v));
+      for (const o of it.opciones) assert.equal(opcion(m.caja, o.valor).disabled, true);
+      const ok = v === it.correcta;
+      assert.deepEqual([...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent), L.evaluarH1(it, v).textos);
+      if (!ok) assert.equal(opcion(m.caja, it.correcta).dataset.estado, "revelada");
+      detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
+    } else {
+      for (const l of it.lineas) {
+        assert.equal(boton(m.caja, "Comprobar").disabled, true, "«Comprobar» antes de tener todas las líneas");
+        await tocar(lado(m.caja, l.id, otro(l.lado)));
+        await tocar(lado(m.caja, l.id, falla(L.idLineaH1(it, l)) ? otro(l.lado) : l.lado));
+      }
+      /* Las sumas (2.092.640) no se ven antes de comprobar: regalarían el distractor del ítem 3. */
+      assert.equal(m.caja.querySelector("[data-asiento-completo]") === null, true, "las sumas antes de comprobar");
+      await tocar(boton(m.caja, "Comprobar"));
+      for (const l of it.lineas) {
+        const ok = !falla(L.idLineaH1(it, l));
+        for (const b of m.caja.querySelectorAll(`[data-linea="${l.id}"] button`)) assert.equal(b.disabled, true);
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), ok ? [] : [l.retro]);
+        detalle.push({ item: L.idLineaH1(it, l), ok, intentos: 1, respuesta: ok ? null : otro(l.lado), orden: detalle.length + 1 });
+      }
+      const suma = pesos(C.sumas);
+      assert.ok(m.caja.querySelector("[data-asiento-completo]").textContent.includes(`${suma}${suma}`), "las sumas");
+    }
+    await tocar(boton(m.caja, k === 4 ? D.BOTON_H1.verResumen : D.BOTON_H1.siguiente));
+  }
+  return detalle;
+}
+
+test("★★★ la tanda entera: ocho unidades, un intento cada una, y el porcentaje es aciertos / 8", async () => {
+  const m = await montar();
+  try {
+    assert.deepEqual([...m.caja.querySelectorAll("[data-enunciado] p")].map((p) => p.textContent), D.H1.enunciado);
+    /* La ficha de la venta, siempre a la vista. */
+    assert.ok(m.caja.textContent.includes(D.FICHA_H1.map(([r, t]) => `${r}${t}`).join("")), "la ficha no está a la vista");
+    const fallos = new Set(["iva", "ingresos-por-ventas", "asiento:anticipo"]);
+    const detalle = await jugar(m, (id) => fallos.has(id));
+    assert.equal(m.completados.length, 1);
+    const [pct, , det] = m.completados[0];
+    assert.deepEqual(det, detalle);
+    assert.deepEqual(det.map((d) => d.item), L.unidadesH1());
+    assert.equal(L.TOTAL_H1, 8);
+    assert.equal(pct, (5 / 8) * 100);
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★ las opciones y las líneas se barajan en cada intento; los ítems, no", () => {
+  const revolver = (xs) => [...xs].sort(() => Math.random() - 0.5);
+  const a = new Set(); const b = new Set();
+  for (let i = 0; i < 60; i++) {
+    const p = L.prepararH1(revolver);
+    assert.deepEqual(p.map((x) => x.id), D.ITEMS_H1.map((x) => x.id));
+    a.add(p[0].opciones.map((o) => o.valor).join());
+    b.add(p[4].orden.join());
+  }
+  assert.ok(a.size > 1 && b.size > 1);
+});
+
+/* ═══════════ 4 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
+
+test("★★★ en T7-3, justo después de A1: evaluativa, medio, 25 FP", () => {
+  assert.deepEqual(clasificacionDe("contabilidad", TEMA_T7_3, D.H1_ID), { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
+  assert.equal(TEMA.actividades.find((a) => a.id === D.H1_ID).nombre, D.H1.nombre);
+  for (const a of TEMA.actividades.filter((x) => x.clasificacion.tipo !== HACER)) assert.deepEqual(a.clasificacion, { tipo: APRENDER }, a.id);
+  const ids = TEMA.actividades.map((x) => x.id);
+  assert.equal(ids.indexOf(D.H1_ID), ids.indexOf("t7-3-descuento-comercial") + 1);
+});
+
+test("★★★ la vista abre lo que el catálogo ofrece y registra con el motor compartido", () => {
+  const ofrecidas = actividadesDeTipo(TEMA, HACER).filter((a) => !a.pendiente).map((a) => a.id).sort();
+  assert.deepEqual(JUEGOS_T7_3.map((j) => j.id).sort(), ofrecidas);
+  assert.equal(JUEGOS_T7_3.find((j) => j.id === D.H1_ID).Mecanica, DescuentoEnFactura);
+  assert.match(VISTA, /registrarActividadCompletada\(clas, \{\s*materiaId: MATERIA, temaId: TEMA_T7_3, actividadId, porcentajeAciertos: porcentaje, duracionMs, detalle,/);
+  assert.match(leer("src/App.jsx"), /<ContabilidadT7_3View modo=\{modoTema\} nodoInicial=\{ruta\.extra\} /);
+});
+
+test("★★★ la 0103: del rango de la célula, aditiva y repetible, sin correr", () => {
+  assert.match(MIGRACION, /\('t7-3-descuento-en-factura',\s*'contabilidad',\s*'inventarios-descuentos-nic2',\s*'evaluativa',\s*'medio',\s*25,\s*1\)/);
+  assert.match(MIGRACION, /on conflict \(activity_id\) do nothing;/);
+  const sentencias = MIGRACION.split("\n").filter((l) => !l.trim().startsWith("--")).join("\n");
+  assert.doesNotMatch(sentencias, /\b(alter|update|delete|drop|truncate)\b/i);
+  assert.match(sentencias, /select activity_id[\s\S]*where activity_id = 't7-3-descuento-en-factura';/);
+  const dir = new URL("supabase/migrations/", RAIZ);
+  assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(D.H1_ID)), ["0103_t7_3_descuento_en_factura.sql"]);
+  assert.deepEqual(readdirSync(dir).filter((f) => f.startsWith("0103")), ["0103_t7_3_descuento_en_factura.sql"]);
+});
+
+test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqueta, leída de los datos", async () => {
+  const m = await montar();
+  try {
+    await jugar(m, () => false);
+    const ids = m.completados[0][2].map((d) => d.item);
+    assert.equal(ids.length, 8);
+    for (const id of ids) {
+      const e = etiquetaDeItem(D.H1_ID, id);
+      assert.ok(typeof e === "string" && e.trim() !== "", `${id}: sin etiqueta`);
+      assert.equal(e, recortar(L.unidadDeH1(id)), id);
+    }
+    assert.equal(L.unidadDeH1("iva"), "¿Cuánto es el IVA?");
+    assert.equal(L.unidadDeH1("asiento:anticipo"), "Anticipo fiscal $63.140");
+  } finally {
+    m.desmontar();
+  }
+  const fuente = leer("src/docente/etiquetasItem.js");
+  const bloque = fuente.slice(fuente.indexOf("CONTABILIDAD · T7 «INVENTARIOS»"));
+  assert.match(bloque.slice(0, bloque.indexOf("});")), /"t7-3-descuento-en-factura": \(id\) => unidadDeT73H1\(id\),/);
+});
