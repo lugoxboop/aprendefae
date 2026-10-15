@@ -147,7 +147,7 @@ Es la única fuente del orden de las piezas en subjects.js, en ContabilidadT7_1V
 
 Los ids de las piezas que ya existen mandan sobre los del plan v3.2 (a4 y a6 llevan el nombre completo). Los demás son los del plan.
 
-En main hoy: a1, a2, a3, a5, a6, a7 (#51, #59, #71, #60, #56, #66). Abiertos: #65 (AP4), que va entre a3 y a5 y ya puede entrar porque AP3 está en main; #64 (H1), que va cuando Mateo corra la 0090.
+En main: a1, a2, a3, AP4, a5, a6 y a7 (#51, #59, #71, #65, #60, #56 y #66), y H1 (#64), con la 0090 corrida.
 
 ## Orden final de T7-2 (decisión de L · 14 de octubre de 2026)
 
@@ -1045,3 +1045,5 @@ Versión 3 del mapa en el repositorio: se agregó, después de «Control», la s
 **Orden final de T7-3 (L, 14 de octubre de 2026):** se agregó, justo antes de «## Bloque A», la sección «## Orden final de T7-3», con los ids del plan v1 de Near y el orden de su plan reordenado por la regla 9: 1 A1 · 2 Descuento en la factura · 3 A2 · 4 La cadena de descuentos · 5 A3 · 6 A4 · 7 ¿Comercial o condicionado? · 8 Pagó a tiempo · 9 A5 · 10 A6 · 11 Ajuste por conteo · 12 A7 · 13 ¿Entra al costo? · 14 ¿Costo o valor neto realizable? · 15 A8. No cambia ninguna cifra ni página.
 
 **Decisión de corte v10.2 (L, 14 de octubre de 2026):** la sección «## Decisión de corte (L, general de la Célula C · 13 de octubre de 2026)», que estaba en la versión 2, se reemplazó con todas sus subsecciones por la versión 10.2 de L, tal cual. No cambia el corte (tres temas, con cortes en 232|233 y en 248); cambian la justificación, las reglas de producción y la lista de control de las cadenas que cruzan.
+
+**Cierre de T7-1 al día (L, 15 de octubre de 2026):** la línea que decía «Abiertos: #65 (AP4) y #64 (H1)» ya no era cierta: los dos están fusionados. Ahora dice qué está en main. No cambia ninguna cifra ni página.
