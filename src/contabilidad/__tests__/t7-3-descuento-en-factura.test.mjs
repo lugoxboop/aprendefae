@@ -118,7 +118,7 @@ test("★★★ los textos son los de la v1, letra por letra", () => {
     const [n, pregunta, correcta, distractores, acierto] = fs[k];
     assert.equal(n, String(k + 1));
     assert.equal(it.pregunta, citas(pregunta)[0], it.id);
-    if (it.tipo === "eleccion") {
+    if (it.tipo !== "asiento") {
       assert.equal(pesos(it.correcta), correcta, it.id);
       assert.equal(it.acierto, citas(acierto)[0], it.id);
       const partes = distractores.split(" · ").map((p) => p.match(/^(\$[\d.]+): «([^»]+)»/));
@@ -149,7 +149,18 @@ const tocar = async (el) => {
 };
 const opcion = (caja, v) => caja.querySelector(`[data-opcion="${v}"] button`);
 const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent === texto);
-const lado = (caja, lineaId, l) => [...caja.querySelectorAll(`[data-linea="${lineaId}"] button`)].find((b) => b.textContent === (l === DEBE ? "Debe" : "Haber"));
+const lado = (caja, lineaId, l) => [...caja.querySelectorAll(`[data-linea-cuenta="${lineaId}"] button`)].find((b) => b.textContent === (l === DEBE ? "Debe" : "Haber"));
+const ficha = (caja, lineaId, cuenta) => [...caja.querySelectorAll(`[data-linea-cuenta="${lineaId}"] [data-ficha-cuenta]`)].find((b) => b.dataset.fichaCuenta === cuenta);
+/* Escribe en la casilla de cifra como lo haría el teclado: el valor con su punto de miles. */
+const escribir = async (caja, id, valor) => {
+  const i = caja.querySelector(`[data-campo-cifra="${id}"]`);
+  assert.ok(i, `no está la casilla de ${id}`);
+  await act(async () => {
+    Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype, "value").set.call(i, String(valor));
+    i.dispatchEvent(new w.Event("input", { bubbles: true }));
+  });
+  assert.equal(i.value, miles(valor));
+};
 const otro = (l) => (l === DEBE ? HABER : DEBE);
 
 async function jugar(m, falla) {
@@ -159,7 +170,20 @@ async function jugar(m, falla) {
     assert.equal(m.caja.querySelector("[data-item] [data-pie]").textContent, D.H1.pie);
     /* Patrón T7-3: la cuenta de la factura no está antes de responder el ítem 1; después, se queda. */
     assert.equal(m.caja.querySelectorAll("figure[data-renglones]").length, k === 0 ? 0 : 1, `figuras antes del ítem ${k + 1}`);
-    if (it.tipo === "eleccion") {
+    if (it.tipo === "cifra") {
+      /* LOTE 3: casilla de cifra; si falla, escribe el primer distractor de Near y sale su retroalimentación. */
+      const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
+      assert.equal(boton(m.caja, "Comprobar").disabled, true, "«Comprobar» sin cifra");
+      await escribir(m.caja, it.id, v);
+      await tocar(boton(m.caja, "Comprobar"));
+      const ok = v === it.correcta;
+      assert.equal(m.caja.querySelector(`[data-campo-cifra="${it.id}"]`).readOnly, true, "un solo intento");
+      assert.equal(boton(m.caja, "Comprobar"), undefined);
+      assert.deepEqual([...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent), L.evaluarH1(it, v).textos);
+      if (!ok) assert.deepEqual(L.evaluarH1(it, v).textos, [it.distractores[0].retro, `La respuesta es ${pesos(it.correcta)}.`]);
+      assert.equal(m.caja.querySelectorAll("figure[data-renglones]").length, 1, `figuras al responder el ítem ${k + 1}`);
+      detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
+    } else if (it.tipo === "eleccion") {
       const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
       await tocar(opcion(m.caja, v));
       for (const o of it.opciones) assert.equal(opcion(m.caja, o.valor).disabled, true);
@@ -169,19 +193,24 @@ async function jugar(m, falla) {
       assert.equal(m.caja.querySelectorAll("figure[data-renglones]").length, 1, `figuras al responder el ítem ${k + 1}`);
       detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
     } else {
+      /* LOTE 3 · «Arma la línea»: cada línea elige su cuenta del banco (la correcta y dos distractores) y su lado. */
       for (const l of it.lineas) {
         assert.equal(boton(m.caja, "Comprobar").disabled, true, "«Comprobar» antes de tener todas las líneas");
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-ficha-cuenta]`)].map((b) => b.dataset.fichaCuenta), [l.cuenta, ...l.distractores]);
+        assert.ok(m.caja.querySelector(`[data-linea-cuenta="${l.id}"] [data-valor]`).textContent === pesos(l.valor), "el monto viene dado");
+        await tocar(ficha(m.caja, l.id, falla(L.idLineaH1(it, l)) ? l.distractores[0] : l.cuenta));
         await tocar(lado(m.caja, l.id, otro(l.lado)));
-        await tocar(lado(m.caja, l.id, falla(L.idLineaH1(it, l)) ? otro(l.lado) : l.lado));
+        await tocar(lado(m.caja, l.id, l.lado));
       }
       /* Las sumas (2.092.640) no se ven antes de comprobar: regalarían el distractor del ítem 3. */
       assert.equal(m.caja.querySelector("[data-asiento-completo]") === null, true, "las sumas antes de comprobar");
       await tocar(boton(m.caja, "Comprobar"));
       for (const l of it.lineas) {
         const ok = !falla(L.idLineaH1(it, l));
-        for (const b of m.caja.querySelectorAll(`[data-linea="${l.id}"] button`)) assert.equal(b.disabled, true);
-        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), ok ? [] : [l.retro]);
-        detalle.push({ item: L.idLineaH1(it, l), ok, intentos: 1, respuesta: ok ? null : otro(l.lado), orden: detalle.length + 1 });
+        for (const b of m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] button`)) assert.equal(b.disabled, true);
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), ok ? [] : [l.retro]);
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Era: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
+        detalle.push({ item: L.idLineaH1(it, l), ok, intentos: 1, respuesta: ok ? null : `${l.distractores[0]}|${l.lado}`, orden: detalle.length + 1 });
       }
       const suma = pesos(C.sumas);
       assert.ok(m.caja.querySelector("[data-asiento-completo]").textContent.includes(`${suma}${suma}`), "las sumas");
@@ -216,8 +245,8 @@ test("★★ las opciones y las líneas se barajan en cada intento; los ítems, 
   for (let i = 0; i < 60; i++) {
     const p = L.prepararH1(revolver);
     assert.deepEqual(p.map((x) => x.id), D.ITEMS_H1.map((x) => x.id));
-    a.add(p[0].opciones.map((o) => o.valor).join());
-    b.add(p[4].orden.join());
+    a.add(p[3].opciones.map((o) => o.valor).join());
+    b.add(p[4].orden.join() + p[4].lineas.map((l) => l.banco.join()).join());
   }
   assert.ok(a.size > 1 && b.size > 1);
 });
@@ -279,7 +308,8 @@ test("★★★ Patrón T7-3: la factura de Guadua en renglones llega al respond
     const m = await montar();
     try {
       assert.equal(m.caja.querySelectorAll("figure[data-renglones]").length, 0);
-      await tocar(opcion(m.caja, v));
+      await escribir(m.caja, "valor-a-facturar", v);
+      await tocar(boton(m.caja, "Comprobar"));
       const fig = m.caja.querySelector("figure[data-renglones]");
       assert.equal(fig.querySelector("figcaption").textContent, "Factura de Guadua");
       assert.deepEqual([...fig.querySelectorAll("[data-renglon]")].map((r) => [r.querySelector(".rg-op").textContent, r.querySelector(".rg-v").textContent, r.classList.contains("rg-res")]),
@@ -291,5 +321,34 @@ test("★★★ Patrón T7-3: la factura de Guadua en renglones llega al respond
     } finally {
       m.desmontar();
     }
+  }
+});
+
+/* ═══════════ LOTE 3 · «ARMA LA LÍNEA», LA CASILLA Y EL DISTINTIVO ═══════════ */
+
+test("★★★ lote 3: los cálculos van con casilla; el asiento, con banco de cuentas (la correcta y 2 distractores)", () => {
+  assert.deepEqual(D.ITEMS_H1.map((x) => x.tipo), ["cifra", "cifra", "cifra", "eleccion", "asiento"]);
+  for (const l of item("asiento").lineas) {
+    assert.equal(l.distractores.length, 2, l.id);
+    assert.ok(!l.distractores.includes(l.cuenta), l.id);
+    assert.equal(new Set(l.distractores).size, 2, l.id);
+  }
+  /* El banco de cada línea: las tres cuentas, barajadas. */
+  const p = L.prepararH1((xs) => [...xs].reverse());
+  for (const l of p[4].lineas) assert.deepEqual([...l.banco].sort(), [l.cuenta, ...l.distractores].sort());
+  /* Una cifra que no es de ningún distractor: la respuesta y el porqué del acierto, sin «Así es.». */
+  assert.deepEqual(L.evaluarH1(item("iva"), 1), { ok: false, correcta: C.iva, textos: [`La respuesta es ${pesos(C.iva)}.`, "Se calcula sobre el valor a facturar: $1.804.000 × 16 % = $288.640."], textoCorrecta: pesos(C.iva) });
+});
+
+test("★★★ lote 3: «Tienes un solo intento» sale de la consigna en pantalla y queda el distintivo junto al contador", async () => {
+  assert.ok(D.H1.consigna.endsWith("Tienes un solo intento por pregunta."), "los datos siguen siendo los de Near");
+  const m = await montar();
+  try {
+    assert.ok(!m.caja.textContent.includes("Tienes un solo intento"));
+    assert.ok(m.caja.textContent.includes("Calcula la factura y arma el asiento de la venta."));
+    const d = m.caja.querySelector("[data-contador-intento] [data-un-intento]");
+    assert.equal(d.textContent, "Un intento");
+  } finally {
+    m.desmontar();
   }
 });
