@@ -449,3 +449,22 @@ test("★★★ los FP de 0 a 6 aciertos salen de calcularFP y son los que da la
     assert.doesNotMatch(leer(f).replace(/^\s*(\/\*|\*|\/\/).*$/gm, ""), /fpBase\s*\*|\*\s*fpBase|Math\.round\([^)]*fp/i, f);
   }
 });
+
+/*
+ * EL CASO DE LA MITAD EXACTA (Takamura). 3 de 6 = 50 %: 25 × 0,5 = 12,5 FP.
+ * El servidor redondea con round() sobre numeric (0017: v_rend y v_tiempo son
+ * numeric), que lleva la mitad hacia arriba; el cliente, con Math.round en
+ * src/fp/motor.js. Los dos tienen que dar 13, no 12.
+ */
+test("★★★ 3 de 6 da 12,5 FP exactos y calcularFP los redondea a 13, como round() sobre numeric en el servidor", () => {
+  const SQL = leer("supabase/migrations/0017_detalle_por_item.sql");
+  assert.match(SQL, /v_rend\s+numeric;/);
+  assert.match(SQL, /v_tiempo\s+numeric;/);
+  const pct = D.puntuarR5_1(3);
+  assert.equal(pct, 50);
+  assert.equal(D.R5_1.fpBase * (pct / 100), 12.5, "el caso tiene que ser una mitad exacta");
+  const { fp, desglose } = calcularFP({ dificultad: D.R5_1.dificultad, modalidad: D.R5_1.modalidad, aciertos: pct / 100, duracionMs: 60_000 });
+  assert.equal(desglose.factorRendimiento, 0.5);
+  assert.equal(desglose.factorTiempo, 1);
+  assert.equal(fp, 13);
+});
