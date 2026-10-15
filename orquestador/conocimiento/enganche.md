@@ -149,6 +149,7 @@ Son 44 piezas: T7-1, T7-2, T7-3 y las suyas de T5. Se midieron con Playwright a 
   - *Regla:* si dos piezas enseñan la misma regla y solo cambia el hecho, son una pieza con dos casos. Un Hacer que se resuelve al 50 % o buscando una palabra del Aprender no se abre.
 - **C7 · El resumen que borra el límite.** «Almacenamiento» pasó a ser «lo que cuesta guardarla», sin el «directamente atribuible a la adquisición» de la p. 258. La frase quedó más corta y dejó de ser cierta.
   - *Regla:* al resumir una definición del libro, se conserva la condición que la limita («directamente», «solo si», «cuando»). Si no cabe, se cita entera. El auditor compara cada resumen con su página, no solo las cifras.
+  - *Corolario:* esa condición tampoco se pliega detrás de «¿Por qué?». Lo plegado solo lo ve quien acierta y lo abre, y una condición que solo ve quien acertó no protege a quien se equivocó.
 - **C8 · Lo que sí engancha: la figura que crece y se queda.** La única pieza de la célula que enganchó por su mecánica fue «Llena el kárdex». Cada respuesta añade una fila, la tabla sigue a la vista y el estudiante ve su trabajo acumularse.
   - *Regla:* en un Hacer de varios ítems sobre un mismo caso, cada respuesta deja su huella en una figura que sigue en pantalla mientras se responde lo siguiente (una tabla, un asiento, una cuenta). Un ítem que borra lo anterior para preguntar lo siguiente desperdicia el caso.
 
