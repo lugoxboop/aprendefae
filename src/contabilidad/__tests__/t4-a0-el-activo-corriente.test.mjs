@@ -255,14 +255,73 @@ test("★★★ la figura va donde la pide Hanayama, con lo que cae a cada lado 
       /* Los rótulos de las dos zonas y del margen, del único sitio donde viven. */
       assert.deepEqual([...f.querySelectorAll(".t4ry-zrot")].map((r) => [...r.children].map((x) => x.textContent)), [Z.FIGURA_RAYA.zonaSi, Z.FIGURA_RAYA.zonaNo]);
       assert.deepEqual([...f.querySelectorAll(".t4ry-mar")].map((x) => x.textContent).filter(Boolean), ["hoy", "1 año"]);
-      /* El eje sigue debajo de la raya (§2.4): un eje por zona, y cada tarjeta con su muesca. */
-      assert.equal(f.querySelectorAll(".t4ry-eje").length, 2, `${id}: el eje no sigue debajo de la raya`);
-      assert.equal(f.querySelectorAll("[data-tarjeta] .t4ry-tick").length, f.querySelectorAll("[data-tarjeta]").length);
-      for (const t of f.querySelectorAll(".t4ry-tick")) assert.equal(t.style.visibility, "", `${id}: muesca escondida`);
+      /* Arriba, cada tarjeta cuelga del eje con su muesca. */
+      assert.equal(f.querySelectorAll('[data-zona="antes"] [data-tarjeta] .t4ry-tick').length, f.querySelectorAll('[data-zona="antes"] [data-tarjeta]').length, `${id}: tarjeta de arriba sin muesca`);
       /* La figura es otra cosa que A1: ni Debe ni Haber. */
       assert.doesNotMatch(f.textContent, /Debe|Haber/);
     }
   } finally { m.desmontar(); }
+});
+
+/* Hanayama v1.1, prueba 6: el rótulo de abajo es el complemento exacto del de arriba, y no habla de «después». */
+test("★★★ v1.1 · el rótulo de abajo es «No es corriente / no se vuelve plata / antes de un año», sin «tarda» ni «más»", () => {
+  assert.deepEqual(Z.FIGURA_RAYA.zonaNo, ["No es corriente", "no se vuelve plata", "antes de un año"]);
+  /* El complemento exacto: los mismos renglones de arriba, con el «no». */
+  assert.deepEqual(Z.FIGURA_RAYA.zonaNo.slice(1), ["no " + Z.FIGURA_RAYA.zonaSi[1], Z.FIGURA_RAYA.zonaSi[2]]);
+  const m = montar();
+  try {
+    for (const id of ["prueba-del-ano", "cual-es-corriente", "activos-fijos", "resumen"]) {
+      irA(m.caja, id);
+      /*
+       * Renglón por renglón: el textContent del rótulo los pega sin espacio
+       * («…corrientetarda más…»). Y sin \b, que en JavaScript no reconoce la «á».
+       */
+      const renglones = [...raya(m.caja).querySelector('[data-zona="despues"] .t4ry-zrot').children].map((x) => x.textContent);
+      assert.equal(renglones.length, 3, `${id}: el rótulo de abajo no tiene sus tres renglones`);
+      const palabras = renglones.flatMap((r) => r.split(/\s+/));
+      assert.deepEqual(palabras.filter((p) => p === "tarda" || p === "más"), [], `${id}: el rótulo de abajo dice «${renglones.join(" / ")}»`);
+    }
+  } finally { m.desmontar(); }
+  /* Y ningún texto alternativo dice que lo de abajo «cae después» o «tarda». */
+  assert.deepEqual(Object.entries(Z.FIGURA_RAYA.alt).filter(([, t]) => /tarda|caen? después|después de la raya/.test(t)).map(([e]) => e), []);
+});
+
+/* Hanayama v1.1, prueba 7: el eje del tiempo termina en la raya; debajo, ni eje ni muescas. */
+test("★★★ v1.1 · el eje no sigue debajo de la raya, y las tarjetas de abajo no llevan muesca", () => {
+  const m = montar();
+  try {
+    let vistas = 0;
+    for (const id of ["prueba-del-ano", "ejemplos", "activos-fijos", "efectivo-primero", "resumen"]) {
+      irA(m.caja, id);
+      const f = raya(m.caja);
+      const linea = f.querySelector("[data-raya]");
+      const ejes = [...f.querySelectorAll(".t4ry-eje")];
+      assert.equal(ejes.length, 1, `${id}: hay ${ejes.length} ejes`);
+      /* El único eje está antes de la raya en el documento: va de «hoy» a la raya. */
+      assert.ok(ejes[0].compareDocumentPosition(linea) & w.Node.DOCUMENT_POSITION_FOLLOWING, `${id}: el eje está debajo de la raya`);
+      const abajo = f.querySelector('[data-zona="despues"]');
+      assert.equal(abajo.querySelectorAll(".t4ry-tick").length, 0, `${id}: hay muescas debajo de la raya`);
+      vistas += abajo.querySelectorAll("[data-tarjeta]").length;
+    }
+    /* La guarda: abajo hubo tarjetas que mirar (los cuatro fijos en tres pantallas). */
+    assert.equal(vistas, 12);
+  } finally { m.desmontar(); }
+  /* Y en P4, con las dos tarjetas de abajo del acierto. */
+  const m2 = montar();
+  try {
+    irA(m2.caja, "cual-es-corriente");
+    tocar(m2.caja.querySelector('[data-opcion="mercancia"]'));
+    tocar(boton(m2.caja, "confirmar"));
+    const f = raya(m2.caja);
+    assert.equal(f.querySelectorAll(".t4ry-eje").length, 1);
+    assert.equal(f.querySelectorAll('[data-zona="despues"] [data-tarjeta]').length, 2);
+    assert.equal(f.querySelectorAll('[data-zona="despues"] .t4ry-tick').length, 0);
+  } finally { m2.desmontar(); }
+});
+
+test("★★ la tarjeta de la mercancía dice «se vende y se cobra este mes», como la opción de la v2", () => {
+  assert.match(pantalla("cual-es-corriente").opciones.find((o) => o.correcta).texto, /vender y cobrar/);
+  assert.deepEqual(Z.ESTADOS_RAYA["p4-acierto"].antes.map((t) => [t.texto, t.glosa]), [["Mercancía", "se vende y se cobra este mes"]]);
 });
 
 test("★★★ la figura: sin teal, ámbar ni coral, sin trazos discontinuos; los renglones no se parten; nada se mueve con movimiento reducido", () => {

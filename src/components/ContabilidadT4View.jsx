@@ -356,14 +356,16 @@ export function PantallasT4({ pieza, rotulo }) {
  * ═══════════════════════════════════════════════════════════════════════════
  * T4 · LAS FIGURAS DE HANAYAMA.
  *
- * Construidas desde la especificación (celula-d/hanayama-a1-figura-v1.md con
- * la v1.1 encima, y hanayama-a0-figura-v1.md), no desde los prototipos. Viven
- * aquí, en el carril de la Célula D: no son componentes compartidos.
+ * Construidas desde la especificación, no desde los prototipos: la versión
+ * más alta de cada una (celula-d/hanayama-a1-figura-v1.md con su v1.1 y su
+ * v1.2, y hanayama-a0-figura-v1.md con su v1.1). Viven aquí, en el
+ * carril de la Célula D: no son componentes compartidos.
  *
  *   · «El cajón de paso» (A1): el dinero entra a Caja por el Debe y sale por
  *     el Haber hacia Bancos o hacia un pago en efectivo
- *   · «La raya del año» (A0): cada activo cae arriba (corriente) o abajo de
- *     una sola raya
+ *   · «La raya del año» (A0): cada activo cae arriba (corriente) o abajo (no
+ *     corriente) de una sola raya. El eje del tiempo va solo de «hoy» a la
+ *     raya: abajo no hay «después», hay «no cumple la prueba»
  *
  * Cada figura es una función de su estado. Solo cambia el color de lo
  * señalado, y lo que aparece lo hace con un fundido de 120 ms; con movimiento
@@ -512,13 +514,13 @@ export function CajonDePaso({ estado }) {
 /* El alto que reservan las dos zonas en los cuatro estados de P4 (Hanayama v1, §3): la raya no salta. */
 const ALTO_P4 = { antes: "122.52px", despues: "174.25px" };
 
-function ZonaRaya({ id, rotulo, s }) {
+function ZonaRaya({ id, rotulo, s, conEje = true }) {
   return (
     <ul className="t4ry-zona" data-zona={id} aria-label={rotulo.join(" ")} style={{ minHeight: s.p4 ? ALTO_P4[id] : undefined }}>
       <li className="t4ry-zrot" aria-hidden="true">{rotulo.map((t) => <span key={t}>{t}</span>)}</li>
       {s[id].map((it) => (
         <li key={it.id} className={`t4ry-item t4f-nueva${s.foco.includes(it.id) ? " t4ry-foco" : ""}`} data-tarjeta={it.id} data-foco={s.foco.includes(it.id) ? "si" : undefined}>
-          <span className="t4ry-tick" aria-hidden="true" />
+          {conEje ? <span className="t4ry-tick" aria-hidden="true" /> : <span aria-hidden="true" />}
           <span className="t4ry-tarj"><span>{it.texto}</span>{it.glosa && <span>{it.glosa}</span>}</span>
         </li>
       ))}
@@ -538,11 +540,15 @@ export function RayaDelAno({ estado }) {
         <ZonaRaya id="antes" rotulo={F.zonaSi} s={s} conEje />
       </div>
       <div className="t4ry-raya" data-raya aria-hidden="true"><span className="t4ry-mar">{F.unAno}</span><span /></div>
-      {/* Hanayama v1 §2.4: debajo de la raya «el mismo eje sigue», y las tarjetas cuelgan de él igual. */}
+      {/*
+        Hanayama v1.1, cambio 2: el eje del tiempo termina en la raya. Debajo
+        no hay eje ni muescas: las tarjetas van en la misma columna, sueltas.
+        La zona dice «no cumple la prueba», no «cuándo».
+      */}
       <div className="t4ry-esc">
         <span />
-        <span className="t4ry-eje" aria-hidden="true" />
-        <ZonaRaya id="despues" rotulo={F.zonaNo} s={s} />
+        <span />
+        <ZonaRaya id="despues" rotulo={F.zonaNo} s={s} conEje={false} />
       </div>
       <figcaption id={idAlt} className="t4f-sr">{F.alt[estado]}</figcaption>
     </figure>

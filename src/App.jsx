@@ -252,7 +252,7 @@ export default function App() {
     );
   }
 
-  /* T4 de Contabilidad (Célula D): por ahora, el andamio del tema, sin piezas. */
+  /* T4 de Contabilidad (Célula D): sus piezas de Aprender, A0 y A1. */
   if (view === "efectivo-caja-menor-bancos") {
     return wrap(
       <Suspense fallback={siteFallback}>

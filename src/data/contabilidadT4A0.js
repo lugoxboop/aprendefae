@@ -13,8 +13,10 @@
  * copiar C.1 como ítem. Sin cifras: los porcentajes de la p. 179 no entran.
  *
  * Aprender: sin FP, sin catálogo y sin llamar al motor. La figura es «La raya
- * del año» de Hanayama (v1): FIGURA_RAYA trae sus rótulos y ESTADOS_RAYA lo
- * que se ve en cada estado; cada pantalla dice en qué estado la pide.
+ * del año» de Hanayama (v1 con la v1.1 encima, y la glosa de la mercancía de
+ * su cotejo con la v2 de Katsumi): FIGURA_RAYA trae sus rótulos y
+ * ESTADOS_RAYA lo que se ve en cada estado; cada pantalla dice en qué estado
+ * la pide.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -23,10 +25,15 @@ import { BOTON } from "./contabilidadT4.js";
 export const A0_ID = "t4-a0-el-activo-corriente";
 
 /*
- * ═══════════ LA FIGURA: «LA RAYA DEL AÑO» (Hanayama v1) ═══════════
+ * ═══════════ LA FIGURA: «LA RAYA DEL AÑO» (Hanayama v1 + v1.1) ═══════════
  *
  * Sin teal, ámbar ni coral, y sin Debe ni Haber: A0 no usa el debe y el haber
  * de A1. Cada renglón de rótulo y de tarjeta va sin partirse.
+ *
+ * v1.1: la zona de abajo es «todo lo que no cumple la prueba», no un tramo de
+ * tiempo «después del año». Por eso su rótulo es el complemento exacto del de
+ * arriba, y el eje del tiempo termina en la raya (la vista no lo dibuja
+ * debajo, ni pone muescas a las tarjetas de abajo).
  */
 export const FIGURA_RAYA = {
   /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] Rótulos del margen y de las zonas (Hanayama v1, §4). */
@@ -34,23 +41,25 @@ export const FIGURA_RAYA = {
   unAno: "1 año",
   zonaSi: ["Corriente", "se vuelve plata", "antes de un año"],
   /*
-   * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El rótulo de la zona de abajo,
-   * en un solo sitio a propósito: la v1.1 de Hanayama lo cambia por el
-   * complemento de «Corriente» («no se vuelve plata» / «antes de un año»).
-   * Hasta que llegue, va el de la v1.
+   * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] v1.1, cambio 1: el
+   * complemento exacto de «Corriente». La v1 («tarda más / de un año») era
+   * falsa para los activos fijos, que no están para volverse plata.
    */
-  zonaNo: ["No es corriente", "tarda más", "de un año"],
-  /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El texto alternativo, uno por estado (Hanayama v1, §4). */
+  zonaNo: ["No es corriente", "no se vuelve plata", "antes de un año"],
+  /*
+   * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El texto alternativo, uno por
+   * estado: los de la v1 §4, con los seis que cambia la v1.1 (cambio 3).
+   */
   alt: {
-    prueba: "Una línea de tiempo que empieza hoy. Una raya marca un año. Lo que se vuelve plata antes de la raya es corriente; lo que tarda más, no.",
+    prueba: "Una línea de tiempo que empieza hoy y llega a una raya que marca un año. Lo que se vuelve plata antes de la raya es corriente; lo que no, no es corriente.",
     ejemplos: "Antes de la raya del año: efectivo en caja, depósitos en bancos, inversiones a corto plazo, cartera e inventarios.",
     "p4-colocando": "La raya del año, todavía sin activos.",
-    "p4-error-edificio": "El edificio de la oficina cae después de la raya del año: se usa por años.",
-    "p4-error-deuda": "La deuda de un cliente que vence en tres años cae después de la raya del año.",
-    "p4-acierto": "La mercancía cae antes de la raya del año. La deuda a tres años y el edificio caen después.",
-    fijos: "Después de la raya del año: un edificio, un terreno, una máquina y un vehículo.",
+    "p4-error-edificio": "El edificio de la oficina no es corriente: no se vuelve plata antes de un año, se usa por años.",
+    "p4-error-deuda": "La deuda de un cliente que vence en tres años no es corriente: no se vuelve plata antes de un año.",
+    "p4-acierto": "La mercancía es corriente: se vende este mes. La deuda a tres años y el edificio no lo son.",
+    fijos: "No son corrientes: un edificio, un terreno, una máquina y un vehículo.",
     primero: "El efectivo en caja y los depósitos en bancos están en lo más alto, junto a hoy.",
-    resumen: "Los cinco activos corrientes antes de la raya del año y los cuatro activos fijos después.",
+    resumen: "Los cinco activos corrientes arriba de la raya del año; los cuatro activos fijos, debajo, como no corrientes.",
   },
 };
 
@@ -69,9 +78,13 @@ const FIJOS = [
   { id: "maquina", texto: "Una máquina" },
   { id: "vehiculo", texto: "Un vehículo" },
 ];
-/* Abreviados de las opciones de P4 de Katsumi. Las glosas: [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN]. */
+/*
+ * Abreviados de las opciones de P4 de Katsumi. Las glosas: [ESCRITO POR CLAUDE
+ * — PENDIENTE DE REVISIÓN]. La de la mercancía sigue a la v2 de A0 («vender y
+ * cobrar»): cotejo de Hanayama con la v2 de Katsumi y FA0-2 de Shibukawa.
+ */
 const DE_P4 = {
-  mercancia: { id: "mercancia", texto: "Mercancía", glosa: "se vende este mes" },
+  mercancia: { id: "mercancia", texto: "Mercancía", glosa: "se vende y se cobra este mes" },
   deuda: { id: "deuda", texto: "Deuda de un cliente", glosa: "vence en tres años" },
   edificio: { id: "edificio", texto: "Edificio de la oficina", glosa: "se usa por años" },
 };
