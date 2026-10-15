@@ -1,4 +1,4 @@
-import { BOTON, DEBE, HABER, FRASE_TARIFAS } from "./contabilidadT7_3.js";
+import { BOTON, DEBE, HABER, FRASE_TARIFAS, ROTULOS_PATRON } from "./contabilidadT7_3.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -35,6 +35,51 @@ export const H3_LIBRO = {
   sumasVenta: 4_628_400, condicionado: 598_500, pago: 3_890_250,
 };
 const C = H3_LIBRO;
+
+/*
+ * Patrón T7-3 (Watari): la franja de plazos de 5 %, 15/10, 5/20, n/30 y la
+ * cuenta en renglones de la factura, del descuento y del pago. Rótulos y
+ * títulos de Watari, por confirmar con Near ([ESCRITO POR CLAUDE —
+ * PENDIENTE DE REVISIÓN], dice su patrón). Los usan también A4 y H4.
+ */
+export const ROTULOS_A3 = {
+  descuentoCondicionadoTit: "El descuento condicionado",
+  facturado: "Lo facturado por la mercancía",
+  condicion: (c) => `Condición ${c}`,
+  descuentoCondicionado: "Descuento condicionado",
+  pagoDel: (fecha) => `El pago del ${fecha}`,
+  loQueDebia: (quien) => `Lo que debía ${quien}`,
+  paga: "Paga",
+  sinDescuento: "sin descuento",
+};
+const CONDICIONES_LIBRO = [
+  { cond: "5 %" }, { cond: "15/10", dia: 10, lleva: "15 %" }, { cond: "5/20", dia: 20, lleva: "5 %" }, { cond: "n/30", dia: 30, lleva: ROTULOS_A3.sinDescuento },
+];
+export const PLAZOS_A3 = (conPago) => ({ tipo: "plazos", venta: "25 may", condiciones: CONDICIONES_LIBRO, pago: conPago ? { dia: 10, fecha: "4 jun" } : null });
+const FACTURA = {
+  tipo: "renglones", titulo: ROTULOS_PATRON.factura("San Calixto"),
+  filas: [
+    { rot: ROTULOS_PATRON.precioLista, v: C.lista },
+    { op: "−", rot: ROTULOS_PATRON.descuentoComercial(5), v: C.comercial },
+    { op: "=", rot: ROTULOS_PATRON.valorFacturar, v: C.factura, res: true },
+  ],
+};
+const DESCUENTO = {
+  tipo: "renglones", titulo: ROTULOS_A3.descuentoCondicionadoTit,
+  filas: [
+    { rot: ROTULOS_A3.facturado, v: C.factura },
+    { op: "×", rot: ROTULOS_A3.condicion("15/10"), v: "15 %" },
+    { op: "=", rot: ROTULOS_A3.descuentoCondicionado, v: C.condicionado, res: true },
+  ],
+};
+const PAGO = {
+  tipo: "renglones", titulo: ROTULOS_A3.pagoDel("4 de junio"),
+  filas: [
+    { rot: ROTULOS_A3.loQueDebia("Santa Martha"), v: C.cliente },
+    { op: "−", rot: ROTULOS_A3.descuentoCondicionado, v: C.condicionado },
+    { op: "=", rot: ROTULOS_A3.paga, v: C.pago, res: true },
+  ],
+};
 
 const PORTADA = {
   id: "portada",
@@ -92,7 +137,8 @@ const CONDICIONES = {
     { id: "cinco", texto: "5 %", devolucion: NINGUNO_30 },
     { id: "ninguno", texto: "Ninguno", correcta: true },
   ],
-  acierto: { texto: "Así es. A los treinta días ya no hay descuento: paga el total de la factura.", pie: "Basado en el libro, p. 252" },
+  /* La franja dice «30 días: sin descuento», que es la respuesta: llega con el acierto. */
+  acierto: { texto: "Así es. A los treinta días ya no hay descuento: paga el total de la factura.", figuras: [PLAZOS_A3(false)], pie: "Basado en el libro, p. 252" },
   error: { pie: "Basado en el libro, p. 252" },
   pie: "Basado en el libro, p. 252",
 };
@@ -119,6 +165,8 @@ const EJEMPLO = {
     FRASE_TARIFAS,
     "Sobre $3.990.000, el IVA es de $638.400 y la retención, de $139.650. Santa Martha queda debiendo $4.488.750.",
   ],
+  /* El texto ya da las condiciones y la factura: la franja (sin el pago) y la cuenta van con él. */
+  figuras: [PLAZOS_A3(false), FACTURA],
   /* «Ventas» va como «Ingresos por ventas» (regla 8). Las sumas son de Near. */
   asientos: [{
     fecha: "25 de mayo",
@@ -143,7 +191,8 @@ const CUAL_LE_TOCA = {
     { id: "cinco", texto: "5 %", devolucion: "Pagó a los diez días. Con la condición 15/10, le toca el 15 %." },
     { id: "ninguno", texto: "Ninguno", devolucion: "Pagó a los diez días. Con la condición 15/10, le toca el 15 %." },
   ],
-  acierto: { texto: "Así es. Pagó a los diez días, así que le toca el 15 %.", pie: "Basado en el libro, pp. 252-253" },
+  /* El pago del 4 de junio en la franja, después de la pregunta: antes daría la respuesta. */
+  acierto: { texto: "Así es. Pagó a los diez días, así que le toca el 15 %.", figuras: [PLAZOS_A3(true)], pie: "Basado en el libro, pp. 252-253" },
   error: { pie: "Basado en el libro, pp. 252-253" },
   pie: "Basado en el libro, pp. 252-253",
 };
@@ -159,6 +208,7 @@ const SOBRE_QUE = {
   ],
   acierto: {
     texto: "Así es. Se calcula sobre lo facturado por la mercancía, sin el IVA: $3.990.000 × 15 % = $598.500.",
+    figuras: [DESCUENTO, PAGO],
     parrafos: [
       "Santa Martha debía $4.488.750. Le restan el descuento de $598.500, así que paga $3.890.250.",
       "El libro anota este descuento en una cuenta que se llama Descuento comercial condicionado. Cuando la empresa da el descuento, la cuenta va al debe.",
