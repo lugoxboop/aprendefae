@@ -41,8 +41,8 @@ import { PIEZA_NIC2_FORMULAS } from "../data/contabilidadT7_3_a8.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T7-3 DE CONTABILIDAD — «Inventarios III: descuentos, inventario físico y
- * NIC 2» (Célula C).
+ * T7-3 DE CONTABILIDAD — «Inventarios III: descuentos, conteo y NIC 2»
+ * (Célula C).
  *
  * Sus piezas de Aprender y sus actividades de Hacer, con la misma cabecera y
  * el mismo camino que T7-1 y T7-2: el camino sale de `subjects.js` y
@@ -130,12 +130,10 @@ export default function ContabilidadT7_3View({ modo = null, nodoInicial = null, 
               <ChevronLeft size={20} color={FAE.text} />
             </button>
             {/*
-             * El nombre del tema rompe en dos líneas en vez de cortarse: a 320 px la
-             * regla compartida de la cabecera compacta (AccountControl) lo truncaba
-             * con «…». Encoge (minWidth: 0), pero no desaparece (herramientas.md,
-             * «La regla que salió de la primera pasada»).
+             * El nombre del tema: la cabecera compacta compartida lo rompe en dos
+             * renglones como mucho, sin «…» (#228). Aquí solo va la letra.
              */}
-            <h1 data-titulo-tema style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "break-word" }}>
+            <h1 data-titulo-tema style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, overflowWrap: "break-word" }}>
               {tema.title}
             </h1>
           </div>

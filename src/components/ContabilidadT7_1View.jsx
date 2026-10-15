@@ -132,12 +132,10 @@ export default function ContabilidadT7_1View({ modo = null, nodoInicial = null, 
               <ChevronLeft size={20} color={FAE.text} />
             </button>
             {/*
-             * El nombre del tema rompe en dos líneas en vez de cortarse: a 320 px la
-             * regla compartida de la cabecera compacta (AccountControl) lo truncaba
-             * con «…». Encoge (minWidth: 0), pero no desaparece (herramientas.md,
-             * «La regla que salió de la primera pasada»).
+             * El nombre del tema: la cabecera compacta compartida lo rompe en dos
+             * renglones como mucho, sin «…» (#228). Aquí solo va la letra.
              */}
-            <h1 data-titulo-tema style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "break-word" }}>
+            <h1 data-titulo-tema style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, overflowWrap: "break-word" }}>
               {tema.title}
             </h1>
           </div>

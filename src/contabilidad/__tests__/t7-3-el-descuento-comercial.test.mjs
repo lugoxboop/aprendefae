@@ -285,7 +285,7 @@ test("★★★ fuera del catálogo de FP; abre T7-3, que va justo después de T
   assert.equal(A.A1_ID, "t7-3-descuento-comercial");
   assert.equal(P.numero, 1);
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_3);
-  assert.equal(tema.title, "Inventarios III: descuentos, inventario físico y NIC 2");
+  assert.equal(tema.title, "Inventarios III: descuentos, conteo y NIC 2");
   assert.equal(TEMA_T7_3, "inventarios-descuentos-nic2");
   const temas = SUBJECTS.contabilidad.topics.map((t) => t.id);
   assert.equal(temas.indexOf(TEMA_T7_3), temas.indexOf("inventarios-permanente") + 1);
