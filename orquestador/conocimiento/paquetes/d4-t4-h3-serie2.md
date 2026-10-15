@@ -1,4 +1,5 @@
 **T4 · H3 «¿Se mueve la caja menor?» · serie 2 · contenido completo.**
+- **Este archivo es la versión vigente de la serie 2.** Va junto con `d4-t4-h3-v1.md` (serie 1); los mensajes que no nombran cifra son los de ese archivo.
 - Autora: Katsumi. Encargo de Yujiro: segunda serie construida para que repetir la actividad cambie la empresa y las cifras (D8 Avanzado, exigencia de Mateo para los juegos).
 - **En cada intento se sortea una serie:** la 1 (Distribuidora Andina, `d4-t4-h3-v1.md` con sus cambios v2) o la 2 (esta).
 - **Igual que la serie 1:** la mecánica, las cuatro cuentas, el orden de las operaciones, los subtemas, el orden de prioridad de los errores y la cobertura completa de combinaciones de la v2 (H3-b).
@@ -22,7 +23,7 @@
 - **Enunciado:** «El 2 de agosto, Muebles El Roble abre una caja menor de $280.000. Le hace un cheque a Andrés, que la va a manejar.» (88,4)
 - **Asiento correcto:** Caja menor al debe / Bancos al haber (modelo de la p. 181)
 - **Acierto:** «Así es. La plata sale del banco y entra al fondo: Caja menor se debita y Bancos se acredita por $280.000.» (86,6)
-- **Errores:** los siete de H3-1 de la serie 1 (los tres con nombre de la v1 y los dos pares de la v2). Ninguno nombra cifra ni empresa, así que van **igual que en la serie 1**.
+- **Errores:** los cinco de H3-1 de la serie 1: dos con nombre, los dos pares de la v2 y «lados al revés». Ninguno nombra cifra ni empresa, así que van **igual que en la serie 1**.
 
 ### H3s2-2 · Reembolso *(trampa central)*
 - **Subtema:** Reembolso
