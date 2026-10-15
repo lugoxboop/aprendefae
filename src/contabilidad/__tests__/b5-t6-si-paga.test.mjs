@@ -143,9 +143,10 @@ test("★★★ ningún componente de la pieza escribe texto que lea el estudian
 test("★★ la pieza va cuarta en el tema: APRENDER, la vista y sus tres capas", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "cuentas-por-cobrar");
   const ids = ["b5-t6-a1-lo-que-otros-le-deben", "b5-t6-a2-cuando-un-cliente-no-va-a-pagar", "b5-t6-a3-la-provision-de-un-ano-al-siguiente", D.PIEZA_SI_PAGA.id];
-  assert.deepEqual(actividadesDeTipo(tema, APRENDER).map((a) => a.id), ids);
-  assert.deepEqual(PIEZAS.map((p) => p.pieza.id), ids);
-  assert.deepEqual(Object.keys(ESCENAS_TEMA6), ids);
+  /* Cuarta: después de ella viene la pieza 5 (T6 · A5). */
+  assert.deepEqual(actividadesDeTipo(tema, APRENDER).map((a) => a.id).slice(0, 4), ids);
+  assert.deepEqual(PIEZAS.map((p) => p.pieza.id).slice(0, 4), ids);
+  assert.deepEqual(Object.keys(ESCENAS_TEMA6).slice(0, 4), ids);
   const { Capa2, Exploracion } = ESCENAS_TEMA6[D.PIEZA_SI_PAGA.id];
   assert.equal(Capa2, SiPaga);
   assert.equal(Exploracion, TresCasos);
