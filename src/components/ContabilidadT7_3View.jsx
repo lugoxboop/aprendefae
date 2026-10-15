@@ -19,6 +19,8 @@ import DescuentoEnFactura from "./mecanicas/libros/t7/DescuentoEnFactura.jsx";
 import { H1 } from "../data/contabilidadT7_3_h1.js";
 import PantallasT7_3 from "./mecanicas/libros/t7/PantallasT7_3.jsx";
 import { PIEZA_EL_DESCUENTO_COMERCIAL } from "../data/contabilidadT7_3.js";
+import { PIEZA_DESCUENTOS_EN_CADENA } from "../data/contabilidadT7_3_a2.js";
+
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-3 DE CONTABILIDAD — «Inventarios III: descuentos, inventario físico y
@@ -39,6 +41,7 @@ export const TEMA_T7_3 = "inventarios-descuentos-nic2";
 /* En el orden del número de pieza. El rótulo «Pieza n de N» cuenta las publicadas. */
 export const PIEZAS_T7_3 = [
   { numero: PIEZA_EL_DESCUENTO_COMERCIAL.numero, pieza: PIEZA_EL_DESCUENTO_COMERCIAL, Pieza: PantallasT7_3 },
+  { numero: PIEZA_DESCUENTOS_EN_CADENA.numero, pieza: PIEZA_DESCUENTOS_EN_CADENA, Pieza: PantallasT7_3 },
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
