@@ -16,10 +16,13 @@ import { Entra, KEYFRAMES_ENTRA } from "./CuentaQueSeLlena.jsx";
  *   · la nota y la tabla de la regla, con su pie (rótulo y fuente del
  *     porcentaje), como en calidad 1;
  *   · parte 1: bajo la tabla, el eje de los cajones (22 · 22 · 28 · 28 %, con
- *     las marcas «3 meses», «6 meses» y «1 año»). La deuda de la casilla es una
- *     pastilla con un palito que apunta a su mes; al responder cae en su
- *     cajón CORRECTO (320 ms; con movimiento reducido, ya dentro). «6 meses»
- *     apunta justo a la marca y cae a su izquierda: «sin pasar de seis»;
+ *     las marcas «3 meses», «6 meses» y «1 año»). El último cajón, «más de 1
+ *     año», queda ABIERTO: sin borde derecho, sus bordes se desvanecen; ningún
+ *     tope que el libro no pone (Shoko). La deuda de la casilla espera
+ *     ENCIMA del eje, siempre en el mismo sitio y sin palito: su posición no
+ *     puede delatar el grupo (Shoko). Al responder cae en su cajón CORRECTO
+ *     (320 ms; con movimiento reducido, ya dentro), del todo dentro de él:
+ *     «6 meses» queda en «Más de 3 hasta 6 meses» sin tocar la marca;
  *   · parte 2: cada fila gana una barra del mismo largo, con la porción
  *     provisionada rellena al final (5, 10 y 15 % del largo) y la provisión
  *     del grupo, que entra al responder. En la casilla 7 aparece la barra
@@ -56,21 +59,17 @@ const ANCHOS = [22, 22, 28, 28];
 const BORDES_EJE = ANCHOS.reduce((xs, a) => [...xs, xs[xs.length - 1] + a], [0]); // 0 · 22 · 44 · 72 · 100
 /* Las marcas, con las palabras de los nombres de los grupos: «3 meses», «6 meses», «1 año». */
 const MARCAS = GRUPOS_T6_ACT6.slice(0, 3).map((g, k) => ({ en: BORDES_EJE[k + 1], texto: g.nombre.match(/(\d+ (meses|año))$/)[1] }));
-/* El mes, en el eje: cada cajón cubre su rango (0-3, 3-6, 6-12 y, el último, 12-18). */
-const RANGOS = [[0, 3], [3, 6], [6, 12], [12, 18]];
-export function posicionDelMes(meses) {
-  const k = RANGOS.findIndex(([, b]) => meses <= b);
-  const [a, b] = RANGOS[k === -1 ? 3 : k];
-  return BORDES_EJE[k === -1 ? 3 : k] + (Math.min(meses, b) - a) / (b - a) * ANCHOS[k === -1 ? 3 : k];
-}
 const centroDe = (k) => BORDES_EJE[k] + ANCHOS[k] / 2;
 const deudaDe = (c) => c.enunciado.match(/(\d+) meses/)[0];
-const mesesDe = (c) => Number(c.enunciado.match(/(\d+) meses/)[1]);
 /* El cajón correcto de una deuda: el del grupo de su opción correcta. */
 const cajonDe = (c) => GRUPOS_T6_ACT6.findIndex((g) => g.nombre === correcta(c).texto);
 
 const ALTO_PASTILLA = 24;
-const TOPE_BARRA = ALTO_PASTILLA + 8;
+/* La deuda espera encima del eje, separada de él: nunca sobre sus meses. */
+const TOPE_BARRA = ALTO_PASTILLA + 10;
+const ULTIMO = GRUPOS_T6_ACT6.length - 1;
+/* El borde que se desvanece, arriba y abajo del último cajón: queda abierto. */
+const DESVANECE = `linear-gradient(to right, ${BORDES}, transparent)`;
 const ALTO_BARRA = 30;
 
 function Eje({ respondidas, abierta, reducido }) {
@@ -78,15 +77,19 @@ function Eje({ respondidas, abierta, reducido }) {
   return (
     <div data-eje {...(abierta !== null ? { "data-renglon-activo": "" } : {})} style={{ position: "relative", height: `${TOPE_BARRA + ALTO_BARRA + 4 + 16}px`, margin: "4px 0 12px" }}>
       {/* La barra, partida en cuatro cajones. */}
-      <div style={{ position: "absolute", top: `${TOPE_BARRA}px`, left: 0, right: 0, height: `${ALTO_BARRA}px`, display: "flex", border: `1px solid ${BORDES}`, borderRadius: "6px", overflow: "hidden" }}>
+      <div style={{ position: "absolute", top: `${TOPE_BARRA}px`, left: 0, right: 0, height: `${ALTO_BARRA}px`, display: "flex" }}>
         {GRUPOS_T6_ACT6.map((g, k) => {
           const tiene = UBICAR.casillas.some((c, i) => i < respondidas && cajonDe(c) === k);
           /* El cajón de la deuda recién respondida se ilumina; los que ya tienen una deuda quedan con fondo tenue. */
           const recien = abierta === null && cajonDe(UBICAR.casillas[actual]) === k;
           return (
-            <div key={g.id} data-cajon={g.id} data-con-deuda={tiene ? "si" : "no"} style={{
-              width: `${ANCHOS[k]}%`, borderLeft: k ? `1px solid ${BORDES}` : "none", boxSizing: "border-box",
-              background: recien ? NAVY : tiene ? TENUE : "transparent", boxShadow: recien ? `inset 0 0 0 2px ${NODO}` : "none",
+            <div key={g.id} data-cajon={g.id} data-con-deuda={tiene ? "si" : "no"} {...(k === ULTIMO ? { "data-abierto": "" } : {})} style={{
+              width: `${ANCHOS[k]}%`, boxSizing: "border-box", borderLeft: `1px solid ${BORDES}`,
+              ...(k === ULTIMO
+                ? { borderRight: "none", backgroundImage: `${DESVANECE}, ${DESVANECE}`, backgroundSize: "100% 1px", backgroundPosition: "top, bottom", backgroundRepeat: "no-repeat" }
+                : { borderTop: `1px solid ${BORDES}`, borderBottom: `1px solid ${BORDES}` }),
+              borderRadius: k === 0 ? "6px 0 0 6px" : 0,
+              backgroundColor: recien ? NAVY : tiene ? TENUE : "transparent", boxShadow: recien ? `inset 0 0 0 2px ${NODO}` : "none",
             }} />
           );
         })}
@@ -103,16 +106,15 @@ function Eje({ respondidas, abierta, reducido }) {
         const anterior = enCajon && i !== actual;
         return (
           <span key={c.id} data-deuda={c.id} data-en-cajon={enCajon ? GRUPOS_T6_ACT6[k].id : ""} style={{
-            position: "absolute", height: `${ALTO_PASTILLA}px`, boxSizing: "border-box", padding: "2px 6px", borderRadius: "999px",
+            position: "absolute", height: `${ALTO_PASTILLA}px`, boxSizing: "border-box", padding: enCajon ? "4px 0" : "2px 6px", borderRadius: "999px",
             top: enCajon ? `${TOPE_BARRA + (ALTO_BARRA - ALTO_PASTILLA) / 2}px` : 0,
-            left: `${enCajon ? centroDe(k) : posicionDelMes(mesesDe(c))}%`, transform: "translateX(-50%)",
-            border: `2px solid ${enCajon ? "transparent" : NODO}`, background: enCajon ? "transparent" : NAVY,
+            /* Esperando, siempre al inicio del eje, encima de él; en su cajón, centrada en él. */
+            left: `${enCajon ? centroDe(k) : 0}%`, transform: enCajon ? "translateX(-50%)" : "none",
+            border: enCajon ? "none" : `2px solid ${NODO}`, background: enCajon ? "transparent" : NAVY,
             ...PEQUENO, fontWeight: 600, whiteSpace: "nowrap", color: anterior ? SECUNDARIO : TEXTO,
             transition: reducido ? "none" : "top 320ms ease-out, left 320ms ease-out",
           }}>
             {deudaDe(c)}
-            {/* El palito: apunta al mes exacto sobre el eje. */}
-            {!enCajon && <span data-palito aria-hidden="true" style={{ position: "absolute", left: "50%", top: `${ALTO_PASTILLA - 2}px`, width: "2px", height: "8px", marginLeft: "-1px", background: NODO }} />}
           </span>
         );
       })}
@@ -226,14 +228,17 @@ export default function CajonesDelTiempo({ respondidas, abierta, reducido, anunc
   );
 }
 
+/* Tras los dos puntos, el nombre del grupo va en minúscula (Shoko). */
+const minuscula = (t) => t.charAt(0).toLowerCase() + t.slice(1);
+
 /* Lo que se anuncia al responder la casilla k: lo que entra (siempre lo correcto). PARA SHOKO: frases armadas con palabras de la actividad. */
 export function anuncioDe(k) {
   if (k < N1) {
     const c = UBICAR.casillas[k];
-    return `${deudaDe(c)}: ${correcta(c).texto}`;
+    return `${deudaDe(c)}: ${minuscula(correcta(c).texto)}`;
   }
   const c = CALCULAR.casillas[k - N1];
   const grupo = Object.entries(CASILLA_DE_GRUPO).find(([, id]) => id === c.id)?.[0];
-  if (grupo) return `${GRUPOS_T6_ACT6.find((g) => g.id === grupo).nombre}: ${pesos(correcta(c).valor)}`;
+  if (grupo) return `${minuscula(GRUPOS_T6_ACT6.find((g) => g.id === grupo).nombre)}: ${pesos(correcta(c).valor)}`;
   return `${c.id === P7.id ? ROTULOS_TOTAL_T6_ACT6.provision : ROTULOS_TOTAL_T6_ACT6.neto}: ${pesos(correcta(c).valor)}`;
 }

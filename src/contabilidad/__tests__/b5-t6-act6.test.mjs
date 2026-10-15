@@ -243,28 +243,45 @@ test("★★ la fila 1 de la regla: su texto en una segunda línea, sin porcenta
 const CJ = await import("../../components/mecanicas/libros/tema6/CajonesDelTiempo.jsx");
 const izquierda = (el) => Number.parseFloat(el.style.left);
 
-test("★★★ el eje: cuatro cajones de 22 · 22 · 28 · 28 %, marcas «3 meses», «6 meses» y «1 año» en sus bordes; «6 meses» apunta a la marca y cae a su izquierda", async () => {
+test("★★★ el eje: cuatro cajones de 22 · 22 · 28 · 28 %, marcas «3 meses», «6 meses» y «1 año»; la deuda espera fuera del eje y cae en su cajón correcto", async () => {
   const { caja, desmontar } = await montar();
   const eje = () => caja.querySelector("[data-eje]");
   assert.deepEqual([...eje().querySelectorAll("[data-cajon]")].map((c) => c.style.width), ["22%", "22%", "28%", "28%"]);
+  /* Shoko 5: ninguna marca más allá de «1 año» (nada que sugiera un tope). */
   assert.deepEqual([...eje().querySelectorAll("[data-marca]")].map((m) => [m.textContent, m.style.left]), [["3 meses", "22%"], ["6 meses", "44%"], ["1 año", "72%"]]);
-  const cajonIzq = { g1: [0, 22], g2: [22, 44], g3: [44, 72], g4: [72, 100] };
+  const centros = { g1: 11, g2: 33, g3: 58, g4: 86 };
   for (let k = 0; k < 3; k++) {
     const c = CASILLAS[k];
     const deuda = eje().querySelector(`[data-deuda="${c.id}"]`);
     assert.equal(deuda.textContent, c.enunciado.match(/\d+ meses/)[0]);
-    assert.ok(deuda.querySelector("[data-palito]"), "la pastilla apunta con su palito");
-    if (c.id === "u2") assert.equal(izquierda(deuda), 44, "el caso límite: «6 meses» apunta justo a la marca de 6");
+    /* Shoko 2: antes de responder, la deuda espera encima del eje, siempre en el mismo sitio y sin palito. */
+    assert.equal(deuda.style.left, "0%", `casilla ${k + 1}: espera al inicio, no sobre sus meses`);
+    assert.equal(deuda.style.top, "0px", `casilla ${k + 1}: encima del eje`);
+    assert.equal(deuda.querySelector("[data-palito]"), null, "sin palito");
+    assert.equal(deuda.dataset.enCajon, "");
     /* Se falla a propósito: la deuda cae igual en su cajón CORRECTO. */
     await tocar(opcion(caja, c.opciones.find((o) => o.tipo)));
     const id = D.GRUPOS_T6_ACT6.find((g) => g.nombre === correcta(c).texto).id;
     assert.equal(deuda.dataset.enCajon, id, `casilla ${k + 1}: en su cajón correcto`);
-    const [a, b] = cajonIzq[id];
-    assert.ok(izquierda(deuda) > a && izquierda(deuda) < b, `casilla ${k + 1}: dentro del cajón`);
-    if (c.id === "u2") assert.ok(izquierda(deuda) < 44, "«6 meses» cae a la izquierda de la marca: sin pasar de seis");
+    assert.equal(izquierda(deuda), centros[id], `casilla ${k + 1}: centrada en su cajón`);
+    /* Shoko 4: dentro del cajón, sin relleno lateral ni borde: «6 meses» no llega a la marca (medido en Chromium). */
+    assert.equal(deuda.style.padding, "4px 0px");
+    assert.equal(deuda.style.border, "");
     assert.equal(eje().querySelector(`[data-cajon="${id}"]`).dataset.conDeuda, "si");
     await siguiente(caja);
   }
+  desmontar();
+});
+
+test("★★★ Shoko 5: el último cajón queda abierto: sin borde derecho y con los bordes que se desvanecen", async () => {
+  const { caja, desmontar } = await montar();
+  const cajones = [...caja.querySelectorAll("[data-eje] [data-cajon]")];
+  const ultimo = cajones.at(-1);
+  assert.ok(ultimo.hasAttribute("data-abierto"));
+  assert.ok(!/px/.test(ultimo.style.borderRight), `sin borde derecho (${ultimo.style.borderRight})`);
+  assert.equal(ultimo.style.borderTop, "", "sin borde arriba: se desvanece");
+  assert.match(ultimo.style.backgroundImage, /linear-gradient\(to right, .*transparent\)/);
+  assert.ok(cajones.slice(0, 3).every((c) => !c.hasAttribute("data-abierto") && c.style.borderTop.startsWith("1px")));
   desmontar();
 });
 
@@ -288,19 +305,33 @@ test("★★★ las barras: la porción mide su porcentaje del largo (5 · 10 ·
   desmontar();
 });
 
-test("★★ el anuncio: lo que entra, con las palabras de la actividad", () => {
+test("★★ el anuncio: lo que entra, con el nombre del grupo en minúscula tras los dos puntos (Shoko 3)", () => {
   assert.deepEqual([0, 1, 2, 3, 4, 5, 6, 7].map(CJ.anuncioDe), [
-    "2 meses: Vigentes o hasta 3 meses",
-    "6 meses: Más de 3 hasta 6 meses",
-    "14 meses: Más de 1 año",
-    "Más de 3 hasta 6 meses: $28.000",
-    "Más de 6 meses hasta 1 año: $16.000",
-    "Más de 1 año: $9.000",
+    "2 meses: vigentes o hasta 3 meses",
+    "6 meses: más de 3 hasta 6 meses",
+    "14 meses: más de 1 año",
+    "más de 3 hasta 6 meses: $28.000",
+    "más de 6 meses hasta 1 año: $16.000",
+    "más de 1 año: $9.000",
     "La provisión: $53.000",
     "El valor neto: $1.347.000",
   ]);
-  /* «2 meses» en el primer cajón, «14 meses» en el último: la escala del eje. */
-  assert.ok(CJ.posicionDelMes(2) < 22 && CJ.posicionDelMes(14) > 72 && CJ.posicionDelMes(6) === 44);
+});
+
+test("★★★ Shoko 1: la cifra bajo «El valor neto» aparece solo después de responder la casilla 8; los rótulos, antes", async () => {
+  const { caja, desmontar } = await montar();
+  for (let k = 0; k < 6; k++) { await tocar(opcion(caja, correcta(CASILLAS[k]))); await siguiente(caja); }
+  /* Casilla 7 abierta: los dos rótulos ya están, sin cifras. */
+  assert.ok(caja.querySelector("[data-barra-total]").textContent.includes("El valor neto"));
+  assert.equal(caja.querySelector("[data-valor-neto]").textContent, "");
+  await tocar(opcion(caja, correcta(CASILLAS[6])));
+  assert.equal(caja.querySelector("[data-valor-provision]").textContent, "$53.000");
+  assert.equal(caja.querySelector("[data-valor-neto]").textContent, "", "con la casilla 7 respondida, el neto sigue vacío");
+  await siguiente(caja);
+  assert.equal(caja.querySelector("[data-valor-neto]").textContent, "", "casilla 8 abierta: todavía vacío");
+  await tocar(opcion(caja, CASILLAS[7].opciones.find((o) => o.tipo)));
+  assert.equal(caja.querySelector("[data-valor-neto]").textContent, "$1.347.000", "respondida la 8 (aunque se falle), entra el neto correcto");
+  desmontar();
 });
 
 test("★★ al pasar de casilla la página se mueve lo justo para ver la casilla, el rótulo y el renglón encendido", async () => {

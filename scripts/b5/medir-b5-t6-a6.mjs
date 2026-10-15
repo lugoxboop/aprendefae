@@ -12,7 +12,9 @@
  *   · las cifras, en una línea;
  *   · al abrir cada casilla (desde la 2), la casilla, el rótulo y el renglón
  *     encendido juntos en la ventana (el sitio no tiene cabecera fija);
- *   · «6 meses» apunta a la marca de 6 y cae a su izquierda;
+ *   · la deuda espera encima del eje, sin tocarlo y en el mismo sitio (Shoko);
+ *     al responder queda del todo dentro de su cajón: «6 meses», dentro de
+ *     «Más de 3 hasta 6 meses», sin tocar la marca de 6 (Shoko);
  *   · la porción de cada barra mide su porcentaje del largo;
  *   · con movimiento reducido, la deuda cae sin trayecto y la cifra entra sin
  *     animación (la hoja de estilos del sitio deja las transiciones en 0,01 ms).
@@ -60,7 +62,16 @@ function medir() {
   /* Las porciones: su ancho frente al de su barra. */
   const porciones = [...document.querySelectorAll("[data-porcion]")].map((p) => Math.round((p.getBoundingClientRect().width / p.parentElement.clientWidth) * 1000) / 10);
   const eje = document.querySelector("[data-eje]")?.getBoundingClientRect();
-  const deudas = [...document.querySelectorAll("[data-deuda]")].map((d) => ({ id: d.dataset.deuda, centro: eje ? Math.round(((d.getBoundingClientRect().left + d.getBoundingClientRect().width / 2 - eje.left) / eje.width) * 1000) / 10 : null, transicion: getComputedStyle(d).transitionProperty, duracion: getComputedStyle(d).transitionDuration }));
+  const deudas = [...document.querySelectorAll("[data-deuda]")].map((d) => {
+    const r = d.getBoundingClientRect();
+    const cajon = d.dataset.enCajon ? document.querySelector(`[data-cajon="${d.dataset.enCajon}"]`).getBoundingClientRect() : null;
+    const barra = document.querySelector("[data-cajon]").getBoundingClientRect();
+    return {
+      id: d.dataset.deuda, izq: Math.round(r.left - eje.left), sobreElEje: r.bottom > barra.top - 0.5,
+      dentro: cajon ? r.left >= cajon.left + 0.5 && r.right <= cajon.right - 0.5 : null,
+      duracion: getComputedStyle(d).transitionDuration,
+    };
+  });
   return {
     problemas, juntos: rs.every(dentro), renglonYRotulo: [rotulo, activo].filter(Boolean).every(dentro), alto: Math.max(...rs.map((r) => r.bottom)) - Math.min(...rs.map((r) => r.top)),
     porciones, deudas, entra: [...document.querySelectorAll("[data-entra]")].map((e) => getComputedStyle(e).animationName),
@@ -78,9 +89,9 @@ for (const reducido of [false, true]) {
       const c = CASILLAS[k];
       if (k > 0) { await p.getByRole("button", { name: /^Siguiente$/ }).click(); await p.waitForTimeout(600); }
       const abierta = await p.evaluate(medir);
-      if (c.id === "u2") {
-        const d = abierta.deudas.find((x) => x.id === "u2");
-        if (Math.abs(d.centro - 44) > 0.6) fallos.push(`${tag}: «6 meses» no apunta a la marca de 6 (${d.centro} %)`);
+      if (k < 3) {
+        const d = abierta.deudas.find((x) => x.id === c.id);
+        if (d.izq !== 0 || d.sobreElEje) fallos.push(`${tag} · casilla ${k + 1}: la deuda no espera fuera del eje (izq ${d.izq}, sobre el eje ${d.sobreElEje})`);
       }
       const elegida = k % 2 === 0 ? c.opciones.find((o) => o.tipo) : c.opciones.find((o) => o.tipo === null);
       await p.click(`[data-opcion="${clave(elegida)}"]`);
@@ -91,9 +102,9 @@ for (const reducido of [false, true]) {
       /* Si no cabe todo en la ventana (menos 8 arriba y abajo), el renglón queda arriba con el rótulo (hoja 2 de Mai §3). */
       if (k > 0 && !abierta.juntos && (abierta.alto <= alto - 16 || !abierta.renglonYRotulo)) fallos.push(`${tag} · casilla ${k + 1}: la casilla, el rótulo y el renglón no se ven juntos`);
       if (k > 0 && !abierta.juntos) informe.push(`${tag} · casilla ${k + 1}: no cabe todo (${abierta.alto.toFixed(2)} en ${alto - 16}); a la vista, el renglón y el rótulo`);
-      if (c.id === "u2") {
-        const d = respondida.deudas.find((x) => x.id === "u2");
-        if (!(d.centro < 44)) fallos.push(`${tag}: «6 meses» no cae a la izquierda de la marca (${d.centro} %)`);
+      if (k < 3) {
+        const d = respondida.deudas.find((x) => x.id === c.id);
+        if (!d.dentro) fallos.push(`${tag} · casilla ${k + 1}: «${c.id}» no queda del todo dentro de su cajón`);
       }
       if (k >= 3 && respondida.porciones.slice(0, 3).some((x, i) => Math.abs(x - [5, 10, 15][i]) > 0.3)) fallos.push(`${tag} · casilla ${k + 1}: porciones ${respondida.porciones}`);
       if (reducido && (respondida.deudas.some((d) => Number.parseFloat(d.duracion) >= 0.001) || respondida.entra.some((a) => a !== "none"))) fallos.push(`${tag} · casilla ${k + 1}: con movimiento reducido hay animación`);
