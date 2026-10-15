@@ -753,3 +753,12 @@ test("★★ v2.1: los rótulos nuevos del autodiagnóstico están en el paquete
   /* El paquete escribe espacios normales donde la pantalla pone de no separación. */
   for (const r of nuevos) assert.ok(seccion.includes(`«${r.replace(/\u00a0/g, " ")}»`), r);
 });
+
+test("★★ v2.1 · B4 de enganche.md: ni el acierto ni «ERA ESTE» van en teal, que en esta pantalla es DEBE", () => {
+  const fuente = leer("src/components/repasoCap5/ToroNegro.jsx");
+  const estados = fuente.slice(fuente.indexOf("const ESTADO_PIEZA = {"), fuente.indexOf("};", fuente.indexOf("const ESTADO_PIEZA = {")));
+  for (const linea of estados.split("\n").filter((l) => /^\s*(ok|revelada):/.test(l))) assert.ok(!/teal|2A9D8F|42,\s*157/i.test(linea), linea.trim());
+  assert.ok(!/data-era-este[^>]*C\.teal/.test(fuente), "«ERA ESTE» en teal");
+  /* El teal sigue donde significa DEBE o DÉBITO. */
+  assert.ok(/l === "debe" \? C\.teal/.test(fuente));
+});

@@ -397,7 +397,8 @@ function PorTema({ filas }) {
                       data-forma={p.ok ? "relleno" : "anillo"}
                       style={{
                         width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box",
-                        ...(p.ok ? { background: C.teal } : { background: "transparent", border: `2px solid ${C.coral}` }),
+                        /* B4 de enganche.md: el acierto, relleno neutro; el teal es DEBE en Contabilidad. */
+                        ...(p.ok ? { background: C.hecho } : { background: "transparent", border: `2px solid ${C.coral}` }),
                       }}
                     />
                   ))}

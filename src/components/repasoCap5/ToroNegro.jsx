@@ -31,10 +31,15 @@ export const cifra = (n) => pesos(Math.abs(n)).replace("$", "");
 const LECTOR = { acierto: "Correcto: ", error: "Incorrecto: " };
 
 const ESTADO_PIEZA = {
-  ok: { border: `2px solid ${C.teal}`, background: "rgba(42,157,143,0.14)" },
+  /*
+   * v2.1 · B4 de enganche.md: en Contabilidad el teal es DEBE (lo es en el
+   * libro de esta misma pantalla). El acierto va en neutro y lo dice la
+   * palabra de debajo («Correcta», «Correcto»), no el color.
+   */
+  ok: { border: `2px solid ${C.hecho}`, background: "rgba(203,220,242,0.10)" },
   mal: { border: `2px solid ${C.coral}`, background: "rgba(231,111,81,0.13)" },
-  /* El «revelada» de Opcion: borde teal translúcido, sin celebrarlo. */
-  revelada: { border: `1px solid ${C.teal}88`, background: C.fondo },
+  /* «ERA ESTE»: borde neutro discontinuo, sin celebrarlo y sin teal (B4). */
+  revelada: { border: `1.5px dashed ${C.hecho}`, background: C.fondo },
 };
 
 const CSS_R5_2 = `
@@ -306,7 +311,7 @@ function Hueco({ lado, cuenta, activo, estado, onTocar, huecoRef, soloLectura = 
 function TarjetaAsiento({ debe, haber, valor, activo, estados = null, onTocar, onValor, refs, soloLectura = false, marca = null, idCampo }) {
   return (
     <div data-tarjeta-asiento={soloLectura ? "era-este" : "armador"} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? ESTADO_PIEZA.revelada : {}), ...(soloLectura ? { background: C.navy } : {}) }}>
-      {marca && <p data-era-este style={{ ...MARCA, color: C.teal, margin: "0 0 10px" }}>{marca}</p>}
+      {marca && <p data-era-este style={{ ...MARCA, color: C.texto, margin: "0 0 10px" }}>{marca}</p>}
       <p style={{ ...MARCA, margin: "0 0 4px" }}>{RT.debe}</p>
       <Hueco lado="debe" cuenta={debe} activo={activo === "debe"} estado={estados?.debe} onTocar={() => onTocar?.("debe")} huecoRef={refs?.debe} soloLectura={soloLectura} />
       <Veredicto estado={estados?.debe} textos={RT.veredicto.cuenta} />
@@ -470,7 +475,7 @@ function BotonLado({ lado, elegido, estado, onClick, soloLectura }) {
 function TarjetaSaldo({ valor, lado, onValor, onLado, estados = null, soloLectura = false, marca = null, idCampo }) {
   return (
     <div data-tarjeta-saldo={soloLectura ? "era-este" : "respuesta"} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? { border: ESTADO_PIEZA.revelada.border } : {}) }}>
-      {marca && <p data-era-este style={{ ...MARCA, color: C.teal, margin: "0 0 10px" }}>{marca}</p>}
+      {marca && <p data-era-este style={{ ...MARCA, color: C.texto, margin: "0 0 10px" }}>{marca}</p>}
       <label htmlFor={idCampo} style={{ ...MARCA, display: "block", margin: "0 0 4px" }}>{RT.valor}</label>
       <CampoValor id={idCampo} valor={valor} onCambiar={onValor} estado={soloLectura ? "revelada" : estados?.valor} soloLectura={soloLectura} />
       <Veredicto estado={soloLectura ? null : estados?.valor} textos={RT.veredicto.valor} />
@@ -680,7 +685,7 @@ function CasoEnTresTiempos({ filas }) {
                         key={x.id}
                         data-punto={x.ok ? "acierto" : "error"}
                         data-forma={x.ok ? "relleno" : "anillo"}
-                        style={{ width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box", ...(x.ok ? { background: C.teal } : { background: "transparent", border: `2px solid ${C.coral}` }) }}
+                        style={{ width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box", ...(x.ok ? { background: C.hecho } : { background: "transparent", border: `2px solid ${C.coral}` }) }}
                       />
                     ))}
                   </span>
