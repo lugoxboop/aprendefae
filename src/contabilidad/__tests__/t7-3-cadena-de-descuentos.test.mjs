@@ -246,3 +246,37 @@ test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqu
   const bloque = fuente.slice(fuente.indexOf("CONTABILIDAD · T7 «INVENTARIOS»"));
   assert.match(bloque.slice(0, bloque.indexOf("});")), /"t7-3-cadena-de-descuentos": \(id\) => unidadDeT73H2\(id\),/);
 });
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+test("★★★ Patrón T7-3: la cuenta crece con los ítems 1 a 4, cada parte después de su ítem", async () => {
+  /* La cadena, recalculada a mano: cada descuento sobre el saldo anterior. */
+  assert.deepEqual(C.saldos, [2_750_000, 2_475_000, 2_351_250, 2_257_200]);
+  assert.deepEqual(C.descuentos, [275_000, 123_750, 94_050]);
+  assert.equal(C.lista - C.factura, 492_800);
+  const tarjetas = (caja) => [...caja.querySelectorAll("figure[data-renglones]")].map((f) => [f.querySelector("figcaption").textContent, [...f.querySelectorAll("[data-renglon] .rg-v")].map((x) => x.textContent)]);
+  const m = await montar();
+  try {
+    const esperado = [
+      [],
+      [["Cadena de descuentos de Palma", ["2.750.000", "275.000", "2.475.000"]]],
+      [["Cadena de descuentos de Palma", ["2.750.000", "275.000", "2.475.000", "123.750", "2.351.250", "94.050", "2.257.200"]]],
+      [["Cadena de descuentos de Palma", ["2.750.000", "275.000", "2.475.000", "123.750", "2.351.250", "94.050", "2.257.200"]], ["El atajo del factor", ["0,90 × 0,95 × 0,96", "0,8208", "2.750.000", "2.257.200"]]],
+      [["Cadena de descuentos de Palma", ["2.750.000", "275.000", "2.475.000", "123.750", "2.351.250", "94.050", "2.257.200"]], ["El atajo del factor", ["0,90 × 0,95 × 0,96", "0,8208", "2.750.000", "2.257.200"]], ["La rebaja de verdad", ["2.750.000", "2.257.200", "492.800", "17,92 %"]]],
+    ];
+    for (const [k, it] of EN_ORDEN.entries()) {
+      /* Antes de responder, solo lo de los ítems ya respondidos. */
+      assert.deepEqual(tarjetas(m.caja), esperado[Math.min(k, 4)], `antes del ítem ${k + 1}`);
+      /* Con error también aparece (un intento, v3.2). */
+      const v = k % 2 ? it.opciones.find((o) => o.valor !== it.correcta).valor : it.correcta;
+      await tocar(opcion(m.caja, v));
+      assert.deepEqual(tarjetas(m.caja), esperado[Math.min(k + 1, 4)], `al responder el ítem ${k + 1}`);
+      await tocar(boton(m.caja, k === EN_ORDEN.length - 1 ? D.BOTON_H2.verResumen : D.BOTON_H2.siguiente));
+    }
+  } finally {
+    m.desmontar();
+  }
+  const rebaja = D.FIGURAS_H2[2];
+  assert.equal(rebaja.nota, "La suma de los porcentajes da 19 %. Cada descuento va sobre un saldo más pequeño, así que la rebaja real es menor.");
+  assert.ok(rebaja.filas.at(-1).fuerte && !rebaja.filas.at(-1).res, "17,92 % en negrita, sin raya");
+});
