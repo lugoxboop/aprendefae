@@ -6,6 +6,7 @@ import { pesos } from "../data/contabilidad.js";
  * (Célula C). La mecánica está en components/mecanicas/libros/t7/armaLaLinea.jsx.
  *
  *   bancoDeLinea(l, barajar)   la cuenta correcta y sus distractores, barajados
+ *   retroDeLinea(l, cuenta)    por qué una línea quedó mal: la del distractor o la del lado
  *   evaluarCifra(ítem, v)      el veredicto de una casilla de cifra
  *   sinUnSoloIntento(texto)    la consigna sin «Tienes un solo intento…»
  *
@@ -22,7 +23,20 @@ export const TEXTOS_ARMA = {
   campo: "Tu respuesta, en pesos",
 };
 
-export const bancoDeLinea = (l, barajar) => barajar([l.cuenta, ...(l.distractores ?? [])]);
+/* Un distractor de cuenta es { cuenta, retro } (Near, lote 3): la cuenta que se ofrece y por qué no es esa. */
+const cuentaDe = (d) => (typeof d === "string" ? d : d.cuenta);
+export const bancoDeLinea = (l, barajar) => barajar([l.cuenta, ...(l.distractores ?? []).map(cuentaDe)]);
+
+/**
+ * Por qué una línea quedó mal. Si la cuenta elegida es un distractor, su
+ * retroalimentación (Near); si la cuenta es la buena y falló el lado, la de
+ * la línea, que explica el lado.
+ */
+export function retroDeLinea(l, cuentaElegida) {
+  if (cuentaElegida === l.cuenta) return l.retro;
+  const d = (l.distractores ?? []).find((x) => typeof x !== "string" && x.cuenta === cuentaElegida);
+  return d?.retro ?? l.retro;
+}
 
 /**
  * Bien si la cifra es la correcta. Si la cifra es la de un distractor de
