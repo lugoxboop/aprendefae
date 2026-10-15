@@ -64,15 +64,16 @@ export const CUENTAS_H5 = [GASTOS_GENERALES, CXC_EMPLEADOS, GASTOS_FALTANTE, ING
 export const nombreDe = (cuenta) => cuenta.replace(/ /g, " ");
 
 /*
- * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] Textos de interfaz que el
- * paquete no trae: «Confirmar el asiento» es de la pantalla de Hanayama (H5 v1
- * §1); los demás, la convención de los Hacer de T4. FALTAN_FILAS es el aviso
- * en gris mientras el asiento no está listo, como en el Tema 2.
+ * Textos de interfaz que el paquete no traía. «Confirmar el asiento» es de la
+ * pantalla de Hanayama (H5 v1 §1); los demás, la convención de los Hacer de
+ * T4. Katsumi los revisó: la fuente es d4-t4-h5-v1.md, «Textos de interfaz».
+ * Cambió uno, FALTAN_FILAS: el mío decía «Pon al menos tres cuentas…», que
+ * delataba cuántas líneas tiene el asiento.
  */
 export const BOTON_H5 = { confirmar: "Confirmar el asiento", siguiente: "Siguiente caso", verResumen: "Ver mi resumen", otraVez: "Otra vez" };
 export const CORRECTO = "Correcto.";
 export const INCORRECTO = "Incorrecto.";
-export const FALTAN_FILAS = "Pon al menos tres cuentas, cada una con su lado y su valor.";
+export const FALTAN_FILAS = "A cada cuenta ponle su lado y su valor. Tiene que haber al menos una al debe y una al haber.";
 export const ROTULO_ASIENTO_H5 = "EL ASIENTO CORRECTO";
 export const resumenH5 = (bien, cuantos) => `${bien} de ${cuantos} asientos bien armados.`;
 
@@ -204,15 +205,19 @@ export function sortearH5(barajar, azar = Math.random) {
 
 /*
  * El asiento armado, de las filas del constructor: las que tienen cuenta,
- * lado y una cifra que se lee. Está listo con al menos tres así, y ninguna a
- * medias.
+ * lado y una cifra que se lee. Está listo con AL MENOS DOS así, una al debe
+ * y otra al haber, y ninguna a medias. NUNCA exige tres: el error central de
+ * H5 es armar solo Gastos generales y Bancos, y quien lo comete tiene que
+ * poder confirmar para ver su mensaje (bancos_igual_a_gastos). El aviso no
+ * gasta intento.
  */
 export function lineasDe(filas, leerCifra) {
   return filas.filter((f) => f.cuenta).map((f) => ({ cuenta: f.cuenta, lado: f.lado, valor: leerCifra(f.valor) }));
 }
 export const estaListoH5 = (filas, leerCifra) => {
   const ls = lineasDe(filas, leerCifra);
-  return ls.length >= 3 && ls.every((l) => l.lado && l.valor !== null);
+  return ls.length >= 2 && ls.every((l) => l.lado && l.valor !== null)
+    && ls.some((l) => l.lado === DEBE) && ls.some((l) => l.lado === HABER);
 };
 
 export function evaluarH5(c, filas, leerCifra) {

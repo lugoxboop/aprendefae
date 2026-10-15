@@ -177,6 +177,19 @@ test("★★ el cierre de la actividad y su pie; INFLESZ de todo texto de 10 pal
   assert.deepEqual(medidos.filter((x) => !x.r.cumple).map((x) => `${x.r.valor} · ${x.t}`), []);
 });
 
+test("★★★ los textos de interfaz son los que revisó Katsumi en el paquete; el aviso es el suyo, que no dice cuántas líneas van", () => {
+  const i = PAQ.indexOf("## Textos de interfaz");
+  assert.ok(i > 0, "el paquete de H5 no trae la sección de textos de interfaz revisados");
+  const sec = PAQ.slice(i, PAQ.indexOf("\n## ", i + 5) > 0 ? PAQ.indexOf("\n## ", i + 5) : undefined);
+  const citas = new Set([...sec.matchAll(new RegExp(CITA, "g"))].map((m) => m[1]));
+  assert.match(sec, new RegExp(`Pasa a: «${D.FALTAN_FILAS.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}»`), "el aviso no es el que pide Katsumi");
+  assert.ok(sec.includes("«Pon al menos tres cuentas, cada una con su lado y su valor.»"), "no se leyó el aviso viejo en el paquete");
+  assert.notEqual(D.FALTAN_FILAS, "Pon al menos tres cuentas, cada una con su lado y su valor.");
+  for (const t of [...Object.values(D.BOTON_H5), D.CORRECTO, D.INCORRECTO, D.ROTULO_ASIENTO_H5]) assert.ok(citas.has(t), `«${t}» no está entre los textos aprobados`);
+  assert.ok(citas.has(D.resumenH5("N", 4)), "el resumen no es el aprobado");
+  assert.match(sec, /con al menos dos filas completas, una al debe y otra al haber, y ninguna fila a medias\. No con tres\./);
+});
+
 /* ═══════════ 2 · LO QUE SE VE ═══════════ */
 
 const Marco = ({ children }) => h("div", { "data-marco": true }, children);
@@ -240,21 +253,48 @@ test("★★★ los nombres con raya solo se parten después de la raya: espacio
   assert.equal(D.nombreDe(D.GASTOS_FALTANTE), "Gastos no operacionales – faltante de caja menor");
 });
 
-test("★★★ «Confirmar el asiento» se activa con al menos tres filas completas (cuenta, lado y valor); antes, el aviso", async () => {
+test("★★★ «Confirmar el asiento» se activa con al menos dos filas completas, una al debe y otra al haber; antes, el aviso, que no dice cuántas líneas lleva", async () => {
   const m = await montar({ items: [EMP_1] });
   try {
     const confirmar = () => boton(m.caja, D.BOTON_H5.confirmar);
+    /* Empieza con dos filas vacías: tres dirían cuántas líneas lleva el asiento. */
+    assert.equal(m.caja.querySelectorAll("[data-fila-asiento]").length, 2);
     assert.equal(confirmar().disabled, true);
     assert.equal(m.caja.querySelector("[data-aviso]").textContent, D.FALTAN_FILAS);
-    await armar(m.caja, EMP_1.asiento.slice(0, 2));
-    assert.equal(confirmar().disabled, true, "con dos filas");
+    assert.doesNotMatch(D.FALTAN_FILAS, /tres|3/, "el aviso dice cuántas líneas lleva el asiento");
+    await armar(m.caja, [EMP_1.asiento[0]]);
+    assert.equal(confirmar().disabled, true, "con una fila");
     await tocar(pastilla(m.caja, D.BANCOS));
-    await tocar(lado(m.caja, 2, D.HABER));
-    assert.equal(confirmar().disabled, true, "la tercera sin valor");
-    await escribir(m.caja.querySelector('[data-fila-asiento="2"] input'), miles(EMP_1.cheque));
-    assert.equal(confirmar().disabled, false);
+    await tocar(lado(m.caja, 1, D.DEBE));
+    await escribir(m.caja.querySelector('[data-fila-asiento="1"] input'), miles(EMP_1.cheque));
+    assert.equal(confirmar().disabled, true, "dos filas, las dos al debe");
+    await tocar(lado(m.caja, 1, D.HABER));
+    assert.equal(confirmar().disabled, false, "dos filas, una a cada lado");
     assert.equal(m.caja.querySelector("[data-aviso]"), null);
+    /* Una tercera a medias lo vuelve a apagar: ninguna fila a medias. */
+    await tocar(pastilla(m.caja, EMP_1.asiento[1].cuenta));
+    assert.equal(m.caja.querySelectorAll("[data-fila-asiento]").length, 3, "el constructor no añadió la tercera fila");
+    assert.equal(confirmar().disabled, true, "una fila a medias");
+    /* El aviso no gasta intento: no hay devolución ni nada anotado. */
+    assert.equal(m.caja.querySelector("[data-panel]"), null);
+    assert.equal(m.completados.length, 0);
   } finally { m.desmontar(); }
+});
+
+test("★★★ el error central se puede cometer: con solo Gastos generales y Bancos se confirma, y sale bancos_igual_a_gastos", async () => {
+  for (const c of [EMP_1, GASTO_2]) {
+    const m = await montar({ items: [c] });
+    try {
+      await armar(m.caja, [c.asiento[0], { cuenta: D.BANCOS, lado: D.HABER, valor: c.gastos }]);
+      const confirmar = boton(m.caja, D.BOTON_H5.confirmar);
+      assert.equal(confirmar.disabled, false, `${c.id}: con Gastos generales y Bancos no se puede confirmar`);
+      await tocar(confirmar);
+      const panel = m.caja.querySelector("[data-panel]");
+      assert.equal(panel.dataset.panel, "error");
+      assert.equal(panel.querySelector("[data-texto-retro]").textContent, c.errores.bancos_igual_a_gastos);
+      assert.equal(D.evaluarH5(c, [{ cuenta: D.GASTOS_GENERALES, lado: D.DEBE, valor: String(c.gastos) }, { cuenta: D.BANCOS, lado: D.HABER, valor: String(c.gastos) }], leerCifra).error, "bancos_igual_a_gastos");
+    } finally { m.desmontar(); }
+  }
 });
 
 test("★★★ PH8-2: mientras se arma, nada de la respuesta está en el DOM (textContent y outerHTML, no innerText)", async () => {
