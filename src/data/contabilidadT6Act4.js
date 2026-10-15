@@ -1,4 +1,6 @@
 import { GASTO, PROVISION, CLIENTES, CAJA } from "./contabilidadT6Act2.js";
+import { INGRESOS } from "./contabilidadT6Act3.js";
+import { BANCOS } from "./contabilidadT5Act2.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -142,6 +144,34 @@ export const EJEMPLO_T6_ACT4 = {
   id: "b5-t6-a4-tutorial", respuesta: A_GASTO, errores: AJUSTE,
   texto: "El 31 de diciembre, El Torito crea la provisión del año.",
   acierto: "Se debita Gasto provisiones – cuentas incobrables. El gasto se anota al crear la provisión, y la provisión, que sube, va al Haber.",
+};
+
+/*
+ * ═══════════ EL ASIENTO MÍNIMO: LO QUE SE ACREDITA EN CADA HECHO ═══════════
+ *
+ * Calidad (hoja 4 de Mai): bajo el hecho, un asiento con DEBE y HABER. Lo que
+ * se acredita no estaba en el contenido de a4: es la lectura de Mai, sacada de
+ * las otras piezas de T6, VERIFICADA POR SHOKO contra el libro. «Ingresos por
+ * ventas» y «Bancos» no son opciones: solo aparecen en el HABER, con sus
+ * nombres publicados.
+ *
+ * qd-04 (cheque devuelto → Bancos) es una CONSTRUCCIÓN: el libro anota la nota
+ * débito en Clientes (p. 197) pero no imprime el asiento con Bancos. a4 no
+ * lleva pies; si algún día lo lleva, el de ese hecho dice «Basado en el
+ * libro, …», nunca «Libro, p. …» (Shoko).
+ */
+export const SE_ACREDITA_T6_ACT4 = {
+  "qd-01": INGRESOS,
+  "qd-02": CLIENTES,
+  "qd-03": CLIENTES,
+  "qd-04": BANCOS,
+  "qd-05": CLIENTES,
+  "qd-06": CLIENTES,
+  "qd-07": CLIENTES,
+  "qd-08": PROVISION,
+  "qd-09": PROVISION,
+  "qd-10": CLIENTES,
+  "b5-t6-a4-tutorial": PROVISION,
 };
 
 export const ALT_T6_ACT4 = "Actividad de elección. Aparece un hecho. Elige cuál de las cuatro cuentas se debita: Cuentas por cobrar – clientes, Caja, Gasto provisiones – cuentas incobrables o Provisión para deudas incobrables. Tienes un intento por hecho, y después se lee la explicación.";
