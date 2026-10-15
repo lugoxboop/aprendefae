@@ -134,11 +134,32 @@ Aquí se registra solo lo que cruza células.
   y el total de $2.655.000 sí. Lo marca con confianza baja porque la imagen está
   borrosa, y no se pronuncia sobre Moncayo.
 
-**ESTA ERRATA ESTÁ ABIERTA.** No está confirmada ni descartada: hay dos
-lecturas que no coinciden y una imagen que no se lee con seguridad.
+**ESTA ERRATA ESTÁ CERRADA, Y SE CIERRA SIN RESOLVERSE.** El 15 de octubre de
+2026 Mateo confirmó que esa página no aparece y que no va a aparecer: «o
+tendrán que encontrar otra o simplemente omitirlo». No hay escaneo nítido que
+esperar.
 
-**Decisión de Sakuta, respaldada:** ninguna actividad se construye sobre esa
-tabla hasta tener un escaneo nítido de la p. 201.
+**La decisión de Sakuta se mantiene y deja de ser provisional:** ninguna
+actividad se construye sobre la tabla de la p. 201. No es una pausa, es el
+estado final. Reconstruir esa tabla desde dos lecturas que no coinciden sería
+inventar cifras y presentarlas como del libro, que es justo lo que este
+proyecto no hace.
+
+**Pero la tabla no es el tema: el tema es el método.** Que la provisión se
+estima mirando cuánto lleva vencida cada deuda se puede enseñar sin esa tabla,
+con cifras construidas, igual que T7-2 enseña el kárdex con cifras construidas
+(ver el orden final de T7-2 en el mapa de T7). **La decisión de enseñarlo así
+es de Sakuta, porque T6 es su tema**, y si lo hace, sus cifras entran al
+registro de cifras construidas con la misma disciplina que usa la Célula C: se
+cruzan contra el libro y **contra los ejercicios del banco, que ahora son de la
+Célula E y cuentan como cifras del libro en ese cruce**. Una cifra construida
+de T6 que coincida con una respuesta del banco le regala el resultado a un
+estudiante que haga las dos.
+
+Y lo que esto significa para la Célula E, para que no quede esperando: `r5-2`
+entrega la provisión como dato **de forma definitiva**, no «hasta que llegue el
+escaneo». Si algún día T6 enseña el método, entonces y solo entonces `r5-2`
+puede ganar su etapa de cálculo.
 
 **Y esa decisión ya cruzó a otra célula, que es la razón de registrarla aquí.**
 El 15 de octubre de 2026 la Célula E auditó el Tema 6 contra el código y
