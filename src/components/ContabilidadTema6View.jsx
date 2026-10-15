@@ -31,6 +31,14 @@ import ProvisionDeElTorito from "./mecanicas/libros/tema6/ProvisionDeElTorito.js
 import { T6_ACT2 } from "../data/contabilidadT6Act2.js";
 import DeudaQueVuelve from "./mecanicas/libros/tema6/DeudaQueVuelve.jsx";
 import { T6_ACT3 } from "../data/contabilidadT6Act3.js";
+import QueSeDebita from "./mecanicas/libros/tema6/QueSeDebita.jsx";
+import { T6_ACT4 } from "../data/contabilidadT6Act4.js";
+import LaCuentaDeLaProvision from "./mecanicas/libros/tema6/LaCuentaDeLaProvision.jsx";
+import { T6_ACT5 } from "../data/contabilidadT6Act5.js";
+import ProvisionPorEdades from "./mecanicas/libros/tema6/ProvisionPorEdades.jsx";
+import { T6_ACT6 } from "../data/contabilidadT6Act6.js";
+import QueMetodoYCuando from "./mecanicas/libros/tema6/QueMetodoYCuando.jsx";
+import { T6_ACT7 } from "../data/contabilidadT6Act7.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -60,6 +68,11 @@ export const JUEGOS = [
   /* La mesa de asientos con el diario encima; en «Así se juega», la mesa sola. */
   { id: T6_ACT2.id, Mecanica: ProvisionDeElTorito, titulo: T6_ACT2.nombre },
   { id: T6_ACT3.id, Mecanica: DeudaQueVuelve, titulo: T6_ACT3.nombre },
+  /* Los cuatro Hacer nuevos: la elección de «¿Por Cuál Arteria Entra?», las casillas en orden y la clasificación de dos niveles, en su copia de la célula. */
+  { id: T6_ACT4.id, Mecanica: QueSeDebita, titulo: T6_ACT4.nombre },
+  { id: T6_ACT5.id, Mecanica: LaCuentaDeLaProvision, titulo: T6_ACT5.nombre },
+  { id: T6_ACT6.id, Mecanica: ProvisionPorEdades, titulo: T6_ACT6.nombre },
+  { id: T6_ACT7.id, Mecanica: QueMetodoYCuando, titulo: T6_ACT7.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */

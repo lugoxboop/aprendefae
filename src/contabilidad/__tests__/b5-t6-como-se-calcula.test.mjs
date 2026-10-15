@@ -331,5 +331,5 @@ test("★★ identificadores nuevos con b5-, y la pieza no va al catálogo (Apre
   assert.equal(a.nombre, D.PIEZA_COMO_SE_CALCULA.titulo);
   const { readdirSync } = await import("node:fs");
   const dir = new URL("../../../supabase/migrations/", import.meta.url);
-  for (const f of readdirSync(dir)) assert.ok(!readFileSync(new URL(f, dir), "utf8").includes("b5-t6-a5"), `${f} trae la pieza`);
+  for (const f of readdirSync(dir)) assert.ok(!readFileSync(new URL(f, dir), "utf8").includes(D.PIEZA_COMO_SE_CALCULA.id), `${f} trae la pieza`); /* el id entero: «b5-t6-a5» a secas es el Hacer 5 (0075) */
 });

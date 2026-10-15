@@ -102,7 +102,8 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
   /* Actividades nuevas que todavía esperan su dibujo de Xeno: el camino las pinta sin ícono. */
   /* T4 · H1 (Célula D): los íconos los reserva el coordinador; se pidió, no se eligió.
    * T5 · N1 (Célula C): igual, pedido al coordinador. */
-  const SIN_ICONO_TODAVIA = new Set(["t5-temporal-o-largo-plazo", "t5-revision-que-falta", "t5-el-interes-del-periodo", "t4-entra-o-sale-de-caja"]);
+  /* T6 · Hacer 4 a 7 (Célula B) y T4 · H1 (Célula D): los íconos los reserva el coordinador; se pidió, no se eligió. */
+  const SIN_ICONO_TODAVIA = new Set(["t5-temporal-o-largo-plazo", "t5-revision-que-falta", "t5-el-interes-del-periodo", "t4-entra-o-sale-de-caja", "b5-t6-a4", "b5-t6-a5", "b5-t6-a6", "b5-t6-a7"]);
   const esperadas = [...hacer].filter((id) => !conDesafio.has(id) && !SIN_ICONO_TODAVIA.has(id));
   assert.equal(esperadas.length, 46);
   assert.deepEqual(Object.keys(ICONO_POR_ACTIVIDAD).sort(), esperadas.sort(), "falta o sobra un ícono");
