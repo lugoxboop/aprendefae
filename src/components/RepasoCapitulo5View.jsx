@@ -280,10 +280,23 @@ function PorTema({ filas }) {
               </span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ margin: 0, fontFamily: INTER, fontSize: "15px", fontWeight: 600, color: C.texto }}>{f.nombre}</p>
-                {/* El color nunca va solo: el «n de m» de la derecha lo dice con palabras. */}
+                {/*
+                  El total va en palabras: el «n de m» de la derecha. Cada punto lleva
+                  forma además de color: relleno si acertó, anillo (solo borde) si
+                  falló. Así quien no distingue teal de coral sabe CUÁLES acertó, no
+                  solo cuántas. Los puntos siguen aria-hidden: el lector oye el «n de m».
+                */}
                 <div aria-hidden="true" style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
                   {f.puntos.map((p) => (
-                    <span key={p.id} data-punto={p.ok ? "acierto" : "error"} style={{ width: "10px", height: "10px", borderRadius: "50%", background: p.ok ? C.teal : C.coral }} />
+                    <span
+                      key={p.id}
+                      data-punto={p.ok ? "acierto" : "error"}
+                      data-forma={p.ok ? "relleno" : "anillo"}
+                      style={{
+                        width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box",
+                        ...(p.ok ? { background: C.teal } : { background: "transparent", border: `2px solid ${C.coral}` }),
+                      }}
+                    />
                   ))}
                 </div>
               </div>

@@ -112,7 +112,8 @@ export default function EligeUnaOpcion({
       <div data-hecho={hecho.id}>
         <Enunciado acento={acento}>{hecho.texto}</Enunciado>
       </div>
-      <Opciones columnas="repeat(auto-fit, minmax(150px, 1fr))">
+      {/* Una columna, siempre a la vista y en el orden de Futaba (hoja de Mai). */}
+      <Opciones columnas="minmax(0, 1fr)">
         {config.opciones.map((o) => (
           <Opcion
             key={o.id}

@@ -622,6 +622,28 @@ export const SUBJECTS = {
         ],
       },
       /*
+       * ═══════════ T4 · CÉLULA D ═══════════
+       *
+       * T4, efectivo, caja menor y bancos: §5.1 y §5.2 del capítulo 5 (pp.
+       * 179-191), entre el Tema 3 y el Tema 5 por el orden del libro. El id
+       * del tema va sin prefijo de célula, como los de T5, T6 y T7: es el
+       * segmento de la dirección que ve el estudiante. El id y el lugar los
+       * fijó el coordinador en nocturno.md (PR #138).
+       *
+       * El orden de sus piezas es el del plan de Yujiro: A0, y después A1 → H1
+       * → H2 → A2…
+       */
+      {
+        id: "efectivo-caja-menor-bancos",
+        title: "Efectivo, caja menor y bancos",
+        actividades: [
+          /* A0, pp. 177-179. Abre el tema. Aprender: cero FP, no entra al catálogo. */
+          { id: "t4-a0-el-activo-corriente", nombre: "El activo corriente", clasificacion: { tipo: APRENDER } },
+          /* A1, pp. 179-180. Aprender: cero FP, no entra al catálogo. */
+          { id: "t4-a1-la-caja", nombre: "La caja", clasificacion: { tipo: APRENDER } },
+        ],
+      },
+      /*
        * EL TEMA 5 (Célula B), por ahora con su pieza 1 de Aprender.
        *
        * CATÁLOGO: decidido por Erwin. El título es el subtítulo literal de

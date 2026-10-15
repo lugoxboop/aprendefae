@@ -469,3 +469,33 @@ test("★★★ 3 de 6 da 12,5 FP exactos y calcularFP los redondea a 13, como r
   assert.equal(desglose.factorTiempo, 1);
   assert.equal(fp, 13);
 });
+
+/* ═══════════ LOS PUNTOS DEL FINAL: FORMA, NO SOLO COLOR ═══════════ */
+
+test("★★★ en el final, acierto y error se distinguen por forma: relleno o anillo, no solo por color", async () => {
+  const { caja, desmontar } = await montar(h(RepasoCruzado, { pantallas: P }));
+  /* Acierta C.3 y falla las otras cinco. */
+  for (const p of P) {
+    const id = p.id === "c3" ? clave(p).id : p.opciones.find((o) => !o.correcta).id;
+    await tocar(opcion(caja, id));
+    await tocar(caja.querySelector("[data-siguiente]"));
+  }
+  const puntos = [...caja.querySelectorAll("[data-punto]")];
+  assert.equal(puntos.length, 6);
+  const forma = (el) => {
+    const st = el.style;
+    const relleno = st.background && st.background !== "transparent" && !st.border;
+    const anillo = (st.background === "transparent" || st.background === "") && /solid/.test(st.border);
+    return relleno ? "relleno" : anillo ? "anillo" : "otra";
+  };
+  /* La forma se lee del estilo pintado, no de la marca de datos. */
+  assert.deepEqual(puntos.map(forma), ["relleno", "anillo", "anillo", "anillo", "anillo", "anillo"]);
+  assert.deepEqual(puntos.map((x) => x.dataset.forma), ["relleno", "anillo", "anillo", "anillo", "anillo", "anillo"]);
+  /* Dos puntos del mismo resultado se ven iguales; uno de cada clase, distinto aunque se quite el color. */
+  const sinColor = (el) => `${el.style.width}|${el.style.height}|${el.style.borderRadius}|${forma(el)}`;
+  assert.notEqual(sinColor(puntos[0]), sinColor(puntos[1]), "sin color, acierto y error se ven igual");
+  /* Siguen aria-hidden, y el total va en palabras. */
+  assert.ok(puntos.every((x) => x.closest("[aria-hidden='true']")));
+  assert.deepEqual([...caja.querySelectorAll("[data-n-de-m]")].map((x) => x.textContent), ["1 de 1", "0 de 1", "0 de 4"]);
+  desmontar();
+});
