@@ -91,7 +91,7 @@ const PORTADA = {
 
 const QUE_ES = {
   id: "que-es",
-  pista: "El comercial ya viene restado en la factura. ¿Cuál de los dos ocurre después de facturar?",
+  pista: "Un descuento se registra cuando se sabe cuánto es. ¿Cuándo se sabe cada uno?",
   tipo: "eleccion",
   parrafos: [
     "El descuento condicionado depende de una condición. Por ejemplo, que el cliente pague dentro de un plazo.",
@@ -204,7 +204,7 @@ const CUAL_LE_TOCA = {
 
 const SOBRE_QUE = {
   id: "sobre-que",
-  pista: "El descuento condicionado no toca el IVA. Y la rebaja comercial ya se restó antes.",
+  pista: "Piensa qué parte de lo que debe Santa Martha es de la mercancía y qué parte es de otra cosa.",
   tipo: "eleccion",
   pregunta: "¿Sobre qué valor se calcula el 15 %?",
   opciones: [

@@ -71,7 +71,7 @@ const PORTADA = {
 /* P1 · la compra (E-1, p. 234). El repaso de IVA y retención viene de la corrección. */
 const LA_COMPRA = {
   id: "la-compra",
-  pista: "Ahora la empresa usa el permanente. Recuerda qué cuenta deja de estar quieta en este sistema.",
+  pista: "La mercancía que se compra es un activo. En el permanente se anota apenas entra.",
   tipo: "eleccion",
   parrafos: [
     "En el permanente, la compra de mercancía va al debe de Inventario de mercancías, por su costo. Así se cumple la regla de los activos: un activo que aumenta va al debe de su cuenta.",

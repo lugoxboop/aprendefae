@@ -89,7 +89,6 @@ import { unidadDeN1 as unidadDeT5N1 } from "../contabilidad/t5N1.js";
 import { unidadDeN3 as unidadDeT5N3 } from "../contabilidad/t5N3.js";
 import { unidadDeN4 as unidadDeT5N4 } from "../contabilidad/t5N4.js";
 import { hechoDeItemH1 as hechoDeItemT4H1 } from "../data/contabilidadT4H1.js";
-import { unidadDeR5_2 } from "../data/repasoCap5ToroNegroJuego.js";
 import { casoDeItemH2 as casoDeItemT4H2 } from "../data/contabilidadT4H2.js";
 import { operacionDeItemH3 as operacionDeItemT4H3 } from "../data/contabilidadT4H3.js";
 import { preguntaDeItemH4 as preguntaDeItemT4H4 } from "../data/contabilidadT4H4.js";
@@ -97,6 +96,7 @@ import { casoDeItemH5 as casoDeItemT4H5 } from "../data/contabilidadT4H5.js";
 import { partidaDeItemH6 as partidaDeItemT4H6 } from "../data/contabilidadT4H6.js";
 import { partidaDeItemH7 as partidaDeItemT4H7 } from "../data/contabilidadT4H7.js";
 import { itemDeH8 as itemDeT4H8 } from "../data/contabilidadT4H8.js";
+import { unidadDeR5_2 } from "../data/repasoCap5ToroNegroJuego.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";

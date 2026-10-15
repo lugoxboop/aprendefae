@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Check, X } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import FondoMateria from "./shared/FondoMateria.jsx";
@@ -16,10 +16,9 @@ import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
 import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import { Panel } from "./mecanicas/salaDeControl/marco.jsx";
-import { PIEZA_LA_CAJA, BOTON, INTERFAZ } from "../data/contabilidadT4.js";
-import { PIEZA_EL_ACTIVO_CORRIENTE } from "../data/contabilidadT4A0.js";
-import { H1 } from "../data/contabilidadT4H1.js";
 import { barajar, barajarDistinto } from "../utils/barajar.js";
+import { BOTON, INTERFAZ, DEBE, HABER, PIEZA_LA_CAJA } from "../data/contabilidadT4.js";
+import { PIEZA_EL_ACTIVO_CORRIENTE } from "../data/contabilidadT4A0.js";
 import { PIEZA_EL_FONDO_FIJO, FIGURA_SOBRE, ESTADOS_SOBRE_A2, ALT_SOBRE_A2 } from "../data/contabilidadT4A2.js";
 import { PIEZA_EL_ARQUEO, FIGURA_SOBRE_A3, ESTADOS_SOBRE_A3, ALT_SOBRE_A3 } from "../data/contabilidadT4A3.js";
 import { PIEZA_BANCOS_Y_NOTAS, FIGURA_LIBRETAS, ESTADOS_LIBRETAS, ALT_LIBRETAS } from "../data/contabilidadT4A4.js";
@@ -30,6 +29,7 @@ import {
   CONCILIADO_BANCO as CONCILIADO_BANCO_A5, CONCILIADO_LIBROS as CONCILIADO_LIBROS_A5,
   SUMA_DEBE_MAYOR as SUMA_DEBE_MAYOR_A5, SALDO_MAYOR as SALDO_MAYOR_A5,
 } from "../data/contabilidadT4A5.js";
+import { H1 } from "../data/contabilidadT4H1.js";
 import {
   H2, PIE_CASO_H2, PREGUNTA_H2, BOTON_H2, CIERRE_H2, resumenH2, lectorErrorH2,
   controlH2, sortearH2, opcionesEnOrden, evaluarH2, puntuarH2,
@@ -66,14 +66,14 @@ import { Responder, useTanda, AsientoEnLineas, leerCifra, CampoCifra } from "./m
 import ConstructorAsiento, { filaVacia } from "./mecanicas/libros/ConstructorAsiento.jsx";
 import { SOLO_LECTOR } from "./mecanicas/libros/verbos.jsx";
 import { Encabezado } from "./mecanicas/libros/tema1/encabezado.jsx";
-import { CSS_T4R } from "./t4/comun.jsx";
+
+import { CSS_T4R, cifra } from "./t4/comun.jsx";
 import { CSS_CAJON } from "./t4/Cajon.jsx";
 import { CSS_ANO, CuerpoA0 } from "./t4/AnoEnMarcha.jsx";
 import { CSS_A1, CuerpoA1 } from "./t4/LaCaja.jsx";
 import EntraOSaleDeCaja from "./t4/EntraOSaleDeCaja.jsx";
 
-export { cifra } from "./t4/comun.jsx";
-export { EntraOSaleDeCaja };
+export { cifra, EntraOSaleDeCaja };
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -89,8 +89,8 @@ export { EntraOSaleDeCaja };
  * figuras y H1 viven en src/components/t4/ (rediseño de enganche, B1-B5).
  *
  * EL ORDEN DE PIEZAS_T4 LO DA `numero`, no la posición en la lista: A0 «El
- * activo corriente» = 0, A1 «La caja» = 1, A2 = 2… La prueba t4-andamio lo
- * afirma.
+ * activo corriente» = 0, A1 «La caja» = 1, A2 «El fondo fijo» = 2… La
+ * prueba t4-andamio lo afirma.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -247,6 +247,9 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
  *
  * Lo propio de cada pieza es su cuerpo: CuerpoA0 («El año en marcha») y
  * CuerpoA1 (el cajón operable), en src/components/t4/. Clases `t4r-`.
+ *
+ * Una pieza sin cuerpo nuevo (A2-A5 de la pila, mientras llega su rediseño)
+ * se pinta con el armazón de antes, PantallasViejasT4.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -255,7 +258,11 @@ const CSS_PANTALLAS = CSS_T4R + CSS_CAJON + CSS_ANO + CSS_A1;
 
 const TextosR = ({ lista }) => (lista ?? []).map((t) => <p key={t} className="t4r-p" data-texto>{t}</p>);
 
-function PantallasRediseno({ pieza, rotulo }) {
+export function PantallasT4({ pieza, rotulo }) {
+  return CUERPOS[pieza.id] ? <PantallasR pieza={pieza} rotulo={rotulo} /> : <PantallasViejasT4 pieza={pieza} rotulo={rotulo} />;
+}
+
+function PantallasR({ pieza, rotulo }) {
   const [k, setK] = useState(0);
   const p = pieza.pantallas[k];
   const ultima = k === pieza.pantallas.length - 1;
@@ -284,19 +291,15 @@ function PantallasRediseno({ pieza, rotulo }) {
 }
 
 /*
- * A0 y A1 ya van con el rediseño (su cuerpo, en src/components/t4/). A2-A5
- * siguen con las pantallas de la pila hasta su rediseño, que entra en esta
- * misma rama: PantallasPila, más abajo.
- */
-export function PantallasT4({ pieza, rotulo }) {
-  return CUERPOS[pieza.id] ? <PantallasRediseno pieza={pieza} rotulo={rotulo} /> : <PantallasPila pieza={pieza} rotulo={rotulo} />;
-}
-
-/*
  * ═══════════════════════════════════════════════════════════════════════════
- * T4 · LAS PANTALLAS DE LA PILA (A2-A5), hasta su rediseño.
+ * T4 · LAS PANTALLAS DE APRENDER DE ANTES (A2-A5 de la pila, hasta su rediseño).
  *
- * Lo que traen los paquetes de A2-A5:
+ * La forma de PantallasT7_3, sin lo que T4 no usa (fichas, cuentas T y las
+ * figuras de Watari): una pantalla a la vez; portada, lectura y resumen con
+ * su botón y su pie; elección con opciones barajadas en cada intento,
+ * «Confirmar», y «Incorrecto.» con «Probar otra» o «Correcto.» con «Seguir».
+ *
+ * Lo que traen los paquetes de T4:
  *   · `listaNumerada`: los siete controles y el resumen van numerados, como
  *     en el paquete
  *   · `trasAcertar`: lo que se muestra solo con el acierto, debajo del
@@ -320,9 +323,7 @@ export function PantallasT4({ pieza, rotulo }) {
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-
 const COLOR = { fondo: "#0E1B2E", texto: "#F8F9FA", texto2: "#A8B6C8", borde: "#B8C4D4", debe: "#2A9D8F", haber: "#E9C46A", error: "#E76F51" };
-
 
 export const CSS_T4P = `
 .t4p { display: grid; gap: 12px; min-width: 0; color: ${COLOR.texto}; font-family: "Inter", sans-serif; font-size: 15px; line-height: 1.4; }
@@ -537,7 +538,7 @@ function EleccionT4({ pantalla, onSeguir }) {
   );
 }
 
-function PantallasPila({ pieza, rotulo }) {
+function PantallasViejasT4({ pieza, rotulo }) {
   const [k, setK] = useState(0);
   const p = pieza.pantallas[k];
   const ultima = k === pieza.pantallas.length - 1;
@@ -590,6 +591,7 @@ function PantallasPila({ pieza, rotulo }) {
  * figcaption oculto, enlazado con aria-describedby. Clases `t4cj-` y `t4ry-`.
  * ═══════════════════════════════════════════════════════════════════════════
  */
+
 
 export const CSS_T4F = `
 .t4f-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -1265,40 +1267,13 @@ export function ConciliacionSanCalixto({ estado }) {
   );
 }
 
-/*
- * ═══════════════════════════════════════════════════════════════════════════
- * T4 · HACER 1 · ¿ENTRA O SALE DE CAJA? (Célula D)
- *
- * Construida desde la especificación de Hanayama (celula-d/hanayama-h1-
- * pantalla-v1.md con la v1.1 encima) y el paquete vigente de Katsumi, no
- * desde el prototipo. La forma de T7-2 H1 «¿Debe o haber?», con tres
- * destinos apilados a todo el ancho en vez de dos, y con las piezas
- * compartidas sin cambiarlas (Encabezado, Pulsos, Opciones, Opcion,
- * Responder, Cierre).
- *
- *   · la tarjeta trae SOLO el hecho: sin pie (v1.1, PH1-1). La página va en la
- *     devolución, debajo de su texto, y H1-8 no la lleva
- *   · los tres destinos, siempre en el mismo orden; lo que se baraja son los
- *     hechos
- *   · UN SOLO TOQUE por tarjeta: al tocar se bloquean los tres; si falló, el
- *     correcto se enseña («era esta»). Coral solo en el error
- *   · mientras se pregunta, nada de la respuesta está en el DOM (PH8-2): ni la
- *     devolución ni la página existen hasta tocar
- *
- * Al terminar: onCompletar(pct, ms, detalle). Exploratoria: el motor paga los
- * 10 FP al terminar; el porcentaje va para el panel docente. En modo demo
- * («Así se juega») no reporta nada.
- * ═══════════════════════════════════════════════════════════════════════════
- */
-
+/* Lo que comparten los Hacer de la pila (H2-H8). H1 vive en src/components/t4/EntraOSaleDeCaja.jsx. */
 const APAGADO_H1 = "rgba(248,249,250,0.6)";
 const CSS_T4H1 = `
 @keyframes fae-t4h1-fundido { from { opacity: 0; } to { opacity: 1; } }
 .fae-t4h1-entra { animation: fae-t4h1-fundido 150ms ease-out both; }
 @media (prefers-reduced-motion: reduce) { .fae-t4h1-entra { animation: none !important; } }
 `;
-
-
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════

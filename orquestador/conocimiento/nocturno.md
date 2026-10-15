@@ -296,6 +296,22 @@ estudiante leyera las dos definiciones.
 
 ## Las migraciones se aplican solas, y quién es la mirada ahora
 
+> **ENCENDIDO Y COMPROBADO el 15 de octubre a las 22:55 UTC.** Lo que sigue
+> dejó de ser un plan ese día: Mateo guardó el secreto `SUPABASE_DB_URL` y el
+> primer despliegue creó la tabla de control. Lo que viene después de este
+> recuadro describe cómo funciona hoy, no cómo se pensaba que funcionaría.
+>
+> **Y cómo se comprobó importa, porque casi me engaño.** El paso del
+> despliegue decía «success»… pero está escrito para NO fallar cuando falta el
+> secreto, así que da «success» en los dos casos. Un paso en verde no probaba
+> nada. Lo que lo probó fue mirar la base: `migraciones_aplicadas`, que antes
+> no existía, apareció con 93 filas y la última sellada a las 22:55. Esa tabla
+> solo la pudo crear el despliegue con la clave buena.
+>
+> **La regla que queda:** cuando se enciende algo, la prueba se busca en el
+> sitio donde el efecto tiene que haber ocurrido, no en el informe de quien lo
+> encendió.
+
 **Cambió el 15 de octubre de 2026.** Hasta esa mañana cada migración la pegaba
 el coordinador en el editor SQL de Supabase. Esa mañana había **doce
 esperando** y cuatro células paradas: el cuello de botella ya no era fusionar

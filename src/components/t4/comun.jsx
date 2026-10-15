@@ -47,8 +47,8 @@ export const CSS_T4R = `
 .t4r-msg p.t4r-pg { grid-column: 2; font-size: 12px; line-height: 1.4; color: ${C.texto2}; }
 .t4r-msg b { font-weight: 700; }
 .t4r-marca { display: inline-flex; width: max-content; align-items: center; gap: 4px; height: 20px; padding: 0 7px; border-radius: 999px; background: ${C.fondo}; border: 1px solid ${C.texto}; color: ${C.texto}; font: 600 12px/18px "Inter", sans-serif; white-space: nowrap; pointer-events: none; }
-.t4r-marca[data-marca="mal"] { border-color: ${C.error}; }
-.t4r-marca[data-marca="mal"] > span:first-child { color: ${C.error}; }
+.t4r-marca[data-marca="mal"], .t4r-marca[data-marca="cifra-mal"] { border-color: ${C.error}; }
+.t4r-marca[data-marca="mal"] > span:first-child, .t4r-marca[data-marca="cifra-mal"] > span:first-child { color: ${C.error}; }
 .t4r-nueva { animation: t4r-aparece .12s ease-out; }
 @keyframes t4r-aparece { from { opacity: 0; } to { opacity: 1; } }
 @keyframes t4r-vibra { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }

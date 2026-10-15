@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../theme.js";
 import { DEBE, HABER, COLOR_LADO, pesos } from "../../../data/contabilidad.js";
 import { TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
+import { MarcaVeredicto } from "./marcaVeredicto.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -279,6 +280,20 @@ export function AsientoEnLineas({ lineas, rotulo = null, acento = FAE.teal, tota
  * Los dos lados como par de opciones. Sale tantas veces en este tema que
  * escribirlo en cada actividad sería copiar el mismo gesto cinco veces.
  */
+/*
+ * ═══════════ EL VEREDICTO SE DICE CON FORMA, NO SOLO CON EL BORDE ═══════════
+ *
+ * Corregido, el lado bueno lleva ✓ y el lado que el estudiante eligió mal lleva
+ * ✗. Antes el veredicto iba solo en el matiz del borde —teal el bueno, coral el
+ * malo— y esos dos tonos miden lo mismo en gris (1,07:1): quien no los
+ * distingue veía DOS botones iguales y no sabía cuál era la respuesta.
+ *
+ * Y el lado bueno ya no se pinta de teal para decir «bien». Teal es el debe:
+ * un haber correcto salía con el color del debe, justo cuando se le decía al
+ * estudiante que había acertado. El acierto conserva el tono de SU lado, el
+ * borde se engrosa (sin mover el botón: es una sombra interior) y la palomita
+ * es la señal. El error sí conserva el coral, que no significa ningún lado.
+ */
 export function ElegirLado({ elegido, correcto = null, onElegir, deshabilitado = false, nombres = null }) {
   const texto = nombres ?? { [DEBE]: "Debe", [HABER]: "Haber" };
   return (
@@ -286,10 +301,12 @@ export function ElegirLado({ elegido, correcto = null, onElegir, deshabilitado =
       {[DEBE, HABER].map((lado) => {
         const elegidoEste = elegido === lado;
         const revelado = correcto !== null;
+        const esBueno = revelado && lado === correcto;
+        const esMalo = revelado && !esBueno && elegidoEste;
         let borde = "rgba(248,249,250,0.22)";
         let fondo = "rgba(14,27,46,0.5)";
-        if (revelado && lado === correcto) { borde = FAE.teal; fondo = "rgba(42,157,143,0.14)"; }
-        else if (revelado && elegidoEste) { borde = FAE.coral; fondo = "rgba(231,111,81,0.14)"; }
+        if (esBueno) { borde = COLOR_LADO[lado]; fondo = `${COLOR_LADO[lado]}24`; }
+        else if (esMalo) { borde = FAE.coral; fondo = "rgba(231,111,81,0.14)"; }
         else if (elegidoEste) { borde = COLOR_LADO[lado]; }
         return (
           <button
@@ -298,11 +315,15 @@ export function ElegirLado({ elegido, correcto = null, onElegir, deshabilitado =
             disabled={deshabilitado}
             onClick={() => onElegir(lado)}
             style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
               padding: "13px 10px", borderRadius: "12px", cursor: deshabilitado ? "default" : "pointer",
               background: fondo, border: `1px solid ${borde}`, color: FAE.text,
+              boxShadow: esBueno || esMalo ? `inset 0 0 0 1px ${borde}` : "none",
               fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600,
             }}
           >
+            {esBueno && <MarcaVeredicto bien color={COLOR_LADO[lado]} etiqueta="Lado correcto" />}
+            {esMalo && <MarcaVeredicto bien={false} color={FAE.coral} etiqueta="Tu respuesta, incorrecta" />}
             {texto[lado]}
           </button>
         );

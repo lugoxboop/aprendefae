@@ -383,7 +383,7 @@ test("★★★ capa 3: la T se llena en orden al decidir, con el valor correcto
   assert.deepEqual(cajas(), ["diciembre-2007"], "al principio, solo la caja de 2007");
   assert.equal(t.querySelector("[data-saldo]"), null);
   assert.deepEqual([...t.querySelectorAll("[data-columna] > p")].map((p) => [p.textContent, p.style.fontSize, p.style.color]),
-    [["DEBE", "9px", rgb("#52C4B0")], ["HABER", "9px", rgb("#E9C46A")]], "DEBE y HABER con el estilo de los colectores");
+    [["DEBE", "12px", rgb("#52C4B0")], ["HABER", "12px", rgb("#E9C46A")]], "DEBE y HABER con el estilo de los colectores, a 12 px (letra mínima)");
   const lectura = (n) => [...n.querySelectorAll("p:not([data-pie])")].map((p) => p.textContent).join("");
   const esperado = [
     { debe: [], haber: ["$148.80031 de diciembre de 2007"], saldo: ["normal", "El saldo queda en $148.800"] },

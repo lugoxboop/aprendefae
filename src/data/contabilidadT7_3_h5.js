@@ -147,7 +147,7 @@ export const ITEMS_H5 = [
     pregunta: "Ubica cada línea del ajuste por faltante: Debe o Haber.",
     lineas: [
       { id: "costo", cuenta: CMV, valor: FALTANTE, lado: DEBE, retro: "El faltante sube el costo de la mercancía vendida: va al debe.", distractores: [{ cuenta: GASTO, retro: "Ese gasto se anota al estimar pérdidas antes de que pasen. Este faltante ya salió en el conteo." }, { cuenta: "Gastos de administración y ventas", retro: "El libro no manda el faltante a los gastos del mes." }] },
-      { id: "inventario", cuenta: INV, valor: FALTANTE, lado: HABER, retro: "Falta mercancía en la bodega, así que el activo baja: va al haber.", distractores: [{ cuenta: PROV, retro: "La provisión se usa cuando llega una pérdida que ya se había estimado. Este faltante es un ajuste por el conteo." }, { cuenta: "Compras", retro: "Olmo usa el permanente, y ahí Compras no se usa." }] },
+      { id: "inventario", cuenta: INV, valor: FALTANTE, lado: HABER, retro: "Falta mercancía en la bodega, así que el activo baja: va al haber.", distractores: [{ cuenta: "Devoluciones de compras", retro: "Olmo no le devolvió nada a un proveedor. La mercancía faltó en el conteo." }, { cuenta: "Compras", retro: "Olmo usa el permanente, y ahí Compras no se usa." }] },
     ],
   },
   {
@@ -162,8 +162,8 @@ export const ITEMS_H5 = [
     id: "perdida-real", tipo: "asiento", caso: 2,
     pregunta: "Ubica cada línea del asiento de la pérdida real: Debe o Haber.",
     lineas: [
-      { id: "provision", cuenta: PROV, valor: PINO.perdida, lado: DEBE, retro: "La pérdida real se carga a la provisión que se había estimado: va al debe.", distractores: [{ cuenta: GASTO, retro: "Ese gasto ya se anotó cuando se hizo la provisión. Anotarlo otra vez lo pondría dos veces." }, { cuenta: CMV, retro: "Esta pérdida ya se había estimado. Se cubre con lo que se reservó para eso." }] },
-      { id: "inventario", cuenta: INV, valor: PINO.perdida, lado: HABER, retro: "Falta mercancía, así que el activo baja: va al haber.", distractores: [{ cuenta: PROV, retro: "La provisión cubre la pérdida, pero no saca de los libros la mercancía que se perdió." }, { cuenta: CMV, retro: "Esta mercancía no se vendió: se perdió. Y esa pérdida ya se había estimado." }] },
+      { id: "provision", cuenta: PROV, valor: PINO.perdida, lado: DEBE, retro: "La pérdida real se carga a la provisión que se había estimado: va al debe.", distractores: [{ cuenta: GASTO, retro: "Ese gasto ya se anotó cuando se hizo la provisión. Anotarlo otra vez lo pondría dos veces." }, { cuenta: CMV, retro: "Esta pérdida ya se había estimado con una provisión, y se carga a esa provisión." }] },
+      { id: "inventario", cuenta: INV, valor: PINO.perdida, lado: HABER, retro: "Falta mercancía, así que el activo baja: va al haber.", distractores: [{ cuenta: PROV, retro: "La provisión cubre la pérdida, pero no saca de los libros la mercancía que se perdió." }, { cuenta: GASTO, retro: "Ese gasto ya se anotó al estimar la provisión. Ahora sale de los libros la mercancía perdida." }] },
     ],
   },
 ];

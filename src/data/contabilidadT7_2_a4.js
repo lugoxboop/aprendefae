@@ -242,7 +242,7 @@ const PIE_CIERRE = "Basado en el libro, pp. 225 y 243";
 const MISMO_EN_LOS_DOS = "Ese sí se hace en los dos sistemas.";
 const EL_CIERRE = {
   id: "el-cierre",
-  pista: "En el periódico, unos asientos del cierre ponían al día el inventario. Busca esos.",
+  pista: "Piensa qué cuenta ya está al día cuando llega el cierre en el permanente.",
   tipo: "eleccion",
   parrafos: [
     "En el permanente, el cierre tiene dos asientos menos. No hay que quitar el inventario inicial ni colocar el final: la cuenta ya está al día.",

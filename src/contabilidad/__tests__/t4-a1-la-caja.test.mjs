@@ -285,7 +285,9 @@ test("★★★ fuera del catálogo de FP: Aprender en subjects.js, ninguna migr
   }
   /* Las pantallas de Aprender no reciben ni llaman a nada que registre: solo la vista, por los Hacer. */
   const vista = leer("src/components/ContabilidadT4View.jsx");
-  const pantallas = vista.slice(vista.indexOf("T4 · LAS PANTALLAS DE APRENDER"));
+  const ini = vista.indexOf("T4 · LAS PANTALLAS DE APRENDER");
+  const sig = vista.indexOf("\n * T4 · ", ini + 10);
+  const pantallas = vista.slice(ini, sig < 0 ? undefined : sig);
   assert.ok(pantallas.length > 500, "no se encontró el bloque de las pantallas");
   assert.doesNotMatch(pantallas, /registrar|completar|otorgarFP|onCompletar/);
 });

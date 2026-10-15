@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -55,7 +56,7 @@ const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.j
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
 const V11 = leer("orquestador/conocimiento/paquetes/t5-n4-v1.1.md");
-const LOTE3 = leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md");
+const LOTE3 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md"));
 const VEREDICTO = leer("orquestador/conocimiento/paquetes/t5-veredicto-mello-tandas-1-y-2.md");
 const REGISTRO = JSON.parse(leer("orquestador/conocimiento/registro-cifras-construidas-t5.json"));
 const MIGRACION = leer("supabase/migrations/0112_t5_el_interes_del_periodo.sql");
@@ -192,7 +193,7 @@ test("★★★ la tanda entera: seis unidades, un intento cada una, y el porcen
         assert.equal(boton(m.caja, "Comprobar"), undefined);
         assert.deepEqual(html("[data-retro] [data-texto-retro]"), ok ? [x.acierto] : [x.distractores[0].retro, `La respuesta es ${pesos(x.correcta)}.`]);
       } else {
-        /* LOTE 3 · «Arma la línea»: la línea de Caja elige «Ingresos por intereses», su segundo distractor; la otra, la buena. */
+        /* LOTE 3 · «Arma la línea»: la línea de Caja elige su segundo distractor (Mello: «Ingresos financieros – ganancia en venta de títulos»); la otra, la buena. */
         const lado = { debe: "Debe", haber: "Haber" };
         const elegida = (l) => (l.id === "caja" ? l.distractores[1].cuenta : l.cuenta);
         for (const l of x.lineas) {
@@ -221,7 +222,7 @@ test("★★★ la tanda entera: seis unidades, un intento cada una, y el porcen
     assert.equal(L.TOTAL_N4, 6);
     assert.equal(bien, 4);
     assert.equal(pct, (4 / 6) * 100);
-    assert.deepEqual(det.filter((d) => !d.ok).map((d) => [d.item, d.respuesta]), [["primer-trimestre", D.CIFRAS_N4.anual], ["asiento-del-cobro:caja", "Ingresos por intereses|debe"]]);
+    assert.deepEqual(det.filter((d) => !d.ok).map((d) => [d.item, d.respuesta]), [["primer-trimestre", D.CIFRAS_N4.anual], ["asiento-del-cobro:caja", "Ingresos financieros – ganancia en venta de títulos|debe"]]);
     assert.equal(m.caja.querySelector("[data-resumen]").textContent, D.resumenN4(4, 6));
   } finally {
     m.desmontar();

@@ -1013,7 +1013,7 @@ test("★★★ se juega entera: cabecera con la silueta del tema, el detalle de
   assert.equal(pct, (3 / 6) * 100);
   assert.deepEqual(detalle.map((d) => [d.item, d.ok, d.respuesta]), [
     ["c3", false, "c3-a"], ["c5", true, null], ["c6", true, null],
-    ["c8", false, "Ventas: Suma · Devoluciones de ventas: No entra · Inventario inicial: Suma · Compras: Suma · Devoluciones de compras: Resta · Inventario final: Resta"],
+    ["c8", false, "Ventas: Suma"],
     ["c9", false, "c9-b"], ["c10", true, null],
   ]);
 });
@@ -1097,4 +1097,47 @@ test("★★ §d · el anillo de foco es de 2 px #F8F9FA, separado 2 px, y se pi
   assert.match(CSS_R5_1, /\[data-r5-1\] button:focus-visible[^{]*\{\s*outline: 2px solid #F8F9FA; outline-offset: 2px; \}/);
   const { caja } = await montar(h(RepasoCruzado, { pantallas: [pantalla("c8")] }));
   assert.ok([...caja.querySelectorAll("style")].some((x) => x.textContent === CSS_R5_1), "la hoja del anillo no se pinta");
+});
+
+/* ═══════════ EL DETALLE: LA PISTA Y LA CLASIFICACIÓN QUE CABE ═══════════ */
+
+test("★★★ el detalle de cada ítem dice si el estudiante abrió la pista antes de responder, sin cambiar los FP", async () => {
+  const fin = [];
+  const { caja } = await montar(h(RepasoCruzado, { pantallas: P, onCompletar: (...x) => fin.push(x) }));
+  /* Abre la pista en la 1, la 4 y la 6; en las demás, no. Acierta todas. */
+  const conPista = new Set(["c3", "c8", "c10"]);
+  for (const p of P) {
+    if (conPista.has(p.id)) await tocar(caja.querySelector("[data-ver-pista]"));
+    await responder(caja, p, bienDe(p));
+    await siguiente(caja);
+  }
+  const [pct, , detalle] = fin[0];
+  assert.deepEqual(detalle.map((d) => [d.item, d.pista]), P.map((p) => [p.id, conPista.has(p.id)]));
+  assert.ok(detalle.every((d) => typeof d.pista === "boolean"));
+  assert.equal(pct, 100, "la pista no quita FP");
+});
+
+test("★★★ la respuesta de la pantalla 4 cabe en los 120 caracteres del servidor y nombra la primera ficha mal (guarda: 728 clasificaciones)", () => {
+  const p = pantalla("c8");
+  const SQL = leer("supabase/migrations/0036_cierre_semanal_y_podio.sql");
+  assert.match(SQL, /left\(d ->> 'respuesta', 120\)/);
+  assert.equal(D.LARGO_RESPUESTA, 120);
+  const botones = ["suma", "resta", "fuera"];
+  let revisadas = 0;
+  for (let n = 0; n < 3 ** 6; n++) {
+    const c = Object.fromEntries(p.datos.map((d, k) => [d.id, botones[Math.floor(n / 3 ** k) % 3]]));
+    if (D.evaluarC8(p, c).ok) continue;
+    revisadas++;
+    const r = D.respuestaDeC8(p, c);
+    assert.ok(r.length <= 120, `${r.length}: ${r}`);
+    const mal = p.datos.filter((d) => c[d.id] !== D.botonCorrectoDe(d));
+    assert.ok(r.startsWith(`${mal[0].etiqueta}: `), r);
+    /* Solo las mal puestas, enteras; si no caben todas, termina en « · …». */
+    const partes = r.split(" · ");
+    const enteras = partes.at(-1) === "…" ? partes.slice(0, -1) : partes;
+    assert.equal(partes.at(-1) === "…", enteras.length < mal.length, r);
+    enteras.forEach((x, k) => assert.equal(x.split(": ")[0], mal[k].etiqueta, r));
+  }
+  assert.equal(revisadas, 728);
+  assert.equal(D.respuestaDeC8(p, { ...CLAVE_C8, ventas: "suma", "inventario-final": "fuera" }), "Ventas: Suma · Inventario final: No entra");
 });
