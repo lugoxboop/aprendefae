@@ -1,6 +1,5 @@
-import { useCallback, useState } from "react";
 import { COMPRA_T5_ACT2, DIARIO_T5_ACT2 } from "../../../../data/contabilidadT5Act2.js";
-import { LibroDiario as LibroDiarioBase } from "../b5/LibroDiario.jsx";
+import { LibroDiario as LibroDiarioBase, useDiario } from "../b5/LibroDiario.jsx";
 import CierreSantaPacha from "./CierreSantaPacha.jsx";
 
 /*
@@ -27,17 +26,15 @@ export default function CierreConDiario(props) {
   return <ConDiario {...props} />;
 }
 
+/* El diario aparece abierto al confirmar el primer asiento (hallazgo 9 de Shoko): useDiario. */
 function ConDiario(props) {
-  const [asientos, setAsientos] = useState(() => [COMPRA_T5_ACT2]);
-  const [abierto, setAbierto] = useState(false);
-  const sumar = useCallback((parte) => setAsientos((xs) => (xs.some((x) => x.id === parte.id) ? xs : [...xs, parte])), []);
-  const reiniciar = useCallback(() => setAsientos([COMPRA_T5_ACT2]), []);
+  const d = useDiario(COMPRA_T5_ACT2);
   return (
     <CierreSantaPacha
       {...props}
-      encima={<LibroDiario asientos={asientos} abierto={abierto} onAlternar={() => setAbierto((x) => !x)} />}
-      onParteComprobada={sumar}
-      onReiniciar={reiniciar}
+      encima={d.visible ? <LibroDiario asientos={d.asientos} abierto={d.abierto} onAlternar={d.alternar} /> : null}
+      onParteComprobada={d.sumar}
+      onReiniciar={d.reiniciar}
     />
   );
 }

@@ -47,7 +47,9 @@ const h = React.createElement;
 
 const D = await import("../../data/contabilidadT6Pieza5.js");
 const E = await import("../t6Pieza5.js");
+const { T6_A5_JUNTO } = E;
 const { default: LaTablaDelEjemplo } = await import("../../components/mecanicas/libros/tema6/LaTablaDelEjemplo.jsx");
+const { decidir } = await import("./b5-capa3.mjs");
 const { default: CuatroGrupos } = await import("../../components/mecanicas/libros/tema6/CuatroGrupos.jsx");
 const { tipoDePie } = await import("../../components/mecanicas/libros/tema6/FuentesT6A5.jsx");
 const { ESCENAS_TEMA6 } = await import("../../components/mecanicas/libros/tema6/escenasTema6.jsx");
@@ -68,26 +70,34 @@ const NBSP = " ";
 const pegado = (t) => t.replace(/(\d) %/g, `$1${NBSP}%`);
 const viva = (caja) => caja.querySelector("[data-escena-viva]");
 const de = (caja, id) => viva(caja).querySelector(`[data-elemento="${id}"]`);
-const siguiente = (caja) => tocar(caja.querySelector("[data-siguiente]"));
-/* Visible: ni la pieza ni nada por encima de ella va oculto. */
+/* Un paso adelante; la parada entre el 4 y el 5 (hoja 7) se cruza eligiendo la correcta: no es un paso. */
+const siguiente = async (caja) => {
+  await tocar(caja.querySelector("[data-siguiente]"));
+  if (caja.querySelector("[data-parada]")) {
+    await tocar(caja.querySelector(`[data-parada] [data-opcion="${D.PARADA_T6_A5.correcta}"]`));
+    await tocar(caja.querySelector("[data-siguiente]"));
+  }
+};
+/* Visible: ni la pieza ni nada por encima de ella va oculto ni en silueta (hoja 5 de Mai: lo que no llega, atenuado y marcado con --b5-silueta). */
 const visible = (n) => {
-  for (let x = n; x && x !== document.body; x = x.parentElement) if (x.style?.visibility === "hidden") return false;
+  for (let x = n; x && x !== document.body; x = x.parentElement) if (x.style?.visibility === "hidden" || x.style?.getPropertyValue("--b5-silueta")) return false;
   return true;
 };
-const PASOS = 11;
-const CIERRE = 12;
+/* Hoja 7 de Mai: 10 pasos, con el 9 y el 10 de antes juntos. */
+const PASOS = 10;
+const CIERRE = 11;
 
 /* Mai §5.3: lo resaltado y lo que aparece en cada paso. */
 const RESALTADOS = {
   1: ["deben"], 2: ["g1", "g2", "g3", "g4"], 3: ["pct2", "pct3", "pct4"], 4: ["g1"], 5: ["g2"], 6: ["g3"], 7: ["g4"],
-  8: ["suma"], 9: ["gasto"], 10: ["provision"], 11: ["neto"], 12: [],
+  8: ["suma"], 9: ["gasto", "provision"], 10: ["neto"], 11: [],
 };
 const APARECE = {
   1: ["fecha0", "deben"], 2: ["tabla", "rotulo", "g1", "g2", "g3", "g4"], 3: ["pct2", "pct3", "pct4"], 4: ["suma1", "res1"],
-  5: ["suma2", "res2"], 6: ["suma3", "res3"], 7: ["suma4", "res4"], 8: ["suma"], 9: ["gasto"], 10: ["provision"], 11: ["neto"],
+  5: ["suma2", "res2"], 6: ["suma3", "res3"], 7: ["suma4", "res4"], 8: ["suma"], 9: ["gasto", "provision"], 10: ["neto"],
 };
 /* Mai §3: el tipo de pie de cada paso, en orden, y del cierre. */
-const TIPOS_CAPA_2 = ["escenario", "libro", "escenario", "escenario", "norma", "norma", "norma", "escenario", "libro", "libro", "libro", "libro"];
+const TIPOS_CAPA_2 = ["escenario", "libro", "escenario", "escenario", "norma", "norma", "norma", "escenario", "libro", "libro", "libro"];
 
 /* ═══════════ EL RÓTULO FIJO ═══════════ */
 
@@ -131,19 +141,19 @@ test("★★★ el desplazamiento busca el rótulo junto a lo resaltado en los p
 
 /* ═══════════ CAPA 2 ═══════════ */
 
-test("★★★ capa 2: el texto (con el «%» pegado), el pie y su tipo, lo resaltado y lo que aparece en los 11 pasos y el cierre", async () => {
+test("★★★ capa 2: el texto (con el «%» pegado), el pie y su tipo, lo resaltado y lo que aparece en los 10 pasos (el 9 y el 10 de antes, juntos) y el cierre", async () => {
   const { caja, desmontar } = await montar(h(LaTablaDelEjemplo));
   const res = () => [...viva(caja).querySelectorAll('[data-resaltado="si"]')].map((n) => n.dataset.elemento).sort();
   const vistos = new Set();
   for (let p = 1; p <= CIERRE; p++) {
-    const esperado = p <= PASOS ? D.PASOS_T6_A5[p - 1] : D.CIERRE_T6_A5;
+    const esperado = T6_A5_JUNTO.TODOS[p - 1];
     assert.equal(caja.querySelector("[data-texto-paso] p").textContent, pegado(esperado.texto), `texto, paso ${p}`);
     const pie = caja.querySelector("[data-pie]");
     assert.equal(pie.textContent, esperado.pie, `pie, paso ${p}`);
     assert.equal(pie.querySelector("[data-tipo-pie]").dataset.tipoPie, TIPOS_CAPA_2[p - 1], `tipo de pie, paso ${p}`);
     assert.deepEqual(res(), [...RESALTADOS[p]].sort(), `resaltados, paso ${p}`);
     if (p <= PASOS) {
-      assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de 11`);
+      assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de ${PASOS}`);
       /* Lo que aparece en este paso aparece aquí y no antes. */
       for (const id of APARECE[p]) {
         assert.ok(!vistos.has(id), `${id} ya estaba`);
@@ -195,9 +205,13 @@ test("★★ con su fila resaltada, la suma y el resultado no se atenúan; en el
 });
 
 test("★★ «Reproducir»: 3 000 + 450 ms por palabra; la tabla de Mai §5.4 y sus 99,6 s", () => {
-  const ms = Array.from({ length: PASOS }, (_, k) => E.duracionPasoT6A5(k + 1));
+  const ms = Array.from({ length: 11 }, (_, k) => E.duracionPasoT6A5(k + 1));
   assert.deepEqual(ms, [9300, 6600, 10200, 12900, 11100, 11550, 9300, 6600, 7050, 7950, 7050]);
   assert.equal(ms.reduce((a, b) => a + b, 0), 99600);
+  /* Hoja 7: con el 9 y el 10 juntos, la fórmula no cambia y se ahorran los 3 000 ms de un paso: 105,45 s con el cierre (Mai lo redondea a 105,5). */
+  const juntos = Array.from({ length: PASOS }, (_, k) => T6_A5_JUNTO.duracion(k + 1));
+  assert.deepEqual(juntos, [9300, 6600, 10200, 12900, 11100, 11550, 9300, 6600, 7050 + 7950 - 3000, 7050]);
+  assert.equal(juntos.reduce((a, b) => a + b, 0) + T6_A5_JUNTO.duracion(CIERRE), 105450);
 });
 
 /* ═══════════ LOS PIES, EN SU FORMA ═══════════ */
@@ -228,7 +242,7 @@ test("★★★ cada tipo de pie tiene su forma: libro llano, escenario en caja 
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: el tablero es una tabla; cada caja llena su celda en cualquier orden; con las cuatro, «La provisión» y el final", async () => {
+test("★★★ capa 3: el tablero es una tabla; cada caja llena su celda al decidir, en cualquier orden y con el valor correcto aunque se falle; con las cuatro, «La provisión» y el final", async () => {
   const { caja, desmontar } = await montar(h(CuatroGrupos));
   assert.equal(caja.querySelector("[data-capa3-t6-a5] > p").textContent, D.CONSIGNA_CAPA_3_T6_A5);
   const tabla = caja.querySelector("[data-tablero] table");
@@ -237,18 +251,22 @@ test("★★★ capa 3: el tablero es una tabla; cada caja llena su celda en cua
   const celdas = () => [...tabla.querySelectorAll("tbody [data-celda]")].map((c) => c.textContent);
   assert.deepEqual(celdas(), ["", "", "", ""]);
   /* Las cajas cerradas: «nombre · monto», como el rótulo de Futaba. */
-  assert.deepEqual([...caja.querySelectorAll("[data-hecho] button")].map((b) => b.textContent), D.GRUPOS_T6_A5.map((g) => `${g.nombre} · ${g.monto}`));
+  assert.deepEqual([...caja.querySelectorAll("[data-hecho] button[aria-expanded]")].map((b) => b.textContent), D.GRUPOS_T6_A5.map((g) => `${g.nombre} · ${g.monto}`));
   for (const [k, id] of [[2, "g3"], [0, "g1"], [3, "g4"]]) {
-    await tocar(caja.querySelector(`[data-hecho="${id}"] button`));
-    assert.equal(celdas()[k], D.TABLERO_T6_A5.celdas[k]);
     const g = D.GRUPOS_T6_A5[k];
+    await tocar(caja.querySelector(`[data-hecho="${id}"] button[aria-expanded]`));
+    assert.equal(celdas()[k], "", "abierta sin decidir: la celda espera");
+    /* Con error a propósito: la celda se llena igual, con el valor correcto (hoja 6, indispensable 5). */
+    await decidir(tocar, caja.querySelector(`[data-hecho="${id}"]`), g.opciones.find((o) => o.id !== g.correcta).id);
+    assert.equal(celdas()[k], D.TABLERO_T6_A5.celdas[k]);
     const revela = caja.querySelector(`[data-revela="${id}"]`);
-    assert.equal(revela.querySelector("p").textContent, pegado(g.revela));
+    assert.equal(revela.querySelector("[data-devolucion]").textContent, pegado(g.falla));
+    assert.equal(revela.querySelector("p:not([data-devolucion])").textContent, pegado(g.revela));
     assert.equal(revela.querySelector("[data-tipo-pie]").dataset.tipoPie, k === 0 ? "escenario" : "norma");
     assert.equal(caja.querySelector("[data-fila-total]"), null, "la suma espera a las cuatro");
     assert.equal(caja.querySelector("[data-final]").textContent, "");
   }
-  await tocar(caja.querySelector('[data-hecho="g2"] button'));
+  await decidir(tocar, caja.querySelector('[data-hecho="g2"]'), "5");
   assert.deepEqual(celdas(), D.TABLERO_T6_A5.celdas);
   assert.equal(caja.querySelector("[data-fila-total]").textContent, `${D.TABLERO_T6_A5.total}${D.TABLERO_T6_A5.suma}`);
   const final = caja.querySelector("[data-final]");
@@ -277,9 +295,10 @@ test("★★★ el «%» nunca se separa de su número: capas 1, 2, 3 y 4", asyn
     await siguiente(c2.caja);
   }
   c2.desmontar();
-  /* Capa 3, con las cuatro abiertas. */
+  /* Capa 3, con las cuatro decididas con error: opciones, devoluciones y textos. */
   const c3 = await montar(h(CuatroGrupos));
-  for (const b of [...c3.caja.querySelectorAll("[data-hecho] button")]) await tocar(b);
+  for (const g of D.GRUPOS_T6_A5) await decidir(tocar, c3.caja.querySelector(`[data-hecho="${g.id}"]`), g.opciones.find((o) => o.id !== g.correcta).id);
+  assert.equal(c3.caja.querySelectorAll("[data-devolucion]").length, 4);
   assert.ok(c3.caja.textContent.includes(`5${NBSP}%`) && sinPartir(c3.caja.textContent));
   c3.desmontar();
   /* Capa 4: la pregunta, las opciones y cada devolución. */
@@ -359,7 +378,7 @@ test("★★★ condición 3 (Shoko): el lector de pantalla oye el pie de cada p
   /* La escena, oculta al lector: el rótulo no se oye ahí. */
   assert.equal(caja.querySelector("[data-escena]").getAttribute("aria-hidden"), "true");
   for (let p = 1; p <= CIERRE; p++) {
-    const esperado = p <= PASOS ? D.PASOS_T6_A5[p - 1] : D.CIERRE_T6_A5;
+    const esperado = T6_A5_JUNTO.TODOS[p - 1];
     const oye = [...viva.querySelectorAll("[data-lector]")].map((n) => n.textContent.trim());
     assert.deepEqual(oye, [...(p === 2 ? [D.ROTULO_SIMULADO_T6_A5] : []), pegado(esperado.pie)], `paso ${p}`);
     /* Todo dentro de la misma región viva, después del texto. */

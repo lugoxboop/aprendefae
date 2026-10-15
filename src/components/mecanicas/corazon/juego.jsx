@@ -153,7 +153,13 @@ export function Opcion({ children, onClick, estado = null, deshabilitada = false
           tres renglones.
         */}
         {revelada && (
-          <span style={{ display: "block", marginTop: "2px", fontSize: "11px", color: "rgba(248,249,250,0.62)" }}>
+          /*
+           * 12 px: «era esta» no es adorno, es lo que le dice al estudiante
+           * cuál era la respuesta buena cuando no la eligió. Si se tapa, se
+           * pierde esa información. A 11 px y al 62 % de opacidad era lo más
+           * difícil de leer de toda la tarjeta, siendo de lo más importante.
+           */
+          <span style={{ display: "block", marginTop: "2px", fontSize: "12px", color: "rgba(248,249,250,0.62)" }}>
             era esta
           </span>
         )}
@@ -267,7 +273,7 @@ export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cue
             }}
           />
         </div>
-        <span style={{ fontFamily: "Inter, sans-serif", fontSize: "11.5px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: "12px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
           {etiqueta} {numero} de {total}
         </span>
       </div>
@@ -311,7 +317,7 @@ export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cue
           );
         })}
       </div>
-      <span style={{ fontFamily: "Inter, sans-serif", fontSize: "11.5px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
+      <span style={{ fontFamily: "Inter, sans-serif", fontSize: "12px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
         {etiqueta} {numero} de {total}
       </span>
     </div>
@@ -360,7 +366,11 @@ function RecuadroDeResultado({ pct, children, onReiniciar, textoReiniciar = "Jug
           onClick={onReiniciar}
           style={{
             marginTop: "12px", fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600,
-            padding: "9px 15px", borderRadius: "999px", cursor: "pointer",
+            /* 44 px: el mínimo que un dedo acierta a 320 px (kit.md). Este botón
+               cierra TODA actividad que use Cierre, así que el defecto se
+               multiplicaba por el catálogo entero. Va solo al final de la
+               tarjeta, así que crecer no empuja nada. */
+            minHeight: "44px", padding: "9px 15px", borderRadius: "999px", cursor: "pointer",
             background: "transparent", border: "1px solid rgba(248,249,250,0.22)", color: "rgba(248,249,250,0.72)",
           }}
         >

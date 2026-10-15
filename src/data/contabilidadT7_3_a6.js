@@ -74,6 +74,7 @@ const EJEMPLO = {
 
 const LA_PERDIDA = {
   id: "la-perdida",
+  pista: "El gasto ya se anotó cuando se hizo la provisión. ¿Qué cuenta se usa ahora para cubrir la pérdida?",
   tipo: "eleccion",
   pregunta: "Llega la pérdida real de $230.000. ¿Qué cuenta va al debe?",
   opciones: [

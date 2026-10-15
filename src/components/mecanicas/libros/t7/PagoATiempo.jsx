@@ -7,7 +7,9 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { AsientoEnLineas, Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
-import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "./hacerT7.jsx";
+import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
+import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -25,6 +27,10 @@ import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion, L
  *
  * Once unidades; las piezas son las de los Hacer de T7-3 (hacerT7.jsx, sin
  * cambiarlo). Al terminar: onCompletar(pct, ms, detalle).
+ *
+ * LOTE 3: «Arma la línea» (armaLaLinea.jsx), con T7-3 H1 de molde. Los
+ * ítems 1, 3 y 4 van con casilla de cifra; en cada asiento, cada línea elige
+ * su cuenta del banco (la correcta y los dos distractores de Near) y su lado.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -39,7 +45,7 @@ export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar
 
   const item = t.items[t.i];
   const cuantos = t.items.length;
-  const listo = item && (item.tipo === "eleccion" ? Boolean(r) : comprobado);
+  const listo = item && (item.tipo === "asiento" ? comprobado : Boolean(r));
 
   useEffect(() => {
     if (t.terminado) onCompletar?.(puntuarH4(bien), Date.now() - t.inicio.current, t.detalle.current);
@@ -85,12 +91,14 @@ export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h4>
-        <Encabezado consigna={H4.consigna} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H4.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H4.enunciado} />
         <Ficha filas={FICHA_H4} />
         <FigurasHacer figuras={FIGURAS_H4} respondidos={t.i + (listo ? 1 : 0)} listo={listo} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </ContadorConIntento>
         </div>
         {item.id === ARRIBA_H4.item && (
           <div data-asiento-arriba style={{ marginBottom: "12px" }}>
@@ -99,13 +107,20 @@ export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar
           </div>
         )}
         <TarjetaPregunta id={item.id} encabezado={item.encabezado ?? null} pregunta={item.pregunta} pie={H4.pie} tarjetaRef={tarjeta} />
-        {item.tipo === "eleccion" ? (
+        {item.tipo === "eleccion" && (
           <>
             <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
             <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es ${r.textoCorrecta}. ` : null} />
           </>
-        ) : (
-          <LineasConComprobar key={item.id} lineas={item.orden.map((id) => item.lineas.find((l) => l.id === id))}
+        )}
+        {item.tipo === "cifra" && (
+          <>
+            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} />
+            <Devolucion r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
+          </>
+        )}
+        {item.tipo === "asiento" && (
+          <LineasConCuenta key={item.id} lineas={item.orden.map((id) => item.lineas.find((l) => l.id === id))}
             asiento={item.lineas} onComprobar={comprobar} comprobado={comprobado} />
         )}
       </div>

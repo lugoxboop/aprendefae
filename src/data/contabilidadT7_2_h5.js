@@ -81,6 +81,15 @@ const GASTO_FLETES = "Gasto de venta – fletes";
 const CMV = "Costo de mercancía vendida";
 const INVENTARIO = "Inventario de mercancías";
 
+/*
+ * LOTE 3 DE LA REVISIÓN («Arma la línea», con T7-3 H1 de molde): los ítems 2
+ * y 5, cuyo objetivo es calcular, van con casilla de cifra (tipo "cifra"); si
+ * la cifra escrita es la de un distractor, sale su retroalimentación. Los
+ * ítems 1, 3 y 4 se quedan en elección: piden la cuenta de un hecho que no
+ * tiene asiento en la pieza. En el ítem 6, cada línea trae su banco de
+ * cuentas: la correcta y sus `distractores` { cuenta, retro }, de Near
+ * (orquestador/conocimiento/paquetes/lote3-distractores-v1.md).
+ */
 export const ITEMS_H5 = [
   {
     id: "flete-del-comprador", tipo: "eleccion", hecho: 0, subtema: "Flete del comprador",
@@ -93,7 +102,7 @@ export const ITEMS_H5 = [
     ],
   },
   {
-    id: "pago-a-la-transportadora", tipo: "eleccion", cifra: true, hecho: 0, subtema: "Flete del comprador",
+    id: "pago-a-la-transportadora", tipo: "cifra", hecho: 0, subtema: "Flete del comprador",
     pregunta: "¿Cuánto le paga Mangle a la transportadora?",
     correcta: C.pago,
     acierto: "Así es: $380.000 − $3.800 = $376.200.",
@@ -124,7 +133,7 @@ export const ITEMS_H5 = [
     ],
   },
   {
-    id: "baja-con-el-proveedor", tipo: "eleccion", cifra: true, hecho: 2, subtema: "Devolución de compras",
+    id: "baja-con-el-proveedor", tipo: "cifra", hecho: 2, subtema: "Devolución de compras",
     pregunta: "¿Cuánto baja lo que Mangle le debe al proveedor?",
     correcta: C.baja,
     acierto: "Así es: $820.000 + $131.200 − $28.700 = $922.500.",
@@ -137,8 +146,8 @@ export const ITEMS_H5 = [
     id: "devolucion-de-ventas", tipo: "asiento", hecho: 3, subtema: "Devolución de ventas",
     pregunta: "La devolución lleva dos asientos. El primero reversa la venta en Devoluciones de ventas, que resta de Ingresos por ventas. Ubica cada línea del segundo: Debe o Haber.",
     lineas: [
-      { id: "inventario", cuenta: INVENTARIO, valor: C.costo, lado: DEBE, retro: "La mercancía vuelve a la bodega, así que el activo aumenta: va al debe." },
-      { id: "costo", cuenta: CMV, valor: C.costo, lado: HABER, retro: "Este asiento reversa el del costo de la venta. Costo de mercancía vendida baja: va al haber." },
+      { id: "inventario", cuenta: INVENTARIO, valor: C.costo, lado: DEBE, retro: "La mercancía vuelve a la bodega, así que el activo aumenta: va al debe.", distractores: [{ cuenta: "Devoluciones de ventas", retro: "Devoluciones de ventas va en el primer asiento, por el precio. Este segundo asiento va por el costo." }, { cuenta: "Compras", retro: "Compras es la cuenta del periódico. Mangle usa el permanente, y ahí no se usa." }] },
+      { id: "costo", cuenta: CMV, valor: C.costo, lado: HABER, retro: "Este asiento reversa el del costo de la venta. Costo de mercancía vendida baja: va al haber.", distractores: [{ cuenta: "Devoluciones de ventas", retro: "Devoluciones de ventas va en el primer asiento, por el precio. Este segundo asiento va por el costo." }, { cuenta: "Ingresos por ventas", retro: "Este asiento no toca el precio de la venta. Va por lo que le costó a Mangle la mercancía." }] },
     ],
   },
 ];

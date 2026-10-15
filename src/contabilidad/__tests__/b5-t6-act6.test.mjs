@@ -130,7 +130,12 @@ test("★★★ parte 1: cada deuda, su grupo correcto y el error de cada grupo 
     const elegido = resto.join(" ").replace(/[«»]/g, "");
     const cerca = c.opciones.find((o) => o.tipo === tipo);
     assert.ok(cerca && cerca.texto.toLowerCase().startsWith(elegido.toLowerCase()), `casilla ${k + 1}: ${tipo} va con «${elegido}»`);
-    assert.ok(c.opciones.filter((o) => o.tipo && o !== cerca).every((o) => o.tipo === "G0"), `casilla ${k + 1}: los demás, G0`);
+    /* Entrega 1: los demás, cada uno con su G0 por casilla y opción, que nombra el rango elegido. */
+    for (const o of c.opciones.filter((x) => x.tipo && x !== cerca)) {
+      const g = D.GRUPOS_T6_ACT6.find((x) => x.nombre === o.texto).id;
+      assert.equal(o.tipo, `G0-${c.id}-${g}`, `casilla ${k + 1}: ${o.texto}`);
+      assert.ok(D.ERRORES_T6_ACT6[o.tipo], `casilla ${k + 1}: ${o.tipo} sin texto`);
+    }
     /* Las opciones son los cuatro grupos, en el orden de la regla. */
     assert.deepEqual(c.opciones.map((o) => o.texto), D.GRUPOS_T6_ACT6.map((g) => g.nombre));
   });
@@ -197,31 +202,27 @@ test("★★★ el rótulo fijo se ve en pantalla en cada una de las ocho casill
     assert.ok(rotulo, `casilla ${k + 1}: sin rótulo`);
     assert.equal(rotulo.textContent, "Escenario simulado · no es la tabla del libro");
     /*
-     * Hoja de Mai (calidad 1): la nota encima de la tabla y sin pie; el pie de
-     * la tabla, dentro de su borde: el rótulo y la fuente del porcentaje, dos
-     * líneas sin cajas. «Escenario simulado» se lee una sola vez.
+     * Calidad 1: la nota encima de la regla y sin pie; el pie de la regla,
+     * dentro de su borde: el rótulo y la fuente del porcentaje, dos líneas
+     * sin cajas. «Escenario simulado» se lee una sola vez.
      */
     const regla = caja.querySelector("[data-regla]");
-    const tabla = regla.querySelector("table");
     const nota = caja.querySelector("[data-nota-regla]");
     const pie = regla.querySelector("[data-pie-tabla]");
     const sigue = (a, b) => Boolean(a.compareDocumentPosition(b) & 4);
-    assert.ok(sigue(nota, tabla), `casilla ${k + 1}: la nota, encima de la tabla`);
+    assert.ok(sigue(nota, regla), `casilla ${k + 1}: la nota, encima de la regla`);
     assert.equal(nota.textContent, D.T6_ACT6.nota, "la nota, sin pie");
-    assert.equal(tabla.parentElement, pie.parentElement, "el pie, dentro del borde de la tabla");
-    assert.ok(sigue(tabla, pie) && pie.contains(rotulo), `casilla ${k + 1}: el rótulo, al pie de la tabla`);
+    assert.ok(pie.contains(rotulo) && sigue(regla.querySelector('[data-fila="g4"]'), pie), `casilla ${k + 1}: el rótulo, al pie de la regla`);
     assert.deepEqual([...pie.children].map((p) => p.textContent), [D.T6_ACT6.rotulo, D.PIES_T6_ACT6.regla]);
-    assert.equal(pie.querySelectorAll("[data-tipo-pie]").length, 0, "sin cajas");
     assert.equal(caja.querySelectorAll("[data-tipo-pie]").length, 0, "ningún pie en caja en la actividad");
     assert.equal((caja.textContent.match(/Escenario simulado/g) ?? []).length, 1, "«Escenario simulado», una sola vez");
     assert.ok(sigue(rotulo, caja.querySelector("[data-hecho]")), `casilla ${k + 1}: el rótulo, antes de la casilla`);
-    /* La parte 2: los montos dentro de la tabla de la regla, una sola tabla, y el total abajo. */
+    /* La parte 2: los montos dentro de la regla y el total abajo; el eje, solo en la parte 1 (hoja 2 de Mai). */
     const datos = caja.querySelector("[data-datos-parte]");
     assert.equal(Boolean(datos), k >= 3, `casilla ${k + 1}: los montos solo en la parte 2`);
-    assert.equal(caja.querySelectorAll("table").length, 1, `casilla ${k + 1}: una sola tabla`);
+    assert.equal(Boolean(caja.querySelector("[data-eje]")), k < 3, `casilla ${k + 1}: el eje solo en la parte 1`);
     if (datos) {
-      const filasT = [...datos.querySelectorAll("tr")];
-      assert.ok(filasT.at(-1).hasAttribute("data-total"), "el total, en la última fila");
+      assert.ok(datos.lastElementChild.hasAttribute("data-total"), "el total, al final");
       assert.deepEqual([...datos.querySelectorAll("[data-monto]")].map((td) => td.textContent), ["$620.000", "$560.000", "$160.000", "$60.000"]);
     }
     /* Las opciones, en una columna (Mai: en fila de tres no caben las cifras de 7 dígitos a 320). */
@@ -232,19 +233,113 @@ test("★★★ el rótulo fijo se ve en pantalla en cada una de las ocho casill
   desmontar();
 });
 
-test("★★ la fila 1 de la regla: su texto en una segunda línea, sin columna de porcentaje; las demás, con el «%» en su columna", async () => {
+test("★★ la fila 1 de la regla: su texto en una segunda línea, sin porcentaje; las demás, con el «%» pegado", async () => {
   const { caja, desmontar } = await montar();
-  const filas1 = [...caja.querySelectorAll('[data-regla] tr[data-fila="g1"]')];
-  assert.equal(filas1.length, 2);
-  assert.equal(filas1[1].textContent, D.GRUPOS_T6_ACT6[0].porcentaje);
+  const g1 = caja.querySelector('[data-regla] [data-fila="g1"]');
+  assert.equal(g1.lastElementChild.textContent, D.GRUPOS_T6_ACT6[0].porcentaje);
   for (const g of D.GRUPOS_T6_ACT6.slice(1)) {
-    assert.equal(caja.querySelectorAll(`[data-regla] tr[data-fila="${g.id}"]`).length, 1, g.id);
-    assert.ok(caja.querySelector(`[data-regla] tr[data-fila="${g.id}"]`).textContent.endsWith(g.porcentaje.replace(" ", NBSP)), g.id);
+    assert.ok(caja.querySelector(`[data-regla] [data-fila="${g.id}"]`).textContent.endsWith(g.porcentaje.replace(" ", NBSP)), g.id);
   }
   desmontar();
 });
 
-test("★★ al pasar de casilla la página se mueve lo justo para ver la casilla, el rótulo y la fila que usa", async () => {
+/* ═══════════ LOS CAJONES DEL TIEMPO (hoja 2 de Mai, calidad) ═══════════ */
+
+const CJ = await import("../../components/mecanicas/libros/tema6/CajonesDelTiempo.jsx");
+const izquierda = (el) => Number.parseFloat(el.style.left);
+
+test("★★★ el eje: cuatro cajones de 22 · 22 · 28 · 28 %, marcas «3 meses», «6 meses» y «1 año»; la deuda espera fuera del eje y cae en su cajón correcto", async () => {
+  const { caja, desmontar } = await montar();
+  const eje = () => caja.querySelector("[data-eje]");
+  assert.deepEqual([...eje().querySelectorAll("[data-cajon]")].map((c) => c.style.width), ["22%", "22%", "28%", "28%"]);
+  /* Shoko 5: ninguna marca más allá de «1 año» (nada que sugiera un tope). */
+  assert.deepEqual([...eje().querySelectorAll("[data-marca]")].map((m) => [m.textContent, m.style.left]), [["3 meses", "22%"], ["6 meses", "44%"], ["1 año", "72%"]]);
+  const centros = { g1: 11, g2: 33, g3: 58, g4: 86 };
+  for (let k = 0; k < 3; k++) {
+    const c = CASILLAS[k];
+    const deuda = eje().querySelector(`[data-deuda="${c.id}"]`);
+    assert.equal(deuda.textContent, c.enunciado.match(/\d+ meses/)[0]);
+    /* Shoko 2: antes de responder, la deuda espera encima del eje, siempre en el mismo sitio y sin palito. */
+    assert.equal(deuda.style.left, "0%", `casilla ${k + 1}: espera al inicio, no sobre sus meses`);
+    assert.equal(deuda.style.top, "0px", `casilla ${k + 1}: encima del eje`);
+    assert.equal(deuda.querySelector("[data-palito]"), null, "sin palito");
+    assert.equal(deuda.dataset.enCajon, "");
+    /* Se falla a propósito: la deuda cae igual en su cajón CORRECTO. */
+    await tocar(opcion(caja, c.opciones.find((o) => o.tipo)));
+    const id = D.GRUPOS_T6_ACT6.find((g) => g.nombre === correcta(c).texto).id;
+    assert.equal(deuda.dataset.enCajon, id, `casilla ${k + 1}: en su cajón correcto`);
+    assert.equal(izquierda(deuda), centros[id], `casilla ${k + 1}: centrada en su cajón`);
+    /* Shoko 4: dentro del cajón, sin relleno lateral ni borde: «6 meses» no llega a la marca (medido en Chromium). */
+    assert.equal(deuda.style.padding, "4px 0px");
+    assert.equal(deuda.style.border, "");
+    assert.equal(eje().querySelector(`[data-cajon="${id}"]`).dataset.conDeuda, "si");
+    await siguiente(caja);
+  }
+  desmontar();
+});
+
+test("★★★ Shoko 5: el último cajón queda abierto: sin borde derecho y con los bordes que se desvanecen", async () => {
+  const { caja, desmontar } = await montar();
+  const cajones = [...caja.querySelectorAll("[data-eje] [data-cajon]")];
+  const ultimo = cajones.at(-1);
+  assert.ok(ultimo.hasAttribute("data-abierto"));
+  assert.ok(!/px/.test(ultimo.style.borderRight), `sin borde derecho (${ultimo.style.borderRight})`);
+  assert.equal(ultimo.style.borderTop, "", "sin borde arriba: se desvanece");
+  assert.match(ultimo.style.backgroundImage, /linear-gradient\(to right, .*transparent\)/);
+  assert.ok(cajones.slice(0, 3).every((c) => !c.hasAttribute("data-abierto") && c.style.borderTop.startsWith("1px")));
+  desmontar();
+});
+
+test("★★★ las barras: la porción mide su porcentaje del largo (5 · 10 · 15 %), la provisión entra al responder, y la barra del total aparece en la casilla 7", async () => {
+  const { caja, desmontar } = await montar();
+  for (let k = 0; k < 3; k++) { await tocar(opcion(caja, correcta(CASILLAS[k]))); await siguiente(caja); }
+  const porcion = (g) => caja.querySelector(`[data-fila="${g}"] [data-porcion]`);
+  assert.equal(porcion("g1"), null, "el primer grupo no tiene porción");
+  assert.deepEqual(["g2", "g3", "g4"].map((g) => porcion(g).style.width), ["5%", "10%", "15%"]);
+  for (let k = 3; k < CASILLAS.length; k++) {
+    const c = CASILLAS[k];
+    assert.equal(Boolean(caja.querySelector("[data-barra-total]")), k >= 6, `casilla ${k + 1}: la barra del total, desde la 7`);
+    assert.ok(caja.querySelector("[data-renglon-activo]"), `casilla ${k + 1}: su renglón encendido`);
+    /* Se falla: entra igual el valor correcto. */
+    await tocar(opcion(caja, c.opciones.find((o) => o.tipo)));
+    const entraron = [...caja.querySelectorAll("[data-cajones-del-tiempo] [data-entra]")].map((e) => e.textContent);
+    assert.ok(entraron.includes(pesos(correcta(c).valor)), `casilla ${k + 1}: entró ${entraron}`);
+    assert.equal(caja.querySelector("[data-anuncio]").textContent, CJ.anuncioDe(k));
+    await siguiente(caja);
+  }
+  desmontar();
+});
+
+test("★★ el anuncio: lo que entra, con el nombre del grupo en minúscula tras los dos puntos (Shoko 3)", () => {
+  assert.deepEqual([0, 1, 2, 3, 4, 5, 6, 7].map(CJ.anuncioDe), [
+    "2 meses: vigentes o hasta 3 meses",
+    "6 meses: más de 3 hasta 6 meses",
+    "14 meses: más de 1 año",
+    "más de 3 hasta 6 meses: $28.000",
+    "más de 6 meses hasta 1 año: $16.000",
+    "más de 1 año: $9.000",
+    "La provisión: $53.000",
+    "El valor neto: $1.347.000",
+  ]);
+});
+
+test("★★★ Shoko 1: la cifra bajo «El valor neto» aparece solo después de responder la casilla 8; los rótulos, antes", async () => {
+  const { caja, desmontar } = await montar();
+  for (let k = 0; k < 6; k++) { await tocar(opcion(caja, correcta(CASILLAS[k]))); await siguiente(caja); }
+  /* Casilla 7 abierta: los dos rótulos ya están, sin cifras. */
+  assert.ok(caja.querySelector("[data-barra-total]").textContent.includes("El valor neto"));
+  assert.equal(caja.querySelector("[data-valor-neto]").textContent, "");
+  await tocar(opcion(caja, correcta(CASILLAS[6])));
+  assert.equal(caja.querySelector("[data-valor-provision]").textContent, "$53.000");
+  assert.equal(caja.querySelector("[data-valor-neto]").textContent, "", "con la casilla 7 respondida, el neto sigue vacío");
+  await siguiente(caja);
+  assert.equal(caja.querySelector("[data-valor-neto]").textContent, "", "casilla 8 abierta: todavía vacío");
+  await tocar(opcion(caja, CASILLAS[7].opciones.find((o) => o.tipo)));
+  assert.equal(caja.querySelector("[data-valor-neto]").textContent, "$1.347.000", "respondida la 8 (aunque se falle), entra el neto correcto");
+  desmontar();
+});
+
+test("★★ al pasar de casilla la página se mueve lo justo para ver la casilla, el rótulo y el renglón encendido", async () => {
   const { caja, desmontar } = await montar();
   const movidas = [];
   const antes = window.scrollBy;
@@ -271,7 +366,7 @@ test("★★ al pasar de casilla la página se mueve lo justo para ver la casill
   }
 });
 
-test("★★★ cada error se ve literal; la correcta queda marcada; y el valor correcto entra al registro para seguir", async () => {
+test("★★★ cada error se ve literal y la correcta queda marcada", async () => {
   for (let k = 0; k < CASILLAS.length; k++) {
     const c = CASILLAS[k];
     const mala = c.opciones.find((o) => o.tipo);
@@ -281,8 +376,6 @@ test("★★★ cada error se ve literal; la correcta queda marcada; y el valor 
     await tocar(opcion(caja, mala));
     assert.equal(devolucion(caja), `❌${pegado(D.ERRORES_T6_ACT6[mala.tipo])}`, `casilla ${k + 1}`);
     assert.equal(opcion(caja, correcta(c)).dataset.estado, "revelada");
-    const reg = caja.querySelector(`[data-resuelta="${c.id}"]`);
-    assert.ok(reg.textContent.includes(correcta(c).valor !== undefined ? pesos(correcta(c).valor) : correcta(c).texto));
     desmontar();
   }
 });

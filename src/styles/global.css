@@ -81,3 +81,48 @@ input:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/*
+ * BLANCO DE TOQUE DE LOS CONTROLES DE LA CABECERA
+ *
+ * Medido a 320 px el 15 de octubre, jugando en la página servida: la marca
+ * mide 26×26 y el botón de volver 38×38. Un dedo pide 44×44; por debajo de
+ * eso el estudiante falla el toque y cree que la página no responde.
+ *
+ * No se agranda el dibujo: se agranda SOLO la zona que escucha el toque, con
+ * un recuadro invisible centrado sobre el control. Así el layout de las 21
+ * vistas que repiten esta cabecera no se mueve ni un pixel.
+ *
+ * Se comprobó que los dos controles quedan a 61 px de separación entre
+ * centros, así que los dos recuadros de 44 px NO se solapan. Si alguna vez se
+ * acercan, esto deja de ser seguro: dos blancos superpuestos mandan al
+ * estudiante al inicio cuando quería volver al tema, que es peor que el
+ * defecto que arregla.
+ */
+.fae-cabecera-marca button,
+.fae-cabecera-titulo > button,
+.fae-logo-boton,
+.fae-split__cerrar {
+  position: relative;
+}
+
+/*
+ * `max(100%, 44px)` y no `44px` a secas, porque hay dos formas de quedarse
+ * corto y el cuadrado solo arregla una. El símbolo de la cabecera mide 26×26
+ * y necesita crecer en los dos sentidos; el logotipo del inicio mide 272×30
+ * y solo le falta ALTO —un cuadrado de 44 centrado le dejaría fuera 228 px
+ * de logotipo que hoy sí responden al toque—. `max(100%, 44px)` nunca
+ * encoge lo que ya era grande.
+ */
+.fae-cabecera-marca button::after,
+.fae-cabecera-titulo > button::after,
+.fae-logo-boton::after,
+.fae-split__cerrar::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}

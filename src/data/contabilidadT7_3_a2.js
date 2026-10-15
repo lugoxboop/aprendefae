@@ -95,6 +95,7 @@ const EN_CADENA = {
 
 const EJEMPLO = {
   id: "ejemplo",
+  pista: "En una cadena, cada descuento se calcula sobre lo que dejó el anterior, no sobre el precio de lista.",
   tipo: "eleccion",
   parrafos: ["Mira el ejemplo del libro. San Calixto Ltda. le vende mercancía a crédito a un cliente. El precio de lista es de $4.200.000, más el IVA, y le da tres descuentos comerciales: del 5 %, del 8 % y del 10 %."],
   /* La ficha de la v1, en su orden. «A crédito» sale del asiento de la p. 250, igual que en A1. */
@@ -109,7 +110,9 @@ const EJEMPLO = {
   pregunta: "5 % más 8 % más 10 % suman 23 %. ¿San Calixto le rebaja el 23 % del precio de lista?",
   opciones: [
     { id: "si", texto: "Sí", devolucion: "Parece que sí, pero no. Cada descuento se calcula sobre un saldo más pequeño, así que la rebaja total es menor." },
-    { id: "no", texto: "No", correcta: true },
+    { id: "no", texto: "No: le rebaja menos del 23 %", correcta: true },
+    /* Tercera opción: anexo del lote 2 (Near). */
+    { id: "no-mas", texto: "No: le rebaja más del 23 %", devolucion: "Cada descuento se calcula sobre un saldo más pequeño que el anterior. Así, la rebaja total no puede pasar del 23 %." },
   ],
   acierto: { texto: "Así es: la rebaja es menor. Cada descuento se calcula sobre un saldo más pequeño, así que el total no llega al 23 %.", pie: "Basado en el libro, pp. 249-250" },
   error: { pie: "Basado en el libro, pp. 249-250" },
@@ -118,12 +121,15 @@ const EJEMPLO = {
 
 const PASOS = {
   id: "pasos",
+  pista: "El primer descuento ya rebajó el precio. ¿Sobre qué valor queda el siguiente?",
   tipo: "eleccion",
   parrafos: ["El primer descuento es el 5 % del precio de lista: $4.200.000 × 5 % = $210.000. Queda un saldo de $3.990.000."],
   pregunta: "¿Sobre qué valor se calcula el segundo descuento, el del 8 %?",
   opciones: [
     { id: "lista", texto: "$4.200.000", devolucion: "En una cadena, cada descuento va sobre el saldo que dejó el anterior. Aquí es $3.990.000, no el precio de lista." },
     { id: "saldo", texto: "$3.990.000", correcta: true },
+    /* Tercera opción: anexo del lote 2 (Near). */
+    { id: "primer-descuento", texto: "$210.000", devolucion: "Ese es el primer descuento, no el valor sobre el que se calcula el segundo. El 8 % va sobre lo que queda después de restarlo." },
   ],
   acierto: {
     texto: "Así es. Se calcula sobre el saldo que dejó el primero: $3.990.000 × 8 % = $319.200.",

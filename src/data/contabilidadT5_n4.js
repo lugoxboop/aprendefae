@@ -74,6 +74,15 @@ export const BOTON_N4 = { siguiente: "Siguiente ítem", verResumen: "Ver mi resu
 
 const ANTES_DEL_ITEM_4 = "Ese mismo día, después de cobrar el interés, Caoba vende 680 de sus títulos. Le quedan 760.";
 
+/*
+ * LOTE 3 DE LA REVISIÓN (L, 15 de octubre de 2026): «Arma la línea». Los
+ * ítems 2 y 5, cuyo objetivo es calcular, van con casilla de cifra (tipo
+ * "cifra"): si la cifra escrita es la de un distractor, sale su
+ * retroalimentación. Los ítems 1 y 4 se quedan en elección. En el asiento,
+ * cada línea trae su banco de cuentas: la correcta y sus `distractores`, con
+ * su retroalimentación, de Near (orquestador/conocimiento/paquetes/
+ * lote3-distractores-v1.md).
+ */
 export const ITEMS_N4 = [
   {
     id: "cada-cuanto", tipo: "eleccion",
@@ -87,7 +96,7 @@ export const ITEMS_N4 = [
     ],
   },
   {
-    id: "primer-trimestre", tipo: "eleccion", pesos: true,
+    id: "primer-trimestre", tipo: "cifra", pesos: true,
     pregunta: "Pasan los primeros 3 meses. ¿Cuánto interés cobra Caoba?",
     correcta: C.interes1,
     acierto: "Así es: $10.800.000 × 0,16 × 3/12 = $432.000.",
@@ -100,8 +109,8 @@ export const ITEMS_N4 = [
     id: "asiento-del-cobro", tipo: "asiento",
     pregunta: "Ubica cada línea del asiento del cobro: Debe o Haber.",
     lineas: [
-      { id: "caja", cuenta: "Caja", valor: C.interes1, lado: DEBE, retro: "Caoba recibe el dinero en Caja. Es un activo que aumenta: va al debe." },
-      { id: "ingresos", cuenta: "Ingresos por intereses", valor: C.interes1, lado: HABER, retro: "El interés es un ingreso que aumenta: va al haber de Ingresos por intereses." },
+      { id: "caja", cuenta: "Caja", valor: C.interes1, lado: DEBE, retro: "Caoba recibe el dinero en Caja. Es un activo que aumenta: va al debe.", distractores: [{ cuenta: "Inversiones – títulos", retro: "El interés no cambia la inversión: Caoba sigue con los mismos títulos." }, { cuenta: "Ingresos por intereses", retro: "Esa cuenta sí se mueve en este cobro, pero en la otra línea. Un ingreso que aumenta no va al debe." }] },
+      { id: "ingresos", cuenta: "Ingresos por intereses", valor: C.interes1, lado: HABER, retro: "El interés es un ingreso que aumenta: va al haber de Ingresos por intereses.", distractores: [{ cuenta: "Ingresos financieros – ganancia en venta de títulos", retro: "Esa cuenta es para lo que se gana al vender títulos por más de lo que costaron. Aquí no se vendió nada." }, { cuenta: "Inversiones – títulos", retro: "El interés no aumenta la inversión: Caoba sigue con los mismos títulos." }] },
     ],
   },
   {
@@ -115,7 +124,7 @@ export const ITEMS_N4 = [
     ],
   },
   {
-    id: "segundo-trimestre", tipo: "eleccion", pesos: true,
+    id: "segundo-trimestre", tipo: "cifra", pesos: true,
     pregunta: "Pasan otros 3 meses. ¿Cuánto interés cobra Caoba?",
     correcta: C.interes2,
     acierto: "Así es: $5.700.000 × 0,16 × 3/12 = $228.000.",

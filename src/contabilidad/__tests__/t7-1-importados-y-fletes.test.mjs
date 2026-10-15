@@ -48,12 +48,16 @@ const A = await import("../../data/contabilidadT7_1_a5.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: Importados, CSS_A5 } = await import("../../components/mecanicas/libros/t7/ImportadosYFletes.jsx");
 const { PIEZAS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
+const { textosDelError, anunciarRespuesta, sinAsiEs } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(`orquestador/conocimiento/paquetes/${f}`, RAIZ), "utf8");
 const V1 = leer("t7-1-a5-v1.md");
 const V2 = leer("t7-1-a5-v2-cambios.md");
 const WATARI = leer("t7-1-a5-figura-watari.md");
+/* Lote 2 de la revisión de calidad (Near): las pistas del primer error y el anexo de la tercera opción. */
+const LOTE2_PISTAS = leer("lote2-pistas-v1.md");
+const LOTE2_ANEXO = leer("lote2-anexo-v1.md");
 const CONTENIDO = V1.slice(V1.indexOf("## Contenido"), V1.indexOf("## Erratas que toca"));
 const P = A.PIEZA_IMPORTADOS_Y_FLETES;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
@@ -87,6 +91,7 @@ function textosVisibles() {
   for (const p of P.pantallas) {
     for (const k of ["objetivo", "entrada", "enunciado", "aviso", "pregunta", "siguiente", "boton", "pie", "pieRespuesta"]) if (p[k]) t.push(p[k]);
     t.push(...(p.parrafos ?? []), ...(p.lista ?? []));
+    if (p.pista) t.push(p.pista);
     for (const o of p.opciones ?? []) { t.push(o.texto); if (o.devolucion) t.push(o.devolucion); }
     if (p.acierto) t.push(...p.acierto.textos);
   }
@@ -147,10 +152,22 @@ const REEMPLAZOS = [
 
 /* ═══════════ 1 · TEXTOS CONTRA LA v1 Y LA v2 ═══════════ */
 
-test("★★★ cada texto de los datos está, letra por letra, en la v1 o en la v2 de Near", () => {
-  const faltan = textosVisibles().filter((t) => !V1.includes(t) && !V2.includes(t));
+test("★★★ cada texto de los datos está, letra por letra, en la v1 o en la v2 de Near (o, si es del lote 2, en su paquete)", () => {
+  const faltan = textosVisibles().filter((t) => !V1.includes(t) && !V2.includes(t) && !LOTE2_PISTAS.includes(t) && !LOTE2_ANEXO.includes(t));
   /* Los botones no los trae la v1 (convención de AP1, AP2 y A6): se comprueban aparte. */
   assert.deepEqual(faltan.filter((t) => !Object.values(A.BOTON).includes(t)), [], "estos textos no están en la v1 ni en la v2");
+});
+
+test("★★★ lote 2 · pistas: cada pregunta lleva la suya, letra por letra la de Near para su pantalla", () => {
+  const desde = LOTE2_PISTAS.indexOf(`### ${A.A5_ID} `);
+  assert.ok(desde >= 0, "la pieza no está en el lote 2");
+  const deNear = Object.fromEntries(LOTE2_PISTAS.slice(desde, LOTE2_PISTAS.indexOf("\n### ", desde)).split("\n").filter((l) => /^\| P\d/.test(l)).map((l) => {
+    const c = l.slice(1, -1).split("|").map((x) => x.trim());
+    return [c[0].match(/`([^`]+)`/)[1], c[2].match(/^«(.+)»$/)[1]];
+  }));
+  assert.deepEqual(Object.fromEntries(P.pantallas.filter((p) => p.tipo === "eleccion").map((p) => [p.id, p.pista])), deNear);
+  /* Esta pieza no tiene preguntas de dos opciones: el anexo no la toca. */
+  assert.ok(!LOTE2_ANEXO.includes(`| ${A.A5_ID} |`));
 });
 
 test("★★★ cada texto que la v2 reemplaza: el viejo está en la v1 y ya no se ve; el nuevo está en la v2 y se ve", () => {
@@ -280,10 +297,19 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos, con
       const ops = p.opciones.map((o) => o.texto).sort();
       assert.deepEqual(enPantalla(m.caja), { textos: [...cab, A.BOTON.confirmar, p.pie], opciones: ops }, `${p.id} colocando`);
       vistos.push(`${p.id}:colocando`);
-      for (const o of p.opciones.filter((x) => !x.correcta)) {
+      /* La escalera de ayuda (lote 2): el 1.er error da la pista; el 2.º y siguientes, la respuesta («La respuesta es «…».»).
+       * Se recorren todas las incorrectas y luego se falla otra vez la primera, para ver los dos peldaños. */
+      assert.ok(p.pista, `${p.id} sin pista del lote 2`);
+      const malas = p.opciones.filter((x) => !x.correcta);
+      let fallos = 0;
+      for (const o of [...malas, malas[0]]) {
         await responder(m.caja, o.id);
-        assert.deepEqual(enPantalla(m.caja), { textos: [...cab, A.INTERFAZ.incorrecto, o.devolucion, A.BOTON.probarOtra, p.pieRespuesta], opciones: ops }, `${p.id} error ${o.id}`);
-        vistos.push(`${p.id}:error:${o.id}`);
+        fallos++;
+        const esperados = textosDelError(p, o, fallos);
+        if (fallos === 1) assert.deepEqual(esperados, [p.pista], `${p.id} 1.er error`);
+        else assert.equal(esperados[0], `La respuesta es «${p.opciones.find((x) => x.correcta).texto.replace(/\.$/, "")}».`, `${p.id} 2.º error`);
+        assert.deepEqual(enPantalla(m.caja), { textos: [...cab, A.INTERFAZ.incorrecto, ...esperados, A.BOTON.probarOtra, p.pieRespuesta], opciones: ops }, `${p.id} error ${fallos} ${o.id}`);
+        vistos.push(`${p.id}:error${fallos}:${o.id}`);
         await tocar(boton(m.caja, "probar-otra"));
       }
       await responder(m.caja, correcta(p));
@@ -291,10 +317,26 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos, con
       vistos.push(`${p.id}:acierto`);
       await tocar(boton(m.caja, "seguir"));
     }
-    /* Portada, P1 y resumen + 5 preguntas de 4 estados: los 23 de Watari. */
-    assert.equal(vistos.length, 3 + 5 * 4);
+    /* Portada, P1 y resumen + 5 preguntas de 4 estados (los 23 de Watari), y en cada pregunta el 2.º peldaño de la escalera. */
+    assert.equal(vistos.length, 3 + 5 * 5);
   } finally {
     m.desmontar();
+  }
+});
+
+/*
+ * POR ARREGLAR EN EL COMPONENTE (no en la prueba): la escalera pone, tras «La respuesta es «…».», el acierto sin
+ * «Así es.» (escaleraAyuda.js, textosDelError, lee `pantalla.acierto.texto`). En esta pieza el acierto es
+ * `acierto.textos` (una lista), así que el 2.º error sale sin su porqué. Queda como «todo» hasta que se decida.
+ */
+test("★★ lote 2 · el 2.º error trae la respuesta y su porqué (el acierto sin «Así es.»)", () => {
+  for (const p of P.pantallas.filter((x) => x.tipo === "eleccion")) {
+    const o = p.opciones.find((x) => !x.correcta);
+    const r = textosDelError(p, o, 2);
+    assert.equal(r[0], anunciarRespuesta(p.opciones.find((x) => x.correcta).texto), p.id);
+    /* Después del anuncio, el porqué: textos del acierto, sin «Así es.». */
+    assert.ok(r.length > 1, `${p.id}: el 2.º error sale sin su porqué`);
+    assert.ok(r.slice(1).every((t) => p.acierto.textos.map(sinAsiEs).includes(t)), p.id);
   }
 });
 

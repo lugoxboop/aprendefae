@@ -1,8 +1,8 @@
-import { Fragment } from "react";
-import { ESCENA_T5_A2, PASOS_T5_A2, CIERRE_T5_A2 } from "../../../../data/contabilidadT5Pieza2.js";
-import { estadoPasoT5A2, duracionPasoT5A2, TRAMOS } from "../../../../contabilidad/t5Pieza2.js";
+import { Fragment, useRef } from "react";
+import { ESCENA_T5_A2, PARADA_T5_A2 } from "../../../../data/contabilidadT5Pieza2.js";
+import { estadoPasoT5A2, T5_A2_JUNTO, TRAMOS } from "../../../../contabilidad/t5Pieza2.js";
 import MaquinaPegada, {
-  SORA, INTER, TEXTO, SECUNDARIO, NODO, BORDES, ATENUADO, caja, transicion, Anotacion as AnotacionBase,
+  SORA, INTER, TEXTO, SECUNDARIO, NODO, BORDES, ATENUADO, caja, aparicion, transicion, useSiluetasQueCaben, Anotacion as AnotacionBase,
 } from "../tema6/MaquinaPegada.jsx";
 
 /*
@@ -26,7 +26,8 @@ import MaquinaPegada, {
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const TODOS = [...PASOS_T5_A2, CIERRE_T5_A2];
+/* Los pasos juntados (hoja 7 de Mai: 21 → 14); la reserva de la escena sigue con los estados de siempre. */
+const TODOS = T5_A2_JUNTO.TODOS;
 const E = ESCENA_T5_A2;
 const LINEA_SORA = { fontFamily: SORA, fontSize: "13px", fontWeight: 600, lineHeight: 1.3 };
 const LINEA_INTER = { fontFamily: INTER, fontSize: "12px", lineHeight: 1.35 };
@@ -111,17 +112,42 @@ function piezasDelHecho(i, el, marca, reducido, refDe, prefijo) {
   ][i]().map((n, k) => <Fragment key={k}>{n}</Fragment>);
 }
 
+/*
+ * Un hecho que todavía no llega (hoja 5 de Mai): su cabecera y su cuerpo en
+ * silueta; la escena viva quita las siluetas que no caben enteras en la
+ * reserva, empezando por la última.
+ */
+const PRESENTE_EN_SILUETA = { presente: true, visible: true, resaltado: false, atenuado: false };
+function HechoFuturo({ hecho, i, reducido }) {
+  const el = new Proxy({}, { get: () => PRESENTE_EN_SILUETA });
+  const marca = (id) => ({ "data-silueta-de": id });
+  return (
+    <div data-hecho-t5={i} data-futuro="" data-silueta-futura="cabecera" style={{
+      borderRadius: "12px", border: `1px solid ${BORDES}`, padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: "6px",
+      ...aparicion({ visible: false }, reducido),
+    }}>
+      <div data-cabecera style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", columnGap: "8px", rowGap: "2px" }}>
+        <span style={LINEA_SORA}>{hecho.fecha}</span>
+        <span style={LINEA_INTER}>{hecho.tipo}</span>
+      </div>
+      {piezasDelHecho(i, el, marca, reducido, () => undefined, "futuro-").map((n, k) => <div key={k} data-silueta-futura="cuerpo">{n}</div>)}
+    </div>
+  );
+}
+
 /* Los cinco hechos de un estado. */
 function Hechos({ estado, refDe, reducido, prefijo = "", marcar = true }) {
   const el = estado.elementos;
+  const viva = useRef(null);
+  useSiluetasQueCaben(viva, [estado]);
   const marca = (id) => (marcar
     ? { ref: refDe(id), "data-elemento": id, "data-resaltado": el[id].resaltado ? "si" : "no" }
     : { "data-elemento": `${prefijo}${id}` });
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+    <div ref={viva} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       {E.hechos.map((hecho, i) => {
         const h = estado.hechos[i];
-        if (!h.mostrado) return null;
+        if (!h.mostrado) return marcar ? <HechoFuturo key={hecho.fecha + hecho.tipo} hecho={hecho} i={i} reducido={reducido} /> : null;
         const apagado = h.atenuado;
         return (
           <div key={hecho.fecha + hecho.tipo} data-hecho-t5={i} data-plegado={h.plegado ? "si" : "no"} style={{
@@ -169,7 +195,7 @@ function Escena(estado, refDe, reducido) {
 
 export default function TresMomentos() {
   return (
-    <MaquinaPegada todos={TODOS} estadoPaso={estadoPasoT5A2} duracion={duracionPasoT5A2} escena={Escena}
+    <MaquinaPegada todos={TODOS} estadoPaso={T5_A2_JUNTO.estadoPaso} duracion={T5_A2_JUNTO.duracion} escena={Escena} parada={PARADA_T5_A2}
       pintar={pintarCuentas} atributos={{ "data-capa2-t5-a2": true }} />
   );
 }

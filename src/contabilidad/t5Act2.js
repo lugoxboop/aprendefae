@@ -1,4 +1,4 @@
-import { INVERSIONES } from "../data/contabilidadT5Act2.js";
+import { INVERSIONES, CAJA } from "../data/contabilidadT5Act2.js";
 import { evaluarParte, totalesDe, puntuar, parteDeItem } from "./cierreConMesa.js";
 
 /*
@@ -17,7 +17,11 @@ import { evaluarParte, totalesDe, puntuar, parteDeItem } from "./cierreConMesa.j
 
 /* Una parte armada: `puestas` es [{ cuenta, lado, valor }]. */
 export function evaluarParteT5Act2(parte, puestas) {
-  const especificas = parte.errores.C7 ? [{ cuenta: INVERSIONES, clave: "C7", texto: parte.errores.C7 }] : [];
+  /* La C7 en dos ramas (entrega 1): con lo recibido (el valor de Caja), la C7; con cualquier otro valor que no sea el costo, la C7-otro. */
+  const recibido = parte.asiento.find((e) => e.cuenta === CAJA)?.valor;
+  const especificas = parte.errores.C7
+    ? [{ cuenta: INVERSIONES, valor: recibido, clave: "C7", texto: parte.errores.C7 }, { cuenta: INVERSIONES, clave: "C7-otro", texto: parte.errores.C7otro }]
+    : [];
   return evaluarParte({ ...parte, errores: { ...parte.errores, especificas } }, puestas);
 }
 

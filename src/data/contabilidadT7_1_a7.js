@@ -52,6 +52,7 @@ const POR_QUE = {
 /* P2 · Al recibir. */
 const AL_RECIBIR = {
   id: "al-recibir",
+  pista: "Piensa en qué momento están a la mano, al mismo tiempo, la factura y la orden de compra.",
   tipo: "eleccion",
   parrafos: [
     "Cuando llega la mercancía, se compara la factura con la orden de compra. Así se ve si hay diferencias en precios, cantidades o referencias.",
@@ -86,6 +87,7 @@ const AL_RECIBIR = {
 /* P3 · Controles de seguridad. La lista del libro, en su orden; las glosas, después. */
 const SEGURIDAD = {
   id: "controles-de-seguridad",
+  pista: "El problema es cómo salió la mercancía de la bodega. Busca el control que decide quién puede sacarla.",
   tipo: "eleccion",
   parrafos: ["Además de los controles del registro, el libro pide otros de seguridad."],
   lista: [

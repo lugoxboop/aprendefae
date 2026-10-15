@@ -53,3 +53,22 @@ En la Def. 7, la frase «La redención es lo que paga…» la reemplaza la líne
 | Capa 3 · texto final (3.6 a 3.8) | Basado en el libro, pp. 191-192 |
 
 Criterio: «Libro» cuando lo que afirma el paso está en la página. «Basado en el libro» cuando la escena o el caso son construidos, aunque la regla que aplican sea del libro.
+
+## (3) Futaba · entrega 2: predecir antes de revelar, capa 3 (pegada tal cual)
+
+
+Cómo funciona (para Mai):
+
+El estudiante toca la caja, elige y se revela el texto de siempre.
+Si falla, la devolución va antes de ese texto. Si acierta, el texto sale directo, sin «Sí.».
+Hay un intento por caja y no da puntaje.
+Los textos que se revelan y el texto final de cada capa no cambian.
+
+T5 A1 (Basado en el libro, p. 192)
+
+Consigna ★: «Toca cada paquete y decide si puede ser temporal. Después, mira la razón.» (81)
+Las dos cajas: ¿Puede ser temporal? Opciones: Sí: cumple las dos condiciones · No: no se vende fácil · No: no hay intención de venderlo.
+Paquete A, correcta «Sí». Si falla: «Sí se vende fácil: se negocia públicamente. Y ya vendió inversiones así cuando le faltó efectivo.» (66)
+Paquete B, correcta «No: no se vende fácil».
+Si elige «Sí»: «Si no se negocia públicamente, puede que no tenga mercado. Falla la primera condición: venderse fácil.» (66)
+Si elige «No: no hay intención»: «El paquete no dice nada de la intención. Lo que falla es que no se negocia públicamente.» (88)

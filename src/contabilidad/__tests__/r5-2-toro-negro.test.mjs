@@ -612,8 +612,9 @@ test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0
   assert.equal(nodos(), "actual,pendiente,pendiente");
   assert.equal(Boolean(caja.querySelector("[data-libro]")), false, "a0 no lleva libro");
   const filasA0 = [...caja.querySelectorAll("[data-fila-grupo]")];
+  /* v2.1: el porcentaje va junto al saldo, como la cuenta que hay que hacer: «8.330.000 × 3 %». */
   assert.deepEqual(filasA0.map((f) => [f.querySelector("[data-grupo]").textContent, f.querySelector("[data-saldo-grupo]").textContent, f.querySelector("[data-porcentaje]").textContent]),
-    T.GRUPOS_A0.map((g) => [g.grupo, cifra(g.saldo), `Porcentaje que fija la empresa: ${g.porcentaje}\u00a0%`]));
+    T.GRUPOS_A0.map((g) => [g.grupo, `${cifra(g.saldo)} ×\u00a0${g.porcentaje}\u00a0%`, `×\u00a0${g.porcentaje}\u00a0%`]));
   const campos = [...caja.querySelectorAll("[data-tarjeta-calculo] input")];
   assert.equal(campos.length, 8);
   assert.deepEqual(campos.map((c) => c.getAttribute("enterkeyhint")), [...Array(7).fill("next"), "done"]);
@@ -665,6 +666,10 @@ test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0
   const p2 = pregunta("p2");
   assert.deepEqual([...caja.querySelectorAll("[data-parrafo-devolucion]")].map((x) => x.textContent.replace(/^Incorrecto: /, "")), [p2.debeMal[T.CAJA], p2.haberMal[T.INGRESOS]]);
   assert.equal(hueco(caja, "debe").dataset.estado, "mal");
+  /* v2.1: la palabra debajo de cada pieza, no solo el borde (D12). */
+  assert.deepEqual([...caja.querySelectorAll("[data-tarjeta-asiento='armador'] [data-veredicto]")].map((v) => [v.dataset.veredicto, v.textContent]),
+    [["mal", "No va aquí"], ["mal", "No va aquí"], ["ok", "Correcto"]]);
+  assert.equal(caja.querySelectorAll("[data-tarjeta-asiento='era-este'] [data-veredicto]").length, 0, "ERA ESTE no se califica");
   assert.equal(caja.querySelector("[data-tarjeta-asiento='armador'] input").dataset.campoValor, "ok");
   const era = caja.querySelector("[data-tarjeta-asiento='era-este']");
   assert.equal(era.querySelector("[data-era-este]").textContent, "ERA ESTE");
@@ -691,6 +696,9 @@ test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0
   const eraSaldo = caja.querySelector("[data-tarjeta-saldo='era-este']");
   assert.equal(eraSaldo.querySelector("input").value, "166.600");
   assert.equal(eraSaldo.querySelector("[data-lado='debito']").getAttribute("aria-pressed"), "true");
+  /* v2.1: en ERA ESTE el lado correcto va relleno y el otro no: forma, no solo color. */
+  assert.notEqual(eraSaldo.querySelector("[data-lado='debito']").style.background, eraSaldo.querySelector("[data-lado='credito']").style.background);
+  assert.deepEqual([...caja.querySelectorAll("[data-tarjeta-saldo='respuesta'] [data-veredicto]")].map((v) => v.textContent), ["No es este valor"]);
   await tocar(sig(caja));
 
   /* Corte MARZO: 166.600 SALDO DÉBITO, el fantasma en 2.283.400 a la derecha, el texto de Miyata. */
@@ -735,4 +743,22 @@ test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0
   assert.deepEqual(detalle.map((d) => [d.item, d.ok]), [["a0", false], ["p1", true], ["p2", false], ["p3", false], ["p4", false], ["p5", false], ["p6", true]]);
   assert.equal(detalle[4].respuesta, "0 | sin lado");
   desmontar();
+});
+
+test("★★ v2.1: los rótulos nuevos del autodiagnóstico están en el paquete, entre comillas (guarda: 7)", () => {
+  const V = T.ROTULOS_R5_2.veredicto;
+  const nuevos = [V.cuenta.ok, V.cuenta.mal, V.valor.ok, V.valor.mal, V.lado.ok, V.lado.mal, T.ROTULOS_A0.porcentaje(3)];
+  assert.equal(nuevos.length, 7);
+  const seccion = PAQUETE.slice(PAQUETE.indexOf("## v2.1 · autodiagnóstico"));
+  /* El paquete escribe espacios normales donde la pantalla pone de no separación. */
+  for (const r of nuevos) assert.ok(seccion.includes(`«${r.replace(/\u00a0/g, " ")}»`), r);
+});
+
+test("★★ v2.1 · B4 de enganche.md: ni el acierto ni «ERA ESTE» van en teal, que en esta pantalla es DEBE", () => {
+  const fuente = leer("src/components/repasoCap5/ToroNegro.jsx");
+  const estados = fuente.slice(fuente.indexOf("const ESTADO_PIEZA = {"), fuente.indexOf("};", fuente.indexOf("const ESTADO_PIEZA = {")));
+  for (const linea of estados.split("\n").filter((l) => /^\s*(ok|revelada):/.test(l))) assert.ok(!/teal|2A9D8F|42,\s*157/i.test(linea), linea.trim());
+  assert.ok(!/data-era-este[^>]*C\.teal/.test(fuente), "«ERA ESTE» en teal");
+  /* El teal sigue donde significa DEBE o DÉBITO. */
+  assert.ok(/l === "debe" \? C\.teal/.test(fuente));
 });
