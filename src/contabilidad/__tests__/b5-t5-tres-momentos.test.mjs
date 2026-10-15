@@ -81,6 +81,8 @@ const FUENTE = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/
 const FUTABA = FUENTE.slice(FUENTE.indexOf("## (1) Futaba"), FUENTE.indexOf("## (2) Mai"));
 const viva = (caja) => caja.querySelector("[data-escena-viva]");
 const de = (caja, id) => viva(caja).querySelector(`[data-elemento="${id}"]`);
+/* Lo que todavía no llega se ve en silueta (hoja 5 de Mai): a la vista, atenuado y marcado con --b5-silueta. */
+const enSilueta = (n) => n.style.visibility === "visible" && Boolean(n.style.getPropertyValue("--b5-silueta"));
 const siguiente = (caja) => tocar(caja.querySelector("[data-siguiente]"));
 const colorVisto = (n) => {
   while (n && (!n.style.color || n.style.color === "inherit")) n = n.parentElement;
@@ -193,7 +195,7 @@ test("★★★ los cinco hechos: uno abierto a la vez, los anteriores plegados 
   const { caja, desmontar } = await montar(h(TresMomentos));
   const H = D.ESCENA_T5_A2.hechos;
   for (let p = 1; p <= 22; p++) {
-    const hechos = [...viva(caja).querySelectorAll("[data-hecho-t5]")];
+    const hechos = [...viva(caja).querySelectorAll("[data-hecho-t5]:not([data-futuro])")];
     const abierto = ABIERTO(p);
     assert.equal(hechos.length, abierto === null ? 5 : abierto + 1, `paso ${p}: hechos a la vista`);
     hechos.forEach((n, i) => {
@@ -225,7 +227,7 @@ test("★★★ dentro del hecho abierto, cada pieza se ve desde su paso; antes 
     for (const [id, desde] of Object.entries(APARECE)) {
       const n = de(caja, id);
       if (HECHO(id) !== ABIERTO(p)) { assert.equal(n, null, `paso ${p}: ${id} no está (su hecho no va abierto)`); continue; }
-      assert.equal(n.style.visibility, p >= desde ? "visible" : "hidden", `paso ${p}: ${id}`);
+      assert.equal(enSilueta(n), p < desde, `paso ${p}: ${id} ${p < desde ? "en silueta" : "a la vista"}`);
     }
     await siguiente(caja);
   }
@@ -373,4 +375,30 @@ test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola corr
 test("★★ identificadores nuevos con b5-", () => {
   assert.match(D.PIEZA_TRES_MOMENTOS.id, /^b5-t5-a2-/);
   for (const o of D.OPCIONES_FINAL_T5_A2) assert.match(o.id, /^b5-t5-a2-/);
+});
+
+/* D12 (Sakuta, #222): lo que está en silueta no lo lee el lector ni se enfoca; lo que llega, ya no lleva esa marca. */
+const MUDOS = '[style*="--b5-silueta"], [data-futuro], [data-silueta-futura]';
+const callado = (n) => n.closest('[aria-hidden="true"]') !== null;
+const marcaPropia = (n) => n.getAttribute("aria-hidden") === "true" && n.hasAttribute("inert");
+test("★★★ D12: en el paso 1 ninguna silueta es legible ni enfocable; en el paso 2, lo que llegó pierde la marca", async () => {
+  const { caja, desmontar } = await montar(h(TresMomentos));
+  const siluetas = [...caja.querySelectorAll(MUDOS)];
+  assert.ok(siluetas.length > 0, "hay siluetas en el paso 1");
+  for (const n of siluetas) {
+    assert.ok(callado(n), "aria-hidden en ella o en un ancestro");
+    assert.ok(marcaPropia(n), "y su propia marca: aria-hidden e inert, aunque la escena cambie");
+  }
+  const vivas = () => [...viva(caja).querySelectorAll("[data-elemento]")];
+  const antes = new Set(vivas().filter((n) => enSilueta(n)));
+  await siguiente(caja);
+  const llegaron = vivas().filter((n) => antes.has(n) && !enSilueta(n));
+  assert.ok(llegaron.length > 0, "algo llegó en el paso 2");
+  for (const n of llegaron) {
+    assert.equal(n.hasAttribute("inert"), false, `${n.dataset.elemento}: sin inert`);
+    assert.equal(n.getAttribute("aria-hidden"), null, `${n.dataset.elemento}: sin su aria-hidden`);
+    assert.equal(n.closest("[data-b5-mudo]"), null, `${n.dataset.elemento}: ni un ancestro en silueta`);
+  }
+  for (const n of caja.querySelectorAll(MUDOS)) assert.ok(marcaPropia(n), "lo que sigue en silueta, callado");
+  desmontar();
 });
