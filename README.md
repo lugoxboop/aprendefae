@@ -1,5 +1,9 @@
 # AprendeFAE
 
+> **Todos los derechos reservados — Nakano / Mateo Lugo Duque.** Este
+> repositorio es público para que pueda verse, no para que se reutilice. No
+> lleva licencia de código abierto: ver [LICENSE](LICENSE).
+
 Sitio educativo interactivo para estudiantes de la FAE (aprendefae.com). Dos materias, cada una con sus temas; cada tema se parte en **Aprender** (material explicativo) y **Hacer** (juegos que otorgan FP). Encima de eso hay una capa de progreso —FP, rankings, ligas semanales, racha diaria, repaso espaciado, medallas, avatares y una tienda de Cristales— y un panel para los docentes.
 
 - **Macroeconomía** → cuatro temas construidos: Demanda Agregada, Política Económica, Política Fiscal y Política Monetaria. Más El Repaso Diario, que es transversal.

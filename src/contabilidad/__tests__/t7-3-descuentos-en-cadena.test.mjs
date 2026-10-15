@@ -215,3 +215,61 @@ test("★★★ fuera del catálogo de FP; en T7-3, después de A1 (y de H1 si y
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A2_ID)), []);
   assert.doesNotMatch(leer("src/data/contabilidadT7_3_a2.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);
 });
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+const filasDe = (fig) => [...fig.querySelectorAll("[data-renglon]")].map((r) => [r.querySelector(".rg-op").textContent, r.querySelector(".rg-rot").textContent.replace(/^(menos|por|igual a) /, ""), r.querySelector(".rg-v").textContent, r.classList.contains("rg-res")]);
+
+test("★★★ Patrón T7-3: la cadena llega con el acierto de «¿sobre qué valor?», y el atajo va con su texto", async () => {
+  const C = A.H2_LIBRO;
+  /* Cada paso de la cadena, recalculado. */
+  assert.equal(C.lista - C.d1, C.s1);
+  assert.equal(C.s1 - C.d2, C.s2);
+  assert.equal(C.s2 - C.d3, C.factura);
+  assert.equal(Math.round(0.95 * 0.92 * 0.90 * 10_000) / 10_000, C.factor);
+  assert.equal(Math.round(C.lista * C.factor), C.factura);
+  const m = await montar();
+  try {
+    const c = m.caja;
+    const ir = async (id) => {
+      for (let k = 0; k < 10 && c.querySelector("[data-pantalla]").dataset.pantalla !== id; k++) {
+        const p = pantalla(c.querySelector("[data-pantalla]").dataset.pantalla);
+        if (p.opciones) { await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`)); await tocar(boton(c, "confirmar")); }
+        await tocar(boton(c, "seguir") ?? boton(c, "empezar"));
+      }
+    };
+    await ir("pasos");
+    /* Antes de responder, la cadena no está: daría la respuesta. */
+    assert.equal(c.querySelectorAll("figure[data-renglones]").length, 0);
+    await tocar(c.querySelector('[data-opcion="lista"]'));
+    await tocar(boton(c, "confirmar"));
+    assert.equal(c.querySelectorAll("figure[data-renglones]").length, 0, "con el error tampoco");
+    await tocar(boton(c, "probar-otra"));
+    await tocar(c.querySelector('[data-opcion="saldo"]'));
+    await tocar(boton(c, "confirmar"));
+    const cadena = c.querySelector("figure[data-renglones]");
+    assert.equal(cadena.querySelector("figcaption").textContent, "Cadena de descuentos de San Calixto");
+    assert.deepEqual(filasDe(cadena), [
+      ["", "Precio de lista", "4.200.000", false],
+      ["−", "Descuento 5 %", "210.000", false],
+      ["=", "Saldo", "3.990.000", true],
+      ["−", "Descuento 8 % del saldo", "319.200", false],
+      ["=", "Saldo", "3.670.800", true],
+      ["−", "Descuento 10 % del saldo", "367.080", false],
+      ["=", "Valor a facturar", "3.303.720", true],
+    ]);
+    assert.ok(cadena.classList.contains("rg-nuevo"));
+    await tocar(boton(c, "seguir"));
+    const factor = c.querySelector("figure[data-renglones]");
+    assert.equal(c.querySelector("[data-pantalla]").dataset.pantalla, "atajo");
+    assert.deepEqual(filasDe(factor), [
+      ["", "Complementos", "0,95 × 0,92 × 0,90", false],
+      ["=", "Factor", "0,7866", true],
+      ["×", "Precio de lista", "4.200.000", false],
+      ["=", "Valor a facturar", "3.303.720", true],
+    ]);
+    assert.ok(factor.querySelector("[data-renglon]").classList.contains("rg-apila"));
+  } finally {
+    m.desmontar();
+  }
+});
