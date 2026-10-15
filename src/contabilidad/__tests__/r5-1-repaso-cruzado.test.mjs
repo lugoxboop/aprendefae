@@ -499,3 +499,204 @@ test("★★★ en el final, acierto y error se distinguen por forma: relleno o 
   assert.deepEqual([...caja.querySelectorAll("[data-n-de-m]")].map((x) => x.textContent), ["1 de 1", "0 de 1", "0 de 4"]);
   desmontar();
 });
+
+/* ═══════════ v1.3 · AUTODIAGNÓSTICO: LA PISTA, LA CUENTA A LA VISTA, EL RÓTULO DEL LOTE ═══════════ */
+
+test("★★★ v1.3: la pista se pide antes de responder, sale literal, se va al responder y vuelve cerrada en la siguiente", async () => {
+  const { caja, desmontar } = await montar(h(RepasoCruzado, { pantallas: P, onCompletar: () => {} }));
+  let vistas = 0;
+  for (const p of P) {
+    assert.equal(caja.querySelector("[data-pista]"), null, `${p.id}: la pista empieza cerrada`);
+    const boton = caja.querySelector("[data-ver-pista]");
+    assert.equal(boton.textContent, "Ver pista");
+    assert.equal(boton.getAttribute("aria-expanded"), "false");
+    await tocar(boton);
+    assert.equal(caja.querySelector("[data-ver-pista]"), null);
+    assert.equal(caja.querySelector("[data-pista]").textContent, `PISTA${p.pista}`);
+    vistas++;
+    await tocar(opcion(caja, clave(p).id));
+    assert.equal(caja.querySelector("[data-pista]"), null, `${p.id}: al responder la pista se va`);
+    assert.equal(caja.querySelector("[data-ver-pista]"), null);
+    await tocar(caja.querySelector("[data-siguiente]"));
+  }
+  assert.equal(vistas, 6);
+  desmontar();
+});
+
+test("★★★ v1.3: la pista no quita FP — seis aciertos con las seis pistas abiertas dan 100", async () => {
+  const fin = [];
+  const { caja, desmontar } = await montar(h(RepasoCruzado, { pantallas: P, onCompletar: (...x) => fin.push(x) }));
+  for (const p of P) {
+    await tocar(caja.querySelector("[data-ver-pista]"));
+    await tocar(opcion(caja, clave(p).id));
+    await tocar(caja.querySelector("[data-siguiente]"));
+  }
+  assert.equal(fin.length, 1);
+  assert.equal(fin[0][0], 100);
+  desmontar();
+});
+
+/* Avanza hasta la pantalla `id` acertando las de antes. */
+async function irA(caja, id) {
+  for (const p of P) {
+    if (p.id === id) return;
+    await tocar(opcion(caja, clave(p).id));
+    await tocar(caja.querySelector("[data-siguiente]"));
+  }
+}
+
+test("★★★ v1.3: en la pantalla 4 la cuenta se ve al responder —acierte o falle— y da 3.400 desde los signos", async () => {
+  /* Calculado aquí, a mano, sin la función de los datos. */
+  const esperado = 500 + 4000 - 300 - 800;
+  assert.equal(D.cuentaDeC8(pantalla("c8")), esperado);
+  assert.equal(clave(pantalla("c8")).valor, esperado);
+  for (const eleccion of ["c8-c", "c8-a"]) {
+    const { caja, desmontar } = await montar(h(RepasoCruzado, { pantallas: P, onCompletar: () => {} }));
+    await irA(caja, "c8");
+    const lista = caja.querySelector('[data-datos="lista"]');
+    /* Antes de responder no se aparta nada: regalaría la respuesta. */
+    assert.equal(lista.dataset.resuelta, "no");
+    assert.equal(lista.querySelector("[data-signo]"), null);
+    assert.equal(lista.querySelector("[data-no-entra]"), null);
+    assert.equal(lista.querySelector('[data-dato="resultado"]'), null);
+    await tocar(opcion(caja, eleccion));
+    assert.equal(lista.dataset.resuelta, "si", eleccion);
+    assert.deepEqual([...lista.querySelectorAll("[data-entra]")].map((d) => d.dataset.entra), ["no", "no", "+", "+", "−", "−"]);
+    assert.deepEqual([...lista.querySelectorAll("[data-no-entra]")].map((d) => d.textContent), ["no entra al costo", "no entra al costo"]);
+    /* Lo que no entra va tachado: la forma lo dice, no el color. */
+    for (const id of ["ventas", "devoluciones-ventas"]) {
+      const fila = lista.querySelector(`[data-dato="${id}"]`);
+      assert.equal(fila.querySelector("span span").style.textDecoration, "line-through", id);
+    }
+    assert.equal(lista.querySelector('[data-dato="resultado"]'), null, "el resultado va en LA CUENTA, no arriba");
+    /* LA CUENTA, entre las opciones y la devolución: donde se está mirando al responder. */
+    const cuenta = caja.querySelector('[data-cuenta="c8"]');
+    assert.ok(cuenta, eleccion);
+    const opciones = caja.querySelector("[data-opcion]").parentElement;
+    assert.ok(opciones.compareDocumentPosition(cuenta) & w.Node.DOCUMENT_POSITION_FOLLOWING, "la cuenta va después de las opciones");
+    assert.ok(cuenta.compareDocumentPosition(caja.querySelector("[data-devolucion]")) & w.Node.DOCUMENT_POSITION_FOLLOWING, "y antes de la devolución");
+    const renglones = [...cuenta.querySelectorAll("[data-renglon-cuenta]")];
+    assert.deepEqual(renglones.map((x) => x.dataset.renglonCuenta), ["inventario-inicial", "compras", "devoluciones-compras", "disponible", "inventario-final", "resultado"]);
+    /* A mano: 500 + 4.000 − 300 = 4.200 disponible; 4.200 − 800 = 3.400. */
+    assert.deepEqual(renglones.map((x) => x.textContent), [
+      "Inventario inicial$500", "+Compras$4.000", "−Devoluciones de compras$300",
+      "=Disponible para vender$4.200", "−Inventario final$800", `=Costo de mercancía vendida${pesos(esperado)}`,
+    ]);
+    desmontar();
+  }
+});
+
+test("★★★ v1.3: en la pantalla 5 LA CUENTA sale al responder, con 25 u en dos cajas y media, y da la clave", async () => {
+  const c = D.cuentaDeC9(pantalla("c9"));
+  /* A mano: 70 + 100 + 80 = 250 u; 1.260 + 2.000 + 2.000 = 5.260; 250 − 225 = 25. */
+  assert.deepEqual([c.unidades, c.total, c.quedan, c.valor], [250, 5260, 25, 526]);
+  assert.equal(c.valor, clave(pantalla("c9")).valor);
+  assert.equal(D.pesosConCentavos(c.promedio), "$21,04");
+  assert.equal(D.pesosConCentavos(5), "$5,00");
+  for (const eleccion of ["c9-b", "c9-d"]) {
+    const { caja, desmontar } = await montar(h(RepasoCruzado, { pantallas: P, onCompletar: () => {} }));
+    await irA(caja, "c9");
+    assert.equal(caja.querySelector("[data-cuenta]"), null, "antes de responder no hay cuenta");
+    await tocar(opcion(caja, eleccion));
+    const cuenta = caja.querySelector('[data-cuenta="c9"]');
+    assert.ok(cuenta, eleccion);
+    assert.ok(cuenta.compareDocumentPosition(caja.querySelector("[data-devolucion]")) & w.Node.DOCUMENT_POSITION_FOLLOWING, "la cuenta va antes de la devolución");
+    assert.deepEqual([...cuenta.querySelectorAll("[data-renglon-cuenta]")].map((x) => x.textContent),
+      ["Tenías 250 u por $5.260", "Cada una: $5.260 ÷ 250 = $21,04", "Quedan 25 u × $21,04 = $526"]);
+    const cajas = cuenta.querySelector("[data-cajas]");
+    assert.equal(cajas.dataset.cajas, "2.5");
+    assert.equal(cajas.children.length, 3);
+    assert.ok(cajas.querySelector("[data-media-caja]"), "la media caja");
+    desmontar();
+  }
+});
+
+test("★★ v1.3: el rótulo del lote es contenido: 12 px, sin mayúsculas forzadas", async () => {
+  const { caja, desmontar } = await montar(h(RepasoCruzado, { pantallas: P, onCompletar: () => {} }));
+  await irA(caja, "c9");
+  const rotulos = [...caja.querySelectorAll("[data-marca-lote]")];
+  assert.deepEqual(rotulos.map((r) => r.textContent), ["Lote 1 · Al inicio", "Lote 2 · Primera compra", "Lote 3 · Segunda compra"]);
+  for (const r of rotulos) {
+    assert.equal(r.style.fontSize, "12px");
+    assert.notEqual(r.style.textTransform, "uppercase");
+  }
+  desmontar();
+});
+
+test("★★ v1.3: cada texto nuevo está, literal, en la tabla «v1.3 · textos nuevos» del paquete (guarda: 9)", () => {
+  const seccion = PAQUETE.slice(PAQUETE.indexOf("## v1.3 · textos nuevos"));
+  const c = D.cuentaDeC9(pantalla("c9"));
+  const I = D.INTERFAZ_R5_1;
+  const nuevos = [
+    I.verPista, I.marcaPista, I.noEntra, D.RESULTADO_C8, I.marcaCuenta, I.disponible,
+    I.tenias(c.unidades, c.total), I.cadaUna(c.total, c.unidades, D.pesosConCentavos(c.promedio)),
+    I.quedan(c.quedan, D.pesosConCentavos(c.promedio), c.valor),
+  ];
+  assert.equal(nuevos.length, 9);
+  for (const t of nuevos) {
+    assert.ok(seccion.includes(`| ${t} |`), t);
+    assert.ok(palabrasDe(t).length < 10, `${t}: llega a 10 palabras y habría que medirlo`);
+  }
+});
+
+test("★★ v1.3: la portada del tema dice de dónde viene el repaso, con las tres siluetas de las preguntas y sus nombres", async () => {
+  const { PortadaRepaso } = await import("../../components/RepasoCapitulo5View.jsx");
+  const { caja, desmontar } = await montar(h(PortadaRepaso));
+  const portada = caja.querySelector("[data-portada-repaso]");
+  assert.ok(portada);
+  assert.equal(portada.querySelector("p").textContent, "FIN DEL CAPÍTULO 5");
+  assert.equal(portada.querySelector("#r5-portada-titulo").textContent, "Repasa los tres temas antes de seguir.");
+  const temas = [...portada.querySelectorAll("[data-portada-tema]")];
+  assert.deepEqual(temas.map((t) => t.dataset.portadaTema), ["inversiones", "cartera", "inventarios"]);
+  assert.deepEqual(temas.map((t) => t.textContent), ["Inversiones", "Cartera", "Inventarios"]);
+  /* El mismo dibujo que en las preguntas, y solo decorativo. */
+  for (const [t, escena] of [["inversiones", "titulo-valor"], ["cartera", "facturas"], ["inventarios", "bodega"]]) {
+    const li = portada.querySelector(`[data-portada-tema="${t}"]`);
+    assert.ok(li.querySelector(`[data-silueta="${escena}"]`), t);
+    assert.equal(li.querySelector(`[data-silueta="${escena}"]`).closest("[aria-hidden]").getAttribute("aria-hidden"), "true");
+  }
+  const seccion = PAQUETE.slice(PAQUETE.indexOf("## v1.3 · textos nuevos"));
+  for (const t of [D.INTERFAZ_R5_1.marcaPortada, D.INTERFAZ_R5_1.portada]) assert.ok(seccion.includes(`| ${t} |`), t);
+  desmontar();
+});
+
+test("★★ el título del tema puede partir en dos renglones: no se corta con «…» (herramientas.md, 15 oct.)", () => {
+  /* La vista entera necesita sesión y FP; el h1 se comprueba en su fuente, y su ancho real a 320 en Chromium. */
+  const fuente = leer("src/components/RepasoCapitulo5View.jsx");
+  const h1 = fuente.slice(fuente.indexOf("<h1 data-titulo-tema"), fuente.indexOf(">", fuente.indexOf("<h1 data-titulo-tema")));
+  for (const d of ['whiteSpace: "normal"', 'overflow: "visible"', 'textOverflow: "clip"', "minWidth: 0"]) assert.ok(h1.includes(d), d);
+});
+
+/*
+ * ═══════════ TODO LO DEL PAQUETE LLEGA A LA PANTALLA ═══════════
+ *
+ * La pista estuvo en el paquete y en los datos y nunca se pintó, y ninguna
+ * prueba lo notó: las pruebas miraban los datos, no la pantalla (Takamura,
+ * auditoría del autodiagnóstico). Esta juega cada pantalla una vez por opción,
+ * con la pista abierta, y exige que cada texto del estudiante haya salido en
+ * el DOM en algún estado. Un campo que nadie pinta, la rompe.
+ */
+test("★★★ cada texto del paquete sale en la pantalla en algún estado: enunciados, opciones, datos, pistas y cada devolución (guarda: 81)", async () => {
+  const visto = new Set();
+  const mirar = (caja) => visto.add(caja.textContent);
+  for (const [k, p] of P.entries()) {
+    for (const o of p.opciones) {
+      const { caja, desmontar } = await montar(h(RepasoCruzado, { pantallas: P, onCompletar: () => {} }));
+      for (const antes of P.slice(0, k)) {
+        await tocar(opcion(caja, clave(antes).id));
+        await tocar(caja.querySelector("[data-siguiente]"));
+      }
+      mirar(caja);
+      await tocar(caja.querySelector("[data-ver-pista]"));
+      mirar(caja);
+      await tocar(opcion(caja, o.id));
+      mirar(caja);
+      desmontar();
+    }
+  }
+  const todo = [...visto].join("\n");
+  const textos = textosDeLosDatos();
+  assert.equal(textos.length, 81, "no recorrió los textos que dice recorrer");
+  const faltan = textos.filter((t) => !todo.includes(t));
+  assert.deepEqual(faltan, [], `no salen en pantalla: ${faltan.join(" | ")}`);
+});

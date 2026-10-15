@@ -18,8 +18,9 @@ import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente } from "./repasoCap5/
 import { ToroNegro } from "./repasoCap5/ToroNegro.jsx";
 import { R5_2 } from "../data/repasoCap5ToroNegroTextos.js";
 import {
-  R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, UNIDADES_POR_CAJA,
+  R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, ORDEN_SUBTEMAS, UNIDADES_POR_CAJA,
   prepararR5_1, evaluarR5_1, puntuarR5_1, porTema, textoDeOpcion,
+  pasosDeC8, cuentaDeC9, pesosConCentavos,
 } from "../data/repasoCap5Cruzado.js";
 
 /*
@@ -166,38 +167,63 @@ function Progreso({ actual, total }) {
 const CONTENEDOR = { background: C.navy, borderRadius: "12px", padding: "4px 16px", marginTop: "16px" };
 const DIVISORIA = "1px solid rgba(184,196,212,0.25)";
 
-function ListaDeDatos({ datos }) {
+/*
+ * v1.3 · LA CUENTA A LA VISTA. Antes de responder, los seis datos en el orden
+ * del estado de resultados y nada más: apartarlos regalaría la respuesta.
+ * Después de responder —acierte o falle—, cada dato dice cómo entra: «+» o
+ * «−» delante de la cifra, o «no entra» con el renglón tachado y atenuado; y
+ * abajo aparece el renglón del resultado. En blanco y negro se lee igual: los
+ * signos, el tachado y las palabras llevan todo, el color no lleva nada.
+ */
+function ListaDeDatos({ datos, resuelta = false }) {
   return (
-    <div data-datos="lista" style={CONTENEDOR}>
-      {datos.map((d, k) => (
-        <div key={d.id} data-dato={d.id} style={{ display: "flex", alignItems: "center", minHeight: "40px", gap: "8px", borderTop: k ? DIVISORIA : "none" }}>
-          <span style={{ flex: 1, minWidth: 0, fontFamily: INTER, fontSize: "14px", color: C.atenuado }}>{d.etiqueta}</span>
-          <span style={{ width: "96px", flexShrink: 0, textAlign: "right", fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>
-            {pesos(d.valor)}
-          </span>
-        </div>
-      ))}
+    <div data-datos="lista" data-resuelta={resuelta ? "si" : "no"} style={CONTENEDOR}>
+      {datos.map((d, k) => {
+        const fuera = resuelta && !d.signo;
+        return (
+          <div key={d.id} data-dato={d.id} data-entra={resuelta ? (d.signo ?? "no") : undefined} style={{ display: "flex", alignItems: "center", minHeight: "40px", gap: "8px", borderTop: k ? DIVISORIA : "none" }}>
+            <span style={{ flex: 1, minWidth: 0, fontFamily: INTER, fontSize: "14px", color: C.atenuado }}>
+              {/* Lo tachado a 0,75 (Takamura: a 0,6 daba unos 3,6:1); «no entra al costo», entero. */}
+              <span style={{ textDecoration: fuera ? "line-through" : "none", opacity: fuera ? 0.75 : 1 }}>{d.etiqueta}</span>
+              {fuera && <span data-no-entra style={{ display: "block", fontSize: "12px", fontWeight: 600, color: C.texto }}>{INTERFAZ_R5_1.noEntra}</span>}
+            </span>
+            <span style={{ width: "112px", flexShrink: 0, textAlign: "right", fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, textDecoration: fuera ? "line-through" : "none", opacity: fuera ? 0.75 : 1, whiteSpace: "nowrap" }}>
+              {resuelta && d.signo && <span data-signo style={{ marginRight: "6px", fontFamily: SORA, fontWeight: 700 }}>{d.signo}</span>}
+              {pesos(d.valor)}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
 
+/* `n` puede traer media caja (25 u = 2,5 cajas): la media es media de ancho. */
 function Cajas({ n }) {
+  const llenas = Math.floor(n);
+  const media = n - llenas >= 0.5;
   return (
     <span aria-hidden="true" data-cajas={n} style={{ display: "flex", gap: "3px" }}>
-      {Array.from({ length: n }, (_, k) => (
+      {Array.from({ length: llenas }, (_, k) => (
         <span key={k} style={{ width: "12px", height: "12px", borderRadius: "2px", background: C.hecho, flexShrink: 0 }} />
       ))}
+      {media && <span data-media-caja style={{ width: "6px", height: "12px", borderRadius: "2px 0 0 2px", background: C.hecho, flexShrink: 0 }} />}
     </span>
   );
 }
 
+/*
+ * v1.3: el rótulo de cada lote es contenido, no una marca: va a 12 px y en
+ * minúscula de frase (el suelo de 10,5 en mayúsculas es solo para marcas como
+ * «PREGUNTA 5 DE 6»).
+ */
 function BloqueDeLotes({ lotes, vendidas }) {
   return (
     <div data-datos="lotes" style={CONTENEDOR}>
       {lotes.map((l, k) => (
         <div key={l.marca} data-lote={k + 1} style={{ minHeight: "48px", padding: "6px 0", boxSizing: "border-box", borderTop: k ? DIVISORIA : "none" }}>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "8px" }}>
-            <span style={MARCA}>{l.marca}</span>
+            <span data-marca-lote style={{ fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: 1.35, color: C.atenuado }}>{l.marca}</span>
             <span style={{ fontFamily: INTER, fontSize: "14px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, whiteSpace: "nowrap" }}>
               {INTERFAZ_R5_1.unidadesACosto(l.unidades, l.costo)}
             </span>
@@ -209,6 +235,83 @@ function BloqueDeLotes({ lotes, vendidas }) {
         {INTERFAZ_R5_1.vendidas(vendidas)}
       </div>
       <p style={{ margin: "0 0 8px", fontFamily: INTER, fontSize: "12px", color: C.atenuado }}>{INTERFAZ_R5_1.leyendaCajas}</p>
+    </div>
+  );
+}
+
+/*
+ * v1.3 · LA CUENTA, DONDE SE ESTÁ MIRANDO. Al responder, el estudiante tiene
+ * el dedo en las opciones y el foco baja a «Siguiente»: los datos ya están
+ * fuera de la pantalla (Takamura; medido en Chromium). Por eso la cuenta va
+ * entre las opciones y la devolución, y arriba, en los datos, solo quedan los
+ * signos y el tachado. Las cifras salen de los datos.
+ */
+const RENGLON_CUENTA = { display: "flex", alignItems: "baseline", gap: "8px", minHeight: "28px", fontFamily: INTER, fontSize: "14px", fontVariantNumeric: "tabular-nums", color: C.texto };
+const CIFRA_CUENTA = { width: "80px", flexShrink: 0, textAlign: "right", whiteSpace: "nowrap", fontWeight: 600 };
+
+function LaCuenta({ pantalla }) {
+  if (pantalla.datos) {
+    const pasos = pasosDeC8(pantalla);
+    return (
+      <div data-cuenta="c8" className="r5-escena" style={{ ...CONTENEDOR, padding: "12px 16px" }}>
+        <p style={{ ...MARCA, margin: "0 0 6px" }}>{INTERFAZ_R5_1.marcaCuenta}</p>
+        {pasos.map((x) => (
+          <div key={x.id} data-renglon-cuenta={x.id} style={{ ...RENGLON_CUENTA, ...(x.total ? { borderTop: `2px solid ${C.hecho}`, paddingTop: "4px", marginTop: "2px", fontWeight: 700 } : {}) }}>
+            <span style={{ width: "14px", flexShrink: 0, fontFamily: SORA, fontWeight: 700 }}>{x.signo}</span>
+            <span style={{ flex: 1, minWidth: 0 }}>{x.etiqueta}</span>
+            <span style={{ ...CIFRA_CUENTA, ...(x.total ? { fontFamily: SORA, fontWeight: 700 } : {}) }}>{pesos(x.valor)}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  const c = cuentaDeC9(pantalla);
+  const promedio = pesosConCentavos(c.promedio);
+  return (
+    <div data-cuenta="c9" className="r5-escena" style={{ ...CONTENEDOR, padding: "12px 16px" }}>
+      <p style={{ ...MARCA, margin: "0 0 8px" }}>{INTERFAZ_R5_1.marcaCuenta}</p>
+      {[
+        ["tenias", INTERFAZ_R5_1.tenias(c.unidades, c.total)],
+        ["cada-una", INTERFAZ_R5_1.cadaUna(c.total, c.unidades, promedio)],
+      ].map(([id, t]) => (
+        <p key={id} data-renglon-cuenta={id} style={{ margin: "0 0 6px", fontFamily: INTER, fontSize: "14px", fontVariantNumeric: "tabular-nums", color: C.texto }}>{t}</p>
+      ))}
+      <p data-renglon-cuenta="quedan" style={{ margin: "8px 0 6px", fontFamily: INTER, fontSize: "15px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: C.texto }}>
+        {INTERFAZ_R5_1.quedan(c.quedan, promedio, c.valor)}
+      </p>
+      <Cajas n={c.quedan / UNIDADES_POR_CAJA} />
+    </div>
+  );
+}
+
+/*
+ * v1.3 · LA PISTA, A PEDIDO. Estaba escrita y aprobada en el paquete y no se
+ * pintaba. Se pide con un botón antes de responder; no quita FP (la nota es
+ * «bien a la primera», y la pista no es un intento). Al responder se va: la
+ * devolución ocupa su sitio.
+ */
+function Pista({ texto, abierta, onAbrir }) {
+  if (!abierta) {
+    return (
+      <button
+        type="button"
+        data-ver-pista
+        aria-expanded="false"
+        onClick={onAbrir}
+        style={{
+          marginTop: "12px", minHeight: "44px", padding: "0 16px", borderRadius: "999px",
+          background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.22)",
+          color: C.texto, cursor: "pointer", fontFamily: INTER, fontSize: "14px", fontWeight: 600,
+        }}
+      >
+        {INTERFAZ_R5_1.verPista}
+      </button>
+    );
+  }
+  return (
+    <div data-pista className="r5-escena" style={{ marginTop: "12px", padding: "10px 14px", borderRadius: "12px", background: C.navy, borderLeft: `3px solid ${C.hecho}` }}>
+      <p style={{ ...MARCA, margin: "0 0 4px" }}>{INTERFAZ_R5_1.marcaPista}</p>
+      <p style={{ margin: 0, fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.texto }}>{texto}</p>
     </div>
   );
 }
@@ -294,7 +397,8 @@ function PorTema({ filas }) {
                       data-forma={p.ok ? "relleno" : "anillo"}
                       style={{
                         width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box",
-                        ...(p.ok ? { background: C.teal } : { background: "transparent", border: `2px solid ${C.coral}` }),
+                        /* B4 de enganche.md: el acierto, relleno neutro; el teal es DEBE en Contabilidad. */
+                        ...(p.ok ? { background: C.hecho } : { background: "transparent", border: `2px solid ${C.coral}` }),
                       }}
                     />
                   ))}
@@ -323,6 +427,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
   const [tanda, setTanda] = useState(() => pantallas ?? prepararR5_1());
   const [i, setI] = useState(0);
   const [r, setR] = useState(null);
+  const [pistaAbierta, setPistaAbierta] = useState(false);
   const [resultados, setResultados] = useState({});
   const [terminado, setTerminado] = useState(false);
   const detalle = useRef([]);
@@ -349,13 +454,14 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
 
   const siguiente = () => {
     setR(null);
+    setPistaAbierta(false);
     if (i + 1 < total) { setI(i + 1); requestAnimationFrame(() => enunciado.current?.focus()); }
     else setTerminado(true);
   };
 
   const reiniciar = () => {
     setTanda((antes) => prepararR5_1(antes));
-    setI(0); setR(null); setResultados({}); setTerminado(false);
+    setI(0); setR(null); setPistaAbierta(false); setResultados({}); setTerminado(false);
     detalle.current = []; inicio.current = Date.now();
   };
 
@@ -385,8 +491,9 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
       <p ref={enunciado} tabIndex={-1} data-enunciado style={{ margin: "20px 0 0", fontFamily: INTER, fontSize: "17px", lineHeight: "26px", fontWeight: 600, color: C.texto, outline: "none" }}>
         {pantalla.enunciado}
       </p>
-      {pantalla.datos && <ListaDeDatos datos={pantalla.datos} />}
+      {pantalla.datos && <ListaDeDatos datos={pantalla.datos} resuelta={Boolean(r)} />}
       {pantalla.lotes && <BloqueDeLotes lotes={pantalla.lotes} vendidas={pantalla.vendidas} />}
+      {!r && pantalla.pista && <Pista key={pantalla.id} texto={pantalla.pista} abierta={pistaAbierta} onAbrir={() => setPistaAbierta(true)} />}
       {pantalla.columnas && <CabeceraDeTabla columnas={pantalla.columnas} />}
       <Opciones columnas="1fr">
         {pantalla.opciones.map((o) => (
@@ -397,6 +504,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
           </div>
         ))}
       </Opciones>
+      {r && (pantalla.datos || pantalla.lotes) && <LaCuenta pantalla={pantalla} />}
       <Devolucion r={r && { ok: r.ok, textos: [r.texto] }} lector={LECTOR_R5_1} />
       {r && <BotonSiguiente onClick={siguiente} botonRef={boton} texto={INTERFAZ_R5_1.siguiente} />}
     </div>
@@ -408,6 +516,48 @@ export const JUEGOS_REPASO_CAP5 = [
   { id: R5_1.id, Mecanica: RepasoCruzado, titulo: R5_1.nombre },
   { id: R5_2.id, Mecanica: ToroNegro, titulo: R5_2.nombre },
 ];
+
+/*
+ * ═══════════ LA PORTADA DEL REPASO ═══════════
+ *
+ * Autodiagnóstico del 15 de octubre (Erwin a 320 px): con pocas piezas en
+ * Hacer, la vista era un nodo arriba y el resto fondo. Es la primera
+ * impresión del tema al que se llega cansado, al final del capítulo. La
+ * portada dice qué se cruza aquí con las tres siluetas que el estudiante va a
+ * volver a ver en las preguntas: el mismo dibujo es el mismo tema.
+ */
+export function PortadaRepaso() {
+  const temas = ORDEN_SUBTEMAS.map((id) => SUBTEMAS[id]);
+  return (
+    <section data-portada-repaso aria-labelledby="r5-portada-titulo" style={{ background: C.navy, borderRadius: "16px", padding: "18px 16px 16px", margin: "4px 0 20px" }}>
+      <p style={{ ...MARCA, margin: 0 }}>{INTERFAZ_R5_1.marcaPortada}</p>
+      <p id="r5-portada-titulo" style={{ margin: "6px 0 0", fontFamily: SORA, fontSize: "17px", fontWeight: 700, lineHeight: 1.3, color: C.texto }}>
+        {INTERFAZ_R5_1.portada}
+      </p>
+      <ul style={{ listStyle: "none", margin: "16px 0 0", padding: 0, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "8px" }}>
+        {temas.map((t) => (
+          <li key={t.id} data-portada-tema={t.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", minWidth: 0 }}>
+            <span aria-hidden="true" style={{ height: "28px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+              <span style={{ transform: `scale(${ESCALA_PORTADA})`, transformOrigin: "center" }}><EscenaSola escena={t.escena} /></span>
+            </span>
+            <span style={{ fontFamily: INTER, fontSize: "13px", fontWeight: 600, color: C.texto, textAlign: "center" }}>{t.nombre}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/*
+ * A 320 cada columna mide 80 px ((288 − 32 − 16) / 3). A 0,38 la silueta más
+ * ancha (200 px) queda en 76 y no se recorta; a 0,42 medía 84 y perdía los
+ * postes de la bodega (medido en Chromium).
+ */
+const ESCALA_PORTADA = 0.38;
+function EscenaSola({ escena }) {
+  const Silueta = SILUETAS[escena];
+  return <Silueta />;
+}
 
 /* ═══════════ LA VISTA DEL TEMA ═══════════ */
 
@@ -453,8 +603,15 @@ export default function RepasoCapitulo5View({ nodoInicial = null, onBack }) {
             >
               <ChevronLeft size={20} color={FAE.text} />
             </button>
-            <h1 style={{ fontFamily: SORA, fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2 }}>
-              {tema.title}
+            {/*
+              * El nombre del tema no se corta (herramientas.md, 15 oct.): a 320
+              * la regla compartida .fae-cabecera-titulo lo truncaba en «Repaso
+              * del capít…» y se perdía justo el número. Aquí puede encoger y
+              * partir en dos renglones; el estilo en línea gana a la clase.
+              */}
+            <h1 data-titulo-tema style={{ fontFamily: SORA, fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, flexShrink: 1, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "anywhere" }}>
+              {/* «capítulo 5» no se separa: si parte, parte antes. */}
+              {tema.title.replace(/ (\S+)$/, "\u00a0$1")}
             </h1>
           </div>
 
@@ -479,7 +636,10 @@ export default function RepasoCapitulo5View({ nodoInicial = null, onBack }) {
               </ContextoResumen.Provider>
             </div>
           ) : (
-            <CaminoHacer nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} vacio="Este tema todavía no tiene juegos." />
+            <>
+              <PortadaRepaso />
+              <CaminoHacer nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} vacio="Este tema todavía no tiene juegos." />
+            </>
           )}
         </div>
       </div>

@@ -142,9 +142,11 @@ export default function CuentaQueSeLlena({ respondidas, abierta, reducido, anunc
 /* Lo que se anuncia al responder la casilla k (el valor correcto, que es lo que entra). */
 export function anuncioDe(k) {
   const lado = (l) => CUENTA_T_T6_A3[l].charAt(0) + CUENTA_T_T6_A3[l].slice(1).toLowerCase();
+  /* La fecha va en mitad de la frase: en minúscula («marzo del año siguiente»). Se nota en braille (Shoko). */
+  const enFrase = (t) => t.charAt(0).toLowerCase() + t.slice(1);
   if (k === 0) return `${E.neto}, ${E.valorNeto}`;
-  if (k === 1) return `${lado(MARZO.lado)}, ${MARZO.monto}, ${MARZO.nombre}`;
+  if (k === 1) return `${lado(MARZO.lado)}, ${MARZO.monto}, ${enFrase(MARZO.nombre)}`;
   if (k === 2) return MARZO.saldo.texto;
-  if (k === 3) return `${lado(DIC_SIGUIENTE.lado)}, ${DIC_SIGUIENTE.monto}, ${DIC_SIGUIENTE.nombre}`;
+  if (k === 3) return `${lado(DIC_SIGUIENTE.lado)}, ${DIC_SIGUIENTE.monto}, ${enFrase(DIC_SIGUIENTE.nombre)}`;
   return DIC_SIGUIENTE.saldo.texto;
 }

@@ -46,6 +46,18 @@ export const INTERFAZ_R5_1 = {
   leyendaCajas: "Cada caja = 10 u",
   unidadesACosto: (u, c) => `${u} u a ${pesos(c)}`,
   nDeM: (n, m) => `${n} de ${m}`,
+  /* v1.3 · autodiagnóstico (Kamogawa): la pista se pide y la cuenta se ve. */
+  verPista: "Ver pista",
+  marcaPista: "PISTA",
+  noEntra: "no entra al costo",
+  marcaCuenta: "LA CUENTA",
+  disponible: "Disponible para vender",
+  tenias: (u, total) => `Tenías ${u} u por ${pesos(total)}`,
+  cadaUna: (total, u, promedio) => `Cada una: ${pesos(total)} ÷ ${u} = ${promedio}`,
+  quedan: (u, promedio, valor) => `Quedan ${u} u × ${promedio} = ${pesos(valor)}`,
+  /* La portada del tema (v1.3): de dónde viene lo que se repasa. */
+  marcaPortada: "FIN DEL CAPÍTULO 5",
+  portada: "Repasa los tres temas antes de seguir.",
 };
 
 /*
@@ -86,20 +98,25 @@ const asiento = (debe, haber) => ({ debe, haber });
 /* ═══════════ LOS DATOS DE LAS PANTALLAS 4 Y 5 ═══════════ */
 
 /* Pantalla 4: en el orden del estado de resultados (Itagaki, confirmado por Kamogawa). */
+/*
+ * `signo` dice cómo entra cada dato al costo (v1.3): «+» suma, «−» resta y
+ * null no entra. Solo se ve después de responder; antes, apartarlos
+ * regalaría la respuesta. La prueba saca 3.400 de aquí.
+ */
 const DATOS_C8 = [
-  { id: "ventas", etiqueta: "Ventas", valor: 11400 },
-  { id: "devoluciones-ventas", etiqueta: "Devoluciones de ventas", valor: 1000 },
-  { id: "inventario-inicial", etiqueta: "Inventario inicial", valor: 500 },
-  { id: "compras", etiqueta: "Compras", valor: 4000 },
-  { id: "devoluciones-compras", etiqueta: "Devoluciones de compras", valor: 300 },
-  { id: "inventario-final", etiqueta: "Inventario final", valor: 800 },
+  { id: "ventas", etiqueta: "Ventas", valor: 11400, signo: null },
+  { id: "devoluciones-ventas", etiqueta: "Devoluciones de ventas", valor: 1000, signo: null },
+  { id: "inventario-inicial", etiqueta: "Inventario inicial", valor: 500, signo: "+" },
+  { id: "compras", etiqueta: "Compras", valor: 4000, signo: "+" },
+  { id: "devoluciones-compras", etiqueta: "Devoluciones de compras", valor: 300, signo: "−" },
+  { id: "inventario-final", etiqueta: "Inventario final", valor: 800, signo: "−" },
 ];
 
 /* Pantalla 5: el inventario inicial primero, como ocurre en el tiempo (Miyata). */
 const LOTES_C9 = [
-  { marca: "LOTE 1 · Al inicio", unidades: 70, costo: 18 },
-  { marca: "LOTE 2 · Primera compra", unidades: 100, costo: 20 },
-  { marca: "LOTE 3 · Segunda compra", unidades: 80, costo: 25 },
+  { marca: "Lote 1 · Al inicio", unidades: 70, costo: 18 },
+  { marca: "Lote 2 · Primera compra", unidades: 100, costo: 20 },
+  { marca: "Lote 3 · Segunda compra", unidades: 80, costo: 25 },
 ];
 const VENDIDAS_C9 = 225;
 
@@ -167,7 +184,7 @@ export const PANTALLAS_R5_1 = [
     enunciado: "Una empresa tiene estos datos del periodo. ¿Cuál es el Costo de mercancía vendida?",
     datos: DATOS_C8,
     opciones: [
-      { id: "c8-a", correcta: true, valor: 3400, retro: "Bien. Lo que tú tenías para vender era $4.200. De eso, quedaron $800 en la bodega. Lo que sí vendiste costó $3.400. Las ventas no van aquí." },
+      { id: "c8-a", correcta: true, valor: 3400, retro: "Bien. Las ventas no van aquí. El costo sale de lo que compraste y guardaste." },
       { id: "c8-b", valor: 2400, retro: "Restaste las devoluciones de ventas. Esas no tocan el costo: afectan las ventas. El costo solo usa inventarios, compras y devoluciones de compras." },
       { id: "c8-c", valor: 6400, retro: "Esa cifra es imposible. Lo más que pudiste vender es lo que tenías disponible: 500 + 4.000 − 300 = $4.200. Ningún costo de lo vendido pasa de ahí. Revisa si usaste las ventas: no entran al cálculo." },
       { id: "c8-d", valor: 6000, retro: "Esta cifra también pasa del disponible ($4.200), así que no puede ser. Revisa dos cosas. El inventario final se resta: es lo que no se vendió. Y las devoluciones de ventas no entran al costo." },
@@ -187,7 +204,7 @@ export const PANTALLAS_R5_1 = [
       { id: "c9-a", valor: 625, retro: "Valoraste las 25 unidades con la última compra ($25). Eso es lo que daría PEPS. El promedio ponderado mezcla todos los costos." },
       { id: "c9-b", valor: 450, retro: "Valoraste las 25 unidades con el precio más viejo ($18). Eso es lo que daría UEPS. El promedio ponderado mezcla todos los costos." },
       { id: "c9-c", valor: 525, retro: "Usaste $21, el promedio simple de los tres precios. Pero no compraste la misma cantidad a cada precio. El ponderado pesa cada precio por sus unidades." },
-      { id: "c9-d", correcta: true, valor: 526, retro: "Bien. Todo te costó $5.260. Eran 250 en total. Así, cada una vale $21,04. Te quedan 25. Y 25 por $21,04 da $526." },
+      { id: "c9-d", correcta: true, valor: 526, retro: "Bien. Cada precio pesa según las unidades que compraste a ese precio." },
     ],
     pista: "¿Cuántas unidades tuviste? ¿Y cuánto te costaron todas?",
   },
@@ -211,6 +228,47 @@ export const PANTALLAS_R5_1 = [
 /* ═══════════ LA LÓGICA, SIN REACT ═══════════ */
 
 export const TOTAL_R5_1 = PANTALLAS_R5_1.length;
+
+/* El rótulo de la fila final de la pantalla 4: la cuenta que se pidió. */
+export const RESULTADO_C8 = CMV;
+
+/* Pesos con dos decimales y coma: 21,04 → «$21,04». */
+export function pesosConCentavos(valor) {
+  const centavos = Math.round(valor * 100);
+  return `${pesos(Math.trunc(centavos / 100))},${String(centavos % 100).padStart(2, "0")}`;
+}
+
+/* La cuenta de la pantalla 4, desde los signos de los datos. */
+export function cuentaDeC8(pantalla) {
+  return pantalla.datos.reduce((t, d) => t + (d.signo === "+" ? d.valor : d.signo === "−" ? -d.valor : 0), 0);
+}
+
+/*
+ * Los renglones de LA CUENTA de la pantalla 4: los datos que entran, en su
+ * orden, con «Disponible para vender» antes de restar el inventario final (el
+ * tope en que se apoyan las devoluciones de $6.000 y $6.400) y el resultado.
+ */
+export function pasosDeC8(pantalla) {
+  const entran = pantalla.datos.filter((d) => d.signo);
+  const final = entran.find((d) => d.id === "inventario-final");
+  const antes = entran.filter((d) => d !== final);
+  const disponible = antes.reduce((t, d) => t + (d.signo === "+" ? d.valor : -d.valor), 0);
+  return [
+    ...antes.map((d, k) => ({ id: d.id, etiqueta: d.etiqueta, signo: k ? d.signo : "", valor: d.valor })),
+    { id: "disponible", etiqueta: INTERFAZ_R5_1.disponible, signo: "=", valor: disponible, total: true },
+    { id: final.id, etiqueta: final.etiqueta, signo: final.signo, valor: final.valor },
+    { id: "resultado", etiqueta: RESULTADO_C8, signo: "=", valor: cuentaDeC8(pantalla), total: true },
+  ];
+}
+
+/* La cuenta de la pantalla 5, desde los lotes: lo que se tuvo, el promedio y lo que queda. */
+export function cuentaDeC9(pantalla) {
+  const unidades = pantalla.lotes.reduce((t, l) => t + l.unidades, 0);
+  const total = pantalla.lotes.reduce((t, l) => t + l.unidades * l.costo, 0);
+  const quedan = unidades - pantalla.vendidas;
+  const promedio = total / unidades;
+  return { unidades, total, promedio, quedan, valor: Math.round(quedan * promedio) };
+}
 
 /* El texto de una opción, como lo lee quien no ve la pantalla. */
 export function textoDeOpcion(pantalla, opcion) {
