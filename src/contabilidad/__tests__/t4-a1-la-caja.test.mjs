@@ -436,5 +436,8 @@ test("★★★ fuera del catálogo de FP: Aprender en subjects.js, ninguna migr
   const vista = leer("src/components/ContabilidadT4View.jsx");
   const pantallas = vista.slice(vista.indexOf("T4 · LAS PANTALLAS DE APRENDER"));
   assert.ok(pantallas.length > 1000, "no se encontró el bloque de las pantallas");
-  assert.doesNotMatch(pantallas, /registrar|completar|otorgarFP|onCompletar/);
+  /* El bloque de las pantallas de Aprender termina donde empiezan las figuras: lo que sigue (H1) sí registra. */
+  const soloAprender = pantallas.slice(0, pantallas.indexOf("T4 · LAS FIGURAS DE HANAYAMA"));
+  assert.ok(soloAprender.length > 1000, "no se encontró el final del bloque de pantallas");
+  assert.doesNotMatch(soloAprender, /registrar|completar|otorgarFP|onCompletar/);
 });

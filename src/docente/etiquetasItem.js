@@ -85,6 +85,7 @@ import { unidadDeH5 as unidadDeT73H5 } from "../contabilidad/t7_3H5.js";
 import { unidadDeH6 as unidadDeT73H6 } from "../contabilidad/t7_3H6.js";
 import { unidadDeH7 as unidadDeT73H7 } from "../contabilidad/t7_3H7.js";
 import { unidadDeR5_1 } from "../data/repasoCap5Cruzado.js";
+import { hechoDeItemH1 as hechoDeItemT4H1 } from "../data/contabilidadT4H1.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -769,6 +770,9 @@ Object.assign(REGLAS, {
   "t7-3-que-entra-al-costo": (id) => unidadDeT73H6(id),
   /* T7-3 · H7. Cada pregunta, por su caso (la pregunta se repite entre casos). */
   "t7-3-costo-o-vnr": (id) => unidadDeT73H7(id),
+  /* ── T4 «Efectivo, caja menor y bancos» (Célula D) ── */
+  /* T4 · H1. El ítem es el hecho, y se lee por su texto. */
+  "t4-entra-o-sale-de-caja": (id) => hechoDeItemT4H1(id),
   /* ── Repaso del capítulo 5 (Célula E) ── */
   /* r5-1. Cada pantalla, por su subtema (Inversiones, Cartera, Inventarios) y su enunciado. */
   "r5-1": (id) => unidadDeR5_1(id),
