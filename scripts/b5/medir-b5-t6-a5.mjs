@@ -20,18 +20,17 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { createServer } from "vite";
-import { createRequire } from "node:module";
 import { resolve } from "node:path";
+import { abrirNavegador } from "./navegador.mjs";
 
 const RAIZ = resolve(import.meta.dirname, "../..");
-const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? "/opt/node-tools/node_modules/playwright");
 const { CASILLAS_T6_ACT5 } = await import("../../src/data/contabilidadT6Act5.js");
 
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
 await servidor.listen();
 const URL = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/b5/harness-a5/index.html`;
-const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+/* Con la barra de desplazamiento a la vista: el ancho del sitio en el Chromium de escritorio (navegador.mjs). */
+const navegador = await abrirNavegador();
 const fallos = [];
 const informe = [];
 const pesos = (v) => `$${String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;

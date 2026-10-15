@@ -11,25 +11,27 @@
  * Comprueba (§9 de la hoja):
  *   1 · el nombre no cambia de alto al abrir (el chevrón gira, no se va);
  *   2 · la correcta no cambia de alto al marcarse;
- *   3 · en fila, ninguna opción se parte (un renglón);
+ *   3 · en fila, ninguna opción se parte (un renglón): si se parte, la pieza
+ *       pasa sola a columna (useFormaQueCabe), y lo que se mide es la columna;
  *   4 · el tramo de las opciones al final de la devolución cabe en 496 (568 − 56 de cabecera);
- *   · y que la página no tenga barra horizontal.
+ *   · y que la página no tenga barra horizontal;
+ *   · la calibración: a 320, las opciones de T6 · A1 miden 213 de ancho, lo
+ *     mismo que en aprendefae.com (navegador.mjs).
  * Al final, la capa 3 entera con todo bien y con todo con error.
  * Sale con código 1 si algo falla. Necesita Playwright (no es dependencia del repo).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { createServer } from "vite";
-import { createRequire } from "node:module";
 import { resolve } from "node:path";
+import { abrirNavegador } from "./navegador.mjs";
 
 const RAIZ = resolve(import.meta.dirname, "../..");
-const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? "/opt/node-tools/node_modules/playwright");
 const PIEZAS = (process.env.PIEZAS ?? "t5a1,t5a2,t6a1,t6a2,t6a3,t6a4,t6a5").split(",");
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
 await servidor.listen();
 const BASE = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/b5/harness-capa3/index.html`;
-const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+/* Con la barra de desplazamiento a la vista: el ancho del sitio en el Chromium de escritorio (navegador.mjs). */
+const navegador = await abrirNavegador();
 const fallos = [];
 const informe = [];
 const r2 = (x) => Math.round(x * 100) / 100;
@@ -54,6 +56,7 @@ const medirCaja = (id) => {
     }),
     altos: Object.fromEntries(opciones.map((b) => [b.dataset.opcion, b.getBoundingClientRect().height])),
     tramo: grupo && dev ? dev.getBoundingClientRect().bottom - grupo.getBoundingClientRect().top : null,
+    ancho: grupo?.getBoundingClientRect().width ?? null,
     horizontal: document.documentElement.scrollWidth > window.innerWidth + 0.5,
   };
 };
@@ -90,6 +93,12 @@ async function recorrer(pieza, ancho, alto, reducido, conError) {
     await p.waitForTimeout(reducido ? 20 : 320);
     const decidida = await p.evaluate(medirCaja, id);
     const tag = `${pieza} · ${ancho}${reducido ? " · reducido" : ""} · ${id}`;
+    /*
+     * La calibración (Sakuta, 15-oct): en aprendefae.com, a 320, las opciones de la capa 3 de T6 · A1 miden 213
+     * de ancho (la fila «Sube · Baja · No cambia», con botones de 68×58). El banco tiene que dar lo mismo; si no,
+     * no mide el sitio (navegador.mjs: la barra de desplazamiento).
+     */
+    if (pieza === "t6a1" && ancho === 320 && Math.abs(abierta.ancho - 213) > 0.5) fallos.push(`${tag}: el banco no tiene el ancho del sitio (${r2(abierta.ancho)} en vez de 213)`);
     if (Math.abs(abierta.titulo - cerrada.titulo) > 0.5) fallos.push(`${tag}: el nombre cambia de alto al abrir (${r2(cerrada.titulo)} → ${r2(abierta.titulo)})`);
     if (Math.abs(decidida.altos[correcta] - abierta.altos[correcta]) > 0.5) fallos.push(`${tag}: la correcta cambia de alto (${r2(abierta.altos[correcta])} → ${r2(decidida.altos[correcta])})`);
     if (abierta.forma === "fila" && abierta.renglones.some((n) => n > 1)) fallos.push(`${tag}: una opción de la fila se parte (${abierta.renglones.join(" · ")} renglones)`);

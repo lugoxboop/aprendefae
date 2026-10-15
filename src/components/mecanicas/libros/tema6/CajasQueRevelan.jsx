@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
@@ -101,7 +101,7 @@ export function OpcionDecidir({ opcion, forma, elegida, correcta, reducido, onEl
         cursor: decidida ? "default" : "pointer",
       }}
     >
-      {opcion.texto}
+      <span data-texto-opcion>{opcion.texto}</span>
     </button>
   );
 }
@@ -109,10 +109,43 @@ export function OpcionDecidir({ opcion, forma, elegida, correcta, reducido, onEl
 /* Desplazamiento mínimo para que `nodo` se vea entero (Mai §4). */
 const asomar = (nodo, reducido) => nodo?.scrollIntoView?.({ block: "nearest", behavior: reducido ? "auto" : "smooth" });
 
-export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "columna", elegida = null, onElegir = () => {} }) {
+/*
+ * ═══════════ FILA O COLUMNA, EN VIVO (Sakuta, 15-oct; regla §2 de Mai) ═══════════
+ *
+ * La pieza pide «fila» y la fila se mide donde se pinta: si una opción se
+ * parte (su texto ocupa más de un renglón), las opciones de TODAS las cajas
+ * de la pieza pasan a columna (cada pieza tiene una sola forma). Se vuelve a
+ * medir al cargar las fuentes y al cambiar el ancho, como el eje de b5-t6-a6:
+ * se prueba otra vez la fila y, si se parte, columna. Lo mide la caja abierta,
+ * antes de pintar (useLayoutEffect): no se ve la fila partida.
+ * Devuelve [forma que se pinta, aviso para la caja, vuelta de medida].
+ */
+export function useFormaQueCabe(forma) {
+  const [partida, setPartida] = useState(false);
+  const [vuelta, setVuelta] = useState(0);
+  useEffect(() => {
+    if (forma !== "fila") return undefined;
+    let vivo = true;
+    const otraVez = () => { if (!vivo) return; setPartida(false); setVuelta((v) => v + 1); };
+    document.fonts?.ready?.then(otraVez);
+    window.addEventListener("resize", otraVez);
+    return () => { vivo = false; window.removeEventListener("resize", otraVez); };
+  }, [forma]);
+  const seParte = useCallback(() => setPartida(true), []);
+  return [forma === "fila" && !partida ? "fila" : "columna", seParte, vuelta];
+}
+/* Una opción se parte si su texto ocupa más de un renglón. */
+const seParteAlguna = (grupo) => [...grupo.querySelectorAll("[data-texto-opcion]")].some((t) => t.getClientRects().length > 1);
+
+export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "columna", elegida = null, onElegir = () => {}, onSeParte = () => {}, vuelta = 0 }) {
   const id = useId();
   const reducido = useReducido();
   const decide = caja.decide;
+  const grupo = useRef(null);
+  /* En fila, si una opción se parte, se avisa a la pieza: pasa a columna (useFormaQueCabe). */
+  useLayoutEffect(() => {
+    if (forma === "fila" && grupo.current && seParteAlguna(grupo.current)) onSeParte();
+  }, [forma, abierto, vuelta]); // eslint-disable-line react-hooks/exhaustive-deps
   const decidida = elegida !== null;
   const muestraTexto = abierto && (!decide || decidida);
   const falla = decide ? fallaDe(decide, elegida) : null;
@@ -162,7 +195,7 @@ export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "
       {decide && abierto && (
         <div ref={zonaDecide} data-decide={caja.id} className={aparece} style={{ padding: "0 14px 12px" }}>
           <p id={`${id}-pregunta`} data-pregunta style={PREGUNTA}>{decide.pregunta}</p>
-          <div role="group" aria-labelledby={`${id}-pregunta`} data-opciones={forma} style={{
+          <div ref={grupo} role="group" aria-labelledby={`${id}-pregunta`} data-opciones={forma} style={{
             display: "flex", flexDirection: forma === "fila" ? "row" : "column", gap: forma === "fila" ? "4px" : "6px", marginTop: "8px",
           }}>
             {decide.opciones.map((o) => (
@@ -186,7 +219,8 @@ export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "
   );
 }
 
-export default function CajasQueRevelan({ consigna, contexto = null, cajas, final, estiloTitulo = LECTURA, forma = "columna", atributos = {} }) {
+export default function CajasQueRevelan({ consigna, contexto = null, cajas, final, estiloTitulo = LECTURA, forma: pedida = "columna", atributos = {} }) {
+  const [forma, seParte, vuelta] = useFormaQueCabe(pedida);
   const reducido = useReducido();
   const [abiertos, setAbiertos] = useState(() => new Set());
   const [elecciones, setElecciones] = useState(() => ({}));
@@ -207,7 +241,7 @@ export default function CajasQueRevelan({ consigna, contexto = null, cajas, fina
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
         {cajas.map((x) => (
           <Caja key={x.id} caja={x} estiloTitulo={estiloTitulo} forma={forma} abierto={abiertos.has(x.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(x.id))}
-            elegida={elecciones[x.id] ?? null} onElegir={(o) => setElecciones((e) => ({ ...e, [x.id]: o }))} />
+            elegida={elecciones[x.id] ?? null} onElegir={(o) => setElecciones((e) => ({ ...e, [x.id]: o }))} onSeParte={seParte} vuelta={vuelta} />
         ))}
       </div>
       <div ref={bloqueFinal} data-final aria-live="polite">
