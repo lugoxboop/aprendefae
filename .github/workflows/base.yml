@@ -53,10 +53,36 @@
 
 name: Pruebas
 
+# POR QUÉ ESTOS DISPARADORES Y NO `on: push` A SECAS
+#
+# El 14 de octubre de 2026 la cuenta se quedó sin minutos de Actions y CI
+# estuvo caída dieciocho horas: los trabajos salían en 2 segundos con
+# "steps": [] y sin runner asignado. No fue un fallo de código. Fueron 100
+# ejecuciones en un día.
+#
+# La causa: `on: push` sin filtro de ramas MÁS `pull_request` hacen que cada
+# empujón a una rama con PR abierto dispare DOS ejecuciones completas de este
+# workflow —la suite entera más el build, dos veces— y que cada empujón a una
+# rama sin PR dispare una que nadie va a mirar. Con tres células empujando,
+# eso agota 2.000 minutos al mes en días.
+#
+# Ahora: en `push` solo main (el estado que se despliega) y en `pull_request`
+# lo que se va a fusionar. Una rama sin PR no gasta nada; una con PR gasta una
+# ejecución por empujón, no dos. `workflow_dispatch` queda para relanzar a mano.
+#
+# Y `cancel-in-progress` en los PRs: si llegan tres empujones seguidos a la
+# misma rama, solo sobrevive el último. Los otros dos ya no interesan y no hay
+# por qué pagarlos. En main NO se cancela: ahí cada commit es un estado que
+# quedó publicado y su veredicto importa aunque llegue otro detrás.
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
+
+concurrency:
+  group: pruebas-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
