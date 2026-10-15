@@ -13,6 +13,8 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · la franja de plazos: una marca por condición, el pago solo cuando se
  *     da, y la lista para el lector de pantalla
  *   · la franja de la NIC 2: nota fija, pegada arriba (sticky)
+ *   · en Hacer, cada figura aparece después de responder su ítem; la cadena
+ *     crece en la misma tarjeta; la de un caso se va cuando el caso termina
  *   · el CSS es el de Watari: sus medidas y la consulta del proyector
  *   · A1: la cuenta de la factura de San Calixto, con las cifras del libro,
  *     va con el texto que ya las da, antes de la pregunta
@@ -37,7 +39,7 @@ const { createRoot } = await import("react-dom/client");
 const act = React.act;
 const h = React.createElement;
 
-const { Renglones, Plazos, FranjaNIC2, CSS_T73_PATRON, sinPartir } = await import("../../components/mecanicas/libros/t7/PatronT7_3.jsx");
+const { Renglones, Plazos, FranjaNIC2, FigurasHacer, CSS_T73_PATRON, sinPartir } = await import("../../components/mecanicas/libros/t7/PatronT7_3.jsx");
 const { default: PantallasT7_3 } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
 const A1 = await import("../../data/contabilidadT7_3.js");
 
@@ -188,4 +190,35 @@ test("★★★ los rótulos de las figuras son los de Watari, marcados como pen
   assert.deepEqual([R.factura("X"), R.precioLista, R.descuentoComercial(15), R.valorFacturar], ["Factura de X", "Precio de lista", "Descuento comercial 15 %", "Valor a facturar"]);
   const fuente = readFileSync(new URL("../../data/contabilidadT7_3.js", import.meta.url), "utf8");
   assert.match(fuente, /\[ESCRITO POR CLAUDE — PENDIENTE DE\s+\* REVISIÓN\]/);
+});
+
+test("★★★ Hacer: cada figura aparece después de responder su ítem, crece o se va", async () => {
+  const figuras = [
+    { tipo: "renglones", titulo: "Cadena", desde: 1, filas: [{ rot: "A", v: 1 }, { op: "=", rot: "B", v: 2, res: true }, { op: "−", rot: "C", v: 3, desde: 2 }] },
+    { tipo: "plazos", desde: 2, hasta: 3, venta: "1 oct", condiciones: [{ cond: "4/20", dia: 20, lleva: "4 %" }], pago: { dia: 20, fecha: "21 oct" } },
+    { tipo: "renglones", titulo: "Otra", desde: 3, filas: [{ rot: "D", v: 4 }] },
+  ];
+  const ver = async (respondidos, listo) => {
+    const m = await montar(h(FigurasHacer, { figuras, respondidos, listo }));
+    const r = {
+      titulos: [...m.caja.querySelectorAll("figure")].map((f) => f.querySelector("figcaption").textContent),
+      filas: [...m.caja.querySelectorAll("[data-renglones='Cadena'] [data-renglon]")].map((x) => x.querySelector(".rg-v").textContent),
+      nuevas: [...m.caja.querySelectorAll(".rg-nuevo")].map((x) => x.matches("figure") ? `fig:${x.querySelector("figcaption").textContent}` : x.matches("[data-renglon]") ? `fila:${x.querySelector(".rg-v").textContent}` : "pago"),
+    };
+    m.desmontar();
+    return r;
+  };
+  /* Antes de responder el ítem 1: nada. */
+  assert.deepEqual(await ver(0, false), { titulos: [], filas: [], nuevas: [] });
+  /* Respondido el 1: la cadena, entera nueva. */
+  assert.deepEqual(await ver(1, true), { titulos: ["Cadena"], filas: ["1", "2"], nuevas: ["fig:Cadena"] });
+  /* En el ítem 2, antes de responder: la cadena sigue, sin fundido. */
+  assert.deepEqual(await ver(1, false), { titulos: ["Cadena"], filas: ["1", "2"], nuevas: [] });
+  /* Respondido el 2: la cadena crece en la misma tarjeta y llegan los plazos. */
+  const r2 = await ver(2, true);
+  assert.deepEqual(r2.titulos, ["Cadena", "Condiciones 4/20"]);
+  assert.deepEqual(r2.filas, ["1", "2", "3"]);
+  assert.deepEqual(r2.nuevas.filter((x) => x.startsWith("fila")), ["fila:3"]);
+  /* Respondido el 4: los plazos (hasta 3) ya se fueron. */
+  assert.deepEqual((await ver(4, false)).titulos, ["Cadena", "Otra"]);
 });

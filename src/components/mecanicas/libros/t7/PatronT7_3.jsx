@@ -96,6 +96,33 @@ export function Plazos({ venta, condiciones, pago = null, nuevo = false }) {
   );
 }
 
+/*
+ * Las figuras de un Hacer: cada una aparece DESPUÉS de responder su ítem
+ * (regla de Watari: antes, el signo daría media respuesta).
+ *
+ *   figuras: [{ tipo: "renglones" | "plazos", desde, hasta?, ...sus datos }]
+ *     desde   el número de ítems respondidos con el que aparece (1 = el ítem 1)
+ *     hasta   con más ítems respondidos que este, ya no se muestra (la de un
+ *             caso se va cuando su caso termina, como en las muestras de Watari)
+ *   una fila de renglones puede traer su propio `desde`: la cadena de H2 crece
+ *   en la misma tarjeta, no se reemplaza.
+ *
+ * Lo que aparece con la respuesta de ahora entra con el fundido de 120 ms.
+ */
+export function FigurasHacer({ figuras, respondidos, listo }) {
+  const ahora = listo ? respondidos : null;
+  const visibles = figuras.filter((f) => f.desde <= respondidos && (f.hasta == null || respondidos <= f.hasta));
+  if (!visibles.length) return null;
+  return (
+    <div data-figuras>
+      {visibles.map((f) => (f.tipo === "plazos"
+        ? <Plazos key={f.clave ?? f.titulo ?? f.tipo} venta={f.venta} condiciones={f.condiciones} pago={f.pago} nuevo={f.desde === ahora} />
+        : <Renglones key={f.clave ?? f.titulo ?? f.tipo} titulo={f.titulo} nota={f.nota ?? null} nuevo={f.desde === ahora}
+            filas={f.filas.filter((x) => (x.desde ?? 0) <= respondidos).map((x) => ({ ...x, nuevo: x.desde != null && x.desde === ahora && f.desde !== ahora }))} />))}
+    </div>
+  );
+}
+
 /* La franja fija de la NIC 2. `data-aviso`: las pruebas de A7, A8, H6 y H7 la buscan así. */
 export function FranjaNIC2({ texto }) {
   return <p className="t73pt-nic2" role="note" data-aviso>{texto}</p>;
