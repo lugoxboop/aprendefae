@@ -93,7 +93,10 @@ export const CIERRE_T6_A2 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · los dos métodos ═══════════ */
 
-export const CONSIGNA_CAPA_3_T6_A2 = "Toca cada método y mira cuándo se anota el gasto y qué se debita al castigar.";
+/* Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja, para Shoko (ver el paquete). */
+export const CONSIGNA_CAPA_3_T6_A2 = "Toca cada método y decide cuándo aparece el gasto. Después, mira qué se debita al castigar.";
+export const PREGUNTA_CAPA_3_T6_A2 = "¿Cuándo aparece el gasto?";
+export const OPCIONES_CAPA_3_T6_A2 = [{ id: "dia-castigo", texto: "El día del castigo" }, { id: "cierre", texto: "Al cerrar el periodo" }];
 
 /* Las dos cajas se ven iguales: ningún método se ve como el «bueno» (Mai). */
 export const METODOS_T6_A2 = [
@@ -102,12 +105,16 @@ export const METODOS_T6_A2 = [
     nombre: "Anulación directa",
     revela: "Con este método no se anota nada por adelantado. Cada deuda se castiga cuando se da por perdida: se debita Gasto provisiones – cuentas incobrables y se acredita Cuentas por cobrar – clientes. El gasto aparece el día del castigo.",
     pie: "Basado en el libro, p. 199",
+    correcta: "dia-castigo",
+    falla: "Con este método, el gasto se anota cuando la deuda se da por perdida.",
   },
   {
     id: "provisiones",
     nombre: "Provisiones",
     revela: "Al cerrar el periodo se estima qué parte no se recuperará. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables. Al castigar la deuda, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto ya se había anotado.",
     pie: "Basado en el libro, p. 200",
+    correcta: "cierre",
+    falla: "Con provisiones, el gasto ya se anotó al cerrar el periodo.",
   },
 ];
 export const FINAL_CAPA_3_T6_A2 = {

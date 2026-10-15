@@ -71,6 +71,8 @@ export default function AuthDialog() {
             type="button"
             onClick={cerrarDialogo}
             aria-label="Cerrar"
+            /* El blanco de toque sube a 44 px sin agrandar el dibujo (global.css). */
+            className="fae-logo-boton"
             style={{
               position: "absolute", top: "14px", right: "14px",
               display: "flex", alignItems: "center", justifyContent: "center",
@@ -94,6 +96,19 @@ export default function AuthDialog() {
                 letterSpacing: "-0.025em",
                 margin: "0 0 8px",
                 color: FAE.text,
+                /*
+                 * EL HUECO DE LA X, RESERVADO.
+                 *
+                 * El botón de cerrar flota en `absolute` sobre la esquina, así
+                 * que no empuja al título: lo tapa. Medido a 320 px, el
+                 * diálogo deja 276 px útiles y «Entra para guardar tus FP»
+                 * ocupa 256 — se metía 24 px por debajo de la X. Con el hueco
+                 * reservado, el título parte antes de llegar.
+                 *
+                 * Solo cuando hay X: sin ella, reservar el hueco dejaría el
+                 * título descolgado sin razón.
+                 */
+                paddingRight: puedeCerrar ? "44px" : undefined,
               }}
             >
               Entra para {motivoLogin}

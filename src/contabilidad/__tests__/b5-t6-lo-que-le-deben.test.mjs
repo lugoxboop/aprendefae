@@ -45,6 +45,7 @@ const h = React.createElement;
 const D = await import("../../data/contabilidadT6Pieza1.js");
 const E = await import("../t6Pieza1.js");
 const { default: DosMomentos } = await import("../../components/mecanicas/libros/tema6/DosMomentos.jsx");
+const { decidir } = await import("./b5-capa3.mjs");
 const { default: SeisHechos } = await import("../../components/mecanicas/libros/tema6/SeisHechos.jsx");
 const { ESCENAS_TEMA6 } = await import("../../components/mecanicas/libros/tema6/escenasTema6.jsx");
 const { FAE } = await import("../../theme.js");
@@ -64,7 +65,7 @@ const rgb = (hex) => `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 1
 const textosDeDatos = () => {
   const out = [];
   const recoger = (v, k) => {
-    if (typeof v === "string") { if (!["id", "glosa", "rotuloDelLibro"].includes(k)) out.push(v); }
+    if (typeof v === "string") { if (!["id", "correcta", "glosa", "rotuloDelLibro"].includes(k)) out.push(v); }
     else if (Array.isArray(v)) v.forEach((x) => recoger(x, k));
     else if (v && typeof v === "object") for (const [kk, x] of Object.entries(v)) recoger(x, kk);
   };
@@ -257,16 +258,16 @@ test("★★★ «Reproducir» como LoQueYaPaso: 3 000 + 450 ms por palabra, ari
 /* Lo que se lee en una caja, sin su pie de fuente. */
 const lectura = (n) => [...n.querySelectorAll("p:not([data-pie])")].map((p) => p.textContent).join("");
 
-test("★★★ capa 3: seis hechos; cada uno revela lo suyo y no se cierra; el bloque final, solo con los seis abiertos", async () => {
+test("★★★ capa 3: seis hechos; cada uno revela lo suyo al decidir y no se cierra; el bloque final, solo con los seis decididos", async () => {
   const { caja, desmontar } = await montar(h(SeisHechos));
   const ids = D.HECHOS_T6.map((x) => x.id);
   assert.equal(caja.querySelectorAll("[data-hecho]").length, 6);
   /* En un orden distinto del de la lista. */
   for (const [i, id] of [...ids].reverse().entries()) {
     const b = caja.querySelector(`[data-hecho="${id}"] button`);
-    await tocar(b);
+    await decidir(tocar, caja.querySelector(`[data-hecho="${id}"]`), D.HECHOS_T6.find((x) => x.id === id).correcta);
     assert.equal(b.getAttribute("aria-expanded"), "true");
-    assert.equal(Boolean(b.querySelector("svg")), false, "sin chevrón al abrirse");
+    assert.equal(Boolean(b.querySelector("svg")), true, "el chevrón se queda, girado (hoja 6)");
     assert.equal(lectura(caja.querySelector(`[data-revela="${id}"]`)), D.HECHOS_T6.find((x) => x.id === id).revela);
     assert.equal(lectura(caja.querySelector("[data-final]")), i < 5 ? "" : D.FINAL_CAPA_3_T6.texto);
   }
@@ -296,7 +297,7 @@ test("★★★ capa 3: cada caja abierta y el bloque final muestran su pie (★
     const [hecho, revela, pie] = TABLA_CAPA_3.filas[k];
     const zona = caja.querySelector(`[data-hecho="${x.id}"]`);
     assert.equal(zona.querySelector("button").textContent.includes(hecho), true, `hecho ${k + 1}: «${hecho}»`);
-    await tocar(zona.querySelector("button"));
+    await decidir(tocar, zona, x.correcta);
     assert.equal(lectura(caja.querySelector(`[data-revela="${x.id}"]`)), revela, `revela ${k + 1}`);
     assert.equal(zona.querySelector("[data-pie]").textContent, pie, `pie ${k + 1}`);
   }

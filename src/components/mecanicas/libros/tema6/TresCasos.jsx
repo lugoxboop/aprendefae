@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import {
-  CONSIGNA_CAPA_3_T6_A4, TABLERO_T6_A4, CASOS_T6_A4, FINAL_CAPA_3_T6_A4,
+  CONSIGNA_CAPA_3_T6_A4, PREGUNTA_CAPA_3_T6_A4, OPCIONES_CAPA_3_T6_A4, TABLERO_T6_A4, CASOS_T6_A4, FINAL_CAPA_3_T6_A4,
 } from "../../../../data/contabilidadT6Pieza4.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
@@ -14,7 +14,9 @@ import { Caja, LECTURA, PIE } from "./CajasQueRevelan.jsx";
  * casos (guía de Mai v1 §4).
  *
  * Una tabla de tres filas (a, b y c) y dos columnas: lo revivido y la plata. Cada
- * caso llena su fila al abrirse; las cajas se abren en cualquier orden (los
+ * caso llena su fila al decidirse (hoja 6: primero la pregunta de la caja, en
+ * fila; la fila se llena siempre con el valor correcto, se acierte o no); las
+ * cajas se abren en cualquier orden (los
  * casos no se suman: son tres finales distintos del mismo castigo). La cifra
  * revivida es la que se destaca: Sora 15/700, borde 2 nodo y relleno navy;
  * lo que entra a Caja, Sora 13/600 con borde neutro. Antes de abrir, la
@@ -51,8 +53,10 @@ function Celda({ cifra, destacada }) {
 export default function TresCasos() {
   const reducido = useReducido();
   const [abiertos, setAbiertos] = useState(() => new Set());
+  const [elecciones, setElecciones] = useState(() => ({}));
   const bloqueFinal = useRef(null);
-  const todos = CASOS_T6_A4.every((c) => abiertos.has(c.id));
+  const decidido = (c) => elecciones[c.id] !== undefined;
+  const todos = CASOS_T6_A4.every(decidido);
 
   useEffect(() => {
     if (todos) bloqueFinal.current?.scrollIntoView?.({ block: "nearest", behavior: reducido ? "auto" : "smooth" });
@@ -76,7 +80,7 @@ export default function TresCasos() {
           </thead>
           <tbody>
             {CASOS_T6_A4.map((c) => {
-              const lleno = abiertos.has(c.id);
+              const lleno = decidido(c);
               return (
                 <tr key={c.id} data-fila={c.id}>
                   <th scope="row" style={{ padding: 0, fontFamily: SORA, fontSize: "13px", fontWeight: 600, lineHeight: 1.3, color: FAE.text, textAlign: "left" }}>{c.letra}</th>
@@ -91,8 +95,10 @@ export default function TresCasos() {
 
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
         {CASOS_T6_A4.map((c) => (
-          <Caja key={c.id} caja={{ id: c.id, titulo: c.nombre, revela: c.revela, pie: c.pie }} estiloTitulo={NOMBRE_CAJA}
-            abierto={abiertos.has(c.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(c.id))} />
+          <Caja key={c.id} estiloTitulo={NOMBRE_CAJA} forma="fila"
+            caja={{ id: c.id, titulo: c.nombre, revela: c.revela, pie: c.pie, decide: { pregunta: PREGUNTA_CAPA_3_T6_A4, opciones: OPCIONES_CAPA_3_T6_A4, correcta: c.correcta, falla: c.falla } }}
+            abierto={abiertos.has(c.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(c.id))}
+            elegida={elecciones[c.id] ?? null} onElegir={(o) => setElecciones((e) => ({ ...e, [c.id]: o }))} />
         ))}
       </div>
 
