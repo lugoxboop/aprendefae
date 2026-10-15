@@ -647,6 +647,8 @@ export const SUBJECTS = {
           { id: "t5-revision-que-falta", nombre: "¿Qué revisión falta?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "b5-t5-a2-los-tres-momentos-de-una-inversion", nombre: "Los tres momentos de una inversión", clasificacion: { tipo: APRENDER } },
           /* El cierre del tema. Difícil · 50 FP (decisión de Sakuta). Su fila del servidor es la migración 0072. */
+          /* N4 de la Célula C, después de los tres momentos de B, que la sostienen (decisión de corte de T5, punto 6). El interés de un trimestre con cifras construidas, como en la p. 194, y el asiento del cobro. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0112. */
+          { id: "t5-el-interes-del-periodo", nombre: "El interés del periodo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "b5-t5-a2", nombre: "El cierre completo de Santa Pacha", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },

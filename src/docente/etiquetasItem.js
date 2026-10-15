@@ -83,6 +83,7 @@ import { unidadDeH7 as unidadDeT73H7 } from "../contabilidad/t7_3H7.js";
 import { unidadDeR5_1 } from "../data/repasoCap5Cruzado.js";
 import { unidadDeN1 as unidadDeT5N1 } from "../contabilidad/t5N1.js";
 import { unidadDeN3 as unidadDeT5N3 } from "../contabilidad/t5N3.js";
+import { unidadDeN4 as unidadDeT5N4 } from "../contabilidad/t5N4.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -603,6 +604,8 @@ Object.assign(REGLAS, {
   "t5-temporal-o-largo-plazo": (id) => unidadDeT5N1(id),
   /* T5 · N3 (Célula C). Cada ítem, por su caso. */
   "t5-revision-que-falta": (id) => unidadDeT5N3(id),
+  /* T5 · N4 (Célula C). Una elección, por su pregunta; una línea, por su cuenta y su valor. */
+  "t5-el-interes-del-periodo": (id) => unidadDeT5N4(id),
 
   "cu-arma-el-asiento": (id) => textoDeItemA6(id),
 

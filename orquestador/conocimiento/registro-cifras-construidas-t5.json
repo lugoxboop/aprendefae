@@ -1,0 +1,219 @@
+{
+  "tema": "activos-financieros",
+  "nota": "Registro 5c de T5 (Near). Tanda 2: N4 y N5. Cálculos solo con enteros y + - * /.",
+  "construidas": [
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "valor nominal y precio por título",
+      "cifra": 7500,
+      "calculo": "7500"
+    },
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "títulos comprados",
+      "cifra": 1440,
+      "calculo": "1440"
+    },
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "inversión total",
+      "cifra": 10800000,
+      "calculo": "1440 * 7500"
+    },
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "tasa anual (%)",
+      "cifra": 16,
+      "calculo": "16"
+    },
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "ítem 2 · primer trimestre",
+      "cifra": 432000,
+      "calculo": "10800000 * 16 * 3 / 1200"
+    },
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "ítem 2 · distractor: un año",
+      "cifra": 1728000,
+      "calculo": "10800000 * 16 / 100"
+    },
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "ítem 2 · distractor: un mes",
+      "cifra": 144000,
+      "calculo": "10800000 * 16 / 1200"
+    },
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "venta",
+      "cifra": 680,
+      "calculo": "680"
+    },
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "títulos que quedan",
+      "cifra": 760,
+      "calculo": "1440 - 680"
+    },
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "ítem 4 · base del segundo trimestre",
+      "cifra": 5700000,
+      "calculo": "760 * 7500"
+    },
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "ítem 4 · distractor: títulos vendidos",
+      "cifra": 5100000,
+      "calculo": "680 * 7500"
+    },
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "ítem 5 · segundo trimestre",
+      "cifra": 228000,
+      "calculo": "5700000 * 16 * 3 / 1200"
+    },
+    {
+      "pieza": "t5-el-interes-del-periodo",
+      "uso": "ítem 5 · distractor: títulos vendidos",
+      "cifra": 204000,
+      "calculo": "5100000 * 16 * 3 / 1200"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "valor nominal y precio por acción",
+      "cifra": 5100,
+      "calculo": "5100"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "acciones compradas",
+      "cifra": 900,
+      "calculo": "900"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "inversión total",
+      "cifra": 4590000,
+      "calculo": "900 * 5100"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "acciones vendidas el 10 de julio",
+      "cifra": 550,
+      "calculo": "550"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "precio de venta del 10 de julio",
+      "cifra": 5400,
+      "calculo": "5400"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "ítem 1 · lo que recibe",
+      "cifra": 2970000,
+      "calculo": "550 * 5400"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "ítem 1 · distractor: las 350",
+      "cifra": 1890000,
+      "calculo": "350 * 5400"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "ítem 2 · costo de las 550",
+      "cifra": 2805000,
+      "calculo": "550 * 5100"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "ítem 3 · ganancia",
+      "cifra": 165000,
+      "calculo": "2970000 - 2805000"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "ítem 3 · distractor: las 900",
+      "cifra": 270000,
+      "calculo": "900 * 5400 - 900 * 5100"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "acciones que quedan",
+      "cifra": 350,
+      "calculo": "900 - 550"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "precio de venta del 20 de octubre",
+      "cifra": 4400,
+      "calculo": "4400"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "ítem 6 · lo que recibe",
+      "cifra": 1540000,
+      "calculo": "350 * 4400"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "ítem 6 · costo de las 350",
+      "cifra": 1785000,
+      "calculo": "350 * 5100"
+    },
+    {
+      "pieza": "t5-gano-o-perdio",
+      "uso": "ítem 6 · pérdida",
+      "cifra": 245000,
+      "calculo": "1785000 - 1540000"
+    }
+  ],
+  "libro_con_dueno": [
+    {
+      "fuente": "Santa Pacha, pp. 194-195 (b5-t5-a2)",
+      "cifras": [
+        2000000,
+        2500,
+        800,
+        24,
+        120000,
+        1875,
+        920,
+        1725000,
+        1500000,
+        225000,
+        30000,
+        500000,
+        625,
+        750,
+        468750,
+        31250,
+        375000,
+        343750
+      ]
+    },
+    {
+      "fuente": "Banco C.4, p. 264",
+      "cifras": [
+        520000,
+        18,
+        31029,
+        93600,
+        23336,
+        31460,
+        31200
+      ]
+    },
+    {
+      "fuente": "Banco D.1 e, p. 267",
+      "cifras": [
+        831000,
+        224000
+      ]
+    }
+  ],
+  "cruce_completo": "ban_t5: OCR del libro, lista libro de T7, registro 5c de T7 y X1-X4 (676 valores). Cero coincidencias."
+}
