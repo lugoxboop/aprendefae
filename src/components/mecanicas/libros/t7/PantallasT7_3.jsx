@@ -3,6 +3,7 @@ import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { BOTON, INTERFAZ, DEBE, HABER, PENDIENTE_DE_REVISION } from "../../../../data/contabilidadT7_3.js";
+import { Renglones, Plazos, FranjaNIC2, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -23,6 +24,10 @@ import { BOTON, INTERFAZ, DEBE, HABER, PENDIENTE_DE_REVISION } from "../../../..
  *                con «Seguir». Con el acierto se descubre lo que sigue: más
  *                texto, un asiento y otro texto
  *
+ * Las figuras del «Patrón T7-3» de Watari (renglones y franja de plazos)
+ * van con el texto de la pantalla (`figuras`) si el texto ya da la cifra, o
+ * con el acierto (`acierto.figuras`) si la pantalla la pregunta.
+ *
  * Los asientos van en el modo lectura del patrón tabular (DEBE en verde
  * azulado, HABER en ámbar, sangría en el haber) y, si la pieza lo pide, con
  * sus sumas debajo y el nombre de la empresa arriba. Un asiento sin fecha
@@ -30,7 +35,8 @@ import { BOTON, INTERFAZ, DEBE, HABER, PENDIENTE_DE_REVISION } from "../../../..
  * nombre de la cuenta, y cada movimiento con su fecha en su lado.
  *
  * Una pieza puede traer un aviso fijo (`aviso`), a la vista en todas sus
- * pantallas: la frase de la NIC 2 en A7 y A8. Una pantalla puede traer una
+ * pantallas: la frase de la NIC 2 en A7 y A8, con la franja del Patrón
+ * T7-3 (pegada arriba mientras se desplaza). Una pantalla puede traer una
  * lista con viñetas (`lista`) después de sus textos.
  *
  * Cada pantalla lleva su pie en todos sus estados. NO CALIFICA y no da FP:
@@ -99,7 +105,6 @@ export const CSS_T73P = `
 .t73p-lista { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 15px; line-height: 1.45; }
 /* La hoja global del sitio quita el estilo de lista: aquí vuelven las viñetas. */
 .t73p-lista li { overflow-wrap: anywhere; list-style: disc; }
-.t73p-aviso { margin: 0 0 12px; padding: 10px 12px; border: 1px solid ${P.borde}; border-left-width: 3px; border-radius: 8px; font-size: 14px; line-height: 1.45; color: ${P.texto}; overflow-wrap: anywhere; }
 .t73p-nueva { animation: t73p-aparece .12s ease-out; }
 @keyframes t73p-aparece { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .t73p *, .t73p *::before, .t73p *::after { transition: none !important; animation: none !important; } }
@@ -200,6 +205,10 @@ function CuentaT({ t }) {
     </div>
   );
 }
+/* Las figuras del Patrón T7-3: { tipo: "renglones", titulo, filas, nota } o { tipo: "plazos", venta, condiciones, pago }. */
+const Figuras = ({ lista, nuevo = false }) => (lista ?? []).map((f, k) => (f.tipo === "plazos"
+  ? <Plazos key={k} {...f} nuevo={nuevo} />
+  : <Renglones key={k} titulo={f.titulo} filas={f.filas} nota={f.nota ?? null} nuevo={nuevo} />));
 
 const Asientos = ({ lista, nuevo = false }) => (lista ?? []).map((a, k) => <Asiento key={k} asiento={a} nuevo={nuevo} />);
 
@@ -212,6 +221,7 @@ function Cuerpo({ p }) {
       {p.lista && <ul className="t73p-lista" data-lista>{p.lista.map((t) => <li key={t} data-texto>{t}</li>)}</ul>}
       {p.ficha && <Ficha ficha={p.ficha} />}
       <Textos lista={p.despues} />
+      <Figuras lista={p.figuras} />
       <Asientos lista={p.asientos} />
       {p.cuentasT && <div className="t73p-ts" data-cuentas-t>{p.cuentasT.map((t) => <CuentaT key={t.titular} t={t} />)}</div>}
       <Textos lista={p.tras} />
@@ -256,6 +266,7 @@ function Eleccion({ pantalla, onSeguir }) {
       {estado === "acierto" && (
         <>
           <Mensaje ok textos={[a.texto]} refFoco={ref} />
+          <Figuras lista={a.figuras} nuevo />
           <Textos lista={a.parrafos} nueva />
           <Asientos lista={a.asientos} nuevo />
           <Textos lista={a.despues} nueva />
@@ -280,9 +291,9 @@ export default function PantallasT7_3({ pieza, rotulo }) {
 
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
-      <style>{CSS_T73P}</style>
-      <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
-        {pieza.aviso && <p className="t73p-aviso" role="note" data-aviso>{pieza.aviso}</p>}
+      <style>{CSS_T73P + CSS_T73_PATRON}</style>
+      <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} className={pieza.aviso ? "t73pt-pieza" : undefined} style={{ outline: "none" }}>
+        {pieza.aviso && <FranjaNIC2 texto={pieza.aviso} />}
         {p.tipo === "eleccion" ? (
           <Eleccion key={p.id} pantalla={p} onSeguir={ultima ? null : seguir} />
         ) : (
