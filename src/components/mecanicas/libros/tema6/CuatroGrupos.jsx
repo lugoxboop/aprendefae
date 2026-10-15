@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import {
-  CONSIGNA_CAPA_3_T6_A5, GRUPOS_T6_A5, TABLERO_T6_A5, FINAL_CAPA_3_T6_A5, ROTULO_SIMULADO_T6_A5,
+  CONSIGNA_CAPA_3_T6_A5, PREGUNTA_CAPA_3_T6_A5, GRUPOS_T6_A5, TABLERO_T6_A5, FINAL_CAPA_3_T6_A5, ROTULO_SIMULADO_T6_A5,
 } from "../../../../data/contabilidadT6Pieza5.js";
 import { pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
@@ -17,7 +17,9 @@ import { RotuloSimulado, PieDeFuente } from "./FuentesT6A5.jsx";
  *
  * El tablero de T6 · A4 en una columna: una tabla que empieza con el rótulo
  * fijo, la cabecera de su columna y una fila por grupo (su nombre y su
- * celda de 104). Cada caja llena su celda al abrirse, en cualquier orden (los
+ * celda de 104). Cada caja llena su celda al decidirse (hoja 6: primero
+ * la pregunta de la caja, en fila; la celda se llena siempre con el
+ * valor correcto, se acierte o no), en cualquier orden (los
  * grupos no se acumulan entre sí); llena: Sora 15/700, borde 2 nodo y relleno
  * navy. Con las cuatro abiertas, la fila de la suma bajo un filete, y el
  * bloque final. Cada caja y el bloque final llevan su pie en su forma. Sin
@@ -51,8 +53,10 @@ function Celda({ cifra }) {
 export default function CuatroGrupos() {
   const reducido = useReducido();
   const [abiertos, setAbiertos] = useState(() => new Set());
+  const [elecciones, setElecciones] = useState(() => ({}));
   const bloqueFinal = useRef(null);
-  const todos = GRUPOS_T6_A5.every((g) => abiertos.has(g.id));
+  const decidido = (g) => elecciones[g.id] !== undefined;
+  const todos = GRUPOS_T6_A5.every(decidido);
 
   useEffect(() => {
     if (todos) bloqueFinal.current?.scrollIntoView?.({ block: "nearest", behavior: reducido ? "auto" : "smooth" });
@@ -80,7 +84,7 @@ export default function CuatroGrupos() {
             {GRUPOS_T6_A5.map((g, k) => (
               <tr key={g.id} data-fila={g.id}>
                 <th scope="row" style={NOMBRE_FILA}>{g.nombre}</th>
-                <Celda cifra={abiertos.has(g.id) ? TABLERO_T6_A5.celdas[k] : null} />
+                <Celda cifra={decidido(g) ? TABLERO_T6_A5.celdas[k] : null} />
               </tr>
             ))}
           </tbody>
@@ -106,8 +110,15 @@ export default function CuatroGrupos() {
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
         {GRUPOS_T6_A5.map((g) => (
           <Caja key={g.id}
-            caja={{ id: g.id, titulo: `${g.nombre} · ${g.monto}`, revela: pegarPorcentaje(g.revela), pie: <PieDeFuente texto={g.pie} /> }}
-            estiloTitulo={NOMBRE_CAJA} abierto={abiertos.has(g.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(g.id))} />
+            caja={{
+              id: g.id, titulo: `${g.nombre} · ${g.monto}`, revela: pegarPorcentaje(g.revela), pie: <PieDeFuente texto={g.pie} />,
+              decide: {
+                pregunta: PREGUNTA_CAPA_3_T6_A5, correcta: g.correcta, falla: pegarPorcentaje(g.falla),
+                opciones: g.opciones.map((o) => ({ ...o, texto: pegarPorcentaje(o.texto) })),
+              },
+            }}
+            estiloTitulo={NOMBRE_CAJA} forma="fila" abierto={abiertos.has(g.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(g.id))}
+            elegida={elecciones[g.id] ?? null} onElegir={(o) => setElecciones((e) => ({ ...e, [g.id]: o }))} />
         ))}
       </div>
 
