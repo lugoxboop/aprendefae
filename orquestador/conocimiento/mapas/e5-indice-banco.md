@@ -13,7 +13,7 @@ fecha: 2026-10-14
 > impresa. Cada cifra que aparece aquí se **calculó con código**, no a ojo (el
 > script va en el anexo y se puede correr). El inventario de lo que la
 > plataforma enseña se levantó sobre `src/data/subjects.js` y los archivos de
-> datos de cada pieza en `main` @ `d0b72a0` (14 oct 2026, 22:30), **no** sobre
+> datos de cada pieza en `main` @ `9688e0b` (14 oct 2026, noche; T7 cerrado entero), **no** sobre
 > títulos ni memoria.
 >
 > **Este índice ya se rehízo una vez.** La primera versión se levantó sobre
@@ -21,7 +21,7 @@ fecha: 2026-10-14
 > (#130) y cambió el estado de ocho filas. Se vuelve a medir cada vez que entre
 > un tema ajeno; un índice viejo dice «espera» de algo que ya llegó.
 >
-> **No verificado por mí:** que `main` @ `d0b72a0` sea lo que está desplegado
+> **No verificado por mí:** que `main` @ `9688e0b` sea lo que está desplegado
 > en aprendefae.com. Aquí «publicado» quiere decir «está en el catálogo de
 > `main`». Takamura lo coteja contra el paquete desplegado.
 
@@ -66,7 +66,7 @@ Levantado de los archivos de datos, no de los títulos.
 | T6 · Cuentas por cobrar | §5.4, pp. 195-206 | Aprender ×4, Hacer ×3 | Provisión para deudas incobrables y su asiento (`contabilidadT6Pieza3.js` l. 22-23), la provisión de un año al siguiente, el castigo con provisión (`contabilidadT6Act3.js`), la cuenta castigada que se recupera. |
 | T7-1 · Inventarios I, periódico | §5.5, pp. 207-232 | Aprender ×7, Hacer ×7 | Compras, IVA 16 %, retención 3,5 %, PEPS/UEPS/promedio ponderado, costo de mercancía disponible y cierre contra Ganancias y pérdidas (`contabilidadT7_1_ap4.js` l. 190-196), fletes, devoluciones de ventas y de compras (`contabilidadT7_1_a6.js` l. 149-151), control interno. |
 | T7-2 · Inventarios II, permanente | §5.5, pp. 233-248 | Aprender ×6, Hacer ×5 | Inventario que sí se mueve, la venta en dos asientos, kárdex con los tres métodos, San Calixto en permanente, fletes y devoluciones en permanente, y su Hacer «Flete y devolución». |
-| T7-3 · Descuentos, inventario físico y NIC 2 | §5.5-5.6, pp. 248-261 | Aprender ×7, Hacer ×7 | Descuento comercial y en cadena; **descuento condicionado** y su registro en los dos libros (`contabilidadT7_3_a3.js`, `_a4.js`, Hacer «Pagó a tiempo»); sobrantes y faltantes; provisión para inventarios; NIC 2, costo y valor neto realizable. |
+| T7-3 · Descuentos, inventario físico y NIC 2 | §5.5-5.6, pp. 248-261 | Aprender ×8, Hacer ×7 | Descuento comercial y en cadena; **descuento condicionado** y su registro en los dos libros (`contabilidadT7_3_a3.js`, `_a4.js`, Hacer «Pagó a tiempo»); sobrantes y faltantes; provisión para inventarios; NIC 2, costo y valor neto realizable. |
 | Temas 1-3 | caps. 1-4 | publicados | Activo corriente y no corriente **solo con Caja, Bancos y activos fijos** (`contabilidad.js` l. 321-332); ajustes acumulados y diferidos, seguros pagados por anticipado (`contabilidadTema3Act5.js`); cierre del periodo. |
 
 **Cómo cuenta los días T7-3, porque decide D.6:** sin el día inicial, y el
@@ -81,7 +81,7 @@ p. 197); el repaso la consume tal como está publicada y no la decide.
 1. **Caja menor y conciliación bancaria** (T4, sin construir).
 2. **El criterio general de activo corriente** —«convertirse en dinero en
    efectivo en un periodo inferior a un año», p. 178—. Ver «Lo que sube a
-   Erwin»: las pp. 177-178 no están en el alcance de ninguna célula.
+   Erwin»: las pp. 177-178 son de la Célula D.
 3. **El ajuste por depreciación.** `grep deprecia` en los datos de
    Contabilidad devuelve una sola línea: una retroalimentación del Tema 2 que
    dice que el terreno no se deprecia. Ningún asiento. La comprobación podía
@@ -106,24 +106,24 @@ CALIFICA** (pregunta abierta del libro).
 
 | Ej. | Qué pide | Secciones que necesita | Última → tema | Estado |
 |---|---|---|---|---|
-| A.1 | Discutir si el activo corriente es más importante que el no corriente | Intro cap. 5, pp. 178-179 | intro → **sin dueño** | NO SE CALIFICA · ESPERA el criterio de activo corriente |
+| A.1 | Discutir si el activo corriente es más importante que el no corriente | Intro cap. 5, pp. 178-179 | intro → T4 (Célula D) | NO SE CALIFICA · ESPERA T4 |
 | A.2 | Implicaciones del método de valoración en utilidad e impuestos | §5.5, pp. 215-218 y 226-227 | §5.5 → T7-1 | NO SE CALIFICA · el contenido está (AP3, AP4) |
 | A.3 | Por qué hace falta gestionar la cartera | §5.4, pp. 198-199 | §5.4 → T6 | NO SE CALIFICA · el contenido está |
-| A.4 | Por qué el sistema periódico «trasgrede la regla» del registro de activos | §5.5, p. 212 | §5.5 → T7-1 | NO SE CALIFICA · el contenido está (AP1) |
-| A.5 | «No importa el método, la existencia física es la misma» | §5.5, p. 227 (conclusión 5) | §5.5 → T7-1 | NO SE CALIFICA · el contenido está |
+| A.4 | Por qué se dice que el sistema periódico rompe la regla de registro de los activos | §5.5, p. 212 | §5.5 → T7-1 | NO SE CALIFICA · el contenido está (AP1) |
+| A.5 | Discutir si el método de valoración importa, dado que las unidades físicas son las mismas | §5.5, p. 227 (conclusión 5) | §5.5 → T7-1 | NO SE CALIFICA · el contenido está |
 
 ### Bloque B · Preguntas sobre el capítulo, pp. 262-263
 
 | Ej. | Qué pide | Secciones | Última → tema | Estado |
 |---|---|---|---|---|
-| B.1 | Qué activos son corrientes, con ejemplos | intro, p. 178 | intro → **sin dueño** | NO SE CALIFICA · ESPERA |
+| B.1 | Qué activos son corrientes, con ejemplos | intro, p. 178 | intro → T4 (Célula D) | NO SE CALIFICA · ESPERA T4 |
 | B.2 | Procedimientos de control del efectivo | §5.1, pp. 179-180 | §5.1 → T4 | NO SE CALIFICA · ESPERA T4 |
 | B.3 | Para qué un fondo de caja menor | §5.1, p. 181 | §5.1 → T4 | NO SE CALIFICA · ESPERA T4 |
 | B.4 | Por qué el saldo en libros no coincide con el extracto | §5.2, p. 188 | §5.2 → T4 | NO SE CALIFICA · ESPERA T4 |
 | B.5 | Qué significa seguir mostrando cartera irrecuperable | §5.4, pp. 198-200 | §5.4 → T6 | NO SE CALIFICA · el contenido está |
 | B.6 | Qué es inventario desde lo financiero | §5.5 p. 207 y §5.6 p. 257 | §5.6 → T7-3 | NO SE CALIFICA · el contenido está (NIC 2) |
 | B.7 | Métodos de valoración y ventajas de cada uno | §5.5, pp. 215-218 | §5.5 → T7-1 | NO SE CALIFICA · el contenido está (AP3) |
-| B.8 | Por qué el promedio ponderado estaría «más cerca del valor real» | §5.5, p. 218 | §5.5 → T7-1 | NO SE CALIFICA · errata E-3: la premisa no está en la página |
+| B.8 | Por qué el promedio ponderado se acercaría más al valor real del inventario | §5.5, p. 218 | §5.5 → T7-1 | NO SE CALIFICA · errata E-3: la premisa no está en la página |
 | B.9 | Descuento comercial frente a financiero | §5.5, pp. 248 y 251 | §5.5 → T7-3 | NO SE CALIFICA · el contenido está |
 | B.10 | Fletes y su registro según el sistema | §5.5, pp. 227-229 y 245 | §5.5 → T7-2 | NO SE CALIFICA · el contenido está (T7-1 A5, T7-2 A5) |
 
@@ -134,7 +134,7 @@ no trae clave.
 
 | Ej. | Qué evalúa | Respuesta calculada | Secciones | Última → tema | Estado |
 |---|---|---|---|---|---|
-| C.1 | Qué grupo es activo corriente | **d** | intro p. 178 | intro → **sin dueño** | ESPERA · el Tema 2 solo clasifica Caja, Bancos y activos fijos; la b se separa de la d por «largo / corto plazo» en cuentas por cobrar, que nadie enseña |
+| C.1 | Qué grupo es activo corriente | **d** | intro p. 178 | intro → T4 (Célula D) | ESPERA T4 · el Tema 2 solo clasifica Caja, Bancos y activos fijos; la b se separa de la d por «largo / corto plazo» en cuentas por cobrar, que nadie enseña |
 | C.2 | Saldo correcto en libros de Bancos | **b · $5.800** = 5.000 − 400 + 1.200 | §5.2, pp. 188-191 | §5.2 → T4 | ESPERA T4 |
 | C.3 | Qué son las inversiones con descuento | **c** | §5.3, p. 193 | §5.3 → T5 | **LISTO** (`contabilidadT5Pieza1.js` l. 68) |
 | C.4 | Interés de $520.000 al 18 % del 1-mar al 30-jun | libro: **d · $31.460** (121 días / 360) | §5.3, p. 194 | §5.3 → T5 | **ABIERTO** · pregunta 2 de `fuente.md`: el ejemplo de la p. 194 cuenta por meses y daría $31.200, que no está entre las opciones. La a ($31.029) es 121/365. No entra hasta que conteste el profesor |
@@ -151,7 +151,7 @@ no trae clave.
 |---|---|---|---|---|
 | D.1 | Tabo Racho S. A., conciliación a sep-30, pp. 266-268 | §5.2, pp. 187-191 | §5.2 → T4 | ESPERA T4. **Cuadra**: los dos lados concilian en **$6.843.000**. Trae algo que el ejemplo del libro no muestra: un error de la propia empresa (cheque de $876.500 registrado por $687.500, diferencia $189.000). La p. 188 lo nombra como causa y ningún ejemplo resuelve su asiento |
 | D.2 | La Trompeta Ltda., caja menor de $1.600.000, p. 268 | §5.1, pp. 181-186 | §5.1 → T4 | ESPERA T4. Gastos **$1.531.200**; efectivo esperado **$68.800**; caso 1 ($68.000): faltante **$800**; caso 2 ($70.200): sobrante **$1.400**. El enunciado no dice si el faltante va al cajero o al gasto: la p. 183 da los dos caminos |
-| D.3 | El Toro Negro, provisión, castigo y recuperación, pp. 268-269 | §5.4, pp. 199-206 | §5.4 → T6 | **PARCIAL** (corregido por Takamura, comprobado en el código): el T6 nunca **calcula** la provisión por edades de vencimiento; siempre la da hecha («El análisis pide una provisión de $153.400», `contabilidadT6Act2.js` l. 76), y la tabla de antigüedad de la p. 201 está retenida por la Célula B. r5-2 da la provisión como dato del análisis y pide el resto. Errata E-1 resuelta. Provisión **$2.283.400**. Los castigos de marzo suman **$2.450.000** y superan la provisión en **$166.600**: es el caso de la provisión subestimada de las pp. 202-203, que el T6 enseña en su pieza 3 |
+| D.3 | El Toro Negro, provisión, castigo y recuperación, pp. 268-269 | §5.4, pp. 199-206 | §5.4 → T6 | **PARCIAL** (corregido por Takamura, comprobado en el código): el T6 nunca **calcula** la provisión por edades de vencimiento; siempre la da hecha («El análisis pide una provisión de $153.400», `contabilidadT6Act2.js` l. 76), y la tabla de antigüedad de la p. 201 no aparece ni va a aparecer (Mateo). **Decisión final:** r5-2 da la provisión como dato del análisis y pide el resto. Errata E-1 resuelta. Provisión **$2.283.400**. Los castigos de marzo suman **$2.450.000** y superan la provisión en **$166.600**: es el caso de la provisión subestimada de las pp. 202-203, que el T6 enseña en su pieza 3 |
 | D.4 | Comercializadora Mate Ltda., marzo, periódico y promedio, pp. 269-271 | §5.5 completo, pp. 210-254 | condicionado p. 252 → T7-3 | **PARCIAL**: ver abajo |
 | D.5 | Distribuciones Ltda., marzo, permanente y PEPS, con ajustes, pp. 271-273 | §5.5 + ajustes del cap. 4 + depreciación | depreciación → **ningún tema** | ESPERA. El balance de febrero **cuadra** ($9.920.000 = $2.718.000 + $7.202.000) y el inventario coincide (300 × $2.600 = $780.000) |
 | D.6 | Comercializadora Barranquilla Ltda., septiembre, los dos sistemas, pp. 273-274 | §5.5 completo | condicionado p. 252 → T7-3 | **PARCIAL**: ver abajo |
@@ -206,23 +206,47 @@ bien:
 |---|---|---|---|---|
 | `r5-1` | C.3, C.5, C.6, C.8, C.9, C.10 | T5, T6, T7-1 | Repaso cruzado: seis preguntas que saltan de tema; el estudiante sabe de qué le hablan por la escena, no por un rótulo. Opciones en orden aleatorio en cada intento | Medio · 25 |
 | `r5-2` | D.3, sin el cálculo por edades | T6 | Caso en tres etapas: registra el ajuste con la provisión que da el análisis ($2.283.400, como hace el T6); castiga a Roja y Negra y ve la provisión quedar con saldo débito; revive y cobra a Roja | Difícil · 50 |
-| `r5-3` | D.4 parcial (1, 10, 15, 20, 25 y 31 de marzo) | T7-1, T7-3 | Diario de la Comercializadora Mate, solo con esas transacciones | Difícil · 50 |
+| `r5-3` | D.4: las seis transacciones de «r5-3 · decisiones» (ocho asientos) | T7-1, T7-3 | Diario de la Comercializadora Mate, un asiento por pantalla, con el armador de r5-2 | Experto · 90 |
 
 Lo demás espera. Al entrar cada pieza ajena, se reabre su fila aquí.
 
-## Lo que sube a Erwin
+## Lo que se escaló, y cómo quedó
 
-1. **Reparto:** las pp. 177-178 (introducción del capítulo: qué es un activo
-   corriente y el criterio de un año) no están en el alcance de ninguna célula.
-   T4 empieza en la 179. C.1, A.1 y B.1 dependen de esas dos páginas.
-2. **Errata E-4** para la Célula D.
-3. **Para el profesor, por medio de Mateo, cuando toque** (no frena a la
-   célula): el IVA incluido, el IVA en la compra de un activo fijo y la
-   depreciación aparecen en D.4 y D.5 y el capítulo no los enseña; y D.6 no
-   dice si lleva IVA. O el profesor los da por vistos en otra parte del curso,
-   o esas transacciones no entran.
-4. **Íconos** para `r5-1`, `r5-2` y `r5-3`, cuando se abran sus PR.
-5. **Para la Célula B:** el cálculo de la provisión por edades de vencimiento (pp. 200-201) no lo enseña ningún tema publicado. Cuando el T6 lo enseñe, r5-2 gana su etapa de cálculo con la tabla de la p. 269.
+Todo esto ya lo resolvió Erwin la noche del 14 de octubre; queda aquí para que
+nadie lo vuelva a descubrir.
+
+1. **Las pp. 177-178 son de la Célula D** (qué es un activo corriente y el
+   criterio de un año). C.1, A.1 y B.1 dependen de T4 y se construyen cuando D
+   publique, no antes.
+2. **Errata E-4**, registrada en `fuente.md` sin confirmar y pasada a la
+   Célula D.
+3. **Preguntas al profesor**, en la lista de `fuente.md`: el IVA incluido, el
+   IVA en la compra de un activo fijo y la depreciación de D.4 y D.5; si los
+   «clientes varios» de D.4 practican retención; la retención de IVA de un
+   gran contribuyente; si D.6 lleva IVA; y el C.4.
+4. **La provisión por edades es FINAL, no pendiente.** Mateo confirmó que la
+   p. 201 no aparece ni va a aparecer. r5-2 entrega la provisión como dato y
+   así se queda. La única puerta es que la Célula B enseñe el método con cifras
+   construidas; si lo hace, Erwin avisa. No se espera.
+5. **Íconos** de `r5-1`, `r5-2` y `r5-3`: se piden a Erwin por significado.
+
+## r5-3 · decisiones de Kamogawa sobre D.4
+
+Diagnóstico de Miyata, cifras verificadas en código. Entran las seis
+transacciones sin IVA incluido ni activo fijo: 1, 10, 15 (compra y flete), 20,
+25 y 31 (venta y flete) de marzo, ocho asientos, Experto · 90 FP. Datos
+**declarados por la célula**, visibles en el enunciado y subidos al profesor:
+
+- Los «clientes varios» no practican retención (la plataforma siempre dio esa
+  retención como dato del ejercicio, y el libro no la da aquí).
+- No se aplica retención de IVA (ninguna pieza publicada la enseña; búsqueda
+  de «gran contribuyente», «retención de IVA» y «reteIVA» vacía, con control
+  positivo).
+- Los descuentos del 15 y del 31 son comerciales: el libro escribe las
+  condiciones cuando el descuento es condicionado (el 25 trae «5/15, n/30»), y
+  estos dos no las traen.
+- El flete de ventas va a «Gasto de venta – fletes» con retención del 1 %,
+  como lo enseña Inventarios I (`contabilidadT7_1_a5.js`, libro p. 229).
 
 ## Anexo · el script del cuadre
 
