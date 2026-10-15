@@ -12,22 +12,23 @@ import { textosDelError, contarFallo } from "./escaleraAyuda.js";
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-1 · PIEZA 1 DE APRENDER — «La cuenta que no se mueve».
  *
- * Siete pantallas, una a la vez, en el orden de la v5 de Near. Las dos
- * pantallas de pregunta tienen tres estados: colocando, error y acierto.
+ * Cuatro pantallas, una a la vez, en el orden del recorte del lote 1 de Near
+ * (con las correcciones de Mello): portada, dos preguntas y resumen. Las dos
+ * preguntas tienen tres estados: colocando, error y acierto.
  *
  *   · colocando  se toca una cuenta y se confirma
- *   · error      la devolución de esa cuenta y «Probar otra»
- *   · acierto    el texto, la nota y «Seguir». La línea que aparece en la v5
- *                («16 de abril · Compras · Debe $5.000.000») es la tarjeta de
- *                la compra en la figura, repartida como la diseñó Watari
+ *   · error      la escalera de ayuda (escaleraAyuda.js) y «Probar otra»
+ *   · acierto    el texto, su «¿Por qué?» plegado (escrito aparte en los
+ *                datos) y «Seguir». Lo que la figura muestra al acertar la
+ *                compra («16 de abril · Compras · Debe · $5.000.000») es la
+ *                tarjeta de la compra, repartida como la diseñó Watari
  *
- * Cada pantalla y cada estado lleva su pie de fuente, abajo, con el texto de
- * la v5. De la pantalla 1 a la 6, cada estado lleva además su figura (Watari,
- * «Dos columnas del periodo»), en el lugar que le da la guía: bajo el texto en
- * las de lectura, entre la ficha y la pregunta en la 4, entre la pregunta y
- * las opciones en la 5, y entre el resumen y la remisión en la 6. La portada
- * no lleva figura. Las opciones se barajan en cada intento: «Probar otra» las vuelve a
- * sortear, y nunca en el mismo orden que el intento anterior.
+ * Cada pantalla y cada estado lleva su pie de fuente, abajo. Las preguntas y
+ * el resumen llevan además su figura (Watari, «Dos columnas del periodo»):
+ * entre el caso y la pregunta, y en el resumen entre las líneas y la
+ * remisión. La portada no lleva figura. Las opciones se barajan en cada
+ * intento: «Probar otra» las vuelve a sortear, y nunca en el mismo orden que
+ * el intento anterior.
  *
  * NO CALIFICA y no da FP: es material de Aprender. No llama a registrar_fp.
  *
@@ -86,6 +87,8 @@ function Pregunta({ pantalla, onSeguir }) {
   const opcion = confirmada ? pantalla.opciones.find((o) => o.id === confirmada) : null;
   const estado = !opcion ? "colocando" : opcion.correcta ? "acierto" : "error";
   const figura = estado === "error" ? pantalla.figura.error[opcion.id] : pantalla.figura[estado];
+  /* Lo que dice el error. Si es la devolución de la opción y esta trae su «¿Por qué?» escrito aparte, se pliega ese. */
+  const errorVisible = estado === "error" ? textosDelError(pantalla, opcion, fallos).join(" ") : null;
 
   useEffect(() => {
     if (estado !== "colocando") devolucionRef.current?.focus();
@@ -99,34 +102,15 @@ function Pregunta({ pantalla, onSeguir }) {
 
   return (
     <div data-pregunta={pantalla.id} data-estado={estado}>
-      {pantalla.enunciado && <p data-texto data-enunciado style={PARRAFO}>{pantalla.enunciado}</p>}
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        {pantalla.enunciado.map((t) => <p key={t} data-texto data-enunciado style={PARRAFO}><Plegable texto={t} /></p>)}
+      </div>
 
-      {pantalla.ficha && (
-        <dl data-ficha style={{
-          margin: "12px 0 0", padding: "10px 12px", borderRadius: "12px",
-          background: "rgba(10,20,34,0.4)", border: "1px solid rgba(248,249,250,0.14)",
-          display: "flex", flexDirection: "column", gap: "6px",
-        }}>
-          {pantalla.ficha.map((f) => (
-            <div key={f.dato} data-dato style={{ fontSize: "13px", lineHeight: 1.45, overflowWrap: "break-word" }}>
-              <dt style={{ display: "inline", fontFamily: SORA, fontWeight: 600, color: APAGADO }}>{f.dato}: </dt>
-              <dd style={{ display: "inline", margin: 0, color: FAE.text }}>{f.texto}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
+      <div style={{ marginTop: "14px" }}><FiguraDosColumnas key={figura} estado={figura} /></div>
 
-      {pantalla.enunciado && <div style={{ marginTop: "14px" }}><FiguraDosColumnas key={figura} estado={figura} /></div>}
-
-      <p data-texto data-enunciado-pregunta style={{ ...PARRAFO, marginTop: pantalla.enunciado ? "14px" : 0, fontFamily: SORA, fontWeight: 700, fontSize: "14px", lineHeight: 1.45 }}>
+      <p data-texto data-enunciado-pregunta style={{ ...PARRAFO, marginTop: "14px", fontFamily: SORA, fontWeight: 700, fontSize: "14px", lineHeight: 1.45 }}>
         {pantalla.pregunta}
       </p>
-      {!pantalla.enunciado && <div style={{ marginTop: "14px" }}><FiguraDosColumnas key={figura} estado={figura} /></div>}
-      {pantalla.ayuda && (
-        <p data-ayuda style={{ margin: "6px 0 0", fontSize: "12.5px", lineHeight: 1.45, color: APAGADO, overflowWrap: "break-word" }}>
-          {pantalla.ayuda}
-        </p>
-      )}
 
       <div role="group" aria-label={pantalla.pregunta} style={{ display: "flex", flexDirection: "column", gap: "7px", marginTop: "12px" }}>
         {orden.map((o) => {
@@ -177,7 +161,7 @@ function Pregunta({ pantalla, onSeguir }) {
             color: "rgba(248,249,250,0.92)", background: "rgba(184,196,212,0.1)", borderLeft: `3px solid ${NEUTRO}`,
             overflowWrap: "break-word",
           }}>
-            <Plegable texto={textosDelError(pantalla, opcion, fallos).join(" ")} />
+            <Plegable texto={errorVisible} porque={errorVisible === opcion.devolucion ? opcion.porque ?? null : null} />
           </p>
           <button type="button" data-boton="probar-otra" onClick={probarOtra} style={{ ...boton(false), marginTop: "10px" }}>
             {pantalla.error.boton}
@@ -193,10 +177,7 @@ function Pregunta({ pantalla, onSeguir }) {
             color: "rgba(248,249,250,0.92)", background: "rgba(184,196,212,0.1)", borderLeft: `3px solid ${NEUTRO}`,
             overflowWrap: "break-word",
           }}>
-            <Plegable texto={pantalla.acierto.texto} />
-          </p>
-          <p data-texto data-nota style={{ ...PARRAFO, marginTop: "10px", fontSize: "13px", color: "rgba(248,249,250,0.82)" }}>
-            {pantalla.acierto.nota}
+            <Plegable texto={pantalla.acierto.texto} porque={pantalla.acierto.porque ?? null} />
           </p>
           <button type="button" data-boton="seguir" onClick={onSeguir} style={{ ...boton(true), marginTop: "12px" }}>
             {pantalla.acierto.boton}
@@ -242,7 +223,7 @@ export default function LaCuentaQueNoSeMueve({ pieza = PIEZA_LA_CUENTA_QUE_NO_SE
           </div>
         )}
 
-        {(pantalla.tipo === "lectura" || pantalla.tipo === "resumen") && (
+        {pantalla.tipo === "resumen" && (
           <div style={{ display: "flex", flexDirection: "column" }}>
             <Parrafos lista={pantalla.parrafos} />
             <div style={{ marginTop: "16px" }}><FiguraDosColumnas estado={pantalla.figura} /></div>
@@ -250,7 +231,7 @@ export default function LaCuentaQueNoSeMueve({ pieza = PIEZA_LA_CUENTA_QUE_NO_SE
             {pantalla.boton && (
               <button
                 type="button"
-                data-boton={pantalla.boton === BOTON.verElCaso ? "ver-el-caso" : "seguir"}
+                data-boton="seguir"
                 onClick={seguir}
                 style={{ ...boton(true), marginTop: "14px" }}
               >

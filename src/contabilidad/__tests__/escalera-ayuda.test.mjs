@@ -408,7 +408,6 @@ function adelantos() {
 
 /* Lo publicado que hoy lo viola (medido el 15 de octubre de 2026): deuda conocida, en revisión. Se quita de aquí al corregirse. */
 const DEUDA = [
-  "t7-1-a1-la-cuenta-que-no-se-mueve · pregunta-conteo ← la-consecuencia.parrafos",
   "t7-1-a1-la-cuenta-que-no-se-mueve · pregunta-conteo ← pregunta-compra.texto",
   "t7-3-descuento-comercial · dos-clases ← portada.objetivo",
   /* Del recorte de T7-3 (texto de Near, 15 de octubre de 2026): en revisión con Near. */
