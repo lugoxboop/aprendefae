@@ -208,3 +208,31 @@ test("★★★ fuera del catálogo de FP; en T7-3, justo después de A3", () =>
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A4_ID)), []);
   assert.doesNotMatch(leer("src/data/contabilidadT7_3_a4.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);
 });
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+test("★★★ Patrón T7-3: la franja de A3, con el pago del 4 de junio, en la pantalla 1 y en ninguna otra", async () => {
+  const m = await montar();
+  try {
+    const c = m.caja;
+    const visto = [];
+    for (let k = 0; k < 12; k++) {
+      const id = c.querySelector("[data-pantalla]").dataset.pantalla;
+      const fr = [...c.querySelectorAll("[data-plazos]")];
+      visto.push([id, fr.map((f) => f.querySelector("[data-pago]")?.textContent ?? "sin pago")]);
+      const p = pantalla(id);
+      if (p.opciones) {
+        await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`)); await tocar(boton(c, "confirmar"));
+        assert.equal(c.querySelectorAll("[data-plazos]").length, 0, `${id}: sin franja tras el acierto`);
+        await tocar(boton(c, "seguir"));
+      } else {
+        const b = boton(c, "seguir") ?? boton(c, "empezar");
+        if (!b) break;
+        await tocar(b);
+      }
+    }
+    assert.deepEqual(visto.filter(([, f]) => f.length), [["quien-compra", ["Pago · 4 jun"]]]);
+  } finally {
+    m.desmontar();
+  }
+});
