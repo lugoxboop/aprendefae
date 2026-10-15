@@ -200,6 +200,7 @@ const EL_CIERRE = {
   lineas: [
     {
       id: "inicial",
+      pista: "Ese valor ya no es lo que hay, así que sale de la cuenta. ¿De qué lado baja un activo?",
       cuenta: "Inventario de mercancías",
       accion: "quitar el inventario inicial",
       monto: inicial,
@@ -208,6 +209,7 @@ const EL_CIERRE = {
     },
     {
       id: "final",
+      pista: "Ese valor es lo que hay hoy, así que entra a la cuenta. ¿De qué lado sube un activo?",
       cuenta: "Inventario de mercancías",
       accion: "colocar el inventario final",
       monto: finalPromedio,
@@ -234,6 +236,7 @@ const EL_CIERRE = {
 /* P5 · El costo de lo vendido. */
 const EL_COSTO = {
   id: "el-costo-de-lo-vendido",
+  pista: "Lo vendido no es todo lo que la empresa tuvo para vender. Falta quitar algo.",
   tipo: "eleccion",
   parrafos: ["Para el costo de la mercancía vendida, se suman el inventario inicial y las compras, y se resta el final."],
   calculos: [`Inventario inicial $${cifra(inicial)} + Compras $${cifra(compras)} = Costo de mercancía disponible $${cifra(disponible)}`],
@@ -286,6 +289,7 @@ const LAS_UTILIDADES = {
 /* P7 · Lado a lado. Lo igual, en el bloque fijo; lo que cambia, en la tabla. */
 const LADO_A_LADO = {
   id: "lado-a-lado",
+  pista: "Si queda más en la bodega, ¿sale más o menos costo hacia lo vendido? Sigue ese efecto hasta la utilidad.",
   tipo: "eleccion",
   bloqueFijo: {
     rotulo: "Iguales con los tres métodos",

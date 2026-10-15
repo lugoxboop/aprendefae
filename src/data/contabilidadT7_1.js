@@ -179,6 +179,7 @@ const LA_CONSECUENCIA = {
  */
 const PREGUNTA_COMPRA = {
   id: "pregunta-compra",
+  pista: "Busca la cuenta que recoge lo comprado en el periodo.",
   tipo: "pregunta",
   enunciado: "El 16 de abril, La Reventa Ltda. le compra mercancía a un proveedor por $5.000.000, a crédito. La empresa usa el sistema de inventario periódico.",
   /*
@@ -232,6 +233,7 @@ const PREGUNTA_COMPRA = {
 /* Pantalla 5 · pregunta 2. La v5 no trae ficha ni ayuda en esta pantalla. */
 const PREGUNTA_CONTEO = {
   id: "pregunta-conteo",
+  pista: "El conteo dice cuánto vale lo que quedó en la bodega. Piensa en qué cuenta estuvo quieta todo el periodo.",
   tipo: "pregunta",
   enunciado: null,
   ficha: null,

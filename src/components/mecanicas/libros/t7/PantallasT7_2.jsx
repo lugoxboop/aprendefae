@@ -4,7 +4,7 @@ import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { cifraK } from "../../../../contabilidad/t7_2Kardex.js";
 import Kardex from "./KardexT7_2.jsx";
-import { textosDelError, contarFallo } from "./escaleraAyuda.js";
+import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDeLineas, puestoTrasProbarOtra } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -359,6 +359,8 @@ function Lados({ pantalla, onSeguir, kardexDe }) {
   const [orden] = useState(() => barajar(pantalla.lineas));
   const [puesto, setPuesto] = useState({});
   const [veredicto, setVeredicto] = useState(null);
+  const [fallosLinea, setFallosLinea] = useState({});
+  const cerrada = (l) => lineaCerrada(pantalla, l, fallosLinea[l.id]);
   const ref = useRef(null);
   const malas = veredicto?.malas ?? [];
   const estado = !veredicto ? "colocando" : malas.length ? "error" : "acierto";
@@ -367,12 +369,16 @@ function Lados({ pantalla, onSeguir, kardexDe }) {
   const pie = estado === "colocando" ? pantalla.pie : estado === "error" ? pantalla.error.pie : pantalla.acierto.pie;
 
   const tocar = (l, lado) => {
-    if (estado !== "colocando") return;
+    if (estado !== "colocando" || cerrada(l)) return;
     setPuesto((p) => ({ ...p, [l.id]: p[l.id] === lado ? undefined : lado }));
   };
-  const confirmar = () => setVeredicto({ malas: orden.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id) });
+  const confirmar = () => {
+    const malas = orden.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id);
+    setFallosLinea((f) => sumarFallosDeLineas(f, malas));
+    setVeredicto({ malas });
+  };
   const probarOtra = () => {
-    setPuesto((p) => { const n = { ...p }; for (const id of malas) delete n[id]; return n; });
+    setPuesto((p) => puestoTrasProbarOtra(p, malas, pantalla.lineas, cerrada));
     setVeredicto(null);
   };
 
@@ -394,7 +400,7 @@ function Lados({ pantalla, onSeguir, kardexDe }) {
                 data-linea={l.id}
                 data-lado={cual}
                 aria-pressed={esta}
-                aria-disabled={estado !== "colocando" ? "true" : undefined}
+                aria-disabled={estado !== "colocando" || cerrada(l) ? "true" : undefined}
                 aria-label={`${l.cuenta}, ${cifraK(l.monto)}: ${nombreLado(cual)}${error ? ", incorrecto" : ""}`}
                 onClick={() => tocar(l, cual)}
               >
@@ -410,7 +416,7 @@ function Lados({ pantalla, onSeguir, kardexDe }) {
                 <span className="t7bp-monto" data-monto>{cifraK(l.monto)}</span>
               </p>
               <span className="t7bp-g2">{boton(DEBE)}{boton(HABER)}</span>
-              {mala && estado === "error" && <Mensaje ok={false} textos={[l.devolucion]} refFoco={l.id === malas[0] ? ref : undefined} />}
+              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} refFoco={l.id === malas[0] ? ref : undefined} />}
             </div>
           );
         })}

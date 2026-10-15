@@ -115,6 +115,7 @@ const LOS_DATOS = {
 /* P3 · PEPS. La línea del flujo de costos es de la v2, con «unidades» (opcionales). */
 const PEPS = {
   id: "peps",
+  pista: "Con PEPS, las primeras unidades que entraron son las primeras que salen. ¿Cuáles se quedan?",
   tipo: "eleccion",
   encabezado: "Método PEPS",
   parrafos: [
@@ -130,6 +131,13 @@ const PEPS = {
       correcta: false,
       devolucion: "Las 10 del inicio fueron las primeras en entrar, así que con PEPS son las primeras en salir. Se vendieron todas. Las que quedan son de la última compra.",
     },
+    {
+      id: "promedio",
+      texto: "De los dos grupos, con un costo promedio",
+      correcta: false,
+      /* Tercera opción: anexo del lote 2 (Near). */
+      devolucion: "Eso hace el promedio ponderado, que viene después. PEPS no mezcla: toma las unidades en el orden en que entraron.",
+    },
   ],
   pie: "Basado en el libro, pp. 215 y 219",
   error: { pie: "Basado en el libro, p. 219" },
@@ -143,6 +151,7 @@ const PEPS = {
 /* P4 · UEPS, con su rótulo. El acierto, el original de la v1. */
 const UEPS_P = {
   id: "ueps",
+  pista: "Con UEPS, salen primero las últimas que entraron. Piensa cuáles se quedan sin salir.",
   tipo: "eleccion",
   encabezado: `Método ${UEPS}`,
   parrafos: [
@@ -158,6 +167,13 @@ const UEPS_P = {
       correcta: false,
       devolucion: "Con UEPS salen primero las últimas que entraron: las 30 compradas. Se vendieron todas, y además 5 de las del inicio. Las que quedan son del inicio.",
     },
+    {
+      id: "promedio",
+      texto: "De los dos grupos, con un costo promedio",
+      correcta: false,
+      /* Tercera opción: anexo del lote 2 (Near). */
+      devolucion: "Eso hace el promedio ponderado, que viene después. UEPS no mezcla: toma las unidades en orden, desde la última que entró.",
+    },
   ],
   pie: "Basado en el libro, pp. 216 y 220",
   error: { pie: "Basado en el libro, p. 220" },
@@ -172,6 +188,7 @@ const UEPS_P = {
 /* P5 · Promedio ponderado. El acierto, el original de la v1. */
 const PROMEDIO = {
   id: "promedio-ponderado",
+  pista: "No es el punto medio entre los dos precios. Cada precio pesa según las unidades compradas a ese precio.",
   tipo: "eleccion",
   encabezado: "Método del costo promedio ponderado",
   parrafos: [
@@ -207,6 +224,7 @@ const PROMEDIO = {
 /* P6 · Lado a lado. Las cuatro columnas de la v1, una tarjeta por método (v2, nota para Watari). */
 const LADO_A_LADO = {
   id: "lado-a-lado",
+  pista: "Mira de qué compra son las unidades que quedan con PEPS, y cuánto costó esa compra.",
   tipo: "eleccion",
   parrafos: [],
   metodos: {
@@ -249,6 +267,7 @@ const LADO_A_LADO = {
  */
 const A_FAVOR_Y_EN_CONTRA = {
   id: "a-favor-y-en-contra",
+  pista: "Piensa si estos métodos dicen cómo sale la mercancía de la bodega o solo cómo se le pone precio.",
   tipo: "eleccion",
   encabezado: "Lo que el libro dice a favor y en contra",
   parrafos: [
@@ -303,6 +322,7 @@ const A_FAVOR_Y_EN_CONTRA = {
 /* P8 · La recomendación del libro (nueva en la v2). Usa «impuesto de renta» sin repetir la glosa. */
 const LA_RECOMENDACION = {
   id: "la-recomendacion",
+  pista: "Si los precios suben, ¿qué costos le tocan a lo vendido con UEPS? Sigue el efecto hasta el impuesto.",
   tipo: "eleccion",
   encabezado: "La recomendación del libro",
   parrafos: [

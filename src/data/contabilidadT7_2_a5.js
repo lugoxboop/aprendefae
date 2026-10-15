@@ -60,6 +60,7 @@ const PIE_G = "Basado en el libro, pp. 245-246";
 /* P2 · G-1: el flete lo asume el comprador. */
 const EL_COMPRADOR = {
   id: "lo-asume-el-comprador",
+  pista: "En el permanente, este flete sigue siendo parte del costo. ¿Qué cuenta guarda ese costo en este sistema?",
   tipo: "eleccion",
   enunciado: "El 18 de marzo, Santa Martha compra mercancía a crédito a un proveedor. La mercancía vale $7.500.000, más el IVA. El flete vale $650.000 y lo asume Santa Martha, que le paga a la transportadora ese mismo día. Usa el sistema de inventario permanente.",
   ficha: [
@@ -99,6 +100,7 @@ const EL_COMPRADOR = {
 /* P3 · G-2: el flete lo asume el vendedor. */
 const EL_VENDEDOR = {
   id: "lo-asume-el-vendedor",
+  pista: "La Popa ya vendió esa mercancía. El flete no se suma al costo de nada que le quede.",
   tipo: "eleccion",
   enunciado: "El 18 de marzo, La Popa le vende mercancía a crédito a Santa Martha. La mercancía vale $7.500.000, más el IVA, y a La Popa le costó $3.000.000. El flete vale $650.000 y lo asume La Popa, que le paga a la transportadora ese mismo día. Usa el sistema de inventario permanente.",
   ficha: [
@@ -126,8 +128,8 @@ const EL_COSTO = {
   tipo: "lados",
   consigna: "En el permanente, la venta tiene además el asiento del costo. Toca Debe o Haber en cada línea.",
   lineas: [
-    { id: "costo", cuenta: "Costo de mercancía vendida", monto: COSTO, lado: DEBE, devolucion: "El costo de la mercancía vendida tiene saldo deudor: va al debe." },
-    { id: "inventario", cuenta: "Inventario de mercancías", monto: COSTO, lado: HABER, devolucion: "Sale mercancía de la bodega, así que el activo disminuye: va al haber." },
+    { id: "costo", cuenta: "Costo de mercancía vendida", monto: COSTO, lado: DEBE, pista: "Es el costo de lo que salió con la venta. ¿De qué lado aumenta un costo?", devolucion: "El costo de la mercancía vendida tiene saldo deudor: va al debe." },
+    { id: "inventario", cuenta: "Inventario de mercancías", monto: COSTO, lado: HABER, pista: "La mercancía sale de la bodega. ¿De qué lado baja un activo?", devolucion: "Sale mercancía de la bodega, así que el activo disminuye: va al haber." },
   ],
   pie: PIE_COSTO,
   error: { pie: PIE_COSTO },
@@ -156,6 +158,7 @@ const EL_COSTO = {
 const PIE_PERIODICO = "Basado en el libro, pp. 228 y 245-246";
 const FRENTE = {
   id: "frente-al-periodico",
+  pista: "En los dos sistemas, ese flete se suma al costo. ¿Qué es lo distinto entre uno y otro?",
   tipo: "eleccion",
   /* «Línea fija»: se ve en todos los estados. */
   despues: ["Si el flete lo asume el vendedor, es un gasto de venta en los dos sistemas."],
