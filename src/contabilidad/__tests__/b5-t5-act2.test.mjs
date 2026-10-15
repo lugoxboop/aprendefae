@@ -46,6 +46,7 @@ const { default: CierreConDiario } = await import("../../components/mecanicas/li
 const { default: CierreSantaPacha } = await import("../../components/mecanicas/libros/tema5/CierreSantaPacha.jsx");
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const L = await import("../t5Act2.js");
+const { textoD } = await import("../cierreConMesa.js");
 const D = await import("../../data/contabilidadT5Act2.js");
 const { FAE } = await import("../../theme.js");
 
@@ -186,7 +187,9 @@ test("★★★ prioridad D > C > A > B en las cuatro partes, cada una con su te
       const { caja, desmontar } = await montar({ items: [parte(n)] });
       await armar(caja, puestas);
       assert.equal(caja.querySelector("[data-panel]").dataset.error, tipo, `parte ${n}: ${tipo}`);
-      assert.equal(textoRetro(caja), errorDe(n, tipo), `parte ${n}: texto ${tipo}`);
+      /* La D nombra la cuenta que sobra y sigue con el texto del paquete (Sakuta, calidad 1). */
+      const esperado = tipo === "D" ? textoD({ asiento: ok, errores: { D: errorDe(n, "D") } }, puestas) : errorDe(n, tipo);
+      assert.equal(textoRetro(caja), esperado, `parte ${n}: texto ${tipo}`);
       desmontar();
     }
   }
@@ -389,11 +392,11 @@ const px = (v) => Number.parseFloat(v) || 0;
 const UTIL_320 = 258;
 
 /*
- * Salida 1 de Sakuta (14-oct): el marco de cada parte en la mesa de la célula
- * va SIN relleno lateral (el borde se conserva), como en la réplica de Mai que
- * auditó Shoko. Con el relleno de 10 px, el hueco era 69,88 y no cabía.
+ * Calidad 1 (hoja de Mai, 15-oct): la parte de la mesa de la célula va SIN
+ * borde y SIN relleno lateral; la separan 16 px de aire. Con relleno, el
+ * hueco no deja caber «1.725.000» (con 6 px ya falta 0,03).
  */
-test("★★★ «1.725.000», la cifra más larga de las respuestas, cabe en el campo a 320, con el marco de la parte sin relleno lateral", async () => {
+test("★★★ «1.725.000», la cifra más larga de las respuestas, cabe en el campo a 320, con la parte sin borde ni relleno lateral", async () => {
   const { caja, desmontar } = await montar({ items: [parte(2)] });
   await armar(caja, parte(2).asiento, false);
   const mesa = caja.querySelector("[data-mesa]");
@@ -402,17 +405,18 @@ test("★★★ «1.725.000», la cifra más larga de las respuestas, cabe en el
   const signo = campo.querySelector("[data-signo]");
   /* El hueco se calcula con los estilos que el componente pinta, desde el Panel: el marco de la parte, la mesa, la tarjeta y el campo. */
   const seccion = caja.querySelector("[data-parte]");
-  const [, phs] = seccion.style.padding.split(" ").map(px);
-  assert.equal(phs, 0, "el marco de la parte, sin relleno lateral (salida 1)");
-  assert.match(seccion.style.border, /^1px solid /, "y con su borde");
-  const util = UTIL_320 - 2 * phs - 2 * px(seccion.style.border);
+  const phs = px(seccion.style.paddingLeft);
+  assert.equal(phs, 0, "la parte, sin relleno lateral");
+  assert.equal(seccion.style.border, "", "y sin borde (calidad 1)");
+  assert.equal(seccion.style.marginTop, "16px", "16 px de aire con lo de encima");
+  const util = UTIL_320 - 2 * phs;
   const columna = (util - px(mesa.style.gap)) / 2;
   const [pv, ph] = tarjeta.style.padding.split(" ").map(px);
   const tarjetaUtil = columna - 2 * ph - 2 * px(tarjeta.style.border);
   const [, phc] = campo.style.padding.split(" ").map(px);
   const hueco = tarjetaUtil - 2 * phc - 2 * px(campo.style.border) - GLIFOS_CIFRA.$ - px(signo.style.marginRight);
-  /* Medido en Chromium a 320 (14-oct, con la salida 1): el input mide 79,88. */
-  assert.ok(pv >= 0 && Math.abs(hueco - 79.88) < 1, `hueco ${hueco}`);
+  /* La hoja de Mai, sin borde: el hueco del campo mide 80,88 (con borde, 79,88). */
+  assert.ok(pv >= 0 && Math.abs(hueco - 80.88) < 1, `hueco ${hueco}`);
   const respuestas = PARTES.flatMap((p) => p.asiento.map((e) => e.valor));
   const mayor = respuestas.map((v) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ".")).sort((a, b) => ancho(b) - ancho(a))[0];
   assert.equal(mayor, "1.725.000");

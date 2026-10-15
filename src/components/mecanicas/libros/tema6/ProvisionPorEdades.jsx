@@ -13,8 +13,9 @@ import { pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
  * provisión, el total y el valor neto. Es un escenario simulado: el rótulo
  * fijo de T6 · A5, la regla en tabla con el pie del porcentaje, y los pies
  * del escenario en su forma. Hoja de Mai: los datos de la parte 2 van dentro
- * de la tabla de la regla, el rótulo al pie de la tabla, y la fila 1 (sin
- * porcentaje) toma su pie del escenario de la nota. El «%» va pegado a su número, como en T6 · A5.
+ * de la tabla de la regla. Calidad 1: la nota sube encima de la tabla, sin
+ * pie, y el rótulo y la fuente del porcentaje son dos líneas sin cajas al
+ * pie de la tabla, dentro de su borde. El «%» va pegado a su número, como en T6 · A5.
  * Los textos y las cifras, en data/contabilidadT6Act6.js.
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -28,7 +29,8 @@ export const CONFIG_T6_ACT6 = {
   rotuloSimulado: T6_ACT6.rotulo,
   /* Un solo pie, el de la norma, para las tres filas con porcentaje; la fila 1 se cubre con el pie del escenario de la nota (Mai). */
   reglaTabla: { filas: GRUPOS_T6_ACT6.map((g) => ({ id: g.id, nombre: g.nombre, valor: pegarPorcentaje(g.porcentaje) })), pie: PIES_T6_ACT6.regla },
-  nota: { texto: T6_ACT6.nota, pie: PIES_T6_ACT6.nota },
+  /* La nota va encima de la tabla y sin pie: el rótulo, al pie de la tabla, ya dice «Escenario simulado» (Mai, calidad 1). */
+  nota: { texto: T6_ACT6.nota },
   partida: pegarPorcentaje(T6_ACT6.partida),
   partes: PARTES_T6_ACT6.map((p) => ({
     ...p,
