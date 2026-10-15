@@ -51,6 +51,12 @@ export const ICONO_POR_ACTIVIDAD = {
   "t7-3-ajuste-por-conteo": I.AjustePorConteo,
   "t7-3-que-entra-al-costo": I.EntraAlCosto,
   "t7-3-costo-o-vnr": I.CostoOValorNetoRealizable,
+  /* Tema 7 · Inventarios II */
+  "t7-2-debe-o-haber": I.DebeOHaber,
+  "t7-2-dos-asientos": I.ArmaLosDosAsientos,
+  "t7-2-llena-el-kardex": I.LlenaElKardex,
+  "t7-2-periodico-o-permanente": I.PeriodicoOPermanente,
+  "t7-2-flete-y-devolucion": I.FleteYDevolucion,
 };
 
 /** Los nodos del camino con su ícono, si lo tienen. */
