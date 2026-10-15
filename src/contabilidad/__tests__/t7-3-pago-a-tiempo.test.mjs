@@ -271,12 +271,14 @@ test("★★★ Patrón T7-3: cada figura después de su ítem, y el asiento de 
   const Z = "plazos Pago · 23 oct";
   const DC = "El descuento condicionado: 1.955.000 4 % 78.200";
   const PG = "El pago del 23 de octubre: 2.199.375 78.200 2.121.175";
-  /* Lo que se ve con N ítems respondidos (las muestras de Watari: la factura hasta el 2, la franja hasta el 3). */
-  const esperado = [[], [F], [F, Z], [Z, DC], [DC, PG], [DC, PG], [DC, PG], [DC, PG]];
+  /* Lo que se ve en la pantalla de cada ítem, antes y después de responder (las muestras de Watari:
+     la factura hasta el ítem 2, la franja hasta el 3; ninguna se va en el momento de responder). */
+  const antes = [[], [F], [Z], [DC], [DC, PG], [DC, PG], [DC, PG]];
+  const despues = [[F], [F, Z], [Z, DC], [DC, PG], [DC, PG], [DC, PG], [DC, PG]];
   const m = await montar();
   try {
     for (const [k, it] of EN_ORDEN.entries()) {
-      assert.deepEqual(vistas(m.caja), esperado[k], `antes del ítem ${k + 1}`);
+      assert.deepEqual(vistas(m.caja), antes[k], `antes del ítem ${k + 1}`);
       /* El asiento de arriba, solo en el ítem 6, y ya resuelto. */
       const arriba = m.caja.querySelector("[data-asiento-arriba]");
       assert.equal(Boolean(arriba), it.id === "libro-de-bambu", `asiento arriba en el ítem ${k + 1}`);
@@ -291,7 +293,7 @@ test("★★★ Patrón T7-3: cada figura después de su ítem, y el asiento de 
         for (const l of it.lineas) await tocar(lado(m.caja, l.id, l.lado));
         await tocar(boton(m.caja, "Comprobar"));
       }
-      assert.deepEqual(vistas(m.caja), esperado[k + 1], `al responder el ítem ${k + 1}`);
+      assert.deepEqual(vistas(m.caja), despues[k], `al responder el ítem ${k + 1}`);
       /* El pago del 23 de octubre: a los 20 días del 3 de octubre, en la franja de 30. */
       if (k === 1) assert.equal(m.caja.querySelector("[data-plazos] .pz-mark").style.left, `${(20 / 30) * 100}%`);
       await tocar(boton(m.caja, k === EN_ORDEN.length - 1 ? D.BOTON_H4.verResumen : D.BOTON_H4.siguiente));
