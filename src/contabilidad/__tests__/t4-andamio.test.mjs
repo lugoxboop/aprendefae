@@ -180,6 +180,26 @@ test("★★★ el índice: con Aprender y Hacer, la tarjeta lleva las dos insig
   } finally { m.desmontar(); }
 });
 
+test("★★★ el título del tema puede encogerse y romper en dos líneas, pero no cortarse: sus estilos en línea ganan a la elipsis del header compacto", () => {
+  /*
+   * La hoja compartida (AccountControl.jsx) le pone al h1 de .fae-cabecera-
+   * titulo `white-space: nowrap`, `overflow: hidden` y elipsis por debajo de
+   * ANCHO_ESTRECHO. Los estilos en línea del h1 de T4 la vencen. La medida de
+   * verdad, a 320 y 375 px en Chromium, la hace scripts/t4/medir-titulo.mjs.
+   */
+  const m = montar(h(ContabilidadT4View, { modo: null, onBack: () => {} }));
+  try {
+    const h1 = m.caja.querySelector("h1[data-titulo-tema]");
+    assert.ok(h1, "no está el h1 del tema");
+    assert.equal(h1.textContent, TEMA.title);
+    assert.ok(h1.closest(".fae-cabecera-titulo"), "el h1 ya no está en la fila del header compacto: esta prueba sobra o hay que moverla");
+    const st = h1.style;
+    assert.deepEqual([parseFloat(st.minWidth), st.flexShrink, st.whiteSpace, st.overflow, st.textOverflow], [0, "1", "normal", "visible", "clip"]);
+  } finally { m.desmontar(); }
+  const hoja = leer("src/components/auth/AccountControl.jsx");
+  assert.match(hoja, /\.fae-cabecera-titulo > h1 \{[^}]*white-space: nowrap;/, "la hoja compartida ya no corta el título: revisar si esta excepción sigue haciendo falta");
+});
+
 test("★★★ la vista montada: cabecera con el título; Aprender con A0 y A1 como «PIEZA 1 DE 2» y «PIEZA 2 DE 2»; Hacer con el camino y su nodo H1", () => {
   for (const modo of [null, APRENDER, HACER]) {
     const m = montar(h(ContabilidadT4View, { modo, onBack: () => {} }));

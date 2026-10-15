@@ -271,3 +271,48 @@ Prerrequisitos recuperados (posiblemente incompletos):
 | Kit de Cliente | Solo el inicio: un prerrequisito completo y otro a medias. |
 
 Cuando aparezcan, se actualiza este archivo y se anota en `decisiones.md`.
+
+## Cómo se escribe el nombre de una actividad
+
+En la pantalla de Hacer conviven hoy **dos estilos**, y un estudiante los ve
+juntos en la misma lista:
+
+```
+¿Desde Dónde Preguntan?     ← estilo viejo (T1, «las cuentas», política monetaria)
+¿Se asienta o no?           ← estilo nuevo (T3 a T7 y el repaso)
+```
+
+**El bueno es el segundo.** En español solo lleva mayúscula la primera palabra;
+poner mayúscula en cada una es una convención del inglés que aquí se cuela por
+traducción. Medido el 15 de octubre: **38 actividades** con el estilo viejo
+—toda la política monetaria, las siete de T1 y seis de «las cuentas»—; las
+demás ya están bien.
+
+**Pero no se arregla con un reemplazo masivo, y por eso esto es una regla y no
+un parche.** Tres cosas que un `lowercase` automático rompería:
+
+| Nombre | Por qué la mayúscula es correcta |
+|---|---|
+| «¿Entra o sale de **Caja**?» | *Caja* es el nombre de una cuenta |
+| «La provisión de **El Torito**» | nombre propio de la empresa del caso |
+| «**NIC** 2», «**IVA**», «**FP**» | siglas |
+
+En contabilidad los nombres de cuenta van en mayúscula —Caja, Bancos,
+Clientes, Inventarios— y esa mayúscula **es información**, no adorno:
+distingue la cuenta del objeto. «Entra o sale de caja» es una caja de cartón;
+«Entra o sale de Caja» es la cuenta.
+
+**La regla:**
+
+1. Mayúscula solo en la primera palabra del nombre.
+2. **Salvo** nombres de cuenta, nombres propios de empresas o personas del
+   caso, y siglas, que la conservan.
+3. Se revisa a mano, nombre por nombre. No hay regla automática que distinga
+   «caja» de «Caja»: hay que saber contabilidad para decidirlo.
+
+**Quién lo arregla:** cada célula los suyos, porque hay que entender el caso
+para aplicar la excepción 2. Los de la política monetaria, T1 y «las cuentas»
+no tienen célula dueña: los toma el coordinador.
+
+Cambiar el `nombre` **no toca el `id`**, así que no hay migración, no se mueve
+ninguna fila del catálogo y ningún estudiante pierde FP. Es texto de pantalla.
