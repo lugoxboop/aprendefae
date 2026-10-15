@@ -150,11 +150,15 @@ export const EJEMPLO_T6_ACT4 = {
  * ═══════════ EL ASIENTO MÍNIMO: LO QUE SE ACREDITA EN CADA HECHO ═══════════
  *
  * Calidad (hoja 4 de Mai): bajo el hecho, un asiento con DEBE y HABER. Lo que
- * se acredita no estaba en el contenido de a4: es la LECTURA DE MAI, sacada de
- * las otras piezas de T6, y PENDIENTE DE QUE LA CONFIRME FUTABA (sobre todo
- * Bancos en el cheque devuelto, T6 · A1 pp. 191 y 197). «Ingresos por ventas»
- * y «Bancos» no son opciones: solo aparecen en el HABER, con sus nombres
- * publicados.
+ * se acredita no estaba en el contenido de a4: es la lectura de Mai, sacada de
+ * las otras piezas de T6, VERIFICADA POR SHOKO contra el libro. «Ingresos por
+ * ventas» y «Bancos» no son opciones: solo aparecen en el HABER, con sus
+ * nombres publicados.
+ *
+ * qd-04 (cheque devuelto → Bancos) es una CONSTRUCCIÓN: el libro anota la nota
+ * débito en Clientes (p. 197) pero no imprime el asiento con Bancos. a4 no
+ * lleva pies; si algún día lo lleva, el de ese hecho dice «Basado en el
+ * libro, …», nunca «Libro, p. …» (Shoko).
  */
 export const SE_ACREDITA_T6_ACT4 = {
   "qd-01": INGRESOS,

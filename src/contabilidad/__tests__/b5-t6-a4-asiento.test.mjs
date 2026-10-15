@@ -115,3 +115,40 @@ test("★★ en cada hecho, solo la cuenta que se acredita se pasa al HABER (E3 
   /* Ninguna contrapartida es la cuenta que se debita. */
   for (const h of [...D.HECHOS_T6_ACT4, D.EJEMPLO_T6_ACT4]) assert.notEqual(D.SE_ACREDITA_T6_ACT4[h.id], D.OPCIONES_T6_ACT4.find((x) => x.id === h.respuesta).nombre, h.id);
 });
+
+/* ═══════════ LAS TRES CONDICIONES DE SHOKO ═══════════ */
+
+test("★★★ Shoko 1: en los castigos (qd-05, qd-06, qd-07), Clientes elegida pasa al HABER: también se acredita", async () => {
+  for (const id of ["qd-05", "qd-06", "qd-07"]) {
+    assert.equal(A.asientoDe(hecho(id), D.A_CLIENTES, "final").caso, "al-haber", id);
+    const { caja, desmontar } = await montar([hecho(id)]);
+    await tocar(opcion(caja, D.A_CLIENTES));
+    assert.match(ranura(caja, "debe").querySelector("[data-cuenta]").style.animation, /b5-entra/, `${id}: entra, no se va`);
+    await espera(560);
+    assert.deepEqual(visible(caja, "haber"), ["Cuentas por cobrar – clientes", "si"], `${id}: en el HABER`);
+    desmontar();
+  }
+  /* En los diez hechos: toda opción que esté en el HABER del asiento pasa al HABER; ninguna de ellas se va. */
+  for (const h of D.HECHOS_T6_ACT4) {
+    for (const o of D.OPCIONES_T6_ACT4.filter((x) => x.id !== h.respuesta)) {
+      const enElHaber = o.nombre === D.SE_ACREDITA_T6_ACT4[h.id];
+      assert.equal(A.asientoDe(h, o.id, "entra").debe.saliendo === true, !enElHaber, `${h.id} · ${o.id}`);
+    }
+  }
+});
+
+test("★★★ Shoko 2: el HABER va vacío hasta que el estudiante elige", async () => {
+  for (const h of D.HECHOS_T6_ACT4) {
+    const { caja, desmontar } = await montar([h]);
+    assert.equal(visible(caja, "haber"), null, `${h.id}: el HABER, vacío`);
+    assert.equal(ranura(caja, "haber").querySelector("[data-cuenta]"), null);
+    desmontar();
+  }
+});
+
+test("★★ Shoko 3: qd-04 (Bancos) es una construcción: a4 no cita «Libro, p.» en ningún texto", () => {
+  const textos = [...D.HECHOS_T6_ACT4.flatMap((h) => [h.texto, h.acierto]), D.T6_ACT4.consigna, D.T6_ACT4.nota, D.T6_ACT4.regla, D.T6_ACT4.cierre];
+  assert.ok(textos.every((t) => !/Libro, p\./.test(t)));
+  assert.ok(!Object.keys(hecho("qd-04")).includes("pie"), "qd-04 no lleva pie");
+  assert.equal(D.SE_ACREDITA_T6_ACT4["qd-04"], "Bancos");
+});
