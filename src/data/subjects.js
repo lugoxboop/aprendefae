@@ -653,6 +653,8 @@ export const SUBJECTS = {
           { id: "t4-a3-el-arqueo", nombre: "El arqueo", clasificacion: { tipo: APRENDER } },
           /* H4, justo después de A3, que la sostiene. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0203. */
           { id: "t4-el-arqueo-de-rosa", nombre: "El arqueo de Rosa", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* H5, después de H4: también la sostiene A3 (los dos caminos del faltante). Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0204. */
+          { id: "t4-al-empleado-o-al-gasto", nombre: "¿Al empleado o al gasto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
       /*

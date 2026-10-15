@@ -2,10 +2,10 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * ¿CABEN LOS HACER DE T4 A 375 Y 320, Y NO DELATAN NADA?
  *
- *   node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4 [carpeta-de-capturas]
+ *   node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4|h5 [carpeta-de-capturas]
  *
  * Chromium de verdad, la vista de T4 en modo Hacer con ese juego abierto
- * (banco scripts/t4/harness-t4, #h1 a #h4). Salta el «Así se juega» y
+ * (banco scripts/t4/harness-t4, #h1 a #h5). Salta el «Así se juega» y
  * juega todas las tarjetas: en cada una, antes de tocar, mira el DOM; después
  * toca la primera opción (acierta en unas y falla en otras) y mide. En H3 no
  * hay opciones: arma el asiento con el constructor —las dos primeras cuentas
@@ -24,6 +24,10 @@
  *     el sobre mida lo mismo y la tarjeta de la pregunta arranque a la misma
  *     altura en todas las preguntas de una ronda, antes y después de
  *     responder (Hanayama H4 v1 §2: nada salta)
+ *   · H5: arma el asiento correcto con cifras (tres filas) y confirma. Mide
+ *     armado y confirmado. Además, que cada nombre de cuenta con raya, en la
+ *     paleta y en la fila, ocupe una línea o se parta justo después de «–»
+ *     (Hanayama H5 v1 §2)
  *   · PH8-2: antes de tocar, el DOM no trae ni la devolución ni la página
  *   · con movimiento reducido, nada de la actividad tiene animación en curso
  *
@@ -45,9 +49,10 @@ const JUEGOS = {
   h3: { raiz: "[data-t4-h3]", tarjeta: "[data-tarjeta-operacion]", siguiente: "Siguiente operación", rotulos: false, total: 4, armar: true },
   /* H4: 3 rondas de 2 o 3 preguntas; el bucle sigue mientras haya pregunta. */
   h4: { raiz: "[data-t4-h4]", tarjeta: "[data-tarjeta-pregunta]", siguiente: "Siguiente pregunta", otros: ["Siguiente ronda"], rotulos: false, total: 8, rondas: true },
+  h5: { raiz: "[data-t4-h5]", tarjeta: "[data-tarjeta-caso]", siguiente: "Siguiente caso", rotulos: false, total: 2, conCifras: true },
 };
 const J = JUEGOS[CUAL];
-if (!J) { console.error("uso: node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4 [carpeta]"); process.exit(2); }
+if (!J) { console.error("uso: node scripts/t4/medir-t4-hacer.mjs h1|h2|h3|h4|h5 [carpeta]"); process.exit(2); }
 const CAPTURAS = process.argv[3] ?? null;
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 const ANCHOS = [375, 320];
@@ -110,6 +115,23 @@ function medir({ antes, raiz, rotulos, siguiente, otros = [] }) {
     if (new Set([...rango.getClientRects()].map((x) => Math.round(x.top))).size > 1) problemas.push(`la cifra «${c.textContent}» del asiento completo se parte`);
   }
   const animado = [...zona.querySelectorAll("*")].filter((el) => el.getAnimations().some((a) => a.playState === "running")).length;
+  /* H5: un nombre con raya, en una línea o partido justo después de «–». */
+  for (const b of zona.querySelectorAll("[data-constructor] button, [data-fila-asiento] > div:first-child > span")) {
+    const t = b.textContent;
+    if (!t.includes("–")) continue;
+    const nodo = [...b.childNodes].find((n) => n.nodeType === 3);
+    if (!nodo) continue;
+    const r = document.createRange(); r.selectNodeContents(nodo);
+    const tops = [...new Set([...r.getClientRects()].filter((x) => x.width > 1).map((x) => Math.round(x.top)))];
+    if (tops.length > 2) problemas.push(`«${t}» ocupa ${tops.length} líneas`);
+    if (tops.length === 2) {
+      /* El primer renglón tiene que terminar en la raya. */
+      const i = t.indexOf("–");
+      const r1 = document.createRange(); r1.setStart(nodo, i); r1.setEnd(nodo, i + 1);
+      const r2 = document.createRange(); r2.setStart(nodo, i + 2); r2.setEnd(nodo, i + 3);
+      if (Math.round(r1.getBoundingClientRect().top) !== tops[0] || Math.round(r2.getBoundingClientRect().top) !== tops[1]) problemas.push(`«${t}» se parte fuera de la raya`);
+    }
+  }
   /* H4: el sobre y dónde arranca la pregunta, desde el tope de la zona. */
   const sobre = zona.querySelector("[data-sobre-h4] [data-figura]");
   const preg = zona.querySelector("[data-tarjeta-pregunta]");
@@ -143,7 +165,17 @@ for (const reducido of [false, true]) {
       if (J.rondas && await pg.$("[data-resumen]")) break;
       const id = `${J.rondas ? `${await pg.getAttribute("[data-enunciado]", "data-enunciado")}-` : ""}${await pg.getAttribute(J.tarjeta, J.tarjeta.slice(1, -1))}`;
       await estado(`${id}-colocando`, true);
-      if (J.armar) {
+      if (J.conCifras) {
+        /* El asiento correcto del caso, tomado de la tarjeta: se arma desde la paleta, fila por fila. */
+        const asiento = await pg.evaluate(async (id) => (await import("/src/data/contabilidadT4H5.js")).CASOS_H5.find((c) => c.id === id).asiento, id);
+        for (const [k, l] of asiento.entries()) {
+          await pg.locator(`${J.raiz} [data-constructor] button`, { hasText: new RegExp(`^${l.cuenta.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`) }).first().click();
+          await pg.click(`${J.raiz} [data-fila-asiento="${k}"] > div:nth-child(2) > button >> nth=${l.lado === "debe" ? 0 : 1}`);
+          await pg.fill(`${J.raiz} [data-fila-asiento="${k}"] input`, String(l.valor));
+        }
+        await estado(`${id}-armado`, true);
+        for (const b of await pg.$$("button")) { if ((await b.textContent())?.trim() === "Confirmar el asiento") { await b.click(); break; } }
+      } else if (J.armar) {
         /* Las dos primeras cuentas, la primera al debe y la segunda al haber: acierta en unas y falla en otras. */
         const cuentas = `${J.raiz} [data-constructor] > div > div:last-child > button`;
         await pg.click(`${cuentas} >> nth=0`);

@@ -37,9 +37,13 @@ import {
   H4, BOTON_H4, CIERRE_H4, CORRECTO as CORRECTO_H4, INCORRECTO as INCORRECTO_H4, CUADRA as CUADRA_H4,
   encabezadoH4, resumenH4, lectorErrorH4, sortearH4, opcionesEnOrden as opcionesH4, evaluarH4, reveladoH4, puntuarH4, itemH4,
 } from "../data/contabilidadT4H4.js";
+import {
+  H5, CUENTAS_H5, BOTON_H5, CIERRE_H5, CORRECTO as CORRECTO_H5, INCORRECTO as INCORRECTO_H5, FALTAN_FILAS, ROTULO_ASIENTO_H5, resumenH5,
+  sortearH5, evaluarH5, estaListoH5, puntuarH5, nombreDe as nombreH5,
+} from "../data/contabilidadT4H5.js";
 import { Opcion, Opciones, Pulsos, Cierre } from "./mecanicas/corazon/juego.jsx";
 import { TEXTO_CIERRE } from "./mecanicas/bloques/marcos.jsx";
-import { Responder, useTanda, AsientoEnLineas } from "./mecanicas/libros/piezas.jsx";
+import { Responder, useTanda, AsientoEnLineas, leerCifra } from "./mecanicas/libros/piezas.jsx";
 import ConstructorAsiento, { filaVacia } from "./mecanicas/libros/ConstructorAsiento.jsx";
 import { SOLO_LECTOR } from "./mecanicas/libros/verbos.jsx";
 import { Encabezado } from "./mecanicas/libros/tema1/encabezado.jsx";
@@ -79,6 +83,7 @@ export const JUEGOS_T4 = [
   { id: H2.id, Mecanica: ElControlQueSeSaltaron, titulo: H2.nombre },
   { id: H3.id, Mecanica: SeMueveLaCajaMenor, titulo: H3.nombre },
   { id: H4.id, Mecanica: ElArqueoDeRosa, titulo: H4.nombre },
+  { id: H5.id, Mecanica: AlEmpleadoOAlGasto, titulo: H5.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
@@ -1470,6 +1475,165 @@ export function ElArqueoDeRosa({ Marco, rotulo, titulo, acento, onCompletar, ite
       {r && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>{!ultimaDeLaRonda ? BOTON_H4.siguientePregunta : t.i + 1 === cuantas ? BOTON_H4.verResumen : BOTON_H4.siguienteRonda}</Responder>
+        </div>
+      )}
+    </Marco>
+  );
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · HACER 5 · ¿AL EMPLEADO O AL GASTO? (Célula D)
+ *
+ * Desde la especificación de Hanayama (celula-d/hanayama-h5-pantalla-v1.md,
+ * PASA de Shibukawa) y el paquete vigente de Katsumi, no desde el prototipo.
+ * Piezas compartidas, sin cambiarlas: Encabezado, Pulsos, ConstructorAsiento
+ * CON CIFRAS (seis cuentas, máximo 4, con sus totales en vivo), Responder,
+ * AsientoEnLineas y Cierre.
+ *
+ *   · la tarjeta del caso en tres partes: el enunciado; la decisión de la
+ *     empresa, tras un filete y en Inter 600 (es el dato que decide la
+ *     cuenta); y el pedido, en 14 y atenuado
+ *   · SIN SOBRE: el cálculo es parte de lo que se evalúa (Hanayama v1 §1.3)
+ *   · los nombres con raya se parten solo después de la raya: espacios duros
+ *     en los datos (v1 §2), nunca en el componente compartido. En la paleta
+ *     y las filas del constructor; en el asiento correcto van con espacios
+ *     normales, porque su columna es más estrecha que el sufijo
+ *   · «Confirmar el asiento» con al menos tres filas completas. Un intento.
+ *     UN mensaje: el primero de la lista de Katsumi que aplique. Después, el
+ *     asiento correcto, calculado
+ *   · mientras se arma, nada de la respuesta está en el DOM (PH8-2)
+ *
+ * Al terminar: onCompletar(pct, ms, detalle). Evaluativa: el motor escala los
+ * 50 FP. En modo demo no reporta nada.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+const filasVaciasH5 = () => [filaVacia(), filaVacia(), filaVacia()];
+
+export function AlEmpleadoOAlGasto({ Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null }) {
+  const t = useTanda(() => items ?? sortearH5(barajar));
+  const [filas, setFilas] = useState(filasVaciasH5);
+  const [r, setR] = useState(null);
+  const [bien, setBien] = useState(0);
+  const zonaBoton = useRef(null);
+  const tarjeta = useRef(null);
+
+  const c = t.items[t.i];
+  const cuantos = t.items.length;
+  const listo = estaListoH5(filas, leerCifra);
+
+  useEffect(() => {
+    if (t.terminado && !modoDemo) onCompletar?.(puntuarH5(bien, cuantos), Date.now() - t.inicio.current, t.detalle.current);
+  }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (r && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [r]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const confirmar = () => {
+    if (r || !listo) return;
+    const nuevo = evaluarH5(c, filas, leerCifra);
+    /* En el error se guarda el asiento armado: eso le dice algo al docente. */
+    t.anotar(c.id, nuevo.ok, nuevo.respuesta);
+    if (nuevo.ok) setBien((n) => n + 1);
+    setR(nuevo);
+  };
+
+  const avanzar = () => {
+    setR(null); setFilas(filasVaciasH5());
+    if (t.i + 1 < cuantos) { t.setI(t.i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); }
+    else t.setTerminado(true);
+  };
+
+  const reiniciar = () => { t.reiniciar(); setR(null); setFilas(filasVaciasH5()); setBien(0); };
+
+  if (t.terminado) {
+    return (
+      <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+        <Cierre pct={Math.round(puntuarH5(bien, cuantos))} onReiniciar={reiniciar} textoReiniciar={BOTON_H5.otraVez}>
+          <p data-resumen style={TEXTO_CIERRE}>{resumenH5(bien, cuantos)}</p>
+          <p data-cierre style={{ ...TEXTO_CIERRE, marginTop: "8px" }}>{CIERRE_H5.texto}</p>
+          <p data-pie-cierre style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{CIERRE_H5.pie}</p>
+        </Cierre>
+      </Marco>
+    );
+  }
+
+  return (
+    <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+      <style>{CSS_T4H1}</style>
+      {/* Como en H1-H4: la partida lleva `data-t4-h5` y la demo, `data-t4-h5-demo`. */}
+      <div {...(modoDemo ? { "data-t4-h5-demo": "" } : { "data-t4-h5": "" })}>
+        <Encabezado consigna={H5.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
+        <div style={{ marginBottom: "12px" }}>
+          <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Caso" />
+        </div>
+
+        {/* La tarjeta del caso: enunciado, decisión (600, tras un filete) y pedido. */}
+        <div key={c.id} className="fae-t4h1-entra" data-tarjeta-caso={c.id} style={{
+          margin: "0 0 4px", padding: "11px 13px", borderRadius: "11px",
+          background: "rgba(184,196,212,0.12)", borderLeft: "3px solid #B8C4D4",
+        }}>
+          <p ref={tarjeta} tabIndex={-1} data-enunciado style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, outline: "none" }}>
+            {c.enunciado}
+          </p>
+          {c.decisionTexto && (
+            <p data-decision style={{ margin: "9px 0 0", paddingTop: "9px", borderTop: "1px solid rgba(248,249,250,0.16)", fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", fontWeight: 600, color: FAE.text }}>
+              {c.decisionTexto}
+            </p>
+          )}
+          {c.pedido && (
+            <p data-pedido style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "20px", color: APAGADO_H1 }}>{c.pedido}</p>
+          )}
+        </div>
+
+        <div data-constructor>
+          <ConstructorAsiento
+            filas={filas}
+            cuentas={CUENTAS_H5}
+            conCifras
+            maximo={4}
+            deshabilitado={Boolean(r)}
+            estados={r ? r.estados : null}
+            acento={acento}
+            onFilas={setFilas}
+          />
+        </div>
+
+        {/* La devolución y el asiento correcto: vacíos mientras se arma. */}
+        <div data-retro aria-live="polite" aria-atomic="true">
+          {r && (
+            <div className="fae-t4h1-entra" data-panel={r.ok ? "acierto" : "error"} style={{
+              marginTop: "12px", padding: "11px 13px", borderRadius: "11px",
+              background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
+              borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
+            }}>
+              <p data-palabra style={{ margin: r.texto ? "0 0 4px" : 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", fontWeight: 700, color: r.ok ? FAE.text : FAE.coral }}>{r.ok ? CORRECTO_H5 : INCORRECTO_H5}</p>
+              {r.texto && <p data-texto-retro style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text }}>{r.texto}</p>}
+            </div>
+          )}
+          {r && (
+            <div className="fae-t4h1-entra" data-asiento-completo style={{ marginTop: "12px" }}>
+              {/*
+                En el asiento correcto, el nombre va con espacios normales: la
+                columna de la cuenta de AsientoEnLineas (compartido) mide 112 px
+                a 320, y «– faltante de caja menor» con espacios duros no cabe
+                (137 px; medido). Aquí se parte por palabras. La regla de la
+                raya es para la paleta y las filas del constructor.
+              */}
+              <AsientoEnLineas lineas={c.asiento.map((l) => ({ ...l, cuenta: nombreH5(l.cuenta) }))} rotulo={ROTULO_ASIENTO_H5} acento={acento} totales />
+            </div>
+          )}
+          {r && <p data-pie-caso style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{c.pie}</p>}
+        </div>
+      </div>
+
+      {/* «Confirmar el asiento» también en la demo: la mano lo toca. */}
+      {!r && <Responder onClick={confirmar} deshabilitado={!listo}>{BOTON_H5.confirmar}</Responder>}
+      {!r && !listo && (
+        <p data-aviso style={{ margin: "9px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12.5px", color: APAGADO_H1, textAlign: "center" }}>{FALTAN_FILAS}</p>
+      )}
+      {r && !modoDemo && (
+        <div ref={zonaBoton}>
+          <Responder onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H5.verResumen : BOTON_H5.siguiente}</Responder>
         </div>
       )}
     </Marco>
