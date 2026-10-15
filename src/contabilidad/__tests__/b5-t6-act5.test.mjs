@@ -191,3 +191,10 @@ test("★★ la mecánica de Macro no se toca: b5/CasillasEnOrden.jsx es la copi
   assert.deepEqual([D.T6_ACT5.id, D.T6_ACT5.dificultad, D.T6_ACT5.fpBase], ["b5-t6-a5", "medio", 25]);
   assert.match(GUIA, /medio · 25 FP/);
 });
+
+test("★★ hoja de Mai: las opciones con cifras van en una columna (en fila de tres, a 320, «$2.506.200» no cabe)", async () => {
+  const { caja, desmontar } = await montar();
+  const span = caja.querySelector("[data-opcion]");
+  assert.equal(span.closest("[style*='grid-template-columns']").style.gridTemplateColumns, "minmax(0, 1fr)");
+  desmontar();
+});
