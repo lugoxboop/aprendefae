@@ -28,9 +28,14 @@ import {
   H2, PIE_CASO_H2, PREGUNTA_H2, BOTON_H2, CIERRE_H2, resumenH2, lectorErrorH2,
   controlH2, sortearH2, opcionesEnOrden, evaluarH2, puntuarH2,
 } from "../data/contabilidadT4H2.js";
+import {
+  H3, CUENTAS_H3, BOTON_H3, CIERRE_H3, CORRECTO as CORRECTO_H3, INCORRECTO as INCORRECTO_H3, MISMO_LADO, ROTULO_ASIENTO_H3, resumenH3,
+  sortearH3, evaluarH3, puntuarH3, ESTA_LISTO, mismoLado,
+} from "../data/contabilidadT4H3.js";
 import { Opcion, Opciones, Pulsos, Cierre } from "./mecanicas/corazon/juego.jsx";
 import { TEXTO_CIERRE } from "./mecanicas/bloques/marcos.jsx";
-import { Responder, useTanda } from "./mecanicas/libros/piezas.jsx";
+import { Responder, useTanda, AsientoEnLineas } from "./mecanicas/libros/piezas.jsx";
+import ConstructorAsiento, { filaVacia } from "./mecanicas/libros/ConstructorAsiento.jsx";
 import { SOLO_LECTOR } from "./mecanicas/libros/verbos.jsx";
 import { Encabezado } from "./mecanicas/libros/tema1/encabezado.jsx";
 
@@ -66,6 +71,7 @@ export const PIEZAS_T4 = [
 export const JUEGOS_T4 = [
   { id: H1.id, Mecanica: EntraOSaleDeCaja, titulo: H1.nombre },
   { id: H2.id, Mecanica: ElControlQueSeSaltaron, titulo: H2.nombre },
+  { id: H3.id, Mecanica: SeMueveLaCajaMenor, titulo: H3.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
@@ -1066,6 +1072,144 @@ export function ElControlQueSeSaltaron({ Marco, rotulo, titulo, acento, onComple
       {r && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H2.verResumen : BOTON_H2.siguiente}</Responder>
+        </div>
+      )}
+    </Marco>
+  );
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · HACER 3 · ¿SE MUEVE LA CAJA MENOR? (Célula D)
+ *
+ * Desde la especificación de Hanayama (celula-d/hanayama-h3-pantalla-v1.md,
+ * PASA de Shibukawa) y el paquete vigente de Katsumi (serie 1 con la v2, y
+ * serie 2), no desde el prototipo. Piezas compartidas, sin cambiarlas:
+ * Encabezado, Pulsos, ConstructorAsiento (cuatro cuentas, máximo 2, sin
+ * cifras), Responder, AsientoEnLineas y Cierre.
+ *
+ *   · las cuatro operaciones van en el orden de la vida del fondo, SIN
+ *     barajar; lo que se sortea es la serie, una por intento (D8)
+ *   · «Comprobar» se activa con dos cuentas y una a cada lado. Un intento
+ *   · al comprobar: cada fila dice si está bien o mal (coral solo en la que
+ *     falló y en la devolución de error), UN mensaje —el primero de la lista
+ *     de Katsumi que aplique— y el asiento completo con el valor
+ *   · mientras se pregunta, nada de la respuesta está en el DOM (PH8-2): ni la
+ *     devolución, ni el asiento completo, ni ningún atributo con la respuesta
+ *
+ * Al terminar: onCompletar(pct, ms, detalle). Evaluativa: el motor escala los
+ * 25 FP con el porcentaje. En modo demo no reporta nada.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+export function SeMueveLaCajaMenor({ Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null }) {
+  const t = useTanda(() => items ?? sortearH3());
+  const [filas, setFilas] = useState(() => [filaVacia(), filaVacia()]);
+  const [r, setR] = useState(null);
+  const [bien, setBien] = useState(0);
+  const zonaBoton = useRef(null);
+  const tarjeta = useRef(null);
+
+  const op = t.items[t.i];
+  const cuantos = t.items.length;
+  const listo = ESTA_LISTO(filas);
+
+  useEffect(() => {
+    if (t.terminado && !modoDemo) onCompletar?.(puntuarH3(bien, cuantos), Date.now() - t.inicio.current, t.detalle.current);
+  }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (r && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [r]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const comprobar = () => {
+    if (r || !listo) return;
+    const nuevo = evaluarH3(op, filas);
+    /* En el error se guarda el asiento armado: eso le dice algo al docente. */
+    t.anotar(op.id, nuevo.ok, nuevo.respuesta);
+    if (nuevo.ok) setBien((n) => n + 1);
+    setR(nuevo);
+  };
+
+  const avanzar = () => {
+    setR(null); setFilas([filaVacia(), filaVacia()]);
+    if (t.i + 1 < cuantos) { t.setI(t.i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); }
+    else t.setTerminado(true);
+  };
+
+  const reiniciar = () => { t.reiniciar(); setR(null); setFilas([filaVacia(), filaVacia()]); setBien(0); };
+
+  if (t.terminado) {
+    return (
+      <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+        <Cierre pct={Math.round(puntuarH3(bien, cuantos))} onReiniciar={reiniciar} textoReiniciar={BOTON_H3.otraVez}>
+          <p data-resumen style={TEXTO_CIERRE}>{resumenH3(bien, cuantos)}</p>
+          <p data-cierre style={{ ...TEXTO_CIERRE, marginTop: "8px" }}>{CIERRE_H3.texto}</p>
+          <p data-pie-cierre style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{CIERRE_H3.pie}</p>
+        </Cierre>
+      </Marco>
+    );
+  }
+
+  return (
+    <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+      <style>{CSS_T4H1}</style>
+      {/* Como en H1 y H2: la partida lleva `data-t4-h3` y la demo, `data-t4-h3-demo`. */}
+      <div {...(modoDemo ? { "data-t4-h3-demo": "" } : { "data-t4-h3": "" })}>
+        <Encabezado consigna={H3.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
+        <div style={{ marginBottom: "12px" }}>
+          <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Operación" />
+        </div>
+
+        {/* La tarjeta de la operación, la de H1: solo el enunciado. */}
+        <div key={op.id} className="fae-t4h1-entra" data-tarjeta-operacion={op.id} style={{
+          margin: "0 0 4px", padding: "11px 13px", borderRadius: "11px",
+          background: "rgba(184,196,212,0.12)", borderLeft: "3px solid #B8C4D4",
+        }}>
+          <p ref={tarjeta} tabIndex={-1} data-enunciado style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, outline: "none" }}>
+            {op.enunciado}
+          </p>
+        </div>
+
+        <div data-constructor>
+          <ConstructorAsiento
+            filas={filas}
+            cuentas={CUENTAS_H3}
+            conCifras={false}
+            maximo={2}
+            deshabilitado={Boolean(r)}
+            estados={r ? r.estados : null}
+            acento={acento}
+            onFilas={setFilas}
+          />
+        </div>
+
+        {!r && mismoLado(filas) && (
+          <p data-aviso style={{ margin: "10px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12.5px", color: APAGADO_H1, textAlign: "center" }}>{MISMO_LADO}</p>
+        )}
+
+        {/* La devolución: región viva, vacía mientras se pregunta. */}
+        <div data-retro aria-live="polite" aria-atomic="true">
+          {r && (
+            <div className="fae-t4h1-entra" data-panel={r.ok ? "acierto" : "error"} style={{
+              marginTop: "12px", padding: "11px 13px", borderRadius: "11px",
+              background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
+              borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
+            }}>
+              <p data-palabra style={{ margin: "0 0 4px", fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", fontWeight: 700, color: r.ok ? FAE.text : FAE.coral }}>{r.ok ? CORRECTO_H3 : INCORRECTO_H3}</p>
+              <p data-texto-retro style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text }}>{r.texto}</p>
+            </div>
+          )}
+          {r && (
+            <div className="fae-t4h1-entra" data-asiento-completo style={{ marginTop: "12px" }}>
+              <AsientoEnLineas lineas={r.asiento} rotulo={ROTULO_ASIENTO_H3} acento={acento} totales />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* «Comprobar» también en la demo: la mano lo toca. */}
+      {!r && <Responder onClick={comprobar} deshabilitado={!listo}>{BOTON_H3.comprobar}</Responder>}
+      {r && !modoDemo && (
+        <div ref={zonaBoton}>
+          <Responder onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H3.verResumen : BOTON_H3.siguiente}</Responder>
         </div>
       )}
     </Marco>

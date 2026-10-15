@@ -110,7 +110,7 @@ test("★★ las catorce actividades tienen «Así se juega»", () => {
   /* Las catorce, más las del Tema 3 de Contabilidad (acts. 2, 3, 4, 5, 6 y 7) y las dos nuevas de Política Monetaria. */
   /* Y b5-t5-a2, b5-t6-a2 y b5-t6-a3 (Célula B). Y b5-t5-a1 y b5-t6-a1 (Célula B, auditoría integral). */
   /* Y t4-entra-o-sale-de-caja y t4-el-control-que-se-saltaron (Célula D, T4 · H1 y H2). */
-  assert.equal(Object.keys(ASI_TODAS).length, 31);
+  assert.equal(Object.keys(ASI_TODAS).length, 32);
 });
 
 test("★★ consignas: T1-6 cambia (la ficha no se toca) y las siete del Tema 2 son nuevas", () => {

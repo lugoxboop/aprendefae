@@ -647,6 +647,8 @@ export const SUBJECTS = {
           { id: "t4-el-control-que-se-saltaron", nombre: "El control que se saltaron", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /* A2, pp. 181-184, justo después de H2 (plan de Yujiro). Aprender: cero FP, no entra al catálogo. */
           { id: "t4-a2-el-fondo-fijo", nombre: "El fondo fijo", clasificacion: { tipo: APRENDER } },
+          /* H3, justo después de A2, que la sostiene. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0202. */
+          { id: "t4-se-mueve-la-caja-menor", nombre: "¿Se mueve la caja menor?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
         ],
       },
       /*

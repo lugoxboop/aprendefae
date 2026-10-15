@@ -2,17 +2,24 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * ¿CABEN LOS HACER DE T4 A 375 Y 320, Y NO DELATAN NADA?
  *
- *   node scripts/t4/medir-t4-hacer.mjs h1|h2 [carpeta-de-capturas]
+ *   node scripts/t4/medir-t4-hacer.mjs h1|h2|h3 [carpeta-de-capturas]
  *
  * Chromium de verdad, la vista de T4 en modo Hacer con ese juego abierto
- * (banco scripts/t4/harness-t4, #h1 o #h2). Salta el «Así se juega» y juega
- * todas las tarjetas: en cada una, antes de tocar, mira el DOM; después toca
- * la primera opción (acierta en unas y falla en otras) y mide. Comprueba:
+ * (banco scripts/t4/harness-t4, #h1, #h2 o #h3). Salta el «Así se juega» y
+ * juega todas las tarjetas: en cada una, antes de tocar, mira el DOM; después
+ * toca la primera opción (acierta en unas y falla en otras) y mide. En H3 no
+ * hay opciones: arma el asiento con el constructor —las dos primeras cuentas
+ * de la paleta, la primera al debe y la segunda al haber—, mide armado (aún
+ * sin comprobar, y ahí también mira el DOM) y comprueba. Comprueba:
  *
  *   · que la página no tenga barra horizontal y ningún texto se salga
  *   · que cada destino y cada botón midan al menos 44 px de alto
  *   · H1: que ningún destino se parta en dos líneas (son rótulos). En H2 las
  *     opciones son frases y se parten por espacios (Hanayama H2 v1 §2)
+ *   · H3: que las pastillas de las cuentas y los botones Debe/Haber midan al
+ *     menos 36 px (son los del constructor compartido, Tema 2) y que el
+ *     asiento completo quepa sin partir la cifra. La ✕ de cada fila mide
+ *     26 px: es del constructor compartido, no se mide aquí y se reporta
  *   · PH8-2: antes de tocar, el DOM no trae ni la devolución ni la página
  *   · con movimiento reducido, nada de la actividad tiene animación en curso
  *
@@ -31,9 +38,10 @@ const CUAL = process.argv[2];
 const JUEGOS = {
   h1: { raiz: "[data-t4-h1]", tarjeta: "[data-tarjeta-hecho]", siguiente: "Siguiente hecho", rotulos: true, total: 8 },
   h2: { raiz: "[data-t4-h2]", tarjeta: "[data-tarjeta-caso]", siguiente: "Siguiente caso", rotulos: false, total: 7 },
+  h3: { raiz: "[data-t4-h3]", tarjeta: "[data-tarjeta-operacion]", siguiente: "Siguiente operación", rotulos: false, total: 4, armar: true },
 };
 const J = JUEGOS[CUAL];
-if (!J) { console.error("uso: node scripts/t4/medir-t4-hacer.mjs h1|h2 [carpeta]"); process.exit(2); }
+if (!J) { console.error("uso: node scripts/t4/medir-t4-hacer.mjs h1|h2|h3 [carpeta]"); process.exit(2); }
 const CAPTURAS = process.argv[3] ?? null;
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 const ANCHOS = [375, 320];
@@ -76,7 +84,22 @@ function medir({ antes, raiz, rotulos, siguiente }) {
     /* PH8-2: con textContent y outerHTML, que ven también lo escondido por CSS. */
     const dom = zona.textContent + zona.outerHTML;
     if (zona.querySelector("[data-panel], [data-pagina], [data-texto-retro]")) problemas.push("antes de responder ya hay devolución en el DOM");
-    if (/Basado en el libro|Correcto\.|Así es\./.test(dom)) problemas.push("antes de responder el DOM trae una página o un acierto");
+    if (/Basado en el libro|Correcto\.|Incorrecto\.|Así es\.|EL ASIENTO COMPLETO/.test(dom)) problemas.push("antes de responder el DOM trae una página, una devolución o el asiento completo");
+    if (zona.querySelector("[data-asiento-completo], [data-asiento]")) problemas.push("antes de responder ya hay un asiento completo en el DOM");
+  }
+  /* H3: lo que se toca del constructor compartido, y la cifra del asiento completo en una línea. */
+  /*
+   * La ✕ de cada fila (26 px) es del constructor compartido y no se toca
+   * aquí: se cuenta aparte y va en el informe para el coordinador.
+   */
+  for (const b of zona.querySelectorAll("[data-constructor] button")) {
+    if (b.textContent.trim() === "✕") continue;
+    const h = b.getBoundingClientRect().height;
+    if (h && h < 36) problemas.push(`«${b.textContent.trim()}» del constructor mide ${h.toFixed(1)} px de alto`);
+  }
+  for (const c of zona.querySelectorAll("[data-asiento-completo] [data-asiento] > div > span:last-child")) {
+    const rango = document.createRange(); rango.selectNodeContents(c);
+    if (new Set([...rango.getClientRects()].map((x) => Math.round(x.top))).size > 1) problemas.push(`la cifra «${c.textContent}» del asiento completo se parte`);
   }
   const animado = [...zona.querySelectorAll("*")].filter((el) => el.getAnimations().some((a) => a.playState === "running")).length;
   return { problemas, ancho: Math.round(caja.width * 10) / 10, alto: Math.round(zona.getBoundingClientRect().height), animado };
@@ -87,7 +110,7 @@ for (const reducido of [false, true]) {
     const pg = await navegador.newPage({ viewport: { width: ancho, height: 900 }, deviceScaleFactor: 2, reducedMotion: reducido ? "reduce" : "no-preference" });
     await pg.goto(URL_BANCO);
     /* El «Así se juega» sale la primera vez: «Siguiente» lo cierra. */
-    const asj = await pg.waitForSelector('[data-asj-control], [data-t4-h1]', { timeout: 120000 });
+    const asj = await pg.waitForSelector(`[data-asj-control], ${J.raiz}`, { timeout: 120000 });
     const saltar = await pg.$$("button");
     for (const b of saltar) if ((await b.textContent())?.trim() === "Siguiente") { await b.click(); break; }
     await pg.waitForSelector(H1);
@@ -105,8 +128,19 @@ for (const reducido of [false, true]) {
     for (let k = 0; k < J.total; k++) {
       const id = await pg.getAttribute(J.tarjeta, J.tarjeta.slice(1, -1));
       await estado(`${id}-colocando`, true);
-      /* Siempre la primera opción: acierta en unas y falla en otras, así se miden los dos paneles. */
-      await pg.click(`${J.raiz} [data-opcion] button`);
+      if (J.armar) {
+        /* Las dos primeras cuentas, la primera al debe y la segunda al haber: acierta en unas y falla en otras. */
+        const cuentas = `${J.raiz} [data-constructor] > div > div:last-child > button`;
+        await pg.click(`${cuentas} >> nth=0`);
+        await pg.click(`${J.raiz} [data-fila-asiento="0"] > div:last-child > button >> nth=0`);
+        await pg.click(`${cuentas} >> nth=1`);
+        await pg.click(`${J.raiz} [data-fila-asiento="1"] > div:last-child > button >> nth=1`);
+        await estado(`${id}-armado`, true);
+        for (const b of await pg.$$("button")) { if ((await b.textContent())?.trim() === "Comprobar") { await b.click(); break; } }
+      } else {
+        /* Siempre la primera opción: acierta en unas y falla en otras, así se miden los dos paneles. */
+        await pg.click(`${J.raiz} [data-opcion] button`);
+      }
       const panel = await pg.getAttribute("[data-panel]", "data-panel");
       await estado(`${id}-${panel}`, false);
       for (const b of await pg.$$("button")) { const t = (await b.textContent())?.trim(); if (t === J.siguiente || t === "Ver mi resumen") { await b.click(); break; } }

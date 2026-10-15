@@ -250,7 +250,7 @@ test("★★★ en T4, justo después de H1: evaluativa, fácil, 10 FP; la vista
   assert.deepEqual(clasificacionDe("contabilidad", TEMA_T4, D.H2_ID), { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 });
   const ids = TEMA.actividades.map((x) => x.id);
   assert.equal(ids.indexOf(D.H2_ID), ids.indexOf("t4-entra-o-sale-de-caja") + 1);
-  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["t4-entra-o-sale-de-caja", D.H2_ID]);
+  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id).slice(0, 2), ["t4-entra-o-sale-de-caja", D.H2_ID]);
   assert.deepEqual(JUEGOS_T4.map((j) => j.id).sort(), actividadesDeTipo(TEMA, HACER).map((a) => a.id).sort());
 });
 
