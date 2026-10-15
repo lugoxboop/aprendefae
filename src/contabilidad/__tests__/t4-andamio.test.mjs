@@ -94,9 +94,9 @@ test("★★★ cada id del tema lleva t4- y está en la vista; la vista no trae
   const hacer = actividadesDeTipo(TEMA, HACER).filter((a) => !a.pendiente).map((a) => a.id);
   const enPiezas = PIEZAS_T4.map((p) => p.pieza.id);
   const enJuegos = JUEGOS_T4.map((j) => j.id);
-  /* La guarda: hoy, A0 y A1, de Aprender, y ningún juego. Cada pieza nueva la sube a propósito. */
-  assert.deepEqual([ids.length, enPiezas.length, enJuegos.length], [2, 2, 0], "cambió el número de piezas de T4: súbelo aquí a propósito");
-  assert.deepEqual(ids, ["t4-a0-el-activo-corriente", "t4-a1-la-caja"]);
+  /* La guarda: hoy, A0 y A1 de Aprender, y H1 de Hacer. Cada pieza nueva la sube a propósito. */
+  assert.deepEqual([ids.length, enPiezas.length, enJuegos.length], [3, 2, 1], "cambió el número de piezas de T4: súbelo aquí a propósito");
+  assert.deepEqual(ids, ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-entra-o-sale-de-caja"]);
   assert.deepEqual(ids.filter((id) => !id.startsWith("t4-")), [], "ids sin el prefijo t4-");
   assert.deepEqual(enPiezas.sort(), [...aprender].sort(), "PIEZAS_T4 no coincide con las de Aprender del tema");
   assert.deepEqual(enJuegos.sort(), [...hacer].sort(), "JUEGOS_T4 no coincide con las de Hacer del tema");
@@ -147,11 +147,11 @@ test("★★★ ningún archivo de datos de T4 llama al motor de FP, y ninguna m
 
 /* ═══════════ 3 · LO QUE VE EL ESTUDIANTE ═══════════ */
 
-test("★★★ el índice: con solo Aprender, una tarjeta con la insignia «Aprender», sin partir, que abre el tema sin modo", () => {
-  /* Lo que decide la tarjeta, desde el dato. Cuando entre el primer Hacer, la tarjeta se parte: esta prueba se pone roja a propósito. */
-  assert.deepEqual(tiposDeTema(TEMA), [APRENDER]);
+test("★★★ el índice: con Aprender y Hacer, la tarjeta lleva las dos insignias, se parte y cada mitad abre su modo", () => {
+  /* Lo que decide la tarjeta, desde el dato. Con H1, el tema ya tiene las dos mitades. */
+  assert.deepEqual(tiposDeTema(TEMA), [APRENDER, HACER]);
   assert.equal(tieneContenidoDe(TEMA, APRENDER), true);
-  assert.equal(tieneContenidoDe(TEMA, HACER), false);
+  assert.equal(tieneContenidoDe(TEMA, HACER), true);
 
   const abiertos = [];
   const materia = SUBJECTS.contabilidad;
@@ -166,13 +166,21 @@ test("★★★ el índice: con solo Aprender, una tarjeta con la insignia «Apr
     const [tarjeta] = tarjetas;
     assert.equal(tarjeta.getAttribute("aria-label"), `Tema ${TEMA.title}`);
     assert.match(tarjeta.textContent, /Aprender/, "la tarjeta lleva la insignia «Aprender»");
-    assert.doesNotMatch(tarjeta.textContent, /Hacer/, "sin juegos, la tarjeta no lleva la insignia «Hacer»");
+    assert.match(tarjeta.textContent, /Hacer/, "la tarjeta lleva la insignia «Hacer»");
+    /* Tocarla abre la elección; cada mitad abre el tema en su modo, con su conteo. */
     act(() => { tarjeta.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
-    assert.deepEqual(abiertos, [[TEMA_T4, null]]);
+    assert.deepEqual(abiertos, [], "tocar la tarjeta partida no abre el tema: abre la elección");
+    const modo = (n) => [...m.caja.querySelectorAll("button.fae-modo")].find((b) => b.getAttribute("aria-label") === n);
+    for (const [etiqueta, quiere] of [["Aprender — 2 actividades", "aprender"], ["Hacer — 1 actividad", "hacer"]]) {
+      const b = modo(etiqueta);
+      assert.ok(b, `no está la mitad «${etiqueta}»`);
+      act(() => { b.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+      assert.deepEqual(abiertos.at(-1), [TEMA_T4, quiere]);
+    }
   } finally { m.desmontar(); }
 });
 
-test("★★★ la vista montada: cabecera con el título; Aprender con A0 y A1 como «PIEZA 1 DE 2» y «PIEZA 2 DE 2»; Hacer con el mensaje de camino vacío", () => {
+test("★★★ la vista montada: cabecera con el título; Aprender con A0 y A1 como «PIEZA 1 DE 2» y «PIEZA 2 DE 2»; Hacer con el camino y su nodo H1", () => {
   for (const modo of [null, APRENDER, HACER]) {
     const m = montar(h(ContabilidadT4View, { modo, onBack: () => {} }));
     try {
@@ -182,7 +190,8 @@ test("★★★ la vista montada: cabecera con el título; Aprender con A0 y A1 
       assert.ok(m.caja.querySelector('button[aria-label="Volver a Contabilidad"]'));
       assert.doesNotMatch(m.caja.textContent, /NaN|undefined|null/, `modo ${modo}: se coló un valor crudo`);
       if (modo === HACER) {
-        assert.ok(m.caja.textContent.includes("Este tema todavía no tiene juegos."), "Hacer: falta el mensaje de camino vacío");
+        assert.ok(!m.caja.textContent.includes("Este tema todavía no tiene juegos."), "Hacer: el camino sale vacío");
+        assert.ok(m.caja.querySelector('[data-nodo="t4-entra-o-sale-de-caja"]'), "Hacer: falta el nodo de H1 en el camino");
         assert.equal(m.caja.querySelectorAll("[data-pieza]").length, 0);
       } else {
         assert.deepEqual(m.caja.textContent.match(/PIEZA \d+ DE \d+/g), ["PIEZA 1 DE 2", "PIEZA 2 DE 2"], `modo ${modo}: rótulos de las piezas`);
