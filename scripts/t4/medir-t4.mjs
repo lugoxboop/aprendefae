@@ -1,12 +1,12 @@
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * ¿CABE CADA TEXTO DE T4 · A0 A A3 A 375 Y 320, CON SUS FIGURAS?
+ * ¿CABE CADA TEXTO DE T4 · A0 A A4 A 375 Y 320, CON SUS FIGURAS?
  *
  *   node scripts/t4/medir-t4.mjs [carpeta-de-capturas]
  *
  * Como medir-t7-3-a1.mjs: Chromium de verdad, la vista de T4 montada tal
  * cual con la hoja de estilos del sitio (banco scripts/t4/harness-t4). Juega
- * A0, A1, A2 y A3 enteras —en cada pregunta falla con cada opción equivocada y
+ * A0, A1, A2, A3 y A4 enteras —en cada pregunta falla con cada opción equivocada y
  * después acierta— y en cada estado comprueba:
  *
  *   · que la página no tenga barra horizontal
@@ -27,6 +27,9 @@
  *     cada error y en el acierto de P3, P4 y P8, y que el sobre (P4) y el
  *     libro (P8) arranquen a la misma altura; que entre P8 y P9 el 6.700
  *     quede a la misma altura
+ *   · en A4 (las dos libretas): que el renglón k tenga el mismo `top` en las
+ *     dos libretas, que las dos midan lo mismo, y que en P7 la figura mida lo
+ *     mismo en colocando, en cada error y en el acierto
  *   · con movimiento reducido, que nada de la pieza tenga animación ni
  *     transición en curso
  *
@@ -52,6 +55,7 @@ const PIEZAS = [
   { sel: '[data-pieza="t4-a1-la-caja"]', nombre: "a1", correctas: { consignacion: "se-acredita", "control-que-falla": "separar" } },
   { sel: '[data-pieza="t4-a2-el-fondo-fijo"]', nombre: "a2", correctas: { "cuanto-queda": "lo-que-queda", "y-caja-menor": "no-se-mueve" } },
   { sel: '[data-pieza="t4-a3-el-arqueo"]', nombre: "a3", correctas: { "el-sobrante": "sobrante", "el-cheque": "menos", "camino-1": "cxc-empleados" } },
+  { sel: '[data-pieza="t4-a4-bancos-y-notas"]', nombre: "a4", correctas: { "lo-que-baja": "se-acredita", "por-que-no-coinciden": "la-empresa" } },
 ];
 
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
@@ -100,7 +104,7 @@ function medir(sel) {
     if (texto > util + 0.5 || c.scrollWidth > c.clientWidth + 0.5) problemas.push(`la cifra «${c.textContent}» mide ${texto.toFixed(1)} px en ${util.toFixed(1)}`);
   }
   /* Cada renglón de las figuras, en una sola línea. */
-  for (const r of pieza.querySelectorAll(".t4cj-glosa > span, .t4cj-caja2-n > span, .t4cj-hecho, .t4ry-zrot > span, .t4ry-tarj > span, .t4ry-mar, .t4sb-rot, .t4sb-nom, .t4sb-cheque-n, .t4sb-cheque-s, .t4sb-cta-n, .t4sb-nota, .t4sb-monto, .t4sb-cheque-m, .t4sb-calc, .t4sb-cta2 > span:first-child, .t4sb-cta-n2")) {
+  for (const r of pieza.querySelectorAll(".t4cj-glosa > span, .t4cj-caja2-n > span, .t4cj-hecho, .t4ry-zrot > span, .t4ry-tarj > span, .t4ry-mar, .t4sb-rot, .t4sb-nom, .t4sb-cheque-n, .t4sb-cheque-s, .t4sb-cta-n, .t4sb-nota, .t4sb-monto, .t4sb-cheque-m, .t4sb-calc, .t4sb-cta2 > span:first-child, .t4sb-cta-n2, .t4lb-nom, .t4lb-ef, .t4lb-no, .t4lb-pie, .t4lb-cab > span, .t4lb-hecho > span")) {
     const rango = document.createRange();
     rango.selectNodeContents(r);
     const lineas = new Set([...rango.getClientRects()].map((x) => Math.round(x.top))).size;
@@ -123,12 +127,29 @@ function medir(sel) {
     const ch = sobre.querySelector("[data-cheque]");
     if (ch && ch.children.length !== 2) problemas.push("el cheque no tiene dos renglones");
   }
+  /* Las dos libretas: el renglón k a la misma altura en las dos, y las dos del mismo alto. */
+  const libretas = pieza.querySelector('[data-figura="libretas"]');
+  let lib = null;
+  if (libretas) {
+    const [e, b] = [...libretas.querySelectorAll(".t4lb-lib")];
+    const tops = (l) => [...l.children].map((x) => Math.round(x.getBoundingClientRect().top * 100) / 100);
+    const [te, tb] = [tops(e), tops(b)];
+    if (te.length !== tb.length || te.some((t, k) => Math.abs(t - tb[k]) > 0.5)) problemas.push(`las libretas no están alineadas (${te.join("/")} frente a ${tb.join("/")})`);
+    if (Math.abs(e.getBoundingClientRect().height - b.getBoundingClientRect().height) > 0.5) problemas.push("las dos libretas no miden lo mismo");
+    /* Las partes de cada libreta (cabecera, renglones, pie) van una debajo de la otra, sin montarse. */
+    for (const l of [e, b]) {
+      const r = [...l.children].map((x) => x.getBoundingClientRect());
+      for (let k = 1; k < r.length; k++) if (r[k].top < r[k - 1].bottom - 0.5) problemas.push(`en la libreta ${l.dataset.libreta}, la parte ${k + 1} se monta sobre la anterior`);
+    }
+    lib = { alto: Math.round(libretas.getBoundingClientRect().height * 100) / 100, estado: libretas.dataset.estado };
+  }
   const raya = pieza.querySelector("[data-raya]");
   const animado = [...pieza.querySelectorAll("*")].filter((el) => el.getAnimations().length > 0).length;
   return {
     problemas,
     medidas,
     raya: raya ? Math.round((raya.getBoundingClientRect().top - pieza.querySelector("[data-figura]").getBoundingClientRect().top) * 100) / 100 : null,
+    lib,
     sobre: sobre ? {
       alto: Math.round(sobre.getBoundingClientRect().height * 100) / 100,
       libro: sobre.querySelector("[data-libro]") ? Math.round((sobre.querySelector("[data-libro]").getBoundingClientRect().top - sobre.getBoundingClientRect().top) * 100) / 100 : null,
@@ -147,6 +168,7 @@ function medir(sel) {
 const rayas = {};
 const sobres = {};
 const sobresA3 = {};
+const libs = {};
 
 for (const reducido of [false, true]) {
 for (const ancho of ANCHOS) {
@@ -169,6 +191,7 @@ for (const { sel, nombre: pz, correctas } of PIEZAS) {
     if (!m.fuentes) fallos.push(`${marca} · no cargaron Inter o Sora`);
     if (nombre.startsWith("cual-es-corriente")) (rayas[ancho] ??= []).push([nombre, m.raya]);
     if (m.sobre) ((pz === "a3" ? sobresA3 : sobres)[ancho] ??= []).push([nombre, m.sobre]);
+    if (m.lib) (libs[ancho] ??= []).push([nombre, m.lib]);
     if (CAPTURAS) {
       const panel = await (await pg.$(sel)).evaluateHandle((x) => x.closest("section"));
       await panel.asElement().screenshot({ path: resolve(CAPTURAS, `t4-${pz}-${ancho}-${String(++n).padStart(2, "0")}-${nombre}.png`) });
@@ -229,6 +252,13 @@ for (const [ancho, lista] of Object.entries(sobres)) {
   iguales("P4-P5", gastos, "alto");
 }
 
+/* Las libretas de A4: en P7 nada salta al confirmar. */
+for (const [ancho, lista] of Object.entries(libs)) {
+  const p7 = lista.filter(([e]) => e.startsWith("por-que-no-coinciden"));
+  if (p7.length !== 4) fallos.push(`${ancho} px · A4 P7: ${p7.length} estados, no 4`);
+  if (new Set(p7.map(([, x]) => x.alto)).size !== 1) fallos.push(`${ancho} px · A4 P7: el alto cambia (${p7.map(([e, x]) => `${e} ${x.alto}`).join(", ")})`);
+}
+
 /* El sobre de A3: en P3, P4 y P8 nada salta al confirmar; entre P8 y P9 el 6.700 no se mueve. */
 for (const [ancho, lista] of Object.entries(sobresA3)) {
   const grupo = (p) => lista.filter(([e]) => e.startsWith(p));
@@ -259,5 +289,7 @@ console.log("\nA2 · el sobre: estado, alto de la figura, dónde arranca el libr
 for (const [ancho, lista] of Object.entries(sobres)) for (const [e, s] of lista) console.log(`${ancho} | ${e} | ${s.estado} | ${s.alto} | ${s.libro} | ${s.holgura}`);
 console.log("\nA3 · el sobre: estado, alto, dónde arranca el sobre, dónde arranca el libro, el 6.700 y la holgura mínima de fila");
 for (const [ancho, lista] of Object.entries(sobresA3)) for (const [e, s] of lista) console.log(`${ancho} | ${e} | ${s.estado} | ${s.alto} | ${s.envoltorio} | ${s.libro} | ${s.seisSetecientos} | ${s.holgura}`);
+console.log("\nA4 · las libretas: estado y alto");
+for (const [ancho, lista] of Object.entries(libs)) for (const [e, x] of lista) console.log(`${ancho} | ${e} | ${x.estado} | ${x.alto}`);
 console.log(fallos.length ? `\n${fallos.length} FALLAN:\n${fallos.join("\n")}` : `\nTodo cabe en los ${filas.length} estados, y con movimiento reducido nada se anima.`);
 process.exit(fallos.length ? 1 : 0);

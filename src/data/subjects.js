@@ -655,6 +655,8 @@ export const SUBJECTS = {
           { id: "t4-el-arqueo-de-rosa", nombre: "El arqueo de Rosa", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* H5, después de H4: también la sostiene A3 (los dos caminos del faltante). Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0204. */
           { id: "t4-al-empleado-o-al-gasto", nombre: "¿Al empleado o al gasto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* A4, pp. 186-188, después de H5 (plan de Yujiro). Aprender: cero FP, no entra al catálogo. Define «nota débito» y «nota crédito» del banco. */
+          { id: "t4-a4-bancos-y-notas", nombre: "Bancos y notas del banco", clasificacion: { tipo: APRENDER } },
         ],
       },
       /*

@@ -21,6 +21,7 @@ import { BOTON, INTERFAZ, DEBE, HABER, PIEZA_LA_CAJA, FIGURA_CAJON, ESTADOS_CAJO
 import { PIEZA_EL_ACTIVO_CORRIENTE, FIGURA_RAYA, ESTADOS_RAYA } from "../data/contabilidadT4A0.js";
 import { PIEZA_EL_FONDO_FIJO, FIGURA_SOBRE, ESTADOS_SOBRE_A2, ALT_SOBRE_A2 } from "../data/contabilidadT4A2.js";
 import { PIEZA_EL_ARQUEO, FIGURA_SOBRE_A3, ESTADOS_SOBRE_A3, ALT_SOBRE_A3 } from "../data/contabilidadT4A3.js";
+import { PIEZA_BANCOS_Y_NOTAS, FIGURA_LIBRETAS, ESTADOS_LIBRETAS, ALT_LIBRETAS } from "../data/contabilidadT4A4.js";
 import {
   H1, DESTINOS_H1, BOTON_H1, CIERRE_H1, resumenH1, lectorErrorH1,
   sortearH1, evaluarH1, puntuarH1, nombreDeDestinoH1,
@@ -75,6 +76,7 @@ export const PIEZAS_T4 = [
   { numero: PIEZA_LA_CAJA.numero, pieza: PIEZA_LA_CAJA, Pieza: PantallasT4 },
   { numero: PIEZA_EL_FONDO_FIJO.numero, pieza: PIEZA_EL_FONDO_FIJO, Pieza: PantallasT4 },
   { numero: PIEZA_EL_ARQUEO.numero, pieza: PIEZA_EL_ARQUEO, Pieza: PantallasT4 },
+  { numero: PIEZA_BANCOS_Y_NOTAS.numero, pieza: PIEZA_BANCOS_Y_NOTAS, Pieza: PantallasT4 },
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
@@ -209,6 +211,10 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
  *   · un asiento con `fecha` la pone en su cabecera (A2: «1 de mayo», «31 de
  *     mayo»); uno con `signo` es un asiento modelo sin cifras, y su lado lleva
  *     el signo («xxxx», Hanayama A2 v1 §4) con su texto para el lector
+ *   · `glosaDeLista`: una glosa debajo de un renglón de la lista numerada (A4,
+ *     «girar» en su primera aparición)
+ *   · `trasAcertar.grupos`: listas con título que salen solo con el acierto,
+ *     numeradas de corrido (A4, las seis causas agrupadas)
  *
  * Las figuras de Hanayama: una pantalla que traiga `figura` la pinta entre sus
  * textos y su asiento (texto → figura → asiento → botón → pie). En una
@@ -257,6 +263,8 @@ export const CSS_T4P = `
 .t4p-lista { margin: 0; padding-left: 26px; display: grid; gap: 6px; font-size: 15px; line-height: 1.45; }
 /* La hoja global del sitio quita el estilo de lista: aquí vuelven los números. */
 .t4p-lista li { overflow-wrap: anywhere; list-style: decimal; }
+.t4p-glosa { display: block; margin-top: 4px; font-size: 14px; line-height: 1.45; color: ${COLOR.texto2}; }
+.t4p-grupo { display: grid; gap: 6px; }
 .t4p-nueva { animation: t4p-aparece .12s ease-out; }
 @keyframes t4p-aparece { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .t4p *, .t4p *::before, .t4p *::after { transition: none !important; animation: none !important; } }
@@ -286,6 +294,21 @@ function MensajeT4({ ok, texto, refFoco }) {
 }
 
 const TextosT4 = ({ lista, nueva = false }) => (lista ?? []).map((t) => <p key={t} className={`t4p-p${nueva ? " t4p-nueva" : ""}`} data-texto>{t}</p>);
+
+/* Listas con título, numeradas de corrido (A4, P7: las seis causas agrupadas). */
+function GruposT4({ grupos }) {
+  let n = 0;
+  return grupos.map((g) => {
+    const inicio = n + 1;
+    n += g.causas.length;
+    return (
+      <div key={g.titulo} className="t4p-grupo t4p-nueva" data-grupo>
+        <p className="t4p-p" data-texto>{g.titulo}</p>
+        <ol className="t4p-lista" start={inicio} data-lista>{g.causas.map((c) => <li key={c} data-texto>{c}</li>)}</ol>
+      </div>
+    );
+  });
+}
 
 /*
  * Un asiento en lectura. Sin `fecha` no la muestra (en A1 el libro pone
@@ -356,7 +379,13 @@ function CuerpoT4({ p, estadoFigura = null }) {
     <>
       {p.objetivo && <p className="t4p-p" data-texto data-objetivo>{p.objetivo}</p>}
       <TextosT4 lista={p.parrafos} />
-      {p.listaNumerada && <ol className="t4p-lista" data-lista>{p.listaNumerada.map((t) => <li key={t} data-texto>{t}</li>)}</ol>}
+      {p.listaNumerada && (
+        <ol className="t4p-lista" data-lista>
+          {p.listaNumerada.map((t, k) => (p.glosaDeLista?.renglon === k
+            ? <li key={t}><span data-texto>{t}</span><span className="t4p-glosa" data-texto data-glosa>{p.glosaDeLista.texto}</span></li>
+            : <li key={t} data-texto>{t}</li>))}
+        </ol>
+      )}
       <TextosT4 lista={p.despues} />
       {p.tabla && <TablaT4 tabla={p.tabla} />}
       {p.figura && <FiguraT4 tipo={p.figura.tipo} estado={estadoFigura ?? p.figura.estado} />}
@@ -397,6 +426,7 @@ function EleccionT4({ pantalla, onSeguir }) {
       {estado === "colocando" && <BotonT4 nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => setConfirmada(elegida)} />}
       {estado !== "colocando" && <MensajeT4 ok={estado === "acierto"} texto={estado === "acierto" ? pantalla.acierto.texto : opcion.devolucion} refFoco={ref} />}
       {estado === "acierto" && despues && <TextosT4 lista={despues.textos} nueva />}
+      {estado === "acierto" && despues?.grupos && <GruposT4 grupos={despues.grupos} />}
       {estado === "acierto" && despues && <AsientosT4 lista={despues.asientos} nuevo />}
       {estado === "error" && (
         <BotonT4 nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((x) => barajarDistinto(pantalla.opciones, x, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
@@ -418,7 +448,7 @@ export function PantallasT4({ pieza, rotulo }) {
 
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
-      <style>{CSS_T4P + CSS_T4F + CSS_T4S}</style>
+      <style>{CSS_T4P + CSS_T4F + CSS_T4S + CSS_T4L}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
         {p.tipo === "eleccion" ? (
           <EleccionT4 key={p.id} pantalla={p} onSeguir={ultima ? null : seguir} />
@@ -535,6 +565,7 @@ const SOBRES = {
 function FiguraT4({ tipo, estado }) {
   if (tipo === "cajon") return <CajonDePaso estado={estado} />;
   if (tipo === "raya") return <RayaDelAno estado={estado} />;
+  if (tipo === "libretas") return <LasDosLibretas estado={estado} />;
   const sobre = SOBRES[tipo];
   return <SobreCajaMenor estado={estado} s={sobre.estados[estado]} alt={sobre.alt[estado]} F={sobre.F} />;
 }
@@ -873,6 +904,125 @@ export function SobreCajaMenor({ estado, s, alt, F = FIGURA_SOBRE }) {
         </div>
       )}
       <figcaption id={idAlt} className="t4f-sr">{alt}</figcaption>
+    </figure>
+  );
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · «LAS DOS LIBRETAS» (Hanayama, A4 v1 con la v1.1 encima).
+ *
+ * Dos registros de la misma cuenta, uno al lado del otro: el de la empresa
+ * (libro auxiliar) y el del banco (extracto del mes). Cada hecho es un
+ * renglón A LO ANCHO de las dos: en la libreta de quien lo anotó, su nombre
+ * y si suma o resta; en la otra, «todavía no / lo sabe». Las dos libretas
+ * usan `grid-template-rows: subgrid`, así el renglón k de una queda a la
+ * altura del renglón k de la otra.
+ *
+ *   · sin coral ni rayado en lo que falta: que el otro no lo sepa es tiempo,
+ *     no un error. Sin teal, ámbar, Debe ni Haber; sin cifras
+ *   · «Cheque girado» en dos renglones fijos; todo renglón con nowrap
+ *   · v1.1 (FA4-1): en `notas`, la cabecera no dice «libro auxiliar» ni
+ *     «extracto del mes»; el subtítulo guarda su sitio sin texto
+ *   · P7: mientras se pregunta, el renglón del cheque guarda su sitio sin
+ *     decir nada (PH8-2)
+ *   · para el lector de pantalla, una tabla (filas = hechos, columnas = las
+ *     dos libretas, con encabezados de fila); el dibujo va aria-hidden
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+export const CSS_T4L = `
+.t4lb { position: relative; margin: 0; display: grid; gap: 8px; min-width: 0; color: ${COLOR.texto}; font-family: "Inter", sans-serif; }
+.t4lb * { box-sizing: border-box; }
+.t4lb-hecho { display: grid; gap: 2px; border: 1px solid ${COLOR.texto}; border-radius: 8px; padding: 8px 12px; min-width: 0; }
+.t4lb-hecho > span:first-child { font: 400 12px/1.3 "Inter", sans-serif; color: ${COLOR.texto2}; white-space: nowrap; }
+.t4lb-hecho > span + span { font: 400 13px/1.35 "Inter", sans-serif; white-space: nowrap; }
+.t4lb-par { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; min-width: 0; }
+.t4lb-lib { grid-row: 1 / -1; display: grid; grid-template-rows: subgrid; min-width: 0; border: 1px solid ${COLOR.borde}; border-radius: 10px; padding: 0 10px; }
+.t4lb-cab { display: grid; gap: 2px; padding: 8px 0; border-bottom: 1px solid ${COLOR.borde}; min-width: 0; }
+.t4lb-cab > span:first-child { font: 600 13px/1.3 "Sora", "Inter", sans-serif; white-space: nowrap; }
+.t4lb-cab > span + span { font: 500 12px/1.3 "Inter", sans-serif; color: ${COLOR.texto2}; white-space: nowrap; }
+.t4lb-ren { display: grid; align-content: start; gap: 2px; min-width: 0; min-height: 62px; margin: 6px 0 0; padding: 4px 0 4px 8px; }
+.t4lb-ren.t4lb-anotado { border-left: 2px solid ${COLOR.borde}; }
+.t4lb-ren.t4lb-anotado.t4lb-foco { border-left-color: ${COLOR.texto}; }
+.t4lb-nom { font: 600 13px/1.3 "Inter", sans-serif; color: ${COLOR.texto2}; white-space: nowrap; }
+.t4lb-foco .t4lb-nom { color: ${COLOR.texto}; }
+.t4lb-ef, .t4lb-no { font: 400 12px/1.3 "Inter", sans-serif; color: ${COLOR.texto2}; white-space: nowrap; }
+.t4lb-pie { padding: 8px 0; margin-top: 6px; border-top: 1px solid ${COLOR.borde}; font: 500 12px/1.3 "Inter", sans-serif; color: ${COLOR.texto2}; white-space: nowrap; }
+.t4lb-oculto { visibility: hidden; }
+@media (prefers-reduced-motion: reduce) { .t4lb, .t4lb * { transition: none !important; animation: none !important; } }
+`;
+
+/* Un renglón de una libreta: anotado (de quien lo anotó), «todavía no / lo sabe», o un hueco. */
+function RenglonLibreta({ lado, id, foco, estado }) {
+  const F = FIGURA_LIBRETAS;
+  if (!id) {
+    return (
+      <div className="t4lb-ren t4lb-oculto" aria-hidden="true" data-hueco-renglon>
+        <span className="t4lb-nom">{VACIO}</span><span className="t4lb-ef">{VACIO}</span>
+      </div>
+    );
+  }
+  const h = F.hechos[id];
+  if (h.quien === lado) {
+    return (
+      <div key={`${estado}-${id}`} className={`t4lb-ren t4lb-anotado t4f-nueva${foco ? " t4lb-foco" : ""}`} data-renglon={id} data-anotado={lado}>
+        {h.nombre.map((t) => <span key={t} className="t4lb-nom">{t}</span>)}
+        <span className="t4lb-ef" data-efecto={h.efecto}>{F[h.efecto]}</span>
+      </div>
+    );
+  }
+  return (
+    <div key={`${estado}-${id}`} className="t4lb-ren t4f-nueva" data-renglon={id} data-no-lo-sabe={lado}>
+      {F.noLoSabe.map((t) => <span key={t} className="t4lb-no">{t}</span>)}
+    </div>
+  );
+}
+
+export function LasDosLibretas({ estado }) {
+  const s = ESTADOS_LIBRETAS[estado];
+  const F = FIGURA_LIBRETAS;
+  const filas = [...s.renglones, ...Array.from({ length: s.huecos ?? 0 }, () => null)];
+  const idAlt = `t4lb-alt-${estado}`;
+  const libreta = (lado) => (
+    <div className="t4lb-lib" data-libreta={lado}>
+      <div className="t4lb-cab">
+        <span>{F[lado].nombre}</span>
+        {/* v1.1, FA4-1: en P2 el subtítulo guarda su sitio sin decir «libro auxiliar» ni «extracto». */}
+        {s.subtitulo ? <span data-registro>{F[lado].registro}</span> : <span className="t4lb-oculto" aria-hidden="true">{VACIO}</span>}
+      </div>
+      {filas.map((id, k) => <RenglonLibreta key={id ?? `hueco-${k}`} lado={lado} id={id} foco={s.foco.includes(id)} estado={estado} />)}
+      <div className={`t4lb-pie${s.saldo === "oculto" ? " t4lb-oculto" : ""}`} aria-hidden={s.saldo === "oculto" ? "true" : undefined} data-saldo={s.saldo}>
+        {s.saldo === "visible" ? F.saldo : VACIO}
+      </div>
+    </div>
+  );
+  return (
+    <figure className="t4lb t4f-nueva" data-figura="libretas" data-estado={estado} aria-describedby={idAlt}>
+      {s.tarjeta && (
+        <div className="t4lb-hecho" aria-hidden="true" data-tarjeta-hecho>
+          <span>{F.tarjetaP7.cuando}</span>
+          {F.tarjetaP7.renglones.map((t) => <span key={t}>{t}</span>)}
+        </div>
+      )}
+      {/* Una fila por renglón, más la cabecera y el pie. Sin «repeat(0, …)»: no es CSS válido y se pierde la plantilla entera. */}
+      <div className="t4lb-par" aria-hidden="true" style={{ gridTemplateRows: ["auto", ...filas.map(() => "auto"), "auto"].join(" ") }}>
+        {libreta("empresa")}
+        {libreta("banco")}
+      </div>
+      {/* Para el lector de pantalla: una fila por hecho que ya está anotado; los huecos no se leen. */}
+      <table className="t4f-sr" data-tabla-libretas>
+        <thead><tr><td />{["empresa", "banco"].map((l) => <th key={l} scope="col">{F[l].nombre}</th>)}</tr></thead>
+        <tbody>
+          {s.renglones.map((id) => (
+            <tr key={id}>
+              <th scope="row">{F.hechos[id].nombre.join(" ")}</th>
+              {["empresa", "banco"].map((l) => <td key={l}>{F.hechos[id].quien === l ? F[F.hechos[id].efecto] : F.noLoSabe.join(" ")}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <figcaption id={idAlt} className="t4f-sr">{ALT_LIBRETAS[estado]}</figcaption>
     </figure>
   );
 }

@@ -45,9 +45,13 @@ export function cambiosDe(pieza) {
 /* Lo que una pantalla de los datos dice, en el orden en que la vista lo pinta (pregunta y opciones al final). */
 export function textosDeDatos(p) {
   return [
-    p.objetivo, ...(p.parrafos ?? []), ...(p.listaNumerada ?? []), ...(p.despues ?? []), ...(p.tras ?? []),
+    p.objetivo, ...(p.parrafos ?? []),
+    /* La glosa de un renglón de la lista va justo debajo de él (A4, «girar»). */
+    ...(p.listaNumerada ?? []).flatMap((t, k) => (p.glosaDeLista?.renglon === k ? [t, p.glosaDeLista.texto] : [t])),
+    ...(p.despues ?? []), ...(p.tras ?? []),
     p.pregunta, ...(p.opciones ?? []).flatMap((o) => [o.texto, o.correcta ? p.acierto.texto : o.devolucion]),
     ...(p.trasAcertar?.textos ?? []),
+    ...(p.trasAcertar?.grupos ?? []).flatMap((g) => [g.titulo, ...g.causas]),
     p.siguiente,
   ].filter(Boolean);
 }
