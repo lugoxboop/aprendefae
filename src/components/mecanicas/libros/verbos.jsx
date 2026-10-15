@@ -541,7 +541,14 @@ export function Balanza({
           style={{
             position: "absolute", left: "8%", right: "8%", top: "16px", height: "3px",
             borderRadius: "999px", background: color,
-            transform: `rotate(${grados}deg)`, transformOrigin: "50% 50%",
+            /*
+             * El signo va al revés: `gradosDe` es positivo cuando pesa el DEBE
+             * (el platillo izquierdo baja), y en CSS un ángulo positivo gira
+             * en el sentido de las agujas del reloj, que baja el extremo
+             * DERECHO. Sin el menos, la viga se inclinaba hacia un lado y los
+             * platillos —que siguen la convención de `gradosDe`— hacia el otro.
+             */
+            transform: `rotate(${-grados}deg)`, transformOrigin: "50% 50%",
             transition: "transform 520ms cubic-bezier(.34,1.2,.5,1), background 300ms ease",
           }}
         />
