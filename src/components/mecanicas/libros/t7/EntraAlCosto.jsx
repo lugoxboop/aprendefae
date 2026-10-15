@@ -7,6 +7,8 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
 import { FranjaNIC2, CSS_T73_PATRON } from "./PatronT7_3.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -74,9 +76,11 @@ export default function EntraAlCosto({ Marco, rotulo, titulo, acento, onCompleta
       <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h6 className="t73pt-pieza">
         <FranjaNIC2 texto={H6.aviso} />
-        <Encabezado consigna={H6.consigna} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H6.consigna)} onComoSeJuega={onComoSeJuega} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </ContadorConIntento>
         </div>
         <TarjetaPregunta id={item.id} encabezado={item.encabezado ?? null} pregunta={item.pregunta} pie={H6.pie} tarjetaRef={tarjeta} />
         <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />

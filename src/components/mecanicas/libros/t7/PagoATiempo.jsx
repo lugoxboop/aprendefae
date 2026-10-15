@@ -8,6 +8,8 @@ import { AsientoEnLineas, Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "./hacerT7.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -85,12 +87,14 @@ export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h4>
-        <Encabezado consigna={H4.consigna} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H4.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H4.enunciado} />
         <Ficha filas={FICHA_H4} />
         <FigurasHacer figuras={FIGURAS_H4} respondidos={t.i + (listo ? 1 : 0)} listo={listo} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </ContadorConIntento>
         </div>
         {item.id === ARRIBA_H4.item && (
           <div data-asiento-arriba style={{ marginBottom: "12px" }}>

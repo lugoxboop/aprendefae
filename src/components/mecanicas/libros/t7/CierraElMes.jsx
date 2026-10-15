@@ -12,6 +12,8 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, Ficha, LineasConComprobar, TEXTO, INTER, APAGADO } from "./hacerT7.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -125,11 +127,13 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER + CSS}</style>
       <div data-h4>
-        <Encabezado consigna={H4.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H4.consigna.join(" "))} onComoSeJuega={onComoSeJuega} />
         <p data-entrada style={{ ...TEXTO, fontSize: "14px", lineHeight: "21px", margin: "0 0 8px" }}>{H4.entrada}</p>
         <Ficha filas={FICHA_H4} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={2} hechos={(parte === 1 ? 0 : 1) + ((parte === 1 && revision) || (parte === 2 && cierreHecho) ? 1 : 0)} enCurso={parte} etiqueta="Parte" />
+          <ContadorConIntento>
+            <Pulsos total={2} hechos={(parte === 1 ? 0 : 1) + ((parte === 1 && revision) || (parte === 2 && cierreHecho) ? 1 : 0)} enCurso={parte} etiqueta="Parte" />
+          </ContadorConIntento>
         </div>
 
         {parte === 1 && (

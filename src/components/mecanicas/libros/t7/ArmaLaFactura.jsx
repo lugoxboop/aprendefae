@@ -9,6 +9,8 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { AsientoEnLineas, ElegirLado, Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -202,13 +204,15 @@ export default function ArmaLaFactura({ Marco, rotulo, titulo, acento, onComplet
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
       <div data-h2>
-        <Encabezado consigna={H2.consigna} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H2.consigna)} onComoSeJuega={onComoSeJuega} />
         <div data-enunciado style={{ margin: "0 0 10px" }}>
           {H2.enunciado.map((p) => <p key={p} style={{ ...TEXTO, fontSize: "14px", lineHeight: "21px", margin: "0 0 6px" }}>{p}</p>)}
         </div>
         <Fichas />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </ContadorConIntento>
         </div>
 
         <div key={item.id} className="fae-t7h2-entra" data-item={item.id} style={{

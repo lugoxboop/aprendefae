@@ -7,7 +7,9 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
-import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "./hacerT7.jsx";
+import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
+import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -25,6 +27,11 @@ import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion, L
  *
  * Ocho unidades; la forma y las piezas son las del segundo Hacer de T7-2
  * (hacerT7.jsx, sin cambiarlo). Al terminar: onCompletar(pct, ms, detalle).
+ *
+ * LOTE 3: el Hacer de muestra de «Arma la línea» (armaLaLinea.jsx). Los
+ * cálculos van con casilla de cifra, el asiento con banco de cuentas y lado,
+ * y el distintivo «Un intento» junto al contador reemplaza la frase de la
+ * consigna, que se quita al pintar.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -39,7 +46,7 @@ export default function DescuentoEnFactura({ Marco, rotulo, titulo, acento, onCo
 
   const item = t.items[t.i];
   const cuantos = t.items.length;
-  const listo = item && (item.tipo === "eleccion" ? Boolean(r) : comprobado);
+  const listo = item && (item.tipo === "asiento" ? comprobado : Boolean(r));
 
   useEffect(() => {
     if (t.terminado) onCompletar?.(puntuarH1(bien), Date.now() - t.inicio.current, t.detalle.current);
@@ -85,21 +92,30 @@ export default function DescuentoEnFactura({ Marco, rotulo, titulo, acento, onCo
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h1>
-        <Encabezado consigna={H1.consigna} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H1.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H1.enunciado} />
         <Ficha filas={FICHA_H1} />
         <FigurasHacer figuras={FIGURAS_H1} respondidos={t.i + (listo ? 1 : 0)} listo={listo} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </ContadorConIntento>
         </div>
         <TarjetaPregunta id={item.id} encabezado={item.encabezado ?? null} pregunta={item.pregunta} pie={H1.pie} tarjetaRef={tarjeta} />
-        {item.tipo === "eleccion" ? (
+        {item.tipo === "eleccion" && (
           <>
             <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
             <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es ${r.textoCorrecta}. ` : null} />
           </>
-        ) : (
-          <LineasConComprobar key={item.id} lineas={item.orden.map((id) => item.lineas.find((l) => l.id === id))}
+        )}
+        {item.tipo === "cifra" && (
+          <>
+            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} />
+            <Devolucion r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
+          </>
+        )}
+        {item.tipo === "asiento" && (
+          <LineasConCuenta key={item.id} lineas={item.orden.map((id) => item.lineas.find((l) => l.id === id))}
             asiento={item.lineas} onComprobar={comprobar} comprobado={comprobado} />
         )}
       </div>
