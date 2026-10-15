@@ -560,7 +560,7 @@ test("★★★ el sobre es una pieza reutilizable de T4: pinta cualquier estado
     assert.equal(f.querySelectorAll('[data-libro="oculto"] .t4sb-cta').length, 1);
   } finally { act(() => raiz.unmount()); caja.remove(); }
   /* Vive en el carril de T4 (la vista), no en una carpeta de componentes compartidos. */
-  assert.match(leer("src/components/ContabilidadT4View.jsx"), /export function SobreCajaMenor\(\{ estado, s, alt \}\)/);
+  assert.match(leer("src/components/ContabilidadT4View.jsx"), /export function SobreCajaMenor\(\{ estado, s, alt, F = FIGURA_SOBRE \}\)/);
 });
 
 test("★★★ la figura: sin teal, ámbar ni coral, sin trazos discontinuos ni círculos; los renglones no se parten; nada se mueve con movimiento reducido", () => {

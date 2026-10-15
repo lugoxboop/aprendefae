@@ -16,7 +16,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · lo que ve el estudiante: la tarjeta del índice, y las dos mitades de la
  *     vista montadas de verdad en jsdom
  *
- * La guarda dice cuántas piezas hay: hoy, A0, A1 y A2. Cada pieza nueva la pone
+ * La guarda dice cuántas piezas hay: hoy, A0 a A3. Cada pieza nueva la pone
  * roja a propósito, y quien la construye la sube. El orden de PIEZAS_T4 lo
  * fija esta prueba, y lo fija por `numero` (A0 = 0, A1 = 1…), no por la
  * posición en la lista.
@@ -94,9 +94,9 @@ test("★★★ cada id del tema lleva t4- y está en la vista; la vista no trae
   const hacer = actividadesDeTipo(TEMA, HACER).filter((a) => !a.pendiente).map((a) => a.id);
   const enPiezas = PIEZAS_T4.map((p) => p.pieza.id);
   const enJuegos = JUEGOS_T4.map((j) => j.id);
-  /* La guarda: hoy, A0, A1 y A2 de Aprender, y H1, H2 y H3 de Hacer. Cada pieza nueva la sube a propósito. */
-  assert.deepEqual([ids.length, enPiezas.length, enJuegos.length], [6, 3, 3], "cambió el número de piezas de T4: súbelo aquí a propósito");
-  assert.deepEqual(ids, ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-entra-o-sale-de-caja", "t4-el-control-que-se-saltaron", "t4-a2-el-fondo-fijo", "t4-se-mueve-la-caja-menor"]);
+  /* La guarda: hoy, A0 a A3 de Aprender, y H1, H2 y H3 de Hacer. Cada pieza nueva la sube a propósito. */
+  assert.deepEqual([ids.length, enPiezas.length, enJuegos.length], [7, 4, 3], "cambió el número de piezas de T4: súbelo aquí a propósito");
+  assert.deepEqual(ids, ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-entra-o-sale-de-caja", "t4-el-control-que-se-saltaron", "t4-a2-el-fondo-fijo", "t4-se-mueve-la-caja-menor", "t4-a3-el-arqueo"]);
   assert.deepEqual(ids.filter((id) => !id.startsWith("t4-")), [], "ids sin el prefijo t4-");
   assert.deepEqual(enPiezas.sort(), [...aprender].sort(), "PIEZAS_T4 no coincide con las de Aprender del tema");
   assert.deepEqual(enJuegos.sort(), [...hacer].sort(), "JUEGOS_T4 no coincide con las de Hacer del tema");
@@ -104,7 +104,7 @@ test("★★★ cada id del tema lleva t4- y está en la vista; la vista no trae
 
 /* ═══════════ 2 · DATOS: NADA INVENTADO Y NADA QUE PAGUE ═══════════ */
 
-test("★★★ el orden de PIEZAS_T4 es el de `numero`: A0, A1, A2, y una pieza nueva se inserta sin mover nada", () => {
+test("★★★ el orden de PIEZAS_T4 es el de `numero`: A0, A1, A2, A3, y una pieza nueva se inserta sin mover nada", () => {
   /*
    * El orden lo fija ESTA prueba: las piezas van por su número en el corte de
    * T4 —A0 «El activo corriente» = 0, A1 «La caja» = 1, A2 = 2…—, sin
@@ -112,7 +112,7 @@ test("★★★ el orden de PIEZAS_T4 es el de `numero`: A0, A1, A2, y una pieza
    * la fila. Una pieza de número 2 añadida al principio de la lista queda
    * igual tercera.
    */
-  assert.deepEqual(PIEZAS_T4.map((p) => [p.numero, p.pieza.id]), [[0, "t4-a0-el-activo-corriente"], [1, "t4-a1-la-caja"], [2, "t4-a2-el-fondo-fijo"]]);
+  assert.deepEqual(PIEZAS_T4.map((p) => [p.numero, p.pieza.id]), [[0, "t4-a0-el-activo-corriente"], [1, "t4-a1-la-caja"], [2, "t4-a2-el-fondo-fijo"], [3, "t4-a3-el-arqueo"]]);
   /* Y el orden del índice, en subjects.js, es el mismo: A0 abre el tema. */
   assert.deepEqual(TEMA.actividades.filter((a) => a.clasificacion?.tipo === APRENDER).map((a) => a.id), PIEZAS_T4.map((p) => p.pieza.id));
   const numeros = PIEZAS_T4.map((p) => p.numero);
@@ -120,8 +120,8 @@ test("★★★ el orden de PIEZAS_T4 es el de `numero`: A0, A1, A2, y una pieza
   assert.equal(new Set(numeros).size, numeros.length, "dos piezas con el mismo número");
   for (const p of PIEZAS_T4) assert.equal(p.numero, p.pieza.numero, `${p.pieza.id}: el número de la fila no es el de la pieza`);
   assert.match(leer("src/components/ContabilidadT4View.jsx"), /export const PIEZAS_T4 = \[[\s\S]*?\]\.sort\(\(a, b\) => a\.numero - b\.numero\);/);
-  const conA3 = [{ numero: 3, pieza: { id: "t4-a3-el-arqueo" } }, ...PIEZAS_T4].sort((a, b) => a.numero - b.numero);
-  assert.deepEqual(conA3.map((p) => p.pieza.id), ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-a2-el-fondo-fijo", "t4-a3-el-arqueo"]);
+  const conA4 = [{ numero: 4, pieza: { id: "t4-a4-bancos-y-notas" } }, ...PIEZAS_T4].sort((a, b) => a.numero - b.numero);
+  assert.deepEqual(conA4.map((p) => p.pieza.id), ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-a2-el-fondo-fijo", "t4-a3-el-arqueo", "t4-a4-bancos-y-notas"]);
 });
 
 test("★★★ ningún archivo de datos de T4 llama al motor de FP, y ninguna migración fuera de 0200-0249 nombra un id t4-", () => {
@@ -170,8 +170,9 @@ test("★★★ el índice: con Aprender y Hacer, la tarjeta lleva las dos insig
     /* Tocarla abre la elección; cada mitad abre el tema en su modo, con su conteo. */
     act(() => { tarjeta.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
     assert.deepEqual(abiertos, [], "tocar la tarjeta partida no abre el tema: abre la elección");
-    const modo = (n) => [...m.caja.querySelectorAll("button.fae-modo")].find((b) => b.getAttribute("aria-label") === n);
-    for (const [etiqueta, quiere] of [["Aprender — 3 actividades", "aprender"], ["Hacer — 3 actividades", "hacer"]]) {
+    /* Los botones de modo de ESTA tarjeta: otro tema puede tener el mismo conteo (el Tema 1 también tiene 4 de Aprender). */
+    const modo = (n) => [...tarjeta.closest(".fae-split").querySelectorAll("button.fae-modo")].find((b) => b.getAttribute("aria-label") === n);
+    for (const [etiqueta, quiere] of [["Aprender — 4 actividades", "aprender"], ["Hacer — 3 actividades", "hacer"]]) {
       const b = modo(etiqueta);
       assert.ok(b, `no está la mitad «${etiqueta}»`);
       act(() => { b.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
@@ -180,7 +181,7 @@ test("★★★ el índice: con Aprender y Hacer, la tarjeta lleva las dos insig
   } finally { m.desmontar(); }
 });
 
-test("★★★ la vista montada: cabecera con el título; Aprender con A0, A1 y A2 como «PIEZA 1 DE 3»…«PIEZA 3 DE 3»; Hacer con el camino y su nodo H1", () => {
+test("★★★ la vista montada: cabecera con el título; Aprender con A0 a A3 como «PIEZA 1 DE 4»…«PIEZA 4 DE 4»; Hacer con el camino y su nodo H1", () => {
   for (const modo of [null, APRENDER, HACER]) {
     const m = montar(h(ContabilidadT4View, { modo, onBack: () => {} }));
     try {
@@ -194,8 +195,8 @@ test("★★★ la vista montada: cabecera con el título; Aprender con A0, A1 y
         assert.ok(m.caja.querySelector('[data-nodo="t4-entra-o-sale-de-caja"]'), "Hacer: falta el nodo de H1 en el camino");
         assert.equal(m.caja.querySelectorAll("[data-pieza]").length, 0);
       } else {
-        assert.deepEqual(m.caja.textContent.match(/PIEZA \d+ DE \d+/g), ["PIEZA 1 DE 3", "PIEZA 2 DE 3", "PIEZA 3 DE 3"], `modo ${modo}: rótulos de las piezas`);
-        assert.deepEqual([...m.caja.querySelectorAll("[data-pieza]")].map((x) => x.dataset.pieza), ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-a2-el-fondo-fijo"]);
+        assert.deepEqual(m.caja.textContent.match(/PIEZA \d+ DE \d+/g), ["PIEZA 1 DE 4", "PIEZA 2 DE 4", "PIEZA 3 DE 4", "PIEZA 4 DE 4"], `modo ${modo}: rótulos de las piezas`);
+        assert.deepEqual([...m.caja.querySelectorAll("[data-pieza]")].map((x) => x.dataset.pieza), ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-a2-el-fondo-fijo", "t4-a3-el-arqueo"]);
         assert.ok(!m.caja.textContent.includes("Este tema todavía no tiene juegos."), `modo ${modo}: Aprender no pinta el camino`);
       }
     } finally { m.desmontar(); }

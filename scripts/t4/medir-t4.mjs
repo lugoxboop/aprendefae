@@ -1,12 +1,12 @@
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * ¿CABE CADA TEXTO DE T4 · A0, A1 Y A2 A 375 Y 320, CON SUS FIGURAS?
+ * ¿CABE CADA TEXTO DE T4 · A0 A A3 A 375 Y 320, CON SUS FIGURAS?
  *
  *   node scripts/t4/medir-t4.mjs [carpeta-de-capturas]
  *
  * Como medir-t7-3-a1.mjs: Chromium de verdad, la vista de T4 montada tal
  * cual con la hoja de estilos del sitio (banco scripts/t4/harness-t4). Juega
- * A0, A1 y A2 enteras —en cada pregunta falla con cada opción equivocada y
+ * A0, A1, A2 y A3 enteras —en cada pregunta falla con cada opción equivocada y
  * después acierta— y en cada estado comprueba:
  *
  *   · que la página no tenga barra horizontal
@@ -23,6 +23,10 @@
  *     estados de P7 la figura mida lo mismo y el libro arranque a la misma
  *     altura, oculto o no (no salta al confirmar); y que en P5 la figura mida
  *     lo mismo en colocando y en el error
+ *   · en A3 (el mismo sobre): que la figura mida lo mismo en colocando, en
+ *     cada error y en el acierto de P3, P4 y P8, y que el sobre (P4) y el
+ *     libro (P8) arranquen a la misma altura; que entre P8 y P9 el 6.700
+ *     quede a la misma altura
  *   · con movimiento reducido, que nada de la pieza tenga animación ni
  *     transición en curso
  *
@@ -47,6 +51,7 @@ const PIEZAS = [
   { sel: '[data-pieza="t4-a0-el-activo-corriente"]', nombre: "a0", correctas: { "cual-es-corriente": "mercancia" } },
   { sel: '[data-pieza="t4-a1-la-caja"]', nombre: "a1", correctas: { consignacion: "se-acredita", "control-que-falla": "separar" } },
   { sel: '[data-pieza="t4-a2-el-fondo-fijo"]', nombre: "a2", correctas: { "cuanto-queda": "lo-que-queda", "y-caja-menor": "no-se-mueve" } },
+  { sel: '[data-pieza="t4-a3-el-arqueo"]', nombre: "a3", correctas: { "el-sobrante": "sobrante", "el-cheque": "menos", "camino-1": "cxc-empleados" } },
 ];
 
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
@@ -95,7 +100,7 @@ function medir(sel) {
     if (texto > util + 0.5 || c.scrollWidth > c.clientWidth + 0.5) problemas.push(`la cifra «${c.textContent}» mide ${texto.toFixed(1)} px en ${util.toFixed(1)}`);
   }
   /* Cada renglón de las figuras, en una sola línea. */
-  for (const r of pieza.querySelectorAll(".t4cj-glosa > span, .t4cj-caja2-n > span, .t4cj-hecho, .t4ry-zrot > span, .t4ry-tarj > span, .t4ry-mar, .t4sb-rot, .t4sb-nom, .t4sb-cheque-n, .t4sb-cheque-s, .t4sb-cta-n, .t4sb-nota, .t4sb-monto, .t4sb-cheque-m")) {
+  for (const r of pieza.querySelectorAll(".t4cj-glosa > span, .t4cj-caja2-n > span, .t4cj-hecho, .t4ry-zrot > span, .t4ry-tarj > span, .t4ry-mar, .t4sb-rot, .t4sb-nom, .t4sb-cheque-n, .t4sb-cheque-s, .t4sb-cta-n, .t4sb-nota, .t4sb-monto, .t4sb-cheque-m, .t4sb-calc, .t4sb-cta2 > span:first-child, .t4sb-cta-n2")) {
     const rango = document.createRange();
     rango.selectNodeContents(r);
     const lineas = new Set([...rango.getClientRects()].map((x) => Math.round(x.top))).size;
@@ -126,7 +131,9 @@ function medir(sel) {
     raya: raya ? Math.round((raya.getBoundingClientRect().top - pieza.querySelector("[data-figura]").getBoundingClientRect().top) * 100) / 100 : null,
     sobre: sobre ? {
       alto: Math.round(sobre.getBoundingClientRect().height * 100) / 100,
-      libro: Math.round((sobre.querySelector("[data-libro]").getBoundingClientRect().top - sobre.getBoundingClientRect().top) * 100) / 100,
+      libro: sobre.querySelector("[data-libro]") ? Math.round((sobre.querySelector("[data-libro]").getBoundingClientRect().top - sobre.getBoundingClientRect().top) * 100) / 100 : null,
+      envoltorio: Math.round((sobre.querySelector("[data-sobre]").getBoundingClientRect().top - sobre.getBoundingClientRect().top) * 100) / 100,
+      seisSetecientos: (() => { const x = sobre.querySelector('[data-cuenta="cxc-empleados"] [data-monto], [data-cuenta="gastos-faltante"] [data-monto]'); return x ? Math.round((x.getBoundingClientRect().top - sobre.getBoundingClientRect().top) * 100) / 100 : null; })(),
       holgura: holgura == null ? null : Math.round(holgura * 100) / 100,
       estado: sobre.dataset.estado,
     } : null,
@@ -139,6 +146,7 @@ function medir(sel) {
 
 const rayas = {};
 const sobres = {};
+const sobresA3 = {};
 
 for (const reducido of [false, true]) {
 for (const ancho of ANCHOS) {
@@ -160,7 +168,7 @@ for (const { sel, nombre: pz, correctas } of PIEZAS) {
     for (const p of m.problemas) fallos.push(`${marca} · ${p}`);
     if (!m.fuentes) fallos.push(`${marca} · no cargaron Inter o Sora`);
     if (nombre.startsWith("cual-es-corriente")) (rayas[ancho] ??= []).push([nombre, m.raya]);
-    if (m.sobre) (sobres[ancho] ??= []).push([nombre, m.sobre]);
+    if (m.sobre) ((pz === "a3" ? sobresA3 : sobres)[ancho] ??= []).push([nombre, m.sobre]);
     if (CAPTURAS) {
       const panel = await (await pg.$(sel)).evaluateHandle((x) => x.closest("section"));
       await panel.asElement().screenshot({ path: resolve(CAPTURAS, `t4-${pz}-${ancho}-${String(++n).padStart(2, "0")}-${nombre}.png`) });
@@ -221,6 +229,23 @@ for (const [ancho, lista] of Object.entries(sobres)) {
   iguales("P4-P5", gastos, "alto");
 }
 
+/* El sobre de A3: en P3, P4 y P8 nada salta al confirmar; entre P8 y P9 el 6.700 no se mueve. */
+for (const [ancho, lista] of Object.entries(sobresA3)) {
+  const grupo = (p) => lista.filter(([e]) => e.startsWith(p));
+  const iguales = (nombre, g, clave, n) => {
+    if (g.length !== n) fallos.push(`${ancho} px · A3 ${nombre}: ${g.length} estados, no ${n}`);
+    const v = new Set(g.map(([, s]) => s[clave]));
+    if (v.size !== 1) fallos.push(`${ancho} px · A3 ${nombre}: ${clave} cambia (${g.map(([e, s]) => `${e} ${s[clave]}`).join(", ")})`);
+  };
+  iguales("P3", grupo("el-sobrante"), "alto", 4);
+  iguales("P4", grupo("el-cheque"), "alto", 4);
+  iguales("P4", grupo("el-cheque"), "envoltorio", 4);
+  iguales("P8", grupo("camino-1"), "alto", 4);
+  iguales("P8", grupo("camino-1"), "libro", 4);
+  iguales("P8-P9", [...grupo("camino-1-acierto"), ...grupo("camino-2")], "seisSetecientos", 2);
+  iguales("P8-P9", [...grupo("camino-1-acierto"), ...grupo("camino-2")], "alto", 2);
+}
+
 await navegador.close();
 await servidor.close();
 
@@ -232,5 +257,7 @@ console.log("\nP4 de A0 · altura de la raya desde el borde de la figura");
 for (const [ancho, lista] of Object.entries(rayas)) console.log(`${ancho} | ${lista.map(([e, y]) => `${e.replace("cual-es-corriente-", "")} ${y}`).join(" · ")}`);
 console.log("\nA2 · el sobre: estado, alto de la figura, dónde arranca el libro y holgura mínima de fila");
 for (const [ancho, lista] of Object.entries(sobres)) for (const [e, s] of lista) console.log(`${ancho} | ${e} | ${s.estado} | ${s.alto} | ${s.libro} | ${s.holgura}`);
+console.log("\nA3 · el sobre: estado, alto, dónde arranca el sobre, dónde arranca el libro, el 6.700 y la holgura mínima de fila");
+for (const [ancho, lista] of Object.entries(sobresA3)) for (const [e, s] of lista) console.log(`${ancho} | ${e} | ${s.estado} | ${s.alto} | ${s.envoltorio} | ${s.libro} | ${s.seisSetecientos} | ${s.holgura}`);
 console.log(fallos.length ? `\n${fallos.length} FALLAN:\n${fallos.join("\n")}` : `\nTodo cabe en los ${filas.length} estados, y con movimiento reducido nada se anima.`);
 process.exit(fallos.length ? 1 : 0);
