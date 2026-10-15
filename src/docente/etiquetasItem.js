@@ -60,6 +60,10 @@ import { PARTES_T5_ACT2 } from "../data/contabilidadT5Act2.js";
 import { parteDeItem as parteDeItemMesa } from "../contabilidad/cierreConMesa.js";
 import { PARTES_T6_ACT2 } from "../data/contabilidadT6Act2.js";
 import { PARTES_T6_ACT3 } from "../data/contabilidadT6Act3.js";
+import { hechoDeItemT6Act4 } from "../contabilidad/t6Act4.js";
+import { fichaDeItemT6Act7 } from "../contabilidad/t6Act7.js";
+import { CASILLAS_T6_ACT5 } from "../data/contabilidadT6Act5.js";
+import { PARTES_T6_ACT6 } from "../data/contabilidadT6Act6.js";
 import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
 import { hechoDeItemH1 } from "../contabilidad/t7H1.js";
 import { unidadDeH2 } from "../contabilidad/t7H2.js";
@@ -81,6 +85,9 @@ import { unidadDeH5 as unidadDeT73H5 } from "../contabilidad/t7_3H5.js";
 import { unidadDeH6 as unidadDeT73H6 } from "../contabilidad/t7_3H6.js";
 import { unidadDeH7 as unidadDeT73H7 } from "../contabilidad/t7_3H7.js";
 import { unidadDeR5_1 } from "../data/repasoCap5Cruzado.js";
+import { unidadDeN1 as unidadDeT5N1 } from "../contabilidad/t5N1.js";
+import { unidadDeN3 as unidadDeT5N3 } from "../contabilidad/t5N3.js";
+import { unidadDeN4 as unidadDeT5N4 } from "../contabilidad/t5N4.js";
 import { hechoDeItemH1 as hechoDeItemT4H1 } from "../data/contabilidadT4H1.js";
 import { unidadDeR5_2 } from "../data/repasoCap5ToroNegroJuego.js";
 import {
@@ -599,6 +606,17 @@ Object.assign(REGLAS, {
   "b5-t5-a2": (id) => parteDeItemT5Act2(PARTES_T5_ACT2)(id),
   "b5-t6-a2": (id) => parteDeItemMesa(PARTES_T6_ACT2)(id),
   "b5-t6-a3": (id) => parteDeItemMesa(PARTES_T6_ACT3)(id),
+  /* T5 · N1 (Célula C). Cada ítem, por su caso o su pregunta. */
+  "t5-temporal-o-largo-plazo": (id) => unidadDeT5N1(id),
+  /* T5 · N3 (Célula C). Cada ítem, por su caso. */
+  "t5-revision-que-falta": (id) => unidadDeT5N3(id),
+  /* T5 · N4 (Célula C). Una elección, por su pregunta; una línea, por su cuenta y su valor. */
+  "t5-el-interes-del-periodo": (id) => unidadDeT5N4(id),
+  /* Tema 6 · acts. 4 a 7: el hecho, la casilla (por su enunciado) o la ficha. */
+  "b5-t6-a4": (id) => hechoDeItemT6Act4(id),
+  "b5-t6-a5": (id) => CASILLAS_T6_ACT5.find((c) => c.id === id)?.enunciado ?? null,
+  "b5-t6-a6": (id) => PARTES_T6_ACT6.flatMap((p) => p.casillas).find((c) => c.id === id)?.enunciado ?? null,
+  "b5-t6-a7": (id) => fichaDeItemT6Act7(id),
 
   "cu-arma-el-asiento": (id) => textoDeItemA6(id),
 

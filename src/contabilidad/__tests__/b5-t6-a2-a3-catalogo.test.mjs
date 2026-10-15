@@ -48,7 +48,8 @@ const CASOS = [
 ];
 
 test("★★★ b5-t6-a2 y b5-t6-a3 están en el bloque de T6, después de b5-t6-a1, con la clasificación de Sakuta", () => {
-  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a2", "b5-t6-a3"]);
+  /* Los tres primeros; después vienen los Hacer 4 a 7 (0075). */
+  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id).slice(0, 3), ["b5-t6-a1", "b5-t6-a2", "b5-t6-a3"]);
   for (const k of CASOS) {
     const c = clasificacionDe("contabilidad", "cuentas-por-cobrar", k.id);
     assert.deepEqual({ modalidad: c.modalidad, dificultad: c.dificultad, fpBase: c.fpBase }, { modalidad: "evaluativa", dificultad: k.dificultad, fpBase: k.fp }, k.id);

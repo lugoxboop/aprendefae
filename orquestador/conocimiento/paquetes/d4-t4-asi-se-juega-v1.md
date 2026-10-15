@@ -24,7 +24,7 @@
   - *[Hecho construido, que no está en el banco de H1 (sus ocho hechos son otros).]*
 - **Texto alternativo (`alt`):** «La tarjeta dice que una tienda paga las neveras con plata de la caja. Sale plata de la caja, así que la tarjeta va al haber de Caja.» (90,5)
   - *[v3, por H1-a: la cafetería y la leche rozaban la caja menor. Construido; no es el hecho H1-3.]*
-- **Lo que hace la mano (para el guion de Baki):** Una sola tarjeta. La mano la arrastra a «Haber de Caja» y aparece la retroalimentación de acierto.
+- **Lo que hace la mano (para el guion de Baki):** Una sola tarjeta. La mano toca «Haber de Caja» y aparece la retroalimentación de acierto. *[Se toca, no se arrastra: la pantalla de Hanayama usa destinos de un toque.]*
 
 ## H2 · El control que se saltaron (`t4-el-control-que-se-saltaron`)
 
@@ -85,7 +85,7 @@
 - **Ejemplo (`demo`):** «El 31, la empresa gira un cheque para pagar la luz. La empresa de energía todavía no lo ha cobrado.» (78,5)
   - *[Partida construida, que no es ninguna de las ocho de H6 (sus cheques son del arriendo y del proveedor).]*
 - **Texto alternativo (`alt`):** «La empresa anotó el cheque al girarlo, pero el banco no sabe de él hasta que lo cobren. La tarjeta va a «Todavía no lo tiene el banco».» (88,3)
-- **Lo que hace la mano (para el guion de Baki):** La mano arrastra la tarjeta a «Todavía no lo tiene el banco».
+- **Lo que hace la mano (para el guion de Baki):** La mano toca «Todavía no lo tiene el banco». *[Se toca, no se arrastra: la pantalla de Hanayama usa destinos de un toque.]*
 
 ## H7 · Concilia la cuenta (`t4-concilia-la-cuenta`)
 
@@ -97,7 +97,7 @@
 - **Ejemplo (`demo`):** «Una nota débito del banco por $12.000, por la comisión de manejo de la cuenta.» (79,7)
   - *[Partida construida, que no es de Los Cerezos: una comisión de 12.000, sin empresa. Solo demuestra cómo se coloca una partida; el cálculo de saldos no se demuestra, para no adelantar la cuenta.]*
 - **Texto alternativo (`alt`):** «El banco ya restó la comisión, y los libros todavía no. La partida va a «Libros: resta».» (92,1)
-- **Lo que hace la mano (para el guion de Baki):** La mano arrastra la tarjeta a «Libros: resta».
+- **Lo que hace la mano (para el guion de Baki):** La mano toca «Libros: resta». *[Se toca, no se arrastra: la pantalla de Hanayama usa destinos de un toque.]*
   - *[Demuestra solo el primer gesto de la actividad. Si Yujiro quiere la demostración completa, H7 y H8 necesitan un ejemplo de varias partidas fuera de Los Cerezos, y eso es una conciliación construida entera. No la escribí: es contenido nuevo de tamaño, y no estaba en el encargo.]*
 
 ## H8 · ¿Se asienta o no? (`t4-se-asienta-o-no`)
@@ -110,7 +110,7 @@
 - **Ejemplo (`demo`):** «Un cheque de $50.000 que la empresa giró y que nadie ha cobrado.» (88,4)
   - *[Partida construida, que no es de Los Cerezos: un cheque de 50.000 sin cobrar. Demuestra solo la etapa 1, con una partida que **no** se asienta, para que la demostración no regale ningún asiento.]*
 - **Texto alternativo (`alt`):** «La empresa ya anotó ese cheque al girarlo. A sus libros no les falta nada, así que no se asienta.» (90,9)
-- **Lo que hace la mano (para el guion de Baki):** La mano arrastra la tarjeta a «No se asienta».
+- **Lo que hace la mano (para el guion de Baki):** La mano toca «No se asienta». *[Se toca, no se arrastra: la pantalla de Hanayama usa destinos de un toque.]*
   - *[Demuestra solo el primer gesto de la actividad. Si Yujiro quiere la demostración completa, H7 y H8 necesitan un ejemplo de varias partidas fuera de Los Cerezos, y eso es una conciliación construida entera. No la escribí: es contenido nuevo de tamaño, y no estaba en el encargo.]*
 
 ## Lo que es mío

@@ -25,6 +25,12 @@ import CierreConDiario from "./mecanicas/libros/tema5/LibroDiario.jsx";
 import { T5_ACT2 } from "../data/contabilidadT5Act2.js";
 import ControlInterno from "./mecanicas/libros/t7/ControlInterno.jsx";
 import { PIEZA_CUIDAR_LAS_INVERSIONES } from "../data/contabilidadT5_n2.js";
+import TemporalOLargoPlazo from "./mecanicas/libros/t5/TemporalOLargoPlazo.jsx";
+import { N1 } from "../data/contabilidadT5_n1.js";
+import RevisionQueFalta from "./mecanicas/libros/t5/RevisionQueFalta.jsx";
+import { N3 } from "../data/contabilidadT5_n3.js";
+import ElInteresDelPeriodo from "./mecanicas/libros/t5/ElInteresDelPeriodo.jsx";
+import { N4 } from "../data/contabilidadT5_n4.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -58,6 +64,9 @@ const PUBLICADAS = PIEZAS.length;
 export const JUEGOS = [
   { id: T5_ACT1.id, Mecanica: QueRentaDa, titulo: T5_ACT1.nombre },
   { id: T5_ACT2.id, Mecanica: CierreConDiario, titulo: T5_ACT2.nombre },
+  { id: N1.id, Mecanica: TemporalOLargoPlazo, titulo: N1.nombre },
+  { id: N3.id, Mecanica: RevisionQueFalta, titulo: N3.nombre },
+  { id: N4.id, Mecanica: ElInteresDelPeriodo, titulo: N4.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
