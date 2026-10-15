@@ -197,31 +197,27 @@ test("★★★ el rótulo fijo se ve en pantalla en cada una de las ocho casill
     assert.ok(rotulo, `casilla ${k + 1}: sin rótulo`);
     assert.equal(rotulo.textContent, "Escenario simulado · no es la tabla del libro");
     /*
-     * Hoja de Mai (calidad 1): la nota encima de la tabla y sin pie; el pie de
-     * la tabla, dentro de su borde: el rótulo y la fuente del porcentaje, dos
-     * líneas sin cajas. «Escenario simulado» se lee una sola vez.
+     * Calidad 1: la nota encima de la regla y sin pie; el pie de la regla,
+     * dentro de su borde: el rótulo y la fuente del porcentaje, dos líneas
+     * sin cajas. «Escenario simulado» se lee una sola vez.
      */
     const regla = caja.querySelector("[data-regla]");
-    const tabla = regla.querySelector("table");
     const nota = caja.querySelector("[data-nota-regla]");
     const pie = regla.querySelector("[data-pie-tabla]");
     const sigue = (a, b) => Boolean(a.compareDocumentPosition(b) & 4);
-    assert.ok(sigue(nota, tabla), `casilla ${k + 1}: la nota, encima de la tabla`);
+    assert.ok(sigue(nota, regla), `casilla ${k + 1}: la nota, encima de la regla`);
     assert.equal(nota.textContent, D.T6_ACT6.nota, "la nota, sin pie");
-    assert.equal(tabla.parentElement, pie.parentElement, "el pie, dentro del borde de la tabla");
-    assert.ok(sigue(tabla, pie) && pie.contains(rotulo), `casilla ${k + 1}: el rótulo, al pie de la tabla`);
+    assert.ok(pie.contains(rotulo) && sigue(regla.querySelector('[data-fila="g4"]'), pie), `casilla ${k + 1}: el rótulo, al pie de la regla`);
     assert.deepEqual([...pie.children].map((p) => p.textContent), [D.T6_ACT6.rotulo, D.PIES_T6_ACT6.regla]);
-    assert.equal(pie.querySelectorAll("[data-tipo-pie]").length, 0, "sin cajas");
     assert.equal(caja.querySelectorAll("[data-tipo-pie]").length, 0, "ningún pie en caja en la actividad");
     assert.equal((caja.textContent.match(/Escenario simulado/g) ?? []).length, 1, "«Escenario simulado», una sola vez");
     assert.ok(sigue(rotulo, caja.querySelector("[data-hecho]")), `casilla ${k + 1}: el rótulo, antes de la casilla`);
-    /* La parte 2: los montos dentro de la tabla de la regla, una sola tabla, y el total abajo. */
+    /* La parte 2: los montos dentro de la regla y el total abajo; el eje, solo en la parte 1 (hoja 2 de Mai). */
     const datos = caja.querySelector("[data-datos-parte]");
     assert.equal(Boolean(datos), k >= 3, `casilla ${k + 1}: los montos solo en la parte 2`);
-    assert.equal(caja.querySelectorAll("table").length, 1, `casilla ${k + 1}: una sola tabla`);
+    assert.equal(Boolean(caja.querySelector("[data-eje]")), k < 3, `casilla ${k + 1}: el eje solo en la parte 1`);
     if (datos) {
-      const filasT = [...datos.querySelectorAll("tr")];
-      assert.ok(filasT.at(-1).hasAttribute("data-total"), "el total, en la última fila");
+      assert.ok(datos.lastElementChild.hasAttribute("data-total"), "el total, al final");
       assert.deepEqual([...datos.querySelectorAll("[data-monto]")].map((td) => td.textContent), ["$620.000", "$560.000", "$160.000", "$60.000"]);
     }
     /* Las opciones, en una columna (Mai: en fila de tres no caben las cifras de 7 dígitos a 320). */
@@ -232,19 +228,82 @@ test("★★★ el rótulo fijo se ve en pantalla en cada una de las ocho casill
   desmontar();
 });
 
-test("★★ la fila 1 de la regla: su texto en una segunda línea, sin columna de porcentaje; las demás, con el «%» en su columna", async () => {
+test("★★ la fila 1 de la regla: su texto en una segunda línea, sin porcentaje; las demás, con el «%» pegado", async () => {
   const { caja, desmontar } = await montar();
-  const filas1 = [...caja.querySelectorAll('[data-regla] tr[data-fila="g1"]')];
-  assert.equal(filas1.length, 2);
-  assert.equal(filas1[1].textContent, D.GRUPOS_T6_ACT6[0].porcentaje);
+  const g1 = caja.querySelector('[data-regla] [data-fila="g1"]');
+  assert.equal(g1.lastElementChild.textContent, D.GRUPOS_T6_ACT6[0].porcentaje);
   for (const g of D.GRUPOS_T6_ACT6.slice(1)) {
-    assert.equal(caja.querySelectorAll(`[data-regla] tr[data-fila="${g.id}"]`).length, 1, g.id);
-    assert.ok(caja.querySelector(`[data-regla] tr[data-fila="${g.id}"]`).textContent.endsWith(g.porcentaje.replace(" ", NBSP)), g.id);
+    assert.ok(caja.querySelector(`[data-regla] [data-fila="${g.id}"]`).textContent.endsWith(g.porcentaje.replace(" ", NBSP)), g.id);
   }
   desmontar();
 });
 
-test("★★ al pasar de casilla la página se mueve lo justo para ver la casilla, el rótulo y la fila que usa", async () => {
+/* ═══════════ LOS CAJONES DEL TIEMPO (hoja 2 de Mai, calidad) ═══════════ */
+
+const CJ = await import("../../components/mecanicas/libros/tema6/CajonesDelTiempo.jsx");
+const izquierda = (el) => Number.parseFloat(el.style.left);
+
+test("★★★ el eje: cuatro cajones de 22 · 22 · 28 · 28 %, marcas «3 meses», «6 meses» y «1 año» en sus bordes; «6 meses» apunta a la marca y cae a su izquierda", async () => {
+  const { caja, desmontar } = await montar();
+  const eje = () => caja.querySelector("[data-eje]");
+  assert.deepEqual([...eje().querySelectorAll("[data-cajon]")].map((c) => c.style.width), ["22%", "22%", "28%", "28%"]);
+  assert.deepEqual([...eje().querySelectorAll("[data-marca]")].map((m) => [m.textContent, m.style.left]), [["3 meses", "22%"], ["6 meses", "44%"], ["1 año", "72%"]]);
+  const cajonIzq = { g1: [0, 22], g2: [22, 44], g3: [44, 72], g4: [72, 100] };
+  for (let k = 0; k < 3; k++) {
+    const c = CASILLAS[k];
+    const deuda = eje().querySelector(`[data-deuda="${c.id}"]`);
+    assert.equal(deuda.textContent, c.enunciado.match(/\d+ meses/)[0]);
+    assert.ok(deuda.querySelector("[data-palito]"), "la pastilla apunta con su palito");
+    if (c.id === "u2") assert.equal(izquierda(deuda), 44, "el caso límite: «6 meses» apunta justo a la marca de 6");
+    /* Se falla a propósito: la deuda cae igual en su cajón CORRECTO. */
+    await tocar(opcion(caja, c.opciones.find((o) => o.tipo)));
+    const id = D.GRUPOS_T6_ACT6.find((g) => g.nombre === correcta(c).texto).id;
+    assert.equal(deuda.dataset.enCajon, id, `casilla ${k + 1}: en su cajón correcto`);
+    const [a, b] = cajonIzq[id];
+    assert.ok(izquierda(deuda) > a && izquierda(deuda) < b, `casilla ${k + 1}: dentro del cajón`);
+    if (c.id === "u2") assert.ok(izquierda(deuda) < 44, "«6 meses» cae a la izquierda de la marca: sin pasar de seis");
+    assert.equal(eje().querySelector(`[data-cajon="${id}"]`).dataset.conDeuda, "si");
+    await siguiente(caja);
+  }
+  desmontar();
+});
+
+test("★★★ las barras: la porción mide su porcentaje del largo (5 · 10 · 15 %), la provisión entra al responder, y la barra del total aparece en la casilla 7", async () => {
+  const { caja, desmontar } = await montar();
+  for (let k = 0; k < 3; k++) { await tocar(opcion(caja, correcta(CASILLAS[k]))); await siguiente(caja); }
+  const porcion = (g) => caja.querySelector(`[data-fila="${g}"] [data-porcion]`);
+  assert.equal(porcion("g1"), null, "el primer grupo no tiene porción");
+  assert.deepEqual(["g2", "g3", "g4"].map((g) => porcion(g).style.width), ["5%", "10%", "15%"]);
+  for (let k = 3; k < CASILLAS.length; k++) {
+    const c = CASILLAS[k];
+    assert.equal(Boolean(caja.querySelector("[data-barra-total]")), k >= 6, `casilla ${k + 1}: la barra del total, desde la 7`);
+    assert.ok(caja.querySelector("[data-renglon-activo]"), `casilla ${k + 1}: su renglón encendido`);
+    /* Se falla: entra igual el valor correcto. */
+    await tocar(opcion(caja, c.opciones.find((o) => o.tipo)));
+    const entraron = [...caja.querySelectorAll("[data-cajones-del-tiempo] [data-entra]")].map((e) => e.textContent);
+    assert.ok(entraron.includes(pesos(correcta(c).valor)), `casilla ${k + 1}: entró ${entraron}`);
+    assert.equal(caja.querySelector("[data-anuncio]").textContent, CJ.anuncioDe(k));
+    await siguiente(caja);
+  }
+  desmontar();
+});
+
+test("★★ el anuncio: lo que entra, con las palabras de la actividad", () => {
+  assert.deepEqual([0, 1, 2, 3, 4, 5, 6, 7].map(CJ.anuncioDe), [
+    "2 meses: Vigentes o hasta 3 meses",
+    "6 meses: Más de 3 hasta 6 meses",
+    "14 meses: Más de 1 año",
+    "Más de 3 hasta 6 meses: $28.000",
+    "Más de 6 meses hasta 1 año: $16.000",
+    "Más de 1 año: $9.000",
+    "La provisión: $53.000",
+    "El valor neto: $1.347.000",
+  ]);
+  /* «2 meses» en el primer cajón, «14 meses» en el último: la escala del eje. */
+  assert.ok(CJ.posicionDelMes(2) < 22 && CJ.posicionDelMes(14) > 72 && CJ.posicionDelMes(6) === 44);
+});
+
+test("★★ al pasar de casilla la página se mueve lo justo para ver la casilla, el rótulo y el renglón encendido", async () => {
   const { caja, desmontar } = await montar();
   const movidas = [];
   const antes = window.scrollBy;
@@ -271,7 +330,7 @@ test("★★ al pasar de casilla la página se mueve lo justo para ver la casill
   }
 });
 
-test("★★★ cada error se ve literal; la correcta queda marcada; y el valor correcto entra al registro para seguir", async () => {
+test("★★★ cada error se ve literal y la correcta queda marcada", async () => {
   for (let k = 0; k < CASILLAS.length; k++) {
     const c = CASILLAS[k];
     const mala = c.opciones.find((o) => o.tipo);
@@ -281,8 +340,6 @@ test("★★★ cada error se ve literal; la correcta queda marcada; y el valor 
     await tocar(opcion(caja, mala));
     assert.equal(devolucion(caja), `❌${pegado(D.ERRORES_T6_ACT6[mala.tipo])}`, `casilla ${k + 1}`);
     assert.equal(opcion(caja, correcta(c)).dataset.estado, "revelada");
-    const reg = caja.querySelector(`[data-resuelta="${c.id}"]`);
-    assert.ok(reg.textContent.includes(correcta(c).valor !== undefined ? pesos(correcta(c).valor) : correcta(c).texto));
     desmontar();
   }
 });
