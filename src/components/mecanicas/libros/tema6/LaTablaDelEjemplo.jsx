@@ -1,7 +1,7 @@
 import {
-  ESCENA_T6_A5, PASOS_T6_A5, CIERRE_T6_A5, GRUPOS_T6_A5, ROTULO_SIMULADO_T6_A5,
+  ESCENA_T6_A5, GRUPOS_T6_A5, ROTULO_SIMULADO_T6_A5, PARADA_T6_A5,
 } from "../../../../data/contabilidadT6Pieza5.js";
-import { T6_A5, pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
+import { T6_A5, T6_A5_JUNTO, pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
 import MaquinaPegada from "./MaquinaPegada.jsx";
 import { escenaDeMomentos } from "./Momentos.jsx";
 import { PieDeFuente } from "./FuentesT6A5.jsx";
@@ -21,7 +21,8 @@ import { PieDeFuente } from "./FuentesT6A5.jsx";
  */
 
 const E = ESCENA_T6_A5;
-const TODOS = [...PASOS_T6_A5, CIERRE_T6_A5];
+/* Los pasos juntados (hoja 7 de Mai: el 9 y el 10 de antes van en uno). */
+const TODOS = T6_A5_JUNTO.TODOS;
 
 export const MOMENTOS_ESCENA_T6_A5 = [
   {
@@ -62,7 +63,7 @@ const lector = (paso) => [
 
 export default function LaTablaDelEjemplo() {
   return (
-    <MaquinaPegada todos={TODOS} estadoPaso={T6_A5.estadoPaso} duracion={T6_A5.duracion} escena={Escena}
+    <MaquinaPegada todos={TODOS} estadoPaso={T6_A5_JUNTO.estadoPaso} duracion={T6_A5_JUNTO.duracion} escena={Escena} parada={PARADA_T6_A5}
       pintar={pegarPorcentaje} pintarPie={pintarPie} lector={lector} atributos={{ "data-capa2-t6-a5": true }} />
   );
 }

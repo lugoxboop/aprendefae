@@ -147,6 +147,7 @@ const LOS_DATOS = {
 const PIE_PEPS = "Basado en el libro, p. 239";
 const CON_PEPS = {
   id: "peps",
+  pista: "Con PEPS sale primero lo más antiguo. ¿Alcanza lo que había al inicio para cubrir las 4.500?",
   tipo: "eleccion",
   pregunta: "Con PEPS, ¿de dónde salen las 4.500 unidades del 6 de febrero?",
   opciones: [
@@ -166,6 +167,7 @@ const CON_PEPS = {
 const PIE_UEPS = "Basado en el libro, p. 240";
 const CON_UEPS = {
   id: "ueps",
+  pista: "Con UEPS sale primero lo último que entró antes del 6 de febrero. Lo que llegó después aún no existe.",
   tipo: "eleccion",
   encabezado: `Método ${UEPS}`,
   pregunta: "Con UEPS, ¿de dónde salen las 4.500 unidades del 6 de febrero?",
@@ -186,6 +188,7 @@ const CON_UEPS = {
 const PIE_PROMEDIO = "Basado en el libro, pp. 240-241";
 const CON_PROMEDIO = {
   id: "promedio",
+  pista: "Si llega mercancía más cara que el promedio que había, ¿hacia dónde se mueve ese promedio?",
   tipo: "eleccion",
   encabezado: "Método del costo promedio ponderado",
   pregunta: "El 12 de febrero llegan 2.500 unidades a $1.350, más caras que el promedio de ese día. ¿Qué pasa con el costo promedio?",
@@ -216,6 +219,7 @@ const CON_PROMEDIO = {
 const PIE_CAMBIA = "Basado en el libro, pp. 222, 233-234 y 239-240";
 const QUE_CAMBIA = {
   id: "que-cambia",
+  pista: "Recorre el kárdex por fechas: cada venta solo podía usar lo que ya había llegado.",
   tipo: "eleccion",
   parrafos: [
     "Con PEPS, al final quedan 1.100 unidades de la compra del 25 de febrero, a $1.380. Es el mismo resultado que con el periódico.",
@@ -238,6 +242,7 @@ const PIE_CIERRE = "Basado en el libro, pp. 225 y 243";
 const MISMO_EN_LOS_DOS = "Ese sí se hace en los dos sistemas.";
 const EL_CIERRE = {
   id: "el-cierre",
+  pista: "Piensa qué cuenta ya está al día cuando llega el cierre en el permanente.",
   tipo: "eleccion",
   parrafos: [
     "En el permanente, el cierre tiene dos asientos menos. No hay que quitar el inventario inicial ni colocar el final: la cuenta ya está al día.",

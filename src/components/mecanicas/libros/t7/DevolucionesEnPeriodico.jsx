@@ -3,7 +3,8 @@ import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_DEVOLUCIONES, BOTON, INTERFAZ, DEBE, HABER, cifra } from "../../../../data/contabilidadT7_1_a6.js";
-import { textosDelError, contarFallo } from "./escaleraAyuda.js";
+import { Plegable } from "./plegable.jsx";
+import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDeLineas, puestoTrasProbarOtra } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -129,7 +130,7 @@ function Mensaje({ ok, textos, refFoco, clase = "" }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7a6-msg-cuerpo">
         <span className="t7a6-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
@@ -150,7 +151,7 @@ function Eleccion({ pantalla, onSeguir }) {
 
   return (
     <div className="t7a6" data-eleccion={pantalla.id} data-estado={estado}>
-      {pantalla.parrafos.map((t) => <p key={t} className="t7a6-p" data-texto>{t}</p>)}
+      {pantalla.parrafos.map((t) => <p key={t} className="t7a6-p" data-texto><Plegable texto={t} /></p>)}
       {pantalla.espejo && <Espejo espejo={pantalla.espejo} acierto={estado === "acierto"} />}
       <p className="t7a6-p t7a6-preg" data-texto data-pregunta>{pantalla.pregunta}</p>
       <div className="t7a6-ops" role="group" aria-label={pantalla.pregunta}>
@@ -239,6 +240,8 @@ function Espejo({ espejo, acierto = false }) {
 function Lados({ pantalla, onSeguir }) {
   const [puesto, setPuesto] = useState({});
   const [veredicto, setVeredicto] = useState(null); // null | { malas: [ids] }
+  const [fallosLinea, setFallosLinea] = useState({});
+  const cerrada = (l) => lineaCerrada(pantalla, l, fallosLinea[l.id]);
   /* Cuántas líneas se ven: crece al colocar la última visible y nunca baja (Watari: una línea a la vez). */
   const [visibles, setVisibles] = useState(1);
   const ref = useRef(null);
@@ -250,13 +253,17 @@ function Lados({ pantalla, onSeguir }) {
   const suma = (lado) => pantalla.lineas.filter((l) => puesto[l.id] === lado).reduce((t, l) => t + l.monto, 0);
 
   const tocar = (l, k, lado) => {
-    if (estado !== "colocando") return;
+    if (estado !== "colocando" || cerrada(l)) return;
     setPuesto((p) => ({ ...p, [l.id]: p[l.id] === lado ? undefined : lado }));
     if (k === visibles - 1) setVisibles((v) => Math.min(v + 1, pantalla.lineas.length));
   };
-  const confirmar = () => setVeredicto({ malas: pantalla.lineas.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id) });
+  const confirmar = () => {
+    const malas = pantalla.lineas.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id);
+    setFallosLinea((f) => sumarFallosDeLineas(f, malas));
+    setVeredicto({ malas });
+  };
   const probarOtra = () => {
-    setPuesto((p) => { const n = { ...p }; for (const id of malas) delete n[id]; return n; });
+    setPuesto((p) => puestoTrasProbarOtra(p, malas, pantalla.lineas, cerrada));
     setVeredicto(null);
   };
 
@@ -296,6 +303,7 @@ function Lados({ pantalla, onSeguir }) {
                 aria-label={`${l.cuenta}: ${nombre}`}
                 aria-pressed={llena}
                 tabIndex={estado === "acierto" ? -1 : 0}
+                aria-disabled={cerrada(l) ? "true" : undefined}
                 aria-hidden={estado === "acierto" && !llena ? "true" : undefined}
                 onClick={() => tocar(l, k, cual)}
               >
@@ -311,7 +319,7 @@ function Lados({ pantalla, onSeguir }) {
                 {!lado && <span className="t7a6-ficha-monto" data-monto-suelto>{cifra(l.monto)}</span>}
               </span>
               <span className="t7a6-g2">{cas(DEBE)}{cas(HABER)}</span>
-              {mala && estado === "error" && <Mensaje ok={false} textos={[l.devolucion]} clase="t7a6-err" refFoco={l.id === malas[0] ? ref : undefined} />}
+              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} clase="t7a6-err" refFoco={l.id === malas[0] ? ref : undefined} />}
             </div>
           );
         })}
@@ -356,7 +364,7 @@ export default function DevolucionesEnPeriodico({ pieza = PIEZA_DEVOLUCIONES, ro
           <div className="t7a6">
             {p.objetivo && <p className="t7a6-p" data-texto data-objetivo>{p.objetivo}</p>}
             {p.enunciado && <p className="t7a6-p" data-texto data-enunciado>{p.enunciado}</p>}
-            {(p.parrafos ?? []).map((t) => <p key={t} className="t7a6-p" data-texto>{t}</p>)}
+            {(p.parrafos ?? []).map((t) => <p key={t} className="t7a6-p" data-texto><Plegable texto={t} /></p>)}
             {p.ficha && (
               <dl className="t7a6-ficha" data-ficha>
                 {p.ficha.map((f) => (

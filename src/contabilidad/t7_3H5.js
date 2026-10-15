@@ -1,5 +1,6 @@
 import { ITEMS_H5, CASOS_H5 } from "../data/contabilidadT7_3_h5.js";
 import { pesos } from "../data/contabilidad.js";
+import { bancoDeLinea, evaluarCifra } from "./armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -7,8 +8,11 @@ import { pesos } from "../data/contabilidad.js";
  *
  *   prepararH5(barajar)    los ocho ítems en su orden; las opciones de cada
  *                          elección (salvo las de los ítems 1 y 4, en el
- *                          orden de la v1) y las líneas de cada asiento, barajadas
- *   evaluarH5(ítem, v)     el veredicto de una elección y su texto
+ *                          orden de la v1), las líneas de cada asiento y el
+ *                          banco de cuentas de cada línea, barajados; las
+ *                          casillas de cifra, tal cual
+ *   evaluarH5(ítem, v)     el veredicto de una elección o de una casilla de
+ *                          cifra (evaluarCifra) y su texto
  *   idLineaH5(ítem, l)     el id de una línea en el detalle:
  *                          «ajuste-sobrante:costo»
  *   unidadesH5()           las once unidades que puntúan
@@ -21,12 +25,15 @@ const textoDe = (it, v) => (it.pesos ? pesos(v) : v);
 export const opcionesDeH5 = (item) => [item.correcta, ...item.distractores.map((d) => d.valor)];
 
 export const prepararH5 = (barajar) => ITEMS_H5.map((it) => {
-  if (it.tipo === "asiento") return { ...it, orden: barajar(it.lineas.map((l) => l.id)) };
+  if (it.tipo === "cifra") return it;
+  /* «Arma la línea»: cada línea con su banco de cuentas, barajado. */
+  if (it.tipo === "asiento") return { ...it, orden: barajar(it.lineas.map((l) => l.id)), lineas: it.lineas.map((l) => ({ ...l, banco: bancoDeLinea(l, barajar) })) };
   const valores = it.opcionesV1 ?? barajar(opcionesDeH5(it));
   return { ...it, opciones: valores.map((v) => ({ valor: v, texto: textoDe(it, v) })) };
 });
 
 export function evaluarH5(item, valor) {
+  if (item.tipo === "cifra") return evaluarCifra(item, valor);
   const ok = valor === item.correcta;
   const texto = ok ? item.acierto : item.distractores.find((d) => d.valor === valor)?.retro ?? null;
   return { ok, correcta: item.correcta, textos: [texto], textoCorrecta: textoDe(item, item.correcta) };

@@ -414,13 +414,34 @@ controles que están bien.
    del producto. **Un medidor que llora siempre se apaga** — y entonces deja de
    avisar el día que hay algo de verdad.
 
-## La revisión de daltonismo de lo compartido: pasa, y por qué
+## La revisión de daltonismo de lo compartido
+
+> **CORREGIDO el 15 de octubre, unas horas después de escribirlo.** Esta
+> sección decía «**lo compartido pasa**», a secas. Era demasiado: miré las
+> cuatro piezas que llevan ESTADO DE NAVEGACIÓN —el camino, la medalla, la
+> rejilla y el resumen— y escribí la conclusión como si cubriera todo lo
+> compartido.
+>
+> Xeno siguió mirando y encontró **seis piezas más** donde el color sí era la
+> única señal, todas en `mecanicas/libros/`: `ElegirLado`, `CampoCifra`,
+> `MesaDelAsiento`, `Retro`, la balanza y el panel docente. Ninguna es de una
+> célula: son compartidas. Y de paso destapó que la viga de la balanza
+> **giraba al revés que sus propios platillos** — un error de geometría que
+> ninguna prueba veía porque miraban el número, no el dibujo.
+>
+> **Lo que falló no fue mirar poco: fue escribir «pasa» en vez de «pasan
+> estas cuatro».** Es exactamente el fallo que describe «un comentario que
+> dice que algo está cubierto no es una comprobación», tres secciones más
+> abajo — y lo cometí yo, en el canon, el mismo día que lo escribí.
+>
+> **La regla: una conclusión nombra lo que miró.** «Pasan estas cuatro» deja
+> a la siguiente persona sabiendo qué falta. «Pasa» la convence de que no hay
+> nada que mirar.
 
 Comisión de Xeno: comprobar que **ninguna información viaje solo en el color**
-en las piezas compartidas. Hecha el 15 de octubre. **Resultado: lo compartido
-pasa.** Se escribe con las pruebas, porque un resultado negativo comprobado
-también es un resultado — y porque el que viene detrás no tiene por qué
-volver a mirarlo.
+en las piezas compartidas. Hecha el 15 de octubre. **Resultado: pasan las
+cuatro piezas de estado de navegación que se listan abajo.** Se escribe con
+las pruebas, porque un resultado negativo comprobado también es un resultado.
 
 | pieza | lo que tenía que comprobarse | cómo lo resuelve |
 |---|---|---|

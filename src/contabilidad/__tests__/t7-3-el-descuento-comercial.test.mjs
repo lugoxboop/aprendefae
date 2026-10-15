@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -40,6 +41,7 @@ const h = React.createElement;
 const A = await import("../../data/contabilidadT7_3.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: PantallasT7_3, cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
+const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
 const { PIEZAS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
 const { VISTAS, vistaDeTema } = await import("../../ruta.js");
 
@@ -49,6 +51,37 @@ const V1 = leer("orquestador/conocimiento/paquetes/t7-3-a1-v1.md");
 const P = A.PIEZA_EL_DESCUENTO_COMERCIAL;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 const citas = (t) => [...t.matchAll(/«([^»]+)»/g)].map((m) => m[1]);
+
+/*
+ * El lote 2 de Near: la pista de cada pregunta (primer error) y el anexo (la
+ * tercera opción, con su devolución, y el cambio en el texto de una opción
+ * correcta). Un texto nuevo de los datos sale de aquí o del paquete de la pieza.
+ */
+const PISTAS_L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-pistas-v1.md"));
+const ANEXO_L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-anexo-v1.md"));
+const sinComillas = (t) => t.trim().replace(/ \|$/, "").replace(/^«/, "").replace(/»$/, "");
+const idEnCelda = (celda) => celda.match(/`([^`]+)`/)[1];
+/* id de pantalla → pista. */
+const L2_PISTAS = new Map((PISTAS_L2.split("\n### ").find((s) => s.startsWith(`${P.id} ·`)) ?? "").split("\n")
+  .filter((l) => /^\| P\d/.test(l)).map((l) => l.split(" | ")).map((c) => [idEnCelda(c[0]), sinComillas(c[2])]));
+/* id de pantalla → la tercera opción del anexo: { texto, devolucion }. */
+const L2_TERCERAS = new Map(ANEXO_L2.split("\n").filter((l) => l.startsWith(`| ${P.id} | `)).map((l) => l.split(" | "))
+  .map((c) => [idEnCelda(c[1]), { texto: c[3].replace(/\*\*/g, ""), devolucion: sinComillas(c[4]) }]));
+/* «Un cambio en el texto de una opción correcta»: [campo, viejo, nuevo]. */
+const L2_CAMBIOS = ANEXO_L2.slice(ANEXO_L2.indexOf("## Un cambio")).split("\n").filter((l) => l.startsWith(`| ${P.id} · `))
+  .map((l) => l.split(" | ").map((x, i) => (i ? sinComillas(x) : x.replace(/^\| /, ""))));
+
+/*
+ * La escalera de ayuda (escaleraAyuda.js): el n-ésimo error de una pregunta.
+ * Con pista, el 1.º muestra la pista; el 2.º y siguientes, la respuesta y el
+ * acierto sin «Así es». Sin pista, la devolución de la opción, como antes.
+ */
+const errorEsperado = (p, o, n) => {
+  const correcta = p.opciones.find((x) => x.correcta).texto.replace(/\.$/, "");
+  const esperado = !p.pista ? [o.devolucion] : n === 1 ? [p.pista] : [`La respuesta es «${correcta}».`, p.acierto.texto.replace(/^Así es[.:]\s*/, "")];
+  assert.deepEqual(textosDelError(p, o, n), esperado);
+  return esperado;
+};
 
 /* La tabla «Pantallas» de la v1: [número, texto] por fila. */
 const FILAS = V1.slice(V1.indexOf("## Pantallas"), V1.indexOf("## Términos")).split("\n")
@@ -60,7 +93,7 @@ const CAPA2 = V1.slice(V1.indexOf("## Capa 2"), V1.indexOf("## Capa 3")).split("
 function textosDeDatos() {
   const t = [];
   for (const p of P.pantallas) {
-    for (const k of ["objetivo", "pregunta", "siguiente"]) if (p[k]) t.push(p[k]);
+    for (const k of ["objetivo", "pregunta", "siguiente", "pista"]) if (p[k]) t.push(p[k]);
     t.push(...(p.parrafos ?? []), ...(p.despues ?? []));
     for (const o of p.opciones ?? []) if (o.devolucion) t.push(o.devolucion);
     if (p.acierto) t.push(p.acierto.texto, ...(p.acierto.parrafos ?? []), ...(p.acierto.despues ?? []));
@@ -96,6 +129,10 @@ test("★★★ cada texto visible de la v1 está en los datos, con las capas de
   }
   /* La frase de tarifas literal va donde la v1 dice «Después, la frase de tarifas literal». */
   esperados.splice(esperados.indexOf(pantalla("repaso").parrafos[1]) + 1, 0, A.FRASE_TARIFAS);
+  /* El lote 2: cada pregunta con su pista, la de Near, y ninguna más; y la devolución de la tercera opción del anexo. */
+  assert.deepEqual(new Map(P.pantallas.filter((p) => p.pista).map((p) => [p.id, p.pista])), L2_PISTAS);
+  assert.deepEqual([...L2_PISTAS.keys()].sort(), ["dos-clases", "ejemplo"]);
+  esperados.push(...L2_PISTAS.values(), ...[...L2_TERCERAS.values()].map((t) => t.devolucion));
   /* El orden en pantalla lo revisa la prueba montada; aquí, que sean los mismos, sin faltar ni sobrar. */
   assert.deepEqual([...textosDeDatos()].sort(), [...esperados].sort());
   assert.ok(FILAS.find((f) => f[1].includes("En este ejercicio, el IVA es del 16 %"))[1].includes("Después, la frase de tarifas literal"));
@@ -106,7 +143,13 @@ test("★★★ cada texto visible de la v1 está en los datos, con las capas de
 
 test("★★★ las opciones, la ficha y el asiento son los de la v1", () => {
   const preg = (n) => FILAS.find((f) => f[0] === n)[1];
-  assert.deepEqual(pantalla("dos-clases").opciones.map((o) => o.texto), preg("2 · Pregunta (sin puntaje)").match(/Opciones: (.+)\.$/)[1].split(" · "));
+  /* Dos clases: las dos de la v1 y, al final, la tercera del anexo del lote 2, con su devolución. */
+  assert.deepEqual([...L2_TERCERAS.keys()], ["dos-clases"]);
+  const tercera = L2_TERCERAS.get("dos-clases");
+  assert.deepEqual(pantalla("dos-clases").opciones.map((o) => o.texto), [...preg("2 · Pregunta (sin puntaje)").match(/Opciones: (.+)\.$/)[1].split(" · "), tercera.texto]);
+  assert.deepEqual(pantalla("dos-clases").opciones.at(-1).devolucion, tercera.devolucion);
+  assert.equal(pantalla("dos-clases").opciones.at(-1).correcta, undefined);
+  assert.deepEqual(L2_CAMBIOS, []);
   assert.deepEqual(pantalla("ejemplo").opciones.map((o) => o.texto), preg("4 · Pregunta (sin puntaje)").match(/Opciones: (.+)\.$/)[1].split(" · "));
   /* Cada error de la v1 va con su opción. */
   const ej = pantalla("ejemplo");
@@ -180,12 +223,18 @@ test("★★★ se recorre entera: cada pantalla y cada estado con sus textos y 
     const dc = pantalla("dos-clases");
     assert.deepEqual(textos(c), [...dc.parrafos, dc.pregunta]);
     assert.equal(boton(c, "confirmar").getAttribute("aria-disabled"), "true");
-    await tocar(c.querySelector('[data-opcion="condicionado"]'));
-    await tocar(boton(c, "confirmar"));
-    assert.equal(c.querySelector("[data-mensaje]").dataset.mensaje, "error");
-    assert.deepEqual(textos(c).slice(-1), [dc.opciones[1].devolucion]);
-    assert.equal(pie(c), dc.error.pie);
-    await tocar(boton(c, "probar-otra"));
+    /* Las dos malas: la 1.ª da la pista; la 2.ª, la respuesta con su porqué (escalera de ayuda). */
+    let n = 0;
+    for (const o of dc.opciones.filter((x) => !x.correcta)) {
+      await tocar(c.querySelector(`[data-opcion="${o.id}"]`));
+      await tocar(boton(c, "confirmar"));
+      assert.equal(c.querySelector("[data-mensaje]").dataset.mensaje, "error");
+      const esperado = errorEsperado(dc, o, ++n);
+      assert.deepEqual(textos(c).slice(-esperado.length), esperado);
+      assert.equal(pie(c), dc.error.pie);
+      await tocar(boton(c, "probar-otra"));
+    }
+    assert.equal(n, 2);
     await tocar(c.querySelector('[data-opcion="comercial"]'));
     await tocar(boton(c, "confirmar"));
     assert.deepEqual(textos(c).slice(-1), [dc.acierto.texto]);
@@ -197,10 +246,12 @@ test("★★★ se recorre entera: cada pantalla y cada estado con sus textos y 
     const ej = pantalla("ejemplo");
     assert.deepEqual(textos(c), [...ej.parrafos, ...ej.ficha.map((f) => f.texto), ...ej.despues, ej.pregunta]);
     assert.equal(c.querySelector("[data-asiento]") === null, true, "el asiento antes del acierto");
+    let fallosEj = 0;
     for (const o of ej.opciones.filter((x) => !x.correcta)) {
       await tocar(c.querySelector(`[data-opcion="${o.id}"]`));
       await tocar(boton(c, "confirmar"));
-      assert.deepEqual(textos(c).slice(-1), [o.devolucion]);
+      const esperado = errorEsperado(ej, o, ++fallosEj);
+      assert.deepEqual(textos(c).slice(-esperado.length), esperado);
       assert.equal(c.querySelector("[data-asiento]") === null, true);
       await tocar(boton(c, "probar-otra"));
     }

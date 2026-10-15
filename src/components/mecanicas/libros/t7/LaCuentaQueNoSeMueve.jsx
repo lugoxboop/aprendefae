@@ -5,6 +5,7 @@ import { NEUTRO } from "../../../../data/contabilidadIntro.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE, BOTON } from "../../../../data/contabilidadT7_1.js";
 import FiguraDosColumnas from "./FiguraDosColumnas.jsx";
+import { Plegable } from "./plegable.jsx";
 import { textosDelError, contarFallo } from "./escaleraAyuda.js";
 
 /*
@@ -48,7 +49,8 @@ const PARRAFO = { margin: 0, fontSize: "14.5px", lineHeight: 1.6, color: FAE.tex
 
 function boton(principal) {
   return {
-    alignSelf: "flex-start", padding: "10px 18px", borderRadius: "999px", cursor: "pointer",
+    /* 44 px de alto como mínimo, el blanco de un dedo (L, tras el juego de Watari: medían 41,5). */
+    alignSelf: "flex-start", minHeight: "44px", padding: "10px 18px", borderRadius: "999px", cursor: "pointer",
     fontFamily: SORA, fontSize: "13px", fontWeight: 600,
     background: principal ? "rgba(248,249,250,0.1)" : "transparent",
     border: "1px solid rgba(248,249,250,0.36)", color: FAE.text,
@@ -66,7 +68,7 @@ function Pie({ texto }) {
 function Parrafos({ lista }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-      {lista.map((t) => <p key={t} data-texto style={PARRAFO}>{t}</p>)}
+      {lista.map((t) => <p key={t} data-texto style={PARRAFO}><Plegable texto={t} /></p>)}
     </div>
   );
 }
@@ -139,7 +141,7 @@ function Pregunta({ pantalla, onSeguir }) {
               disabled={Boolean(confirmada)}
               onClick={() => setElegida(o.id)}
               style={{
-                textAlign: "left", padding: "10px 12px", borderRadius: "11px",
+                textAlign: "left", minHeight: "44px", padding: "10px 12px", borderRadius: "11px",
                 cursor: confirmada ? "default" : "pointer",
                 background: esta ? "rgba(184,196,212,0.12)" : "rgba(10,20,34,0.4)",
                 border: `${esta ? 2 : 1}px solid ${esta ? NEUTRO : "rgba(248,249,250,0.36)"}`,
@@ -175,7 +177,7 @@ function Pregunta({ pantalla, onSeguir }) {
             color: "rgba(248,249,250,0.92)", background: "rgba(184,196,212,0.1)", borderLeft: `3px solid ${NEUTRO}`,
             overflowWrap: "break-word",
           }}>
-            {textosDelError(pantalla, opcion, fallos).join(" ")}
+            <Plegable texto={textosDelError(pantalla, opcion, fallos).join(" ")} />
           </p>
           <button type="button" data-boton="probar-otra" onClick={probarOtra} style={{ ...boton(false), marginTop: "10px" }}>
             {pantalla.error.boton}
@@ -191,7 +193,7 @@ function Pregunta({ pantalla, onSeguir }) {
             color: "rgba(248,249,250,0.92)", background: "rgba(184,196,212,0.1)", borderLeft: `3px solid ${NEUTRO}`,
             overflowWrap: "break-word",
           }}>
-            {pantalla.acierto.texto}
+            <Plegable texto={pantalla.acierto.texto} />
           </p>
           <p data-texto data-nota style={{ ...PARRAFO, marginTop: "10px", fontSize: "13px", color: "rgba(248,249,250,0.82)" }}>
             {pantalla.acierto.nota}

@@ -53,6 +53,8 @@ const { FAE } = await import("../../theme.js");
  * pone el componente, y el rgb al que JSDOM lo convierte al leerlo de vuelta.
  */
 const TEAL = /#2A9D8F|rgba?\(\s*42,\s*157,\s*143/i;
+/* El ámbar, que es el tono del haber: el lado correcto se destapa en SU color, no siempre en teal. */
+const AMBAR = /#E9C46A|rgba?\(\s*233,\s*196,\s*106/i;
 
 /*
  * La tabla de la ficha, copiada a mano: nueve cuentas con sus movimientos y su
@@ -374,18 +376,33 @@ test("★★ el lado correcto no se destapa mientras quede reintento", () => {
    * aparecía y la prueba pasaba dijera lo que dijera la pantalla — un mutante
    * que destapaba el lado correcto durante el reintento sobrevivió a ella.
    * Ahora se mira el fondo, y en las dos formas en que puede estar escrito.
+   *
+   * Y el tono es el del PROPIO lado: teal para el debe, ámbar para el haber.
+   * Antes la prueba daba por hecho que «destapado» era siempre teal, y como la
+   * cuenta sale del sorteo, pasaba o fallaba según cayera un saldo del debe o
+   * del haber. El veredicto, además, ya no depende solo del color: lleva su
+   * marca (✓ / ✗), y esa se mira también.
    */
-  const encendido = (b) => TEAL.test(b.style.background);
+  const tonoDe = (lado) => (lado === DEBE ? TEAL : AMBAR);
+  const encendido = (b, lado) => tonoDe(lado).test(b.style.background);
+  const conMarca = (b) => b.querySelector("svg[data-veredicto]") !== null;
 
   responder(caja, c.saldo, otro);
-  assert.equal(encendido(botonLado(caja, c.lado)), false,
+  assert.equal(encendido(botonLado(caja, c.lado), c.lado), false,
     "el lado correcto se encendió durante el reintento");
-  assert.equal(encendido(botonLado(caja, otro)), false);
+  assert.equal(encendido(botonLado(caja, otro), otro), false);
+  assert.equal(conMarca(botonLado(caja, c.lado)) || conMarca(botonLado(caja, otro)), false,
+    "salió una marca de veredicto con reintento pendiente");
 
   /* Y agotado el reintento sí se destapa: si no, la prueba de arriba sobra. */
   responder(caja, c.saldo, otro);
-  assert.equal(encendido(botonLado(caja, c.lado)), true,
+  assert.equal(encendido(botonLado(caja, c.lado), c.lado), true,
     "el lado correcto no se destapó ni después del reintento");
+  assert.equal(
+    botonLado(caja, c.lado).querySelector("svg[data-veredicto]")?.getAttribute("data-veredicto"),
+    "bien",
+    "el lado correcto se destapó sin su ✓",
+  );
   desmontar();
 });
 

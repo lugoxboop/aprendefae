@@ -81,6 +81,7 @@ const REPASO = {
 
 const DOS_CLASES = {
   id: "dos-clases",
+  pista: "Fíjate si el cliente tiene que cumplir algo para recibir la rebaja.",
   tipo: "eleccion",
   parrafos: [
     "Ahora sí, los descuentos. Muchas empresas les dan descuentos a sus clientes. El libro separa dos clases.",
@@ -92,6 +93,8 @@ const DOS_CLASES = {
   opciones: [
     { id: "comercial", texto: "Comercial", correcta: true },
     { id: "condicionado", texto: "Condicionado", devolucion: "Este no depende de ninguna condición, como pagar a tiempo. Y aparece en la factura. Es un descuento comercial." },
+    /* Tercera opción: anexo del lote 2 (Near). */
+    { id: "ninguna", texto: "Ninguna: si va en la factura, no es un descuento", devolucion: "Sí es un descuento. El libro llama así a la rebaja sobre el precio de lista, aunque venga escrita en la factura." },
   ],
   acierto: { texto: "Así es. No tiene condiciones y aparece en la factura: es comercial.", pie: "Basado en el libro, pp. 248 y 251" },
   error: { pie: "Basado en el libro, pp. 248 y 251" },
@@ -110,6 +113,7 @@ const C = H1_LIBRO;
 
 const EJEMPLO = {
   id: "ejemplo",
+  pista: "Piensa en qué valor queda en la factura después de la rebaja comercial.",
   tipo: "eleccion",
   parrafos: [
     "Mira el ejemplo del libro. San Calixto Ltda. le vende mercancía a crédito a un cliente. El precio de lista es de $4.200.000, más el IVA, y le da un descuento comercial del 15 %.",

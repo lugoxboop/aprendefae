@@ -506,3 +506,25 @@ g4	5 % · 10 % · 15 %	15 %	Más de un año: es el 15 %, el más alto.	Decreto 1
 ## (7) Mai · hoja 6: la pregunta de la caja (la revisa Shoko)
 
 «¿Qué porcentaje le toca?»
+
+## (8) Futaba · entrega 3: pasos que se juntan y predicción a mitad de la escena (pegada tal cual)
+
+Cada fusión pega dos textos ya aprobados sin cambiar una palabra.
+
+Para Kaede: el estado de la escena de cada paso fusionado es el del segundo paso. En t6Pieza3.js hay que volver a numerar las vueltas atrás (el paso 11 pasa a ser el 7).
+
+T6 A5: de 11 pasos a 10
+
+Se juntan 9 + 10 (Libro, p. 202).
+Predicción, entre los pasos 4 y 5:
+Pregunta: «El grupo de más de tres hasta seis meses suma $340.000. Al 5 %, ¿cuánto da?» (100)
+Opciones: $17.000 ✓ · $1.700 · $170.000.
+Si falla: «Revisa los ceros: el 5 % de $340.000 es $17.000.»
+Pie ★: «Fuente del porcentaje: Decreto 1625 de 2016», el mismo de los pasos 5 a 7.
+Al registro de cifras construidas: $1.700 y $170.000. No están en el capítulo, ni en la tabla de la p. 201, ni en la tabla ni las respuestas del D-3 (p. 269), ni en T6 A5 o a6.
+
+## (9) Mai · hoja 7: qué pasos se juntan y dónde va la parada (resumen; manda sobre la entrega 3)
+
+De 11 pasos a 10 (9 + 10, como pide Futaba). La predicción va entre el 4 y el 5.
+
+El contador de la parada dice «Antes del paso N» (nuevo, para Shoko).

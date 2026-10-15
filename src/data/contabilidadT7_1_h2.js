@@ -19,8 +19,14 @@ import { DEBE, HABER } from "./contabilidad.js";
  * error en un ítem no cambia la respuesta del siguiente, y después de
  * responder siempre se ve la buena.
  *
- * Los ítems van en el orden de la tabla, porque cada uno usa el anterior. Las
- * opciones de cada cálculo, en orden aleatorio.
+ * Los ítems van en el orden de la tabla, porque cada uno usa el anterior.
+ *
+ * LOTE 3 («Arma la línea», paquete de Near lote3-distractores-v1.md): los
+ * cuatro cálculos van con casilla de cifra (tipo "cifra"): si la cifra
+ * escrita es la de un distractor, sale su retroalimentación. En cada línea de
+ * los dos asientos se elige la cuenta (la correcta y sus `distractores` de
+ * Near, { cuenta, retro }) y el lado. Las líneas del asiento de venta son las
+ * mismas, con los mismos textos, que las del asiento de T7-3 H1.
  *
  * Lo que la v1 no trae y se toma de la convención de H1 y del Tema 3: los
  * botones «Siguiente ítem» y «Ver mi resumen», y los nombres «Debe» y «Haber»
@@ -72,14 +78,14 @@ export const BOTON_H2 = { siguiente: "Siguiente ítem", verResumen: "Ver mi resu
 export const LADOS_H2 = { [DEBE]: "Debe", [HABER]: "Haber" };
 
 /*
- * Los seis ítems. Un cálculo trae su cifra buena, su acierto y dos
- * distractores, cada uno con su retroalimentación. Un asiento trae sus cuatro
- * líneas, cada una con su lado y su mensaje de error, y las sumas que se
- * muestran al terminar.
+ * Los seis ítems. Un cálculo (casilla de cifra) trae su cifra buena, su
+ * acierto y dos distractores, cada uno con su retroalimentación. Un asiento
+ * trae sus cuatro líneas, cada una con su lado, su mensaje de error de lado y
+ * sus dos cuentas distractoras de Near, y las sumas que se muestran al terminar.
  */
 export const ITEMS_H2 = [
   {
-    id: "iva-compra", tipo: "calculo", subtema: "IVA",
+    id: "iva-compra", tipo: "cifra", subtema: "IVA",
     pregunta: "¿Cuánto es el IVA de la compra?",
     correcta: 512_000,
     acierto: "Así es: el 16 % de $3.200.000 es $512.000.",
@@ -90,7 +96,7 @@ export const ITEMS_H2 = [
     ],
   },
   {
-    id: "retencion-compra", tipo: "calculo", subtema: "Retención",
+    id: "retencion-compra", tipo: "cifra", subtema: "Retención",
     pregunta: "¿Cuánto es la retención de la compra?",
     correcta: 112_000,
     acierto: "Así es: el 3,5 % de $3.200.000 es $112.000. Se calcula sin el IVA.",
@@ -100,7 +106,7 @@ export const ITEMS_H2 = [
     ],
   },
   {
-    id: "debe-proveedor", tipo: "calculo", subtema: "Total de la factura",
+    id: "debe-proveedor", tipo: "cifra", subtema: "Total de la factura",
     pregunta: "¿Cuánto le queda debiendo La Ceiba al proveedor?",
     correcta: 3_600_000,
     acierto: "Así es: $3.200.000 + $512.000 − $112.000 = $3.600.000.",
@@ -113,15 +119,15 @@ export const ITEMS_H2 = [
     id: "asiento-compra", tipo: "asiento", subtema: "Asiento de compra",
     pregunta: "Ubica cada línea del asiento de la compra: Debe o Haber.",
     lineas: [
-      { id: "compras", cuenta: "Compras", valor: 3_200_000, lado: DEBE, retro: "La compra de mercancía va al debe de Compras." },
-      { id: "iva", cuenta: "IVA por pagar", valor: 512_000, lado: DEBE, retro: "En la compra, el IVA va al debe de IVA por pagar." },
-      { id: "retencion", cuenta: "Retención en la fuente por pagar", valor: 112_000, lado: HABER, retro: "La Ceiba descontó la retención y se la debe a la Dirección de Impuestos. Es un pasivo que aumenta: va al haber." },
-      { id: "proveedores", cuenta: "Cuentas por pagar – proveedores", valor: 3_600_000, lado: HABER, retro: "La Ceiba le queda debiendo al proveedor. Es un pasivo que aumenta: va al haber." },
+      { id: "compras", cuenta: "Compras", valor: 3_200_000, lado: DEBE, retro: "La compra de mercancía va al debe de Compras.", distractores: [{ cuenta: "Inventario de mercancías", retro: "En el periódico, Inventario de mercancías no se mueve con cada compra. Se queda quieta hasta el cierre." }, { cuenta: "Gastos de administración y ventas", retro: "La Ceiba compró esta mercancía para volver a venderla. No es un gasto de la operación del mes." }] },
+      { id: "iva", cuenta: "IVA por pagar", valor: 512_000, lado: DEBE, retro: "En la compra, el IVA va al debe de IVA por pagar.", distractores: [{ cuenta: "Retención en la fuente por pagar", retro: "La retención se calcula al 3,5 %, y este valor no sale de esa tarifa. Revisa con qué tarifa sale." }, { cuenta: "Anticipo fiscal", retro: "Anticipo fiscal aparece cuando a la empresa le descuentan la retención, y eso pasa al vender. Aquí La Ceiba compra." }] },
+      { id: "retencion", cuenta: "Retención en la fuente por pagar", valor: 112_000, lado: HABER, retro: "La Ceiba descontó la retención y se la debe a la Dirección de Impuestos. Es un pasivo que aumenta: va al haber.", distractores: [{ cuenta: "Anticipo fiscal", retro: "Anticipo fiscal es la retención que le descuentan a la empresa cuando vende. En la compra, es La Ceiba quien la descuenta." }, { cuenta: "IVA por pagar", retro: "El IVA de esta compra se calcula al 16 %, y este valor no sale de esa tarifa. Revisa con qué tarifa sale." }] },
+      { id: "proveedores", cuenta: "Cuentas por pagar – proveedores", valor: 3_600_000, lado: HABER, retro: "La Ceiba le queda debiendo al proveedor. Es un pasivo que aumenta: va al haber.", distractores: [{ cuenta: "Caja o Bancos", retro: "La compra fue a crédito, así que todavía no sale dinero. Lo que aparece es una deuda." }, { cuenta: "Cuentas por cobrar – clientes", retro: "Esa cuenta es lo que a la empresa le deben sus clientes. En esta compra, nadie le queda debiendo a La Ceiba." }] },
     ],
     sumas: 3_712_000,
   },
   {
-    id: "debe-cliente", tipo: "calculo", subtema: "Total de la factura",
+    id: "debe-cliente", tipo: "cifra", subtema: "Total de la factura",
     pregunta: "¿Cuánto le queda debiendo el cliente a La Ceiba?",
     correcta: 5_400_000,
     acierto: "Así es: $4.800.000 + $768.000 − $168.000 = $5.400.000.",
@@ -134,10 +140,10 @@ export const ITEMS_H2 = [
     id: "asiento-venta", tipo: "asiento", subtema: "Asiento de venta",
     pregunta: "Ubica cada línea del asiento de la venta: Debe o Haber.",
     lineas: [
-      { id: "clientes", cuenta: "Cuentas por cobrar – clientes", valor: 5_400_000, lado: DEBE, retro: "El cliente le queda debiendo a La Ceiba. Es un activo que aumenta: va al debe." },
-      { id: "anticipo", cuenta: "Anticipo fiscal", valor: 168_000, lado: DEBE, retro: "El cliente le descontó la retención a La Ceiba. Es un impuesto pagado por adelantado: va al debe de Anticipo fiscal." },
-      { id: "iva", cuenta: "IVA por pagar", valor: 768_000, lado: HABER, retro: "En la venta, La Ceiba cobró el IVA y se lo debe al Estado: va al haber de IVA por pagar." },
-      { id: "ingresos", cuenta: "Ingresos por ventas", valor: 4_800_000, lado: HABER, retro: "La venta es un ingreso que aumenta: va al haber de Ingresos por ventas." },
+      { id: "clientes", cuenta: "Cuentas por cobrar – clientes", valor: 5_400_000, lado: DEBE, retro: "El cliente le queda debiendo a La Ceiba. Es un activo que aumenta: va al debe.", distractores: [{ cuenta: "Caja o Bancos", retro: "La venta fue a crédito, así que el cliente todavía no paga. No entra dinero." }, { cuenta: "Cuentas por pagar – proveedores", retro: "Esa cuenta es lo que la empresa debe. Con esta venta, la empresa no queda debiendo nada." }] },
+      { id: "anticipo", cuenta: "Anticipo fiscal", valor: 168_000, lado: DEBE, retro: "El cliente le descontó la retención a La Ceiba. Es un impuesto pagado por adelantado: va al debe de Anticipo fiscal.", distractores: [{ cuenta: "Retención en la fuente por pagar", retro: "Esa cuenta es para la retención que la empresa descuenta cuando compra. Aquí el que descuenta es el cliente." }, { cuenta: "IVA por pagar", retro: "Este valor sale al 3,5 %, no al 16 %. No es el IVA." }] },
+      { id: "iva", cuenta: "IVA por pagar", valor: 768_000, lado: HABER, retro: "En la venta, La Ceiba cobró el IVA y se lo debe al Estado: va al haber de IVA por pagar.", distractores: [{ cuenta: "Anticipo fiscal", retro: "Anticipo fiscal va con la retención, que sale al 3,5 %. Este valor sale al 16 %." }, { cuenta: "Retención en la fuente por pagar", retro: "Esa cuenta es para la retención que la empresa descuenta cuando compra. Y este valor sale al 16 %." }] },
+      { id: "ingresos", cuenta: "Ingresos por ventas", valor: 4_800_000, lado: HABER, retro: "La venta es un ingreso que aumenta: va al haber de Ingresos por ventas.", distractores: [{ cuenta: "Inventario de mercancías", retro: "En el periódico, la venta no toca Inventario de mercancías. Esa cuenta solo se pone al día al cierre." }, { cuenta: "Compras", retro: "Compras recoge lo que la empresa compra para vender. Aquí la empresa vende." }] },
     ],
     sumas: 5_568_000,
   },

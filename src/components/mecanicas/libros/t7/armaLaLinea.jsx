@@ -4,8 +4,9 @@ import { pesos } from "../../../../data/contabilidad.js";
 import { formatearCifra, leerCifra } from "../../../../contabilidad/elCierreCompleto.js";
 import { AsientoEnLineas, ElegirLado, Responder } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
-import { TEXTOS_ARMA } from "../../../../contabilidad/armaLaLinea.js";
+import { TEXTOS_ARMA, retroDeLinea } from "../../../../contabilidad/armaLaLinea.js";
 import { TEXTO, LADOS_T7, BOTONES_T7 } from "./hacerT7.jsx";
+import { Plegable } from "./plegable.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -18,7 +19,8 @@ import { TEXTO, LADOS_T7, BOTONES_T7 } from "./hacerT7.jsx";
  *                  correcta y sus distractores, barajados) y su LADO; el monto
  *                  viene dado. «Comprobar» califica cada línea UNA vez: está
  *                  bien si cuenta y lado lo están. Después, la línea dice cuál
- *                  era, el porqué de las que fallaron debajo de ellas y, si se
+ *                  era y por qué no era la elegida (la retroalimentación del
+ *                  distractor, o la de la línea si solo falló el lado) y, si se
  *                  pasa `asiento`, el asiento completo con sus sumas.
  *
  * CasillaCifra     para los ítems cuyo objetivo es calcular: se escribe la
@@ -148,7 +150,7 @@ export function LineasConCuenta({ lineas, asiento = null, onComprobar, comprobad
                   }}>
                     <span style={SOLO_LECTOR}>Incorrecto. </span>
                     <p data-era style={{ ...TEXTO, margin: "0 0 6px", fontWeight: 600 }}>{TEXTOS_ARMA.era(l.cuenta, LADOS_T7[l.lado])}</p>
-                    <p data-texto-retro style={TEXTO}>{l.retro}</p>
+                    <p data-texto-retro style={TEXTO}><Plegable texto={retroDeLinea(l, cuentas[l.id])} /></p>
                   </div>
                 )}
               </div>

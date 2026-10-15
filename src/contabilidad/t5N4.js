@@ -1,13 +1,17 @@
 import { ITEMS_N4 } from "../data/contabilidadT5_n4.js";
 import { pesos } from "../data/contabilidad.js";
+import { bancoDeLinea, evaluarCifra } from "./armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * T5 · N4 «El interés del periodo» — la lógica, sin React.
  *
  *   prepararN4(barajar)    los cinco ítems en su orden; las opciones de cada
- *                          elección y las dos líneas del asiento, barajadas
- *   evaluarN4(ítem, v)     el veredicto de una elección y su texto
+ *                          elección, las dos líneas del asiento y el banco de
+ *                          cuentas de cada línea, barajados; las casillas de
+ *                          cifra, tal cual
+ *   evaluarN4(ítem, v)     el veredicto de una elección o de una casilla de
+ *                          cifra (evaluarCifra) y su texto
  *   idLineaN4(ítem, l)     el id de una línea en el detalle:
  *                          «asiento-del-cobro:caja»
  *   unidadesN4()           las seis unidades que puntúan
@@ -20,11 +24,14 @@ const textoDe = (it, v) => (it.pesos ? pesos(v) : v);
 export const opcionesDeN4 = (item) => [item.correcta, ...item.distractores.map((d) => d.valor)];
 
 export const prepararN4 = (barajar) => ITEMS_N4.map((it) => {
-  if (it.tipo === "asiento") return { ...it, orden: barajar(it.lineas.map((l) => l.id)) };
+  if (it.tipo === "cifra") return it;
+  /* «Arma la línea»: cada línea con su banco de cuentas, barajado. */
+  if (it.tipo === "asiento") return { ...it, orden: barajar(it.lineas.map((l) => l.id)), lineas: it.lineas.map((l) => ({ ...l, banco: bancoDeLinea(l, barajar) })) };
   return { ...it, opciones: barajar(opcionesDeN4(it)).map((v) => ({ valor: v, texto: textoDe(it, v) })) };
 });
 
 export function evaluarN4(item, valor) {
+  if (item.tipo === "cifra") return evaluarCifra(item, valor);
   const ok = valor === item.correcta;
   const texto = ok ? item.acierto : item.distractores.find((d) => d.valor === valor)?.retro ?? null;
   return { ok, correcta: item.correcta, textos: [texto], textoCorrecta: textoDe(item, item.correcta) };

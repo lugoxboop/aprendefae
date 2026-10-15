@@ -4,7 +4,8 @@ import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { cifraK } from "../../../../contabilidad/t7_2Kardex.js";
 import Kardex from "./KardexT7_2.jsx";
-import { textosDelError, contarFallo } from "./escaleraAyuda.js";
+import { Plegable } from "./plegable.jsx";
+import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDeLineas, puestoTrasProbarOtra } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -29,7 +30,7 @@ import { textosDelError, contarFallo } from "./escaleraAyuda.js";
  *
  * Los asientos van en el modo lectura del patrón tabular (DEBE en verde
  * azulado, HABER en ámbar, sangría en el haber, sin sumas); un monto que no
- * se muestra lleva el ● provisional de A2, a la espera de Watari. El kárdex
+ * se muestra lleva la casilla vacía discontinua del kárdex. El kárdex
  * es el de la guía de Watari (KardexT7_2.jsx).
  *
  * Cada pantalla lleva su pie en todos sus estados. NO CALIFICA y no da FP:
@@ -103,7 +104,9 @@ export const CSS_T7BP = `
 .t7bp-as-r > span:first-child { font-size: 14px; overflow-wrap: anywhere; min-width: 0; }
 .t7bp-as-r .t7bp-g2 > span { text-align: right; padding-inline: 9px; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 0; }
 .t7bp-sangria { padding-left: 24px; }
-.t7bp-oculto { color: ${P.texto2}; }
+/* el monto que no se muestra: la casilla discontinua vacía del patrón, la misma del kárdex (KardexT7_2.jsx, .t7kx-sin) */
+.t7bp-oculto { display: flex; align-items: center; height: 100%; }
+.t7bp-oculto i { display: block; width: 100%; height: 18px; border: 1px dashed ${P.borde}; border-radius: 4px; }
 /* cierre por nombres (A4, P6): «cuenta → cuenta», sin montos */
 .t7bp-cierre { margin: 0; padding: 4px 12px; list-style: none; border: 1px solid ${P.borde}; border-radius: 10px; display: grid; }
 .t7bp-cierre li { list-style: none; padding-block: 8px; font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
@@ -166,13 +169,13 @@ function Mensaje({ ok, textos, refFoco }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7bp-msg-cuerpo">
         <span className="t7bp-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
 }
 
-const Textos = ({ lista, clase = "t7bp-p", nueva = false }) => (lista ?? []).map((t) => <p key={t} className={`${clase}${nueva ? " t7bp-nueva" : ""}`} data-texto>{t}</p>);
+const Textos = ({ lista, clase = "t7bp-p", nueva = false }) => (lista ?? []).map((t) => <p key={t} className={`${clase}${nueva ? " t7bp-nueva" : ""}`} data-texto><Plegable texto={t} /></p>);
 
 function Ficha({ ficha }) {
   return (
@@ -214,14 +217,14 @@ function Movimientos({ tabla }) {
   );
 }
 
-/* Un asiento en lectura. monto null = monto que no se muestra (●). */
+/* Un asiento en lectura. monto null = monto que no se muestra (casilla vacía). */
 export function Asiento({ asiento, nuevo = false }) {
   const monto = (l, lado) => {
     if (l.lado !== lado) return "";
     if (l.monto === null) {
       return (
         <span className="t7bp-oculto" data-oculto data-revision="pendiente">
-          <span aria-hidden="true">●</span>
+          <i aria-hidden="true" />
           <span className="t7bp-sr">{PENDIENTE_DE_REVISION.montoOculto}</span>
         </span>
       );
@@ -359,6 +362,8 @@ function Lados({ pantalla, onSeguir, kardexDe }) {
   const [orden] = useState(() => barajar(pantalla.lineas));
   const [puesto, setPuesto] = useState({});
   const [veredicto, setVeredicto] = useState(null);
+  const [fallosLinea, setFallosLinea] = useState({});
+  const cerrada = (l) => lineaCerrada(pantalla, l, fallosLinea[l.id]);
   const ref = useRef(null);
   const malas = veredicto?.malas ?? [];
   const estado = !veredicto ? "colocando" : malas.length ? "error" : "acierto";
@@ -367,12 +372,16 @@ function Lados({ pantalla, onSeguir, kardexDe }) {
   const pie = estado === "colocando" ? pantalla.pie : estado === "error" ? pantalla.error.pie : pantalla.acierto.pie;
 
   const tocar = (l, lado) => {
-    if (estado !== "colocando") return;
+    if (estado !== "colocando" || cerrada(l)) return;
     setPuesto((p) => ({ ...p, [l.id]: p[l.id] === lado ? undefined : lado }));
   };
-  const confirmar = () => setVeredicto({ malas: orden.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id) });
+  const confirmar = () => {
+    const malas = orden.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id);
+    setFallosLinea((f) => sumarFallosDeLineas(f, malas));
+    setVeredicto({ malas });
+  };
   const probarOtra = () => {
-    setPuesto((p) => { const n = { ...p }; for (const id of malas) delete n[id]; return n; });
+    setPuesto((p) => puestoTrasProbarOtra(p, malas, pantalla.lineas, cerrada));
     setVeredicto(null);
   };
 
@@ -394,7 +403,7 @@ function Lados({ pantalla, onSeguir, kardexDe }) {
                 data-linea={l.id}
                 data-lado={cual}
                 aria-pressed={esta}
-                aria-disabled={estado !== "colocando" ? "true" : undefined}
+                aria-disabled={estado !== "colocando" || cerrada(l) ? "true" : undefined}
                 aria-label={`${l.cuenta}, ${cifraK(l.monto)}: ${nombreLado(cual)}${error ? ", incorrecto" : ""}`}
                 onClick={() => tocar(l, cual)}
               >
@@ -410,7 +419,7 @@ function Lados({ pantalla, onSeguir, kardexDe }) {
                 <span className="t7bp-monto" data-monto>{cifraK(l.monto)}</span>
               </p>
               <span className="t7bp-g2">{boton(DEBE)}{boton(HABER)}</span>
-              {mala && estado === "error" && <Mensaje ok={false} textos={[l.devolucion]} refFoco={l.id === malas[0] ? ref : undefined} />}
+              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} refFoco={l.id === malas[0] ? ref : undefined} />}
             </div>
           );
         })}
