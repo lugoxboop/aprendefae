@@ -377,3 +377,39 @@ controles que están bien.
    Midiendo esquinas, el medidor marcaba en rojo todos los botones redondeados
    del producto. **Un medidor que llora siempre se apaga** — y entonces deja de
    avisar el día que hay algo de verdad.
+
+## El piso de la letra: 12 px para lo que el estudiante lee
+
+Lo encontró la Célula C midiendo sus 44 piezas (#206): 26 de ellas tenían
+texto por debajo de 12 px, y **casi todos esos textos eran de piezas
+compartidas**, no suyas. Es el mejor ejemplo de para qué sirve que cada célula
+mida lo suyo: midiendo T7 se destapó un defecto de todos.
+
+**La regla: 12 px es el piso de lo que el estudiante lee para entender.**
+
+Arreglados en lo compartido el 15 de octubre:
+
+| texto | medía | ahora |
+|---|---|---|
+| `DEBE` / `HABER` de `AsientoEnLineas` | 10 px | **12** |
+| «Pregunta n de N» de `Pulsos` (2 sitios) | 11,5 px | **12** |
+
+**Por qué el primero importaba más de lo que parecía.** El lado de cada línea
+se dice dos veces: con la **palabra** y con el **color**. A 10 px la palabra
+deja de leerse, y el único aviso que queda en pie es el color — justo lo que
+la revisión de daltonismo dice que no puede pasar. **La letra pequeña
+convierte una señal de texto en una señal de color.** Los dos hallazgos eran
+el mismo.
+
+**La excepción, para no arreglar lo que no está roto:** un rótulo de cejilla
+—«RESULTADO» sobre un número de 28 px, «HACER» sobre el título— puede ir por
+debajo de 12. No es lo que se lee para entender: es la etiqueta de algo que
+está justo debajo y se entiende sin ella. Si al taparlo con el dedo la
+pantalla sigue diciendo lo mismo, es cejilla. Si al taparlo se pierde algo,
+es texto y va a 12.
+
+**Y antes de subir un tamaño, mide la holgura.** Es la misma regla que el
+blanco de toque: crecer puede romper. «HABER» a 12 px ocupa 47,5 de los 50 px
+que la columna tenía fijos —cabe—, y el contador de avance tenía 169 px de
+sobra en su fila. Las dos cosas se midieron en la página servida antes de
+tocar nada.
