@@ -1,0 +1,6 @@
+# fuentes que baja fuentes.sh (binarios: no se suben)
+.sonda-fuentes/
+# salidas de una corrida
+clave.json
+salida*.json
+tablas.md
