@@ -36,7 +36,7 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 ## Bloque 0 · Apertura del capítulo (pp. 177-179, hasta el título de §5.1) → pieza A0
 
 - **Portada (p. 177).** Capítulo «5 ACTIVOS CORRIENTES». Objetivos: conocer el grupo de bienes que conforman el activo corriente; manejar correctamente los movimientos del efectivo; manejar el movimiento de la cuenta deudores; saber los sistemas de inventarios; contabilizar compraventas con esos sistemas; contabilizar el impuesto a las ventas, la retención en la fuente, los fletes y los descuentos; hacer el estado de resultados de las empresas comerciales. Sin cifras ni cuentas.
-- **Definición (p. 178), literal:** «Se consideran activos corrientes a todos aquellos activos que son susceptibles de convertirse en dinero en efectivo en un periodo inferior a un año. Ejemplo de estos activos, además del efectivo en caja y los depósitos en bancos, son las inversiones a corto plazo, la cartera y los inventarios.»
+- **Definición (p. 178), en paráfrasis:** un activo es corriente si puede volverse efectivo en menos de un año (frase clave del libro: «en un periodo inferior a un año»). Ejemplos del libro: el efectivo en caja, los depósitos en bancos, las inversiones a corto plazo, la cartera y los inventarios.
 - **Qué afirma.** Los activos corrientes permiten operar (comprar mercancías, pagar gastos, adquirir activos fijos, pagar pasivos). Del volumen de activos corrientes depende el capital de trabajo, que es activo corriente menos pasivo corriente (p. 178). Son los que pueden convertirse en efectivo en menos de un año: caja, bancos, inversiones a corto plazo, cartera e inventarios (p. 178). A los acreedores les interesa más la capacidad de pago que los activos fijos (pp. 178-179). El activo corriente no debe ser más del necesario para operar al 100 %: operar con activos para el 120 % significa un 20 % subutilizado; operar al 90 % significa que falta liquidez y hay que cubrirla con financiación externa o aportes, con su costo (p. 179).
 - **Cifras.** 100 %, 120 %, 20 %, 90 % (p. 179). Son ilustrativas, sin cálculo.
 - **Cuentas.** Ninguna.
@@ -51,16 +51,16 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 
 **[2] Qué afirma el libro, en orden:**
 
-1. **Definición (p. 179).** «La cuenta de caja representa el dinero en efectivo o en cheques que mantiene la empresa para efectuar sus pagos frecuentes; es decir, es un recurso de disponibilidad inmediata.»
-2. **Control interno (p. 179).** El efectivo debe someterse a «estrictos controles» para salvaguardar los fondos de que dispone la empresa para el desarrollo normal de sus operaciones. Los procedimientos más comunes son siete:
-   1. Elaborar informes diarios de las entradas y las salidas de efectivo (p. 179).
-   2. Consignar diariamente el efectivo recibido (p. 179).
-   3. Establecer políticas bien definidas sobre los montos máximos que se pueden cancelar en efectivo (p. 180).
-   4. Evitar que la misma persona que recibe el dinero sea quien lo contabilice (p. 180).
-   5. Hacer arqueos de caja permanentes y sin previo aviso (p. 180).
-   6. Establecer pólizas de manejo para las personas que manejan el dinero de la empresa (p. 180).
-   7. Crear un fondo de caja menor para los pagos de poca cuantía (p. 180).
-3. **Regla (p. 180).** Caja, «por pertenecer al grupo de los activos», se debita cuando se recibe dinero y se acredita cuando los dineros se consignan o cuando se hacen pagos en efectivo.
+1. **Definición (p. 179), en paráfrasis.** Caja es el efectivo y los cheques que la empresa tiene para sus pagos frecuentes. El libro lo resume como un recurso «de disponibilidad inmediata».
+2. **Control interno (p. 179).** El libro pide «estrictos controles» sobre el efectivo para proteger la plata con la que la empresa opera. Da siete procedimientos, en paráfrasis:
+   1. Informes diarios de lo que entra y sale en efectivo (p. 179).
+   2. Consignar cada día el efectivo recibido (p. 179).
+   3. Un tope fijado para los pagos en efectivo (p. 180).
+   4. Que quien recibe el dinero no sea quien lo registra (p. 180).
+   5. Arqueos frecuentes y sin aviso (p. 180).
+   6. Pólizas de manejo para quienes manejan el dinero (p. 180).
+   7. Una caja menor para los pagos pequeños (p. 180).
+3. **Regla (p. 180), en paráfrasis.** Como Caja es un activo, se debita al recibir dinero y se acredita al consignarlo o al pagar en efectivo.
 4. **Ejemplo Sus Servicios Ltda. (p. 180).** Durante el día presta el servicio de mantenimiento de computadoras a varios clientes por **$435.000**; todos pagan de contado. El dinero se deposita ese mismo día en la cuenta corriente.
    - Asiento 1, «Contabilización del recibo del dinero»: Caja 435.000 al debe / Ingresos por servicios 435.000 al haber. Fecha «xxxx».
    - Asiento 2, «Consignación del dinero en la cuenta corriente»: Bancos 435.000 al debe / Caja 435.000 al haber. Fecha «xxxx».
@@ -78,9 +78,9 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 
 **[2] Qué afirma el libro:**
 
-1. **Definición (p. 181).** La caja menor es «un fondo en efectivo, fijo y renovable», cuyo manejo se confía a un funcionario, para atender gastos imprevistos, urgentes y de menor cuantía. La administra de manera exclusiva el funcionario designado, que responde disciplinaria, fiscal, tributaria y penalmente por su manejo.
-2. **Funciones del responsable (p. 181):** gestionar la adquisición y pagar los bienes y servicios autorizados para la caja menor; custodiar los dineros y los soportes de los gastos; aplicar las retenciones de ley; mantener la liquidez del fondo pidiendo su reembolso en la periodicidad establecida.
-3. **Regla (p. 181).** «La cuenta de caja se debe debitar cuando se recibe el dinero para crear el fondo o cuando se incrementa el valor del mismo, y acreditar cuando se disminuye el valor del fondo o cuando se cancela definitivamente.» (Ver errata D4-7: por los asientos, se refiere a la cuenta Caja menor.)
+1. **Definición (p. 181), en paráfrasis.** La caja menor es un fondo en efectivo «fijo y renovable» para gastos pequeños, urgentes o imprevistos. La maneja una sola persona designada, que responde por él en varios planos, entre ellos el disciplinario y el penal.
+2. **Funciones del responsable (p. 181), en paráfrasis:** pagar lo autorizado; guardar la plata y los soportes; aplicar las retenciones de ley; pedir el reembolso a tiempo.
+3. **Regla (p. 181), en paráfrasis.** Se debita al crear o aumentar el fondo y se acredita al disminuirlo o cancelarlo. El texto dice «la cuenta de caja», pero los asientos mueven Caja menor (errata D4-7).
 4. **Manejo contable, cuatro pasos numerados:**
    1. **Apertura (p. 181).** Se gira un cheque a nombre del encargado. Asiento modelo: Caja menor al debe / Bancos al haber, valores «xxxx».
    2. **Reembolso y contabilización de los gastos (p. 182).** El encargado relaciona todos los pagos con sus comprobantes y los envía a contabilidad, que los aprueba y gira el cheque del reembolso. Asiento modelo: Gastos generales al debe / Bancos al haber. **Caja menor no se mueve**: esto lo dice el asiento de la p. 182, no el texto. En pantalla se presenta como «mira el asiento de la p. 182» (decisión de Yujiro, I4).
@@ -99,9 +99,9 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 
 **[2] Qué afirma el libro:**
 
-1. **Arqueo (p. 182).** «Frecuentemente, y sin previo aviso», se audita la caja menor para determinar si el valor de los comprobantes de soporte de los desembolsos y el efectivo en la caja son iguales al valor del fondo.
-2. **Sobrantes de caja menor (p. 183).** «Se llevan a los fondos de la empresa como aprovechamientos». Asiento modelo: Gastos al debe / Ingresos no operacionales -sobrante de caja menor al haber / Bancos al haber.
-3. **Faltantes de caja menor (p. 183).** «Generalmente, cuando los faltantes son representativos, se le cobran al encargado de manejar el fondo.» (cita literal; se refiere a los faltantes de caja menor) Asiento modelo: Gastos generales al debe / Cuentas por cobrar -empleados al debe / Bancos al haber. Y «en caso de que el faltante sea considerado como no representativo, se puede cargar a los gastos del periodo» (literal; faltante de caja menor): Gastos generales al debe / Gastos no operacionales -faltante de caja menor al debe / Bancos al haber.
+1. **Arqueo (p. 182), en paráfrasis.** La caja menor se revisa a menudo y «sin previo aviso» para ver si los soportes de lo pagado, más el efectivo que queda, dan el valor del fondo.
+2. **Sobrantes de caja menor (p. 183).** El libro dice que pasan a la empresa «como aprovechamientos». Asiento modelo: Gastos al debe / Ingresos no operacionales -sobrante de caja menor al haber / Bancos al haber.
+3. **Faltantes de caja menor (p. 183), en paráfrasis.** Si el faltante es «representativo», por lo general se le cobra a quien maneja el fondo. Asiento modelo: Gastos generales al debe / Cuentas por cobrar -empleados al debe / Bancos al haber. Si no lo es, se puede llevar a los gastos del periodo: Gastos generales al debe / Gastos no operacionales -faltante de caja menor al debe / Bancos al haber.
 
 **[4] Ejemplo Rosa Primorosa · Sus Servicios Ltda. (pp. 183-186).** El 1 de mayo Sus Servicios establece una caja menor de **$500.000** con un cheque a nombre de Rosa Primorosa (p. 183).
 
@@ -141,10 +141,10 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 
 **[2] Qué afirma el libro:**
 
-1. **Definición (p. 186).** Bancos representa los fondos depositados por la empresa, en moneda nacional o extranjera, en bancos del país o del exterior. Las cuentas en el exterior se convierten a pesos al cierre de cada ejercicio con la tasa representativa del mercado a la fecha.
-2. **Regla (p. 186).** Como activo, se debita por todo lo que aumente los depósitos y se acredita por todo lo que los disminuya.
-3. **Se debita por (p. 186):** consignaciones en la cuenta corriente; notas crédito expedidas por el banco por cualquier concepto; consignaciones de los clientes directamente a la cuenta corriente; cheques anulados con posterioridad a su contabilización; cualquier operación que aumente los depósitos.
-4. **Se acredita por (p. 187):** cheques girados; notas débito expedidas por el banco por cualquier concepto; cargos por abono o cancelación de préstamos; cualquier operación que disminuya los depósitos.
+1. **Definición (p. 186), en paráfrasis.** Bancos es la plata que la empresa tiene depositada, en pesos o en otra moneda, en bancos de Colombia o de fuera. Lo que está en moneda extranjera se pasa a pesos al cierre del ejercicio con la tasa representativa del mercado.
+2. **Regla (p. 186), en paráfrasis.** Es un activo: se debita con lo que aumenta los depósitos y se acredita con lo que los disminuye.
+3. **Se debita por (p. 186), en paráfrasis:** consignaciones propias; notas crédito del banco; consignaciones que hacen los clientes directamente; cheques anulados después de registrados; cualquier otro aumento.
+4. **Se acredita por (p. 187), en paráfrasis:** cheques girados; notas débito del banco; pagos de préstamos; cualquier otra disminución.
 5. **Ejemplo 1, Sus Servicios Ltda. (p. 187).** Durante el día consigna **$876.000** en la cuenta corriente y gira un cheque a un proveedor por **$398.200**. Asientos (xxxx): Bancos 876.000 / Caja 876.000; Cuentas por pagar -proveedores 398.200 / Bancos 398.200.
 
 **[3] Cuentas literal:** Bancos · Caja · Cuentas por pagar -proveedores (p. 187).
@@ -159,16 +159,16 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 
 **[2] Qué afirma el libro:**
 
-1. La conciliación «permite confrontar y conciliar» lo que la empresa registra en su cuenta de bancos con lo que el banco suministra en el extracto (p. 187).
+1. La conciliación compara lo que la empresa tiene registrado en Bancos con lo que dice el extracto del banco (p. 187, en paráfrasis).
 2. La empresa lleva un libro auxiliar de bancos con cada movimiento: giro de cheques, consignaciones, notas débito, notas crédito, anulación de cheques (p. 187). El banco lleva su propio registro y envía cada mes un extracto con los movimientos y el saldo al último día del mes (p. 188).
-3. «Por lo general, el saldo del extracto bancario nunca coincide» con el de los libros [ver D4-10], y hay que identificar las diferencias y sus causas revisando cada movimiento de los auxiliares contra el extracto (p. 188).
-4. **Seis causas (p. 188):** cheques girados que el beneficiario no ha cobrado; consignaciones registradas en libros que el banco aún no ha abonado; notas débito cargadas por el banco que la empresa no ha registrado; notas crédito abonadas por el banco que la empresa no ha registrado; errores de la empresa; errores del banco.
+3. El libro dice que los dos saldos casi nunca coinciden (su frase mezcla «por lo general» y «nunca», ver D4-10), y que hay que revisar movimiento por movimiento para hallar la causa (p. 188, en paráfrasis).
+4. **Seis causas (p. 188), en paráfrasis:** cheques que el beneficiario aún no cobra; consignaciones que el banco aún no abona; notas débito del banco que la empresa no ha registrado; notas crédito del banco que la empresa no ha registrado; errores de la empresa; errores del banco.
 
 **[3] Cuentas:** ninguna. **[4] Cifras:** ninguna.
 
 **[5] Dependencias.** Bloque 4 (qué mueve Bancos). Libro mayor (Tema 2, `cu-a4-diario-y-mayor`). «Libro auxiliar» y «extracto» son nuevos y el libro solo los describe de pasada. (Busqué «extracto» en `src/data/`: solo sale en un comentario de código de T7-1 A5 con el sentido de «fragmento», no de extracto bancario.)
 
-**La p. 188 es la mejor definición que trae el libro de nota débito y nota crédito:** nota débito = lo que el banco «ha cargado a la cuenta bancaria»; nota crédito = lo que el banco «ha abonado a la cuenta de la empresa».
+**La p. 188 es lo más cerca que llega el libro a definir las notas del banco:** la nota débito es lo que el banco le «ha cargado» a la cuenta, y la nota crédito, lo que le «ha abonado».
 
 ## Bloque 6 · Ejemplo 2: la conciliación de la Compañía San Calixto Ltda. (pp. 188-191) → pieza A4 o A5
 
@@ -207,7 +207,7 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 
 Comprobación cruzada mía: la diferencia inicial es 4.373.100 − 2.435.600 = 1.937.500. El lado del banco se mueve +2.177.000 (2.758.000 − 581.000) y el de libros +239.500 (987.000 − 747.500); 2.177.000 − 239.500 = 1.937.500. **Cuadra.**
 
-**Lo que concluye el libro (p. 190).** Ninguna de las dos partes estaba en un error; la diferencia venía de hechos sin registrar en los dos lados. «Lo más importante no es que la conciliación arroje saldos iguales, sino los registros contables que se deben hacer para llevar el saldo de bancos a su verdadero valor.» «Solo se deben registrar aquellos hechos que afecten los libros de la empresa.»
+**Lo que concluye el libro (p. 190).** En paráfrasis: nadie se había equivocado, sino que a cada lado le faltaba registrar algo. Para el libro, lo importante no es que los saldos den igual, sino hacer los asientos que dejan Bancos en su «verdadero valor». Y solo se asienta lo que afecta los libros de la empresa.
 
 **Asientos de ajuste (p. 191), todos mar-31:**
 
@@ -259,7 +259,7 @@ Cuando esté aprobado, esto pasa a `vocabulario/contabilidad.md` por quien lo ad
 | D4-4 | 183 | El modelo del sobrante de caja menor debita «**Gastos**»; todos los demás asientos de reembolso (p. 182, los dos modelos de faltante de caja menor de la p. 183 y los ejemplos de las pp. 184-186) debitan «Gastos generales». | Media-alta: puede ser abreviatura, no cambia ninguna cifra |
 | D4-5 | 189 vs 190 | El cheque de Laura García es el **n.º 146** en la tabla de la p. 189 y el **n.º 145** en la conciliación de la p. 190. El valor (125.000) es el mismo, así que no cambia ningún total. **Decisión de Yujiro: no se elige número; ninguna pieza muestra números de cheque.** | Alta |
 | D4-6 | 186 | «debitar la **cuanta** de bancos» por «cuenta». | Alta, sin efecto |
-| D4-7 | 181 | En la sección de caja menor, la regla dice «La cuenta **de caja** se debe debitar cuando se recibe el dinero para crear el fondo…», pero los asientos de apertura y aumento debitan **Caja menor**, y el de disminución (p. 182) acredita Caja menor y debita **Caja**. La frase solo es coherente si «caja» quiere decir «caja menor». **Decisión de Yujiro: se enseña lo que hacen los asientos (Caja menor); si se cita la frase, va con la aclaración.** | Media: puede leerse como uso genérico, pero tal cual confunde las dos cuentas |
+| D4-7 | 181 | En la sección de caja menor, la regla habla de «la cuenta de caja» al describir cuándo se debita y se acredita el fondo, pero los asientos de apertura y aumento debitan **Caja menor**, y el de disminución (p. 182) acredita Caja menor y debita **Caja**. La frase solo es coherente si «caja» quiere decir «caja menor». **Decisión de Yujiro: se enseña lo que hacen los asientos (Caja menor); si se cita la frase, va con la aclaración.** | Media: puede leerse como uso genérico, pero tal cual confunde las dos cuentas |
 | D4-8 | 183 | En el modelo de faltante de caja menor al cajero, «Cuentas por cobrar -empleados» va **sangrado como un crédito**, pero su valor está en la columna Debe. En el ejemplo de la p. 186 no va sangrado. Además, en la plantilla del sobrante de caja menor, «Bancos» va **sin sangría** aunque es un crédito (añadido en segunda lectura por Shibukawa, su E8). | Media: la columna manda |
 | D4-9 | 187 | La enumeración de movimientos del libro auxiliar repite «las consignaciones» (al principio y al final). | Alta, sin efecto |
 | D4-10 | 188 | «Por lo general, el saldo del extracto bancario **nunca** coincide»: «por lo general» y «nunca» se contradicen. No se debe enseñar «nunca». | Media (redacción, no cifra) |
@@ -285,11 +285,11 @@ Cuando esté aprobado, esto pasa a `vocabulario/contabilidad.md` por quien lo ad
 | HD4-4 | 181 | Nombra «aplicar las **retenciones de ley**» como función del responsable, sin explicarla; la retención se explica en la p. 210 (T7). |
 | HD4-5 | 182 | No dice por qué la disminución del fondo va a **Caja** y el aumento sale de **Bancos**. |
 | HD4-6 | 183 | No da **criterio de «representativo»** para un faltante de caja menor. Un ítem no puede pedirle al estudiante que lo juzgue: el enunciado debe decir qué decidió la empresa. |
-| HD4-7 | 183 | La p. 183 sí dice algo: los sobrantes «se llevan a los fondos de la empresa como aprovechamientos» (cita literal). Lo que no dice es dónde queda físicamente la plata. La deducción del bloque 3 (efectivo + reembolso = fondo) es mía. «Aprovechamientos» no es nombre de cuenta (decisión I2). |
+| HD4-7 | 183 | La p. 183 sí dice algo: los sobrantes pasan a la empresa «como aprovechamientos». Lo que no dice es dónde queda físicamente la plata. La deducción del bloque 3 (efectivo + reembolso = fondo) es mía. «Aprovechamientos» no es nombre de cuenta (decisión I2). |
 | HD4-8 | 183, 186 | No hay asiento del **cobro posterior** al empleado (cómo se cancela Cuentas por cobrar – empleados). |
 | HD4-9 | 186 | La conversión a pesos con la **tasa representativa del mercado** no tiene ejemplo, ni cuenta para la diferencia. |
-| HD4-10 | 186 | «Cheques anulados con posterioridad a su contabilización» y «cargos por abono o cancelación de préstamos»: sin ejemplo. |
-| HD4-11 | 186-188 | No hay definición formal de **nota débito** ni de **nota crédito**: la p. 188 las describe como causas de diferencia. **El extracto sí está descrito** (p. 188): «el banco envía a la empresa un extracto en el que se muestran todos los movimientos de la cuenta y el saldo de la misma al último día del respectivo mes» (corrección O3). |
+| HD4-10 | 186 | Los cheques anulados después de registrados y los pagos de préstamos: sin ejemplo. |
+| HD4-11 | 186-188 | No hay definición formal de **nota débito** ni de **nota crédito**: la p. 188 las describe como causas de diferencia. **El extracto sí está descrito** (p. 188): el banco lo envía cada mes, con los movimientos de la cuenta y su saldo al último día del mes (paráfrasis; corrección O3). |
 | HD4-12 | 187 | En el ejemplo 1 no dice de dónde sale la plata consignada; el asiento acredita Caja. |
 | HD4-13 | 188 | Los **errores** de la empresa o del banco son causa de diferencia, pero no hay ejemplo ni asiento de corrección. |
 | HD4-14 | 189 | No define **sobregiro** ni **chequera**; las notas débito de los días 14, 20 y 26 no dicen el mes. |
