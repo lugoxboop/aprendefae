@@ -158,6 +158,11 @@ export function CampoCifra({ valor, onCambio, onEnviar, deshabilitado = false, e
    * o en coral y la cifra se quedaba con su borde de siempre: el estudiante
    * leía «el saldo es una resta» y tenía que deducir a cuál de las dos
    * respuestas se refería.
+   *
+   * Pero el borde teal o coral, solo, no dice nada en blanco y negro: miden lo
+   * mismo (1,07:1). Por eso la corrección lleva además su marca —✓ o ✗— al
+   * final del campo. Aquí el color SÍ puede ser teal y coral (una cifra no es
+   * un lado del asiento), y la forma es lo que sobrevive sin color.
    */
   const borde = estado === "correcta" ? FAE.teal : estado === "incorrecta" ? FAE.coral : "rgba(248,249,250,0.22)";
 
@@ -200,6 +205,16 @@ export function CampoCifra({ valor, onCambio, onEnviar, deshabilitado = false, e
           color: FAE.text, ...CIFRA, fontSize: "15px", textAlign: "left",
         }}
       />
+      {estado === "correcta" && (
+        <span style={{ display: "flex", alignItems: "center" }}>
+          <MarcaVeredicto bien color={FAE.teal} etiqueta="Cifra correcta" />
+        </span>
+      )}
+      {estado === "incorrecta" && (
+        <span style={{ display: "flex", alignItems: "center" }}>
+          <MarcaVeredicto bien={false} color={FAE.coral} etiqueta="Cifra incorrecta" />
+        </span>
+      )}
     </form>
   );
 }
