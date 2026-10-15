@@ -223,8 +223,9 @@ Lo que el coordinador sigue teniendo, y es lo único:
 - **Los datos de estudiantes.** Nadie más los toca, ni para mirar.
 - **Destrabar generales.** Un general detenido es el fallo más caro que tiene
   este montaje, y repararlo es trabajo del coordinador, no un favor.
-- **Las migraciones**, porque se corren a mano contra la base y hay que
-  comprobarlas ahí, no en los archivos.
+- **Las migraciones que no son de catálogo**: las de esquema, los incidentes y
+  comprobar que la base y la aplicación siguen diciendo lo mismo. Las de
+  catálogo **ya no las corre nadie a mano**; ver abajo.
 
 **Lo que el coordinador ya NO hace:** revisar y fusionar lo que la célula
 puede fusionar sola. Si un general fusiona algo que rompe `main` o que pisa a
@@ -234,6 +235,64 @@ es exactamente la dependencia que este cambio existe para romper.
 
 Y lo que no cambia: **ninguna célula toca producción**, y un PR abierto sigue
 sin ser un bloqueo. Si algo tuyo espera, sigues por la pieza siguiente.
+
+---
+
+## Las migraciones se aplican solas, y quién es la mirada ahora
+
+**Cambió el 15 de octubre de 2026.** Hasta esa mañana cada migración la pegaba
+el coordinador en el editor SQL de Supabase. Esa mañana había **doce
+esperando** y cuatro células paradas: el cuello de botella ya no era fusionar
+—eso se había soltado la noche anterior— sino la base de datos.
+
+La tentación era repartir la llave de producción entre los cinco generales. No
+se hizo, y la razón no es la confianza: **lo que protegía ese paso manual no
+era la mano, era la mirada.** Alguien que no había escrito la migración la
+revisaba antes de que tocara la base. Si la corre quien la escribe, se pierde
+exactamente eso, y se pierde sobre el único recurso que no se puede deshacer
+barato.
+
+Así que la mirada se escribió una vez, en `scripts/guardian-migraciones.mjs`,
+y ahora corre en **cada propuesta**, al instante, sin dormirse. Comprueba lo
+mismo que se comprobaba a mano:
+
+1. **Nada destructivo.** `ALTER`, `DROP`, `TRUNCATE`, `DELETE`, `UPDATE`,
+   `GRANT` o `REVOKE` fuera de un comentario se rechazan. Solo el rango del
+   coordinador (0150-0199) puede cambiar el esquema, y tiene que decirlo con
+   una marca explícita.
+2. **El número, dentro del rango de su célula.** Un número fuera de rango es
+   un choque que se descubre con las dos migraciones ya escritas.
+3. **La fila dice lo mismo que `subjects.js`**: materia, tema, modalidad,
+   dificultad y FP, uno por uno. Es la que de verdad protege a un estudiante:
+   si la migración dice 25 FP y la aplicación dice 50, alguien cobra lo que no
+   es.
+
+Y el despliegue aplica las que falten, **antes de subir el sitio**. El orden
+importa: publicar primero y migrar después deja un rato en el que el sitio
+ofrece una actividad cuya fila no existe, y quien la termine en ese rato no
+cobra. La tabla `public.migraciones_aplicadas` lleva la cuenta; se sembró con
+las 93 que ya estaban aplicadas a mano, porque si no el primer despliegue
+habría intentado reaplicar desde la 0001.
+
+**Lo que esto te pide a ti, general: nada nuevo.** Sigues escribiendo las
+migraciones igual. Lo que cambia es que ya no avisas de «corre la 0204» y ya
+no esperas. Lo que no cambia es que una migración floja rebota: el guardián
+comprueba lo mismo que comprobaba una persona, y rechaza antes de que se pueda
+fusionar.
+
+**Tres cosas que se aprendieron escribiéndolo**, por si alguien lo toca:
+
+- Un `on conflict ... do update set` **no es destructivo**: es la forma
+  idempotente de un insert. La primera versión lo rechazaba, o sea que
+  rechazaba la manera más segura de escribir una migración.
+- El guardián mira **solo lo que la propuesta añade**, no la historia. La
+  primera versión juzgaba las ochenta del repositorio y rechazaba doce que
+  llevaban meses aplicadas y correctas.
+- **No se comprueba que el id empiece por el prefijo de la célula**, aunque
+  suene razonable: las Células B y C también construyeron piezas de Macro
+  desde sus rangos, con ids como `en-que-talla-va`. Esa regla, escrita,
+  rechazaba migraciones correctas. La comprobación 3 ya caza un id equivocado
+  sin inventarse una regla que la realidad no cumple.
 
 ---
 

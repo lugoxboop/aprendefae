@@ -144,6 +144,69 @@ jobs:
           echo "Contenido local que se envía:"
           find dist -type f | sort
 
+      # ═══════════════════════════════════════════════════════════════════════
+      # LAS MIGRACIONES, APLICADAS AQUÍ Y NO A MANO
+      #
+      # Hasta el 15 de octubre de 2026 cada migración la pegaba una persona en
+      # el editor SQL de Supabase. Eso puso una fila delante de cinco células:
+      # una mañana había doce esperando y cuatro células paradas.
+      #
+      # Lo que protegía ese paso manual no era la mano, era la MIRADA: alguien
+      # que no había escrito la migración la revisaba antes de que tocara la
+      # base. Esa mirada ahora vive en scripts/guardian-migraciones.mjs y corre
+      # en CADA propuesta, antes de poder fusionarse. Aquí solo se aplica lo
+      # que ya pasó por ella.
+      #
+      # VA ANTES DEL FTP A PROPÓSITO. Si la migración falla, el sitio no se
+      # publica. El orden contrario —publicar y luego migrar— deja un rato en
+      # el que el sitio ofrece una actividad cuya fila no existe, y un
+      # estudiante que la termine en ese rato no cobra sus FP.
+      #
+      # MIENTRAS NO EXISTA EL SECRETO, NO HACE NADA Y NO FALLA. Así el
+      # despliegue sigue funcionando exactamente igual que hoy hasta que
+      # SUPABASE_DB_URL esté puesto.
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: Aplicar las migraciones que falten
+        env:
+          PGURL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PGURL:-}" ]; then
+            echo "SUPABASE_DB_URL no está puesto todavía: las migraciones se siguen corriendo a mano."
+            echo "Para automatizarlo, guarda la cadena de conexión de Supabase como secreto del repositorio con ese nombre."
+            exit 0
+          fi
+
+          # El arranque. La tabla de control la crea la propia 0151, así que la
+          # primera vez no existe y no se le puede preguntar qué falta. Se
+          # aplica solo esa, que además se siembra con todo lo ya aplicado a
+          # mano, y a partir de ahí la tabla responde por sí sola.
+          existe=$(psql "$PGURL" -At -c "select to_regclass('public.migraciones_aplicadas') is not null")
+          if [ "$existe" != "t" ]; then
+            echo "Primera vez: no existe la tabla de control. Aplico solo la 0151, que la crea y la siembra."
+            psql "$PGURL" -v ON_ERROR_STOP=1 -1 -f supabase/migrations/0151_control_de_migraciones.sql
+          fi
+
+          aplicadas=$(psql "$PGURL" -At -c "select archivo from public.migraciones_aplicadas")
+          faltan=0
+          for f in $(ls supabase/migrations/*.sql | sort); do
+            nombre=$(basename "$f")
+            if echo "$aplicadas" | grep -qxF "$nombre"; then continue; fi
+            faltan=$((faltan+1))
+            echo "──► aplicando $nombre"
+            # Una transacción por archivo, y el registro DENTRO de ella: si la
+            # migración falla a la mitad, no queda aplicada ni registrada.
+            psql "$PGURL" -v ON_ERROR_STOP=1 -1 \
+              -c "begin" -f "$f" \
+              -c "insert into public.migraciones_aplicadas (archivo) values ('$nombre') on conflict (archivo) do nothing" \
+              -c "commit"
+          done
+          if [ "$faltan" = "0" ]; then
+            echo "No faltaba ninguna migración."
+          else
+            echo "Aplicadas $faltan migración(es)."
+          fi
+
       - name: Subir a Hostinger por FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
