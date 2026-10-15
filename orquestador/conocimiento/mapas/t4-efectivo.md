@@ -1,14 +1,14 @@
-# Mapa T4 · Efectivo, caja menor y bancos · pp. 179-191
+# Mapa T4 · Efectivo, caja menor y bancos · pp. 177-191
 
 ## Control
 
-Mapa de Katsumi (Célula D «Baki Hanma»), versión 1, 14 de octubre de 2026. Fuente: *Contabilidad financiera para contaduría y administración*, cap. 5, §5.1 y §5.2. Toda página citada es la **impresa** en el libro. INFLESZ: no aplica a un mapa. D9 y D10 del kit: no evaluables.
+Mapa de Katsumi (Célula D «Baki Hanma»), versión 1.2, 15 de octubre de 2026 (v1 del 14 de octubre). Fuente: *Contabilidad financiera para contaduría y administración*, cap. 5: apertura del capítulo (pp. 177-179), §5.1 y §5.2. La v1.2 incorpora el cotejo de Shibukawa (PASA CON CORRECCIONES; todas las cifras coinciden) y el cambio de territorio de Erwin (T4 empieza en la p. 177). Toda página citada es la **impresa** en el libro. INFLESZ: no aplica a un mapa. D9 y D10 del kit: no evaluables.
 
 1. **Pliegos, verificados uno por uno.** Abrí los 7 pliegos de `t4_pp178-191.pdf` y leí el número impreso de las dos páginas de cada uno: pliego 1 = 178|179, 2 = 180|181, 3 = 182|183, 4 = 184|185, 5 = 186|187, 6 = 188|189, 7 = 190|191. Coincide con la fórmula de la orden (176+2k y 177+2k).
 2. **Frontera con §5.3, confirmada.** El título «5.3 ACTIVOS FINANCIEROS» está a media p. 191, después del mayor de Bancos de San Calixto. Lo que va encima del título es nuestro; lo de abajo es de la Célula B.
-3. **Frontera de arriba.** El título «5.1 EFECTIVO Y EQUIVALENTES AL EFECTIVO: CAJA» está a media p. 179. Lo que va antes (la p. 178 y la mitad de arriba de la p. 179) es la **introducción del capítulo**, no §5.1. Lo mapeo como contexto (bloque 0) y recomiendo no construir sobre ello.
+3. **Frontera de arriba (cambiada en v1.2).** Por orden de Erwin (15 de octubre), T4 empieza en la **p. 177**: portada del capítulo con sus objetivos (p. 177), introducción (p. 178 y mitad de arriba de la p. 179) y, desde el título «5.1 EFECTIVO Y EQUIVALENTES AL EFECTIVO: CAJA» a media p. 179, §5.1. El bloque 0 ya no es contexto: lo enseña la pieza A0. Fuente de la p. 177: `t4_pp176-191.pdf`, pliego 1 = pp. 176|177 y pliego 2 = 178|179, comprobados por su número impreso.
 4. **Calidad del escaneo.** Las 14 páginas se leen bien. Rasterizé a 170 ppp y amplié las tablas de asientos de las pp. 183 y 186 para confirmar dos erratas (D4-1 y D4-3). Lo único que cae en el pliegue son los últimos caracteres de algunas líneas de las páginas pares (p. ej. «$435.000» en la p. 180, «bancos.» en la p. 186), y en todos los casos se leen completos. **No hay ninguna cifra que no haya podido leer.**
-5. **El libro no trae códigos de cuenta** en ningún asiento de las pp. 179-191. Las fechas de los asientos modelo y de los ejemplos de Sus Servicios son «xxxx».
+5. **El libro no trae códigos de cuenta** en ningún asiento de las pp. 179-191. Fechas: los asientos modelo y los dos ejemplos de Sus Servicios de las pp. 180 y 187 van «xxxx». El ejemplo de caja menor de Rosa Primorosa (también Sus Servicios) lleva «may-01» en cuatro de sus cinco asientos y «xxxx» en el de faltante de caja menor cargado al empleado (p. 186). Los ajustes de San Calixto van «mar-31». (Corrección P4 de Shibukawa.)
 
 ## Qué dejaron dicho los temas anteriores (para no contradecirlo ni re-enseñarlo como nuevo)
 
@@ -21,22 +21,29 @@ Comprobado en `src/data/` el 14 de octubre de 2026, no de memoria.
 | Consignar mueve plata de Caja a Bancos | Tema 2: cu7-05 «Se consignó en la cuenta corriente $800», cu12-02, `consignar` en los errores | El asiento 2 de Sus Servicios (p. 180) y el ejemplo 1 de Bancos (p. 187) ya los vio el estudiante con otras cifras |
 | «Con cheque» o «se consignó» → Bancos; «de contado» o «en efectivo» → Caja | Tema 2: `contabilidadArmaElAsiento.js` (`PALABRAS_DE_CAJA`, `PALABRAS_DE_BANCOS`, `COLETILLA_CAJA_BANCOS`) | **Choque aparente** con la p. 179, que dice que Caja guarda «dinero en efectivo o en cheques». Hay que explicarlo (ver A1, P2) |
 | Cobro = plata que entra a la caja; pago = plata que sale; vender no es cobrar | Tema 3: `contabilidadTema3.js` (`PIEZA_VENDER_NO_ES_COBRAR`) | Sus Servicios vende y cobra el mismo día: se dice que aquí coinciden, sin re-enseñar la diferencia |
-| «El efectivo es el activo corriente por excelencia»; corriente = se vuelve efectivo o se consume dentro del año | Tema 1: `contabilidadDesafio.js` | La definición de activo corriente de la p. 178 ya está enseñada; no hace falta repetirla |
+| «El efectivo es el activo corriente por excelencia»; corriente = se vuelve efectivo o se consume dentro del año | **Tema 2**, en el desafío opcional «El Ciclo Completo» (`contabilidadDesafio.js`; `ciclo-completo` cuelga de `cuentas-debe-haber` en subjects.js). Corrección O5: la v1 decía Tema 1 | Como el desafío es opcional, no garantiza que el estudiante lo haya visto. Por eso A0 define el activo corriente con la p. 178, sin darlo por sabido |
 | «Ingresos por servicios» | Temas 2 y 3 (13 archivos) | Se usa sin definir |
 | «Ingresos no operacionales» | Tema 1: `contabilidadTema1.js` (c6-09, como línea del estado de resultados) | Nombrado, no explicado. Para A3 hace falta una glosa corta |
 | «Gastos generales», «Caja menor», «Gastos no operacionales», «arqueo» | **En ningún archivo** | Términos nuevos de T4 |
 | «Nota débito» | Solo en la glosa **provisional** de la Célula B (`contabilidadT6Pieza1.js`, `GLOSA_NOTA_DEBITO`), que dice esperar a que T4 la defina | **Término que T4 define en A4**, como «nota débito del banco». Ver cruces |
 | «Nota crédito» | T7-1 A6 (`contabilidadT7_1_a6.js`), con otro sentido: la que el vendedor le da al comprador | **Término que T4 define en A4**, como «nota crédito del banco». Ver cruces |
 | «Ingresos por intereses» · «Gasto interés» | Tema 3 (`asiSeJuegaTema3.js`) y T5 (`contabilidadT5Act2.js`, `contabilidadT5Pieza2.js`) | Nombres que T4 usa para los intereses de San Calixto (decisión de Yujiro, C1-C2) |
-| «Cuentas por pagar – proveedores», «Cuentas por cobrar – clientes», «Gastos financieros – …», «Ingresos financieros – …» | T5, T6 y T7 (con raya «–» y espacios) | Nombres que T4 debe usar con esa misma forma |
+| «Cuentas por pagar – proveedores» y «Cuentas por cobrar – clientes» | Tema 1 (c6-03 y c6-07, con «– Proveedores» y «– Clientes» en mayúscula), Tema 3 (CxC – clientes, Act7 y Cierre), T6 y T7. T5 no las usa (corrección P7 de Shibukawa) | Nombres que T4 usa con la forma en minúscula de T6 y T7 |
+| «Cuentas por cobrar» | **Tema 2**: se enseña y se juega (`contabilidad.js`, l. 113, activo; `contabilidadActividades.js` cu4-04 y cu4-08) | **No es nueva en T4** (corrección O2): A0 y A5 la usan como sabida |
+| «Ingresos por intereses» (T5, `contabilidadT5Act2.js`) · «Ingresos financieros – ganancia en venta de títulos» y «Gastos financieros – pérdida en venta de títulos» (T5) | T5 | T5 reservó «Ingresos financieros – …» para la venta de títulos; el interés va a «Ingresos por intereses» (corrección O1) |
+| El sobrante de **inventario** de T7-3 va contra el costo de la mercancía vendida (`contabilidadT7_3_a5.js`), no contra Ingresos no operacionales | T7-3 | Por eso en T4 siempre «sobrante de caja menor» y «faltante de caja menor» (C5, aviso P2 de Shibukawa) |
 
-## Bloque 0 · Introducción del capítulo (p. 178 y mitad de arriba de la p. 179) — contexto, fuera de §5.1
+## Bloque 0 · Apertura del capítulo (pp. 177-179, hasta el título de §5.1) → pieza A0
 
+- **Portada (p. 177).** Capítulo «5 ACTIVOS CORRIENTES». Objetivos: conocer el grupo de bienes que conforman el activo corriente; manejar correctamente los movimientos del efectivo; manejar el movimiento de la cuenta deudores; saber los sistemas de inventarios; contabilizar compraventas con esos sistemas; contabilizar el impuesto a las ventas, la retención en la fuente, los fletes y los descuentos; hacer el estado de resultados de las empresas comerciales. Sin cifras ni cuentas.
+- **Definición (p. 178), literal:** «Se consideran activos corrientes a todos aquellos activos que son susceptibles de convertirse en dinero en efectivo en un periodo inferior a un año. Ejemplo de estos activos, además del efectivo en caja y los depósitos en bancos, son las inversiones a corto plazo, la cartera y los inventarios.»
 - **Qué afirma.** Los activos corrientes permiten operar (comprar mercancías, pagar gastos, adquirir activos fijos, pagar pasivos). Del volumen de activos corrientes depende el capital de trabajo, que es activo corriente menos pasivo corriente (p. 178). Son los que pueden convertirse en efectivo en menos de un año: caja, bancos, inversiones a corto plazo, cartera e inventarios (p. 178). A los acreedores les interesa más la capacidad de pago que los activos fijos (pp. 178-179). El activo corriente no debe ser más del necesario para operar al 100 %: operar con activos para el 120 % significa un 20 % subutilizado; operar al 90 % significa que falta liquidez y hay que cubrirla con financiación externa o aportes, con su costo (p. 179).
 - **Cifras.** 100 %, 120 %, 20 %, 90 % (p. 179). Son ilustrativas, sin cálculo.
 - **Cuentas.** Ninguna.
-- **Dependencias.** «Capital de trabajo» y «liquidez» no están enseñados en Contabilidad (T7-1 A7 ya sacó «capital de trabajo» por esa razón).
-- **Recomendación.** No construir sobre este bloque. Si una pieza lo necesita, solo la última frase: «Algunos activos que se consideran corrientes son: caja y bancos, inversiones, clientes e inventarios» (p. 179), que además anuncia el orden del capítulo.
+- **Dependencias.** «Activo» (Temas 1 y 2). «Capital de trabajo» y «liquidez» no están enseñados en Contabilidad (T7-1 A7 ya sacó «capital de trabajo» por esa razón). «Pasivo corriente» solo está en el desafío opcional del Tema 2. «Activos fijos» no se define en el bloque.
+- **Ejercicios de la Célula E que dependen de este bloque:** B.1 (p. 262, qué activos son corrientes, con ejemplos), A.1 (p. 262, discutir si los corrientes son más importantes que los no corrientes) y C.1 (p. 263, elegir el grupo de activos corrientes; las opciones mezclan cuentas por cobrar a corto y a largo plazo, maquinaria, equipos, edificaciones y terrenos). No se usan como ítems.
+- **Qué toma A0 (decisión de Katsumi, razones en `paquetes/d4-t4-a0-v1.md`):** el criterio de un año, los ejemplos, las dos razones de importancia con el matiz de los activos fijos, y el orden de la lista de la p. 179 como puente con A1. **No toma** el capital de trabajo ni el párrafo del 100 %, 120 % y 90 %: usan términos no enseñados y ningún ejercicio de E los pide.
+- *(Histórico: la v1 recomendaba no construir sobre este bloque. Esa recomendación la reemplazó la orden de Erwin del 15 de octubre.)*
 
 ## Bloque 1 · §5.1 Caja (pp. 179-180) → pieza A1
 
@@ -218,7 +225,7 @@ Los cinco cuadran. Lo que **no** se asienta: los cuatro cheques pendientes y la 
 
 **[3] Cuentas literal (p. 191):** Bancos · Cuentas por cobrar -Efraín Martínez · Ingresos Financieros -interés · Gastos financieros -chequera · Gastos financieros -Interés · Cuentas por cobrar -Humberto Gómez.
 
-**[5] Dependencias.** Bloques 4 y 5. Libro mayor (Tema 2). «Sobregiro», «chequera» e «intereses de las inversiones» no están definidos en el libro. «Cuentas por cobrar» como cuenta de lo que deben los clientes se enseña en §5.4 (T6, p. 195), **que va después**: T4 la usa sin poder apoyarse en T6.
+**[5] Dependencias.** Bloques 4 y 5. Libro mayor (Tema 2). «Sobregiro», «chequera» e «intereses de las inversiones» no están definidos en el libro. «Cuentas por cobrar» **no es nueva**: el Tema 2 la enseña y la juega (cu4-04, cu4-08), y los Temas 1 y 3 la usan como «Cuentas por cobrar – clientes». T4 la usa como sabida. (Corrección O2; la v1 decía que se enseñaba en T6, que va después, y era falso.)
 
 ## Nombres de cuentas que usará T4 (decisión de contenido de Katsumi)
 
@@ -242,7 +249,7 @@ Cuando esté aprobado, esto pasa a `vocabulario/contabilidad.md` por quien lo ad
 
 **Regla de redacción (decisión de Yujiro, C5):** en T4 nunca se escribe «sobrante» ni «faltante» a secas, sino «sobrante de caja menor» y «faltante de caja menor», porque en T7 el sobrante de inventario va a otra cuenta. Este mapa ya está escrito así, salvo en las citas literales del libro, que se marcan.
 
-## Erratas e incoherencias (D4-1 a D4-12), ninguna confirmada con el profesor
+## Erratas e incoherencias (D4-1 a D4-17), ninguna confirmada con el profesor
 
 | Id | Página | Qué | Confianza |
 |---|---|---|---|
@@ -253,11 +260,20 @@ Cuando esté aprobado, esto pasa a `vocabulario/contabilidad.md` por quien lo ad
 | D4-5 | 189 vs 190 | El cheque de Laura García es el **n.º 146** en la tabla de la p. 189 y el **n.º 145** en la conciliación de la p. 190. El valor (125.000) es el mismo, así que no cambia ningún total. **Decisión de Yujiro: no se elige número; ninguna pieza muestra números de cheque.** | Alta |
 | D4-6 | 186 | «debitar la **cuanta** de bancos» por «cuenta». | Alta, sin efecto |
 | D4-7 | 181 | En la sección de caja menor, la regla dice «La cuenta **de caja** se debe debitar cuando se recibe el dinero para crear el fondo…», pero los asientos de apertura y aumento debitan **Caja menor**, y el de disminución (p. 182) acredita Caja menor y debita **Caja**. La frase solo es coherente si «caja» quiere decir «caja menor». **Decisión de Yujiro: se enseña lo que hacen los asientos (Caja menor); si se cita la frase, va con la aclaración.** | Media: puede leerse como uso genérico, pero tal cual confunde las dos cuentas |
-| D4-8 | 183 | En el modelo de faltante de caja menor al cajero, «Cuentas por cobrar -empleados» va **sangrado como un crédito**, pero su valor está en la columna Debe. En el ejemplo de la p. 186 no va sangrado. | Media: la columna manda, es un débito |
+| D4-8 | 183 | En el modelo de faltante de caja menor al cajero, «Cuentas por cobrar -empleados» va **sangrado como un crédito**, pero su valor está en la columna Debe. En el ejemplo de la p. 186 no va sangrado. Además, en la plantilla del sobrante de caja menor, «Bancos» va **sin sangría** aunque es un crédito (añadido en segunda lectura por Shibukawa, su E8). | Media: la columna manda |
 | D4-9 | 187 | La enumeración de movimientos del libro auxiliar repite «las consignaciones» (al principio y al final). | Alta, sin efecto |
 | D4-10 | 188 | «Por lo general, el saldo del extracto bancario **nunca** coincide»: «por lo general» y «nunca» se contradicen. No se debe enseñar «nunca». | Media (redacción, no cifra) |
 | D4-11 | 185, 186 | El ejemplo dice «la cajera menor» (Rosa Primorosa) y los textos de los asientos dicen «el **cajero** menor» y «cargado al **cajero**». | Baja: puede ser masculino genérico |
-| D4-12 | 178 (contexto, fuera de §5.1) | «**ente** otros aspectos» dos veces, por «entre»; el primer párrafo de la introducción se repite casi literal en el cuarto. | Alta, sin efecto en T4 |
+| D4-12 | 178 (ahora dentro de T4, pieza A0) | «**ente** otros aspectos» dos veces, por «entre». El primer párrafo de la introducción se repite casi literal en el cuarto, y el segundo con el quinto (lo segundo, comprobado por Shibukawa). | Alta, sin efecto en cifras |
+| D4-13 | 189 | «correspondientes a **el** pago de la factura número 1234» por «al pago». Encontrada en segunda lectura (Shibukawa, su E9). | Alta, sin efecto |
+| D4-14 | 190 | «Total Notas **créditos**» frente a «Notas de crédito» y «Total Notas débito» de la misma tabla. Encontrada en segunda lectura (Shibukawa, su E10). | Alta, sin efecto |
+| D4-15 | 190 | «Cheques devueltos, cliente Humberto Gómez», en plural, cuando la p. 189 habla de **un** cheque devuelto. Encontrada en segunda lectura (Shibukawa, su E11). | Alta, sin efecto en cifras |
+| D4-16 | 191 | Mayúsculas desiguales en los nombres de cuenta de los ajustes («Ingresos Financieros -interés», «Gastos financieros -Interés», «Gastos financieros -chequera»). Encontrada en segunda lectura (Shibukawa, su E13). | Alta, sin efecto |
+| D4-17 | 186 | «si se decide llevar **al** faltante a los gastos del periodo» por «llevar **el** faltante». Encontrada en segunda lectura (Shibukawa, su E14, a 400 ppp; ninguno de los dos la vio en la primera). | Alta, sin efecto |
+
+**Cómo se tratan (canon de Erwin, 15 de octubre):** ninguna se corrige en silencio. Cada paquete lleva una sección «Erratas que toca esta pieza» con la lectura que usamos, la razón y dónde queda anotada. Esta tabla es la lista canónica de T4. Equivalencia con la lista de Shibukawa: E1=D4-1, E2=D4-2, E3=D4-5, E4=D4-6, E5=D4-3, E6=D4-4, E7=D4-9, E8=D4-8, E9=D4-13, E10=D4-14, E11=D4-15, E12=D4-11, E13=D4-16, E14=D4-17; I1=D4-7, I3=D4-10.
+
+**No verificado por ninguno de los dos:** las erratas de redacción de los párrafos largos sin cifras de las pp. 179, 181 y 188 no se releyeron palabra por palabra en segunda lectura.
 
 ## Huecos: lo que la fuente no dice
 
@@ -269,14 +285,24 @@ Cuando esté aprobado, esto pasa a `vocabulario/contabilidad.md` por quien lo ad
 | HD4-4 | 181 | Nombra «aplicar las **retenciones de ley**» como función del responsable, sin explicarla; la retención se explica en la p. 210 (T7). |
 | HD4-5 | 182 | No dice por qué la disminución del fondo va a **Caja** y el aumento sale de **Bancos**. |
 | HD4-6 | 183 | No da **criterio de «representativo»** para un faltante de caja menor. Un ítem no puede pedirle al estudiante que lo juzgue: el enunciado debe decir qué decidió la empresa. |
-| HD4-7 | 183 | El sobrante de caja menor «se lleva a los fondos de la empresa como aprovechamientos», pero no dice dónde queda la plata. La deducción del bloque 3 (efectivo + reembolso = fondo) es mía. |
+| HD4-7 | 183 | La p. 183 sí dice algo: los sobrantes «se llevan a los fondos de la empresa como aprovechamientos» (cita literal). Lo que no dice es dónde queda físicamente la plata. La deducción del bloque 3 (efectivo + reembolso = fondo) es mía. «Aprovechamientos» no es nombre de cuenta (decisión I2). |
 | HD4-8 | 183, 186 | No hay asiento del **cobro posterior** al empleado (cómo se cancela Cuentas por cobrar – empleados). |
 | HD4-9 | 186 | La conversión a pesos con la **tasa representativa del mercado** no tiene ejemplo, ni cuenta para la diferencia. |
 | HD4-10 | 186 | «Cheques anulados con posterioridad a su contabilización» y «cargos por abono o cancelación de préstamos»: sin ejemplo. |
-| HD4-11 | 186-188 | No hay definición formal de **nota débito**, **nota crédito** ni **extracto**; la p. 188 los describe como causas de diferencia. |
+| HD4-11 | 186-188 | No hay definición formal de **nota débito** ni de **nota crédito**: la p. 188 las describe como causas de diferencia. **El extracto sí está descrito** (p. 188): «el banco envía a la empresa un extracto en el que se muestran todos los movimientos de la cuenta y el saldo de la misma al último día del respectivo mes» (corrección O3). |
 | HD4-12 | 187 | En el ejemplo 1 no dice de dónde sale la plata consignada; el asiento acredita Caja. |
 | HD4-13 | 188 | Los **errores** de la empresa o del banco son causa de diferencia, pero no hay ejemplo ni asiento de corrección. |
 | HD4-14 | 189 | No define **sobregiro** ni **chequera**; las notas débito de los días 14, 20 y 26 no dicen el mes. |
+| HD4-15 | 188-190 | **El signo de cada partida de la conciliación no está en el texto.** La p. 188 da las seis causas de diferencia, pero no dice cuál suma y cuál resta en cada lado. Solo lo muestra la presentación de la p. 190, con «Más: consignaciones en tránsito», «Menos: cheques pendientes de cobro», «Más: notas de crédito» y «Menos: notas débito». Quien escriba H6 y H7 tiene que presentarlo como «mira la presentación de la p. 190» (corrección O4). |
+| HD4-16 | 183-186 | No define «**operacional**» ni «**no operacional**». |
+| HD4-17 | 191 | Los cinco ajustes van fechados **mar-31** aunque las notas son de los días 14 a 30. El libro no dice por qué. |
+| HD4-18 | 189-190 | Los cheques tienen dos nombres: «cheques sin pagar» (p. 189) y «cheques pendientes de cobro» (p. 190). |
+| HD4-19 | 182-186 | No define «**Gastos generales**» ni explica por qué ocho gastos distintos van a una sola cuenta. |
+| HD4-20 | 178-179 | No define «**activos fijos**» ni da ejemplos. |
+| HD4-21 | 178 | No define «**corto plazo**». |
+| HD4-22 | 179 | No dice por qué el efectivo va primero en la lista; solo lo pone primero. |
+
+(HD4-16 a HD4-19 son los huecos menores de P5 de Shibukawa. HD4-20 a HD4-22 salen de A0.)
 
 ## Cruces con otras células
 
@@ -287,19 +313,22 @@ Cuando esté aprobado, esto pasa a `vocabulario/contabilidad.md` por quien lo ad
 5. **San Calixto.** El Tema 3 y T7 ya usan «San Calixto» con otras cifras. Nuestro enunciado debe decir «Compañía San Calixto Ltda.», «conciliación de marzo» y traer todos sus datos.
 6. **Sus Servicios Ltda.** Aparece en A1 (p. 180), en caja menor (p. 183) y en Bancos (p. 187), con hechos y cifras distintos. Cada enunciado trae sus datos completos.
 
-## Corte definitivo (decisión de Yujiro, 14 de octubre de 2026)
+## Corte definitivo (Yujiro, 14 de octubre; A0 añadida por orden de Erwin, 15 de octubre)
 
-Cinco piezas, como se propuso abajo. Manda la sección «CORTE DEFINITIVO» de la orden de la célula.
+Seis piezas de Aprender. Manda la orden de la célula.
 
 | Pieza | Qué cubre | Páginas |
 |---|---|---|
+| A0 | El activo corriente: el criterio de un año, los ejemplos, por qué importa y por qué el efectivo va primero | 177-179 |
 | A1 | La caja | 179-180 |
 | A2 | El fondo fijo, con la apertura de Rosa Primorosa y la situación que cuadra | 181-184 |
 | A3 | El arqueo: sobrante de caja menor y faltante de caja menor | 182-186 |
 | A4 | Bancos y notas del banco | 186-188 |
 | A5 | La conciliación de San Calixto | 188-191 |
 
-## Opinión sobre el corte A1-A4 (la que llevó al corte definitivo)
+## (Histórico) Opinión sobre el corte A1-A4, la que llevó al corte definitivo
+
+*Sección histórica: el corte definitivo de arriba ya la adoptó. Se deja por trazabilidad.*
 
 **A1 sirve tal cual** (pp. 179-180): una definición, una regla, un ejemplo de dos asientos y siete controles. Es corta y no hace falta estirarla.
 
@@ -325,10 +354,11 @@ En resumen: **5 piezas en lugar de 4**, con la frontera A2|A3 corrida a la p. 18
 | H3 | ¿Se mueve la caja menor? | Apertura, reembolso, aumento y disminución: qué cuentas se mueven y de qué lado. La trampa es el reembolso, que no toca Caja menor | A2 (pp. 181-182) | Sin cifras o con las de Rosa (500.000, 478.100) |
 | H4 | El arqueo de Rosa | Con fondo, gastos y efectivo, decir si cuadra, sobra o falta, cuánto, y por cuánto sale el cheque del reembolso | A3 (pp. 184-186) | Las tres situaciones del libro, más variantes con otro efectivo **marcadas como construidas** |
 | H5 | ¿Al empleado o al gasto? | Armar el asiento del faltante de caja menor en los dos tratamientos | A3 (pp. 183, 186) | El enunciado dice qué decidió la empresa (HD4-6): el estudiante no juzga si es «representativo» |
-| H6 | ¿De qué lado va? | Clasificar las partidas de San Calixto: suma o resta al saldo del banco, suma o resta al de libros, y armar los dos saldos conciliados | A5 (pp. 189-190) | Si el corte queda en 4 piezas, la sostiene A4 |
+| H6 | ¿De qué lado va? | Clasificar las partidas de San Calixto: suma o resta al saldo del banco, suma o resta al de libros, y armar los dos saldos conciliados | A5 (pp. 189-190) | El signo de cada partida solo está en la presentación de la p. 190 (HD4-15): la retroalimentación remite ahí |
 | H7 | ¿Se asienta o no? | De las ocho partidas, cuáles generan asiento en los libros de la empresa, y armarlos | A5 (pp. 190-191) | Cuidado con la cadena: si H6 pide 4.612.600, H7 no puede mostrarlo resuelto |
 
 ## Cambios de esta versión
 
 - v1, primera lectura completa de las pp. 178-191.
+- v1.2 (15 de octubre): territorio desde la p. 177 (bloque 0 → A0, con la portada de la p. 177 y los ejercicios de E que dependen de él); corte de seis piezas; correcciones obligatorias del cotejo de Shibukawa (O1 a O6) y las opcionales P1 a P7; erratas D4-13 a D4-17 añadidas con su origen, D4-8 completada y equivalencia con la lista de Shibukawa; huecos HD4-15 a HD4-22; «Opinión sobre el corte» marcada como histórica.
 - v1.1, con las decisiones de Yujiro del 14 de octubre: «sobrante/faltante de caja menor» en todo el mapa; nombres de cuenta «Ingresos por intereses», «Gasto interés» y «Cuentas por cobrar – clientes»; nota débito y nota crédito marcadas como términos que T4 define en A4, siempre «del banco»; ninguna pieza muestra números de cheque; las reglas que solo están en los asientos se presentan como «mira el asiento de la p. X»; erratas D4-1, D4-2, D4-5 y D4-7 con su decisión; corte definitivo en cinco piezas. Mapa hecho sin leer el informe de Shibukawa.
