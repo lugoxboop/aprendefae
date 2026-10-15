@@ -18,7 +18,7 @@
 -- dos actividades de la Célula B (0070 y 0072).
 --
 -- LA MODALIDAD: evaluativa, como la pide la ficha de Near: el motor escala los
--- 25 FP con los aciertos (11 posibles), con piso del 50 %.
+-- 25 FP con los aciertos (10 posibles desde la v2), con piso del 50 %.
 --
 -- LA DIFICULTAD: «medio», sin tilde, como la escribe el catálogo del cliente.
 --
