@@ -166,8 +166,8 @@ Las cuentas, la regla de cobertura de 29 combinaciones y la fecha son las de la 
 - **Acierto:** «Así es. La plata entró al banco, así que Bancos se debita. Y Tomás Acosta ya no debe esa factura: Cuentas por cobrar – clientes se acredita.» (85,5)
 - **Errores** (ver «Cómo se elige el mensaje» al principio de la etapa 2). De cuenta, para la cuenta que acompaña a Bancos:
   - *usó Ingresos por intereses:* «Esa cuenta es para lo que rinde una inversión. Aquí un cliente pagó una factura que debía.» (77,4)
-  - *usó Gastos financieros – chequera:* «Tomás Acosta pagó una deuda: aquí no hay ningún gasto de la empresa. Piensa en qué cambió cuando ella pagó.» (81,6)
-  - *usó Gasto interés:* «Aquí nadie pagó intereses: el cliente pagó una factura que debía. Piensa en qué cambió cuando ella pagó.» (69,8)
+  - *usó Gastos financieros – chequera:* «Tomás Acosta pagó una deuda: aquí no hay ningún gasto de la empresa. Piensa en qué cambió cuando el cliente pagó.» (83,6)
+  - *usó Gasto interés:* «Aquí nadie pagó intereses: el cliente pagó una factura que debía. Piensa en qué cambió cuando pagó.» (70,1)
   - *usó Caja:* «La plata no pasó por la caja: el cliente la consignó directo en el banco.» (92,2)
   - *lados al revés:* «Las cuentas están bien, pero al revés. Bancos sube, así que va al debe. Lo que debe el cliente baja, así que va al haber.» (103,8)
   - *regla, sin Bancos en el asiento:* «La plata de esta nota entró a la cuenta del banco. Si el asiento no mueve Bancos, los libros siguen sin enterarse.» (91,1)
