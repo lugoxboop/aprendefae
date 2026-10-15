@@ -19,7 +19,10 @@ import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
  * por paso y sus textos (`todos`: los pasos y, al final, el cierre). Las
  * piezas de dibujo (caja, Anotacion, Lado) van exportadas para las escenas.
  * `pintar` deja que una pieza pinte el texto del paso a su modo (T5 · A2: las
- * cuentas sin partir); por defecto, el texto tal cual.
+ * cuentas sin partir); por defecto, el texto tal cual. `pintarPie`, lo mismo
+ * con el pie (T6 · A5: los cuatro tipos de pie). Si el estado trae
+ * `tambienEnVista` (T6 · A5: el rótulo fijo), el desplazamiento intenta que se
+ * vea junto con lo resaltado; si no cabe, manda lo resaltado.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -96,7 +99,7 @@ export function Anotacion({ id, e, cuenta, linea, movimiento, lado, reducido, re
   );
 }
 
-export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atributos = {}, pintar = (t) => t }) {
+export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atributos = {}, pintar = (t) => t, pintarPie = (t) => t }) {
   const PASOS = todos.length - 1;
   const CIERRE = todos.length;
   const reducido = useReducido();
@@ -183,8 +186,12 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     if (!rects.length || tope === undefined) return;
     const arriba = 8;
     const abajo = Math.min(tope, window.innerHeight) - 8;
-    const juntos = { top: Math.min(...rects.map((r) => r.top)), bottom: Math.max(...rects.map((r) => r.bottom)) };
-    const objetivo = juntos.bottom - juntos.top <= abajo - arriba ? juntos : rects[0];
+    const union = (rs) => ({ top: Math.min(...rs.map((r) => r.top)), bottom: Math.max(...rs.map((r) => r.bottom)) });
+    const cabe = (r) => r.bottom - r.top <= abajo - arriba;
+    const extra = (estado.tambienEnVista ?? []).map((id) => piezas.current[id]?.getBoundingClientRect()).filter(Boolean);
+    const conExtra = union([...rects, ...extra]);
+    const juntos = union(rects);
+    const objetivo = extra.length && cabe(conExtra) ? conExtra : cabe(juntos) ? juntos : rects[0];
     let delta = 0;
     if (objetivo.bottom > abajo) delta = objetivo.bottom - abajo;
     if (objetivo.top - delta < arriba) delta = objetivo.top - arriba;
@@ -237,9 +244,9 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
         </div>
         <div style={{ display: "grid", marginTop: "4px" }}>
           <div aria-hidden="true" style={{ gridArea: "1 / 1", display: "grid", visibility: "hidden" }}>
-            {todos.map((x, i) => <p key={`${i}-${x.pie}`} style={{ gridArea: "1 / 1", ...PIE }}>{x.pie}</p>)}
+            {todos.map((x, i) => <p key={`${i}-${x.pie}`} style={{ gridArea: "1 / 1", ...PIE }}>{pintarPie(x.pie)}</p>)}
           </div>
-          <p data-pie style={{ gridArea: "1 / 1", ...PIE }}>{actual.pie}</p>
+          <p data-pie style={{ gridArea: "1 / 1", ...PIE }}>{pintarPie(actual.pie)}</p>
         </div>
 
         {/* Los controles, copiados de LoQueYaPaso. */}

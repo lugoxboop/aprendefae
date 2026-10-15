@@ -91,7 +91,33 @@ export const ESCENARIO_T6_A5 = {
 
 /* ═══════════ CAPA 2 · «MÍRELO FUNCIONAR» ═══════════ */
 
-/* Los 11 pasos y el cierre, cada uno con su pie (Futaba). Lo resaltado lo dirá la guía de Mai. */
+/*
+ * Los rótulos de la escena (Mai §5 y §10): fragmentos literales de los pasos,
+ * de las cajas de la capa 3 o del rótulo fijo. Un solo momento, el 31 de
+ * diciembre; la tabla del ejemplo con una fila por grupo (los nombres, los de
+ * las cajas de la capa 3) y la suma bajo un filete.
+ */
+export const ESCENA_T6_A5 = {
+  fecha: "31 de diciembre",
+  deben: "Lo que le deben sus clientes",
+  total: "$1.000.000",
+  /* Por grupo: lo que suma, la pastilla del porcentaje (el grupo 1 no tiene) y el resultado. */
+  grupos: [
+    { suma: "$400.000", porcentaje: null, resultado: "no se provisiona nada" },
+    { suma: "$200.000", porcentaje: "Al 5 %", resultado: "son $10.000" },
+    { suma: "$300.000", porcentaje: "Al 10 %", resultado: "son $30.000" },
+    { suma: "$100.000", porcentaje: "Al 15 %", resultado: "son $15.000" },
+  ],
+  suma: "$55.000",
+  gasto: "Gasto provisiones – cuentas incobrables",
+  provision: "Provisión para deudas incobrables",
+  neto: "El valor neto",
+  valorNeto: "$945.000",
+  debita: "se debita",
+  acredita: "se acredita",
+};
+
+/* Los 11 pasos y el cierre, cada uno con su pie (Futaba). Lo resaltado, en contabilidad/t6Pieza5.js (Mai §5.3). */
 export const PASOS_T6_A5 = [
   { texto: "El 31 de diciembre, una empresa revisa lo que le deben sus clientes: $1.000.000.", pie: PIE_SIMULADO },
   { texto: "Agrupa las deudas según cuánto tiempo llevan vencidas.", pie: PIE_LIBRO("p. 200") },
@@ -145,6 +171,14 @@ export const GRUPOS_T6_A5 = [
     pie: PIE_PORCENTAJE,
   },
 ];
+/* El tablero (Mai §6.1): la cabecera de su columna, la celda de cada grupo y la fila de la suma. */
+export const TABLERO_T6_A5 = {
+  cabecera: "Se provisiona",
+  celdas: ["$0", "$10.000", "$30.000", "$15.000"],
+  total: "La provisión",
+  suma: "$55.000",
+};
+
 export const FINAL_CAPA_3_T6_A5 = {
   texto: "La provisión es la suma de los cuatro grupos: $55.000. Mientras más tiempo lleva vencido un grupo, mayor es su porcentaje en este ejemplo.",
   pie: PIE_SIMULADO,

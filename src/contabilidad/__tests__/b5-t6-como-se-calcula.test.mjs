@@ -231,9 +231,15 @@ test("★★★ la capa 4 cuadra: ocho meses caen en el grupo del 10 %, y las eq
 
 /* ═══════════ IDS Y CATÁLOGO ═══════════ */
 
-test("★★ identificadores nuevos con b5-, y la pieza no va al catálogo (Aprender no paga)", () => {
+test("★★ identificadores nuevos con b5-, y la pieza no va al catálogo (Aprender no paga)", async () => {
   assert.match(D.PIEZA_COMO_SE_CALCULA.id, /^b5-t6-a5-/);
   for (const o of D.OPCIONES_FINAL_T6_A5) assert.match(o.id, /^b5-t6-a5-/);
-  const subjects = readFileSync(new URL("../../data/subjects.js", import.meta.url), "utf8");
-  assert.ok(!subjects.includes("b5-t6-a5"), "Aprender no tiene fila en el catálogo");
+  /* En el tema es una pieza de APRENDER, sin dificultad ni FP; ninguna migración la trae al catálogo. */
+  const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
+  const a = SUBJECTS.contabilidad.topics.find((t) => t.id === "cuentas-por-cobrar").actividades.find((x) => x.id === D.PIEZA_COMO_SE_CALCULA.id);
+  assert.deepEqual(a.clasificacion, { tipo: APRENDER });
+  assert.equal(a.nombre, D.PIEZA_COMO_SE_CALCULA.titulo);
+  const { readdirSync } = await import("node:fs");
+  const dir = new URL("../../../supabase/migrations/", import.meta.url);
+  for (const f of readdirSync(dir)) assert.ok(!readFileSync(new URL(f, dir), "utf8").includes("b5-t6-a5"), `${f} trae la pieza`);
 });
