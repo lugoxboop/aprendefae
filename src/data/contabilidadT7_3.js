@@ -36,6 +36,19 @@ export const HABER = "haber";
 /* [ESCRITO POR CLAUDE, NO POR LA FICHA] El nombre del asiento sin fecha para el lector de pantalla. */
 export const PENDIENTE_DE_REVISION = { nombreAsiento: "Asiento de la venta" };
 
+/*
+ * Rótulos y títulos de las figuras del «Patrón T7-3» (renglones). Los puso
+ * Watari: casi todos salen de los textos de Near, pero la forma corta es suya
+ * y está por confirmar con Near ([ESCRITO POR CLAUDE — PENDIENTE DE
+ * REVISIÓN], dice su patrón).
+ */
+export const ROTULOS_PATRON = {
+  factura: (quien) => `Factura de ${quien}`,
+  precioLista: "Precio de lista",
+  descuentoComercial: (pct) => `Descuento comercial ${pct} %`,
+  valorFacturar: "Valor a facturar",
+};
+
 /* La frase fija de tarifas, la misma de T7-2 (A2). */
 export const FRASE_TARIFAS = "Las tarifas de este ejercicio son datos del libro. No las tomes como las tarifas de hoy.";
 
@@ -117,6 +130,16 @@ const EJEMPLO = {
     "Primero se calcula el descuento. Es el 15 % del precio de lista: $4.200.000 × 15 % = $630.000.",
     "Después se resta: el valor a facturar es $4.200.000 − $630.000 = $3.570.000.",
   ],
+  /* Patrón T7-3: el texto ya da las cifras, así que la cuenta en renglones va con él, antes de la pregunta. */
+  figuras: [{
+    tipo: "renglones",
+    titulo: ROTULOS_PATRON.factura("San Calixto"),
+    filas: [
+      { rot: ROTULOS_PATRON.precioLista, v: C.lista },
+      { op: "−", rot: ROTULOS_PATRON.descuentoComercial(15), v: C.descuento },
+      { op: "=", rot: ROTULOS_PATRON.valorFacturar, v: C.factura, res: true },
+    ],
+  }],
   pregunta: "¿Sobre qué valor se calculan el IVA y la retención?",
   opciones: [
     { id: "lista", texto: "$4.200.000", devolucion: "Ese es el precio de lista. El IVA y la retención se calculan sobre lo que se factura, que ya tiene el descuento." },
