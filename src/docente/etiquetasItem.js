@@ -72,7 +72,14 @@ import { hechoDeItemH1 as hechoDeItemT72H1 } from "../contabilidad/t7_2H1.js";
 import { unidadDeH2 as unidadDeT72H2 } from "../contabilidad/t7_2H2.js";
 import { unidadDeH3 as unidadDeT72H3 } from "../contabilidad/t7_2H3.js";
 import { unidadDeH4 as unidadDeT72H4 } from "../contabilidad/t7_2H4.js";
+import { unidadDeH5 as unidadDeT72H5 } from "../contabilidad/t7_2H5.js";
 import { unidadDeH1 as unidadDeT73H1 } from "../contabilidad/t7_3H1.js";
+import { unidadDeH2 as unidadDeT73H2 } from "../contabilidad/t7_3H2.js";
+import { unidadDeH3 as unidadDeT73H3 } from "../contabilidad/t7_3H3.js";
+import { unidadDeH4 as unidadDeT73H4 } from "../contabilidad/t7_3H4.js";
+import { unidadDeH5 as unidadDeT73H5 } from "../contabilidad/t7_3H5.js";
+import { unidadDeH6 as unidadDeT73H6 } from "../contabilidad/t7_3H6.js";
+import { unidadDeH7 as unidadDeT73H7 } from "../contabilidad/t7_3H7.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -736,8 +743,22 @@ Object.assign(REGLAS, {
   "t7-2-llena-el-kardex": (id) => unidadDeT72H3(id),
   /* T7-2 · H4. Por su subtema y su pregunta (la de los ítems 3 y 5 es la misma). */
   "t7-2-periodico-o-permanente": (id) => unidadDeT72H4(id),
+  /* T7-2 · H5. Una elección, por su hecho y su pregunta; una línea, por su cuenta y su valor. */
+  "t7-2-flete-y-devolucion": (id) => unidadDeT72H5(id),
   /* T7-3 · H1. Un cálculo, por su pregunta; una línea, por su cuenta y su valor. */
   "t7-3-descuento-en-factura": (id) => unidadDeT73H1(id),
+  /* T7-3 · H2. Cada ítem, por su pregunta. */
+  "t7-3-cadena-de-descuentos": (id) => unidadDeT73H2(id),
+  /* T7-3 · H3. Cada ítem, por su caso o su pregunta. */
+  "t7-3-comercial-o-condicionado": (id) => unidadDeT73H3(id),
+  /* T7-3 · H4. Una elección, por su pregunta; una línea, por su libro, su cuenta y su valor. */
+  "t7-3-pago-a-tiempo": (id) => unidadDeT73H4(id),
+  /* T7-3 · H5. Una elección, por su caso y su pregunta; una línea, por su caso, su cuenta y su valor. */
+  "t7-3-ajuste-por-conteo": (id) => unidadDeT73H5(id),
+  /* T7-3 · H6. Cada cosa, por su texto. */
+  "t7-3-que-entra-al-costo": (id) => unidadDeT73H6(id),
+  /* T7-3 · H7. Cada pregunta, por su caso (la pregunta se repite entre casos). */
+  "t7-3-costo-o-vnr": (id) => unidadDeT73H7(id),
 });
 
 /*

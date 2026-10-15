@@ -23,13 +23,34 @@ va a conseguir.
 | 4 Ingresos y gastos | 117-176 | publicado (Tema 3) |
 | 5 Activos corrientes | 177-274 | **lo que queda** |
 
-## Las tres células y su reparto
+## Las cinco células y su reparto
 
 | Célula | General | Contenido | Diseño | Auditoría | Construcción | Alcance |
 |---|---|---|---|---|---|---|
-| **A** Attack on Titan | Erwin | Gen | Xeno | Levi | Sai | Cerrar T3, luego **T4** · §5.1-§5.2 · pp. 179-190 |
-| **B** Bunny Girl Senpai | Sakuta | Futaba | Mai | Shoko | Kaede | **§5.3 y §5.4** · pp. 191-206 |
+| **A** Attack on Titan | Erwin | Gen | Xeno | Levi | Sai | Coordinación, íconos y el índice del banco de ejercicios |
+| **B** Bunny Girl Senpai | Sakuta | Futaba | Mai | Shoko | Kaede | **T5 y T6** · §5.3 y §5.4 · pp. 191-206 |
 | **C** Death Note | L | Near | Watari | Mello | Misa | **T7 Inventarios** · §5.5-§5.6 · pp. 207-261 |
+| **D** Baki Hanma | Yujiro | Katsumi | Hanayama | Shibukawa | Baki | **T4 Efectivo, caja menor y bancos** · §5.1 y §5.2 · pp. 179-190 |
+| **E** Hajime no Ippo | Kamogawa | Miyata | Itagaki | Takamura | Ippo | **Repaso del capítulo 5**: el banco de ejercicios · pp. 262-274 |
+
+**Ukyo es el probador general y no pertenece a ninguna célula.** Es común a las
+cinco: a él se le lleva una pieza cuando hay que saber si un estudiante la
+entiende sin que nadie se la explique al lado.
+
+**Por qué T4 salió de la Célula A el 14 de octubre de 2026.** A llevaba T4
+asignada desde el montaje y no se construyó un solo día, porque el general de A
+es también el coordinador y la coordinación siempre gana. Un alcance que vive
+en la célula del coordinador es un alcance que no existe. T4 pasa a la Célula D,
+y A se queda con lo que sí es suyo e indelegable: coordinar, reservar los íconos
+y mantener el índice del banco de ejercicios.
+
+**Por qué el banco de ejercicios tiene dueño ahora.** Las pp. 262-274 llevaban
+escrito «de nadie» y eso funcionó mientras hubo tres células. Con cinco, «de
+nadie» es una invitación a que dos lo tomen. La Célula E lo construye como la
+capa de repaso del capítulo entero, y es la única célula que **consume** los
+temas de las demás sin editarlos: sus actividades viven en su propio tema
+transversal, y jamás toca un archivo de otra célula. Si necesita que un tema
+ajeno cambie, lo reporta al coordinador y sigue con lo suyo.
 
 **Por qué §5.3 y §5.4 van juntas:** §5.3 son cinco páginas. Una célula sola con
 cinco páginas se queda sin fuente el primer día, y ahí es donde empieza a

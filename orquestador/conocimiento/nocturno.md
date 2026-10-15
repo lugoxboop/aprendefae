@@ -114,15 +114,28 @@ que está repartido y lo que no.
 
 **Cada célula tiene lo suyo y nadie más lo toca:**
 
-| | Célula B | Célula C |
-|---|---|---|
-| Secciones | §5.3 y §5.4, pp. 191-206 | §5.5 y §5.6, pp. 207-261 |
-| Temas | T5 y T6 | T7-1, T7-2 y T7-3 |
-| Prefijo de rama | `feat/conta-b5-` | `feat/conta-c7-` |
-| Prefijo de id | `t5-`, `t6-` | `t7-` |
-| Migraciones | 0070 a 0089 | 0090 a 0109 |
-| Su vista | la del tema que construye | la del tema que construye |
-| Sus datos | `src/data/contabilidadT5*`, `T6*` | `src/data/contabilidadT7*` |
+| | Célula B | Célula C | Célula D | Célula E |
+|---|---|---|---|---|
+| Secciones | §5.3 y §5.4, pp. 191-206 | §5.5 y §5.6, pp. 207-261 | §5.1 y §5.2, pp. 179-190 | banco de ejercicios, pp. 262-274 |
+| Temas | T5 y T6 | T7-1, T7-2 y T7-3 | T4 | `repaso-capitulo-5` |
+| Prefijo de rama | `feat/conta-b5-` | `feat/conta-c7-` | `feat/conta-d4-` | `feat/conta-e5-` |
+| Prefijo de id | `t5-`, `t6-` | `t7-` | `t4-` | `r5-` |
+| Migraciones | 0070 a 0089 | 0090 a **0149** | **0200 a 0249** | **0250 a 0299** |
+| Su vista | la del tema que construye | la del tema que construye | `ContabilidadT4View` | `RepasoCapitulo5View` |
+| Sus datos | `src/data/contabilidadT5*`, `T6*` | `src/data/contabilidadT7*` | `src/data/contabilidadT4*` | `src/data/repasoCap5*` |
+
+El rango del coordinador es **0150 a 0199**, y la 0150 ya está gastada.
+
+**El rango de C se amplió de 0109 a 0149 el 14 de octubre de 2026**, porque
+T7-3 consumió hasta la 0109 exacta y la célula se habría quedado sin números a
+mitad de tema. Un rango que se agota en silencio es un choque esperando: el
+siguiente número libre es el de otra célula y nadie se entera hasta que dos
+migraciones distintas se llaman igual.
+
+**Los rangos nuevos no empiezan en 0110 por una razón.** Dejar hueco entre
+rangos cuesta nada y permite ampliar el de en medio sin mover a nadie. Las
+migraciones se aplican por orden de nombre y ningún hueco rompe eso: la 0150
+corrió perfectamente con las 0104 a 0149 sin escribir.
 
 **Archivos compartidos que las dos tocan.** No se reparten, porque cada
 actividad nueva los necesita. La regla es otra:
