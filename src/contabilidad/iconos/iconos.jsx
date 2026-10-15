@@ -44,6 +44,7 @@ import t52 from "./conta-t5-2-el-cierre-completo-de-santa-pacha.svg?raw";
 import t61 from "./conta-t6-1-clientes-o-otra-cuenta-por-cobrar.svg?raw";
 import t62 from "./conta-t6-2-la-provision-de-el-torito.svg?raw";
 import t63 from "./conta-t6-3-cuando-la-deuda-castigada-vuelve.svg?raw";
+import r51 from "./conta-r5-1-repaso-cruzado.svg?raw";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -138,3 +139,4 @@ export const ElCierreCompletoDeSantaPacha = icono("ElCierreCompletoDeSantaPacha"
 export const ClientesOOtraCuentaPorCobrar = icono("ClientesOOtraCuentaPorCobrar", t61);
 export const LaProvisionDeElTorito = icono("LaProvisionDeElTorito", t62);
 export const CuandoLaDeudaCastigadaVuelve = icono("CuandoLaDeudaCastigadaVuelve", t63);
+export const RepasoCruzado = icono("RepasoCruzado", r51);
