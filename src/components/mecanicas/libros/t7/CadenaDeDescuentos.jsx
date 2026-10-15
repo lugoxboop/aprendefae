@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
-import { H2, FICHA_H2, BOTON_H2, resumenH2 } from "../../../../data/contabilidadT7_3_h2.js";
+import { H2, FICHA_H2, FIGURAS_H2, BOTON_H2, resumenH2 } from "../../../../data/contabilidadT7_3_h2.js";
 import { prepararH2, evaluarH2, puntuarH2, TOTAL_H2 } from "../../../../contabilidad/t7_3H2.js";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
 
 /*
@@ -68,11 +69,12 @@ export default function CadenaDeDescuentos({ Marco, rotulo, titulo, acento, onCo
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T7_HACER}</style>
+      <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h2>
         <Encabezado consigna={H2.consigna} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H2.enunciado} />
         <Ficha filas={FICHA_H2} />
+        <FigurasHacer figuras={FIGURAS_H2} respondidos={t.i + (listo ? 1 : 0)} listo={listo} />
         <div style={{ marginBottom: "12px" }}>
           <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
         </div>
