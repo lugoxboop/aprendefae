@@ -55,3 +55,17 @@ test("★★ los textos D de la mesa: los del Tema 6 empiezan con «Sobra una cu
     assert.ok(t.endsWith(p.errores.D.replace(/^Sobra una cuenta\. /, "")), `${p.id}: sigue el texto D`);
   }
 });
+
+test("★★★ dos de más y dos de menos (b5-t5-a2, asientos de tres cuentas): «No van X ni W: en su lugar van Y y Z.», sin emparejar al azar (condición de Shoko)", () => {
+  const p = T5.PARTES_T5_ACT2.find((x) => x.asiento.length >= 3);
+  const [a, b, ...resto] = p.asiento;
+  const t = textoD(p, [...resto, d("Bancos", 0), d("Gastos financieros – pérdida en venta de títulos", 0)].map((x) => x));
+  assert.ok(t.startsWith(`No van Bancos ni Gastos financieros – pérdida en venta de títulos: en su lugar van ${a.cuenta} ${/^h?i(?![aeoáéó])/i.test(b.cuenta) ? "e" : "y"} ${b.cuenta}. `), t);
+});
+
+test("★★ distinto número de más y de menos: «Sobra X.» y luego «Falta Y.»/«Faltan Y y Z.»", () => {
+  const t = textoD(castigo, [d(A2.GASTO, 0), d(A2.CAJA, 0)]);
+  assert.ok(t.startsWith("Sobran Gasto provisiones – cuentas incobrables y Caja. Faltan Provisión para deudas incobrables y Cuentas por cobrar – clientes. ") === false, "dos y dos van como cambio, no como sobra/falta");
+  const u = textoD(castigo, [d(A2.GASTO, 0), d(A2.CAJA, 0), hb(A2.CLIENTES, 0)]);
+  assert.ok(u.startsWith("Sobran Gasto provisiones – cuentas incobrables y Caja. Falta Provisión para deudas incobrables. "), u);
+});
