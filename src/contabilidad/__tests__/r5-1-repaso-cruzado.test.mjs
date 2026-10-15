@@ -13,7 +13,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · las seis claves; 3.400 y 526 se CALCULAN aquí desde los datos
  *   · cada opción incorrecta tiene su devolución, distinta de las demás
  *   · INFLESZ ≥ 65 en todo texto de 10 palabras o más, con guarda de
- *     recorrido; el enunciado de C.9 da 61,3 y queda como TODO reportado
+ *     recorrido exacto; el enunciado de C.9 de v1.2 incluido (68,7)
  *   · ningún renglón de asiento de las pantallas 2 y 6 llega a 10 palabras
  *   · el barajado, con semilla fija, cambia el orden y conserva la clave
  *   · los FP de una partida parcial salen de calcularFP (src/fp/motor.js),
@@ -182,13 +182,12 @@ test("★★★ cada opción incorrecta tiene una devolución propia, distinta d
 /* ═══════════ INFLESZ ═══════════ */
 
 /*
- * El enunciado de C.9 da 61,3 con la herramienta oficial. El paquete dice que
- * todos pasan; este no. NO se reescribe en construcción (decisiones.md): se
- * reportó a Kamogawa y queda como deuda conocida, con su cifra.
+ * El enunciado de C.9 de v1 daba 61,3 con la herramienta oficial. Kamogawa lo
+ * corrigió en el paquete (v1.2) y el nuevo da 68,7: ya no hay excepción.
  */
 const C9_ENUNCIADO = pantalla("c9").enunciado;
 
-test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js, salvo el enunciado de C.9 (guarda: 39 medidos)", () => {
+test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 39 medidos)", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of textosDeLosDatos()) {
@@ -199,11 +198,14 @@ test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js, salvo e
     if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
   assert.equal(medidos, 39, "no midió los textos que dice medir");
-  assert.deepEqual(bajos, [`61.3 · ${C9_ENUNCIADO}`], "cambió la lista de textos por debajo de 65");
+  assert.deepEqual(bajos, [], "textos por debajo de 65");
 });
 
-test("el enunciado de C.9 pasa 65", { todo: "da 61,3: reportado a Kamogawa para Miyata, no se reescribe en construcción" }, () => {
-  assert.ok(inflesz(C9_ENUNCIADO).valor >= UMBRAL, `${inflesz(C9_ENUNCIADO).valor}`);
+test("★★ el enunciado de C.9 es el de v1.2 y pasa 65: da 68,7", () => {
+  assert.equal(C9_ENUNCIADO, "Mira los datos del periodo. Usa el promedio ponderado. ¿Cuánto vale el inventario final?");
+  assert.ok(PAQUETE.includes("> **v1.2 (Kamogawa):**"), "el paquete no dice v1.2");
+  assert.equal(inflesz(C9_ENUNCIADO).valor, 68.7);
+  assert.ok(inflesz(C9_ENUNCIADO).valor >= UMBRAL);
 });
 
 test("★★ ningún renglón de asiento de las pantallas 2 y 6 tiene 10 palabras o más (guarda: 16 renglones)", () => {

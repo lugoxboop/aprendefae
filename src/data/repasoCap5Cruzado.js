@@ -180,7 +180,7 @@ export const PANTALLAS_R5_1 = [
     pagina: "p. 266",
     subtema: "inventarios",
     forma: "cifra",
-    enunciado: "Una empresa tiene estos datos del periodo. Usa el promedio ponderado. ¿Cuánto vale el inventario final?",
+    enunciado: "Mira los datos del periodo. Usa el promedio ponderado. ¿Cuánto vale el inventario final?",
     lotes: LOTES_C9,
     vendidas: VENDIDAS_C9,
     opciones: [
