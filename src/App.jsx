@@ -283,11 +283,11 @@ export default function App() {
     );
   }
 
-  /* T7-3 de Contabilidad (Célula C): por ahora, su pieza 1 de Aprender. */
+  /* T7-3 de Contabilidad (Célula C): sus piezas de Aprender y sus actividades de Hacer. */
   if (view === "inventarios-descuentos-nic2") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <ContabilidadT7_3View onBack={() => setView("contabilidad")} />
+        <ContabilidadT7_3View modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }

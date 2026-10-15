@@ -102,8 +102,9 @@ export function Plazos({ venta, condiciones, pago = null, nuevo = false }) {
  *
  *   figuras: [{ tipo: "renglones" | "plazos", desde, hasta?, ...sus datos }]
  *     desde   el número de ítems respondidos con el que aparece (1 = el ítem 1)
- *     hasta   con más ítems respondidos que este, ya no se muestra (la de un
- *             caso se va cuando su caso termina, como en las muestras de Watari)
+ *     hasta   el último ítem en cuya pantalla se muestra (la de un caso se va
+ *             cuando empieza otro caso, como en las muestras de Watari); nunca
+ *             se va en el momento de responder
  *   una fila de renglones puede traer su propio `desde`: la cadena de H2 crece
  *   en la misma tarjeta, no se reemplaza.
  *
@@ -111,7 +112,9 @@ export function Plazos({ venta, condiciones, pago = null, nuevo = false }) {
  */
 export function FigurasHacer({ figuras, respondidos, listo }) {
   const ahora = listo ? respondidos : null;
-  const visibles = figuras.filter((f) => f.desde <= respondidos && (f.hasta == null || respondidos <= f.hasta));
+  /* El ítem que está en pantalla: el que se acaba de responder, o el siguiente. */
+  const actual = listo ? respondidos : respondidos + 1;
+  const visibles = figuras.filter((f) => f.desde <= respondidos && (f.hasta == null || actual <= f.hasta));
   if (!visibles.length) return null;
   return (
     <div data-figuras>

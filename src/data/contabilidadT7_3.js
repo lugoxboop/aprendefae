@@ -38,9 +38,7 @@ export const PENDIENTE_DE_REVISION = { nombreAsiento: "Asiento de la venta" };
 
 /*
  * Rótulos y títulos de las figuras del «Patrón T7-3» (renglones). Los puso
- * Watari: casi todos salen de los textos de Near, pero la forma corta es suya
- * y está por confirmar con Near ([ESCRITO POR CLAUDE — PENDIENTE DE
- * REVISIÓN], dice su patrón).
+ * Watari y los revisó Near (L, 15 de octubre de 2026): van tal cual.
  */
 export const ROTULOS_PATRON = {
   factura: (quien) => `Factura de ${quien}`,
