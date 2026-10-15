@@ -402,3 +402,84 @@ Recomendada, para Futaba: el «Resalta» del paso 3 pasa a «Los tres porcentaje
 
 1. **Pies de la capa 1: aprobado el camino de Kaede.** Se pintan con un componente de la célula (tema6/PiesDeTermino.jsx), como la nota de «cartera», sin tocar CuatroCapas: el pie de cada término bajo su definición; el de la nota del término 4, dentro de su caja. La prueba que impide que el Decreto quede bajo «Así lo dice el libro» se queda.
 2. **Cruce de cifras.** Las cifras construidas no pueden coincidir con cifras del libro ni con respuestas del banco de ejercicios (pp. 262-274, Célula E). Futaba las está cruzando. Hay un registro de las cifras construidas (CIFRAS_CONSTRUIDAS_T6_A5) y una lista negra con las del libro que ya están en los datos. Dos choques quedan en revisión: $30.000 (grupo 3 = el interés de noviembre de Santa Pacha, T5 · A2) y $100.000 (grupo 4 = el abono de Pablo Moncayo, T6 · A4 y b5-t6-a3).
+
+## (5) Futaba · cruce de cifras del capítulo y cifras nuevas (pegado tal cual)
+
+**Decisión de Sakuta:** se cambia el juego ENTERO de cifras por el de Futaba. Los textos, los porcentajes, los rangos y la lógica no cambian; solo los montos. La devolución correcta de la capa 4 pasa a «El 10 % de $380.000 es $38.000.». Manda sobre las cifras de (1), (2) y (4). En la capa 4, $200.000, $20.000, $10.000 y $30.000 se cambian por su fila propia, no por la de los grupos.
+
+Del texto pegado se quitaron las líneas de la interfaz del chat.
+
+Sakuta: mi PDF sí llega a las pp. 262-274: tiene el capítulo completo, de la p. 176 a la 275. Cuatro de las once cifras chocan con datos de provisión o de cuentas por cobrar del libro. Propongo un juego nuevo de cifras, que tampoco aparece en el libro.
+
+Cómo lo revisé:
+
+Busqué las once cifras con reconocimiento de texto (OCR) en las 100 páginas del PDF.
+El OCR no leyó bien algunas cifras de las tablas: se le escapó el $1.000.000 de la p. 269. Por eso revisé a ojo la tabla del ejercicio 3 del bloque D (pp. 268-269) y la de la p. 201.
+Las once cifras actuales
+Cifra	¿Aparece?	Dónde	¿Choca?
+$1.000.000	Sí	Bloque D, ejercicio 3 (El Toro Negro), p. 269: dato de la tabla de cartera, Cía. Roja, 31-60 días	Sí: es un dato de provisión
+$400.000	Sí	Bloque D, ejercicio 3, p. 269: dato, Cía. Azul, 31-60 días	Sí: es un dato de provisión
+$200.000	Sí	p. 201, tabla de El Torito (Mónica Galindo y Pablo Moncayo); pp. 219 y 221, ejemplo de inventarios; p. 270, ejercicio de compras	Sí: es una cifra de provisión del libro (la tabla cerrada)
+$100.000	Sí	p. 201, tabla de El Torito; pp. 205-206, abono de Moncayo (cuentas por cobrar); p. 221, inventarios	Sí: es una cifra de provisión y de cuentas por cobrar del libro
+$300.000	Sí	p. 273, ejercicio de inventario (suministros)	No es de cartera
+$10.000	Sí	pp. 273-274, precios unitarios de un ejercicio de inventario	No es de cartera
+$30.000	Sí	p. 195 (interés de Santa Pacha), p. 255 (inventario), p. 271 (precio)	No es de cartera
+$15.000	Sí	p. 273, precios unitarios	No es de cartera
+$20.000	Sí	pp. 219-221, inventarios; p. 271, precio	No es de cartera
+$945.000	Sí	p. 241, kárdex de inventarios	No es de cartera
+$55.000	No	—	No
+
+Ninguna cifra de T6 A5 coincide con una respuesta del ejercicio D-3. Lo calculé con los porcentajes de ese ejercicio: la provisión da $2.283.400.
+
+Cifras de reemplazo
+
+Al cambiar los grupos cambian todas las cifras en cascada, así que el juego es nuevo entero. Lo armé descartando dos fuentes: todas las cifras que el OCR encontró en el capítulo y, a mano, las de las tablas de las pp. 201 y 269 y las respuestas de D-3.
+
+Lugar	Antes	Ahora
+Total que deben los clientes (paso 1)	$1.000.000	$1.300.000
+Vigentes o hasta 3 meses, sin provisión (paso 4, caja 1)	$400.000	$460.000
+Más de 3 hasta 6 meses → 5 % (paso 5, caja 2)	$200.000 → $10.000	$340.000 → $17.000
+Más de 6 meses hasta 1 año → 10 % (paso 6, caja 3)	$300.000 → $30.000	$360.000 → $36.000
+Más de 1 año → 15 % (paso 7, caja 4)	$100.000 → $15.000	$140.000 → $21.000
+Provisión (pasos 8 y 9, final de la capa 3)	$55.000	$74.000
+Valor neto (paso 11)	$945.000	$1.226.000
+Capa 4: deuda de 8 meses	$200.000 → ✓ $20.000 · ✗ $10.000 · ✗ $30.000	$380.000 → ✓ $38.000 · ✗ $19.000 · ✗ $57.000
+
+Comprobación:
+
+460.000 + 340.000 + 360.000 + 140.000 = 1.300.000.
+17.000 + 36.000 + 21.000 = 74.000.
+1.300.000 − 74.000 = 1.226.000.
+En la capa 4: 10 % de 380.000 = 38.000. Los distractores son el 5 % (19.000) y el 15 % (57.000).
+
+Lo que no cambia:
+
+Los textos, los porcentajes, los rangos y la lógica de cada paso. Solo cambian los montos.
+La devolución correcta de la capa 4 pasa a decir: «El 10 % de $380.000 es $38.000.»
+La legibilidad no se mueve: cada texto tiene la misma cantidad de cifras.
+
+Límite honesto:
+
+Lo verificado a ojo: las tablas de las pp. 201 y 269.
+Lo verificado solo por OCR: el resto del capítulo. Fuera de esas dos tablas no encontré ninguna de las cifras nuevas, pero el OCR puede fallar en tablas que no revisé a ojo.
+Si quieres certeza total, que Kaede o la Célula E las busquen en el banco digitado de las pp. 262-274.
+
+### (5b) Los textos con las cifras nuevas (los de (1), con el cambio de la tabla de arriba aplicado)
+
+- «son $17.000»
+- «son $36.000»
+- «son $21.000»
+- «La provisión es la suma de los cuatro grupos: $74.000. Mientras más tiempo lleva vencido un grupo, mayor es su porcentaje en este ejemplo.»
+- «Al 5 %, los $340.000 dan $17.000.»
+- «Al 10 %, los $360.000 dan $36.000.»
+- «Al 15 %, los $140.000 dan $21.000.»
+- «Correcto. Ocho meses es más de seis y no pasa de un año: le toca el 10 %. El 10 % de $380.000 es $38.000.»
+- «El 31 de diciembre, una empresa revisa lo que le deben sus clientes: $1.300.000.»
+- «Las que están vigentes o llevan hasta tres meses de vencidas suman $460.000. En este ejemplo, por ellas no se provisiona nada.»
+- «Las que llevan más de tres meses, sin pasar de seis, suman $340.000. Al 5 %, son $17.000.»
+- «Las que llevan más de seis meses, sin pasar de un año, suman $360.000. Al 10 %, son $36.000.»
+- «Las que llevan más de un año suman $140.000. Al 15 %, son $21.000.»
+- «Cálculo: $17.000 + $36.000 + $21.000 = $74.000.»
+- «Se debita Gasto provisiones – cuentas incobrables por $74.000.»
+- «Cálculo: $1.300.000 − $74.000 = $1.226.000, el valor neto.»
+- «Una deuda de $380.000 lleva ocho meses vencida. Con los porcentajes del ejemplo, ¿cuánto se provisiona por ella?»

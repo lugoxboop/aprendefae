@@ -175,7 +175,8 @@ test("★★★ la tabla: cuatro filas con los nombres de la capa 3; el grupo 1 
     if (esperado[k].porcentaje) assert.equal(pct.textContent, pegado(esperado[k].porcentaje));
     else assert.equal(pct, null, "el grupo 1 no tiene pastilla (no hay «0 %» escrito)");
   });
-  assert.equal(de(caja, "suma").textContent, "$55.000");
+  assert.equal(de(caja, "suma").textContent, D.ESCENA_T6_A5.suma);
+  assert.equal(D.ESCENA_T6_A5.suma, "$74.000");
   assert.deepEqual([...viva(caja).querySelectorAll("[data-lado]")].map((n) => `${n.closest("[data-elemento]").dataset.elemento}:${n.textContent}`),
     ["gasto:se debita", "provision:se acredita"]);
   desmontar();
@@ -249,7 +250,7 @@ test("★★★ capa 3: el tablero es una tabla; cada caja llena su celda en cua
   }
   await tocar(caja.querySelector('[data-hecho="g2"] button'));
   assert.deepEqual(celdas(), D.TABLERO_T6_A5.celdas);
-  assert.equal(caja.querySelector("[data-fila-total]").textContent, "La provisión$55.000");
+  assert.equal(caja.querySelector("[data-fila-total]").textContent, `${D.TABLERO_T6_A5.total}${D.TABLERO_T6_A5.suma}`);
   const final = caja.querySelector("[data-final]");
   assert.equal(final.querySelector("p").textContent, D.FINAL_CAPA_3_T6_A5.texto);
   assert.equal(final.querySelector("[data-tipo-pie]").dataset.tipoPie, "escenario");

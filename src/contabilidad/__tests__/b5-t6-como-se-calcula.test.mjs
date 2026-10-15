@@ -29,6 +29,21 @@ const { pesos } = await import("../../data/contabilidad.js");
 
 const FUENTE = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-aprender5.md", import.meta.url), "utf8");
 const FUTABA = FUENTE.slice(FUENTE.indexOf("## (1) Futaba"));
+/*
+ * Las cifras nuevas de Futaba (sección (5) del paquete): solo cambian los
+ * montos. Lo que en (1) dice la cifra vieja se compara con la nueva. La
+ * capa 4 lleva su propio cambio: allí $200.000, $20.000, $10.000 y $30.000
+ * son otras cifras que en los grupos.
+ */
+const CAMBIO = {
+  "$1.000.000": "$1.300.000", "$400.000": "$460.000", "$200.000": "$340.000", "$10.000": "$17.000", "$300.000": "$360.000",
+  "$30.000": "$36.000", "$100.000": "$140.000", "$15.000": "$21.000", "$55.000": "$74.000", "$945.000": "$1.226.000",
+};
+const CAMBIO_CAPA_4 = { "$200.000": "$380.000", "$20.000": "$38.000", "$10.000": "$19.000", "$30.000": "$57.000" };
+const conCifrasNuevas = (t, mapa) => t.replace(/\$\d{1,3}(?:\.\d{3})*/g, (m) => mapa[m] ?? m);
+const I4 = FUTABA.indexOf("Capa 4 · En una frase");
+const FUTABA_NUEVA = conCifrasNuevas(FUTABA.slice(0, I4), CAMBIO) + conCifrasNuevas(FUTABA.slice(I4), CAMBIO_CAPA_4);
+const CIFRAS_NUEVAS = FUENTE.slice(FUENTE.indexOf("## (5) Futaba"));
 const E = D.ESCENARIO_T6_A5;
 const N = D.PIEZA_COMO_SE_CALCULA.nombres;
 
@@ -86,25 +101,36 @@ test("★★★ manda Futaba: los cuatro términos con su pie (el del término 1
   assert.deepEqual([N[1].delLibro, N[2].delLibro], [undefined, undefined]);
 });
 
+test("★★★ el cambio de cifras es la tabla de Futaba (sección (5)), y la devolución correcta de la capa 4 es la que ella dicta", () => {
+  for (const [antes, ahora] of [...Object.entries(CAMBIO), ...Object.entries(CAMBIO_CAPA_4)]) {
+    const linea = CIFRAS_NUEVAS.split("\n").find((l) => l.includes(antes) && l.includes(ahora) && l.indexOf(antes) < l.lastIndexOf(ahora));
+    assert.ok(linea, `${antes} → ${ahora} no está en la tabla de Futaba`);
+  }
+  assert.ok(CIFRAS_NUEVAS.includes("La devolución correcta de la capa 4 pasa a decir: «El 10 % de $380.000 es $38.000.»"));
+  assert.ok(D.OPCIONES_FINAL_T6_A5[0].feedback.endsWith("El 10 % de $380.000 es $38.000."));
+  /* Las cuentas de su comprobación. */
+  for (const l of ["460.000 + 340.000 + 360.000 + 140.000 = 1.300.000.", "17.000 + 36.000 + 21.000 = 74.000.", "1.300.000 − 74.000 = 1.226.000."]) assert.ok(CIFRAS_NUEVAS.includes(l), l);
+});
+
 test("★★★ manda Futaba: los 11 pasos y el cierre, cada uno con su pie", () => {
   const filas = new Map();
-  for (const l of FUTABA.slice(FUTABA.indexOf("Capa 2 ·"), FUTABA.indexOf("Comprobación:")).split("\n")) {
+  for (const l of FUTABA_NUEVA.slice(FUTABA_NUEVA.indexOf("Capa 2 ·"), FUTABA_NUEVA.indexOf("Comprobación:")).split("\n")) {
     const c = l.split("\t");
     if (c.length === 5 && /^\d+/.test(c[0])) filas.set(Number.parseInt(c[0], 10), { texto: c[1], pie: c[2] });
   }
   assert.equal(filas.size, 11, "la guarda: los 11 pasos");
   D.PASOS_T6_A5.forEach((p, k) => assert.deepEqual(p, filas.get(k + 1), `paso ${k + 1}`));
-  assert.ok(FUTABA.includes(`Cierre\t${D.CIERRE_T6_A5.texto}\t${D.CIERRE_T6_A5.pie}\t`), "el cierre y su pie");
+  assert.ok(FUTABA_NUEVA.includes(`Cierre\t${D.CIERRE_T6_A5.texto}\t${D.CIERRE_T6_A5.pie}\t`), "el cierre y su pie");
 });
 
 test("★★★ manda Futaba: las cuatro cajas (nombre · monto), lo que revelan, el final y la capa 4", () => {
-  for (const g of D.GRUPOS_T6_A5) assert.ok(FUTABA.includes(`${g.nombre} · ${g.monto}\t✎ ${g.revela}\t${g.pie}\t`) || FUTABA.includes(`${g.nombre} · ${g.monto}\t${g.revela}\t${g.pie}\t`), g.id);
-  assert.ok(FUTABA.includes(`Cuando tocó las cuatro\t${D.FINAL_CAPA_3_T6_A5.texto}\t${D.FINAL_CAPA_3_T6_A5.pie}\t`));
+  for (const g of D.GRUPOS_T6_A5) assert.ok(FUTABA_NUEVA.includes(`${g.nombre} · ${g.monto}\t✎ ${g.revela}\t${g.pie}\t`) || FUTABA_NUEVA.includes(`${g.nombre} · ${g.monto}\t${g.revela}\t${g.pie}\t`), g.id);
+  assert.ok(FUTABA_NUEVA.includes(`Cuando tocó las cuatro\t${D.FINAL_CAPA_3_T6_A5.texto}\t${D.FINAL_CAPA_3_T6_A5.pie}\t`));
   assert.ok(FUTABA.includes(`Consigna: ${D.CONSIGNA_CAPA_3_T6_A5} (85)`));
-  assert.ok(FUTABA.includes(`Pregunta: ${D.PREGUNTA_FINAL_T6_A5} (70)`));
+  assert.ok(FUTABA_NUEVA.includes(`Pregunta: ${D.PREGUNTA_FINAL_T6_A5} (70)`));
   for (const o of D.OPCIONES_FINAL_T6_A5) {
     const marca = o.correcta ? "✓" : "✗";
-    assert.ok(FUTABA.includes(`${o.texto}\t${marca}\t${o.feedback}\t`) || FUTABA.includes(`${o.texto}\t${marca}\t✎ ${o.feedback}\t`), o.id);
+    assert.ok(FUTABA_NUEVA.includes(`${o.texto}\t${marca}\t${o.feedback}\t`) || FUTABA_NUEVA.includes(`${o.texto}\t${marca}\t✎ ${o.feedback}\t`), o.id);
   }
   assert.equal(D.OPCIONES_FINAL_T6_A5.filter((o) => o.correcta).length, 1);
 });
@@ -176,7 +202,7 @@ test("★★★ ninguna cifra de El Torito ni de la tabla de la p. 201 entra en 
 
 test("★★★ el registro: las cifras de los textos y del escenario son exactamente las cifras construidas registradas", () => {
   const enTextos = new Set(textosDe(D).flatMap(cifras));
-  const enEscenario = new Set([E.total, E.provision, E.neto, ...E.grupos.flatMap((g) => [g.monto, provisionDe(g)]), E.pregunta.monto, E.pregunta.provision]);
+  const enEscenario = new Set([E.total, E.provision, E.neto, ...E.grupos.flatMap((g) => [g.monto, provisionDe(g)]), E.pregunta.monto, E.pregunta.provision, (E.pregunta.monto * 5) / 100, (E.pregunta.monto * 15) / 100]);
   const registro = D.CIFRAS_CONSTRUIDAS_T6_A5;
   assert.deepEqual([...registro].sort((a, b) => a - b), registro, "el registro va ordenado");
   assert.deepEqual([...enTextos].sort((a, b) => a - b), registro, "una cifra en los textos que no está en el registro, o al revés");
@@ -204,16 +230,18 @@ const valoresDe = (mod) => {
   return out;
 };
 /*
- * EN REVISIÓN (Futaba las está cruzando; reportadas a Sakuta): dos cifras
- * construidas que coinciden con cifras del libro. Cuando lleguen las nuevas,
- * esta lista se vacía. Si aparece otro choque, o uno de estos se resuelve,
- * la prueba se pone roja hasta actualizarla.
- *   · $30.000: grupo 3 (10 % de $300.000) = el interés de noviembre de Santa Pacha (T5 · A2, pp. 194-195).
- *   · $100.000: grupo 4 = el abono de Pablo Moncayo (T6 · A4 y b5-t6-a3, pp. 205-206).
+ * Las cifras del libro que no están en nuestros datos y que Futaba encontró
+ * al cruzar el capítulo (pp. 176-275, OCR y, a ojo, las tablas de las pp. 201
+ * y 269): las que hicieron cambiar el primer juego y las demás que nombró.
  */
-const CHOQUES_EN_REVISION = [30000, 100000];
+const LIBRO_FUERA_DE_DATOS = {
+  "p. 201, tabla de El Torito": [200000, 100000],
+  "p. 269, ejercicio D-3 (El Toro Negro), datos": [1000000, 400000],
+  "ejercicio D-3, la provisión que da": [2283400],
+  "pp. 219-221, 241, 255, 270-274 (inventarios, compras, precios)": [300000, 10000, 30000, 15000, 20000, 945000, 200000, 100000],
+};
 
-test("★★★ la lista negra: ninguna cifra construida coincide con una cifra del libro en los datos (salvo las dos en revisión, nombradas)", async () => {
+test("★★★ la lista negra: ninguna cifra construida coincide con una cifra del libro (nuestros datos, el banco digitado de El Toro Negro y las que nombró Futaba)", async () => {
   const negra = new Set();
   for (const f of MODULOS_DEL_LIBRO) {
     const mod = await import(`../../data/${f}`);
@@ -221,8 +249,15 @@ test("★★★ la lista negra: ninguna cifra construida coincide con una cifra 
   }
   /* La guarda: la lista negra trae cifras de cada historia del libro. */
   for (const c of [2655000, 148800, 312500, 1350000, 1725000, 468750, 180000]) assert.ok(negra.has(c), `la lista negra no tiene ${pesos(c)}`);
+  /* El banco digitado de la Célula E (El Toro Negro, D-3): todas sus cifras. */
+  const toro = await import("../../data/repasoCap5ToroNegro.js");
+  const numeros = (v) => (typeof v === "number" ? (v >= 1000 ? [v] : []) : typeof v === "string" ? cifras(v)
+    : Array.isArray(v) ? v.flatMap(numeros) : v && typeof v === "object" ? Object.values(v).flatMap(numeros) : []);
+  const delBanco = Object.values(toro).flatMap(numeros);
+  for (const c of [1000000, 400000, 2283400]) assert.ok(delBanco.includes(c), `el banco digitado no trae ${pesos(c)}`);
+  for (const c of [...delBanco, ...Object.values(LIBRO_FUERA_DE_DATOS).flat()]) negra.add(c);
   const choques = D.CIFRAS_CONSTRUIDAS_T6_A5.filter((c) => negra.has(c));
-  assert.deepEqual(choques, CHOQUES_EN_REVISION, `choques: ${choques.map(pesos).join(", ")}`);
+  assert.deepEqual(choques.map(pesos), []);
 });
 
 /* ═══════════ LAS CUENTAS CUADRAN ═══════════ */
@@ -239,7 +274,9 @@ test("★★★ las cuentas cuadran: los grupos suman el total, cada provisión 
 });
 
 test("★★★ cada cifra de los textos sale del escenario (ni una suelta), y cada paso dice las suyas", () => {
-  const validas = new Set([E.total, E.provision, E.neto, 0, ...E.grupos.flatMap((g) => [g.monto, provisionDe(g)]), E.pregunta.monto, E.pregunta.provision]);
+  /* Las de la capa 4: la deuda, lo que da al 10 % y los dos distractores (el 5 % y el 15 %). */
+  const capa4 = [E.pregunta.monto, E.pregunta.provision, (E.pregunta.monto * 5) / 100, (E.pregunta.monto * 15) / 100];
+  const validas = new Set([E.total, E.provision, E.neto, 0, ...E.grupos.flatMap((g) => [g.monto, provisionDe(g)]), ...capa4]);
   for (const t of textosDe(D)) for (const c of cifras(t)) assert.ok(validas.has(c), `${pesos(c)} no sale del escenario: «${t.slice(0, 50)}»`);
   const P = D.PASOS_T6_A5.map((p) => p.texto);
   assert.deepEqual(cifras(P[0]), [E.total]);

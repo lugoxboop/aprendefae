@@ -76,17 +76,17 @@ export const PIEZA_COMO_SE_CALCULA = {
 
 /* No se pinta: las pruebas lo cruzan con cada cifra de los textos. */
 export const ESCENARIO_T6_A5 = {
-  total: 1000000,
+  total: 1300000,
   grupos: [
-    { id: "g1", monto: 400000, porcentaje: 0 },
-    { id: "g2", monto: 200000, porcentaje: 5 },
-    { id: "g3", monto: 300000, porcentaje: 10 },
-    { id: "g4", monto: 100000, porcentaje: 15 },
+    { id: "g1", monto: 460000, porcentaje: 0 },
+    { id: "g2", monto: 340000, porcentaje: 5 },
+    { id: "g3", monto: 360000, porcentaje: 10 },
+    { id: "g4", monto: 140000, porcentaje: 15 },
   ],
-  provision: 55000,
-  neto: 945000,
-  /* La capa 4: una deuda de $200.000 con ocho meses de vencida. */
-  pregunta: { monto: 200000, meses: 8, porcentaje: 10, provision: 20000 },
+  provision: 74000,
+  neto: 1226000,
+  /* La capa 4: una deuda de $380.000 con ocho meses de vencida. */
+  pregunta: { monto: 380000, meses: 8, porcentaje: 10, provision: 38000 },
 };
 
 /*
@@ -95,9 +95,10 @@ export const ESCENARIO_T6_A5 = {
  * cifras de los textos sean exactamente estas, y que ninguna coincida con una
  * cifra del libro que ya está en los datos (lista negra). Futaba las cruza
  * además con el banco de ejercicios (pp. 262-274, Célula E); si alguna cambia,
- * cambia aquí y en los textos.
+ * cambia aquí y en los textos. Es el juego de Futaba tras cruzar el capítulo
+ * entero (pp. 176-275): el primero chocaba con la p. 201 y con el ejercicio D-3.
  */
-export const CIFRAS_CONSTRUIDAS_T6_A5 = [0, 10000, 15000, 20000, 30000, 55000, 100000, 200000, 300000, 400000, 945000, 1000000];
+export const CIFRAS_CONSTRUIDAS_T6_A5 = [0, 17000, 19000, 21000, 36000, 38000, 57000, 74000, 140000, 340000, 360000, 380000, 460000, 1226000, 1300000];
 
 /* ═══════════ CAPA 2 · «MÍRELO FUNCIONAR» ═══════════ */
 
@@ -110,36 +111,36 @@ export const CIFRAS_CONSTRUIDAS_T6_A5 = [0, 10000, 15000, 20000, 30000, 55000, 1
 export const ESCENA_T6_A5 = {
   fecha: "31 de diciembre",
   deben: "Lo que le deben sus clientes",
-  total: "$1.000.000",
+  total: "$1.300.000",
   /* Por grupo: lo que suma, la pastilla del porcentaje (el grupo 1 no tiene) y el resultado. */
   grupos: [
-    { suma: "$400.000", porcentaje: null, resultado: "no se provisiona nada" },
-    { suma: "$200.000", porcentaje: "Al 5 %", resultado: "son $10.000" },
-    { suma: "$300.000", porcentaje: "Al 10 %", resultado: "son $30.000" },
-    { suma: "$100.000", porcentaje: "Al 15 %", resultado: "son $15.000" },
+    { suma: "$460.000", porcentaje: null, resultado: "no se provisiona nada" },
+    { suma: "$340.000", porcentaje: "Al 5 %", resultado: "son $17.000" },
+    { suma: "$360.000", porcentaje: "Al 10 %", resultado: "son $36.000" },
+    { suma: "$140.000", porcentaje: "Al 15 %", resultado: "son $21.000" },
   ],
-  suma: "$55.000",
+  suma: "$74.000",
   gasto: "Gasto provisiones – cuentas incobrables",
   provision: "Provisión para deudas incobrables",
   neto: "El valor neto",
-  valorNeto: "$945.000",
+  valorNeto: "$1.226.000",
   debita: "se debita",
   acredita: "se acredita",
 };
 
 /* Los 11 pasos y el cierre, cada uno con su pie (Futaba). Lo resaltado, en contabilidad/t6Pieza5.js (Mai §5.3). */
 export const PASOS_T6_A5 = [
-  { texto: "El 31 de diciembre, una empresa revisa lo que le deben sus clientes: $1.000.000.", pie: PIE_SIMULADO },
+  { texto: "El 31 de diciembre, una empresa revisa lo que le deben sus clientes: $1.300.000.", pie: PIE_SIMULADO },
   { texto: "Agrupa las deudas según cuánto tiempo llevan vencidas.", pie: PIE_LIBRO("p. 200") },
   { texto: "En este ejemplo, la empresa decide usar como suyos los porcentajes de la norma de renta.", pie: PIE_SIMULADO },
-  { texto: "Las que están vigentes o llevan hasta tres meses de vencidas suman $400.000. En este ejemplo, por ellas no se provisiona nada.", pie: PIE_SIMULADO },
-  { texto: "Las que llevan más de tres meses, sin pasar de seis, suman $200.000. Al 5 %, son $10.000.", pie: PIE_PORCENTAJE },
-  { texto: "Las que llevan más de seis meses, sin pasar de un año, suman $300.000. Al 10 %, son $30.000.", pie: PIE_PORCENTAJE },
-  { texto: "Las que llevan más de un año suman $100.000. Al 15 %, son $15.000.", pie: PIE_PORCENTAJE },
-  { texto: "Cálculo: $10.000 + $30.000 + $15.000 = $55.000.", pie: PIE_SIMULADO },
-  { texto: "Se debita Gasto provisiones – cuentas incobrables por $55.000.", pie: PIE_LIBRO("p. 202") },
+  { texto: "Las que están vigentes o llevan hasta tres meses de vencidas suman $460.000. En este ejemplo, por ellas no se provisiona nada.", pie: PIE_SIMULADO },
+  { texto: "Las que llevan más de tres meses, sin pasar de seis, suman $340.000. Al 5 %, son $17.000.", pie: PIE_PORCENTAJE },
+  { texto: "Las que llevan más de seis meses, sin pasar de un año, suman $360.000. Al 10 %, son $36.000.", pie: PIE_PORCENTAJE },
+  { texto: "Las que llevan más de un año suman $140.000. Al 15 %, son $21.000.", pie: PIE_PORCENTAJE },
+  { texto: "Cálculo: $17.000 + $36.000 + $21.000 = $74.000.", pie: PIE_SIMULADO },
+  { texto: "Se debita Gasto provisiones – cuentas incobrables por $74.000.", pie: PIE_LIBRO("p. 202") },
   { texto: "Y se acredita Provisión para deudas incobrables, por el mismo valor.", pie: PIE_LIBRO("p. 202") },
-  { texto: "Cálculo: $1.000.000 − $55.000 = $945.000, el valor neto.", pie: PIE_LIBRO("p. 202") },
+  { texto: "Cálculo: $1.300.000 − $74.000 = $1.226.000, el valor neto.", pie: PIE_LIBRO("p. 202") },
 ];
 export const CIERRE_T6_A5 = {
   texto: "Cada grupo con su porcentaje, y la suma de todos es la provisión.",
@@ -155,65 +156,65 @@ export const GRUPOS_T6_A5 = [
   {
     id: "g1",
     nombre: "Vigentes o hasta 3 meses",
-    monto: "$400.000",
+    monto: "$460.000",
     revela: "En este ejemplo, por las deudas vigentes o con hasta tres meses de vencidas no se provisiona nada: $0.",
     pie: PIE_SIMULADO,
   },
   {
     id: "g2",
     nombre: "Más de 3 hasta 6 meses",
-    monto: "$200.000",
-    revela: "Al 5 %, los $200.000 dan $10.000.",
+    monto: "$340.000",
+    revela: "Al 5 %, los $340.000 dan $17.000.",
     pie: PIE_PORCENTAJE,
   },
   {
     id: "g3",
     nombre: "Más de 6 meses hasta 1 año",
-    monto: "$300.000",
-    revela: "Al 10 %, los $300.000 dan $30.000.",
+    monto: "$360.000",
+    revela: "Al 10 %, los $360.000 dan $36.000.",
     pie: PIE_PORCENTAJE,
   },
   {
     id: "g4",
     nombre: "Más de 1 año",
-    monto: "$100.000",
-    revela: "Al 15 %, los $100.000 dan $15.000.",
+    monto: "$140.000",
+    revela: "Al 15 %, los $140.000 dan $21.000.",
     pie: PIE_PORCENTAJE,
   },
 ];
 /* El tablero (Mai §6.1): la cabecera de su columna, la celda de cada grupo y la fila de la suma. */
 export const TABLERO_T6_A5 = {
   cabecera: "Se provisiona",
-  celdas: ["$0", "$10.000", "$30.000", "$15.000"],
+  celdas: ["$0", "$17.000", "$36.000", "$21.000"],
   total: "La provisión",
-  suma: "$55.000",
+  suma: "$74.000",
 };
 
 export const FINAL_CAPA_3_T6_A5 = {
-  texto: "La provisión es la suma de los cuatro grupos: $55.000. Mientras más tiempo lleva vencido un grupo, mayor es su porcentaje en este ejemplo.",
+  texto: "La provisión es la suma de los cuatro grupos: $74.000. Mientras más tiempo lleva vencido un grupo, mayor es su porcentaje en este ejemplo.",
   pie: PIE_SIMULADO,
 };
 
 /* ═══════════ CAPA 4 · «EN UNA FRASE» (UnaFrase, sin cambios) ═══════════ */
 
-export const PREGUNTA_FINAL_T6_A5 = "Una deuda de $200.000 lleva ocho meses vencida. Con los porcentajes del ejemplo, ¿cuánto se provisiona por ella?";
+export const PREGUNTA_FINAL_T6_A5 = "Una deuda de $380.000 lleva ocho meses vencida. Con los porcentajes del ejemplo, ¿cuánto se provisiona por ella?";
 /* En el orden de Futaba; UnaFrase las baraja una vez al cargar. */
 export const OPCIONES_FINAL_T6_A5 = [
   {
     id: "b5-t6-a5-veinte",
-    texto: "$20.000",
+    texto: "$38.000",
     correcta: true,
-    feedback: "Correcto. Ocho meses es más de seis y no pasa de un año: le toca el 10 %. El 10 % de $200.000 es $20.000.",
+    feedback: "Correcto. Ocho meses es más de seis y no pasa de un año: le toca el 10 %. El 10 % de $380.000 es $38.000.",
   },
   {
     id: "b5-t6-a5-diez",
-    texto: "$10.000",
+    texto: "$19.000",
     correcta: false,
     feedback: "No es esa. Ese sería el 5 %, que es para deudas de más de tres hasta seis meses. Ocho meses ya pasó de seis.",
   },
   {
     id: "b5-t6-a5-treinta",
-    texto: "$30.000",
+    texto: "$57.000",
     correcta: false,
     feedback: "No es esa. Ese sería el 15 %, que es para deudas de más de un año. Ocho meses no llega a un año.",
   },
