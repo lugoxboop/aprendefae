@@ -81,8 +81,7 @@ export const FICHA_H4 = [
  *   ítem 3  el descuento condicionado
  *   ítem 4  el pago
  * Y en el ítem 6, el asiento de Totumo ya resuelto queda arriba, en lectura,
- * con el de Bambú debajo (patrón 06 b). Rótulos y títulos de Watari, por
- * confirmar con Near. «Libro de Totumo», el título del asiento de arriba, es
+ * con el de Bambú debajo (patrón 06 b). Rótulos y títulos de Watari, revisados por Near. «Libro de Totumo», el título del asiento de arriba, es
  * convención: sale de la pregunta del ítem 5.
  */
 export const FIGURAS_H4 = [
