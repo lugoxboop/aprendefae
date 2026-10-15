@@ -9,6 +9,7 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { AsientoEnLineas, ElegirLado, Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { Plegable } from "./plegable.jsx";
 import { ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
@@ -100,7 +101,7 @@ function Calculo({ item, r, elegida, onElegir }) {
         {r && (
           <div className="fae-t7h2-entra" data-panel={r.ok ? "acierto" : "error"} style={PANEL(r.ok)}>
             {!r.ok && <span style={SOLO_LECTOR}>{`Incorrecto. La respuesta es ${pesos(r.correcta)}. `}</span>}
-            <p data-texto-retro style={TEXTO}>{r.texto}</p>
+            <p data-texto-retro style={TEXTO}><Plegable texto={r.texto} /></p>
           </div>
         )}
       </div>
@@ -130,7 +131,7 @@ function Asiento({ item, puestas, onPoner }) {
                 {r && !r.ok && (
                   <div className="fae-t7h2-entra" data-panel="error" style={PANEL(false)}>
                     <span style={SOLO_LECTOR}>{`Incorrecto. Va al ${LADOS_H2[r.correcto].toLowerCase()}. `}</span>
-                    <p data-texto-retro style={TEXTO}>{r.texto}</p>
+                    <p data-texto-retro style={TEXTO}><Plegable texto={r.texto} /></p>
                   </div>
                 )}
               </div>

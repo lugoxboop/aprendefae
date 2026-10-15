@@ -3,6 +3,7 @@ import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_EL_CIERRE, BOTON, INTERFAZ, PENDIENTE_DE_REVISION, FECHA, DEBE, HABER, cifra } from "../../../../data/contabilidadT7_1_ap4.js";
+import { Plegable } from "./plegable.jsx";
 import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDeLineas, puestoTrasProbarOtra } from "./escaleraAyuda.js";
 
 /*
@@ -136,7 +137,7 @@ function Mensaje({ ok, textos, refFoco, clase = "" }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7a4-msg-cuerpo">
         <span className="t7a4-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
@@ -250,7 +251,7 @@ function Eleccion({ pantalla, onSeguir }) {
           ))}
         </div>
       )}
-      {(pantalla.parrafos ?? []).map((t) => <p key={t} className="t7a4-p" data-texto>{t}</p>)}
+      {(pantalla.parrafos ?? []).map((t) => <p key={t} className="t7a4-p" data-texto><Plegable texto={t} /></p>)}
       <Calculos lista={pantalla.calculos} />
       {pantalla.tabla && <TresMetodos tabla={pantalla.tabla} />}
       <p className="t7a4-p t7a4-preg" data-texto data-pregunta>{pantalla.pregunta}</p>
@@ -313,7 +314,7 @@ function Lados({ pantalla, onSeguir }) {
 
   return (
     <div className="t7a4" data-lados={pantalla.id} data-estado={estado}>
-      {pantalla.parrafos.map((t) => <p key={t} className="t7a4-p" data-texto>{t}</p>)}
+      {pantalla.parrafos.map((t) => <p key={t} className="t7a4-p" data-texto><Plegable texto={t} /></p>)}
       <Asientos lineas={pantalla.dados} nuevas={estado === "acierto" ? pantalla.acierto.suman : []} />
       {estado !== "acierto" && (
         <>
@@ -383,7 +384,7 @@ export default function ElCierreEnPeriodico({ pieza = PIEZA_EL_CIERRE, rotulo })
         {p.tipo === "lectura" && (
           <div className="t7a4">
             {p.objetivo && <p className="t7a4-p" data-texto data-objetivo>{p.objetivo}</p>}
-            {p.parrafos.map((t) => <p key={t} className="t7a4-p" data-texto>{t}</p>)}
+            {p.parrafos.map((t) => <p key={t} className="t7a4-p" data-texto><Plegable texto={t} /></p>)}
             {p.ficha && <Ficha ficha={p.ficha} />}
             {p.metodos?.map((m) => (
               <div key={m.encabezado} className="t7a4-metodo" data-metodo>

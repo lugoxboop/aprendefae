@@ -1,4 +1,4 @@
-import { ESCENA_T6_A4, PASOS_T6_A4, CIERRE_T6_A4 } from "../../../../data/contabilidadT6Pieza4.js";
+import { ESCENA_T6_A4, PASOS_T6_A4, CIERRE_T6_A4, PARADA_T6_A4 } from "../../../../data/contabilidadT6Pieza4.js";
 import { T6_A4 } from "../../../../contabilidad/t6Pieza4.js";
 import MaquinaPegada from "./MaquinaPegada.jsx";
 import { escenaDeMomentos } from "./Momentos.jsx";
@@ -45,5 +45,6 @@ export const MOMENTOS_ESCENA_T6_A4 = [
 const Escena = escenaDeMomentos({ momentos: MOMENTOS_ESCENA_T6_A4, estadoPaso: T6_A4.estadoPaso, reservas: T6_A4.reservas, textos: E });
 
 export default function SiPaga() {
-  return <MaquinaPegada todos={TODOS} estadoPaso={T6_A4.estadoPaso} duracion={T6_A4.duracion} escena={Escena} atributos={{ "data-capa2-t6-a4": true }} />;
+  /* Sin pasos juntados (hoja 7 de Mai), con la parada entre el 4 y el 5. */
+  return <MaquinaPegada todos={TODOS} estadoPaso={T6_A4.estadoPaso} duracion={T6_A4.duracion} escena={Escena} parada={PARADA_T6_A4} atributos={{ "data-capa2-t6-a4": true }} />;
 }

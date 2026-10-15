@@ -1,5 +1,5 @@
-import { ESCENA_T6_A3, PASOS_T6_A3, CIERRE_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
-import { T6_A3 } from "../../../../contabilidad/t6Pieza3.js";
+import { ESCENA_T6_A3, PARADA_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
+import { T6_A3, T6_A3_JUNTO } from "../../../../contabilidad/t6Pieza3.js";
 import MaquinaPegada from "./MaquinaPegada.jsx";
 import { escenaDeMomentos } from "./Momentos.jsx";
 
@@ -18,7 +18,6 @@ import { escenaDeMomentos } from "./Momentos.jsx";
  */
 
 const E = ESCENA_T6_A3;
-const TODOS = [...PASOS_T6_A3, CIERRE_T6_A3];
 const fecha = (i) => ({ id: `fecha${i}`, texto: E.momentos[i].fecha });
 
 export const MOMENTOS_ESCENA_T6_A3 = [
@@ -65,5 +64,9 @@ export const MOMENTOS_ESCENA_T6_A3 = [
 const Escena = escenaDeMomentos({ momentos: MOMENTOS_ESCENA_T6_A3, estadoPaso: T6_A3.estadoPaso, reservas: T6_A3.reservas, textos: E });
 
 export default function LaProvision() {
-  return <MaquinaPegada todos={TODOS} estadoPaso={T6_A3.estadoPaso} duracion={T6_A3.duracion} escena={Escena} atributos={{ "data-capa2-t6-a3": true }} />;
+  /* Los pasos juntados y la parada (hoja 7 de Mai); la reserva de la escena sigue con los estados de siempre. */
+  return (
+    <MaquinaPegada todos={T6_A3_JUNTO.TODOS} estadoPaso={T6_A3_JUNTO.estadoPaso} duracion={T6_A3_JUNTO.duracion} escena={Escena}
+      parada={PARADA_T6_A3} atributos={{ "data-capa2-t6-a3": true }} />
+  );
 }
