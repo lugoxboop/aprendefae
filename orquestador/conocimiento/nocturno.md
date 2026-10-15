@@ -126,6 +126,33 @@ que está repartido y lo que no.
 
 El rango del coordinador es **0150 a 0199**, y la 0150 ya está gastada.
 
+**Dónde entra cada tema nuevo en el índice, decidido por el coordinador antes
+de que las células lleguen ahí.** D y E van a añadir cada una un tema a
+`SUBJECTS.contabilidad.topics`, y si las dos lo ponen al final chocan en la
+misma línea y además dejan el índice en un orden que no es el del libro. El
+orden es este y no se discute en la rama:
+
+1. `introduccion-contabilidad`
+2. `cuentas-debe-haber`
+3. `ingresos-gastos-y-caja`
+4. **`efectivo-caja-menor-bancos`** ← Célula D, §5.1 y §5.2. Va aquí, antes de
+   T5, porque en el libro va antes.
+5. `activos-financieros`
+6. `cuentas-por-cobrar`
+7. `inventarios-periodico`
+8. `inventarios-permanente`
+9. `inventarios-descuentos-nic2`
+10. **`repaso-capitulo-5`** ← Célula E. Va al final, siempre, porque repasa
+    todo lo anterior. Ningún tema se añade después de él.
+
+La prueba `src/contabilidad/__tests__/tema.test.mjs` afirma esa lista completa
+y en ese orden. Las dos células la van a tocar: la segunda en fusionar
+actualiza desde `main` antes de empujar y añade su id al lado del otro, sin
+reordenar nada. **Esa prueba no se afloja**: afirma la lista entera a
+propósito, para que un tema no pueda aparecer, desaparecer ni cambiarse de
+sitio sin que alguien lo vea.
+
+
 **El rango de C se amplió de 0109 a 0149 el 14 de octubre de 2026**, porque
 T7-3 consumió hasta la 0109 exacta y la célula se habría quedado sin números a
 mitad de tema. Un rango que se agota en silencio es un choque esperando: el
