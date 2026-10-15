@@ -174,3 +174,53 @@ test("★★★ fuera del catálogo de FP; en T7-3, después de A4 entre las de 
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A5_ID)), []);
 });
+
+/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
+
+/* Recorre la pieza: en cada pantalla con pregunta, antes, con un error y con el acierto. Devuelve qué figuras se vieron en cada estado. */
+async function figurasPorEstado(m) {
+  const c = m.caja;
+  const figs = () => [...c.querySelectorAll("[data-plazos], figure[data-renglones]")].map((f) => (f.matches("[data-plazos]")
+    ? `plazos ${f.querySelector("[data-pago]")?.textContent ?? "sin pago"}`
+    : `${f.querySelector("figcaption").textContent}: ${[...f.querySelectorAll("[data-renglon]")].map((r) => `${r.querySelector(".rg-op").textContent}${r.querySelector(".rg-rot").textContent.replace(/^(menos|por|igual a) /, "")} ${r.querySelector(".rg-v").textContent}${r.classList.contains("rg-res") ? " =" : ""}${r.classList.contains("rg-fuerte") ? " !" : ""}`).join(" | ")}`));
+  const visto = {};
+  for (let k = 0; k < 15; k++) {
+    const id = c.querySelector("[data-pantalla]").dataset.pantalla;
+    const p = pantalla(id);
+    if (p.opciones) {
+      visto[`${id}:antes`] = figs();
+      await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => !o.correcta).id}"]`)); await tocar(boton(c, "confirmar"));
+      visto[`${id}:error`] = figs();
+      await tocar(boton(c, "probar-otra"));
+      await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`)); await tocar(boton(c, "confirmar"));
+      visto[`${id}:acierto`] = figs();
+      const s = boton(c, "seguir");
+      if (!s) break;
+      await tocar(s);
+    } else {
+      visto[`${id}:lectura`] = figs();
+      const b = boton(c, "seguir") ?? boton(c, "empezar");
+      if (!b) break;
+      await tocar(b);
+    }
+  }
+  /* Solo los estados con figuras. */
+  return Object.fromEntries(Object.entries(visto).filter(([, v]) => v.length));
+}
+
+test("★★★ Patrón T7-3: el sobrante en renglones con el acierto; el faltante, con su texto; siempre el mayor arriba", async () => {
+  const C = A.I_LIBRO;
+  assert.equal(C.conteoSobra - C.libros, C.sobrante);
+  assert.equal(C.libros - C.conteoFalta, C.faltante);
+  const m = await montar();
+  try {
+    assert.deepEqual(await figurasPorEstado(m), {
+      "sobrante:acierto": ["Ejemplo del libro · 31 de diciembre: Conteo físico 495.000 | −Saldo en libros 465.000 | =Sobrante 30.000 ="],
+      "faltante:antes": ["El mismo ejemplo, otro conteo: Saldo en libros 465.000 | −Conteo físico 430.000 | =Faltante 35.000 ="],
+      "faltante:error": ["El mismo ejemplo, otro conteo: Saldo en libros 465.000 | −Conteo físico 430.000 | =Faltante 35.000 ="],
+      "faltante:acierto": ["El mismo ejemplo, otro conteo: Saldo en libros 465.000 | −Conteo físico 430.000 | =Faltante 35.000 ="],
+    });
+  } finally {
+    m.desmontar();
+  }
+});
