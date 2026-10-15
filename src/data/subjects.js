@@ -685,10 +685,16 @@ export const SUBJECTS = {
           { id: "b5-t5-a1-del-efectivo-de-sobra", nombre: "Del efectivo de sobra al activo financiero", clasificacion: { tipo: APRENDER } },
           /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (guía de Mai). Su fila del servidor es la migración 0070. */
           { id: "b5-t5-a1", nombre: "¿Qué renta da este título?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* N1 de la Célula C, después de b5-t5-a1 (decisión de corte de T5, punto 6; la sostiene b5-t5-a1-del-efectivo-de-sobra). Temporal o a largo plazo, el grupo y la intención, pp. 191-192. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0110. */
+          { id: "t5-temporal-o-largo-plazo", nombre: "¿Temporal o a largo plazo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /* N2 de la Célula C, después de b5-t5-a1 (decisión de corte de T5, punto 6: N1 entra entre b5-t5-a1 y N2, y N3 justo después de N2). Las cuatro acciones de control de la p. 193; sostiene a N3. Cero FP. */
           { id: "t5-a1-cuidar-las-inversiones", nombre: "Cómo se cuidan las inversiones", clasificacion: { tipo: APRENDER } },
+          /* N3 de la Célula C, justo después de N2, que la sostiene (decisión de corte de T5, punto 6). Qué acción de control de la p. 193 hace falta. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0111. */
+          { id: "t5-revision-que-falta", nombre: "¿Qué revisión falta?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "b5-t5-a2-los-tres-momentos-de-una-inversion", nombre: "Los tres momentos de una inversión", clasificacion: { tipo: APRENDER } },
           /* El cierre del tema. Difícil · 50 FP (decisión de Sakuta). Su fila del servidor es la migración 0072. */
+          /* N4 de la Célula C, después de los tres momentos de B, que la sostienen (decisión de corte de T5, punto 6). El interés de un trimestre con cifras construidas, como en la p. 194, y el asiento del cobro. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0112. */
+          { id: "t5-el-interes-del-periodo", nombre: "El interés del periodo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "b5-t5-a2", nombre: "El cierre completo de Santa Pacha", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
@@ -708,9 +714,14 @@ export const SUBJECTS = {
           { id: "b5-t6-a1-lo-que-otros-le-deben", nombre: "Lo que otros le deben a la empresa", clasificacion: { tipo: APRENDER } },
           /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (Futaba). Su fila del servidor es la migración 0071. */
           { id: "b5-t6-a1", nombre: "¿Clientes o otra cuenta por cobrar?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* Orden del camino por lo que cada actividad necesita saber (Shoko, calidad 15-oct; R9): a7 distingue los dos métodos y es la base de a2; la dificultad ya no sube y baja. */
+          { id: "b5-t6-a7", nombre: "¿Qué método y cuándo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "b5-t6-a4", nombre: "¿Qué se debita?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "b5-t6-a5", nombre: "La cuenta de la provisión", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* Actividades 2 y 3 de Hacer (mesa de asientos). Media · 25 y difícil · 50 FP (Sakuta). Sus filas del servidor son la migración 0074. */
           { id: "b5-t6-a2", nombre: "La provisión de El Torito", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "b5-t6-a3", nombre: "Cuando la deuda castigada vuelve", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "b5-t6-a6", nombre: "Provisión por edades", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "b5-t6-a2-cuando-un-cliente-no-va-a-pagar", nombre: "Cuando un cliente no va a pagar", clasificacion: { tipo: APRENDER } },
           { id: "b5-t6-a3-la-provision-de-un-ano-al-siguiente", nombre: "La provisión, de un año al siguiente", clasificacion: { tipo: APRENDER } },
           { id: "b5-t6-a4-cuando-el-cliente-castigado-si-paga", nombre: "Cuando el cliente castigado sí paga", clasificacion: { tipo: APRENDER } },
@@ -847,6 +858,8 @@ export const SUBJECTS = {
         actividades: [
           /* r5-1: el bloque C, ejercicios 3, 5, 6, 8, 9 y 10, pp. 264-266. Medio · 25 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0250. */
           { id: "r5-1", nombre: "Repaso cruzado", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* r5-2: el 3 del bloque D, pp. 268-269, provisión, castigo y recuperación. Difícil · 50 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0251. */
+          { id: "r5-2", nombre: "El Toro Negro", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
     ],

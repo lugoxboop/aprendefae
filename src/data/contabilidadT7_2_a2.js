@@ -71,6 +71,7 @@ const PORTADA = {
 /* P1 · la compra (E-1, p. 234). El repaso de IVA y retención viene de la corrección. */
 const LA_COMPRA = {
   id: "la-compra",
+  pista: "La mercancía que se compra es un activo. En el permanente se anota apenas entra.",
   tipo: "eleccion",
   parrafos: [
     "En el permanente, la compra de mercancía va al debe de Inventario de mercancías, por su costo. Así se cumple la regla de los activos: un activo que aumenta va al debe de su cuenta.",
@@ -164,8 +165,8 @@ const EL_SEGUNDO = {
   tipo: "lados",
   consigna: "El segundo asiento registra el costo de lo que salió. Toca Debe o Haber en cada línea.",
   lineas: [
-    { id: "costo", cuenta: "Costo de mercancía vendida", monto: COMPRA, lado: DEBE, devolucion: "El costo de la mercancía vendida tiene saldo deudor: va al debe." },
-    { id: "inventario", cuenta: "Inventario de mercancías", monto: COMPRA, lado: HABER, devolucion: "Sale mercancía de la bodega, así que el activo disminuye: va al haber." },
+    { id: "costo", cuenta: "Costo de mercancía vendida", monto: COMPRA, lado: DEBE, pista: "Es lo que costó lo vendido, y ese costo aumenta. ¿De qué lado aumenta un costo?", devolucion: "El costo de la mercancía vendida tiene saldo deudor: va al debe." },
+    { id: "inventario", cuenta: "Inventario de mercancías", monto: COMPRA, lado: HABER, pista: "Sale mercancía de la bodega. ¿De qué lado baja un activo?", devolucion: "Sale mercancía de la bodega, así que el activo disminuye: va al haber." },
   ],
   pie: "Basado en el libro, pp. 236-237",
   error: { pie: "Basado en el libro, pp. 236-237" },
@@ -178,6 +179,7 @@ const EL_SEGUNDO = {
 /* P4 · por qué dos asientos. */
 const POR_QUE = {
   id: "por-que-dos-asientos",
+  pista: "Piensa en cuándo se anota lo que costó lo vendido en cada sistema: ¿en cada venta o al cierre?",
   tipo: "eleccion",
   parrafos: [],
   pregunta: "¿Por qué en el permanente hay un segundo asiento, y en el periódico no?",

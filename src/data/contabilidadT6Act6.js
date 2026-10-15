@@ -83,9 +83,10 @@ export const DISTRACTORES_EN_EL_LIBRO_T6_ACT6 = [2800, 8000, 24000, 6000, 84000]
 /* ═══════════ LAS DOS PARTES ═══════════ */
 
 /* Parte 1: las opciones son los cuatro grupos de la regla, en su orden. */
-const ubicar = (correcto, cerca, tipoCerca) => GRUPOS_T6_ACT6.map((g) => ({
+/* Entrega 1 de Futaba (calidad): el G0 va uno por pareja de casilla y opción, «G0-{casilla}-{grupo}». */
+const ubicar = (casilla, correcto, cerca, tipoCerca) => GRUPOS_T6_ACT6.map((g) => ({
   texto: g.nombre,
-  tipo: g.id === correcto ? null : g.id === cerca ? tipoCerca : "G0",
+  tipo: g.id === correcto ? null : g.id === cerca ? tipoCerca : `G0-${casilla}-${g.id}`,
 }));
 const op = (valor, tipo = null) => ({ valor, tipo });
 
@@ -93,10 +94,10 @@ export const PARTES_T6_ACT6 = [
   {
     id: "ubicar",
     casillas: [
-      { id: "u1", enunciado: "Una deuda lleva 2 meses vencida.", opciones: ubicar("g1", "g2", "G1") },
+      { id: "u1", enunciado: "Una deuda lleva 2 meses vencida.", opciones: ubicar("u1", "g1", "g2", "G1") },
       /* El caso límite: «sin exceder de 6 meses», así que seis meses justos van al 5 % (la frontera de T6 · A5). */
-      { id: "u2", enunciado: "Una deuda lleva exactamente 6 meses vencida.", opciones: ubicar("g2", "g3", "G2") },
-      { id: "u3", enunciado: "Una deuda lleva 14 meses vencida.", opciones: ubicar("g4", "g3", "G3") },
+      { id: "u2", enunciado: "Una deuda lleva exactamente 6 meses vencida.", opciones: ubicar("u2", "g2", "g3", "G2") },
+      { id: "u3", enunciado: "Una deuda lleva 14 meses vencida.", opciones: ubicar("u3", "g4", "g3", "G3") },
     ],
   },
   {
@@ -120,13 +121,25 @@ export const PARTES_T6_ACT6 = [
   },
 ];
 
+/*
+ * Los rótulos de la barra del total (hoja 2 de Mai, calidad). Salen de los
+ * enunciados de las casillas 7 y 8. PARA SHOKO: son nuevos en pantalla.
+ */
+export const ROTULOS_TOTAL_T6_ACT6 = { neto: "El valor neto", provision: "La provisión" };
+
 /* ═══════════ LOS ERRORES POR TIPO ═══════════ */
 
 export const ERRORES_T6_ACT6 = {
   G1: "Dos meses no pasan de tres: va con las vigentes y las de hasta tres meses.",
   G2: "El grupo del 5 % llega hasta seis meses, sin pasar de seis. Seis meses justos todavía caben ahí.",
   G3: "Catorce meses ya pasan de un año: va en el grupo de más de un año.",
-  G0: "Mira cuántos meses lleva vencida y busca el grupo que los cubre.",
+  /* El G0 por casilla y opción: nombra el rango elegido (entrega 1 de Futaba). */
+  "G0-u1-g3": "Ese grupo es para deudas de más de seis meses hasta un año. Esta lleva 2 meses vencida.",
+  "G0-u1-g4": "Ese grupo es para deudas de más de un año. Esta lleva 2 meses vencida.",
+  "G0-u2-g1": "Ese grupo es para deudas vigentes o de hasta tres meses. Esta lleva 6 meses vencida.",
+  "G0-u2-g4": "Ese grupo es para deudas de más de un año. Esta lleva 6 meses vencida.",
+  "G0-u3-g1": "Ese grupo es para deudas vigentes o de hasta tres meses. Esta lleva 14 meses vencida.",
+  "G0-u3-g2": "Ese grupo es para deudas de más de tres hasta seis meses. Esta lleva 14 meses vencida.",
   P1: "Ese es el porcentaje de otro grupo. Mira el rango del grupo y usa su porcentaje.",
   P2: "Revisa la cuenta: te sobra o te falta un cero.",
   /* «En este ejemplo»: no provisionar ese grupo es una decisión del escenario, no de la norma. */

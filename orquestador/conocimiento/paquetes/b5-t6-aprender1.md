@@ -35,6 +35,7 @@ Cierre: «Una venta a crédito, dos momentos: el día de la venta sube la deuda 
 ## (2) Las tres líneas corregidas
 
 1. Glosa **b5-t6-glosa-nota-debito**, rótulo «Nota», debajo del término 4: «Con una nota débito, el banco le resta un valor a la cuenta bancaria de la empresa; por ejemplo, cuando devuelve el cheque con el que un cliente había pagado.»
+   - **Retirada el 15-oct (acuerdo C4 / A4-P).** El Tema 4 · A4 de la Célula D define «nota débito». La glosa provisional se retira y la nota del término 4 dice, letra por letra, la definición del Tema 4 (`NOTA_DEBITO` en `contabilidadT4A4.js`): «Con una nota débito, el banco le resta un valor a la cuenta de la empresa. Por ejemplo, cuando le cobra una chequera, o cuando le devuelve el cheque con el que un cliente le había pagado.» La guardia queda vigilando que las dos digan lo mismo.
 2. Término 5: reemplazado por el término 5 nuevo de (1).
 3. Devolución de la opción correcta de la capa 4: «Correcto. En los libros de Comercializadora Santa Pacha, el 25 de enero Cuentas por cobrar – clientes baja $1.350.000, se acredita, y no se anota ningún ingreso: ese estaba desde el 10.»
 
@@ -105,3 +106,29 @@ Corrección de lo aprobado, no contenido nuevo. Manda sobre (1), (2) y (3).
 
 5 · Cuándo baja lo que deben los clientes: «Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. También baja cuando devuelve mercancía que había comprado a crédito y todavía no había pagado: es una devolución de ventas. Baja cuando la empresa le otorga un descuento sobre lo que todavía le debe. Y baja cuando la deuda se da por perdida, algo que se explica más adelante.»
 Pie de fuente: «Basado en el libro, pp. 197 y 199-200»
+
+## (5) Futaba · entrega 2: predecir antes de revelar, capa 3 (pegada tal cual)
+
+
+Cómo funciona (para Mai):
+
+El estudiante toca la caja, elige y se revela el texto de siempre.
+Si falla, la devolución va antes de ese texto. Si acierta, el texto sale directo, sin «Sí.».
+Hay un intento por caja y no da puntaje.
+Los textos que se revelan y el texto final de cada capa no cambian.
+
+T6 A1 (p. 197). Sin cambios.
+
+Consigna: «Toca cada hecho y decide si lo que deben los clientes sube, baja o no cambia. Después, mira la razón.» (94)
+Opciones de todas las cajas: Sube · Baja · No cambia.
+Caja	Correcta	Devolución si falla	Est.
+venta-credito	Sube	Aunque diga “crédito”, el cliente queda debiendo lo que compró: sube.	77
+pago	Baja	Al pagar, el cliente deja de deber lo que pagó: baja.	100
+cheque-devuelto	Sube	El cheque no se cobró, así que el pago no cuenta: la deuda sube otra vez.	97
+devolucion	Baja	Lo que devuelve ya no lo tiene que pagar: baja.	103
+descuento	Baja	El descuento rebaja lo que el cliente debe: baja.	—
+contado	No cambia	Pagó en el momento, así que no queda debiendo nada: no cambia.	86
+
+## (6) Mai · hoja 6: la pregunta de la caja (la revisa Shoko)
+
+«¿Qué pasa con lo que deben los clientes?»

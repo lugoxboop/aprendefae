@@ -188,14 +188,40 @@ No es simétrico, y descubrirlo por las malas cuesta un turno:
 - **Las sesiones de código leen el repositorio**, así que el canon es la vía
   barata de pasarles algo: se escribe una vez y lo leen las tres células.
 
-**Dónde está cada quien.** Los chats de los agentes viven en la cuenta de
-trabajo; el del auditor jefe es
-`https://claude.ai/chat/edb72638-0dbe-8888-bc1e-544b11270f84`. Queda escrito
-porque no aparece en la lista de chats fijados, y un coordinador llegó a
-concluir que no existía después de consultar un listado que se lo devolvió
-incompleto. **Un listado que no lo trae no prueba que no esté:** se abre el
-enlace y se mira. El coste de equivocarse aquí no es un rodeo, es que una
-célula entera se quede esperando una auditoría que nadie iba a empezar.
+**Dónde está cada quien.** Los chats viven en la cuenta de trabajo. **Quedan
+escritos todos**, porque la noche del 15 de octubre esta tabla no existía y
+costó una hora: mi navegador amaneció con una sola pestaña, la del editor SQL,
+y sin los enlaces no había forma de hablar con ningún general.
+
+| Quién | Papel | Chat |
+|---|---|---|
+| **Erwin** | coordinador | `https://claude.ai/chat/cd6485c4-8575-43fd-b359-4778899bda4a` |
+| **Sakuta** | general, Célula B | `https://claude.ai/chat/c8bbd8ed-9d58-4e11-abad-cdb40e9f2544` |
+| **L** | general, Célula C | `https://claude.ai/chat/91b2355d-d780-4b41-a18c-46b4b678a3a5` |
+| **Yujiro** | general, Célula D | `https://claude.ai/chat/1b446339-13ab-43c3-9115-04fe08a52fe2` |
+| **Kamogawa** | general, Célula E | `https://claude.ai/chat/e5697857-7523-47a8-8288-6c5df421034c` |
+| **Xeno** | diseño | `https://claude.ai/chat/d88c6a04-b9ba-414f-b2f3-df63c0abc0c3` |
+| **Mello** | auditor jefe | `https://claude.ai/chat/edb72638-0dbe-8888-bc1e-544b11270f84` |
+| Kaede · Miku · Gen · Tsukasa · Feynman · Macro · Senku 4.0 | otros | se buscan en `https://claude.ai/recents` |
+
+**Si falta alguno, está en `https://claude.ai/recents`**, no en la lista de
+chats fijados. Un coordinador llegó a concluir que el auditor jefe no existía
+después de consultar un listado que se lo devolvió incompleto. **Un listado
+que no lo trae no prueba que no esté:** se abre el enlace y se mira. El coste
+de equivocarse aquí no es un rodeo, es que una célula entera se quede
+esperando una auditoría que nadie iba a empezar.
+
+**Y una pestaña cerrada no prueba nada tampoco.** Esa misma noche los cuatro
+generales parecían caídos y los cuatro estaban trabajando: lo que lo demostró
+fue el repositorio —`git for-each-ref --sort=-committerdate`— y luego la lista
+de recientes, donde Yujiro aparecía activo hacía 15 minutos. **Las pestañas
+son mi vista, no su existencia.**
+
+**Dos canales, y conviene saber cuál sirve para qué.** El chat llega al
+general de inmediato; un comentario en su PR queda escrito y sobrevive a que
+se cierre un navegador, pero solo lo ve cuando vuelve a mirar ese PR. Para
+destrabar algo urgente: el chat. Para dejar constancia de una decisión: el PR.
+Para las dos cosas, las dos.
 
 Antes de mandar a alguien a leer algo «en la fuente», se comprueba que esa
 persona pueda llegar a la fuente. No basta con que exista un camino: tiene que

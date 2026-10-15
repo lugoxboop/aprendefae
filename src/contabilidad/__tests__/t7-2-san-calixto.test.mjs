@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -43,6 +44,7 @@ const h = React.createElement;
 const A = await import("../../data/contabilidadT7_2_a4.js");
 const K = await import("../t7_2Kardex.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
+const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
 const { default: PantallasT7_2, BOTON, INTERFAZ } = await import("../../components/mecanicas/libros/t7/PantallasT7_2.jsx");
 const { PIEZAS_T7_2, TEMA_T7_2 } = await import("../../components/ContabilidadT7_2View.jsx");
 
@@ -53,6 +55,25 @@ const CORR = leer("orquestador/conocimiento/paquetes/t7-2-a3-a4-correcciones.md"
 const CORR_A4 = CORR.slice(CORR.indexOf("A4 «San Calixto en permanente»"));
 const CONTENIDO = V1.slice(V1.indexOf("## Contenido"), V1.indexOf("## Erratas"));
 const P = A.PIEZA_SAN_CALIXTO;
+
+/*
+ * El lote 2 de Near (pistas y anexo): sus textos valen como los del paquete,
+ * pero solo los de esta pieza (su sección de pistas y sus filas del anexo).
+ */
+const LOTE2 = (f) => conCorreccionesDeMello(readFileSync(new URL(`orquestador/conocimiento/paquetes/lote2-${f}-v1.md`, RAIZ), "utf8"));
+let l2;
+function L2() {
+  if (l2 !== undefined) return l2;
+  const pistas = LOTE2("pistas");
+  const i = pistas.indexOf(`\n### ${P.id} · `);
+  assert.ok(i >= 0, `${P.id} no tiene sección en el lote 2`);
+  const fin = pistas.slice(i + 1).search(/\n(### |\*\*Decisión)/);
+  const seccion = fin < 0 ? pistas.slice(i) : pistas.slice(i, i + 1 + fin);
+  l2 = [seccion, ...LOTE2("anexo").split("\n").filter((l) => l.startsWith(`| ${P.id} |`))].join("\n");
+  return l2;
+}
+/* Las pistas del lote 2 para esta pieza: la tercera columna de su tabla. */
+const pistasL2 = () => L2().split("\n").filter((l) => /^\| P\d/.test(l)).map((l) => l.split(" | ")[2].replace(/^«|»$/g, ""));
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 const METODO = { peps: K.PEPS, ueps: K.UEPS_M, promedio: K.PROMEDIO };
 
@@ -77,6 +98,7 @@ function textosVisibles() {
     if (p.movimientos) t.push(...p.movimientos.columnas, ...p.movimientos.filas.flat());
     if (p.error) t.push(p.error.pie);
     for (const o of p.opciones ?? []) { t.push(o.texto); if (o.devolucion) t.push(o.devolucion); }
+    if (p.pista) t.push(p.pista);
     if (p.acierto) t.push(p.acierto.texto, p.acierto.pie, ...(p.acierto.calculos ?? []), ...(p.acierto.notaKardex ? [p.acierto.notaKardex] : []));
   }
   return t;
@@ -100,13 +122,16 @@ function citas(md) {
 
 test("★★★ cada texto de los datos está, letra por letra, en la v1 o en sus correcciones", () => {
   const fuente = V1 + CORR_A4;
-  const faltan = textosVisibles().filter((t) => !fuente.includes(t) && !Object.values(A.BOTON).includes(t));
+  const faltan = textosVisibles().filter((t) => !fuente.includes(t) && !L2().includes(t) && !Object.values(A.BOTON).includes(t));
   assert.deepEqual(faltan, []);
   for (const t of A.PENDIENTE_DE_REVISION.finales) assert.ok(!fuente.includes(t), t);
 });
 
 test("★★★ cada texto visible de la v1 está en los datos, salvo lo que las correcciones reemplazan", () => {
   const datos = new Set(textosVisibles());
+  /* Cada pista del lote 2 para esta pieza está en los datos. */
+  assert.ok(pistasL2().length > 0, "no se leyó ninguna pista del lote 2");
+  assert.deepEqual(pistasL2().filter((x) => !datos.has(x)), [], "estas pistas del lote 2 no están en los datos");
   const sobran = [...new Set(citas(CONTENIDO).filter((c) => !datos.has(c)))].sort();
   assert.deepEqual(sobran, [
     /* Los cuatro cálculos con «=», que la obligatoria 1 pasa a «≈». */
@@ -245,11 +270,24 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos y su
       assert.deepEqual(enPantalla(m.caja), { textos: [...cab, BOTON.confirmar, p.pie], opciones: ops }, `${p.id} colocando`);
       assert.equal(m.caja.querySelector("[data-kardex], [data-calculos]") === null, true, `${p.id}: el kárdex o los cálculos antes del acierto`);
       vistos.push(`${p.id}:colocando`);
-      for (const o of p.opciones.filter((x) => !x.correcta)) {
+      /* La escalera de ayuda: el 1.er error da la pista; el 2.º y los siguientes, la respuesta con su porqué. */
+      assert.ok(p.pista, `${p.id}: sin pista`);
+      const malas = p.opciones.filter((x) => !x.correcta);
+      for (const [i, o] of malas.entries()) {
         await tocar(m.caja.querySelector(`[data-opcion="${o.id}"]`));
         await tocar(boton(m.caja, "confirmar"));
-        assert.deepEqual(enPantalla(m.caja), { textos: [...cab, INTERFAZ.incorrecto, o.devolucion, BOTON.probarOtra, p.error.pie], opciones: ops }, `${p.id} error ${o.id}`);
+        assert.deepEqual(enPantalla(m.caja), { textos: [...cab, INTERFAZ.incorrecto, ...textosDelError(p, o, i + 1), BOTON.probarOtra, p.error.pie], opciones: ops }, `${p.id} error ${i + 1} (${o.id})`);
         vistos.push(`${p.id}:error:${o.id}`);
+        await tocar(boton(m.caja, "probar-otra"));
+      }
+      /* Si vuelve a una opción ya fallada, sigue la respuesta, no vuelve la pista. */
+      {
+        const o = malas[0];
+        const i = malas.length;
+        assert.equal(textosDelError(p, o, i + 1)[0], `La respuesta es «${p.opciones.find((x) => x.correcta).texto.replace(/\.$/, "")}».`);
+        await tocar(m.caja.querySelector(`[data-opcion="${o.id}"]`));
+        await tocar(boton(m.caja, "confirmar"));
+        assert.deepEqual(enPantalla(m.caja), { textos: [...cab, INTERFAZ.incorrecto, ...textosDelError(p, o, i + 1), BOTON.probarOtra, p.error.pie], opciones: ops }, `${p.id} error ${i + 1} (${o.id})`);
         await tocar(boton(m.caja, "probar-otra"));
       }
       await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((x) => x.correcta).id}"]`));

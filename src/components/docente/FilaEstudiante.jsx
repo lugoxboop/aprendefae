@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { FAE } from "../../theme.js";
 import { promedioAciertos, avancePorTema, alertasDe, NIVEL } from "../../docente/alertas.js";
 import DetalleEstudiante from "./DetalleEstudiante.jsx";
+import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
 
 /*
  * Una fila por estudiante, con lo que un docente necesita decidir a quién
@@ -106,10 +107,10 @@ function Chevron({ abierta }) {
   );
 }
 
-const COLOR_NIVEL = {
-  [NIVEL.URGENTE]: FAE.coral,
-  [NIVEL.ATENCION]: FAE.ambar,
-  [NIVEL.INFO]: FAE.teal,
+const MARCA_NIVEL = {
+  [NIVEL.URGENTE]: NIVEL_MARCA.URGENTE,
+  [NIVEL.ATENCION]: NIVEL_MARCA.ATENCION,
+  [NIVEL.INFO]: NIVEL_MARCA.INFO,
 };
 const PALABRA_NIVEL = {
   [NIVEL.URGENTE]: "alerta urgente",
@@ -167,14 +168,16 @@ export default function FilaEstudiante({
   }, [abierta, onAlternar]);
 
   /*
-   * El indicador de la fila cerrada: el nivel de alerta más grave, o el teal de
-   * destacado, o nada. Nunca el color solo — lleva su palabra en aria-label y
-   * en el title, porque un punto de color no lo lee quien no lo distingue.
+   * El indicador de la fila cerrada: el nivel de alerta más grave, o el de
+   * destacado, o nada. Nunca el color solo: cada uno tiene su SILUETA
+   * (▲ urgente, ◆ atención, ★ destacado; ver MarcaNivel) porque coral y teal
+   * miden lo mismo en gris, y su palabra va en el aria-label y en el title.
+   * El title solo sale al pasar el ratón: no es lo que sostiene el significado.
    */
   const indicador = peor
-    ? { color: COLOR_NIVEL[peor.nivel], palabra: PALABRA_NIVEL[peor.nivel] }
+    ? { marca: MARCA_NIVEL[peor.nivel], palabra: PALABRA_NIVEL[peor.nivel] }
     : destacado
-      ? { color: FAE.teal, palabra: "destacado" }
+      ? { marca: NIVEL_MARCA.DESTACADO, palabra: "destacado" }
       : null;
 
   return (
@@ -220,14 +223,9 @@ export default function FilaEstudiante({
             minWidth: 0,
           }}
         >
-          <span
-            aria-hidden="true"
-            title={indicador ? indicador.palabra : undefined}
-            style={{
-              width: "8px", height: "8px", borderRadius: "50%", flexShrink: 0,
-              background: indicador ? indicador.color : "rgba(248,249,250,0.18)",
-            }}
-          />
+          <span aria-hidden="true" title={indicador ? indicador.palabra : undefined} style={{ display: "flex" }}>
+            <MarcaNivel nivel={indicador ? indicador.marca : NIVEL_MARCA.NINGUNO} />
+          </span>
 
           <span style={{ minWidth: 0 }}>
             <span style={{ display: "block", fontFamily: "Sora, sans-serif", fontSize: "14.5px", fontWeight: 600, color: FAE.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>

@@ -3,6 +3,7 @@ import { FAE } from "../../theme.js";
 import { NIVEL, alertasDe } from "../../docente/alertas.js";
 import { historialDe } from "../../docente/datos.js";
 import { nombreDeActividad } from "../../data/subjects.js";
+import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
 
 /*
  * ÍTEM 3 — El detalle que se abre DEBAJO de la fila, dentro de la misma fila.
@@ -41,6 +42,11 @@ const COLOR_NIVEL = {
   [NIVEL.URGENTE]: FAE.coral,
   [NIVEL.ATENCION]: FAE.ambar,
   [NIVEL.INFO]: FAE.teal,
+};
+const MARCA_NIVEL = {
+  [NIVEL.URGENTE]: NIVEL_MARCA.URGENTE,
+  [NIVEL.ATENCION]: NIVEL_MARCA.ATENCION,
+  [NIVEL.INFO]: NIVEL_MARCA.INFO,
 };
 const PALABRA_NIVEL = {
   [NIVEL.URGENTE]: "Urgente",
@@ -85,7 +91,9 @@ export default function DetalleEstudiante({ e, subjectId, posicion }) {
             border: `1px solid ${COLOR_NIVEL[alerta.nivel]}55`,
           }}
         >
-          <span aria-hidden="true" style={{ width: "8px", height: "8px", borderRadius: "50%", background: COLOR_NIVEL[alerta.nivel], marginTop: "5px", flexShrink: 0 }} />
+          <span aria-hidden="true" style={{ display: "flex", marginTop: "3px" }}>
+            <MarcaNivel nivel={MARCA_NIVEL[alerta.nivel]} />
+          </span>
           <div style={{ minWidth: 0 }}>
             <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, color: FAE.text }}>
               {/* La palabra del nivel acompaña al color: el tono nunca va solo. */}

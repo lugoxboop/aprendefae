@@ -46,6 +46,7 @@ const { default: CierreConDiario } = await import("../../components/mecanicas/li
 const { default: CierreSantaPacha } = await import("../../components/mecanicas/libros/tema5/CierreSantaPacha.jsx");
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const L = await import("../t5Act2.js");
+const { textoD } = await import("../cierreConMesa.js");
 const D = await import("../../data/contabilidadT5Act2.js");
 const { FAE } = await import("../../theme.js");
 
@@ -186,7 +187,9 @@ test("★★★ prioridad D > C > A > B en las cuatro partes, cada una con su te
       const { caja, desmontar } = await montar({ items: [parte(n)] });
       await armar(caja, puestas);
       assert.equal(caja.querySelector("[data-panel]").dataset.error, tipo, `parte ${n}: ${tipo}`);
-      assert.equal(textoRetro(caja), errorDe(n, tipo), `parte ${n}: texto ${tipo}`);
+      /* La D nombra la cuenta que sobra y sigue con el texto del paquete (Sakuta, calidad 1). */
+      const esperado = tipo === "D" ? textoD({ asiento: ok, errores: { D: errorDe(n, "D"), razones: parte(n).errores.razones } }, puestas) : errorDe(n, tipo);
+      assert.equal(textoRetro(caja), esperado, `parte ${n}: texto ${tipo}`);
       desmontar();
     }
   }
@@ -289,21 +292,23 @@ const filasVistas = (caja) => [...caja.querySelectorAll("[data-asiento-diario]")
   }),
 }));
 
-test("★★★ el diario: cerrado al cargar, cabecera «LIBRO DIARIO», «1 asiento», «Ver» / «Ocultar» y la compra literal", async () => {
+test("★★★ el diario (hallazgo 9 de Shoko): no ocupa sitio hasta confirmar el primer asiento; entonces aparece ABIERTO, con ese asiento escrito; «Ver» / «Ocultar»", async () => {
   const { caja, desmontar } = await montar();
+  assert.equal(caja.querySelector("[data-libro-diario]"), null, "antes del primer asiento, el diario no ocupa sitio");
+  await armar(caja, parte(1).asiento);
   const boton = caja.querySelector("[data-diario-alternar]");
   assert.equal(caja.querySelector("[data-diario-cabecera]").textContent, G_DIARIO.cabecera[0]);
-  assert.equal(caja.querySelector("[data-diario-cuenta]").textContent, "1 asiento");
-  assert.equal(caja.querySelector("[data-diario-boton]").textContent, "Ver");
-  assert.equal(boton.getAttribute("aria-expanded"), "false");
-  assert.equal(caja.querySelectorAll("[data-asiento-diario]").length, 0, "cerrado no muestra asientos");
-  assert.equal(boton.querySelector("svg"), null, "sin chevrón");
-  await tocar(boton);
-  assert.equal(boton.getAttribute("aria-expanded"), "true");
+  assert.equal(caja.querySelector("[data-diario-cuenta]").textContent, "2 asientos");
+  assert.equal(boton.getAttribute("aria-expanded"), "true", "se abre solo al confirmar el primero");
   assert.equal(caja.querySelector("[data-diario-boton]").textContent, "Ocultar");
+  assert.equal(boton.querySelector("svg"), null, "sin chevrón");
   assert.equal(boton.getAttribute("aria-controls"), caja.querySelector("[data-diario-cuerpo]").id);
   assert.deepEqual([...caja.querySelectorAll("[data-diario-columna]")].map((n) => n.textContent), ["DEBE", "HABER"]);
-  assert.deepEqual(filasVistas(caja), [filaEsperada(G_ASIENTOS[0])]);
+  assert.deepEqual(filasVistas(caja), [filaEsperada(G_ASIENTOS[0]), filaEsperada(G_ASIENTOS[1])], "la compra y el asiento recién confirmado");
+  await tocar(boton);
+  assert.equal(boton.getAttribute("aria-expanded"), "false");
+  assert.equal(caja.querySelector("[data-diario-boton]").textContent, "Ver");
+  assert.equal(caja.querySelectorAll("[data-asiento-diario]").length, 0, "cerrado no muestra asientos");
   /* El diario va entre el encabezado y el contador. */
   const diario = caja.querySelector("[data-libro-diario]");
   assert.ok(caja.querySelector("[data-consigna]").compareDocumentPosition(diario) & w.Node.DOCUMENT_POSITION_FOLLOWING);
@@ -311,25 +316,27 @@ test("★★★ el diario: cerrado al cargar, cabecera «LIBRO DIARIO», «1 asi
   desmontar();
 });
 
-test("★★★ el diario crece con el asiento CORRECTO de cada parte comprobada, sin abrirse solo y conservando su estado", async () => {
+test("★★★ el diario crece con el asiento CORRECTO de cada parte comprobada; se abre solo una vez, con el primero, y después conserva su estado", async () => {
   const { caja, desmontar } = await montar();
   for (let n = 1; n <= 4; n++) {
     /* Mal la 2 y la 4: el diario igual anota lo correcto. */
     await armar(caja, n % 2 ? parte(n).asiento : [parte(n).asiento[0]]);
     assert.equal(caja.querySelector("[data-diario-cuenta]").textContent, `${n + 1} asientos`);
-    if (n === 1) assert.equal(caja.querySelectorAll("[data-asiento-diario]").length, 0, "no se abre solo");
+    if (n === 1) assert.equal(caja.querySelector("[data-diario-alternar]").getAttribute("aria-expanded"), "true", "se abre solo con el primero");
+    /* Se cierra en la 2: ya no se vuelve a abrir solo. */
     if (n === 2) await tocar(caja.querySelector("[data-diario-alternar]"));
     await avanzar(caja);
-    if (n >= 2) assert.equal(caja.querySelector("[data-diario-alternar]").getAttribute("aria-expanded"), "true", "conserva su estado al cambiar de asiento");
+    if (n >= 2) assert.equal(caja.querySelector("[data-diario-alternar]").getAttribute("aria-expanded"), "false", "conserva su estado al cambiar de asiento");
   }
+  await tocar(caja.querySelector("[data-diario-alternar]"));
   /* En el resumen, los cinco asientos, literales del paquete; el Haber con sangría. */
   assert.deepEqual(filasVistas(caja), G_ASIENTOS.map(filaEsperada));
   for (const m of caja.querySelectorAll("[data-movimiento]")) {
     assert.equal(m.querySelector("[data-nombre-diario]").style.paddingLeft, m.dataset.movimiento.startsWith("haber") ? "12px" : "0px");
   }
-  /* «Otra vez» deja solo la compra. */
+  /* «Otra vez» deja solo la compra: el diario vuelve a no ocupar sitio hasta el primer asiento. */
   await tocar([...caja.querySelectorAll("button")].find((b) => b.textContent === "Otra vez"));
-  assert.equal(caja.querySelector("[data-diario-cuenta]").textContent, "1 asiento");
+  assert.equal(caja.querySelector("[data-libro-diario]"), null);
   desmontar();
 });
 
@@ -342,8 +349,8 @@ test("★★★ ninguna cifra del estante, del diario ni de los textos sale de l
   assert.deepEqual(cifrasDe("Caja $999 y 1.725.000").filter((c) => !G_CIFRAS.has(c)), ["999"]);
   const { caja, desmontar } = await montar();
   assert.deepEqual(cifrasDe(caja.querySelector("[data-estante]").textContent), [], "el estante no tiene cifras");
+  /* El diario ya está abierto: se abrió solo con el primer asiento. */
   for (let n = 1; n <= 4; n++) { await armar(caja, parte(n).asiento); await avanzar(caja); }
-  await tocar(caja.querySelector("[data-diario-alternar]"));
   /* Pieza por pieza (fecha, cuenta, valor): el textContent entero pega las cifras. La cuenta de asientos es del componente. */
   const piezas = [...caja.querySelectorAll("[data-fecha-diario], [data-nombre-diario], [data-valor-diario]")];
   assert.equal(caja.querySelectorAll("[data-valor-diario]").length, 12, "doce movimientos en los cinco asientos");
@@ -354,7 +361,8 @@ test("★★★ ninguna cifra del estante, del diario ni de los textos sale de l
   /* Y en todo texto de los datos: enunciados, devoluciones, tutorial. */
   const textos = [];
   const recoger = (v) => {
-    if (typeof v === "string") textos.push(v);
+    /* «el asiento 4» numera las partes (las razones de la entrega 1): no es una cifra del libro. */
+    if (typeof v === "string") textos.push(v.replace(/asiento \d/g, "asiento"));
     else if (typeof v === "number") textos.push(String(v).replace(/\B(?=(\d{3})+(?!\d))/g, "."));
     else if (Array.isArray(v)) v.forEach(recoger);
     /* El id y el rótulo («Asiento 2») numeran las partes: no son cifras del libro. */
@@ -389,11 +397,11 @@ const px = (v) => Number.parseFloat(v) || 0;
 const UTIL_320 = 258;
 
 /*
- * Salida 1 de Sakuta (14-oct): el marco de cada parte en la mesa de la célula
- * va SIN relleno lateral (el borde se conserva), como en la réplica de Mai que
- * auditó Shoko. Con el relleno de 10 px, el hueco era 69,88 y no cabía.
+ * Calidad 1 (hoja de Mai, 15-oct): la parte de la mesa de la célula va SIN
+ * borde y SIN relleno lateral; la separan 16 px de aire. Con relleno, el
+ * hueco no deja caber «1.725.000» (con 6 px ya falta 0,03).
  */
-test("★★★ «1.725.000», la cifra más larga de las respuestas, cabe en el campo a 320, con el marco de la parte sin relleno lateral", async () => {
+test("★★★ «1.725.000», la cifra más larga de las respuestas, cabe en el campo a 320, con la parte sin borde ni relleno lateral", async () => {
   const { caja, desmontar } = await montar({ items: [parte(2)] });
   await armar(caja, parte(2).asiento, false);
   const mesa = caja.querySelector("[data-mesa]");
@@ -402,17 +410,18 @@ test("★★★ «1.725.000», la cifra más larga de las respuestas, cabe en el
   const signo = campo.querySelector("[data-signo]");
   /* El hueco se calcula con los estilos que el componente pinta, desde el Panel: el marco de la parte, la mesa, la tarjeta y el campo. */
   const seccion = caja.querySelector("[data-parte]");
-  const [, phs] = seccion.style.padding.split(" ").map(px);
-  assert.equal(phs, 0, "el marco de la parte, sin relleno lateral (salida 1)");
-  assert.match(seccion.style.border, /^1px solid /, "y con su borde");
-  const util = UTIL_320 - 2 * phs - 2 * px(seccion.style.border);
+  const phs = px(seccion.style.paddingLeft);
+  assert.equal(phs, 0, "la parte, sin relleno lateral");
+  assert.equal(seccion.style.border, "", "y sin borde (calidad 1)");
+  assert.equal(seccion.style.marginTop, "16px", "16 px de aire con lo de encima");
+  const util = UTIL_320 - 2 * phs;
   const columna = (util - px(mesa.style.gap)) / 2;
   const [pv, ph] = tarjeta.style.padding.split(" ").map(px);
   const tarjetaUtil = columna - 2 * ph - 2 * px(tarjeta.style.border);
   const [, phc] = campo.style.padding.split(" ").map(px);
   const hueco = tarjetaUtil - 2 * phc - 2 * px(campo.style.border) - GLIFOS_CIFRA.$ - px(signo.style.marginRight);
-  /* Medido en Chromium a 320 (14-oct, con la salida 1): el input mide 79,88. */
-  assert.ok(pv >= 0 && Math.abs(hueco - 79.88) < 1, `hueco ${hueco}`);
+  /* La hoja de Mai, sin borde: el hueco del campo mide 80,88 (con borde, 79,88). */
+  assert.ok(pv >= 0 && Math.abs(hueco - 80.88) < 1, `hueco ${hueco}`);
   const respuestas = PARTES.flatMap((p) => p.asiento.map((e) => e.valor));
   const mayor = respuestas.map((v) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ".")).sort((a, b) => ancho(b) - ancho(a))[0];
   assert.equal(mayor, "1.725.000");
@@ -434,4 +443,16 @@ test("★★ el ejemplo de la compra: enunciado, sin número de asiento, y sus c
     [G_TUTORIAL.linea1[0], G_TUTORIAL.linea2[0], G_TUTORIAL.linea3[0], G_TUTORIAL.linea4[0]]);
   assert.equal(D.ALT_TUTORIAL_T5_ACT2, G_TUTORIAL["alt-tutorial"][0]);
   desmontar();
+});
+
+test("★★★ entrega 1: la C7 en dos ramas — con lo recibido, la C7 de siempre; con cualquier otro valor que no sea el costo, la C7-otro", () => {
+  for (const [n, recibido, otro] of [[2, 1725000, 1600000], [4, 468750, 450000]]) {
+    const p = parte(n);
+    const conValor = (v) => p.asiento.map((e) => (e.cuenta === "Inversiones – títulos" ? { ...e, valor: v } : e));
+    const a = L.evaluarParteT5Act2(p, conValor(recibido));
+    assert.deepEqual([a.error, a.texto], ["C7", p.errores.C7], `parte ${n}: lo recibido`);
+    const b = L.evaluarParteT5Act2(p, conValor(otro));
+    assert.deepEqual([b.error, b.texto], ["C7-otro", p.errores.C7otro], `parte ${n}: otro valor`);
+    assert.ok(GUIA.includes(`C7-otro\t${p.errores.C7otro}`), `parte ${n}: la C7-otro, literal del paquete`);
+  }
 });

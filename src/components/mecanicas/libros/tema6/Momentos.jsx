@@ -1,5 +1,5 @@
-import { Fragment } from "react";
-import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES, ATENUADO, caja, aparicion, transicion, Anotacion } from "./MaquinaPegada.jsx";
+import { Fragment, useRef } from "react";
+import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES, ATENUADO, caja, aparicion, transicion, Anotacion, useSiluetasQueCaben } from "./MaquinaPegada.jsx";
 import { RotuloSimulado } from "./FuentesT6A5.jsx";
 
 /*
@@ -166,17 +166,47 @@ function Pieza({ pieza, el, marca, reducido, refDe, textos, prefijo }) {
   }
 }
 
+/*
+ * Un momento que todavía no llega (hoja 5 de Mai): su cabecera y su cuerpo en
+ * silueta, en orden. Cada silueta lleva `data-silueta-futura`: la escena viva
+ * quita las que no caben enteras en la reserva, empezando por la última. Sin
+ * refs ni data-elemento: las piezas reales llegan después con los suyos.
+ */
+const PRESENTE_EN_SILUETA = { presente: true, visible: true, resaltado: false, atenuado: false };
+function MomentoFuturo({ m, i, reducido, textos }) {
+  const el = new Proxy({}, { get: () => PRESENTE_EN_SILUETA });
+  const marca = (id) => ({ "data-silueta-de": id });
+  return (
+    <div data-momento={i} data-futuro="" data-silueta-futura="cabecera" style={{
+      borderRadius: "12px", border: `1px solid ${BORDES}`, padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: "6px",
+      ...aparicion({ visible: false }, reducido),
+    }}>
+      <div data-cabecera style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", columnGap: "8px", rowGap: "2px" }}>
+        <span style={{ margin: "0 -6px", padding: "0 6px", border: "2px solid transparent", ...LINEA_SORA }}>{m.fecha.texto}</span>
+        {m.tipo && <span style={LINEA_INTER}>{m.tipo}</span>}
+      </div>
+      {m.piezas.map((p) => (
+        <div key={p.id} data-silueta-futura="cuerpo">
+          <Pieza pieza={p} el={el} marca={marca} reducido={reducido} refDe={() => undefined} textos={textos} prefijo="futuro-" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* Los momentos de un estado. `marcar` pone refs y data- (la escena viva); la reserva, no. */
 export function Momentos({ estado, momentos, refDe, reducido, textos, prefijo = "", marcar = true }) {
   const el = estado.elementos;
+  const viva = useRef(null);
+  useSiluetasQueCaben(viva, [estado]);
   const marca = (id) => (marcar
     ? { ref: refDe(id), "data-elemento": id, "data-resaltado": el[id].resaltado ? "si" : "no" }
     : { "data-elemento": `${prefijo}${id}` });
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+    <div ref={viva} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       {momentos.map((m, i) => {
         const h = estado.momentos[i];
-        if (!h.mostrado) return null;
+        if (!h.mostrado) return marcar ? <MomentoFuturo key={m.fecha.id} m={m} i={i} reducido={reducido} textos={textos} /> : null;
         const apagado = h.atenuado;
         const f = el[m.fecha.id];
         return (

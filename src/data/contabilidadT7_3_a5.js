@@ -76,6 +76,7 @@ const EL_CONTEO = {
 
 const SOBRANTE = {
   id: "sobrante",
+  pista: "El sobrante no es todo lo que hay en la bodega. ¿Qué parte de lo contado es?",
   tipo: "eleccion",
   parrafos: [
     "Hay un sobrante cuando el conteo da más que los libros.",
@@ -110,6 +111,7 @@ const SOBRANTE = {
 
 const FALTANTE = {
   id: "faltante",
+  pista: "Si falta mercancía, el inventario de los libros tiene que bajar. ¿De qué lado baja un activo?",
   tipo: "eleccion",
   parrafos: [
     "Hay un faltante cuando el conteo da menos que los libros.",
@@ -122,6 +124,8 @@ const FALTANTE = {
   opciones: [
     { id: "debe", texto: "Debe", devolucion: "Falta mercancía en la bodega, así que el activo baja. Inventario de mercancías va al haber." },
     { id: "haber", texto: "Haber", correcta: true },
+    /* Tercera opción: anexo del lote 2 (Near). */
+    { id: "no-se-mueve", texto: "No se mueve: solo cambia el costo", devolucion: "Si solo cambiara el costo, los libros seguirían con mercancía que ya no está en la bodega." },
   ],
   acierto: {
     texto: "Así es. Falta mercancía, así que el activo baja: va al haber.",

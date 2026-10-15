@@ -3,6 +3,8 @@ import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_IMPORTADOS_Y_FLETES, BOTON, INTERFAZ, FIGURA_PENDIENTE_DE_REVISION, DEBE, cifra } from "../../../../data/contabilidadT7_1_a5.js";
+import { Plegable } from "./plegable.jsx";
+import { textosDelError, contarFallo } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -109,7 +111,7 @@ function Mensaje({ ok, textos, refFoco }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7a5-msg-cuerpo">
         <span className="t7a5-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
@@ -201,6 +203,8 @@ function Eleccion({ pantalla, onSeguir }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
   const [confirmada, setConfirmada] = useState(null);
+  /* Cuántas veces se ha fallado esta pregunta: la escalera de ayuda (escaleraAyuda.js). */
+  const [fallos, setFallos] = useState(0);
   const ref = useRef(null);
   const opcion = confirmada ? pantalla.opciones.find((o) => o.id === confirmada) : null;
   const estado = !opcion ? "colocando" : opcion.correcta ? "acierto" : "error";
@@ -210,7 +214,7 @@ function Eleccion({ pantalla, onSeguir }) {
     <div className="t7a5" data-eleccion={pantalla.id} data-estado={estado}>
       {pantalla.entrada && <p className="t7a5-p" data-texto data-entrada>{pantalla.entrada}</p>}
       {pantalla.enunciado && <p className="t7a5-p" data-texto data-enunciado>{pantalla.enunciado}</p>}
-      {pantalla.parrafos.map((t) => <p key={t} className="t7a5-p" data-texto>{t}</p>)}
+      {pantalla.parrafos.map((t) => <p key={t} className="t7a5-p" data-texto><Plegable texto={t} /></p>)}
       {pantalla.aviso && <p className="t7a5-nota" data-texto data-aviso>{pantalla.aviso}</p>}
       {pantalla.lista && (
         <ul className="t7a5-lista" data-lista>
@@ -238,10 +242,10 @@ function Eleccion({ pantalla, onSeguir }) {
           );
         })}
       </div>
-      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => setConfirmada(elegida)} />}
+      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }} />}
       {estado === "error" && (
         <>
-          <Mensaje ok={false} textos={[opcion.devolucion]} refFoco={ref} />
+          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} refFoco={ref} />
           <Boton
             nombre="probar-otra"
             texto={BOTON.probarOtra}
@@ -281,7 +285,7 @@ export default function ImportadosYFletes({ pieza = PIEZA_IMPORTADOS_Y_FLETES, r
         ) : (
           <div className="t7a5">
             {p.objetivo && <p className="t7a5-p" data-texto data-objetivo>{p.objetivo}</p>}
-            {p.parrafos?.map((t) => <p key={t} className="t7a5-p" data-texto>{t}</p>)}
+            {p.parrafos?.map((t) => <p key={t} className="t7a5-p" data-texto><Plegable texto={t} /></p>)}
             {p.siguiente && <p className="t7a5-nota" data-texto data-siguiente>{p.siguiente}</p>}
             {p.boton && <Boton nombre={p.tipo === "portada" ? "empezar" : "seguir"} texto={p.boton} onClick={seguir} />}
             <Pie texto={p.pie} />

@@ -6,7 +6,8 @@
  * contenido de Futaba con el PASA de Shoko, en este orden de precedencia:
  *   1. la secuencia final de la capa 2 (9 pasos, el 1 partido en dos) y el
  *      término 5 nuevo;
- *   2. las tres líneas corregidas (la glosa de nota débito y la devolución
+ *   2. las tres líneas corregidas (la nota de nota débito —hoy, la definición
+ *      del Tema 4— y la devolución
  *      correcta de la capa 4; la del término 5 la reemplaza la de arriba);
  *   3. la pieza corregida, para todo lo demás.
  * Encima de todo, la «versión que manda» de Futaba del 14-oct (PASA de
@@ -25,18 +26,23 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* ═══════════ LA GLOSA PROVISIONAL DE «NOTA DÉBITO» ═══════════ */
+/* ═══════════ LA NOTA DE «NOTA DÉBITO»: LA DEFINICIÓN DEL TEMA 4 ═══════════ */
 
 /*
- * El Tema 4 (Célula A) es el que define «nota débito». Mientras no lo
- * publique, esta pieza lleva su propia glosa, debajo del término 4. La prueba
- * de guardia (b5-t6-glosa-nota-debito.test.mjs) se pone roja el día que
- * cualquier otro tema defina el término: entonces esta glosa se reemplaza por
- * la definición publicada y pasa por auditoría.
+ * Esta pieza llevaba una glosa PROVISIONAL de «nota débito» (b5-t6-glosa-
+ * nota-debito) mientras el Tema 4 no la definiera. El Tema 4 · A4 de la
+ * Célula D la define (NOTA_DEBITO en contabilidadT4A4.js, acuerdo C4 / A4-P),
+ * así que la glosa propia se retira: la nota debajo del término 4 dice ahora,
+ * letra por letra, la definición del Tema 4. Así el sitio tiene una sola
+ * explicación del término.
+ *
+ * La guardia (b5-t6-glosa-nota-debito.test.mjs) ya no espera a que otro tema
+ * la defina: ahora se pone roja si la definición de otro tema y esta nota
+ * dejan de decir lo mismo.
  */
-export const GLOSA_NOTA_DEBITO = {
-  id: "b5-t6-glosa-nota-debito",
-  texto: "Con una nota débito, el banco le resta un valor a la cuenta bancaria de la empresa; por ejemplo, cuando devuelve el cheque con el que un cliente había pagado.",
+export const NOTA_DEBITO_T6 = {
+  rotulo: "Nota",
+  texto: "Con una nota débito, el banco le resta un valor a la cuenta de la empresa. Por ejemplo, cuando le cobra una chequera, o cuando le devuelve el cheque con el que un cliente le había pagado.",
 };
 
 /* ═══════════ LA PIEZA (lo que lee CuatroCapas: título, objetivo y capa 1) ═══════════ */
@@ -77,9 +83,8 @@ export const PIEZA_LO_QUE_LE_DEBEN = {
     {
       termino: "Cuándo sube lo que deben los clientes",
       definicion: "Cuentas por cobrar – clientes es una cuenta de activo: cuando lo que deben los clientes sube, se debita. Sube, entre otras causas, por una venta a crédito de bienes o servicios, o por una nota débito cuando el banco devuelve el cheque con el que un cliente había pagado.",
-      delLibro: GLOSA_NOTA_DEBITO.texto,
-      rotuloDelLibro: "Nota",
-      glosa: GLOSA_NOTA_DEBITO.id,
+      delLibro: NOTA_DEBITO_T6.texto,
+      rotuloDelLibro: NOTA_DEBITO_T6.rotulo,
     },
     {
       termino: "Cuándo baja lo que deben los clientes",
@@ -133,7 +138,10 @@ export const CIERRE_T6 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» ═══════════ */
 
-export const CONSIGNA_CAPA_3_T6 = "Toca cada hecho y mira si lo que deben los clientes sube, baja o no cambia.";
+/* Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja es de Mai (hoja 6), para Shoko. */
+export const CONSIGNA_CAPA_3_T6 = "Toca cada hecho y decide si lo que deben los clientes sube, baja o no cambia. Después, mira la razón.";
+export const PREGUNTA_CAPA_3_T6 = "¿Qué pasa con lo que deben los clientes?";
+export const OPCIONES_CAPA_3_T6 = [{ id: "sube", texto: "Sube" }, { id: "baja", texto: "Baja" }, { id: "no-cambia", texto: "No cambia" }];
 
 /*
  * Los seis hechos, con su pie de fuente (★, versión que manda de Futaba):
@@ -141,12 +149,12 @@ export const CONSIGNA_CAPA_3_T6 = "Toca cada hecho y mira si lo que deben los cl
  * condición o una conclusión. Siete pies: uno por caja y el del bloque final.
  */
 export const HECHOS_T6 = [
-  { id: "venta-credito", hecho: "La empresa le vende a crédito a un cliente.", revela: "Sube: se debita. El cliente queda debiendo lo que compró.", pie: "Libro, p. 197" },
-  { id: "pago", hecho: "Un cliente paga lo que debía.", revela: "Baja: se acredita. La deuda se cancela.", pie: "Libro, p. 197" },
-  { id: "cheque-devuelto", hecho: "El banco devuelve el cheque con el que un cliente había pagado.", revela: "Sube: se debita, con una nota débito. Ese pago no llegó a la empresa, así que la deuda vuelve.", pie: "Basado en el libro, pp. 191 y 197" },
-  { id: "devolucion", hecho: "Un cliente devuelve mercancía que compró a crédito y aún no paga.", revela: "Baja: se acredita. Es una devolución de ventas.", pie: "Basado en el libro, p. 197" },
-  { id: "descuento", hecho: "La empresa le otorga a un cliente un descuento sobre lo que todavía le debe.", revela: "Baja: se acredita.", pie: "Basado en el libro, p. 197" },
-  { id: "contado", hecho: "La empresa le vende de contado a un cliente.", revela: "No cambia. El cliente pagó en el momento y no queda debiendo nada.", pie: "Basado en el libro, p. 197" },
+  { id: "venta-credito", hecho: "La empresa le vende a crédito a un cliente.", revela: "Sube: se debita. El cliente queda debiendo lo que compró.", pie: "Libro, p. 197", correcta: "sube", falla: "Aunque diga “crédito”, el cliente queda debiendo lo que compró: sube." },
+  { id: "pago", hecho: "Un cliente paga lo que debía.", revela: "Baja: se acredita. La deuda se cancela.", pie: "Libro, p. 197", correcta: "baja", falla: "Al pagar, el cliente deja de deber lo que pagó: baja." },
+  { id: "cheque-devuelto", hecho: "El banco devuelve el cheque con el que un cliente había pagado.", revela: "Sube: se debita, con una nota débito. Ese pago no llegó a la empresa, así que la deuda vuelve.", pie: "Basado en el libro, pp. 191 y 197", correcta: "sube", falla: "El cheque no se cobró, así que el pago no cuenta: la deuda sube otra vez." },
+  { id: "devolucion", hecho: "Un cliente devuelve mercancía que compró a crédito y aún no paga.", revela: "Baja: se acredita. Es una devolución de ventas.", pie: "Basado en el libro, p. 197", correcta: "baja", falla: "Lo que devuelve ya no lo tiene que pagar: baja." },
+  { id: "descuento", hecho: "La empresa le otorga a un cliente un descuento sobre lo que todavía le debe.", revela: "Baja: se acredita.", pie: "Basado en el libro, p. 197", correcta: "baja", falla: "El descuento rebaja lo que el cliente debe: baja." },
+  { id: "contado", hecho: "La empresa le vende de contado a un cliente.", revela: "No cambia. El cliente pagó en el momento y no queda debiendo nada.", pie: "Basado en el libro, p. 197", correcta: "no-cambia", falla: "Pagó en el momento, así que no queda debiendo nada: no cambia." },
 ];
 export const FINAL_CAPA_3_T6 = {
   texto: "Fíjate: “venta a crédito” lleva la palabra crédito, pero a la cuenta del cliente se le hace un débito. El nombre del negocio no dice en qué lado se anota.",

@@ -92,8 +92,12 @@ jobs:
     name: Pruebas de JavaScript y build
     runs-on: ubuntu-latest
     steps:
+      # fetch-depth 0 porque el guardián de las migraciones compara contra la
+      # rama base, y con el historial recortado no hay contra qué comparar.
       - name: Traer el código
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Preparar Node
         uses: actions/setup-node@v7
@@ -103,6 +107,27 @@ jobs:
 
       - name: Instalar dependencias
         run: npm ci
+
+      # ═══════════════════════════════════════════════════════════════════════
+      # EL GUARDIÁN DE LAS MIGRACIONES
+      #
+      # Es la mirada que antes ponía una persona pegando cada migración en el
+      # editor SQL. Comprueba lo mismo que se comprobaba a mano —que no haya
+      # nada destructivo, que el número caiga en el rango de su célula, y que
+      # la fila diga exactamente lo que declara subjects.js— pero en cada
+      # propuesta y al instante.
+      #
+      # Solo mira las migraciones que la propuesta AÑADE. La primera versión
+      # juzgaba las ochenta del repositorio y rechazaba doce que llevaban
+      # meses aplicadas y correctas. La historia ya es realidad.
+      #
+      # Va antes de las pruebas a propósito: si una migración le va a pagar a
+      # un estudiante lo que no es, eso se dice primero y en una línea, no al
+      # final de dos mil pruebas.
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: Guardián de las migraciones
+        if: github.event_name == 'pull_request'
+        run: node --import ./scripts/cargador-jsx.mjs scripts/guardian-migraciones.mjs origin/${{ github.base_ref }}
 
       # Hasta ahora estas ochenta pruebas solo corrían en el computador de
       # quien se acordara. Un push podía romper el catálogo, los umbrales o la

@@ -32,6 +32,8 @@ export default function Logo({
       type="button"
       onClick={handleClick}
       aria-label={label}
+      /* La zona de toque la agranda global.css; aquí solo va el enganche. */
+      className="fae-logo-boton"
       style={{
         display: "inline-flex",
         alignItems: "center",

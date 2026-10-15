@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../theme.js";
 import { DEBE, HABER, COLOR_LADO, pesos } from "../../../data/contabilidad.js";
 import { TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
+import { MarcaVeredicto } from "./marcaVeredicto.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -51,7 +52,17 @@ export function CuentaT({ cuenta, saldo = null, resaltar = null, marcar = null, 
   const columna = (lado, movimientos) => (
     <div style={{ flex: 1, minWidth: 0, opacity: atenuado(lado), transition: "opacity 220ms ease" }}>
       <p style={{
-        margin: "0 0 6px", fontFamily: "Sora, sans-serif", fontSize: "10.5px", fontWeight: 700,
+        /*
+         * 12 px, por lo mismo que en AsientoEnLineas: esto NO es una cejilla,
+         * es la cabecera de la columna, y tapándola se pierde cuál es cuál.
+         * Y además el lado se dice aquí dos veces —con la palabra y con el
+         * color—, así que a 10,5 la palabra deja de leerse y queda el color
+         * solo, que es justo lo que no puede pasar (kit.md).
+         *
+         * Se me había escapado: arreglé las líneas del asiento y dejé las
+         * columnas de la cuenta T, que dicen exactamente lo mismo.
+         */
+        margin: "0 0 6px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700,
         letterSpacing: "0.14em", color: COLOR_LADO[lado], textAlign: lado === DEBE ? "left" : "right",
       }}>
         {lado === DEBE ? "DEBE" : "HABER"}
@@ -225,8 +236,25 @@ export function AsientoEnLineas({ lineas, rotulo = null, acento = FAE.teal, tota
       )}
       {lineas.map((l, k) => (
         <div key={`${l.cuenta}-${l.lado}-${k}`} style={{ display: "flex", gap: "8px", alignItems: "baseline", padding: "3px 0" }}>
+          {/*
+            12 px, no 10. La Célula C midió las 44 piezas de T7 a 320 px y
+            encontró este rótulo entre los textos por debajo de 12. Importa
+            más de lo que parece: el lado de la línea se dice con la PALABRA
+            y con el color, y a 10 px la palabra deja de leerse — entonces el
+            único aviso que queda es el color, que es justo lo que no puede
+            pasar (ver la revisión de daltonismo en kit.md).
+
+            Y `minWidth` en vez de `width`: a 12 px «HABER» mide 47,5 de los
+            50 que había fijos. Intenté comprobar que también cupiera si Sora
+            no carga y la medición me dio el MISMO número en cuatro
+            tipografías distintas — o sea, que la sustitución no ocurría y la
+            comprobación no comprobaba nada. En vez de apostar a una medida
+            que no pude validar, el ancho deja de ser un techo: si alguna vez
+            no cabe, empuja en lugar de recortar, y el nombre de la cuenta de
+            al lado ya sabe encogerse (`flex: 1, minWidth: 0`).
+          */}
           <span style={{
-            flexShrink: 0, width: "50px", fontFamily: "Sora, sans-serif", fontSize: "10px",
+            flexShrink: 0, minWidth: "50px", fontFamily: "Sora, sans-serif", fontSize: "12px",
             fontWeight: 700, letterSpacing: "0.08em", color: COLOR_LADO[l.lado],
           }}>
             {l.lado === DEBE ? "DEBE" : "HABER"}
@@ -252,6 +280,20 @@ export function AsientoEnLineas({ lineas, rotulo = null, acento = FAE.teal, tota
  * Los dos lados como par de opciones. Sale tantas veces en este tema que
  * escribirlo en cada actividad sería copiar el mismo gesto cinco veces.
  */
+/*
+ * ═══════════ EL VEREDICTO SE DICE CON FORMA, NO SOLO CON EL BORDE ═══════════
+ *
+ * Corregido, el lado bueno lleva ✓ y el lado que el estudiante eligió mal lleva
+ * ✗. Antes el veredicto iba solo en el matiz del borde —teal el bueno, coral el
+ * malo— y esos dos tonos miden lo mismo en gris (1,07:1): quien no los
+ * distingue veía DOS botones iguales y no sabía cuál era la respuesta.
+ *
+ * Y el lado bueno ya no se pinta de teal para decir «bien». Teal es el debe:
+ * un haber correcto salía con el color del debe, justo cuando se le decía al
+ * estudiante que había acertado. El acierto conserva el tono de SU lado, el
+ * borde se engrosa (sin mover el botón: es una sombra interior) y la palomita
+ * es la señal. El error sí conserva el coral, que no significa ningún lado.
+ */
 export function ElegirLado({ elegido, correcto = null, onElegir, deshabilitado = false, nombres = null }) {
   const texto = nombres ?? { [DEBE]: "Debe", [HABER]: "Haber" };
   return (
@@ -259,10 +301,12 @@ export function ElegirLado({ elegido, correcto = null, onElegir, deshabilitado =
       {[DEBE, HABER].map((lado) => {
         const elegidoEste = elegido === lado;
         const revelado = correcto !== null;
+        const esBueno = revelado && lado === correcto;
+        const esMalo = revelado && !esBueno && elegidoEste;
         let borde = "rgba(248,249,250,0.22)";
         let fondo = "rgba(14,27,46,0.5)";
-        if (revelado && lado === correcto) { borde = FAE.teal; fondo = "rgba(42,157,143,0.14)"; }
-        else if (revelado && elegidoEste) { borde = FAE.coral; fondo = "rgba(231,111,81,0.14)"; }
+        if (esBueno) { borde = COLOR_LADO[lado]; fondo = `${COLOR_LADO[lado]}24`; }
+        else if (esMalo) { borde = FAE.coral; fondo = "rgba(231,111,81,0.14)"; }
         else if (elegidoEste) { borde = COLOR_LADO[lado]; }
         return (
           <button
@@ -271,11 +315,15 @@ export function ElegirLado({ elegido, correcto = null, onElegir, deshabilitado =
             disabled={deshabilitado}
             onClick={() => onElegir(lado)}
             style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
               padding: "13px 10px", borderRadius: "12px", cursor: deshabilitado ? "default" : "pointer",
               background: fondo, border: `1px solid ${borde}`, color: FAE.text,
+              boxShadow: esBueno || esMalo ? `inset 0 0 0 1px ${borde}` : "none",
               fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600,
             }}
           >
+            {esBueno && <MarcaVeredicto bien color={COLOR_LADO[lado]} etiqueta="Lado correcto" />}
+            {esMalo && <MarcaVeredicto bien={false} color={FAE.coral} etiqueta="Tu respuesta, incorrecta" />}
             {texto[lado]}
           </button>
         );

@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { sinUnSoloIntento } from "../armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -193,7 +194,8 @@ async function jugar(m, falla) {
 test("★★★ la tanda entera: seis preguntas, un intento cada una, y el porcentaje es aciertos / 6", async () => {
   const m = await montar();
   try {
-    assert.ok(m.caja.textContent.includes(D.H7.consigna));
+    assert.ok(m.caja.textContent.includes(sinUnSoloIntento(D.H7.consigna)));
+    assert.ok(m.caja.querySelector("[data-contador-intento] [data-un-intento]"), "el distintivo junto al contador");
     const fallos = new Set(["vnr-1", "medida-2", "vnr-3"]);
     const detalle = await jugar(m, (id) => fallos.has(id));
     assert.equal(m.completados.length, 1);
