@@ -663,6 +663,8 @@ export const SUBJECTS = {
           { id: "t4-a5-san-calixto", nombre: "San Calixto", clasificacion: { tipo: APRENDER } },
           /* H7, justo después de A5, que la sostiene. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0206. */
           { id: "t4-concilia-la-cuenta", nombre: "Concilia la cuenta", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* H8, la última de T4. Experto · 90 FP, evaluativa, tres etapas en un solo juego. Su fila del servidor es la migración 0207. */
+          { id: "t4-se-asienta-o-no", nombre: "¿Se asienta o no?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],
       },
       /*

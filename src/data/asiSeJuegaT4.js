@@ -5,6 +5,7 @@ import { H4, PASOS_H4, EJEMPLO_H4, ALT_H4, BOTON_H4, CUADRA } from "./contabilid
 import { H5, PASOS_H5, EJEMPLO_H5, ALT_H5, BOTON_H5 } from "./contabilidadT4H5.js";
 import { H6, PASOS_H6, EJEMPLO_H6, ALT_H6 } from "./contabilidadT4H6.js";
 import { H7, PASOS_H7, EJEMPLO_H7, ALT_H7 } from "./contabilidadT4H7.js";
+import { H8, PASOS_H8, EJEMPLO_H8, ALT_H8 } from "./contabilidadT4H8.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -49,6 +50,10 @@ import { H7, PASOS_H7, EJEMPLO_H7, ALT_H7 } from "./contabilidadT4H7.js";
  * serie). Solo el primer gesto, como pide Katsumi: la mano TOCA «Libros:
  * resta». La demo no trae serie, así que no pinta el par ni los datos de
  * partida, y no llega a la fase 2.
+ *
+ * t4-se-asienta-o-no (H8): el cheque de $50.000 que nadie ha cobrado
+ * (construido, sin serie). Solo la etapa 1, con una partida que NO se
+ * asienta, para no regalar ningún asiento: la mano TOCA «No se asienta».
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -180,6 +185,23 @@ const ASI_CONCILIA = {
   cuadros: { gesto: 1 },
 };
 
+const ASI_SE_ASIENTA = {
+  actividadId: H8.id,
+  titulo: H8.nombre,
+  /* La consigna de H8 nombra la empresa de su serie: aquí va solo la frase común a las dos. */
+  consigna: H8.consignaComun,
+  pasos: PASOS_H8,
+  alt: ALT_H8,
+  demo: { items: { serie: null, partidas: [EJEMPLO_H8] } },
+  guion: {
+    duracion: 6500,
+    toques: [
+      { ms: 2200, en: `[data-opcion="${EJEMPLO_H8.respuesta}"] button` },
+    ],
+  },
+  cuadros: { gesto: 1 },
+};
+
 export const ASI_SE_JUEGA_T4 = {
   [ASI_ENTRA_O_SALE.actividadId]: ASI_ENTRA_O_SALE,
   [ASI_CONTROL.actividadId]: ASI_CONTROL,
@@ -188,4 +210,5 @@ export const ASI_SE_JUEGA_T4 = {
   [ASI_EMPLEADO_O_GASTO.actividadId]: ASI_EMPLEADO_O_GASTO,
   [ASI_QUIEN_PRIMERO.actividadId]: ASI_QUIEN_PRIMERO,
   [ASI_CONCILIA.actividadId]: ASI_CONCILIA,
+  [ASI_SE_ASIENTA.actividadId]: ASI_SE_ASIENTA,
 };

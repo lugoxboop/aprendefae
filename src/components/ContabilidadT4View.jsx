@@ -57,6 +57,12 @@ import {
   H7, DESTINOS_H7, BOTON_H7, TABLA_H7, FALTAN_SALDOS, PIE_DATOS_H7, PIE_CIERRE_H7, CORRECTO as CORRECTO_H7, INCORRECTO as INCORRECTO_H7,
   resumenH7, lectorErrorH7, nombreDeDestinoH7, sortearH7, evaluarPartidaH7, tablaH7, leerSaldo, evaluarSaldosH7, puntuarH7,
 } from "../data/contabilidadT4H7.js";
+import {
+  H8, DESTINOS_H8, PALETA_H8, deLaPaleta, BOTON_H8, ETAPAS_H8, PIE_ETAPA1, CIERRE_H8, CORRECTO as CORRECTO_H8, INCORRECTO as INCORRECTO_H8,
+  ROTULO_ASIENTO_H8, MISMO_LADO_H8, FALTA_SALDO, MAYOR_H8, PAR_H8, TOTAL_H8,
+  resumenH8, lectorErrorH8, nombreDeDestinoH8, sortearH8, evaluarEtapa1H8, evaluarEtapa2H8, evaluarEtapa3H8,
+  listoH8, mismoLadoH8, leerSaldoH8, puntuarH8,
+} from "../data/contabilidadT4H8.js";
 import { Opcion, Opciones, Pulsos, Cierre } from "./mecanicas/corazon/juego.jsx";
 import { TEXTO_CIERRE } from "./mecanicas/bloques/marcos.jsx";
 import { Responder, useTanda, AsientoEnLineas, leerCifra, CampoCifra } from "./mecanicas/libros/piezas.jsx";
@@ -104,6 +110,7 @@ export const JUEGOS_T4 = [
   { id: H5.id, Mecanica: AlEmpleadoOAlGasto, titulo: H5.nombre },
   { id: H6.id, Mecanica: QuienSeEnteroPrimero, titulo: H6.nombre },
   { id: H7.id, Mecanica: ConciliaLaCuenta, titulo: H7.nombre },
+  { id: H8.id, Mecanica: SeAsientaONo, titulo: H8.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
@@ -2490,6 +2497,307 @@ export function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onCompletar, i
         <div ref={zonaBoton}>
           <Responder onClick={() => setTerminado(true)}>{BOTON_H7.verResumen}</Responder>
         </div>
+      )}
+    </Marco>
+  );
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * T4 · HACER 8 · ¿SE ASIENTA O NO? (Célula D)
+ *
+ * Desde la especificación de Hanayama (celula-d/hanayama-h8-pantalla-v1.md
+ * con la v1.1 encima: PH8-1) y el paquete vigente de Katsumi (serie 1 y
+ * serie 2). Las piezas compartidas, sin cambiarlas (Encabezado, Pulsos,
+ * Opciones, Opcion, ConstructorAsiento, AsientoEnLineas, Responder,
+ * CampoCifra, Cierre).
+ *
+ * Cada intento sortea UNA serie, por su cuenta: nada se comparte con H7.
+ * Arriba, el PAR de A5/H7 con SOLO «los libros» y su saldo; el lado
+ * izquierdo y el «=» guardan su sitio SIN texto hasta el acierto de la
+ * etapa 3 (v1.1). El saldo conciliado y el extracto NO están en el DOM
+ * hasta ese acierto (v3 de Katsumi; prueba de Shibukawa).
+ *
+ *   · ETAPA 1 · las nueve partidas: «Se asienta» / «No se asienta», en
+ *     orden fijo y apiladas. Un toque; «era esta»; coral solo en el error
+ *   · ETAPA 2 · las cinco notas, en el orden de la p. 191: el constructor
+ *     de H3 (sin cifras, dos filas), las seis cuentas fijas. «Comprobar»,
+ *     un intento, el mensaje de la primera regla que aplique; después, el
+ *     asiento correcto con su valor y su fecha
+ *   · ETAPA 3 · el mayor de Bancos: el saldo inicial y los cinco
+ *     movimientos CORRECTOS, sin las filas «Suma»; un CampoCifra. Al
+ *     comprobar, «Suma» y «Saldo»; con el acierto, el par completo
+ *
+ * Al terminar: onCompletar(pct, ms, detalle) con quince puntos. En modo demo
+ * («Así se juega»), una sola partida de la etapa 1.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+const CSS_T4H8 = `
+.t4h8-etapa { margin: 0 0 10px; font: 700 10.5px/1.3 "Sora", "Inter", sans-serif; letter-spacing: .16em; color: ${FAE.ambar}; }
+`;
+
+/* El par de H8: «los libros» siempre; a la izquierda, «el banco» y el «=» solo con el acierto de la etapa 3. */
+function ParH8({ s, completo }) {
+  const P = PAR_H8;
+  return (
+    <div className="t4cn-par" data-par>
+      <span className="t4f-sr" data-par-lector>{completo ? `${TABLA_H7.lectorPar(cifra(s.conciliadoBanco), cifra(s.saldoMayor))} ${TABLA_H7.lectorIguales}` : `${P.libros}: ${cifra(s.libros)}.`}</span>
+      {completo ? (
+        <div className="t4cn-parl t4cn-foco" aria-hidden="true">
+          <span>{P.banco}</span>
+          <span className="t4cn-m" data-par-monto="banco">{cifra(s.conciliadoBanco)}</span>
+        </div>
+      ) : (
+        <div className="t4cn-parl t4cn-oculto" aria-hidden="true" data-par-oculto>
+          <span>{VACIO}</span>
+          <span className="t4cn-m">{VACIO}</span>
+        </div>
+      )}
+      {completo
+        ? <span className="t4cn-igual" aria-hidden="true" data-igual="visible">{P.igual}</span>
+        : <span className="t4cn-igual t4cn-oculto" aria-hidden="true" data-igual="oculto">{VACIO}</span>}
+      <div className={`t4cn-parl${completo ? " t4cn-foco" : ""}`} aria-hidden="true">
+        <span>{completo ? P.mayor : P.libros}</span>
+        <span className="t4cn-m" data-par-monto="libros">{cifra(completo ? s.saldoMayor : s.libros)}</span>
+      </div>
+    </div>
+  );
+}
+
+/*
+ * El mayor de Bancos de la etapa 3: saldo inicial y movimientos. Al
+ * comprobar, las dos «Suma»; el «Saldo» final SOLO con el acierto: es el
+ * saldo conciliado, y no está en el DOM antes (v3; con el error, el intento
+ * ya se gastó, pero la orden es la misma).
+ */
+function MayorH8({ s, comprobado, acierto }) {
+  const M = MAYOR_H8;
+  const debe = [{ rotulo: M.saldo, monto: s.libros }, ...s.notas.filter((n) => n.tipo === "credito").map((n) => ({ monto: n.monto }))];
+  const haber = s.notas.filter((n) => n.tipo === "debito").map((n) => ({ monto: n.monto }));
+  if (comprobado) {
+    debe.push({ rotulo: M.suma, monto: s.libros + s.credito, clase: "t4my-suma" });
+    haber.push(...Array.from({ length: Math.max(0, debe.length - 1 - haber.length) }, () => null), { rotulo: M.suma, monto: s.debito, clase: "t4my-suma" });
+    if (acierto) debe.push({ rotulo: M.saldoFinal, monto: s.saldoMayor, clase: "t4my-saldo" });
+  }
+  const n = Math.max(debe.length, haber.length);
+  const celda = (f, otra, lado, k) => (
+    <div key={`${lado}-${k}`} className={`t4my-c ${f?.clase ?? otra?.clase ?? ""}`} data-mayor={f ? lado : undefined} data-fila-mayor={k}>
+      {(f?.rotulo || otra?.rotulo) && <span className="t4my-r">{f?.rotulo ?? VACIO}</span>}
+      {f ? <span className="t4cn-m" data-monto={`mayor-${lado}-${k}`}>{cifra(f.monto)}</span> : <span className="t4cn-m">{VACIO}</span>}
+    </div>
+  );
+  return (
+    <figure className="t4my" data-mayor-h8 data-comprobado={comprobado ? "si" : "no"}>
+      <div aria-hidden="true" style={{ display: "grid", minWidth: 0 }}>
+        <span className="t4my-n">{M.titulo(s.fechaAsientos)}</span>
+        <div className="t4my-g">
+          <div className="t4my-c"><span className="t4my-lado t4p-d">{INTERFAZ.debe}</span></div>
+          <div className="t4my-c"><span className="t4my-lado t4p-hb">{INTERFAZ.haber}</span></div>
+          {Array.from({ length: n }, (_, k) => [celda(debe[k], haber[k], DEBE, k), celda(haber[k], debe[k], HABER, k)])}
+        </div>
+      </div>
+      <table className="t4f-sr" data-tabla-mayor>
+        <caption>{M.titulo(s.fechaAsientos)}</caption>
+        <thead><tr><th scope="col">{INTERFAZ.debe}</th><th scope="col">{INTERFAZ.haber}</th></tr></thead>
+        <tbody>
+          {Array.from({ length: n }, (_, k) => (
+            <tr key={k}>{[debe[k], haber[k]].map((f, j) => <td key={j}>{f ? [f.rotulo, cifra(f.monto)].filter(Boolean).join(" ") : ""}</td>)}</tr>
+          ))}
+        </tbody>
+      </table>
+    </figure>
+  );
+}
+
+/* La devolución de H8: región viva; vacía mientras se pregunta. */
+function PanelH8({ r, palabra = false, lector = null, pie = null }) {
+  return (
+    <div data-retro aria-live="polite" aria-atomic="true">
+      {r && (
+        <div className="fae-t4h1-entra" data-panel={r.ok ? "acierto" : "error"} style={{
+          marginTop: "12px", padding: "11px 13px", borderRadius: "11px",
+          background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
+          borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
+        }}>
+          {lector && !r.ok && <span style={SOLO_LECTOR}>{lector} </span>}
+          {palabra && <p data-palabra style={{ margin: "0 0 4px", fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", fontWeight: 700, color: r.ok ? FAE.text : FAE.coral }}>{r.ok ? CORRECTO_H8 : INCORRECTO_H8}</p>}
+          {(r.textos ?? [r.texto]).map((x, k) => (
+            <p key={x} data-texto-retro style={{ margin: "0 0 4px", fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, fontWeight: !palabra && k === 0 && r.ok ? 700 : 400 }}>{x}</p>
+          ))}
+          {pie && <p data-pagina style={{ margin: "4px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{pie}</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function SeAsientaONo({ Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null }) {
+  const sortear = () => items ?? sortearH8((xs) => xs[Math.floor(Math.random() * xs.length)], barajar);
+  const [tanda, setTanda] = useState(sortear);
+  const [etapa, setEtapa] = useState(1);
+  const [i, setI] = useState(0);
+  const [elegido, setElegido] = useState(null);
+  const [r, setR] = useState(null);
+  const [filas, setFilas] = useState(() => [filaVacia(), filaVacia()]);
+  const [campo, setCampo] = useState("");
+  const [aviso, setAviso] = useState(false);
+  const [bien, setBien] = useState(0);
+  const [terminado, setTerminado] = useState(false);
+  const detalle = useRef([]);
+  const inicio = useRef(Date.now());
+  const zonaBoton = useRef(null);
+  const tarjeta = useRef(null);
+
+  const { serie: s, partidas } = tanda;
+  const notas = s?.notas ?? [];
+
+  useEffect(() => {
+    if (terminado && !modoDemo) onCompletar?.(puntuarH8(bien), Date.now() - inicio.current, detalle.current);
+  }, [terminado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (r && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [r]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const anotar = (id, ok, respuesta) => detalle.current.push({ item: id, ok, intentos: 1, respuesta: ok ? null : respuesta, orden: detalle.current.length + 1 });
+  const contar = (nuevo) => { if (nuevo.ok) setBien((x) => x + 1); };
+
+  /* Etapa 1: un toque. */
+  const responder = (id) => {
+    if (r) return;
+    const it = partidas[i];
+    const nuevo = evaluarEtapa1H8(it, id);
+    anotar(it.id, nuevo.ok, id);
+    contar(nuevo);
+    setElegido(id);
+    setR(nuevo);
+  };
+  /* Etapa 2: el asiento armado, un intento. */
+  const comprobarAsiento = () => {
+    if (r || !listoH8(filas)) return;
+    const nota = notas[i];
+    /* La paleta lleva espacios duros (la regla de la raya): se evalúa con el nombre llano. */
+    const nuevo = evaluarEtapa2H8(nota, filas.map((f) => ({ ...f, cuenta: f.cuenta && deLaPaleta(f.cuenta) })));
+    anotar(`asiento-${nota.id}`, nuevo.ok, nuevo.respuesta);
+    contar(nuevo);
+    setR(nuevo);
+  };
+  /* Etapa 3: el saldo, un intento; vacío, un aviso que no lo gasta. */
+  const comprobarSaldo = () => {
+    if (r) return;
+    const v = leerSaldoH8(campo);
+    if (v === null) { setAviso(true); return; }
+    setAviso(false);
+    const nuevo = evaluarEtapa3H8(s, v);
+    anotar("saldo-mayor", nuevo.ok, cifra(v));
+    contar(nuevo);
+    setR(nuevo);
+  };
+
+  const avanzar = () => {
+    const ultimo = i + 1 === (etapa === 1 ? partidas.length : notas.length);
+    setElegido(null); setR(null); setFilas([filaVacia(), filaVacia()]);
+    if (etapa === 3) { setTerminado(true); return; }
+    if (!ultimo) { setI(i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); return; }
+    setI(0);
+    setEtapa(etapa + 1);
+  };
+
+  const reiniciar = () => {
+    setTanda(sortear()); setEtapa(1); setI(0); setElegido(null); setR(null); setFilas([filaVacia(), filaVacia()]);
+    setCampo(""); setAviso(false); setBien(0); setTerminado(false);
+    detalle.current = []; inicio.current = Date.now();
+  };
+
+  if (terminado) {
+    return (
+      <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+        <Cierre pct={Math.round(puntuarH8(bien))} onReiniciar={reiniciar} textoReiniciar={BOTON_H8.otraVez}>
+          <p data-resumen style={TEXTO_CIERRE}>{resumenH8(bien, TOTAL_H8)}</p>
+          <p data-cierre style={{ ...TEXTO_CIERRE, marginTop: "8px" }}>{CIERRE_H8.texto}</p>
+          <p data-pie-cierre style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", color: APAGADO_H1 }}>{CIERRE_H8.pie}</p>
+        </Cierre>
+      </Marco>
+    );
+  }
+
+  const estadoDe = (id) => {
+    if (!r) return null;
+    if (id === elegido) return r.ok ? "correcta" : "incorrecta";
+    if (id === r.correcta) return "revelada";
+    return null;
+  };
+  const tarjetaDe = (key, attr, texto) => (
+    <div key={key} className="fae-t4h1-entra" {...{ [attr]: key }} style={{
+      margin: "0 0 12px", padding: "11px 13px", borderRadius: "11px",
+      background: "rgba(184,196,212,0.12)", borderLeft: "3px solid #B8C4D4",
+    }}>
+      <p ref={tarjeta} tabIndex={-1} data-partida-texto style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text, outline: "none" }}>{texto}</p>
+    </div>
+  );
+  const ultimo = i + 1 === (etapa === 1 ? partidas.length : notas.length);
+  const textoSeguir = etapa === 1 ? (ultimo ? BOTON_H8.aLosAsientos : BOTON_H8.siguiente) : etapa === 2 ? (ultimo ? BOTON_H8.alMayor : BOTON_H8.siguienteAsiento) : BOTON_H8.verResumen;
+
+  return (
+    <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+      <style>{CSS_T4H1 + CSS_T4F + CSS_T4C + CSS_T4H8}</style>
+      {/* Como en H1-H7: la partida lleva `data-t4-h8` y la demo, `data-t4-h8-demo`. */}
+      <div {...(modoDemo ? { "data-t4-h8-demo": "" } : { "data-t4-h8": "" })} data-etapa={etapa} data-serie={s?.id}>
+        <Encabezado consigna={s ? s.consigna.join(" ") : H8.consignaComun} onComoSeJuega={onComoSeJuega} />
+        {/* El par: solo «los libros» hasta el acierto de la etapa 3. La demo no trae serie. */}
+        {s && <div className="t4cn" style={{ margin: "0 0 12px" }}><ParH8 s={s} completo={etapa === 3 && Boolean(r?.ok)} /></div>}
+        <p className="t4h8-etapa" data-rotulo-etapa>{ETAPAS_H8[etapa - 1]}</p>
+
+        {etapa === 1 && (
+          <>
+            <div style={{ marginBottom: "12px" }}><Pulsos total={partidas.length} hechos={i + (r ? 1 : 0)} enCurso={i + 1} etiqueta="Partida" /></div>
+            {tarjetaDe(partidas[i].id, "data-tarjeta-partida", partidas[i].texto)}
+            <div role="group" aria-label={ETAPAS_H8[0]}>
+              <Opciones columnas="minmax(0, 1fr)">
+                {DESTINOS_H8.map((d) => (
+                  <span key={d.id} data-opcion={d.id} style={{ display: "contents" }}>
+                    <Opcion ancho deshabilitada={Boolean(r)} estado={estadoDe(d.id)} onClick={() => responder(d.id)}>{d.nombre}</Opcion>
+                  </span>
+                ))}
+              </Opciones>
+            </div>
+            <PanelH8 r={r} lector={r && lectorErrorH8(nombreDeDestinoH8(r.correcta))} pie={PIE_ETAPA1} />
+          </>
+        )}
+
+        {etapa === 2 && (
+          <>
+            <div style={{ marginBottom: "12px" }}><Pulsos total={notas.length} hechos={i + (r ? 1 : 0)} enCurso={i + 1} etiqueta="Asiento" /></div>
+            {tarjetaDe(notas[i].id, "data-tarjeta-nota", notas[i].texto)}
+            <div data-constructor>
+              <ConstructorAsiento filas={filas} cuentas={PALETA_H8} conCifras={false} maximo={2} deshabilitado={Boolean(r)} estados={r ? r.estados : null} acento={acento} onFilas={setFilas} />
+            </div>
+            {!r && mismoLadoH8(filas) && <p data-aviso style={{ margin: "10px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12.5px", color: APAGADO_H1, textAlign: "center" }}>{MISMO_LADO_H8}</p>}
+            <PanelH8 r={r} palabra />
+            {r && (
+              <div className="fae-t4h1-entra" data-asiento-completo style={{ marginTop: "12px" }}>
+                <AsientoEnLineas lineas={r.asiento} rotulo={`${ROTULO_ASIENTO_H8} · ${s.fechaAsientos.toUpperCase()}`} acento={acento} totales />
+              </div>
+            )}
+          </>
+        )}
+
+        {etapa === 3 && (
+          <>
+            <p data-dato-etapa3 style={{ margin: "0 0 10px", fontFamily: "Inter, sans-serif", fontSize: "15px", lineHeight: "22px", color: FAE.text }}>{s.datoEtapa3}</p>
+            <MayorH8 s={s} comprobado={Boolean(r)} acierto={Boolean(r?.ok)} />
+            <div data-campo="mayor" style={{ display: "grid", gap: "6px", marginTop: "12px" }}>
+              <span style={{ fontFamily: "Inter, sans-serif", fontSize: "13px", fontWeight: 600, color: FAE.text }}>{MAYOR_H8.campo}</span>
+              <CampoCifra valor={campo} onCambio={setCampo} onEnviar={comprobarSaldo} deshabilitado={Boolean(r)} etiqueta={MAYOR_H8.campo} estado={r ? (r.ok ? "correcta" : "incorrecta") : null} />
+            </div>
+            <PanelH8 r={r} palabra />
+          </>
+        )}
+      </div>
+
+      {etapa === 2 && !r && <Responder onClick={comprobarAsiento} deshabilitado={!listoH8(filas)}>{BOTON_H8.comprobar}</Responder>}
+      {etapa === 3 && !r && <Responder onClick={comprobarSaldo}>{BOTON_H8.comprobarSaldo}</Responder>}
+      {etapa === 3 && !r && aviso && <p data-aviso style={{ margin: "9px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12.5px", color: APAGADO_H1, textAlign: "center" }}>{FALTA_SALDO}</p>}
+      {r && !modoDemo && (
+        <div ref={zonaBoton}><Responder onClick={avanzar}>{textoSeguir}</Responder></div>
       )}
     </Marco>
   );

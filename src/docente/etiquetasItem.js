@@ -88,6 +88,7 @@ import { preguntaDeItemH4 as preguntaDeItemT4H4 } from "../data/contabilidadT4H4
 import { casoDeItemH5 as casoDeItemT4H5 } from "../data/contabilidadT4H5.js";
 import { partidaDeItemH6 as partidaDeItemT4H6 } from "../data/contabilidadT4H6.js";
 import { partidaDeItemH7 as partidaDeItemT4H7 } from "../data/contabilidadT4H7.js";
+import { itemDeH8 as itemDeT4H8 } from "../data/contabilidadT4H8.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -782,6 +783,8 @@ Object.assign(REGLAS, {
   "t4-quien-se-entero-primero": (id) => partidaDeItemT4H6(id),
   /* T4 · H7. El ítem es la partida de su serie, o uno de los dos saldos. */
   "t4-concilia-la-cuenta": (id) => partidaDeItemT4H7(id),
+  /* T4 · H8. El ítem es la partida (etapa 1), su asiento (etapa 2) o el saldo del mayor (etapa 3). */
+  "t4-se-asienta-o-no": (id) => itemDeT4H8(id),
   /* ── Repaso del capítulo 5 (Célula E) ── */
   /* r5-1. Cada pantalla, por su subtema (Inversiones, Cartera, Inventarios) y su enunciado. */
   "r5-1": (id) => unidadDeR5_1(id),

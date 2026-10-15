@@ -5,7 +5,7 @@
  * la sirve solo cuando se mide. Sin sesión: la vista pide un AuthContext y
  * aquí basta uno vacío.
  *
- * Con #h1 a #h7 monta la vista en el modo Hacer, con ese juego abierto
+ * Con #h1 a #h8 monta la vista en el modo Hacer, con ese juego abierto
  * (medir-t4-hacer.mjs).
  */
 import { createRoot } from "react-dom/client";
@@ -13,7 +13,7 @@ import "../../../src/styles/global.css";
 import ContabilidadT4View from "../../../src/components/ContabilidadT4View.jsx";
 import { AuthContext } from "../../../src/auth/AuthProvider.jsx";
 
-const ABIERTO = { "#h1": "t4-entra-o-sale-de-caja", "#h2": "t4-el-control-que-se-saltaron", "#h3": "t4-se-mueve-la-caja-menor", "#h4": "t4-el-arqueo-de-rosa", "#h5": "t4-al-empleado-o-al-gasto", "#h6": "t4-quien-se-entero-primero", "#h7": "t4-concilia-la-cuenta" };
+const ABIERTO = { "#h1": "t4-entra-o-sale-de-caja", "#h2": "t4-el-control-que-se-saltaron", "#h3": "t4-se-mueve-la-caja-menor", "#h4": "t4-el-arqueo-de-rosa", "#h5": "t4-al-empleado-o-al-gasto", "#h6": "t4-quien-se-entero-primero", "#h7": "t4-concilia-la-cuenta", "#h8": "t4-se-asienta-o-no" };
 const nodo = ABIERTO[location.hash] ?? null;
 
 createRoot(document.getElementById("root")).render(
