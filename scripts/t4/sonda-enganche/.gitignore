@@ -4,3 +4,5 @@
 clave.json
 salida*.json
 tablas.md
+# caché de Python
+__pycache__/
