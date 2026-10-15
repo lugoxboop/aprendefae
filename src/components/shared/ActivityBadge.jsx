@@ -8,22 +8,27 @@ import { APRENDER, HACER, ETIQUETAS } from "../../data/subjects.js";
  * necesita código: basta con que traiga su `clasificacion` en subjects.js.
  * Si no hay clasificación (Gen aún no la ha definido), no se dibuja nada.
  *
- * Teal para "Aprender" y coral para "Hacer": son los dos acentos de marca más
- * separados entre sí, y además difieren en relleno y borde para que la
- * distinción no dependa solo del color.
+ * NEUTRA, Y LA DIFERENCIA LA HACE LA FORMA: «Hacer» va lleno, «Aprender» de
+ * contorno. Decisión de Xeno (15-oct), medida y no supuesta.
+ *
+ * Aquí decía antes que teal y coral «difieren en relleno y borde para que la
+ * distinción no dependa solo del color». Xeno comprobó que era FALSO: en gris
+ * las dos insignias salen idénticas —tinte del 14 % contra 16 %, borde del
+ * 55 % contra 62 %—, así que lo único que de verdad las separaba era la
+ * palabra. Un comentario puede llevar años diciendo que algo está cubierto
+ * sin que nadie lo mire.
+ *
+ * Y el coral sobraba por otra razón, de la misma pantalla: la insignia va
+ * arriba de cada pantalla de Hacer, donde el coral significa ERROR. Con
+ * deuteranopía, ese «HACER» se ve del mismo tono que la fila equivocada.
+ *
+ * Lleno contra contorno sí sobrevive al gris y al daltonismo, porque no es
+ * color: es cuánta tinta hay.
  */
 
 const ESTILOS = {
-  [APRENDER]: {
-    color: FAE.teal,
-    background: "rgba(42,157,143,0.14)",
-    border: "rgba(42,157,143,0.55)",
-  },
-  [HACER]: {
-    color: FAE.coral,
-    background: "rgba(231,111,81,0.16)",
-    border: "rgba(231,111,81,0.62)",
-  },
+  [APRENDER]: { color: FAE.node, background: "transparent", border: "rgba(203,220,242,0.55)" },
+  [HACER]: { color: FAE.bg, background: FAE.node, border: FAE.node },
 };
 
 export default function ActivityBadge({ tipo, size = "md" }) {

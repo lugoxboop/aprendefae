@@ -483,3 +483,48 @@ Si quieres certeza total, que Kaede o la Célula E las busquen en el banco digit
 - «Se debita Gasto provisiones – cuentas incobrables por $74.000.»
 - «Cálculo: $1.300.000 − $74.000 = $1.226.000, el valor neto.»
 - «Una deuda de $380.000 lleva ocho meses vencida. Con los porcentajes del ejemplo, ¿cuánto se provisiona por ella?»
+
+## (6) Futaba · entrega 2: predecir antes de revelar, capa 3 (pegada tal cual)
+
+
+Cómo funciona (para Mai):
+
+El estudiante toca la caja, elige y se revela el texto de siempre.
+Si falla, la devolución va antes de ese texto. Si acierta, el texto sale directo, sin «Sí.».
+Hay un intento por caja y no da puntaje.
+Los textos que se revelan y el texto final de cada capa no cambian.
+
+T6 A5
+
+Consigna: «Toca cada grupo y decide qué porcentaje le toca. Después, mira cuánto se provisiona.» (71)
+Grupo	Opciones	Correcta	Devolución si falla	Pie
+g1 ★	Nada · 5 % · 10 %	Nada	En este ejemplo, las vigentes y las de hasta tres meses no llevan provisión. (86)	Escenario simulado
+g2	Nada · 5 % · 10 %	5 %	Más de tres meses, sin pasar de seis: es el 5 %.	Decreto 1625 de 2016
+g3	5 % · 10 % · 15 %	10 %	Más de seis meses, sin pasar de un año: es el 10 %.	Decreto 1625 de 2016
+g4	5 % · 10 % · 15 %	15 %	Más de un año: es el 15 %, el más alto.	Decreto 1625 de 2016
+
+## (7) Mai · hoja 6: la pregunta de la caja (la revisa Shoko)
+
+«¿Qué porcentaje le toca?»
+
+## (8) Futaba · entrega 3: pasos que se juntan y predicción a mitad de la escena (pegada tal cual)
+
+Cada fusión pega dos textos ya aprobados sin cambiar una palabra.
+
+Para Kaede: el estado de la escena de cada paso fusionado es el del segundo paso. En t6Pieza3.js hay que volver a numerar las vueltas atrás (el paso 11 pasa a ser el 7).
+
+T6 A5: de 11 pasos a 10
+
+Se juntan 9 + 10 (Libro, p. 202).
+Predicción, entre los pasos 4 y 5:
+Pregunta: «El grupo de más de tres hasta seis meses suma $340.000. Al 5 %, ¿cuánto da?» (100)
+Opciones: $17.000 ✓ · $1.700 · $170.000.
+Si falla: «Revisa los ceros: el 5 % de $340.000 es $17.000.»
+Pie ★: «Fuente del porcentaje: Decreto 1625 de 2016», el mismo de los pasos 5 a 7.
+Al registro de cifras construidas: $1.700 y $170.000. No están en el capítulo, ni en la tabla de la p. 201, ni en la tabla ni las respuestas del D-3 (p. 269), ni en T6 A5 o a6.
+
+## (9) Mai · hoja 7: qué pasos se juntan y dónde va la parada (resumen; manda sobre la entrega 3)
+
+De 11 pasos a 10 (9 + 10, como pide Futaba). La predicción va entre el 4 y el 5.
+
+El contador de la parada dice «Antes del paso N» (nuevo, para Shoko).

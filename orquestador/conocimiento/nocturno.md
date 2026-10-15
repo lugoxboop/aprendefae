@@ -223,8 +223,9 @@ Lo que el coordinador sigue teniendo, y es lo único:
 - **Los datos de estudiantes.** Nadie más los toca, ni para mirar.
 - **Destrabar generales.** Un general detenido es el fallo más caro que tiene
   este montaje, y repararlo es trabajo del coordinador, no un favor.
-- **Las migraciones**, porque se corren a mano contra la base y hay que
-  comprobarlas ahí, no en los archivos.
+- **Las migraciones que no son de catálogo**: las de esquema, los incidentes y
+  comprobar que la base y la aplicación siguen diciendo lo mismo. Las de
+  catálogo **ya no las corre nadie a mano**; ver abajo.
 
 **Lo que el coordinador ya NO hace:** revisar y fusionar lo que la célula
 puede fusionar sola. Si un general fusiona algo que rompe `main` o que pisa a
@@ -234,6 +235,120 @@ es exactamente la dependencia que este cambio existe para romper.
 
 Y lo que no cambia: **ninguna célula toca producción**, y un PR abierto sigue
 sin ser un bloqueo. Si algo tuyo espera, sigues por la pieza siguiente.
+
+---
+
+## La prueba de guardia: cómo se entrega un término de una célula a otra
+
+**Es de la Célula B, y es la mejor pieza de coordinación que ha producido este
+montaje.** Se escribe aquí para que las cinco la usen.
+
+**El problema.** Un término solo puede estar definido en un sitio. Pero la
+célula que lo necesita hoy no siempre es la que va a ser su dueña mañana: T6
+necesitaba «nota débito» mucho antes de que existiera T4, que es el tema al
+que de verdad pertenece. Las salidas malas son dos: definirlo dos veces, y que
+un estudiante lea dos definiciones distintas del mismo término; o no definirlo
+y dejar un hueco.
+
+**Lo que hizo la Célula B.** Puso una glosa provisional en su tema **y** una
+prueba que se pone roja el día que otro tema defina ese término:
+
+```
+src/contabilidad/__tests__/b5-t6-glosa-nota-debito.test.mjs
+★★★ GUARDIA: ningún tema fuera de T6 define «nota débito»
+```
+
+El 15 de octubre de 2026 la Célula D publicó A4 de T4, que define «nota
+débito», y la guardia saltó. Exactamente el día que tenía que saltar.
+
+**Lo que la hace buena de verdad no es la prueba: es el mensaje de fallo.**
+Lleva dentro las instrucciones de qué hacer cuando salte, y a quién le toca:
+
+```
+══ OTRO TEMA YA DEFINE «NOTA DÉBITO» ══
+Qué hacer (Célula B):
+  1. Reemplazar la glosa provisional por la definición publicada, o quitarla
+     y remitir a ese tema.
+  2. Pasar el cambio por auditoría: es contenido publicado.
+  3. No debilitar ni borrar esta prueba: cuando la glosa ya no exista, se
+     retira con ella, en el mismo PR.
+```
+
+Quien se encuentra ese rojo —que puede ser otra célula, meses después— no
+tiene que entender el contexto ni preguntar a nadie: lo lee.
+
+**Y la otra mitad: la Célula D no tocó esa prueba.** Tenía una prueba ajena en
+rojo bloqueándole la entrega y la dejó en paz, explicó por qué en el PR y
+esperó. Si la hubiera aflojado, nadie se habría enterado hasta que un
+estudiante leyera las dos definiciones.
+
+**La regla, para las cinco:**
+
+- Si necesitas un término que pertenece a un tema que todavía no existe,
+  defínelo provisionalmente **y escribe la guardia**.
+- La guardia lleva las instrucciones dentro del mensaje de fallo, nombrando a
+  la célula a la que le tocará actuar.
+- La guardia se retira en el mismo PR que retira la glosa, nunca antes.
+- **Una prueba ajena en rojo no se toca.** Se reporta y se sigue por otra
+  pieza. Aflojarla es la única manera de que este mecanismo falle.
+
+---
+
+## Las migraciones se aplican solas, y quién es la mirada ahora
+
+**Cambió el 15 de octubre de 2026.** Hasta esa mañana cada migración la pegaba
+el coordinador en el editor SQL de Supabase. Esa mañana había **doce
+esperando** y cuatro células paradas: el cuello de botella ya no era fusionar
+—eso se había soltado la noche anterior— sino la base de datos.
+
+La tentación era repartir la llave de producción entre los cinco generales. No
+se hizo, y la razón no es la confianza: **lo que protegía ese paso manual no
+era la mano, era la mirada.** Alguien que no había escrito la migración la
+revisaba antes de que tocara la base. Si la corre quien la escribe, se pierde
+exactamente eso, y se pierde sobre el único recurso que no se puede deshacer
+barato.
+
+Así que la mirada se escribió una vez, en `scripts/guardian-migraciones.mjs`,
+y ahora corre en **cada propuesta**, al instante, sin dormirse. Comprueba lo
+mismo que se comprobaba a mano:
+
+1. **Nada destructivo.** `ALTER`, `DROP`, `TRUNCATE`, `DELETE`, `UPDATE`,
+   `GRANT` o `REVOKE` fuera de un comentario se rechazan. Solo el rango del
+   coordinador (0150-0199) puede cambiar el esquema, y tiene que decirlo con
+   una marca explícita.
+2. **El número, dentro del rango de su célula.** Un número fuera de rango es
+   un choque que se descubre con las dos migraciones ya escritas.
+3. **La fila dice lo mismo que `subjects.js`**: materia, tema, modalidad,
+   dificultad y FP, uno por uno. Es la que de verdad protege a un estudiante:
+   si la migración dice 25 FP y la aplicación dice 50, alguien cobra lo que no
+   es.
+
+Y el despliegue aplica las que falten, **antes de subir el sitio**. El orden
+importa: publicar primero y migrar después deja un rato en el que el sitio
+ofrece una actividad cuya fila no existe, y quien la termine en ese rato no
+cobra. La tabla `public.migraciones_aplicadas` lleva la cuenta; se sembró con
+las 93 que ya estaban aplicadas a mano, porque si no el primer despliegue
+habría intentado reaplicar desde la 0001.
+
+**Lo que esto te pide a ti, general: nada nuevo.** Sigues escribiendo las
+migraciones igual. Lo que cambia es que ya no avisas de «corre la 0204» y ya
+no esperas. Lo que no cambia es que una migración floja rebota: el guardián
+comprueba lo mismo que comprobaba una persona, y rechaza antes de que se pueda
+fusionar.
+
+**Tres cosas que se aprendieron escribiéndolo**, por si alguien lo toca:
+
+- Un `on conflict ... do update set` **no es destructivo**: es la forma
+  idempotente de un insert. La primera versión lo rechazaba, o sea que
+  rechazaba la manera más segura de escribir una migración.
+- El guardián mira **solo lo que la propuesta añade**, no la historia. La
+  primera versión juzgaba las ochenta del repositorio y rechazaba doce que
+  llevaban meses aplicadas y correctas.
+- **No se comprueba que el id empiece por el prefijo de la célula**, aunque
+  suene razonable: las Células B y C también construyeron piezas de Macro
+  desde sus rangos, con ids como `en-que-talla-va`. Esa regla, escrita,
+  rechazaba migraciones correctas. La comprobación 3 ya caza un id equivocado
+  sin inventarse una regla que la realidad no cumple.
 
 ---
 
@@ -299,3 +414,40 @@ Cada general deja, al final de la noche, una lista corta:
 
 Nada de esto se escribe durante la noche interrumpiendo el trabajo: se escribe
 al final, o cuando una entrega lo justifique.
+
+## La vara de lo crítico: ¿se puede deshacer?
+
+Mateo, 15 de octubre, corrigiéndome a mí y mandándomelo pasar a las cinco
+células:
+
+> Crítico es solo lo que no se puede deshacer: borrar o dañar datos de
+> estudiantes, cambiar contenido que yo ya aprobé, o algo que tumbe la
+> plataforma. Un punto de diferencia en un redondeo, cómo se interpreta una
+> regla, qué componente se ajusta y cómo: todo eso lo resuelves tú y me lo
+> cuentas en el resumen final, no me lo preguntas. Antes de preguntarme algo,
+> pregúntate si se puede deshacer; si se puede, decide tú.
+
+**La prueba, antes de escribirle a nadie por encima de ti: ¿se puede
+deshacer?** Si sí, decides y lo cuentas en el informe. Si no, preguntas.
+
+| Se deshace → **decides tú** | No se deshace → **preguntas** |
+|---|---|
+| Cambiar cómo se calcula algo de aquí en adelante | Recalcular o borrar FP ya otorgados |
+| Ajustar un componente, un color, un tamaño | Reescribir contenido que Mateo ya aprobó |
+| Interpretar una regla del canon | Un cambio que puede tumbar la plataforma |
+| Abrir, cerrar o rehacer un PR | Borrar una rama o reescribir la historia de `main` |
+| Decidir el alcance de tu propia tanda | Gastar dinero o escribirle a un tercero |
+
+**El caso que la originó, por si sirve de calibre.** Encontré que el navegador
+le enseñaba 56 FP al estudiante y la base guardaba 57, en las 137 actividades
+evaluativas. Lo llevé a Mateo porque toca puntajes. Me respondió que no: el
+arreglo era una línea, no tocaba ninguna fila guardada y se podía revertir en
+un minuto. **Lo reversible era el arreglo, no el defecto.** Lo irreversible
+habría sido recalcular las filas ya otorgadas — y eso sí se queda esperando.
+
+**Y la otra mitad, que es la que cuesta más:** esto vale en los dos sentidos.
+Un general que le pregunta a su coordinador lo que puede decidir él convierte
+al coordinador en el cuello de botella, igual que el coordinador que le
+pregunta a Mateo. Si lo que te frena es que alguien confirme algo reversible,
+no estás siendo prudente: estás gastando el recurso más escaso que hay aquí,
+que es la atención de quien está por encima de ti.

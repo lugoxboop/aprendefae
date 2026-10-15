@@ -66,6 +66,11 @@ export const PARTES_T6_ACT2 = [
         { valor: 148800, clave: "C15", texto: "Revisa el valor. Se castiga toda la deuda, $180.000, aunque la provisión sea menor. Así lo hace el libro." },
       ],
       B: "Revisa el valor. Mira de cuánto es la deuda de Pablo Moncayo.",
+      /* Las razones por cuenta de la D (Futaba, entrega 1): detrás de «Sobra X.» o «No va X: en su lugar va Y.». */
+      razones: {
+        [GASTO]: "El gasto se anotó en diciembre, al crear la provisión. Lo que le faltó se suma a la provisión del año siguiente.",
+        [CAJA]: "En un castigo no entra plata.",
+      },
     },
   },
   {
@@ -83,6 +88,10 @@ export const PARTES_T6_ACT2 = [
         { valor: 153400, clave: "C12", texto: "Revisa el valor. A lo que pide el análisis se le suma lo que faltó el año anterior: $153.400 + $31.200 = $184.600." },
       ],
       B: "Revisa el valor. Suma lo que pide el análisis y lo que faltó en marzo.",
+      razones: {
+        [CLIENTES]: "Crear la provisión del año no cambia lo que deben los clientes: nadie paga y no se castiga ninguna deuda.",
+        [CAJA]: "La provisión es un cálculo: no entra ni sale plata.",
+      },
     },
   },
 ];

@@ -25,6 +25,12 @@ import CierreConDiario from "./mecanicas/libros/tema5/LibroDiario.jsx";
 import { T5_ACT2 } from "../data/contabilidadT5Act2.js";
 import ControlInterno from "./mecanicas/libros/t7/ControlInterno.jsx";
 import { PIEZA_CUIDAR_LAS_INVERSIONES } from "../data/contabilidadT5_n2.js";
+import TemporalOLargoPlazo from "./mecanicas/libros/t5/TemporalOLargoPlazo.jsx";
+import { N1 } from "../data/contabilidadT5_n1.js";
+import RevisionQueFalta from "./mecanicas/libros/t5/RevisionQueFalta.jsx";
+import { N3 } from "../data/contabilidadT5_n3.js";
+import ElInteresDelPeriodo from "./mecanicas/libros/t5/ElInteresDelPeriodo.jsx";
+import { N4 } from "../data/contabilidadT5_n4.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -58,6 +64,9 @@ const PUBLICADAS = PIEZAS.length;
 export const JUEGOS = [
   { id: T5_ACT1.id, Mecanica: QueRentaDa, titulo: T5_ACT1.nombre },
   { id: T5_ACT2.id, Mecanica: CierreConDiario, titulo: T5_ACT2.nombre },
+  { id: N1.id, Mecanica: TemporalOLargoPlazo, titulo: N1.nombre },
+  { id: N3.id, Mecanica: RevisionQueFalta, titulo: N3.nombre },
+  { id: N4.id, Mecanica: ElInteresDelPeriodo, titulo: N4.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
@@ -110,7 +119,13 @@ export default function ContabilidadTema5View({ modo = null, nodoInicial = null,
             >
               <ChevronLeft size={20} color={FAE.text} />
             </button>
-            <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1 }}>
+            {/*
+             * El nombre del tema rompe en dos líneas en vez de cortarse: a 320 px la
+             * regla compartida de la cabecera compacta (AccountControl) lo truncaba
+             * con «…». Encoge (minWidth: 0), pero no desaparece (herramientas.md,
+             * «La regla que salió de la primera pasada»).
+             */}
+            <h1 data-titulo-tema style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "break-word" }}>
               {tema.title}
             </h1>
           </div>

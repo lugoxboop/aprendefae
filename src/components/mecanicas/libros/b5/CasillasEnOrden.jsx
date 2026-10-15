@@ -8,6 +8,7 @@ import { Avanzar, TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { RotuloSimulado, PieDeFuente } from "../tema6/FuentesT6A5.jsx";
+import { useReducido } from "../tema3/DosLineas.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -27,9 +28,14 @@ import { RotuloSimulado, PieDeFuente } from "../tema6/FuentesT6A5.jsx";
  *   · acierte o falle, el valor correcto queda escrito en el registro de la
  *     partida, para que la casilla siguiente parta de él (Futaba: en a6 es
  *     indispensable, porque el total y el neto dependen de lo anterior);
- *   · la regla fija (un texto o una tabla), la nota bajo ella, el punto de
- *     partida ya resuelto, los datos de cada parte y, si la actividad es un
- *     escenario simulado, su rótulo fijo y los pies de fuente en su forma;
+ *   · la regla fija en texto, la nota bajo ella y el punto de partida ya
+ *     resuelto;
+ *   · un visual propio, si la actividad lo trae (`visual: { Componente,
+ *     anuncio, enDemo? }`): va encima de la casilla y hace de registro
+ *     (b5-t6-a5, la cuenta que se llena; b5-t6-a6, los cajones del tiempo,
+ *     con su tabla, su rótulo y sus pies);
+ *   · las opciones, en una columna; al pasar de casilla, la página se mueve
+ *     para que se vean la casilla, el rótulo y el renglón encendido;
  *   · pct = aciertos / casillas × 100, y el texto de cierre.
  *
  * Ítem = la casilla, por su id; `respuesta` guarda el valor elegido al fallar.
@@ -37,10 +43,9 @@ import { RotuloSimulado, PieDeFuente } from "../tema6/FuentesT6A5.jsx";
  * MODO DEMO («Así se juega»): llega `items` con el ejemplo (una casilla), no
  * se baraja nada, no hay encabezado y nunca se llama a `onCompletar`.
  *
- * config: { consigna, regla | reglaTabla{ filas[{ nombre, valor, pie? }], pie? }, nota?{ texto, pie },
- *           rotuloSimulado?, partida?, partes: [{ id, datos?{ filas, pie },
- *           casillas: [{ id, enunciado, opciones: [{ valor | texto, tipo }] }] }],
- *           errores, cierre, alt, etiqueta }
+ * config: { consigna, regla?, nota?{ texto, pie }, rotuloSimulado?, partida?,
+ *           partes: [{ id, datos?, casillas: [{ id, enunciado, opciones: [{ valor | texto, tipo }] }] }],
+ *           visual?{ Componente, anuncio, enDemo? }, errores, cierre, alt, etiqueta }
  * Una opción con tipo null es la correcta. En el registro, cada casilla se
  * nombra con la etiqueta del contador y su número («Casilla 3»): ningún texto
  * nuevo.
@@ -55,42 +60,11 @@ const ESTILO_REGLA = {
   background: "rgba(248,249,250,0.05)", border: `1px solid ${BORDE}`,
 };
 const PIE = { display: "block", margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px", color: SECUNDARIO };
-const CELDA = { padding: "4px 2px", fontSize: "13px", lineHeight: 1.4, color: FAE.text };
-const CIFRA = { ...CELDA, textAlign: "right", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" };
 
 const textoDe = (op) => (op.valor !== undefined ? pesos(op.valor) : op.texto);
 const claveDe = (op) => String(op.valor ?? op.texto);
 /* Las opciones de cifras se barajan; las de texto (los grupos de una regla) van en su orden. */
 const ordenar = (casillas, conBarajar) => casillas.map((c) => (conBarajar && c.opciones.every((o) => o.valor !== undefined) ? barajar(c.opciones) : c.opciones));
-
-/*
- * Una tabla de dos columnas (nombre | valor), con su pie en su forma. Si las
- * filas traen su propio pie (`f.pie`), las seguidas con el mismo pie se agrupan
- * y el pie va debajo de su grupo.
- */
-function Tabla({ filas, pie, marca }) {
-  return (
-    <div {...{ [marca]: "" }} style={{ ...ESTILO_REGLA, padding: "8px 11px" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <tbody>
-          {filas.flatMap((f, k) => {
-            const fila = (
-              <tr key={f.nombre} style={{ borderTop: f.total ? "none" : `1px solid ${BORDE}` }}>
-                <th scope="row" style={{ ...CELDA, textAlign: "left", fontWeight: f.total ? 600 : 400 }}>{f.nombre}</th>
-                <td style={{ ...CIFRA, fontWeight: f.total ? 600 : 400 }}>{f.valor}</td>
-              </tr>
-            );
-            const cierraGrupo = f.pie && filas[k + 1]?.pie !== f.pie;
-            return cierraGrupo
-              ? [fila, <tr key={`${f.nombre}-pie`} data-pie-grupo=""><td colSpan={2} style={{ padding: "0 0 6px" }}><span style={PIE}><PieDeFuente texto={f.pie} /></span></td></tr>]
-              : [fila];
-          })}
-        </tbody>
-      </table>
-      {pie && <span style={PIE}><PieDeFuente texto={pie} /></span>}
-    </div>
-  );
-}
 
 export default function CasillasEnOrden({
   config, Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
@@ -108,10 +82,41 @@ export default function CasillasEnOrden({
   const [orden, setOrden] = useState(() => ordenar(casillas, !ejemplo));
   const detalle = useRef([]);
   const inicio = useRef(Date.now());
+  const casillaRef = useRef(null);
+  const reducido = useReducido();
   const pct = porcentaje(aciertos, total);
   const actual = casillas[n];
   const parte = partes.find((p) => p.id === actual.parte);
   const correcta = actual.opciones.find((o) => o.tipo === null);
+
+  /*
+   * Al pasar de casilla: que se vean juntos la casilla, el rótulo y el
+   * renglón encendido del visual. Si no cabe todo y el renglón está encima
+   * (hoja 2 de Mai), el renglón queda arriba, porque tiene las cifras que se
+   * usan, y el rótulo, que está entre él y la casilla, queda a la vista; sin
+   * renglón, la casilla y el rótulo, o la casilla sola. La página se mueve lo
+   * justo, como en MaquinaPegada.
+   */
+  useEffect(() => {
+    if (n === 0 || modoDemo || !casillaRef.current) return;
+    const rect = (el) => el?.getBoundingClientRect();
+    const casilla = rect(casillaRef.current);
+    const rotuloR = rect(casillaRef.current.ownerDocument.querySelector("[data-rotulo-simulado]"));
+    const doc = casillaRef.current.ownerDocument;
+    /* La fila de la tabla que usa la casilla (a6) o, con un visual propio, su renglón encendido (a5). */
+    const filaR = config.visual ? rect(doc.querySelector("[data-renglon-activo]")) : null;
+    const arriba = 8;
+    const abajo = window.innerHeight - 8;
+    const union = (rs) => ({ top: Math.min(...rs.map((r) => r.top)), bottom: Math.max(...rs.map((r) => r.bottom)) });
+    const cabe = (r) => r.bottom - r.top <= abajo - arriba;
+    const todo = union([casilla, rotuloR, filaR].filter(Boolean));
+    const renglonArriba = filaR && filaR.top < casilla.top ? { top: filaR.top, bottom: filaR.top + (abajo - arriba) } : null;
+    const objetivo = cabe(todo) ? todo : renglonArriba ?? [[casilla, rotuloR], [casilla]].map((rs) => union(rs.filter(Boolean))).find(cabe) ?? casilla;
+    let delta = 0;
+    if (objetivo.bottom > abajo) delta = objetivo.bottom - abajo;
+    if (objetivo.top - delta < arriba) delta = objetivo.top - arriba;
+    if (Math.abs(delta) > 0.5) window.scrollBy?.({ top: delta, behavior: reducido ? "auto" : "smooth" });
+  }, [n]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (terminado && !modoDemo) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
@@ -150,15 +155,14 @@ export default function CasillasEnOrden({
   const retro = elegida && elegida.tipo ? `❌ ${config.errores[elegida.tipo]}` : null;
   /* El registro: cada casilla ya respondida, con su valor correcto y si se acertó. */
   const resueltas = casillas.slice(0, n + (elegida ? 1 : 0));
-  const esNumerica = actual.opciones.every((o) => o.valor !== undefined);
+  /* El visual propio se ve en el juego; en «Así se juega», solo si lo pide (`enDemo`: a6 muestra su regla). */
+  const conVisual = config.visual && (!modoDemo || config.visual.enDemo);
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       {!modoDemo && <Encabezado consigna={config.consigna} onComoSeJuega={onComoSeJuega} />}
       {config.rotuloSimulado && <div style={{ margin: "0 0 10px" }}><RotuloSimulado texto={config.rotuloSimulado} /></div>}
-      {config.reglaTabla
-        ? <Tabla filas={config.reglaTabla.filas} pie={config.reglaTabla.pie} marca="data-regla" />
-        : <p data-regla style={ESTILO_REGLA}>{config.regla}</p>}
+      {config.regla && <p data-regla style={ESTILO_REGLA}>{config.regla}</p>}
       {config.nota && (
         <p data-nota-regla style={{ margin: "-4px 0 12px", fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.75)" }}>
           {config.nota.texto}
@@ -175,9 +179,13 @@ export default function CasillasEnOrden({
           <Pulsos total={total} hechos={n + (elegida ? 1 : 0)} enCurso={n + 1} etiqueta={config.etiqueta} />
         </div>
       )}
-      {!modoDemo && parte.datos && <Tabla filas={parte.datos.filas} pie={parte.datos.pie} marca="data-datos-parte" />}
 
-      {resueltas.length > 0 && (
+      {/* Con un visual propio (b5-t6-a5: la cuenta que se llena), el visual es el registro. */}
+      {conVisual && (
+        <config.visual.Componente respondidas={resueltas.length} abierta={elegida ? null : n} reducido={reducido} modoDemo={modoDemo}
+          anuncio={elegida && !modoDemo ? config.visual.anuncio(n) : ""} />
+      )}
+      {resueltas.length > 0 && !(config.visual && !modoDemo) && (
         <ol data-registro style={{ margin: "0 0 12px", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "4px" }}>
           {resueltas.map((c, k) => {
             const bien = respuestas[k]?.ok;
@@ -193,10 +201,12 @@ export default function CasillasEnOrden({
         </ol>
       )}
 
+      <div ref={casillaRef}>
       <div data-hecho={actual.id}>
         <Enunciado acento={acento}>{actual.enunciado}</Enunciado>
       </div>
-      <Opciones columnas={esNumerica ? "repeat(3, minmax(0, 1fr))" : "repeat(auto-fit, minmax(150px, 1fr))"}>
+      {/* En una columna (hoja de Mai): en fila de tres, a 320 quedan 61 px por opción y «$2.506.200» mide 83. */}
+      <Opciones columnas="minmax(0, 1fr)">
         {orden[n].map((op) => (
           <Opcion
             key={claveDe(op)}
@@ -209,6 +219,7 @@ export default function CasillasEnOrden({
           </Opcion>
         ))}
       </Opciones>
+      </div>
       <Retro texto={retro} />
       {ejemplo?.resolucion && elegida && (
         <p data-resolucion style={{ margin: "12px 0 0", padding: "11px 13px", borderRadius: "12px", background: "rgba(184,196,212,0.13)", fontSize: "15px", lineHeight: "22px", color: FAE.text }}>

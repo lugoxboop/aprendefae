@@ -66,6 +66,7 @@ export const ICONO_POR_ACTIVIDAD = {
   "b5-t6-a3": I.CuandoLaDeudaCastigadaVuelve,
   /* Repaso del capítulo 5 */
   "r5-1": I.RepasoCruzado,
+  "r5-2": I.ElToroNegro,
 };
 
 /** Los nodos del camino con su ícono, si lo tienen. */

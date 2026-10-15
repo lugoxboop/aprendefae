@@ -93,8 +93,9 @@ export const FICHAS_T6_ACT1 = [
   },
   {
     id: "venta-mercancia", cuenta: CLIENTES, lado: DEBITA, c5: true,
-    texto: "La empresa le vende mercancía a crédito a un cliente.",
-    acierto: "✅ Sí. Sube: se debita. El cliente queda debiendo lo que compró.",
+    /* Entrega 4 de Futaba (calidad): los cinco hechos de Clientes, con otras palabras. */
+    texto: "Un cliente se lleva un pedido de mercancía a crédito, para pagarlo a fin de mes.",
+    acierto: "✅ Sí. Es una venta a crédito: el cliente queda debiendo, así que se debita.",
   },
   {
     id: "venta-servicio", cuenta: CLIENTES, lado: DEBITA, c5: true,
@@ -103,22 +104,22 @@ export const FICHAS_T6_ACT1 = [
   },
   {
     id: "cheque", cuenta: CLIENTES, lado: DEBITA,
-    texto: "El banco devuelve el cheque con el que un cliente había pagado.",
-    acierto: "✅ Sí. Sube: se debita. Ese pago no llegó a la empresa, así que la deuda vuelve.",
+    texto: "El banco no le paga a la empresa el cheque de un cliente: se lo devuelve.",
+    acierto: "✅ Sí. Sube: se debita. Como el cheque no se cobró, el cliente vuelve a deber.",
   },
   {
     id: "pago", cuenta: CLIENTES, lado: ACREDITA,
-    texto: "Un cliente paga lo que debía.",
-    acierto: "✅ Sí. Baja: se acredita. La deuda se cancela.",
+    texto: "Un cliente abona una parte de lo que debe.",
+    acierto: "✅ Sí. Baja: se acredita. Lo que abonó ya no lo debe.",
   },
   {
     id: "devolucion", cuenta: CLIENTES, lado: ACREDITA,
-    texto: "Un cliente devuelve mercancía que compró a crédito y aún no paga.",
-    acierto: "✅ Sí. Baja: se acredita. Es una devolución de ventas.",
+    texto: "Un cliente que todavía debe una compra regresa parte de la mercancía.",
+    acierto: "✅ Sí. Baja: se acredita. Lo que regresó ya no lo tiene que pagar.",
   },
   {
     id: "descuento", cuenta: CLIENTES, lado: ACREDITA,
-    texto: "La empresa le otorga a un cliente un descuento sobre lo que todavía le debe.",
+    texto: "La empresa le rebaja a un cliente una parte de lo que le debe.",
     acierto: "✅ Sí. Baja: se acredita. Ahora el cliente le debe menos.",
   },
 ];

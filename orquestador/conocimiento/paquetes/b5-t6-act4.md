@@ -93,3 +93,17 @@ qd-04	Hecho	Un cliente pagó con un cheque, pero el banco lo devolvió.	94	Ya no
 qd-09	Hecho	Pablo Moncayo vuelve y paga. Primero se revive su deuda.	77	Usa la forma publicada, «vuelve y paga».
 
 Los aciertos y los errores de esos cuatro hechos no cambian.
+
+
+## (3) Futaba · entrega 1 de calidad (versión final, con PASA de Shoko; pegada tal cual)
+
+b5-t6-a4 · qd-09 · E10 nuevo (solo cuando elige Caja). E5 sigue igual para qd-01 y qd-04.
+Tipo	Cuándo	Texto literal
+E10 · qd-09 con Caja	Caja en qd-09	Todavía no entra plata: primero se revive la deuda. Caja se debita en el asiento siguiente, con el pago.
+
+## (4) Futaba · entrega 5 de calidad: los $180.000 (versión final, PASA de Shoko; pegada tal cual)
+
+Quedan como hueco a2, a3, T6 A3 y T6 A4. En a4, Pablo Moncayo deja de nombrarse. E10 sigue funcionando con los dos.
+Id	Campo	Texto nuevo (literal)
+qd-09	Hecho	Un cliente cuya deuda ya se castigó vuelve y paga. Primero se revive su deuda.
+qd-10	Hecho	Ya revivida la deuda, entra el pago del cliente.

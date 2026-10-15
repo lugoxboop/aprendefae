@@ -85,9 +85,21 @@ export const FIGURAS_H1 = [{
 
 export const BOTON_H1 = { siguiente: "Siguiente ítem", verResumen: "Ver mi resumen" };
 
+/*
+ * LOTE 3 DE LA REVISIÓN (L, 15 de octubre de 2026): T7-3 · H1 es el Hacer de
+ * muestra de «Arma la línea». Los ítems 1 a 3, cuyo objetivo es calcular, van
+ * con casilla de cifra (tipo "cifra"): si la cifra escrita es la de un
+ * distractor de Near, sale su retroalimentación. En el asiento, cada línea
+ * trae su banco de cuentas: la correcta y sus `distractores`.
+ * Los distractores de cuenta y su retroalimentación son de Near (lote 3,
+ * orquestador/conocimiento/paquetes/lote3-distractores-v1.md); los de esta
+ * venta son los mismos que los del asiento de venta de T7-1 H2. El ítem 4
+ * («¿Por qué valor va Ingresos por ventas?») se quitó por decisión de L: la
+ * mesa ya muestra ese valor en su línea.
+ */
 export const ITEMS_H1 = [
   {
-    id: "valor-a-facturar", tipo: "eleccion",
+    id: "valor-a-facturar", tipo: "cifra",
     pregunta: "¿Cuál es el valor a facturar?",
     correcta: C.factura,
     acierto: "Así es. El descuento es de $246.000, y se resta: $2.050.000 − $246.000 = $1.804.000.",
@@ -97,7 +109,7 @@ export const ITEMS_H1 = [
     ],
   },
   {
-    id: "iva", tipo: "eleccion",
+    id: "iva", tipo: "cifra",
     pregunta: "¿Cuánto es el IVA?",
     correcta: C.iva,
     acierto: "Así es. Se calcula sobre el valor a facturar: $1.804.000 × 16 % = $288.640.",
@@ -108,7 +120,7 @@ export const ITEMS_H1 = [
     ],
   },
   {
-    id: "debe-el-cliente", tipo: "eleccion",
+    id: "debe-el-cliente", tipo: "cifra",
     pregunta: "¿Cuánto le queda debiendo el cliente a Guadua?",
     correcta: C.cliente,
     acierto: "Así es: $1.804.000 + $288.640 − $63.140 = $2.029.500.",
@@ -118,23 +130,13 @@ export const ITEMS_H1 = [
     ],
   },
   {
-    id: "ingresos-por-ventas", tipo: "eleccion",
-    pregunta: "¿Por qué valor va Ingresos por ventas?",
-    correcta: C.factura,
-    acierto: "Así es. El descuento no aparece en el asiento: Ingresos por ventas va por lo facturado.",
-    distractores: [
-      { valor: C.lista, retro: "El descuento comercial no se registra. Ingresos por ventas va por lo que se facturó." },
-      { valor: C.cliente, retro: "Ese es lo que debe el cliente. Ingresos por ventas va por el valor de la mercancía facturada." },
-    ],
-  },
-  {
     id: "asiento", tipo: "asiento",
     pregunta: "Ubica cada línea del asiento: Debe o Haber.",
     lineas: [
-      { id: "clientes", cuenta: "Cuentas por cobrar – clientes", valor: C.cliente, lado: DEBE, retro: "El cliente le queda debiendo a Guadua. Es un activo que aumenta: va al debe." },
-      { id: "anticipo", cuenta: "Anticipo fiscal", valor: C.retencion, lado: DEBE, retro: "El cliente le descontó la retención. Para Guadua es un impuesto pagado por adelantado: va al debe de Anticipo fiscal." },
-      { id: "iva", cuenta: "IVA por pagar", valor: C.iva, lado: HABER, retro: "Guadua cobró el IVA y se lo debe al Estado: va al haber de IVA por pagar." },
-      { id: "ingresos", cuenta: "Ingresos por ventas", valor: C.factura, lado: HABER, retro: "La venta es un ingreso que aumenta: va al haber de Ingresos por ventas." },
+      { id: "clientes", cuenta: "Cuentas por cobrar – clientes", valor: C.cliente, lado: DEBE, retro: "El cliente le queda debiendo a Guadua. Es un activo que aumenta: va al debe.", distractores: [{ cuenta: "Caja o Bancos", retro: "La venta fue a crédito, así que el cliente todavía no paga. No entra dinero." }, { cuenta: "Cuentas por pagar – proveedores", retro: "Esa cuenta es lo que la empresa debe. Con esta venta, la empresa no queda debiendo nada." }] },
+      { id: "anticipo", cuenta: "Anticipo fiscal", valor: C.retencion, lado: DEBE, retro: "El cliente le descontó la retención. Para Guadua es un impuesto pagado por adelantado: va al debe de Anticipo fiscal.", distractores: [{ cuenta: "Retención en la fuente por pagar", retro: "Esa cuenta es para la retención que la empresa descuenta cuando compra. Aquí el que descuenta es el cliente." }, { cuenta: "IVA por pagar", retro: "Este valor sale al 3,5 %, no al 16 %. No es el IVA." }] },
+      { id: "iva", cuenta: "IVA por pagar", valor: C.iva, lado: HABER, retro: "Guadua cobró el IVA y se lo debe al Estado: va al haber de IVA por pagar.", distractores: [{ cuenta: "Anticipo fiscal", retro: "Anticipo fiscal va con la retención, que sale al 3,5 %. Este valor sale al 16 %." }, { cuenta: "Retención en la fuente por pagar", retro: "Esa cuenta es para la retención que la empresa descuenta cuando compra. Y este valor sale al 16 %." }] },
+      { id: "ingresos", cuenta: "Ingresos por ventas", valor: C.factura, lado: HABER, retro: "La venta es un ingreso que aumenta: va al haber de Ingresos por ventas.", distractores: [{ cuenta: "Inventario de mercancías", retro: "En el periódico, la venta no toca Inventario de mercancías. Esa cuenta solo se pone al día al cierre." }, { cuenta: "Compras", retro: "Compras recoge lo que la empresa compra para vender. Aquí la empresa vende." }] },
     ],
   },
 ];

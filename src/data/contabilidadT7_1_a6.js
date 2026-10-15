@@ -144,6 +144,7 @@ const QUE_ES = {
 /* P2 · Dos cuentas propias: lectura y pregunta en la misma pantalla. */
 const DOS_CUENTAS = {
   id: "dos-cuentas-propias",
+  pista: "Piensa qué dato perdería la gerencia si la devolución se restara directo de la venta.",
   tipo: "eleccion",
   parrafos: [
     "Cada una tiene su propia cuenta. El vendedor usa Devoluciones de ventas. El comprador usa Devoluciones de compras.",
@@ -218,6 +219,7 @@ EL_CASO.espejo = tablaEspejo(FECHA.compra, EL_CASO.asientos[0].lineas, EL_CASO.a
 /* P4 · Cuánto se reversa. Los cálculos aparecen en el acierto: antes darían la respuesta. */
 const CUANTO_SE_REVERSA = {
   id: "cuanto-se-reversa",
+  pista: "El IVA va con la mercancía. Si vuelve solo una parte, ¿cuánto IVA vuelve con ella?",
   tipo: "eleccion",
   parrafos: [],
   pregunta: "La devolución es de $2.400.000. ¿Cuánto IVA se devuelve con ella?",
@@ -255,10 +257,10 @@ const LIBRO_COMPRADOR = {
   fecha: FECHA.devolucion,
   consigna: "Ahora el libro del comprador, Dajema. Toca Debe o Haber en cada línea.",
   lineas: [
-    { id: "proveedores", cuenta: "Cuentas por pagar – proveedores", monto: CIFRAS.totalDevuelto, lado: DEBE, devolucion: "La devolución baja lo que Dajema le debe al proveedor. Un pasivo que disminuye va al debe." },
-    { id: "retencion", cuenta: "Retención en la fuente por pagar", monto: CIFRAS.retDevuelto, lado: DEBE, devolucion: "En la compra, la retención fue al haber. La devolución reversa esa línea, así que ahora va al debe." },
-    { id: "iva", cuenta: "IVA por pagar", monto: CIFRAS.ivaDevuelto, lado: HABER, devolucion: "En la compra, el IVA fue al debe. La devolución lo reversa: ahora va al haber." },
-    { id: "devoluciones", cuenta: "Devoluciones de compras", monto: CIFRAS.devuelto, lado: HABER, devolucion: "En la compra, Compras fue al debe. La devolución reversa ese lado, pero en su propia cuenta: Devoluciones de compras, al haber." },
+    { id: "proveedores", cuenta: "Cuentas por pagar – proveedores", monto: CIFRAS.totalDevuelto, lado: DEBE, pista: "Dajema ahora le debe menos al proveedor. ¿De qué lado baja un pasivo?", devolucion: "La devolución baja lo que Dajema le debe al proveedor. Un pasivo que disminuye va al debe." },
+    { id: "retencion", cuenta: "Retención en la fuente por pagar", monto: CIFRAS.retDevuelto, lado: DEBE, pista: "La retención que Dajema descontó también baja con la devolución. ¿De qué lado baja un pasivo?", devolucion: "En la compra, la retención fue al haber. La devolución reversa esa línea, así que ahora va al debe." },
+    { id: "iva", cuenta: "IVA por pagar", monto: CIFRAS.ivaDevuelto, lado: HABER, pista: "En la compra, este IVA fue al debe. La devolución lo reversa.", devolucion: "En la compra, el IVA fue al debe. La devolución lo reversa: ahora va al haber." },
+    { id: "devoluciones", cuenta: "Devoluciones de compras", monto: CIFRAS.devuelto, lado: HABER, pista: "Esta cuenta hace lo contrario de Compras. ¿De qué lado iba Compras?", devolucion: "En la compra, Compras fue al debe. La devolución reversa ese lado, pero en su propia cuenta: Devoluciones de compras, al haber." },
   ],
   acierto: { texto: "Así es. Es el asiento de la compra al revés, pero con Devoluciones de compras en lugar de Compras." },
   pie: "Basado en el libro, pp. 230 y 232",
@@ -272,10 +274,10 @@ const LIBRO_VENDEDOR = {
   fecha: FECHA.devolucion,
   consigna: "Ahora el libro del vendedor, El Tajamar. Toca Debe o Haber en cada línea.",
   lineas: [
-    { id: "devoluciones", cuenta: "Devoluciones de ventas", monto: CIFRAS.devuelto, lado: DEBE, devolucion: "En la venta, Ingresos por ventas fue al haber. La devolución reversa ese lado, pero en su propia cuenta: Devoluciones de ventas, al debe." },
-    { id: "iva", cuenta: "IVA por pagar", monto: CIFRAS.ivaDevuelto, lado: DEBE, devolucion: "En la venta, el IVA fue al haber. La devolución lo reversa: ahora va al debe." },
-    { id: "anticipo", cuenta: "Anticipo fiscal", monto: CIFRAS.retDevuelto, lado: HABER, devolucion: "En la venta, el anticipo fue al debe. La devolución lo reversa, así que ahora va al haber." },
-    { id: "clientes", cuenta: "Cuentas por cobrar – clientes", monto: CIFRAS.totalDevuelto, lado: HABER, devolucion: "La devolución baja lo que el cliente le debe a El Tajamar. Un activo que disminuye va al haber." },
+    { id: "devoluciones", cuenta: "Devoluciones de ventas", monto: CIFRAS.devuelto, lado: DEBE, pista: "Esta cuenta hace lo contrario de Ingresos por ventas. ¿De qué lado iba la venta?", devolucion: "En la venta, Ingresos por ventas fue al haber. La devolución reversa ese lado, pero en su propia cuenta: Devoluciones de ventas, al debe." },
+    { id: "iva", cuenta: "IVA por pagar", monto: CIFRAS.ivaDevuelto, lado: DEBE, pista: "El Tajamar ya no le debe al Estado el IVA de lo devuelto. ¿De qué lado baja un pasivo?", devolucion: "En la venta, el IVA fue al haber. La devolución lo reversa: ahora va al debe." },
+    { id: "anticipo", cuenta: "Anticipo fiscal", monto: CIFRAS.retDevuelto, lado: HABER, pista: "El anticipo era algo a favor de El Tajamar. Con la devolución, ese valor baja.", devolucion: "En la venta, el anticipo fue al debe. La devolución lo reversa, así que ahora va al haber." },
+    { id: "clientes", cuenta: "Cuentas por cobrar – clientes", monto: CIFRAS.totalDevuelto, lado: HABER, pista: "El cliente ahora le debe menos a El Tajamar. ¿De qué lado baja un activo?", devolucion: "La devolución baja lo que el cliente le debe a El Tajamar. Un activo que disminuye va al haber." },
   ],
   acierto: { texto: "Así es. Es el asiento de la venta al revés, pero con Devoluciones de ventas en lugar de Ingresos por ventas." },
   pie: "Basado en el libro, pp. 230 y 232",
@@ -287,6 +289,7 @@ const LIBRO_VENDEDOR = {
  */
 const LADO_A_LADO = {
   id: "lado-a-lado",
+  pista: "Mira qué cuenta usó cada libro para la devolución, y si quedó del mismo lado que el registro original.",
   tipo: "eleccion",
   parrafos: [],
   espejo: tablaEspejo(FECHA.devolucion, LIBRO_COMPRADOR.lineas, LIBRO_VENDEDOR.lineas, "Devoluciones de compras"),

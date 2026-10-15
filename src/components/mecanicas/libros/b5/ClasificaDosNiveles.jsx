@@ -8,6 +8,8 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { useReducido } from "../tema3/DosLineas.jsx";
+import EstanteDeCajones, { claveDe, lecturaDe, BIEN, SEGUNDO } from "./EstanteDeCajones.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -29,6 +31,11 @@ import { Encabezado } from "../tema1/encabezado.jsx";
  * y los rótulos fijos de T1-6.
  *
  * La devolución sale por Retro, con el ✅ o el ❌ al inicio del texto.
+ *
+ * Calidad (hoja 3 de Mai): entre el contador y la ficha, el estante de
+ * cajones (EstanteDeCajones.jsx), uno por respuesta final. Al acertar, una
+ * copia de la ficha vuela a su cajón; en el primer fallo va al elegido y
+ * rebota; en el segundo fallo va a su cajón CORRECTO (`config.destino`).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -69,6 +76,12 @@ export default function ClasificaDosNiveles({
   const [rebotando, setRebotando] = useState(false);
   const reloj = useRef(null);
   const zonaBoton = useRef(null);
+  const reducido = useReducido();
+  const estante = useRef(null);
+  const ficha = useRef(null);
+  const [cuentas, setCuentas] = useState({});
+  const [anuncio, setAnuncio] = useState("");
+  const conEstante = !modoDemo && typeof config.destino === "function";
 
   const c = t.items[t.i];
   const cuantas = t.items.length;
@@ -91,6 +104,25 @@ export default function ClasificaDosNiveles({
     const marcado = { n1, n2: n1 === config.abre ? n2 : null };
     const nuevo = config.evaluar(c, marcado, intento === 0 ? 1 : 2);
     const valor = config.valor(c, nuevo);
+
+    /* El estante: lo que queda colocado va a su cajón correcto; el primer fallo va al elegido y vuelve. */
+    if (conEstante) {
+      const fin = nuevo.ok || intento > 0;
+      const d = config.destino(c);
+      const clave = fin ? claveDe(d.n1, d.n2) : claveDe(marcado.n1, marcado.n2);
+      const vuelo = estante.current?.volar(clave, ficha.current, { rebote: !fin }) ?? Promise.resolve();
+      if (fin) {
+        /* Tras el segundo fallo, la lámina llega distinta (Shoko). */
+        const lamina = nuevo.ok ? BIEN : SEGUNDO;
+        vuelo.then(() => {
+          setCuentas((x) => {
+            const laminas = [...(x[clave] ?? []), lamina];
+            setAnuncio(lecturaDe(config, clave, laminas));
+            return { ...x, [clave]: laminas };
+          });
+        });
+      }
+    }
 
     if (!nuevo.ok) {
       setRebotando(true);
@@ -118,7 +150,7 @@ export default function ClasificaDosNiveles({
     else t.setTerminado(true);
   };
   const reiniciar = () => {
-    t.reiniciar(); setR(null); setIntento(0); setRespuestas([]);
+    t.reiniciar(); setR(null); setIntento(0); setRespuestas([]); setCuentas({}); setAnuncio("");
     setN1(null); setN2(null); setRebotando(false);
   };
 
@@ -158,9 +190,14 @@ export default function ClasificaDosNiveles({
           </div>
         </>
       )}
+      {conEstante && (
+        <EstanteDeCajones ref={estante} config={config} cuentas={cuentas} n1={n1} n2={n1 === config.abre ? n2 : null}
+          reducido={reducido} anuncio={anuncio} />
+      )}
 
       <div data-contenido>
         <p
+          ref={ficha}
           data-ficha={c.id}
           className={rebotando ? "fae-b5c-rebota" : undefined}
           style={{

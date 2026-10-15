@@ -6,7 +6,8 @@ import { DEBE, HABER } from "./contabilidad.js";
  *
  * Fuente: la v1 de Near y su corrección 5, las dos con PASA de Mello (tanda
  * corregida). Manda la más nueva:
- *   · los aciertos de los ítems 4 y 6 ya no dicen el lado;
+ *   · los aciertos de los ítems 4 y 6 ya no dicen el lado (esos dos ítems
+ *     se quitaron en el lote 3);
  *   · cada línea de los dos asientos trae su texto literal para cuando se
  *     ubica mal (la v1 solo daba el primero y un rango);
  *   · las sumas (986.000) aparecen después de «Comprobar».
@@ -14,12 +15,19 @@ import { DEBE, HABER } from "./contabilidad.js";
  * t7-1-h6-cambios.md; una prueba compara cada texto contra ellas.
  *
  * Hacer Difícil, evaluativa, 50 FP: el motor escala los FP con los aciertos
- * (13 posibles: cinco preguntas y las ocho líneas), con piso del 50 %.
- * Migración 0096, que corre Mateo.
+ * (11 posibles: tres preguntas y las ocho líneas), con piso del 50 %.
+ * Migración 0096, que corre Mateo (no guarda aciertos: no cambia).
  *
  * Un solo intento por unidad (patrón v3.2), sin arrastre: las cifras son
  * fijas. Los ítems van en el orden de la tabla; las opciones de cada pregunta
  * y las líneas de cada asiento, barajadas en cada intento.
+ *
+ * LOTE 3 («Arma la línea», paquete de Near lote3-distractores-v1.md): en
+ * cada línea de los dos libros se elige la cuenta (la correcta y sus
+ * `distractores` de Near, { cuenta, retro }) y el lado; el ítem 3 (cuánto
+ * baja la deuda) va con casilla de cifra (tipo "cifra"). Los ítems 4 y 6 de
+ * la v1 («¿a qué cuenta va la devolución de $850.000?», en cada libro) se
+ * quitaron por decisión de L: la mesa ya pide esa cuenta. De 13 aciertos a 11.
  *
  * LAS CIFRAS no se escriben a mano: salen de la compra, la devolución y las
  * tarifas (calcularH6). Una prueba las recalcula y las compara con las de
@@ -87,15 +95,7 @@ export const FICHA_H6 = [
   ["Clase de hecho", "Devolución de mercancía dañada"],
 ];
 
-export const CUENTAS_H6 = [
-  { valor: "devoluciones-compras", texto: "Devoluciones de compras" },
-  { valor: "devoluciones-ventas", texto: "Devoluciones de ventas" },
-  { valor: "compras", texto: "Compras" },
-  { valor: "inventario", texto: "Inventario de mercancías" },
-  { valor: "ingresos", texto: "Ingresos por ventas" },
-];
-
-/* La pregunta de los dos asientos: la v1 la da en el ítem 5 y el 7 la repite. */
+/* La pregunta de los dos asientos: la v1 la da en el ítem 5 y el 7 la repite (hoy, ítems 4 y 5). */
 const TOCA = "Toca Debe o Haber en cada línea.";
 
 export const ITEMS_H6 = [
@@ -120,7 +120,7 @@ export const ITEMS_H6 = [
     ],
   },
   {
-    id: "baja-deuda", tipo: "eleccion", subtema: "IVA y retención proporcionales",
+    id: "baja-deuda", tipo: "cifra", subtema: "IVA y retención proporcionales",
     pregunta: "¿Cuánto baja lo que La Garza le debe a El Nogal?",
     correcta: C.baja,
     acierto: "Así es: $850.000 + $136.000 − $29.750 = $956.250.",
@@ -130,45 +130,23 @@ export const ITEMS_H6 = [
     ],
   },
   {
-    id: "cuenta-comprador", tipo: "eleccion", subtema: "Cuenta de devoluciones",
-    pregunta: "En el libro de La Garza, ¿a qué cuenta va la devolución de $850.000?",
-    correcta: "devoluciones-compras",
-    /* Corrección 5: sin el lado. */
-    acierto: "Así es. El comprador usa su propia cuenta: Devoluciones de compras.",
-    distractores: [
-      { valor: "compras", retro: "La devolución no se anota en Compras. El comprador usa su propia cuenta: Devoluciones de compras." },
-      { valor: "inventario", retro: "En el periódico, la devolución de compras no va a Inventario de mercancías. Va a Devoluciones de compras." },
-    ],
-  },
-  {
     id: "libro-garza", tipo: "asiento", subtema: "Libro del comprador", encabezado: "Libro de La Garza",
     pregunta: TOCA,
     lineas: [
-      { id: "cxp", cuenta: "Cuentas por pagar – proveedores", valor: C.baja, lado: DEBE, retro: "La devolución baja lo que La Garza le debe al proveedor. Un pasivo que disminuye va al debe." },
-      { id: "retencion", cuenta: "Retención en la fuente por pagar", valor: C.retDev, lado: DEBE, retro: "En la compra, la retención fue al haber. La devolución reversa esa línea, así que ahora va al debe." },
-      { id: "iva", cuenta: "IVA por pagar", valor: C.ivaDev, lado: HABER, retro: "En la compra, el IVA fue al debe. La devolución lo reversa: ahora va al haber." },
-      { id: "devoluciones", cuenta: "Devoluciones de compras", valor: C.devolucion, lado: HABER, retro: "En la compra, Compras fue al debe. La devolución reversa ese lado, pero en su propia cuenta: Devoluciones de compras, al haber." },
-    ],
-  },
-  {
-    id: "cuenta-vendedor", tipo: "eleccion", subtema: "Cuenta de devoluciones",
-    pregunta: "En el libro de El Nogal, ¿a qué cuenta va la devolución de $850.000?",
-    correcta: "devoluciones-ventas",
-    /* Corrección 5: sin el lado. */
-    acierto: "Así es. El vendedor usa su propia cuenta: Devoluciones de ventas.",
-    distractores: [
-      { valor: "ingresos", retro: "La devolución no se anota en Ingresos por ventas. El vendedor usa su propia cuenta: Devoluciones de ventas." },
-      { valor: "devoluciones-compras", retro: "Esa es la cuenta del comprador. El vendedor usa Devoluciones de ventas." },
+      { id: "cxp", cuenta: "Cuentas por pagar – proveedores", valor: C.baja, lado: DEBE, retro: "La devolución baja lo que La Garza le debe al proveedor. Un pasivo que disminuye va al debe.", distractores: [{ cuenta: "Cuentas por cobrar – clientes", retro: "Esa cuenta es lo que a la empresa le deben sus clientes. La Garza es la que compró." }, { cuenta: "Caja o Bancos", retro: "La compra fue a crédito y nadie devuelve dinero. Lo que cambia es una deuda." }] },
+      { id: "retencion", cuenta: "Retención en la fuente por pagar", valor: C.retDev, lado: DEBE, retro: "En la compra, la retención fue al haber. La devolución reversa esa línea, así que ahora va al debe.", distractores: [{ cuenta: "Anticipo fiscal", retro: "Anticipo fiscal es del libro de quien vende. La Garza compró: ella fue la que descontó la retención." }, { cuenta: "IVA por pagar", retro: "Este valor sale al 3,5 % de lo devuelto, no al 16 %. No es el IVA." }] },
+      { id: "iva", cuenta: "IVA por pagar", valor: C.ivaDev, lado: HABER, retro: "En la compra, el IVA fue al debe. La devolución lo reversa: ahora va al haber.", distractores: [{ cuenta: "Retención en la fuente por pagar", retro: "Este valor sale al 16 % de lo devuelto. La retención sale al 3,5 %." }, { cuenta: "Anticipo fiscal", retro: "Anticipo fiscal es del libro de quien vende, y va con la retención, no con este impuesto." }] },
+      { id: "devoluciones", cuenta: "Devoluciones de compras", valor: C.devolucion, lado: HABER, retro: "En la compra, Compras fue al debe. La devolución reversa ese lado, pero en su propia cuenta: Devoluciones de compras, al haber.", distractores: [{ cuenta: "Compras", retro: "El libro no resta la devolución directo de Compras. La anota aparte, para saber cuánto se devolvió." }, { cuenta: "Devoluciones de ventas", retro: "Esa cuenta es del libro de quien vendió. La Garza es la que compró." }] },
     ],
   },
   {
     id: "libro-nogal", tipo: "asiento", subtema: "Libro del vendedor", encabezado: "Libro de El Nogal",
     pregunta: TOCA,
     lineas: [
-      { id: "devoluciones", cuenta: "Devoluciones de ventas", valor: C.devolucion, lado: DEBE, retro: "En la venta, Ingresos por ventas fue al haber. La devolución reversa ese lado, pero en su propia cuenta: Devoluciones de ventas, al debe." },
-      { id: "iva", cuenta: "IVA por pagar", valor: C.ivaDev, lado: DEBE, retro: "En la venta, el IVA fue al haber. La devolución lo reversa: ahora va al debe." },
-      { id: "anticipo", cuenta: "Anticipo fiscal", valor: C.retDev, lado: HABER, retro: "En la venta, el anticipo fue al debe. La devolución lo reversa, así que ahora va al haber." },
-      { id: "cxc", cuenta: "Cuentas por cobrar – clientes", valor: C.baja, lado: HABER, retro: "La devolución baja lo que el cliente le debe a El Nogal. Un activo que disminuye va al haber." },
+      { id: "devoluciones", cuenta: "Devoluciones de ventas", valor: C.devolucion, lado: DEBE, retro: "En la venta, Ingresos por ventas fue al haber. La devolución reversa ese lado, pero en su propia cuenta: Devoluciones de ventas, al debe.", distractores: [{ cuenta: "Ingresos por ventas", retro: "El libro no resta la devolución directo de la venta. La anota aparte, para saber cuánto se devolvió." }, { cuenta: "Devoluciones de compras", retro: "Esa cuenta es del libro de quien compró. El Nogal es el que vendió." }] },
+      { id: "iva", cuenta: "IVA por pagar", valor: C.ivaDev, lado: DEBE, retro: "En la venta, el IVA fue al haber. La devolución lo reversa: ahora va al debe.", distractores: [{ cuenta: "Anticipo fiscal", retro: "Anticipo fiscal va con la retención, que sale al 3,5 %. Este valor sale al 16 % de lo devuelto." }, { cuenta: "Retención en la fuente por pagar", retro: "Esa cuenta es del libro de quien compra. Y este valor sale al 16 %, no al 3,5 %." }] },
+      { id: "anticipo", cuenta: "Anticipo fiscal", valor: C.retDev, lado: HABER, retro: "En la venta, el anticipo fue al debe. La devolución lo reversa, así que ahora va al haber.", distractores: [{ cuenta: "Retención en la fuente por pagar", retro: "Esa cuenta es del libro de quien compra. A El Nogal le descontaron la retención: no la descontó él." }, { cuenta: "IVA por pagar", retro: "Este valor sale al 3,5 % de lo devuelto, no al 16 %. No es el IVA." }] },
+      { id: "cxc", cuenta: "Cuentas por cobrar – clientes", valor: C.baja, lado: HABER, retro: "La devolución baja lo que el cliente le debe a El Nogal. Un activo que disminuye va al haber.", distractores: [{ cuenta: "Cuentas por pagar – proveedores", retro: "Esa cuenta es lo que la empresa debe. El Nogal no le debe nada a nadie en este hecho." }, { cuenta: "Caja o Bancos", retro: "La venta fue a crédito y nadie devuelve dinero. Lo que cambia es una deuda." }] },
     ],
   },
 ];

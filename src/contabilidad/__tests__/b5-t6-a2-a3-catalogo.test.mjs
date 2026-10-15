@@ -47,8 +47,9 @@ const CASOS = [
   { id: "b5-t6-a3", D: A3.T6_ACT3, partes: A3.PARTES_T6_ACT3, ejemplo: A3.CASTIGO_T6_ACT3, reglas: A3.REGLAS_T6_ACT3, Juego: DeudaQueVuelve, dificultad: "dificil", fp: 50 },
 ];
 
-test("★★★ b5-t6-a2 y b5-t6-a3 están en el bloque de T6, después de b5-t6-a1, con la clasificación de Sakuta", () => {
-  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a2", "b5-t6-a3"]);
+test("★★★ b5-t6-a2 y b5-t6-a3 están en el bloque de T6, en el orden del camino, con la clasificación de Sakuta", () => {
+  /* El orden del camino es el de la calidad del 15-oct (Shoko, R9): de lo que se necesita saber primero a lo que lo usa. */
+  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a7", "b5-t6-a4", "b5-t6-a5", "b5-t6-a2", "b5-t6-a3", "b5-t6-a6"]);
   for (const k of CASOS) {
     const c = clasificacionDe("contabilidad", "cuentas-por-cobrar", k.id);
     assert.deepEqual({ modalidad: c.modalidad, dificultad: c.dificultad, fpBase: c.fpBase }, { modalidad: "evaluativa", dificultad: k.dificultad, fpBase: k.fp }, k.id);

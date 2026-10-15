@@ -13,7 +13,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *     su rótulo
  *   · la capa 2: qué aparece, qué se resalta y qué se atenúa en cada paso
  *     (guía de Mai v3, §4.4); «Anterior» devuelve el estado exacto
- *   · la capa 3: el bloque final solo con los dos paquetes, en cualquier orden
+ *   · la capa 3: el bloque final solo con los dos paquetes decididos, en cualquier orden
  *   · la capa 4: UnaFrase sin cambios, cuatro opciones y una sola correcta
  *   · todo identificador nuevo empieza por b5-
  * ═══════════════════════════════════════════════════════════════════════════
@@ -44,6 +44,7 @@ const h = React.createElement;
 const D = await import("../../data/contabilidadT5Pieza1.js");
 const E = await import("../efectivoDeSobra.js");
 const { default: EfectivoDeSobra } = await import("../../components/mecanicas/libros/tema5/EfectivoDeSobra.jsx");
+const { decidir } = await import("./b5-capa3.mjs");
 const { default: DosPaquetes } = await import("../../components/mecanicas/libros/tema5/DosPaquetes.jsx");
 const { ESCENAS_TEMA5 } = await import("../../components/mecanicas/libros/tema5/escenasTema5.jsx");
 
@@ -217,10 +218,13 @@ test("★★ capa 2: las tres tarjetas, idénticas en estilo y en orden (nada su
 
 /* ═══════════ CAPA 3 ═══════════ */
 
+/* Hoja 6: abrir pide decidir; lo común a las siete capas 3 está en b5-capa3-decidir.test.mjs. */
+const correctaDe = (id) => D.PAQUETES.find((x) => x.id === id).correcta;
 for (const orden of [["a", "b"], ["b", "a"]]) {
-  test(`★★★ capa 3: el bloque final aparece solo con los dos paquetes abiertos (${orden.join(" → ")})`, async () => {
+  test(`★★★ capa 3: el bloque final aparece solo con los dos paquetes decididos (${orden.join(" → ")})`, async () => {
     const { caja, desmontar } = await montar(h(DosPaquetes));
-    const boton = (id) => caja.querySelector(`[data-paquete="${id}"] button`);
+    const zona = (id) => caja.querySelector(`[data-hecho="${id}"]`);
+    const boton = (id) => zona(id).querySelector("button[aria-expanded]");
     const final = () => caja.querySelector("[data-final]").textContent;
     assert.equal(final(), "");
     assert.ok(boton("a").querySelector("svg"), "chevrón antes de abrir");
@@ -228,23 +232,26 @@ for (const orden of [["a", "b"], ["b", "a"]]) {
     assert.equal(final(), "");
     assert.equal(boton(orden[0]).getAttribute("aria-expanded"), "true");
     assert.equal(boton(orden[0]).getAttribute("aria-disabled"), "true");
-    assert.equal(Boolean(boton(orden[0]).querySelector("svg")), false, "al abrirse, el chevrón desaparece");
+    assert.ok(boton(orden[0]).querySelector("svg"), "al abrirse, el chevrón se queda (gira)");
+    assert.equal(caja.querySelector(`[data-revela="${orden[0]}"]`).textContent, "", "abierto sin decidir: nada revelado");
+    await decidir(tocar, zona(orden[0]), correctaDe(orden[0]));
     const p = D.PAQUETES.find((x) => x.id === orden[0]);
     assert.equal(caja.querySelector(`[data-revela="${orden[0]}"]`).textContent, p.revela + p.pie);
     await tocar(boton(orden[0])); // no se vuelve a cerrar
     assert.equal(boton(orden[0]).getAttribute("aria-expanded"), "true");
-    await tocar(boton(orden[1]));
+    assert.equal(final(), "");
+    await decidir(tocar, zona(orden[1]), correctaDe(orden[1]));
     assert.equal(final(), D.FINAL_CAPA_3.join("") + D.PIE_FINAL_CAPA_3);
     desmontar();
   });
 }
 
-test("★★ capa 3: A y B se ven idénticos antes y después de tocarlos (sin color de acierto)", async () => {
+test("★★ capa 3: A y B se ven idénticos antes y después de decidirlos (sin color de acierto en la caja)", async () => {
   const { caja, desmontar } = await montar(h(DosPaquetes));
-  const estilo = (id) => caja.querySelector(`[data-paquete="${id}"]`).getAttribute("style");
+  const estilo = (id) => caja.querySelector(`[data-hecho="${id}"]`).getAttribute("style");
   assert.equal(estilo("a"), estilo("b"));
-  await tocar(caja.querySelector('[data-paquete="a"] button'));
-  await tocar(caja.querySelector('[data-paquete="b"] button'));
+  await decidir(tocar, caja.querySelector('[data-hecho="a"]'), correctaDe("a"));
+  await decidir(tocar, caja.querySelector('[data-hecho="b"]'), "si");
   assert.equal(estilo("a"), estilo("b"));
   desmontar();
 });
@@ -292,13 +299,13 @@ test("★★★ capa 2: cada paso y el cierre llevan su pie de fuente, el de Fut
   desmontar();
 });
 
-test("★★★ capa 3: los pies de fuente de las dos cajas y del bloque final se ven al abrirse", async () => {
+test("★★★ capa 3: los pies de fuente de las dos cajas y del bloque final se ven al decidir", async () => {
   const { caja, desmontar } = await montar(h(DosPaquetes));
   assert.equal(caja.querySelectorAll("[data-pie]").length, 0, "cerradas, sin pie");
-  await tocar(caja.querySelector('[data-paquete="a"] button'));
-  assert.equal(caja.querySelector('[data-paquete="a"] [data-pie]').textContent, "Basado en el libro, p. 192");
-  await tocar(caja.querySelector('[data-paquete="b"] button'));
-  assert.equal(caja.querySelector('[data-paquete="b"] [data-pie]').textContent, "Basado en el libro, p. 192");
+  await decidir(tocar, caja.querySelector('[data-hecho="a"]'), correctaDe("a"));
+  assert.equal(caja.querySelector('[data-hecho="a"] [data-pie]').textContent, "Basado en el libro, p. 192");
+  await decidir(tocar, caja.querySelector('[data-hecho="b"]'), correctaDe("b"));
+  assert.equal(caja.querySelector('[data-hecho="b"] [data-pie]').textContent, "Basado en el libro, p. 192");
   assert.equal(caja.querySelector("[data-final] [data-pie]").textContent, "Basado en el libro, pp. 191-192");
   desmontar();
 });

@@ -49,6 +49,7 @@ const h = React.createElement;
 const D = await import("../../data/contabilidadT5Pieza2.js");
 const E = await import("../t5Pieza2.js");
 const { default: TresMomentos } = await import("../../components/mecanicas/libros/tema5/TresMomentos.jsx");
+const { decidir } = await import("./b5-capa3.mjs");
 const { default: DosVentas } = await import("../../components/mecanicas/libros/tema5/DosVentas.jsx");
 const { ESCENAS_TEMA5 } = await import("../../components/mecanicas/libros/tema5/escenasTema5.jsx");
 const { PIEZAS } = await import("../../components/ContabilidadTema5View.jsx");
@@ -69,7 +70,7 @@ const rgb = (hex) => `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 1
 const textosDeDatos = () => {
   const out = [];
   const recoger = (v, k) => {
-    if (typeof v === "string") { if (!["id"].includes(k)) out.push(v); }
+    if (typeof v === "string") { if (!["id", "correcta", "resaltados"].includes(k)) out.push(v); }
     else if (Array.isArray(v)) v.forEach((x) => recoger(x, k));
     else if (v && typeof v === "object") for (const [kk, x] of Object.entries(v)) recoger(x, kk);
   };
@@ -81,7 +82,22 @@ const FUENTE = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/
 const FUTABA = FUENTE.slice(FUENTE.indexOf("## (1) Futaba"), FUENTE.indexOf("## (2) Mai"));
 const viva = (caja) => caja.querySelector("[data-escena-viva]");
 const de = (caja, id) => viva(caja).querySelector(`[data-elemento="${id}"]`);
-const siguiente = (caja) => tocar(caja.querySelector("[data-siguiente]"));
+/* Lo que todavía no llega se ve en silueta (hoja 5 de Mai): a la vista, atenuado y marcado con --b5-silueta. */
+const enSilueta = (n) => n.style.visibility === "visible" && Boolean(n.style.getPropertyValue("--b5-silueta"));
+/* Un paso adelante; la parada entre el 10 y el 11 (hoja 7) se cruza eligiendo la correcta: no es un paso. */
+const siguiente = async (caja) => {
+  await tocar(caja.querySelector("[data-siguiente]"));
+  if (caja.querySelector("[data-parada]")) {
+    await tocar(caja.querySelector(`[data-parada] [data-opcion="${D.PARADA_T5_A2.correcta}"]`));
+    await tocar(caja.querySelector("[data-siguiente]"));
+  }
+};
+/*
+ * Los pasos juntados (hoja 7 de Mai): 14 pasos que muestran los estados de los 21 de antes. `J.viejo(n)` es el
+ * paso de antes cuyo estado muestra el paso n; `nuevoDe(p)`, el paso nuevo que contiene el paso p de antes.
+ */
+const J = E.T5_A2_JUNTO;
+const nuevoDe = (p) => (p > 21 ? J.CIERRE : D.FUSION_T5_A2.grupos.findIndex((g) => g.includes(p)) + 1);
 const colorVisto = (n) => {
   while (n && (!n.style.color || n.style.color === "inherit")) n = n.parentElement;
   return n?.style.color;
@@ -163,20 +179,22 @@ const RESALTADOS = {
   19: ["costo2", "recibe2"], 20: ["caja4", "inversiones3"], 21: ["perdida"], 22: [],
 };
 
-test("★★★ capa 2: el texto, el pie y lo resaltado de los 21 pasos y del cierre, sin avisos de React", async () => {
+test("★★★ capa 2: el texto, el pie y lo resaltado de los 14 pasos (los 21 de antes, juntados) y del cierre, sin avisos de React", async () => {
   const avisos = [];
   const antes = console.error;
   console.error = (...a) => avisos.push(a.join(" "));
   try {
     const { caja, desmontar } = await montar(h(TresMomentos));
     const res = () => [...caja.querySelectorAll('[data-resaltado="si"]')].map((n) => n.dataset.elemento).sort();
-    for (let p = 1; p <= 22; p++) {
-      const esperado = p <= 21 ? D.PASOS_T5_A2[p - 1] : D.CIERRE_T5_A2;
-      assert.equal(caja.querySelector("[data-texto-paso]").textContent, esperado.texto, `texto, paso ${p}`);
-      assert.equal(caja.querySelector("[data-pie]").textContent, esperado.pie, `pie, paso ${p}`);
-      assert.deepEqual(res(), RESALTADOS[p], `resaltados, paso ${p}`);
-      if (p <= 21) assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de 21`);
-      if (p < 22) await siguiente(caja);
+    for (let p = 1; p <= J.CIERRE; p++) {
+      /* El texto: los de antes, seguidos y sin cambiar una palabra; el pie, el nuevo; lo resaltado, la unión. */
+      const grupo = p <= J.PASOS ? D.FUSION_T5_A2.grupos[p - 1] : [22];
+      const texto = grupo.map((v) => (v <= 21 ? D.PASOS_T5_A2[v - 1] : D.CIERRE_T5_A2).texto).join(" ");
+      assert.equal(caja.querySelector("[data-texto-paso]").textContent, texto, `texto, paso ${p}`);
+      assert.equal(caja.querySelector("[data-pie]").textContent, p <= J.PASOS ? D.FUSION_T5_A2.pies[p - 1] : D.CIERRE_T5_A2.pie, `pie, paso ${p}`);
+      assert.deepEqual(res(), [...new Set(grupo.flatMap((v) => RESALTADOS[v]))].sort(), `resaltados, paso ${p}`);
+      if (p <= J.PASOS) assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de 14`);
+      if (p < J.CIERRE) await siguiente(caja);
     }
     assert.equal(caja.querySelector("[data-paso-de]").style.visibility, "hidden");
     desmontar();
@@ -192,8 +210,9 @@ const ABIERTO = (p) => (p <= 4 ? 0 : p <= 7 ? 1 : p <= 14 ? 2 : p <= 17 ? 3 : p 
 test("★★★ los cinco hechos: uno abierto a la vez, los anteriores plegados con su resultado, los que no llegan no se ven; en el cierre, los cinco plegados", async () => {
   const { caja, desmontar } = await montar(h(TresMomentos));
   const H = D.ESCENA_T5_A2.hechos;
-  for (let p = 1; p <= 22; p++) {
-    const hechos = [...viva(caja).querySelectorAll("[data-hecho-t5]")];
+  for (let n = 1; n <= J.CIERRE; n++) {
+    const p = J.viejo(n);
+    const hechos = [...viva(caja).querySelectorAll("[data-hecho-t5]:not([data-futuro])")];
     const abierto = ABIERTO(p);
     assert.equal(hechos.length, abierto === null ? 5 : abierto + 1, `paso ${p}: hechos a la vista`);
     hechos.forEach((n, i) => {
@@ -204,7 +223,7 @@ test("★★★ los cinco hechos: uno abierto a la vez, los anteriores plegados 
       const cabecera = n.firstElementChild.textContent;
       assert.equal(cabecera, plegado ? `${H[i].fecha}${H[i].tipo}${H[i].plegado}` : `${H[i].fecha}${H[i].tipo}`, `paso ${p}, hecho ${i + 1}: lo que dice`);
     });
-    if (p < 22) await siguiente(caja);
+    if (n < J.CIERRE) await siguiente(caja);
   }
   desmontar();
 });
@@ -221,11 +240,12 @@ const HECHO = (id) => ABIERTO(APARECE[id]);
 
 test("★★★ dentro del hecho abierto, cada pieza se ve desde su paso; antes ocupa su sitio invisible", async () => {
   const { caja, desmontar } = await montar(h(TresMomentos));
-  for (let p = 1; p <= 21; p++) {
+  for (let k = 1; k <= J.PASOS; k++) {
+    const p = J.viejo(k);
     for (const [id, desde] of Object.entries(APARECE)) {
       const n = de(caja, id);
       if (HECHO(id) !== ABIERTO(p)) { assert.equal(n, null, `paso ${p}: ${id} no está (su hecho no va abierto)`); continue; }
-      assert.equal(n.style.visibility, p >= desde ? "visible" : "hidden", `paso ${p}: ${id}`);
+      assert.equal(enSilueta(n), p < desde, `paso ${p}: ${id} ${p < desde ? "en silueta" : "a la vista"}`);
     }
     await siguiente(caja);
   }
@@ -246,7 +266,7 @@ const ASIENTOS = {
 test("★★★ cada asiento muestra sus dos lados: cuenta, monto y cápsula («se debita» teal, «se acredita» ámbar), sin atenuarse", async () => {
   const { caja, desmontar } = await montar(h(TresMomentos));
   const vistos = new Set();
-  for (let p = 1; p <= 21; p++) {
+  for (let k = 1; k <= J.PASOS; k++) {
     for (const [id, [cuenta, monto, lado]] of Object.entries(ASIENTOS)) {
       const n = de(caja, id);
       if (!n || n.style.visibility !== "visible") continue;
@@ -269,28 +289,31 @@ test("★★★ cada asiento muestra sus dos lados: cuenta, monto y cápsula («
 
 test("★★★ lo que se ve: lo resaltado en claro sobre navy; lo demás y los hechos plegados, atenuados; en el cierre nada atenuado", async () => {
   const { caja, desmontar } = await montar(h(TresMomentos));
-  for (let p = 1; p <= 22; p++) {
-    for (const id of RESALTADOS[p]) {
+  for (let n = 1; n <= J.CIERRE; n++) {
+    const p = J.viejo(n);
+    for (const id of J.estadoPaso(n).resaltados) {
       assert.equal(de(caja, id).style.background, rgb(FAE.navy), `paso ${p}: ${id} con relleno navy`);
       assert.equal(colorVisto(de(caja, id).firstElementChild ?? de(caja, id)), rgb(FAE.text), `paso ${p}: ${id} en claro`);
     }
     for (const n of viva(caja).querySelectorAll('[data-plegado="si"]')) {
       assert.equal(colorVisto(n.querySelector("[data-resultado]")), rgb(p === 22 ? FAE.text : COLOR.apagado), `paso ${p}: hecho plegado`);
     }
-    if (p === 12) assert.equal(colorVisto(de(caja, "vendidos")), rgb(COLOR.apagado), "control: lo no resaltado se atenúa");
-    if (p < 22) await siguiente(caja);
+    if (p === 13) assert.equal(colorVisto(de(caja, "vendidos")), rgb(COLOR.apagado), "control: lo no resaltado se atenúa");
+    if (n < J.CIERRE) await siguiente(caja);
   }
   desmontar();
 });
 
-test("★★★ las cuentas: en el texto de los pasos 6 y 16 van enteras, sin partir; en la escena, un solo corte, antes de «=»", async () => {
+test("★★★ las cuentas: en el texto de los pasos 6 y 16 de antes (hoy 5 y 11, juntados con el siguiente) van enteras, sin partir; en la escena, un solo corte, antes de «=»", async () => {
   const { caja, desmontar } = await montar(h(TresMomentos));
-  for (let p = 1; p <= 16; p++) {
+  for (let k = 1; k <= nuevoDe(16); k++) {
+    const grupo = D.FUSION_T5_A2.grupos[k - 1];
+    const p = grupo.find((v) => v === 6 || v === 16) ?? grupo[0];
     const c = caja.querySelector("[data-texto-paso] [data-cuenta]");
     if (p === 6 || p === 16) {
       assert.equal(c.textContent, p === 6 ? "2.000.000 × 0,24 × 3/12 = $120.000" : "500.000 × 0,24 × 3/12 = $30.000");
       assert.equal(c.style.whiteSpace, "nowrap");
-      assert.equal(caja.querySelector("[data-texto-paso]").textContent, D.PASOS_T5_A2[p - 1].texto, "el texto sigue literal");
+      assert.equal(caja.querySelector("[data-texto-paso]").textContent, grupo.map((v) => D.PASOS_T5_A2[v - 1].texto).join(" "), "el texto sigue literal");
       const n = de(caja, p === 6 ? "cuenta1" : "cuenta2");
       assert.deepEqual([...n.children].map((s) => [s.textContent, s.style.whiteSpace]),
         (p === 6 ? D.ESCENA_T5_A2.cuenta1 : D.ESCENA_T5_A2.cuenta2).map((t) => [t, "nowrap"]));
@@ -332,7 +355,7 @@ test("★★ «Reproducir»: 3 000 + 450 ms por palabra; la tabla de la v2b y su
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: las dos ventas se ven iguales, con lo recibido y lo que costaron; cada una revela lo suyo con su pie; el final, con las dos", async () => {
+test("★★★ capa 3: las dos ventas se ven iguales, con lo recibido y lo que costaron; cada una revela lo suyo con su pie; el final, con las dos decididas", async () => {
   const { caja, desmontar } = await montar(h(DosVentas));
   assert.equal(caja.querySelector("p").textContent, D.CONSIGNA_CAPA_3_T5_A2);
   const cajas = [...caja.querySelectorAll("[data-hecho]")];
@@ -343,8 +366,8 @@ test("★★★ capa 3: las dos ventas se ven iguales, con lo recibido y lo que 
   const lectura = (n) => [...n.querySelectorAll("p:not([data-pie])")].map((p) => p.textContent).join("");
   for (const [k, v] of D.VENTAS_T5_A2.entries()) {
     assert.equal(cajas[k].querySelectorAll("svg").length, 1, "cerrada, con su chevrón");
-    await tocar(caja.querySelector(`[data-hecho="${v.id}"] button`));
-    assert.equal(cajas[k].querySelectorAll("svg").length, 0, "abierta, sin chevrón");
+    await decidir(tocar, caja.querySelector(`[data-hecho="${v.id}"]`), v.correcta);
+    assert.equal(cajas[k].querySelectorAll("svg").length, 1, "decidida, con su chevrón girado (hoja 6)");
     assert.equal(lectura(caja.querySelector(`[data-revela="${v.id}"]`)), v.revela);
     assert.equal(caja.querySelector(`[data-revela="${v.id}"] [data-pie]`).textContent, v.pie);
     assert.equal(lectura(caja.querySelector("[data-final]")), k === 0 ? "" : D.FINAL_CAPA_3_T5_A2.texto);
@@ -373,4 +396,30 @@ test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola corr
 test("★★ identificadores nuevos con b5-", () => {
   assert.match(D.PIEZA_TRES_MOMENTOS.id, /^b5-t5-a2-/);
   for (const o of D.OPCIONES_FINAL_T5_A2) assert.match(o.id, /^b5-t5-a2-/);
+});
+
+/* D12 (Sakuta, #222): lo que está en silueta no lo lee el lector ni se enfoca; lo que llega, ya no lleva esa marca. */
+const MUDOS = '[style*="--b5-silueta"], [data-futuro], [data-silueta-futura]';
+const callado = (n) => n.closest('[aria-hidden="true"]') !== null;
+const marcaPropia = (n) => n.getAttribute("aria-hidden") === "true" && n.hasAttribute("inert");
+test("★★★ D12: en el paso 1 ninguna silueta es legible ni enfocable; en el paso 2, lo que llegó pierde la marca", async () => {
+  const { caja, desmontar } = await montar(h(TresMomentos));
+  const siluetas = [...caja.querySelectorAll(MUDOS)];
+  assert.ok(siluetas.length > 0, "hay siluetas en el paso 1");
+  for (const n of siluetas) {
+    assert.ok(callado(n), "aria-hidden en ella o en un ancestro");
+    assert.ok(marcaPropia(n), "y su propia marca: aria-hidden e inert, aunque la escena cambie");
+  }
+  const vivas = () => [...viva(caja).querySelectorAll("[data-elemento]")];
+  const antes = new Set(vivas().filter((n) => enSilueta(n)));
+  await siguiente(caja);
+  const llegaron = vivas().filter((n) => antes.has(n) && !enSilueta(n));
+  assert.ok(llegaron.length > 0, "algo llegó en el paso 2");
+  for (const n of llegaron) {
+    assert.equal(n.hasAttribute("inert"), false, `${n.dataset.elemento}: sin inert`);
+    assert.equal(n.getAttribute("aria-hidden"), null, `${n.dataset.elemento}: sin su aria-hidden`);
+    assert.equal(n.closest("[data-b5-mudo]"), null, `${n.dataset.elemento}: ni un ancestro en silueta`);
+  }
+  for (const n of caja.querySelectorAll(MUDOS)) assert.ok(marcaPropia(n), "lo que sigue en silueta, callado");
+  desmontar();
 });

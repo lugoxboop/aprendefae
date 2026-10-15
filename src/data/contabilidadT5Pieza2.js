@@ -119,7 +119,11 @@ export const CIERRE_T5_A2 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · las dos ventas ═══════════ */
 
-export const CONSIGNA_CAPA_3_T5_A2 = "Toca cada venta y compara lo que se recibió con lo que costó.";
+/* Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja, para Shoko (ver el paquete). */
+export const CONSIGNA_CAPA_3_T5_A2 = "Toca cada venta y decide si dejó ganancia o pérdida. Después, mira por cuánto se acredita la inversión.";
+export const PREGUNTA_CAPA_3_T5_A2 = "¿Dejó ganancia o pérdida?";
+export const OPCIONES_CAPA_3_T5_A2 = [{ id: "ganancia", texto: "Ganancia" }, { id: "perdida", texto: "Pérdida" }];
+export const FALLA_CAPA_3_T5_A2 = "Compara las dos cifras de la caja: lo que recibió y lo que costaron.";
 
 /* Cerradas, cada una muestra su nombre y dos cifras: lo recibido y lo que costaron. */
 export const VENTAS_T5_A2 = [
@@ -129,6 +133,7 @@ export const VENTAS_T5_A2 = [
     cifras: ["Recibió $1.725.000", "Costaron $1.500.000"],
     revela: "Recibió más de lo que costaron: ganancia de $225.000. Inversiones – títulos se acredita por el costo, no por lo recibido.",
     pie: "Libro, pp. 194-195",
+    correcta: "ganancia",
   },
   {
     id: "venta-noviembre",
@@ -136,6 +141,7 @@ export const VENTAS_T5_A2 = [
     cifras: ["Recibió $468.750", "Costaron $500.000"],
     revela: "Recibió menos de lo que costaron: pérdida de $31.250. Inversiones – títulos también se acredita por el costo.",
     pie: "Libro, p. 195",
+    correcta: "perdida",
   },
 ];
 export const FINAL_CAPA_3_T5_A2 = {
@@ -173,3 +179,32 @@ export const OPCIONES_FINAL_T5_A2 = [
     feedback: "No es esa. Ese día solo se vendió el 75 %. Se acredita lo que costaron esos 1.875 títulos, no toda la inversión.",
   },
 ];
+
+/* ═══════════ CAPA 2 LARGA: LOS PASOS QUE SE JUNTAN Y LA PARADA (hoja 7 de Mai, entrega 3 de Futaba) ═══════════ */
+
+/*
+ * De 21 pasos a 14 (Mai §1): las fusiones de Futaba menos 4 + 5, que no
+ * cumple la regla 1 (en el estado del paso 5, la tasa del paso 4 ya no se
+ * ve). Cada paso nuevo dice los textos de sus pasos seguidos, sin cambiar una
+ * palabra. Los pies, los de Futaba; los pasos 3 y 4 conservan el suyo.
+ */
+export const FUSION_T5_A2 = {
+  grupos: [[1, 2], [3], [4], [5], [6, 7], [8, 9], [10, 11], [12, 13], [14], [15], [16, 17], [18, 19], [20], [21]],
+  pies: [
+    "Libro, p. 194", "Libro, p. 194", "Libro, p. 194", "Libro, p. 194", "Basado en el libro, p. 194", "Libro, p. 194", "Libro, pp. 194-195",
+    "Libro, pp. 194-195", "Libro, p. 195", "Libro, p. 195", "Basado en el libro, p. 195", "Libro, p. 195", "Libro, p. 195", "Basado en el libro, p. 195",
+  ],
+};
+/* La predicción entre los pasos 10 y 11 (la que Futaba llamó «entre 9 y 10»). `antes`: el paso que viene. */
+export const PARADA_T5_A2 = {
+  antes: 11,
+  pregunta: "Ya solo quedan 625 títulos. ¿Sobre qué valor se calcula el interés de noviembre?",
+  opciones: [{ id: "dos-millones", texto: "$2.000.000" }, { id: "costo", texto: "$1.500.000" }, { id: "quedan", texto: "$500.000" }],
+  correcta: "quedan",
+  falla: {
+    "dos-millones": "Ya no hay 2.500 títulos: quedan 625. Son 625 × $800 = $500.000.",
+    costo: "Eso costaron los títulos que vendió. El interés se paga sobre los que quedan: 625 × $800 = $500.000.",
+  },
+  pie: "Libro, p. 195",
+  resaltados: ["quedan"],
+};

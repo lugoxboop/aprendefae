@@ -15,7 +15,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *     Torito en nuestros datos); los distractores de Futaba no lo son
  *   · las casillas en orden: un intento; al fallar, la razón y la correcta
  *     marcada; acierte o falle, el valor correcto queda en el registro;
- *     pct = aciertos / 5 × 100; las opciones, barajadas
+ *     pct = aciertos / 4 × 100; las opciones, barajadas
  *   · la mecánica de Macro no se toca: la de la célula es una copia
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -91,19 +91,29 @@ test("★★★ los textos fijos son los del paquete: consigna, regla, reglas, p
   D.REGLAS_T6_ACT5.forEach((r, k) => assert.equal(r, fila(`Así se juega, ${k + 1}`)[1]));
   assert.equal(D.T6_ACT5.partida, cambio("Tutorial", "Texto")[0]);
   assert.equal(D.T6_ACT5.cierre, fila("Cierre")[1]);
-  assert.equal(D.ALT_T6_ACT5, fila("Texto alternativo")[1]);
+  /* El texto alternativo nuevo (entrega 5): el castigo ya anotado. */
+  assert.equal(D.ALT_T6_ACT5, cambio("Texto alternativo", "ALT")[0]);
 });
 
-test("★★★ las cinco casillas: el enunciado, la correcta y los dos distractores con su tipo, como en el paquete", () => {
-  assert.equal(C.length, 5);
-  C.forEach((c, k) => {
+test("★★★ entrega 5: el castigo de marzo es un dato dado, con el texto y el anuncio de Futaba; quedan cuatro casillas (c1, c3, c4 y c5) y T3 y T4 se eliminan", () => {
+  assert.equal(D.CASTIGO_DADO_T6_ACT5.texto, cambio("Castigo", "Texto que se ve")[0]);
+  assert.equal(D.CASTIGO_DADO_T6_ACT5.anuncio, cambio("Castigo", "Anuncio para el lector")[0]);
+  assert.deepEqual(C.map((c) => c.id), ["c1", "c3", "c4", "c5"]);
+  assert.equal(D.ERRORES_T6_ACT5.T3, undefined);
+  assert.equal(D.ERRORES_T6_ACT5.T4, undefined);
+});
+
+test("★★★ las cuatro casillas: el enunciado, la correcta y los dos distractores con su tipo, como en el paquete", () => {
+  assert.equal(C.length, 4);
+  C.forEach((c) => {
+    const k = Number(c.id.slice(1)) - 1;
     const [, enunciado, bien, mal1, mal2] = fila(String(k + 1));
     assert.equal(c.enunciado, sinCifra(enunciado), `casilla ${k + 1}: enunciado`);
     assert.deepEqual(c.opciones, [opcionDe(bien), opcionDe(mal1), opcionDe(mal2)], `casilla ${k + 1}: opciones`);
   });
   /* T3, T7 y T9, de la sección (2); los demás, de (1). */
   const nuevo = (t) => filas2.find((c) => c[0] === t || c[0].startsWith(`${t} ·`))?.[2];
-  for (let k = 1; k <= 10; k++) assert.equal(D.ERRORES_T6_ACT5[`T${k}`], nuevo(`T${k}`) ?? filaTipo(`T${k}`)[1], `T${k}`);
+  for (const t of Object.keys(D.ERRORES_T6_ACT5)) assert.equal(D.ERRORES_T6_ACT5[t], nuevo(t) ?? filaTipo(t)[1], t);
   /* Cada tipo de error se usa en una casilla, y solo en una. */
   const usados = C.flatMap((c) => c.opciones.map((o) => o.tipo).filter(Boolean));
   assert.deepEqual([...usados].sort(), Object.keys(D.ERRORES_T6_ACT5).sort());
@@ -111,12 +121,14 @@ test("★★★ las cinco casillas: el enunciado, la correcta y los dos distract
 
 test("auditoría: las devoluciones T3 y T7 ya no copian B·C15 ni B·C12 de b5-t6-a2", async () => {
   const A2 = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-act2.md", import.meta.url), "utf8");
-  for (const t of ["T3", "T7", "T9"]) assert.ok(!A2.includes(D.ERRORES_T6_ACT5[t]), `${t} está en el paquete de b5-t6-a2`);
+  for (const t of ["T7", "T9"]) assert.ok(!A2.includes(D.ERRORES_T6_ACT5[t]), `${t} está en el paquete de b5-t6-a2`);
   assert.match(D.T6_ACT5.partida, /El Torito Currambero/);
 });
 
 test("★★★ las cuentas cuadran con el libro: neto, lo que faltó, el ajuste y el saldo final", () => {
-  const [neto, castigo, falta, ajuste, saldo] = C.map(correctaDe);
+  const [neto, falta, ajuste, saldo] = C.map(correctaDe);
+  /* El castigo es un dato dado (entrega 5): está en el texto que se ve. */
+  const [castigo] = cifras(D.CASTIGO_DADO_T6_ACT5.texto);
   const [deben, provision, pide] = [2655000, 148800, 153400];
   assert.equal(deben - provision, neto);
   assert.equal(castigo, 180000);
@@ -156,22 +168,86 @@ test("★★★ cada error se ve literal; la correcta queda marcada; un solo int
       assert.equal(opcion(caja, correctaDe(C[k])).dataset.estado, "revelada");
       await tocar(opcion(caja, correctaDe(C[k])));
       assert.equal(opcion(caja, correctaDe(C[k])).dataset.estado, "revelada", "un solo intento");
-      const reg = caja.querySelector(`[data-resuelta="${C[k].id}"]`);
-      assert.equal(reg.dataset.acierto, "no");
-      assert.ok(reg.textContent.includes(pesos(correctaDe(C[k]))), "el valor correcto, en el registro");
+      /* La cuenta es el registro (hoja 1 de Mai): entra el valor correcto aunque se haya fallado. */
+      const cuenta = caja.querySelector("[data-cuenta-que-se-llena]");
+      const entraron = [...cuenta.querySelectorAll("[data-entra]")].map((e) => e.textContent).join(" | ");
+      assert.ok(entraron.includes(pesos(correctaDe(C[k]))), `casilla ${k + 1}: entró «${entraron}»`);
+      /* Lo que se anuncia es lo que entró: el valor correcto (el elegido mal puede estar ya en la cuenta, como el ajuste de la T9). */
+      assert.ok(cuenta.querySelector("[data-anuncio]").textContent.includes(pesos(correctaDe(C[k]))), `casilla ${k + 1}: el anuncio`);
       desmontar();
     }
   }
 });
 
-test("★★★ pct = aciertos / 5 × 100 y el cierre literal", async () => {
+/* ═══════════ LA CUENTA QUE SE LLENA (hoja 1 de Mai, calidad) ═══════════ */
+
+const P3 = await import("../../data/contabilidadT6Pieza3.js");
+const { estadoDeLaCuenta, anuncioDe: anuncioDeLaCuenta } = await import("../../components/mecanicas/libros/tema6/CuentaQueSeLlena.jsx");
+
+test("★★★ la cuenta se llena casilla a casilla con las cifras de las casillas; el castigo entra como dato al responder la casilla 1 (entrega 5)", async () => {
+  const [dic, marzo, sig] = P3.MOMENTOS_T6_A3;
+  /* Lo que entra en cada casilla es su valor correcto: neto, lo que falta, el ajuste y el saldo final. */
+  assert.deepEqual([P3.ESCENA_T6_A3.valorNeto, marzo.saldo.texto, sig.monto, sig.saldo.texto].map((t) => cifras(t)[0]), C.map(correctaDe));
+  assert.equal(cifras(dic.monto)[0], 148800, "arranca con el tutorial");
+  const { caja, desmontar } = await montar();
+  const cuenta = () => caja.querySelector("[data-cuenta-que-se-llena]");
+  const activo = () => cuenta().querySelector("[data-renglon-activo]");
+  const saldo = () => cuenta().querySelector("[data-saldo]");
+  const debe = () => [...cuenta().querySelectorAll('[data-columna="debe"] [data-movimiento]')];
+  /* Casilla 1: se enciende la fila del neto; el saldo es el de 2007; el castigo todavía no está (ni en la T ni a la vista). */
+  assert.ok(activo().hasAttribute("data-fila-neto"));
+  assert.equal(saldo().textContent, dic.saldo.texto);
+  assert.equal(debe().length, 0, "la T no muestra un momento posterior al que se pregunta");
+  assert.equal(cuenta().querySelector("[data-castigo-dado]").dataset.castigoDado, "no");
+  assert.equal(cuenta().querySelector("[data-castigo-dado]").style.visibility, "hidden");
+  /* Se falla la 1: entra igual el neto correcto y, con él, el castigo ya anotado. */
+  await tocar(opcion(caja, C[0].opciones.find((o) => o.tipo).valor));
+  assert.equal(cuenta().querySelector("[data-castigo-dado]").dataset.castigoDado, "si");
+  assert.equal(cuenta().querySelector("[data-castigo-dado]").textContent, D.CASTIGO_DADO_T6_ACT5.texto);
+  assert.equal(debe().length, 1);
+  assert.equal(debe()[0].textContent, `${marzo.monto}${marzo.nombre}`, "en el DEBE, con su fecha");
+  assert.ok(!debe()[0].hasAttribute("data-renglon-activo"), "un dato no se enciende");
+  assert.equal(caja.querySelector("[data-anuncio]").textContent, `El valor neto, $2.506.200. ${D.CASTIGO_DADO_T6_ACT5.anuncio}`);
+  await siguiente(caja);
+  /* Casilla 2 (c3): el hueco del saldo a todo el ancho, sin lado. */
+  assert.equal(activo().dataset.saldo, "hueco");
+  assert.equal(activo().closest("[data-columna]"), null, "el hueco no está bajo ningún lado");
+  await tocar(opcion(caja, correctaDe(C[1])));
+  assert.equal(cuenta().querySelector("[data-saldo]").dataset.saldo, "en-contra");
+  assert.equal(cuenta().querySelector("[data-saldo]").textContent, marzo.saldo.texto);
+  await siguiente(caja);
+  /* Casilla 3 (c4): un renglón nuevo del HABER. */
+  assert.equal(activo().closest("[data-columna]").dataset.columna, "haber");
+  await tocar(opcion(caja, correctaDe(C[2]))); await siguiente(caja);
+  /* Casilla 4 (c5): el hueco otra vez; al responder, el saldo bajo HABER y el recuadro en contra se va. */
+  assert.equal(activo().dataset.saldo, "hueco");
+  await tocar(opcion(caja, correctaDe(C[3])));
+  assert.deepEqual([...cuenta().querySelectorAll("[data-saldo]")].map((x) => x.dataset.saldo), ["normal"]);
+  assert.equal(saldo().textContent, sig.saldo.texto);
+  assert.equal(cuenta().querySelector("[data-renglon-activo]"), null, "respondida, nada encendido");
+  desmontar();
+});
+
+test("★★ el lado se lee por la palabra y la columna, no solo por el color; el anuncio dice lo que entró", () => {
+  const e = estadoDeLaCuenta(1, 1);
+  assert.equal(e.huecoSaldo, true);
+  assert.equal(e.saldo, null, "mientras se pregunta, ningún saldo con lado");
+  assert.deepEqual([0, 1, 2, 3].map(anuncioDeLaCuenta), [
+    "El valor neto, $2.506.200. Debe, $180.000, marzo del año siguiente",
+    "Le faltan $31.200",
+    "Haber, $184.600, 31 de diciembre del año siguiente",
+    "El saldo queda en $153.400",
+  ]);
+});
+
+test("★★★ pct = aciertos / 4 × 100 y el cierre literal", async () => {
   const m = await montar();
   for (let k = 0; k < C.length; k++) {
     const v = k < 3 ? correctaDe(C[k]) : C[k].opciones.find((o) => o.tipo).valor;
     await tocar(opcion(m.caja, v));
     await siguiente(m.caja);
   }
-  assert.equal(m.pct(), 60);
+  assert.equal(m.pct(), 75);
   assert.equal(m.caja.querySelector("[data-cierre-texto]").textContent, D.T6_ACT5.cierre);
   m.desmontar();
 });
@@ -190,4 +266,11 @@ test("★★ la mecánica de Macro no se toca: b5/CasillasEnOrden.jsx es la copi
   assert.doesNotMatch(copia, /pmFabricaDelDinero|ESCALERA|fabricaDelDinero\.jsx"/, "la copia no depende de Macro");
   assert.deepEqual([D.T6_ACT5.id, D.T6_ACT5.dificultad, D.T6_ACT5.fpBase], ["b5-t6-a5", "medio", 25]);
   assert.match(GUIA, /medio · 25 FP/);
+});
+
+test("★★ hoja de Mai: las opciones con cifras van en una columna (en fila de tres, a 320, «$2.506.200» no cabe)", async () => {
+  const { caja, desmontar } = await montar();
+  const span = caja.querySelector("[data-opcion]");
+  assert.equal(span.closest("[style*='grid-template-columns']").style.gridTemplateColumns, "minmax(0, 1fr)");
+  desmontar();
 });

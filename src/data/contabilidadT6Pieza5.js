@@ -95,10 +95,12 @@ export const ESCENARIO_T6_A5 = {
  * cifras de los textos sean exactamente estas, y que ninguna coincida con una
  * cifra del libro que ya está en los datos (lista negra). Futaba las cruza
  * además con el banco de ejercicios (pp. 262-274, Célula E); si alguna cambia,
- * cambia aquí y en los textos. Es el juego de Futaba tras cruzar el capítulo
+ * cambia aquí y en los textos. $1.700 y $170.000 (la parada de la capa 2,
+ * calidad 15-oct) son CONSTRUIDAS: las cruzó Futaba (OCR del capítulo y a ojo
+ * pp. 201, 269 y D-3), NO la Célula E ni Shoko (Shoko, #245). Es el juego de Futaba tras cruzar el capítulo
  * entero (pp. 176-275): el primero chocaba con la p. 201 y con el ejercicio D-3.
  */
-export const CIFRAS_CONSTRUIDAS_T6_A5 = [0, 17000, 19000, 21000, 36000, 38000, 57000, 74000, 140000, 340000, 360000, 380000, 460000, 1226000, 1300000];
+export const CIFRAS_CONSTRUIDAS_T6_A5 = [0, 1700, 17000, 19000, 21000, 36000, 38000, 57000, 74000, 140000, 170000, 340000, 360000, 380000, 460000, 1226000, 1300000];
 
 /* ═══════════ CAPA 2 · «MÍRELO FUNCIONAR» ═══════════ */
 
@@ -149,7 +151,13 @@ export const CIERRE_T6_A5 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · los cuatro grupos ═══════════ */
 
-export const CONSIGNA_CAPA_3_T6_A5 = "Toca cada grupo y mira cuánto se provisiona por él.";
+/* Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja es de Mai (hoja 6), para Shoko. */
+export const CONSIGNA_CAPA_3_T6_A5 = "Toca cada grupo y decide qué porcentaje le toca. Después, mira cuánto se provisiona.";
+export const PREGUNTA_CAPA_3_T6_A5 = "¿Qué porcentaje le toca?";
+const NADA = { id: "nada", texto: "Nada" };
+const P5 = { id: "5", texto: "5 %" };
+const P10 = { id: "10", texto: "10 %" };
+const P15 = { id: "15", texto: "15 %" };
 
 /* Cerrada, cada caja muestra su nombre y su monto (el rótulo de Futaba, «nombre · monto»). */
 export const GRUPOS_T6_A5 = [
@@ -159,6 +167,9 @@ export const GRUPOS_T6_A5 = [
     monto: "$460.000",
     revela: "En este ejemplo, por las deudas vigentes o con hasta tres meses de vencidas no se provisiona nada: $0.",
     pie: PIE_SIMULADO,
+    opciones: [NADA, P5, P10],
+    correcta: "nada",
+    falla: "En este ejemplo, las vigentes y las de hasta tres meses no llevan provisión.",
   },
   {
     id: "g2",
@@ -166,6 +177,9 @@ export const GRUPOS_T6_A5 = [
     monto: "$340.000",
     revela: "Al 5 %, los $340.000 dan $17.000.",
     pie: PIE_PORCENTAJE,
+    opciones: [NADA, P5, P10],
+    correcta: "5",
+    falla: "Más de tres meses, sin pasar de seis: es el 5 %.",
   },
   {
     id: "g3",
@@ -173,6 +187,9 @@ export const GRUPOS_T6_A5 = [
     monto: "$360.000",
     revela: "Al 10 %, los $360.000 dan $36.000.",
     pie: PIE_PORCENTAJE,
+    opciones: [P5, P10, P15],
+    correcta: "10",
+    falla: "Más de seis meses, sin pasar de un año: es el 10 %.",
   },
   {
     id: "g4",
@@ -180,6 +197,9 @@ export const GRUPOS_T6_A5 = [
     monto: "$140.000",
     revela: "Al 15 %, los $140.000 dan $21.000.",
     pie: PIE_PORCENTAJE,
+    opciones: [P5, P10, P15],
+    correcta: "15",
+    falla: "Más de un año: es el 15 %, el más alto.",
   },
 ];
 /* El tablero (Mai §6.1): la cabecera de su columna, la celda de cada grupo y la fila de la suma. */
@@ -225,3 +245,22 @@ export const OPCIONES_FINAL_T6_A5 = [
     feedback: "No es esa. Una deuda con más de tres meses de vencida sí entra en la provisión del ejemplo.",
   },
 ];
+
+/* ═══════════ CAPA 2 LARGA: LOS PASOS QUE SE JUNTAN Y LA PARADA (hoja 7 de Mai, entrega 3 de Futaba) ═══════════ */
+
+/* De 11 pasos a 10: se juntan el 9 y el 10 (Libro, p. 202). */
+export const FUSION_T6_A5 = {
+  grupos: [[1], [2], [3], [4], [5], [6], [7], [8], [9, 10], [11]],
+  /* El 9 y el 10 llevan los dos «Basado en el libro, p. 202» en la versión que manda: el juntado lleva ese pie (Shoko, #245). */
+  pies: PASOS_T6_A5.map((p) => p.pie).filter((_, k) => k !== 9).map((pie, k) => (k === 8 ? "Basado en el libro, p. 202" : pie)),
+};
+/* La predicción entre los pasos 4 y 5; resalta la fila del grupo 2, que la pregunta nombra (Mai §2). */
+export const PARADA_T6_A5 = {
+  antes: 5,
+  pregunta: "El grupo de más de tres hasta seis meses suma $340.000. Al 5 %, ¿cuánto da?",
+  opciones: [{ id: "bien", texto: "$17.000" }, { id: "diez", texto: "$1.700" }, { id: "cien", texto: "$170.000" }],
+  correcta: "bien",
+  falla: "Revisa los ceros: el 5 % de $340.000 es $17.000.",
+  pie: PIE_PORCENTAJE,
+  resaltados: ["g2"],
+};

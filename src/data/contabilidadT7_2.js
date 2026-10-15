@@ -76,6 +76,7 @@ const PERMANENTE = {
 /* P3 · la lista del libro (regla 5b). Las líneas se barajan al entrar. */
 const LISTA = {
   id: "la-lista-del-libro",
+  pista: "Pregúntate si la mercancía entra a la bodega o sale de ella. Inventario de mercancías es un activo.",
   tipo: "lados",
   consigna: "El libro da la lista de cuándo esta cuenta va al debe y cuándo va al haber. Toca Debe o Haber en cada línea.",
   lineas: [
@@ -106,6 +107,7 @@ const LO_QUE_FALTA = {
 /* P5 · el conteo en el permanente. Fuera, «obsolescencia»: no está enseñada. */
 const CONTEO = {
   id: "el-conteo-en-el-permanente",
+  pista: "En el permanente, el saldo ya está al día después de cada venta. ¿Qué le queda por hacer al conteo?",
   tipo: "eleccion",
   parrafos: [],
   pregunta: "En el permanente, ¿para qué sirve el conteo físico?",
