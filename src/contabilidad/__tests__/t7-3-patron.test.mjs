@@ -185,11 +185,12 @@ test("★★★ A1: la cuenta de la factura de San Calixto va con su texto, ante
   }
 });
 
-test("★★★ los rótulos de las figuras son los de Watari, marcados como pendientes de revisión", () => {
+test("★★★ los rótulos de las figuras son los de Watari, ya revisados por Near: sin la marca de pendiente", () => {
   const R = A1.ROTULOS_PATRON;
   assert.deepEqual([R.factura("X"), R.precioLista, R.descuentoComercial(15), R.valorFacturar], ["Factura de X", "Precio de lista", "Descuento comercial 15 %", "Valor a facturar"]);
   const fuente = readFileSync(new URL("../../data/contabilidadT7_3.js", import.meta.url), "utf8");
-  assert.match(fuente, /\[ESCRITO POR CLAUDE — PENDIENTE DE\s+\* REVISIÓN\]/);
+  assert.match(fuente, /Los puso\s+\* Watari y los revisó Near/);
+  assert.doesNotMatch(fuente, /PENDIENTE DE\s+(\* )?REVISIÓN\], dice su patrón/);
 });
 
 test("★★★ Hacer: cada figura aparece después de responder su ítem, crece o se va", async () => {
@@ -219,6 +220,9 @@ test("★★★ Hacer: cada figura aparece después de responder su ítem, crece
   assert.deepEqual(r2.titulos, ["Cadena", "Condiciones 4/20"]);
   assert.deepEqual(r2.filas, ["1", "2", "3"]);
   assert.deepEqual(r2.nuevas.filter((x) => x.startsWith("fila")), ["fila:3"]);
-  /* Respondido el 4: los plazos (hasta 3) ya se fueron. */
-  assert.deepEqual((await ver(4, false)).titulos, ["Cadena", "Otra"]);
+  /* Respondido el 3: los plazos (hasta el ítem 3) siguen; no se van al responder. */
+  assert.deepEqual((await ver(3, true)).titulos, ["Cadena", "Condiciones 4/20", "Otra"]);
+  /* En la pantalla del ítem 4 ya se fueron. */
+  assert.deepEqual((await ver(3, false)).titulos, ["Cadena", "Otra"]);
+  assert.deepEqual((await ver(4, true)).titulos, ["Cadena", "Otra"]);
 });

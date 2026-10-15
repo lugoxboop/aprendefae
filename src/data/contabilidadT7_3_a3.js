@@ -39,8 +39,8 @@ const C = H3_LIBRO;
 /*
  * Patrón T7-3 (Watari): la franja de plazos de 5 %, 15/10, 5/20, n/30 y la
  * cuenta en renglones de la factura, del descuento y del pago. Rótulos y
- * títulos de Watari, por confirmar con Near ([ESCRITO POR CLAUDE —
- * PENDIENTE DE REVISIÓN], dice su patrón). Los usan también A4 y H4.
+ * títulos de Watari, revisados por Near.
+ * Los usan también A4 y H4.
  */
 export const ROTULOS_A3 = {
   descuentoCondicionadoTit: "El descuento condicionado",
