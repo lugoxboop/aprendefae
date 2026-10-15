@@ -51,47 +51,44 @@ const P = Z.PIEZA_EL_ACTIVO_CORRIENTE;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 const S = leerSecciones(V1);
 
-/* Los archivos de cambios de A0 que esta prueba aplica. Uno nuevo la pone en rojo. */
+/*
+ * Desde el commit 4d22017 de Katsumi, el paquete base ES la versión vigente
+ * (ya trae la v2). Se compara contra él. El archivo de cambios se queda como
+ * registro: todo texto que sustituye tiene que NO estar ni en la base ni en
+ * los datos. Uno nuevo pone la primera prueba en rojo hasta mirarlo.
+ */
 const APLICADOS = ["d4-t4-a0-v2-cambios.md"];
 const V2 = leer(`${PAQUETES}d4-t4-a0-v2-cambios.md`);
+const ES_VIGENTE = /\*\*Este archivo es la versión vigente\*\*/.test(V1);
 
-/*
- * v2 (auditoría de Shibukawa), en sus formas:
- *   · pares «- v1: «…»» / «- **v2:** «…»»
- *   · la tabla «| Opción correcta | «v1» (…) | «v2» (…) |» (y la del acierto)
- *   · las dos líneas nuevas al final de P1, después de «Esa es la prueba…»
- *   · «Pie de P1: pasa de «…» a «…»»
- */
+/* Lo que la v2 sustituye (pares «v1/v2» y su tabla), y lo que añade a P1. */
 const V2_PARES = [...V2.matchAll(new RegExp(`^- v1: ${CITA}[^\\n]*\\n- \\*\\*v2:\\*\\* ${CITA}`, "gm"))].map((m) => ({ viejo: m[1], nuevo: m[2] }));
 const V2_TABLA = [...V2.matchAll(new RegExp(`^\\| (?:Opción correcta|Acierto) \\| ${CITA} \\([^)]*\\) \\| ${CITA} \\([^)]*\\) \\|$`, "gm"))].map((m) => ({ viejo: m[1], nuevo: m[2] }));
 const OBLIGATORIA_3 = V2.slice(V2.indexOf("## Obligatoria 3"), V2.indexOf("\n## ", V2.indexOf("## Obligatoria 3") + 5));
 const V2_NUEVAS_P1 = [...OBLIGATORIA_3.matchAll(new RegExp(`^- ${CITA} \\(\\d+,\\d\\)$`, "gm"))].map((m) => m[1]);
 const V2_PIE_P1 = OBLIGATORIA_3.match(new RegExp(`Pie de P1: pasa de ${CITA} a ${CITA}`));
-const conV2 = (t) => [...V2_PARES, ...V2_TABLA].find((x) => x.viejo === t)?.nuevo ?? t;
 
-/* El paquete, en su orden: P0…P8 de la v1, con la v2 encima. */
+/* El paquete vigente, en su orden: P0…P8 del archivo base. */
 const IDS = ["portada", "prueba-del-ano", "analogia", "ejemplos", "cual-es-corriente", "activos-fijos", "por-que-importan", "efectivo-primero", "resumen"];
-const PAQUETE = IDS.map((id, k) => {
-  const sec = S[`P${k}`];
-  const textos = sec.textos.map(conV2);
-  if (id === "prueba-del-ano") textos.push(...V2_NUEVAS_P1);
-  const pies = sec.pies.map((x) => (id === "prueba-del-ano" && V2_PIE_P1 && x === V2_PIE_P1[1] ? V2_PIE_P1[2] : x));
-  return { id, bloque: sec.bloque, textos, pies };
-});
+const PAQUETE = IDS.map((id, k) => ({ id, ...S[`P${k}`] }));
 
 /* ═══════════ 1 · EL TEXTO, CONTRA EL PAQUETE ═══════════ */
 
-test("★★★ todos los archivos de cambios de A0 que hay en la carpeta están aplicados, y la v2 se leyó entera", () => {
-  assert.deepEqual(cambiosDe("a0"), APLICADOS, "hay un archivo de cambios de A0 que esta pieza no aplica todavía");
+test("★★★ el paquete base es la versión vigente, la v2 está dentro y ningún texto que sustituye sigue", () => {
+  assert.ok(ES_VIGENTE, "el paquete base de A0 no dice que es la versión vigente");
+  assert.deepEqual(cambiosDe("a0"), APLICADOS, "hay un archivo de cambios de A0 que esta pieza no ha mirado todavía");
   assert.deepEqual([V2_PARES.length, V2_TABLA.length, V2_NUEVAS_P1.length, Boolean(V2_PIE_P1)], [2, 2, 2, true], "la lectura de la v2 no encontró sus cambios");
-  const todo = P.pantallas.flatMap(textosDeDatos).join("\n");
+  const datos = P.pantallas.flatMap(textosDeDatos);
+  const base = PAQUETE.flatMap((x) => x.textos);
   for (const r of [...V2_PARES, ...V2_TABLA]) {
-    assert.ok(todo.includes(r.nuevo), `falta el texto de la v2: «${r.nuevo}»`);
-    assert.ok(!P.pantallas.flatMap(textosDeDatos).includes(r.viejo), `quedó un texto que la v2 sustituye: «${r.viejo}»`);
+    assert.ok(datos.includes(r.nuevo), `falta el texto de la v2: «${r.nuevo}»`);
+    assert.ok(base.includes(r.nuevo), `el paquete base no trae el texto de la v2: «${r.nuevo}»`);
+    assert.ok(!datos.includes(r.viejo), `los datos traen un texto que la v2 sustituye: «${r.viejo}»`);
+    assert.ok(!base.includes(r.viejo), `el paquete base trae un texto que la v2 sustituye: «${r.viejo}»`);
   }
-  for (const t of V2_NUEVAS_P1) assert.ok(pantalla("prueba-del-ano").parrafos.includes(t), `falta en P1: «${t}»`);
-  /* Las dos líneas nuevas van al final de P1, después de «Esa es la prueba…». */
+  /* Las dos líneas nuevas van al final de P1, después de «Esa es la prueba…», y su pie cambia. */
   assert.deepEqual(pantalla("prueba-del-ano").parrafos.slice(-2), V2_NUEVAS_P1);
+  assert.equal(pantalla("prueba-del-ano").pie, V2_PIE_P1[2]);
 });
 
 test("★★★ las 9 pantallas, en el orden del paquete; título e id", () => {

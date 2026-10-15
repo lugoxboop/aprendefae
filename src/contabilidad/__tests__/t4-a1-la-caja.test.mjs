@@ -58,14 +58,20 @@ const V5 = leer(`${PAQUETES}d4-t4-a1-v5-cambios.md`);
 const P = A.PIEZA_LA_CAJA;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 
-/* ═══════════ EL PAQUETE, LEÍDO, CON CADA ARCHIVO DE CAMBIOS ENCIMA ═══════════ */
+/* ═══════════ EL PAQUETE VIGENTE, Y LOS CAMBIOS COMO REGISTRO ═══════════ */
 
 /*
- * Los archivos de cambios que esta prueba sabe aplicar. Si Katsumi entrega
- * otro (v4…), la primera prueba se pone roja hasta que alguien lo aplique
- * aquí y en los datos: así una versión vieja no pasa en silencio.
+ * Desde el commit 4d22017 de Katsumi (decisión C-1 de Yujiro), el paquete
+ * base ES la versión vigente: ya trae la v2 a la v5. Se construye y se
+ * compara contra él, pantalla por pantalla.
+ *
+ * Los archivos de cambios se quedan como registro, y esta prueba los usa
+ * para lo contrario: todo texto que un cambio sustituye o quita tiene que
+ * NO estar ni en el paquete base ni en los datos. Si Katsumi entrega un
+ * archivo de cambios nuevo, la primera prueba se pone roja hasta mirarlo.
  */
 const APLICADOS = ["d4-t4-a1-v2-cambios.md", "d4-t4-a1-v3-cambios.md", "d4-t4-a1-v4-cambios.md", "d4-t4-a1-v5-cambios.md"];
+const ES_VIGENTE = /\*\*Este archivo es la versión vigente\*\*/.test(V1);
 
 const asientosDe = (bloque) => {
   const filas = bloque.split("\n").filter((l) => /^\| (?!Cuenta|---|Opción)[^|]+\|\s*[\d.]*\s*\|\s*[\d.]*\s*\|$/.test(l));
@@ -73,83 +79,51 @@ const asientosDe = (bloque) => {
 };
 const S = leerSecciones(V1);
 
-/* v2, cambio 1: la pantalla nueva. */
-const V2_CAMBIO_1 = V2.slice(V2.indexOf("## Cambio 1"), V2.indexOf("## Cambio 2"));
-/* v2, cambios 2 y 3: dos reemplazos, «v1: «…»» por «**v2:** «…»». */
-const reemplazoV2 = (n) => {
-  const sec = V2.slice(V2.indexOf(`## Cambio ${n}`), V2.indexOf("\n## ", V2.indexOf(`## Cambio ${n}`) + 5));
-  const viejo = sec.match(new RegExp(`^- v1: ${CITA}`, "m"))[1].replace(/^… /, "");
-  const nuevo = sec.match(new RegExp(`^- \\*\\*v2:\\*\\* ${CITA}`, "m"))[1];
-  return { viejo, nuevo };
-};
-const REEMPLAZOS = [reemplazoV2(2), reemplazoV2(3)];
-const conReemplazos = (t) => {
-  const r = REEMPLAZOS.find((x) => t === x.viejo || t.endsWith(x.viejo));
-  return r ? r.nuevo : t;
-};
-/* v3, cambio 1: una primera línea nueva en «Qué es Caja», y su pie. */
-const V3_CAMBIO_1 = V3.slice(V3.indexOf("## Cambio 1"), V3.indexOf("\n## ", V3.indexOf("## Cambio 1") + 5));
-const V3_PRIMERA = V3_CAMBIO_1.match(new RegExp(`Nueva primera línea:\\*\\* ${CITA}`))[1];
-const V3_PIE = V3_CAMBIO_1.match(new RegExp(`^- Pie: pasa de ${CITA} a ${CITA}`, "m"));
-
-/*
- * v4 (auditoría de Shibukawa), en sus tres formas:
- *   · pares «- v3: «…»» / «- **v4:** «…»»
- *   · la tabla «| línea n | «v2» (…) | «v4» (…) |»
- *   · «Pie: pasa de «…» a «…»»
- * y una retirada que va en prosa: la glosa de arqueo de P7 sale.
- */
-const V4_PARES = [...V4.matchAll(new RegExp(`^- v3: ${CITA}[^\\n]*\\n- \\*\\*v4:\\*\\* ${CITA}`, "gm"))].map((m) => ({ viejo: m[1], nuevo: m[2] }));
-const V4_TABLA = [...V4.matchAll(new RegExp(`^\\| línea \\d \\| ${CITA} \\([^)]*\\) \\| ${CITA} \\([^)]*\\) \\|$`, "gm"))].map((m) => ({ viejo: m[1], nuevo: m[2] }));
-const V4_PIES = [...V4.matchAll(new RegExp(`^- Pie: pasa de ${CITA} a ${CITA}`, "gm"))].map((m) => ({ viejo: m[1], nuevo: m[2] }));
+/* Lo que cada archivo de cambios sustituye o quita: los textos viejos. */
+const viejosV2 = [...V2.matchAll(new RegExp(`^- v1: ${CITA}`, "gm"))].map((m) => m[1].replace(/^… /, ""));
+const viejosV4 = [
+  ...[...V4.matchAll(new RegExp(`^- v3: ${CITA}`, "gm"))].map((m) => m[1]),
+  ...[...V4.matchAll(new RegExp(`^\\| línea \\d \\| ${CITA} \\([^)]*\\) \\|`, "gm"))].map((m) => m[1]),
+];
 const V4_SALE_ARQUEO = /\*\*Lo tomo:\*\* la glosa de arqueo de P7 sale\./.test(V4);
 const GLOSA_ARQUEO = "Un arqueo es contar el dinero de la caja para ver si cuadra con lo que debe haber.";
-const conV4 = (t) => [...V4_PARES, ...V4_TABLA].find((x) => x.viejo === t)?.nuevo ?? t;
-
-/*
- * v5: las tablas «| «opción» | «error v1-v4» | «error v5» (…) |». El error
- * viejo puede venir abreviado con «… »: se reconoce por cómo termina.
- */
 const V5_ERRORES = [...V5.matchAll(new RegExp(`^\\| ${CITA} \\| ${CITA} \\| ${CITA} \\([^)]*\\) \\|$`, "gm"))].map((m) => ({ opcion: m[1], viejo: m[2].replace(/^… /, ""), nuevo: m[3] }));
 const V5_ASIENTO_SOLO_CON_ACIERTO = /Ahora se muestra \*\*solo con el acierto\*\*/.test(V5);
-const conV5 = (t) => V5_ERRORES.find((x) => t === x.viejo || t.endsWith(x.viejo))?.nuevo ?? t;
-const pieV4 = (t) => V4_PIES.find((x) => x.viejo === t)?.nuevo ?? t;
+const V3_PRIMERA = V3.match(new RegExp(`Nueva primera línea:\\*\\* ${CITA}`))[1];
+/* Los viejos, menos los que la versión siguiente volvió a escribir igual (ninguno, hoy). */
+const VIEJOS = [...viejosV2, ...viejosV4, ...V5_ERRORES.map((e) => e.viejo), ...(V4_SALE_ARQUEO ? [GLOSA_ARQUEO] : [])];
 
-/* El paquete vigente, pantalla por pantalla, en el orden final: P0 · nueva de la v2 · P1…P8 de la v1. */
-const pantallaDelPaquete = (id, { bloque, textos, pies }) => ({
-  id, bloque,
-  textos: textos.map(conReemplazos).map(conV4).map(conV5).filter((t) => !(V4_SALE_ARQUEO && t === GLOSA_ARQUEO)),
-  pies: pies.map(pieV4),
-});
-const PAQUETE = [
-  pantallaDelPaquete("portada", S.P0),
-  pantallaDelPaquete("dos-cuentas", { bloque: V2_CAMBIO_1, textos: textosConMedida(V2_CAMBIO_1), pies: piesDe(V2_CAMBIO_1) }),
-  { ...pantallaDelPaquete("que-es-caja", S.P1), textos: [V3_PRIMERA, ...S.P1.textos.map(conReemplazos).map(conV4)], pies: S.P1.pies.map((x) => (x === V3_PIE[1] ? V3_PIE[2] : x)) },
-  pantallaDelPaquete("cheques", S.P2),
-  pantallaDelPaquete("la-regla", S.P3),
-  pantallaDelPaquete("cobra", S.P4),
-  pantallaDelPaquete("consignacion", S.P5),
-  pantallaDelPaquete("controles", S.P6),
-  pantallaDelPaquete("control-que-falla", S.P7),
-  pantallaDelPaquete("resumen", S.P8),
-].map((x) => ({ ...x, asientos: asientosDe(x.bloque) }));
+/* El paquete vigente, pantalla por pantalla: P0…P9 del archivo base. */
+const IDS = ["portada", "dos-cuentas", "que-es-caja", "cheques", "la-regla", "cobra", "consignacion", "controles", "control-que-falla", "resumen"];
+const PAQUETE = IDS.map((id, k) => ({ id, ...S[`P${k}`], asientos: asientosDe(S[`P${k}`].bloque) }));
 
 /* ═══════════ 1 · EL TEXTO, CONTRA EL PAQUETE ═══════════ */
 
-test("★★★ todos los archivos de cambios de A1 que hay en la carpeta están aplicados", () => {
-  assert.deepEqual(cambiosDe("a1"), APLICADOS, "hay un archivo de cambios de A1 que esta pieza no aplica todavía");
-  assert.ok(V3_PIE, "no se leyó el cambio de pie de la v3");
-  assert.equal(V3_PIE[2], "Basado en el libro, pp. 178-179");
-  /* La guarda de la v4: lo que su lectura encontró, contado. */
-  assert.deepEqual([V4_PARES.length, V4_TABLA.length, V4_PIES.length, V4_SALE_ARQUEO], [3, 3, 1, true], "la lectura de la v4 no encontró sus cambios");
-  assert.deepEqual([V5_ERRORES.length, V5_ASIENTO_SOLO_CON_ACIERTO], [4, true], "la lectura de la v5 no encontró sus cambios");
-  /* Cada error de la v5 es el de su opción, y ninguno nombra la opción correcta. */
+test("★★★ el paquete base es la versión vigente, y todos los archivos de cambios de A1 están mirados", () => {
+  assert.ok(ES_VIGENTE, "el paquete base de A1 no dice que es la versión vigente");
+  assert.deepEqual(cambiosDe("a1"), APLICADOS, "hay un archivo de cambios de A1 que esta pieza no ha mirado todavía");
+  /* La guarda: lo que la lectura de cada archivo de cambios encontró, contado. */
+  assert.deepEqual([viejosV2.length, viejosV4.length, V5_ERRORES.length, V4_SALE_ARQUEO, V5_ASIENTO_SOLO_CON_ACIERTO], [2, 6, 4, true, true], "la lectura de los cambios no encontró lo que esperaba");
+  /* La v3 añade una primera línea a «Qué es Caja»: la base la trae ahí. */
+  assert.equal(PAQUETE.find((x) => x.id === "que-es-caja").textos[0], V3_PRIMERA);
+  /* Cada error de la v5 es el de su opción, en la base y en los datos. */
   for (const e of V5_ERRORES) {
     const o = P.pantallas.flatMap((p) => p.opciones ?? []).find((x) => x.texto === e.opcion);
     assert.ok(o, `la v5 nombra una opción que no existe: «${e.opcion}»`);
     assert.equal(o.devolucion, e.nuevo, `${o.id}: el error no es el de la v5`);
   }
-  assert.ok(S.P6.textos.includes(GLOSA_ARQUEO), "la glosa de arqueo que la v4 quita no está en la v1");
+});
+
+test("★★★ ningún texto que un archivo de cambios sustituye o quita sigue en el paquete base ni en los datos", () => {
+  const datos = P.pantallas.flatMap(textosDeDatos);
+  const base = PAQUETE.flatMap((x) => x.textos);
+  for (const v of VIEJOS) {
+    assert.ok(!datos.includes(v) && !datos.some((t) => t.endsWith(v)), `los datos traen un texto viejo: «${v}»`);
+    assert.ok(!base.includes(v), `el paquete base trae un texto viejo: «${v}»`);
+  }
+  assert.ok(!datos.join("\n").includes("un error o un faltante"), "quedó el «faltante» de la v1 (C5)");
+  /* C5: nunca «sobrante» ni «faltante» a secas. */
+  assert.doesNotMatch(datos.join("\n"), /\b(sobrante|faltante)\b/i);
 });
 
 test("★★★ la copia de los paquetes de A0 y A1 es la de la punta de la rama de Katsumi (si este clon la tiene)", (t) => {
@@ -162,8 +136,8 @@ test("★★★ la copia de los paquetes de A0 y A1 es la de la punta de la rama
   for (const f of deA0yA1) assert.equal(blobDeLaCopia(f), blobEnLaRamaFuente(f), `${f}: la copia no es la de la punta de ${RAMA_FUENTE}`);
 });
 
-test("★★★ las 10 pantallas, en el orden de la v2", () => {
-  assert.equal(Object.keys(S).length, 9, "la v1 no trae sus nueve pantallas P0-P8: la lectura del paquete está mal");
+test("★★★ las 10 pantallas, en el orden del paquete vigente", () => {
+  assert.equal(Object.keys(S).length, 10, "el paquete vigente no trae sus diez pantallas P0-P9: la lectura está mal");
   assert.match(V2, /P0 Portada · \*\*P1 De la caja del Tema 3 a dos cuentas \(nueva\)\*\* · P2 Qué es Caja · P3 Los cheques de la caja · P4 La regla · P5 Sus Servicios cobra · P6 La consignación · P7 Los siete controles · P8 ¿Qué control falla\? · P9 Resumen\./);
   assert.deepEqual(P.pantallas.map((x) => x.id), PAQUETE.map((x) => x.id));
   assert.equal(P.titulo, V1.match(/- Título: «([^»]+)»/)[1]);
@@ -179,28 +153,6 @@ for (const { id, textos, pies } of PAQUETE) {
     for (const p of pies) assert.ok([pantalla(id).pie, pantalla(id).acierto?.pie, pantalla(id).error?.pie].includes(p), `${id}: pie «${p}»`);
   });
 }
-
-test("★★★ los reemplazos de la v2, v4 y v5 están, y los textos viejos que sustituyen ya no", () => {
-  const todo = P.pantallas.flatMap(textosDeDatos).join("\n");
-  assert.equal(REEMPLAZOS.length, 2);
-  for (const r of REEMPLAZOS) {
-    assert.ok(todo.includes(r.nuevo), `falta el texto de la v2: «${r.nuevo}»`);
-  }
-  /* Ni un texto de los que la v4 sustituye o quita. */
-  for (const r of [...V4_PARES, ...V4_TABLA]) {
-    assert.ok(todo.includes(r.nuevo), `falta el texto de la v4: «${r.nuevo}»`);
-    assert.ok(!todo.includes(r.viejo), `quedó un texto que la v4 sustituye: «${r.viejo}»`);
-  }
-  assert.ok(!todo.includes(GLOSA_ARQUEO), "quedó la glosa de arqueo que la v4 quita");
-  for (const e of V5_ERRORES) {
-    assert.ok(todo.includes(e.nuevo), `falta el error de la v5: «${e.nuevo}»`);
-    assert.ok(!todo.includes(e.viejo), `quedó un error que la v5 sustituye: «${e.viejo}»`);
-  }
-  assert.ok(!todo.includes("un error o un faltante"), "quedó el «faltante» de la v1 (C5)");
-  assert.ok(!todo.includes("llegó al banco. Bancos se debita"), "quedó el acierto de la consignación de la v1 (I5)");
-  /* C5: nunca «sobrante» ni «faltante» a secas. */
-  assert.doesNotMatch(todo, /\b(sobrante|faltante)\b/i);
-});
 
 test("★★★ los dos asientos son las tablas del paquete y cuadran; la única cifra es 435.000", () => {
   const filas = (a) => a.lineas.map((l) => [l.cuenta, l.lado === A.DEBE ? "435.000" : "", l.lado === A.HABER ? "435.000" : ""]);
