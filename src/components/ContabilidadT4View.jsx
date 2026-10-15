@@ -1499,7 +1499,9 @@ export function ElArqueoDeRosa({ Marco, rotulo, titulo, acento, onCompletar, ite
  *     en los datos (v1 §2), nunca en el componente compartido. En la paleta
  *     y las filas del constructor; en el asiento correcto van con espacios
  *     normales, porque su columna es más estrecha que el sufijo
- *   · «Confirmar el asiento» con al menos tres filas completas. Un intento.
+ *   · «Confirmar el asiento» con al menos dos filas completas, una al debe y
+ *     otra al haber (nunca exige tres: el error central de H5 es de dos
+ *     líneas). Un intento.
  *     UN mensaje: el primero de la lista de Katsumi que aplique. Después, el
  *     asiento correcto, calculado
  *   · mientras se arma, nada de la respuesta está en el DOM (PH8-2)
@@ -1509,7 +1511,12 @@ export function ElArqueoDeRosa({ Marco, rotulo, titulo, acento, onCompletar, ite
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const filasVaciasH5 = () => [filaVacia(), filaVacia(), filaVacia()];
+/*
+ * Dos filas vacías al empezar, como el asiento compuesto del Tema 2: tres
+ * dirían cuántas líneas lleva el asiento. Al tocar una cuenta con las dos
+ * llenas, el constructor añade otra (hasta 4).
+ */
+const filasVaciasH5 = () => [filaVacia(), filaVacia()];
 
 export function AlEmpleadoOAlGasto({ Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null }) {
   const t = useTanda(() => items ?? sortearH5(barajar));
