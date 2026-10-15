@@ -351,12 +351,26 @@ test("★★★ la pieza no entra al catálogo de FP", () => {
   }
 });
 
-test("★★ ids con el prefijo t7- y el tema al final del índice de Contabilidad, seguido solo de T7-2 y T7-3", () => {
+test("★★ ids con el prefijo t7- y los tres temas de inventarios consecutivos, con solo el repaso detrás", () => {
   assert.equal(T7.AP1_ID, "t7-1-a1-la-cuenta-que-no-se-mueve");
   assert.equal(P.id, T7.AP1_ID);
   const temas = SUBJECTS.contabilidad.topics.map((t) => t.id);
-  /* T7-2 «Inventarios II» entró justo después, y T7-3 «Inventarios III» detrás de él. */
-  assert.deepEqual(temas.slice(-3), [TEMA_T7_1, "inventarios-permanente", "inventarios-descuentos-nic2"]);
+  /*
+   * Esto decía «los tres últimos del índice» y dejó de ser cierto el 15 de
+   * octubre de 2026, cuando el coordinador puso «repaso-capitulo-5» detrás de
+   * inventarios (ver el mapa de choques en nocturno.md). La afirmación vieja
+   * no estaba mal escrita: estaba atada a una posición absoluta que no era
+   * suya. Ahora se afirma relativo, como ya lo hacían las pruebas de T7-2 y
+   * T7-3, y se gana precisión en vez de perderla: antes solo decía que los
+   * tres estaban al final; ahora dice que van consecutivos, en orden, y que
+   * lo ÚNICO que puede ir detrás de ellos es el repaso del capítulo.
+   */
+  const i = temas.indexOf(TEMA_T7_1);
+  assert.ok(i >= 0, "T7-1 no está en el índice de Contabilidad");
+  assert.deepEqual(temas.slice(i, i + 3), [TEMA_T7_1, "inventarios-permanente", "inventarios-descuentos-nic2"]);
+  const cola = temas.slice(i + 3);
+  assert.ok(cola.length <= 1, `detrás de inventarios solo cabe el repaso del capítulo, y hay: ${cola.join(", ")}`);
+  assert.deepEqual(cola.filter((id) => id !== "repaso-capitulo-5"), [], "detrás de inventarios solo puede ir repaso-capitulo-5");
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_1);
   assert.equal(tema.title, "Inventarios I: el sistema periódico");
   /* AP1 abre el tema; las piezas que llegan después van detrás. */
