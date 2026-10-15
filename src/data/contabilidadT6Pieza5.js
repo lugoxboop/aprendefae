@@ -89,6 +89,16 @@ export const ESCENARIO_T6_A5 = {
   pregunta: { monto: 200000, meses: 8, porcentaje: 10, provision: 20000 },
 };
 
+/*
+ * EL REGISTRO DE CIFRAS CONSTRUIDAS (Sakuta): cada monto en pesos que la pieza
+ * inventa para su escenario, del menor al mayor. Una prueba exige que las
+ * cifras de los textos sean exactamente estas, y que ninguna coincida con una
+ * cifra del libro que ya está en los datos (lista negra). Futaba las cruza
+ * además con el banco de ejercicios (pp. 262-274, Célula E); si alguna cambia,
+ * cambia aquí y en los textos.
+ */
+export const CIFRAS_CONSTRUIDAS_T6_A5 = [0, 10000, 15000, 20000, 30000, 55000, 100000, 200000, 300000, 400000, 945000, 1000000];
+
 /* ═══════════ CAPA 2 · «MÍRELO FUNCIONAR» ═══════════ */
 
 /*

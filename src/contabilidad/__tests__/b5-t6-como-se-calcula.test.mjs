@@ -172,6 +172,59 @@ test("★★★ ninguna cifra de El Torito ni de la tabla de la p. 201 entra en 
   for (const t of textosDe(D)) assert.doesNotMatch(t, /Torito|Pablo Moncayo|Currambero/, t.slice(0, 40));
 });
 
+/* ═══════════ EL CRUCE DE CIFRAS (Sakuta) ═══════════ */
+
+test("★★★ el registro: las cifras de los textos y del escenario son exactamente las cifras construidas registradas", () => {
+  const enTextos = new Set(textosDe(D).flatMap(cifras));
+  const enEscenario = new Set([E.total, E.provision, E.neto, ...E.grupos.flatMap((g) => [g.monto, provisionDe(g)]), E.pregunta.monto, E.pregunta.provision]);
+  const registro = D.CIFRAS_CONSTRUIDAS_T6_A5;
+  assert.deepEqual([...registro].sort((a, b) => a - b), registro, "el registro va ordenado");
+  assert.deepEqual([...enTextos].sort((a, b) => a - b), registro, "una cifra en los textos que no está en el registro, o al revés");
+  for (const c of enEscenario) assert.ok(registro.includes(c), `${pesos(c)} del escenario no está registrada`);
+});
+
+/*
+ * La lista negra: toda cifra del libro que ya está en nuestros datos (T5 y T6:
+ * El Torito, Dajema, Santa Pacha, Comercializadora Santa Pacha…), en los
+ * textos y en los asientos. Se arma sola desde los módulos de datos.
+ */
+const MODULOS_DEL_LIBRO = [
+  "contabilidadT5Act1.js", "contabilidadT5Act2.js", "contabilidadT5Pieza1.js", "contabilidadT5Pieza2.js",
+  "contabilidadT6Act1.js", "contabilidadT6Act2.js", "contabilidadT6Act3.js",
+  "contabilidadT6Pieza1.js", "contabilidadT6Pieza2.js", "contabilidadT6Pieza3.js", "contabilidadT6Pieza4.js",
+];
+const valoresDe = (mod) => {
+  const out = [];
+  const r = (v, k) => {
+    if (typeof v === "number" && (k === "valor" || k === "monto")) out.push(v);
+    else if (Array.isArray(v)) v.forEach((x) => r(x, k));
+    else if (v && typeof v === "object") for (const [kk, x] of Object.entries(v)) r(x, kk);
+  };
+  for (const [k, v] of Object.entries(mod)) r(v, k);
+  return out;
+};
+/*
+ * EN REVISIÓN (Futaba las está cruzando; reportadas a Sakuta): dos cifras
+ * construidas que coinciden con cifras del libro. Cuando lleguen las nuevas,
+ * esta lista se vacía. Si aparece otro choque, o uno de estos se resuelve,
+ * la prueba se pone roja hasta actualizarla.
+ *   · $30.000: grupo 3 (10 % de $300.000) = el interés de noviembre de Santa Pacha (T5 · A2, pp. 194-195).
+ *   · $100.000: grupo 4 = el abono de Pablo Moncayo (T6 · A4 y b5-t6-a3, pp. 205-206).
+ */
+const CHOQUES_EN_REVISION = [30000, 100000];
+
+test("★★★ la lista negra: ninguna cifra construida coincide con una cifra del libro en los datos (salvo las dos en revisión, nombradas)", async () => {
+  const negra = new Set();
+  for (const f of MODULOS_DEL_LIBRO) {
+    const mod = await import(`../../data/${f}`);
+    for (const c of [...textosDe(mod).flatMap(cifras), ...valoresDe(mod)]) negra.add(c);
+  }
+  /* La guarda: la lista negra trae cifras de cada historia del libro. */
+  for (const c of [2655000, 148800, 312500, 1350000, 1725000, 468750, 180000]) assert.ok(negra.has(c), `la lista negra no tiene ${pesos(c)}`);
+  const choques = D.CIFRAS_CONSTRUIDAS_T6_A5.filter((c) => negra.has(c));
+  assert.deepEqual(choques, CHOQUES_EN_REVISION, `choques: ${choques.map(pesos).join(", ")}`);
+});
+
 /* ═══════════ LAS CUENTAS CUADRAN ═══════════ */
 
 const provisionDe = (g) => (g.monto * g.porcentaje) / 100;

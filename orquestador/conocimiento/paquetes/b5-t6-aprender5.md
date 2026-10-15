@@ -397,3 +397,8 @@ Pasan los textos (los 66), los rótulos (los 27), que nada dibujado deje de exis
 3. **El lector de pantalla.** El pie de cada paso tiene que leerse junto con su texto; lo mínimo es que el paso 2 anuncie el rótulo una vez, cuando aparece la tabla.
 
 Recomendada, para Futaba: el «Resalta» del paso 3 pasa a «Los tres porcentajes» (no cambia nada visible).
+
+## (4) Sakuta · decisiones tras la revisión de Shoko
+
+1. **Pies de la capa 1: aprobado el camino de Kaede.** Se pintan con un componente de la célula (tema6/PiesDeTermino.jsx), como la nota de «cartera», sin tocar CuatroCapas: el pie de cada término bajo su definición; el de la nota del término 4, dentro de su caja. La prueba que impide que el Decreto quede bajo «Así lo dice el libro» se queda.
+2. **Cruce de cifras.** Las cifras construidas no pueden coincidir con cifras del libro ni con respuestas del banco de ejercicios (pp. 262-274, Célula E). Futaba las está cruzando. Hay un registro de las cifras construidas (CIFRAS_CONSTRUIDAS_T6_A5) y una lista negra con las del libro que ya están en los datos. Dos choques quedan en revisión: $30.000 (grupo 3 = el interés de noviembre de Santa Pacha, T5 · A2) y $100.000 (grupo 4 = el abono de Pablo Moncayo, T6 · A4 y b5-t6-a3).
