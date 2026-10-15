@@ -215,7 +215,7 @@ test("★★ el lado se lee por la palabra y la columna, no solo por el color; e
   assert.equal(e.saldo, null, "mientras se pregunta, ningún saldo con lado");
   assert.deepEqual([0, 1, 2, 3, 4].map(anuncioDeLaCuenta), [
     "El valor neto, $2.506.200",
-    "Debe, $180.000, Marzo del año siguiente",
+    "Debe, $180.000, marzo del año siguiente",
     "Le faltan $31.200",
     "Haber, $184.600, 31 de diciembre del año siguiente",
     "El saldo queda en $153.400",
