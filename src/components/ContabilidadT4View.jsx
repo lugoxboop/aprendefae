@@ -655,7 +655,12 @@ export function EntraOSaleDeCaja({ Marco, rotulo, titulo, acento, onCompletar, i
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T4H1}</style>
-      <div data-t4-h1>
+      {/*
+        La raíz del juego lleva `data-t4-h1`; la de la demo de «Así se juega»,
+        `data-t4-h1-demo`. Así, en la página del juego, `[data-t4-h1]` encuentra
+        exactamente una: la partida, nunca el ejemplo (Shibukawa, juego de H1).
+      */}
+      <div {...(modoDemo ? { "data-t4-h1-demo": "" } : { "data-t4-h1": "" })}>
         <Encabezado consigna={H1.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
         <div style={{ marginBottom: "12px" }}>
           <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Hecho" />
