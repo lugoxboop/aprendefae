@@ -16,6 +16,8 @@
  *     al responder queda del todo dentro de su cajón: «6 meses», dentro de
  *     «Más de 3 hasta 6 meses», sin tocar la marca de 6 (Shoko);
  *   · la porción de cada barra mide su porcentaje del largo;
+ *   · entre dos rótulos del eje en la misma línea, 8 px como mínimo; si no
+ *     caben, el del medio va escalonado en una segunda línea (Sakuta);
  *   · con movimiento reducido, la deuda cae sin trayecto y la cifra entra sin
  *     animación (la hoja de estilos del sitio deja las transiciones en 0,01 ms).
  *
@@ -72,14 +74,26 @@ function medir() {
       duracion: getComputedStyle(d).transitionDuration,
     };
   });
+  /* Los rótulos del eje: los que comparten línea, a 8 px como mínimo. */
+  const marcas = [...document.querySelectorAll("[data-eje] [data-marca]")].map((m) => m.getBoundingClientRect());
+  for (let k = 1; k < marcas.length; k++) {
+    for (let j = 0; j < k; j++) {
+      const mismaLinea = Math.abs(marcas[k].top - marcas[j].top) < 1;
+      const hueco = marcas[k].left - marcas[j].right;
+      if (mismaLinea && hueco < 8) problemas.push(`rótulos del eje a ${hueco.toFixed(2)} px`);
+    }
+  }
+  const huecoEje = marcas.length > 1 ? Math.min(...marcas.slice(1).map((r, k) => r.left - marcas[k].right)) : null;
   return {
+    huecoEje, escalonado: document.querySelector("[data-eje]")?.dataset.escalonado,
     problemas, juntos: rs.every(dentro), renglonYRotulo: [rotulo, activo].filter(Boolean).every(dentro), alto: Math.max(...rs.map((r) => r.bottom)) - Math.min(...rs.map((r) => r.top)),
     porciones, deudas, entra: [...document.querySelectorAll("[data-entra]")].map((e) => getComputedStyle(e).animationName),
   };
 }
 
 for (const reducido of [false, true]) {
-  for (const [ancho, alto] of [[320, 568], [375, 667]]) {
+  /* 300: en el sitio, a 320, la columna es más angosta que en este banco (Sakuta midió 5,5 px entre «3 meses» y «6 meses»); a 300 el banco llega a ese caso y prueba el escalón. */
+  for (const [ancho, alto] of [[320, 568], [375, 667], [300, 568]]) {
     const p = await navegador.newPage({ viewport: { width: ancho, height: alto }, reducedMotion: reducido ? "reduce" : "no-preference" });
     await p.goto(URL);
     await p.waitForSelector("[data-cajones-del-tiempo]");
@@ -97,6 +111,7 @@ for (const reducido of [false, true]) {
       await p.click(`[data-opcion="${clave(elegida)}"]`);
       await p.waitForTimeout(reducido ? 50 : 450);
       const respondida = await p.evaluate(medir);
+      if (k === 0) informe.push(`${tag} · eje: hueco horizontal entre rótulos ${abierta.huecoEje?.toFixed(2)} px · escalonado ${abierta.escalonado}`);
       informe.push(`${tag} · casilla ${k + 1}: casilla, rótulo y renglón ${abierta.juntos ? "juntos" : "NO juntos"} (${abierta.alto.toFixed(2)} px) · ${k % 2 === 0 ? "falla" : "acierta"}${respondida.porciones.length ? ` · porciones ${respondida.porciones.join(" / ")} %` : ""}`);
       for (const x of [...abierta.problemas, ...respondida.problemas]) fallos.push(`${tag} · casilla ${k + 1}: ${x}`);
       /* Si no cabe todo en la ventana (menos 8 arriba y abajo), el renglón queda arriba con el rótulo (hoja 2 de Mai §3). */

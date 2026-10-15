@@ -84,3 +84,13 @@ T3 frente a la B·C15 de a2. La de a2 dice «Se castiga toda la deuda… aunque 
 T7 frente a la B·C12 de a2. La de a2 da la suma. La nueva explica para qué se suma: para llegar a lo que pide el análisis.
 
 Para Mai, pendiente: el largo del paso 11 de T6 A5 (las cifras de siete dígitos, 1.300.000 y 1.226.000).
+
+
+## (3) Futaba · entrega 5 de calidad: la decisión de a5, el castigo como dato dado (versión final, PASA de Shoko; pegada tal cual)
+
+Cuándo entra: el castigo deja de estar en la T desde el principio. Entra después de que el estudiante responde la casilla 1, como dato, con su fecha. Así la T no muestra un momento posterior al que se pregunta.
+Casillas: quedan cuatro, c1, c3, c4 y c5, con sus enunciados de hoy. Puntaje: aciertos ÷ 4 × 100. T3 y T4: se eliminan.
+Id	Campo	Texto nuevo (literal)
+Castigo	Texto que se ve	En marzo del año siguiente se castiga la deuda de Pablo Moncayo: $180.000, contra la provisión.
+Castigo	Anuncio para el lector	Debe, $180.000, marzo del año siguiente
+Texto alternativo	ALT	Actividad de casillas. Sigues la cuenta de la provisión de El Torito. Primero calculas el valor neto. Después llega el castigo de marzo, ya anotado, y calculas tres casillas más, en orden. En cada una eliges un valor entre tres. Tienes un intento por casilla; si fallas, se muestra la razón y el valor correcto.

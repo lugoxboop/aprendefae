@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import {
   T6_ACT6, GRUPOS_T6_ACT6, PARTES_T6_ACT6, PIES_T6_ACT6, ESCENARIO_T6_ACT6, ROTULOS_TOTAL_T6_ACT6,
@@ -72,10 +73,38 @@ const ULTIMO = GRUPOS_T6_ACT6.length - 1;
 const DESVANECE = `linear-gradient(to right, ${BORDES}, transparent)`;
 const ALTO_BARRA = 30;
 
+/*
+ * Entre dos rótulos del eje, 8 px como mínimo (Sakuta). Si no caben (a 320,
+ * «3 meses» y «6 meses» quedaban a 5,5 px), el rótulo del medio baja a una
+ * segunda línea, escalonado, sin cambiar el texto. Se mide en vivo: con las
+ * fuentes cargadas y con cada cambio de ancho.
+ */
+const SEPARACION_MINIMA = 8;
+const LINEA_MARCA = 16;
+function useEscalonado() {
+  const marcas = useRef([]);
+  const [escalonado, setEscalonado] = useState(false);
+  useLayoutEffect(() => {
+    const medir = () => {
+      const rs = marcas.current.map((m) => m?.getBoundingClientRect()).filter(Boolean);
+      if (rs.length < 2) return;
+      const huecos = rs.slice(1).map((r, k) => r.left - rs[k].right);
+      setEscalonado(huecos.some((h) => h < SEPARACION_MINIMA));
+    };
+    medir();
+    let vivo = true;
+    document.fonts?.ready?.then(() => { if (vivo) medir(); });
+    window.addEventListener("resize", medir);
+    return () => { vivo = false; window.removeEventListener("resize", medir); };
+  }, []);
+  return { marcas, escalonado };
+}
+
 function Eje({ respondidas, abierta, reducido }) {
+  const { marcas, escalonado } = useEscalonado();
   const actual = abierta ?? respondidas - 1;
   return (
-    <div data-eje {...(abierta !== null ? { "data-renglon-activo": "" } : {})} style={{ position: "relative", height: `${TOPE_BARRA + ALTO_BARRA + 4 + 16}px`, margin: "4px 0 12px" }}>
+    <div data-eje {...(abierta !== null ? { "data-renglon-activo": "" } : {})} data-escalonado={escalonado ? "si" : "no"} style={{ position: "relative", height: `${TOPE_BARRA + ALTO_BARRA + 4 + LINEA_MARCA * (escalonado ? 2 : 1)}px`, margin: "4px 0 12px" }}>
       {/* La barra, partida en cuatro cajones. */}
       <div style={{ position: "absolute", top: `${TOPE_BARRA}px`, left: 0, right: 0, height: `${ALTO_BARRA}px`, display: "flex" }}>
         {GRUPOS_T6_ACT6.map((g, k) => {
@@ -95,8 +124,13 @@ function Eje({ respondidas, abierta, reducido }) {
         })}
       </div>
       {/* Las marcas, bajo los bordes interiores. */}
-      {MARCAS.map((m) => (
-        <span key={m.texto} data-marca style={{ position: "absolute", top: `${TOPE_BARRA + ALTO_BARRA + 4}px`, left: `${m.en}%`, transform: "translateX(-50%)", ...PEQUENO, color: SECUNDARIO, whiteSpace: "nowrap" }}>{m.texto}</span>
+      {/* Medidos siempre en la primera línea: el escalón del medio va por transform, que no mueve su caja de medida. */}
+      {MARCAS.map((m, k) => (
+        <span key={m.texto} ref={(n) => { marcas.current[k] = n; }} data-marca style={{
+          position: "absolute", top: `${TOPE_BARRA + ALTO_BARRA + 4}px`, left: `${m.en}%`,
+          transform: `translateX(-50%)${escalonado && k === 1 ? ` translateY(${LINEA_MARCA}px)` : ""}`,
+          ...PEQUENO, color: SECUNDARIO, whiteSpace: "nowrap",
+        }}>{m.texto}</span>
       ))}
       {/* Las deudas: las ya ubicadas, en su cajón; la de la casilla, como pastilla sobre su mes, y al responder, cae. */}
       {UBICAR.casillas.map((c, i) => {
