@@ -1,7 +1,8 @@
 **T4 · H7 «Concilia la cuenta» y H8 «¿Se asienta o no?» · serie 2 · contenido completo.**
+- **Este archivo es la versión vigente de la serie 2.** Ya incluye todos los cambios de H8 (v2, v3, S2-1) y el nombre neutro de H7.
 - Autora: Katsumi. Encargo de Yujiro: una segunda conciliación construida, para que en cada intento se sortee una serie (D8 Avanzado).
 - **Serie 1:** Comercializadora Los Cerezos Ltda., en `d4-t4-h7-v1.md` y `d4-t4-h8-v1.md` con sus cambios. **Serie 2:** esta.
-- **H7 y H8 sortean su serie por separado** (decisión de Yujiro). Son actividades distintas: H8 no supone que el estudiante acaba de hacer H7, y no se guarda estado entre ellas. H8 trae como dato de partida los dos saldos conciliados de su propia serie.
+- **H7 y H8 sortean su serie por separado** (decisión de Yujiro). Son actividades distintas: H8 no supone que el estudiante acaba de hacer H7, y no se guarda estado entre ellas. H8 trae como dato de partida las nueve partidas y el saldo en libros de su propia serie; el saldo conciliado aparece solo al acertar su etapa 3 (v3).
 - **Nombre de H7: «Concilia la cuenta»**, con id `t4-concilia-la-cuenta` (decisión de Yujiro). Es neutro: vale para las dos series. Cada serie dice su empresa en los datos de partida.
 - **Igual que la serie 1:** la mecánica, los destinos, las reglas de error y su cobertura (los cambios v2 de H8 ya están incluidos), y las clases de partidas: 3 cheques sin cobrar, 1 consignación en tránsito, 2 notas crédito y 3 notas débito del banco.
 - **Cambia:** la empresa, la fecha de cierre (31 de octubre), las personas, las cifras y los textos que las nombran.
