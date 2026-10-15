@@ -35,7 +35,19 @@ export const REGLAS_T6_ACT5 = [
   "Al final, mira cómo quedó la provisión.",
 ];
 
-/* ═══════════ LAS CINCO CASILLAS (la correcta lleva tipo null) ═══════════ */
+/* ═══════════ LAS CUATRO CASILLAS (la correcta lleva tipo null) ═══════════ */
+
+/*
+ * Decisión de a5 (Futaba, entrega 5, con PASA de Shoko): el castigo de
+ * $180.000 deja de ser una casilla. Es un DATO DADO que entra a la cuenta
+ * después de responder la casilla 1, con su fecha: así la T no muestra un
+ * momento posterior al que se pregunta. Quedan c1, c3, c4 y c5; T3 y T4 se
+ * eliminan.
+ */
+export const CASTIGO_DADO_T6_ACT5 = {
+  texto: "En marzo del año siguiente se castiga la deuda de Pablo Moncayo: $180.000, contra la provisión.",
+  anuncio: "Debe, $180.000, marzo del año siguiente",
+};
 
 const op = (valor, tipo = null) => ({ valor, tipo });
 
@@ -44,11 +56,6 @@ export const CASILLAS_T6_ACT5 = [
     id: "c1",
     enunciado: "En el estado de situación financiera, ¿cuál es el valor neto de Cuentas por cobrar – clientes?",
     opciones: [op(2506200), op(2655000, "T1"), op(2803800, "T2")],
-  },
-  {
-    id: "c2",
-    enunciado: "En marzo del año siguiente se castiga la deuda de Pablo Moncayo, que es de $180.000. ¿Por cuánto se debita la provisión?",
-    opciones: [op(180000), op(148800, "T3"), op(31200, "T4")],
   },
   {
     id: "c3",
@@ -75,8 +82,6 @@ export const DISTRACTORES_PROPIOS_T6_ACT5 = [122200, 328800, 333400, 2803800];
 export const ERRORES_T6_ACT5 = {
   T1: "Falta restar la provisión. El valor neto es lo que deben los clientes menos la provisión.",
   T2: "La provisión no se suma: se resta de Cuentas por cobrar – clientes.",
-  T3: "La provisión no pone el límite: lo que manda es la deuda de Pablo Moncayo. Por eso se debita la provisión por los $180.000 completos, aunque solo tuviera $148.800.",
-  T4: "Esos $31.200 son lo que faltó, no lo que se castiga. Se castiga toda la deuda de Pablo Moncayo.",
   T5: "La provisión era menor que lo castigado, así que no alcanzó. Resta $148.800 de $180.000.",
   T6: "El castigo baja la provisión: se resta, no se suma.",
   T7: "El análisis dice cuánto debe quedar en la provisión, pero en marzo quedó corta. Para llegar a esa cifra, al registro hay que sumarle los $31.200 que faltaron.",
@@ -86,4 +91,4 @@ export const ERRORES_T6_ACT5 = {
   T10: "Falta restar el castigo de marzo. Son $148.800 menos $180.000, más $184.600.",
 };
 
-export const ALT_T6_ACT5 = "Actividad de casillas. Sigues la cuenta de la provisión de El Torito en cinco casillas, en orden. En cada una eliges un valor entre tres. Tienes un intento por casilla; si fallas, se muestra la razón y el valor correcto.";
+export const ALT_T6_ACT5 = "Actividad de casillas. Sigues la cuenta de la provisión de El Torito. Primero calculas el valor neto. Después llega el castigo de marzo, ya anotado, y calculas tres casillas más, en orden. En cada una eliges un valor entre tres. Tienes un intento por casilla; si fallas, se muestra la razón y el valor correcto.";
