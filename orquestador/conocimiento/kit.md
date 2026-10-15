@@ -316,3 +316,64 @@ no tienen célula dueña: los toma el coordinador.
 
 Cambiar el `nombre` **no toca el `id`**, así que no hay migración, no se mueve
 ninguna fila del catálogo y ningún estudiante pierde FP. Es texto de pantalla.
+
+## El blanco de toque: 44 px, y cómo se mide sin engañarse
+
+A 320 px un dedo acierta un blanco de **44×44**. Por debajo, el estudiante no
+concluye que apuntó mal: concluye que **la página no responde**.
+
+Medido el 15 de octubre jugando en la página servida, los controles que
+aparecen en *todas* las actividades de las tres materias estaban por debajo:
+
+| control | medía | estado |
+|---|---|---|
+| marca AprendeFAE (cabecera) | 26×26 | ✅ arreglado en `global.css` |
+| volver al tema (cabecera) | 38×38 | ✅ arreglado en `global.css` |
+| «Pausar» (`AsiSeJuega`) | 40 de alto | ✅ 44 |
+| **«‹ Volver al camino»** | 129×**37** | ⏳ **lo arregla cada célula** |
+
+### Lo que le toca a cada célula
+
+«‹ Volver al camino» está escrito **a mano en 16 vistas**, no en un componente.
+Cuando toques una vista tuya, súbele el alto a ese botón:
+
+```jsx
+/* 44 px: el mínimo que un dedo acierta a 320 px (kit.md). */
+minHeight: "44px",
+```
+
+Si el botón queda apretado contra otro, **no lo agrandes**: separa primero.
+
+### La regla al arreglar: medir la separación ANTES
+
+Agrandar dos blancos vecinos puede **solaparlos**, y entonces el estudiante va
+al inicio cuando quería volver al tema. **Eso es peor que el defecto.** En la
+cabecera se midió antes: 61 px entre centros, así que los dos cuadros de 44 no
+se tocan. Si hubieran estado a menos de 44, lo correcto no era agrandar sino
+mover.
+
+### Cómo se mide sin engañarse
+
+```
+npx vite build && cd dist && python3 -m http.server 8099
+node scripts/blanco-de-toque.mjs "Contabilidad" "Las cuentas, el debe y el haber" "Los juegos que dan FP" "¿Debe o Haber?"
+```
+
+Mide el **toque**, no el dibujo: la zona que escucha puede ser mayor que lo
+pintado, y un medidor que solo mire el rectángulo da rojos falsos sobre
+controles que están bien.
+
+**Tres trampas que ya costaron un rato, escritas para que no las repitas:**
+
+1. **Los paneles de EJEMPLO dibujan botones falsos.** La primera versión del
+   medidor los contó y declaró cuatro defectos donde había dos. Lo que está
+   dentro de un `<figure>` es ilustración: no se mide.
+2. **«Pequeño» y «tapado» no son el mismo fallo.** Uno se arregla con tamaño;
+   el otro puede ser un control inalcanzable —grave— o un panel legítimo
+   delante. El medidor dice cuál ve; el juicio es de quien mira.
+3. **Las esquinas no se miden: se miden los puntos medios de los lados.** Casi
+   todo aquí es una píldora (`border-radius: 999px`) y la esquina de un
+   cuadrado cae fuera de una píldora **por geometría, no por defecto**.
+   Midiendo esquinas, el medidor marcaba en rojo todos los botones redondeados
+   del producto. **Un medidor que llora siempre se apaga** — y entonces deja de
+   avisar el día que hay algo de verdad.
