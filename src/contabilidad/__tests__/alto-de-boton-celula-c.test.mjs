@@ -33,8 +33,11 @@ import { readFileSync, readdirSync } from "node:fs";
  * alto que se encuentre también falla: si viene de lo compartido no es un
  * `<button` de estos archivos y no entra aquí (se le anota a Erwin).
  *
- * No hay botón «¿Por qué?» (data-por-que) en la célula; si lo hubiera y no
- * fuera un enlace en línea de texto, entra como cualquier otro.
+ * La excepción es el «¿Por qué?» del plegado (t7/plegable.jsx, data-por-que):
+ * va en línea, dentro del renglón del texto, y no puede medir 44 px sin
+ * abrirlo. A él se le exige el área de toque invisible de 44 px por fuera
+ * (::before con max(100%, 44px) en alto y ancho), como los botones pequeños
+ * de global.css.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -149,7 +152,17 @@ test("★★★ la prueba encuentra los botones de la célula y lee sus altos", 
   assert.deepEqual(altos('min-height: 44px; minHeight: "46px" · height: 40px · minHeight: 48 · line-height: 30px · border-radius: 8px'), [44, 46, 40, 48]);
 });
 
+const EN_LINEA = (b) => b.tag.includes("data-por-que");
+
+test("★★★ el «¿Por qué?», en línea con el texto, lleva su área de toque de 44 px por fuera", () => {
+  const enLinea = TODOS.filter(EN_LINEA);
+  assert.equal(enLinea.length, 1);
+  const css = readFileSync(new URL("src/components/mecanicas/libros/t7/plegable.jsx", RAIZ), "utf8");
+  assert.match(css, /\.fae-por-que \{ position: relative; \}/);
+  assert.match(css, /\.fae-por-que::before \{ content: ""; position: absolute;[^}]*width: max\(100%, 44px\); height: max\(100%, 44px\);[^}]*\}/);
+});
+
 test("★★★ ningún botón de la célula queda por debajo de 44 px de alto", () => {
-  const malos = TODOS.filter((b) => !b.altos.some((h) => h >= MINIMO) || b.altos.some((h) => h < MINIMO)).map((b) => `${b.donde} · altos ${JSON.stringify(b.altos)} · ${b.tag}`);
+  const malos = TODOS.filter((b) => !EN_LINEA(b)).filter((b) => !b.altos.some((h) => h >= MINIMO) || b.altos.some((h) => h < MINIMO)).map((b) => `${b.donde} · altos ${JSON.stringify(b.altos)} · ${b.tag}`);
   assert.deepEqual(malos, []);
 });

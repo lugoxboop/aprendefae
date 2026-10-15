@@ -41,6 +41,13 @@ const CSS = `
 .fae-por-que { appearance: none; display: inline; margin: 0 0 0 6px; padding: 0; border: none; background: none;
   color: #A8B6C8; font: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .fae-por-que::after { content: "${POR_QUE}"; }
+/*
+ * Va en línea con el texto, así que no puede medir 44 px de alto sin abrir
+ * el renglón. El área de toque crece por fuera, invisible, como los botones
+ * pequeños de global.css: \`max(100%, 44px)\` en los dos sentidos.
+ */
+.fae-por-que { position: relative; }
+.fae-por-que::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }
 .fae-por-que:focus-visible { outline: 2px solid #F8F9FA; outline-offset: 2px; border-radius: 4px; }
 `;
 
