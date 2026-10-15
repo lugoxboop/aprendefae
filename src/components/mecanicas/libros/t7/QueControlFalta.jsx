@@ -7,6 +7,8 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -70,9 +72,11 @@ export default function QueControlFalta({ Marco, rotulo, titulo, acento, onCompl
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER}</style>
       <div data-h7>
-        <Encabezado objetivo={H7.objetivo} consigna={H7.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
+        <Encabezado objetivo={H7.objetivo} consigna={sinUnSoloIntento(H7.consigna.join(" "))} onComoSeJuega={onComoSeJuega} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Caso" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Caso" />
+          </ContadorConIntento>
         </div>
         <TarjetaPregunta id={caso.id} pregunta={caso.texto} pie={caso.pie} tarjetaRef={tarjeta} />
         <Eleccion opciones={caso.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={caso.texto} />

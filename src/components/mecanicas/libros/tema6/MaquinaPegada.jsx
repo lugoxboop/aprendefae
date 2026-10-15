@@ -54,13 +54,88 @@ export function transicion(reducido) {
   return ["border-color 200ms ease-out", "background-color 200ms ease-out", "color 200ms ease-out",
     "opacity 240ms ease-out", "transform 240ms ease-out", "visibility 240ms ease-out"].join(", ");
 }
+/*
+ * La capa 2 no empieza vacía (hoja 5 de Mai, calidad): lo que todavía no
+ * llegó se dibuja como SILUETA en su sitio, con su caja y sus renglones. La
+ * silueta lleva la marca `--b5-silueta` y una opacidad de 0,3: sus bordes
+ * reales quedan tenues (los transparentes siguen transparentes) y la hoja de
+ * estilos de la célula (EstilosT5) le quita el texto y deja una barra por
+ * renglón, del largo de sus palabras. Al llegar, la pieza real aparece sobre
+ * su silueta con opacidad en 240 ms, sin el desplazamiento de 4 px: la caja
+ * ya estaba ahí.
+ */
+export const SILUETA = "--b5-silueta";
+export const OPACIDAD_SILUETA = 0.3;
 export function aparicion(e, reducido) {
   return {
-    visibility: e.visible ? "visible" : "hidden",
-    opacity: e.visible ? 1 : 0,
-    transform: e.visible || reducido ? "none" : "translateY(4px)",
+    visibility: "visible",
+    opacity: e.visible ? 1 : OPACIDAD_SILUETA,
+    transform: "none",
     transition: transicion(reducido),
+    ...(e.visible ? {} : { [SILUETA]: 1 }),
   };
+}
+export const enSilueta = (nodo) => Boolean(nodo?.style?.getPropertyValue(SILUETA));
+
+/*
+ * Lo que está en silueta no ha llegado: el lector de pantalla no lo lee ni se
+ * puede enfocar (D12; antes lo callaba visibility: hidden). En cada render, a
+ * todo lo marcado con --b5-silueta y a los [data-futuro] / [data-silueta-futura]
+ * de `raiz` se les pone aria-hidden="true" e inert; cuando llega su paso, se les
+ * quitan. Solo se quita lo que se puso aquí (data-b5-mudo): un aria-hidden que
+ * ya traía el nodo se queda.
+ */
+const MUDOS = `[style*="${SILUETA}"], [data-futuro], [data-silueta-futura]`;
+export function useSiluetasMudas(raiz) {
+  useLayoutEffect(() => {
+    const r = raiz.current;
+    if (!r) return;
+    const ahora = new Set(r.querySelectorAll(MUDOS));
+    for (const n of r.querySelectorAll("[data-b5-mudo]")) {
+      if (ahora.has(n)) continue;
+      if (n.dataset.b5Mudo === "propio") n.removeAttribute("aria-hidden");
+      n.removeAttribute("inert");
+      delete n.dataset.b5Mudo;
+    }
+    for (const n of ahora) {
+      if (n.dataset.b5Mudo) continue;
+      n.dataset.b5Mudo = n.getAttribute("aria-hidden") === "true" ? "previo" : "propio";
+      n.setAttribute("aria-hidden", "true");
+      n.setAttribute("inert", "");
+    }
+  });
+}
+
+/*
+ * Las siluetas de lo que todavía no llega (momentos futuros: T5 · A2, T6 · A3
+ * y A4) se dibujan mientras quepan enteras en el alto reservado de la escena:
+ * la que no cabe no se dibuja, empezando por la última: primero los cuerpos,
+ * del último al primero, y después las cabeceras. Nada se recorta y la
+ * reserva nunca crece. `contenedor` es la capa viva; las siluetas candidatas
+ * llevan `data-silueta-futura` («cuerpo» o «cabecera»). La reserva se mide
+ * por su contenido: la celda de la escena se estira a la capa viva.
+ */
+export function useSiluetasQueCaben(contenedor, deps) {
+  useLayoutEffect(() => {
+    const ajustar = () => {
+      const viva = contenedor.current;
+      const escena = viva?.closest("[data-escena]");
+      if (!viva || !escena) return;
+      const todas = [...viva.querySelectorAll("[data-silueta-futura]")];
+      if (!todas.length) return;
+      for (const f of todas) f.style.display = "";
+      const futuras = [...todas.filter((f) => f.dataset.siluetaFutura === "cabecera"), ...todas.filter((f) => f.dataset.siluetaFutura === "cuerpo")];
+      const reserva = Math.max(0, ...[...escena.querySelectorAll("[data-reserva]")].map((r) => r.firstElementChild?.getBoundingClientRect().height ?? 0));
+      if (!reserva) return;
+      for (let k = futuras.length - 1; k >= 0 && viva.getBoundingClientRect().height > reserva + 0.5; k--) futuras[k].style.display = "none";
+    };
+    ajustar();
+    /* Con las fuentes cargadas o con otro ancho, los renglones cambian: se vuelve a ajustar. */
+    let vivo = true;
+    document.fonts?.ready?.then(() => { if (vivo) ajustar(); });
+    window.addEventListener("resize", ajustar);
+    return () => { vivo = false; window.removeEventListener("resize", ajustar); };
+  }, deps); // eslint-disable-line react-hooks/exhaustive-deps
 }
 /* Resaltado: borde 2 nodo y relleno navy, con el relleno compensado; atenuado: secundario. */
 export function caja(e, relleno, reducido, { conNavy = true } = {}) {
@@ -122,6 +197,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
   const refDe = (id) => (n) => { piezas.current[id] = n; };
 
   const estado = estadoPaso(paso);
+  useSiluetasMudas(maquina);
 
   /*
    * ═══════════ MODO B: EL BLOQUE PEGADO POR SCRIPT (guía v2 §D) ═══════════

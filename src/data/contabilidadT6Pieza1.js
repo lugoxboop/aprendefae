@@ -138,7 +138,10 @@ export const CIERRE_T6 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» ═══════════ */
 
-export const CONSIGNA_CAPA_3_T6 = "Toca cada hecho y mira si lo que deben los clientes sube, baja o no cambia.";
+/* Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja es de Mai (hoja 6), para Shoko. */
+export const CONSIGNA_CAPA_3_T6 = "Toca cada hecho y decide si lo que deben los clientes sube, baja o no cambia. Después, mira la razón.";
+export const PREGUNTA_CAPA_3_T6 = "¿Qué pasa con lo que deben los clientes?";
+export const OPCIONES_CAPA_3_T6 = [{ id: "sube", texto: "Sube" }, { id: "baja", texto: "Baja" }, { id: "no-cambia", texto: "No cambia" }];
 
 /*
  * Los seis hechos, con su pie de fuente (★, versión que manda de Futaba):
@@ -146,12 +149,12 @@ export const CONSIGNA_CAPA_3_T6 = "Toca cada hecho y mira si lo que deben los cl
  * condición o una conclusión. Siete pies: uno por caja y el del bloque final.
  */
 export const HECHOS_T6 = [
-  { id: "venta-credito", hecho: "La empresa le vende a crédito a un cliente.", revela: "Sube: se debita. El cliente queda debiendo lo que compró.", pie: "Libro, p. 197" },
-  { id: "pago", hecho: "Un cliente paga lo que debía.", revela: "Baja: se acredita. La deuda se cancela.", pie: "Libro, p. 197" },
-  { id: "cheque-devuelto", hecho: "El banco devuelve el cheque con el que un cliente había pagado.", revela: "Sube: se debita, con una nota débito. Ese pago no llegó a la empresa, así que la deuda vuelve.", pie: "Basado en el libro, pp. 191 y 197" },
-  { id: "devolucion", hecho: "Un cliente devuelve mercancía que compró a crédito y aún no paga.", revela: "Baja: se acredita. Es una devolución de ventas.", pie: "Basado en el libro, p. 197" },
-  { id: "descuento", hecho: "La empresa le otorga a un cliente un descuento sobre lo que todavía le debe.", revela: "Baja: se acredita.", pie: "Basado en el libro, p. 197" },
-  { id: "contado", hecho: "La empresa le vende de contado a un cliente.", revela: "No cambia. El cliente pagó en el momento y no queda debiendo nada.", pie: "Basado en el libro, p. 197" },
+  { id: "venta-credito", hecho: "La empresa le vende a crédito a un cliente.", revela: "Sube: se debita. El cliente queda debiendo lo que compró.", pie: "Libro, p. 197", correcta: "sube", falla: "Aunque diga “crédito”, el cliente queda debiendo lo que compró: sube." },
+  { id: "pago", hecho: "Un cliente paga lo que debía.", revela: "Baja: se acredita. La deuda se cancela.", pie: "Libro, p. 197", correcta: "baja", falla: "Al pagar, el cliente deja de deber lo que pagó: baja." },
+  { id: "cheque-devuelto", hecho: "El banco devuelve el cheque con el que un cliente había pagado.", revela: "Sube: se debita, con una nota débito. Ese pago no llegó a la empresa, así que la deuda vuelve.", pie: "Basado en el libro, pp. 191 y 197", correcta: "sube", falla: "El cheque no se cobró, así que el pago no cuenta: la deuda sube otra vez." },
+  { id: "devolucion", hecho: "Un cliente devuelve mercancía que compró a crédito y aún no paga.", revela: "Baja: se acredita. Es una devolución de ventas.", pie: "Basado en el libro, p. 197", correcta: "baja", falla: "Lo que devuelve ya no lo tiene que pagar: baja." },
+  { id: "descuento", hecho: "La empresa le otorga a un cliente un descuento sobre lo que todavía le debe.", revela: "Baja: se acredita.", pie: "Basado en el libro, p. 197", correcta: "baja", falla: "El descuento rebaja lo que el cliente debe: baja." },
+  { id: "contado", hecho: "La empresa le vende de contado a un cliente.", revela: "No cambia. El cliente pagó en el momento y no queda debiendo nada.", pie: "Basado en el libro, p. 197", correcta: "no-cambia", falla: "Pagó en el momento, así que no queda debiendo nada: no cambia." },
 ];
 export const FINAL_CAPA_3_T6 = {
   texto: "Fíjate: “venta a crédito” lleva la palabra crédito, pero a la cuenta del cliente se le hace un débito. El nombre del negocio no dice en qué lado se anota.",

@@ -399,3 +399,24 @@ El límite de C a 320×568 es el mismo: «Siguiente» queda bajo el borde en el 
 §9 · Kaede
 
 Las filas 2 y 4 de la tabla de Kaede cambian a 738,38 · 657,13 y 959,23 · 877,98.
+
+## (4) Futaba · entrega 2: predecir antes de revelar, capa 3 (pegada tal cual)
+
+
+Cómo funciona (para Mai):
+
+El estudiante toca la caja, elige y se revela el texto de siempre.
+Si falla, la devolución va antes de ese texto. Si acierta, el texto sale directo, sin «Sí.».
+Hay un intento por caja y no da puntaje.
+Los textos que se revelan y el texto final de cada capa no cambian.
+
+T6 A3 (pp. 202-203; las cajas se abren en orden). Sin cambios.
+
+Consigna: «Toca cada momento y decide qué le pasa a la provisión. Después, mira cómo queda la T.» (88)
+Diciembre de 2007: ¿En qué columna de la T se anota la provisión que se crea? Debe · Haber ✓. Si falla: «La provisión sube por el Haber.»
+Marzo: ¿Qué le pasa al saldo? Queda en $0 · Le faltan $31.200 ✓ · Sigue en $148.800.
+Si elige $0: «No queda en cero: el castigo es más grande que la provisión.» (96)
+Si elige $148.800: «El castigo se debita a la provisión, así que el saldo baja.» (86)
+Diciembre siguiente: ¿Por cuánto se registra la provisión? $153.400 · $184.600 ✓ · $31.200.
+Si elige $153.400: «$153.400 es el saldo que debe quedar. Para llegar ahí, también hay que cubrir lo que faltó en marzo.» (96)
+Si elige $31.200: «Eso solo cubre lo que faltó. Falta lo que pide el análisis.» (92)

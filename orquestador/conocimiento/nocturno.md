@@ -414,3 +414,40 @@ Cada general deja, al final de la noche, una lista corta:
 
 Nada de esto se escribe durante la noche interrumpiendo el trabajo: se escribe
 al final, o cuando una entrega lo justifique.
+
+## La vara de lo crítico: ¿se puede deshacer?
+
+Mateo, 15 de octubre, corrigiéndome a mí y mandándomelo pasar a las cinco
+células:
+
+> Crítico es solo lo que no se puede deshacer: borrar o dañar datos de
+> estudiantes, cambiar contenido que yo ya aprobé, o algo que tumbe la
+> plataforma. Un punto de diferencia en un redondeo, cómo se interpreta una
+> regla, qué componente se ajusta y cómo: todo eso lo resuelves tú y me lo
+> cuentas en el resumen final, no me lo preguntas. Antes de preguntarme algo,
+> pregúntate si se puede deshacer; si se puede, decide tú.
+
+**La prueba, antes de escribirle a nadie por encima de ti: ¿se puede
+deshacer?** Si sí, decides y lo cuentas en el informe. Si no, preguntas.
+
+| Se deshace → **decides tú** | No se deshace → **preguntas** |
+|---|---|
+| Cambiar cómo se calcula algo de aquí en adelante | Recalcular o borrar FP ya otorgados |
+| Ajustar un componente, un color, un tamaño | Reescribir contenido que Mateo ya aprobó |
+| Interpretar una regla del canon | Un cambio que puede tumbar la plataforma |
+| Abrir, cerrar o rehacer un PR | Borrar una rama o reescribir la historia de `main` |
+| Decidir el alcance de tu propia tanda | Gastar dinero o escribirle a un tercero |
+
+**El caso que la originó, por si sirve de calibre.** Encontré que el navegador
+le enseñaba 56 FP al estudiante y la base guardaba 57, en las 137 actividades
+evaluativas. Lo llevé a Mateo porque toca puntajes. Me respondió que no: el
+arreglo era una línea, no tocaba ninguna fila guardada y se podía revertir en
+un minuto. **Lo reversible era el arreglo, no el defecto.** Lo irreversible
+habría sido recalcular las filas ya otorgadas — y eso sí se queda esperando.
+
+**Y la otra mitad, que es la que cuesta más:** esto vale en los dos sentidos.
+Un general que le pregunta a su coordinador lo que puede decidir él convierte
+al coordinador en el cuello de botella, igual que el coordinador que le
+pregunta a Mateo. Si lo que te frena es que alguien confirme algo reversible,
+no estás siendo prudente: estás gastando el recurso más escaso que hay aquí,
+que es la atención de quien está por encima de ti.

@@ -81,9 +81,22 @@ for (const paso of pasos) {
 }
 
 /* Ya en la pantalla que toca, la ventana se estira hasta la altura real. */
-const altoReal = await pagina.evaluate(() => document.documentElement.scrollHeight);
-await pagina.setViewportSize({ width: 320, height: Math.min(Math.max(altoReal + 200, 820), 16000) });
-await pagina.waitForTimeout(300);
+/*
+ * DOS PASADAS, Y LA SEGUNDA NO SOBRA. Al estirar la ventana el contenido se
+ * reacomoda y la página puede CRECER otra vez: en el índice de Contabilidad
+ * quedaban cuatro controles por debajo del borde —entre ellos un «Entrar» de
+ * 76×40, un defecto real— y el informe los daba por «no medidos» en vez de
+ * por malos, que es lo correcto pero no es suficiente. Se mide, se estira, se
+ * vuelve a medir, y si creció se estira otra vez.
+ */
+let altoReal = await pagina.evaluate(() => document.documentElement.scrollHeight);
+for (let intento = 0; intento < 3; intento++) {
+  await pagina.setViewportSize({ width: 320, height: Math.min(Math.max(altoReal + 200, 820), 16000) });
+  await pagina.waitForTimeout(300);
+  const nuevo = await pagina.evaluate(() => document.documentElement.scrollHeight);
+  if (nuevo <= altoReal) break;
+  altoReal = nuevo;
+}
 
 const informe = await pagina.evaluate((MIN) => {
   const controles = [...document.querySelectorAll("button:not([disabled]), [role=button]")]

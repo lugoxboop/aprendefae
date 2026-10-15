@@ -12,6 +12,9 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, Ficha, LineasConComprobar, TEXTO, INTER, APAGADO } from "./hacerT7.jsx";
+import { Plegable } from "./plegable.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -125,11 +128,13 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER + CSS}</style>
       <div data-h4>
-        <Encabezado consigna={H4.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H4.consigna.join(" "))} onComoSeJuega={onComoSeJuega} />
         <p data-entrada style={{ ...TEXTO, fontSize: "14px", lineHeight: "21px", margin: "0 0 8px" }}>{H4.entrada}</p>
         <Ficha filas={FICHA_H4} />
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={2} hechos={(parte === 1 ? 0 : 1) + ((parte === 1 && revision) || (parte === 2 && cierreHecho) ? 1 : 0)} enCurso={parte} etiqueta="Parte" />
+          <ContadorConIntento>
+            <Pulsos total={2} hechos={(parte === 1 ? 0 : 1) + ((parte === 1 && revision) || (parte === 2 && cierreHecho) ? 1 : 0)} enCurso={parte} etiqueta="Parte" />
+          </ContadorConIntento>
         </div>
 
         {parte === 1 && (
@@ -141,7 +146,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
 
             {!revision && (
               <div data-banco style={{ margin: "0 0 14px" }}>
-                <p style={{ margin: "0 0 7px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", color: APAGADO }}>CIFRAS</p>
+                <p style={{ margin: "0 0 7px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: APAGADO }}>CIFRAS</p>
                 <div className="t7h4-banco" role="group" aria-label="Cifras para poner en la tabla">
                   {enBanco.map((v) => (
                     <button key={v} type="button" data-ficha-cifra={v} aria-pressed={seleccion === v}
@@ -195,11 +200,11 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
                   <div key={c.id} data-retro-casilla={c.id} data-panel="error" style={{
                     padding: "11px 13px", borderRadius: "11px", background: "rgba(231,111,81,0.13)", borderLeft: `3px solid ${FAE.coral}`,
                   }}>
-                    <p style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", color: APAGADO }}>
+                    <p style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.08em", color: APAGADO }}>
                       {`${c.metodo.nombre} · ${c.fila.nombre}`.toUpperCase()}
                     </p>
                     <span style={SOLO_LECTOR}>{`Incorrecto. Era ${pesos(c.valor)}. `}</span>
-                    {revision[c.id].textos.map((x) => <p key={x} data-texto-retro style={{ ...TEXTO, margin: "0 0 4px" }}>{x}</p>)}
+                    {revision[c.id].textos.map((x) => <p key={x} data-texto-retro style={{ ...TEXTO, margin: "0 0 4px" }}><Plegable texto={x} /></p>)}
                   </div>
                 ))}
                 <p data-cierre-parte1 style={{ ...TEXTO, padding: "11px 13px", borderRadius: "11px", background: "rgba(184,196,212,0.13)", borderLeft: "3px solid #B8C4D4" }}>

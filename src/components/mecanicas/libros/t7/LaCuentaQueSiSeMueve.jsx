@@ -3,6 +3,8 @@ import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE, BOTON, INTERFAZ, DEBE, HABER } from "../../../../data/contabilidadT7_2.js";
+import { Plegable } from "./plegable.jsx";
+import { textosDelError, contarFallo } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -90,7 +92,7 @@ function Mensaje({ ok, textos, refFoco }) {
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7b1-msg-cuerpo">
         <span className="t7b1-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto>{t}</p>)}
+        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
       </div>
     </div>
   );
@@ -102,6 +104,8 @@ function Eleccion({ pantalla, onSeguir }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
   const [confirmada, setConfirmada] = useState(null);
+  /* Cuántas veces se ha fallado esta pregunta: la escalera de ayuda (escaleraAyuda.js). */
+  const [fallos, setFallos] = useState(0);
   const ref = useRef(null);
   const opcion = confirmada ? pantalla.opciones.find((o) => o.id === confirmada) : null;
   const estado = !opcion ? "colocando" : opcion.correcta ? "acierto" : "error";
@@ -110,7 +114,7 @@ function Eleccion({ pantalla, onSeguir }) {
 
   return (
     <div className="t7b1" data-eleccion={pantalla.id} data-estado={estado}>
-      {pantalla.parrafos.map((t) => <p key={t} className="t7b1-p" data-texto>{t}</p>)}
+      {pantalla.parrafos.map((t) => <p key={t} className="t7b1-p" data-texto><Plegable texto={t} /></p>)}
       <p className="t7b1-p t7b1-preg" data-texto data-pregunta>{pantalla.pregunta}</p>
       <div className="t7b1-ops" role="group" aria-label={pantalla.pregunta}>
         {orden.map((o) => {
@@ -122,10 +126,10 @@ function Eleccion({ pantalla, onSeguir }) {
           );
         })}
       </div>
-      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => setConfirmada(elegida)} />}
+      {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }} />}
       {estado === "error" && (
         <>
-          <Mensaje ok={false} textos={[opcion.devolucion]} refFoco={ref} />
+          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} refFoco={ref} />
           <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((a) => barajarDistinto(pantalla.opciones, a, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
         </>
       )}
@@ -230,7 +234,7 @@ export default function LaCuentaQueSiSeMueve({ pieza = PIEZA_LA_CUENTA_QUE_SI_SE
         {(p.tipo === "portada" || p.tipo === "lectura" || p.tipo === "resumen") && (
           <div className="t7b1">
             {p.objetivo && <p className="t7b1-p" data-texto data-objetivo>{p.objetivo}</p>}
-            {p.parrafos?.map((t) => <p key={t} className="t7b1-p" data-texto>{t}</p>)}
+            {p.parrafos?.map((t) => <p key={t} className="t7b1-p" data-texto><Plegable texto={t} /></p>)}
             {p.lista && (
               <ol className="t7b1-lista" data-lista>
                 {p.lista.map((t) => <li key={t} data-texto>{t}</li>)}

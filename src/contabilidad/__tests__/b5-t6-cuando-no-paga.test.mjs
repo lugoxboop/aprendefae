@@ -48,6 +48,7 @@ const h = React.createElement;
 const D = await import("../../data/contabilidadT6Pieza2.js");
 const E = await import("../t6Pieza2.js");
 const { default: DosDias } = await import("../../components/mecanicas/libros/tema6/DosDias.jsx");
+const { decidir } = await import("./b5-capa3.mjs");
 const { default: DosMetodos } = await import("../../components/mecanicas/libros/tema6/DosMetodos.jsx");
 const { ESCENAS_TEMA6 } = await import("../../components/mecanicas/libros/tema6/escenasTema6.jsx");
 const { PIEZAS } = await import("../../components/ContabilidadTema6View.jsx");
@@ -68,7 +69,7 @@ const rgb = (hex) => `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 1
 const textosDeDatos = () => {
   const out = [];
   const recoger = (v, k) => {
-    if (typeof v === "string") { if (!["id"].includes(k)) out.push(v); }
+    if (typeof v === "string") { if (!["id", "correcta"].includes(k)) out.push(v); }
     else if (Array.isArray(v)) v.forEach((x) => recoger(x, k));
     else if (v && typeof v === "object") for (const [kk, x] of Object.entries(v)) recoger(x, kk);
   };
@@ -76,6 +77,8 @@ const textosDeDatos = () => {
   return out;
 };
 const FUENTE = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-aprender2.md", import.meta.url), "utf8");
+/* Lo que todavía no llega se ve en silueta (hoja 5 de Mai): a la vista, atenuado y marcado con --b5-silueta. */
+const enSilueta = (n) => n.style.visibility === "visible" && Boolean(n.style.getPropertyValue("--b5-silueta"));
 
 /* ═══════════ TEXTOS ═══════════ */
 
@@ -146,7 +149,7 @@ test("★★★ cada pieza de la escena se ve desde su paso, y antes ocupa su si
   for (let p = 1; p <= 11; p++) {
     for (const [id, desde] of Object.entries(APARECE)) {
       const n = caja.querySelector(`[data-elemento="${id}"]`);
-      assert.equal(n.style.visibility, p >= desde ? "visible" : "hidden", `paso ${p}: ${id}`);
+      assert.equal(enSilueta(n), p < desde, `paso ${p}: ${id} ${p < desde ? "en silueta" : "a la vista"}`);
     }
     if (p < 11) await tocar(caja.querySelector("[data-siguiente]"));
   }
@@ -247,7 +250,7 @@ test("★★★ cápsulas: «se debita» en teal y «se acredita» en ámbar, si
 
 test("★★ capa 2: «Anterior» devuelve el estado exacto de cada paso", async () => {
   const { caja, desmontar } = await montar(h(DosDias));
-  const foto = () => [...caja.querySelectorAll("[data-elemento]")].map((n) => `${n.dataset.elemento}:${n.dataset.resaltado ?? ""}:${n.style.visibility}`).join("|");
+  const foto = () => [...caja.querySelectorAll("[data-elemento]")].map((n) => `${n.dataset.elemento}:${n.dataset.resaltado ?? ""}:${n.style.visibility}:${enSilueta(n)}`).join("|");
   const fotos = {};
   for (let p = 1; p <= 11; p++) { fotos[p] = foto(); if (p < 11) await tocar(caja.querySelector("[data-siguiente]")); }
   for (let p = 10; p >= 1; p--) { await tocar(caja.querySelector("[data-anterior]")); assert.equal(foto(), fotos[p], `paso ${p}`); }
@@ -261,7 +264,7 @@ test("★★ «Reproducir»: 3 000 + 450 ms por palabra (los de la v1b de Mai)",
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: los dos métodos se ven iguales; cada uno revela lo suyo con su pie; el final, solo con los dos abiertos", async () => {
+test("★★★ capa 3: los dos métodos se ven iguales; cada uno revela lo suyo con su pie; el final, solo con los dos decididos", async () => {
   const { caja, desmontar } = await montar(h(DosMetodos));
   assert.equal(caja.querySelector("p").textContent, D.CONSIGNA_CAPA_3_T6_A2);
   const cajas = [...caja.querySelectorAll("[data-hecho]")];
@@ -270,7 +273,7 @@ test("★★★ capa 3: los dos métodos se ven iguales; cada uno revela lo suyo
   assert.equal(cajas[0].getAttribute("style"), cajas[1].getAttribute("style"));
   const lectura = (n) => [...n.querySelectorAll("p:not([data-pie])")].map((p) => p.textContent).join("");
   for (const [k, m] of D.METODOS_T6_A2.entries()) {
-    await tocar(caja.querySelector(`[data-hecho="${m.id}"] button`));
+    await decidir(tocar, caja.querySelector(`[data-hecho="${m.id}"]`), m.correcta);
     assert.equal(lectura(caja.querySelector(`[data-revela="${m.id}"]`)), m.revela);
     assert.equal(caja.querySelector(`[data-revela="${m.id}"] [data-pie]`).textContent, m.pie);
     assert.equal(lectura(caja.querySelector("[data-final]")), k === 0 ? "" : D.FINAL_CAPA_3_T6_A2.texto);

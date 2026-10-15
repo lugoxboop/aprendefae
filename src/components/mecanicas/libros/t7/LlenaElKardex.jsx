@@ -9,6 +9,8 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, Parrafos, TarjetaPregunta, Eleccion, Devolucion, TEXTO } from "./hacerT7.jsx";
 import Kardex from "./KardexT7_2.jsx";
+import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -112,13 +114,15 @@ export default function LlenaElKardex({ Marco, rotulo, titulo, acento, onComplet
       <style>{CSS_T7_HACER}</style>
       <style>{CSS_H3}</style>
       <div data-t7-2-h3>
-        <Encabezado consigna={H3.consigna} onComoSeJuega={onComoSeJuega} />
+        <Encabezado consigna={sinUnSoloIntento(H3.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H3.enunciado} />
         <ul className="t72h3-mov" data-movimientos>
           {H3.movimientos.map((m) => <li key={m}>{m}</li>)}
         </ul>
         <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          <ContadorConIntento>
+            <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
+          </ContadorConIntento>
         </div>
         <TarjetaPregunta id={item.id} pregunta={item.pregunta} pie={H3.pie} tarjetaRef={tarjeta} />
 

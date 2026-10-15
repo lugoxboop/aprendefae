@@ -748,3 +748,26 @@ Rehago solo esas filas: líneas, duraciones y, si cambian, los rótulos de la §
 De Futaba, para ti, sin tocar el diseño:
 si «Bancos» está publicado;
 la concordancia de «Gastos financieros».
+
+## (6) Futaba · entrega 2: predecir antes de revelar, capa 3 (pegada tal cual)
+
+
+Cómo funciona (para Mai):
+
+El estudiante toca la caja, elige y se revela el texto de siempre.
+Si falla, la devolución va antes de ese texto. Si acierta, el texto sale directo, sin «Sí.».
+Hay un intento por caja y no da puntaje.
+Los textos que se revelan y el texto final de cada capa no cambian.
+
+T5 A2 ★ (Libro, pp. 194-195). Ya no repite la capa 4.
+
+Consigna: «Toca cada venta y decide si dejó ganancia o pérdida. Después, mira por cuánto se acredita la inversión.» (73)
+Opciones de las dos cajas: Ganancia · Pérdida.
+Correctas: Agosto → Ganancia. Noviembre → Pérdida.
+Si falla, en las dos: «Compara las dos cifras de la caja: lo que recibió y lo que costaron.» (95)
+
+## (7) Kaede · la pregunta de la caja, para Shoko
+
+La hoja 6 de Mai propone «¿Por cuánto se acredita la inversión?», pero no responde a las opciones de Futaba. Mientras Shoko decide, la pregunta sale de la consigna nueva («decide si dejó ganancia o pérdida»):
+
+¿Dejó ganancia o pérdida?

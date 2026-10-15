@@ -66,6 +66,23 @@ const CSS = `
 @media (prefers-reduced-motion: reduce) {
   .fae-asj-onda { animation: none !important; opacity: 0 !important; }
 }
+
+/*
+ * LA CONSIGNA, UNA SOLA VEZ.
+ *
+ * La demo de este panel es EL COMPONENTE REAL en modo demo, así que trae
+ * dentro su propia cabecera — y esta pantalla ya imprime arriba el nombre, la
+ * consigna y los tres pasos. Resultado: el estudiante leía la misma frase dos
+ * veces, a 250 px de distancia. Medido a 320 px en T4: una en
+ * data-asj-consigna a y=202 y otra en data-encabezado a y=452, el
+ * mismo texto letra por letra. Lo encontró la Célula D en sus ocho Hacer.
+ *
+ * Se oculta aquí, en el marco, y no en cada mecánica a propósito. Algunas ya
+ * lo hacían por su cuenta , condicionando su Encabezado a modoDemo, y otras no, y eso
+ * es exactamente lo que no puede depender de que cada autor se acuerde. La
+ * demo enseña el GESTO; la instrucción ya está escrita arriba.
+ */
+[data-asj-figura] [data-encabezado] { display: none; }
 `;
 
 /* El marco de la demo: ninguno. Solo las hojas de estilo que el componente espera. */

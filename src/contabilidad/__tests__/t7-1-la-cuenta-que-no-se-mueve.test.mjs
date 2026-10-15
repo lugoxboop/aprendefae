@@ -70,7 +70,8 @@ const montar = async (el) => {
 const tocar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
 const boton = (caja, nombre) => caja.querySelector(`[data-boton="${nombre}"]`);
 const opcionesEnPantalla = (caja) => [...caja.querySelectorAll("[data-opcion]")].map((b) => b.dataset.opcion);
-const botonesActivos = (caja) => [...caja.querySelectorAll("button")].filter((b) => !b.disabled).map((b) => b.textContent);
+/* Los botones de la pieza, sin el «¿Por qué?» del texto plegado (lote 1), que no es un paso de la pieza. */
+const botonesActivos = (caja) => [...caja.querySelectorAll("button:not([data-por-que])")].filter((b) => !b.disabled).map((b) => b.textContent);
 
 /* ═══════════ LO QUE EL ESTUDIANTE VE, SACADO DE LOS DATOS ═══════════ */
 

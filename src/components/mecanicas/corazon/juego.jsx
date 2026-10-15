@@ -153,7 +153,13 @@ export function Opcion({ children, onClick, estado = null, deshabilitada = false
           tres renglones.
         */}
         {revelada && (
-          <span style={{ display: "block", marginTop: "2px", fontSize: "11px", color: "rgba(248,249,250,0.62)" }}>
+          /*
+           * 12 px: «era esta» no es adorno, es lo que le dice al estudiante
+           * cuál era la respuesta buena cuando no la eligió. Si se tapa, se
+           * pierde esa información. A 11 px y al 62 % de opacidad era lo más
+           * difícil de leer de toda la tarjeta, siendo de lo más importante.
+           */
+          <span style={{ display: "block", marginTop: "2px", fontSize: "12px", color: "rgba(248,249,250,0.62)" }}>
             era esta
           </span>
         )}
