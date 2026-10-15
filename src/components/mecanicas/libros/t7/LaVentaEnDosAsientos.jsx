@@ -18,7 +18,7 @@ import { textosDelError, contarFallo } from "./escaleraAyuda.js";
  *                En P1, antes de la pregunta, el enunciado de E-1, su ficha y
  *                el repaso de IVA y retención; con el acierto, el asiento de
  *                la compra: Inventario de mercancías con su monto y las otras
- *                tres líneas sin él (●, X1), y las dos líneas que las explican
+ *                tres líneas sin él (casilla vacía, X1), y las dos líneas que las explican
  *   · lados      P3: las dos líneas del asiento del costo, barajadas al
  *                entrar, cada una con «Debe» | «Haber», como P3 de A1
  *   · resumen    la lista numerada, la línea «Siguiente» y el pie
@@ -77,8 +77,9 @@ export const CSS_T7B2 = `
 .t7b2-as-r > span:first-child { font-size: 14px; overflow-wrap: anywhere; min-width: 0; }
 .t7b2-as-r .t7b2-g2 > span { text-align: right; padding-inline: 9px; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 0; }
 .t7b2-sangria { padding-left: 24px; }
-/* el monto que no se muestra (X1): un punto gris en su lado; Watari decide la forma final */
-.t7b2-oculto { color: ${P.texto2}; }
+/* el monto que no se muestra (X1): la casilla discontinua vacía del patrón, la misma del kárdex (KardexT7_2.jsx, .t7kx-sin) */
+.t7b2-oculto { display: flex; align-items: center; height: 100%; }
+.t7b2-oculto i { display: block; width: 100%; height: 18px; border: 1px dashed ${P.borde}; border-radius: 4px; }
 /* P3: las dos líneas del asiento del costo */
 .t7b2-lineas { display: grid; gap: 10px; }
 .t7b2-la { display: grid; gap: 8px; min-width: 0; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; }
@@ -163,7 +164,7 @@ export function Asiento({ asiento, nuevo = false }) {
     if (l.monto === null) {
       return (
         <span className="t7b2-oculto" data-oculto data-revision="pendiente">
-          <span aria-hidden="true">●</span>
+          <i aria-hidden="true" />
           <span className="t7b2-sr">{PENDIENTE_DE_REVISION.montoOculto}</span>
         </span>
       );
