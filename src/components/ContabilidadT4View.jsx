@@ -797,7 +797,8 @@ export function ElControlQueSeSaltaron({ Marco, rotulo, titulo, acento, onComple
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T4H1}</style>
-      <div data-t4-h2>
+      {/* Como en H1: la partida lleva `data-t4-h2` y la demo, `data-t4-h2-demo`. */}
+      <div {...(modoDemo ? { "data-t4-h2-demo": "" } : { "data-t4-h2": "" })}>
         <Encabezado consigna={H2.consigna.join(" ")} onComoSeJuega={onComoSeJuega} />
         <div style={{ marginBottom: "12px" }}>
           <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Caso" />

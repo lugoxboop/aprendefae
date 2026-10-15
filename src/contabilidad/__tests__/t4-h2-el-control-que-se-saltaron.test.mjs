@@ -42,7 +42,8 @@ const h = React.createElement;
 const D = await import("../../data/contabilidadT4H2.js");
 const A = await import("../../data/contabilidadT4.js");
 const { SUBJECTS, HACER, actividadesDeTipo, clasificacionDe } = await import("../../data/subjects.js");
-const { ElControlQueSeSaltaron, JUEGOS_T4, TEMA_T4 } = await import("../../components/ContabilidadT4View.jsx");
+const { default: ContabilidadT4View, ElControlQueSeSaltaron, JUEGOS_T4, TEMA_T4 } = await import("../../components/ContabilidadT4View.jsx");
+const { AuthContext } = await import("../../auth/AuthProvider.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
 const { ASI_SE_JUEGA } = await import("../../data/asiSeJuega.js");
 const { inflesz } = await import("../../herramientas/inflesz.js");
@@ -224,6 +225,23 @@ test("★★★ al terminar: el cierre y su pie, y onCompletar con el porcentaje
     assert.equal(m.caja.querySelector("[data-cierre]").textContent, D.CIERRE_H2.texto);
     assert.equal(m.caja.querySelector("[data-pie-cierre]").textContent, D.CIERRE_H2.pie);
   } finally { m.desmontar(); }
+});
+
+test("★★★ en la página del juego hay exactamente UN [data-t4-h2]: la partida; la demo de «Así se juega» lleva el suyo propio", async () => {
+  try { globalThis.localStorage.clear(); } catch { /* sin almacenamiento, sale igual */ }
+  const caja = document.createElement("div");
+  document.body.appendChild(caja);
+  const raiz = createRoot(caja);
+  await act(async () => {
+    raiz.render(h(AuthContext.Provider, { value: { usuario: null, pedirCuenta: () => {} } },
+      h(ContabilidadT4View, { modo: HACER, nodoInicial: D.H2_ID, onBack: () => {} })));
+  });
+  try {
+    assert.ok(caja.querySelector("[data-asj-demo]"), "no salió el «Así se juega»: la prueba no está mirando el caso de las dos");
+    assert.equal(caja.querySelectorAll("[data-t4-h2-demo]").length, 1, "la demo no lleva su propio atributo");
+    assert.equal(caja.querySelectorAll("[data-t4-h2]").length, 1, "hay más de un [data-t4-h2] en la página");
+    assert.ok(caja.querySelector("[data-t4-h2]").closest("[data-partida]"), "el [data-t4-h2] no es el de la partida");
+  } finally { act(() => raiz.unmount()); caja.remove(); }
 });
 
 /* ═══════════ 3 · CAMINO, CATÁLOGO, PANEL Y «ASÍ SE JUEGA» ═══════════ */
