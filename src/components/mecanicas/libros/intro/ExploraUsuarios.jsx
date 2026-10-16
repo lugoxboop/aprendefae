@@ -59,7 +59,7 @@ export default function ExploraUsuarios() {
         }}
       >
         {u.nombre}
-        <span style={{ marginLeft: "5px", opacity: 0.7, fontSize: "9.5px" }}>
+        <span style={{ marginLeft: "5px", opacity: 0.7, fontSize: "12px" }}>
           {u.tipo === "interno" ? "interno" : "externo"}
         </span>
       </button>
