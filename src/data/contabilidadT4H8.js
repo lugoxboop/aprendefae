@@ -154,7 +154,7 @@ function serieH8(s) {
       { cifra: s.libros - nd, texto: "Ese saldo tiene las notas débito, pero no las crédito. Al mayor le falta lo que el banco abonó." },
       { cifra: s.libros + nc - nd - cheques + consignacion, texto: "Ese saldo mete partidas que la empresa ya tenía. Al mayor solo entran las notas del banco." },
     ],
-    otroEtapa3: "Tu saldo se saltó un asiento o lo sumó del lado que no era. Repasa el debe y el haber del mayor.",
+    otroEtapa3: "Tu saldo se saltó un asiento o lo puso del otro lado. Repasa el debe y el haber del mayor.",
   };
 }
 export const SERIE_H8_1 = serieH8(SERIE_1);

@@ -120,7 +120,14 @@ function medir({ raiz, objetivo }) {
  * después es la vista misma.
  */
 async function jugarPlan(pg, sel, plan, alVeredicto = null) {
-  for (const paso of plan ?? []) {
+  for (const [k, paso] of (plan ?? []).entries()) {
+    /* El control del paso tiene que estar: si no llega, se nombra la pantalla y el paso, en vez de caerse. */
+    const objetivo = paso.click ?? paso.arrastra;
+    if (objetivo && !(await pg.waitForSelector(`${sel} ${objetivo}`, { state: "visible", timeout: 8000 }).catch(() => null))) {
+      const id = await pg.getAttribute(sel, "data-pantalla").catch(() => "?");
+      fallos.push(`plan · ${sel} · ${id} · paso ${k + 1}: no aparece ${objetivo}`);
+      return false;
+    }
     if (paso.click && alVeredicto) await pg.$eval(`${sel} ${paso.click}`, (el) => el.scrollIntoView({ block: "end", behavior: "instant" }));
     if (paso.click) await pg.click(`${sel} ${paso.click}`);
     if (paso.arrastra) {
@@ -293,6 +300,7 @@ const CLAVE = JSON.parse(execFileSync(process.execPath, [resolve(RAIZ, "scripts/
 const SIGLA = { "t4-entra-o-sale-de-caja": "H1", "t4-se-mueve-la-caja-menor": "H3", "t4-el-arqueo-de-rosa": "H4", "t4-concilia-la-cuenta": "H7", "t4-se-asienta-o-no": "H8" };
 const ESPERA_REVELA = 700 + 900;
 /* En la página: la caja de un elemento contra la ventana. */
+const r1 = (x) => Math.round(x * 10) / 10;
 const caja = (el) => { if (!el) return null; const r = el.getBoundingClientRect(); return { top: Math.round(r.top * 10) / 10, bottom: Math.round(r.bottom * 10) / 10 }; };
 const filasE2H = [];
 for (const ventana of E2_VENTANAS) {
@@ -350,7 +358,13 @@ for (const ventana of E2_VENTANAS) {
         const d = ms[ms.length - 1]?.getBoundingClientRect();
         const ps = [...raiz.querySelectorAll('.t4r-marca[data-marca="bien"], .t4r-marca[data-marca="mal"]')].map((p) => p.getBoundingClientRect().top);
         const r1 = (x) => Math.round(x * 10) / 10;
-        return { pie: d ? r1(d.bottom) : null, topeDevolucion: d ? r1(d.top) : null, pastilla: ps.length ? r1(Math.min(...ps)) : null, alto: innerHeight };
+        const bs = [...raiz.querySelectorAll("[data-avance-t4] button")];
+        const b = bs[bs.length - 1]?.getBoundingClientRect();
+        const a = document.activeElement;
+        const f = a && a !== document.body ? a.getBoundingClientRect() : null;
+        const foco = !a || a === document.body ? "nada" : bs.includes(a) ? "boton" : a === ms[ms.length - 1] ? "devolucion" : `${a.tagName.toLowerCase()}${a.dataset.boton ? `[${a.dataset.boton}]` : ""}`;
+        return { pie: d ? r1(d.bottom) : null, topeDevolucion: d ? r1(d.top) : null, pastilla: ps.length ? r1(Math.min(...ps)) : null, alto: innerHeight,
+          boton: b ? { top: r1(b.top), bottom: r1(b.bottom) } : null, foco, focoCaja: f ? { top: r1(f.top), bottom: r1(f.bottom) } : null };
       }, R);
       const lugar = `E2 · ${ventana.width}×${ventana.height} · ${id} · ${modo === "bien" ? "acierto" : "error"} · tarjeta ${n}${estado.e ? ` (etapa ${estado.e})` : ""}`;
       if (m.pie == null) fallos.push(`${lugar}: no hay devolución`);
@@ -358,8 +372,26 @@ for (const ventana of E2_VENTANAS) {
         const tope = m.pastilla ?? m.topeDevolucion;
         if (tope < -0.5) fallos.push(`${lugar}: la pastilla tocada más alta empieza en ${tope} px, fuera de la ventana`);
         if (m.pie > m.alto + 0.5) fallos.push(`${lugar}: el pie de la devolución queda en ${m.pie} px y la ventana mide ${m.alto}`);
+        /*
+         * El botón de avance (decisión de Yujiro tras la FALLA E2 de Shibukawa en 35348c3): si el tramo de la
+         * pastilla al pie del botón cabe en la ventana menos 16 px, el botón queda entero a la vista y con el foco.
+         * Si no, el foco está en la devolución y el botón es el siguiente Tab. En todo caso, el foco dentro de la ventana.
+         */
+        if (!m.boton) fallos.push(`${lugar}: no hay botón de avance`);
+        else {
+          const cabe = m.boton.bottom - tope <= m.alto - 16 + 0.5;
+          if (cabe && (m.boton.bottom > m.alto + 0.5 || m.boton.top < -0.5)) fallos.push(`${lugar}: el tramo hasta el botón cabe (${r1(m.boton.bottom - tope)} px), pero el botón queda en ${m.boton.top}-${m.boton.bottom} con la ventana en ${m.alto}`);
+          if (cabe && m.foco !== "boton") fallos.push(`${lugar}: el tramo hasta el botón cabe y el foco está en ${m.foco}, no en el botón`);
+          if (!cabe && m.foco !== "devolucion") fallos.push(`${lugar}: el tramo hasta el botón no cabe y el foco está en ${m.foco}, no en la devolución`);
+          if (!m.focoCaja || m.focoCaja.top < -0.5 || m.focoCaja.top > m.alto - 8) fallos.push(`${lugar}: el foco (${m.foco}) queda fuera de la ventana (${m.focoCaja ? `${m.focoCaja.top}-${m.focoCaja.bottom}` : "sin caja"}, ventana ${m.alto})`);
+          if (!cabe && m.foco === "devolucion") {
+            await pg.keyboard.press("Tab");
+            const sigue = await pg.evaluate((R) => { const bs = [...document.querySelector(R).querySelectorAll("[data-avance-t4] button")]; return bs.includes(document.activeElement); }, R);
+            if (!sigue) fallos.push(`${lugar}: desde la devolución, el siguiente Tab no llega al botón de avance`);
+          }
+          filasE2H.push(`${lugar}: pastilla desde ${m.pastilla ?? "—"}, devolución hasta ${m.pie}, botón hasta ${m.boton.bottom}, foco en ${m.foco} (ventana ${m.alto})`);
+        }
       }
-      filasE2H.push(`${lugar}: pastilla desde ${m.pastilla ?? "—"}, devolución hasta ${m.pie} (ventana ${m.alto})`);
       await mirarSolapes(pg, R, `${ventana.width}×${ventana.height} · ${id} · ${modo === "bien" ? "acierto" : "error"} · tarjeta ${n}`);
       if (CAPTURAS) await pg.screenshot({ path: resolve(CAPTURAS, `e2h-${ventana.width}x${ventana.height}-${s}-${modo}-${n}.png`) });
       const sig = await pg.$(`${R} [data-boton="seguir-hacer"] button`);

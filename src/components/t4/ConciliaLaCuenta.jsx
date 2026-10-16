@@ -52,7 +52,7 @@ import { Campo, CSS_TABLERO } from "./tablero.jsx";
 import { ParConLector, CSS_HACER, mostrarTramo } from "./hacerComun.jsx";
 
 export const CSS_H7 = `
-.t4h7-t { display: grid; gap: 4px; border: 1px solid ${C.neutro}; border-radius: 8px; padding: 8px 12px; }
+.t4h7-t { display: grid; gap: 4px; border: 1px solid ${C.reposo}; border-radius: 8px; padding: 8px 12px; }
 .t4h7-t p { margin: 0; font-size: 15px; line-height: 22px; min-height: 88px; overflow-wrap: anywhere; outline: none; }
 .t4h7-t > span { justify-self: end; font: 600 15px/1.2 "Inter", sans-serif; font-variant-numeric: tabular-nums; }
 .t4lb { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
@@ -112,11 +112,10 @@ export default function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onComp
       onCompletar?.(puntuarH7(bien, sb), Date.now() - t.inicio.current, t.detalle.current);
     }
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if ((r?.aplicado || r2?.aplicado) && !modoDemo) zonaBoton.current?.querySelector("button")?.focus({ preventScroll: true }); }, [r?.aplicado, r2?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (enfocar.current) { enfocar.current = false; tarjeta.current?.focus(); } }, [t.i]);
   const retro = useRef(null);
   /* Al dar el veredicto, la devolución entra en la ventana (decisión de Yujiro sobre la parada de Hanayama). */
-  useEffect(() => { if ((r || r2) && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]")); }, [Boolean(r), Boolean(r2), r?.aplicado, r2?.iba, r2?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if ((r || r2) && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]"), { enfocar: Boolean(r?.aplicado || r2?.aplicado) }); }, [Boolean(r), Boolean(r2), r?.aplicado, r2?.iba, r2?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const poner = (x) => setPuestas((ps) => (ps.some((y) => y.id === x.id) ? ps : [...ps, { id: x.id, seccion: x.va, monto: x.monto }]));
 

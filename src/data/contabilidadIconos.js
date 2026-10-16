@@ -67,6 +67,8 @@ export const ICONO_POR_ACTIVIDAD = {
   /* Repaso del capítulo 5 */
   "r5-1": I.RepasoCruzado,
   "r5-2": I.ElToroNegro,
+  "r5-4": I.SeptiembreEnBarranquilla,
+  "r5-5": I.SeptiembreEnPermanente,
 };
 
 /** Los nodos del camino con su ícono, si lo tienen. */

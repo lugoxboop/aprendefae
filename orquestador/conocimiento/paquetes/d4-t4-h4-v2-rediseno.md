@@ -39,7 +39,7 @@ Cuatro rondas por intento, una de cada tipo, sorteadas de a dos: Cuadra: H4-1 o 
 
 **Zonas de la pregunta 1:** «Falta», «Cuadra», «Sobra», en el orden de la regla.
 
-**Rótulos de la regla:** «fondo 500.000» · «suman 504.300» · «suman, fuera de la regla» · «tu diferencia» · «era» · «caja + tu cheque» · «con el cheque correcto» (antes «con el cheque bien») · «falta» · «sobra» · «cada marca: 2.000». Los demás son los de Hanayama.
+**Rótulos de la regla:** «fondo 500.000» · «suman 504.300» · «suman, fuera de la regla» · «tu diferencia» · «Iba aquí: {diferencia}» (antes «era»; en el paso 2, tras el error, por ejemplo «Iba aquí: 3.800») · «caja + tu cheque» · «falta» · «sobra» · «cada marca: 2.000». Los demás son los de Hanayama. Sale «con el cheque correcto» (§2, FALLA de Shibukawa en 35348c3): en el paso 3, la aguja buena sigue en blanco sobre la marca del fondo, y la revelación es la opción correcta con su pastilla «Iba aquí».
 
 **Asiento de la pregunta 4:** «DEBE», «HABER», «Gastos generales», la cuenta de la diferencia en sus renglones fijos y «Bancos» (sin cambios).
 
@@ -77,8 +77,8 @@ Un intento por pregunta; la pregunta siguiente se juega con la verdad ya dibujad
 | 1 · Falta | Al revés: la suma da $504.300, más que el fondo. Sobra plata. | 12 pal. · INFLESZ 102,2 |
 | 1 · Cuadra | La suma da $504.300, y el fondo es de $500.000. No da exacto: sobra plata. | 15 pal. · INFLESZ 95,5 |
 | 2 · 4.300 (acierto) | Correcto. $504.300 menos $500.000 da $4.300. | 6 pal. |
-| 2 · 108.200 | Eso es lo que debería quedar en la caja: el fondo menos los gastos. La diferencia compara la suma con el fondo: $4.300. | 23 pal. · INFLESZ 84,3 |
-| 2 · 504.300 | Esa es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: $4.300. | 19 pal. · INFLESZ 85,9 |
+| 2 · 108.200 | Eso es lo que debería quedar en la caja: fondo menos gastos. La diferencia compara la suma con el fondo: $4.300. | 21 pal. · INFLESZ 80,6 |
+| 2 · 504.300 | Es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: $4.300. | 18 pal. · INFLESZ 87,1 |
 | 3 · 387.500 (acierto) | Correcto. Los $4.300 de más ya están en la caja, así que el cheque sale por menos de lo gastado: $387.500. | 21 pal. · INFLESZ 92,5 |
 | 3 · 391.800 | Ese es el total de los gastos. Con un sobrante de caja menor, el cheque sale por menos: $387.500. | 19 pal. · INFLESZ 95,7 |
 | 3 · 396.100 | Eso suma la diferencia en vez de restarla. La plata de más ya está en la caja: el cheque es de $387.500. | 22 pal. · INFLESZ 96,7 |
@@ -96,8 +96,8 @@ Un intento por pregunta; la pregunta siguiente se juega con la verdad ya dibujad
 | 1 · Falta | Al revés: la suma da $501.500, más que el fondo. Sobra plata. | 12 pal. · INFLESZ 102,2 |
 | 1 · Cuadra | La suma da $501.500, y el fondo es de $500.000. No da exacto: sobra plata. | 15 pal. · INFLESZ 95,5 |
 | 2 · 1.500 (acierto) | Correcto. $501.500 menos $500.000 da $1.500. | 6 pal. |
-| 2 · 43.700 | Eso es lo que debería quedar en la caja: el fondo menos los gastos. La diferencia compara la suma con el fondo: $1.500. | 23 pal. · INFLESZ 84,3 |
-| 2 · 501.500 | Esa es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: $1.500. | 19 pal. · INFLESZ 85,9 |
+| 2 · 43.700 | Eso es lo que debería quedar en la caja: fondo menos gastos. La diferencia compara la suma con el fondo: $1.500. | 21 pal. · INFLESZ 80,6 |
+| 2 · 501.500 | Es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: $1.500. | 18 pal. · INFLESZ 87,1 |
 | 3 · 454.800 (acierto) | Correcto. Los $1.500 de más ya están en la caja, así que el cheque sale por menos de lo gastado: $454.800. | 21 pal. · INFLESZ 92,5 |
 | 3 · 456.300 | Ese es el total de los gastos. Con un sobrante de caja menor, el cheque sale por menos: $454.800. | 19 pal. · INFLESZ 95,7 |
 | 3 · 457.800 | Eso suma la diferencia en vez de restarla. La plata de más ya está en la caja: el cheque es de $454.800. | 22 pal. · INFLESZ 96,7 |
@@ -115,8 +115,8 @@ Un intento por pregunta; la pregunta siguiente se juega con la verdad ya dibujad
 | 1 · Sobra | Al revés: la suma da $394.500, menos que el fondo. Falta plata. | 12 pal. · INFLESZ 97 |
 | 1 · Cuadra | La suma da $394.500, y el fondo es de $400.000. No da exacto: falta plata. | 15 pal. · INFLESZ 95,5 |
 | 2 · 5.500 (acierto) | Correcto. $400.000 menos $394.500 da $5.500. | 6 pal. |
-| 2 · 47.200 | Eso es lo que debería quedar en la caja: el fondo menos los gastos. La diferencia compara la suma con el fondo: $5.500. | 23 pal. · INFLESZ 84,3 |
-| 2 · 394.500 | Esa es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: $5.500. | 19 pal. · INFLESZ 85,9 |
+| 2 · 47.200 | Eso es lo que debería quedar en la caja: fondo menos gastos. La diferencia compara la suma con el fondo: $5.500. | 21 pal. · INFLESZ 80,6 |
+| 2 · 394.500 | Es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: $5.500. | 18 pal. · INFLESZ 87,1 |
 | 3 · 358.300 (acierto) | Correcto. El cheque repone los gastos y los $5.500 que faltan: $358.300. | 12 pal. · INFLESZ 81,4 |
 | 3 · 352.800 | El cheque no es solo lo gastado. También repone los $5.500 que faltan: $358.300. | 14 pal. · INFLESZ 84,1 |
 | 3 · 347.300 | Falta plata, así que el cheque sale por más de lo gastado, no por menos: $358.300. | 16 pal. · INFLESZ 89,6 |
@@ -134,8 +134,8 @@ Un intento por pregunta; la pregunta siguiente se juega con la verdad ya dibujad
 | 1 · Sobra | Al revés: la suma da $246.200, menos que el fondo. Falta plata. | 12 pal. · INFLESZ 97 |
 | 1 · Cuadra | La suma da $246.200, y el fondo es de $250.000. No da exacto: falta plata. | 15 pal. · INFLESZ 95,5 |
 | 2 · 3.800 (acierto) | Correcto. $250.000 menos $246.200 da $3.800. | 6 pal. |
-| 2 · 52.700 | Eso es lo que debería quedar en la caja: el fondo menos los gastos. La diferencia compara la suma con el fondo: $3.800. | 23 pal. · INFLESZ 84,3 |
-| 2 · 246.200 | Esa es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: $3.800. | 19 pal. · INFLESZ 85,9 |
+| 2 · 52.700 | Eso es lo que debería quedar en la caja: fondo menos gastos. La diferencia compara la suma con el fondo: $3.800. | 21 pal. · INFLESZ 80,6 |
+| 2 · 246.200 | Es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: $3.800. | 18 pal. · INFLESZ 87,1 |
 | 3 · 201.100 (acierto) | Correcto. El cheque repone los gastos y los $3.800 que faltan: $201.100. | 12 pal. · INFLESZ 81,4 |
 | 3 · 197.300 | El cheque no es solo lo gastado. También repone los $3.800 que faltan: $201.100. | 14 pal. · INFLESZ 84,1 |
 | 3 · 193.500 | Falta plata, así que el cheque sale por más de lo gastado, no por menos: $201.100. | 16 pal. · INFLESZ 89,6 |
@@ -153,8 +153,8 @@ Un intento por pregunta; la pregunta siguiente se juega con la verdad ya dibujad
 | 1 · Sobra | Al revés: la suma da $595.800, menos que el fondo. Falta plata. | 12 pal. · INFLESZ 97 |
 | 1 · Cuadra | La suma da $595.800, y el fondo es de $600.000. No da exacto: falta plata. | 15 pal. · INFLESZ 95,5 |
 | 2 · 4.200 (acierto) | Correcto. $600.000 menos $595.800 da $4.200. | 6 pal. |
-| 2 · 81.550 | Eso es lo que debería quedar en la caja: el fondo menos los gastos. La diferencia compara la suma con el fondo: $4.200. | 23 pal. · INFLESZ 84,3 |
-| 2 · 595.800 | Esa es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: $4.200. | 19 pal. · INFLESZ 85,9 |
+| 2 · 81.550 | Eso es lo que debería quedar en la caja: fondo menos gastos. La diferencia compara la suma con el fondo: $4.200. | 21 pal. · INFLESZ 80,6 |
+| 2 · 595.800 | Es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: $4.200. | 18 pal. · INFLESZ 87,1 |
 | 3 · 522.650 (acierto) | Correcto. El cheque repone los gastos y los $4.200 que faltan: $522.650. | 12 pal. · INFLESZ 81,4 |
 | 3 · 518.450 | El cheque no es solo lo gastado. También repone los $4.200 que faltan: $522.650. | 14 pal. · INFLESZ 84,1 |
 | 3 · 514.250 | Falta plata, así que el cheque sale por más de lo gastado, no por menos: $522.650. | 16 pal. · INFLESZ 89,6 |
@@ -172,8 +172,8 @@ Un intento por pregunta; la pregunta siguiente se juega con la verdad ya dibujad
 | 1 · Sobra | Al revés: la suma da $491.000, menos que el fondo. Falta plata. | 12 pal. · INFLESZ 97 |
 | 1 · Cuadra | La suma da $491.000, y el fondo es de $500.000. No da exacto: falta plata. | 15 pal. · INFLESZ 95,5 |
 | 2 · 9.000 (acierto) | Correcto. $500.000 menos $491.000 da $9.000. | 6 pal. |
-| 2 · 68.400 | Eso es lo que debería quedar en la caja: el fondo menos los gastos. La diferencia compara la suma con el fondo: $9.000. | 23 pal. · INFLESZ 84,3 |
-| 2 · 491.000 | Esa es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: $9.000. | 19 pal. · INFLESZ 85,9 |
+| 2 · 68.400 | Eso es lo que debería quedar en la caja: fondo menos gastos. La diferencia compara la suma con el fondo: $9.000. | 21 pal. · INFLESZ 80,6 |
+| 2 · 491.000 | Es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: $9.000. | 18 pal. · INFLESZ 87,1 |
 | 3 · 440.600 (acierto) | Correcto. El cheque repone los gastos y los $9.000 que faltan: $440.600. | 12 pal. · INFLESZ 81,4 |
 | 3 · 431.600 | El cheque no es solo lo gastado. También repone los $9.000 que faltan: $440.600. | 14 pal. · INFLESZ 84,1 |
 | 3 · 422.600 | Falta plata, así que el cheque sale por más de lo gastado, no por menos: $440.600. | 16 pal. · INFLESZ 89,6 |

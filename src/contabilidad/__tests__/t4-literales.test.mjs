@@ -38,14 +38,18 @@ const PROHIBIDO = [
   [/(?<![\p{L}])Correcta(?![\p{L}])/u, "«Correcta»"],
   [/(?<![\p{L}])Revisa(?![\p{L}])/u, "«Revisa»"],
   [/Cifra errada/u, "«Cifra errada»"],
+  [/^\s*con el cheque correcto/iu, "«con el cheque correcto» como rótulo (la revelación es «Iba aquí»)"],
 ];
+/* En los datos, «era» como rótulo: una cadena que empieza por «era» (en los componentes, "era" es el nombre interno de la marca). */
+const ROTULO_ERA = /^\s*era(?![\p{L}])/iu;
 
-test("★★★ ningún dato ni componente de T4 trae «Bien», «Mal», «Correcta», «Revisa» o «Cifra errada»", () => {
+test("★★★ ningún dato ni componente de T4 trae «Bien», «Mal», «Correcta», «Revisa», «Cifra errada», «con el cheque correcto» ni «era» como rótulo", () => {
   assert.ok(ARCHIVOS.length >= 20, `solo ${ARCHIVOS.length} archivos: la prueba no está mirando T4`);
   const malas = [];
   for (const f of ARCHIVOS) {
     for (const c of cadenas(sinComentarios(leer(f)))) {
       for (const [re, nombre] of PROHIBIDO) if (re.test(c)) malas.push(`${f}: ${nombre} en «${c.slice(0, 80)}»`);
+      if (f.startsWith("src/data/") && ROTULO_ERA.test(c)) malas.push(`${f}: «era» como rótulo en «${c.slice(0, 80)}»`);
     }
   }
   assert.deepEqual(malas, []);
@@ -75,10 +79,13 @@ test("★★★ el botón de avance sigue al contador (§4.3): H4 dentro de la r
 });
 
 test("★★ el detector caza los literales viejos (si se afloja, aquí se ve)", () => {
-  const viejos = ['{ bien: ["✓", "Bien"], mal: ["✗", "Mal"] }', '"cifra-mal": ["✗", "Cifra errada"]', '"Respuesta Correcta"', '"Revisa las sumas."'];
+  const viejos = ['{ bien: ["✓", "Bien"], mal: ["✗", "Mal"] }', '"cifra-mal": ["✗", "Cifra errada"]', '"Respuesta Correcta"', '"Revisa las sumas."', 'chequeCorrecto: "con el cheque correcto"'];
   for (const v of viejos) {
     const hallado = cadenas(v).some((c) => PROHIBIDO.some(([re]) => re.test(c)));
     assert.ok(hallado, v);
   }
   assert.ok(!cadenas('"Las dos cuentas están bien, pero al revés."').some((c) => PROHIBIDO.some(([re]) => re.test(c))), "«bien» en una frase no es una marca");
+  /* El rótulo viejo de H4 (REGLA_H4.era) cae; «ya era plata», dentro de una frase, no. */
+  assert.ok(cadenas('era: "era"').some((c) => ROTULO_ERA.test(c)), "«era» como rótulo");
+  assert.ok(!cadenas('"Nada cambia: ya era plata."').some((c) => ROTULO_ERA.test(c)), "«era» en una frase no es un rótulo");
 });

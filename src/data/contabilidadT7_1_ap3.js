@@ -139,7 +139,7 @@ const PEPS = {
   pie: "Basado en el libro, pp. 215 y 219",
   error: { pie: "Basado en el libro, p. 219" },
   acierto: {
-    texto: "Así es.",
+    texto: "De las 35 que se venden, primero salen las 10 del inicio y luego 25 compradas. Quedan 5 compradas.",
     calculos: [inventarioFinal(COMPRA.costo)],
     pie: "Basado en el libro, p. 219",
   },
@@ -161,7 +161,7 @@ const UEPS_P = {
   pie: "Basado en el libro, pp. 216 y 220",
   error: { pie: "Basado en el libro, p. 220" },
   acierto: {
-    texto: "Así es.",
+    texto: "De las 35 que se venden, primero salen las 30 compradas y luego 5 del inicio. Quedan 5 del inicio.",
     calculos: [inventarioFinal(INICIO.costo)],
     pie: "Basado en el libro, p. 220",
   },

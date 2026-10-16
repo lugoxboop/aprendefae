@@ -112,12 +112,12 @@ Orden de las reglas (paquete): sin Bancos; Bancos al lado contrario; la cuenta; 
 | 1 | 3.074.000 | Ese saldo tiene las notas crédito, pero no las débito. Al mayor le falta lo que el banco descontó. | 19 pal. · INFLESZ 89,1 |
 | 1 | 1.962.500 | Ese saldo tiene las notas débito, pero no las crédito. Al mayor le falta lo que el banco abonó. | 19 pal. · INFLESZ 89,1 |
 | 1 | 3.229.000 | Ese saldo mete partidas que la empresa ya tenía. Al mayor solo entran las notas del banco. | 17 pal. · INFLESZ 84,7 |
-| 1 | Cualquier otra | Tu saldo se saltó un asiento o lo sumó del lado que no era. Repasa el debe y el haber del mayor. | 22 pal. · INFLESZ 99,6 |
+| 1 | Cualquier otra | Tu saldo se saltó un asiento o lo puso del otro lado. Repasa el debe y el haber del mayor. | 20 pal. · INFLESZ 97,2 |
 | 2 | 3.377.500 | Correcto. Y fíjate: el extracto decía $3.216.800. Si le sumas la consignación pendiente y le restas los cheques sin cobrar, también da $3.377.500. Es el saldo conciliado: los libros ya dicen la verdad. | 33 pal. · INFLESZ 81,5 |
 | 2 | 3.889.000 | Ese saldo tiene las notas crédito, pero no las débito. Al mayor le falta lo que el banco descontó. | 19 pal. · INFLESZ 89,1 |
 | 2 | 2.579.400 | Ese saldo tiene las notas débito, pero no las crédito. Al mayor le falta lo que el banco abonó. | 19 pal. · INFLESZ 89,1 |
 | 2 | 3.538.200 | Ese saldo mete partidas que la empresa ya tenía. Al mayor solo entran las notas del banco. | 17 pal. · INFLESZ 84,7 |
-| 2 | Cualquier otra | Tu saldo se saltó un asiento o lo sumó del lado que no era. Repasa el debe y el haber del mayor. | 22 pal. · INFLESZ 99,6 |
+| 2 | Cualquier otra | Tu saldo se saltó un asiento o lo puso del otro lado. Repasa el debe y el haber del mayor. | 20 pal. · INFLESZ 97,2 |
 
 ### Botones, avisos, cierre
 

@@ -255,6 +255,25 @@ export const MAXIMO_NODOS = 14;
  * el Memorama, donde no hay un ítem «en curso» —las parejas se encuentran en
  * cualquier orden— y lo que se lleva es cuántas van (Levi).
  */
+/*
+ * ═══════════ EL AVANCE VA EN NODE, NO EN TEAL ═══════════
+ *
+ * Lo pidió la Célula D. El avance llevaba `FAE.teal` en los cinco sitios de
+ * este componente: la barra recorrida (con muchos ítems), la línea recorrida,
+ * el relleno del nodo hecho y los bordes del nodo hecho y del actual.
+ *
+ * Y en Contabilidad el teal YA significa dos cosas —«correcto» y el lado
+ * DEBE—, así que un contador teal dice «bien» donde solo quiere decir «vas
+ * por aquí».
+ *
+ * `FAE.node` (#CBDCF2) es el tono de estructura del kit: ni veredicto ni lado.
+ * Un contador de avance es estructura.
+ *
+ * SE CAMBIA PARA LAS TRES MATERIAS, y no con una prop por materia, por dos
+ * razones: el avance no es «correcto» en ninguna de ellas —así que teal
+ * tampoco estaba bien en Macro—, y una prop obligaría a tocar todas las
+ * llamadas de Contabilidad para arreglar algo que se arregla en un sitio.
+ */
 export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cuenta = false }) {
   const numero = cuenta ? hechos : Math.max(1, Math.min(enCurso ?? hechos + 1, total));
   const actual = hechos < total ? hechos : null;
@@ -281,7 +300,7 @@ export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cue
             data-tramo-hecho
             style={{
               position: "absolute", left: 0, top: 0, bottom: 0,
-              width: `${llevado * 100}%`, background: FAE.teal, transition: "width 240ms ease",
+              width: `${llevado * 100}%`, background: FAE.node, transition: "width 240ms ease",
             }}
           />
         </div>
@@ -309,7 +328,7 @@ export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cue
         <span
           aria-hidden="true"
           data-tramo-hecho
-          style={{ position: "absolute", left: NODO / 2, top: "50%", height: "1.5px", marginTop: "-0.75px", width: `calc((100% - ${NODO}px) * ${hasta})`, background: FAE.teal, transition: "width 240ms ease" }}
+          style={{ position: "absolute", left: NODO / 2, top: "50%", height: "1.5px", marginTop: "-0.75px", width: `calc((100% - ${NODO}px) * ${hasta})`, background: FAE.node, transition: "width 240ms ease" }}
         />
         {Array.from({ length: total }, (_, k) => {
           const estado = k < hechos ? "hecho" : k === actual ? "actual" : "pendiente";
@@ -321,8 +340,8 @@ export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cue
               style={{
                 position: "relative", boxSizing: "border-box", borderRadius: "999px", flexShrink: 0,
                 width: estado === "actual" ? "12px" : `${NODO}px`, height: estado === "actual" ? "12px" : `${NODO}px`,
-                background: estado === "hecho" ? FAE.teal : FAE.bg,
-                border: estado === "hecho" ? `1.5px solid ${FAE.teal}` : estado === "actual" ? `2px solid ${FAE.teal}` : "1.5px solid rgba(248,249,250,0.38)",
+                background: estado === "hecho" ? FAE.node : FAE.bg,
+                border: estado === "hecho" ? `1.5px solid ${FAE.node}` : estado === "actual" ? `2px solid ${FAE.node}` : "1.5px solid rgba(248,249,250,0.38)",
                 boxShadow: estado === "actual" ? "0 0 0 3px rgba(42,157,143,0.22)" : "none",
               }}
             />

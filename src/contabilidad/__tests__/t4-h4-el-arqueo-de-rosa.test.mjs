@@ -206,7 +206,7 @@ test("★★★ la regla dibuja lo que decide el estudiante: la suma, su diferen
     assert.match(q(m, "[data-rot=tu-diferencia]").textContent, /tu diferencia 108\.200 →/);
     await esperar(ESPERA_ERROR_MS + 50);
     assert.ok(q(m, "[data-tramo=diferencia]"));
-    assert.match(q(m, "[data-rot=diferencia]").textContent, /era 4\.300/);
+    assert.match(q(m, "[data-rot=diferencia]").textContent, /^Iba aquí: 4\.300$/);
     await tocar(siguiente(m));
     /* Pregunta 3: el cheque correcto deja la aguja en la marca del fondo (50 %). */
     await tocar(opcion(m, 387_500));
