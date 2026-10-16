@@ -5,11 +5,19 @@
 - Ocho pantallas (la v2 tenía nueve). Sale la portada; la analogía del amigo se va (P0 hace la misma idea con el dedo). Los rótulos de las filas de la figura son los de Hanayama, literales de la p. 178, en renglones fijos.
 - INFLESZ **medido** con `src/herramientas/inflesz.js` (`(<10)`: menos de 10 palabras, no aplica). Todo texto de 10 o más palabras da 65 o más.
 - Medido con la sonda de enganche (Katsumi y Baki): peor pantalla 59 de 60 palabras; antes de la figura, 28 de 40 como mucho; la figura entre 84 y 162 px a 320.
+- **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
+- **Objetivo (D2, 16 oct 2026):** una línea fija bajo el título, solo en la P0 (hallazgo de Shibukawa; Yujiro; texto de Katsumi). Con ella, la figura de la P0 queda a 130 px a 320: Yujiro la acepta porque B1 (280) se cumple, y la parada de medición de la P0 pasa a ser ≤ 280.
+- **«Pasa el año», seis veces (decisión de Yujiro, 16 oct 2026; texto de Hanayama):** son seis pasos del mismo modelo dentro de una sola pieza, no un calco entre piezas: el año y la raya son los mismos y cada paso trae otro activo (el efectivo, los otros tres, los fijos, lo que se consume) con otro resultado en la raya. El gesto cambia de papel: «la-prueba» se arrastra para probar, «cual-cruza» predice y comprueba, y los demás muestran. No hay fusión: medida, daba 72 y 71 palabras.
+
+## Objetivo de la pieza
+
+- Bajo el título, en la P0: «Separar activos corrientes de activos fijos.» (<10)
 
 ## Contenido, pantalla por pantalla
 
 **P0 · la-prueba**
-- Antes de la figura: «Un activo es corriente si se vuelve plata antes de un año. Arrastra el año.» (91,3)
+- Rótulo de la acción: «Arrastra el año»
+- Después de la figura, con la acción: «Un activo es corriente si se vuelve plata antes de un año.» (91,0)
 - Pie: «Basado en el libro, pp. 177-178»
 
 **P1 · el-efectivo**
@@ -37,16 +45,10 @@
 - Pie: «Basado en el Tema 2 y en el libro, p. 178»
 
 **P6 · por-que-importan**
-- Antes de la figura: «Con los activos corrientes la empresa opera y paga sus deudas.» (76,9)
-- Después de la figura: «Un edificio puede respaldar un préstamo, pero las cuotas se pagan con plata.» (74,0)
-- Pie: «Basado en el libro, pp. 178-179»
-
-**P7 · resumen**
-- Resumen 1: «Es corriente lo que se vuelve plata antes de un año. El efectivo ya lo es.» (101,5)
-- Resumen 2: «Con los corrientes, la empresa opera y paga sus deudas.» (84,7)
-- Resumen 3: «Los fijos ayudan a producir esa plata.» (<10)
+- Antes de la figura: «Con lo corriente se pagan deudas.» (<10)
+- Frase de cierre (desde que se llega): «Corriente: se vuelve plata o se consume antes de un año. Los fijos ayudan a producirla.» (82,0)
 - Siguiente: «Siguiente: «La caja».» (<10)
-- Pie: «Basado en el libro, pp. 177-179»
+- Pie: «Basado en el libro, pp. 178-179»
 
 ## Interfaz común del rediseño (A0, A1 y H1)
 

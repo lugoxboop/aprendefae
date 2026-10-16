@@ -21,11 +21,8 @@
     },
     "hacer": {
       "H1": "¿Entra o sale de Caja?",
-      "H2": "El control que se saltaron",
       "H3": "¿Se mueve la caja menor?",
-      "H4": "El arqueo de Rosa",
-      "H5": "¿Al empleado o al gasto?",
-      "H6": "¿Quién se enteró primero?",
+      "H4": "El arqueo de caja menor",
       "H7": "Concilia la cuenta",
       "H8": "¿Se asienta o no?"
     }

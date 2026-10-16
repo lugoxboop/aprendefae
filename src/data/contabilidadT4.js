@@ -27,8 +27,12 @@
 export const A1_ID = "t4-a1-la-caja";
 
 /* El botón de avance de A0 y A1 (Katsumi, «Pendientes del #260»). No hay «Intentar de nuevo»: tras un error, las opciones siguen activas. */
-export const BOTON = { seguir: "Seguir" };
-export const INTERFAZ = { debe: "Debe", haber: "Haber" };
+/*
+ * «empezar», «confirmar», «probarOtra», «correcto» e «incorrecto» son del
+ * armazón de antes, que siguen usando A2-A5 de la pila hasta su rediseño.
+ */
+export const BOTON = { empezar: "Empezar", seguir: "Seguir", confirmar: "Confirmar", probarOtra: "Probar otra" };
+export const INTERFAZ = { correcto: "Correcto.", incorrecto: "Incorrecto.", debe: "Debe", haber: "Haber" };
 
 /*
  * UNA SOLA FORMA DE DEVOLUCIÓN en A0, A1 y H1 (Katsumi, decisión 1; corte de
@@ -42,7 +46,8 @@ export const LECTOR_ERROR = "Incorrecto.";
  * Las marcas con palabra de los destinos (canon, enganche.md E3: en blanco y
  * negro se sabe cuál falló). Katsumi, decisión 2.
  */
-export const MARCA = { bien: ["✓", "Correcto"], mal: ["✗", "No va aquí"], era: ["", "Iba aquí"] };
+export const MARCA = { bien: "Correcto", mal: "No va aquí", era: "Iba aquí" };
+/* Los tres literales de la marca, y ninguno más, en todo T4 (los íconos Check y X de lucide los pone `Marca`, en comun.jsx): «✓ Correcto», «✗ No va aquí» e «Iba aquí» (prompt maestro §4.2; Katsumi, lote del 16 oct). También en los campos de cifra (H7 fase 2 y H8 etapa 3), en las casillas de A0 y en las opciones y tableros de Aprender. */
 
 /* El nombre de cada asiento para el lector de pantalla: el libro no les pone fecha (Katsumi, «Pendientes del #260»). */
 export const NOMBRE_ASIENTO = { cobro: "Asiento del cobro de contado", consignacion: "Asiento de la consignación" };
@@ -69,6 +74,9 @@ export const FIGURA_CAJON = {
   /* abreviados por Hanayama de «cuando los dineros se consignan o cuando se hacen pagos en efectivo» (p. 180). */
   glosaHaber: ["se consigna", "o se paga"],
   bancos: "Bancos",
+  /* Lote B, capa 1 (A1 P0): las glosas de las dos cuentas, con las palabras de la definición de antes (Katsumi v2). */
+  glosaCaja: ["a la mano, como tu billetera"],
+  glosaBancos: ["en el banco"],
   pago: ["Pago", "en efectivo"],
   bandeja: "Caja no se mueve",
   enLaCaja: "En la caja",
@@ -77,11 +85,17 @@ export const FIGURA_CAJON = {
   /* Para el lector de pantalla (Hanayama; aprobado por Katsumi, «Pendientes del #260»). */
   destino: { [DEBE]: "Al debe de Caja", [HABER]: "Al haber de Caja", [NO_SE_MUEVE]: "Caja no se mueve" },
   alt: "La cuenta Caja como un cajón de paso: la plata entra por el Debe y sale por el Haber hacia Bancos o hacia un pago en efectivo.",
-  controles: "Los siete controles",
+  /* A1 P5 «el-faltante» (Katsumi; Hanayama; Yujiro): lo que se cobró y no llegó al libro, junto al tubo de entrada; la cifra va delante, sin «$». */
+  sinAnotar: "sin anotar",
 };
 
 const PIE_180 = "Basado en el libro, p. 180";
 const PIE_179_180 = "Basado en el libro, pp. 179-180";
+const PIE_179_180_SIMULADO = "Basado en el libro, pp. 179-180 · Escenario simulado";
+
+/* A1 P5 «el-faltante»: el escenario simulado de Katsumi. Andrés cobra 435.000 y anota 410.000; 25.000 no llegan al libro. */
+export const ANOTADO_A1 = 410_000;
+export const SIN_ANOTAR_A1 = SUS_SERVICIOS - ANOTADO_A1;
 
 /* Los dos asientos de la p. 180, sin fecha: el libro pone «xxxx» y la pieza no la muestra. */
 export const ASIENTO_COBRO = {
@@ -100,19 +114,20 @@ export const ASIENTO_CONSIGNACION = {
 };
 
 /*
- * Los siete controles (pp. 179-180, en el orden del libro y en paráfrasis) y
- * la parte del cajón que cada uno enciende (Hanayama §1.4): `luz` lleva el
- * borde blanco; `vivo`, los trazos del recorrido. El 7 enciende Bancos
- * (corte de Yujiro).
+ * Los siete controles (pp. 179-180, en el orden del libro): en A1 P6, cada uno
+ * es un botón con su rótulo (Katsumi) en la parte del cajón que cuida
+ * (Hanayama §1.4), y tocarlo enciende esa parte: `luz` lleva el borde
+ * blanco; `vivo`, los trazos del recorrido. El 7 va en Bancos (corte de
+ * Yujiro). El 4, «Separación», es lo que enciende el acierto de P5.
  */
 export const CONTROLES_A1 = [
-  { luz: ["cols"], vivo: [], texto: "Anotar cada día cuánto efectivo entró y cuánto salió." },
-  { luz: ["bancos"], vivo: ["salida", "bancos"], texto: "Llevar al banco, cada día, el efectivo que se recibió." },
-  { luz: ["pago"], vivo: ["salida", "pago"], texto: "Poner un tope a los pagos que se hacen en efectivo." },
-  { luz: ["cols"], vivo: ["entrada"], texto: "Separar a quien recibe el dinero de quien lo registra." },
-  { luz: ["saldo"], vivo: [], texto: "Contar la caja seguido y sin avisar: eso es un arqueo." },
-  { luz: ["cajon"], vivo: [], texto: "Tener una póliza de manejo: un seguro contra el robo de quien maneja la plata." },
-  { luz: ["bancos"], vivo: [], texto: "Tener una caja menor, un fondo aparte para los pagos pequeños." },
+  { rotulo: "Registro diario", luz: ["cols"], vivo: [] },
+  { rotulo: "Consignación", luz: ["bancos"], vivo: ["salida", "bancos"] },
+  { rotulo: "Tope de pagos", luz: ["pago"], vivo: ["salida", "pago"] },
+  { rotulo: "Separación", luz: ["cols"], vivo: ["entrada"] },
+  { rotulo: "Arqueo", luz: ["saldo"], vivo: [] },
+  { rotulo: "Póliza", luz: ["cajon"], vivo: [] },
+  { rotulo: "Caja menor", luz: ["bancos"], vivo: [] },
 ];
 
 /* Los dos cheques de P4: uno entra a Caja; el propio sale del banco (bandeja, y Bancos se enciende). */
@@ -141,7 +156,9 @@ export const ESPERA_CHEQUE_MS = 1400;
 export const PANTALLAS_A1 = [
   {
     id: "dos-cuentas", tipo: "mapa", figura: "cajon",
-    antes: ["En el Tema 2 la plata ya iba en dos cuentas. Caja es la que está a la mano, como en tu billetera. Bancos, la que está en el banco."],
+    /* Lote B, capa 1: abre con el cajón; las definiciones pasan a glosas de sus cuentas, y el puente al Tema 2 va debajo, desde el principio (P0 no tiene acción). */
+    glosasCuenta: true,
+    despues: ["En el Tema 2 la plata ya iba en dos cuentas."],
     pie: "Basado en el libro, p. 179, y en el Tema 2",
   },
   {
@@ -172,18 +189,30 @@ export const PANTALLAS_A1 = [
     pie: "Basado en el libro, pp. 179, 180 y 187",
   },
   {
-    id: "controles", tipo: "controles", figura: "cajon",
-    antes: ["El libro pide siete controles. Toca cada uno y mira qué cuida."],
-    pie: PIE_179_180,
+    /*
+     * P5 «el-faltante» (Katsumi; Hanayama; Yujiro partió la P5 de antes en
+     * dos): el caso y tres tarjetas apiladas. El cajón va sin salidas ni
+     * glosas. Con el acierto, la pastilla «Correcto» en la tarjeta (sin
+     * mensaje, decisión de Yujiro) y se enciende lo que cuida la separación,
+     * el control 4: el tubo de entrada y las columnas.
+     */
+    id: "el-faltante", tipo: "faltante", figura: "cajon", pregunta: true,
+    antes: ["Andrés cobra y anota. ¿Qué control faltó?"],
+    opciones: ["separar", "arqueo", "poliza"],
+    correcta: "separar",
+    tarjetas: { separar: "Separar funciones", arqueo: "Arqueo sorpresa", poliza: "Póliza de manejo" },
+    control: 4,
+    errores: {
+      arqueo: "Al contar, caja y libro cuadran: lo no anotado no se ve.",
+      poliza: "La póliza paga el robo, pero no lo impide.",
+    },
+    pie: PIE_179_180_SIMULADO,
   },
   {
-    id: "resumen", tipo: "mapa", figura: "cajon",
-    resumen: [
-      "Caja es la plata a la mano: billetes, monedas y cheques.",
-      "Entra por el debe y sale por el haber.",
-      "Un cheque propio sale del banco: no mueve Caja.",
-      "Siete controles la cuidan.",
-    ],
+    /* P6 «controles»: el cajón entero, sin el caso; cada control enciende lo que cuida; con los siete, la frase de cierre. */
+    id: "controles", tipo: "controles", figura: "cajon",
+    antes: ["Toca cada control: se enciende lo que vigila."],
+    cierre: "Cada control tapa una fuga distinta.",
     siguiente: "Siguiente: «El fondo fijo».",
     pie: PIE_179_180,
   },
@@ -194,6 +223,8 @@ export const PIEZA_LA_CAJA = {
   id: A1_ID,
   numero: 1,
   titulo: "La caja",
+  /* D2 (Shibukawa; Yujiro): el objetivo de la pieza, una línea fija bajo el título en la P0 (Katsumi). */
+  objetivo: "Decidir qué mueve Caja y cómo cuidarla.",
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A1,
 };

@@ -43,6 +43,8 @@ export const FIGURA_ANO = {
   pasar: "Pasar el año",
   volver: "Volver a hoy",
   otraVez: "Otra vez",
+  /* D7: el aviso de «Pasar el año» con filas sin marcar, neutro: no es una devolución (Katsumi, lote §5.3). */
+  aviso: "Marca las tres filas primero.",
   pista: "El año",
   /* El texto alternativo de la figura y el nombre de cada casilla del juego para el lector (Katsumi, «Pendientes del #260»). */
   alt: "Una pista de hoy a un año. Cuando pasa el año, cada activo se marca al volverse plata o al consumirse; el que no, cruza la raya hacia «No es corriente».",
@@ -51,12 +53,11 @@ export const FIGURA_ANO = {
 };
 
 /*
- * La pastilla con palabra de la casilla elegida (canon E3: en blanco y negro se
- * sabe cuál falló). Katsumi, «Pendientes del #260»: la casilla de después de la
- * raya mide 73,4 px a 320, y «✓ Bien» (56 px) y «✗ Mal» (52 px) caben; las de
- * MARCA («✓ Correcto», «✗ No va aquí») no. Nunca «era»: nombraría la respuesta.
+ * La casilla elegida lleva la pastilla con palabra de MARCA (contabilidadT4.js):
+ * «✓ Correcto» o «✗ No va aquí» (prompt maestro §4.2; Katsumi, lote del 16
+ * oct: las palabras cortas de antes salen). Nunca «era»: nombraría la
+ * respuesta.
  */
-export const MARCA_CASILLA = { bien: ["✓", "Bien"], mal: ["✗", "Mal"] };
 
 /*
  * Las filas. `mes`: cuándo se vuelve plata (null = nunca, cruza la raya).
@@ -64,14 +65,14 @@ export const MARCA_CASILLA = { bien: ["✓", "Bien"], mal: ["✗", "Mal"] };
  * Rótulos literales del paquete, partidos en renglones fijos (Hanayama §3.1).
  */
 export const FILAS_A0 = {
-  mercancia: { id: "mercancia", texto: ["Mercancía"], glosa: ["se vende y se cobra", "este mes"], mes: 1 },
-  edificioOficina: { id: "edificio", texto: ["Edificio de", "la oficina"], glosa: ["se usa por años"], mes: null },
+  mercancia: { id: "mercancia", texto: ["Mercancía"], glosa: ["se cobra este mes"], mes: 1 },
+  edificioOficina: { id: "edificio", texto: ["Edificio de", "la oficina"], glosa: ["dura años"], mes: null },
   caja: { id: "caja", texto: ["Efectivo en caja"], glosa: [], mes: 0 },
   bancos: { id: "bancos", texto: ["Depósitos", "en bancos"], glosa: [], mes: 0 },
   inversiones: { id: "inversiones", texto: ["Inversiones", "a corto plazo"], glosa: ["menos de un año"], mes: 7 },
   cartera: { id: "cartera", texto: ["Cartera"], glosa: ["lo que deben los clientes"], mes: 2 },
   inventarios: { id: "inventarios", texto: ["Inventarios"], glosa: ["mercancía para vender"], mes: 4 },
-  deuda: { id: "deuda", texto: ["Deuda de", "un cliente"], glosa: ["vence en tres años"], mes: null },
+  deuda: { id: "deuda", texto: ["Deuda de", "un cliente"], glosa: ["a tres años"], mes: null },
   unEdificio: { id: "un-edificio", texto: ["Un edificio"], glosa: [], mes: null },
   terreno: { id: "terreno", texto: ["Un terreno"], glosa: [], mes: null },
   maquina: { id: "maquina", texto: ["Una máquina"], glosa: [], mes: null },
@@ -90,7 +91,9 @@ const F = FILAS_A0;
 export const PANTALLAS_A0 = [
   {
     id: "la-prueba", figura: "ano", modo: "pista",
-    antes: ["Un activo es corriente si se vuelve plata antes de un año. Arrastra el año."],
+    /* Lote B, capa 1 (Hanayama §2.1; Katsumi v2): la pieza abre con la figura; el rótulo va sobre la pista y la definición aparece con el primer arrastre. */
+    rotuloAccion: "Arrastra el año",
+    despuesConAccion: [{ texto: "Un activo es corriente si se vuelve plata antes de un año." }],
     filas: [F.mercancia, F.edificioOficina],
     pie: "Basado en el libro, pp. 177-178",
   },
@@ -131,21 +134,13 @@ export const PANTALLAS_A0 = [
   },
   {
     id: "por-que-importan", figura: "ano", modo: "quieta",
-    antes: ["Con los activos corrientes la empresa opera y paga sus deudas."],
+    antes: ["Con lo corriente se pagan deudas."],
     filas: [F.caja, F.edificioOficina],
-    despues: ["Un edificio puede respaldar un préstamo, pero las cuotas se pagan con plata."],
-    pie: "Basado en el libro, pp. 178-179",
-  },
-  {
-    id: "resumen", figura: "ano", modo: "quieta",
-    filas: [],
-    resumen: [
-      "Es corriente lo que se vuelve plata antes de un año. El efectivo ya lo es.",
-      "Con los corrientes, la empresa opera y paga sus deudas.",
-      "Los fijos ayudan a producir esa plata.",
-    ],
+    /* Lote B, capa 4: la frase de cierre, pegada a la figura quieta en el mes 12, desde que se llega (Katsumi, versión final). */
+    cierre: "Corriente: se vuelve plata o se consume antes de un año. Los fijos ayudan a producirla.",
+    cierreAl: "llegar",
     siguiente: "Siguiente: «La caja».",
-    pie: "Basado en el libro, pp. 177-179",
+    pie: "Basado en el libro, pp. 178-179",
   },
 ];
 
@@ -165,6 +160,8 @@ export const PIEZA_EL_ACTIVO_CORRIENTE = {
   id: A0_ID,
   numero: 0,
   titulo: "El activo corriente",
+  /* D2 (Shibukawa; Yujiro): el objetivo de la pieza, una línea fija bajo el título en la P0 (Katsumi). */
+  objetivo: "Separar activos corrientes de activos fijos.",
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A0,
 };

@@ -87,6 +87,10 @@ import { unidadDeN1 as unidadDeT5N1 } from "../contabilidad/t5N1.js";
 import { unidadDeN3 as unidadDeT5N3 } from "../contabilidad/t5N3.js";
 import { unidadDeN4 as unidadDeT5N4 } from "../contabilidad/t5N4.js";
 import { hechoDeItemH1 as hechoDeItemT4H1 } from "../data/contabilidadT4H1.js";
+import { operacionDeItemH3 as operacionDeItemT4H3 } from "../data/contabilidadT4H3.js";
+import { preguntaDeItemH4 as preguntaDeItemT4H4 } from "../data/contabilidadT4H4.js";
+import { partidaDeItemH7 as partidaDeItemT4H7 } from "../data/contabilidadT4H7.js";
+import { itemDeH8 as itemDeT4H8 } from "../data/contabilidadT4H8.js";
 import { unidadDeN5 as unidadDeT5N5 } from "../contabilidad/t5N5.js";
 import { unidadDeN7 as unidadDeT5N7 } from "../contabilidad/t5N7.js";
 import { unidadDeR5_2 } from "../data/repasoCap5ToroNegroJuego.js";
@@ -789,6 +793,14 @@ Object.assign(REGLAS, {
   /* ── T4 «Efectivo, caja menor y bancos» (Célula D) ── */
   /* T4 · H1. El ítem es el hecho, y se lee por su texto. */
   "t4-entra-o-sale-de-caja": (id) => hechoDeItemT4H1(id),
+  /* T4 · H3. El ítem es la operación (de cualquiera de las dos series), y se lee por su enunciado. */
+  "t4-se-mueve-la-caja-menor": (id) => operacionDeItemT4H3(id),
+  /* T4 · H4 «El arqueo de caja menor», con H5 dentro. El ítem es «ronda:pregunta» (h5-1:cuenta), y se lee por la ronda y la pregunta. H2, H5 y H6 salieron del catálogo (retiro blando, migración 0208). */
+  "t4-el-arqueo-de-rosa": (id) => preguntaDeItemT4H4(id),
+  /* T4 · H7. El ítem es la partida de su serie, o uno de los dos saldos. */
+  "t4-concilia-la-cuenta": (id) => partidaDeItemT4H7(id),
+  /* T4 · H8. El ítem es la partida (etapa 1), su asiento (etapa 2) o el saldo del mayor (etapa 3). */
+  "t4-se-asienta-o-no": (id) => itemDeT4H8(id),
   /* ── Repaso del capítulo 5 (Célula E) ── */
   /* r5-1. Cada pantalla, por su subtema (Inversiones, Cartera, Inventarios) y su enunciado. */
   "r5-1": (id) => unidadDeR5_1(id),

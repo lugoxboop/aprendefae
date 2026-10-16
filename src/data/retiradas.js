@@ -53,6 +53,13 @@ export const NOMBRE_DE_RETIRADA = {
   "b5-t6-a7": "¿Qué método y cuándo?",
   /* 0077 · Célula B: se fundió en b5-t6-a2 «La provisión de El Torito» (lote 6b, hoja de Mai). */
   "b5-t6-a5": "La cuenta de la provisión",
+  /* 0208 · corte de calidad de los Hacer de T4 (Célula D, 15 oct 2026). H2
+     sale; H5 se funde en H4 «El arqueo de caja menor» y H6 en H7 «Concilia
+     la cuenta». Los nombres son los que tenían en subjects.js antes de salir,
+     y los mismos de sus paquetes (d4-t4-h2-v1, -h5-v1, -h6-v1). */
+  "t4-el-control-que-se-saltaron": "El control que se saltaron",
+  "t4-al-empleado-o-al-gasto": "¿Al empleado o al gasto?",
+  "t4-quien-se-entero-primero": "¿Quién se enteró primero?",
   /* 0115 · Célula C: lo que preguntan ya lo piden otras de su mismo tema. */
   "t7-2-debe-o-haber": "¿Debe o haber?",
   "t7-2-periodico-o-permanente": "¿Periódico o permanente?",

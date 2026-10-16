@@ -16,17 +16,35 @@ import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
 import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import { Panel } from "./mecanicas/salaDeControl/marco.jsx";
-import { PIEZA_LA_CAJA, BOTON } from "../data/contabilidadT4.js";
+import { BOTON, PIEZA_LA_CAJA } from "../data/contabilidadT4.js";
 import { PIEZA_EL_ACTIVO_CORRIENTE } from "../data/contabilidadT4A0.js";
+import { PIEZA_EL_FONDO_FIJO } from "../data/contabilidadT4A2.js";
+import { PIEZA_EL_ARQUEO } from "../data/contabilidadT4A3.js";
+import { PIEZA_BANCOS_Y_NOTAS } from "../data/contabilidadT4A4.js";
+import { PIEZA_SAN_CALIXTO } from "../data/contabilidadT4A5.js";
 import { H1 } from "../data/contabilidadT4H1.js";
-import { CSS_T4R } from "./t4/comun.jsx";
+import { CSS_T4R, cifra, SeguirAprender } from "./t4/comun.jsx";
 import { CSS_CAJON } from "./t4/Cajon.jsx";
 import { CSS_ANO, CuerpoA0 } from "./t4/AnoEnMarcha.jsx";
 import { CSS_A1, CuerpoA1 } from "./t4/LaCaja.jsx";
+import { CSS_TABLERO } from "./t4/tablero.jsx";
+import { CSS_REGLA } from "./t4/Regla.jsx";
+import { CSS_APRENDER } from "./t4/aprender.jsx";
+import { CSS_A2, CuerpoA2 } from "./t4/A2ElFondoFijo.jsx";
+import { CSS_A3, CuerpoA3 } from "./t4/A3ElArqueo.jsx";
+import { CSS_A4, CuerpoA4 } from "./t4/A4BancosYNotas.jsx";
+import { CSS_A5, CuerpoA5 } from "./t4/A5SanCalixto.jsx";
 import EntraOSaleDeCaja from "./t4/EntraOSaleDeCaja.jsx";
+import SeMueveLaCajaMenor from "./t4/SeMueveLaCajaMenor.jsx";
+import ElArqueo from "./t4/ElArqueo.jsx";
+import ConciliaLaCuenta from "./t4/ConciliaLaCuenta.jsx";
+import SeAsientaONo from "./t4/SeAsientaONo.jsx";
+import { H3 } from "../data/contabilidadT4H3.js";
+import { H4 } from "../data/contabilidadT4H4.js";
+import { H7 } from "../data/contabilidadT4H7.js";
+import { H8 } from "../data/contabilidadT4H8.js";
 
-export { cifra } from "./t4/comun.jsx";
-export { EntraOSaleDeCaja };
+export { cifra, EntraOSaleDeCaja, SeMueveLaCajaMenor, ElArqueo, ConciliaLaCuenta, SeAsientaONo };
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -39,11 +57,12 @@ export { EntraOSaleDeCaja };
  *
  * Las piezas de Aprender se pintan con PantallasT4, que vive aquí y no en una
  * carpeta de mecánicas: es el carril de la Célula D y nadie más lo usa. Sus
- * figuras y H1 viven en src/components/t4/ (rediseño de enganche, B1-B5).
+ * figuras y los Hacer (H1, H3, H4, H7 y H8) viven en src/components/t4/
+ * (rediseño de enganche, B1-B5).
  *
  * EL ORDEN DE PIEZAS_T4 LO DA `numero`, no la posición en la lista: A0 «El
- * activo corriente» = 0, A1 «La caja» = 1, A2 = 2… La prueba t4-andamio lo
- * afirma.
+ * activo corriente» = 0, A1 «La caja» = 1, A2 «El fondo fijo» = 2… La
+ * prueba t4-andamio lo afirma.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -54,11 +73,19 @@ export const TEMA_T4 = "efectivo-caja-menor-bancos";
 export const PIEZAS_T4 = [
   { numero: PIEZA_EL_ACTIVO_CORRIENTE.numero, pieza: PIEZA_EL_ACTIVO_CORRIENTE, Pieza: PantallasT4 },
   { numero: PIEZA_LA_CAJA.numero, pieza: PIEZA_LA_CAJA, Pieza: PantallasT4 },
+  { numero: PIEZA_EL_FONDO_FIJO.numero, pieza: PIEZA_EL_FONDO_FIJO, Pieza: PantallasT4 },
+  { numero: PIEZA_EL_ARQUEO.numero, pieza: PIEZA_EL_ARQUEO, Pieza: PantallasT4 },
+  { numero: PIEZA_BANCOS_Y_NOTAS.numero, pieza: PIEZA_BANCOS_Y_NOTAS, Pieza: PantallasT4 },
+  { numero: PIEZA_SAN_CALIXTO.numero, pieza: PIEZA_SAN_CALIXTO, Pieza: PantallasT4 },
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS_T4 = [
   { id: H1.id, Mecanica: EntraOSaleDeCaja, titulo: H1.nombre },
+  { id: H3.id, Mecanica: SeMueveLaCajaMenor, titulo: H3.nombre },
+  { id: H4.id, Mecanica: ElArqueo, titulo: H4.nombre },
+  { id: H7.id, Mecanica: ConciliaLaCuenta, titulo: H7.nombre },
+  { id: H8.id, Mecanica: SeAsientaONo, titulo: H8.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
@@ -186,9 +213,22 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
  * T4 · LAS PANTALLAS DE APRENDER (rediseño de enganche).
  *
  * Una pantalla a la vez, siempre en el mismo orden (Hanayama, rediseños de
- * A0 y A1): el texto de antes (corto: la figura queda en los primeros 280 px a
- * 320), la figura con lo que el estudiante hace en ella, el texto de después,
- * el resumen, «Siguiente…», «Seguir» y el pie. Es Aprender: no califica ni da FP.
+ * A0-A5 y lote B): el texto de antes (en las P0, ninguno: la pieza abre con el
+ * objeto, capa 1), la figura con lo que el estudiante hace en ella, el texto
+ * de después, la frase de cierre, «Siguiente…», «Seguir» y el pie. Es
+ * Aprender: no califica ni da FP. No hay pantalla de resumen en lista: la
+ * frase de cierre queda pegada al modelo en su estado final (capa 4).
+ *
+ * Lo que una pantalla puede traer, además de `antes` y `despues`:
+ *   · `despuesConAccion`: [{ texto, con }] textos que aparecen con la primera
+ *     acción del cuerpo (`onAccion(clave)`; `con` es la clave, o «accion»
+ *     para cualquiera). Reservan su alto desde el principio: nada se mueve
+ *   · `cierre`: la frase de cierre. Con `cierreAl: "llegar"` se ve desde el
+ *     principio; si no, aparece cuando el cuerpo llama a `onCierre()`. Con
+ *     `cierreEnCuerpo`, la pinta el cuerpo (A1, en el hueco del control)
+ *   · `siguiente`: va debajo de la frase y aparece con ella
+ *   · `rotuloAccion`: el rótulo de instrucción, que pinta el cuerpo sobre su
+ *     control, dentro de la figura
  *
  * EN UNA PANTALLA CON PREGUNTA (`pregunta: true`), «SEGUIR» NO APARECE HASTA
  * EL ACIERTO (regla D7 del canon; decisión de Yujiro, que manda sobre el §2.4
@@ -196,15 +236,78 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
  * volver a tocar. El cuerpo avisa del acierto con `onAcierto`, y una vez
  * acertada la pantalla, «Seguir» se queda.
  *
- * Lo propio de cada pieza es su cuerpo: CuerpoA0 («El año en marcha») y
- * CuerpoA1 (el cajón operable), en src/components/t4/. Clases `t4r-`.
+ * Lo propio de cada pieza es su cuerpo, en src/components/t4/: CuerpoA0 («El
+ * año en marcha»), CuerpoA1 (el cajón operable), CuerpoA2 (el sobre y el
+ * libro), CuerpoA3 (el sobre con la regla del fondo), CuerpoA4 (Bancos y las
+ * dos libretas) y CuerpoA5 (el par que se iguala). Clases `t4r-`.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const CUERPOS = { [PIEZA_EL_ACTIVO_CORRIENTE.id]: CuerpoA0, [PIEZA_LA_CAJA.id]: CuerpoA1 };
-const CSS_PANTALLAS = CSS_T4R + CSS_CAJON + CSS_ANO + CSS_A1;
+const CUERPOS = {
+  [PIEZA_EL_ACTIVO_CORRIENTE.id]: CuerpoA0,
+  [PIEZA_LA_CAJA.id]: CuerpoA1,
+  [PIEZA_EL_FONDO_FIJO.id]: CuerpoA2,
+  [PIEZA_EL_ARQUEO.id]: CuerpoA3,
+  [PIEZA_BANCOS_Y_NOTAS.id]: CuerpoA4,
+  [PIEZA_SAN_CALIXTO.id]: CuerpoA5,
+};
+const CSS_PANTALLAS = CSS_T4R + CSS_CAJON + CSS_ANO + CSS_A1 + CSS_TABLERO + CSS_REGLA + CSS_APRENDER + CSS_A2 + CSS_A3 + CSS_A4 + CSS_A5;
 
-const TextosT4 = ({ lista }) => (lista ?? []).map((t) => <p key={t} className="t4r-p" data-texto>{t}</p>);
+const TextosR = ({ lista }) => (lista ?? []).map((t) => <p key={t} className="t4r-p" data-texto>{t}</p>);
+
+/*
+ * Un texto que aparece después (con la acción, o la frase de cierre): reserva
+ * su alto desde el principio con una copia invisible (visibility: hidden y
+ * aria-hidden), así que nada se mueve, y al aparecer entra con el fundido de
+ * 120 ms en una región viva. Con movimiento reducido, sin fundido (CSS_T4R).
+ */
+export function Reservado({ visible, children, clase = "t4r-p", ...datos }) {
+  return (
+    <div className="t4r-reserva" {...datos} data-visible={visible ? "" : undefined}>
+      <p className={`${clase} t4r-fantasma`} aria-hidden="true">{children}</p>
+      <p className={`${clase}${visible ? " t4r-nueva" : ""}`} aria-live="polite" data-texto={visible ? "" : undefined}>{visible ? children : null}</p>
+    </div>
+  );
+}
+
+/* Una pantalla: lo que se ve con la acción y la frase de cierre se olvidan al cambiar de pantalla (va con `key`). */
+function PantallaT4({ p, Cuerpo, onAcierto, seguirBoton }) {
+  const [hechas, setHechas] = useState(() => new Set());
+  const [cerrada, setCerrada] = useState(p.cierreAl === "llegar");
+  const refCierre = useRef(null);
+  const onAccion = (clave = "accion") => setHechas((h) => (h.has(clave) ? h : new Set([...h, clave])));
+  const onCierre = () => setCerrada(true);
+  /* E2: cuando aparece la frase de cierre (y «Siguiente»), la vista baja lo justo para que se vean enteras. */
+  useEffect(() => {
+    if (!cerrada || p.cierreAl === "llegar") return;
+    const el = refCierre.current;
+    const V = el?.ownerDocument?.defaultView;
+    const quieto = V?.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    el?.scrollIntoView?.({ block: "nearest", behavior: quieto ? "auto" : "smooth" });
+  }, [cerrada]); // eslint-disable-line react-hooks/exhaustive-deps
+  const conCierre = Boolean(p.cierre);
+  const verSiguiente = conCierre ? cerrada : true;
+  return (
+    <div className="t4r" key={p.id}>
+      <TextosR lista={p.antes} />
+      <Cuerpo p={p} onAcierto={onAcierto} onAccion={onAccion} onCierre={onCierre} cerrada={cerrada} />
+      <TextosR lista={p.despues} />
+      {(p.despuesConAccion ?? []).map((x) => (
+        <Reservado key={x.texto} visible={hechas.has(x.con ?? "accion") || (!x.con && hechas.size > 0)} data-con-accion={x.con ?? "accion"}>{x.texto}</Reservado>
+      ))}
+      {(conCierre || p.siguiente) && (
+        <div ref={refCierre} className="t4r-cierre" data-bloque-cierre>
+          {conCierre && !p.cierreEnCuerpo && <Reservado visible={cerrada} data-cierre>{p.cierre}</Reservado>}
+          {p.siguiente && (conCierre
+            ? <Reservado visible={verSiguiente} clase="t4r-sig" data-siguiente>{p.siguiente}</Reservado>
+            : <p className="t4r-sig" data-texto data-siguiente>{p.siguiente}</p>)}
+        </div>
+      )}
+      {seguirBoton}
+      {p.pie && <p className="t4r-pie" data-pie>{p.pie}</p>}
+    </div>
+  );
+}
 
 export function PantallasT4({ pieza, rotulo }) {
   const [k, setK] = useState(0);
@@ -249,15 +352,10 @@ export function PantallasT4({ pieza, rotulo }) {
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <style>{CSS_PANTALLAS}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
-        <div className="t4r" key={p.id}>
-          <TextosT4 lista={p.antes} />
-          <Cuerpo p={p} onAcierto={() => setAcertada(k)} />
-          <TextosT4 lista={p.despues} />
-          {p.resumen && <ol className="t4r-lista" data-lista>{p.resumen.map((t) => <li key={t} data-texto>{t}</li>)}</ol>}
-          {p.siguiente && <p className="t4r-sig" data-texto data-siguiente>{p.siguiente}</p>}
-          {!ultima && puedeSeguir && <button type="button" className="t4r-btn t4r-nueva" data-boton="seguir" onClick={seguir}>{pieza.boton ?? BOTON.seguir}</button>}
-          {p.pie && <p className="t4r-pie" data-pie>{p.pie}</p>}
-        </div>
+        {/* D2: el objetivo de la pieza, fijo bajo el título, solo en la P0 (Shibukawa; Yujiro; texto de Katsumi). */}
+        {k === 0 && pieza.objetivo && <p className="t4r-objetivo" data-objetivo>{pieza.objetivo}</p>}
+        <PantallaT4 key={p.id} p={p} Cuerpo={Cuerpo} onAcierto={() => setAcertada(k)}
+          seguirBoton={!ultima && puedeSeguir ? <SeguirAprender nueva onClick={seguir}>{pieza.boton ?? BOTON.seguir}</SeguirAprender> : null} />
       </div>
     </Panel>
   );

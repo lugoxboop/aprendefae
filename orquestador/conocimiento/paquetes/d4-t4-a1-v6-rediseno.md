@@ -6,11 +6,18 @@
 - Única cifra del libro: 435.000 (p. 180). Los dos asientos de la p. 180 siguen como en la v5: el 1 sale al cobrar y el 2 solo con el acierto de la consignación.
 - INFLESZ **medido** con `src/herramientas/inflesz.js`. Todo texto de 10 o más palabras da 65 o más.
 - Medido con la sonda de enganche: peor pantalla 59 de 60 palabras; antes de la figura, 38 de 40 como mucho (P0); la figura entre 84 y 183 px a 320.
+- **A1 P5 (16 oct 2026): los controles se parten en dos pantallas (decisión de Yujiro).** P5 «el-faltante» es una decisión sobre un escenario simulado (Andrés cobra 435.000 y al libro llegan 410.000; los 25.000 no son del libro, y el pie lo dice). P6 «controles» deja tocar los siete controles, que encienden lo que cuidan; las pestañas 1-7 y los siete textos de control salen. Diseño: Hanayama; textos: Katsumi. La frase de cierre del lote B se reemplaza. Siete pantallas (sale el resumen del lote B, entra «el-faltante»).
+- **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
+- **Objetivo (D2, 16 oct 2026):** una línea fija bajo el título, solo en la P0 (hallazgo de Shibukawa; Yujiro; texto de Katsumi). Con ella, la figura de la P0 queda a 130 px a 320: Yujiro la acepta porque B1 (280) se cumple, y la parada de medición de la P0 pasa a ser ≤ 280.
+
+## Objetivo de la pieza
+
+- Bajo el título, en la P0: «Decidir qué mueve Caja y cómo cuidarla.» (<10)
 
 ## Contenido, pantalla por pantalla
 
 **P0 · dos-cuentas**
-- Antes de la figura: «En el Tema 2 la plata ya iba en dos cuentas. Caja es la que está a la mano, como en tu billetera. Bancos, la que está en el banco.» (101,3)
+- Después de la figura: «En el Tema 2 la plata ya iba en dos cuentas.» (99,6)
 - Pie: «Basado en el libro, p. 179, y en el Tema 2»
 
 **P1 · cobra**
@@ -41,24 +48,40 @@
 - Cheque «propio» · error si va al haber: «¿De dónde sale esa plata?» (<10)
 - Pie: «Basado en el libro, pp. 179, 180 y 187»
 
-**P5 · controles**
-- Antes de la figura: «El libro pide siete controles. Toca cada uno y mira qué cuida.» (86,6)
-- Control 1: «Anotar cada día cuánto efectivo entró y cuánto salió.» (<10)
-- Control 2: «Llevar al banco, cada día, el efectivo que se recibió.» (78,5)
-- Control 3: «Poner un tope a los pagos que se hacen en efectivo.» (93,9)
-- Control 4: «Separar a quien recibe el dinero de quien lo registra.» (84,7)
-- Control 5: «Contar la caja seguido y sin avisar: eso es un arqueo.» (82,6)
-- Control 6: «Tener una póliza de manejo: un seguro contra el robo de quien maneja la plata.» (75,5)
-- Control 7: «Tener una caja menor, un fondo aparte para los pagos pequeños.» (71,2)
-- Pie: «Basado en el libro, pp. 179-180»
+**P5 · el-faltante**
+- Antes de la figura: «Andrés cobra y anota. ¿Qué control faltó?» (<10)
+- Tarjeta · separar (la correcta): «Separar funciones» (<10)
+- Tarjeta · arqueo: «Arqueo sorpresa» (<10)
+- Tarjeta · poliza: «Póliza de manejo» (<10)
+- Error · arqueo (✗ y el texto): «Al contar, caja y libro cuadran: lo no anotado no se ve.» (96,2)
+- Error · poliza (✗ y el texto): «La póliza paga el robo, pero no lo impide.» (<10)
+- Pie: «Basado en el libro, pp. 179-180 · Escenario simulado»
 
-**P6 · resumen**
-- Resumen 1: «Caja es la plata a la mano: billetes, monedas y cheques.» (88,2)
-- Resumen 2: «Entra por el debe y sale por el haber.» (<10)
-- Resumen 3: «Un cheque propio sale del banco: no mueve Caja.» (<10)
-- Resumen 4: «Siete controles la cuidan.» (<10)
+**P6 · controles**
+- Antes de la figura: «Toca cada control: se enciende lo que vigila.» (<10)
+- Frase de cierre (con los siete encendidos, debajo del cajón): «Cada control tapa una fuga distinta.» (<10)
 - Siguiente: «Siguiente: «El fondo fijo».» (<10)
 - Pie: «Basado en el libro, pp. 179-180»
+
+## El cajón en P5 y P6
+
+En P5 (el-faltante) el cajón va sin salidas ni glosas: el origen muestra lo cobrado (435.000), el Debe y «En la caja», 410.000, y junto al tubo de entrada, en neutro, lo que no llegó al libro. Con el acierto, la pastilla «Correcto» en la tarjeta, sin mensaje (decisión de Yujiro), y se enciende lo que cuida la separación (el control 4): el tubo de entrada y las columnas.
+
+En P6 (controles) el cajón va entero, sin el caso. Los siete controles de las pp. 179-180, en el orden del libro, son botones de 44 px como mínimo en la parte que cuidan (Hanayama): el 1 y el 4 bajo las columnas, el 2 y el 7 en Bancos, el 3 en «Pago en efectivo», el 5 junto a «En la caja», el 6 junto al nombre del cajón. Tocar uno enciende su parte; no se califican.
+
+- Junto al tubo de entrada (P5): «25.000 sin anotar»
+- Control 1: «Registro diario»
+- Control 2: «Consignación»
+- Control 3: «Tope de pagos»
+- Control 4: «Separación»
+- Control 5: «Arqueo»
+- Control 6: «Póliza»
+- Control 7: «Caja menor»
+
+## Glosas del cajón (P0)
+
+- Bajo «Caja»: «a la mano, como tu billetera»
+- Bajo «Bancos»: «en el banco»
 
 ## Interfaz común del rediseño (A0, A1 y H1)
 
