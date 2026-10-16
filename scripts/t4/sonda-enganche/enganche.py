@@ -147,7 +147,7 @@ def aprender(b, sigla):
     return regs, errs
 
 # ───────────────────────────── Hacer ─────────────────────────────
-SIGUIENTE = ("Siguiente hecho", "Siguiente caso", "Siguiente operación", "Siguiente pregunta", "Siguiente ronda",
+SIGUIENTE = ("Siguiente hecho", "Siguiente caso", "Siguiente operación", "Siguiente pregunta", "Siguiente ronda", "Siguiente paso",
              "Siguiente partida", "Siguiente asiento", "Ir a los saldos", "Ir a los asientos", "Ir al mayor")
 norm = lambda s: re.sub(r"\s+", " ", s or "").strip()
 exacto = lambda s: re.compile(r"^\s*" + r"\s+".join(re.escape(p) for p in norm(s).split(" ")) + r"\s*$")
@@ -192,6 +192,7 @@ def hacer(b, sigla, modo, clave):
         else:
             carta = texto(K["tarjeta"])
             if sigla == "H4": carta = f"{carta}::{pg.evaluate(f'document.querySelector(`{R} [data-tarjeta-pregunta]`).dataset.tarjetaPregunta')}"
+            if K.get("porEtapa"): carta = f"{ds['etapa']}::{carta}"  # H8: la misma partida en la etapa 1 y en la 2
             if carta not in K["items"]: raise SinClave(f"{sigla}: tarjeta sin clave: {carta!r}")
             resp = K["items"][carta][modo]
         pantalla = f"{etapa} · {k}"
@@ -203,6 +204,15 @@ def hacer(b, sigla, modo, clave):
             # el cajón como tablero (H1 rediseñado): un toque en el destino; en el error la plata llega
             # a su sitio a los 0,7 s, así que se espera a que la figura quede quieta antes de medir
             pg.locator(f'{R} [data-destino="{resp["destino"]}"]').click(); pg.wait_for_timeout(900)
+        elif "toques" in resp:
+            # los Hacer rediseñados (tablero, regla, libretas, bandejas): los toques del gesto mínimo, en orden,
+            # y «Comprobar» si va; en el error lo que iba se escribe a los 0,7 s: se espera a que la figura quede quieta
+            for sel in resp["toques"]:
+                loc = pg.locator(f"{R} {sel}")
+                if loc.count() == 0: raise SinClave(f"{sigla}: el toque {sel!r} no está en {pantalla}")
+                loc.first.click(); pg.wait_for_timeout(80)
+            if resp.get("comprobar") and not boton(lambda t: t == "Comprobar"): raise SinClave(f"{sigla}: sin «Comprobar» en {pantalla}")
+            pg.wait_for_timeout(900)
         elif "asiento" in resp:
             for i, linea in enumerate(resp["asiento"]):
                 cuenta, lado = linea[0], linea[1]

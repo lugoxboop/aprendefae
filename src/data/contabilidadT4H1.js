@@ -76,7 +76,7 @@ export const ITEMS_H1 = [
     texto: "Arregla las bicicletas de varios clientes, y todos le pagan de contado ese día.",
     acierto: "Entró plata a la caja, y Caja es un activo: lo que entra va al debe.",
     errores: {
-      [HABER]: "Al revés: al haber va lo que sale. Aquí le pagaron, así que la plata entró y va al debe.",
+      [HABER]: "Lo tomaste como una salida, pero aquí le pagaron al taller: la plata entró. Va al debe.",
       [NO_SE_MUEVE]: "Sí se mueve: de contado quiere decir que la plata entró hoy a la caja. Va al debe.",
     },
     pagina: P180,
@@ -86,7 +86,7 @@ export const ITEMS_H1 = [
     texto: "Saca plata de la caja y la consigna en la cuenta corriente del taller.",
     acierto: "La plata salió de la caja y llegó al banco: Caja se acredita y Bancos se debita.",
     errores: {
-      [DEBE]: "Bancos es la que se debita, porque ahí llegó la plata. Caja la entregó, así que va al haber.",
+      [DEBE]: "Miraste a Bancos, que es la que recibe. Caja es la que entrega la plata: va al haber.",
       [NO_SE_MUEVE]: "La plata sigue siendo del taller, pero ya no está en la caja. Salió por el haber hacia Bancos.",
     },
     pagina: P180,
@@ -137,7 +137,7 @@ export const ITEMS_H1 = [
     acierto: "Entró plata a la caja, aunque nadie compró nada. Va al debe; el aporte no es un ingreso.",
     errores: {
       [NO_SE_MUEVE]: "Sí se mueve: el efectivo entró a la caja. Que el aporte no sea un ingreso no quiere decir que Caja se quede quieta.",
-      [HABER]: "Al revés. La plata entró a la caja, no salió. Lo que entra a Caja va al debe.",
+      [HABER]: "Pensaste que salió, pero los socios la pusieron en la caja. Va al debe.",
     },
     pagina: P180,
   },

@@ -643,6 +643,23 @@ export const SUBJECTS = {
           { id: "t4-a1-la-caja", nombre: "La caja", clasificacion: { tipo: APRENDER } },
           /* H1, justo después de A1, que la sostiene. Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0200. */
           { id: "t4-entra-o-sale-de-caja", nombre: "¿Entra o sale de Caja?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
+          /* H2 «El control que se saltaron» SALIÓ (corte de calidad de Yujiro, 15 oct): era reconocer una lista, y los controles ya los enseña A1 con figura. La 0208 retira en blando su fila del catálogo (0201). */
+          /* A2, pp. 181-184, justo después de H1. Aprender: cero FP, no entra al catálogo. */
+          { id: "t4-a2-el-fondo-fijo", nombre: "El fondo fijo", clasificacion: { tipo: APRENDER } },
+          /* H3, justo después de A2, que la sostiene. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0202. */
+          { id: "t4-se-mueve-la-caja-menor", nombre: "¿Se mueve la caja menor?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* A3, pp. 182-186, justo después de H3 (plan de Yujiro). Aprender: cero FP, no entra al catálogo. */
+          { id: "t4-a3-el-arqueo", nombre: "El arqueo", clasificacion: { tipo: APRENDER } },
+          /* H4 «El arqueo de caja menor», justo después de A3, que la sostiene. Lleva H5 «¿Al empleado o al gasto?» dentro (corte de Yujiro, 15 oct): el mismo id, y sube a difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0203; la 0209 la sube a difícil · 50, y la 0208 retira en blando la de H5 (0204). */
+          { id: "t4-el-arqueo-de-rosa", nombre: "El arqueo de caja menor", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* A4, pp. 186-188, después de H4. Aprender: cero FP, no entra al catálogo. Define «nota débito» y «nota crédito» del banco. */
+          { id: "t4-a4-bancos-y-notas", nombre: "Bancos y notas del banco", clasificacion: { tipo: APRENDER } },
+          /* A5, pp. 188-191, justo después de A4. Aprender: cero FP, no entra al catálogo. La conciliación completa de San Calixto. */
+          { id: "t4-a5-san-calixto", nombre: "San Calixto", clasificacion: { tipo: APRENDER } },
+          /* H7, justo después de A5, que la sostiene. Lleva H6 «¿Quién se enteró primero?» dentro (corte de Yujiro, 15 oct): elegir la libreta es decidir quién no tiene la partida. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0206; la de H6 (0205) la retira en blando la 0208. */
+          { id: "t4-concilia-la-cuenta", nombre: "Concilia la cuenta", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* H8, la última de T4. Experto · 90 FP, evaluativa, tres etapas en un solo juego. Su fila del servidor es la migración 0207. */
+          { id: "t4-se-asienta-o-no", nombre: "¿Se asienta o no?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],
       },
       /*

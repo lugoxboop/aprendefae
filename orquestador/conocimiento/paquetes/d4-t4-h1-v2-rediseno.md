@@ -20,7 +20,7 @@
 - Monto: 180.000
 - Hecho: «Arregla las bicicletas de varios clientes, y todos le pagan de contado ese día.» (72,7)
 - Acierto (tras «Correcto.»): «Entró plata a la caja, y Caja es un activo: lo que entra va al debe.» (97,4)
-- Error si va al haber: «Al revés: al haber va lo que sale. Aquí le pagaron, así que la plata entró y va al debe.» (100,3)
+- Error si va al haber: «Lo tomaste como una salida, pero aquí le pagaron al taller: la plata entró. Va al debe.» (81,1)
 - Error si va a «Caja no se mueve»: «Sí se mueve: de contado quiere decir que la plata entró hoy a la caja. Va al debe.» (104,4)
 - Página: «Basado en el libro, p. 180. Cifras construidas.»
 
@@ -30,7 +30,7 @@
 - Monto: 200.000
 - Hecho: «Saca plata de la caja y la consigna en la cuenta corriente del taller.» (90,5)
 - Acierto (tras «Correcto.»): «La plata salió de la caja y llegó al banco: Caja se acredita y Bancos se debita.» (83,6)
-- Error si va al debe: «Bancos es la que se debita, porque ahí llegó la plata. Caja la entregó, así que va al haber.» (95,7)
+- Error si va al debe: «Miraste a Bancos, que es la que recibe. Caja es la que entrega la plata: va al haber.» (100,9)
 - Error si va a «Caja no se mueve»: «La plata sigue siendo del taller, pero ya no está en la caja. Salió por el haber hacia Bancos.» (99,0)
 - Página: «Basado en el libro, p. 180. Cifras construidas.»
 
@@ -81,7 +81,7 @@
 - Hecho: «Los socios ponen más plata, en efectivo, para que el taller crezca.» (85,8)
 - Acierto (tras «Correcto.»): «Entró plata a la caja, aunque nadie compró nada. Va al debe; el aporte no es un ingreso.» (94,0)
 - Error si va a «Caja no se mueve»: «Sí se mueve: el efectivo entró a la caja. Que el aporte no sea un ingreso no quiere decir que Caja se quede quieta.» (91,0)
-- Error si va al haber: «Al revés. La plata entró a la caja, no salió. Lo que entra a Caja va al debe.» (110,8)
+- Error si va al haber: «Pensaste que salió, pero los socios la pusieron en la caja. Va al debe.» (97,5)
 - Página: «Basado en el libro, p. 180. Cifras construidas.»
 
 ### h1-t8 · viene de h1-8

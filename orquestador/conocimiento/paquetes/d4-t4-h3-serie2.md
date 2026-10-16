@@ -1,3 +1,5 @@
+> **REEMPLAZADO** por `d4-t4-h3-v2-rediseno.md` (rediseño de enganche, 15 oct 2026). Queda como historia.
+
 **T4 · H3 «¿Se mueve la caja menor?» · serie 2 · contenido completo.**
 - **Este archivo es la versión vigente de la serie 2.** Va junto con `d4-t4-h3-v1.md` (serie 1); los mensajes que no nombran cifra son los de ese archivo.
 - Autora: Katsumi. Encargo de Yujiro: segunda serie construida para que repetir la actividad cambie la empresa y las cifras (D8 Avanzado, exigencia de Mateo para los juegos).

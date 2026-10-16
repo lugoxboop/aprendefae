@@ -1,3 +1,5 @@
+> **REEMPLAZADO** por `d4-t4-h7-v2-rediseno.md` y `d4-t4-h8-v2-rediseno.md` (rediseño de enganche, 15 oct 2026). Queda como historia.
+
 **T4 · H7 «Concilia la cuenta» y H8 «¿Se asienta o no?» · serie 2 · contenido completo.**
 - **Este archivo es la versión vigente de la serie 2.** Ya incluye todos los cambios de H8 (v2, v3, S2-1) y el nombre neutro de H7.
 - Autora: Katsumi. Encargo de Yujiro: una segunda conciliación construida, para que en cada intento se sortee una serie (D8 Avanzado).

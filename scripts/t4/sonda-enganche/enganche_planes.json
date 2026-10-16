@@ -1,5 +1,5 @@
 {
- "_": "Cómo juega la sonda las pantallas de Aprender con figura operable (A0 y A1 del rediseño de enganche). Por pieza y pantalla, en orden: click (selector dentro de la pieza) o arrastra (selector y fracción del ancho), espera en ms, mide (el nombre del momento) y veredicto (acierto o error: si la pantalla da otro, la sonda sale con 2). Se miden los errores y los aciertos. Ver README.",
+ "_": "Cómo juega la sonda las pantallas de Aprender con figura operable (A0-A5 del rediseño de enganche). Por pieza y pantalla, en orden: click (selector dentro de la pieza) o arrastra (selector y fracción del ancho), espera en ms, mide (el nombre del momento) y veredicto (acierto o error: si la pantalla da otro, la sonda sale con 2). Se miden los errores y los aciertos. Los Hacer no van aquí: su gesto depende de la tarjeta que salió, así que lo da la clave (enganche_clave.mjs), con la misma forma de toques en orden y su veredicto. Ver README.",
  "t4-a0-el-activo-corriente": {
   "la-prueba": [
    {"arrastra": "[data-pista]", "hasta": 0.35, "espera": 300, "mide": "arrastre a medio año"},
@@ -42,6 +42,11 @@
    {"click": "[data-destino=haber]", "espera": 400, "mide": "cheque propio · error al haber", "veredicto": "error"},
    {"click": "[data-destino=no-se-mueve]", "espera": 600, "mide": "cheque propio · acierto", "veredicto": "acierto"}
   ],
+  "el-faltante": [
+   {"click": "[data-opcion=arqueo]", "espera": 400, "mide": "error con el arqueo", "veredicto": "error"},
+   {"click": "[data-opcion=poliza]", "espera": 400, "mide": "error con la póliza", "veredicto": "error"},
+   {"click": "[data-opcion=separar]", "espera": 600, "mide": "acierto"}
+  ],
   "controles": [
    {"click": "[data-control='1']", "mide": "control 1"},
    {"click": "[data-control='2']", "mide": "control 2"},
@@ -49,7 +54,154 @@
    {"click": "[data-control='4']", "mide": "control 4"},
    {"click": "[data-control='5']", "mide": "control 5"},
    {"click": "[data-control='6']", "mide": "control 6"},
-   {"click": "[data-control='7']", "mide": "control 7"}
+   {"click": "[data-control='7']", "espera": 600, "mide": "los siete y la frase de cierre"}
+  ]
+ },
+ "t4-a2-el-fondo-fijo": {
+  "el-fondo": [
+   {"click": "[data-accion=pagar]", "espera": 300, "mide": "un pago"},
+   {"click": "[data-accion=pagar]"},
+   {"click": "[data-accion=pagar]", "espera": 600, "mide": "tres pagos"},
+   {"click": "[data-accion=reponer]", "espera": 600, "mide": "repuesto"}
+  ],
+  "la-apertura": [{"click": "[data-cheque]", "espera": 700, "mide": "abierto"}],
+  "los-gastos": [
+   {"click": "[data-accion=pagar]", "espera": 300, "mide": "gasto 1"},
+   {"click": "[data-accion=pagar]"},
+   {"click": "[data-accion=pagar]", "espera": 300, "mide": "gasto 3"},
+   {"click": "[data-accion=pagar]"},
+   {"click": "[data-accion=pagar]"},
+   {"click": "[data-accion=pagar]"},
+   {"click": "[data-accion=pagar]"},
+   {"click": "[data-accion=pagar]", "espera": 600, "mide": "gasto 8"}
+  ],
+  "cuanto-queda": [
+   {"click": "[data-opcion='500000']", "espera": 500, "mide": "error con 500.000", "veredicto": "error"},
+   {"click": "[data-opcion='478100']", "espera": 500, "mide": "error con 478.100", "veredicto": "error"},
+   {"click": "[data-opcion='21900']", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "el-reembolso": [{"click": "[data-cheque]", "espera": 700, "mide": "repuesto"}],
+  "y-caja-menor": [
+   {"click": "[data-destino='caja-menor:debe']"},
+   {"click": "[data-destino='bancos:haber']"},
+   {"click": "[data-boton=comprobar]", "espera": 500, "mide": "error con Caja menor al debe", "veredicto": "error"},
+   {"click": "[data-destino='gastos-generales:debe']"},
+   {"click": "[data-destino='caja-menor:haber']"},
+   {"click": "[data-boton=comprobar]", "espera": 500, "mide": "error con Caja menor al haber", "veredicto": "error"},
+   {"click": "[data-destino='bancos:haber']"},
+   {"click": "[data-boton=comprobar]", "espera": 700, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "subir-bajar": [
+   {"click": "[data-accion=subir]", "espera": 600, "mide": "subido"},
+   {"click": "[data-accion=bajar]"},
+   {"click": "[data-accion=bajar]", "espera": 600, "mide": "bajado"}
+  ]
+ },
+ "t4-a3-el-arqueo": {
+  "contar": [{"click": "[data-accion=contar]", "espera": 600, "mide": "contado"}],
+  "cuando-no-cuadra": [
+   {"arrastra": "[data-accion=mover]", "hasta": 0.85, "espera": 600, "mide": "sobra"},
+   {"arrastra": "[data-accion=mover]", "hasta": 0.15, "espera": 600, "mide": "falta"}
+  ],
+  "el-sobrante": [
+   {"click": "[data-opcion=falta]", "espera": 500, "mide": "error con falta", "veredicto": "error"},
+   {"click": "[data-opcion=cuadra]", "espera": 500, "mide": "error con cuadra", "veredicto": "error"},
+   {"click": "[data-opcion=sobra]", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "el-cheque": [
+   {"click": "[data-opcion='478100']", "espera": 500, "mide": "error con 478.100", "veredicto": "error"},
+   {"click": "[data-opcion='480200']", "espera": 500, "mide": "error con 480.200", "veredicto": "error"},
+   {"click": "[data-opcion='476000']", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "el-asiento": [
+   {"click": "[data-destino='bancos:haber']", "espera": 500, "mide": "error con Bancos", "veredicto": "error"},
+   {"click": "[data-destino='ino-sobrante:debe']", "espera": 500, "mide": "error de lado", "veredicto": "error"},
+   {"click": "[data-destino='ino-sobrante:haber']", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "el-faltante": [
+   {"click": "[data-opcion='478100']", "espera": 500, "mide": "error con 478.100", "veredicto": "error"},
+   {"click": "[data-opcion='471400']", "espera": 500, "mide": "error con 471.400", "veredicto": "error"},
+   {"click": "[data-opcion='484800']", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "camino-1": [
+   {"click": "[data-destino='gno-faltante:debe']", "espera": 500, "mide": "error con el gasto", "veredicto": "error"},
+   {"click": "[data-destino='cxc-empleados:haber']", "espera": 500, "mide": "error de lado", "veredicto": "error"},
+   {"click": "[data-destino='cxc-empleados:debe']", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "dos-caminos": [
+   {"click": "[data-accion=asume]", "espera": 600, "mide": "la empresa lo asume"},
+   {"click": "[data-accion=cobra]", "espera": 600, "mide": "se le cobra a Rosa"}
+  ]
+ },
+ "t4-a4-bancos-y-notas": {
+  "sube-y-baja": [
+   {"click": "[data-accion=consignar]", "espera": 600, "mide": "consignado"},
+   {"click": "[data-accion=girar]", "espera": 700, "mide": "girado"}
+  ],
+  "las-notas": [{"click": "[data-accion=extracto]", "espera": 600, "mide": "extracto"}],
+  "sube-o-baja": [
+   {"click": "[data-destino=haber]", "espera": 300, "mide": "error en el 1"},
+   {"click": "[data-destino=debe]", "espera": 300, "mide": "1 puesto"},
+   {"click": "[data-destino=haber]"},
+   {"click": "[data-destino=debe]"},
+   {"click": "[data-destino=haber]"},
+   {"click": "[data-destino=debe]"},
+   {"click": "[data-destino=debe]", "espera": 300, "mide": "error en el 6"},
+   {"click": "[data-destino=haber]"},
+   {"click": "[data-destino=debe]", "espera": 600, "mide": "siete"}
+  ],
+  "seis-causas": [
+   {"click": "[data-destino=banco]", "espera": 300, "mide": "error en la causa 1"},
+   {"click": "[data-destino=empresa]", "espera": 300, "mide": "causa 1 puesta"},
+   {"click": "[data-destino=empresa]", "espera": 200},
+   {"click": "[data-destino=banco]", "espera": 200},
+   {"click": "[data-destino=empresa]", "espera": 300, "mide": "error en la causa 4"},
+   {"click": "[data-destino=banco]", "espera": 200},
+   {"click": "[data-destino=empresa]", "espera": 200},
+   {"click": "[data-destino=banco]", "espera": 600, "mide": "las seis"}
+  ],
+  "la-conciliacion": [
+   {"click": "[data-destino=cheque-sin-cobrar]", "espera": 500, "mide": "error con el cheque", "veredicto": "error"},
+   {"click": "[data-destino=nota-debito]", "espera": 600, "mide": "acierto y frase de cierre"}
+  ]
+ },
+ "t4-a5-san-calixto": {
+  "lado-del-banco": [
+   {"click": "[data-destino=mas]", "espera": 400, "mide": "error en la 1"},
+   {"click": "[data-destino=menos]", "espera": 300, "mide": "1 puesta"},
+   {"click": "[data-destino=mas]", "espera": 300},
+   {"click": "[data-destino=menos]", "espera": 300},
+   {"click": "[data-destino=menos]", "espera": 300},
+   {"click": "[data-destino=mas]", "espera": 400, "mide": "error en la 5"},
+   {"click": "[data-destino=menos]", "espera": 900, "mide": "cinco"}
+  ],
+  "lado-de-la-empresa": [
+   {"click": "[data-destino=menos]", "espera": 400, "mide": "error en la 1"},
+   {"click": "[data-destino=mas]", "espera": 300},
+   {"click": "[data-destino=menos]", "espera": 300},
+   {"click": "[data-destino=mas]", "espera": 300},
+   {"click": "[data-destino=menos]", "espera": 300},
+   {"click": "[data-destino=mas]", "espera": 400, "mide": "error en la 5"},
+   {"click": "[data-destino=menos]", "espera": 900, "mide": "cinco"}
+  ],
+  "que-se-asienta": [
+   {"click": "[data-opcion=si]", "espera": 400, "mide": "error", "veredicto": "error"},
+   {"click": "[data-opcion=no]", "espera": 500, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "los-asientos": [
+   {"click": "[data-destino='bancos:haber']", "espera": 500, "mide": "error en la nota 1", "veredicto": "error"},
+   {"click": "[data-destino='bancos:debe']", "espera": 1700, "mide": "nota 1 escrita"},
+   {"click": "[data-destino='bancos:debe']", "espera": 1700},
+   {"click": "[data-destino='bancos:debe']", "espera": 500, "mide": "error en la nota 3", "veredicto": "error"},
+   {"click": "[data-destino='bancos:haber']", "espera": 1700},
+   {"click": "[data-destino='bancos:haber']", "espera": 1700},
+   {"click": "[data-destino='bancos:haber']", "espera": 600, "mide": "nota 5 escrita"}
+  ],
+  "el-mayor": [{"click": "[data-accion=asentar]", "espera": 2600, "mide": "asentado y frase de cierre"}],
+  "dos-saldos": [
+   {"click": "[data-opcion=banco]", "espera": 500, "mide": "error con el banco", "veredicto": "error"},
+   {"click": "[data-opcion=empresa]", "espera": 500, "mide": "error con la empresa", "veredicto": "error"},
+   {"click": "[data-opcion=ninguno]", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
   ]
  }
 }

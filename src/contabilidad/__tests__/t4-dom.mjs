@@ -47,12 +47,19 @@ export function montar(elemento) {
   act(() => raiz.render(elemento));
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 }
-export const tocar = (el) => act(() => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+/*
+ * El botón de avance y «Comprobar» son el Responder compartido dentro de un
+ * envoltorio con `data-boton` (Responder no acepta atributos: P2 de Hanayama,
+ * §3.4). Tocar el envoltorio es tocar su botón, como en el navegador.
+ */
+const objetivo = (el) => (el?.matches?.("[data-avance-t4]") ? el.querySelector("button") ?? el : el);
+export const tocar = (el) => act(() => { objetivo(el).dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 export const tecla = (el, key) => act(() => { el.dispatchEvent(new w.KeyboardEvent("keydown", { key, bubbles: true })); });
 export const esperar = (ms) => act(async () => { await new Promise((r) => setTimeout(r, ms)); });
 
 /* Teal y ámbar de Contabilidad (debe y haber), y coral (error), como salen calculados. */
-export const TEAL_AMBAR = /rgb\(42, 157, 143\)|rgb\(233, 196, 106\)|rgb\(47, 168, 160\)|rgba\(42, 157, 143|rgba\(233, 196, 106/;
+/* Con #3FA69A, el teal de TEXTO de «Debe» (prompt maestro §5.2), y el teal del Responder, que se mira aparte (es el botón, no el acierto). */
+export const TEAL_AMBAR = /rgb\(42, 157, 143\)|rgb\(233, 196, 106\)|rgb\(47, 168, 160\)|rgb\(63, 166, 154\)|rgba\(42, 157, 143|rgba\(233, 196, 106/;
 export const CORAL = /rgb\(231, 111, 81\)|rgba\(231, 111, 81/;
 const PROPS = ["color", "border-top-color", "border-right-color", "border-bottom-color", "border-left-color", "background-color", "background", "box-shadow", "outline-color", "fill", "stroke"];
 export const estilo = (el) => { const c = w.getComputedStyle(el); return [el.getAttribute("style") ?? "", ...PROPS.map((k) => c.getPropertyValue(k))].join(" | "); };
