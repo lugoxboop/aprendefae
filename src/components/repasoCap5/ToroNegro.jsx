@@ -221,7 +221,7 @@ export const leerCifra = (texto, maximo = 8) => {
 
 function CampoValor({
   id, valor, onCambiar, estado = null, soloLectura = false,
-  maximo = 8, alto = "48px", placeholder, enterKeyHint, onEnter, inputRef, etiqueta,
+  maximo = 8, alto = "48px", tamano = "17px", placeholder, enterKeyHint, onEnter, inputRef, etiqueta,
 }) {
   const visto = estado && estado !== "vacia" ? ESTADOS[estado] : ESTADOS.reposo;
   return (
@@ -242,7 +242,7 @@ function CampoValor({
       onKeyDown={onEnter ? (e) => { if (e.key === "Enter") { e.preventDefault(); onEnter(); } } : undefined}
       style={{
         width: "100%", height: alto, boxSizing: "border-box", borderRadius: "10px", padding: "0 12px",
-        ...CIFRA, fontSize: "17px", fontWeight: 600, textAlign: "right", color: C.texto,
+        ...CIFRA, fontSize: tamano, fontWeight: 600, textAlign: "right", color: C.texto,
         ...visto,
       }}
     />
@@ -557,6 +557,8 @@ function PreguntaCalculo({ p, onRespondida, r, respuestas = {} }) {
               onCambiar={setTotal}
               estado={r ? (r.ok ? "ok" : "mal") : null}
               maximo={9}
+              /* Nueve dígitos en mono no caben a 17 px en los 136 del paquete: 15 px, provisional (medida para Itagaki en el PR). */
+              tamano="15px"
               placeholder={RA.marcador}
               enterKeyHint="done"
             />

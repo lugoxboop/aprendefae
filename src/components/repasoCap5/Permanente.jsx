@@ -64,7 +64,7 @@ const ACTIVIDAD_PERMANENTE = {
  */
 const CSS_PERMANENTE = `
 .r55-k { display: grid; grid-template-columns: 60px 64px 76px 101px; column-gap: 6px; align-items: center; }
-@media (max-width: 359px) { .r55-k { grid-template-columns: 53px 41px 72px 80px; } }
+@media (max-width: 359px) { .r55-k { grid-template-columns: 60px 40px 66px 80px; } }
 @keyframes r55-destapa { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 .r55-destapa { animation: r55-destapa 200ms ease-out both; }
 @keyframes r55-entra { from { max-height: 0; opacity: 0; } to { max-height: 200px; opacity: 1; } }
@@ -77,7 +77,13 @@ const CSS_PERMANENTE = `
 @media (prefers-reduced-motion: reduce) { .r55-destapa, .r55-entra, .r55-franja, .r55-despliega, .r55-campo-entra { animation: none; } }
 ` + CSS_FOCO;
 
-const NUMERO = { ...CIFRA, fontSize: "14px", lineHeight: "18px", color: C.texto, textAlign: "right", whiteSpace: "nowrap" };
+/*
+ * Provisional, para Itagaki: a 320, la pila mono a 14 px pide 84 px para
+ * «13.870.500» en una columna de 80, y «ENTRADA» en mayúsculas a 12 px pide 60
+ * en 53. Cifras a 13 px (78) y, a 320, columnas de 60 · 40 · 66 · 80
+ * (antes 53 · 41 · 72 · 80; suman lo mismo, 246).
+ */
+const NUMERO = { ...CIFRA, fontSize: "13px", lineHeight: "18px", color: C.texto, textAlign: "right", whiteSpace: "nowrap" };
 const MARCA_K = { ...MARCA, letterSpacing: "0.02em" };
 const fechaDe = (f) => `${f.dia} ${MES_CORTO}`;
 

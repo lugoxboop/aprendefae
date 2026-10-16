@@ -547,8 +547,8 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
       {/* §4.3: «Comprobar», porque el asiento tiene varios renglones. */}
       {!r && <Comprobar activo={puedeRevisarMate(renglones)} onClick={() => onRespondida(evaluarMate(a, renglones), renglones)} dato="revisar" />}
       <Devolucion r={r && { ok: r.ok, textos: r.textos }} />
-      {/* Después de la devolución, sin desplazamiento forzado (corrección 1 de Takamura). */}
-      {r && <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={i} linea={LINEAS_MES[a.id] ?? null} />}
+      {/* Después de la devolución, sin desplazamiento forzado (corrección 1 de Takamura). En el error, espera a «Iba aquí»: si no, el armador revelado lo empuja mientras anima. */}
+      {r && (r.ok || revelar) && <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={i} linea={LINEAS_MES[a.id] ?? null} />}
       {r && <BotonSiguiente onClick={onSiguiente} botonRef={botonRef} sustantivo={RM.sustantivo} ultimo={i + 1 === total} />}
       {hoja && <HojaRenglon lado={hoja.lado} inicial={hoja.inicial} renglones={renglones} onListo={listo} onQuitar={quitar} onCancelar={() => setHoja(null)} />}
       {datos && <HojaDatosDeMarzo onCerrar={() => setDatos(false)} />}
