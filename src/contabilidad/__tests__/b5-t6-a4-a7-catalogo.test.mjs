@@ -6,10 +6,11 @@ import { JSDOM, VirtualConsole } from "jsdom";
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * TEMA 6 · EL CATÁLOGO Y LA CONEXIÓN DE b5-t6-a4 A b5-t6-a6 (Célula B).
- * b5-t6-a7 entró con ellas en la 0075 y se retiró en el lote 4 (la 0076 borra
- * su fila): su retiro lo vigila b5-t6-a7-retirada.test.mjs.
+ * b5-t6-a5 y b5-t6-a7 entraron con ellas en la 0075; a7 se retiró en el
+ * lote 4 (lápida en la 0076) y a5 se fundió en a2 en el 6b (lápida en la
+ * 0077). Sus retiros los vigilan b5-t6-a7-retirada y b5-t6-a5-retirada.
  *
- *   · las tres están en el bloque de T6, en el orden del camino, con la
+ *   · a4 y a6 están en el bloque de T6, en el orden del camino, con la
  *     dificultad y los FP de Sakuta
  *   · la vista las abre desde el camino, cada una con su mecánica
  *   · la 0075 trae sus filas: un insert aditivo y repetible, la
@@ -44,17 +45,14 @@ const { ASI_SE_JUEGA } = await import("../../data/asiSeJuega.js");
 const { JUEGOS } = await import("../../components/ContabilidadTema6View.jsx");
 const { default: JuegoConTutorial } = await import("../../components/mecanicas/libros/JuegoConTutorial.jsx");
 const A4 = await import("../../data/contabilidadT6Act4.js");
-const A5 = await import("../../data/contabilidadT6Act5.js");
 const A6 = await import("../../data/contabilidadT6Act6.js");
 const { default: QueSeDebita } = await import("../../components/mecanicas/libros/tema6/QueSeDebita.jsx");
-const { default: LaCuentaDeLaProvision } = await import("../../components/mecanicas/libros/tema6/LaCuentaDeLaProvision.jsx");
 const { default: ProvisionPorEdades } = await import("../../components/mecanicas/libros/tema6/ProvisionPorEdades.jsx");
 
 const MIGRACION = readFileSync(new URL("../../../supabase/migrations/0075_tema6_cuatro_hacer.sql", import.meta.url), "utf8");
 const TEMA = SUBJECTS.contabilidad.topics.find((t) => t.id === "cuentas-por-cobrar");
 const CASOS = [
   { id: "b5-t6-a4", D: A4.T6_ACT4, reglas: A4.REGLAS_T6_ACT4, Juego: QueSeDebita, dificultad: "medio", fp: 25 },
-  { id: "b5-t6-a5", D: A5.T6_ACT5, reglas: A5.REGLAS_T6_ACT5, Juego: LaCuentaDeLaProvision, dificultad: "medio", fp: 25 },
   { id: "b5-t6-a6", D: A6.T6_ACT6, reglas: A6.REGLAS_T6_ACT6, Juego: ProvisionPorEdades, dificultad: "dificil", fp: 50 },
 ];
 const montar = async (el) => {
@@ -68,9 +66,9 @@ const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(
 const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent.trim() === texto) ?? null;
 const Marco = ({ children }) => h("div", null, children);
 
-test("★★★ las tres están en el bloque de T6, en el orden del camino, con la clasificación de Sakuta", () => {
-  /* El orden provisional del camino (Sakuta, lote 4): a1 → a4 → a5 → a2 → a6 → a3. */
-  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a4", "b5-t6-a5", "b5-t6-a2", "b5-t6-a6", "b5-t6-a3"]);
+test("★★★ a4 y a6 están en el bloque de T6, en el orden del camino, con la clasificación de Sakuta", () => {
+  /* El orden final del camino (Sakuta, lote 6b): a1 → a4 → a2 → a6 → a3. b5-t6-a5 se fundió en a2 (0077), y su caso salió de aquí. */
+  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a4", "b5-t6-a2", "b5-t6-a6", "b5-t6-a3"]);
   for (const k of CASOS) {
     const c = clasificacionDe("contabilidad", "cuentas-por-cobrar", k.id);
     assert.deepEqual({ modalidad: c.modalidad, dificultad: c.dificultad, fpBase: c.fpBase }, { modalidad: "evaluativa", dificultad: k.dificultad, fpBase: k.fp }, k.id);
@@ -110,7 +108,6 @@ test("★★ el panel docente lee cada ítem por su hecho, su casilla o su ficha
     assert.ok(e && texto.startsWith(e.replace(/…$/, "")), `${id} · ${item}: «${e}»`);
   };
   for (const x of A4.HECHOS_T6_ACT4) lee("b5-t6-a4", x.id, x.texto);
-  for (const c of A5.CASILLAS_T6_ACT5) lee("b5-t6-a5", c.id, c.enunciado);
   for (const c of A6.PARTES_T6_ACT6.flatMap((p) => p.casillas)) lee("b5-t6-a6", c.id, c.enunciado);
 });
 
@@ -124,9 +121,6 @@ test("★★★ «Así se juega»: las tres reglas aprobadas, la consigna, y un 
   }
   /* Los ejemplos: fuera del banco, y armados con textos que ya existen. */
   assert.ok(!A4.HECHOS_T6_ACT4.includes(ASI_SE_JUEGA["b5-t6-a4"].demo.items[0]));
-  const e5 = ASI_SE_JUEGA["b5-t6-a5"].demo.items[0];
-  assert.ok(A5.T6_ACT5.partida.startsWith(e5.enunciado) && A5.T6_ACT5.partida.endsWith(e5.resolucion));
-  assert.ok(!A5.CASILLAS_T6_ACT5.some((c) => c.enunciado === e5.enunciado));
   const e6 = ASI_SE_JUEGA["b5-t6-a6"].demo.items[0];
   assert.ok(A6.T6_ACT6.partida.startsWith(e6.enunciado));
   assert.deepEqual(e6.opciones.map((o) => o.texto), A6.GRUPOS_T6_ACT6.map((g) => g.nombre));

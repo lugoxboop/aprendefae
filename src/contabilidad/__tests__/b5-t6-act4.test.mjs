@@ -181,6 +181,15 @@ test("★★★ cada acierto y cada error se ven literales; al fallar, la correc
         assert.equal(devolucion(caja), `❌${D.ERRORES_T6_ACT4[x.errores[o.id]]}`, `${x.id} con ${o.id}`);
         assert.equal(opcion(caja, o.id).dataset.estado, "incorrecta");
         assert.equal(opcion(caja, x.respuesta).dataset.estado, "revelada");
+        /* E4 (hoja de fusiones de Mai): la elegida ✕ y tachada junto a la correcta ✓; las demás, a 0,5. */
+        const icono = (el) => [...el.querySelectorAll("svg[data-icono]")].map((y) => y.dataset.icono);
+        assert.equal(opcion(caja, o.id).dataset.marca, "tachada");
+        assert.deepEqual(icono(opcion(caja, o.id)), ["tache"]);
+        assert.ok(opcion(caja, o.id).textContent.includes("(tu respuesta)"));
+        assert.equal(opcion(caja, x.respuesta).dataset.marca, "correcta");
+        assert.deepEqual(icono(opcion(caja, x.respuesta)), ["visto"]);
+        assert.ok(opcion(caja, x.respuesta).textContent.includes("(respuesta correcta)"));
+        for (const y of D.OPCIONES_T6_ACT4) if (y.id !== o.id && y.id !== x.respuesta) assert.equal(opcion(caja, y.id).style.opacity, "0.5");
         /* Un solo intento: tocar la correcta ya no cambia nada. */
         await tocar(opcion(caja, x.respuesta));
         assert.equal(opcion(caja, x.respuesta).dataset.estado, "revelada");
