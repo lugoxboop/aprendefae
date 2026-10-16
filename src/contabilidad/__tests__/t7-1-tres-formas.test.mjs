@@ -22,6 +22,14 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · P7: tres tarjetas cerradas; se abre una a la vez; «Seguir» cuando se
  *     abrieron las tres
  *   · UEPS con su rótulo; sin el 33 %; en T7-1 en la posición 5
+ *   · ACIERTOS C7 (gana sobre lo anterior en P6 y en la tarjeta UEPS de P7):
+ *     P6 `la-recomendacion` sale de t7-1-a3-la-recomendacion-c7.md (Near)
+ *     con A3-1 y A3-2 de Mello (auditoria-mello-a4-v5-y-a3-recomendacion.md,
+ *     §2): pregunta por precios que bajan (correcta: PEPS), su pista y sus
+ *     dos errores; el acierto, con las dos condiciones del libro y el
+ *     impuesto de renta definido, a la vista y sin plegado (C7); 60 palabras
+ *     (B2). La tarjeta UEPS dice «el impuesto sobre la utilidad» (A3-2). La
+ *     opcional de Mello NO se aplica
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -48,13 +56,14 @@ const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: TresFormas, CSS_AP3, partirPorque, PILA } = await import("../../components/mecanicas/libros/t7/TresFormas.jsx");
 const { PIEZAS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
 const { textosDelError, sinAsiEs } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
+const { RECOMENDACION: C7, CORRECCIONES_A3, MELLO_A3, NEAR_A3, TARJETA_UEPS_A3_2, NO_APLICADAS, palabrasAlAcertar } = await import("./correccionesMelloAciertos.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(`orquestador/conocimiento/paquetes/${f}`, RAIZ), "utf8");
 const RECORTE_MD = leer("lote1-recortes-t71-v1.md");
 const MELLO_MD = leer("mello-recortes-v1.md");
 const SECCION = RECORTE_MD.slice(RECORTE_MD.indexOf("## t7-1-a3-tres-formas · "), RECORTE_MD.indexOf("\n## ", RECORTE_MD.indexOf("## t7-1-a3-tres-formas · ") + 5));
-const MELLO_A3 = MELLO_MD.slice(MELLO_MD.indexOf("**A3 «Tres formas"), MELLO_MD.indexOf("**A4 «El cierre"));
+const MELLO_A3_RECORTES = MELLO_MD.slice(MELLO_MD.indexOf("**A3 «Tres formas"), MELLO_MD.indexOf("**A4 «El cierre"));
 const P = A.PIEZA_TRES_FORMAS;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 const conPieza = (...ids) => ({ ...P, pantallas: ids.map(pantalla) });
@@ -93,19 +102,23 @@ const BLOQUES = SECCION.split(/\n(?=\*\*P\d+ · `)/).slice(1).map((b) => ({ id: 
  * LAS CORRECCIONES OBLIGATORIAS DE MELLO: [texto del recorte, texto que manda].
  * Cada nuevo se comprueba contra la auditoría, cada viejo contra el recorte.
  */
+/*
+ * Las correcciones 1 y 2 de mello-recortes-v1.md (el plegado y el acierto de
+ * P6, la glosa en la tarjeta UEPS) las reemplazan los Aciertos C7: P6 se
+ * compara contra la tabla final de Near con A3-1 (abajo), y la tarjeta UEPS
+ * lleva el cambio de Near que Mello acepta en A3-2. Queda la 3.
+ */
 const MELLO = {
-  pliegueP6: "Por eso el libro recomienda UEPS en épocas de inflación, cuando los precios suben. También recomienda PEPS en épocas de deflación, cuando bajan, pero no dice por qué.",
-  aciertoP6: "Así es. Más costo de lo vendido deja menos utilidad.",
-  /* En la auditoría va tras «A favor: », en minúscula; en la tarjeta, el rótulo va aparte y el texto abre en mayúscula. */
-  favorUeps: "A favor: si los precios suben, lo vendido sale más caro y el impuesto de renta, el que va sobre la utilidad, baja.",
   contraPeps: "Si los precios suben, lo vendido lleva costos antiguos frente a ventas de hoy. La utilidad sale mayor, y el libro la llama ficticia.",
 };
-const mayuscula = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 const SUSTITUCIONES = [
-  ["El impuesto de renta es el que se calcula sobre la utilidad. Por eso el libro recomienda UEPS en épocas de inflación, cuando los precios suben, y PEPS en épocas de deflación, cuando bajan.", MELLO.pliegueP6],
-  ["Así es. Más costo de lo vendido deja menos utilidad, y menos impuesto de renta.", MELLO.aciertoP6],
-  ["Si los precios suben, lo vendido sale más caro y el impuesto de renta baja.", mayuscula(MELLO.favorUeps.replace(/^A favor: /, ""))],
+  ["Si los precios suben, lo vendido sale más caro y el impuesto de renta baja.", TARJETA_UEPS_A3_2],
   ["Si los precios suben, la utilidad sale mayor, y el libro la llama ficticia.", MELLO.contraPeps],
+];
+/* Aciertos C7: lo que P6 dice, en el orden de `textosDeDatos`, de la tabla final (Near con A3-1 de Mello). */
+const P6_C7 = [
+  ...C7["Pantalla, línea 1"].textos, ...C7.Pregunta.textos, ...C7.Opciones.textos, ...C7["Pista (1.er error)"].textos,
+  ...C7["Si elige UEPS"].textos, ...C7["Si elige Promedio"].textos, ...C7.Acierto.textos,
 ];
 const conMello = (t) => SUSTITUCIONES.reduce((x, [viejo, nuevo]) => x.replace(viejo, nuevo), t);
 
@@ -140,23 +153,55 @@ test("★★★ las diez pantallas del recorte, en su orden, con sus ids y sus t
 });
 
 test("★★★ las correcciones de Mello están en su auditoría, y lo que reemplazan, en el recorte", () => {
-  for (const t of Object.values(MELLO)) assert.ok(MELLO_A3.includes(`«${t}»`), `no está en Mello: ${t}`);
+  for (const t of Object.values(MELLO)) assert.ok(MELLO_A3_RECORTES.includes(`«${t}»`), `no está en Mello: ${t}`);
+  assert.ok(MELLO_A3.includes(`«${TARJETA_UEPS_A3_2}»`) && NEAR_A3.includes(`«${TARJETA_UEPS_A3_2}»`), "A3-2: el cambio de Near, aceptado por Mello");
   for (const [viejo] of SUSTITUCIONES) assert.ok(SECCION.includes(viejo), `no está en el recorte: ${viejo}`);
 });
 
 test("★★★ cada pantalla dice, letra por letra y en su orden, lo del recorte con las correcciones de Mello", () => {
-  for (const b of BLOQUES) assert.deepEqual(textosDeDatos(pantalla(b.id)), b.textos.map(conMello), b.id);
+  for (const b of BLOQUES) assert.deepEqual(textosDeDatos(pantalla(b.id)), b.id === "la-recomendacion" ? P6_C7 : b.textos.map(conMello), b.id);
 });
 
-test("★★★ Mello 1 y 2: P6 sin «impuesto de renta» en el acierto ni en el plegado; la glosa, en la tarjeta UEPS de P7", () => {
+test("★★★ A3-1 de Mello: P6 pregunta por precios que bajan; la correcta es PEPS; pista, errores y acierto, letra por letra", () => {
+  for (const [vieja, nuevas] of CORRECCIONES_A3) {
+    assert.ok(NEAR_A3.includes(vieja), vieja);
+    for (const n of nuevas) assert.ok(MELLO_A3.includes(n), n);
+  }
   const p6 = pantalla("la-recomendacion");
-  assert.equal(p6.acierto.texto, MELLO.aciertoP6);
-  assert.equal(p6.acierto.porque, MELLO.pliegueP6);
-  assert.doesNotMatch(JSON.stringify(p6), /impuesto de renta/);
+  assert.deepEqual(p6.parrafos, C7["Pantalla, línea 1"].textos);
+  assert.equal(p6.pregunta, "Si los precios bajan, ¿con qué método lo vendido queda más caro?");
+  assert.equal(C7.Opciones.correcta, "PEPS");
+  assert.equal(p6.opciones.find((o) => o.correcta).texto, C7.Opciones.correcta);
+  assert.equal(p6.pista, C7["Pista (1.er error)"].textos[0]);
+  assert.equal(p6.opciones.find((o) => o.id === "ueps").devolucion, C7["Si elige UEPS"].textos[0]);
+  assert.equal(p6.opciones.find((o) => o.id === "promedio").devolucion, C7["Si elige Promedio"].textos[0]);
+  assert.equal(p6.acierto.texto, C7.Acierto.textos[0]);
+  /* B2: 9 + 12 + 8 + 31 = 60 al acertar, con el contador de Near. */
+  assert.equal(palabrasAlAcertar(C7), 60);
+});
+
+test("★★★ C7 · P6 sin plegado: las dos condiciones del libro van en el acierto, a la vista", () => {
+  const p6 = pantalla("la-recomendacion");
+  assert.equal(p6.acierto.porque, undefined);
+  assert.match(p6.acierto.texto, /PEPS en deflación, cuando los precios bajan, y UEPS en inflación, cuando suben\.$/);
+  /* La línea que entregaba la deducción salió. */
+  assert.doesNotMatch(JSON.stringify(p6), /Si lo que queda vale menos/);
+});
+
+test("★★★ A3-2 de Mello: «impuesto de renta» se nombra y se define en P6 antes de AP4; la tarjeta UEPS dice «impuesto sobre la utilidad»", () => {
+  const p6 = pantalla("la-recomendacion");
+  assert.match(p6.acierto.texto, /menos impuesto de renta, que se calcula sobre ella\./);
   const ueps = pantalla("a-favor-y-en-contra").tarjetas.metodos.find((m) => m.id === "ueps");
-  assert.equal(`A favor: ${ueps.aFavor.charAt(0).toLowerCase()}${ueps.aFavor.slice(1)}`, MELLO.favorUeps);
-  /* Ninguna pantalla antes de P7 nombra el impuesto de renta. */
-  for (const p of P.pantallas.slice(0, 7)) assert.doesNotMatch(JSON.stringify(p), /impuesto de renta/i, p.id);
+  assert.equal(ueps.aFavor, TARJETA_UEPS_A3_2);
+  /* La primera vez que la pieza nombra el impuesto de renta es el acierto de P6, con su definición. */
+  const primera = P.pantallas.findIndex((p) => /impuesto de renta/i.test(JSON.stringify(p)));
+  assert.equal(P.pantallas[primera].id, "la-recomendacion");
+  for (const p of P.pantallas.slice(0, primera)) assert.doesNotMatch(JSON.stringify(p), /impuesto/i, p.id);
+});
+
+test("★★ la opcional de Mello en A3-1 («Según el libro, cada empresa escoge…») no se aplica", () => {
+  assert.ok(MELLO_A3.includes(NO_APLICADAS.a3Opcional));
+  assert.doesNotMatch(JSON.stringify(P), /cada empresa escoge/);
 });
 
 test("★★★ Mello 3: la tarjeta «En contra» de PEPS dice por qué la utilidad es «ficticia»", () => {
@@ -164,7 +209,7 @@ test("★★★ Mello 3: la tarjeta «En contra» de PEPS dice por qué la utili
 });
 
 test("★★ la opcional de Mello (P8, «cajas» → «unidades») no se aplica", () => {
-  assert.match(MELLO_A3, /Opcional: en el acierto de P8, «el orden de las cajas» → «el orden de las unidades»/);
+  assert.match(MELLO_A3_RECORTES, /Opcional: en el acierto de P8, «el orden de las cajas» → «el orden de las unidades»/);
   assert.equal(pantalla("la-refutacion").acierto.texto, "Exacto: el método no tiene que seguir el orden de las cajas.");
 });
 
@@ -172,7 +217,9 @@ test("★★★ lo que el recorte cambia del lote 2: las pistas de A3 y la terce
   const filas = [...RECORTE_MD.matchAll(/^\| (Pista|Anexo) · A3 `?([^`|]+?)`? (?:y `ueps` )?(?:· ([^|]+?) )?\| (?:«(.+?)»|\([^)]*\)) \| «(.+?)» \|$/gm)];
   const pistas = Object.fromEntries(filas.filter((f) => f[1] === "Pista").map((f) => [f[2], f[5]]));
   assert.deepEqual(Object.keys(pistas).sort(), ["la-recomendacion", "lado-a-lado", "peps", "ueps"]);
-  for (const [id, pista] of Object.entries(pistas)) assert.equal(pantalla(id).pista, pista, id);
+  /* La de `la-recomendacion` la reemplaza A3-1 de Mello (Aciertos C7). */
+  for (const [id, pista] of Object.entries(pistas)) assert.equal(pantalla(id).pista, id === "la-recomendacion" ? C7["Pista (1.er error)"].textos[0] : pista, id);
+  assert.notEqual(pantalla("la-recomendacion").pista, pistas["la-recomendacion"]);
   /* La tercera opción, igual en peps y ueps. */
   assert.ok(RECORTE_MD.includes("| Anexo · A3 `peps` y `ueps` · tercera opción | «De los dos grupos, con un costo promedio» | «De los dos, con un costo promedio» |"));
   for (const id of ["peps", "ueps"]) {
@@ -189,7 +236,8 @@ test("★★★ ids: los que siguen conservan el suyo; la-refutacion y la pregun
   assert.equal(pantalla("a-favor-y-en-contra").tipo, "tarjetas");
   assert.equal(pantalla("a-favor-y-en-contra").opciones, undefined);
   assert.deepEqual(pantalla("la-refutacion").opciones.map((o) => o.id), ["orden-de-costos", "debe-vender", "tiene-razon"]);
-  assert.deepEqual(pantalla("la-recomendacion").opciones.map((o) => [o.id, o.correcta]), [["peps", false], ["ueps", true], ["promedio", false]]);
+  /* A3-1 de Mello: la correcta pasa a PEPS. */
+  assert.deepEqual(pantalla("la-recomendacion").opciones.map((o) => [o.id, o.correcta]), [["peps", true], ["ueps", false], ["promedio", false]]);
 });
 
 /* ═══════════ 2 · CIFRAS Y FIGURAS ═══════════ */
@@ -242,7 +290,8 @@ test("★★★ regla de L: lo del plegado escrito aparte que trae una condició
   assert.deepEqual(partirPorque(null), ["", null]);
   assert.deepEqual(partirPorque("Sale del libro. Y del ejemplo."), ["", "Sale del libro. Y del ejemplo."]);
   assert.deepEqual(partirPorque("Vale cuando suben. Y del ejemplo."), [" Vale cuando suben.", "Y del ejemplo."]);
-  assert.deepEqual(partirPorque(MELLO.pliegueP6), [` ${MELLO.pliegueP6}`, null]);
+  const conCuando = "Por eso el libro recomienda UEPS en épocas de inflación, cuando los precios suben. También recomienda PEPS en épocas de deflación, cuando bajan.";
+  assert.deepEqual(partirPorque(conCuando), [` ${conCuando}`, null]);
 });
 
 /* ═══════════ 3 · PANTALLAS Y ESTADOS ═══════════ */
@@ -312,14 +361,15 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos y su
   }
 });
 
-test("★★★ P6: el plegado trae «cuando» y no se pliega: el acierto entero a la vista, sin «¿Por qué?»", async () => {
+test("★★★ C7 · P6: el acierto entero a la vista, sin «¿Por qué?» ni plegado", async () => {
   const p = pantalla("la-recomendacion");
   const m = await montar(h(TresFormas, { pieza: conPieza("la-recomendacion"), rotulo: "R" }));
   try {
-    await tocar(m.caja.querySelector('[data-opcion="ueps"]'));
+    await tocar(m.caja.querySelector('[data-opcion="peps"]'));
     await tocar(boton(m.caja, "confirmar"));
     const msg = m.caja.querySelector('[data-mensaje="acierto"] [data-texto]');
-    assert.equal(msg.textContent, `${p.acierto.texto} ${p.acierto.porque}`);
+    assert.equal(msg.textContent, C7.Acierto.textos[0]);
+    assert.equal(m.caja.querySelectorAll('[data-mensaje="acierto"] [data-texto]').length, 1);
     assert.ok(msg.querySelector("[data-por-que]") === null, "sin «¿Por qué?»");
     assert.ok(msg.querySelector("[data-plegado]") === null, "nada plegado");
   } finally {
