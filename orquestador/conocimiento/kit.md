@@ -648,6 +648,60 @@ que la columna tenía fijos —cabe—, y el contador de avance tenía 169 px de
 sobra en su fila. Las dos cosas se midieron en la página servida antes de
 tocar nada.
 
+## El contraste del texto: 4,5:1, y por qué el código no lo dice
+
+La regla es la de WCAG AA, la misma del prompt maestro de diseño: el texto
+normal necesita **4,5:1** contra su fondo; el grande —24 px, o 18,66 px en
+negrita— se conforma con 3:1.
+
+**Mirar el código no sirve.** Casi todo el texto atenuado de la plataforma se
+escribe como `rgba(248,249,250,0.45)`, y ese 0,45 no dice nada por sí solo: lo
+que se ve depende del fondo que tenga debajo —una tarjeta sobre otra tarjeta
+sobre el fondo de la materia— y de si ese fondo es a su vez semitransparente.
+El número que importa no está escrito en ningún sitio: hay que componerlo.
+
+`scripts/contraste.mjs` lo compone. Sube por los padres mezclando capas hasta
+llegar a un fondo opaco, mezcla también el texto si es semitransparente, y
+aplica el piso que pide cada tamaño. Se corre con el paquete construido y
+servido:
+
+    node scripts/contraste.mjs "Las cuentas, el debe y el haber"
+
+### Cómo quedó Contabilidad el 16 de octubre
+
+| tema | fallos | pantallas |
+|---|---|---|
+| T1 · Introducción | **1** | 30 |
+| T2 · Las cuentas | 0 | 30 |
+| T3 · Ingresos | 0 | 30 |
+| T4 · Efectivo | 0 | 21 |
+| T5 · Activos financieros | 0 | 30 |
+| T6 · Cuentas por cobrar | 0 | 30 |
+
+Veintidós colores pasaron de opacidad al sólido `#A8B6C8` (6,79:1 sobre
+tarjeta), que es lo que Xeno fijó. El que queda es la flecha inactiva de
+`TresInformes`: 2,32:1, porque el color y la opacidad se multiplican. Subirlo
+cambia la señal de cuál está activa, así que es decisión de diseño y está en
+manos de Xeno. **Un fallo nombrado vale más que uno arreglado mal.**
+
+### Las dos trampas de esta sonda, por si alguien escribe otra
+
+**Un control deshabilitado no pide contraste.** WCAG exime lo inactivo, y
+verlo apagado ES la señal. La primera versión marcó «Siguiente» y «Repetir»
+apagados: dos falsos positivos de diez.
+
+**«No medido» no es «mal», y tampoco es «bien».** Texto con el color
+transparente no se puede medir desde fuera —el color real viene de un recorte
+sobre el fondo— y medirlo da 1:1 para todo. Estuve a punto de mandarle a la
+Célula B cuarenta y seis «fallos» de T6 y a la C otros veintiuno de T5: no
+existía ninguno. Lo que lo evitó no fue la sonda, fue mirar lo que decía antes
+de relatarlo.
+
+Del mismo par: un cero sobre UNA pantalla quiere decir que la sonda no entró.
+Le pasaba a T4, que abre con «Aprender 6 actividades» y avanza con «Seguir» en
+vez de «Siguiente». Se le pusieron los dos nombres. **Un aviso es un parche;
+lo que había que arreglar era que entrara.**
+
 ## Dónde enchufan los identificadores de tema
 
 Encargo de Mateo del 16 de octubre: cada tema del inicio de una materia va a
