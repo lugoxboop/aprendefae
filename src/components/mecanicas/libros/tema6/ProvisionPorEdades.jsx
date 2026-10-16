@@ -38,7 +38,8 @@ export const CONFIG_T6_ACT6 = {
   cierre: T6_ACT6.cierre,
   alt: ALT_T6_ACT6,
   etiqueta: "Casilla",
-  visual: { Componente: CajonesDelTiempo, anuncio: anuncioDe, enDemo: true },
+  /* Lote 6c: en las casillas de ubicar (1 a 3), los cajones del eje son las opciones. */
+  visual: { Componente: CajonesDelTiempo, anuncio: anuncioDe, enDemo: true, opciones: (c) => c.parte === PARTES_T6_ACT6[0].id },
 };
 
 export default function ProvisionPorEdades(props) {

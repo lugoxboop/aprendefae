@@ -169,6 +169,8 @@ VEREDICTO = """() => { const m = document.querySelector('[data-sonda-marco]'); i
   const r = [...m.querySelectorAll('[role="status"]')].map((e) => e.textContent.trim()).find((t) => /^(Correcto|Incorrecto):/.test(t));
   if (r) return r.startsWith('Correcto') ? 'acierto' : 'error';
   if (m.querySelector('[data-estado="incorrecta"]')) return 'error';
+  if (m.querySelector('[data-estado-destino="error"]')) return 'error';   // lote 6c: a6, los cajones del eje son las opciones (estándar de Hacer)
+  if (m.querySelector('[data-estado-destino="correcto"]')) return 'acierto';
   if (m.querySelector('[data-estado="correcta"]')) return 'acierto';
   return null; }"""
 
