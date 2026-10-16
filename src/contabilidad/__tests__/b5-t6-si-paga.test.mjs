@@ -108,9 +108,15 @@ test("★★★ todo texto de los datos es literal del paquete guardado (paquete
 test("★★★ manda Futaba: los cinco términos (nota en el 2, cita con página en el 5), sin marcas de auditoría, y los 9 pasos y el cierre con su etiqueta", () => {
   const n = D.PIEZA_SI_PAGA.nombres;
   assert.deepEqual(n.map((x) => x.termino), ["Cuenta recuperada", "Revivir la deuda", "Después, el pago", "Abono", "Cuánto se revive"]);
-  for (const x of n) assert.ok(FUTABA.includes(`\t${x.termino}\t${x.definicion}\t`), `término «${x.termino}» como en Futaba`);
+  /* B2 (un término por pantalla, 15-oct), guardada al final del paquete: solo cambia «Cuánto se revive»; los otros, «el de hoy». */
+  const B2 = FUENTE.slice(FUENTE.indexOf("## B2 ·"));
+  for (const x of n.slice(0, 4)) {
+    assert.ok(B2.includes(`**${x.termino}** — El de hoy`), `«${x.termino}»: B2 dice «el de hoy»`);
+    assert.ok(FUTABA.includes(`\t${x.termino}\t${x.definicion}\t`), `término «${x.termino}» como en Futaba`);
+  }
+  assert.ok(B2.includes(`**Cuánto se revive** — Def.: ${n[4].definicion} · Cita: ${n[4].delLibro}`), "«Cuánto se revive» como en B2");
   assert.equal(n[1].rotuloDelLibro, "Nota");
-  assert.match(n[4].delLibro, /^«….*» \(p\. 203\)$/);
+  assert.match(n[4].delLibro, /^«….*…» \(p\. 203\)$/);
   assert.deepEqual([0, 2, 3].map((k) => n[k].delLibro), [undefined, undefined, undefined]);
   assert.ok(!JSON.stringify(D).includes("CONSTRUCCIÓN"), "las marcas de auditoría no se pintan");
   const filas = new Map();
