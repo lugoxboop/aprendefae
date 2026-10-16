@@ -37,6 +37,13 @@
  * iba ya escrito, la pastilla tocada más alta queda con su tope dentro de la
  * ventana y el pie de la devolución también: las dos A LA VEZ.
  *
+ * Y los SOLAPES (Shibukawa, auditoría del #308; Yujiro): en las mismas dos
+ * ventanas, al llegar, tras cada veredicto y al final de cada pantalla de
+ * Aprender, y tras cada tarjeta de cada Hacer, ninguna pastilla
+ * (`.t4r-marca`) ni título (el de la pieza y los nombres del cajón y de la
+ * bandeja) queda tapado por otro elemento, cruzado por un borde o una raya
+ * ajena, ni cortado por un contenedor que recorta.
+ *
  * Sale con código 1 si algo falla. Necesita Playwright.
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -136,6 +143,69 @@ function devolucion(sel) {
   return { veredicto: m.dataset.mensaje, top: Math.round(r.top * 10) / 10, bottom: Math.round(r.bottom * 10) / 10, alto: innerHeight };
 }
 
+/*
+ * En la página: lo que tapa, cruza o corta una pastilla o un título dentro de
+ * `sel`. Tapado: en un punto de su caja, lo de más arriba es otro elemento
+ * (ni ella, ni algo suyo, ni algo que la contiene). Cruzado: un borde visible
+ * de otro elemento, o una raya (un elemento de 3 px o menos con fondo), pasa
+ * por dentro de su caja. Cortado: un contenedor con overflow que recorta no
+ * la contiene entera.
+ */
+export const SOLAPABLES = '.t4r-marca, .t4cv-nombre, .t4cv-caja2-n, .t4cv-band > span:first-child, [data-titulo-pieza], .t4r-titulo';
+function solapes({ sel, objetivos }) {
+  const raiz = document.querySelector(sel);
+  if (!raiz) return [];
+  const salida = [];
+  const visible = (el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 1 && r.height > 1 && cs.visibility !== "hidden" && cs.opacity !== "0"; };
+  const nombre = (el) => (el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 40) || el.className;
+  const opaco = (c) => c && c !== "transparent" && !/rgba\([^)]*,\s*0\)$/.test(c);
+  const blancos = [...raiz.querySelectorAll(objetivos)].filter(visible);
+  const todos = [...raiz.querySelectorAll("*")].filter(visible);
+  for (const t of blancos) {
+    t.scrollIntoView({ block: "center", behavior: "instant" });
+    const r = t.getBoundingClientRect();
+    const dentro = { l: r.left + 1.5, r: r.right - 1.5, t: r.top + 1.5, b: r.bottom - 1.5 };
+    /* Tapado */
+    const puntos = [[(r.left + r.right) / 2, (r.top + r.bottom) / 2], [dentro.l + 1, dentro.t + 1], [dentro.r - 1, dentro.t + 1], [dentro.l + 1, dentro.b - 1], [dentro.r - 1, dentro.b - 1]];
+    for (const [x, y] of puntos) {
+      const e = document.elementFromPoint(x, y);
+      if (e && e !== t && !t.contains(e) && !e.contains(t)) { salida.push(`«${nombre(t)}» queda tapado por «${nombre(e)}»`); break; }
+    }
+    /* Cruzado */
+    for (const e of todos) {
+      if (e === t || t.contains(e) || e.contains(t)) continue;
+      const q = e.getBoundingClientRect();
+      if (q.right < r.left || q.left > r.right || q.bottom < r.top || q.top > r.bottom) continue;
+      const cs = getComputedStyle(e);
+      const rayas = [];
+      const lado = (w, c) => parseFloat(w) > 0 && cs.borderStyle !== "none" && opaco(c);
+      if (lado(cs.borderTopWidth, cs.borderTopColor)) rayas.push({ y: q.top, x0: q.left, x1: q.right });
+      if (lado(cs.borderBottomWidth, cs.borderBottomColor)) rayas.push({ y: q.bottom, x0: q.left, x1: q.right });
+      if (lado(cs.borderLeftWidth, cs.borderLeftColor)) rayas.push({ x: q.left, y0: q.top, y1: q.bottom });
+      if (lado(cs.borderRightWidth, cs.borderRightColor)) rayas.push({ x: q.right, y0: q.top, y1: q.bottom });
+      if (opaco(cs.backgroundColor) && (q.height <= 3 || q.width <= 3)) rayas.push(q.height <= 3 ? { y: (q.top + q.bottom) / 2, x0: q.left, x1: q.right } : { x: (q.left + q.right) / 2, y0: q.top, y1: q.bottom });
+      const cruza = rayas.some((k) => (k.y != null
+        ? k.y > dentro.t && k.y < dentro.b && Math.min(k.x1, dentro.r) - Math.max(k.x0, dentro.l) > 2
+        : k.x > dentro.l && k.x < dentro.r && Math.min(k.y1, dentro.b) - Math.max(k.y0, dentro.t) > 2));
+      if (cruza) { salida.push(`«${nombre(t)}» queda cruzado por un borde de «${nombre(e)}»`); break; }
+    }
+    /* Cortado */
+    for (let a = t.parentElement; a && a !== document.body; a = a.parentElement) {
+      const cs = getComputedStyle(a);
+      if (cs.overflowX === "visible" && cs.overflowY === "visible") continue;
+      const q = a.getBoundingClientRect();
+      if (r.left < q.left - 0.5 || r.right > q.right + 0.5 || r.top < q.top - 0.5 || r.bottom > q.bottom + 0.5) { salida.push(`«${nombre(t)}» queda cortado por «${nombre(a)}»`); break; }
+    }
+  }
+  return [...new Set(salida)];
+}
+const filasS = [];
+async function mirarSolapes(pg, sel, lugar) {
+  const s = await pg.evaluate(solapes, { sel, objetivos: SOLAPABLES });
+  filasS.push(`${lugar}: ${s.length ? s.join("; ") : "sin solapes"}`);
+  for (const x of s) fallos.push(`SOLAPE · ${lugar}: ${x}`);
+}
+
 /* ═══════════ APRENDER ═══════════ */
 {
   const pg = await navegador.newPage({ viewport: { width: ANCHO, height: 900 }, deviceScaleFactor: 2 });
@@ -193,7 +263,9 @@ for (const ventana of E2_VENTANAS) {
     for (let vuelta = 0; vuelta < 16; vuelta++) {
       await pg.evaluate(() => document.fonts.ready);
       const id = await pg.getAttribute(sel, "data-pantalla");
+      await mirarSolapes(pg, sel, `${ventana.width}×${ventana.height} · ${pz} · ${id} · al llegar`);
       await jugarPlan(pg, sel, PLANES[pz][id], async (paso) => {
+        await mirarSolapes(pg, sel, `${ventana.width}×${ventana.height} · ${pz} · ${id} · ${paso.mide}`);
         const d = await pg.evaluate(devolucion, sel);
         const lugar = `E2 · ${ventana.width}×${ventana.height} · ${pz} · ${id} · ${paso.mide}`;
         if (!d) { fallos.push(`${lugar}: no hay devolución`); return; }
@@ -201,6 +273,8 @@ for (const ventana of E2_VENTANAS) {
         if (CAPTURAS) await pg.screenshot({ path: resolve(CAPTURAS, `e2-${ventana.width}x${ventana.height}-${pz}-${id}-${paso.mide.replace(/[^\p{L}\p{N}]+/gu, "-")}.png`) });
         if (d.top < -0.5 || d.bottom > d.alto + 0.5) fallos.push(`${lugar}: la devolución va de ${d.top} a ${d.bottom} px y la ventana mide ${d.alto}`);
       });
+      await pg.waitForTimeout(400);
+      await mirarSolapes(pg, sel, `${ventana.width}×${ventana.height} · ${pz} · ${id} · al final`);
       const b = await pg.$(`${sel} [data-boton="seguir"]`);
       if (!b) break;
       await b.click();
@@ -282,6 +356,7 @@ for (const ventana of E2_VENTANAS) {
         if (m.pie > m.alto + 0.5) fallos.push(`${lugar}: el pie de la devolución queda en ${m.pie} px y la ventana mide ${m.alto}`);
       }
       filasE2H.push(`${lugar}: pastilla desde ${m.pastilla ?? "—"}, devolución hasta ${m.pie} (ventana ${m.alto})`);
+      await mirarSolapes(pg, R, `${ventana.width}×${ventana.height} · ${id} · ${modo === "bien" ? "acierto" : "error"} · tarjeta ${n}`);
       if (CAPTURAS) await pg.screenshot({ path: resolve(CAPTURAS, `e2h-${ventana.width}x${ventana.height}-${s}-${modo}-${n}.png`) });
       const sig = await pg.$(`${R} [data-boton="seguir-hacer"] button`);
       if (!sig) break;
@@ -325,5 +400,6 @@ filasE2.push(...filasE2H);
 await navegador.close();
 await servidor.close();
 console.log(filas.join("\n"));
-console.log(fallos.length ? `\n${fallos.length} FALLAN:\n${fallos.join("\n")}` : `\nB1 se cumple en las ${filas.length - filasE2.length} pantallas medidas a ${ANCHO} px, y E2 en los ${filasE2.length} veredictos medidos en la ventana.`);
+console.log(filasS.join("\n"));
+console.log(fallos.length ? `\n${fallos.length} FALLAN:\n${fallos.join("\n")}` : `\nB1 se cumple en las ${filas.length - filasE2.length} pantallas medidas a ${ANCHO} px, E2 en los ${filasE2.length} veredictos medidos en la ventana, y no hay solapes en los ${filasS.length} estados mirados.`);
 process.exit(fallos.length ? 1 : 0);

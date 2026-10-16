@@ -51,7 +51,7 @@ export const CSS_CAJON = `
 .t4cv-borde { position: absolute; left: -1px; right: -1px; height: 12px; display: flex; justify-content: space-between; pointer-events: none; }
 .t4cv-borde > span { border-color: ${C.neutro}; border-style: solid; border-width: 0; }
 .t4cv-cajon[data-luz] .t4cv-borde > span { border-color: ${C.texto}; }
-.t4cv-nombre { margin: 0; text-align: center; font: 600 13px/1.3 "Sora", "Inter", sans-serif; }
+.t4cv-nombre { margin: 0; justify-self: center; text-align: center; font: 600 13px/1.3 "Sora", "Inter", sans-serif; }
 /* Lote B, capa 1 (A1 P0): la glosa de cada cuenta, bajo su nombre (Hanayama §2.1; Katsumi). */
 .t4cv-glosa-c { display: grid; margin: 0; font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; }
 .t4cv-glosa-c > span { white-space: nowrap; }
@@ -77,7 +77,14 @@ button.t4cv-col:disabled { cursor: default; }
 .t4cv-saldo[data-luz] { border: 2px solid ${C.texto}; }
 .t4cv-saldo > span:first-child { font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; white-space: nowrap; }
 .t4cv-saldo > span:last-child { font: 600 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.t4cv-band { position: absolute; left: 36%; right: 0; top: 6px; min-height: 44px; display: grid; align-content: center; gap: 0; padding: 4px 26px 4px 10px; border-radius: 8px; border: 1px solid rgba(248,249,250,0.35); background: transparent; color: ${C.texto}; text-align: left; font: inherit; }
+/*
+ * La bandeja va en el flujo del tubo (no absoluta): si su segunda línea parte en
+ * dos a 320 o 375 (el cheque y su pastilla), el tubo crece con ella y no tacha
+ * la pastilla con el borde del cajón ni tapa «Caja» (Shibukawa, #308). Sin
+ * partir, mide lo de antes: 6 + 44 + 8 = 58 px.
+ */
+.t4cv-tubo[data-con-bandeja] { padding: 6px 0 8px 36%; }
+.t4cv-band { position: relative; min-height: 44px; display: grid; align-content: center; gap: 0; padding: 4px 26px 4px 10px; border-radius: 8px; border: 1px solid rgba(248,249,250,0.35); background: transparent; color: ${C.texto}; text-align: left; font: inherit; }
 button.t4cv-band { cursor: pointer; }
 button.t4cv-band:disabled { cursor: default; }
 .t4cv-band[data-marca="bien"], .t4cv-band[data-marca="era"] { border: 2px solid ${C.texto}; padding: 3px 25px 3px 9px; }
@@ -172,7 +179,7 @@ export function Cajon({
           </span>
         </div>
       )}
-      <div className="t4cv-tubo" style={{ height: bandeja ? "58px" : "16px" }} aria-hidden={bandeja ? undefined : "true"}>
+      <div className="t4cv-tubo" data-con-bandeja={bandeja ? "" : undefined} style={bandeja ? undefined : { height: "16px" }} aria-hidden={bandeja ? undefined : "true"}>
         <span className={`t4cv-v${v("entrada")}`} data-trazo="entrada" aria-hidden="true" style={{ left: "calc(25% - 1px)", top: 0, bottom: 0 }} />
         {bandeja && (
           <Band

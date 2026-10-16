@@ -64,6 +64,8 @@ export async function jugar(m, P, id, hasta = Infinity) {
   for (const [k, paso] of plan.entries()) {
     if (k >= hasta) break;
     if (paso.arrastra) continue;
+    /* Un paso de solo espera (A1 · cheques: llega el cheque propio a los 1,4 s). */
+    if (!paso.click) { await esperar(paso.espera ?? 0); continue; }
     const el = q(m, `[data-pieza] ${paso.click}`);
     assert.ok(el, `${P.id} · ${id}: el plan toca ${paso.click} y no está`);
     tocar(el);
