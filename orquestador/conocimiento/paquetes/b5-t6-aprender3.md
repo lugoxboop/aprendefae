@@ -13,12 +13,12 @@ Lo que ve el estudiante sale de aquí, letra por letra. Precedencia (Sakuta, tod
 
 **Rótulos de la escena** (guía v1 §4.1, §4.2 y §8), todos fragmentos literales de los pasos, de las cajas de la capa 3 o del cierre:
 
-- Momento 1 · «31 de diciembre de 2007» · «Se crea»: «Lo que le deben sus clientes» / «$2.655.000» (paso 1); «Una parte no la va a recuperar: $148.800» (paso 2); «Gasto provisiones – cuentas incobrables» «$148.800» [se debita] (paso 3); «Provisión para deudas incobrables» «$148.800» [se acredita] (paso 4); «Ese gasto baja la utilidad del año» (paso 5); el bloque «En el estado de situación financiera»: «Cuentas por cobrar – clientes» «$2.655.000» y «Provisión para deudas incobrables» «− $148.800» (paso 6); «El valor neto» «$2.506.200» (paso 7).
-- Momento 2 · «Marzo del año siguiente» · «Se usa»: «Da por perdida la deuda de Pablo Moncayo» (paso 8); «Provisión para deudas incobrables» «$180.000» [se debita] (paso 9); «Cuentas por cobrar – clientes» · «A nombre de Pablo Moncayo» · «$180.000» [se acredita] (paso 10); «Quedó subestimada en $31.200» (paso 13).
-- Momento 3 · «31 de diciembre del año siguiente» · «Se corrige»: «Hace otra vez el análisis» (paso 14); «Pide una provisión de $153.400» (paso 15); «Se le suman los $31.200 que faltaron» (paso 16); «Gasto provisiones – cuentas incobrables» «$184.600» [se debita] (paso 17); «Provisión para deudas incobrables» «$184.600» [se acredita] (paso 18); «La provisión queda con $153.400» (paso 19).
+- Momento 1 · «31 de diciembre de 2007» · «Se crea»: «Lo que le deben sus clientes» / «$2.655.000» (paso 1); «Una parte no la va a recuperar: $148.800» (paso 2); «Gasto provisiones – cuentas incobrables» «$148.800» [se debita] (paso 3); «Provisión para cuentas incobrables» «$148.800» [se acredita] (paso 4); «Ese gasto baja la utilidad del año» (paso 5); el bloque «En el estado de situación financiera»: «Cuentas por cobrar – clientes» «$2.655.000» y «Provisión para cuentas incobrables» «− $148.800» (paso 6); «El valor neto» «$2.506.200» (paso 7).
+- Momento 2 · «Marzo del año siguiente» · «Se usa»: «Da por perdida la deuda de Pablo Moncayo» (paso 8); «Provisión para cuentas incobrables» «$180.000» [se debita] (paso 9); «Cuentas por cobrar – clientes» · «A nombre de Pablo Moncayo» · «$180.000» [se acredita] (paso 10); «Quedó subestimada en $31.200» (paso 13).
+- Momento 3 · «31 de diciembre del año siguiente» · «Se corrige»: «Hace otra vez el análisis» (paso 14); «Pide una provisión de $153.400» (paso 15); «Se le suman los $31.200 que faltaron» (paso 16); «Gasto provisiones – cuentas incobrables» «$184.600» [se debita] (paso 17); «Provisión para cuentas incobrables» «$184.600» [se acredita] (paso 18); «La provisión queda con $153.400» (paso 19).
 - Las cápsulas: «se debita» y «se acredita».
 
-**La cuenta T de la capa 3** (guía v1 §5): el nombre «Provisión para deudas incobrables»; las columnas «DEBE» y «HABER» (las palabras publicadas en ElCierreCompleto); los movimientos «$148.800», «$180.000» y «$184.600», cada uno con el nombre de su momento; los saldos «El saldo queda en $148.800», «Le faltan $31.200» y «El saldo queda en $153.400», fragmentos de las revelaciones.
+**La cuenta T de la capa 3** (guía v1 §5): el nombre «Provisión para cuentas incobrables»; las columnas «DEBE» y «HABER» (las palabras publicadas en ElCierreCompleto); los movimientos «$148.800», «$180.000» y «$184.600», cada uno con el nombre de su momento; los saldos «El saldo queda en $148.800», «Le faltan $31.200» y «El saldo queda en $153.400», fragmentos de las revelaciones.
 
 **Ids:**
 
@@ -38,7 +38,7 @@ OBJETIVO: Vas a ver cómo se crea la provisión, cómo se castiga una deuda cont
 
 Capa 1 · Primero, los nombres
 #	Término	Texto literal	Estim.
-1 ✎	Provisión para deudas incobrables	Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables. Ojo: la provisión sube cuando se acredita y baja cuando se debita. Es al revés de Cuentas por cobrar – clientes, porque se resta de ella.	80
+1 ✎	Provisión para cuentas incobrables	Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para cuentas incobrables. Ojo: la provisión sube cuando se acredita y baja cuando se debita. Es al revés de Cuentas por cobrar – clientes, porque se resta de ella.	80
 2	Valor neto	La provisión se resta de Cuentas por cobrar – clientes en el estado de situación financiera. Lo que queda es el valor neto. Así la empresa ve cuánto espera recuperar de verdad.	82
 2 · Nota	—	La provisión no mueve Caja ni Bancos. No es plata aparte: es un valor que se resta de lo que deben los clientes.	101
 3	El gasto	El gasto de la provisión baja la utilidad del año en que se crea. Se ve en el estado de resultados.	93
@@ -58,12 +58,12 @@ Sin cambios.
 1	El 31 de diciembre de 2007, El Torito Currambero revisa lo que le deben sus clientes: $2.655.000.	Basado en el libro, p. 200	Lo que deben los clientes	65
 2	Calcula que una parte no la va a recuperar: $148.800.	Basado en el libro, p. 202	La parte que no se recupera	79
 3	Se debita Gasto provisiones – cuentas incobrables por $148.800.	Libro, p. 202	Gasto provisiones – cuentas incobrables	<10
-4	Y se acredita Provisión para deudas incobrables, por el mismo valor.	Libro, p. 202	Provisión para deudas incobrables	66
+4	Y se acredita Provisión para cuentas incobrables, por el mismo valor.	Libro, p. 202	Provisión para cuentas incobrables	66
 5	Ese gasto baja la utilidad del año.	Libro, p. 202	La utilidad	<10
 6	En el estado de situación financiera, la provisión se resta de Cuentas por cobrar – clientes.	Libro, p. 202	Las dos cuentas, una debajo de la otra	76
 7	Cálculo: $2.655.000 − $148.800 = $2.506.200, el valor neto.	Libro, p. 202	El valor neto	<10
 8	En marzo del año siguiente, la empresa da por perdida la deuda de Pablo Moncayo.	Basado en el libro, p. 202	La deuda de Moncayo	80
-9	Se debita Provisión para deudas incobrables por $180.000.	Libro, p. 202	Provisión para deudas incobrables	<10
+9	Se debita Provisión para cuentas incobrables por $180.000.	Libro, p. 202	Provisión para cuentas incobrables	<10
 10	Y se acredita Cuentas por cobrar – clientes, a nombre de Pablo Moncayo.	Basado en el libro, p. 202	Cuentas por cobrar – clientes	81
 11	No se anota ningún gasto: ese ya se anotó en diciembre.	Basado en el libro, p. 202	El gasto, quieto	83
 12	La provisión era de $148.800, y lo castigado fue $180.000.	Libro, p. 202	Las dos cifras	72
@@ -72,7 +72,7 @@ Sin cambios.
 15	Esta vez pide una provisión de $153.400.	Libro, p. 203	La provisión nueva	<10
 16	A esa cifra se le suman los $31.200 que faltaron.	Libro, p. 203	La suma	91
 17	Se debita Gasto provisiones – cuentas incobrables por $184.600.	Basado en el libro, p. 203	Gasto provisiones – cuentas incobrables	<10
-18	Y se acredita Provisión para deudas incobrables, por el mismo valor.	Libro, p. 203	Provisión para deudas incobrables	66
+18	Y se acredita Provisión para cuentas incobrables, por el mismo valor.	Libro, p. 203	Provisión para cuentas incobrables	66
 19	Al final, la provisión queda con $153.400: justo lo que pidió el análisis.	Libro, p. 203	El saldo final	79
 Cierre	La provisión se crea al cierre, se usa al castigar y se corrige al año siguiente.	Basado en el libro, pp. 200-203	—	82
 Capa 3 · Ahora pruebe usted
@@ -141,7 +141,7 @@ Título: «La provisión, de un año al siguiente».
 Objetivo (4 · 3): «Vas a ver cómo se crea la provisión, cómo se castiga una deuda contra ella y cómo se ajusta al año siguiente.»
 
 #	Término	Texto literal	Líneas 320 · 375
-1	«Provisión para deudas incobrables» (2 · 1)	«Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables. Ojo: la provisión sube cuando se acredita y baja cuando se debita. Es al revés de Cuentas por cobrar – clientes, porque se resta de ella.»	12 · 10
+1	«Provisión para cuentas incobrables» (2 · 1)	«Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para cuentas incobrables. Ojo: la provisión sube cuando se acredita y baja cuando se debita. Es al revés de Cuentas por cobrar – clientes, porque se resta de ella.»	12 · 10
 2	«Valor neto»	«La provisión se resta de Cuentas por cobrar – clientes en el estado de situación financiera. Lo que queda es el valor neto. Así la empresa ve cuánto espera recuperar de verdad.»	6 · 5
 2 · Nota	—	«La provisión no mueve Caja ni Bancos. No es plata aparte: es un valor que se resta de lo que deben los clientes.»	4 · 3
 3	«El gasto»	«El gasto de la provisión baja la utilidad del año en que se crea. Se ve en el estado de resultados.»	3 · 3
@@ -166,19 +166,19 @@ Paso	Pieza	Texto	Alto 320 · 375
 1	hecho	«Lo que le deben sus clientes» / «$2.655.000»	49,08
 2	nota	«Una parte no la va a recuperar: $148.800»	46,38 · 30,19
 3	anotación	«Gasto provisiones – cuentas incobrables» «$148.800» [se debita]	67,69 · 51,44
-4	anotación	«Provisión para deudas incobrables» «$148.800» [se acredita]	67,69 · 51,44
+4	anotación	«Provisión para cuentas incobrables» «$148.800» [se acredita]	67,69 · 51,44
 5	nota	«Ese gasto baja la utilidad del año»	30,19
-6	bloque	«En el estado de situación financiera»: «Cuentas por cobrar – clientes» «$2.655.000» · «Provisión para deudas incobrables» «− $148.800»	148,44 · 132,19 con el neto
+6	bloque	«En el estado de situación financiera»: «Cuentas por cobrar – clientes» «$2.655.000» · «Provisión para cuentas incobrables» «− $148.800»	148,44 · 132,19 con el neto
 7	fila	«El valor neto» «$2.506.200», bajo filete neutro	25,25
 8	hecho	«Da por perdida la deuda de Pablo Moncayo»	47,78
-9	anotación	«Provisión para deudas incobrables» «$180.000» [se debita]	67,69 · 51,44
+9	anotación	«Provisión para cuentas incobrables» «$180.000» [se debita]	67,69 · 51,44
 10	anotación	«Cuentas por cobrar – clientes» «A nombre de Pablo Moncayo» [se acredita]	73,63 · 51,44
 13	nota	«Quedó subestimada en $31.200»	30,19
 14	hecho	«Hace otra vez el análisis»	30,89
 15	nota	«Pide una provisión de $153.400»	30,19
 16	nota	«Se le suman los $31.200 que faltaron»	30,19
 17	anotación	«Gasto provisiones – cuentas incobrables» «$184.600» [se debita]	67,69 · 51,44
-18	anotación	«Provisión para deudas incobrables» «$184.600» [se acredita]	67,69 · 51,44
+18	anotación	«Provisión para cuentas incobrables» «$184.600» [se acredita]	67,69 · 51,44
 19	nota	«La provisión queda con $153.400»	30,19
 
 Bloque del estado de situación financiera:
@@ -205,12 +205,12 @@ Paso	Momento	Resaltado	Texto literal	Líneas	Pie
 1	1	lo que deben los clientes	«El 31 de diciembre de 2007, El Torito Currambero revisa lo que le deben sus clientes: $2.655.000.»	3 / 3	Basado en el libro, p. 200
 2	1	la parte que no se recupera	«Calcula que una parte no la va a recuperar: $148.800.»	2 / 2	Basado en el libro, p. 202
 3	1	el gasto	«Se debita Gasto provisiones – cuentas incobrables por $148.800.»	2 / 2	Libro, p. 202
-4	1	la provisión	«Y se acredita Provisión para deudas incobrables, por el mismo valor.»	2 / 2	Libro, p. 202
+4	1	la provisión	«Y se acredita Provisión para cuentas incobrables, por el mismo valor.»	2 / 2	Libro, p. 202
 5	1	la utilidad	«Ese gasto baja la utilidad del año.»	1 / 1	Libro, p. 202
 6	1	las dos filas del bloque	«En el estado de situación financiera, la provisión se resta de Cuentas por cobrar – clientes.»	3 / 3	Libro, p. 202
 7	1	el valor neto	«Cálculo: $2.655.000 − $148.800 = $2.506.200, el valor neto.»	2 / 2	Libro, p. 202
 8	2	la deuda de Moncayo	«En marzo del año siguiente, la empresa da por perdida la deuda de Pablo Moncayo.»	3 / 2	Basado en el libro, p. 202
-9	2	la provisión	«Se debita Provisión para deudas incobrables por $180.000.»	2 / 2	Libro, p. 202
+9	2	la provisión	«Se debita Provisión para cuentas incobrables por $180.000.»	2 / 2	Libro, p. 202
 10	2	Cuentas por cobrar – clientes	«Y se acredita Cuentas por cobrar – clientes, a nombre de Pablo Moncayo.»	2 / 2	Basado en el libro, p. 202
 11	2	el gasto de diciembre, quieto	«No se anota ningún gasto: ese ya se anotó en diciembre.»	2 / 2	Basado en el libro, p. 202
 12	2	las dos cifras ($148.800 y $180.000)	«La provisión era de $148.800, y lo castigado fue $180.000.»	2 / 2	Libro, p. 202
@@ -219,7 +219,7 @@ Paso	Momento	Resaltado	Texto literal	Líneas	Pie
 15	3	la provisión nueva	«Esta vez pide una provisión de $153.400.»	2 / 1	Libro, p. 203
 16	3	la suma	«A esa cifra se le suman los $31.200 que faltaron.»	2 / 2	Libro, p. 203
 17	3	el gasto	«Se debita Gasto provisiones – cuentas incobrables por $184.600.»	2 / 2	Basado en el libro, p. 203
-18	3	la provisión	«Y se acredita Provisión para deudas incobrables, por el mismo valor.»	2 / 2	Libro, p. 203
+18	3	la provisión	«Y se acredita Provisión para cuentas incobrables, por el mismo valor.»	2 / 2	Libro, p. 203
 19	3	el saldo final	«Al final, la provisión queda con $153.400: justo lo que pidió el análisis.»	2 / 2	Libro, p. 203
 Cierre	—	nada	«La provisión se crea al cierre, se usa al castigar y se corrige al año siguiente.»	3 / 2	Basado en el libro, pp. 200-203
 
@@ -262,7 +262,7 @@ Orden de la capa: consigna (2 / 2), «Toca cada momento y mira cómo cambia el s
 La cuenta T:
 
 Borde 1 neutro, radio 12, relleno 10/12/12, aria-live="polite".
-Nombre centrado: «Provisión para deudas incobrables».
+Nombre centrado: «Provisión para cuentas incobrables».
 Línea horizontal de 2 px y, debajo, dos columnas separadas por una línea vertical de 2 px.
 «DEBE» y «HABER» arriba, con el estilo de los colectores [S].
 Cada movimiento va en su columna, alineado a la derecha: el monto, y debajo el momento.
@@ -498,7 +498,7 @@ Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza
 («El de hoy» = el texto que ya está en el repositorio para ese término, sin cambios. Las cifras entre paréntesis son la estimación INFLESZ de Futaba; NO van en pantalla. «Def.:», «Cita:», «Nota:», «Pie:» indican la parte del término: Def. = definición/texto; Cita = «Así lo dice el libro»; Nota = la nota; Pie = pie de fuente.)
 
 ### T6 A3 · 6 pantallas
-1. **Provisión para deudas incobrables** — Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables.
+1. **Provisión para cuentas incobrables** — Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para cuentas incobrables.
 2. **Al revés de Clientes** — Ojo: la provisión sube cuando se acredita y baja cuando se debita. Es al revés de Cuentas por cobrar – clientes, porque se resta de ella.
 3. **Valor neto** — El de hoy, con su nota.
 4. **El gasto** — El de hoy.
@@ -571,7 +571,7 @@ No filtrar la respuesta: en la capa 2 no hay respuesta; en la capa 3, las opcion
 Panel: el contenedor útil es de 258 a 320 y 313 a 375 [pantalla, Sai, 13-oct-2026].
 Escena de la capa 2, de arriba abajo:
 A. Clientes (alto reservado de 115 a 136 [fuente]): Fila: «Cuentas por cobrar – clientes» (Inter 12/600) y «$2.655.000» (monoespaciada 12,5/700), a los dos lados. Barra: alto 26, contorno 1 px rgba(248,249,250,.35) y radio 6. Es un botón solo en el paso 4. La parte que no se va a recuperar: ocupa el 24 % del largo, a la derecha [supuesto: proporción ilustrativa, no a escala; parada para Sai: mide que se lea «No la va a recuperar» completo; si se corta, detente y avisa]. Va rayada en neutro antes del paso 4. Desde el paso 4, esa parte va rellena de ámbar al 38 % con borde izquierdo ámbar de 2 px: es la provisión restada. Rótulos bajo la barra (alto mínimo 34): a la izquierda «Valor neto» y su cifra; a la derecha «No la va a recuperar $148.800» o «Provisión − $148.800». Inter 12, #A8B6C8, con las cifras en #F8F9FA. Ranura de 44: la ficha de Pablo Moncayo (pasos 6 y 7) o la pista del paso 4.
-B. Zona media: rejilla de dos columnas, 1fr 84px, separación 10. Columna 1: la bandeja del gasto: rótulo «Gasto provisiones – cuentas incobrables» (Inter 12/600, #A8B6C8) y dos fichas de 44 de alto mínimo; debajo, la cuenta T «Provisión para deudas incobrables», en el contenedor hundido de Cuentas (rgba(10,20,34,.45), 1 px rgba(248,249,250,.12), radio 12). DEBE y HABER son texto de 12 px, en #3FA69A y ámbar. Cada fila lleva solo la cifra (monoespaciada 12,5/700); la fecha la lleva la ficha que la trajo y el lector de pantalla (§8). Columna 2: «Saldo» (Inter 12/600, #A8B6C8); el tanque, en el contenedor hundido, de 84 × 160 y radio 10; debajo, el rótulo del saldo (alto mínimo 34): «Queda en $148.800», «Le faltan $31.200», etc.
+B. Zona media: rejilla de dos columnas, 1fr 84px, separación 10. Columna 1: la bandeja del gasto: rótulo «Gasto provisiones – cuentas incobrables» (Inter 12/600, #A8B6C8) y dos fichas de 44 de alto mínimo; debajo, la cuenta T «Provisión para cuentas incobrables», en el contenedor hundido de Cuentas (rgba(10,20,34,.45), 1 px rgba(248,249,250,.12), radio 12). DEBE y HABER son texto de 12 px, en #3FA69A y ámbar. Cada fila lleva solo la cifra (monoespaciada 12,5/700); la fecha la lleva la ficha que la trajo y el lector de pantalla (§8). Columna 2: «Saldo» (Inter 12/600, #A8B6C8); el tanque, en el contenedor hundido, de 84 × 160 y radio 10; debajo, el rótulo del saldo (alto mínimo 34): «Queda en $148.800», «Le faltan $31.200», etc.
 Escala del tanque: de −40.000 a +200.000 en 160 px. Fórmula: y(v) = 160·(200.000 − v)/240.000 [calculado]. Cero en y = 133,33 [calculado]. Nivel $148.800 = 99,2 px sobre el cero; −$31.200 = 20,8 px bajo el cero; análisis $153.400 = 102,27 px [calculado].
 Alturas [fuente] (320 · 375): Escena reservada (todo el recorrido, sin saltos) 452,97 · 417,78; Zona media 310,72 · 275,53; Tanque, desde la cima del Panel 204,44 en todos los pasos · 204,44; Bloque pegado (texto reservado 86,75) 242,55 · 242,55; Bloque en la parada 297,92 · 297,92.
 Hueco sobre el bloque a 320×568 con cabecera de 56: 568 − 56 − 242,55 = 269,45 [calculado].

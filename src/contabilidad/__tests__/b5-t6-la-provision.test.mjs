@@ -116,7 +116,7 @@ test("★★★ todo texto de los datos es literal del paquete guardado (paquete
 
 test("★★★ manda Futaba, y encima B2: los seis términos (nota en el 3, cita solo en el 5) y los 19 pasos y el cierre con su etiqueta", () => {
   const n = D.PIEZA_LA_PROVISION.nombres;
-  assert.deepEqual(n.map((x) => x.termino), ["Provisión para deudas incobrables", "Al revés de Clientes", "Valor neto", "El gasto", "Castigar contra la provisión", "Subestimada y sobrestimada"]);
+  assert.deepEqual(n.map((x) => x.termino), ["Provisión para cuentas incobrables", "Al revés de Clientes", "Valor neto", "El gasto", "Castigar contra la provisión", "Subestimada y sobrestimada"]);
   /* B2 (un término por pantalla, 15-oct), guardada al final del paquete: los nuevos, literales; «el de hoy», como en Futaba. */
   const B2 = FUENTE.slice(FUENTE.indexOf("## B2 ·"));
   for (const k of [0, 1, 4]) assert.ok(B2.includes(`**${n[k].termino}** — ${k === 4 ? "Def.: " : ""}${n[k].definicion}`), `término «${n[k].termino}» como en B2`);

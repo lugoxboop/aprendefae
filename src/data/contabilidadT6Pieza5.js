@@ -66,7 +66,7 @@ export const PIEZA_COMO_SE_CALCULA = {
     },
     {
       termino: "La provisión",
-      definicion: "Se suman los cálculos de todos los grupos. Ese total es la provisión. Se anota como ya viste: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables.",
+      definicion: "Se suman los cálculos de todos los grupos. Ese total es la provisión. Se anota como ya viste: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para cuentas incobrables.",
       pie: PIE_LIBRO("pp. 200-202"),
     },
     {
@@ -134,7 +134,7 @@ export const ESCENA_T6_A5 = {
   ],
   suma: "$74.000",
   gasto: "Gasto provisiones – cuentas incobrables",
-  provision: "Provisión para deudas incobrables",
+  provision: "Provisión para cuentas incobrables",
   neto: "El valor neto",
   valorNeto: "$1.226.000",
   debita: "se debita",
@@ -152,7 +152,7 @@ export const PASOS_T6_A5 = [
   { texto: "Las que llevan más de un año suman $140.000. Al 15 %, son $21.000.", pie: PIE_PORCENTAJE },
   { texto: "Cálculo: $17.000 + $36.000 + $21.000 = $74.000.", pie: PIE_SIMULADO },
   { texto: "Se debita Gasto provisiones – cuentas incobrables por $74.000.", pie: PIE_LIBRO("p. 202") },
-  { texto: "Y se acredita Provisión para deudas incobrables, por el mismo valor.", pie: PIE_LIBRO("p. 202") },
+  { texto: "Y se acredita Provisión para cuentas incobrables, por el mismo valor.", pie: PIE_LIBRO("p. 202") },
   { texto: "Cálculo: $1.300.000 − $74.000 = $1.226.000, el valor neto.", pie: PIE_LIBRO("p. 202") },
 ];
 export const CIERRE_T6_A5 = {

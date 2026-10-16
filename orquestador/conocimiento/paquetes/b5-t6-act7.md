@@ -47,7 +47,7 @@ mc-04	El libro lo llama muy sencillo, pero con una desventaja. (79)	Anulación d
 mc-05	Se debita el gasto y se acredita la provisión, que sube. (83)	Provisiones · Al cierre	Sí. Es el asiento que crea la provisión al cierre. (102)	200, 202
 mc-06	Se calcula qué parte de lo que deben los clientes no se va a recuperar. (96)	Provisiones · Al cierre	Sí. Con provisiones, ese cálculo se hace al cierre.	200
 mc-07	A la provisión del año se le suma lo que faltó el año anterior. (95)	Provisiones · Al cierre	Sí. Es el ajuste de la provisión, al cierre del año siguiente. (97)	203
-mc-08	Al Debe, Provisión para deudas incobrables. Al Haber, Cuentas por cobrar – clientes. (76)	Provisiones · Al castigar	Sí. Es el asiento del castigo cuando hay provisión.	200
+mc-08	Al Debe, Provisión para cuentas incobrables. Al Haber, Cuentas por cobrar – clientes. (76)	Provisiones · Al castigar	Sí. Es el asiento del castigo cuando hay provisión.	200
 mc-09	Se castiga toda la deuda, aunque sea mayor que lo provisionado. (71)	Provisiones · Al castigar	Sí. Con provisiones, al castigar se da de baja toda la deuda, como hizo El Torito con Pablo Moncayo. (86)	202
 mc-10	El gasto no se toca, porque ya se había anotado. (85)	Provisiones · Al castigar	Sí. Con provisiones, el gasto se anotó al cierre; al castigar solo baja la provisión. (83)	200, 202
 mc-01 es la trampa a propósito. El nombre del gasto dice «provisiones», pero la ficha es de anulación directa: es el «Ojo» del término 4 de T6 A2.
