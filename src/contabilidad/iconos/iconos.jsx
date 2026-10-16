@@ -48,6 +48,16 @@ import r51 from "./conta-r5-1-repaso-cruzado.svg?raw";
 import r52 from "./conta-r5-2-el-toro-negro.svg?raw";
 import r54 from "./conta-r5-4-septiembre-en-barranquilla.svg?raw";
 import r55 from "./conta-r5-5-septiembre-en-permanente.svg?raw";
+import t4ec from "./conta-t4-entra-o-sale-de-caja.svg?raw";
+/* Los cinco de T5 sin número propio en el nombre: su id tampoco lo tiene. */
+import t5tl from "./conta-t5-temporal-o-largo-plazo.svg?raw";
+import t5rf from "./conta-t5-revision-que-falta.svg?raw";
+import t5ip from "./conta-t5-el-interes-del-periodo.svg?raw";
+import t5gp from "./conta-t5-gano-o-perdio.svg?raw";
+import t5cv from "./conta-t5-a-que-cuenta-va.svg?raw";
+import t64 from "./conta-t6-4-que-se-debita.svg?raw";
+import t66 from "./conta-t6-6-provision-por-edades.svg?raw";
+import r53 from "./conta-r5-3-marzo-en-comercializadora-mate.svg?raw";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -177,3 +187,14 @@ export const SeptiembreEnBarranquilla = icono("SeptiembreEnBarranquilla", r54);
  */
 export const SeptiembreEnPermanente = icono("SeptiembreEnPermanente", r55);
 
+/* Las nueve que esperaban su dibujo (16 de octubre): T4 H1, los cinco de T5,
+   dos de T6 y r5-3. Mismo estilo de la casa: 24, trazo de 2, currentColor. */
+export const EntraOSaleDeCajaIcono = icono("EntraOSaleDeCajaIcono", t4ec);
+export const TemporalOLargoPlazo = icono("TemporalOLargoPlazo", t5tl);
+export const QueRevisionFalta = icono("QueRevisionFalta", t5rf);
+export const ElInteresDelPeriodo = icono("ElInteresDelPeriodo", t5ip);
+export const GanoOPerdio = icono("GanoOPerdio", t5gp);
+export const AQueCuentaVa = icono("AQueCuentaVa", t5cv);
+export const QueSeDebita = icono("QueSeDebita", t64);
+export const ProvisionPorEdades = icono("ProvisionPorEdades", t66);
+export const MarzoEnComercializadoraMate = icono("MarzoEnComercializadoraMate", r53);

@@ -105,7 +105,7 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
   assert.equal(ICONO_POR_ACTIVIDAD["ciclo-completo"], undefined, "el Ciclo Completo no lleva ícono");
   assert.ok(!Object.keys(ICONO_POR_ACTIVIDAD).some((id) => /t1-3\b/.test(id)));
   assert.equal(new Set(Object.values(ICONO_POR_ACTIVIDAD)).size, Object.keys(ICONO_POR_ACTIVIDAD).length, "un ícono repetido");
-  /* Las 46 de Hacer de Contabilidad con dibujo (sin el desafío) tienen su ícono, y son 46 archivos. */
+  /* Las 58 de Hacer de Contabilidad con dibujo (sin el desafío) tienen su ícono, y son 58 archivos. */
   const conDesafio = new Set(SUBJECTS.contabilidad.topics.flatMap((t) => (t.actividades ?? []).filter((x) => x.clasificacion?.desafio).map((x) => x.id)));
   /* Actividades nuevas que todavía esperan su dibujo de Xeno: el camino las pinta sin ícono. */
   /* T4 · H1 (Célula D): los íconos los reserva el coordinador; se pidió, no se eligió.
@@ -115,11 +115,14 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
      r5-3 entra a subjects.js con el #196 y su ícono está pedido al coordinador.
      r5-4 (dos libros que cuadran) y r5-5 (el saldo que sube por escalones) ya
      tienen el suyo, del 16 de octubre. */
-  const SIN_ICONO_TODAVIA = new Set(["t5-temporal-o-largo-plazo", "t5-revision-que-falta", "t5-el-interes-del-periodo", "t4-entra-o-sale-de-caja", "b5-t6-a4", "b5-t6-a5", "b5-t6-a6", "b5-t6-a7", "r5-3", "t5-gano-o-perdio", "t5-a-que-cuenta-va"]);
+  /* Vacío a propósito: desde el 16 de octubre toda actividad de Hacer de
+     Contabilidad que no sea el desafío tiene su dibujo. Si entra una nueva sin
+     ícono, se nombra aquí con la fecha en que se pidió, y se saca al dibujarla. */
+  const SIN_ICONO_TODAVIA = new Set([]);
   const esperadas = [...hacer].filter((id) => !conDesafio.has(id) && !SIN_ICONO_TODAVIA.has(id));
-  assert.equal(esperadas.length, 49);
+  assert.equal(esperadas.length, 58);
   assert.deepEqual(Object.keys(ICONO_POR_ACTIVIDAD).sort(), esperadas.sort(), "falta o sobra un ícono");
-  assert.equal(ARCHIVOS.length, 49);
+  assert.equal(ARCHIVOS.length, 58);
   /* «¿Dónde se Rompió?» es la T1-8: su archivo se llama así. */
   assert.ok(ARCHIVOS.includes("conta-t1-8-donde-se-rompio.svg"));
   assert.ok(!ARCHIVOS.some((f) => f.startsWith("conta-t1-3")));
