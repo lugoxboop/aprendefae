@@ -11,11 +11,11 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · todo texto de los datos es literal del paquete guardado
  *     (paquetes/b5-t6-aprender2.md), con las comillas internas “ ”, y ningún
  *     componente escribe texto propio
- *   · la capa 2: el texto, el pie y lo resaltado de los 10 pasos y del cierre
- *     (la columna «Resalta» de Futaba); la misma cuenta de Clientes que se
+ *   · la capa 2: el texto, el pie y lo resaltado de los 9 pasos y del cierre
+ *     (la columna «Resalta» de Futaba; el paso 10 lo quitó el lote C1-6 de
+ *     Futaba, con el cierre corto); la misma cuenta de Clientes que se
  *     debita el 25 de mayo y se acredita el 31 de diciembre; sin provisión
- *     dibujada y sin coral; las fechas nunca se atenúan; el paso 10, con el
- *     gasto primero (prioridad de la v1b)
+ *     dibujada y sin coral; las fechas nunca se atenúan
  *   · las correcciones de Shoko: el rótulo literal del paso 4 y «por $312.500»
  *   · la capa 3: las dos cajas iguales, el final solo con las dos abiertas
  *   · la capa 4: UnaFrase con una sola correcta y sus devoluciones
@@ -88,19 +88,34 @@ test("★★★ todo texto de los datos es literal del paquete guardado (paquete
   assert.deepEqual(textos.filter((t) => !FUENTE.includes(t)), []);
 });
 
-test("★★★ comillas internas “ ” en los términos 3 y 4 y en la nota del término 2 (término 3: «Castigar una deuda», Sakuta); las citas del libro con «» y página", () => {
+test("★★★ B2: siete términos en el orden de Futaba, literales; comillas internas “ ” en los términos 3 y 4; las citas del libro con «» y página", () => {
   const n = D.PIEZA_NO_VA_A_PAGAR.nombres;
   assert.deepEqual(n.map((x) => x.termino), [
-    "Cuentas incobrables o de difícil cobro", "Cómo se decide", "Castigar una deuda", "Método de anulación directa", "Método de provisiones",
+    "Cuentas incobrables o de difícil cobro", "Cómo se decide", "Castigar una deuda", "Método de anulación directa",
+    "La desventaja de la anulación directa", "Método de provisiones", "Los asientos del método de provisiones",
   ]);
+  /* B2 (un término por pantalla, 15-oct), guardada al final del paquete: cada texto, literal; «el de hoy» donde lo dice. */
+  const B2 = FUENTE.slice(FUENTE.indexOf("## B2 ·"));
+  for (const x of n) {
+    assert.ok(B2.includes(`**${x.termino}**`), x.termino);
+    for (const t of [x.definicion, x.delLibro].filter(Boolean)) {
+      if (!B2.includes(t)) assert.ok([n[1].definicion, n[2].definicion, n[5].delLibro].includes(t), `${x.termino}: «${t.slice(0, 40)}…» no es de B2 ni «el de hoy»`);
+    }
+  }
+  assert.ok(B2.includes("**Cómo se decide** — Def.: La de hoy. · Nota: Una deuda vigente todavía está dentro de su plazo de pago. Una vencida ya lo pasó."));
+  assert.ok(B2.includes("**Castigar una deuda** — El de hoy."));
+  assert.ok(B2.includes("**Método de provisiones** — Def.: Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. · Cita: la de hoy, de la p. 200."));
   assert.ok(n[3].definicion.includes("dice “provisiones”, pero"));
-  assert.ok(n[1].delLibro.includes("“Cuentas vigentes” y “Cuentas vencidas”"));
+  assert.equal(n[1].delLibro, "Una deuda vigente todavía está dentro de su plazo de pago. Una vencida ya lo pasó.");
   assert.equal(n[1].rotuloDelLibro, "Nota");
   assert.equal(n[2].definicion, "Castigar una deuda es darla de baja porque ya no se espera cobrarla. El libro dice “castigar la cuenta”.");
   for (const t of [n[3].definicion, n[1].delLibro, n[2].definicion]) assert.doesNotMatch(t, /[«»]/, "comillas internas «» donde van “ ”");
   assert.match(n[0].delLibro, /^«.*» \(p\. 198\)$/);
-  assert.match(n[3].delLibro, /^«.*» \(p\. 199\)$/);
-  assert.match(n[4].delLibro, /^«.*» \(p\. 200\)$/);
+  /* La cita de la p. 199 pasa a la desventaja; la anulación directa queda sin cita. */
+  assert.equal(n[3].delLibro, undefined);
+  assert.match(n[4].delLibro, /^«.*» \(p\. 199\)$/);
+  assert.match(n[5].delLibro, /^«.*» \(p\. 200\)$/);
+  assert.equal(n[6].delLibro, undefined);
 });
 
 test("★★★ ningún componente de la pieza escribe texto que lea el estudiante", () => {
@@ -123,14 +138,21 @@ test("★★ la pieza va segunda en el tema: APRENDER (no paga) y en la vista", 
 
 /* ═══════════ CAPA 2 ═══════════ */
 
-test("★★★ cada paso lleva el pie de su fila en la tabla §4.2 de Mai (y la guarda lee las 11 filas)", () => {
+test("★★★ cada paso lleva el pie de su fila en la tabla §4.2 de Mai (y la guarda lee las 11 filas); sin el paso 10 y con el cierre del lote C1-6", () => {
   const filas = new Map();
+  const porFila = new Map();
   for (const l of FUENTE.split("\n")) {
     const m = l.match(/^(\d+|Cierre)\t«(.+)»\t[^\t]+\t([^\t]+)\t/);
-    if (m) filas.set(m[2], m[3]);
+    if (m) { filas.set(m[2], m[3]); porFila.set(m[1], { texto: m[2], pie: m[3] }); }
   }
   assert.equal(filas.size, 11, "la tabla de estados del paquete tiene 10 pasos y el cierre");
-  for (const p of [...D.PASOS_T6_A2, D.CIERRE_T6_A2]) assert.equal(p.pie, filas.get(p.texto), `pie de «${p.texto.slice(0, 40)}»`);
+  for (const p of D.PASOS_T6_A2) assert.equal(p.pie, filas.get(p.texto), `pie de «${p.texto.slice(0, 40)}»`);
+  /* C1-6: el paso 10 se elimina; el cierre cambia de texto (literal del lote) y conserva su pie. */
+  assert.equal(D.PASOS_T6_A2.length, 9);
+  assert.ok(!D.PASOS_T6_A2.some((p) => p.texto === porFila.get("10").texto), "el paso 10 ya no está");
+  assert.equal(D.CIERRE_T6_A2.texto, "Con la anulación directa, la deuda se borra sin dejar información aparte.");
+  assert.ok(FUENTE.includes(`Cierre de la capa 2: «${D.CIERRE_T6_A2.texto}»`), "el cierre, literal del lote");
+  assert.equal(D.CIERRE_T6_A2.pie, porFila.get("Cierre").pie);
 });
 
 /* Desde qué paso se VE cada pieza de la escena (la columna «Aparece» de la guía). */
@@ -146,12 +168,12 @@ const colorVisto = (n) => {
 
 test("★★★ cada pieza de la escena se ve desde su paso, y antes ocupa su sitio invisible", async () => {
   const { caja, desmontar } = await montar(h(DosDias));
-  for (let p = 1; p <= 11; p++) {
+  for (let p = 1; p <= 10; p++) {
     for (const [id, desde] of Object.entries(APARECE)) {
       const n = caja.querySelector(`[data-elemento="${id}"]`);
       assert.equal(enSilueta(n), p < desde, `paso ${p}: ${id} ${p < desde ? "en silueta" : "a la vista"}`);
     }
-    if (p < 11) await tocar(caja.querySelector("[data-siguiente]"));
+    if (p < 10) await tocar(caja.querySelector("[data-siguiente]"));
   }
   desmontar();
 });
@@ -160,42 +182,42 @@ test("★★★ lo que se ve: las fechas nunca en gris (aunque su día se atenú
   const { caja, desmontar } = await montar(h(DosDias));
   const de = (id) => caja.querySelector(`[data-elemento="${id}"]`);
   let diaAtenuado = false;
-  for (let p = 1; p <= 11; p++) {
+  for (let p = 1; p <= 10; p++) {
     for (const f of ["fecha25", "fecha31"]) assert.equal(colorVisto(de(f)), rgb(FAE.text), `paso ${p}: ${f} en gris`);
     if (colorVisto(de("dia25")) === rgb(COLOR.apagado)) diaAtenuado = true;
     if (p === 2) assert.equal(colorVisto(de("monto25")), rgb(FAE.text), "el monto resaltado se ve en claro");
     if (p === 4) assert.equal(colorVisto(de("monto25")), rgb(COLOR.apagado), "el monto no resaltado se atenúa (control)");
-    if (p < 11) await tocar(caja.querySelector("[data-siguiente]"));
+    if (p < 10) await tocar(caja.querySelector("[data-siguiente]"));
   }
   assert.ok(diaAtenuado, "control: el día del 25 sí se atenúa en algún paso");
   desmontar();
 });
 
-/* La columna «Resalta» de Futaba, paso por paso; en el 10, el gasto primero. */
+/* La columna «Resalta» de Futaba, paso por paso (sin el paso 10, que quitó el lote C1-6). */
 const RESALTADOS = {
   1: ["hecho25"], 2: ["monto25"], 3: ["clientes25", "ingresos25"], 4: ["hecho31"], 5: ["nancy"],
-  6: ["factura"], 7: ["metodo"], 8: ["gasto"], 9: ["clientes31"], 10: ["gasto", "fecha31"], 11: [],
+  6: ["factura"], 7: ["metodo"], 8: ["gasto"], 9: ["clientes31"], 10: [],
 };
 
-test("★★★ capa 2: el texto, el pie y lo resaltado de los 10 pasos y del cierre", async () => {
+test("★★★ capa 2: el texto, el pie y lo resaltado de los 9 pasos y del cierre", async () => {
   const { caja, desmontar } = await montar(h(DosDias));
   const res = () => [...caja.querySelectorAll('[data-resaltado="si"]')].map((n) => n.dataset.elemento).sort();
-  for (let p = 1; p <= 11; p++) {
-    const esperado = p <= 10 ? D.PASOS_T6_A2[p - 1] : D.CIERRE_T6_A2;
+  for (let p = 1; p <= 10; p++) {
+    const esperado = p <= 9 ? D.PASOS_T6_A2[p - 1] : D.CIERRE_T6_A2;
     assert.equal(caja.querySelector("[data-texto-paso]").textContent, esperado.texto, `texto, paso ${p}`);
     assert.equal(caja.querySelector("[data-pie]").textContent, esperado.pie, `pie, paso ${p}`);
     assert.deepEqual(res(), [...RESALTADOS[p]].sort(), `resaltados, paso ${p}`);
-    if (p <= 10) assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de 10`);
-    if (p < 11) await tocar(caja.querySelector("[data-siguiente]"));
+    if (p <= 9) assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de 9`);
+    if (p < 10) await tocar(caja.querySelector("[data-siguiente]"));
   }
   assert.equal(caja.querySelector("[data-paso-de]").style.visibility, "hidden");
-  assert.deepEqual(E.estadoPasoT6A2(10).resaltados, ["gasto", "fecha31"], "el gasto manda sobre la fecha (v1b)");
+  assert.equal(E.estadoPasoT6A2(10).cierre, true, "el 10 es ya el cierre");
   desmontar();
 });
 
 test("★★★ la escena: los rótulos literales (paso 4, «por $312.500»), la misma cuenta de Clientes en los dos días, sin provisión y sin coral", async () => {
   const { caja, desmontar } = await montar(h(DosDias));
-  for (let p = 1; p <= 10; p++) await tocar(caja.querySelector("[data-siguiente]"));
+  for (let p = 1; p <= 9; p++) await tocar(caja.querySelector("[data-siguiente]"));
   const texto = (id) => caja.querySelector(`[data-elemento="${id}"]`).textContent;
   assert.equal(texto("hecho31"), "Analiza lo que le deben sus clientes");
   assert.ok(D.PASOS_T6_A2[3].texto.includes("analiza lo que le deben sus clientes"), "el rótulo es fragmento literal del paso 4");
@@ -218,21 +240,19 @@ test("★★★ la escena: los rótulos literales (paso 4, «por $312.500»), la
   desmontar();
 });
 
-test("★★★ las fechas nunca se atenúan; la del 31 de diciembre se resalta en el paso 10 con borde nodo y relleno navy, sin moverse", async () => {
-  for (let p = 1; p <= 11; p++) {
+test("★★★ las fechas nunca se atenúan; sin el paso 10 (lote C1-6), la del 31 de diciembre ya no se resalta y guarda su borde de 2 px transparente en todos los pasos", async () => {
+  for (let p = 1; p <= 10; p++) {
     const e = E.estadoPasoT6A2(p).elementos;
     for (const f of ["fecha25", "fecha31"]) assert.equal(e[f].atenuado, false, `paso ${p}: ${f} atenuada`);
   }
   const { caja, desmontar } = await montar(h(DosDias));
   const f31 = () => caja.querySelector('[data-elemento="fecha31"]');
-  for (let p = 1; p < 4; p++) await tocar(caja.querySelector("[data-siguiente]"));
-  assert.equal(f31().style.borderWidth, "2px");
-  assert.equal(f31().style.borderColor, "transparent");
-  for (let p = 4; p < 10; p++) await tocar(caja.querySelector("[data-siguiente]"));
-  assert.equal(f31().dataset.resaltado, "si");
-  assert.equal(f31().style.borderColor, rgb(FAE.node));
-  assert.equal(f31().style.background, rgb(FAE.navy));
-  assert.equal(f31().style.borderWidth, "2px", "el mismo grosor: no se mueve");
+  for (let p = 1; p <= 10; p++) {
+    assert.equal(f31().dataset.resaltado, "no", `paso ${p}`);
+    assert.equal(f31().style.borderWidth, "2px", "el mismo grosor: no se mueve");
+    assert.equal(f31().style.borderColor, "transparent");
+    if (p < 10) await tocar(caja.querySelector("[data-siguiente]"));
+  }
   desmontar();
 });
 
@@ -252,14 +272,15 @@ test("★★ capa 2: «Anterior» devuelve el estado exacto de cada paso", async
   const { caja, desmontar } = await montar(h(DosDias));
   const foto = () => [...caja.querySelectorAll("[data-elemento]")].map((n) => `${n.dataset.elemento}:${n.dataset.resaltado ?? ""}:${n.style.visibility}:${enSilueta(n)}`).join("|");
   const fotos = {};
-  for (let p = 1; p <= 11; p++) { fotos[p] = foto(); if (p < 11) await tocar(caja.querySelector("[data-siguiente]")); }
-  for (let p = 10; p >= 1; p--) { await tocar(caja.querySelector("[data-anterior]")); assert.equal(foto(), fotos[p], `paso ${p}`); }
+  for (let p = 1; p <= 10; p++) { fotos[p] = foto(); if (p < 10) await tocar(caja.querySelector("[data-siguiente]")); }
+  for (let p = 9; p >= 1; p--) { await tocar(caja.querySelector("[data-anterior]")); assert.equal(foto(), fotos[p], `paso ${p}`); }
   desmontar();
 });
 
 test("★★ «Reproducir»: 3 000 + 450 ms por palabra (los de la v1b de Mai)", () => {
   const ms = Array.from({ length: 10 }, (_, k) => E.duracionPasoT6A2(k + 1));
-  assert.deepEqual(ms, [9300, 5250, 8850, 8850, 10200, 5250, 9750, 7050, 9300, 9750]);
+  /* El 10 es ya el cierre corto del lote C1-6: 12 palabras. */
+  assert.deepEqual(ms, [9300, 5250, 8850, 8850, 10200, 5250, 9750, 7050, 9300, 8400]);
 });
 
 /* ═══════════ CAPA 3 ═══════════ */

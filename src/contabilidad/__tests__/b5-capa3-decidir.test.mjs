@@ -10,11 +10,13 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *     el orden de Futaba, en un grupo etiquetado por la pregunta, con el
  *     chevrón girado (no desaparece);
  *   · antes de decidir no se revela nada;
- *   · un intento: la correcta con el resalte (borde 2 nodo, relleno navy y
- *     1 px menos de relleno), la elegida mala tachada y entera, las demás al
- *     0,5; aria-disabled (no disabled) y aria-pressed en la elegida;
- *   · si falló, la devolución de Futaba y después el texto de siempre; si
- *     acertó, el texto directo;
+ *   · la escalera de ayuda (lote C2 de Futaba): al primer error, la pista y
+ *     nada más; la elegida tachada y sin poder volver a tocarse, las demás
+ *     activas; al segundo error, la correcta con el resalte (borde 2 nodo,
+ *     relleno navy y 1 px menos de relleno), las elegidas malas tachadas y
+ *     enteras, las demás al 0,5; aria-disabled (no disabled) y aria-pressed
+ *     en la última elegida; la devolución de Futaba y después el texto de
+ *     siempre; si acertó, el texto directo;
  *   · el final, solo con todas decididas; fila o columna por pieza;
  *   · con movimiento reducido, sin transiciones ni animaciones.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -61,7 +63,7 @@ const PIEZAS = [
   { nombre: "T5 · A1", Componente: await C("tema5/DosPaquetes"), consigna: T5A1.CONSIGNA_CAPA_3, forma: "columna",
     cajas: T5A1.PAQUETES.map((p) => ({ ...p, pregunta: T5A1.PREGUNTA_CAPA_3, opciones: T5A1.OPCIONES_CAPA_3 })), final: T5A1.FINAL_CAPA_3.join("") },
   { nombre: "T5 · A2", Componente: await C("tema5/DosVentas"), consigna: T5A2.CONSIGNA_CAPA_3_T5_A2, forma: "fila",
-    cajas: T5A2.VENTAS_T5_A2.map((v) => ({ ...v, pregunta: T5A2.PREGUNTA_CAPA_3_T5_A2, opciones: T5A2.OPCIONES_CAPA_3_T5_A2, falla: T5A2.FALLA_CAPA_3_T5_A2 })), final: T5A2.FINAL_CAPA_3_T5_A2.texto },
+    cajas: T5A2.VENTAS_T5_A2.map((v) => ({ ...v, pregunta: T5A2.PREGUNTA_CAPA_3_T5_A2, opciones: T5A2.OPCIONES_CAPA_3_T5_A2, pista: T5A2.PISTA_CAPA_3_T5_A2 })), final: T5A2.FINAL_CAPA_3_T5_A2.texto },
   { nombre: "T6 · A1", Componente: await C("tema6/SeisHechos"), consigna: T6A1.CONSIGNA_CAPA_3_T6, forma: "fila",
     cajas: T6A1.HECHOS_T6.map((x) => ({ ...x, pregunta: T6A1.PREGUNTA_CAPA_3_T6, opciones: T6A1.OPCIONES_CAPA_3_T6 })), final: T6A1.FINAL_CAPA_3_T6.texto },
   { nombre: "T6 · A2", Componente: await C("tema6/DosMetodos"), consigna: T6A2.CONSIGNA_CAPA_3_T6_A2, forma: "columna",
@@ -69,9 +71,10 @@ const PIEZAS = [
   { nombre: "T6 · A3", Componente: await C("tema6/CuentaT"), consigna: T6A3.CONSIGNA_CAPA_3_T6_A3, forma: "columna", enOrden: true,
     cajas: T6A3.MOMENTOS_T6_A3, final: T6A3.FINAL_CAPA_3_T6_A3.texto },
   { nombre: "T6 · A4", Componente: await C("tema6/TresCasos"), consigna: T6A4.CONSIGNA_CAPA_3_T6_A4, forma: "fila",
-    cajas: T6A4.CASOS_T6_A4.map((c) => ({ ...c, pregunta: T6A4.PREGUNTA_CAPA_3_T6_A4, opciones: T6A4.OPCIONES_CAPA_3_T6_A4 })), final: T6A4.FINAL_CAPA_3_T6_A4.texto },
+    /* El caso a es el ejemplo (lote C1-11): no se pregunta. */
+    cajas: T6A4.CASOS_T6_A4.filter((c) => !c.ejemplo).map((c) => ({ ...c, pregunta: T6A4.PREGUNTA_CAPA_3_T6_A4, opciones: T6A4.OPCIONES_CAPA_3_T6_A4 })), final: T6A4.FINAL_CAPA_3_T6_A4.texto },
   { nombre: "T6 · A5", Componente: await C("tema6/CuatroGrupos"), consigna: T6A5.CONSIGNA_CAPA_3_T6_A5, forma: "fila", pegar: pegarPorcentaje,
-    cajas: T6A5.GRUPOS_T6_A5.map((g) => ({ ...g, revela: pegarPorcentaje(g.revela), pregunta: T6A5.PREGUNTA_CAPA_3_T6_A5 })), final: T6A5.FINAL_CAPA_3_T6_A5.texto },
+    cajas: T6A5.GRUPOS_T6_A5.map((g) => ({ ...g, revela: pegarPorcentaje(g.revela), pista: pegarPorcentaje(g.pista), pregunta: T6A5.PREGUNTA_CAPA_3_T6_A5 })), final: T6A5.FINAL_CAPA_3_T6_A5.texto },
 ];
 
 const montar = async (el) => {
@@ -127,12 +130,51 @@ for (const p of PIEZAS) {
     desmontar();
   });
 
-  test(`★★★ ${p.nombre}: con error, la correcta resaltada sin moverse, la elegida tachada, las demás al 0,5; la devolución de Futaba y después el texto de siempre; el final, solo con todas decididas`, async () => {
+  test(`★★★ ${p.nombre}: al primer error, solo la pista (ni devolución ni texto), la elegida tachada y las demás activas`, async () => {
     const { caja, desmontar } = await montar(h(p.Componente));
-    for (const [k, x] of p.cajas.entries()) {
+    for (const x of p.cajas) {
       const mala = x.opciones.find((o) => o.id !== x.correcta).id;
       const zona = zonaDe(caja, x.id);
       assert.ok(zona, `${x.id} a la vista`);
+      assert.ok(x.pista, `${x.id} trae su pista`);
+      await decidir(tocar, zona, mala);
+      const pista = zona.querySelector("[data-pista]");
+      assert.equal(pista.textContent, pegar(p, x.pista));
+      assert.equal(pista.style.borderLeft, `3px solid ${rgb("#B8C4D4")}`, "con la forma de la devolución, sin coral");
+      assert.equal(pista.style.fontSize, "13px");
+      assert.deepEqual(revelado(zona), [pegar(p, x.pista)], "solo la pista: ni la devolución ni el texto");
+      assert.equal(zona.querySelector("[data-devolucion]"), null);
+      assert.equal(zona.querySelector("[data-pie]"), null);
+      assert.equal(zona.dataset.decidida, "no", "la pregunta sigue abierta");
+      const por = Object.fromEntries([...zona.querySelectorAll("[data-opcion]")].map((b) => [b.dataset.opcion, b]));
+      assert.equal(por[mala].style.textDecoration, "line-through");
+      assert.equal(por[mala].getAttribute("aria-pressed"), "true");
+      assert.equal(por[mala].getAttribute("aria-disabled"), "true", "la elegida mala no se vuelve a tocar");
+      for (const [id, b] of Object.entries(por)) {
+        if (id === mala) continue;
+        assert.equal(b.hasAttribute("aria-disabled"), false, `${id}, activa`);
+        assert.equal(b.style.textDecoration, "none");
+        assert.equal(b.style.opacity, "1");
+        assert.equal(b.style.border, "1px solid rgba(248, 249, 250, 0.36)", `${id}: nada delata la correcta`);
+      }
+      /* Tocar otra vez la tachada no cuenta como segundo intento. */
+      await tocar(por[mala]);
+      assert.deepEqual(revelado(zona), [pegar(p, x.pista)]);
+      /* T6 · A3 abre sus momentos en orden: se cierra este para ver el siguiente. */
+      if (p.enOrden) await tocar(por[x.correcta]);
+    }
+    if (!p.enOrden) assert.equal(finalLeido(caja), "", "el final espera");
+    desmontar();
+  });
+
+  test(`★★★ ${p.nombre}: al segundo error, la correcta resaltada sin moverse, las elegidas tachadas, las demás al 0,5; la devolución de Futaba y después el texto de siempre; el final, solo con todas cerradas`, async () => {
+    const { caja, desmontar } = await montar(h(p.Componente));
+    for (const [k, x] of p.cajas.entries()) {
+      const [mala1, mala] = x.opciones.filter((o) => o.id !== x.correcta).map((o) => o.id);
+      assert.ok(mala, `${x.id}: con dos opciones malas, el segundo error puede pasar (terceras opciones del lote C2)`);
+      const zona = zonaDe(caja, x.id);
+      assert.ok(zona, `${x.id} a la vista`);
+      await decidir(tocar, zona, mala1);
       await decidir(tocar, zona, mala);
       const por = Object.fromEntries([...zona.querySelectorAll("[data-opcion]")].map((b) => [b.dataset.opcion, b]));
       const correcta = por[x.correcta];
@@ -140,23 +182,53 @@ for (const p of PIEZAS) {
       assert.equal(correcta.style.background, rgb(FAE.navy));
       assert.equal(correcta.style.padding, p.forma === "fila" ? "9px 2px" : "9px 11px", "1 px menos de relleno: nada se mueve");
       assert.equal(correcta.style.fontWeight, "400", "sin cambiar de peso");
-      assert.equal(por[mala].style.textDecoration, "line-through");
-      assert.equal(por[mala].style.opacity, "1");
-      assert.equal(por[mala].getAttribute("aria-pressed"), "true");
+      for (const m of [mala1, mala]) {
+        assert.equal(por[m].style.textDecoration, "line-through");
+        assert.equal(por[m].style.opacity, "1");
+      }
+      assert.equal(por[mala].getAttribute("aria-pressed"), "true", "la última elegida");
+      assert.equal(por[mala1].getAttribute("aria-pressed"), "false");
+      /* E4 (hoja de fusiones de Mai): los íconos SVG con su texto oculto; las tachadas, ✕; el resto, sin ícono. */
+      const icono = (el) => [...el.querySelectorAll("svg[data-icono]")].map((x) => x.dataset.icono);
+      assert.deepEqual(icono(correcta), ["visto"]);
+      assert.ok(correcta.textContent.includes("(respuesta correcta)"));
+      for (const m of [mala1, mala]) {
+        assert.deepEqual(icono(por[m]), ["tache"]);
+        assert.ok(por[m].textContent.includes("(tu respuesta)"));
+      }
+      for (const [id, b] of Object.entries(por)) if (![x.correcta, mala, mala1].includes(id)) assert.deepEqual(icono(b), []);
       for (const [id, b] of Object.entries(por)) {
-        if (id !== x.correcta && id !== mala) assert.equal(b.style.opacity, "0.5", `${id}, apagada`);
+        if (![x.correcta, mala, mala1].includes(id)) assert.equal(b.style.opacity, "0.5", `${id}, apagada`);
         assert.equal(b.getAttribute("aria-disabled"), "true");
         assert.equal(b.hasAttribute("disabled"), false, "aria-disabled, no disabled: el foco no se pierde");
       }
+      assert.equal(zona.querySelector("[data-pista]"), null, "la pista deja su sitio");
       const devolucion = zona.querySelector("[data-devolucion]");
       assert.equal(devolucion.style.borderLeft, `3px solid ${rgb("#B8C4D4")}`);
       assert.equal(devolucion.style.fontSize, "13px");
       assert.deepEqual(revelado(zona), [pegar(p, falloDe(x, mala)), x.revela], "primero la devolución y después el texto");
-      /* Un solo intento: tocar otra no cambia nada. */
+      /* Cerrada: tocar otra no cambia nada. */
       await tocar(correcta);
       assert.equal(por[mala].getAttribute("aria-pressed"), "true");
       assert.equal(finalLeido(caja), k < p.cajas.length - 1 ? "" : p.final, `final tras la caja ${k + 1}`);
     }
+    desmontar();
+  });
+
+  test(`★★★ ${p.nombre}: al acertar después de la pista, el texto directo, sin devolución`, async () => {
+    const { caja, desmontar } = await montar(h(p.Componente));
+    for (const x of p.cajas) {
+      const mala = x.opciones.find((o) => o.id !== x.correcta).id;
+      const zona = zonaDe(caja, x.id);
+      await decidir(tocar, zona, mala);
+      await decidir(tocar, zona, x.correcta);
+      assert.equal(zona.querySelector("[data-devolucion]"), null);
+      assert.equal(zona.querySelector("[data-pista]"), null);
+      assert.deepEqual(revelado(zona), [x.revela]);
+      assert.equal(zona.querySelector(`[data-opcion="${mala}"]`).style.textDecoration, "line-through", "el primer error sigue tachado");
+      assert.equal(zona.querySelector(`[data-opcion="${x.correcta}"]`).getAttribute("aria-pressed"), "true");
+    }
+    assert.equal(finalLeido(caja), p.final);
     desmontar();
   });
 
@@ -175,13 +247,15 @@ for (const p of PIEZAS) {
   });
 }
 
-test("★★★ T6 · A3: cada momento aparece cuando se DECIDE el anterior, no cuando se abre", async () => {
+test("★★★ T6 · A3: cada momento aparece cuando se CIERRA el anterior, no cuando se abre ni con la pista", async () => {
   const p = PIEZAS.find((x) => x.enOrden);
   const { caja, desmontar } = await montar(h(p.Componente));
   for (const [k, x] of p.cajas.entries()) {
     assert.equal(caja.querySelectorAll("[data-hecho]").length, k + 1, `antes del momento ${k + 1}`);
     await tocar(zonaDe(caja, x.id).querySelector("button[aria-expanded]"));
     assert.equal(caja.querySelectorAll("[data-hecho]").length, k + 1, "abierto sin decidir: el siguiente no aparece");
+    await tocar(zonaDe(caja, x.id).querySelector(`[data-opcion="${x.opciones.find((o) => o.id !== x.correcta).id}"]`));
+    assert.equal(caja.querySelectorAll("[data-hecho]").length, k + 1, "con la pista: el siguiente no aparece");
     await tocar(zonaDe(caja, x.id).querySelector(`[data-opcion="${x.correcta}"]`));
   }
   desmontar();
@@ -194,10 +268,13 @@ test("★★ movimiento: con reducido, sin transición ni animación; sin reduci
     reducido = r;
     const { caja, desmontar } = await montar(h(p.Componente));
     const zona = zonaDe(caja, x.id);
-    await decidir(tocar, zona, p.cajas[0].opciones.find((o) => o.id !== x.correcta).id);
+    const [mala1, mala2] = x.opciones.filter((o) => o.id !== x.correcta).map((o) => o.id);
+    await decidir(tocar, zona, mala1);
+    const conPista = zona.querySelector("[data-pista]");
+    await decidir(tocar, zona, mala2);
     const chevron = zona.querySelector("[data-chevron]");
     const opcion = zona.querySelector("[data-opcion]");
-    const animadas = [zona.querySelector("[data-decide]"), zona.querySelector("[data-devolucion]")];
+    const animadas = [zona.querySelector("[data-decide]"), conPista, zona.querySelector("[data-devolucion]")];
     if (r) {
       assert.equal(chevron.style.transition, "none");
       assert.equal(opcion.style.transition, "none");

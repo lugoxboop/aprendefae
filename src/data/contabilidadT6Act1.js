@@ -23,8 +23,13 @@ export const T6_ACT1 = {
   nombre: "¿Clientes o otra cuenta por cobrar?",
   dificultad: "facil",
   fpBase: 10,
-  /* R10 (hoja de fusiones de Mai): nueve fichas, entre 2 y 4 por cajón. El banco tiene 4 · 3 · 3. */
-  porPartida: 9,
+  /*
+   * R10 (hoja de fusiones de Mai): entre 2 y 4 fichas por cajón. Lote 6b (C4): sale la ficha del cheque
+   * devuelto, que se practicaba cinco veces en B y se queda donde enseña algo nuevo; el banco queda en
+   * 4 · 2 · 3. Con nueve fichas la tanda sería siempre el banco entero, con el mismo reparto, y la cuenta
+   * del estante volvería a delatar la última: van ocho, con dos repartos posibles (4 · 2 · 2 y 3 · 2 · 3).
+   */
+  porPartida: 8,
   objetivo: "Decidir si un hecho va en Clientes o en otra cuenta por cobrar, y si se debita o se acredita.",
   consigna: "Lee el hecho. Elige la cuenta y, si es Clientes, cómo se anota.",
 };
@@ -97,11 +102,6 @@ export const FICHAS_T6_ACT1 = [
     id: "venta-servicio", cuenta: CLIENTES, lado: DEBITA, c5: true,
     texto: "La empresa le presta un servicio a crédito a un cliente.",
     acierto: "✅ Sí. Un servicio vendido a crédito también hace subir la deuda: se debita.",
-  },
-  {
-    id: "cheque", cuenta: CLIENTES, lado: DEBITA,
-    texto: "El banco no le paga a la empresa el cheque de un cliente: se lo devuelve.",
-    acierto: "✅ Sí. Sube: se debita. Como el cheque no se cobró, el cliente vuelve a deber.",
   },
   {
     id: "pago", cuenta: CLIENTES, lado: ACREDITA,

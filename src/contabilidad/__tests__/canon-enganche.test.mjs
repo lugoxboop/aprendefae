@@ -156,6 +156,7 @@ test("★★★ la medida: sin figura, el ancla de B1 es la primera interacción
 });
 
 test("★★★ el recorrido llega a todo: cada pantalla de las 22 piezas de Aprender y la apertura de los 22 Hacer", () => {
+  /* 22 piezas de Aprender menos N2 de T5, que entró en N3 (entrega 5), más N6 de T5. */
   assert.equal(APRENDER_CANON.length, 22, APRENDER_CANON.map((p) => p.pieza.id).join(", "));
   assert.equal(HACER_CANON.length, 22, HACER_CANON.map((j) => j.id).join(", "));
   const pantallas = APRENDER_CANON.reduce((s, p) => s + p.pieza.pantallas.length, 0);

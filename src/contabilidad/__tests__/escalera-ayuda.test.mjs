@@ -10,7 +10,7 @@ import { conCorreccionesDeMello } from "./correccionesMello.mjs";
  *
  *   · primer error: la pista; segundo: la respuesta con su porqué; sin
  *     pista, como hoy (la devolución de la opción tocada)
- *   · las once piezas de Aprender con preguntas de opción la usan
+ *   · las diez piezas de Aprender con preguntas de opción la usan (A1 de T7-1 salió con el enganche)
  *   · ninguna pista nombra la respuesta
  *   · TODO (deuda): toda pregunta tiene pista —llega con las pistas de Near—
  *   · la opción correcta no aparece en las 2 pantallas anteriores, salvo como
@@ -47,10 +47,32 @@ const DATOS = new URL("src/data/", RAIZ);
 const T7 = new URL("src/components/mecanicas/libros/t7/", RAIZ);
 
 /* Las piezas de Aprender de la célula: todo módulo de datos de T7 o de T5 de la célula que exporta un objeto con `pantallas`. */
+const { PAQUETE_N6, conCorreccionesN6 } = await import("./correccionesMelloN6.mjs");
 const PIEZAS = [];
 for (const f of readdirSync(DATOS).filter((x) => /^contabilidadT7_.*\.js$|^contabilidadT5_n\d+\.js$/.test(x))) {
   for (const v of Object.values(await import(new URL(f, DATOS).href))) if (v && Array.isArray(v.pantallas) && v.id) PIEZAS.push(v);
 }
+/*
+ * Las piezas renovadas por el Patrón de enganche C (v6 de Watari) conservan el
+ * id de la vieja: de las dos, queda la que publica la vista del tema. Y sus
+ * preguntas del lote 2 que la pieza nueva ya no tiene salen de la lista, una
+ * por una (las demás, como el cierre de T7-2 A4, se siguen comprobando).
+ */
+{
+  const { PIEZAS_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
+  const { PIEZAS_T7_2 } = await import("../../components/ContabilidadT7_2View.jsx");
+  const { PIEZAS_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
+  const publicadas = new Set([...PIEZAS_T7_1, ...PIEZAS_T7_2, ...PIEZAS_T7_3].map((x) => x.pieza));
+  for (const id of new Set(PIEZAS.map((p) => p.id))) {
+    const mismas = PIEZAS.filter((p) => p.id === id);
+    if (mismas.length > 1) for (const p of mismas) if (!publicadas.has(p)) PIEZAS.splice(PIEZAS.indexOf(p), 1);
+  }
+}
+const REEMPLAZADAS_POR_EL_ENGANCHE = {
+  "t7-1-a1-la-cuenta-que-no-se-mueve": ["pregunta-compra", "pregunta-conteo"],
+  "t7-1-a7-control-interno": ["al-recibir", "controles-de-seguridad"],
+  "t7-2-a4-san-calixto": ["peps", "ueps", "promedio", "que-cambia"],
+};
 const PREGUNTAS = PIEZAS.flatMap((p) => p.pantallas.map((s, k) => ({ pieza: p, pantalla: s, k }))).filter((x) => Array.isArray(x.pantalla.opciones) && x.pantalla.opciones.some((o) => o.correcta));
 const norm = (s) => String(s).toLowerCase().replace(/[«»"“”]/g, "").replace(/[.:;]\s*$/, "").trim();
 
@@ -186,10 +208,10 @@ test("★★★ las seis piezas con líneas de Debe o Haber usan la escalera de 
   }
 });
 
-test("★★★ las once piezas de Aprender con preguntas de opción usan la escalera", () => {
+test("★★★ las diez piezas de Aprender con preguntas de opción usan la escalera", () => {
   const usan = readdirSync(T7).filter((f) => f.endsWith(".jsx") && readFileSync(new URL(f, T7), "utf8").includes("textosDelError(pantalla, opcion, fallos)"));
   assert.deepEqual(usan.sort(), [
-    "ControlInterno.jsx", "DevolucionesEnPeriodico.jsx", "ElCierreEnPeriodico.jsx", "ImportadosYFletes.jsx", "LaCuentaQueNoSeMueve.jsx",
+    "ControlInterno.jsx", "DevolucionesEnPeriodico.jsx", "ElCierreEnPeriodico.jsx", "ImportadosYFletes.jsx",
     "LaCuentaQueSiSeMueve.jsx", "LaFacturaCompleta.jsx", "LaVentaEnDosAsientos.jsx", "PantallasT7_2.jsx", "PantallasT7_3.jsx", "TresFormas.jsx",
   ]);
   /* Y ninguna muestra ya la devolución sola en una pregunta de opción. */
@@ -276,6 +298,10 @@ function recortadas() {
 }
 const RECORTADAS = recortadas();
 for (const [pieza, viejo, nuevo] of CORRECCIONES_MELLO) if (RECORTADAS[pieza]) CAMBIOS.set(viejo, nuevo);
+/* La pista de `cual-le-toca` rehecha por Near (t7-3-condicionado-cual-le-toca.md, tabla «Cambios frente a lo publicado»). */
+const PISTA_CUAL_LE_TOCA = readFileSync(new URL("t7-3-condicionado-cual-le-toca.md", PAQUETES), "utf8").match(/^\| Pista \| «(.+?)» \| «(.+?)» \|$/m);
+assert.ok(PISTA_CUAL_LE_TOCA, "no está la fila «Pista» de t7-3-condicionado-cual-le-toca.md");
+CAMBIOS.set(PISTA_CUAL_LE_TOCA[1], PISTA_CUAL_LE_TOCA[2]);
 /*
  * La entrega 6 de Near (lote1-entrega6-v1.md) cambia la pregunta del 23 % de
  * «descuentos-en-cadena»: «No: le rebaja menos» pasa a «Menor que 23 %» (la
@@ -308,6 +334,8 @@ const lineaPorNombre = (s, nombre) => s.lineas?.find((l) => l.id === nombre || S
 function pistasEsperadas() {
   const esperadas = [];
   for (const f of filasDeNear()) {
+    /* Una pregunta que la pieza renovada ya no tiene: solo si la pieza de verdad ya no la trae. */
+    if (REEMPLAZADAS_POR_EL_ENGANCHE[f.pieza]?.includes(f.pantalla) && !PIEZAS.find((p) => p.id === f.pieza)?.pantallas.some((s) => s.id === f.pantalla && s.pista)) continue;
     /* De una pieza recortada, las preguntas las da su sección; las líneas, el lote 2 con sus cambios. */
     if (RECORTADAS[f.pieza]) {
       if (!f.linea) continue;
@@ -324,6 +352,7 @@ function pistasEsperadas() {
   }
   for (const [pieza, pantallas] of Object.entries(RECORTADAS)) {
     for (const p of pantallas) {
+      if (REEMPLAZADAS_POR_EL_ENGANCHE[pieza]?.includes(p.id) && !PIEZAS.find((x) => x.id === pieza)?.pantallas.some((s) => s.id === p.id && s.pista)) continue;
       if (p.pista) esperadas.push({ pieza, k: p.k, pantalla: p.id, linea: null, pista: vigente(p.pista) });
       for (const [nombre, pista] of Object.entries(p.lineas)) esperadas.push({ pieza, k: p.k, pantalla: p.id, linea: nombre, pista: vigente(pista), porNombre: true });
     }
@@ -348,9 +377,10 @@ test("★★★ las pistas de Near están en los datos, letra por letra, en su p
     const dato = !f.linea || f.linea === "las 5 líneas" ? s.pista : f.porNombre ? lineaPorNombre(s, f.linea)?.pista : s.lineas.find((l) => l.id === f.linea)?.pista;
     assert.equal(dato, f.pista, `${f.pieza} · ${f.pantalla}${f.linea ? ` · ${f.linea}` : ""}`);
   }
-  /* Y al revés: en los datos no hay pistas que Near no escribió. */
+  /* Y al revés: en los datos no hay pistas que Near no escribió. Las de N6 de T5 vienen de su propio paquete, con Mello encima. */
+  const N6 = conCorreccionesN6(PAQUETE_N6);
   const enDatos = [...PREGUNTAS.map((x) => x.pantalla.pista), ...LINEAS.map((x) => x.linea.pista).filter(Boolean)];
-  for (const p of enDatos) assert.ok(esperadas.some((f) => f.pista === p), `pista sin fila en los paquetes: «${p}»`);
+  for (const p of enDatos) assert.ok(esperadas.some((f) => f.pista === p) || N6.includes(`*pista (1.er error):* «${p}»`), `pista sin fila en los paquetes: «${p}»`);
 });
 
 test("★★★ anexo: las 10 preguntas que tenían dos opciones tienen tres, con la tercera de Near letra por letra (o la de los recortes)", () => {
@@ -413,7 +443,6 @@ const DEUDA = [
   /* A3-1 de Mello: la correcta pasa a «PEPS», y `lado-a-lado` nombra el método (no la respuesta para precios que bajan). En revisión. */
   "t7-1-a3-tres-formas · la-recomendacion ← lado-a-lado.pregunta",
   "t7-1-a3-tres-formas · la-recomendacion ← lado-a-lado.pista",
-  "t7-1-a1-la-cuenta-que-no-se-mueve · pregunta-conteo ← pregunta-compra.texto",
   "t7-3-descuento-comercial · dos-clases ← portada.objetivo",
   /* Del recorte de T7-3 (texto de Near, 15 de octubre de 2026): en revisión con Near. */
   "t7-3-descuento-condicionado · cual-le-toca ← condiciones.pregunta",

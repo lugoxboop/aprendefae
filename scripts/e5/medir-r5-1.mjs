@@ -13,7 +13,7 @@
  *
  *   · sin desbordamiento horizontal: la página y cada texto en su caja
  *   · ningún texto de lectura bajo 12 px (las marcas de interfaz en
- *     mayúsculas, como «PREGUNTA 2 DE 6», pueden ir a 10,5: E6)
+ *     mayúsculas, como «PREGUNTA 2 DE 7», pueden ir a 10,5: E6)
  *   · cada botón de al menos 44 px de alto
  *   · B1: la figura o la interacción empieza en los primeros 280 px de la
  *     tarjeta, con 40 palabras o menos antes
@@ -21,6 +21,14 @@
  *     (pantallas 1, 2, 3, 5 y 6 al responder; el contador fijo de la 4
  *     mientras se clasifica), muestreado cada 50 ms
  *   · que se midió con Inter y Sora, no con la fuente de reserva
+ *
+ * v2.3 · C.1 (la raya del año), primera de siete: se juega con el acierto y
+ * con cada error (b, c y d), cada uno en su carga. Con las posiciones del
+ * diseño (orientación de RayaDelAno §3): la elegida a 16 px del borde de la
+ * ventana útil (56 + 16 = 72) y la figura entera a la vista mientras cae; al
+ * desplegar la correcta, la figura termina a 16 px del borde de abajo y el
+ * activo de la elegida se queda en la fila de abajo, en discontinuo, a la
+ * vista (decisión 3).
  *
  * y anota los altos que el paquete deja para medir. Capturas de cada pantalla
  * antes, durante y después. Sale con código 1 si algo falla. Necesita
@@ -189,6 +197,54 @@ for (const [ancho, alto] of VENTANAS) {
     await captura(`${id}-3-despues`);
   };
 
+  /*
+   * C.1: el acierto y los errores b y c, cada uno en su carga; el d abre la
+   * tanda larga. Lo que cae tiene que estar entero en la ventana mientras cae.
+   */
+  const raya = async (id, eleccion) => {
+    await b1(id);
+    await medir(`${id} antes`);
+    const sinFigura = await pagina.evaluate(() => !document.querySelector("[data-caja-figura]"));
+    if (!sinFigura) fallos.push(`${ancho} · ${id}: hay figura antes de elegir (E8)`);
+    if (eleccion === "c1-a") await captura(`${id}-1-antes`);
+    await pagina.click(`[data-opcion="${eleccion}"] button`);
+    const problemas = new Set();
+    await pagina.waitForTimeout(560);
+    await captura(`${id}-${eleccion}-2-durante`);
+    await enVentana(pagina, ["[data-caja-figura]"], eleccion === "c1-a" ? 1400 : 3600, `${id} ${eleccion} durante`, problemas);
+    for (const p of problemas) fallos.push(`${ancho} · ${p}`);
+    const pos = await pagina.evaluate((el) => {
+      const r = (s) => document.querySelector(s)?.getBoundingClientRect() ?? null;
+      const elegida = r(`[data-opcion="${el}"]`);
+      const fig = r("[data-caja-figura]");
+      const habria = r("[data-habria]");
+      return {
+        elegida: [Math.round(elegida.top), Math.round(elegida.bottom)],
+        figura: [Math.round(fig.top), Math.round(fig.bottom)],
+        alto: Math.round(document.querySelector("[data-raya-c1]").getBoundingClientRect().height),
+        habria: habria ? [Math.round(habria.top), Math.round(habria.bottom), document.querySelector("[data-habria]").dataset.habria] : null,
+      };
+    }, eleccion);
+    notas.push(`${ancho} · ${id} ${eleccion}: elegida ${pos.elegida.join("-")}, figura ${pos.figura.join("-")} (raya de ${pos.alto} px; ventana ${alto})${pos.habria ? `, abajo se queda «${pos.habria[2]}» en ${pos.habria[0]}-${pos.habria[1]}` : ""}`);
+    if (pos.alto !== 240) fallos.push(`${ancho} · ${id}: la raya mide ${pos.alto} px y son 240 (264 con el relleno)`);
+    if (pos.figura[1] > alto + 0.5) fallos.push(`${ancho} · ${id} ${eleccion}: la figura termina en ${pos.figura[1]}, fuera de la ventana de ${alto}`);
+    if (eleccion === "c1-a" && Math.abs(pos.elegida[0] - 72) > 1) fallos.push(`${ancho} · ${id}: la elegida queda en ${pos.elegida[0]} y son 72 (56 + 16)`);
+    if (eleccion !== "c1-a") {
+      if (!pos.habria) fallos.push(`${ancho} · ${id} ${eleccion}: el activo de la elegida no se quedó abajo (decisión 3)`);
+      else if (pos.habria[0] < 56 || pos.habria[1] > alto) fallos.push(`${ancho} · ${id} ${eleccion}: el activo que se quedó abajo está fuera de la ventana (${pos.habria[0]}-${pos.habria[1]})`);
+    }
+    await medir(`${id} ${eleccion} después`);
+    await captura(`${id}-${eleccion}-3-despues`);
+  };
+  for (const eleccion of ["c1-a", "c1-b", "c1-c"]) {
+    await raya("c1", eleccion);
+    /* La misma URL con hash no recarga: se recarga para empezar de cero. */
+    await pagina.reload();
+    await pagina.waitForSelector("[data-r5-1]");
+    await pagina.evaluate(() => document.fonts.ready);
+  }
+  await raya("c1", "c1-d");
+  await siguiente();
   await titulo("p1", "c3-a");
   await siguiente();
   await titulo("p2", "c5-d");

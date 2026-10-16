@@ -807,3 +807,54 @@ Si elige $1.500.000 ★: «Eso costaron los títulos que vendió. El interés se
 De 21 pasos a 14: las fusiones de Futaba menos 4 + 5 (regla 1: en el estado del paso 5, la tasa del paso 4 ya no se ve). Los pasos 3 y 4 (los actuales 4 y 5) conservan su pie de hoy: «Libro, p. 194» los dos. La predicción va entre el 10 y el 11, la misma posición que Futaba llamó «entre 9 y 10».
 
 El contador de la parada dice «Antes del paso N» (nuevo, para Shoko).
+
+## Lote C2 · C1 · C7 (Futaba, PASA de Shoko, 15-oct) · manda sobre lo de arriba
+
+Líneas copiadas tal cual de paquetes/b5-lote-c2-c1-c7.md (la entrega entera). Al primer error sale la pista; al segundo, la devolución que ya existe y después el texto que se revela.
+
+| Pieza | Caja o parada | Pista |
+|---|---|---|
+| T5 A2 | Ventas A y B | Compara lo que recibió con lo que le costaron los títulos que vendió. |
+| T5 A2 | Parada | El interés lo pagan los títulos que la empresa todavía tiene, no los que ya vendió. |
+
+| Pieza | Pregunta | Opción nueva | Devolución al segundo error |
+|---|---|---|---|
+| T5 A2 | Ventas A y B | Ni ganancia ni pérdida | La de cada caja (C1-2) |
+
+### C1-2 · T5 A2 · capa 3 (pie de las cajas «Escenario simulado»)
+Consigna: «Toca cada venta y decide si dejó ganancia o pérdida. Después, mira cómo se acredita la inversión.»
+Opciones: Ganancia · Pérdida · Ni ganancia ni pérdida.
+- Venta A, «Costó $650 cada uno · Se vende a $690». Correcta: Ganancia.
+  - Revela: «Recibió más de lo que costaron: es ganancia. Inversiones – títulos se acredita por el costo, no por lo recibido.»
+  - Al segundo error: «Los vende a $690 y le costaron $650: recibe más de lo que pagó, así que es ganancia.»
+- Venta B, «Costó $1.150 cada uno · Se vende a $1.060». Correcta: Pérdida.
+  - Revela: «Recibió menos de lo que costaron: es pérdida. Inversiones – títulos también se acredita por el costo.»
+  - Al segundo error: «Los vende a $1.060 y le costaron $1.150: recibe menos de lo que pagó, así que es pérdida.»
+- El texto final no cambia y sigue con su pie de las pp. 194-195.
+
+### C1-3 · T5 A2 · capa 4 (pie «Escenario simulado»)
+Pregunta: «Una empresa vende 260 títulos. Cada uno le costó $850. Le pagan $273.000. ¿Por cuánto se acredita la inversión?»
+| Opción | ✓ | Devolución |
+|---|---|---|
+| Por $221.000, lo que costaron los 260 títulos. | ✓ | Correcto. Inversiones – títulos se acredita por lo que costaron los títulos vendidos: 260 × $850 = $221.000. Lo que recibió de más es la ganancia. |
+| Por $273.000, lo que recibió por la venta. | | No es esa. Los $273.000 entran a Caja. La inversión se acredita por lo que costó, y la diferencia es la ganancia. |
+| Por $52.000, la ganancia que dejó la venta. | | No es esa. Los $52.000 son la ganancia y van a su propia cuenta. La inversión se acredita por lo que costaron los títulos. |
+| Por $850, lo que costó cada título. | | No es esa. Ese es el costo de un solo título. Vendió 260: multiplica. |
+
+Al registro de cifras construidas (T5): $650, $690, $1.060, $1.150, 260, $850, $221.000, $273.000 y $52.000.
+
+| # | Término | Texto final | Estado |
+|---|---|---|---|
+| C7-2 | T5 A2 · El rendimiento | (sin cambio) | PASA |
+
+## B2 · Capa 1, un término por pantalla (Futaba, con las correcciones de Shoko, 15-oct) · manda sobre lo de arriba
+
+Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza. Kaede la aplicó letra por letra.
+
+(«El de hoy» = el texto que ya está en el repositorio para ese término, sin cambios. Las cifras entre paréntesis son la estimación INFLESZ de Futaba; NO van en pantalla. «Def.:», «Cita:», «Nota:», «Pie:» indican la parte del término: Def. = definición/texto; Cita = «Así lo dice el libro»; Nota = la nota; Pie = pie de fuente.)
+
+### T5 A2 · 4 pantallas
+1. **Tres momentos** — El de hoy.
+2. **La compra** — El de hoy.
+3. **El rendimiento** — Cuando llega un interés o un dividendo, se anota como un ingreso: por dividendos si viene de acciones, y por interés si viene de otro título. En esta materia, el interés va a Ingresos por intereses. En el ejemplo, se paga a trimestre vencido: al terminar cada trimestre, cada tres meses.
+4. **La venta** — El de hoy.

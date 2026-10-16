@@ -82,12 +82,14 @@ select 1, 'retirada es boolean y una fila nueva nace en false', 'boolean/false',
   and (select not retirada from public.actividad_catalogo
         where activity_id = 'zzz-default-retirada');
 
--- ── 2. Solo el dashboard quedó retirado ────────────────────────────────────
--- Si el default no hubiera aplicado, aquí saldría más de una.
-insert into res select 2, 'la única actividad retirada es dashboard-economico', 'dashboard-economico',
+-- ── 2. Solo están retiradas las que se retiraron a propósito ────────────────
+-- Si el default no hubiera aplicado, aquí saldrían de más. Cada retiro blando
+-- (puerta del #289) se añade a esta lista en el mismo PR: 0015 el dashboard;
+-- 0076 b5-t6-a7 y 0077 b5-t6-a5 (Célula B).
+insert into res select 2, 'solo están retiradas las retiradas a propósito', 'b5-t6-a5, b5-t6-a7, dashboard-economico',
   coalesce((select string_agg(activity_id, ', ' order by activity_id)
               from public.actividad_catalogo where retirada), 'ninguna'),
-  (select coalesce(string_agg(activity_id, ',' order by activity_id), '') = 'dashboard-economico'
+  (select coalesce(string_agg(activity_id, ',' order by activity_id), '') = 'b5-t6-a5,b5-t6-a7,dashboard-economico'
      from public.actividad_catalogo where retirada);
 
 -- ── 3. La lápida sigue ahí: retirada NO es lo mismo que borrada ────────────

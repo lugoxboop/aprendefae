@@ -38,8 +38,9 @@ export const PIEZA_SI_PAGA = {
     },
     {
       termino: "Cuánto se revive",
-      definicion: "Depende de lo que haga el cliente. Si paga todo, se revive toda la deuda. Si abona una parte y promete pagar el resto, también se revive toda. Si abona una parte y avisa que no pagará más, se revive solo lo que pagó.",
-      delLibro: "«…teniendo presente si el cliente paga la totalidad de la deuda o no, ya que se pueden presentar las siguientes situaciones.» (p. 203)",
+      /* B2 (Futaba, 15-oct): sin la frase de entrada y con la cita recortada. */
+      definicion: "Si paga todo, se revive toda la deuda. Si abona una parte y promete pagar el resto, también se revive toda. Si abona una parte y avisa que ya no puede pagar más, se revive solo lo que pagó.",
+      delLibro: "«…si el cliente paga la totalidad de la deuda o no…» (p. 203)",
     },
   ],
 };
@@ -81,52 +82,55 @@ export const CIERRE_T6_A4 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · los tres casos, con la misma deuda ═══════════ */
 
-/* Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja es de Mai (hoja 6), para Shoko. */
-export const CONSIGNA_CAPA_3_T6_A4 = "Toca cada caso y decide cuánto se revive. Después, mira cuánta plata entra a Caja.";
+/*
+ * Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja es de Mai
+ * (hoja 6). Lote C2 · C1 · C7 (C1-11, C1-12, C7-5 y C2): el caso a ya es el
+ * de la capa 2, así que deja de preguntarse: su fila del tablero viene llena,
+ * con el rótulo «Ejemplo». Los casos b y c llevan su pista.
+ */
+export const CONSIGNA_CAPA_3_T6_A4 = "El caso a ya lo viste. Toca los casos b y c, y decide cuánto se revive. Después, mira cuánta plata entra a Caja.";
 export const PREGUNTA_CAPA_3_T6_A4 = "¿Cuánto se revive?";
 export const OPCIONES_CAPA_3_T6_A4 = [{ id: "toda", texto: "$180.000" }, { id: "abono", texto: "$100.000" }, { id: "resto", texto: "$80.000" }];
 
-/* El tablero (guía §4.1): sus dos cabeceras; cada caso llena su fila al abrirse. */
-export const TABLERO_T6_A4 = { revive: "Se revive", entran: "A Caja entran" };
+/* El tablero (guía §4.1): sus dos cabeceras y el rótulo de la fila del ejemplo; cada caso preguntado llena su fila al cerrarse. */
+export const TABLERO_T6_A4 = { revive: "Se revive", entran: "A Caja entran", ejemplo: "Ejemplo" };
 export const CASOS_T6_A4 = [
   {
     id: "a",
     letra: "a",
-    nombre: "a · Paga toda la factura",
-    revela: "Se revive toda la deuda: $180.000. A Caja entran $180.000.",
-    pie: "Libro, p. 204",
+    ejemplo: true,
     revive: "$180.000",
     entran: "$180.000",
-    correcta: "toda",
-    falla: "En el caso a paga toda la factura: se revive toda.",
   },
   {
     id: "b",
     letra: "b",
     nombre: "b · Abona $100.000 y promete pagar el resto",
-    revela: "Se revive toda la deuda: $180.000. A Caja entran $100.000. Los otros $80.000 quedan en Cuentas por cobrar – clientes, como deuda pendiente.",
+    revela: "Se revive toda la deuda: $180.000. A Caja entran $100.000.",
     pie: "Basado en el libro, p. 205",
     revive: "$180.000",
     entran: "$100.000",
     correcta: "toda",
     falla: {
       abono: "Como promete pagar el resto, la deuda vuelve completa.",
-      resto: "$80.000 es lo que queda pendiente. Como lo va a pagar, la deuda vuelve completa.",
+      resto: "Como va a pagar el resto, la deuda vuelve completa, no solo lo que falta.",
     },
+    pista: "Fíjate en lo que promete el cliente sobre el resto de la deuda.",
   },
   {
     id: "c",
     letra: "c",
-    nombre: "c · Abona $100.000 y avisa que no pagará más",
+    nombre: "c · Abona $100.000 y avisa que ya no puede pagar más",
     revela: "Se revive solo lo que pagó: $100.000. A Caja entran $100.000. Los otros $80.000 siguen castigados.",
     pie: "Basado en el libro, p. 206",
     revive: "$100.000",
     entran: "$100.000",
     correcta: "abono",
     falla: {
-      toda: "Como no pagará más, solo vuelve lo que abonó.",
+      toda: "Como ya no puede pagar más, solo vuelve lo que abonó.",
       resto: "$80.000 es lo que no va a pagar: eso sigue castigado.",
     },
+    pista: "Fíjate en lo que avisa el cliente sobre el resto de la deuda.",
   },
 ];
 export const FINAL_CAPA_3_T6_A4 = {
@@ -149,7 +153,7 @@ export const OPCIONES_FINAL_T6_A4 = [
     id: "b5-t6-a4-castigados",
     texto: "Siguen castigados, como en el caso c: no se reviven.",
     correcta: false,
-    feedback: "No es esa. Eso pasa en el caso c, cuando avisa que no pagará más. En el caso b promete pagar, así que la deuda volvió completa.",
+    feedback: "No es esa. Eso pasa en el caso c, cuando avisa que ya no puede pagar más. En el caso b promete pagar, así que la deuda volvió completa.",
   },
   {
     id: "b5-t6-a4-provision",
@@ -177,9 +181,13 @@ export const PIE_FINAL_T6_A4 = "Basado en el libro, p. 205";
 export const PARADA_T6_A4 = {
   antes: 5,
   pregunta: "Pablo Moncayo vuelve y paga. ¿Qué se anota primero?",
-  opciones: [{ id: "revivir", texto: "Revivir la deuda" }, { id: "caja", texto: "La plata que entra a Caja" }],
+  opciones: [{ id: "revivir", texto: "Revivir la deuda" }, { id: "caja", texto: "La plata que entra a Caja" }, { id: "ingreso", texto: "Un ingreso por la deuda recuperada" }],
   correcta: "revivir",
-  falla: "Primero se reversa el castigo, para que la deuda vuelva. Después se anota el pago.",
+  falla: {
+    caja: "Primero se reversa el castigo, para que la deuda vuelva. Después se anota el pago.",
+    ingreso: "No hay ningún ingreso: primero se revive la deuda y después se anota el pago.",
+  },
+  pista: "La deuda ya salió de Cuentas por cobrar – clientes. ¿Se puede cobrar algo que no está?",
   pie: "Basado en el libro, p. 204",
   resaltados: ["vuelve"],
 };

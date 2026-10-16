@@ -11,6 +11,9 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
+import { Marca, estiloE4, CORRECTA, TACHADA, TACHADO, OCULTO_E4 } from "./MarcasE4.jsx";
+import { useReducido } from "../tema3/DosLineas.jsx";
+import { evaluarPregunta, formatearRespuesta, leerRespuesta } from "../../../../contabilidad/t6Act2.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -33,6 +36,16 @@ import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
  * reinicio (`onReiniciar`): con eso, el libro diario de encima crece (la
  * variante 1 de la guía de Mai). El diario llega por `encima` y se pinta
  * entre el encabezado y el contador.
+ *
+ * PASOS CON PREGUNTAS (lote 6b, la fusión de a5 en a2): una parte con
+ * `tipo: "pregunta"` no lleva mesa: su enunciado, un campo de cifra escrita,
+ * «Comprobar» y un solo intento (contabilidad/t6Act2.js). Si falla, su cifra
+ * queda ✕ tachada y debajo, ✓ la correcta (E4). Lo propio de la actividad
+ * llega en `config`: `textos` (la etiqueta del contador, «Siguiente»,
+ * «Comprobar», el nombre del campo), `visual` (lo que va entre el contador y
+ * el paso, que no se mueve: en a2, la cuenta T) y `bloques` (lo que una
+ * pregunta lleva encima de su campo). Las partes de asiento siguen igual, y
+ * solo ellas llegan al diario.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -58,17 +71,19 @@ function Visto() {
 }
 
 /* Un campo de cifra: «$», punto de miles, sin decimales, hasta 8 dígitos. */
-function Campo({ id, valor, onCambio, bloqueado, etiqueta, error }) {
+/* `tachado` (E4): el valor que escribió el estudiante y no era, con ✕ y tachado; su borde de siempre, sin coral. */
+function Campo({ id, valor, onCambio, bloqueado, etiqueta, tachado = false, formatear = formatearCifra }) {
   return (
-    <div data-caja-campo={id} style={{
-      display: "flex", alignItems: "center", height: "44px", boxSizing: "border-box", padding: "0 8px", borderRadius: "10px",
-      background: "rgba(14,27,46,0.7)", border: `${error ? "2px" : "1px"} solid ${error ? CORAL : "rgba(248,249,250,0.22)"}`,
+    <div data-caja-campo={id} data-marca={tachado ? TACHADA : ""} style={{
+      display: "flex", alignItems: "center", gap: "3px", height: "44px", boxSizing: "border-box", padding: "0 8px", borderRadius: "10px",
+      background: "rgba(14,27,46,0.7)", border: "1px solid rgba(248,249,250,0.22)",
     }}>
+      {tachado && <Marca marca={TACHADA} />}
       <span aria-hidden="true" data-signo style={{ fontFamily: SORA, fontSize: "14px", fontWeight: 700, color: COLOR.apagado, marginRight: "3px" }}>$</span>
       <input
         data-campo-cifra={id}
         value={valor}
-        onChange={(e) => onCambio(formatearCifra(e.target.value))}
+        onChange={(e) => onCambio(formatear(e.target.value))}
         readOnly={bloqueado}
         inputMode="numeric"
         autoComplete="off"
@@ -76,7 +91,7 @@ function Campo({ id, valor, onCambio, bloqueado, etiqueta, error }) {
         aria-label={etiqueta}
         style={{
           flex: "1 1 auto", minWidth: 0, width: "100%", height: "100%", padding: 0, border: "none", outline: "none",
-          background: "transparent", color: COLOR.blanco, fontSize: "14px", fontWeight: 700, ...CIFRA,
+          background: "transparent", color: COLOR.blanco, fontSize: "14px", fontWeight: 700, ...CIFRA, ...(tachado ? TACHADO : null),
         }}
       />
     </div>
@@ -186,22 +201,64 @@ function Estante({ cuentas, onSacar }) {
 }
 
 /* La mesa de dos columnas, su conector y (si está activa) el estante, sin montos. */
+/*
+ * E4 en la mesa (hoja de fusiones de Mai, §3): al confirmar con error, la mesa del estudiante se queda
+ * como la armó, y lo correcto aparece junto, sin reemplazarla:
+ *   · cuenta que sobra o que está en la columna equivocada: su tarjeta queda ✕, con el nombre y el
+ *     valor tachados;
+ *   · valor equivocado: el valor queda ✕ tachado dentro del campo y, debajo, en la misma tarjeta,
+ *     «✓ $180.000» con borde 2 nodo y relleno navy;
+ *   · cuenta que faltaba: al final de su columna, una tarjeta ✓ con el valor correcto.
+ * Los totales y la diferencia se quedan como los dejó el estudiante: son su asiento. El diario recibe
+ * el asiento correcto. Sin coral: el coral sigue solo en la devolución.
+ */
+const BORDE_TARJETA = "1px solid rgba(248,249,250,0.14)";
+const TARJETA = { padding: "7px 6px", borderRadius: "11px", background: "rgba(10,20,34,0.45)" };
+const NOMBRE_MESA = { margin: "0 0 5px", fontFamily: SORA, fontWeight: 700, fontSize: "12px", lineHeight: 1.25, color: COLOR.blanco, textAlign: "center" };
+
+function ValorCorrecto({ cuenta, valor, oculto }) {
+  return (
+    <p data-valor-correcto={cuenta} style={{
+      display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", margin: "5px 0 0", padding: "6px 6px", borderRadius: "10px",
+      ...CIFRA, fontSize: "14px", fontWeight: 700, color: COLOR.blanco, ...estiloE4(CORRECTA),
+    }}>
+      <Marca marca={CORRECTA} oculto={oculto} />
+      <span>{pesos(valor)}</span>
+    </p>
+  );
+}
+
 function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante }) {
   const conValor = mesa.map((m) => ({ ...m, valor: leerCifra(m.texto) }));
   const t = totalesDe(conValor);
   const cierra = t.debe > 0 && t.debe === t.haber;
-  const conError = resultado && resultado.deValor;
+  const juzgada = Boolean(resultado) && !resultado.ok;
+  const esperado = resultado?.esperado ?? [];
+  /* «cuenta»: sobra o está en la columna equivocada; «valor»: va, pero con otro valor. */
+  const errorDe = (m) => {
+    if (!juzgada) return null;
+    const e = esperado.find((x) => x.cuenta === m.cuenta);
+    if (!e || e.lado !== m.lado) return "cuenta";
+    return leerCifra(m.texto) !== e.valor ? "valor" : null;
+  };
+  const faltan = juzgada ? esperado.filter((e) => !mesa.some((m) => m.cuenta === e.cuenta && m.lado === e.lado)) : [];
   const columna = (lado) => (
     <div data-columna={lado} style={{ flex: "1 1 0", minWidth: 0, display: "flex", flexDirection: "column", gap: "7px" }}>
       <Colector lado={lado} total={lado === DEBE ? t.debe : t.haber} />
-      {mesa.filter((m) => m.lado === lado).map((m) => (
-        <div key={m.cuenta} data-en-mesa={m.cuenta} style={{
-          padding: "7px 6px", borderRadius: "11px", background: "rgba(10,20,34,0.45)", border: "1px solid rgba(248,249,250,0.14)",
+      {mesa.filter((m) => m.lado === lado).map((m) => {
+        const error = errorDe(m);
+        return (
+        <div key={m.cuenta} data-en-mesa={m.cuenta} data-marca={error === "cuenta" ? TACHADA : ""} style={{
+          ...TARJETA, ...estiloE4(error === "cuenta" ? TACHADA : null, BORDE_TARJETA),
           animation: "fae-b5k-entra 200ms ease-out both",
         }}>
-          <p data-nombre-mesa style={{ margin: "0 0 5px", fontFamily: SORA, fontWeight: 700, fontSize: "12px", lineHeight: 1.25, color: COLOR.blanco, textAlign: "center" }}>{m.cuenta}</p>
+          <p data-nombre-mesa style={{ ...NOMBRE_MESA, ...(error === "cuenta" ? { ...TACHADO, display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" } : null) }}>
+            {error === "cuenta" && <Marca marca={TACHADA} />}
+            <span>{m.cuenta}</span>
+          </p>
           <Campo id={m.cuenta} valor={m.texto} onCambio={(v) => onCifra(m.cuenta, v)} bloqueado={!activa}
-            etiqueta={`Valor de ${m.cuenta}`} error={conError && leerCifra(m.texto) !== resultado.esperado.find((e) => e.cuenta === m.cuenta)?.valor} />
+            etiqueta={`Valor de ${m.cuenta}`} tachado={error !== null} />
+          {error === "valor" && <ValorCorrecto cuenta={m.cuenta} valor={esperado.find((x) => x.cuenta === m.cuenta).valor} oculto={OCULTO_E4.valorCorrecto} />}
           {activa && (
             <button type="button" data-devolver={m.cuenta} onClick={() => onDevolver(m.cuenta)} style={{
               display: "block", width: "100%", minHeight: "32px", marginTop: "3px", background: "none", border: "none", cursor: "pointer",
@@ -210,6 +267,17 @@ function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante
               devolver al estante
             </button>
           )}
+        </div>
+        );
+      })}
+      {/* La cuenta que faltaba: al final de su columna, ✓ con el valor correcto. */}
+      {faltan.filter((e) => e.lado === lado).map((e) => (
+        <div key={`falta-${e.cuenta}`} data-faltaba={e.cuenta} data-marca={CORRECTA} style={{ ...TARJETA, ...estiloE4(CORRECTA) }}>
+          <p style={{ ...NOMBRE_MESA, display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+            <Marca marca={CORRECTA} oculto={OCULTO_E4.faltaba} />
+            <span>{e.cuenta}</span>
+          </p>
+          <p style={{ margin: 0, ...CIFRA, fontSize: "14px", fontWeight: 700, color: COLOR.blanco, textAlign: "center" }}>{pesos(e.valor)}</p>
         </div>
       ))}
     </div>
@@ -264,13 +332,30 @@ function Retro({ resultado }) {
   );
 }
 
-const vacio = () => ({ mesa: [], resultado: null });
+const vacio = () => ({ mesa: [], resultado: null, texto: "" });
+
+/* Una pregunta de cifra escrita: lo que lleva encima (si lo lleva), el campo y, si falló, ✓ la cifra correcta. */
+function Pregunta({ parte, texto, onTexto, resultado, Bloque, reducido, etiqueta }) {
+  const fallo = Boolean(resultado) && !resultado.ok;
+  return (
+    <>
+      {Bloque && <Bloque comprobada={Boolean(resultado)} reducido={reducido} />}
+      <div data-pregunta={parte.id} style={{ marginTop: "12px" }}>
+        <Campo id={parte.id} valor={texto} onCambio={onTexto} bloqueado={Boolean(resultado)} etiqueta={etiqueta}
+          tachado={fallo} formatear={formatearRespuesta} />
+        {fallo && <ValorCorrecto cuenta={parte.id} valor={resultado.correcta} oculto={OCULTO_E4.valorCorrecto} />}
+      </div>
+    </>
+  );
+}
 
 export default function CierreConMesa({
   config, Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
   encima = null, onParteComprobada = null, onReiniciar = null,
 }) {
   const t = useTanda(() => items ?? config.partes);
+  const reducido = useReducido();
+  const textos = config.textos ?? {};
   const [s, setS] = useState(vacio);
   const [todos, setTodos] = useState([]);
   const tarjeta = useRef(null);
@@ -300,19 +385,27 @@ export default function CierreConMesa({
   }
 
   const comprobada = Boolean(s.resultado);
+  const esPregunta = parte.tipo === "pregunta";
+  const Visual = config.visual ?? null;
   const enEstante = config.estante.filter((c) => !s.mesa.some((m) => m.cuenta === c));
   const sacar = (cuenta, lado) => setS((x) => (x.mesa.some((m) => m.cuenta === cuenta) ? x : { ...x, mesa: [...x.mesa, { cuenta, lado, texto: "" }] }));
   const cifra = (cuenta, texto) => setS((x) => ({ ...x, mesa: x.mesa.map((m) => (m.cuenta === cuenta ? { ...m, texto } : m)) }));
   const devolver = (cuenta) => setS((x) => ({ ...x, mesa: x.mesa.filter((m) => m.cuenta !== cuenta) }));
 
   const confirmar = () => {
+    if (esPregunta) {
+      const r = evaluarPregunta(parte, s.texto);
+      t.anotar(parte.id, r.ok, r.ok ? null : r.error);
+      setTodos((xs) => [...xs, { id: parte.id, ok: r.ok }]);
+      setS({ ...s, resultado: r });
+      return;
+    }
     const puestas = s.mesa.map((m) => ({ cuenta: m.cuenta, lado: m.lado, valor: leerCifra(m.texto) }));
     const r = config.evaluar(parte, puestas);
     t.anotar(parte.id, r.ok, r.ok ? null : r.error);
     setTodos((xs) => [...xs, { id: parte.id, ok: r.ok }]);
-    /* Si falla, se revela lo correcto. */
-    const mesa = r.ok ? s.mesa : r.esperado.map((e) => ({ cuenta: e.cuenta, lado: e.lado, texto: formatearCifra(String(e.valor)) }));
-    setS({ mesa, resultado: r });
+    /* Si falla, la mesa del estudiante se queda como la armó y lo correcto aparece junto (E4, en Mesa). */
+    setS({ mesa: s.mesa, resultado: r });
     onParteComprobada?.(parte, r);
   };
   const avanzar = () => {
@@ -320,7 +413,7 @@ export default function CierreConMesa({
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
-  const listo = s.mesa.length > 0 && s.mesa.every((m) => leerCifra(m.texto) !== null);
+  const listo = esPregunta ? leerRespuesta(s.texto) !== null : s.mesa.length > 0 && s.mesa.every((m) => leerCifra(m.texto) !== null);
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
@@ -330,12 +423,13 @@ export default function CierreConMesa({
         {encima}
         {!modoDemo && (
           <div style={{ marginBottom: "12px" }}>
-            <Pulsos total={cuantas} hechos={t.i + (comprobada ? 1 : 0)} enCurso={t.i + 1} etiqueta="Asiento" />
+            <Pulsos total={cuantas} hechos={t.i + (comprobada ? 1 : 0)} enCurso={t.i + 1} etiqueta={textos.etiqueta ?? "Asiento"} />
           </div>
         )}
+        {Visual && !modoDemo && <Visual paso={t.i} comprobada={comprobada} reducido={reducido} />}
 
         <div key={parte.id} data-tarjeta-parte={parte.id} style={{ padding: "11px 13px", borderRadius: "11px", background: "rgba(184,196,212,0.12)", borderLeft: `3px solid ${COLOR.neutro}` }}>
-          <p ref={tarjeta} tabIndex={-1} data-hecho style={{ margin: 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: COLOR.blanco }}>{parte.hecho}</p>
+          <p ref={tarjeta} tabIndex={-1} data-hecho style={{ margin: 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: COLOR.blanco }}>{esPregunta ? parte.enunciado : parte.hecho}</p>
         </div>
 
         <section key={`${parte.id}-parte`} data-parte={parte.id} data-estado-parte={comprobada ? "comprobada" : "activa"}
@@ -352,18 +446,23 @@ export default function CierreConMesa({
               {parte.rotulo && (
                 <div>
                   <p data-rotulo-parte style={{ margin: 0, fontFamily: SORA, fontSize: "14px", fontWeight: 700, color: COLOR.blanco }}>{parte.rotulo}</p>
-                  <p data-instruccion style={{ margin: "2px 0 0", fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: COLOR.apagado }}>{parte.instruccion}</p>
+                  {parte.instruccion && <p data-instruccion style={{ margin: "2px 0 0", fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: COLOR.apagado }}>{parte.instruccion}</p>}
                 </div>
               )}
             </div>
           )}
-          <Mesa mesa={s.mesa} activa={!comprobada} resultado={s.resultado} enEstante={enEstante}
-            onSacar={sacar} onCifra={cifra} onDevolver={devolver} />
+          {esPregunta ? (
+            <Pregunta parte={parte} texto={s.texto} onTexto={(texto) => setS((x) => ({ ...x, texto }))} resultado={s.resultado}
+              Bloque={config.bloques?.[parte.bloque] ?? null} reducido={reducido} etiqueta={textos.campo} />
+          ) : (
+            <Mesa mesa={s.mesa} activa={!comprobada} resultado={s.resultado} enEstante={enEstante}
+              onSacar={sacar} onCifra={cifra} onDevolver={devolver} />
+          )}
           <Retro resultado={s.resultado} />
           {!comprobada && (
             <>
-              <BotonConfirmar deshabilitado={!listo} onClick={confirmar}>{TEXTO_CONFIRMAR}</BotonConfirmar>
-              {!modoDemo && (
+              <BotonConfirmar deshabilitado={!listo} onClick={confirmar}>{esPregunta ? textos.comprobar : TEXTO_CONFIRMAR}</BotonConfirmar>
+              {!modoDemo && !esPregunta && (
                 <p data-un-intento style={{ margin: "9px 0 0", fontSize: "12px", lineHeight: 1.45, color: COLOR.apagado, textAlign: "center" }}>{AVISO_UN_INTENTO}</p>
               )}
             </>
@@ -382,7 +481,7 @@ export default function CierreConMesa({
 
       {comprobada && !modoDemo && (
         <div data-boton-avanzar>
-          <Responder onClick={avanzar}>{t.i + 1 === cuantas ? "Ver mi resumen" : "Siguiente asiento"}</Responder>
+          <Responder onClick={avanzar}>{t.i + 1 === cuantas ? "Ver mi resumen" : textos.siguiente ?? "Siguiente asiento"}</Responder>
         </div>
       )}
 

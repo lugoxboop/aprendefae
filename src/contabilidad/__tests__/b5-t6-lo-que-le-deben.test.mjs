@@ -90,27 +90,37 @@ test("★★★ ningún componente de la pieza escribe texto que lea el estudian
   }
 });
 
-test("★★ capa 1: cinco términos; las citas con «» y página; la nota de nota débito bajo el término 4", () => {
+test("★★ capa 1 (B2): seis términos; las citas con «» y página; «Nota débito» es término propio, antes de «Cuándo sube…»", () => {
   const n = D.PIEZA_LO_QUE_LE_DEBEN.nombres;
   assert.deepEqual(n.map((x) => x.termino), [
-    "Cuentas por cobrar", "Clientes", "Otras cuentas por cobrar",
+    "Cuentas por cobrar", "Clientes", "Otras cuentas por cobrar", "Nota débito",
     "Cuándo sube lo que deben los clientes", "Cuándo baja lo que deben los clientes",
   ]);
   assert.match(n[0].delLibro, /^«.*» \(p\. 195\)$/);
   assert.match(n[1].delLibro, /^«.*» \(p\. 196\)$/);
-  assert.equal(n[3].delLibro, D.NOTA_DEBITO_T6.texto);
-  assert.equal(n[3].rotuloDelLibro, "Nota");
+  /* B2: la definición del Tema 4, letra por letra, es ahora la del término 4; «Cuándo sube…» queda sin la nota debajo. */
+  assert.equal(n[3].definicion, D.NOTA_DEBITO_T6.texto);
+  assert.equal(n[3].delLibro, undefined);
   assert.equal(n[3].glosa, undefined, "la glosa provisional se retiró: el término 4 ya no lleva id de glosa");
+  assert.equal(n[4].delLibro, undefined, "«Cuándo sube…» volvió a llevar la nota");
+  assert.equal(n[4].rotuloDelLibro, undefined);
   /* La nota de «cartera» va debajo de la cita del término 2 (auditoría integral). */
   assert.equal(n[1].notaDebajo, D.NOTA_CLIENTES);
   assert.equal(n.filter((x) => x.notaDebajo).length, 1);
+  /* Cada texto nuevo, literal de B2 (guardada al final del paquete); los demás, «el de hoy». */
+  const fuente = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-aprender1.md", import.meta.url), "utf8");
+  const B2 = fuente.slice(fuente.indexOf("## B2 ·"));
+  for (const x of n) assert.ok(B2.includes(`**${x.termino}**`), x.termino);
+  for (const t of [n[0].definicion, n[0].delLibro, n[1].definicion, n[1].delLibro, D.NOTA_CLIENTES.texto, n[5].definicion]) assert.ok(B2.includes(t), `«${t.slice(0, 40)}…» no es literal de B2`);
+  for (const t of ["Otras cuentas por cobrar", "Cuándo sube lo que deben los clientes"]) assert.ok(B2.includes(`**${t}** — El de hoy`), t);
+  assert.ok(B2.includes("**Nota débito** — La definición del Tema 4, letra por letra."));
 });
 
-test("★★★ auditoría integral: el término 5 de Futaba, con su pie, sin el traslado a difícil cobro", () => {
-  const t5 = D.PIEZA_LO_QUE_LE_DEBEN.nombres[4];
-  assert.equal(t5.definicion, "Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. También baja cuando devuelve mercancía que había comprado a crédito y todavía no había pagado: es una devolución de ventas. Baja cuando la empresa le otorga un descuento sobre lo que todavía le debe. Y baja cuando la deuda se da por perdida, algo que se explica más adelante.");
-  assert.equal(t5.pie, "Basado en el libro, pp. 197 y 199-200");
-  assert.ok(!/difícil cobro/.test(t5.definicion));
+test("★★★ B2: el término 6 de Futaba, con su pie, sin el traslado a difícil cobro", () => {
+  const t6 = D.PIEZA_LO_QUE_LE_DEBEN.nombres[5];
+  assert.equal(t6.definicion, "Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. Baja cuando devuelve mercancía comprada a crédito que aún no pagaba: es una devolución de ventas. Baja con un descuento sobre lo que aún debe. Y baja cuando la deuda se da por perdida.");
+  assert.equal(t6.pie, "Basado en el libro, pp. 197 y 199-200");
+  assert.ok(!/difícil cobro/.test(t6.definicion));
 });
 
 test("★★★ auditoría integral: la nota de «cartera» se ve en pantalla, debajo de la cita del término 2", async () => {
@@ -119,11 +129,24 @@ test("★★★ auditoría integral: la nota de «cartera» se ve en pantalla, d
   const pieza = PIEZAS[0].pieza;
   const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA6[pieza.id];
   const { caja, desmontar } = await montar(h(CuatroCapas, { pieza, Capa2, Exploracion, Capa4, rotulo: "R" }));
-  const terminos = [...caja.querySelectorAll('[data-capa="1"] dl > div')];
-  assert.equal(terminos.length, 5);
+  /* La capa 1 va paginada: se recorre término por término, abriendo «Más sobre este término» donde lo hay. */
+  const puntos = [...caja.querySelectorAll('[data-capa="1"] [data-punto]')];
+  assert.equal(puntos.length, 6);
+  const cartas = [];
+  for (const p of puntos) {
+    await tocar(p);
+    const carta = caja.querySelector('[data-capa="1"] [data-termino][data-actual]');
+    const mas = carta.querySelector("[data-mas]");
+    if (mas) await tocar(mas);
+    cartas.push({ conNota: Boolean(carta.querySelector("[data-mas-contenido] [data-nota-debajo]")), carta, texto: carta.textContent });
+  }
   /* Solo el término 2 la lleva, y dentro del bloque de la cita. */
-  assert.deepEqual(terminos.map((t) => Boolean(t.querySelector("[data-nota-debajo]"))), [false, true, false, false, false]);
-  const bloque = terminos[1].querySelector("[data-del-libro]");
+  assert.deepEqual(cartas.map((c) => c.conNota), [false, true, false, false, false, false]);
+  await tocar(puntos[1]);
+  const carta = caja.querySelector('[data-capa="1"] [data-termino][data-actual]');
+  await tocar(carta.querySelector("[data-mas]"));
+  const bloque = carta.querySelector("[data-mas-contenido] [data-del-libro]");
+  assert.equal(bloque.closest("[hidden]"), null, "la nota quedó plegada después de abrir «Más»");
   const cita = bloque.querySelector("[data-cita]");
   const nota = bloque.querySelector("[data-nota-debajo]");
   assert.equal(cita.textContent, D.PIEZA_LO_QUE_LE_DEBEN.nombres[1].delLibro);
@@ -132,8 +155,13 @@ test("★★★ auditoría integral: la nota de «cartera» se ve en pantalla, d
   /* La cita se lee primero; la nota, después. */
   assert.ok(cita.compareDocumentPosition(nota) & w.Node.DOCUMENT_POSITION_FOLLOWING);
   assert.equal(getComputedStyle(nota).display, "block");
-  /* El término 5 nuevo, en pantalla. */
-  assert.ok(terminos[4].textContent.includes("Y baja cuando la deuda se da por perdida, algo que se explica más adelante."));
+  /* Clientes lleva los dos rótulos, distintos (B5). */
+  assert.equal(bloque.firstElementChild.textContent, "Así lo dice el libro");
+  /* El término 6 nuevo, en pantalla cuando le toca. */
+  assert.ok(cartas[5].texto.includes("Y baja cuando la deuda se da por perdida."));
+  /* «Nota débito», con su definición del Tema 4, en el término 4. */
+  assert.ok(cartas[3].texto.startsWith("Nota débito"));
+  assert.ok(cartas[3].texto.includes(D.NOTA_DEBITO_T6.texto));
   desmontar();
 });
 
@@ -286,7 +314,24 @@ const TABLA_CAPA_3 = (() => {
   }
   const final = fuente.match(/Etiqueta del bloque final \(★\): «([^»]+)»/);
   assert.ok(final, "el paquete no tiene el pie del bloque final");
-  return { filas, final: final[1] };
+  /*
+   * Encima, la tabla C1-4 del lote C2 · C1 · C7 (al final del paquete): sus
+   * filas, en el orden de las cajas, mandan sobre el hecho, lo que se revela,
+   * la devolución del segundo error y el pie; «La de hoy» deja lo de antes.
+   */
+  const j = fuente.indexOf("### C1-4 · T6 A1 · capa 3");
+  assert.ok(j >= 0, "el paquete no tiene la tabla C1-4 del lote");
+  const lote = fuente.slice(j).split("\n").slice(3, 9).map((l) => l.slice(2, -2).split(" | "));
+  assert.equal(lote.length, 6);
+  const fallas = [];
+  lote.forEach(([, hecho, revela, falla, pie], k) => {
+    const hoy = (t) => t === "La de hoy";
+    if (!hoy(hecho)) filas[k][0] = hecho;
+    if (!hoy(revela)) filas[k][1] = revela;
+    if (!hoy(pie)) filas[k][2] = pie;
+    fallas.push(hoy(falla) ? null : falla);
+  });
+  return { filas, final: final[1], fallas };
 })();
 
 test("★★★ capa 3: cada caja abierta y el bloque final muestran su pie (★), literal del paquete, con el estilo de fuente", async () => {
@@ -300,7 +345,9 @@ test("★★★ capa 3: cada caja abierta y el bloque final muestran su pie (★
     await decidir(tocar, zona, x.correcta);
     assert.equal(lectura(caja.querySelector(`[data-revela="${x.id}"]`)), revela, `revela ${k + 1}`);
     assert.equal(zona.querySelector("[data-pie]").textContent, pie, `pie ${k + 1}`);
+    if (TABLA_CAPA_3.fallas[k]) assert.equal(x.falla, TABLA_CAPA_3.fallas[k], `al segundo error ${k + 1}`);
   }
+  assert.deepEqual(TABLA_CAPA_3.fallas.map(Boolean), [false, true, false, false, false, false], "C1-4 cambia solo la devolución del pago");
   const pies = [...caja.querySelectorAll("[data-pie]")];
   assert.equal(pies.length, 7, "seis cajas y el bloque final");
   assert.equal(caja.querySelector("[data-final] [data-pie]").textContent, TABLA_CAPA_3.final);
@@ -313,8 +360,8 @@ test("★★★ capa 3: cada caja abierta y el bloque final muestran su pie (★
 
 /* ═══════════ CAPA 4 ═══════════ */
 
-test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola correcta y su devolución corregida", async () => {
-  assert.deepEqual(D.OPCIONES_FINAL_T6.filter((o) => o.correcta).map((o) => o.texto), ["Baja, porque la deuda se paga; el ingreso ya estaba anotado."]);
+test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola correcta y su devolución (C1-5 del lote C2 · C1 · C7); su pie debajo", async () => {
+  assert.deepEqual(D.OPCIONES_FINAL_T6.filter((o) => o.correcta).map((o) => o.texto), ["Nada: la deuda subió con la venta y bajó con la devolución."]);
   const { Capa4 } = ESCENAS_TEMA6[D.PIEZA_LO_QUE_LE_DEBEN.id];
   const { caja, desmontar } = await montar(h(Capa4));
   assert.ok(caja.textContent.startsWith(D.PREGUNTA_FINAL_T6));
@@ -323,8 +370,9 @@ test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola corr
     assert.equal(caja.querySelector("[data-devolucion]").textContent, o.feedback);
     await tocar(caja.querySelector("[data-otra-vez]"));
   }
-  /* La versión que manda (Futaba, 14-oct), no la línea corregida anterior. */
-  assert.equal(D.OPCIONES_FINAL_T6[0].feedback, "Correcto. El 25 de enero, en los libros de Comercializadora Santa Pacha, Cuentas por cobrar – clientes baja: se acredita. No se anota ningún ingreso. Ese ya estaba desde el 10.");
+  /* C1-5: la pregunta ya no repite el ejemplo de la capa 2. */
+  assert.equal(D.OPCIONES_FINAL_T6[0].feedback, "Correcto. La venta a crédito hizo subir la deuda, y la devolución la hizo bajar por el mismo valor.");
+  assert.equal([...caja.querySelectorAll("[data-pie]")].at(-1).textContent, "Basado en el libro, p. 197");
   desmontar();
 });
 

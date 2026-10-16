@@ -94,3 +94,7 @@ Id	Campo	Texto nuevo (literal)
 Castigo	Texto que se ve	En marzo del año siguiente se castiga la deuda de Pablo Moncayo: $180.000, contra la provisión.
 Castigo	Anuncio para el lector	Debe, $180.000, marzo del año siguiente
 Texto alternativo	ALT	Actividad de casillas. Sigues la cuenta de la provisión de El Torito. Primero calculas el valor neto. Después llega el castigo de marzo, ya anotado, y calculas tres casillas más, en orden. En cada una eliges un valor entre tres. Tienes un intento por casilla; si fallas, se muestra la razón y el valor correcto.
+
+## Retirada (lote 6b)
+
+b5-t6-a5 se fundió en b5-t6-a2 (hoja de fusiones de Mai): sus casillas son ahora las tres preguntas de cifra escrita de a2, con los textos de la sección (5) de paquetes/b5-t6-act2.md. Lápida en la 0077. Este paquete queda como registro.

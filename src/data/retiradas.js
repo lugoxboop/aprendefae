@@ -37,6 +37,10 @@ export const NOMBRE_DE_RETIRADA = {
      igual: la tabla vale por las que vengan, y empezar vacía invita a no
      usarla. */
   "dashboard-economico": "El Tablero Económico",
+  /* 0076 · Célula B: sus decisiones ya están en a4 y en la capa 3 de T6 · A2 (Shoko, C6). */
+  "b5-t6-a7": "¿Qué método y cuándo?",
+  /* 0077 · Célula B: se fundió en b5-t6-a2 «La provisión de El Torito» (lote 6b, hoja de Mai). */
+  "b5-t6-a5": "La cuenta de la provisión",
   /* 0208 · corte de calidad de los Hacer de T4 (Célula D, 15 oct 2026). H2
      sale; H5 se funde en H4 «El arqueo de caja menor» y H6 en H7 «Concilia
      la cuenta». Los nombres son los que tenían en subjects.js antes de salir,

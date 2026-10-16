@@ -58,11 +58,9 @@ import { fichaDeItemT6Act1 } from "../contabilidad/t6Act1.js";
 import { parteDeItemT5Act2 } from "../contabilidad/t5Act2.js";
 import { PARTES_T5_ACT2 } from "../data/contabilidadT5Act2.js";
 import { parteDeItem as parteDeItemMesa } from "../contabilidad/cierreConMesa.js";
-import { PARTES_T6_ACT2 } from "../data/contabilidadT6Act2.js";
+import { PASOS_T6_ACT2 } from "../data/contabilidadT6Act2.js";
 import { PARTES_T6_ACT3 } from "../data/contabilidadT6Act3.js";
 import { hechoDeItemT6Act4 } from "../contabilidad/t6Act4.js";
-import { fichaDeItemT6Act7 } from "../contabilidad/t6Act7.js";
-import { CASILLAS_T6_ACT5 } from "../data/contabilidadT6Act5.js";
 import { PARTES_T6_ACT6 } from "../data/contabilidadT6Act6.js";
 import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
 import { hechoDeItemH1 } from "../contabilidad/t7H1.js";
@@ -93,9 +91,11 @@ import { operacionDeItemH3 as operacionDeItemT4H3 } from "../data/contabilidadT4
 import { preguntaDeItemH4 as preguntaDeItemT4H4 } from "../data/contabilidadT4H4.js";
 import { partidaDeItemH7 as partidaDeItemT4H7 } from "../data/contabilidadT4H7.js";
 import { itemDeH8 as itemDeT4H8 } from "../data/contabilidadT4H8.js";
+import { unidadDeN5 as unidadDeT5N5 } from "../contabilidad/t5N5.js";
 import { unidadDeR5_2 } from "../data/repasoCap5ToroNegroJuego.js";
 import { unidadDeR5_3 } from "../data/repasoCap5MateJuego.js";
 import { unidadDeR5_4 } from "../data/repasoCap5BarranquillaJuego.js";
+import { unidadDeR5_5 } from "../data/repasoCap5PermanenteJuego.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -610,7 +610,8 @@ Object.assign(REGLAS, {
   "b5-t6-a1": (id) => fichaDeItemT6Act1(id),
   /* Tema 5 · act. 2 y Tema 6 · acts. 2 y 3. El ítem es la parte, y se lee por su rótulo y su instrucción. */
   "b5-t5-a2": (id) => parteDeItemT5Act2(PARTES_T5_ACT2)(id),
-  "b5-t6-a2": (id) => parteDeItemMesa(PARTES_T6_ACT2)(id),
+  /* Desde el lote 6b, los cinco pasos: los dos asientos y las tres preguntas (las casillas de a5, que se fundió aquí). */
+  "b5-t6-a2": (id) => parteDeItemMesa(PASOS_T6_ACT2)(id),
   "b5-t6-a3": (id) => parteDeItemMesa(PARTES_T6_ACT3)(id),
   /* T5 · N1 (Célula C). Cada ítem, por su caso o su pregunta. */
   "t5-temporal-o-largo-plazo": (id) => unidadDeT5N1(id),
@@ -618,11 +619,11 @@ Object.assign(REGLAS, {
   "t5-revision-que-falta": (id) => unidadDeT5N3(id),
   /* T5 · N4 (Célula C). Una elección, por su pregunta; una línea, por su cuenta y su valor. */
   "t5-el-interes-del-periodo": (id) => unidadDeT5N4(id),
-  /* Tema 6 · acts. 4 a 7: el hecho, la casilla (por su enunciado) o la ficha. */
+  /* Tema 6 · acts. 4 a 6: el hecho o la casilla (por su enunciado). b5-t6-a7 se retiró en el lote 4. */
   "b5-t6-a4": (id) => hechoDeItemT6Act4(id),
-  "b5-t6-a5": (id) => CASILLAS_T6_ACT5.find((c) => c.id === id)?.enunciado ?? null,
   "b5-t6-a6": (id) => PARTES_T6_ACT6.flatMap((p) => p.casillas).find((c) => c.id === id)?.enunciado ?? null,
-  "b5-t6-a7": (id) => fichaDeItemT6Act7(id),
+  /* T5 · N5 (Célula C). Una elección, por su pregunta; una línea, por su cuenta y su valor. */
+  "t5-gano-o-perdio": (id) => unidadDeT5N5(id),
 
   "cu-arma-el-asiento": (id) => textoDeItemA6(id),
 
@@ -806,6 +807,8 @@ Object.assign(REGLAS, {
   "r5-3": (id) => unidadDeR5_3(id),
   /* r5-4. Cada asiento, por su fecha y su nombre corto. */
   "r5-4": (id) => unidadDeR5_4(id),
+  /* r5-5. Cada pantalla, por su número y su título. */
+  "r5-5": (id) => unidadDeR5_5(id),
 });
 
 /*

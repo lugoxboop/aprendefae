@@ -1,5 +1,7 @@
 # b5-t6-act7 · «¿Qué método y cuándo?» · paquete
 
+> **RETIRADA (lote 4, 15 oct 2026).** Shoko, C6: sus decisiones ya están en b5-t6-a4 y en la capa 3 de T6 A2. Se quitó del camino y del código; la 0076 borra su fila del catálogo. Este paquete queda como registro.
+
 Célula B · T6 · Hacer · `b5-t6-a7`. Mecánica de b5-t6-a1 (la clasificación de dos niveles de la célula).
 
 Lo que ve el estudiante sale de aquí, letra por letra. Precedencia (Sakuta): la versión de Futaba de abajo; la auditoría de Shoko y la hoja corta de Mai, cuando lleguen, mandan sobre ella y se añaden como secciones nuevas.

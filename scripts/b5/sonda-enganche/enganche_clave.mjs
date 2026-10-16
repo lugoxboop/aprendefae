@@ -6,9 +6,9 @@
  * Lee del build que se mide la respuesta correcta y una equivocada de cada tarjeta, sin copiar
  * ninguna regla: las configuraciones de los Hacer (CONFIG_*) y los datos de las capas 3 y de las
  * paradas de la capa 2 de los Aprender. La equivocada se comete con el mismo gesto que la buena:
- *   · mesa (b5-t5-a2, b5-t6-a2, a3): las mismas cuentas en sus lados, con el primer valor mal;
- *   · casillas y elección (b5-t6-a4, a5, a6): otra opción de la misma tarjeta;
- *   · clasificar en dos niveles (b5-t6-a7): el otro primer nivel, dos veces;
+ *   · mesa (b5-t5-a2, b5-t6-a2, a3): las mismas cuentas en sus lados, con el primer valor mal; en las
+ *     preguntas de a2 (lote 6b), la cifra correcta más 1.000;
+ *   · casillas y elección (b5-t6-a4, a6): otra opción de la misma tarjeta (b5-t6-a5 se fundió en a2);
  *   · las fichas a un nivel (b5-t5-a1, b5-t6-a1, lote 6a): los otros dos cajones, uno tras otro.
  * Las fichas de clasificar salen de sortear: se juntan todas las que puede dar (cada id, su destino).
  */
@@ -21,6 +21,8 @@ const clave = { hacer: {}, aprender: {} };
 for (const [id, p, k] of [["b5-t5-a2", "tema5/CierreSantaPacha.jsx", "CONFIG_T5_ACT2"], ["b5-t6-a2", "tema6/ProvisionDeElTorito.jsx", "CONFIG_T6_ACT2"], ["b5-t6-a3", "tema6/DeudaQueVuelve.jsx", "CONFIG_T6_ACT3"]]) {
   const cfg = await C(p, k);
   clave.hacer[id] = { mecanica: "mesa", partes: Object.fromEntries(cfg.partes.map((x) => {
+    /* Las preguntas de a2 (lote 6b): la cifra escrita; la mal, la correcta más 1.000. */
+    if (x.tipo === "pregunta") return [x.id, { pregunta: true, bien: x.correcta, mal: x.correcta + 1000 }];
     const bien = x.asiento.map((e) => [e.cuenta, e.lado, e.valor]);
     const mal = bien.map((e, i) => (i === 0 ? [e[0], e[1], e[2] + 1000] : e));
     return [x.id, { bien, mal }];
@@ -33,9 +35,9 @@ for (const [id, p, k] of [["b5-t5-a2", "tema5/CierreSantaPacha.jsx", "CONFIG_T5_
   clave.hacer["b5-t6-a4"] = { mecanica: "eleccion", tarjetas: Object.fromEntries(cfg.banco.map((h) => [h.id, { bien: h.respuesta, mal: cfg.opciones.find((o) => o.id !== h.respuesta).id }])) };
 }
 
-/* Casillas (b5-t6-a5, a6): la opción es String(valor ?? texto), como CasillasEnOrden. */
+/* Casillas (b5-t6-a6): la opción es String(valor ?? texto), como CasillasEnOrden. */
 const claveDe = (op) => String(op.valor ?? op.texto);
-for (const [id, p, k] of [["b5-t6-a5", "tema6/LaCuentaDeLaProvision.jsx", "CONFIG_T6_ACT5"], ["b5-t6-a6", "tema6/ProvisionPorEdades.jsx", "CONFIG_T6_ACT6"]]) {
+for (const [id, p, k] of [["b5-t6-a6", "tema6/ProvisionPorEdades.jsx", "CONFIG_T6_ACT6"]]) {
   const cfg = await C(p, k);
   const casillas = cfg.partes.flatMap((x) => x.casillas);
   clave.hacer[id] = { mecanica: "casillas", tarjetas: Object.fromEntries(casillas.map((c) => [c.id, { bien: claveDe(c.opciones.find((o) => o.tipo === null)), mal: claveDe(c.opciones.find((o) => o.tipo !== null)) }])) };
@@ -43,7 +45,7 @@ for (const [id, p, k] of [["b5-t6-a5", "tema6/LaCuentaDeLaProvision.jsx", "CONFI
 
 /* Clasificar en dos niveles: por ficha, su destino {n1, n2} y un primer nivel equivocado. */
 const barajar = (xs) => { const a = [...xs]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-for (const [id, p, k] of [["b5-t5-a1", "tema5/QueRentaDa.jsx", "CONFIG_T5_ACT1"], ["b5-t6-a1", "tema6/ClientesOOtra.jsx", "CONFIG_T6_ACT1"], ["b5-t6-a7", "tema6/QueMetodoYCuando.jsx", "CONFIG_T6_ACT7"]]) {
+for (const [id, p, k] of [["b5-t5-a1", "tema5/QueRentaDa.jsx", "CONFIG_T5_ACT1"], ["b5-t6-a1", "tema6/ClientesOOtra.jsx", "CONFIG_T6_ACT1"]]) {
   const cfg = await C(p, k);
   const fichas = new Map();
   for (let i = 0; i < 400; i++) for (const f of cfg.sortear(barajar)) fichas.set(f.id, f);
