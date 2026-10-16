@@ -1,14 +1,16 @@
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * ¿CABE CADA TEXTO DE T7-2 · A5 «FLETES EN PERMANENTE» A 375 Y 320?
+ * ¿CABE CADA TEXTO DE T7-2 · A5 «FLETES Y DEVOLUCIONES EN PERMANENTE» (LA
+ * FUSIÓN CON A6) A 375 Y 320?
  *
- *   node scripts/t7/medir-t7-2-a5.mjs [carpeta-de-capturas]
+ *   FUENTES_DIR=/tmp/claude-0/fuentes node scripts/t7/medir-t7-2-a5.mjs [carpeta-de-capturas]
  *
  * Como medir-t7-1-a7.mjs: Chromium de verdad, la vista de T7-2 montada tal
  * cual con la hoja de estilos del sitio (banco scripts/t7/harness-t7-2). Juega
- * A5 entera —en P2, P3 y P5 falla con cada opción equivocada y acierta; en
- * P4 pone la línea de Inventario de mercancías en el lado equivocado y
- * después acierta— y en cada uno de sus 18 estados comprueba:
+ * A5 entera —en P1, P2, P3 y P5 falla con cada opción equivocada y acierta;
+ * en P4 pone la línea de Inventario de mercancías en el lado equivocado y
+ * después acierta; en cada acierto abre el «¿Por qué?» y el «Ver…» que
+ * traiga— y en cada uno de sus 25 estados comprueba:
  *
  *   · que la página no tenga barra horizontal
  *   · que ningún texto se salga de su caja (scrollWidth) ni del panel
@@ -18,7 +20,8 @@
  *   · en P3, que la X de una línea equivocada quede dentro del panel
  *   · en los asientos, que cada monto quepa en su celda sin partirse y que
  *     el ● de los montos que no se muestran quede en su columna
- *   · en el resumen, que cada ítem de la lista lleve su número
+ *   · que las figuras de la fusión (renglones, la cuenta y las fichas,
+ *     provisionales para Watari) no se salgan de su caja
  *
  * Sale con código 1 si algo falla. Necesita Playwright (no es dependencia del
  * repo): el de la máquina, o el de PLAYWRIGHT_MODULE.
@@ -42,6 +45,19 @@ await servidor.listen();
 const URL_BANCO = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/t7/harness-t7-2/index.html`;
 const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const fallos = [];
+
+/* Google Fonts no siempre se alcanza: con FUENTES_DIR (fuentes.css y los .woff2), se sirven desde el disco (como medir-t7-3-a6.mjs). */
+async function servirFuentes(ctx) {
+  const dir = process.env.FUENTES_DIR;
+  if (!dir) return;
+  const { readFileSync } = await import("node:fs");
+  const css = readFileSync(resolve(dir, "fuentes.css"), "utf8");
+  await ctx.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => {
+    const u = route.request().url();
+    if (u.startsWith("https://fonts.googleapis.com/")) return route.fulfill({ status: 200, contentType: "text/css", body: css });
+    try { return route.fulfill({ status: 200, contentType: "font/woff2", body: readFileSync(resolve(dir, u.replace("https://fonts.gstatic.com/", "").replace(/\//g, "_"))) }); } catch { return route.abort(); }
+  });
+}
 const filas = [];
 
 function medir(sel) {
@@ -61,7 +77,8 @@ function medir(sel) {
   }
   if (document.documentElement.scrollWidth > window.innerWidth) problemas.push(`la página mide ${document.documentElement.scrollWidth} px en ${window.innerWidth}`);
   for (const b of pieza.querySelectorAll("button")) {
-    const h = b.getBoundingClientRect().height;
+    /* El «¿Por qué?» va en línea con el texto: su área de toque de 44 px es su ::before (plegable.jsx). */
+    const h = Math.max(b.getBoundingClientRect().height, b.matches("[data-por-que]") ? parseFloat(getComputedStyle(b, "::before").height) || 0 : 0);
     if (h < 44) problemas.push(`«${b.textContent.trim().slice(0, 30)}» mide ${h.toFixed(1)} px de alto`);
   }
   /* El número de cada ítem de la lista es un ::marker: se mide su borde izquierdo con el relleno de la lista. */
@@ -84,6 +101,13 @@ function medir(sel) {
     if (t.width && (t.right > r.right + 0.5 || t.left < r.left - 0.5)) problemas.push(`el monto «${celda.textContent}» no cabe en su celda`);
     if (t.width && t.height > 26) problemas.push(`el monto «${celda.textContent}» se parte en dos líneas`);
   }
+  for (const fig of pieza.querySelectorAll("[data-figura-t72]")) {
+    const c = fig.getBoundingClientRect();
+    for (const x of fig.querySelectorAll("[data-renglon] > span, p, li")) {
+      const r = x.getBoundingClientRect();
+      if (r.left < c.left - 0.5 || r.right > c.right + 0.5) problemas.push(`«${x.textContent.slice(0, 30)}» se sale de su figura`);
+    }
+  }
   for (const x of pieza.querySelectorAll("[data-marca]")) {
     const r = x.getBoundingClientRect();
     if (r.left < caja.left - 0.5 || r.top < caja.top - 0.5) problemas.push("la X de una línea equivocada se sale del panel");
@@ -97,14 +121,16 @@ function medir(sel) {
   };
 }
 
-const correctas = { "lo-asume-el-comprador": "inventario", "lo-asume-el-vendedor": "gasto", "frente-al-periodico": "la-cuenta" };
-/* P3: las líneas y su lado, y la que se pone mal a propósito. */
-const LADOS = { costo: "debe", inventario: "haber" };
+const correctas = { "lo-asume-el-comprador": "inventario", "lo-asume-el-vendedor": "gasto", "libro-del-comprador": "inventario", "frente-al-periodico": "no-existe" };
+/* P4: las líneas y su lado, y la que se pone mal a propósito. */
+const LADOS = { inventario: "debe", costo: "haber" };
 const MALAS = ["inventario"];
 const otro = (l) => (l === "debe" ? "haber" : "debe");
 
 for (const ancho of ANCHOS) {
-  const pg = await navegador.newPage({ viewport: { width: ancho, height: 900 }, deviceScaleFactor: 2 });
+  const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, deviceScaleFactor: 2 });
+  await servirFuentes(ctx);
+  const pg = await ctx.newPage();
   await pg.goto(URL_BANCO);
   await pg.waitForSelector(A2);
   let n = 0;
@@ -121,6 +147,12 @@ for (const ancho of ANCHOS) {
   };
   const en = (sel) => `${A2} ${sel}`;
   const clic = (sel) => pg.click(en(sel));
+  /* Lo del acierto: el foco en el mensaje, el «¿Por qué?» abierto y el «Ver…» abierto, si los trae. */
+  const abrirLoDelAcierto = async (id) => {
+    if (!(await pg.evaluate(() => document.activeElement?.matches("[data-mensaje]")))) fallos.push(`${ancho} px · ${id} · el foco no va al mensaje`);
+    if (await pg.$(en("[data-mensaje] [data-por-que]"))) { await clic("[data-mensaje] [data-por-que]"); await estado(`${id}-porque`); }
+    if (await pg.$(en("[data-ver] button"))) { await clic("[data-ver] button"); await estado(`${id}-ver`); }
+  };
   for (let vuelta = 0; vuelta < 10; vuelta++) {
     const id = await pg.getAttribute(A2, "data-pantalla");
     if (await pg.$(en("[data-lados]"))) {
@@ -132,6 +164,7 @@ for (const ancho of ANCHOS) {
       for (const l of MALAS) await clic(`[data-linea="${l}"][data-lado="${LADOS[l]}"]`);
       await clic('[data-boton="confirmar"]');
       await estado(`${id}-acierto`);
+      await abrirLoDelAcierto(id);
       await clic('[data-boton="seguir"]');
       continue;
     }
@@ -145,6 +178,7 @@ for (const ancho of ANCHOS) {
       }
       await clic(`[data-opcion="${correctas[id]}"]`); await clic('[data-boton="confirmar"]');
       await estado(`${id}-acierto`);
+      await abrirLoDelAcierto(id);
       await clic('[data-boton="seguir"]');
       continue;
     }
@@ -163,7 +197,7 @@ console.log("ancho | estado | panel | alto pieza");
 for (const f of filas) console.log(`${f.ancho} | ${f.estado} | ${f.panel} | ${f.alto}`);
 const estados = new Set(filas.map((f) => f.estado)).size;
 console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos).`);
-if (estados !== 18) fallos.push(`se recorrieron ${estados} estados y son 18`);
+if (estados !== 25) fallos.push(`se recorrieron ${estados} estados y son 25`);
 if (fallos.length) {
   console.log(`\nFALLA: ${fallos.length} problema(s)`);
   for (const f of fallos) console.log(`  · ${f}`);

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
@@ -16,7 +16,9 @@ import { conCorreccionesDeMello } from "./correccionesMello.mjs";
  *     p. 259»
  *   · la frase fija de la NIC 2, la de A7, a la vista en TODAS las pantallas
  *     y estados
- *   · sin cifras; fuera del catálogo de FP; la última de T7-3
+ *   · sin cifras; fuera del catálogo de FP. Desde la fusión de la entrega 4
+ *     de Near, fuera también de la lista de T7-3 y de su vista (lo suyo va
+ *     dentro de A7, «La NIC 2 del libro»), con sus datos en su sitio
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -219,16 +221,27 @@ test("★★★ se recorre entera, con la frase de la NIC 2 a la vista en cada p
   }
 });
 
-test("★★★ fuera del catálogo de FP; la última de T7-3, y la vista la muestra", () => {
+/*
+ * LA FUSIÓN DE LA ENTREGA 4 DE NEAR (lote1-entrega4-v1.md, sección 2): «A8
+ * (`t7-3-nic2-formulas`) sale de la lista». Lo suyo va dentro de A7, «La NIC 2
+ * del libro». Los datos y sus pruebas se quedan: las de arriba siguen
+ * leyéndolos. Nunca tuvo FP ni migración.
+ */
+test("★★★ A8 salió del catálogo y de la vista de T7-3 (entró en A7); sus datos siguen; nunca tuvo FP ni migración", () => {
+  const E4 = leer("orquestador/conocimiento/paquetes/lote1-entrega4-v1.md");
+  assert.ok(E4.includes(`A8 (\`${A.A8_ID}\`) sale de la lista.`));
+  assert.equal(A.A8_ID, "t7-3-nic2-formulas");
+  assert.equal(P.id, A.A8_ID);
   assert.equal(P.numero, 8);
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_3);
-  const a = tema.actividades.find((x) => x.id === A.A8_ID);
-  assert.deepEqual(a.clasificacion, { tipo: APRENDER });
-  assert.equal(a.nombre, P.titulo);
+  assert.equal(tema.actividades.find((x) => x.id === A.A8_ID), undefined, "A8 sigue en el catálogo");
+  assert.equal(PIEZAS_T7_3.find((x) => x.pieza.id === A.A8_ID), undefined, "A8 sigue en la vista");
+  /* La última Aprender del tema es ahora A7, que la lleva adentro. */
   const ids = tema.actividades.filter((x) => x.clasificacion.tipo === APRENDER).map((x) => x.id);
-  assert.equal(ids.indexOf(A.A8_ID), ids.indexOf(A7.A7_ID) + 1);
-  assert.equal(ids.at(-1), A.A8_ID);
-  assert.equal(PIEZAS_T7_3.at(-1).pieza, P);
+  assert.equal(ids.at(-1), A7.A7_ID);
+  assert.equal(PIEZAS_T7_3.at(-1).pieza.id, A7.A7_ID);
+  assert.doesNotMatch(leer("src/components/ContabilidadT7_3View.jsx"), /contabilidadT7_3_a8|PIEZA_NIC2_FORMULAS/);
+  for (const f of ["src/data/contabilidadT7_3_a8.js", "orquestador/conocimiento/paquetes/t7-3-a8-v1.md"]) assert.ok(existsSync(new URL(f, RAIZ)), `${f}: se borró`);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A8_ID)), []);
 });
