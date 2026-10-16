@@ -69,6 +69,7 @@ const MEDIR = `(() => {
     return true;
   };
   const malos = [];
+  const sinMedir = [];
   for (const el of document.querySelectorAll("body *")) {
     const propio = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent.trim()).join(" ").trim();
     if (!propio) continue;
@@ -83,6 +84,15 @@ const MEDIR = `(() => {
     const texto = nums(s.color);
     if (texto.length < 3) continue;
     const alfa = texto.length === 4 ? texto[3] : 1;
+    /*
+     * Texto totalmente transparente: NO es un fallo de contraste, es que no
+     * se puede medir desde aquí. Casi siempre el color viene de un recorte
+     * (background-clip: text) o el elemento está a mitad de una entrada.
+     * Medirlo daría 1:1 para todo, que es ruido con pinta de hallazgo: la
+     * primera versión marcó así 46 textos de T6 y los iba a mandar a la
+     * Célula B como defectos.
+     */
+    if (alfa === 0) { sinMedir.push(propio.slice(0, 34)); continue; }
     const fondo = fondoDe(el);
     /* Un texto semitransparente se mezcla con su propio fondo antes de medirse. */
     const color = alfa < 1 ? sobre([texto[0], texto[1], texto[2], alfa], fondo) : texto.slice(0, 3);
@@ -93,7 +103,7 @@ const MEDIR = `(() => {
     const r = razon(color, fondo);
     if (r < piso) malos.push({ r: Math.round(r * 100) / 100, piso, px, peso, texto: propio.slice(0, 34), etiqueta: el.tagName.toLowerCase(), color: s.color, fondo: "rgb(" + fondo.join(",") + ")" });
   }
-  return malos;
+  return { malos, sinMedir };
 })()`;
 
 const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium" });
@@ -105,13 +115,16 @@ for (const paso of ["Contabilidad", TEMA, "El material que explica"]) {
 }
 
 const vistos = new Map();
+const sinMedir = new Set();
 let pantallas = 0;
 for (let i = 0; i < 30; i++) {
   pantallas++;
-  for (const m of await p.evaluate(MEDIR)) {
+  const tanda = await p.evaluate(MEDIR);
+  for (const m of tanda.malos) {
     const clave = `${m.r}|${m.px}|${m.texto}`;
     if (!vistos.has(clave)) vistos.set(clave, m);
   }
+  for (const t of tanda.sinMedir) sinMedir.add(t);
   const sig = p.locator('button:visible:has-text("Siguiente")');
   if ((await sig.count()) === 0) break;
   await sig.first().click({ timeout: 5000 }).catch(() => {});
@@ -124,4 +137,18 @@ for (const m of malos) {
   console.log(`  ${String(m.r).padStart(5)}:1  (pide ${m.piso})  ${String(m.px).padStart(5)}px/${m.peso}  <${m.etiqueta}>  «${m.texto}»\n          texto ${m.color}  sobre ${m.fondo}`);
 }
 console.log(`\n${malos.length} texto(s) por debajo del contraste que pide su tamaño, en ${pantallas} pantalla(s) de «${TEMA}» a ${ANCHO} px.`);
+/*
+ * Un cero sobre una pantalla no es un cero: quiere decir que no entré. Lo
+ * digo fuerte porque «0 textos ... en 1 pantalla» se lee como éxito, y es
+ * justo el error que esta casa tiene escrito con nombre: no medido no es lo
+ * mismo que limpio.
+ */
+if (pantallas <= 1) {
+  console.log("NO MEDIDO: solo llegué a 1 pantalla, así que este cero no vale. Mira si el tema abre con otro rótulo.");
+  process.exit(2);
+}
+if (sinMedir.size) {
+  console.log(`${sinMedir.size} texto(s) NO MEDIDOS: su color es transparente, así que el color real no sale de aquí.`);
+  console.log(`  ${[...sinMedir].slice(0, 6).map((t) => `«${t}»`).join("  ")}`);
+}
 process.exit(malos.length === 0 ? 0 : 1);
