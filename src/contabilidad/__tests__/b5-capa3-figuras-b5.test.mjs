@@ -244,22 +244,22 @@ for (const [nombre, ruta, pregunta] of NOMBRES) {
   });
 }
 
-test("★★★ T6 · A3 · B5: las cajas se llaman «Se crea», «Se usa» y «Se corrige»; la fecha, solo en las filas de la T; cada caja conserva su propia pregunta", async () => {
-  const { caja, desmontar } = await montar(h(await C("tema6/CuentaT")));
+test("★★★ T6 · A3 · B5: cada momento se llama «Se crea», «Se usa» y «Se corrige»; la fecha, solo en las filas de la T; cada uno con su propia pregunta (lote 7: el tanque)", async () => {
+  const { caja, desmontar } = await montar(h(await C("tema6/TanqueMomentos")));
   assert.deepEqual(T6A3.MOMENTOS_T6_A3.map((m) => m.caja), ["Se crea", "Se usa", "Se corrige"]);
   for (const m of T6A3.MOMENTOS_T6_A3) {
-    const zona = zonaDe(caja, m.id);
-    assert.equal(zona.querySelector("button[aria-expanded] > span").textContent, m.caja);
-    assert.ok(!zona.textContent.includes(m.nombre), "sin la fecha en la caja");
-    await tocar(zona.querySelector("button[aria-expanded]"));
-    assert.equal(zona.querySelector("[data-pregunta]").textContent, m.pregunta, "su propia pregunta, a la vista");
-    await tocar(zona.querySelector(`[data-opcion="${m.correcta}"]`));
-    assert.equal(zona.querySelector("[data-pregunta]"), null);
-    assert.equal(zona.querySelector("[data-pregunta-oculta]").textContent, m.pregunta);
+    const tarjeta = caja.querySelector("[data-tarjeta-momento]");
+    assert.ok(tarjeta.textContent.includes(m.caja));
+    assert.ok(!tarjeta.textContent.includes(m.nombre), "sin la fecha en la tarjeta");
+    assert.equal(tarjeta.querySelector("[data-pregunta]").textContent, m.pregunta, "su propia pregunta");
+    await tocar(caja.querySelector(`[data-hecho="${m.id}"] [data-opcion="${m.correcta}"]`));
     assert.ok(caja.querySelector("[data-cuenta-t]").textContent.includes(m.nombre), "la fecha, en la T");
+    const sig = caja.querySelector("[data-siguiente-momento]");
+    if (sig) await tocar(sig);
   }
   desmontar();
 });
+
 
 test("★★★ B5 de Futaba: quien falla dos veces lee la devolución de su opción y ve la figura, pero NO el texto que se revela; quien acierta, sí", async () => {
   const p = FIGURAS[2];

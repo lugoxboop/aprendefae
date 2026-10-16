@@ -73,12 +73,13 @@ const conFuturo = (visible, estilo) => ({ ...(visible ? {} : { "data-futuro": ""
  * En reposo, 1 px rgba(248,249,250,.35); resaltada o arrastrándose, 2 px #F8F9FA (y scale(.96) mientras va con el dedo).
  * Se suelta en el tanque: se desvanece en 200 ms y el modelo avanza. Se suelta fuera: vuelve en 200 ms.
  */
-function Ficha({ id, refDe, arriba, cifra, nombre, activa, resaltada, destino, alColocar, reducido }) {
+export function Ficha({ id, refDe, arriba, cifra, nombre, activa, resaltada, destino, alColocar, reducido, contorno = null, cifraEstilo = null, opcion = null }) {
   const [mano, setMano] = useState(null); // { x0, y0, dx, dy, lejos }
   const [fase, setFase] = useState(null); // "suelta" | "vuelve"
   const tocado = useRef(false);
-  const borde = resaltada || mano?.lejos ? ACTIVO : REPOSO;
-  const d = resaltada || mano?.lejos ? 1 : 0;
+  /* `contorno`: el de una opción calificada (capa 3: acierto o error), que manda sobre el de reposo. */
+  const borde = mano?.lejos ? ACTIVO : contorno ?? (resaltada ? ACTIVO : REPOSO);
+  const d = borde.startsWith("2px") ? 1 : 0;
   const colocar = () => {
     if (reducido) { setMano(null); setFase(null); alColocar(); return; }
     setFase("suelta");
@@ -117,7 +118,7 @@ function Ficha({ id, refDe, arriba, cifra, nombre, activa, resaltada, destino, a
   const Etiqueta = activa ? "button" : "div";
   const moviendo = mano && (mano.lejos || fase);
   return (
-    <Etiqueta ref={refDe(id)} data-ficha={id} data-elemento={id} data-activa={activa ? "si" : "no"} data-resaltado={resaltada ? "si" : "no"} {...props} style={{
+    <Etiqueta ref={refDe(id)} data-ficha={id} data-elemento={id} data-opcion={opcion ?? undefined} data-activa={activa ? "si" : "no"} data-resaltado={resaltada ? "si" : "no"} {...props} style={{
       display: "block", width: "100%", minHeight: "44px", boxSizing: "border-box", margin: 0, textAlign: "left", font: "inherit",
       padding: `${5 - d}px ${9 - d}px`, borderRadius: "10px", border: borde, background: FAE.bg, color: BLANCO,
       cursor: activa ? "grab" : "default", touchAction: activa ? "none" : undefined, position: "relative", zIndex: moviendo ? 30 : undefined,
@@ -125,8 +126,8 @@ function Ficha({ id, refDe, arriba, cifra, nombre, activa, resaltada, destino, a
       opacity: fase === "suelta" ? 0 : 1,
       transition: reducido || (mano?.lejos && !fase) ? "none" : `transform 200ms ${CURVA}, opacity 200ms ${CURVA}`,
     }}>
-      <span aria-hidden={activa ? "true" : undefined} style={{ display: "block", ...PEQUENO }}>{arriba}</span>
-      <span aria-hidden={activa ? "true" : undefined} style={{ display: "block", ...CIFRA, fontSize: "13px" }}>{cifra}</span>
+      {arriba && <span aria-hidden={activa ? "true" : undefined} style={{ display: "block", ...PEQUENO }}>{arriba}</span>}
+      <span aria-hidden={activa ? "true" : undefined} style={{ display: "block", ...CIFRA, fontSize: "13px", ...cifraEstilo }}>{cifra}</span>
     </Etiqueta>
   );
 }

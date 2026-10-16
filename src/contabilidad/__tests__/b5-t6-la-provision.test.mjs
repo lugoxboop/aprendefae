@@ -50,7 +50,7 @@ const D = await import("../../data/contabilidadT6Pieza3.js");
 const E = await import("../t6Pieza3.js");
 const { default: LaProvision } = await import("../../components/mecanicas/libros/tema6/LaProvision.jsx");
 const { decidir } = await import("./b5-capa3.mjs");
-const { default: CuentaT } = await import("../../components/mecanicas/libros/tema6/CuentaT.jsx");
+const { default: TanqueMomentos } = await import("../../components/mecanicas/libros/tema6/TanqueMomentos.jsx");
 const { ESCENAS_TEMA6 } = await import("../../components/mecanicas/libros/tema6/escenasTema6.jsx");
 const { PIEZAS } = await import("../../components/ContabilidadTema6View.jsx");
 const { SUBJECTS, APRENDER, actividadesDeTipo } = await import("../../data/subjects.js");
@@ -157,7 +157,7 @@ test("★★★ cada rótulo de la escena y de la T es fragmento literal de un p
 });
 
 test("★★★ ningún componente de la pieza escribe texto que lea el estudiante", () => {
-  const fuentes = ["LaProvision.jsx", "TanqueProvision.jsx", "CuentaT.jsx", "Momentos.jsx", "MaquinaPegada.jsx", "CajasQueRevelan.jsx", "escenasTema6.jsx"]
+  const fuentes = ["LaProvision.jsx", "TanqueProvision.jsx", "TanqueMomentos.jsx", "Momentos.jsx", "MaquinaPegada.jsx", "CajasQueRevelan.jsx", "escenasTema6.jsx"]
     .map((f) => readFileSync(new URL(`../../components/mecanicas/libros/tema6/${f}`, import.meta.url), "utf8"));
   for (const t of textosDeDatos()) {
     if (t.length < 12) continue;
@@ -173,7 +173,7 @@ test("★★ la pieza va tercera en el tema: APRENDER, la vista y sus tres capas
   assert.deepEqual(Object.keys(ESCENAS_TEMA6).slice(0, 3), ids);
   const { Capa2, Exploracion } = ESCENAS_TEMA6[D.PIEZA_LA_PROVISION.id];
   assert.equal(Capa2, LaProvision);
-  assert.equal(Exploracion, CuentaT);
+  assert.equal(Exploracion, TanqueMomentos);
 });
 
 /* ═══════════ CAPA 2 ═══════════ */
@@ -199,50 +199,8 @@ test("★★ «Reproducir»: 3 000 + 450 ms por palabra; la tabla de Mai §4.4 y
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: la T se llena en orden al cerrarse cada pregunta (escalera de ayuda: tras la pista, al segundo error), con el valor correcto aunque se falle; el saldo en contra bajo DEBE en recuadro, el normal bajo HABER bajo un filete; el final, con los tres", async () => {
-  const { caja, desmontar } = await montar(h(CuentaT));
-  const t = caja.querySelector("[data-cuenta-t]");
-  assert.equal(caja.querySelector("p").textContent, D.CONSIGNA_CAPA_3_T6_A3);
-  assert.equal(t.firstElementChild.textContent, "Provisión para deudas incobrables");
-  const columna = (lado) => [...t.querySelectorAll(`[data-columna="${lado}"] [data-movimiento]`)].map((n) => n.textContent);
-  const cajas = () => [...caja.querySelectorAll("[data-hecho]")].map((n) => n.dataset.hecho);
-  assert.deepEqual(cajas(), ["diciembre-2007"], "al principio, solo la caja de 2007");
-  assert.equal(t.querySelector("[data-saldo]"), null);
-  assert.deepEqual([...t.querySelectorAll("[data-columna] > p")].map((p) => [p.textContent, p.style.fontSize, p.style.color]),
-    [["DEBE", "12px", rgb("#52C4B0")], ["HABER", "12px", rgb("#E9C46A")]], "DEBE y HABER con el estilo de los colectores, a 12 px (letra mínima)");
-  const lectura = (n) => [...n.querySelectorAll("p:not([data-pie])")].map((p) => p.textContent).join("");
-  const esperado = [
-    { debe: [], haber: ["$148.80031 de diciembre de 2007"], saldo: ["normal", "El saldo queda en $148.800"] },
-    { debe: ["$180.000Marzo del año siguiente"], haber: ["$148.80031 de diciembre de 2007"], saldo: ["en-contra", "Le faltan $31.200"] },
-    { debe: ["$180.000Marzo del año siguiente"], haber: ["$148.80031 de diciembre de 2007", "$184.60031 de diciembre del año siguiente"], saldo: ["normal", "El saldo queda en $153.400"] },
-  ];
-  for (const [k, m] of D.MOMENTOS_T6_A3.entries()) {
-    /* Con dos errores a propósito: la T se llena igual, con el valor correcto (hoja 6, indispensable 5). */
-    const [mala1, mala] = m.opciones.filter((o) => o.id !== m.correcta).map((o) => o.id);
-    const antes = [columna("debe"), columna("haber")];
-    await decidir(tocar, caja.querySelector(`[data-hecho="${m.id}"]`), mala1);
-    assert.equal(lectura(caja.querySelector(`[data-revela="${m.id}"]`)), m.pista, "al primer error, solo la pista");
-    assert.deepEqual([columna("debe"), columna("haber")], antes, "al primer error, la T no se mueve");
-    await decidir(tocar, caja.querySelector(`[data-hecho="${m.id}"]`), mala);
-    /* B5 de Futaba: tras dos errores, la devolución de la opción, sin el texto que se revela. */
-    assert.equal(lectura(caja.querySelector(`[data-revela="${m.id}"]`)), typeof m.falla === "string" ? m.falla : m.falla[mala]);
-    assert.equal(caja.querySelector(`[data-revela="${m.id}"] [data-pie]`).textContent, m.pie);
-    assert.deepEqual(columna("debe"), esperado[k].debe, `momento ${k + 1}: DEBE`);
-    assert.deepEqual(columna("haber"), esperado[k].haber, `momento ${k + 1}: HABER`);
-    const s = t.querySelector("[data-saldo]");
-    assert.deepEqual([s.dataset.saldo, s.textContent], esperado[k].saldo);
-    if (s.dataset.saldo === "en-contra") {
-      assert.deepEqual([s.style.border, s.style.justifySelf], [`2px solid ${rgb(FAE.node)}`, "start"], "recuadro nodo, a la izquierda (bajo DEBE)");
-    } else {
-      assert.deepEqual([s.style.gridColumn, s.style.borderTop], ["2", `1px solid ${rgb(COLOR.neutro)}`], "bajo HABER, bajo un filete");
-    }
-    assert.ok(![s.style.color, s.style.border, s.style.background].some((x) => x.includes(rgb(FAE.coral ?? "#E76F51"))), "sin coral");
-    assert.deepEqual(cajas(), D.MOMENTOS_T6_A3.slice(0, Math.min(k + 2, 3)).map((x) => x.id), "aparece la caja siguiente");
-    assert.equal(lectura(caja.querySelector("[data-final]")), k < 2 ? "" : D.FINAL_CAPA_3_T6_A3.texto);
-  }
-  assert.equal(caja.querySelector("[data-final] [data-pie]").textContent, D.FINAL_CAPA_3_T6_A3.pie);
-  desmontar();
-});
+/* Lote 7: la capa 3 es el tanque; sus pruebas, en b5-t6-tanque-capa3.test.mjs. */
+
 
 /* ═══════════ CAPA 4 ═══════════ */
 

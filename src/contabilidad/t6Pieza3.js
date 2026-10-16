@@ -104,3 +104,16 @@ export function crearEstadoTanque(grupos) {
   }
   return { estado, gestoDe, CIERRE };
 }
+
+/*
+ * LOTE 7 · LA CAPA 3 SOBRE EL TANQUE (§3.3 de Mai, decisión (a) de Sakuta).
+ * El nivel al que lleva cada opción del momento 2 y lo que registra cada
+ * opción del momento 3 (el relleno sube eso desde el faltante). Son las
+ * cifras de los pasos o su cuenta; ninguna se escribe en pantalla.
+ *   · «Igual»: se registra lo que pide el análisis, $153.400.
+ *   · «Menor»: lo que faltó se resta en vez de sumarse: $153.400 − $31.200.
+ */
+export const NIVEL_OPCION_T6_A3 = { cero: 0, faltan: -31200, sigue: 148800 };
+export const REGISTRO_OPCION_T6_A3 = { mayor: 184600, igual: 153400, menor: 122200 };
+/* El saldo que deja cada momento ya decidido (el valor correcto, se acierte o no). */
+export const NIVEL_MOMENTO_T6_A3 = [148800, -31200, 153400];

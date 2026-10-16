@@ -7,7 +7,7 @@ import DosDias from "./DosDias.jsx";
 import DosMetodos from "./DosMetodos.jsx";
 import { PIEZA_LA_PROVISION, PREGUNTA_FINAL_T6_A3, OPCIONES_FINAL_T6_A3, PIE_FINAL_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
 import LaProvision from "./LaProvision.jsx";
-import CuentaT from "./CuentaT.jsx";
+import TanqueMomentos from "./TanqueMomentos.jsx";
 import { PIEZA_SI_PAGA, PREGUNTA_FINAL_T6_A4, OPCIONES_FINAL_T6_A4, PIE_FINAL_T6_A4 } from "../../../../data/contabilidadT6Pieza4.js";
 import SiPaga from "./SiPaga.jsx";
 import TresCasos from "./TresCasos.jsx";
@@ -87,7 +87,7 @@ export function EnUnaFraseT6A5() {
 export const ESCENAS_TEMA6 = {
   [PIEZA_LO_QUE_LE_DEBEN.id]: { Capa2: DosMomentos, Exploracion: SeisHechos, Capa4: EnUnaFraseT6 },
   [PIEZA_NO_VA_A_PAGAR.id]: { Capa2: DosDias, Exploracion: DosMetodos, Capa4: EnUnaFraseT6A2 },
-  [PIEZA_LA_PROVISION.id]: { Capa2: LaProvision, Exploracion: CuentaT, Capa4: EnUnaFraseT6A3 },
+  [PIEZA_LA_PROVISION.id]: { Capa2: LaProvision, Exploracion: TanqueMomentos, Capa4: EnUnaFraseT6A3 },
   [PIEZA_SI_PAGA.id]: { Capa2: SiPaga, Exploracion: TresCasos, Capa4: EnUnaFraseT6A4 },
   [PIEZA_COMO_SE_CALCULA.id]: { Capa2: LaTablaDelEjemplo, Exploracion: CuatroGrupos, Capa4: EnUnaFraseT6A5 },
 };

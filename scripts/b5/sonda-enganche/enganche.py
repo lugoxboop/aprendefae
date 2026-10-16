@@ -149,8 +149,11 @@ def aprender(b, sigla, ancho, clave):
         m0 = med(3, f"capa 3 · {cid}", "al llegar")
         pg.locator(f'{C} [data-opcion="{K["cajas"][cid]}"]').click(); pg.wait_for_timeout(400)
         m1 = med(3, f"capa 3 · {cid}", "acierto")
-        m1["veredicto"] = "error" if hay(f"{C} [data-devolucion]") else "acierto"
+        # Lote 7: el bloque de mensaje del estándar (Devolucion.jsx) dice su veredicto en data-mensaje
+        m1["veredicto"] = ("error" if hay(f'{C} [data-mensaje="error"]') else "acierto") if hay(f"{C} [data-mensaje]") else ("error" if hay(f"{C} [data-devolucion]") else "acierto")
         m0["figuraCambiaConLaAccion"] = m1["figuraCambiaConLaAccion"] = bool(m0["figHTML"]) and m0["figHTML"] != m1["figHTML"]
+        # Lote 7 (el tanque de T6 · A3): un momento a la vez; «Siguiente momento» abre el que sigue
+        if hay(f"{cap(3)} [data-siguiente-momento]"): pg.locator(f"{cap(3)} [data-siguiente-momento]").first.click(); pg.wait_for_timeout(350)
 
     # Capa 4: las frases en orden hasta la correcta («Otra vez» tras cada error)
     ver(cap(4)); m0 = med(4, "capa 4", "al llegar")

@@ -290,6 +290,9 @@ export const TANQUE_T6_A3 = {
   nombreBarra: "Restar la provisión de Cuentas por cobrar – clientes",
   nombreAsa: "Nivel de la provisión",
   pablo: "Pablo Moncayo",
+  /* La capa 3 sobre el tanque (§3.3): el contador «Momento n de 3» y el botón de avance. */
+  momento: "Momento",
+  siguienteMomento: "Siguiente momento",
   faltante: "$31.200",
   pide: "$153.400",
 };
