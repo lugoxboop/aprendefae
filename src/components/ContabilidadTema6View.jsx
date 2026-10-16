@@ -132,7 +132,7 @@ export default function ContabilidadTema6View({ modo = null, nodoInicial = null,
               * compacto lo trunca con «…»; aquí se le deja romper: a 320 se leía
               * «Cuentas por co…». El estilo en línea gana a la clase.
               */}
-            <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "break-word" }}>
+            <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2 }}>
               {tema.title}
             </h1>
           </div>

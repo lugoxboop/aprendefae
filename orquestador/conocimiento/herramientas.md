@@ -107,8 +107,58 @@ Cortado, un estudiante en un teléfono estrecho no sabe dónde está.
 
 **La regla: un título puede encogerse o romper en dos líneas, pero no
 desaparecer.** En una fila flex, el elemento que lleva texto necesita
-`minWidth: 0` para poder encogerse, y hay que dejarle romper. Cada célula lo
-arregla en la vista de su tema; no es un componente compartido.
+`minWidth: 0` para poder encogerse, y hay que dejarle romper.
+
+**Y ya está arreglado en un solo sitio: `src/components/auth/AccountControl.jsx`**,
+en la regla de `.fae-cabecera-titulo > h1`, que deja romper de renglón y
+recorta con `-webkit-line-clamp` para todas las vistas de tema.
+
+**El tope son cuatro renglones, y el número salió de medir, no de elegirlo.**
+A 320 px al título le quedan 164 px —el resto son el botón de volver y la
+reserva de la pastilla—. Medido sobre el paquete construido, con los diez
+temas de Contabilidad: ocho entran en uno o dos renglones, y «Inventarios III:
+descuentos, inventario físico y NIC 2» pide cuatro a 320 px, tres a 360 y dos
+a 375. Con el tope en dos, ese título perdía sus últimas palabras **sin poner
+puntos suspensivos**: el recorte por renglones no avisa, y el estudiante no
+sabe que falta algo. El tope recorta pero no reserva, así que los otros nueve
+siguen ocupando lo que ocupaban.
+
+**Si entra un título más largo, hay que volver a medir.** Esto no se deduce del
+CSS ni del número de caracteres.
+
+Esto decía «cada célula lo arregla en la vista de su tema», y eso fue verdad
+dos días. El resultado: **siete vistas con el mismo arreglo en línea** —T4, T5,
+T6, las tres de T7 y el repaso del capítulo 5—, **tres pruebas de tres células
+distintas** vigilando que los rodeos siguieran puestos, y las vistas que nadie
+había tocado cortando igual. Siete copias de un arreglo son siete sitios donde
+se puede olvidar la octava.
+
+**La lección, que vale para cualquier defecto y no solo para este: cuando la
+misma corrección aparece en la tercera vista, el defecto no está en las
+vistas.** La tercera copia es la señal; a la séptima ya hay que desmontar
+pruebas.
+
+Dos consecuencias para quien venga:
+
+- **No pongas en línea nada que decida cómo cede el título.** Los estilos en
+  línea ganan a la hoja, así que un `overflow: "visible"` suelto anula el
+  recorte compartido sin que se note en ninguna pantalla hasta que un título
+  largo empuje la pantalla entera. `titulo-tema-320.test.mjs` lo vigila en las
+  cuatro vistas de C y `t4-andamio.test.mjs` en la de D. La tipografía sí es de
+  la vista.
+- **Una prueba que exige el rodeo caduca con el rodeo.** Las tres que había
+  —`titulo-tema-320.test.mjs` (C), `t4-andamio.test.mjs` (D) y
+  `r5-1-repaso-cruzado.test.mjs` (E)— afirmaban «la hoja compartida sigue
+  truncando, por eso cada vista la anula», así que arreglar la hoja las ponía
+  en rojo **pidiendo que se devolviera el defecto**. Se reapuntaron: ahora
+  exigen el recorte en la hoja y la AUSENCIA de estilos en línea que lo venzan.
+  Lo que defienden es lo mismo; de lo que cuelgan, no.
+
+  Y la señal para reconocerlo: **si una prueba se pone roja al arreglar algo, y
+  su mensaje describe el arreglo, la prueba estaba vigilando el parche y no el
+  defecto.** Las tres lo decían en voz alta —«por eso cada vista la anula»,
+  «revisar si esta excepción sigue haciendo falta»—. Leer el mensaje antes de
+  tocar el código ahorra el paso de creer que se rompió algo.
 
 ## Verificación contra lo publicado
 
