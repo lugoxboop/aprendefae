@@ -8,6 +8,7 @@ import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
 import { Caja, LECTURA, PIE, useFormaQueCabe } from "./CajasQueRevelan.jsx";
 import { escalera, elegir } from "./escaleraB5.js";
+import { MONO } from "./TanqueProvision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -55,7 +56,8 @@ function Celda({ cifra, destacada }) {
         minHeight: "36px", boxSizing: "border-box", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center",
         border: !llena ? `1px solid ${ATENUADO}` : destacada ? `2px solid ${FAE.node}` : `1px solid ${BORDES}`,
         background: llena && destacada ? FAE.navy : "transparent",
-        fontFamily: SORA, fontSize: destacada ? "15px" : "13px", fontWeight: destacada ? 700 : 600, lineHeight: 1.3,
+        /* Lote 9: la cifra que entra, monoespaciada; la destacada (el resultado del caso) sigue en Sora. */
+        fontFamily: destacada ? SORA : MONO, fontSize: destacada ? "15px" : "13px", fontWeight: destacada ? 700 : 600, lineHeight: 1.3,
         fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap", color: FAE.text,
       }}>
         {cifra}

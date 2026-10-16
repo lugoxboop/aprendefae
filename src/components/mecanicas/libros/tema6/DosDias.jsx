@@ -1,6 +1,7 @@
 import { ESCENA_T6_A2, PASOS_T6_A2, CIERRE_T6_A2 } from "../../../../data/contabilidadT6Pieza2.js";
 import { estadoPasoT6A2, duracionPasoT6A2 } from "../../../../contabilidad/t6Pieza2.js";
 import MaquinaPegada, { SORA, INTER, NODO, NAVY, TEXTO, SECUNDARIO, caja, aparicion, transicion, Anotacion as AnotacionBase } from "./MaquinaPegada.jsx";
+import { ConCifras } from "./TanqueProvision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -50,7 +51,7 @@ function Escena(estado, refDe, reducido) {
         {fecha("fecha25", ESCENA_T6_A2.dia25)}
         <div {...marca("hecho25")} style={{ borderRadius: "10px", ...caja(el.hecho25, [6, 8], reducido) }}>
           <p style={{ margin: 0, ...LINEA_SORA, color: "inherit" }}>{ESCENA_T6_A2.venta}</p>
-          <p {...marca("monto25")} style={{ margin: "2px 0 0", ...NOTA, color: el.monto25.atenuado ? SECUNDARIO : TEXTO, ...aparicion(el.monto25, reducido) }}>{ESCENA_T6_A2.monto}</p>
+          <p {...marca("monto25")} style={{ margin: "2px 0 0", ...NOTA, color: el.monto25.atenuado ? SECUNDARIO : TEXTO, ...aparicion(el.monto25, reducido) }}><ConCifras texto={ESCENA_T6_A2.monto} /></p>
         </div>
         <Anotacion id="clientes25" e={el.clientes25} cuenta={ESCENA_T6_A2.clientes} movimiento={ESCENA_T6_A2.monto} lado="debe" reducido={reducido} refDe={refDe} />
         <Anotacion id="ingresos25" e={el.ingresos25} cuenta={ESCENA_T6_A2.ingresos} movimiento={ESCENA_T6_A2.monto} lado="haber" reducido={reducido} refDe={refDe} />

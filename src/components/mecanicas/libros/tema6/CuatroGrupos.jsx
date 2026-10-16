@@ -10,6 +10,7 @@ import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
 import { Caja, LECTURA, PIE, useFormaQueCabe } from "./CajasQueRevelan.jsx";
 import { escalera, elegir } from "./escaleraB5.js";
 import { RotuloSimulado, PieDeFuente } from "./FuentesT6A5.jsx";
+import { MONO } from "./TanqueProvision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -47,7 +48,8 @@ function Celda({ cifra }) {
       <div style={{
         minHeight: "36px", boxSizing: "border-box", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center",
         border: llena ? `2px solid ${FAE.node}` : `1px solid ${ATENUADO}`, background: llena ? FAE.navy : "transparent",
-        fontFamily: SORA, fontSize: "15px", fontWeight: 700, lineHeight: 1.3,
+        /* Lote 9: la cifra de cada grupo, monoespaciada; el total (el resultado) sigue en Sora. */
+        fontFamily: MONO, fontSize: "15px", fontWeight: 700, lineHeight: 1.3,
         fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap", color: FAE.text,
       }}>
         {cifra}

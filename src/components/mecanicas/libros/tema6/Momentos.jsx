@@ -1,6 +1,7 @@
 import { Fragment, useRef } from "react";
 import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES, ATENUADO, caja, aparicion, transicion, Anotacion, useSiluetasQueCaben } from "./MaquinaPegada.jsx";
 import { RotuloSimulado } from "./FuentesT6A5.jsx";
+import { ConCifras, CIFRA_MONO } from "./TanqueProvision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -34,7 +35,7 @@ function Fila({ fila, e, marca, reducido }) {
       color: e.atenuado ? SECUNDARIO : TEXTO, transition: transicion(reducido), ...aparicion(e, reducido),
     }}>
       <span>{fila.nombre}</span>
-      <span data-valor style={{ whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>{fila.valor}</span>
+      <span data-valor style={CIFRA_MONO}>{fila.valor}</span>
     </div>
   );
 }
@@ -81,7 +82,7 @@ function FilaGrupo({ fila, el, marca, reducido }) {
     }}>
       <p data-nombre-grupo style={{ margin: 0, ...NOMBRE, color: "inherit" }}>{fila.nombre}</p>
       <div style={{ marginTop: "2px", display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "8px" }}>
-        <span {...marca(fila.suma.id)} style={{ ...CIFRA, color: color(s), transition: transicion(reducido), ...aparicion(s, reducido) }}>{fila.suma.texto}</span>
+        <span {...marca(fila.suma.id)} style={{ ...CIFRA, color: color(s), transition: transicion(reducido), ...aparicion(s, reducido) }}><ConCifras texto={fila.suma.texto} /></span>
         <span style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
           {fila.porcentaje && <Pastilla texto={fila.porcentaje.texto} id={fila.porcentaje.id} e={el[fila.porcentaje.id]} marca={marca} reducido={reducido} />}
           <span {...marca(fila.resultado.id)} style={{
@@ -126,7 +127,7 @@ function Pieza({ pieza, el, marca, reducido, refDe, textos, prefijo }) {
       return (
         <div {...marca(pieza.id)} style={estilo()}>
           <p style={{ margin: 0, ...LINEA_SORA, color: "inherit" }}>{pieza.l1}</p>
-          <p style={{ margin: "2px 0 0", ...LINEA_INTER, color: "inherit" }}>{pieza.l2}</p>
+          <p style={{ margin: "2px 0 0", ...LINEA_INTER, color: "inherit" }}><ConCifras texto={pieza.l2} /></p>
         </div>
       );
     case "hecho":
