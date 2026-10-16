@@ -59,7 +59,7 @@ export const altDeRaya = (opcion) => INTERFAZ_R5_1.altRaya(
   opcion.activos.filter((a) => !esCorriente(a)).map((a) => a.figura),
 );
 
-function Punto({ y, fase, retraso, x = X_EJE + 1, fantasma = false }) {
+function PuntoRaya({ y, fase, retraso, x = X_EJE + 1, fantasma = false }) {
   return (
     <span
       aria-hidden="true"
@@ -108,6 +108,7 @@ export function RayaC1({ opcion, clave, onTerminar, elegida = null }) {
   return (
     <div
       data-raya-c1
+      data-figura="raya"
       data-fase={fase}
       role="img"
       aria-label={opcion ? altDeRaya(opcion) : undefined}
@@ -151,7 +152,7 @@ export function RayaC1({ opcion, clave, onTerminar, elegida = null }) {
 
         {c?.arriba.map((x) => (
           <span key={x.activo.texto}>
-            <Punto y={Y_HOY + x.punto} fase={fase} retraso={retrasoDe(x.activo)} />
+            <PuntoRaya y={Y_HOY + x.punto} fase={fase} retraso={retrasoDe(x.activo)} />
             <Nombre y={Y_HOY + x.nombre} fase={fase} retraso={retrasoDe(x.activo)} dato={x.activo.figura}>{x.activo.figura}</Nombre>
           </span>
         ))}
@@ -172,7 +173,7 @@ export function RayaC1({ opcion, clave, onTerminar, elegida = null }) {
         ))}
         {habria.map((a) => (
           <span key={`h-${a.texto}`} data-habria={a.figura} style={{ position: "absolute", left: 0, right: 0, top: `${Y_FILA}px`, height: "24px" }}>
-            <Punto y={12} fase="final" retraso={0} fantasma />
+            <PuntoRaya y={12} fase="final" retraso={0} fantasma />
             <span style={{ ...nombreSt, position: "absolute", left: `${X_NOMBRE}px`, top: "3px", color: C.atenuado }}>{a.figura}</span>
           </span>
         ))}
