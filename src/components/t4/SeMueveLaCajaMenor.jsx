@@ -115,8 +115,7 @@ export default function SeMueveLaCajaMenor({ Marco, rotulo, titulo, acento, onCo
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(puntuarH3(bien, cuantos), Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
-  /* Con el veredicto ya escrito, el foco pasa al botón: la página baja sola hasta la devolución. */
-  useEffect(() => { if (r?.aplicado && !modoDemo) zonaBoton.current?.querySelector("button")?.focus({ preventScroll: true }); }, [r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
+  /* Con el veredicto aplicado, el foco lo pone mostrarTramo: al botón si entra con el tramo; si no, a la devolución. */
   useEffect(() => { if (enfocar.current) { enfocar.current = false; tarjeta.current?.focus(); } }, [t.i]);
 
   const escribir = () => setTotales((x) => conAsiento(x, op.debe, op.haber, op.monto));
@@ -157,7 +156,7 @@ export default function SeMueveLaCajaMenor({ Marco, rotulo, titulo, acento, onCo
 
   const retro = useRef(null);
   /* La pastilla tocada más alta y el pie de la devolución, en un solo desplazamiento (hacerComun.jsx). */
-  useEffect(() => { if (r && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]")); }, [Boolean(r), r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (r && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]"), { enfocar: Boolean(r?.aplicado) }); }, [Boolean(r), r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
   const reiniciar = () => { clearTimeout(reloj.current); t.reiniciar(); setR(null); setPuestas({ debe: null, haber: null }); setTotales({}); setBien(0); setAviso(false); };
 
   if (t.terminado) {

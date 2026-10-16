@@ -64,12 +64,11 @@ export default function EntraOSaleDeCaja({ Marco, rotulo, titulo, acento, onComp
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(puntuarH1(bien, cuantos), Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
-  /* Con el veredicto, el foco pasa al botón: la página baja sola hasta la devolución. */
-  useEffect(() => { if (r?.aplicado && !modoDemo) zonaBoton.current?.querySelector("button")?.focus({ preventScroll: true }); }, [r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
+  /* Con el veredicto aplicado, el foco lo pone mostrarTramo: al botón si entra con el tramo; si no, a la devolución. */
   useEffect(() => { if (enfocarHecho.current) { enfocarHecho.current = false; hecho.current?.focus(); } }, [t.i]);
   const retro = useRef(null);
   /* Al dar el veredicto, la devolución entra en la ventana (decisión de Yujiro sobre la parada de Hanayama). */
-  useEffect(() => { if (r && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]")); }, [Boolean(r), r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (r && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]"), { enfocar: Boolean(r?.aplicado) }); }, [Boolean(r), r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const poner = (it) => setPuestos((p) => (p.some((x) => x.id === it.id) ? p : [...p, it]));
 

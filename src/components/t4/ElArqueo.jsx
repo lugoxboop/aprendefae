@@ -52,7 +52,7 @@ import { CSS_HACER, mostrarTramo } from "./hacerComun.jsx";
 import { Regla, CSS_REGLA } from "./Regla.jsx";
 
 export const CSS_H4 = `
-.t4h4-t { display: grid; gap: 2px; border: 1px solid ${C.neutro}; border-radius: 8px; padding: 8px 12px; }
+.t4h4-t { display: grid; gap: 2px; border: 1px solid ${C.reposo}; border-radius: 8px; padding: 8px 12px; }
 .t4h4-t b { font: 600 14px/1.35 "Sora", "Inter", sans-serif; }
 .t4h4-t p { margin: 0; font-size: 15px; line-height: 22px; min-height: 22px; }
 .t4h4-sb { display: grid; gap: 2px; border: 1px solid ${C.neutro}; border-top: none; border-radius: 0 0 10px 10px; padding: 4px 12px 8px; }
@@ -139,12 +139,11 @@ export default function ElArqueo({ Marco, rotulo, titulo, acento, onCompletar, i
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(puntuarH4(bien, total), Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (aplicado && !modoDemo) zonaBoton.current?.querySelector("button")?.focus({ preventScroll: true }); }, [aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (enfocar.current) { enfocar.current = false; tarjeta.current?.focus(); } }, [t.i]);
   const retro = useRef(null);
   /* Al dar el veredicto, la devolución entra en la ventana con la pastilla (decisión de Yujiro sobre la parada de Hanayama). */
   /* También a los 0,7 s del error: «Iba aquí» y el asiento del reembolso empujan la devolución hacia abajo. */
-  useEffect(() => { if (eleg != null && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]")); }, [eleg, aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (eleg != null && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]"), { enfocar: Boolean(aplicado) }); }, [eleg, aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const decidir = (v, ok, respuesta) => {
     t.anotar(itemH4(r.id, p.id), ok, respuesta);
@@ -208,7 +207,6 @@ export default function ElArqueo({ Marco, rotulo, titulo, acento, onCompletar, i
     const mal = eleg !== r.cheque;
     agujas.push({ id: "con-el-cheque", desv: r.caja + eleg - r.fondo, mal });
     etiquetas.push({ id: "tu-cheque", fila: "A", desv: r.caja + eleg - r.fondo, valor: r.caja + eleg, texto: REGLA_H4.tuCheque, mal });
-    if (aplicado && mal) etiquetas.push({ id: "cheque", fila: "B", desv: 0, valor: r.fondo, texto: REGLA_H4.chequeCorrecto });
   }
   if ((p.id === CHEQUE && aplicado && eleg !== r.cheque) || hechas[CHEQUE]) agujas.push({ id: "con-el-cheque-bien", desv: 0 });
 

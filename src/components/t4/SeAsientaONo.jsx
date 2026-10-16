@@ -46,7 +46,7 @@ import { Tablero, Mayor, Campo, CSS_TABLERO } from "./tablero.jsx";
 import { ParConLector, CSS_HACER, mostrarTramo } from "./hacerComun.jsx";
 
 export const CSS_H8 = `
-.t4h8-t { display: grid; gap: 4px; border: 1px solid ${C.neutro}; border-radius: 8px; padding: 8px 12px; }
+.t4h8-t { display: grid; gap: 4px; border: 1px solid ${C.reposo}; border-radius: 8px; padding: 8px 12px; }
 .t4h8-t p { margin: 0; font-size: 15px; line-height: 22px; min-height: 88px; overflow-wrap: anywhere; outline: none; }
 .t4h8-t > span { justify-self: end; font: 600 15px/1.2 "Inter", sans-serif; font-variant-numeric: tabular-nums; }
 .t4h8-et { font: 600 14px/1.3 "Sora", "Inter", sans-serif; color: ${C.texto}; margin: 0; }
@@ -92,11 +92,10 @@ export default function SeAsientaONo({ Marco, rotulo, titulo, acento, onCompleta
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(puntuarH8(bien), Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (r?.aplicado && !modoDemo) zonaBoton.current?.querySelector("button")?.focus({ preventScroll: true }); }, [r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (enfocar.current) { enfocar.current = false; tarjeta.current?.focus(); } }, [t.i, etapa]);
   const retro = useRef(null);
   /* Al dar el veredicto, la devolución entra en la ventana (decisión de Yujiro sobre la parada de Hanayama). */
-  useEffect(() => { if (r && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]")); }, [Boolean(r), r?.aplicado, r?.iba]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (r && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]"), { enfocar: Boolean(r?.aplicado) }); }, [Boolean(r), r?.aplicado, r?.iba]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const despues = (fn) => { reloj.current = setTimeout(() => { fn(); setR((x) => (x ? { ...x, aplicado: true } : x)); }, ESPERA_ERROR_MS); };
 
