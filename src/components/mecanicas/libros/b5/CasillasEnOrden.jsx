@@ -3,11 +3,11 @@ import { barajar } from "../../../../utils/barajar.js";
 import { porcentaje } from "../../../../data/politicaFiscal.js";
 import { pesos } from "../../../../data/contabilidad.js";
 import { FAE } from "../../../../theme.js";
-import { Opciones, Retro, Pulsos, Cierre, Enunciado } from "../../corazon/juego.jsx";
+import { Opciones, Retro, Cierre, Enunciado } from "../../corazon/juego.jsx";
 /* E4 (hoja de fusiones de Mai): la opción de la célula, con el contrato de la compartida y sus marcas ✓ y ✕. */
 import { OpcionE4 as Opcion } from "./MarcasE4.jsx";
 import { Avanzar, TEXTO_CIERRE } from "../../bloques/marcos.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import EncabezadoCompacto from "./EncabezadoCompacto.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { RotuloSimulado, PieDeFuente } from "../tema6/FuentesT6A5.jsx";
 import { useReducido } from "../tema3/DosLineas.jsx";
@@ -161,7 +161,9 @@ export default function CasillasEnOrden({
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      {!modoDemo && <Encabezado consigna={config.consigna} onComoSeJuega={onComoSeJuega} />}
+      {/* Lote 6c: el encabezado compacto de la célula; la consigna y los pasos, plegados bajo «¿Cómo se juega?». */}
+      {!modoDemo && <EncabezadoCompacto objetivo={config.objetivo} consigna={config.consigna} pasos={config.reglas ?? []}
+        contador={`${config.etiqueta} ${n + 1} de ${total}`} />}
       {config.rotuloSimulado && <div style={{ margin: "0 0 10px" }}><RotuloSimulado texto={config.rotuloSimulado} /></div>}
       {config.regla && <p data-regla style={ESTILO_REGLA}>{config.regla}</p>}
       {config.nota && (
@@ -170,21 +172,17 @@ export default function CasillasEnOrden({
           {config.nota.pie && <span style={PIE}><PieDeFuente texto={config.nota.pie} /></span>}
         </p>
       )}
-      {!modoDemo && config.partida && (
-        <p data-partida style={{ margin: "0 0 12px", padding: "10px 13px", borderRadius: "12px", background: "rgba(184,196,212,0.13)", fontSize: "13.5px", lineHeight: 1.5, color: FAE.text }}>
-          {config.partida}
-        </p>
-      )}
-      {!modoDemo && (
-        <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={total} hechos={n + (elegida ? 1 : 0)} enCurso={n + 1} etiqueta={config.etiqueta} />
-        </div>
-      )}
 
       {/* Con un visual propio (b5-t6-a6: los cajones del tiempo), el visual es el registro. */}
       {conVisual && (
         <config.visual.Componente respondidas={resueltas.length} abierta={elegida ? null : n} reducido={reducido} modoDemo={modoDemo}
           anuncio={elegida && !modoDemo ? config.visual.anuncio(n) : ""} />
+      )}
+      {/* Lote 6c (B1): el punto de partida, debajo de la figura. */}
+      {!modoDemo && config.partida && (
+        <p data-partida style={{ margin: "0 0 12px", padding: "10px 13px", borderRadius: "12px", background: "rgba(184,196,212,0.13)", fontSize: "13.5px", lineHeight: 1.5, color: FAE.text }}>
+          {config.partida}
+        </p>
       )}
       {resueltas.length > 0 && !(config.visual && !modoDemo) && (
         <ol data-registro style={{ margin: "0 0 12px", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "4px" }}>

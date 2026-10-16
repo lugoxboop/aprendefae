@@ -40,8 +40,10 @@ ANCHOS = [int(x) for x in (_an[0] if _an else "320,375").split(",")]
 U = f"http://localhost:{PORT}"
 MIDE = open(D + "/enganche_mide.js").read()
 # B no usa <figure>: estas son sus figuras con significado (la de D sigue valiendo si alguna vez aparece)
+# Lote 6c: en las fichas a un nivel, la ficha es lo que se juega (vuela a su cajón), y así la mide la réplica
+# de Mai («fichas unos 126»): cuenta como figura.
 FIG = ("figure, [data-escena], [data-cuenta-t], [data-tablero], [data-mesa], [data-asiento-minimo], [data-cuenta-que-se-llena], "
-       "[data-cajones-del-tiempo], [data-estante]:has([data-cajon]), [data-registro]")
+       "[data-cajones-del-tiempo], [data-estante]:has([data-cajon]), [data-registro], [data-ficha]")
 
 def b64(o): return base64.urlsafe_b64encode(json.dumps(o).encode()).decode().rstrip("=")
 exp = int(time.time()) + 3600
@@ -191,6 +193,12 @@ def hacer(b, sid, modo, clave, ancho):
         bs = [x for x in pg.locator(f"{R} button:visible").all() if x.inner_text().strip() in textos]
         if not bs: return None
         t = bs[-1].inner_text().strip(); bs[-1].click(); pg.wait_for_timeout(450); return t
+    # lote 6c: el ejemplo resuelto de las mesas es su propio paso, con «Empezar»; se mide al llegar y se sigue
+    if pg.locator("[data-ejemplo-resuelto]:visible").count():
+        pg.evaluate(MARCO)
+        if modo == "bien":
+            m = mide(pg, R); m.update(pantalla="ejemplo resuelto", momento="al llegar", carta="ejemplo"); regs.append(m)
+        pg.locator("[data-boton-empezar] button").first.click(); pg.wait_for_timeout(450)
     k = 0
     for _ in range(40):
         if not pg.evaluate(MARCO): break

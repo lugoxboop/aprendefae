@@ -130,3 +130,9 @@ G0-u2-g1 · u2 (6 meses) · Vigentes o hasta 3 meses	Devolución	Ese grupo es pa
 G0-u2-g4 · u2 · Más de 1 año	Devolución	Ese grupo es para deudas de más de un año. Esta lleva 6 meses vencida.
 G0-u3-g1 · u3 (14 meses) · Vigentes o hasta 3 meses	Devolución	Ese grupo es para deudas vigentes o de hasta tres meses. Esta lleva 14 meses vencida.
 G0-u3-g2 · u3 · Más de 3 hasta 6 meses	Devolución	Ese grupo es para deudas de más de tres hasta seis meses. Esta lleva 14 meses vencida.
+
+## Lote 6c · encabezado compacto (hoja «Enganche B1-B5» de Mai, parte Hacer)
+
+Objetivo nuevo, una oración del kit (PARA SHOKO, lo escribió KAEDE): «Calcular la provisión de una cartera según cuánto tiempo lleva vencida cada deuda.»
+
+En la partida, la consigna, los pasos y lo fijo de la actividad van plegados bajo «¿Cómo se juega?»; la figura sube a los primeros 280 px.

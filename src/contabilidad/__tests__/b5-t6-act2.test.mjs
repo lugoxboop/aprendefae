@@ -67,13 +67,16 @@ const PREGUNTAS = D.PREGUNTAS_T6_ACT2;
 const PASOS = D.PASOS_T6_ACT2;
 const { GASTO, PROVISION, CLIENTES, CAJA } = D;
 
-const montar = async ({ items = undefined, onCompletar = () => {}, modoDemo = false } = {}) => {
+const montar = async ({ items = undefined, onCompletar = () => {}, modoDemo = false, empezar = true } = {}) => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
   await act(async () => {
     raiz.render(h(ProvisionDeElTorito, { Marco: MarcoLibros, rotulo: "PRUEBA", titulo: "Prueba", acento: FAE.ambar, onCompletar, items, modoDemo }));
   });
+  /* Lote 6c: el ejemplo resuelto es su propio paso; la partida empieza con «Empezar». */
+  const empieza = caja.querySelector("[data-boton-empezar] button");
+  if (empezar && empieza) await act(async () => { empieza.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
 const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
@@ -166,12 +169,16 @@ test("★★★ ningún componente escribe texto de la actividad", () => {
 test("★★★ encabezado, contador «Paso 1 de 5», texto alternativo, la T arriba y, en la pregunta 1, el bloque del estado; el estante sin montos llega con el asiento", async () => {
   const { caja, desmontar } = await montar();
   assert.equal(caja.querySelector("[data-objetivo]").textContent, D.T6_ACT2.objetivo);
+  /* Lote 6c: la consigna va plegada bajo «¿Cómo se juega?» (encabezado compacto). */
+  assert.equal(caja.querySelector("[data-consigna]"), null);
+  await tocar(caja.querySelector("[data-como-se-juega]"));
   assert.equal(caja.querySelector("[data-consigna]").textContent, D.T6_ACT2.consigna);
+  assert.deepEqual([...caja.querySelectorAll("[data-encabezado] [data-pasos] li")].map((li) => li.textContent), D.REGLAS_T6_ACT2);
   assert.ok(caja.textContent.includes("Paso 1 de 5"));
   assert.ok(caja.textContent.includes(D.ALT_T6_ACT2));
   /* La T va entre el contador y el paso. */
   const t = caja.querySelector("[data-cuenta-que-se-llena]");
-  assert.ok(caja.querySelector("[data-avance]").compareDocumentPosition(t) & 4, "la T, después del contador");
+  assert.ok(caja.querySelector("[data-contador]").compareDocumentPosition(t) & 4, "la T, después del contador");
   assert.ok(t.compareDocumentPosition(caja.querySelector("[data-tarjeta-parte]")) & 4, "la T, antes del paso");
   assert.ok(caja.querySelector("[data-bloque-estado]"), "P1 lleva el bloque del estado");
   assert.ok(caja.querySelector("[data-fila-neto]").hasAttribute("data-renglon-activo"), "«El valor neto», encendido");
