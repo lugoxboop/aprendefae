@@ -37,6 +37,8 @@ export const NOMBRE_DE_RETIRADA = {
      igual: la tabla vale por las que vengan, y empezar vacía invita a no
      usarla. */
   "dashboard-economico": "El Tablero Económico",
+  /* 0076 · Célula B: sus decisiones ya están en a4 y en la capa 3 de T6 · A2 (Shoko, C6). */
+  "b5-t6-a7": "¿Qué método y cuándo?",
 };
 
 /**

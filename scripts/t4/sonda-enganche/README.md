@@ -11,6 +11,7 @@ Hoy está adaptada a T4 («Efectivo, caja menor y bancos»). El recorrido y la c
 | `enganche_mide.js` | **La medición.** Una función que se evalúa en la página con Playwright y devuelve los números de una tarjeta. No juzga nada |
 | `enganche.py` | **El recorrido y el juicio.** Abre cada pieza, juega todas sus pantallas o tarjetas, llama a la medición en cada momento y juzga B1-B5 con la función `juzga` |
 | `enganche_clave.mjs` | **La clave de Hacer.** Lee de los datos del build que se mide (`src/data/contabilidadT4H*.js`) la respuesta correcta de cada tarjeta y una equivocada que se comete con el mismo gesto |
+| `enganche_planes.json` | **Los planes de Aprender con figura operable.** Por pieza y pantalla, los gestos que la sonda hace (tocar, arrastrar, esperar), el momento que mide tras cada uno y el veredicto que tiene que dar. Los usa también la guardia de enganche de `npm test` |
 | `eng_fixture.py` | **La autocomprobación.** Tarjetas sintéticas con una sola rotura cada una (ver abajo) |
 | `eng_tablas.py` | Las tablas en Markdown a partir del JSON de salida |
 | `base.py` | El navegador a 320 px y las fuentes locales |
@@ -35,6 +36,8 @@ Lo que no ve un estudiante vidente no cuenta: `display:none`, `visibility:hidden
 | **B5 · Nada dos veces** | El texto visible se parte en bloques (p, li, h, botón, o lo que se muestre como bloque) y los bloques en frases. Se buscan frases de **5 o más palabras** iguales en dos bloques de la misma vista. Incluye Así se juega | Una frase aparece dos veces |
 
 **Palabra** es un token con letra o cifra: «$500.000» vale una, y «·» no cuenta.
+
+**Aprender con figura operable** (el rediseño de enganche de A0 y A1, 15 oct 2026). La pantalla ya no es una elección de radios: el estudiante arrastra el año, cobra, manda la plata a un lado del cajón o enciende un control. La sonda no adivina qué tocar: lo lee de `enganche_planes.json`. Mide la pantalla al llegar y después de cada gesto del plan, incluidos **cada error y cada acierto**, y comprueba el veredicto de cada uno (`data-mensaje`). Si un gesto no encuentra su control o el veredicto no es el del plan, da código 2. Si una pantalla tiene controles dentro de la figura y no tiene plan, también da código 2. B3 se juzga igual: la figura de la llegada contra la de después de los gestos.
 
 **Hacer, con todas las tarjetas.** La sonda juega la partida entera, de todas las etapas, dos veces con la misma semilla: una con la respuesta correcta de la clave y otra con la equivocada. Mide cada tarjeta al llegar, tras acertar y tras fallar, y además Así se juega. En cada tarjeta comprueba que el juego haya dado el veredicto esperado: «acierto» con la correcta y «error» con la equivocada. Si no, es la clave la que está rota, y la sonda lo dice (código 2) en vez de medir colores de otro estado.
 
@@ -121,7 +124,7 @@ Todo desde la raíz del repositorio, en una máquina sin nada previo salvo Pytho
    node scripts/t4/sonda-enganche/enganche_clave.mjs > clave.json
    ```
 
-7. **La sonda.** El control es A0, A1 y H1: hoy tienen que dar `A0 FALLA 17`, `A1 FALLA 20` y `H1 FALLA 36`, con código 1.
+7. **La sonda.** El control es A0, A1 y H1. Con el rediseño de enganche (PR «D4 · T4 · Rediseño de enganche: A0, A1 y H1») tienen que dar `A0 PASA 0`, `A1 PASA 0` y `H1 PASA 0`, con código 0. Antes del rediseño daban `A0 FALLA 17`, `A1 FALLA 20` y `H1 FALLA 36` (32 desde #238, que quitó la consigna repetida de «Así se juega»), con código 1.
 
    ```
    python3 scripts/t4/sonda-enganche/enganche.py 5290 salida.json A0 A1 H1 --clave=clave.json; echo rc=$?
@@ -176,7 +179,8 @@ Sale con **0** si los 12 casos dan lo esperado y con **1** si alguno no. **Tambi
 - **B2 no se aplica a Hacer**: la barra lo pide solo para Aprender. Las palabras de Hacer igual se miden y salen en la tabla.
 - **El recorrido es de T4.** Para otro tema, `enganche.py` necesita los nombres de las piezas (`APRENDER`, `HACER`), la ruta del tema y los botones de «seguir» (`SIGUIENTE`). `enganche_clave.mjs` necesita su propia clave, escrita contra los datos del tema. La medición (`enganche_mide.js`), el juicio (`juzga`) y el fixture no cambian.
 - **Los atributos que usa:**
-  - en Aprender, `data-pieza`, `data-pantalla`, `data-eleccion`, `data-opcion` y `data-boton`;
+  - en Aprender, `data-pieza`, `data-pantalla`, `data-eleccion`, `data-opcion` y `data-boton`; con figura operable, los selectores de su plan (`data-accion`, `data-destino`, `data-control`, `data-seg`, `data-fila`, `data-pista`) y `data-mensaje` para el veredicto;
+  - en H1 rediseñado, `data-destino` (el cajón como tablero): la clave da `{destino: …}` en vez de `{opcion: …}` cuando los datos traen `SALDO_INICIAL_H1`, y la sonda espera 900 ms tras el toque, porque en el error la plata llega a su sitio a los 0,7 s;
   - en Hacer, `data-t4-hN` y `data-t4-hN-demo`, las tarjetas (`data-hecho`, `data-caso`, `data-enunciado`, `data-partida-texto`, `data-tarjeta-nota`, `data-tarjeta-pregunta`), `data-constructor`, `data-fila-asiento`, `data-campo` y `data-panel` o `data-mensaje` para el veredicto.
 
   Si una pieza nueva no los pone, la sonda da código 2: no adivina.

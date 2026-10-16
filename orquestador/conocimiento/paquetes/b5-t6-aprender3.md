@@ -458,3 +458,35 @@ El contador de la parada dice «Antes del paso N» (nuevo, para Shoko).
 ## (7) Kaede · al ancho del sitio, dos fusiones más no entran (para Sakuta y Mai)
 
 Al ancho del sitio (Chromium de escritorio a 320, con la barra de desplazamiento; Mai midió sin ella), 1 + 2 y 9 + 10 ocupan 5 renglones a 320: no cumplen la regla 2 y subían el bloque 21,69 en toda la pieza. Quedan separados: 15 pasos. Los pasos sueltos conservan su pie de hoy. La parada queda entre el 9 y el 10 (la misma posición: después del paso 10 de antes). La vuelta atrás del paso 11 de antes es el 10.
+
+## Lote C2 · C1 · C7 (Futaba, PASA de Shoko, 15-oct) · manda sobre lo de arriba
+
+Líneas copiadas tal cual de paquetes/b5-lote-c2-c1-c7.md (la entrega entera). Al primer error sale la pista; al segundo, la devolución que ya existe y después el texto que se revela.
+
+| Pieza | Caja o parada | Pista |
+|---|---|---|
+| T6 A3 | Diciembre de 2007 | Mira el asiento que la crea: el gasto va al Debe. ¿Y la provisión? |
+| T6 A3 | Marzo (la pregunta aprobada) | Compara lo que había en la provisión con lo que se castigó. ¿Cuál es mayor? |
+| T6 A3 | Diciembre siguiente | Mira de qué saldo parte la T antes de este registro. |
+| T6 A3 | Parada | Recuerda en qué momento del ejemplo se anotó el gasto de la provisión. |
+
+| Pieza | Pregunta | Opción nueva | Devolución al segundo error |
+|---|---|---|---|
+| T6 A3 | Diciembre de 2007 | En ninguna: es solo un cálculo | Es un cálculo, pero se anota con un asiento: la provisión sube por el Haber. |
+| T6 A3 | Parada | Sí, por la parte que la provisión no cubre | No: el gasto ya se anotó al crear la provisión, aunque esta se quede corta. |
+
+### C1-8 · T6 A3 · capa 3
+- Marzo: se queda la pregunta aprobada, como está hoy. Solo se le suma su pista.
+- Diciembre siguiente: «¿El registro es mayor, menor o igual a lo que pide el análisis?» Opciones: Mayor ✓ · Igual · Menor.
+  - Si elige «Igual»: «$153.400 es el saldo que debe quedar. Para llegar ahí, también hay que cubrir lo que faltó en marzo.»
+  - Si elige «Menor»: «Lo que faltó en marzo se suma, no se resta.»
+- El texto que se revela y la T no cambian.
+
+### C1-9 · T6 A3 · capa 4 (pie «Basado en el libro, p. 203»)
+Pregunta: «Si en marzo el castigo hubiera sido menor que la provisión, ¿qué se haría en diciembre?»
+| Opción | ✓ | Devolución |
+|---|---|---|
+| Lo que sobró se resta de lo que pide el análisis. | ✓ | Correcto. Si la provisión quedó sobrestimada, se hace lo contrario que en el ejemplo: lo que sobró se resta de la provisión que pide el análisis. |
+| Lo que sobró se suma a lo que pide el análisis. | | No es esa. Lo que faltó se suma. Si sobró, se hace lo contrario: se resta. |
+| Se registra solo lo que pide el análisis. | | No es esa. Lo que sobró sigue en la provisión. Por eso se descuenta del registro del año. |
+| Lo que sobró sale de la provisión y entra a Caja. | | No es esa. La provisión no es plata: no sale ni entra nada de Caja. |

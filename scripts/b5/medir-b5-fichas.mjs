@@ -4,7 +4,7 @@
  *
  *   node --import ./scripts/cargador-jsx.mjs scripts/b5/medir-b5-fichas.mjs
  *
- * En b5-t5-a1, b5-t6-a1 y b5-t6-a7, a 320×568 y 375×667, con y sin
+ * En b5-t5-a1 y b5-t6-a1 (b5-t6-a7 se retiró: 0076), a 320×568 y 375×667, con y sin
  * movimiento reducido, juega la tanda entera y en cada ficha comprueba:
  *
  * LOTE 6a (hoja de fusiones de Mai, §2): b5-t5-a1 y b5-t6-a1 son fichas a un
@@ -12,8 +12,7 @@
  * hoja: el alto del estante (84), los renglones de cada nombre, y del
  * contador al estante con la ficha más alta, con la devolución abierta y
  * resuelta hasta «Siguiente ficha». Comprueba que el cajón ✕ no se puede
- * volver a tocar y que ✓ y ✕ llevan su ícono. b5-t6-a7 sigue con el estante
- * de dos niveles hasta que se retire.
+ * volver a tocar y que ✓ y ✕ llevan su ícono.
  *
  *   · sin barra horizontal; ningún nombre de cajón fuera de su cajón;
  *   · el alto del estante (la réplica de Mai: 96,78);
@@ -115,61 +114,6 @@ for (const juego of ["#t5a1", "#t6a1"]) {
       if (Math.abs(m.estante - 84) > 0.5) fallos.push(`${tag}: el estante mide ${m.estante.toFixed(2)} y la hoja pide 84`);
       if (ancho === 320 && !reducido && process.env.CAPTURAS) await p.locator("[data-estante]").screenshot({ path: `${process.env.CAPTURAS}/estante-un-nivel-${juego.slice(1)}.png` });
       informe.push(`${tag}: estante ${m.estante.toFixed(2)} · del contador al estante, con la ficha más alta, ${m.alEstante.toFixed(2)} · con la devolución ${m.conDevolucion.toFixed(2)} · resuelta, hasta «Siguiente ficha», ${m.resuelta.toFixed(2)} (${m.resuelta <= alto ? "cabe" : "NO cabe"} en ${alto})${!reducido ? ` · renglones: ${m.nombres.join(" · ")}` : ""}`);
-      await p.close();
-    }
-  }
-}
-
-/* ═══════════ b5-t6-a7: EL ESTANTE DE DOS NIVELES (hoja 3), hasta que se retire ═══════════ */
-
-for (const juego of ["#t6a7"]) {
-  for (const reducido of [false, true]) {
-    for (const [ancho, alto] of [[320, 568], [375, 667]]) {
-      const p = await navegador.newPage({ viewport: { width: ancho, height: alto }, reducedMotion: reducido ? "reduce" : "no-preference" });
-      await p.goto(`${BASE}${juego}`);
-      await p.waitForSelector("[data-estante]");
-      await p.evaluate(() => document.fonts.ready);
-      const tag = `${juego} · ${ancho}×${alto}${reducido ? " · reducido" : ""}`;
-      let mayor = 0, alturaEstante = 0, lineas = [];
-      for (let k = 0; ; k++) {
-        /* Abre el panel (la pestaña que abre va al final) y elige su primera opción: el juego en su alto mayor. */
-        const pestanas = await p.$$("[data-nivel1]");
-        await pestanas[pestanas.length - 1].click();
-        await p.click("[data-nivel2]");
-        const m = await p.evaluate(medir);
-        mayor = Math.max(mayor, m.juego); alturaEstante = m.estante; lineas = m.lineas;
-        for (const x of m.problemas) fallos.push(`${tag} · ficha ${k + 1}: ${x}`);
-        const antes = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll("[data-cajon]")].map((c) => [c.dataset.cajon, Number(c.dataset.cuantas)])));
-        /* Coloca dos veces (si el primero falla, el segundo deja la ficha). */
-        let vuelo = false;
-        for (let intento = 0; intento < 2; intento++) {
-          const colocar = await p.$("[data-boton-colocar] button");
-          if (!colocar) break;
-          await colocar.click();
-          vuelo = vuelo || await p.evaluate(() => [...document.body.children].some((e) => e.style.position === "fixed" && e.getAttribute("aria-hidden") === "true"));
-          await p.waitForTimeout(reducido ? 50 : 760);
-        }
-        const despues = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll("[data-cajon]")].map((c) => [c.dataset.cajon, Number(c.dataset.cuantas)])));
-        const sumo = Object.keys(despues).filter((c) => despues[c] !== antes[c]);
-        if (sumo.length !== 1 || despues[sumo[0]] !== antes[sumo[0]] + 1) fallos.push(`${tag} · ficha ${k + 1}: el estante no sumó una lámina (${JSON.stringify(despues)})`);
-        if (reducido && vuelo) fallos.push(`${tag} · ficha ${k + 1}: con movimiento reducido hubo vuelo`);
-        if (!reducido && !vuelo) fallos.push(`${tag} · ficha ${k + 1}: sin vuelo`);
-        const siguiente = await p.$("[data-boton-avanzar] button");
-        const texto = await siguiente.textContent();
-        if (/resultado/.test(texto)) break;
-        await siguiente.click();
-      }
-      /* Al final de la tanda, en gris: cada lámina por su forma. */
-      await p.addStyleTag({ content: "html { filter: grayscale(1); }" });
-      const formas = await p.evaluate(() => [...document.querySelectorAll("[data-lamina]")].map((l) => {
-        const cs = getComputedStyle(l);
-        return { tipo: l.dataset.lamina, borde: cs.borderTopStyle, relleno: cs.backgroundColor };
-      }));
-      const segundas = formas.filter((f) => f.tipo === "segundo");
-      if (segundas.some((f) => f.borde !== "dashed" || f.relleno !== "rgba(0, 0, 0, 0)")) fallos.push(`${tag}: una lámina tras el segundo fallo no es punteada y vacía`);
-      if (formas.filter((f) => f.tipo === "bien").some((f) => f.borde === "dashed" || f.relleno === "rgba(0, 0, 0, 0)")) fallos.push(`${tag}: una lámina acertada no es llena`);
-      if (ancho === 320 && !reducido && process.env.CAPTURAS) await p.locator("[data-estante]").screenshot({ path: `${process.env.CAPTURAS}/estante-${juego.slice(1)}.png` });
-      informe.push(`${tag}: láminas ${formas.length - segundas.length} llenas y ${segundas.length} punteadas · estante ${alturaEstante.toFixed(2)} · juego con el panel abierto, el mayor ${mayor.toFixed(2)} (${mayor <= alto - 16 ? "cabe" : "NO cabe"} en ${alto - 16})${ancho === 320 && !reducido ? ` · líneas: ${lineas.join(" · ")}` : ""}`);
       await p.close();
     }
   }

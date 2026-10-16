@@ -5,7 +5,7 @@
  * la sirve solo cuando se mide. Sin sesión: la vista pide un AuthContext y
  * aquí basta uno vacío.
  *
- * Con #h1 monta la vista en el modo Hacer, con H1 abierto (medir-t4-h1.mjs).
+ * Con #h1 monta la vista en el modo Hacer, con H1 abierto (medir-t4.mjs y guardia-enganche.mjs).
  */
 import { createRoot } from "react-dom/client";
 import "../../../src/styles/global.css";
