@@ -97,7 +97,6 @@
 - Asiento: «EL ASIENTO DEL REEMBOLSO»
 - Camino · cobra: «Cobrarle a Rosa»
 - Camino · asume: «La empresa asume»
-- Comprobar: «Comprobar»
 
 ## Interfaz común del rediseño (A0-A5 y H1)
 

@@ -16,13 +16,16 @@
  *   · Par: dos saldos («el banco» y «la empresa»), con el «=» cuando coinciden
  *   · Campo: una cifra escrita, con su marca
  *
- * Teal y ámbar solo en «DEBE» y «HABER». Acierto: ✓ y borde #F8F9FA. Error: ✗
- * y borde coral, y no se escribe nada. Nada vuela; todo con fundido de 120 ms.
+ * Teal y ámbar solo en «DEBE» y «HABER». Acierto: borde de 2 px #F8F9FA y la
+ * pastilla «Correcto» con Check. Error: borde coral y «No va aquí» con X, y no
+ * se escribe nada. Nada vuela; todo con fundido de 120 ms.
  *
- * `palabras` (opcional, lo usan A2 y A3): la marca de una mitad lleva palabra,
- * la pastilla común debajo del total («✓ Correcto», «✗ No va aquí», las de
- * MARCA: canon E3, en blanco y negro se sabe cuál falló), y el lector la oye en el nombre de la mitad. Sin
- * `palabras`, el glifo de siempre en la esquina (los Hacer, sin cambios).
+ * EL TABLERO VA APILADO (bloque P2 de Hanayama, §2.3-2 y §3.6): cada cuenta es
+ * un bloque, el nombre arriba a todo el ancho y debajo sus dos mitades, de
+ * (ancho − 8) / 2. Cada mitad reserva abajo un hueco de 20 px para su pastilla,
+ * así que calificar no mueve nada, y la misma cuenta puede llevar «No va aquí»
+ * en una mitad e «Iba aquí» en la otra. «DEBE» (#3FA69A) y «HABER» se dicen una
+ * vez, en la cabecera. Las mitades van sin relleno: la forma la guarda el borde.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { useNumeroQueSube } from "../mecanicas/libros/verbos.jsx";
@@ -30,22 +33,27 @@ import { C, cifra, Marca } from "./comun.jsx";
 import { MARCA } from "../../data/contabilidadT4.js";
 
 export const CSS_TABLERO = `
-.t4tb { display: grid; gap: 4px; min-width: 0; }
-.t4tb-cab, .t4tb-fila { display: grid; grid-template-columns: minmax(0, 1fr) var(--t4tb-mitad, 74px) var(--t4tb-mitad, 74px); gap: 4px; align-items: stretch; }
-.t4tb-cab > span { font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .06em; text-transform: uppercase; text-align: center; }
-.t4tb-nom { display: grid; align-content: center; padding: 4px 0; font: 600 13px/1.25 "Sora", "Inter", sans-serif; color: ${C.texto}; min-width: 0; }
+.t4tb { display: grid; gap: 8px; min-width: 0; }
+.t4tb-cab, .t4tb-mitades { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.t4tb-cab > span { font: 700 12px/1.2 "Inter", sans-serif; letter-spacing: .06em; text-transform: uppercase; padding: 0 9px; }
+.t4tb-cab > span + span { text-align: right; }
+.t4tb-cuenta { display: grid; gap: 4px; min-width: 0; }
+.t4tb-nom { display: grid; font: 600 14px/1.3 "Sora", "Inter", sans-serif; color: ${C.texto}; min-width: 0; }
 .t4tb-nom > span { white-space: nowrap; }
-.t4tb-mitad { position: relative; min-height: 44px; display: grid; place-items: center; padding: 0 4px; border-radius: 8px; border: 1px solid rgba(248,249,250,0.30); background: transparent; color: ${C.texto2}; font: 500 13px/1.2 "Inter", sans-serif; font-variant-numeric: tabular-nums; cursor: pointer; }
+.t4tb-mitad { position: relative; display: grid; grid-template-rows: 22px 20px; align-content: center; gap: 2px; min-height: 44px; padding: 5px 8px; border-radius: 8px; border: 1px solid ${C.reposo}; background: transparent; color: ${C.texto2}; font: 500 15px/22px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; cursor: pointer; text-align: left; justify-items: start; }
+.t4tb-mitad[data-lado="haber"] { text-align: right; justify-items: end; }
+.t4tb-mitad[data-sin-marcas] { grid-template-rows: 22px; }
 .t4tb-mitad:disabled { cursor: default; }
-.t4tb-mitad[data-puesta] { border: 2px solid ${C.texto}; background: rgba(248,249,250,0.08); color: ${C.texto}; font-weight: 600; }
-.t4tb-mitad[data-marca="bien"], .t4tb-mitad[data-marca="era"] { border: 2px solid ${C.texto}; color: ${C.texto}; }
-.t4tb-mitad[data-marca="mal"] { border: 2px solid ${C.error}; background: rgba(248,249,250,0.08); }
-.t4tb-mitad .g { position: absolute; top: 1px; right: 4px; font: 700 12px/1 "Inter", sans-serif; }
+.t4tb-mitad:focus-visible { outline: 2px solid ${C.texto}; outline-offset: 2px; }
+.t4tb-mitad[data-puesta] { border: 2px solid ${C.texto}; padding: 4px 7px; color: ${C.texto}; font-weight: 600; }
+.t4tb-mitad[data-marca="bien"], .t4tb-mitad[data-marca="era"] { border: 2px solid ${C.texto}; padding: 4px 7px; color: ${C.texto}; }
+.t4tb-mitad[data-marca="mal"] { border: 2px solid ${C.error}; padding: 4px 7px; }
 .t4tb-mitad > span { white-space: nowrap; }
-.t4tb-mitad[data-con-palabra] { align-content: center; gap: 2px; }
+.t4tb-hueco { display: flex; min-height: 20px; }
+.t4tb-mitad[data-lado="haber"] .t4tb-hueco { justify-content: flex-end; }
 .t4tb-foco { color: ${C.texto}; font-weight: 600; }
 /* mayor */
-.t4my { display: grid; border: 1px solid ${C.neutro}; border-radius: 10px; padding: 8px 10px; gap: 4px; }
+.t4my { display: grid; background: ${C.hundido}; border: 1px solid ${C.hundidoBorde}; border-radius: 10px; padding: 8px 10px; gap: 4px; }
 .t4my-t { margin: 0; text-align: center; font: 600 13px/1.3 "Sora", "Inter", sans-serif; }
 .t4my-cols { display: grid; grid-template-columns: minmax(0,1fr) 1px minmax(0,1fr); gap: 0 10px; border-top: 1px solid rgba(248,249,250,0.22); padding-top: 4px; }
 .t4my-col { display: grid; align-content: start; gap: 2px; min-width: 0; }
@@ -64,13 +72,15 @@ export const CSS_TABLERO = `
 .t4pr span.r { font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; white-space: nowrap; }
 .t4pr span.v { font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .t4pr span.v.f { font-weight: 600; }
+/* El eco de lo que se escribe (H7 fase 2): en #A8B6C8 hasta comprobar (§4.4 del prompt maestro). */
+.t4pr span.v.e { color: ${C.texto2}; font-weight: 500; }
 .t4pr-igual { text-align: center; font: 600 17px/1.3 "Inter", sans-serif; }
 /* campo */
 .t4cp { display: grid; gap: 4px; min-width: 0; }
 .t4cp label { font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; }
-.t4cp input { min-height: 44px; width: 100%; border-radius: 8px; border: 1px solid ${C.neutro}; background: transparent; color: ${C.texto}; font: 500 16px "Inter", sans-serif; font-variant-numeric: tabular-nums; padding: 0 10px; }
+.t4cp input { min-height: 44px; width: 100%; border-radius: 8px; border: 1px solid ${C.reposo}; background: transparent; color: ${C.texto}; font: 500 16px "Inter", sans-serif; font-variant-numeric: tabular-nums; padding: 0 10px; }
 .t4cp[data-marca="bien"] input { border: 2px solid ${C.texto}; }
-.t4cp-iba { display: block; margin-top: 4px; font: 600 13px/1.4 "Inter", sans-serif; color: ${C.texto}; }
+.t4cp-marcas { display: flex; flex-wrap: wrap; gap: 6px; min-height: 20px; }
 .t4cp[data-marca="mal"] input { border: 2px solid ${C.error}; }
 `;
 
@@ -96,39 +106,39 @@ const nombreMitad = (c, lado, cifraVista, palabra) =>
  * marcas:  { "id:lado": "bien"|"mal"|"era" }
  * recien:  ["id:lado"] los totales que acaban de cambiar
  */
-export function Tablero({ cuentas, totales = {}, puestas = {}, monto, onElegir, activo, marcas = {}, recien = [], ancho = 74, etiqueta = "Cuentas", palabras = null }) {
+export function Tablero({ cuentas, totales = {}, puestas = {}, monto, onElegir, activo, marcas = {}, recien = [], etiqueta = "Cuentas", conMarcas = true }) {
   return (
-    <div className="t4tb" role="group" aria-label={etiqueta} style={{ "--t4tb-mitad": `${ancho}px` }} data-tablero>
-      <div className="t4tb-cab" aria-hidden="true"><span /><span style={{ color: C.debe }}>Debe</span><span style={{ color: C.haber }}>Haber</span></div>
+    <div className="t4tb" role="group" aria-label={etiqueta} data-tablero>
+      <div className="t4tb-cab" aria-hidden="true"><span style={{ color: C.debeTexto }}>Debe</span><span style={{ color: C.haber }}>Haber</span></div>
       {cuentas.map((c) => (
-        <div key={c.id} className="t4tb-fila" data-cuenta={c.id}>
+        <div key={c.id} className="t4tb-cuenta" data-cuenta={c.id}>
           <span className="t4tb-nom">{c.renglones.map((r) => <span key={r}>{r}</span>)}</span>
-          {["debe", "haber"].map((lado) => {
-            const k = `${c.id}:${lado}`;
-            const puesta = puestas[lado] === c.id;
-            const m = marcas[k];
-            return (
-              <button
-                key={lado}
-                type="button"
-                className="t4tb-mitad"
-                data-destino={k}
-                data-puesta={puesta && !m ? "" : undefined}
-                data-marca={m}
-                data-con-palabra={palabras && m ? "" : undefined}
-                disabled={!activo}
-                aria-pressed={puesta}
-                aria-label={nombreMitad(c, lado, puesta && !m ? monto : (totales[c.id]?.[lado] ? cifra(totales[c.id][lado]) : null), palabras && m && palabras[m] ? palabras[m][1] : null)}
-                onClick={() => onElegir?.(c.id, lado)}
-              >
-                {puesta && !m ? <span className="t4r-nueva">{monto}</span>
-                  : (!palabras || !m || totales[c.id]?.[lado]) ? <Total v={totales[c.id]?.[lado]} foco={recien.includes(k)} /> : null}
-                {palabras && m && palabras[m] && <Marca marca={m} palabras={palabras[m]} />}
-                {!palabras && m === "bien" && <span className="g" aria-hidden="true">✓</span>}
-                {!palabras && m === "mal" && <span className="g" aria-hidden="true" style={{ color: C.error }}>✗</span>}
-              </button>
-            );
-          })}
+          <div className="t4tb-mitades">
+            {["debe", "haber"].map((lado) => {
+              const k = `${c.id}:${lado}`;
+              const puesta = puestas[lado] === c.id;
+              const m = marcas[k];
+              return (
+                <button
+                  key={lado}
+                  type="button"
+                  className="t4tb-mitad"
+                  data-destino={k}
+                  data-lado={lado}
+                  data-puesta={puesta && !m ? "" : undefined}
+                  data-marca={m}
+                  data-sin-marcas={conMarcas ? undefined : ""}
+                  disabled={!activo}
+                  aria-pressed={puesta}
+                  aria-label={nombreMitad(c, lado, puesta && !m ? monto : (totales[c.id]?.[lado] ? cifra(totales[c.id][lado]) : null), m ? MARCA[m] : null)}
+                  onClick={() => onElegir?.(c.id, lado)}
+                >
+                  {puesta && !m ? <span className="t4r-nueva">{monto}</span> : <Total v={totales[c.id]?.[lado]} foco={recien.includes(k)} />}
+                  {conMarcas && <span className="t4tb-hueco">{m && <Marca marca={m} />}</span>}
+                </button>
+              );
+            })}
+          </div>
         </div>
       ))}
     </div>
@@ -136,10 +146,11 @@ export function Tablero({ cuentas, totales = {}, puestas = {}, monto, onElegir, 
 }
 
 /* lineas: [{ id, v, r?: rótulo, foco? }] */
-export function Mayor({ titulo, debe, haber, reserva = 3, saldo = null, rotuloSaldo = "Saldo", marcaSaldo = null }) {
+/* `eco`: lo que el estudiante escribe en el campo del saldo, en #A8B6C8 mientras escribe (H8 etapa 3, §4.4 del prompt maestro). */
+export function Mayor({ titulo, debe, haber, reserva = 3, saldo = null, rotuloSaldo = "Saldo", marcaSaldo = null, eco = null }) {
   const col = (lado, ls) => (
     <div className="t4my-col" data-columna={lado}>
-      <span style={{ color: lado === "debe" ? C.debe : C.haber, textAlign: lado === "debe" ? "left" : "right" }}>{lado === "debe" ? "Debe" : "Haber"}</span>
+      <span style={{ color: lado === "debe" ? C.debeTexto : C.haber, textAlign: lado === "debe" ? "left" : "right" }}>{lado === "debe" ? "Debe" : "Haber"}</span>
       <div style={{ display: "grid", gap: "2px", minHeight: `${reserva * 22}px`, alignContent: "start" }}>
         {ls.map((l) => (
           <div key={l.id} className={`t4my-l t4r-nueva${l.foco ? " t4tb-foco" : ""}`} data-linea={l.id}>
@@ -155,9 +166,9 @@ export function Mayor({ titulo, debe, haber, reserva = 3, saldo = null, rotuloSa
     <div className="t4my" data-mayor>
       <p className="t4my-t">{titulo}</p>
       <div className="t4my-cols">{col("debe", debe)}<span style={{ background: "rgba(248,249,250,0.22)" }} />{col("haber", haber)}</div>
-      <div className="t4my-saldo" data-saldo-mayor={saldo ?? ""} style={{ visibility: saldo == null ? "hidden" : "visible" }}>
+      <div className="t4my-saldo" data-saldo-mayor={saldo ?? ""} data-eco={saldo == null && eco ? eco : undefined} style={{ visibility: saldo == null && !eco ? "hidden" : "visible" }}>
         <span>{rotuloSaldo}</span>
-        <span style={{ display: "flex", gap: "8px", alignItems: "center" }}>{saldo ?? "0"}{marcaSaldo && <Marca marca={marcaSaldo} />}</span>
+        <span style={{ display: "flex", gap: "8px", alignItems: "center", color: saldo == null ? C.texto2 : C.texto }}>{saldo ?? (eco || "0")}{marcaSaldo && <Marca marca={marcaSaldo} />}</span>
       </div>
     </div>
   );
@@ -171,9 +182,9 @@ export function Par({ izq, der, igual = false }) {
   const b = useNumeroQueSube(der.v ?? 0);
   return (
     <div className="t4pr" data-par aria-label={`${izq.r} ${cifra(izq.v ?? 0)}; ${der.r} ${der.v != null ? cifra(der.v) : ""}${igual ? `; ${SON_IGUALES}` : ""}`}>
-      <div data-lado-par="izq"><span className="r">{izq.r}</span><span className={`v${izq.foco ? " f" : ""}`}>{izq.v != null ? cifra(a) : "—"}</span></div>
+      <div data-lado-par="izq"><span className="r">{izq.r}</span><span className={`v${izq.foco ? " f" : ""}${izq.eco ? " e" : ""}`} data-eco={izq.eco ? "" : undefined}>{izq.v != null ? cifra(izq.eco ? izq.v : a) : "—"}</span></div>
       <span className="t4pr-igual" aria-hidden="true" style={{ visibility: igual ? "visible" : "hidden" }}>=</span>
-      <div data-lado-par="der"><span className="r">{der.r}</span><span className={`v${der.foco ? " f" : ""}`}>{der.v != null ? cifra(b) : "—"}</span></div>
+      <div data-lado-par="der"><span className="r">{der.r}</span><span className={`v${der.foco ? " f" : ""}${der.eco ? " e" : ""}`} data-eco={der.eco ? "" : undefined}>{der.v != null ? cifra(der.eco ? der.v : b) : "—"}</span></div>
       {/* Cuando aparece el «=», el lector lo oye: la región está desde el principio, vacía, para que el cambio se anuncie. */}
       <span className="t4f-sr" aria-live="polite" data-lector-igual>{igual ? SON_IGUALES : ""}</span>
     </div>
@@ -183,7 +194,8 @@ export function Par({ izq, der, igual = false }) {
 /*
  * `iba`: la cifra que iba, ya con su formato ($1.240.000). Se pasa solo tras
  * el error y a los 0,7 s, en las piezas sin reintento (H7 fase 2 y H8 etapa
- * 3): debajo del campo se lee «Iba aquí: {valor}» (prompt maestro §4.2).
+ * 3): al lado de «No va aquí», en el mismo renglón, «Iba aquí: {valor}»
+ * (prompt maestro §4.2; P2 de Hanayama, §3.8: 97 + 6 + 127 ≤ 258 px).
  */
 export function Campo({ id, rotulo, valor, onCambio, marca = null, bloqueado = false, iba = null }) {
   return (
@@ -191,8 +203,12 @@ export function Campo({ id, rotulo, valor, onCambio, marca = null, bloqueado = f
       <label htmlFor={`t4cp-${id}`}>{rotulo}</label>
       <input id={`t4cp-${id}`} inputMode="numeric" autoComplete="off" value={valor} disabled={bloqueado}
         onChange={(e) => onCambio(e.target.value.replace(/[^\d]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, "."))} />
-      {marca && <Marca marca={marca} />}
-      {iba != null && <span className="t4cp-iba t4r-nueva" data-iba={id}>{`${MARCA.era[1]}: ${iba}`}</span>}
+      {(marca || iba != null) && (
+        <span className="t4cp-marcas">
+          {marca && <Marca marca={marca} />}
+          {iba != null && <span data-iba={id}><Marca marca="era" valor={iba} /></span>}
+        </span>
+      )}
     </div>
   );
 }

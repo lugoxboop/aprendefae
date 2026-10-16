@@ -16,8 +16,8 @@
  *     nunca muestra un saldo falso
  *   · el acierto: ✓ y borde blanco. NUNCA teal ni ámbar: por eso no usa Opcion
  *     ni ConstructorAsiento compartidos (pintan el acierto en teal)
- *   · «Siguiente hecho» en el neutro blanco (SeguirHacer), no el Responder
- *     compartido, que es teal
+ *   · «Siguiente hecho» en el Responder compartido, teal (Avance): el botón
+ *     principal es teal también en Contabilidad (prompt maestro §4.3 y §5.2)
  *   · «Hecho n de 8» y el pulso activo coinciden en todos los estados: el
  *     hecho respondido no cuenta como hecho hasta tocar «Siguiente»
  *   · mientras se pregunta, nada de la respuesta está en el DOM (PH8-2)
@@ -39,7 +39,7 @@ import {
   H1, DEBE, HABER, BOTON_H1, CIERRE_H1, ESPERA_ERROR_H1_MS, SALDO_INICIAL_H1,
   resumenH1, sortearH1, evaluarH1, puntuarH1, libroH1,
 } from "../../data/contabilidadT4H1.js";
-import { C, CSS_T4R, cifra, Mensaje, SeguirHacer } from "./comun.jsx";
+import { C, CSS_T4R, cifra, Mensaje, Avance } from "./comun.jsx";
 import { Cajon, CSS_CAJON } from "./Cajon.jsx";
 
 /* Cada columna reserva cuatro líneas: el saldo inicial más tres entradas, el máximo posible. */
@@ -163,7 +163,7 @@ export default function EntraOSaleDeCaja({ Marco, rotulo, titulo, acento, onComp
         </div>
         {r && !modoDemo && (
           <div className="t4r">
-            <SeguirHacer refZona={zonaBoton} onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H1.verResumen : BOTON_H1.siguiente}</SeguirHacer>
+            <Avance refZona={zonaBoton} onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H1.verResumen : BOTON_H1.siguiente}</Avance>
           </div>
         )}
       </div>

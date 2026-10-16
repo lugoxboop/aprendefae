@@ -48,8 +48,9 @@ function montarJuego(props = {}) {
 }
 const q = (m, sel) => m.caja.querySelector(sel);
 const seccion = (m, k) => q(m, `[data-destino="${k}"]`);
-const siguiente = (m) => q(m, '[data-boton="seguir-hacer"]');
-const comprobar = (m) => q(m, '[data-boton="comprobar"]');
+/* El avance y «Comprobar» son el Responder compartido dentro de su envoltorio (P2 de Hanayama, §3.4). */
+const siguiente = (m) => q(m, '[data-boton="seguir-hacer"] button');
+const comprobar = (m) => q(m, '[data-boton="comprobar"] button');
 const partidaActual = (m, s) => s.partidas.find((p) => p.texto === q(m, "[data-hecho]").textContent);
 const lineas = (m, k) => [...seccion(m, k).querySelectorAll("[data-linea]")].map((x) => x.textContent);
 /* Escribe en un campo como lo haría el teclado (el componente es controlado). */
@@ -196,7 +197,8 @@ test("★★★ fase 1: el acierto escribe con «✓ Correcto»; el error marca 
   try {
     await tocar(seccion(m, "libros:menos"));
     assert.equal(seccion(m, "libros:menos").dataset.marca, "mal");
-    assert.match(seccion(m, "libros:menos").textContent, /✗No va aquí/);
+    assert.match(seccion(m, "libros:menos").textContent, /No va aquí/);
+    assert.ok(seccion(m, "libros:menos").querySelector('[data-icono="x"]'));
     assert.ok(CORAL.test(w.getComputedStyle(seccion(m, "libros:menos")).borderTopColor));
     for (const k of D.SECCIONES_H7) assert.deepEqual(lineas(m, k), [], `${k}: se escribió antes de tiempo`);
     for (const k of D.SECCIONES_H7) assert.equal(seccion(m, k).disabled, true, "un segundo toque");
@@ -208,7 +210,8 @@ test("★★★ fase 1: el acierto escribe con «✓ Correcto»; el error marca 
     await tocar(siguiente(m));
     await tocar(seccion(m, "banco:mas"));
     assert.equal(seccion(m, "banco:mas").dataset.marca, "bien");
-    assert.match(seccion(m, "banco:mas").textContent, /✓Correcto/);
+    assert.match(seccion(m, "banco:mas").textContent, /Correcto/);
+    assert.ok(seccion(m, "banco:mas").querySelector('[data-icono="check"]'));
     assert.deepEqual(lineas(m, "banco:mas"), ["1.265.000"]);
     assert.equal(w.getComputedStyle(seccion(m, "banco:mas")).borderTopColor, "rgb(248, 249, 250)");
   } finally { m.desmontar(); }
@@ -259,7 +262,7 @@ test("★★★ gesto mínimo, fase 2: cada cifra de error de cada serie se escr
         assert.equal(q(m, "[data-pagina]").textContent, D.PIE_FASE2_H7);
         for (const [campo, v, bien] of [["banco", b, s.conciliadoBanco], ["libros", l, s.conciliadoLibros]]) {
           const marca = q(m, `[data-campo="${campo}"] .t4r-marca`).textContent;
-          assert.equal(marca, v === bien ? "✓Correcto" : "✗No va aquí", `${campo}: la marca de cifra`);
+          assert.equal(marca, v === bien ? "Correcto" : "No va aquí", `${campo}: la marca de cifra`);
           /* «Iba aquí» todavía no: llega a los 0,7 s. */
           assert.equal(q(m, `[data-iba="${campo}"]`), null, `${campo}: «Iba aquí» antes de tiempo`);
         }
@@ -327,7 +330,7 @@ test("★★★ «Paso n de 10» coincide con el pulso activo; al terminar, el c
   } finally { m.desmontar(); }
 });
 
-test("★★★ B4: el acierto es ✓ y borde blanco; teal y ámbar no aparecen en la pieza; seguir en blanco neutro", async () => {
+test("★★★ B4: el acierto es Check y borde blanco; teal y ámbar no aparecen en la pieza; seguir es el Responder teal", async () => {
   const s = D.SERIE_1;
   const m = montarJuego({ items: { serie: s, partidas: s.partidas } });
   try {
@@ -336,11 +339,14 @@ test("★★★ B4: el acierto es ✓ y borde blanco; teal y ámbar no aparecen 
     await escribir(m, "libros", s.conciliadoLibros);
     await tocar(comprobar(m));
     const raiz = q(m, "[data-t4-h7]");
-    /* Lo único teal es el avance compartido (Pulsos), que no es de la pieza. */
+    /* Lo único teal es el avance compartido (Pulsos) y el botón de avance (Responder), que son botón y progreso, no el acierto. */
     assert.deepEqual(conColor(q(m, "[data-figura]"), TEAL_AMBAR), []);
-    assert.deepEqual(conColor(raiz, TEAL_AMBAR).filter((e) => !e.closest("[data-avance]")).map((e) => e.outerHTML.slice(0, 60)), []);
+    assert.deepEqual(conColor(raiz, TEAL_AMBAR).filter((e) => !e.closest("[data-avance], [data-avance-t4]")).map((e) => e.outerHTML.slice(0, 60)), []);
     assert.deepEqual(conColor(q(m, "[data-figura]"), CORAL), []);
-    assert.equal(w.getComputedStyle(siguiente(m)).backgroundColor, "rgb(248, 249, 250)");
+    const b = siguiente(m);
+    /* El avance es el Responder compartido: teal con texto #06202A (prompt maestro §4.3). Un botón blanco no pasa. */
+    assert.equal(w.getComputedStyle(b).backgroundColor, "rgb(42, 157, 143)");
+    assert.equal(w.getComputedStyle(b).color, "rgb(6, 32, 42)");
   } finally { m.desmontar(); }
   const imports = leer("src/components/t4/ConciliaLaCuenta.jsx").split("\n").filter((l) => /^import /.test(l)).join("\n");
   assert.doesNotMatch(imports, /\b(Opcion|Opciones|ConstructorAsiento|Responder)\b/);

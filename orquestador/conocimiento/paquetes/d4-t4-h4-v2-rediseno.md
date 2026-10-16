@@ -187,7 +187,7 @@ En la pregunta 4, el mensaje de cada cuenta equivocada sale igual en el debe y e
 
 ### Botones, cierre
 
-- Botones: «Comprobar» (pregunta 4), «Siguiente paso» (dentro de la ronda), «Siguiente ronda», «Ver mi resumen», «Otra vez».
+- Botones: «Siguiente paso» (dentro de la ronda), «Siguiente ronda», «Ver mi resumen», «Otra vez».
 - **Resumen:** «N de 14 respuestas al primer intento.» (2 + 4 + 4 + 4 preguntas).
 - **Cierre** (38 pal. · INFLESZ 82,7): Si el arqueo cuadra, el cheque repone lo gastado. Si sobra plata, sale por menos, y la diferencia es un ingreso. Si falta, sale por más, y la diferencia la paga el encargado o la asume la empresa.
 - **Pie del cierre:** «Basado en el libro, pp. 182-186. Cifras construidas»

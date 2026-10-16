@@ -70,7 +70,7 @@ const ASI_CAJA_MENOR = {
     toques: [
       { ms: 1500, en: `[data-destino="${CAJA_MENOR}:debe"]` },
       { ms: 3000, en: `[data-destino="${BANCOS}:haber"]` },
-      { ms: 4500, en: '[data-boton="comprobar"]' },
+      { ms: 4500, en: '[data-boton="comprobar"] button' },
     ],
   },
   cuadros: { gesto: 2 },

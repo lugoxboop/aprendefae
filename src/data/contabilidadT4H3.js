@@ -58,6 +58,8 @@ export const CUENTAS_H3 = [
 export const nombreDeCuentaH3 = (id) => CUENTAS_H3.find((c) => c.id === id)?.renglones.join(" ") ?? null;
 
 /* Interfaz (Katsumi, «Marcas, botones, cierre» y «El sobre y el libro»). */
+/* El aviso de «Comprobar» con una mitad sin poner: el de H8 etapa 2, ya escrito por Katsumi (P2 de Hanayama, §4). */
+export const AVISO_H3 = "Pon una cuenta al debe y la otra al haber.";
 export const BOTON_H3 = { comprobar: "Comprobar", siguiente: "Siguiente operación", verResumen: "Ver mi resumen", otraVez: "Otra vez" };
 export const resumenH3 = (bien) => `${bien} de 4 asientos bien armados.`;
 export const ROTULOS_H3 = {

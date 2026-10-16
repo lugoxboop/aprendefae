@@ -105,6 +105,8 @@ export const FIGURA_A2 = {
   bajar: "Bajar",
   subir: "Subir",
   comprobar: "Comprobar",
+  /* El aviso de «Comprobar» con una mitad sin poner (el de H8 etapa 2, ya escrito por Katsumi; P2 de Hanayama, §4). */
+  aviso: "Pon una cuenta al debe y la otra al haber.",
   /* Para el lector de pantalla: los nombres del grupo de opciones y del tablero. */
   opciones: "¿Cuánto queda en billetes?",
   tablero: "El libro",

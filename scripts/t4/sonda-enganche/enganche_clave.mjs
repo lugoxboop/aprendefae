@@ -47,7 +47,8 @@ if (h4?.RONDAS_H4) {
     const k = `${n(r.titulo + r.tarjeta)}::${p.id}`;
     if (p.id === h4.CUENTA) {
       const c = p.correcta;
-      items[k] = { bien: { toques: [destino(`${c.cuenta}:${c.lado}`)], comprobar: true }, mal: { toques: [destino(`${h4.CM}:${c.lado}`)], comprobar: true } };
+      /* Una sola ficha: el toque califica, sin «Comprobar» (P2 de Hanayama, §5.2). */
+      items[k] = { bien: { toques: [destino(`${c.cuenta}:${c.lado}`)] }, mal: { toques: [destino(`${h4.CM}:${c.lado}`)] } };
     } else {
       const mala = p.opciones.find((o) => o !== p.correcta);
       items[k] = { bien: { toques: [`[data-opcion="${p.correcta}"]`] }, mal: { toques: [`[data-opcion="${mala}"]`] } };

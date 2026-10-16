@@ -66,9 +66,8 @@ button.t4cv-col:disabled { cursor: default; }
 .t4cv-lineas { display: grid; gap: 2px; align-content: start; }
 .t4cv-lineas > span { font: 500 15px/20px "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; color: ${C.texto2}; }
 .t4cv-lineas > span.t4cv-foco { color: ${C.texto}; font-weight: 600; }
-.t4cv-ver { position: absolute; top: 4px; font: 700 14px/1 "Inter", sans-serif; }
-.t4cv-col .t4cv-ver { right: 8px; } .t4cv-col-h .t4cv-ver { left: 8px; right: auto; }
-.t4cv-hueco { min-height: 20px; display: flex; }
+/* El hueco de la pastilla se mete 6 px en el relleno a cada lado: así cabe «No va aquí» a 320 (P2 de Hanayama, §2.3-1). */
+.t4cv-hueco { min-height: 20px; display: flex; margin-inline: -6px; }
 .t4cv-col-h .t4cv-hueco { justify-content: flex-end; }
 .t4cv-saldo { display: flex; justify-content: center; align-items: baseline; gap: 8px; padding: 4px 8px; border-radius: 8px; border: 1px solid transparent; }
 .t4cv-saldo[data-luz] { border: 2px solid ${C.texto}; }
@@ -81,7 +80,6 @@ button.t4cv-band:disabled { cursor: default; }
 .t4cv-band[data-marca="mal"] { border: 2px solid ${C.error}; padding: 3px 25px 3px 9px; }
 .t4cv-band > span:first-child { font: 600 13px/1.3 "Inter", sans-serif; white-space: nowrap; }
 .t4cv-band > span + span { font: 500 13px/1.3 "Inter", sans-serif; color: ${C.texto2}; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.t4cv-band .t4cv-ver { right: 8px; top: 15px; }
 .t4cv-band-l2 { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; }
 .t4cv-rama { position: relative; height: 24px; }
 .t4cv-dest { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; }
@@ -91,7 +89,7 @@ button.t4cv-band:disabled { cursor: default; }
 .t4cv-caja2-n > span { white-space: nowrap; }
 .t4cv-caja2 .t4cv-monto { margin-left: 0; justify-self: end; }
 .t4cv-caja2 .t4r-btn2 { width: 100%; padding: 0 6px; }
-.t4cv-d { color: ${C.debe}; } .t4cv-hb { color: ${C.haber}; }
+.t4cv-d { color: ${C.debeTexto}; } .t4cv-hb { color: ${C.haber}; }
 .t4cv-oculto { visibility: hidden; }
 `;
 
@@ -106,16 +104,8 @@ function Borde({ arriba }) {
   );
 }
 
-/* La marca sin palabra (A1): ✓ o ✗ en la esquina. Con `palabras` (H1) va la pastilla en su hueco. */
-const Ver = ({ marca, palabras }) => {
-  if (palabras || !marca) return null;
-  if (marca === "bien") return <span className="t4cv-ver" aria-hidden="true">✓</span>;
-  if (marca === "mal") return <span className="t4cv-ver" aria-hidden="true" style={{ color: C.error }}>✗</span>;
-  return null;
-};
-
 /* Lo que oye el lector de un destino: su nombre y, tras responder, su marca con palabra. */
-const etiquetaDestino = (id, marca) => (marca ? `${FIGURA_CAJON.destino[id]}: ${MARCA[marca][1]}` : FIGURA_CAJON.destino[id]);
+const etiquetaDestino = (id, marca) => (marca ? `${FIGURA_CAJON.destino[id]}: ${MARCA[marca]}` : FIGURA_CAJON.destino[id]);
 
 function Columna({ lado, glosa, lineas, reserva, destinos, luz, vibra, palabras }) {
   const marca = destinos?.marcas?.[lado] ?? null;
@@ -137,8 +127,7 @@ function Columna({ lado, glosa, lineas, reserva, destinos, luz, vibra, palabras 
       <span className="t4cv-lineas" style={{ minHeight: `${reserva * 22}px` }}>
         {lineas.map((l) => <span key={l.id} className={`t4r-nueva${l.foco ? " t4cv-foco" : ""}`} data-linea={l.id}>{l.v}</span>)}
       </span>
-      {palabras && <span className="t4cv-hueco" data-hueco={lado}><Marca marca={marca} /></span>}
-      <Ver marca={marca} palabras={palabras} />
+      {(palabras || destinos) && <span className="t4cv-hueco" data-hueco={lado}><Marca marca={marca} /></span>}
     </Elemento>
   );
 }
@@ -192,10 +181,9 @@ export function Cajon({
             onClick={destinos ? () => destinos.onElegir(NO_SE_MUEVE) : undefined}
           >
             <span>{FIGURA_CAJON.bandeja}</span>
-            {palabras && marcaBand
+            {(palabras || destinos) && marcaBand
               ? <span className="t4cv-band-l2">{marcaBand !== "mal" ? ultimo : null}<Marca marca={marcaBand} /></span>
               : ultimo}
-            <Ver marca={marcaBand} palabras={palabras} />
           </Band>
         )}
       </div>

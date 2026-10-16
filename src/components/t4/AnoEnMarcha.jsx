@@ -56,12 +56,14 @@ export const CSS_ANO = `
 .t4an-chip { position: absolute; top: 1px; height: 20px; padding: 0 6px; border: 1px solid ${C.texto}; border-radius: 6px; font: 600 12px/18px "Inter", sans-serif; color: ${C.texto}; white-space: nowrap; }
 .t4an-sigue { position: absolute; left: ${RAYA}%; right: 0; top: 10px; height: 2px; background: ${C.texto2}; }
 .t4an-sigue::after { content: ""; position: absolute; right: 0; top: -4px; border-left: 7px solid ${C.texto2}; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
-.t4an-seg { position: absolute; top: 0; height: 44px; border-radius: 8px; border: 1px solid rgba(184,196,212,0.55); background: transparent; color: ${C.texto2}; font: 500 13px "Inter", sans-serif; cursor: pointer; padding: 0 8px; text-align: left; }
-.t4an-seg[aria-pressed="true"] { border-color: ${C.texto}; color: ${C.texto}; background: rgba(248,249,250,0.08); font-weight: 600; }
+.t4an-seg { position: absolute; top: 0; height: 44px; border-radius: 8px; border: 1px solid ${C.reposo}; background: transparent; color: ${C.texto2}; font: 500 13px "Inter", sans-serif; cursor: pointer; padding: 0 8px; text-align: left; }
+.t4an-seg[aria-pressed="true"] { border: 2px solid ${C.texto}; color: ${C.texto}; font-weight: 600; }
 .t4an-seg[data-veredicto="bien"] { border: 2px solid ${C.texto}; }
 .t4an-seg[data-veredicto="mal"] { border: 2px solid ${C.error}; }
 .t4an-seg:disabled { cursor: default; }
-.t4an-ver { position: absolute; right: 6px; top: 0; bottom: 0; display: flex; align-items: center; }
+/* La línea de marcas de cada fila (P2 de Hanayama, §3.10): 20 px reservados bajo el carril, a 2 px; la pastilla de «antes» al inicio y la de «después» al final. */
+.t4an-linea { display: flex; min-height: 20px; margin-top: 2px; }
+.t4an-linea[data-lado="despues"] { justify-content: flex-end; }
 .t4an-pie { display: flex; justify-content: flex-end; }
 `;
 
@@ -131,6 +133,9 @@ function Fila({ f, m, juego = null }) {
   const x = f.mes != null ? (f.mes / 12) * RAYA : 0;
   const chip = est === "plata" ? FIGURA_ANO.marca.plata : est === "consumio" ? FIGURA_ANO.marca.consumio : null;
   const izq = x > RAYA * 0.6;
+  /* Solo se marca lo elegido: en Aprender, «era» nombraría la respuesta antes de reintentar. */
+  const verDe = (lado) => (juego?.fin && juego.eleccion === lado ? (ladoCorrectoA0(f) === lado ? "bien" : "mal") : null);
+  const conMarca = juego ? ["antes", "despues"].find((l) => verDe(l)) : null;
   return (
     <div className="t4an-fila" data-fila={f.id} data-estado={est}>
       <div className="t4an-nom">
@@ -140,9 +145,8 @@ function Fila({ f, m, juego = null }) {
       <div className="t4an-carril" style={juego ? { height: "44px" } : undefined}>
         {juego ? ["antes", "despues"].map((lado) => {
           const elegido = juego.eleccion === lado;
-          const correcto = ladoCorrectoA0(f) === lado;
-          /* Solo se marca lo elegido: en Aprender, «era» nombraría la respuesta antes de reintentar. El lector oye la palabra de la marca en el nombre de la casilla (Katsumi). */
-          const ver = juego.fin && elegido ? (correcto ? "bien" : "mal") : null;
+          /* El lector oye la palabra de la marca en el nombre de la casilla (Katsumi). */
+          const ver = verDe(lado);
           return (
             <button
               key={lado}
@@ -151,13 +155,11 @@ function Fila({ f, m, juego = null }) {
               data-seg={lado}
               data-veredicto={ver ?? undefined}
               aria-pressed={elegido}
-              aria-label={`${f.texto.join(" ")}: ${FIGURA_ANO.casilla[lado]}${ver ? `: ${MARCA[ver][1]}` : ""}`}
+              aria-label={`${f.texto.join(" ")}: ${FIGURA_ANO.casilla[lado]}${ver ? `: ${MARCA[ver]}` : ""}`}
               disabled={juego.fin}
               onClick={() => juego.elegir(lado)}
               style={lado === "antes" ? { left: 0, width: `calc(${RAYA}% - 4px)` } : { left: `calc(${RAYA}% + 4px)`, right: 0 }}
-            >
-              {ver && <span className="t4an-ver"><Marca marca={ver} palabras={MARCA[ver]} /></span>}
-            </button>
+            />
           );
         }) : <span className="t4an-base" aria-hidden="true" />}
         {chip && (
@@ -168,6 +170,7 @@ function Fila({ f, m, juego = null }) {
         )}
         {est === "despues" && !juego && <span className="t4an-sigue t4r-nueva" data-cruza aria-hidden="true" />}
       </div>
+      {juego && <div className="t4an-linea" data-linea-fila={f.id} data-lado={conMarca ?? undefined} aria-hidden="true">{conMarca && <Marca marca={verDe(conMarca)} />}</div>}
     </div>
   );
 }

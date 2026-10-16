@@ -13,11 +13,11 @@ Renglones a 320 y a 375: 2 (capturas; la figura queda a 181 px).
 
 **Partidas:** las de H7 (tabla de arriba), en las etapas 1 y 2.
 
-**Rótulos de etapa** (paquete, sin cambios): «ETAPA 1 DE 3 · ¿SE ASIENTA?» · «ETAPA 2 DE 3 · LOS ASIENTOS» · «ETAPA 3 DE 3 · EL MAYOR».
+**Rótulos de etapa** (sin contador desde el bloque P2 de Hanayama, §5.1: el contador es «Paso n de 15»; Sora 600 14 #F8F9FA): «¿Se asienta?» · «Los asientos» · «El mayor».
 
 **Bandejas** (renglones fijos de Hanayama, los apruebo): «Se asienta / en los libros» y «No se asienta / lo arregla / el banco».
 
-**Cuentas del tablero** (renglones fijos, sin cambios): «Bancos» · «Cuentas por cobrar – clientes» · «Ingresos por intereses» · «Gastos financieros – chequera» · «Gasto interés» · «Caja».
+**Cuentas del tablero** (renglones fijos, sin cambios): «Bancos» · «Cuentas por cobrar – clientes» · «Ingresos por intereses» · «Gastos financieros – chequera» · «Gasto interés». *«Caja» salió con el bloque P2 de Hanayama (⛔3, decisión de Yujiro, 16 oct): con seis cuentas, a 320×568 las marcas de arriba quedaban fuera de la ventana, y ninguna nota del banco toca Caja.*
 
 **Mayor:** «Bancos · 30 de septiembre» (serie 2: «Bancos · 31 de octubre»), primera línea «Saldo» con el saldo de los libros, pie «Saldo». **Campo:** «Saldo de Bancos en el mayor». **Par:** «los libros» antes del acierto; «el mayor» = «el banco» con él.
 
@@ -36,7 +36,7 @@ Renglones a 320 y a 375: 2 (capturas; la figura queda a 181 px).
 
 ### Etapa 2 · Los asientos (pie: «Basado en el libro, p. 191. Cifras construidas»)
 
-Orden de las reglas (paquete): Caja; sin Bancos; Bancos al lado contrario; la cuenta; lados al revés. Las 29 combinaciones equivocadas de cada asiento caen en una regla con mensaje (script).
+Orden de las reglas (paquete): sin Bancos; Bancos al lado contrario; la cuenta; lados al revés. Las 19 combinaciones equivocadas de cada asiento caen en una regla con mensaje (script).
 
 | Regla | Nota crédito | Nota débito |
 |---|---|---|
@@ -51,31 +51,26 @@ Orden de las reglas (paquete): Caja; sin Bancos; Bancos al lado contrario; la cu
 | | Usó Ingresos por intereses | Esa cuenta es para lo que rinde una inversión. Aquí un cliente pagó una factura que debía. | 17 pal. · INFLESZ 77,4 |
 | | Usó Gastos financieros – chequera | Gloria Ruiz pagó una deuda: aquí no hay ningún gasto de la empresa. Piensa en qué cambió con ese pago. | 20 pal. · INFLESZ 90,9 |
 | | Usó Gasto interés | Aquí nadie pagó intereses: un cliente pagó una factura que debía. Piensa en qué cambió con ese pago. | 18 pal. · INFLESZ 73,2 |
-| | Usó Caja | La plata no pasó por la caja: se consignó directo en el banco. | 13 pal. · INFLESZ 93,2 |
 | | Lados al revés | Las cuentas están bien, pero al revés. Bancos sube, así que va al debe. Lo que debe el cliente baja, así que va al haber. | 25 pal. · INFLESZ 103,8 |
 | H7-6 | Acierto (Bancos / Ingresos por intereses) | Correcto. La plata entró al banco: Bancos va al debe. Y es lo que ganó la empresa: Ingresos por intereses va al haber. | 23 pal. · INFLESZ 93,5 |
 | | Usó Cuentas por cobrar – clientes | Nadie le debía esto a la empresa: es lo que rindió su inversión. Es un ingreso. | 16 pal. · INFLESZ 93,7 |
 | | Usó Gasto interés | Esos intereses los ganó la empresa, no los pagó. Un interés ganado es un ingreso. | 15 pal. · INFLESZ 78,9 |
 | | Usó Gastos financieros – chequera | Esta plata la ganó la empresa por su inversión: no es un gasto. Piensa en qué tipo de cuenta registra lo que se gana. | 24 pal. · INFLESZ 96,2 |
-| | Usó Caja | La plata no pasó por la caja: el banco la abonó en la cuenta. | 14 pal. · INFLESZ 99,4 |
 | | Lados al revés | Las cuentas están bien, pero al revés. Bancos sube, así que va al debe. El ingreso va al haber. | 19 pal. · INFLESZ 102,1 |
 | H7-7 | Acierto (Gastos financieros – chequera / Bancos) | Correcto. La chequera es un gasto: Gastos financieros – chequera se debita y Bancos se acredita. | 15 pal. · INFLESZ 66,4 |
 | | Usó Gasto interés | Una chequera no es un interés: es lo que cobra el banco por los cheques. Tiene su propia cuenta de gasto. | 21 pal. · INFLESZ 98,4 |
 | | Usó Cuentas por cobrar – clientes | Ningún cliente tiene que ver aquí: el banco cobró por un servicio suyo. Es un gasto de la empresa. | 19 pal. · INFLESZ 92,4 |
 | | Usó Ingresos por intereses | La chequera la cobró el banco: la empresa no ganó nada. Piensa en qué tipo de cuenta registra lo que se paga. | 22 pal. · INFLESZ 93,9 |
-| | Usó Caja | La plata no salió de la caja: el banco la descontó de la cuenta. | 14 pal. · INFLESZ 99,4 |
 | | Lados al revés | Las cuentas están bien, pero al revés. El gasto va al debe. Bancos baja, así que va al haber. | 19 pal. · INFLESZ 105,4 |
 | H7-8 | Acierto (Gasto interés / Bancos) | Correcto. Los intereses de sobregiro son un gasto: Gasto interés se debita y Bancos se acredita. | 16 pal. · INFLESZ 66,4 |
 | | Usó Ingresos por intereses | Estos intereses los cobró el banco, no los ganó la empresa. Un interés que se paga es un gasto. | 19 pal. · INFLESZ 92,4 |
 | | Usó Gastos financieros – chequera | Esa cuenta es la del cobro de la chequera. Esto es un interés, y tiene su propia cuenta. | 18 pal. · INFLESZ 97,5 |
 | | Usó Cuentas por cobrar – clientes | El banco cobró intereses por el sobregiro: ningún cliente quedó debiendo nada. Piensa en qué tipo de cuenta registra lo que se paga. | 23 pal. · INFLESZ 78,9 |
-| | Usó Caja | La plata no salió de la caja: el banco la descontó de la cuenta. | 14 pal. · INFLESZ 99,4 |
 | | Lados al revés | Las cuentas están bien, pero al revés. El gasto va al debe. Bancos baja, así que va al haber. | 19 pal. · INFLESZ 105,4 |
 | H7-9 | Acierto (Cuentas por cobrar – clientes / Bancos) | Correcto. El pago de Pedro Silva nunca llegó, así que vuelve a deber: Cuentas por cobrar – clientes se debita y Bancos se acredita. | 23 pal. · INFLESZ 81,6 |
 | | Usó Gastos financieros – chequera | La empresa no perdió esa plata: Pedro Silva todavía la debe. Su deuda vuelve a subir. | 16 pal. · INFLESZ 82 |
 | | Usó Gasto interés | La empresa no perdió esa plata: Pedro Silva todavía la debe. Su deuda vuelve a subir. | 16 pal. · INFLESZ 82 |
 | | Usó Ingresos por intereses | Aquí no entra nada: el banco devolvió un cheque. Lo que sube es lo que el cliente debe. | 18 pal. · INFLESZ 97,5 |
-| | Usó Caja | La plata no salió de la caja: el banco la descontó de la cuenta. | 14 pal. · INFLESZ 99,4 |
 | | Lados al revés | Las cuentas están bien, pero al revés. Lo que debe el cliente sube, así que va al debe. Bancos baja, así que va al haber. | 25 pal. · INFLESZ 103,8 |
 
 **Serie 2**
@@ -86,31 +81,26 @@ Orden de las reglas (paquete): Caja; sin Bancos; Bancos al lado contrario; la cu
 | | Usó Ingresos por intereses | Esa cuenta es para lo que rinde una inversión. Aquí un cliente pagó una factura que debía. | 17 pal. · INFLESZ 77,4 |
 | | Usó Gastos financieros – chequera | Tomás Acosta pagó una deuda: aquí no hay ningún gasto de la empresa. Piensa en qué cambió con ese pago. | 20 pal. · INFLESZ 84,7 |
 | | Usó Gasto interés | Aquí nadie pagó intereses: un cliente pagó una factura que debía. Piensa en qué cambió con ese pago. | 18 pal. · INFLESZ 73,2 |
-| | Usó Caja | La plata no pasó por la caja: se consignó directo en el banco. | 13 pal. · INFLESZ 93,2 |
 | | Lados al revés | Las cuentas están bien, pero al revés. Bancos sube, así que va al debe. Lo que debe el cliente baja, así que va al haber. | 25 pal. · INFLESZ 103,8 |
 | H7-6 | Acierto (Bancos / Ingresos por intereses) | Correcto. La plata entró al banco: Bancos va al debe. Y es lo que ganó la empresa: Ingresos por intereses va al haber. | 23 pal. · INFLESZ 93,5 |
 | | Usó Cuentas por cobrar – clientes | Nadie le debía esto a la empresa: es lo que rindió su inversión. Es un ingreso. | 16 pal. · INFLESZ 93,7 |
 | | Usó Gasto interés | Esos intereses los ganó la empresa, no los pagó. Un interés ganado es un ingreso. | 15 pal. · INFLESZ 78,9 |
 | | Usó Gastos financieros – chequera | Esta plata la ganó la empresa por su inversión: no es un gasto. Piensa en qué tipo de cuenta registra lo que se gana. | 24 pal. · INFLESZ 96,2 |
-| | Usó Caja | La plata no pasó por la caja: el banco la abonó en la cuenta. | 14 pal. · INFLESZ 99,4 |
 | | Lados al revés | Las cuentas están bien, pero al revés. Bancos sube, así que va al debe. El ingreso va al haber. | 19 pal. · INFLESZ 102,1 |
 | H7-7 | Acierto (Gastos financieros – chequera / Bancos) | Correcto. La chequera es un gasto: Gastos financieros – chequera se debita y Bancos se acredita. | 15 pal. · INFLESZ 66,4 |
 | | Usó Gasto interés | Una chequera no es un interés: es lo que cobra el banco por los cheques. Tiene su propia cuenta de gasto. | 21 pal. · INFLESZ 98,4 |
 | | Usó Cuentas por cobrar – clientes | Ningún cliente tiene que ver aquí: el banco cobró por un servicio suyo. Es un gasto de la empresa. | 19 pal. · INFLESZ 92,4 |
 | | Usó Ingresos por intereses | La chequera la cobró el banco: la empresa no ganó nada. Piensa en qué tipo de cuenta registra lo que se paga. | 22 pal. · INFLESZ 93,9 |
-| | Usó Caja | La plata no salió de la caja: el banco la descontó de la cuenta. | 14 pal. · INFLESZ 99,4 |
 | | Lados al revés | Las cuentas están bien, pero al revés. El gasto va al debe. Bancos baja, así que va al haber. | 19 pal. · INFLESZ 105,4 |
 | H7-8 | Acierto (Gasto interés / Bancos) | Correcto. Los intereses de sobregiro son un gasto: Gasto interés se debita y Bancos se acredita. | 16 pal. · INFLESZ 66,4 |
 | | Usó Ingresos por intereses | Estos intereses los cobró el banco, no los ganó la empresa. Un interés que se paga es un gasto. | 19 pal. · INFLESZ 92,4 |
 | | Usó Gastos financieros – chequera | Esa cuenta es la del cobro de la chequera. Esto es un interés, y tiene su propia cuenta. | 18 pal. · INFLESZ 97,5 |
 | | Usó Cuentas por cobrar – clientes | El banco cobró intereses por el sobregiro: ningún cliente quedó debiendo nada. Piensa en qué tipo de cuenta registra lo que se paga. | 23 pal. · INFLESZ 78,9 |
-| | Usó Caja | La plata no salió de la caja: el banco la descontó de la cuenta. | 14 pal. · INFLESZ 99,4 |
 | | Lados al revés | Las cuentas están bien, pero al revés. El gasto va al debe. Bancos baja, así que va al haber. | 19 pal. · INFLESZ 105,4 |
 | H7-9 | Acierto (Cuentas por cobrar – clientes / Bancos) | Correcto. El pago de Sofía Cárdenas nunca llegó, así que vuelve a deber: Cuentas por cobrar – clientes se debita y Bancos se acredita. | 23 pal. · INFLESZ 76,2 |
 | | Usó Gastos financieros – chequera | La empresa no perdió esa plata: Sofía Cárdenas todavía la debe. Su deuda vuelve a subir. | 16 pal. · INFLESZ 74,2 |
 | | Usó Gasto interés | La empresa no perdió esa plata: Sofía Cárdenas todavía la debe. Su deuda vuelve a subir. | 16 pal. · INFLESZ 74,2 |
 | | Usó Ingresos por intereses | Aquí no entra nada: el banco devolvió un cheque. Lo que sube es lo que el cliente debe. | 18 pal. · INFLESZ 97,5 |
-| | Usó Caja | La plata no salió de la caja: el banco la descontó de la cuenta. | 14 pal. · INFLESZ 99,4 |
 | | Lados al revés | Las cuentas están bien, pero al revés. Lo que debe el cliente sube, así que va al debe. Bancos baja, así que va al haber. | 25 pal. · INFLESZ 103,8 |
 
 ### Etapa 3 · El mayor (pie: «Basado en el libro, pp. 190-191. Cifras construidas»)

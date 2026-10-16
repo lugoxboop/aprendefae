@@ -19,7 +19,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { useEffect, useState } from "react";
-import { C, Mensaje, cifra } from "./comun.jsx";
+import { C, Mensaje, Avance, cifra } from "./comun.jsx";
 import { Tablero } from "./tablero.jsx";
 import { Fig, Sobre, Cheque, Rotulo, Chips } from "./aprender.jsx";
 import { DEBE, HABER, MARCA } from "../../data/contabilidadT4.js";
@@ -41,7 +41,7 @@ function Libro({ cuentas, totales, recien = [] }) {
   return (
     <>
       <Rotulo>{F.libro}</Rotulo>
-      <Tablero cuentas={cuentas.map((c) => CUENTAS_A2[c])} totales={totales} activo={false} recien={recien} etiqueta={F.tablero} />
+      <Tablero cuentas={cuentas.map((c) => CUENTAS_A2[c])} totales={totales} activo={false} conMarcas={false} recien={recien} etiqueta={F.tablero} />
     </>
   );
 }
@@ -159,13 +159,17 @@ function YCajaMenor({ p, onAcierto }) {
     });
   };
   const listo = Boolean(puestas[DEBE] && puestas[HABER]);
+  /* «Comprobar» nunca se apaga (P2 de Hanayama, §5.3): con algo incompleto, avisa. */
+  const [aviso, setAviso] = useState(false);
+  const comprobar = () => { if (!listo) { setAviso(true); return; } setAviso(false); setR({ ...puestas }); };
   return (
     <>
       <Fig nombre={NOMBRE} alt={p.alt}>
         <Rotulo>{F.libro}</Rotulo>
         <Tablero cuentas={[CM, B, CJ, GG].map((c) => CUENTAS_A2[c])} totales={totales} puestas={ok ? {} : puestas} monto={cifra(GASTADO)}
-          onElegir={elegir} activo={!ok} marcas={marcas} recien={ok ? [`${GG}:${DEBE}`, `${B}:${HABER}`] : []} etiqueta={F.tablero} palabras={MARCA} />
-        {!ok && <button type="button" className="t4r-btn2" data-boton="comprobar" aria-disabled={!listo ? "true" : undefined} onClick={listo ? () => setR({ ...puestas }) : undefined}>{F.comprobar}</button>}
+          onElegir={elegir} activo={!ok} marcas={marcas} recien={ok ? [`${GG}:${DEBE}`, `${B}:${HABER}`] : []} etiqueta={F.tablero} />
+        {!ok && <Avance nombre="comprobar" onClick={comprobar}>{F.comprobar}</Avance>}
+        <p className="t4r-aviso" data-aviso aria-live="polite">{aviso && !listo ? F.aviso : null}</p>
       </Fig>
       {r && <Mensaje key={`${r[DEBE]}-${r[HABER]}-${ok}`} ok={ok} texto={ok ? p.acierto : p.errores[errorReembolsoA2(r)]} />}
     </>

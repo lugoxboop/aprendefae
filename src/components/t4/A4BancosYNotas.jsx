@@ -22,7 +22,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { useEffect, useState } from "react";
-import { C, Mensaje, Marca } from "./comun.jsx";
+import { C, Mensaje, LineaMarcas } from "./comun.jsx";
 import { Tablero, Mayor } from "./tablero.jsx";
 import { Fig, Chips, LectorError } from "./aprender.jsx";
 import { DEBE, HABER, MARCA } from "../../data/contabilidadT4.js";
@@ -50,8 +50,7 @@ export const CSS_A4 = `
 .t4a4-c > span { font-size: 15px; line-height: 22px; overflow-wrap: anywhere; }
 .t4a4-c > span + span { font-size: 12px; color: ${C.texto2}; line-height: 1.3; }
 .t4a4-lado[data-marca="mal"] { border: 2px solid ${C.error}; }
-/* Con el error, el nombre y la pastilla «✗ No va aquí»: si no caben en un renglón, la pastilla baja (a 320 cada botón mide ~125 px). */
-.t4a4-lado { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 8px; white-space: normal; }
+.t4a4-lado { display: flex; align-items: center; justify-content: center; }
 .t4a4-causas { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
 `;
 
@@ -93,7 +92,7 @@ function Cuenta({ p }) {
       </div>
       <Tablero cuentas={[{ id: "bancos", renglones: [F.mayor] }]}
         totales={{ bancos: { [DEBE]: h.consignar ? CONSIGNACION : 0, [HABER]: h.girar ? CHEQUE_PROVEEDOR : 0 } }}
-        activo={false} recien={[...(h.consignar ? [`bancos:${DEBE}`] : []), ...(h.girar ? [`bancos:${HABER}`] : [])]} etiqueta={F.tablero} />
+        activo={false} conMarcas={false} recien={[...(h.consignar ? [`bancos:${DEBE}`] : []), ...(h.girar ? [`bancos:${HABER}`] : [])]} etiqueta={F.tablero} />
     </Fig>
   );
 }
@@ -132,14 +131,17 @@ function Mandar({ p, onAcierto }) {
         {m ? <><span>{m.texto}</span><span>{F.contador(i + 1, total)}</span></> : <span>{p.fin}</span>}
       </div>
       {!fin && (
+        <>
         <div className="t4r-par2">
           {[[DEBE, F.sube], [HABER, F.baja]].map(([lado, t]) => (
             <button key={lado} type="button" className="t4r-btn2 t4a4-lado" data-destino={lado} data-marca={mal === lado ? "mal" : undefined}
-              aria-label={mal === lado ? `${t}: ${MARCA.mal[1]}` : undefined} onClick={() => elegir(lado)}>
-              <span>{t}</span>{mal === lado && <Marca marca="mal" />}
+              aria-label={mal === lado ? `${t}: ${MARCA.mal}` : undefined} onClick={() => elegir(lado)}>
+              <span>{t}</span>
             </button>
           ))}
         </div>
+        <LineaMarcas columnas={2} marcas={{ 0: mal === DEBE ? { marca: "mal" } : null, 1: mal === HABER ? { marca: "mal" } : null }} />
+        </>
       )}
       <LectorError error={Boolean(mal)} clave={errores} />
       <Mayor titulo={F.mayor} reserva={RESERVA_MAYOR_A4} debe={lineas(DEBE)} haber={lineas(HABER)} />

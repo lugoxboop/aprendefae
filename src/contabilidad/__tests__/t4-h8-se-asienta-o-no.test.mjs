@@ -12,7 +12,7 @@ import { readdirSync, readFileSync } from "node:fs";
  *   · LAS CIFRAS: el mayor solo llega a 2.551.700 (3.377.500 en la serie 2)
  *     con TODAS las decisiones buenas: de las 3⁹ = 19.683 maneras de llevar las
  *     nueve partidas al mayor (cada una suma, resta o no entra), una sola
- *   · las 29 combinaciones equivocadas de cada asiento caen en una regla con
+ *   · las 19 combinaciones equivocadas de cada asiento caen en una regla con
  *     mensaje, y cada mensaje con nombre se comete con el gesto mínimo (dos
  *     fichas y «Comprobar»); en la etapa 1 y la 3, con un toque o una cifra
  *   · PH8-1: ni el saldo conciliado ni el extracto están en el DOM antes del
@@ -48,8 +48,9 @@ function montarJuego(props = {}) {
 }
 const q = (m, sel) => m.caja.querySelector(sel);
 const destino = (m, k) => q(m, `[data-destino="${k}"]`);
-const siguiente = (m) => q(m, '[data-boton="seguir-hacer"]');
-const comprobar = (m) => q(m, '[data-boton="comprobar"]');
+/* El avance y «Comprobar» son el Responder compartido dentro de su envoltorio (P2 de Hanayama, §3.4). */
+const siguiente = (m) => q(m, '[data-boton="seguir-hacer"] button');
+const comprobar = (m) => q(m, '[data-boton="comprobar"] button');
 async function escribir(m, v) {
   const input = q(m, '[data-campo="mayor"] input');
   const set = Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype, "value").set;
@@ -116,7 +117,6 @@ test("★★★ etapa 2: el asiento y cada mensaje de las cinco notas de cada se
     for (const n of s.notas) {
       assert.ok(bloque.includes(`| H7-${n.n} | Acierto (${D.nombreDeCuentaH8(n.debe)} / ${D.nombreDeCuentaH8(n.haber)}) | Correcto. ${n.acierto} |`), `${n.id}: el acierto`);
       for (const [c, t] of Object.entries(n.cuenta)) assert.ok(bloque.includes(`| Usó ${D.nombreDeCuentaH8(c)} | ${t} |`), `${n.id}: ${c}`);
-      assert.ok(bloque.includes(`| Usó Caja | ${n.caja} |`), `${n.id}: Caja`);
       assert.ok(bloque.includes(`| Lados al revés | ${n.reves} |`), `${n.id}: al revés`);
     }
   }
@@ -135,7 +135,7 @@ test("★★★ etapa 3: el acierto (con el extracto) y los errores con cifra de
 
 test("★★ INFLESZ con la herramienta oficial: cada texto de 10 palabras o más da 65 o más", () => {
   const ts = [D.H8.consigna, D.CIERRE_H8.texto, D.ALT_H8, ...Object.values(D.ETAPA1_H8).flatMap((e) => [`Correcto. ${e.acierto}`, e.error]),
-    ...D.SERIES_H8.flatMap((s) => [`Correcto. ${s.aciertoEtapa3}`, s.otroEtapa3, ...s.erroresEtapa3.map((e) => e.texto), ...s.notas.flatMap((n) => [`Correcto. ${n.acierto}`, n.caja, n.reves, ...Object.values(n.cuenta)])])];
+    ...D.SERIES_H8.flatMap((s) => [`Correcto. ${s.aciertoEtapa3}`, s.otroEtapa3, ...s.erroresEtapa3.map((e) => e.texto), ...s.notas.flatMap((n) => [`Correcto. ${n.acierto}`, n.reves, ...Object.values(n.cuenta)])])];
   for (const t of ts) { const v = inflesz(t); if (v.aplica) assert.ok(v.valor >= 65, `${v.valor}: ${t}`); }
 });
 
@@ -155,15 +155,15 @@ test("★★★ el mayor SOLO llega al saldo conciliado con TODAS las decisiones
   assert.match(CAMBIOS, /de las 19683 formas de llevar las 9 partidas al mayor \(sumando, restando o sin entrar\), llegan a 2\.551\.700: 1; es la de todas las decisiones buenas: True/);
 });
 
-test("★★★ cada asiento: las 29 combinaciones equivocadas caen en una regla con mensaje, en el orden del paquete (10 + 12 + 3 + 3 + 1)", () => {
+test("★★★ cada asiento: las 19 combinaciones equivocadas de las cinco cuentas (sin Caja) caen en una regla con mensaje, en el orden del paquete (12 + 3 + 3 + 1)", () => {
   for (const s of D.SERIES_H8) for (const n of s.notas) {
-    const cuenta = { caja: 0, "sin-bancos": 0, "bancos-al-lado": 0, cuenta: 0, reves: 0 };
+    const cuenta = { "sin-bancos": 0, "bancos-al-lado": 0, cuenta: 0, reves: 0 };
     for (const a of COMBINACIONES.filter((x) => !(x.debe === n.debe && x.haber === n.haber))) {
       const r = D.reglaH8(n, a);
       assert.ok(r.texto, `${n.id} ${a.debe}/${a.haber}: sin mensaje`);
       cuenta[r.regla] += 1;
     }
-    assert.deepEqual(Object.values(cuenta), [10, 12, 3, 3, 1], n.id);
+    assert.deepEqual(Object.values(cuenta), [12, 3, 3, 1], n.id);
   }
 });
 
@@ -185,7 +185,7 @@ test("★★★ PH8-1: ni el saldo conciliado ni el extracto están en el DOM en
       prohibido();
       assert.equal(visible(q(m, "[data-devolucion]")), s.erroresEtapa3[0].texto);
       assert.equal(q(m, "[data-saldo-mayor]").dataset.saldoMayor, cifra(s.erroresEtapa3[0].cifra));
-      assert.match(q(m, "[data-saldo-mayor]").textContent, /✗No va aquí/);
+      assert.match(q(m, "[data-saldo-mayor]").textContent, /No va aquí/);
       assert.equal(q(m, '[data-iba="mayor"]'), null, "«Iba aquí» antes de los 0,7 s");
       await esperar(ESPERA_ERROR_MS + 50);
       assert.equal(q(m, '[data-iba="mayor"]').textContent, `Iba aquí: $${cifra(s.saldoMayor)}`);
@@ -210,7 +210,7 @@ test("★★★ PH8-2: al llegar a cada partida y a cada asiento, nada de su res
     const m = montarJuego({ items: etapa2(s, n.n) });
     try {
       const raiz = q(m, "[data-t4-h8]");
-      for (const x of [n.acierto, n.caja, n.reves, ...Object.values(n.cuenta), "Correcto"]) assert.ok(!raiz.outerHTML.includes(x), `${n.id}: «${x.slice(0, 30)}»`);
+      for (const x of [n.acierto, n.reves, ...Object.values(n.cuenta), "Correcto"]) assert.ok(!raiz.outerHTML.includes(x), `${n.id}: «${x.slice(0, 30)}»`);
       assert.equal(raiz.querySelector("[data-marca], [data-mensaje]"), null);
       assert.deepEqual([...raiz.querySelectorAll("[data-mayor] [data-linea]")].map((x) => x.dataset.linea), ["inicial"]);
     } finally { m.desmontar(); }
@@ -300,7 +300,7 @@ test("★★★ etapa 3: cada cifra de error sale con su mensaje y «✗ No va a
         await tocar(comprobar(m));
         assert.equal(visible(q(m, "[data-devolucion]")), texto, `${s.id} ${v}`);
         const ok = v === s.saldoMayor;
-        assert.match(q(m, "[data-saldo-mayor]").textContent, ok ? /✓Correcto/ : /✗No va aquí/);
+        assert.match(q(m, "[data-saldo-mayor]").textContent, ok ? /Correcto/ : /No va aquí/);
         assert.equal(q(m, ".t4pr-igual").style.visibility, ok ? "visible" : "hidden");
         assert.equal(q(m, "[data-lector-par]").getAttribute("aria-label"), ok ? D.lectorParH8.acierto(cifra(s.saldoMayor), cifra(s.saldoMayor)) : D.lectorParH8.antes(cifra(s.libros)));
       } finally { m.desmontar(); }
@@ -342,7 +342,7 @@ test("★★★ «Paso n de 15» y el cierre: onCompletar con quince puntos y el
   } finally { m.desmontar(); }
 });
 
-test("★★★ B4: el acierto es ✓ y borde blanco; teal y ámbar solo en «Debe» y «Haber»; seguir en blanco neutro", async () => {
+test("★★★ B4: el acierto es Check y borde blanco; teal y ámbar solo en «Debe» y «Haber»; seguir es el Responder teal", async () => {
   const s = D.SERIE_H8_1;
   const n = nota(s, 6);
   const m = montarJuego({ items: etapa2(s, 6) });
@@ -350,11 +350,14 @@ test("★★★ B4: el acierto es ✓ y borde blanco; teal y ámbar solo en «De
     await asentar(m, n);
     await esperar(500);
     const raiz = q(m, "[data-t4-h8]");
-    const tonos = [...new Set(conColor(raiz, TEAL_AMBAR).filter((e) => !e.closest("[data-avance]")).map((e) => e.textContent.trim()))].filter(Boolean).sort();
+    const tonos = [...new Set(conColor(raiz, TEAL_AMBAR).filter((e) => !e.closest("[data-avance], [data-avance-t4]")).map((e) => e.textContent.trim()))].filter(Boolean).sort();
     assert.deepEqual(tonos, ["Debe", "Haber"]);
     assert.deepEqual(conColor(q(m, "[data-figura]"), CORAL), []);
     for (const k of [`${n.debe}:debe`, `${n.haber}:haber`]) assert.equal(w.getComputedStyle(destino(m, k)).borderTopColor, "rgb(248, 249, 250)");
-    assert.equal(w.getComputedStyle(siguiente(m)).backgroundColor, "rgb(248, 249, 250)");
+    const b = siguiente(m);
+    /* El avance es el Responder compartido: teal con texto #06202A (prompt maestro §4.3). Un botón blanco no pasa. */
+    assert.equal(w.getComputedStyle(b).backgroundColor, "rgb(42, 157, 143)");
+    assert.equal(w.getComputedStyle(b).color, "rgb(6, 32, 42)");
   } finally { m.desmontar(); }
   const imports = leer("src/components/t4/SeAsientaONo.jsx").split("\n").filter((l) => /^import /.test(l)).join("\n");
   assert.doesNotMatch(imports, /\b(Opcion|Opciones|ConstructorAsiento|Responder|CuentaDeValor)\b/);

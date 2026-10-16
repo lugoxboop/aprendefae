@@ -106,7 +106,7 @@ test("★★★ P1 y P2: cada partida a su sección; el saldo cambia con cada ac
         await esperar(0);
         const s = q(m, `[data-destino="${otra}"]`);
         assert.equal(s.dataset.marca, "mal");
-        assert.match(visible(s), /✗No va aquí$/);
+        assert.match(visible(s), /No va aquí$/);
         assert.match(s.getAttribute("aria-label"), /: No va aquí$/);
         assert.equal(q(m, "[data-lector-error]").textContent, "Incorrecto.");
         assert.deepEqual([lineas(m, A.MAS), lineas(m, A.MENOS), par(m)], antes, `${id} · ${x.id}: el error escribió algo`);
@@ -130,10 +130,12 @@ test("★★★ P3: el cheque de Lorena Guerra no se asienta; «Se asienta» da 
     assert.equal(visible(q(m, "[data-tarjeta-partida]")), "Cheque a Lorena Guerra, sin cobrar156.000");
     tocar(q(m, '[data-opcion="si"]'));
     await esperar(0);
-    assert.equal(visible(q(m, '[data-opcion="si"]')), "Se asienta✗No va aquí");
+    assert.equal(visible(q(m, '[data-opcion="si"]')), "Se asienta");
+    assert.equal(visible(q(m, "[data-linea-marcas]")), "No va aquí");
     tocar(q(m, '[data-opcion="no"]'));
     await esperar(0);
-    assert.equal(visible(q(m, '[data-opcion="no"]')), "No se asienta✓Correcto");
+    assert.equal(visible(q(m, '[data-opcion="no"]')), "No se asienta");
+    assert.equal(visible(q(m, "[data-linea-marcas]")), "Correcto");
   } finally { m.desmontar(); }
 });
 

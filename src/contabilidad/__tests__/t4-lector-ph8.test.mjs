@@ -96,7 +96,7 @@ const patron = (f) => (esCifra(f)
 const dice = (texto, f) => patron(f).test(texto);
 
 /* Las palabras de las marcas, que el nombre de un control lleva al final tras responder («: No va aquí»). */
-const PALABRAS_MARCA = [...new Set(Object.values(MARCA).map((x) => x[1]).filter(Boolean))];
+const PALABRAS_MARCA = [...new Set(Object.values(MARCA).filter(Boolean))];
 const SIN_MARCA = new RegExp(`(: (${PALABRAS_MARCA.map(escapar).join("|")}))+$`, "u");
 /* El nombre con el que se reconoce un control: su aria-label sin la marca ni la cifra que muestra, o su texto. */
 function frasesDe(el) {

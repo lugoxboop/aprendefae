@@ -109,12 +109,9 @@
    {"click": "[data-opcion='476000']", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
   ],
   "el-asiento": [
-   {"click": "[data-destino='bancos:haber']"},
-   {"click": "[data-boton=comprobar]", "espera": 500, "mide": "error con Bancos", "veredicto": "error"},
-   {"click": "[data-destino='ino-sobrante:debe']"},
-   {"click": "[data-boton=comprobar]", "espera": 500, "mide": "error de lado", "veredicto": "error"},
-   {"click": "[data-destino='ino-sobrante:haber']"},
-   {"click": "[data-boton=comprobar]", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+   {"click": "[data-destino='bancos:haber']", "espera": 500, "mide": "error con Bancos", "veredicto": "error"},
+   {"click": "[data-destino='ino-sobrante:debe']", "espera": 500, "mide": "error de lado", "veredicto": "error"},
+   {"click": "[data-destino='ino-sobrante:haber']", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
   ],
   "el-faltante": [
    {"click": "[data-opcion='478100']", "espera": 500, "mide": "error con 478.100", "veredicto": "error"},
@@ -122,12 +119,9 @@
    {"click": "[data-opcion='484800']", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
   ],
   "camino-1": [
-   {"click": "[data-destino='gno-faltante:debe']"},
-   {"click": "[data-boton=comprobar]", "espera": 500, "mide": "error con el gasto", "veredicto": "error"},
-   {"click": "[data-destino='cxc-empleados:haber']"},
-   {"click": "[data-boton=comprobar]", "espera": 500, "mide": "error de lado", "veredicto": "error"},
-   {"click": "[data-destino='cxc-empleados:debe']"},
-   {"click": "[data-boton=comprobar]", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+   {"click": "[data-destino='gno-faltante:debe']", "espera": 500, "mide": "error con el gasto", "veredicto": "error"},
+   {"click": "[data-destino='cxc-empleados:haber']", "espera": 500, "mide": "error de lado", "veredicto": "error"},
+   {"click": "[data-destino='cxc-empleados:debe']", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
   ],
   "camino-2": [
    {"click": "[data-accion=asume]", "espera": 600, "mide": "asume"},

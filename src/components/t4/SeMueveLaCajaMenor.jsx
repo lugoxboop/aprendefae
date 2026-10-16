@@ -21,7 +21,7 @@
  *     operación siguiente parte de ese fondo
  *   · el acierto con ✓ y borde blanco, NUNCA teal ni ámbar: por eso no usa
  *     ConstructorAsiento ni Opcion compartidos. «Siguiente operación» en el
- *     neutro blanco (SeguirHacer)
+ *     Responder compartido, teal (Avance)
  *   · «Operación n de 4» y el pulso activo coinciden: la operación respondida
  *     no cuenta como hecha hasta tocar «Siguiente»
  *   · mientras se pregunta, nada de la respuesta está en el DOM (PH8-2): ni la
@@ -41,16 +41,16 @@ import { useTanda } from "../mecanicas/libros/piezas.jsx";
 import { useNumeroQueSube } from "../mecanicas/libros/verbos.jsx";
 import { Encabezado } from "../mecanicas/libros/tema1/encabezado.jsx";
 import {
-  H3, CUENTAS_H3, CAJA_MENOR, BOTON_H3, ROTULOS_H3, CIERRE_H3, ALT_FIGURA_H3,
+  H3, CUENTAS_H3, CAJA_MENOR, BOTON_H3, ROTULOS_H3, CIERRE_H3, ALT_FIGURA_H3, AVISO_H3,
   resumenH3, sortearH3, evaluarH3, puntuarH3, libroCajaMenor, conAsiento, sobreSuma,
 } from "../../data/contabilidadT4H3.js";
 import { ESPERA_ERROR_MS, cifra } from "../../data/contabilidadT4Hacer.js";
-import { C, CSS_T4R, Mensaje, SeguirHacer } from "./comun.jsx";
+import { C, CSS_T4R, Mensaje, Avance, IconoMal } from "./comun.jsx";
 import { Tablero, CSS_TABLERO } from "./tablero.jsx";
 import { VACIO, CSS_HACER } from "./hacerComun.jsx";
 
 export const CSS_H3 = `
-.t4h3-op { display: grid; gap: 4px; border: 1px solid ${C.neutro}; border-radius: 8px; padding: 8px 12px; }
+.t4h3-op { display: grid; gap: 4px; border: 1px solid ${C.reposo}; border-radius: 8px; padding: 8px 12px; }
 .t4h3-op p { margin: 0; font-size: 15px; line-height: 22px; min-height: 88px; overflow-wrap: anywhere; outline: none; }
 .t4h3-op > span { justify-self: end; font: 600 15px/1.2 "Inter", sans-serif; font-variant-numeric: tabular-nums; }
 .t4h3-sobre { display: grid; gap: 2px; border: 1px solid ${C.neutro}; border-radius: 0 0 10px 10px; border-top: none; padding: 6px 12px 8px; position: relative; }
@@ -90,7 +90,7 @@ function Sobre({ rotulo, billetes, soportes, libro, diria }) {
         </span>
       </div>
       <p className="t4h3-diria" data-diria={diria ? "" : undefined}>
-        {diria ? <><span aria-hidden="true" style={{ color: C.error }}>✗ </span>{diria}</> : VACIO}
+        {diria ? <><span aria-hidden="true" style={{ display: "inline-flex", verticalAlign: "-3px", marginRight: "6px" }}><IconoMal /></span>{diria}</> : VACIO}
       </p>
     </div>
   );
@@ -132,8 +132,12 @@ export default function SeMueveLaCajaMenor({ Marco, rotulo, titulo, acento, onCo
   };
   const listo = Boolean(puestas.debe && puestas.haber);
 
+  /* «Comprobar» nunca se apaga (P2 de Hanayama, §5.3): con una mitad sin poner, avisa. */
+  const [aviso, setAviso] = useState(false);
   const comprobar = () => {
-    if (r || !listo) return;
+    if (r) return;
+    if (!listo) { setAviso(true); return; }
+    setAviso(false);
     const a = { debe: puestas.debe, haber: puestas.haber };
     const v = evaluarH3(op, a, totales);
     /* En el error se guarda el asiento armado: eso le dice algo al docente. */
@@ -151,7 +155,7 @@ export default function SeMueveLaCajaMenor({ Marco, rotulo, titulo, acento, onCo
     if (t.i + 1 < cuantos) { enfocar.current = true; t.setI(t.i + 1); } else t.setTerminado(true);
   };
 
-  const reiniciar = () => { clearTimeout(reloj.current); t.reiniciar(); setR(null); setPuestas({ debe: null, haber: null }); setTotales({}); setBien(0); };
+  const reiniciar = () => { clearTimeout(reloj.current); t.reiniciar(); setR(null); setPuestas({ debe: null, haber: null }); setTotales({}); setBien(0); setAviso(false); };
 
   if (t.terminado) {
     return (
@@ -222,16 +226,13 @@ export default function SeMueveLaCajaMenor({ Marco, rotulo, titulo, acento, onCo
         {/* «Comprobar» también en la demo: la mano lo toca. */}
         {!r && (
           <div className="t4r" style={{ marginTop: "14px" }}>
-            <button type="button" className="t4r-btn" data-boton="comprobar" aria-disabled={!listo ? "true" : undefined}
-              style={!listo ? { background: "transparent", color: C.texto2, borderColor: C.texto2 } : undefined}
-              onClick={comprobar}>
-              {BOTON_H3.comprobar}
-            </button>
+            <Avance nombre="comprobar" onClick={comprobar}>{BOTON_H3.comprobar}</Avance>
+            <p className="t4r-aviso" data-aviso aria-live="polite">{aviso && !listo ? AVISO_H3 : null}</p>
           </div>
         )}
         {r && !modoDemo && (
           <div className="t4r">
-            <SeguirHacer refZona={zonaBoton} onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H3.verResumen : BOTON_H3.siguiente}</SeguirHacer>
+            <Avance refZona={zonaBoton} onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H3.verResumen : BOTON_H3.siguiente}</Avance>
           </div>
         )}
       </div>

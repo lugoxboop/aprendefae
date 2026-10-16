@@ -139,7 +139,7 @@ function loQueSeVe(raiz) {
 
 /* ═══════════ APRENDER: CADA PANTALLA DE CADA PIEZA ═══════════ */
 
-const tocar = (el) => act(() => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+const tocar = (el) => act(() => { (el?.matches?.("[data-avance-t4]") ? el.querySelector("button") ?? el : el).dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 
 /*
  * Recorre una pieza entera y devuelve, por pantalla y estado, lo que se lee.
@@ -334,7 +334,8 @@ const DATOS = {
       const { r, items } = solo4(rid);
       const c = r.preguntas.find((q) => q.id === D.CUENTA).correcta;
       const otra = D.CUENTAS_H4.find((x) => x.id !== c.cuenta && x.id !== D.CM).id;
-      return { nombre, items, correcto: `${c.cuenta}:${c.lado}`, acierta: [`${c.cuenta}:${c.lado}`, COMPROBAR], falla: [`${otra}:${c.lado}`, COMPROBAR] };
+      /* Una sola ficha: el toque califica, sin «Comprobar» (P2 de Hanayama, §5.2). */
+      return { nombre, items, correcto: `${c.cuenta}:${c.lado}`, acierta: [`${c.cuenta}:${c.lado}`], falla: [`${otra}:${c.lado}`] };
     };
     return { espera: ESPERA_ERROR_MS, casos: [caso("h4-2", "El sobrante, al haber"), caso("h5-1", "El faltante cobrado, al debe")] };
   },
@@ -349,7 +350,9 @@ const DATOS = {
       const lado = nota.debe === D.BANCOS ? "debe" : "haber";
       const otro = lado === "debe" ? "haber" : "debe";
       const contra = lado === "debe" ? nota.haber : nota.debe;
-      return { nombre, items, correcto: `${D.BANCOS}:${lado}`, acierta: [`${nota.debe}:debe`, `${nota.haber}:haber`, COMPROBAR], falla: [`${D.CAJA}:${lado}`, `${contra}:${otro}`, COMPROBAR] };
+      /* Sin «Caja» (⛔3 del bloque P2): la cuenta equivocada del lado de Bancos es otra de las cinco. */
+      const intrusa = D.CUENTAS_H8.find((x) => x.id !== D.BANCOS && x.id !== contra).id;
+      return { nombre, items, correcto: `${D.BANCOS}:${lado}`, acierta: [`${nota.debe}:debe`, `${nota.haber}:haber`, COMPROBAR], falla: [`${intrusa}:${lado}`, `${contra}:${otro}`, COMPROBAR] };
     };
     return { espera: ESPERA_ERROR_MS, casos: [caso(5, "Bancos al debe (nota crédito)"), caso(7, "Bancos al haber (nota débito)")] };
   },
@@ -394,7 +397,9 @@ for (const { id, Mecanica } of JUEGOS_T4) {
         const raiz = createRoot(caja);
         await act(async () => { raiz.render(h(Mecanica, { Marco, items: c.items, onCompletar: () => {} })); });
         try {
-          const destino = (x) => (x.startsWith("[") ? caja.querySelector(x) : caja.querySelector(`[data-destino="${x}"]`) ?? caja.querySelector(`[data-opcion="${x}"] button`));
+          /* El avance y «Comprobar» son el Responder dentro de su envoltorio: se toca su botón. */
+          const boton = (el) => (el?.matches?.("[data-avance-t4]") ? el.querySelector("button") : el);
+          const destino = (x) => (x.startsWith("[") ? boton(caja.querySelector(x)) : caja.querySelector(`[data-destino="${x}"]`) ?? caja.querySelector(`[data-opcion="${x}"] button`));
           for (const x of c[modo]) assert.ok(destino(x), `${id}: no encontré el destino «${x}»`);
           const antes = fotoTonos(destino(d.id));
           for (const x of c[modo]) await act(async () => { destino(x).dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });

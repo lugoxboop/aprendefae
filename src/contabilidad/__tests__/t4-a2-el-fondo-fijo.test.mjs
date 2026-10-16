@@ -119,14 +119,16 @@ test("★★★ P3: la cifra elegida va a los billetes y «Suman» da cifra + 47
       const fila = q(m, '[data-fila-sobre="suman"]');
       assert.equal(fila.firstElementChild.textContent, A.FIGURA_A2.sumanMal);
       assert.equal(fila.dataset.valor, String(suma));
-      assert.equal(visible(q(m, `[data-opcion="${v}"]`)), `${String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}✗No va aquí`);
+      assert.equal(visible(q(m, `[data-opcion="${v}"]`)), String(v).replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+      assert.equal(visible(q(m, "[data-linea-marcas]")), "No va aquí", "la pastilla, en la línea de marcas");
       assert.equal(q(m, '[data-opcion="21900"] .t4r-marca'), null, "la correcta se marca en el error");
     }
     tocar(q(m, '[data-opcion="21900"]'));
     await esperar(0);
     assert.equal(q(m, '[data-fila-sobre="suman"]').firstElementChild.textContent, A.FIGURA_A2.suman);
     assert.equal(q(m, '[data-fila-sobre="suman"]').dataset.valor, String(A.FONDO));
-    assert.equal(visible(q(m, '[data-opcion="21900"]')), "21.900✓Correcto");
+    assert.equal(visible(q(m, '[data-opcion="21900"]')), "21.900");
+    assert.equal(visible(q(m, "[data-linea-marcas]")), "Correcto");
     assert.ok([...m.caja.querySelectorAll("[data-opcion]")].every((b) => b.disabled), "las opciones siguen activas tras el acierto");
   } finally { m.desmontar(); }
 });
@@ -162,22 +164,22 @@ test("★★★ P5: Caja menor dice 500.000 antes y después; en el error no se 
       assert.equal(q(m, "[data-mensaje]").dataset.mensaje, "error", clave);
       assert.equal(q(m, "[data-devolucion]").textContent, `Incorrecto. ${errores[clave]}`, clave);
       assert.deepEqual([...m.caja.querySelectorAll("[data-destino][data-marca]")].map((b) => b.dataset.destino).sort(), [...marcadas].sort(), clave);
-      for (const k of marcadas) assert.match(visible(q(m, `[data-destino="${k}"]`)), /✗No va aquí$/, k);
+      for (const k of marcadas) assert.match(visible(q(m, `[data-destino="${k}"]`)), /No va aquí$/, k);
       for (const k of mitades) {
-        if (marcadas.includes(k)) assert.equal(total(m, k), `${antes[k]}✗Novaaquí`, `${clave} · ${k}`);
+        if (marcadas.includes(k)) assert.equal(total(m, k), `${antes[k]}Novaaquí`, `${clave} · ${k}`);
         else if (toques.includes(k)) {
           assert.equal(q(m, `[data-destino="${k}"]`).dataset.puesta, "", `${clave} · ${k}: lo bien elegido no queda puesto`);
           assert.equal(total(m, k), "478.100", `${clave} · ${k}`);
         } else assert.equal(total(m, k), antes[k], `${clave} · ${k}: el error escribió algo en el libro`);
       }
-      assert.equal(total(m, "caja-menor:debe").replace(/✗Novaaquí$/, ""), "500.000");
+      assert.equal(total(m, "caja-menor:debe").replace(/Novaaquí$/, ""), "500.000");
     } finally { m.desmontar(); }
   }
   const m = await abrir(P, "y-caja-menor");
   try {
     await jugar(m, P, "y-caja-menor");
     assert.equal(q(m, "[data-mensaje]").dataset.mensaje, "acierto");
-    assert.deepEqual([total(m, "caja-menor:debe"), total(m, "gastos-generales:debe"), total(m, "bancos:haber")], ["500.000", "478.100✓Correcto", "978.100✓Correcto"]);
+    assert.deepEqual([total(m, "caja-menor:debe"), total(m, "gastos-generales:debe"), total(m, "bancos:haber")], ["500.000", "478.100Correcto", "978.100Correcto"]);
     assert.equal(q(m, "[data-boton=comprobar]"), null, "«Comprobar» sigue tras el acierto");
   } finally { m.desmontar(); }
 });

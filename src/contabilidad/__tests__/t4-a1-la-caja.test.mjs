@@ -121,9 +121,9 @@ test("★★★ la interfaz común: «Correcto.», «Incorrecto.» solo para el 
   const com = renglones(seccionDe(PAQ, "Interfaz común del rediseño (A0, A1 y H1)"));
   assert.deepEqual(A.PALABRA, { ok: textoDe(com, "Palabra del acierto (va antes del texto)"), error: null });
   assert.equal(A.LECTOR_ERROR, textoDe(com, "Solo para el lector de pantalla, delante del texto del error"));
-  assert.deepEqual(A.MARCA.bien.join(" "), textoDe(com, "Marca del destino acertado"));
-  assert.deepEqual(A.MARCA.mal.join(" "), textoDe(com, "Marca del destino mal elegido"));
-  assert.deepEqual(A.MARCA.era[1], textoDe(com, "Marca del destino que era"));
+  assert.deepEqual(`✓ ${A.MARCA.bien}`, textoDe(com, "Marca del destino acertado"));
+  assert.deepEqual(`✗ ${A.MARCA.mal}`, textoDe(com, "Marca del destino mal elegido"));
+  assert.deepEqual(A.MARCA.era, textoDe(com, "Marca del destino que era"));
 });
 
 test("★★★ los dos asientos de la p. 180 cuadran; la única cifra del libro es 435.000", async () => {
@@ -225,7 +225,7 @@ test("★★★ P2 consigna: mientras pregunta, nada de la respuesta en el DOM; 
       tocar(q(m, `[data-destino="${d}"]`));
       const msg = q(m, "[data-mensaje]");
       assert.equal(msg.dataset.mensaje, "error", d);
-      assert.equal(visible(msg), `✗${p.errores[d]}`, d);
+      assert.equal(visible(msg), p.errores[d], d);
       assert.equal(msg.querySelector(".t4f-sr").textContent.trim(), "Incorrecto.");
       assert.equal(q(m, `[data-destino="${d}"]`).dataset.marca, "mal");
       assert.ok(CORAL.test(w.getComputedStyle(q(m, `[data-destino="${d}"]`)).borderTopColor), `${d}: el error no va en coral`);
@@ -236,7 +236,7 @@ test("★★★ P2 consigna: mientras pregunta, nada de la respuesta en el DOM; 
     tocar(q(m, `[data-destino="${A.HABER}"]`));
     const msg = q(m, "[data-mensaje]");
     assert.equal(msg.dataset.mensaje, "acierto");
-    assert.equal(visible(msg), "✓Correcto.");
+    assert.equal(visible(msg), "Correcto.");
     assert.deepEqual([lineas(m, A.HABER), saldo(m), vivos(m), q(m, "[data-monto=bancos]").textContent], [["435.000"], "0", ["a-bancos", "cruce", "salida"], "435.000"]);
     assert.equal(q(m, "[data-asiento]").dataset.asiento, A.ASIENTO_CONSIGNACION.nombre);
     assert.equal(q(m, `[data-destino="${A.HABER}"]`).dataset.marca, "bien");
@@ -263,17 +263,17 @@ test("★★★ P4 los cheques: errores con su texto; el recibido entra al Debe;
     const [rec, pro] = A.CHEQUES_A1;
     assert.equal(q(m, "[data-hecho]").textContent, rec.tarjeta);
     tocar(q(m, `[data-destino="${A.HABER}"]`));
-    assert.equal(visible(q(m, "[data-mensaje]")), `✗${rec.errores[A.HABER]}`);
+    assert.equal(visible(q(m, "[data-mensaje]")), rec.errores[A.HABER]);
     tocar(q(m, `[data-destino="${A.DEBE}"]`));
-    assert.equal(visible(q(m, "[data-mensaje]")), `✓Correcto. ${rec.acierto}`);
+    assert.equal(visible(q(m, "[data-mensaje]")), `Correcto. ${rec.acierto}`);
     assert.deepEqual(lineas(m, A.DEBE), ["cheque"]);
     await esperar(A.ESPERA_CHEQUE_MS + 100);
     assert.equal(q(m, "[data-hecho]").textContent, pro.tarjeta);
     assert.equal(q(m, "[data-mensaje]"), null, "la devolución del primero sigue con el segundo");
     tocar(q(m, `[data-destino="${A.HABER}"]`));
-    assert.equal(visible(q(m, "[data-mensaje]")), `✗${pro.errores[A.HABER]}`);
+    assert.equal(visible(q(m, "[data-mensaje]")), pro.errores[A.HABER]);
     tocar(q(m, `[data-destino="${A.NO_SE_MUEVE}"]`));
-    assert.equal(visible(q(m, "[data-mensaje]")), `✓Correcto. ${pro.acierto}`);
+    assert.equal(visible(q(m, "[data-mensaje]")), `Correcto. ${pro.acierto}`);
     assert.match(q(m, "[data-bandeja]").textContent, /cheque propio/);
     assert.deepEqual(luces(m), ["bancos"]);
     for (const d of [A.DEBE, A.HABER, A.NO_SE_MUEVE]) assert.equal(q(m, `[data-destino="${d}"]`).disabled, true);
@@ -310,10 +310,12 @@ test("★★★ B4: el acierto es ✓ y borde blanco; teal y ámbar solo en los 
   } finally { m.desmontar(); }
 });
 
-test("★★★ el cajón no usa piezas compartidas que pintan el acierto en teal (Opcion, ConstructorAsiento, Responder)", async () => {
+test("★★★ el cajón no usa piezas compartidas que pintan el acierto en teal (Opcion, ConstructorAsiento); el Responder teal, solo como botón de avance (Avance, en comun.jsx)", async () => {
   for (const f of ["src/components/t4/Cajon.jsx", "src/components/t4/LaCaja.jsx", "src/components/t4/comun.jsx"]) {
     const imports = leer(f).split("\n").filter((l) => /^import /.test(l)).join("\n");
-    assert.doesNotMatch(imports, /\b(Opcion|Opciones|ConstructorAsiento|Responder)\b/, f);
+    assert.doesNotMatch(imports, /\b(Opcion|Opciones|ConstructorAsiento)\b/, f);
+    if (f.endsWith("comun.jsx")) assert.match(leer(f), /export function Avance[\s\S]*?<Responder onClick=\{onClick\}>/, "el Responder entra solo por Avance");
+    else assert.doesNotMatch(imports, /\bResponder\b/, f);
   }
 });
 

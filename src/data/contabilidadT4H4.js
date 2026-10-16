@@ -98,8 +98,8 @@ export const RENGLONES_ASIENTO_H4 = {
 };
 
 /* Interfaz (Katsumi). */
-/* Dentro de la ronda, «Siguiente paso» (sigue al rótulo «Paso n de N»); entre rondas, «Siguiente ronda» (sigue al contador «Ronda n de 4»). */
-export const BOTON_H4 = { comprobar: "Comprobar", siguientePaso: "Siguiente paso", siguienteRonda: "Siguiente ronda", verResumen: "Ver mi resumen", otraVez: "Otra vez" };
+/* Sin «Comprobar»: la pregunta 4 califica al tocar la mitad (P2 de Hanayama, §5.2). Dentro de la ronda, «Siguiente paso» (sigue al rótulo «Paso n de N»); entre rondas, «Siguiente ronda» (sigue al contador «Ronda n de 4»). */
+export const BOTON_H4 = { siguientePaso: "Siguiente paso", siguienteRonda: "Siguiente ronda", verResumen: "Ver mi resumen", otraVez: "Otra vez" };
 export const SOBRE_H4 = { gastos: "Soportes de gastos", caja: "En la caja" };
 export const REGLA_H4 = {
   fondo: "fondo", suman: "suman", sumanFuera: "suman, fuera de la regla", tuDiferencia: "tu diferencia", era: "era",

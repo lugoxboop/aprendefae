@@ -33,7 +33,7 @@ const M = cifra(SUS_SERVICIOS);
 const VIBRA_MS = 260;
 
 export const CSS_A1 = `
-.t4a1-as { display: grid; border: 1px solid ${C.neutro}; border-radius: 10px; padding: 10px 12px; gap: 4px; }
+.t4a1-as { display: grid; background: ${C.hundido}; border: 1px solid ${C.hundidoBorde}; border-radius: 10px; padding: 10px 12px; gap: 4px; }
 .t4a1-as-f { display: grid; grid-template-columns: minmax(0,1fr) 72px 72px; gap: 4px; font-size: 14px; line-height: 1.35; }
 .t4a1-as-f > span:nth-child(n+2) { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .t4a1-as-h > span { font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .06em; text-transform: uppercase; }
@@ -49,7 +49,7 @@ export function AsientoA1({ asiento }) {
     <div className="t4a1-as t4r-nueva" role="table" aria-label={asiento.nombre} data-asiento={asiento.nombre}>
       <div className="t4a1-as-f t4a1-as-h" role="row">
         <span />
-        <span role="columnheader" style={{ color: C.debe }}>{INTERFAZ.debe}</span>
+        <span role="columnheader" style={{ color: C.debeTexto }}>{INTERFAZ.debe}</span>
         <span role="columnheader" style={{ color: C.haber }}>{INTERFAZ.haber}</span>
       </div>
       {asiento.lineas.map((l) => (

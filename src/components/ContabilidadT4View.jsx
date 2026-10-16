@@ -23,7 +23,7 @@ import { PIEZA_EL_ARQUEO } from "../data/contabilidadT4A3.js";
 import { PIEZA_BANCOS_Y_NOTAS } from "../data/contabilidadT4A4.js";
 import { PIEZA_SAN_CALIXTO } from "../data/contabilidadT4A5.js";
 import { H1 } from "../data/contabilidadT4H1.js";
-import { CSS_T4R, cifra } from "./t4/comun.jsx";
+import { CSS_T4R, cifra, SeguirAprender } from "./t4/comun.jsx";
 import { CSS_CAJON } from "./t4/Cajon.jsx";
 import { CSS_ANO, CuerpoA0 } from "./t4/AnoEnMarcha.jsx";
 import { CSS_A1, CuerpoA1 } from "./t4/LaCaja.jsx";
@@ -291,7 +291,7 @@ export function PantallasT4({ pieza, rotulo }) {
           <TextosR lista={p.despues} />
           {p.resumen && <ol className="t4r-lista" data-lista>{p.resumen.map((t) => <li key={t} data-texto>{t}</li>)}</ol>}
           {p.siguiente && <p className="t4r-sig" data-texto data-siguiente>{p.siguiente}</p>}
-          {!ultima && puedeSeguir && <button type="button" className="t4r-btn t4r-nueva" data-boton="seguir" onClick={seguir}>{pieza.boton ?? BOTON.seguir}</button>}
+          {!ultima && puedeSeguir && <SeguirAprender nueva onClick={seguir}>{pieza.boton ?? BOTON.seguir}</SeguirAprender>}
           {p.pie && <p className="t4r-pie" data-pie>{p.pie}</p>}
         </div>
       </div>

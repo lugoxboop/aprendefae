@@ -11,7 +11,7 @@
  *       elegida («✓ Correcto»); con el error, borde coral y «✗ No va aquí»,
  *       y a los 0,7 s cae en la otra («Iba aquí»). Las dos reservan cinco
  *       renglones: el alto no delata cuántas van en cada una
- *   2 · Los asientos. El tablero de seis cuentas y, debajo, el mayor de
+ *   2 · Los asientos. El tablero de cinco cuentas y, debajo, el mayor de
  *       Bancos, que arranca con el saldo de los libros. Una ficha por lado y
  *       «Comprobar»: con el acierto, la línea de Bancos CAE EN EL MAYOR, en su
  *       lado. Con el error no se escribe nada; a los 0,7 s, el asiento
@@ -41,7 +41,7 @@ import {
   lectorParH8, resumenH8, sortearH8, notasEnOrden, evaluarEtapa1H8, evaluarEtapa2H8, evaluarEtapa3H8, puntuarH8,
 } from "../../data/contabilidadT4H8.js";
 import { ESPERA_ERROR_MS, MARCA_CIFRA_BIEN, MARCA_CIFRA_MAL, cifra, pesos, leerCifra } from "../../data/contabilidadT4Hacer.js";
-import { C, CSS_T4R, Mensaje, Marca, SeguirHacer } from "./comun.jsx";
+import { C, CSS_T4R, Mensaje, Marca, Avance } from "./comun.jsx";
 import { Tablero, Mayor, Campo, CSS_TABLERO } from "./tablero.jsx";
 import { ParConLector, CSS_HACER } from "./hacerComun.jsx";
 
@@ -49,11 +49,10 @@ export const CSS_H8 = `
 .t4h8-t { display: grid; gap: 4px; border: 1px solid ${C.neutro}; border-radius: 8px; padding: 8px 12px; }
 .t4h8-t p { margin: 0; font-size: 15px; line-height: 22px; min-height: 88px; overflow-wrap: anywhere; outline: none; }
 .t4h8-t > span { justify-self: end; font: 600 15px/1.2 "Inter", sans-serif; font-variant-numeric: tabular-nums; }
-.t4h8-et { font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .08em; color: ${C.texto2}; margin: 0; }
+.t4h8-et { font: 600 14px/1.3 "Sora", "Inter", sans-serif; color: ${C.texto}; margin: 0; }
 .t4bj { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.t4bj-b { position: relative; min-width: 0; display: grid; gap: 2px; align-content: start; padding: 8px; border-radius: 10px; border: 1px solid rgba(248,249,250,0.30); background: transparent; color: ${C.texto}; text-align: left; font: inherit; cursor: pointer; min-height: 44px; }
+.t4bj-b { position: relative; min-width: 0; display: grid; gap: 2px; align-content: start; padding: 8px; border-radius: 10px; border: 1px solid ${C.reposo}; background: transparent; color: ${C.texto}; text-align: left; font: inherit; cursor: pointer; min-height: 44px; }
 .t4bj-b:disabled { cursor: default; }
-.t4bj-b[data-marca] { background: rgba(248,249,250,0.08); }
 .t4bj-b[data-marca="bien"], .t4bj-b[data-marca="era"] { border: 2px solid ${C.texto}; padding: 7px; }
 .t4bj-b[data-marca="mal"] { border: 2px solid ${C.error}; padding: 7px; }
 .t4bj-b > b { display: grid; font: 600 13px/1.3 "Sora", "Inter", sans-serif; }
@@ -235,12 +234,13 @@ export default function SeAsientaONo({ Marco, rotulo, titulo, acento, onCompleta
           {etapa === 1 && <div className="t4bj" role="group" aria-label={ETAPAS_H8[0]}>{BANDEJAS_H8.map(bandeja)}</div>}
           {etapa === 2 && (
             <Tablero cuentas={CUENTAS_H8} totales={totales} puestas={r && !r.ok ? r.a : puestas} monto={cifra(p.monto)} onElegir={elegir2}
-              activo={!r} marcas={marcas2} ancho={70} recien={r?.aplicado ? [`${p.debe}:debe`, `${p.haber}:haber`] : []} etiqueta={ETAPAS_H8[1]} />
+              activo={!r} marcas={marcas2} recien={r?.aplicado ? [`${p.debe}:debe`, `${p.haber}:haber`] : []} etiqueta={ETAPAS_H8[1]} />
           )}
           {etapa === 3 && <Campo id="mayor" rotulo={ROTULOS_H8.campo} valor={saldo} bloqueado={Boolean(r)} iba={r?.iba ? pesos(s.saldoMayor) : null} onCambio={(v) => { setSaldo(v); setAviso(null); }} />}
           {etapa >= 2 && (
             <Mayor titulo={s.tituloMayor} debe={mayorDebe} haber={mayorHaber} reserva={3} rotuloSaldo={ROTULOS_H8.saldoPie}
-              saldo={etapa === 3 && r ? cifra(r.v) : null} marcaSaldo={etapa === 3 && r ? (r.ok ? MARCA_CIFRA_BIEN : MARCA_CIFRA_MAL) : null} />
+              saldo={etapa === 3 && r ? cifra(r.v) : null} marcaSaldo={etapa === 3 && r ? (r.ok ? MARCA_CIFRA_BIEN : MARCA_CIFRA_MAL) : null}
+              eco={etapa === 3 && !r && leerCifra(saldo) != null ? cifra(leerCifra(saldo)) : null} />
           )}
           {conPar && (
             <ParConLector
@@ -257,12 +257,12 @@ export default function SeAsientaONo({ Marco, rotulo, titulo, acento, onCompleta
         </div>
         {etapa >= 2 && !r && (
           <div className="t4r" style={{ marginTop: "14px" }}>
-            <button type="button" className="t4r-btn" data-boton="comprobar" onClick={etapa === 2 ? comprobar2 : comprobar3}>{etapa === 2 ? BOTON_H8.comprobar : BOTON_H8.comprobarSaldo}</button>
+            <Avance nombre="comprobar" onClick={etapa === 2 ? comprobar2 : comprobar3}>{etapa === 2 ? BOTON_H8.comprobar : BOTON_H8.comprobarSaldo}</Avance>
             {aviso && <p className="t4h8-aviso" data-aviso>{aviso}</p>}
           </div>
         )}
         {r && !modoDemo && (
-          <div className="t4r"><SeguirHacer refZona={zonaBoton} onClick={avanzar}>{textoSeguir}</SeguirHacer></div>
+          <div className="t4r"><Avance refZona={zonaBoton} onClick={avanzar}>{textoSeguir}</Avance></div>
         )}
       </div>
     </Marco>

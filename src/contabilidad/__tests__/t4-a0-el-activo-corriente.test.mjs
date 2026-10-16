@@ -268,15 +268,19 @@ test("★★★ P3 mal: la raya decide; ✗ y coral en la mal elegida, y la que 
     assert.equal(m.caja.querySelector('[data-veredicto="era"], [data-marca="era"]'), null, "en Aprender no se marca la que era");
     assert.deepEqual([ver("edificio", "despues"), ver("edificio", "antes")], ["bien", null]);
     /* La pastilla con palabra, la de MARCA («✓ Correcto», «✗ No va aquí»: prompt maestro §4.2; nunca «era»), y el lector oye la palabra. */
-    assert.equal(visible(seg(m.caja, "deuda", "antes")), "✗No va aquí");
-    assert.equal(visible(seg(m.caja, "edificio", "despues")), "✓Correcto");
+    /* La pastilla va en la línea de marcas de su fila (P2 de Hanayama, §3.10), no en la casilla. */
+    assert.equal(visible(seg(m.caja, "deuda", "antes")), "");
+    assert.equal(visible(m.caja.querySelector('[data-linea-fila="deuda"]')), "No va aquí");
+    assert.equal(visible(m.caja.querySelector('[data-linea-fila="edificio"]')), "Correcto");
+    assert.ok(m.caja.querySelector('[data-linea-fila="deuda"] [data-icono="x"]') && m.caja.querySelector('[data-linea-fila="edificio"] [data-icono="check"]'), "los íconos de lucide");
     assert.equal(seg(m.caja, "mercancia", "despues").getAttribute("aria-label"), "Mercancía: no es corriente, después de la raya: No va aquí");
     assert.equal(seg(m.caja, "mercancia", "antes").getAttribute("aria-label"), "Mercancía: corriente, antes de la raya");
     const oido = [...m.caja.querySelectorAll("[aria-label]")].map((x) => x.getAttribute("aria-label")).join(" ");
     assert.doesNotMatch(`${visible(m.caja)} ${oido}`, /\bera\b/i, "nunca «era» en Aprender, ni a la vista ni para el lector");
     const msg = m.caja.querySelector("[data-mensaje]");
     assert.equal(msg.dataset.mensaje, "error");
-    assert.equal(visible(msg), `✗${p.error}`);
+    assert.equal(visible(msg), p.error);
+    assert.ok(msg.querySelector('[data-icono="x"]'), "el X de lucide en el mensaje");
     assert.equal(msg.querySelector(".t4f-sr").textContent.trim(), "Incorrecto.");
     assert.ok(CORAL.test(w.getComputedStyle(seg(m.caja, "deuda", "antes")).borderTopColor), "la mal elegida no va en coral");
     assert.ok(!CORAL.test(w.getComputedStyle(seg(m.caja, "deuda", "despues")).borderTopColor), "la que no se eligió va en coral");
@@ -324,7 +328,8 @@ test("★★★ P3 bien: «Correcto.» y nada más; ✓ blanco en las tres; ni t
     await esperar(0);
     const msg = m.caja.querySelector("[data-mensaje]");
     assert.equal(msg.dataset.mensaje, "acierto");
-    assert.equal(visible(msg), "✓Correcto.");
+    assert.equal(visible(msg), "Correcto.");
+    assert.ok(msg.querySelector('[data-icono="check"]'), "el Check de lucide en el mensaje");
     assert.deepEqual([...m.caja.querySelectorAll("[data-veredicto]")].map((x) => x.dataset.veredicto), ["bien", "bien", "bien"]);
     const zona = m.caja.querySelector("[data-pieza]");
     assert.deepEqual(conColor(zona, TEAL_AMBAR).map((e) => e.outerHTML.slice(0, 60)), []);

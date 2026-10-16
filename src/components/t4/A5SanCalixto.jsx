@@ -34,9 +34,9 @@ export const CSS_A5 = `
 .t4a5-t > span:first-child { font-size: 14px; line-height: 20px; min-width: 0; }
 .t4a5-t > span:last-child { font: 600 15px/1.2 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .t4a5-s { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.t4a5-d { position: relative; display: grid; gap: 2px; align-content: start; min-height: 44px; padding: 6px 8px; border-radius: 8px; border: 1px solid rgba(248,249,250,0.30); background: transparent; color: ${C.texto}; text-align: right; font: inherit; cursor: pointer; min-width: 0; }
+.t4a5-d { position: relative; display: grid; gap: 2px; align-content: start; min-height: 44px; padding: 6px 8px; border-radius: 8px; border: 1px solid ${C.reposo}; background: transparent; color: ${C.texto}; text-align: right; font: inherit; cursor: pointer; min-width: 0; }
 .t4a5-d:disabled { cursor: default; }
-.t4a5-d[data-marca="mal"] { border: 2px solid ${C.error}; padding: 5px 7px; background: rgba(248,249,250,0.08); }
+.t4a5-d[data-marca="mal"] { border: 2px solid ${C.error}; padding: 5px 7px; }
 .t4a5-d > b { justify-self: start; font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .04em; }
 .t4a5-d span.l { font: 500 15px/20px "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; color: ${C.texto2}; }
 .t4a5-d span.l.f { color: ${C.texto}; font-weight: 600; }
@@ -77,7 +77,7 @@ function Lado({ p, onAcierto }) {
   const reservar = Math.max(...[MAS, MENOS].map((s) => partidas.filter((y) => y.va === s).length));
   const seccion = (s, rotulo) => (
     <button type="button" className="t4a5-d" data-destino={s} data-marca={mal === s ? "mal" : undefined} disabled={fin} onClick={() => elegir(s)}
-      aria-label={`${F.seccion(rotulo, p.lado)}${mal === s ? `: ${MARCA.mal[1]}` : ""}`}>
+      aria-label={`${F.seccion(rotulo, p.lado)}${mal === s ? `: ${MARCA.mal}` : ""}`}>
       <b>{rotulo}</b>
       <span style={{ display: "grid", gap: "2px", minHeight: `${reservar * 22}px`, alignContent: "start" }}>
         {puestas.filter((y) => y.va === s).map((y) => <span key={y.id} className={`l t4r-nueva${y === ultima ? " f" : ""}`} data-linea={y.id}>{cifra(y.monto)}</span>)}
@@ -125,8 +125,8 @@ function Asientos({ p }) {
         {ASIENTOS_A5.map((x, i) => <button key={x.id} type="button" className="t4r-tab" data-control={i + 1} aria-pressed={k === i} onClick={() => setK(i)}>{i + 1}</button>)}
       </div>
       <p className="t4a5-nota" data-nota-asiento={a.id} aria-live="polite">{a.linea}</p>
-      <Tablero key={a.id} cuentas={a.cuentas} totales={{ [a.debe]: { [DEBE]: a.monto }, [a.haber]: { [HABER]: a.monto } }} activo={false}
-        recien={[`${a.debe}:${DEBE}`, `${a.haber}:${HABER}`]} ancho={70} etiqueta={F.tablero} />
+      <Tablero key={a.id} cuentas={a.cuentas} totales={{ [a.debe]: { [DEBE]: a.monto }, [a.haber]: { [HABER]: a.monto } }} activo={false} conMarcas={false}
+        recien={[`${a.debe}:${DEBE}`, `${a.haber}:${HABER}`]} etiqueta={F.tablero} />
     </Fig>
   );
 }

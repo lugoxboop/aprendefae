@@ -62,7 +62,8 @@ function montarJuego(props = {}) {
 }
 const q = (m, sel) => m.caja.querySelector(sel);
 const destino = (m, d) => q(m, `[data-destino="${d}"]`);
-const siguiente = (m) => q(m, '[data-boton="seguir-hacer"]');
+/* El avance y «Comprobar» son el Responder compartido dentro de su envoltorio (P2 de Hanayama, §3.4). */
+const siguiente = (m) => q(m, '[data-boton="seguir-hacer"] button');
 const hechoActual = (m) => D.ITEMS_H1.find((x) => x.texto === q(m, "[data-hecho]").textContent);
 const saldo = (m) => Number(q(m, "[data-saldo]").dataset.saldo);
 const lineas = (m, lado) => [...m.caja.querySelectorAll(`[data-columna="${lado}"] [data-linea]`)].map((x) => x.textContent);
@@ -266,24 +267,25 @@ test("★★★ «Hecho n de 8» coincide con el pulso activo al llegar, tras ac
   } finally { m.desmontar(); }
 });
 
-test("★★★ B4: el acierto es ✓ y borde blanco; teal y ámbar solo en «Debe» y «Haber»; «Siguiente hecho» en blanco neutro, no el Responder teal", async () => {
+test("★★★ B4: el acierto es Check y borde blanco; teal y ámbar solo en «Debe» y «Haber»; «Siguiente hecho» es el Responder teal, y es lo único teal fuera de «Debe»", async () => {
   for (const it of [D.ITEMS_H1[0], D.ITEMS_H1[1], D.ITEMS_H1[3]]) {
     const m = montarJuego({ items: [it, D.ITEMS_H1[7]] });
     try {
       await tocar(destino(m, it.respuesta));
       const raiz = q(m, "[data-t4-h1]");
-      assert.deepEqual([...new Set(conColor(raiz, TEAL_AMBAR).map((e) => e.textContent.trim()))].sort().filter((x) => !/^Hecho/.test(x) && x !== ""), ["Debe", "Haber"]);
+      assert.deepEqual([...new Set(conColor(raiz, TEAL_AMBAR).filter((e) => !e.closest("[data-avance-t4]")).map((e) => e.textContent.trim()))].sort().filter((x) => !/^Hecho/.test(x) && x !== ""), ["Debe", "Haber"]);
       assert.deepEqual(conColor(q(m, "[data-figura]"), CORAL), [], "hay coral en un acierto");
       assert.equal(w.getComputedStyle(destino(m, it.respuesta)).borderTopColor, "rgb(248, 249, 250)");
       const b = siguiente(m);
       assert.equal(b.textContent, D.BOTON_H1.siguiente);
-      assert.equal(w.getComputedStyle(b).backgroundColor, "rgb(248, 249, 250)");
-      assert.doesNotMatch(w.getComputedStyle(b).backgroundColor + w.getComputedStyle(b).borderTopColor, TEAL_AMBAR);
+      /* El avance es el Responder compartido: teal con texto #06202A (prompt maestro §4.3). Un botón blanco no pasa. */
+      assert.equal(w.getComputedStyle(b).backgroundColor, "rgb(42, 157, 143)");
+      assert.equal(w.getComputedStyle(b).color, "rgb(6, 32, 42)");
     } finally { m.desmontar(); }
   }
   for (const f of ["src/components/t4/EntraOSaleDeCaja.jsx", "src/components/t4/Cajon.jsx", "src/components/t4/comun.jsx"]) {
     const imports = leer(f).split("\n").filter((l) => /^import /.test(l)).join("\n");
-    assert.doesNotMatch(imports, /\b(Opcion|Opciones|ConstructorAsiento|Responder)\b/, f);
+    assert.doesNotMatch(imports, /\b(Opcion|Opciones|ConstructorAsiento)\b/, f);
   }
 });
 

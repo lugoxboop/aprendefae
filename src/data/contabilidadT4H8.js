@@ -17,7 +17,7 @@
  *   1 · las nueve partidas, barajadas: «Se asienta» o «No se asienta». La
  *       cifra cae en la bandeja elegida
  *   2 · las cinco notas del banco, en el orden en que salieron: el asiento de
- *       cada una en el tablero de seis cuentas. Con el acierto, la línea de
+ *       cada una en el tablero de cinco cuentas. Con el acierto, la línea de
  *       Bancos CAE EN EL MAYOR
  *   3 · el saldo de Bancos en el mayor, escrito: el mayor lo pone al pie
  * El saldo conciliado y el extracto NO están en el DOM hasta el acierto de la
@@ -67,19 +67,17 @@ export const CXC_CLIENTES = "cxc-clientes";
 export const INGRESOS_INTERESES = "ingresos-intereses";
 export const GASTOS_CHEQUERA = "gastos-chequera";
 export const GASTO_INTERES = "gasto-interes";
-export const CAJA = "caja";
-/* Las seis cuentas del tablero, en su orden y en renglones fijos (Hanayama §3). */
+/* Las cinco cuentas del tablero, en su orden y en renglones fijos (Hanayama §3). «Caja» salió (⛔3 del bloque P2, decisión de Yujiro): con seis, a 320×568 las marcas de arriba quedaban fuera de la ventana, y las notas del banco no tocan Caja. */
 export const CUENTAS_H8 = [
   { id: BANCOS, renglones: ["Bancos"] },
   { id: CXC_CLIENTES, renglones: ["Cuentas por", "cobrar", "– clientes"] },
   { id: INGRESOS_INTERESES, renglones: ["Ingresos", "por intereses"] },
   { id: GASTOS_CHEQUERA, renglones: ["Gastos", "financieros", "– chequera"] },
   { id: GASTO_INTERES, renglones: ["Gasto interés"] },
-  { id: CAJA, renglones: ["Caja"] },
 ];
 export const nombreDeCuentaH8 = (id) => CUENTAS_H8.find((c) => c.id === id)?.renglones.join(" ") ?? null;
 
-/* Las reglas del error, en el orden del paquete: Caja; sin Bancos; Bancos al lado contrario; la cuenta; lados al revés. */
+/* Las reglas del error, en el orden del paquete: sin Bancos; Bancos al lado contrario; la cuenta; lados al revés. */
 const SIN_BANCOS = {
   entra: "La plata de esta nota entró a la cuenta del banco. Si el asiento no mueve Bancos, los libros siguen sin enterarse.",
   sale: "La plata de esta nota salió de la cuenta del banco. Si el asiento no mueve Bancos, los libros siguen sin enterarse.",
@@ -99,35 +97,30 @@ function asientos(s) {
       cuenta: { [INGRESOS_INTERESES]: "Esa cuenta es para lo que rinde una inversión. Aquí un cliente pagó una factura que debía.",
         [GASTOS_CHEQUERA]: `${cli} pagó una deuda: aquí no hay ningún gasto de la empresa. Piensa en qué cambió con ese pago.`,
         [GASTO_INTERES]: "Aquí nadie pagó intereses: un cliente pagó una factura que debía. Piensa en qué cambió con ese pago." },
-      caja: "La plata no pasó por la caja: se consignó directo en el banco.",
       reves: "Las cuentas están bien, pero al revés. Bancos sube, así que va al debe. Lo que debe el cliente baja, así que va al haber." },
     6: { debe: BANCOS, haber: INGRESOS_INTERESES, sentido: "entra",
       acierto: "La plata entró al banco: Bancos va al debe. Y es lo que ganó la empresa: Ingresos por intereses va al haber.",
       cuenta: { [CXC_CLIENTES]: "Nadie le debía esto a la empresa: es lo que rindió su inversión. Es un ingreso.",
         [GASTO_INTERES]: "Esos intereses los ganó la empresa, no los pagó. Un interés ganado es un ingreso.",
         [GASTOS_CHEQUERA]: "Esta plata la ganó la empresa por su inversión: no es un gasto. Piensa en qué tipo de cuenta registra lo que se gana." },
-      caja: "La plata no pasó por la caja: el banco la abonó en la cuenta.",
       reves: "Las cuentas están bien, pero al revés. Bancos sube, así que va al debe. El ingreso va al haber." },
     7: { debe: GASTOS_CHEQUERA, haber: BANCOS, sentido: "sale",
       acierto: "La chequera es un gasto: Gastos financieros – chequera se debita y Bancos se acredita.",
       cuenta: { [GASTO_INTERES]: "Una chequera no es un interés: es lo que cobra el banco por los cheques. Tiene su propia cuenta de gasto.",
         [CXC_CLIENTES]: "Ningún cliente tiene que ver aquí: el banco cobró por un servicio suyo. Es un gasto de la empresa.",
         [INGRESOS_INTERESES]: "La chequera la cobró el banco: la empresa no ganó nada. Piensa en qué tipo de cuenta registra lo que se paga." },
-      caja: "La plata no salió de la caja: el banco la descontó de la cuenta.",
       reves: "Las cuentas están bien, pero al revés. El gasto va al debe. Bancos baja, así que va al haber." },
     8: { debe: GASTO_INTERES, haber: BANCOS, sentido: "sale",
       acierto: "Los intereses de sobregiro son un gasto: Gasto interés se debita y Bancos se acredita.",
       cuenta: { [INGRESOS_INTERESES]: "Estos intereses los cobró el banco, no los ganó la empresa. Un interés que se paga es un gasto.",
         [GASTOS_CHEQUERA]: "Esa cuenta es la del cobro de la chequera. Esto es un interés, y tiene su propia cuenta.",
         [CXC_CLIENTES]: "El banco cobró intereses por el sobregiro: ningún cliente quedó debiendo nada. Piensa en qué tipo de cuenta registra lo que se paga." },
-      caja: "La plata no salió de la caja: el banco la descontó de la cuenta.",
       reves: "Las cuentas están bien, pero al revés. El gasto va al debe. Bancos baja, así que va al haber." },
     9: { debe: CXC_CLIENTES, haber: BANCOS, sentido: "sale",
       acierto: `El pago de ${dev} nunca llegó, así que vuelve a deber: Cuentas por cobrar – clientes se debita y Bancos se acredita.`,
       cuenta: { [GASTOS_CHEQUERA]: `La empresa no perdió esa plata: ${dev} todavía la debe. Su deuda vuelve a subir.`,
         [GASTO_INTERES]: `La empresa no perdió esa plata: ${dev} todavía la debe. Su deuda vuelve a subir.`,
         [INGRESOS_INTERESES]: "Aquí no entra nada: el banco devolvió un cheque. Lo que sube es lo que el cliente debe." },
-      caja: "La plata no salió de la caja: el banco la descontó de la cuenta.",
       reves: "Las cuentas están bien, pero al revés. Lo que debe el cliente sube, así que va al debe. Bancos baja, así que va al haber." },
   };
 }
@@ -135,7 +128,6 @@ function asientos(s) {
 /* La regla del error que aplica a un asiento armado { debe, haber }, en el orden del paquete. */
 export function reglaH8(nota, a) {
   if (a.debe === nota.debe && a.haber === nota.haber) return { regla: "acierto", texto: nota.acierto };
-  if (a.debe === CAJA || a.haber === CAJA) return { regla: "caja", texto: nota.caja };
   if (a.debe !== BANCOS && a.haber !== BANCOS) return { regla: "sin-bancos", texto: SIN_BANCOS[nota.sentido] };
   const ladoB = nota.debe === BANCOS ? "debe" : "haber";
   const otra = ladoB === "debe" ? nota.haber : nota.debe;
@@ -171,7 +163,8 @@ export const SERIES_H8 = [SERIE_H8_1, SERIE_H8_2];
 
 /* ═══════════ INTERFAZ ═══════════ */
 
-export const ETAPAS_H8 = ["ETAPA 1 DE 3 · ¿SE ASIENTA?", "ETAPA 2 DE 3 · LOS ASIENTOS", "ETAPA 3 DE 3 · EL MAYOR"];
+/* Los rótulos de etapa pierden su contador: el contador es «Paso n de 15» (P2 de Hanayama, §5.1). */
+export const ETAPAS_H8 = ["¿Se asienta?", "Los asientos", "El mayor"];
 /* El contador dice «Paso n de 15» (un solo caso: §4.3 del prompt maestro): los cuatro avances son «Siguiente paso». El rótulo «ETAPA n DE 3» sigue orientando. */
 export const BOTON_H8 = {
   siguientePartida: "Siguiente paso", aLosAsientos: "Siguiente paso", comprobar: "Comprobar", siguienteAsiento: "Siguiente paso",

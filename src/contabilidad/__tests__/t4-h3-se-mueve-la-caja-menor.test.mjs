@@ -53,8 +53,9 @@ function montarJuego(props = {}) {
 }
 const q = (m, sel) => m.caja.querySelector(sel);
 const mitad = (m, k) => q(m, `[data-destino="${k}"]`);
-const comprobar = (m) => q(m, '[data-boton="comprobar"]');
-const siguiente = (m) => q(m, '[data-boton="seguir-hacer"]');
+const comprobar = (m) => q(m, '[data-boton="comprobar"] button');
+/* El avance y «Comprobar» son el Responder compartido dentro de su envoltorio (P2 de Hanayama, §3.4). */
+const siguiente = (m) => q(m, '[data-boton="seguir-hacer"] button');
 /* El gesto mínimo del estudiante: la ficha del debe, la del haber y «Comprobar». */
 async function armar(m, a) {
   await tocar(mitad(m, `${a.debe}:debe`));
@@ -171,7 +172,12 @@ test("★★★ PH8-2: mientras se pregunta, nada de la respuesta está en el DO
       /* Con una ficha puesta, todavía nada. */
       await tocar(mitad(m, `${op.debe}:debe`));
       assert.ok(!raiz.textContent.includes(op.acierto));
-      assert.equal(comprobar(m).getAttribute("aria-disabled"), "true");
+      /* «Comprobar» nunca se apaga (P2 de Hanayama, §5.3): con una ficha sola, avisa y no califica. */
+      assert.equal(comprobar(m).disabled, false);
+      assert.equal(comprobar(m).getAttribute("aria-disabled"), null);
+      await tocar(comprobar(m));
+      assert.equal(q(m, "[data-aviso]").textContent, D.AVISO_H3);
+      assert.equal(raiz.querySelector("[data-marca], [data-mensaje]"), null, "con una ficha sola, «Comprobar» calificó");
     } finally { m.desmontar(); }
   }
 });
@@ -227,7 +233,8 @@ test("★★★ el acierto suma en las dos mitades, cambia el sobre y el libro d
         assert.equal(mitad(m, "caja-menor:debe").dataset.marca, "mal");
         assert.equal(mitad(m, "bancos:haber").dataset.marca, "bien");
         assert.equal(mitad(m, "gastos-generales:debe").dataset.marca, undefined, "«Iba aquí» antes de tiempo");
-        assert.equal(q(m, "[data-diria]").textContent, `✗ ${D.diriaH3(514_600, 300_000)}`);
+        assert.equal(q(m, "[data-diria]").textContent, D.diriaH3(514_600, 300_000));
+        assert.ok(q(m, '[data-diria] [data-icono="x"]'), "el X de lucide en la línea «diría»");
         assert.equal(libro(m), 300_000, "en el error, el libro se movió antes de tiempo");
         assert.equal(sobre(m), 300_000);
         assert.ok(CORAL.test(w.getComputedStyle(mitad(m, "caja-menor:debe")).borderTopColor), "el error no va en coral");
@@ -273,13 +280,13 @@ test("★★★ «Operación n de 4» coincide con el pulso activo al llegar y d
   } finally { m.desmontar(); }
 });
 
-test("★★★ B4: el acierto es ✓ y borde blanco; teal y ámbar solo en «Debe» y «Haber»; seguir en blanco neutro", async () => {
+test("★★★ B4: el acierto es Check y borde blanco; teal y ámbar solo en «Debe» y «Haber»; seguir es el Responder teal", async () => {
   const m = montarJuego({ items: D.SERIE_1 });
   try {
     await armar(m, D.SERIE_1.ops[0]);
     await esperar(500);
     const raiz = q(m, "[data-t4-h3]");
-    assert.deepEqual([...new Set(conColor(raiz, TEAL_AMBAR).map((e) => e.textContent.trim()))].filter((x) => x && !/^Operación/.test(x)).sort(), ["Debe", "Haber"]);
+    assert.deepEqual([...new Set(conColor(raiz, TEAL_AMBAR).filter((e) => !e.closest("[data-avance-t4]")).map((e) => e.textContent.trim()))].filter((x) => x && !/^Operación/.test(x)).sort(), ["Debe", "Haber"]);
     assert.deepEqual(conColor(q(m, "[data-figura]"), CORAL), [], "hay coral en un acierto");
     for (const k of ["caja-menor:debe", "bancos:haber"]) {
       assert.equal(mitad(m, k).dataset.marca, "bien");
@@ -287,10 +294,12 @@ test("★★★ B4: el acierto es ✓ y borde blanco; teal y ámbar solo en «De
     }
     const b = siguiente(m);
     assert.equal(b.textContent, D.BOTON_H3.siguiente);
-    assert.equal(w.getComputedStyle(b).backgroundColor, "rgb(248, 249, 250)");
+    /* El avance es el Responder compartido: teal con texto #06202A (prompt maestro §4.3). Un botón blanco no pasa. */
+    assert.equal(w.getComputedStyle(b).backgroundColor, "rgb(42, 157, 143)");
+    assert.equal(w.getComputedStyle(b).color, "rgb(6, 32, 42)");
   } finally { m.desmontar(); }
   const imports = leer("src/components/t4/SeMueveLaCajaMenor.jsx").split("\n").filter((l) => /^import /.test(l)).join("\n");
-  assert.doesNotMatch(imports, /\b(Opcion|Opciones|ConstructorAsiento|Responder|AsientoEnLineas)\b/);
+  assert.doesNotMatch(imports, /\b(Opcion|Opciones|ConstructorAsiento|Responder|AsientoEnLineas)\b/, "el Responder entra solo por Avance (comun.jsx)");
 });
 
 test("★★★ al terminar: el cierre con su texto y su pie, y onCompletar con el porcentaje y el asiento armado en cada error", async () => {
@@ -358,7 +367,7 @@ test("★★★ «Así se juega»: pasos, ejemplo y texto alternativo del paquet
   assert.ok(PAQ.includes(`| ${D.EJEMPLO_H3.ops[0].texto} |`));
   assert.ok(PAQ.includes(`| Correcto. ${D.EJEMPLO_H3.ops[0].acierto} |`));
   assert.ok(PAQ.includes(`| ${D.ALT_H3} |`));
-  assert.deepEqual(asi.guion.toques.map((t) => t.en), ['[data-destino="caja-menor:debe"]', '[data-destino="bancos:haber"]', '[data-boton="comprobar"]']);
+  assert.deepEqual(asi.guion.toques.map((t) => t.en), ['[data-destino="caja-menor:debe"]', '[data-destino="bancos:haber"]', '[data-boton="comprobar"] button']);
   assert.ok(!D.SERIES_H3.some((s) => s.empresa === D.EJEMPLO_H3.empresa), "el ejemplo es de una serie");
 });
 

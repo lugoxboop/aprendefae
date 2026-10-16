@@ -53,7 +53,7 @@ test("★★★ ningún dato ni componente de T4 trae «Bien», «Mal», «Corre
 
 test("★★★ la marca son tres literales y nada más: «✓ Correcto», «✗ No va aquí» e «Iba aquí»", async () => {
   const { MARCA } = await import("../../data/contabilidadT4.js");
-  assert.deepEqual(MARCA, { bien: ["✓", "Correcto"], mal: ["✗", "No va aquí"], era: ["", "Iba aquí"] });
+  assert.deepEqual(MARCA, { bien: "Correcto", mal: "No va aquí", era: "Iba aquí" });
   const A0 = await import("../../data/contabilidadT4A0.js");
   assert.equal(A0.MARCA_CASILLA, undefined, "MARCA_CASILLA volvió: las casillas de A0 usan MARCA");
   const { MARCA_CIFRA_BIEN, MARCA_CIFRA_MAL } = await import("../../data/contabilidadT4Hacer.js");

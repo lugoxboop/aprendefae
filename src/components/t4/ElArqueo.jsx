@@ -22,7 +22,7 @@
  * era. Un intento por pregunta; la siguiente se juega con la verdad dibujada.
  *
  *   · el acierto con ✓ y borde blanco, NUNCA teal ni ámbar; el botón de
- *     seguir en el neutro blanco (SeguirHacer)
+ *     seguir en el Responder compartido, teal (Avance)
  *   · «Ronda n de 4» y el pulso activo coinciden
  *   · mientras se pregunta, nada de la respuesta está en el DOM (PH8-2): ni la
  *     aguja «suman», ni el tramo, ni el asiento, ni la devolución
@@ -45,7 +45,8 @@ import {
   rotuloPasoH4, resumenH4, sortearH4, evaluarH4, evaluarCuentaH4, puntuarH4, itemH4,
 } from "../../data/contabilidadT4H4.js";
 import { ESPERA_ERROR_MS, cifra } from "../../data/contabilidadT4Hacer.js";
-import { C, CSS_T4R, Mensaje, SeguirHacer } from "./comun.jsx";
+import { C, CSS_T4R, Mensaje, Avance, LineaMarcas } from "./comun.jsx";
+import { MARCA } from "../../data/contabilidadT4.js";
 import { Tablero, CSS_TABLERO } from "./tablero.jsx";
 import { CSS_HACER } from "./hacerComun.jsx";
 import { Regla, CSS_REGLA } from "./Regla.jsx";
@@ -62,32 +63,38 @@ export const CSS_H4 = `
 .t4h4-q > p { margin: 0; font: 600 15px/1.4 "Sora", "Inter", sans-serif; }
 .t4h4-q > span { font: 500 12px/1.2 "Inter", sans-serif; color: ${C.texto2}; }
 .t4h4-ops { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-.t4h4-op { position: relative; min-height: 44px; border-radius: 8px; border: 1px solid ${C.neutro}; background: transparent; color: ${C.texto}; font: 600 14px "Inter", sans-serif; font-variant-numeric: tabular-nums; cursor: pointer; white-space: nowrap; padding: 0 4px; }
+.t4h4-op { position: relative; min-height: 44px; border-radius: 8px; border: 1px solid ${C.reposo}; background: transparent; color: ${C.texto}; font: 600 14px "Inter", sans-serif; font-variant-numeric: tabular-nums; cursor: pointer; white-space: nowrap; padding: 0 4px; }
 .t4h4-op:disabled { cursor: default; }
-.t4h4-op[data-marca] { background: rgba(248,249,250,0.08); }
 .t4h4-op[data-marca="bien"], .t4h4-op[data-marca="era"] { border: 2px solid ${C.texto}; }
 .t4h4-op[data-marca="mal"] { border: 2px solid ${C.error}; }
-.t4h4-op .t4h4-g { position: absolute; top: -8px; right: 6px; padding: 0 3px; background: ${C.fondo}; font: 700 12px/1.2 "Inter", sans-serif; }
-.t4h4-as { display: grid; gap: 2px; border: 1px solid ${C.neutro}; border-radius: 10px; padding: 8px 12px; font-size: 13px; }
+.t4h4-as { display: grid; gap: 2px; background: ${C.hundido}; border: 1px solid ${C.hundidoBorde}; border-radius: 10px; padding: 8px 12px; font-size: 13px; }
 .t4h4-as > div { display: grid; grid-template-columns: minmax(0,1fr) 70px 70px; gap: 4px; align-items: end; }
 .t4h4-as > div > span:nth-child(n+2) { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 `;
 
-/* Las opciones de una pregunta 1, 2 o 3: un toque, y la marca en lo elegido y, ya aplicado, en lo que era. */
+/*
+ * Las opciones de una pregunta 1, 2 o 3: un toque, y la marca en lo elegido y,
+ * ya aplicado, en lo que era. La opción es angosta para su pastilla, así que la
+ * pastilla va en la línea de marcas, debajo del grupo (P2 de Hanayama, §2.3-3).
+ * El lector oye la marca en el nombre de la opción.
+ */
 function Opciones({ opciones, elegida, correcta, aplicado, onElegir, rotulo, etiqueta }) {
+  const marca = (o) => (elegida == null ? null : o === elegida ? (o === correcta ? "bien" : "mal") : (aplicado && o === correcta ? "era" : null));
   return (
-    <div className="t4h4-ops" role="group" aria-label={etiqueta}>
-      {opciones.map((o) => {
-        const m = elegida == null ? null : o === elegida ? (o === correcta ? "bien" : "mal") : (aplicado && o === correcta ? "era" : null);
-        return (
-          <button key={o} type="button" className="t4h4-op" data-opcion={o} data-marca={m ?? undefined} disabled={elegida != null} aria-pressed={o === elegida} onClick={() => onElegir(o)}>
-            {rotulo(o)}
-            {m === "bien" && <span className="t4h4-g" aria-hidden="true">✓</span>}
-            {m === "mal" && <span className="t4h4-g" aria-hidden="true" style={{ color: C.error }}>✗</span>}
-          </button>
-        );
-      })}
-    </div>
+    <>
+      <div className="t4h4-ops" role="group" aria-label={etiqueta}>
+        {opciones.map((o) => {
+          const m = marca(o);
+          return (
+            <button key={o} type="button" className="t4h4-op" data-opcion={o} data-marca={m ?? undefined} disabled={elegida != null} aria-pressed={o === elegida}
+              aria-label={m ? `${rotulo(o)}: ${MARCA[m]}` : undefined} onClick={() => onElegir(o)}>
+              {rotulo(o)}
+            </button>
+          );
+        })}
+      </div>
+      <LineaMarcas columnas={opciones.length} marcas={Object.fromEntries(opciones.map((o, k) => [k, marca(o) ? { marca: marca(o) } : null]))} gap={6} />
+    </>
   );
 }
 
@@ -100,7 +107,7 @@ function AsientoReembolso({ r, cuenta }) {
   ];
   return (
     <div className="t4h4-as t4r-nueva" data-asiento>
-      <div><span /><span style={{ color: C.debe, fontWeight: 600 }}>{ASIENTO_H4.debe}</span><span style={{ color: C.haber, fontWeight: 600 }}>{ASIENTO_H4.haber}</span></div>
+      <div><span /><span style={{ color: C.debeTexto, fontWeight: 600 }}>{ASIENTO_H4.debe}</span><span style={{ color: C.haber, fontWeight: 600 }}>{ASIENTO_H4.haber}</span></div>
       {lineas.map((l) => (
         <div key={l.k} data-linea-asiento={l.k} style={{ borderTop: "1px solid rgba(248,249,250,0.22)", paddingTop: "2px" }}>
           <span style={{ gridColumn: "1 / -1", display: "grid", paddingLeft: l.sangria ? "12px" : 0 }}>{l.renglones.map((t) => <span key={t} style={{ whiteSpace: "nowrap" }}>{t}</span>)}</span>
@@ -117,7 +124,6 @@ export default function ElArqueo({ Marco, rotulo, titulo, acento, onCompletar, i
   const [eleg, setEleg] = useState(null); /* lo elegido: una opción, o { cuenta, lado } en la 4 */
   const [aplicado, setAplicado] = useState(false);
   const [hechas, setHechas] = useState({}); /* lo ya resuelto en la ronda, por pregunta */
-  const [puesta, setPuesta] = useState({ debe: null, haber: null });
   const [bien, setBien] = useState(0);
   const reloj = useRef(0);
   const zonaBoton = useRef(null);
@@ -144,23 +150,22 @@ export default function ElArqueo({ Marco, rotulo, titulo, acento, onCompletar, i
     if (ok) guardar(); else reloj.current = setTimeout(guardar, ESPERA_ERROR_MS);
   };
   const elegir = (v) => { if (eleg != null) return; decidir(v, evaluarH4(p, v).ok, String(v)); };
-  const listo4 = Boolean(puesta.debe || puesta.haber);
-  const comprobar = () => {
-    if (eleg != null || !listo4) return;
-    const lado = puesta.debe ? "debe" : "haber";
-    const v = { cuenta: puesta[lado], lado };
-    decidir(v, evaluarCuentaH4(p, v.cuenta, v.lado).ok, `${v.cuenta}:${v.lado}`);
+  /* Pregunta 4: una sola ficha, así que el toque en la mitad califica en el acto, sin «Comprobar» (prompt maestro §4.3; P2 de Hanayama, §5.2). */
+  const elegirCuenta = (cuenta, lado) => {
+    if (eleg != null) return;
+    const v = { cuenta, lado };
+    decidir(v, evaluarCuentaH4(p, cuenta, lado).ok, `${cuenta}:${lado}`);
   };
 
   const avanzar = () => {
     clearTimeout(reloj.current);
     if (!aplicado) setHechas((h) => ({ ...h, [p.id]: { v: eleg, ok: false } }));
-    setEleg(null); setAplicado(false); setPuesta({ debe: null, haber: null });
+    setEleg(null); setAplicado(false);
     if (k + 1 < r.preguntas.length) { setK(k + 1); return; }
     setHechas({}); setK(0);
     if (t.i + 1 < rondas.length) { enfocar.current = true; t.setI(t.i + 1); } else t.setTerminado(true);
   };
-  const reiniciar = () => { clearTimeout(reloj.current); t.reiniciar(); setK(0); setEleg(null); setAplicado(false); setHechas({}); setPuesta({ debe: null, haber: null }); setBien(0); };
+  const reiniciar = () => { clearTimeout(reloj.current); t.reiniciar(); setK(0); setEleg(null); setAplicado(false); setHechas({}); setBien(0); };
 
   if (t.terminado) {
     return (
@@ -239,14 +244,13 @@ export default function ElArqueo({ Marco, rotulo, titulo, acento, onCompletar, i
               <>
                 <Tablero
                   cuentas={CUENTAS_H4}
-                  puestas={eleg ? { [eleg.lado]: eleg.cuenta } : puesta}
+                  puestas={{}}
                   monto={cifra(r.dif)}
                   activo={eleg == null}
                   marcas={marcas4}
-                  ancho={70}
                   totales={aplicado ? { [p.correcta.cuenta]: { [p.correcta.lado]: r.dif } } : {}}
                   recien={aplicado ? [`${p.correcta.cuenta}:${p.correcta.lado}`] : []}
-                  onElegir={(id, lado) => setPuesta((x) => (x[lado] === id ? { debe: null, haber: null } : { debe: null, haber: null, [lado]: id }))}
+                  onElegir={elegirCuenta}
                   etiqueta={p.pregunta}
                 />
                 {aplicado && <AsientoReembolso r={r} cuenta={p.correcta} />}
@@ -258,16 +262,8 @@ export default function ElArqueo({ Marco, rotulo, titulo, acento, onCompletar, i
         <div className="t4r" data-retro aria-live="polite" aria-atomic="true">
           {msg && <div style={{ marginTop: "12px" }}><Mensaje ok={msg.ok} texto={msg.texto} pagina={r.pagina} /></div>}
         </div>
-        {p.id === CUENTA && eleg == null && (
-          <div className="t4r" style={{ marginTop: "14px" }}>
-            <button type="button" className="t4r-btn" data-boton="comprobar" aria-disabled={!listo4 ? "true" : undefined}
-              style={!listo4 ? { background: "transparent", color: C.texto2, borderColor: C.texto2 } : undefined} onClick={comprobar}>
-              {BOTON_H4.comprobar}
-            </button>
-          </div>
-        )}
         {eleg != null && !modoDemo && (
-          <div className="t4r"><SeguirHacer refZona={zonaBoton} onClick={avanzar}>{textoSeguir}</SeguirHacer></div>
+          <div className="t4r"><Avance refZona={zonaBoton} onClick={avanzar}>{textoSeguir}</Avance></div>
         )}
       </div>
     </Marco>

@@ -69,7 +69,7 @@ test("★★★ los rótulos de la figura son los del paquete; la regla conserva
   const F = A.FIGURA_A3;
   for (const [lugar, v] of [["Soportes", F.soportes], ["Caja", F.caja], ["Sin contar", F.sinContar], ["Contar", F.contar], ["Control (para el lector)", F.control],
     ["Línea de P1 · cuadra", F.zona.cuadra], ["Opción · falta", F.chips.falta], ["Opción · cuadra", F.chips.cuadra], ["Opción · sobra", F.chips.sobra],
-    ["Aguja", F.aguja], ["Asiento", F.asiento], ["Camino · cobra", F.caminos.cobra], ["Camino · asume", F.caminos.asume], ["Comprobar", F.comprobar]]) {
+    ["Aguja", F.aguja], ["Asiento", F.asiento], ["Camino · cobra", F.caminos.cobra], ["Camino · asume", F.caminos.asume]]) {
     assert.equal(v, textoDe(r, lugar), lugar);
   }
   assert.equal(`${F.zona.sobra} · cifra`, textoDe(r, "Línea de P1 · sobra"));
@@ -131,7 +131,7 @@ test("★★★ P2: la aguja aparece solo con el acierto (antes delataría la re
       tocar(q(m, `[data-opcion="${o}"]`));
       await esperar(0);
       assert.equal(aguja(m, "suman"), null, `${o}: la aguja en el error`);
-      assert.match(visible(q(m, `[data-opcion="${o}"]`)), /✗No va aquí$/);
+      assert.equal(visible(q(m, "[data-linea-marcas]")), "No va aquí");
     }
     tocar(q(m, '[data-opcion="sobra"]'));
     await esperar(0);
@@ -151,7 +151,8 @@ test("★★★ P3 y P5: la aguja «caja + tu cheque» cae donde dice el cheque 
         const desv = caja + o - A2.FONDO;
         assert.equal(izquierda(aguja(m, "con-el-cheque")), xDe(desv), `${id} · ${o}`);
         assert.equal(aguja(m, "con-el-cheque").style.background, "rgb(231, 111, 81)", `${id} · ${o}: la aguja no va en coral`);
-        assert.match(q(m, '[data-rot="tu-cheque"]').textContent, new RegExp(`✗ caja \\+ tu cheque ${String(caja + o).replace(/\B(?=(\d{3})+(?!\d))/g, "\\.")}`));
+        assert.ok(q(m, '[data-rot="tu-cheque"] [data-icono="x"]'), "el X de lucide en la etiqueta");
+        assert.match(q(m, '[data-rot="tu-cheque"]').textContent, new RegExp(`^(← )?caja \\+ tu cheque ${String(caja + o).replace(/\B(?=(\d{3})+(?!\d))/g, "\\.")}`));
       }
       tocar(q(m, `[data-opcion="${correcta}"]`));
       await esperar(0);
@@ -161,7 +162,7 @@ test("★★★ P3 y P5: la aguja «caja + tu cheque» cae donde dice el cheque 
   }
 });
 
-test("★★★ P4 y P7: la diferencia a una cuenta y un lado; en el error no se escribe nada, «✗ No va aquí» en lo elegido y el texto de esa cuenta (o del lado); el acierto la escribe", async () => {
+test("★★★ P4 y P7: la diferencia a una cuenta y un lado, con un toque; en el error no se escribe nada, «✗ No va aquí» en lo elegido y el texto de esa cuenta (o del lado); el acierto la escribe", async () => {
   for (const [id, malas, lado, va] of [
     ["el-asiento", ["gastos-generales:debe", "bancos:haber"], "ino-sobrante:debe", "ino-sobrante:haber"],
     ["camino-1", ["gno-faltante:debe", "ino-sobrante:haber"], "cxc-empleados:haber", "cxc-empleados:debe"],
@@ -171,18 +172,19 @@ test("★★★ P4 y P7: la diferencia a una cuenta y un lado; en el error no se
       const m = await abrir(P, id);
       try {
         const antes = Object.fromEntries(p.cuentas.flatMap((c) => ["debe", "haber"].map((l) => [`${c}:${l}`, total(m, `${c}:${l}`)])));
+        /* Una sola ficha: el toque califica en el acto, sin «Comprobar» (P2 de Hanayama, §5.2). */
         tocar(q(m, `[data-destino="${k}"]`));
-        tocar(q(m, "[data-boton=comprobar]"));
         await esperar(0);
+        assert.equal(q(m, "[data-boton=comprobar]"), null, "P4 y P7 ya no llevan «Comprobar»");
         const [cuenta] = k.split(":");
         assert.equal(q(m, "[data-devolucion]").textContent, `Incorrecto. ${p.errores[cuenta] ?? p.errores.lado}`, `${id} · ${k}`);
-        for (const [x, v] of Object.entries(antes)) assert.equal(total(m, x), x === k ? `${v}✗Novaaquí` : v, `${id} · ${k} · ${x}`);
+        for (const [x, v] of Object.entries(antes)) assert.equal(total(m, x), x === k ? `${v}Novaaquí` : v, `${id} · ${k} · ${x}`);
       } finally { m.desmontar(); }
     }
     const m = await abrir(P, id);
     try {
       await jugar(m, P, id);
-      assert.equal(total(m, va), `${String(p.monto).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}✓Correcto`);
+      assert.equal(total(m, va), `${String(p.monto).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}Correcto`);
     } finally { m.desmontar(); }
   }
 });

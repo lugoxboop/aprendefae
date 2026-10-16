@@ -22,7 +22,7 @@
  */
 import { useEffect, useId, useState } from "react";
 import { useNumeroQueSube } from "../mecanicas/libros/verbos.jsx";
-import { C, cifra, Marca } from "./comun.jsx";
+import { C, cifra, LineaMarcas } from "./comun.jsx";
 import { LECTOR_ERROR, MARCA } from "../../data/contabilidadT4.js";
 
 export const CSS_APRENDER = `
@@ -41,9 +41,9 @@ export const CSS_APRENDER = `
 .t4ch > span:first-child > span + span { font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; }
 .t4ch > span:last-child { font: 600 15px/1.2 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .t4op-g { display: grid; gap: 6px; }
-.t4op { display: grid; place-items: center; align-content: center; gap: 2px; min-height: 48px; border-radius: 8px; padding: 2px 4px; white-space: nowrap; cursor: pointer; border: 1px solid ${C.neutro}; background: transparent; color: ${C.texto}; font: 600 14px/20px "Inter", sans-serif; font-variant-numeric: tabular-nums; min-width: 0; }
+.t4op { display: grid; place-items: center; align-content: center; gap: 2px; min-height: 48px; border-radius: 8px; padding: 2px 4px; white-space: nowrap; cursor: pointer; border: 1px solid ${C.reposo}; background: transparent; color: ${C.texto}; font: 600 14px/20px "Inter", sans-serif; font-variant-numeric: tabular-nums; min-width: 0; }
 .t4op:disabled { cursor: default; }
-.t4op[data-marca] { border-width: 2px; background: rgba(248,249,250,0.08); border-color: ${C.texto}; padding: 1px 3px; }
+.t4op[data-marca] { border-width: 2px; border-color: ${C.texto}; padding: 1px 3px; }
 .t4op[data-marca="mal"] { border-color: ${C.error}; }
 .t4r-tab { appearance: none; min-height: 44px; border-radius: 8px; border: 1px solid ${C.neutro}; background: transparent; color: ${C.texto}; font: 600 15px "Sora", "Inter", sans-serif; cursor: pointer; padding: 0; }
 .t4r-tab[aria-pressed="true"] { background: ${C.texto}; color: ${C.fondo}; border-color: ${C.texto}; }
@@ -98,25 +98,31 @@ export function Cheque({ monto, onClick = null, hecho = false, renglones }) {
 
 /*
  * Las opciones de una pregunta de Aprender. Tras el error siguen activas
- * (reintento) y solo se marca la elegida, con su palabra: nada delata la
- * correcta. Con el acierto se bloquean. El lector oye la marca en el nombre.
+ * (reintento) y solo se marca la elegida: nada delata la correcta. Con el
+ * acierto se bloquean. La opción es angosta para su pastilla, así que la
+ * pastilla va en la línea de marcas, debajo del grupo (P2 de Hanayama, §2.3-3).
+ * El lector oye la marca en el nombre de la opción.
  */
 export function Chips({ opciones, elegida, correcta, onElegir, rotulo = (o) => cifra(o), etiqueta }) {
+  const marca = (o) => (o === elegida ? (o === correcta ? "bien" : "mal") : null);
+  const marcas = Object.fromEntries(opciones.map((o, k) => [k, marca(o) ? { marca: marca(o) } : null]));
   return (
-    <div className="t4op-g" style={{ gridTemplateColumns: `repeat(${opciones.length}, minmax(0, 1fr))` }} role="group" aria-label={etiqueta}>
-      {opciones.map((o) => {
-        const m = o === elegida ? (o === correcta ? "bien" : "mal") : null;
-        const r = rotulo(o);
-        return (
-          <button key={o} type="button" className="t4op" data-opcion={o} data-marca={m ?? undefined} aria-pressed={o === elegida}
-            aria-label={m ? `${r}: ${MARCA[m][1]}` : undefined}
-            disabled={elegida === correcta} onClick={() => onElegir(o)}>
-            <span>{r}</span>
-            {m && <Marca marca={m} palabras={MARCA[m]} />}
-          </button>
-        );
-      })}
-    </div>
+    <>
+      <div className="t4op-g" style={{ gridTemplateColumns: `repeat(${opciones.length}, minmax(0, 1fr))` }} role="group" aria-label={etiqueta}>
+        {opciones.map((o) => {
+          const m = marca(o);
+          const r = rotulo(o);
+          return (
+            <button key={o} type="button" className="t4op" data-opcion={o} data-marca={m ?? undefined} aria-pressed={o === elegida}
+              aria-label={m ? `${r}: ${MARCA[m]}` : undefined}
+              disabled={elegida === correcta} onClick={() => onElegir(o)}>
+              <span>{r}</span>
+            </button>
+          );
+        })}
+      </div>
+      <LineaMarcas columnas={opciones.length} marcas={marcas} gap={6} />
+    </>
   );
 }
 

@@ -124,7 +124,8 @@ test("★★★ P2: con el acierto el nombre entra al mayor y llega el siguiente
       await esperar(0);
       const b = q(m, `[data-destino="${otro}"]`);
       assert.equal(b.dataset.marca, "mal");
-      assert.equal(visible(b), `${otro === T.DEBE ? "Sube" : "Baja"}✗No va aquí`);
+      assert.equal(visible(b), otro === T.DEBE ? "Sube" : "Baja");
+      assert.equal(visible(q(m, "[data-linea-marcas]")), "No va aquí", "la pastilla, en la línea de marcas");
       assert.equal(b.getAttribute("aria-label"), `${otro === T.DEBE ? "Sube" : "Baja"}: No va aquí`);
       assert.equal(q(m, "[data-lector-error]").textContent, "Incorrecto.");
       assert.deepEqual([lineasMayor(m, "debe"), lineasMayor(m, "haber")], antes, `${mv.id}: el error escribió en el mayor`);
@@ -160,7 +161,7 @@ test("★★★ P3: el renglón del cheque no existe antes del acierto (PH8-2); 
       tocar(q(m, `[data-opcion="${o}"]`));
       await esperar(0);
       assert.equal(q(m, "[data-renglon]"), null, `${o}: el renglón en el error`);
-      assert.match(visible(q(m, `[data-opcion="${o}"]`)), /✗No va aquí$/);
+      assert.equal(visible(q(m, "[data-linea-marcas]")), "No va aquí");
     }
     tocar(q(m, '[data-opcion="empresa"]'));
     await esperar(0);

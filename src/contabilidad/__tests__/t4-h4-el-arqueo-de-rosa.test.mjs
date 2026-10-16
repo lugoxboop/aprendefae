@@ -49,12 +49,14 @@ function montarJuego(props = {}) {
 const q = (m, sel) => m.caja.querySelector(sel);
 const opcion = (m, v) => q(m, `[data-opcion="${v}"]`);
 const mitad = (m, k) => q(m, `[data-destino="${k}"]`);
-const comprobar = (m) => q(m, '[data-boton="comprobar"]');
-const siguiente = (m) => q(m, '[data-boton="seguir-hacer"]');
+const comprobar = (m) => q(m, '[data-boton="comprobar"] button');
+/* El avance y «Comprobar» son el Responder compartido dentro de su envoltorio (P2 de Hanayama, §3.4). */
+const siguiente = (m) => q(m, '[data-boton="seguir-hacer"] button');
 const devolucion = (m) => visible(q(m, "[data-devolucion]"));
 /* El gesto mínimo de una pregunta: un toque (1, 2 y 3) o una ficha y «Comprobar» (4). */
 async function responder(m, p, v) {
-  if (p.id === D.CUENTA) { await tocar(mitad(m, `${v.cuenta}:${v.lado}`)); await tocar(comprobar(m)); } else await tocar(opcion(m, v));
+  /* La pregunta 4 también es de una ficha: el toque califica, sin «Comprobar» (P2 de Hanayama, §5.2). */
+  if (p.id === D.CUENTA) await tocar(mitad(m, `${v.cuenta}:${v.lado}`)); else await tocar(opcion(m, v));
 }
 const desvio = (sel, m) => Number(q(m, sel)?.style.left.replace(/calc\(|%.*$/g, ""));
 
@@ -167,7 +169,7 @@ test("★★★ PH8-2: mientras se pregunta, nada de la respuesta está en el DO
   }
 });
 
-test("★★★ gesto mínimo: cada error con nombre de cada pregunta de cada ronda se comete con un toque (o una ficha y «Comprobar») y sale ESE mensaje", async () => {
+test("★★★ gesto mínimo: cada error con nombre de cada pregunta de cada ronda se comete con un toque y sale ESE mensaje; ninguna pregunta lleva «Comprobar»", async () => {
   for (const r of D.RONDAS_H4) for (const p of r.preguntas) {
     const malas = p.id === D.CUENTA
       ? [...D.CUENTAS_H4.filter((c) => c.id !== p.correcta.cuenta).flatMap((c) => ["debe", "haber"].map((lado) => [{ cuenta: c.id, lado }, p.errores[c.id]])),
@@ -176,6 +178,7 @@ test("★★★ gesto mínimo: cada error con nombre de cada pregunta de cada ro
     for (const [v, texto] of malas) {
       const m = montarJuego({ items: [solo(r, [p.id])] });
       try {
+        assert.equal(comprobar(m), null, `${r.id} ${p.id}: «Comprobar» con una sola ficha`);
         await responder(m, p, v);
         assert.equal(q(m, "[data-mensaje]").dataset.mensaje, "error");
         assert.equal(devolucion(m), texto, `${r.id} ${p.id} ${JSON.stringify(v)}`);
@@ -210,10 +213,9 @@ test("★★★ la regla dibuja lo que decide el estudiante: la suma, su diferen
     assert.equal(desvio("[data-aguja=con-el-cheque]", m), 50);
     assert.equal(visible(q(m, "[data-devolucion]")), `Correcto. ${r.preguntas[2].acierto}`);
     await tocar(siguiente(m));
-    /* Pregunta 4: la cuenta, y con el acierto el asiento del reembolso. */
-    await tocar(mitad(m, "ino-sobrante:haber"));
+    /* Pregunta 4: la cuenta, con un toque (sin «Comprobar»), y con el acierto el asiento del reembolso. */
     assert.equal(q(m, "[data-asiento]"), null);
-    await tocar(comprobar(m));
+    await tocar(mitad(m, "ino-sobrante:haber"));
     assert.equal(mitad(m, "ino-sobrante:haber").dataset.marca, "bien");
     const lineas = [...m.caja.querySelectorAll("[data-linea-asiento]")].map((x) => [...x.querySelectorAll("span")].map((y) => y.children.length ? null : y.textContent).filter(Boolean));
     assert.deepEqual(lineas, [["Gastos generales", "391.800"], ["Ingresos no operacionales", "– sobrante de caja menor", "4.300"], ["Bancos", "387.500"]]);
@@ -259,17 +261,19 @@ test("★★★ «Ronda n de 4» coincide con el pulso activo; al terminar, el c
   } finally { m.desmontar(); }
 });
 
-test("★★★ B4: el acierto es ✓ y borde blanco; teal y ámbar solo en «Debe» y «Haber»; seguir en blanco neutro", async () => {
+test("★★★ B4: el acierto es Check y borde blanco; teal y ámbar solo en «Debe» y «Haber»; seguir es el Responder teal", async () => {
   const r = ronda("h5-1");
   const m = montarJuego({ items: [solo(r, [D.CUENTA])] });
   try {
     await responder(m, r.preguntas[3], r.preguntas[3].correcta);
     const raiz = q(m, "[data-t4-h4]");
-    const tonos = [...new Set(conColor(raiz, TEAL_AMBAR).map((e) => e.textContent.trim()))].filter((x) => x && !/^Ronda/.test(x)).sort();
+    const tonos = [...new Set(conColor(raiz, TEAL_AMBAR).filter((e) => !e.closest("[data-avance-t4]")).map((e) => e.textContent.trim()))].filter((x) => x && !/^Ronda/.test(x)).sort();
     assert.deepEqual(tonos, ["DEBE", "Debe", "HABER", "Haber"]);
     assert.deepEqual(conColor(q(m, "[data-figura]"), CORAL), []);
     assert.equal(w.getComputedStyle(mitad(m, "cxc-empleados:debe")).borderTopColor, "rgb(248, 249, 250)");
-    assert.equal(w.getComputedStyle(siguiente(m)).backgroundColor, "rgb(248, 249, 250)");
+    /* El avance es el Responder compartido: teal con texto #06202A (prompt maestro §4.3). Un botón blanco no pasa. */
+    assert.equal(w.getComputedStyle(siguiente(m)).backgroundColor, "rgb(42, 157, 143)");
+    assert.equal(w.getComputedStyle(siguiente(m)).color, "rgb(6, 32, 42)");
   } finally { m.desmontar(); }
   const m2 = montarJuego({ items: [solo(r, [D.ARQUEO])] });
   try {

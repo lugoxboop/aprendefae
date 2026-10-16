@@ -95,7 +95,6 @@ export const FIGURA_A3 = {
   aguja: "caja + tu cheque",
   asiento: "EL ASIENTO DEL REEMBOLSO",
   caminos: { cobra: "Cobrarle a Rosa", asume: "La empresa asume" },
-  comprobar: "Comprobar",
   /* Para el lector de pantalla: el nombre del tablero (el del prototipo) y de los grupos de opciones (las preguntas de Katsumi). */
   tablero: "El asiento del reembolso",
   opcionesZona: "¿Qué muestra el arqueo?",

@@ -46,7 +46,8 @@ import {
   resumenH7, lectorParH7, sortearH7, evaluarPartidaH7, evaluarSaldosH7, puntuarH7,
 } from "../../data/contabilidadT4H7.js";
 import { ESPERA_ERROR_MS, ESPERA_SALDOS_MS, MARCA_CIFRA_BIEN, MARCA_CIFRA_MAL, cifra, pesos, leerCifra } from "../../data/contabilidadT4Hacer.js";
-import { C, CSS_T4R, Mensaje, Marca, SeguirHacer } from "./comun.jsx";
+import { C, CSS_T4R, Mensaje, Marca, Avance } from "./comun.jsx";
+import { MARCA } from "../../data/contabilidadT4.js";
 import { Campo, CSS_TABLERO } from "./tablero.jsx";
 import { ParConLector, CSS_HACER } from "./hacerComun.jsx";
 
@@ -59,16 +60,16 @@ export const CSS_H7 = `
 .t4lb-n { display: grid; font: 600 13px/1.3 "Sora", "Inter", sans-serif; padding-bottom: 4px; border-bottom: 1px solid rgba(248,249,250,0.22); }
 .t4lb-n > span { white-space: nowrap; }
 .t4lb-n > span + span { font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; }
-.t4lb-s { position: relative; display: grid; gap: 2px; align-content: start; min-height: 44px; padding: 6px 8px; border-radius: 8px; border: 1px solid rgba(248,249,250,0.30); background: transparent; color: ${C.texto}; text-align: right; font: inherit; cursor: pointer; }
+.t4lb-s { position: relative; display: grid; gap: 2px; align-content: start; min-height: 44px; padding: 6px 8px; border-radius: 8px; border: 1px solid ${C.reposo}; background: transparent; color: ${C.texto}; text-align: right; font: inherit; cursor: pointer; }
 .t4lb-s:disabled { cursor: default; }
-.t4lb-s[data-marca] { background: rgba(248,249,250,0.08); }
 .t4lb-s[data-marca="bien"], .t4lb-s[data-marca="era"] { border: 2px solid ${C.texto}; padding: 5px 7px; }
 .t4lb-s[data-marca="mal"] { border: 2px solid ${C.error}; padding: 5px 7px; }
 .t4lb-s > b { justify-self: start; font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .04em; }
 .t4lb-ls { display: grid; gap: 2px; min-height: 66px; align-content: start; }
 .t4lb-ls > span { font: 500 15px/20px "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; color: ${C.texto2}; }
 .t4lb-ls > span.t4lb-f { color: ${C.texto}; font-weight: 600; }
-.t4lb-hueco { min-height: 20px; display: flex; justify-content: flex-end; }
+/* El hueco de la pastilla se mete 6 px en el relleno a cada lado: así cabe «No va aquí» a 320 (P2 de Hanayama, §2.3-1). */
+.t4lb-hueco { min-height: 20px; display: flex; justify-content: flex-end; margin-inline: -6px; }
 .t4h7-saldos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .t4h7-aviso { margin: 9px 0 0; font-size: 12.5px; color: ${C.texto2}; text-align: center; }
 `;
@@ -78,7 +79,7 @@ const elegirSerie = (xs) => xs[Math.floor(Math.random() * xs.length) % xs.length
 /* Una sección de una libreta: su rótulo, sus montos (tres renglones reservados) y el hueco de su marca. */
 function Seccion({ k, rotulo, libreta, lineas, activo, marca, onElegir }) {
   return (
-    <button type="button" className="t4lb-s" data-destino={k} data-marca={marca ?? undefined} disabled={!activo} onClick={() => onElegir(k)} aria-label={`${libreta}: ${rotulo}`}>
+    <button type="button" className="t4lb-s" data-destino={k} data-marca={marca ?? undefined} disabled={!activo} onClick={() => onElegir(k)} aria-label={`${libreta}: ${rotulo}${marca ? `: ${MARCA[marca]}` : ""}`}>
       <b>{rotulo}</b>
       <span className="t4lb-ls">{lineas.map((l) => <span key={l.id} className={`t4r-nueva${l.foco ? " t4lb-f" : ""}`} data-linea={l.id}>{cifra(l.v)}</span>)}</span>
       <span className="t4lb-hueco"><Marca marca={marca} /></span>
@@ -180,13 +181,16 @@ export default function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onComp
   );
 
   /* El par: los saldos de partida; con la fase 2 comprobada, lo escrito y, después, la verdad. */
-  const izq = !r2 ? s.extracto : r2.aplicado ? s.conciliadoBanco : r2.banco;
-  const der = !r2 ? s.libros : r2.aplicado ? s.conciliadoLibros : r2.libros;
+  /* Fase 2: lo que se escribe aparece en su lado del par mientras se escribe, en #A8B6C8 (§4.4 del prompt maestro; P2 de Hanayama, §3.8). */
+  const ecoB = fase === 2 && !r2 ? leerCifra(saldos.banco) : null;
+  const ecoL = fase === 2 && !r2 ? leerCifra(saldos.libros) : null;
+  const izq = !r2 ? (ecoB ?? s.extracto) : r2.aplicado ? s.conciliadoBanco : r2.banco;
+  const der = !r2 ? (ecoL ?? s.libros) : r2.aplicado ? s.conciliadoLibros : r2.libros;
   const igual = Boolean(r2?.aplicado);
   const par = (
     <ParConLector
-      izq={{ r: ROTULOS_H7.parBanco, v: izq, foco: Boolean(r2) }}
-      der={{ r: ROTULOS_H7.parLibros, v: der, foco: Boolean(r2) }}
+      izq={{ r: ROTULOS_H7.parBanco, v: izq, foco: Boolean(r2), eco: ecoB != null }}
+      der={{ r: ROTULOS_H7.parLibros, v: der, foco: Boolean(r2), eco: ecoL != null }}
       igual={igual}
       lector={lectorParH7(cifra(izq), cifra(der))}
     />
@@ -233,15 +237,15 @@ export default function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onComp
         </div>
         {fase === 2 && !r2 && (
           <div className="t4r" style={{ marginTop: "14px" }}>
-            <button type="button" className="t4r-btn" data-boton="comprobar" onClick={comprobar}>{BOTON_H7.comprobar}</button>
+            <Avance nombre="comprobar" onClick={comprobar}>{BOTON_H7.comprobar}</Avance>
             {aviso && <p className="t4h7-aviso" data-aviso>{FALTAN_SALDOS}</p>}
           </div>
         )}
         {fase === 1 && r && !modoDemo && (
-          <div className="t4r"><SeguirHacer refZona={zonaBoton} onClick={avanzar}>{t.i + 1 === cuantas ? BOTON_H7.aLosSaldos : BOTON_H7.siguiente}</SeguirHacer></div>
+          <div className="t4r"><Avance refZona={zonaBoton} onClick={avanzar}>{t.i + 1 === cuantas ? BOTON_H7.aLosSaldos : BOTON_H7.siguiente}</Avance></div>
         )}
         {fase === 2 && r2 && !modoDemo && (
-          <div className="t4r"><SeguirHacer refZona={zonaBoton} onClick={terminar}>{BOTON_H7.verResumen}</SeguirHacer></div>
+          <div className="t4r"><Avance refZona={zonaBoton} onClick={terminar}>{BOTON_H7.verResumen}</Avance></div>
         )}
       </div>
     </Marco>

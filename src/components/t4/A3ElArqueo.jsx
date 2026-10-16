@@ -36,7 +36,7 @@ export const CSS_A3 = `
 .t4a3-control { display: block; width: 100%; height: 44px; margin: 0; accent-color: ${C.texto}; cursor: pointer; }
 .t4a3-camino { display: grid; gap: 6px; }
 .t4a3-camino > button { width: 100%; padding: 0 6px; }
-.t4a3-camino > button[aria-pressed="true"] { border-width: 2px; border-color: ${C.texto}; background: rgba(248,249,250,0.08); }
+.t4a3-camino > button[aria-pressed="true"] { border-width: 2px; border-color: ${C.texto}; }
 `;
 
 const NOMBRE = "sobre-y-regla";
@@ -115,24 +115,21 @@ function ElCheque({ p, onAcierto }) {
   );
 }
 
-/* P4 y P7 · una ficha a su cuenta y su lado, con «Comprobar». */
+/* P4 y P7 · una ficha a su cuenta y su lado. Una sola ficha: el toque califica en el acto, sin «Comprobar» (prompt maestro §4.3; P2 de Hanayama, §5.2). */
 function Ficha({ p, onAcierto }) {
-  const [puesta, setPuesta] = useState(null);
   const [r, setR] = useState(null);
   const ok = Boolean(r) && r.id === p.va.id && r.lado === p.va.lado;
   useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
   const k = (x) => `${x.id}:${x.lado}`;
   const totales = ok ? { ...p.base, [p.va.id]: { ...(p.base[p.va.id] ?? {}), [p.va.lado]: p.monto } } : p.base;
   const marcas = !r ? {} : { [k(r)]: ok ? "bien" : "mal" };
-  const puestas = ok || !puesta ? {} : { [puesta.lado]: puesta.id };
-  const elegir = (id, lado) => { if (ok) return; setR(null); setPuesta({ id, lado }); };
+  const elegir = (id, lado) => { if (ok) return; setR({ id, lado }); };
   return (
     <>
       <Fig nombre={NOMBRE} alt={p.alt} gap={6}>
         <Rotulo>{F.asiento}</Rotulo>
-        <Tablero cuentas={p.cuentas.map((c) => CUENTAS_A3[c])} totales={totales} puestas={r && !ok ? { [r.lado]: r.id } : puestas} monto={cifra(p.monto)}
-          onElegir={elegir} activo={!ok} marcas={marcas} recien={ok ? [k(p.va)] : []} etiqueta={F.tablero} ancho={70} palabras={MARCA} />
-        {!ok && <button type="button" className="t4r-btn2" data-boton="comprobar" aria-disabled={!puesta ? "true" : undefined} onClick={puesta ? () => setR({ ...puesta }) : undefined}>{F.comprobar}</button>}
+        <Tablero cuentas={p.cuentas.map((c) => CUENTAS_A3[c])} totales={totales} puestas={{}} monto={cifra(p.monto)}
+          onElegir={elegir} activo={!ok} marcas={marcas} recien={ok ? [k(p.va)] : []} etiqueta={F.tablero} />
       </Fig>
       {r && <Mensaje key={`${k(r)}-${ok}`} ok={ok} texto={ok ? p.acierto : (p.errores[r.id] ?? p.errores.lado)} />}
     </>
@@ -160,7 +157,7 @@ function Caminos({ p }) {
         ))}
       </div>
       <Tablero cuentas={[GG, va, B].map((c) => CUENTAS_A3[c])} totales={{ [GG]: { [DEBE]: GASTADO }, [va]: { [DEBE]: FALTANTE }, [B]: { [HABER]: CHEQUE_FALTANTE } }}
-        activo={false} recien={[`${va}:${DEBE}`]} etiqueta={F.tablero} ancho={70} />
+        activo={false} conMarcas={false} recien={[`${va}:${DEBE}`]} etiqueta={F.tablero} />
     </Fig>
   );
 }
