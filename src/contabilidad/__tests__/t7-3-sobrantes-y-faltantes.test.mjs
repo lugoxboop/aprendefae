@@ -2,43 +2,32 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { conCorreccionesDeMello } from "./correccionesMello.mjs";
+import { seccion, compararDatos, recorrer, prepararDom, citas, CONDICION } from "./t7-3-recorte.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T7-3 · A5 «Sobrantes y faltantes» (Célula C) · Aprender.
+ * T7-3 · A5 «Sobrantes y faltantes» (Célula C) · Aprender · RECORTE.
  *
- *   · cada texto visible de la v1 está en los datos, letra por letra, y
- *     nada más
- *   · la ficha es la de la regla 10b; los dos asientos son los de la v1,
- *     con «Inventario de mercancías» en plural (regla 8)
- *   · las cifras de I-1 e I-2 se recalculan; ninguna de X1-X4 ni el 960.000
- *     que Near descartó (es el costo de G-4)
- *   · cada pantalla y cada estado muestran sus textos y su pie
- *   · fuera del catálogo de FP; en T7-3, después de A4
+ *   · cada pantalla, texto, opción, pista, error, acierto y «¿Por qué?» es
+ *     el del recorte de Near (lote1-recortes-t73-v1.md), letra por letra
+ *   · Mello (mello-recortes-v1.md): la línea nueva del resumen; y, llegada
+ *     por L, la pista de P1
+ *   · la respuesta regalada de P2 se corrigió: «al haber» ya no se lee
+ *     antes de preguntarlo
+ *   · las dos barras, libros contra conteo, a la misma escala
+ *   · el «¿Por qué?» de P1 («solo se presentan en el permanente») va a la
+ *     vista (regla de L)
+ *   · las cifras de I-1 e I-2; fuera del catálogo de FP
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
-const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
-for (const [k, v] of Object.entries({
-  window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
-  HTMLElement: w.HTMLElement, Element: w.Element, Node: w.Node, SVGElement: w.SVGElement,
-  Event: w.Event, MouseEvent: w.MouseEvent, KeyboardEvent: w.KeyboardEvent,
-  getComputedStyle: w.getComputedStyle.bind(w), matchMedia: w.matchMedia,
-})) {
-  Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
-}
-globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-
+const w = prepararDom(JSDOM, VirtualConsole);
 const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act;
 const h = React.createElement;
 
 const A = await import("../../data/contabilidadT7_3_a5.js");
-const A1 = await import("../../data/contabilidadT7_3.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: PantallasT7_3, cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
 const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
@@ -46,103 +35,56 @@ const { PIEZAS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
-const V1 = leer("orquestador/conocimiento/paquetes/t7-3-a5-v1.md");
-const PLAN = leer("orquestador/conocimiento/paquetes/t7-3-plan-v1.md");
+const RECORTE = leer("orquestador/conocimiento/paquetes/lote1-recortes-t73-v1.md");
+const MELLO = leer("orquestador/conocimiento/paquetes/mello-recortes-v1.md");
 const P = A.PIEZA_SOBRANTES_Y_FALTANTES;
+const S = seccion(RECORTE, P.id);
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
-const citas = (t) => [...t.matchAll(/«([^»]+)»/g)].map((m) => m[1]);
+const s = (id) => S.pantallas.find((x) => x.id === id);
 
-/*
- * El lote 2 de Near: la pista de cada pregunta (primer error) y el anexo (la
- * tercera opción, con su devolución, y el cambio en el texto de una opción
- * correcta). Un texto nuevo de los datos sale de aquí o del paquete de la pieza.
- */
-const PISTAS_L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-pistas-v1.md"));
-const ANEXO_L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-anexo-v1.md"));
-const sinComillas = (t) => t.trim().replace(/ \|$/, "").replace(/^«/, "").replace(/»$/, "");
-const idEnCelda = (celda) => celda.match(/`([^`]+)`/)[1];
-/* id de pantalla → pista. */
-const L2_PISTAS = new Map((PISTAS_L2.split("\n### ").find((s) => s.startsWith(`${P.id} ·`)) ?? "").split("\n")
-  .filter((l) => /^\| P\d/.test(l)).map((l) => l.split(" | ")).map((c) => [idEnCelda(c[0]), sinComillas(c[2])]));
-/* id de pantalla → la tercera opción del anexo: { texto, devolucion }. */
-const L2_TERCERAS = new Map(ANEXO_L2.split("\n").filter((l) => l.startsWith(`| ${P.id} | `)).map((l) => l.split(" | "))
-  .map((c) => [idEnCelda(c[1]), { texto: c[3].replace(/\*\*/g, ""), devolucion: sinComillas(c[4]) }]));
-/* «Un cambio en el texto de una opción correcta»: [campo, viejo, nuevo]. */
-const L2_CAMBIOS = ANEXO_L2.slice(ANEXO_L2.indexOf("## Un cambio")).split("\n").filter((l) => l.startsWith(`| ${P.id} · `))
-  .map((l) => l.split(" | ").map((x, i) => (i ? sinComillas(x) : x.replace(/^\| /, ""))));
+/* Mello, entrega 3: «Al resumen se agrega: «…»». Va antes del «Siguiente». */
+const MELLO_A5 = MELLO.slice(MELLO.indexOf("**«Sobrantes y faltantes»"), MELLO.indexOf("**«La provisión para inventarios»"));
+const LINEA_MELLO = citas(MELLO_A5.split("\n").find((l) => l.includes("Al resumen se agrega")))[0];
+assert.equal(LINEA_MELLO, "Estos ajustes son del sistema permanente.");
+s("resumen").lineas.splice(s("resumen").lineas.length - 1, 0, LINEA_MELLO);
+/* La pista de P1, de la auditoría de pistas de Mello (mello-pistas-distractores-v1.md). */
+assert.equal(s("sobrante").pista, "El sobrante es la diferencia entre lo que hay en la bodega y lo que dicen los libros.");
+s("sobrante").pista = "El sobrante no es todo lo que hay en la bodega. ¿Qué parte de lo contado es?";
+assert.ok(leer("orquestador/conocimiento/paquetes/mello-pistas-distractores-v1.md").includes(`«${s("sobrante").pista}»`));
 
-/*
- * La escalera de ayuda (escaleraAyuda.js): el n-ésimo error de una pregunta.
- * Con pista, el 1.º muestra la pista; el 2.º y siguientes, la respuesta y el
- * acierto sin «Así es». Sin pista, la devolución de la opción, como antes.
- */
-const errorEsperado = (p, o, n) => {
-  const correcta = p.opciones.find((x) => x.correcta).texto.replace(/\.$/, "");
-  const esperado = !p.pista ? [o.devolucion] : n === 1 ? [p.pista] : [`La respuesta es «${correcta}».`, p.acierto.texto.replace(/^Así es[.:]\s*/, "")];
-  assert.deepEqual(textosDelError(p, o, n), esperado);
-  return esperado;
-};
-const FILAS = V1.slice(V1.indexOf("## Pantallas"), V1.indexOf("## Notas")).split("\n").filter((l) => /^\| \d/.test(l)).map((l) => l.split(" | ").map((c) => c.replace(/^\| /, "")));
+/* ═══════════ 1 · DATOS ═══════════ */
 
-function textosDeDatos() {
-  const t = [];
-  for (const p of P.pantallas) {
-    for (const k of ["objetivo", "pregunta", "siguiente", "pista"]) if (p[k]) t.push(p[k]);
-    t.push(...(p.parrafos ?? []), ...(p.despues ?? []), ...(p.tras ?? []));
-    for (const o of p.opciones ?? []) if (o.devolucion) t.push(o.devolucion);
-    if (p.acierto) t.push(p.acierto.texto, ...(p.acierto.parrafos ?? []), ...(p.acierto.despues ?? []));
-  }
-  return t;
-}
-
-test("★★★ cada texto visible de la v1 está en los datos, letra por letra, y nada más", () => {
-  const esperados = [];
-  for (const [n, texto] of FILAS) {
-    if (/Asiento/.test(n) || texto.startsWith("Ficha")) continue;
-    for (const c of citas(texto)) esperados.push(c);
-  }
-  /* El lote 2: cada pregunta con su pista, la de Near, y ninguna más; y la devolución de la tercera opción del anexo. */
-  assert.deepEqual(new Map(P.pantallas.filter((p) => p.pista).map((p) => [p.id, p.pista])), L2_PISTAS);
-  assert.deepEqual([...L2_PISTAS.keys()].sort(), ["faltante", "sobrante"]);
-  esperados.push(...L2_PISTAS.values(), ...[...L2_TERCERAS.values()].map((t) => t.devolucion));
-  assert.deepEqual([...new Set(textosDeDatos())].sort(), [...new Set(esperados)].sort());
-  /* El error del sobrante vale para las dos opciones equivocadas. */
-  assert.equal(pantalla("sobrante").opciones.filter((o) => o.devolucion).length, 2);
+test("★★★ pantallas, textos, opciones, pista, errores, acierto y ¿Por qué?: los del recorte con Mello, letra por letra", () => {
+  assert.deepEqual(S.pantallas.map((x) => x.id), ["portada", "sobrante", "faltante", "resumen"]);
+  compararDatos(P, S);
+  assert.equal(pantalla("portada").objetivo, S.pantallas[0].lineas[0]);
+  assert.deepEqual(pantalla("resumen").tras.at(-1), LINEA_MELLO);
+  for (const id of ["el-conteo", "la-lista"]) assert.equal(pantalla(id), undefined, id);
 });
 
-test("★★★ la ficha de la regla 10b, las opciones y los dos asientos son los de la v1", () => {
-  const f = FILAS.find((x) => x[1].startsWith("Ficha 10b"))[1];
-  const [, quien, libros, conteo, fecha, sistema] = f.match(/quién, (.+?) · saldo en libros (.+?) · conteo (.+?) · (.+?) · sistema (.+?)\.$/);
-  assert.deepEqual(pantalla("sobrante").ficha.map((x) => x.texto.toLowerCase()), [quien, libros, conteo, fecha, sistema].map((x) => x.toLowerCase()));
-  assert.ok(PLAN.includes("I-1 e I-2: quién · saldo en libros · valor del conteo · fecha · sistema."));
-  assert.deepEqual(pantalla("sobrante").ficha.map((x) => x.dato.toLowerCase()), ["quién", "saldo en libros", "valor del conteo", "fecha", "sistema"]);
-  const ops = (pref) => FILAS.find((x) => x[1].startsWith(pref))[1].match(/Opciones: (.+)\.$/)[1].split(" · ");
-  assert.deepEqual(pantalla("sobrante").opciones.map((o) => o.texto), ops("«¿Cuánto es el sobrante?»"));
-  /* El faltante: Debe y Haber, de la v1, y al final la tercera opción del anexo del lote 2, con su devolución. */
-  assert.deepEqual([...L2_TERCERAS.keys()], ["faltante"]);
-  assert.deepEqual(L2_CAMBIOS, []);
-  assert.deepEqual(pantalla("faltante").opciones.map((o) => o.texto), [...ops("«En el ajuste por faltante"), L2_TERCERAS.get("faltante").texto]);
-  assert.equal(pantalla("faltante").opciones.at(-1).devolucion, L2_TERCERAS.get("faltante").devolucion);
-  assert.equal(pantalla("faltante").opciones.at(-1).correcta, undefined);
-  const asientos = FILAS.filter((x) => /Asiento/.test(x[0])).map((x) => x[1]);
-  const lineas = (t) => [...t.matchAll(/(?:: |· )([^·:]+?) ([\d.]+) (D|H)/g)].map((m) => [m[1].trim(), Number(m[2].replace(/\./g, "")), m[3] === "D" ? A1.DEBE : A1.HABER]);
-  for (const [k, id] of ["sobrante", "faltante"].entries()) {
-    const as = pantalla(id).acierto.asientos[0];
-    assert.deepEqual(as.lineas.map((l) => [l.cuenta, l.monto, l.lado]), lineas(asientos[k]), id);
-    assert.ok(asientos[k].startsWith(`${as.fecha}:`), id);
-    assert.ok(asientos[k].includes(`Pie: «${pantalla(id).acierto.pie}»`), id);
-  }
-  assert.ok(!JSON.stringify(P).includes("Inventario de mercancía\""));
+test("★★★ la respuesta regalada se corrigió: antes de preguntar el lado del faltante, nada dice «haber»", () => {
+  const f = pantalla("faltante");
+  for (const t of [...(f.parrafos ?? []), ...(f.tras ?? []), f.pregunta]) assert.doesNotMatch(t, /haber/i, t);
+  assert.match(f.acierto.texto, /va al haber/);
+});
+
+test("★★★ regla de L: el «¿Por qué?» de P1 («solo se presentan en el sistema permanente») va a la vista, y es el único", () => {
+  assert.match(s("sobrante").porque, CONDICION);
+  assert.deepEqual(P.pantallas.filter((p) => p.acierto?.porqueALaVista).map((p) => p.id), ["sobrante"]);
 });
 
 test("★★★ las cifras de I-1 e I-2 se recalculan; ninguna de X1-X4 ni la que Near descartó", () => {
   const C = A.I_LIBRO;
   assert.equal(C.sobrante, C.conteoSobra - C.libros);
   assert.equal(C.faltante, C.libros - C.conteoFalta);
+  assert.deepEqual(pantalla("sobrante").acierto.asientos[0].lineas.map((l) => [l.cuenta, l.lado, l.monto]), [["Inventario de mercancías", "debe", C.sobrante], ["Costo de mercancía vendida", "haber", C.sobrante]]);
+  assert.deepEqual(pantalla("faltante").acierto.asientos[0].lineas.map((l) => [l.cuenta, l.lado, l.monto]), [["Costo de mercancía vendida", "debe", C.faltante], ["Inventario de mercancías", "haber", C.faltante]]);
   const prohibidas = [960_000, 800_000, 175_000, 5_625_000, 5_800_000, 1_200_000, 262_500, 643_500, 8_700_000, 2_432_000, 532_000, 384_000, 84_000, 2_700_000, 2_784_000, 17_632_000];
   const numeros = new Set([...JSON.stringify(P).matchAll(/\d[\d.]*/g)].map((m) => Number(m[0].replace(/\./g, ""))));
   for (const x of prohibidas) assert.ok(!numeros.has(x), cifra(x));
 });
+
+/* ═══════════ 2 · MONTADA ═══════════ */
 
 const montar = async () => {
   const caja = document.createElement("div");
@@ -155,55 +97,44 @@ const tocar = async (el) => {
   assert.ok(el, "no está el elemento que se quería tocar");
   await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 };
-const boton = (caja, n) => caja.querySelector(`[data-boton="${n}"]`);
-const textos = (caja) => [...caja.querySelectorAll("[data-pieza] [data-texto]")].map((x) => x.textContent);
-const pie = (caja) => caja.querySelector("[data-pie]").textContent;
+/* Las barras de cada figura: [título, [rótulo, cifra, ancho]...]. */
+const barras = (c) => [...c.querySelectorAll("figure[data-barras]")].map((f) => [f.querySelector("figcaption").textContent,
+  ...[...f.querySelectorAll("[data-barra]")].map((b) => [b.querySelector(".br-rot").textContent, b.querySelector(".br-v").textContent, b.querySelector(".br-relleno").style.width])]);
+const ancho = (v, max) => `${(v / max) * 100}%`;
+const C = A.I_LIBRO;
+const SOBRA = [["Saldo en libros", "465.000", ancho(C.libros, C.conteoSobra)], ["Conteo físico", "495.000", "100%"]];
+/* Una sola escala en toda la pieza (la del conteo mayor): el saldo en libros mide lo mismo en cada pantalla. */
+const FALTA = [["Saldo en libros", "465.000", ancho(C.libros, C.conteoSobra)], ["Conteo físico", "430.000", ancho(C.conteoFalta, C.conteoSobra)]];
 
-async function pregunta(c, p) {
-  /* Los errores siguen la escalera de ayuda: con pista, el 1.º da la pista y los demás, la respuesta con su porqué. */
-  let n = 0;
-  for (const o of p.opciones.filter((x) => !x.correcta)) {
-    await tocar(c.querySelector(`[data-opcion="${o.id}"]`));
-    await tocar(boton(c, "confirmar"));
-    const esperado = errorEsperado(p, o, ++n);
-    assert.deepEqual(textos(c).slice(-esperado.length), esperado);
-    assert.equal(c.querySelector("[data-asiento]") === null, true);
-    await tocar(boton(c, "probar-otra"));
-  }
-  await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`));
-  await tocar(boton(c, "confirmar"));
-  assert.deepEqual(textos(c).slice(-1), [p.acierto.texto]);
-  assert.equal(pie(c), p.acierto.pie);
-}
-
-test("★★★ se recorre entera: cada pantalla y cada estado con sus textos y su pie", async () => {
+test("★★★ se recorre entera: cada pantalla y cada estado, contra el recorte", async () => {
   const m = await montar();
   try {
-    const c = m.caja;
-    assert.deepEqual(textos(c), [pantalla("portada").objetivo]);
-    await tocar(boton(c, "empezar"));
-    assert.deepEqual(textos(c), pantalla("el-conteo").parrafos);
-    assert.equal(pie(c), pantalla("el-conteo").pie);
-    await tocar(boton(c, "seguir"));
-    const so = pantalla("sobrante");
-    assert.deepEqual(textos(c), [...so.parrafos, ...so.ficha.map((f) => f.texto), so.pregunta]);
-    await pregunta(c, so);
-    assert.equal(c.querySelector("[data-asiento]").dataset.asiento, "31 de diciembre");
-    await tocar(boton(c, "seguir"));
-    const fa = pantalla("faltante");
-    assert.deepEqual(textos(c), [...fa.parrafos, fa.pregunta]);
-    await pregunta(c, fa);
-    await tocar(boton(c, "seguir"));
-    assert.deepEqual(textos(c), pantalla("la-lista").parrafos);
-    assert.equal(pie(c), pantalla("la-lista").pie);
-    await tocar(boton(c, "seguir"));
-    const r = pantalla("resumen");
-    assert.deepEqual(textos(c), [...r.parrafos, r.siguiente]);
-    assert.equal(c.querySelector("[data-boton]") === null, true);
+    await recorrer({
+      caja: m.caja, P, S, tocar, w, textosDelError,
+      async alLlegar(k, c) {
+        const id = S.pantallas[k].id;
+        if (id === "sobrante") assert.deepEqual(barras(c), [["Ejemplo del libro · 31 de diciembre", ...SOBRA]]);
+        if (id === "faltante") assert.deepEqual(barras(c), [["El mismo ejemplo, otro conteo", ...FALTA]]);
+        if (id === "resumen") assert.deepEqual(barras(c), [["Conteo mayor: sobrante", ...SOBRA], ["Conteo menor: faltante", ...FALTA]]);
+        if (id === "portada") assert.deepEqual(barras(c), []);
+        /* El conteo más corto se ve más corto. */
+        if (id === "faltante") assert.ok(parseFloat(FALTA[1][2]) < parseFloat(FALTA[0][2]));
+      },
+      async alFallar(k, c) {
+        assert.equal(c.querySelector("[data-asiento]"), null);
+      },
+      async alAcertar(k, c) {
+        const as = c.querySelector("[data-asiento]");
+        assert.equal(as.dataset.asiento, "sin-fecha");
+        assert.equal(as.querySelector("[data-sumas]"), null);
+      },
+    });
   } finally {
     m.desmontar();
   }
 });
+
+/* ═══════════ 3 · CATÁLOGO Y TEMA ═══════════ */
 
 test("★★★ fuera del catálogo de FP; en T7-3, después de A4 entre las de Aprender", () => {
   assert.equal(A.A5_ID, "t7-3-sobrantes-y-faltantes");
@@ -218,54 +149,5 @@ test("★★★ fuera del catálogo de FP; en T7-3, después de A4 entre las de 
   assert.equal(piezas.indexOf(A.A5_ID), piezas.indexOf("t7-3-descuento-en-dos-libros") + 1);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A5_ID)), []);
-});
-
-/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
-
-/* Recorre la pieza: en cada pantalla con pregunta, antes, con un error y con el acierto. Devuelve qué figuras se vieron en cada estado. */
-async function figurasPorEstado(m) {
-  const c = m.caja;
-  const figs = () => [...c.querySelectorAll("[data-plazos], figure[data-renglones]")].map((f) => (f.matches("[data-plazos]")
-    ? `plazos ${f.querySelector("[data-pago]")?.textContent ?? "sin pago"}`
-    : `${f.querySelector("figcaption").textContent}: ${[...f.querySelectorAll("[data-renglon]")].map((r) => `${r.querySelector(".rg-op").textContent}${r.querySelector(".rg-rot").textContent.replace(/^(menos|por|igual a) /, "")} ${r.querySelector(".rg-v").textContent}${r.classList.contains("rg-res") ? " =" : ""}${r.classList.contains("rg-fuerte") ? " !" : ""}`).join(" | ")}`));
-  const visto = {};
-  for (let k = 0; k < 15; k++) {
-    const id = c.querySelector("[data-pantalla]").dataset.pantalla;
-    const p = pantalla(id);
-    if (p.opciones) {
-      visto[`${id}:antes`] = figs();
-      await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => !o.correcta).id}"]`)); await tocar(boton(c, "confirmar"));
-      visto[`${id}:error`] = figs();
-      await tocar(boton(c, "probar-otra"));
-      await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`)); await tocar(boton(c, "confirmar"));
-      visto[`${id}:acierto`] = figs();
-      const s = boton(c, "seguir");
-      if (!s) break;
-      await tocar(s);
-    } else {
-      visto[`${id}:lectura`] = figs();
-      const b = boton(c, "seguir") ?? boton(c, "empezar");
-      if (!b) break;
-      await tocar(b);
-    }
-  }
-  /* Solo los estados con figuras. */
-  return Object.fromEntries(Object.entries(visto).filter(([, v]) => v.length));
-}
-
-test("★★★ Patrón T7-3: el sobrante en renglones con el acierto; el faltante, con su texto; siempre el mayor arriba", async () => {
-  const C = A.I_LIBRO;
-  assert.equal(C.conteoSobra - C.libros, C.sobrante);
-  assert.equal(C.libros - C.conteoFalta, C.faltante);
-  const m = await montar();
-  try {
-    assert.deepEqual(await figurasPorEstado(m), {
-      "sobrante:acierto": ["Ejemplo del libro · 31 de diciembre: Conteo físico 495.000 | −Saldo en libros 465.000 | =Sobrante 30.000 ="],
-      "faltante:antes": ["El mismo ejemplo, otro conteo: Saldo en libros 465.000 | −Conteo físico 430.000 | =Faltante 35.000 ="],
-      "faltante:error": ["El mismo ejemplo, otro conteo: Saldo en libros 465.000 | −Conteo físico 430.000 | =Faltante 35.000 ="],
-      "faltante:acierto": ["El mismo ejemplo, otro conteo: Saldo en libros 465.000 | −Conteo físico 430.000 | =Faltante 35.000 ="],
-    });
-  } finally {
-    m.desmontar();
-  }
+  assert.doesNotMatch(leer("src/data/contabilidadT7_3_a5.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);
 });

@@ -110,7 +110,8 @@ test("★★★ los textos son los de la v1, letra por letra", () => {
   /* La ficha: los cinco datos de la v1, en su orden, con los rótulos de A1 de T7-3. */
   const ficha = V1.split("\n").find((l) => l.startsWith("- **Ficha en pantalla:** ")).replace("- **Ficha en pantalla:** ", "").replace(/\.$/, "").split(" · ").map((t) => t.replace(/^(entrega|recibe) /, ""));
   assert.deepEqual(D.FICHA_H1.map(([, t]) => t.toLowerCase()), ficha.map((t) => t.toLowerCase()));
-  assert.deepEqual(D.FICHA_H1.map(([r]) => r), A1.PIEZA_EL_DESCUENTO_COMERCIAL.pantallas.find((p) => p.ficha).ficha.map((f) => f.dato));
+  /* Los rótulos de la ficha de A1 de T7-3 (los de H2 de T7-2). El recorte del lote 1 quitó esa ficha de A1; los rótulos se quedan. */
+  assert.deepEqual(D.FICHA_H1.map(([r]) => r), ["Quién entrega", "Quién recibe", "Monto", "Tipo", "Clase de hecho"]);
   const fs = filas();
   assert.equal(fs.length, 5);
   /* El ítem 4 de la v1 («¿Por qué valor va Ingresos por ventas?») se quitó en el lote 3: la mesa ya lo muestra. */
