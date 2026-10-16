@@ -451,7 +451,7 @@ test("★★★ INFLESZ: los 107 textos de 10 palabras o más pasan 65; los rót
 
 test("★★★ catálogo, registro de la vista, etiqueta y migración 0252 dicen lo mismo", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "repaso-capitulo-5");
-  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2", "r5-3"]);
+  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2", "r5-3", "r5-4"]);
   const a = actividadesDeTipo(tema, HACER).find((x) => x.id === "r5-3");
   assert.equal(a.nombre, T.R5_3.nombre);
   assert.deepEqual(a.clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 });

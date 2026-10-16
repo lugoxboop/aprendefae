@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 /* Los estados de calificación, el «ERA ESTE», los puntos y la palabra: de comun.jsx (B4, E3). */
 import { C, INTER, SORA, MARCA, SOLO_LECTOR, Devolucion, BotonSiguiente, ESTADOS, MARCA_ERA_ESTE, Punto, MarcaPieza } from "./comun.jsx";
@@ -35,6 +35,22 @@ export const DIGITOS_DEL_CAMPO = 9;
 const DIVISORIA = "1px solid rgba(184,196,212,0.25)";
 /* El mes en dos cuentas (Caja e IVA por pagar): siempre la cifra del asiento correcto. */
 const MOVIMIENTOS_MATE = movimientosDelMes(ASIENTOS_MATE, MES_MATE.cuentas);
+
+/*
+ * ═══════════ LA ACTIVIDAD QUE SE PINTA ═══════════
+ *
+ * El armador, el hecho, la hoja de datos, la línea del mes, el panel del mes
+ * y la pantalla final son los mismos para r5-3 y r5-4 (paquete e5-r5-4-v1:
+ * «se construye sobre r5-3»). Cada actividad trae sus datos en un objeto; los
+ * componentes los leen del contexto con los mismos nombres. Sin contexto, los
+ * de r5-3.
+ */
+export const ACTIVIDAD_MATE = {
+  id: "r5-3", R5_3, MES_MATE, MOVIMIENTOS_MATE, ASIENTOS_MATE, HOJA_MATE, ENTRADA_MATE, DATOS_DEL_LIBRO, DATOS_DECLARADOS, RM,
+  evaluarMate, puntuarR5_3, MES_CORTO: "MAR", DIAS: 31, NODO: 10, AVISO: null, LINEAS_MES: {},
+};
+const Actividad = createContext(ACTIVIDAD_MATE);
+const useActividad = () => useContext(Actividad);
 const CSS_MATE = `
 .mate-campo:focus { outline: none; border: 2px solid ${C.ambar} !important; }
 `;
@@ -45,9 +61,10 @@ const CSS_MATE = `
  * El día d va en x = 6 + (d − 1) / 30 × (ancho − 12). Dos operaciones el mismo
  * día: la segunda 14 px más abajo, unida por una línea de 2 px.
  */
-const xDelDia = (d) => `calc(6px + ${(d - 1) / 30} * (100% - 12px))`;
-
 export function LineaDeMarzo({ actual = null, hechos = 0 }) {
+  const { ASIENTOS_MATE, MES_CORTO, DIAS, NODO } = useActividad();
+  /* r5-4 §1: 30 días y nodos de 8 px; r5-3: 31 días y nodos de 10. */
+  const xDelDia = (d) => `calc(6px + ${(d - 1) / (DIAS - 1)} * (100% - 12px))`;
   const vistos = {};
   const nodos = ASIENTOS_MATE.map((a, k) => {
     const abajo = Boolean(vistos[a.dia]);
@@ -62,10 +79,10 @@ export function LineaDeMarzo({ actual = null, hechos = 0 }) {
           data-marca-fecha
           style={{
             ...MARCA, position: "absolute", top: 0, whiteSpace: "nowrap",
-            ...(marcaActual.dia === 1 ? { left: 0 } : marcaActual.dia === 31 ? { right: 0 } : { left: xDelDia(marcaActual.dia), transform: "translateX(-50%)" }),
+            ...(marcaActual.dia === 1 ? { left: 0 } : marcaActual.dia === DIAS ? { right: 0 } : { left: xDelDia(marcaActual.dia), transform: "translateX(-50%)" }),
           }}
         >
-          {`${marcaActual.dia} MAR`}
+          {`${marcaActual.dia} ${MES_CORTO}`}
         </span>
       )}
       <span aria-hidden="true" style={{ position: "absolute", left: 0, right: 0, top: "21px", height: "2px", background: C.navy }} />
@@ -79,8 +96,8 @@ export function LineaDeMarzo({ actual = null, hechos = 0 }) {
           data-estado={n.estado}
           aria-hidden="true"
           style={{
-            position: "absolute", left: `calc(${xDelDia(n.a.dia)} - 5px)`, top: n.abajo ? "31px" : "17px",
-            width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box",
+            position: "absolute", left: `calc(${xDelDia(n.a.dia)} - ${NODO / 2}px)`, top: `${22 - NODO / 2 + (n.abajo ? 14 : 0)}px`,
+            width: `${NODO}px`, height: `${NODO}px`, borderRadius: "50%", boxSizing: "border-box",
             background: n.estado === "hecho" ? C.hecho : n.estado === "actual" ? C.ambar : C.fondo,
             border: n.estado === "pendiente" ? `1.5px solid ${C.atenuado}` : "none",
           }}
@@ -93,6 +110,7 @@ export function LineaDeMarzo({ actual = null, hechos = 0 }) {
 /* ═══════════ LAS TARJETAS DE DATOS (entrada y hoja «Datos de marzo») ═══════════ */
 
 function TarjetasDeDatos() {
+  const { DATOS_DEL_LIBRO, DATOS_DECLARADOS } = useActividad();
   return (
     <>
       <div data-datos-libro style={{ background: C.navy, borderRadius: "12px", padding: "16px" }}>
@@ -151,6 +169,7 @@ const botonTexto = (color = C.texto) => ({
 });
 
 function HojaDatosDeMarzo({ onCerrar }) {
+  const { RM } = useActividad();
   const cerrar = useRef(null);
   useEffect(() => { cerrar.current?.focus(); }, []);
   return (
@@ -167,14 +186,19 @@ function HojaDatosDeMarzo({ onCerrar }) {
 /* ═══════════ LA PANTALLA DE ENTRADA (delta v2 §1) ═══════════ */
 
 function Entrada({ onEmpezar }) {
+  const { id, R5_3, ENTRADA_MATE, AVISO } = useActividad();
   return (
-    <div data-r5-3 data-paso="entrada">
+    <div {...{ [`data-${id}`]: true }} data-paso="entrada">
       {/* E1: el objetivo aprobado de Miyata, como en r5-2: encima de la entrada, solo aquí. */}
       <p data-objetivo style={{ margin: "0 0 16px", fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.atenuado }}>{R5_3.objetivo}</p>
       <p style={{ ...MARCA, margin: 0 }}>{ENTRADA_MATE.marca}</p>
       <h3 style={{ margin: "8px 0 0", fontFamily: SORA, fontSize: "24px", lineHeight: "32px", fontWeight: 600, color: C.texto }}>{ENTRADA_MATE.titulo}</h3>
       <p data-apertura style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{ENTRADA_MATE.apertura}</p>
       <p data-instruccion style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "14px", lineHeight: "20px", color: C.atenuado }}>{ENTRADA_MATE.instruccion}</p>
+      {/* r5-4 §2: el aviso, arriba y fuera de las tarjetas (el único de la entrada: decisión 3). */}
+      {AVISO && (
+        <p data-aviso style={{ margin: "16px 0 0", paddingLeft: "12px", borderLeft: `3px solid ${C.hecho}`, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", fontWeight: 600, color: C.texto }}>{AVISO}</p>
+      )}
       <div style={{ marginTop: "16px" }}><LineaDeMarzo /></div>
       <div style={{ marginTop: "16px" }}><TarjetasDeDatos /></div>
       <button
@@ -194,6 +218,7 @@ function Entrada({ onEmpezar }) {
 const renglonDeDato = { minHeight: "32px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" };
 
 function Hecho({ a }) {
+  const { RM } = useActividad();
   return (
     <div data-hecho style={{ background: C.navy, borderRadius: "12px", borderLeft: `3px solid ${C.hecho}`, padding: "12px" }}>
       <p style={{ ...MARCA, margin: 0 }}>{a.fecha}</p>
@@ -212,6 +237,23 @@ function Hecho({ a }) {
             <span style={{ fontFamily: INTER, fontSize: "14px", color: C.atenuado, textAlign: "right" }}>{RM.fleteEnElSiguiente}</span>
           </div>
         )}
+        {/*
+          * r5-4 §3: el bloque «DE LA OPERACIÓN DEL …» (asientos 3 y 6): una línea al
+          * 25 %, la marca y sus renglones; el texto que no es cifra, en Inter 14.
+          */}
+        {a.bloque && (
+          <div data-bloque-operacion style={{ borderTop: DIVISORIA, marginTop: "8px", paddingTop: "8px" }}>
+            <span style={{ ...MARCA, letterSpacing: "0.04em", display: "block", marginBottom: "6px" }}>{a.bloque.marca}</span>
+            {a.bloque.renglones.map(([et, val]) => (
+              <div key={et} data-renglon-hecho style={renglonDeDato}>
+                <span style={{ fontFamily: INTER, fontSize: "14px", color: C.atenuado }}>{et}</span>
+                {/^[\d$]/.test(val)
+                  ? <span style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, textAlign: "right" }}>{val}</span>
+                  : <span style={{ fontFamily: INTER, fontSize: "14px", color: C.texto, textAlign: "right" }}>{val}</span>}
+              </div>
+            ))}
+          </div>
+        )}
         {/* Asiento 5: el dato de otra operación, al final y separado (decisión 3). */}
         {a.deOtraOperacion && (
           <div data-otra-operacion style={{ borderTop: DIVISORIA, marginTop: "8px", paddingTop: "8px" }}>
@@ -228,6 +270,7 @@ function Hecho({ a }) {
 }
 
 function BotonDatos({ onAbrir }) {
+  const { RM } = useActividad();
   return (
     <button
       type="button"
@@ -245,6 +288,7 @@ function BotonDatos({ onAbrir }) {
 /* ═══════════ EL ARMADOR COMPUESTO (§4) ═══════════ */
 
 function Renglon({ r, estado = null, pieza = null, onTocar, soloLectura = false }) {
+  const { RM } = useActividad();
   const visto = estado ? ESTADOS[estado] : { border: `1px solid ${C.atenuado}`, background: C.fondo };
   /*
    * Auditoría de Takamura (e5-mes-en-dos-cuentas, punto 4): dos marcas, una por
@@ -271,6 +315,7 @@ function Renglon({ r, estado = null, pieza = null, onTocar, soloLectura = false 
 }
 
 function Grupo({ lado, renglones, estados, piezas, onAnadir, onEditar, bloqueado, soloLectura }) {
+  const { RM } = useActividad();
   const mios = renglones.filter((r) => r.lado === lado);
   return (
     <div data-grupo={lado} style={{ paddingLeft: lado === "haber" ? "16px" : 0, marginTop: lado === "haber" ? "16px" : 0 }}>
@@ -298,6 +343,7 @@ function Grupo({ lado, renglones, estados, piezas, onAnadir, onEditar, bloqueado
 }
 
 function Sumas({ renglones, conCuadre = true }) {
+  const { RM } = useActividad();
   const s = sumasDe(renglones);
   return (
     <>
@@ -324,7 +370,9 @@ function Sumas({ renglones, conCuadre = true }) {
   );
 }
 
-function Armador({ renglones, estados = null, piezas = null, onAnadir, onEditar, bloqueado = false, soloLectura = false, marca = RM.tuAsiento, datos = {} }) {
+function Armador({ renglones, estados = null, piezas = null, onAnadir, onEditar, bloqueado = false, soloLectura = false, marca: marcaDada = null, datos = {} }) {
+  const { RM } = useActividad();
+  const marca = marcaDada ?? RM.tuAsiento;
   return (
     <div {...datos} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? { border: ESTADOS.revelada.border } : {}) }}>
       <p {...(soloLectura ? { "data-era-este": true } : {})} style={{ ...(soloLectura ? MARCA_ERA_ESTE : MARCA), margin: "0 0 8px" }}>{marca}</p>
@@ -337,6 +385,7 @@ function Armador({ renglones, estados = null, piezas = null, onAnadir, onEditar,
 
 /* La hoja en dos pasos: la cuenta y el valor. `inicial` trae el renglón que se edita. */
 function HojaRenglon({ lado, inicial = null, renglones, onListo, onQuitar, onCancelar }) {
+  const { RM, HOJA_MATE } = useActividad();
   const [paso, setPaso] = useState(inicial ? 2 : 1);
   const [cuenta, setCuenta] = useState(inicial?.cuenta ?? null);
   const [valor, setValor] = useState(inicial?.valor ?? null);
@@ -444,6 +493,7 @@ function HojaRenglon({ lado, inicial = null, renglones, onListo, onQuitar, onCan
 let siguienteId = 0;
 
 function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }) {
+  const { id, RM, evaluarMate, MES_MATE, MOVIMIENTOS_MATE, LINEAS_MES } = useActividad();
   const [renglones, setRenglones] = useState([]);
   const [hoja, setHoja] = useState(null); // { lado, inicial }
   const [datos, setDatos] = useState(false);
@@ -457,7 +507,7 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
   const quitar = (rq) => { setRenglones((xs) => xs.filter((x) => x.id !== rq.id)); setHoja(null); };
 
   return (
-    <div data-r5-3 data-paso={a.id}>
+    <div {...{ [`data-${id}`]: true }} data-paso={a.id}>
       <p data-progreso style={{ ...MARCA, margin: 0 }}>{RM.progreso(i + 1, total)}</p>
       <div style={{ marginTop: "8px" }}><LineaDeMarzo actual={i} hechos={i} /></div>
       <div style={{ marginTop: "16px" }}><Hecho a={a} /></div>
@@ -495,7 +545,7 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
       )}
       <Devolucion r={r && { ok: r.ok, textos: r.textos }} lector={LECTOR} />
       {/* Después de la devolución, sin desplazamiento forzado (corrección 1 de Takamura). */}
-      {r && <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={i} />}
+      {r && <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={i} linea={LINEAS_MES[a.id] ?? null} />}
       {r && <BotonSiguiente onClick={onSiguiente} botonRef={botonRef} texto={RM.siguiente} />}
       {hoja && <HojaRenglon lado={hoja.lado} inicial={hoja.inicial} renglones={renglones} onListo={listo} onQuitar={quitar} onCancelar={() => setHoja(null)} />}
       {datos && <HojaDatosDeMarzo onCerrar={() => setDatos(false)} />}
@@ -506,6 +556,7 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
 /* ═══════════ LA PANTALLA FINAL (§6) ═══════════ */
 
 function MarzoEnOcho({ resultados }) {
+  const { ASIENTOS_MATE, RM, MES_CORTO } = useActividad();
   const bien = ASIENTOS_MATE.filter((a) => resultados[a.id]).length;
   return (
     <div data-marzo-en-ocho style={{ background: C.navy, borderRadius: "12px", padding: "16px" }}>
@@ -517,7 +568,7 @@ function MarzoEnOcho({ resultados }) {
         const ok = Boolean(resultados[a.id]);
         return (
           <div key={a.id} data-fila-asiento={a.id} style={{ minHeight: "44px", display: "flex", alignItems: "center", gap: "8px", borderTop: k ? DIVISORIA : "none" }}>
-            <span style={{ ...MARCA, width: "44px", flexShrink: 0 }}>{`${a.dia} MAR`}</span>
+            <span style={{ ...MARCA, width: "44px", flexShrink: 0 }}>{`${a.dia} ${MES_CORTO}`}</span>
             <span style={{ flex: 1, minWidth: 0, fontFamily: INTER, fontSize: "14px", color: C.texto }}>{a.operacion}</span>
             {/* Forma, color y palabra (decisión 7). */}
             <span data-resultado={ok ? "acierto" : "error"} style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
@@ -533,9 +584,26 @@ function MarzoEnOcho({ resultados }) {
 
 /* ═══════════ LA ACTIVIDAD ═══════════ */
 
-/* `pasoInicial`: −1 abre en la entrada (la partida); las pruebas abren un asiento directo. */
-export function Mate({ onCompletar, pasoInicial = -1 }) {
-  const [paso, setPaso] = useState(pasoInicial); // -1: entrada; 0..7: asientos
+/*
+ * La partida de un mes en asientos. `actividad` trae los datos (r5-3 o r5-4);
+ * `pasoInicial`: −1 abre en la entrada (la partida); las pruebas abren un
+ * asiento directo.
+ */
+export function MesContable({ actividad, onCompletar, pasoInicial = -1 }) {
+  return (
+    <Actividad.Provider value={actividad}>
+      <Partida onCompletar={onCompletar} pasoInicial={pasoInicial} />
+    </Actividad.Provider>
+  );
+}
+
+export function Mate(props) {
+  return <MesContable actividad={ACTIVIDAD_MATE} {...props} />;
+}
+
+function Partida({ onCompletar, pasoInicial }) {
+  const { id, ASIENTOS_MATE, puntuarR5_3, MES_MATE, MOVIMIENTOS_MATE } = useActividad();
+  const [paso, setPaso] = useState(pasoInicial); // -1: entrada; luego, un asiento por paso
   const [r, setR] = useState(null);
   const [resultados, setResultados] = useState({});
   const [terminado, setTerminado] = useState(false);
@@ -570,7 +638,7 @@ export function Mate({ onCompletar, pasoInicial = -1 }) {
 
   if (terminado) {
     return (
-      <div data-r5-3 data-cierre>
+      <div {...{ [`data-${id}`]: true }} data-cierre>
         <style>{CSS_JUEGO + CSS_MATE}</style>
         <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={null} final={MES_MATE.final} />
         <div style={{ marginTop: "16px" }}><MarzoEnOcho resultados={resultados} /></div>

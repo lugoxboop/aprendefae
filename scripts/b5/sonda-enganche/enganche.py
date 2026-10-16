@@ -12,7 +12,11 @@ Lo que cambia frente a la de D es el recorrido, no la medición ni la barra:
    paso y, en la parada, se elige la opción buena; capa 3 abre cada caja y elige la buena; capa 4 prueba
    las frases en orden. B3 cuenta por capa: una capa «tiene acción» si una elección cambia su figura.
  · Hacer: la mesa del diario (a2, a3, t5-a2), la elección y las casillas (a4, a5, a6) y el estante de
+<<<<<<< HEAD
    cajones (t5-a1, t6-a1). Cada tarjeta, una vez bien y otra mal con la misma semilla.
+=======
+   cajones (t6-a7) y las fichas a un nivel (t5-a1, t6-a1, lote 6a). Cada tarjeta, una vez bien y otra mal con la misma semilla.
+>>>>>>> origin/main
  · La figura de B no es un <figure>: son la escena, la cuenta T, el tablero, la mesa, el asiento mínimo,
    la cuenta que se llena, los cajones del tiempo, el estante con cajones y el registro (FIG, abajo).
 Mide sin barra de desplazamiento, como un teléfono, a cada ancho de --anchos (por defecto 320 y 375).
@@ -197,7 +201,7 @@ def hacer(b, sid, modo, clave, ancho):
         k += 1
         if mec == "mesa":
             carta = pg.get_attribute('section[data-estado-parte="activa"]', "data-parte")
-        elif mec == "clasifica":
+        elif mec in ("clasifica", "cajones"):
             carta = pg.get_attribute(f"{R} [data-ficha]", "data-ficha")
         else:
             carta = pg.get_attribute(f"{R} [data-hecho]", "data-hecho")
@@ -218,6 +222,11 @@ def hacer(b, sid, modo, clave, ancho):
                 if resp["n2"]: pg.locator(f'{R} [data-nivel2="{resp["n2"]}"]').click(); pg.wait_for_timeout(100)
                 pg.locator(f"{R} [data-boton-colocar] button").click(); pg.wait_for_timeout(450)
                 if pg.locator(f"{R} [data-boton-avanzar]").count(): break   # sin segundo intento: ya hay veredicto
+        elif mec == "cajones":
+            # lote 6a: tocar un cajón coloca la ficha; tras un primer fallo, el siguiente de la clave
+            for cl in resp:
+                if pg.locator(f"{R} [data-boton-avanzar]").count(): break
+                pg.locator(f'{R} [data-cajon="{cl}"]').click(); pg.wait_for_timeout(450)
         else:
             # las opciones van debajo del hecho, no dentro: se buscan en el Marco
             pg.locator(f'{R} button:has([data-opcion="{resp}"])').first.click(); pg.wait_for_timeout(450)
@@ -227,7 +236,7 @@ def hacer(b, sid, modo, clave, ancho):
         # ¿el juego tomó la respuesta como se esperaba? Sin esto, una clave rota daría colores de otro estado.
         m1["veredicto"] = pg.evaluate(VEREDICTO)
         regs.append(m1)
-        if mec == "clasifica":
+        if mec in ("clasifica", "cajones"):
             av = pg.locator(f"{R} [data-boton-avanzar] button"); t = av.inner_text().strip() if av.count() else None
             if t: av.click(); pg.wait_for_timeout(450)
         else:
