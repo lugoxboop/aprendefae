@@ -117,10 +117,19 @@ const RESERVA_MOVIL = 112;
 
 /*
  * Y el hueco cuando la pastilla va compacta —sin avatar— en una vista con
- * título. Medido: 76 px de pastilla + los 14 que la separan del borde, menos
- * los 24 de relleno que la página ya tiene, redondeado hacia arriba.
+ * título.
+ *
+ * ESTUVO EN 76 Y NO ALCANZABA. Esos 76 salían de medir la pastilla con una
+ * cifra corta; con cuatro cifras y el sufijo llegaba a 85 y con seis a 102, así
+ * que se montaba sobre el título. Ahora el sufijo no sale en vistas con título
+ * (ver la regla de abajo), y el peor caso medido es la cifra sola de seis
+ * dígitos: 82 px. La reserva son esos 82 más 6 de separación.
+ *
+ * Si la pastilla vuelve a crecer —otro sufijo, otra cifra, un icono— hay que
+ * volver a medir esto. El número de aquí no se deduce del diseño: se mide con
+ * la tipografía real sobre el paquete construido.
  */
-const RESERVA_MOVIL_COMPACTA = 76;
+const RESERVA_MOVIL_COMPACTA = 88;
 
 /*
  * Por debajo de esto ni «FP» cabe al lado del número, y se queda solo la cifra.
@@ -213,27 +222,32 @@ const CSS_CUENTA = `
    * pantalla hacia abajo y la cabecera dejaría de ser una cabecera. Pero el
    * número no se deduce, se mide. Medido a 320 px sobre el paquete construido,
    * con el hueco real que le queda al título —164 px de los 320, porque el
-   * resto son el botón de volver y la reserva de la pastilla—, y con los diez
-   * títulos que existen hoy en Contabilidad:
+   * resto son el botón de volver y la reserva de la pastilla—:
    *
-   *   · ocho entran en uno o dos renglones;
-   *   · «Inventarios III: descuentos, inventario físico y NIC 2» pide CUATRO
-   *     a 320 px, tres a 360 y dos a 375.
+   *   · «Inventarios III: descuentos, inventario físico y NIC 2» pedía CUATRO
+   *     renglones a 320 px (82 px de cabecera). Con el tope en dos se leía
+   *     cortado, y el recorte no avisa: no pone puntos suspensivos, se queda
+   *     sin las últimas palabras.
+   *   · Hoy (#259 lo acortó a «…descuentos, conteo y NIC 2») pide TRES a 320 y
+   *     a 360 —61 px— y DOS a 375. De los diez títulos de Contabilidad, nueve
+   *     caben en uno o dos renglones: la fila mide 38–44 px, que es lo que
+   *     mide el botón de volver.
    *
-   * Con el tope en dos, ese título se leía cortado. Y el recorte no avisa: no
-   * pone puntos suspensivos, simplemente se queda sin las últimas palabras.
-   * Un estudiante en un teléfono de 320 px leía «…inventario» y no sabía que
-   * faltaba «físico y NIC 2».
+   * El tope recorta, no reserva: los títulos cortos siguen ocupando lo que
+   * ocupaban. La regla de la casa ya eligió: romper renglón sí, desaparecer no.
    *
-   * Cuatro renglones los usa solo quien los necesita: el tope recorta, no
-   * reserva, así que los otros nueve títulos siguen ocupando lo que ocupaban.
-   * El coste es una cabecera de 82 px en UNA vista de diez, a UN ancho, contra
-   * perder palabras en la principal señal de orientación de la pantalla. La
-   * regla de la casa ya eligió: romper renglón sí, desaparecer no.
+   * ═══════════ DECIDIDO: SE QUEDA EN UNA FILA (Xeno, 15 oct.) ═══════════
    *
-   * SE PUEDE HACER MEJOR, y no toca a esta hoja: medido, ese título en su
-   * propio renglón a ancho completo entra en dos (41 px). Eso mueve el orden
-   * de cesión de la cabecera, que es de Xeno; queda dicho y no bloquea esto.
+   * Se midió la alternativa —[volver][pastilla] arriba y el título debajo, a
+   * ancho completo— y pierde. Ese título en su propio renglón cabe en dos
+   * (41 px), pero la fila de arriba cuesta 44 px SIEMPRE: 85 px para el peor
+   * título contra 61 de hoy, y 44 + 20 = 64 para uno de un renglón contra 44.
+   * Es decir: gasta más en los nueve títulos que hoy caben, para ahorrar dos
+   * renglones en el único que ya no necesita cuatro. La cabecera de una fila
+   * es la que menos pantalla le quita al ejercicio.
+   *
+   * Si un título pasa de tres renglones a 320 px, la salida no es esta hoja:
+   * es un título más corto (un nombre de tema es una etiqueta, no una frase).
    *
    * SI ENTRA UN TÍTULO MÁS LARGO, hay que volver a medir. Esto no se deduce
    * del CSS: scripts/t7/medir-titulo-320.mjs y la sonda de títulos.
@@ -283,13 +297,25 @@ const CSS_CUENTA = `
 }
 
 /*
- * Y si ni con eso cabe —pantallas de 320 px, que existen— el número se queda
- * solo. Es lo último que cede, y nunca cede del todo: la lectura de FP no
- * desaparece en ningún ancho.
+ * ═══════════ EL «FP» SE VA EN TODA VISTA CON TÍTULO, Y ESTO SE MIDIÓ ═══════════
+ *
+ * Esto quitaba el sufijo solo por debajo de 361 px. Medido el 16 de octubre con
+ * la tipografía real a 13 px y 600, sumándole los 28 px de relleno de la
+ * pastilla, contra los 76 px que la vista con título le reserva:
+ *
+ *      FP        solo la cifra        con « FP»
+ *     250           53 px               73 px
+ *   2.500           65 px               85 px   ← ya no cabe
+ *  12.500           74 px               93 px
+ * 112.500           82 px              102 px
+ *
+ * O sea que a 375 px CUALQUIER estudiante con cuatro cifras tapaba el título,
+ * y es la mayoría. El número no cede nunca —eso sigue igual—, pero el sufijo
+ * sí: en una vista con título el hueco es el título, y «FP» es decoración que
+ * el contexto ya dice. Por debajo de 361 ya se iba; ahora se va siempre que la
+ * pastilla va compacta, que es exactamente cuando hay título.
  */
-@media (max-width: ${ANCHO_MINIMO_SUFIJO}px) {
-  .fae-cuenta-compacta .fae-cuenta-sufijo { display: none; }
-}
+.fae-cuenta-compacta .fae-cuenta-sufijo { display: none; }
 @keyframes fae-atajo-entra { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: none; } }
 .fae-atajo-entra { animation: fae-atajo-entra 0.2s ease-out; }
 @media (prefers-reduced-motion: reduce) { .fae-atajo-entra { animation: none; } }
@@ -437,6 +463,31 @@ const POSICION_LECTOR = {
   overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0,
 };
 
+/*
+ * ═══════════ SE QUEDA FIJA, Y NUNCA TRANSPARENTE (Xeno, 15 oct.) ═══════════
+ *
+ * La Célula C reportó que, sin sesión, «Entrar» tapa el texto al bajar. Lo que
+ * se vio al medirlo en la página no era que el control esté fijo, sino que
+ * estaba HUECO: la pastilla de la cuenta pintaba un 6 % de blanco y el botón de
+ * «Entrar» —el que sale cuando la librería de Google no carga: red del salón,
+ * bloqueador— no pintaba nada. El texto que pasaba por debajo se leía a través
+ * del control, y las dos cosas se estorbaban: «suma de todos» pisado por
+ * «Entrar».
+ *
+ * Fijo se queda, y es deliberado: dentro de una actividad los FP en vivo
+ * importan más que la identidad (ver «LA PASTILLA COMPACTA» arriba), y un
+ * contador que se va con el scroll deja de ser lo que se mira al acertar. Lo
+ * que no puede pasar es que el contenido se lea a través de él. Un control que
+ * flota sobre el texto tiene que TAPARLO, no mezclarse con él: tapar un
+ * trozo de línea mientras pasa es lo que hace cualquier botón fijo; leer dos
+ * textos encimados no lo hace ninguno.
+ *
+ * Por eso toda pieza flotante de este archivo lleva el mismo fondo casi
+ * opaco —el del menú que abre, #16233A— y conserva su borde y su desenfoque.
+ * El botón de Google de verdad (filled_black) ya es opaco: no se toca.
+ */
+export const FONDO_FLOTANTE = "rgba(22,35,58,0.97)";
+
 const ENVOLTORIO = {
   position: "fixed",
   top: "clamp(14px, 2.4vh, 24px)",
@@ -464,7 +515,7 @@ export default function AccountControl({ conTitulo = false }) {
     return (
       <div style={ENVOLTORIO}>
         <EstiloCuenta />
-        <GoogleSignInButton size="medium" adaptable />
+        <GoogleSignInButton size="medium" adaptable fondo={FONDO_FLOTANTE} />
       </div>
     );
   }
@@ -575,8 +626,9 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
               fontSize: "13px",
               fontWeight: 600,
               color: FAE.text,
-              /* El teal del bloque del perfil, a la intensidad de la pastilla de la cuenta. */
-              background: "rgba(42,157,143,0.14)",
+              /* El teal del bloque del perfil, a la intensidad de la pastilla de la cuenta, sobre fondo sólido. */
+              backgroundColor: FONDO_FLOTANTE,
+              backgroundImage: "linear-gradient(rgba(42,157,143,0.14), rgba(42,157,143,0.14))",
               border: `1px solid ${FAE.teal}99`,
               backdropFilter: "blur(8px)",
               WebkitBackdropFilter: "blur(8px)",
@@ -609,7 +661,7 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
           padding: "8px 14px",
           borderRadius: "999px",
           cursor: "pointer",
-          background: "rgba(248,249,250,0.06)",
+          background: FONDO_FLOTANTE,
           border: "1px solid rgba(248,249,250,0.16)",
           color: FAE.text,
           backdropFilter: "blur(8px)",

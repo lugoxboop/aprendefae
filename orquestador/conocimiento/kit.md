@@ -462,6 +462,41 @@ pasa; los aciertos y errores dentro de cada actividad los revisa su célula con
 este mismo criterio. Si tu mecánica marca bien y mal solo con verde y rojo,
 tiene el defecto que estas cuatro no tienen.
 
+## Lo que flota tapa, no se mezcla
+
+La regla la pidió Xeno el 16 de octubre, resolviendo un hallazgo de la Célula C:
+sin sesión, el botón «Entrar» «tapaba el texto al bajar» a 320 y 375 px.
+
+Medido sobre el paquete construido, **el defecto no era que flotara: era que
+estaba hueco.** Un control fijo con relleno transparente deja que el texto que
+pasa por debajo se lea A TRAVÉS de él, y entonces hay dos textos encimados, que
+es lo que de verdad no se puede leer.
+
+| pieza flotante | relleno antes | ahora |
+|---|---|---|
+| botón de respaldo «Entrar» | `transparent` | `#16233A` al 97 % |
+| pastilla de la cuenta (FP + avatar) | blanco al 6 % | `#16233A` al 97 % |
+| pastilla «Panel docente» | teal al 14 % | teal al 14 % **sobre** `#16233A` al 97 % |
+
+**La regla: todo control flotante pinta su propio fondo opaco.** Un control fijo
+que tapa un trozo de línea mientras pasa es normal y se entiende; dos textos
+mezclados no. El 97 % y no el 94 % también se midió: al 94 % quedaba un fantasma
+legible detrás.
+
+Lo vigila `control-flotante-opaco.test.mjs`, que exige alfa ≥ 0,9 en cada pieza
+flotante y falla contra el código anterior.
+
+**Y la cuenta se queda fija, con una consecuencia aceptada y medida.** Dentro de
+una actividad los FP en vivo importan más que la identidad, así que la pastilla
+no se va al desplazar. El precio, que midió la Célula D con «Seguir» de A0 a 320
+y 375 px: mientras un botón de ancho completo pasa POR DEBAJO de la pastilla,
+**sus dos esquinas derechas devuelven la pastilla y no el botón** —el centro y la
+izquierda sí responden—. Está aceptado, no ignorado: con un control fijo,
+cualquier cosa que se desplace por debajo pierde esa banda, y la alternativa
+—que la cabecera se vaya con el desplazamiento— cuesta los FP en vivo, que valen
+más. **No hace falta volver a reportarlo**; si alguien encuentra un caso donde
+ESA banda sea el único sitio por donde se puede pulsar algo, eso sí es nuevo.
+
 ## El piso de la letra: 12 px para lo que el estudiante lee
 
 Lo encontró la Célula C midiendo sus 44 piezas (#206): 26 de ellas tenían

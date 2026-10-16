@@ -238,6 +238,53 @@ sin ser un bloqueo. Si algo tuyo espera, sigues por la pieza siguiente.
 
 ---
 
+## Una pila fusionada al revés pierde los de en medio, y CI no se queja
+
+El 16 de octubre Xeno encontró que dos trabajos terminados, revisados y
+fusionados **no estaban en `main`**: las marcas ✓/✗ de `CampoCifra` (#253) y de
+`MesaDelAsiento` (#254), con sus pruebas.
+
+Qué pasó. Los tres PR estaban apilados: #251 → #253 → #254. Se fusionaron en
+orden inverso al de la pila:
+
+1. el #254 entró en la rama del #253;
+2. el #251 entró en `main`;
+3. el #253 entró en la rama del #251 — **que ya estaba fusionada**, así que su
+   contenido quedó en una rama muerta.
+
+Resultado: `main` se quedó con la marca de `ElegirLado` (#251) y sin las otras
+dos. Los tres PR dicen «fusionado» y ninguno miente: cada uno entró en la rama
+que tenía por base.
+
+**Y CI nunca iba a avisar.** No hay nada roto que fallar: el código simplemente
+no está. Las pruebas que lo vigilaban se fueron con él. Es el falso verde de
+`herramientas.md` en su forma más limpia: **lo que no existe no falla.**
+
+**La regla, y cuesta treinta segundos: después de fusionar una pila, se busca en
+`main` una cadena distintiva de CADA PR.**
+
+```bash
+git fetch -q origin && git checkout main && git pull -q
+for s in "Cifra correcta" "data-marca-cuenta" "data-marca-lado"; do
+  printf '%-22s ' "$s"; git grep -l "$s" -- src | head -1 || echo "NO ESTÁ"
+done
+```
+
+Que el PR esté cerrado con «Merged» **no es la comprobación**: la comprobación es
+que la cadena esté en `main`. Y conviene escribir esa cadena en el propio PR
+—«esto se busca en main como `data-marca-cuenta`»— para que cualquiera pueda
+hacerlo sin leer el diff.
+
+Dos cosas que ayudan a no llegar ahí:
+
+- **Una pila se fusiona de abajo hacia arriba**, y cada PR se reapunta a `main`
+  cuando su base entra. Si la base se fusionó y el PR sigue apuntando a ella, lo
+  que entre no llega a ninguna parte.
+- **Cuando una base se fusiona, GitHub reapunta solo los PR que colgaban de
+  ella si la rama se borra.** Aquí no se borran ramas (y está bien: son el
+  respaldo), así que el reapuntado **lo hace una persona**. Esa es la otra cara
+  de la regla de no borrar ramas, y no estaba escrita.
+
 ## La prueba de guardia: cómo se entrega un término de una célula a otra
 
 **Es de la Célula B, y es la mejor pieza de coordinación que ha producido este

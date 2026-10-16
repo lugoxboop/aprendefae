@@ -56,6 +56,7 @@ const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: TresFormas, CSS_AP3, partirPorque, PILA } = await import("../../components/mecanicas/libros/t7/TresFormas.jsx");
 const { PIEZAS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
 const { textosDelError, sinAsiEs } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
+const { ACIERTOS_NEAR } = await import("./correccionesNearPepsUeps.mjs");
 const { RECOMENDACION: C7, CORRECCIONES_A3, MELLO_A3, NEAR_A3, TARJETA_UEPS_A3_2, NO_APLICADAS, palabrasAlAcertar } = await import("./correccionesMelloAciertos.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
@@ -121,6 +122,8 @@ const P6_C7 = [
   ...C7["Si elige UEPS"].textos, ...C7["Si elige Promedio"].textos, ...C7.Acierto.textos,
 ];
 const conMello = (t) => SUSTITUCIONES.reduce((x, [viejo, nuevo]) => x.replace(viejo, nuevo), t);
+/* Los aciertos de `peps` y `ueps` los cambia Near (t7-1-ap3-aciertos-peps-ueps.md): el viejo del recorte por el nuevo, solo en su pantalla. */
+const conNear = (id, textos) => (ACIERTOS_NEAR[id] ? textos.map((t) => (t === ACIERTOS_NEAR[id].viejo ? ACIERTOS_NEAR[id].nuevo : t)) : textos);
 
 /* Los textos de los datos de una pantalla, en el orden en que el recorte los escribe. */
 function textosDeDatos(p) {
@@ -159,7 +162,20 @@ test("★★★ las correcciones de Mello están en su auditoría, y lo que reem
 });
 
 test("★★★ cada pantalla dice, letra por letra y en su orden, lo del recorte con las correcciones de Mello", () => {
-  for (const b of BLOQUES) assert.deepEqual(textosDeDatos(pantalla(b.id)), b.id === "la-recomendacion" ? P6_C7 : b.textos.map(conMello), b.id);
+  for (const b of BLOQUES) assert.deepEqual(textosDeDatos(pantalla(b.id)), b.id === "la-recomendacion" ? P6_C7 : conNear(b.id, b.textos.map(conMello)), b.id);
+});
+
+test("★★★ peps y ueps: el acierto es el de Near, el viejo «Así es.» estaba una vez en su bloque del recorte, y las cifras son las de la pieza", () => {
+  for (const id of ["peps", "ueps"]) {
+    const { viejo, nuevo } = ACIERTOS_NEAR[id];
+    assert.equal(BLOQUES.find((b) => b.id === id).textos.filter((t) => t === viejo).length, 1, `${id}: el viejo en el recorte`);
+    assert.equal(pantalla(id).acierto.texto, nuevo, id);
+    assert.doesNotMatch(nuevo, /Así es/);
+  }
+  /* Las cifras de la pieza (INICIO.unidades, COMPRA.unidades, VENDIDAS en los datos): las cuentas de Near cuadran. */
+  const INICIO = 10, COMPRA = 30, VENDIDAS = 35;
+  assert.ok(ACIERTOS_NEAR.peps.nuevo.includes(`De las ${VENDIDAS} que se venden, primero salen las ${INICIO} del inicio y luego ${VENDIDAS - INICIO} compradas. Quedan ${INICIO + COMPRA - VENDIDAS} compradas.`));
+  assert.ok(ACIERTOS_NEAR.ueps.nuevo.includes(`De las ${VENDIDAS} que se venden, primero salen las ${COMPRA} compradas y luego ${VENDIDAS - COMPRA} del inicio. Quedan ${INICIO + COMPRA - VENDIDAS} del inicio.`));
 });
 
 test("★★★ A3-1 de Mello: P6 pregunta por precios que bajan; la correcta es PEPS; pista, errores y acierto, letra por letra", () => {
