@@ -168,3 +168,19 @@ Pregunta: «Un cliente compra a crédito y, antes de pagar, devuelve toda la mer
 | # | Término | Texto final | Estado |
 |---|---|---|---|
 | C7-4 | T6 A1 · Cuentas por cobrar | (sin cambio) | PASA |
+
+## Enganche B1-B5 (Mai, 15-oct) y B5 de Futaba (final, con las correcciones de Shoko) · manda sobre lo de arriba
+
+Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entregas/futaba-b2-b5-final.md (sección «B5»). Los textos nuevos van para Shoko.
+
+| Pieza | Figura | Al decidir |
+|---|---|---|
+| T6 A1 | la cuenta T «Cuentas por cobrar – clientes» | el hecho entra con su nombre corto en el DEBE (sube) o en el HABER (baja). «No cambia» va debajo: «Sin movimiento: Venta de contado» |
+
+Textos nuevos (para Shoko): los nombres cortos de T6 A1: «Venta a crédito», «Pago», «Cheque devuelto», «Devolución», «Descuento» y «Venta de contado»; «Sin movimiento:». Las columnas de la T llevan las palabras publicadas «DEBE» y «HABER».
+
+- Capa 3 (las 7): la pregunta de la caja solo se ve mientras falta decidir; al decidir sale y quedan las opciones marcadas (✓/✕), la devolución y el texto. La pregunta es el nombre accesible del grupo de opciones (aria-labelledby); cuando sale de la pantalla pasa a una copia oculta.
+- Capa 3: quien acierta ve el texto que se revela; quien falla dos veces ve la devolución de su opción y la figura, pero NO ese texto.
+- **Cajas ya respondidas:** muestran solo la opción elegida con su marca (cumple E4). Vale para la capa 3 de las siete piezas.
+- Nombre accesible del grupo de opciones: T6 A1 «¿Qué pasa con lo que deben los clientes?»
+- T6 A1 · capa 3 · caja de la venta a crédito, devolución al segundo error (texto aprobado, 15-oct; reemplaza la de arriba): «Aunque diga “crédito”, el cliente queda debiendo el arreglo: sube.»

@@ -147,6 +147,12 @@ export const PAQUETES = [
     pista: "Piensa quién le compraría estas acciones a la empresa si las quisiera vender mañana.",
   },
 ];
+/*
+ * La figura de la capa 3 (Mai, enganche B1-B5 §2b; textos nuevos, para
+ * Shoko): dos cajones. Al decidirse un paquete, su nombre entra en el cajón
+ * correcto (el de su respuesta correcta: «si» es temporal), se acierte o no.
+ */
+export const FIGURA_CAPA_3 = { temporal: "Temporal", noTemporal: "No temporal" };
 /* Solo aparece con los dos paquetes abiertos, en cualquier orden. Su pie va debajo. */
 export const PIE_FINAL_CAPA_3 = "Basado en el libro, pp. 191-192";
 export const FINAL_CAPA_3 = [

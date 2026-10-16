@@ -63,10 +63,13 @@ export const MOMENTOS_ESCENA_T6_A3 = [
 
 const Escena = escenaDeMomentos({ momentos: MOMENTOS_ESCENA_T6_A3, estadoPaso: T6_A3.estadoPaso, reservas: T6_A3.reservas, textos: E });
 
+/* La predicción se escribe sobre el asiento del gasto de diciembre, el que resalta el paso que viene (§2a de Mai). */
+const PARADA = { ...PARADA_T6_A3, etiquetaEn: "gasto1" };
+
 export default function LaProvision() {
   /* Los pasos juntados y la parada (hoja 7 de Mai); la reserva de la escena sigue con los estados de siempre. */
   return (
     <MaquinaPegada todos={T6_A3_JUNTO.TODOS} estadoPaso={T6_A3_JUNTO.estadoPaso} duracion={T6_A3_JUNTO.duracion} escena={Escena}
-      parada={PARADA_T6_A3} atributos={{ "data-capa2-t6-a3": true }} />
+      parada={PARADA} atributos={{ "data-capa2-t6-a3": true }} />
   );
 }

@@ -154,6 +154,25 @@ export const VENTAS_T5_A2 = [
     falla: "Los vende a $1.060 y le costaron $1.150: recibe menos de lo que pagó, así que es pérdida.",
   },
 ];
+/*
+ * La figura de la capa 3 (Mai, enganche B1-B5 §2b): la cuenta T de
+ * Inversiones – títulos del ejemplo del libro, con la compra del 1 de mayo en
+ * el DEBE. Al decidirse cada venta entra en el HABER lo que costaron los
+ * títulos vendidos ese día (las cifras y las fechas son las de la capa 2):
+ * la venta A, la del 1 de agosto (ganancia); la B, la del 1 de noviembre
+ * (pérdida). «DEBE» y «HABER», las palabras publicadas de la T (T6 · A3).
+ */
+const HECHO = (i) => ESCENA_T5_A2.hechos[i].fecha;
+export const FIGURA_CAPA_3_T5_A2 = {
+  cuenta: ESCENA_T5_A2.inversiones,
+  debe: "DEBE",
+  haber: "HABER",
+  compra: { monto: ESCENA_T5_A2.compra, fecha: HECHO(0) },
+  ventas: {
+    "venta-a": { monto: ESCENA_T5_A2.costado1, fecha: HECHO(2) },
+    "venta-b": { monto: ESCENA_T5_A2.costado2, fecha: HECHO(4) },
+  },
+};
 /* El texto final no cambia y sigue con su pie de las pp. 194-195. */
 export const FINAL_CAPA_3_T5_A2 = {
   texto: "En las dos ventas, la inversión se acredita por lo que costó. Lo que cambia es la diferencia: una vez es ganancia y otra vez es pérdida.",

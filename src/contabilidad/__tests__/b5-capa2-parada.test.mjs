@@ -16,7 +16,11 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *     en el sitio de la pregunta y «Siguiente» todavía desactivado; al
  *     segundo, marcas de la capa 3 y la devolución en ese sitio; al volver,
  *     ya decidida; «Ver de nuevo» no la borra; «Reproducir» se pausa al
- *     llegar.
+ *     llegar;
+ *   · la predicción en la escena (§2a de Mai, enganche B1-B5): la etiqueta
+ *     de borrador sale solo después de elegir, montada (absolute) sobre la
+ *     pieza que nombra la pregunta; en el paso que viene se califica (✓, o
+ *     ✕ y tachada) y en el siguiente desaparece; con «Anterior», calificada.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -56,11 +60,13 @@ const E4 = await import("../t6Pieza4.js");
 const E6 = await import("../t6Pieza5.js");
 
 /* Cada pieza: su componente, cuántos pasos quedan, su parada y su estado por paso (el que se ve). */
+/* `en`: la pieza de la escena que lleva la etiqueta; `dice`: lo que escribe cada opción (§2a de Mai). */
+const textoDeOpcion = (par) => Object.fromEntries(par.opciones.map((o) => [o.id, o.texto]));
 const PIEZAS = [
-  { nombre: "T5 · A2", Componente: await C("tema5/TresMomentos"), pasos: 14, parada: D5.PARADA_T5_A2, estado: E5.T5_A2_JUNTO.estadoPaso, duracion: E5.T5_A2_JUNTO.duracion },
-  { nombre: "T6 · A3", Componente: await C("tema6/LaProvision"), pasos: 15, parada: D3.PARADA_T6_A3, estado: E3.T6_A3_JUNTO.estadoPaso, duracion: E3.T6_A3_JUNTO.duracion },
-  { nombre: "T6 · A4", Componente: await C("tema6/SiPaga"), pasos: 9, parada: D4.PARADA_T6_A4, estado: E4.T6_A4.estadoPaso, duracion: E4.T6_A4.duracion },
-  { nombre: "T6 · A5", Componente: await C("tema6/LaTablaDelEjemplo"), pasos: 10, parada: D6.PARADA_T6_A5, estado: E6.T6_A5_JUNTO.estadoPaso, duracion: E6.T6_A5_JUNTO.duracion, pegar: pegarPorcentaje },
+  { nombre: "T5 · A2", en: "cuenta2", dice: textoDeOpcion(D5.PARADA_T5_A2), Componente: await C("tema5/TresMomentos"), pasos: 14, parada: D5.PARADA_T5_A2, estado: E5.T5_A2_JUNTO.estadoPaso, duracion: E5.T5_A2_JUNTO.duracion },
+  { nombre: "T6 · A3", en: "gasto1", dice: { si: "Otra vez en marzo", "si-parte": "Otra vez en marzo", no: "Solo en diciembre" }, Componente: await C("tema6/LaProvision"), pasos: 15, parada: D3.PARADA_T6_A3, estado: E3.T6_A3_JUNTO.estadoPaso, duracion: E3.T6_A3_JUNTO.duracion },
+  { nombre: "T6 · A4", en: "clientes2", dice: textoDeOpcion(D4.PARADA_T6_A4), Componente: await C("tema6/SiPaga"), pasos: 9, parada: D4.PARADA_T6_A4, estado: E4.T6_A4.estadoPaso, duracion: E4.T6_A4.duracion },
+  { nombre: "T6 · A5", en: "res2", dice: textoDeOpcion(D6.PARADA_T6_A5), Componente: await C("tema6/LaTablaDelEjemplo"), pasos: 10, parada: D6.PARADA_T6_A5, estado: E6.T6_A5_JUNTO.estadoPaso, duracion: E6.T6_A5_JUNTO.duracion, pegar: pegarPorcentaje },
 ];
 
 const montar = async (el) => {
@@ -251,6 +257,69 @@ for (const p of PIEZAS) {
       mock.timers.reset();
     }
   });
+}
+
+for (const p of PIEZAS) {
+  const etiqueta = (caja) => caja.querySelector("[data-etiqueta-parada]");
+  const elegirEnParada = async (caja, id) => tocar(caja.querySelector(`[data-parada] [data-opcion="${id}"]`));
+
+  test(`★★★ ${p.nombre} · §2a: la etiqueta sale solo después de elegir, como borrador montado sobre «${p.en}» sin ocupar sitio`, async () => {
+    const { caja, desmontar } = await montar(h(p.Componente));
+    assert.equal(etiqueta(caja), null, "en los pasos, nada");
+    await hastaAntes(caja, p);
+    await tocar(btn(caja, "siguiente"));
+    assert.equal(etiqueta(caja), null, "R10: en la parada, antes de elegir, nada");
+    const alto = caja.querySelector("[data-escena]").innerHTML.length;
+    const mala = p.parada.opciones.find((o) => o.id !== p.parada.correcta).id;
+    await elegirEnParada(caja, mala);
+    const e = etiqueta(caja);
+    assert.ok(e, "al elegir, la etiqueta");
+    assert.equal(e.dataset.etiquetaParada, p.en);
+    assert.ok(caja.querySelector(`[data-escena-viva] [data-elemento="${p.en}"]`), `«${p.en}» está en la escena`);
+    assert.equal(e.querySelector("[data-texto-etiqueta]").textContent, p.dice[mala]);
+    assert.equal(e.dataset.marca, "", "borrador: sin calificar");
+    assert.equal(e.querySelector("svg"), null);
+    assert.equal(e.style.position, "absolute", "montada: no ocupa sitio");
+    assert.equal(e.style.transform, "translateY(-50%)", "sobre el borde de arriba de la pieza");
+    assert.equal(e.style.border, `1.5px dashed ${rgb(FAE.node)}`);
+    assert.equal(e.style.borderRadius, "6px");
+    assert.deepEqual([e.style.fontFamily, e.style.fontSize, e.style.fontWeight], ["Inter, sans-serif", "12px", "600"]);
+    assert.equal(e.getAttribute("aria-hidden"), "true", "la escena ya va oculta al lector");
+    assert.equal(e.closest("[data-escena]"), null, "fuera de la escena: no la cambia");
+    assert.equal(caja.querySelector("[data-escena]").innerHTML.length, alto, "la escena no cambia al elegir");
+    desmontar();
+  });
+
+  for (const acierta of [true, false]) {
+    test(`★★★ ${p.nombre} · §2a: ${acierta ? "acierto" : "dos errores"}: en el paso que viene la etiqueta se califica (${acierta ? "✓" : "✕ y tachada"}); en el siguiente desaparece; con «Anterior», la parada la muestra calificada`, async () => {
+      const { caja, desmontar } = await montar(h(p.Componente));
+      await hastaAntes(caja, p);
+      await tocar(btn(caja, "siguiente"));
+      const malas = p.parada.opciones.filter((o) => o.id !== p.parada.correcta).map((o) => o.id);
+      const ultima = acierta ? p.parada.correcta : malas[1];
+      if (acierta) await elegirEnParada(caja, p.parada.correcta);
+      else { await elegirEnParada(caja, malas[0]); await elegirEnParada(caja, malas[1]); }
+      assert.equal(etiqueta(caja).dataset.marca, "", "en la parada, todavía borrador");
+      assert.equal(etiqueta(caja).querySelector("[data-texto-etiqueta]").textContent, p.dice[ultima], "dice la última elegida");
+      await tocar(btn(caja, "siguiente"));
+      assert.equal(contador(caja), `Paso ${p.parada.antes} de ${p.pasos}`);
+      const e = etiqueta(caja);
+      assert.ok(e, "en el paso que viene, la etiqueta sigue");
+      assert.equal(e.dataset.marca, acierta ? "correcta" : "tachada");
+      assert.ok(e.querySelector(`svg[data-icono="${acierta ? "visto" : "tache"}"]`));
+      assert.equal(e.querySelector("[data-texto-etiqueta]").style.textDecoration, acierta ? "" : "line-through");
+      await tocar(btn(caja, "siguiente"));
+      assert.equal(etiqueta(caja), null, "en el siguiente, desaparece");
+      await tocar(btn(caja, "anterior"));
+      assert.equal(etiqueta(caja).dataset.marca, acierta ? "correcta" : "tachada", "volviendo, calificada");
+      await tocar(btn(caja, "anterior"));
+      assert.equal(contador(caja), `Antes del paso ${p.parada.antes}`);
+      assert.equal(etiqueta(caja).dataset.marca, acierta ? "correcta" : "tachada", "la parada la muestra ya decidida");
+      await tocar(btn(caja, "anterior"));
+      assert.equal(etiqueta(caja), null, "en el paso de antes, nada");
+      desmontar();
+    });
+  }
 }
 
 test("★★ T6 A5: el paso juntado 9 + 10 lleva «Basado en el libro, p. 202», como sus dos pasos de origen (Shoko, #245)", async () => {

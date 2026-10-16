@@ -61,9 +61,12 @@ const lector = (paso) => [
   pegarPorcentaje(TODOS[paso - 1].pie),
 ];
 
+/* La predicción se escribe sobre la silueta de la provisión del grupo 2 (§2a de Mai). */
+const PARADA = { ...PARADA_T6_A5, etiquetaEn: "res2" };
+
 export default function LaTablaDelEjemplo() {
   return (
-    <MaquinaPegada todos={TODOS} estadoPaso={T6_A5_JUNTO.estadoPaso} duracion={T6_A5_JUNTO.duracion} escena={Escena} parada={PARADA_T6_A5}
+    <MaquinaPegada todos={TODOS} estadoPaso={T6_A5_JUNTO.estadoPaso} duracion={T6_A5_JUNTO.duracion} escena={Escena} parada={PARADA}
       pintar={pegarPorcentaje} pintarPie={pintarPie} lector={lector} atributos={{ "data-capa2-t6-a5": true }} />
   );
 }

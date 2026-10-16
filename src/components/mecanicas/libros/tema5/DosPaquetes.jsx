@@ -1,5 +1,6 @@
 import { CONSIGNA_CAPA_3, CONTEXTO_CAPA_3, PREGUNTA_CAPA_3, OPCIONES_CAPA_3, PAQUETES, FINAL_CAPA_3, PIE_FINAL_CAPA_3 } from "../../../../data/contabilidadT5Pieza1.js";
 import CajasQueRevelan, { LECTURA } from "../tema6/CajasQueRevelan.jsx";
+import { FiguraT5A1 } from "../tema6/FigurasCapa3.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -11,6 +12,7 @@ import CajasQueRevelan, { LECTURA } from "../tema6/CajasQueRevelan.jsx";
  * puede ser temporal (opciones en columna: son frases); al decidir, la
  * devolución si falló y el texto de siempre. Con los dos decididos, en
  * cualquier orden, aparece el bloque final. Sin color de acierto ni de error.
+ * Entre la consigna y las cajas, los dos cajones (§2b de Mai, FigurasCapa3).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -23,6 +25,6 @@ const NOMBRE = { ...LECTURA, fontFamily: "Sora, sans-serif", fontWeight: 600, li
 export default function DosPaquetes() {
   return (
     <CajasQueRevelan consigna={CONSIGNA_CAPA_3} contexto={CONTEXTO_CAPA_3} cajas={CAJAS} final={{ texto: FINAL_CAPA_3, pie: PIE_FINAL_CAPA_3 }}
-      estiloTitulo={NOMBRE} forma="columna" atributos={{ "data-capa3-t5": true }} />
+      estiloTitulo={NOMBRE} forma="columna" atributos={{ "data-capa3-t5": true }} Figura={FiguraT5A1} />
   );
 }

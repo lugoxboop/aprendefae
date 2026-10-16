@@ -12,11 +12,14 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · antes de decidir no se revela nada;
  *   · la escalera de ayuda (lote C2 de Futaba): al primer error, la pista y
  *     nada más; la elegida tachada y sin poder volver a tocarse, las demás
- *     activas; al segundo error, la correcta con el resalte (borde 2 nodo,
- *     relleno navy y 1 px menos de relleno), las elegidas malas tachadas y
- *     enteras, las demás al 0,5; aria-disabled (no disabled) y aria-pressed
- *     en la última elegida; la devolución de Futaba y después el texto de
- *     siempre; si acertó, el texto directo;
+ *     activas;
+ *   · nada dos veces (B5 de Futaba, §3 de Mai): al decidir, la pregunta sale
+ *     de la pantalla y queda como copia oculta que nombra el grupo; queda solo
+ *     la opción elegida con su marca E4: ✓ con el resalte (borde 2 nodo,
+ *     relleno navy y 1 px menos de relleno) si acertó, ✕ y tachada si no;
+ *     aria-disabled (no disabled) y aria-pressed; al segundo error, la
+ *     devolución de Futaba y el pie, SIN el texto que se revela; si acertó,
+ *     el texto directo;
  *   · el final, solo con todas decididas; fila o columna por pieza;
  *   · con movimiento reducido, sin transiciones ni animaciones.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -167,7 +170,7 @@ for (const p of PIEZAS) {
     desmontar();
   });
 
-  test(`★★★ ${p.nombre}: al segundo error, la correcta resaltada sin moverse, las elegidas tachadas, las demás al 0,5; la devolución de Futaba y después el texto de siempre; el final, solo con todas cerradas`, async () => {
+  test(`★★★ ${p.nombre}: al segundo error, la pregunta sale (queda como nombre oculto del grupo), solo la última elegida con ✕ y tachada; la devolución de Futaba y el pie, sin el texto que se revela; el final, solo con todas cerradas`, async () => {
     const { caja, desmontar } = await montar(h(p.Componente));
     for (const [k, x] of p.cajas.entries()) {
       const [mala1, mala] = x.opciones.filter((o) => o.id !== x.correcta).map((o) => o.id);
@@ -176,37 +179,42 @@ for (const p of PIEZAS) {
       assert.ok(zona, `${x.id} a la vista`);
       await decidir(tocar, zona, mala1);
       await decidir(tocar, zona, mala);
-      const por = Object.fromEntries([...zona.querySelectorAll("[data-opcion]")].map((b) => [b.dataset.opcion, b]));
-      const correcta = por[x.correcta];
-      assert.equal(correcta.style.border, `2px solid ${rgb(FAE.node)}`);
-      assert.equal(correcta.style.background, rgb(FAE.navy));
-      assert.equal(correcta.style.padding, p.forma === "fila" ? "9px 2px" : "9px 11px", "1 px menos de relleno: nada se mueve");
-      assert.equal(correcta.style.fontWeight, "400", "sin cambiar de peso");
-      for (const m of [mala1, mala]) {
-        assert.equal(por[m].style.textDecoration, "line-through");
-        assert.equal(por[m].style.opacity, "1");
-      }
-      assert.equal(por[mala].getAttribute("aria-pressed"), "true", "la última elegida");
-      assert.equal(por[mala1].getAttribute("aria-pressed"), "false");
-      for (const [id, b] of Object.entries(por)) {
-        if (![x.correcta, mala, mala1].includes(id)) assert.equal(b.style.opacity, "0.5", `${id}, apagada`);
-        assert.equal(b.getAttribute("aria-disabled"), "true");
-        assert.equal(b.hasAttribute("disabled"), false, "aria-disabled, no disabled: el foco no se pierde");
-      }
+      /* La pregunta sale de la pantalla y sigue nombrando el grupo. */
+      assert.equal(zona.querySelector("[data-pregunta]"), null, "la pregunta visible sale");
+      const oculta = zona.querySelector("[data-pregunta-oculta]");
+      assert.equal(oculta.textContent, x.pregunta);
+      assert.equal(oculta.style.position, "absolute", "copia oculta (solo para el lector)");
+      assert.equal(oculta.style.width, "1px");
+      const grupo = zona.querySelector("[role='group']");
+      assert.equal(grupo.getAttribute("aria-labelledby"), oculta.id);
+      /* Solo la última elegida, con su marca. */
+      const botones = [...zona.querySelectorAll("[data-opcion]")];
+      assert.deepEqual(botones.map((b) => b.dataset.opcion), [mala], "solo la elegida");
+      const elegida = botones[0];
+      assert.equal(elegida.dataset.marca, "tachada");
+      assert.equal(elegida.style.textDecoration, "line-through");
+      assert.equal(elegida.style.opacity, "1");
+      assert.ok(elegida.querySelector("svg[data-icono='tache']"), "el ✕ de E4");
+      assert.equal(elegida.querySelector("svg[data-icono='visto']"), null);
+      assert.equal(elegida.getAttribute("aria-pressed"), "true", "la última elegida");
+      assert.equal(elegida.getAttribute("aria-disabled"), "true");
+      assert.equal(elegida.hasAttribute("disabled"), false, "aria-disabled, no disabled: el foco no se pierde");
       assert.equal(zona.querySelector("[data-pista]"), null, "la pista deja su sitio");
       const devolucion = zona.querySelector("[data-devolucion]");
       assert.equal(devolucion.style.borderLeft, `3px solid ${rgb("#B8C4D4")}`);
       assert.equal(devolucion.style.fontSize, "13px");
-      assert.deepEqual(revelado(zona), [pegar(p, falloDe(x, mala)), x.revela], "primero la devolución y después el texto");
-      /* Cerrada: tocar otra no cambia nada. */
-      await tocar(correcta);
-      assert.equal(por[mala].getAttribute("aria-pressed"), "true");
+      assert.deepEqual(revelado(zona), [pegar(p, falloDe(x, mala))], "la devolución, sin el texto que se revela");
+      assert.ok(!zona.textContent.includes(x.revela), "el texto que se revela no está");
+      assert.ok(zona.querySelector("[data-pie]"), "la fuente se queda, bajo la devolución");
+      /* Cerrada: tocar la elegida no cambia nada. */
+      await tocar(elegida);
+      assert.equal(elegida.getAttribute("aria-pressed"), "true");
       assert.equal(finalLeido(caja), k < p.cajas.length - 1 ? "" : p.final, `final tras la caja ${k + 1}`);
     }
     desmontar();
   });
 
-  test(`★★★ ${p.nombre}: al acertar después de la pista, el texto directo, sin devolución`, async () => {
+  test(`★★★ ${p.nombre}: al acertar después de la pista, solo la correcta con ✓ y el resalte sin moverse, y el texto directo, sin devolución`, async () => {
     const { caja, desmontar } = await montar(h(p.Componente));
     for (const x of p.cajas) {
       const mala = x.opciones.find((o) => o.id !== x.correcta).id;
@@ -216,8 +224,15 @@ for (const p of PIEZAS) {
       assert.equal(zona.querySelector("[data-devolucion]"), null);
       assert.equal(zona.querySelector("[data-pista]"), null);
       assert.deepEqual(revelado(zona), [x.revela]);
-      assert.equal(zona.querySelector(`[data-opcion="${mala}"]`).style.textDecoration, "line-through", "el primer error sigue tachado");
-      assert.equal(zona.querySelector(`[data-opcion="${x.correcta}"]`).getAttribute("aria-pressed"), "true");
+      assert.equal(zona.querySelector(`[data-opcion="${mala}"]`), null, "el primer error ya no se ve: solo la elegida");
+      const correcta = zona.querySelector(`[data-opcion="${x.correcta}"]`);
+      assert.equal(correcta.getAttribute("aria-pressed"), "true");
+      assert.equal(correcta.dataset.marca, "correcta");
+      assert.ok(correcta.querySelector("svg[data-icono='visto']"), "el ✓ de E4");
+      assert.equal(correcta.style.border, `2px solid ${rgb(FAE.node)}`);
+      assert.equal(correcta.style.background, rgb(FAE.navy));
+      assert.equal(correcta.style.padding, p.forma === "fila" ? "9px 2px" : "9px 11px", "1 px menos de relleno: nada se mueve");
+      assert.equal(correcta.style.fontWeight, "400", "sin cambiar de peso");
     }
     assert.equal(finalLeido(caja), p.final);
     desmontar();
@@ -231,6 +246,7 @@ for (const p of PIEZAS) {
       assert.equal(zona.querySelector("[data-devolucion]"), null);
       assert.deepEqual(revelado(zona), [x.revela]);
       assert.equal(zona.querySelector(`[data-opcion="${x.correcta}"]`).getAttribute("aria-pressed"), "true");
+      assert.equal(zona.querySelectorAll("[data-opcion]").length, 1, "solo la elegida");
       assert.ok([...zona.querySelectorAll("[data-opcion]")].every((b) => b.style.textDecoration === "none"));
     }
     assert.equal(finalLeido(caja), p.final);

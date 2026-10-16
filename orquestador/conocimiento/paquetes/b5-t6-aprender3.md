@@ -490,3 +490,17 @@ Pregunta: «Si en marzo el castigo hubiera sido menor que la provisión, ¿qué 
 | Lo que sobró se suma a lo que pide el análisis. | | No es esa. Lo que faltó se suma. Si sobró, se hace lo contrario: se resta. |
 | Se registra solo lo que pide el análisis. | | No es esa. Lo que sobró sigue en la provisión. Por eso se descuenta del registro del año. |
 | Lo que sobró sale de la provisión y entra a Caja. | | No es esa. La provisión no es plata: no sale ni entra nada de Caja. |
+
+## Enganche B1-B5 (Mai, 15-oct) y B5 de Futaba (final, con las correcciones de Shoko) · manda sobre lo de arriba
+
+Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entregas/futaba-b2-b5-final.md (sección «B5»). Los textos nuevos van para Shoko.
+
+| Pieza | Dónde va la etiqueta | Qué dice |
+|---|---|---|
+| T6 A3 | en el asiento del gasto de diciembre (el que resalta el paso 8) | «Otra vez en marzo» (eligió «Sí») o «Solo en diciembre» (eligió «No») · textos nuevos, para Shoko |
+
+- **T6 A3 · capa 3:** las cajas se llaman «Se crea» · «Se usa» · «Se corrige». Las fechas quedan solo en las filas de la T.
+- T6 A3 conserva su pregunta visible en cada caja, porque cada una pregunta algo distinto.
+- Capa 3 (las 7): la pregunta de la caja solo se ve mientras falta decidir; al decidir sale y quedan las opciones marcadas (✓/✕), la devolución y el texto. La pregunta es el nombre accesible del grupo de opciones (aria-labelledby); cuando sale de la pantalla pasa a una copia oculta.
+- Capa 3: quien acierta ve el texto que se revela; quien falla dos veces ve la devolución de su opción y la figura, pero NO ese texto.
+- **Cajas ya respondidas:** muestran solo la opción elegida con su marca (cumple E4). Vale para la capa 3 de las siete piezas.

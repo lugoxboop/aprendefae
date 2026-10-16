@@ -7,6 +7,7 @@ import { SOLO_LECTOR } from "../verbos.jsx";
 import { estadoParada } from "../../../../contabilidad/fusionar.js";
 import { OpcionDecidir, useFormaQueCabe, seParteAlguna } from "./CajasQueRevelan.jsx";
 import { escalera, elegir, fallasDe } from "./escaleraB5.js";
+import { IconoVisto, IconoTache, TACHADO } from "../b5/MarcasE4.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -45,6 +46,18 @@ import { escalera, elegir, fallasDe } from "./escaleraB5.js";
  * lo que nombra la pregunta. El bloque crece una sola vez, al entrar, hacia
  * arriba («Siguiente» no se mueve). «Reproducir» se pausa al llegar. La
  * decisión se conserva al volver y con «Ver de nuevo».
+ *
+ * LA PREDICCIÓN EN LA ESCENA (§2a de Mai, enganche B1-B5): con
+ * `parada.etiquetaEn` (el id de una pieza de la escena), lo elegido se
+ * escribe en la escena como un borrador: una etiqueta de borde discontinuo
+ * (1,5 nodo, radio 6, Inter 12/600, fondo de la escena) montada sobre el
+ * borde de arriba de esa pieza, en position: absolute (no ocupa sitio: la
+ * escena reservada no cambia). Aparece solo después de elegir (R10), con
+ * opacidad en 240 ms (al instante con movimiento reducido). Dice la opción
+ * elegida, o su texto en `parada.etiquetas`. En el paso que viene se califica
+ * con E4 (✓, o ✕ y tachada) y desaparece en el siguiente; con «Anterior», la
+ * parada la muestra otra vez, ya calificada. Va oculta al lector: la escena
+ * ya lo está, y lo elegido y su resultado se oyen en la parada.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -77,6 +90,12 @@ const ESTILOS_PARADA = `
 @keyframes b5-parada-aparece { from { opacity: 0; } to { opacity: 1; } }
 .b5-parada-aparece { animation: b5-parada-aparece 240ms ease-out both; }
 @media (prefers-reduced-motion: reduce) { .b5-parada-aparece { animation: none; } }
+`;
+/* La etiqueta de la predicción (§2a): su propia entrada, porque vive fuera del bloque. */
+const ESTILOS_ETIQUETA = `
+@keyframes b5-etiqueta-aparece { from { opacity: 0; } to { opacity: 1; } }
+.b5-etiqueta-aparece { animation: b5-etiqueta-aparece 240ms ease-out both; }
+@media (prefers-reduced-motion: reduce) { .b5-etiqueta-aparece { animation: none; } }
 `;
 /* Lo que puede ocupar el sitio de la pregunta: cada devolución y la pista. */
 const textosParada = (parada) => [...fallasDe(parada), ...(parada.pista ? [parada.pista] : [])];
@@ -219,6 +238,10 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
   const [enParada, setEnParada] = useState(false);
   const [intentos, setIntentos] = useState([]);
   const escalon = parada ? escalera(parada, intentos) : null;
+  /* La predicción ya se calificó: se pasó de la parada al paso que viene (§2a). */
+  const [calificada, setCalificada] = useState(false);
+  /* Dónde va la etiqueta, relativo a la máquina: el borde de arriba de su pieza. */
+  const [sitioEtiqueta, setSitioEtiqueta] = useState(null);
   /* Fila o columna, medido donde se pinta (como la capa 3). */
   const [formaParada, seParteParada, vueltaParada] = useFormaQueCabe("fila");
   const grupoParada = useRef(null);
@@ -285,7 +308,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
   /* Un paso adelante, con la parada entre `antes − 1` y `antes`. Devuelve si quedó en la parada. */
   const avanzar = () => {
     if (parada && !enParada && paso === parada.antes - 1) { setEnParada(true); return true; }
-    if (enParada) { setEnParada(false); setPaso(parada.antes); return false; }
+    if (enParada) { setEnParada(false); setPaso(parada.antes); setCalificada(true); return false; }
     setPaso((p) => Math.min(CIERRE, p + 1));
     return false;
   };
@@ -354,7 +377,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     const destino = Math.min(CIERRE, Math.max(1, nuevo));
     if (parada) {
       /* Desde la parada: «Siguiente» va al paso que viene; «Anterior», al de antes. Al foco no se le toca. */
-      if (enParada) { setEnParada(false); if (destino > paso) setPaso(parada.antes); return; }
+      if (enParada) { setEnParada(false); if (destino > paso) { setPaso(parada.antes); setCalificada(true); } return; }
       /* Hacia la parada, desde el paso de antes (adelante) o desde el que viene (atrás): vuelve ya decidida. */
       if (paso === parada.antes - 1 && destino === parada.antes) { setEnParada(true); return; }
       if (paso === parada.antes && destino === parada.antes - 1) { setEnParada(true); setPaso(destino); return; }
@@ -363,6 +386,32 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     if (destino === 1) foco.current = "siguiente";
     setPaso(destino);
   };
+
+  /*
+   * La etiqueta de la predicción (§2a): en la parada, desde que se elige; en
+   * el paso que viene, calificada; después, nada.
+   */
+  const etiqueta = parada?.etiquetaEn && escalon.ultima
+    ? (enParada ? { calificada: calificada && escalon.resuelta } : paso === parada.antes && escalon.resuelta ? { calificada: true } : null)
+    : null;
+  const conEtiqueta = Boolean(etiqueta);
+  useLayoutEffect(() => {
+    if (!conEtiqueta) { setSitioEtiqueta(null); return undefined; }
+    let vivo = true;
+    const medir = () => {
+      const t = piezas.current[parada.etiquetaEn]; const m = maquina.current;
+      if (!vivo || !t || !m) return;
+      const a = t.getBoundingClientRect(); const b = m.getBoundingClientRect();
+      const nuevo = { top: a.top - b.top, left: a.left - b.left + 8, ancho: Math.max(0, a.width - 16) };
+      setSitioEtiqueta((s) => (s && ["top", "left", "ancho"].every((k) => Math.abs(s[k] - nuevo[k]) < 0.5) ? s : nuevo));
+    };
+    medir();
+    document.fonts?.ready?.then(medir);
+    window.addEventListener("resize", medir);
+    return () => { vivo = false; window.removeEventListener("resize", medir); };
+  }, [conEtiqueta, paso, enParada]); // eslint-disable-line react-hooks/exhaustive-deps
+  const textoEtiqueta = etiqueta ? (parada.etiquetas?.[escalon.ultima] ?? pintar(parada.opciones.find((o) => o.id === escalon.ultima).texto)) : null;
+  const marcaEtiqueta = etiqueta?.calificada ? (escalon.acerto ? "correcta" : "tachada") : null;
 
   const primero = paso === 1 && !enParada;
   const ultimo = paso === CIERRE;
@@ -374,9 +423,23 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
   const actual = todos[paso - 1];
   const estiloTexto = (i) => (i === PASOS ? { fontFamily: SORA, fontWeight: 600 } : { fontFamily: INTER, fontWeight: 400 });
   return (
-    <div ref={maquina} {...atributos} className={CLASE_T5}>
+    <div ref={maquina} {...atributos} className={CLASE_T5} style={{ position: "relative" }}>
       <EstilosT5 />
       {escena(estado, refDe, reducido)}
+      {etiqueta && (
+        <span data-etiqueta-parada={parada.etiquetaEn} data-marca={marcaEtiqueta ?? ""} aria-hidden="true" className={reducido ? undefined : "b5-etiqueta-aparece"} style={{
+          position: "absolute", top: `${sitioEtiqueta?.top ?? 0}px`, left: `${sitioEtiqueta?.left ?? 0}px`,
+          maxWidth: sitioEtiqueta ? `${sitioEtiqueta.ancho}px` : undefined, transform: "translateY(-50%)",
+          visibility: sitioEtiqueta ? "visible" : "hidden", zIndex: 3, pointerEvents: "none",
+          display: "inline-flex", alignItems: "center", gap: "4px", boxSizing: "border-box", padding: "1px 6px", borderRadius: "6px",
+          border: `1.5px dashed ${NODO}`, background: FONDO, color: TEXTO, fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: 1.35,
+        }}>
+          <style>{ESTILOS_ETIQUETA}</style>
+          {marcaEtiqueta === "correcta" && <IconoVisto />}
+          {marcaEtiqueta === "tachada" && <IconoTache />}
+          <span data-texto-etiqueta style={marcaEtiqueta === "tachada" ? TACHADO : undefined}>{textoEtiqueta}</span>
+        </span>
+      )}
 
       {/*
         ═══ EL BLOQUE DE CONTROL, PEGADO (guía v2 §4.4, modo B) ═══

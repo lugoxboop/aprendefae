@@ -125,7 +125,8 @@ test("★★★ manda Futaba: los cinco términos (nota en el 2, cita con págin
 
 const rotulos = () => {
   const { momentos, debita, acredita, ...resto } = D.ESCENA_T6_A4;
-  return [...momentos.map((m) => m.fecha), ...Object.values(resto), D.TABLERO_T6_A4.revive, D.TABLERO_T6_A4.entran,
+  /* «A Caja entran» ya no sale de ningún texto que se revela (B5 de Futaba: sin cifras); es la cabecera literal de la guía §4.1 (abajo). */
+  return [...momentos.map((m) => m.fecha), ...Object.values(resto), D.TABLERO_T6_A4.revive,
     ...D.CASOS_T6_A4.flatMap((c) => [c.letra, c.revive, c.entran])];
 };
 /* El caso a ya no tiene caja (lote C1-11): sin nombre ni texto que revelar. */
@@ -142,6 +143,8 @@ test("★★★ cada rótulo de la escena y del tablero es fragmento literal de 
   assert.deepEqual(r.filter((x) => !esFragmento(x)), []);
   /* El rótulo de la fila del caso a no sale de un paso: es literal del lote C1-11. */
   assert.equal(D.TABLERO_T6_A4.ejemplo, "Ejemplo");
+  /* Las cabeceras del tablero, literales de la guía §4.1. */
+  assert.ok(FUENTE.includes(`Cabecera: «${D.TABLERO_T6_A4.revive}» y «${D.TABLERO_T6_A4.entran}»`));
   assert.ok(FUENTE.includes("- Caso a: su fila del tablero ya viene llena, con el rótulo «Ejemplo». Ya no se pregunta."));
 });
 
@@ -329,7 +332,8 @@ test("★★★ capa 3: el tablero es una tabla; el caso a viene lleno, con el r
     assert.equal(lectura(caja.querySelector(`[data-revela="${c.id}"]`)), c.pista, "al primer error, solo la pista");
     assert.deepEqual(fila(c.id), ["", ""], "al primer error, la fila sigue vacía");
     await decidir(tocar, caja.querySelector(`[data-hecho="${c.id}"]`), mala);
-    assert.equal(lectura(caja.querySelector(`[data-revela="${c.id}"]`)), (typeof c.falla === "string" ? c.falla : c.falla[mala]) + c.revela);
+    /* B5 de Futaba: tras dos errores, la devolución de la opción, sin el texto que se revela. */
+    assert.equal(lectura(caja.querySelector(`[data-revela="${c.id}"]`)), typeof c.falla === "string" ? c.falla : c.falla[mala]);
     assert.equal(caja.querySelector(`[data-revela="${c.id}"] [data-pie]`).textContent, c.pie);
     assert.deepEqual(fila(c.id), [c.revive, c.entran]);
     const [rev, ent] = t.querySelectorAll(`[data-fila="${c.id}"] td div`);

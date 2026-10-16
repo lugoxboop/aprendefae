@@ -118,10 +118,13 @@ export const CONSIGNA_CAPA_3_T6_A3 = "Toca cada momento y decide qué le pasa a 
  * Los tres momentos, en orden (se abren en orden: guía v1 §5.1). Cada uno
  * deja en la T su movimiento (columna y monto) y el saldo que queda: normal
  * bajo HABER, o en contra bajo DEBE.
+ * B5 de Futaba: la caja se llama por lo que pasa (`caja`: «Se crea», «Se
+ * usa», «Se corrige»); la fecha (`nombre`) queda solo en las filas de la T.
  */
 export const MOMENTOS_T6_A3 = [
   {
     id: "diciembre-2007",
+    caja: "Se crea",
     nombre: "31 de diciembre de 2007",
     revela: "Sube $148.800, porque se crea la provisión. El saldo queda en $148.800.",
     pie: "Libro, pp. 202-203",
@@ -139,6 +142,7 @@ export const MOMENTOS_T6_A3 = [
   },
   {
     id: "marzo",
+    caja: "Se usa",
     nombre: "Marzo del año siguiente",
     revela: "Baja $180.000, porque se castiga la deuda de Pablo Moncayo. Como solo tenía $148.800, le faltan $31.200.",
     pie: "Basado en el libro, pp. 202-203",
@@ -156,6 +160,7 @@ export const MOMENTOS_T6_A3 = [
   },
   {
     id: "diciembre-siguiente",
+    caja: "Se corrige",
     nombre: "31 de diciembre del año siguiente",
     revela: "Sube $184.600: los $153.400 del análisis más los $31.200 que faltaron. El saldo queda en $153.400.",
     pie: "Libro, p. 203",
@@ -246,4 +251,6 @@ export const PARADA_T6_A3 = {
   pista: "Recuerda en qué momento del ejemplo se anotó el gasto de la provisión.",
   pie: "Basado en el libro, p. 202",
   resaltados: ["provision2", "clientes2"],
+  /* La predicción escrita en la escena (Mai, enganche §2a; textos nuevos, para Shoko): «Sí, por la parte…» también dice que el gasto vuelve en marzo. */
+  etiquetas: { si: "Otra vez en marzo", "si-parte": "Otra vez en marzo", no: "Solo en diciembre" },
 };

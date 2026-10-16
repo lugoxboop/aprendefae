@@ -29,6 +29,11 @@ import { escalera, elegir } from "./escaleraB5.js";
  *     provisión no está mal anotada, se quedó corta.
  * «DEBE» y «HABER» llevan el estilo publicado de los colectores de
  * ElCierreCompleto (Sora 9). Ningún texto vive aquí.
+ *
+ * B5 de Futaba: las cajas se llaman por lo que pasa («Se crea», «Se usa»,
+ * «Se corrige»); la fecha de cada momento queda solo en su fila de la T.
+ * Cada caja conserva su pregunta visible mientras falta decidir, porque cada
+ * una pregunta algo distinto.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -118,7 +123,7 @@ export default function CuentaT() {
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
         {MOMENTOS_T6_A3.slice(0, Math.min(n + 1, MOMENTOS_T6_A3.length)).map((m, i) => (
           <Caja key={m.id} estiloTitulo={NOMBRE_CAJA} forma="columna"
-            caja={{ id: m.id, titulo: m.nombre, revela: m.revela, pie: m.pie, decide: decideDe(m) }}
+            caja={{ id: m.id, titulo: m.caja, revela: m.revela, pie: m.pie, decide: decideDe(m) }}
             abierto={i < abiertos} onAbrir={() => setAbiertos((k) => Math.max(k, i + 1))}
             intentos={elecciones[m.id]} onElegir={(o) => setElecciones((e) => ({ ...e, [m.id]: elegir(decideDe(m), e[m.id] ?? [], o) }))} />
         ))}
