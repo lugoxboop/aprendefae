@@ -24,7 +24,8 @@ test("★★★ todo Hacer pinta la consigna sin la frase del intento y el conta
     for (const [, valor] of src.matchAll(/<Encabezado[^>]*\sconsigna=\{([^\n]*?)\}\s+onComoSeJuega/g))
       assert.match(valor, /^sinUnSoloIntento\(/, `${ruta}: consigna={${valor}}`);
     const pulsos = (src.match(/<Pulsos\b/g) ?? []).length;
-    const envueltos = (src.match(/<ContadorConIntento>\s*<Pulsos\b/g) ?? []).length;
+    /* ContadorPrimerIntento es el de la escalera (EscaleraHacer.jsx): mismo lugar, con el texto «Vale el primer intento» de los datos. */
+    const envueltos = (src.match(/<(?:ContadorConIntento|ContadorPrimerIntento\b[^>]*)>\s*<Pulsos\b/g) ?? []).length;
     assert.equal(envueltos, pulsos, `${ruta}: Pulsos sin distintivo`);
   }
 });
