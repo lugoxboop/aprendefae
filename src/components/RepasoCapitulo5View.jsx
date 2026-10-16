@@ -12,15 +12,21 @@ import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
-import { CSS_JUEGO, Opcion, Opciones, Cierre } from "./mecanicas/corazon/juego.jsx";
-import { pesos } from "../data/contabilidad.js";
-import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente } from "./repasoCap5/comun.jsx";
+import { CSS_JUEGO, Cierre } from "./mecanicas/corazon/juego.jsx";
+import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente, Punto } from "./repasoCap5/comun.jsx";
 import { ToroNegro } from "./repasoCap5/ToroNegro.jsx";
+import { OpcionesTitulo } from "./repasoCap5/OpcionesTitulo.jsx";
+import { Flujos } from "./repasoCap5/Flujos.jsx";
+import { MayorCompacto } from "./repasoCap5/MayorCompacto.jsx";
+import { Latas } from "./repasoCap5/Latas.jsx";
+import { Fichas } from "./repasoCap5/Fichas.jsx";
+import { Lotes } from "./repasoCap5/Lotes.jsx";
 import { R5_2 } from "../data/repasoCap5ToroNegroTextos.js";
+import { Mate } from "./repasoCap5/Mate.jsx";
+import { R5_3 } from "../data/repasoCap5MateTextos.js";
 import {
-  R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, ORDEN_SUBTEMAS, UNIDADES_POR_CAJA,
-  prepararR5_1, evaluarR5_1, puntuarR5_1, porTema, textoDeOpcion,
-  pasosDeC8, cuentaDeC9, pesosConCentavos,
+  R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, ORDEN_SUBTEMAS,
+  prepararR5_1, puntuarR5_1, porTema, textoDeOpcion, renglonesDeAsiento, mayorTrasAsiento,
 } from "../data/repasoCap5Cruzado.js";
 
 /*
@@ -32,11 +38,13 @@ import {
  * partida, la vista registra con el motor compartido
  * (registrarActividadCompletada → otorgarFP), sin tocarlo, igual que T7.
  *
- * r5-1 «Repaso cruzado» se pinta aquí mismo, con el diseño de Itagaki del
- * paquete e5-r5-1-v1: Opcion, Opciones y Cierre de corazon/juego.jsx sin
- * cambiarlos; el progreso, la escena, los datos, el panel de devolución y el
- * bloque «POR TEMA» son de esta vista. Nada de mecanicas/libros/t7, que es de
- * la Célula C.
+ * r5-1 «Repaso cruzado» v2 (paquete e5-r5-1-v2): aquí van la cabecera, la
+ * pista, el orden de las pantallas y el final POR TEMA; las mecánicas (la
+ * opción propia, los flujos, el mayor compacto, las latas, las fichas, los
+ * lotes) viven en repasoCap5/. De corazon/juego.jsx solo se usan el Cierre y
+ * su CSS, sin tocarlos: su `Opcion` pinta el acierto en teal, que en
+ * Contabilidad es DEBE (decisión 2). Nada de mecanicas/libros/t7, que es de la
+ * Célula C.
  *
  * Sin Marco: el paquete mide la pantalla con el ancho de contenido de la
  * vista (343 a 375 px, 288 a 320), sin el relleno de un panel encima.
@@ -48,10 +56,9 @@ export const TEMA_REPASO_CAP5 = "repaso-capitulo-5";
 
 const LECTOR_R5_1 = { acierto: PENDIENTE_DE_REVISION_R5_1.lectorAcierto, error: PENDIENTE_DE_REVISION_R5_1.lectorError };
 
-const CSS_R5 = `
-@keyframes r5-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.r5-escena { animation: r5-entra 240ms ease-out both; }
-@media (prefers-reduced-motion: reduce) { .r5-escena { animation: none; } }
+/* §d · el anillo de foco de r5-1: 2 px #F8F9FA, separado 2 px. */
+export const CSS_R5_1 = `
+[data-r5-1] button:focus-visible, [data-r5-1] [tabindex]:focus-visible { outline: 2px solid #F8F9FA; outline-offset: 2px; }
 `;
 
 /* ═══════════ LAS TRES SILUETAS (HTML/CSS a px reales, trazo de 2) ═══════════ */
@@ -129,166 +136,32 @@ function Bodega() {
 
 const SILUETAS = { "titulo-valor": TituloValor, facturas: Facturas, bodega: Bodega };
 const ANCHO_SILUETA = { "titulo-valor": 168, facturas: 150, bodega: 200 };
+const ALTO_SILUETA = { "titulo-valor": 44, facturas: 44, bodega: 48 };
 
-function BandaEscena({ escena }) {
+/* ═══════════ LA CABECERA: «PREGUNTA n DE 6» Y LA SILUETA DEL TEMA AL 50 % ═══════════ */
+
+/*
+ * v2 (§0): sale la banda de escena de 72 px de v1. Queda un renglón de 40 px
+ * con la marca a la izquierda y la silueta del tema a la mitad a la derecha
+ * (título 84 × 22, facturas 75 × 22, bodega 100 × 24).
+ */
+function Cabecera({ actual, total, escena }) {
   const Silueta = SILUETAS[escena];
   return (
-    <div aria-hidden="true" data-banda-escena style={{ height: "72px", borderRadius: "12px", background: C.navy, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-      {/* La clave es la escena: mismo tema, la silueta no se mueve; tema nuevo, entra. */}
-      <div key={escena} className="r5-escena" style={{ height: "48px", display: "flex", alignItems: "center" }}>
-        <Silueta />
-      </div>
-    </div>
-  );
-}
-
-/* ═══════════ EL PROGRESO ═══════════ */
-
-function Progreso({ actual, total }) {
-  return (
-    <div data-progreso>
-      <p style={{ ...MARCA, margin: 0 }}>{INTERFAZ_R5_1.progreso(actual + 1, total)}</p>
-      {/* Los segmentos no dicen acierto ni error. */}
-      <div aria-hidden="true" style={{ display: "flex", gap: "4px", marginTop: "8px" }}>
-        {Array.from({ length: total }, (_, k) => (
-          <span
-            key={k}
-            data-segmento={k < actual ? "hecho" : k === actual ? "actual" : "pendiente"}
-            style={{ flex: 1, height: "4px", borderRadius: "2px", background: k < actual ? C.hecho : k === actual ? C.ambar : C.navy }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ═══════════ LOS DATOS DE LAS PANTALLAS 4 Y 5 ═══════════ */
-
-const CONTENEDOR = { background: C.navy, borderRadius: "12px", padding: "4px 16px", marginTop: "16px" };
-const DIVISORIA = "1px solid rgba(184,196,212,0.25)";
-
-/*
- * v1.3 · LA CUENTA A LA VISTA. Antes de responder, los seis datos en el orden
- * del estado de resultados y nada más: apartarlos regalaría la respuesta.
- * Después de responder —acierte o falle—, cada dato dice cómo entra: «+» o
- * «−» delante de la cifra, o «no entra» con el renglón tachado y atenuado; y
- * abajo aparece el renglón del resultado. En blanco y negro se lee igual: los
- * signos, el tachado y las palabras llevan todo, el color no lleva nada.
- */
-function ListaDeDatos({ datos, resuelta = false }) {
-  return (
-    <div data-datos="lista" data-resuelta={resuelta ? "si" : "no"} style={CONTENEDOR}>
-      {datos.map((d, k) => {
-        const fuera = resuelta && !d.signo;
-        return (
-          <div key={d.id} data-dato={d.id} data-entra={resuelta ? (d.signo ?? "no") : undefined} style={{ display: "flex", alignItems: "center", minHeight: "40px", gap: "8px", borderTop: k ? DIVISORIA : "none" }}>
-            <span style={{ flex: 1, minWidth: 0, fontFamily: INTER, fontSize: "14px", color: C.atenuado }}>
-              {/* Lo tachado a 0,75 (Takamura: a 0,6 daba unos 3,6:1); «no entra al costo», entero. */}
-              <span style={{ textDecoration: fuera ? "line-through" : "none", opacity: fuera ? 0.75 : 1 }}>{d.etiqueta}</span>
-              {fuera && <span data-no-entra style={{ display: "block", fontSize: "12px", fontWeight: 600, color: C.texto }}>{INTERFAZ_R5_1.noEntra}</span>}
-            </span>
-            <span style={{ width: "112px", flexShrink: 0, textAlign: "right", fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, textDecoration: fuera ? "line-through" : "none", opacity: fuera ? 0.75 : 1, whiteSpace: "nowrap" }}>
-              {resuelta && d.signo && <span data-signo style={{ marginRight: "6px", fontFamily: SORA, fontWeight: 700 }}>{d.signo}</span>}
-              {pesos(d.valor)}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/* `n` puede traer media caja (25 u = 2,5 cajas): la media es media de ancho. */
-function Cajas({ n }) {
-  const llenas = Math.floor(n);
-  const media = n - llenas >= 0.5;
-  return (
-    <span aria-hidden="true" data-cajas={n} style={{ display: "flex", gap: "3px" }}>
-      {Array.from({ length: llenas }, (_, k) => (
-        <span key={k} style={{ width: "12px", height: "12px", borderRadius: "2px", background: C.hecho, flexShrink: 0 }} />
-      ))}
-      {media && <span data-media-caja style={{ width: "6px", height: "12px", borderRadius: "2px 0 0 2px", background: C.hecho, flexShrink: 0 }} />}
-    </span>
-  );
-}
-
-/*
- * v1.3: el rótulo de cada lote es contenido, no una marca: va a 12 px y en
- * minúscula de frase (el suelo de 10,5 en mayúsculas es solo para marcas como
- * «PREGUNTA 5 DE 6»).
- */
-function BloqueDeLotes({ lotes, vendidas }) {
-  return (
-    <div data-datos="lotes" style={CONTENEDOR}>
-      {lotes.map((l, k) => (
-        <div key={l.marca} data-lote={k + 1} style={{ minHeight: "48px", padding: "6px 0", boxSizing: "border-box", borderTop: k ? DIVISORIA : "none" }}>
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "8px" }}>
-            <span data-marca-lote style={{ fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: 1.35, color: C.atenuado }}>{l.marca}</span>
-            <span style={{ fontFamily: INTER, fontSize: "14px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, whiteSpace: "nowrap" }}>
-              {INTERFAZ_R5_1.unidadesACosto(l.unidades, l.costo)}
-            </span>
-          </div>
-          <div style={{ marginTop: "6px" }}><Cajas n={l.unidades / UNIDADES_POR_CAJA} /></div>
-        </div>
-      ))}
-      <div style={{ borderTop: DIVISORIA, minHeight: "40px", display: "flex", alignItems: "center", fontFamily: INTER, fontSize: "14px", fontWeight: 600, color: C.texto }}>
-        {INTERFAZ_R5_1.vendidas(vendidas)}
-      </div>
-      <p style={{ margin: "0 0 8px", fontFamily: INTER, fontSize: "12px", color: C.atenuado }}>{INTERFAZ_R5_1.leyendaCajas}</p>
+    <div data-cabecera-r5 style={{ display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: "40px", gap: "12px" }}>
+      <p data-progreso style={{ ...MARCA, margin: 0 }}>{INTERFAZ_R5_1.progreso(actual + 1, total)}</p>
+      <span aria-hidden="true" data-silueta-cabecera={escena} style={{ position: "relative", width: `${ANCHO_SILUETA[escena] / 2}px`, height: `${ALTO_SILUETA[escena] / 2}px`, flexShrink: 0 }}>
+        <span style={{ position: "absolute", left: 0, top: 0, transform: "scale(0.5)", transformOrigin: "left top" }}><Silueta /></span>
+      </span>
     </div>
   );
 }
 
 /*
- * v1.3 · LA CUENTA, DONDE SE ESTÁ MIRANDO. Al responder, el estudiante tiene
- * el dedo en las opciones y el foco baja a «Siguiente»: los datos ya están
- * fuera de la pantalla (Takamura; medido en Chromium). Por eso la cuenta va
- * entre las opciones y la devolución, y arriba, en los datos, solo quedan los
- * signos y el tachado. Las cifras salen de los datos.
- */
-const RENGLON_CUENTA = { display: "flex", alignItems: "baseline", gap: "8px", minHeight: "28px", fontFamily: INTER, fontSize: "14px", fontVariantNumeric: "tabular-nums", color: C.texto };
-const CIFRA_CUENTA = { width: "80px", flexShrink: 0, textAlign: "right", whiteSpace: "nowrap", fontWeight: 600 };
-
-function LaCuenta({ pantalla }) {
-  if (pantalla.datos) {
-    const pasos = pasosDeC8(pantalla);
-    return (
-      <div data-cuenta="c8" className="r5-escena" style={{ ...CONTENEDOR, padding: "12px 16px" }}>
-        <p style={{ ...MARCA, margin: "0 0 6px" }}>{INTERFAZ_R5_1.marcaCuenta}</p>
-        {pasos.map((x) => (
-          <div key={x.id} data-renglon-cuenta={x.id} style={{ ...RENGLON_CUENTA, ...(x.total ? { borderTop: `2px solid ${C.hecho}`, paddingTop: "4px", marginTop: "2px", fontWeight: 700 } : {}) }}>
-            <span style={{ width: "14px", flexShrink: 0, fontFamily: SORA, fontWeight: 700 }}>{x.signo}</span>
-            <span style={{ flex: 1, minWidth: 0 }}>{x.etiqueta}</span>
-            <span style={{ ...CIFRA_CUENTA, ...(x.total ? { fontFamily: SORA, fontWeight: 700 } : {}) }}>{pesos(x.valor)}</span>
-          </div>
-        ))}
-      </div>
-    );
-  }
-  const c = cuentaDeC9(pantalla);
-  const promedio = pesosConCentavos(c.promedio);
-  return (
-    <div data-cuenta="c9" className="r5-escena" style={{ ...CONTENEDOR, padding: "12px 16px" }}>
-      <p style={{ ...MARCA, margin: "0 0 8px" }}>{INTERFAZ_R5_1.marcaCuenta}</p>
-      {[
-        ["tenias", INTERFAZ_R5_1.tenias(c.unidades, c.total)],
-        ["cada-una", INTERFAZ_R5_1.cadaUna(c.total, c.unidades, promedio)],
-      ].map(([id, t]) => (
-        <p key={id} data-renglon-cuenta={id} style={{ margin: "0 0 6px", fontFamily: INTER, fontSize: "14px", fontVariantNumeric: "tabular-nums", color: C.texto }}>{t}</p>
-      ))}
-      <p data-renglon-cuenta="quedan" style={{ margin: "8px 0 6px", fontFamily: INTER, fontSize: "15px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: C.texto }}>
-        {INTERFAZ_R5_1.quedan(c.quedan, promedio, c.valor)}
-      </p>
-      <Cajas n={c.quedan / UNIDADES_POR_CAJA} />
-    </div>
-  );
-}
-
-/*
- * v1.3 · LA PISTA, A PEDIDO. Estaba escrita y aprobada en el paquete y no se
- * pintaba. Se pide con un botón antes de responder; no quita FP (la nota es
- * «bien a la primera», y la pista no es un intento). Al responder se va: la
- * devolución ocupa su sitio.
+ * v1.3 · LA PISTA, A PEDIDO. Se pide con un botón antes de responder, debajo
+ * de la interacción (decisión 7 de v2: nunca encima de la figura); no quita
+ * FP (la nota es «bien a la primera», y la pista no es un intento). Al
+ * responder se va: la devolución ocupa su sitio.
  */
 function Pista({ texto, abierta, onAbrir }) {
   if (!abierta) {
@@ -299,7 +172,7 @@ function Pista({ texto, abierta, onAbrir }) {
         aria-expanded="false"
         onClick={onAbrir}
         style={{
-          marginTop: "12px", minHeight: "44px", padding: "0 16px", borderRadius: "999px",
+          marginTop: "16px", minHeight: "44px", padding: "0 16px", borderRadius: "999px",
           background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.22)",
           color: C.texto, cursor: "pointer", fontFamily: INTER, fontSize: "14px", fontWeight: 600,
         }}
@@ -309,60 +182,58 @@ function Pista({ texto, abierta, onAbrir }) {
     );
   }
   return (
-    <div data-pista className="r5-escena" style={{ marginTop: "12px", padding: "10px 14px", borderRadius: "12px", background: C.navy, borderLeft: `3px solid ${C.hecho}` }}>
+    <div data-pista style={{ marginTop: "16px", padding: "10px 14px", borderRadius: "12px", background: C.navy, borderLeft: `3px solid ${C.hecho}` }}>
       <p style={{ ...MARCA, margin: "0 0 4px" }}>{INTERFAZ_R5_1.marcaPista}</p>
       <p style={{ margin: 0, fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.texto }}>{texto}</p>
     </div>
   );
 }
 
-/* ═══════════ EL CONTENIDO DE UNA OPCIÓN, SEGÚN SU FORMA ═══════════ */
-
-/* Sin teal ni ámbar en los renglones: no chocan con los estados de la opción. */
-function Asiento({ asiento }) {
+/* Las opciones de asiento: «Debita …» / «Acredita …», cada renglón puede partir. */
+function RenglonesDeAsiento({ asiento }) {
+  const [debita, acredita] = renglonesDeAsiento(asiento);
   return (
     <span data-asiento style={{ display: "block" }}>
-      <span style={{ ...MARCA, display: "block" }}>{INTERFAZ_R5_1.marcaDebe}</span>
-      <span data-renglon="debe" style={{ display: "block", color: C.texto }}>{asiento.debe}</span>
-      <span style={{ display: "block", marginTop: "10px", paddingLeft: "16px" }}>
-        <span style={{ ...MARCA, display: "block" }}>{INTERFAZ_R5_1.marcaHaber}</span>
-        <span data-renglon="haber" style={{ display: "block", color: C.texto }}>{asiento.haber}</span>
-      </span>
+      <span data-renglon="debe" style={{ display: "block" }}>{debita}</span>
+      <span data-renglon="haber" style={{ display: "block" }}>{acredita}</span>
     </span>
   );
 }
 
-const TRES_COLUMNAS = { display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "8px" };
-
-function Celdas({ celdas }) {
-  return (
-    <span data-celdas style={TRES_COLUMNAS}>
-      {celdas.map((c, k) => (
-        <span key={k} style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, color: C.texto }}>{c}</span>
-      ))}
-    </span>
-  );
-}
-
-/*
- * La cabecera de la pantalla 3, alineada con las celdas: el relleno de Opcion
- * (15) más su borde (1), el marcador (18) y su hueco (12) van a la izquierda.
- */
-function CabeceraDeTabla({ columnas }) {
-  return (
-    <div data-cabecera-tabla aria-hidden="true" style={{ ...TRES_COLUMNAS, minHeight: "36px", alignItems: "end", padding: "0 16px 0 46px", marginTop: "16px", boxSizing: "border-box" }}>
-      {columnas.map((c) => <span key={c} style={{ fontFamily: INTER, fontSize: "12px", color: C.atenuado }}>{c}</span>)}
-    </div>
-  );
-}
-
-function ContenidoDeOpcion({ pantalla, opcion }) {
-  if (opcion.asiento) return <Asiento asiento={opcion.asiento} />;
-  if (opcion.celdas) return <Celdas celdas={opcion.celdas} />;
-  if (opcion.valor !== undefined) {
-    return <span style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{pesos(opcion.valor)}</span>;
+/* La mecánica de cada pantalla, según su forma. */
+function Mecanica({ pantalla, onCalificar }) {
+  const p = pantalla;
+  if (p.forma === "flujos") {
+    return (
+      <OpcionesTitulo
+        opciones={p.opciones}
+        etiqueta={(o) => textoDeOpcion(p, o)}
+        contenido={(o) => <span>{o.texto}</span>}
+        figura={(o, clave, onTerminar) => <Flujos flujo={o?.flujo ?? null} clave={clave} onTerminar={onTerminar} />}
+        onCalificar={onCalificar}
+      />
+    );
   }
-  return <span>{textoDeOpcion(pantalla, opcion)}</span>;
+  if (p.forma === "asiento") {
+    return (
+      <OpcionesTitulo
+        opciones={p.opciones}
+        etiqueta={(o) => textoDeOpcion(p, o)}
+        contenido={(o) => <RenglonesDeAsiento asiento={o.asiento} />}
+        figura={(o, clave, onTerminar) => (
+          <MayorCompacto
+            cuentas={o ? mayorTrasAsiento(p.mayor, o.asiento, p.valor) : p.mayor.map((c) => ({ ...c, nueva: false, entra: null, saldoNuevo: null }))}
+            clave={clave}
+            onTerminar={onTerminar}
+          />
+        )}
+        onCalificar={onCalificar}
+      />
+    );
+  }
+  if (p.forma === "latas") return <Latas pantalla={p} onCalificar={onCalificar} />;
+  if (p.forma === "fichas") return <Fichas pantalla={p} onCalificar={onCalificar} />;
+  return <Lotes pantalla={p} onCalificar={onCalificar} />;
 }
 
 /* ═══════════ EL BLOQUE «POR TEMA» DEL FINAL ═══════════ */
@@ -390,18 +261,7 @@ function PorTema({ filas }) {
                   solo cuántas. Los puntos siguen aria-hidden: el lector oye el «n de m».
                 */}
                 <div aria-hidden="true" style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
-                  {f.puntos.map((p) => (
-                    <span
-                      key={p.id}
-                      data-punto={p.ok ? "acierto" : "error"}
-                      data-forma={p.ok ? "relleno" : "anillo"}
-                      style={{
-                        width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box",
-                        /* B4 de enganche.md: el acierto, relleno neutro; el teal es DEBE en Contabilidad. */
-                        ...(p.ok ? { background: C.hecho } : { background: "transparent", border: `2px solid ${C.coral}` }),
-                      }}
-                    />
-                  ))}
+                  {f.puntos.map((p) => <Punto key={p.id} ok={p.ok} />)}
                 </div>
               </div>
               <span data-n-de-m style={{ fontFamily: SORA, fontSize: "17px", fontWeight: 700, color: C.texto, whiteSpace: "nowrap" }}>
@@ -415,13 +275,15 @@ function PorTema({ filas }) {
   );
 }
 
-/* ═══════════ r5-1 «REPASO CRUZADO» ═══════════ */
+/* ═══════════ r5-1 «REPASO CRUZADO» v2 ═══════════ */
 
 /*
- * Seis pantallas en el orden del libro, un toque por pantalla. Las opciones se
- * barajan en cada intento (`prepararR5_1`). Al terminar:
- * onCompletar(pct, ms, detalle), con el detalle de useTanda: una fila por
- * pantalla, con la opción elegida cuando falló.
+ * Seis pantallas en el orden del libro, una calificación por pantalla («bien
+ * a la primera»). Arriba: relleno 12, la cabecera de 40 px, 8 px y el
+ * enunciado (Inter 16/24, peso 600); 16 px y la mecánica. Abajo: «Ver pista»,
+ * el panel de devolución y «Siguiente» (§0). Al terminar:
+ * onCompletar(pct, ms, detalle), con una fila por pantalla y la respuesta
+ * cuando falló (la opción elegida, o la clasificación entera en la 4).
  */
 export function RepasoCruzado({ onCompletar, pantallas = null }) {
   const [tanda, setTanda] = useState(() => pantallas ?? prepararR5_1());
@@ -434,6 +296,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
   const inicio = useRef(Date.now());
   const boton = useRef(null);
   const enunciado = useRef(null);
+  const tarjeta = useRef(null);
 
   const pantalla = tanda[i];
   const total = tanda.length;
@@ -442,21 +305,29 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
   useEffect(() => {
     if (terminado) onCompletar?.(puntuarR5_1(bien, total), Date.now() - inicio.current, detalle.current);
   }, [terminado]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (r) boton.current?.focus(); }, [r]);
+  /* E2 de enganche.md: el foco baja a «Siguiente» SIN mover la página; lo que cambia sigue a la vista. */
+  useEffect(() => { if (r) boton.current?.focus({ preventScroll: true }); }, [r]);
 
-  const elegir = (opcionId) => {
+  const calificar = ({ ok, elegida = null, textos = null, respuesta = null }) => {
     if (r) return;
-    const nuevo = evaluarR5_1(pantalla, opcionId);
-    detalle.current.push({ item: pantalla.id, ok: nuevo.ok, intentos: 1, respuesta: nuevo.ok ? null : opcionId, orden: detalle.current.length + 1 });
-    setResultados((x) => ({ ...x, [pantalla.id]: nuevo.ok }));
-    setR(nuevo);
+    const texto = textos ?? [pantalla.opciones.find((o) => o.id === elegida).retro];
+    /* `pista`: si el estudiante la abrió antes de responder (Mateo). No cambia los FP. */
+    detalle.current.push({ item: pantalla.id, ok, intentos: 1, respuesta: ok ? null : (respuesta ?? elegida), orden: detalle.current.length + 1, pista: pistaAbierta });
+    setResultados((x) => ({ ...x, [pantalla.id]: ok }));
+    setR({ ok, textos: texto });
   };
 
   const siguiente = () => {
     setR(null);
     setPistaAbierta(false);
-    if (i + 1 < total) { setI(i + 1); requestAnimationFrame(() => enunciado.current?.focus()); }
-    else setTerminado(true);
+    if (i + 1 < total) {
+      setI(i + 1);
+      requestAnimationFrame(() => {
+        const t = tarjeta.current?.getBoundingClientRect();
+        if (t && t.top < 0) window.scrollTo?.(0, window.scrollY + t.top);
+        enunciado.current?.focus({ preventScroll: true });
+      });
+    } else setTerminado(true);
   };
 
   const reiniciar = () => {
@@ -468,44 +339,25 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
   if (terminado) {
     return (
       <div data-r5-1 data-cierre>
-        <style>{CSS_JUEGO + CSS_R5}</style>
+        <style>{CSS_JUEGO}</style>
         <PorTema filas={porTema(resultados)} />
         <Cierre pct={Math.round(puntuarR5_1(bien, total))} onReiniciar={reiniciar} />
       </div>
     );
   }
 
-  const estadoDe = (o) => {
-    if (!r) return null;
-    if (o.id === r.elegida) return r.ok ? "correcta" : "incorrecta";
-    if (o.id === r.correcta) return "revelada";
-    return null;
-  };
-
   return (
-    <div data-r5-1 data-pantalla={pantalla.id}>
-      <style>{CSS_JUEGO + CSS_R5}</style>
-      <p data-objetivo style={{ margin: "0 0 16px", fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.atenuado }}>{R5_1.objetivo}</p>
-      <Progreso actual={i} total={total} />
-      <div style={{ marginTop: "16px" }}><BandaEscena escena={SUBTEMAS[pantalla.subtema].escena} /></div>
-      <p ref={enunciado} tabIndex={-1} data-enunciado style={{ margin: "20px 0 0", fontFamily: INTER, fontSize: "17px", lineHeight: "26px", fontWeight: 600, color: C.texto, outline: "none" }}>
+    <div ref={tarjeta} data-r5-1 data-pantalla={pantalla.id} data-forma={pantalla.forma} style={{ paddingTop: "12px" }}>
+      <style>{CSS_R5_1}</style>
+      <Cabecera actual={i} total={total} escena={SUBTEMAS[pantalla.subtema].escena} />
+      <p ref={enunciado} tabIndex={-1} data-enunciado style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "16px", lineHeight: "24px", fontWeight: 600, color: C.texto, outline: "none" }}>
         {pantalla.enunciado}
       </p>
-      {pantalla.datos && <ListaDeDatos datos={pantalla.datos} resuelta={Boolean(r)} />}
-      {pantalla.lotes && <BloqueDeLotes lotes={pantalla.lotes} vendidas={pantalla.vendidas} />}
-      {!r && pantalla.pista && <Pista key={pantalla.id} texto={pantalla.pista} abierta={pistaAbierta} onAbrir={() => setPistaAbierta(true)} />}
-      {pantalla.columnas && <CabeceraDeTabla columnas={pantalla.columnas} />}
-      <Opciones columnas="1fr">
-        {pantalla.opciones.map((o) => (
-          <div key={o.id} data-opcion={o.id}>
-            <Opcion ancho estado={estadoDe(o)} deshabilitada={Boolean(r)} onClick={() => elegir(o.id)}>
-              <ContenidoDeOpcion pantalla={pantalla} opcion={o} />
-            </Opcion>
-          </div>
-        ))}
-      </Opciones>
-      {r && (pantalla.datos || pantalla.lotes) && <LaCuenta pantalla={pantalla} />}
-      <Devolucion r={r && { ok: r.ok, textos: [r.texto] }} lector={LECTOR_R5_1} />
+      <div data-interaccion style={{ marginTop: "16px" }}>
+        <Mecanica key={pantalla.id} pantalla={pantalla} onCalificar={calificar} />
+      </div>
+      {!r && <Pista key={pantalla.id} texto={pantalla.pista} abierta={pistaAbierta} onAbrir={() => setPistaAbierta(true)} />}
+      <Devolucion r={r} lector={LECTOR_R5_1} />
       {r && <BotonSiguiente onClick={siguiente} botonRef={boton} texto={INTERFAZ_R5_1.siguiente} />}
     </div>
   );
@@ -515,6 +367,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
 export const JUEGOS_REPASO_CAP5 = [
   { id: R5_1.id, Mecanica: RepasoCruzado, titulo: R5_1.nombre },
   { id: R5_2.id, Mecanica: ToroNegro, titulo: R5_2.nombre },
+  { id: R5_3.id, Mecanica: Mate, titulo: R5_3.nombre },
 ];
 
 /*

@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -41,6 +42,7 @@ const A = await import("../../data/contabilidadT7_3_a8.js");
 const A7 = await import("../../data/contabilidadT7_3_a7.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: PantallasT7_3 } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
+const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
 const { PIEZAS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
 
 const RAIZ = new URL("../../../", import.meta.url);
@@ -50,6 +52,37 @@ const MAPA = leer("orquestador/conocimiento/mapas/t7-inventarios.md");
 const P = A.PIEZA_NIC2_FORMULAS;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 const citas = (t) => [...t.matchAll(/«([^»]+)»/g)].map((m) => m[1]);
+
+/*
+ * El lote 2 de Near: la pista de cada pregunta (primer error) y el anexo (la
+ * tercera opción, con su devolución, y el cambio en el texto de una opción
+ * correcta). Un texto nuevo de los datos sale de aquí o del paquete de la pieza.
+ */
+const PISTAS_L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-pistas-v1.md"));
+const ANEXO_L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-anexo-v1.md"));
+const sinComillas = (t) => t.trim().replace(/ \|$/, "").replace(/^«/, "").replace(/»$/, "");
+const idEnCelda = (celda) => celda.match(/`([^`]+)`/)[1];
+/* id de pantalla → pista. */
+const L2_PISTAS = new Map((PISTAS_L2.split("\n### ").find((s) => s.startsWith(`${P.id} ·`)) ?? "").split("\n")
+  .filter((l) => /^\| P\d/.test(l)).map((l) => l.split(" | ")).map((c) => [idEnCelda(c[0]), sinComillas(c[2])]));
+/* id de pantalla → la tercera opción del anexo: { texto, devolucion }. */
+const L2_TERCERAS = new Map(ANEXO_L2.split("\n").filter((l) => l.startsWith(`| ${P.id} | `)).map((l) => l.split(" | "))
+  .map((c) => [idEnCelda(c[1]), { texto: c[3].replace(/\*\*/g, ""), devolucion: sinComillas(c[4]) }]));
+/* «Un cambio en el texto de una opción correcta»: [campo, viejo, nuevo]. */
+const L2_CAMBIOS = ANEXO_L2.slice(ANEXO_L2.indexOf("## Un cambio")).split("\n").filter((l) => l.startsWith(`| ${P.id} · `))
+  .map((l) => l.split(" | ").map((x, i) => (i ? sinComillas(x) : x.replace(/^\| /, ""))));
+
+/*
+ * La escalera de ayuda (escaleraAyuda.js): el n-ésimo error de una pregunta.
+ * Con pista, el 1.º muestra la pista; el 2.º y siguientes, la respuesta y el
+ * acierto sin «Así es». Sin pista, la devolución de la opción, como antes.
+ */
+const errorEsperado = (p, o, n) => {
+  const correcta = p.opciones.find((x) => x.correcta).texto.replace(/\.$/, "");
+  const esperado = !p.pista ? [o.devolucion] : n === 1 ? [p.pista] : [`La respuesta es «${correcta}».`, p.acierto.texto.replace(/^Así es[.:]\s*/, "")];
+  assert.deepEqual(textosDelError(p, o, n), esperado);
+  return esperado;
+};
 const celdas = (l) => l.split(" | ").map((c) => c.replace(/^\| | \|$/g, ""));
 const FILAS = V1.slice(V1.indexOf("## Pantallas"), V1.indexOf("## Decisiones")).split("\n").filter((l) => /^\| \d/.test(l)).map(celdas);
 /* El cambio de Near: «Viejo» y «Nuevo» de cada fila. */
@@ -58,7 +91,7 @@ const CAMBIO = V1.slice(V1.indexOf("## Cambio de Near en A8")).split("\n").filte
 function textosDeDatos() {
   const t = [];
   for (const p of P.pantallas) {
-    for (const k of ["objetivo", "pregunta", "siguiente"]) if (p[k]) t.push(p[k]);
+    for (const k of ["objetivo", "pregunta", "siguiente", "pista"]) if (p[k]) t.push(p[k]);
     t.push(...(p.parrafos ?? []), ...(p.despues ?? []), ...(p.tras ?? []), ...(p.lista ?? []));
     for (const o of p.opciones ?? []) if (o.devolucion) t.push(o.devolucion);
     if (p.acierto) t.push(p.acierto.texto, ...(p.acierto.parrafos ?? []), ...(p.acierto.despues ?? []));
@@ -78,6 +111,11 @@ test("★★★ cada texto de la v1, con el cambio de Near, está en los datos, 
   const esperados = FILAS.flatMap((f) => citas(f[1])).filter((t) => !viejos.includes(t));
   assert.equal(esperados.length, FILAS.flatMap((f) => citas(f[1])).length - 3, "los tres textos viejos estaban en la v1");
   esperados.push(...nuevos);
+  /* El lote 2: cada pregunta con su pista, la de Near, y ninguna más; aquí no hay tercera opción ni cambio del anexo. */
+  assert.deepEqual(new Map(P.pantallas.filter((p) => p.pista).map((p) => [p.id, p.pista])), L2_PISTAS);
+  assert.deepEqual([...L2_PISTAS.keys()].sort(), ["formulas"]);
+  assert.deepEqual([L2_TERCERAS.size, L2_CAMBIOS.length], [0, 0]);
+  esperados.push(...L2_PISTAS.values());
   assert.deepEqual([...new Set(textosDeDatos())].sort(), [...new Set(esperados)].sort());
   for (const v of viejos) assert.ok(!JSON.stringify(P).includes(v), `sigue el texto viejo: ${v}`);
   /* Las cinco revelaciones, en su orden. */
@@ -148,10 +186,13 @@ test("★★★ se recorre entera, con la frase de la NIC 2 a la vista en cada p
     await tocar(boton(c, "seguir")); mira();
     const f = pantalla("formulas");
     assert.deepEqual(textos(c), [...f.parrafos, f.pregunta]);
+    /* Los errores siguen la escalera de ayuda: el 1.º da la pista; los demás, la respuesta con su porqué. */
+    let n = 0;
     for (const o of f.opciones.filter((x) => !x.correcta)) {
       await tocar(c.querySelector(`[data-opcion="${o.id}"]`));
       await tocar(boton(c, "confirmar")); mira();
-      assert.deepEqual(textos(c).slice(-1), [o.devolucion]);
+      const esperado = errorEsperado(f, o, ++n);
+      assert.deepEqual(textos(c).slice(-esperado.length), esperado);
       assert.equal(pie(c), f.error.pie);
       /* La línea de UEPS no aparece con el error. */
       assert.ok(!textos(c).includes(f.acierto.despues[0]));

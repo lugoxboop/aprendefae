@@ -89,6 +89,15 @@ const CMV = "Costo de mercancía vendida";
 const GASTO = "Gasto provisiones – inventarios";
 const PROV = "Provisión para inventarios";
 
+/*
+ * LOTE 3 DE LA REVISIÓN (L, 15 de octubre de 2026): «Arma la línea». Los
+ * ítems 2 y 5, cuyo objetivo es calcular, van con casilla de cifra (tipo
+ * "cifra"): si la cifra escrita es la de un distractor, sale su
+ * retroalimentación. Los ítems 1, 4 y 7 se quedan en elección. En cada
+ * asiento, cada línea trae su banco de cuentas: la correcta y sus
+ * `distractores`, con su retroalimentación, de Near (orquestador/
+ * conocimiento/paquetes/lote3-distractores-v1.md).
+ */
 export const ITEMS_H5 = [
   {
     id: "sobrante-o-faltante", tipo: "eleccion", caso: 0, opcionesV1: ["Sobrante", "Faltante"],
@@ -98,7 +107,7 @@ export const ITEMS_H5 = [
     distractores: [{ valor: "Faltante", retro: "El conteo da más que los libros. Cuando eso pasa, hay un sobrante." }],
   },
   {
-    id: "el-sobrante", tipo: "eleccion", caso: 0, pesos: true,
+    id: "el-sobrante", tipo: "cifra", caso: 0, pesos: true,
     pregunta: "¿De cuánto es el sobrante?",
     correcta: SOBRANTE,
     acierto: "Así es: $648.000 − $612.000 = $36.000.",
@@ -111,8 +120,8 @@ export const ITEMS_H5 = [
     id: "ajuste-sobrante", tipo: "asiento", caso: 0,
     pregunta: "Ubica cada línea del ajuste por sobrante: Debe o Haber.",
     lineas: [
-      { id: "inventario", cuenta: INV, valor: SOBRANTE, lado: DEBE, retro: "Aparece mercancía que los libros no tenían, así que el activo aumenta: va al debe." },
-      { id: "costo", cuenta: CMV, valor: SOBRANTE, lado: HABER, retro: "El sobrante baja el costo de la mercancía vendida: va al haber." },
+      { id: "inventario", cuenta: INV, valor: SOBRANTE, lado: DEBE, retro: "Aparece mercancía que los libros no tenían, así que el activo aumenta: va al debe.", distractores: [{ cuenta: "Compras", retro: "Olmo no compró nada: la mercancía apareció en el conteo. Además, usa el permanente, y ahí Compras no se usa." }, { cuenta: PROV, retro: "La provisión es para pérdidas que se estiman. Aquí no falta mercancía: sobra." }] },
+      { id: "costo", cuenta: CMV, valor: SOBRANTE, lado: HABER, retro: "El sobrante baja el costo de la mercancía vendida: va al haber.", distractores: [{ cuenta: "Ingresos por ventas", retro: "No hubo ninguna venta. El sobrante no es un ingreso por vender." }, { cuenta: GASTO, retro: "Ese gasto se anota al estimar pérdidas antes de que pasen. Aquí no se estima nada: se ajusta lo que dio el conteo." }] },
     ],
   },
   {
@@ -124,7 +133,7 @@ export const ITEMS_H5 = [
     distractores: ["Sube", "No cambia"].map((valor) => ({ valor, retro: "El sobrante va al haber de Costo de mercancía vendida. Por eso el costo baja." })),
   },
   {
-    id: "el-faltante", tipo: "eleccion", caso: 1, pesos: true,
+    id: "el-faltante", tipo: "cifra", caso: 1, pesos: true,
     pregunta: "¿De cuánto es el faltante?",
     correcta: FALTANTE,
     acierto: "Así es: $738.000 − $694.000 = $44.000. El conteo da menos que los libros.",
@@ -137,8 +146,8 @@ export const ITEMS_H5 = [
     id: "ajuste-faltante", tipo: "asiento", caso: 1,
     pregunta: "Ubica cada línea del ajuste por faltante: Debe o Haber.",
     lineas: [
-      { id: "costo", cuenta: CMV, valor: FALTANTE, lado: DEBE, retro: "El faltante sube el costo de la mercancía vendida: va al debe." },
-      { id: "inventario", cuenta: INV, valor: FALTANTE, lado: HABER, retro: "Falta mercancía en la bodega, así que el activo baja: va al haber." },
+      { id: "costo", cuenta: CMV, valor: FALTANTE, lado: DEBE, retro: "El faltante sube el costo de la mercancía vendida: va al debe.", distractores: [{ cuenta: GASTO, retro: "Ese gasto se anota al estimar pérdidas antes de que pasen. Este faltante ya salió en el conteo." }, { cuenta: "Gastos de administración y ventas", retro: "El libro no manda el faltante a los gastos del mes." }] },
+      { id: "inventario", cuenta: INV, valor: FALTANTE, lado: HABER, retro: "Falta mercancía en la bodega, así que el activo baja: va al haber.", distractores: [{ cuenta: "Devoluciones de compras", retro: "Olmo no le devolvió nada a un proveedor. La mercancía faltó en el conteo." }, { cuenta: "Compras", retro: "Olmo usa el permanente, y ahí Compras no se usa." }] },
     ],
   },
   {
@@ -153,8 +162,8 @@ export const ITEMS_H5 = [
     id: "perdida-real", tipo: "asiento", caso: 2,
     pregunta: "Ubica cada línea del asiento de la pérdida real: Debe o Haber.",
     lineas: [
-      { id: "provision", cuenta: PROV, valor: PINO.perdida, lado: DEBE, retro: "La pérdida real se carga a la provisión que se había estimado: va al debe." },
-      { id: "inventario", cuenta: INV, valor: PINO.perdida, lado: HABER, retro: "Falta mercancía, así que el activo baja: va al haber." },
+      { id: "provision", cuenta: PROV, valor: PINO.perdida, lado: DEBE, retro: "La pérdida real se carga a la provisión que se había estimado: va al debe.", distractores: [{ cuenta: GASTO, retro: "Ese gasto ya se anotó cuando se hizo la provisión. Anotarlo otra vez lo pondría dos veces." }, { cuenta: CMV, retro: "Esta pérdida ya se había estimado con una provisión, y se carga a esa provisión." }] },
+      { id: "inventario", cuenta: INV, valor: PINO.perdida, lado: HABER, retro: "Falta mercancía, así que el activo baja: va al haber.", distractores: [{ cuenta: PROV, retro: "La provisión cubre la pérdida, pero no saca de los libros la mercancía que se perdió." }, { cuenta: GASTO, retro: "Ese gasto ya se anotó al estimar la provisión. Ahora sale de los libros la mercancía perdida." }] },
     ],
   },
 ];

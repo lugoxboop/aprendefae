@@ -234,7 +234,30 @@ export default function EnUnaFrase() {
                 transition: "border-color 200ms ease, background 200ms ease, opacity 200ms ease",
               }}
             >
-              {x.texto}
+              <span style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+                <span style={{ flex: 1, minWidth: 0 }}>{x.texto}</span>
+                {/*
+                  LA MARCA, PORQUE EL TONO SOLO NO BASTA.
+                  Elegida la opción, lo único que separaba «la correcta» de
+                  «la que elegiste» era teal contra ámbar. Quien no distingue
+                  esos dos tonos veía dos opciones resaltadas igual y tenía
+                  que bajar a leer la devolución para saber cuál era cuál.
+                  El texto de la devolución sí lo dice —la información no se
+                  perdía—, pero el color era la única señal EN LA LISTA, y esa
+                  es justo la regla de kit.md.
+                  Ni ✓ ni ✗: esta pieza no califica a nadie, así que la marca
+                  dice «esta es» y la elegida dice «la tuya», con palabras.
+                */}
+                {elegida && (x.correcta || esta) && (
+                  <span style={{
+                    flexShrink: 0, fontFamily: "Sora, sans-serif", fontSize: "10px",
+                    fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
+                    color: x.correcta ? FAE.teal : FAE.ambar,
+                  }}>
+                    {x.correcta ? "esta es" : "la tuya"}
+                  </span>
+                )}
+              </span>
             </button>
           );
         })}

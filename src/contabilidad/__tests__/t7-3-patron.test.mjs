@@ -39,7 +39,7 @@ const { createRoot } = await import("react-dom/client");
 const act = React.act;
 const h = React.createElement;
 
-const { Renglones, Plazos, FranjaNIC2, FigurasHacer, CSS_T73_PATRON, sinPartir } = await import("../../components/mecanicas/libros/t7/PatronT7_3.jsx");
+const { Renglones, Plazos, Barras, FranjaNIC2, FigurasHacer, CSS_T73_PATRON, sinPartir } = await import("../../components/mecanicas/libros/t7/PatronT7_3.jsx");
 const { default: PantallasT7_3 } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
 const A1 = await import("../../data/contabilidadT7_3.js");
 
@@ -123,6 +123,49 @@ test("★★★ la franja de plazos: una marca por condición y el pago solo cua
   }
 });
 
+test("★★★ la franja de plazos de los recortes: título propio, «día N», sin venta, y lo que lleva cada plazo solo si se pide", async () => {
+  const condiciones = [{ cond: "8 %" }, { cond: "10/10", dia: 10, lleva: "10 %" }, { cond: "n/30", dia: 30, lleva: "sin descuento" }];
+  const oculta = await montar(h(Plazos, { venta: null, condiciones, titulo: "8 % · 10/10 · n/30", rotDia: (d) => `día ${d}`, ocultarLleva: true }));
+  try {
+    const f = oculta.caja.querySelector("[data-plazos]");
+    assert.equal(f.querySelector("figcaption").textContent, "8\u00a0% · 10/10 · n/30");
+    assert.deepEqual([...f.querySelectorAll("[data-plazo] b")].map((b) => b.textContent), ["día 10", "día 30"]);
+    assert.equal(f.querySelectorAll("[data-lleva]").length, 0);
+    assert.equal(f.querySelector(".pz-ini"), null, "sin venta");
+    assert.ok(f.querySelector('[data-plazo="30"]').classList.contains("pz-fin-dia"));
+    assert.deepEqual([...f.querySelectorAll("ul.sr li")].map((x) => x.textContent), ["A los 10 días", "A los 30 días"]);
+  } finally {
+    oculta.desmontar();
+  }
+  const vista = await montar(h(Plazos, { venta: null, condiciones, titulo: "T", rotDia: (d) => `día ${d}`, pago: { dia: 10, fecha: "4 jun" } }));
+  try {
+    const f = vista.caja.querySelector("[data-plazos]");
+    assert.deepEqual([...f.querySelectorAll("[data-lleva]")].map((b) => b.textContent), ["10\u00a0%", "sin descuento"]);
+    assert.equal(f.querySelector("[data-pago]").textContent, "Pago · 4 jun");
+  } finally {
+    vista.desmontar();
+  }
+});
+
+test("★★★ las barras de los recortes: a la misma escala, con su nombre y su cifra; neutras", async () => {
+  const m = await montar(h(Barras, { titulo: "Libros contra conteo", barras: [{ rot: "Saldo en libros", v: 400 }, { rot: "Conteo físico", v: 500 }] }));
+  try {
+    const f = m.caja.querySelector("figure[data-barras]");
+    assert.ok(f.parentElement.classList.contains("t73pt"));
+    assert.equal(f.getAttribute("aria-label"), "Libros contra conteo");
+    assert.deepEqual([...f.querySelectorAll("[data-barra]")].map((b) => [b.querySelector(".br-rot").textContent, b.querySelector(".br-v").textContent, b.querySelector(".br-relleno").style.width]), [["Saldo en libros", "400", "80%"], ["Conteo físico", "500", "100%"]]);
+  } finally {
+    m.desmontar();
+  }
+  const conEscala = await montar(h(Barras, { titulo: "T", escala: 1000, barras: [{ rot: "A", v: 500 }] }));
+  try {
+    assert.equal(conEscala.caja.querySelector(".br-relleno").style.width, "50%");
+  } finally {
+    conEscala.desmontar();
+  }
+  assert.match(CSS_T73_PATRON, /\.t73pt \.br-relleno \{[^}]*background: var\(--p-texto2\)/);
+});
+
 test("★★★ la franja de la NIC 2: una nota, pegada arriba, con el CSS de Watari", async () => {
   const m = await montar(h(FranjaNIC2, { texto: "Frase." }));
   try {
@@ -144,7 +187,7 @@ test("★★★ la franja de la NIC 2: una nota, pegada arriba, con el CSS de Wa
   assert.doesNotMatch(CSS_T73_PATRON, /#E76F51|#2A9D8F|#E9C46A/i);
 });
 
-test("★★★ A1: la cuenta de la factura de San Calixto va con su texto, antes de la pregunta", async () => {
+test("★★★ A1: la cuenta de la factura de San Calixto va tras su texto, antes de la pregunta", async () => {
   const P = A1.PIEZA_EL_DESCUENTO_COMERCIAL;
   const ej = P.pantallas.find((p) => p.id === "ejemplo");
   const C = A1.H1_LIBRO;
@@ -170,9 +213,9 @@ test("★★★ A1: la cuenta de la factura de San Calixto va con su texto, ante
       ["−", "menos Descuento comercial 15\u00a0%", "630.000", false],
       ["=", "igual a Valor a facturar", "3.570.000", true],
     ]);
-    /* Va después de los textos que dan las cifras y antes de la pregunta. */
-    const ultimoDespues = [...c.querySelectorAll("[data-texto]")].find((x) => x.textContent === ej.despues.at(-1));
-    assert.ok(ultimoDespues.compareDocumentPosition(fig) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+    /* Va después del texto de la venta y antes de la pregunta (recorte del lote 1: la figura lleva las cifras). */
+    const texto = [...c.querySelectorAll("[data-texto]")].find((x) => x.textContent === ej.parrafos.at(-1));
+    assert.ok(texto.compareDocumentPosition(fig) & w.Node.DOCUMENT_POSITION_FOLLOWING);
     assert.ok(fig.compareDocumentPosition(c.querySelector("[data-pregunta]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
     /* Una sola: con el acierto no se repite. */
     await tocar(c.querySelector('[data-opcion="factura"]'));

@@ -2,26 +2,25 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-1 · AP4 DE APRENDER — «El cierre en periódico» (C-1, pp. 207-227).
  *
- * Fuente: la v2.1, armada por L con la v1 de Near, sus cambios de la v2 y las
- * correcciones de Mello, con PASA. Copia en
- * orquestador/conocimiento/paquetes/t7-1-ap4-v2-1.md; una prueba compara cada
- * texto de aquí contra ella, letra por letra.
+ * Fuente: el RECORTE del lote 1 de Near
+ * (orquestador/conocimiento/paquetes/lote1-recortes-t71-v1.md, sección
+ * «t7-1-a4-el-cierre-en-periodico»), con las dos correcciones obligatorias de
+ * Mello (mello-recortes-v1.md): en P6, antes de responder solo se ve la fila
+ * «Inventario final»; y la definición de «antes de impuestos» es la suya.
+ * Las 10 operaciones del mes (P2, plegadas) y los otros asientos del cierre
+ * (P3, plegados) son los de la v2.1 publicada (t7-1-ap4-v2-1.md). Una prueba
+ * compara cada texto de aquí contra esos paquetes, letra por letra.
  *
- * Pieza de Aprender: cero FP, no entra al catálogo. Nueve pantallas (P0-P8).
- * Nada del 33 %: la pieza termina en la utilidad antes de impuestos y no
- * muestra los dos asientos del libro que dependen de la renta.
+ * Pieza de Aprender: cero FP, no entra al catálogo. Ocho pantallas (P0-P7).
+ * Nada del 33 %: la pieza termina en la utilidad antes de impuestos.
  *
- * Diseño: no hay «Figura de AP4» de Watari. Se arma con el patrón tabular
- * v3.2, como A6 antes de su figura:
- *   · P4: los asientos del cierre en lectura (sin casillas) y las dos líneas
- *     de inventario que se colocan en Debe o Haber; con el acierto, las dos
- *     líneas pasan a la tabla con su contrapartida (de 6 a 10 filas)
- *   · P7: el estado de resultados de tres columnas, que a 313 y 258 px de
- *     contenido va apilado (una fila por método, el nombre a la izquierda)
+ *   · P1 «la-apuesta» (prediccion): sin calificar y sin puntos; lo elegido se
+ *     guarda en el estado de la pieza y marca su columna en P6
+ *   · P5 «las-utilidades» (tocar-filas): cada utilidad se abre al tocarla
  *
- * Lo que la v2.1 no trae y se toma de la convención de AP1, AP2 y A6: los
- * botones «Empezar», «Seguir», «Confirmar» y «Probar otra». Interfaz del
- * patrón: «Debe», «Haber», «Correcto.», «Incorrecto.».
+ * Los pies no vienen en el recorte: se conservan los de la v2.1 de la
+ * pantalla de la que sale cada una (P1, de «las-1100-unidades»).
+ * Interfaz del patrón: «Debe», «Haber», «Correcto.», «Incorrecto.».
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -106,89 +105,94 @@ export const CIFRAS = {
 const PORTADA = {
   id: "portada",
   tipo: "lectura",
-  objetivo: "Ver cómo se cierra un periodo en el sistema periódico. El inventario inicial se quita de los libros y el final se coloca. Y ver cómo el método cambia la utilidad antes de impuestos.",
+  objetivo: "Vas a cerrar el mes de San Calixto y a ver por qué el método cambia la utilidad.",
   parrafos: [],
   boton: BOTON.empezar,
   pie: "Basado en el libro, pp. 207-208, 214 y 221-227",
 };
 
-/* P1 · Lo que falta al cierre. */
-const LO_QUE_FALTA = {
-  id: "lo-que-falta-al-cierre",
-  tipo: "lectura",
-  parrafos: [
-    "Durante el periodo, Inventario de mercancías se quedó con el valor del inicio. Al cierre hay que hacer dos cosas: quitar ese valor y colocar el del inventario final.",
-    "El libro lo dice así: en el periódico, al cierre, la cuenta va al haber por el inventario inicial. Y va al debe por el inventario final.",
+/* P1 · La apuesta: una predicción sin calificar. Las opciones no tienen `correcta`. */
+const LA_APUESTA = {
+  id: "la-apuesta",
+  tipo: "prediccion",
+  parrafos: ["A San Calixto le quedaron 1.100 unidades en febrero. Su valor cambia con el método:"],
+  valores: [
+    { metodo: "PEPS", valor: `$${cifra(CIFRAS.peps.final)}` },
+    { metodo: UEPS, valor: `$${cifra(CIFRAS.ueps.final)}` },
+    { metodo: "Promedio ponderado", valor: `$${cifra(CIFRAS.promedio.final)}` },
   ],
-  boton: BOTON.seguir,
-  pie: "Basado en el libro, pp. 207-208 y 214",
-};
-
-/*
- * P2 · Los datos de San Calixto. En la ficha, «Qué compró» y «Qué vendió»
- * traen varias partes separadas por « · »: cada una va en su renglón, y el
- * total en negrita, como lo marca la v2.1.
- */
-const LOS_DATOS = {
-  id: "los-datos-de-san-calixto",
-  tipo: "lectura",
-  parrafos: ["La compañía San Calixto Ltda. usa el sistema de inventario periódico. En febrero compró y vendió mercancía. Estos son sus datos."],
-  ficha: [
-    { dato: "Quién", partes: ["San Calixto Ltda."] },
-    { dato: "Qué tenía el 1 de febrero", partes: [`5.200 unidades a $1.300: $${cifra(inicial)}`] },
-    {
-      dato: "Qué compró",
-      partes: [
-        ...COMPRAS.map((c) => `${c.dia} feb: ${cifra(c.unidades)} a $${cifra(c.costo)} = $${cifra(c.unidades * c.costo)}`),
-      ],
-      total: `Total: 13.000 unidades, $${cifra(compras)}`,
-    },
-    {
-      dato: "Qué vendió",
-      partes: VENTAS.map((v) => `${v.dia} feb: ${cifra(v.unidades)} u por $${cifra(v.valor)}`),
-      total: `Total: 17.100 unidades, $${cifra(ingresos)}`,
-    },
-    { dato: "Gastos de administración y ventas del mes", partes: [`$${cifra(GASTOS)}`] },
+  pregunta: "¿Con qué método crees que sale más utilidad?",
+  /* `columna`: la columna de P6 que se marca (null: «Igual con los tres» no marca ninguna). */
+  opciones: [
+    { id: "peps", texto: "PEPS", columna: 0 },
+    { id: "ueps", texto: "UEPS", columna: 1 },
+    { id: "promedio", texto: "Promedio ponderado", columna: 2 },
+    { id: "iguales", texto: "Igual con los tres", columna: null },
   ],
-  calculos: [`Unidades disponibles = 5.200 + 13.000 = ${cifra(unidadesDisponibles)}`],
-  cierre: "Se vendieron 17.100 unidades. Las que quedaron las da el conteo físico: 1.100.",
-  boton: BOTON.seguir,
-  pie: "Basado en el libro, pp. 221-223",
-};
-
-/* P3 · Las 1.100 unidades con cada método. */
-const CON_CADA_METODO = {
-  id: "las-1100-unidades",
-  tipo: "lectura",
-  parrafos: ["Con lo que viste en «Tres formas de ponerle precio a lo que quedó», esas 1.100 unidades valen distinto según el método."],
-  metodos: [
-    {
-      encabezado: "Método PEPS",
-      texto: "Con PEPS quedan 1.100 de las compradas el 25 de febrero, a $1.380 cada una.",
-      calculos: [`1.100 × $1.380 = $${cifra(CIFRAS.peps.final)}`],
-    },
-    {
-      encabezado: `Método ${UEPS}`,
-      texto: "Con UEPS quedan 1.100 de las que había al inicio, a $1.300 cada una.",
-      calculos: [`1.100 × $1.300 = $${cifra(CIFRAS.ueps.final)}`],
-    },
-    {
-      encabezado: "Método del costo promedio ponderado",
-      texto: "Con el promedio ponderado, cada unidad queda con el mismo costo.",
-      /* C7-21: «$1.330,77», con coma decimal. La pieza muestra el resultado del libro, no 1.100 × 1.330,77. */
-      calculos: [`$${cifra(disponible)} ÷ ${cifra(unidadesDisponibles)} = $1.330,77 por unidad`, `Inventario final = $${cifra(CIFRAS.promedio.final)}`],
-    },
-  ],
+  guardada: "Guardamos tu apuesta. La compruebas al final del cierre.",
   boton: BOTON.seguir,
   pie: "Basado en el libro, pp. 222-223",
 };
 
-/* P4 · El cierre. Los seis asientos dados, en lectura; dos líneas que se colocan. */
+/*
+ * P2 · Los datos de San Calixto: la ficha de totales. Las 10 operaciones del
+ * mes, plegadas: las 4 compras, las 5 ventas y los gastos, como en la v2.1.
+ */
+const LOS_DATOS = {
+  id: "los-datos-de-san-calixto",
+  tipo: "lectura",
+  parrafos: ["Estos son los totales de febrero."],
+  totales: [
+    `Inventario inicial: 5.200 unidades, $${cifra(inicial)}`,
+    `Compras: 13.000 unidades, $${cifra(compras)}`,
+    `Ventas: 17.100 unidades, $${cifra(ingresos)}`,
+    `Gastos de administración y ventas: $${cifra(GASTOS)}`,
+    "Quedan, según el conteo: 1.100 unidades",
+  ],
+  verOperaciones: "Ver las operaciones del mes",
+  operaciones: [
+    { dato: "Qué compró", partes: COMPRAS.map((c) => `${c.dia} feb: ${cifra(c.unidades)} a $${cifra(c.costo)} = $${cifra(c.unidades * c.costo)}`) },
+    { dato: "Qué vendió", partes: VENTAS.map((v) => `${v.dia} feb: ${cifra(v.unidades)} u por $${cifra(v.valor)}`) },
+    { dato: "Gastos de administración y ventas del mes", partes: [`$${cifra(GASTOS)}`] },
+  ],
+  boton: BOTON.seguir,
+  pie: "Basado en el libro, pp. 221-223",
+};
+
+/*
+ * P3 · El cierre. «Inventario de mercancías» va una sola vez, arriba de sus
+ * dos líneas. Los otros asientos del cierre (los seis de la v2.1), plegados.
+ * Las líneas conservan sus ids («inicial», «final»); su texto empieza por
+ * «Quitar…» y «Colocar…», como las nombra el recorte.
+ */
 const EL_CIERRE = {
   id: "el-cierre",
   tipo: "lados",
-  parrafos: ["El libro hace el cierre con el promedio ponderado. Primero pasa las cuentas del estado de resultados a una cuenta que las resume: Ganancias y pérdidas."],
-  dados: [
+  parrafos: ["Inventario de mercancías se quedó todo el mes con el valor del inicio. Al cierre se pone al día."],
+  consigna: "Toca Debe o Haber en cada línea.",
+  cuenta: "Inventario de mercancías",
+  lineas: [
+    {
+      id: "inicial",
+      texto: "Quitar el inventario inicial",
+      pista: "Ese valor sale de la cuenta. ¿De qué lado baja un activo?",
+      monto: inicial,
+      lado: HABER,
+      devolucion: "Quitar ese valor hace que el activo baje: va al haber.",
+      porque: "La otra parte va al debe de Ganancias y pérdidas.",
+    },
+    {
+      id: "final",
+      texto: "Colocar el inventario final",
+      pista: "Ese valor es lo que hay hoy, así que entra a la cuenta. ¿De qué lado sube un activo?",
+      monto: finalPromedio,
+      lado: DEBE,
+      devolucion: "Colocar ese valor hace que el activo suba: va al debe.",
+      porque: "La otra parte va al haber de Ganancias y pérdidas.",
+    },
+  ],
+  verOtros: "Ver los otros asientos del cierre",
+  otros: [
     { cuenta: "Ingresos por ventas", lado: DEBE, monto: ingresos },
     { cuenta: "Ganancias y pérdidas", lado: HABER, monto: ingresos },
     { cuenta: "Ganancias y pérdidas", lado: DEBE, monto: compras },
@@ -196,150 +200,101 @@ const EL_CIERRE = {
     { cuenta: "Ganancias y pérdidas", lado: DEBE, monto: GASTOS },
     { cuenta: "Gastos de administración y ventas", lado: HABER, monto: GASTOS },
   ],
-  consigna: "Ahora, el inventario. Toca Debe o Haber en cada línea.",
-  lineas: [
-    {
-      id: "inicial",
-      cuenta: "Inventario de mercancías",
-      accion: "quitar el inventario inicial",
-      monto: inicial,
-      lado: HABER,
-      devolucion: "Quitar el inventario inicial hace que el activo disminuya, y un activo que disminuye va al haber. La otra parte va al debe de Ganancias y pérdidas.",
-    },
-    {
-      id: "final",
-      cuenta: "Inventario de mercancías",
-      accion: "colocar el inventario final",
-      monto: finalPromedio,
-      lado: DEBE,
-      devolucion: "Colocar el inventario final hace que el activo aumente, y un activo que aumenta va al debe. La otra parte va al haber de Ganancias y pérdidas.",
-    },
-  ],
   pie: "Basado en el libro, pp. 207-208, 210, 212 y 225",
   error: { pie: "Basado en el libro, pp. 207-208 y 225" },
   acierto: {
-    texto: "Así es. Al cierre, Inventario de mercancías deja el valor del inicio y queda con el del conteo. Esa es la cifra del estado de situación financiera.",
-    /* Los cuatro renglones que se suman a la tabla: de 6 a 10 filas. */
-    suman: [
-      { cuenta: "Ganancias y pérdidas", lado: DEBE, monto: inicial },
-      { cuenta: "Inventario de mercancías", lado: HABER, monto: inicial },
-      { cuenta: "Inventario de mercancías", lado: DEBE, monto: finalPromedio },
-      { cuenta: "Ganancias y pérdidas", lado: HABER, monto: finalPromedio },
-    ],
-    saldo: `Ganancias y pérdidas: debe $${cifra(compras + GASTOS + inicial)} · haber $${cifra(ingresos + finalPromedio)} · saldo $${cifra(ingresos + finalPromedio - compras - GASTOS - inicial)}`,
+    texto: "Así es: ahora la cuenta tiene el valor del conteo.",
+    porque: "Esa es la cifra del estado de situación financiera. El libro hace este cierre con el promedio ponderado.",
     pie: "Basado en el libro, pp. 209 y 225-226",
   },
 };
 
-/* P5 · El costo de lo vendido. */
+/* P4 · El costo de lo vendido. Ya no se da la fórmula antes de preguntar. */
 const EL_COSTO = {
   id: "el-costo-de-lo-vendido",
+  pista: "Lo vendido no es todo lo que la empresa tuvo para vender. Falta quitar algo.",
   tipo: "eleccion",
-  parrafos: ["Para el costo de la mercancía vendida, se suman el inventario inicial y las compras, y se resta el final."],
-  calculos: [`Inventario inicial $${cifra(inicial)} + Compras $${cifra(compras)} = Costo de mercancía disponible $${cifra(disponible)}`],
-  pregunta: "Con el promedio ponderado, ¿cuál es el costo de la mercancía vendida?",
+  calculos: [`Inventario inicial + compras = $${cifra(disponible)}`],
+  parrafos: [`Quedaron $${cifra(finalPromedio)}, con el promedio ponderado.`],
+  pregunta: "¿Cuál fue el costo de la mercancía vendida?",
   opciones: [
     { id: "vendida", texto: `$${cifra(CIFRAS.promedio.costo)}`, correcta: true },
-    {
-      id: "disponible",
-      texto: `$${cifra(disponible)}`,
-      correcta: false,
-      devolucion: "Ese es el costo de la mercancía disponible. Falta restarle lo que quedó al final: el inventario final de $1.463.846.",
-    },
-    {
-      id: "compras",
-      texto: `$${cifra(compras)}`,
-      correcta: false,
-      devolucion: "Eso es solo lo que se compró en el mes. El costo de lo vendido también incluye lo que había al inicio, y descuenta lo que quedó al final.",
-    },
+    { id: "disponible", texto: `$${cifra(disponible)}`, correcta: false, devolucion: "Eso es todo lo que hubo para vender. Falta quitar lo que quedó." },
+    { id: "compras", texto: `$${cifra(compras)}`, correcta: false, devolucion: "Eso es solo lo comprado en el mes. Falta lo que había al inicio, y quitar lo que quedó." },
   ],
   pie: "Basado en el libro, pp. 214, 223 y 226",
   error: { pie: "Basado en el libro, pp. 214 y 226" },
   acierto: {
-    texto: "Así es. En el sistema periódico, este costo no se anota venta por venta: se halla al cierre, con el conteo.",
-    calculos: [`$${cifra(disponible)} − $${cifra(finalPromedio)} = $${cifra(CIFRAS.promedio.costo)}`],
+    texto: `Así es: $${cifra(disponible)} − $${cifra(finalPromedio)} = $${cifra(CIFRAS.promedio.costo)}. En el periódico, este costo se halla al cierre, no venta por venta.`,
+    calculos: [],
     pie: "Basado en el libro, pp. 209 y 226",
   },
 };
 
-/* P6 · Las utilidades (nueva en la v2). */
+/*
+ * P5 · Las utilidades: el estado de resultados en filas. Las que llevan
+ * `definicion` son botones: al tocar una se abre su definición, una a la vez.
+ * La de «antes de impuestos» es la de Mello (corrección obligatoria 2).
+ */
 const LAS_UTILIDADES = {
   id: "las-utilidades",
-  tipo: "lectura",
-  parrafos: [
-    "El estado de resultados resta paso a paso. Cada paso deja una utilidad con su propio nombre.",
-    "La utilidad bruta en ventas es lo que queda de las ventas cuando se les resta el costo de la mercancía vendida.",
-    "A la utilidad bruta se le restan los gastos de administración y ventas. Lo que queda es la utilidad operacional.",
-    "Después, el libro suma los ingresos que no son de la operación y resta los gastos que no son de la operación. Lo que queda es la utilidad antes de impuestos, porque todavía no se le ha restado el impuesto de renta.",
-    "Aquí no hay otros ingresos ni otros gastos. Por eso la utilidad antes de impuestos es igual a la operacional.",
+  tipo: "tocar-filas",
+  consigna: "Toca cada utilidad para ver qué es.",
+  filas: [
+    { id: "ingresos", rubro: "Ingresos por ventas", valor: `$${cifra(ingresos)}` },
+    { id: "costo", rubro: "− Costo de mercancía vendida", valor: `$${cifra(CIFRAS.promedio.costo)}` },
+    { id: "bruta", rubro: "= Utilidad bruta en ventas", valor: `$${cifra(CIFRAS.promedio.bruta)}`, definicion: "Lo que queda de las ventas cuando se les resta el costo de la mercancía vendida." },
+    { id: "gastos", rubro: "− Gastos de administración y ventas", valor: `$${cifra(GASTOS)}` },
+    { id: "operacional", rubro: "= Utilidad operacional", valor: `$${cifra(CIFRAS.promedio.operacional)}`, definicion: "Lo que queda de la utilidad bruta cuando se le restan los gastos de administración y ventas." },
+    { id: "antes-de-impuestos", rubro: "= Utilidad antes de impuestos", valor: `$${cifra(CIFRAS.promedio.antesDeImpuestos)}`, definicion: "Suma y resta lo que no es de la operación, y todavía no resta el impuesto de renta. Aquí eso es cero." },
   ],
-  calculos: [
-    `$${cifra(ingresos)} − $${cifra(CIFRAS.promedio.costo)} = $${cifra(CIFRAS.promedio.bruta)} · utilidad bruta en ventas`,
-    `$${cifra(CIFRAS.promedio.bruta)} − $${cifra(GASTOS)} = $${cifra(CIFRAS.promedio.operacional)} · utilidad operacional`,
-    `$${cifra(CIFRAS.promedio.operacional)} + $0 − $0 = $${cifra(CIFRAS.promedio.antesDeImpuestos)} · utilidad antes de impuestos`,
-  ],
-  cierre: "Mira el saldo de Ganancias y pérdidas del cierre: $11.036.846. Es la utilidad antes de impuestos con el promedio ponderado.",
   boton: BOTON.seguir,
   pie: "Basado en el libro, pp. 214 y 226",
 };
 
-/* P7 · Lado a lado. Lo igual, en el bloque fijo; lo que cambia, en la tabla. */
+/*
+ * P6 · Lado a lado. Corrección obligatoria 1 de Mello: antes de responder
+ * solo se ve la fila «Inventario final»; las de costo y utilidad llegan con
+ * el acierto (`despues`). La columna de la apuesta va marcada con borde.
+ */
 const LADO_A_LADO = {
   id: "lado-a-lado",
+  pista: "Si queda más en la bodega, ¿lo vendido lleva más o menos costo?",
   tipo: "eleccion",
-  bloqueFijo: {
-    rotulo: "Iguales con los tres métodos",
-    filas: [
-      { rubro: "Ingresos por ventas", valor: `$${cifra(ingresos)}` },
-      { rubro: "Costo de mercancía disponible", valor: `$${cifra(disponible)}` },
-      { rubro: "Gastos de administración y ventas", valor: `$${cifra(GASTOS)}` },
-    ],
-  },
-  parrafos: ["Esto es igual con los tres métodos. Lo que cambia está en la tabla de abajo."],
   tabla: {
     nombre: PENDIENTE_DE_REVISION.nombreMetodos,
-    metodos: ["PEPS", UEPS, "Promedio ponderado"],
+    metodos: ["PEPS", UEPS, "Promedio"],
     filas: [
       { rubro: "Inventario final", clave: "final" },
-      { rubro: "Costo de mercancía vendida", clave: "costo" },
-      { rubro: "Utilidad bruta en ventas", clave: "bruta" },
-      { rubro: "Utilidad operacional", clave: "operacional" },
-      { rubro: "Utilidad antes de impuestos", clave: "antesDeImpuestos" },
+      { rubro: "Costo de mercancía vendida", clave: "costo", despues: true },
+      { rubro: "Utilidad antes de impuestos", clave: "antesDeImpuestos", despues: true },
     ].map((f) => ({ ...f, valores: [CIFRAS.peps, CIFRAS.ueps, CIFRAS.promedio].map((m) => cifra(m[f.clave])) })),
   },
-  pregunta: "Con PEPS, el inventario final es el más alto. ¿Qué pasa con su costo de la mercancía vendida y con su utilidad?",
+  parrafos: [],
+  pregunta: "¿Y el costo y la utilidad de PEPS?",
   opciones: [
-    { id: "bajo-y-alta", texto: "El costo es el más bajo y la utilidad, la más alta.", correcta: true },
-    {
-      id: "el-mas-alto",
-      texto: "El costo es el más alto y la utilidad, también.",
-      correcta: false,
-      devolucion: "El inventario final se resta para hallar el costo. Si se resta más, el costo queda menor. Mira la fila: con PEPS es el menor de los tres.",
-    },
-    {
-      id: "iguales",
-      texto: "Los dos son iguales con los tres métodos.",
-      correcta: false,
-      devolucion: "Lo que es igual son las ventas, las compras y los gastos. Lo que cambia es el inventario final, y con él cambian el costo y la utilidad.",
-    },
+    { id: "bajo-y-alta", texto: "Costo menor, utilidad mayor", correcta: true },
+    { id: "costo-mayor", texto: "Costo mayor, utilidad mayor", correcta: false, devolucion: "Si se resta más inventario final, el costo baja." },
+    { id: "iguales", texto: "Iguales en los tres", correcta: false, devolucion: "Ventas, compras y gastos sí son iguales. El inventario final no." },
   ],
   pie: "Basado en el libro, pp. 214 y 226",
   error: { pie: "Basado en el libro, pp. 226-227" },
   acierto: {
-    texto: "Exacto. Más inventario final quiere decir menos costo de la mercancía vendida. Y menos costo quiere decir más utilidad. Así lo concluye el libro.",
+    texto: "Así es: más inventario final, menos costo y más utilidad.",
+    porque: "Ventas, compras y gastos son iguales con los tres métodos. Lo único que cambia es el inventario final. ¿Coincide con tu apuesta?",
     calculos: [],
     pie: "Basado en el libro, p. 227",
   },
 };
 
-/* P8 · Resumen, sin botón, como en AP1 y A6. */
+/* P7 · Resumen, sin botón. La figura: la cuenta en una línea. */
 const RESUMEN = {
   id: "resumen",
   tipo: "lectura",
+  cuentaEnUnaLinea: "Inicio + compras − final = costo de lo vendido",
   parrafos: [
-    "Al cierre, Inventario de mercancías va al haber por el inventario inicial. Y va al debe por el inventario final.",
-    "Para el costo de la mercancía vendida, se suman el inventario inicial y las compras, y se resta el final.",
-    "Un inventario final más alto da un costo más bajo y una utilidad más alta.",
+    "Al cierre, el inventario inicial sale por el haber y el final entra por el debe.",
+    "Más inventario final da menos costo y más utilidad.",
   ],
   siguiente: "Siguiente: «Importados y fletes».",
   boton: null,
@@ -352,5 +307,5 @@ export const PIEZA_EL_CIERRE = {
   id: AP4_ID,
   numero: 4,
   titulo: "El cierre en periódico",
-  pantallas: [PORTADA, LO_QUE_FALTA, LOS_DATOS, CON_CADA_METODO, EL_CIERRE, EL_COSTO, LAS_UTILIDADES, LADO_A_LADO, RESUMEN],
+  pantallas: [PORTADA, LA_APUESTA, LOS_DATOS, EL_CIERRE, EL_COSTO, LAS_UTILIDADES, LADO_A_LADO, RESUMEN],
 };

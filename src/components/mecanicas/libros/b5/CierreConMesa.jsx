@@ -89,12 +89,98 @@ function Colector({ lado, total }) {
       padding: "7px 6px", borderRadius: "10px", textAlign: "center",
       background: `${COLOR_LADO[lado]}1A`, border: `1px solid ${COLOR_LADO[lado]}`,
     }}>
-      <p style={{ margin: 0, fontFamily: SORA, fontSize: "9px", fontWeight: 700, letterSpacing: "0.1em", color: TONO_ROTULO[lado] }}>
+      <p style={{ margin: 0, fontFamily: SORA, fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", color: TONO_ROTULO[lado] }}>
         {lado === DEBE ? COLECTOR.debe : COLECTOR.haber}
       </p>
       <p data-total={lado} style={{ margin: "2px 0 0", ...CIFRA, fontSize: "13px", fontWeight: 700, color: COLOR.blanco, whiteSpace: "nowrap" }}>
         {pesos(total)}
       </p>
+    </div>
+  );
+}
+
+/*
+ * EL ESTANTE, FILA POR FILA (hoja de Mai, lote 3 · A). Cada fila va como siempre: el nombre a la
+ * izquierda y «AL DEBE» y «AL HABER» a la derecha. Si el nombre pasa de 3 renglones al lado de los
+ * botones, esa fila pasa a «abajo»: el nombre a todo el ancho y, 4 px debajo, los mismos botones, del
+ * mismo tamaño y en la misma columna que los de las demás filas; la fila queda a 10 px de sus vecinas
+ * (los 6 del estante y 4 más) y entre su nombre y sus botones hay 4: el aire dice a qué nombre pertenecen. Se mide en vivo y por fila, no se fija por cuenta: a 320 bajan una o dos filas, y a 375 ninguna.
+ * Se mide antes de pintar (useLayoutEffect), otra vez cuando cargan las fuentes y cada vez que cambia
+ * el ancho del estante. El orden en el DOM no cambia (nombre, «AL DEBE», «AL HABER»): el lector de
+ * pantalla y el tabulador no notan la diferencia. Sin animación: es un cambio de ancho, no un evento.
+ */
+const NOMBRE_ESTANTE = { fontFamily: INTER, fontSize: "12.5px", fontWeight: 600, lineHeight: 1.25 };
+const RENGLONES_AL_LADO = 3;
+const HUECO_ESTANTE = 8;
+const ENTRE_FILAS = 6;
+const AIRE_ABAJO = 10;
+
+function useFilasAbajo(ref, cuentas) {
+  const [abajo, setAbajo] = useState(() => new Set());
+  const clave = cuentas.join("|");
+  useLayoutEffect(() => {
+    const estante = ref.current;
+    if (!estante) return undefined;
+    const medir = () => {
+      const bajan = [];
+      for (const fila of estante.querySelectorAll("[data-en-estante]")) {
+        const nombre = fila.querySelector("[data-nombre-estante]");
+        const botones = [...fila.querySelectorAll("[data-sacar]")];
+        /* El ancho que tendría el nombre al lado de los botones, esté como esté ahora la fila. */
+        const ancho = fila.getBoundingClientRect().width - botones.reduce((t, b) => t + b.getBoundingClientRect().width + HUECO_ESTANTE, 0);
+        const renglon = parseFloat(getComputedStyle(nombre).lineHeight);
+        if (!(ancho > 0) || !(renglon > 0)) continue;
+        const copia = nombre.cloneNode(true);
+        copia.removeAttribute("data-nombre-estante");
+        copia.setAttribute("aria-hidden", "true");
+        Object.assign(copia.style, { position: "absolute", visibility: "hidden", left: "0", top: "0", width: `${ancho}px`, gridColumn: "auto" });
+        estante.appendChild(copia);
+        const alto = copia.getBoundingClientRect().height;
+        copia.remove();
+        if (alto > renglon * RENGLONES_AL_LADO + 0.5) bajan.push(fila.dataset.enEstante);
+      }
+      setAbajo((antes) => (bajan.join("|") === [...antes].join("|") ? antes : new Set(bajan)));
+    };
+    medir();
+    let vivo = true;
+    document.fonts?.ready?.then(() => { if (vivo) medir(); });
+    const observador = typeof ResizeObserver === "function" ? new ResizeObserver(medir) : null;
+    observador?.observe(estante);
+    return () => { vivo = false; observador?.disconnect(); };
+  }, [clave]); // eslint-disable-line react-hooks/exhaustive-deps
+  return abajo;
+}
+
+function Estante({ cuentas, onSacar }) {
+  const ref = useRef(null);
+  const abajo = useFilasAbajo(ref, cuentas);
+  return (
+    <div ref={ref} data-estante style={{ position: "relative", display: "flex", flexDirection: "column", gap: `${ENTRE_FILAS}px` }}>
+      {cuentas.map((c, i) => {
+        const baja = abajo.has(c);
+        const aire = `${AIRE_ABAJO - ENTRE_FILAS}px`;
+        return (
+          <div key={c} data-en-estante={c} data-forma={baja ? "abajo" : "al lado"} style={{
+            display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto auto", columnGap: `${HUECO_ESTANTE}px`, rowGap: "4px",
+            alignItems: "center",
+            marginTop: baja && i > 0 ? aire : 0, marginBottom: baja && i < cuentas.length - 1 ? aire : 0,
+          }}>
+            <span data-nombre-estante style={{ ...NOMBRE_ESTANTE, minWidth: 0, gridColumn: baja ? "1 / -1" : "1", color: COLOR.blanco }}>{c}</span>
+            {[DEBE, HABER].map((lado, k) => (
+              <button key={lado} type="button" data-sacar={`${c}:${lado}`} onClick={() => onSacar(c, lado)}
+                aria-label={`${c} ${lado === DEBE ? "al debe" : "al haber"}`}
+                style={{
+                  gridColumn: String(k + 2), gridRow: baja ? "2" : "1",
+                  minHeight: "44px", padding: "5px 8px", borderRadius: "8px", cursor: "pointer",
+                  background: `${COLOR_LADO[lado]}14`, border: `1px solid ${COLOR_LADO[lado]}66`,
+                  color: TONO_ROTULO[lado], fontFamily: SORA, fontSize: "12px", fontWeight: 700, letterSpacing: "0.08em",
+                }}>
+                {lado === DEBE ? "AL DEBE" : "AL HABER"}
+              </button>
+            ))}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -113,13 +199,13 @@ function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante
           padding: "7px 6px", borderRadius: "11px", background: "rgba(10,20,34,0.45)", border: "1px solid rgba(248,249,250,0.14)",
           animation: "fae-b5k-entra 200ms ease-out both",
         }}>
-          <p data-nombre-mesa style={{ margin: "0 0 5px", fontFamily: SORA, fontWeight: 700, fontSize: "11px", lineHeight: 1.25, color: COLOR.blanco, textAlign: "center" }}>{m.cuenta}</p>
+          <p data-nombre-mesa style={{ margin: "0 0 5px", fontFamily: SORA, fontWeight: 700, fontSize: "12px", lineHeight: 1.25, color: COLOR.blanco, textAlign: "center" }}>{m.cuenta}</p>
           <Campo id={m.cuenta} valor={m.texto} onCambio={(v) => onCifra(m.cuenta, v)} bloqueado={!activa}
             etiqueta={`Valor de ${m.cuenta}`} error={conError && leerCifra(m.texto) !== resultado.esperado.find((e) => e.cuenta === m.cuenta)?.valor} />
           {activa && (
             <button type="button" data-devolver={m.cuenta} onClick={() => onDevolver(m.cuenta)} style={{
               display: "block", width: "100%", minHeight: "32px", marginTop: "3px", background: "none", border: "none", cursor: "pointer",
-              color: COLOR.apagado, fontFamily: SORA, fontSize: "10px",
+              color: COLOR.apagado, fontFamily: SORA, fontSize: "12px",
             }}>
               devolver al estante
             </button>
@@ -141,7 +227,7 @@ function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante
           {cierra && <circle cx="50" cy="5" r="2" fill={FAE.teal} vectorEffect="non-scaling-stroke" />}
         </svg>
         {!cierra && (t.debe > 0 || t.haber > 0) && (
-          <p data-diferencia={Math.abs(t.debe - t.haber)} style={{ margin: "4px 0 0", ...CIFRA, fontSize: "11.5px", color: COLOR.apagado }}>
+          <p data-diferencia={Math.abs(t.debe - t.haber)} style={{ margin: "4px 0 0", ...CIFRA, fontSize: "12px", color: COLOR.apagado }}>
             {TEXTO_DIFERENCIA}: {pesos(Math.abs(t.debe - t.haber))}
           </p>
         )}
@@ -153,27 +239,10 @@ function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante
       </p>
       {activa && (
         <>
-          <p style={{ margin: "14px 0 8px", fontFamily: SORA, fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.16em", color: COLOR.apagado }}>
+          <p style={{ margin: "14px 0 8px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, letterSpacing: "0.16em", color: COLOR.apagado }}>
             {ROTULO_ESTANTE}
           </p>
-          <div data-estante style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            {enEstante.map((c) => (
-              <div key={c} data-en-estante={c} style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                <span data-nombre-estante style={{ flex: "1 1 auto", minWidth: 0, fontFamily: INTER, fontSize: "12.5px", fontWeight: 600, lineHeight: 1.25, color: COLOR.blanco }}>{c}</span>
-                {[DEBE, HABER].map((lado) => (
-                  <button key={lado} type="button" data-sacar={`${c}:${lado}`} onClick={() => onSacar(c, lado)}
-                    aria-label={`${c} ${lado === DEBE ? "al debe" : "al haber"}`}
-                    style={{
-                      flex: "none", minHeight: "40px", padding: "5px 8px", borderRadius: "8px", cursor: "pointer",
-                      background: `${COLOR_LADO[lado]}14`, border: `1px solid ${COLOR_LADO[lado]}66`,
-                      color: TONO_ROTULO[lado], fontFamily: SORA, fontSize: "9.5px", fontWeight: 700, letterSpacing: "0.08em",
-                    }}>
-                    {lado === DEBE ? "AL DEBE" : "AL HABER"}
-                  </button>
-                ))}
-              </div>
-            ))}
-          </div>
+          <Estante cuentas={enEstante} onSacar={onSacar} />
         </>
       )}
     </>

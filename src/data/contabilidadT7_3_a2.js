@@ -1,18 +1,16 @@
-import { BOTON, DEBE, HABER, FRASE_TARIFAS, ROTULOS_PATRON } from "./contabilidadT7_3.js";
+import { BOTON, DEBE, HABER, ROTULOS_PATRON } from "./contabilidadT7_3.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-3 · A2 DE APRENDER — «Descuentos en cadena» (Célula C).
  *
- * Fuente: la v1 de Near y los cambios de su plan reordenado por la regla 9
- * (capa 3), con el PASA de Mello. Copia en
- * orquestador/conocimiento/paquetes/t7-3-a2-v1.md; una prueba compara cada
- * texto de aquí contra ella, letra por letra. Cuando dos capas chocan, manda
- * la más nueva:
- *
- *   · pantalla 5: «…no aparecen en el asiento, y el asiento es igual en los
- *     dos sistemas…» (opcional de Mello, regla 4)
- *   · pantalla 7: «Siguiente: practica con varios descuentos seguidos.»
+ * Fuente: el RECORTE del lote 1 de Near (entrega 3,
+ * orquestador/conocimiento/paquetes/lote1-recortes-t73-v1.md; Mello: PASA),
+ * con el cambio de la entrega 6 de Near en P1 `ejemplo` (la pregunta
+ * «¿mayor, igual o menor?», sus tres opciones y sus dos errores, que llegan
+ * por L). Seis pantallas: la pregunta llega antes que la regla del saldo, y
+ * el atajo es una pregunta («¿Qué da 0,7866 × $4.200.000?»). La frase de
+ * las tarifas va en el pie de la pantalla del asiento, que las da.
  *
  * Ejemplo H-2 del libro (pp. 249-250), resuelto: A2 es la dueña de sus
  * cifras y ninguna pieza de Hacer las pide. El factor va bien escrito
@@ -73,67 +71,59 @@ const FACTOR = {
   ],
 };
 
+/* La cadena de la pantalla de los pasos: primero solo el primer descuento; con el acierto, el resto. */
+const CADENA_PASOS = {
+  ...CADENA,
+  filas: CADENA.filas.slice(0, 3),
+  alAcertar: { filas: CADENA.filas.map((f, k) => (k < 3 ? f : { ...f, nuevo: true })) },
+};
+/* El atajo antes de la pregunta: los complementos y el factor. */
+const FACTOR_PREGUNTA = { ...FACTOR, filas: FACTOR.filas.slice(0, 2) };
+
 const PORTADA = {
   id: "portada",
   tipo: "portada",
-  objetivo: "Al terminar, sabrás cómo se calculan varios descuentos seguidos, y cuánto se rebaja en total.",
+  objetivo: "Vas a calcular varios descuentos seguidos y a ver cuánto se rebaja en total.",
   boton: BOTON.empezar,
   pie: "Basado en el libro, pp. 249-250",
 };
 
-const EN_CADENA = {
-  id: "en-cadena",
-  tipo: "lectura",
-  parrafos: [
-    "En la pieza anterior viste el descuento comercial: se resta del precio de lista, y el asiento va por el valor a facturar.",
-    "A veces la empresa da varios descuentos, uno detrás de otro. El libro los llama descuentos en cadena.",
-    "Cada descuento se calcula sobre el saldo que dejó el anterior, no sobre el precio de lista.",
-  ],
-  boton: BOTON.seguir,
-  pie: "Basado en el libro, pp. 248-249",
-};
-
+/* Entrega 6 de Near: la pregunta, las opciones y los dos errores. */
 const EJEMPLO = {
   id: "ejemplo",
+  pista: "En una cadena, cada descuento se calcula sobre lo que dejó el anterior, no sobre el precio de lista.",
   tipo: "eleccion",
-  parrafos: ["Mira el ejemplo del libro. San Calixto Ltda. le vende mercancía a crédito a un cliente. El precio de lista es de $4.200.000, más el IVA, y le da tres descuentos comerciales: del 5 %, del 8 % y del 10 %."],
-  /* La ficha de la v1, en su orden. «A crédito» sale del asiento de la p. 250, igual que en A1. */
-  ficha: [
-    { dato: "Quién entrega", texto: "San Calixto" },
-    { dato: "Quién recibe", texto: "Un cliente" },
-    { dato: "Monto", texto: "$4.200.000 de lista, con 5 %, 8 % y 10 %" },
-    { dato: "Tipo", texto: "A crédito" },
-    { dato: "Clase de hecho", texto: "Venta de mercancía" },
-  ],
-  /* Sin puntaje. */
-  pregunta: "5 % más 8 % más 10 % suman 23 %. ¿San Calixto le rebaja el 23 % del precio de lista?",
+  parrafos: ["San Calixto vende por $4.200.000 de lista. Da tres descuentos seguidos: 5 %, 8 % y 10 %."],
+  pregunta: "Suman 23 %. ¿La rebaja total será mayor, igual o menor que el 23 %?",
   opciones: [
-    { id: "si", texto: "Sí", devolucion: "Parece que sí, pero no. Cada descuento se calcula sobre un saldo más pequeño, así que la rebaja total es menor." },
-    { id: "no", texto: "No", correcta: true },
+    { id: "mayor", texto: "Mayor que 23 %", devolucion: "Cada descuento se calcula sobre un saldo más pequeño que el anterior. Así, la rebaja total no puede pasar del 23 %." },
+    { id: "igual", texto: "Igual: 23 %", devolucion: "Sería igual si cada descuento fuera sobre el precio de lista. Pero cada uno va sobre un saldo más pequeño." },
+    { id: "menor", texto: "Menor que 23 %", correcta: true },
   ],
-  acierto: { texto: "Así es: la rebaja es menor. Cada descuento se calcula sobre un saldo más pequeño, así que el total no llega al 23 %.", pie: "Basado en el libro, pp. 249-250" },
+  acierto: {
+    texto: "Así es: la rebaja es menor.",
+    porque: "Cada descuento se calcula sobre el saldo que dejó el anterior, no sobre el precio de lista.",
+    pie: "Basado en el libro, pp. 249-250",
+  },
   error: { pie: "Basado en el libro, pp. 249-250" },
   pie: "Basado en el libro, pp. 249-250",
 };
 
 const PASOS = {
   id: "pasos",
+  pista: "El primer descuento ya rebajó el precio. ¿Sobre qué valor queda el siguiente?",
   tipo: "eleccion",
-  parrafos: ["El primer descuento es el 5 % del precio de lista: $4.200.000 × 5 % = $210.000. Queda un saldo de $3.990.000."],
-  pregunta: "¿Sobre qué valor se calcula el segundo descuento, el del 8 %?",
+  /* Patrón T7-3: la cadena de renglones; al principio, solo el primer descuento. */
+  figuras: [CADENA_PASOS],
+  pregunta: "El primer descuento ya está. ¿Sobre qué valor se calcula el del 8 %?",
   opciones: [
-    { id: "lista", texto: "$4.200.000", devolucion: "En una cadena, cada descuento va sobre el saldo que dejó el anterior. Aquí es $3.990.000, no el precio de lista." },
+    { id: "lista", texto: "$4.200.000", devolucion: "En una cadena, cada descuento va sobre el saldo que dejó el anterior." },
     { id: "saldo", texto: "$3.990.000", correcta: true },
+    { id: "primer-descuento", texto: "$210.000", devolucion: "Ese es el primer descuento, no el valor sobre el que se calcula el segundo. El 8 % va sobre lo que queda después de restarlo." },
   ],
   acierto: {
-    texto: "Así es. Se calcula sobre el saldo que dejó el primero: $3.990.000 × 8 % = $319.200.",
-    parrafos: [
-      "Queda un saldo de $3.670.800. El tercer descuento es el 10 % de ese saldo: $367.080.",
-      "El valor a facturar es $3.670.800 − $367.080 = $3.303.720.",
-      "En total, San Calixto rebajó $896.280. Es el 21,34 % del precio de lista. Con el 23 %, la rebaja habría sido de $966.000.",
-    ],
-    /* Patrón T7-3: la pantalla pregunta por el saldo, así que la cadena llega con el acierto. */
-    figuras: [CADENA],
+    texto: "Así es: $3.990.000 × 8 % = $319.200. Rebajó $896.280 en total, el 21,34 %: menos que el 23 %.",
+    porque: "Con el 23 %, la rebaja habría sido de $966.000.",
     pie: "Basado en el libro, pp. 249-250",
   },
   error: { pie: "Basado en el libro, pp. 249-250" },
@@ -142,29 +132,26 @@ const PASOS = {
 
 const ATAJO = {
   id: "atajo",
-  tipo: "lectura",
-  parrafos: [
-    "El libro enseña un atajo. A cada descuento se le halla su complemento: lo que le falta para llegar al 100 %.",
-    "Los complementos se multiplican entre sí, y sale un factor. El factor por el precio de lista da el valor a facturar.",
-    "Aquí los complementos son 0,95, 0,92 y 0,90. Si los multiplicas entre sí, el factor que sale es 0,7866.",
-    /* Con la C7-2 resuelta: el libro escribe 0,7688 en esta línea. La pantalla no la menciona. */
-    "Y $4.200.000 × 0,7866 = $3.303.720: el mismo valor a facturar, con menos pasos.",
+  pista: "El factor es lo que queda después de los tres descuentos. ¿Qué valor es ese?",
+  tipo: "eleccion",
+  parrafos: ["El libro da un atajo. Multiplica los complementos: lo que le falta a cada descuento para el 100 %."],
+  /* Los renglones del factor. Con la C7-2 resuelta: 0,7866 (el libro escribe 0,7688 en una línea). */
+  figuras: [FACTOR_PREGUNTA],
+  pregunta: "¿Qué da 0,7866 × $4.200.000?",
+  opciones: [
+    { id: "factura", texto: "$3.303.720", correcta: true },
+    { id: "rebaja", texto: "$896.280", devolucion: "Esa es la rebaja. El factor da lo que queda por facturar." },
+    { id: "rebaja-23", texto: "$966.000", devolucion: "Esa sería la rebaja con el 23 %. El factor da lo que queda por facturar." },
   ],
-  /* Patrón T7-3: el texto ya da las cifras; el atajo va con él. */
-  figuras: [FACTOR],
-  boton: BOTON.seguir,
+  acierto: { texto: "Así es: el mismo valor a facturar, con menos pasos.", pie: "Basado en el libro, p. 250" },
+  error: { pie: "Basado en el libro, p. 250" },
   pie: "Basado en el libro, p. 250",
 };
 
 const ASIENTO = {
   id: "asiento",
   tipo: "lectura",
-  parrafos: [
-    "En este ejercicio, el IVA es del 16 % y la retención del 3,5 %. Las dos se calculan sobre el valor a facturar.",
-    FRASE_TARIFAS,
-    "Sobre $3.303.720, el IVA es de $528.595 y la retención, de $115.630. El libro redondea al peso.",
-    "El cliente queda debiendo $3.303.720 + $528.595 − $115.630 = $3.716.685.",
-  ],
+  parrafos: ["Con el IVA del 16 % y la retención del 3,5 %, este es el asiento. El libro redondea al peso."],
   /* Sin fecha: el libro pone «xxxx». «Ventas» va como «Ingresos por ventas» (regla 8). Las sumas son de Near. */
   asientos: [{
     fecha: null,
@@ -176,21 +163,22 @@ const ASIENTO = {
     ],
     sumas: true,
   }],
-  /* Capa 3 (opcional de Mello, regla 4). */
-  tras: ["Como en la pieza anterior, los descuentos no aparecen en el asiento, y el asiento es igual en los dos sistemas. Ingresos por ventas va por el valor a facturar."],
+  tras: ["Los descuentos no aparecen: Ingresos por ventas va por el valor a facturar."],
   boton: BOTON.seguir,
   pie: "Basado en el libro, p. 250",
+  /* Aquí se dan las tarifas: la frase va en el pie. */
+  pieTarifas: true,
 };
 
 const RESUMEN = {
   id: "resumen",
   tipo: "resumen",
-  parrafos: [
-    "En una cadena, cada descuento se calcula sobre el saldo que dejó el anterior.",
-    "Por eso la rebaja total es menor que la suma de los porcentajes.",
+  /* La cadena de renglones completa, con el camino de la lista a lo facturado arriba. */
+  figuras: [{ ...CADENA, titulo: "$4.200.000 → $3.303.720" }],
+  tras: [
+    "En una cadena, cada descuento va sobre el saldo que dejó el anterior, así que la rebaja es menor que la suma.",
     "El atajo: multiplica los complementos y aplica el factor al precio de lista.",
   ],
-  /* Capa 3: ahora lleva a H2. */
   siguiente: "Siguiente: practica con varios descuentos seguidos.",
   pie: "Basado en el libro, pp. 249-250",
 };
@@ -199,5 +187,7 @@ export const PIEZA_DESCUENTOS_EN_CADENA = {
   id: A2_ID,
   numero: 2,
   titulo: "Descuentos en cadena",
-  pantallas: [PORTADA, EN_CADENA, EJEMPLO, PASOS, ATAJO, ASIENTO, RESUMEN],
+  /* Recorte del lote 1: los textos se ven enteros (los midió Near); el «¿Por qué?» va aparte. */
+  textosEnteros: true,
+  pantallas: [PORTADA, EJEMPLO, PASOS, ATAJO, ASIENTO, RESUMEN],
 };

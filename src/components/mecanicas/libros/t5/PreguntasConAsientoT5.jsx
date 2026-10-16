@@ -5,7 +5,7 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "../t7/hacerT7.jsx";
-import { ContadorConIntento } from "../t7/armaLaLinea.jsx";
+import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "../t7/armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 
 /*
@@ -20,6 +20,13 @@ import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
  *             enseña.
  *   ASIENTO   las líneas barajadas; «Comprobar» las califica UNA vez, y el
  *             asiento con sus sumas aparece después.
+ *
+ * LOTE 3 («Arma la línea», armaLaLinea.jsx, con T7-3 H1 de molde): cada
+ * ítem se pinta según su `tipo`. Un ítem "cifra" va con casilla de cifra. En
+ * un "asiento" cuyas líneas traen `banco` (las prepara bancoDeLinea), cada
+ * línea elige su cuenta del banco y su lado; si no lo traen, va la mesa de
+ * antes, solo con el lado. Así una actividad que aún no pasa al lote 3 (N5)
+ * no cambia.
  *
  * Un ítem puede traer `intro`, un texto que va encima de su tarjeta (la
  * pantalla intermedia de la ficha). Mientras llega el Patrón T5 de Watari.
@@ -41,7 +48,7 @@ export default function PreguntasConAsientoT5({ config, Marco, rotulo, titulo, a
 
   const item = t.items[t.i];
   const cuantos = t.items.length;
-  const listo = item && (item.tipo === "eleccion" ? Boolean(r) : comprobado);
+  const listo = item && (item.tipo === "asiento" ? comprobado : Boolean(r));
 
   useEffect(() => {
     if (t.terminado) onCompletar?.(puntuar(bien), Date.now() - t.inicio.current, t.detalle.current);
@@ -97,15 +104,25 @@ export default function PreguntasConAsientoT5({ config, Marco, rotulo, titulo, a
         </div>
         {item.intro && <div style={{ marginBottom: "12px" }}><Parrafos textos={[item.intro]} dato="intro" /></div>}
         <TarjetaPregunta id={item.id} pregunta={item.pregunta} pie={datos.pie} tarjetaRef={tarjeta} />
-        {item.tipo === "eleccion" ? (
+        {item.tipo === "eleccion" && (
           <>
             <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
             <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es ${r.textoCorrecta}. ` : null} />
           </>
+        )}
+        {item.tipo === "cifra" && (
+          <>
+            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} />
+            <Devolucion r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
+          </>
+        )}
+        {item.tipo === "asiento" && (item.lineas.every((l) => l.banco) ? (
+          <LineasConCuenta key={item.id} lineas={item.orden.map((id) => item.lineas.find((l) => l.id === id))}
+            asiento={item.lineas} onComprobar={comprobar} comprobado={comprobado} />
         ) : (
           <LineasConComprobar key={item.id} lineas={item.orden.map((id) => item.lineas.find((l) => l.id === id))}
             asiento={item.lineas} onComprobar={comprobar} comprobado={comprobado} />
-        )}
+        ))}
       </div>
       {listo && (
         <div ref={zonaBoton}>

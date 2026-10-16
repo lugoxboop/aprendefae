@@ -414,7 +414,7 @@ test("★★★ los FP de 0 a 7 aciertos salen de calcularFP y son los que paga 
 
 test("★★★ catálogo, registro de la vista, etiqueta y migración 0251 dicen lo mismo", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "repaso-capitulo-5");
-  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2"]);
+  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2", "r5-3"]);
   const a = actividadesDeTipo(tema, HACER).find((x) => x.id === "r5-2");
   assert.equal(a.nombre, T.R5_2.nombre);
   assert.deepEqual(a.clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 });
@@ -756,8 +756,15 @@ test("★★ v2.1: los rótulos nuevos del autodiagnóstico están en el paquete
 
 test("★★ v2.1 · B4 de enganche.md: ni el acierto ni «ERA ESTE» van en teal, que en esta pantalla es DEBE", () => {
   const fuente = leer("src/components/repasoCap5/ToroNegro.jsx");
-  const estados = fuente.slice(fuente.indexOf("const ESTADO_PIEZA = {"), fuente.indexOf("};", fuente.indexOf("const ESTADO_PIEZA = {")));
-  for (const linea of estados.split("\n").filter((l) => /^\s*(ok|revelada):/.test(l))) assert.ok(!/teal|2A9D8F|42,\s*157/i.test(linea), linea.trim());
+  /* Los estados y la marca «ERA ESTE» son los de comun.jsx (Kamogawa: uno solo para el repaso). */
+  assert.match(fuente, /import \{[^}]*\bESTADOS\b[^}]*\bMARCA_ERA_ESTE\b[^}]*\} from "\.\/comun\.jsx"/);
+  assert.doesNotMatch(fuente, /const ESTADO\w*\s*=/, "ToroNegro vuelve a definir sus estados");
+  const comun = leer("src/components/repasoCap5/comun.jsx");
+  const estados = comun.slice(comun.indexOf("export const ESTADOS = {"), comun.indexOf("};", comun.indexOf("export const ESTADOS = {")));
+  const lineas = estados.split("\n").filter((l) => /^\s*(ok|revelada):/.test(l));
+  assert.equal(lineas.length, 2, "no encontró los estados que dice mirar");
+  for (const linea of lineas) assert.ok(!/teal|2A9D8F|42,\s*157/i.test(linea), linea.trim());
+  assert.ok(fuente.includes("data-era-este style={{ ...MARCA_ERA_ESTE"), "«ERA ESTE» no usa la marca común");
   assert.ok(!/data-era-este[^>]*C\.teal/.test(fuente), "«ERA ESTE» en teal");
   /* El teal sigue donde significa DEBE o DÉBITO. */
   assert.ok(/l === "debe" \? C\.teal/.test(fuente));

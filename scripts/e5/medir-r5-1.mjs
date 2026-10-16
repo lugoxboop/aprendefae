@@ -1,142 +1,301 @@
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * ¿CABE r5-1 «REPASO CRUZADO» A 375 Y 320? (Célula E)
+ * ¿CABE Y SE VE r5-1 «REPASO CRUZADO» v2 A 320 Y 375? (Célula E)
  *
  *   node scripts/e5/medir-r5-1.mjs [carpeta-de-capturas]
  *
- * Chromium de verdad: la vista del Repaso del capítulo 5 con r5-1 abierta y
- * la hoja de estilos del sitio (banco scripts/e5/harness-r5). Juega la tanda
- * entera —error en C.5 con la opción d, que pone «Gasto provisiones – cuentas
- * incobrables» en el renglón sangrado del haber, y error en C.9— y mide cada
- * pantalla antes y después de responder, y el cierre. En cada estado:
+ * Como manda orquestador/conocimiento/herramientas.md: build con claves de
+ * mentira, dist servido en local y Chromium con el viewport fijo (320 × 568 y
+ * 375 × 667), con window.innerWidth comprobado antes de medir. Abre
+ * #/repaso-capitulo-5/r5-1 y juega la tanda entera fallando a propósito (el
+ * camino más largo: la elegida y luego la correcta). En cada pantalla, antes,
+ * durante y después de responder:
  *
- *   · que la página no tenga barra horizontal
- *   · que ningún texto se salga de su caja (scrollWidth) ni de la pantalla
- *   · que se hayan medido Inter y Sora, no la fuente de reserva
- *   · que cada opción y «Siguiente» midan al menos 44 px de alto
- *   · el ancho del contenido (343 a 375, 288 a 320, dice el paquete)
- *   · en C.5, el renglón de «Gasto provisiones – cuentas incobrables» dentro
- *     de su opción; en C.9, la fila de 10 cajas (147 px) dentro de su bloque
+ *   · sin desbordamiento horizontal: la página y cada texto en su caja
+ *   · ningún texto de lectura bajo 12 px (las marcas de interfaz en
+ *     mayúsculas, como «PREGUNTA 2 DE 6», pueden ir a 10,5: E6)
+ *   · cada botón de al menos 44 px de alto
+ *   · B1: la figura o la interacción empieza en los primeros 280 px de la
+ *     tarjeta, con 40 palabras o menos antes
+ *   · E2: en el momento en que algo se mueve, eso está en la ventana
+ *     (pantallas 1, 2, 3, 5 y 6 al responder; el contador fijo de la 4
+ *     mientras se clasifica), muestreado cada 50 ms
+ *   · que se midió con Inter y Sora, no con la fuente de reserva
  *
- * Sale con código 1 si algo falla. Necesita Playwright (no es dependencia del
- * repo): el de la máquina, o el de PLAYWRIGHT_MODULE.
+ * y anota los altos que el paquete deja para medir. Capturas de cada pantalla
+ * antes, durante y después. Sale con código 1 si algo falla. Necesita
+ * Playwright (no es dependencia del repo): el de la máquina, o el de
+ * PLAYWRIGHT_MODULE; Chromium en CHROMIUM_PATH o /opt/pw-browsers/chromium.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { createServer } from "vite";
 import { createRequire } from "node:module";
-import { mkdirSync } from "node:fs";
-import { resolve } from "node:path";
+import { spawnSync } from "node:child_process";
+import { createServer } from "node:http";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { extname, join, resolve } from "node:path";
 
 const RAIZ = resolve(import.meta.dirname, "../..");
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? "/opt/node-tools/node_modules/playwright");
 const CAPTURAS = process.argv[2] ?? null;
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
-const ANCHOS = [375, 320];
+const VENTANAS = [[320, 568], [375, 667]];
 const CONTENIDO = { 375: 343, 320: 288 };
-const { PANTALLAS_R5_1 } = await import("../../src/data/repasoCap5Cruzado.js");
 
-const ELIGE = { c5: "c5-d", c9: "c9-b" };
-const GASTO = "Gasto provisiones – cuentas incobrables";
+/* ═══════════ EL BUILD, CON CLAVES DE MENTIRA, SERVIDO EN LOCAL ═══════════ */
 
-const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
-await servidor.listen();
-const URL_BANCO = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/e5/harness-r5/index.html#r5-1`;
-const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+const DIST = mkdtempSync(join(tmpdir(), "r5-1-dist-"));
+const build = spawnSync("npx", ["vite", "build", "--outDir", DIST, "--emptyOutDir"], {
+  cwd: RAIZ, encoding: "utf8",
+  env: {
+    ...process.env,
+    VITE_SUPABASE_URL: "https://ejemplo.supabase.co",
+    VITE_SUPABASE_ANON_KEY: "clave-de-mentira",
+    VITE_GOOGLE_CLIENT_ID: "000.apps.googleusercontent.com",
+  },
+});
+if (build.status !== 0) { console.error(build.stdout, build.stderr); process.exit(1); }
+
+const TIPOS = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png", ".woff2": "font/woff2", ".woff": "font/woff", ".json": "application/json", ".ico": "image/x-icon", ".webmanifest": "application/manifest+json" };
+const servidor = createServer((req, res) => {
+  let ruta = join(DIST, decodeURIComponent(new URL(req.url, "http://x").pathname));
+  if (!ruta.startsWith(DIST) || !existsSync(ruta) || statSync(ruta).isDirectory()) ruta = join(DIST, "index.html");
+  res.writeHead(200, { "content-type": TIPOS[extname(ruta)] ?? "application/octet-stream" });
+  res.end(readFileSync(ruta));
+});
+await new Promise((ok) => servidor.listen(0, "127.0.0.1", ok));
+const URL_R5_1 = `http://127.0.0.1:${servidor.address().port}/#/repaso-capitulo-5/r5-1`;
+
+const navegador = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium" });
 const fallos = [];
-const filas = [];
+const notas = [];
 
-function medir(gasto) {
-  const raiz = document.getElementById("root");
+/* ═══════════ LO QUE SE MIDE EN CADA ESTADO ═══════════ */
+
+/* Las marcas de interfaz que pueden ir a 10,5 en mayúsculas (E6). */
+const MARCAS = ["PREGUNTA", "PISTA", "POR TEMA", "EN LA FIGURA", "HACER"];
+
+function medirEstado(marcas) {
+  const raiz = document.querySelector("[data-r5-1]");
   const problemas = [];
+  if (document.documentElement.scrollWidth > window.innerWidth) problemas.push(`la página mide ${document.documentElement.scrollWidth} px en ${window.innerWidth}`);
   const conTexto = [...raiz.querySelectorAll("*")]
-    .filter((el) => !el.matches("style, script"))
-    .filter((el) => { const e = getComputedStyle(el); return !(e.position === "absolute" && el.clientWidth <= 1); })
+    .filter((el) => !el.matches("style, script") && !el.closest("[aria-hidden='true']"))
     .filter((el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()));
+  let minima = Infinity;
   for (const el of conTexto) {
     const r = el.getBoundingClientRect();
     if (!r.width) continue;
-    const nombre = `${el.tagName.toLowerCase()} «${el.textContent.trim().slice(0, 40)}»`;
-    if (getComputedStyle(el).display !== "inline" && el.scrollWidth > el.clientWidth + 0.5) problemas.push(`${nombre}: mide ${el.scrollWidth} px en una caja de ${el.clientWidth}`);
+    const e = getComputedStyle(el);
+    if (e.opacity === "0" || e.visibility === "hidden") continue;
+    /* El texto solo para lector de pantalla (1 × 1 px, recortado) no se mide. */
+    if (e.position === "absolute" && r.width <= 1) continue;
+    const texto = el.textContent.trim();
+    const nombre = `${el.tagName.toLowerCase()} «${texto.slice(0, 40)}»`;
+    if (e.display !== "inline" && el.scrollWidth > el.clientWidth + 0.5) problemas.push(`${nombre}: mide ${el.scrollWidth} px en una caja de ${el.clientWidth}`);
     if (r.right > window.innerWidth + 0.5 || r.left < -0.5) problemas.push(`${nombre}: se sale de la pantalla`);
+    const px = parseFloat(e.fontSize);
+    const esMarca = e.textTransform === "uppercase" && marcas.some((m) => texto.startsWith(m));
+    if (!esMarca) minima = Math.min(minima, px);
+    if (px < 12 && !esMarca) problemas.push(`${nombre}: letra de ${px} px`);
+    if (esMarca && px < 10.5) problemas.push(`${nombre}: marca de ${px} px`);
   }
-  if (document.documentElement.scrollWidth > window.innerWidth) problemas.push(`la página mide ${document.documentElement.scrollWidth} px en ${window.innerWidth}`);
-  const toques = [...document.querySelectorAll("[data-opcion] button, [data-siguiente]")].map((b) => b.getBoundingClientRect());
-  for (const [k, r] of toques.entries()) if (r.height < 44) problemas.push(`el botón ${k + 1} mide ${r.height.toFixed(1)} px de alto`);
-
-  /* Lo que el paquete pide medir a 320. */
-  let renglonGasto = null;
-  for (const op of document.querySelectorAll("[data-opcion]")) {
-    for (const rg of op.querySelectorAll("[data-renglon]")) {
-      if (rg.textContent !== gasto) continue;
-      const a = rg.getBoundingClientRect();
-      const b = op.querySelector("button").getBoundingClientRect();
-      if (a.right > b.right - 15 + 0.5 || rg.scrollWidth > rg.clientWidth + 0.5) problemas.push(`el renglón «${gasto}» (${rg.dataset.renglon}) se sale de su opción`);
-      renglonGasto = Math.max(renglonGasto ?? 0, Math.round(a.width * 10) / 10);
-    }
+  for (const b of raiz.querySelectorAll("button")) {
+    const r = b.getBoundingClientRect();
+    if (!r.width || getComputedStyle(b).opacity === "0") continue;
+    if (b.closest("[data-r5-1][data-cierre]")) continue;
+    if (r.height < 44 - 0.5) problemas.push(`el botón «${b.textContent.trim().slice(0, 30)}» mide ${r.height.toFixed(1)} px de alto`);
   }
-  let cajas = null;
-  const diez = document.querySelector('[data-cajas="10"]');
-  if (diez) {
-    const bloque = document.querySelector('[data-datos="lotes"]');
-    const est = getComputedStyle(bloque);
-    const util = bloque.clientWidth - parseFloat(est.paddingLeft) - parseFloat(est.paddingRight);
-    const fila = [...diez.children].reduce((s, c, k) => s + c.getBoundingClientRect().width + (k ? 3 : 0), 0);
-    cajas = `${Math.round(fila)} de ${Math.round(util)}`;
-    if (fila > util + 0.5) problemas.push(`la fila de 10 cajas mide ${fila} px en ${util}`);
-  }
-  const act = document.querySelector("[data-r5-1]");
-  return {
-    problemas,
-    actividad: act ? Math.round(act.getBoundingClientRect().width * 10) / 10 : null,
-    alto: Math.round(document.documentElement.scrollHeight),
-    botonMasBajo: toques.length ? Math.round(Math.min(...toques.map((r) => r.height)) * 10) / 10 : null,
-    renglonGasto,
-    cajas,
-    fuentes: document.fonts.check("15px Inter") && document.fonts.check("700 14px Sora"),
-  };
+  const fuentes = document.fonts.check("16px Inter") && document.fonts.check("700 16px Sora");
+  return { problemas, minima: minima === Infinity ? null : minima, fuentes, ancho: raiz.getBoundingClientRect().width };
 }
 
-for (const ancho of ANCHOS) {
-  const pg = await navegador.newPage({ viewport: { width: ancho, height: 900 }, deviceScaleFactor: 2 });
-  await pg.emulateMedia({ reducedMotion: "reduce" });
-  await pg.goto(URL_BANCO);
-  await pg.waitForSelector("[data-r5-1]");
-  let n = 0;
-  const estado = async (nombre) => {
-    await pg.evaluate(() => document.fonts.ready);
-    const m = await pg.evaluate(medir, GASTO);
-    filas.push({ ancho, estado: nombre, ...m });
-    for (const p of m.problemas) fallos.push(`${ancho} px · ${nombre} · ${p}`);
-    if (!m.fuentes) fallos.push(`${ancho} px · ${nombre} · no cargaron Inter o Sora`);
-    if (m.actividad !== null && Math.abs(m.actividad - CONTENIDO[ancho]) > 0.5) fallos.push(`${ancho} px · ${nombre} · el contenido mide ${m.actividad} y son ${CONTENIDO[ancho]}`);
-    if (CAPTURAS) await pg.screenshot({ path: resolve(CAPTURAS, `r5-1-${ancho}-${String(++n).padStart(2, "0")}-${nombre}.png`), fullPage: true });
-  };
-  for (const p of PANTALLAS_R5_1) {
-    await estado(`${p.id}-antes`);
-    const id = ELIGE[p.id] ?? p.opciones.find((o) => o.correcta).id;
-    await pg.click(`[data-opcion="${id}"] button`);
-    await estado(`${p.id}-${ELIGE[p.id] ? "error" : "acierto"}`);
-    await pg.click("[data-siguiente]");
+/* B1: dónde empieza la figura o la interacción, y cuántas palabras van antes. */
+function medirB1() {
+  const tarjeta = document.querySelector("[data-r5-1]").getBoundingClientRect();
+  const interaccion = document.querySelector("[data-interaccion]").getBoundingClientRect();
+  const antes = document.querySelector("[data-enunciado]").textContent.trim().split(/\s+/).length;
+  return { empieza: Math.round(interaccion.top - tarjeta.top), palabras: antes };
+}
+
+/*
+ * Muestrea los selectores cada 50 ms durante `ms`: lo que se está moviendo,
+ * ¿está entero en la ventana? Una figura cuenta solo mientras anima
+ * (data-fase="animando"); quieta, preparándose, no se mueve.
+ */
+async function enVentana(pagina, selectores, ms, etiqueta, problemas) {
+  const t0 = Date.now();
+  let muestras = 0;
+  while (Date.now() - t0 < ms) {
+    const fuera = await pagina.evaluate((sels) => sels.flatMap((s) => [...document.querySelectorAll(s)].map((el) => {
+      const r = el.getBoundingClientRect();
+      if (!r.height) return null;
+      const fig = el.matches("[data-caja-figura]") ? el.querySelector("[data-figura]") : null;
+      if (fig && fig.dataset.fase !== "animando") return null;
+      return r.top < -0.5 || r.bottom > window.innerHeight + 0.5 ? `${s} en ${Math.round(r.top)}-${Math.round(r.bottom)} (ventana ${window.innerHeight})` : null;
+    })).filter(Boolean), selectores);
+    muestras++;
+    for (const f of fuera) problemas.add(`${etiqueta}: ${f}`);
+    await pagina.waitForTimeout(50);
   }
-  await pg.waitForSelector("[data-cierre]");
-  await estado("cierre");
-  await pg.close();
+  return muestras;
+}
+
+/* ═══════════ LA TANDA, A CADA ANCHO ═══════════ */
+
+for (const [ancho, alto] of VENTANAS) {
+  const pagina = await navegador.newPage({ viewport: { width: ancho, height: alto } });
+  await pagina.goto(URL_R5_1);
+  await pagina.waitForSelector("[data-r5-1]");
+  await pagina.evaluate(() => document.fonts.ready);
+  const iw = await pagina.evaluate(() => window.innerWidth);
+  if (iw !== ancho) { fallos.push(`${ancho}: window.innerWidth da ${iw}`); continue; }
+  const captura = async (nombre) => { if (CAPTURAS) await pagina.screenshot({ path: `${CAPTURAS}/${ancho}-${nombre}.png` }); };
+  const medir = async (nombre) => {
+    const m = await pagina.evaluate(medirEstado, MARCAS);
+    for (const p of m.problemas) fallos.push(`${ancho} · ${nombre}: ${p}`);
+    if (!m.fuentes) fallos.push(`${ancho} · ${nombre}: no se midió con Inter y Sora`);
+    if (Math.abs(m.ancho - CONTENIDO[ancho]) > 0.5) fallos.push(`${ancho} · ${nombre}: el contenido mide ${m.ancho} px, no ${CONTENIDO[ancho]}`);
+    return m;
+  };
+  const b1 = async (id) => {
+    const r = await pagina.evaluate(medirB1);
+    notas.push(`${ancho} · ${id}: la interacción empieza en ${r.empieza} px de la tarjeta, con ${r.palabras} palabras antes`);
+    if (ancho === 320 && (r.empieza > 280 || r.palabras > 40)) fallos.push(`${ancho} · ${id}: B1 — empieza en ${r.empieza} px con ${r.palabras} palabras antes`);
+  };
+  const siguiente = async () => { await pagina.click("[data-siguiente]"); await pagina.waitForTimeout(400); };
+
+  /* Pantallas 1, 2 y 6: la opción se vuelve título; se falla para ver la correcta. */
+  const titulo = async (id, mala) => {
+    await b1(id);
+    await medir(`${id} antes`);
+    await captura(`${id}-1-antes`);
+    const alto0 = await pagina.evaluate((m) => document.querySelector(`[data-opcion="${m}"]`).getBoundingClientRect().height, mala);
+    await pagina.click(`[data-opcion="${mala}"] button`);
+    const problemas = new Set();
+    /* Recoger + trasladar (500 ms); luego la figura se mueve: tiene que estar en la ventana. */
+    await pagina.waitForTimeout(560);
+    await captura(`${id}-2-durante`);
+    await enVentana(pagina, ["[data-caja-figura]"], 3200, `${id} durante`, problemas);
+    for (const p of problemas) fallos.push(`${ancho} · ${p}`);
+    const pos = await pagina.evaluate(() => {
+      const r = (s) => document.querySelector(s).getBoundingClientRect();
+      const filas = [...document.querySelectorAll("[data-opcion]")].map((f) => f.getBoundingClientRect());
+      return { elegida: [Math.round(filas[0].top), Math.round(filas[0].bottom)], correcta: filas[1] ? [Math.round(filas[1].top), Math.round(filas[1].bottom)] : null, figura: [Math.round(r("[data-caja-figura]").top), Math.round(r("[data-caja-figura]").bottom)] };
+    });
+    notas.push(`${ancho} · ${id}: opción de ${Math.round(alto0)} px; tras fallar, elegida ${pos.elegida.join("-")}, correcta ${pos.correcta?.join("-")}, figura ${pos.figura.join("-")} (ventana ${alto})`);
+    await medir(`${id} después`);
+    await captura(`${id}-3-despues`);
+  };
+
+  await titulo("p1", "c3-a");
+  await siguiente();
+  await titulo("p2", "c5-d");
+  await siguiente();
+
+  /* Pantalla 3: la lata nueva antes de tiempo, las cuatro, la tabla. */
+  {
+    await b1("p3");
+    await medir("p3 antes");
+    await captura("p3-1-antes");
+    await pagina.click('[data-lata="segunda-0"]');
+    await pagina.waitForTimeout(350);
+    await medir("p3 mensaje");
+    const problemas = new Set();
+    for (const k of [0, 1, 2, 3]) {
+      await pagina.click(`[data-lata="primera-${k}"]`);
+      await enVentana(pagina, ["[data-en-bandeja]", "[data-barras]"], 420, `p3 lata ${k + 1}`, problemas);
+      if (k === 1) await captura("p3-2-durante");
+    }
+    await enVentana(pagina, ["[data-barras]", "[data-marca-ueps]"], 400, "p3 marcas de UEPS", problemas);
+    for (const p of problemas) fallos.push(`${ancho} · ${p}`);
+    const barras = await pagina.evaluate(() => Math.round(document.querySelector("[data-barras]").getBoundingClientRect().top));
+    notas.push(`${ancho} · p3: tras la cuarta, las barras quedan en ${barras} px (pedido: 56 + 16 = 72)`);
+    if (barras !== 72) fallos.push(`${ancho} · p3: las barras quedan en ${barras} px, no en 72`);
+    await medir("p3 tabla");
+    await captura("p3-3-tabla");
+    await pagina.click('[data-opcion="c6-a"] button');
+    await pagina.waitForTimeout(300);
+    await medir("p3 después");
+    await captura("p3-4-despues");
+    await siguiente();
+  }
+
+  /* Pantalla 4: el contador fijo mientras se clasifica. */
+  {
+    await b1("p4");
+    await medir("p4 antes");
+    await captura("p4-1-antes");
+    const pon = { ventas: "suma", "devoluciones-ventas": "fuera", "inventario-inicial": "suma", compras: "suma", "devoluciones-compras": "resta", "inventario-final": "fuera" };
+    const problemas = new Set();
+    for (const [f, b] of Object.entries(pon)) {
+      await pagina.evaluate((s) => document.querySelector(s).scrollIntoView({ block: "center" }), `[data-ficha="${f}"] [data-boton="${b}"]`);
+      await pagina.click(`[data-ficha="${f}"] [data-boton="${b}"]`);
+      await enVentana(pagina, ["[data-contador]"], 250, `p4 contador tras ${f}`, problemas);
+      const tapa = await pagina.evaluate((sel) => {
+        const c = document.querySelector("[data-contador]").getBoundingClientRect();
+        const b = document.querySelector(sel).getBoundingClientRect();
+        return b.bottom > c.top + 0.5 && b.top < c.bottom - 0.5;
+      }, `[data-ficha="${f}"] [data-boton="${b}"]`);
+      if (tapa) problemas.add(`p4: el contador tapa el botón que se acaba de tocar (${f})`);
+      if (f === "compras") await captura("p4-2-durante");
+    }
+    for (const p of problemas) fallos.push(`${ancho} · ${p}`);
+    const fijo = await pagina.evaluate(() => document.querySelector("[data-contador]").dataset.fijo);
+    notas.push(`${ancho} · p4: con la última ficha puesta, el contador está ${fijo === "si" ? "fijo abajo" : "en el flujo"}`);
+    await pagina.click("[data-revisar]");
+    await pagina.waitForTimeout(300);
+    await medir("p4 después");
+    await captura("p4-3-despues");
+    await siguiente();
+  }
+
+  /* Pantalla 5: los tres lotes, la salida, las opciones. */
+  {
+    await b1("p5");
+    await medir("p5 antes");
+    await captura("p5-1-antes");
+    const problemas = new Set();
+    for (const k of [3, 1, 2]) {
+      await pagina.click(`[data-lote="${k}"]`);
+      await enVentana(pagina, ["[data-estante-comun]", '[data-rotulo-lotes="costo"]', '[data-rotulo-lotes="unidades"]'], 450, `p5 lote ${k}`, problemas);
+      if (k === 1) await captura("p5-2-durante");
+    }
+    await enVentana(pagina, ["[data-estante-comun]"], 800, "p5 salida", problemas);
+    await pagina.waitForSelector("[data-opciones-lotes]");
+    await pagina.waitForTimeout(400);
+    for (const p of problemas) fallos.push(`${ancho} · ${p}`);
+    const { costo, tope } = await pagina.evaluate(() => ({
+      costo: Math.round(document.querySelector('[data-rotulo-lotes="costo"]').getBoundingClientRect().top),
+      tope: Math.round(document.documentElement.scrollHeight - window.innerHeight - window.scrollY) <= 1,
+    }));
+    notas.push(`${ancho} · p5: tras la salida, «Costo total» queda en ${costo} px (pedido: 72)${tope ? "; la página ya no da más desplazamiento" : ""}`);
+    if (costo !== 72 && !tope) fallos.push(`${ancho} · p5: «Costo total» en ${costo} px y la página aún podía desplazarse`);
+    await medir("p5 opciones");
+    await captura("p5-3-opciones");
+    await pagina.click('[data-opcion="c9-c"] button');
+    await pagina.waitForTimeout(300);
+    await medir("p5 después");
+    await captura("p5-4-despues");
+    await siguiente();
+  }
+
+  await titulo("p6", "c10-b");
+  await siguiente();
+  await pagina.waitForTimeout(500);
+  await captura("final");
+  await pagina.close();
 }
 
 await navegador.close();
-await servidor.close();
+servidor.close();
+rmSync(DIST, { recursive: true, force: true });
 
-console.log("ancho | estado | contenido | alto | botón más bajo | renglón «Gasto…» | 10 cajas");
-for (const f of filas) console.log(`${f.ancho} | ${f.estado} | ${f.actividad ?? "—"} | ${f.alto} | ${f.botonMasBajo ?? "—"} | ${f.renglonGasto ?? "—"} | ${f.cajas ?? "—"}`);
-const estados = filas.length / ANCHOS.length;
-console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos).`);
-if (estados !== 13) fallos.push(`se recorrieron ${estados} estados y son 13`);
-if (!filas.some((f) => f.ancho === 320 && f.renglonGasto)) fallos.push("no se midió el renglón de «Gasto provisiones – cuentas incobrables» a 320");
-if (!filas.some((f) => f.ancho === 320 && f.cajas)) fallos.push("no se midió la fila de 10 cajas a 320");
+for (const n of notas) console.log(`· ${n}`);
 if (fallos.length) {
-  console.log(`\nFALLA: ${fallos.length} problema(s)`);
-  for (const f of fallos) console.log(`  · ${f}`);
+  console.log(`\n✗ ${fallos.length} fallos:`);
+  for (const f of fallos) console.log(`  ✗ ${f}`);
   process.exit(1);
 }
-console.log("PASA: r5-1 cabe a 375 y a 320 px.");
+console.log("\n✓ r5-1 v2 cabe y se ve a 320 y a 375");

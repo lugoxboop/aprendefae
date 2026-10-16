@@ -38,6 +38,23 @@ await servidor.listen();
 const URL_BANCO = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/t7/harness-t7-3/index.html`;
 const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const fallos = [];
+
+/*
+ * Google Fonts no siempre se alcanza desde la máquina que mide. Con
+ * FUENTES_DIR (una carpeta con fuentes.css y los .woff2 de Inter y Sora,
+ * bajados de Google), se sirven desde el disco: la letra medida es la real.
+ */
+async function servirFuentes(ctx) {
+  const dir = process.env.FUENTES_DIR;
+  if (!dir) return;
+  const { readFileSync } = await import("node:fs");
+  const css = readFileSync(resolve(dir, "fuentes.css"), "utf8");
+  await ctx.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => {
+    const u = route.request().url();
+    if (u.startsWith("https://fonts.googleapis.com/")) return route.fulfill({ status: 200, contentType: "text/css", body: css });
+    try { return route.fulfill({ status: 200, contentType: "font/woff2", body: readFileSync(resolve(dir, u.replace("https://fonts.gstatic.com/", "").replace(/\//g, "_"))) }); } catch { return route.abort(); }
+  });
+}
 const filas = [];
 
 function medir(sel) {
@@ -76,7 +93,8 @@ function medir(sel) {
   }
   if (document.documentElement.scrollWidth > window.innerWidth) problemas.push(`la página mide ${document.documentElement.scrollWidth} px en ${window.innerWidth}`);
   for (const b of pieza.querySelectorAll("button")) {
-    const h = b.getBoundingClientRect().height;
+    /* El «¿Por qué?» va en línea con el texto: su área de toque de 44 px es su ::before (plegable.jsx). */
+    const h = Math.max(b.getBoundingClientRect().height, b.matches("[data-por-que]") ? parseFloat(getComputedStyle(b, "::before").height) || 0 : 0);
     if (h < 44) problemas.push(`«${b.textContent.trim().slice(0, 30)}» mide ${h.toFixed(1)} px de alto`);
   }
   /* Las cifras del asiento y de sus sumas: en una línea, dentro de su columna. */
@@ -95,7 +113,9 @@ function medir(sel) {
 const correctas = { sobrante: "sobrante", faltante: "haber" };
 
 for (const ancho of ANCHOS) {
-  const pg = await navegador.newPage({ viewport: { width: ancho, height: 900 }, deviceScaleFactor: 2 });
+  const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, deviceScaleFactor: 2 });
+  await servirFuentes(ctx);
+  const pg = await ctx.newPage();
   await pg.goto(URL_BANCO);
   await pg.waitForSelector(A1);
   let n = 0;
@@ -116,6 +136,13 @@ for (const ancho of ANCHOS) {
     const id = await pg.getAttribute(A1, "data-pantalla");
     if (await pg.$(en("[data-eleccion]"))) {
       await estado(`${id}-colocando`);
+      /* Recortes: una cuenta del asiento que abre su definición (A1, P3). Se mide abierta, una a la vez, y se cierra. */
+      const terminos = await pg.$$eval(en("[data-termino]"), (bs) => bs.map((b) => b.dataset.termino));
+      for (const t of terminos) {
+        await clic(`[data-termino="${t}"]`);
+        await estado(`${id}-termino-${t}`);
+      }
+      if (terminos.length) await clic(`[data-termino="${terminos.at(-1)}"]`);
       const malas = await pg.$$eval(en("[data-opcion]"), (bs, c) => bs.map((b) => b.dataset.opcion).filter((o) => o !== c).sort(), correctas[id]);
       for (const mala of malas) {
         await clic(`[data-opcion="${mala}"]`); await clic('[data-boton="confirmar"]');
@@ -124,6 +151,11 @@ for (const ancho of ANCHOS) {
       }
       await clic(`[data-opcion="${correctas[id]}"]`); await clic('[data-boton="confirmar"]');
       await estado(`${id}-acierto`);
+      /* Recortes: el «¿Por qué?» del acierto, abierto. */
+      if (await pg.$(en("[data-mensaje] [data-por-que]"))) {
+        await clic("[data-mensaje] [data-por-que]");
+        await estado(`${id}-porque`);
+      }
       await clic('[data-boton="seguir"]');
       continue;
     }

@@ -7,7 +7,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * ═══════════════════════════════════════════════════════════════════════════
  * TEMA 6 · EL CATÁLOGO Y LA CONEXIÓN DE b5-t6-a4 A b5-t6-a7 (Célula B).
  *
- *   · las cuatro están en el bloque de T6, después de b5-t6-a3, con la
+ *   · las cuatro están en el bloque de T6, en el orden del camino, con la
  *     dificultad y los FP de Sakuta
  *   · la vista las abre desde el camino, cada una con su mecánica
  *   · la 0075 trae sus cuatro filas: un insert aditivo y repetible, la
@@ -69,8 +69,9 @@ const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(
 const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent.trim() === texto) ?? null;
 const Marco = ({ children }) => h("div", null, children);
 
-test("★★★ las cuatro están en el bloque de T6, después de b5-t6-a3, con la clasificación de Sakuta", () => {
-  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a2", "b5-t6-a3", "b5-t6-a4", "b5-t6-a5", "b5-t6-a6", "b5-t6-a7"]);
+test("★★★ las cuatro están en el bloque de T6, en el orden del camino, con la clasificación de Sakuta", () => {
+  /* El orden del camino es el de la calidad del 15-oct (Shoko, R9): de lo que se necesita saber primero a lo que lo usa. */
+  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a7", "b5-t6-a4", "b5-t6-a5", "b5-t6-a2", "b5-t6-a3", "b5-t6-a6"]);
   for (const k of CASOS) {
     const c = clasificacionDe("contabilidad", "cuentas-por-cobrar", k.id);
     assert.deepEqual({ modalidad: c.modalidad, dificultad: c.dificultad, fpBase: c.fpBase }, { modalidad: "evaluativa", dificultad: k.dificultad, fpBase: k.fp }, k.id);

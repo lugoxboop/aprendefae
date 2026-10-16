@@ -7,14 +7,15 @@
  *
  * Como medir-t7-1-a6.mjs: Chromium de verdad, la vista de T7-1 montada tal
  * cual con la hoja de estilos del sitio. Juega AP3 entera —en cada pregunta
- * falla con cada opción equivocada y acierta— y en cada uno de sus 26
- * estados comprueba:
+ * falla con cada opción equivocada y acierta; en P7 abre cada tarjeta— y
+ * en cada uno de sus 31 estados comprueba:
  *
  *   · que la página no tenga barra horizontal
  *   · que ningún texto se salga de su caja (scrollWidth) ni del panel
  *   · que se hayan medido Inter y Sora, no la fuente de reserva
  *   · que cada opción y cada botón midan al menos 44 px de alto
- *   · en las tarjetas de P6, que cada cifra quepa en su renglón, sin partirse
+ *   · en la tabla de P5 y del resumen, que cada cifra quepa en su renglón
+ *   · en P1, la pila al terminar de moverse (y una captura a medio camino)
  *
  * Sale con código 1 si algo falla. Necesita Playwright (no es dependencia del
  * repo): el de la máquina, o el de PLAYWRIGHT_MODULE.
@@ -22,12 +23,14 @@
  */
 import { createServer } from "vite";
 import { createRequire } from "node:module";
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const RAIZ = resolve(import.meta.dirname, "../..");
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? "/opt/node-tools/node_modules/playwright");
+/* Google Fonts no se alcanza desde aquí: si hay copia en disco (FUENTES), se sirve desde ahí. */
+const FUENTES = process.env.FUENTES ?? "/tmp/claude-0/fuentes/";
 const CAPTURAS = process.argv[2] ?? null;
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 const ANCHOS = [375, 320];
@@ -37,6 +40,19 @@ const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { p
 await servidor.listen();
 const URL_BANCO = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/t7/harness/index.html`;
 const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+async function rutas(ctx) {
+  if (!existsSync(`${FUENTES}fuentes.css`)) return;
+  const css = readFileSync(`${FUENTES}fuentes.css`, "utf8");
+  await ctx.route("**/*", (route) => {
+    const u = route.request().url();
+    if (u.startsWith("http://127.0.0.1")) return route.continue();
+    if (u.startsWith("https://fonts.googleapis.com/")) return route.fulfill({ status: 200, contentType: "text/css", body: css });
+    if (u.startsWith("https://fonts.gstatic.com/")) {
+      try { return route.fulfill({ status: 200, contentType: "font/woff2", body: readFileSync(FUENTES + u.replace("https://fonts.gstatic.com/", "").replace(/\//g, "_")) }); } catch { return route.abort(); }
+    }
+    return route.abort();
+  });
+}
 const fallos = [];
 const filas = [];
 
@@ -60,13 +76,17 @@ function medir(sel) {
     const h = b.getBoundingClientRect().height;
     if (h < 44) problemas.push(`«${b.textContent.trim().slice(0, 30)}» mide ${h.toFixed(1)} px de alto`);
   }
-  /* P6: cada cifra de las tarjetas, en un solo renglón y dentro de su tarjeta. */
-  for (const dd of pieza.querySelectorAll("[data-metodos] [data-valor]")) {
-    if (dd.classList.contains("t7a3-txt")) continue;
+  /* P5 y P9: cada cifra de la tabla, en un solo renglón y dentro de la tabla. */
+  for (const dd of pieza.querySelectorAll("[data-tabla] [data-valor]")) {
     const rg = document.createRange(); rg.selectNodeContents(dd);
     if (rg.getClientRects().length > 1) problemas.push(`«${dd.textContent}» se parte en dos renglones`);
-    const t = dd.closest("[data-tarjeta]").getBoundingClientRect(), d = dd.getBoundingClientRect();
-    if (d.right > t.right + 0.5) problemas.push(`«${dd.textContent}» se sale de su tarjeta`);
+    const t = dd.closest("[data-tabla]").getBoundingClientRect(), d = dd.getBoundingClientRect();
+    if (d.right > t.right + 0.5) problemas.push(`«${dd.textContent}» se sale de la tabla`);
+  }
+  /* P1: la pila, dentro de su figura. */
+  for (const u of pieza.querySelectorAll("[data-pila] [data-unidad], [data-pila] [data-queda]")) {
+    const f = u.closest("[data-pila]").getBoundingClientRect(), r = u.getBoundingClientRect();
+    if (r.right > f.right + 0.5 || r.width < 8) { problemas.push(`una unidad de la pila se sale o mide ${r.width.toFixed(1)} px`); break; }
   }
   return {
     problemas,
@@ -76,10 +96,12 @@ function medir(sel) {
   };
 }
 
-const correctas = { peps: "compradas", ueps: "inicio", "promedio-ponderado": "ponderado", "lado-a-lado": "reciente", "a-favor-y-en-contra": "orden-de-costos", "la-recomendacion": "menos-impuesto" };
+const correctas = { peps: "compradas", ueps: "inicio", "promedio-ponderado": "ponderado", "lado-a-lado": "reciente", "la-recomendacion": "ueps", "la-refutacion": "orden-de-costos" };
 
 for (const ancho of ANCHOS) {
-  const pg = await navegador.newPage({ viewport: { width: ancho, height: 900 }, deviceScaleFactor: 2 });
+  const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, deviceScaleFactor: 2 });
+  await rutas(ctx);
+  const pg = await ctx.newPage();
   await pg.goto(URL_BANCO);
   await pg.waitForSelector(AP3);
   let n = 0;
@@ -96,7 +118,7 @@ for (const ancho of ANCHOS) {
   };
   const en = (sel) => `${AP3} ${sel}`;
   const clic = (sel) => pg.click(en(sel));
-  for (let vuelta = 0; vuelta < 10; vuelta++) {
+  for (let vuelta = 0; vuelta < 12; vuelta++) {
     const id = await pg.getAttribute(AP3, "data-pantalla");
     if (await pg.$(en("[data-eleccion]"))) {
       await estado(`${id}-colocando`);
@@ -111,12 +133,26 @@ for (const ancho of ANCHOS) {
       await clic('[data-boton="seguir"]');
       continue;
     }
+    if (await pg.$(en("[data-tarjetas]"))) {
+      await estado(`${id}-cerradas`);
+      for (const t of await pg.$$eval(en("[data-abrir]"), (bs) => bs.map((b) => b.dataset.abrir))) {
+        await clic(`[data-abrir="${t}"]`);
+        await estado(`${id}-abierta-${t}`);
+      }
+      await clic('[data-boton="seguir"]');
+      continue;
+    }
+    if (id === "el-problema") {
+      await pg.waitForTimeout(900);
+      if (CAPTURAS) await (await (await pg.$(AP3)).evaluateHandle((x) => x.closest("section"))).asElement().screenshot({ path: resolve(CAPTURAS, `ap3-${ancho}-el-problema-en-movimiento.png`) });
+      await pg.waitForTimeout(2200);
+    }
     await estado(id);
     const b = await pg.$(en("[data-boton]"));
     if (!b) break;
     await b.click();
   }
-  await pg.close();
+  await ctx.close();
 }
 
 await navegador.close();
@@ -126,7 +162,7 @@ console.log("ancho | estado | panel | alto pieza");
 for (const f of filas) console.log(`${f.ancho} | ${f.estado} | ${f.panel} | ${f.alto}`);
 const estados = new Set(filas.map((f) => f.estado)).size;
 console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos).`);
-if (estados !== 26) fallos.push(`se recorrieron ${estados} estados y son 26`);
+if (estados !== 31) fallos.push(`se recorrieron ${estados} estados y son 31`);
 if (fallos.length) {
   console.log(`\nFALLA: ${fallos.length} problema(s)`);
   for (const f of fallos) console.log(`  · ${f}`);

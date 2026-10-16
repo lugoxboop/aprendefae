@@ -4,7 +4,7 @@ import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { PIEZA_LA_VENTA_EN_DOS_ASIENTOS, BOTON, INTERFAZ, PENDIENTE_DE_REVISION, DEBE, HABER, cifra } from "../../../../data/contabilidadT7_2_a2.js";
 import { Plegable } from "./plegable.jsx";
-import { textosDelError, contarFallo } from "./escaleraAyuda.js";
+import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDeLineas, puestoTrasProbarOtra } from "./escaleraAyuda.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -19,7 +19,7 @@ import { textosDelError, contarFallo } from "./escaleraAyuda.js";
  *                En P1, antes de la pregunta, el enunciado de E-1, su ficha y
  *                el repaso de IVA y retención; con el acierto, el asiento de
  *                la compra: Inventario de mercancías con su monto y las otras
- *                tres líneas sin él (●, X1), y las dos líneas que las explican
+ *                tres líneas sin él (casilla vacía, X1), y las dos líneas que las explican
  *   · lados      P3: las dos líneas del asiento del costo, barajadas al
  *                entrar, cada una con «Debe» | «Haber», como P3 de A1
  *   · resumen    la lista numerada, la línea «Siguiente» y el pie
@@ -78,8 +78,9 @@ export const CSS_T7B2 = `
 .t7b2-as-r > span:first-child { font-size: 14px; overflow-wrap: anywhere; min-width: 0; }
 .t7b2-as-r .t7b2-g2 > span { text-align: right; padding-inline: 9px; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 0; }
 .t7b2-sangria { padding-left: 24px; }
-/* el monto que no se muestra (X1): un punto gris en su lado; Watari decide la forma final */
-.t7b2-oculto { color: ${P.texto2}; }
+/* el monto que no se muestra (X1): la casilla discontinua vacía del patrón, la misma del kárdex (KardexT7_2.jsx, .t7kx-sin) */
+.t7b2-oculto { display: flex; align-items: center; height: 100%; }
+.t7b2-oculto i { display: block; width: 100%; height: 18px; border: 1px dashed ${P.borde}; border-radius: 4px; }
 /* P3: las dos líneas del asiento del costo */
 .t7b2-lineas { display: grid; gap: 10px; }
 .t7b2-la { display: grid; gap: 8px; min-width: 0; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; }
@@ -164,7 +165,7 @@ export function Asiento({ asiento, nuevo = false }) {
     if (l.monto === null) {
       return (
         <span className="t7b2-oculto" data-oculto data-revision="pendiente">
-          <span aria-hidden="true">●</span>
+          <i aria-hidden="true" />
           <span className="t7b2-sr">{PENDIENTE_DE_REVISION.montoOculto}</span>
         </span>
       );
@@ -250,6 +251,8 @@ function Lados({ pantalla, onSeguir }) {
   const [orden] = useState(() => barajar(pantalla.lineas));
   const [puesto, setPuesto] = useState({});
   const [veredicto, setVeredicto] = useState(null);
+  const [fallosLinea, setFallosLinea] = useState({});
+  const cerrada = (l) => lineaCerrada(pantalla, l, fallosLinea[l.id]);
   const ref = useRef(null);
   const malas = veredicto?.malas ?? [];
   const estado = !veredicto ? "colocando" : malas.length ? "error" : "acierto";
@@ -258,12 +261,16 @@ function Lados({ pantalla, onSeguir }) {
   const pie = estado === "colocando" ? pantalla.pie : estado === "error" ? pantalla.error.pie : pantalla.acierto.pie;
 
   const tocar = (l, lado) => {
-    if (estado !== "colocando") return;
+    if (estado !== "colocando" || cerrada(l)) return;
     setPuesto((p) => ({ ...p, [l.id]: p[l.id] === lado ? undefined : lado }));
   };
-  const confirmar = () => setVeredicto({ malas: orden.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id) });
+  const confirmar = () => {
+    const malas = orden.filter((l) => puesto[l.id] !== l.lado).map((l) => l.id);
+    setFallosLinea((f) => sumarFallosDeLineas(f, malas));
+    setVeredicto({ malas });
+  };
   const probarOtra = () => {
-    setPuesto((p) => { const n = { ...p }; for (const id of malas) delete n[id]; return n; });
+    setPuesto((p) => puestoTrasProbarOtra(p, malas, pantalla.lineas, cerrada));
     setVeredicto(null);
   };
 
@@ -284,7 +291,7 @@ function Lados({ pantalla, onSeguir }) {
                 data-linea={l.id}
                 data-lado={cual}
                 aria-pressed={esta}
-                aria-disabled={estado !== "colocando" ? "true" : undefined}
+                aria-disabled={estado !== "colocando" || cerrada(l) ? "true" : undefined}
                 aria-label={`${l.cuenta}, ${cifra(l.monto)}: ${nombreLado(cual)}${error ? ", incorrecto" : ""}`}
                 onClick={() => tocar(l, cual)}
               >
@@ -300,7 +307,7 @@ function Lados({ pantalla, onSeguir }) {
                 <span className="t7b2-monto" data-monto>{cifra(l.monto)}</span>
               </p>
               <span className="t7b2-g2">{boton(DEBE)}{boton(HABER)}</span>
-              {mala && estado === "error" && <Mensaje ok={false} textos={[l.devolucion]} refFoco={l.id === malas[0] ? ref : undefined} />}
+              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} refFoco={l.id === malas[0] ? ref : undefined} />}
             </div>
           );
         })}

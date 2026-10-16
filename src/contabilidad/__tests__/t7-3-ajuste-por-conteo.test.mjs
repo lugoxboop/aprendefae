@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -13,6 +14,9 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *     regla 10b (y su variante para la provisión)
  *   · el sistema de Pino es la propuesta de Near, pendiente de decisión de L
  *   · un solo intento por unidad; once unidades; el porcentaje es aciertos / 11
+ *   · lote 3 («Arma la línea»): los ítems 2 y 5 van con casilla de cifra;
+ *     cada línea de los tres asientos elige su cuenta de un banco con los dos
+ *     distractores de Near, letra por letra (lote3-distractores-v1.md)
  *   · evaluativa, medio, 25 FP, en el cliente y en la migración 0107; la
  *     vista lo abre y registra con el motor; el panel docente lee cada unidad
  *   · ninguna cifra del libro (I-1 a I-3 son de A5 y A6) ni de X1-X4
@@ -51,6 +55,7 @@ const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.j
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
 const V1 = leer("orquestador/conocimiento/paquetes/t7-3-h5-v1.md");
+const LOTE3 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md"));
 const MAPA = leer("orquestador/conocimiento/mapas/t7-inventarios.md");
 const VISTA = leer("src/components/ContabilidadT7_3View.jsx");
 const MIGRACION = leer("supabase/migrations/0107_t7_3_ajuste_por_conteo.sql");
@@ -92,11 +97,13 @@ test("★★★ los textos son los de la v1, letra por letra; las fichas, las de
   for (const k of [0, 1]) {
     const [quien, libros, conteo, fecha, sistema] = fichaV1(k);
     assert.deepEqual(D.CASOS_H5[k].ficha.map(([, x]) => x.toLowerCase()), [quien, libros.replace("libros ", ""), conteo.replace("conteo ", ""), fecha, sistema].map((x) => x.toLowerCase()));
-    assert.deepEqual(D.CASOS_H5[k].ficha.map(([r]) => r), A5.PIEZA_SOBRANTES_Y_FALTANTES.pantallas.find((p) => p.ficha).ficha.map((f) => f.dato));
+    /* Los rótulos de la ficha 10b de A5 de T7-3. El recorte del lote 1 quitó esa ficha de A5; los rótulos se quedan. */
+    assert.deepEqual(D.CASOS_H5[k].ficha.map(([r]) => r), ["Quién", "Saldo en libros", "Valor del conteo", "Fecha", "Sistema"]);
   }
   const [quien, prov, perdida, fecha] = fichaV1(2);
   assert.deepEqual(D.CASOS_H5[2].ficha.slice(0, 4).map(([, x]) => x.toLowerCase()), [quien, prov.replace("provisión estimada ", ""), perdida.replace("pérdida real ", ""), fecha].map((x) => x.toLowerCase()));
-  assert.deepEqual(D.CASOS_H5[2].ficha.map(([r]) => r), A6.PIEZA_LA_PROVISION.pantallas.find((p) => p.ficha).ficha.map((f) => f.dato));
+  /* Los rótulos de la ficha 10b de A6 de T7-3. El recorte del lote 1 quitó esa ficha de A6; los rótulos se quedan. */
+  assert.deepEqual(D.CASOS_H5[2].ficha.map(([r]) => r), ["Quién", "Provisión estimada", "Pérdida real", "Fecha", "Sistema"]);
   /* El sistema de Pino: la propuesta de Near, pendiente de L. */
   assert.ok(V1.includes(`**Propongo que la ficha de Pino diga «Sistema: ${D.SISTEMA_PINO.charAt(0).toLowerCase()}${D.SISTEMA_PINO.slice(1)}»**`));
   assert.equal(D.CASOS_H5[2].ficha[4][1], D.SISTEMA_PINO);
@@ -149,7 +156,18 @@ const tocar = async (el) => {
 };
 const opcion = (caja, v) => caja.querySelector(`[data-opcion="${v}"] button`);
 const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent === texto);
-const lado = (caja, lineaId, l) => [...caja.querySelectorAll(`[data-linea="${lineaId}"] button`)].find((b) => b.textContent === (l === DEBE ? "Debe" : "Haber"));
+const lado = (caja, lineaId, l) => [...caja.querySelectorAll(`[data-linea-cuenta="${lineaId}"] button`)].find((b) => b.textContent === (l === DEBE ? "Debe" : "Haber"));
+const ficha = (caja, lineaId, cuenta) => [...caja.querySelectorAll(`[data-linea-cuenta="${lineaId}"] [data-ficha-cuenta]`)].find((b) => b.dataset.fichaCuenta === cuenta);
+/* Escribe en la casilla de cifra como lo haría el teclado: el valor con su punto de miles. */
+const escribir = async (caja, id, valor) => {
+  const i = caja.querySelector(`[data-campo-cifra="${id}"]`);
+  assert.ok(i, `no está la casilla de ${id}`);
+  await act(async () => {
+    Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype, "value").set.call(i, String(valor));
+    i.dispatchEvent(new w.Event("input", { bubbles: true }));
+  });
+  assert.equal(i.value, pesos(valor).slice(1));
+};
 const otro = (l) => (l === DEBE ? HABER : DEBE);
 
 async function jugar(m, falla) {
@@ -162,7 +180,19 @@ async function jugar(m, falla) {
     assert.deepEqual([...m.caja.querySelectorAll("[data-caso] p")].map((p) => p.textContent), caso.textos);
     assert.ok(m.caja.querySelector("[data-caso]").textContent.includes(caso.ficha.map(([r, x]) => `${r}${x}`).join("")));
     assert.equal(m.caja.querySelector("[data-encabezado-item]").textContent, caso.encabezado.toUpperCase());
-    if (it.tipo === "eleccion") {
+    if (it.tipo === "cifra") {
+      /* LOTE 3: casilla de cifra; si falla, escribe el primer distractor y sale su retroalimentación. */
+      const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
+      assert.equal(boton(m.caja, "Comprobar").disabled, true, "«Comprobar» sin cifra");
+      await escribir(m.caja, it.id, v);
+      await tocar(boton(m.caja, "Comprobar"));
+      const ok = v === it.correcta;
+      assert.equal(m.caja.querySelector(`[data-campo-cifra="${it.id}"]`).readOnly, true, "un solo intento");
+      assert.equal(boton(m.caja, "Comprobar"), undefined);
+      assert.deepEqual([...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent), L.evaluarH5(it, v).textos);
+      assert.deepEqual(L.evaluarH5(it, v).textos, ok ? [it.acierto] : [it.distractores[0].retro, `La respuesta es ${pesos(it.correcta)}.`]);
+      detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
+    } else if (it.tipo === "eleccion") {
       const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
       await tocar(opcion(m.caja, v));
       const ok = v === it.correcta;
@@ -170,13 +200,26 @@ async function jugar(m, falla) {
       if (!ok) assert.equal(opcion(m.caja, it.correcta).dataset.estado, "revelada");
       detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
     } else {
-      for (const l of it.lineas) await tocar(lado(m.caja, l.id, falla(L.idLineaH5(it, l)) ? otro(l.lado) : l.lado));
+      /* LOTE 3 · «Arma la línea»: cada línea elige su cuenta del banco (la correcta y dos distractores) y su lado. */
+      for (const l of it.lineas) {
+        assert.equal(boton(m.caja, "Comprobar").disabled, true, "«Comprobar» antes de tener todas las líneas");
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-ficha-cuenta]`)].map((b) => b.dataset.fichaCuenta), [l.cuenta, ...l.distractores.map((d) => d.cuenta)]);
+        assert.equal(m.caja.querySelector(`[data-linea-cuenta="${l.id}"] [data-valor]`).textContent, pesos(l.valor), "el monto viene dado");
+        const mal = falla(L.idLineaH5(it, l));
+        /* Una falla con la cuenta (el primer distractor) y otra con el lado, con la cuenta buena. */
+        await tocar(ficha(m.caja, l.id, mal === "cuenta" ? l.distractores[0].cuenta : l.cuenta));
+        await tocar(lado(m.caja, l.id, mal === "lado" ? otro(l.lado) : l.lado));
+      }
       assert.equal(m.caja.querySelector("[data-asiento-completo]") === null, true);
       await tocar(boton(m.caja, "Comprobar"));
       for (const l of it.lineas) {
-        const ok = !falla(L.idLineaH5(it, l));
-        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), ok ? [] : [l.retro]);
-        detalle.push({ item: L.idLineaH5(it, l), ok, intentos: 1, respuesta: ok ? null : otro(l.lado), orden: detalle.length + 1 });
+        const mal = falla(L.idLineaH5(it, l));
+        const ok = !mal;
+        for (const b of m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] button`)) assert.equal(b.disabled, true);
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), ok ? [] : [mal === "cuenta" ? l.distractores[0].retro : l.retro]);
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Era: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
+        const respuesta = mal === "cuenta" ? `${l.distractores[0].cuenta}|${l.lado}` : `${l.cuenta}|${otro(l.lado)}`;
+        detalle.push({ item: L.idLineaH5(it, l), ok, intentos: 1, respuesta: ok ? null : respuesta, orden: detalle.length + 1 });
       }
       assert.ok(m.caja.querySelector("[data-asiento-completo]"));
     }
@@ -188,28 +231,29 @@ async function jugar(m, falla) {
 test("★★★ la tanda entera: once unidades, un intento cada una, y el porcentaje es aciertos / 11", async () => {
   const m = await montar();
   try {
-    const fallos = new Set(["sobrante-o-faltante", "que-pasa-con-el-costo", "ajuste-faltante:costo", "perdida-real:provision"]);
-    const detalle = await jugar(m, (id) => fallos.has(id));
+    const fallos = new Map([["sobrante-o-faltante", true], ["que-pasa-con-el-costo", true], ["el-faltante", true], ["ajuste-faltante:costo", "cuenta"], ["perdida-real:provision", "lado"]]);
+    const detalle = await jugar(m, (id) => fallos.get(id) ?? false);
     const [pct, , det] = m.completados[0];
     assert.deepEqual(det, detalle);
     assert.deepEqual(det.map((d) => d.item), L.unidadesH5());
     assert.equal(L.TOTAL_H5, 11);
-    assert.equal(pct, (7 / 11) * 100);
+    assert.equal(pct, (6 / 11) * 100);
   } finally {
     m.desmontar();
   }
 });
 
-test("★★ las opciones de los ítems 1 y 4 van en el orden de la v1; las demás y las líneas se barajan", () => {
+test("★★ las opciones de los ítems 1 y 4 van en el orden de la v1; las demás, las líneas y su banco de cuentas se barajan", () => {
   const revolver = (xs) => [...xs].sort(() => Math.random() - 0.5);
-  const a = new Set();
+  const a = new Set(); const b = new Set();
   for (let i = 0; i < 60; i++) {
     const p = L.prepararH5(revolver);
     assert.deepEqual(p[0].opciones.map((o) => o.valor), ["Sobrante", "Faltante"]);
     assert.deepEqual(p[3].opciones.map((o) => o.valor), ["Sube", "Baja", "No cambia"]);
     a.add(p[6].opciones.map((o) => o.valor).join());
+    b.add([2, 5, 7].map((k) => p[k].orden.join() + p[k].lineas.map((l) => l.banco.join()).join()).join());
   }
-  assert.ok(a.size > 1);
+  assert.ok(a.size > 1 && b.size > 1);
 });
 
 test("★★★ en T7-3, justo después de A6: evaluativa, medio, 25 FP", () => {
@@ -260,7 +304,10 @@ async function figurasPorItem(m, botonFinal, botonSiguiente) {
   for (const [k, it] of EN_ORDEN.entries()) {
     const antes = vistas();
     if (it.lineas) {
-      for (const l of it.lineas) await tocar(lado(m.caja, l.id, l.lado));
+      for (const l of it.lineas) { await tocar(ficha(m.caja, l.id, l.cuenta)); await tocar(lado(m.caja, l.id, l.lado)); }
+      await tocar(boton(m.caja, "Comprobar"));
+    } else if (it.tipo === "cifra") {
+      await escribir(m.caja, it.id, k % 2 ? it.distractores[0].valor : it.correcta);
       await tocar(boton(m.caja, "Comprobar"));
     } else {
       const v = k % 2 ? it.opciones.find((o) => o.valor !== it.correcta).valor : it.correcta;
@@ -293,4 +340,39 @@ test("★★★ Patrón T7-3: la cuenta de Olmo después de los ítems 2 y 5, mi
   } finally {
     m.desmontar();
   }
+});
+
+/* ═══════════ LOTE 3 · «ARMA LA LÍNEA» Y LA CASILLA DE CIFRA ═══════════ */
+
+/* Las filas de Near para esta pieza: [asiento, cuenta, lado, valor, distractor, retro], en su orden. */
+const filasLote3 = () => {
+  const seccion = LOTE3.slice(LOTE3.indexOf("### T7-3 H5 · `t7-3-ajuste-por-conteo`"));
+  return seccion.slice(0, seccion.indexOf("\n### ", 1)).split("\n")
+    .map((l) => l.match(/^\| `([^`]+)` \| (.+?) · ([DH]) · \$([\d.]+) \| (.+?) \| «(.+)» \| [\d,]+ \|$/)).filter(Boolean)
+    .map((m) => [m[1], m[2], m[3] === "D" ? DEBE : HABER, Number(m[4].replace(/\./g, "")), m[5], m[6]]);
+};
+
+test("★★★ lote 3: los ítems 2 y 5 van con casilla; el 1, el 4 y el 7 se quedan en elección; los asientos, con banco de cuentas", () => {
+  assert.deepEqual(D.ITEMS_H5.map((x) => [x.id, x.tipo]), [
+    ["sobrante-o-faltante", "eleccion"], ["el-sobrante", "cifra"], ["ajuste-sobrante", "asiento"], ["que-pasa-con-el-costo", "eleccion"],
+    ["el-faltante", "cifra"], ["ajuste-faltante", "asiento"], ["estimar-provision", "eleccion"], ["perdida-real", "asiento"],
+  ]);
+  for (const it of D.ITEMS_H5.filter((x) => x.tipo === "asiento")) for (const l of it.lineas) {
+    assert.equal(l.distractores.length, 2, `${it.id}:${l.id}`);
+    assert.ok(!l.distractores.some((d) => d.cuenta === l.cuenta), `${it.id}:${l.id}`);
+  }
+  const p = L.prepararH5((xs) => [...xs].reverse());
+  for (const k of [2, 5, 7]) for (const l of p[k].lineas) assert.deepEqual([...l.banco].sort(), [l.cuenta, ...l.distractores.map((d) => d.cuenta)].sort());
+  for (const k of [1, 4]) assert.equal(p[k], D.ITEMS_H5[k]);
+  /* Una cifra de un distractor: su retroalimentación; otra cualquiera: la respuesta y el porqué del acierto, sin «Así es». */
+  assert.deepEqual(L.evaluarH5(item("el-sobrante"), 1_260_000), { ok: false, correcta: 36_000, textos: ["Sumaste los dos valores. El sobrante es la diferencia: $648.000 − $612.000.", "La respuesta es $36.000."], textoCorrecta: "$36.000" });
+  assert.deepEqual(L.evaluarH5(item("el-faltante"), 1).textos, ["La respuesta es $44.000.", "$738.000 − $694.000 = $44.000. El conteo da menos que los libros."]);
+  assert.equal(L.evaluarH5(item("el-faltante"), 44_000).ok, true);
+});
+
+test("★★★ lote 3: los distractores de cuenta de los tres asientos son los de Near, letra por letra y en su orden", () => {
+  const fs = filasLote3();
+  assert.equal(fs.length, 12);
+  const datos = D.ITEMS_H5.filter((x) => x.tipo === "asiento").flatMap((it) => it.lineas.flatMap((l) => l.distractores.map((d) => [it.id, l.cuenta, l.lado, l.valor, d.cuenta, d.retro])));
+  assert.deepEqual(datos, fs);
 });

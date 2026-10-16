@@ -121,5 +121,80 @@ con su causa y la regla que la evita.
   o más.
 - **E7 · Lo que el kit no mide: r5-1 es una cadena de selección.** Con la barra
   B3 de este archivo, cuatro de sus seis pantallas son marcar una opción de
-  radio y no mueven nada. Cumple el kit y no cumple la barra. Va una v2 de
-  mecánica; mientras, sigue publicada con las correcciones de arriba.
+  radio y no mueven nada. Cumple el kit y no cumple la barra. *Corregido en la
+  v2 (#250, paquete `e5-r5-1-v2`):* el flujo del título se reproduce, el
+  asiento entra en las cuentas T, las latas se venden, las fichas arman el
+  costo con un contador en vivo y los lotes se mezclan. *Regla:* antes de
+  escribir contenido, el general fija la mecánica de cada pantalla con la
+  pregunta «¿qué se mueve cuando el estudiante decide?»; si la respuesta es
+  «nada», la pantalla no está diseñada.
+- **E8 · La figura no hace la cuenta que se califica.** En el primer diseño de
+  la v2, el rótulo «Costo de cada unidad» calculaba en vivo el promedio que
+  la pregunta pedía; la elección se reducía a multiplicar y los distractores
+  dejaban de ser creíbles (Takamura). *Regla:* la figura muestra los
+  insumos y las consecuencias; el resultado que se evalúa solo aparece
+  después de responder.
+- **E9 · Un distractor que la pantalla misma desmiente no es distractor.** En
+  el contenido de r5-5, la opción «el periódico no suma los fletes» la negaba
+  el dato declarado de la entrada («promedia todo el mes, con fletes»), y «el
+  permanente se equivoca» se descartaba por su tono; quedaban dos opciones
+  de cuatro (Takamura). *Regla:* cada distractor nace de un error real del
+  estudiante y se lee contra todo lo que la pantalla ya dice; ninguna opción
+  se descarta sin saber contabilidad.
+- **E10 · Cuando un error lleva a la cifra correcta, el acierto lo explica.**
+  En r5-5 el flete cuesta justo el 5 % que se descontó: quien ignora ambos
+  llega a $2.300, la clave. No se puede cambiar el dato del libro (Takamura).
+  *Regla:* si un camino equivocado probable da la clave, el acierto dice por
+  qué la cifra coincide, para que quien acertó por casualidad se lleve la
+  razón correcta; y las devoluciones de los errores vecinos nombran ese
+  camino («precio de lista más flete»), no uno improbable.
+
+## Lo que encontró la Célula C en su autodiagnóstico (15 de octubre)
+
+Son 44 piezas: T7-1, T7-2, T7-3 y las suyas de T5. Se midieron con Playwright a 320 y 375 px y se jugaron pieza por pieza. El detalle y la evidencia están en `calidad/c7.md`. Las barras B1 a B5 ya cubrían los muros de texto. Lo de abajo es lo que no cubrían.
+
+- **C1 · La respuesta viaja en la pantalla anterior.** La pregunta llega después de una pantalla que ya dijo la respuesta, y responder es recordar lo de hace diez segundos.
+  - *Causa:* cada texto se auditó por separado y nadie leyó la secuencia.
+  - *Regla:* la cadena de la opción correcta no aparece en las dos pantallas anteriores a su pregunta, salvo como dato del enunciado. Se comprueba con una prueba automática por pieza.
+- **C2 · El primer error regala la respuesta.** En Aprender, el primer fallo explicaba la solución completa y el «Probar otra» quedaba vacío.
+  - *Regla:* escalera de ayuda.
+    - Al primer error, una **pista** de 20 palabras como máximo que orienta sin nombrar la respuesta.
+    - Al segundo error, la respuesta con su porqué.
+  - El campo `pista` es obligatorio en toda pregunta de Aprender, y una prueba lo exige.
+- **C3 · Hacer calcados.** Nueve Hacer repetían el mismo esqueleto: elegir la cifra entre 3 y después el lado de cada línea, con la cuenta y el monto ya puestos. Elegir el lado con la cuenta a la vista es 50/50.
+  - *Regla:*
+    - En un asiento calificado, el estudiante elige la **cuenta** (entre la correcta y dos distractores verosímiles) y además el **lado**.
+    - Si el objetivo de un ítem es calcular, la cifra se **escribe**. La opción múltiple queda para los conceptos.
+    - Dos Hacer seguidos de un tema no pueden tener la misma secuencia de mecánicas.
+- **C4 · La misma decisión en tres temas.** «¿Entra al costo?» repetía la decisión de «¿Costo o gasto?» y la del flete de T7-2, con los mismos ejemplos.
+  - *Regla:* antes de abrir un Hacer, se busca en la materia una decisión igual. Si existe, la pieza nueva sube el nivel (un caso que engaña, una variable más) o no se abre.
+- **C5 · Reglas del juego dentro de la consigna.** «Tienes un solo intento por pregunta» aparecía en casi todas las consignas, y en una era toda la consigna.
+  - *Regla:* la consigna dice qué hacer con este caso. Las reglas del juego van en un distintivo junto al contador, una sola vez.
+- **C6 · Dos piezas que son una.** T7-2 A5 y A6 enseñaban la misma regla («en el permanente no existe Compras») con otro hecho. Dos Hacer binarios repetían listas que ya se habían colocado en Aprender.
+  - *Regla:* si dos piezas enseñan la misma regla y solo cambia el hecho, son una pieza con dos casos. Un Hacer que se resuelve al 50 % o buscando una palabra del Aprender no se abre.
+- **C7 · El resumen que borra el límite.** «Almacenamiento» pasó a ser «lo que cuesta guardarla», sin el «directamente atribuible a la adquisición» de la p. 258. La frase quedó más corta y dejó de ser cierta.
+  - *Regla:* al resumir una definición del libro, se conserva la condición que la limita («directamente», «solo si», «cuando»). Si no cabe, se cita entera. El auditor compara cada resumen con su página, no solo las cifras.
+  - *Corolario:* esa condición tampoco se pliega detrás de «¿Por qué?». Lo plegado solo lo ve quien acierta y lo abre, y una condición que solo ve quien acertó no protege a quien se equivocó.
+- **C8 · Lo que sí engancha: la figura que crece y se queda.** La única pieza de la célula que enganchó por su mecánica fue «Llena el kárdex». Cada respuesta añade una fila, la tabla sigue a la vista y el estudiante ve su trabajo acumularse.
+  - *Regla:* en un Hacer de varios ítems sobre un mismo caso, cada respuesta deja su huella en una figura que sigue en pantalla mientras se responde lo siguiente (una tabla, un asiento, una cuenta). Un ítem que borra lo anterior para preguntar lo siguiente desperdicia el caso.
+
+## Lo que encontró la Célula D en su autodiagnóstico (15 de octubre)
+
+T4 «Efectivo, caja menor y bancos». Se revisaron las 3 piezas publicadas (A0, A1 y H1) y las 11 sin publicar, en la página y con la sonda de enganche (`scripts/t4/sonda-enganche/`, Playwright a 320 y 375 px). Fallaban las 14. Se rediseñaron todas y los Hacer pasaron de 8 a 5. Lo de abajo es lo que B1-B5 y las reglas de las otras células no cubrían.
+
+- **D1 · Un Hacer que no mueve nada se quita, no se decora.** H2 pedía reconocer un control dentro de una lista: ninguna decisión movía plata ni registro, así que cualquier figura habría sido adorno. H5 y H6 eran la mitad de otra decisión (el arqueo y la conciliación).
+  - *Regla:* antes de rediseñar un Hacer, se pregunta qué figura con significado cambia cuando el estudiante decide. Si no hay ninguna, la pieza sale. Si es un paso de otra, se funde con ella. Cinco piezas que enganchan valen más que ocho que se contestan.
+- **D2 · La figura que acumula exige un solo caso.** H1 tenía ocho hechos de ocho negocios distintos. Un saldo que sumara sus cajas habría sido falso.
+  - *Regla:* si la figura lleva un saldo, un mayor o un total que crece con cada respuesta, todos los ítems son del mismo caso, con saldo inicial. Un script comprueba que el saldo no da negativo en ningún orden (H1: 40.320 órdenes).
+- **D3 · Tras el error, la figura dice la verdad.** Si el error escribe la cifra donde la puso el estudiante, el saldo siguiente miente y el resto de la partida se juega sobre un dato falso.
+  - *Regla:* en un Hacer de un solo intento, la elección equivocada se marca («✗ No va aquí») y la cifra va a donde de verdad iba («Iba aquí»). La figura nunca guarda un estado falso.
+- **D4 · La meta solo se alcanza acertando.** En H8, siete de las nueve partidas mal llevadas daban el mismo saldo final del mayor: llegar a la meta no probaba nada.
+  - *Regla:* si la figura muestra una meta (un saldo conciliado, un total), un script recorre todas las combinaciones de decisiones y comprueba que solo la correcta llega. Si alguna equivocada llega, se cambian las cifras construidas.
+- **D5 · La forma no delata la respuesta.** Una tarjeta que traía la decisión del faltante solo en las rondas con faltante respondía la primera pregunta. Una bandeja o libreta que crece al recibir la cifra dice dónde iba.
+  - *Regla:* lo que el estudiante ve antes de decidir es igual en todos los casos. Las tarjetas llevan la misma estructura, y bandejas, libretas y secciones reservan el mismo alto. Es la regla PH8-2 llevada a la geometría.
+- **D6 · El contador y el pulso salen del mismo número.** Al responder, el contador decía «Hecho 2 de 8» y el pulso ya marcaba el tercero, porque cada uno calculaba por su lado.
+  - *Regla:* el contador y el indicador de progreso se derivan del mismo índice, que avanza al tocar «Siguiente», no al responder. Una prueba lo comprueba al llegar, al acertar y al fallar.
+- **D7 · Nada queda gris y muerto.** Al terminar de colocar, «Sube» y «Baja» seguían en pantalla sin hacer nada. En Aprender, «Seguir» avanzaba aunque la respuesta estuviera mal.
+  - *Regla:* un control que ya no hace nada desaparece. En una pantalla con reintento, después de un error no se avanza sin el acierto.
+- **D8 · El medidor cuenta lo que ve el estudiante, y se prueba roto.** La primera guardia contaba solo el párrafo y dejaba fuera la cabecera, la figura, los botones y el pie. La primera sonda medía la etapa de H5 con un asiento equivocado y daba PASA en el color.
+  - *Regla:* una sonda o guardia cuenta todo el texto visible de la pantalla y juega el asiento correcto, que saca de los mismos datos que se miden. Además trae un fixture con un caso roto por regla, que tiene que salir FALLA. Si no pudo medir, sale con código propio (2), nunca con PASA.
