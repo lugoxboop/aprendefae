@@ -158,6 +158,9 @@ export default function CasillasEnOrden({
   const resueltas = casillas.slice(0, n + (elegida ? 1 : 0));
   /* El visual propio se ve en el juego; en «Así se juega», solo si lo pide (`enDemo`: a6 muestra su regla). */
   const conVisual = config.visual && (!modoDemo || config.visual.enDemo);
+  /* Lote 6c (b5-t6-a6, casillas 1 a 3): las opciones son el visual (los cajones del eje), y la lista sale. */
+  const opcionesEnVisual = Boolean(conVisual && !modoDemo && config.visual.opciones?.(actual));
+  const eleccion = opcionesEnVisual ? { elegida, elegir: elegida ? null : responder } : null;
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
@@ -175,7 +178,7 @@ export default function CasillasEnOrden({
 
       {/* Con un visual propio (b5-t6-a6: los cajones del tiempo), el visual es el registro. */}
       {conVisual && (
-        <config.visual.Componente respondidas={resueltas.length} abierta={elegida ? null : n} reducido={reducido} modoDemo={modoDemo}
+        <config.visual.Componente respondidas={resueltas.length} abierta={elegida ? null : n} reducido={reducido} modoDemo={modoDemo} eleccion={eleccion}
           anuncio={elegida && !modoDemo ? config.visual.anuncio(n) : ""} />
       )}
       {/* Lote 6c (B1): el punto de partida, debajo de la figura. */}
@@ -205,7 +208,7 @@ export default function CasillasEnOrden({
         <Enunciado acento={acento}>{actual.enunciado}</Enunciado>
       </div>
       {/* En una columna (hoja de Mai): en fila de tres, a 320 quedan 61 px por opción y «$2.506.200» mide 83. */}
-      <Opciones columnas="minmax(0, 1fr)">
+      {!opcionesEnVisual && <Opciones columnas="minmax(0, 1fr)">
         {orden[n].map((op) => (
           <Opcion
             key={claveDe(op)}
@@ -217,7 +220,7 @@ export default function CasillasEnOrden({
             <span data-opcion={claveDe(op)}>{textoDe(op)}</span>
           </Opcion>
         ))}
-      </Opciones>
+      </Opciones>}
       </div>
       <Retro texto={retro} />
       {ejemplo?.resolucion && elegida && (
