@@ -147,21 +147,34 @@ const QUE_ES = {
   pie: "Basado en el libro, pp. 248 y 251",
 };
 
+/*
+ * `cual-le-toca` rehecha (t7-3-condicionado-cual-le-toca.md, de Near): el
+ * texto da solo las dos fechas del libro y el estudiante cuenta los días. La
+ * figura de antes de responder es la franja `PLAZOS_A3(false)` tal cual
+ * (auditoría de Mello, «Para Misa»: lleva la venta y lo que trae cada plazo,
+ * sin el pago); al acertar, la misma franja marca el pago del día 10 y queda
+ * como `PLAZOS_A3(true)`. La factura y los $4.488.750 se fueron a
+ * `sobre-que` (corrección obligatoria de Mello).
+ * Escalera: el 1.er error da la pista; desde el 2.º, la devolución propia de
+ * la opción tocada, que ya dice la respuesta y su porqué (`errorPropio`).
+ * El «¿Por qué?» plegado y la frase de las tarifas en el pie no cambian: el
+ * paquete no los toca.
+ */
 const CUAL_LE_TOCA = {
   id: "cual-le-toca",
-  pista: "Calcula los días que pasaron y compáralos con el plazo de cada condición, de la más corta en adelante.",
+  pista: "Mayo tiene 31 días. Calcula cuántos días van del 25 de mayo al 4 de junio y busca su plazo.",
   tipo: "eleccion",
-  /* Los renglones de la factura (del libro), y el texto después. */
-  figuras: [FACTURA],
-  tras: ["Con el IVA, Santa Martha debe $4.488.750. Paga el 4 de junio, diez días después de la venta."],
+  parrafos: ["San Calixto le factura a Santa Martha el 25 de mayo. Santa Martha paga el 4 de junio."],
+  figuras: [{ ...PLAZOS_A3(false), alAcertar: { pago: PLAZOS_A3(true).pago } }],
   pregunta: "¿Qué descuento condicionado le toca?",
   opciones: [
     { id: "quince", texto: "15 %", correcta: true },
-    { id: "cinco", texto: "5 %", devolucion: "Pagó a los diez días. Mira la condición de ese plazo." },
-    { id: "ninguno", texto: "Ninguno", devolucion: "Pagó a los diez días. Mira la condición de ese plazo." },
+    { id: "cinco", texto: "5 %", devolucion: "Del 25 de mayo al 4 de junio van diez días: seis de mayo y cuatro de junio. Con 15/10, le toca el 15 %." },
+    { id: "ninguno", texto: "Ninguno", devolucion: "Pagó en el plazo más corto: del 25 de mayo al 4 de junio van diez días. Con 15/10, le toca el 15 %." },
   ],
+  errorPropio: true,
   acierto: {
-    texto: "Así es: pagó a los diez días, así que le toca el 15 %.",
+    texto: "Así es: van diez días, seis de mayo y cuatro de junio. Con 15/10, le toca el 15 %.",
     porque: "Sobre $3.990.000, el IVA es de $638.400 y la retención, de $139.650. El asiento de la venta es como el del descuento comercial: Ingresos por ventas va por $3.990.000.",
     pie: "Basado en el libro, pp. 252-253",
   },
@@ -176,6 +189,13 @@ const SOBRE_QUE = {
   /* Pista de Mello (mello-pistas-distractores-v1.md): gana sobre la del recorte. */
   pista: "Piensa qué parte de lo que debe Santa Martha es de la mercancía y qué parte es de otra cosa.",
   tipo: "eleccion",
+  /*
+   * Corrección obligatoria de Mello (auditoria-mello-t7-3-cual-le-toca.md):
+   * la factura y lo que debe Santa Martha, antes de la pregunta, que es donde
+   * se usan. La frase lleva ahora la retención.
+   */
+  figuras: [FACTURA],
+  tras: ["Con el IVA y la retención, Santa Martha debe $4.488.750."],
   pregunta: "¿Sobre qué valor se calcula el 15 %?",
   opciones: [
     { id: "factura", texto: "$3.990.000", correcta: true },
