@@ -230,7 +230,7 @@ test("★★★ en pantalla: «Comprobar» con aria-disabled y su pista; un solo
     assert.equal(q("[data-panel]").dataset.caso, D.CONTRARIO);
     assert.equal(q("[data-titulo-panel]").textContent, "Revisa 1 casilla");
     assert.deepEqual([...document.querySelectorAll("[data-estado-casilla]")].map((x) => x.dataset.estadoCasilla), ["bien", "bien", "bien", "error"]);
-    assert.equal(q("[data-casilla='1:haber']").getAttribute("aria-label"), "San Miguel, Haber: elegiste Servicios recibidos por anticipado. Revisa. Va Ingresos por servicios.");
+    assert.equal(q("[data-casilla='1:haber']").getAttribute("aria-label"), "San Miguel, Haber: elegiste Servicios recibidos por anticipado. No va aquí. Iba aquí: Ingresos por servicios.");
     assert.equal(q("[data-casilla='1:haber']").getAttribute("aria-disabled"), "true");
     /* Un solo intento: tocar una casilla ya no abre la hoja. */
     await clic(q("[data-casilla='0:debe']"));
