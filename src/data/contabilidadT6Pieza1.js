@@ -32,13 +32,14 @@
  * Esta pieza llevaba una glosa PROVISIONAL de «nota débito» (b5-t6-glosa-
  * nota-debito) mientras el Tema 4 no la definiera. El Tema 4 · A4 de la
  * Célula D la define (NOTA_DEBITO en contabilidadT4A4.js, acuerdo C4 / A4-P),
- * así que la glosa propia se retira: la nota debajo del término 4 dice ahora,
- * letra por letra, la definición del Tema 4. Así el sitio tiene una sola
- * explicación del término.
+ * así que la glosa propia se retira: dice ahora, letra por letra, la
+ * definición del Tema 4. Así el sitio tiene una sola explicación del término.
+ * Desde B2 (un término por pantalla) ya no va como nota debajo de «Cuándo
+ * sube…»: es la definición del término 4, «Nota débito».
  *
  * La guardia (b5-t6-glosa-nota-debito.test.mjs) ya no espera a que otro tema
- * la defina: ahora se pone roja si la definición de otro tema y esta nota
- * dejan de decir lo mismo.
+ * la defina: ahora se pone roja si la definición de otro tema y esta dejan de
+ * decir lo mismo.
  */
 export const NOTA_DEBITO_T6 = {
   rotulo: "Nota",
@@ -56,7 +57,7 @@ export const NOTA_DEBITO_T6 = {
  */
 export const NOTA_CLIENTES = {
   rotulo: "Nota",
-  texto: "El libro también la llama cartera; es lo mismo. Aquí la cuenta se llama “Cuentas por cobrar – clientes”.",
+  texto: "El libro también la llama cartera. Aquí se llama “Cuentas por cobrar – clientes”.",
 };
 
 export const PIEZA_LO_QUE_LE_DEBEN = {
@@ -64,16 +65,22 @@ export const PIEZA_LO_QUE_LE_DEBEN = {
   numero: 1,
   titulo: "Lo que otros le deben a la empresa",
   objetivo: "Vas a ver qué cabe en las cuentas por cobrar y qué hace subir o bajar lo que los clientes le deben a la empresa.",
+  /*
+   * B2 · un término por pantalla (Futaba, 15-oct): seis pantallas. «Nota
+   * débito» pasa de nota debajo de «Cuándo sube…» a término propio, ANTES de
+   * él, con la definición del Tema 4 letra por letra (NOTA_DEBITO_T6). «Cuándo
+   * sube…» queda sin la nota debajo.
+   */
   nombres: [
     {
       termino: "Cuentas por cobrar",
-      definicion: "Ya viste la cuenta de los clientes. Las cuentas por cobrar son el grupo completo: ahí se anota lo que otras personas o empresas le deben a la empresa. Es un activo porque es un derecho: la empresa tiene derecho a cobrar esa deuda. Incluye las deudas comerciales y las no comerciales (las que vienen de la actividad del negocio y las que vienen de otros motivos).",
-      delLibro: "«En la cuenta cuentas por cobrar se contabilizan los valores que terceras personas le adeudan a la empresa.» (p. 195)",
+      definicion: "Es todo lo que otras personas o empresas le deben a la empresa. Se considera un activo, porque es un derecho de cobro. Incluye las deudas comerciales, que vienen del negocio, y las no comerciales.",
+      delLibro: "«…se contabilizan los valores que terceras personas le adeudan a la empresa.» (p. 195)",
     },
     {
       termino: "Clientes",
-      definicion: "Quizás es la parte más importante de las cuentas por cobrar: lo que deben los clientes por bienes y servicios que la empresa les vendió a crédito y que todavía no han pagado.",
-      delLibro: "«Los clientes son quizás el concepto más importante dentro de lo que se clasifica como cuentas por cobrar.» (p. 196)",
+      definicion: "Es lo que deben los clientes por bienes y servicios que la empresa les vendió a crédito y que todavía no han pagado.",
+      delLibro: "«…quizás el concepto más importante dentro de lo que se clasifica como cuentas por cobrar.» (p. 196)",
       notaDebajo: NOTA_CLIENTES,
     },
     {
@@ -81,19 +88,18 @@ export const PIEZA_LO_QUE_LE_DEBEN = {
       definicion: "No solo los clientes le deben a la empresa. También caben, entre otras, las deudas de socios y accionistas, las de trabajadores y los préstamos a particulares. Cualquier cosa que alguien le deba a la empresa va en las cuentas por cobrar, en la cuenta que mejor le corresponda.",
     },
     {
+      termino: "Nota débito",
+      /* La definición del Tema 4, letra por letra: la guardia b5-t6-glosa-nota-debito mira este término. */
+      definicion: NOTA_DEBITO_T6.texto,
+    },
+    {
       termino: "Cuándo sube lo que deben los clientes",
       definicion: "Cuentas por cobrar – clientes es una cuenta de activo: cuando lo que deben los clientes sube, se debita. Sube, entre otras causas, por una venta a crédito de bienes o servicios, o por una nota débito cuando el banco devuelve el cheque con el que un cliente había pagado.",
-      delLibro: NOTA_DEBITO_T6.texto,
-      rotuloDelLibro: NOTA_DEBITO_T6.rotulo,
     },
     {
       termino: "Cuándo baja lo que deben los clientes",
-      /*
-       * Auditoría integral (Shoko, 15-oct): texto de Futaba (p. 197 y pp. 199-200).
-       * Ya no habla del traslado a difícil cobro: queda como hueco marcado.
-       * CuatroCapas no pinta pies en la capa 1: el pie queda en los datos.
-       */
-      definicion: "Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. También baja cuando devuelve mercancía que había comprado a crédito y todavía no había pagado: es una devolución de ventas. Baja cuando la empresa le otorga un descuento sobre lo que todavía le debe. Y baja cuando la deuda se da por perdida, algo que se explica más adelante.",
+      /* Texto de Futaba (p. 197 y pp. 199-200). CuatroCapas no pinta pies en esta pieza: el pie queda en los datos. */
+      definicion: "Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. Baja cuando devuelve mercancía comprada a crédito que aún no pagaba: es una devolución de ventas. Baja con un descuento sobre lo que aún debe. Y baja cuando la deuda se da por perdida.",
       pie: "Basado en el libro, pp. 197 y 199-200",
     },
   ],

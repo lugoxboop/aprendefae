@@ -319,6 +319,18 @@ function Cuerpo({ p, acerto = false, enteros = false }) {
 
 /* ═══════════ ELECCIÓN ═══════════ */
 
+/*
+ * La escalera de ayuda (escaleraAyuda.js), con una variante de los recortes:
+ * si la pantalla trae `errorPropio` (T7-3 A3 · `cual-le-toca`, paquete de
+ * Near), desde el 2.º error se ve la devolución de la opción tocada, que ya
+ * dice la respuesta y su porqué, en lugar de «La respuesta es…» y el acierto.
+ * El 1.er error sigue dando la pista.
+ */
+export function textosDeErrorT73(pantalla, opcion, fallos) {
+  if (pantalla.errorPropio && pantalla.pista && fallos >= 2 && opcion.devolucion) return [opcion.devolucion];
+  return textosDelError(pantalla, opcion, fallos);
+}
+
 function Eleccion({ pantalla, onSeguir, enteros = false }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
@@ -349,7 +361,7 @@ function Eleccion({ pantalla, onSeguir, enteros = false }) {
       {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }} />}
       {estado === "error" && (
         <>
-          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} enteros={enteros} refFoco={ref} />
+          <Mensaje ok={false} textos={textosDeErrorT73(pantalla, opcion, fallos)} enteros={enteros} refFoco={ref} />
           <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((x) => barajarDistinto(pantalla.opciones, x, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
         </>
       )}

@@ -140,10 +140,21 @@ test("★★★ la definición del libro va debajo de la idea simple, nunca arri
       pieza: p, Capa2: vacia, Exploracion: vacia, Capa4: vacia,
     });
     try {
+      /*
+       * La capa 1 va paginada (un término por pantalla, CuatroCapas): se va al
+       * término con su punto, se abre «Más sobre este término», y se mira la
+       * carta que está a la vista.
+       */
       const capa1 = caja.querySelector('[data-capa="1"]');
-      const texto = capa1.textContent;
       for (const n of conCita) {
-        assert.ok(capa1.querySelector("[data-del-libro]"), `${p.id}: la cita no se pinta`);
+        tocar(capa1.querySelector(`[data-punto="${p.nombres.indexOf(n)}"]`));
+        const carta = capa1.querySelector("[data-termino][data-actual]");
+        assert.equal(carta.querySelector("[data-nombre-termino]").textContent, n.termino);
+        tocar(carta.querySelector("[data-mas]"));
+        const bloque = carta.querySelector("[data-del-libro]");
+        assert.ok(bloque, `${p.id}: la cita no se pinta`);
+        assert.equal(bloque.closest("[hidden]"), null, `${p.id}: la cita sigue plegada después de abrir «Más»`);
+        const texto = carta.textContent;
         assert.ok(texto.includes(n.delLibro), `${p.id}: la cita no sale en pantalla`);
         assert.ok(texto.indexOf(n.definicion) < texto.indexOf(n.delLibro),
           `${p.id}: la cita del libro se adelantó a la idea simple en «${n.termino}»`);

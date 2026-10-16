@@ -31,6 +31,8 @@ import ElInteresDelPeriodo from "./mecanicas/libros/t5/ElInteresDelPeriodo.jsx";
 import { N4 } from "../data/contabilidadT5_n4.js";
 import GanoOPerdio from "./mecanicas/libros/t5/GanoOPerdio.jsx";
 import { N5 } from "../data/contabilidadT5_n5.js";
+import LoQueElEjemploNoTrae from "./mecanicas/libros/t5/LoQueElEjemploNoTrae.jsx";
+import { PIEZA_LO_QUE_EL_EJEMPLO_NO_TRAE } from "../data/contabilidadT5_n6.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -58,6 +60,7 @@ export const TEMA = "activos-financieros";
 export const PIEZAS = [
   { numero: 1, pieza: PIEZA_DEL_EFECTIVO },
   { numero: 2, pieza: PIEZA_TRES_MOMENTOS },
+  { numero: 3, pieza: PIEZA_LO_QUE_EL_EJEMPLO_NO_TRAE, Pieza: LoQueElEjemploNoTrae },
 ];
 const PUBLICADAS = PIEZAS.length;
 
