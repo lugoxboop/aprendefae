@@ -10,13 +10,14 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * Vigila LO QUE SE VE, no solo lo que se calcula:
  *   · lote 6a (hoja de fusiones de Mai): los tres cajones son las opciones, con
  *     las marcas de E4; la tanda reparte entre 2 y 4 por cajón (R10)
- *   · las 14 fichas, sus devoluciones de acierto, las tres de error y las
- *     TRES columnas de las fichas de nombre, literales de la guía guardada
- *     (orquestador/conocimiento/paquetes/b5-t5-act1.md), ficha por ficha
- *   · el segundo fallo de una ficha de nombre de renta fija: la lista del libro
- *   · las correcciones de Shoko: en el reintento, la devolución del error de
- *     ESE intento; tras acertar el reintento, solo el ✅; el aviso, solo
- *     mientras se espera el reintento; la devolución por Retro (role=status)
+ *   · las 14 fichas y sus devoluciones de acierto, literales de la guía
+ *     guardada (orquestador/conocimiento/paquetes/b5-t5-act1.md), ficha por ficha
+ *   · E5 (Futaba, fila 11 de Shoko): al primer fallo, con cualquier cajón, la
+ *     PISTA de la ficha, literal de la guía (§12.1); al segundo, la respuesta;
+ *     acertada al primer intento, la pista no se ve nunca
+ *   · las correcciones de Shoko: tras acertar el reintento, solo el ✅; el
+ *     aviso, solo mientras se espera el reintento; la devolución por Retro
+ *     (role=status)
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -94,12 +95,13 @@ const filas = (texto) => {
 };
 const GUIA_FICHAS = filas(seccion("### 3.6", "Devoluciones de acierto"));
 const GUIA_ACIERTOS = filas(seccion("Devoluciones de acierto", "### 3.7"));
-const GUIA_ERRORES = filas(seccion("### 3.7", "### 3.8"));
-const GUIA_NOMBRES = filas(seccion("### 3.8", "### 3.9"));
-const sinEmoji = (t) => t.replace(/^(✅|❌) /, "");
+/* E5: la pista del primer fallo de cada ficha (§12.1). Las devoluciones de error de 3.7 y 3.8 quedan como registro. */
+const GUIA_PISTAS = filas(seccion("### 12.1", null));
 
 const IDS = ["acciones", "def-emisora", "def-dividendos", "caso-resultados", "cdt", "bonos", "cedulas", "def-interes", "caso-pactado", "participacion", "cert", "canjeables", "def-descuento", "caso-redencion"];
-const NOMBRES_FIJA = ["cdt", "bonos", "cedulas", "participacion", "cert", "canjeables"];
+/* Los dos cajones que no son el de la ficha, en el orden del estante. */
+const OPCIONES = [["variable", null], ["fija", "interes"], ["fija", "descuento"]];
+const malos = (f) => OPCIONES.filter(([rr, tt]) => !(rr === f.renta && tt === f.tipo));
 
 /* ═══════════ LO QUE SE VE: LAS 14 FICHAS Y SUS DEVOLUCIONES ═══════════ */
 
@@ -126,72 +128,74 @@ test("★★★ las 14 devoluciones de acierto se ven literales tras ✅, ficha 
   }
 });
 
-test("★★★ las tres devoluciones de error (A, B, C) se ven literales en las fichas de definición y caso", async () => {
-  /* A: renta fija puesta en variable. */
-  let m = await montar(["def-interes"]);
-  await marcar(m.caja, "variable");
-  assert.equal(devolucion(m.caja), `❌${GUIA_ERRORES.A[1]}`);
-  m.desmontar();
-  /* B: renta variable puesta en fija. */
-  m = await montar(["def-emisora"]);
-  await marcar(m.caja, "fija", "interes");
-  assert.equal(devolucion(m.caja), `❌${GUIA_ERRORES.B[1]}`);
-  m.desmontar();
-  /* C: renta fija bien, tipo mal. */
-  m = await montar(["caso-redencion"]);
-  await marcar(m.caja, "fija", "interes");
-  assert.equal(devolucion(m.caja), `❌${GUIA_ERRORES.C[1]}`);
-  m.desmontar();
+test("guarda: la guía trae una pista por ficha, y una fila inventada no aparece", () => {
+  assert.deepEqual(Object.keys(GUIA_PISTAS).filter((k) => k !== "Id" && !k.startsWith("|---")), IDS);
+  assert.equal(GUIA_PISTAS["no-existe"], undefined);
+});
+
+test("★★★ E5: al primer fallo, con CADA cajón equivocado, se ve la pista de la ficha, literal de la guía (§12.1), por Retro", async () => {
+  for (const id of IDS) {
+    const f = ficha(id);
+    assert.equal(f.pista, GUIA_PISTAS[id][0], `${id}: la pista de los datos no es la de la guía`);
+    for (const malo of malos(f)) {
+      const m = await montar([id]);
+      await marcar(m.caja, ...malo);
+      assert.equal(devolucion(m.caja), GUIA_PISTAS[id][0], `${id} en ${malo.join("/")}`);
+      const p = m.caja.querySelector('[role="status"]');
+      assert.equal(m.caja.querySelectorAll('[role="status"]').length, 1, `${id}: una sola devolución`);
+      assert.equal(p.dataset.retro, "neutro", `${id}: la pista va sin veredicto, como en la escalera de ayuda`);
+      assert.ok(parseFloat(p.style.fontSize) >= 12, `${id}: la pista, a 12 px como mínimo`);
+      assert.equal(m.caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
+      assert.equal(botonAvanzar(m.caja), null, `${id}: con la pista se espera el reintento`);
+      m.desmontar();
+    }
+  }
 });
 
 /* La regla única del segundo fallo, calculada a mano desde la guía: «No es esa.» + el acierto sin «Sí.». */
 const segundoDeGuia = (id) => `❌No es esa. ${GUIA_ACIERTOS[id][0].replace(/^Sí\. /, "")}`;
 
-test("★★★ fichas de nombre: nivel 1 y nivel 2 se ven literales, y el segundo fallo es su acierto con «No es esa.» delante", async () => {
-  for (const id of NOMBRES_FIJA) {
-    const [nivel1, nivel2] = GUIA_NOMBRES[id];
-    const f = ficha(id);
-    const otro = f.tipo === "interes" ? "descuento" : "interes";
-    let m = await montar([id]);
-    await marcar(m.caja, "variable");
-    assert.equal(devolucion(m.caja), `❌${nivel1}`, `${id}: nivel 1`);
-    await marcar(m.caja, "fija", otro);
-    assert.equal(devolucion(m.caja), segundoDeGuia(id), `${id}: segundo fallo`);
-    m.desmontar();
-    m = await montar([id]);
-    await marcar(m.caja, "fija", otro);
-    assert.equal(devolucion(m.caja), `❌${nivel2}`, `${id}: nivel 2`);
-    await marcar(m.caja, "variable");
-    assert.equal(devolucion(m.caja), segundoDeGuia(id), `${id}: segundo fallo tras nivel 2`);
-    m.desmontar();
-  }
-});
-
 test("★★★ regla única: tras el segundo fallo, TODA ficha muestra su acierto con «No es esa.», y ese texto dice la respuesta", async () => {
   for (const id of IDS) {
     const f = ficha(id);
-    /* Dos fallos seguidos, en los dos cajones que no son el suyo (el tocado queda ✕ y no se puede volver a tocar). */
-    const otros = [["variable", null], ["fija", "interes"], ["fija", "descuento"]].filter(([rr, tt]) => !(rr === f.renta && tt === f.tipo));
-    const m = await montar([id]);
-    await marcar(m.caja, ...otros[0]);
-    await marcar(m.caja, ...otros[1]);
-    assert.equal(devolucion(m.caja), segundoDeGuia(id), id);
-    /* La respuesta está en el texto: el tipo de renta o la lista del libro. */
-    const t = devolucion(m.caja).toLowerCase();
-    const dice = f.renta === "variable" ? t.includes("renta variable") : (t.includes("interés") || t.includes("descuento"));
-    assert.ok(dice, `${id}: el segundo fallo no dice la respuesta: «${devolucion(m.caja)}»`);
-    m.desmontar();
+    /* Dos fallos seguidos, en los dos cajones que no son el suyo, en los dos órdenes (el tocado queda ✕ y no se puede volver a tocar). */
+    for (const [a, b] of [malos(f), [...malos(f)].reverse()]) {
+      const m = await montar([id]);
+      await marcar(m.caja, ...a);
+      assert.equal(devolucion(m.caja), GUIA_PISTAS[id][0], `${id}: primero, la pista`);
+      await marcar(m.caja, ...b);
+      assert.equal(devolucion(m.caja), segundoDeGuia(id), id);
+      assert.ok(!m.caja.textContent.includes(f.pista), `${id}: tras el segundo fallo, la pista ya no se ve`);
+      /* La respuesta está en el texto: el tipo de renta o la lista del libro. */
+      const t = devolucion(m.caja).toLowerCase();
+      const dice = f.renta === "variable" ? t.includes("renta variable") : (t.includes("interés") || t.includes("descuento"));
+      assert.ok(dice, `${id}: el segundo fallo no dice la respuesta: «${devolucion(m.caja)}»`);
+      assert.ok(botonAvanzar(m.caja), `${id}: tras el segundo fallo se avanza`);
+      m.desmontar();
+    }
   }
+});
+
+test("★★★ E5: una ficha acertada al primer intento nunca muestra su pista", async () => {
+  const { caja, desmontar } = await montar(IDS);
+  for (const id of IDS) {
+    const f = ficha(id);
+    await marcar(caja, f.renta, f.tipo);
+    assert.equal(devolucion(caja), `✅${GUIA_ACIERTOS[id][0]}`, id);
+    assert.ok(!caja.textContent.includes(f.pista), `${id}: la pista se ve tras acertar`);
+    await tocar(botonAvanzar(caja));
+  }
+  desmontar();
 });
 
 /* ═══════════ LAS CORRECCIONES DE SHOKO ═══════════ */
 
-test("★★★ el primer fallo da el error de ESE intento (A); el segundo, la regla única (no C)", async () => {
+test("★★★ el primer fallo da la pista; el segundo, la regla única (no la pista otra vez)", async () => {
   const { caja, desmontar } = await montar(["def-interes"]);
   await marcar(caja, "variable");
-  assert.equal(devolucion(caja), `❌${GUIA_ERRORES.A[1]}`);
+  assert.equal(devolucion(caja), GUIA_PISTAS["def-interes"][0]);
   await marcar(caja, "fija", "descuento");
-  assert.equal(devolucion(caja), segundoDeGuia("def-interes"), "el segundo fallo ya no da C: da la respuesta");
+  assert.equal(devolucion(caja), segundoDeGuia("def-interes"), "el segundo fallo ya no da la pista: da la respuesta");
   desmontar();
 });
 
@@ -200,21 +204,24 @@ test("★★★ corrección 2: tras un reintento acertado queda solo el ✅; el 
   assert.equal(Boolean(caja.querySelector("[data-fallo]")), false);
   await marcar(caja, "fija", "descuento");
   assert.equal(caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
-  assert.ok(devolucion(caja).startsWith("❌"));
+  assert.equal(devolucion(caja), GUIA_PISTAS["caso-pactado"][0]);
   await marcar(caja, "fija", "interes");
   assert.equal(Boolean(caja.querySelector("[data-fallo]")), false, "el aviso desaparece tras el reintento");
   assert.equal(caja.querySelectorAll('[role="status"]').length, 1);
   assert.equal(devolucion(caja), `✅${GUIA_ACIERTOS["caso-pactado"][0]}`);
-  assert.ok(!caja.textContent.includes(sinEmoji(D.ERROR_T5_ACT1.C)), "la devolución del primer fallo ya no se ve");
+  assert.ok(!caja.textContent.includes(ficha("caso-pactado").pista), "la pista del primer fallo ya no se ve");
   desmontar();
 });
 
-test("★★ correcciones 3 y 4: el emoji va al inicio en los datos y la devolución sale por Retro (role=status)", async () => {
+test("★★ correcciones 3 y 4: el emoji va al inicio en los datos y la devolución sale por Retro (role=status); la pista, sin emoji y de 20 palabras como mucho", async () => {
   for (const f of D.FICHAS_T5_ACT1) {
     assert.ok(f.acierto.startsWith("✅ "), f.id);
-    for (const k of ["falloNivel1", "falloNivel2", "segundoFallo"]) if (f[k]) assert.ok(f[k].startsWith("❌ "), `${f.id}.${k}`);
+    assert.ok(!/^(✅|❌)/.test(f.pista), `${f.id}: la pista no lleva veredicto`);
+    assert.ok(f.pista.split(/\s+/).length <= 20, `${f.id}: la pista pasa de 20 palabras`);
+    /* Lo retirado con E5 no vuelve. */
+    for (const k of ["falloNivel1", "falloNivel2", "segundoFallo"]) assert.equal(f[k], undefined, `${f.id}.${k}`);
   }
-  for (const t of Object.values(D.ERROR_T5_ACT1)) assert.ok(t.startsWith("❌ "));
+  assert.equal(D.ERROR_T5_ACT1, undefined, "las devoluciones de error A, B y C salieron de los datos");
   const { caja, desmontar } = await montar(["bonos"]);
   await marcar(caja, "fija", "interes");
   const p = caja.querySelector('[role="status"]');

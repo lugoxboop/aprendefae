@@ -211,3 +211,44 @@ Nueve fichas, antes las diez del banco. Entre 2 y 4 por cajón. El banco da 4 ·
 ## 8 · Lote 6b: sale la ficha del cheque devuelto (C4)
 
 Orden de Sakuta: el cheque devuelto se practica cinco veces en B; la ficha «cheque» sale de b5-t6-a1 y se queda donde enseña algo nuevo. Su enunciado y su acierto quedan arriba como registro, sin uso. El banco queda en 4 · 2 · 3 (nueve fichas). Decisión de KAEDE: la tanda pasa de 9 a 8 fichas (porPartida 8), porque con nueve sería siempre el banco entero con el mismo reparto y el estante delataría la última (R10). Los repartos posibles son 4 · 2 · 2 y 3 · 2 · 3. El contador queda «Ficha N de 8».
+
+
+## 9 · E5: el primer fallo propio de cada ficha (Futaba, fila 11 de Shoko)
+
+Manda sobre 3.3, 7.1 y lo anterior en el primer fallo. Al primer fallo, con cualquier cajón, se lee la PISTA de la ficha: 20 palabras como mucho, no nombra el cajón y va sin emoji, por Retro (role=status), como la escalera de ayuda de la célula (`tema6/escaleraB5.js`). Al segundo fallo, la respuesta, como antes (la regla única). Las devoluciones A, B, C y C5 (§3.3) dejan de usarse y salen de los datos; quedan arriba como registro. Las fichas se emparejaron por su texto en main.
+
+### 9.1 Pistas
+
+| Id | Pista del primer fallo |
+|---|---|
+| socio | «¿El socio compró algo a crédito, o recibió plata prestada? Piensa qué deudas recoge la cuenta de clientes.» |
+| trabajador | «¿Aquí hubo una venta a crédito? Piensa qué deudas recoge Cuentas por cobrar – clientes.» |
+| particular | «Fíjate por qué esta persona le debe a la empresa. ¿La deuda vino de una venta a crédito?» |
+| prestamo-cliente | «Que sea cliente no decide la cuenta. Mira por qué le debe: ¿compró a crédito o le prestaron?» |
+| venta-mercancia | «Después de esto, ¿lo que debe el cliente sube o baja? No te guíes por la palabra “crédito”.» |
+| venta-servicio | «Un servicio vendido sin cobrarlo también deja una deuda. ¿Esa deuda sube o baja?» |
+| pago | «Después de pagar esa parte, ¿el cliente debe más o menos que antes?» |
+| devolucion | «Lo que el cliente regresa, ¿lo sigue teniendo que pagar? Piensa si su deuda sube o baja.» |
+| descuento | «Con la rebaja, ¿el cliente debe más o menos que antes?» |
+
+### 9.2 Ficha
+
+Cambio extra: Shoko marcó que «abono» no se enseña hasta T6 A4, y b5-t6-a1 va antes. Antes decía «Un cliente abona una parte de lo que debe.» (§6.1).
+
+| Id | Ficha |
+|---|---|
+| pago | «Un cliente paga una parte de lo que debe.» |
+
+### 9.3 Acierto
+
+Norma de diseño nueva (sin emojis como íconos): este acierto va SIN el ✅ delante, tal como está en la tabla. Los aciertos de las demás fichas conservan el ✅ hasta el lote de corrección que viene después.
+
+| Id | ✅ Acierto |
+|---|---|
+| pago | «Sí. Baja: se acredita. Lo que pagó ya no lo debe.» |
+
+### 9.4 Tras el segundo fallo
+
+| Id | Texto |
+|---|---|
+| pago | «No es esa. Baja: se acredita. Lo que pagó ya no lo debe.» |

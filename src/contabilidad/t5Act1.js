@@ -1,7 +1,7 @@
 import { segundoFalloDe } from "./b5SegundoFallo.js";
 import { repartirTanda } from "./b5Reparto.js";
 import {
-  T5_ACT1, FICHAS_T5_ACT1, ERROR_T5_ACT1, FIJA, NOMBRE, CAJONES_T5_ACT1,
+  T5_ACT1, FICHAS_T5_ACT1, FIJA, NOMBRE, CAJONES_T5_ACT1,
 } from "../data/contabilidadT5Act1.js";
 
 /*
@@ -34,8 +34,10 @@ export function sortearT5Act1(barajar, total = T5_ACT1.porPartida) {
 
 /**
  * `marcado` es { renta, tipo }. El tipo va a null con «Renta variable».
- * `intento` es 1 o 2. En el segundo fallo manda la regla única de la célula:
- * el acierto de la ficha, con «No es esa.» delante, en TODAS las fichas.
+ * `intento` es 1 o 2. Al primer fallo, la PISTA de la ficha (la escalera de
+ * ayuda de la célula, tema6/escaleraB5.js): la misma con cualquier cajón, sin
+ * emoji. En el segundo fallo manda la regla única de la célula: el acierto de
+ * la ficha, con «No es esa.» delante, en TODAS las fichas.
  */
 export function evaluarT5Act1(ficha, marcado, intento = 1) {
   const rentaOk = marcado.renta === ficha.renta;
@@ -48,17 +50,7 @@ export function evaluarT5Act1(ficha, marcado, intento = 1) {
   /* Regla única del segundo fallo (b5SegundoFallo.js): el acierto, con «No es esa.» delante. */
   if (intento === 2) return { ok, texto: segundoFalloDe(ficha.acierto), patron: "segundo", rentaOk, tipoOk };
 
-  if (ficha.clase === NOMBRE) {
-    if (!rentaOk) return { ok, texto: ficha.falloNivel1, patron: "nivel1", rentaOk, tipoOk: false };
-    return { ok, texto: ficha.falloNivel2, patron: "nivel2", rentaOk, tipoOk: false };
-  }
-
-  if (!rentaOk) {
-    /* A: era de renta fija y la puso en variable. B: al revés. */
-    const patron = ficha.renta === FIJA ? "A" : "B";
-    return { ok, texto: ERROR_T5_ACT1[patron], patron, rentaOk, tipoOk: false };
-  }
-  return { ok, texto: ERROR_T5_ACT1.C, patron: "C", rentaOk, tipoOk: false };
+  return { ok, texto: ficha.pista, patron: "pista", rentaOk, tipoOk };
 }
 
 /* Cada ficha vale entera al acertar (lote 6a: ya no hay dos niveles que pesar). En el segundo intento, la mitad (el componente). */
