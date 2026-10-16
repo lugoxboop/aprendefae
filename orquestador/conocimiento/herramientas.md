@@ -170,6 +170,72 @@ de cada despliegue** con la consulta de arriba.
 **La regla que queda:** una prueba verde sobre archivos no dice nada del estado
 de producción. Lo que no se le pregunta a la base, no se sabe.
 
+## Un repertorio a medias se lee como verde: espera la línea `# fail`
+
+Hermano de los dos de abajo, y me pasó **dos veces el mismo día**.
+
+Lancé `npm test` en segundo plano y fui leyendo el archivo de salida mientras
+corría. Lo que vi:
+
+```
+ok: 735    not ok: 0        → «verde»
+ok: 1527   not ok: 3        → «solo los TODO conocidos»
+ok: 2032   not ok: 4
+# tests 2670 · # pass 2664 · # fail 0 · # todo 4   ← lo único que valía
+```
+
+Las tres primeras lecturas estaban hechas **a mitad de la corrida**, y las tres
+se leían como un resultado. La primera habría dado por buena una rama con 1.935
+pruebas sin ejecutar. Lo peor: `grep -c "not ok"` da 0 cuando todavía no ha
+llegado al archivo que falla, y 0 rojos parece la mejor noticia posible.
+
+**La regla: el repertorio no ha terminado hasta que imprime `# fail`.** Hasta
+esa línea no hay resultado, hay un archivo creciendo. Contar `ok` no sirve
+—2.670 no se sabe de antemano—, y «el proceso ya no está» tampoco: con dos
+corridas a la vez es fácil vigilar el pid de la otra.
+
+Esperar bien, y de paso no inventarse el total:
+
+```bash
+F=salida.txt
+for i in $(seq 1 30); do grep -qE "^# fail" $F && break; read -t 20 _ < /dev/zero; done
+grep -E "^# (tests|pass|fail|todo)" $F || echo "(aún sin resumen: NO es verde)"
+```
+
+El `|| echo` no es adorno: sin él, un `grep` que no encuentra nada imprime nada,
+y «nada» se lee como «sin fallos». Es el falso verde de abajo otra vez, con otro
+disfraz.
+
+## Una prueba que lee un archivo como texto no lo compila
+
+El 15 de octubre añadí un comentario dentro de la plantilla de CSS de
+`AccountControl.jsx` y usé comillas invertidas para citar una propiedad. Una
+comilla invertida **cierra la plantilla**: el archivo quedó roto. Corrí la
+prueba que vigila justo esa regla y salió **verde, 8 de 8**.
+
+Verde porque esa prueba hace `leer("src/components/auth/AccountControl.jsx")` y
+busca con una expresión regular. Para ella el archivo es texto, y un texto roto
+es un texto. Nadie lo importó, así que nadie lo compiló. Lo cazó `npm run build`
+diez minutos después:
+
+```
+ERROR: Expected ";" but found "overflow"
+```
+
+Dos reglas de aquí:
+
+- **Comprobar un archivo por su texto no dice que el archivo sea válido.** Tres
+  pruebas de tres células vigilan esa hoja compartida leyéndola como texto, y
+  ninguna la compila. Lo que valida la sintaxis es la compilación.
+- **Antes de empujar un cambio en una plantilla de CSS, compila.** El repertorio
+  en verde no basta, y es exactamente el caso en que menos lo parece: la prueba
+  del archivo que rompiste es la que te dice que está bien.
+
+Y la trampa de fondo, que ya estaba escrita en este canon dos horas antes de que
+yo volviera a caer: **nada de comillas invertidas dentro de una plantilla de
+CSS**, ni en el código ni en los comentarios. Escribir la regla no inmuniza
+contra ella; compilar, sí.
+
 ## El falso verde: un extractor que no extrae nada dice que todo está bien
 
 Hermano del resultado vacío, y más peligroso, porque sale **en verde**.
