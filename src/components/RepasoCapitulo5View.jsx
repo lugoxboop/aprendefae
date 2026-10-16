@@ -13,7 +13,7 @@ import { useAuth } from "../auth/AuthProvider.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
 import { CSS_JUEGO, Cierre } from "./mecanicas/corazon/juego.jsx";
-import { C, INTER, SORA, MARCA, CEJILLA, HUNDIDO, Devolucion, BotonSiguiente, Punto } from "./repasoCap5/comun.jsx";
+import { C, INTER, SORA, MARCA, CEJILLA, HUNDIDO, Devolucion, BotonSiguiente, Punto, Cita } from "./repasoCap5/comun.jsx";
 import { ToroNegro } from "./repasoCap5/ToroNegro.jsx";
 import { OpcionesTitulo } from "./repasoCap5/OpcionesTitulo.jsx";
 import { Flujos } from "./repasoCap5/Flujos.jsx";
@@ -254,6 +254,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
       {!r && <Pista key={pantalla.id} texto={pantalla.pista} abierta={pistaAbierta} onAbrir={() => setPistaAbierta(true)} />}
       <Devolucion r={r} lector={LECTOR_R5_1} />
       {r && <BotonSiguiente onClick={siguiente} botonRef={boton} sustantivo={INTERFAZ_R5_1.sustantivo} ultimo={i + 1 === total} />}
+      <Cita texto={pantalla.cita} />
     </div>
   );
 }

@@ -51,6 +51,7 @@ const { FEEDBACK, VEREDICTO } = await import("../../data/repasoCap5Comun.js");
 const D1 = await import("../../data/repasoCap5Cruzado.js");
 const T2 = await import("../../data/repasoCap5ToroNegroTextos.js");
 const T3 = await import("../../data/repasoCap5MateTextos.js");
+const T4 = await import("../../data/repasoCap5BarranquillaTextos.js");
 const T5 = await import("../../data/repasoCap5PermanenteTextos.js");
 const { RepasoCruzado } = await import("../../components/RepasoCapitulo5View.jsx");
 const { ToroNegro } = await import("../../components/repasoCap5/ToroNegro.jsx");
@@ -165,7 +166,7 @@ async function recorrer(mirar) {
 
   /* r5-3: cada asiento al abrir; el primero y el último con un error. */
   for (let k = 0; k < T3.ASIENTOS_MATE.length; k++) await ver(`r5-3 asiento ${k + 1}`, "r5-3", h(Mate, { pasoInicial: k }));
-  await ver("r5-3 entrada", "r5-3", h(Mate, {}));
+  await ver("r5-3 al abrir (sin entrada: el asiento 1)", "r5-3", h(Mate, {}));
   for (const k of [0, T3.ASIENTOS_MATE.length - 1]) {
     await ver(`r5-3 asiento ${k + 1} mal`, "r5-3", h(Mate, { pasoInicial: k }), async (c) => {
       await anadir(c, "debe", T3.HOJA_MATE[0], 1);
@@ -243,7 +244,7 @@ test("★★★ 1 · ningún #1D3557 como fondo en repasoCap5/: ni en la fuente 
 
 const AMBAR = /E9C46A|233,\s*196,\s*106/i;
 
-test("★★★ 2 · ningún ámbar en un botón ni en :focus; el foco es el anillo de 2 px #F8F9FA separado 2 px (guarda: 45 estados, 213 botones)", async () => {
+test("★★★ 2 · ningún ámbar en un botón ni en :focus; el foco es el anillo de 2 px #F8F9FA separado 2 px (guarda: 45 estados, 216 botones)", async () => {
   /* Las reglas de foco de la fuente, una por una. */
   const reglas = [];
   for (const f of COMPONENTES) {
@@ -268,7 +269,7 @@ test("★★★ 2 · ningún ámbar en un botón ni en :focus; el foco es el ani
     }
   });
   assert.equal(n, ESTADOS_DEL_RECORRIDO);
-  assert.equal(botones, 213, "no revisó los botones que dice revisar");
+  assert.equal(botones, 216, "no revisó los botones que dice revisar");
   assert.deepEqual([...new Set(malos)], []);
 });
 
@@ -291,6 +292,15 @@ test("★★★ 3 · los literales de feedback son exactamente los tres de §4.2
   assert.deepEqual([I.correcta, I.incorrecta, I.eraEsta], [acierto, error, revelada]);
   assert.deepEqual([T2.ROTULOS_R5_2.eraEste, T2.ROTULOS_A0.correcta, T2.ROTULOS_A0.era("2.283.400")], [revelada, acierto, `${revelada}: 2.283.400`]);
   assert.equal(T3.ROTULOS_MATE.eraEste, revelada);
+  /* Lote de textos (Miyata): los aciertos de r5-2 a r5-5 no abren con «Bien.», «Correcto.» ni «Exacto.»; la pastilla ya lo dice. */
+  const aciertos = [
+    ...T2.PREGUNTAS_R5_2.map((p) => p.acierto),
+    ...T3.ASIENTOS_MATE.flatMap((a) => a.acierto),
+    ...T4.ASIENTOS_BARRANQUILLA.flatMap((a) => [].concat(a.acierto)),
+    ...T5.PANTALLAS.flatMap((p) => [].concat(p.acierto)),
+  ];
+  assert.equal(aciertos.length, 32, "no miró los aciertos que dice mirar");
+  assert.deepEqual(aciertos.filter((t) => /^(Bien|Correcto|Exacto)\./.test(t)), []);
   /* Ninguna palabra muerta en la fuente ni en los datos (las cadenas, sin comentarios). */
   for (const f of [...COMPONENTES, ...DATOS]) {
     const cadenas = [...sinComentarios(leer(f)).matchAll(/"([^"\n]*)"|`([^`]*)`/g)].map((m) => m[1] ?? m[2]);
@@ -380,7 +390,7 @@ const CIFRA = /^[−+-]?\s?\$?\s?\d{1,3}(\.\d{3})+(,\d{1,2})?( u)?$|^[−+-]?\s?
 /* Sora solo para la cifra de resultado (§5.3): el contador en vivo de C.8, «n de m» y el % del cierre. */
 const RESULTADO = "[data-valor-contador], [data-n-de-m], [data-cierre] [data-pct], [data-resultado-cifra]";
 
-test("★★★ 5 · las cifras van en ui-monospace, SFMono-Regular, Menlo, Consolas con tabular-nums (guarda: 45 estados, 192 cifras)", async () => {
+test("★★★ 5 · las cifras van en ui-monospace, SFMono-Regular, Menlo, Consolas con tabular-nums (guarda: 45 estados, 191 cifras)", async () => {
   assert.equal(K.MONO, "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace");
   assert.deepEqual(K.CIFRA, { fontFamily: K.MONO, fontVariantNumeric: "tabular-nums" });
   const malas = [];
@@ -397,7 +407,7 @@ test("★★★ 5 · las cifras van en ui-monospace, SFMono-Regular, Menlo, Cons
     }
   });
   assert.equal(n, ESTADOS_DEL_RECORRIDO);
-  assert.equal(cifras, 192, "no miró las cifras que dice mirar");
+  assert.equal(cifras, 191, "no miró las cifras que dice mirar");
   assert.deepEqual([...new Set(malas)], []);
 });
 

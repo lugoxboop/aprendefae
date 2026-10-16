@@ -8,7 +8,7 @@
  * scripts/e5/harness-r5). Juega la partida entera: los ocho asientos bien,
  * salvo el 6 (el peor caso del paquete: cuatro renglones, dos de dos
  * líneas), que se arma con un valor equivocado para ver su ERA ESTE. Mide
- * la entrada, cada asiento lleno y revisado, la hoja de cuentas con la marca
+ * cada asiento (sin entrada desde el lote de textos) lleno y revisado, la hoja de cuentas con la marca
  * «EN EL HABER», la hoja «Datos de marzo» y el final. En cada estado:
  *
  *   · sin barra horizontal y sin textos que se salgan de su caja
@@ -143,8 +143,7 @@ for (const ancho of ANCHOS) {
     if (fase !== "final") fallos.push(`${ancho} px · ${id} · el panel del mes no terminó (fase ${fase})`);
     if (CAPTURAS) await pg.screenshot({ path: resolve(CAPTURAS, `r5-3-${ancho}-${String(++n).padStart(2, "0")}-${id}-mes.png`) });
   };
-  await estado("entrada");
-  await pg.click("[data-empezar]");
+  /* Lote de textos (Miyata): r5-3 no tiene entrada; abre en el asiento 1. */
   for (const [k, a] of ASIENTOS_MATE.entries()) {
     await estado(`${a.id}-vacio`);
     if (k === 0) {
@@ -180,7 +179,7 @@ console.log("ancho | estado | contenido | alto | nota");
 for (const f of filas) console.log(`${f.ancho} | ${f.estado} | ${f.actividad ?? "—"} | ${f.alto} | ${f.nota ?? "—"}`);
 const estados = filas.filter((f) => !f.estado.startsWith("hoja") && !f.estado.endsWith("-mes")).length / ANCHOS.length;
 console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos, más las hojas).`);
-if (estados !== 26) fallos.push(`se recorrieron ${estados} estados y son 26`);
+if (estados !== 25) fallos.push(`se recorrieron ${estados} estados y son 25`); // sin entrada (lote de textos)
 if (fallos.length) {
   console.log(`\nFALLA: ${fallos.length} problema(s)`);
   for (const f of fallos) console.log(`  · ${f}`);

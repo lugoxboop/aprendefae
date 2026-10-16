@@ -51,13 +51,15 @@ export const R5_2 = {
   modalidad: "evaluativa",
   /* Delta a0: el objetivo cambia. */
   objetivo: "Calcula una provisión, arma sus asientos y sigue qué le pasa en tres momentos del año.",
+  /* Lote de textos (Miyata): la cita del libro, al pie de cada pregunta. */
+  cita: "Basado en el libro: el 3 del bloque D, pp. 268-269.",
   entrada: "El Toro Negro vende a crédito. A 31 de diciembre, sus clientes le deben $38.230.000. No todo se podrá cobrar. Sigue su cartera de diciembre a mayo.",
 };
 
 /* ═══════════ LA HOJA DE CUENTAS (igual en las cinco pantallas de asiento) ═══════════ */
 
 export const GASTO = "Gasto provisiones – cuentas incobrables";
-export const PROVISION = "Provisión para deudas incobrables";
+export const PROVISION = "Provisión para cuentas incobrables";
 export const CLIENTES = "Cuentas por cobrar – clientes";
 export const CAJA = "Caja";
 export const INGRESOS = "Ingresos por ventas";
@@ -95,8 +97,10 @@ export const ROTULOS_R5_2 = {
   veredicto: VEREDICTO,
   debito: "DÉBITO",
   credito: "CRÉDITO",
+  /* Lote de textos (Miyata): los botones del lado en P4, «Debe · Haber». */
+  botonLado: { debito: "Debe", credito: "Haber" },
   eraEste: "Iba aquí",
-  tituloLibro: "Provisión para deudas incobrables",
+  tituloLibro: "Provisión para cuentas incobrables",
   sinMovimientos: "Sin movimientos",
   saldoDebito: "SALDO DÉBITO",
   saldoCredito: "SALDO CRÉDITO",
@@ -168,7 +172,7 @@ const CALCULO_A0 = {
   /* Decisión 6: total bien con filas mal. */
   compensado: "Tu total está bien, pero revisa las filas marcadas: una se compensó con otra.",
   generica: "Revisa grupo por grupo: saldo por el porcentaje que fija la empresa. Luego suma los siete.",
-  acierto: "Bien. Cada grupo aporta según lo vencido que está. Juntos dan $2.283.400: esa es la provisión.",
+  acierto: "Cada grupo aporta según lo vencido que está. Juntos dan $2.283.400: esa es la provisión.",
 };
 
 /* Los rótulos de la pantalla (a0), de Itagaki, con el del porcentaje de Miyata (decisión 1). */
@@ -221,7 +225,7 @@ const ASIENTO_1 = {
   ],
   /* Decisión 7: ningún «análisis» en r5-2. */
   valorGenerica: "Usa la provisión que calculaste: $2.283.400.",
-  acierto: "Bien. Reconoces el gasto del año y creas la provisión. La cartera no se toca: nadie ha dejado de pagar todavía.",
+  acierto: "Reconoces el gasto del año y creas la provisión. La cartera no se toca: nadie ha dejado de pagar todavía.",
 };
 
 const ASIENTO_2 = {
@@ -248,7 +252,7 @@ const ASIENTO_2 = {
     { valor: VALORES.negra, texto: "Ese valor es de la Cía. Negra. La deuda perdida de la Cía. Roja es de $950.000." },
   ],
   valorGenerica: "Revisa el valor. Usa el de la deuda que se da por perdida.",
-  acierto: "Bien. La deuda sale de la cartera y la provisión cubre la pérdida. El gasto no se toca: ya se registró en diciembre.",
+  acierto: "La deuda sale de la cartera y la provisión cubre la pérdida. El gasto no se toca: ya se registró en diciembre.",
 };
 
 const ASIENTO_3 = {
@@ -277,7 +281,7 @@ const ASIENTO_3 = {
     { valor: VALORES.roja, texto: "Ese valor es de la Cía. Roja. La deuda perdida de la Cía. Negra es de $1.500.000." },
   ],
   valorGenerica: "Revisa el valor. Es el de la deuda de la Cía. Negra.",
-  acierto: "Correcto. El castigo va completo contra la provisión, aunque ya le quede poco.",
+  acierto: "El castigo va completo contra la provisión, aunque ya le quede poco.",
 };
 
 const HECHO_MAYO = "Mayo. La Cía. Roja paga con un cheque de $950.000. Con eso cancela la factura que se castigó en marzo.";
@@ -309,7 +313,7 @@ const ASIENTO_5 = {
     { valor: VALORES.castigos, texto: "Solo paga la Cía. Roja. Revive solo su deuda: $950.000." },
   ],
   valorGenerica: "Revisa el valor. Es el de la deuda que vuelve.",
-  acierto: "Bien. La deuda vuelve a la cartera y a la provisión. Es el castigo de marzo, pero al revés.",
+  acierto: "La deuda vuelve a la cartera y a la provisión. Es el castigo de marzo, pero al revés.",
 };
 
 const ASIENTO_6 = {
@@ -338,7 +342,7 @@ const ASIENTO_6 = {
     { valor: VALORES.castigos, texto: "Solo llega un cheque, el de la Cía. Roja. Anota $950.000." },
   ],
   valorGenerica: "Revisa el valor. Es el del cheque.",
-  acierto: "Bien. Primero la deuda vuelve a la cartera y a la provisión. Luego la Cía. Roja paga y la cartera baja. No hay ingreso: la deuda volvió y se pagó.",
+  acierto: "Primero la deuda vuelve a la cartera y a la provisión. Luego la Cía. Roja paga y la cartera baja. No hay ingreso: la deuda volvió y se pagó.",
 };
 
 /* ═══════════ LA PANTALLA DE SALDO (pregunta 4) ═══════════ */
@@ -353,9 +357,9 @@ const SALDO_4 = {
   etapa: "marzo",
   tipo: "saldo",
   hecho: "La provisión empezó con $2.283.400. En marzo se castigaron dos deudas: $950.000 de la Cía. Roja y $1.500.000 de la Cía. Negra.",
-  enunciado: "Escribe el saldo de la provisión. Luego elige si es débito o crédito.",
+  enunciado: "Escribe el saldo de la provisión. Luego elige si queda en el debe o en el haber.",
   correcto: { valor: VALORES.faltante, lado: "debito" },
-  ladoMal: "La cifra está bien; el lado no. Salió más por el debe de lo que había en el haber. El saldo es débito.",
+  ladoMal: "La cifra está bien; el lado no. Salió más por el debe de lo que había en el haber. El saldo queda en el debe.",
   valorMal: [
     { valor: VALORES.trasRoja, texto: "Restaste solo la Cía. Roja. Falta el castigo de la Cía. Negra: $1.500.000." },
     { valor: VALORES.trasNegra, texto: "Restaste solo la Cía. Negra. Falta el castigo de la Cía. Roja: $950.000. Ese número sí aparece más adelante, pero en marzo todavía no." },
@@ -363,7 +367,7 @@ const SALDO_4 = {
     { valor: 0, texto: "La provisión no se queda en cero. Se castigó todo lo perdido, aunque pase de lo que había." },
   ],
   generica: "Parte de $2.283.400 y resta los dos castigos. Luego mira qué lado ganó.",
-  acierto: "Correcto. Todo el castigo va contra la provisión. Como no alcanzó, queda en débito por $166.600.",
+  acierto: "Todo el castigo va contra la provisión. Como no alcanzó, queda en el debe por $166.600.",
 };
 
 /* Las siete preguntas, en orden: (a0) y las seis de v2. */
@@ -382,9 +386,9 @@ export const PREGUNTAS_R5_2 = [
 export const CORTES_R5_2 = {
   dic: { parrafos: [] },
   marzo: {
-    parrafos: ["La provisión es lo que estimaste perder. En diciembre estimaste $2.283.400. En marzo se perdieron $2.450.000. La estimación se quedó corta por $166.600. Por eso la provisión queda en débito: muestra un faltante. Ya lo viste con Pablo Moncayo. Tenía $148.800 y se castigaron $180.000. Si nada cambia, el próximo 31 de diciembre el ajuste suma lo que faltó."],
+    parrafos: ["La provisión es lo que estimaste perder. En diciembre estimaste $2.283.400. En marzo se perdieron $2.450.000. La estimación se quedó corta por $166.600. Por eso la provisión queda en el debe: muestra un faltante. Ya lo viste con Pablo Moncayo. Tenía $148.800 y se castigaron $180.000. Si nada cambia, el próximo 31 de diciembre el ajuste suma lo que faltó."],
   },
   mayo: {
-    parrafos: ["La provisión venía en débito por $166.600. Al revivir la deuda, recibió $950.000 en el haber. Ahora queda en crédito por $783.400. Ya no tiene faltante."],
+    parrafos: ["La provisión venía en el debe con $166.600. Al revivir la deuda, recibió $950.000 en el haber. Ahora queda en el haber con $783.400. Ya no tiene faltante."],
   },
 };
