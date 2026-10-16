@@ -47,6 +47,12 @@ Aplicado sobre la cabeza del #308, que ya trae A2-A5 de Baki, con las decisiones
   - si no cabe, la pastilla queda a 8 px del borde de arriba.
 - En H3, en H4 pregunta 4 y en H8 etapa 2 la devolución va justo debajo del tablero, antes del sobre y del libro, del asiento o del mayor.
 - La guardia de Chromium lo mide en 320×568 y 375×667, con acierto y con error.
+- **El botón de avance entra con el tramo** (FALLA E2 de Shibukawa en 35348c3; decisión de Yujiro):
+  - si el tramo hasta el pie del botón cabe en la ventana menos 16 px, el tramo llega hasta ahí y el foco va al botón;
+  - si no cabe (sobre todo H3 a 320×568), el tramo llega al pie de la devolución, y el foco va a la devolución, sin preventScroll. El botón queda al siguiente Tab;
+  - el foco nunca queda fuera de la ventana. La guardia lo mide.
+- **§2 en H4:** el rótulo de la regla tras el error es «Iba aquí: {diferencia}» y sale «con el cheque correcto» (textos de Katsumi).
+- **§4.1:** las cinco tarjetas en reposo llevan el mismo borde, 1 px rgba(248,249,250,.35).
 - **Plan B en H4 pregunta 4 y en H8 etapa 2.** Ahí el tablero apilado no cabe con la devolución en 320×568: en H8 etapa 2 el pie llegaba a 629-673 px, y en H4 la tarjeta 8 a 601 px. Por eso esos dos tableros van lado a lado (nombre · Debe · Haber). Las pastillas bajan a una línea por mitad marcada, debajo del tablero: «Cuenta · lado: ✗ No va aquí». El lector sigue oyendo la marca en la mitad. Con el plan B el pie queda en 560 px o menos.
 
 ## D7, nada gris y muerto (veredicto de Shibukawa sobre el #308)
