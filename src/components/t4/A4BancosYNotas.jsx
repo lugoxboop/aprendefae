@@ -78,7 +78,7 @@ const NOMBRE = "libretas";
 
 /*
  * Las dos libretas. renglones: [{ id, emp: { t: [..], e } | null, ban: {...} | null }];
- * `reserva`: renglones vacíos (el alto no cambia); `sub`: los subtítulos (solo en P5).
+ * `reserva`: renglones vacíos (el alto no cambia).
  */
 /* Una celda de libreta: el renglón anotado, con su efecto, o «todavía no / lo sabe». */
 function Celda({ x, lado, luz = false, nueva = false }) {
@@ -92,13 +92,13 @@ function Celda({ x, lado, luz = false, nueva = false }) {
     : <span className="t4lt-c" data-libreta={lado} data-no-sabe=""><span>{F.noSabe[0]}</span><span>{F.noSabe[1]}</span></span>;
 }
 
-function Libretas({ renglones, reserva = 0, sub = false, luz = false }) {
+function Libretas({ renglones, reserva = 0, luz = false }) {
   const celda = (x, lado) => <Celda key={lado} x={x} lado={lado} luz={luz} nueva={Boolean(x)} />;
   return (
     <div className="t4lt" data-libretas>
       <div className="t4lt-f t4lt-cab">
-        <div><span>{F.empresa}</span>{sub && <span>{F.subEmpresa}</span>}</div>
-        <div><span>{F.banco}</span>{sub && <span>{F.subBanco}</span>}</div>
+        <div><span>{F.empresa}</span></div>
+        <div><span>{F.banco}</span></div>
       </div>
       {renglones.map((r) => <div key={r.id} className="t4lt-f t4lt-r" data-renglon={r.id}>{celda(r.emp, "empresa")}{celda(r.ban, "banco")}</div>)}
       {Array.from({ length: reserva }, (_, k) => <div key={`v${k}`} className="t4lt-f t4lt-r" aria-hidden="true" data-renglon-vacio=""><div /><div /></div>)}

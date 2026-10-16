@@ -77,7 +77,7 @@ export const CAUSAS_A4 = [
   { id: "error-empresa", tarjeta: "La empresa anota mal un cheque", emp: { t: ["Error al anotar"], e: "de la empresa" }, ban: null },
   { id: "error-banco", tarjeta: "El banco liquida mal unos intereses", emp: null, ban: { t: ["Error al liquidar"], e: "del banco" } },
 ];
-/* P5: lo que cada libreta tiene y la otra no. */
+/* P4 (la conciliación): lo que cada libreta tiene y la otra no; cada renglón es un destino. */
 export const RENGLONES_CONCILIACION = [
   { id: "cheque-sin-cobrar", emp: CHEQUE_SIN_COBRAR, ban: null },
   { id: "nota-debito", emp: null, ban: NOTA_DEBITO_LIBRETA },
@@ -88,8 +88,6 @@ export const RENGLONES_CONCILIACION = [
 export const FIGURA_A4 = {
   empresa: "La empresa",
   banco: "El banco",
-  subEmpresa: "libro auxiliar",
-  subBanco: "extracto del mes",
   noSabe: ["todavía no", "lo sabe"],
   consignar: "Consignar",
   girar: "Girar un cheque",
@@ -98,7 +96,6 @@ export const FIGURA_A4 = {
   baja: "Baja",
   mayor: "Bancos",
   contador: (n, total) => `${n} de ${total}`,
-  chips: { empresa: "Empresa", banco: "Banco", "los-dos": "Los dos" },
   /* Para el lector de pantalla (los del prototipo de Hanayama). */
   tablero: "Bancos",
   /* Lote B, §5.4: el contador de las causas y lo que el lector oye de cada libreta (Hanayama; Katsumi, en número). */
@@ -164,7 +161,7 @@ export const PANTALLAS_A4 = [
   {
     /* Lote B, §5.2: la última pantalla de A4. Se toca el renglón que le falta anotar a la empresa; con el acierto, sin mensaje, la frase de cierre. */
     id: "la-conciliacion", modo: "conciliacion", pregunta: true, correcta: "nota-debito",
-    rotuloPregunta: "¿Qué le falta anotar a la empresa?",
+    rotuloPregunta: "¿Qué ignora la empresa?",
     errores: { "cheque-sin-cobrar": "El cheque ya está en sus libros: lo anotó al girarlo." },
     cierre: "Cada libreta anota lo que la otra todavía no sabe. Conciliar es ver qué falta.",
     siguiente: "Siguiente: «San Calixto».",
