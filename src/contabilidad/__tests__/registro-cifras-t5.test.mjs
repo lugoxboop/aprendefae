@@ -10,8 +10,8 @@ import { readFileSync, readdirSync } from "node:fs";
  * orquestador/conocimiento/registro-cifras-construidas-t5.json, con las tres
  * etiquetas de uso de N4 que corrigió Mello (decisión de L, en
  * paquetes/t5-veredicto-mello-tandas-1-y-2.md); las cifras no cambian. Desde
- * la v2 de N5 trae 40 filas: N4, N5 v2, N6 y N7 (estas dos, todavía sin
- * pieza en el catálogo). Esta prueba lo lee y, para cada fila:
+ * la v2 de N5 trae 40 filas: N4, N5 v2, N6 y N7, las cuatro ya en el
+ * catálogo. Esta prueba lo lee y, para cada fila:
  *
  *   · evalúa su «calculo» (enteros, solo + − × / y paréntesis) y lo compara
  *     con su «cifra»
@@ -20,7 +20,7 @@ import { readFileSync, readdirSync } from "node:fs";
  *     valor numérico, no solo escrita en un texto
  *   · comprueba que la cifra no es del libro: ni de Santa Pacha (dueña
  *     b5-t5-a2), ni de C.4 ni de D.1 e del banco
- *   · comprueba que N4 y N5 no comparten cifras
+ *   · comprueba que N4, N5, N6 y N7 no comparten cifras, ninguna con otra
  *
  * La cifra del libro que N5 usa solo para reconocer un error (4.860.000) no
  * es construida y no va en el registro; la trata la prueba de N5.
@@ -95,8 +95,8 @@ test("★★★ cada «calculo» da su «cifra»", () => {
 
 test("★★★ cada cifra de una pieza publicada está en sus datos, como valor numérico", async () => {
   const publicadas = PIEZAS.filter((id) => TEMA.actividades.some((a) => a.id === id));
-  /* N4, N5 y N6 están en el tema; N7, todavía no: sus filas se comprueban cuando entre. */
-  assert.deepEqual(publicadas, PIEZAS.slice(0, 3));
+  /* N4, N5, N6 y N7 están en el tema. */
+  assert.deepEqual(publicadas, PIEZAS.slice(0, 4));
   const faltan = [];
   for (const id of publicadas) {
     const archivos = archivosDe(id);
@@ -110,11 +110,16 @@ test("★★★ cada cifra de una pieza publicada está en sus datos, como valor
 
 /* ═══════════ 4 · NINGUNA CIFRA DEL LIBRO, NINGUNA COMPARTIDA ═══════════ */
 
-test("★★★ ninguna cifra construida es del libro (Santa Pacha, C.4, D.1 e) y N4 y N5 no comparten cifras", () => {
+test("★★★ ninguna cifra construida es del libro (Santa Pacha, C.4, D.1 e) y ni N4, ni N5, ni N6, ni N7 comparten cifras con otra", () => {
   const libro = new Set(REGISTRO.libro_con_dueno.flatMap((x) => x.cifras));
   for (const v of [2_000_000, 1_725_000, 375_000, 343_750, 520_000, 31_200, 31_460, 831_000]) assert.ok(libro.has(v), String(v));
   assert.deepEqual(FILAS.filter((f) => libro.has(f.cifra)).map((f) => `${f.pieza}: ${f.cifra}`), []);
   const de = (id) => new Set(FILAS.filter((f) => f.pieza === id).map((f) => f.cifra));
   const [n4, n5] = PIEZAS.slice(0, 2).map(de);
   assert.deepEqual([...n4].filter((v) => n5.has(v)), []);
+  /* Cada par de las cuatro, N7 incluida: ninguna cifra en dos piezas. */
+  const compartidas = [];
+  PIEZAS.forEach((a, i) => PIEZAS.slice(i + 1).forEach((b) => { for (const v of de(a)) if (de(b).has(v)) compartidas.push(`${a} y ${b}: ${v}`); }));
+  assert.deepEqual(compartidas, []);
+  assert.equal(PIEZAS.length, 4);
 });
