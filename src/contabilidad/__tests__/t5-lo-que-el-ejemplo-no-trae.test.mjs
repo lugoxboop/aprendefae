@@ -422,9 +422,8 @@ test("★★★ fuera del catálogo de FP; en T5 en la posición de la decisión
   assert.equal(a.nombre, P.titulo);
   /*
    * Punto 6 de la decisión de corte: la posición 9, después de N4 (7) y N5 (8)
-   * y antes de N7 (10) y del cierre de Santa Pacha (11). N7 llega en su PR, y N2
-   * (posición 4) entró en N3 con la entrega 5: el orden de lo publicado es el
-   * de la tabla sin ellas.
+   * y antes de N7 (10) y del cierre de Santa Pacha (11). N2 (posición 4) entró
+   * en N3 con la entrega 5: el orden de lo publicado es el de la tabla sin él.
    */
   const corte = readFileSync(new URL("orquestador/conocimiento/mapas/t5-activos-financieros.md", RAIZ), "utf8");
   const tabla = [...corte.slice(corte.indexOf("6. **Orden final")).matchAll(/^ {3}\| (\d+) \| `([^`]+)`/gm)].map((m) => [Number(m[1]), m[2]]);
@@ -434,7 +433,7 @@ test("★★★ fuera del catálogo de FP; en T5 en la posición de la decisión
   assert.deepEqual(ids, tabla.map(([, id]) => id).filter((id) => ids.includes(id)), "el orden del tema no es el de la decisión de corte");
   assert.deepEqual(ids, [
     "b5-t5-a1-del-efectivo-de-sobra", "b5-t5-a1", "t5-temporal-o-largo-plazo", "t5-revision-que-falta",
-    "b5-t5-a2-los-tres-momentos-de-una-inversion", "t5-el-interes-del-periodo", "t5-gano-o-perdio", N.N6_ID, "b5-t5-a2",
+    "b5-t5-a2-los-tres-momentos-de-una-inversion", "t5-el-interes-del-periodo", "t5-gano-o-perdio", N.N6_ID, "t5-a-que-cuenta-va", "b5-t5-a2",
   ]);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(N.N6_ID)), []);

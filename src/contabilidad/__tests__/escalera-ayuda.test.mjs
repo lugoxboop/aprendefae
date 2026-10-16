@@ -259,6 +259,17 @@ const ANEXO_MD = conCorreccionesDeMello(readFileSync(new URL("lote2-anexo-v1.md"
  * preguntas, por id e índice, porque pantallas e ids pueden haber cambiado.
  */
 const RECORTES_MD = readdirSync(PAQUETES).filter((f) => /^lote1-recortes-.*\.md$/.test(f)).sort().map((f) => readFileSync(new URL(f, PAQUETES), "utf8"));
+/*
+ * Las FUSIONES del lote 1 (entregas 4 y 5 de Near) ganan igual que un
+ * recorte: la sección de la pieza que queda trae sus pantallas renumeradas,
+ * con sus pistas. La de la entrega 5 lleva un número delante del id; se le
+ * da la forma de un encabezado de recorte, y se lee solo su sección 1 (la 2,
+ * N3 de T5, no es de Aprender).
+ */
+RECORTES_MD.push(
+  readFileSync(new URL("lote1-entrega4-v1.md", PAQUETES), "utf8"),
+  readFileSync(new URL("lote1-entrega5-v1.md", PAQUETES), "utf8").split("\n## 2. ")[0].replace(/^## 1\. T7-2 · («[^»]+») \(id `(t7-2-a5-fletes)`\)$/m, "## $2 · $1"),
+);
 const CAMBIOS = new Map(RECORTES_MD.flatMap((md) => [...md.matchAll(/^\| (?:Pista|Anexo) · [^|]+ \| «(.+?)» \| «(.+?)» \|$/gm)].map((m) => [m[1], m[2]])));
 /*
  * Las correcciones de Mello que cambian una pista de una pieza recortada

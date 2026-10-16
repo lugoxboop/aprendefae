@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
@@ -147,6 +147,20 @@ export const CSS_T7BP = `
 .t7bp-marca { position: absolute; top: -9px; left: -9px; width: 18px; height: 18px; border-radius: 50%; background: ${P.fondo}; border: 1px solid ${P.error}; display: grid; place-items: center; line-height: 0; color: ${P.error}; }
 .t7bp-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .t7bp-nueva { animation: t7bp-aparece .12s ease-out; }
+/* La fusión de A5 y A6: figuras y «Ver…» (provisional para Watari) */
+.t7bp-fig { margin: 0; display: grid; border: 1px solid ${P.borde}; border-radius: 10px; padding: 4px 12px; min-width: 0; }
+.t7bp-fig-r { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 10px; padding-block: 8px; font-size: 14px; line-height: 1.35; }
+.t7bp-fig-r + .t7bp-fig-r { border-top: 1px solid ${P.borde}; }
+.t7bp-fig-r > span:first-child { overflow-wrap: anywhere; min-width: 0; }
+.t7bp-fig-v { margin-left: auto; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.t7bp-fig-cuenta { margin: 0; padding-block: 8px; font: 500 15px/1.4 "Inter", sans-serif; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.t7bp-fichas { margin: 0; padding: 8px 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.t7bp-fichas li { list-style: none; border: 1px solid ${P.borde}; border-radius: 999px; padding: 4px 10px; font-size: 13px; line-height: 1.3; overflow-wrap: anywhere; }
+.t7bp-ver { display: grid; gap: 8px; }
+.t7bp-ver-b { appearance: none; min-height: 44px; width: 100%; text-align: left; padding: 10px 14px; border: 1px solid ${P.borde}; border-radius: 8px; background: transparent; color: ${P.texto}; font: 600 15px/1.35 "Inter", sans-serif; cursor: pointer; }
+.t7bp-ver-b[aria-expanded="true"] { border-color: ${P.texto}; }
+.t7bp-ver-b:focus-visible { outline: 2px solid ${P.texto}; outline-offset: 2px; }
+.t7bp-ver-c { display: grid; gap: 10px; }
 @keyframes t7bp-aparece { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .t7bp *, .t7bp *::before, .t7bp *::after { transition: none !important; animation: none !important; } }
 `;
@@ -163,19 +177,77 @@ function Boton({ nombre, texto, onClick, inactivo = false }) {
   );
 }
 
-function Mensaje({ ok, textos, refFoco }) {
+/*
+ * Con `porque` (la fusión de A5 y A6: el «¿Por qué?» escrito aparte por
+ * Near), lo plegado del primer texto es ese. Con `enteros`
+ * (`pieza.textosEnteros`, como en T7-3), los textos que Near ya midió se ven
+ * enteros: el plegado automático no los corta.
+ */
+function Mensaje({ ok, textos, porque = null, enteros = false, refFoco }) {
   return (
     <div ref={refFoco} tabIndex={-1} role="status" className={`t7bp-msg ${ok ? "t7bp-msg-ok" : "t7bp-msg-error"}`} data-mensaje={ok ? "acierto" : "error"}>
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7bp-msg-cuerpo">
         <span className="t7bp-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
+        {textos.map((t, i) => {
+          const suPorque = i === 0 ? porque : null;
+          return <p key={t} data-texto>{enteros && !suPorque ? t : <Plegable texto={t} porque={suPorque} />}</p>;
+        })}
       </div>
     </div>
   );
 }
 
-const Textos = ({ lista, clase = "t7bp-p", nueva = false }) => (lista ?? []).map((t) => <p key={t} className={`${clase}${nueva ? " t7bp-nueva" : ""}`} data-texto><Plegable texto={t} /></p>);
+/*
+ * LA FUSIÓN DE A5 Y A6 (entrega 5 de Near): una figura por pantalla
+ * (`figura`), en lectura. PROVISIONALES PARA WATARI: todavía no entrega su
+ * forma; van sobrias, con el borde y los tokens del patrón tabular, sin teal
+ * ni ámbar (aquí no hay debe ni haber).
+ *   · renglones   cuenta y cifra, una por renglón (lo que entra al inventario)
+ *   · cuenta      una multiplicación, en una línea («300 × $8.000 = …»)
+ *   · fichas      el resumen: cada caso con su cuenta
+ */
+function FiguraT72({ f, nuevo = false }) {
+  const clase = `t7bp-fig${nuevo ? " t7bp-nueva" : ""}`;
+  if (f.tipo === "renglones") {
+    return (
+      <figure className={clase} data-figura data-figura-t72="renglones" role="table" aria-label={f.filas.map((r) => r.rot).join(" y ")}>
+        {f.filas.map((r) => (
+          <div key={r.rot} className="t7bp-fig-r" role="row" data-renglon>
+            <span role="rowheader">{r.rot}</span>
+            <span role="cell" className="t7bp-fig-v">{cifraK(r.v)}</span>
+          </div>
+        ))}
+      </figure>
+    );
+  }
+  if (f.tipo === "cuenta") return <figure className={clase} data-figura data-figura-t72="cuenta"><p className="t7bp-fig-cuenta">{f.texto}</p></figure>;
+  return (
+    <figure className={clase} data-figura data-figura-t72="fichas">
+      <ul className="t7bp-fichas">{f.fichas.map((t) => <li key={t} data-ficha-t72>{t}</li>)}</ul>
+    </figure>
+  );
+}
+
+/*
+ * Lo que Near pliega como «Ver…» (los asientos completos de G-3 y G-4): un
+ * botón con `aria-expanded`, que no es de interfaz, y los asientos debajo,
+ * solo cuando está abierto.
+ */
+function Ver({ ver }) {
+  const [abierto, setAbierto] = useState(false);
+  const id = useId();
+  return (
+    <div className="t7bp-ver" data-ver>
+      <button type="button" className="t7bp-ver-b" aria-expanded={abierto} aria-controls={abierto ? id : undefined} onClick={() => setAbierto((x) => !x)}>
+        <span data-texto data-ver-boton>{ver.texto}</span>
+      </button>
+      {abierto && <div id={id} className="t7bp-ver-c t7bp-nueva" data-visto><Asientos lista={ver.asientos} /></div>}
+    </div>
+  );
+}
+
+const Textos = ({ lista, clase = "t7bp-p", nueva = false, enteros = false }) => (lista ?? []).map((t) => <p key={t} className={`${clase}${nueva ? " t7bp-nueva" : ""}`} data-texto>{enteros ? t : <Plegable texto={t} />}</p>);
 
 function Ficha({ ficha }) {
   return (
@@ -284,12 +356,13 @@ export function TresMetodos({ tabla }) {
 }
 
 /* Lo que una pantalla trae antes de su pregunta o de su botón. */
-function Cuerpo({ p, kardexDe }) {
+function Cuerpo({ p, kardexDe, enteros = false }) {
   return (
     <>
       {p.encabezado && <p className="t7bp-h" data-texto data-encabezado>{p.encabezado}</p>}
       {p.objetivo && <p className="t7bp-p" data-texto data-objetivo>{p.objetivo}</p>}
-      <Textos lista={p.parrafos} />
+      {p.figura && <FiguraT72 f={p.figura} />}
+      <Textos lista={p.parrafos} enteros={enteros} />
       {p.enunciado && <p className="t7bp-enunciado" data-texto data-enunciado>{p.enunciado}</p>}
       {p.ficha && <Ficha ficha={p.ficha} />}
       {p.estructura && <Estructura lista={p.estructura} />}
@@ -300,14 +373,14 @@ function Cuerpo({ p, kardexDe }) {
       {p.calculos && <Calculos lista={p.calculos} />}
       {p.tabla && <TresMetodos tabla={p.tabla} />}
       {p.kardex && <Kardex kardex={kardexDe(p.kardex)} nota={p.notaKardex ?? null} />}
-      <Textos lista={p.despues} />
+      <Textos lista={p.despues} enteros={enteros} />
     </>
   );
 }
 
 /* ═══════════ ELECCIÓN ═══════════ */
 
-function Eleccion({ pantalla, onSeguir, kardexDe }) {
+export function Eleccion({ pantalla, onSeguir, kardexDe, enteros = false }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
   const [confirmada, setConfirmada] = useState(null);
@@ -322,7 +395,7 @@ function Eleccion({ pantalla, onSeguir, kardexDe }) {
 
   return (
     <div className="t7bp" data-eleccion={pantalla.id} data-estado={estado}>
-      <Cuerpo p={pantalla} kardexDe={kardexDe} />
+      <Cuerpo p={pantalla} kardexDe={kardexDe} enteros={enteros} />
       <p className="t7bp-p t7bp-preg" data-texto data-pregunta>{pantalla.pregunta}</p>
       <div className="t7bp-ops" role="group" aria-label={pantalla.pregunta}>
         {orden.map((o) => {
@@ -337,17 +410,19 @@ function Eleccion({ pantalla, onSeguir, kardexDe }) {
       {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }} />}
       {estado === "error" && (
         <>
-          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} refFoco={ref} />
+          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} enteros={enteros} refFoco={ref} />
           <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((x) => barajarDistinto(pantalla.opciones, x, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
         </>
       )}
       {estado === "acierto" && (
         <>
-          <Mensaje ok textos={[a.texto]} refFoco={ref} />
+          <Mensaje ok textos={[a.texto]} porque={a.porque ?? null} enteros={enteros} refFoco={ref} />
+          {a.figura && <FiguraT72 f={a.figura} nuevo />}
+          {a.ver && <Ver ver={a.ver} />}
           <Asientos lista={a.asientos} nuevo />
           {a.calculos && <div className="t7bp-nueva"><Calculos lista={a.calculos} /></div>}
           {a.kardex && <div className="t7bp-nueva"><Kardex kardex={kardexDe(a.kardex)} nota={a.notaKardex ?? null} /></div>}
-          <Textos lista={a.despues} nueva />
+          <Textos lista={a.despues} nueva enteros={enteros} />
           <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />
         </>
       )}
@@ -358,7 +433,7 @@ function Eleccion({ pantalla, onSeguir, kardexDe }) {
 
 /* ═══════════ LADOS ═══════════ */
 
-function Lados({ pantalla, onSeguir, kardexDe }) {
+function Lados({ pantalla, onSeguir, kardexDe, enteros = false }) {
   const [orden] = useState(() => barajar(pantalla.lineas));
   const [puesto, setPuesto] = useState({});
   const [veredicto, setVeredicto] = useState(null);
@@ -387,7 +462,7 @@ function Lados({ pantalla, onSeguir, kardexDe }) {
 
   return (
     <div className="t7bp" data-lados={pantalla.id} data-estado={estado}>
-      <Cuerpo p={pantalla} kardexDe={kardexDe} />
+      <Cuerpo p={pantalla} kardexDe={kardexDe} enteros={enteros} />
       <p className="t7bp-p" data-texto data-consigna>{pantalla.consigna}</p>
       <div className="t7bp-lineas" role="group" aria-label={pantalla.consigna}>
         {orden.map((l) => {
@@ -419,7 +494,7 @@ function Lados({ pantalla, onSeguir, kardexDe }) {
                 <span className="t7bp-monto" data-monto>{cifraK(l.monto)}</span>
               </p>
               <span className="t7bp-g2">{boton(DEBE)}{boton(HABER)}</span>
-              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} refFoco={l.id === malas[0] ? ref : undefined} />}
+              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} enteros={enteros} refFoco={l.id === malas[0] ? ref : undefined} />}
             </div>
           );
         })}
@@ -428,9 +503,11 @@ function Lados({ pantalla, onSeguir, kardexDe }) {
       {estado === "error" && <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={probarOtra} />}
       {estado === "acierto" && (
         <>
-          <Mensaje ok textos={[pantalla.acierto.texto]} refFoco={ref} />
+          <Mensaje ok textos={[pantalla.acierto.texto]} porque={pantalla.acierto.porque ?? null} enteros={enteros} refFoco={ref} />
+          {pantalla.acierto.figura && <FiguraT72 f={pantalla.acierto.figura} nuevo />}
+          {pantalla.acierto.ver && <Ver ver={pantalla.acierto.ver} />}
           <Asientos lista={pantalla.acierto.asientos} nuevo />
-          <Textos lista={pantalla.acierto.despues} nueva />
+          <Textos lista={pantalla.acierto.despues} nueva enteros={enteros} />
           <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />
         </>
       )}
@@ -449,16 +526,17 @@ export default function PantallasT7_2({ pieza, rotulo }) {
   const seguir = () => setK((x) => Math.min(x + 1, pieza.pantallas.length - 1));
   useEffect(() => { if (primera.current) { primera.current = false; return; } marco.current?.focus(); }, [k]);
   const kardexDe = (clave) => pieza.kardex[clave];
+  const enteros = Boolean(pieza.textosEnteros);
 
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <style>{CSS_T7BP}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
-        {p.tipo === "eleccion" && <Eleccion key={p.id} pantalla={p} onSeguir={seguir} kardexDe={kardexDe} />}
-        {p.tipo === "lados" && <Lados key={p.id} pantalla={p} onSeguir={seguir} kardexDe={kardexDe} />}
+        {p.tipo === "eleccion" && <Eleccion key={p.id} pantalla={p} onSeguir={seguir} kardexDe={kardexDe} enteros={enteros} />}
+        {p.tipo === "lados" && <Lados key={p.id} pantalla={p} onSeguir={seguir} kardexDe={kardexDe} enteros={enteros} />}
         {(p.tipo === "portada" || p.tipo === "lectura" || p.tipo === "resumen") && (
           <div className="t7bp">
-            <Cuerpo p={p} kardexDe={kardexDe} />
+            <Cuerpo p={p} kardexDe={kardexDe} enteros={enteros} />
             {p.lista && (
               <ol className="t7bp-lista" data-lista>
                 {p.lista.map((t) => <li key={t} data-texto>{t}</li>)}

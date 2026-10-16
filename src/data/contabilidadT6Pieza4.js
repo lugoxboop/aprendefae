@@ -94,6 +94,11 @@ export const OPCIONES_CAPA_3_T6_A4 = [{ id: "toda", texto: "$180.000" }, { id: "
 
 /* El tablero (guía §4.1): sus dos cabeceras y el rótulo de la fila del ejemplo; cada caso preguntado llena su fila al cerrarse. */
 export const TABLERO_T6_A4 = { revive: "Se revive", entran: "A Caja entran", ejemplo: "Ejemplo" };
+/*
+ * B5 de Futaba: los textos que se revelan no llevan cifras (las cifras ya
+ * están en el tablero) ni dicen dónde quedan los $80.000. Solo los lee quien
+ * acierta; quien falla dos veces lee la devolución de su opción.
+ */
 export const CASOS_T6_A4 = [
   {
     id: "a",
@@ -101,12 +106,14 @@ export const CASOS_T6_A4 = [
     ejemplo: true,
     revive: "$180.000",
     entran: "$180.000",
+    /* B5 de Futaba: el ejemplo no tiene caja; su texto va bajo su fila del tablero. */
+    revela: "Pagó toda la factura: a Caja entra todo.",
   },
   {
     id: "b",
     letra: "b",
     nombre: "b · Abona $100.000 y promete pagar el resto",
-    revela: "Se revive toda la deuda: $180.000. A Caja entran $100.000.",
+    revela: "Como promete pagar el resto, vuelve toda la deuda.",
     pie: "Basado en el libro, p. 205",
     revive: "$180.000",
     entran: "$100.000",
@@ -121,7 +128,7 @@ export const CASOS_T6_A4 = [
     id: "c",
     letra: "c",
     nombre: "c · Abona $100.000 y avisa que ya no puede pagar más",
-    revela: "Se revive solo lo que pagó: $100.000. A Caja entran $100.000. Los otros $80.000 siguen castigados.",
+    revela: "Como ya no puede pagar más, lo demás sigue castigado.",
     pie: "Basado en el libro, p. 206",
     revive: "$100.000",
     entran: "$100.000",

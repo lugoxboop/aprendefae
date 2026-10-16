@@ -261,12 +261,14 @@ test("★★ las opciones, las líneas y su banco de cuentas se barajan en cada 
 
 /* ═══════════ 4 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
 
-test("★★★ en T7-2, justo después de A6 y al final del tema: evaluativa, medio, 25 FP", () => {
+/* Desde la fusión de la entrega 5 de Near, A6 («Devoluciones en permanente») va dentro de A5 («Fletes y devoluciones en permanente»): H5 queda justo después de A5. */
+test("★★★ en T7-2, justo después de A5 (con A6 adentro) y al final del tema: evaluativa, medio, 25 FP", () => {
   assert.deepEqual(clasificacionDe("contabilidad", TEMA_T7_2, D.H5_ID), { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
   assert.equal(TEMA.actividades.find((a) => a.id === D.H5_ID).nombre, D.H5.nombre);
   for (const a of TEMA.actividades.filter((x) => x.clasificacion.tipo !== HACER)) assert.deepEqual(a.clasificacion, { tipo: APRENDER }, a.id);
   const ids = TEMA.actividades.map((x) => x.id);
-  assert.equal(ids.indexOf(D.H5_ID), ids.indexOf("t7-2-a6-devoluciones") + 1);
+  assert.equal(ids.indexOf(D.H5_ID), ids.indexOf("t7-2-a5-fletes") + 1);
+  assert.ok(!ids.includes("t7-2-a6-devoluciones"));
   assert.equal(ids.at(-1), D.H5_ID);
   const nombres = TEMA.actividades.map((a) => a.nombre);
   assert.equal(new Set(nombres).size, nombres.length);

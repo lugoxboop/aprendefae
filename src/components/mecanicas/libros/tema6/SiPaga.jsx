@@ -44,7 +44,10 @@ export const MOMENTOS_ESCENA_T6_A4 = [
 
 const Escena = escenaDeMomentos({ momentos: MOMENTOS_ESCENA_T6_A4, estadoPaso: T6_A4.estadoPaso, reservas: T6_A4.reservas, textos: E });
 
+/* La predicción se escribe sobre la silueta del primer asiento del segundo momento (§2a de Mai). */
+const PARADA = { ...PARADA_T6_A4, etiquetaEn: "clientes2" };
+
 export default function SiPaga() {
   /* Sin pasos juntados (hoja 7 de Mai), con la parada entre el 4 y el 5. */
-  return <MaquinaPegada todos={TODOS} estadoPaso={T6_A4.estadoPaso} duracion={T6_A4.duracion} escena={Escena} parada={PARADA_T6_A4} atributos={{ "data-capa2-t6-a4": true }} />;
+  return <MaquinaPegada todos={TODOS} estadoPaso={T6_A4.estadoPaso} duracion={T6_A4.duracion} escena={Escena} parada={PARADA} atributos={{ "data-capa2-t6-a4": true }} />;
 }

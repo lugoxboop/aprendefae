@@ -226,12 +226,12 @@ function piezaDeAprender(tema, pieza, k, total) {
 
   md(`#### Capa 1 · ${lit(NOMBRES_CAPAS[1])}`);
   md();
-  /* Los textos, de los datos: la vista puede traer la cita ya pintada con su nota (b5/NotaDebajo.jsx). */
+  /* Los textos, de los datos (la nota de un término con cita, `notaDebajo`, la pinta CuatroCapas aparte, siempre a la vista). */
   const datos = DATOS_PIEZAS.find((x) => x.id === pieza.id);
   datos.nombres.forEach((n, i) => {
     md(`${i + 1}. **${lit(n.termino)}.** ${lit(n.definicion)}`);
     if (n.delLibro) md(`   - *${lit(n.rotuloDelLibro ?? ROTULO_DEL_LIBRO)}:* ${lit(n.delLibro)}`);
-    if (n.notaDebajo) md(`   - *${lit(n.notaDebajo.rotulo)}* (debajo de la cita, en el mismo bloque): ${lit(n.notaDebajo.texto)}`);
+    if (n.notaDebajo) md(`   - *${lit(n.notaDebajo.rotulo)}* (a la vista, bajo la definición): ${lit(n.notaDebajo.texto)}`);
     /* La vista pinta el pie si le pasa la definición ya compuesta con él (tema6/PiesDeTermino.jsx). */
     const pintado = typeof pieza.nombres[i].definicion !== "string";
     if (n.pie && pintado) md(`   - *Pie de fuente (bajo la definición):* ${lit(n.pie)}`);

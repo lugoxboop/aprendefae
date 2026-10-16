@@ -1,5 +1,6 @@
 import { CONSIGNA_CAPA_3_T5_A2, PREGUNTA_CAPA_3_T5_A2, OPCIONES_CAPA_3_T5_A2, PISTA_CAPA_3_T5_A2, VENTAS_T5_A2, FINAL_CAPA_3_T5_A2 } from "../../../../data/contabilidadT5Pieza2.js";
 import CajasQueRevelan, { LECTURA } from "../tema6/CajasQueRevelan.jsx";
+import { FiguraT5A2 } from "../tema6/FigurasCapa3.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -10,6 +11,7 @@ import CajasQueRevelan, { LECTURA } from "../tema6/CajasQueRevelan.jsx";
  * nombre en Sora 14/600 con el chevrón y, debajo, lo que costó cada título
  * y a cuánto se vende (C1-2: un escenario simulado). Sin color de acierto ni de error, sin verde ni rojo: ganancia y
  * pérdida las dice la palabra. Con las dos decididas aparece el final.
+ * Entre la consigna y las cajas, la cuenta T de las inversiones (§2b de Mai).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -21,5 +23,5 @@ const CAJAS = VENTAS_T5_A2.map((v) => ({
 const NOMBRE = { ...LECTURA, fontFamily: "Sora, sans-serif", fontWeight: 600, lineHeight: 1.35 };
 
 export default function DosVentas() {
-  return <CajasQueRevelan consigna={CONSIGNA_CAPA_3_T5_A2} cajas={CAJAS} final={FINAL_CAPA_3_T5_A2} estiloTitulo={NOMBRE} forma="fila" atributos={{ "data-capa3-t5-a2": true }} />;
+  return <CajasQueRevelan consigna={CONSIGNA_CAPA_3_T5_A2} cajas={CAJAS} final={FINAL_CAPA_3_T5_A2} estiloTitulo={NOMBRE} forma="fila" atributos={{ "data-capa3-t5-a2": true }} Figura={FiguraT5A2} />;
 }

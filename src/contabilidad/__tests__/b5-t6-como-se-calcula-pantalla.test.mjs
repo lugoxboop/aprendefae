@@ -267,7 +267,9 @@ test("★★★ capa 3: el tablero es una tabla; cada deuda llena la celda de su
     assert.equal(celdas()[k], D.TABLERO_T6_A5.celdas[k]);
     const revela = caja.querySelector(`[data-revela="${id}"]`);
     assert.equal(revela.querySelector("[data-devolucion]").textContent, pegado(g.falla));
-    assert.equal(revela.querySelector("p:not([data-devolucion])").textContent, pegado(g.revela));
+    /* B5 de Futaba: tras dos errores, la devolución y el pie, sin el texto que se revela. */
+    assert.equal(revela.querySelectorAll("p:not([data-devolucion]):not([data-pie])").length, 0);
+    assert.ok(!revela.textContent.includes(pegado(g.revela)), "sin el texto que se revela");
     assert.equal(revela.querySelector("[data-tipo-pie]").dataset.tipoPie, k === 0 ? "escenario" : "norma");
     assert.equal(caja.querySelector("[data-fila-total]"), null, "la suma espera a las cuatro");
     assert.equal(caja.querySelector("[data-final]").textContent, "");
@@ -428,7 +430,7 @@ test("★★ las otras piezas de T6 no cambian: sin `lector`, el pie visible se 
 
 /*
  * La capa 1 va paginada (un término por pantalla): se recorre término por
- * término con los puntos, abriendo «Más sobre este término» donde lo hay, y
+ * término con los puntos, abriendo «Ver lo que dice el libro» donde lo hay, y
  * se mira la carta que está a la vista.
  */
 const recorrerCapa1 = async (caja, fn) => {

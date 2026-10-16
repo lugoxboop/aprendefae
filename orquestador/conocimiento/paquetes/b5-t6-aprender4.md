@@ -556,3 +556,17 @@ Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza
 3. **Después, el pago** — El de hoy.
 4. **Abono** — El de hoy.
 5. **Cuánto se revive** — Def.: Si paga todo, se revive toda la deuda. Si abona una parte y promete pagar el resto, también se revive toda. Si abona una parte y avisa que ya no puede pagar más, se revive solo lo que pagó. · Cita: «…si el cliente paga la totalidad de la deuda o no…» (p. 203)
+
+## Enganche B1-B5 (Mai, 15-oct) y B5 de Futaba (final, con las correcciones de Shoko) · manda sobre lo de arriba
+
+Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entregas/futaba-b2-b5-final.md (sección «B5»). Los textos nuevos van para Shoko.
+
+| Pieza | Dónde va la etiqueta | Qué dice |
+|---|---|---|
+| T6 A4 | en la silueta del primer asiento de «Un tiempo después» | «Revivir la deuda» o «La plata que entra a Caja» |
+
+- **T6 A4 · capa 3:** ninguno de los textos que se revelan lleva cifras, y ninguno dice dónde quedan los $80.000. Caso a (ejemplo, la fila ya viene llena): «Pagó toda la factura: a Caja entra todo.» Caso b: «Como promete pagar el resto, vuelve toda la deuda.» Caso c: «Como ya no puede pagar más, lo demás sigue castigado.» Estos textos solo los ve quien acierta; quien falla dos veces ve la devolución de su opción.
+- Capa 3 (las 7): la pregunta de la caja solo se ve mientras falta decidir; al decidir sale y quedan las opciones marcadas (✓/✕), la devolución y el texto. La pregunta es el nombre accesible del grupo de opciones (aria-labelledby); cuando sale de la pantalla pasa a una copia oculta.
+- Capa 3: quien acierta ve el texto que se revela; quien falla dos veces ve la devolución de su opción y la figura, pero NO ese texto.
+- **Cajas ya respondidas:** muestran solo la opción elegida con su marca (cumple E4). Vale para la capa 3 de las siete piezas.
+- Nombre accesible del grupo de opciones: T6 A4 «¿Cuánto se revive?»
