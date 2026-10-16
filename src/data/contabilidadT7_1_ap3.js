@@ -19,6 +19,12 @@
  *   3. la tarjeta «En contra» de PEPS dice por qué la utilidad es «ficticia»
  * La opcional de P8 («cajas» → «unidades») NO se aplica.
  *
+ * ACIERTOS C7 (encima de lo anterior; reemplaza 1 y 2): P6 sale del paquete
+ * t7-1-a3-la-recomendacion-c7.md de Near con A3-1 y A3-2 de Mello
+ * (auditoria-mello-a4-v5-y-a3-recomendacion.md, §2). Sin plegado en P6; el
+ * impuesto de renta se nombra y se define en su acierto, y la tarjeta UEPS
+ * de P7 dice «el impuesto sobre la utilidad».
+ *
  * Los ids que siguen conservan su id. Nuevos: `la-refutacion` (sale de la
  * vieja pregunta `a-favor-y-en-contra`, que ahora son tarjetas) y la pregunta
  * de `la-recomendacion`. Sale `los-datos`: sus cifras pasan a la pila de P1.
@@ -205,25 +211,31 @@ const LADO_A_LADO = {
   },
 };
 
-/* P6 · La recomendación: una inferencia sobre la tabla, antes de leer el porqué. */
+/*
+ * P6 · La recomendación: una inferencia sobre los $950.000, antes de leer el
+ * porqué. Aciertos C7 (paquetes/t7-1-a3-la-recomendacion-c7.md, de Near, con
+ * A3-1 y A3-2 de Mello, auditoria-mello-a4-v5-y-a3-recomendacion.md §2): la
+ * pregunta va por precios que bajan (correcta: PEPS), y las dos condiciones
+ * del libro van a la vista en el acierto, sin plegado (C7). El acierto
+ * nombra y define el impuesto de renta, que AP4 usa (A3-2). La opcional de
+ * Mello («Según el libro, cada empresa escoge…») NO se aplica.
+ */
 const LA_RECOMENDACION = {
   id: "la-recomendacion",
-  pista: "Mira la tabla anterior: ¿con qué método lo que queda vale menos? Ese costo no desaparece.",
+  pista: `Si los precios bajan, ¿qué método deja en lo que queda los precios más bajos? Los ${$(costoDisponible)} no cambian.`,
   tipo: "eleccion",
-  parrafos: [`Lo que queda y lo vendido se reparten el mismo costo: ${$(costoDisponible)}. Si lo que queda vale menos, lo vendido vale más.`],
-  pregunta: "Cuando los precios suben, ¿con qué método lo vendido queda más caro?",
+  parrafos: [`Lo que queda y lo vendido se reparten ${$(costoDisponible)}.`],
+  pregunta: "Si los precios bajan, ¿con qué método lo vendido queda más caro?",
   opciones: [
-    { id: "peps", texto: "PEPS", correcta: false, devolucion: "Con PEPS, lo que queda se lleva los precios altos, y lo vendido, los bajos." },
-    { id: "ueps", texto: UEPS, correcta: true },
-    { id: "promedio", texto: "Promedio ponderado", correcta: false, devolucion: "El promedio queda en medio: ni el más caro ni el más barato." },
+    { id: "peps", texto: "PEPS", correcta: true },
+    { id: "ueps", texto: UEPS, correcta: false, devolucion: "Con UEPS, lo vendido lleva los precios más recientes, que ahora son los más bajos." },
+    { id: "promedio", texto: "Promedio ponderado", correcta: false, devolucion: "El promedio queda en medio. Busca el método que le deja a lo vendido los precios más altos." },
   ],
   pie: "Basado en el libro, pp. 215 y 217",
   error: { pie: "Basado en el libro, pp. 215-217 y 219-221" },
   acierto: {
-    /* Corrección 2 de Mello: sin «y menos impuesto de renta». */
-    texto: "Así es. Más costo de lo vendido deja menos utilidad.",
-    /* Corrección 1 de Mello. Trae «cuando»: el componente no lo pliega (regla de L). */
-    porque: "Por eso el libro recomienda UEPS en épocas de inflación, cuando los precios suben. También recomienda PEPS en épocas de deflación, cuando bajan, pero no dice por qué.",
+    /* Todo a la vista: sin `porque`. */
+    texto: "Exacto: menos utilidad y menos impuesto de renta, que se calcula sobre ella. Por eso el libro recomienda PEPS en deflación, cuando los precios bajan, y UEPS en inflación, cuando suben.",
     calculos: [],
     pie: "Basado en el libro, pp. 215 y 217",
   },
@@ -247,8 +259,8 @@ const A_FAVOR_Y_EN_CONTRA = {
       {
         id: "ueps",
         metodo: UEPS,
-        /* Corrección 2 de Mello: la glosa de «impuesto de renta». */
-        aFavor: "Si los precios suben, lo vendido sale más caro y el impuesto de renta, el que va sobre la utilidad, baja.",
+        /* Aciertos C7 · A3-2 de Mello: acepta el cambio de Near. «Impuesto de renta» ya se define en el acierto de P6. */
+        aFavor: "Si los precios suben, lo vendido sale más caro y el impuesto sobre la utilidad baja.",
         enContra: "Lo que queda lleva costos antiguos.",
       },
       {
@@ -259,7 +271,7 @@ const A_FAVOR_Y_EN_CONTRA = {
       },
     ],
   },
-  /* «Seguir» se activa cuando se han abierto las tres: la de UEPS trae la glosa que usa A4. */
+  /* «Seguir» se activa cuando se han abierto las tres. */
   boton: BOTON.seguir,
   pie: "Basado en el libro, pp. 214-218",
 };

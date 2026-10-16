@@ -174,3 +174,36 @@ Mandan sobre 3.1, 3.2 y 3.4. «Sin cambio»: el acierto de 3.2 se queda. El segu
 | devolucion | «No es esa. Baja: se acredita. Lo que regresó ya no lo tiene que pagar.» |
 
 Para Shoko, el cruce con a4: ninguno de los cinco hechos repite las palabras de qd-03 ni de qd-04. El cheque de a1 lo cuenta el banco; el de a4, el cliente.
+
+## 7 · Lote 6a: las fichas a un nivel (hoja de fusiones de Mai, textos de Futaba, correcciones de Shoko)
+
+Manda sobre lo anterior en lo que toca la interfaz y en las cuatro fichas de préstamo.
+
+### 7.1 Las tres opciones son los tres cajones
+
+- Cajones: «Otra cuenta por cobrar» · «Clientes, se debita» · «Clientes, se acredita». Tocar un cajón coloca la ficha. No hay pestañas ni botón.
+- El grupo se lee «Cuenta por cobrar». PARA SHOKO: la hoja pide la etiqueta del grupo de pestañas de hoy, que no tenía nombre.
+- Reparto de devoluciones (Futaba): las de préstamo puestas en Clientes dan B; las de Clientes puestas en «Otra» dan A; el lado equivocado da C, y C5 en las dos ventas a crédito puestas en «se acredita».
+
+### 7.2 Los préstamos, cada uno con otra forma
+
+| id | Hecho |
+|---|---|
+| socio | «Un socio le pide plata prestada a la empresa, y ella se la da.» |
+| trabajador | «Un trabajador necesita plata y la empresa se la entrega; él la pagará por cuotas.» |
+| particular | «Alguien que no es cliente, socio ni trabajador recibe plata de la empresa. Tiene que devolverla.» |
+| prestamo-cliente | «Un cliente le pide plata a la empresa, y ella se la entrega para que la devuelva.» |
+
+La de prestamo-cliente es la corrección de Shoko. Los aciertos no cambian.
+
+### 7.3 Textos
+
+- «¿Cómo se juega?», línea 1 (Futaba): «Lee el hecho y elige dónde va: en otra cuenta por cobrar, o en Clientes, y si se debita o se acredita.»
+- «¿Cómo se juega?», línea 2. Adaptada a la hoja de Mai (sin botón), PARA SHOKO: «Toca el cajón donde va la ficha; si fallas, tienes un intento más.»
+- Resumen (Futaba): «{bien} de {cuantas} fichas bien al primer intento.»
+- Texto alternativo. La corrección de Shoko, con su frase del botón adaptada, PARA SHOKO: «Actividad de clasificación. Aparece un hecho. Elige entre tres opciones: Otra cuenta por cobrar; Clientes, se debita; o Clientes, se acredita. Toca el cajón donde va la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.»
+- Se retiran: PESO_CUENTA, PESO_LADO, LADOS, CUENTAS y los rótulos del botón.
+
+### 7.4 La tanda (R10)
+
+Nueve fichas, antes las diez del banco. Entre 2 y 4 por cajón. El banco da 4 · 3 · 3, así que el reparto se sortea con ese tope: 4 · 3 · 2, 4 · 2 · 3 o 3 · 3 · 3.

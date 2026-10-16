@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { seccion, compararDatos, recorrer, prepararDom, citas, CONDICION } from "./t7-3-recorte.mjs";
+import { SOBRANTE as C7, MELLO_T73, NO_APLICADAS, aplicarAlRecorte, palabrasAlAcertar } from "./correccionesMelloAciertos.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -15,8 +16,11 @@ import { seccion, compararDatos, recorrer, prepararDom, citas, CONDICION } from 
  *   · la respuesta regalada de P2 se corrigió: «al haber» ya no se lee
  *     antes de preguntarlo
  *   · las dos barras, libros contra conteo, a la misma escala
- *   · el «¿Por qué?» de P1 («solo se presentan en el permanente») va a la
- *     vista (regla de L)
+ *   · ACIERTOS C7: P1 `sobrante` sale de t7-3-tres-aciertos-c7.md (Near),
+ *     que Mello pasa sin correcciones (auditoria-mello-enganche-v6-y-t7-3-
+ *     aciertos.md, §2.3): la condición de la ley va arriba, a la vista, y la
+ *     del permanente («solo») en el acierto; sin «¿Por qué?» (C7); 60
+ *     palabras al acertar (B2). La «Opcional» de Mello NO se aplica
  *   · las cifras de I-1 e I-2; fuera del catálogo de FP
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -51,6 +55,8 @@ s("resumen").lineas.splice(s("resumen").lineas.length - 1, 0, LINEA_MELLO);
 assert.equal(s("sobrante").pista, "El sobrante es la diferencia entre lo que hay en la bodega y lo que dicen los libros.");
 s("sobrante").pista = "El sobrante no es todo lo que hay en la bodega. ¿Qué parte de lo contado es?";
 assert.ok(leer("orquestador/conocimiento/paquetes/mello-pistas-distractores-v1.md").includes(`«${s("sobrante").pista}»`));
+/* Aciertos C7: P1, con la tabla final de Near (Mello: PASA). La pista y los errores no cambian. */
+aplicarAlRecorte(s("sobrante"), C7);
 
 /* ═══════════ 1 · DATOS ═══════════ */
 
@@ -68,9 +74,29 @@ test("★★★ la respuesta regalada se corrigió: antes de preguntar el lado d
   assert.match(f.acierto.texto, /va al haber/);
 });
 
-test("★★★ regla de L: el «¿Por qué?» de P1 («solo se presentan en el sistema permanente») va a la vista, y es el único", () => {
-  assert.match(s("sobrante").porque, CONDICION);
-  assert.deepEqual(P.pantallas.filter((p) => p.acierto?.porqueALaVista).map((p) => p.id), ["sobrante"]);
+test("★★★ C7 · P1 sin plegado: «al menos… a más tardar…» arriba y «solo… en el sistema permanente» en el acierto, a la vista", () => {
+  const p = pantalla("sobrante");
+  assert.equal(p.acierto.porque, undefined);
+  assert.equal(p.acierto.porqueALaVista, undefined);
+  assert.match(p.parrafos[0], /al menos una vez al año, a más tardar el 31 de diciembre/);
+  assert.match(p.acierto.texto, /Estos ajustes solo se dan en el sistema permanente\./);
+  assert.match(p.acierto.texto, CONDICION);
+  assert.deepEqual(P.pantallas.filter((x) => x.acierto?.porqueALaVista).map((x) => x.id), []);
+});
+
+test("★★★ P1 dice lo de la tabla final de Near, letra por letra (Mello: PASA); la opcional no se aplica; B2: 60", () => {
+  assert.match(MELLO_T73, /### 2\.3 `sobrante` · Sobrantes y faltantes: PASA\n/);
+  const p = pantalla("sobrante");
+  assert.deepEqual(p.parrafos, C7.Texto.textos);
+  assert.equal(p.pregunta, C7.Pregunta.textos[0]);
+  assert.deepEqual(p.opciones.map((o) => o.texto), C7.Opciones.textos);
+  assert.equal(p.acierto.texto, C7.Acierto.textos[0]);
+  assert.deepEqual(p.figuras[0].barras.map((b) => `${b.rot} $${cifra(b.v)}`), C7["Rótulos de la figura"].textos);
+  assert.deepEqual(p.acierto.asientos[0].lineas.map((l) => `${l.cuenta} · ${l.lado === "debe" ? "Debe" : "Haber"} $${cifra(l.monto)}`), C7["Figura del acierto"].textos);
+  /* La opcional: «Baja el costo de la mercancía vendida» no vuelve. */
+  assert.ok(MELLO_T73.includes(NO_APLICADAS.t73Opcional));
+  assert.doesNotMatch(p.acierto.texto, /Baja el costo/);
+  assert.equal(palabrasAlAcertar(C7), 60);
 });
 
 test("★★★ las cifras de I-1 e I-2 se recalculan; ninguna de X1-X4 ni la que Near descartó", () => {
