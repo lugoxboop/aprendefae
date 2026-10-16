@@ -86,13 +86,15 @@ function Visto() {
 
 /* Un campo de cifra: «$», punto de miles, sin decimales, hasta 8 dígitos. */
 /* `tachado` (E4): el valor que escribió el estudiante y no era, con ✕ y tachado; su borde de siempre, sin coral. */
-function Campo({ id, valor, onCambio, bloqueado, etiqueta, tachado = false, formatear = formatearCifra }) {
+/* `acertado` (E4, lote 6c): la cifra de una pregunta acertada, con ✓, borde 2 nodo y relleno navy. */
+function Campo({ id, valor, onCambio, bloqueado, etiqueta, tachado = false, acertado = false, formatear = formatearCifra }) {
   return (
-    <div data-caja-campo={id} data-marca={tachado ? TACHADA : ""} style={{
+    <div data-caja-campo={id} data-marca={tachado ? TACHADA : acertado ? CORRECTA : ""} style={{
       display: "flex", alignItems: "center", gap: "3px", height: "44px", boxSizing: "border-box", padding: "0 8px", borderRadius: "10px",
-      background: "rgba(14,27,46,0.7)", border: "1px solid rgba(248,249,250,0.22)",
+      background: "rgba(14,27,46,0.7)", border: "1px solid rgba(248,249,250,0.22)", ...(acertado ? estiloE4(CORRECTA) : null),
     }}>
       {tachado && <Marca marca={TACHADA} />}
+      {acertado && <Marca marca={CORRECTA} />}
       <span aria-hidden="true" data-signo style={{ fontFamily: SORA, fontSize: "14px", fontWeight: 700, color: COLOR.apagado, marginRight: "3px" }}>$</span>
       <input
         data-campo-cifra={id}
@@ -350,7 +352,10 @@ function Retro({ resultado }) {
 
 const vacio = () => ({ mesa: [], resultado: null, texto: "" });
 
-/* Una pregunta de cifra escrita: lo que lleva encima (si lo lleva), el campo y, si falló, ✓ la cifra correcta. */
+/*
+ * Una pregunta de cifra escrita: lo que lleva encima (si lo lleva), el campo y, si falló, ✓ la cifra
+ * correcta. Lote 6c (E4 en todo Hacer): si acertó, su propia cifra queda ✓; las tres preguntas llevan ✓ y ✕.
+ */
 function Pregunta({ parte, texto, onTexto, resultado, Bloque, reducido, etiqueta }) {
   const fallo = Boolean(resultado) && !resultado.ok;
   return (
@@ -358,7 +363,7 @@ function Pregunta({ parte, texto, onTexto, resultado, Bloque, reducido, etiqueta
       {Bloque && <Bloque comprobada={Boolean(resultado)} reducido={reducido} />}
       <div data-pregunta={parte.id} style={{ marginTop: "12px" }}>
         <Campo id={parte.id} valor={texto} onCambio={onTexto} bloqueado={Boolean(resultado)} etiqueta={etiqueta}
-          tachado={fallo} formatear={formatearRespuesta} />
+          tachado={fallo} acertado={Boolean(resultado?.ok)} formatear={formatearRespuesta} />
         {fallo && <ValorCorrecto cuenta={parte.id} valor={resultado.correcta} oculto={OCULTO_E4.valorCorrecto} />}
       </div>
     </>
