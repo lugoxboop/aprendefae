@@ -676,6 +676,8 @@ export const SUBJECTS = {
           { id: "t5-el-interes-del-periodo", nombre: "El interés del periodo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* N5 de la Célula C, justo después de N4; la sostienen los tres momentos de B (decisión de corte de T5, punto 6). Dos ventas de acciones, una con ganancia y otra con pérdida, por el costo, con cifras construidas. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0113. */
           { id: "t5-gano-o-perdio", nombre: "¿Ganó o perdió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* N6 de la Célula C, posición 9 de la decisión de corte de T5 (punto 6): después de N4 y de N5, antes de N7, que la sostiene, y del cierre de Santa Pacha. Los gastos de la compra al costo y el dividendo a Ingresos por dividendos, p. 193, con un ejemplo construido. Cero FP. */
+          { id: "t5-a2-lo-que-el-ejemplo-no-trae", nombre: "Lo que el ejemplo no trae", clasificacion: { tipo: APRENDER } },
           { id: "b5-t5-a2", nombre: "El cierre completo de Santa Pacha", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
@@ -850,6 +852,8 @@ export const SUBJECTS = {
           { id: "r5-3", nombre: "Marzo en Comercializadora Mate", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
           /* r5-4: el 6 del bloque D, pp. 273-274, en diez asientos (sin los fletes del 25 y del 28). Experto · 90 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0253. */
           { id: "r5-4", nombre: "Septiembre en Barranquilla", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          /* r5-5: el mismo septiembre en permanente, con su kárdex (paquete e5-r5-5-v1). Difícil · 50 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0254. */
+          { id: "r5-5", nombre: "Septiembre en permanente", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
     ],

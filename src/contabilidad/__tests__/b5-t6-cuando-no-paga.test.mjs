@@ -88,19 +88,34 @@ test("★★★ todo texto de los datos es literal del paquete guardado (paquete
   assert.deepEqual(textos.filter((t) => !FUENTE.includes(t)), []);
 });
 
-test("★★★ comillas internas “ ” en los términos 3 y 4 y en la nota del término 2 (término 3: «Castigar una deuda», Sakuta); las citas del libro con «» y página", () => {
+test("★★★ B2: siete términos en el orden de Futaba, literales; comillas internas “ ” en los términos 3 y 4; las citas del libro con «» y página", () => {
   const n = D.PIEZA_NO_VA_A_PAGAR.nombres;
   assert.deepEqual(n.map((x) => x.termino), [
-    "Cuentas incobrables o de difícil cobro", "Cómo se decide", "Castigar una deuda", "Método de anulación directa", "Método de provisiones",
+    "Cuentas incobrables o de difícil cobro", "Cómo se decide", "Castigar una deuda", "Método de anulación directa",
+    "La desventaja de la anulación directa", "Método de provisiones", "Los asientos del método de provisiones",
   ]);
+  /* B2 (un término por pantalla, 15-oct), guardada al final del paquete: cada texto, literal; «el de hoy» donde lo dice. */
+  const B2 = FUENTE.slice(FUENTE.indexOf("## B2 ·"));
+  for (const x of n) {
+    assert.ok(B2.includes(`**${x.termino}**`), x.termino);
+    for (const t of [x.definicion, x.delLibro].filter(Boolean)) {
+      if (!B2.includes(t)) assert.ok([n[1].definicion, n[2].definicion, n[5].delLibro].includes(t), `${x.termino}: «${t.slice(0, 40)}…» no es de B2 ni «el de hoy»`);
+    }
+  }
+  assert.ok(B2.includes("**Cómo se decide** — Def.: La de hoy. · Nota: Una deuda vigente todavía está dentro de su plazo de pago. Una vencida ya lo pasó."));
+  assert.ok(B2.includes("**Castigar una deuda** — El de hoy."));
+  assert.ok(B2.includes("**Método de provisiones** — Def.: Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. · Cita: la de hoy, de la p. 200."));
   assert.ok(n[3].definicion.includes("dice “provisiones”, pero"));
-  assert.ok(n[1].delLibro.includes("“Cuentas vigentes” y “Cuentas vencidas”"));
+  assert.equal(n[1].delLibro, "Una deuda vigente todavía está dentro de su plazo de pago. Una vencida ya lo pasó.");
   assert.equal(n[1].rotuloDelLibro, "Nota");
   assert.equal(n[2].definicion, "Castigar una deuda es darla de baja porque ya no se espera cobrarla. El libro dice “castigar la cuenta”.");
   for (const t of [n[3].definicion, n[1].delLibro, n[2].definicion]) assert.doesNotMatch(t, /[«»]/, "comillas internas «» donde van “ ”");
   assert.match(n[0].delLibro, /^«.*» \(p\. 198\)$/);
-  assert.match(n[3].delLibro, /^«.*» \(p\. 199\)$/);
-  assert.match(n[4].delLibro, /^«.*» \(p\. 200\)$/);
+  /* La cita de la p. 199 pasa a la desventaja; la anulación directa queda sin cita. */
+  assert.equal(n[3].delLibro, undefined);
+  assert.match(n[4].delLibro, /^«.*» \(p\. 199\)$/);
+  assert.match(n[5].delLibro, /^«.*» \(p\. 200\)$/);
+  assert.equal(n[6].delLibro, undefined);
 });
 
 test("★★★ ningún componente de la pieza escribe texto que lea el estudiante", () => {

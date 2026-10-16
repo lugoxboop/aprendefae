@@ -24,11 +24,11 @@ export const PIE_LIBRO = (paginas) => `Basado en el libro, ${paginas}`;
 export const PIE_SIMULADO = "Escenario simulado";
 /* 3 · los porcentajes de la norma, aplicados en el ejemplo. */
 export const PIE_PORCENTAJE = "Fuente del porcentaje: Decreto 1625 de 2016";
-/* 4 · la norma. Con «· Libro, p. 201» solo en la nota del término 4, donde hablan las dos fuentes. */
+/* 4 · la norma. Con «· Libro, p. 201» solo en el término 5 (antes, la nota del término 4), donde hablan las dos fuentes. */
 export const PIE_DECRETO = "Fuente: Decreto 1625 de 2016, art. 1.2.1.18.21";
 export const PIE_DECRETO_Y_LIBRO = `${PIE_DECRETO} · Libro, p. 201`;
 /*
- * C7-6 de Futaba (lote C2 · C1 · C7): la nota del término 4 dice ahora la
+ * C7-6 de Futaba (lote C2 · C1 · C7): el término 5 (antes, la nota del término 4) dice la
  * condición de llevar contabilidad, que Shoko verificó en el Concepto 534 de
  * 2026 de la DIAN (párrafos 4 y 11). Su pie nombra también ese concepto.
  */
@@ -40,9 +40,10 @@ export const ROTULO_SIMULADO_T6_A5 = "Escenario simulado · no es la tabla del l
 /* ═══════════ LA PIEZA (lo que lee CuatroCapas: título, objetivo y capa 1) ═══════════ */
 
 /*
- * Cada término trae su `pie`. CuatroCapas no pinta pies en la capa 1: cómo
- * se ven lo decide la guía de Mai. La nota del término 4 trae el suyo en
- * `pieDelLibro`.
+ * Cada término trae su `pie`, y lo pinta PiesDeTermino.jsx bajo la
+ * definición. Desde B2 (un término por pantalla, 15-oct) ningún término
+ * lleva nota: la del término 4 es ahora el término 5, con su pie. Si una
+ * nota vuelve, su pie va en `pieDelLibro`.
  */
 export const PIEZA_COMO_SE_CALCULA = {
   id: "b5-t6-a5-como-se-calcula-la-provision",
@@ -55,12 +56,13 @@ export const PIEZA_COMO_SE_CALCULA = {
       definicion: "Al cierre, la empresa agrupa lo que le deben sus clientes. Separa las deudas vigentes de las vencidas, y a estas según cuánto tiempo llevan vencidas.",
       /* Sakuta: «pp. 200-201» (Futaba decía «p. 200»). */
       pie: PIE_LIBRO("pp. 200-201"),
-      delLibro: "«Lo primero que se deba hacer para realizar el ajuste por cuentas incobrables a diciembre 31 es calcular la probable pérdida de cartera con base en el porcentaje de pérdida establecido por la empresa.» (p. 201)",
     },
     {
       termino: "Un porcentaje por grupo",
       definicion: "A cada grupo se le aplica el porcentaje que la empresa espera perder. Los porcentajes los fija la propia empresa.",
       pie: PIE_LIBRO("p. 201"),
+      /* B2: la cita pasa aquí desde «Análisis de vencimiento», recortada a lo que dice de los porcentajes. */
+      delLibro: "«…calcular la probable pérdida de cartera con base en el porcentaje de pérdida establecido por la empresa.» (p. 201)",
     },
     {
       termino: "La provisión",
@@ -71,9 +73,12 @@ export const PIEZA_COMO_SE_CALCULA = {
       termino: "Una referencia colombiana",
       definicion: "En Colombia, la norma del impuesto de renta trae una provisión general con tres porcentajes. Es el 5 % para deudas con más de tres meses de vencidas, sin pasar de seis. Es el 10 % para más de seis meses, sin pasar de un año. Y es el 15 % para más de un año.",
       pie: PIE_DECRETO,
-      delLibro: "Esos porcentajes son el máximo que una empresa obligada a llevar contabilidad puede restar como gasto al calcular su impuesto de renta. Solo valen si usa este método. No son una regla para todas las empresas: cada una fija los suyos.",
-      rotuloDelLibro: "Nota",
-      pieDelLibro: PIE_DECRETO_DIAN_Y_LIBRO,
+    },
+    {
+      /* B2: la nota del término 4 (C7-6) pasa a pantalla propia, con la frase partida y el pie de la C7-6. */
+      termino: "Para qué sirven esos porcentajes",
+      definicion: "Son el máximo que una empresa obligada a llevar contabilidad puede restar como gasto al calcular su impuesto de renta. Solo valen si usa este método. No son una regla para todas las empresas: cada una fija los suyos.",
+      pie: PIE_DECRETO_DIAN_Y_LIBRO,
     },
   ],
 };
