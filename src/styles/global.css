@@ -102,7 +102,8 @@ input:focus-visible {
 .fae-cabecera-marca button,
 .fae-cabecera-titulo > button,
 .fae-logo-boton,
-.fae-split__cerrar {
+.fae-split__cerrar,
+[data-como-se-juega] {
   position: relative;
 }
 
@@ -114,10 +115,19 @@ input:focus-visible {
  * de logotipo que hoy sí responden al toque—. `max(100%, 44px)` nunca
  * encoge lo que ya era grande.
  */
+/*
+ * Y «¿Cómo se juega?», que lo encontró la Célula D midiendo T4: medía 40 × 40
+ * y su propio comentario decía «al menos 40 × 40», que era la regla antes de
+ * que kit.md fijara 44. Va por aquí y no subiéndole el minHeight porque está
+ * en el flujo, debajo de la consigna y con un margen inferior negativo que
+ * aprieta el espacio: crecer 4 px empujaría el contenido de todas las
+ * actividades que lo traen. El dibujo se queda igual y el dedo acierta.
+ */
 .fae-cabecera-marca button::after,
 .fae-cabecera-titulo > button::after,
 .fae-logo-boton::after,
-.fae-split__cerrar::after {
+.fae-split__cerrar::after,
+[data-como-se-juega]::after {
   content: "";
   position: absolute;
   top: 50%;

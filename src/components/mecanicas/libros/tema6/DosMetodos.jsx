@@ -14,7 +14,7 @@ import CajasQueRevelan, { LECTURA } from "./CajasQueRevelan.jsx";
 /* Hoja 6: abierta, cada caja pide decidir cuándo aparece el gasto antes de revelar. */
 const CAJAS = METODOS_T6_A2.map((m) => ({
   id: m.id, titulo: m.nombre, revela: m.revela, pie: m.pie,
-  decide: { pregunta: PREGUNTA_CAPA_3_T6_A2, opciones: OPCIONES_CAPA_3_T6_A2, correcta: m.correcta, falla: m.falla },
+  decide: { pregunta: PREGUNTA_CAPA_3_T6_A2, opciones: OPCIONES_CAPA_3_T6_A2, correcta: m.correcta, falla: m.falla, pista: m.pista },
 }));
 const NOMBRE = { ...LECTURA, fontFamily: "Sora, sans-serif", fontWeight: 600 };
 /* La regla de Mai (§2): en fila solo si todas caben en un renglón a 320. La segunda opción se parte a 320 (medido en Chromium): columna. */

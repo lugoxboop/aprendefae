@@ -134,7 +134,10 @@ test("★★★ cada texto del estudiante está entero en el paquete (guarda: 12
   }
   for (const [et, val] of T.DATOS_DEL_LIBRO_BARRANQUILLA[0].renglones) assert.ok(PLANO.includes(`${et} · ${val}`), et);
   /* Los nombres cortos de la pantalla final, en su orden, y los rótulos que cambian respecto de r5-3. */
-  assert.ok(PLANO.includes(A.map((a) => a.operacion).join(" · ")));
+  /* Kamogawa (la fecha una vez): sin «, día N», que ya dice la fecha de la fila; los fletes se nombran por lo que son. */
+  const cortos = /Compra, día 2 · Flete compra[^\n]*/.exec(PAQUETE)[0].split(" · ")
+    .map((x) => x.replace(/, día \d+$/, "").replace(/^Flete (compra|venta)$/, (_, q) => `Flete de la ${q}`));
+  assert.deepEqual(A.map((a) => a.operacion), cortos);
   assert.ok(A.every((a) => a.operacion.length <= 20));
   for (const t of [`«${T.ROTULOS_BARRANQUILLA.datosDeMarzo}»`, `«${T.ROTULOS_BARRANQUILLA.tasasALaVista}»`, `«${T.ROTULOS_BARRANQUILLA.marzoEnOcho}»`, `«${T.ENTRADA_BARRANQUILLA.titulo}»`]) assert.ok(PLANO.includes(t), t);
   /* Decisión 3: «No hay IVA ni retención.» sale de los datos declarados. */
@@ -340,7 +343,7 @@ test("★★★ catálogo, registro de la vista, etiqueta y migración 0253 dice
   assert.equal(JUEGOS_REPASO_CAP5.find((j) => j.id === "r5-4").titulo, T.R5_4.nombre);
   assert.equal(JUEGOS_REPASO_CAP5.find((j) => j.id === "r5-4").Mecanica, Barranquilla);
   assert.ok(hayReglaPara("r5-4"));
-  assert.equal(etiquetaDeItem("r5-4", "a7"), "17 SEP · Pago, día 17");
+  assert.equal(etiquetaDeItem("r5-4", "a7"), "17 SEP · Pago");
   assert.equal(new Set(A.map((x) => etiquetaDeItem("r5-4", x.id))).size, 10);
   const migraciones = readdirSync(new URL("supabase/migrations/", RAIZ)).filter((f) => /^\d{4}_/.test(f) && leer(`supabase/migrations/${f}`).includes("'r5-4'"));
   assert.deepEqual(migraciones, ["0253_r5_4_septiembre_en_barranquilla.sql"]);
@@ -548,4 +551,28 @@ test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda:
   assert.deepEqual(bajos, []);
   /* Los dos que Kamogawa sustituyó (daban 59,7) ya pasan. */
   for (const id of ["a8", "a10"]) assert.ok(inflesz(asiento(id).hecho).valor >= UMBRAL, id);
+});
+
+/* ═══════════ LA FECHA UNA SOLA VEZ EN LA TARJETA (Kamogawa) ═══════════ */
+
+test("★★ la tarjeta del hecho no repite la fecha: ningún hecho de septiembre lleva la marca «n DE SEPTIEMBRE»", async () => {
+  const { hechoDiceSuFecha } = await import("../../components/repasoCap5/Mate.jsx");
+  for (const [k, a] of A.entries()) {
+    assert.ok(hechoDiceSuFecha(a), `${a.id}: el hecho de Miyata empieza con su fecha`);
+    const { caja, desmontar } = await montar(h(Barranquilla, { pasoInicial: k }));
+    const tarjeta = caja.querySelector("[data-hecho]");
+    assert.equal(tarjeta.textContent.includes(a.fecha), false, `${a.id}: la marca de fecha sigue en la tarjeta`);
+    assert.equal(tarjeta.querySelector("[data-frase]").textContent, a.hecho, `${a.id}: el texto de Miyata no se toca`);
+    desmontar();
+  }
+});
+
+test("★★ E5 · la lista final no repite el día: «2 SEP · Compra», sin «, día 2», y ningún renglón queda igual a otro", async () => {
+  /* La pantalla final pinta «fecha · operacion» por fila (lo cuida la prueba del cierre). */
+  const filas = A.map((a) => `${a.dia} SEP · ${a.operacion}`);
+  assert.equal(filas.length, A.length);
+  assert.deepEqual(filas.filter((f) => /\bd[ií]a\b/i.test(f)), [], "un renglón repite el día");
+  assert.equal(new Set(filas).size, filas.length, "dos renglones quedan iguales");
+  assert.equal(filas[1], "2 SEP · Flete de la compra");
+  assert.deepEqual(A.map((a) => J.unidadDeR5_4(a.id)), filas, "el panel docente dice lo mismo que la lista");
 });
