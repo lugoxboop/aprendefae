@@ -1,0 +1,127 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * EL CONTRASTE DEL TEXTO, MEDIDO EN LA PÁGINA.
+ *
+ * La regla (WCAG AA, la que usa el prompt maestro de diseño): el texto normal
+ * necesita 4,5:1 contra su fondo; el grande —24 px, o 18,66 px en negrita—
+ * se conforma con 3:1.
+ *
+ * POR QUÉ NO SIRVE MIRAR EL CÓDIGO: casi todo el texto atenuado de la
+ * plataforma se escribe como `rgba(248,249,250,0.45)`, y ese 0,45 no dice
+ * nada por sí solo. Lo que se ve depende del fondo que tenga DEBAJO —una
+ * tarjeta sobre otra tarjeta sobre el fondo de la materia—, y de si ese fondo
+ * es a su vez semitransparente. El número que importa no está escrito en
+ * ningún sitio: hay que componerlo.
+ *
+ * LO QUE HACE: por cada elemento con texto propio visible, compone el fondo
+ * real subiendo por los padres hasta encontrar opacidad 1, mezcla las capas
+ * en orden, y calcula la razón de contraste.
+ *
+ * LO QUE NO HACE, dicho de frente: no cuenta los controles deshabilitados
+ * —WCAG los exime y verlos apagados es la señal—, no mira texto sobre imágenes ni sobre
+ * degradados —se queda con el color plano más cercano—, y solo recorre las
+ * rutas que se le pasan. Una conclusión aquí nombra lo que miró (kit.md).
+ *
+ * CÓMO SE CORRE (hace falta el paquete construido y servido):
+ *
+ *   node scripts/contraste.mjs "Introducción a la contabilidad"
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+import pkg from "/opt/npm-tools/node_modules/playwright-core/index.js";
+const { chromium } = pkg;
+
+const TEMA = process.argv[2] ?? "Introducción a la contabilidad";
+const ANCHO = Number(process.argv[3] ?? 320);
+const RAIZ = `http://127.0.0.1:${process.env.PUERTO ?? 8099}/`;
+
+const MEDIR = `(() => {
+  const lum = ([r, g, b]) => {
+    const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+  };
+  const razon = (a, b) => { const l1 = lum(a), l2 = lum(b); return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05); };
+  const nums = (c) => (c.match(/[\\d.]+/g) || []).map(Number);
+  /* Mezcla una capa con alfa sobre lo que ya hay debajo. */
+  const sobre = (capa, base) => capa.slice(0, 3).map((v, i) => Math.round(v * capa[3] + base[i] * (1 - capa[3])));
+  /* El fondo real: sube por los padres mezclando cada capa hasta llegar a opaco. */
+  const fondoDe = (el) => {
+    const capas = [];
+    for (let n = el; n; n = n.parentElement) {
+      const c = nums(getComputedStyle(n).backgroundColor);
+      if (c.length < 3) continue;
+      const a = c.length === 4 ? c[3] : 1;
+      if (a === 0) continue;
+      capas.push([c[0], c[1], c[2], a]);
+      if (a === 1) break;
+    }
+    if (capas.length === 0) return [14, 27, 46];
+    let base = capas[capas.length - 1].slice(0, 3);
+    for (let i = capas.length - 2; i >= 0; i--) base = sobre(capas[i], base);
+    return base;
+  };
+  const visible = (el) => {
+    const s = getComputedStyle(el);
+    if (s.display === "none" || s.visibility === "hidden" || Number(s.opacity) === 0) return false;
+    const r = el.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return false;
+    /* El texto recortado solo para lector de pantalla no se ve. */
+    if (r.width <= 1.5 && r.height <= 1.5) return false;
+    return true;
+  };
+  const malos = [];
+  for (const el of document.querySelectorAll("body *")) {
+    const propio = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent.trim()).join(" ").trim();
+    if (!propio) continue;
+    if (!visible(el)) continue;
+    /*
+     * Un control inactivo no pide contraste (WCAG 1.4.3 exime a lo
+     * deshabilitado): el «Siguiente» que todavía no se puede pulsar se ve
+     * apagado A PROPÓSITO, y contarlo aquí sería perseguir un acierto.
+     */
+    if (el.closest("[disabled], [aria-disabled='true']")) continue;
+    const s = getComputedStyle(el);
+    const texto = nums(s.color);
+    if (texto.length < 3) continue;
+    const alfa = texto.length === 4 ? texto[3] : 1;
+    const fondo = fondoDe(el);
+    /* Un texto semitransparente se mezcla con su propio fondo antes de medirse. */
+    const color = alfa < 1 ? sobre([texto[0], texto[1], texto[2], alfa], fondo) : texto.slice(0, 3);
+    const px = parseFloat(s.fontSize);
+    const peso = Number(s.fontWeight) || 400;
+    const grande = px >= 24 || (px >= 18.66 && peso >= 700);
+    const piso = grande ? 3 : 4.5;
+    const r = razon(color, fondo);
+    if (r < piso) malos.push({ r: Math.round(r * 100) / 100, piso, px, peso, texto: propio.slice(0, 34), etiqueta: el.tagName.toLowerCase(), color: s.color, fondo: "rgb(" + fondo.join(",") + ")" });
+  }
+  return malos;
+})()`;
+
+const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium" });
+const p = await b.newPage({ viewport: { width: ANCHO, height: 1400 } });
+await p.goto(RAIZ, { waitUntil: "networkidle" });
+for (const paso of ["Contabilidad", TEMA, "El material que explica"]) {
+  await p.locator(`button:visible:has-text("${paso}")`).first().click({ timeout: 9000 });
+  await p.waitForTimeout(650);
+}
+
+const vistos = new Map();
+let pantallas = 0;
+for (let i = 0; i < 30; i++) {
+  pantallas++;
+  for (const m of await p.evaluate(MEDIR)) {
+    const clave = `${m.r}|${m.px}|${m.texto}`;
+    if (!vistos.has(clave)) vistos.set(clave, m);
+  }
+  const sig = p.locator('button:visible:has-text("Siguiente")');
+  if ((await sig.count()) === 0) break;
+  await sig.first().click({ timeout: 5000 }).catch(() => {});
+  await p.waitForTimeout(340);
+}
+await b.close();
+
+const malos = [...vistos.values()].sort((a, b2) => a.r - b2.r);
+for (const m of malos) {
+  console.log(`  ${String(m.r).padStart(5)}:1  (pide ${m.piso})  ${String(m.px).padStart(5)}px/${m.peso}  <${m.etiqueta}>  «${m.texto}»\n          texto ${m.color}  sobre ${m.fondo}`);
+}
+console.log(`\n${malos.length} texto(s) por debajo del contraste que pide su tamaño, en ${pantallas} pantalla(s) de «${TEMA}» a ${ANCHO} px.`);
+process.exit(malos.length === 0 ? 0 : 1);
