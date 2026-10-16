@@ -111,56 +111,58 @@ for (const ancho of ANCHOS) {
     if (CAPTURAS) await pg.screenshot({ path: resolve(CAPTURAS, `r5-4-${ancho}-${String(++n).padStart(2, "0")}-${nombre}.png`) });
   };
   /*
-   * «El mes en dos cuentas» (e5-mes-en-dos-cuentas, correcciones de Takamura):
-   * no fuerza el desplazamiento y anima solo cuando entra entero en la ventana.
-   * Se lleva a la vista como lo haría el estudiante y, mientras anima, se
-   * muestrea cada 50 ms que esté entero en la ventana (E2).
+   * P2 de Itagaki: el calendario es la figura del mes (el panel salió de r5-4).
+   * ⛔ (a) el encabezado: del borde superior de la actividad a la frase del
+   * hecho; si pasa de 96 px, se detiene. La figura debe empezar a 280 px o
+   * menos. ⛔ (b) la perilla: su área táctil EFECTIVA (los puntos donde un
+   * toque cae en ella) no puede bajar de 44 × 44 px.
    */
-  const mes = async (id) => {
-    /* En el error, el panel llega con «Iba aquí» (0,7 s, §4.2): se espera a que esté. */
-    await pg.waitForSelector("[data-mes-en-dos-cuentas]", { state: "attached", timeout: 3000 });
-    const compacta = await pg.evaluate(() => document.querySelector("[data-mes-en-dos-cuentas]").dataset.mesEnDosCuentas === "compacta");
-    if (compacta) {
-      const alto = await pg.evaluate(() => Math.round(document.querySelector("[data-mes-en-dos-cuentas]").getBoundingClientRect().height));
-      filas.push({ ancho, estado: `${id}-mes`, alto, actividad: null, nota: "compacta" });
-      return;
-    }
-    await pg.waitForTimeout(150);
-    const antes = await pg.evaluate(() => {
-      const p = document.querySelector("[data-mes-en-dos-cuentas]");
-      const r = p.getBoundingClientRect();
-      return { fase: p.dataset.fase, entero: r.top >= 0 && r.bottom <= window.innerHeight };
+  const calendario = async (id, conPerilla) => {
+    const m = await pg.evaluate(() => {
+      const raiz = document.querySelector("[data-paso]");
+      const frase = document.querySelector("[data-frase]");
+      const cal = document.querySelector("[data-calendario]");
+      const celda = document.querySelector('[data-calendario] [data-dia="1"]');
+      const top = raiz.getBoundingClientRect().top + window.scrollY;
+      return {
+        encabezado: Math.round(frase.getBoundingClientRect().top + window.scrollY - top),
+        figura: Math.round(cal.getBoundingClientRect().top + window.scrollY - top),
+        alto: Math.round(cal.getBoundingClientRect().height),
+        celda: Math.round(celda.getBoundingClientRect().width * 10) / 10,
+      };
     });
-    /* Sin desplazamiento forzado: si no está entero a la vista, espera. */
-    if (!antes.entero && antes.fase !== "espera") fallos.push(`${ancho} px · ${id} · el panel del mes empezó fuera de la ventana (fase ${antes.fase})`);
-    await pg.evaluate(() => document.querySelector("[data-mes-en-dos-cuentas]").scrollIntoView({ block: "center" }));
-    const t0 = Date.now();
-    let animando = 0;
-    let fase = "";
-    while (Date.now() - t0 < 2200) {
-      const m = await pg.evaluate(() => {
-        const p = document.querySelector("[data-mes-en-dos-cuentas]");
-        const r = p.getBoundingClientRect();
-        return { fase: p.dataset.fase, fuera: r.top < -0.5 || r.bottom > window.innerHeight + 0.5, alto: Math.round(r.height), arriba: Math.round(r.top) };
-      });
-      fase = m.fase;
-      if (m.fase === "animando") {
-        animando++;
-        if (m.fuera) { fallos.push(`${ancho} px · ${id} · el panel del mes anima fuera de la ventana (${m.arriba} px, alto ${m.alto})`); break; }
-      }
-      if (m.fase === "final" && animando) break;
-      await pg.waitForTimeout(50);
-    }
-    const alto = await pg.evaluate(() => Math.round(document.querySelector("[data-mes-en-dos-cuentas]").getBoundingClientRect().height));
-    filas.push({ ancho, estado: `${id}-mes`, alto, actividad: null, nota: `${antes.entero ? "ya a la vista" : "fuera de la vista"}, ${antes.fase}; ${animando} muestras animando; termina en ${fase}` });
-    if (!animando) fallos.push(`${ancho} px · ${id} · el panel del mes no animó al entrar en la ventana (fase ${fase})`);
-    if (fase !== "final") fallos.push(`${ancho} px · ${id} · el panel del mes no terminó (fase ${fase})`);
-    if (CAPTURAS) await pg.screenshot({ path: resolve(CAPTURAS, `r5-4-${ancho}-${String(++n).padStart(2, "0")}-${id}-mes.png`) });
+    filas.push({ ancho, estado: `${id}-calendario`, alto: m.alto, actividad: null, nota: `encabezado ${m.encabezado}, figura desde ${m.figura}, celda ${m.celda}` });
+    if (m.encabezado > 96) fallos.push(`${ancho} px · ${id} · ⛔ el encabezado mide ${m.encabezado} px (tope 96)`);
+    if (m.figura > 280) fallos.push(`${ancho} px · ${id} · la figura empieza en ${m.figura} px (tope 280)`);
+    if (!conPerilla) return;
+    /* La perilla: se lleva a la vista y se barre su área con elementFromPoint, de 1 en 1 px. */
+    await pg.evaluate(() => document.querySelector("[data-perilla]").scrollIntoView({ block: "center" }));
+    const p = await pg.evaluate(() => {
+      const b = document.querySelector("[data-perilla-boton]").getBoundingClientRect();
+      const cx = b.left + b.width / 2;
+      const cy = b.top + b.height / 2;
+      const dentro = (x, y) => Boolean(document.elementFromPoint(x, y)?.closest("[data-perilla]"));
+      let ancho = 0;
+      let alto = 0;
+      for (let d = -30; d <= 30; d++) { if (dentro(cx + d, cy)) ancho++; if (dentro(cx, cy + d)) alto++; }
+      return { ancho, alto, boton: Math.round(b.width) };
+    });
+    filas.push({ ancho, estado: `${id}-perilla`, alto: p.alto, actividad: null, nota: `área táctil efectiva ${p.ancho} × ${p.alto} px; perilla ${p.boton} px` });
+    if (p.ancho < 44 || p.alto < 44) fallos.push(`${ancho} px · ${id} · ⛔ la perilla tiene un área táctil efectiva de ${p.ancho} × ${p.alto} px (mínimo 44)`);
   };
   await estado("entrada");
   await pg.click("[data-empezar]");
   for (const [k, a] of ASIENTOS.entries()) {
     await estado(`${a.id}-vacio`);
+    await calendario(a.id, Boolean(a.ventana));
+    /* Los dos asientos con condición: la ventana primero (el 7, contando el día de la factura: error; el 9, bien). */
+    if (a.ventana) {
+      const borde = a.id === "a7" ? a.ventana.pago - 1 : a.ventana.pago;
+      await pg.click(`[data-calendario] [data-dia="${borde}"]`);
+      await pg.click("[data-revisar-ventana]");
+      await pg.waitForTimeout(800);
+      await estado(`${a.id}-ventana`);
+    }
     if (k === 0) {
       await pg.click("[data-boton-datos]");
       await hoja("[data-hoja-datos]", "hoja-datos", true);
@@ -178,8 +180,7 @@ for (const ancho of ANCHOS) {
     }
     await estado(`${a.id}-lleno`);
     await pg.click("[data-revisar]");
-    /* El panel, antes de la captura de página entera: esa captura agranda la ventana y lo haría «entrar». */
-    await mes(a.id);
+    await pg.waitForTimeout(800);
     await estado(`${a.id}-revisado`);
     await pg.click("[data-siguiente]");
   }
@@ -193,9 +194,9 @@ await servidor.close();
 
 console.log("ancho | estado | contenido | alto | nota");
 for (const f of filas) console.log(`${f.ancho} | ${f.estado} | ${f.actividad ?? "—"} | ${f.alto} | ${f.nota ?? "—"}`);
-const estados = filas.filter((f) => !f.estado.startsWith("hoja") && !f.estado.endsWith("-mes")).length / ANCHOS.length;
+const estados = filas.filter((f) => !f.estado.startsWith("hoja") && !/-(calendario|perilla)$/.test(f.estado)).length / ANCHOS.length;
 console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos, más las hojas).`);
-if (estados !== 32) fallos.push(`se recorrieron ${estados} estados y son 32`);
+if (estados !== 34) fallos.push(`se recorrieron ${estados} estados y son 34`); // + las dos ventanas (P2)
 if (fallos.length) {
   console.log(`\nFALLA: ${fallos.length} problema(s)`);
   for (const f of fallos) console.log(`  · ${f}`);

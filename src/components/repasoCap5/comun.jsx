@@ -164,10 +164,10 @@ export function Punto({ ok }) {
  * Fondo rgba(184,196,212,.12) y raya izquierda de 3 px: #B8C4D4 en el
  * acierto, coral en el error. `r.textos` trae uno o dos párrafos.
  */
-export function Devolucion({ r, lector = LECTOR }) {
+export function Devolucion({ r, lector = LECTOR, dato = "devolucion" }) {
   const ok = r?.ok;
   return (
-    <div aria-live="polite" data-devolucion={r ? (ok ? "acierto" : "error") : "vacia"}>
+    <div aria-live="polite" {...{ [`data-${dato}`]: r ? (ok ? "acierto" : "error") : "vacia" }}>
       {r && (
         <div style={{ marginTop: "14px", padding: "12px 14px", borderRadius: "12px", background: "rgba(184,196,212,0.12)", borderLeft: `3px solid ${ok ? C.atenuado : C.coral}` }}>
           {r.textos.map((t, k) => (
@@ -210,6 +210,18 @@ export function Responder({ children, onClick, deshabilitado = false, botonRef, 
       {children}
     </button>
   );
+}
+
+/*
+ * r5-4 (P2 de Itagaki): el punto de 6 px de un asiento en su día del
+ * calendario. «hecho» relleno #CBDCF2 durante la partida; en el resumen,
+ * relleno si acertó y anillo coral si no. ⛔ El estándar único quitó estos
+ * puntos del repaso; el P2 los pide: Kamogawa decide (PARADA avisada).
+ */
+export function PuntoDelMes({ estado, clase }) {
+  const base = { width: "6px", height: "6px", borderRadius: "50%", boxSizing: "border-box" };
+  const forma = estado === "error" ? { border: `1.5px solid ${C.coral}` } : { background: C.hecho };
+  return <span data-punto-mes={estado} className={clase} style={{ ...base, ...forma }} />;
 }
 
 /* La cita del libro, al pie de la pantalla (lote de textos de Miyata): 12 px, atenuada. */
