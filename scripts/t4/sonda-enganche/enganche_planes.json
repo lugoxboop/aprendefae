@@ -42,6 +42,11 @@
    {"click": "[data-destino=haber]", "espera": 400, "mide": "cheque propio · error al haber", "veredicto": "error"},
    {"click": "[data-destino=no-se-mueve]", "espera": 600, "mide": "cheque propio · acierto", "veredicto": "acierto"}
   ],
+  "el-faltante": [
+   {"click": "[data-opcion=arqueo]", "espera": 400, "mide": "error con el arqueo", "veredicto": "error"},
+   {"click": "[data-opcion=poliza]", "espera": 400, "mide": "error con la póliza", "veredicto": "error"},
+   {"click": "[data-opcion=separar]", "espera": 600, "mide": "acierto"}
+  ],
   "controles": [
    {"click": "[data-control='1']", "mide": "control 1"},
    {"click": "[data-control='2']", "mide": "control 2"},
@@ -49,7 +54,7 @@
    {"click": "[data-control='4']", "mide": "control 4"},
    {"click": "[data-control='5']", "mide": "control 5"},
    {"click": "[data-control='6']", "mide": "control 6"},
-   {"click": "[data-control='7']", "mide": "control 7"}
+   {"click": "[data-control='7']", "espera": 600, "mide": "los siete y la frase de cierre"}
   ]
  },
  "t4-a2-el-fondo-fijo": {

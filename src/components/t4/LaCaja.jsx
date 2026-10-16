@@ -11,8 +11,13 @@
  *                coral y ✗, nada se escribe y se puede probar otra vez
  *   · salidas    P3: «Consignar» o «Pagar»; «Otra vez» deja probar la otra
  *   · cheques    P4: dos decisiones; la segunda tarjeta llega 1,4 s después
- *   · controles  P5: siete pestañas; cada una enciende la parte del cajón que
- *                ese control cuida
+ *   · faltante   P5 (el-faltante): decisión. Lo cobrado (435.000) no llegó
+ *                entero al libro (410.000); el cajón va sin salidas. Tres
+ *                tarjetas apiladas: el error marca la elegida y no escribe
+ *                nada; el acierto, con su pastilla y sin mensaje, enciende lo
+ *                que cuida la separación (el control 4)
+ *   · controles  P6: los siete controles, botones en la parte que cuidan;
+ *                cada uno la enciende. Con los siete, la frase de cierre
  *
  * En el error de Aprender no se escribe nada y se puede reintentar: los
  * destinos siguen activos (regla del Tema 2 con el reintento de la elección
@@ -24,10 +29,11 @@
 import { useEffect, useRef, useState } from "react";
 import {
   FIGURA_CAJON, SUS_SERVICIOS, DEBE, HABER, INTERFAZ,
-  CONTROLES_A1, CHEQUES_A1, CHEQUE_EN_FIGURA, ESPERA_CHEQUE_MS,
+  CONTROLES_A1, CHEQUES_A1, CHEQUE_EN_FIGURA, ESPERA_CHEQUE_MS, ANOTADO_A1, SIN_ANOTAR_A1,
 } from "../../data/contabilidadT4.js";
 import { C, cifra, Mensaje } from "./comun.jsx";
 import { Cajon } from "./Cajon.jsx";
+import { Chips } from "./aprender.jsx";
 
 const M = cifra(SUS_SERVICIOS);
 const VIBRA_MS = 260;
@@ -37,10 +43,7 @@ export const CSS_A1 = `
 .t4a1-as-f { display: grid; grid-template-columns: minmax(0,1fr) 72px 72px; gap: 4px; font-size: 14px; line-height: 1.35; }
 .t4a1-as-f > span:nth-child(n+2) { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .t4a1-as-h > span { font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .06em; text-transform: uppercase; }
-.t4a1-tabs { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-top: 10px; }
-.t4r-tab { appearance: none; min-height: 44px; border-radius: 8px; border: 1px solid ${C.neutro}; background: transparent; color: ${C.texto}; font: 600 15px "Sora", "Inter", sans-serif; cursor: pointer; padding: 0; }
-.t4r-tab[aria-pressed="true"] { background: ${C.texto}; color: ${C.fondo}; border-color: ${C.texto}; }
-.t4a1-ctl { margin: 8px 0 0; min-height: 66px; font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+.t4a1-ctl { margin-top: 10px; }
 `;
 
 /* Un asiento de la p. 180, en lectura: «Debe» en teal y «Haber» en ámbar, que es su significado. */
@@ -176,35 +179,42 @@ function Cheques({ onAcierto }) {
   );
 }
 
-function Controles({ p, onCierre }) {
-  const [k, setK] = useState(null);
-  const [vistos, setVistos] = useState(() => new Set());
-  /* Lote B, capa 4: con el séptimo control distinto, el hueco muestra la frase de cierre; tocar un número vuelve a su control. */
-  const [frase, setFrase] = useState(false);
-  const tocar = (i) => {
-    const n = new Set([...vistos, i]);
-    const ultimo = n.size === CONTROLES_A1.length && vistos.size < CONTROLES_A1.length;
-    setVistos(n);
-    setK(i);
-    setFrase(Boolean(p.cierre) && ultimo);
-    if (ultimo) onCierre?.();
-  };
-  const c = k != null ? CONTROLES_A1[k] : null;
+function Faltante({ p, onAcierto }) {
+  const [elegida, setElegida] = useState(null);
+  const ok = elegida === p.correcta;
+  useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
+  const c = ok ? CONTROLES_A1[p.control - 1] : null;
   return (
-    <Cajon saldo="—" luz={c?.luz ?? []} vivo={c?.vivo ?? []}>
-      <div className="t4a1-tabs" role="group" aria-label={FIGURA_CAJON.controles}>
-        {CONTROLES_A1.map((x, i) => (
-          <button key={x.texto} type="button" className="t4r-tab" data-control={i + 1} aria-pressed={k === i} onClick={() => tocar(i)}>{i + 1}</button>
-        ))}
-      </div>
-      {frase
-        ? <p className="t4a1-ctl t4r-nueva" data-cierre aria-live="polite">{p.cierre}</p>
-        : <p className="t4a1-ctl" data-texto-control aria-live="polite">{c ? c.texto : ""}</p>}
-    </Cajon>
+    <>
+      <Cajon
+        origen={{ monto: M }}
+        sinAnotar={`${cifra(SIN_ANOTAR_A1)} ${FIGURA_CAJON.sinAnotar}`}
+        debe={[{ id: "anotado", v: cifra(ANOTADO_A1) }]}
+        saldo={ANOTADO_A1}
+        salidas={false}
+        luz={c?.luz ?? []}
+        vivo={c?.vivo ?? []}
+      >
+        <div className="t4a1-ctl">
+          <Chips opciones={p.opciones} elegida={elegida} correcta={p.correcta} onElegir={(o) => { if (!ok) setElegida(o); }} rotulo={(o) => p.tarjetas[o]} columna />
+        </div>
+      </Cajon>
+      {elegida && !ok && <Mensaje key={elegida} ok={false} texto={p.errores[elegida]} />}
+    </>
   );
 }
 
-const CUERPOS = { mapa: Mapa, cobra: Cobra, consigna: Consigna, salidas: DosSalidas, cheques: Cheques, controles: Controles };
+function Controles({ onCierre }) {
+  const [k, setK] = useState(null);
+  const [vistos, setVistos] = useState(() => new Set());
+  const todos = vistos.size === CONTROLES_A1.length;
+  useEffect(() => { if (todos) onCierre?.(); }, [todos]); // eslint-disable-line react-hooks/exhaustive-deps
+  const tocar = (i) => { setK(i); setVistos((v) => new Set([...v, i])); };
+  const c = k != null ? CONTROLES_A1[k] : null;
+  return <Cajon saldo="—" luz={c?.luz ?? []} vivo={c?.vivo ?? []} controles={{ lista: CONTROLES_A1, activo: k, onTocar: tocar }} />;
+}
+
+const CUERPOS = { mapa: Mapa, cobra: Cobra, consigna: Consigna, salidas: DosSalidas, cheques: Cheques, faltante: Faltante, controles: Controles };
 
 /* El cuerpo de una pantalla de A1: el cajón y lo que sale debajo con la acción. */
 export function CuerpoA1({ p, onAcierto, onCierre }) {

@@ -102,11 +102,30 @@ button.t4cv-band:disabled { cursor: default; }
 .t4cv-caja2 .t4r-btn2 { width: 100%; padding: 0 6px; }
 .t4cv-d { color: ${C.debeTexto}; } .t4cv-hb { color: ${C.haber}; }
 .t4cv-oculto { visibility: hidden; }
+/*
+ * A1 P6 (controles): los siete controles son botones de 44 px como mínimo en
+ * la parte del cajón que cuidan (Hanayama); tocar uno enciende esa parte. No
+ * se califican: sin pastilla. A1 P5 (el-faltante): lo que no llegó al libro,
+ * junto al tubo de entrada, en neutro (no es un error).
+ */
+.t4cv-rc { display: flex; flex-wrap: wrap; gap: 6px; }
+.t4cv-rc[data-parte="cols"] { justify-content: center; }
+.t4cv-cab { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 6px; }
+.t4cv-cab > .t4cv-rc { justify-self: end; }
+.t4cv-saldo > .t4cv-rc[data-parte="saldo"] { margin-left: auto; }
+.t4cv-caja2 .t4cv-rc { display: grid; }
+.t4cv-ctl { appearance: none; min-height: 44px; min-width: 44px; padding: 0 10px; border-radius: 8px; border: 1px solid ${C.reposo}; background: transparent; color: ${C.texto2}; font: 600 12px/1.2 "Inter", sans-serif; white-space: nowrap; cursor: pointer; }
+.t4cv-ctl[aria-pressed="true"] { border: 2px solid ${C.texto}; padding: 0 9px; color: ${C.texto}; }
+.t4cv-ctl:focus-visible { outline: 2px solid ${C.texto}; outline-offset: 2px; }
+.t4cv-saldo:has(.t4cv-rc) { align-items: center; }
+.t4cv-sin { position: absolute; left: calc(25% + 8px); top: 3px; font: 500 12px/14px "Inter", sans-serif; color: ${C.texto2}; white-space: nowrap; font-variant-numeric: tabular-nums; }
 `;
 
-function Borde({ arriba }) {
+function Borde({ arriba, cerrado = false }) {
   const centro = arriba ? "25%" : "75%";
   const lado = arriba ? "borderTopWidth" : "borderBottomWidth";
+  /* Sin salidas (A1 P5), el fondo del cajón no tiene boca. */
+  if (cerrado) return <span className="t4cv-borde" aria-hidden="true" style={{ bottom: 0 }}><span style={{ width: "100%", borderBottomWidth: "1px", borderLeftWidth: "1px", borderRightWidth: "1px", borderRadius: "0 0 12px 12px" }} /></span>;
   return (
     <span className="t4cv-borde" aria-hidden="true" style={arriba ? { top: 0 } : { bottom: 0 }}>
       <span style={{ width: `calc(${centro} - ${BOCA / 2}px)`, [lado]: "1px", borderLeftWidth: "1px", borderRadius: arriba ? "12px 0 0 0" : "0 0 0 12px" }} />
@@ -152,11 +171,15 @@ function Columna({ lado, glosa, lineas, reserva, destinos, luz, vibra, palabras 
  * bancos, pago  { monto?, accion? }
  * bandeja  { ultimo? } o null       con bandeja, la fila del tubo lleva «Caja no se mueve»
  * destinos { activos, onElegir(id), marcas: { debe|haber|no-se-mueve: bien|mal|era } } o null
+ * controles { lista: [{ rotulo, luz: [parte] }], activo, onTocar(i) } o null
+ *                                    A1 P6: cada control, un botón en la parte que cuida
+ * sinAnotar texto o null             A1 P5: lo cobrado que no llegó al libro, junto al tubo de entrada
+ * salidas  false                     A1 P5: sin Bancos ni «Pago en efectivo» (el caso no los usa)
  */
 export function Cajon({
   origen = null, glosas = {}, debe = [], haber = [], reserva = 1, saldo = null, vivo = [],
   bancos = {}, pago = {}, destinos = null, bandeja = null, luz = [], vibra = null, alt = FIGURA_CAJON.alt, children = null, palabras = false,
-  glosasCuenta = false,
+  glosasCuenta = false, controles = null, sinAnotar = null, salidas = true,
 }) {
   const idAlt = useId();
   const visto = useNumeroQueSube(typeof saldo === "number" ? saldo : 0);
@@ -164,6 +187,17 @@ export function Cajon({
   const L = (k) => (luz.includes(k) ? "" : undefined);
   const marcaBand = destinos?.marcas?.[NO_SE_MUEVE] ?? null;
   const Band = destinos ? "button" : "div";
+  /* Los rótulos de los controles que van en una parte (A1 P5). */
+  const rc = (parte) => {
+    const r = (controles?.lista ?? []).map((c, i) => ({ ...c, i })).filter((c) => c.luz[0] === parte);
+    return r.length ? (
+      <span className="t4cv-rc" data-parte={parte}>
+        {r.map((c) => (
+          <button key={c.rotulo} type="button" className="t4cv-ctl" data-control={c.i + 1} aria-pressed={controles.activo === c.i} onClick={() => controles.onTocar(c.i)}>{c.rotulo}</button>
+        ))}
+      </span>
+    ) : null;
+  };
   const ultimo = bandeja?.ultimo ? <span className="t4r-nueva" key={bandeja.ultimo} data-linea="bandeja">{bandeja.ultimo}</span> : null;
   return (
     <figure className="t4cv" data-figura="cajon" aria-describedby={idAlt}>
@@ -179,8 +213,9 @@ export function Cajon({
           </span>
         </div>
       )}
-      <div className="t4cv-tubo" data-con-bandeja={bandeja ? "" : undefined} style={bandeja ? undefined : { height: "16px" }} aria-hidden={bandeja ? undefined : "true"}>
+      <div className="t4cv-tubo" data-con-bandeja={bandeja ? "" : undefined} style={bandeja ? undefined : { height: sinAnotar ? "20px" : "16px" }} aria-hidden={bandeja || sinAnotar ? undefined : "true"}>
         <span className={`t4cv-v${v("entrada")}`} data-trazo="entrada" aria-hidden="true" style={{ left: "calc(25% - 1px)", top: 0, bottom: 0 }} />
+        {sinAnotar && <span className="t4cv-sin" data-sin-anotar>{sinAnotar}</span>}
         {bandeja && (
           <Band
             type={destinos ? "button" : undefined}
@@ -201,39 +236,49 @@ export function Cajon({
       </div>
       <div className="t4cv-cajon" data-cajon data-luz={L("cajon")}>
         <Borde arriba />
-        <Borde />
-        <p className="t4cv-nombre">{FIGURA_CAJON.cuenta}</p>
+        <Borde cerrado={!salidas} />
+        {rc("cajon")
+          ? <div className="t4cv-cab"><span /><p className="t4cv-nombre">{FIGURA_CAJON.cuenta}</p>{rc("cajon")}</div>
+          : <p className="t4cv-nombre">{FIGURA_CAJON.cuenta}</p>}
         {glosasCuenta && <p className="t4cv-glosa-c" data-glosa-cuenta="caja">{FIGURA_CAJON.glosaCaja.map((t) => <span key={t}>{t}</span>)}</p>}
         <div className="t4cv-cols">
           <Columna lado={DEBE} glosa={glosas.debe ? FIGURA_CAJON.glosaDebe : null} lineas={debe} reserva={reserva} destinos={destinos} luz={luz.includes("cols")} vibra={vibra} palabras={palabras} />
           <Columna lado={HABER} glosa={glosas.haber ? FIGURA_CAJON.glosaHaber : null} lineas={haber} reserva={reserva} destinos={destinos} luz={luz.includes("cols")} vibra={vibra} palabras={palabras} />
         </div>
+        {rc("cols")}
         {saldo !== null && (
           <div className="t4cv-saldo" data-saldo={saldo} data-luz={L("saldo")}>
             <span>{FIGURA_CAJON.enLaCaja}</span>
             <span data-saldo-visto>{saldo === "—" ? "—" : cifra(visto)}</span>
+            {rc("saldo")}
           </div>
         )}
       </div>
-      <div className="t4cv-rama" aria-hidden="true">
-        <span className={`t4cv-v${v("salida")}`} data-trazo="salida" style={{ left: "calc(75% - 1px)", top: 0, height: "13px" }} />
-        <span className={`t4cv-h${v("bancos")}`} data-trazo="cruce" style={{ left: "calc(25% - 1px)", width: "calc(50% + 2px)", top: "11px" }} />
-        <span className={`t4cv-v${v("bancos")}`} data-trazo="a-bancos" style={{ left: "calc(25% - 1px)", top: "11px", bottom: 0 }} />
-        <span className={`t4cv-v${v("pago")}`} data-trazo="a-pago" style={{ left: "calc(75% - 1px)", top: "11px", bottom: 0 }} />
-      </div>
-      <div className="t4cv-dest">
-        <div className="t4cv-caja2" data-caja2="bancos" data-luz={L("bancos")}>
-          <span className="t4cv-caja2-n"><span>{FIGURA_CAJON.bancos}</span></span>
-          {glosasCuenta && <p className="t4cv-glosa-c" data-glosa-cuenta="bancos">{FIGURA_CAJON.glosaBancos.map((t) => <span key={t}>{t}</span>)}</p>}
-          {bancos.accion && <button type="button" className={`t4r-btn2${bancos.accion.hecha ? " t4cv-oculto" : ""}`} data-accion={bancos.accion.id} onClick={bancos.accion.onClick}>{bancos.accion.texto}</button>}
-          {bancos.monto && <span className="t4cv-monto t4cv-foco t4r-nueva" data-monto="bancos">{bancos.monto}</span>}
+      {salidas && (
+        <>
+        <div className="t4cv-rama" aria-hidden="true">
+          <span className={`t4cv-v${v("salida")}`} data-trazo="salida" style={{ left: "calc(75% - 1px)", top: 0, height: "13px" }} />
+          <span className={`t4cv-h${v("bancos")}`} data-trazo="cruce" style={{ left: "calc(25% - 1px)", width: "calc(50% + 2px)", top: "11px" }} />
+          <span className={`t4cv-v${v("bancos")}`} data-trazo="a-bancos" style={{ left: "calc(25% - 1px)", top: "11px", bottom: 0 }} />
+          <span className={`t4cv-v${v("pago")}`} data-trazo="a-pago" style={{ left: "calc(75% - 1px)", top: "11px", bottom: 0 }} />
         </div>
-        <div className="t4cv-caja2" data-caja2="pago" data-luz={L("pago")}>
-          <span className="t4cv-caja2-n">{FIGURA_CAJON.pago.map((t) => <span key={t}>{t}</span>)}</span>
-          {pago.accion && <button type="button" className={`t4r-btn2${pago.accion.hecha ? " t4cv-oculto" : ""}`} data-accion={pago.accion.id} onClick={pago.accion.onClick}>{pago.accion.texto}</button>}
-          {pago.monto && <span className="t4cv-monto t4cv-foco t4r-nueva" data-monto="pago">{pago.monto}</span>}
+        <div className="t4cv-dest">
+          <div className="t4cv-caja2" data-caja2="bancos" data-luz={L("bancos")}>
+            <span className="t4cv-caja2-n"><span>{FIGURA_CAJON.bancos}</span></span>
+            {glosasCuenta && <p className="t4cv-glosa-c" data-glosa-cuenta="bancos">{FIGURA_CAJON.glosaBancos.map((t) => <span key={t}>{t}</span>)}</p>}
+            {rc("bancos")}
+            {bancos.accion && <button type="button" className={`t4r-btn2${bancos.accion.hecha ? " t4cv-oculto" : ""}`} data-accion={bancos.accion.id} onClick={bancos.accion.onClick}>{bancos.accion.texto}</button>}
+            {bancos.monto && <span className="t4cv-monto t4cv-foco t4r-nueva" data-monto="bancos">{bancos.monto}</span>}
+          </div>
+          <div className="t4cv-caja2" data-caja2="pago" data-luz={L("pago")}>
+            <span className="t4cv-caja2-n">{FIGURA_CAJON.pago.map((t) => <span key={t}>{t}</span>)}</span>
+            {rc("pago")}
+            {pago.accion && <button type="button" className={`t4r-btn2${pago.accion.hecha ? " t4cv-oculto" : ""}`} data-accion={pago.accion.id} onClick={pago.accion.onClick}>{pago.accion.texto}</button>}
+            {pago.monto && <span className="t4cv-monto t4cv-foco t4r-nueva" data-monto="pago">{pago.monto}</span>}
+          </div>
         </div>
-      </div>
+        </>
+      )}
       {children}
       <figcaption id={idAlt} className="t4f-sr">{alt}</figcaption>
     </figure>

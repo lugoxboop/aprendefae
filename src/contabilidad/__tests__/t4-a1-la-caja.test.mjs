@@ -42,16 +42,16 @@ function porLugar(p) {
   for (const t of p.antes ?? []) r.push(["Antes de la figura", t]);
   for (const t of p.despues ?? []) r.push(["Después de la figura", t]);
   if (p.tarjeta) r.push(["Tarjeta del origen", p.tarjeta]);
+  for (const o of p.tipo === "faltante" ? p.opciones : []) r.push([`Tarjeta · ${o}${o === p.correcta ? " (la correcta)" : ""}`, p.tarjetas[o]]);
   if ("acierto" in p) r.push(["Acierto (tras «Correcto.»)", p.acierto]);
-  for (const [d, t] of Object.entries(p.errores ?? {})) r.push([ERR[d], t]);
+  for (const [d, t] of Object.entries(p.errores ?? {})) r.push([p.tipo === "faltante" ? `Error · ${d} (✗ y el texto)` : ERR[d], t]);
   if (p.tipo === "cheques") {
     for (const c of A.CHEQUES_A1) {
       r.push([`Cheque «${c.id}» · tarjeta`, c.tarjeta], [`Cheque «${c.id}» · acierto (tras «Correcto.»)`, c.acierto]);
       for (const [d, t] of Object.entries(c.errores)) r.push([`Cheque «${c.id}» · ${ERR[d].toLowerCase()}`, t]);
     }
   }
-  if (p.tipo === "controles") A.CONTROLES_A1.forEach((c, i) => r.push([`Control ${i + 1}`, c.texto]));
-  if (p.cierre) r.push(["Frase de cierre (en el hueco del control, con el séptimo distinto)", p.cierre]);
+  if (p.cierre) r.push(["Frase de cierre (con los siete encendidos, debajo del cajón)", p.cierre]);
   if (p.siguiente) r.push(["Siguiente", p.siguiente]);
   r.push(["Pie", p.pie]);
   return r;
@@ -65,6 +65,7 @@ async function acertar(m, p) {
     await esperar(A.ESPERA_CHEQUE_MS + 100);
     tocar(m.caja.querySelector(`[data-destino="${A.NO_SE_MUEVE}"]`));
   }
+  if (p.tipo === "faltante") tocar(m.caja.querySelector(`[data-opcion="${p.correcta}"]`));
 }
 
 /* Monta la pieza y avanza hasta la pantalla `id`; las preguntas del camino se aciertan. */
@@ -92,11 +93,11 @@ test("★★★ el paquete vigente es el del rediseño (v6) y lo dice, con la de
   assert.match(leer("src/data/contabilidadT4.js"), new RegExp(CANON.replace(/\./g, "\\.")));
 });
 
-test("★★★ las 6 pantallas, en el orden del paquete (lote B: sale el resumen en lista); título e id; todas con el cajón", async () => {
+test("★★★ las 7 pantallas, en el orden del paquete (lote B: sale el resumen en lista; la P5 de antes se parte en «el-faltante» y «controles»); título e id; todas con el cajón", async () => {
   assert.equal(P.id, "t4-a1-la-caja");
   assert.equal(P.titulo, "La caja");
   assert.deepEqual(P.pantallas.map((p) => p.id), CANON_P.map((p) => p.id));
-  assert.equal(P.pantallas.length, 6);
+  assert.equal(P.pantallas.length, 7);
   assert.ok(!P.pantallas.some((p) => p.id === "resumen" || p.resumen), "queda una pantalla de resumen (capa 4)");
   for (const p of P.pantallas) assert.equal(p.figura, "cajon", p.id);
 });
@@ -128,19 +129,23 @@ test("★★★ la interfaz común: «Correcto.», «Incorrecto.» solo para el 
   assert.deepEqual(A.MARCA.era, textoDe(com, "Marca del destino que era"));
 });
 
-test("★★★ los dos asientos de la p. 180 cuadran; la única cifra del libro es 435.000", async () => {
+test("★★★ los dos asientos de la p. 180 cuadran; la única cifra del libro es 435.000 (los 25.000 y 410.000 de P5 son del escenario simulado, y su pie lo dice)", async () => {
   const filas = (a) => a.lineas.map((l) => [l.cuenta, l.lado, l.monto]);
   assert.deepEqual(filas(A.ASIENTO_COBRO), [["Caja", A.DEBE, 435_000], ["Ingresos por servicios", A.HABER, 435_000]]);
   assert.deepEqual(filas(A.ASIENTO_CONSIGNACION), [["Bancos", A.DEBE, 435_000], ["Caja", A.HABER, 435_000]]);
   assert.equal(pantalla("cobra").asiento, A.ASIENTO_COBRO);
   assert.equal(pantalla("consigna").asiento, A.ASIENTO_CONSIGNACION);
-  const cifras = CANON_P.flatMap((c) => c.textos.map((x) => x.texto)).flatMap((t) => [...t.matchAll(/\$?\d{1,3}(?:\.\d{3})+/g)].map((x) => x[0]));
-  assert.deepEqual([...new Set(cifras)], ["$435.000"]);
+  const cifrasDe = (cs) => cs.flatMap((c) => c.textos.map((x) => x.texto)).flatMap((t) => [...t.matchAll(/\$?\d{1,3}(?:\.\d{3})+/g)].map((x) => x[0]));
+  assert.deepEqual([...new Set(cifrasDe(CANON_P))], ["$435.000"]);
+  assert.equal(textoDe(renglones(seccionDe(PAQ, "El cajón en P5 y P6")), "Junto al tubo de entrada (P5)"), "25.000 sin anotar");
+  assert.match(pantalla("el-faltante").pie, / · Escenario simulado$/);
+  assert.equal(A.SUS_SERVICIOS - A.ANOTADO_A1, 25_000);
+  assert.equal(A.SIN_ANOTAR_A1, 25_000);
 });
 
 /* ═══════════ 2 · LA PANTALLA Y EL CAJÓN ═══════════ */
 
-test("★★★ cada pantalla, en el orden de Hanayama: antes → cajón → después → siguiente → «Seguir» → pie (en las preguntas, tras el acierto; en la última, tras el séptimo control)", async () => {
+test("★★★ cada pantalla, en el orden de Hanayama: antes → cajón → después → frase de cierre → siguiente → «Seguir» → pie (en las preguntas, tras el acierto)", async () => {
   const m = await abrir("dos-cuentas");
   try {
     for (const [k, p] of P.pantallas.entries()) {
@@ -150,22 +155,19 @@ test("★★★ cada pantalla, en el orden de Hanayama: antes → cajón → des
         assert.equal(zona.querySelector('[data-boton="seguir"]'), null, `${p.id}: «Seguir» antes del acierto`);
         await acertar(m, p);
       }
-      if (p.tipo === "controles") {
-        assert.ok(!zona.querySelector("[data-siguiente][data-visible]"), "«Siguiente» antes de la frase de cierre");
-        A.CONTROLES_A1.forEach((_, i) => tocar(zona.querySelector(`[data-control="${i + 1}"]`)));
-      }
+      if (p.tipo === "controles") A.CONTROLES_A1.forEach((_, i) => tocar(zona.querySelector(`[data-control="${i + 1}"]`)));
       const orden = [...zona.querySelectorAll("[data-texto], [data-figura], [data-boton], [data-pie]")]
         .filter((e) => !e.parentElement.closest("[data-figura]"))
         .map((e) => (e.matches("[data-figura]") ? "FIGURA" : e.matches("[data-boton]") ? "SEGUIR" : e.matches("[data-pie]") ? "PIE" : e.textContent));
-      const esperado = [...(p.antes ?? []), "FIGURA", ...(p.despues ?? []), ...(p.siguiente ? [p.siguiente] : []), ...(k < 5 ? ["SEGUIR"] : []), "PIE"];
+      const esperado = [...(p.antes ?? []), "FIGURA", ...(p.despues ?? []), ...(p.cierre ? [p.cierre] : []), ...(p.siguiente ? [p.siguiente] : []), ...(k < 6 ? ["SEGUIR"] : []), "PIE"];
       assert.deepEqual(orden, esperado, p.id);
-      if (k < 5) tocar(zona.querySelector('[data-boton="seguir"]'));
+      if (k < 6) tocar(zona.querySelector('[data-boton="seguir"]'));
     }
   } finally { m.desmontar(); }
 });
 
-test("★★★ D7 · en las dos pantallas con pregunta, «Seguir» no aparece sin el acierto: ni al llegar, ni tras cada error, ni con un solo cheque", async () => {
-  assert.deepEqual(P.pantallas.filter((p) => p.pregunta).map((p) => p.id), ["consigna", "cheques"]);
+test("★★★ D7 · en las tres pantallas con pregunta, «Seguir» no aparece sin el acierto: ni al llegar, ni tras cada error, ni con un solo cheque; la última (controles) no lo lleva", async () => {
+  assert.deepEqual(P.pantallas.filter((p) => p.pregunta).map((p) => p.id), ["consigna", "cheques", "el-faltante"]);
   const seguir = (m) => q(m, '[data-boton="seguir"]');
   const c = await abrir("consigna");
   try {
@@ -191,7 +193,18 @@ test("★★★ D7 · en las dos pantallas con pregunta, «Seguir» no aparece s
     tocar(q(k, `[data-destino="${A.NO_SE_MUEVE}"]`));
     assert.ok(seguir(k), "cheques: tras los dos aciertos no aparece «Seguir»");
     tocar(seguir(k));
+    assert.equal(q(k, "[data-pieza]").dataset.pantalla, "el-faltante");
+    assert.equal(seguir(k), null, "el-faltante, al llegar");
+    for (const o of ["arqueo", "poliza"]) {
+      tocar(q(k, `[data-opcion="${o}"]`));
+      assert.equal(seguir(k), null, `el-faltante, tras el error con ${o}`);
+    }
+    tocar(q(k, '[data-opcion="separar"]'));
+    assert.ok(seguir(k), "el-faltante: tras el acierto no aparece «Seguir»");
+    tocar(seguir(k));
     assert.equal(q(k, "[data-pieza]").dataset.pantalla, "controles");
+    A.CONTROLES_A1.forEach((_, i) => tocar(q(k, `[data-control="${i + 1}"]`)));
+    assert.equal(seguir(k), null, "controles es la última: sin «Seguir»");
   } finally { k.desmontar(); }
 });
 
@@ -300,45 +313,118 @@ test("★★★ P4 los cheques: errores con su texto; el recibido entra al Debe;
   } finally { m.desmontar(); }
 });
 
-test("★★★ P5 los controles: cada pestaña enciende lo que cuida y muestra su texto; el 7 (caja menor) enciende Bancos, no el pago", async () => {
-  const m = await abrir("controles");
+const CAJON_P = renglones(seccionDe(PAQ, "El cajón en P5 y P6"));
+
+test("★★★ P5 «el-faltante», al llegar: el cajón sin salidas ni glosas, con lo cobrado (435.000) arriba, 410.000 en el Debe y en la caja y «25.000 sin anotar» junto al tubo, en neutro; tres tarjetas apiladas, sin marca; nada de la devolución en el DOM", async () => {
+  const p = pantalla("el-faltante");
+  const m = await abrir("el-faltante");
   try {
-    assert.equal(q(m, "[data-texto-control]").textContent, "");
-    assert.equal(q(m, "[data-saldo]").dataset.saldo, "—");
-    const esperado = [["cols"], ["bancos"], ["pago"], ["cols"], ["saldo"], ["cajon"], ["bancos"]];
-    A.CONTROLES_A1.forEach((c, i) => {
-      tocar(q(m, `[data-control="${i + 1}"]`));
-      if (i === A.CONTROLES_A1.length - 1) {
-        /* El séptimo distinto muestra la frase de cierre (prueba aparte); un segundo toque, el texto del control. */
-        assert.equal(q(m, "[data-cierre]").textContent, P.pantallas.at(-1).cierre);
-        tocar(q(m, `[data-control="${i + 1}"]`));
-      }
-      assert.equal(q(m, "[data-texto-control]").textContent, c.texto, `control ${i + 1}`);
-      assert.equal(q(m, `[data-control="${i + 1}"]`).getAttribute("aria-pressed"), "true");
-      const l = luces(m);
-      assert.deepEqual(l.map((x) => (x === "debe" || x === "haber" ? "cols" : x)).filter((x, j, xs) => xs.indexOf(x) === j), esperado[i], `control ${i + 1}`);
-    });
-    assert.ok(!luces(m).includes("pago"), "el control 7 enciende «Pago en efectivo»");
+    assert.equal(q(m, "[data-monto=origen]").textContent, "435.000");
+    assert.deepEqual([lineas(m, A.DEBE), lineas(m, A.HABER), saldo(m)], [["410.000"], [], "410000"]);
+    assert.equal(q(m, "[data-caja2]"), null, "el cajón lleva salidas");
+    assert.equal(q(m, ".t4cv-glosa, .t4cv-glosa-c"), null, "el cajón lleva glosas");
+    assert.equal(q(m, "[data-control]"), null, "los controles van en la P6");
+    const sin = q(m, "[data-figura] [data-sin-anotar]");
+    assert.equal(sin.textContent, textoDe(CAJON_P, "Junto al tubo de entrada (P5)"));
+    assert.equal(sin.closest('[aria-hidden="true"]'), null, "el lector no oye «25.000 sin anotar»");
+    assert.equal(conColor(q(m, "[data-figura]"), CORAL).length, 0, "lo que no llegó al libro no es un error: sin coral");
+    assert.deepEqual(luces(m), []);
+    assert.deepEqual(vivos(m), []);
+    const g = q(m, "[data-figura] .t4op-g[data-columna]");
+    assert.ok(g, "las tarjetas no van apiladas dentro de la figura");
+    assert.equal(g.style.gridTemplateColumns, "minmax(0, 1fr)");
+    assert.deepEqual([...g.querySelectorAll("[data-opcion]")].map((b) => [b.dataset.opcion, b.querySelector("span").textContent]), p.opciones.map((o) => [o, p.tarjetas[o]]));
+    for (const b of g.querySelectorAll("[data-opcion]")) assert.ok(b.querySelector(".t4op-hueco"), `${b.dataset.opcion}: sin el hueco reservado de la pastilla`);
+    assert.equal(q(m, "[data-mensaje]"), null);
+    assert.equal(q(m, ".t4r-marca"), null);
+    const html = q(m, "[data-pieza]").outerHTML;
+    for (const t of Object.values(p.errores)) assert.ok(!html.includes(t), `«${t}» en el DOM antes de responder`);
   } finally { m.desmontar(); }
 });
 
-test("★★★ P5, la frase de cierre (capa 4): con el séptimo control distinto, el hueco del control la muestra, pegada al cajón; entonces sale «Siguiente»; tocar un número vuelve a su control", async () => {
+test("★★★ P5 «el-faltante», el error: la tarjeta elegida con «No va aquí» dentro, su texto y nada escrito en el cajón; se puede reintentar; nunca «Iba aquí»", async () => {
+  const p = pantalla("el-faltante");
+  for (const o of ["arqueo", "poliza"]) {
+    const m = await abrir("el-faltante");
+    try {
+      tocar(q(m, `[data-opcion="${o}"]`));
+      const b = q(m, `[data-opcion="${o}"]`);
+      assert.equal(b.dataset.marca, "mal");
+      assert.equal(b.querySelector(".t4op-hueco .t4r-marca").dataset.marca, "mal");
+      assert.equal(b.getAttribute("aria-label"), `${p.tarjetas[o]}: ${A.MARCA.mal}`);
+      assert.equal(q(m, "[data-mensaje]").dataset.mensaje, "error");
+      assert.equal(q(m, "[data-mensaje] [data-devolucion]").textContent, `${A.LECTOR_ERROR} ${p.errores[o]}`);
+      assert.deepEqual([lineas(m, A.DEBE), saldo(m), luces(m), vivos(m)], [["410.000"], "410000", [], []], o);
+      assert.equal(q(m, '[data-marca="era"]'), null, "«Iba aquí» en Aprender");
+      for (const x of m.caja.querySelectorAll("[data-opcion]")) assert.equal(x.disabled, false, `${x.dataset.opcion}: no se puede reintentar`);
+    } finally { m.desmontar(); }
+  }
+});
+
+test("★★★ P5 «el-faltante», el acierto: «Correcto» dentro de la tarjeta, sin mensaje (Yujiro); se enciende lo que cuida la separación (el tubo de entrada y las columnas); luego «Seguir»", async () => {
+  const p = pantalla("el-faltante");
+  const m = await abrir("el-faltante");
+  try {
+    tocar(q(m, '[data-opcion="arqueo"]'));
+    tocar(q(m, '[data-opcion="separar"]'));
+    const b = q(m, '[data-opcion="separar"]');
+    assert.equal(b.dataset.marca, "bien");
+    assert.equal(b.querySelector(".t4op-hueco .t4r-marca").dataset.marca, "bien");
+    assert.equal(b.getAttribute("aria-label"), `${p.tarjetas.separar}: ${A.MARCA.bien}`);
+    assert.equal(q(m, '[data-opcion="arqueo"]').dataset.marca, undefined, "solo se marca la elegida");
+    assert.equal(A.CONTROLES_A1[p.control - 1].rotulo, "Separación");
+    assert.deepEqual(luces(m), ["debe", "haber"]);
+    assert.deepEqual(vivos(m), ["entrada"]);
+    assert.equal(q(m, "[data-mensaje]"), null, "el acierto lleva mensaje");
+    assert.ok(q(m, '[data-boton="seguir"]'));
+    for (const x of m.caja.querySelectorAll("[data-opcion]")) assert.equal(x.disabled, true);
+  } finally { m.desmontar(); }
+});
+
+/* Los rótulos de los controles que van en una parte del cajón (P6). */
+const controlesEn = (m, parte) => [...m.caja.querySelectorAll(`[data-figura] .t4cv-rc[data-parte="${parte}"] [data-control]`)].map((x) => x.textContent);
+
+test("★★★ P6 «controles»: los siete controles del paquete, en orden, como botones en la parte que cuidan; el 7 (caja menor) en Bancos, no en el pago; el cajón entero, sin el caso", async () => {
+  assert.deepEqual(A.CONTROLES_A1.map((c, i) => [`Control ${i + 1}`, c.rotulo]), CAJON_P.filter((x) => x.lugar.startsWith("Control ")).map((x) => [x.lugar, x.texto]));
+  const m = await abrir("controles");
+  try {
+    const botones = [...m.caja.querySelectorAll("[data-figura] button[data-control]")].map((b) => [Number(b.dataset.control), b.textContent]).sort((a, b) => a[0] - b[0]);
+    assert.deepEqual(botones, A.CONTROLES_A1.map((c, i) => [i + 1, c.rotulo]));
+    assert.equal(m.caja.querySelectorAll("[data-figura] button[data-control]").length, 7);
+    assert.deepEqual(controlesEn(m, "cols"), ["Registro diario", "Separación"]);
+    assert.deepEqual(controlesEn(m, "bancos"), ["Consignación", "Caja menor"]);
+    assert.deepEqual(controlesEn(m, "pago"), ["Tope de pagos"]);
+    assert.deepEqual(controlesEn(m, "saldo"), ["Arqueo"]);
+    assert.deepEqual(controlesEn(m, "cajon"), ["Póliza"]);
+    assert.ok(q(m, '[data-caja2="bancos"] [data-control="7"]') && !q(m, '[data-caja2="pago"] [data-control="7"]'));
+    assert.equal(q(m, "[data-sin-anotar]"), null);
+    assert.equal(q(m, "[data-monto=origen]"), null);
+    assert.equal(q(m, "[data-saldo]").dataset.saldo, "—");
+    assert.deepEqual(luces(m), []);
+  } finally { m.desmontar(); }
+});
+
+test("★★★ P6 «controles»: cada control enciende lo que cuida (el 7, Bancos y no el pago); no se califican; con los siete distintos, la frase de cierre debajo del cajón y «Siguiente», sin «Seguir»", async () => {
   const p = pantalla("controles");
   const m = await abrir("controles");
   try {
-    for (const i of [0, 0, 1, 2, 3, 4, 5]) {
+    assert.equal(q(m, "[data-cierre] .t4r-fantasma").textContent, p.cierre, "la frase de cierre no reserva su alto desde el principio");
+    const esperado = [["cols"], ["bancos"], ["pago"], ["cols"], ["saldo"], ["cajon"], ["bancos"]];
+    for (const [i, c] of A.CONTROLES_A1.entries()) {
+      assert.ok(!q(m, "[data-cierre][data-visible]"), `la frase de cierre sale antes del séptimo (control ${i + 1})`);
       tocar(q(m, `[data-control="${i + 1}"]`));
-      assert.equal(q(m, "[data-cierre]"), null, `la frase sale antes del séptimo distinto (control ${i + 1})`);
+      assert.equal(q(m, `[data-control="${i + 1}"]`).getAttribute("aria-pressed"), "true");
+      assert.equal(m.caja.querySelectorAll('[data-control][aria-pressed="true"]').length, 1);
+      const l = luces(m).map((x) => (x === "debe" || x === "haber" ? "cols" : x)).filter((x, j, xs) => xs.indexOf(x) === j);
+      assert.deepEqual(l, esperado[i], `control ${i + 1}`);
+      assert.deepEqual(vivos(m).filter((x) => !["cruce", "a-bancos", "a-pago"].includes(x)), c.vivo.filter((x) => x !== "bancos" && x !== "pago").sort(), `control ${i + 1}`);
+      assert.equal(q(m, ".t4r-marca"), null, "un control se califica");
+      assert.equal(q(m, "[data-mensaje]"), null);
     }
-    assert.ok(!q(m, "[data-siguiente][data-visible]"));
-    tocar(q(m, '[data-control="7"]'));
-    const frase = q(m, "[data-figura] [data-cierre]");
-    assert.equal(frase?.textContent, p.cierre);
-    assert.equal(q(m, "[data-texto-control]"), null);
-    assert.equal(q(m, "[data-siguiente][data-visible] [aria-live]").textContent, p.siguiente);
-    tocar(q(m, '[data-control="3"]'));
-    assert.equal(q(m, "[data-texto-control]").textContent, A.CONTROLES_A1[2].texto);
-    assert.ok(q(m, "[data-siguiente][data-visible]"), "«Siguiente» se va al volver a un control");
+    assert.ok(!luces(m).includes("pago"), "el control 7 enciende «Pago en efectivo»");
+    assert.equal(q(m, "[data-cierre][data-visible] > [aria-live]").textContent, p.cierre);
+    assert.equal(q(m, "[data-siguiente][data-visible] > [aria-live]").textContent, p.siguiente);
+    assert.equal(q(m, '[data-boton="seguir"]'), null);
   } finally { m.desmontar(); }
 });
 

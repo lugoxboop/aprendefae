@@ -85,11 +85,17 @@ export const FIGURA_CAJON = {
   /* Para el lector de pantalla (Hanayama; aprobado por Katsumi, «Pendientes del #260»). */
   destino: { [DEBE]: "Al debe de Caja", [HABER]: "Al haber de Caja", [NO_SE_MUEVE]: "Caja no se mueve" },
   alt: "La cuenta Caja como un cajón de paso: la plata entra por el Debe y sale por el Haber hacia Bancos o hacia un pago en efectivo.",
-  controles: "Los siete controles",
+  /* A1 P5 «el-faltante» (Katsumi; Hanayama; Yujiro): lo que se cobró y no llegó al libro, junto al tubo de entrada; la cifra va delante, sin «$». */
+  sinAnotar: "sin anotar",
 };
 
 const PIE_180 = "Basado en el libro, p. 180";
 const PIE_179_180 = "Basado en el libro, pp. 179-180";
+const PIE_179_180_SIMULADO = "Basado en el libro, pp. 179-180 · Escenario simulado";
+
+/* A1 P5 «el-faltante»: el escenario simulado de Katsumi. Andrés cobra 435.000 y anota 410.000; 25.000 no llegan al libro. */
+export const ANOTADO_A1 = 410_000;
+export const SIN_ANOTAR_A1 = SUS_SERVICIOS - ANOTADO_A1;
 
 /* Los dos asientos de la p. 180, sin fecha: el libro pone «xxxx» y la pieza no la muestra. */
 export const ASIENTO_COBRO = {
@@ -108,19 +114,20 @@ export const ASIENTO_CONSIGNACION = {
 };
 
 /*
- * Los siete controles (pp. 179-180, en el orden del libro y en paráfrasis) y
- * la parte del cajón que cada uno enciende (Hanayama §1.4): `luz` lleva el
- * borde blanco; `vivo`, los trazos del recorrido. El 7 enciende Bancos
- * (corte de Yujiro).
+ * Los siete controles (pp. 179-180, en el orden del libro): en A1 P6, cada uno
+ * es un botón con su rótulo (Katsumi) en la parte del cajón que cuida
+ * (Hanayama §1.4), y tocarlo enciende esa parte: `luz` lleva el borde
+ * blanco; `vivo`, los trazos del recorrido. El 7 va en Bancos (corte de
+ * Yujiro). El 4, «Separación», es lo que enciende el acierto de P5.
  */
 export const CONTROLES_A1 = [
-  { luz: ["cols"], vivo: [], texto: "Anotar cada día cuánto efectivo entró y cuánto salió." },
-  { luz: ["bancos"], vivo: ["salida", "bancos"], texto: "Llevar al banco, cada día, el efectivo que se recibió." },
-  { luz: ["pago"], vivo: ["salida", "pago"], texto: "Poner un tope a los pagos que se hacen en efectivo." },
-  { luz: ["cols"], vivo: ["entrada"], texto: "Separar a quien recibe el dinero de quien lo registra." },
-  { luz: ["saldo"], vivo: [], texto: "Contar la caja seguido y sin avisar: eso es un arqueo." },
-  { luz: ["cajon"], vivo: [], texto: "Tener una póliza de manejo: un seguro contra el robo de quien maneja la plata." },
-  { luz: ["bancos"], vivo: [], texto: "Tener una caja menor, un fondo aparte para los pagos pequeños." },
+  { rotulo: "Registro diario", luz: ["cols"], vivo: [] },
+  { rotulo: "Consignación", luz: ["bancos"], vivo: ["salida", "bancos"] },
+  { rotulo: "Tope de pagos", luz: ["pago"], vivo: ["salida", "pago"] },
+  { rotulo: "Separación", luz: ["cols"], vivo: ["entrada"] },
+  { rotulo: "Arqueo", luz: ["saldo"], vivo: [] },
+  { rotulo: "Póliza", luz: ["cajon"], vivo: [] },
+  { rotulo: "Caja menor", luz: ["bancos"], vivo: [] },
 ];
 
 /* Los dos cheques de P4: uno entra a Caja; el propio sale del banco (bandeja, y Bancos se enciende). */
@@ -182,11 +189,30 @@ export const PANTALLAS_A1 = [
     pie: "Basado en el libro, pp. 179, 180 y 187",
   },
   {
+    /*
+     * P5 «el-faltante» (Katsumi; Hanayama; Yujiro partió la P5 de antes en
+     * dos): el caso y tres tarjetas apiladas. El cajón va sin salidas ni
+     * glosas. Con el acierto, la pastilla «Correcto» en la tarjeta (sin
+     * mensaje, decisión de Yujiro) y se enciende lo que cuida la separación,
+     * el control 4: el tubo de entrada y las columnas.
+     */
+    id: "el-faltante", tipo: "faltante", figura: "cajon", pregunta: true,
+    antes: ["Andrés cobra y anota. ¿Qué control faltó?"],
+    opciones: ["separar", "arqueo", "poliza"],
+    correcta: "separar",
+    tarjetas: { separar: "Separar funciones", arqueo: "Arqueo sorpresa", poliza: "Póliza de manejo" },
+    control: 4,
+    errores: {
+      arqueo: "Al contar, caja y libro cuadran: lo no anotado no se ve.",
+      poliza: "La póliza paga el robo, pero no lo impide.",
+    },
+    pie: PIE_179_180_SIMULADO,
+  },
+  {
+    /* P6 «controles»: el cajón entero, sin el caso; cada control enciende lo que cuida; con los siete, la frase de cierre. */
     id: "controles", tipo: "controles", figura: "cajon",
-    antes: ["Siete controles cuidan la caja: toca cada uno."],
-    /* Lote B, capa 4: con el séptimo control distinto, el hueco del control pasa a la frase; tocar un número vuelve a mostrar su control (Hanayama §2.2). */
-    cierre: "Caja recibe por el debe y entrega por el haber. Un cheque propio no la mueve.",
-    cierreEnCuerpo: true,
+    antes: ["Toca cada control: se enciende lo que vigila."],
+    cierre: "Cada control tapa una fuga distinta.",
     siguiente: "Siguiente: «El fondo fijo».",
     pie: PIE_179_180,
   },

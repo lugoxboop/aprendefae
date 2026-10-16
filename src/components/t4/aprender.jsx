@@ -22,7 +22,7 @@
  */
 import { useEffect, useId, useState } from "react";
 import { useNumeroQueSube } from "../mecanicas/libros/verbos.jsx";
-import { C, cifra, LineaMarcas } from "./comun.jsx";
+import { C, cifra, LineaMarcas, Marca } from "./comun.jsx";
 import { LECTOR_ERROR, MARCA } from "../../data/contabilidadT4.js";
 
 export const CSS_APRENDER = `
@@ -44,6 +44,10 @@ export const CSS_APRENDER = `
 .t4op { display: grid; place-items: center; align-content: center; gap: 2px; min-height: 48px; border-radius: 8px; padding: 2px 4px; white-space: nowrap; cursor: pointer; border: 1px solid ${C.reposo}; background: transparent; color: ${C.texto}; font: 600 14px/20px "Inter", sans-serif; font-variant-numeric: tabular-nums; min-width: 0; }
 /* Lote B (A5 P0): las opciones con palabras, no cifras, parten en dos renglones si no caben a 320 («ninguno todavía»). */
 .t4op-g[data-palabras] .t4op { white-space: normal; text-align: center; text-wrap: balance; }
+/* A1 P5: las opciones apiladas a todo el ancho; la pastilla va dentro, en un hueco de 20 px reservado (lote A §2.3). */
+.t4op-g[data-columna] .t4op { white-space: normal; justify-items: start; text-align: left; padding: 8px 12px; gap: 4px; }
+.t4op-g[data-columna] .t4op[data-marca] { padding: 7px 11px; }
+.t4op-hueco { min-height: 20px; display: flex; }
 .t4op:disabled { cursor: default; }
 .t4op[data-marca] { border-width: 2px; border-color: ${C.texto}; padding: 1px 3px; }
 .t4op[data-marca="mal"] { border-color: ${C.error}; }
@@ -105,12 +109,13 @@ export function Cheque({ monto, onClick = null, hecho = false, renglones }) {
  * pastilla va en la línea de marcas, debajo del grupo (P2 de Hanayama, §2.3-3).
  * El lector oye la marca en el nombre de la opción.
  */
-export function Chips({ opciones, elegida, correcta, onElegir, rotulo = (o) => cifra(o), etiqueta, palabras = false }) {
+export function Chips({ opciones, elegida, correcta, onElegir, rotulo = (o) => cifra(o), etiqueta, palabras = false, columna = false }) {
   const marca = (o) => (o === elegida ? (o === correcta ? "bien" : "mal") : null);
   const marcas = Object.fromEntries(opciones.map((o, k) => [k, marca(o) ? { marca: marca(o) } : null]));
   return (
     <>
-      <div className="t4op-g" data-palabras={palabras ? "" : undefined} style={{ gridTemplateColumns: `repeat(${opciones.length}, minmax(0, 1fr))` }} role="group" aria-label={etiqueta}>
+      <div className="t4op-g" data-palabras={palabras ? "" : undefined} data-columna={columna ? "" : undefined}
+        style={{ gridTemplateColumns: columna ? "minmax(0, 1fr)" : `repeat(${opciones.length}, minmax(0, 1fr))` }} role="group" aria-label={etiqueta}>
         {opciones.map((o) => {
           const m = marca(o);
           const r = rotulo(o);
@@ -119,11 +124,12 @@ export function Chips({ opciones, elegida, correcta, onElegir, rotulo = (o) => c
               aria-label={m ? `${r}: ${MARCA[m]}` : undefined}
               disabled={elegida === correcta} onClick={() => onElegir(o)}>
               <span>{r}</span>
+              {columna && <span className="t4op-hueco">{m && <Marca marca={m} />}</span>}
             </button>
           );
         })}
       </div>
-      <LineaMarcas columnas={opciones.length} marcas={marcas} gap={6} />
+      {!columna && <LineaMarcas columnas={opciones.length} marcas={marcas} gap={6} />}
     </>
   );
 }
