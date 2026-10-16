@@ -36,8 +36,9 @@ import { Pastilla, Mensaje, RegionViva, claseDe, botonDeAvance, CSS_B5H, CLASE_B
  *     tema6/escaleraB5.js), en el bloque de mensaje como las demás;
  *   · segundo fallo: el tocado queda «No va aquí» y la ficha va a su cajón
  *     correcto, que queda «Iba aquí» (0,7 s después: ya no hay reintento); su
- *     lámina llega punteada (hoja 3, Shoko). La devolución dice la respuesta
- *     (la regla única, b5SegundoFallo.js).
+ *     lámina llega punteada (hoja 3, Shoko). La devolución dice la respuesta:
+ *     el acierto tal cual, debajo de la pastilla «Iba aquí» (la regla única,
+ *     b5SegundoFallo.js).
  *
  * LOTE 6d (estándar único de Hacer, Devolucion.jsx): los cajones van sin
  * relleno, con el contorno de reposo de 1 px .35; la pastilla con su palabra
@@ -244,7 +245,7 @@ export default function FichasUnNivel({
           fontSize: "12px", textAlign: "center", color: "rgba(248,249,250,0.75)",
           border: `1px dashed ${FAE.coral}`,
         }}>
-          La ficha no se colocó.
+          La ficha volvió. Lee la pista y pruébala en otro cajón.
         </p>
       )}
       {/* El veredicto es el estado de la evaluación (`r.ok`), no el texto. */}

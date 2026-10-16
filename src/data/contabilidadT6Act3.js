@@ -47,8 +47,8 @@ const h = (cuenta, valor) => ({ cuenta, lado: HABER, valor });
 /* Las D, C y A se repiten según el tipo de asiento: revivir la deuda o el pago. */
 const REVIVIR = {
   D: "Sobra una cuenta. Revivir la deuda solo mueve Cuentas por cobrar – clientes y la provisión. El gasto no se toca, la plata todavía no entra y no hay ningún ingreso.",
-  C: "Están al revés. Revivir es reversar el castigo: Cuentas por cobrar – clientes vuelve a subir y va al Debe. La provisión va al Haber.",
-  A: "Falta una cuenta. Revivir la deuda mueve dos: Cuentas por cobrar – clientes y la provisión.",
+  C: "Revivir es reversar el castigo: lo que se debitó entonces ahora se acredita, y al revés.",
+  A: "Revivir mueve la deuda y la provisión, como el castigo pero al revés.",
   /* Las razones por cuenta de la D (Futaba, entrega 1): detrás de «Sobra X.» o «No va X: en su lugar va Y.». */
   razones: {
     [CAJA]: "Revivir la deuda es reversar el castigo, y el castigo no movió plata. El pago se anota en otro asiento.",
@@ -58,8 +58,8 @@ const REVIVIR = {
 };
 const PAGO = {
   D: "Sobra una cuenta. El pago solo mueve Caja y Cuentas por cobrar – clientes. La provisión ya se movió al revivir la deuda, y no hay ningún ingreso.",
-  C: "Están al revés. La plata entra a Caja, que va al Debe. La deuda se cancela: Cuentas por cobrar – clientes va al Haber.",
-  A: "Falta una cuenta. El pago mueve dos: Caja y Cuentas por cobrar – clientes.",
+  C: "La plata entra a Caja y la deuda se cancela.",
+  A: "El pago mueve Caja y la deuda del cliente.",
   razones: {
     [PROVISION]: "La provisión ya se movió en el asiento anterior, al revivir la deuda.",
     [GASTO]: "Cobrar no es un gasto: lo que debía el cliente se vuelve plata.",
@@ -81,7 +81,7 @@ export const PARTES_T6_ACT3 = [
     fecha: "Caso a",
     hecho: "Caso a. Un tiempo después del castigo, Pablo Moncayo vuelve y paga toda la factura: $180.000.",
     asiento: [d(CLIENTES, 180000), h(PROVISION, 180000)],
-    errores: { ...REVIVIR, especificas: [], B: "Revisa el valor. En el caso a, el cliente paga toda la factura." },
+    errores: { ...REVIVIR, especificas: [], B: "En el caso a, el cliente paga toda la factura, así que se revive toda. Ese valor no es la factura completa." },
   },
   {
     id: "b5-t6-a3-p2",
@@ -90,7 +90,7 @@ export const PARTES_T6_ACT3 = [
     fecha: "Caso a",
     hecho: "Caso a. La deuda ya se revivió. Ahora entran a Caja los $180.000 que pagó Pablo Moncayo.",
     asiento: [d(CAJA, 180000), h(CLIENTES, 180000)],
-    errores: { ...PAGO, especificas: [], B: "Revisa el valor. Entra a Caja lo que pagó Pablo Moncayo." },
+    errores: { ...PAGO, especificas: [], B: "A Caja entra lo que pagó Pablo Moncayo, que es toda la factura. Ese valor no coincide." },
   },
   {
     id: "b5-t6-a3-p3",
@@ -102,9 +102,9 @@ export const PARTES_T6_ACT3 = [
     errores: {
       ...REVIVIR,
       especificas: [
-        { valor: 100000, clave: "C14", texto: "Revisa el valor. En el caso b, Pablo Moncayo promete pagar el resto. Por eso se revive toda la deuda, no solo el abono." },
+        { valor: 100000, clave: "C14", texto: "Reviviste solo el abono. Como Pablo Moncayo promete pagar el resto, se revive toda la deuda." },
       ],
-      B: "Revisa el valor. Mira de cuánto era la deuda castigada.",
+      B: "En el caso b se revive toda la deuda castigada, y ese valor no lo es.",
     },
   },
   {
@@ -117,9 +117,9 @@ export const PARTES_T6_ACT3 = [
     errores: {
       ...PAGO,
       especificas: [
-        { valor: 180000, clave: "B-toda", texto: "Revisa el valor. A Caja solo entra lo que abonó. El resto sigue en Cuentas por cobrar – clientes, como deuda pendiente." },
+        { valor: 180000, clave: "B-toda", texto: "Pusiste toda la deuda, pero a Caja solo entra lo que abonó. El resto sigue como deuda pendiente." },
       ],
-      B: "Revisa el valor. A Caja entra lo que abonó Pablo Moncayo.",
+      B: "A Caja entra solo el abono de Pablo Moncayo, y ese valor no lo es. Míralo en el hecho.",
     },
   },
   {
@@ -132,9 +132,9 @@ export const PARTES_T6_ACT3 = [
     errores: {
       ...REVIVIR,
       especificas: [
-        { valor: 180000, clave: "C14", texto: "Revisa el valor. En el caso c, Pablo Moncayo avisa que ya no puede pagar más. Por eso se revive solo lo que pagó." },
+        { valor: 180000, clave: "C14", texto: "Reviviste toda la deuda. Como Pablo Moncayo ya no puede pagar más, se revive solo lo que pagó." },
       ],
-      B: "Revisa el valor. Mira cuánto pagó Pablo Moncayo.",
+      B: "En el caso c se revive solo lo que pagó Pablo Moncayo, y ese valor no lo es.",
     },
   },
 ];

@@ -92,14 +92,15 @@ const ubicar = (casilla, correcto, cerca, tipoCerca) => GRUPOS_T6_ACT6.map((g) =
 }));
 const op = (valor, tipo = null) => ({ valor, tipo });
 
+/* `acierto` (lote 6d-textos, Futaba): el texto que sale debajo de «Correcto» al acertar la casilla. */
 export const PARTES_T6_ACT6 = [
   {
     id: "ubicar",
     casillas: [
-      { id: "u1", enunciado: "Una deuda lleva 2 meses vencida.", opciones: ubicar("u1", "g1", "g2", "G1") },
+      { id: "u1", enunciado: "Una deuda lleva 2 meses vencida.", acierto: "Dos meses no pasan de tres: es del primer grupo, que en este ejemplo no se provisiona.", opciones: ubicar("u1", "g1", "g2", "G1") },
       /* El caso límite: «sin exceder de 6 meses», así que seis meses justos van al 5 % (la frontera de T6 · A5). */
-      { id: "u2", enunciado: "Una deuda lleva exactamente 6 meses vencida.", opciones: ubicar("u2", "g2", "g3", "G2") },
-      { id: "u3", enunciado: "Una deuda lleva 14 meses vencida.", opciones: ubicar("u3", "g4", "g3", "G3") },
+      { id: "u2", enunciado: "Una deuda lleva exactamente 6 meses vencida.", acierto: "Seis meses justos no pasan de seis: siguen en el grupo del 5 %.", opciones: ubicar("u2", "g2", "g3", "G2") },
+      { id: "u3", enunciado: "Una deuda lleva 14 meses vencida.", acierto: "Catorce meses pasan de un año: es del grupo del 15 %.", opciones: ubicar("u3", "g4", "g3", "G3") },
     ],
   },
   {
@@ -114,11 +115,11 @@ export const PARTES_T6_ACT6 = [
       ],
     },
     casillas: [
-      { id: "p4", enunciado: "¿Cuánta provisión lleva el grupo de más de tres hasta seis meses?", opciones: [op(28000), op(56000, "P1"), op(2800, "P2")] },
-      { id: "p5", enunciado: "¿Cuánta provisión lleva el grupo de más de seis meses hasta un año?", opciones: [op(16000), op(8000, "P1"), op(24000, "P1")] },
-      { id: "p6", enunciado: "¿Cuánta provisión lleva el grupo de más de un año?", opciones: [op(9000), op(6000, "P1"), op(900, "P2")] },
-      { id: "p7", enunciado: "¿Cuál es el total de la provisión?", opciones: [op(53000), op(44000, "P7"), op(84000, "P4")] },
-      { id: "p8", enunciado: "¿Cuál es el valor neto de lo que deben los clientes?", opciones: [op(1347000), op(1400000, "P5"), op(1453000, "P6")] },
+      { id: "p4", enunciado: "¿Cuánta provisión lleva el grupo de más de tres hasta seis meses?", acierto: "El 5 % de $560.000 es $28.000.", opciones: [op(28000), op(56000, "P1"), op(2800, "P2")] },
+      { id: "p5", enunciado: "¿Cuánta provisión lleva el grupo de más de seis meses hasta un año?", acierto: "El 10 % de $160.000 es $16.000.", opciones: [op(16000), op(8000, "P1"), op(24000, "P1")] },
+      { id: "p6", enunciado: "¿Cuánta provisión lleva el grupo de más de un año?", acierto: "El 15 % de $60.000 es $9.000.", opciones: [op(9000), op(6000, "P1"), op(900, "P2")] },
+      { id: "p7", enunciado: "¿Cuál es el total de la provisión?", acierto: "Los tres grupos que llevan provisión suman $53.000.", opciones: [op(53000), op(44000, "P7"), op(84000, "P4")] },
+      { id: "p8", enunciado: "¿Cuál es el valor neto de lo que deben los clientes?", acierto: "A $1.400.000 se le resta la provisión de $53.000: quedan $1.347.000.", opciones: [op(1347000), op(1400000, "P5"), op(1453000, "P6")] },
     ],
   },
 ];
@@ -143,7 +144,7 @@ export const ERRORES_T6_ACT6 = {
   "G0-u3-g1": "Ese grupo es para deudas vigentes o de hasta tres meses. Esta lleva 14 meses vencida.",
   "G0-u3-g2": "Ese grupo es para deudas de más de tres hasta seis meses. Esta lleva 14 meses vencida.",
   P1: "Ese es el porcentaje de otro grupo. Mira el rango del grupo y usa su porcentaje.",
-  P2: "Revisa la cuenta: te sobra o te falta un cero.",
+  P2: "Ese valor tiene un cero de más o de menos. Repite la multiplicación.",
   /* «En este ejemplo»: no provisionar ese grupo es una decisión del escenario, no de la norma. */
   P4: "Las vigentes y las de hasta tres meses no llevan provisión en este ejemplo. Suma solo los otros tres grupos.",
   P5: "Falta restar la provisión: el valor neto es lo que deben los clientes menos la provisión.",

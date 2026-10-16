@@ -361,3 +361,11 @@ Manda sobre 3.7, 3.8 y 11.1 en el primer fallo. Al primer fallo, con cualquier c
 | canjeables | «En la lista del libro, los títulos canjeables van junto a los de participación y el CERT.» |
 | def-descuento | «La ficha dice de dónde sale la renta. ¿Es un interés, o la diferencia entre dos valores?» |
 | caso-redencion | «Fíjate en qué gana: ¿un interés que le pagan, o la diferencia entre lo que pagó y lo que recibe?» |
+
+## Lote 6d-textos · los aciertos sin la apertura de veredicto (Futaba, 16-oct)
+
+Manda sobre todas las tablas de acierto y de segundo fallo de arriba. Fuente: entrega de Futaba del 16-oct (8:21), §1.
+
+- Los aciertos de las 14 fichas pierden «Sí. » delante; el resto de cada texto se queda igual, letra por letra.
+- Tras el segundo fallo, la regla única (b5SegundoFallo.js) ya no quita ni pone nada: el acierto sale tal cual, debajo de la pastilla «Iba aquí». Ya no hay «No es esa.» delante.
+- El aviso del primer fallo pasa de «La ficha no se colocó.» a «La ficha volvió. Lee la pista y pruébala en otro cajón.» (solo en FichasUnNivel.jsx de la Célula B).

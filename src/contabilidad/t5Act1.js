@@ -37,7 +37,7 @@ export function sortearT5Act1(barajar, total = T5_ACT1.porPartida) {
  * `intento` es 1 o 2. Al primer fallo, la PISTA de la ficha (la escalera de
  * ayuda de la célula, tema6/escaleraB5.js): la misma con cualquier cajón, sin
  * emoji. En el segundo fallo manda la regla única de la célula: el acierto de
- * la ficha, con «No es esa.» delante, en TODAS las fichas.
+ * la ficha, tal cual, en TODAS las fichas.
  */
 export function evaluarT5Act1(ficha, marcado, intento = 1) {
   const rentaOk = marcado.renta === ficha.renta;
@@ -47,7 +47,7 @@ export function evaluarT5Act1(ficha, marcado, intento = 1) {
 
   if (ok) return { ok, texto: ficha.acierto, patron: null, rentaOk, tipoOk };
 
-  /* Regla única del segundo fallo (b5SegundoFallo.js): el acierto, con «No es esa.» delante. */
+  /* Regla única del segundo fallo (b5SegundoFallo.js): el acierto tal cual. */
   if (intento === 2) return { ok, texto: segundoFalloDe(ficha.acierto), patron: "segundo", rentaOk, tipoOk };
 
   return { ok, texto: ficha.pista, patron: "pista", rentaOk, tipoOk };

@@ -19,9 +19,17 @@ import { DEBE, HABER } from "../data/contabilidad.js";
  *
  * E3 (lote 6a; Futaba, con la corrección de Shoko): si la parte trae
  * `errores.segunda` (una segunda frase por cuenta), la B general nombra las
- * cuentas con el valor errado, en el orden del asiento: «Revisa el valor de
- * {X}.» o «Revisa los valores de {X} y {Y}.» (con «e» ante el sonido i), y
- * después la segunda frase de la primera.
+ * cuentas con el valor errado, en el orden del asiento: «No cuadra el valor
+ * de {X}.» o «No cuadran los valores de {X} y {Y}.» (con «e» ante el sonido
+ * i; lote 6d-textos, Futaba), y después la segunda frase de la primera.
+ *
+ * La C y la A nombran la cuenta (lote 6d-2, Futaba), como la D: la primera
+ * frase se arma con las cuentas que puso el estudiante, en el orden del
+ * asiento, y después va solo el porqué, desde los datos (`errores.C`,
+ * `errores.A`):
+ *   · C: «Pusiste {X} en el Debe.» / «… en el Haber.» (el lado donde la
+ *     puso), o «Pusiste {X} y {Y} en el lado contrario.»;
+ *   · A: «Falta {Y}.» / «Faltan {Y} y {Z}.».
  *
  * La D nombra la cuenta (Sakuta, calidad 1; condición de Shoko):
  *   · tantas de más como de menos: «No va {X}: en su lugar va {Y}.», o
@@ -65,10 +73,26 @@ export function textoD(parte, puestas) {
   return `${cuales} ${resto}`;
 }
 
+/* La C (lote 6d-2): qué cuentas puso al revés, en el orden del asiento, y después el porqué de los datos. */
+export function textoC(parte, puestas) {
+  const alReves = parte.asiento.filter((e) => puestas.some((p) => p.cuenta === e.cuenta && p.lado !== e.lado));
+  const nombres = alReves.map((e) => e.cuenta);
+  const cabeza = nombres.length > 1
+    ? `Pusiste ${enLista(nombres)} en el lado contrario.`
+    : `Pusiste ${nombres[0]} en el ${puestas.find((p) => p.cuenta === nombres[0]).lado === DEBE ? "Debe" : "Haber"}.`;
+  return `${cabeza} ${parte.errores.C}`;
+}
+
+/* La A (lote 6d-2): qué cuentas faltan, en el orden del asiento, y después el porqué de los datos. */
+export function textoA(parte, puestas) {
+  const faltan = parte.asiento.map((e) => e.cuenta).filter((c) => !puestas.some((p) => p.cuenta === c));
+  return `${faltan.length > 1 ? "Faltan" : "Falta"} ${enLista(faltan)}. ${parte.errores.A}`;
+}
+
 /* La B general que nombra las cuentas (E3): `malas` son las cuentas con el valor errado, en el orden del asiento. */
 export function textoBConCuentas(parte, malas) {
   const nombres = parte.asiento.map((e) => e.cuenta).filter((c) => malas.includes(c));
-  const cabeza = nombres.length > 1 ? `Revisa los valores de ${enLista(nombres)}.` : `Revisa el valor de ${nombres[0]}.`;
+  const cabeza = nombres.length > 1 ? `No cuadran los valores de ${enLista(nombres)}.` : `No cuadra el valor de ${nombres[0]}.`;
   const segunda = parte.errores.segunda?.[nombres[0]];
   return segunda ? `${cabeza} ${segunda}` : cabeza;
 }
@@ -92,6 +116,8 @@ export function evaluarParte(parte, puestas) {
     }
   }
   if (error === "D") texto = textoD(parte, puestas);
+  if (error === "C") texto = textoC(parte, puestas);
+  if (error === "A") texto = textoA(parte, puestas);
   if (error && texto === null) texto = parte.errores[error];
   return { ok: error === null, error, deValor: Boolean(error) && !["D", "C", "A"].includes(error), texto, esperado };
 }

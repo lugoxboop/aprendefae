@@ -101,6 +101,15 @@ const filas = (texto) => {
 };
 const GUIA_FICHAS = filas(seccion("### 3.6", "Devoluciones de acierto"));
 const GUIA_ACIERTOS = filas(seccion("Devoluciones de acierto", "### 3.7"));
+/* Lote 6d-textos (Futaba; nota al final de la guía): el acierto de la guía pierde «Sí. » delante, y el resto queda letra por letra. */
+const aciertoDeGuia = (id) => {
+  const t = GUIA_ACIERTOS[id][0];
+  assert.ok(t.startsWith("Sí. "), `${id}: la tabla de la guía abre con «Sí. »`);
+  assert.ok(GUIA.includes("pierden «Sí. » delante"), "la guía guarda la regla del lote 6d-textos");
+  return t.slice("Sí. ".length);
+};
+/* Lote 6d-textos: el aviso del primer fallo. */
+const AVISO_FALLO = "La ficha volvió. Lee la pista y pruébala en otro cajón.";
 /* E5: la pista del primer fallo de cada ficha (§12.1). Las devoluciones de error de 3.7 y 3.8 quedan como registro. */
 const GUIA_PISTAS = filas(seccion("### 12.1", null));
 
@@ -129,7 +138,7 @@ test("★★★ las 14 devoluciones de acierto se ven literales tras «Correcto.
     const f = ficha(id);
     const { caja, desmontar } = await montar([id]);
     await marcar(caja, f.renta, f.tipo);
-    assert.equal(devolucion(caja), `Correcto. ${GUIA_ACIERTOS[id][0]}`, id);
+    assert.equal(devolucion(caja), `Correcto. ${aciertoDeGuia(id)}`, id);
     desmontar();
   }
 });
@@ -153,17 +162,17 @@ test("★★★ E5: al primer fallo, con CADA cajón equivocado, se ve la pista 
       assert.equal(p.dataset.retro, "mal", `${id}: la pista va en el bloque de error`);
       assert.equal(p.querySelector("[data-lector]").textContent.trim(), "Incorrecto.", `${id}: el lector dice «Incorrecto.»`);
       assert.ok(parseFloat(p.querySelector("[data-devolucion]").style.fontSize) >= 12, `${id}: la pista, a 12 px como mínimo`);
-      assert.equal(m.caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
+      assert.equal(m.caja.querySelector("[data-fallo]").textContent, AVISO_FALLO);
       assert.equal(botonAvanzar(m.caja), null, `${id}: con la pista se espera el reintento`);
       m.desmontar();
     }
   }
 });
 
-/* La regla única del segundo fallo, calculada a mano desde la guía: «No es esa.» + el acierto sin «Sí.». */
-const segundoDeGuia = (id) => `No es esa. ${GUIA_ACIERTOS[id][0].replace(/^Sí\. /, "")}`;
+/* La regla única del segundo fallo (lote 6d-textos): el acierto tal cual, sin nada delante. */
+const segundoDeGuia = (id) => aciertoDeGuia(id);
 
-test("★★★ regla única: tras el segundo fallo, TODA ficha muestra su acierto con «No es esa.», y ese texto dice la respuesta", async () => {
+test("★★★ regla única: tras el segundo fallo, TODA ficha muestra su acierto tal cual (sin «No es esa.»), y ese texto dice la respuesta", async () => {
   for (const id of IDS) {
     const f = ficha(id);
     /* Dos fallos seguidos, en los dos cajones que no son el suyo, en los dos órdenes (el tocado queda ✕ y no se puede volver a tocar). */
@@ -189,7 +198,7 @@ test("★★★ E5: una ficha acertada al primer intento nunca muestra su pista"
   for (const id of IDS) {
     const f = ficha(id);
     await marcar(caja, f.renta, f.tipo);
-    assert.equal(devolucion(caja), `Correcto. ${GUIA_ACIERTOS[id][0]}`, id);
+    assert.equal(devolucion(caja), `Correcto. ${aciertoDeGuia(id)}`, id);
     assert.ok(!caja.textContent.includes(f.pista), `${id}: la pista se ve tras acertar`);
     await tocar(botonAvanzar(caja));
   }
@@ -211,19 +220,21 @@ test("★★★ corrección 2: tras un reintento acertado queda solo el acierto;
   const { caja, desmontar } = await montar(["caso-pactado"]);
   assert.equal(Boolean(caja.querySelector("[data-fallo]")), false);
   await marcar(caja, "fija", "descuento");
-  assert.equal(caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
+  assert.equal(caja.querySelector("[data-fallo]").textContent, AVISO_FALLO);
   assert.equal(devolucion(caja), GUIA_PISTAS["caso-pactado"][0]);
   await marcar(caja, "fija", "interes");
   assert.equal(Boolean(caja.querySelector("[data-fallo]")), false, "el aviso desaparece tras el reintento");
   assert.equal(caja.querySelectorAll('[role="status"]').length, 1);
-  assert.equal(devolucion(caja), `Correcto. ${GUIA_ACIERTOS["caso-pactado"][0]}`);
+  assert.equal(devolucion(caja), `Correcto. ${aciertoDeGuia("caso-pactado")}`);
   assert.ok(!caja.textContent.includes(ficha("caso-pactado").pista), "la pista del primer fallo ya no se ve");
   desmontar();
 });
 
 test("★★ correcciones 3 y 4 (lote 6d): los datos van sin emoji y el veredicto sale del estado; la devolución, en una región viva (role=status); la pista, de 20 palabras como mucho", async () => {
   for (const f of D.FICHAS_T5_ACT1) {
-    assert.ok(f.acierto.startsWith("Sí. "), f.id);
+    /* Lote 6d-textos: el acierto ya no abre con un veredicto. */
+    assert.ok(!/^Sí\b/.test(f.acierto), `${f.id}: el acierto abre con «Sí»`);
+    for (const k of ["acierto", "pista"]) assert.ok(!/Vas bien:|No es esa\./.test(f[k]), `${f.id}.${k}`);
     assert.ok(!/[\u2705\u274C]/.test(f.acierto), `${f.id}: el acierto lleva emoji`);
     assert.ok(!/^(✅|❌)/.test(f.pista), `${f.id}: la pista no lleva veredicto`);
     assert.ok(f.pista.split(/\s+/).length <= 20, `${f.id}: la pista pasa de 20 palabras`);

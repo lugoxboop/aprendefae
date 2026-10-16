@@ -47,7 +47,7 @@ import { useReducido } from "../tema3/DosLineas.jsx";
  * se baraja nada, no hay encabezado y nunca se llama a `onCompletar`.
  *
  * config: { consigna, regla?, nota?{ texto, pie }, rotuloSimulado?, partida?,
- *           partes: [{ id, datos?, casillas: [{ id, enunciado, opciones: [{ valor | texto, tipo }] }] }],
+ *           partes: [{ id, datos?, casillas: [{ id, enunciado, acierto?, opciones: [{ valor | texto, tipo }] }] }],
  *           visual?{ Componente, anuncio, enDemo? }, errores, cierre, alt, etiqueta }
  * Una opción con tipo null es la correcta. En el registro, cada casilla se
  * nombra con la etiqueta del contador y su número («Casilla 3»): ningún texto
@@ -160,9 +160,9 @@ export default function CasillasEnOrden({
     );
   }
 
-  /* El veredicto es el estado (tipo null = la correcta), no el texto. El acierto aún no trae texto de contenido: «Correcto.» solo. */
+  /* El veredicto es el estado (tipo null = la correcta), no el texto. Con acierto, el texto es el `acierto` de la casilla (lote 6d-textos, b5-t6-a6), debajo de «Correcto»; sin él, «Correcto.» solo. */
   const okCasilla = Boolean(elegida) && elegida.tipo === null;
-  const retro = elegida && elegida.tipo ? config.errores[elegida.tipo] : null;
+  const retro = !elegida ? null : elegida.tipo ? config.errores[elegida.tipo] : (actual.acierto ?? null);
   /* El registro: cada casilla ya respondida, con su valor correcto y si se acertó. */
   const resueltas = casillas.slice(0, n + (elegida ? 1 : 0));
   /* El visual propio se ve en el juego; en «Así se juega», solo si lo pide (`enDemo`: a6 muestra su regla). */

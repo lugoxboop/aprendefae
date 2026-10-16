@@ -400,3 +400,23 @@ Parte	Cuenta	Razón
 2 y 4 (pago)	Provisión para cuentas incobrables	La provisión ya se movió en el asiento anterior, al revivir la deuda.
 2 y 4	Gasto provisiones – cuentas incobrables	Cobrar no es un gasto: lo que debía el cliente se vuelve plata.
 2 y 4	Ingresos por ventas	Cobrar no es vender: se cobra la factura que ya existía.
+
+
+## (6) Lote 6d-textos · las devoluciones nombran el error probable (Futaba, 16-oct; pegado tal cual)
+
+Manda sobre la (1) y la (2) en lo que nombra. La C y la A de los datos son solo el porqué: la primera frase la arma la mesa con las cuentas que puso el estudiante, en el orden del asiento: «Pusiste {X} en el Debe.» / «Pusiste {X} en el Haber.», o «Pusiste {X} y {Y} en el lado contrario.»; «Falta {Y}.» / «Faltan {Y} y {Z}.». Las D no cambian.
+
+| Lugar | Texto literal |
+|---|---|
+| REVIVIR · C | «Revivir es reversar el castigo: lo que se debitó entonces ahora se acredita, y al revés.» |
+| REVIVIR · A | «Revivir mueve la deuda y la provisión, como el castigo pero al revés.» |
+| PAGO · C | «La plata entra a Caja y la deuda se cancela.» |
+| PAGO · A | «El pago mueve Caja y la deuda del cliente.» |
+| asiento 1 · B | «En el caso a, el cliente paga toda la factura, así que se revive toda. Ese valor no es la factura completa.» |
+| asiento 2 · B | «A Caja entra lo que pagó Pablo Moncayo, que es toda la factura. Ese valor no coincide.» |
+| asiento 3 · C14 (100.000) | «Reviviste solo el abono. Como Pablo Moncayo promete pagar el resto, se revive toda la deuda.» |
+| asiento 3 · B | «En el caso b se revive toda la deuda castigada, y ese valor no lo es.» |
+| asiento 4 · B-toda (180.000) | «Pusiste toda la deuda, pero a Caja solo entra lo que abonó. El resto sigue como deuda pendiente.» |
+| asiento 4 · B | «A Caja entra solo el abono de Pablo Moncayo, y ese valor no lo es. Míralo en el hecho.» |
+| asiento 5 · C14 (180.000) | «Reviviste toda la deuda. Como Pablo Moncayo ya no puede pagar más, se revive solo lo que pagó.» |
+| asiento 5 · B | «En el caso c se revive solo lo que pagó Pablo Moncayo, y ese valor no lo es.» |

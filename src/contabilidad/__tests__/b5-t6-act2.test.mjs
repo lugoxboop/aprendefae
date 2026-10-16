@@ -107,6 +107,8 @@ const sinTexto = (n) => n.textContent.replace(/\s+/g, " ").trim();
 
 const FUENTE = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-act2.md", import.meta.url), "utf8");
 const FUTABA = FUENTE.slice(FUENTE.indexOf("## (1) Futaba"), FUENTE.indexOf("## (2) Futaba"));
+/* Lote 6d-textos (Futaba): las C, A y B de las mesas y la general de la pregunta 1, pegadas en la sección (6). */
+const L6D = FUENTE.slice(FUENTE.indexOf("## (6) Lote 6d-textos"));
 const textosDeDatos = () => {
   const out = [];
   const recoger = (v, k) => {
@@ -134,8 +136,9 @@ test("★★★ la D de la parte 1 es la nueva de Futaba (E), no la de la tabla;
   assert.ok(FUTABA.includes(vieja), "guarda: la vieja está en la tabla pegada");
   assert.equal(PARTES[0].errores.D, nueva);
   for (const p of PARTES) {
-    for (const k of ["C", "A", "B"]) assert.ok(FUTABA.includes(`\t${p.errores[k]}\t`), `${p.id} ${k}, de la tabla de Futaba`);
-    for (const e of p.errores.especificas.filter((x) => x.clave !== "T8")) assert.ok(FUTABA.includes(`\t${e.texto}\t`), `${p.id} ${e.clave}`);
+    /* Lote 6d-textos: la C, la A, la B y las específicas C15 y C12 son las de la sección (6), fila por fila. */
+    for (const k of ["C", "A", "B"]) assert.ok(L6D.includes(`· ${k} | «${p.errores[k]}» |`), `${p.id} ${k}, de la tabla del lote 6d-textos`);
+    for (const e of p.errores.especificas.filter((x) => x.clave !== "T8")) assert.ok(L6D.includes(`· ${e.clave} (${e.valor.toLocaleString("es-CO").replace(/,/g, ".")}) | «${e.texto}» |`), `${p.id} ${e.clave}`);
     assert.ok(FUTABA.includes(`Enunciado: «${p.hecho}»`), `${p.id}: el enunciado`);
     assert.ok(FUTABA.includes(`Instrucción: «${p.instruccion}»`), `${p.id}: la instrucción`);
   }
@@ -342,26 +345,29 @@ test("★★★ la T: no se mueve, sin huecos al armar; cada renglón entra al c
 const CASOS = [
   [0, "D", [d(PROVISION, 180000), hb(CLIENTES, 180000), d(CAJA, 0)], "Caja (C11)"],
   [0, "D", [d(GASTO, 31200), d(PROVISION, 148800), hb(CLIENTES, 180000)], "el gasto (C8): D manda sobre la C15"],
-  [0, "C", [hb(PROVISION, 180000), d(CLIENTES, 180000)], "al revés"],
-  [0, "A", [d(PROVISION, 180000)], "falta Clientes"],
-  [0, "C", [hb(PROVISION, 180000)], "al revés y falta Clientes: C manda sobre A"],
+  /* Lote 6d-2: la C y la A abren con la cabeza que nombra las cuentas del estudiante (quinta columna, literal). */
+  [0, "C", [hb(PROVISION, 180000), d(CLIENTES, 180000)], "al revés", `Pusiste ${PROVISION} y ${CLIENTES} en el lado contrario.`],
+  [0, "A", [d(PROVISION, 180000)], "falta Clientes", `Falta ${CLIENTES}.`],
+  [0, "C", [hb(PROVISION, 180000)], "al revés y falta Clientes: C manda sobre A", `Pusiste ${PROVISION} en el Haber.`],
   [0, "C15", [d(PROVISION, 148800), hb(CLIENTES, 148800)], "lo provisionado en vez de lo castigado"],
   [0, "B", [d(PROVISION, 18000), hb(CLIENTES, 18000)], "otro valor"],
   [1, "D", [d(GASTO, 184600), hb(PROVISION, 184600), d(CLIENTES, 0)], "Clientes sobra"],
-  [1, "C", [hb(GASTO, 184600), d(PROVISION, 184600)], "al revés"],
-  [1, "A", [hb(PROVISION, 184600)], "falta el gasto"],
+  [1, "C", [hb(GASTO, 184600), d(PROVISION, 184600)], "al revés", `Pusiste ${GASTO} y ${PROVISION} en el lado contrario.`],
+  [1, "A", [hb(PROVISION, 184600)], "falta el gasto", `Falta ${GASTO}.`],
   [1, "C12", [d(GASTO, 153400), hb(PROVISION, 153400)], "sin lo que faltó"],
   [1, "T8", [d(GASTO, 122200), hb(PROVISION, 122200)], "lo que faltó, restado (la T8 de a5, lote 6b)"],
   [1, "B", [d(GASTO, 31200), hb(PROVISION, 31200)], "otro valor"],
 ];
 
 test("★★★ la prioridad D > C > A > B con su texto en el panel, las B específicas (C15, C12, T8), y E4: la mesa del estudiante se queda, con lo correcto junto", async () => {
-  for (const [k, tipo, puestas, nota] of CASOS) {
+  for (const [k, tipo, puestas, nota, cabeza] of CASOS) {
     const p = PARTES[k];
     const { caja, desmontar } = await montar({ items: [p] });
     await armar(caja, puestas);
     assert.equal(caja.querySelector("[data-panel]").dataset.error, tipo, `${p.id}: ${nota}`);
-    const esperado = tipo === "D" ? M.textoD(p, puestas) : tipo.startsWith("C1") || tipo === "T8" ? p.errores.especificas.find((e) => e.clave === tipo).texto : p.errores[tipo];
+    assert.equal(Boolean(cabeza), tipo === "C" || tipo === "A", `${p.id} ${tipo}: la C y la A llevan cabeza`);
+    const esperado = tipo === "D" ? M.textoD(p, puestas) : tipo.startsWith("C1") || tipo === "T8" ? p.errores.especificas.find((e) => e.clave === tipo).texto
+      : cabeza ? `${cabeza} ${p.errores[tipo]}` : p.errores[tipo];
     assert.equal(textoRetro(caja), esperado, `${p.id} ${tipo}: el texto`);
     comprobarMesaE4(caja, p, puestas, `${p.id} ${tipo}`);
     desmontar();
@@ -425,6 +431,12 @@ test("★★★ cierreConMesa: D > C > A > B; una B específica por valor, por c
   assert.equal(ev([hb("X", 10), d("Y", 10)]).error, "C");
   assert.equal(ev([d("X", 10)]).error, "A");
   assert.equal(ev([hb("X", 10)]).error, "C", "al revés y falta una: manda C");
+  /* Lote 6d-2: la cabeza de la C y de la A nombra las cuentas que puso el estudiante, y después va el porqué de los datos. */
+  assert.equal(ev([hb("X", 10), d("Y", 10)]).texto, "Pusiste X y Y en el lado contrario. c");
+  assert.equal(ev([hb("X", 10)]).texto, "Pusiste X en el Haber. c");
+  assert.equal(ev([d("X", 10), d("Y", 10)]).texto, "Pusiste Y en el Debe. c");
+  assert.equal(ev([d("X", 10)]).texto, "Falta Y. a");
+  assert.equal(ev([hb("Y", 10)]).texto, "Falta X. a");
   assert.deepEqual([ev([d("X", 7), hb("Y", 7)]).error, ev([d("X", 7), hb("Y", 7)]).texto], ["V", "v"], "por valor, la primera que se cumple");
   assert.deepEqual([ev([d("X", 10), hb("Y", 9)]).error, ev([d("X", 10), hb("Y", 9)]).texto], ["K", "k"], "por cuenta, cualquier valor equivocado");
   assert.deepEqual([ev([d("X", 3), hb("Y", 10)]).error, ev([d("X", 3), hb("Y", 10)]).texto], ["XV", "xv"], "por cuenta y valor");
