@@ -144,7 +144,7 @@ async function irA(caja, id) {
 function contenido() {
   const t = [];
   for (const p of P) {
-    t.push(p.enunciado, p.pista);
+    t.push(p.enunciado, p.pista, p.cita);
     if (p.pregunta) t.push(p.pregunta, p.mensaje, ...p.columnas);
     for (const o of p.opciones ?? []) {
       t.push(o.retro);
@@ -182,9 +182,9 @@ const entero = (texto, t) => new RegExp(`(?:^|[|:·«(/] |\\*\\* |«)${escapar(t
 /* Los nombres del mayor los escribe el paquete con su saldo detrás: «Nombre (…». */
 const delMayor = new Set(P.flatMap((p) => (p.mayor ?? []).map((c) => c.nombre)));
 
-test("★★★ 2 · cada texto de los datos está, letra por letra, en el paquete v2 (guarda: 113 textos y 27 rótulos) y las palabras del feedback, en el PROMPT MAESTRO", () => {
+test("★★★ 2 · cada texto de los datos está, letra por letra, en el paquete v2 (guarda: 120 textos y 27 rótulos) y las palabras del feedback, en el PROMPT MAESTRO", () => {
   const textos = contenido();
-  assert.equal(textos.length, 113, "no recorrió los textos que dice recorrer");
+  assert.equal(textos.length, 120, "no recorrió los textos que dice recorrer");
   /* Los rótulos de los lotes los conserva v2 de v1.3 («la marca «Lote n · …» de v1.3»). */
   const lotes = pantalla("c9").lotes.map((l) => l.marca);
   /* C.1 (v2.3): los activos de cada opción, en su renglón del paquete «x) [**clave** · ]A · B · C · D». */
@@ -829,7 +829,7 @@ test("★★★ 10 · 3 de 25 cae al piso del 50 %: 12,5 FP exactos que calcular
 
 /* ═══════════ 12 · INFLESZ ═══════════ */
 
-test("★★★ 12 · todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 50 medidos)", () => {
+test("★★★ 12 · todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 55 medidos)", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of [...contenido(), ...ROTULOS]) {
@@ -839,7 +839,7 @@ test("★★★ 12 · todo texto de 10 palabras o más pasa 65 con inflesz.js (g
     medidos++;
     if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
-  assert.equal(medidos, 50, "no midió los textos que dice medir");
+  assert.equal(medidos, 55, "no midió los textos que dice medir");
   assert.deepEqual(bajos, [], "textos por debajo de 65");
   /* La devolución (a) de la pantalla 2 de v2.2: el paquete dice 87,2. */
   assert.equal(inflesz(pantalla("c5").opciones.find((o) => o.id === "c5-a").retro).valor, 87.2);
@@ -853,7 +853,7 @@ test("★★★ 12 · todo texto de 10 palabras o más pasa 65 con inflesz.js (g
  * opción o camino, con la pista abierta, y exige que cada texto del
  * estudiante y cada rótulo haya salido en el DOM en algún estado.
  */
-test("★★★ 1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 113 textos, 27 rótulos, 49 caminos)", async () => {
+test("★★★ 1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 120 textos, 27 rótulos, 49 caminos)", async () => {
   const visto = new Set();
   const mirar = (caja) => visto.add(caja.textContent);
   let caminos = 0;
@@ -894,7 +894,7 @@ test("★★★ 1 · cada texto del paquete sale en la pantalla en algún estado
   mirar(caja);
   const todo = [...visto].join("\n");
   const textos = contenido();
-  assert.equal(textos.length, 113);
+  assert.equal(textos.length, 120);
   assert.equal(ROTULOS.length, 27);
   assert.equal(caminos, 49, "no recorrió los caminos que dice recorrer");
   const faltan = [...textos, ...ROTULOS, I.porTema, I.marcaPista, "Siguiente pregunta", "Ver mi resumen"].filter((t) => !todo.includes(t));

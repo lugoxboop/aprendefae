@@ -70,7 +70,7 @@ const pesosConSigno = (n) => `$${cifra(n)}`;
 /* ═══════════ LO QUE LEE EL ESTUDIANTE ═══════════ */
 
 function textosDelEstudiante() {
-  const t = [T.R5_2.objetivo, T.R5_2.entrada];
+  const t = [T.R5_2.objetivo, T.R5_2.entrada, T.R5_2.cita];
   for (const p of P) {
     t.push(p.hecho, p.enunciado, p.acierto);
     if (p.tipo === "asiento") t.push(p.alReves, ...Object.values(p.debeMal), ...Object.values(p.haberMal), ...p.valorMal.map((v) => v.texto), p.valorGenerica);
@@ -81,9 +81,9 @@ function textosDelEstudiante() {
   return [...new Set(t)];
 }
 
-test("★★★ cada texto del estudiante está entero en el paquete o en su delta (guarda: 96 textos distintos)", () => {
+test("★★★ cada texto del estudiante está entero en el paquete o en su delta (guarda: 97 textos distintos)", () => {
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 96);
+  assert.equal(textos.length, 97);
   /*
    * Entero: tras «: » o un salto de línea y hasta el fin del renglón; o, si
    * lo fija una decisión de Kamogawa, entre «» (con los saltos de línea del
@@ -370,7 +370,7 @@ test("★★ las barras del medidor son las que Itagaki calculó para 375 y 320 
 
 /* ═══════════ INFLESZ ═══════════ */
 
-test("★★★ INFLESZ: los 89 textos de 10 palabras o más pasan 65; los rótulos no se miden", () => {
+test("★★★ INFLESZ: los 90 textos de 10 palabras o más pasan 65; los rótulos no se miden", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of textosDelEstudiante()) {
@@ -380,7 +380,7 @@ test("★★★ INFLESZ: los 89 textos de 10 palabras o más pasan 65; los rótu
     medidos++;
     if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
-  assert.equal(medidos, 89);
+  assert.equal(medidos, 90);
   assert.deepEqual(bajos, []);
   /* Los rótulos son marcas cortas: ninguno llega a 10 palabras. */
   const rotulosDe = (o) => Object.values(o).flatMap((x) => (typeof x === "string" ? [x] : typeof x === "object" ? Object.values(x) : typeof x === "function" ? [x(25)] : []));
@@ -695,7 +695,7 @@ test("★★★ se juega entera: regla del libro, «Iba aquí», los dos textos,
   assert.equal(caja.querySelector("[data-saldo='credito']").textContent, "SALDO CRÉDITO2.283.400");
   assert.ok(!caja.querySelector("[data-libro]").textContent.includes("166.600"));
   const lados = [...caja.querySelectorAll("[data-tarjeta-saldo='respuesta'] [data-lado]")];
-  assert.deepEqual(lados.map((b) => [b.textContent, b.getAttribute("aria-pressed")]), [["DÉBITO", "false"], ["CRÉDITO", "false"]]);
+  assert.deepEqual(lados.map((b) => [b.textContent, b.getAttribute("aria-pressed")]), [["Debe", "false"], ["Haber", "false"]]);
   assert.ok(apagado(caja.querySelector("[data-revisar]")));
   await escribir(campo(caja), "0");
   assert.equal(apagado(caja.querySelector("[data-revisar]")), false, "con 0 no se exige lado");

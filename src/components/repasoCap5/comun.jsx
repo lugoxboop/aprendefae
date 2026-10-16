@@ -212,6 +212,12 @@ export function Responder({ children, onClick, deshabilitado = false, botonRef, 
   );
 }
 
+/* La cita del libro, al pie de la pantalla (lote de textos de Miyata): 12 px, atenuada. */
+export function Cita({ texto }) {
+  if (!texto) return null;
+  return <p data-cita style={{ margin: "16px 0 0", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: C.apagado }}>{texto}</p>;
+}
+
 /* «Comprobar»: solo donde la respuesta tiene varios campos o fichas (§4.3). */
 export function Comprobar({ activo, onClick, dato = "comprobar" }) {
   return <Responder deshabilitado={!activo} onClick={onClick} datos={{ [`data-${dato}`]: true }}>{FEEDBACK.comprobar}</Responder>;

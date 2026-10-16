@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 /* Los estados de calificación, el punto y la palabra: de comun.jsx (B4, E3). */
 import {
-  C, INTER, SORA, MARCA, CEJILLA, CIFRA, HUNDIDO, REPOSO, CSS_FOCO, Devolucion, BotonSiguiente, Responder, Comprobar,
+  C, INTER, SORA, MARCA, CEJILLA, CIFRA, HUNDIDO, REPOSO, CSS_FOCO, Devolucion, BotonSiguiente, Responder, Comprobar, Cita,
   ESTADOS, MarcaPieza, Pastilla, useTrasError,
 } from "./comun.jsx";
 import { cifra, leerCifra } from "./ToroNegro.jsx";
@@ -853,6 +853,7 @@ function Partida({ onCompletar, pasoInicial, ordenP3 }) {
       {!r && <Pista key={p.id} texto={p.pista} abierta={pistaAbierta} onAbrir={() => setPistaAbierta(true)} />}
       <Devolucion r={r && { ok: r.ok, textos: r.textos }} />
       {r && <BotonSiguiente onClick={siguiente} botonRef={boton} sustantivo={RP.sustantivo} ultimo={paso + 1 === TOTAL_R5_5} />}
+      <Cita texto={R5_5.cita} />
     </div>
   );
 }

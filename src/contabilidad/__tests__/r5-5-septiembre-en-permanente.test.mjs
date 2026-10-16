@@ -151,7 +151,7 @@ function textosDePantalla(x) {
 }
 function textosDelEstudiante() {
   const t = [
-    T.R5_5.objetivo, T.ENTRADA_PERMANENTE.apertura, T.ENTRADA_PERMANENTE.instruccion,
+    T.R5_5.objetivo, T.R5_5.cita, T.ENTRADA_PERMANENTE.apertura, T.ENTRADA_PERMANENTE.instruccion,
     ...T.DATOS_DEL_LIBRO_PERMANENTE.flatMap((g) => g.frases), ...T.DATOS_DECLARADOS_PERMANENTE.datos,
     ...T.PANTALLAS.flatMap(textosDePantalla),
     ...Object.values(T.DETALLES),
@@ -167,9 +167,9 @@ const ROTULOS_E1 = [
   RP.comaSola, RP.yaRegistrado,
 ];
 
-test("★★★ cada texto del estudiante está entero en el paquete, y los rótulos en la lista del diseño (guarda: 72 textos, 22 rótulos)", () => {
+test("★★★ cada texto del estudiante está entero en el paquete, y los rótulos en la lista del diseño (guarda: 73 textos, 22 rótulos)", () => {
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 72);
+  assert.equal(textos.length, 73);
   /* La línea de lo que habría sido: el paquete da el texto y la cifra por separado. */
   const fuera = textos.filter((x) => !PLANO.includes(x) && !(x.startsWith("Así quedaba con tu valor: ") && PLANO.includes(`«Así quedaba con tu valor: N»`) && PLANO.includes(x.split(": ")[1])));
   assert.deepEqual(fuera, [], `no están en el paquete: ${fuera.join(" | ")}`);
@@ -554,7 +554,7 @@ async function vistasDeTodo() {
   return { vistas, caminos };
 }
 
-test("★★★ E1 · cada texto del paquete y cada rótulo fijo salen en la pantalla en algún estado (guarda: 72 textos, 22 rótulos, 38 caminos)", async () => {
+test("★★★ E1 · cada texto del paquete y cada rótulo fijo salen en la pantalla en algún estado (guarda: 73 textos, 22 rótulos, 38 caminos)", async () => {
   const { vistas, caminos } = await vistasDeTodo();
   const todo = vistas.join("\n");
   const faltan = [...textosDelEstudiante(), ...ROTULOS_E1].filter((t) => !todo.includes(t));
@@ -638,7 +638,7 @@ test("★★ B4 · los estados de r5-5 son los de comun.jsx: 2 px #F8F9FA con «
 });
 
 /* v1.4: la opción b se reescribió (88,4): la prueba vuelve a cubrir todo, sin excepción. */
-test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 56 medidos)", () => {
+test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 57 medidos)", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of textosDelEstudiante()) {
@@ -648,7 +648,7 @@ test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda:
     medidos++;
     if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
-  assert.equal(medidos, 56, "no midió los textos que dice medir");
+  assert.equal(medidos, 57, "no midió los textos que dice medir");
   assert.deepEqual(bajos, []);
 });
 

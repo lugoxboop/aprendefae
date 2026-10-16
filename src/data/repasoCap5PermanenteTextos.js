@@ -21,6 +21,8 @@ export { CAJA, COMPRAS, CLIENTES, DEVOLUCIONES, INGRESOS, INVENTARIO };
 export const HOJA_PERMANENTE = [CAJA, COMPRAS, CMV, CLIENTES, DEVOLUCIONES, INGRESOS, INVENTARIO];
 
 export const R5_5 = {
+  /* Lote de textos (Miyata): la cita del libro, al pie de cada movimiento. */
+  cita: "Basado en el libro: el 6 del bloque D, pp. 273-274.",
   id: "r5-5",
   nombre: "Septiembre en permanente",
   /* Kamogawa: Difícil · 50 FP, cinco pantallas, una calificación cada una, 10 FP cada una, sin mitades. */
@@ -152,7 +154,7 @@ export const PANTALLAS = [
       ],
     },
     generica: "Reparte el flete entre las unidades que trajo y súmalo al precio de factura.",
-    acierto: "Bien. Cada unidad entra con $2.185 de factura y $115 de transporte. Da $2.300, lo mismo que el precio de lista: el flete costó justo lo que te descontaron.",
+    acierto: "Cada unidad entra con $2.185 de factura y $115 de transporte. Da $2.300, lo mismo que el precio de lista: el flete costó justo lo que te descontaron.",
     pista: "¿Podrías vender lo que compraste sin traerlo antes a tu bodega?",
   },
   {
@@ -177,7 +179,7 @@ export const PANTALLAS = [
       valorMal: DEV_P2.costo.flatMap((x) => x.valores.flatMap((valor) => [CMV, INVENTARIO].map((cuenta) => ({ cuenta, valor, texto: x.texto })))),
     },
     generica: "Divide el saldo entre las unidades. Ese promedio, por 6.000, es lo que sale de la bodega.",
-    acierto: "Bien. El costo pasa de Inventario a Costo de mercancía vendida el mismo día de la venta. El periódico lo dejaba para el cierre.",
+    acierto: "El costo pasa de Inventario a Costo de mercancía vendida el mismo día de la venta. El periódico lo dejaba para el cierre.",
     pista: "El promedio de hoy sale del último saldo del kárdex.",
   },
   {
@@ -207,7 +209,7 @@ export const PANTALLAS = [
       valorMal: [],
     },
     generica: "Este asiento solo toca dos cuentas: Inventario y el costo de lo vendido.",
-    acierto: "Correcto. Vuelven al costo con que salieron. El costo de la venta baja y la bodega recupera esas unidades.",
+    acierto: "Vuelven al costo con que salieron. El costo de la venta baja y la bodega recupera esas unidades.",
     pista: "¿A qué valor salieron estas unidades de la bodega el día 10?",
   },
   {
@@ -229,7 +231,7 @@ export const PANTALLAS = [
       ],
     },
     generica: "Suma la entrada al saldo y divide entre las unidades. Luego multiplica por las 6.100 que salen.",
-    acierto: "Bien. El lote barato bajó el promedio. Por eso estas 6.100 salen más baratas que las del día 10.",
+    acierto: "El lote barato bajó el promedio. Por eso estas 6.100 salen más baratas que las del día 10.",
     pista: "¿Cuántas unidades hay después de la compra, y cuánto valen todas juntas?",
   },
   {
@@ -245,7 +247,7 @@ export const PANTALLAS = [
       { id: "d", texto: "En el permanente, la devolución del 15 sube el costo de la venta.", retro: "La devolución vuelve al mismo costo con que salió. No cambia el promedio ni el costo de la venta del 10." },
     ],
     generica: "El permanente usa lo que había el día 10. El periódico espera a fin de mes.",
-    acierto: "Exacto. El periódico le pone a la venta del 10 un costo que solo se conoce a fin de mes. Es como costear la leche vendida el día 10 con un promedio que incluye leche que aún no llegaba.",
+    acierto: "El periódico le pone a la venta del 10 un costo que solo se conoce a fin de mes. Es como costear la leche vendida el día 10 con un promedio que incluye leche que aún no llegaba.",
     pista: "Mira qué compras existían ya el día 10, y cuáles llegaron después.",
   },
 ];

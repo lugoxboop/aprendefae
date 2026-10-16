@@ -70,8 +70,9 @@ export const INTERFAZ_R5_1 = {
   debe: "DEBE",
   haber: "HABER",
   sinSaldo: "Sin saldo",
-  debita: "Debita",
-  acredita: "Acredita",
+  /* Lote de textos (Miyata): los renglones de las opciones de asiento, «Debe · X / Haber · Y». */
+  renglonDebe: "Debe",
+  renglonHaber: "Haber",
   /* Pantalla 3. */
   marcaCompra: (marca, precio) => `${marca} · ${pesos(precio)} CADA UNA`,
   vendidas: "VENDIDAS",
@@ -245,10 +246,11 @@ export const PANTALLAS_R5_1 = [
   {
     id: "c1",
     ejercicio: "C.1",
+    cita: "Basado en el libro: el 1 del bloque C, p. 263.",
     pagina: "p. 263",
     subtema: "corrientes",
     forma: "raya",
-    enunciado: "Un grupo tiene solo activos corrientes. Elige cuál y mira cuándo se vuelve plata cada uno.",
+    enunciado: "Escenario simulado. Solo un grupo es todo corriente. Elige y mira cuándo se vuelve plata cada uno.",
     opciones: [
       { id: "c1-a", correcta: true, activos: [CAJA_C1, cartera("10 meses", 10), INVENTARIO_C1, inversion("seis meses", 6)], retro: "Exacto. Son de clases distintas, y hasta la cartera a 10 meses entra: los cuatro se vuelven plata (efectivo) antes de un año." },
       { id: "c1-b", activos: [BANCOS_C1, cartera("18 meses", 18), INVENTARIO_C1, inversion("tres meses", 3)], retro: "Ser cartera no la hace corriente: lo que manda es cuándo se cobra. Esta tarda 18 meses, más de un año." },
@@ -260,6 +262,7 @@ export const PANTALLAS_R5_1 = [
   {
     id: "c3",
     ejercicio: "C.3",
+    cita: "Libro: el 3 del bloque C, pp. 263-266.",
     pagina: "p. 264",
     subtema: "inversiones",
     forma: "flujos",
@@ -276,10 +279,11 @@ export const PANTALLAS_R5_1 = [
   {
     id: "c5",
     ejercicio: "C.5",
+    cita: "Basado en el libro: el 5 del bloque C, pp. 263-266.",
     pagina: "pp. 264-265",
     subtema: "cartera",
     forma: "asiento",
-    enunciado: "Un cliente no te pagará $300.000. Esa deuda se castiga, y la pérdida ya estaba prevista. ¿Qué asiento va?",
+    enunciado: "Escenario simulado. Un cliente no te pagará $300.000. Se castiga, y la pérdida ya estaba prevista. ¿Qué asiento va?",
     mayor: MAYOR_C5,
     valor: CASTIGO_C5,
     opciones: [
@@ -293,10 +297,11 @@ export const PANTALLAS_R5_1 = [
   {
     id: "c6",
     ejercicio: "C.6",
+    cita: "Basado en el libro: el 6 del bloque C, pp. 263-266.",
     pagina: "p. 265",
     subtema: "inventarios",
     forma: "latas",
-    enunciado: "Vende 4 latas con PEPS: toca las que salen.",
+    enunciado: "Escenario simulado. Con PEPS, toca las 4 latas que salen.",
     compras: COMPRAS_C6,
     vender: VENDER_C6,
     mensaje: "Esa llegó después. Con PEPS sale primero la más vieja.",
@@ -313,6 +318,7 @@ export const PANTALLAS_R5_1 = [
   {
     id: "c8",
     ejercicio: "C.8",
+    cita: "Libro: el 8 del bloque C, pp. 263-266.",
     pagina: "p. 265",
     subtema: "inventarios",
     forma: "fichas",
@@ -325,6 +331,7 @@ export const PANTALLAS_R5_1 = [
   {
     id: "c9",
     ejercicio: "C.9",
+    cita: "Libro: el 9 del bloque C, pp. 263-266.",
     pagina: "p. 266",
     subtema: "inventarios",
     forma: "lotes",
@@ -342,19 +349,20 @@ export const PANTALLAS_R5_1 = [
   {
     id: "c10",
     ejercicio: "C.10",
+    cita: "Basado en el libro: el 10 del bloque C, pp. 263-266.",
     pagina: "p. 266",
     subtema: "inventarios",
     forma: "asiento",
-    enunciado: "Con el sistema periódico, al cierre, lo que había en bodega al empezar debe salir de los libros. ¿Qué asiento lo saca?",
+    enunciado: "Escenario simulado. En periódico, al cierre, el inventario del inicio sale de los libros. ¿Qué asiento lo saca?",
     mayor: MAYOR_C10,
     valor: MAYOR_C10[0].saldo,
     opciones: [
       { id: "c10-a", asiento: asiento(INVENTARIO, GYP), retro: "Ese asiento pone en los libros el inventario final. Aquí va lo contrario: sacar el que había al empezar." },
-      { id: "c10-b", asiento: asiento(INVENTARIO, CMV), retro: "Debitar el inventario lo hace crecer. Para sacarlo de los libros hay que acreditarlo." },
+      { id: "c10-b", asiento: asiento(INVENTARIO, CMV), retro: "Con el inventario en el debe, crece. Para sacarlo de los libros, va al haber." },
       { id: "c10-c", correcta: true, asiento: asiento(GYP, INVENTARIO), retro: "Correcto. El inventario inicial sale de los libros y pasa a Ganancias y pérdidas, donde entra al costo del periodo." },
       { id: "c10-d", asiento: asiento(CMV, INVENTARIO), retro: "El inventario sí sale bien. El fallo es a dónde va: en el cierre que vimos, va a Ganancias y pérdidas." },
     ],
-    pista: "Para sacar un activo de los libros, ¿lo debitas o lo acreditas?",
+    pista: "Para sacar un activo de los libros, ¿va al debe o al haber?",
   },
 ];
 
@@ -373,7 +381,12 @@ export function pesosConCentavos(valor) {
 }
 
 /* Los dos renglones de una opción de asiento: «Debita …» / «Acredita …». */
-export const renglonesDeAsiento = (a) => [`${INTERFAZ_R5_1.debita} ${a.debe}`, `${INTERFAZ_R5_1.acredita} ${a.haber}`];
+/* El nombre corto de cada cuenta en las opciones de asiento (lote de textos de Miyata). */
+export const NOMBRE_CORTO = {
+  [GASTO]: "Gasto", [CLIENTES]: "Cartera", [PROVISION]: "Provisión",
+  [INVENTARIO]: "Inventario", [GYP]: GYP, [CMV]: CMV,
+};
+export const renglonesDeAsiento = (a) => [`${INTERFAZ_R5_1.renglonDebe} · ${NOMBRE_CORTO[a.debe]}`, `${INTERFAZ_R5_1.renglonHaber} · ${NOMBRE_CORTO[a.haber]}`];
 
 /*
  * Pantallas 2 y 6: el mayor después de un asiento por `valor`. Cada cuenta
