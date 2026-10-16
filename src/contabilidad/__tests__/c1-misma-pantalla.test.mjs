@@ -36,7 +36,7 @@ const PENDIENTES = new Set([
   "el-cierre · «Los de quitar el inventario inicial y colocar el final.»",
 ]);
 
-const norm = (t) => String(t).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9ñ ]/g, " ");
+const norm = (t) => String(t).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\u00f1 ]/g, " ");
 const VACIAS = new Set("el la los las de del y o a en que se un una por con para es no lo al su sus mas menos ya ese esa este esta como".split(" "));
 const palabras = (t) => norm(t).split(/\s+/).filter((w) => w.length > 3 && !VACIAS.has(w));
 
