@@ -247,6 +247,22 @@ test("★★★ las preguntas: la correcta con o sin «$» y puntos; cada T con 
   assert.equal(L.formatearRespuesta("$2506200"), "2.506.200");
 });
 
+test("★★★ lote 6c · E4 en todo Hacer: una pregunta acertada deja su cifra ✓ (borde 2 nodo, relleno navy), sin tachado ni otra cifra debajo", async () => {
+  for (const [k, texto] of [[0, "$2.506.200"], [2, "31.200"], [4, "153400"]]) {
+    const p = PASOS[k];
+    const { caja, desmontar } = await montar({ items: [p] });
+    await responder(caja, texto);
+    const campo = caja.querySelector(`[data-caja-campo="${p.id}"]`);
+    assert.equal(campo.dataset.marca, "correcta", p.id);
+    assert.ok(campo.querySelector('[data-icono="visto"]'));
+    assert.equal(campo.querySelector('[data-icono="tache"]'), null);
+    assert.match(campo.style.border, /^2px solid/);
+    assert.notEqual(campo.querySelector("input").style.textDecoration, "line-through");
+    assert.equal(caja.querySelector(`[data-valor-correcto="${p.id}"]`), null, "acertó: no hay otra cifra debajo");
+    desmontar();
+  }
+});
+
 test("★★★ una pregunta mal: un intento, el panel con su texto, y E4: su cifra ✕ tachada y debajo ✓ la correcta; sin coral en el campo", async () => {
   for (const [k, texto, error] of [[0, "2.655.000", "T1"], [2, "-31200", "general"], [4, "184600", "T9"]]) {
     const p = PASOS[k];
