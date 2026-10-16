@@ -14,8 +14,7 @@
  * `t4-el-arqueo-de-rosa`; el nombre pasa a «El arqueo de caja menor».
  *
  * Hacer · evaluativa · DIFÍCIL · 50 FP (antes medio · 25). Su fila del
- * catálogo (0203) la ajusta una migración de Erwin en su rango, con la marca
- * del guardián (decisión de Yujiro).
+ * catálogo (0203) la sube la migración 0209, con un upsert.
  *
  * CUATRO RONDAS POR INTENTO, una de cada tipo, al azar entre sus dos, en
  * orden barajado (el orden no delata el tipo): cuadra (H4-1 o H4-6),

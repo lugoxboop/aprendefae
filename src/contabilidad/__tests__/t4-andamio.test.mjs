@@ -105,7 +105,7 @@ test("★★★ cada id del tema lleva t4- y está en la vista; la vista no trae
    */
   assert.deepEqual([ids.length, enPiezas.length, enJuegos.length], [11, 6, 5], "cambió el número de piezas de T4: súbelo aquí a propósito");
   assert.deepEqual(ids, ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-entra-o-sale-de-caja", "t4-a2-el-fondo-fijo", "t4-se-mueve-la-caja-menor", "t4-a3-el-arqueo", "t4-el-arqueo-de-rosa", "t4-a4-bancos-y-notas", "t4-a5-san-calixto", "t4-concilia-la-cuenta", "t4-se-asienta-o-no"]);
-  /* H2, H5 y H6 salieron del catálogo (corte de calidad; la migración de catálogo la escribe Erwin en su rango): ni en el tema ni en la vista. */
+  /* H2, H5 y H6 salieron del catálogo (corte de calidad; la 0208 las retira en blando del catálogo): ni en el tema ni en la vista. */
   for (const id of ["t4-el-control-que-se-saltaron", "t4-al-empleado-o-al-gasto", "t4-quien-se-entero-primero"]) {
     assert.ok(!ids.includes(id) && !enJuegos.includes(id), `${id} salió del catálogo y sigue en T4`);
   }

@@ -15,14 +15,13 @@ Mateo ordenó «calidad sobre cantidad». Ninguna pieza del T4 pasaba la barra d
 | H7 «Concilia la cuenta» | difícil · 50 | igual, rediseñada, con H6 dentro | `d4-t4-h7-v2-rediseno.md` |
 | H8 «¿Se asienta o no?» | experto · 90 | igual, rediseñada | `d4-t4-h8-v2-rediseno.md` |
 
-## Catálogo: lo hace Erwin, en su rango
+## Catálogo: 0208 y 0209
 
-El catálogo del servidor lo cambia **una migración de Erwin en su rango (0150-0199), con la marca del guardián** (decisión de Yujiro, 15 oct): el guardián de migraciones no deja que una célula borre ni actualice. La Célula D le pasó su propuesta, probada sobre un Postgres limpio con todas las migraciones:
-- limpiar las filas de prueba de `t4-el-control-que-se-saltaron` (0201), `t4-al-empleado-o-al-gasto` (0204) y `t4-quien-se-entero-primero` (0205): su historial de FP (y su detalle, en cascada), descontando esos FP de cada perfil; no hay estudiantes reales;
-- retirarlas del catálogo (`partida_en_curso` cae en cascada; `fp_history` y `fp_detalle` no tienen clave foránea al catálogo);
-- pasar `t4-el-arqueo-de-rosa` (0203) a difícil · 50 FP, como las otras difíciles del catálogo.
+El catálogo del servidor lo cambian dos migraciones de la Célula D (decisión de Yujiro, 15 oct), por la puerta del #289:
+- **0208**, con la marca «GUARDIAN: retiro blando de catalogo»: retira en blando `t4-el-control-que-se-saltaron` (0201), `t4-al-empleado-o-al-gasto` (0204) y `t4-quien-se-entero-primero` (0205). Solo `set retirada = true`; nada de delete. Sus filas de prueba se quedan, retiradas, y una llamada con caché vieja responde en vez de reventar.
+- **0209**: un upsert que sube `t4-el-arqueo-de-rosa` (0203) a evaluativa · difícil · 50 FP · 1 etapa, como las otras difíciles del catálogo.
 
-Las 0200-0207 no cambian: ya corrieron en producción. Hasta que entre esa migración, `src/fp/__tests__/catalogo.test.mjs` y el guardián se quejan de las cuatro filas.
+Van en dos archivos porque el guardián deja pasar un retiro blando solo si el archivo no trae otra actualización. La prueba es `supabase/tests/t4_corte_hacer_test.sql` (7 de 7 sobre un Postgres 16 limpio con todas las migraciones, corriéndolas dos veces). Las 0200-0207 no cambian: ya corrieron en producción.
 
 ## Ids
 

@@ -791,7 +791,7 @@ Object.assign(REGLAS, {
   "t4-entra-o-sale-de-caja": (id) => hechoDeItemT4H1(id),
   /* T4 · H3. El ítem es la operación (de cualquiera de las dos series), y se lee por su enunciado. */
   "t4-se-mueve-la-caja-menor": (id) => operacionDeItemT4H3(id),
-  /* T4 · H4 «El arqueo de caja menor», con H5 dentro. El ítem es «ronda:pregunta» (h5-1:cuenta), y se lee por la ronda y la pregunta. H2, H5 y H6 salieron del catálogo (la migración de catálogo de Erwin, en su rango). */
+  /* T4 · H4 «El arqueo de caja menor», con H5 dentro. El ítem es «ronda:pregunta» (h5-1:cuenta), y se lee por la ronda y la pregunta. H2, H5 y H6 salieron del catálogo (retiro blando, migración 0208). */
   "t4-el-arqueo-de-rosa": (id) => preguntaDeItemT4H4(id),
   /* T4 · H7. El ítem es la partida de su serie, o uno de los dos saldos. */
   "t4-concilia-la-cuenta": (id) => partidaDeItemT4H7(id),
