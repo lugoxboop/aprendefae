@@ -85,11 +85,12 @@ select 1, 'retirada es boolean y una fila nueva nace en false', 'boolean/false',
 -- ── 2. Solo están retiradas las que se retiraron a propósito ────────────────
 -- Si el default no hubiera aplicado, aquí saldrían de más. Cada retiro blando
 -- (puerta del #289) se añade a esta lista en el mismo PR: 0015 el dashboard;
--- 0076 b5-t6-a7 y 0077 b5-t6-a5 (Célula B).
-insert into res select 2, 'solo están retiradas las retiradas a propósito', 'b5-t6-a5, b5-t6-a7, dashboard-economico',
+-- 0076 b5-t6-a7 y 0077 b5-t6-a5 (Célula B); 0208 t4-el-control-que-se-saltaron,
+-- t4-al-empleado-o-al-gasto y t4-quien-se-entero-primero (Célula D).
+insert into res select 2, 'solo están retiradas las retiradas a propósito', 'b5-t6-a5, b5-t6-a7, dashboard-economico, t4-al-empleado-o-al-gasto, t4-el-control-que-se-saltaron, t4-quien-se-entero-primero',
   coalesce((select string_agg(activity_id, ', ' order by activity_id)
               from public.actividad_catalogo where retirada), 'ninguna'),
-  (select coalesce(string_agg(activity_id, ',' order by activity_id), '') = 'b5-t6-a5,b5-t6-a7,dashboard-economico'
+  (select coalesce(string_agg(activity_id, ',' order by activity_id), '') = 'b5-t6-a5,b5-t6-a7,dashboard-economico,t4-al-empleado-o-al-gasto,t4-el-control-que-se-saltaron,t4-quien-se-entero-primero'
      from public.actividad_catalogo where retirada);
 
 -- ── 3. La lápida sigue ahí: retirada NO es lo mismo que borrada ────────────
