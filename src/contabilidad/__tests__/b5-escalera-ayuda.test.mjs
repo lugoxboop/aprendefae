@@ -131,7 +131,9 @@ const montar = async (el) => {
   await act(async () => { r.render(el); });
   return { caja, desmontar: () => { act(() => r.unmount()); caja.remove(); } };
 };
-const tocar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
+/* Lote 7: en la capa 2 del tanque, «Siguiente» espera su gesto; se hace antes de tocarlo. */
+const { hacerGesto } = await import("./b5-gestos.mjs");
+const tocar = async (el) => { await hacerGesto(el, act, w); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
 const zonaDe = (caja, id) => caja.querySelector(`[data-hecho="${id}"]`);
 const revelado = (zona) => [...zona.querySelectorAll("[data-revela] p:not([data-pie])")].map((p) => llano(p.textContent));
 const btn = (caja, cual) => caja.querySelector(`[data-${cual}]`);

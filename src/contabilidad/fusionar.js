@@ -51,8 +51,9 @@ export function fusionar({ grupos, pies, estadoPaso, paso, cierreViejo }) {
  * El estado de la escena en la parada (la predicción entre dos pasos): el del
  * paso de antes, con el resalte en lo que nombra la pregunta (Mai §2).
  */
-export function estadoParada(estadoPaso, antes, resaltados) {
-  const base = estadoPaso(antes - 1);
+export function estadoParada(estadoPaso, antes, resaltados, hechos) {
+  /* `hechos`: los gestos hechos (lote 7); las piezas sin gestos no lo usan. */
+  const base = estadoPaso(antes - 1, hechos);
   const r = new Set(resaltados);
   return {
     ...base,
