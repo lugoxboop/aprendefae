@@ -58,6 +58,8 @@ const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
 /* El paquete v2 y su delta (a0): los dos son la fuente de verdad. */
 const PAQUETE = leer("orquestador/conocimiento/paquetes/e5-r5-2-v2.md") + "\n" + leer("orquestador/conocimiento/paquetes/e5-r5-2-a0.md");
+const MAESTRO = leer("orquestador/conocimiento/prompts/disenadores-de-celula-v1.md");
+const apagado = (b) => b.getAttribute("aria-disabled") === "true";
 const DELTA = leer("orquestador/conocimiento/paquetes/e5-r5-2-a0.md");
 const P = T.PREGUNTAS_R5_2;
 const pregunta = (id) => P.find((p) => p.id === id);
@@ -99,12 +101,16 @@ test("★★★ cada texto del estudiante está entero en el paquete o en su del
   assert.ok(!textos.includes("A ese grupo le pusiste 10 %. Aún va al 3 %. El 10 % empieza en 61 días."));
   /* Los rótulos del diseño también están en el paquete, entre comillas. */
   const R = T.ROTULOS_R5_2;
-  for (const r of [R.revisarAsiento, R.revisarSaldo, R.vacio, R.cerrar, R.eraEste, R.ladoDelSaldo, R.tituloCorte, R.casoEnTresTiempos, R.sinMovimientos, R.sinSaldo, R.saldoDebito, R.saldoCredito, R.cuentaDel.debe, R.cuentaDel.haber, R.enElOtro.debe, R.enElOtro.haber, R.debito, R.credito, R.valor]) {
+  for (const r of [R.vacio, R.cerrar, R.ladoDelSaldo, R.tituloCorte, R.casoEnTresTiempos, R.sinMovimientos, R.sinSaldo, R.saldoDebito, R.saldoCredito, R.cuentaDel.debe, R.cuentaDel.haber, R.enElOtro.debe, R.enElOtro.haber, R.debito, R.credito, R.valor]) {
     assert.ok(PAQUETE.includes(`«${r}»`), r);
   }
   const A = T.ROTULOS_A0;
-  for (const r of [A.grupoYSaldo, A.tuProvision, A.marcador, A.revisar, A.correcta, A.era("2.283.400"), A.cifrasEnPesos, "Porcentaje que fija la empresa"]) assert.ok(DELTA.includes(`«${r}»`), r);
+  for (const r of [A.grupoYSaldo, A.tuProvision, A.marcador, A.cifrasEnPesos, "Porcentaje que fija la empresa"]) assert.ok(DELTA.includes(`«${r}»`), r);
   assert.ok(DELTA.includes(A.total), A.total);
+  /* Lote «r5 al estándar único»: «Comprobar», «Correcto» e «Iba aquí» salen del PROMPT MAESTRO §4.2 y §4.3, no del paquete. */
+  for (const r of [R.revisarAsiento, R.revisarSaldo, A.revisar, A.correcta, R.eraEste]) assert.ok(MAESTRO.includes(`"${r}"`), r);
+  assert.deepEqual([R.revisarAsiento, R.revisarSaldo, A.revisar, A.correcta, R.eraEste, A.era("2.283.400")], ["Comprobar", "Comprobar", "Comprobar", "Correcto", "Iba aquí", "Iba aquí: 2.283.400"]);
+  assert.ok(MAESTRO.includes('"Iba aquí: {valor}"'));
   for (const c of Object.values(T.CONCEPTOS)) assert.ok(PAQUETE.includes(`«${c}»`), c);
   for (const c of HOJA) assert.ok(PAQUETE.includes(`\n${c}\n`), c);
   /* Los grupos, con los rótulos de Miyata (decisión 1), y sus cifras, en la tabla del delta. */
@@ -582,16 +588,16 @@ test("★★★ la hoja: llena el hueco activo, pasa al HABER, marca «EN EL DEB
   assert.equal(Boolean(caja.querySelector("[data-hoja]")), false);
   /* «Revisar asiento» pide los dos renglones y un valor mayor que 0. */
   await elegir(caja, "debe", T.PROVISION);
-  assert.ok(caja.querySelector("[data-revisar]").disabled);
+  assert.ok(apagado(caja.querySelector("[data-revisar]")));
   await escribir(campo(caja), "0");
-  assert.ok(caja.querySelector("[data-revisar]").disabled);
+  assert.ok(apagado(caja.querySelector("[data-revisar]")));
   await escribir(campo(caja), "2283400");
   assert.equal(campo(caja).value, "2.283.400");
-  assert.equal(caja.querySelector("[data-revisar]").disabled, false);
+  assert.equal(apagado(caja.querySelector("[data-revisar]")), false);
   desmontar();
 });
 
-test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0, los cortes y EL CASO EN TRES TIEMPOS", async () => {
+test("★★★ se juega entera: regla del libro, «Iba aquí», los dos textos, el 0, los cortes y EL CASO EN TRES TIEMPOS", async () => {
   const fin = [];
   const { caja, desmontar } = await montar(h(ToroNegro, { preparar: () => ({ hoja: HOJA }), onCompletar: (...x) => fin.push(x) }));
   assert.equal(caja.querySelector("[data-objetivo]").textContent, T.R5_2.objetivo);
@@ -608,7 +614,7 @@ test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0
   const nodos = () => [...caja.querySelectorAll("[data-nodo]")].map((n) => n.dataset.estado).join(",");
 
   /* a0 mal: una fila con la coma corrida, una bien, cinco vacías. Sin libro. */
-  assert.equal(progreso(), "PREGUNTA 1 DE 7");
+  assert.equal(progreso(), "Paso 1 de 7");
   assert.equal(nodos(), "actual,pendiente,pendiente");
   assert.equal(Boolean(caja.querySelector("[data-libro]")), false, "a0 no lleva libro");
   const filasA0 = [...caja.querySelectorAll("[data-fila-grupo]")];
@@ -626,25 +632,25 @@ test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0
   campos[6].focus();
   await act(async () => { campos[6].dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true })); });
   assert.equal(document.activeElement === campos[7], true, "Enter no pasó de la última fila al total");
-  assert.ok(caja.querySelector("[data-revisar]").disabled, "«Revisar cálculo» sin total");
+  assert.ok(apagado(caja.querySelector("[data-revisar]")), "«Revisar cálculo» sin total");
   /* El campo admite nueve dígitos en esta pantalla (decisión 4). */
   await escribir(caja.querySelector("[data-fila-total] input"), "2283400000");
   assert.equal(caja.querySelector("[data-fila-total] input").value, "228.340.000");
-  assert.equal(caja.querySelector("[data-revisar]").textContent, "Revisar cálculo");
+  assert.equal(caja.querySelector("[data-revisar]").textContent, "Comprobar");
   await jugarA0(caja, 4532500, { "1-30": 2499000, "31-60": 204000 });
   assert.equal(caja.querySelector("[data-devolucion]").textContent.endsWith(pregunta("a0").coma), true);
   const bajo = (id) => caja.querySelector(`[data-fila-grupo="${id}"] [data-bajo]`);
-  assert.deepEqual([bajo("1-30").dataset.bajo, bajo("1-30").textContent], ["mal", "Era 249.900"]);
-  assert.deepEqual([bajo("31-60").dataset.bajo, bajo("31-60").textContent], ["ok", "Correcta"]);
-  assert.deepEqual([bajo("vigentes").dataset.bajo, bajo("vigentes").textContent], ["vacia", "Era 0"]);
+  assert.deepEqual([bajo("1-30").dataset.bajo, bajo("1-30").textContent], ["mal", "No va aquíIncorrecto.Iba aquí: 249.900"]);
+  assert.deepEqual([bajo("31-60").dataset.bajo, bajo("31-60").textContent], ["ok", "Correcto"]);
+  assert.deepEqual([bajo("vigentes").dataset.bajo, bajo("vigentes").textContent], ["vacia", "No va aquíIncorrecto.Iba aquí: 0"]);
   assert.equal(caja.querySelector('[data-fila-grupo="vigentes"] input').dataset.campoValor, "vacia");
   assert.equal(caja.querySelector('[data-fila-grupo="1-30"] input').dataset.campoValor, "mal");
-  assert.equal(caja.querySelector("[data-fila-total] [data-bajo]").textContent, "Era 2.283.400");
+  assert.equal(caja.querySelector("[data-fila-total] [data-bajo]").textContent, "No va aquíIncorrecto.Iba aquí: 2.283.400");
   assert.ok(campos.every((c) => c.readOnly), "después de revisar, todo queda bloqueado");
   await tocar(sig(caja));
 
   /* P1 bien. Libro sin movimientos; el hecho dice 2.283.400 aunque a0 salió mal. */
-  assert.equal(progreso(), "PREGUNTA 2 DE 7");
+  assert.equal(progreso(), "Paso 2 de 7");
   assert.equal(nodos(), "actual,pendiente,pendiente");
   assert.equal(caja.querySelector("[data-hecho]").textContent, `31 DIC${pregunta("p1").hecho}`);
   assert.ok(caja.querySelector("[data-sin-movimientos]"));
@@ -664,15 +670,17 @@ test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0
   assert.equal(nodos(), "hecho,actual,pendiente");
   await asiento(T.CAJA, T.INGRESOS, 950000);
   const p2 = pregunta("p2");
-  assert.deepEqual([...caja.querySelectorAll("[data-parrafo-devolucion]")].map((x) => x.textContent.replace(/^Incorrecto: /, "")), [p2.debeMal[T.CAJA], p2.haberMal[T.INGRESOS]]);
+  assert.deepEqual([...caja.querySelectorAll("[data-parrafo-devolucion]")].map((x) => x.textContent.replace(/^Incorrecto\. /, "")), [p2.debeMal[T.CAJA], p2.haberMal[T.INGRESOS]]);
   assert.equal(hueco(caja, "debe").dataset.estado, "mal");
   /* v2.1: la palabra debajo de cada pieza, no solo el borde (D12). */
   assert.deepEqual([...caja.querySelectorAll("[data-tarjeta-asiento='armador'] [data-veredicto]")].map((v) => [v.dataset.veredicto, v.textContent]),
-    [["mal", "No va aquí"], ["mal", "No va aquí"], ["ok", "Correcto"]]);
-  assert.equal(caja.querySelectorAll("[data-tarjeta-asiento='era-este'] [data-veredicto]").length, 0, "ERA ESTE no se califica");
+    [["mal", "No va aquíIncorrecto."], ["mal", "No va aquíIncorrecto."], ["ok", "Correcto"]]);
+  /* La tarjeta «Iba aquí» no se califica: su única pastilla es la de su cabecera. */
+  assert.deepEqual([...caja.querySelectorAll("[data-tarjeta-asiento='era-este'] [data-veredicto]")].map((v) => v.dataset.veredicto), ["revelada"], "«Iba aquí» no se califica");
   assert.equal(caja.querySelector("[data-tarjeta-asiento='armador'] input").dataset.campoValor, "ok");
   const era = caja.querySelector("[data-tarjeta-asiento='era-este']");
-  assert.equal(era.querySelector("[data-era-este]").textContent, "ERA ESTE");
+  assert.equal(era.querySelector("[data-era-este]").textContent, "Iba aquí");
+  assert.match(era.style.border, /2px solid (#F8F9FA|rgb\(248, 249, 250\))/i);
   assert.ok(era.textContent.includes(T.PROVISION) && era.textContent.includes(T.CLIENTES));
   assert.equal(era.querySelector("input").value, "950.000");
   await tocar(sig(caja));
@@ -683,22 +691,23 @@ test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0
   await tocar(sig(caja));
 
   /* P4: el libro sigue en 2.283.400 CRÉDITO; nunca muestra el saldo de marzo. Se responde 0, sin lado. */
-  assert.equal(progreso(), "PREGUNTA 5 DE 7");
+  assert.equal(progreso(), "Paso 5 de 7");
   assert.equal(caja.querySelector("[data-saldo='credito']").textContent, "SALDO CRÉDITO2.283.400");
   assert.ok(!caja.querySelector("[data-libro]").textContent.includes("166.600"));
   const lados = [...caja.querySelectorAll("[data-tarjeta-saldo='respuesta'] [data-lado]")];
   assert.deepEqual(lados.map((b) => [b.textContent, b.getAttribute("aria-pressed")]), [["DÉBITO", "false"], ["CRÉDITO", "false"]]);
-  assert.ok(caja.querySelector("[data-revisar]").disabled);
+  assert.ok(apagado(caja.querySelector("[data-revisar]")));
   await escribir(campo(caja), "0");
-  assert.equal(caja.querySelector("[data-revisar]").disabled, false, "con 0 no se exige lado");
+  assert.equal(apagado(caja.querySelector("[data-revisar]")), false, "con 0 no se exige lado");
   await tocar(caja.querySelector("[data-revisar]"));
   assert.ok(caja.querySelector("[data-devolucion]").textContent.endsWith("La provisión no se queda en cero. Se castigó todo lo perdido, aunque pase de lo que había."));
   const eraSaldo = caja.querySelector("[data-tarjeta-saldo='era-este']");
   assert.equal(eraSaldo.querySelector("input").value, "166.600");
   assert.equal(eraSaldo.querySelector("[data-lado='debito']").getAttribute("aria-pressed"), "true");
-  /* v2.1: en ERA ESTE el lado correcto va relleno y el otro no: forma, no solo color. */
-  assert.notEqual(eraSaldo.querySelector("[data-lado='debito']").style.background, eraSaldo.querySelector("[data-lado='credito']").style.background);
-  assert.deepEqual([...caja.querySelectorAll("[data-tarjeta-saldo='respuesta'] [data-veredicto]")].map((v) => v.textContent), ["No es este valor"]);
+  /* §4.1: en «Iba aquí» el lado correcto lleva 2 px #F8F9FA y el otro el reposo de 1 px: grosor, no solo color. */
+  assert.match(eraSaldo.querySelector("[data-lado='debito']").style.border, /^2px solid/);
+  assert.match(eraSaldo.querySelector("[data-lado='credito']").style.border, /^1px solid/);
+  assert.deepEqual([...caja.querySelectorAll("[data-tarjeta-saldo='respuesta'] [data-veredicto]")].map((v) => v.textContent), ["No va aquíIncorrecto."]);
   await tocar(sig(caja));
 
   /* Corte MARZO: 166.600 SALDO DÉBITO, el fantasma en 2.283.400 a la derecha, el texto de Miyata. */
@@ -733,9 +742,9 @@ test("★★★ se juega entera: regla del libro, ERA ESTE, los dos textos, el 0
     ["mayo", "error,acierto", "1 de 2", "783.400CRÉDITO"],
   ]);
   assert.ok(caja.textContent.includes("29%"));
-  /* Los puntos: relleno si acertó, anillo si falló (decisión 9), leído del estilo pintado. */
-  const forma = (el) => (el.style.background === "transparent" && /solid/.test(el.style.border) ? "anillo" : el.style.background && !el.style.border ? "relleno" : "otra");
-  assert.deepEqual([...caja.querySelectorAll("[data-punto]")].map(forma), ["anillo", "relleno", "anillo", "anillo", "anillo", "anillo", "relleno"]);
+  /* Los puntos: Check si acertó, X si falló (§4.2), leído del ícono pintado. */
+  const forma = (el) => (el.classList.contains("lucide-check") ? "check" : el.classList.contains("lucide-x") ? "x" : "otra");
+  assert.deepEqual([...caja.querySelectorAll("[data-punto]")].map(forma), ["x", "check", "x", "x", "x", "x", "check"]);
   assert.ok([...caja.querySelectorAll("[data-punto]")].every((x) => x.closest("[aria-hidden='true']")));
   assert.equal(fin.length, 1);
   const [pct, , detalle] = fin[0];
@@ -754,18 +763,18 @@ test("★★ v2.1: los rótulos nuevos del autodiagnóstico están en el paquete
   for (const r of nuevos) assert.ok(seccion.includes(`«${r.replace(/\u00a0/g, " ")}»`), r);
 });
 
-test("★★ v2.1 · B4 de enganche.md: ni el acierto ni «ERA ESTE» van en teal, que en esta pantalla es DEBE", () => {
+test("★★ v2.1 · B4 de enganche.md: ni el acierto ni «Iba aquí» van en teal, que en esta pantalla es DEBE", () => {
   const fuente = leer("src/components/repasoCap5/ToroNegro.jsx");
-  /* Los estados y la marca «ERA ESTE» son los de comun.jsx (Kamogawa: uno solo para el repaso). */
-  assert.match(fuente, /import \{[^}]*\bESTADOS\b[^}]*\bMARCA_ERA_ESTE\b[^}]*\} from "\.\/comun\.jsx"/);
+  /* Los estados y la pastilla son los de comun.jsx (Kamogawa: uno solo para el repaso). */
+  assert.match(fuente, /import \{[^}]*\bESTADOS\b[^}]*\bPastilla\b[^}]*\} from "\.\/comun\.jsx"/);
   assert.doesNotMatch(fuente, /const ESTADO\w*\s*=/, "ToroNegro vuelve a definir sus estados");
   const comun = leer("src/components/repasoCap5/comun.jsx");
   const estados = comun.slice(comun.indexOf("export const ESTADOS = {"), comun.indexOf("};", comun.indexOf("export const ESTADOS = {")));
   const lineas = estados.split("\n").filter((l) => /^\s*(ok|revelada):/.test(l));
   assert.equal(lineas.length, 2, "no encontró los estados que dice mirar");
   for (const linea of lineas) assert.ok(!/teal|2A9D8F|42,\s*157/i.test(linea), linea.trim());
-  assert.ok(fuente.includes("data-era-este style={{ ...MARCA_ERA_ESTE"), "«ERA ESTE» no usa la marca común");
-  assert.ok(!/data-era-este[^>]*C\.teal/.test(fuente), "«ERA ESTE» en teal");
+  assert.ok(fuente.includes('<p data-era-este style={{ margin: "0 0 10px" }}><Pastilla estado="revelada" /></p>'), "«Iba aquí» no usa la pastilla común");
+  assert.ok(!/data-era-este[^>]*C\.teal/.test(fuente), "«Iba aquí» en teal");
   /* El teal sigue donde significa DEBE o DÉBITO. */
   assert.ok(/l === "debe" \? C\.teal/.test(fuente));
 });

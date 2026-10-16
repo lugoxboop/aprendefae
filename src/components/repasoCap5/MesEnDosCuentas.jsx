@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { C, INTER, MARCA } from "./comun.jsx";
+import { C, INTER, MARCA, CIFRA, HUNDIDO, HUNDIDO_OPACO } from "./comun.jsx";
 import { cifra } from "./ToroNegro.jsx";
 import { MES_COMUN } from "../../data/repasoCap5Comun.js";
 import { estadoDelMes, anchosDelLado, diferenciaDe } from "../../data/repasoCap5Mes.js";
@@ -14,7 +14,7 @@ import { useReducido, useTemporizadores, enFase } from "./movimiento.js";
  *   · va DESPUÉS de la devolución, sin desplazamiento forzado; su animación
  *     arranca cuando entra en la ventana (con reduced-motion, estado final);
  *   · lo de este asiento va RAYADO (rayas #0E1B2E de 2 px con 2 de hueco sobre
- *     el color de su lado), lo acumulado liso, con un corte de 2 px #1D3557;
+ *     el color de su lado), lo acumulado liso, con un corte de 2 px del hundido opaco;
  *   · un asiento que no toca ninguna de las dos cuentas lleva la versión
  *     compacta: la marca y la línea de Miyata, sin barras.
  *
@@ -86,7 +86,7 @@ function Lado({ lado, rotulo, datos, anchos, fase, retraso }) {
           <span style={{ ...MARCA, flexShrink: 0 }}>{lado === "debe" ? MES_COMUN.debe : MES_COMUN.haber}</span>
           <span style={{ fontFamily: INTER, fontSize: "13px", color: C.texto }}>{rotulo}</span>
         </span>
-        <span data-acumulado={datos.total} style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, whiteSpace: "nowrap" }}>
+        <span data-acumulado={datos.total} style={{ ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto, whiteSpace: "nowrap" }}>
           <Cuenta fase={fase} desde={datos.antes} hasta={datos.total} retraso={retraso} ms={TRAMO_MS} />
         </span>
       </div>
@@ -94,10 +94,10 @@ function Lado({ lado, rotulo, datos, anchos, fase, retraso }) {
       <div aria-hidden="true" data-riel={lado} style={{ position: "relative", height: "10px", marginTop: "4px", borderRadius: "2px", background: C.fondo, overflow: "hidden" }}>
         <span data-liso style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${anchos.liso + anchos.previo}px`, background: color }} />
         {anchos.previo > 0 && (
-          <span data-previo style={{ position: "absolute", left: `${anchos.liso}px`, top: 0, bottom: 0, width: `${anchos.previo}px`, backgroundImage: RAYAS(color), borderLeft: `2px solid ${C.navy}`, boxSizing: "border-box", ...sinRayas }} />
+          <span data-previo style={{ position: "absolute", left: `${anchos.liso}px`, top: 0, bottom: 0, width: `${anchos.previo}px`, backgroundImage: RAYAS(color), borderLeft: `2px solid ${HUNDIDO_OPACO}`, boxSizing: "border-box", ...sinRayas }} />
         )}
         {anchos.tramo > 0 && (
-          <span data-tramo={anchos.tramo} style={{ position: "absolute", left: `${anchos.liso + anchos.previo}px`, top: 0, bottom: 0, backgroundImage: RAYAS(color), borderLeft: `2px solid ${C.navy}`, boxSizing: "border-box", ...crece }} />
+          <span data-tramo={anchos.tramo} style={{ position: "absolute", left: `${anchos.liso + anchos.previo}px`, top: 0, bottom: 0, backgroundImage: RAYAS(color), borderLeft: `2px solid ${HUNDIDO_OPACO}`, boxSizing: "border-box", ...crece }} />
         )}
       </div>
     </div>
@@ -125,7 +125,7 @@ function CuentaDelMes({ c, movs, hasta, ancho, fase, guion, fraseFinal }) {
             <span style={{ fontFamily: INTER, fontSize: "14px", fontWeight: 600, color: C.texto, ...(fase === "final" || !cambia ? {} : fundido) }}>
               {fase === "inicio" ? frase(antes) : frase(ahora)}
             </span>
-            <span data-valor-diferencia={ahora.valor} style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, whiteSpace: "nowrap" }}>
+            <span data-valor-diferencia={ahora.valor} style={{ ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto, whiteSpace: "nowrap" }}>
               <Cuenta fase={fase} desde={antes.valor} hasta={ahora.valor} retraso={guion.diferencia} ms={DIF_MS} />
             </span>
           </>
@@ -179,7 +179,7 @@ export function MesEnDosCuentas({ cuentas, movs, hasta, linea = null, final = nu
 
   if (compacta) {
     return (
-      <div ref={caja} data-mes-en-dos-cuentas="compacta" style={{ marginTop: "16px", background: C.navy, borderRadius: "12px", padding: "12px" }}>
+      <div ref={caja} data-mes-en-dos-cuentas="compacta" style={{ marginTop: "16px", ...HUNDIDO, borderRadius: "12px", padding: "12px" }}>
         <p style={{ ...MARCA, margin: 0 }}>{MES_COMUN.marca}</p>
         <p data-linea-mes style={{ margin: "6px 0 0", paddingLeft: "10px", borderLeft: `3px solid ${C.hecho}`, fontFamily: INTER, fontSize: "13px", lineHeight: "18px", fontWeight: 600, color: C.texto }}>{linea}</p>
       </div>
@@ -193,7 +193,7 @@ export function MesEnDosCuentas({ cuentas, movs, hasta, linea = null, final = nu
       data-mes-en-dos-cuentas={hasta === null ? "final" : "asiento"}
       data-fase={fase}
       onClick={saltar}
-      style={{ marginTop: "16px", background: C.navy, borderRadius: "12px", padding: "12px" }}
+      style={{ marginTop: "16px", ...HUNDIDO, borderRadius: "12px", padding: "12px" }}
     >
       <p style={{ ...MARCA, margin: 0, lineHeight: "14px" }}>{MES_COMUN.marca}</p>
       {hasta !== null && (

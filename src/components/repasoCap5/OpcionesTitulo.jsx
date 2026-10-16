@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { C } from "./comun.jsx";
+import { HUNDIDO } from "./comun.jsx";
 import { OpcionR5 } from "./OpcionR5.jsx";
 import { useReducido, useTemporizadores, llevarArriba, asomarAbajo, volarDesde, MARGEN_VENTANA } from "./movimiento.js";
 
@@ -160,7 +160,7 @@ export function OpcionesTitulo({ opciones, figura, contenido, etiqueta, onCalifi
 
   const mostradaOpcion = opciones.find((o) => o.id === mostrada) ?? null;
   const cajaDeFigura = (
-    <div key="figura" ref={cajaFigura} data-caja-figura style={{ marginTop: resuelta ? "16px" : 0, background: C.navy, borderRadius: "12px", padding: "12px" }}>
+    <div key="figura" ref={cajaFigura} data-caja-figura style={{ marginTop: resuelta ? "16px" : 0, ...HUNDIDO, borderRadius: "12px", padding: "12px" }}>
       {figura(resuelta ? mostradaOpcion : null, resuelta ? clave : null, alTerminar, { elegida: opciones.find((o) => o.id === elegida) ?? null })}
     </div>
   );

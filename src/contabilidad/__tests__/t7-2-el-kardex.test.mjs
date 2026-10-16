@@ -27,6 +27,11 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *     vista) y el kárdex que se abre con «Ver…» (botón con aria-expanded);
  *     el resumen abre con el kárdex de PEPS
  *   · fuera del catálogo de FP; en T7-2 después de A2
+ *
+ * Desde el Patrón de enganche C2, la vista publica «El kárdex que crece»
+ * (ElKardexQueCrece.jsx, con su prueba t7-2-el-kardex-que-crece.test.mjs),
+ * que lee sus textos de estos mismos datos. Esta prueba sigue cuidando los
+ * datos de Near y su pantalla de lectura con PantallasT7_2.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -46,6 +51,7 @@ const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: PantallasT7_2 } = await import("../../components/mecanicas/libros/t7/PantallasT7_2.jsx");
 const { default: Kardex, ROTULOS_KX } = await import("../../components/mecanicas/libros/t7/KardexT7_2.jsx");
 const { PIEZAS_T7_2, TEMA_T7_2 } = await import("../../components/ContabilidadT7_2View.jsx");
+const { default: ElKardexQueCrece } = await import("../../components/mecanicas/libros/t7/ElKardexQueCrece.jsx");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -319,9 +325,14 @@ test("★★★ fuera del catálogo de FP; en T7-2 después de A2 (y de H2); sin
   assert.equal(a.nombre, P.titulo);
   const ids = tema.actividades.map((x) => x.id);
   assert.equal(ids.indexOf(A.A3_ID), ids.indexOf("t7-2-dos-asientos") + 1);
+  /*
+   * La vista publica la pieza renovada (Patrón de enganche C2, ElKardexQueCrece.jsx), con el mismo
+   * id, número y título, en la misma posición. Sus textos son los de estos datos: los lee de aquí
+   * (t7-2-el-kardex-que-crece.test.mjs).
+   */
   const enVista = PIEZAS_T7_2.find((x) => x.pieza.id === A.A3_ID);
-  assert.equal(enVista.pieza, P);
-  assert.equal(enVista.Pieza, PantallasT7_2);
+  assert.deepEqual([enVista.pieza.id, enVista.pieza.numero, enVista.pieza.titulo], [P.id, P.numero, P.titulo]);
+  assert.equal(enVista.Pieza, ElKardexQueCrece);
   assert.equal(PIEZAS_T7_2.indexOf(enVista), 2);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A3_ID)), []);

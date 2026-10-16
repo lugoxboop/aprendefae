@@ -1,4 +1,4 @@
-import { C, INTER } from "./comun.jsx";
+import { C, INTER, HUNDIDO_OPACO } from "./comun.jsx";
 import { useReproduccion, enFase } from "./movimiento.js";
 import { INTERFAZ_R5_1, RAYA_C1, colocarC1, esCorriente } from "../../data/repasoCap5Cruzado.js";
 
@@ -19,7 +19,7 @@ import { INTERFAZ_R5_1, RAYA_C1, colocarC1, esCorriente } from "../../data/repas
  *   · sin subtítulos en las zonas (decisión 2: repetían el enunciado y el
  *     acierto): la figura mide 264 px con su relleno
  *   · todo neutro, sin coral (B4): lo que no es corriente lo dice su lugar
- *   · puntos #CBDCF2 con anillo de 2 px #1D3557 (decisión 4)
+ *   · puntos #CBDCF2 con anillo de 2 px del hundido opaco (decisión 4; el navy no es superficie)
  *   · el inventario no tiene fecha: una franja de 6 px de «hoy» a 8 px antes
  *     de la raya, y su línea de unión sale de la mitad de la franja (decisión 5)
  *   · quien falla no pierde su activo (decisión 3): con la correcta en la
@@ -48,10 +48,10 @@ const DESFASE = 140;
 const CAE = 260;
 const UNION = 100;
 const CAE_ABAJO = 360;
-const ANILLO = `0 0 0 2px ${C.navy}`;
+const ANILLO = `0 0 0 2px ${HUNDIDO_OPACO}`;
 
 const rotulo = { fontFamily: INTER, fontSize: "14px", lineHeight: "18px", fontWeight: 600, color: C.texto, whiteSpace: "nowrap" };
-const nombreSt = { fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: C.texto, whiteSpace: "nowrap", background: C.navy, padding: "0 2px" };
+const nombreSt = { fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: C.texto, whiteSpace: "nowrap", background: HUNDIDO_OPACO, padding: "0 2px" };
 const margen = { fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: C.atenuado, whiteSpace: "nowrap", position: "absolute", left: 0, width: `${COL - 8}px`, textAlign: "right" };
 
 export const altDeRaya = (opcion) => INTERFAZ_R5_1.altRaya(

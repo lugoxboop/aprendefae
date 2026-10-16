@@ -35,6 +35,15 @@ const h = React.createElement;
 
 const { CampoCifra } = await import("../../components/mecanicas/libros/piezas.jsx");
 
+/*
+ * EL ACIERTO YA NO VA EN TEAL (B4, barrida del 16-oct). En Contabilidad el teal
+ * significa el lado DEBE, así que no puede significar además «correcto»: el
+ * acierto va en el NEUTRO del kit (#F8F9FA), que es la regla de Xeno. Lo que
+ * esta prueba defiende no cambia —que el borde conserve un tono ADEMÁS de la
+ * marca, para que el color no sea la única señal—, y ahora exige también que el
+ * teal no vuelva.
+ */
+const NEUTRO_ACIERTO = "rgb(248, 249, 250)";
 const TEAL = "rgb(42, 157, 143)";
 const CORAL = "rgb(231, 111, 81)";
 
@@ -88,7 +97,8 @@ test("★ una sola marca por campo, y el borde conserva su tono (teal / coral)",
   try {
     assert.equal(ok.form.querySelectorAll("svg").length, 1);
     assert.equal(mal.form.querySelectorAll("svg").length, 1);
-    assert.ok(ok.input.style.borderTop.includes(TEAL), "cifra correcta: borde teal");
+    assert.ok(ok.input.style.borderTop.includes(NEUTRO_ACIERTO), "cifra correcta: borde neutro");
+    assert.ok(!ok.input.style.borderTop.includes(TEAL), "volvió el teal al acierto (B4)");
     assert.ok(mal.input.style.borderTop.includes(CORAL), "cifra incorrecta: borde coral");
   } finally { ok.desmontar(); mal.desmontar(); }
 });
