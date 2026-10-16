@@ -182,6 +182,45 @@ test("★★ idsRetirados saca todos los ids, y no los de un comentario", () => 
   assert.deepEqual([...idsRetirados(fila())], []);
 });
 
+
+/*
+ * ═════════ SE COMPARA LA ÚLTIMA FILA DE CADA ID, NO CADA UNA ═════════
+ *
+ * El caso de verdad (Célula D): la 0203 da de alta t4-el-arqueo-de-rosa en
+ * medio con 25 FP y la 0209 la sube a difícil con 50 en el MISMO PR, junto al
+ * código que la declara así. Comparando archivo por archivo, el guardián
+ * reprochaba dos veces una migración que la siguiente corrige.
+ */
+test("★★★ dos escrituras del mismo id: manda la última, y no se reprocha la primera", () => {
+  /*
+   * CLIENTE declara el id en medio con 25 FP, así que `fila()` sin argumentos
+   * ya coincide. El alta de abajo NO coincide a propósito —difícil con 50—,
+   * que es el papel que en el caso de D tenía la 0203: una fila que una
+   * migración posterior corrige dentro del mismo PR.
+   */
+  const alta = { nombre: "0203_d4_arqueo.sql", sql: fila({ fp: 50, dificultad: "dificil" }) };
+  const corrige = { nombre: "0209_d4_sube.sql", sql: fila() };
+  assert.deepEqual(revisar([alta, corrige], CLIENTE), [], "la última coincide: nada que reprochar");
+  assert.equal(revisar([alta], CLIENTE).length, 2, "sola, la primera sí se reprocha: dificultad y FP");
+});
+
+test("★★★ el orden de los archivos no decide: se ordena por número de migración", () => {
+  const alta = { nombre: "0203_d4_arqueo.sql", sql: fila({ fp: 50, dificultad: "dificil" }) };
+  const sube = { nombre: "0209_d4_sube.sql", sql: fila() };
+  assert.deepEqual(revisar([alta, sube], CLIENTE), [], "en orden");
+  assert.deepEqual(revisar([sube, alta], CLIENTE), [], "al revés: el guardián los ordena");
+});
+
+test("★★★ si la ÚLTIMA no coincide, se reprocha, y con el nombre de la última", () => {
+  const alta = { nombre: "0203_d4_arqueo.sql", sql: fila() };
+  const rompe = { nombre: "0209_d4_sube.sql", sql: fila({ fp: 999 }) };
+  const r = revisar([alta, rompe], CLIENTE);
+  assert.equal(r.length, 1);
+  assert.match(r[0], /^0209_d4_sube\.sql/, "culpa a la última, que es la que queda en la base");
+  assert.match(r[0], /queda en fp_base=999/);
+  assert.match(r[0], /última fila del id en esta propuesta/);
+});
+
 test("★★★ rechaza un número fuera de todos los rangos", () => {
   const r = revisar([{ nombre: "9001_fuera.sql", sql: fila() }], CLIENTE);
   assert.equal(r.length, 1);

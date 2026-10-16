@@ -39,8 +39,24 @@ const FONDOS = {
 export default function FondoMateria({ materiaId, children }) {
   const Fondo = FONDOS[materiaId] ?? null;
 
+  /*
+   * overflow-x: clip Y NO overflow: hidden, y la diferencia no es de estilo.
+   *
+   * Lo encontró la Célula E: con hidden, el div de abajo se convierte en el
+   * «scrollport» de todo lo que lleva dentro, y entonces NINGÚN position:
+   * sticky de la página vuelve a pegarse a la ventana —se pega a ese div, que
+   * no se desplaza porque crece con el contenido—. O sea que el fondo animado
+   * rompía en silencio la cabecera pegajosa del repaso del capítulo 5, la
+   * barra inferior de «Así se juega» y cuatro sitios más, en toda página de
+   * actividad que lleve fondo.
+   *
+   * clip recorta exactamente igual —que es para lo que estaba, porque los
+   * fondos son absolutos y sobresalen— pero NO crea scrollport. Y solo en X:
+   * en Y no hay nada que recortar, y recortarlo volvería a romper el sticky.
+   */
+
   return (
-    <div style={{ position: "relative", minHeight: "100vh", backgroundColor: FAE.bg, overflow: "hidden" }}>
+    <div style={{ position: "relative", minHeight: "100vh", backgroundColor: FAE.bg, overflowX: "clip" }}>
       {Fondo && (
         /* Sin fallback: el fondo puede llegar tarde, el contenido no espera. */
         <Suspense fallback={null}>
