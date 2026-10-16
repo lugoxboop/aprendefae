@@ -43,13 +43,16 @@ const { default: DeudaQueVuelve } = await import("../../components/mecanicas/lib
 const MIGRACION = readFileSync(new URL("../../../supabase/migrations/0074_tema6_mesa_de_asientos.sql", import.meta.url), "utf8");
 const TEMA = SUBJECTS.contabilidad.topics.find((t) => t.id === "cuentas-por-cobrar");
 const CASOS = [
-  { id: "b5-t6-a2", D: A2.T6_ACT2, partes: A2.PARTES_T6_ACT2, ejemplo: A2.PROVISION_2007_T6_ACT2, reglas: A2.REGLAS_T6_ACT2, Juego: ProvisionDeElTorito, dificultad: "medio", fp: 25 },
+  { id: "b5-t6-a2", D: A2.T6_ACT2, partes: A2.PARTES_T6_ACT2, ejemplo: A2.PROVISION_2007_T6_ACT2, reglas: A2.REGLAS_T6_ACT2, Juego: ProvisionDeElTorito, dificultad: "dificil", fp: 50 },
   { id: "b5-t6-a3", D: A3.T6_ACT3, partes: A3.PARTES_T6_ACT3, ejemplo: A3.CASTIGO_T6_ACT3, reglas: A3.REGLAS_T6_ACT3, Juego: DeudaQueVuelve, dificultad: "dificil", fp: 50 },
 ];
 
 test("★★★ b5-t6-a2 y b5-t6-a3 están en el bloque de T6, en el orden del camino, con la clasificación de Sakuta", () => {
-  /* El orden provisional del camino (Sakuta, lote 4, con b5-t6-a7 retirada): a1 → a4 → a5 → a2 → a6 → a3. */
-  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a4", "b5-t6-a5", "b5-t6-a2", "b5-t6-a6", "b5-t6-a3"]);
+  /*
+   * El orden final del camino (Sakuta, lote 6b, con b5-t6-a7 retirada y b5-t6-a5 fundida en a2): a1 → a4 → a2 → a6 → a3.
+   * a2 es difícil · 50 desde la fusión (la 0078); la 0074 la dio de alta como media · 25.
+   */
+  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a4", "b5-t6-a2", "b5-t6-a6", "b5-t6-a3"]);
   for (const k of CASOS) {
     const c = clasificacionDe("contabilidad", "cuentas-por-cobrar", k.id);
     assert.deepEqual({ modalidad: c.modalidad, dificultad: c.dificultad, fpBase: c.fpBase }, { modalidad: "evaluativa", dificultad: k.dificultad, fpBase: k.fp }, k.id);

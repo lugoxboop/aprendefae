@@ -343,6 +343,30 @@ test("★★ el texto alternativo y las dos reglas son los del lote 6a; el objet
   for (const linea of D.REGLAS_T5_ACT1) assert.ok(L6A.includes(`«${linea}»`), linea);
   assert.equal(D.REGLAS_T5_ACT1.length, 2);
   assert.equal(caja.querySelector("[data-objetivo]").textContent, "Distinguir los tres tipos de título según el tipo de renta que dan.");
+  /* Lote 6b: la consigna va plegada bajo «¿Cómo se juega?» (encabezado compacto). */
+  await tocar(caja.querySelector("[data-como-se-juega]"));
   assert.equal(caja.querySelector("[data-consigna]").textContent, "Lee la ficha. Elige qué tipo de renta da.");
+  desmontar();
+});
+
+test("★★★ lote 6b · el encabezado compacto (B1): el objetivo, y en una fila el contador y «¿Cómo se juega?»; plegados, la consigna y los pasos", async () => {
+  const { caja, desmontar } = await montar(["bonos", "acciones"]);
+  const enc = caja.querySelector("[data-encabezado-compacto]");
+  assert.ok(enc, "sin encabezado compacto");
+  assert.ok(D.T5_ACT1.objetivo.split(/\s+/).length <= 20, "el objetivo, 20 palabras como mucho");
+  assert.equal(enc.querySelector("[data-contador]").textContent, "Ficha 1 de 2");
+  assert.equal(enc.querySelector("[data-contador]").style.textTransform, "uppercase");
+  const como = enc.querySelector("[data-como-se-juega]");
+  assert.equal(como.textContent, "¿Cómo se juega?");
+  assert.equal(como.style.minHeight, "44px");
+  assert.equal(como.style.textDecoration, "underline");
+  assert.equal(como.parentElement, enc.querySelector("[data-contador]").parentElement, "el contador y el enlace, en la misma fila");
+  assert.equal(como.parentElement.style.minHeight, "44px");
+  /* Plegado no ocupa nada; el foco no puede caer en algo escondido. */
+  assert.equal(enc.querySelector("[data-consigna]"), null);
+  await tocar(como);
+  assert.deepEqual([...enc.querySelectorAll("[data-pasos] li")].map((li) => li.textContent), D.REGLAS_T5_ACT1);
+  /* La ficha y el estante, después del encabezado. */
+  assert.ok(enc.compareDocumentPosition(caja.querySelector("[data-ficha]")) & 4);
   desmontar();
 });

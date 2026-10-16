@@ -88,22 +88,26 @@ export function LibroDiario({ asientos, abierto, onAlternar, textos, agrupar = f
  * El diario de una mesa (hallazgo 9 de Shoko, decidido por Mai): no ocupa
  * sitio hasta que se confirma el primer asiento; entonces aparece ABIERTO, ya
  * con ese asiento escrito. Después se abre y se cierra como siempre.
+ *
+ * `quieto` (b5-t6-a2, lote 6b): está desde el principio, plegado, y no se
+ * abre solo. Así no empuja la cuenta T que va debajo cuando llega el primer
+ * asiento.
  */
-export function useDiario(inicial) {
+export function useDiario(inicial, quieto = false) {
   const [asientos, setAsientos] = useState(() => [inicial]);
   const [abierto, setAbierto] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(quieto);
   const sumar = useCallback((parte) => {
     setAsientos((xs) => (xs.some((x) => x.id === parte.id) ? xs : [...xs, parte]));
-    setVisible((v) => { if (!v) setAbierto(true); return true; });
-  }, []);
-  const reiniciar = useCallback(() => { setAsientos([inicial]); setVisible(false); setAbierto(false); }, [inicial]);
+    setVisible((v) => { if (!v && !quieto) setAbierto(true); return true; });
+  }, [quieto]);
+  const reiniciar = useCallback(() => { setAsientos([inicial]); setVisible(quieto); setAbierto(false); }, [inicial, quieto]);
   return { asientos, abierto, visible, alternar: () => setAbierto((x) => !x), sumar, reiniciar };
 }
 
 /* La mesa con el diario encima: `inicial` es el asiento del ejemplo; cada parte comprobada suma la suya. */
-export function MesaConDiario({ Juego, inicial, textos, agrupar = false, ...props }) {
-  const d = useDiario(inicial);
+export function MesaConDiario({ Juego, inicial, textos, agrupar = false, quieto = false, ...props }) {
+  const d = useDiario(inicial, quieto);
   return (
     <Juego
       {...props}

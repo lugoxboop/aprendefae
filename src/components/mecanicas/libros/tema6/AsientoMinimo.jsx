@@ -19,8 +19,9 @@ import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES } from "./MaquinaPeg
  *   · una incorrecta que en ese hecho se acredita entra al DEBE y a los 500 ms
  *     se pasa al HABER (en texto principal: es la que eligió); la correcta
  *     entra al DEBE;
- *   · una incorrecta que no está en el asiento entra al DEBE y se va (300 ms,
- *     opacidad y 6 px hacia arriba); entran la correcta y la contrapartida.
+ *   · una incorrecta que no está en el asiento ya no entra ni se va (E4, hoja
+ *     de fusiones de Mai: «ya nada entra y se va»): entran de una vez la
+ *     correcta y la contrapartida, y la elegida se queda ✕ en su fila.
  * Con movimiento reducido, el asiento final de una vez.
  *
  * Las dos ranuras reservan el alto del nombre más largo que puede caer en
@@ -44,7 +45,7 @@ export function asientoDe(hecho, elegida, fase) {
   if (!elegida) return { debe: null, haber: null, caso: null };
   const nombre = nombreDe(elegida);
   const caso = elegida === hecho.respuesta ? "correcta" : nombre === haber ? "al-haber" : "fuera";
-  if (fase === "entra" && caso !== "correcta") return { debe: { nombre, propia: true, saliendo: caso === "fuera" }, haber: null, caso };
+  if (fase === "entra" && caso === "al-haber") return { debe: { nombre, propia: true }, haber: null, caso };
   if (caso === "correcta") return { debe: { nombre, propia: true }, haber: { nombre: haber, propia: false }, caso };
   if (caso === "al-haber") return { debe: { nombre: correcta, propia: false }, haber: { nombre, propia: true }, caso };
   return { debe: { nombre: correcta, propia: false }, haber: { nombre: haber, propia: false }, caso };
@@ -71,7 +72,7 @@ function Ranura({ lado, cuenta, encendida, reducido }) {
       {cuenta && (
         <p key={`${cuenta.nombre}-${cuenta.propia}`} data-cuenta={cuenta.nombre} data-propia={cuenta.propia ? "si" : "no"} style={{
           ...NOMBRE, gridArea: "1 / 1", color: cuenta.propia ? TEXTO : SECUNDARIO,
-          animation: reducido ? "none" : cuenta.saliendo ? "b5-se-va 300ms ease-in 200ms both" : "b5-entra 240ms ease-out both",
+          animation: reducido ? "none" : "b5-entra 240ms ease-out both",
         }}>
           {cuenta.nombre}
         </p>
@@ -83,10 +84,11 @@ function Ranura({ lado, cuenta, encendida, reducido }) {
 const PASA_AL_HABER = 500;
 
 export default function AsientoMinimo({ hecho, elegida, reducido }) {
-  /* La fase sale de lo elegido: un error empieza en «entra» y pasa a «final» a los 500 ms; la correcta, de una vez. */
+  /* La fase sale de lo elegido: la contrapartida empieza en «entra» y pasa a «final» a los 500 ms; lo demás, de una vez. */
   const clave = elegida ? `${hecho.id}/${elegida}` : null;
   const [llego, setLlego] = useState(null);
-  const conTrayecto = Boolean(elegida) && !reducido && elegida !== hecho.respuesta;
+  /* Solo la contrapartida hace trayecto (entra al DEBE y se pasa al HABER, donde debió ir); la que no está en el asiento, no (E4). */
+  const conTrayecto = Boolean(elegida) && !reducido && elegida !== hecho.respuesta && nombreDe(elegida) === SE_ACREDITA_T6_ACT4[hecho.id];
   const fase = conTrayecto && llego !== clave ? "entra" : "final";
   useEffect(() => {
     if (!conTrayecto) return undefined;
@@ -96,7 +98,7 @@ export default function AsientoMinimo({ hecho, elegida, reducido }) {
   const a = asientoDe(hecho, elegida, fase);
   return (
     <div data-asiento-minimo data-caso={a.caso ?? ""} style={{ margin: "0 0 12px", padding: "8px 10px 10px", borderRadius: "12px", border: `1px solid ${BORDES}` }}>
-      <style>{"@keyframes b5-entra { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } } @keyframes b5-se-va { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-6px); } }"}</style>
+      <style>{"@keyframes b5-entra { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }"}</style>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "8px" }}>
         {["debe", "haber"].map((lado) => (
           <div key={lado} style={{ minWidth: 0 }}>

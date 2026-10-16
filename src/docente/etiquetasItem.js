@@ -58,10 +58,9 @@ import { fichaDeItemT6Act1 } from "../contabilidad/t6Act1.js";
 import { parteDeItemT5Act2 } from "../contabilidad/t5Act2.js";
 import { PARTES_T5_ACT2 } from "../data/contabilidadT5Act2.js";
 import { parteDeItem as parteDeItemMesa } from "../contabilidad/cierreConMesa.js";
-import { PARTES_T6_ACT2 } from "../data/contabilidadT6Act2.js";
+import { PASOS_T6_ACT2 } from "../data/contabilidadT6Act2.js";
 import { PARTES_T6_ACT3 } from "../data/contabilidadT6Act3.js";
 import { hechoDeItemT6Act4 } from "../contabilidad/t6Act4.js";
-import { CASILLAS_T6_ACT5 } from "../data/contabilidadT6Act5.js";
 import { PARTES_T6_ACT6 } from "../data/contabilidadT6Act6.js";
 import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
 import { hechoDeItemH1 } from "../contabilidad/t7H1.js";
@@ -608,7 +607,8 @@ Object.assign(REGLAS, {
   "b5-t6-a1": (id) => fichaDeItemT6Act1(id),
   /* Tema 5 · act. 2 y Tema 6 · acts. 2 y 3. El ítem es la parte, y se lee por su rótulo y su instrucción. */
   "b5-t5-a2": (id) => parteDeItemT5Act2(PARTES_T5_ACT2)(id),
-  "b5-t6-a2": (id) => parteDeItemMesa(PARTES_T6_ACT2)(id),
+  /* Desde el lote 6b, los cinco pasos: los dos asientos y las tres preguntas (las casillas de a5, que se fundió aquí). */
+  "b5-t6-a2": (id) => parteDeItemMesa(PASOS_T6_ACT2)(id),
   "b5-t6-a3": (id) => parteDeItemMesa(PARTES_T6_ACT3)(id),
   /* T5 · N1 (Célula C). Cada ítem, por su caso o su pregunta. */
   "t5-temporal-o-largo-plazo": (id) => unidadDeT5N1(id),
@@ -618,7 +618,6 @@ Object.assign(REGLAS, {
   "t5-el-interes-del-periodo": (id) => unidadDeT5N4(id),
   /* Tema 6 · acts. 4 a 6: el hecho o la casilla (por su enunciado). b5-t6-a7 se retiró en el lote 4. */
   "b5-t6-a4": (id) => hechoDeItemT6Act4(id),
-  "b5-t6-a5": (id) => CASILLAS_T6_ACT5.find((c) => c.id === id)?.enunciado ?? null,
   "b5-t6-a6": (id) => PARTES_T6_ACT6.flatMap((p) => p.casillas).find((c) => c.id === id)?.enunciado ?? null,
   /* T5 · N5 (Célula C). Una elección, por su pregunta; una línea, por su cuenta y su valor. */
   "t5-gano-o-perdio": (id) => unidadDeT5N5(id),
