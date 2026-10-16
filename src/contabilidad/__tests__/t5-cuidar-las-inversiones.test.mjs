@@ -238,10 +238,10 @@ test("★★★ N2 salió del catálogo y de la vista de T5; sus datos y su comp
   for (const interno of ["CONSTRUCCIÓN", "construcción", "Near", "Mello", "HUECO", "INFLESZ", "C5-", "las activos"]) assert.ok(!texto.includes(interno), interno);
 });
 
-test("★★ la vista de T5 ya no importa N2: le quedan las dos piezas de B, sin componente propio", async () => {
+test("★★ la vista de T5 ya no importa N2: le quedan las dos piezas de B, sin componente propio, y N6 con el suyo", async () => {
   const { default: Vista } = await import("../../components/ContabilidadTema5View.jsx");
   const VISTA = readFileSync(new URL("src/components/ContabilidadTema5View.jsx", RAIZ), "utf8");
   assert.doesNotMatch(VISTA, /contabilidadT5_n2|PIEZA_CUIDAR_LAS_INVERSIONES/);
   assert.equal(typeof Vista, "function");
-  assert.deepEqual(PIEZAS.map((x) => Boolean(x.Pieza)), [false, false]);
+  assert.deepEqual(PIEZAS.map((x) => Boolean(x.Pieza)), [false, false, true]);
 });
