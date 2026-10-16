@@ -62,7 +62,8 @@ function CuentasEnBlanco({ elegidas, correcto, deshabilitado, onElegir, acento }
         const posible = NUMEROS.includes(n);
 
         let borde = "rgba(248,249,250,0.22)";
-        if (revelado && debida && elegidas === correcto) borde = FAE.teal;
+        /* B4: acertar se marca en neutro, no en teal. */
+        if (revelado && debida && elegidas === correcto) borde = FAE.text;
         else if (revelado && debida) borde = FAE.ambar;
         else if (revelado && abierta) borde = FAE.coral;
         else if (abierta) borde = acento;

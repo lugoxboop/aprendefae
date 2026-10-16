@@ -103,7 +103,8 @@ export default function SeisCuentasAbiertas({ banco, Marco, rotulo, titulo, acen
           const esLaBuena = retro && c.id === item.respuesta;
           const esLaTocada = retro && c.id === retro.elegida;
           let borde = "rgba(248,249,250,0.18)";
-          if (esLaBuena) borde = FAE.teal;
+          /* B4: la buena va en neutro —sea el acierto o la revelada—, nunca en teal. */
+          if (esLaBuena) borde = FAE.text;
           else if (esLaTocada) borde = FAE.coral;
 
           return (
