@@ -336,7 +336,7 @@ test("★★★ FP: 9 por acierto, de 0 a 10, siempre enteros y los mismos que e
 
 test("★★★ catálogo, registro de la vista, etiqueta y migración 0253 dicen lo mismo", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "repaso-capitulo-5");
-  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2", "r5-3", "r5-4"]);
+  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2", "r5-3", "r5-4", "r5-5"]);
   const a = actividadesDeTipo(tema, HACER).find((x) => x.id === "r5-4");
   assert.equal(a.nombre, T.R5_4.nombre);
   assert.deepEqual(a.clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 });

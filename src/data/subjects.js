@@ -848,6 +848,8 @@ export const SUBJECTS = {
           { id: "r5-3", nombre: "Marzo en Comercializadora Mate", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
           /* r5-4: el 6 del bloque D, pp. 273-274, en diez asientos (sin los fletes del 25 y del 28). Experto · 90 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0253. */
           { id: "r5-4", nombre: "Septiembre en Barranquilla", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          /* r5-5: el mismo septiembre en permanente, con su kárdex (paquete e5-r5-5-v1). Difícil · 50 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0254. */
+          { id: "r5-5", nombre: "Septiembre en permanente", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
     ],
