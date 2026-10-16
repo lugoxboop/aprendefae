@@ -38,7 +38,7 @@
 - Cheque «propio» · tarjeta: «Sus Servicios paga con un cheque propio» (<10)
 - Cheque «propio» · acierto (tras «Correcto.»): «Esa plata sale del banco.» (<10)
 - Cheque «propio» · error si va al debe: «Aquí la empresa paga, no recibe.» (<10)
-- Cheque «propio» · error si va al haber: «¿De dónde sale la plata de ese cheque?» (<10)
+- Cheque «propio» · error si va al haber: «¿De dónde sale esa plata?» (<10)
 - Pie: «Basado en el libro, pp. 179, 180 y 187»
 
 **P5 · controles**

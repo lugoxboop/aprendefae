@@ -12,8 +12,9 @@
  *
  * En el juego (P3) cada fila tiene dos casillas sin texto, antes y después
  * de la raya; «Pasar el año» se activa con las tres marcadas, y la raya
- * decide: ✓ blanco en la casilla bien elegida, ✗ y borde coral en la mal
- * elegida, y borde blanco en la que era.
+ * decide: en cada casilla elegida, la pastilla con palabra (✓ y borde blanco,
+ * o ✗ y borde coral). La que era no se marca: en Aprender se reintenta con
+ * «Otra vez», y marcarla nombraría la respuesta.
  *
  * Sin teal, ámbar ni Debe/Haber. Coral solo en el error del juego. Sin
  * círculos (caja del Tema 3), sin trazo discontinuo (corte del Tema 3), sin
@@ -23,8 +24,8 @@
  */
 import { useEffect, useId, useRef, useState } from "react";
 import { useMovimientoReducido } from "../mecanicas/libros/verbos.jsx";
-import { RAYA_A0 as RAYA, FIGURA_ANO, estadoFilaA0, ladoCorrectoA0, juegoBienA0 } from "../../data/contabilidadT4A0.js";
-import { C, Mensaje } from "./comun.jsx";
+import { RAYA_A0 as RAYA, FIGURA_ANO, MARCA_CASILLA, estadoFilaA0, ladoCorrectoA0, juegoBienA0 } from "../../data/contabilidadT4A0.js";
+import { C, Mensaje, Marca } from "./comun.jsx";
 
 const MS_POR_MES = 220;
 
@@ -58,9 +59,8 @@ export const CSS_ANO = `
 .t4an-seg[aria-pressed="true"] { border-color: ${C.texto}; color: ${C.texto}; background: rgba(248,249,250,0.08); font-weight: 600; }
 .t4an-seg[data-veredicto="bien"] { border: 2px solid ${C.texto}; }
 .t4an-seg[data-veredicto="mal"] { border: 2px solid ${C.error}; }
-.t4an-seg[data-veredicto="era"] { border: 2px solid ${C.texto}; color: ${C.texto}; }
 .t4an-seg:disabled { cursor: default; }
-.t4an-ver { position: absolute; right: 8px; top: 0; font: 700 14px/42px "Inter", sans-serif; }
+.t4an-ver { position: absolute; right: 6px; top: 0; bottom: 0; display: flex; align-items: center; }
 .t4an-pie { display: flex; justify-content: flex-end; }
 `;
 
@@ -140,7 +140,8 @@ function Fila({ f, m, juego = null }) {
         {juego ? ["antes", "despues"].map((lado) => {
           const elegido = juego.eleccion === lado;
           const correcto = ladoCorrectoA0(f) === lado;
-          const ver = juego.fin ? (elegido ? (correcto ? "bien" : "mal") : (correcto && juego.eleccion ? "era" : null)) : null;
+          /* Solo se marca lo elegido: en Aprender, «era» nombraría la respuesta antes de reintentar. El lector oye la palabra de la marca en el nombre de la casilla (Katsumi). */
+          const ver = juego.fin && elegido ? (correcto ? "bien" : "mal") : null;
           return (
             <button
               key={lado}
@@ -149,13 +150,12 @@ function Fila({ f, m, juego = null }) {
               data-seg={lado}
               data-veredicto={ver ?? undefined}
               aria-pressed={elegido}
-              aria-label={`${f.texto.join(" ")}: ${FIGURA_ANO.casilla[lado]}`}
+              aria-label={`${f.texto.join(" ")}: ${FIGURA_ANO.casilla[lado]}${ver ? `: ${MARCA_CASILLA[ver][1]}` : ""}`}
               disabled={juego.fin}
               onClick={() => juego.elegir(lado)}
               style={lado === "antes" ? { left: 0, width: `calc(${RAYA}% - 4px)` } : { left: `calc(${RAYA}% + 4px)`, right: 0 }}
             >
-              {ver === "bien" && <span className="t4an-ver" aria-hidden="true">✓</span>}
-              {ver === "mal" && <span className="t4an-ver" aria-hidden="true" style={{ color: C.error }}>✗</span>}
+              {ver && <span className="t4an-ver"><Marca marca={ver} palabras={MARCA_CASILLA[ver]} /></span>}
             </button>
           );
         }) : <span className="t4an-base" aria-hidden="true" />}
@@ -203,7 +203,7 @@ export function FiguraAno({ filas, ano, quieta = false, boton = null, juego = nu
 }
 
 /* El cuerpo de una pantalla de A0: la figura y, en el juego, la devolución. */
-export function CuerpoA0({ p }) {
+export function CuerpoA0({ p, onAcierto }) {
   const quieta = p.modo === "quieta";
   const ano = useAno(quieta ? 12 : 0);
   const [elecciones, setElecciones] = useState({});
@@ -211,6 +211,7 @@ export function CuerpoA0({ p }) {
   const juego = p.modo === "juego";
   const listas = juego ? p.filas.every((f) => elecciones[f.id]) : true;
   const bien = juego && fin && juegoBienA0(p.filas, elecciones);
+  useEffect(() => { if (bien) onAcierto?.(); }, [bien]); // eslint-disable-line react-hooks/exhaustive-deps
 
   let boton = null;
   if (juego) {

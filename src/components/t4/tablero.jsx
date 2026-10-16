@@ -18,6 +18,11 @@
  *
  * Teal y ámbar solo en «DEBE» y «HABER». Acierto: ✓ y borde #F8F9FA. Error: ✗
  * y borde coral, y no se escribe nada. Nada vuela; todo con fundido de 120 ms.
+ *
+ * `palabras` (opcional, lo usan A2 y A3): la marca de una mitad lleva palabra,
+ * la pastilla común debajo del total («✓ Bien», «✗ Mal»: canon E3, en blanco y
+ * negro se sabe cuál falló), y el lector la oye en el nombre de la mitad. Sin
+ * `palabras`, el glifo de siempre en la esquina (los Hacer, sin cambios).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { useNumeroQueSube } from "../mecanicas/libros/verbos.jsx";
@@ -36,6 +41,7 @@ export const CSS_TABLERO = `
 .t4tb-mitad[data-marca="mal"] { border: 2px solid ${C.error}; background: rgba(248,249,250,0.08); }
 .t4tb-mitad .g { position: absolute; top: 1px; right: 4px; font: 700 12px/1 "Inter", sans-serif; }
 .t4tb-mitad > span { white-space: nowrap; }
+.t4tb-mitad[data-con-palabra] { align-content: center; gap: 2px; }
 .t4tb-foco { color: ${C.texto}; font-weight: 600; }
 /* mayor */
 .t4my { display: grid; border: 1px solid ${C.neutro}; border-radius: 10px; padding: 8px 10px; gap: 4px; }
@@ -79,7 +85,7 @@ function Total({ v, foco }) {
  * marcas:  { "id:lado": "bien"|"mal"|"era" }
  * recien:  ["id:lado"] los totales que acaban de cambiar
  */
-export function Tablero({ cuentas, totales = {}, puestas = {}, monto, onElegir, activo, marcas = {}, recien = [], ancho = 74, etiqueta = "Cuentas" }) {
+export function Tablero({ cuentas, totales = {}, puestas = {}, monto, onElegir, activo, marcas = {}, recien = [], ancho = 74, etiqueta = "Cuentas", palabras = null }) {
   return (
     <div className="t4tb" role="group" aria-label={etiqueta} style={{ "--t4tb-mitad": `${ancho}px` }} data-tablero>
       <div className="t4tb-cab" aria-hidden="true"><span /><span style={{ color: C.debe }}>Debe</span><span style={{ color: C.haber }}>Haber</span></div>
@@ -98,15 +104,17 @@ export function Tablero({ cuentas, totales = {}, puestas = {}, monto, onElegir, 
                 data-destino={k}
                 data-puesta={puesta && !m ? "" : undefined}
                 data-marca={m}
+                data-con-palabra={palabras && m ? "" : undefined}
                 disabled={!activo}
                 aria-pressed={puesta}
-                aria-label={`${c.renglones.join(" ")} al ${lado}`}
-                onClick={() => onElegir(c.id, lado)}
+                aria-label={`${c.renglones.join(" ")} al ${lado}${palabras && m && palabras[m] ? `: ${palabras[m][1]}` : ""}`}
+                onClick={() => onElegir?.(c.id, lado)}
               >
                 {puesta && !m ? <span className="t4r-nueva">{monto}</span>
-                  : <Total v={totales[c.id]?.[lado]} foco={recien.includes(k)} />}
-                {m === "bien" && <span className="g" aria-hidden="true">✓</span>}
-                {m === "mal" && <span className="g" aria-hidden="true" style={{ color: C.error }}>✗</span>}
+                  : (!palabras || !m || totales[c.id]?.[lado]) ? <Total v={totales[c.id]?.[lado]} foco={recien.includes(k)} /> : null}
+                {palabras && m && palabras[m] && <Marca marca={m} palabras={palabras[m]} />}
+                {!palabras && m === "bien" && <span className="g" aria-hidden="true">✓</span>}
+                {!palabras && m === "mal" && <span className="g" aria-hidden="true" style={{ color: C.error }}>✗</span>}
               </button>
             );
           })}
@@ -125,7 +133,8 @@ export function Mayor({ titulo, debe, haber, reserva = 3, saldo = null, rotuloSa
         {ls.map((l) => (
           <div key={l.id} className={`t4my-l t4r-nueva${l.foco ? " t4tb-foco" : ""}`} data-linea={l.id}>
             {l.r && <span className="r">{l.r}</span>}
-            <span style={l.chico ? { fontSize: "12px", lineHeight: "20px" } : undefined}>{l.v}</span>
+            {/* `v` puede venir en renglones fijos (A4: «Nota débito» / «del banco»): un span por renglón. */}
+            {(Array.isArray(l.v) ? l.v : [l.v]).map((t, i) => <span key={i} style={l.chico ? { fontSize: "12px", lineHeight: "20px" } : undefined}>{t}</span>)}
           </div>
         ))}
       </div>

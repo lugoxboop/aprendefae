@@ -1,6 +1,6 @@
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * ¿CABE T4 · A0, A1 Y H1 A 320 Y 375? (rediseño de enganche, Célula D)
+ * ¿CABE T4 · A0-A5 Y H1 A 320 Y 375? (rediseño de enganche, Célula D)
  *
  *   node scripts/t4/medir-t4.mjs [carpeta-de-capturas]
  *
@@ -9,7 +9,7 @@
  * figuras de antes (medir-t4.mjs y medir-t4-h1.mjs), que medían la raya del
  * año y la lista de radios.
  *
- *   · Aprender (A0 y A1): cada pantalla al llegar y, con el plan de la sonda
+ *   · Aprender (A0-A5): cada pantalla al llegar y, con el plan de la sonda
  *     (sonda-enganche/enganche_planes.json), después de cada gesto: errores y
  *     aciertos
  *   · H1: «Así se juega», y la partida entera, un hecho bien y otro mal (el
@@ -126,6 +126,14 @@ function medir({ raiz }) {
       }
     }
   }
+  /* Una pastilla con palabra no puede salirse de la casilla o del destino que marca (no puede cruzar la raya ni el borde). */
+  for (const mk of sec.querySelectorAll(".t4r-marca")) {
+    if (!veo(mk)) continue;
+    const caja = mk.closest("button, [data-destino], [data-seg], [data-bandeja]");
+    if (!caja) continue;
+    const a = mk.getBoundingClientRect(), b = caja.getBoundingClientRect();
+    if (a.left < b.left - 0.5 || a.right > b.right + 0.5 || a.top < b.top - 0.5 || a.bottom > b.bottom + 0.5) desborda.push(`pastilla «${mk.textContent.trim()}» fuera de su casilla [${r2(a.left - b.left)}, ${r2(b.right - a.right)}]`);
+  }
   const fuentes = document.fonts.check("15px Inter") && document.fonts.check("600 13px Sora");
   return { sw: document.documentElement.scrollWidth, vw: innerWidth, desborda, desbordaCompartido, partidos, chicos, chicosCompartidos, fuentes, alto: r2(sr.height) };
 }
@@ -156,7 +164,7 @@ for (const ancho of ANCHOS) {
   const { ctx, pg } = await pagina(ancho);
   await pg.goto(BANCO);
   await pg.waitForSelector("[data-pieza]", { timeout: 120000 });
-  for (const [pid, corto] of [["t4-a0-el-activo-corriente", "a0"], ["t4-a1-la-caja", "a1"]]) {
+  for (const [pid, corto] of [["t4-a0-el-activo-corriente", "a0"], ["t4-a1-la-caja", "a1"], ["t4-a2-el-fondo-fijo", "a2"], ["t4-a3-el-arqueo", "a3"], ["t4-a4-bancos-y-notas", "a4"], ["t4-a5-san-calixto", "a5"]]) {
     const R = `[data-pieza="${pid}"]`;
     for (let k = 0; k < 12; k++) {
       const id = await pg.getAttribute(R, "data-pantalla");

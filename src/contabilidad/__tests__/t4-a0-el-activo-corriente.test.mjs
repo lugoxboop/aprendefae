@@ -12,8 +12,9 @@ import { readFileSync, readdirSync } from "node:fs";
  *     Al pasar el año la mercancía se vuelve plata y el edificio cruza la
  *     raya; si el año vuelve, se apagan otra vez
  *   · el juego (P3): «Pasar el año» espera a las tres marcas; la raya decide;
- *     ✓ en la bien elegida, ✗ y coral en la mal elegida, borde blanco en la
- *     que era. Antes de pasar el año, nada de la devolución está en el DOM
+ *     ✓ en la bien elegida, ✗ y coral en la mal elegida; la que era no se
+ *     marca. Antes de pasar el año, nada de la devolución está en el DOM, y
+ *     «Seguir» no aparece hasta el acierto (D7)
  *   · sin teal ni ámbar en ninguna parte de A0; coral solo en el error
  *   · Aprender: sin FP
  * ═══════════════════════════════════════════════════════════════════════════
@@ -46,10 +47,23 @@ function porLugar(p) {
   return r;
 }
 
-/* Monta la pieza y avanza hasta la pantalla k. */
+const seg = (caja, fila, lado) => caja.querySelector(`[data-fila="${fila}"] [data-seg="${lado}"]`);
+
+/* El juego de P3, bien: la mercancía antes de la raya, la deuda y el edificio después, y «Pasar el año». */
+function acertarP3(caja) {
+  for (const [f, l] of [["mercancia", "antes"], ["deuda", "despues"], ["edificio", "despues"]]) tocar(caja.querySelector(`[data-fila="${f}"] [data-seg="${l}"]`));
+  tocar(caja.querySelector("[data-accion=pasar]"));
+}
+
+/* Monta la pieza y avanza hasta la pantalla k; la pregunta del camino se acierta (con movimiento reducido, para que el año salte). */
 function abrir(k = 0) {
+  const antes = movimientoReducido(true);
   const m = montar(h(PantallasT4, { pieza: P, rotulo: "T4 · APRENDER" }));
-  for (let i = 0; i < k; i++) tocar(m.caja.querySelector('[data-boton="seguir"]'));
+  for (let i = 0; i < k; i++) {
+    if (P.pantallas[i].pregunta) acertarP3(m.caja);
+    tocar(m.caja.querySelector('[data-boton="seguir"]'));
+  }
+  movimientoReducido(antes);
   return m;
 }
 const filas = (caja) => Object.fromEntries([...caja.querySelectorAll("[data-fila]")].map((f) => [f.dataset.fila, f.dataset.estado]));
@@ -97,12 +111,17 @@ test("★★★ la interfaz común: «Correcto.» en el acierto; el error sin pa
 
 /* ═══════════ 2 · LA PANTALLA Y LA FIGURA ═══════════ */
 
-test("★★★ cada pantalla, en el orden de Hanayama: antes → figura → después → resumen → siguiente → «Seguir» → pie", () => {
+test("★★★ cada pantalla, en el orden de Hanayama: antes → figura → después → resumen → siguiente → «Seguir» → pie (en la pregunta, tras el acierto)", () => {
+  movimientoReducido(true);
   const m = abrir();
   try {
     for (const [k, p] of P.pantallas.entries()) {
       const zona = m.caja.querySelector("[data-pieza]");
       assert.equal(zona.dataset.pantalla, p.id);
+      if (p.pregunta) {
+        assert.equal(zona.querySelector('[data-boton="seguir"]'), null, `${p.id}: «Seguir» antes del acierto`);
+        acertarP3(m.caja);
+      }
       const orden = [...zona.querySelectorAll("[data-texto], [data-figura], [data-boton], [data-pie]")]
         .filter((e) => !e.parentElement.closest("[data-figura]"))
         .map((e) => (e.matches("[data-figura]") ? "FIGURA" : e.matches("[data-boton]") ? "SEGUIR" : e.matches("[data-pie]") ? "PIE" : e.textContent));
@@ -111,7 +130,33 @@ test("★★★ cada pantalla, en el orden de Hanayama: antes → figura → des
       assert.equal(zona.querySelector("[data-pie]").textContent, p.pie);
       if (k < 7) tocar(zona.querySelector('[data-boton="seguir"]'));
     }
-  } finally { m.desmontar(); }
+  } finally { m.desmontar(); movimientoReducido(false); }
+});
+
+test("★★★ D7 · P3 es la única pantalla con pregunta, y su «Seguir» no aparece sin el acierto: ni al llegar, ni marcando, ni tras el error, ni tras «Otra vez»", async () => {
+  assert.deepEqual(P.pantallas.filter((p) => p.pregunta).map((p) => p.id), ["cual-cruza"]);
+  movimientoReducido(true);
+  const m = abrir(3);
+  try {
+    const seguir = () => m.caja.querySelector('[data-boton="seguir"]');
+    assert.equal(seguir(), null, "al llegar");
+    tocar(seg(m.caja, "mercancia", "despues"));
+    tocar(seg(m.caja, "deuda", "despues"));
+    tocar(seg(m.caja, "edificio", "despues"));
+    assert.equal(seguir(), null, "marcando");
+    tocar(m.caja.querySelector("[data-accion=pasar]"));
+    await esperar(0);
+    assert.equal(m.caja.querySelector("[data-mensaje]").dataset.mensaje, "error");
+    assert.equal(seguir(), null, "tras el error");
+    tocar(m.caja.querySelector("[data-accion=otra-vez]"));
+    assert.equal(seguir(), null, "tras «Otra vez»");
+    acertarP3(m.caja);
+    await esperar(0);
+    assert.equal(m.caja.querySelector("[data-mensaje]").dataset.mensaje, "acierto");
+    assert.ok(seguir(), "tras el acierto no aparece «Seguir»");
+    tocar(seguir());
+    assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, "los-fijos");
+  } finally { m.desmontar(); movimientoReducido(false); }
 });
 
 test("★★★ P0: el año se arrastra con el teclado; en el mes 1 la mercancía es plata, en la raya el edificio cruza; si vuelve, se apaga", () => {
@@ -183,7 +228,6 @@ test("★★★ P6 y P7: la figura quieta en el mes 12, sin pista ni acción", (
 
 /* ═══════════ 3 · EL JUEGO (P3) ═══════════ */
 
-const seg = (caja, fila, lado) => caja.querySelector(`[data-fila="${fila}"] [data-seg="${lado}"]`);
 
 test("★★★ P3: «Pasar el año» espera a las tres marcas, y antes de pasarlo nada de la devolución está en el DOM (PH8-2)", () => {
   const p = pantalla("cual-cruza");
@@ -208,7 +252,7 @@ test("★★★ P3: «Pasar el año» espera a las tres marcas, y antes de pasar
   } finally { m.desmontar(); }
 });
 
-test("★★★ P3 mal: la raya decide; ✗ y coral en la mal elegida, borde blanco en la que era; el error, ✗ y su texto, «Incorrecto.» solo para el lector", async () => {
+test("★★★ P3 mal: la raya decide; ✗ y coral en la mal elegida, y la que era NO se marca (nombraría la respuesta); el error, ✗ y su texto, «Incorrecto.» solo para el lector", async () => {
   movimientoReducido(true);
   const p = pantalla("cual-cruza");
   const m = abrir(3);
@@ -219,20 +263,54 @@ test("★★★ P3 mal: la raya decide; ✗ y coral en la mal elegida, borde bla
     tocar(m.caja.querySelector("[data-accion=pasar]"));
     await esperar(0);
     const ver = (f, l) => seg(m.caja, f, l).dataset.veredicto ?? null;
-    assert.deepEqual([ver("mercancia", "despues"), ver("mercancia", "antes")], ["mal", "era"]);
-    assert.deepEqual([ver("deuda", "antes"), ver("deuda", "despues")], ["mal", "era"]);
+    assert.deepEqual([ver("mercancia", "despues"), ver("mercancia", "antes")], ["mal", null]);
+    assert.deepEqual([ver("deuda", "antes"), ver("deuda", "despues")], ["mal", null]);
+    assert.equal(m.caja.querySelector('[data-veredicto="era"], [data-marca="era"]'), null, "en Aprender no se marca la que era");
     assert.deepEqual([ver("edificio", "despues"), ver("edificio", "antes")], ["bien", null]);
+    /* La pastilla con palabra (Katsumi: «✓ Bien» y «✗ Mal» caben en la casilla; nunca «era»), y el lector oye la palabra. */
+    assert.equal(visible(seg(m.caja, "deuda", "antes")), "✗Mal");
+    assert.equal(visible(seg(m.caja, "edificio", "despues")), "✓Bien");
+    assert.equal(seg(m.caja, "mercancia", "despues").getAttribute("aria-label"), "Mercancía: no es corriente, después de la raya: Mal");
+    assert.equal(seg(m.caja, "mercancia", "antes").getAttribute("aria-label"), "Mercancía: corriente, antes de la raya");
+    const oido = [...m.caja.querySelectorAll("[aria-label]")].map((x) => x.getAttribute("aria-label")).join(" ");
+    assert.doesNotMatch(`${visible(m.caja)} ${oido}`, /\bera\b/i, "nunca «era» en Aprender, ni a la vista ni para el lector");
     const msg = m.caja.querySelector("[data-mensaje]");
     assert.equal(msg.dataset.mensaje, "error");
     assert.equal(visible(msg), `✗${p.error}`);
     assert.equal(msg.querySelector(".t4f-sr").textContent.trim(), "Incorrecto.");
     assert.ok(CORAL.test(w.getComputedStyle(seg(m.caja, "deuda", "antes")).borderTopColor), "la mal elegida no va en coral");
-    assert.ok(!CORAL.test(w.getComputedStyle(seg(m.caja, "deuda", "despues")).borderTopColor), "la que era va en coral");
+    assert.ok(!CORAL.test(w.getComputedStyle(seg(m.caja, "deuda", "despues")).borderTopColor), "la que no se eligió va en coral");
     /* «Otra vez» limpia las marcas y vuelve a hoy. */
     tocar(m.caja.querySelector("[data-accion=otra-vez]"));
     assert.equal(m.caja.querySelector("[data-veredicto], [data-mensaje]"), null);
     assert.equal(m.caja.querySelector("[data-figura]").dataset.mes, "0");
   } finally { m.desmontar(); movimientoReducido(false); }
+});
+
+test("★★★ E2 · P3: el veredicto lleva la devolución a la ventana con «nearest»; sin animación si el movimiento está reducido, suave si no", async () => {
+  const original = w.Element.prototype.scrollIntoView;
+  const llevados = [];
+  w.Element.prototype.scrollIntoView = function (o) { llevados.push({ el: this, o }); };
+  const antes = movimientoReducido(true);
+  try {
+    for (const quieto of [true, false]) {
+      movimientoReducido(quieto);
+      llevados.length = 0;
+      const m = abrir(3);
+      movimientoReducido(quieto);
+      try {
+        tocar(seg(m.caja, "mercancia", "antes"));
+        tocar(seg(m.caja, "deuda", "despues"));
+        tocar(seg(m.caja, "edificio", "despues"));
+        assert.equal(llevados.length, 0, "antes del veredicto no se mueve la vista");
+        tocar(m.caja.querySelector("[data-accion=pasar]"));
+        await esperar(quieto ? 0 : 3200);
+        const msg = m.caja.querySelector("[data-mensaje]");
+        assert.ok(msg, "no hay devolución");
+        assert.deepEqual(llevados.filter((x) => x.el === msg).map((x) => x.o), [{ block: "nearest", behavior: quieto ? "auto" : "smooth" }]);
+      } finally { m.desmontar(); }
+    }
+  } finally { w.Element.prototype.scrollIntoView = original; movimientoReducido(antes); }
 });
 
 test("★★★ P3 bien: «Correcto.» y nada más; ✓ blanco en las tres; ni teal ni ámbar en ninguna parte de A0", async () => {

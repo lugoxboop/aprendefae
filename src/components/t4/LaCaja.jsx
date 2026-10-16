@@ -16,7 +16,9 @@
  *
  * En el error de Aprender no se escribe nada y se puede reintentar: los
  * destinos siguen activos (regla del Tema 2 con el reintento de la elección
- * publicada). Carril de la Célula D.
+ * publicada). El destino elegido lleva la pastilla con palabra, como en H1
+ * (en blanco y negro se sabe cuál falló), pero nunca «Iba aquí»: nombraría
+ * la respuesta. Carril de la Célula D.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { useEffect, useRef, useState } from "react";
@@ -90,10 +92,11 @@ function Cobra({ p }) {
   );
 }
 
-function Consigna({ p }) {
+function Consigna({ p, onAcierto }) {
   const [elegida, setElegida] = useState(null);
   const [vibra, sacudir] = useVibra();
   const ok = elegida === p.correcta;
+  useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
   const elegir = (d) => {
     if (ok) return;
     setElegida(d);
@@ -110,6 +113,7 @@ function Consigna({ p }) {
         bancos={ok ? { monto: M } : {}}
         bandeja={{}}
         destinos={{ activos: !ok, onElegir: elegir, marcas: elegida ? { [elegida]: ok ? "bien" : "mal" } : {} }}
+        palabras
         vibra={vibra}
       />
       {elegida && <Mensaje key={elegida} ok={ok} texto={ok ? p.acierto : p.errores[elegida]} />}
@@ -137,7 +141,7 @@ function DosSalidas() {
   );
 }
 
-function Cheques() {
+function Cheques({ onAcierto }) {
   const [k, setK] = useState(0);
   const [hechos, setHechos] = useState([]);
   const [elegida, setElegida] = useState(null);
@@ -147,6 +151,7 @@ function Cheques() {
   const ch = CHEQUES_A1[k];
   const ok = elegida === ch.correcta;
   const ambos = hechos.length === CHEQUES_A1.length;
+  useEffect(() => { if (ambos) onAcierto?.(); }, [ambos]); // eslint-disable-line react-hooks/exhaustive-deps
   const elegir = (d) => {
     if (ok) return;
     setElegida(d);
@@ -163,6 +168,7 @@ function Cheques() {
         bandeja={{ ultimo: hechos.includes("propio") ? CHEQUE_EN_FIGURA.propio : null }}
         luz={hechos.includes("propio") ? ["bancos"] : []}
         destinos={{ activos: !ambos && !ok, onElegir: elegir, marcas: elegida ? { [elegida]: ok ? "bien" : "mal" } : {} }}
+        palabras
         vibra={vibra}
       />
       {elegida && <Mensaje key={ch.id + elegida} ok={ok} texto={ok ? ch.acierto : ch.errores[elegida]} />}
@@ -188,8 +194,8 @@ function Controles() {
 const CUERPOS = { mapa: Mapa, cobra: Cobra, consigna: Consigna, salidas: DosSalidas, cheques: Cheques, controles: Controles };
 
 /* El cuerpo de una pantalla de A1: el cajón y lo que sale debajo con la acción. */
-export function CuerpoA1({ p }) {
+export function CuerpoA1({ p, onAcierto }) {
   const Cuerpo = CUERPOS[p.tipo];
-  return <Cuerpo p={p} />;
+  return <Cuerpo p={p} onAcierto={onAcierto} />;
 }
 

@@ -1,5 +1,5 @@
 {
- "_": "Cómo juega la sonda las pantallas de Aprender con figura operable (A0 y A1 del rediseño de enganche). Por pieza y pantalla, en orden: click (selector dentro de la pieza) o arrastra (selector y fracción del ancho), espera en ms, mide (el nombre del momento) y veredicto (acierto o error: si la pantalla da otro, la sonda sale con 2). Se miden los errores y los aciertos. Los Hacer no van aquí: su gesto depende de la tarjeta que salió, así que lo da la clave (enganche_clave.mjs), con la misma forma de toques en orden y su veredicto. Ver README.",
+  "_": "Cómo juega la sonda las pantallas de Aprender con figura operable (A0-A5 del rediseño de enganche). Por pieza y pantalla, en orden: click (selector dentro de la pieza) o arrastra (selector y fracción del ancho), espera en ms, mide (el nombre del momento) y veredicto (acierto o error: si la pantalla da otro, la sonda sale con 2). Se miden los errores y los aciertos. Los Hacer no van aquí: su gesto depende de la tarjeta que salió, así que lo da la clave (enganche_clave.mjs), con la misma forma de toques en orden y su veredicto. Ver README.",
  "t4-a0-el-activo-corriente": {
   "la-prueba": [
    {"arrastra": "[data-pista]", "hasta": 0.35, "espera": 300, "mide": "arrastre a medio año"},
@@ -51,5 +51,150 @@
    {"click": "[data-control='6']", "mide": "control 6"},
    {"click": "[data-control='7']", "mide": "control 7"}
   ]
+ },
+ "t4-a2-el-fondo-fijo": {
+  "el-fondo": [
+   {"click": "[data-accion=pagar]", "espera": 300, "mide": "un pago"},
+   {"click": "[data-accion=pagar]"},
+   {"click": "[data-accion=pagar]", "espera": 600, "mide": "tres pagos"},
+   {"click": "[data-accion=reponer]", "espera": 600, "mide": "repuesto"}
+  ],
+  "la-apertura": [{"click": "[data-cheque]", "espera": 700, "mide": "abierto"}],
+  "los-gastos": [
+   {"click": "[data-accion=pagar]", "espera": 300, "mide": "gasto 1"},
+   {"click": "[data-accion=pagar]"},
+   {"click": "[data-accion=pagar]", "espera": 300, "mide": "gasto 3"},
+   {"click": "[data-accion=pagar]"},
+   {"click": "[data-accion=pagar]"},
+   {"click": "[data-accion=pagar]"},
+   {"click": "[data-accion=pagar]"},
+   {"click": "[data-accion=pagar]", "espera": 600, "mide": "gasto 8"}
+  ],
+  "cuanto-queda": [
+   {"click": "[data-opcion='500000']", "espera": 500, "mide": "error con 500.000", "veredicto": "error"},
+   {"click": "[data-opcion='478100']", "espera": 500, "mide": "error con 478.100", "veredicto": "error"},
+   {"click": "[data-opcion='21900']", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "el-reembolso": [{"click": "[data-cheque]", "espera": 700, "mide": "repuesto"}],
+  "y-caja-menor": [
+   {"click": "[data-destino='caja-menor:debe']"},
+   {"click": "[data-destino='bancos:haber']"},
+   {"click": "[data-boton=comprobar]", "espera": 500, "mide": "error con Caja menor al debe", "veredicto": "error"},
+   {"click": "[data-destino='gastos-generales:debe']"},
+   {"click": "[data-destino='caja-menor:haber']"},
+   {"click": "[data-boton=comprobar]", "espera": 500, "mide": "error con Caja menor al haber", "veredicto": "error"},
+   {"click": "[data-destino='bancos:haber']"},
+   {"click": "[data-boton=comprobar]", "espera": 700, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "subir-bajar": [
+   {"click": "[data-accion=subir]", "espera": 600, "mide": "subido"},
+   {"click": "[data-accion=bajar]"},
+   {"click": "[data-accion=bajar]", "espera": 600, "mide": "bajado"}
+  ]
+ },
+ "t4-a3-el-arqueo": {
+  "contar": [{"click": "[data-accion=contar]", "espera": 600, "mide": "contado"}],
+  "cuando-no-cuadra": [
+   {"arrastra": "[data-accion=mover]", "hasta": 0.85, "espera": 600, "mide": "sobra"},
+   {"arrastra": "[data-accion=mover]", "hasta": 0.15, "espera": 600, "mide": "falta"}
+  ],
+  "el-sobrante": [
+   {"click": "[data-opcion=falta]", "espera": 500, "mide": "error con falta", "veredicto": "error"},
+   {"click": "[data-opcion=cuadra]", "espera": 500, "mide": "error con cuadra", "veredicto": "error"},
+   {"click": "[data-opcion=sobra]", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "el-cheque": [
+   {"click": "[data-opcion='478100']", "espera": 500, "mide": "error con 478.100", "veredicto": "error"},
+   {"click": "[data-opcion='480200']", "espera": 500, "mide": "error con 480.200", "veredicto": "error"},
+   {"click": "[data-opcion='476000']", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "el-asiento": [
+   {"click": "[data-destino='bancos:haber']"},
+   {"click": "[data-boton=comprobar]", "espera": 500, "mide": "error con Bancos", "veredicto": "error"},
+   {"click": "[data-destino='ino-sobrante:debe']"},
+   {"click": "[data-boton=comprobar]", "espera": 500, "mide": "error de lado", "veredicto": "error"},
+   {"click": "[data-destino='ino-sobrante:haber']"},
+   {"click": "[data-boton=comprobar]", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "el-faltante": [
+   {"click": "[data-opcion='478100']", "espera": 500, "mide": "error con 478.100", "veredicto": "error"},
+   {"click": "[data-opcion='471400']", "espera": 500, "mide": "error con 471.400", "veredicto": "error"},
+   {"click": "[data-opcion='484800']", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "camino-1": [
+   {"click": "[data-destino='gno-faltante:debe']"},
+   {"click": "[data-boton=comprobar]", "espera": 500, "mide": "error con el gasto", "veredicto": "error"},
+   {"click": "[data-destino='cxc-empleados:haber']"},
+   {"click": "[data-boton=comprobar]", "espera": 500, "mide": "error de lado", "veredicto": "error"},
+   {"click": "[data-destino='cxc-empleados:debe']"},
+   {"click": "[data-boton=comprobar]", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "camino-2": [
+   {"click": "[data-accion=asume]", "espera": 600, "mide": "asume"},
+   {"click": "[data-accion=cobra]", "espera": 600, "mide": "cobra"}
+  ]
+ },
+ "t4-a4-bancos-y-notas": {
+  "sube-y-baja": [
+   {"click": "[data-accion=consignar]", "espera": 600, "mide": "consignado"},
+   {"click": "[data-accion=girar]", "espera": 700, "mide": "girado"}
+  ],
+  "las-notas": [{"click": "[data-accion=extracto]", "espera": 600, "mide": "extracto"}],
+  "sube-o-baja": [
+   {"click": "[data-destino=haber]", "espera": 300, "mide": "error en el 1"},
+   {"click": "[data-destino=debe]", "espera": 300, "mide": "1 puesto"},
+   {"click": "[data-destino=haber]"},
+   {"click": "[data-destino=debe]"},
+   {"click": "[data-destino=haber]"},
+   {"click": "[data-destino=debe]"},
+   {"click": "[data-destino=debe]", "espera": 300, "mide": "error en el 6"},
+   {"click": "[data-destino=haber]"},
+   {"click": "[data-destino=debe]", "espera": 600, "mide": "siete"}
+  ],
+  "quien-lo-tiene": [
+   {"click": "[data-opcion=banco]", "espera": 400, "mide": "error con banco", "veredicto": "error"},
+   {"click": "[data-opcion=los-dos]", "espera": 400, "mide": "error con los dos", "veredicto": "error"},
+   {"click": "[data-opcion=empresa]", "espera": 600, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "seis-causas": [
+   {"click": "[data-control='1']", "espera": 300, "mide": "causa 1"},
+   {"click": "[data-control='2']", "espera": 300, "mide": "causa 2"},
+   {"click": "[data-control='3']", "espera": 300, "mide": "causa 3"},
+   {"click": "[data-control='4']", "espera": 300, "mide": "causa 4"},
+   {"click": "[data-control='5']", "espera": 300, "mide": "causa 5"},
+   {"click": "[data-control='6']", "espera": 300, "mide": "causa 6"}
+  ]
+ },
+ "t4-a5-san-calixto": {
+  "lado-del-banco": [
+   {"click": "[data-destino=mas]", "espera": 400, "mide": "error en la 1"},
+   {"click": "[data-destino=menos]", "espera": 300, "mide": "1 puesta"},
+   {"click": "[data-destino=mas]", "espera": 300},
+   {"click": "[data-destino=menos]", "espera": 300},
+   {"click": "[data-destino=menos]", "espera": 300},
+   {"click": "[data-destino=mas]", "espera": 400, "mide": "error en la 5"},
+   {"click": "[data-destino=menos]", "espera": 900, "mide": "cinco"}
+  ],
+  "lado-de-la-empresa": [
+   {"click": "[data-destino=menos]", "espera": 400, "mide": "error en la 1"},
+   {"click": "[data-destino=mas]", "espera": 300},
+   {"click": "[data-destino=menos]", "espera": 300},
+   {"click": "[data-destino=mas]", "espera": 300},
+   {"click": "[data-destino=menos]", "espera": 300},
+   {"click": "[data-destino=mas]", "espera": 400, "mide": "error en la 5"},
+   {"click": "[data-destino=menos]", "espera": 900, "mide": "cinco"}
+  ],
+  "que-se-asienta": [
+   {"click": "[data-opcion=si]", "espera": 400, "mide": "error", "veredicto": "error"},
+   {"click": "[data-opcion=no]", "espera": 500, "mide": "acierto", "veredicto": "acierto"}
+  ],
+  "los-asientos": [
+   {"click": "[data-control='1']", "espera": 400, "mide": "asiento 1"},
+   {"click": "[data-control='2']", "espera": 400, "mide": "asiento 2"},
+   {"click": "[data-control='3']", "espera": 400, "mide": "asiento 3"},
+   {"click": "[data-control='4']", "espera": 400, "mide": "asiento 4"},
+   {"click": "[data-control='5']", "espera": 400, "mide": "asiento 5"}
+  ],
+  "el-mayor": [{"click": "[data-accion=asentar]", "espera": 2400, "mide": "asentado"}]
  }
 }
