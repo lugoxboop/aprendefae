@@ -4,7 +4,7 @@
  *
  *   node --import ./scripts/cargador-jsx.mjs scripts/b5/medir-b5-fichas.mjs
  *
- * En b5-t5-a1, b5-t6-a1 y b5-t6-a7, a 320×568 y 375×667, con y sin
+ * En b5-t5-a1 y b5-t6-a1 (b5-t6-a7 se retiró en el lote 4), a 320×568 y 375×667, con y sin
  * movimiento reducido, juega la tanda entera y en cada ficha comprueba:
  *
  * LOTE 6a (hoja de fusiones de Mai, §2): b5-t5-a1 y b5-t6-a1 son fichas a un
@@ -12,8 +12,8 @@
  * hoja: el alto del estante (84), los renglones de cada nombre, y del
  * contador al estante con la ficha más alta, con la devolución abierta y
  * resuelta hasta «Siguiente ficha». Comprueba que el cajón ✕ no se puede
- * volver a tocar y que ✓ y ✕ llevan su ícono. b5-t6-a7 sigue con el estante
- * de dos niveles hasta que se retire.
+ * volver a tocar y que ✓ y ✕ llevan su ícono. b5-t6-a7, la del estante de dos
+ * niveles, se retiró en el lote 4.
  *
  *   · sin barra horizontal; ningún nombre de cajón fuera de su cajón;
  *   · el alto del estante (la réplica de Mai: 96,78);
@@ -120,9 +120,9 @@ for (const juego of ["#t5a1", "#t6a1"]) {
   }
 }
 
-/* ═══════════ b5-t6-a7: EL ESTANTE DE DOS NIVELES (hoja 3), hasta que se retire ═══════════ */
+/* ═══════════ EL ESTANTE DE DOS NIVELES (hoja 3): sin juego desde que b5-t6-a7 se retiró (0076) ═══════════ */
 
-for (const juego of ["#t6a7"]) {
+for (const juego of []) {
   for (const reducido of [false, true]) {
     for (const [ancho, alto] of [[320, 568], [375, 667]]) {
       const p = await navegador.newPage({ viewport: { width: ancho, height: alto }, reducedMotion: reducido ? "reduce" : "no-preference" });
