@@ -234,10 +234,10 @@ test("★★★ fuera del catálogo de FP; id t5-; en T5 después de b5-t5-a1 y 
   for (const interno of ["CONSTRUCCIÓN", "construcción", "Near", "Mello", "HUECO", "INFLESZ", "C5-", "las activos"]) assert.ok(!texto.includes(interno), interno);
 });
 
-test("★★ la vista pinta N2 con su componente, entre las dos piezas de B, con «Pieza 2 de 3»", async () => {
+test("★★ la vista pinta N2 con su componente, entre las dos piezas de B, con «Pieza 2 de 4» (N6 es la cuarta)", async () => {
   const { default: Vista } = await import("../../components/ContabilidadTema5View.jsx");
   const VISTA = readFileSync(new URL("src/components/ContabilidadTema5View.jsx", RAIZ), "utf8");
   assert.match(VISTA, /if \(Pieza\) \{[\s\S]*<Pieza pieza=\{pieza\} rotulo=\{rotulo\} \/>/);
   assert.equal(typeof Vista, "function");
-  assert.deepEqual(PIEZAS.map((x) => Boolean(x.Pieza)), [false, true, false]);
+  assert.deepEqual(PIEZAS.map((x) => Boolean(x.Pieza)), [false, true, false, true]);
 });
