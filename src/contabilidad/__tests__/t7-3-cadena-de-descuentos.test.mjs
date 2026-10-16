@@ -47,6 +47,7 @@ const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await 
 const { default: CadenaDeDescuentos } = await import("../../components/mecanicas/libros/t7/CadenaDeDescuentos.jsx");
 const { JUEGOS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
+const { firma, textoFigura } = await import("./figuraAcumuladaPrueba.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -279,4 +280,23 @@ test("★★★ Patrón T7-3: la cuenta crece con los ítems 1 a 4, cada parte d
   const rebaja = D.FIGURAS_H2[2];
   assert.equal(rebaja.nota, "La suma de los porcentajes da 19 %. Cada descuento va sobre un saldo más pequeño, así que la rebaja real es menor.");
   assert.ok(rebaja.filas.at(-1).fuerte && !rebaja.filas.at(-1).res, "17,92 % en negrita, sin raya");
+});
+
+/* ═══════════ LOTE 5 · LA FIGURA ACUMULADA ═══════════ */
+
+test("★★★ lote 5: las figuras del Patrón T7-3 van en la figura acumulada, arriba del ítem, y se quedan hasta el cierre", async () => {
+  const m = await montar();
+  try {
+    for (const [k, it] of EN_ORDEN.entries()) {
+      const fig = m.caja.querySelector("[data-figura-acumulada]");
+      assert.equal(Boolean(fig), k > 0, `antes del ítem ${k + 1}`);
+      if (fig) assert.equal(fig.querySelectorAll("figure[data-renglones]").length, [0, 1, 1, 2, 3][k], `tarjetas antes del ítem ${k + 1}`);
+      await tocar(opcion(m.caja, k % 2 ? it.opciones.find((o) => o.valor !== it.correcta).valor : it.correcta));
+      assert.ok(m.caja.querySelector("[data-figura-acumulada]").compareDocumentPosition(m.caja.querySelector("[data-pregunta]")) & w.Node.DOCUMENT_POSITION_FOLLOWING, "arriba del ítem");
+      await tocar(boton(m.caja, k === EN_ORDEN.length - 1 ? D.BOTON_H2.verResumen : D.BOTON_H2.siguiente));
+    }
+    assert.equal(m.caja.querySelector("[data-figura-acumulada]"), null);
+  } finally {
+    m.desmontar();
+  }
 });

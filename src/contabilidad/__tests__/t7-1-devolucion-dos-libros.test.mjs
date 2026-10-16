@@ -50,6 +50,7 @@ const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await 
 const { default: DevolucionDosLibros } = await import("../../components/mecanicas/libros/t7/DevolucionDosLibros.jsx");
 const { JUEGOS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
+const { firma, textoFigura } = await import("./figuraAcumuladaPrueba.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -347,6 +348,42 @@ test("★★★ lote 3: cuenta buena y lado malo, sale el texto del lado; cuenta
     assert.deepEqual(bajo(l1), [dato(l1).retro], "cuenta buena, lado malo: el texto del lado");
     assert.deepEqual(bajo(l2), [dato(l2).distractores[1].retro], "cuenta mala: el texto de ese distractor");
     for (const l of resto) assert.deepEqual(bajo(l), []);
+  } finally {
+    m.desmontar();
+  }
+});
+
+/* ═══════════ LOTE 5 · LA FIGURA ACUMULADA ═══════════ */
+
+test("★★★ lote 5: la cuenta de la devolución se arma con los ítems 1 a 3 y cada libro suma su asiento; nunca antes, y se queda", async () => {
+  const CU = "850.000 136.000 29.750 956.250";
+  const despues = [
+    ["850.000 136.000"],
+    ["850.000 136.000 29.750"],
+    [CU],
+    [CU, "asiento Libro de La Garza: 4 líneas"],
+    [CU, "asiento Libro de La Garza: 4 líneas", "asiento Libro de El Nogal: 4 líneas"],
+  ];
+  const m = await montar();
+  try {
+    for (const [k, it] of EN_ORDEN.entries()) {
+      assert.deepEqual(firma(m.caja), k ? despues[k - 1] : [], `antes del ítem ${k + 1}`);
+      const falla = k % 2 === 1;
+      if (it.tipo === "eleccion") {
+        await tocar(opcion(m.caja, falla ? it.distractores[0].valor : it.correcta));
+      } else if (it.tipo === "cifra") {
+        assert.ok(!textoFigura(m.caja).includes(miles(it.correcta)), "E8");
+        await escribir(m.caja, it.id, falla ? it.distractores[0].valor : it.correcta);
+        await tocar(boton(m.caja, "Comprobar"));
+      } else {
+        for (const l of it.lineas) { await tocar(ficha(m.caja, l.id, l.cuenta)); await tocar(lado(m.caja, l.id, falla ? otro(l.lado) : l.lado)); }
+        assert.deepEqual(firma(m.caja), k ? despues[k - 1] : [], `el asiento ${k + 1} no está antes de comprobar`);
+        await tocar(boton(m.caja, "Comprobar"));
+      }
+      assert.deepEqual(firma(m.caja), despues[k], `al cerrar el ítem ${k + 1}`);
+      await tocar(boton(m.caja, k === EN_ORDEN.length - 1 ? D.BOTON_H6.verResumen : D.BOTON_H6.siguiente));
+    }
+    assert.equal(m.caja.querySelector("[data-figura-acumulada]"), null);
   } finally {
     m.desmontar();
   }

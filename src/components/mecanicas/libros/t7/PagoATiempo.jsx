@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
-import { H4, FICHA_H4, FIGURAS_H4, ARRIBA_H4, ITEMS_H4, BOTON_H4, resumenH4 } from "../../../../data/contabilidadT7_3_h4.js";
+import { H4, FICHA_H4, ARRIBA_H4, ITEMS_H4, BOTON_H4, resumenH4 } from "../../../../data/contabilidadT7_3_h4.js";
 import { prepararH4, evaluarH4, idLineaH4, puntuarH4, TOTAL_H4 } from "../../../../contabilidad/t7_3H4.js";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { AsientoEnLineas, Responder, useTanda } from "../piezas.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
-import { FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
+import { CSS_T73_PATRON } from "./PatronT7_3.jsx";
+import FiguraAcumulada from "./FiguraAcumulada.jsx";
+import { FIGURA_T7_3_H4, cerradosDe } from "../../../../contabilidad/figuraAcumulada.js";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
 import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
@@ -31,6 +33,9 @@ import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
  * LOTE 3: «Arma la línea» (armaLaLinea.jsx), con T7-3 H1 de molde. Los
  * ítems 1, 3 y 4 van con casilla de cifra; en cada asiento, cada línea elige
  * su cuenta del banco (la correcta y los dos distractores de Near) y su lado.
+ *
+ * LOTE 5 (L): la factura, el descuento y el pago, en una sola cuenta que crece
+ * en la figura acumulada (FiguraAcumulada.jsx) y se queda hasta el cierre.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -94,7 +99,7 @@ export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar
         <Encabezado consigna={sinUnSoloIntento(H4.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H4.enunciado} />
         <Ficha filas={FICHA_H4} />
-        <FigurasHacer figuras={FIGURAS_H4} respondidos={t.i + (listo ? 1 : 0)} listo={listo} />
+        <FiguraAcumulada figura={FIGURA_T7_3_H4} cerrados={cerradosDe(t.i, Boolean(listo))} listo={Boolean(listo)} />
         <div style={{ marginBottom: "12px" }}>
           <ContadorConIntento>
             <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
