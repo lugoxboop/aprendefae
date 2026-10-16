@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -54,7 +55,7 @@ const P = A.PIEZA_DEVOLUCIONES;
  * El lote 2 de Near (pistas y anexo): sus textos valen como los del paquete,
  * pero solo los de esta pieza (su sección de pistas y sus filas del anexo).
  */
-const LOTE2 = (f) => readFileSync(new URL(`orquestador/conocimiento/paquetes/lote2-${f}-v1.md`, RAIZ), "utf8");
+const LOTE2 = (f) => conCorreccionesDeMello(readFileSync(new URL(`orquestador/conocimiento/paquetes/lote2-${f}-v1.md`, RAIZ), "utf8"));
 let l2;
 function L2() {
   if (l2 !== undefined) return l2;
@@ -302,7 +303,12 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos y su
       assert.deepEqual(enPantalla(m.caja), { textos: [...cab, INTERFAZ.correcto, p.acierto.texto, BOTON.seguir, p.acierto.pie], opciones: ops }, `${p.id} acierto`);
       if (p.asientos || p.acierto.asientos) {
         assert.deepEqual(filasDeAsiento(m.caja), todosLosAsientos(p, true));
-        for (const o of m.caja.querySelectorAll("[data-oculto]")) assert.equal(o.textContent, `●${PENDIENTE_DE_REVISION.montoOculto}`);
+        /* El monto oculto es la casilla vacía discontinua, como la del kárdex: nunca un «●» suelto. */
+        for (const o of m.caja.querySelectorAll("[data-oculto]")) {
+          assert.equal(o.textContent, PENDIENTE_DE_REVISION.montoOculto, "el monto oculto vuelve a pintarse «●»");
+          assert.ok(o.querySelector("i[aria-hidden=true]"), "el monto oculto no lleva su casilla vacía");
+        }
+        assert.equal(m.caja.querySelector("[data-asiento]").closest("[data-pieza]").textContent.includes("●"), false, "un «●» suelto en la pieza");
       }
       vistos.push(`${p.id}:acierto`);
       await tocar(boton(m.caja, "seguir"));

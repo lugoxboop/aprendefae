@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -53,14 +54,15 @@ const V1 = leer("orquestador/conocimiento/paquetes/t7-2-a3-v1.md");
 const CORR = leer("orquestador/conocimiento/paquetes/t7-2-a3-a4-correcciones.md");
 const CORR_A3 = CORR.slice(CORR.indexOf("A3 «El kárdex»"), CORR.indexOf("A4 «San Calixto en permanente»"));
 const CONTENIDO = V1.slice(V1.indexOf("## Contenido"), V1.indexOf("## Registro 5c"));
-const AP3 = leer("src/data/contabilidadT7_1_ap3.js");
+/* Las definiciones salen de la ficha de AP3 de T7-1: el recorte del lote 1 las sacó de su pantalla. */
+const AP3 = leer("orquestador/conocimiento/paquetes/t7-1-ap3-v1.md");
 const P = A.PIEZA_EL_KARDEX;
 
 /*
  * El lote 2 de Near (pistas y anexo): sus textos valen como los del paquete,
  * pero solo los de esta pieza (su sección de pistas y sus filas del anexo).
  */
-const LOTE2 = (f) => readFileSync(new URL(`orquestador/conocimiento/paquetes/lote2-${f}-v1.md`, RAIZ), "utf8");
+const LOTE2 = (f) => conCorreccionesDeMello(readFileSync(new URL(`orquestador/conocimiento/paquetes/lote2-${f}-v1.md`, RAIZ), "utf8"));
 let l2;
 function L2() {
   if (l2 !== undefined) return l2;
@@ -154,7 +156,7 @@ test("★★★ las correcciones: las definiciones de AP3 de T7-1, después de c
   assert.equal(nuevas.length, 3);
   for (const [id, def] of [["peps", nuevas[0]], ["ueps", nuevas[1]], ["promedio", nuevas[2]]]) {
     assert.equal(pantalla(id).parrafos[0], def, id);
-    assert.ok(AP3.includes(`"${def}"`), `${id}: la definición no es literal de AP3 de T7-1`);
+    assert.ok(AP3.includes(def), `${id}: la definición no es literal de AP3 de T7-1`);
   }
   assert.equal(pantalla("promedio").pie, "Basado en el libro, pp. 218 y 240-241");
   assert.ok(CORR_A3.includes(`«${pantalla("promedio").pie}»`));

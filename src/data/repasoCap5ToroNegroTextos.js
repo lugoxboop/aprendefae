@@ -1,3 +1,4 @@
+import { VEREDICTO } from "./repasoCap5Comun.js";
 import { CIFRAS, CASTIGOS_MARZO, RECUPERACION_MAYO, COLUMNAS, PORCENTAJES } from "./repasoCap5ToroNegro.js";
 
 /*
@@ -89,8 +90,8 @@ export const ROTULOS_R5_2 = {
    * si quedó bien. Antes solo lo decía el color del borde (D12).
    */
   veredicto: {
-    cuenta: { ok: "Correcta", mal: "No va aquí" },
-    valor: { ok: "Correcto", mal: "No es este valor" },
+    /* Cuenta y valor, los del repaso entero (repasoCap5Comun.js). */
+    ...VEREDICTO,
     lado: { ok: "Lado correcto", mal: "No es este lado" },
   },
   debito: "DÉBITO",

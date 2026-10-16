@@ -75,9 +75,17 @@ export const BOTON_H2 = { siguiente: "Siguiente ítem", verResumen: "Ver mi resu
 
 export const SUBTEMAS_H2 = ["Total de la factura", "Primer asiento", "Valor del costo", "Asiento del costo"];
 
+/*
+ * LOTE 3 DE LA REVISIÓN («Arma la línea», con T7-3 H1 de molde): el ítem 1,
+ * cuyo objetivo es calcular, va con casilla de cifra (tipo "cifra"); si la
+ * cifra escrita es la de un distractor, sale su retroalimentación. El ítem 3
+ * se queda en elección (costo contra precio). En los dos asientos, cada línea
+ * trae su banco de cuentas: la correcta y sus `distractores` { cuenta, retro },
+ * de Near (orquestador/conocimiento/paquetes/lote3-distractores-v1.md).
+ */
 export const ITEMS_H2 = [
   {
-    id: "debe-cliente", tipo: "eleccion", subtema: "Total de la factura",
+    id: "debe-cliente", tipo: "cifra", subtema: "Total de la factura",
     pregunta: "¿Cuánto le queda debiendo el cliente a El Arrayán?",
     correcta: C.cliente,
     acierto: "Así es: $5.600.000 + $896.000 − $196.000 = $6.300.000.",
@@ -90,10 +98,10 @@ export const ITEMS_H2 = [
     id: "primer-asiento", tipo: "asiento", subtema: "Primer asiento",
     pregunta: "Ubica cada línea del primer asiento: Debe o Haber.",
     lineas: [
-      { id: "clientes", cuenta: "Cuentas por cobrar – clientes", valor: C.cliente, lado: DEBE, retro: "El cliente le queda debiendo a El Arrayán. Es un activo que aumenta: va al debe." },
-      { id: "anticipo", cuenta: "Anticipo fiscal", valor: C.retencion, lado: DEBE, retro: "El cliente le descontó la retención. Para El Arrayán es un impuesto pagado por adelantado: va al debe de Anticipo fiscal." },
-      { id: "iva", cuenta: "IVA por pagar", valor: C.iva, lado: HABER, retro: "El Arrayán cobró el IVA y se lo debe al Estado: va al haber de IVA por pagar." },
-      { id: "ingresos", cuenta: "Ingresos por ventas", valor: C.venta, lado: HABER, retro: "La venta es un ingreso que aumenta: va al haber de Ingresos por ventas." },
+      { id: "clientes", cuenta: "Cuentas por cobrar – clientes", valor: C.cliente, lado: DEBE, retro: "El cliente le queda debiendo a El Arrayán. Es un activo que aumenta: va al debe.", distractores: [{ cuenta: "Caja o Bancos", retro: "La venta fue a crédito, así que el cliente todavía no paga. No entra dinero." }, { cuenta: "Cuentas por pagar – proveedores", retro: "Esa cuenta es lo que la empresa debe. Con esta venta, la empresa no queda debiendo nada." }] },
+      { id: "anticipo", cuenta: "Anticipo fiscal", valor: C.retencion, lado: DEBE, retro: "El cliente le descontó la retención. Para El Arrayán es un impuesto pagado por adelantado: va al debe de Anticipo fiscal.", distractores: [{ cuenta: "Retención en la fuente por pagar", retro: "Esa cuenta es para la retención que la empresa descuenta cuando compra. Aquí el que descuenta es el cliente." }, { cuenta: "IVA por pagar", retro: "Este valor sale al 3,5 %, no al 16 %. No es el IVA." }] },
+      { id: "iva", cuenta: "IVA por pagar", valor: C.iva, lado: HABER, retro: "El Arrayán cobró el IVA y se lo debe al Estado: va al haber de IVA por pagar.", distractores: [{ cuenta: "Anticipo fiscal", retro: "Anticipo fiscal va con la retención, que sale al 3,5 %. Este valor sale al 16 %." }, { cuenta: "Retención en la fuente por pagar", retro: "Esa cuenta es para la retención que la empresa descuenta cuando compra. Y este valor sale al 16 %." }] },
+      { id: "ingresos", cuenta: "Ingresos por ventas", valor: C.venta, lado: HABER, retro: "La venta es un ingreso que aumenta: va al haber de Ingresos por ventas.", distractores: [{ cuenta: "Inventario de mercancías", retro: "Inventario de mercancías sí se mueve en esta venta, pero en el segundo asiento y por el costo. Este valor es el precio." }, { cuenta: "Costo de mercancía vendida", retro: "Esa cuenta guarda lo que costó lo vendido, no el precio al que se vendió." }] },
     ],
   },
   {
@@ -110,8 +118,8 @@ export const ITEMS_H2 = [
     id: "asiento-del-costo", tipo: "asiento", subtema: "Asiento del costo",
     pregunta: "Ubica cada línea del segundo asiento: Debe o Haber.",
     lineas: [
-      { id: "costo", cuenta: "Costo de mercancía vendida", valor: C.costo, lado: DEBE, retro: "El costo de la mercancía vendida tiene saldo deudor: va al debe." },
-      { id: "inventario", cuenta: "Inventario de mercancías", valor: C.costo, lado: HABER, retro: "Sale mercancía de la bodega, así que el activo disminuye: va al haber." },
+      { id: "costo", cuenta: "Costo de mercancía vendida", valor: C.costo, lado: DEBE, retro: "El costo de la mercancía vendida tiene saldo deudor: va al debe.", distractores: [{ cuenta: "Compras", retro: "Compras es la cuenta del periódico. El Arrayán usa el permanente, y ahí no se usa." }, { cuenta: "Ingresos por ventas", retro: "El precio de la venta ya se anotó en el primer asiento. Este segundo asiento va por lo que costó." }] },
+      { id: "inventario", cuenta: "Inventario de mercancías", valor: C.costo, lado: HABER, retro: "Sale mercancía de la bodega, así que el activo disminuye: va al haber.", distractores: [{ cuenta: "Compras", retro: "Compras es la cuenta del periódico. El Arrayán usa el permanente, y ahí no se usa." }, { cuenta: "Cuentas por cobrar – clientes", retro: "Lo que debe el cliente ya se anotó en el primer asiento, por el precio. Este asiento va por el costo." }] },
     ],
   },
 ];

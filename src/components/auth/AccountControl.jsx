@@ -192,8 +192,36 @@ const CSS_CUENTA = `
    * —«las cuentas» e «ingresos, gastos y ajustes»— dejan de cortar sin que
    * nadie más tenga que enterarse.
    *
-   * El tope de dos se queda: sin él, un título muy largo empujaría el resto
-   * de la pantalla hacia abajo, y la cabecera dejaría de ser una cabecera.
+   * EL TOPE ES CUATRO, Y ESTUVO EN DOS HASTA QUE SE MIDIÓ.
+   *
+   * Tiene que haber tope: sin ninguno, un título larguísimo empujaría la
+   * pantalla hacia abajo y la cabecera dejaría de ser una cabecera. Pero el
+   * número no se deduce, se mide. Medido a 320 px sobre el paquete construido,
+   * con el hueco real que le queda al título —164 px de los 320, porque el
+   * resto son el botón de volver y la reserva de la pastilla—, y con los diez
+   * títulos que existen hoy en Contabilidad:
+   *
+   *   · ocho entran en uno o dos renglones;
+   *   · «Inventarios III: descuentos, inventario físico y NIC 2» pide CUATRO
+   *     a 320 px, tres a 360 y dos a 375.
+   *
+   * Con el tope en dos, ese título se leía cortado. Y el recorte no avisa: no
+   * pone puntos suspensivos, simplemente se queda sin las últimas palabras.
+   * Un estudiante en un teléfono de 320 px leía «…inventario» y no sabía que
+   * faltaba «físico y NIC 2».
+   *
+   * Cuatro renglones los usa solo quien los necesita: el tope recorta, no
+   * reserva, así que los otros nueve títulos siguen ocupando lo que ocupaban.
+   * El coste es una cabecera de 82 px en UNA vista de diez, a UN ancho, contra
+   * perder palabras en la principal señal de orientación de la pantalla. La
+   * regla de la casa ya eligió: romper renglón sí, desaparecer no.
+   *
+   * SE PUEDE HACER MEJOR, y no toca a esta hoja: medido, ese título en su
+   * propio renglón a ancho completo entra en dos (41 px). Eso mueve el orden
+   * de cesión de la cabecera, que es de Xeno; queda dicho y no bloquea esto.
+   *
+   * SI ENTRA UN TÍTULO MÁS LARGO, hay que volver a medir. Esto no se deduce
+   * del CSS: scripts/t7/medir-titulo-320.mjs y la sonda de títulos.
    */
   .fae-cabecera-titulo > h1 {
     flex-shrink: 1;
@@ -201,8 +229,23 @@ const CSS_CUENTA = `
     white-space: normal;
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
+    /*
+     * Lo único que los siete rodeos en línea tenían y esta regla no:
+     * overflow-wrap. Sin él, una palabra más ancha que la cabecera —un título
+     * sin espacios donde partir— se sale por el lado en vez de partirse, y el
+     * recorte de dos renglones no la alcanza. Con "anywhere" parte donde haga
+     * falta, que es mejor que salirse.
+     *
+     * Las siete vistas lo tenían porque cada una tropezó con lo mismo. Sube
+     * aquí para que la octava no tenga que tropezar.
+     *
+     * (Sin comillas invertidas en este comentario: está DENTRO de la plantilla
+     * de CSS, y una comilla invertida la cierra. El repertorio no lo nota —lee
+     * este archivo como texto— y solo lo caza la compilación.)
+     */
+    overflow-wrap: anywhere;
   }
 
   .fae-gsi-ancho { display: none; }

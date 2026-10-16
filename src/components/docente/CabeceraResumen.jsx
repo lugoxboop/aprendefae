@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FAE } from "../../theme.js";
 import { NIVEL } from "../../docente/alertas.js";
+import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
 
 /*
  * ÍTEM 1 — El resumen ejecutivo, lo primero que se ve al abrir el panel.
@@ -146,17 +147,19 @@ export default function CabeceraResumen({ cohorte, etiquetaCohorte, alertas, res
           <p style={rotulo}>ALERTAS PENDIENTES</p>
           <p style={{ ...cifra, color: urgentes > 0 ? FAE.coral : FAE.text }}>{nAlertas}</p>
           {/*
-            * Los tres niveles con su palabra al lado del color. El punto solo
-            * acompaña; quien no distinga los tonos lee "urgentes" igual.
+            * Los tres niveles con su palabra y su silueta al lado del color: la
+            * misma forma que lleva cada fila del panel (▲ ◆ ●), así esta
+            * cabecera hace de leyenda. Quien no distinga los tonos lee
+            * "urgentes" igual.
             */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "8px" }}>
             {[
-              { n: urgentes, texto: "urgentes", color: FAE.coral },
-              { n: atencion, texto: "atención", color: FAE.ambar },
-              { n: info, texto: "informativas", color: FAE.teal },
+              { n: urgentes, texto: "urgentes", marca: NIVEL_MARCA.URGENTE },
+              { n: atencion, texto: "atención", marca: NIVEL_MARCA.ATENCION },
+              { n: info, texto: "informativas", marca: NIVEL_MARCA.INFO },
             ].map((x) => (
               <span key={x.texto} style={{ display: "inline-flex", alignItems: "center", gap: "5px", fontSize: "11.5px", color: "rgba(248,249,250,0.72)" }}>
-                <span aria-hidden="true" style={{ width: "7px", height: "7px", borderRadius: "50%", background: x.color, flexShrink: 0 }} />
+                <span aria-hidden="true" style={{ display: "flex" }}><MarcaNivel nivel={x.marca} tamano={11} /></span>
                 <span style={{ fontVariantNumeric: "tabular-nums" }}>{x.n}</span> {x.texto}
               </span>
             ))}

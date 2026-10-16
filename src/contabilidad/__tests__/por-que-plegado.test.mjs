@@ -49,6 +49,32 @@ test("★★★ se ven 2 frases; lo demás se pliega; con 2 o menos no se pliega
   assert.deepEqual(partirEnFrases("¿Una? «Dos». ¡Tres!"), ["¿Una? «Dos».", " ¡Tres!"]);
 });
 
+test("★★★ regla de L: una frase con condición («solo», «directamente», «cuando», «si») no se pliega", () => {
+  const t = "Uno. Dos. Tres. Estos ajustes solo se presentan en el permanente. Cinco.";
+  assert.deepEqual(partirEnFrases(t), ["Uno. Dos. Tres. Estos ajustes solo se presentan en el permanente.", " Cinco."]);
+  /* Lo visible llega hasta la ÚLTIMA condición; el orden no cambia. */
+  assert.deepEqual(partirEnFrases("A. B. Si sube, va al debe. C. Cuando baja, al haber."), ["A. B. Si sube, va al debe. C. Cuando baja, al haber.", ""]);
+  assert.deepEqual(partirEnFrases("A. B. Se suma lo directamente atribuible. D."), ["A. B. Se suma lo directamente atribuible.", " D."]);
+  /* «sí» (afirmación) y «así» no son condiciones. */
+  assert.deepEqual(partirEnFrases("A. B. Así es. Sí se anota."), ["A. B.", " Así es. Sí se anota."]);
+  /* Sin condición, como antes. */
+  assert.deepEqual(partirEnFrases("A. B. C. D."), ["A. B.", " C. D."]);
+  /* Juntos, siempre el original. */
+  for (const x of [t, "A. B. Si sube, va al debe. C. Cuando baja, al haber."]) assert.equal(partirEnFrases(x).join(""), x);
+});
+
+test("★★★ el plegado escrito aparte (`porque`) se usa tal cual", async () => {
+  const m = await montar(h("p", { "data-texto": true }, h(Plegable, { texto: "Así es: va al haber.", porque: "La otra parte va al debe." })));
+  try {
+    const p = m.caja.querySelector("[data-texto]");
+    assert.equal(p.textContent, "Así es: va al haber. La otra parte va al debe.");
+    assert.equal(p.querySelector("[data-plegado]").hidden, true);
+    assert.ok(p.querySelector("[data-por-que]"));
+  } finally {
+    m.desmontar();
+  }
+});
+
 test("★★★ las páginas y las cifras no cortan frase", () => {
   assert.deepEqual(partirEnFrases("El libro, en la p. 194, lo dice. Son $1.000.000 en total. Va al debe."), ["El libro, en la p. 194, lo dice. Son $1.000.000 en total.", " Va al debe."]);
   assert.deepEqual(partirEnFrases("Basado en el libro, pp. 207 y 208. Otra."), ["Basado en el libro, pp. 207 y 208. Otra.", ""]);
@@ -135,5 +161,6 @@ test("★★★ en t7/, todos los aciertos, errores y bloques de texto pasan por
     for (const m of s.matchAll(/<p key=\{t\}[^>]*\bdata-texto\b[^>]*>\{t\}<\/p>|<p[^>]*\bdata-texto-retro\b[^>]*>\{[\w.]+\}<\/p>/g)) sueltos.push(`${f}: ${m[0].slice(0, 70)}`);
   }
   assert.deepEqual(sueltos, []);
-  assert.ok(usos >= 41, `solo ${usos} usos`);
+  /* 40 desde el lote 3: los dos de ArmaLaFactura pasaron a la mecánica compartida de la célula (armaLaLinea.jsx y la Devolucion de hacerT7), que ya pliega. */
+  assert.ok(usos >= 40, `solo ${usos} usos`);
 });

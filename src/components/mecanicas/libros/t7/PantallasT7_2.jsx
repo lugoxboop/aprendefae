@@ -30,7 +30,7 @@ import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDe
  *
  * Los asientos van en el modo lectura del patrón tabular (DEBE en verde
  * azulado, HABER en ámbar, sangría en el haber, sin sumas); un monto que no
- * se muestra lleva el ● provisional de A2, a la espera de Watari. El kárdex
+ * se muestra lleva la casilla vacía discontinua del kárdex. El kárdex
  * es el de la guía de Watari (KardexT7_2.jsx).
  *
  * Cada pantalla lleva su pie en todos sus estados. NO CALIFICA y no da FP:
@@ -104,7 +104,9 @@ export const CSS_T7BP = `
 .t7bp-as-r > span:first-child { font-size: 14px; overflow-wrap: anywhere; min-width: 0; }
 .t7bp-as-r .t7bp-g2 > span { text-align: right; padding-inline: 9px; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 0; }
 .t7bp-sangria { padding-left: 24px; }
-.t7bp-oculto { color: ${P.texto2}; }
+/* el monto que no se muestra: la casilla discontinua vacía del patrón, la misma del kárdex (KardexT7_2.jsx, .t7kx-sin) */
+.t7bp-oculto { display: flex; align-items: center; height: 100%; }
+.t7bp-oculto i { display: block; width: 100%; height: 18px; border: 1px dashed ${P.borde}; border-radius: 4px; }
 /* cierre por nombres (A4, P6): «cuenta → cuenta», sin montos */
 .t7bp-cierre { margin: 0; padding: 4px 12px; list-style: none; border: 1px solid ${P.borde}; border-radius: 10px; display: grid; }
 .t7bp-cierre li { list-style: none; padding-block: 8px; font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
@@ -215,14 +217,14 @@ function Movimientos({ tabla }) {
   );
 }
 
-/* Un asiento en lectura. monto null = monto que no se muestra (●). */
+/* Un asiento en lectura. monto null = monto que no se muestra (casilla vacía). */
 export function Asiento({ asiento, nuevo = false }) {
   const monto = (l, lado) => {
     if (l.lado !== lado) return "";
     if (l.monto === null) {
       return (
         <span className="t7bp-oculto" data-oculto data-revision="pendiente">
-          <span aria-hidden="true">●</span>
+          <i aria-hidden="true" />
           <span className="t7bp-sr">{PENDIENTE_DE_REVISION.montoOculto}</span>
         </span>
       );

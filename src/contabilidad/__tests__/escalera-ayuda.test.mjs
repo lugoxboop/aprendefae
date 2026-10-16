@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -225,8 +226,65 @@ test("★★★ ninguna pista de línea dice el lado: pregunta por él", () => {
 /* ═══════════ 3b · LAS PISTAS Y EL ANEXO, LETRA POR LETRA CONTRA NEAR ═══════════ */
 
 const PAQUETES = new URL("orquestador/conocimiento/paquetes/", RAIZ);
-const PISTAS_MD = readFileSync(new URL("lote2-pistas-v1.md", PAQUETES), "utf8");
-const ANEXO_MD = readFileSync(new URL("lote2-anexo-v1.md", PAQUETES), "utf8");
+const PISTAS_MD = conCorreccionesDeMello(readFileSync(new URL("lote2-pistas-v1.md", PAQUETES), "utf8"));
+const ANEXO_MD = conCorreccionesDeMello(readFileSync(new URL("lote2-anexo-v1.md", PAQUETES), "utf8"));
+
+/*
+ * LOS RECORTES DEL LOTE 1 (lote1-recortes-*.md) GANAN. Cada entrega trae una
+ * tabla «Cambios al lote 2…» con el texto viejo y el nuevo: se aplica como
+ * reemplazo a las pistas del lote 2 y a su anexo. Y cada pieza recortada trae
+ * su sección completa («## <id> · «…»»): de ahí salen las pistas de sus
+ * preguntas, por id e índice, porque pantallas e ids pueden haber cambiado.
+ */
+const RECORTES_MD = readdirSync(PAQUETES).filter((f) => /^lote1-recortes-.*\.md$/.test(f)).sort().map((f) => readFileSync(new URL(f, PAQUETES), "utf8"));
+const CAMBIOS = new Map(RECORTES_MD.flatMap((md) => [...md.matchAll(/^\| (?:Pista|Anexo) · [^|]+ \| «(.+?)» \| «(.+?)» \|$/gm)].map((m) => [m[1], m[2]])));
+/*
+ * Las correcciones de Mello que cambian una pista de una pieza recortada
+ * también ganan: las de los recortes (mello-recortes-v1.md) y las de su
+ * auditoría de pistas (mello-pistas-distractores-v1.md). Cada una se comprueba
+ * contra la auditoría, y se aplica solo cuando el recorte de su pieza está.
+ */
+const MELLO_MD = ["mello-recortes-v1.md", "mello-pistas-distractores-v1.md"].map((f) => readFileSync(new URL(f, PAQUETES), "utf8")).join("\n");
+const CORRECCIONES_MELLO = [
+  ["t7-3-descuento-en-dos-libros", "Santa Martha es quien recibe el descuento. Recuerda de qué lado lo anota quien lo recibe.", "Para quien vende, la cuenta fue al debe. Santa Martha está del otro lado del negocio."],
+  ["t7-1-a1-la-cuenta-que-no-se-mueve", "Busca la cuenta que recoge lo comprado en el periodo.", "En el periódico, ¿qué cuenta junta en el periodo la mercancía que se trae para vender?"],
+  ["t7-1-a1-la-cuenta-que-no-se-mueve", "El conteo dice cuánto vale lo que quedó en la bodega. Piensa en qué cuenta estuvo quieta todo el periodo.", "El conteo dice cuánto vale lo que quedó en la bodega. ¿Qué cuenta debería mostrar ese valor?"],
+  ["t7-3-descuento-condicionado", "El comercial ya viene restado en la factura. ¿Cuál de los dos ocurre después de facturar?", "Un descuento se registra cuando se sabe cuánto es. ¿Cuándo se sabe cada uno?"],
+  ["t7-3-descuento-condicionado", "El descuento condicionado no toca el IVA. Y la rebaja comercial ya se restó antes.", "Piensa qué parte de lo que debe Santa Martha es de la mercancía y qué parte es de otra cosa."],
+  ["t7-3-sobrantes-y-faltantes", "El sobrante es la diferencia entre lo que hay en la bodega y lo que dicen los libros.", "El sobrante no es todo lo que hay en la bodega. ¿Qué parte de lo contado es?"],
+];
+for (const [, , nuevo] of CORRECCIONES_MELLO) assert.ok(MELLO_MD.includes(`«${nuevo}»`), `no está en la auditoría de Mello: «${nuevo}»`);
+const vigente = (t) => CAMBIOS.get(t) ?? t;
+
+/* Las secciones de las piezas recortadas: por pantalla, su índice, su pista y las pistas de línea con nombre. */
+function recortadas() {
+  const out = {};
+  for (const md of RECORTES_MD) {
+    let pieza = null, pant = null;
+    for (const l of md.split("\n")) {
+      const t = l.match(/^## (t[\d-]+\S*) · «/);
+      if (t) { pieza = t[1]; out[pieza] = []; pant = null; continue; }
+      const p = l.match(/^\*\*P(\d+) · `([^`]+)`\*\*/);
+      if (p && pieza) { pant = { k: Number(p[1]), id: p[2], pista: null, lineas: {} }; out[pieza].push(pant); continue; }
+      const q = l.match(/^- \*pista(?: · ([^(]+?))? \(1\.er error(?:, las cinco líneas)?\):\* «(.+)»/);
+      if (q && pant) { if (q[1]) pant.lineas[q[1].trim()] = q[2]; else pant.pista = q[2]; }
+    }
+  }
+  return out;
+}
+const RECORTADAS = recortadas();
+for (const [pieza, viejo, nuevo] of CORRECCIONES_MELLO) if (RECORTADAS[pieza]) CAMBIOS.set(viejo, nuevo);
+/*
+ * La entrega 6 de Near (lote1-entrega6-v1.md) cambia la pregunta del 23 % de
+ * «descuentos-en-cadena»: «No: le rebaja menos» pasa a «Menor que 23 %» (la
+ * correcta) y la tercera del anexo, «No: le rebaja más», a «Mayor que 23 %».
+ */
+if (RECORTADAS["t7-3-descuentos-en-cadena"]) {
+  const E6 = readFileSync(new URL("lote1-entrega6-v1.md", PAQUETES), "utf8");
+  assert.ok(E6.includes("| Opciones | «Sí» · «No: le rebaja menos del 23 %» · «No: le rebaja más del 23 %» | «Mayor que 23 %» · «Igual: 23 %» · «Menor que 23 %» (correcta) |"));
+  CAMBIOS.set("No: le rebaja menos del 23 %", "Menor que 23 %");
+  CAMBIOS.set("No: le rebaja más del 23 %", "Mayor que 23 %");
+}
 
 /* Cada fila de la tabla de Near: pieza, índice, pantalla, línea (si la hay) y la pista. */
 function filasDeNear() {
@@ -241,41 +299,82 @@ function filasDeNear() {
   return filas;
 }
 
-test("★★★ las 80 pistas de Near están en los datos, letra por letra, en su pantalla (por índice y por id) o en su línea", () => {
+/* Una línea por su nombre en los recortes: su id, o el comienzo de su texto («quitar» → «Quitar el inventario inicial…»). */
+const lineaPorNombre = (s, nombre) => s.lineas?.find((l) => l.id === nombre || String(l.texto ?? l.cuenta ?? "").toLowerCase().startsWith(nombre.toLowerCase()));
+
+/* Lo que debe haber en los datos: [pieza, k, pantalla, línea|null, pista]. */
+function pistasEsperadas() {
+  const esperadas = [];
+  for (const f of filasDeNear()) {
+    /* De una pieza recortada, las preguntas las da su sección; las líneas, el lote 2 con sus cambios. */
+    if (RECORTADAS[f.pieza]) {
+      if (!f.linea) continue;
+      /* La línea sigue en su pantalla, que en el recorte puede haber cambiado de índice o haber salido. */
+      const p = RECORTADAS[f.pieza].find((x) => x.id === f.pantalla);
+      if (!p) continue;
+      /* Y si el recorte le da pista propia a esa misma línea, gana la del recorte. */
+      const s = PIEZAS.find((x) => x.id === f.pieza)?.pantallas[p.k];
+      if (Object.keys(p.lineas).some((n) => lineaPorNombre(s, n)?.id === f.linea)) continue;
+      esperadas.push({ ...f, k: p.k, pista: vigente(f.pista) });
+      continue;
+    }
+    esperadas.push({ ...f, pista: vigente(f.pista) });
+  }
+  for (const [pieza, pantallas] of Object.entries(RECORTADAS)) {
+    for (const p of pantallas) {
+      if (p.pista) esperadas.push({ pieza, k: p.k, pantalla: p.id, linea: null, pista: vigente(p.pista) });
+      for (const [nombre, pista] of Object.entries(p.lineas)) esperadas.push({ pieza, k: p.k, pantalla: p.id, linea: nombre, pista: vigente(pista), porNombre: true });
+    }
+  }
+  return esperadas;
+}
+
+test("★★★ el paquete del lote 2 trae sus 80 pistas (56 de preguntas)", () => {
   const filas = filasDeNear();
   assert.equal(filas.length, 80);
   assert.equal(filas.filter((f) => !f.linea).length, 56);
+});
+
+test("★★★ las pistas de Near están en los datos, letra por letra, en su pantalla (por índice y por id) o en su línea; los recortes del lote 1 ganan", () => {
   const porId = Object.fromEntries(PIEZAS.map((p) => [p.id, p]));
-  for (const f of filas) {
+  const esperadas = pistasEsperadas();
+  for (const f of esperadas) {
     const pz = porId[f.pieza];
     assert.ok(pz, `no está la pieza ${f.pieza}`);
     const s = pz.pantallas[f.k];
     assert.equal(s?.id, f.pantalla, `${f.pieza}: P${f.k}`);
-    const dato = !f.linea ? s.pista : f.linea === "las 5 líneas" ? s.pista : s.lineas.find((l) => l.id === f.linea)?.pista;
+    const dato = !f.linea || f.linea === "las 5 líneas" ? s.pista : f.porNombre ? lineaPorNombre(s, f.linea)?.pista : s.lineas.find((l) => l.id === f.linea)?.pista;
     assert.equal(dato, f.pista, `${f.pieza} · ${f.pantalla}${f.linea ? ` · ${f.linea}` : ""}`);
   }
   /* Y al revés: en los datos no hay pistas que Near no escribió. */
   const enDatos = [...PREGUNTAS.map((x) => x.pantalla.pista), ...LINEAS.map((x) => x.linea.pista).filter(Boolean)];
-  for (const p of enDatos) assert.ok(filas.some((f) => f.pista === p), `pista sin fila en el paquete: «${p}»`);
+  for (const p of enDatos) assert.ok(esperadas.some((f) => f.pista === p), `pista sin fila en los paquetes: «${p}»`);
 });
 
-test("★★★ anexo: las 10 preguntas que tenían dos opciones tienen tres, con la tercera de Near letra por letra", () => {
+test("★★★ anexo: las 10 preguntas que tenían dos opciones tienen tres, con la tercera de Near letra por letra (o la de los recortes)", () => {
   const filas = [...ANEXO_MD.matchAll(/^\| (t7-\S+) \| P\d+ · `([^`]+)` \| .*? \| \*\*(.+?)\*\* \| «(.+?)» \| [\d,]+ \|$/gm)];
   assert.equal(filas.length, 10);
   const porId = Object.fromEntries(PIEZAS.map((p) => [p.id, p]));
   for (const [, pieza, pantalla, texto, devolucion] of filas) {
     const s = porId[pieza].pantallas.find((x) => x.id === pantalla);
+    assert.ok(s, `${pieza} · ${pantalla}: ya no está`);
     assert.equal(s.opciones.length, 3, `${pieza} · ${pantalla}`);
-    const nueva = s.opciones.find((o) => o.texto === texto);
-    assert.ok(nueva && !nueva.correcta, `${pieza} · ${pantalla}: falta «${texto}»`);
-    assert.equal(nueva.devolucion, devolucion);
+    const nueva = s.opciones.find((o) => o.texto === vigente(texto));
+    assert.ok(nueva && !nueva.correcta, `${pieza} · ${pantalla}: falta «${vigente(texto)}»`);
+    assert.equal(nueva.devolucion, vigente(devolucion));
   }
   /* El cambio de texto de una opción correcta. */
   const cadena = porId["t7-3-descuentos-en-cadena"].pantallas.find((x) => x.id === "ejemplo");
-  assert.equal(cadena.opciones.find((o) => o.correcta).texto, "No: le rebaja menos del 23 %");
+  assert.equal(cadena.opciones.find((o) => o.correcta).texto, vigente("No: le rebaja menos del 23 %"));
   assert.ok(ANEXO_MD.includes("| t7-3-descuentos-en-cadena · P2 · opción correcta | «No» | «No: le rebaja menos del 23 %» |"));
   /* Ninguna pregunta de opción de Aprender se queda en dos. */
   assert.deepEqual(PREGUNTAS.filter((x) => x.pantalla.opciones.length < 3).map((x) => `${x.pieza.id} · ${x.pantalla.id}`), []);
+});
+
+test("★★ los recortes se leen: las nueve piezas recortadas de T7-1 y T7-3, y su tabla de cambios", () => {
+  /* Cada entrega se suma con su PR; esta prueba crece con ellas. */
+  for (const id of Object.keys(RECORTADAS)) assert.ok(PIEZAS.some((p) => p.id === id), `${id}: la sección no es de una pieza publicada`);
+  for (const [viejo, nuevo] of CAMBIOS) assert.notEqual(viejo, nuevo);
 });
 
 /* ═══════════ 4 · LA RESPUESTA NO SE ADELANTA ═══════════ */
@@ -309,24 +408,18 @@ function adelantos() {
 
 /* Lo publicado que hoy lo viola (medido el 15 de octubre de 2026): deuda conocida, en revisión. Se quita de aquí al corregirse. */
 const DEUDA = [
-  "t7-1-a1-la-cuenta-que-no-se-mueve · pregunta-conteo ← la-consecuencia.parrafos",
   "t7-1-a1-la-cuenta-que-no-se-mueve · pregunta-conteo ← pregunta-compra.texto",
   "t7-3-descuento-comercial · dos-clases ← portada.objetivo",
+  /* Del recorte de T7-3 (texto de Near, 15 de octubre de 2026): en revisión con Near. */
+  "t7-3-descuento-condicionado · cual-le-toca ← condiciones.pregunta",
+  "t7-3-descuento-condicionado · sobre-que ← cual-le-toca.porque",
+  "t7-3-descuento-en-dos-libros · cierre ← el-pago.porque",
+  "t7-3-provision-inventarios · la-perdida ← estimar.cuenta",
+  "t7-3-provision-inventarios · la-perdida ← portada.objetivo",
   "t7-3-descuento-condicionado · cual-le-toca ← condiciones.lleva",
-  "t7-3-descuento-condicionado · cual-le-toca ← condiciones.parrafos",
-  "t7-3-descuento-condicionado · cual-le-toca ← ejemplo.lleva",
-  "t7-3-descuento-condicionado · sobre-que ← ejemplo.despues",
-  "t7-3-descuento-en-dos-libros · cierre ← el-pago.despues",
   "t7-3-descuento-en-dos-libros · cierre ← el-pago.lado",
   "t7-3-descuento-en-dos-libros · cierre ← el-pago.texto",
-  "t7-3-descuento-en-dos-libros · cierre ← repaso.lado",
-  "t7-3-descuento-en-dos-libros · cierre ← repaso.parrafos",
-  "t7-3-descuento-en-dos-libros · el-pago ← repaso.lado",
-  "t7-3-descuento-en-dos-libros · el-pago ← repaso.parrafos",
-  "t7-3-provision-inventarios · la-perdida ← ejemplo.cuenta",
-  "t7-3-provision-inventarios · la-perdida ← que-es.parrafos",
   "t7-3-sobrantes-y-faltantes · faltante ← sobrante.lado",
-  "t7-3-sobrantes-y-faltantes · faltante ← sobrante.parrafos",
 ];
 
 test("★★★ la opción correcta no se adelanta en las 2 pantallas anteriores (fuera de la deuda conocida)", () => {

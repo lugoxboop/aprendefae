@@ -1013,7 +1013,7 @@ test("★★★ se juega entera: cabecera con la silueta del tema, el detalle de
   assert.equal(pct, (3 / 6) * 100);
   assert.deepEqual(detalle.map((d) => [d.item, d.ok, d.respuesta]), [
     ["c3", false, "c3-a"], ["c5", true, null], ["c6", true, null],
-    ["c8", false, "Ventas: Suma · Devoluciones de ventas: No entra · Inventario inicial: Suma · Compras: Suma · Devoluciones de compras: Resta · Inventario final: Resta"],
+    ["c8", false, "Ventas: Suma"],
     ["c9", false, "c9-b"], ["c10", true, null],
   ]);
 });
@@ -1086,10 +1086,38 @@ test("★★ la portada del tema dice de dónde viene el repaso, con las tres si
   assert.deepEqual([...portada.querySelectorAll("[data-portada-tema]")].map((t) => t.textContent), ["Inversiones", "Cartera", "Inventarios"]);
 });
 
-test("★★ el título del tema puede partir en dos renglones: no se corta con «…» (herramientas.md, 15 oct.)", () => {
+test("★★ el título del tema no se corta, y de eso se encarga la hoja compartida: esta vista no se mete", () => {
+  /*
+   * La regla es la misma de siempre (herramientas.md): el título puede
+   * encogerse o romper de renglón, pero no desaparecer. Lo que cambió es quién
+   * la cumple.
+   *
+   * Esto exigía los estilos EN LÍNEA del h1 —whiteSpace normal, overflow
+   * visible, textOverflow clip, minWidth 0— porque la hoja compartida de la
+   * cabecera compacta le ponía `nowrap` y elipsis, y cada vista se defendía
+   * sola. Tres células escribieron esta misma prueba sobre siete vistas.
+   *
+   * La hoja ya no corta: recorta por renglones para toda
+   * `.fae-cabecera-titulo > h1`. Así que el rodeo sobra, y exigirlo era pedir
+   * que volviera el defecto. Ahora se comprueba al revés: que esta vista NO
+   * traiga en línea nada que venza a la hoja —un `overflow: "visible"` suelto
+   * anula el recorte sin que se note— y que la hoja siga recortando.
+   *
+   * La vista entera necesita sesión y FP, así que el h1 se mira en su fuente.
+   * El ancho real, a 320 px en Chromium: ahí se vio que «Repaso del capítulo
+   * 5» entra en dos renglones y no pierde nada.
+   */
   const fuente = leer("src/components/RepasoCapitulo5View.jsx");
   const h1 = fuente.slice(fuente.indexOf("<h1 data-titulo-tema"), fuente.indexOf(">", fuente.indexOf("<h1 data-titulo-tema")));
-  for (const d of ['whiteSpace: "normal"', 'overflow: "visible"', 'textOverflow: "clip"', "minWidth: 0"]) assert.ok(h1.includes(d), d);
+  for (const d of ["whiteSpace", "overflow", "textOverflow", "minWidth", "flexShrink", "overflowWrap", "WebkitLineClamp"]) {
+    assert.ok(!new RegExp(`\\b${d}\\s*:`).test(h1), `${d} en línea vence a la hoja compartida y anula su recorte`);
+  }
+  assert.ok(/fontFamily:/.test(h1), "la tipografía sí es de la vista y se queda");
+
+  const regla = leer("src/components/auth/AccountControl.jsx").match(/\.fae-cabecera-titulo > h1 \{([^}]*)\}/)?.[1];
+  assert.ok(regla, "la hoja compartida ya no tiene regla para el título");
+  assert.match(regla, /-webkit-line-clamp:\s*4;/, "cambió el tope de renglones: hay que volver a medir a 320 px");
+  assert.doesNotMatch(regla, /nowrap|text-overflow:\s*ellipsis/, "volvió el corte: el título perderá palabras");
 });
 
 test("★★ §d · el anillo de foco es de 2 px #F8F9FA, separado 2 px, y se pinta en la tarjeta", async () => {
@@ -1097,4 +1125,47 @@ test("★★ §d · el anillo de foco es de 2 px #F8F9FA, separado 2 px, y se pi
   assert.match(CSS_R5_1, /\[data-r5-1\] button:focus-visible[^{]*\{\s*outline: 2px solid #F8F9FA; outline-offset: 2px; \}/);
   const { caja } = await montar(h(RepasoCruzado, { pantallas: [pantalla("c8")] }));
   assert.ok([...caja.querySelectorAll("style")].some((x) => x.textContent === CSS_R5_1), "la hoja del anillo no se pinta");
+});
+
+/* ═══════════ EL DETALLE: LA PISTA Y LA CLASIFICACIÓN QUE CABE ═══════════ */
+
+test("★★★ el detalle de cada ítem dice si el estudiante abrió la pista antes de responder, sin cambiar los FP", async () => {
+  const fin = [];
+  const { caja } = await montar(h(RepasoCruzado, { pantallas: P, onCompletar: (...x) => fin.push(x) }));
+  /* Abre la pista en la 1, la 4 y la 6; en las demás, no. Acierta todas. */
+  const conPista = new Set(["c3", "c8", "c10"]);
+  for (const p of P) {
+    if (conPista.has(p.id)) await tocar(caja.querySelector("[data-ver-pista]"));
+    await responder(caja, p, bienDe(p));
+    await siguiente(caja);
+  }
+  const [pct, , detalle] = fin[0];
+  assert.deepEqual(detalle.map((d) => [d.item, d.pista]), P.map((p) => [p.id, conPista.has(p.id)]));
+  assert.ok(detalle.every((d) => typeof d.pista === "boolean"));
+  assert.equal(pct, 100, "la pista no quita FP");
+});
+
+test("★★★ la respuesta de la pantalla 4 cabe en los 120 caracteres del servidor y nombra la primera ficha mal (guarda: 728 clasificaciones)", () => {
+  const p = pantalla("c8");
+  const SQL = leer("supabase/migrations/0036_cierre_semanal_y_podio.sql");
+  assert.match(SQL, /left\(d ->> 'respuesta', 120\)/);
+  assert.equal(D.LARGO_RESPUESTA, 120);
+  const botones = ["suma", "resta", "fuera"];
+  let revisadas = 0;
+  for (let n = 0; n < 3 ** 6; n++) {
+    const c = Object.fromEntries(p.datos.map((d, k) => [d.id, botones[Math.floor(n / 3 ** k) % 3]]));
+    if (D.evaluarC8(p, c).ok) continue;
+    revisadas++;
+    const r = D.respuestaDeC8(p, c);
+    assert.ok(r.length <= 120, `${r.length}: ${r}`);
+    const mal = p.datos.filter((d) => c[d.id] !== D.botonCorrectoDe(d));
+    assert.ok(r.startsWith(`${mal[0].etiqueta}: `), r);
+    /* Solo las mal puestas, enteras; si no caben todas, termina en « · …». */
+    const partes = r.split(" · ");
+    const enteras = partes.at(-1) === "…" ? partes.slice(0, -1) : partes;
+    assert.equal(partes.at(-1) === "…", enteras.length < mal.length, r);
+    enteras.forEach((x, k) => assert.equal(x.split(": ")[0], mal[k].etiqueta, r));
+  }
+  assert.equal(revisadas, 728);
+  assert.equal(D.respuestaDeC8(p, { ...CLAVE_C8, ventas: "suma", "inventario-final": "fuera" }), "Ventas: Suma · Inventario final: No entra");
 });

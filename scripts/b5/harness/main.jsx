@@ -6,12 +6,15 @@
  *
  *   #mesa-2 · el cierre de Santa Pacha (b5-t5-a2) en su parte 2, la de «1.725.000»
  *   #a6     · «Provisión por edades» (b5-t6-a6) entera
+ *   #mesa-t5, #mesa-t6a2, #mesa-t6a3 · las tres mesas enteras, con su estante (lote 3)
  */
 import { createRoot } from "react-dom/client";
 import "../../../src/styles/global.css";
 import { MarcoLibros } from "../../../src/components/mecanicas/bloques/marcos.jsx";
 import CierreSantaPacha from "../../../src/components/mecanicas/libros/tema5/CierreSantaPacha.jsx";
 import ProvisionPorEdades from "../../../src/components/mecanicas/libros/tema6/ProvisionPorEdades.jsx";
+import ProvisionDeElTorito from "../../../src/components/mecanicas/libros/tema6/ProvisionDeElTorito.jsx";
+import DeudaQueVuelve from "../../../src/components/mecanicas/libros/tema6/DeudaQueVuelve.jsx";
 import { PARTES_T5_ACT2 } from "../../../src/data/contabilidadT5Act2.js";
 import { FAE } from "../../../src/theme.js";
 
@@ -20,3 +23,6 @@ const raiz = createRoot(document.getElementById("root"));
 const envolver = (hijo) => <div style={{ padding: "16px" }}>{hijo}</div>;
 if (location.hash === "#mesa-2") raiz.render(envolver(<CierreSantaPacha {...props} items={[PARTES_T5_ACT2[1]]} />));
 else if (location.hash === "#a6") raiz.render(envolver(<ProvisionPorEdades {...props} />));
+else if (location.hash === "#mesa-t5") raiz.render(envolver(<CierreSantaPacha {...props} />));
+else if (location.hash === "#mesa-t6a2") raiz.render(envolver(<ProvisionDeElTorito {...props} />));
+else if (location.hash === "#mesa-t6a3") raiz.render(envolver(<DeudaQueVuelve {...props} />));
