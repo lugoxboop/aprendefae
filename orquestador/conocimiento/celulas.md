@@ -132,6 +132,30 @@ línea que iba a cambiar los finales de línea, y esa línea pasó de largo.
 Si se corrige el prompt, entra una `-v2` y esta se queda: un diseñador que
 trabajó con la v1 tiene que poder leer lo que leyó.
 
+## `git add -A` después de cambiar de rama mete en tu PR el trabajo de otro
+
+Me pasó el 15 de octubre y lo cuento porque con cinco células en un repositorio
+es de los errores que más fácil se repiten.
+
+Arreglé una cosa de la Célula E en `FondoMateria.jsx` —un `overflow: hidden` que
+rompía todos los `position: sticky` de la página—, la construí, la medí, y antes
+de confirmarla me fui a atender un bloqueo de la Célula D. El cambio se quedó en
+el árbol de trabajo. Cambié de rama, hice `git add -A` del otro asunto, y ese
+archivo **viajó dentro de un PR cuyo mensaje no lo menciona**.
+
+El cambio era bueno y estaba medido, así que nada se rompió. Lo que se perdió es
+el registro: quien mañana busque por qué cambió ese archivo no lo encuentra en el
+commit que lo trajo. Y si hubiera estado mal, habría entrado bajo un título que
+hablaba de otra cosa.
+
+**La regla: `git status` antes de confirmar, siempre, y `git add` por archivos
+cuando el árbol tiene más de un asunto.** Cambiar de rama NO deja atrás lo que no
+está confirmado: se lo lleva puesto.
+
+Y si ya se colaron: **se declara en el PR**, con lo que es y con su medida. No se
+revierte para reponerlo igual —eso añade dos commits y ningún dato—, pero
+tampoco se calla.
+
 ## Reglas de convivencia entre células
 
 Medidas sobre el repositorio el 13 de octubre de 2026, no supuestas.
