@@ -46,6 +46,8 @@ import t62 from "./conta-t6-2-la-provision-de-el-torito.svg?raw";
 import t63 from "./conta-t6-3-cuando-la-deuda-castigada-vuelve.svg?raw";
 import r51 from "./conta-r5-1-repaso-cruzado.svg?raw";
 import r52 from "./conta-r5-2-el-toro-negro.svg?raw";
+import r54 from "./conta-r5-4-septiembre-en-barranquilla.svg?raw";
+import r55 from "./conta-r5-5-septiembre-en-permanente.svg?raw";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -150,4 +152,28 @@ export const RepasoCruzado = icono("RepasoCruzado", r51);
  * un toro no le enseñaría nada a nadie.
  */
 export const ElToroNegro = icono("ElToroNegro", r52);
+
+/*
+ * r5-4 «Septiembre en Barranquilla» · diez asientos de un mes que termina
+ * CUADRANDO dos registros: el de la empresa y el del banco. Eso dibuja: dos
+ * libros, cada uno con sus renglones, y entre ellos el signo de igual. No
+ * dibuja Barranquilla ni un mes: el nombre es del caso, y una palmera no le
+ * enseñaría nada a nadie.
+ *
+ * No repite a «Cierra el mes» (una bandera) ni a «Qué control falta».
+ */
+export const SeptiembreEnBarranquilla = icono("SeptiembreEnBarranquilla", r54);
+
+/*
+ * r5-5 «Septiembre en permanente» · el MISMO septiembre llevado en kárdex: el
+ * saldo se recalcula renglón por renglón y el costo final no es el que da el
+ * periódico. Eso dibuja: la tarjeta del kárdex con su encabezado, los
+ * renglones que se van llenando, y la línea del saldo subiendo por escalones
+ * —uno por renglón—.
+ *
+ * No repite a «Llena el kárdex» (un cajón que se llena) ni a «Periódico o
+ * permanente» (un interruptor): aquí lo que se enseña es que el saldo se mueve
+ * con cada renglón.
+ */
+export const SeptiembreEnPermanente = icono("SeptiembreEnPermanente", r55);
 

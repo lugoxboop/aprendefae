@@ -117,10 +117,19 @@ const RESERVA_MOVIL = 112;
 
 /*
  * Y el hueco cuando la pastilla va compacta —sin avatar— en una vista con
- * título. Medido: 76 px de pastilla + los 14 que la separan del borde, menos
- * los 24 de relleno que la página ya tiene, redondeado hacia arriba.
+ * título.
+ *
+ * ESTUVO EN 76 Y NO ALCANZABA. Esos 76 salían de medir la pastilla con una
+ * cifra corta; con cuatro cifras y el sufijo llegaba a 85 y con seis a 102, así
+ * que se montaba sobre el título. Ahora el sufijo no sale en vistas con título
+ * (ver la regla de abajo), y el peor caso medido es la cifra sola de seis
+ * dígitos: 82 px. La reserva son esos 82 más 6 de separación.
+ *
+ * Si la pastilla vuelve a crecer —otro sufijo, otra cifra, un icono— hay que
+ * volver a medir esto. El número de aquí no se deduce del diseño: se mide con
+ * la tipografía real sobre el paquete construido.
  */
-const RESERVA_MOVIL_COMPACTA = 76;
+const RESERVA_MOVIL_COMPACTA = 88;
 
 /*
  * Por debajo de esto ni «FP» cabe al lado del número, y se queda solo la cifra.
@@ -288,13 +297,25 @@ const CSS_CUENTA = `
 }
 
 /*
- * Y si ni con eso cabe —pantallas de 320 px, que existen— el número se queda
- * solo. Es lo último que cede, y nunca cede del todo: la lectura de FP no
- * desaparece en ningún ancho.
+ * ═══════════ EL «FP» SE VA EN TODA VISTA CON TÍTULO, Y ESTO SE MIDIÓ ═══════════
+ *
+ * Esto quitaba el sufijo solo por debajo de 361 px. Medido el 16 de octubre con
+ * la tipografía real a 13 px y 600, sumándole los 28 px de relleno de la
+ * pastilla, contra los 76 px que la vista con título le reserva:
+ *
+ *      FP        solo la cifra        con « FP»
+ *     250           53 px               73 px
+ *   2.500           65 px               85 px   ← ya no cabe
+ *  12.500           74 px               93 px
+ * 112.500           82 px              102 px
+ *
+ * O sea que a 375 px CUALQUIER estudiante con cuatro cifras tapaba el título,
+ * y es la mayoría. El número no cede nunca —eso sigue igual—, pero el sufijo
+ * sí: en una vista con título el hueco es el título, y «FP» es decoración que
+ * el contexto ya dice. Por debajo de 361 ya se iba; ahora se va siempre que la
+ * pastilla va compacta, que es exactamente cuando hay título.
  */
-@media (max-width: ${ANCHO_MINIMO_SUFIJO}px) {
-  .fae-cuenta-compacta .fae-cuenta-sufijo { display: none; }
-}
+.fae-cuenta-compacta .fae-cuenta-sufijo { display: none; }
 @keyframes fae-atajo-entra { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: none; } }
 .fae-atajo-entra { animation: fae-atajo-entra 0.2s ease-out; }
 @media (prefers-reduced-motion: reduce) { .fae-atajo-entra { animation: none; } }
