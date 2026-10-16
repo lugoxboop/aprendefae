@@ -7,7 +7,7 @@
 - Medido con la sonda de enganche (Katsumi y Baki): peor pantalla 59 de 60 palabras; antes de la figura, 28 de 40 como mucho; la figura entre 84 y 162 px a 320.
 - **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
 - **Objetivo (D2, 16 oct 2026):** una línea fija bajo el título, solo en la P0 (hallazgo de Shibukawa; Yujiro; texto de Katsumi). Con ella, la figura de la P0 queda a 130 px a 320: Yujiro la acepta porque B1 (280) se cumple, y la parada de medición de la P0 pasa a ser ≤ 280.
-- **D6 (lote del Kit, 16 oct 2026; Katsumi):** el error de «cual-cruza» va por fila: si la deuda va del lado corriente, «Que te deban no basta: cuenta cuándo pagan.»; con cualquier otro error, el de siempre.
+- **D6 (lote del Kit, 16 oct 2026; Katsumi):** el error de «cual-cruza» va por fila: si la deuda va del lado corriente, «Te deben, sí. ¿Pero cuándo pagan?»; con cualquier otro error, el de siempre.
 - **«Pasa el año», seis veces (decisión de Yujiro, 16 oct 2026; texto de Hanayama):** son seis pasos del mismo modelo dentro de una sola pieza, no un calco entre piezas: el año y la raya son los mismos y cada paso trae otro activo (el efectivo, los otros tres, los fijos, lo que se consume) con otro resultado en la raya. El gesto cambia de papel: «la-prueba» se arrastra para probar, «cual-cruza» predice y comprueba, y los demás muestran. No hay fusión: medida, daba 72 y 71 palabras.
 
 ## Objetivo de la pieza
@@ -33,7 +33,7 @@
 **P3 · cual-cruza**
 - Antes de la figura: «Marca cada fila.» (<10)
 - Acierto (tras «Correcto.»): «» (<10)
-- Error si «Deuda de un cliente» va del lado corriente (✗ y el texto; con varios errores, gana este): «Que te deban no basta: cuenta cuándo pagan.» (<10)
+- Error si «Deuda de un cliente» va del lado corriente (✗ y el texto; con varios errores, gana este): «Te deben, sí. ¿Pero cuándo pagan?» (<10)
 - Error (✗ y el texto): «¿Qué se volvió plata?» (<10)
 - Pie: «Basado en el libro, p. 178»
 

@@ -118,7 +118,7 @@ export const PANTALLAS_A0 = [
     acierto: "",
     error: "¿Qué se volvió plata?",
     /* D6 (Katsumi, lote del Kit): si la deuda va del lado corriente, su error propio; con varios errores, gana este. */
-    errorFila: { fila: "deuda", lado: "antes", texto: "Que te deban no basta: cuenta cuándo pagan." },
+    errorFila: { fila: "deuda", lado: "antes", texto: "Te deben, sí. ¿Pero cuándo pagan?" },
     pie: "Basado en el libro, p. 178",
   },
   {
