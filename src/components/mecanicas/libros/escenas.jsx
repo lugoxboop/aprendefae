@@ -205,7 +205,8 @@ export function EscenaFamilias({ resaltar }) {
         <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", justifyContent: "center", marginBottom: "12px" }}>
           {EN_LA_MESA.map((c) => (
             <span key={c.nombre} className="fae-cae" style={{
-              padding: "5px 9px", borderRadius: "999px", fontSize: "11.5px",
+              /* 12 px: son los nombres de las seis cuentas que hay sobre la mesa. */
+              padding: "5px 9px", borderRadius: "999px", fontSize: "12px",
               background: "rgba(14,27,46,0.6)", border: "1px solid rgba(248,249,250,0.22)", color: FAE.text,
             }}>
               {c.nombre}
