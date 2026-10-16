@@ -267,7 +267,8 @@ y sin los enlaces no había forma de hablar con ningún general.
 | **Yujiro** | general, Célula D | `https://claude.ai/chat/1b446339-13ab-43c3-9115-04fe08a52fe2` |
 | **Kamogawa** | general, Célula E | `https://claude.ai/chat/e5697857-7523-47a8-8288-6c5df421034c` |
 | **Xeno** | diseño | `https://claude.ai/chat/d88c6a04-b9ba-414f-b2f3-df63c0abc0c3` |
-| **Mello** | auditor jefe | `https://claude.ai/chat/edb72638-0dbe-8888-bc1e-544b11270f84` |
+| **Levi** | calidad, Célula A | `https://claude.ai/chat/edb72638-0dbe-8888-bc1e-544b11270f84` |
+| **Mello** | auditor jefe | sin enlace: se busca en `https://claude.ai/recents` |
 | Kaede · Miku · Gen · Tsukasa · Feynman · Macro · Senku 4.0 | otros | se buscan en `https://claude.ai/recents` |
 
 **Si falta alguno, está en `https://claude.ai/recents`**, no en la lista de
