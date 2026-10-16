@@ -423,3 +423,12 @@ test("★★★ «Así se juega»: pasos, ejemplo y texto alternativo del paquet
   /* Ningún paso repite la consigna (B5). */
   for (const p of asi.pasos) assert.ok(!D.H1.consigna.includes(p.replace(/\.$/, "")), p);
 });
+
+test("★★★ D2: el objetivo de la pieza se ve antes de empezar, en el Encabezado compartido (por su prop), antes de la consigna", () => {
+  const m = montarJuego();
+  try {
+    const o = m.caja.querySelector("[data-encabezado] [data-objetivo]");
+    assert.equal(o?.textContent, D.H1.objetivo);
+    assert.ok(o.compareDocumentPosition(m.caja.querySelector("[data-encabezado] [data-consigna]")) & 4, "el objetivo no va antes de la consigna");
+  } finally { m.desmontar(); }
+});

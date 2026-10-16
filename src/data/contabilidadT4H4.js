@@ -41,7 +41,7 @@ export const H4_ID = "t4-el-arqueo-de-rosa";
 export const H4 = {
   id: H4_ID,
   nombre: "El arqueo de caja menor",
-  objetivo: "Hacer el arqueo de un fondo de caja menor: ver si falta, cuadra o sobra, de cuánto, por cuánto sale el reembolso y a qué cuenta va la diferencia.",
+  objetivo: "Arquear una caja menor y calcular su reembolso.",
   consigna: "Compara el sobre con el fondo y mira en la regla lo que decides.",
 };
 

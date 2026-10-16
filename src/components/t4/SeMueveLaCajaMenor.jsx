@@ -196,7 +196,7 @@ export default function SeMueveLaCajaMenor({ Marco, rotulo, titulo, acento, onCo
       <div {...(modoDemo ? { "data-t4-h3-demo": "" } : { "data-t4-h3": "" })} data-serie={serie.id}>
         {!modoDemo && (
           <>
-            <Encabezado consigna={H3.consigna} onComoSeJuega={onComoSeJuega} />
+            <Encabezado objetivo={H3.objetivo} consigna={H3.consigna} onComoSeJuega={onComoSeJuega} />
             <div style={{ marginBottom: "12px" }}>
               <Pulsos total={cuantos} hechos={t.i} enCurso={t.i + 1} etiqueta="Operación" />
             </div>

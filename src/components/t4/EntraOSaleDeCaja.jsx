@@ -153,7 +153,7 @@ export default function EntraOSaleDeCaja({ Marco, rotulo, titulo, acento, onComp
       <div {...(modoDemo ? { "data-t4-h1-demo": "" } : { "data-t4-h1": "" })}>
         {!modoDemo && (
           <>
-            <Encabezado consigna={H1.consigna} onComoSeJuega={onComoSeJuega} />
+            <Encabezado objetivo={H1.objetivo} consigna={H1.consigna} onComoSeJuega={onComoSeJuega} />
             <div style={{ marginBottom: "12px" }}>
               <Pulsos total={cuantos} hechos={t.i} enCurso={t.i + 1} etiqueta="Hecho" />
             </div>

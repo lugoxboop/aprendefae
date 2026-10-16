@@ -416,3 +416,12 @@ test("★★★ en la página del juego hay exactamente UN [data-t4-h8]: la part
     assert.equal(m.caja.querySelectorAll("[data-t4-h8-demo]").length, 1);
   } finally { m.desmontar(); }
 });
+
+test("★★★ D2: el objetivo de la pieza se ve antes de empezar, en el Encabezado compartido (por su prop), antes de la consigna", () => {
+  const m = montarJuego();
+  try {
+    const o = m.caja.querySelector("[data-encabezado] [data-objetivo]");
+    assert.equal(o?.textContent, D.H8.objetivo);
+    assert.ok(o.compareDocumentPosition(m.caja.querySelector("[data-encabezado] [data-consigna]")) & 4, "el objetivo no va antes de la consigna");
+  } finally { m.desmontar(); }
+});

@@ -207,7 +207,7 @@ export default function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onComp
       <div {...(modoDemo ? { "data-t4-h7-demo": "" } : { "data-t4-h7": "" })} data-fase={fase} data-serie={s.id}>
         {!modoDemo && (
           <>
-            <Encabezado consigna={H7.consigna} onComoSeJuega={onComoSeJuega} />
+            <Encabezado objetivo={H7.objetivo} consigna={H7.consigna} onComoSeJuega={onComoSeJuega} />
             <div style={{ marginBottom: "12px" }}>
               <Pulsos total={cuantas + 1} hechos={fase === 2 ? cuantas : t.i} enCurso={fase === 2 ? cuantas + 1 : t.i + 1} etiqueta="Paso" />
             </div>

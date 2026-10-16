@@ -1,5 +1,6 @@
 **T4 · H3 «¿Se mueve la caja menor?» · versión 2: el rediseño de enganche.**
 - **Este archivo es la versión vigente de H3.** Sustituye las tarjetas, las devoluciones, el cierre y «Así se juega» de `d4-t4-h3-v1.md`, de `d4-t4-h3-serie2.md` y de la parte de H3 de `d4-t4-asi-se-juega-v1.md`. Mismo `activity_id` (`t4-se-mueve-la-caja-menor`, migración 0202, sin cambios) y mismos ítems (`h3-1`…`h3-4`, `h3s2-1`…`h3s2-4`).
+- **Objetivo (D2, 16 oct 2026):** se ve antes de empezar, en el Encabezado compartido (su prop `objetivo`), sobre la consigna: «Armar el asiento de cada movimiento de la caja menor y saber cuándo se mueve su cuenta.»
 - Por qué: la pieza publicada en la pila fallaba la barra de enganche B1-B5 (`orquestador/conocimiento/enganche.md`; diagnóstico de Shibukawa, `celula-d/shibukawa-diagnostico-enganche.md`).
 - Diseño: Hanayama (`celula-d/hanayama-h3-rediseno.md`). Textos: Katsumi (`celula-d/katsumi-texto-hacer.md`, 15 oct 2026), copiados aquí tal cual. Aprobados por Yujiro en su corte de calidad (`celula-d/corte-calidad.md`, «Hacer que quedan» y «Texto de los Hacer»).
 - El código lee estos textos de `src/data/contabilidadT4H3.js`; una prueba (`src/contabilidad/__tests__/t4-h3-*.test.mjs`) compara cada uno contra este archivo, letra por letra.

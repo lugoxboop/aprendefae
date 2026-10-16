@@ -224,7 +224,7 @@ export default function SeAsientaONo({ Marco, rotulo, titulo, acento, onCompleta
       <div {...(modoDemo ? { "data-t4-h8-demo": "" } : { "data-t4-h8": "" })} data-etapa={etapa} data-serie={s.id}>
         {!modoDemo && (
           <>
-            <Encabezado consigna={H8.consigna} onComoSeJuega={onComoSeJuega} />
+            <Encabezado objetivo={H8.objetivo} consigna={H8.consigna} onComoSeJuega={onComoSeJuega} />
             <div style={{ marginBottom: "12px" }}>
               <Pulsos total={pasos} hechos={hechos} enCurso={hechos + 1} etiqueta="Paso" />
             </div>

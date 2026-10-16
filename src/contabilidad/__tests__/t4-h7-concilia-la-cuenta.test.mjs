@@ -426,3 +426,12 @@ test("★★★ «Iba aquí: {valor}» parte en dos renglones si no cabe en su c
   assert.match(regla(".t4cp-iba .t4r-marca > span"), /white-space: nowrap/);
   assert.match(regla(".t4cp-iba[data-reserva]"), /min-height: 40px/);
 });
+
+test("★★★ D2: el objetivo de la pieza se ve antes de empezar, en el Encabezado compartido (por su prop), antes de la consigna", () => {
+  const m = montarJuego();
+  try {
+    const o = m.caja.querySelector("[data-encabezado] [data-objetivo]");
+    assert.equal(o?.textContent, D.H7.objetivo);
+    assert.ok(o.compareDocumentPosition(m.caja.querySelector("[data-encabezado] [data-consigna]")) & 4, "el objetivo no va antes de la consigna");
+  } finally { m.desmontar(); }
+});

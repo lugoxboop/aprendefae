@@ -227,7 +227,7 @@ export default function ElArqueo({ Marco, rotulo, titulo, acento, onCompletar, i
       <div {...(modoDemo ? { "data-t4-h4-demo": "" } : { "data-t4-h4": "" })} data-pregunta={p.id}>
         {!modoDemo && (
           <>
-            <Encabezado consigna={H4.consigna} onComoSeJuega={onComoSeJuega} />
+            <Encabezado objetivo={H4.objetivo} consigna={H4.consigna} onComoSeJuega={onComoSeJuega} />
             <div style={{ marginBottom: "12px" }}>
               <Pulsos total={rondas.length} hechos={t.i} enCurso={t.i + 1} etiqueta="Ronda" />
             </div>
