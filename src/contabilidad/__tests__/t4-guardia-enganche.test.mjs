@@ -281,7 +281,55 @@ for (const { id } of JUEGOS_T4) {
  */
 const DEBE_HABER = /\b(debe|haber)\b/i;
 const Marco = ({ children }) => h("div", null, children);
-const DATOS = { "t4-entra-o-sale-de-caja": async () => { const D = await import("../../data/contabilidadT4H1.js"); return { items: D.ITEMS_H1, destinos: D.DESTINOS_H1, espera: D.ESPERA_ERROR_H1_MS }; } };
+/*
+ * Los Hacer del tablero (H3, H4 con H5 y H8, rediseño de enganche): el destino
+ * es una mitad Debe o Haber de una cuenta (`data-destino="cuenta:lado"`) y el
+ * gesto es poner las fichas y comprobar. Cada caso dice qué ítems monta, qué
+ * mitad es la correcta y qué toques acierta y cuáles fallan (con el mismo gesto
+ * mínimo). Se miran el debe y el haber, acertados y «Iba aquí», como en H1.
+ */
+const COMPROBAR = '[data-boton="comprobar"]';
+const DATOS = {
+  "t4-entra-o-sale-de-caja": async () => { const D = await import("../../data/contabilidadT4H1.js"); return { items: D.ITEMS_H1, destinos: D.DESTINOS_H1, espera: D.ESPERA_ERROR_H1_MS }; },
+  "t4-se-mueve-la-caja-menor": async () => {
+    const D = await import("../../data/contabilidadT4H3.js");
+    const { ESPERA_ERROR_MS } = await import("../../data/contabilidadT4Hacer.js");
+    const op = D.SERIE_1.ops[0];
+    const items = { ...D.SERIE_1, ops: [op] };
+    return { espera: ESPERA_ERROR_MS, casos: [
+      { nombre: "Caja menor al debe", items, correcto: `${op.debe}:debe`, acierta: [`${op.debe}:debe`, `${op.haber}:haber`, COMPROBAR], falla: [`${D.CAJA}:debe`, `${op.haber}:haber`, COMPROBAR] },
+      { nombre: "Bancos al haber", items, correcto: `${op.haber}:haber`, acierta: [`${op.debe}:debe`, `${op.haber}:haber`, COMPROBAR], falla: [`${op.debe}:debe`, `${D.CAJA}:haber`, COMPROBAR] },
+    ] };
+  },
+  "t4-el-arqueo-de-rosa": async () => {
+    const D = await import("../../data/contabilidadT4H4.js");
+    const { ESPERA_ERROR_MS } = await import("../../data/contabilidadT4Hacer.js");
+    /* La pregunta 4 sola: un sobrante (al haber) y un faltante (al debe). */
+    const solo4 = (rid) => { const r = D.RONDAS_H4.find((x) => x.id === rid); return { r, items: [{ ...r, preguntas: r.preguntas.filter((q) => q.id === D.CUENTA) }] }; };
+    const caso = (rid, nombre) => {
+      const { r, items } = solo4(rid);
+      const c = r.preguntas.find((q) => q.id === D.CUENTA).correcta;
+      const otra = D.CUENTAS_H4.find((x) => x.id !== c.cuenta && x.id !== D.CM).id;
+      return { nombre, items, correcto: `${c.cuenta}:${c.lado}`, acierta: [`${c.cuenta}:${c.lado}`, COMPROBAR], falla: [`${otra}:${c.lado}`, COMPROBAR] };
+    };
+    return { espera: ESPERA_ERROR_MS, casos: [caso("h4-2", "El sobrante, al haber"), caso("h5-1", "El faltante cobrado, al debe")] };
+  },
+  "t4-se-asienta-o-no": async () => {
+    const D = await import("../../data/contabilidadT4H8.js");
+    const { ESPERA_ERROR_MS } = await import("../../data/contabilidadT4Hacer.js");
+    const s = D.SERIE_H8_1;
+    /* La etapa 2 sola, con una nota: una nota crédito (Bancos al debe) y una débito (Bancos al haber). */
+    const caso = (n, nombre) => {
+      const nota = s.notas.find((x) => x.n === n);
+      const items = { serie: s, partidas: [s.partidas.find((p) => p.id === nota.id)], etapaInicial: 2 };
+      const lado = nota.debe === D.BANCOS ? "debe" : "haber";
+      const otro = lado === "debe" ? "haber" : "debe";
+      const contra = lado === "debe" ? nota.haber : nota.debe;
+      return { nombre, items, correcto: `${D.BANCOS}:${lado}`, acierta: [`${nota.debe}:debe`, `${nota.haber}:haber`, COMPROBAR], falla: [`${D.CAJA}:${lado}`, `${contra}:${otro}`, COMPROBAR] };
+    };
+    return { espera: ESPERA_ERROR_MS, casos: [caso(5, "Bancos al debe (nota crédito)"), caso(7, "Bancos al haber (nota débito)")] };
+  },
+};
 
 const PROPS = ["color", "border-top-color", "border-right-color", "border-bottom-color", "border-left-color", "background-color", "background", "box-shadow", "outline-color", "fill", "stroke"];
 /* Los tonos teal/ámbar de un elemento: estilo en línea, atributos fill/stroke y estilo calculado. */
@@ -309,19 +357,23 @@ for (const { id, Mecanica } of JUEGOS_T4) {
     }
     const fallan = [];
     let mirados = 0;
-    for (const d of datos.destinos.filter((x) => DEBE_HABER.test(x.nombre))) {
-      const item = datos.items.find((x) => x.respuesta === d.id);
+    /* Cada caso: los ítems que monta, el destino correcto y los toques que aciertan o fallan. */
+    const casos = datos.casos ?? datos.destinos.filter((x) => DEBE_HABER.test(x.nombre)).map((d) => ({
+      nombre: d.nombre, items: [datos.items.find((x) => x.respuesta === d.id)], correcto: d.id,
+      acierta: [d.id], falla: [datos.destinos.find((x) => x.id !== d.id).id],
+    }));
+    for (const c of casos) {
+      const d = { id: c.correcto, nombre: c.nombre };
       for (const modo of ["acierta", "falla"]) {
         const caja = document.createElement("div");
         document.body.appendChild(caja);
         const raiz = createRoot(caja);
-        await act(async () => { raiz.render(h(Mecanica, { Marco, items: [item], onCompletar: () => {} })); });
+        await act(async () => { raiz.render(h(Mecanica, { Marco, items: c.items, onCompletar: () => {} })); });
         try {
-          const elegir = modo === "acierta" ? d.id : datos.destinos.find((x) => x.id !== d.id).id;
-          const destino = (x) => caja.querySelector(`[data-destino="${x}"]`) ?? caja.querySelector(`[data-opcion="${x}"] button`);
-          assert.ok(destino(elegir), `${id}: no encontré el destino «${elegir}»`);
+          const destino = (x) => (x.startsWith("[") ? caja.querySelector(x) : caja.querySelector(`[data-destino="${x}"]`) ?? caja.querySelector(`[data-opcion="${x}"] button`));
+          for (const x of c[modo]) assert.ok(destino(x), `${id}: no encontré el destino «${x}»`);
           const antes = fotoTonos(destino(d.id));
-          await act(async () => { destino(elegir).dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+          for (const x of c[modo]) await act(async () => { destino(x).dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
           if (modo === "falla") await esperar((datos.espera ?? 0) + 100);
           const correcto = destino(d.id);
           const marca = modo === "acierta" ? "bien" : "era";

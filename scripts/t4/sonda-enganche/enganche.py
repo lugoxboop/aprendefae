@@ -46,8 +46,9 @@ USER = {"id": "00000000-0000-0000-0000-000000000001", "aud": "authenticated", "r
 SES = {"access_token": jwt, "token_type": "bearer", "expires_in": 3600, "expires_at": exp, "refresh_token": "r", "user": USER}
 
 APRENDER = {"A0": "t4-a0-el-activo-corriente", "A1": "t4-a1-la-caja", "A2": "t4-a2-el-fondo-fijo", "A3": "t4-a3-el-arqueo", "A4": "t4-a4-bancos-y-notas", "A5": "t4-a5-san-calixto"}
-HACER = {"H1": "¿Entra o sale de Caja?", "H2": "El control que se saltaron", "H3": "¿Se mueve la caja menor?", "H4": "El arqueo de Rosa",
-         "H5": "¿Al empleado o al gasto?", "H6": "¿Quién se enteró primero?", "H7": "Concilia la cuenta", "H8": "¿Se asienta o no?"}
+# Los cinco Hacer del corte de calidad (15 oct): H2 salió, H5 se fundió en H4 y H6 en H7.
+HACER = {"H1": "¿Entra o sale de Caja?", "H3": "¿Se mueve la caja menor?", "H4": "El arqueo de caja menor",
+         "H7": "Concilia la cuenta", "H8": "¿Se asienta o no?"}
 
 def abrir(b, ruta, sem=7):
     ctx, pg, errs = pagina(b, 320, False)
@@ -183,6 +184,7 @@ def hacer(b, sigla, modo, clave):
         else:
             carta = texto(K["tarjeta"])
             if sigla == "H4": carta = f"{carta}::{pg.evaluate(f'document.querySelector(`{R} [data-tarjeta-pregunta]`).dataset.tarjetaPregunta')}"
+            if K.get("porEtapa"): carta = f"{ds['etapa']}::{carta}"  # H8: la misma partida en la etapa 1 y en la 2
             if carta not in K["items"]: raise SinClave(f"{sigla}: tarjeta sin clave: {carta!r}")
             resp = K["items"][carta][modo]
         pantalla = f"{etapa} · {k}"
@@ -194,6 +196,15 @@ def hacer(b, sigla, modo, clave):
             # el cajón como tablero (H1 rediseñado): un toque en el destino; en el error la plata llega
             # a su sitio a los 0,7 s, así que se espera a que la figura quede quieta antes de medir
             pg.locator(f'{R} [data-destino="{resp["destino"]}"]').click(); pg.wait_for_timeout(900)
+        elif "toques" in resp:
+            # los Hacer rediseñados (tablero, regla, libretas, bandejas): los toques del gesto mínimo, en orden,
+            # y «Comprobar» si va; en el error lo que iba se escribe a los 0,7 s: se espera a que la figura quede quieta
+            for sel in resp["toques"]:
+                loc = pg.locator(f"{R} {sel}")
+                if loc.count() == 0: raise SinClave(f"{sigla}: el toque {sel!r} no está en {pantalla}")
+                loc.first.click(); pg.wait_for_timeout(80)
+            if resp.get("comprobar") and not boton(lambda t: t == "Comprobar"): raise SinClave(f"{sigla}: sin «Comprobar» en {pantalla}")
+            pg.wait_for_timeout(900)
         elif "asiento" in resp:
             for i, linea in enumerate(resp["asiento"]):
                 cuenta, lado = linea[0], linea[1]

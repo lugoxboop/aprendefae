@@ -5,7 +5,8 @@
  * no de una copia: si Baki cambia una respuesta, la clave cambia con ella.
  * Por cada tarjeta da su texto (con el que la sonda la reconoce en pantalla), la respuesta
  * correcta y una equivocada que se comete con el mismo gesto.
- * Una pieza que no existe en ese build se omite (main hoy solo tiene H1).
+ * Una pieza que no existe en ese build se omite (main hoy solo tiene H1). Una pieza de la pila vieja
+ * (H3, H4, H7 y H8 antes del rediseño) tampoco: la clave es la del rediseño.
  */
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
@@ -26,58 +27,58 @@ const gestoH1 = h1 && h1.SALDO_INICIAL_H1 != null ? "destino" : "opcion";
 if (h1) clave.H1 = { tarjeta: "[data-hecho]", items: Object.fromEntries(h1.ITEMS_H1.map((it) => [n(it.texto), {
   bien: { [gestoH1]: it.respuesta }, mal: { [gestoH1]: h1.DESTINOS_H1.map((d) => d.id ?? d).find((d) => d !== it.respuesta) } }])) };
 
-const h2 = await carga("H2");
-if (h2) clave.H2 = { tarjeta: "[data-caso]", items: Object.fromEntries(h2.CASOS_H2.map((c) => [n(c.caso), {
-  bien: { opcion: c.correcta }, mal: { opcion: Object.keys(c.distractores)[0] } }])) };
-
+/*
+ * Los Hacer rediseñados (H3, H4 con H5, H7 con H6 y H8: el tablero, la regla, las libretas y el mayor).
+ * El gesto es «toques»: los selectores que se tocan en orden dentro de la pieza, y «comprobar» si
+ * después va el botón. La respuesta equivocada se comete con el MISMO gesto mínimo. H2, H5 y H6
+ * salieron del catálogo con el corte de calidad (15 oct): ya no tienen clave.
+ */
+const destino = (k) => `[data-destino="${k}"]`;
 const h3 = await carga("H3");
-if (h3) clave.H3 = { tarjeta: "[data-enunciado]", items: Object.fromEntries(h3.SERIES_H3.flat().map((op) => [n(op.enunciado), {
-  bien: { asiento: [[op.debe, "Debe"], [op.haber, "Haber"]] }, mal: { asiento: [[op.haber, "Debe"], [op.debe, "Haber"]] } }])) };
+if (h3?.CUENTAS_H3) clave.H3 = { tarjeta: "[data-hecho]", items: Object.fromEntries(h3.SERIES_H3.flatMap((s) => s.ops).map((op) => [n(op.texto), {
+  bien: { toques: [destino(`${op.debe}:debe`), destino(`${op.haber}:haber`)], comprobar: true },
+  /* las dos cuentas bien, pero al revés: el error más mecánico, con los mismos dos toques */
+  mal: { toques: [destino(`${op.haber}:debe`), destino(`${op.debe}:haber`)], comprobar: true } }])) };
 
 const h4 = await carga("H4");
-if (h4) {
+if (h4?.RONDAS_H4) {
   const items = {};
   for (const r of h4.RONDAS_H4) for (const p of r.preguntas) {
-    const mala = Object.keys(p.opciones).find((k) => k !== p.correcta);
-    items[`${n(r.enunciado)}::${p.id}`] = { bien: { opcion: p.correcta }, mal: { opcion: mala } };
+    const k = `${n(r.titulo + r.tarjeta)}::${p.id}`;
+    if (p.id === h4.CUENTA) {
+      const c = p.correcta;
+      items[k] = { bien: { toques: [destino(`${c.cuenta}:${c.lado}`)], comprobar: true }, mal: { toques: [destino(`${h4.CM}:${c.lado}`)], comprobar: true } };
+    } else {
+      const mala = p.opciones.find((o) => o !== p.correcta);
+      items[k] = { bien: { toques: [`[data-opcion="${p.correcta}"]`] }, mal: { toques: [`[data-opcion="${mala}"]`] } };
+    }
   }
-  clave.H4 = { tarjeta: "[data-enunciado]", subtarjeta: "[data-tarjeta-pregunta]", items };
+  clave.H4 = { tarjeta: "[data-tarjeta-ronda]", subtarjeta: "[data-tarjeta-pregunta]", items };
 }
 
-const h5 = await carga("H5");
-if (h5) clave.H5 = { tarjeta: "[data-enunciado]", items: Object.fromEntries(h5.CASOS_H5.map((c) => {
-  const gg = c.asiento.find((l) => l.lado === "debe");
-  const banco = c.asiento.find((l) => l.lado === "haber");
-  return [n(c.enunciado), {
-    bien: { asiento: c.asiento.map((l) => [n(h5.nombreDe ? h5.nombreDe(l.cuenta) : l.cuenta), l.lado === "debe" ? "Debe" : "Haber", l.valor]) },
-    // el error central del juego: dos filas, Bancos por lo mismo que los gastos (gesto mínimo, ver H5 v2)
-    mal: { asiento: [[n(gg.cuenta), "Debe", gg.valor], [n(banco.cuenta), "Haber", gg.valor]] } }];
-})) };
-
-const h6 = await carga("H6");
-if (h6) clave.H6 = { tarjeta: "[data-partida-texto]", items: Object.fromEntries(h6.ITEMS_H6.map((it) => [n(it.texto), {
-  bien: { opcion: it.respuesta }, mal: { opcion: it.respuesta === h6.BANCO ? h6.EMPRESA : h6.BANCO } }])) };
-
 const h7 = await carga("H7");
-if (h7) {
+if (h7?.SECCIONES_H7) {
   const items = {}, saldos = {};
-  const dest = h7.DESTINOS_H7.map((d) => d.id ?? d);
   for (const s of h7.SERIES_H7) {
-    for (const p of s.partidas) items[n(p.texto)] = { bien: { opcion: p.respuesta }, mal: { opcion: dest.find((d) => d !== p.respuesta) } };
+    for (const p of s.partidas) items[n(p.texto)] = { bien: { toques: [destino(p.va)] }, mal: { toques: [destino(h7.SECCIONES_H7.find((x) => x !== p.va))] } };
     saldos[s.id] = { bien: { campos: { banco: s.conciliadoBanco, libros: s.conciliadoLibros } }, mal: { campos: { banco: s.extracto, libros: s.libros } } };
   }
-  clave.H7 = { tarjeta: "[data-partida-texto]", items, saldos };
+  clave.H7 = { tarjeta: "[data-hecho]", items, saldos };
 }
 
 const h8 = await carga("H8");
-if (h8) {
-  const items = {}, notas = {}, saldos = {};
+if (h8?.BANDEJAS_H8) {
+  /* Las partidas de la etapa 1 y las notas de la etapa 2 tienen el mismo texto: la clave va por etapa. */
+  const items = {}, saldos = {};
   for (const s of h8.SERIES_H8) {
-    for (const p of s.partidas) items[n(p.texto)] = { bien: { opcion: p.respuesta }, mal: { opcion: p.respuesta === h8.SE_ASIENTA ? h8.NO_SE_ASIENTA : h8.SE_ASIENTA } };
-    for (const q of s.notas) notas[n(q.texto)] = { bien: { asiento: [[q.debe, "Debe"], [q.haber, "Haber"]] }, mal: { asiento: [[q.haber, "Debe"], [q.debe, "Haber"]] } };
+    for (const p of s.partidas) {
+      const r = h8.ETAPA1_H8[p.tipo].respuesta;
+      items[`1::${n(p.texto)}`] = { bien: { toques: [destino(r)] }, mal: { toques: [destino(r === h8.SE_ASIENTA ? h8.NO_SE_ASIENTA : h8.SE_ASIENTA)] } };
+    }
+    for (const q of s.notas) items[`2::${n(q.texto)}`] = { bien: { toques: [destino(`${q.debe}:debe`), destino(`${q.haber}:haber`)], comprobar: true }, mal: { toques: [destino(`${q.haber}:debe`), destino(`${q.debe}:haber`)], comprobar: true } };
     saldos[s.id] = { bien: { campos: { mayor: s.saldoMayor } }, mal: { campos: { mayor: s.erroresEtapa3[0].cifra } } };
   }
-  clave.H8 = { tarjeta: "[data-partida-texto]", notaTarjeta: "[data-tarjeta-nota]", items, notas, saldos };
+  clave.H8 = { tarjeta: "[data-hecho]", porEtapa: true, items, saldos };
 }
 
 console.log(JSON.stringify(clave));

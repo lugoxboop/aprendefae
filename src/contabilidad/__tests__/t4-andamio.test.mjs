@@ -98,9 +98,17 @@ test("★★★ cada id del tema lleva t4- y está en la vista; la vista no trae
   const hacer = actividadesDeTipo(TEMA, HACER).filter((a) => !a.pendiente).map((a) => a.id);
   const enPiezas = PIEZAS_T4.map((p) => p.pieza.id);
   const enJuegos = JUEGOS_T4.map((j) => j.id);
-  /* La guarda: hoy, A0 a A5 de Aprender, y H1 a H8 de Hacer. Cada pieza nueva la sube a propósito. */
-  assert.deepEqual([ids.length, enPiezas.length, enJuegos.length], [14, 6, 8], "cambió el número de piezas de T4: súbelo aquí a propósito");
-  assert.deepEqual(ids, ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-entra-o-sale-de-caja", "t4-el-control-que-se-saltaron", "t4-a2-el-fondo-fijo", "t4-se-mueve-la-caja-menor", "t4-a3-el-arqueo", "t4-el-arqueo-de-rosa", "t4-al-empleado-o-al-gasto", "t4-a4-bancos-y-notas", "t4-quien-se-entero-primero", "t4-a5-san-calixto", "t4-concilia-la-cuenta", "t4-se-asienta-o-no"]);
+  /*
+   * La guarda: hoy, A0 a A5 de Aprender, y los cinco Hacer del corte de calidad
+   * (H1, H3, H4 con H5 dentro, H7 con H6 dentro y H8). Cada pieza nueva la sube
+   * a propósito, y una que sale la baja a propósito.
+   */
+  assert.deepEqual([ids.length, enPiezas.length, enJuegos.length], [11, 6, 5], "cambió el número de piezas de T4: súbelo aquí a propósito");
+  assert.deepEqual(ids, ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-entra-o-sale-de-caja", "t4-a2-el-fondo-fijo", "t4-se-mueve-la-caja-menor", "t4-a3-el-arqueo", "t4-el-arqueo-de-rosa", "t4-a4-bancos-y-notas", "t4-a5-san-calixto", "t4-concilia-la-cuenta", "t4-se-asienta-o-no"]);
+  /* H2, H5 y H6 salieron del catálogo (corte de calidad; la migración de catálogo la escribe Erwin en su rango): ni en el tema ni en la vista. */
+  for (const id of ["t4-el-control-que-se-saltaron", "t4-al-empleado-o-al-gasto", "t4-quien-se-entero-primero"]) {
+    assert.ok(!ids.includes(id) && !enJuegos.includes(id), `${id} salió del catálogo y sigue en T4`);
+  }
   assert.deepEqual(ids.filter((id) => !id.startsWith("t4-")), [], "ids sin el prefijo t4-");
   assert.deepEqual(enPiezas.sort(), [...aprender].sort(), "PIEZAS_T4 no coincide con las de Aprender del tema");
   assert.deepEqual(enJuegos.sort(), [...hacer].sort(), "JUEGOS_T4 no coincide con las de Hacer del tema");
@@ -176,7 +184,7 @@ test("★★★ el índice: con Aprender y Hacer, la tarjeta lleva las dos insig
     assert.deepEqual(abiertos, [], "tocar la tarjeta partida no abre el tema: abre la elección");
     /* Los botones de modo de ESTA tarjeta: otro tema puede tener el mismo conteo (el Tema 1 también tiene 4 de Aprender). */
     const modo = (n) => [...tarjeta.closest(".fae-split").querySelectorAll("button.fae-modo")].find((b) => b.getAttribute("aria-label") === n);
-    for (const [etiqueta, quiere] of [["Aprender — 6 actividades", "aprender"], ["Hacer — 8 actividades", "hacer"]]) {
+    for (const [etiqueta, quiere] of [["Aprender — 6 actividades", "aprender"], ["Hacer — 5 actividades", "hacer"]]) {
       const b = modo(etiqueta);
       assert.ok(b, `no está la mitad «${etiqueta}»`);
       act(() => { b.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });

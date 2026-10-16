@@ -1,78 +1,89 @@
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T4 · H3 DE HACER — «¿Se mueve la caja menor?» (Célula D).
+ * T4 · H3 DE HACER — «¿Se mueve la caja menor?» (Célula D). REDISEÑO DE
+ * ENGANCHE: el tablero y el sobre.
  *
- * Fuente: el paquete vigente de Katsumi: d4-t4-h3-v1.md (serie 1, ya con la
- * v2 dentro) y d4-t4-h3-serie2.md (serie 2). Copias en orquestador/
- * conocimiento/paquetes/, los mismos blobs que en main. Una prueba compara
- * cada texto de aquí contra ellos, letra por letra.
+ * Diseño: Hanayama (celula-d/hanayama-h3-rediseno.md). Textos: Katsumi
+ * (celula-d/katsumi-texto-hacer.md), aprobados por Yujiro el 15 oct 2026.
+ * Copia en el canon: orquestador/conocimiento/paquetes/d4-t4-h3-v2-
+ * rediseno.md. Una prueba compara cada texto de aquí contra ella.
  *
  * Hacer · evaluativa · medio · 25 FP. El motor compartido escala los FP con
- * los aciertos. Su fila del servidor es la migración 0202, que corre Erwin.
+ * los aciertos. Su fila del servidor es la migración 0202 y NO cambia: mismo
+ * activity_id y mismos ítems (h3-1…h3-4, h3s2-1…h3s2-4).
  *
  * Cuatro operaciones de una empresa construida, en el orden de la vida del
  * fondo (apertura, reembolso, aumento, disminución): no se barajan. En cada
- * intento se sortea UNA serie (D8): Distribuidora Andina o Muebles El Roble.
- * El estudiante arma el asiento con ConstructorAsiento (compartido, sin
- * cambiarlo): dos cuentas de las cuatro y el lado de cada una. El valor va
- * en el enunciado y no se pide. Un intento por operación.
+ * intento se sortea UNA serie: Distribuidora Andina (Lucía) o Muebles El
+ * Roble (Andrés). El estudiante pone el monto en una cuenta del debe y en
+ * otra del haber del tablero, y comprueba. Un intento por operación.
  *
- * El error: se muestra UN mensaje, el primero de la lista de Katsumi que
- * aplique (está ordenada del error más grave al más mecánico). Con una
- * cuenta en cada lado, las 11 combinaciones equivocadas de cada operación
- * tienen el suyo (una prueba las recorre).
+ * La figura: el tablero de las cuatro cuentas (sus totales se acumulan a lo
+ * largo de la vida del fondo), el sobre del encargado (antes y después de la
+ * operación) y «lo que dice el libro» de Caja menor (debe − haber). Con el
+ * error, si el asiento toca Caja menor, la línea «diría» compara el libro que
+ * daría ESE asiento con lo que hay en el sobre después de la operación.
+ *
+ * El error: UN mensaje, el primero de la lista de Katsumi que aplique (está
+ * ordenada del error más grave al más mecánico). Las 11 combinaciones
+ * equivocadas de cada operación tienen el suyo (una prueba las recorre).
  * ═══════════════════════════════════════════════════════════════════════════
  */
+import { DEBE, HABER, cifra, pesos } from "./contabilidadT4Hacer.js";
+
+export { DEBE, HABER };
 
 export const H3_ID = "t4-se-mueve-la-caja-menor";
-
-export const DEBE = "debe";
-export const HABER = "haber";
 
 export const H3 = {
   id: H3_ID,
   nombre: "¿Se mueve la caja menor?",
   objetivo: "Armar el asiento de cada movimiento de la caja menor y saber cuándo se mueve su cuenta.",
-  consigna: [
-    "Cada tarjeta trae una operación de la caja menor de una empresa. Arma su asiento: elige las dos cuentas y el lado de cada una.",
-    "Tienes un intento por operación. Después verás el asiento completo y por qué.",
-  ],
+  consigna: "Pon el monto en la cuenta que va al debe y en la que va al haber.",
 };
 
 export const SUBTEMAS_H3 = ["Apertura del fondo", "Reembolso", "Aumento del fondo", "Disminución del fondo"];
 
-/* Las mismas cuatro en todas las operaciones, en el orden del paquete. */
-export const CAJA_MENOR = "Caja menor";
-export const BANCOS = "Bancos";
-export const CAJA = "Caja";
-export const GASTOS = "Gastos generales";
-export const CUENTAS_H3 = [CAJA_MENOR, BANCOS, CAJA, GASTOS];
+/* Las cuatro cuentas del tablero, en el orden del paquete. «Gastos / generales» va en dos renglones fijos (Hanayama §3). */
+export const CAJA_MENOR = "caja-menor";
+export const BANCOS = "bancos";
+export const CAJA = "caja";
+export const GASTOS = "gastos-generales";
+export const CUENTAS_H3 = [
+  { id: CAJA_MENOR, renglones: ["Caja menor"] },
+  { id: BANCOS, renglones: ["Bancos"] },
+  { id: CAJA, renglones: ["Caja"] },
+  { id: GASTOS, renglones: ["Gastos", "generales"] },
+];
+export const nombreDeCuentaH3 = (id) => CUENTAS_H3.find((c) => c.id === id)?.renglones.join(" ") ?? null;
 
-/*
- * Textos de interfaz que el paquete no traía. «Comprobar» es de la pantalla
- * de Hanayama (H3 v1 §1); los demás, la convención de los Hacer de T4.
- * MISMO_LADO es mío: el paquete no tenía mensaje para dos cuentas del mismo
- * lado (ver ESTA_LISTO). Katsumi los aprobó tal cual: la fuente es
- * d4-t4-h3-v1.md, «Textos de interfaz».
- */
+/* Interfaz (Katsumi, «Marcas, botones, cierre» y «El sobre y el libro»). */
 export const BOTON_H3 = { comprobar: "Comprobar", siguiente: "Siguiente operación", verResumen: "Ver mi resumen", otraVez: "Otra vez" };
-export const CORRECTO = "Correcto.";
-export const INCORRECTO = "Incorrecto.";
-export const MISMO_LADO = "Pon una cuenta al debe y la otra al haber.";
-export const resumenH3 = (bien, cuantos) => `${bien} de ${cuantos} asientos bien armados.`;
-export const ROTULO_ASIENTO_H3 = "EL ASIENTO COMPLETO";
+export const resumenH3 = (bien) => `${bien} de 4 asientos bien armados.`;
+export const ROTULOS_H3 = {
+  sobre: (encargado) => `LO QUE TIENE ${encargado.toUpperCase()}`,
+  billetes: "Billetes y monedas",
+  soportes: "Soportes de gastos",
+  suman: "Suman",
+  libro: "LO QUE DICE EL LIBRO",
+  cuenta: "Caja menor",
+  igual: "= sobre",
+};
+/* x: el libro con el asiento del estudiante; y: lo que hay en el sobre DESPUÉS de la operación. */
+export const diriaH3 = (x, y) => `Con tu asiento, el libro diría ${cifra(x)}, pero en el sobre hay ${cifra(y)}.`;
+export const ALT_FIGURA_H3 = "Cuatro cuentas con su debe y su haber, y debajo el fondo de caja menor comparado con lo que dice el libro.";
+
+export const CIERRE_H3 = {
+  texto: "Caja menor se mueve cuando el fondo se abre, se aumenta, se disminuye o se cierra. En el reembolso no se mueve: se debita Gastos generales y se acredita Bancos.",
+  pie: "Basado en el libro, pp. 181-182. Cifras construidas",
+};
 
 /* ═══════════ LOS ERRORES: CUÁNDO APLICA CADA UNO ═══════════ */
 
-/*
- * Cada error de la lista de Katsumi, como una condición sobre el asiento
- * armado { debe, haber } (una cuenta en cada lado). Los nombres dicen la
- * combinación que describe el paquete, en su orden.
- */
+/* Cada error, como una condición sobre el asiento armado { debe, haber } (una cuenta en cada lado). */
 const tiene = (a, c) => a.debe === c || a.haber === c;
 const es = (debe, haber) => (a) => a.debe === debe && a.haber === haber;
 
-/* Los mensajes que no nombran cifra ni empresa: los mismos en las dos series. */
 const ERRORES_APERTURA = [
   { cuando: (a) => tiene(a, GASTOS), texto: "Es la primera vez que se arma el fondo, y nada se ha gastado todavía. No hay gastos que anotar: solo pasa plata de Bancos a Caja menor." },
   { cuando: (a) => tiene(a, CAJA) && !tiene(a, CAJA_MENOR), texto: "Caja no recibe nada aquí. El cheque sale del banco y la plata va al fondo nuevo, así que la cuenta que sube es Caja menor." },
@@ -81,10 +92,10 @@ const ERRORES_APERTURA = [
   { cuando: es(BANCOS, CAJA_MENOR), texto: "Las dos cuentas están bien, pero al revés. Caja menor sube, así que va al debe. Bancos baja, así que va al haber." },
 ];
 /* El primero del reembolso nombra el fondo: cada serie trae el suyo. */
-const erroresReembolso = (primero) => [
-  { cuando: (a) => a.debe === CAJA_MENOR, texto: primero },
+const erroresReembolso = (fondo) => [
+  { cuando: (a) => a.debe === CAJA_MENOR, texto: `Esta es la trampa del reembolso. El cheque repone la plata gastada, pero el fondo no crece: sigue valiendo ${pesos(fondo)}. Mira el asiento de la p. 182: Caja menor no aparece.` },
   { cuando: (a) => a.haber === CAJA_MENOR, texto: "Caja menor no paga el cheque del reembolso: lo paga el banco. Mira el asiento de la p. 182: se acredita Bancos, y Caja menor no aparece." },
-  { cuando: (a) => !tiene(a, GASTOS) && !tiene(a, CAJA_MENOR), texto: "Al reembolso le faltan los gastos. Lo que se anota es en qué se fue la plata, y eso va a Gastos generales." },
+  { cuando: (a) => !tiene(a, GASTOS), texto: "Al reembolso le faltan los gastos. Lo que se anota es en qué se fue la plata, y eso va a Gastos generales." },
   { cuando: es(CAJA, GASTOS), texto: "Aquí no entra plata a la caja, y los gastos no bajan. El reembolso anota los gastos que se hicieron y se paga con un cheque." },
   { cuando: es(GASTOS, CAJA), texto: "El reembolso no se paga con la plata de la caja: se paga con un cheque." },
   { cuando: es(BANCOS, GASTOS), texto: "Las dos cuentas están bien, pero al revés. Los gastos suben, así que van al debe. El cheque sale del banco, así que Bancos va al haber." },
@@ -103,79 +114,77 @@ const ERRORES_DISMINUCION = [
   { cuando: es(CAJA, BANCOS), texto: "Caja sí recibe la plata, pero esa plata no sale del banco: sale del fondo, que es el que baja." },
   { cuando: es(CAJA_MENOR, CAJA), texto: "Las dos cuentas están bien, pero al revés. La plata sale del fondo, así que Caja menor va al haber. Llega a Caja, que va al debe." },
 ];
-const ACIERTO_REEMBOLSO = "Así es. Los gastos van a Gastos generales, al debe, y el cheque sale de Bancos, al haber. Caja menor no se mueve.";
-const ACIERTO_DISMINUCION = "Así es. Mira el asiento de la p. 182: Caja menor se acredita y la plata que sale del fondo va al debe de Caja.";
 
 /*
- * Una serie: la empresa y sus cifras. Lo que sale de restar SE CALCULA: el
- * cheque del aumento y lo que se devuelve en la disminución.
+ * Una serie: la empresa, su encargado y sus cifras. Lo que sale de restar SE
+ * CALCULA: el cheque del aumento, lo que se devuelve en la disminución y los
+ * billetes que quedan antes del reembolso (fondo − soportes: el arqueo cuadró).
+ * El monto va aparte de la tarjeta (Katsumi, decisión 3) y el valor del fondo
+ * lo dice el sobre (decisión 4).
  */
-function serie({ prefijo, fondo, gastos, fondoAumentado, fondoDisminuido, textos }) {
+function serie({ id, prefijo, empresa, encargado, dia, mes, mesAumento, fondo, gastos, fondoAumentado, fondoDisminuido }) {
   const aumento = fondoAumentado - fondo;
   const disminucion = fondoAumentado - fondoDisminuido;
-  return [
-    { id: `${prefijo}-1`, subtema: SUBTEMAS_H3[0], enunciado: textos.apertura, debe: CAJA_MENOR, haber: BANCOS, valor: fondo, acierto: textos.aciertoApertura, errores: ERRORES_APERTURA },
-    { id: `${prefijo}-2`, subtema: SUBTEMAS_H3[1], enunciado: textos.reembolso, debe: GASTOS, haber: BANCOS, valor: gastos, acierto: ACIERTO_REEMBOLSO, errores: erroresReembolso(textos.trampa) },
-    { id: `${prefijo}-3`, subtema: SUBTEMAS_H3[2], enunciado: textos.aumento, debe: CAJA_MENOR, haber: BANCOS, valor: aumento, acierto: textos.aciertoAumento, errores: ERRORES_AUMENTO },
-    { id: `${prefijo}-4`, subtema: SUBTEMAS_H3[3], enunciado: textos.disminucion, debe: CAJA, haber: CAJA_MENOR, valor: disminucion, acierto: ACIERTO_DISMINUCION, errores: ERRORES_DISMINUCION },
+  const pie = (p) => `Basado en el libro, ${p}. Cifras construidas`;
+  const ops = [
+    {
+      id: `${prefijo}-1`, subtema: SUBTEMAS_H3[0], monto: fondo, debe: CAJA_MENOR, haber: BANCOS,
+      antes: { billetes: 0, soportes: 0 }, despues: { billetes: fondo, soportes: 0 },
+      texto: `El ${dia} de ${mes}, ${empresa} abre una caja menor. Le hace un cheque a ${encargado}, que la va a manejar.`,
+      acierto: `La plata sale del banco y entra al fondo: Caja menor se debita y Bancos se acredita por ${pesos(fondo)}.`,
+      errores: ERRORES_APERTURA, pagina: pie("p. 181"),
+    },
+    {
+      id: `${prefijo}-2`, subtema: SUBTEMAS_H3[1], monto: gastos, debe: GASTOS, haber: BANCOS,
+      antes: { billetes: fondo - gastos, soportes: gastos }, despues: { billetes: fondo, soportes: 0 },
+      texto: `El 31 de ${mes}, ${encargado} entrega los soportes de sus pagos y recibe el cheque del reembolso.`,
+      acierto: "Los gastos van a Gastos generales, al debe, y el cheque sale de Bancos, al haber. Caja menor no se mueve.",
+      errores: erroresReembolso(fondo), pagina: pie("p. 182"),
+    },
+    {
+      id: `${prefijo}-3`, subtema: SUBTEMAS_H3[2], monto: aumento, debe: CAJA_MENOR, haber: BANCOS,
+      antes: { billetes: fondo, soportes: 0 }, despues: { billetes: fondoAumentado, soportes: 0 },
+      texto: `El fondo se queda corto y lo reponen cada semana. En ${mesAumento} lo suben con un cheque.`,
+      acierto: `Entran ${pesos(aumento)} más al fondo: Caja menor se debita y Bancos se acredita, igual que al abrirlo.`,
+      errores: ERRORES_AUMENTO, pagina: pie("p. 182"),
+    },
+    {
+      id: `${prefijo}-4`, subtema: SUBTEMAS_H3[3], monto: disminucion, debe: CAJA, haber: CAJA_MENOR,
+      antes: { billetes: fondoAumentado, soportes: 0 }, despues: { billetes: fondoDisminuido, soportes: 0 },
+      texto: `Meses después, la plata del fondo se queda quieta. Lo bajan, y ${encargado} devuelve la diferencia.`,
+      acierto: "Mira el asiento de la p. 182: Caja menor se acredita y la plata que sale del fondo va al debe de Caja.",
+      errores: ERRORES_DISMINUCION, pagina: pie("p. 182"),
+    },
   ];
+  return { id, empresa, encargado, rotuloSobre: ROTULOS_H3.sobre(encargado), ops };
 }
 
-/* Serie 1 · Distribuidora Andina, con Lucía (d4-t4-h3-v1.md). Cifras construidas. */
+/* Serie 1 · Distribuidora Andina, con Lucía. Cifras construidas. */
 export const SERIE_1 = serie({
-  prefijo: "h3",
+  id: "s1", prefijo: "h3", empresa: "Distribuidora Andina", encargado: "Lucía", dia: 1, mes: "marzo", mesAumento: "abril",
   fondo: 300_000, gastos: 214_600, fondoAumentado: 450_000, fondoDisminuido: 350_000,
-  textos: {
-    apertura: "El 1 de marzo, Distribuidora Andina abre una caja menor de $300.000. Le hace un cheque a Lucía, que la va a manejar.",
-    aciertoApertura: "Así es. La plata sale del banco y entra al fondo: Caja menor se debita y Bancos se acredita por $300.000.",
-    reembolso: "El 31 de marzo, Lucía entrega los soportes de lo que pagó en el mes: $214.600. Contabilidad hace el cheque del reembolso por esa cifra.",
-    trampa: "Esta es la trampa del reembolso. El cheque repone la plata gastada, pero el fondo no crece: sigue valiendo $300.000. Mira el asiento de la p. 182: Caja menor no aparece.",
-    aumento: "El fondo de Distribuidora Andina se queda corto: lo reponen cada semana. En abril lo suben de $300.000 a $450.000, con un cheque por la diferencia.",
-    aciertoAumento: "Así es. Entran $150.000 más al fondo: Caja menor se debita y Bancos se acredita, igual que al abrirlo.",
-    disminucion: "Meses después, la plata del fondo se queda quieta. Distribuidora Andina lo baja de $450.000 a $350.000, y Lucía devuelve los $100.000 de diferencia.",
-  },
 });
-
-/* Serie 2 · Muebles El Roble, con Andrés (d4-t4-h3-serie2.md). Cifras construidas. */
+/* Serie 2 · Muebles El Roble, con Andrés. Cifras construidas. */
 export const SERIE_2 = serie({
-  prefijo: "h3s2",
+  id: "s2", prefijo: "h3s2", empresa: "Muebles El Roble", encargado: "Andrés", dia: 2, mes: "agosto", mesAumento: "septiembre",
   fondo: 280_000, gastos: 187_350, fondoAumentado: 445_000, fondoDisminuido: 375_000,
-  textos: {
-    apertura: "El 2 de agosto, Muebles El Roble abre una caja menor de $280.000. Le hace un cheque a Andrés, que la va a manejar.",
-    aciertoApertura: "Así es. La plata sale del banco y entra al fondo: Caja menor se debita y Bancos se acredita por $280.000.",
-    reembolso: "El 31 de agosto, Andrés entrega los soportes de lo que pagó en el mes: $187.350. Contabilidad hace el cheque del reembolso por esa cifra.",
-    trampa: "Esta es la trampa del reembolso. El cheque repone la plata gastada, pero el fondo no crece: sigue valiendo $280.000. Mira el asiento de la p. 182: Caja menor no aparece.",
-    aumento: "El fondo de Muebles El Roble se queda corto: lo reponen cada semana. En septiembre lo suben de $280.000 a $445.000, con un cheque por la diferencia.",
-    aciertoAumento: "Así es. Entran $165.000 más al fondo: Caja menor se debita y Bancos se acredita, igual que al abrirlo.",
-    disminucion: "Meses después, la plata del fondo se queda quieta. Muebles El Roble lo baja de $445.000 a $375.000, y Andrés devuelve los $70.000 de diferencia.",
-  },
 });
-
 export const SERIES_H3 = [SERIE_1, SERIE_2];
 
-export const CIERRE_H3 = {
-  texto: "Caja menor se mueve cuando el fondo se abre, se aumenta, se disminuye o se cierra. En el reembolso no se mueve: se debita Gastos generales y se acredita Bancos.",
-  pie: "Basado en el libro, pp. 181-182",
-};
+/* ═══════════ «ASÍ SE JUEGA» ═══════════ */
 
-/* ═══════════ «ASÍ SE JUEGA» (d4-t4-asi-se-juega-v1.md, H3) ═══════════ */
-
-export const PASOS_H3 = [
-  "Lee la operación de la caja menor.",
-  "Elige las dos cuentas que se mueven y el lado de cada una.",
-  "Confirma. Tienes un intento por operación.",
-];
-export const ALT_H3 = "Para abrir la caja menor, Caja menor va al debe y Bancos va al haber, las dos por $200.000. La plata pasa del banco al fondo.";
-/*
- * La apertura de Papelería Arcoíris (construida, no está en ninguna serie).
- * El paquete trae el enunciado y el texto alternativo; el acierto de la demo
- * es ese texto alternativo (aprobado por Katsumi), y sus errores son los de
- * la apertura (la demo nunca falla).
- */
+export const PASOS_H3 = ["Lee la operación.", "¿Qué cuenta sube? ¿Cuál baja?", "El libro tiene que dar lo del sobre."];
+export const ALT_H3 = "Papelería Arcoíris abre una caja menor de $200.000. Caja menor va al debe y Bancos al haber, y el libro queda igual que el sobre: 200.000.";
+/* La apertura de Papelería Arcoíris (construida, no está en ninguna serie). La demo nunca falla. */
 export const EJEMPLO_H3 = {
-  id: "demo", subtema: SUBTEMAS_H3[0],
-  enunciado: "El 2 de enero, Papelería Arcoíris abre una caja menor de $200.000. Le hace un cheque a Julio, que la va a manejar.",
-  debe: CAJA_MENOR, haber: BANCOS, valor: 200_000, acierto: ALT_H3, errores: ERRORES_APERTURA,
+  id: "demo", empresa: "Papelería Arcoíris", encargado: "Julio", rotuloSobre: ROTULOS_H3.sobre("Julio"),
+  ops: [{
+    id: "demo", subtema: SUBTEMAS_H3[0], monto: 200_000, debe: CAJA_MENOR, haber: BANCOS,
+    antes: { billetes: 0, soportes: 0 }, despues: { billetes: 200_000, soportes: 0 },
+    texto: "El 2 de enero, Papelería Arcoíris abre una caja menor. Le hace un cheque a Julio, que la va a manejar.",
+    acierto: "La plata pasa del banco al fondo: Caja menor va al debe y Bancos al haber.",
+    errores: ERRORES_APERTURA, pagina: "Basado en el libro, p. 181. Cifras construidas",
+  }],
 };
 
 /* ═══════════ LA LÓGICA, SIN REACT ═══════════ */
@@ -183,41 +192,34 @@ export const EJEMPLO_H3 = {
 /* Una serie al azar por intento; dentro, las cuatro en su orden. */
 export const sortearH3 = (azar = Math.random) => SERIES_H3[Math.floor(azar() * SERIES_H3.length) % SERIES_H3.length];
 
-/*
- * El asiento armado, leído de las filas de ConstructorAsiento. Está listo
- * para comprobar con dos cuentas y una a cada lado. Dos al mismo lado no se
- * comprueban: el paquete no tiene mensaje para eso, y un asiento así no
- * cumple la partida doble que el estudiante ya conoce del Tema 2.
- */
-export function armado(filas) {
-  const puestas = filas.filter((f) => f.cuenta && f.lado);
-  const debe = puestas.filter((f) => f.lado === DEBE);
-  const haber = puestas.filter((f) => f.lado === HABER);
-  return { completas: puestas.length === 2 && filas.length === 2, debe: debe.length === 1 ? debe[0].cuenta : null, haber: haber.length === 1 ? haber[0].cuenta : null };
+/* El saldo de Caja menor en el libro: lo que lleva en el debe menos lo que lleva en el haber. */
+export const libroCajaMenor = (totales) => (totales[CAJA_MENOR]?.debe ?? 0) - (totales[CAJA_MENOR]?.haber ?? 0);
+/* Los totales con el asiento de una operación sumado en sus dos mitades. */
+export function conAsiento(totales, debe, haber, monto) {
+  const n = { ...totales, [debe]: { ...(totales[debe] ?? {}) }, [haber]: { ...(totales[haber] ?? {}) } };
+  n[debe].debe = (n[debe].debe ?? 0) + monto;
+  n[haber].haber = (n[haber].haber ?? 0) + monto;
+  return n;
 }
-export const ESTA_LISTO = (filas) => { const a = armado(filas); return a.completas && Boolean(a.debe && a.haber); };
-export const mismoLado = (filas) => { const a = armado(filas); return a.completas && !(a.debe && a.haber); };
+export const sobreSuma = (s) => s.billetes + s.soportes;
 
-export function evaluarH3(op, filas) {
-  const a = armado(filas);
+/*
+ * El asiento del estudiante { debe, haber }, contra la operación. Con el
+ * error, la línea «diría» sale solo si el asiento toca Caja menor y lo que
+ * daría el libro no es lo que hay en el sobre después de la operación.
+ */
+export function evaluarH3(op, a, totales) {
   const ok = a.debe === op.debe && a.haber === op.haber;
-  const error = ok ? null : op.errores.find((e) => e.cuando(a)) ?? null;
-  /* Cada fila: bien si su cuenta va en ese lado en el asiento correcto. */
-  const estados = filas.map((f) => (f.cuenta ? ((f.lado === DEBE ? op.debe : op.haber) === f.cuenta ? "correcta" : "incorrecta") : null));
-  return {
-    ok,
-    texto: ok ? op.acierto : error?.texto ?? null,
-    estados,
-    respuesta: `${a.debe} / ${a.haber}`,
-    asiento: [
-      { cuenta: op.debe, lado: DEBE, valor: op.valor },
-      { cuenta: op.haber, lado: HABER, valor: op.valor },
-    ],
-  };
+  if (ok) return { ok, texto: op.acierto, diria: null, respuesta: `${a.debe} / ${a.haber}` };
+  const error = op.errores.find((e) => e.cuando(a)) ?? null;
+  const toca = a.debe === CAJA_MENOR || a.haber === CAJA_MENOR;
+  const x = libroCajaMenor(conAsiento(totales, a.debe, a.haber, op.monto));
+  const y = sobreSuma(op.despues);
+  return { ok, texto: error?.texto ?? null, diria: toca && x !== y ? { x, y, texto: diriaH3(x, y) } : null, respuesta: `${a.debe} / ${a.haber}` };
 }
 
 /* Evaluativa: el motor escala los 25 FP con este porcentaje. */
 export const puntuarH3 = (aciertos, cuantos) => (cuantos ? (aciertos / cuantos) * 100 : 0);
 
-/* Para el panel docente: el ítem se lee por su enunciado, en las dos series. */
-export const operacionDeItemH3 = (id) => SERIES_H3.flat().find((x) => x.id === id)?.enunciado ?? null;
+/* Para el panel docente: el ítem se lee por el texto de su operación, en las dos series. */
+export const operacionDeItemH3 = (id) => SERIES_H3.flatMap((s) => s.ops).find((x) => x.id === id)?.texto ?? null;

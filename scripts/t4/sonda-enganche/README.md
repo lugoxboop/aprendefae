@@ -76,7 +76,7 @@ Las fuentes van en un directorio con `fontsource-sora-5.3.0/` y `fontsource-inte
 3. **Corre la sonda** con las piezas que quieras. El primer argumento, la carpeta de la sonda, es opcional:
 
    ```
-   python3 scripts/t4/sonda-enganche/enganche.py 5290 salida.json A0 A1 H1 --clave=clave.json
+   python3 scripts/t4/sonda-enganche/enganche.py 5290 salida.json A0 A1 H1 H3 H4 H7 H8 --clave=clave.json
    python3 scripts/t4/sonda-enganche/eng_tablas.py salida.json > tablas.md
    ```
 
@@ -130,6 +130,12 @@ Todo desde la raíz del repositorio, en una máquina sin nada previo salvo Pytho
    python3 scripts/t4/sonda-enganche/enganche.py 5290 salida.json A0 A1 H1 --clave=clave.json; echo rc=$?
    ```
 
+   Los Hacer rediseñados (PR «D4 · T4 · Rediseño de enganche: los Hacer»), con la misma clave: `H3 PASA 0`, `H4 PASA 0`, `H7 PASA 0` y `H8 PASA 0`, con código 0.
+
+   ```
+   python3 scripts/t4/sonda-enganche/enganche.py 5290 salida.json H3 H4 H7 H8 --clave=clave.json; echo rc=$?
+   ```
+
 8. **Para vite** cuando termines (Ctrl+C en su terminal, o `kill` a su proceso).
 
 `clave.json`, `salida*.json` y `tablas.md` quedan ignorados por git en esta carpeta. Si los escribes en la raíz, no los subas.
@@ -181,6 +187,8 @@ Sale con **0** si los 12 casos dan lo esperado y con **1** si alguno no. **Tambi
 - **Los atributos que usa:**
   - en Aprender, `data-pieza`, `data-pantalla`, `data-eleccion`, `data-opcion` y `data-boton`; con figura operable, los selectores de su plan (`data-accion`, `data-destino`, `data-control`, `data-seg`, `data-fila`, `data-pista`) y `data-mensaje` para el veredicto;
   - en H1 rediseñado, `data-destino` (el cajón como tablero): la clave da `{destino: …}` en vez de `{opcion: …}` cuando los datos traen `SALDO_INICIAL_H1`, y la sonda espera 900 ms tras el toque, porque en el error la plata llega a su sitio a los 0,7 s;
+  - en H3, H4, H7 y H8 rediseñados (el tablero, la regla del fondo, las libretas y las bandejas), la clave da `{toques: [selectores], comprobar: true|false}`: los toques del gesto mínimo, en orden y dentro de la pieza, y «Comprobar» si va. La respuesta equivocada se comete con el mismo gesto. La sonda espera 900 ms al final, por la misma razón que en H1. En H8 la misma partida sale en la etapa 1 y en la 2, así que su clave va por etapa (`porEtapa`, «1::texto» y «2::texto»);
+  - H2, H5 y H6 salieron del catálogo con el corte de calidad (15 oct 2026): H5 está dentro de H4 («El arqueo de caja menor») y H6 dentro de H7. La sonda ya no las conoce;
   - en Hacer, `data-t4-hN` y `data-t4-hN-demo`, las tarjetas (`data-hecho`, `data-caso`, `data-enunciado`, `data-partida-texto`, `data-tarjeta-nota`, `data-tarjeta-pregunta`), `data-constructor`, `data-fila-asiento`, `data-campo` y `data-panel` o `data-mensaje` para el veredicto.
 
   Si una pieza nueva no los pone, la sonda da código 2: no adivina.

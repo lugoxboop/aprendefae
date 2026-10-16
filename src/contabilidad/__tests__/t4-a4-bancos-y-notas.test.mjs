@@ -438,10 +438,10 @@ test("★★★ la figura: sin teal, ámbar ni coral, sin trazos discontinuos; l
 
 /* ═══════════ 6 · APRENDER NO DA FP ═══════════ */
 
-test("★★★ fuera del catálogo de FP: Aprender en subjects.js, después de H5; ninguna migración la nombra, y sus datos no llaman al motor", () => {
+test("★★★ fuera del catálogo de FP: Aprender en subjects.js, después de H4 (H5 se fundió en H4); ninguna migración la nombra, y sus datos no llaman al motor", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T4);
   const ids = tema.actividades.map((a) => a.id);
-  assert.equal(ids.indexOf(Z.A4_ID), ids.indexOf("t4-al-empleado-o-al-gasto") + 1);
+  assert.equal(ids.indexOf(Z.A4_ID), ids.indexOf("t4-el-arqueo-de-rosa") + 1);
   const a = tema.actividades.find((x) => x.id === Z.A4_ID);
   assert.deepEqual(a.clasificacion, { tipo: APRENDER });
   assert.equal(a.nombre, P.titulo);

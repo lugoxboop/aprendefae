@@ -1,420 +1,374 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
-import { JSDOM, VirtualConsole } from "jsdom";
+import { readdirSync, readFileSync } from "node:fs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T4 · H3 «¿Se mueve la caja menor?» (Célula D) · Hacer · evaluativa · medio · 25 FP.
+ * T4 · H3 «¿Se mueve la caja menor?» (Célula D) · Hacer · evaluativa · 25 FP.
+ * REDISEÑO DE ENGANCHE: el tablero y el sobre.
  *
- *   · cada texto es el del paquete vigente de Katsumi, letra por letra: la
- *     serie 1 (con la v2 dentro) y la serie 2; los errores, en su orden
+ *   · cada texto es el del paquete vigente (d4-t4-h3-v2-rediseno.md, Katsumi
+ *     aprobado por Yujiro), letra por letra
+ *   · las cifras: el libro de Caja menor queda igual al sobre después de
+ *     cada operación, y la línea «diría» da, para cada asiento equivocado que
+ *     toca Caja menor, lo mismo que el script de Katsumi (con «−»)
  *   · las 11 combinaciones equivocadas de cada operación tienen mensaje, y
- *     sale el PRIMERO de la lista que aplique
- *   · las cifras que salen de restar se calculan; ninguna es de A2
- *   · la pantalla de Hanayama: las cuatro cuentas siempre, en su orden;
- *     «Comprobar» con dos cuentas y una a cada lado; un intento; un mensaje;
- *     el asiento completo solo después; coral solo en el error
- *   · PH8-2: mientras se pregunta, nada de la respuesta está en el DOM
- *     (textContent y outerHTML, nunca innerText)
- *   · el camino, el motor, la 0202, el panel docente y el «Así se juega»
+ *     cada error con nombre se comete con el gesto mínimo (dos toques y
+ *     «Comprobar») y sale ESE mensaje
+ *   · PH8-2: mientras se pregunta, nada de la respuesta está en el DOM, ni
+ *     en el hueco reservado de la línea «diría» (`textContent`)
+ *   · un intento; el error marca, no escribe, y a los 0,7 s escribe lo que
+ *     iba («Iba aquí»): la operación siguiente parte de ese fondo
+ *   · B4: el acierto con ✓ y borde blanco; teal y ámbar solo en «Debe» y
+ *     «Haber»; «Siguiente operación» en blanco neutro
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
-const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
-w.requestAnimationFrame = (f) => setTimeout(f, 0);
-for (const [k, v] of Object.entries({
-  window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
-  HTMLElement: w.HTMLElement, Element: w.Element, Node: w.Node, SVGElement: w.SVGElement,
-  Event: w.Event, MouseEvent: w.MouseEvent, KeyboardEvent: w.KeyboardEvent,
-  getComputedStyle: w.getComputedStyle.bind(w), matchMedia: w.matchMedia, requestAnimationFrame: w.requestAnimationFrame,
-})) {
-  Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
-}
-globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-
-const React = await import("react");
-const { createRoot } = await import("react-dom/client");
-const act = React.act;
-const h = React.createElement;
-
+const { w, h, montar, tocar, esperar, conColor, TEAL_AMBAR, CORAL, visible } = await import("./t4-dom.mjs");
 const D = await import("../../data/contabilidadT4H3.js");
+const { ESPERA_ERROR_MS } = await import("../../data/contabilidadT4Hacer.js");
 const { SUBJECTS, HACER, actividadesDeTipo, clasificacionDe } = await import("../../data/subjects.js");
 const { default: ContabilidadT4View, SeMueveLaCajaMenor, JUEGOS_T4, TEMA_T4 } = await import("../../components/ContabilidadT4View.jsx");
 const { AuthContext } = await import("../../auth/AuthProvider.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
 const { ASI_SE_JUEGA } = await import("../../data/asiSeJuega.js");
 const { inflesz } = await import("../../herramientas/inflesz.js");
-const { leer, CITA, PAQUETES, RAIZ, blobEnLaRamaFuente, blobDeLaCopia, RAMA_FUENTE } = await import("./t4-paquete.mjs");
+const { leer, PAQUETES, RAIZ } = await import("./t4-paquete.mjs");
 
-const S1 = leer(`${PAQUETES}d4-t4-h3-v1.md`);
-const S2 = leer(`${PAQUETES}d4-t4-h3-serie2.md`);
-const V2 = leer(`${PAQUETES}d4-t4-h3-h5-a4-v2-cambios.md`);
-const ASI = leer(`${PAQUETES}d4-t4-asi-se-juega-v1.md`);
-const VISTA = leer("src/components/ContabilidadT4View.jsx");
-const MIGRACION = leer("supabase/migrations/0202_t4_se_mueve_la_caja_menor.sql");
+const PAQ = leer(`${PAQUETES}d4-t4-h3-v2-rediseno.md`);
+const CAMBIOS = leer(`${PAQUETES}d4-t4-hacer-v2-cambios.md`);
 const TEMA = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T4);
-const TODAS = D.SERIES_H3.flat();
+const CUENTAS = D.CUENTAS_H3.map((c) => c.id);
+const cifra = (n) => (n < 0 ? "−" : "") + String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+/* Todas las combinaciones de una cuenta al debe y otra distinta al haber: 12, una buena. */
+const COMBINACIONES = CUENTAS.flatMap((d) => CUENTAS.filter((x) => x !== d).map((x) => ({ debe: d, haber: x })));
 
-/* ═══════════ EL PAQUETE, LEÍDO ═══════════ */
+/* ═══════════ EL JUEGO, MONTADO ═══════════ */
 
-const cita = (b, rotulo) => b.match(new RegExp(`^- \\*\\*${rotulo}:\\*\\* (?:[^«\\n]*?)${CITA}`, "m"))?.[1] ?? null;
-const operacionesDe = (md, marca) => md.slice(md.indexOf("## Operaciones"), md.indexOf("## Cierre")).split(new RegExp(`\\n(?=### ${marca}-\\d)`)).slice(1);
-const SERIE1 = operacionesDe(S1, "H3").map((b) => ({
-  enunciado: cita(b, "Enunciado"),
-  acierto: cita(b, "Acierto"),
-  subtema: b.match(/^- \*\*Subtema:\*\* (.+)$/m)[1].trim(),
-  errores: [...b.matchAll(new RegExp(`^  \\d\\. \\*[^*]+\\*[^«\\n]*: ${CITA}`, "gm"))].map((m) => m[1]),
-}));
-const SERIE2 = operacionesDe(S2, "H3s2").map((b) => ({
-  enunciado: cita(b, "Enunciado"),
-  acierto: cita(b, "Acierto"),
-  subtema: b.match(/^- \*\*Subtema:\*\* (.+)$/m)[1].trim(),
-  primerError: b.match(new RegExp(`^  1\\. \\*[^*]+\\*[^«\\n]*: ${CITA}`, "m"))?.[1] ?? null,
-}));
-const textosDe = (op) => op.errores.map((e) => e.texto);
+const Marco = ({ children }) => h("section", null, children);
+function montarJuego(props = {}) {
+  const completados = [];
+  const m = montar(h(SeMueveLaCajaMenor, { Marco, onCompletar: (...a) => completados.push(a), ...props }));
+  return { ...m, completados };
+}
+const q = (m, sel) => m.caja.querySelector(sel);
+const mitad = (m, k) => q(m, `[data-destino="${k}"]`);
+const comprobar = (m) => q(m, '[data-boton="comprobar"]');
+const siguiente = (m) => q(m, '[data-boton="seguir-hacer"]');
+/* El gesto mínimo del estudiante: la ficha del debe, la del haber y «Comprobar». */
+async function armar(m, a) {
+  await tocar(mitad(m, `${a.debe}:debe`));
+  await tocar(mitad(m, `${a.haber}:haber`));
+  await tocar(comprobar(m));
+}
+const libro = (m) => Number(q(m, "[data-libro]").dataset.libro);
+const sobre = (m) => Number(q(m, "[data-sobre]").dataset.sobre);
+const serieDe = (s, k) => ({ ...s, ops: [s.ops[k]] });
+/* Los totales que deja la serie después de sus primeras k operaciones bien hechas. */
+const totalesHasta = (s, k) => s.ops.slice(0, k).reduce((t, op) => D.conAsiento(t, op.debe, op.haber, op.monto), {});
 
 /* ═══════════ 1 · EL TEXTO, CONTRA EL PAQUETE ═══════════ */
 
-test("★★★ la copia de los paquetes de H3 es la de la punta de la rama de Katsumi (si este clon la tiene)", (t) => {
-  if (!blobEnLaRamaFuente("d4-t4-h3-v1.md")) { t.skip(`este clon no tiene ${RAMA_FUENTE}`); return; }
-  for (const f of ["d4-t4-h3-v1.md", "d4-t4-h3-serie2.md", "d4-t4-h3-h5-a4-v2-cambios.md", "d4-t4-asi-se-juega-v1.md"]) {
-    assert.equal(blobDeLaCopia(f), blobEnLaRamaFuente(f), `${f}: la copia no es la última versión aprobada`);
-  }
+test("★★★ el paquete vigente es el del rediseño (v2): mismo activity_id y mismos ítems; la v1 queda como historia", () => {
+  assert.match(PAQ, /\*\*Este archivo es la versión vigente de H3\.\*\*/);
+  assert.match(PAQ, /Mismo `activity_id` \(`t4-se-mueve-la-caja-menor`, migración 0202, sin cambios\)/);
+  assert.match(leer(`${PAQUETES}d4-t4-h3-v1.md`), /^> \*\*REEMPLAZADO\*\* por `d4-t4-h3-v2-rediseno\.md`/);
+  assert.deepEqual(D.SERIES_H3.flatMap((s) => s.ops.map((o) => o.id)), ["h3-1", "h3-2", "h3-3", "h3-4", "h3s2-1", "h3s2-2", "h3s2-3", "h3s2-4"]);
 });
 
-test("★★★ ficha: id, nombre, objetivo, consigna, subtemas y las cuatro cuentas son los del paquete", () => {
-  assert.match(S1, /\*\*Este archivo es la versión vigente\*\*/);
-  assert.match(S2, /\*\*Este archivo es la versión vigente de la serie 2\.\*\*/);
-  assert.match(S1, new RegExp(`\\| id \\| \`${D.H3_ID}\` \\|`));
-  assert.ok(S1.startsWith(`**T4 · H3 «${D.H3.nombre}»`));
-  assert.match(S1, /\| Dificultad y modalidad \| Medio · evaluativa · 25 FP/);
-  assert.ok(S1.includes(`«${D.H3.objetivo}»`));
-  const consigna = S1.slice(S1.indexOf("## Consigna"), S1.indexOf("## Cuentas disponibles"));
-  assert.deepEqual([...consigna.matchAll(new RegExp(`^- ${CITA}`, "gm"))].map((m) => m[1]), D.H3.consigna);
-  assert.equal(S1.match(/\| Subtemas \| (.+) \|/)[1], D.SUBTEMAS_H3.join(" · "));
-  const cuentas = S1.slice(S1.indexOf("## Cuentas disponibles"), S1.indexOf("## Operaciones"));
-  assert.deepEqual([...cuentas.split("\n").find((l) => l.startsWith("«")).matchAll(new RegExp(CITA, "g"))].map((m) => m[1]), D.CUENTAS_H3);
+test("★★★ ficha, consigna, rótulos, botones, resumen y cierre: los del paquete, letra por letra", () => {
+  assert.equal(D.H3_ID, "t4-se-mueve-la-caja-menor");
+  assert.equal(D.H3.nombre, "¿Se mueve la caja menor?");
+  assert.ok(PAQ.includes(`**Consigna** (17 pal. · INFLESZ 112,9; tope 24): ${D.H3.consigna}`));
+  for (const r of [D.ROTULOS_H3.billetes, D.ROTULOS_H3.soportes, D.ROTULOS_H3.suman, D.ROTULOS_H3.libro, D.ROTULOS_H3.cuenta, D.ROTULOS_H3.igual]) assert.ok(PAQ.includes(`«${r}»`), r);
+  assert.equal(D.ROTULOS_H3.sobre("Lucía"), "LO QUE TIENE LUCÍA");
+  assert.equal(D.ROTULOS_H3.sobre("Andrés"), "LO QUE TIENE ANDRÉS");
+  assert.ok(PAQ.includes("«LO QUE TIENE LUCÍA» (serie 2: «LO QUE TIENE ANDRÉS»)"));
+  assert.ok(PAQ.includes(`«${D.diriaH3(514_600, 300_000)}»`), "la línea «diría» no es la del paquete");
+  for (const b of Object.values(D.BOTON_H3)) assert.ok(PAQ.includes(`«${b}»`), b);
+  assert.ok(PAQ.includes(`«${D.resumenH3("N")}»`));
+  assert.ok(PAQ.includes(`(30 pal. · INFLESZ 75,5): ${D.CIERRE_H3.texto}`));
+  assert.ok(PAQ.includes(`«${D.CIERRE_H3.pie}»`));
+  assert.deepEqual(D.CUENTAS_H3.map((c) => c.renglones), [["Caja menor"], ["Bancos"], ["Caja"], ["Gastos", "generales"]]);
 });
 
-test("★★★ serie 1: enunciado, acierto, subtema y cada error de las cuatro operaciones, letra por letra y en el orden del paquete", () => {
-  assert.equal(SERIE1.length, 4, "no se leyeron las cuatro operaciones de la serie 1");
-  assert.deepEqual(SERIE1.map((o) => o.errores.length), [5, 6, 5, 5], "no se leyeron los errores de la serie 1");
-  D.SERIE_1.forEach((op, k) => {
-    assert.equal(op.enunciado, SERIE1[k].enunciado, `${op.id}: enunciado`);
-    assert.equal(op.acierto, SERIE1[k].acierto, `${op.id}: acierto`);
-    assert.equal(op.subtema, SERIE1[k].subtema, `${op.id}: subtema`);
-    assert.deepEqual(textosDe(op), SERIE1[k].errores, `${op.id}: los errores no son los del paquete, en su orden`);
-  });
-});
-
-test("★★★ serie 2: lo que cambia (empresa, cifras, el primer error del reembolso) es lo del paquete; lo demás, igual que la serie 1", () => {
-  assert.equal(SERIE2.length, 4, "no se leyeron las cuatro operaciones de la serie 2");
-  D.SERIE_2.forEach((op, k) => {
-    assert.equal(op.enunciado, SERIE2[k].enunciado, `${op.id}: enunciado`);
-    assert.equal(op.acierto, SERIE2[k].acierto, `${op.id}: acierto`);
-    assert.equal(op.subtema, SERIE2[k].subtema, `${op.id}: subtema`);
-  });
-  /* La trampa nombra el fondo: la de la serie 2 es la suya; los demás mensajes, los de la serie 1. */
-  assert.equal(D.SERIE_2[1].errores[0].texto, SERIE2[1].primerError);
-  assert.deepEqual(textosDe(D.SERIE_2[1]).slice(1), textosDe(D.SERIE_1[1]).slice(1));
-  for (const k of [0, 2, 3]) assert.deepEqual(textosDe(D.SERIE_2[k]), textosDe(D.SERIE_1[k]), `operación ${k + 1}: los errores no son los de la serie 1`);
-  assert.match(S2, /\*\*Igual que la serie 1:\*\* la mecánica, las cuatro cuentas, el orden de las operaciones/);
-});
-
-test("★★★ la v2 está dentro: ningún «gira», y los ocho mensajes de pares de la v2 son los de los datos", () => {
-  const todo = [D.H3.objetivo, ...D.H3.consigna, ...TODAS.flatMap((o) => [o.enunciado, o.acierto, ...textosDe(o)]), D.CIERRE_H3.texto].join("\n");
-  assert.doesNotMatch(todo, /\bgir(a|ar|ó)\b|\bcontra\b|\bsolo se mueve\b/i);
-  const pares = [...V2.matchAll(new RegExp(`^\\| H3-\\d [^|]+ \\| [^|]+ \\| [^|]+ \\| ${CITA}`, "gm"))].map((m) => m[1]);
-  assert.equal(pares.length, 8, "no se leyeron los ocho mensajes de la v2");
-  for (const p of pares) assert.ok(textosDe(D.SERIE_1.find((o) => textosDe(o).includes(p)) ?? { errores: [] }).includes(p), `falta el mensaje de la v2 «${p.slice(0, 40)}…»`);
-  /* Y van antes de «lados al revés»: es el último de cada lista. */
-  for (const op of D.SERIE_1) assert.match(textosDe(op).at(-1), /^Las dos cuentas están bien, pero al revés\./, `${op.id}: «lados al revés» no va al final`);
-});
-
-test("★★★ las 11 combinaciones equivocadas de cada operación tienen mensaje, y sale el PRIMERO de la lista que aplica", () => {
-  for (const op of TODAS) {
-    let equivocadas = 0;
-    for (const debe of D.CUENTAS_H3) for (const haber of D.CUENTAS_H3) {
-      if (debe === haber) continue;
-      const filas = [{ cuenta: debe, lado: D.DEBE }, { cuenta: haber, lado: D.HABER }];
-      const r = D.evaluarH3(op, filas);
-      if (debe === op.debe && haber === op.haber) { assert.ok(r.ok); assert.equal(r.texto, op.acierto); continue; }
-      equivocadas++;
-      assert.ok(r.texto, `${op.id}: ${debe} / ${haber} no tiene mensaje`);
-      const primero = op.errores.find((e) => e.cuando({ debe, haber }));
-      assert.equal(r.texto, primero.texto);
+test("★★★ cada operación de las dos series: tarjeta, monto, asiento, acierto, errores y página, como en el paquete", () => {
+  for (const s of D.SERIES_H3) {
+    for (const op of s.ops) {
+      const fila = PAQ.split("\n").find((l) => l.includes(`| ${op.texto} |`));
+      assert.ok(fila, `${op.id}: la tarjeta no está en el paquete`);
+      assert.ok(fila.includes(`| ${cifra(op.monto)} |`), `${op.id}: el monto`);
+      assert.ok(PAQ.includes(`| Correcto. ${op.acierto} |`), `${op.id}: el acierto`);
+      for (const e of op.errores) assert.ok(PAQ.includes(`| ${e.texto} |`), `${op.id}: «${e.texto.slice(0, 40)}»`);
+      assert.ok(PAQ.includes(`pie: «${op.pagina}»`), `${op.id}: la página`);
+      assert.ok(PAQ.includes(`asiento: ${op.debe} al debe / ${op.haber} al haber`), `${op.id}: el asiento`);
+      assert.doesNotMatch(op.texto, /\$|\d{3}\.\d{3}/, `${op.id}: la tarjeta repite el monto o el fondo`);
     }
-    assert.equal(equivocadas, 11, `${op.id}: no son 11 combinaciones equivocadas`);
-    /* Cada error del paquete sale para alguna combinación: ninguno queda escondido detrás de otro. */
-    const salen = new Set();
-    for (const debe of D.CUENTAS_H3) for (const haber of D.CUENTAS_H3) if (debe !== haber) salen.add(D.evaluarH3(op, [{ cuenta: debe, lado: D.DEBE }, { cuenta: haber, lado: D.HABER }]).texto);
-    for (const e of op.errores) assert.ok(salen.has(e.texto), `${op.id}: el error «${e.texto.slice(0, 40)}…» nunca sale`);
   }
 });
 
-test("★★★ la trampa: en el reembolso, cualquier asiento con Caja menor marca esa fila mal y da el mensaje de la trampa o el de Caja menor al haber", () => {
-  for (const op of TODAS.filter((o) => o.subtema === "Reembolso")) {
-    for (const otra of D.CUENTAS_H3.filter((c) => c !== D.CAJA_MENOR)) {
-      for (const [debe, haber] of [[D.CAJA_MENOR, otra], [otra, D.CAJA_MENOR]]) {
-        const filas = [{ cuenta: debe, lado: D.DEBE }, { cuenta: haber, lado: D.HABER }];
-        const r = D.evaluarH3(op, filas);
-        assert.equal(r.estados[filas.findIndex((f) => f.cuenta === D.CAJA_MENOR)], "incorrecta", `${op.id}: ${debe} / ${haber}`);
-        assert.equal(r.texto, debe === D.CAJA_MENOR ? op.errores[0].texto : op.errores[1].texto);
+test("★★ INFLESZ con la herramienta oficial: cada texto de 10 palabras o más da 65 o más", () => {
+  const textos = [D.H3.consigna, D.CIERRE_H3.texto, D.ALT_H3, ...D.SERIES_H3.flatMap((s) => s.ops.flatMap((o) => [o.texto, `Correcto. ${o.acierto}`, ...o.errores.map((e) => e.texto)]))];
+  for (const t of textos) {
+    const r = inflesz(t);
+    if (r.aplica) assert.ok(r.valor >= 65, `${r.valor}: ${t}`);
+  }
+});
+
+/* ═══════════ 2 · LAS CIFRAS ═══════════ */
+
+test("★★★ jugada bien, el libro de Caja menor queda igual al sobre después de cada operación; el reembolso no lo mueve", () => {
+  for (const s of D.SERIES_H3) {
+    let t = {};
+    for (const op of s.ops) {
+      assert.equal(D.libroCajaMenor(t), D.sobreSuma(op.antes), `${op.id}: el sobre antes no es el libro`);
+      t = D.conAsiento(t, op.debe, op.haber, op.monto);
+      assert.equal(D.libroCajaMenor(t), D.sobreSuma(op.despues), `${op.id}: el libro después no es el sobre`);
+    }
+    assert.equal(s.ops[1].antes.billetes + s.ops[1].antes.soportes, s.ops[0].monto, "el reembolso: billetes y soportes no dan el fondo");
+  }
+});
+
+test("★★★ la línea «diría», asiento por asiento: sale solo si toca Caja menor y no da el sobre; su cifra es la del script de Katsumi", () => {
+  const sec = CAMBIOS.slice(CAMBIOS.indexOf("══ H3 ══"), CAMBIOS.indexOf("══ H4"));
+  for (const s of D.SERIES_H3) {
+    const bloque = sec.slice(sec.indexOf(`Serie ${s.empresa}`));
+    for (const [k, op] of s.ops.entries()) {
+      const linea = bloque.split("\n").filter((l) => l.includes("línea «diría»"))[k];
+      const t = totalesHasta(s, k);
+      for (const a of COMBINACIONES.filter((x) => !(x.debe === op.debe && x.haber === op.haber))) {
+        const v = D.evaluarH3(op, a, t);
+        assert.ok(v.texto, `${op.id} ${a.debe}/${a.haber}: sin mensaje`);
+        const toca = a.debe === D.CAJA_MENOR || a.haber === D.CAJA_MENOR;
+        if (!toca) { assert.equal(v.diria, null); continue; }
+        const m = linea.match(new RegExp(`${a.debe}/${a.haber}: diría (−?[\\d.]+)( \\(oculta: igual al sobre\\))?`));
+        assert.ok(m, `${op.id} ${a.debe}/${a.haber}: no está en el script`);
+        if (m[2]) assert.equal(v.diria, null, `${op.id} ${a.debe}/${a.haber}: debía ocultarse`);
+        else assert.equal(cifra(v.diria.x), m[1], `${op.id} ${a.debe}/${a.haber}`);
+        if (v.diria) assert.equal(v.diria.y, D.sobreSuma(op.despues), "«diría» no compara con el sobre de después");
       }
     }
-    assert.match(op.errores[0].texto, /^Esta es la trampa del reembolso\./);
+  }
+  assert.equal(D.diriaH3(-300_000, 300_000), "Con tu asiento, el libro diría −300.000, pero en el sobre hay 300.000.", "el negativo no va con «−»");
+});
+
+/* ═══════════ 3 · LA PARTIDA ═══════════ */
+
+test("★★★ PH8-2: mientras se pregunta, nada de la respuesta está en el DOM, ni en el hueco reservado de «diría»", async () => {
+  for (const s of D.SERIES_H3) for (const op of s.ops) {
+    const m = montarJuego({ items: serieDe(s, s.ops.indexOf(op)) });
+    try {
+      const raiz = q(m, "[data-t4-h3]");
+      for (const x of [op.acierto, ...op.errores.map((e) => e.texto), op.pagina, "Correcto", "Incorrecto", "Iba aquí", "diría"]) {
+        assert.ok(!raiz.textContent.includes(x), `${op.id}: «${x.slice(0, 30)}» está en el texto antes de comprobar`);
+        assert.ok(!raiz.outerHTML.includes(x), `${op.id}: «${x.slice(0, 30)}» está en el HTML antes de comprobar`);
+      }
+      assert.equal(q(m, "[data-diria]"), null);
+      assert.equal(q(m, ".t4h3-diria").textContent.trim(), "", "el hueco de «diría» trae texto");
+      assert.equal(raiz.querySelector("[data-marca], [data-mensaje]"), null);
+      assert.equal(q(m, "[data-hecho]").textContent, op.texto);
+      assert.equal(q(m, "[data-monto]").textContent, cifra(op.monto));
+      /* Con una ficha puesta, todavía nada. */
+      await tocar(mitad(m, `${op.debe}:debe`));
+      assert.ok(!raiz.textContent.includes(op.acierto));
+      assert.equal(comprobar(m).getAttribute("aria-disabled"), "true");
+    } finally { m.desmontar(); }
   }
 });
 
-test("★★★ las cifras: las que salen de restar se calculan, ninguna es de A2, y el valor del asiento sale del enunciado", () => {
-  assert.deepEqual(TODAS.map((o) => o.valor), [300_000, 214_600, 150_000, 100_000, 280_000, 187_350, 165_000, 70_000]);
-  const fuente = leer("src/data/contabilidadT4H3.js");
-  assert.doesNotMatch(fuente, /\b(150_?000|100_?000|165_?000|70_?000)\b/, "una cifra que sale de restar está escrita a mano");
-  const pesos = (n) => `$${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
-  /* La apertura, el reembolso y la disminución nombran el valor; el aumento da los dos fondos y el cheque es «la diferencia». */
-  for (const op of TODAS) {
-    if (op.subtema === "Aumento del fondo") {
-      const [antes, despues] = [...op.enunciado.matchAll(/\$(\d{1,3}(?:\.\d{3})*)/g)].map((m) => Number(m[1].replace(/\./g, "")));
-      assert.equal(despues - antes, op.valor, `${op.id}: el cheque no es la diferencia de los dos fondos del enunciado`);
-      assert.match(op.enunciado, /con un cheque por la diferencia\.$/);
-      assert.ok(op.acierto.includes(pesos(op.valor)), `${op.id}: el acierto no nombra ${pesos(op.valor)}`);
-    } else assert.ok(op.enunciado.includes(pesos(op.valor)), `${op.id}: el enunciado no nombra ${pesos(op.valor)}`);
-  }
-  const cifras = new Set(TODAS.flatMap((o) => [o.enunciado, o.acierto, ...textosDe(o)]).flatMap((t) => [...t.matchAll(/\$\d{1,3}(?:\.\d{3})*/g)].map((m) => m[0])));
-  for (const deA2 of ["$500.000", "$478.100", "$21.900"]) assert.ok(!cifras.has(deA2), `H3 usa ${deA2}, que es de A2`);
-});
-
-test("★★ el cierre y su pie; INFLESZ de todo texto de 10 palabras o más, 65 o más", () => {
-  const cierre = S1.slice(S1.indexOf("## Cierre"));
-  assert.ok(cierre.includes(`«${D.CIERRE_H3.texto}»`));
-  assert.equal(D.CIERRE_H3.pie, cierre.match(new RegExp(`^- Pie: ${CITA}`, "m"))[1]);
-  const textos = [D.H3.objetivo, ...D.H3.consigna, ...TODAS.flatMap((o) => [o.enunciado, o.acierto, ...textosDe(o)]), D.CIERRE_H3.texto];
-  const medidos = textos.map((t) => ({ t, r: inflesz(t) })).filter((x) => x.r.aplica);
-  assert.ok(medidos.length >= 40);
-  assert.deepEqual(medidos.filter((x) => !x.r.cumple).map((x) => `${x.r.valor} · ${x.t}`), []);
-});
-
-test("★★★ los textos de interfaz son los que aprobó Katsumi en el paquete («Textos de interfaz»), y no queda ninguna marca de pendiente", () => {
-  const i = S1.indexOf("## Textos de interfaz");
-  assert.ok(i > 0, "el paquete de H3 no trae la sección de textos de interfaz revisados");
-  const sec = S1.slice(i, S1.indexOf("\n## ", i + 5));
-  const citas = new Set([...sec.matchAll(new RegExp(CITA, "g"))].map((m) => m[1]));
-  for (const t of [D.MISMO_LADO, ...Object.values(D.BOTON_H3), D.CORRECTO, D.INCORRECTO, D.ROTULO_ASIENTO_H3]) assert.ok(citas.has(t), `«${t}» no está entre los textos aprobados`);
-  assert.ok(citas.has(D.resumenH3("N", 4)), "el resumen no es el aprobado");
-  assert.match(sec, /\*\*Demo de Así se juega:\*\* su acierto es el texto alternativo de la apertura de Papelería Arcoíris\. Aprobado\./);
-  assert.equal(D.EJEMPLO_H3.acierto, D.ALT_H3);
-  assert.doesNotMatch(leer("src/data/contabilidadT4H3.js"), /PENDIENTE DE REVISIÓN/);
-});
-
-/* ═══════════ 2 · LO QUE SE VE ═══════════ */
-
-const Marco = ({ children }) => h("div", { "data-marco": true }, children);
-const montar = async (props = {}) => {
-  const caja = document.createElement("div");
-  document.body.appendChild(caja);
-  const raiz = createRoot(caja);
-  const completados = [];
-  await act(async () => { raiz.render(h(SeMueveLaCajaMenor, { Marco, items: D.SERIE_1, onCompletar: (...a) => completados.push(a), ...props })); });
-  return { caja, completados, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
-};
-const tocar = async (el) => {
-  assert.ok(el, "no está el elemento que se quería tocar");
-  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
-};
-const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent.trim() === texto) ?? null;
-const lado = (caja, k, l) => caja.querySelectorAll(`[data-fila-asiento="${k}"] > div:last-child > button`)[l === D.DEBE ? 0 : 1];
-async function armar(caja, debe, haber) {
-  await tocar(boton(caja, debe));
-  await tocar(lado(caja, 0, D.DEBE));
-  await tocar(boton(caja, haber));
-  await tocar(lado(caja, 1, D.HABER));
-}
-const paleta = (caja) => [...caja.querySelectorAll("[data-constructor] button")].filter((b) => D.CUENTAS_H3.includes(b.textContent.trim())).map((b) => b.textContent.trim());
-const delatores = (op) => [op.acierto, ...textosDe(op), D.CORRECTO, D.INCORRECTO, D.ROTULO_ASIENTO_H3];
-
-test("★★★ la pantalla: la tarjeta con el enunciado; las cuatro cuentas siempre, en su orden; las operaciones en el orden de la vida del fondo", async () => {
-  const m = await montar();
-  try {
-    for (const op of D.SERIE_1) {
-      assert.equal(m.caja.querySelector(`[data-tarjeta-operacion="${op.id}"] [data-enunciado]`).textContent, op.enunciado);
-      assert.deepEqual(paleta(m.caja), D.CUENTAS_H3, `${op.id}: la paleta no son las cuatro cuentas en su orden`);
-      assert.equal(m.caja.querySelectorAll("[data-fila-asiento]").length, 2);
-      await armar(m.caja, op.debe, op.haber);
-      await tocar(boton(m.caja, D.BOTON_H3.comprobar));
-      await tocar(boton(m.caja, D.SERIE_1.at(-1) === op ? D.BOTON_H3.verResumen : D.BOTON_H3.siguiente));
-    }
-  } finally { m.desmontar(); }
-});
-
-test("★★★ «Comprobar» se activa solo con dos cuentas y una a cada lado; con las dos al mismo lado avisa y no se comprueba", async () => {
-  const m = await montar();
-  try {
-    const comprobar = () => boton(m.caja, D.BOTON_H3.comprobar);
-    assert.equal(comprobar().disabled, true, "vacío");
-    await tocar(boton(m.caja, D.CAJA_MENOR));
-    assert.equal(comprobar().disabled, true, "una cuenta sin lado");
-    await tocar(lado(m.caja, 0, D.DEBE));
-    assert.equal(comprobar().disabled, true, "una cuenta con lado");
-    await tocar(boton(m.caja, D.BANCOS));
-    await tocar(lado(m.caja, 1, D.DEBE));
-    assert.equal(comprobar().disabled, true, "dos cuentas al mismo lado");
-    assert.equal(m.caja.querySelector("[data-aviso]").textContent, D.MISMO_LADO);
-    await tocar(lado(m.caja, 1, D.HABER));
-    assert.equal(comprobar().disabled, false, "dos cuentas, una a cada lado");
-    assert.equal(m.caja.querySelector("[data-aviso]"), null);
-  } finally { m.desmontar(); }
-});
-
-test("★★★ PH8-2: mientras se arma, nada de la respuesta está en el DOM (textContent y outerHTML, no innerText)", async () => {
-  const m = await montar();
-  try {
-    for (const op of D.SERIE_1) {
-      const comprobarSinDelatar = (cuando) => {
-        const dom = `${m.caja.textContent}\n${m.caja.outerHTML}`;
-        for (const x of delatores(op)) assert.ok(!dom.includes(x), `${op.id} ${cuando}: el DOM ya trae «${x.slice(0, 50)}»`);
-        assert.equal(m.caja.querySelectorAll("[data-panel], [data-asiento-completo], [data-asiento], [data-texto-retro]").length, 0, `${op.id} ${cuando}: hay devolución montada`);
-        assert.doesNotMatch(m.caja.outerHTML, /data-correct|data-respuesta|aria-(?:checked|selected)="true"/);
-      };
-      comprobarSinDelatar("vacío");
-      /* Armado con la respuesta correcta, y antes de comprobar: tampoco. */
-      await armar(m.caja, op.debe, op.haber);
-      comprobarSinDelatar("armado");
-      await tocar(boton(m.caja, D.BOTON_H3.comprobar));
-      await tocar(boton(m.caja, D.SERIE_1.at(-1) === op ? D.BOTON_H3.verResumen : D.BOTON_H3.siguiente));
-    }
-  } finally { m.desmontar(); }
-});
-
-test("★★★ al comprobar: un solo mensaje, cada fila bien o mal, el asiento completo con el valor; coral solo en el error; un intento", async () => {
-  const coral = /rgb\(231,\s*111,\s*81\)|#e76f51/i;
-  for (const op of D.SERIE_1) {
-    /* El acierto, los lados al revés, y una cuenta equivocada al debe. */
-    const otra = D.CUENTAS_H3.find((c) => c !== op.debe && c !== op.haber);
-    for (const [debe, haber] of [[op.debe, op.haber], [op.haber, op.debe], [otra, op.haber]]) {
-      const m = await montar({ items: [op] });
-      try {
-        await armar(m.caja, debe, haber);
-        await tocar(boton(m.caja, D.BOTON_H3.comprobar));
-        const r = D.evaluarH3(op, [{ cuenta: debe, lado: D.DEBE }, { cuenta: haber, lado: D.HABER }]);
-        const panel = m.caja.querySelector("[data-panel]");
-        assert.equal(panel.dataset.panel, r.ok ? "acierto" : "error");
-        assert.equal(m.caja.querySelectorAll("[data-texto-retro]").length, 1, `${op.id}: más de un mensaje`);
-        assert.equal(panel.querySelector("[data-palabra]").textContent, r.ok ? D.CORRECTO : D.INCORRECTO);
-        assert.equal(panel.querySelector("[data-texto-retro]").textContent, r.texto);
-        assert.equal(coral.test(panel.getAttribute("style")), !r.ok, `${op.id}: coral en la devolución`);
-        /* Cada fila: borde coral solo si está mal. */
-        const filas = [...m.caja.querySelectorAll("[data-fila-asiento]")];
-        filas.forEach((f, k) => assert.equal(coral.test(f.getAttribute("style")), r.estados[k] === "incorrecta", `${op.id}: fila ${k}`));
-        /* El asiento completo, con el valor del enunciado. */
-        const as = m.caja.querySelector("[data-asiento-completo]");
-        assert.ok(as.textContent.includes(op.debe) && as.textContent.includes(op.haber));
-        assert.equal(as.textContent.split(`$${String(op.valor).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`).length - 1, 4, `${op.id}: el valor no está en las dos líneas y las dos sumas`);
-        /* Un intento: el constructor queda bloqueado y «Comprobar» ya no está. */
-        assert.equal(boton(m.caja, D.BOTON_H3.comprobar), null);
-        assert.ok([...m.caja.querySelectorAll("[data-constructor] button")].every((b) => b.disabled));
-      } finally { m.desmontar(); }
+test("★★★ gesto mínimo: cada error con nombre de cada operación se comete con dos toques y «Comprobar», y sale ESE mensaje", async () => {
+  for (const s of D.SERIES_H3) {
+    for (const [k, op] of s.ops.entries()) {
+      for (const e of op.errores) {
+        const a = COMBINACIONES.find((x) => !(x.debe === op.debe && x.haber === op.haber) && op.errores.find((y) => y.cuando(x)) === e);
+        assert.ok(a, `${op.id}: «${e.texto.slice(0, 40)}» no lo dispara ningún asiento`);
+        const m = montarJuego({ items: serieDe(s, k) });
+        try {
+          await armar(m, a);
+          assert.equal(q(m, "[data-mensaje]").dataset.mensaje, "error");
+          assert.equal(visible(q(m, "[data-devolucion]")), e.texto, `${op.id} ${a.debe}/${a.haber}`);
+        } finally { m.desmontar(); }
+      }
     }
   }
 });
 
-test("★★★ se sortea la serie, no las operaciones; al terminar, el cierre y onCompletar con el porcentaje y el asiento armado en el error", async () => {
-  assert.equal(D.sortearH3(() => 0), D.SERIE_1);
-  assert.equal(D.sortearH3(() => 0.99), D.SERIE_2);
-  assert.match(VISTA, /useTanda\(\(\) => items \?\? sortearH3\(\)\)/);
-  const deH3 = VISTA.slice(VISTA.indexOf("export function SeMueveLaCajaMenor"));
-  /* Solo el componente de H3: lo que viene después es de otra pieza. */
-  const soloH3 = deH3.slice(0, deH3.indexOf("\n/*\n * ═══", 10) > 0 ? deH3.indexOf("\n/*\n * ═══", 10) : undefined);
-  assert.ok(soloH3.length > 1000 && soloH3.includes("ConstructorAsiento"), "no se encontró el componente de H3");
-  assert.doesNotMatch(soloH3, /barajar/);
-  const m = await montar();
+test("★★★ una cuenta no va a los dos lados: tocar su otra mitad mueve la ficha", async () => {
+  const m = montarJuego({ items: D.SERIE_1 });
   try {
-    for (const [k, op] of D.SERIE_1.entries()) {
-      if (k === 1) await armar(m.caja, D.CAJA_MENOR, D.BANCOS); else await armar(m.caja, op.debe, op.haber);
-      await tocar(boton(m.caja, D.BOTON_H3.comprobar));
-      await tocar(boton(m.caja, k === 3 ? D.BOTON_H3.verResumen : D.BOTON_H3.siguiente));
+    await tocar(mitad(m, "caja-menor:debe"));
+    await tocar(mitad(m, "caja-menor:haber"));
+    assert.equal(mitad(m, "caja-menor:debe").getAttribute("aria-pressed"), "false");
+    assert.equal(mitad(m, "caja-menor:haber").getAttribute("aria-pressed"), "true");
+  } finally { m.desmontar(); }
+});
+
+test("★★★ el acierto suma en las dos mitades, cambia el sobre y el libro dice «= sobre»; el error marca, no escribe, y a los 0,7 s escribe lo que iba", async () => {
+  const s = D.SERIE_1;
+  /* Operación 2 (el reembolso), con la 1 ya jugada: la trampa. */
+  for (const modo of ["bien", "mal"]) {
+    const m = montarJuego({ items: s });
+    try {
+      await armar(m, s.ops[0]);
+      await tocar(siguiente(m));
+      const op = s.ops[1];
+      assert.equal(sobre(m), 300_000);
+      assert.ok(q(m, "[data-fila-sobre=soportes]").textContent.includes("214.600"), "el reembolso trae sus soportes");
+      if (modo === "bien") {
+        await armar(m, op);
+        assert.equal(mitad(m, "gastos-generales:debe").dataset.marca, "bien");
+        assert.equal(mitad(m, "bancos:haber").dataset.marca, "bien");
+        await esperar(500);
+        assert.equal(mitad(m, "gastos-generales:debe").textContent.replace(/[^\d.]/g, ""), "214.600");
+        assert.equal(mitad(m, "bancos:haber").textContent.replace(/[^\d.]/g, ""), "514.600");
+        assert.equal(q(m, "[data-diria]"), null);
+      } else {
+        await armar(m, { debe: D.CAJA_MENOR, haber: D.BANCOS });
+        assert.equal(mitad(m, "caja-menor:debe").dataset.marca, "mal");
+        assert.equal(mitad(m, "bancos:haber").dataset.marca, "bien");
+        assert.equal(mitad(m, "gastos-generales:debe").dataset.marca, undefined, "«Iba aquí» antes de tiempo");
+        assert.equal(q(m, "[data-diria]").textContent, `✗ ${D.diriaH3(514_600, 300_000)}`);
+        assert.equal(libro(m), 300_000, "en el error, el libro se movió antes de tiempo");
+        assert.equal(sobre(m), 300_000);
+        assert.ok(CORAL.test(w.getComputedStyle(mitad(m, "caja-menor:debe")).borderTopColor), "el error no va en coral");
+        await esperar(ESPERA_ERROR_MS + 50);
+        assert.equal(mitad(m, "gastos-generales:debe").dataset.marca, "era");
+      }
+      await esperar(500);
+      assert.equal(libro(m), 300_000);
+      assert.equal(sobre(m), 300_000);
+      assert.equal(q(m, "[data-fila-sobre=soportes]").textContent.trim(), "", "tras el reembolso los soportes siguen en el sobre");
+      assert.ok(q(m, "[data-igual-sobre]"), "el libro no dice «= sobre»");
+    } finally { m.desmontar(); }
+  }
+});
+
+test("★★★ la serie entera, todo mal: cada operación parte del fondo correcto, y al final libro = sobre = 350.000", async () => {
+  const s = D.SERIE_1;
+  const m = montarJuego({ items: s });
+  try {
+    for (const op of s.ops) {
+      assert.equal(libro(m), D.sobreSuma(op.antes), `${op.id}: no parte del fondo correcto`);
+      await armar(m, { debe: op.haber, haber: op.debe });
+      await esperar(ESPERA_ERROR_MS + 50);
+      await esperar(500);
+      assert.equal(libro(m), D.sobreSuma(op.despues), `${op.id}: el libro no quedó en el sobre`);
+      await tocar(siguiente(m));
     }
+    assert.ok(q(m, "[data-fin]"));
+    assert.equal(m.completados[0][0], 0);
+  } finally { m.desmontar(); }
+});
+
+test("★★★ «Operación n de 4» coincide con el pulso activo al llegar y después de responder", async () => {
+  const m = montarJuego({ items: D.SERIE_2 });
+  try {
+    for (const [k, op] of D.SERIE_2.ops.entries()) {
+      const avance = () => ({ n: Number(q(m, "[data-avance]").textContent.match(/Operación (\d) de 4/)[1]), activo: [...m.caja.querySelectorAll("[data-nodo]")].findIndex((x) => x.dataset.nodo === "actual") + 1 });
+      assert.deepEqual(avance(), { n: k + 1, activo: k + 1 }, `${op.id} al llegar`);
+      await armar(m, op);
+      assert.deepEqual(avance(), { n: k + 1, activo: k + 1 }, `${op.id} tras responder`);
+      await tocar(siguiente(m));
+    }
+  } finally { m.desmontar(); }
+});
+
+test("★★★ B4: el acierto es ✓ y borde blanco; teal y ámbar solo en «Debe» y «Haber»; seguir en blanco neutro", async () => {
+  const m = montarJuego({ items: D.SERIE_1 });
+  try {
+    await armar(m, D.SERIE_1.ops[0]);
+    await esperar(500);
+    const raiz = q(m, "[data-t4-h3]");
+    assert.deepEqual([...new Set(conColor(raiz, TEAL_AMBAR).map((e) => e.textContent.trim()))].filter((x) => x && !/^Operación/.test(x)).sort(), ["Debe", "Haber"]);
+    assert.deepEqual(conColor(q(m, "[data-figura]"), CORAL), [], "hay coral en un acierto");
+    for (const k of ["caja-menor:debe", "bancos:haber"]) {
+      assert.equal(mitad(m, k).dataset.marca, "bien");
+      assert.equal(w.getComputedStyle(mitad(m, k)).borderTopColor, "rgb(248, 249, 250)");
+    }
+    const b = siguiente(m);
+    assert.equal(b.textContent, D.BOTON_H3.siguiente);
+    assert.equal(w.getComputedStyle(b).backgroundColor, "rgb(248, 249, 250)");
+  } finally { m.desmontar(); }
+  const imports = leer("src/components/t4/SeMueveLaCajaMenor.jsx").split("\n").filter((l) => /^import /.test(l)).join("\n");
+  assert.doesNotMatch(imports, /\b(Opcion|Opciones|ConstructorAsiento|Responder|AsientoEnLineas)\b/);
+});
+
+test("★★★ al terminar: el cierre con su texto y su pie, y onCompletar con el porcentaje y el asiento armado en cada error", async () => {
+  const s = D.SERIE_1;
+  const m = montarJuego({ items: s });
+  try {
+    for (const [k, op] of s.ops.entries()) {
+      await armar(m, k === 1 ? { debe: D.CAJA_MENOR, haber: D.BANCOS } : op);
+      assert.equal(siguiente(m).textContent, k === 3 ? D.BOTON_H3.verResumen : D.BOTON_H3.siguiente);
+      await tocar(siguiente(m));
+    }
+    assert.equal(q(m, "[data-resumen]").textContent, "3 de 4 asientos bien armados.");
+    assert.equal(q(m, "[data-cierre]").textContent, D.CIERRE_H3.texto);
+    assert.equal(q(m, "[data-pie-cierre]").textContent, D.CIERRE_H3.pie);
     const [pct, , detalle] = m.completados[0];
     assert.equal(pct, 75);
-    assert.equal(detalle.length, 4);
-    assert.deepEqual(detalle[1], { item: "h3-2", ok: false, intentos: 1, respuesta: "Caja menor / Bancos", orden: 2 });
-    assert.equal(m.caja.querySelector("[data-resumen]").textContent, D.resumenH3(3, 4));
-    assert.equal(m.caja.querySelector("[data-cierre]").textContent, D.CIERRE_H3.texto);
-    assert.equal(m.caja.querySelector("[data-pie-cierre]").textContent, D.CIERRE_H3.pie);
+    assert.deepEqual(detalle.map((x) => [x.item, x.ok, x.respuesta]), [["h3-1", true, null], ["h3-2", false, "caja-menor / bancos"], ["h3-3", true, null], ["h3-4", true, null]]);
   } finally { m.desmontar(); }
 });
 
-test("★★★ en la página del juego hay exactamente UN [data-t4-h3]: la partida; la demo de «Así se juega» lleva el suyo propio", async () => {
-  try { globalThis.localStorage.clear(); } catch { /* sin almacenamiento, sale igual */ }
-  const caja = document.createElement("div");
-  document.body.appendChild(caja);
-  const raiz = createRoot(caja);
-  await act(async () => {
-    raiz.render(h(AuthContext.Provider, { value: { usuario: null, pedirCuenta: () => {} } },
-      h(ContabilidadT4View, { modo: HACER, nodoInicial: D.H3_ID, onBack: () => {} })));
-  });
+test("★★ en modo demo: sin Encabezado ni Pulsos, CON «Comprobar» (la mano lo toca), sin seguir y sin reportar nada", async () => {
+  const m = montarJuego({ items: D.EJEMPLO_H3, modoDemo: true });
   try {
-    assert.ok(caja.querySelector("[data-asj-demo]"), "no salió el «Así se juega»");
-    assert.equal(caja.querySelectorAll("[data-t4-h3-demo]").length, 1, "la demo no lleva su propio atributo");
-    assert.equal(caja.querySelectorAll("[data-t4-h3]").length, 1, "hay más de un [data-t4-h3] en la página");
-    assert.ok(caja.querySelector("[data-t4-h3]").closest("[data-partida]"), "el [data-t4-h3] no es el de la partida");
-  } finally { act(() => raiz.unmount()); caja.remove(); }
+    assert.ok(q(m, "[data-t4-h3-demo]"));
+    assert.equal(q(m, "[data-t4-h3]"), null);
+    assert.equal(q(m, "[data-encabezado]"), null);
+    assert.equal(q(m, "[data-avance]"), null);
+    assert.ok(comprobar(m), "en la demo no está «Comprobar»");
+    assert.ok(m.caja.textContent.includes("LO QUE TIENE JULIO"));
+    await armar(m, D.EJEMPLO_H3.ops[0]);
+    assert.equal(visible(q(m, "[data-devolucion]")), `Correcto. ${D.EJEMPLO_H3.ops[0].acierto}`);
+    assert.equal(siguiente(m), null);
+    assert.equal(m.completados.length, 0);
+  } finally { m.desmontar(); }
 });
 
-/* ═══════════ 3 · CAMINO, CATÁLOGO, PANEL Y «ASÍ SE JUEGA» ═══════════ */
+/* ═══════════ 4 · CAMINO, CATÁLOGO, PANEL Y «ASÍ SE JUEGA» ═══════════ */
 
-test("★★★ en T4, justo después de A2: evaluativa, medio, 25 FP; la vista lo abre", () => {
+test("★★★ en T4, justo después de A2: evaluativa, medio, 25 FP; la vista la abre con el componente nuevo", () => {
   assert.deepEqual(clasificacionDe("contabilidad", TEMA_T4, D.H3_ID), { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
   const ids = TEMA.actividades.map((x) => x.id);
   assert.equal(ids.indexOf(D.H3_ID), ids.indexOf("t4-a2-el-fondo-fijo") + 1);
-  assert.deepEqual(JUEGOS_T4.map((j) => j.id).sort(), actividadesDeTipo(TEMA, HACER).map((a) => a.id).sort());
   assert.equal(JUEGOS_T4.find((j) => j.id === D.H3_ID).Mecanica, SeMueveLaCajaMenor);
+  assert.equal(actividadesDeTipo(TEMA, HACER).find((a) => a.id === D.H3_ID).nombre, D.H3.nombre);
 });
 
-test("★★★ la 0202: del rango de la célula, un insert aditivo y repetible, con su comprobación y su deshacer escrito sin correr", () => {
-  assert.match(MIGRACION, /\('t4-se-mueve-la-caja-menor',\s*'contabilidad',\s*'efectivo-caja-menor-bancos',\s*'evaluativa',\s*'medio',\s*25,\s*1\)/);
-  assert.match(MIGRACION, /on conflict \(activity_id\) do nothing;/);
-  const sentencias = MIGRACION.split("\n").filter((l) => !l.trim().startsWith("--")).join("\n");
-  assert.doesNotMatch(sentencias, /\b(alter|update|delete|drop|truncate)\b/i);
-  assert.match(sentencias, /select activity_id[\s\S]*where activity_id = 't4-se-mueve-la-caja-menor';\s*$/);
-  assert.match(MIGRACION, /^--\s+delete from public\.actividad_catalogo where activity_id = 't4-se-mueve-la-caja-menor';$/m);
-  assert.match(MIGRACION, /^-- Del rango de la Célula D \(0200-0249\)\./m);
+test("★★★ la 0202 no cambia y es la única que nombra la actividad; ninguna migración nombra sus ítems", () => {
   const dir = new URL("supabase/migrations/", RAIZ);
   const archivos = readdirSync(dir);
-  assert.ok(archivos.includes("0001_profiles.sql"));
   assert.deepEqual(archivos.filter((f) => readFileSync(new URL(f, dir), "utf8").includes(D.H3_ID)), ["0202_t4_se_mueve_la_caja_menor.sql"]);
-  assert.deepEqual(archivos.filter((f) => f.startsWith("0202")), ["0202_t4_se_mueve_la_caja_menor.sql"]);
+  assert.match(leer("supabase/migrations/0202_t4_se_mueve_la_caja_menor.sql"), /\('t4-se-mueve-la-caja-menor',\s*'contabilidad',\s*'efectivo-caja-menor-bancos',\s*'evaluativa',\s*'medio',\s*25,\s*1\)/);
+  for (const op of D.SERIES_H3.flatMap((s) => s.ops)) assert.deepEqual(archivos.filter((f) => readFileSync(new URL(f, dir), "utf8").includes(`'${op.id}'`)), [], op.id);
 });
 
-test("★★★ el panel docente: todo item_id de las dos series tiene etiqueta, leída del enunciado, y la regla vive en el bloque de T4", () => {
-  assert.equal(new Set(TODAS.map((o) => o.id)).size, 8, "dos operaciones con el mismo id");
-  for (const op of TODAS) assert.equal(etiquetaDeItem(D.H3_ID, op.id), recortar(op.enunciado), op.id);
-  const fuente = leer("src/docente/etiquetasItem.js");
-  const bloque = fuente.slice(fuente.indexOf("── T4 «Efectivo, caja menor y bancos» (Célula D) ──"), fuente.indexOf("── Repaso del capítulo 5 (Célula E) ──"));
-  assert.match(bloque, /"t4-se-mueve-la-caja-menor": \(id\) => operacionDeItemT4H3\(id\),/);
+test("★★★ el panel docente lee cada item_id que guarda la partida, por el texto de su operación", () => {
+  for (const op of D.SERIES_H3.flatMap((s) => s.ops)) assert.equal(etiquetaDeItem(D.H3_ID, op.id), recortar(op.texto), op.id);
+  assert.equal(etiquetaDeItem(D.H3_ID, "h3-9"), null);
 });
 
-test("★★★ «Así se juega»: pasos, ejemplo y texto alternativo de Katsumi; el ejemplo no está en ninguna serie; la mano arma la apertura y comprueba", async () => {
+test("★★★ «Así se juega»: pasos, ejemplo y texto alternativo del paquete; la mano pone las dos fichas y toca «Comprobar»", () => {
   const asi = ASI_SE_JUEGA[D.H3_ID];
-  assert.ok(asi);
-  const sec = ASI.slice(ASI.indexOf("## H3 · "), ASI.indexOf("## H4 · "));
-  assert.deepEqual([...sec.matchAll(new RegExp(`^  \\d\\. ${CITA}`, "gm"))].map((m) => m[1]), asi.pasos);
-  assert.equal(D.EJEMPLO_H3.enunciado, sec.match(new RegExp(`\\*\\*Ejemplo \\(\`demo\`\\):\\*\\* ${CITA}`))[1]);
-  assert.equal(asi.alt, sec.match(new RegExp(`\\*\\*Texto alternativo \\(\`alt\`\\):\\*\\* ${CITA}`))[1]);
-  assert.match(sec, /La mano saca «Caja menor» al debe y «Bancos» al haber, y confirma\./);
-  assert.ok(!TODAS.some((o) => o.enunciado === D.EJEMPLO_H3.enunciado));
-  assert.deepEqual([D.EJEMPLO_H3.debe, D.EJEMPLO_H3.haber], [D.CAJA_MENOR, D.BANCOS]);
-  /* La demo, montada: el guion de la mano, tal cual, da el acierto, y no reporta nada. */
-  const m = await montar({ modoDemo: true, items: [D.EJEMPLO_H3] });
+  assert.equal(asi.consigna, D.H3.consigna);
+  assert.deepEqual(asi.pasos, D.PASOS_H3);
+  for (const p of D.PASOS_H3) assert.ok(PAQ.includes(`| ${p} |`), p);
+  assert.ok(PAQ.includes(`| ${D.EJEMPLO_H3.ops[0].texto} |`));
+  assert.ok(PAQ.includes(`| Correcto. ${D.EJEMPLO_H3.ops[0].acierto} |`));
+  assert.ok(PAQ.includes(`| ${D.ALT_H3} |`));
+  assert.deepEqual(asi.guion.toques.map((t) => t.en), ['[data-destino="caja-menor:debe"]', '[data-destino="bancos:haber"]', '[data-boton="comprobar"]']);
+  assert.ok(!D.SERIES_H3.some((s) => s.empresa === D.EJEMPLO_H3.empresa), "el ejemplo es de una serie");
+});
+
+test("★★★ en la página del juego hay exactamente UN [data-t4-h3]: la partida; la demo lleva el suyo", async () => {
+  try { w.localStorage.clear(); } catch { /* sin almacenamiento */ }
+  const m = montar(h(AuthContext.Provider, { value: { usuario: null, pedirCuenta: () => {} } }, h(ContabilidadT4View, { modo: HACER, nodoInicial: D.H3_ID, onBack: () => {} })));
+  await esperar(0);
   try {
-    for (const toque of asi.guion.toques) {
-      const el = toque.en ? m.caja.querySelector(toque.en) : boton(m.caja, toque.texto);
-      assert.ok(el, `el guion no encuentra «${toque.en ?? toque.texto}»`);
-      await tocar(el);
-    }
-    assert.equal(m.caja.querySelector("[data-panel]").dataset.panel, "acierto");
-    assert.equal(m.completados.length, 0);
+    assert.equal(m.caja.querySelectorAll("[data-t4-h3]").length, 1);
+    assert.equal(m.caja.querySelectorAll("[data-t4-h3-demo]").length, 1);
+    assert.ok(m.caja.querySelector("[data-asi-se-juega] [data-t4-h3-demo]"));
   } finally { m.desmontar(); }
 });

@@ -89,11 +89,8 @@ import { unidadDeN1 as unidadDeT5N1 } from "../contabilidad/t5N1.js";
 import { unidadDeN3 as unidadDeT5N3 } from "../contabilidad/t5N3.js";
 import { unidadDeN4 as unidadDeT5N4 } from "../contabilidad/t5N4.js";
 import { hechoDeItemH1 as hechoDeItemT4H1 } from "../data/contabilidadT4H1.js";
-import { casoDeItemH2 as casoDeItemT4H2 } from "../data/contabilidadT4H2.js";
 import { operacionDeItemH3 as operacionDeItemT4H3 } from "../data/contabilidadT4H3.js";
 import { preguntaDeItemH4 as preguntaDeItemT4H4 } from "../data/contabilidadT4H4.js";
-import { casoDeItemH5 as casoDeItemT4H5 } from "../data/contabilidadT4H5.js";
-import { partidaDeItemH6 as partidaDeItemT4H6 } from "../data/contabilidadT4H6.js";
 import { partidaDeItemH7 as partidaDeItemT4H7 } from "../data/contabilidadT4H7.js";
 import { itemDeH8 as itemDeT4H8 } from "../data/contabilidadT4H8.js";
 import { unidadDeR5_2 } from "../data/repasoCap5ToroNegroJuego.js";
@@ -790,16 +787,10 @@ Object.assign(REGLAS, {
   /* ── T4 «Efectivo, caja menor y bancos» (Célula D) ── */
   /* T4 · H1. El ítem es el hecho, y se lee por su texto. */
   "t4-entra-o-sale-de-caja": (id) => hechoDeItemT4H1(id),
-  /* T4 · H2. El ítem es el caso, y se lee por su texto. */
-  "t4-el-control-que-se-saltaron": (id) => casoDeItemT4H2(id),
   /* T4 · H3. El ítem es la operación (de cualquiera de las dos series), y se lee por su enunciado. */
   "t4-se-mueve-la-caja-menor": (id) => operacionDeItemT4H3(id),
-  /* T4 · H4. El ítem es «ronda:pregunta» (h4-3:cheque), y se lee por el mes y la pregunta. */
+  /* T4 · H4 «El arqueo de caja menor», con H5 dentro. El ítem es «ronda:pregunta» (h5-1:cuenta), y se lee por la ronda y la pregunta. H2, H5 y H6 salieron del catálogo (la migración de catálogo de Erwin, en su rango). */
   "t4-el-arqueo-de-rosa": (id) => preguntaDeItemT4H4(id),
-  /* T4 · H5. El ítem es el caso, y se lee por la empresa y la decisión. */
-  "t4-al-empleado-o-al-gasto": (id) => casoDeItemT4H5(id),
-  /* T4 · H6. El ítem es la partida, y se lee por su texto. */
-  "t4-quien-se-entero-primero": (id) => partidaDeItemT4H6(id),
   /* T4 · H7. El ítem es la partida de su serie, o uno de los dos saldos. */
   "t4-concilia-la-cuenta": (id) => partidaDeItemT4H7(id),
   /* T4 · H8. El ítem es la partida (etapa 1), su asiento (etapa 2) o el saldo del mayor (etapa 3). */

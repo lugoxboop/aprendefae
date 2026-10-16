@@ -1,5 +1,5 @@
 {
- "_": "Cómo juega la sonda las pantallas de Aprender con figura operable (A0 y A1 del rediseño de enganche). Por pieza y pantalla, en orden: click (selector dentro de la pieza) o arrastra (selector y fracción del ancho), espera en ms, mide (el nombre del momento) y veredicto (acierto o error: si la pantalla da otro, la sonda sale con 2). Se miden los errores y los aciertos. Ver README.",
+ "_": "Cómo juega la sonda las pantallas de Aprender con figura operable (A0 y A1 del rediseño de enganche). Por pieza y pantalla, en orden: click (selector dentro de la pieza) o arrastra (selector y fracción del ancho), espera en ms, mide (el nombre del momento) y veredicto (acierto o error: si la pantalla da otro, la sonda sale con 2). Se miden los errores y los aciertos. Los Hacer no van aquí: su gesto depende de la tarjeta que salió, así que lo da la clave (enganche_clave.mjs), con la misma forma de toques en orden y su veredicto. Ver README.",
  "t4-a0-el-activo-corriente": {
   "la-prueba": [
    {"arrastra": "[data-pista]", "hasta": 0.35, "espera": 300, "mide": "arrastre a medio año"},
