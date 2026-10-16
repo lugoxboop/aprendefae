@@ -120,7 +120,8 @@ export default function ContabilidadTema5View({ modo = null, nodoInicial = null,
               onClick={onBack}
               aria-label="Volver a Contabilidad"
               style={{
-                display: "flex", alignItems: "center", justifyContent: "center", padding: "8px",
+                /* Lote 6d: 44 de blanco táctil (medía 36: 20 del chevrón y 8 de relleno por lado). */
+                display: "flex", alignItems: "center", justifyContent: "center", padding: "8px", minWidth: "44px", minHeight: "44px", boxSizing: "border-box",
                 borderRadius: "999px", background: "rgba(248,249,250,0.06)",
                 border: "1px solid rgba(248,249,250,0.14)", cursor: "pointer",
               }}
@@ -171,7 +172,8 @@ export default function ContabilidadTema5View({ modo = null, nodoInicial = null,
                 type="button"
                 onClick={() => { resumen.limpiar(); setNodoAbierto(null); }}
                 style={{
-                  marginBottom: "16px", padding: "8px 14px", borderRadius: "999px",
+                  /* Lote 6d: 44 de alto como mínimo (blanco táctil). */
+                  marginBottom: "16px", padding: "8px 14px", minHeight: "44px", borderRadius: "999px",
                   background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)",
                   color: FAE.text, cursor: "pointer", fontFamily: "Sora, sans-serif", fontSize: "12.5px",
                 }}

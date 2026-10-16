@@ -166,6 +166,7 @@ MARCO = """() => { const e = document.querySelector('[data-hecho], [data-ficha],
   if (!s) return false; s.setAttribute('data-sonda-marco', ''); return true; }"""
 VEREDICTO = """() => { const m = document.querySelector('[data-sonda-marco]'); if (!m) return null;
   const p = m.querySelector('[data-panel]'); if (p) return p.dataset.panel;
+  const ms = m.querySelector('[data-mensaje]'); if (ms) return ms.dataset.mensaje === 'acierto' ? 'acierto' : 'error';   // lote 6d: el bloque de mensaje lleva el veredicto como estado
   const r = [...m.querySelectorAll('[role="status"]')].map((e) => e.textContent.trim()).find((t) => /^(Correcto|Incorrecto):/.test(t));
   if (r) return r.startsWith('Correcto') ? 'acierto' : 'error';
   if (m.querySelector('[data-estado="incorrecta"]')) return 'error';

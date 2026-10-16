@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
-import { NEUTRO } from "../../../../data/contabilidadIntro.js";
-import { Retro, Cierre } from "../../corazon/juego.jsx";
+import { Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import EncabezadoCompacto from "./EncabezadoCompacto.jsx";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import { volarCopia, cuantasFichas, BIEN, SEGUNDO } from "./EstanteDeCajones.jsx";
-import { Marca, estiloE4, CORRECTA, TACHADA, APAGADA, TACHADO } from "./MarcasE4.jsx";
+import { estiloE4, CORRECTA, TACHADA, APAGADA, REVELADA, TACHADO } from "./MarcasE4.jsx";
+import { Pastilla, Mensaje, RegionViva, claseDe, botonDeAvance, CSS_B5H, CLASE_B5H, REPOSO_B, ERROR_B } from "./Devolucion.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -28,15 +28,22 @@ import { Marca, estiloE4, CORRECTA, TACHADA, APAGADA, TACHADO } from "./MarcasE4
  *
  * Dos intentos, como en el patrón:
  *   · acierto: la ficha vuela a su cajón (340 ms), la pila suma una lámina y
- *     el cajón queda ✓;
+ *     el cajón queda «Correcto»;
  *   · primer fallo: la ficha va al cajón tocado y rebota (340 + 340 ms; el
- *     coral de 420 ms en la ficha). Ese cajón queda ✕ y tachado, y no se
+ *     coral de 420 ms en la ficha). Ese cajón queda «No va aquí» y tachado, y no se
  *     puede volver a tocar en esta ficha. La devolución es la PISTA de la
  *     ficha (E5 de Futaba: cada ficha la suya, la escalera de ayuda de
- *     tema6/escaleraB5.js), por Retro como las demás;
- *   · segundo fallo: el tocado queda ✕ y la ficha va a su cajón correcto, que
- *     queda ✓; su lámina llega punteada (hoja 3, Shoko). La devolución dice
- *     la respuesta (la regla única, b5SegundoFallo.js).
+ *     tema6/escaleraB5.js), en el bloque de mensaje como las demás;
+ *   · segundo fallo: el tocado queda «No va aquí» y la ficha va a su cajón
+ *     correcto, que queda «Iba aquí» (0,7 s después: ya no hay reintento); su
+ *     lámina llega punteada (hoja 3, Shoko). La devolución dice la respuesta
+ *     (la regla única, b5SegundoFallo.js).
+ *
+ * LOTE 6d (estándar único de Hacer, Devolucion.jsx): los cajones van sin
+ * relleno, con el contorno de reposo de 1 px .35; la pastilla con su palabra
+ * va bajo el nombre y entra en el nombre accesible del cajón; el veredicto lo
+ * da `r.ok` de la evaluación, nunca el texto. El último botón, «Ver mi
+ * resumen».
  * «Siguiente ficha» borra las marcas; la pila y el número se quedan. Las
  * marcas son las de E4 (MarcasE4.jsx); al calificar, lo demás queda a 0,5.
  *
@@ -59,7 +66,6 @@ const CSS = `
 const SORA = "Sora, sans-serif";
 const INTER = "Inter, sans-serif";
 const VISIBLES = 4;
-const BORDE = `1px solid ${NEUTRO}`;
 
 /* La lectura de un cajón: «Fija con interés: 2 fichas», con «, 1 tras el segundo intento» si alguna llegó así. */
 export function lecturaUnNivel(cajon, laminas = []) {
@@ -70,7 +76,8 @@ export function lecturaUnNivel(cajon, laminas = []) {
 /* La marca de cada cajón, después de lo que se tocó en esta ficha. */
 export function marcasDe(cajones, tocados, correcta, fin) {
   return Object.fromEntries(cajones.map((c) => {
-    if (fin && c.clave === correcta) return [c.clave, CORRECTA];
+    /* Lote 6d: si nunca se tocó la correcta (segundo fallo), se revela: «Iba aquí». */
+    if (fin && c.clave === correcta) return [c.clave, tocados.includes(correcta) ? CORRECTA : REVELADA];
     if (tocados.includes(c.clave)) return [c.clave, TACHADA];
     return [c.clave, fin ? APAGADA : null];
   }));
@@ -80,18 +87,18 @@ function Cajon({ cajon, laminas = [], marca, puede, onTocar, refDe }) {
   const cuantas = laminas.length;
   return (
     <button ref={refDe(cajon.clave)} type="button" data-cajon={cajon.clave} data-cuantas={cuantas} data-marca={marca ?? ""}
-      disabled={!puede} onClick={puede ? () => onTocar(cajon) : undefined}
+      disabled={!puede} onClick={puede ? () => onTocar(cajon) : undefined} className={claseDe(marca)}
       style={{
-        boxSizing: "border-box", minHeight: "84px", minWidth: 0, width: "100%", padding: marca === CORRECTA ? "6px 4px" : "7px 5px",
-        borderRadius: "10px", background: "rgba(10,20,34,0.4)", cursor: puede ? "pointer" : "default", textAlign: "left",
+        boxSizing: "border-box", minHeight: "84px", minWidth: 0, width: "100%", padding: marca === CORRECTA || marca === TACHADA ? "6px 4px" : "7px 5px",
+        borderRadius: "10px", background: "transparent", cursor: puede ? "pointer" : "default", textAlign: "left",
         display: "flex", flexDirection: "column", justifyContent: "space-between", gap: "4px", color: FAE.text,
-        ...estiloE4(marca, BORDE),
+        ...estiloE4(marca, REPOSO_B),
       }}>
-      <span style={{ display: "flex", alignItems: "flex-start", gap: "4px" }}>
-        <Marca marca={marca} />
+      <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px" }}>
         <span data-nombre-cajon style={{ fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "15px", overflowWrap: "anywhere", ...(marca === TACHADA ? TACHADO : null) }}>
           {cajon.rotulo}
         </span>
+        <Pastilla marca={marca} envuelve />
       </span>
       <span aria-hidden="true" style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
         {/* La pila: crece hacia arriba; caben cuatro a la vista. */}
@@ -175,7 +182,7 @@ export default function FichasUnNivel({
     }
     /* En el segundo intento la ficha vale la mitad de lo que habría valido. */
     setRespuestas((xs) => [...xs, { id: c.id, valor: valor / 2, primeroOk: false, segundoOk: nuevo.ok }]);
-    /* setR reemplaza: tras un reintento acertado queda solo el ✅. */
+    /* setR reemplaza: tras un reintento acertado queda solo el acierto. */
     setR({ ...nuevo, primero: false });
   };
 
@@ -203,7 +210,8 @@ export default function FichasUnNivel({
   const marcas = marcasDe(config.cajones, tocados, correcta, fin);
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS}</style>
+      <style>{CSS + CSS_B5H}</style>
+      <div className={CLASE_B5H}>
       {!modoDemo && (
         <>
           {/* Lote 6b (B1 de t5-a1): el encabezado compacto de Mai; la consigna y los pasos, plegados. */}
@@ -216,7 +224,8 @@ export default function FichasUnNivel({
         margin: "0 0 10px", padding: "11px 13px", borderRadius: "11px",
         fontFamily: SORA, fontSize: "14px", fontWeight: 700, lineHeight: 1.3, color: FAE.text,
         background: "rgba(10,20,34,0.5)",
-        border: `1px ${rebotando ? "dashed" : "solid"} ${rebotando ? FAE.coral : "rgba(248,249,250,0.2)"}`,
+        /* Lote 6d: el rebote, 2 px sólido coral; en reposo, el contorno de 1 px .35. El borde de 2 se come 1 px del relleno. */
+        ...(rebotando ? { border: ERROR_B, padding: "10px 12px" } : { border: REPOSO_B }),
       }}>
         {c.texto}
       </p>
@@ -238,15 +247,17 @@ export default function FichasUnNivel({
           La ficha no se colocó.
         </p>
       )}
-      {r && <Retro texto={r.texto} />}
+      {/* El veredicto es el estado de la evaluación (`r.ok`), no el texto. */}
+      <RegionViva>{r && <Mensaje ok={r.ok} texto={r.texto} />}</RegionViva>
 
       {fin && !modoDemo && (
         <div ref={zonaBoton} data-boton-avanzar>
-          <Responder onClick={avanzar}>{t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente ficha"}</Responder>
+          <Responder onClick={avanzar}>{botonDeAvance("Ficha", t.i + 1 === cuantas)}</Responder>
         </div>
       )}
 
       {!modoDemo && <p style={SOLO_LECTOR}>{config.alt}</p>}
+      </div>
     </Marco>
   );
 }

@@ -217,7 +217,8 @@ test("★★★ los cinco pasos en su orden, cada uno con su texto; «Siguiente�
       assert.equal(textoRetro(caja), null, "acierto sin texto");
       assert.ok(caja.querySelector("[data-visto-parte]"));
     }
-    assert.equal(caja.querySelector("[data-boton-avanzar] button").textContent, k === 4 ? "Ver mi resumen" : "Siguiente");
+    /* Lote 6d (§4.3): el botón sigue al contador «Paso n de 5». */
+    assert.equal(caja.querySelector("[data-boton-avanzar] button").textContent, k === 4 ? "Ver mi resumen" : "Siguiente paso");
     await avanzar(caja);
   }
   assert.equal(caja.querySelector("[data-resumen-cierre]").textContent, "Bien a la primera: 4 de 5");
@@ -247,23 +248,26 @@ test("★★★ las preguntas: la correcta con o sin «$» y puntos; cada T con 
   assert.equal(L.formatearRespuesta("$2506200"), "2.506.200");
 });
 
-test("★★★ lote 6c · E4 en todo Hacer: una pregunta acertada deja su cifra ✓ (borde 2 nodo, relleno navy), sin tachado ni otra cifra debajo", async () => {
+test("★★★ lote 6c · E4 en todo Hacer (lote 6d: el estándar único): una pregunta acertada deja su cifra con 2 px #F8F9FA y «Correcto» (Check), sin tachado ni otra cifra debajo", async () => {
   for (const [k, texto] of [[0, "$2.506.200"], [2, "31.200"], [4, "153400"]]) {
     const p = PASOS[k];
     const { caja, desmontar } = await montar({ items: [p] });
     await responder(caja, texto);
     const campo = caja.querySelector(`[data-caja-campo="${p.id}"]`);
     assert.equal(campo.dataset.marca, "correcta", p.id);
-    assert.ok(campo.querySelector('[data-icono="visto"]'));
-    assert.equal(campo.querySelector('[data-icono="tache"]'), null);
-    assert.match(campo.style.border, /^2px solid/);
+    const pastilla = caja.querySelector(`[data-pregunta="${p.id}"] [data-pastilla]`);
+    assert.equal(pastilla.textContent, "Correcto");
+    assert.ok(pastilla.querySelector('[data-icono="visto"]'));
+    assert.equal(caja.querySelector(`[data-pregunta="${p.id}"] [data-icono="tache"]`), null);
+    assert.equal(campo.style.border, "2px solid rgb(248, 249, 250)");
+    assert.doesNotMatch(campo.getAttribute("style"), /42, 157, 143|29, 53, 87/, "sin teal ni relleno navy");
     assert.notEqual(campo.querySelector("input").style.textDecoration, "line-through");
     assert.equal(caja.querySelector(`[data-valor-correcto="${p.id}"]`), null, "acertó: no hay otra cifra debajo");
     desmontar();
   }
 });
 
-test("★★★ una pregunta mal: un intento, el panel con su texto, y E4: su cifra ✕ tachada y debajo ✓ la correcta; sin coral en el campo", async () => {
+test("★★★ una pregunta mal: un intento, el panel con su texto, y E4 (lote 6d): su cifra tachada con 2 px coral y «No va aquí», y debajo «Iba aquí: {valor}»", async () => {
   for (const [k, texto, error] of [[0, "2.655.000", "T1"], [2, "-31200", "general"], [4, "184600", "T9"]]) {
     const p = PASOS[k];
     const { caja, desmontar } = await montar({ items: [p] });
@@ -272,14 +276,17 @@ test("★★★ una pregunta mal: un intento, el panel con su texto, y E4: su ci
     assert.equal(textoRetro(caja), error === "general" ? p.general : p.errores.find((e) => e.clave === error).texto);
     const campo = caja.querySelector(`[data-caja-campo="${p.id}"]`);
     assert.equal(campo.dataset.marca, "tachada");
-    assert.ok(campo.querySelector('[data-icono="tache"]'));
+    const pastilla = caja.querySelector(`[data-pregunta="${p.id}"] [data-pastilla]`);
+    assert.equal(pastilla.textContent, "No va aquí");
+    assert.ok(pastilla.querySelector('[data-icono="tache"]'));
     assert.equal(campo.querySelector("input").value, L.formatearRespuesta(texto));
     assert.ok(campo.querySelector("input").readOnly, "un solo intento");
     const correcta = caja.querySelector(`[data-valor-correcto="${p.id}"]`);
-    assert.ok(correcta.querySelector('[data-icono="visto"]'));
-    assert.ok(correcta.textContent.includes(["$2.506.200", "$31.200", "$153.400"][k / 2]));
+    assert.equal(correcta.textContent, `Iba aquí:${["$2.506.200", "$31.200", "$153.400"][k / 2]}`);
+    assert.equal(correcta.querySelector("svg"), null, "«Iba aquí» va sin ícono");
+    assert.ok(correcta.classList.contains("fae-b5h-revela"), "llega 0,7 s después del error");
     assert.equal(caja.querySelector("[data-confirmar-parte]"), null, "no se vuelve a comprobar");
-    assert.doesNotMatch(campo.getAttribute("style"), /231, 111, 81|#E76F51/i, "sin coral en el campo");
+    assert.equal(campo.style.border, "2px solid rgb(231, 111, 81)", "el error, 2 px coral");
     desmontar();
   }
 });

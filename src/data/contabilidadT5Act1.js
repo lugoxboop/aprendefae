@@ -8,8 +8,9 @@
  * los textos que no llegan a 65 en INFLESZ (def-emisora, caso-pactado, el
  * acierto de def-interes y el resumen), el cambio es solo de datos.
  *
- * Como en T1-6, el ✅ y el ❌ van al inicio de cada devolución y Retro los
- * separa; lo que sigue al emoji es literal de la guía. La pista del primer
+ * Lote 6d (estándar único de Hacer): las devoluciones van sin los emojis de acierto y de
+ * error que llevaban al inicio (solo se quitó el emoji); el veredicto lo da la
+ * evaluación (`ok`), no el texto. El resto es literal de la guía. La pista del primer
  * fallo va sin emoji (como en la escalera de ayuda, tema6/escaleraB5.js).
  *
  * El segundo fallo sigue la REGLA ÚNICA de la célula (b5SegundoFallo.js): el
@@ -78,86 +79,86 @@ export const FICHAS_T5_ACT1 = [
     id: "acciones", clase: NOMBRE, renta: VARIABLE, tipo: null,
     texto: "Acciones de otra empresa",
     pista: "Piensa de qué depende lo que recibe quien tiene acciones. ¿Se pactó el día que las compró?",
-    acierto: "✅ Sí. Son renta variable: lo que rinden depende de cómo le vaya a la empresa que las emitió.",
+    acierto: "Sí. Son renta variable: lo que rinden depende de cómo le vaya a la empresa que las emitió.",
   },
   {
     id: "def-emisora", clase: DEFINICION, renta: VARIABLE, tipo: null,
     /* Definición casi literal del libro (p. 192), sin «económicos»: reescrita por INFLESZ, PASA de Shoko. */
     texto: "Su rendimiento depende de factores propios de la empresa que lo emitió.",
     pista: "Fíjate de qué depende el rendimiento, según la ficha. ¿Se puede saber desde el día de la compra?",
-    acierto: "✅ Sí. Es renta variable: rinde según cómo le vaya a la empresa que lo emitió.",
+    acierto: "Sí. Es renta variable: rinde según cómo le vaya a la empresa que lo emitió.",
   },
   {
     id: "def-dividendos", clase: DEFINICION, renta: VARIABLE, tipo: null,
     texto: "Sus dividendos dependen de la situación económica y de la liquidez de quien lo emitió.",
     pista: "La ficha habla de dividendos. Recuerda qué título los reparte y de qué dependen.",
-    acierto: "✅ Sí. Es renta variable: así describe el libro a las acciones, cuyos dividendos siguen a quien las emitió.",
+    acierto: "Sí. Es renta variable: así describe el libro a las acciones, cuyos dividendos siguen a quien las emitió.",
   },
   {
     id: "caso-resultados", clase: CASO, renta: VARIABLE, tipo: null,
     texto: "Lo que recibe quien lo tiene se decide según los resultados de la empresa que lo emitió.",
     pista: "Si lo que recibe depende de los resultados de la empresa, ¿se pudo pactar al invertir?",
-    acierto: "✅ Sí. Si lo que recibe se decide según cómo le vaya a la empresa que lo emitió, es renta variable.",
+    acierto: "Sí. Si lo que recibe se decide según cómo le vaya a la empresa que lo emitió, es renta variable.",
   },
   {
     id: "cdt", clase: NOMBRE, renta: FIJA, tipo: INTERES,
     texto: "CDT (certificado de depósito a término)",
     pista: "Recuerda qué le paga un CDT a quien lo tiene, y si eso se pacta al invertir.",
-    acierto: "✅ Sí. El libro pone el CDT entre los títulos que pagan un interés fijo durante un periodo.",
+    acierto: "Sí. El libro pone el CDT entre los títulos que pagan un interés fijo durante un periodo.",
   },
   {
     id: "bonos", clase: NOMBRE, renta: FIJA, tipo: INTERES,
     texto: "Bonos",
     pista: "En la lista del libro, los bonos van junto al CDT. Recuerda cómo rinde un CDT.",
-    acierto: "✅ Sí. El libro pone los bonos en la renta fija con interés.",
+    acierto: "Sí. El libro pone los bonos en la renta fija con interés.",
   },
   {
     id: "cedulas", clase: NOMBRE, renta: FIJA, tipo: INTERES,
     texto: "Cédulas hipotecarias",
     pista: "En la lista del libro, las cédulas hipotecarias van junto al CDT y los bonos.",
-    acierto: "✅ Sí. Las cédulas hipotecarias van con el CDT y los bonos: renta fija con interés.",
+    acierto: "Sí. Las cédulas hipotecarias van con el CDT y los bonos: renta fija con interés.",
   },
   {
     id: "def-interes", clase: DEFINICION, renta: FIJA, tipo: INTERES,
     texto: "Le paga un interés fijo durante un periodo determinado.",
     pista: "Lee de dónde sale la renta: ¿de un interés o de una diferencia? ¿Y se pacta al invertir?",
-    acierto: "✅ Sí. Un interés fijo durante un periodo determinado. Así define el libro la renta fija con interés.",
+    acierto: "Sí. Un interés fijo durante un periodo determinado. Así define el libro la renta fija con interés.",
   },
   {
     id: "caso-pactado", clase: CASO, renta: FIJA, tipo: INTERES,
     texto: "Desde el día de la compra se sabe qué interés pagará la empresa que lo emitió.",
     pista: "Si desde la compra se sabe lo que pagará, ¿depende de la empresa? ¿Y lo que paga es un interés?",
-    acierto: "✅ Sí. El interés quedó fijo al invertir, aunque lo pague una empresa: es renta fija con interés.",
+    acierto: "Sí. El interés quedó fijo al invertir, aunque lo pague una empresa: es renta fija con interés.",
   },
   {
     id: "participacion", clase: NOMBRE, renta: FIJA, tipo: DESCUENTO,
     texto: "Títulos de participación",
     pista: "Piensa cómo gana quien tiene estos títulos: ¿le pagan un interés, o gana una diferencia cuando vencen?",
-    acierto: "✅ Sí. El libro pone los títulos de participación entre los de descuento.",
+    acierto: "Sí. El libro pone los títulos de participación entre los de descuento.",
   },
   {
     id: "cert", clase: NOMBRE, renta: FIJA, tipo: DESCUENTO,
     texto: "CERT (certificado de reembolso tributario)",
     pista: "Piensa cómo rinde el CERT: ¿cobra un interés, o gana la diferencia entre lo que pagó y lo que recibe?",
-    acierto: "✅ Sí. El CERT está en la lista del libro de renta fija con descuento.",
+    acierto: "Sí. El CERT está en la lista del libro de renta fija con descuento.",
   },
   {
     id: "canjeables", clase: NOMBRE, renta: FIJA, tipo: DESCUENTO,
     texto: "Títulos canjeables",
     pista: "En la lista del libro, los títulos canjeables van junto a los de participación y el CERT.",
-    acierto: "✅ Sí. Los títulos canjeables están en la lista del libro de renta fija con descuento, que es una lista abierta.",
+    acierto: "Sí. Los títulos canjeables están en la lista del libro de renta fija con descuento, que es una lista abierta.",
   },
   {
     id: "def-descuento", clase: DEFINICION, renta: FIJA, tipo: DESCUENTO,
     texto: "Su renta es la diferencia entre el valor de compra y el valor de redención.",
     pista: "La ficha dice de dónde sale la renta. ¿Es un interés, o la diferencia entre dos valores?",
-    acierto: "✅ Sí. La renta sale de la diferencia entre lo que costó y lo que vale al redimirse: con descuento.",
+    acierto: "Sí. La renta sale de la diferencia entre lo que costó y lo que vale al redimirse: con descuento.",
   },
   {
     id: "caso-redencion", clase: CASO, renta: FIJA, tipo: DESCUENTO,
     texto: "Se compra por menos de lo que pagará la empresa que lo emitió al redimirlo, y esa diferencia es lo que gana.",
     pista: "Fíjate en qué gana: ¿un interés que le pagan, o la diferencia entre lo que pagó y lo que recibe?",
-    acierto: "✅ Sí. Gana la diferencia entre lo que pagó y el valor de redención: es renta fija con descuento.",
+    acierto: "Sí. Gana la diferencia entre lo que pagó y el valor de redención: es renta fija con descuento.",
   },
 ];
 
