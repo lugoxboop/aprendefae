@@ -185,7 +185,7 @@ test("★★★ C2: las terceras opciones, literales, con su devolución al segu
 });
 
 for (const [pieza, p] of Object.entries(CAPA3)) {
-  test(`★★★ C2 · ${pieza} · capa 3: al primer error, la pista literal y nada más; al segundo, la devolución y después el texto`, async () => {
+  test(`★★★ C2 · ${pieza} · capa 3: al primer error, la pista literal y nada más; al segundo, la devolución sin el texto (B5 de Futaba)`, async () => {
     const { caja, desmontar } = await montar(h(p.Componente));
     /* En orden: así T6 A3, que abre cada momento al cerrarse el anterior, también se recorre. */
     for (const x of p.cajas) {
@@ -207,7 +207,9 @@ for (const [pieza, p] of Object.entries(CAPA3)) {
       await decidir(tocar, zona, segunda);
       assert.equal(zona.querySelector("[data-pista]"), null, `${x.id}: la pista se va`);
       const devolucion = tercera && tercera[3] !== "La de cada caja (C1-2)" ? tercera[3] : falloDe(x, segunda);
-      assert.deepEqual(revelado(zona), [llano(p.pegar ? p.pegar(devolucion) : devolucion), llano(x.revela)], `${x.id}: la devolución y después el texto`);
+      /* B5 de Futaba: quien falla dos veces lee la devolución de su opción, NO el texto que se revela. */
+      assert.deepEqual(revelado(zona), [llano(p.pegar ? p.pegar(devolucion) : devolucion)], `${x.id}: solo la devolución`);
+      assert.ok(!llano(zona.textContent).includes(llano(x.revela)), `${x.id}: sin el texto que se revela`);
       assert.equal(zona.dataset.decidida, "si");
     }
     desmontar();
@@ -308,7 +310,8 @@ test("★★★ C1-4 · T6 A1 · capa 3: los hechos nuevos y, en venta y pago, l
     for (const [campo, valor] of [["hecho", hecho], ["revela", revela], ["falla", falla], ["pie", pie]]) {
       if (valor !== "La de hoy") assert.equal(x[campo], valor, `${caja} · ${campo}`);
     }
-  }
+  }  /* La devolución de la venta, al segundo error: el texto aprobado del 15-oct (reemplaza «La de hoy»). */
+  assert.equal(T6A1.HECHOS_T6.find((c) => c.id === "venta-credito").falla, "Aunque diga “crédito”, el cliente queda debiendo el arreglo: sube.");
 });
 
 test("★★★ C1-5 · T6 A1 · capa 4: la devolución de toda la mercancía, literal, con su pie", async () => {
@@ -348,7 +351,11 @@ test("★★★ C1-11 y C1-12 · T6 A4 · capa 3: el caso a viene lleno con el r
   const b = T6A4.CASOS_T6_A4.find((c) => c.id === "b");
   const c = T6A4.CASOS_T6_A4.find((x) => x.id === "c");
   const op = (texto) => T6A4.OPCIONES_CAPA_3_T6_A4.find((o) => o.texto === texto).id;
-  assert.equal(b.revela, entre(s, "Caso b: texto que se revela: "));
+  /* B5 de Futaba (manda sobre C1-12): los textos que se revelan ya no llevan cifras. */
+  assert.equal(b.revela, "Como promete pagar el resto, vuelve toda la deuda.");
+  assert.equal(c.revela, "Como ya no puede pagar más, lo demás sigue castigado.");
+  assert.equal(T6A4.CASOS_T6_A4.find((x) => x.id === "a").revela, "Pagó toda la factura: a Caja entra todo.");
+  for (const x of T6A4.CASOS_T6_A4) assert.ok(!/\d/.test(x.revela), `${x.id}: sin cifras`);
   assert.equal(b.falla[op("$80.000")], entre(s, "Si elige \\$80\\.000: "));
   assert.equal(c.nombre, entre(s, "Caso c: nombre de la caja: "));
   assert.equal(c.falla[op("$180.000")], entre(s, "Si elige \\$180\\.000: "));
@@ -358,6 +365,7 @@ test("★★★ C1-11 y C1-12 · T6 A4 · capa 3: el caso a viene lleno con el r
   assert.equal(fila.querySelector("[data-rotulo-ejemplo]").textContent, "Ejemplo");
   assert.deepEqual([...fila.querySelectorAll("[data-celda]")].map((x) => x.textContent), ["$180.000", "$180.000"]);
   assert.equal(zonaDe(caja, "a"), null, "el caso a ya no se pregunta");
+  assert.equal(caja.querySelector('[data-tablero] [data-texto-ejemplo="a"]').textContent, "Pagó toda la factura: a Caja entra todo.", "el texto del ejemplo, bajo su fila");
   for (const id of ["b", "c"]) assert.deepEqual([...caja.querySelectorAll(`[data-fila="${id}"] [data-celda]`)].map((x) => x.textContent), ["", ""], `${id}: vacía`);
   desmontar();
 });

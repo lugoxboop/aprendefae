@@ -678,6 +678,8 @@ export const SUBJECTS = {
           { id: "t5-gano-o-perdio", nombre: "¿Ganó o perdió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* N6 de la Célula C, posición 9 de la decisión de corte de T5 (punto 6): después de N4 y de N5, antes de N7, que la sostiene, y del cierre de Santa Pacha. Los gastos de la compra al costo y el dividendo a Ingresos por dividendos, p. 193, con un ejemplo construido. Cero FP. */
           { id: "t5-a2-lo-que-el-ejemplo-no-trae", nombre: "Lo que el ejemplo no trae", clasificacion: { tipo: APRENDER } },
+          /* N7 de la Célula C, posición 10 de la decisión de corte de T5 (punto 6): después de N6, que la sostiene, y antes del cierre de Santa Pacha. La cuenta y el lado de la compra con gastos, el interés y el dividendo, p. 193, con cifras construidas. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0114. */
+          { id: "t5-a-que-cuenta-va", nombre: "¿A qué cuenta va?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "b5-t5-a2", nombre: "El cierre completo de Santa Pacha", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
@@ -698,14 +700,16 @@ export const SUBJECTS = {
           /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (Futaba). Su fila del servidor es la migración 0071. */
           { id: "b5-t6-a1", nombre: "¿Clientes o otra cuenta por cobrar?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /*
-           * Orden del camino (Sakuta, lote 4): a1 → a4 → a5 → a2 → a6 → a3. Es provisional: a5 se fusionará en a2
-           * en otro lote y el orden final será a1 → a4 → a2 → a6 → a3. b5-t6-a7 «¿Qué método y cuándo?» se retiró
-           * (Shoko, C6: sus decisiones ya están en a4 y en la capa 3 de T6 A2); su fila del servidor la borra la 0076.
+           * Orden del camino (Sakuta, lote 6b): a1 → a4 → a2 → a6 → a3. b5-t6-a7 «¿Qué método y cuándo?» se retiró
+           * (Shoko, C6: sus decisiones ya están en a4 y en la capa 3 de T6 A2; lápida en la 0076), y b5-t6-a5 «La
+           * cuenta de la provisión» se fundió en a2 (hoja de Mai; lápida en la 0077).
            */
           { id: "b5-t6-a4", nombre: "¿Qué se debita?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "b5-t6-a5", nombre: "La cuenta de la provisión", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          /* Actividades 2 y 3 de Hacer (mesa de asientos). Media · 25 y difícil · 50 FP (Sakuta). Sus filas del servidor son la migración 0074. */
-          { id: "b5-t6-a2", nombre: "La provisión de El Torito", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /*
+           * Actividades 2 y 3 de Hacer (mesa de asientos), filas de la 0074. a2 lleva dentro a a5 desde el lote 6b:
+           * difícil · 50 FP (los 25 + 25 de las dos; fila en la 0078). a3, difícil · 50 (Sakuta).
+           */
+          { id: "b5-t6-a2", nombre: "La provisión de El Torito", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "b5-t6-a6", nombre: "Provisión por edades", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "b5-t6-a3", nombre: "Cuando la deuda castigada vuelve", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "b5-t6-a2-cuando-un-cliente-no-va-a-pagar", nombre: "Cuando un cliente no va a pagar", clasificacion: { tipo: APRENDER } },
@@ -779,8 +783,8 @@ export const SUBJECTS = {
           { id: "t7-2-a3-el-kardex", nombre: "El kárdex", clasificacion: { tipo: APRENDER } },
           /* H3, justo después de A3 (orden final de T7-2): los tres kárdex de Laurel, casilla por casilla. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0100. */
           { id: "t7-2-llena-el-kardex", nombre: "Llena el kárdex", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          /* A4, después de A3 (regla 9): F-1 del libro en el permanente, con la decisión de Mello casilla por casilla. H3 «Llena el kárdex» entra entre A3 y A4. Cero FP. */
-          { id: "t7-2-a4-san-calixto", nombre: "San Calixto en permanente", clasificacion: { tipo: APRENDER } },
+          /* A4, después de A3 (regla 9): F-1 del libro en el permanente, como capas de costo que la venta corta (Patrón de enganche C, v6; reemplaza a «San Calixto en permanente» con el mismo id). H3 «Llena el kárdex» entra entre A3 y A4. Cero FP. */
+          { id: "t7-2-a4-san-calixto", nombre: "Las capas que la venta corta", clasificacion: { tipo: APRENDER } },
           /* H4, justo después de A4 (orden final de T7-2): las dos versiones de un mismo hecho, sin cifras. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0101. */
           { id: "t7-2-periodico-o-permanente", nombre: "¿Periódico o permanente?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A5, después de A4 por el orden del mapa (regla 9: usa la venta en dos asientos de A2). H4 «¿Periódico o permanente?» entra entre A4 y A5. Cero FP. */

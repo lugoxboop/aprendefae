@@ -33,6 +33,8 @@ import GanoOPerdio from "./mecanicas/libros/t5/GanoOPerdio.jsx";
 import { N5 } from "../data/contabilidadT5_n5.js";
 import LoQueElEjemploNoTrae from "./mecanicas/libros/t5/LoQueElEjemploNoTrae.jsx";
 import { PIEZA_LO_QUE_EL_EJEMPLO_NO_TRAE } from "../data/contabilidadT5_n6.js";
+import AQueCuentaVa from "./mecanicas/libros/t5/AQueCuentaVa.jsx";
+import { N7 } from "../data/contabilidadT5_n7.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -72,6 +74,7 @@ export const JUEGOS = [
   { id: N3.id, Mecanica: RevisionQueFalta, titulo: N3.nombre },
   { id: N4.id, Mecanica: ElInteresDelPeriodo, titulo: N4.nombre },
   { id: N5.id, Mecanica: GanoOPerdio, titulo: N5.nombre },
+  { id: N7.id, Mecanica: AQueCuentaVa, titulo: N7.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */

@@ -858,3 +858,23 @@ Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza
 2. **La compra** — El de hoy.
 3. **El rendimiento** — Cuando llega un interés o un dividendo, se anota como un ingreso: por dividendos si viene de acciones, y por interés si viene de otro título. En esta materia, el interés va a Ingresos por intereses. En el ejemplo, se paga a trimestre vencido: al terminar cada trimestre, cada tres meses.
 4. **La venta** — El de hoy.
+
+## Enganche B1-B5 (Mai, 15-oct) y B5 de Futaba (final, con las correcciones de Shoko) · manda sobre lo de arriba
+
+Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entregas/futaba-b2-b5-final.md (sección «B5»). Los textos nuevos van para Shoko.
+
+| Pieza | Dónde va la etiqueta | Qué dice |
+|---|---|---|
+| T5 A2 | en la silueta del cálculo de noviembre | la opción elegida: «$2.000.000» o «$500.000» |
+
+| Pieza | Figura | Al decidir |
+|---|---|---|
+| T5 A2 | la cuenta T «Inversiones – títulos», con «$2.000.000 · 1 de mayo» en el DEBE | entra en el HABER «$1.500.000 · 1 de agosto» o «$500.000 · 1 de noviembre» |
+
+Las columnas de la T llevan las palabras publicadas «DEBE» y «HABER».
+
+- Capa 3 (las 7): la pregunta de la caja solo se ve mientras falta decidir; al decidir sale y quedan las opciones marcadas (✓/✕), la devolución y el texto. La pregunta es el nombre accesible del grupo de opciones (aria-labelledby); cuando sale de la pantalla pasa a una copia oculta.
+- Capa 3: quien acierta ve el texto que se revela; quien falla dos veces ve la devolución de su opción y la figura, pero NO ese texto.
+- **Cajas ya respondidas:** muestran solo la opción elegida con su marca (cumple E4). Vale para la capa 3 de las siete piezas.
+- Nombre accesible del grupo de opciones: T5 A2 «¿Dejó ganancia o pérdida?»
+- Decisión del 15-oct (manda sobre la fila de la figura de T5 A2 de arriba): la figura no muestra cifras distintas de las cajas que se responden. La T «Inversiones – títulos» se arma solo con el escenario simulado de las cajas: en el DEBE, la compra de cada venta por lo que costó («Costó $650 cada uno», «Costó $1.150 cada uno», con el nombre de su caja); al cerrarse la caja, la venta la saca por ese mismo costo en el HABER. La ganancia o la pérdida es la diferencia que ya dice el texto de la caja. Sin fechas (las cajas no las traen). Debajo, el pie «Escenario simulado».

@@ -58,8 +58,13 @@ const h = (cuenta, valor) => ({ cuenta, lado: HABER, valor });
  */
 const NO_SE_VENDE = (que) => `Aquí no se vende ningún título, así que no hay ${que}.`;
 
-/* La B · C7 de las dos ventas y la B «otro valor», iguales en las dos (Futaba). */
-const OTRO_VALOR = "Revisa los valores. Compara lo que recibió con lo que costaron los títulos.";
+/*
+ * E3 (lote 6a): en las dos ventas, la B general nombra la cuenta con el valor errado
+ * (contabilidad/cierreConMesa.js) y sigue con su segunda frase (Futaba, PASA de Shoko). Antes era una
+ * sola, «Revisa los valores. Compara lo que recibió con lo que costaron los títulos.». Si la errada es
+ * Inversiones – títulos, manda antes la C7.
+ */
+const SEGUNDA_CAJA = "Caja recibe lo que le pagaron por la venta. Míralo en el hecho.";
 
 /* ═══════════ LAS CUATRO PARTES: UN ASIENTO POR PANTALLA ═══════════ */
 
@@ -103,7 +108,12 @@ export const PARTES_T5_ACT2 = [
       C7: "Inversiones – títulos no se acredita por lo que se recibió. En el ejemplo del libro, se acredita por lo que costaron: 1.875 × $800 = $1.500.000. La diferencia, $225.000, es la ganancia.",
       /* La C7 en dos ramas (entrega 1): `C7` si lleva lo recibido; `C7otro` con cualquier otro valor que no sea el costo. */
       C7otro: "Inversiones – títulos baja por lo que costaron los títulos que vendió. Son 1.875 × $800 = $1.500.000. Lo demás que recibió es la ganancia.",
-      B: OTRO_VALOR,
+      /* La B general, con la cuenta nombrada (E3): queda `B` solo como respaldo si alguna cuenta no tuviera segunda frase. */
+      B: "Revisa los valores.",
+      segunda: {
+        [CAJA]: SEGUNDA_CAJA,
+        [GANANCIA]: "La ganancia es la diferencia entre lo que recibió y lo que costaron los títulos.",
+      },
       razones: {
         [BANCOS]: "En el ejemplo, lo de la venta entra a Caja. Bancos solo se movió el día de la compra.",
         [INTERESES]: "El precio de $920 no incluye el interés. El interés se anota en su propio asiento.",
@@ -144,7 +154,11 @@ export const PARTES_T5_ACT2 = [
       A: "Falta una cuenta. Esta venta mueve tres: Caja, Inversiones – títulos y la pérdida. Inversiones – títulos se acredita por lo que costaron los títulos, no por lo que se recibió. Por eso queda una diferencia, y esa diferencia es la pérdida.",
       C7: "Inversiones – títulos no se acredita por lo que se recibió. En el ejemplo del libro, se acredita por lo que costaron: 625 × $800 = $500.000. La diferencia, $31.250, es la pérdida.",
       C7otro: "Inversiones – títulos baja por lo que costaron los títulos que vendió. Son 625 × $800 = $500.000. Lo que le faltó para llegar a ese costo es la pérdida.",
-      B: OTRO_VALOR,
+      B: "Revisa los valores.",
+      segunda: {
+        [CAJA]: SEGUNDA_CAJA,
+        [PERDIDA]: "La pérdida es la diferencia entre lo que costaron los títulos y lo que recibió.",
+      },
       razones: {
         [BANCOS]: "Como en agosto, lo de la venta entra a Caja.",
         [INTERESES]: "El interés de noviembre ya se anotó en el asiento 3. Esta venta va aparte.",

@@ -45,7 +45,8 @@ const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(
  * EL ASIENTO MÍNIMO DE b5-t6-a4 (hoja 4 de Mai, calidad): DEBE y HABER bajo
  * el hecho; la correcta entra al DEBE y el HABER se llena con lo que se
  * acredita; una incorrecta que se acredita en el hecho se pasa al HABER; una
- * que no está en el asiento se va.
+ * que no está en el asiento ya no entra (E4, hoja de fusiones de Mai): el
+ * asiento correcto aparece de una vez y la elegida se queda ✕ en su fila.
  */
 const A = await import("../../components/mecanicas/libros/tema6/AsientoMinimo.jsx");
 const espera = (ms) => act(async () => { await new Promise((r) => setTimeout(r, ms)); });
@@ -90,14 +91,15 @@ test("★★★ una incorrecta que en el hecho se acredita: entra al DEBE y a lo
   desmontar();
 });
 
-test("★★★ una incorrecta que no está en el asiento: entra al DEBE y se va; quedan la correcta y la contrapartida", async () => {
+test("★★★ E4: una incorrecta que no está en el asiento ya no entra ni se va; el asiento correcto, de una vez, y la elegida ✕ en su fila", async () => {
   const { caja, desmontar } = await montar([hecho("qd-02")]);
   await tocar(opcion(caja, D.A_GASTO));
-  assert.deepEqual(visible(caja, "debe"), [D.OPCIONES_T6_ACT4.find((o) => o.id === D.A_GASTO).nombre, "si"]);
-  assert.match(ranura(caja, "debe").querySelector("[data-cuenta]").style.animation, /b5-se-va/);
-  await espera(560);
-  assert.deepEqual(visible(caja, "debe"), ["Caja", "no"]);
+  assert.deepEqual(visible(caja, "debe"), ["Caja", "no"], "al instante: nada entra y se va");
   assert.deepEqual(visible(caja, "haber"), ["Cuentas por cobrar – clientes", "no"]);
+  assert.doesNotMatch(caja.innerHTML, /b5-se-va/);
+  assert.equal(opcion(caja, D.A_GASTO).dataset.marca, "tachada");
+  await espera(560);
+  assert.deepEqual(visible(caja, "debe"), ["Caja", "no"], "y no cambia después");
   desmontar();
 });
 
@@ -128,11 +130,12 @@ test("★★★ Shoko 1: en los castigos (qd-05, qd-06, qd-07), Clientes elegida
     assert.deepEqual(visible(caja, "haber"), ["Cuentas por cobrar – clientes", "si"], `${id}: en el HABER`);
     desmontar();
   }
-  /* En los diez hechos: toda opción que esté en el HABER del asiento pasa al HABER; ninguna de ellas se va. */
+  /* En los diez hechos: solo la opción que está en el HABER del asiento hace trayecto (entra al DEBE); las demás, el asiento final de una vez (E4). */
   for (const h of D.HECHOS_T6_ACT4) {
     for (const o of D.OPCIONES_T6_ACT4.filter((x) => x.id !== h.respuesta)) {
       const enElHaber = o.nombre === D.SE_ACREDITA_T6_ACT4[h.id];
-      assert.equal(A.asientoDe(h, o.id, "entra").debe.saliendo === true, !enElHaber, `${h.id} · ${o.id}`);
+      const a = A.asientoDe(h, o.id, "entra");
+      assert.equal(a.debe.nombre === o.nombre && a.debe.propia, enElHaber, `${h.id} · ${o.id}`);
     }
   }
 });

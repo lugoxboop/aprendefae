@@ -193,9 +193,12 @@ function Escena(estado, refDe, reducido) {
   );
 }
 
+/* La predicción se escribe sobre la silueta del cálculo de noviembre (§2a de Mai). */
+const PARADA = { ...PARADA_T5_A2, etiquetaEn: "cuenta2" };
+
 export default function TresMomentos() {
   return (
-    <MaquinaPegada todos={TODOS} estadoPaso={T5_A2_JUNTO.estadoPaso} duracion={T5_A2_JUNTO.duracion} escena={Escena} parada={PARADA_T5_A2}
+    <MaquinaPegada todos={TODOS} estadoPaso={T5_A2_JUNTO.estadoPaso} duracion={T5_A2_JUNTO.duracion} escena={Escena} parada={PARADA}
       pintar={pintarCuentas} atributos={{ "data-capa2-t5-a2": true }} />
   );
 }

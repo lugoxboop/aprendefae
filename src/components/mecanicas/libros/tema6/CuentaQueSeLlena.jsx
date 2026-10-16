@@ -2,24 +2,28 @@ import { FAE } from "../../../../theme.js";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { ESCENA_T6_A3, MOMENTOS_T6_A3, CUENTA_T_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
 import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES } from "./MaquinaPegada.jsx";
-import { CASTIGO_DADO_T6_ACT5 } from "../../../../data/contabilidadT6Act5.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * b5-t6-a5 «LA CUENTA DE LA PROVISIÓN» · LA CUENTA QUE SE LLENA (hoja 1 de
- * Mai, calidad).
+ * b5-t6-a2 «LA PROVISIÓN DE EL TORITO» · LA CUENTA QUE SE LLENA (hoja 1 de
+ * Mai; en el lote 6b, la hoja de la fusión de a5 en a2).
  *
- * Encima de la casilla, dos piezas que el estudiante ya conoce de T6 · A3, con
- * su estilo y sus palabras publicadas (ESCENA_T6_A3 y MOMENTOS_T6_A3):
- *   · el bloque «En el estado de situación financiera» (borde 1, radio 10,
- *     relleno 6/8/8; el neto bajo un filete);
+ * Nació en b5-t6-a5, que se retiró: ahora acompaña los cinco pasos de a2
+ * (P1 → Asiento 1 → P2 → Asiento 2 → P3). Dos piezas que el estudiante ya
+ * conoce de T6 · A3, con su estilo y sus palabras publicadas (ESCENA_T6_A3 y
+ * MOMENTOS_T6_A3):
  *   · la cuenta T «Provisión para deudas incobrables» (la de la capa 3), que
- *     arranca con el tutorial: $148.800 en el HABER.
+ *     arranca con el tutorial: $148.800 en el HABER. Va encima del paso y no
+ *     se mueve en pantalla;
+ *   · el bloque «En el estado de situación financiera» (borde 1, radio 10,
+ *     relleno 6/8/8; el neto bajo un filete), solo en la pregunta 1, con «El
+ *     valor neto» vacío y encendido.
  *
- * Cada casilla tiene su renglón, que se enciende (borde 2 nodo y relleno
- * navy) mientras está abierta. Al responder entra SIEMPRE el valor correcto,
- * se acierte o no: la cuenta es el registro, no la nota. Mientras se pregunta
- * el saldo, su hueco ocupa las dos columnas: el lado lo da la respuesta.
+ * R10: mientras se arma un asiento no hay huecos. El renglón nuevo entra al
+ * confirmar (siempre el del asiento correcto, se acierte o no: la cuenta es
+ * el registro, no la nota) y queda encendido (borde 2 nodo, relleno navy)
+ * hasta el paso siguiente. El saldo ocupa las dos columnas mientras se
+ * pregunta y aparece solo después de cada respuesta.
  *
  * En blanco y negro: el lado se lee por la palabra (DEBE, HABER) y la
  * columna; el saldo en contra, por «Le faltan», su sitio bajo DEBE y su
@@ -52,26 +56,27 @@ export function Entra({ reducido, children }) {
 
 export const KEYFRAMES_ENTRA = "@keyframes b5-entra { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }";
 
-/* Los pasos de la cuenta: qué se ve con `respondidas` casillas respondidas y la casilla `abierta` (o null). */
 /*
- * Las cuatro casillas (decisión de a5, entrega 5): 0 · el neto; 1 · lo que le
- * falta; 2 · el registro del año siguiente; 3 · el saldo final. El castigo de
- * marzo es un DATO DADO: entra al DEBE, sin encenderse, al responder la
- * casilla 1.
+ * Qué se ve en el paso `paso` (0-4) con su respuesta `comprobada` o no. Los
+ * pasos: 0 · P1, el neto; 1 · Asiento 1, el castigo de marzo; 2 · P2, lo que
+ * le falta; 3 · Asiento 2, el ajuste del año siguiente; 4 · P3, el saldo final.
  */
-export function estadoDeLaCuenta(respondidas, abierta) {
-  const r = (k) => respondidas > k;
+export function estadoDeLaCuenta(paso, comprobada) {
+  const hecho = (k) => k < paso || (k === paso && comprobada);
+  const encendido = (k) => k === paso && comprobada;
+  let saldo = DIC_2007.saldo;
+  if (hecho(4)) saldo = DIC_SIGUIENTE.saldo;
+  else if (paso === 4 || hecho(3)) saldo = null;
+  else if (hecho(2)) saldo = MARZO.saldo;
+  else if (paso === 2 || hecho(1)) saldo = null;
   return {
-    neto: { valor: r(0) ? E.valorNeto : null, activo: abierta === 0 },
-    castigo: r(0),
-    debe: r(0) ? [{ ...MARZO, activo: false }] : [],
-    haber: [
-      { ...DIC_2007, activo: false },
-      ...(abierta === 2 || r(2) ? [{ ...DIC_SIGUIENTE, monto: r(2) ? DIC_SIGUIENTE.monto : null, activo: abierta === 2 }] : []),
-    ],
-    /* El saldo: el de 2007 hasta el castigo; después, vacío hasta que se pregunta; en contra hasta el ajuste; al final, el del año siguiente. */
-    saldo: r(3) ? DIC_SIGUIENTE.saldo : r(1) ? MARZO.saldo : r(0) ? null : DIC_2007.saldo,
-    huecoSaldo: abierta === 1 || abierta === 3,
+    neto: { valor: hecho(0) ? E.valorNeto : null, activo: paso === 0 && !comprobada },
+    debe: hecho(1) ? [{ ...MARZO, activo: encendido(1) }] : [],
+    haber: [{ ...DIC_2007, activo: false }, ...(hecho(3) ? [{ ...DIC_SIGUIENTE, activo: encendido(3) }] : [])],
+    saldo,
+    /* El saldo se pregunta en P2 y en P3: su hueco, en las dos columnas, hasta que se responde. */
+    huecoSaldo: (paso === 2 || paso === 4) && !comprobada,
+    cierre: hecho(4),
   };
 }
 
@@ -91,39 +96,33 @@ function Columna({ lado, movimientos, reducido }) {
   );
 }
 
-export default function CuentaQueSeLlena({ respondidas, abierta, reducido, anuncio }) {
-  const c = estadoDeLaCuenta(respondidas, abierta);
+/* El estado de situación financiera (T6 · A3): Clientes, la provisión restada y, bajo un filete, el neto. Solo en la pregunta 1. */
+export function BloqueEstado({ comprobada, reducido }) {
+  const activo = !comprobada;
+  return (
+    <div data-bloque-estado style={{ border: `1px solid ${BORDES}`, borderRadius: "10px", padding: "6px 8px 8px", display: "flex", flexDirection: "column", gap: "6px", margin: "10px 0 0" }}>
+      <p style={{ margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: 1.35, color: SECUNDARIO }}>{E.estado}</p>
+      {[[E.clientes, E.saldoClientes], [E.provision, E.menos]].map(([nombre, valor]) => (
+        <div key={nombre} style={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: "8px", alignItems: "baseline", ...NOMBRE, color: TEXTO, ...resalte(false) }}>
+          <span>{nombre}</span>
+          <span style={{ whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>{valor}</span>
+        </div>
+      ))}
+      <div style={{ borderTop: `1px solid ${BORDES}`, paddingTop: "6px" }}>
+        <div data-fila-neto {...marcaActivo(activo)} style={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: "8px", alignItems: "baseline", ...NOMBRE, color: TEXTO, ...resalte(activo) }}>
+          <span>{E.neto}</span>
+          <span data-valor style={{ whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums", minWidth: "1px" }}>{comprobada && <Entra reducido={reducido}>{E.valorNeto}</Entra>}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function CuentaQueSeLlena({ paso, comprobada, reducido, cierre = null }) {
+  const c = estadoDeLaCuenta(paso, comprobada);
   return (
     <div data-cuenta-que-se-llena style={{ display: "flex", flexDirection: "column", gap: "10px", margin: "0 0 12px" }}>
       <style>{KEYFRAMES_ENTRA}</style>
-
-      {/* El estado de situación financiera (T6 · A3): Clientes, la provisión restada y, bajo un filete, el neto. */}
-      <div data-bloque-estado style={{ border: `1px solid ${BORDES}`, borderRadius: "10px", padding: "6px 8px 8px", display: "flex", flexDirection: "column", gap: "6px" }}>
-        <p style={{ margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: 1.35, color: SECUNDARIO }}>{E.estado}</p>
-        {[[E.clientes, E.saldoClientes], [E.provision, E.menos]].map(([nombre, valor]) => (
-          <div key={nombre} style={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: "8px", alignItems: "baseline", ...NOMBRE, color: TEXTO, ...resalte(false) }}>
-            <span>{nombre}</span>
-            <span style={{ whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>{valor}</span>
-          </div>
-        ))}
-        <div style={{ borderTop: `1px solid ${BORDES}`, paddingTop: "6px" }}>
-          <div data-fila-neto {...marcaActivo(c.neto.activo)} style={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: "8px", alignItems: "baseline", ...NOMBRE, color: TEXTO, ...resalte(c.neto.activo) }}>
-            <span>{E.neto}</span>
-            <span data-valor style={{ whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums", minWidth: "1px" }}>{c.neto.valor && <Entra reducido={reducido}>{c.neto.valor}</Entra>}</span>
-          </div>
-        </div>
-      </div>
-
-      {/*
-        * El castigo de marzo, como dato (decisión de a5): entra al responder la casilla 1. Su sitio está
-        * reservado desde el principio, invisible: la T no salta cuando llega.
-        */}
-      <p data-castigo-dado={c.castigo ? "si" : "no"} aria-hidden={c.castigo ? undefined : "true"} style={{
-        margin: 0, padding: "8px 10px", borderRadius: "10px", background: "rgba(184,196,212,0.13)",
-        fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: TEXTO, visibility: c.castigo ? "visible" : "hidden",
-      }}>
-        {c.castigo ? <Entra reducido={reducido}>{CASTIGO_DADO_T6_ACT5.texto}</Entra> : CASTIGO_DADO_T6_ACT5.texto}
-      </p>
 
       {/* La cuenta T de la provisión (capa 3 de T6 · A3). */}
       <div data-cuenta-t style={{ border: `1px solid ${BORDES}`, borderRadius: "12px", padding: "10px 12px 12px" }}>
@@ -141,31 +140,39 @@ export default function CuentaQueSeLlena({ respondidas, abierta, reducido, anunc
         )}
         {/* Mientras se pregunta, el hueco del saldo ocupa las dos columnas: si estuviera bajo un lado, delataría la respuesta. */}
         {c.huecoSaldo && (
-          <div data-saldo="hueco" data-renglon-activo="" style={{ marginTop: "8px", minHeight: "22px", ...resalte(true), margin: "8px -6px 0" }} />
+          <div data-saldo="hueco" data-renglon-activo="" style={{ minHeight: "22px", ...resalte(true), margin: "8px -6px 0" }} />
         )}
         {c.saldo && !c.saldo.enContra && !c.huecoSaldo && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", marginTop: "8px" }}>
             <p data-saldo="normal" style={{ ...SALDO, gridColumn: "2", paddingTop: "4px", borderTop: `1px solid ${BORDES}`, textAlign: "right" }}>
-              {respondidas > 3 ? <Entra reducido={reducido}>{c.saldo.texto}</Entra> : c.saldo.texto}
+              {c.cierre ? <Entra reducido={reducido}>{c.saldo.texto}</Entra> : c.saldo.texto}
             </p>
           </div>
         )}
       </div>
 
+      {/* El cierre, debajo de la T, después de la pregunta 3. */}
+      {c.cierre && cierre && (
+        <p data-cierre-t style={{ margin: 0, padding: "8px 10px", borderRadius: "10px", background: "rgba(184,196,212,0.13)", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: TEXTO }}>
+          <Entra reducido={reducido}>{cierre}</Entra>
+        </p>
+      )}
+
       {/* Lo que entró, para el lector de pantalla. */}
-      <p data-anuncio aria-live="polite" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" }}>{anuncio}</p>
+      <p data-anuncio aria-live="polite" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" }}>{comprobada ? anuncioDe(paso) : ""}</p>
     </div>
   );
 }
 
-/* Lo que se anuncia al responder la casilla k (el valor correcto, que es lo que entra). */
+/* Lo que se anuncia al comprobar el paso k (lo que entra a la cuenta, que es siempre lo correcto). */
 export function anuncioDe(k) {
   const lado = (l) => CUENTA_T_T6_A3[l].charAt(0) + CUENTA_T_T6_A3[l].slice(1).toLowerCase();
   /* La fecha va en mitad de la frase: en minúscula («marzo del año siguiente»). Se nota en braille (Shoko). */
   const enFrase = (t) => t.charAt(0).toLowerCase() + t.slice(1);
-  /* Con la casilla 1 entra también el castigo, ya anotado: se anuncia con las palabras de Futaba. */
-  if (k === 0) return `${E.neto}, ${E.valorNeto}. ${CASTIGO_DADO_T6_ACT5.anuncio}`;
-  if (k === 1) return MARZO.saldo.texto;
-  if (k === 2) return `${lado(DIC_SIGUIENTE.lado)}, ${DIC_SIGUIENTE.monto}, ${enFrase(DIC_SIGUIENTE.nombre)}`;
+  const movimiento = (m) => `${lado(m.lado)}, ${m.monto}, ${enFrase(m.nombre)}`;
+  if (k === 0) return `${E.neto}, ${E.valorNeto}`;
+  if (k === 1) return movimiento(MARZO);
+  if (k === 2) return MARZO.saldo.texto;
+  if (k === 3) return movimiento(DIC_SIGUIENTE);
   return DIC_SIGUIENTE.saldo.texto;
 }

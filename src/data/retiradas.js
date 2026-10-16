@@ -39,6 +39,8 @@ export const NOMBRE_DE_RETIRADA = {
   "dashboard-economico": "El Tablero Económico",
   /* 0076 · Célula B: sus decisiones ya están en a4 y en la capa 3 de T6 · A2 (Shoko, C6). */
   "b5-t6-a7": "¿Qué método y cuándo?",
+  /* 0077 · Célula B: se fundió en b5-t6-a2 «La provisión de El Torito» (lote 6b, hoja de Mai). */
+  "b5-t6-a5": "La cuenta de la provisión",
 };
 
 /**

@@ -405,7 +405,8 @@ test("★★★ capa 3: la T se llena en orden al cerrarse cada pregunta (escale
     assert.equal(lectura(caja.querySelector(`[data-revela="${m.id}"]`)), m.pista, "al primer error, solo la pista");
     assert.deepEqual([columna("debe"), columna("haber")], antes, "al primer error, la T no se mueve");
     await decidir(tocar, caja.querySelector(`[data-hecho="${m.id}"]`), mala);
-    assert.equal(lectura(caja.querySelector(`[data-revela="${m.id}"]`)), (typeof m.falla === "string" ? m.falla : m.falla[mala]) + m.revela);
+    /* B5 de Futaba: tras dos errores, la devolución de la opción, sin el texto que se revela. */
+    assert.equal(lectura(caja.querySelector(`[data-revela="${m.id}"]`)), typeof m.falla === "string" ? m.falla : m.falla[mala]);
     assert.equal(caja.querySelector(`[data-revela="${m.id}"] [data-pie]`).textContent, m.pie);
     assert.deepEqual(columna("debe"), esperado[k].debe, `momento ${k + 1}: DEBE`);
     assert.deepEqual(columna("haber"), esperado[k].haber, `momento ${k + 1}: HABER`);
