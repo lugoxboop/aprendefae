@@ -21,12 +21,24 @@
  * nuevo. El panel es un registro de lo que pasó, y el estudiante no jugó un
  * nombre distinto del que vio.
  *
- * NO HAY GUARDIA QUE TE OBLIGUE, y es a propósito: una prueba que fallara al
- * retirar algo bloquearía a la célula que retira por un asunto del panel
- * docente, que es de otro. Si se olvida, el panel enseña el id como enseñaba
- * antes — se pierde la mejora, no se rompe nada.
+ * SÍ HAY GUARDIA, Y ESTE PÁRRAFO DECÍA LO CONTRARIO. Lo cambio y digo por qué,
+ * porque el razonamiento viejo no era tonto: decía que una prueba que fallara
+ * al retirar algo bloquearía a la célula que retira por un asunto del panel
+ * docente, que es de otro.
  *
- * Lo que sí hay es una prueba de que lo que está aquí SIGA retirado de
+ * Lo que lo tumbó fue ver el coste del olvido. La Célula D retiró tres
+ * actividades, puso sus nombres aquí y no tocó la lista del paso 2 de
+ * `supabase/tests/retiro_test.sql` —la otra mitad del mismo trabajo—. Se
+ * enteró por un rojo de una prueba que solo corre sobre Postgres limpio, con
+ * un mensaje que no dice qué archivo editar, y costó una ronda de mensajes
+ * entre células averiguarlo.
+ *
+ * Así que `retiradas-en-sincronia.test.mjs` compara las dos listas y, cuando
+ * no cuadran, DICE qué ids faltan y en qué archivo. No bloquea a nadie por un
+ * asunto ajeno: bloquea por media tarea. Quien retira ya está editando dos
+ * cadenas del SQL; la tercera línea es esta, y la prueba se la nombra.
+ *
+ * Y sigue habiendo la otra prueba, la de que lo que está aquí SIGA retirado de
  * verdad: una entrada para algo que volvió al catálogo es basura que engaña.
  * ═══════════════════════════════════════════════════════════════════════════
  */
