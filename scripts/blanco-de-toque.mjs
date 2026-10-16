@@ -130,9 +130,26 @@ const informe = await pagina.evaluate((MIN) => {
     const bordes = [[x.cx, x.cy - r], [x.cx, x.cy + r], [x.cx - r, x.cy], [x.cx + r, x.cy]];
     let aciertos = 0;
     let tapaQuien = null;
+    let porLaCurva = 0;
     for (const [a, b] of bordes) {
       const encima = document.elementFromPoint(a, b);
       if (encima?.closest("button, [role=button]") === x.el) { aciertos++; continue; }
+      /*
+       * UN ANCESTRO NO ES UN ELEMENTO ENCIMA, Y CONFUNDIRLOS ERA UN FALSO ROJO.
+       *
+       * Lo cazó la Célula D con «Volver al camino»: el medidor decía «tapado
+       * por <div>» y ellos midieron 140×44 sin nada encima. Los dos datos eran
+       * ciertos. Con `border-radius: 999px`, el punto del borde cae a un pelo
+       * de la curva y `elementFromPoint` devuelve el CONTENEDOR, que está
+       * DEBAJO, no encima. Informar eso como «tapado» manda a buscar un
+       * elemento superpuesto que no existe.
+       *
+       * Así que un ancestro se cuenta aparte: es geometría de la píldora, no
+       * una superposición. Y si el dibujo ya llega a 44 en los dos sentidos,
+       * tampoco es un defecto de tamaño: el dedo acierta en todo el cuerpo del
+       * botón. Se informa el número, que no es lo mismo que callarlo.
+       */
+      if (encima && encima.contains(x.el)) { porLaCurva++; continue; }
       if (encima && !x.el.contains(encima) && !tapaQuien) {
         const ot = encima.closest("button, [role=button]");
         tapaQuien = ot ? `«${(ot.getAttribute("aria-label") || ot.textContent || "").trim().slice(0, 20)}»` : `<${encima.tagName.toLowerCase()}>`;
@@ -147,8 +164,18 @@ const informe = await pagina.evaluate((MIN) => {
      * que informar: un control pequeño se arregla con tamaño y uno tapado no,
      * y confundirlos manda a arreglar lo que no está roto.
      */
-    medidos.push({ nombre: x.nombre, dibujo: `${Math.round(x.w)}×${Math.round(x.h)}`, aciertos,
-      causa: aciertos === 4 ? null : (tapaQuien ? `tapado por ${tapaQuien}` : "pequeño") });
+    const grandeDeDibujo = x.w >= MIN - 0.5 && x.h >= MIN - 0.5;
+    /*
+     * Las dos cosas a la vez se dicen las dos. Antes «tapado» tapaba
+     * —literalmente— a «pequeño», y el informe acababa diciendo «ningún
+     * control por debajo de 44» justo encima de una línea con 129×37. Las dos
+     * eran verdad y la segunda contradecía al resumen.
+     */
+    const causa = aciertos === 4 ? null
+      : tapaQuien ? (grandeDeDibujo ? `tapado por ${tapaQuien}` : `pequeño (${Math.round(x.w)}×${Math.round(x.h)}) Y tapado por ${tapaQuien}`)
+      : (porLaCurva && grandeDeDibujo) ? null
+      : "pequeño";
+    medidos.push({ nombre: x.nombre, dibujo: `${Math.round(x.w)}×${Math.round(x.h)}`, aciertos, porLaCurva, causa });
   }
 
   const solapes = [];
@@ -173,11 +200,27 @@ const informe = await pagina.evaluate((MIN) => {
  */
 let pequenos = 0;
 let tapados = 0;
+let curvas = 0;
 for (const m of informe.medidos) {
-  const ok = m.aciertos === 4;
-  if (!ok) (m.causa && m.causa.startsWith("tapado") ? tapados++ : pequenos++);
-  const causa = m.causa ? `  ← ${m.causa}` : "";
-  console.log(`${ok ? "✅" : "⚠️ "} dibujo ${m.dibujo.padEnd(8)} toque ${m.aciertos}/4 bordes   «${m.nombre}»${causa}`);
+  /*
+   * «Bien» es no tener causa, y no acertar los cuatro bordes. Un botón de
+   * 140×44 con `border-radius: 999px` pierde un borde contra su propio
+   * contenedor —la curva—, y eso no es ni pequeño ni tapado: el dedo acierta
+   * en todo su cuerpo. Se marca con «~» en vez de «✅» para que se vea que
+   * hubo un punto que no acertó, y se cuenta abajo.
+   */
+  const ok = !m.causa;
+  if (!ok) {
+    if (m.causa.includes("tapado")) tapados++;
+    if (m.causa.startsWith("pequeño")) pequenos++;
+  }
+  if (ok && m.porLaCurva) curvas++;
+  const marca = m.causa ? "⚠️ " : (m.porLaCurva ? "✅" : "✅");
+  const nota = m.causa ? `  ← ${m.causa}` : (m.porLaCurva ? `  (${m.porLaCurva} borde(s) en la curva de la píldora, no tapados)` : "");
+  console.log(`${marca} dibujo ${m.dibujo.padEnd(8)} toque ${m.aciertos}/4 bordes   «${m.nombre}»${nota}`);
+}
+if (curvas > 0) {
+  console.log(`\n(${curvas} control(es) perdieron algún punto del borde contra su PROPIO contenedor: es la curva de la píldora, no un elemento encima. Lo cazó la Célula D con «Volver al camino», que medía 140×44 y salía «tapado por <div>».)`);
 }
 const malos = pequenos;
 if (informe.fueraDePantalla > 0) {
