@@ -432,7 +432,7 @@ export default function MesaDeDosCasos() {
       </p>
 
       <p style={{
-        margin: "12px 0 6px", fontFamily: "Sora, sans-serif", fontSize: "11.5px",
+        margin: "12px 0 6px", fontFamily: "Sora, sans-serif", fontSize: "12px",
         fontWeight: 600, color: "rgba(248,249,250,0.55)",
       }}>
         Segmento {segmento + 1} de {P.segmentos.length}

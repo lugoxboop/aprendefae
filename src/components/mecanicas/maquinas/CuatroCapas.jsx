@@ -505,7 +505,7 @@ export default function CuatroCapas({
             <div style={{ borderRadius: "14px", background: "rgba(10,20,34,0.45)", border: "1px solid rgba(248,249,250,0.1)", padding: "10px" }}>
               <Escena resaltar={actual.resaltar} />
             </div>
-            <p style={{ margin: "12px 0 6px", fontFamily: "Sora, sans-serif", fontSize: "11.5px", fontWeight: 600, color: "rgba(248,249,250,0.55)" }}>
+            <p style={{ margin: "12px 0 6px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 600, color: "rgba(248,249,250,0.55)" }}>
               Paso {paso + 1} de {pieza.pasos.length}
             </p>
             <p data-texto-paso aria-live="polite" style={{ margin: 0, fontSize: "15px", lineHeight: 1.6, color: FAE.text }}>{actual.texto}</p>

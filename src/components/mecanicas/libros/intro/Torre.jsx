@@ -86,7 +86,7 @@ export default function Torre({
     <span
       data-rotulo-lado={texto}
       style={{
-        flex: "1 1 0", minWidth: 0, fontFamily: SORA, fontSize: "10px", fontWeight: 700,
+        flex: "1 1 0", minWidth: 0, fontFamily: SORA, fontSize: "12px", fontWeight: 700,
         letterSpacing: "0.14em", color: NEUTRO, textAlign: alaDerecha ? "left" : "right",
         opacity: ver ? 1 : 0,
         transition: reducido ? "none" : "opacity 400ms ease",
@@ -130,7 +130,7 @@ export default function Torre({
             data-izq={c.extra ? "extra" : c.bloque.id}
             style={{
               height: `${ALTO_BLOQUE}px`, display: "flex", alignItems: "center",
-              justifyContent: "flex-end", fontSize: "11px", color: FAE.text, textAlign: "right",
+              justifyContent: "flex-end", fontSize: "12px", color: FAE.text, textAlign: "right",
             }}
           >
             {/* El bloque de más no tiene nombre: el capítulo no dice cuál sería. */}

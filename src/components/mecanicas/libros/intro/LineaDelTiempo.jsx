@@ -52,14 +52,14 @@ export function Foto({ foto, atenuada = false, resaltada = false, conCifras = fa
       }}
     >
       <p data-fecha={foto.fecha} style={{
-        margin: "0 0 6px", fontFamily: SORA, fontSize: "11.5px", fontWeight: 700, color: FAE.text,
+        margin: "0 0 6px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, color: FAE.text,
       }}>
         {foto.fecha}
       </p>
       {foto.lineas.map((l) => (
         <p key={l.rotulo} data-linea-foto={l.rotulo} style={{
           margin: "0 0 3px", display: "flex", flexWrap: "wrap", gap: "2px 6px",
-          fontSize: "10.5px", lineHeight: 1.35,
+          fontSize: "12px", lineHeight: 1.35,
         }}>
           <span style={{ color: "rgba(248,249,250,0.5)" }}>{l.rotulo}</span>
           <span style={{ color: "rgba(248,249,250,0.85)" }}>{l.texto}</span>
@@ -127,10 +127,10 @@ export function Banda({ llenado = 0, atenuada = false, resaltada = false, reduci
         position: "relative", height: "100%", padding: "8px 11px", boxSizing: "border-box",
         display: "flex", flexDirection: "column", justifyContent: "center", gap: "2px",
       }}>
-        <span style={{ fontFamily: SORA, fontSize: "11px", fontWeight: 700, lineHeight: 1.3, color: FAE.text }}>
+        <span style={{ fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: 1.3, color: FAE.text }}>
           {ROTULO_BANDA}
         </span>
-        <span data-rango style={{ fontSize: "10px", color: "rgba(248,249,250,0.6)" }}>{RANGO_BANDA}</span>
+        <span data-rango style={{ fontSize: "12px", color: "rgba(248,249,250,0.6)" }}>{RANGO_BANDA}</span>
       </div>
     </div>
   );
@@ -196,7 +196,7 @@ export function FiguraDelTiempo({
             style={{
               marginTop: "8px", padding: "6px 12px", borderRadius: "999px", cursor: "pointer",
               background: "transparent", border: "1px solid rgba(248,249,250,0.3)",
-              color: FAE.text, fontFamily: SORA, fontSize: "11.5px", fontWeight: 600,
+              color: FAE.text, fontFamily: SORA, fontSize: "12px", fontWeight: 600,
             }}
           >
             Cerrar

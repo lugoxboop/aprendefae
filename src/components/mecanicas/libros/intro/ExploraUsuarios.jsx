@@ -55,7 +55,7 @@ export default function ExploraUsuarios() {
           background: activo ? NEUTRO : "transparent",
           color: activo ? NAVY_DEL_CHIP : "rgba(248,249,250,0.72)",
           border: `1px solid ${activo ? NEUTRO : "rgba(248,249,250,0.22)"}`,
-          fontFamily: SORA, fontSize: "11px", fontWeight: activo ? 700 : 500,
+          fontFamily: SORA, fontSize: "12px", fontWeight: activo ? 700 : 500,
         }}
       >
         {u.nombre}
