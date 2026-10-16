@@ -1,4 +1,4 @@
-import { T5_ACT2, PARTES_T5_ACT2, ESTANTE_T5_ACT2, RESUMEN_T5_ACT2, ALT_T5_ACT2 } from "../../../../data/contabilidadT5Act2.js";
+import { T5_ACT2, PARTES_T5_ACT2, ESTANTE_T5_ACT2, RESUMEN_T5_ACT2, ALT_T5_ACT2, REGLAS_T5_ACT2, COMPRA_T5_ACT2 } from "../../../../data/contabilidadT5Act2.js";
 import { evaluarParteT5Act2 } from "../../../../contabilidad/t5Act2.js";
 import CierreConMesa from "../b5/CierreConMesa.jsx";
 
@@ -14,6 +14,9 @@ import CierreConMesa from "../b5/CierreConMesa.jsx";
 
 export const CONFIG_T5_ACT2 = {
   actividad: T5_ACT2,
+  /* Lote 6c: los pasos van plegados bajo «¿Cómo se juega?», y el ejemplo resuelto es su propio paso. */
+  reglas: REGLAS_T5_ACT2,
+  ejemplo: COMPRA_T5_ACT2,
   partes: PARTES_T5_ACT2,
   estante: ESTANTE_T5_ACT2,
   resumen: RESUMEN_T5_ACT2,

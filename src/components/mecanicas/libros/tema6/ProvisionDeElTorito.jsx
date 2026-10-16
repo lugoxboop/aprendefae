@@ -1,5 +1,5 @@
 import {
-  T6_ACT2, PASOS_T6_ACT2, PASOS_TEXTOS_T6_ACT2, ESTANTE_T6_ACT2, RESUMEN_T6_ACT2, ALT_T6_ACT2, DIARIO_T6_ACT2, PROVISION_2007_T6_ACT2,
+  T6_ACT2, PASOS_T6_ACT2, PASOS_TEXTOS_T6_ACT2, ESTANTE_T6_ACT2, RESUMEN_T6_ACT2, ALT_T6_ACT2, DIARIO_T6_ACT2, PROVISION_2007_T6_ACT2, REGLAS_T6_ACT2,
 } from "../../../../data/contabilidadT6Act2.js";
 import { evaluarParte } from "../../../../contabilidad/cierreConMesa.js";
 import CierreConMesa from "../b5/CierreConMesa.jsx";
@@ -33,6 +33,9 @@ function CuentaDeA2(props) {
 
 export const CONFIG_T6_ACT2 = {
   actividad: T6_ACT2,
+  /* Lote 6c: los pasos van plegados bajo «¿Cómo se juega?», y el ejemplo resuelto es su propio paso. */
+  reglas: REGLAS_T6_ACT2,
+  ejemplo: PROVISION_2007_T6_ACT2,
   partes: PASOS_T6_ACT2,
   estante: ESTANTE_T6_ACT2,
   resumen: RESUMEN_T6_ACT2,

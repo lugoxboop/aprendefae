@@ -13,8 +13,9 @@ import { COLOR } from "../../../../data/contabilidadTema3.js";
  *   · debajo, una fila de 44: a la izquierda el contador («Ficha N de 9»;
  *     Sora 12/600, en mayúsculas, secundario) y a la derecha «¿Cómo se
  *     juega?» como enlace (Sora 12/600, subrayado, 44 de alto);
- *   · plegados bajo «¿Cómo se juega?», la consigna, los pasos y, si la
- *     actividad la tiene, la regla fija. Al abrir empuja hacia abajo; plegado
+ *   · plegados bajo «¿Cómo se juega?», la consigna, los pasos, lo que la
+ *     actividad fija como recordatorio (`notas`) y, si la tiene, la regla
+ *     fija («Solo tienes un intento…»). Al abrir empuja hacia abajo; plegado
  *     no ocupa nada (no se pinta: así tampoco se le puede dar el foco).
  *
  * «Así se juega» (el ejemplo con la mano) sigue saliendo la primera vez,
@@ -28,7 +29,7 @@ const INTER = "Inter, sans-serif";
 const SECUNDARIO = COLOR.apagado;
 export const ROTULO_COMO_SE_JUEGA = "¿Cómo se juega?";
 
-export default function EncabezadoCompacto({ objetivo, contador, consigna, pasos = [], regla = null }) {
+export default function EncabezadoCompacto({ objetivo, contador, consigna, pasos = [], regla = null, notas = [] }) {
   const [abierto, setAbierto] = useState(false);
   const idPanel = useId();
   return (
@@ -58,6 +59,8 @@ export default function EncabezadoCompacto({ objetivo, contador, consigna, pasos
                 {pasos.map((p) => <li key={p}>{p}</li>)}
               </ol>
             )}
+            {/* Lo que la actividad fija como recordatorio (b5-t6-a4: su nota y la regla de qué se debita). */}
+            {notas.map((n) => <p key={n} data-nota-plegada style={{ margin: 0, fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: COLOR.blanco }}>{n}</p>)}
             {regla && <p data-regla style={{ margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: 1.45, color: SECUNDARIO }}>{regla}</p>}
           </div>
         )}

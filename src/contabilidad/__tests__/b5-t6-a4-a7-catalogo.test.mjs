@@ -142,7 +142,7 @@ test("★★★ el guion de cada «Así se juega» resuelve su ejemplo con la re
   }
 });
 
-test("★★★ en pantalla: la primera vez, «Así se juega» con las tres reglas; después, «¿Cómo se juega?» lo reabre", async () => {
+test("★★★ en pantalla: la primera vez, «Así se juega» con las tres reglas; después, «¿Cómo se juega?» las despliega en el encabezado compacto", async () => {
   for (const k of CASOS) {
     localStorage.clear();
     const juego = JUEGOS.find((x) => x.id === k.id);
@@ -152,8 +152,9 @@ test("★★★ en pantalla: la primera vez, «Así se juega» con las tres regl
     await tocar(boton(caja, "Siguiente"));
     const como = [...caja.querySelectorAll("button")].find((b) => b.textContent.includes("¿Cómo se juega?"));
     assert.ok(como, `${k.id}: la partida no ofrece «¿Cómo se juega?»`);
+    /* Lote 6c: el enlace despliega los pasos en el encabezado compacto, sin volver al ejemplo animado. */
     await tocar(como);
-    assert.deepEqual(pasos(), k.reglas, `${k.id}: no se reabre`);
+    assert.deepEqual([...caja.querySelectorAll("[data-partida] [data-pasos] li")].map((li) => li.textContent), k.reglas, `${k.id}: no se despliegan`);
     desmontar();
   }
 });

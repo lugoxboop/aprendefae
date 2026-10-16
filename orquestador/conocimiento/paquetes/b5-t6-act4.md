@@ -107,3 +107,9 @@ Quedan como hueco a2, a3, T6 A3 y T6 A4. En a4, Pablo Moncayo deja de nombrarse.
 Id	Campo	Texto nuevo (literal)
 qd-09	Hecho	Un cliente cuya deuda ya se castigó vuelve y paga. Primero se revive su deuda.
 qd-10	Hecho	Ya revivida la deuda, entra el pago del cliente.
+
+## Lote 6c · encabezado compacto (hoja «Enganche B1-B5» de Mai, parte Hacer)
+
+Objetivo nuevo, una oración del kit (PARA SHOKO, lo escribió KAEDE): «Decidir qué cuenta se debita en cada hecho de las cuentas por cobrar y de su provisión.»
+
+En la partida, la consigna, los pasos y lo fijo de la actividad van plegados bajo «¿Cómo se juega?»; la figura sube a los primeros 280 px.

@@ -695,6 +695,8 @@ export const SUBJECTS = {
           { id: "t5-gano-o-perdio", nombre: "¿Ganó o perdió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* N6 de la Célula C, posición 9 de la decisión de corte de T5 (punto 6): después de N4 y de N5, antes de N7, que la sostiene, y del cierre de Santa Pacha. Los gastos de la compra al costo y el dividendo a Ingresos por dividendos, p. 193, con un ejemplo construido. Cero FP. */
           { id: "t5-a2-lo-que-el-ejemplo-no-trae", nombre: "Lo que el ejemplo no trae", clasificacion: { tipo: APRENDER } },
+          /* N7 de la Célula C, posición 10 de la decisión de corte de T5 (punto 6): después de N6, que la sostiene, y antes del cierre de Santa Pacha. La cuenta y el lado de la compra con gastos, el interés y el dividendo, p. 193, con cifras construidas. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0114. */
+          { id: "t5-a-que-cuenta-va", nombre: "¿A qué cuenta va?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "b5-t5-a2", nombre: "El cierre completo de Santa Pacha", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },

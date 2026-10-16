@@ -9,8 +9,9 @@
  *   · primer error    la PISTA (`decide.pista`); la elegida queda tachada y
  *                     no se puede volver a tocar; las demás siguen activas.
  *                     Ni la devolución ni el texto que se revela.
- *   · segundo error   la devolución de esa opción (`falla`, la de siempre) y
- *                     después el texto que se revela. La pregunta se cierra.
+ *   · segundo error   la devolución de esa opción (`falla`, la de siempre).
+ *                     La pregunta se cierra. En la capa 3, sin el texto que
+ *                     se revela (B5 de Futaba: lo lee solo quien acierta).
  *   · acierto         como antes: el texto directo, sin devolución.
  *
  * Sin pista, la pregunta se comporta como antes: un solo intento.

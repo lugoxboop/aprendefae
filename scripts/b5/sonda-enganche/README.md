@@ -156,3 +156,8 @@ Sale con **0** si los 12 casos dan lo esperado y con **1** si alguno no. **Tambi
 - **B2 no se aplica a Hacer**: la barra lo pide solo para Aprender.
 - **Sin barra de desplazamiento.** Chromium sin pantalla la oculta, como un teléfono. Las mediciones de ancho de `scripts/b5/medir-*.mjs` la muestran a propósito (15 px); por eso sus números pueden no coincidir con estos.
 - Si una pieza nueva no pone los atributos de arriba, la sonda da código 2: no adivina.
+
+## Lote 6c
+
+- Las mesas empiezan con el ejemplo resuelto como paso propio: la sonda lo mide al llegar («ejemplo resuelto») y toca «Empezar».
+- En las fichas a un nivel, la ficha cuenta como figura (`[data-ficha]` en FIG): es lo que se juega y así la mide la réplica de Mai («fichas unos 126»).

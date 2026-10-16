@@ -54,13 +54,16 @@ const { FAE } = await import("../../theme.js");
 const PARTES = D.PARTES_T5_ACT2;
 const parte = (n) => PARTES[n - 1];
 
-const montar = async ({ Juego = CierreConDiario, items = undefined, onCompletar = () => {}, modoDemo = false } = {}) => {
+const montar = async ({ Juego = CierreConDiario, items = undefined, onCompletar = () => {}, modoDemo = false, empezar = true } = {}) => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
   await act(async () => {
     raiz.render(h(Juego, { Marco: MarcoLibros, rotulo: "PRUEBA", titulo: "Prueba", acento: FAE.ambar, onCompletar, items, modoDemo }));
   });
+  /* Lote 6c: el ejemplo resuelto es su propio paso; la partida empieza con «Empezar». */
+  const empieza = caja.querySelector("[data-boton-empezar] button");
+  if (empezar && empieza) await act(async () => { empieza.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
 const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
@@ -141,7 +144,11 @@ test("guarda: el paquete se leyó entero, y una fila inventada no aparece", () =
 test("★★★ encabezado, contador «Asiento», reglas y texto alternativo: los del paquete", async () => {
   const { caja, desmontar } = await montar();
   assert.equal(caja.querySelector("[data-objetivo]").textContent, G_INICIAL.objetivo[0]);
+  /* Lote 6c: la consigna, los pasos y la regla fija van plegados bajo «¿Cómo se juega?». */
+  assert.equal(caja.querySelector("[data-consigna]"), null, "plegada no ocupa nada");
+  await tocar(caja.querySelector("[data-como-se-juega]"));
   assert.equal(caja.querySelector("[data-consigna]").textContent, G_INICIAL.consigna[0]);
+  assert.deepEqual([...caja.querySelectorAll("[data-encabezado] [data-pasos] li")].map((li) => li.textContent), D.REGLAS_T5_ACT2);
   assert.deepEqual(D.REGLAS_T5_ACT2, [G_INICIAL.regla1[0], G_INICIAL.regla2[0], G_INICIAL.regla3[0]]);
   assert.ok(caja.textContent.includes(G_INICIAL.alt[0]));
   assert.ok(caja.textContent.includes("Asiento 1 de 4"), "el contador dice «Asiento»");
@@ -371,10 +378,10 @@ test("★★★ el diario (hallazgo 9 de Shoko): no ocupa sitio hasta confirmar 
   assert.equal(boton.getAttribute("aria-expanded"), "false");
   assert.equal(caja.querySelector("[data-diario-boton]").textContent, "Ver");
   assert.equal(caja.querySelectorAll("[data-asiento-diario]").length, 0, "cerrado no muestra asientos");
-  /* El diario va entre el encabezado y el contador. */
+  /* Lote 6c: el diario baja al final de la tarjeta, debajo de «Siguiente». */
   const diario = caja.querySelector("[data-libro-diario]");
-  assert.ok(caja.querySelector("[data-consigna]").compareDocumentPosition(diario) & w.Node.DOCUMENT_POSITION_FOLLOWING);
-  assert.ok(diario.compareDocumentPosition(caja.querySelector("[data-tarjeta-parte]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+  assert.ok(caja.querySelector("[data-boton-avanzar]").compareDocumentPosition(diario) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+  assert.ok(caja.querySelector("[data-tarjeta-parte]").compareDocumentPosition(diario) & w.Node.DOCUMENT_POSITION_FOLLOWING);
   desmontar();
 });
 
@@ -475,7 +482,8 @@ test("★★★ «1.725.000», la cifra más larga de las respuestas, cabe en el
   const phs = px(seccion.style.paddingLeft);
   assert.equal(phs, 0, "la parte, sin relleno lateral");
   assert.equal(seccion.style.border, "", "y sin borde (calidad 1)");
-  assert.equal(seccion.style.marginTop, "16px", "16 px de aire con lo de encima");
+  /* Lote 6c (B1): la parte del asiento va justo bajo el encabezado, con la mesa arriba; el hecho, entre la mesa y el estante. */
+  assert.equal(seccion.style.marginTop, "0px");
   const util = UTIL_320 - 2 * phs;
   const columna = (util - px(mesa.style.gap)) / 2;
   const [pv, ph] = tarjeta.style.padding.split(" ").map(px);

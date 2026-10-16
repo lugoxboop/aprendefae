@@ -247,3 +247,18 @@ Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza
 5. **La desventaja de la anulación directa** — Def.: La anulación directa es muy sencilla. Pero no guarda información de las deudas que se castigan. Y esa información sirve para decidir cómo vender a crédito. · Cita: «Este método es muy sencillo, pero presenta la desventaja de que no suministra información relacionada con la cartera castigada…» (p. 199)
 6. **Método de provisiones** — Def.: Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. · Cita: la de hoy, de la p. 200.
 7. **Los asientos del método de provisiones** — Al cierre, se debita Gasto provisiones – cuentas incobrables. Y se acredita una cuenta llamada Provisión para deudas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.
+
+## Enganche B1-B5 (Mai, 15-oct) y B5 de Futaba (final, con las correcciones de Shoko) · manda sobre lo de arriba
+
+Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entregas/futaba-b2-b5-final.md (sección «B5»). Los textos nuevos van para Shoko.
+
+| Pieza | Figura | Al decidir |
+|---|---|---|
+| T6 A2 | rejilla: «Anulación directa» y «Provisiones» × «Al cerrar el periodo» y «Al castigar» | anulación: «Nada» al cerrar y «Gasto» al castigar. Provisiones: «Gasto» al cerrar y «Provisión» al castigar |
+
+Textos nuevos (para Shoko): «Nada», «Gasto» y «Provisión».
+
+- Capa 3 (las 7): la pregunta de la caja solo se ve mientras falta decidir; al decidir sale y quedan las opciones marcadas (✓/✕), la devolución y el texto. La pregunta es el nombre accesible del grupo de opciones (aria-labelledby); cuando sale de la pantalla pasa a una copia oculta.
+- Capa 3: quien acierta ve el texto que se revela; quien falla dos veces ve la devolución de su opción y la figura, pero NO ese texto.
+- **Cajas ya respondidas:** muestran solo la opción elegida con su marca (cumple E4). Vale para la capa 3 de las siete piezas.
+- Nombre accesible del grupo de opciones: T6 A2 «¿Cuándo aparece el gasto?»

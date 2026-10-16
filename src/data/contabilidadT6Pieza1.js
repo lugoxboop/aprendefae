@@ -160,13 +160,21 @@ export const OPCIONES_CAPA_3_T6 = [{ id: "sube", texto: "Sube" }, { id: "baja", 
  * se revela, la devolución o el pie; C2 le da a cada caja su pista.
  */
 export const HECHOS_T6 = [
-  { id: "venta-credito", hecho: "Un taller le arregla el carro a un cliente a crédito: le da 30 días para pagar.", revela: "Sube: se debita. El cliente queda debiendo el arreglo.", pie: "Basado en el libro, p. 197", correcta: "sube", falla: "Aunque diga “crédito”, el cliente queda debiendo lo que compró: sube.", pista: "Después de esto, ¿el cliente ya pagó o quedó debiendo algo?" },
-  { id: "pago", hecho: "Un cliente paga la mitad de lo que debe.", revela: "Baja: se acredita, pero solo por lo que pagó. El resto lo sigue debiendo.", pie: "Libro, p. 197", correcta: "baja", falla: "Lo que pagó ya no lo debe; el resto lo sigue debiendo.", pista: "Piensa en cuánto debe el cliente justo después de pagar esa parte." },
-  { id: "cheque-devuelto", hecho: "El cheque con el que un cliente pagó su factura rebota: el banco no lo paga.", revela: "Sube: se debita, con una nota débito. Ese pago no llegó a la empresa, así que la deuda vuelve.", pie: "Basado en el libro, pp. 191 y 197", correcta: "sube", falla: "El cheque no se cobró, así que el pago no cuenta: la deuda sube otra vez.", pista: "Si el banco no le pagó el cheque, ¿el cliente sí canceló su deuda?" },
-  { id: "devolucion", hecho: "Llegan de vuelta unas cajas de un pedido que el cliente aún no paga.", revela: "Baja: se acredita. Es una devolución de ventas.", pie: "Basado en el libro, p. 197", correcta: "baja", falla: "Lo que devuelve ya no lo tiene que pagar: baja.", pista: "¿Tiene que pagar el cliente lo que ya regresó?" },
-  { id: "descuento", hecho: "Un cliente recibe un descuento sobre la factura que todavía no ha pagado.", revela: "Baja: se acredita.", pie: "Basado en el libro, p. 197", correcta: "baja", falla: "El descuento rebaja lo que el cliente debe: baja.", pista: "Un descuento sobre una deuda, ¿qué le hace a lo que el cliente tiene que pagar?" },
-  { id: "contado", hecho: "La empresa le vende de contado a un cliente.", revela: "No cambia. El cliente pagó en el momento y no queda debiendo nada.", pie: "Basado en el libro, p. 197", correcta: "no-cambia", falla: "Pagó en el momento, así que no queda debiendo nada: no cambia.", pista: "Si paga en el mismo momento, ¿queda alguna deuda por anotar?" },
+  { id: "venta-credito", corto: "Venta a crédito", hecho: "Un taller le arregla el carro a un cliente a crédito: le da 30 días para pagar.", revela: "Sube: se debita. El cliente queda debiendo el arreglo.", pie: "Basado en el libro, p. 197", correcta: "sube", falla: "Aunque diga “crédito”, el cliente queda debiendo el arreglo: sube.", pista: "Después de esto, ¿el cliente ya pagó o quedó debiendo algo?" },
+  { id: "pago", corto: "Pago", hecho: "Un cliente paga la mitad de lo que debe.", revela: "Baja: se acredita, pero solo por lo que pagó. El resto lo sigue debiendo.", pie: "Libro, p. 197", correcta: "baja", falla: "Lo que pagó ya no lo debe; el resto lo sigue debiendo.", pista: "Piensa en cuánto debe el cliente justo después de pagar esa parte." },
+  { id: "cheque-devuelto", corto: "Cheque devuelto", hecho: "El cheque con el que un cliente pagó su factura rebota: el banco no lo paga.", revela: "Sube: se debita, con una nota débito. Ese pago no llegó a la empresa, así que la deuda vuelve.", pie: "Basado en el libro, pp. 191 y 197", correcta: "sube", falla: "El cheque no se cobró, así que el pago no cuenta: la deuda sube otra vez.", pista: "Si el banco no le pagó el cheque, ¿el cliente sí canceló su deuda?" },
+  { id: "devolucion", corto: "Devolución", hecho: "Llegan de vuelta unas cajas de un pedido que el cliente aún no paga.", revela: "Baja: se acredita. Es una devolución de ventas.", pie: "Basado en el libro, p. 197", correcta: "baja", falla: "Lo que devuelve ya no lo tiene que pagar: baja.", pista: "¿Tiene que pagar el cliente lo que ya regresó?" },
+  { id: "descuento", corto: "Descuento", hecho: "Un cliente recibe un descuento sobre la factura que todavía no ha pagado.", revela: "Baja: se acredita.", pie: "Basado en el libro, p. 197", correcta: "baja", falla: "El descuento rebaja lo que el cliente debe: baja.", pista: "Un descuento sobre una deuda, ¿qué le hace a lo que el cliente tiene que pagar?" },
+  { id: "contado", corto: "Venta de contado", hecho: "La empresa le vende de contado a un cliente.", revela: "No cambia. El cliente pagó en el momento y no queda debiendo nada.", pie: "Basado en el libro, p. 197", correcta: "no-cambia", falla: "Pagó en el momento, así que no queda debiendo nada: no cambia.", pista: "Si paga en el mismo momento, ¿queda alguna deuda por anotar?" },
 ];
+/*
+ * La figura de la capa 3 (Mai, enganche B1-B5 §2b; textos nuevos, para
+ * Shoko): la cuenta T de Cuentas por cobrar – clientes. Al decidirse un
+ * hecho, su nombre corto (`corto`) entra en el DEBE si lo que deben sube, en
+ * el HABER si baja; si no cambia, va debajo: «Sin movimiento: Venta de
+ * contado». Siempre con la respuesta correcta, se acierte o no.
+ */
+export const FIGURA_CAPA_3_T6 = { cuenta: "Cuentas por cobrar – clientes", debe: "DEBE", haber: "HABER", sinMovimiento: "Sin movimiento:" };
 export const FINAL_CAPA_3_T6 = {
   texto: "Fíjate: “venta a crédito” lleva la palabra crédito, pero a la cuenta del cliente se le hace un débito. El nombre del negocio no dice en qué lado se anota.",
   pie: "Basado en el libro, p. 197",

@@ -87,7 +87,8 @@ export function escalonDeCifra(item, { ok, reconocida = null }, fallos) {
   if (ok) return { ...base, cerrado: true, textos: [item.acierto] };
   const primero = reconocida ?? item.pista ?? null;
   if (fallos <= 1 && primero) return { ...base, cerrado: false, textos: [primero] };
-  return { ...base, cerrado: true, textos: [TEXTOS_ARMA.respuesta(item.correcta), porqueDe(item.acierto)].filter(Boolean) };
+  /* `item.porque`, opcional (T5 N7): el porqué propio de la respuesta, si la ficha lo trae; si no, el acierto sin su «Así es.». */
+  return { ...base, cerrado: true, textos: [TEXTOS_ARMA.respuesta(item.correcta), item.porque ?? porqueDe(item.acierto)].filter(Boolean) };
 }
 
 /* Una casilla sola: el error reconocido es la cifra de un distractor. */

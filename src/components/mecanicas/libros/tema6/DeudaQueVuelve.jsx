@@ -1,5 +1,5 @@
 import {
-  T6_ACT3, PARTES_T6_ACT3, ESTANTE_T6_ACT3, RESUMEN_T6_ACT3, ALT_T6_ACT3, DIARIO_T6_ACT3, CASTIGO_T6_ACT3,
+  T6_ACT3, PARTES_T6_ACT3, ESTANTE_T6_ACT3, RESUMEN_T6_ACT3, ALT_T6_ACT3, DIARIO_T6_ACT3, CASTIGO_T6_ACT3, REGLAS_T6_ACT3,
 } from "../../../../data/contabilidadT6Act3.js";
 import { evaluarParte } from "../../../../contabilidad/cierreConMesa.js";
 import CierreConMesa from "../b5/CierreConMesa.jsx";
@@ -22,6 +22,9 @@ import { MesaConDiario } from "../b5/LibroDiario.jsx";
 
 export const CONFIG_T6_ACT3 = {
   actividad: T6_ACT3,
+  /* Lote 6c: los pasos van plegados bajo «¿Cómo se juega?», y el ejemplo resuelto es su propio paso. */
+  reglas: REGLAS_T6_ACT3,
+  ejemplo: CASTIGO_T6_ACT3,
   partes: PARTES_T6_ACT3,
   estante: ESTANTE_T6_ACT3,
   resumen: RESUMEN_T6_ACT3,

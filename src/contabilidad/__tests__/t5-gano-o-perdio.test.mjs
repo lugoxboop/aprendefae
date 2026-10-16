@@ -470,13 +470,13 @@ test("★★ las líneas y su banco de cuentas se barajan; las casillas no", () 
 
 /* ═══════════ 5 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
 
-test("★★★ en T5 justo después de N4, seguida de N6 y del cierre de B (decisión de corte, punto 6): evaluativa, medio, 25 FP", () => {
+test("★★★ en T5 justo después de N4, seguida de N6, N7 y del cierre de B (decisión de corte, punto 6): evaluativa, medio, 25 FP", () => {
   assert.deepEqual(clasificacionDe("contabilidad", TEMA_T5, D.N5_ID), { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
   assert.equal(TEMA.actividades.find((a) => a.id === D.N5_ID).nombre, D.N5.nombre);
   const ids = TEMA.actividades.map((x) => x.id);
   assert.equal(ids.indexOf(D.N5_ID), ids.indexOf("t5-el-interes-del-periodo") + 1);
-  /* Después de N5 van N6 (posición 9) y el cierre de B (11); N7 (10) llega en su PR. */
-  assert.deepEqual(ids.slice(ids.indexOf(D.N5_ID)), [D.N5_ID, "t5-a2-lo-que-el-ejemplo-no-trae", "b5-t5-a2"]);
+  /* Después de N5 van N6 (posición 9), N7 (10) y el cierre de B (11). */
+  assert.deepEqual(ids.slice(ids.indexOf(D.N5_ID)), [D.N5_ID, "t5-a2-lo-que-el-ejemplo-no-trae", "t5-a-que-cuenta-va", "b5-t5-a2"]);
 });
 
 test("★★★ la vista abre lo que el catálogo ofrece", () => {
