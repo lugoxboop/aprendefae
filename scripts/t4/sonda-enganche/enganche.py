@@ -31,7 +31,8 @@ _AQUI = os.path.dirname(os.path.abspath(__file__))
 if len(sys.argv) < 2 or not os.path.isdir(sys.argv[1]): sys.argv.insert(1, _AQUI)
 sys.path.insert(0, sys.argv[1])
 from base import *
-D = sys.argv[1]; PORT = sys.argv[2]; SALIDA = sys.argv[3]; PIEZAS = [a for a in sys.argv[4:] if not a.startswith("--clave=")]
+D = sys.argv[1]; PORT = sys.argv[2]; SALIDA = sys.argv[3]
+PIEZAS = [a for a in sys.argv[4:] if not a.startswith("--clave=") and not a.startswith("--tema=")]
 _cl = [a.split("=", 1)[1] for a in sys.argv[4:] if a.startswith("--clave=")]
 CLAVE = json.load(open(_cl[0])) if _cl else {}
 U = f"http://localhost:{PORT}"
@@ -45,9 +46,17 @@ jwt = b64({"alg": "HS256", "typ": "JWT"}) + "." + b64({"sub": "00000000-0000-000
 USER = {"id": "00000000-0000-0000-0000-000000000001", "aud": "authenticated", "role": "authenticated", "email": "p@s.test", "app_metadata": {}, "user_metadata": {}, "created_at": "2026-10-01T00:00:00Z"}
 SES = {"access_token": jwt, "token_type": "bearer", "expires_in": 3600, "expires_at": exp, "refresh_token": "r", "user": USER}
 
-APRENDER = {"A0": "t4-a0-el-activo-corriente", "A1": "t4-a1-la-caja", "A2": "t4-a2-el-fondo-fijo", "A3": "t4-a3-el-arqueo", "A4": "t4-a4-bancos-y-notas", "A5": "t4-a5-san-calixto"}
-HACER = {"H1": "¿Entra o sale de Caja?", "H2": "El control que se saltaron", "H3": "¿Se mueve la caja menor?", "H4": "El arqueo de Rosa",
-         "H5": "¿Al empleado o al gasto?", "H6": "¿Quién se enteró primero?", "H7": "Concilia la cuenta", "H8": "¿Se asienta o no?"}
+# ───────────── Lo que cada tema pone: nada de esto vive ya en la sonda ─────────────
+# `--tema=<sigla>` elige la entrada de temas.json. Sin él, t4: la sonda nació ahí
+# y las órdenes que ya existen no se enteran del cambio.
+TEMA = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--tema=")), "t4")
+_TEMAS = json.load(open(os.path.join(_AQUI, "temas.json"), encoding="utf-8"))
+if TEMA not in _TEMAS or TEMA.startswith("_"):
+    disponibles = ", ".join(k for k in _TEMAS if not k.startswith("_"))
+    print(f"no conozco el tema «{TEMA}». Los que hay: {disponibles}. Se añade uno en temas.json.", file=sys.stderr)
+    sys.exit(2)  # 2 es «no medí», el mismo código que cuando la sonda no adivina (README)
+_T = _TEMAS[TEMA]
+RUTA = _T["ruta"]; PREFIJO = _T["prefijo"]; APRENDER = _T["aprender"]; HACER = _T["hacer"]
 
 def abrir(b, ruta, sem=7):
     ctx, pg, errs = pagina(b, 320, False)
@@ -102,7 +111,7 @@ def jugar_plan(pg, R, pid_p, plan, llegada, regs):
 
 def aprender(b, sigla):
     pid = APRENDER[sigla]; R = f'[data-pieza="{pid}"]'
-    ctx, pg, errs = abrir(b, "/#/efectivo-caja-menor-bancos")
+    ctx, pg, errs = abrir(b, RUTA)
     pg.wait_for_selector(R, timeout=20000); pg.wait_for_timeout(400)
     regs = []
     for _ in range(20):
@@ -146,15 +155,15 @@ exacto = lambda s: re.compile(r"^\s*" + r"\s+".join(re.escape(p) for p in norm(s
 def hacer(b, sigla, modo, clave):
     """Juega la partida entera con la clave: modo «bien» responde todo bien; «mal», todo mal con el mismo gesto.
     Mide cada tarjeta al llegar y tras responder. La misma semilla en los dos modos: las mismas tarjetas, en el mismo orden."""
-    n = sigla.lower(); R = f"[data-t4-{n}]"; K = clave[sigla]
-    ctx, pg, errs = abrir(b, "/#/efectivo-caja-menor-bancos/hacer", sem=7)
+    n = sigla.lower(); R = f"[data-{PREFIJO}-{n}]"; K = clave[sigla]
+    ctx, pg, errs = abrir(b, RUTA + "/hacer", sem=7)
     pg.locator("span:visible", has_text=HACER[sigla]).first.click()
-    pg.wait_for_selector(f"[data-t4-{n}-demo], {R}", state="attached", timeout=10000); pg.wait_for_timeout(500)
+    pg.wait_for_selector(f"[data-{PREFIJO}-{n}-demo], {R}", state="attached", timeout=10000); pg.wait_for_timeout(500)
     regs = []
-    if modo == "bien" and pg.locator(f"[data-t4-{n}-demo]").count():
-        m = mide(pg, f"[data-t4-{n}-demo]"); m.update(pantalla="así se juega", momento="así se juega", carta="así se juega"); regs.append(m)
+    if modo == "bien" and pg.locator(f"[data-{PREFIJO}-{n}-demo]").count():
+        m = mide(pg, f"[data-{PREFIJO}-{n}-demo]"); m.update(pantalla="así se juega", momento="así se juega", carta="así se juega"); regs.append(m)
     for _ in range(20):
-        if pg.locator(f"{R}:visible").count() == 1 and pg.locator(f"[data-t4-{n}-demo]:visible").count() == 0: break
+        if pg.locator(f"{R}:visible").count() == 1 and pg.locator(f"[data-{PREFIJO}-{n}-demo]:visible").count() == 0: break
         bs = [x for x in pg.locator("button:visible").all() if x.inner_text().strip() == "Siguiente"]
         if not bs: break
         bs[-1].click(); pg.wait_for_timeout(450)
