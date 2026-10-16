@@ -117,6 +117,8 @@ for (const ancho of ANCHOS) {
    * muestrea cada 50 ms que esté entero en la ventana (E2).
    */
   const mes = async (id) => {
+    /* En el error, el panel llega con «Iba aquí» (0,7 s, §4.2): se espera a que esté. */
+    await pg.waitForSelector("[data-mes-en-dos-cuentas]", { state: "attached", timeout: 3000 });
     const compacta = await pg.evaluate(() => document.querySelector("[data-mes-en-dos-cuentas]").dataset.mesEnDosCuentas === "compacta");
     if (compacta) {
       const alto = await pg.evaluate(() => Math.round(document.querySelector("[data-mes-en-dos-cuentas]").getBoundingClientRect().height));
