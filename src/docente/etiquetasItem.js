@@ -88,6 +88,7 @@ import { unidadDeN3 as unidadDeT5N3 } from "../contabilidad/t5N3.js";
 import { unidadDeN4 as unidadDeT5N4 } from "../contabilidad/t5N4.js";
 import { hechoDeItemH1 as hechoDeItemT4H1 } from "../data/contabilidadT4H1.js";
 import { unidadDeN5 as unidadDeT5N5 } from "../contabilidad/t5N5.js";
+import { unidadDeN7 as unidadDeT5N7 } from "../contabilidad/t5N7.js";
 import { unidadDeR5_2 } from "../data/repasoCap5ToroNegroJuego.js";
 import { unidadDeR5_3 } from "../data/repasoCap5MateJuego.js";
 import { unidadDeR5_4 } from "../data/repasoCap5BarranquillaJuego.js";
@@ -620,6 +621,8 @@ Object.assign(REGLAS, {
   "b5-t6-a6": (id) => PARTES_T6_ACT6.flatMap((p) => p.casillas).find((c) => c.id === id)?.enunciado ?? null,
   /* T5 · N5 (Célula C). Una elección, por su pregunta; una línea, por su cuenta y su valor. */
   "t5-gano-o-perdio": (id) => unidadDeT5N5(id),
+  /* T5 · N7 (Célula C). La casilla, por su pregunta; una línea, por su hecho, su cuenta y su valor. */
+  "t5-a-que-cuenta-va": (id) => unidadDeT5N7(id),
 
   "cu-arma-el-asiento": (id) => textoDeItemA6(id),
 
