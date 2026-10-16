@@ -29,36 +29,34 @@ export const T5_ACT1 = {
   consigna: "Lee la ficha. Elige qué tipo de renta da.",
 };
 
-/* Las tres líneas de «¿Cómo se juega?». */
+/*
+ * Las dos líneas de «¿Cómo se juega?» (lote 6a: las fichas a un nivel). La primera es de Futaba. La
+ * segunda, PARA SHOKO: Futaba escribió «Pulsa el botón para colocar la ficha; si fallas, tienes un
+ * intento más.», pero en la hoja de Mai no hay botón (tocar un cajón coloca la ficha), así que se
+ * adaptó a «Toca el cajón…».
+ */
 export const REGLAS_T5_ACT1 = [
-  "Elige primero si el título es de renta variable o de renta fija.",
-  "Si es de renta fija, elige también si es con interés o con descuento.",
-  "Pulsa el botón para colocar la ficha; si fallas, tienes un intento más.",
+  "Lee la ficha y elige qué renta da: variable, fija con interés o fija con descuento.",
+  "Toca el cajón donde va la ficha; si fallas, tienes un intento más.",
 ];
 
-/* ═══════════ LOS DOS NIVELES ═══════════ */
+/* ═══════════ LAS TRES OPCIONES: LOS TRES CAJONES DEL ESTANTE (hoja de fusiones de Mai) ═══════════ */
 
 export const VARIABLE = "variable";
 export const FIJA = "fija";
 export const INTERES = "interes";
 export const DESCUENTO = "descuento";
 
-/* «Renta variable» arriba y «Renta fija» abajo: el panel se abre al final (guía §2.2). */
-export const RENTAS = [
-  { id: VARIABLE, rotulo: "Renta variable" },
-  { id: FIJA, rotulo: "Renta fija" },
+/*
+ * Cada cajón es una respuesta entera: la renta y, si es fija, su tipo. Los nombres son los de la hoja de
+ * Mai y del texto alternativo de Futaba. El grupo se lee «Tipo de renta» (hoja de Mai; PARA SHOKO).
+ */
+export const CAJONES_T5_ACT1 = [
+  { renta: VARIABLE, tipo: null, rotulo: "Renta variable" },
+  { renta: FIJA, tipo: INTERES, rotulo: "Fija con interés" },
+  { renta: FIJA, tipo: DESCUENTO, rotulo: "Fija con descuento" },
 ];
-export const TIPOS_FIJA = [
-  { id: INTERES, rotulo: "Con interés" },
-  { id: DESCUENTO, rotulo: "Con descuento" },
-];
-
-/* Los rótulos del botón (guía §3, estado 2). */
-export const BOTON_T5_ACT1 = {
-  nada: "Elige un tipo de renta",
-  falta: "Elige qué renta fija",
-  colocar: "Colocar la ficha",
-};
+export const GRUPO_T5_ACT1 = "Tipo de renta";
 
 /* ═══════════ EL BANCO: 14 FICHAS ═══════════ */
 
@@ -169,13 +167,8 @@ export const ERROR_T5_ACT1 = {
   C: "❌ Vas bien: es renta fija. Ahora mira cómo produce la renta. Si paga un interés fijo durante un periodo, es con interés. Si gana la diferencia entre el valor de compra y el de redención, es con descuento.",
 };
 
-/* ═══════════ EL PUNTAJE: 60 % LA RENTA, 40 % EL TIPO (como T1-6) ═══════════ */
+/* El resumen (Futaba, lote 6a): ya no habla de pesos; cada ficha vale entera. */
+export const resumenT5Act1 = (bien, cuantas) => `${bien} de ${cuantas} fichas bien al primer intento.`;
 
-export const PESO_RENTA = 0.6;
-export const PESO_TIPO = 0.4;
-
-/* El resumen (guía §3, estado 5). {X} lo formatea el componente, como T1-6. */
-export const resumenT5Act1 = (bien, cuantas, x) =>
-  `${bien} de ${cuantas} completas al primer intento. Cada ficha valía ${x} %. Elegir variable o fija pesa 60 %. Elegir con interés o con descuento pesa 40 %. En las de renta variable, la primera elección vale toda la ficha.`;
-
-export const ALT_T5_ACT1 = "Actividad de clasificación. Aparece una ficha con el nombre de un título o con una pista de cómo rinde. Elige Renta variable o Renta fija. Si eliges Renta fija, elige también Con interés o Con descuento. Luego pulsa Colocar la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.";
+/* Futaba, con su última frase adaptada a la hoja de Mai (sin botón: tocar un cajón coloca la ficha). PARA SHOKO. */
+export const ALT_T5_ACT1 = "Actividad de clasificación. Aparece una ficha con el nombre de un título o con una pista de cómo rinde. Elige entre tres opciones: Renta variable, Fija con interés o Fija con descuento. Toca el cajón donde va la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.";
