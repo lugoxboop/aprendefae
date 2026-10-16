@@ -46,6 +46,7 @@
 --   y devolver las cuatro entradas a src/data/subjects.js.
 -- ---------------------------------------------------------------------------
 
+-- GUARDIAN: retiro blando de catalogo
 update public.actividad_catalogo
    set retirada = true
  where activity_id in ('t7-2-debe-o-haber', 't7-2-periodico-o-permanente', 't7-3-comercial-o-condicionado', 't7-3-que-entra-al-costo');
