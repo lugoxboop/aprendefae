@@ -7,6 +7,7 @@ import { Marca, CORRECTA, TACHADA } from "../b5/MarcasE4.jsx";
 import { escalera, fallaDe, elegir, sePuedeElegir } from "./escaleraB5.js";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import FiguraPegada, { asomarBajoLaFigura } from "./FiguraPegada.jsx";
+import { ConCifras } from "./TanqueProvision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -220,7 +221,7 @@ export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "
               {chevron}
             </span>
             <span data-cifras style={{ display: "block", marginTop: "4px" }}>
-              {caja.cifras.map((c) => <span key={c} style={{ ...LECTURA, display: "block" }}>{c}</span>)}
+              {caja.cifras.map((c) => <span key={c} style={{ ...LECTURA, display: "block" }}><ConCifras texto={c} /></span>)}
             </span>
           </>
         ) : (

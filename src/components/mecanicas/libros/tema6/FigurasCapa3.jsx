@@ -1,6 +1,7 @@
 import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
+import { ConCifras } from "./TanqueProvision.jsx";
 import { PAQUETES, FIGURA_CAPA_3 } from "../../../../data/contabilidadT5Pieza1.js";
 import { FIGURA_CAPA_3_T5_A2 } from "../../../../data/contabilidadT5Pieza2.js";
 import { HECHOS_T6, FIGURA_CAPA_3_T6 } from "../../../../data/contabilidadT6Pieza1.js";
@@ -58,7 +59,7 @@ function Entrada({ id, texto, detalle = null, ultima, centrada = false }) {
       fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: 1.35, color: FAE.text,
       fontVariantNumeric: "tabular-nums", textAlign: centrada ? "center" : "left",
     }}>
-      <span style={{ display: "block" }}>{texto}</span>
+      <span style={{ display: "block" }}><ConCifras texto={texto} /></span>
       {detalle && <span data-detalle style={{ display: "block", fontWeight: 400, color: COLOR.apagado }}>{detalle}</span>}
     </p>
   );

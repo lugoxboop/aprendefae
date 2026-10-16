@@ -43,6 +43,22 @@ import { pesos } from "../../../../data/contabilidad.js";
 
 export const CURVA = "cubic-bezier(.3,.9,.4,1)";
 export const MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+
+/*
+ * LOTE 9 · LAS CIFRAS EN LA PILA MONOESPACIADA (prompt maestro §5.3), en todo
+ * Aprender de B: las cifras de cuentas, asientos y saldos van en MONO con
+ * tabular-nums; Sora queda para las cifras de título o de resultado.
+ * `ConCifras` deja el texto igual y envuelve cada cifra («$148.800»,
+ * «− $148.800») en la pila monoespaciada, también dentro de una frase corta.
+ */
+export const CIFRA_MONO = { fontFamily: MONO, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" };
+const CIFRAS = /((?:[−-]\s?)?\$\s?\d[\d.]*(?:,\d+)?)/g;
+export function ConCifras({ texto }) {
+  if (typeof texto !== "string") return texto ?? null;
+  const partes = texto.split(CIFRAS);
+  if (partes.length === 1) return texto;
+  return partes.map((p, k) => (k % 2 ? <span key={k} data-cifra style={CIFRA_MONO}>{p}</span> : p));
+}
 const INTER = "Inter, sans-serif";
 const BLANCO = FAE.text;
 const NEUTRO = "#B8C4D4";

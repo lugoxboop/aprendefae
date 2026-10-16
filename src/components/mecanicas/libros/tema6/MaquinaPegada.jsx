@@ -8,6 +8,7 @@ import { estadoParada } from "../../../../contabilidad/fusionar.js";
 import { OpcionDecidir, useFormaQueCabe, seParteAlguna } from "./CajasQueRevelan.jsx";
 import { escalera, elegir, fallasDe } from "./escaleraB5.js";
 import { IconoVisto, IconoTache, TACHADO } from "../b5/MarcasE4.jsx";
+import { ConCifras } from "./TanqueProvision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -230,7 +231,7 @@ export function Anotacion({ id, e, cuenta, linea, movimiento, lado, reducido, re
       {linea && <p data-linea style={{ margin: "2px 0 0", fontFamily: INTER, fontSize: "12px", lineHeight: 1.35, color: "inherit" }}>{linea}</p>}
       {/* Si el movimiento y la cápsula no caben juntos, la cápsula baja de línea entera (Mai, T6 · A2 v1b: 73,63). */}
       <p data-movimiento style={{ margin: "3px 0 0", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px", fontFamily: INTER, fontSize: "12px", lineHeight: 1.35, color: "inherit" }}>
-        <span>{movimiento}</span>
+        <span><ConCifras texto={movimiento} /></span>
         {lado && <Lado lado={lado} textos={textos} />}
       </p>
     </div>

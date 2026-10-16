@@ -1,6 +1,7 @@
 import { ESCENA_T6, PASOS_T6, CIERRE_T6 } from "../../../../data/contabilidadT6Pieza1.js";
 import { estadoPasoT6, duracionPasoT6 } from "../../../../contabilidad/t6Pieza1.js";
 import MaquinaPegada, { SORA, INTER, SECUNDARIO, caja, Anotacion as AnotacionBase } from "./MaquinaPegada.jsx";
+import { ConCifras } from "./TanqueProvision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -40,7 +41,7 @@ function Escena(estado, refDe, reducido) {
           borderRadius: "10px", display: "flex", justifyContent: "space-between", gap: "8px",
           fontFamily: SORA, fontSize: "13px", fontWeight: 600, lineHeight: 1.3, ...caja(el.hecho10, [6, 8], reducido),
         }}>
-          <span>{ESCENA_T6.venta}</span><span>{ESCENA_T6.monto}</span>
+          <span>{ESCENA_T6.venta}</span><span><ConCifras texto={ESCENA_T6.monto} /></span>
         </div>
         <span ref={refDe("plazo")} data-elemento="plazo" data-resaltado={el.plazo.resaltado ? "si" : "no"} style={{
           alignSelf: "flex-start", borderRadius: "999px", whiteSpace: "nowrap", fontFamily: INTER, fontSize: "12px", lineHeight: 1.35,

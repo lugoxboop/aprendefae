@@ -385,7 +385,7 @@ test("★★★ capa 3: las dos ventas se ven iguales, con lo que costó y a cu�
   assert.deepEqual(cajas.map((c) => c.querySelector("button span span").textContent), ["Venta A", "Venta B"]);
   assert.deepEqual(D.VENTAS_T5_A2.map((v) => v.cifras), [["Costó $650 cada uno", "Se vende a $690"], ["Costó $1.150 cada uno", "Se vende a $1.060"]]);
   assert.deepEqual(D.VENTAS_T5_A2.map((v) => v.pie), ["Escenario simulado", "Escenario simulado"]);
-  assert.deepEqual(cajas.map((c) => [...c.querySelectorAll("[data-cifras] span")].map((s) => s.textContent)), D.VENTAS_T5_A2.map((v) => v.cifras));
+  assert.deepEqual(cajas.map((c) => [...c.querySelectorAll("[data-cifras] > span")].map((s) => s.textContent)), D.VENTAS_T5_A2.map((v) => v.cifras));
   assert.equal(cajas[0].getAttribute("style"), cajas[1].getAttribute("style"), "las dos cajas iguales");
   assert.equal(cajas[0].querySelector("button").getAttribute("style"), cajas[1].querySelector("button").getAttribute("style"));
   const lectura = (n) => [...n.querySelectorAll("p:not([data-pie])")].map((p) => p.textContent).join("");
