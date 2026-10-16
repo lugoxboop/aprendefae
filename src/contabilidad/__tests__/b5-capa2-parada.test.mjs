@@ -12,9 +12,11 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · la parada: no es un paso («Antes del paso N»), la pregunta en el hueco
  *     del texto, las opciones en fila, «Siguiente» desactivado hasta elegir,
  *     la escena del paso anterior con el resalte en lo que nombra la pregunta;
- *   · al elegir: un intento, marcas de la capa 3, la devolución en el sitio
- *     de la pregunta si falló; al volver, ya decidida; «Ver de nuevo» no la
- *     borra; «Reproducir» se pausa al llegar.
+ *   · al elegir, la escalera de ayuda (lote C2): al primer error, la pista
+ *     en el sitio de la pregunta y «Siguiente» todavía desactivado; al
+ *     segundo, marcas de la capa 3 y la devolución en ese sitio; al volver,
+ *     ya decidida; «Ver de nuevo» no la borra; «Reproducir» se pausa al
+ *     llegar.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -143,13 +145,43 @@ for (const p of PIEZAS) {
     desmontar();
   });
 
-  test(`★★★ ${p.nombre}: con error, la devolución en el sitio de la pregunta, las opciones marcadas como en la capa 3, «Siguiente» activo; al volver, ya decidida`, async () => {
+  test(`★★★ ${p.nombre}: al primer error, la pista en el sitio de la pregunta, la elegida tachada, las demás activas y «Siguiente» desactivado`, async () => {
     const { caja, desmontar } = await montar(h(p.Componente));
     await hastaAntes(caja, p);
     await tocar(btn(caja, "siguiente"));
     const mala = p.parada.opciones.find((o) => o.id !== p.parada.correcta).id;
     await tocar(caja.querySelector(`[data-parada] [data-opcion="${mala}"]`));
     assert.equal(caja.querySelector("[data-texto-paso] [data-pregunta]"), null, "la pregunta deja su sitio");
+    const pista = caja.querySelector("[data-texto-paso] [data-pista]");
+    assert.equal(pista.textContent, pegar(p, p.parada.pista));
+    assert.equal(pista.style.borderLeft, `3px solid ${rgb("#B8C4D4")}`, "la forma de la devolución, sin coral");
+    assert.equal(caja.querySelector("[data-texto-paso] [data-devolucion]"), null, "ni la devolución");
+    assert.equal(caja.querySelector("[data-texto-paso]").getAttribute("aria-live"), "polite", "la pista se anuncia");
+    const por = Object.fromEntries([...caja.querySelectorAll("[data-parada] [data-opcion]")].map((b) => [b.dataset.opcion, b]));
+    assert.equal(por[mala].style.textDecoration, "line-through");
+    assert.equal(por[mala].getAttribute("aria-disabled"), "true");
+    for (const [id, b] of Object.entries(por)) {
+      if (id === mala) continue;
+      assert.equal(b.hasAttribute("aria-disabled"), false, `${id}, activa`);
+      assert.equal(b.style.border, "1px solid rgba(248, 249, 250, 0.36)", `${id}: nada delata la correcta`);
+    }
+    assert.equal(btn(caja, "siguiente").disabled, true, "«Siguiente» espera a que se cierre");
+    /* La reserva del texto también guarda la pista: el bloque no crece al salir. */
+    const reserva = [...caja.querySelectorAll('[data-bloque-control] [aria-hidden="true"] p')].map((n) => n.textContent);
+    assert.ok(reserva.includes(pegar(p, p.parada.pista)));
+    desmontar();
+  });
+
+  test(`★★★ ${p.nombre}: al segundo error, la devolución en el sitio de la pregunta, las opciones marcadas como en la capa 3, «Siguiente» activo; al volver, ya decidida`, async () => {
+    const { caja, desmontar } = await montar(h(p.Componente));
+    await hastaAntes(caja, p);
+    await tocar(btn(caja, "siguiente"));
+    const [mala1, mala] = p.parada.opciones.filter((o) => o.id !== p.parada.correcta).map((o) => o.id);
+    assert.ok(mala, "con dos opciones malas (terceras opciones del lote C2)");
+    await tocar(caja.querySelector(`[data-parada] [data-opcion="${mala1}"]`));
+    await tocar(caja.querySelector(`[data-parada] [data-opcion="${mala}"]`));
+    assert.equal(caja.querySelector("[data-texto-paso] [data-pregunta]"), null, "la pregunta deja su sitio");
+    assert.equal(caja.querySelector("[data-texto-paso] [data-pista]"), null, "y la pista también");
     const dev = caja.querySelector("[data-texto-paso] [data-devolucion]");
     assert.equal(dev.textContent, pegar(p, falloDe(p.parada, mala)));
     assert.equal(dev.style.borderLeft, `3px solid ${rgb("#B8C4D4")}`, "la forma de la devolución de UnaFrase, sin coral");
@@ -157,11 +189,12 @@ for (const p of PIEZAS) {
     assert.equal(por[p.parada.correcta].style.border, `2px solid ${rgb(FAE.node)}`);
     assert.equal(por[p.parada.correcta].style.background, rgb(FAE.navy));
     assert.equal(por[mala].style.textDecoration, "line-through");
+    assert.equal(por[mala1].style.textDecoration, "line-through");
     for (const [id, b] of Object.entries(por)) {
-      if (id !== p.parada.correcta && id !== mala) assert.equal(b.style.opacity, "0.5");
+      if (![p.parada.correcta, mala, mala1].includes(id)) assert.equal(b.style.opacity, "0.5");
       assert.equal(b.getAttribute("aria-disabled"), "true");
     }
-    /* Un intento: tocar la correcta no cambia nada. */
+    /* Cerrada: tocar la correcta no cambia nada. */
     await tocar(por[p.parada.correcta]);
     assert.equal(por[mala].getAttribute("aria-pressed"), "true");
     assert.equal(btn(caja, "siguiente").disabled, false);

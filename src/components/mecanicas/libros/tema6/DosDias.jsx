@@ -13,7 +13,8 @@ import MaquinaPegada, { SORA, INTER, NODO, NAVY, TEXTO, SECUNDARIO, caja, aparic
  * segundo. Sin provisión dibujada (este método no la crea) y sin coral:
  * «incobrable» es un hecho contable, no un error.
  *
- * La fecha del castigo se puede resaltar (paso 10) sin moverse:
+ * La fecha del castigo se puede resaltar sin moverse (lo hacía el paso 10,
+ * que el lote C1-6 quitó):
  * borde de 2 px transparente y margen −6; resaltada, borde nodo y relleno
  * navy. Las fechas nunca se atenúan: llevan su color, no el del día (que sí
  * se atenúa); el monto, igual, para verse claro cuando lo resaltado es él. El bloque de control pegado vive en

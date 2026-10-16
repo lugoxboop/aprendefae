@@ -73,7 +73,7 @@ export const ESCENA_T6_A2 = {
   acredita: "se acredita",
 };
 
-/* Los 10 pasos y el cierre, cada uno con su pie de fuente. */
+/* Los 9 pasos y el cierre, cada uno con su pie de fuente. C1-6 de Futaba (lote C2 · C1 · C7): sin el paso 10, que se volvía a decir en el cierre, y con el cierre corto. */
 export const PASOS_T6_A2 = [
   { texto: "El 25 de mayo, Dajema le vende mercancía a crédito a Nancy Zea Cuesta.", pie: "Libro, p. 199" },
   { texto: "La venta es por $312.500.", pie: "Libro, p. 199" },
@@ -84,19 +84,18 @@ export const PASOS_T6_A2 = [
   { texto: "Dajema usa la anulación directa: la deuda se saca de Cuentas por cobrar – clientes.", pie: "Basado en el libro, pp. 199-200" },
   { texto: "Se debita Gasto provisiones – cuentas incobrables por $312.500.", pie: "Libro, p. 200" },
   { texto: "Y se acredita Cuentas por cobrar – clientes, a nombre de Nancy, por $312.500.", pie: "Basado en el libro, p. 200" },
-  { texto: "La pérdida queda en el gasto el mismo día en que se castiga la deuda.", pie: "Basado en el libro, pp. 198-199" },
 ];
 export const CIERRE_T6_A2 = {
-  texto: "Con la anulación directa, el gasto aparece cuando la deuda se da por perdida. Y la deuda se borra sin dejar información aparte.",
+  texto: "Con la anulación directa, la deuda se borra sin dejar información aparte.",
   pie: "Basado en el libro, p. 199",
 };
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · los dos métodos ═══════════ */
 
-/* Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja, para Shoko (ver el paquete). */
-export const CONSIGNA_CAPA_3_T6_A2 = "Toca cada método y decide cuándo aparece el gasto. Después, mira qué se debita al castigar.";
+/* Consigna y decisión: entrega 2 de Futaba; consigna, texto de provisiones, tercera opción y pistas del lote C2 · C1 · C7 (C1-7 y C2). */
+export const CONSIGNA_CAPA_3_T6_A2 = "Toca cada método y decide cuándo aparece el gasto. Después, mira la razón.";
 export const PREGUNTA_CAPA_3_T6_A2 = "¿Cuándo aparece el gasto?";
-export const OPCIONES_CAPA_3_T6_A2 = [{ id: "dia-castigo", texto: "El día del castigo" }, { id: "cierre", texto: "Al cerrar el periodo" }];
+export const OPCIONES_CAPA_3_T6_A2 = [{ id: "dia-castigo", texto: "El día del castigo" }, { id: "cierre", texto: "Al cerrar el periodo" }, { id: "venta", texto: "Cuando se vende a crédito" }];
 
 /* Las dos cajas se ven iguales: ningún método se ve como el «bueno» (Mai). */
 export const METODOS_T6_A2 = [
@@ -106,15 +105,23 @@ export const METODOS_T6_A2 = [
     revela: "Con este método no se anota nada por adelantado. Cada deuda se castiga cuando se da por perdida: se debita Gasto provisiones – cuentas incobrables y se acredita Cuentas por cobrar – clientes. El gasto aparece el día del castigo.",
     pie: "Basado en el libro, p. 199",
     correcta: "dia-castigo",
-    falla: "Con este método, el gasto se anota cuando la deuda se da por perdida.",
+    falla: {
+      cierre: "Con este método, el gasto se anota cuando la deuda se da por perdida.",
+      venta: "No: con este método no se anota nada antes. El gasto llega cuando la deuda se pierde.",
+    },
+    pista: "Pregúntate si este método anota algo antes de que una deuda se dé por perdida.",
   },
   {
     id: "provisiones",
     nombre: "Provisiones",
-    revela: "Al cerrar el periodo se estima qué parte no se recuperará. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables. Al castigar la deuda, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto ya se había anotado.",
+    revela: "Al cerrar el periodo se estima qué parte no se recuperará, y ese valor se anota como gasto desde ya. El gasto aparece antes de saber qué deuda se pierde.",
     pie: "Basado en el libro, p. 200",
     correcta: "cierre",
-    falla: "Con provisiones, el gasto ya se anotó al cerrar el periodo.",
+    falla: {
+      "dia-castigo": "Con provisiones, el gasto ya se anotó al cerrar el periodo.",
+      venta: "No: al vender todavía no se sabe qué parte se va a perder. Eso se estima al cierre.",
+    },
+    pista: "Este método estima la pérdida antes de saber qué deuda se va a perder.",
   },
 ];
 export const FINAL_CAPA_3_T6_A2 = {

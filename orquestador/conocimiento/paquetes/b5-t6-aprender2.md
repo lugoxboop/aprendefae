@@ -208,3 +208,27 @@ Provisiones, correcta «Al cerrar el periodo». Si falla: «Con provisiones, el 
 La hoja 6 de Mai propone «¿Qué se debita al castigar la deuda?», pero no responde a las opciones de Futaba. Mientras Shoko decide, la pregunta sale de la consigna nueva («decide cuándo aparece el gasto»):
 
 ¿Cuándo aparece el gasto?
+
+## Lote C2 · C1 · C7 (Futaba, PASA de Shoko, 15-oct) · manda sobre lo de arriba
+
+Líneas copiadas tal cual de paquetes/b5-lote-c2-c1-c7.md (la entrega entera). Al primer error sale la pista; al segundo, la devolución que ya existe y después el texto que se revela.
+
+| Pieza | Caja o parada | Pista |
+|---|---|---|
+| T6 A2 | Anulación directa | Pregúntate si este método anota algo antes de que una deuda se dé por perdida. |
+| T6 A2 | Provisiones | Este método estima la pérdida antes de saber qué deuda se va a perder. |
+
+| Pieza | Pregunta | Opción nueva | Devolución al segundo error |
+|---|---|---|---|
+| T6 A2 | Anulación directa | Cuando se vende a crédito | No: con este método no se anota nada antes. El gasto llega cuando la deuda se pierde. |
+| T6 A2 | Provisiones | Cuando se vende a crédito | No: al vender todavía no se sabe qué parte se va a perder. Eso se estima al cierre. |
+
+### C1-6 y C1-7 · T6 A2
+- Capa 2: se elimina el paso 10. (Mai ajusta la escena: si la escena del paso 10 no aporta nada nuevo, basta con quitarlo.)
+- Cierre de la capa 2: «Con la anulación directa, la deuda se borra sin dejar información aparte.»
+- Consigna de la capa 3: «Toca cada método y decide cuándo aparece el gasto. Después, mira la razón.»
+- Texto que revela la caja de provisiones: «Al cerrar el periodo se estima qué parte no se recuperará, y ese valor se anota como gasto desde ya. El gasto aparece antes de saber qué deuda se pierde.»
+
+| # | Término | Texto final | Estado |
+|---|---|---|---|
+| C7-3 | T6 A2 · Cuentas incobrables | (sin cambio) | PASA |

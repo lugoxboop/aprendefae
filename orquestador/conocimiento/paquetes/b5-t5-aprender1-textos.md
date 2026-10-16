@@ -72,3 +72,25 @@ Paquete A, correcta «Sí». Si falla: «Sí se vende fácil: se negocia públic
 Paquete B, correcta «No: no se vende fácil».
 Si elige «Sí»: «Si no se negocia públicamente, puede que no tenga mercado. Falla la primera condición: venderse fácil.» (66)
 Si elige «No: no hay intención»: «El paquete no dice nada de la intención. Lo que falla es que no se negocia públicamente.» (88)
+
+## Lote C2 · C1 · C7 (Futaba, PASA de Shoko, 15-oct) · manda sobre lo de arriba
+
+Líneas copiadas tal cual de paquetes/b5-lote-c2-c1-c7.md (la entrega entera). Al primer error sale la pista; al segundo, la devolución que ya existe y después el texto que se revela.
+
+| Pieza | Caja o parada | Pista |
+|---|---|---|
+| T5 A1 | Paquete A | Revisa las dos condiciones, una por una, con lo que dice la descripción del paquete. |
+| T5 A1 | Paquete B | Piensa quién le compraría estas acciones a la empresa si las quisiera vender mañana. |
+
+### C1-1 · T5 A1 · capa 4 (pie «Escenario simulado»)
+Pregunta: «Una empresa compra bonos que se venden fácil, pero piensa guardarlos cinco años. Su ciclo de operaciones dura menos de un año. ¿Son un activo financiero temporal?»
+| Opción | ✓ | Devolución |
+|---|---|---|
+| No: no se volverán efectivo en un año. | ✓ | Correcto. Cumplen la primera condición, pero no la segunda: no están destinados a volverse efectivo en un año o en un ciclo de operaciones. |
+| Sí: se venden fácil, y con eso basta. | | No es esa. Venderse fácil es solo la primera condición. También tienen que estar destinados a volverse efectivo pronto. |
+| Sí: los bonos suelen estar entre los temporales. | | No es esa. El tipo de documento no decide solo: también tienen que cumplir las dos condiciones. |
+| No: los bonos nunca son activos temporales. | | No es esa. Los bonos sí pueden ser temporales, si cumplen las dos condiciones. Aquí falla la segunda. |
+
+| # | Término | Texto final | Estado |
+|---|---|---|---|
+| C7-1 | T5 A1 · Título valor | Es un documento. Los títulos valores negociables sirven para captar recursos y moverlos entre quienes invierten. En el libro, los valores son clases de títulos valores. Por ejemplo, los de renta variable o los negociables. | Corregida |
