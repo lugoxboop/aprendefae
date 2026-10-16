@@ -159,8 +159,12 @@ function devolucion(sel) {
  * `sel`. Tapado: en un punto de su caja, lo de más arriba es otro elemento
  * (ni ella, ni algo suyo, ni algo que la contiene). Cruzado: un borde visible
  * de otro elemento, o una raya (un elemento de 3 px o menos con fondo), pasa
- * por dentro de su caja. Cortado: un contenedor con overflow que recorta no
- * la contiene entera.
+ * por dentro de su caja y se pinta ENCIMA de ella (si la pastilla, con su
+ * fondo, tapa la raya, la raya no la cruza: así va la raya del año de A0).
+ * Para saber qué se pinta encima, durante la mirada todo recibe el puntero
+ * (los bordes y las pastillas no lo reciben). Cortado: un contenedor con
+ * overflow que recorta no la contiene entera. Al terminar, la vista vuelve
+ * adonde estaba.
  */
 export const SOLAPABLES = '.t4r-marca, .t4cv-nombre, .t4cv-caja2-n, .t4cv-band > span:first-child, [data-titulo-pieza], .t4r-titulo';
 function solapes({ sel, objetivos }) {
@@ -172,6 +176,11 @@ function solapes({ sel, objetivos }) {
   const opaco = (c) => c && c !== "transparent" && !/rgba\([^)]*,\s*0\)$/.test(c);
   const blancos = [...raiz.querySelectorAll(objetivos)].filter(visible);
   const todos = [...raiz.querySelectorAll("*")].filter(visible);
+  const [sx, sy] = [scrollX, scrollY];
+  const puntero = [raiz, ...raiz.querySelectorAll("*")].map((el) => [el, el.style.getPropertyValue("pointer-events"), el.style.getPropertyPriority("pointer-events")]);
+  for (const [el] of puntero) el.style.setProperty("pointer-events", "auto", "important");
+  /* Lo que se pinta en (x, y) es `t` o algo suyo con fondo: lo de debajo no se ve. */
+  const encima = (t, x, y) => { const e = document.elementFromPoint(x, y); return Boolean(e) && (e === t || t.contains(e)); };
   for (const t of blancos) {
     t.scrollIntoView({ block: "center", behavior: "instant" });
     const r = t.getBoundingClientRect();
@@ -195,9 +204,15 @@ function solapes({ sel, objetivos }) {
       if (lado(cs.borderLeftWidth, cs.borderLeftColor)) rayas.push({ x: q.left, y0: q.top, y1: q.bottom });
       if (lado(cs.borderRightWidth, cs.borderRightColor)) rayas.push({ x: q.right, y0: q.top, y1: q.bottom });
       if (opaco(cs.backgroundColor) && (q.height <= 3 || q.width <= 3)) rayas.push(q.height <= 3 ? { y: (q.top + q.bottom) / 2, x0: q.left, x1: q.right } : { x: (q.left + q.right) / 2, y0: q.top, y1: q.bottom });
-      const cruza = rayas.some((k) => (k.y != null
-        ? k.y > dentro.t && k.y < dentro.b && Math.min(k.x1, dentro.r) - Math.max(k.x0, dentro.l) > 2
-        : k.x > dentro.l && k.x < dentro.r && Math.min(k.y1, dentro.b) - Math.max(k.y0, dentro.t) > 2));
+      const opacoT = opaco(getComputedStyle(t).backgroundColor);
+      const cruza = rayas.some((k) => {
+        const corta = k.y != null
+          ? k.y > dentro.t && k.y < dentro.b && Math.min(k.x1, dentro.r) - Math.max(k.x0, dentro.l) > 2
+          : k.x > dentro.l && k.x < dentro.r && Math.min(k.y1, dentro.b) - Math.max(k.y0, dentro.t) > 2;
+        if (!corta) return false;
+        const [x, y] = k.y != null ? [(Math.max(k.x0, dentro.l) + Math.min(k.x1, dentro.r)) / 2, k.y] : [k.x, (Math.max(k.y0, dentro.t) + Math.min(k.y1, dentro.b)) / 2];
+        return !(opacoT && encima(t, x, y));
+      });
       if (cruza) { salida.push(`«${nombre(t)}» queda cruzado por un borde de «${nombre(e)}»`); break; }
     }
     /* Cortado */
@@ -208,6 +223,8 @@ function solapes({ sel, objetivos }) {
       if (r.left < q.left - 0.5 || r.right > q.right + 0.5 || r.top < q.top - 0.5 || r.bottom > q.bottom + 0.5) { salida.push(`«${nombre(t)}» queda cortado por «${nombre(a)}»`); break; }
     }
   }
+  for (const [el, v, pr] of puntero) { if (v) el.style.setProperty("pointer-events", v, pr); else el.style.removeProperty("pointer-events"); }
+  scrollTo({ left: sx, top: sy, behavior: "instant" });
   return [...new Set(salida)];
 }
 const filasS = [];
@@ -276,13 +293,14 @@ for (const ventana of E2_VENTANAS) {
       const id = await pg.getAttribute(sel, "data-pantalla");
       await mirarSolapes(pg, sel, `${ventana.width}×${ventana.height} · ${pz} · ${id} · al llegar`);
       await jugarPlan(pg, sel, PLANES[pz][id], async (paso) => {
-        await mirarSolapes(pg, sel, `${ventana.width}×${ventana.height} · ${pz} · ${id} · ${paso.mide}`);
         const d = await pg.evaluate(devolucion, sel);
         const lugar = `E2 · ${ventana.width}×${ventana.height} · ${pz} · ${id} · ${paso.mide}`;
         if (!d) { fallos.push(`${lugar}: no hay devolución`); return; }
         filasE2.push(`${lugar}: devolución de ${d.top} a ${d.bottom} px (ventana ${d.alto})`);
         if (CAPTURAS) await pg.screenshot({ path: resolve(CAPTURAS, `e2-${ventana.width}x${ventana.height}-${pz}-${id}-${paso.mide.replace(/[^\p{L}\p{N}]+/gu, "-")}.png`) });
         if (d.top < -0.5 || d.bottom > d.alto + 0.5) fallos.push(`${lugar}: la devolución va de ${d.top} a ${d.bottom} px y la ventana mide ${d.alto}`);
+        /* Después de medir E2: la mirada de solapes mueve la vista (y la deja donde estaba). */
+        await mirarSolapes(pg, sel, `${ventana.width}×${ventana.height} · ${pz} · ${id} · ${paso.mide}`);
       });
       await pg.waitForTimeout(400);
       await mirarSolapes(pg, sel, `${ventana.width}×${ventana.height} · ${pz} · ${id} · al final`);
