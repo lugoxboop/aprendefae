@@ -492,6 +492,55 @@ está justo debajo y se entiende sin ella. Si al taparlo con el dedo la
 pantalla sigue diciendo lo mismo, es cejilla. Si al taparlo se pierde algo,
 es texto y va a 12.
 
+### El grep no alcanza: el piso se mide en la página (15 oct., noche)
+
+La Célula B me mandó cinco sitios por debajo de 12 px, encontrados con
+`grep fontSize` sobre los archivos. Monté una sonda que lo mide **en el paquete
+construido y servido**, a 320 px: `scripts/piso-de-12.mjs`.
+
+**112 textos por debajo de 12 px en seis rutas.** No cinco.
+
+| ruta | textos bajo 12 px | el más pequeño |
+|---|---|---|
+| T1 Aprender | 79 | **8 px** (el subtítulo del estado financiero) |
+| T2 Aprender | 25 | 9,5 px (`ACTIVOS`, `PASIVO + PATRIMONIO`) |
+| T3 Aprender | 3 | 10,5 px |
+| T5 Aprender | 2 | 10,5 px |
+| T6 Aprender | 2 | 10,5 px |
+| T1 Hacer | 1 | 10,5 px |
+
+**Por qué el `grep` no llega**, y es la razón de fondo para medir:
+
+- un tamaño **heredado** no está en el archivo del texto: el `span` que se lee
+  a 9,5 px no dice nada, lo dice su contenedor;
+- un tamaño en `em` o `rem` depende de dónde cuelgue el elemento;
+- un tamaño en una hoja de CSS no está en ningún `fontSize:`;
+- y al revés: un `fontSize: "11px"` que ningún estado llega a pintar es un
+  falso positivo. **Tres de los cinco que me mandaron eran de código que
+  ninguna de las seis rutas pinta.** Los subí a 12 px, volví a medir, y la
+  cuenta no bajó de 112: había cambiado algo que no estaba en pantalla. Lo
+  deshice. **Arreglar lo que no se ve es cambiar sin comprobar**, y además deja
+  un «arreglado» en el informe que no lo está.
+
+De los cinco, uno era de libro: `RESULTADO` a 11 px sobre un `28%` de 28 px.
+Es el ejemplo de cejilla que ya está escrito dos párrafos más arriba. Lo subí
+antes de leer mi propio canon.
+
+**Lo que esto le pide a cada célula:** correr la sonda sobre SUS rutas y aplicar
+la prueba del dedo a cada hallazgo antes de tocar nada. Hay cejillas entre los
+112 —la insignia «Aprender», la cejilla del título— y hay texto de verdad: unas
+cifras de estado financiero a 9,5 px y un subtítulo a 8 px no son etiquetas de
+nada, son lo que el estudiante tiene que leer. El número 112 no es una lista de
+defectos: es una lista de cosas que hay que mirar una por una.
+
+**Y el `DEBE`/`HABER` a 10 px volvió a aparecer**, en otros componentes
+(`MesaDeDosCasos`, `piezasDebeHaber`, `ExploraUnaCuenta`, `escenas`). Es el
+mismo defecto que esta sección ya cuenta arreglado en `AsientoEnLineas`: la
+palabra deja de leerse y el lado queda dicho solo por el color. Arreglarlo en
+un componente no lo arregla en los otros cinco, y la lista de arriba no se iba
+a enterar nunca: **un defecto de familia se busca por la familia entera, no por
+el archivo donde se vio.**
+
 **Y antes de subir un tamaño, mide la holgura.** Es la misma regla que el
 blanco de toque: crecer puede romper. «HABER» a 12 px ocupa 47,5 de los 50 px
 que la columna tenía fijos —cabe—, y el contador de avance tenía 169 px de
