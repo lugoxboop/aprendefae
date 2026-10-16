@@ -143,6 +143,13 @@ for (const p of PIEZAS) {
       assert.equal(por[mala].style.textDecoration, "line-through");
       assert.equal(por[mala].style.opacity, "1");
       assert.equal(por[mala].getAttribute("aria-pressed"), "true");
+      /* E4 (hoja de fusiones de Mai): los íconos SVG con su texto oculto; el resto, sin ícono. */
+      const icono = (el) => [...el.querySelectorAll("svg[data-icono]")].map((x) => x.dataset.icono);
+      assert.deepEqual(icono(correcta), ["visto"]);
+      assert.ok(correcta.textContent.includes("(respuesta correcta)"));
+      assert.deepEqual(icono(por[mala]), ["tache"]);
+      assert.ok(por[mala].textContent.includes("(tu respuesta)"));
+      for (const [id, b] of Object.entries(por)) if (id !== x.correcta && id !== mala) assert.deepEqual(icono(b), []);
       for (const [id, b] of Object.entries(por)) {
         if (id !== x.correcta && id !== mala) assert.equal(b.style.opacity, "0.5", `${id}, apagada`);
         assert.equal(b.getAttribute("aria-disabled"), "true");

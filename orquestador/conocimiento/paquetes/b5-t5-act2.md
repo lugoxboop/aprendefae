@@ -177,3 +177,17 @@ C7-recibido (sin cambio): sale cuando Inversiones – títulos lleva lo recibido
 C7-otro: sale con cualquier otro valor que no sea el costo.
 Asiento 2	C7-otro	Inversiones – títulos baja por lo que costaron los títulos que vendió. Son 1.875 × $800 = $1.500.000. Lo demás que recibió es la ganancia.
 Asiento 4	C7-otro	Inversiones – títulos baja por lo que costaron los títulos que vendió. Son 625 × $800 = $500.000. Lo que le faltó para llegar a ese costo es la pérdida.
+
+## (2) Lote 6a · E3: la B general de las ventas nombra la cuenta (Futaba, con la corrección de Shoko)
+
+Manda sobre la B de las partes 2 y 4 de la §3.3 («Revisa los valores. Compara lo que recibió con lo que costaron los títulos.»).
+
+- Un valor errado: «Revisa el valor de {X}.» y la segunda frase de {X}.
+- Dos o más: «Revisa los valores de {X} y {Y}.» y la segunda frase de {X}. Va «e» delante del sonido i. Las cuentas se nombran en el orden del asiento.
+- Si la errada es Inversiones – títulos, manda antes la C7. Por eso la B solo nombra Caja, la ganancia o la pérdida.
+
+| Cuenta | Segunda frase |
+|---|---|
+| Caja | «Caja recibe lo que le pagaron por la venta. Míralo en el hecho.» |
+| Ingresos financieros – ganancia en venta de títulos | «La ganancia es la diferencia entre lo que recibió y lo que costaron los títulos.» |
+| Gastos financieros – pérdida en venta de títulos | «La pérdida es la diferencia entre lo que costaron los títulos y lo que recibió.» |

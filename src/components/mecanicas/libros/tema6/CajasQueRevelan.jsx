@@ -3,6 +3,7 @@ import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
+import { Marca, CORRECTA, TACHADA } from "../b5/MarcasE4.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -101,7 +102,13 @@ export function OpcionDecidir({ opcion, forma, elegida, correcta, reducido, onEl
         cursor: decidida ? "default" : "pointer",
       }}
     >
-      <span data-texto-opcion>{opcion.texto}</span>
+      {/* E4 (hoja de fusiones de Mai): ya tachaba; se le suman los íconos ✓ y ✕, con su texto oculto. */}
+      {(esCorrecta || tachada) ? (
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", ...(fila ? { justifyContent: "center" } : null) }}>
+          <Marca marca={esCorrecta ? CORRECTA : TACHADA} />
+          <span data-texto-opcion>{opcion.texto}</span>
+        </span>
+      ) : <span data-texto-opcion>{opcion.texto}</span>}
     </button>
   );
 }

@@ -23,6 +23,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+const { comprobarMesaE4 } = await import("./b5-mesa-e4.mjs");
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
 w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
@@ -190,7 +191,7 @@ const CASOS = [
   [1, "B", [d(GASTO, 31200), hb(PROVISION, 31200)], "otro valor"],
 ];
 
-test("★★★ la prioridad D > C > A > B con su texto en el panel, las B específicas (C15, C12), y el asiento correcto revelado", async () => {
+test("★★★ la prioridad D > C > A > B con su texto en el panel, las B específicas (C15, C12), y E4: la mesa del estudiante se queda, con lo correcto junto", async () => {
   for (const [k, tipo, puestas, nota] of CASOS) {
     const p = PARTES[k];
     const { caja, desmontar } = await montar({ items: [p] });
@@ -198,9 +199,7 @@ test("★★★ la prioridad D > C > A > B con su texto en el panel, las B espec
     assert.equal(caja.querySelector("[data-panel]").dataset.error, tipo, `${p.id}: ${nota}`);
     const esperado = tipo === "D" ? M.textoD(p, puestas) : tipo.startsWith("C1") ? p.errores.especificas.find((e) => e.clave === tipo).texto : p.errores[tipo];
     assert.equal(textoRetro(caja), esperado, `${p.id} ${tipo}: el texto`);
-    assert.deepEqual(mesaVista(caja).sort((a, b) => a.cuenta.localeCompare(b.cuenta)),
-      p.asiento.map((m) => ({ cuenta: m.cuenta, lado: m.lado, texto: m.valor.toLocaleString("es-CO").replace(/,/g, ".") })).sort((a, b) => a.cuenta.localeCompare(b.cuenta)),
-      `${p.id}: el asiento correcto, revelado`);
+    comprobarMesaE4(caja, p, puestas, `${p.id} ${tipo}`);
     desmontar();
   }
 });

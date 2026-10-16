@@ -3,7 +3,9 @@ import { barajar } from "../../../../utils/barajar.js";
 import { porcentaje } from "../../../../data/politicaFiscal.js";
 import { pesos } from "../../../../data/contabilidad.js";
 import { FAE } from "../../../../theme.js";
-import { Opcion, Opciones, Retro, Pulsos, Cierre, Enunciado } from "../../corazon/juego.jsx";
+import { Opciones, Retro, Pulsos, Cierre, Enunciado } from "../../corazon/juego.jsx";
+/* E4 (hoja de fusiones de Mai): la opción de la célula, con el contrato de la compartida y sus marcas ✓ y ✕. */
+import { OpcionE4 as Opcion } from "./MarcasE4.jsx";
 import { Avanzar, TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";

@@ -17,6 +17,12 @@ import { DEBE, HABER } from "../data/contabilidad.js";
  * C7 de T5) o ese `valor` (la C12, C14 y C15 del Tema 6), o los dos. Si
  * ninguna se cumple, va la B general.
  *
+ * E3 (lote 6a; Futaba, con la corrección de Shoko): si la parte trae
+ * `errores.segunda` (una segunda frase por cuenta), la B general nombra las
+ * cuentas con el valor errado, en el orden del asiento: «Revisa el valor de
+ * {X}.» o «Revisa los valores de {X} y {Y}.» (con «e» ante el sonido i), y
+ * después la segunda frase de la primera.
+ *
  * La D nombra la cuenta (Sakuta, calidad 1; condición de Shoko):
  *   · tantas de más como de menos: «No va {X}: en su lugar va {Y}.», o
  *     «No van {X} ni {W}: en su lugar van {Y} y {Z}.»;
@@ -59,6 +65,14 @@ export function textoD(parte, puestas) {
   return `${cuales} ${resto}`;
 }
 
+/* La B general que nombra las cuentas (E3): `malas` son las cuentas con el valor errado, en el orden del asiento. */
+export function textoBConCuentas(parte, malas) {
+  const nombres = parte.asiento.map((e) => e.cuenta).filter((c) => malas.includes(c));
+  const cabeza = nombres.length > 1 ? `Revisa los valores de ${enLista(nombres)}.` : `Revisa el valor de ${nombres[0]}.`;
+  const segunda = parte.errores.segunda?.[nombres[0]];
+  return segunda ? `${cabeza} ${segunda}` : cabeza;
+}
+
 /* Una parte armada: `puestas` es [{ cuenta, lado, valor }]. */
 export function evaluarParte(parte, puestas) {
   const esperado = parte.asiento;
@@ -74,7 +88,7 @@ export function evaluarParte(parte, puestas) {
       const cumple = (x) => malas.some((p) => (x.cuenta === undefined || p.cuenta === x.cuenta) && (x.valor === undefined || p.valor === x.valor));
       const especifica = (parte.errores.especificas ?? []).find(cumple);
       error = especifica ? especifica.clave : "B";
-      texto = especifica ? especifica.texto : parte.errores.B;
+      texto = especifica ? especifica.texto : parte.errores.segunda ? textoBConCuentas(parte, malas.map((p) => p.cuenta)) : parte.errores.B;
     }
   }
   if (error === "D") texto = textoD(parte, puestas);
