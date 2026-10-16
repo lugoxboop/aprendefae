@@ -107,8 +107,58 @@ Cortado, un estudiante en un teléfono estrecho no sabe dónde está.
 
 **La regla: un título puede encogerse o romper en dos líneas, pero no
 desaparecer.** En una fila flex, el elemento que lleva texto necesita
-`minWidth: 0` para poder encogerse, y hay que dejarle romper. Cada célula lo
-arregla en la vista de su tema; no es un componente compartido.
+`minWidth: 0` para poder encogerse, y hay que dejarle romper.
+
+**Y ya está arreglado en un solo sitio: `src/components/auth/AccountControl.jsx`**,
+en la regla de `.fae-cabecera-titulo > h1`, que deja romper de renglón y
+recorta con `-webkit-line-clamp` para todas las vistas de tema.
+
+**El tope son cuatro renglones, y el número salió de medir, no de elegirlo.**
+A 320 px al título le quedan 164 px —el resto son el botón de volver y la
+reserva de la pastilla—. Medido sobre el paquete construido, con los diez
+temas de Contabilidad: ocho entran en uno o dos renglones, y «Inventarios III:
+descuentos, inventario físico y NIC 2» pide cuatro a 320 px, tres a 360 y dos
+a 375. Con el tope en dos, ese título perdía sus últimas palabras **sin poner
+puntos suspensivos**: el recorte por renglones no avisa, y el estudiante no
+sabe que falta algo. El tope recorta pero no reserva, así que los otros nueve
+siguen ocupando lo que ocupaban.
+
+**Si entra un título más largo, hay que volver a medir.** Esto no se deduce del
+CSS ni del número de caracteres.
+
+Esto decía «cada célula lo arregla en la vista de su tema», y eso fue verdad
+dos días. El resultado: **siete vistas con el mismo arreglo en línea** —T4, T5,
+T6, las tres de T7 y el repaso del capítulo 5—, **tres pruebas de tres células
+distintas** vigilando que los rodeos siguieran puestos, y las vistas que nadie
+había tocado cortando igual. Siete copias de un arreglo son siete sitios donde
+se puede olvidar la octava.
+
+**La lección, que vale para cualquier defecto y no solo para este: cuando la
+misma corrección aparece en la tercera vista, el defecto no está en las
+vistas.** La tercera copia es la señal; a la séptima ya hay que desmontar
+pruebas.
+
+Dos consecuencias para quien venga:
+
+- **No pongas en línea nada que decida cómo cede el título.** Los estilos en
+  línea ganan a la hoja, así que un `overflow: "visible"` suelto anula el
+  recorte compartido sin que se note en ninguna pantalla hasta que un título
+  largo empuje la pantalla entera. `titulo-tema-320.test.mjs` lo vigila en las
+  cuatro vistas de C y `t4-andamio.test.mjs` en la de D. La tipografía sí es de
+  la vista.
+- **Una prueba que exige el rodeo caduca con el rodeo.** Las tres que había
+  —`titulo-tema-320.test.mjs` (C), `t4-andamio.test.mjs` (D) y
+  `r5-1-repaso-cruzado.test.mjs` (E)— afirmaban «la hoja compartida sigue
+  truncando, por eso cada vista la anula», así que arreglar la hoja las ponía
+  en rojo **pidiendo que se devolviera el defecto**. Se reapuntaron: ahora
+  exigen el recorte en la hoja y la AUSENCIA de estilos en línea que lo venzan.
+  Lo que defienden es lo mismo; de lo que cuelgan, no.
+
+  Y la señal para reconocerlo: **si una prueba se pone roja al arreglar algo, y
+  su mensaje describe el arreglo, la prueba estaba vigilando el parche y no el
+  defecto.** Las tres lo decían en voz alta —«por eso cada vista la anula»,
+  «revisar si esta excepción sigue haciendo falta»—. Leer el mensaje antes de
+  tocar el código ahorra el paso de creer que se rompió algo.
 
 ## Verificación contra lo publicado
 
@@ -169,6 +219,72 @@ de cada despliegue** con la consulta de arriba.
 
 **La regla que queda:** una prueba verde sobre archivos no dice nada del estado
 de producción. Lo que no se le pregunta a la base, no se sabe.
+
+## Un repertorio a medias se lee como verde: espera la línea `# fail`
+
+Hermano de los dos de abajo, y me pasó **dos veces el mismo día**.
+
+Lancé `npm test` en segundo plano y fui leyendo el archivo de salida mientras
+corría. Lo que vi:
+
+```
+ok: 735    not ok: 0        → «verde»
+ok: 1527   not ok: 3        → «solo los TODO conocidos»
+ok: 2032   not ok: 4
+# tests 2670 · # pass 2664 · # fail 0 · # todo 4   ← lo único que valía
+```
+
+Las tres primeras lecturas estaban hechas **a mitad de la corrida**, y las tres
+se leían como un resultado. La primera habría dado por buena una rama con 1.935
+pruebas sin ejecutar. Lo peor: `grep -c "not ok"` da 0 cuando todavía no ha
+llegado al archivo que falla, y 0 rojos parece la mejor noticia posible.
+
+**La regla: el repertorio no ha terminado hasta que imprime `# fail`.** Hasta
+esa línea no hay resultado, hay un archivo creciendo. Contar `ok` no sirve
+—2.670 no se sabe de antemano—, y «el proceso ya no está» tampoco: con dos
+corridas a la vez es fácil vigilar el pid de la otra.
+
+Esperar bien, y de paso no inventarse el total:
+
+```bash
+F=salida.txt
+for i in $(seq 1 30); do grep -qE "^# fail" $F && break; read -t 20 _ < /dev/zero; done
+grep -E "^# (tests|pass|fail|todo)" $F || echo "(aún sin resumen: NO es verde)"
+```
+
+El `|| echo` no es adorno: sin él, un `grep` que no encuentra nada imprime nada,
+y «nada» se lee como «sin fallos». Es el falso verde de abajo otra vez, con otro
+disfraz.
+
+## Una prueba que lee un archivo como texto no lo compila
+
+El 15 de octubre añadí un comentario dentro de la plantilla de CSS de
+`AccountControl.jsx` y usé comillas invertidas para citar una propiedad. Una
+comilla invertida **cierra la plantilla**: el archivo quedó roto. Corrí la
+prueba que vigila justo esa regla y salió **verde, 8 de 8**.
+
+Verde porque esa prueba hace `leer("src/components/auth/AccountControl.jsx")` y
+busca con una expresión regular. Para ella el archivo es texto, y un texto roto
+es un texto. Nadie lo importó, así que nadie lo compiló. Lo cazó `npm run build`
+diez minutos después:
+
+```
+ERROR: Expected ";" but found "overflow"
+```
+
+Dos reglas de aquí:
+
+- **Comprobar un archivo por su texto no dice que el archivo sea válido.** Tres
+  pruebas de tres células vigilan esa hoja compartida leyéndola como texto, y
+  ninguna la compila. Lo que valida la sintaxis es la compilación.
+- **Antes de empujar un cambio en una plantilla de CSS, compila.** El repertorio
+  en verde no basta, y es exactamente el caso en que menos lo parece: la prueba
+  del archivo que rompiste es la que te dice que está bien.
+
+Y la trampa de fondo, que ya estaba escrita en este canon dos horas antes de que
+yo volviera a caer: **nada de comillas invertidas dentro de una plantilla de
+CSS**, ni en el código ni en los comentarios. Escribir la regla no inmuniza
+contra ella; compilar, sí.
 
 ## El falso verde: un extractor que no extrae nada dice que todo está bien
 
