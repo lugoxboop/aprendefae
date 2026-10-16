@@ -24,6 +24,8 @@ export const T6_ACT4 = {
   /* Decisión de Sakuta: media, 25 FP. */
   dificultad: "medio",
   fpBase: 25,
+  /* Lote 6c (encabezado compacto, objetivo del kit en una oración). PARA SHOKO: texto nuevo. */
+  objetivo: "Decidir qué cuenta se debita en cada hecho de las cuentas por cobrar y de su provisión.",
   consigna: "Lee el hecho y elige qué cuenta se debita.",
   nota: "Cada hecho se anota en los libros de la empresa que vende, cobra o castiga.",
   regla: "Se debita una cuenta de activo cuando sube, el gasto cuando se anota y la provisión cuando baja.",

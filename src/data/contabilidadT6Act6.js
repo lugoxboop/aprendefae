@@ -24,6 +24,8 @@ export const T6_ACT6 = {
   /* Decisión de Sakuta: difícil, 50 FP. */
   dificultad: "dificil",
   fpBase: 50,
+  /* Lote 6c (encabezado compacto, objetivo del kit en una oración). PARA SHOKO: texto nuevo. */
+  objetivo: "Calcular la provisión de una cartera según cuánto tiempo lleva vencida cada deuda.",
   consigna: "Ubica cada deuda en su grupo y calcula la provisión.",
   rotulo: ROTULO_SIMULADO_T6_A5,
   nota: "En este ejemplo, la empresa usa como suyos los porcentajes de la norma de renta.",

@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { porcentaje } from "../../../../data/politicaFiscal.js";
-import { Opciones, Retro, Pulsos, Cierre, Enunciado } from "../../corazon/juego.jsx";
+import { Opciones, Retro, Cierre, Enunciado } from "../../corazon/juego.jsx";
 /* E4 (hoja de fusiones de Mai): la opción de la célula, con el contrato de la compartida y sus marcas ✓ y ✕. */
 import { OpcionE4 as Opcion } from "./MarcasE4.jsx";
 import { Avanzar, TEXTO_CIERRE } from "../../bloques/marcos.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import EncabezadoCompacto from "./EncabezadoCompacto.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { useReducido } from "../tema3/DosLineas.jsx";
 
@@ -45,7 +45,6 @@ const ESTILO_REGLA = {
   fontSize: "13.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.86)",
   background: "rgba(248,249,250,0.05)", border: "1px solid rgba(248,249,250,0.14)",
 };
-const ESTILO_NOTA = { margin: "-6px 0 12px", fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.7)" };
 
 export default function EligeUnaOpcion({
   config, Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
@@ -107,20 +106,17 @@ export default function EligeUnaOpcion({
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      {!modoDemo && <Encabezado consigna={config.consigna} onComoSeJuega={onComoSeJuega} />}
-      {!modoDemo && config.nota && <p data-nota-fija style={ESTILO_NOTA}>{config.nota}</p>}
-      <p data-regla style={ESTILO_REGLA}>{config.regla}</p>
-      {!modoDemo && (
-        <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={hechos.length} hechos={i + (elegida ? 1 : 0)} enCurso={i + 1} etiqueta={config.etiqueta} />
-        </div>
-      )}
+      {/* Lote 6c: el encabezado compacto de la célula; la consigna y los pasos, plegados bajo «¿Cómo se juega?». */}
+      {/* En la partida, la nota y la regla van plegadas con los pasos (B1: la figura en los primeros 280 px). */}
+      {!modoDemo && <EncabezadoCompacto objetivo={config.objetivo} consigna={config.consigna} pasos={config.reglas ?? []}
+        notas={[config.nota, config.regla].filter(Boolean)} contador={`${config.etiqueta} ${i + 1} de ${hechos.length}`} />}
+      {modoDemo && <p data-regla style={ESTILO_REGLA}>{config.regla}</p>}
+      {/* Un visual propio, la figura (b5-t6-a4: el asiento mínimo, hoja 4 de Mai). Lote 6c: va antes del hecho. */}
+      {config.visual && <config.visual hecho={hecho} elegida={elegida} reducido={reducido} />}
       <div data-hecho={hecho.id}>
         <Enunciado acento={acento}>{hecho.texto}</Enunciado>
       </div>
       {/* Una columna, siempre a la vista y en el orden de Futaba (hoja de Mai). */}
-      {/* Un visual propio entre el hecho y las opciones (b5-t6-a4: el asiento mínimo, hoja 4 de Mai). */}
-      {config.visual && <config.visual hecho={hecho} elegida={elegida} reducido={reducido} />}
       <Opciones columnas="minmax(0, 1fr)">
         {config.opciones.map((o) => (
           <Opcion

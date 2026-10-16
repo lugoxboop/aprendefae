@@ -159,11 +159,19 @@ test("★★★ ninguna cifra: la actividad no lleva montos", () => {
 
 /* ═══════════ LO QUE SE VE ═══════════ */
 
-test("★★★ en pantalla: la consigna, la nota fija, la regla y las cuatro cuentas, en su orden y sin barajar", async () => {
+test("★★★ en pantalla: el objetivo; plegadas bajo «¿Cómo se juega?», la consigna, los pasos, la nota y la regla; el asiento mínimo antes del hecho; y las cuatro cuentas, en su orden y sin barajar", async () => {
   const { caja, desmontar } = await montar([hecho("qd-01")]);
-  assert.ok(caja.textContent.includes(D.T6_ACT4.consigna));
-  assert.equal(caja.querySelector("[data-nota-fija]").textContent, D.T6_ACT4.nota);
-  assert.equal(caja.querySelector("[data-regla]").textContent, D.T6_ACT4.regla);
+  /* Lote 6c (encabezado compacto y B1): lo fijo se pliega y la figura sube. */
+  assert.equal(caja.querySelector("[data-objetivo]").textContent, D.T6_ACT4.objetivo);
+  assert.ok(D.T6_ACT4.objetivo.split(/\s+/).length <= 20);
+  assert.equal(caja.querySelector("[data-contador]").textContent, "Hecho 1 de 1");
+  assert.equal(caja.querySelector("[data-consigna]"), null);
+  assert.equal(caja.querySelector("[data-regla]"), null);
+  await tocar(caja.querySelector("[data-como-se-juega]"));
+  assert.equal(caja.querySelector("[data-consigna]").textContent, D.T6_ACT4.consigna);
+  assert.deepEqual([...caja.querySelectorAll("[data-pasos] li")].map((li) => li.textContent), D.REGLAS_T6_ACT4);
+  assert.deepEqual([...caja.querySelectorAll("[data-nota-plegada]")].map((n) => n.textContent), [D.T6_ACT4.nota, D.T6_ACT4.regla]);
+  assert.ok(caja.querySelector("[data-asiento-minimo]").compareDocumentPosition(caja.querySelector("[data-hecho]")) & 4, "el asiento mínimo, antes del hecho");
   assert.deepEqual([...caja.querySelectorAll("[data-opcion]")].map((n) => n.textContent), D.OPCIONES_T6_ACT4.map((o) => o.nombre));
   assert.equal(caja.querySelector("[data-hecho]").textContent, hecho("qd-01").texto);
   desmontar();
