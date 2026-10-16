@@ -4,6 +4,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 import * as M from "./correccionesMelloA4.mjs";
+import * as C1 from "./correccionesMelloC1.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -27,8 +28,11 @@ import * as M from "./correccionesMelloA4.mjs";
  *     es lo de la v6 con A4-N1 encima (correccionesMelloA4.mjs)
  *   · F1 de Mello, como la midió: al saltar o volver, 0 capas «vendidas», 0
  *     cortes y 0 capas que caen
- *   · la pantalla del cierre de hoy, tal cual, entre la 6 y el resumen: sus
- *     textos son los de la v1 y el lote 2 (con Mello), y su escalera
+ *   · la pantalla del cierre, entre la 6 y el resumen, rehecha por C1 (Near,
+ *     t7-2-a4-el-cierre-c1.md, con PASA de Mello; correccionesMelloC1.mjs):
+ *     sus textos, letra por letra, en los dos sentidos; «Comprobar» con cada
+ *     selección posible; la escalera; la figura que pasa a la lista del
+ *     permanente y se queda; el foco; B1 y B2; la línea nueva del resumen
  *   · foco: al responder, al mensaje; al seguir, al texto
  *   · fuera del catálogo de FP; en T7-2 después de A3, con el nombre de la v6
  * ═══════════════════════════════════════════════════════════════════════════
@@ -60,9 +64,7 @@ const A = await import("../../data/contabilidadT7_2_a4.js");
 const C = await import("../t7_2Capas.js");
 const K = await import("../t7_2Kardex.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
-const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
-const { BOTON, INTERFAZ } = await import("../../components/mecanicas/libros/t7/PantallasT7_2.jsx");
-const { default: LasCapas, CSS_A4, MEZCLA_MS } = await import("../../components/mecanicas/libros/t7/LasCapasQueLaVentaCorta.jsx");
+const { default: LasCapas, CSS_A4, MEZCLA_MS, comprobarCierre, listaDelPermanente } = await import("../../components/mecanicas/libros/t7/LasCapasQueLaVentaCorta.jsx");
 const { PIEZAS_T7_2, TEMA_T7_2 } = await import("../../components/ContabilidadT7_2View.jsx");
 
 const RAIZ = new URL("../../../", import.meta.url);
@@ -433,13 +435,12 @@ async function jugar(reducido) {
     await x.metodo("ueps"); foto("p6 · selector UEPS, resuelta");
     await x.seguir();
 
-    /* 7 · el cierre de hoy (se prueba aparte); la v6 no lo tiene. */
+    /* 7 · el cierre (C1, se prueba aparte); la v6 no lo tiene. */
     assert.equal(x.m.caja.querySelector("[data-pieza]").dataset.pantalla, "el-cierre");
     assert.equal(x.m.caja.querySelector(".ea4-marca").textContent, "Pantalla 7 de 8");
-    assert.ok(activo() === x.m.caja.querySelector("[data-pieza]"), "al llegar al cierre, el foco va al marco");
-    const cierre = pantalla("el-cierre");
-    await clic(x.m.caja.querySelector(`[data-opcion="${cierre.opciones.find((o) => o.correcta).id}"]`));
-    await clic(x.m.caja.querySelector('[data-boton="confirmar"]'));
+    assert.ok(activo() === x.m.caja.querySelector("[data-cierre-c1] .ea4-txt"), "al llegar al cierre, el foco va a su texto");
+    for (const f of pantalla("el-cierre").filas.filter((y) => y.sobra)) await clic(x.m.caja.querySelector(`[data-fila="${f.id}"]`));
+    await clic(x.m.caja.querySelector('[data-boton="comprobar"]'));
     await x.salirDelCierre();
 
     /* 8 · el resumen: selector y fecha libres. */
@@ -558,49 +559,216 @@ test("★★ la mezcla del promedio se cancela si la fecha cambia antes de fundi
   }
 });
 
-/* ═══════════ 5 · LA PANTALLA DEL CIERRE, LA DE HOY TAL CUAL ═══════════ */
+/* ═══════════ 5 · LA PANTALLA DEL CIERRE, REHECHA POR C1 (Near, con PASA de Mello) ═══════════ */
 
-const LOTE2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-pistas-v1.md"));
-const CORR = leer("orquestador/conocimiento/paquetes/t7-2-a3-a4-correcciones.md");
-const CORR_A4 = CORR.slice(CORR.indexOf("A4 «San Calixto en permanente»"));
+const EC = pantalla("el-cierre");
+const NO_TEXTO = new Set(["id", "tipo", "sobra", "despuesDe"]);
+const cadenas = (v, k = null, out = []) => {
+  if (k && NO_TEXTO.has(k)) return out;
+  if (typeof v === "string") out.push(v);
+  else if (Array.isArray(v)) v.forEach((x) => cadenas(x, null, out));
+  else if (v && typeof v === "object") for (const [kk, x] of Object.entries(v)) cadenas(x, kk, out);
+  return out;
+};
 
-test("★★★ el cierre es el objeto de la pieza de hoy, en la pantalla 7; sus textos son los de la v1, y su pista, la del lote 2 con Mello", () => {
-  const c = pantalla("el-cierre");
-  assert.equal(c, A.PIEZA_SAN_CALIXTO.pantallas.find((p) => p.id === "el-cierre"));
-  assert.equal(P.pantallas.indexOf(c), 6);
-  const fuente = V1 + CORR_A4;
-  const textos = [...c.parrafos, ...c.cierre, c.pregunta, c.pie, c.error.pie, c.acierto.texto, c.acierto.pie, ...c.opciones.flatMap((o) => [o.texto, o.devolucion].filter(Boolean))];
-  assert.deepEqual(textos.filter((t) => !fuente.includes(t)), []);
-  assert.ok(LOTE2.includes(`| P6 · \`el-cierre\` | «${c.pregunta}» | «${c.pista}» |`));
+test("★★★ C1 · el cierre es el de la pieza de hoy, en la pantalla 7, y cada texto es, letra por letra, el de Near (PASA de Mello); y al revés, ninguno sobra", () => {
+  assert.equal(EC, A.PIEZA_SAN_CALIXTO.pantallas.find((p) => p.id === "el-cierre"));
+  assert.equal(P.pantallas.indexOf(EC), 6);
+  assert.ok(C1.VEREDICTO_CIERRE);
+  assert.equal(EC.tipo, "cierre-que-sobra");
+  assert.equal(EC.texto, C1.CIERRE.texto);
+  assert.equal(EC.encabezado, C1.CIERRE.encabezado);
+  assert.deepEqual(EC.filas.map((f) => f.texto), C1.CIERRE.periodico);
+  /* «Para Misa»: la solución, las dos que no sobran con su retro, y la que entra con «nuevo». */
+  assert.deepEqual(EC.filas.filter((f) => f.sobra).map((f) => f.id), ["inicial", "final", "compras"]);
+  assert.deepEqual(EC.filas.filter((f) => !f.sobra).map((f) => [f.id, f.retro]), [["ventas", C1.CIERRE.retroVentas], ["gastos", C1.CIERRE.retroGastos]]);
+  assert.deepEqual(EC.filas.filter((f) => f.sobra).map((f) => f.retro), [undefined, undefined, undefined]);
+  assert.deepEqual([EC.entra.id, EC.entra.marca], ["cmv", C1.MARCA_NUEVO]);
+  assert.deepEqual(listaDelPermanente(EC).map((f) => f.texto), C1.CIERRE.permanente);
+  assert.deepEqual(EC.mensajes, { pista: C1.CIERRE.pista, respuesta: C1.CIERRE.respuesta, acierto: C1.CIERRE.acierto });
+  assert.equal(EC.boton, C1.BOTON_COMPROBAR);
+  assert.equal(EC.pie, C1.PIE_CIERRE);
+  /* Al revés: ningún texto de la pantalla que no esté en el paquete. */
+  const esperados = new Set([...Object.values(C1.CIERRE).filter((v) => typeof v === "string" || Array.isArray(v)).flat(), C1.MARCA_NUEVO, C1.BOTON_COMPROBAR, C1.PIE_CIERRE]);
+  assert.deepEqual(cadenas(EC).filter((t) => !esperados.has(t)), []);
 });
 
-test("★★★ el cierre montado: la escalera (pista, después la respuesta), el acierto, y luego el resumen con el foco en su texto", async () => {
-  const k = P.pantallas.findIndex((p) => p.id === "el-cierre");
-  const m = await montar(h(LasCapas, { pieza: { ...P, pantallas: P.pantallas.slice(k) }, rotulo: "R" }));
-  const c = pantalla("el-cierre");
-  const err = () => [...m.caja.querySelectorAll('[data-mensaje="error"] [data-texto]')].map((p) => p.textContent);
-  try {
-    const malas = c.opciones.filter((o) => !o.correcta);
-    for (const [i, o] of malas.entries()) {
-      await clic(m.caja.querySelector(`[data-opcion="${o.id}"]`));
-      await clic(m.caja.querySelector('[data-boton="confirmar"]'));
-      assert.deepEqual(err(), textosDelError(c, o, i + 1), `error ${i + 1}`);
-      assert.equal(m.caja.querySelector("[data-palabra]").textContent, INTERFAZ.incorrecto);
-      assert.ok(w.document.activeElement === m.caja.querySelector('[data-mensaje="error"]'), "el foco no está donde debe");
-      await clic(m.caja.querySelector('[data-boton="probar-otra"]'));
+test("★★★ C1 · el cierre: lo que daba la respuesta ya no está; nada antes de tocar dice qué sobra; sin montos (X2)", () => {
+  const todo = cadenas(EC).join("\n");
+  for (const viejo of [
+    "En el permanente, el cierre tiene dos asientos menos. No hay que quitar el inventario inicial ni colocar el final: la cuenta ya está al día.",
+    "En su lugar, la cuenta Costo de mercancía vendida se cierra contra Ganancias y pérdidas.",
+    "¿Qué asientos del cierre no hacen falta en el permanente?",
+    "Los de quitar el inventario inicial y colocar el final.",
+    "Ese sí se hace en los dos sistemas.",
+  ]) assert.ok(!todo.includes(viejo), viejo);
+  assert.equal(EC.parrafos, undefined);
+  assert.equal(EC.opciones, undefined);
+  /* Pensar, no reconocer: «Compras» (la cuenta) no está en ningún texto de antes de resolver, ni el costo de lo vendido. */
+  const antes = [EC.texto, EC.encabezado, EC.mensajes.pista, ...EC.filas.map((f) => f.retro).filter(Boolean)];
+  for (const t of antes) {
+    assert.doesNotMatch(t, /Compras|Costo de mercancía vendida|inventario inicial|inventario final/, t);
+  }
+  assert.doesNotMatch(todo.replace(EC.pie, ""), /\d/, "sin cifras (salvo las páginas del pie)");
+});
+
+test("★★★ C1 · la línea del resumen: la nueva de Near, que Mello acepta; la vieja ya no está", () => {
+  const lista = A.PIEZA_SAN_CALIXTO.pantallas.find((p) => p.id === "resumen").lista;
+  assert.equal(lista[2], C1.RESUMEN_NUEVO);
+  assert.ok(!lista.includes(C1.RESUMEN_VIEJO));
+});
+
+/* Todas las selecciones posibles de las cinco filas. */
+const SELECCIONES = Array.from({ length: 31 }, (_, n) => EC.filas.filter((_, i) => n + 1 & (1 << i)).map((f) => f.id));
+
+test("★★★ C1 · «Comprobar» con cada selección posible (31): acierto, retro de la primera que no sobra, pista si solo faltó, respuesta en el 2.º", () => {
+  const sobran = ["inicial", "final", "compras"];
+  for (const m of SELECCIONES) {
+    const r1 = comprobarCierre(EC, m, 0);
+    const r2 = comprobarCierre(EC, m, 1);
+    if (m.length === 3 && sobran.every((x) => m.includes(x))) {
+      assert.deepEqual(r1, { resuelta: true, peldano: "acierto", texto: C1.CIERRE.acierto, malas: [] });
+      assert.equal(r2.peldano, "acierto");
+      continue;
     }
-    assert.deepEqual(textosDelError(c, malas[0], 1), [c.pista]);
-    assert.equal(textosDelError(c, malas[1], 2)[0], "La respuesta es «Los de quitar el inventario inicial y colocar el final».");
-    await clic(m.caja.querySelector(`[data-opcion="${c.opciones.find((o) => o.correcta).id}"]`));
-    await clic(m.caja.querySelector('[data-boton="confirmar"]'));
-    assert.deepEqual([...m.caja.querySelectorAll('[data-mensaje="acierto"] [data-texto]')].map((p) => p.textContent), [c.acierto.texto]);
-    assert.equal(m.caja.querySelector('[data-boton="seguir"]').textContent, BOTON.seguir);
+    const noSobran = m.filter((x) => !sobran.includes(x));
+    /* Si marcó las dos, la de la primera en la lista (ventas). */
+    const retro = noSobran.includes("ventas") ? C1.CIERRE.retroVentas : noSobran.includes("gastos") ? C1.CIERRE.retroGastos : null;
+    if (retro) assert.deepEqual(r1, { resuelta: false, peldano: "retro", texto: retro, malas: ["ventas", "gastos"].filter((x) => noSobran.includes(x)) }, m.join());
+    else assert.deepEqual(r1, { resuelta: false, peldano: "pista", texto: C1.CIERRE.pista, malas: [] }, m.join());
+    assert.deepEqual(r2, { resuelta: true, peldano: "respuesta", texto: C1.CIERRE.respuesta, malas: [] }, m.join());
+  }
+});
+
+/* Lo que se ve del cierre. */
+function vistaCierre(caja) {
+  const r = caja.querySelector("[data-cierre-c1]");
+  const msg = r.querySelector(".ea4-msg");
+  return {
+    estado: r.dataset.estado,
+    texto: r.querySelector(".ea4-txt").textContent,
+    encabezado: r.querySelector("[data-encabezado]").textContent,
+    lista: r.querySelector("[data-lista]").dataset.lista,
+    filas: [...r.querySelectorAll("[data-fila]")].map((f) => ({
+      id: f.dataset.fila, boton: f.tagName === "BUTTON", pulsada: f.getAttribute("aria-pressed"), mal: f.classList.contains("mal"),
+      texto: f.querySelector("span:not([aria-hidden]):not(.ea4-c-nuevo)").textContent, nuevo: f.querySelector("[data-marca-nuevo]")?.textContent ?? null,
+    })),
+    msg: [msg.textContent, msg.dataset.mensaje ?? null, msg.dataset.peldano ?? null, [...msg.classList].filter((c) => c !== "ea4-msg").join(" ")],
+    comprobar: r.querySelector('[data-boton="comprobar"]') ? [r.querySelector('[data-boton="comprobar"]').textContent, r.querySelector('[data-boton="comprobar"]').getAttribute("aria-disabled") === "true"] : null,
+    seguir: [r.querySelector('[data-boton="seguir"]').textContent, r.querySelector('[data-boton="seguir"]').disabled],
+    pie: r.querySelector("[data-pie]").textContent,
+  };
+}
+
+test("★★★ C1 · el cierre montado: al llegar, retro, pista, 2.º error con la figura transformada (y se queda), el foco, y luego el resumen", async () => {
+  const k = P.pantallas.indexOf(EC);
+  const m = await montar(h(LasCapas, { pieza: { ...P, pantallas: P.pantallas.slice(k) }, rotulo: "R" }));
+  const v = () => vistaCierre(m.caja);
+  const fila = (id) => m.caja.querySelector(`[data-fila="${id}"]`);
+  const comprobar = () => clic(m.caja.querySelector('[data-boton="comprobar"]'));
+  const activo = () => w.document.activeElement;
+  try {
+    let x = v();
+    assert.deepEqual([x.estado, x.texto, x.encabezado, x.lista], ["colocando", C1.CIERRE.texto, C1.CIERRE.encabezado, "periodico"]);
+    assert.deepEqual(x.filas.map((f) => [f.texto, f.boton, f.pulsada, f.mal, f.nuevo]), C1.CIERRE.periodico.map((t) => [t, true, "false", false, null]));
+    assert.deepEqual(x.msg, ["", null, null, ""]);
+    assert.deepEqual(x.comprobar, [C1.BOTON_COMPROBAR, true], "sin marcar nada, «Comprobar» espera");
+    assert.deepEqual(x.seguir, ["Seguir", true]);
+    assert.equal(x.pie, C1.PIE_CIERRE);
+    /* «Comprobar» sin nada marcado no cuenta como intento. */
+    await comprobar();
+    assert.equal(v().msg[0], "");
+    /* 1.er error: marcó «Cerrar Gastos…» (y una buena): la retro de gastos, coral solo en esa fila; se puede volver a intentar. */
+    await clic(fila("inicial"));
+    await clic(fila("gastos"));
+    assert.deepEqual(v().filas.filter((f) => f.pulsada === "true").map((f) => f.id), ["inicial", "gastos"]);
+    await comprobar();
+    x = v();
+    assert.deepEqual(x.msg, [C1.CIERRE.retroGastos, "error", "retro", "mal"]);
+    assert.ok(activo() === m.caja.querySelector(".ea4-msg"), "al responder, el foco va al mensaje");
+    assert.deepEqual(x.filas.filter((f) => f.mal).map((f) => f.id), ["gastos"]);
+    assert.deepEqual([x.estado, x.lista, x.comprobar[1], x.seguir[1]], ["error", "periodico", false, true]);
+    /* Al quitarla, su marca de error se va. */
+    await clic(fila("gastos"));
+    assert.deepEqual(v().filas.filter((f) => f.mal), []);
+    /* 2.º error (solo le faltan): la respuesta; salen las tres que sobran y entra «Cerrar Costo de mercancía vendida», con «nuevo». */
+    await comprobar();
+    x = v();
+    assert.deepEqual(x.msg, [C1.CIERRE.respuesta, "error", "respuesta", "pista"]);
+    assert.ok(activo() === m.caja.querySelector(".ea4-msg"));
+    assert.deepEqual([x.estado, x.lista, x.comprobar], ["resuelta", "permanente", null]);
+    assert.deepEqual(x.filas.map((f) => [f.texto, f.boton, f.nuevo]), [[C1.CIERRE.permanente[0], false, null], [C1.CIERRE.permanente[1], false, C1.MARCA_NUEVO], [C1.CIERRE.permanente[2], false, null]]);
+    assert.ok(m.caja.querySelector('[data-fila="cmv"]').closest("li").classList.contains("ea4-c-entra"));
+    assert.equal(x.encabezado, C1.CIERRE.encabezado, "la figura se queda, con su encabezado (C8)");
+    assert.deepEqual(x.seguir, ["Seguir", false]);
+    /* Ya no se toca nada. */
+    assert.equal(m.caja.querySelectorAll("[data-cierre-c1] [data-figura] button").length, 0);
     await clic(m.caja.querySelector('[data-boton="seguir"]'));
     assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, "resumen");
-    assert.ok(w.document.activeElement === m.caja.querySelector(".ea4-txt"), "el foco no está donde debe");
+    assert.ok(activo() === m.caja.querySelector(".ea4-txt"), "el foco no está donde debe");
   } finally {
     m.desmontar();
   }
+});
+
+test("★★★ C1 · el cierre montado: la pista si solo faltó marcar, y el acierto con la figura del permanente", async () => {
+  const k = P.pantallas.indexOf(EC);
+  const m = await montar(h(LasCapas, { pieza: { ...P, pantallas: P.pantallas.slice(k) }, rotulo: "R" }));
+  const fila = (id) => m.caja.querySelector(`[data-fila="${id}"]`);
+  const comprobar = () => clic(m.caja.querySelector('[data-boton="comprobar"]'));
+  try {
+    await clic(fila("final"));
+    await comprobar();
+    assert.deepEqual(vistaCierre(m.caja).msg, [C1.CIERRE.pista, "error", "pista", "mal"]);
+    assert.deepEqual(vistaCierre(m.caja).filas.filter((f) => f.mal), [], "la pista no señala filas");
+    /* Completa las tres: el acierto (en el segundo intento; en Aprender no hay puntaje). */
+    await clic(fila("inicial"));
+    await clic(fila("compras"));
+    await comprobar();
+    const x = vistaCierre(m.caja);
+    assert.deepEqual(x.msg, [`✓ ${C1.CIERRE.acierto}`, "acierto", "acierto", "bien"]);
+    assert.deepEqual(x.filas.map((f) => [f.texto, f.nuevo]), C1.CIERRE.permanente.map((t, i) => [t, i === 1 ? C1.MARCA_NUEVO : null]));
+    assert.deepEqual([x.estado, x.lista, x.seguir], ["resuelta", "permanente", ["Seguir", false]]);
+    /* El ✓ del acierto es forma, no color: el mensaje lleva borde neutro, sin teal ni ámbar. */
+    assert.match(CSS_A4, /\.ea4-msg\.bien \{ padding: 8px 12px; border: 2px solid var\(--neutro\);/);
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★★ C1 · el cierre montado: si marcó las dos que no sobran, la retro de la primera en la lista (ventas), con coral en las dos", async () => {
+  const k = P.pantallas.indexOf(EC);
+  const m = await montar(h(LasCapas, { pieza: { ...P, pantallas: P.pantallas.slice(k) }, rotulo: "R" }));
+  try {
+    await clic(m.caja.querySelector('[data-fila="gastos"]'));
+    await clic(m.caja.querySelector('[data-fila="ventas"]'));
+    await clic(m.caja.querySelector('[data-boton="comprobar"]'));
+    const x = vistaCierre(m.caja);
+    assert.deepEqual(x.msg, [C1.CIERRE.retroVentas, "error", "retro", "mal"]);
+    assert.deepEqual(x.filas.filter((f) => f.mal).map((f) => f.id), ["ventas", "gastos"]);
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★★ C1 · el cierre: B1 ≤ 40 antes de tocar y B2 ≤ 60 en cada momento, contado como Near (texto, encabezado, filas y mensaje)", () => {
+  const n = (t) => contar(Array.isArray(t) ? t.join(" ") : t);
+  /* Las palabras de cada campo son las de la tabla de Near. */
+  const tabla = C1.CIERRE.palabras;
+  assert.equal(n(EC.texto), Number(tabla.Texto));
+  assert.equal(n(EC.encabezado), Number(tabla["Encabezado de la figura"]));
+  assert.equal(n(EC.filas.map((f) => f.texto)), Number(tabla["Filas que se tocan (periódico)"]));
+  assert.equal(n(listaDelPermanente(EC).map((f) => f.texto)), Number(tabla["Figura final (permanente)"]));
+  const cab = n(EC.texto) + n(EC.encabezado);
+  const llegar = cab + n(EC.filas.map((f) => f.texto));
+  const final = cab + n(listaDelPermanente(EC).map((f) => f.texto));
+  assert.equal(llegar, 40, "B1: Near cuenta 40");
+  const momentos = {
+    "primer error": llegar + Math.max(n(EC.mensajes.pista), ...EC.filas.filter((f) => f.retro).map((f) => n(f.retro))),
+    "segundo error": final + n(EC.mensajes.respuesta),
+    acierto: final + n(EC.mensajes.acierto),
+  };
+  assert.deepEqual(momentos, { "primer error": 58, "segundo error": 54, acierto: 55 }, "los totales de la tabla «Conteo a la vista» de Near");
 });
 
 /* ═══════════ 6 · ACCESIBILIDAD Y LO QUE LA CASA PIDE ═══════════ */
