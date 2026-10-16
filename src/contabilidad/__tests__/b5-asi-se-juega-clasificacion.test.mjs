@@ -98,7 +98,7 @@ test("★★★ el guion toca el cajón de la ficha, que la coloca: queda ✓ y 
   }
 });
 
-test("★★★ en pantalla: la primera vez sale «Así se juega» con sus reglas; luego, «¿Cómo se juega?» lo reabre", async () => {
+test("★★★ en pantalla: la primera vez sale «Así se juega» con sus reglas; luego, «¿Cómo se juega?» las despliega en el encabezado compacto", async () => {
   for (const k of CASOS) {
     localStorage.clear();
     const juego = { id: k.id, Mecanica: k.Mecanica, titulo: k.D.nombre };
@@ -109,8 +109,15 @@ test("★★★ en pantalla: la primera vez sale «Así se juega» con sus regla
     assert.deepEqual(pasos(), []);
     const como = boton(caja, "?¿Cómo se juega?") ?? [...caja.querySelectorAll("button")].find((b) => b.textContent.includes("¿Cómo se juega?"));
     assert.ok(como, `${k.id}: la partida no ofrece «¿Cómo se juega?»`);
+    /* Lote 6b (encabezado compacto de Mai): plegados no ocupan nada; al abrir, la consigna y los pasos. */
+    assert.equal(como.getAttribute("aria-expanded"), "false");
+    assert.equal(caja.querySelector("[data-partida] [data-consigna]"), null, `${k.id}: plegado no ocupa nada`);
     await tocar(como);
-    assert.deepEqual(pasos(), k.reglas, `${k.id}: «¿Cómo se juega?» no reabre las reglas`);
+    assert.equal(como.getAttribute("aria-expanded"), "true");
+    assert.equal(caja.querySelector("[data-partida] [data-consigna]").textContent, k.D.consigna);
+    assert.deepEqual([...caja.querySelectorAll("[data-partida] ol[data-pasos] li")].map((li) => li.textContent), k.reglas, `${k.id}: «¿Cómo se juega?» no despliega las reglas`);
+    await tocar(como);
+    assert.equal(caja.querySelector("[data-partida] [data-consigna]"), null, `${k.id}: no se vuelve a plegar`);
     desmontar();
   }
 });
