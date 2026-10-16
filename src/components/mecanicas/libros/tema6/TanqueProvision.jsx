@@ -190,7 +190,8 @@ const TanqueProvision = forwardRef(function TanqueProvision({
         {/* La pista de soltar. */}
         {soltar && (
           <span data-pista-soltar style={{
-            position: "absolute", left: "5px", right: "5px", top: "8px", padding: "4px 2px", borderRadius: "6px", background: "rgba(14,27,46,0.9)",
+            /* Bajo la línea del análisis si está, para no tapar su rótulo. */
+            position: "absolute", left: "5px", right: "5px", top: `${lineaAnalisis !== null ? lineaAnalisis + 6 : 8}px`, padding: "4px 2px", borderRadius: "6px", background: "rgba(14,27,46,0.9)",
             display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", pointerEvents: "none",
             fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "14px", color: BLANCO, textAlign: "center",
           }}>
