@@ -108,5 +108,6 @@ export const puntuar = (resultados, total) => (total ? (resultados.filter((r) =>
 /* Para el panel docente: la parte se lee por su rótulo y su instrucción. */
 export const parteDeItem = (partes) => (id) => {
   const p = partes.find((x) => x.id === id);
-  return p ? `${p.rotulo} · ${p.instruccion}` : null;
+  /* Una pregunta (b5-t6-a2, lote 6b) no tiene instrucción: va su enunciado. */
+  return p ? `${p.rotulo} · ${p.instruccion ?? p.enunciado}` : null;
 };

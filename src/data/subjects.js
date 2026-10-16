@@ -693,14 +693,16 @@ export const SUBJECTS = {
           /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (Futaba). Su fila del servidor es la migración 0071. */
           { id: "b5-t6-a1", nombre: "¿Clientes o otra cuenta por cobrar?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /*
-           * Orden del camino (Sakuta, lote 4): a1 → a4 → a5 → a2 → a6 → a3. Es provisional: a5 se fusionará en a2
-           * en otro lote y el orden final será a1 → a4 → a2 → a6 → a3. b5-t6-a7 «¿Qué método y cuándo?» se retiró
-           * (Shoko, C6: sus decisiones ya están en a4 y en la capa 3 de T6 A2); su fila del servidor la borra la 0076.
+           * Orden del camino (Sakuta, lote 6b): a1 → a4 → a2 → a6 → a3. b5-t6-a7 «¿Qué método y cuándo?» se retiró
+           * (Shoko, C6: sus decisiones ya están en a4 y en la capa 3 de T6 A2; lápida en la 0076), y b5-t6-a5 «La
+           * cuenta de la provisión» se fundió en a2 (hoja de Mai; lápida en la 0077).
            */
           { id: "b5-t6-a4", nombre: "¿Qué se debita?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "b5-t6-a5", nombre: "La cuenta de la provisión", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          /* Actividades 2 y 3 de Hacer (mesa de asientos). Media · 25 y difícil · 50 FP (Sakuta). Sus filas del servidor son la migración 0074. */
-          { id: "b5-t6-a2", nombre: "La provisión de El Torito", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /*
+           * Actividades 2 y 3 de Hacer (mesa de asientos), filas de la 0074. a2 lleva dentro a a5 desde el lote 6b:
+           * difícil · 50 FP (los 25 + 25 de las dos; fila en la 0078). a3, difícil · 50 (Sakuta).
+           */
+          { id: "b5-t6-a2", nombre: "La provisión de El Torito", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "b5-t6-a6", nombre: "Provisión por edades", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "b5-t6-a3", nombre: "Cuando la deuda castigada vuelve", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "b5-t6-a2-cuando-un-cliente-no-va-a-pagar", nombre: "Cuando un cliente no va a pagar", clasificacion: { tipo: APRENDER } },

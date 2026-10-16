@@ -12,6 +12,8 @@ import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { Marca, estiloE4, CORRECTA, TACHADA, TACHADO, OCULTO_E4 } from "./MarcasE4.jsx";
+import { useReducido } from "../tema3/DosLineas.jsx";
+import { evaluarPregunta, formatearRespuesta, leerRespuesta } from "../../../../contabilidad/t6Act2.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -34,6 +36,16 @@ import { Marca, estiloE4, CORRECTA, TACHADA, TACHADO, OCULTO_E4 } from "./Marcas
  * reinicio (`onReiniciar`): con eso, el libro diario de encima crece (la
  * variante 1 de la guía de Mai). El diario llega por `encima` y se pinta
  * entre el encabezado y el contador.
+ *
+ * PASOS CON PREGUNTAS (lote 6b, la fusión de a5 en a2): una parte con
+ * `tipo: "pregunta"` no lleva mesa: su enunciado, un campo de cifra escrita,
+ * «Comprobar» y un solo intento (contabilidad/t6Act2.js). Si falla, su cifra
+ * queda ✕ tachada y debajo, ✓ la correcta (E4). Lo propio de la actividad
+ * llega en `config`: `textos` (la etiqueta del contador, «Siguiente»,
+ * «Comprobar», el nombre del campo), `visual` (lo que va entre el contador y
+ * el paso, que no se mueve: en a2, la cuenta T) y `bloques` (lo que una
+ * pregunta lleva encima de su campo). Las partes de asiento siguen igual, y
+ * solo ellas llegan al diario.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -60,7 +72,7 @@ function Visto() {
 
 /* Un campo de cifra: «$», punto de miles, sin decimales, hasta 8 dígitos. */
 /* `tachado` (E4): el valor que escribió el estudiante y no era, con ✕ y tachado; su borde de siempre, sin coral. */
-function Campo({ id, valor, onCambio, bloqueado, etiqueta, tachado = false }) {
+function Campo({ id, valor, onCambio, bloqueado, etiqueta, tachado = false, formatear = formatearCifra }) {
   return (
     <div data-caja-campo={id} data-marca={tachado ? TACHADA : ""} style={{
       display: "flex", alignItems: "center", gap: "3px", height: "44px", boxSizing: "border-box", padding: "0 8px", borderRadius: "10px",
@@ -71,7 +83,7 @@ function Campo({ id, valor, onCambio, bloqueado, etiqueta, tachado = false }) {
       <input
         data-campo-cifra={id}
         value={valor}
-        onChange={(e) => onCambio(formatearCifra(e.target.value))}
+        onChange={(e) => onCambio(formatear(e.target.value))}
         readOnly={bloqueado}
         inputMode="numeric"
         autoComplete="off"
@@ -320,13 +332,30 @@ function Retro({ resultado }) {
   );
 }
 
-const vacio = () => ({ mesa: [], resultado: null });
+const vacio = () => ({ mesa: [], resultado: null, texto: "" });
+
+/* Una pregunta de cifra escrita: lo que lleva encima (si lo lleva), el campo y, si falló, ✓ la cifra correcta. */
+function Pregunta({ parte, texto, onTexto, resultado, Bloque, reducido, etiqueta }) {
+  const fallo = Boolean(resultado) && !resultado.ok;
+  return (
+    <>
+      {Bloque && <Bloque comprobada={Boolean(resultado)} reducido={reducido} />}
+      <div data-pregunta={parte.id} style={{ marginTop: "12px" }}>
+        <Campo id={parte.id} valor={texto} onCambio={onTexto} bloqueado={Boolean(resultado)} etiqueta={etiqueta}
+          tachado={fallo} formatear={formatearRespuesta} />
+        {fallo && <ValorCorrecto cuenta={parte.id} valor={resultado.correcta} oculto={OCULTO_E4.valorCorrecto} />}
+      </div>
+    </>
+  );
+}
 
 export default function CierreConMesa({
   config, Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
   encima = null, onParteComprobada = null, onReiniciar = null,
 }) {
   const t = useTanda(() => items ?? config.partes);
+  const reducido = useReducido();
+  const textos = config.textos ?? {};
   const [s, setS] = useState(vacio);
   const [todos, setTodos] = useState([]);
   const tarjeta = useRef(null);
@@ -356,12 +385,21 @@ export default function CierreConMesa({
   }
 
   const comprobada = Boolean(s.resultado);
+  const esPregunta = parte.tipo === "pregunta";
+  const Visual = config.visual ?? null;
   const enEstante = config.estante.filter((c) => !s.mesa.some((m) => m.cuenta === c));
   const sacar = (cuenta, lado) => setS((x) => (x.mesa.some((m) => m.cuenta === cuenta) ? x : { ...x, mesa: [...x.mesa, { cuenta, lado, texto: "" }] }));
   const cifra = (cuenta, texto) => setS((x) => ({ ...x, mesa: x.mesa.map((m) => (m.cuenta === cuenta ? { ...m, texto } : m)) }));
   const devolver = (cuenta) => setS((x) => ({ ...x, mesa: x.mesa.filter((m) => m.cuenta !== cuenta) }));
 
   const confirmar = () => {
+    if (esPregunta) {
+      const r = evaluarPregunta(parte, s.texto);
+      t.anotar(parte.id, r.ok, r.ok ? null : r.error);
+      setTodos((xs) => [...xs, { id: parte.id, ok: r.ok }]);
+      setS({ ...s, resultado: r });
+      return;
+    }
     const puestas = s.mesa.map((m) => ({ cuenta: m.cuenta, lado: m.lado, valor: leerCifra(m.texto) }));
     const r = config.evaluar(parte, puestas);
     t.anotar(parte.id, r.ok, r.ok ? null : r.error);
@@ -375,7 +413,7 @@ export default function CierreConMesa({
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
-  const listo = s.mesa.length > 0 && s.mesa.every((m) => leerCifra(m.texto) !== null);
+  const listo = esPregunta ? leerRespuesta(s.texto) !== null : s.mesa.length > 0 && s.mesa.every((m) => leerCifra(m.texto) !== null);
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
@@ -385,12 +423,13 @@ export default function CierreConMesa({
         {encima}
         {!modoDemo && (
           <div style={{ marginBottom: "12px" }}>
-            <Pulsos total={cuantas} hechos={t.i + (comprobada ? 1 : 0)} enCurso={t.i + 1} etiqueta="Asiento" />
+            <Pulsos total={cuantas} hechos={t.i + (comprobada ? 1 : 0)} enCurso={t.i + 1} etiqueta={textos.etiqueta ?? "Asiento"} />
           </div>
         )}
+        {Visual && !modoDemo && <Visual paso={t.i} comprobada={comprobada} reducido={reducido} />}
 
         <div key={parte.id} data-tarjeta-parte={parte.id} style={{ padding: "11px 13px", borderRadius: "11px", background: "rgba(184,196,212,0.12)", borderLeft: `3px solid ${COLOR.neutro}` }}>
-          <p ref={tarjeta} tabIndex={-1} data-hecho style={{ margin: 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: COLOR.blanco }}>{parte.hecho}</p>
+          <p ref={tarjeta} tabIndex={-1} data-hecho style={{ margin: 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: COLOR.blanco }}>{esPregunta ? parte.enunciado : parte.hecho}</p>
         </div>
 
         <section key={`${parte.id}-parte`} data-parte={parte.id} data-estado-parte={comprobada ? "comprobada" : "activa"}
@@ -407,18 +446,23 @@ export default function CierreConMesa({
               {parte.rotulo && (
                 <div>
                   <p data-rotulo-parte style={{ margin: 0, fontFamily: SORA, fontSize: "14px", fontWeight: 700, color: COLOR.blanco }}>{parte.rotulo}</p>
-                  <p data-instruccion style={{ margin: "2px 0 0", fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: COLOR.apagado }}>{parte.instruccion}</p>
+                  {parte.instruccion && <p data-instruccion style={{ margin: "2px 0 0", fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: COLOR.apagado }}>{parte.instruccion}</p>}
                 </div>
               )}
             </div>
           )}
-          <Mesa mesa={s.mesa} activa={!comprobada} resultado={s.resultado} enEstante={enEstante}
-            onSacar={sacar} onCifra={cifra} onDevolver={devolver} />
+          {esPregunta ? (
+            <Pregunta parte={parte} texto={s.texto} onTexto={(texto) => setS((x) => ({ ...x, texto }))} resultado={s.resultado}
+              Bloque={config.bloques?.[parte.bloque] ?? null} reducido={reducido} etiqueta={textos.campo} />
+          ) : (
+            <Mesa mesa={s.mesa} activa={!comprobada} resultado={s.resultado} enEstante={enEstante}
+              onSacar={sacar} onCifra={cifra} onDevolver={devolver} />
+          )}
           <Retro resultado={s.resultado} />
           {!comprobada && (
             <>
-              <BotonConfirmar deshabilitado={!listo} onClick={confirmar}>{TEXTO_CONFIRMAR}</BotonConfirmar>
-              {!modoDemo && (
+              <BotonConfirmar deshabilitado={!listo} onClick={confirmar}>{esPregunta ? textos.comprobar : TEXTO_CONFIRMAR}</BotonConfirmar>
+              {!modoDemo && !esPregunta && (
                 <p data-un-intento style={{ margin: "9px 0 0", fontSize: "12px", lineHeight: 1.45, color: COLOR.apagado, textAlign: "center" }}>{AVISO_UN_INTENTO}</p>
               )}
             </>
@@ -437,7 +481,7 @@ export default function CierreConMesa({
 
       {comprobada && !modoDemo && (
         <div data-boton-avanzar>
-          <Responder onClick={avanzar}>{t.i + 1 === cuantas ? "Ver mi resumen" : "Siguiente asiento"}</Responder>
+          <Responder onClick={avanzar}>{t.i + 1 === cuantas ? "Ver mi resumen" : textos.siguiente ?? "Siguiente asiento"}</Responder>
         </div>
       )}
 

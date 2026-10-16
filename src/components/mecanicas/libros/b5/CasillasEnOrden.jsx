@@ -15,8 +15,8 @@ import { useReducido } from "../tema3/DosLineas.jsx";
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * CASILLAS EN ORDEN — el patrón de «La Escalera del Encaje», generalizado
- * dentro de la Célula B (b5-t6-a5 «La cuenta de la provisión» y b5-t6-a6
- * «Provisión por edades»).
+ * dentro de la Célula B (b5-t6-a6 «Provisión por edades»; lo usaba también
+ * b5-t6-a5, que en el lote 6b se fundió en a2).
  *
  * El original (EscaleraDelEncaje, en maquinas/fabricaDelDinero.jsx) vive en
  * Macroeconomía y está atado a su escalera; no se toca. Esta copia hace lo
@@ -34,8 +34,7 @@ import { useReducido } from "../tema3/DosLineas.jsx";
  *     resuelto;
  *   · un visual propio, si la actividad lo trae (`visual: { Componente,
  *     anuncio, enDemo? }`): va encima de la casilla y hace de registro
- *     (b5-t6-a5, la cuenta que se llena; b5-t6-a6, los cajones del tiempo,
- *     con su tabla, su rótulo y sus pies);
+ *     (b5-t6-a6, los cajones del tiempo, con su tabla, su rótulo y sus pies);
  *   · las opciones, en una columna; al pasar de casilla, la página se mueve
  *     para que se vean la casilla, el rótulo y el renglón encendido;
  *   · pct = aciertos / casillas × 100, y el texto de cierre.
@@ -182,7 +181,7 @@ export default function CasillasEnOrden({
         </div>
       )}
 
-      {/* Con un visual propio (b5-t6-a5: la cuenta que se llena), el visual es el registro. */}
+      {/* Con un visual propio (b5-t6-a6: los cajones del tiempo), el visual es el registro. */}
       {conVisual && (
         <config.visual.Componente respondidas={resueltas.length} abierta={elegida ? null : n} reducido={reducido} modoDemo={modoDemo}
           anuncio={elegida && !modoDemo ? config.visual.anuncio(n) : ""} />
