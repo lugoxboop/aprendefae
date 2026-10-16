@@ -36,7 +36,8 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? "/opt/node-tools/n
 const CAPTURAS = process.argv[2] ?? null;
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 const ANCHOS = [375, 320];
-const PIEZAS = ["t7-2-a1-la-cuenta-que-si-se-mueve", "t7-2-a2-la-venta-en-dos-asientos", "t7-2-a3-el-kardex"];
+/* A3 salió de aquí con el Patrón de enganche C2 («el kárdex que crece»): la mide medir-t7-2-a3.mjs. */
+const PIEZAS = ["t7-2-a1-la-cuenta-que-si-se-mueve", "t7-2-a2-la-venta-en-dos-asientos"];
 const FUENTES = "/tmp/claude-0/fuentes/";
 
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
