@@ -92,6 +92,46 @@ a ojo: Gen hace un índice de qué secciones necesita cada ejercicio para
 resolverse, y Levi asigna cada uno a **un solo tema**, el de la última sección
 que necesita. Ninguna célula usa un ejercicio que no tenga asignado.
 
+## El prompt maestro de los diseñadores vive en el canon
+
+`orquestador/conocimiento/prompts/disenadores-de-celula-v1.md`
+
+Lo escribieron Senku, Xeno y Ukyo, y Miku lo repartió el 15 de octubre a los
+cinco diseñadores: Mai (B), Watari (C), Hanayama (D), Itagaki (E) y Xeno (A).
+Trae el kit completo y vigente, el estándar de Aprender en cuatro capas, el
+modelo único de Hacer, la barra de enganche y el reparto del top 10 de Ukyo por
+célula.
+
+**Está aquí, y no solo en los chats, por tres razones.** Un prompt pegado en un
+chat se va hacia arriba y se pierde; un archivo se relee, se cita por línea y se
+versiona. Cinco copias en cinco chats divergen en cuanto alguien corrige una; una
+en el canon se corrige una vez. Y la sexta célula, o el diseñador que entre
+mañana, lo encuentra sin que nadie se lo pase.
+
+Está **sin tocar una coma**, y el «sin tocar» lleva su comprobación, porque la
+primera versión de esta nota decía un número que no verificaba.
+
+El archivo que llegó traía finales de línea de Windows (CRLF) y git los normaliza
+a LF al guardarlo, así que el archivo del repositorio **no es byte por byte** el
+que llegó: son 25.145 bytes en vez de 25.276, y su SHA-256 empieza por
+`f7ceda14`, no por `556cebca`. Lo que sí es idéntico es el TEXTO: quitándole los
+retornos de carro al original, `cmp` no encuentra una sola diferencia. Esa es la
+comprobación, y es la que vale:
+
+```bash
+git show HEAD:orquestador/conocimiento/prompts/disenadores-de-celula-v1.md > /tmp/a
+tr -d '\r' < <el archivo que llegó> > /tmp/b
+cmp /tmp/a /tmp/b    # sin salida = idénticos
+```
+
+**La lección, que no es sobre este archivo:** un hash es una promesa
+comprobable, y por eso hay que comprobarlo DESPUÉS de guardar, no antes. Yo
+escribí el del archivo de entrada y lo di por bueno; git ya había avisado en una
+línea que iba a cambiar los finales de línea, y esa línea pasó de largo.
+
+Si se corrige el prompt, entra una `-v2` y esta se queda: un diseñador que
+trabajó con la v1 tiene que poder leer lo que leyó.
+
 ## Reglas de convivencia entre células
 
 Medidas sobre el repositorio el 13 de octubre de 2026, no supuestas.
