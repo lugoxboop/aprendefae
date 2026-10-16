@@ -5,7 +5,7 @@ import { NEUTRO } from "../../../../data/contabilidadIntro.js";
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * EL ESTANTE DE CAJONES (hoja 3 de Mai, calidad) — de la Célula B, para las
- * de fichas: b5-t5-a1 y b5-t6-a1 (ClasificaDosNiveles; b5-t6-a7 se retiró en el lote 4).
+ * de fichas: b5-t5-a1 y b5-t6-a1 (FichasUnNivel). El estante de dos niveles se fue con b5-t6-a7 (0076).
  *
  * Un cajón por respuesta final, con la forma del árbol de decisión: el cajón
  * suelto de la opción de primer nivel que no abre panel, y un grupo de dos

@@ -10,7 +10,6 @@
  *     preguntas de a2 (lote 6b), la cifra correcta más 1.000;
  *   · casillas y elección (b5-t6-a4, a6): otra opción de la misma tarjeta (b5-t6-a5 se fundió en a2);
  *   · las fichas a un nivel (b5-t5-a1, b5-t6-a1, lote 6a): los otros dos cajones, uno tras otro.
- *     (El estante de dos niveles se quedó sin actividad: b5-t6-a7 se retiró en el lote 4.)
  * Las fichas de clasificar salen de sortear: se juntan todas las que puede dar (cada id, su destino).
  */
 const C = async (p, k) => (await import(new URL(`../../../src/components/mecanicas/libros/${p}`, import.meta.url)))[k];
