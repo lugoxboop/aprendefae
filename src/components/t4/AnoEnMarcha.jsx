@@ -208,6 +208,9 @@ export function FiguraAno({ filas, ano, quieta = false, boton = null, juego = nu
   );
 }
 
+/* D6: el error del juego por fila (Katsumi). Si la fila de `errorFila` va del lado que no es, su texto gana; si no, el de siempre. */
+const errorDe = (p, elecciones) => (p.errorFila && elecciones[p.errorFila.fila] === p.errorFila.lado ? p.errorFila.texto : p.error);
+
 /* El cuerpo de una pantalla de A0: la figura y, en el juego, la devolución. */
 export function CuerpoA0({ p, onAcierto, onAccion }) {
   const quieta = p.modo === "quieta";
@@ -241,7 +244,7 @@ export function CuerpoA0({ p, onAcierto, onAccion }) {
     <>
       <FiguraAno filas={p.filas} ano={ano} quieta={quieta} boton={boton} juego={datosJuego} rotulo={p.rotuloAccion ?? null} />
       {juego && <p className="t4r-aviso" data-aviso aria-live="polite">{verAviso ? FIGURA_ANO.aviso : null}</p>}
-      {juego && fin && <Mensaje ok={bien} texto={bien ? p.acierto : p.error} />}
+      {juego && fin && <Mensaje ok={bien} texto={bien ? p.acierto : errorDe(p, elecciones)} />}
     </>
   );
 }

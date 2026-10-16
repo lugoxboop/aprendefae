@@ -38,6 +38,7 @@
 **P3 · seis-causas**
 - Antes de la figura: «Lleva cada causa a quien ya la anotó.» (<10)
 - Tarjeta final: «El banco sabe del cheque cuando lo cobran.» (<10)
+- Error · una nota del banco a la libreta de la empresa (✗ y el texto; los demás errores, solo la marca): «La empresa la ve en el extracto.» (<10)
 - Texto alternativo: «Seis tarjetas, una a la vez. Cada causa se manda a la libreta de la empresa o a la del banco, y queda escrita en la que la tiene anotada.» (92,2)
 - Pie: «Basado en el libro, p. 188»
 

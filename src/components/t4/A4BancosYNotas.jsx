@@ -198,7 +198,10 @@ function Causas({ p, onAcierto }) {
     if (!c) return;
     if (lado === ladoDe(c)) { setMarca({ lado, m: "bien" }); setI(i + 1); } else { setMarca({ lado, m: "mal" }); setErrores((n) => n + 1); }
   };
+  /* D6: una nota del banco llevada a la libreta de la empresa tiene su mensaje (Katsumi); los demás errores, solo la marca. */
+  const textoError = marca?.m === "mal" && marca.lado === "empresa" && p.errorEmpresa?.causas.includes(c?.id) ? p.errorEmpresa.texto : null;
   return (
+    <>
     <Fig nombre={NOMBRE} alt={p.alt}>
       <div className="t4a4-c" data-tarjeta-causa={c?.id ?? "fin"} aria-live="polite">
         {c ? <><span>{c.tarjeta}</span><span>{F.contadorCausa(i + 1, total)}</span></> : <span>{p.fin}</span>}
@@ -219,8 +222,10 @@ function Causas({ p, onAcierto }) {
           );
         })}
       </div>
-      <LectorError error={marca?.m === "mal"} clave={errores} />
+      <LectorError error={marca?.m === "mal" && !textoError} clave={errores} />
     </Fig>
+    {textoError && <Mensaje key={`${c.id}-${errores}`} ok={false} texto={textoError} />}
+    </>
   );
 }
 

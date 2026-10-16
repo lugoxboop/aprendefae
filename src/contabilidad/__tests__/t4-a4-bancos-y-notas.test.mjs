@@ -158,7 +158,7 @@ test("★★★ P2: el mayor reserva cinco renglones y la tarjeta su alto (80 px
   assert.match(css, /^\.t4a4-c \{.*min-height: 80px/m);
 });
 
-test("★★★ P3 seis-causas (lote B, §5.4): cada tarjeta a la libreta que la tiene; con el acierto su rótulo se escribe allí; con el error, «No va aquí» en la libreta tocada, nada se escribe y «Incorrecto.» para el lector; absorbe a «quien-lo-tiene»", async () => {
+test("★★★ P3 seis-causas (lote B, §5.4; D6): cada tarjeta a la libreta que la tiene; con el acierto su rótulo se escribe allí; con el error, «No va aquí» en la libreta tocada, nada se escribe y «Incorrecto.» para el lector; las notas del banco en la empresa, con su mensaje; absorbe a «quien-lo-tiene»", async () => {
   assert.ok(!P.pantallas.some((p) => p.id === "quien-lo-tiene"), "quien-lo-tiene sigue: sería la misma pantalla con otro texto");
   assert.equal(P.pantallas.length, 5);
   assert.equal(A.CAUSAS_A4[0].tarjeta, "Cheque girado el 30, que nadie ha cobrado", "la tarjeta 1 no es el cheque del 30 (el caso de quien-lo-tiene)");
@@ -175,13 +175,22 @@ test("★★★ P3 seis-causas (lote B, §5.4): cada tarjeta a la libreta que la
       assert.equal(q(m, `[data-destino="${otro}"]`).dataset.marca, "mal");
       assert.match(visible(q(m, `[data-destino="${otro}"]`)), /No va aquí$/);
       assert.match(q(m, `[data-destino="${otro}"]`).getAttribute("aria-label"), /: no va aquí$/);
-      assert.equal(q(m, "[data-lector-error]").textContent, "Incorrecto.");
       assert.deepEqual([escritas("empresa"), escritas("banco")], antes, `${c.id}: el error escribió algo`);
-      assert.equal(q(m, "[data-mensaje]"), null, "seis-causas no lleva mensaje a la vista");
+      /* D6 (Katsumi): las notas del banco llevadas a la empresa tienen su mensaje (con «Incorrecto.» para el lector, una vez); los demás errores, solo la marca. */
+      const conMensaje = otro === "empresa" && P.pantallas[3].errorEmpresa.causas.includes(c.id);
+      if (conMensaje) {
+        assert.equal(q(m, "[data-mensaje]")?.dataset.mensaje, "error", `${c.id}: sin mensaje`);
+        assert.equal(q(m, "[data-mensaje] [data-devolucion]").textContent, `Incorrecto. ${P.pantallas[3].errorEmpresa.texto}`);
+        assert.equal(q(m, "[data-lector-error]"), null, `${c.id}: «Incorrecto.» se oye dos veces`);
+      } else {
+        assert.equal(q(m, "[data-lector-error]").textContent, "Incorrecto.");
+        assert.equal(q(m, "[data-mensaje]"), null, `${c.id}: este error no lleva mensaje a la vista`);
+      }
       assert.equal(R.seguir(m), null);
       tocar(q(m, `[data-destino="${lado}"]`));
       await esperar(0);
       assert.equal(escritas(lado).at(-1), c.id);
+      assert.equal(q(m, "[data-mensaje]"), null, `${c.id}: el mensaje del error sigue tras el acierto`);
       assert.equal(q(m, `[data-destino="${lado}"]`).dataset.marca, "bien");
       assert.equal(q(m, `[data-destino="${otro}"]`).dataset.marca, undefined, "la marca del error se queda en la otra");
     }

@@ -42,6 +42,7 @@ export function porLugar(p) {
   for (const t of p.despues ?? []) r.push(["Después de la figura", t]);
   for (const x of p.despuesConAccion ?? []) r.push([`Después de la figura, con la acción${x.con ? ` (${x.con})` : ""}`, x.texto]);
   if (p.fin) r.push(["Tarjeta final", p.fin]);
+  if (p.errorEmpresa) r.push(["Error · una nota del banco a la libreta de la empresa (✗ y el texto; los demás errores, solo la marca)", p.errorEmpresa.texto]);
   if ("acierto" in p) r.push(["Acierto (tras «Correcto.»)", p.acierto]);
   if (p.error) r.push(["Error (✗ y el texto)", p.error]);
   for (const [c, t] of Object.entries(p.errores ?? {})) r.push([`Error · ${c} (✗ y el texto)`, t]);
