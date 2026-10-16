@@ -82,6 +82,6 @@ export function hechoDePar(id) {
 /** El nombre accesible de una casilla, según su estado (Xeno; nombre de error corregido por Levi). */
 export function nombreAccesible({ empresa, lado, cuenta, monto, error = null }) {
   const L = lado === "debe" ? UI.debe : UI.haber;
-  if (error) return `${empresa}, ${L}: elegiste ${error.elegida}. ${UI.revisa}. Va ${error.correcta}.`;
+  if (error) return `${empresa}, ${L}: elegiste ${error.elegida}. ${UI.revisa}. ${UI.va}: ${error.correcta}.`;
   return cuenta ? `${empresa}, ${L}: ${cuenta}. ${monto}` : `${empresa}, ${L}: vacía. ${monto}`;
 }

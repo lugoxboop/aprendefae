@@ -36,9 +36,11 @@ export const UI = {
   siguientePar: "Siguiente par",
   verResumen: "Ver mi resumen",
   cancelar: "Cancelar",
-  bien: "Bien",
-  revisa: "Revisa",
-  va: "Va:",
+  /* El dialecto único del estándar: «Correcto» / «No va aquí» / «Iba aquí»
+     (los mismos de r5 y T4). Antes decían «Bien» / «Revisa» / «Va:». */
+  bien: "Correcto",
+  revisa: "No va aquí",
+  va: "Iba aquí",
   elegida: "Elegida",
   estaEnElDebe: "Está en el Debe",
   estaEnElHaber: "Está en el Haber",
