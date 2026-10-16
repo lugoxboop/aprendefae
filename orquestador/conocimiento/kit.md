@@ -586,6 +586,30 @@ Dos cosas que la sonda no midió y hay que decir: `b5-t6-a2`, `b5-t6-a3` y
 `b5-t6-a5` no se pudieron jugar (se agotó el tiempo al tocar), así que de
 esas tres no hay dato. No medido no es lo mismo que limpio.
 
+### Cómo quedó el 16 de octubre, al cerrar el barrido
+
+| | al empezar | al cerrar |
+|---|---|---|
+| textos bajo 12 px | 182 | **112** |
+| con forma de cejilla | 94 | 92 |
+| **sin** forma de cejilla | 88 | **20** |
+| desbordes | 0 | **0** |
+| scroll horizontal | no | **no** |
+
+**Los 20 que quedan son todos la figura del estado de situación financiera
+de T1 Aprender.** Fuera de esa figura no queda ni un texto bajo el piso en
+las 18 rutas que la sonda recorre. La figura la rehace Xeno: a 12 px sus dos
+columnas de 96,5 px no caben —«Equipo de computación» mide 134 px—, así que
+es rehacerla, no cambiar un número.
+
+Una cosa más, que vale para cualquiera que repita esto: seis de esos textos
+los di por «heredados del contenedor, no están en ninguna línea `fontSize`».
+Era falso. El tamaño estaba inline, en el mismo `span`; mi búsqueda fallaba
+porque pedía la clase y el tamaño en el MISMO renglón, y el archivo los
+tenía en dos. Lo resolví preguntándole a la página qué elemento ponía ese
+tamaño, no afinando el grep. **Cuando la búsqueda en el código no encuentra
+algo que la pantalla sí muestra, el que se equivoca es el grep.**
+
 **Por qué el `grep` no llega**, y es la razón de fondo para medir:
 
 - un tamaño **heredado** no está en el archivo del texto: el `span` que se lee
