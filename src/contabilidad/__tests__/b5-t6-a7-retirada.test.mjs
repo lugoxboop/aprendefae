@@ -9,14 +9,12 @@ import { existsSync, readFileSync } from "node:fs";
  * Shoko (C6): sus decisiones ya están en b5-t6-a4 y en la capa 3 de T6 · A2.
  * Mateo autorizó retirar actividades de Contabilidad mientras no haya
  * estudiantes reales. Esto vigila que no quede a medias:
- *   · fuera del catálogo del cliente y del camino, que queda a1 → a4 → a5 →
- *     a2 → a6 → a3 (provisional: a5 se fusionará en a2);
+ *   · fuera del catálogo del cliente y del camino, que queda a1 → a4 → a2 →
+ *     a6 → a3 (lote 6b: a5 se fundió en a2);
  *   · fuera de «Así se juega» y del panel docente;
  *   · sin su componente, sus datos ni su lógica;
- *   · la 0076 borra primero sus partidas a medias (la única llave foránea
- *     hacia el catálogo, la de partida_en_curso) y después su fila, con la
- *     forma `in (...)` que lee catalogo.test.mjs, su comprobación y la
- *     reversión escrita sin correr.
+ *   · la 0076 es un retiro blando (la puerta del #289): la fila queda como
+ *     lápida, con su comprobación y la reversión escrita sin correr.
  * La vista y el catálogo del servidor los comparan b5-t6-catalogo.test.mjs y
  * fp/__tests__/catalogo.test.mjs.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -29,12 +27,12 @@ const { ASI_SE_JUEGA } = await import("../../data/asiSeJuega.js");
 const { etiquetaDeItem } = await import("../../docente/etiquetasItem.js");
 const MIGRACION = readFileSync(new URL("supabase/migrations/0076_tema6_retira_que_metodo.sql", RAIZ), "utf8");
 
-test("★★★ b5-t6-a7 ya no está en ningún catálogo del cliente, y el camino de T6 queda a1 → a4 → a5 → a2 → a6 → a3", () => {
+test("★★★ b5-t6-a7 ya no está en ningún catálogo del cliente, y el camino de T6 queda a1 → a4 → a2 → a6 → a3", () => {
   const todas = Object.values(SUBJECTS).flatMap((m) => m.topics ?? []).flatMap((t) => t.actividades ?? []);
   assert.ok(todas.length > 50, "no se leyó el catálogo: la comprobación habría pasado mirando nada");
   assert.ok(!todas.some((a) => a.id === ID), "sigue en subjects.js");
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "cuentas-por-cobrar");
-  assert.deepEqual(actividadesDeTipo(tema, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a4", "b5-t6-a5", "b5-t6-a2", "b5-t6-a6", "b5-t6-a3"]);
+  assert.deepEqual(actividadesDeTipo(tema, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a4", "b5-t6-a2", "b5-t6-a6", "b5-t6-a3"]);
 });
 
 test("★★★ ni «Así se juega» ni el panel docente la conocen, y su código ya no está", () => {

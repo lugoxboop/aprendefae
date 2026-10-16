@@ -390,10 +390,11 @@ test("★★★ capa 3: las dos ventas se ven iguales, con lo que costó y a cu�
   assert.equal(cajas[0].querySelector("button").getAttribute("style"), cajas[1].querySelector("button").getAttribute("style"));
   const lectura = (n) => [...n.querySelectorAll("p:not([data-pie])")].map((p) => p.textContent).join("");
   for (const [k, v] of D.VENTAS_T5_A2.entries()) {
-    assert.equal(cajas[k].querySelectorAll("svg").length, 1, "cerrada, con su chevrón");
+    /* Solo el chevrón: desde el lote 6a, la opción correcta lleva además su ✓ de E4 (otro SVG). */
+    assert.equal(cajas[k].querySelectorAll("svg[data-chevron]").length, 1, "cerrada, con su chevrón");
     await decidir(tocar, caja.querySelector(`[data-hecho="${v.id}"]`), v.correcta);
     assert.equal(cajas[k].querySelectorAll("svg[data-chevron]").length, 1, "decidida, con su chevrón girado (hoja 6)");
-    assert.equal(cajas[k].querySelectorAll("svg[data-icono='visto']").length, 1, "y el ✓ de E4 en la elegida (B5)");
+    assert.equal(cajas[k].querySelectorAll('svg[data-icono="visto"]').length, 1, "decidida, la correcta con su ✓ (E4)");
     assert.equal(lectura(caja.querySelector(`[data-revela="${v.id}"]`)), v.revela);
     assert.equal(caja.querySelector(`[data-revela="${v.id}"] [data-pie]`).textContent, v.pie);
     assert.equal(lectura(caja.querySelector("[data-final]")), k === 0 ? "" : D.FINAL_CAPA_3_T5_A2.texto);

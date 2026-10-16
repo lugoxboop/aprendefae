@@ -48,7 +48,7 @@ Un acierto que el juego no da por bueno (`[data-devolucion]` en la capa 2 o 3, o
 |---|---|---|---|
 | Mesa del diario | `b5-t5-a2`, `b5-t6-a2`, `b5-t6-a3` | `[data-sacar="cuenta:lado"]`, la cifra en `input[data-campo-cifra]` y `[data-confirmar-parte]`. La mala lleva la primera cifra con 1.000 de más | `[data-panel]` |
 | Elección | `b5-t6-a4` | el botón con `[data-opcion]` | `data-estado` de la Opción |
-| Casillas | `b5-t6-a5`, `b5-t6-a6` | el botón con `[data-opcion]` | `data-estado` de la Opción |
+| Casillas | `b5-t6-a6` (`b5-t6-a5` se fundió en a2) | el botón con `[data-opcion]` | `data-estado` de la Opción |
 | Estante de dos niveles | `b5-t5-a1`, `b5-t6-a1` | `[data-nivel1]`, `[data-nivel2]` y el botón de `[data-boton-colocar]`. La mala va al otro primer nivel, dos veces (el juego da un segundo intento) | el Retro (`role="status"`, «Correcto:» o «Incorrecto:») |
 
 ## Qué mide cada regla

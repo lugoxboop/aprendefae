@@ -3,9 +3,9 @@ import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
+import { Marca, CORRECTA, TACHADA } from "../b5/MarcasE4.jsx";
 import { escalera, fallaDe, elegir, sePuedeElegir } from "./escaleraB5.js";
 import { SOLO_LECTOR } from "../verbos.jsx";
-import { Marca, CORRECTA, TACHADA } from "../b5/MarcasE4.jsx";
 import FiguraPegada, { asomarBajoLaFigura } from "./FiguraPegada.jsx";
 
 /*
@@ -88,15 +88,13 @@ export { fallaDe };
  * de la capa 2. `estado` es el de la escalera (escaleraB5.js): una elegida
  * mala queda tachada y sin poder tocarse desde el primer error.
  */
-export function OpcionDecidir({ opcion, forma, estado, correcta, reducido, onElegir, conMarca = false }) {
+export function OpcionDecidir({ opcion, forma, estado, correcta, reducido, onElegir }) {
   const decidida = estado.resuelta;
   const esCorrecta = decidida && opcion.id === correcta;
   const tachada = estado.tachadas.includes(opcion.id);
   const bloqueada = decidida || tachada;
   const fila = forma === "fila";
   const d = esCorrecta ? 1 : 0;
-  /* La marca E4 (✓ o ✕ con su texto oculto), solo en la capa 3 ya decidida: la parada de la capa 2 no cambia. */
-  const marca = conMarca && decidida ? (esCorrecta ? CORRECTA : tachada ? TACHADA : null) : null;
   return (
     <button
       type="button"
@@ -116,11 +114,15 @@ export function OpcionDecidir({ opcion, forma, estado, correcta, reducido, onEle
         opacity: decidida && !esCorrecta && !tachada ? 0.5 : 1,
         transition: reducido ? "none" : "opacity 200ms ease",
         cursor: bloqueada ? "default" : "pointer",
-        ...(marca ? { display: "flex", alignItems: "center", justifyContent: fila ? "center" : "flex-start", gap: "6px" } : {}),
       }}
     >
-      {marca && <Marca marca={marca} />}
-      <span data-texto-opcion>{opcion.texto}</span>
+      {/* E4 (hoja de fusiones de Mai): ya tachaba; se le suman los íconos ✓ y ✕, con su texto oculto. */}
+      {(esCorrecta || tachada) ? (
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", ...(fila ? { justifyContent: "center" } : null) }}>
+          <Marca marca={esCorrecta ? CORRECTA : TACHADA} />
+          <span data-texto-opcion>{opcion.texto}</span>
+        </span>
+      ) : <span data-texto-opcion>{opcion.texto}</span>}
     </button>
   );
 }
@@ -238,7 +240,7 @@ export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "
             display: "flex", flexDirection: forma === "fila" ? "row" : "column", gap: forma === "fila" ? "4px" : "6px", marginTop: decidida ? 0 : "8px",
           }}>
             {visibles.map((o) => (
-              <OpcionDecidir key={o.id} opcion={o} forma={forma} estado={estado} correcta={decide.correcta} reducido={reducido} conMarca
+              <OpcionDecidir key={o.id} opcion={o} forma={forma} estado={estado} correcta={decide.correcta} reducido={reducido}
                 onElegir={(id) => { if (sePuedeElegir(decide, intentos, id)) onElegir(id); }} />
             ))}
           </div>

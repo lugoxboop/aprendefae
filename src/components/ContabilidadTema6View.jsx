@@ -33,8 +33,6 @@ import DeudaQueVuelve from "./mecanicas/libros/tema6/DeudaQueVuelve.jsx";
 import { T6_ACT3 } from "../data/contabilidadT6Act3.js";
 import QueSeDebita from "./mecanicas/libros/tema6/QueSeDebita.jsx";
 import { T6_ACT4 } from "../data/contabilidadT6Act4.js";
-import LaCuentaDeLaProvision from "./mecanicas/libros/tema6/LaCuentaDeLaProvision.jsx";
-import { T6_ACT5 } from "../data/contabilidadT6Act5.js";
 import ProvisionPorEdades from "./mecanicas/libros/tema6/ProvisionPorEdades.jsx";
 import { T6_ACT6 } from "../data/contabilidadT6Act6.js";
 
@@ -63,12 +61,11 @@ const PUBLICADAS = PIEZAS.length;
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS = [
   { id: T6_ACT1.id, Mecanica: ClientesOOtra, titulo: T6_ACT1.nombre },
-  /* La mesa de asientos con el diario encima; en «Así se juega», la mesa sola. */
+  /* La mesa de asientos con el diario encima y, desde el lote 6b, las tres preguntas de a5 (que se fundió aquí); en «Así se juega», la mesa sola. */
   { id: T6_ACT2.id, Mecanica: ProvisionDeElTorito, titulo: T6_ACT2.nombre },
   { id: T6_ACT3.id, Mecanica: DeudaQueVuelve, titulo: T6_ACT3.nombre },
-  /* Los Hacer nuevos: la elección de «¿Por Cuál Arteria Entra?» y las casillas en orden, en su copia de la célula (b5-t6-a7 se retiró en el lote 4). */
+  /* Los Hacer nuevos: la elección de «¿Por Cuál Arteria Entra?» y las casillas en orden, en su copia de la célula (b5-t6-a7 se retiró en el lote 4; b5-t6-a5 se fundió en a2 en el 6b). */
   { id: T6_ACT4.id, Mecanica: QueSeDebita, titulo: T6_ACT4.nombre },
-  { id: T6_ACT5.id, Mecanica: LaCuentaDeLaProvision, titulo: T6_ACT5.nombre },
   { id: T6_ACT6.id, Mecanica: ProvisionPorEdades, titulo: T6_ACT6.nombre },
 ];
 

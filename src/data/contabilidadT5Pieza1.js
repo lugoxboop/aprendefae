@@ -40,7 +40,7 @@ export const PIEZA_DEL_EFECTIVO = {
   nombres: [
     {
       termino: "Activo financiero",
-      definicion: "Es una colocación de dinero: la empresa espera que le rinda más adelante. Puede rendir un interés, un dividendo (lo que una empresa reparte entre quienes tienen sus acciones) o una venta por más de lo que costó.",
+      definicion: "Es una colocación de dinero que se espera que rinda más adelante. Puede rendir un interés, un dividendo (lo que una empresa reparte entre sus accionistas) o una venta por más de lo que costó.",
       delLibro: "«…colocaciones de dinero sobre las cuales una empresa espera obtener algún rendimiento a futuro…» (p. 191)",
     },
     {

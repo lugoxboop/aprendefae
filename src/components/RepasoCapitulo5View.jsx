@@ -26,12 +26,13 @@ import { Mate } from "./repasoCap5/Mate.jsx";
 import { R5_3 } from "../data/repasoCap5MateTextos.js";
 import { Barranquilla } from "./repasoCap5/Barranquilla.jsx";
 import { Cabecera, Pista, SILUETAS, ANCHO_SILUETA } from "./repasoCap5/Cabecera.jsx";
+import { RayaC1 } from "./repasoCap5/RayaC1.jsx";
 import { R5_4 } from "../data/repasoCap5BarranquillaTextos.js";
 import { Permanente } from "./repasoCap5/Permanente.jsx";
 import { R5_5 } from "../data/repasoCap5PermanenteTextos.js";
 import {
   R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, ORDEN_SUBTEMAS,
-  prepararR5_1, puntuarR5_1, porTema, textoDeOpcion, renglonesDeAsiento, mayorTrasAsiento,
+  prepararR5_1, puntuarR5_1, puntosDeR5_1, porTema, textoDeOpcion, renglonesDeAsiento, mayorTrasAsiento,
 } from "../data/repasoCap5Cruzado.js";
 
 /*
@@ -80,6 +81,23 @@ function RenglonesDeAsiento({ asiento }) {
 /* La mecánica de cada pantalla, según su forma. */
 function Mecanica({ pantalla, onCalificar }) {
   const p = pantalla;
+  /* C.1 (v2.3): un activo por renglón, sin «·»; la figura no existe antes de elegir (E8). */
+  if (p.forma === "raya") {
+    return (
+      <OpcionesTitulo
+        opciones={p.opciones}
+        sinFiguraAntes
+        etiqueta={(o) => textoDeOpcion(p, o)}
+        contenido={(o) => (
+          <span data-activos style={{ display: "block", fontSize: "14px", lineHeight: "20px" }}>
+            {o.activos.map((a) => <span key={a.texto} data-activo style={{ display: "block" }}>{a.texto}</span>)}
+          </span>
+        )}
+        figura={(o, clave, onTerminar, { elegida }) => <RayaC1 opcion={o} clave={clave} onTerminar={onTerminar} elegida={elegida} />}
+        onCalificar={onCalificar}
+      />
+    );
+  }
   if (p.forma === "flujos") {
     return (
       <OpcionesTitulo
@@ -155,7 +173,7 @@ function PorTema({ filas }) {
 /* ═══════════ r5-1 «REPASO CRUZADO» v2 ═══════════ */
 
 /*
- * Seis pantallas en el orden del libro, una calificación por pantalla («bien
+ * Siete pantallas en el orden del libro (v2.3: C.1 primera), una calificación por pantalla («bien
  * a la primera»). Arriba: relleno 12, la cabecera de 40 px, 8 px y el
  * enunciado (Inter 16/24, peso 600); 16 px y la mecánica. Abajo: «Ver pista»,
  * el panel de devolución y «Siguiente» (§0). Al terminar:
@@ -177,10 +195,10 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
 
   const pantalla = tanda[i];
   const total = tanda.length;
-  const bien = Object.values(resultados).filter(Boolean).length;
 
   useEffect(() => {
-    if (terminado) onCompletar?.(puntuarR5_1(bien, total), Date.now() - inicio.current, detalle.current);
+    /* v2.3: el rendimiento son los puntos ganados / 25, nunca aciertos / 7. */
+    if (terminado) onCompletar?.(puntuarR5_1(puntosDeR5_1(resultados)), Date.now() - inicio.current, detalle.current);
   }, [terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   /* E2 de enganche.md: el foco baja a «Siguiente» SIN mover la página; lo que cambia sigue a la vista. */
   useEffect(() => { if (r) boton.current?.focus({ preventScroll: true }); }, [r]);
@@ -218,7 +236,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
       <div data-r5-1 data-cierre>
         <style>{CSS_JUEGO}</style>
         <PorTema filas={porTema(resultados)} />
-        <Cierre pct={Math.round(puntuarR5_1(bien, total))} onReiniciar={reiniciar} />
+        <Cierre pct={Math.round(puntuarR5_1(puntosDeR5_1(resultados)))} onReiniciar={reiniciar} />
       </div>
     );
   }
@@ -259,7 +277,12 @@ export const JUEGOS_REPASO_CAP5 = [
  * volver a ver en las preguntas: el mismo dibujo es el mismo tema.
  */
 export function PortadaRepaso() {
-  const temas = ORDEN_SUBTEMAS.map((id) => SUBTEMAS[id]);
+  /*
+   * La portada dice «Repasa los tres temas antes de seguir.» (v1.3, literal):
+   * sigue con los tres del capítulo. C.1 (v2.3) es de activos corrientes y no
+   * entra aquí; reportado a Kamogawa por si la portada cambia.
+   */
+  const temas = ORDEN_SUBTEMAS.filter((id) => id !== "corrientes").map((id) => SUBTEMAS[id]);
   return (
     <section data-portada-repaso aria-labelledby="r5-portada-titulo" style={{ background: C.navy, borderRadius: "16px", padding: "18px 16px 16px", margin: "4px 0 20px" }}>
       <p style={{ ...MARCA, margin: 0 }}>{INTERFAZ_R5_1.marcaPortada}</p>

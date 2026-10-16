@@ -310,3 +310,39 @@ Asiento 1	Gasto provisiones – cuentas incobrables	El gasto se anotó en diciem
 Asiento 1	Caja	En un castigo no entra plata.
 Asiento 2	Cuentas por cobrar – clientes	Crear la provisión del año no cambia lo que deben los clientes: nadie paga y no se castiga ninguna deuda.
 Asiento 2	Caja	La provisión es un cálculo: no entra ni sale plata.
+
+## (5) Lote 6b · la fusión de b5-t6-a5 en a2 (hoja de Mai; textos de Futaba con las correcciones de Shoko)
+
+b5-t6-a5 «La cuenta de la provisión» se retira (lápida en la 0077) y sus casillas pasan a a2 como tres preguntas de cifra escrita. Cinco pasos: P1 (valor neto) → Asiento 1 (castigo de marzo) → P2 (cuánto le falta) → Asiento 2 (ajuste del año siguiente) → P3 (saldo final). La cuenta T de la provisión va entre el contador y el paso y no se mueve; empieza con HABER «$148.800 · 31 de diciembre de 2007». Cada renglón entra al confirmar (siempre el del asiento correcto), con borde 2 nodo y relleno navy hasta el paso siguiente. El saldo ocupa las dos columnas mientras se pregunta y aparece solo después de cada respuesta. P1 lleva el bloque «En el estado de situación financiera» con «El valor neto» vacío y encendido. El diario está desde el principio, plegado, y no se abre solo.
+
+Se escribe la cifra: vale con o sin «$» y con o sin puntos; una negativa va a la devolución general. Un intento por pregunta; si falla, se ve el valor correcto.
+
+Objetivo: «Registrar la provisión de El Torito y seguir su saldo: cuando se crea, cuando se castiga una deuda y cuando se ajusta.»
+
+Pregunta 1: «Los clientes le deben $2.655.000, y la provisión quedó en $148.800. En el estado de situación financiera, ¿cuál es el valor neto de Cuentas por cobrar – clientes?»
+Correcta: $2.506.200
+$2.655.000 → T1	Falta restar la provisión. El valor neto es lo que deben los clientes menos la provisión.
+$2.803.800 → T2	La provisión no se suma: se resta de Cuentas por cobrar – clientes.
+Otra: «Revisa la cuenta: a lo que deben los clientes se le resta la provisión.»
+
+Pregunta 2: «Después del castigo, ¿cuánto le falta a la provisión?»
+Correcta: $31.200
+$0 → T5	La provisión era menor que lo castigado, así que no alcanzó. Resta $148.800 de $180.000.
+$328.800 → T6	El castigo baja la provisión: se resta, no se suma.
+Otra: «Compara lo que había en la provisión con lo que se castigó: la diferencia es lo que falta.»
+
+Pregunta 3: «¿Cuál es el saldo final de la provisión?»
+Correcta: $153.400
+$184.600 → T9 (la versión de Shoko)	Ese es el valor del ajuste, no el saldo. Antes del ajuste, a la provisión le faltaban $31.200.
+$333.400 → T10	Falta restar el castigo de marzo. Son $148.800 menos $180.000, más $184.600.
+Otra: «Parte de lo que le faltaba a la provisión en marzo y súmale el registro de diciembre.»
+
+Asiento 2, B específica nueva: $122.200 → T8	Lo que faltó se suma, no se resta. Se resta solo cuando la provisión se pasó.
+
+Cierre, debajo de la T después de la pregunta 3: «La provisión sube al crearla, baja al castigar y se corrige al año siguiente. Por eso el saldo final es justo lo que pidió el análisis.»
+
+Texto alternativo: «Actividad de registro. Hay dos hechos de la provisión de El Torito Currambero. Antes, entre y después de los asientos, respondes tres preguntas sobre su saldo. En cada asiento, pon en la mesa las cuentas que mueve, ubícalas en el Debe o en el Haber y escribe cada valor. La T de la provisión se llena con cada respuesta. Tienes un solo intento por asiento y por pregunta.»
+
+Dificultad: difícil, 50 FP (sugerencia de Futaba y Shoko; lo decide KAEDE con la regla nueva). Fila del servidor: la 0078.
+
+PARA SHOKO (textos nuevos de la mecánica, sin revisar): el contador «Paso N de 5»; los rótulos «Pregunta 1», «Pregunta 2» y «Pregunta 3»; el botón «Siguiente» (en los asientos y en las preguntas, en lugar de «Siguiente asiento»); el botón «Comprobar» de las preguntas (el publicado de T3); el nombre del campo para el lector de pantalla, «Tu respuesta»; y la cuarta línea de «¿Cómo se juega?»: «Entre los asientos, escribe la cifra que se pide. También tienes un solo intento.»

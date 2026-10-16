@@ -196,6 +196,7 @@ for (const p of PIEZAS) {
       assert.equal(elegida.style.opacity, "1");
       assert.ok(elegida.querySelector("svg[data-icono='tache']"), "el ✕ de E4");
       assert.equal(elegida.querySelector("svg[data-icono='visto']"), null);
+      assert.ok(elegida.textContent.includes("(tu respuesta)"), "con su texto oculto de E4");
       assert.equal(elegida.getAttribute("aria-pressed"), "true", "la última elegida");
       assert.equal(elegida.getAttribute("aria-disabled"), "true");
       assert.equal(elegida.hasAttribute("disabled"), false, "aria-disabled, no disabled: el foco no se pierde");
@@ -229,6 +230,7 @@ for (const p of PIEZAS) {
       assert.equal(correcta.getAttribute("aria-pressed"), "true");
       assert.equal(correcta.dataset.marca, "correcta");
       assert.ok(correcta.querySelector("svg[data-icono='visto']"), "el ✓ de E4");
+      assert.ok(correcta.textContent.includes("(respuesta correcta)"), "con su texto oculto de E4");
       assert.equal(correcta.style.border, `2px solid ${rgb(FAE.node)}`);
       assert.equal(correcta.style.background, rgb(FAE.navy));
       assert.equal(correcta.style.padding, p.forma === "fila" ? "9px 2px" : "9px 11px", "1 px menos de relleno: nada se mueve");

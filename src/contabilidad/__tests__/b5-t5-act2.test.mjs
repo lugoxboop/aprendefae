@@ -21,6 +21,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+const { comprobarMesaE4 } = await import("./b5-mesa-e4.mjs");
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
 w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
@@ -115,7 +116,16 @@ const errorDe = (n, tipo) => {
 const G_DIARIO = porClave(seccion("## 4 · El libro diario", "Asientos del diario"));
 const G_ASIENTOS = filas(seccion("Asientos del diario", "## 5 "));
 const G_TUTORIAL = porClave(seccion("## 5 · Tutorial", "## 6 "));
-const G_CIFRAS = new Set(filas(seccion("## 6 · Cifras", null)).map((f) => f[0]));
+const G_CIFRAS = new Set(filas(seccion("## 6 · Cifras", "## (1)")).map((f) => f[0]));
+/* Lote 6a · E3: en las ventas (partes 2 y 4), la B general nombra las cuentas con el valor errado. */
+const G_E3 = Object.fromEntries(filas(seccion("## (2) Lote 6a · E3", null)).filter((f) => f[0] !== "Cuenta").map((f) => [f[0], f[1]]));
+const bE3 = (n, cuentas) => {
+  if (n !== 2 && n !== 4) return errorDe(n, "B");
+  const orden = parte(n).asiento.map((e) => e.cuenta).filter((c) => cuentas.includes(c));
+  const cabeza = orden.length > 1 ? `Revisa los valores de ${orden.slice(0, -1).join(", ")} ${/^h?i/i.test(orden.at(-1)) ? "e" : "y"} ${orden.at(-1)}.` : `Revisa el valor de ${orden[0]}.`;
+  assert.ok(G_E3[orden[0]], `el paquete no tiene la segunda frase de ${orden[0]}`);
+  return `${cabeza} ${G_E3[orden[0]]}`;
+};
 
 test("guarda: el paquete se leyó entero, y una fila inventada no aparece", () => {
   assert.equal(G_ESTANTE.length, 6);
@@ -232,7 +242,8 @@ test("★★★ prioridad D > C > A > B en las cuatro partes, cada una con su te
       await armar(caja, puestas);
       assert.equal(caja.querySelector("[data-panel]").dataset.error, tipo, `parte ${n}: ${tipo}`);
       /* La D nombra la cuenta que sobra y sigue con el texto del paquete (Sakuta, calidad 1). */
-      const esperado = tipo === "D" ? textoD({ asiento: ok, errores: { D: errorDe(n, "D"), razones: parte(n).errores.razones } }, puestas) : errorDe(n, tipo);
+      const esperado = tipo === "D" ? textoD({ asiento: ok, errores: { D: errorDe(n, "D"), razones: parte(n).errores.razones } }, puestas)
+        : tipo === "B" ? bE3(n, [ok[0].cuenta]) : errorDe(n, tipo);
       assert.equal(textoRetro(caja), esperado, `parte ${n}: texto ${tipo}`);
       desmontar();
     }
@@ -255,22 +266,29 @@ test("★★★ C7, los dos caminos: cuadrar sin la ganancia → A (la explica);
     assert.equal(m.caja.querySelector("[data-panel]").dataset.error, "C7");
     assert.equal(textoRetro(m.caja), errorDe(n, "C7"), `parte ${n}: B · C7`);
     m.desmontar();
-    /* Inversiones – títulos bien y otro valor mal: la B «otro valor», no la C7. */
+    /* Inversiones – títulos bien y otro valor mal: la B que nombra la cuenta (E3), no la C7. */
     m = await montar({ items: [parte(n)] });
     await armar(m.caja, ok.map((e) => (e.cuenta === otra ? { ...e, valor: e.valor + 1000 } : e)));
-    assert.equal(textoRetro(m.caja), errorDe(n, "B"));
+    assert.equal(textoRetro(m.caja), bE3(n, [otra]));
+    m.desmontar();
+    /* Dos valores errados: los nombra los dos, en el orden del asiento, con «e» ante el sonido i (corrección de Shoko). */
+    m = await montar({ items: [parte(n)] });
+    await armar(m.caja, ok.map((e) => (e.cuenta === otra || e.cuenta === "Caja" ? { ...e, valor: e.valor + 1000 } : e)));
+    assert.equal(textoRetro(m.caja), bE3(n, ["Caja", otra]));
+    assert.match(textoRetro(m.caja), n === 2 ? /^Revisa los valores de Caja e Ingresos financieros/ : /^Revisa los valores de Caja y Gastos financieros/);
     m.desmontar();
   }
 });
 
 /* ═══════════ EL ASIENTO REVELADO Y EL ACIERTO ═══════════ */
 
-test("★★★ tras el error se revela el asiento correcto y ya no hay segundo intento", async () => {
+test("★★★ E4: tras el error, la mesa del estudiante se queda como la armó, con lo correcto junto, y ya no hay segundo intento", async () => {
   const { caja, desmontar } = await montar({ items: [parte(2)] });
-  await armar(caja, parte(2).asiento.map((e) => (e.cuenta === "Inversiones – títulos" ? { ...e, valor: 1725000 } : e)));
-  const esperado = parte(2).asiento.map((e) => ({ cuenta: e.cuenta, lado: e.lado, texto: e.valor.toLocaleString("es-CO").replace(/,/g, ".") }));
-  assert.deepEqual(mesaVista(caja).sort((a, b) => a.cuenta.localeCompare(b.cuenta)), esperado.sort((a, b) => a.cuenta.localeCompare(b.cuenta)));
-  assert.equal(caja.querySelector("[data-conector]").dataset.conector, "cerrado");
+  const puestas = parte(2).asiento.map((e) => (e.cuenta === "Inversiones – títulos" ? { ...e, valor: 1725000 } : e));
+  await armar(caja, puestas);
+  comprobarMesaE4(caja, parte(2), puestas, "parte 2, C7");
+  /* Los totales son los del estudiante: su asiento no cuadra, y el conector lo dice. */
+  assert.equal(caja.querySelector("[data-conector]").dataset.conector, "abierto");
   assert.equal(caja.querySelector("[data-confirmar-parte]"), null, "un solo intento");
   assert.ok([...caja.querySelectorAll("input")].every((i) => i.readOnly));
   assert.equal(caja.querySelector("[data-visto-parte]"), null, "con error no hay marca");

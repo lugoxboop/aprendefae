@@ -22,6 +22,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+const { comprobarMesaE4 } = await import("./b5-mesa-e4.mjs");
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
 w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
@@ -192,7 +193,7 @@ const CASOS = [
   [4, "C", [hb(CLIENTES, 100000)], "al revés y falta la provisión: C manda sobre A"],
 ];
 
-test("★★★ la prioridad D > C > A > B con su texto en el panel, las B específicas (C14, $180.000 en la parte 4) y el asiento correcto revelado", async () => {
+test("★★★ la prioridad D > C > A > B con su texto en el panel, las B específicas (C14, $180.000 en la parte 4) y E4: la mesa del estudiante se queda, con lo correcto junto", async () => {
   for (const [k, tipo, puestas, nota] of CASOS) {
     const p = PARTES[k];
     const { caja, desmontar } = await montar({ items: [p] });
@@ -200,8 +201,7 @@ test("★★★ la prioridad D > C > A > B con su texto en el panel, las B espec
     assert.equal(caja.querySelector("[data-panel]").dataset.error, tipo, `${p.id}: ${nota}`);
     const esp = p.errores.especificas.find((e) => e.clave === tipo);
     assert.equal(textoRetro(caja), esp ? esp.texto : tipo === "D" ? M.textoD(p, puestas) : p.errores[tipo], `${p.id} ${tipo}: el texto`);
-    assert.deepEqual(mesaVista(caja).map((m) => `${m.lado}:${m.cuenta}:${m.texto}`).sort(),
-      p.asiento.map((m) => `${m.lado}:${m.cuenta}:${m.valor.toLocaleString("es-CO").replace(/,/g, ".")}`).sort(), `${p.id}: el asiento revelado`);
+    comprobarMesaE4(caja, p, puestas, `${p.id} ${tipo}`);
     desmontar();
   }
 });

@@ -106,7 +106,7 @@ DECISIONES DE SAKUTA (se pueden deshacer):
 - T5 A1: Shoko advierte que muchas pantallas antes de la escena van contra el enganche, y que Título valor y Tres grupos no se practican en ninguna capa ni Hacer. Sale «Título valor» (la palabra «título» se entiende en contexto en Renta variable/fija). Tres grupos se queda porque sus nombres aparecen en las fichas de b5-t5-a1. T5 A1 queda en 9 pantallas.
 
 ### T5 A1 · 9 pantallas (sin «Título valor»)
-1. **Activo financiero** — Def.: Es una colocación de dinero: la empresa espera que le rinda más adelante. Puede rendir un interés, un dividendo (lo que una empresa reparte entre quienes tienen sus acciones) o una venta por más de lo que costó. · Cita: «…colocaciones de dinero sobre las cuales una empresa espera obtener algún rendimiento a futuro…» (p. 191)
+1. **Activo financiero** — Def.: Es una colocación de dinero que se espera que rinda más adelante. Puede rendir un interés, un dividendo (lo que una empresa reparte entre sus accionistas) o una venta por más de lo que costó. · Cita: «…colocaciones de dinero sobre las cuales una empresa espera obtener algún rendimiento a futuro…» (p. 191)
 2. **Activo financiero temporal** — Def.: Se compra con efectivo que la empresa no necesita de inmediato, en vez de dejarlo quieto. Para ser temporal cumple dos condiciones a la vez. La primera: poder venderse rápido y con facilidad. · Cita: «1. Negociables o realizables rápidamente.» (p. 192)
 3. **La segunda condición** — Es la segunda: estar destinado a volverse efectivo cuando se necesite, en un año o en un ciclo de operaciones, el que sea más largo. El ciclo de operaciones es lo que tarda el negocio en comprar, vender y cobrar. (Sin cita, como pidió Shoko.)
 4. ~~Título valor~~ — SALE (decisión de Sakuta).
