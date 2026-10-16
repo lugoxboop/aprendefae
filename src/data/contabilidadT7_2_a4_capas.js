@@ -21,9 +21,10 @@ import { calcularCapas, METODOS_CAPAS } from "../contabilidad/t7_2Capas.js";
  * la aplica el componente con `SIGUE_HASTA_EL_28`.
  *
  * Los datos de las capas son los de la pieza de hoy (contabilidadT7_2_a4.js:
- * INICIAL_A4 y MOVIMIENTOS_A4), y la pantalla del cierre es la de hoy, tal
- * cual, entre la pantalla 6 y el resumen (decisión de la v6: «Qué queda
- * igual»). Por eso son 8 pantallas y no las 7 del prototipo.
+ * INICIAL_A4 y MOVIMIENTOS_A4), y la pantalla del cierre es la de esa pieza,
+ * entre la pantalla 6 y el resumen (decisión de la v6: «Qué queda igual»),
+ * rehecha por C1 (t7-2-a4-el-cierre-c1.md, con PASA de Mello). Por eso son 8
+ * pantallas y no las 7 del prototipo.
  *
  * Los totales en pesos no se muestran (decisión de Mello sobre X2): todo va
  * como «unidades × costo unitario», salvo el cálculo del promedio del libro
@@ -192,7 +193,12 @@ const MISMO_FINAL = {
   },
 };
 
-/* La pantalla del cierre de hoy, tal cual (v6, «Qué queda igual»: no trata de capas). */
+/*
+ * La pantalla del cierre, de la pieza de hoy (v6, «Qué queda igual»: no trata
+ * de capas), rehecha por C1: ya no es una pregunta de opción con la respuesta
+ * en el párrafo de arriba, sino la lista de los cierres del periódico que se
+ * tocan (ver contabilidadT7_2_a4.js, P6).
+ */
 const EL_CIERRE = PIEZA_SAN_CALIXTO.pantallas.find((p) => p.id === "el-cierre");
 
 const RESUMEN = {
