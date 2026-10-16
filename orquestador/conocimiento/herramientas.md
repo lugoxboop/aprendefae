@@ -160,6 +160,42 @@ Dos consecuencias para quien venga:
   «revisar si esta excepción sigue haciendo falta»—. Leer el mensaje antes de
   tocar el código ahorra el paso de creer que se rompió algo.
 
+## El punto ciego de la revisión local: todo lo que hay detrás de la sesión
+
+La revisión honesta a 320 px se hace sobre el paquete construido con claves de
+mentira. Eso basta para casi todo —y es lo que hay que usar—, pero tiene un
+agujero que conviene conocer antes de dar una pantalla por revisada.
+
+**Medido el 15 de octubre:** con claves de mentira, pulsar «Entrar» no abre
+ningún diálogo. Navega directo al proveedor:
+
+```
+x.supabase.co/auth/v1/authorize?provider=google&redirect_to=http%3A%2F%2F127.0.0.1%3A8099
+```
+
+…que no existe, así que la pestaña acaba en «This site can't be reached». No es
+un defecto del sitio: es que sin claves de verdad no hay sesión que empezar.
+
+**Lo que queda sin revisar por eso:** el diálogo de entrada (`AuthDialog`), el
+paso del apodo, la pastilla de FP con un número de verdad, el menú de la cuenta
+y el panel docente. Nada de eso se pinta sin sesión.
+
+Se notó porque tres informes de lo compartido del mismo día caían justo en el
+borde de ese agujero:
+
+| informe | se pudo medir |
+|---|---|
+| «sin sesión, el botón Entrar tapa el texto al bajar» (C) | **sí**: ese control sí se pinta sin sesión |
+| «el globo de FP tapa la esquina derecha de los botones de ancho completo» (D) | **sí**: la pastilla se pinta, aunque sin número |
+| «la X del diálogo de entrada se monta sobre otro elemento» (E) | **no**: ese diálogo no se abre en local |
+
+**Qué hacer en vez de callarlo.** Lo de detrás de la sesión se revisa en
+**aprendefae.com con una cuenta de verdad**, y el informe dice con qué se
+revisó. Lo que NO vale es dar por revisada una pantalla que no se abrió: es el
+falso verde de siempre con otra cara. Si un hallazgo cae ahí y no se puede
+reproducir, se pide la pantalla a quien la vio —con el ancho y el momento— en vez
+de arreglar a ciegas.
+
 ## Verificación contra lo publicado
 
 - **El texto** se lee del **paquete desplegado**, no del repositorio: es lo que
