@@ -71,7 +71,7 @@ function Saldo({ p, onAcierto }) {
           verdadero={ok ? { rotulo: F.verdadero, v: null, lector: F.verdaderoLector } : null} />
         <p className="t4r-p" data-caso>{p.caso}</p>
         <p className="t4r-rotacc" data-rotulo-pregunta>{p.rotuloPregunta}</p>
-        <Chips opciones={p.opciones} elegida={e} correcta={p.correcta} onElegir={setE} rotulo={(o) => F.opcionesSaldo[o]} etiqueta={p.rotuloPregunta} />
+        <Chips opciones={p.opciones} elegida={e} correcta={p.correcta} onElegir={setE} rotulo={(o) => F.opcionesSaldo[o]} etiqueta={p.rotuloPregunta} palabras />
       </Fig>
       {e && <Mensaje key={e} ok={ok} texto={ok ? p.acierto : p.errores[e]} />}
     </>
