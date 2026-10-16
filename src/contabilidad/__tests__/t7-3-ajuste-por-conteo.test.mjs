@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { PARCHES, parchado } from "./correccionesMelloRecortesT72.mjs";
 import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 /*
@@ -89,7 +90,9 @@ test("★★★ los textos son los de la v1, letra por letra; las fichas, las de
   const casos = [bloque("## Caso 1", "## Caso 2"), bloque("## Caso 2", "## Caso 3"), bloque("## Caso 3", "## Por qué")];
   for (const [k, c] of D.CASOS_H5.entries()) {
     const textos = casos[k].split("\n").filter((l) => /^(- )?«/.test(l)).map((l) => citas(l)[0]);
-    assert.deepEqual(c.textos, textos, c.encabezado);
+    /* Con el parche de la entrega 6 de Near (arreglo mínimo de Mello): Pino, sin «por un faltante». */
+    assert.deepEqual(c.textos, textos.map(parchado), c.encabezado);
+    if (k === 2) assert.ok(textos.includes(PARCHES.pino.viejo) && c.textos.includes(PARCHES.pino.nuevo) && !c.textos.includes(PARCHES.pino.viejo), "Pino");
     assert.equal(c.encabezado, `Caso ${k + 1}`);
     assert.ok(casos[k].startsWith(`## Caso ${k + 1} · `));
   }

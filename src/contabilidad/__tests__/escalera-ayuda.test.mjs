@@ -262,6 +262,20 @@ const ANEXO_MD = conCorreccionesDeMello(readFileSync(new URL("lote2-anexo-v1.md"
  */
 const RECORTES_MD = readdirSync(PAQUETES).filter((f) => /^lote1-recortes-.*\.md$/.test(f)).sort().map((f) => readFileSync(new URL(f, PAQUETES), "utf8"));
 /*
+ * Los recortes de T7-2 (entregas 2 y 6 de Near) ganan igual que los del lote
+ * 1: de la entrega 2, solo T7-2 A1 (su NIC 2 la reemplazó la entrega 4), con
+ * su fila de la tabla de pistas en la forma «Pista · …»; de la entrega 6, A2 y
+ * A3 (A4 la renovó el enganche C).
+ */
+{
+  const E2 = readFileSync(new URL("lote1-entrega2-v1.md", PAQUETES), "utf8");
+  const E6 = readFileSync(new URL("lote1-entrega6-v1.md", PAQUETES), "utf8");
+  RECORTES_MD.push(
+    E2.match(/^\| `t7-2-a1` · .+$/m)[0].replace("| `t7-2-a1` · ", "| Pista · ") + E2.slice(E2.indexOf("\n## t7-2-a1-la-cuenta-que-si-se-mueve · ")),
+    E6.slice(E6.indexOf("\n## t7-2-a2-la-venta-en-dos-asientos · "), E6.indexOf("\n## t7-2-a4-san-calixto · ")),
+  );
+}
+/*
  * Las FUSIONES del lote 1 (entregas 4 y 5 de Near) ganan igual que un
  * recorte: la sección de la pieza que queda trae sus pantallas renumeradas,
  * con sus pistas. La de la entrega 5 lleva un número delante del id; se le
@@ -281,6 +295,8 @@ const CAMBIOS = new Map(RECORTES_MD.flatMap((md) => [...md.matchAll(/^\| (?:Pist
  */
 const MELLO_MD = ["mello-recortes-v1.md", "mello-pistas-distractores-v1.md", "auditoria-mello-a4-v5-y-a3-recomendacion.md"].map((f) => readFileSync(new URL(f, PAQUETES), "utf8")).join("\n");
 const CORRECCIONES_MELLO = [
+  /* Mello, entrega 6 (mello-entregas-4-5-6-v1.md): la pista de `la-compra` que ya había mandado. */
+  ["t7-2-a2-la-venta-en-dos-asientos", "Ahora la empresa usa el permanente. Recuerda qué cuenta deja de estar quieta en este sistema.", "La mercancía que se compra es un activo. En el permanente se anota apenas entra."],
   /* Mello, A3-1 (auditoria-mello-a4-v5-y-a3-recomendacion.md): la pregunta pasa a precios que bajan. */
   ["t7-1-a3-tres-formas", "Mira la tabla anterior: ¿con qué método lo que queda vale menos? Ese costo no desaparece.", "Si los precios bajan, ¿qué método deja en lo que queda los precios más bajos? Los $950.000 no cambian."],
   ["t7-3-descuento-en-dos-libros", "Santa Martha es quien recibe el descuento. Recuerda de qué lado lo anota quien lo recibe.", "Para quien vende, la cuenta fue al debe. Santa Martha está del otro lado del negocio."],

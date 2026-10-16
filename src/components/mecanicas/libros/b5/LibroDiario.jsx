@@ -3,6 +3,7 @@ import { FAE } from "../../../../theme.js";
 import { DEBE, HABER, pesos } from "../../../../data/contabilidad.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
+import { HUNDIDO_B } from "./Devolucion.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -48,7 +49,8 @@ export function LibroDiario({ asientos, abierto, onAlternar, textos, agrupar = f
   /* Agrupar (b5-t6-a3): un asiento con la misma etiqueta que el anterior no la repite ni lleva filete entre los dos. */
   const sigue = (k) => agrupar && k > 0 && k < asientos.length && asientos[k].fecha === asientos[k - 1].fecha;
   return (
-    <div data-libro-diario style={{ marginBottom: "12px", border: `1px solid ${COLOR.neutro}`, borderRadius: "12px" }}>
+    /* Lote 6d: el contenedor hundido de Cuentas (rgba(10,20,34,.45) y 1 px rgba(248,249,250,.12)). */
+    <div data-libro-diario style={{ marginBottom: "12px", ...HUNDIDO_B, borderRadius: "12px" }}>
       <button type="button" data-diario-alternar aria-expanded={abierto} aria-controls={idCuerpo} onClick={onAlternar} style={{
         display: "flex", alignItems: "center", gap: "10px", width: "100%", minHeight: "44px", padding: "0 12px", boxSizing: "border-box",
         background: "transparent", border: "none", borderRadius: "12px", cursor: "pointer", color: FAE.text, textAlign: "left",

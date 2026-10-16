@@ -55,7 +55,8 @@ const C = CIFRAS_H5;
 export const H5 = {
   id: H5_ID,
   nombre: "Flete y devolución",
-  consigna: "Tienes un solo intento por pregunta.",
+  /* Entrega 6 de Near: la consigna dice qué hacer. */
+  consigna: "Para cada hecho, elige la cuenta o calcula lo que se pide. Tienes un solo intento por pregunta.",
   enunciado: [
     "La empresa Mangle usa el sistema de inventario permanente. Mira cuatro hechos de su mes.",
     "En este ejercicio, el IVA es del 16 %, la retención del 3,5 % y la retención por transporte del 1 %. Todas se calculan sobre el valor, sin el IVA.",
@@ -116,10 +117,11 @@ export const ITEMS_H5 = [
     id: "flete-del-vendedor", tipo: "eleccion", hecho: 1, subtema: "Flete del vendedor",
     pregunta: "¿A qué cuenta va este flete?",
     correcta: GASTO_FLETES,
-    acierto: "Así es. Cuando el flete lo asume quien vende, es un gasto de ventas.",
+    /* Entrega 6 de Near: «gasto de venta», como la cuenta (también en sus dos errores). */
+    acierto: "Así es. Cuando el flete lo asume quien vende, es un gasto de venta.",
     distractores: [
-      { valor: INV_FLETES, retro: "Este flete lo asume quien vende, y la mercancía ya salió. Es un gasto de ventas: va a Gasto de venta – fletes." },
-      { valor: CMV, retro: "El costo de la mercancía vendida es lo que costó lo que salió. El flete del envío es un gasto de ventas." },
+      { valor: INV_FLETES, retro: "Este flete lo asume quien vende, y la mercancía ya salió. Es un gasto de venta: va a Gasto de venta – fletes." },
+      { valor: CMV, retro: "El costo de la mercancía vendida es lo que costó lo que salió. El flete del envío es un gasto de venta." },
     ],
   },
   {

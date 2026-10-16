@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { conCorreccionesDeMello } from "./correccionesMello.mjs";
+import { PARCHES, parchado } from "./correccionesMelloRecortesT72.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -44,12 +45,14 @@ const act = React.act;
 const h = React.createElement;
 
 const D = await import("../../data/contabilidadT7_2_h5.js");
+const { FRASE_TARIFAS } = await import("../../data/contabilidadT7_3.js");
 const L = await import("../t7_2H5.js");
 const { DEBE, HABER, pesos } = await import("../../data/contabilidad.js");
 const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await import("../../data/subjects.js");
 const { default: FleteYDevolucion } = await import("../../components/mecanicas/libros/t7/FleteYDevolucion.jsx");
 const { JUEGOS_T7_2, TEMA_T7_2 } = await import("../../components/ContabilidadT7_2View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
+const { firma, textoFigura } = await import("./figuraAcumuladaPrueba.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -97,7 +100,8 @@ const CORRECCIONES = Object.fromEntries(V1.split("\n").filter((l) => l.startsWit
   const [campo, , nuevo] = l.split("\t");
   return [campo.replace("H5 · ", ""), citas(nuevo)[0]];
 }));
-const corregido = (campo, v1) => CORRECCIONES[campo] ?? v1;
+/* Y encima, los parches de la entrega 6 de Near (Mello los da por buenos): la consigna y «gasto de venta». */
+const corregido = (campo, v1) => parchado(CORRECCIONES[campo] ?? v1);
 
 test("★★★ los textos son los de la v1, letra por letra, con la tabla de correcciones aplicada", () => {
   assert.equal(Object.keys(CORRECCIONES).length, 13);
@@ -111,8 +115,11 @@ test("★★★ los textos son los de la v1, letra por letra, con la tabla de co
   const enunciado = V1.slice(V1.indexOf("Enunciado y tarifas\n")).split("\n");
   assert.equal(D.H5.enunciado[0], corregido("enunciado", citas(enunciado[1])[0]));
   assert.equal(D.H5.enunciado[1], citas(enunciado[2])[0]);
-  assert.equal(enunciado[3], `Después va la frase de tarifas literal y «${D.H5.consigna}»`);
-  assert.ok(leer("src/data/contabilidadT7_2_a2.js").includes(`"${D.H5.enunciado[2]}"`), "la frase de tarifas no es la de A2");
+  assert.equal(enunciado[3], `Después va la frase de tarifas literal y «${PARCHES.h5Consigna.viejo}»`);
+  assert.equal(D.H5.consigna, parchado(PARCHES.h5Consigna.viejo));
+  assert.equal(D.H5.consigna, "Para cada hecho, elige la cuenta o calcula lo que se pide. Tienes un solo intento por pregunta.");
+  /* La frase de tarifas literal: la de la célula (A2 la dejó con su recorte: ya no da tarifas). */
+  assert.equal(D.H5.enunciado[2], FRASE_TARIFAS, "la frase de tarifas no es la de la célula");
   /* Los cuatro hechos. */
   const hechos = V1.split("\n").filter((l) => /^Hecho \d: «/.test(l)).map((l) => citas(l)[0]);
   assert.equal(hechos.length, 4);
@@ -137,8 +144,11 @@ test("★★★ los textos son los de la v1, letra por letra, con la tabla de co
   assert.deepEqual(i6.lineas.map((l) => [`${l.cuenta} ${pesos(l.valor)}`, l.lado === DEBE ? "Debe" : "Haber", l.retro]), lineas.map(([a, b, c]) => [a, b, citas(c)[0]]));
   /* Las trece correcciones están todas, y ya no queda Ceiba ni «lo paga quien». */
   const todo = JSON.stringify(D);
-  for (const [campo, nuevo] of Object.entries(CORRECCIONES)) assert.ok(todo.includes(JSON.stringify(nuevo).slice(1, -1)), campo);
+  for (const [campo, nuevo] of Object.entries(CORRECCIONES)) assert.ok(todo.includes(JSON.stringify(parchado(nuevo)).slice(1, -1)), campo);
   assert.ok(!todo.includes("Ceiba") && !/lo paga quien|paga el flete/.test(todo));
+  /* «Gasto de venta», un solo nombre (entrega 6): ya no queda «gasto de ventas». */
+  assert.doesNotMatch(todo, /gasto de ventas/i);
+  for (const k of ["h5Acierto", "h5Inventario", "h5Costo"]) assert.ok(todo.includes(JSON.stringify(PARCHES[k].nuevo).slice(1, -1)), k);
 });
 
 /* ═══════════ 3 · LA MECÁNICA, MONTADA ═══════════ */
@@ -372,6 +382,43 @@ test("★★★ lote 3: si la cuenta es la buena y falla el lado, sale la retroa
     }
     await tocar(boton(m.caja, "Comprobar"));
     for (const l of it.lineas) assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), l.id === "costo" ? [item("devolucion-de-ventas").lineas.find((x) => x.id === l.id).retro] : []);
+  } finally {
+    m.desmontar();
+  }
+});
+
+/* ═══════════ LOTE 5 · LA FIGURA ACUMULADA ═══════════ */
+
+test("★★★ lote 5: lo de cada hecho se suma al cerrar su ítem, con las cuentas de los datos; el asiento del hecho 4 al final", async () => {
+  const c = (id) => item(id).correcta;
+  const r = [
+    `[Hecho 1] ${c("flete-del-comprador")}`,
+    `[Hecho 1] ${c("flete-del-comprador")} 376.200`,
+    `[Hecho 1] ${c("flete-del-comprador")} 376.200 [Hecho 2] ${c("flete-del-vendedor")}`,
+    `[Hecho 1] ${c("flete-del-comprador")} 376.200 [Hecho 2] ${c("flete-del-vendedor")} [Hecho 3] ${c("devolucion-de-compras")}`,
+    `[Hecho 1] ${c("flete-del-comprador")} 376.200 [Hecho 2] ${c("flete-del-vendedor")} [Hecho 3] ${c("devolucion-de-compras")} 922.500`,
+  ];
+  const despues = [[r[0]], [r[1]], [r[2]], [r[3]], [r[4]], [r[4], "asiento Hecho 4: 2 líneas"]];
+  const m = await montar();
+  try {
+    for (const [k, it] of EN_ORDEN.entries()) {
+      assert.deepEqual(firma(m.caja), k ? despues[k - 1] : [], `antes del ítem ${k + 1}`);
+      const falla = k % 2 === 1;
+      if (it.tipo === "eleccion") {
+        await tocar(opcion(m.caja, falla ? it.distractores[0].valor : it.correcta));
+      } else if (it.tipo === "cifra") {
+        assert.ok(!textoFigura(m.caja).includes(miles(it.correcta)), "E8");
+        await escribir(m.caja, it.id, falla ? it.distractores[0].valor : it.correcta);
+        await tocar(boton(m.caja, "Comprobar"));
+      } else {
+        for (const l of it.lineas) { await tocar(ficha(m.caja, l.id, l.cuenta)); await tocar(lado(m.caja, l.id, falla ? otro(l.lado) : l.lado)); }
+        assert.deepEqual(firma(m.caja), despues[k - 1], "el asiento no está antes de comprobar");
+        await tocar(boton(m.caja, "Comprobar"));
+      }
+      assert.deepEqual(firma(m.caja), despues[k], `al cerrar el ítem ${k + 1}`);
+      await tocar(boton(m.caja, k === EN_ORDEN.length - 1 ? D.BOTON_H5.verResumen : D.BOTON_H5.siguiente));
+    }
+    assert.equal(m.caja.querySelector("[data-figura-acumulada]"), null);
   } finally {
     m.desmontar();
   }

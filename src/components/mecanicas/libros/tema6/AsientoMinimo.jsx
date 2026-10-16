@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { CUENTA_T_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
 import { OPCIONES_T6_ACT4, SE_ACREDITA_T6_ACT4 } from "../../../../data/contabilidadT6Act4.js";
-import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES } from "./MaquinaPegada.jsx";
+import { SORA, INTER, TEXTO, SECUNDARIO } from "./MaquinaPegada.jsx";
+import { HUNDIDO_B, ACIERTO_B } from "../b5/Devolucion.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -21,7 +22,7 @@ import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES } from "./MaquinaPeg
  *     entra al DEBE;
  *   · una incorrecta que no está en el asiento ya no entra ni se va (E4, hoja
  *     de fusiones de Mai: «ya nada entra y se va»): entran de una vez la
- *     correcta y la contrapartida, y la elegida se queda ✕ en su fila.
+ *     correcta y la contrapartida, y la elegida se queda «No va aquí» en su fila.
  * Con movimiento reducido, el asiento final de una vez.
  *
  * Las dos ranuras reservan el alto del nombre más largo que puede caer en
@@ -62,7 +63,8 @@ function Ranura({ lado, cuenta, encendida, reducido }) {
     <div data-ranura={lado} {...(encendida ? { "data-encendida": "" } : {})} style={{
       /* El borde de 2 se come 1 px del relleno: encendida o no, la ranura mide lo mismo. */
       display: "grid", minHeight: "44px", boxSizing: "border-box", padding: encendida ? "5px 7px" : "6px 8px", borderRadius: "10px",
-      border: `${encendida ? 2 : 1}px solid ${encendida ? NODO : ATENUADO}`, background: encendida ? NAVY : "transparent",
+      /* Lote 6d: la ranura activa, 2 px #F8F9FA y sin relleno navy. */
+      border: encendida ? ACIERTO_B : `1px solid ${ATENUADO}`, background: "transparent",
       textAlign: lado === "debe" ? "left" : "right", alignItems: "center",
     }}>
       {/* La reserva: todos los nombres que pueden caer aquí, apilados e invisibles, dan el alto. */}
@@ -97,7 +99,8 @@ export default function AsientoMinimo({ hecho, elegida, reducido }) {
   }, [clave, conTrayecto]);
   const a = asientoDe(hecho, elegida, fase);
   return (
-    <div data-asiento-minimo data-caso={a.caso ?? ""} style={{ margin: "0 0 12px", padding: "8px 10px 10px", borderRadius: "12px", border: `1px solid ${BORDES}` }}>
+    /* Lote 6d: la tabla del asiento va en el hundido de Cuentas. */
+    <div data-asiento-minimo data-caso={a.caso ?? ""} style={{ margin: "0 0 12px", padding: "8px 10px 10px", borderRadius: "12px", ...HUNDIDO_B }}>
       <style>{"@keyframes b5-entra { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }"}</style>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "8px" }}>
         {["debe", "haber"].map((lado) => (

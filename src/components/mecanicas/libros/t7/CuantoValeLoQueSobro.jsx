@@ -11,6 +11,8 @@ import { Encabezado } from "../tema1/encabezado.jsx";
 import { Plegable } from "./plegable.jsx";
 import { ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
+import FiguraAcumulada from "./FiguraAcumulada.jsx";
+import { FIGURA_T7_1_H3, cerradosDe } from "../../../../contabilidad/figuraAcumulada.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -28,6 +30,9 @@ import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
  *
  * Al terminar: onCompletar(pct, ms, detalle). Evaluativa: el motor escala los
  * 25 FP con el porcentaje, con piso del 50 %.
+ *
+ * LOTE 5 (L): arriba del ítem, la figura acumulada (FiguraAcumulada.jsx): la
+ * tabla de los tres métodos se llena con cada respuesta y se queda.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -115,6 +120,7 @@ export default function CuantoValeLoQueSobro({ Marco, rotulo, titulo, acento, on
         <Encabezado consigna={sinUnSoloIntento(H3.consigna)} onComoSeJuega={onComoSeJuega} />
         <p data-entrada style={{ ...TEXTO, fontSize: "14px", lineHeight: "21px", margin: "0 0 8px" }}>{H3.entrada}</p>
         <Ficha />
+        <FiguraAcumulada figura={FIGURA_T7_1_H3} cerrados={cerradosDe(t.i, Boolean(r))} listo={Boolean(r)} />
         <div style={{ marginBottom: "12px" }}>
           <ContadorConIntento>
             <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
