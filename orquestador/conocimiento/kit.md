@@ -544,6 +544,34 @@ construido y servido**, a 320 px: `scripts/piso-de-12.mjs`.
 | T6 Aprender | 2 | 10,5 px |
 | T1 Hacer | 1 | 10,5 px |
 
+### Vuelta a medir el 16 de octubre, con las rutas de los juegos
+
+**182 textos bajo 12 px en 26 pantallas de 18 rutas.** La cuenta sube porque
+ahora se recorren también los juegos de B, no porque haya empeorado.
+
+Lo que importa de esa medida no es el 182 sino el reparto: **94 tienen forma
+de cejilla** —rótulo cuyo contenido se explica solo debajo, que es la
+excepción de esta misma nota— y **88 no**. Y esos 88 se reducen a **unos 20
+textos distintos que se repiten de pantalla en pantalla**, todos en T1, T2 y
+T3 Aprender:
+
+| qué es | tamaño | dónde |
+|---|---|---|
+| «Toma una ficha y suéltala…», la instrucción del gesto | **10 px** | T2, Explora una cuenta |
+| las líneas del estado de flujo («Actividades de operación», «Utilidad neta») | 10,5 px | T1, escenas |
+| los nombres de cuenta apilados | 11 px | T2, Seis cuentas abiertas |
+| «Activo, Pasivo, Patrimonio» / «Ingresos, Gastos, Costos» | 11 px | T1, escenas |
+| «Cierre» sobre el calendario | 11 px | T3, Dos líneas |
+| los contadores «Paso 1 de 4», «Segmento 1 de 5» | 11,5 px | T2, Mesa de dos casos |
+
+Ninguno desborda y ninguna pantalla trae scroll horizontal: subirlos es
+cambiar el tamaño, no rehacer la maqueta. El de 10 px es el que más duele:
+es la instrucción que dice qué hacer, no un rótulo.
+
+Dos cosas que la sonda no midió y hay que decir: `b5-t6-a2`, `b5-t6-a3` y
+`b5-t6-a5` no se pudieron jugar (se agotó el tiempo al tocar), así que de
+esas tres no hay dato. No medido no es lo mismo que limpio.
+
 **Por qué el `grep` no llega**, y es la razón de fondo para medir:
 
 - un tamaño **heredado** no está en el archivo del texto: el `span` que se lee
