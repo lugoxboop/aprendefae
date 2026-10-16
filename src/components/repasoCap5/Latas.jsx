@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { C, INTER } from "./comun.jsx";
+import { C, INTER, CIFRA, HUNDIDO } from "./comun.jsx";
 import { OpcionR5 } from "./OpcionR5.jsx";
 import { pesos } from "../../data/contabilidad.js";
 import { INTERFAZ_R5_1, costoDeLatas, textoDeOpcion } from "../../data/repasoCap5Cruzado.js";
@@ -50,7 +50,7 @@ function Barra({ id, rotulo, valor, escala, relleno, ueps, conUeps, reducido }) 
     <div data-barra-latas={id} style={{ marginTop: id === "costo" ? 0 : "12px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "8px", minHeight: "20px" }}>
         <span style={{ fontFamily: INTER, fontSize: "13px", color: C.atenuado }}>{rotulo}</span>
-        <span data-valor-barra={valor} style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>{pesos(valor)}</span>
+        <span data-valor-barra={valor} style={{ ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto }}>{pesos(valor)}</span>
       </div>
       {/* Con «Con UEPS» encima, la barra baja para que el rótulo no pise el renglón. */}
       <div style={{ position: "relative", height: "10px", marginTop: ueps !== null && conUeps ? "24px" : "6px" }}>
@@ -155,7 +155,7 @@ export function Latas({ pantalla, onCalificar }) {
   return (
     <div data-pantalla-latas>
       <style>{"@keyframes r5-aparece { from { opacity: 0; } to { opacity: 1; } }"}</style>
-      <div ref={figura} data-figura="latas" data-vendidas={vendidas.length} onClick={() => terminarAnimaciones(figura.current)} style={{ background: C.navy, borderRadius: "12px", padding: "12px" }}>
+      <div ref={figura} data-figura="latas" data-vendidas={vendidas.length} onClick={() => terminarAnimaciones(figura.current)} style={{ ...HUNDIDO, borderRadius: "12px", padding: "12px" }}>
         {compras.map((c) => (
           <div key={c.id} data-estante={c.id} style={{ marginBottom: "8px" }}>
             <p style={MARCA_CONTENIDO}>{INTERFAZ_R5_1.marcaCompra(c.marca, c.precio)}</p>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { C, INTER, SORA, ESTADOS, PUNTOS } from "./comun.jsx";
+import { C, INTER, SORA, CIFRA, ESTADOS, REPOSO, Pastilla, Comprobar, useTrasError } from "./comun.jsx";
 import { pesos } from "../../data/contabilidad.js";
 import { INTERFAZ_R5_1, CMV, BOTONES_C8, contadorDeC8, evaluarC8, respuestaDeC8 } from "../../data/repasoCap5Cruzado.js";
 import { useCifra } from "./movimiento.js";
@@ -20,31 +20,31 @@ import { useCifra } from "./movimiento.js";
  * «Revisar». La lista lleva un relleno inferior igual al alto del contador.
  * «Revisar» se activa con las seis fichas puestas.
  *
- * Se califica por clasificación (decisión 5). Ficha bien: el botón elegido
- * conserva su relleno, con un punto y «Bien». Ficha mal: el botón elegido
- * PIERDE el relleno y queda con borde coral, un anillo y «Era …» (§e).
+ * Se califica por clasificación (decisión 5), al estándar único de Hacer
+ * (PROMPT MAESTRO §4): la ficha va sobre el Panel con su contorno de reposo;
+ * los botones, sin relleno. Ficha bien: el elegido con 2 px #F8F9FA y la
+ * pastilla «Correcto». Ficha mal: el elegido con 2 px coral y «No va aquí», y
+ * 0,7 s después el que iba, con 2 px #F8F9FA e «Iba aquí» (r5-1 no tiene
+ * reintento).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 const CONTADOR = 64;
-const ERA = INTERFAZ_R5_1.era;
 const NOMBRE = { suma: INTERFAZ_R5_1.suma, resta: INTERFAZ_R5_1.resta, fuera: INTERFAZ_R5_1.noEntra };
 
-function estiloBoton(elegido, calif) {
+/* El botón: reposo 1 px; elegido o bien 2 px #F8F9FA; mal 2 px coral; el que iba, 2 px #F8F9FA (comun.jsx). */
+function estiloBoton(estado, calificada) {
   const base = {
-    flex: 1, minWidth: 0, minHeight: "44px", padding: "0 6px", borderRadius: "10px", boxSizing: "border-box",
-    display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
-    fontFamily: INTER, fontSize: "14px", fontWeight: 600, cursor: calif ? "default" : "pointer",
+    flex: 1, minWidth: 0, minHeight: "44px", padding: "4px 6px", borderRadius: "10px", boxSizing: "border-box",
+    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "2px",
+    fontFamily: INTER, fontSize: "14px", fontWeight: 600, color: C.texto, cursor: calificada ? "default" : "pointer",
   };
-  if (!elegido) return { ...base, background: "transparent", border: `1.5px solid ${C.atenuado}`, color: C.texto };
-  /* Los bordes de la calificación, los comunes del repaso (comun.jsx); el elegido bien conserva su relleno (§e). */
-  if (calif === "mal") return { ...base, background: "transparent", border: ESTADOS.mal.border, color: C.texto };
-  if (calif === "bien") return { ...base, background: C.hecho, border: ESTADOS.ok.border, color: C.fondo };
-  return { ...base, background: C.hecho, border: `1.5px solid ${C.hecho}`, color: C.fondo };
+  return { ...base, ...(ESTADOS[estado] ?? ESTADOS.reposo) };
 }
 
 function Ficha({ dato, elegido, calif, onElegir, botonesRef }) {
   const fuera = elegido === "fuera";
+  const revela = useTrasError(calif === "mal");
   const nombre = INTERFAZ_R5_1.grupo(dato.etiqueta, dato.valor);
   /* El grupo de opciones: las flechas cambian dentro del grupo; Tab pasa a la ficha siguiente. */
   const teclas = (e, k) => {
@@ -58,17 +58,18 @@ function Ficha({ dato, elegido, calif, onElegir, botonesRef }) {
   };
   const conFoco = elegido ?? BOTONES_C8[0].id;
   return (
-    <div data-ficha={dato.id} data-calificacion={calif ?? "sin"} style={{ background: C.navy, borderRadius: "10px", padding: "12px", marginTop: "8px" }}>
+    <div data-ficha={dato.id} data-calificacion={calif ?? "sin"} style={{ border: REPOSO, borderRadius: "10px", padding: "12px", marginTop: "8px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "8px" }}>
         <span style={{ fontFamily: INTER, fontSize: "14px", lineHeight: "20px", color: C.texto }}>{dato.etiqueta}</span>
-        <span data-cifra-ficha style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: fuera ? C.atenuado : C.texto, whiteSpace: "nowrap" }}>
+        <span data-cifra-ficha style={{ ...CIFRA, fontSize: "15px", fontWeight: 600, color: fuera ? C.atenuado : C.texto, whiteSpace: "nowrap" }}>
           {pesos(dato.valor)}
         </span>
       </div>
       <div role="radiogroup" aria-label={nombre} style={{ display: "flex", gap: "4px", marginTop: "8px" }}>
         {BOTONES_C8.map((b, k) => {
           const es = elegido === b.id;
-          const marca = es && calif;
+          const iba = calif === "mal" && revela && b.id === dato.correcto;
+          const estado = es ? (calif === "bien" ? "ok" : calif === "mal" ? "mal" : "ok") : iba ? "revelada" : null;
           return (
             <button
               key={b.id}
@@ -82,24 +83,18 @@ function Ficha({ dato, elegido, calif, onElegir, botonesRef }) {
               data-elegido={es ? "si" : "no"}
               onClick={() => { if (!calif) onElegir(b.id); }}
               onKeyDown={(e) => teclas(e, k)}
-              style={estiloBoton(es, es ? calif : null)}
+              data-estado-ficha={estado ?? "reposo"}
+              style={estiloBoton(estado, Boolean(calif))}
             >
-              {marca && (
-                <span
-                  aria-hidden="true"
-                  data-forma-ficha={calif === "bien" ? "punto" : "anillo"}
-                  /* §e: el anillo es el del error común (PUNTOS); el punto, oscuro sobre el relleno claro. */
-                  style={{ width: "8px", height: "8px", borderRadius: "50%", boxSizing: "border-box", flexShrink: 0, ...(calif === "bien" ? { background: C.fondo } : PUNTOS.error) }}
-                />
-              )}
               {NOMBRE[b.id]}
+              {iba && <Pastilla estado="revelada" />}
             </button>
           );
         })}
       </div>
       {calif && (
-        <p data-palabra-ficha={calif} style={{ margin: "6px 0 0", textAlign: "right", fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px", color: C.texto }}>
-          {calif === "bien" ? INTERFAZ_R5_1.bien : ERA[calif === "mal" ? dato.correcto : ""]}
+        <p data-palabra-ficha={calif} style={{ margin: "6px 0 0", display: "flex", justifyContent: "flex-end" }}>
+          <Pastilla estado={calif === "bien" ? "ok" : "mal"} />
         </p>
       )}
     </div>
@@ -145,7 +140,7 @@ function Contador({ valor, listaRef }) {
           ...(fijo ? { position: "fixed", bottom: 0, left: `${fijo.left}px`, width: `${fijo.width}px`, zIndex: 20 } : { position: "relative" }),
           height: `${CONTADOR}px`, boxSizing: "border-box", padding: "0 16px",
           display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
-          background: C.fondo, borderTop: `1px solid ${C.navy}`,
+          background: C.fondo, borderTop: "1px solid rgba(248,249,250,0.12)",
         }}
       >
         <span style={{ fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: C.atenuado }}>{CMV}</span>
@@ -192,19 +187,8 @@ export function Fichas({ pantalla, onCalificar }) {
         </div>
         <Contador valor={contadorDeC8(pantalla, clasificacion)} listaRef={lista} />
       </div>
-      <button
-        type="button"
-        data-revisar
-        disabled={!listas || Boolean(r)}
-        onClick={revisar}
-        style={{
-          marginTop: "16px", width: "100%", minHeight: "44px", borderRadius: "999px", border: "none",
-          background: C.ambar, color: C.navy, fontFamily: SORA, fontSize: "14px", fontWeight: 700,
-          opacity: listas && !r ? 1 : 0.45, cursor: listas && !r ? "pointer" : "default",
-        }}
-      >
-        {INTERFAZ_R5_1.revisar}
-      </button>
+      {/* §4.3: «Comprobar», porque son seis fichas; el Responder común. */}
+      {!r && <Comprobar activo={listas} onClick={revisar} dato="revisar" />}
     </div>
   );
 }

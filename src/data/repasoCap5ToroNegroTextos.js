@@ -74,7 +74,9 @@ export const ETAPAS = [
 /* ═══════════ LOS TEXTOS DE INTERFAZ DEL DISEÑO (rótulos: no se miden con INFLESZ) ═══════════ */
 
 export const ROTULOS_R5_2 = {
-  progreso: (n, total) => `PREGUNTA ${n} DE ${total}`,
+  /* §4.3: «Paso n de N» (los pasos de un solo caso); el mismo sustantivo en el botón de avance. */
+  sustantivo: "Paso",
+  progreso: (n, total) => `Paso ${n} de ${total}`,
   debe: "DEBE",
   haber: "HABER",
   valor: "VALOR",
@@ -82,21 +84,18 @@ export const ROTULOS_R5_2 = {
   cuentaDel: { debe: "CUENTA DEL DEBE", haber: "CUENTA DEL HABER" },
   enElOtro: { debe: "EN EL DEBE", haber: "EN EL HABER" },
   cerrar: "Cerrar",
-  revisarAsiento: "Revisar asiento",
-  revisarSaldo: "Revisar saldo",
+  revisarAsiento: "Comprobar",
+  revisarSaldo: "Comprobar",
   ladoDelSaldo: "LADO DEL SALDO",
   /*
    * v2.1 (autodiagnóstico): después de revisar, cada pieza dice con palabras
    * si quedó bien. Antes solo lo decía el color del borde (D12).
    */
-  veredicto: {
-    /* Cuenta y valor, los del repaso entero (repasoCap5Comun.js). */
-    ...VEREDICTO,
-    lado: { ok: "Lado correcto", mal: "No es este lado" },
-  },
+  /* §4.2: cuenta, valor y lado dicen las mismas tres palabras (repasoCap5Comun.js). */
+  veredicto: VEREDICTO,
   debito: "DÉBITO",
   credito: "CRÉDITO",
-  eraEste: "ERA ESTE",
+  eraEste: "Iba aquí",
   tituloLibro: "Provisión para deudas incobrables",
   sinMovimientos: "Sin movimientos",
   saldoDebito: "SALDO DÉBITO",
@@ -104,7 +103,6 @@ export const ROTULOS_R5_2 = {
   sinSaldo: "SIN SALDO",
   tituloCorte: "Así queda la provisión",
   casoEnTresTiempos: "EL CASO EN TRES TIEMPOS",
-  siguiente: "Siguiente",
   nDeM: (n, m) => `${n} de ${m}`,
 };
 
@@ -188,9 +186,9 @@ export const ROTULOS_A0 = {
   marcador: "Provisión",
   total: "Provisión total",
   cifrasEnPesos: "CIFRAS EN PESOS",
-  revisar: "Revisar cálculo",
-  correcta: "Correcta",
-  era: (cifra) => `Era ${cifra}`,
+  revisar: "Comprobar",
+  correcta: "Correcto",
+  era: (cifra) => `Iba aquí: ${cifra}`,
 };
 
 const ASIENTO_1 = {
