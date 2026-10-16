@@ -40,7 +40,7 @@ export const SALDO_INICIAL_H1 = 400_000;
 export const H1 = {
   id: H1_ID,
   nombre: "¿Entra o sale de Caja?",
-  objetivo: "Decidir, ante cada hecho, si Caja va al debe, va al haber o no se mueve.",
+  objetivo: "Decidir qué mueve Caja.",
   consigna: "La caja de un taller tiene 400.000. Manda cada hecho al debe, al haber o a «Caja no se mueve».",
 };
 

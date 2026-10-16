@@ -38,7 +38,7 @@ export const H3_ID = "t4-se-mueve-la-caja-menor";
 export const H3 = {
   id: H3_ID,
   nombre: "¿Se mueve la caja menor?",
-  objetivo: "Armar el asiento de cada movimiento de la caja menor y saber cuándo se mueve su cuenta.",
+  objetivo: "Asentar el fondo de caja menor.",
   consigna: "Pon el monto en la cuenta que va al debe y en la que va al haber.",
 };
 
