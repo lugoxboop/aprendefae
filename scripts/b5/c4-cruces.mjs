@@ -63,7 +63,7 @@ const B = (await Promise.all(B_MODULOS.map(textosDeModulo))).flat();
 const T3 = (await Promise.all(T3_MODULOS.map(textosDeModulo))).flat();
 const T4 = [...(await Promise.all(T4_MODULOS.map(textosDeModulo))).flat(), ...T4_PAQUETES.flatMap(textosDePaquete)];
 
-const plano = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9$.\s]/g, " ").replace(/\s+/g, " ").trim();
+const plano = (s) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9$.\s]/g, " ").replace(/\s+/g, " ").trim();
 const palabras = (s) => plano(s).split(" ").filter((w) => w && !/^[.$]+$/.test(w));
 const tejas = (s, n = 5) => { const w = palabras(s); const r = new Set(); for (let i = 0; i + n <= w.length; i++) r.add(w.slice(i, i + n).join(" ")); return r; };
 /* Las frases de 5 palabras que no dicen nada de un ejemplo (rótulos de interfaz, fórmulas del libro). */
