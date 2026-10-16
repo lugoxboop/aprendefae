@@ -265,12 +265,19 @@ test("★★★ gesto mínimo, fase 2: cada cifra de error de cada serie se escr
           assert.equal(marca, v === bien ? "Correcto" : "No va aquí", `${campo}: la marca de cifra`);
           /* «Iba aquí» todavía no: llega a los 0,7 s. */
           assert.equal(q(m, `[data-iba="${campo}"]`), null, `${campo}: «Iba aquí» antes de tiempo`);
+          /* Su hueco, reservado desde el error con el alto de dos renglones: nada salta a los 0,7 s (Shibukawa; Yujiro). */
+          assert.equal(Boolean(q(m, `[data-campo="${campo}"] .t4cp-iba[data-reserva]`)), v !== bien, `${campo}: el hueco de «Iba aquí»`);
         }
         await esperar(ESPERA_ERROR_MS + 50);
         for (const [campo, v, bien] of [["banco", b, s.conciliadoBanco], ["libros", l, s.conciliadoLibros]]) {
           const iba = q(m, `[data-iba="${campo}"]`);
           if (v === bien) assert.equal(iba, null, `${campo}: «Iba aquí» en un campo bien escrito`);
-          else assert.equal(iba?.textContent, `Iba aquí: $${cifra(bien)}`, `${campo}: «Iba aquí: {valor}» bajo el campo errado`);
+          else {
+            assert.equal(iba?.textContent, `Iba aquí: $${cifra(bien)}`, `${campo}: «Iba aquí: {valor}» bajo el campo errado`);
+            /* Dos piezas que no se parten por dentro: si no cabe, «Iba aquí:» arriba y la cifra abajo. */
+            assert.deepEqual([...iba.querySelectorAll(".t4r-marca > span")].map((x) => x.textContent), ["Iba aquí:", `$${cifra(bien)}`]);
+            assert.ok(iba.matches(".t4cp-iba[data-reserva]"), `${campo}: «Iba aquí» fuera de su hueco`);
+          }
         }
       } finally { m.desmontar(); }
     }
@@ -408,4 +415,14 @@ test("★★★ en la página del juego hay exactamente UN [data-t4-h7]: la part
     assert.equal(m.caja.querySelectorAll("[data-t4-h7]").length, 1);
     assert.equal(m.caja.querySelectorAll("[data-t4-h7-demo]").length, 1);
   } finally { m.desmontar(); }
+});
+
+test("★★★ «Iba aquí: {valor}» parte en dos renglones si no cabe en su columna, con la letra a 12 px y su hueco reservado a dos renglones", async () => {
+  const { CSS_TABLERO } = await import("../../components/t4/tablero.jsx");
+  const regla = (sel) => CSS_TABLERO.match(new RegExp(`${sel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} \\{([^}]*)\\}`))?.[1] ?? "";
+  assert.match(regla(".t4cp-iba .t4r-marca"), /flex-wrap: wrap/);
+  assert.match(regla(".t4cp-iba .t4r-marca"), /white-space: normal/);
+  assert.doesNotMatch(regla(".t4cp-iba .t4r-marca"), /font/, "la pastilla cambia de letra");
+  assert.match(regla(".t4cp-iba .t4r-marca > span"), /white-space: nowrap/);
+  assert.match(regla(".t4cp-iba[data-reserva]"), /min-height: 40px/);
 });
