@@ -14,7 +14,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 export const w = dom.window;
 let reducido = false;
-export const movimientoReducido = (si) => { reducido = si; };
+export const movimientoReducido = (si) => { const antes = reducido; reducido = si; return antes; };
 w.matchMedia = (q) => ({ matches: q.includes("reduce") ? reducido : false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
 w.requestAnimationFrame = (f) => setTimeout(() => f(performance.now()), 0);
 w.cancelAnimationFrame = (id) => clearTimeout(id);

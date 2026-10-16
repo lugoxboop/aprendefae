@@ -225,3 +225,16 @@ test("★★★ la vista montada: cabecera con el título; Aprender con A0 y A1 
     } finally { m.desmontar(); }
   }
 });
+
+test("★★★ ningún texto de T4 queda «[ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN]»: todo lo que ve u oye el estudiante lo revisó Katsumi", () => {
+  const raiz = new URL("../../../", import.meta.url);
+  const archivos = [
+    ...readdirSync(new URL("src/data/", raiz)).filter((f) => /^(contabilidadT4|asiSeJuegaT4)/.test(f)).map((f) => `src/data/${f}`),
+    ...readdirSync(new URL("src/components/t4/", raiz)).map((f) => `src/components/t4/${f}`),
+    "src/components/ContabilidadT4View.jsx",
+  ];
+  assert.ok(archivos.length >= 8, "no se encontraron los archivos de T4");
+  const MARCA_PENDIENTE = /ESCRITO POR CLAUDE\s*[—-]\s*PENDIENTE DE REVISI[ÓO]N/;
+  const con = archivos.filter((f) => MARCA_PENDIENTE.test(readFileSync(new URL(f, raiz), "utf8")));
+  assert.deepEqual(con, [], "archivos de T4 con textos sin revisar");
+});

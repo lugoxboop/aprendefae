@@ -126,6 +126,14 @@ function medir({ raiz }) {
       }
     }
   }
+  /* Una pastilla con palabra no puede salirse de la casilla o del destino que marca (no puede cruzar la raya ni el borde). */
+  for (const mk of sec.querySelectorAll(".t4r-marca")) {
+    if (!veo(mk)) continue;
+    const caja = mk.closest("button, [data-destino], [data-seg], [data-bandeja]");
+    if (!caja) continue;
+    const a = mk.getBoundingClientRect(), b = caja.getBoundingClientRect();
+    if (a.left < b.left - 0.5 || a.right > b.right + 0.5 || a.top < b.top - 0.5 || a.bottom > b.bottom + 0.5) desborda.push(`pastilla «${mk.textContent.trim()}» fuera de su casilla [${r2(a.left - b.left)}, ${r2(b.right - a.right)}]`);
+  }
   const fuentes = document.fonts.check("15px Inter") && document.fonts.check("600 13px Sora");
   return { sw: document.documentElement.scrollWidth, vw: innerWidth, desborda, desbordaCompartido, partidos, chicos, chicosCompartidos, fuentes, alto: r2(sr.height) };
 }

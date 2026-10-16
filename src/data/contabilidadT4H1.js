@@ -53,7 +53,7 @@ export const DESTINOS_H1 = [
 
 export const SUBTEMAS_H1 = ["Entradas a Caja", "Salidas de Caja", "Caja o Bancos", "Caja frente a ingresos"];
 
-/* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] Textos de interfaz que el paquete no trae (los de los Hacer de T7). */
+/* Los botones de H1, los mismos de los Hacer (aprobados por Katsumi, «Pendientes del #260»). */
 export const BOTON_H1 = { siguiente: "Siguiente hecho", verResumen: "Ver mi resumen", otraVez: "Otra vez" };
 export const resumenH1 = (bien, cuantos) => `${bien} de ${cuantos} al primer toque.`;
 
