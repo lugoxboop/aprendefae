@@ -29,11 +29,20 @@
  * Las pantallas con pregunta no muestran «Seguir» sin el acierto (D7), así
  * que la guardia juega el plan de cada pantalla antes de seguir.
  *
+ * Y E2 de los Hacer (decisión de Yujiro sobre la parada de medición del bloque
+ * P2 de Hanayama, con la revisión de hanayama-p2-lote-b.md §6): en las mismas
+ * dos ventanas, cada tarjeta de cada Hacer se juega bien y mal con la clave de
+ * la sonda (enganche_clave.mjs, con el gesto del estudiante: cada control
+ * pegado al borde de abajo antes de tocarlo), y con la vista quieta y lo que
+ * iba ya escrito, la pastilla tocada más alta queda con su tope dentro de la
+ * ventana y el pie de la devolución también: las dos A LA VEZ.
+ *
  * Sale con código 1 si algo falla. Necesita Playwright.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { createServer } from "vite";
 import { createRequire } from "node:module";
+import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -200,6 +209,91 @@ for (const ventana of E2_VENTANAS) {
   await pg.close();
 }
 filas.push(...filasE2);
+
+/* ═══════════ E2 DE LOS HACER: LA PASTILLA TOCADA Y LA DEVOLUCIÓN, A LA VEZ ═══════════ */
+const CLAVE = JSON.parse(execFileSync(process.execPath, [resolve(RAIZ, "scripts/t4/sonda-enganche/enganche_clave.mjs"), RAIZ], { encoding: "utf8" }));
+const SIGLA = { "t4-entra-o-sale-de-caja": "H1", "t4-se-mueve-la-caja-menor": "H3", "t4-el-arqueo-de-rosa": "H4", "t4-concilia-la-cuenta": "H7", "t4-se-asienta-o-no": "H8" };
+const ESPERA_REVELA = 700 + 900;
+/* En la página: la caja de un elemento contra la ventana. */
+const caja = (el) => { if (!el) return null; const r = el.getBoundingClientRect(); return { top: Math.round(r.top * 10) / 10, bottom: Math.round(r.bottom * 10) / 10 }; };
+const filasE2H = [];
+for (const ventana of E2_VENTANAS) {
+  const pg = await navegador.newPage({ viewport: ventana, deviceScaleFactor: 2 });
+  await pg.goto(BASE);
+  await pg.waitForSelector("[data-pieza]", { timeout: 120000 });
+  const harness = await pg.evaluate(async () => (await (await fetch("/scripts/t4/harness-t4/main.jsx")).text()));
+  for (const [id, s] of Object.entries(SIGLA)) {
+    const K = CLAVE[s];
+    const hash = harness.match(new RegExp(`"(#h\\d)": "${id}"`))?.[1];
+    if (!K || !hash) { fallos.push(`E2 · ${id}: sin clave o sin #hN en el banco`); continue; }
+    const R = `[data-t4-${s.toLowerCase()}]`;
+    await pg.goto(`${BASE}${hash}`);
+    await pg.reload();
+    await pg.waitForSelector("[data-partida]", { state: "attached", timeout: 120000 });
+    for (const b of await pg.$$("button")) if ((await b.textContent())?.trim() === "Siguiente") { await b.click(); break; }
+    await pg.waitForSelector(R, { timeout: 30000 });
+    for (const modo of ["bien", "mal"]) {
+    if (modo === "mal") {
+      await pg.goto(`${BASE}${hash}`);
+      await pg.reload();
+      await pg.waitForSelector("[data-partida]", { state: "attached", timeout: 120000 });
+      for (const b of await pg.$$("button")) if ((await b.textContent())?.trim() === "Siguiente") { await b.click(); break; }
+      await pg.waitForSelector(R, { timeout: 30000 });
+    }
+    let n = 0;
+    for (let vuelta = 0; vuelta < 40; vuelta++) {
+      const estado = await pg.evaluate((R) => { const r = document.querySelector(R); return r && !r.hasAttribute("data-fin") ? { e: r.dataset.etapa ?? r.dataset.fase ?? "", serie: r.dataset.serie ?? "", campos: r.querySelectorAll("[data-campo] input").length } : null; }, R);
+      if (!estado) break;
+      n += 1;
+      const tocar = async (sel) => {
+        await pg.$eval(`${R} ${sel}`, (el) => el.scrollIntoView({ block: "end", behavior: "instant" }));
+        await pg.click(`${R} ${sel}`);
+        await pg.waitForTimeout(80);
+      };
+      if (estado.campos) {
+        const c = K.saldos[estado.serie][modo].campos;
+        for (const [k, v] of Object.entries(c)) { await pg.$eval(`${R} [data-campo="${k}"] input`, (el) => el.scrollIntoView({ block: "end", behavior: "instant" })); await pg.fill(`${R} [data-campo="${k}"] input`, String(v)); }
+        await tocar('[data-boton="comprobar"] button');
+      } else {
+        let carta = (await pg.textContent(`${R} ${K.tarjeta}`)).replace(/\s+/g, " ").trim();
+        if (K.subtarjeta) carta = `${carta}::${await pg.getAttribute(`${R} ${K.subtarjeta}`, "data-tarjeta-pregunta")}`;
+        if (K.porEtapa) carta = `${estado.e}::${carta}`;
+        const g = K.items[carta]?.[modo];
+        if (!g) { fallos.push(`E2 · ${id}: la clave no reconoce «${carta.slice(0, 50)}»`); break; }
+        for (const x of g.toques ?? [g.destino != null ? `[data-destino="${g.destino}"]` : `[data-opcion="${g.opcion}"]`]) await tocar(x);
+        if (g.comprobar) await tocar('[data-boton="comprobar"] button');
+      }
+      await pg.waitForTimeout(modo === "mal" ? ESPERA_REVELA : 500);
+      let y = -1;
+      for (let i = 0; i < 40; i++) { const y2 = await pg.evaluate(() => scrollY); if (y2 === y) break; y = y2; await pg.waitForTimeout(80); }
+      const m = await pg.evaluate((R) => {
+        const raiz = document.querySelector(R);
+        const ms = raiz.querySelectorAll("[data-mensaje]");
+        const d = ms[ms.length - 1]?.getBoundingClientRect();
+        const ps = [...raiz.querySelectorAll('.t4r-marca[data-marca="bien"], .t4r-marca[data-marca="mal"]')].map((p) => p.getBoundingClientRect().top);
+        const r1 = (x) => Math.round(x * 10) / 10;
+        return { pie: d ? r1(d.bottom) : null, topeDevolucion: d ? r1(d.top) : null, pastilla: ps.length ? r1(Math.min(...ps)) : null, alto: innerHeight };
+      }, R);
+      const lugar = `E2 · ${ventana.width}×${ventana.height} · ${id} · ${modo === "bien" ? "acierto" : "error"} · tarjeta ${n}${estado.e ? ` (etapa ${estado.e})` : ""}`;
+      if (m.pie == null) fallos.push(`${lugar}: no hay devolución`);
+      else {
+        const tope = m.pastilla ?? m.topeDevolucion;
+        if (tope < -0.5) fallos.push(`${lugar}: la pastilla tocada más alta empieza en ${tope} px, fuera de la ventana`);
+        if (m.pie > m.alto + 0.5) fallos.push(`${lugar}: el pie de la devolución queda en ${m.pie} px y la ventana mide ${m.alto}`);
+      }
+      filasE2H.push(`${lugar}: pastilla desde ${m.pastilla ?? "—"}, devolución hasta ${m.pie} (ventana ${m.alto})`);
+      if (CAPTURAS) await pg.screenshot({ path: resolve(CAPTURAS, `e2h-${ventana.width}x${ventana.height}-${s}-${modo}-${n}.png`) });
+      const sig = await pg.$(`${R} [data-boton="seguir-hacer"] button`);
+      if (!sig) break;
+      await sig.click();
+      await pg.waitForTimeout(250);
+    }
+    }
+  }
+  await pg.close();
+}
+filas.push(...filasE2H);
+filasE2.push(...filasE2H);
 
 /* ═══════════ HACER ═══════════ */
 {

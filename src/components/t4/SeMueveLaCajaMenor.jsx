@@ -47,7 +47,7 @@ import {
 import { ESPERA_ERROR_MS, cifra } from "../../data/contabilidadT4Hacer.js";
 import { C, CSS_T4R, Mensaje, Avance, IconoMal } from "./comun.jsx";
 import { Tablero, CSS_TABLERO } from "./tablero.jsx";
-import { VACIO, CSS_HACER } from "./hacerComun.jsx";
+import { VACIO, CSS_HACER, mostrarTramo } from "./hacerComun.jsx";
 
 export const CSS_H3 = `
 .t4h3-op { display: grid; gap: 4px; border: 1px solid ${C.reposo}; border-radius: 8px; padding: 8px 12px; }
@@ -116,7 +116,7 @@ export default function SeMueveLaCajaMenor({ Marco, rotulo, titulo, acento, onCo
     if (t.terminado && !modoDemo) onCompletar?.(puntuarH3(bien, cuantos), Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   /* Con el veredicto ya escrito, el foco pasa al botón: la página baja sola hasta la devolución. */
-  useEffect(() => { if (r?.aplicado && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (r?.aplicado && !modoDemo) zonaBoton.current?.querySelector("button")?.focus({ preventScroll: true }); }, [r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (enfocar.current) { enfocar.current = false; tarjeta.current?.focus(); } }, [t.i]);
 
   const escribir = () => setTotales((x) => conAsiento(x, op.debe, op.haber, op.monto));
@@ -155,6 +155,9 @@ export default function SeMueveLaCajaMenor({ Marco, rotulo, titulo, acento, onCo
     if (t.i + 1 < cuantos) { enfocar.current = true; t.setI(t.i + 1); } else t.setTerminado(true);
   };
 
+  const retro = useRef(null);
+  /* La pastilla tocada más alta y el pie de la devolución, en un solo desplazamiento (hacerComun.jsx). */
+  useEffect(() => { if (r && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]")); }, [Boolean(r), r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
   const reiniciar = () => { clearTimeout(reloj.current); t.reiniciar(); setR(null); setPuestas({ debe: null, haber: null }); setTotales({}); setBien(0); setAviso(false); };
 
   if (t.terminado) {
@@ -216,13 +219,13 @@ export default function SeMueveLaCajaMenor({ Marco, rotulo, titulo, acento, onCo
             recien={r?.aplicado ? [`${op.debe}:debe`, `${op.haber}:haber`] : []}
             etiqueta={H3.nombre}
           />
+          {/* La devolución: región viva, vacía mientras se pregunta. Va justo debajo del tablero, antes del sobre y del libro, para que con el error la pastilla de la mitad tocada y la devolución entren a la vez en la ventana (decisión de Yujiro sobre la parada de Hanayama, P2 §11). */}
+          <div className="t4r" data-retro aria-live="polite" aria-atomic="true" ref={retro}>
+            {r && <Mensaje ok={r.ok} texto={r.texto} pagina={op.pagina} />}
+          </div>
           <Sobre rotulo={serie.rotuloSobre} billetes={sobre.billetes} soportes={sobre.soportes} libro={libro} diria={r && !r.ok ? r.diria?.texto ?? null : null} />
           {!modoDemo && <figcaption id="t4h3-alt" className="t4f-sr">{ALT_FIGURA_H3}</figcaption>}
         </figure>
-        {/* La devolución: región viva, vacía mientras se pregunta. */}
-        <div className="t4r" data-retro aria-live="polite" aria-atomic="true">
-          {r && <div style={{ marginTop: "12px" }}><Mensaje ok={r.ok} texto={r.texto} pagina={op.pagina} /></div>}
-        </div>
         {/* «Comprobar» también en la demo: la mano lo toca. */}
         {!r && (
           <div className="t4r" style={{ marginTop: "14px" }}>

@@ -149,7 +149,7 @@ function ElMayor({ p }) {
   const haber = hechos.filter((a) => a.haber === "bancos").map((a) => ({ id: a.id, v: cifra(a.monto), foco: a === ultimo }));
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
-      <button type="button" className="t4r-btn2" data-accion="asentar" aria-disabled={n ? "true" : undefined} onClick={n ? undefined : asentar}>{F.asentar}</button>
+      <button type="button" className={`t4r-btn2${n ? " t4r-oculto" : ""}`} data-accion="asentar" data-usado={n ? "" : undefined} onClick={n ? undefined : asentar}>{F.asentar}</button>
       <Mayor titulo={F.mayor} debe={debe} haber={haber} reserva={3} saldo={n === total ? cifra(SALDO_MAYOR) : null} rotuloSaldo={F.saldo} />
     </Fig>
   );

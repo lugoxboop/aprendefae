@@ -18,7 +18,7 @@
  *   · quieta (P7): el sobre con el fondo
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { C, Mensaje, Avance, cifra } from "./comun.jsx";
 import { Tablero } from "./tablero.jsx";
 import { Fig, Sobre, Cheque, Rotulo, Chips } from "./aprender.jsx";
@@ -49,6 +49,9 @@ function Libro({ cuentas, totales, recien = [] }) {
 /* P0 · pagar y reponer: los billetes bajan, los soportes suben, «Suman» se queda. */
 function Pagar({ p }) {
   const [n, setN] = useState(0);
+  const idRazon = useId();
+  /* D7: los dos son de límite (vuelven a servir), así que se quedan; apagado, cada uno dice al lado por qué (Katsumi). */
+  const razon = !n ? F.razonReponer : n >= PAGOS_P0 ? F.razonPagar : null;
   const pagado = sumaGastos(n);
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
@@ -58,9 +61,10 @@ function Pagar({ p }) {
         { id: "suman", r: F.suman, v: FONDO, suma: true },
       ]} />
       <div className="t4r-par2">
-        <button type="button" className="t4r-btn2" data-accion="pagar" aria-disabled={n >= PAGOS_P0 ? "true" : undefined} onClick={n < PAGOS_P0 ? () => setN(n + 1) : undefined}>{F.pagar}</button>
-        <button type="button" className="t4r-btn2" data-accion="reponer" aria-disabled={!n ? "true" : undefined} onClick={n ? () => setN(0) : undefined}>{F.reponer}</button>
+        <button type="button" className="t4r-btn2" data-accion="pagar" aria-disabled={n >= PAGOS_P0 ? "true" : undefined} aria-describedby={n >= PAGOS_P0 ? idRazon : undefined} onClick={n < PAGOS_P0 ? () => setN(n + 1) : undefined}>{F.pagar}</button>
+        <button type="button" className="t4r-btn2" data-accion="reponer" aria-disabled={!n ? "true" : undefined} aria-describedby={!n ? idRazon : undefined} onClick={n ? () => setN(0) : undefined}>{F.reponer}</button>
       </div>
+      <p className="t4r-razon" id={idRazon} data-razon>{razon}</p>
     </Fig>
   );
 }
@@ -92,7 +96,7 @@ function Gastos({ p }) {
         { id: "soportes", r: F.soportes, v: sumaGastos(n), luz: Boolean(n) },
       ]} />
       <p className="t4a2-g" data-gasto={g ? n : undefined} aria-live="polite">{g ? <><span>{g.gasto}</span><span>{cifra(g.valor)}</span></> : <span>&nbsp;</span>}</p>
-      <button type="button" className="t4r-btn2" data-accion="pagar" aria-disabled={n >= total ? "true" : undefined} onClick={n < total ? () => setN(n + 1) : undefined}>{F.pagarSiguiente(Math.min(n + 1, total), total)}</button>
+      <button type="button" className={`t4r-btn2${n >= total ? " t4r-oculto" : ""}`} data-accion="pagar" data-usado={n >= total ? "" : undefined} onClick={n < total ? () => setN(n + 1) : undefined}>{F.pagarSiguiente(Math.min(n + 1, total), total)}</button>
     </Fig>
   );
 }
@@ -179,15 +183,19 @@ function YCajaMenor({ p, onAcierto }) {
 /* P6 · subir y bajar el fondo, de a 100.000 (supuesto). Subir: Caja menor / Bancos. Bajar: Caja / Caja menor. */
 function SubirBajar({ p }) {
   const [f, setF] = useState(FONDO);
+  const idRazon = useId();
+  /* D7: «Bajar» y «Subir» son de límite; apagado, cada uno dice al lado por qué (Katsumi). */
+  const razon = f <= FONDO_MIN ? F.razonBajar : f >= FONDO_MAX ? F.razonSubir : null;
   const sube = Math.max(0, f - FONDO);
   const baja = Math.max(0, FONDO - f);
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
       <Sobre rotulo={F.sobre} filas={[{ id: "billetes", r: F.billetes, v: f, luz: f !== FONDO }]} />
       <div className="t4r-par2">
-        <button type="button" className="t4r-btn2" data-accion="bajar" aria-disabled={f <= FONDO_MIN ? "true" : undefined} onClick={f > FONDO_MIN ? () => setF(f - PASO_FONDO) : undefined}>{F.bajar}</button>
-        <button type="button" className="t4r-btn2" data-accion="subir" aria-disabled={f >= FONDO_MAX ? "true" : undefined} onClick={f < FONDO_MAX ? () => setF(f + PASO_FONDO) : undefined}>{F.subir}</button>
+        <button type="button" className="t4r-btn2" data-accion="bajar" aria-disabled={f <= FONDO_MIN ? "true" : undefined} aria-describedby={f <= FONDO_MIN ? idRazon : undefined} onClick={f > FONDO_MIN ? () => setF(f - PASO_FONDO) : undefined}>{F.bajar}</button>
+        <button type="button" className="t4r-btn2" data-accion="subir" aria-disabled={f >= FONDO_MAX ? "true" : undefined} aria-describedby={f >= FONDO_MAX ? idRazon : undefined} onClick={f < FONDO_MAX ? () => setF(f + PASO_FONDO) : undefined}>{F.subir}</button>
       </div>
+      <p className="t4r-razon" id={idRazon} data-razon>{razon}</p>
       <Libro cuentas={[CM, B, CJ]}
         totales={{ [CM]: { [DEBE]: FONDO + sube, [HABER]: baja }, [B]: { [HABER]: FONDO + sube }, [CJ]: { [DEBE]: baja } }}
         recien={sube ? [`${CM}:${DEBE}`, `${B}:${HABER}`] : baja ? [`${CM}:${HABER}`, `${CJ}:${DEBE}`] : []} />

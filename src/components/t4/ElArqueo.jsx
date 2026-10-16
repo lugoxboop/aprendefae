@@ -48,7 +48,7 @@ import { ESPERA_ERROR_MS, cifra } from "../../data/contabilidadT4Hacer.js";
 import { C, CSS_T4R, Mensaje, Avance, LineaMarcas } from "./comun.jsx";
 import { MARCA } from "../../data/contabilidadT4.js";
 import { Tablero, CSS_TABLERO } from "./tablero.jsx";
-import { CSS_HACER } from "./hacerComun.jsx";
+import { CSS_HACER, mostrarTramo } from "./hacerComun.jsx";
 import { Regla, CSS_REGLA } from "./Regla.jsx";
 
 export const CSS_H4 = `
@@ -139,8 +139,12 @@ export default function ElArqueo({ Marco, rotulo, titulo, acento, onCompletar, i
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(puntuarH4(bien, total), Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (aplicado && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (aplicado && !modoDemo) zonaBoton.current?.querySelector("button")?.focus({ preventScroll: true }); }, [aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (enfocar.current) { enfocar.current = false; tarjeta.current?.focus(); } }, [t.i]);
+  const retro = useRef(null);
+  /* Al dar el veredicto, la devolución entra en la ventana con la pastilla (decisión de Yujiro sobre la parada de Hanayama). */
+  /* También a los 0,7 s del error: «Iba aquí» y el asiento del reembolso empujan la devolución hacia abajo. */
+  useEffect(() => { if (eleg != null && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]")); }, [eleg, aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const decidir = (v, ok, respuesta) => {
     t.anotar(itemH4(r.id, p.id), ok, respuesta);
@@ -181,6 +185,12 @@ export default function ElArqueo({ Marco, rotulo, titulo, acento, onCompletar, i
     );
   }
 
+  /* La devolución, región viva: bajo el tablero en la pregunta 4; si no, debajo de la figura. */
+  const retroEn = (dentro) => ((p.id === CUENTA) === dentro ? (
+    <div className="t4r" data-retro aria-live="polite" aria-atomic="true" ref={retro}>
+      {msg && <div style={{ marginTop: dentro ? 0 : "12px" }}><Mensaje ok={msg.ok} texto={msg.texto} pagina={r.pagina} /></div>}
+    </div>
+  ) : null);
   /* Lo que dibuja la regla: lo ya resuelto en la ronda y, en la pregunta en curso, lo elegido. */
   const signo = r.tipo === FALTA ? -1 : 1;
   const verSuman = Boolean(hechas[ARQUEO]) || (p.id === ARQUEO && aplicado);
@@ -251,17 +261,18 @@ export default function ElArqueo({ Marco, rotulo, titulo, acento, onCompletar, i
                   totales={aplicado ? { [p.correcta.cuenta]: { [p.correcta.lado]: r.dif } } : {}}
                   recien={aplicado ? [`${p.correcta.cuenta}:${p.correcta.lado}`] : []}
                   onElegir={elegirCuenta}
+                  apilado={false}
                   etiqueta={p.pregunta}
                 />
+                {/* En la pregunta 4, la devolución va justo debajo del tablero, antes del asiento: así la pastilla tocada y su pie entran a la vez en la ventana (E2 de los Hacer). */}
+                {retroEn(true)}
                 {aplicado && <AsientoReembolso r={r} cuenta={p.correcta} />}
               </>
             )}
           </div>
           {!modoDemo && <figcaption id="t4h4-alt" className="t4f-sr">{ALT_FIGURA_H4}</figcaption>}
         </figure>
-        <div className="t4r" data-retro aria-live="polite" aria-atomic="true">
-          {msg && <div style={{ marginTop: "12px" }}><Mensaje ok={msg.ok} texto={msg.texto} pagina={r.pagina} /></div>}
-        </div>
+        {retroEn(false)}
         {eleg != null && !modoDemo && (
           <div className="t4r"><Avance refZona={zonaBoton} onClick={avanzar}>{textoSeguir}</Avance></div>
         )}

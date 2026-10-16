@@ -174,7 +174,7 @@ export const AVISOS_H8 = { lados: "Pon una cuenta al debe y la otra al haber.", 
 export const ROTULOS_H8 = { saldoInicial: "Saldo", saldoPie: "Saldo", campo: "Saldo de Bancos en el mayor", parLibros: "los libros", parMayor: "el mayor", parBanco: "el banco" };
 export const lectorParH8 = { antes: (y) => `Los libros: ${y}.`, acierto: (x, y) => `El banco: ${x}. El mayor: ${y}. Son iguales.` };
 export const resumenH8 = (bien) => `${bien} de 15 al primer intento.`;
-export const ALT_FIGURA_H8 = "Las partidas de la conciliación se separan en las que se asientan y las que no; las que se asientan entran al mayor de Bancos.";
+export const ALT_FIGURA_H8 = "Dos bandejas, «Se asienta» y «No se asienta», para las partidas de la conciliación. Después, un tablero para armar cada asiento y el mayor de Bancos con su saldo.";
 export const CIERRE_H8 = {
   texto: "La empresa no corrige lo que el banco no sabe: eso lo arregla el tiempo. Corrige lo que ella no sabía: las notas del banco.",
   pie: "Basado en el libro, pp. 190-191. Cifras construidas",

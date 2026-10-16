@@ -59,6 +59,10 @@ export const CSS_T4R = `
 .t4r-aviso { margin: 8px 0 0; font-size: 13px; line-height: 1.4; color: ${C.texto2}; }
 .t4r-aviso:empty { margin: 0; }
 .t4r-btn2 { appearance: none; min-height: 44px; border-radius: 8px; border: 1px solid ${C.neutro}; background: transparent; color: ${C.texto}; font: 600 14px "Inter", sans-serif; cursor: pointer; padding: 0 12px; white-space: nowrap; }
+/* D7 (Shibukawa): un botón de un solo uso se oculta tras usarse y guarda su sitio, como en A1 (t4cv-oculto). Uno de límite, apagado, dice al lado por qué. */
+.t4r-oculto { visibility: hidden; }
+.t4r-razon { margin: 6px 0 0; font-size: 13px; line-height: 1.4; color: ${C.texto2}; }
+.t4r-razon:empty { margin: 0; }
 .t4r-btn2[aria-disabled="true"] { color: ${C.texto2}; border-color: rgba(184,196,212,0.4); cursor: default; }
 .t4r-seguir:focus-visible, .t4r-btn2:focus-visible, .t4cv-col:focus-visible, .t4cv-band:focus-visible, .t4r-tab:focus-visible, .t4an-seg:focus-visible, [role="slider"]:focus-visible { outline: 2px solid ${C.texto}; outline-offset: 2px; }
 .t4r-msg { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 4px 8px; padding: 11px 13px; border-radius: 11px; border-left: 3px solid ${C.neutro}; background: rgba(184,196,212,0.12); outline: none; }

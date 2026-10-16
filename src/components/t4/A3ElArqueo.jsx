@@ -57,7 +57,7 @@ function Contar({ p }) {
     <Fig nombre={NOMBRE} alt={p.alt} gap={6}>
       <SobreArqueo caja={c ? caja : null} luz={c} />
       <Regla r={R} suman={c ? GASTADO + caja : null} />
-      <button type="button" className="t4r-btn2" data-accion="contar" aria-disabled={c ? "true" : undefined} onClick={c ? undefined : () => setC(true)}>{F.contar}</button>
+      <button type="button" className={`t4r-btn2${c ? " t4r-oculto" : ""}`} data-accion="contar" data-usado={c ? "" : undefined} onClick={c ? undefined : () => setC(true)}>{F.contar}</button>
     </Fig>
   );
 }

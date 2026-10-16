@@ -107,7 +107,7 @@ export const REGLA_H4 = {
 };
 export const ASIENTO_H4 = { debe: "DEBE", haber: "HABER", gastos: "Gastos generales", bancos: "Bancos" };
 export const resumenH4 = (bien) => `${bien} de 14 respuestas al primer intento.`;
-export const ALT_FIGURA_H4 = "El sobre del arqueo y una regla alrededor del fondo, donde se dibujan la suma, la diferencia y el cheque.";
+export const ALT_FIGURA_H4 = "El sobre del arqueo, con los soportes y lo que hay en la caja, y una regla alrededor del fondo. En ella se dibujan la suma, la diferencia y lo que dejaría cada cheque.";
 export const CIERRE_H4 = {
   texto: "Si el arqueo cuadra, el cheque repone lo gastado. Si sobra plata, sale por menos, y la diferencia es un ingreso. Si falta, sale por más, y la diferencia la paga el encargado o la asume la empresa.",
   pie: "Basado en el libro, pp. 182-186. Cifras construidas",

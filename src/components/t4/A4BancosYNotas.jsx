@@ -87,8 +87,8 @@ function Cuenta({ p }) {
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
       <div className="t4r-par2">
-        <button type="button" className="t4r-btn2" data-accion="consignar" aria-disabled={h.consignar ? "true" : undefined} onClick={h.consignar ? undefined : () => setH({ ...h, consignar: true })}>{F.consignar}</button>
-        <button type="button" className="t4r-btn2" data-accion="girar" aria-disabled={h.girar ? "true" : undefined} onClick={h.girar ? undefined : () => setH({ ...h, girar: true })}>{F.girar}</button>
+        <button type="button" className={`t4r-btn2${h.consignar ? " t4r-oculto" : ""}`} data-accion="consignar" data-usado={h.consignar ? "" : undefined} onClick={h.consignar ? undefined : () => setH({ ...h, consignar: true })}>{F.consignar}</button>
+        <button type="button" className={`t4r-btn2${h.girar ? " t4r-oculto" : ""}`} data-accion="girar" data-usado={h.girar ? "" : undefined} onClick={h.girar ? undefined : () => setH({ ...h, girar: true })}>{F.girar}</button>
       </div>
       <Tablero cuentas={[{ id: "bancos", renglones: [F.mayor] }]}
         totales={{ bancos: { [DEBE]: h.consignar ? CONSIGNACION : 0, [HABER]: h.girar ? CHEQUE_PROVEEDOR : 0 } }}
@@ -104,7 +104,7 @@ function Extracto({ p }) {
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
       <Libretas renglones={r} reserva={RENGLONES_EXTRACTO.length - r.length} luz />
-      <button type="button" className="t4r-btn2" data-accion="extracto" aria-disabled={llego ? "true" : undefined} onClick={llego ? undefined : () => setLlego(true)}>{F.extracto}</button>
+      <button type="button" className={`t4r-btn2${llego ? " t4r-oculto" : ""}`} data-accion="extracto" data-usado={llego ? "" : undefined} onClick={llego ? undefined : () => setLlego(true)}>{F.extracto}</button>
     </Fig>
   );
 }

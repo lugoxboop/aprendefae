@@ -43,6 +43,8 @@ export const FIGURA_ANO = {
   pasar: "Pasar el año",
   volver: "Volver a hoy",
   otraVez: "Otra vez",
+  /* D7: el aviso de «Pasar el año» con filas sin marcar, neutro: no es una devolución (Katsumi, lote §5.3). */
+  aviso: "Marca las tres filas primero.",
   pista: "El año",
   /* El texto alternativo de la figura y el nombre de cada casilla del juego para el lector (Katsumi, «Pendientes del #260»). */
   alt: "Una pista de hoy a un año. Cuando pasa el año, cada activo se marca al volverse plata o al consumirse; el que no, cruza la raya hacia «No es corriente».",

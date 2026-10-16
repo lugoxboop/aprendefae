@@ -65,7 +65,7 @@ export const PIE_FASE2_H7 = "Formato y signos del libro, p. 190. Cifras construi
 export const resumenH7 = (bien) => `${bien} de 9 partidas al primer toque.`;
 export const lectorParH7 = (x, y) => `El banco: ${x}. Los libros: ${y}.${x === y ? " Son iguales." : ""}`;
 export const FALTAN_SALDOS = "Escribe los dos saldos antes de comprobar.";
-export const ALT_FIGURA_H7 = "Los dos saldos y las dos libretas con su Más y su Menos, donde se escribe cada partida.";
+export const ALT_FIGURA_H7 = "Arriba, el saldo del banco y el de los libros. Debajo, las dos libretas, cada una con su Más y su Menos, donde va cada partida.";
 
 /* La devolución de la fase 1, por tipo de partida; el error, por la sección elegida. */
 export const ACIERTO_H7 = {

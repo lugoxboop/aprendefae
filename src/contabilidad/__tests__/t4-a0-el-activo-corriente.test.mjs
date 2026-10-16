@@ -229,16 +229,19 @@ test("★★★ P6 y P7: la figura quieta en el mes 12, sin pista ni acción", (
 /* ═══════════ 3 · EL JUEGO (P3) ═══════════ */
 
 
-test("★★★ P3: «Pasar el año» espera a las tres marcas, y antes de pasarlo nada de la devolución está en el DOM (PH8-2)", () => {
+test("★★★ P3: «Pasar el año» no se apaga (D7): con filas sin marcar avisa y no pasa; antes de pasarlo nada de la devolución está en el DOM (PH8-2)", () => {
   const p = pantalla("cual-cruza");
   const m = abrir(3);
   try {
     const pasar = m.caja.querySelector("[data-accion=pasar]");
-    assert.equal(pasar.getAttribute("aria-disabled"), "true");
+    assert.equal(pasar.getAttribute("aria-disabled"), null);
     tocar(seg(m.caja, "mercancia", "antes"));
     tocar(seg(m.caja, "deuda", "despues"));
-    assert.equal(pasar.getAttribute("aria-disabled"), "true");
+    tocar(pasar);
+    assert.equal(m.caja.querySelector("[data-aviso]").textContent, Z.FIGURA_ANO.aviso, "con una fila sin marcar, el aviso");
+    assert.equal(m.caja.querySelector("[data-mensaje]"), null, "con una fila sin marcar, pasó el año");
     tocar(seg(m.caja, "edificio", "despues"));
+    assert.equal(m.caja.querySelector("[data-aviso]").textContent, "", "el aviso no se va al marcar la fila que faltaba");
     assert.equal(m.caja.querySelector("[data-accion=pasar]").getAttribute("aria-disabled"), null);
     const zona = m.caja.querySelector("[data-pieza]");
     for (const x of [p.error, "Correcto.", "Incorrecto."]) {

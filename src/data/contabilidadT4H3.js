@@ -73,7 +73,7 @@ export const ROTULOS_H3 = {
 };
 /* x: el libro con el asiento del estudiante; y: lo que hay en el sobre DESPUÉS de la operación. */
 export const diriaH3 = (x, y) => `Con tu asiento, el libro diría ${cifra(x)}, pero en el sobre hay ${cifra(y)}.`;
-export const ALT_FIGURA_H3 = "Cuatro cuentas con su debe y su haber, y debajo el fondo de caja menor comparado con lo que dice el libro.";
+export const ALT_FIGURA_H3 = "El libro de la caja menor: cuatro cuentas, cada una con su debe y su haber. Debajo, el sobre del encargado, para comparar con lo que dice el libro.";
 
 export const CIERRE_H3 = {
   texto: "Caja menor se mueve cuando el fondo se abre, se aumenta, se disminuye o se cierra. En el reembolso no se mueve: se debita Gastos generales y se acredita Bancos.",

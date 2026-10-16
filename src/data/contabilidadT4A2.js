@@ -107,6 +107,11 @@ export const FIGURA_A2 = {
   comprobar: "Comprobar",
   /* El aviso de «Comprobar» con una mitad sin poner (el de H8 etapa 2, ya escrito por Katsumi; P2 de Hanayama, §4). */
   aviso: "Pon una cuenta al debe y la otra al haber.",
+  /* D7 (Shibukawa): la razón visible, al lado del botón de límite apagado, y en su aria-describedby (Katsumi). */
+  razonReponer: "El fondo ya está completo.",
+  razonPagar: "Tope: tres gastos",
+  razonSubir: "Tope: 600.000",
+  razonBajar: "Mínimo: 400.000",
   /* Para el lector de pantalla: los nombres del grupo de opciones y del tablero. */
   opciones: "¿Cuánto queda en billetes?",
   tablero: "El libro",

@@ -52,6 +52,22 @@ export const CSS_TABLERO = `
 .t4tb-hueco { display: flex; min-height: 20px; }
 .t4tb-mitad[data-lado="haber"] .t4tb-hueco { justify-content: flex-end; }
 .t4tb-foco { color: ${C.texto}; font-weight: 600; }
+/*
+ * Plan B (decisión de Yujiro sobre la parada de medición de Hanayama): donde
+ * el tablero apilado no deja la pastilla tocada y la devolución a la vez en
+ * la ventana de 320×568 (H4 pregunta 4 y H8 etapa 2), el tablero va lado a
+ * lado (nombre · Debe · Haber) y las pastillas bajan a una línea por mitad
+ * marcada, debajo del tablero: «Cuenta · lado: ✗ No va aquí».
+ */
+.t4tb-lineal .t4tb-cab, .t4tb-lineal .t4tb-fila { display: grid; grid-template-columns: minmax(0, 1fr) 76px 76px; gap: 6px; align-items: stretch; }
+.t4tb-lineal .t4tb-cab > span + span { text-align: center; }
+.t4tb-lineal .t4tb-cab > span:last-child { text-align: center; }
+.t4tb-lineal .t4tb-nom { align-content: center; font-size: 13px; }
+.t4tb-lineal .t4tb-mitad { grid-template-rows: 22px; justify-items: center; text-align: center; padding: 0 4px; min-height: 44px; }
+.t4tb-lineal .t4tb-mitad[data-lado="haber"] { justify-items: center; text-align: center; }
+.t4tb-lineal .t4tb-mitad[data-puesta], .t4tb-lineal .t4tb-mitad[data-marca] { padding: 0 3px; }
+.t4tb-marcas { display: grid; gap: 4px; }
+.t4tb-marcas > div { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font: 500 13px/1.4 "Inter", sans-serif; color: ${C.texto2}; }
 /* mayor */
 .t4my { display: grid; background: ${C.hundido}; border: 1px solid ${C.hundidoBorde}; border-radius: 10px; padding: 8px 10px; gap: 4px; }
 .t4my-t { margin: 0; text-align: center; font: 600 13px/1.3 "Sora", "Inter", sans-serif; }
@@ -106,39 +122,64 @@ const nombreMitad = (c, lado, cifraVista, palabra) =>
  * marcas:  { "id:lado": "bien"|"mal"|"era" }
  * recien:  ["id:lado"] los totales que acaban de cambiar
  */
-export function Tablero({ cuentas, totales = {}, puestas = {}, monto, onElegir, activo, marcas = {}, recien = [], etiqueta = "Cuentas", conMarcas = true }) {
+export function Tablero({ cuentas, totales = {}, puestas = {}, monto, onElegir, activo, marcas = {}, recien = [], etiqueta = "Cuentas", conMarcas = true, apilado = true }) {
+  const mitad = (c, lado) => {
+    const k = `${c.id}:${lado}`;
+    const puesta = puestas[lado] === c.id;
+    const m = marcas[k];
+    return (
+      <button
+        key={lado}
+        type="button"
+        className="t4tb-mitad"
+        data-destino={k}
+        data-lado={lado}
+        data-puesta={puesta && !m ? "" : undefined}
+        data-marca={m}
+        data-sin-marcas={conMarcas && apilado ? undefined : ""}
+        disabled={!activo}
+        aria-pressed={puesta}
+        aria-label={nombreMitad(c, lado, puesta && !m ? monto : (totales[c.id]?.[lado] ? cifra(totales[c.id][lado]) : null), m ? MARCA[m] : null)}
+        onClick={() => onElegir?.(c.id, lado)}
+      >
+        {puesta && !m ? <span className="t4r-nueva">{monto}</span> : <Total v={totales[c.id]?.[lado]} foco={recien.includes(k)} />}
+        {conMarcas && apilado && <span className="t4tb-hueco">{m && <Marca marca={m} />}</span>}
+      </button>
+    );
+  };
+  if (!apilado) {
+    /* Las marcas, una línea por mitad marcada, en el orden de las cuentas. */
+    const lineas = cuentas.flatMap((c) => ["debe", "haber"].filter((lado) => marcas[`${c.id}:${lado}`]).map((lado) => ({ c, lado, m: marcas[`${c.id}:${lado}`] })));
+    return (
+      <div className="t4tb t4tb-lineal" role="group" aria-label={etiqueta} data-tablero data-apilado="no">
+        <div className="t4tb-cab" aria-hidden="true"><span /><span style={{ color: C.debeTexto }}>Debe</span><span style={{ color: C.haber }}>Haber</span></div>
+        {cuentas.map((c) => (
+          <div key={c.id} className="t4tb-fila" data-cuenta={c.id}>
+            <span className="t4tb-nom">{c.renglones.map((r) => <span key={r}>{r}</span>)}</span>
+            {mitad(c, "debe")}
+            {mitad(c, "haber")}
+          </div>
+        ))}
+        {conMarcas && (
+          <div className="t4tb-marcas" data-linea-marcas={lineas.length} aria-hidden="true">
+            {lineas.map(({ c, lado, m }) => (
+              <div key={`${c.id}:${lado}`} data-marca-de={`${c.id}:${lado}`}>
+                <span>{`${c.renglones.join(" ")} · ${lado}:`}</span>
+                <Marca marca={m} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
   return (
     <div className="t4tb" role="group" aria-label={etiqueta} data-tablero>
       <div className="t4tb-cab" aria-hidden="true"><span style={{ color: C.debeTexto }}>Debe</span><span style={{ color: C.haber }}>Haber</span></div>
       {cuentas.map((c) => (
         <div key={c.id} className="t4tb-cuenta" data-cuenta={c.id}>
           <span className="t4tb-nom">{c.renglones.map((r) => <span key={r}>{r}</span>)}</span>
-          <div className="t4tb-mitades">
-            {["debe", "haber"].map((lado) => {
-              const k = `${c.id}:${lado}`;
-              const puesta = puestas[lado] === c.id;
-              const m = marcas[k];
-              return (
-                <button
-                  key={lado}
-                  type="button"
-                  className="t4tb-mitad"
-                  data-destino={k}
-                  data-lado={lado}
-                  data-puesta={puesta && !m ? "" : undefined}
-                  data-marca={m}
-                  data-sin-marcas={conMarcas ? undefined : ""}
-                  disabled={!activo}
-                  aria-pressed={puesta}
-                  aria-label={nombreMitad(c, lado, puesta && !m ? monto : (totales[c.id]?.[lado] ? cifra(totales[c.id][lado]) : null), m ? MARCA[m] : null)}
-                  onClick={() => onElegir?.(c.id, lado)}
-                >
-                  {puesta && !m ? <span className="t4r-nueva">{monto}</span> : <Total v={totales[c.id]?.[lado]} foco={recien.includes(k)} />}
-                  {conMarcas && <span className="t4tb-hueco">{m && <Marca marca={m} />}</span>}
-                </button>
-              );
-            })}
-          </div>
+          <div className="t4tb-mitades">{mitad(c, "debe")}{mitad(c, "haber")}</div>
         </div>
       ))}
     </div>

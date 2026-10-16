@@ -214,6 +214,9 @@ export function CuerpoA0({ p, onAcierto }) {
   const [fin, setFin] = useState(false);
   const juego = p.modo === "juego";
   const listas = juego ? p.filas.every((f) => elecciones[f.id]) : true;
+  /* D7: «Pasar el año» nunca se apaga; con filas sin marcar, un aviso neutro (no es una devolución), que se va al marcar la que faltaba (Katsumi). */
+  const [aviso, setAviso] = useState(false);
+  const verAviso = juego && aviso && !listas && !fin;
   const bien = juego && fin && juegoBienA0(p.filas, elecciones);
   useEffect(() => { if (bien) onAcierto?.(); }, [bien]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -221,7 +224,7 @@ export function CuerpoA0({ p, onAcierto }) {
   if (juego) {
     boton = fin
       ? <button type="button" className="t4r-btn2" data-accion="otra-vez" onClick={() => { setFin(false); setElecciones({}); ano.setM(0); }}>{FIGURA_ANO.otraVez}</button>
-      : <button type="button" className="t4r-btn2" data-accion="pasar" aria-disabled={!listas ? "true" : undefined} onClick={listas ? () => ano.pasar(() => setFin(true)) : undefined}>{FIGURA_ANO.pasar}</button>;
+      : <button type="button" className="t4r-btn2" data-accion="pasar" onClick={() => { if (!listas) { setAviso(true); return; } setAviso(false); ano.pasar(() => setFin(true)); }}>{FIGURA_ANO.pasar}</button>;
   } else if (!quieta) {
     boton = ano.m >= 12
       ? <button type="button" className="t4r-btn2" data-accion="volver" onClick={() => ano.setM(0)}>{FIGURA_ANO.volver}</button>
@@ -232,6 +235,7 @@ export function CuerpoA0({ p, onAcierto }) {
   return (
     <>
       <FiguraAno filas={p.filas} ano={ano} quieta={quieta} boton={boton} juego={datosJuego} />
+      {juego && <p className="t4r-aviso" data-aviso aria-live="polite">{verAviso ? FIGURA_ANO.aviso : null}</p>}
       {juego && fin && <Mensaje ok={bien} texto={bien ? p.acierto : p.error} />}
     </>
   );

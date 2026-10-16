@@ -132,6 +132,7 @@ const escribir = (input, v) => {
   input.dispatchEvent(new w.Event("input", { bubbles: true }));
 };
 
+const lineales = new Set();
 for (const { s, raiz: R, C, items } of HACER) {
   for (const modo of ["bien", "mal"]) {
     test(`★★★ ${s} (${modo === "bien" ? "acertando" : "fallando"}): en cada tarjeta, sin glifos de texto, pastillas con su literal y su ícono, y el avance y «Comprobar» en el Responder teal`, async () => {
@@ -164,6 +165,15 @@ for (const { s, raiz: R, C, items } of HACER) {
           await esperar(modo === "mal" ? ESPERA_ERROR_MS + 600 : 20);
           const r2 = m.caja.querySelector(R);
           malas.push(...defectos(r2, { aprender: false }).map((x) => `tarjeta ${mirados + 1} tras responder: ${x}`));
+          /* Plan B: el tablero lado a lado lleva una línea por mitad marcada, con su pastilla. */
+          for (const t of r2.querySelectorAll('[data-tablero][data-apilado="no"]')) {
+            lineales.add(s);
+            const marcadas = [...t.querySelectorAll(".t4tb-mitad[data-marca]")].map((x) => x.dataset.destino).sort();
+            const lineas = [...t.querySelectorAll("[data-marca-de]")].map((x) => x.dataset.marcaDe).sort();
+            if (JSON.stringify(marcadas) !== JSON.stringify(lineas)) malas.push(`tarjeta ${mirados + 1}: mitades marcadas ${marcadas} y líneas ${lineas}`);
+            for (const x of t.querySelectorAll("[data-marca-de]")) if (!x.querySelector('.t4r-marca[data-marca="era"], .t4r-marca svg[data-icono]')) malas.push(`tarjeta ${mirados + 1}: la línea ${x.dataset.marcaDe} sin pastilla con ícono`);
+            if (t.querySelector(".t4tb-mitad .t4r-marca")) malas.push(`tarjeta ${mirados + 1}: el tablero lado a lado trae pastillas dentro de las mitades`);
+          }
           mirados++;
           if (campos.length) break;
           const sig = r2.querySelector('[data-boton="seguir-hacer"]');
@@ -173,6 +183,8 @@ for (const { s, raiz: R, C, items } of HACER) {
         }
       } finally { m.desmontar(); movimientoReducido(antes); }
       assert.ok(mirados >= 4, `${s}: solo ${mirados} tarjetas`);
+      /* H4 pregunta 4 y H8 etapa 2 van lado a lado (plan B de la medición en 320×568). */
+      assert.equal(lineales.has(s), s === "H4" || s === "H8", `${s}: tablero lado a lado ${lineales.has(s) ? "sí" : "no"}`);
       assert.deepEqual([...new Set(malas)], []);
     });
   }

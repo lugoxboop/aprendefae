@@ -43,7 +43,7 @@ import {
 import { ESPERA_ERROR_MS, MARCA_CIFRA_BIEN, MARCA_CIFRA_MAL, cifra, pesos, leerCifra } from "../../data/contabilidadT4Hacer.js";
 import { C, CSS_T4R, Mensaje, Marca, Avance } from "./comun.jsx";
 import { Tablero, Mayor, Campo, CSS_TABLERO } from "./tablero.jsx";
-import { ParConLector, CSS_HACER } from "./hacerComun.jsx";
+import { ParConLector, CSS_HACER, mostrarTramo } from "./hacerComun.jsx";
 
 export const CSS_H8 = `
 .t4h8-t { display: grid; gap: 4px; border: 1px solid ${C.neutro}; border-radius: 8px; padding: 8px 12px; }
@@ -92,8 +92,11 @@ export default function SeAsientaONo({ Marco, rotulo, titulo, acento, onCompleta
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(puntuarH8(bien), Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (r?.aplicado && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (r?.aplicado && !modoDemo) zonaBoton.current?.querySelector("button")?.focus({ preventScroll: true }); }, [r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (enfocar.current) { enfocar.current = false; tarjeta.current?.focus(); } }, [t.i, etapa]);
+  const retro = useRef(null);
+  /* Al dar el veredicto, la devolución entra en la ventana (decisión de Yujiro sobre la parada de Hanayama). */
+  useEffect(() => { if (r && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]")); }, [Boolean(r), r?.aplicado, r?.iba]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const despues = (fn) => { reloj.current = setTimeout(() => { fn(); setR((x) => (x ? { ...x, aplicado: true } : x)); }, ESPERA_ERROR_MS); };
 
@@ -211,6 +214,11 @@ export default function SeAsientaONo({ Marco, rotulo, titulo, acento, onCompleta
   const textoSeguir = etapa === 1 ? (t.i + 1 === partidas.length ? BOTON_H8.aLosAsientos : BOTON_H8.siguientePartida)
     : etapa === 2 ? (t.i + 1 === notas.length ? BOTON_H8.alMayor : BOTON_H8.siguienteAsiento) : BOTON_H8.verResumen;
 
+  const retroEn = (dentro) => ((etapa === 2) === dentro ? (
+    <div className="t4r" data-retro aria-live="polite" aria-atomic="true" ref={retro}>
+      {r && <div style={{ marginTop: dentro ? 0 : "12px" }}><Mensaje ok={r.ok} texto={r.texto} pagina={PIE_H8[etapa]} /></div>}
+    </div>
+  ) : null);
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T4R + CSS_TABLERO + CSS_H8 + CSS_HACER}</style>
@@ -234,8 +242,10 @@ export default function SeAsientaONo({ Marco, rotulo, titulo, acento, onCompleta
           {etapa === 1 && <div className="t4bj" role="group" aria-label={ETAPAS_H8[0]}>{BANDEJAS_H8.map(bandeja)}</div>}
           {etapa === 2 && (
             <Tablero cuentas={CUENTAS_H8} totales={totales} puestas={r && !r.ok ? r.a : puestas} monto={cifra(p.monto)} onElegir={elegir2}
-              activo={!r} marcas={marcas2} recien={r?.aplicado ? [`${p.debe}:debe`, `${p.haber}:haber`] : []} etiqueta={ETAPAS_H8[1]} />
+              activo={!r} marcas={marcas2} recien={r?.aplicado ? [`${p.debe}:debe`, `${p.haber}:haber`] : []} etiqueta={ETAPAS_H8[1]} apilado={false} />
           )}
+          {/* En la etapa 2, la devolución va justo debajo del tablero, antes del mayor (E2 de los Hacer). */}
+          {retroEn(true)}
           {etapa === 3 && <Campo id="mayor" rotulo={ROTULOS_H8.campo} valor={saldo} bloqueado={Boolean(r)} iba={r?.iba ? pesos(s.saldoMayor) : null} onCambio={(v) => { setSaldo(v); setAviso(null); }} />}
           {etapa >= 2 && (
             <Mayor titulo={s.tituloMayor} debe={mayorDebe} haber={mayorHaber} reserva={3} rotuloSaldo={ROTULOS_H8.saldoPie}
@@ -252,9 +262,7 @@ export default function SeAsientaONo({ Marco, rotulo, titulo, acento, onCompleta
           )}
           {!modoDemo && <figcaption id="t4h8-alt" className="t4f-sr">{ALT_FIGURA_H8}</figcaption>}
         </figure>
-        <div className="t4r" data-retro aria-live="polite" aria-atomic="true">
-          {r && <div style={{ marginTop: "12px" }}><Mensaje ok={r.ok} texto={r.texto} pagina={PIE_H8[etapa]} /></div>}
-        </div>
+        {retroEn(false)}
         {etapa >= 2 && !r && (
           <div className="t4r" style={{ marginTop: "14px" }}>
             <Avance nombre="comprobar" onClick={etapa === 2 ? comprobar2 : comprobar3}>{etapa === 2 ? BOTON_H8.comprobar : BOTON_H8.comprobarSaldo}</Avance>

@@ -66,6 +66,7 @@ test("★★★ P0: pagar baja los billetes y sube los soportes, «Suman» se qu
   try {
     assert.deepEqual(sobre(m), { billetes: "500.000", soportes: null, suman: "500.000" });
     assert.equal(q(m, "[data-accion=reponer]").getAttribute("aria-disabled"), "true");
+    assert.equal(m.caja.ownerDocument.getElementById(q(m, "[data-accion=reponer]").getAttribute("aria-describedby"))?.textContent, A.FIGURA_A2.razonReponer, "D7: la razón visible del botón apagado");
     for (let n = 1; n <= 3; n++) {
       tocar(q(m, "[data-accion=pagar]"));
       await esperar(0);
@@ -74,6 +75,7 @@ test("★★★ P0: pagar baja los billetes y sube los soportes, «Suman» se qu
       assert.equal(q(m, '[data-fila-sobre="suman"]').dataset.valor, String(A.FONDO));
     }
     assert.equal(q(m, "[data-accion=pagar]").getAttribute("aria-disabled"), "true");
+    assert.equal(m.caja.ownerDocument.getElementById(q(m, "[data-accion=pagar]").getAttribute("aria-describedby"))?.textContent, A.FIGURA_A2.razonPagar, "D7: la razón visible del botón apagado");
     tocar(q(m, "[data-accion=reponer]"));
     await esperar(0);
     assert.equal(q(m, '[data-fila-sobre="soportes"]').style.visibility, "hidden");
@@ -105,7 +107,9 @@ test("★★★ P2: los ocho gastos de mayo, uno por toque, con su rubro y su ci
     }
     assert.equal(q(m, '[data-fila-sobre="soportes"]').dataset.valor, String(A.GASTADO));
     assert.equal(sobre(m).billetes, "sin contar");
-    assert.equal(q(m, "[data-accion=pagar]").getAttribute("aria-disabled"), "true");
+    /* D7: de un solo uso, se oculta tras el octavo gasto y guarda su sitio. */
+    assert.ok(q(m, "[data-accion=pagar]").classList.contains("t4r-oculto"));
+    assert.equal(q(m, "[data-accion=pagar]").getAttribute("aria-disabled"), null);
   } finally { m.desmontar(); }
 });
 
@@ -192,12 +196,14 @@ test("★★★ P6: subir y bajar de a 100.000, entre 400.000 y 600.000; subir m
     assert.equal(q(m, '[data-fila-sobre="billetes"]').dataset.valor, "600000");
     assert.deepEqual([total(m, "caja-menor:debe"), total(m, "bancos:haber")], ["600.000", "600.000"]);
     assert.equal(q(m, "[data-accion=subir]").getAttribute("aria-disabled"), "true");
+    assert.equal(m.caja.ownerDocument.getElementById(q(m, "[data-accion=subir]").getAttribute("aria-describedby"))?.textContent, A.FIGURA_A2.razonSubir, "D7: la razón visible del botón apagado");
     tocar(q(m, "[data-accion=bajar]"));
     tocar(q(m, "[data-accion=bajar]"));
     await esperar(0);
     assert.equal(q(m, '[data-fila-sobre="billetes"]').dataset.valor, "400000");
     assert.deepEqual([total(m, "caja:debe"), total(m, "caja-menor:haber"), total(m, "caja-menor:debe")], ["100.000", "100.000", "500.000"]);
     assert.equal(q(m, "[data-accion=bajar]").getAttribute("aria-disabled"), "true");
+    assert.equal(m.caja.ownerDocument.getElementById(q(m, "[data-accion=bajar]").getAttribute("aria-describedby"))?.textContent, A.FIGURA_A2.razonBajar, "D7: la razón visible del botón apagado");
   } finally { m.desmontar(); }
 });
 

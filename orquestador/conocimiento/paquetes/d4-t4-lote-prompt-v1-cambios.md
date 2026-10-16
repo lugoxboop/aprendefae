@@ -26,3 +26,48 @@ Las tres pastillas «No va aquí» suman seis palabras, así que tres glosas se 
 ## Pruebas
 
 `src/contabilidad/__tests__/t4-literales.test.mjs` falla si vuelve a una cadena de T4 (datos y componentes, sin comentarios) «Bien» o «Mal» como marca, «Correcta», «Revisa» o «Cifra errada». Con el código de antes del lote sale roja en cinco archivos.
+
+## Parte visual (bloque P2 de Hanayama, `hanayama-p2-lote-t4.md`)
+
+Aplicado sobre la cabeza del #308, que ya trae A2-A5 de Baki, con las decisiones de Yujiro (`corte-calidad.md`, «Bloque P2 de Hanayama»):
+- **Marcas y mensajes:** `Check` y `X` de lucide (16 px, trazo 2,5). No queda ningún ✓/✗ de texto en T4. El bloque del error lleva el mismo fondo neutro que el acierto y la raya coral.
+- **Botones:**
+  - el avance y «Comprobar» de los Hacer (y el de A2 P5) son el `Responder` compartido, teal;
+  - «Comprobar» nunca se apaga: con algo incompleto, avisa;
+  - el «Seguir» de Aprender es el neutro de CuatroCapas.
+- **Tablero apilado** (cada cuenta con su nombre arriba y sus dos mitades). «DEBE» va en #3FA69A. El mayor y los asientos de A1 y H4 van en el contenedor hundido de Cuentas.
+- **Línea de marcas** bajo las opciones angostas y por fila en A0 P3. En el cajón y en H7, el hueco se mete 6 px en el relleno.
+- **Un toque califica** en H4 pregunta 4 y en A3 P4 y P7.
+- **La cifra escrita se ve al instante:** en el par (H7) y en el mayor (H8).
+- **⛔3 (Yujiro):** H8 etapa 2 queda con cinco cuentas; sale «Caja». ⛔1 (`Pulsos` en node) espera a Erwin.
+
+**La devolución entra en la ventana con la pastilla tocada** (parada de medición de Hanayama; decisión de Yujiro con la revisión de `hanayama-p2-lote-b.md` §6):
+- Al dar el veredicto, un solo desplazamiento cubre el tramo que va de la pastilla tocada más alta al pie de la devolución:
+  - si el tramo cabe en la ventana menos 16 px, se mueve lo mínimo, con 8 px de margen;
+  - si no cabe, la pastilla queda a 8 px del borde de arriba.
+- En H3, en H4 pregunta 4 y en H8 etapa 2 la devolución va justo debajo del tablero, antes del sobre y del libro, del asiento o del mayor.
+- La guardia de Chromium lo mide en 320×568 y 375×667, con acierto y con error.
+- **Plan B en H4 pregunta 4 y en H8 etapa 2.** Ahí el tablero apilado no cabe con la devolución en 320×568: en H8 etapa 2 el pie llegaba a 629-673 px, y en H4 la tarjeta 8 a 601 px. Por eso esos dos tableros van lado a lado (nombre · Debe · Haber). Las pastillas bajan a una línea por mitad marcada, debajo del tablero: «Cuenta · lado: ✗ No va aquí». El lector sigue oyendo la marca en la mitad. Con el plan B el pie queda en 560 px o menos.
+
+## D7, nada gris y muerto (veredicto de Shibukawa sobre el #308)
+
+- **Los botones de un solo uso se ocultan tras usarse y guardan su sitio**, como «Cobrar» en A1: A2 «Pagar el siguiente» (al 8 de 8), A3 «Contar la caja», A4 «Consignar», «Girar un cheque» y «Llega el extracto», y A5 «Asentar las cinco notas».
+- **Los de límite se quedan.** Apagados, dicen al lado por qué y lo llevan en su `aria-describedby`. Los textos son de Katsumi:
+
+  | Botón | Razón |
+  |---|---|
+  | A2 «Reponer» | «El fondo ya está completo.» |
+  | A2 «Pagar un gasto» | «Tope: tres gastos» |
+  | A2 «Subir» | «Tope: 600.000» |
+  | A2 «Bajar» | «Mínimo: 400.000» |
+
+- **A0 «Pasar el año» no se apaga.** Si se toca con filas sin marcar, sale el aviso neutro «Marca las tres filas primero.», que se va al marcar la que faltaba.
+- **Prueba nueva, `t4-d7.test.mjs`:** en ningún estado queda a la vista un botón apagado sin razón visible. Con el #308 en ac1986e, sale roja en A0, A2, A3, A4 y A5.
+
+## Textos alternativos de los Hacer (Katsumi, por la auditoría de Shibukawa)
+
+Ninguno da la respuesta:
+- H3: «El libro de la caja menor: cuatro cuentas, cada una con su debe y su haber. Debajo, el sobre del encargado, para comparar con lo que dice el libro.»
+- H4: «El sobre del arqueo, con los soportes y lo que hay en la caja, y una regla alrededor del fondo. En ella se dibujan la suma, la diferencia y lo que dejaría cada cheque.»
+- H7: «Arriba, el saldo del banco y el de los libros. Debajo, las dos libretas, cada una con su Más y su Menos, donde va cada partida.»
+- H8: «Dos bandejas, «Se asienta» y «No se asienta», para las partidas de la conciliación. Después, un tablero para armar cada asiento y el mayor de Bancos con su saldo.»

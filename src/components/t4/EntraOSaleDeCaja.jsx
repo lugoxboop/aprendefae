@@ -40,6 +40,7 @@ import {
   resumenH1, sortearH1, evaluarH1, puntuarH1, libroH1,
 } from "../../data/contabilidadT4H1.js";
 import { C, CSS_T4R, cifra, Mensaje, Avance } from "./comun.jsx";
+import { mostrarTramo } from "./hacerComun.jsx";
 import { Cajon, CSS_CAJON } from "./Cajon.jsx";
 
 /* Cada columna reserva cuatro líneas: el saldo inicial más tres entradas, el máximo posible. */
@@ -64,8 +65,11 @@ export default function EntraOSaleDeCaja({ Marco, rotulo, titulo, acento, onComp
     if (t.terminado && !modoDemo) onCompletar?.(puntuarH1(bien, cuantos), Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   /* Con el veredicto, el foco pasa al botón: la página baja sola hasta la devolución. */
-  useEffect(() => { if (r?.aplicado && !modoDemo) zonaBoton.current?.querySelector("button")?.focus(); }, [r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (r?.aplicado && !modoDemo) zonaBoton.current?.querySelector("button")?.focus({ preventScroll: true }); }, [r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (enfocarHecho.current) { enfocarHecho.current = false; hecho.current?.focus(); } }, [t.i]);
+  const retro = useRef(null);
+  /* Al dar el veredicto, la devolución entra en la ventana (decisión de Yujiro sobre la parada de Hanayama). */
+  useEffect(() => { if (r && !modoDemo) mostrarTramo(retro.current?.closest("[data-t4-h1], [data-t4-h3], [data-t4-h4], [data-t4-h7], [data-t4-h8]")); }, [Boolean(r), r?.aplicado]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const poner = (it) => setPuestos((p) => (p.some((x) => x.id === it.id) ? p : [...p, it]));
 
@@ -158,7 +162,7 @@ export default function EntraOSaleDeCaja({ Marco, rotulo, titulo, acento, onComp
         )}
         <div className="t4r" role="group" aria-label={H1.nombre}>{tablero}</div>
         {/* La devolución: región viva. Vacía mientras se pregunta: ni su texto ni su página están en el DOM. */}
-        <div className="t4r" data-retro aria-live="polite" aria-atomic="true">
+        <div className="t4r" data-retro aria-live="polite" aria-atomic="true" ref={retro}>
           {r && <div style={{ marginTop: "12px" }}><Mensaje ok={r.ok} texto={r.texto} pagina={r.pagina} /></div>}
         </div>
         {r && !modoDemo && (
