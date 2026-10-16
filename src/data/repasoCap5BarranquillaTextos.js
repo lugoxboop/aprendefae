@@ -1,5 +1,5 @@
 import { pesos } from "./contabilidad.js";
-import { CIFRAS_BARRANQUILLA as N, EQUIVOCADAS_BARRANQUILLA as E, OPERACIONES as O } from "./repasoCap5Barranquilla.js";
+import { CIFRAS_BARRANQUILLA as N, EQUIVOCADAS_BARRANQUILLA as E, OPERACIONES as O, CONDICIONES } from "./repasoCap5Barranquilla.js";
 import {
   CAJA, COMPRAS, COMPRAS_FLETES, CLIENTES, PROVEEDORES, DEVOLUCIONES, GASTO_FLETES, INGRESOS, INVENTARIO,
   ENTRADA_MATE, DATOS_DECLARADOS as DECLARADOS_MATE, ROTULOS_MATE, COMUNES_MATE,
@@ -95,6 +95,26 @@ export const ROTULOS_BARRANQUILLA = {
   datosDeMarzoMarca: "DATOS DE SEPTIEMBRE",
   /* Diseño §6. */
   marzoEnOcho: "SEPTIEMBRE EN 10 ASIENTOS",
+  /* P2 de Itagaki §10 (rótulos fijos de interfaz). */
+  mes: "septiembre",
+};
+
+/* P2 de Itagaki §10: los textos de Miyata para el calendario. */
+export const CALENDARIO_R5_4 = {
+  ventanaOk: {
+    a7: "La ventana cierra el 17: quince días sin contar el 2. Pagas justo el último día, así que el 10 % es tuyo.",
+    a9: "La ventana cierra el 25: quince días desde el 10, sin contarlo. El cliente paga ese mismo día y gana su 5 %.",
+  },
+  ventanaMal: {
+    a7: "Los 15 días se cuentan desde la factura, no desde el inicio del mes. El día de la factura no cuenta; el último día sí.",
+    a9: "El plazo no es el día 15 del mes: son 15 días desde la venta. El día 10 no entra en la cuenta, y el último sí.",
+  },
+  alt: "Calendario de septiembre con la fecha de la factura y una ventana de descuento que se alarga o se acorta día a día.",
+  /* El nombre corto de cada operación, para el nombre accesible de su celda. */
+  nombres: {
+    a1: "Compra, día 2", a2: "Flete compra, día 2", a3: "Devuelves, día 8", a4: "Venta, día 10", a5: "Flete venta, día 10",
+    a6: "Te devuelven, día 15", a7: "Pago, día 17", a8: "Compra, día 25", a9: "Cobro, día 25", a10: "Venta, día 28",
+  },
 };
 
 /* ═══════════ LOS DIEZ ASIENTOS ═══════════ */
@@ -111,8 +131,8 @@ export const ASIENTOS_BARRANQUILLA = [
     dia: O.a1.dia,
     fecha: "2 DE SEPTIEMBRE",
     operacion: "Compra",
-    hecho: "Septiembre 2: compra a crédito. Arma su asiento.",
-    renglones: [["Unidades", "5.000"], ["Precio por unidad", pesos(O.a1.precio)], ["Descuento comercial", "5 %"], ["Condición", "10/15, n/30"]],
+    hecho: "Compras a crédito. Arma su asiento.",
+    renglones: [["Unidades", "5.000"], ["Precio por unidad", pesos(O.a1.precio)], ["Descuento comercial", "5 %"], ["Condicionado", "10/15, n/30"]],
     fleteEnElSiguiente: true,
     correctos: [[d(COMPRAS, N.a1.compras), h(PROVEEDORES, N.a1.compras)]],
     cruzado: {
@@ -144,7 +164,7 @@ export const ASIENTOS_BARRANQUILLA = [
     dia: O.a2.dia,
     fecha: "2 DE SEPTIEMBRE",
     operacion: "Flete de la compra",
-    hecho: "Septiembre 2: pagas de contado el transporte de lo comprado. Arma el asiento del flete.",
+    hecho: "Pagas de contado el transporte de lo comprado. Arma el asiento del flete.",
     renglones: [["Valor del flete", pesos(N.a2.flete)]],
     /* Decisión 8: completo con una u otra cuenta, nunca mezclado. */
     correctos: [
@@ -175,10 +195,10 @@ export const ASIENTOS_BARRANQUILLA = [
     dia: O.a3.dia,
     fecha: "8 DE SEPTIEMBRE",
     operacion: "Devuelves",
-    hecho: "Septiembre 8: devuelves parte de lo que compraste el día 2. Arma su asiento.",
+    hecho: "Devuelves parte de lo que compraste el día 2. Arma su asiento.",
     renglones: [["Unidades devueltas", "700"]],
     /* Decisión 5: el bloque de la operación del día 2, sin paréntesis en los valores. */
-    bloque: { marca: "DE LA OPERACIÓN DEL DÍA 2", renglones: [["Precio por unidad", pesos(O.a1.precio)], ["Descuento comercial", "5 %"], ["Se compró", "a crédito"]] },
+    bloque: { marca: "DE LA OPERACIÓN DEL 2 DE SEPTIEMBRE", renglones: [["Precio por unidad", pesos(O.a1.precio)], ["Descuento comercial", "5 %"], ["Pago", "a crédito"]] },
     correctos: [[d(PROVEEDORES, N.a3.devolucion), h(DEV_COMPRAS, N.a3.devolucion)]],
     cruzado: {
       [PROVEEDORES]: "Va al revés. Tu deuda baja, así que el proveedor va al debe. La devolución va al haber.",
@@ -203,8 +223,8 @@ export const ASIENTOS_BARRANQUILLA = [
     dia: O.a4.dia,
     fecha: "10 DE SEPTIEMBRE",
     operacion: "Venta",
-    hecho: "Septiembre 10: venta a crédito a un cliente. Arma su asiento.",
-    renglones: [["Unidades", "6.000"], ["Precio por unidad", pesos(O.a4.precio)], ["Descuento comercial", "10 %"], ["Condición", "5/15, n/30"]],
+    hecho: "Vendes a crédito a un cliente. Arma su asiento.",
+    renglones: [["Unidades", "6.000"], ["Precio por unidad", pesos(O.a4.precio)], ["Descuento comercial", "10 %"], ["Condicionado", "5/15, n/30"]],
     fleteEnElSiguiente: true,
     correctos: [[d(CLIENTES, N.a4.venta), h(INGRESOS, N.a4.venta)]],
     cruzado: {
@@ -236,7 +256,7 @@ export const ASIENTOS_BARRANQUILLA = [
     dia: O.a5.dia,
     fecha: "10 DE SEPTIEMBRE",
     operacion: "Flete de la venta",
-    hecho: "Septiembre 10: pagas el transporte de lo vendido. Arma el asiento del flete.",
+    hecho: "Pagas el transporte de lo vendido. Arma el asiento del flete.",
     renglones: [["Valor del flete", pesos(N.a5.flete)]],
     /* Decisión 8: el del 10, solo «Gasto de venta – fletes». */
     correctos: [[d(GASTO_FLETES, N.a5.flete), h(CAJA, N.a5.flete)]],
@@ -261,9 +281,9 @@ export const ASIENTOS_BARRANQUILLA = [
     dia: O.a6.dia,
     fecha: "15 DE SEPTIEMBRE",
     operacion: "Te devuelven",
-    hecho: "Septiembre 15: vuelven unidades de la venta del día 10. Arma su asiento.",
+    hecho: "Vuelven unidades de la venta del día 10. Arma su asiento.",
     renglones: [["Unidades devueltas", "200"]],
-    bloque: { marca: "DE LA OPERACIÓN DEL DÍA 10", renglones: [["Precio por unidad", pesos(O.a4.precio)], ["Descuento comercial", "10 %"], ["Se vendió", "a crédito"]] },
+    bloque: { marca: "DE LA OPERACIÓN DEL 10 DE SEPTIEMBRE", renglones: [["Precio por unidad", pesos(O.a4.precio)], ["Descuento comercial", "10 %"], ["Pago", "a crédito"]] },
     correctos: [[d(DEVOLUCIONES, N.a6.devolucion), h(CLIENTES, N.a6.devolucion)]],
     cruzado: {
       [DEVOLUCIONES]: "Va al revés. La devolución va al debe, y lo que debe el cliente baja por el haber.",
@@ -288,9 +308,11 @@ export const ASIENTOS_BARRANQUILLA = [
     dia: O.a7.dia,
     fecha: "17 DE SEPTIEMBRE",
     operacion: "Pago",
-    hecho: "Septiembre 17: pagas al proveedor la compra del día 2. Arma el asiento del pago.",
-    /* Decisión 1: la condición y las dos fechas; el estudiante cuenta los días. */
-    renglones: [["Saldo por pagar", pesos(N.a7.saldo)], ["Condición", "10/15"], ["Fecha de la compra", "2 sep"], ["Fecha del pago", "17 sep"]],
+    hecho: "Pagas la compra del día 2. Arrastra el borde hasta el último día con descuento.",
+    /* P2 de Itagaki: salen los renglones de fechas; el calendario muestra los días. */
+    renglones: [["Saldo por pagar", pesos(N.a7.saldo)], ["Condiciones", "10/15, n/30"]],
+    /* La ventana del descuento: factura del 2, 15 días (10/15), pago del 17. */
+    ventana: { factura: O.a7.factura, plazo: CONDICIONES.compra.plazo, pago: O.a7.dia }, // 2 · 15 · 17
     correctos: [[d(PROVEEDORES, N.a7.saldo), h(DESCUENTO, N.a7.descuento), h(CAJA, N.a7.caja)]],
     cruzado: {
       [PROVEEDORES]: "Va al revés. La deuda se cancela por el debe. El dinero sale por el haber.",
@@ -317,7 +339,7 @@ export const ASIENTOS_BARRANQUILLA = [
     dia: O.a8.dia,
     fecha: "25 DE SEPTIEMBRE",
     operacion: "Compra",
-    hecho: "Septiembre 25: compras de contado y te dan un descuento comercial. Arma el asiento.",
+    hecho: "Compras de contado con descuento comercial. Arma su asiento.",
     renglones: [["Unidades", "7.750"], ["Precio por unidad", pesos(O.a8.precio)], ["Descuento comercial", "20 %"]],
     correctos: [[d(COMPRAS, N.a8.compras), h(CAJA, N.a8.compras)]],
     cruzado: {
@@ -342,8 +364,9 @@ export const ASIENTOS_BARRANQUILLA = [
     dia: O.a9.dia,
     fecha: "25 DE SEPTIEMBRE",
     operacion: "Cobro",
-    hecho: "Septiembre 25: se recibe de un cliente el pago de la venta del día 10. Arma su asiento.",
-    renglones: [["Saldo por cobrar", pesos(N.a9.saldo)], ["Condición", "5/15"], ["Fecha de la venta", "10 sep"], ["Fecha del cobro", "25 sep"]],
+    hecho: "Cobras la venta del día 10. Arrastra el borde hasta el último día con descuento.",
+    renglones: [["Saldo por cobrar", pesos(N.a9.saldo)], ["Condiciones", "5/15, n/30"]],
+    ventana: { factura: O.a9.factura, plazo: CONDICIONES.venta.plazo, pago: O.a9.dia }, // 10 · 15 · 25
     correctos: [[d(CAJA, N.a9.caja), d(DESCUENTO, N.a9.descuento), h(CLIENTES, N.a9.saldo)]],
     cruzado: {
       [CAJA]: "Va al revés. El dinero entra por el debe. La deuda del cliente sale por el haber.",
@@ -370,7 +393,7 @@ export const ASIENTOS_BARRANQUILLA = [
     dia: O.a10.dia,
     fecha: "28 DE SEPTIEMBRE",
     operacion: "Venta",
-    hecho: "Septiembre 28: vendes de contado y das un descuento comercial. Arma el asiento.",
+    hecho: "Vendes de contado con descuento comercial. Arma su asiento.",
     renglones: [["Unidades", "6.100"], ["Precio por unidad", pesos(O.a10.precio)], ["Descuento comercial", "8 %"]],
     correctos: [[d(CAJA, N.a10.venta), h(INGRESOS, N.a10.venta)]],
     cruzado: {

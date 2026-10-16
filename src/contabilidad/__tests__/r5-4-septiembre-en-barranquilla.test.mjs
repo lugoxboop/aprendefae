@@ -103,6 +103,12 @@ const anadir = async (caja, lado, cuenta, valor) => {
 let n = 0;
 const R = (lado, cuenta, valor) => ({ id: `t${n++}`, lado, cuenta, valor });
 const bien = (a, v = 0) => a.correctos[v].map((c) => R(c.lado, c.cuenta, c.valor));
+/* P2 de Itagaki: en los asientos con condición, primero la ventana (tocar el día del borde y «Comprobar»). */
+const abrirVentana = async (caja, a, borde = a.ventana?.pago) => {
+  if (!a.ventana) return;
+  await tocar(caja.querySelector(`[data-calendario] [data-dia="${borde}"]`));
+  await tocar(caja.querySelector("[data-revisar-ventana]"));
+};
 const otroLado = (l) => (l === "debe" ? "haber" : "debe");
 
 /* ═══════════ LO QUE LEE EL ESTUDIANTE ═══════════ */
@@ -115,13 +121,13 @@ function textosDelEstudiante() {
   const t = [T.R5_4.objetivo, T.R5_4.cita, T.ENTRADA_BARRANQUILLA.apertura, T.AVISO_BARRANQUILLA, ...T.DATOS_DECLARADOS_BARRANQUILLA.datos, T.COMUNES_BARRANQUILLA.cuentaNoPrevista, T.COMUNES_BARRANQUILLA.hayMas];
   for (const g of T.DATOS_DEL_LIBRO_BARRANQUILLA) if (g.nota) t.push(g.nota);
   for (const a of A) t.push(a.hecho, ...textosDeAsiento(a));
-  t.push(...Object.values(T.LINEAS_MES_BARRANQUILLA));
+  /* P2 de Itagaki: las líneas del panel del mes salen con el panel. */
   return [...new Set(t)];
 }
 
-test("★★★ cada texto del estudiante está entero en el paquete (guarda: 121 textos distintos)", () => {
+test("★★★ cada texto del estudiante está entero en el paquete (guarda: 117 textos distintos)", () => {
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 121);
+  assert.equal(textos.length, 117);
   const escapar = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const entero = (t) => new RegExp(`(?:: |:\\*\\* |\\n- |\\| )${escapar(t)}(?:\\n| \\||$)`).test(PAQUETE) || PLANO.includes(`«${t}»`) || PAQUETE_MES.includes(`| ${t} |`);
   const fuera = textos.filter((t) => !entero(t));
@@ -130,7 +136,8 @@ test("★★★ cada texto del estudiante está entero en el paquete (guarda: 12
   for (const a of A) {
     for (const [et, val] of [...a.renglones, ...(a.bloque?.renglones ?? [])]) assert.ok(PLANO.includes(`${et} · ${val}`), `${a.id}: ${et} · ${val}`);
     if (a.bloque) assert.ok(PLANO.includes(`Bloque «${a.bloque.marca}»`), a.bloque.marca);
-    if (a.fleteEnElSiguiente) assert.ok(PLANO.includes(`${a.hecho} Renglones:`) && /Flete · en el asiento siguiente/.test(PAQUETE.slice(PAQUETE.indexOf(a.hecho), PAQUETE.indexOf(a.hecho) + 400)), a.id);
+    /* P2 (textos de Miyata): el flete «en el asiento siguiente» va en el renglón de datos de su asiento. */
+    if (a.fleteEnElSiguiente) assert.ok(new RegExp(`\\n- ${a.id}: [^\\n]*«Flete · en el asiento siguiente»`).test(PAQUETE), a.id);
   }
   for (const [et, val] of T.DATOS_DEL_LIBRO_BARRANQUILLA[0].renglones) assert.ok(PLANO.includes(`${et} · ${val}`), et);
   /* Los nombres cortos de la pantalla final, en su orden, y los rótulos que cambian respecto de r5-3. */
@@ -194,12 +201,19 @@ test("★★★ los días del pago del 17 y el cobro del 25 se cuentan desde las
   }
   assert.equal(B.CIFRAS_BARRANQUILLA.a7.dias, 15);
   assert.equal(B.CIFRAS_BARRANQUILLA.a9.dias, 15);
-  /* Las fechas del hecho son las de los datos, y no hay «Días desde la factura» (decisión 1). */
-  for (const [id, fechas] of [["a7", ["Fecha de la compra", "2 sep", "Fecha del pago", "17 sep"]], ["a9", ["Fecha de la venta", "10 sep", "Fecha del cobro", "25 sep"]]]) {
+  /* P2 de Itagaki: salen los renglones de fechas (el calendario muestra los días) y no hay «días». */
+  for (const id of ["a7", "a9"]) {
     const r = asiento(id).renglones.flat();
-    for (const x of fechas) assert.ok(r.includes(x), `${id}: ${x}`);
+    assert.ok(!r.some((x) => /^Fecha /.test(x)), `${id}: queda un renglón de fecha`);
     assert.ok(!r.some((x) => /días/i.test(x)), `${id}: el hecho no da los días`);
   }
+  /* La ventana sale de los datos: la factura, el plazo de la condición y el día del pago, que cae en la frontera. */
+  for (const [id, c] of [["a7", B.CONDICIONES.compra], ["a9", B.CONDICIONES.venta]]) {
+    const v = asiento(id).ventana;
+    assert.deepEqual(v, { factura: B.OPERACIONES[id].factura, plazo: c.plazo, pago: B.OPERACIONES[id].dia });
+    assert.equal(v.factura + v.plazo, v.pago, `${id}: el pago cae justo en la frontera`);
+  }
+  assert.deepEqual(A.filter((a) => a.ventana).map((a) => a.id), ["a7", "a9"]);
   assert.deepEqual([B.OPERACIONES.a7.factura, B.OPERACIONES.a7.dia, B.OPERACIONES.a9.factura, B.OPERACIONES.a9.dia], [2, 17, 10, 25]);
 });
 
@@ -355,23 +369,31 @@ test("★★★ catálogo, registro de la vista, etiqueta y migración 0253 dice
 
 /* ═══════════ LA LÍNEA DE SEPTIEMBRE ═══════════ */
 
-test("★★ la línea de septiembre: 30 días, nodos de 8 px, y en los días con dos operaciones (2, 10 y 25) los nodos no se tocan", async () => {
+test("★★ P2 · el calendario de septiembre: 30 días en 7 columnas, el día en curso con 2 px #F8F9FA, un punto por asiento hecho y el nombre de cada día", async () => {
   assert.equal(ACTIVIDAD_BARRANQUILLA.DIAS, 30);
-  assert.equal(ACTIVIDAD_BARRANQUILLA.NODO, 8);
-  const { caja } = await montar(h(Barranquilla, { pasoInicial: 6 }));
-  const nodos = [...caja.querySelectorAll("[data-nodo]")];
-  assert.equal(nodos.length, 10);
-  assert.ok(nodos.every((x) => x.style.width === "8px" && x.style.height === "8px"));
-  assert.equal(caja.querySelector("[data-marca-fecha]").textContent, "17 SEP");
-  /* El segundo de cada día, 14 px más abajo: en la vertical no se tocan (8 < 14). */
-  for (const [d, x, y] of [[2, "a1", "a2"], [10, "a4", "a5"], [25, "a8", "a9"]]) {
-    const [p, s] = [caja.querySelector(`[data-nodo="${x}"]`), caja.querySelector(`[data-nodo="${y}"]`)];
-    assert.equal(parseFloat(s.style.top) - parseFloat(p.style.top), 14, `día ${d}`);
-    assert.ok(14 > 8);
-  }
-  /* En la horizontal, días seguidos a 320: (288 − 12) / 29 = 9,5 px entre centros, más que los 8 del nodo. */
-  assert.ok((288 - 12) / 29 > 8);
-  assert.equal(Math.round(((288 - 12) / 29 - 8) * 10) / 10, 1.5);
+  assert.equal(ACTIVIDAD_BARRANQUILLA.CALENDARIO, true);
+  const { caja } = await montar(h(Barranquilla, { pasoInicial: 9 }));
+  const cal = caja.querySelector("[data-calendario]");
+  const dias = [...cal.querySelectorAll("[data-dia]")];
+  assert.deepEqual(dias.map((d) => Number(d.dataset.dia)), Array.from({ length: 30 }, (_, k) => k + 1));
+  assert.equal(cal.querySelector('[role="grid"]').style.gridTemplateColumns, "repeat(7, minmax(0, 1fr))");
+  /* Sin días de la semana: el 8 va en la fila 2, columna 1. */
+  const d8 = cal.querySelector('[data-dia="8"]');
+  assert.deepEqual([d8.style.gridRow, d8.style.gridColumn], ["2", "1"]);
+  /* El asiento en curso (28 sep). */
+  assert.deepEqual(dias.filter((d) => d.dataset.actual === "si").map((d) => d.dataset.dia), ["28"]);
+  assert.match(cal.querySelector('[data-dia="28"]').style.outline, /2px solid (#F8F9FA|rgb\(248, 249, 250\))/i);
+  /* Los nueve asientos de antes, como puntos en su día (dos el 2, el 10 y el 25). */
+  const puntos = (d) => cal.querySelectorAll(`[data-dia="${d}"] [data-punto-mes="hecho"]`).length;
+  assert.deepEqual([2, 8, 10, 15, 17, 25, 28].map(puntos), [2, 1, 2, 1, 1, 2, 0]);
+  /* Cada celda dice su día y sus operaciones. */
+  assert.equal(cal.querySelector('[data-dia="2"]').getAttribute("aria-label"), `2 de septiembre: ${T.CALENDARIO_R5_4.nombres.a1}, ${T.CALENDARIO_R5_4.nombres.a2}`);
+  assert.equal(cal.querySelector('[data-dia="3"]').getAttribute("aria-label"), "3 de septiembre");
+  /* El día en mono 12 #A8B6C8. */
+  const numero = cal.querySelector('[data-dia="3"] span');
+  assert.deepEqual([numero.style.fontSize, numero.style.color], ["12px", "rgb(168, 182, 200)"]);
+  /* Sin la línea de nodos y sin el panel del mes. */
+  assert.equal(caja.querySelectorAll("[data-nodo]").length, 0);
 });
 
 /* ═══════════ LA PANTALLA ═══════════ */
@@ -414,6 +436,7 @@ function cubrir(a) {
 }
 async function jugarCamino(k, renglones) {
   const { caja, desmontar } = await montar(h(Barranquilla, { pasoInicial: k }));
+  await abrirVentana(caja, A[k]);
   for (const r of renglones) await anadir(caja, r.lado, r.cuenta, r.valor);
   await tocar(caja.querySelector("[data-revisar]"));
   const pantalla = document.body.cloneNode(true);
@@ -421,7 +444,7 @@ async function jugarCamino(k, renglones) {
   return pantalla;
 }
 
-test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 121 textos, 96 caminos)", async () => {
+test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 117 textos, 96 caminos)", async () => {
   const vistas = [];
   const entrada = await montar(h(Barranquilla, {}));
   vistas.push(document.body.textContent);
@@ -436,7 +459,7 @@ test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estad
   }
   const todo = vistas.join("\n");
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 121);
+  assert.equal(textos.length, 117);
   const faltan = textos.filter((t) => !todo.includes(t));
   assert.deepEqual(faltan, [], `no salen en pantalla: ${faltan.join(" | ")}`);
   assert.equal(caminos, 96, "no jugó los caminos que dice jugar");
@@ -458,6 +481,7 @@ test("★★ B5 de enganche.md: ninguna frase sale dos veces en la misma pantall
   for (const [k, a] of A.entries()) {
     const abierto = await montar(h(Barranquilla, { pasoInicial: k }));
     assert.deepEqual(repetidas(document.body), [], `${a.id} antes`);
+    await abrirVentana(abierto.caja, a);
     await tocar(abierto.caja.querySelector("[data-boton-datos]"));
     assert.deepEqual(repetidas(document.body), [], `${a.id} con los datos`);
     abierto.desmontar();
@@ -472,7 +496,7 @@ test("★★ B5 de enganche.md: ninguna frase sale dos veces en la misma pantall
 
 /* ═══════════ EL MES EN DOS CUENTAS ═══════════ */
 
-test("★★★ el mes en dos cuentas de r5-4: Caja y Descuento comercial condicionado, con las cifras de Miyata y la frase final", async () => {
+test("★★★ el mes en dos cuentas: las cifras de Miyata siguen en los datos, pero el panel sale de r5-4 (P2 de Itagaki)", async () => {
   const cuentas = T.MES_BARRANQUILLA.cuentas;
   for (const c of cuentas) assert.ok(PAQUETE_MES.includes(`| ${c.nombre} | ${c.debe} | ${c.haber} | ${c.difDebe} | ${c.difHaber} |`), c.nombre);
   const movs = ACTIVIDAD_BARRANQUILLA.MOVIMIENTOS_MATE;
@@ -481,32 +505,22 @@ test("★★★ el mes en dos cuentas de r5-4: Caja y Descuento comercial condic
   assert.deepEqual([desc.debe.total, desc.haber.total], [2610000, 939550]);
   assert.deepEqual(M.diferenciaDe(desc.debe.total, desc.haber.total), { valor: 1670450, lado: "debe" });
   assert.ok(PAQUETE_MES.replace(/\s+/g, " ").includes("Caja entradas $105.710.000, salidas $25.730.950, diferencia $79.979.050 débito; descuento debe $2.610.000, haber $939.550, diferencia $1.670.450 débito"));
-  /* Los asientos 1, 3, 4 y 6 no tocan ninguna de las dos: versión compacta con su línea. */
-  assert.deepEqual(A.filter((_, k) => movs[k].length === 0).map((a) => a.id), ["a1", "a3", "a4", "a6"]);
-  assert.deepEqual(Object.keys(T.LINEAS_MES_BARRANQUILLA), ["a1", "a3", "a4", "a6"]);
-  for (const id of ["a1", "a4"]) {
+  /* P2 de Itagaki: el panel sale de r5-4 (el calendario es la figura del mes); en r5-3 se queda. */
+  for (const id of ["a1", "a7"]) {
     const k = A.findIndex((x) => x.id === id);
     const { caja: c, desmontar } = await montar(h(Barranquilla, { pasoInicial: k }));
+    await abrirVentana(c, A[k]);
     for (const r of bien(A[k])) await anadir(c, r.lado, r.cuenta, r.valor);
     await tocar(c.querySelector("[data-revisar]"));
-    const panel = c.querySelector("[data-mes-en-dos-cuentas]");
-    assert.equal(panel.dataset.mesEnDosCuentas, "compacta", id);
-    assert.equal(panel.querySelector("[data-linea-mes]").textContent, T.LINEAS_MES_BARRANQUILLA[id]);
+    assert.equal(Boolean(c.querySelector("[data-mes-en-dos-cuentas]")), false, `${id}: el panel del mes sigue en r5-4`);
     desmontar();
   }
-  /* El 7 mueve las dos: panel completo, con el tramo del descuento en el haber. */
-  const k7 = A.findIndex((x) => x.id === "a7");
-  const { caja: c7 } = await montar(h(Barranquilla, { pasoInicial: k7 }));
-  for (const r of bien(A[k7])) await anadir(c7, r.lado, r.cuenta, r.valor);
-  await tocar(c7.querySelector("[data-revisar]"));
-  assert.equal(c7.querySelector("[data-mes-en-dos-cuentas]").dataset.mesEnDosCuentas, "asiento");
-  assert.equal(c7.querySelector(`[data-cuenta-mes="${T.DESCUENTO}"] [data-lado-mes="haber"] [data-acumulado]`).dataset.acumulado, "939550");
   /* La frase final del descuento: diste más. */
   assert.equal(T.MES_BARRANQUILLA.final.debe(1670450), "Neto: diste $1.670.450 a quien pagó a tiempo.");
   assert.ok(PAQUETE_MES.includes("«Neto: diste $1.670.450 a quien pagó a tiempo.»"));
 });
 
-test("★★★ se juega entera: diez asientos, el final con «SEPTIEMBRE EN 10 ASIENTOS», el mes en cierre y el detalle", async () => {
+test("★★★ se juega entera: diez asientos (dos con ventana), el final con «SEPTIEMBRE EN 10 ASIENTOS», el calendario del resumen y el detalle", async () => {
   const fin = [];
   const { caja } = await montar(h(Barranquilla, { onCompletar: (...x) => fin.push(x) }));
   await tocar(caja.querySelector("[data-empezar]"));
@@ -514,6 +528,7 @@ test("★★★ se juega entera: diez asientos, el final con «SEPTIEMBRE EN 10 
     assert.equal(caja.querySelector("[data-progreso]").textContent, `Asiento ${k + 1} de 10`);
     /* Falla el pago del 17: Caja sin descuento. */
     const renglones = a.id === "a7" ? [R("debe", T.PROVEEDORES, B.CIFRAS_BARRANQUILLA.a7.saldo), R("haber", T.CAJA, B.CIFRAS_BARRANQUILLA.a7.saldo)] : bien(a);
+    await abrirVentana(caja, a);
     for (const r of renglones) await anadir(caja, r.lado, r.cuenta, r.valor);
     await tocar(caja.querySelector("[data-revisar]"));
     await tocar(caja.querySelector("[data-siguiente]"));
@@ -523,7 +538,12 @@ test("★★★ se juega entera: diez asientos, el final con «SEPTIEMBRE EN 10 
   assert.equal(caja.querySelector("[data-n-de-m]").textContent, "9 de 10");
   assert.deepEqual([...caja.querySelectorAll("[data-fila-asiento]")].map((f) => f.firstElementChild.textContent), A.map((a) => `${a.dia} SEP`));
   assert.deepEqual([...caja.querySelectorAll("[data-fila-asiento]")].map((f) => f.children[1].textContent), A.map((a) => a.operacion));
-  assert.equal(caja.querySelector("[data-frase-final]").textContent, "Neto: diste $1.670.450 a quien pagó a tiempo.");
+  /* P2: encima del resumen, el calendario completo: relleno si acertó, anillo coral si no, con una sola leyenda. */
+  const resumen = caja.querySelector("[data-cierre] [data-calendario]");
+  const marcas = (d) => [...resumen.querySelectorAll(`[data-dia="${d}"] [data-punto-mes]`)].map((p) => p.dataset.puntoMes).join(",");
+  assert.deepEqual([2, 8, 10, 15, 17, 25, 28].map(marcas), ["acierto,acierto", "acierto", "acierto,acierto", "acierto", "error", "acierto,acierto", "acierto"]);
+  assert.equal(resumen.querySelector("[data-leyenda-mes]").textContent, "CorrectoNo va aquí");
+  assert.equal(Boolean(caja.querySelector("[data-mes-en-dos-cuentas]")), false);
   assert.equal(fin.length, 1);
   assert.equal(fin[0][0], 90);
   assert.deepEqual(fin[0][2].filter((d) => !d.ok).map((d) => d.item), ["a7"]);
@@ -537,7 +557,7 @@ test("★★ B4: r5-4 no define estados ni colores de calificación propios: los
   assert.match(fuente, /import \{ MesContable \} from "\.\/Mate\.jsx"/);
 });
 
-test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 103 medidos)", () => {
+test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 98 medidos)", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of textosDelEstudiante()) {
@@ -547,7 +567,7 @@ test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda:
     medidos++;
     if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
-  assert.equal(medidos, 103, "no midió los textos que dice medir");
+  assert.equal(medidos, 98, "no midió los textos que dice medir");
   assert.deepEqual(bajos, []);
   /* Los dos que Kamogawa sustituyó (daban 59,7) ya pasan. */
   for (const id of ["a8", "a10"]) assert.ok(inflesz(asiento(id).hecho).valor >= UMBRAL, id);
@@ -558,11 +578,16 @@ test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda:
 test("★★ la tarjeta del hecho no repite la fecha: ningún hecho de septiembre lleva la marca «n DE SEPTIEMBRE»", async () => {
   const { hechoDiceSuFecha } = await import("../../components/repasoCap5/Mate.jsx");
   for (const [k, a] of A.entries()) {
-    assert.ok(hechoDiceSuFecha(a), `${a.id}: el hecho de Miyata empieza con su fecha`);
+    /* P2 de Itagaki: la fecha la da el calendario (el día en curso, con su contorno); la frase ya no la lleva. */
+    assert.equal(hechoDiceSuFecha(a), false, `${a.id}: la frase vuelve a llevar la fecha`);
     const { caja, desmontar } = await montar(h(Barranquilla, { pasoInicial: k }));
+    /* P2: la frase va sola, sobre el Panel; los datos, en su tarjeta (tras la ventana, si la hay). */
+    await abrirVentana(caja, a);
     const tarjeta = caja.querySelector("[data-hecho]");
     assert.equal(tarjeta.textContent.includes(a.fecha), false, `${a.id}: la marca de fecha sigue en la tarjeta`);
-    assert.equal(tarjeta.querySelector("[data-frase]").textContent, a.hecho, `${a.id}: el texto de Miyata no se toca`);
+    assert.equal(caja.querySelector("[data-frase]").textContent, a.hecho, `${a.id}: el texto de Miyata no se toca`);
+    assert.equal(caja.querySelector("[data-frase]").textContent.includes(a.fecha), false);
+    assert.equal(caja.querySelector('[data-calendario] [data-actual="si"]').dataset.dia, String(a.dia));
     desmontar();
   }
 });
@@ -575,4 +600,110 @@ test("★★ E5 · la lista final no repite el día: «2 SEP · Compra», sin «
   assert.equal(new Set(filas).size, filas.length, "dos renglones quedan iguales");
   assert.equal(filas[1], "2 SEP · Flete de la compra");
   assert.deepEqual(A.map((a) => J.unidadDeR5_4(a.id)), filas, "el panel docente dice lo mismo que la lista");
+});
+
+/* ═══════════ P2 DE ITAGAKI · LA VENTANA DEL DESCUENTO ═══════════ */
+
+const tecla = async (el, key) => { await act(async () => { el.dispatchEvent(new w.KeyboardEvent("keydown", { key, bubbles: true })); }); };
+const tramosDe = (caja, quien) => [...caja.querySelectorAll(`[data-tramo="${quien}"]`)].map((t) => `${t.style.gridRow}:${t.style.gridColumn}`);
+
+test("★★★ P2 · la ventana: el borde arranca en la factura, se mueve con flechas (±1 día, ±1 semana) o tocando un día; «Comprobar» pide largo; el pago no aparece antes", async () => {
+  const k = A.findIndex((x) => x.id === "a7");
+  const { caja } = await montar(h(Barranquilla, { pasoInicial: k }));
+  const perilla = caja.querySelector("[data-perilla]");
+  /* Un deslizador accesible, con su texto de valor. */
+  assert.equal(perilla.getAttribute("role"), "slider");
+  assert.deepEqual([perilla.getAttribute("aria-valuenow"), perilla.getAttribute("aria-valuemax")], ["2", "30"]);
+  assert.equal(perilla.getAttribute("aria-valuetext"), "Termina el 2 de septiembre");
+  /* Vacío: largo 0, «Comprobar» apagado, sin armador ni pago; la factura en su día. */
+  const comprobar = () => caja.querySelector("[data-revisar-ventana]");
+  assert.equal(comprobar().getAttribute("aria-disabled"), "true");
+  assert.equal(tramosDe(caja, "estudiante").length, 0);
+  assert.equal(Boolean(caja.querySelector("[data-armador]")), false, "el armador espera a la ventana");
+  assert.equal(Boolean(caja.querySelector("[data-pago]")), false, "el pago delata la respuesta");
+  assert.ok(caja.querySelector('[data-dia="2"] [data-factura]'));
+  /* Teclado: derecha +1, abajo +7, izquierda −1, arriba −7; nunca antes de la factura ni después del 30. */
+  await tecla(perilla, "ArrowRight");
+  assert.equal(caja.querySelector("[data-perilla]").getAttribute("aria-valuenow"), "3");
+  await tecla(caja.querySelector("[data-perilla]"), "ArrowDown");
+  await tecla(caja.querySelector("[data-perilla]"), "ArrowDown");
+  assert.equal(caja.querySelector("[data-perilla]").getAttribute("aria-valuenow"), "17");
+  await tecla(caja.querySelector("[data-perilla]"), "ArrowUp");
+  await tecla(caja.querySelector("[data-perilla]"), "ArrowUp");
+  await tecla(caja.querySelector("[data-perilla]"), "ArrowUp");
+  assert.equal(caja.querySelector("[data-perilla]").getAttribute("aria-valuenow"), "2", "pasó antes de la factura");
+  /* Tocar un día posterior a la factura mueve el borde; uno anterior, no. */
+  await tocar(caja.querySelector('[data-dia="1"]'));
+  assert.equal(caja.querySelector("[data-perilla]").getAttribute("aria-valuenow"), "2");
+  await tocar(caja.querySelector('[data-dia="16"]'));
+  assert.equal(caja.querySelector("[data-perilla]").getAttribute("aria-valuetext"), "Termina el 16 de septiembre");
+  /* La franja: del 3 al 16, un tramo por fila (3-7, 8-14, 15-16), con fondo y contorno de 1 px. */
+  assert.deepEqual(tramosDe(caja, "estudiante"), ["1:3 / 8", "2:1 / 8", "3:1 / 3"]);
+  const t = caja.querySelector('[data-tramo="estudiante"]');
+  assert.equal(t.style.background, "rgba(184, 196, 212, 0.18)");
+  assert.equal(t.style.borderRadius, "6px");
+  assert.equal(comprobar().getAttribute("aria-disabled"), null);
+  /* Error (cuenta el día de la factura): coral en la franja, «No va aquí», y la correcta con «Iba aquí: 17 sep». */
+  await tecla(caja.querySelector("[data-perilla]"), "Enter");
+  assert.equal(Boolean(caja.querySelector("[data-perilla]")), false, "la perilla sigue después de comprobar");
+  assert.match(caja.querySelector('[data-tramo="estudiante"]').style.border, /2px solid (#E76F51|rgb\(231, 111, 81\))/i);
+  assert.deepEqual(tramosDe(caja, "correcta"), ["1:3 / 8", "2:1 / 8", "3:1 / 4"]);
+  assert.deepEqual([...caja.querySelectorAll("[data-veredicto-ventana] [data-veredicto]")].map((v) => v.textContent), ["No va aquíIncorrecto.", "Iba aquí: 17 sep"]);
+  assert.equal(caja.querySelector("[data-devolucion-ventana]").dataset.devolucionVentana, "error");
+  /* El pago cae en su día, y sigue el armador, sin botón en medio. */
+  assert.ok(caja.querySelector('[data-dia="17"] [data-pago]'));
+  assert.ok(caja.querySelector('[data-armador="tu-asiento"]'));
+  /* Una calificación: el asiento bien no salva la ventana mal. */
+  for (const r of bien(A[k])) await anadir(caja, r.lado, r.cuenta, r.valor);
+  await tocar(caja.querySelector("[data-revisar]"));
+  assert.equal(caja.querySelector("[data-devolucion]").dataset.devolucion, "error");
+});
+
+test("★★★ P2 · la ventana bien y el asiento bien califican acierto; la respuesta guarda el borde; el contorno pasa a 2 px #F8F9FA", async () => {
+  const fin = [];
+  const k = A.findIndex((x) => x.id === "a9");
+  const { caja } = await montar(h(Barranquilla, { pasoInicial: k, onCompletar: (...x) => fin.push(x) }));
+  await abrirVentana(caja, A[k]);
+  assert.match(caja.querySelector('[data-tramo="estudiante"]').style.border, /2px solid (#F8F9FA|rgb\(248, 249, 250\))/i);
+  assert.equal(caja.querySelectorAll('[data-tramo="correcta"]').length, 0);
+  assert.deepEqual([...caja.querySelectorAll("[data-veredicto-ventana] [data-veredicto]")].map((v) => v.textContent), ["Correcto"]);
+  for (const r of bien(A[k])) await anadir(caja, r.lado, r.cuenta, r.valor);
+  await tocar(caja.querySelector("[data-revisar]"));
+  assert.equal(caja.querySelector("[data-devolucion]").dataset.devolucion, "acierto");
+  /* El asiento de r5-4 (el último no es este): sin el panel del mes; el botón sigue. */
+  assert.ok(caja.querySelector("[data-siguiente]"));
+});
+
+test("★★★ P2 §10 · los textos del calendario son los de Miyata, literales en el paquete: mensajes de la ventana, nombres cortos (≤ 20) y texto alternativo (≤ 120)", async () => {
+  const C = T.CALENDARIO_R5_4;
+  const seccion = PAQUETE.slice(PAQUETE.indexOf("## v2 · r5-4 rediseñada"));
+  const mensajes = [...Object.values(C.ventanaOk), ...Object.values(C.ventanaMal)];
+  assert.equal(mensajes.length, 4);
+  for (const t of [...mensajes, C.alt]) assert.ok(seccion.includes(`\n- ${t}\n`), t);
+  for (const n of Object.values(C.nombres)) assert.ok(seccion.includes(`«${n}»`), n);
+  assert.deepEqual(Object.keys(C.nombres), A.map((a) => a.id));
+  assert.deepEqual(mensajes.filter((t) => t.length > 140), []);
+  assert.deepEqual(Object.values(C.nombres).filter((t) => t.length > 20), []);
+  assert.ok(C.alt.length <= 120);
+  assert.deepEqual(A.filter((a) => a.hecho.length > 90).map((a) => a.id), [], "una frase del hecho pasa de 90 caracteres");
+  /* La orden de arrastrar va en la frase de los dos asientos con condición. */
+  assert.deepEqual(A.filter((a) => /Arrastra el borde/.test(a.hecho)).map((a) => a.id), ["a7", "a9"]);
+  /* Y salen en pantalla: el texto alternativo en la rejilla y el nombre corto en su celda. */
+  const k = A.findIndex((x) => x.id === "a7");
+  const { caja } = await montar(h(Barranquilla, { pasoInicial: k }));
+  assert.equal(caja.querySelector('[data-calendario] [role="grid"]').getAttribute("aria-label"), C.alt);
+  assert.equal(caja.querySelector('[data-dia="17"]').getAttribute("aria-label"), `17 de septiembre: ${C.nombres.a7}`);
+  await abrirVentana(caja, A[k]);
+  assert.ok(caja.querySelector("[data-devolucion-ventana]").textContent.endsWith(C.ventanaOk.a7));
+});
+
+test("★★ P2 · el área táctil de la perilla mide 44 × 44, centrada en la perilla de 16 px (a 320 lo mide scripts/e5/medir-r5-4.mjs)", async () => {
+  const { AREA_PERILLA } = await import("../../components/repasoCap5/Calendario.jsx");
+  assert.equal(AREA_PERILLA, 44);
+  const k = A.findIndex((x) => x.id === "a7");
+  const { caja } = await montar(h(Barranquilla, { pasoInicial: k }));
+  const area = caja.querySelector("[data-perilla-area]");
+  assert.deepEqual([area.style.width, area.style.height, area.style.marginLeft, area.style.marginTop], ["44px", "44px", "-22px", "-22px"]);
+  const boton = caja.querySelector("[data-perilla-boton]");
+  assert.deepEqual([boton.style.width, boton.style.height], ["16px", "16px"]);
 });

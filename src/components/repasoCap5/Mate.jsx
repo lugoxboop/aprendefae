@@ -7,6 +7,7 @@ import {
 } from "./comun.jsx";
 import { cifra, leerCifra } from "./ToroNegro.jsx";
 import { MesEnDosCuentas } from "./MesEnDosCuentas.jsx";
+import { Calendario, CSS_CALENDARIO } from "./Calendario.jsx";
 import { movimientosDelMes } from "../../data/repasoCap5Mes.js";
 import {
   R5_3, MES_MATE, ASIENTOS_MATE, HOJA_MATE, ENTRADA_MATE, DATOS_DEL_LIBRO, DATOS_DECLARADOS, ROTULOS_MATE as RM,
@@ -225,14 +226,20 @@ export function hechoDiceSuFecha(a) {
   return Boolean(dia) && a.hecho.toLowerCase().startsWith(`${mes.toLowerCase()} ${dia}:`);
 }
 
-function Hecho({ a }) {
+/*
+ * `parte`: «todo» (r5-3), o, con el calendario de r5-4 (P2 de Itagaki), «frase»
+ * (la frase del hecho, Inter 14/20, sobre el Panel) y «datos» (los renglones,
+ * en el hundido, debajo del calendario).
+ */
+function Hecho({ a, parte = "todo" }) {
   const { RM } = useActividad();
   const conMarca = !hechoDiceSuFecha(a);
+  if (parte === "frase") return <p data-frase style={{ margin: 0, fontFamily: INTER, fontSize: "14px", lineHeight: "20px", color: C.texto }}>{a.hecho}</p>;
   return (
     <div data-hecho style={{ ...HUNDIDO, borderRadius: "12px", padding: "12px" }}>
-      {conMarca && <p data-marca-fecha-hecho style={{ ...MARCA, margin: 0 }}>{a.fecha}</p>}
-      <p data-frase style={{ margin: conMarca ? "4px 0 0" : 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{a.hecho}</p>
-      <div style={{ marginTop: "8px" }}>
+      {parte === "todo" && conMarca && <p data-marca-fecha-hecho style={{ ...MARCA, margin: 0 }}>{a.fecha}</p>}
+      {parte === "todo" && <p data-frase style={{ margin: conMarca ? "4px 0 0" : 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{a.hecho}</p>}
+      <div style={{ marginTop: parte === "todo" ? "8px" : 0 }}>
         {a.renglones.map(([et, val]) => (
           <div key={et} data-renglon-hecho style={renglonDeDato}>
             <span style={{ fontFamily: INTER, fontSize: "14px", color: C.atenuado }}>{et}</span>
@@ -507,9 +514,19 @@ export function HojaRenglon({ lado, inicial = null, renglones, onListo, onQuitar
 
 let siguienteId = 0;
 
+/* r5-4: los puntos del mes (asientos ya hechos), los nombres de cada día y el resumen. */
+const marcasDelMes = (asientos, hechos) => asientos.slice(0, hechos).reduce((m, x) => ({ ...m, [x.dia]: (m[x.dia] ?? 0) + 1 }), {});
+const nombresDelMes = (asientos, nombres) => asientos.reduce((m, x) => ({ ...m, [x.dia]: [...(m[x.dia] ?? []), nombres[x.id]] }), {});
+const resumenDelMes = (asientos, resultados) => asientos.reduce((m, x) => ({ ...m, [x.dia]: [...(m[x.dia] ?? []), Boolean(resultados[x.id])] }), {});
+
 function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }) {
-  const { id, RM, R5_3, SIN_ENTRADA, evaluarMate, MES_MATE, MOVIMIENTOS_MATE, LINEAS_MES } = useActividad();
+  const { id, RM, R5_3, SIN_ENTRADA, CALENDARIO, TEXTOS_CALENDARIO: TC, ASIENTOS_MATE, evaluarMate, MES_MATE, MOVIMIENTOS_MATE, LINEAS_MES } = useActividad();
   const [renglones, setRenglones] = useState([]);
+  /* r5-4 (P2 de Itagaki): la ventana del descuento, en los asientos con condición. */
+  const ventana = CALENDARIO && a.ventana ? { ...a.ventana, borde: a.ventana.factura + a.ventana.plazo } : null;
+  const [borde, setBorde] = useState(ventana?.factura ?? null);
+  const [calVentana, setCalVentana] = useState(null); // null | "ok" | "mal"
+  const comprobarVentana = () => { if (ventana && borde > ventana.factura && !calVentana) setCalVentana(borde === ventana.borde ? "ok" : "mal"); };
   const [hoja, setHoja] = useState(null); // { lado, inicial }
   const revelar = useTrasError(Boolean(r && !r.ok));
   const [datos, setDatos] = useState(false);
@@ -528,8 +545,33 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
       {SIN_ENTRADA && i === 0 && <p data-objetivo style={{ margin: "0 0 16px", fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.atenuado }}>{R5_3.objetivo}</p>}
       {/* §4.3: el contador «Asiento n de N», a 12 px #A8B6C8. */}
       <p data-progreso style={{ ...CONTADOR, margin: 0 }}>{RM.progreso(i + 1, total)}</p>
-      <div style={{ marginTop: "8px" }}><LineaDeMarzo actual={i} hechos={i} /></div>
-      <div style={{ marginTop: "16px" }}><Hecho a={a} /></div>
+      {!CALENDARIO && <div style={{ marginTop: "8px" }}><LineaDeMarzo actual={i} hechos={i} /></div>}
+      {!CALENDARIO && <div style={{ marginTop: "16px" }}><Hecho a={a} /></div>}
+      {CALENDARIO && (
+        <>
+          <div style={{ marginTop: "16px" }}><Hecho a={a} parte="frase" /></div>
+          <div style={{ marginTop: "12px" }}>
+            <Calendario
+              mes={RM.mes}
+              etiqueta={TC.alt}
+              actual={a.dia}
+              marcas={marcasDelMes(ASIENTOS_MATE, r ? i + 1 : i)}
+              nombres={nombresDelMes(ASIENTOS_MATE, TC.nombres)}
+              ventana={ventana}
+              borde={borde}
+              onBorde={setBorde}
+              onComprobar={comprobarVentana}
+              calif={calVentana}
+            />
+          </div>
+          {ventana && !calVentana && <Comprobar activo={borde > ventana.factura} onClick={comprobarVentana} dato="revisar-ventana" />}
+          {ventana && calVentana && (
+            <Devolucion r={{ ok: calVentana === "ok", textos: [calVentana === "ok" ? TC.ventanaOk[a.id] : TC.ventanaMal[a.id]] }} dato="devolucion-ventana" />
+          )}
+          {(!ventana || calVentana) && <div style={{ marginTop: "12px" }}><Hecho a={a} parte="datos" /></div>}
+        </>
+      )}
+      {(!ventana || calVentana) && (<>
       <div style={{ marginTop: "12px" }}><BotonDatos onAbrir={() => setDatos(true)} /></div>
       <div style={{ marginTop: "16px" }}>
         <Armador
@@ -549,11 +591,13 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
         </div>
       )}
       {/* §4.3: «Comprobar», porque el asiento tiene varios renglones. */}
-      {!r && <Comprobar activo={puedeRevisarMate(renglones)} onClick={() => onRespondida(evaluarMate(a, renglones), renglones)} dato="revisar" />}
+      {/* P2 §6: con ventana, el acierto pide la ventana y el asiento. */}
+      {!r && <Comprobar activo={puedeRevisarMate(renglones)} onClick={() => { const v = evaluarMate(a, renglones); onRespondida(ventana ? { ...v, ok: v.ok && calVentana === "ok" } : v, renglones, ventana ? borde : null); }} dato="revisar" />}
       <Devolucion r={r && { ok: r.ok, textos: r.textos }} />
       {/* Después de la devolución, sin desplazamiento forzado (corrección 1 de Takamura). En el error, espera a «Iba aquí»: si no, el armador revelado lo empuja mientras anima. */}
-      {r && (r.ok || revelar) && <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={i} linea={LINEAS_MES[a.id] ?? null} />}
+      {!CALENDARIO && r && (r.ok || revelar) && <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={i} linea={LINEAS_MES[a.id] ?? null} />}
       {r && <BotonSiguiente onClick={onSiguiente} botonRef={botonRef} sustantivo={RM.sustantivo} ultimo={i + 1 === total} />}
+      </>)}
       {hoja && <HojaRenglon lado={hoja.lado} inicial={hoja.inicial} renglones={renglones} onListo={listo} onQuitar={quitar} onCancelar={() => setHoja(null)} />}
       {datos && <HojaDatosDeMarzo onCerrar={() => setDatos(false)} />}
       <Cita texto={R5_3.cita} />
@@ -610,7 +654,7 @@ export function Mate(props) {
 }
 
 function Partida({ onCompletar, pasoInicial }) {
-  const { id, ASIENTOS_MATE, puntuarR5_3, MES_MATE, MOVIMIENTOS_MATE, SIN_ENTRADA } = useActividad();
+  const { id, ASIENTOS_MATE, puntuarR5_3, MES_MATE, MOVIMIENTOS_MATE, SIN_ENTRADA, CALENDARIO, TEXTOS_CALENDARIO: TC, RM } = useActividad();
   /* -1: entrada; luego, un asiento por paso. Sin entrada (r5-3), se abre en el primer asiento. */
   const primero = SIN_ENTRADA ? 0 : -1;
   const [paso, setPaso] = useState(pasoInicial < 0 ? primero : pasoInicial);
@@ -629,8 +673,8 @@ function Partida({ onCompletar, pasoInicial }) {
   /* El foco baja a «Siguiente» SIN mover la página (corrección 1 de Takamura): se ven juntos ERA ESTE y la devolución. */
   useEffect(() => { if (r) boton.current?.focus({ preventScroll: true }); }, [r]);
 
-  const responder = (a) => (veredicto, renglones) => {
-    const respuesta = renglones.map((x) => `${x.lado === "debe" ? "D" : "H"} ${x.cuenta} ${x.valor}`).join(" | ");
+  const responder = (a) => (veredicto, renglones, borde = null) => {
+    const respuesta = (borde === null ? "" : `V ${borde} | `) + renglones.map((x) => `${x.lado === "debe" ? "D" : "H"} ${x.cuenta} ${x.valor}`).join(" | ");
     detalle.current.push({ item: a.id, ok: veredicto.ok, intentos: 1, respuesta: veredicto.ok ? null : respuesta, orden: detalle.current.length + 1 });
     setResultados((x) => ({ ...x, [a.id]: veredicto.ok }));
     setR(veredicto);
@@ -649,8 +693,10 @@ function Partida({ onCompletar, pasoInicial }) {
   if (terminado) {
     return (
       <div {...{ [`data-${id}`]: true }} data-r5 data-cierre>
-        <style>{CSS_JUEGO + CSS_MATE}</style>
-        <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={null} final={MES_MATE.final} />
+        <style>{CSS_JUEGO + CSS_MATE + CSS_CALENDARIO}</style>
+        {CALENDARIO
+          ? <Calendario mes={RM.mes} etiqueta={TC.alt} nombres={nombresDelMes(ASIENTOS_MATE, TC.nombres)} resumen={resumenDelMes(ASIENTOS_MATE, resultados)} />
+          : <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={null} final={MES_MATE.final} />}
         <div style={{ marginTop: "16px" }}><MarzoEnOcho resultados={resultados} /></div>
         <Cierre pct={Math.round(puntuarR5_3(bien, total))} onReiniciar={reiniciar} />
       </div>
@@ -659,7 +705,7 @@ function Partida({ onCompletar, pasoInicial }) {
   if (paso < 0) {
     return (
       <>
-        <style>{CSS_JUEGO + CSS_MATE}</style>
+        <style>{CSS_JUEGO + CSS_MATE + CSS_CALENDARIO}</style>
         <Entrada onEmpezar={() => setPaso(0)} />
       </>
     );
@@ -667,7 +713,7 @@ function Partida({ onCompletar, pasoInicial }) {
   const a = ASIENTOS_MATE[paso];
   return (
     <>
-      <style>{CSS_JUEGO + CSS_MATE}</style>
+      <style>{CSS_JUEGO + CSS_MATE + CSS_CALENDARIO}</style>
       <PantallaAsiento key={a.id} a={a} i={paso} total={total} r={r} onRespondida={responder(a)} onSiguiente={siguiente} botonRef={boton} />
     </>
   );

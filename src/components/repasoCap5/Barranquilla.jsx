@@ -3,7 +3,7 @@ import { movimientosDelMes } from "../../data/repasoCap5Mes.js";
 import { evaluarBarranquilla, puntuarR5_4 } from "../../data/repasoCap5BarranquillaJuego.js";
 import {
   R5_4, ASIENTOS_BARRANQUILLA, HOJA_BARRANQUILLA, ENTRADA_BARRANQUILLA, AVISO_BARRANQUILLA,
-  DATOS_DEL_LIBRO_BARRANQUILLA, DATOS_DECLARADOS_BARRANQUILLA, ROTULOS_BARRANQUILLA,
+  DATOS_DEL_LIBRO_BARRANQUILLA, DATOS_DECLARADOS_BARRANQUILLA, ROTULOS_BARRANQUILLA, CALENDARIO_R5_4,
   MES_BARRANQUILLA, LINEAS_MES_BARRANQUILLA,
 } from "../../data/repasoCap5BarranquillaTextos.js";
 
@@ -41,6 +41,9 @@ export const ACTIVIDAD_BARRANQUILLA = {
   NODO: 8,
   AVISO: AVISO_BARRANQUILLA,
   LINEAS_MES: LINEAS_MES_BARRANQUILLA,
+  /* P2 de Itagaki: el calendario es la figura del mes; el panel «el mes en dos cuentas» sale de r5-4. */
+  CALENDARIO: true,
+  TEXTOS_CALENDARIO: CALENDARIO_R5_4,
 };
 
 export function Barranquilla(props) {
