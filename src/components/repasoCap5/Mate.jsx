@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useId, useRef, useState } from "r
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 /* Los estados de calificación, el «ERA ESTE», los puntos y la palabra: de comun.jsx (B4, E3). */
 import {
-  C, INTER, SORA, MARCA, CEJILLA, CONTADOR, CIFRA, HUNDIDO, REPOSO, SOLO_LECTOR, LECTOR, CSS_FOCO, Devolucion, BotonSiguiente, Responder, Comprobar,
+  C, INTER, SORA, MARCA, CEJILLA, CONTADOR, CIFRA, HUNDIDO, REPOSO, SOLO_LECTOR, LECTOR, CSS_FOCO, Devolucion, BotonSiguiente, Responder, Comprobar, Cita,
   ESTADOS, Punto, MarcaPieza, Pastilla, useTrasError,
 } from "./comun.jsx";
 import { cifra, leerCifra } from "./ToroNegro.jsx";
@@ -49,6 +49,8 @@ const MOVIMIENTOS_MATE = movimientosDelMes(ASIENTOS_MATE, MES_MATE.cuentas);
 export const ACTIVIDAD_MATE = {
   id: "r5-3", R5_3, MES_MATE, MOVIMIENTOS_MATE, ASIENTOS_MATE, HOJA_MATE, ENTRADA_MATE, DATOS_DEL_LIBRO, DATOS_DECLARADOS, RM,
   evaluarMate, puntuarR5_3, MES_CORTO: "MAR", DIAS: 31, NODO: 10, AVISO: null, LINEAS_MES: {},
+  /* Lote de textos (Miyata): r5-3 no tiene pantalla de entrada; cada dato va en el asiento que lo usa. */
+  SIN_ENTRADA: true,
 };
 const Actividad = createContext(ACTIVIDAD_MATE);
 const useActividad = () => useContext(Actividad);
@@ -506,7 +508,7 @@ export function HojaRenglon({ lado, inicial = null, renglones, onListo, onQuitar
 let siguienteId = 0;
 
 function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }) {
-  const { id, RM, evaluarMate, MES_MATE, MOVIMIENTOS_MATE, LINEAS_MES } = useActividad();
+  const { id, RM, R5_3, SIN_ENTRADA, evaluarMate, MES_MATE, MOVIMIENTOS_MATE, LINEAS_MES } = useActividad();
   const [renglones, setRenglones] = useState([]);
   const [hoja, setHoja] = useState(null); // { lado, inicial }
   const revelar = useTrasError(Boolean(r && !r.ok));
@@ -522,6 +524,8 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
 
   return (
     <div {...{ [`data-${id}`]: true }} data-r5 data-paso={a.id}>
+      {/* E1: sin entrada, el objetivo de Miyata va encima del primer asiento, solo ahí. */}
+      {SIN_ENTRADA && i === 0 && <p data-objetivo style={{ margin: "0 0 16px", fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.atenuado }}>{R5_3.objetivo}</p>}
       {/* §4.3: el contador «Asiento n de N», a 12 px #A8B6C8. */}
       <p data-progreso style={{ ...CONTADOR, margin: 0 }}>{RM.progreso(i + 1, total)}</p>
       <div style={{ marginTop: "8px" }}><LineaDeMarzo actual={i} hechos={i} /></div>
@@ -552,6 +556,7 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
       {r && <BotonSiguiente onClick={onSiguiente} botonRef={botonRef} sustantivo={RM.sustantivo} ultimo={i + 1 === total} />}
       {hoja && <HojaRenglon lado={hoja.lado} inicial={hoja.inicial} renglones={renglones} onListo={listo} onQuitar={quitar} onCancelar={() => setHoja(null)} />}
       {datos && <HojaDatosDeMarzo onCerrar={() => setDatos(false)} />}
+      <Cita texto={R5_3.cita} />
     </div>
   );
 }
@@ -605,8 +610,10 @@ export function Mate(props) {
 }
 
 function Partida({ onCompletar, pasoInicial }) {
-  const { id, ASIENTOS_MATE, puntuarR5_3, MES_MATE, MOVIMIENTOS_MATE } = useActividad();
-  const [paso, setPaso] = useState(pasoInicial); // -1: entrada; luego, un asiento por paso
+  const { id, ASIENTOS_MATE, puntuarR5_3, MES_MATE, MOVIMIENTOS_MATE, SIN_ENTRADA } = useActividad();
+  /* -1: entrada; luego, un asiento por paso. Sin entrada (r5-3), se abre en el primer asiento. */
+  const primero = SIN_ENTRADA ? 0 : -1;
+  const [paso, setPaso] = useState(pasoInicial < 0 ? primero : pasoInicial);
   const [r, setR] = useState(null);
   const [resultados, setResultados] = useState({});
   const [terminado, setTerminado] = useState(false);
@@ -635,7 +642,7 @@ function Partida({ onCompletar, pasoInicial }) {
     try { globalThis.scrollTo?.(0, 0); } catch { /* sin ventana */ }
   };
   const reiniciar = () => {
-    setPaso(-1); setR(null); setResultados({}); setTerminado(false);
+    setPaso(primero); setR(null); setResultados({}); setTerminado(false);
     detalle.current = []; inicio.current = Date.now();
   };
 

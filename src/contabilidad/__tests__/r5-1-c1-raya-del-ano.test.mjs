@@ -80,7 +80,9 @@ const opcion = (caja, id) => caja.querySelector(`[data-opcion="${id}"] button`);
 test("★★★ cada texto de C.1 está, literal, en la sección v2.3 del paquete (guarda: 7 textos y 4 grupos)", () => {
   const textos = [C1.enunciado, C1.pista, ...C1.opciones.map((o) => o.retro), D.R5_1.objetivo];
   assert.equal(new Set(textos).size, 7);
-  const fuera = textos.filter((t) => !V23.includes(`«${t}»`));
+  /* v2.4 (lote de textos de Miyata): el enunciado nuevo va en su tabla. */
+  const V24 = PAQUETE.slice(PAQUETE.indexOf("## v2.4 · lote de textos")).replace(/\s+/g, " ");
+  const fuera = textos.filter((t) => !V23.includes(`«${t}»`) && !V24.includes(`| ${t} |`));
   assert.deepEqual(fuera, [], `no están: ${fuera.join(" | ")}`);
   /* Los cuatro grupos, en su renglón «x) A · B · C · D», en el orden del paquete. */
   const letras = ["a", "b", "c", "d"];

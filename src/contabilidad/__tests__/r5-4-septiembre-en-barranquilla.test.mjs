@@ -112,16 +112,16 @@ function textosDeAsiento(a) {
   return [...new Set([...Object.values(a.cruzado), ...Object.values(a.falta), ...cm, ...a.valorMal.map((x) => x.texto), a.generica, ...a.acierto])];
 }
 function textosDelEstudiante() {
-  const t = [T.R5_4.objetivo, T.ENTRADA_BARRANQUILLA.apertura, T.AVISO_BARRANQUILLA, ...T.DATOS_DECLARADOS_BARRANQUILLA.datos, T.COMUNES_BARRANQUILLA.cuentaNoPrevista, T.COMUNES_BARRANQUILLA.hayMas];
+  const t = [T.R5_4.objetivo, T.R5_4.cita, T.ENTRADA_BARRANQUILLA.apertura, T.AVISO_BARRANQUILLA, ...T.DATOS_DECLARADOS_BARRANQUILLA.datos, T.COMUNES_BARRANQUILLA.cuentaNoPrevista, T.COMUNES_BARRANQUILLA.hayMas];
   for (const g of T.DATOS_DEL_LIBRO_BARRANQUILLA) if (g.nota) t.push(g.nota);
   for (const a of A) t.push(a.hecho, ...textosDeAsiento(a));
   t.push(...Object.values(T.LINEAS_MES_BARRANQUILLA));
   return [...new Set(t)];
 }
 
-test("★★★ cada texto del estudiante está entero en el paquete (guarda: 120 textos distintos)", () => {
+test("★★★ cada texto del estudiante está entero en el paquete (guarda: 121 textos distintos)", () => {
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 120);
+  assert.equal(textos.length, 121);
   const escapar = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const entero = (t) => new RegExp(`(?:: |:\\*\\* |\\n- |\\| )${escapar(t)}(?:\\n| \\||$)`).test(PAQUETE) || PLANO.includes(`«${t}»`) || PAQUETE_MES.includes(`| ${t} |`);
   const fuera = textos.filter((t) => !entero(t));
@@ -421,7 +421,7 @@ async function jugarCamino(k, renglones) {
   return pantalla;
 }
 
-test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 120 textos, 96 caminos)", async () => {
+test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 121 textos, 96 caminos)", async () => {
   const vistas = [];
   const entrada = await montar(h(Barranquilla, {}));
   vistas.push(document.body.textContent);
@@ -436,7 +436,7 @@ test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estad
   }
   const todo = vistas.join("\n");
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 120);
+  assert.equal(textos.length, 121);
   const faltan = textos.filter((t) => !todo.includes(t));
   assert.deepEqual(faltan, [], `no salen en pantalla: ${faltan.join(" | ")}`);
   assert.equal(caminos, 96, "no jugó los caminos que dice jugar");
@@ -537,7 +537,7 @@ test("★★ B4: r5-4 no define estados ni colores de calificación propios: los
   assert.match(fuente, /import \{ MesContable \} from "\.\/Mate\.jsx"/);
 });
 
-test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 102 medidos)", () => {
+test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 103 medidos)", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of textosDelEstudiante()) {
@@ -547,7 +547,7 @@ test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda:
     medidos++;
     if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
-  assert.equal(medidos, 102, "no midió los textos que dice medir");
+  assert.equal(medidos, 103, "no midió los textos que dice medir");
   assert.deepEqual(bajos, []);
   /* Los dos que Kamogawa sustituyó (daban 59,7) ya pasan. */
   for (const id of ["a8", "a10"]) assert.ok(inflesz(asiento(id).hecho).valor >= UMBRAL, id);

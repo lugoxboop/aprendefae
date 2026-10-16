@@ -45,6 +45,8 @@ export const R5_4 = {
   fpBase: 90,
   modalidad: "evaluativa",
   objetivo: "Registra un mes de compras y ventas: descuentos, devoluciones, fletes y pagos a tiempo.",
+  /* Lote de textos (Miyata): la cita del libro, al pie de cada asiento. */
+  cita: "Basado en el libro: el 6 del bloque D, pp. 273-274.",
 };
 
 /* Las reglas comunes son las de r5-3. */
@@ -135,7 +137,7 @@ export const ASIENTOS_BARRANQUILLA = [
       ...v2([COMPRAS, PROVEEDORES], E.a1.losDos, "Restaste los dos descuentos. El comercial va hoy; el condicionado espera al pago."),
     ],
     generica: "Resta solo el descuento comercial. El condicionado no se toca al comprar.",
-    acierto: ["Bien. El comercial se resta hoy. El 10 % queda en espera: depende de cuándo pagues."],
+    acierto: ["El comercial se resta hoy. El 10 % queda en espera: depende de cuándo pagues."],
   },
   {
     id: "a2",
@@ -164,7 +166,7 @@ export const ASIENTOS_BARRANQUILLA = [
     generica: "El flete de lo comprado suma al costo. Sale entero de Caja.",
     /* Un acierto por variante, en el orden de `correctos`. */
     acierto: [
-      "Correcto. El flete suma al costo de la compra, en su propia subcuenta. Sin retención, sale entero de Caja.",
+      "El flete suma al costo de la compra, en su propia subcuenta. Sin retención, sale entero de Caja.",
       "También vale: el flete suma al costo de la compra. En Inventarios I lo llevamos a su subcuenta, Compras (fletes).",
     ],
   },
@@ -194,7 +196,7 @@ export const ASIENTOS_BARRANQUILLA = [
       ...v2([PROVEEDORES, DEV_COMPRAS], E.a3.conCondicionado, "Le quitaste el 10 %. Ese aún no se ha ganado: nadie ha pagado."),
     ],
     generica: "Usa solo las 700 que vuelven. Cada una vale lo que pagaste el día 2.",
-    acierto: ["Correcto. Devuelves al mismo precio que pagaste, y tu deuda baja $1.529.500."],
+    acierto: ["Devuelves al mismo precio que pagaste, y tu deuda baja $1.529.500."],
   },
   {
     id: "a4",
@@ -227,7 +229,7 @@ export const ASIENTOS_BARRANQUILLA = [
       ...v2([CLIENTES, INGRESOS], E.a4.conFlete, "Restaste el flete. Va en su propio asiento: el siguiente."),
     ],
     generica: "Hoy solo va el 10 %. El 5 % se gana o se pierde al cobrar.",
-    acierto: ["Bien. El 10 % comercial se resta hoy. El 5 % queda en espera: depende de cuándo pague el cliente."],
+    acierto: ["El 10 % comercial se resta hoy. El 5 % queda en espera: depende de cuándo pague el cliente."],
   },
   {
     id: "a5",
@@ -252,7 +254,7 @@ export const ASIENTOS_BARRANQUILLA = [
     },
     valorMal: v2([GASTO_FLETES, CAJA], E.a5.conComercial, "El 10 % es de la venta, no del flete. El flete se paga entero."),
     generica: "Lo que cuesta llevar la venta es gasto. Sale entero de Caja.",
-    acierto: ["Bien. Lo que cuesta vender es gasto, y aquí sale entero de Caja."],
+    acierto: ["Lo que cuesta vender es gasto, y aquí sale entero de Caja."],
   },
   {
     id: "a6",
@@ -279,7 +281,7 @@ export const ASIENTOS_BARRANQUILLA = [
       ...v2([DEVOLUCIONES, CLIENTES], E.a6.conCondicionado, "Le quitaste el 5 %. Ese aún no se ha ganado: el cliente no ha pagado."),
     ],
     generica: "Usa solo las 200 que vuelven. Cada una vale lo que se cobró el día 10.",
-    acierto: ["Correcto. Vuelven al precio que se cobró, y el cliente debe $1.800.000 menos."],
+    acierto: ["Vuelven al precio que se cobró, y el cliente debe $1.800.000 menos."],
   },
   {
     id: "a7",
@@ -308,7 +310,7 @@ export const ASIENTOS_BARRANQUILLA = [
       v(PROVEEDORES, E.a7.proveedorNeto, "La deuda se cancela completa. El descuento es la parte que no pagas."),
     ],
     generica: "Cuenta los días. Si ganas el descuento, réstalo del saldo: eso sale de Caja.",
-    acierto: ["Bien. Pagaste justo en el día 15 y ganaste el 10 %. La deuda se cancela entera, aunque salgan $939.550 menos."],
+    acierto: ["Pagaste justo en el día 15 y ganaste el 10 %. La deuda se cancela entera, aunque salgan $939.550 menos."],
   },
   {
     id: "a8",
@@ -333,7 +335,7 @@ export const ASIENTOS_BARRANQUILLA = [
       ...v2([COMPRAS, CAJA], E.a8.elDescuento, "Ese es el descuento. Lo que pagas es lo que queda: $15.500.000."),
     ],
     generica: "Resta el 20 % al precio. Eso es lo que pagas.",
-    acierto: ["Bien. El 20 % comercial se resta en la factura, y pagas de una vez $15.500.000."],
+    acierto: ["El 20 % comercial se resta en la factura, y pagas de una vez $15.500.000."],
   },
   {
     id: "a9",
@@ -361,7 +363,7 @@ export const ASIENTOS_BARRANQUILLA = [
       v(CLIENTES, E.a9.clienteNeto, "La deuda del cliente se cancela entera. El descuento es lo que no te paga."),
     ],
     generica: "Cuenta los días. Si el cliente gana el descuento, réstalo del saldo: eso entra a Caja.",
-    acierto: ["Correcto. El cliente pagó en el día 15 y ganó el 5 %. Su deuda se cancela entera, aunque entren $2.610.000 menos."],
+    acierto: ["El cliente pagó en el día 15 y ganó el 5 %. Su deuda se cancela entera, aunque entren $2.610.000 menos."],
   },
   {
     id: "a10",
@@ -387,7 +389,7 @@ export const ASIENTOS_BARRANQUILLA = [
       ...v2([CAJA, INGRESOS], E.a10.elDescuento, "Ese es el descuento. Lo que entra es lo que queda: $56.120.000."),
     ],
     generica: "Resta el 8 % al precio. Eso entra a Caja.",
-    acierto: ["Bien. El 8 % comercial se resta en la factura, y entran $56.120.000 de una vez."],
+    acierto: ["El 8 % comercial se resta en la factura, y entran $56.120.000 de una vez."],
   },
 ];
 

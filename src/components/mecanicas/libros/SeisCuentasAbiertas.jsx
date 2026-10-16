@@ -103,7 +103,8 @@ export default function SeisCuentasAbiertas({ banco, Marco, rotulo, titulo, acen
           const esLaBuena = retro && c.id === item.respuesta;
           const esLaTocada = retro && c.id === retro.elegida;
           let borde = "rgba(248,249,250,0.18)";
-          if (esLaBuena) borde = FAE.teal;
+          /* B4: la buena va en neutro —sea el acierto o la revelada—, nunca en teal. */
+          if (esLaBuena) borde = FAE.text;
           else if (esLaTocada) borde = FAE.coral;
 
           return (
@@ -136,12 +137,12 @@ export default function SeisCuentasAbiertas({ banco, Marco, rotulo, titulo, acen
               {recibidas.length === 0
                 ? <span style={{ fontSize: "11px", color: "rgba(248,249,250,0.28)" }}>—</span>
                 : recibidas.map((nombre) => (
-                  <span key={nombre} data-apilada style={{ fontSize: "11px", lineHeight: 1.3, color: "rgba(248,249,250,0.72)" }}>
+                  <span key={nombre} data-apilada style={{ fontSize: "12px", lineHeight: 1.3, color: "rgba(248,249,250,0.72)" }}>
                     {nombre}
                   </span>
                 ))}
               {esLaBuena && !mesa[c.id]?.includes(item.cuenta) && (
-                <span className="fae-cae" style={{ fontSize: "11px", lineHeight: 1.3, color: FAE.teal, fontWeight: 600 }}>
+                <span className="fae-cae" style={{ fontSize: "12px", lineHeight: 1.3, color: FAE.teal, fontWeight: 600 }}>
                   {item.cuenta}
                 </span>
               )}

@@ -434,7 +434,7 @@ function ReglaMeses({ calendario, anima, reducido }) {
       {MESES_P4.map((mes, i) => (
         <span key={`c-${mes}`} data-rotulo-cierre={i} style={{
           position: "absolute", right: `calc(100% - ${xCorteMes(i)} + 5px)`, top: 0, whiteSpace: "nowrap",
-          fontFamily: INTER, fontSize: "11px", fontWeight: 600, lineHeight: "16px", color: COLOR.apagado, animation: fundido,
+          fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px", color: COLOR.apagado, animation: fundido,
         }}>
           {ROTULO_CIERRE}
         </span>

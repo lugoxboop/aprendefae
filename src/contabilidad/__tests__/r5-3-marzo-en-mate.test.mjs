@@ -101,15 +101,15 @@ const anadir = async (caja, lado, cuenta, valor) => {
 /* ═══════════ LO QUE LEE EL ESTUDIANTE ═══════════ */
 
 function textosDelEstudiante() {
-  const t = [T.R5_3.objetivo, T.ENTRADA_MATE.apertura, T.ENTRADA_MATE.instruccion, T.DATOS_DECLARADOS.linea, ...T.DATOS_DECLARADOS.datos, T.COMUNES_MATE.cuentaNoPrevista, T.COMUNES_MATE.hayMas];
+  const t = [T.R5_3.objetivo, T.R5_3.cita, T.DATOS_DECLARADOS.linea, ...T.DATOS_DECLARADOS.datos, T.COMUNES_MATE.cuentaNoPrevista, T.COMUNES_MATE.hayMas];
   for (const g of T.DATOS_DEL_LIBRO) { if (g.nota) t.push(g.nota); if (g.frases) t.push(...g.frases); }
   for (const a of A) t.push(a.hecho, ...Object.values(a.cruzado), ...Object.values(a.falta), ...Object.values(a.cuentaMal), ...a.valorMal.map((x) => x.texto), a.generica, ...a.acierto);
   return [...new Set(t)];
 }
 
-test("★★★ cada texto del estudiante está entero en el paquete (guarda: 125 textos distintos)", () => {
+test("★★★ cada texto del estudiante está entero en el paquete (guarda: 124 textos distintos)", () => {
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 125);
+  assert.equal(textos.length, 124);
   const escapar = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   /* Entero: tras «: », un salto de línea o «», hasta el fin del renglón o la comilla. */
   const entero = (t) => new RegExp(`(?:: |\\n)${escapar(t)}(?:\\n|$)`).test(PAQUETE) || PLANO.includes(`«${t}»`) || PLANO.includes(`«${t}`);
@@ -122,7 +122,8 @@ test("★★★ cada texto del estudiante está entero en el paquete (guarda: 12
   const ACIERTO_A1 = "Bien. Restas el descuento, cobras el IVA sobre lo que queda y retienes sobre el valor sin IVA.";
   assert.ok(entero(ACIERTO_A1), "el texto de Miyata que la decisión 1 corrige");
   assert.ok(PLANO.includes("donde dice «cobras el IVA» va «pagas el IVA sobre lo que queda»"));
-  const corregido = ACIERTO_A1.replace("cobras el IVA sobre lo que queda", "pagas el IVA sobre lo que queda");
+  /* Lote de textos (Miyata): el acierto pierde su «Bien.»; la pastilla ya lo dice. */
+  const corregido = ACIERTO_A1.replace("cobras el IVA sobre lo que queda", "pagas el IVA sobre lo que queda").replace(/^Bien\. /, "");
   assert.equal(asiento("a1").acierto[0], corregido);
   const fuera = textos.filter((t) => t !== corregido && !entero(t) && !entero(t.replace(/\$/g, "")));
   assert.deepEqual(fuera, [], `no están en el paquete: ${fuera.join(" | ")}`);
@@ -387,7 +388,6 @@ test("★★★ el campo admite todas las respuestas: 104.400.000 tiene 9 dígit
   assert.equal(digitos, 9);
   assert.equal(DIGITOS_DEL_CAMPO, digitos);
   const { caja } = await montar(h(Mate, {}));
-  await tocar(caja.querySelector("[data-empezar]"));
   await tocar(caja.querySelector('[data-anadir="debe"]'));
   await tocar(document.querySelector(`[data-hoja-renglon] [data-cuenta="${T.CLIENTES}"]`));
   await escribir(document.querySelector("[data-hoja-renglon] input"), "1044000009");
@@ -436,7 +436,7 @@ test("★★★ 5 de 8 —la mitad que se partía— calcularFP da lo mismo que 
 
 /* ═══════════ INFLESZ ═══════════ */
 
-test("★★★ INFLESZ: los 107 textos de 10 palabras o más pasan 65; los rótulos no se miden", () => {
+test("★★★ INFLESZ: los 106 textos de 10 palabras o más pasan 65; los rótulos no se miden", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of textosDelEstudiante()) {
@@ -446,7 +446,7 @@ test("★★★ INFLESZ: los 107 textos de 10 palabras o más pasan 65; los rót
     medidos++;
     if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
-  assert.equal(medidos, 107);
+  assert.equal(medidos, 106);
   assert.deepEqual(bajos, []);
   const rotulos = Object.values(T.ROTULOS_MATE).flatMap((x) => (typeof x === "string" ? [x] : typeof x === "object" ? Object.values(x) : [x(3, 8)]));
   for (const r of rotulos) assert.equal(inflesz(r).aplica, false, r);
@@ -482,7 +482,6 @@ test("★★★ catálogo, registro de la vista, etiqueta y migración 0252 dice
 test("★★★ el armador: hoja en dos pasos, «EN EL DEBE», editar y quitar, tope de 3 por lado, sumas y cuadre", async () => {
   const { caja } = await montar(h(Mate, {}));
   assert.equal(Boolean(caja.querySelector("[data-tarjeta]")), false);
-  await tocar(caja.querySelector("[data-empezar]"));
   assert.equal(caja.querySelector("[data-progreso]").textContent, "Asiento 1 de 8");
   /* Empieza vacío: sin huecos fijos. */
   assert.equal(caja.querySelectorAll("[data-renglon]").length, 0);
@@ -543,12 +542,10 @@ test("★★★ el armador: hoja en dos pasos, «EN EL DEBE», editar y quitar, 
 test("★★★ se juega entera: hechos, «Iba aquí», la devolución, y el final con forma, color y palabra", async () => {
   const fin = [];
   const { caja } = await montar(h(Mate, { onCompletar: (...x) => fin.push(x) }));
-  /* La entrada: la marca de dato declarado vive aquí y en la hoja, nunca en un renglón del hecho. */
-  assert.equal(caja.querySelector("[data-apertura]").textContent, T.ENTRADA_MATE.apertura);
-  assert.equal(caja.querySelectorAll("[data-datos-declarados] [data-dato-declarado]").length, 5);
-  assert.ok(caja.querySelector("[data-datos-declarados]").style.border.includes("dashed"));
-  assert.ok([...caja.querySelectorAll("[data-nodo]")].every((n) => n.dataset.estado === "pendiente"));
-  await tocar(caja.querySelector("[data-empezar]"));
+  /* Lote de textos (Miyata): sin pantalla de entrada; abre en el asiento 1 y nada dice «Empezar». */
+  assert.equal(Boolean(caja.querySelector('[data-paso="entrada"]')), false);
+  assert.equal(Boolean(caja.querySelector("[data-empezar]")), false);
+  assert.equal(caja.querySelector("[data-paso]").dataset.paso, "a1");
 
   /* Acierta todos menos el 6 (proveedor sin restar la retención) y el 4 (mezclado). */
   for (const [k, a] of A.entries()) {
@@ -697,21 +694,21 @@ test("★★★ E3 · en la pantalla, cada renglón calificado lleva «Correcto�
 
 /* ═══════════ E1 · EL OBJETIVO SE PINTA ═══════════ */
 
-test("★★★ E1 · el «Objetivo» de Miyata se pinta encima de la entrada, como en r5-2, y solo ahí", async () => {
+test("★★★ E1 · el «Objetivo» de Miyata se pinta encima del primer asiento (sin entrada), con el estilo de r5-2, y solo ahí", async () => {
   const { caja } = await montar(h(Mate, {}));
   const objetivo = caja.querySelector("[data-objetivo]");
   assert.equal(Boolean(objetivo), true, "la entrada no pinta el objetivo");
   assert.equal(objetivo.textContent, T.R5_3.objetivo);
   assert.ok(PAQUETE.includes(`Objetivo: ${T.R5_3.objetivo}`));
-  /* Encima de todo lo demás de la entrada. */
-  assert.equal(caja.querySelector('[data-paso="entrada"]').firstElementChild === objetivo, true);
+  /* Sin entrada (lote de textos): encima de todo lo demás del primer asiento. */
+  assert.equal(caja.querySelector('[data-paso="a1"]').firstElementChild === objetivo, true);
   /* El mismo estilo que el de r5-2. */
   const toro = leer("src/components/repasoCap5/ToroNegro.jsx");
   const mate = leer("src/components/repasoCap5/Mate.jsx");
   const estilo = (f) => f.match(/<p data-objetivo style=\{\{([^}]*)\}\}/)[1];
   assert.equal(estilo(mate), estilo(toro));
-  await tocar(caja.querySelector("[data-empezar]"));
-  assert.equal(Boolean(caja.querySelector("[data-objetivo]")), false, "el objetivo sigue en los asientos");
+  const otro = await montar(h(Mate, { pasoInicial: 1 }));
+  assert.equal(Boolean(otro.caja.querySelector("[data-objetivo]")), false, "el objetivo sigue en los asientos");
 });
 
 /* ═══════════ E1 · TODO LO DEL PAQUETE LLEGA A LA PANTALLA ═══════════ */
@@ -768,7 +765,7 @@ async function jugarCamino(k, renglones) {
   return pantalla;
 }
 
-test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 125 textos, 98 caminos)", async () => {
+test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 124 textos, 98 caminos)", async () => {
   vistas.length = 0;
   /* La entrada y la hoja «Datos de marzo». */
   const entrada = await montar(h(Mate, {}));
@@ -785,7 +782,7 @@ test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estad
   }
   const todo = vistas.join("\n");
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 125);
+  assert.equal(textos.length, 124);
   const faltan = textos.filter((t) => !todo.includes(t));
   assert.deepEqual(faltan, [], `no salen en pantalla: ${faltan.join(" | ")}`);
   assert.equal(caminos, 98, "no jugó los caminos que dice jugar");

@@ -140,6 +140,28 @@ Todo desde la raíz del repositorio, en una máquina sin nada previo salvo Pytho
 
 `clave.json`, `salida*.json` y `tablas.md` quedan ignorados por git en esta carpeta. Si los escribes en la raíz, no los subas.
 
+## Cómo añadir un tema
+
+Una entrada en `temas.json` y una clave propia. Nada más: no se copia la sonda.
+
+```json
+"t3": {
+  "ruta": "/#/ingresos-gastos-y-ajustes",
+  "prefijo": "t3",
+  "aprender": { "A1": "t3-a1-..." },
+  "hacer":    { "H1": "¿Ingreso o cobro?" }
+}
+```
+
+| Campo | Qué es | Cómo se averigua |
+|---|---|---|
+| `ruta` | la del tema en la aplicación, **sin** `/hacer` | la barra de direcciones al entrar al tema |
+| `prefijo` | el atributo de las piezas de Hacer: `t4` → `[data-t4-h1]` | el `data-…` que pone la pieza |
+| `aprender` | sigla → el `data-pieza` de cada Aprender | el atributo `data-pieza` |
+| `hacer` | sigla → el nombre con el que la pieza aparece en el camino | el rótulo del nodo |
+
+Si el tema no existe en `temas.json`, la sonda **no adivina**: lo dice y sale con código 2, igual que cuando una pieza no pone sus atributos.
+
 ## Qué significa el código de salida
 
 | Código | Significa |
@@ -183,7 +205,7 @@ Sale con **0** si los 12 casos dan lo esperado y con **1** si alguno no. **Tambi
 
 - **B3 es un mínimo, no una garantía.** «Cambia el DOM de la figura» y «queda distinta si aciertas o fallas» no juzgan si el cambio tiene significado. La sonda compara una respuesta buena con una mala, no dos malas distintas. Por eso una figura que solo marca «bien o mal» pasa B3 aunque no muestre lo que hizo el estudiante. Eso lo juzga una persona.
 - **B2 no se aplica a Hacer**: la barra lo pide solo para Aprender. Las palabras de Hacer igual se miden y salen en la tabla.
-- **El recorrido es de T4.** Para otro tema, `enganche.py` necesita los nombres de las piezas (`APRENDER`, `HACER`), la ruta del tema y los botones de «seguir» (`SIGUIENTE`). `enganche_clave.mjs` necesita su propia clave, escrita contra los datos del tema. La medición (`enganche_mide.js`), el juicio (`juzga`) y el fixture no cambian.
+- **El recorrido ya no está dentro de la sonda**: vive en `temas.json`, una entrada por tema (16 oct). `enganche.py --tema=<sigla>` la lee; sin `--tema`, t4, que es donde nació. Lo único que sigue siendo de cada célula es su **clave** (`enganche_clave.mjs`), que hay que escribir contra los datos del tema, y los botones de «seguir» (`SIGUIENTE`), que hoy son la unión de todos los que existen. La medición (`enganche_mide.js`), el juicio (`juzga`) y el fixture no cambian: eso es lo común de las cinco células.
 - **Los atributos que usa:**
   - en Aprender, `data-pieza`, `data-pantalla`, `data-eleccion`, `data-opcion` y `data-boton`; con figura operable, los selectores de su plan (`data-accion`, `data-destino`, `data-control`, `data-seg`, `data-fila`, `data-pista`) y `data-mensaje` para el veredicto;
   - en H1 rediseñado, `data-destino` (el cajón como tablero): la clave da `{destino: …}` en vez de `{opcion: …}` cuando los datos traen `SALDO_INICIAL_H1`, y la sonda espera 900 ms tras el toque, porque en el error la plata llega a su sitio a los 0,7 s;

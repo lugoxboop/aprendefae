@@ -4,7 +4,7 @@ import { pesos } from "../../data/contabilidad.js";
 /* Los estados de calificación, el «ERA ESTE», los puntos y la palabra: de comun.jsx (B4). */
 import {
   C, INTER, SORA, MARCA, CONTADOR, CIFRA, HUNDIDO, HUNDIDO_OPACO, REPOSO, ELEGIDO, SOLO_LECTOR, CSS_FOCO, Devolucion, BotonSiguiente, Comprobar,
-  ESTADOS, Punto, Veredicto, Pastilla, useTrasError,
+  ESTADOS, Punto, Veredicto, Pastilla, useTrasError, Cita,
 } from "./comun.jsx";
 import { R5_2, ETAPAS, PREGUNTAS_R5_2, CORTES_R5_2, ROTULOS_R5_2 as RT, GRUPOS_A0, ROTULOS_A0 as RA } from "../../data/repasoCap5ToroNegroTextos.js";
 import {
@@ -433,7 +433,7 @@ function BotonLado({ lado, elegido, estado, onClick, soloLectura }) {
         fontFamily: INTER, fontSize: "15px", fontWeight: 600, color: C.texto, ...visto,
       }}
     >
-      {lado === "debito" ? RT.debito : RT.credito}
+      {RT.botonLado[lado]}
     </button>
   );
 }
@@ -771,6 +771,7 @@ export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_
       <Pregunta key={p.id} p={p} hoja={tanda.hoja} r={r} respuestas={respuestas} onRespondida={responder(p)} />
       <Devolucion r={r} />
       {r && <BotonSiguiente onClick={avanzar} botonRef={boton} sustantivo={RT.sustantivo} ultimo={paso + 1 === pasos.length} />}
+      <Cita texto={R5_2.cita} />
     </div>
   );
 }
