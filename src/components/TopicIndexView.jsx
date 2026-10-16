@@ -10,6 +10,7 @@ import RankingFP from "./ranking/RankingFP.jsx";
 import LigaBoard from "./ligas/LigaBoard.jsx";
 import BannerRepaso from "./repaso/BannerRepaso.jsx";
 import { marcaDeTema } from "./shared/contenidoNuevo.jsx";
+import IdentificadorDeTema from "./shared/IdentificadorDeTema.jsx";
 
 /*
  * Plantilla del índice de temas, compartida por las dos materias.
@@ -135,7 +136,18 @@ export default function TopicIndexView({
                   <ActivityBadge key={tipo} tipo={tipo} size="sm" />
                 ));
                 const comun = {
-                  icon: renderTopicIcon(topic),
+                  /*
+                   * El identificador propio del tema si lo tiene, y el ícono de
+                   * la materia si no. Un solo sitio decide: ver
+                   * shared/IdentificadorDeTema.jsx.
+                   */
+                  icon: (
+                    <IdentificadorDeTema
+                      tema={topic}
+                      materia={subjectId}
+                      respaldo={renderTopicIcon(topic)}
+                    />
+                  ),
                   badges,
                   accent,
                   hoverBg,
