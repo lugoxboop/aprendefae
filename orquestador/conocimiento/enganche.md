@@ -134,6 +134,20 @@ con su causa y la regla que la evita.
   dejaban de ser creíbles (Takamura). *Regla:* la figura muestra los
   insumos y las consecuencias; el resultado que se evalúa solo aparece
   después de responder.
+- **E9 · Un distractor que la pantalla misma desmiente no es distractor.** En
+  el contenido de r5-5, la opción «el periódico no suma los fletes» la negaba
+  el dato declarado de la entrada («promedia todo el mes, con fletes»), y «el
+  permanente se equivoca» se descartaba por su tono; quedaban dos opciones
+  de cuatro (Takamura). *Regla:* cada distractor nace de un error real del
+  estudiante y se lee contra todo lo que la pantalla ya dice; ninguna opción
+  se descarta sin saber contabilidad.
+- **E10 · Cuando un error lleva a la cifra correcta, el acierto lo explica.**
+  En r5-5 el flete cuesta justo el 5 % que se descontó: quien ignora ambos
+  llega a $2.300, la clave. No se puede cambiar el dato del libro (Takamura).
+  *Regla:* si un camino equivocado probable da la clave, el acierto dice por
+  qué la cifra coincide, para que quien acertó por casualidad se lleve la
+  razón correcta; y las devoluciones de los errores vecinos nombran ese
+  camino («precio de lista más flete»), no uno improbable.
 
 ## Lo que encontró la Célula C en su autodiagnóstico (15 de octubre)
 

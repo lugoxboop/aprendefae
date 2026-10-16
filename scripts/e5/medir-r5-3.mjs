@@ -18,6 +18,8 @@
  *     renglón del dato de otra operación del asiento 5 (248 de 256), la hoja
  *     de 12 cuentas con scroll interno bajo su tope del 85 %, la hoja «Datos
  *     de marzo» con scroll interno, y el renglón final de cada operación
+ *   · «El mes en dos cuentas» después de cada asiento: anima solo cuando entra
+ *     entero en la ventana, y mientras anima sigue entero en ella (E2)
  *
  * Sale con código 1 si algo falla. Necesita Playwright (no es dependencia del
  * repo): el de la máquina, o el de PLAYWRIGHT_MODULE.
@@ -100,6 +102,45 @@ for (const ancho of ANCHOS) {
     if (conScroll && !h.scroll) fallos.push(`${ancho} px · ${nombre} · no tiene scroll interno`);
     if (CAPTURAS) await pg.screenshot({ path: resolve(CAPTURAS, `r5-3-${ancho}-${String(++n).padStart(2, "0")}-${nombre}.png`) });
   };
+  /*
+   * «El mes en dos cuentas» (e5-mes-en-dos-cuentas, correcciones de Takamura):
+   * no fuerza el desplazamiento y anima solo cuando entra entero en la ventana.
+   * Se lleva a la vista como lo haría el estudiante y, mientras anima, se
+   * muestrea cada 50 ms que esté entero en la ventana (E2).
+   */
+  const mes = async (id) => {
+    await pg.waitForTimeout(150);
+    const antes = await pg.evaluate(() => {
+      const p = document.querySelector("[data-mes-en-dos-cuentas]");
+      const r = p.getBoundingClientRect();
+      return { fase: p.dataset.fase, entero: r.top >= 0 && r.bottom <= window.innerHeight };
+    });
+    /* Sin desplazamiento forzado: si no está entero a la vista, espera. */
+    if (!antes.entero && antes.fase !== "espera") fallos.push(`${ancho} px · ${id} · el panel del mes empezó fuera de la ventana (fase ${antes.fase})`);
+    await pg.evaluate(() => document.querySelector("[data-mes-en-dos-cuentas]").scrollIntoView({ block: "center" }));
+    const t0 = Date.now();
+    let animando = 0;
+    let fase = "";
+    while (Date.now() - t0 < 2200) {
+      const m = await pg.evaluate(() => {
+        const p = document.querySelector("[data-mes-en-dos-cuentas]");
+        const r = p.getBoundingClientRect();
+        return { fase: p.dataset.fase, fuera: r.top < -0.5 || r.bottom > window.innerHeight + 0.5, alto: Math.round(r.height), arriba: Math.round(r.top) };
+      });
+      fase = m.fase;
+      if (m.fase === "animando") {
+        animando++;
+        if (m.fuera) { fallos.push(`${ancho} px · ${id} · el panel del mes anima fuera de la ventana (${m.arriba} px, alto ${m.alto})`); break; }
+      }
+      if (m.fase === "final" && animando) break;
+      await pg.waitForTimeout(50);
+    }
+    const alto = await pg.evaluate(() => Math.round(document.querySelector("[data-mes-en-dos-cuentas]").getBoundingClientRect().height));
+    filas.push({ ancho, estado: `${id}-mes`, alto, actividad: null, nota: `${antes.entero ? "ya a la vista" : "fuera de la vista"}, ${antes.fase}; ${animando} muestras animando; termina en ${fase}` });
+    if (!animando) fallos.push(`${ancho} px · ${id} · el panel del mes no animó al entrar en la ventana (fase ${fase})`);
+    if (fase !== "final") fallos.push(`${ancho} px · ${id} · el panel del mes no terminó (fase ${fase})`);
+    if (CAPTURAS) await pg.screenshot({ path: resolve(CAPTURAS, `r5-3-${ancho}-${String(++n).padStart(2, "0")}-${id}-mes.png`) });
+  };
   await estado("entrada");
   await pg.click("[data-empezar]");
   for (const [k, a] of ASIENTOS_MATE.entries()) {
@@ -120,6 +161,8 @@ for (const ancho of ANCHOS) {
     }
     await estado(`${a.id}-lleno`);
     await pg.click("[data-revisar]");
+    /* El panel, antes de la captura de página entera: esa captura agranda la ventana y lo haría «entrar». */
+    await mes(a.id);
     await estado(`${a.id}-revisado`);
     await pg.click("[data-siguiente]");
   }
@@ -133,7 +176,7 @@ await servidor.close();
 
 console.log("ancho | estado | contenido | alto | nota");
 for (const f of filas) console.log(`${f.ancho} | ${f.estado} | ${f.actividad ?? "—"} | ${f.alto} | ${f.nota ?? "—"}`);
-const estados = filas.filter((f) => !f.estado.startsWith("hoja")).length / ANCHOS.length;
+const estados = filas.filter((f) => !f.estado.startsWith("hoja") && !f.estado.endsWith("-mes")).length / ANCHOS.length;
 console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos, más las hojas).`);
 if (estados !== 26) fallos.push(`se recorrieron ${estados} estados y son 26`);
 if (fallos.length) {

@@ -137,7 +137,7 @@ export default function ContabilidadT7_1View({ modo = null, nodoInicial = null, 
              * con «…». Encoge (minWidth: 0), pero no desaparece (herramientas.md,
              * «La regla que salió de la primera pasada»).
              */}
-            <h1 data-titulo-tema style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "break-word" }}>
+            <h1 data-titulo-tema style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2 }}>
               {tema.title}
             </h1>
           </div>
