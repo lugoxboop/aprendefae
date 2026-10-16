@@ -15,9 +15,13 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · E5 (Futaba, fila 11 de Shoko): al primer fallo, con cualquier cajón, la
  *     PISTA de la ficha, literal de la guía (§12.1); al segundo, la respuesta;
  *     acertada al primer intento, la pista no se ve nunca
- *   · las correcciones de Shoko: tras acertar el reintento, solo el ✅; el
- *     aviso, solo mientras se espera el reintento; la devolución por Retro
- *     (role=status)
+ *   · las correcciones de Shoko: tras acertar el reintento, solo el acierto;
+ *     el aviso, solo mientras se espera el reintento; la devolución en una
+ *     región viva (role=status)
+ *   · lote 6d (estándar único de Hacer, el modelo T4): sin emoji; el bloque
+ *     de mensaje toma el veredicto del estado de la evaluación (Check y
+ *     «Correcto.», o X y «Incorrecto.» al lector); las pastillas «Correcto»,
+ *     «No va aquí» e «Iba aquí» en los cajones; «Ver mi resumen» al final
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -64,12 +68,14 @@ const montar = async (ids) => {
 };
 const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
 const botonAvanzar = (caja) => caja.querySelector("[data-boton-avanzar] button");
-/* Lo que se lee en la devolución, sin el texto oculto para lectores. */
+/* Lo que se lee en la devolución (lote 6d: el bloque de mensaje), sin el texto oculto para lectores. */
 const devolucion = (caja) => {
-  const p = caja.querySelector('[role="status"]');
+  const p = caja.querySelector('[role="status"] [data-devolucion]');
   if (!p) return null;
-  return [...p.childNodes].filter((n) => !(n.classList?.contains("fae-jg-oculto"))).map((n) => n.textContent).join("");
+  return [...p.childNodes].filter((n) => !(n.dataset && "lector" in n.dataset)).map((n) => n.textContent).join("");
 };
+const BLANCO = "rgb(248, 249, 250)";
+const CORAL = "rgb(231, 111, 81)";
 /* Lote 6a: tocar el cajón coloca la ficha (las fichas a un nivel). */
 const cajon = (caja, renta, tipo = null) => caja.querySelector(`[data-cajon="${tipo ? `${renta}/${tipo}` : renta}"]`);
 const marcar = async (caja, renta, tipo = null) => tocar(cajon(caja, renta, tipo));
@@ -118,12 +124,12 @@ test("★★★ las 14 fichas: el texto pintado es el de la guía, ficha por fic
   }
 });
 
-test("★★★ las 14 devoluciones de acierto se ven literales tras ✅, ficha por ficha", async () => {
+test("★★★ las 14 devoluciones de acierto se ven literales tras «Correcto.», ficha por ficha", async () => {
   for (const id of IDS) {
     const f = ficha(id);
     const { caja, desmontar } = await montar([id]);
     await marcar(caja, f.renta, f.tipo);
-    assert.equal(devolucion(caja), `✅${GUIA_ACIERTOS[id][0]}`, id);
+    assert.equal(devolucion(caja), `Correcto. ${GUIA_ACIERTOS[id][0]}`, id);
     desmontar();
   }
 });
@@ -133,7 +139,7 @@ test("guarda: la guía trae una pista por ficha, y una fila inventada no aparece
   assert.equal(GUIA_PISTAS["no-existe"], undefined);
 });
 
-test("★★★ E5: al primer fallo, con CADA cajón equivocado, se ve la pista de la ficha, literal de la guía (§12.1), por Retro", async () => {
+test("★★★ E5: al primer fallo, con CADA cajón equivocado, se ve la pista de la ficha, literal de la guía (§12.1), en el bloque de error", async () => {
   for (const id of IDS) {
     const f = ficha(id);
     assert.equal(f.pista, GUIA_PISTAS[id][0], `${id}: la pista de los datos no es la de la guía`);
@@ -143,8 +149,10 @@ test("★★★ E5: al primer fallo, con CADA cajón equivocado, se ve la pista 
       assert.equal(devolucion(m.caja), GUIA_PISTAS[id][0], `${id} en ${malo.join("/")}`);
       const p = m.caja.querySelector('[role="status"]');
       assert.equal(m.caja.querySelectorAll('[role="status"]').length, 1, `${id}: una sola devolución`);
-      assert.equal(p.dataset.retro, "neutro", `${id}: la pista va sin veredicto, como en la escalera de ayuda`);
-      assert.ok(parseFloat(p.style.fontSize) >= 12, `${id}: la pista, a 12 px como mínimo`);
+      /* Lote 6d: el cajón tocado ya dice «No va aquí» en coral; el bloque es el de error del estándar único (X, raya coral, «Incorrecto.»). */
+      assert.equal(p.dataset.retro, "mal", `${id}: la pista va en el bloque de error`);
+      assert.equal(p.querySelector("[data-lector]").textContent.trim(), "Incorrecto.", `${id}: el lector dice «Incorrecto.»`);
+      assert.ok(parseFloat(p.querySelector("[data-devolucion]").style.fontSize) >= 12, `${id}: la pista, a 12 px como mínimo`);
       assert.equal(m.caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
       assert.equal(botonAvanzar(m.caja), null, `${id}: con la pista se espera el reintento`);
       m.desmontar();
@@ -153,7 +161,7 @@ test("★★★ E5: al primer fallo, con CADA cajón equivocado, se ve la pista 
 });
 
 /* La regla única del segundo fallo, calculada a mano desde la guía: «No es esa.» + el acierto sin «Sí.». */
-const segundoDeGuia = (id) => `❌No es esa. ${GUIA_ACIERTOS[id][0].replace(/^Sí\. /, "")}`;
+const segundoDeGuia = (id) => `No es esa. ${GUIA_ACIERTOS[id][0].replace(/^Sí\. /, "")}`;
 
 test("★★★ regla única: tras el segundo fallo, TODA ficha muestra su acierto con «No es esa.», y ese texto dice la respuesta", async () => {
   for (const id of IDS) {
@@ -181,7 +189,7 @@ test("★★★ E5: una ficha acertada al primer intento nunca muestra su pista"
   for (const id of IDS) {
     const f = ficha(id);
     await marcar(caja, f.renta, f.tipo);
-    assert.equal(devolucion(caja), `✅${GUIA_ACIERTOS[id][0]}`, id);
+    assert.equal(devolucion(caja), `Correcto. ${GUIA_ACIERTOS[id][0]}`, id);
     assert.ok(!caja.textContent.includes(f.pista), `${id}: la pista se ve tras acertar`);
     await tocar(botonAvanzar(caja));
   }
@@ -199,7 +207,7 @@ test("★★★ el primer fallo da la pista; el segundo, la regla única (no la 
   desmontar();
 });
 
-test("★★★ corrección 2: tras un reintento acertado queda solo el ✅; el aviso, solo mientras se espera el reintento", async () => {
+test("★★★ corrección 2: tras un reintento acertado queda solo el acierto; el aviso, solo mientras se espera el reintento", async () => {
   const { caja, desmontar } = await montar(["caso-pactado"]);
   assert.equal(Boolean(caja.querySelector("[data-fallo]")), false);
   await marcar(caja, "fija", "descuento");
@@ -208,14 +216,15 @@ test("★★★ corrección 2: tras un reintento acertado queda solo el ✅; el 
   await marcar(caja, "fija", "interes");
   assert.equal(Boolean(caja.querySelector("[data-fallo]")), false, "el aviso desaparece tras el reintento");
   assert.equal(caja.querySelectorAll('[role="status"]').length, 1);
-  assert.equal(devolucion(caja), `✅${GUIA_ACIERTOS["caso-pactado"][0]}`);
+  assert.equal(devolucion(caja), `Correcto. ${GUIA_ACIERTOS["caso-pactado"][0]}`);
   assert.ok(!caja.textContent.includes(ficha("caso-pactado").pista), "la pista del primer fallo ya no se ve");
   desmontar();
 });
 
-test("★★ correcciones 3 y 4: el emoji va al inicio en los datos y la devolución sale por Retro (role=status); la pista, sin emoji y de 20 palabras como mucho", async () => {
+test("★★ correcciones 3 y 4 (lote 6d): los datos van sin emoji y el veredicto sale del estado; la devolución, en una región viva (role=status); la pista, de 20 palabras como mucho", async () => {
   for (const f of D.FICHAS_T5_ACT1) {
-    assert.ok(f.acierto.startsWith("✅ "), f.id);
+    assert.ok(f.acierto.startsWith("Sí. "), f.id);
+    assert.ok(!/[\u2705\u274C]/.test(f.acierto), `${f.id}: el acierto lleva emoji`);
     assert.ok(!/^(✅|❌)/.test(f.pista), `${f.id}: la pista no lleva veredicto`);
     assert.ok(f.pista.split(/\s+/).length <= 20, `${f.id}: la pista pasa de 20 palabras`);
     /* Lo retirado con E5 no vuelve. */
@@ -226,7 +235,11 @@ test("★★ correcciones 3 y 4: el emoji va al inicio en los datos y la devoluc
   await marcar(caja, "fija", "interes");
   const p = caja.querySelector('[role="status"]');
   assert.ok(p);
-  assert.equal(p.querySelector('[aria-hidden="true"]').textContent, "✅", "Retro separa el emoji");
+  assert.equal(p.dataset.retro, "ok");
+  const icono = p.querySelector("svg[data-icono]");
+  assert.equal(icono.dataset.icono, "visto", "el acierto, con el Check de lucide");
+  assert.equal(icono.getAttribute("aria-hidden"), "true");
+  assert.ok(p.closest('[aria-live="polite"]'), "la devolución va en una región viva");
   desmontar();
 });
 
@@ -256,15 +269,16 @@ test("★★★ los tres cajones son las opciones: sus nombres, su grupo, y van 
   desmontar();
 });
 
-test("★★★ E4: el acierto queda ✓ con borde grueso y relleno; el resto, a 0,5", async () => {
+test("★★★ E4 · lote 6d: el acierto queda «Correcto» con Check y borde 2 px #F8F9FA, sin relleno ni teal; el resto, a 0,5", async () => {
   const { caja, desmontar } = await montar(["cdt", "acciones"]);
   await marcar(caja, "fija", "interes");
   const bien = cajon(caja, "fija", "interes");
   assert.equal(marcaDe(bien), "correcta");
   assert.deepEqual(iconos(bien), ["visto"]);
-  assert.equal(bien.style.borderWidth, "2px", "borde grueso");
-  assert.ok(bien.style.background, "con relleno");
-  assert.ok(bien.textContent.includes("(respuesta correcta)"));
+  assert.equal(bien.style.border, `2px solid ${BLANCO}`, "borde 2 px #F8F9FA");
+  assert.equal(bien.style.background, "transparent", "sin relleno");
+  assert.ok(!bien.outerHTML.includes("42, 157, 143") && !/2a9d8f/i.test(bien.outerHTML), "sin teal");
+  assert.equal(bien.querySelector("[data-pastilla]").textContent, "Correcto");
   for (const otro of [cajon(caja, "variable"), cajon(caja, "fija", "descuento")]) {
     assert.equal(marcaDe(otro), "apagada");
     assert.equal(otro.style.opacity, "0.5");
@@ -278,14 +292,15 @@ test("★★★ E4: el acierto queda ✓ con borde grueso y relleno; el resto, a
   desmontar();
 });
 
-test("★★★ E4: el primer fallo deja el cajón tocado ✕ y tachado, y no se puede volver a tocar; el segundo deja los dos ✕ junto al correcto ✓", async () => {
+test("★★★ E4 · lote 6d: el primer fallo deja el cajón tocado «No va aquí» (X, 2 px coral) y tachado, y no se puede volver a tocar; el segundo deja los dos así y revela «Iba aquí» en el correcto", async () => {
   const { caja, desmontar } = await montar(["cdt"]);
   await marcar(caja, "fija", "descuento");
   const primero = cajon(caja, "fija", "descuento");
   assert.equal(marcaDe(primero), "tachada");
   assert.deepEqual(iconos(primero), ["tache"]);
   assert.ok(tachado(primero));
-  assert.ok(primero.textContent.includes("(tu respuesta)"));
+  assert.equal(primero.querySelector("[data-pastilla]").textContent, "No va aquí");
+  assert.equal(primero.style.border, `2px solid ${CORAL}`);
   assert.equal(primero.disabled, true, "el ✕ no se puede volver a tocar en esta ficha");
   assert.equal(primero.style.opacity, "1");
   assert.equal(cajon(caja, "variable").disabled, false, "los otros siguen abiertos");
@@ -293,7 +308,12 @@ test("★★★ E4: el primer fallo deja el cajón tocado ✕ y tachado, y no se
   await marcar(caja, "variable");
   assert.equal(marcaDe(cajon(caja, "variable")), "tachada");
   assert.equal(marcaDe(primero), "tachada", "lo elegido no se reemplaza");
-  assert.equal(marcaDe(cajon(caja, "fija", "interes")), "correcta");
+  const correcto = cajon(caja, "fija", "interes");
+  assert.equal(marcaDe(correcto), "revelada", "sin reintento, la correcta se revela");
+  assert.equal(correcto.querySelector("[data-pastilla]").textContent, "Iba aquí");
+  assert.deepEqual(iconos(correcto), [], "«Iba aquí» va sin ícono");
+  assert.ok(correcto.classList.contains("fae-b5h-revelado"), "con el borde de 2 px #F8F9FA que llega 0,7 s después");
+  assert.ok(correcto.querySelector("[data-pastilla]").classList.contains("fae-b5h-revela"));
   /* La lámina tras el segundo fallo llega punteada, al cajón correcto. */
   assert.equal(cajon(caja, "fija", "interes").querySelector("[data-lamina]").dataset.lamina, "segundo");
   assert.equal(cajon(caja, "variable").querySelector("[data-numero]").textContent, "0");
@@ -362,7 +382,9 @@ test("★★★ lote 6b · el encabezado compacto (B1): el objetivo, y en una fi
   assert.ok(enc, "sin encabezado compacto");
   assert.ok(D.T5_ACT1.objetivo.split(/\s+/).length <= 20, "el objetivo, 20 palabras como mucho");
   assert.equal(enc.querySelector("[data-contador]").textContent, "Ficha 1 de 2");
-  assert.equal(enc.querySelector("[data-contador]").style.textTransform, "uppercase");
+  /* Lote 6d (§4.3): «Ficha 1 de 2», sin mayúsculas ni espaciado. */
+  assert.equal(enc.querySelector("[data-contador]").style.textTransform, "");
+  assert.equal(enc.querySelector("[data-contador]").style.letterSpacing, "");
   const como = enc.querySelector("[data-como-se-juega]");
   assert.equal(como.textContent, "¿Cómo se juega?");
   assert.equal(como.style.minHeight, "44px");

@@ -57,9 +57,10 @@ const montar = async (items, props = {}) => {
 };
 const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
 const opcion = (caja, id) => caja.querySelector(`[data-opcion="${id}"]`).closest("button");
+/* Lote 6d: el bloque de mensaje del estándar único; se lee su texto visible, sin el «Incorrecto.» del lector. */
 const devolucion = (caja) => {
-  const p = caja.querySelector('[role="status"]');
-  return p ? [...p.childNodes].filter((n) => !(n.classList?.contains("fae-jg-oculto"))).map((n) => n.textContent).join("") : null;
+  const p = caja.querySelector('[role="status"] [data-devolucion]');
+  return p ? [...p.childNodes].filter((n) => !(n.dataset && "lector" in n.dataset)).map((n) => n.textContent).join("") : null;
 };
 
 /* ═══════════ EL PAQUETE ═══════════ */
@@ -183,20 +184,22 @@ test("★★★ cada acierto y cada error se ven literales; al fallar, la correc
       const { caja, desmontar } = await montar([x]);
       await tocar(opcion(caja, o.id));
       if (o.id === x.respuesta) {
-        assert.equal(devolucion(caja), `✅${x.acierto}`, `${x.id}`);
+        assert.equal(devolucion(caja), `Correcto. ${x.acierto}`, `${x.id}`);
         assert.equal(opcion(caja, o.id).dataset.estado, "correcta");
       } else {
-        assert.equal(devolucion(caja), `❌${D.ERRORES_T6_ACT4[x.errores[o.id]]}`, `${x.id} con ${o.id}`);
+        assert.equal(devolucion(caja), D.ERRORES_T6_ACT4[x.errores[o.id]], `${x.id} con ${o.id}`);
         assert.equal(opcion(caja, o.id).dataset.estado, "incorrecta");
         assert.equal(opcion(caja, x.respuesta).dataset.estado, "revelada");
-        /* E4 (hoja de fusiones de Mai): la elegida ✕ y tachada junto a la correcta ✓; las demás, a 0,5. */
+        /* E4 · lote 6d: la elegida «No va aquí» (X, 2 px coral) y tachada, junto a la correcta revelada «Iba aquí» (sin ícono); las demás, a 0,5. */
         const icono = (el) => [...el.querySelectorAll("svg[data-icono]")].map((y) => y.dataset.icono);
         assert.equal(opcion(caja, o.id).dataset.marca, "tachada");
         assert.deepEqual(icono(opcion(caja, o.id)), ["tache"]);
-        assert.ok(opcion(caja, o.id).textContent.includes("(tu respuesta)"));
-        assert.equal(opcion(caja, x.respuesta).dataset.marca, "correcta");
-        assert.deepEqual(icono(opcion(caja, x.respuesta)), ["visto"]);
-        assert.ok(opcion(caja, x.respuesta).textContent.includes("(respuesta correcta)"));
+        assert.equal(opcion(caja, o.id).querySelector("[data-pastilla]").textContent, "No va aquí");
+        assert.equal(opcion(caja, o.id).style.border, "2px solid rgb(231, 111, 81)");
+        assert.equal(opcion(caja, x.respuesta).dataset.marca, "revelada");
+        assert.deepEqual(icono(opcion(caja, x.respuesta)), []);
+        assert.equal(opcion(caja, x.respuesta).querySelector("[data-pastilla]").textContent, "Iba aquí");
+        assert.ok(opcion(caja, x.respuesta).classList.contains("fae-b5h-revelado"), "el borde de 2 px #F8F9FA, 0,7 s después");
         for (const y of D.OPCIONES_T6_ACT4) if (y.id !== o.id && y.id !== x.respuesta) assert.equal(opcion(caja, y.id).style.opacity, "0.5");
         /* Un solo intento: tocar la correcta ya no cambia nada. */
         await tocar(opcion(caja, x.respuesta));
@@ -226,7 +229,7 @@ test("★★ el modo demo: sin encabezado ni nota, con la regla y el ejemplo; nu
   assert.equal(m.caja.querySelector("[data-nota-fija]"), null);
   assert.ok(m.caja.querySelector("[data-regla]"));
   await tocar(opcion(m.caja, D.A_GASTO));
-  assert.equal(devolucion(m.caja), `✅${D.EJEMPLO_T6_ACT4.acierto}`);
+  assert.equal(devolucion(m.caja), `Correcto. ${D.EJEMPLO_T6_ACT4.acierto}`);
   assert.equal(llamado, false);
   m.desmontar();
 });

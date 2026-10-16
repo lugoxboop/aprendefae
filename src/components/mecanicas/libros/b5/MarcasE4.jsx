@@ -1,5 +1,8 @@
-import { FAE } from "../../../../theme.js";
 import { SOLO_LECTOR } from "../verbos.jsx";
+import {
+  IconoCheck, IconoX, Pastilla, TEXTO_B, REPOSO_B, bordeDe, claseDe,
+  CORRECTA, TACHADA, APAGADA, REVELADA,
+} from "./Devolucion.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -7,24 +10,28 @@ import { SOLO_LECTOR } from "../verbos.jsx";
  * para las opciones, las fichas, las mesas y las casillas de la Célula B.
  *
  * Después de calificar, lo que eligió el estudiante se queda donde lo puso, con
- * su forma, y lo correcto aparece junto a ello, sin reemplazarlo:
- *   · ✓ correcta: ícono ✓ (SVG de 14, trazo 2, al inicio) + borde 2 nodo +
- *     relleno navy. Siempre en lo correcto.
- *   · ✕ tu respuesta: ícono ✕ (SVG de 14) + texto tachado (1,5 px) + su borde
- *     de siempre + opacidad entera. Solo si lo elegido no era lo correcto.
- *   · el resto: opacidad 0,5.
- * Si acertó, solo hay ✓. En blanco y negro se lee por el ícono, el tachado y el
- * borde grueso. Sin coral: el coral sigue solo en la devolución.
+ * su forma, y lo correcto aparece junto a ello, sin reemplazarlo.
  *
- * Los íconos son SVG, no letras de la fuente, con aria-hidden; a cada marca la
- * acompaña un texto oculto. PARA SHOKO (textos nuevos): «(respuesta
- * correcta)», «(tu respuesta)» y, en la mesa, «(valor correcto)» y «(faltaba)».
+ * LOTE 6d (prompt maestro §4, el estándar único de Hacer; Devolucion.jsx):
+ *   · acierto: la pastilla Check + «Correcto» y borde 2 px #F8F9FA, sin
+ *     relleno (antes, 2 nodo y relleno navy);
+ *   · error: la pastilla X coral + «No va aquí», texto tachado (1,5 px) y
+ *     borde 2 px coral (antes, sin coral);
+ *   · revelada (la correcta que no se eligió, donde no hay reintento): la
+ *     pastilla «Iba aquí», sin ícono, y borde 2 px #F8F9FA, 0,7 s después;
+ *   · el resto, una vez decidido: opacidad 0,5;
+ *   · reposo: 1 px rgba(248,249,250,.35), sin relleno.
+ * Los íconos son Check y X de lucide (16 px, trazo 2,5) con aria-hidden; la
+ * palabra de la pastilla es texto: entra en el nombre accesible.
+ *
+ * `Marca` (solo el ícono y su texto oculto) queda para las piezas de Aprender
+ * que la usan (CajasQueRevelan, CajonesDelTiempo): cambia el dibujo, no el
+ * comportamiento. Su X sigue sin coral (en Aprender no se toca el color del
+ * error).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-export const CORRECTA = "correcta";
-export const TACHADA = "tachada";
-export const APAGADA = "apagada";
+export { CORRECTA, TACHADA, APAGADA, REVELADA };
 
 export const OCULTO_E4 = {
   correcta: "(respuesta correcta)",
@@ -33,21 +40,8 @@ export const OCULTO_E4 = {
   faltaba: "(faltaba)",
 };
 
-export function IconoVisto({ color = FAE.text }) {
-  return (
-    <svg data-icono="visto" aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" style={{ flex: "none", display: "block" }}>
-      <path d="M2.5 7.4 5.6 10.4 11.5 3.8" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-export function IconoTache({ color = FAE.text }) {
-  return (
-    <svg data-icono="tache" aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" style={{ flex: "none", display: "block" }}>
-      <path d="M3.5 3.5 10.5 10.5M10.5 3.5 3.5 10.5" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
+export const IconoVisto = ({ color = TEXTO_B }) => <IconoCheck color={color} />;
+export const IconoTache = ({ color = TEXTO_B }) => <IconoX color={color} />;
 
 /* El ícono y el texto oculto de una marca; nada si no hay marca o si está apagada. */
 export function Marca({ marca, oculto = null }) {
@@ -60,44 +54,40 @@ export function Marca({ marca, oculto = null }) {
   );
 }
 
-/* El borde y el relleno de cada marca; `base` es el borde de siempre. */
-export function estiloE4(marca, base) {
-  if (marca === CORRECTA) return { border: `2px solid ${FAE.node}`, background: FAE.navy, opacity: 1 };
-  if (marca === TACHADA) return { border: base, opacity: 1 };
+/* El borde de cada marca, sin relleno; `base` es el borde de reposo. El revelado lleva además `claseDe(marca)`. */
+export function estiloE4(marca, base = REPOSO_B) {
   if (marca === APAGADA) return { border: base, opacity: 0.5 };
+  if (marca === CORRECTA || marca === TACHADA) return { border: bordeDe(marca, base), opacity: 1 };
   return { border: base };
 }
+
+export { Pastilla, claseDe };
 
 /* El tachado del texto de lo que eligió y no era (1,5 px). */
 export const TACHADO = { textDecoration: "line-through", textDecorationThickness: "1.5px" };
 
 /*
- * La opción de la célula con E4, para las elecciones y las casillas (b5-t6-a4, a5, a6). Tiene el mismo
+ * La opción de la célula con E4, para las elecciones y las casillas (b5-t6-a4, a6). Tiene el mismo
  * contrato que la Opcion compartida de corazon/juego.jsx (`estado`: null · "correcta" · "incorrecta" ·
- * "revelada"; `deshabilitada`; `ancho`), y sus medidas (relleno 13 · 15, Inter 13,5), para no mover
- * nada. Lo que cambia son las marcas:
- *   · correcta y revelada (la buena que no se eligió): ✓, borde 2 nodo y relleno navy; sin teal;
- *   · incorrecta (la elegida que no era): ✕ y tachada, con su borde de siempre; sin coral;
- *   · el resto, una vez decidida: opacidad 0,5.
- * «era esta» deja de verse: lo dicen el ✓ y su texto oculto. El ícono va en un hueco de 18, el mismo
- * ancho del marcador compartido, así que el texto no se mueve al decidir.
+ * "revelada"; `deshabilitada`; `ancho`), y sus medidas (relleno 13 · 15, Inter 13,5). Lote 6d: la
+ * pastilla va debajo del texto de la opción, y el borde de 2 se come 1 px del relleno (no se mueve
+ * nada al decidir).
  */
-const BORDE_OPCION = "1px solid rgba(248,249,250,0.16)";
 export function OpcionE4({ children, onClick, estado = null, deshabilitada = false, ancho = false }) {
-  const marca = estado === "correcta" || estado === "revelada" ? CORRECTA : estado === "incorrecta" ? TACHADA : deshabilitada ? APAGADA : null;
-  const grueso = marca === CORRECTA;
+  const marca = estado === "correcta" ? CORRECTA : estado === "revelada" ? REVELADA : estado === "incorrecta" ? TACHADA : deshabilitada ? APAGADA : null;
+  const grueso = marca === CORRECTA || marca === TACHADA;
+  const conPastilla = marca === CORRECTA || marca === TACHADA || marca === REVELADA;
   return (
     <button type="button" onClick={onClick} disabled={deshabilitada} data-estado={estado ?? "libre"} data-marca={marca ?? ""}
+      className={claseDe(marca)}
       style={{
-        display: "flex", alignItems: "center", gap: "12px", width: ancho ? "100%" : undefined, boxSizing: "border-box",
-        textAlign: "left", padding: grueso ? "12px 14px" : "13px 15px", borderRadius: "18px",
-        background: "rgba(248,249,250,0.055)", color: FAE.text, fontFamily: "Inter, sans-serif", fontSize: "13.5px", lineHeight: 1.45,
-        cursor: deshabilitada ? "default" : "pointer", ...estiloE4(marca, BORDE_OPCION),
+        display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px", width: ancho ? "100%" : undefined, boxSizing: "border-box",
+        minHeight: "44px", textAlign: "left", padding: grueso ? "12px 14px" : "13px 15px", borderRadius: "18px",
+        background: "transparent", color: TEXTO_B, fontFamily: "Inter, sans-serif", fontSize: "13.5px", lineHeight: 1.45,
+        cursor: deshabilitada ? "default" : "pointer", ...estiloE4(marca),
       }}>
-      <span aria-hidden={marca ? undefined : "true"} style={{ flex: "none", width: "18px", display: "flex", justifyContent: "center" }}>
-        <Marca marca={marca} />
-      </span>
-      <span style={{ minWidth: 0, flex: 1, ...(marca === TACHADA ? TACHADO : null) }}>{children}</span>
+      <span style={{ minWidth: 0, maxWidth: "100%", ...(marca === TACHADA ? TACHADO : null) }}>{children}</span>
+      {conPastilla && <Pastilla marca={marca} />}
     </button>
   );
 }

@@ -2,7 +2,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { DEBE, HABER, COLOR_LADO, pesos } from "../../../../data/contabilidad.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
-import { ROTULO_ESTANTE, COLECTOR, TEXTO_CONFIRMAR, TEXTO_DIFERENCIA, AVISO_UN_INTENTO } from "../../../../data/contabilidadAsientoCompuesto.js";
+import { ROTULO_ESTANTE, COLECTOR, TEXTO_DIFERENCIA, AVISO_UN_INTENTO } from "../../../../data/contabilidadAsientoCompuesto.js";
 import { totalesDe, puntuar } from "../../../../contabilidad/cierreConMesa.js";
 import { formatearCifra, leerCifra } from "../../../../contabilidad/elCierreCompleto.js";
 import { Cierre } from "../../corazon/juego.jsx";
@@ -11,7 +11,11 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import EncabezadoCompacto from "./EncabezadoCompacto.jsx";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
-import { Marca, estiloE4, CORRECTA, TACHADA, TACHADO, OCULTO_E4 } from "./MarcasE4.jsx";
+import { estiloE4, CORRECTA, TACHADA, REVELADA, TACHADO } from "./MarcasE4.jsx";
+import {
+  Pastilla, Mensaje, RegionViva, IconoCheck, CSS_B5H, CLASE_B5H, COMPROBAR_B, VER_MI_RESUMEN, siguienteDe,
+  PALABRA_B, REPOSO_B, ACIERTO_B, HUNDIDO_B,
+} from "./Devolucion.jsx";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import { evaluarPregunta, formatearRespuesta, leerRespuesta } from "../../../../contabilidad/t6Act2.js";
 
@@ -40,7 +44,7 @@ import { evaluarPregunta, formatearRespuesta, leerRespuesta } from "../../../../
  * PASOS CON PREGUNTAS (lote 6b, la fusión de a5 en a2): una parte con
  * `tipo: "pregunta"` no lleva mesa: su enunciado, un campo de cifra escrita,
  * «Comprobar» y un solo intento (contabilidad/t6Act2.js). Si falla, su cifra
- * queda ✕ tachada y debajo, ✓ la correcta (E4). Lo propio de la actividad
+ * queda tachada y debajo, la correcta (E4). Lo propio de la actividad
  * llega en `config`: `textos` (la etiqueta del contador, «Siguiente»,
  * «Comprobar», el nombre del campo), `visual` (lo que va entre el contador y
  * el paso, que no se mueve: en a2, la cuenta T) y `bloques` (lo que una
@@ -60,41 +64,56 @@ import { evaluarPregunta, formatearRespuesta, leerRespuesta } from "../../../../
  *   · la instrucción de cada asiento sale de la pantalla y la lee el lector
  *     de pantalla (aria-describedby); el rótulo del estante lleva 8 arriba y
  *     6 abajo.
+ *
+ * LOTE 6d (estándar único de Hacer, Devolucion.jsx):
+ *   · «Comprobar» en vez de «Confirmar asiento» (la constante compartida
+ *     sigue igual: la usan las mesas del Tema 3; esta es COMPROBAR_B);
+ *   · las tarjetas de la mesa, en el hundido de Cuentas; los campos, sin
+ *     relleno y con el contorno de reposo de 1 px .35;
+ *   · al comprobar con error: la cuenta que sobra o está en la columna
+ *     equivocada, 2 px coral y «No va aquí»; el valor equivocado, igual en su
+ *     campo, y debajo «Iba aquí: $180.000»; la cuenta que faltaba, al final de
+ *     su columna con «Iba aquí» y 2 px #F8F9FA. Lo revelado llega 0,7 s
+ *     después; en una mesa hay un solo intento, así que siempre se revela;
+ *   · la pregunta acertada: su cifra con 2 px #F8F9FA y «Correcto»;
+ *   · el bloque de mensaje, el del modelo T4, con el veredicto del estado
+ *     (`resultado.ok`): Check y «Correcto.», o X y «Incorrecto.» al lector;
+ *   · el avance sigue al contador: «Siguiente asiento» / «Siguiente paso», y
+ *     «Ver mi resumen» al final.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 const SORA = "Sora, sans-serif";
 const INTER = "Inter, sans-serif";
-const CORAL = FAE.coral;
 const CIFRA = { fontFamily: SORA, fontVariantNumeric: "tabular-nums" };
 
 const CSS = `
 @keyframes fae-b5k-entra { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 .fae-b5k button { -webkit-tap-highlight-color: transparent; }
-.fae-b5k button:focus-visible, .fae-b5k input:focus-visible { outline: 2px solid ${COLOR.blanco}; outline-offset: 2px; }
+.fae-b5k button:focus-visible, .fae-b5k input:focus-visible { outline: 2px solid ${FAE.text}; outline-offset: 2px; }
 .fae-b5k input::placeholder { color: ${COLOR.apagado}; }
 @media (prefers-reduced-motion: reduce) { .fae-b5k * { animation: none !important; transition: none !important; } }
 `;
 
+/* El acierto junto al rótulo de la parte: el Check de lucide (lote 6d), sin círculo. */
 function Visto() {
   return (
-    <span aria-hidden="true" data-visto-parte style={{ width: "20px", height: "20px", borderRadius: "50%", background: COLOR.neutro, display: "inline-grid", placeItems: "center", flex: "none" }}>
-      <svg width="11" height="11" viewBox="0 0 12 12"><path d="M2.5 6.5 L5 9 L9.5 3.5" fill="none" stroke={COLOR.navy} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    <span aria-hidden="true" data-visto-parte style={{ display: "inline-flex", height: "20px", alignItems: "center", flex: "none" }}>
+      <IconoCheck />
     </span>
   );
 }
 
 /* Un campo de cifra: «$», punto de miles, sin decimales, hasta 8 dígitos. */
-/* `tachado` (E4): el valor que escribió el estudiante y no era, con ✕ y tachado; su borde de siempre, sin coral. */
-/* `acertado` (E4, lote 6c): la cifra de una pregunta acertada, con ✓, borde 2 nodo y relleno navy. */
+/* `tachado` (E4): el valor que escribió el estudiante y no era, tachado y con 2 px coral (lote 6d); la pastilla va debajo. */
+/* `acertado` (E4, lote 6c): la cifra de una pregunta acertada, con 2 px #F8F9FA (lote 6d); la pastilla va debajo. */
 function Campo({ id, valor, onCambio, bloqueado, etiqueta, tachado = false, acertado = false, formatear = formatearCifra }) {
+  const marca = tachado ? TACHADA : acertado ? CORRECTA : null;
   return (
-    <div data-caja-campo={id} data-marca={tachado ? TACHADA : acertado ? CORRECTA : ""} style={{
-      display: "flex", alignItems: "center", gap: "3px", height: "44px", boxSizing: "border-box", padding: "0 8px", borderRadius: "10px",
-      background: "rgba(14,27,46,0.7)", border: "1px solid rgba(248,249,250,0.22)", ...(acertado ? estiloE4(CORRECTA) : null),
+    <div data-caja-campo={id} data-marca={marca ?? ""} style={{
+      display: "flex", alignItems: "center", gap: "3px", height: "44px", boxSizing: "border-box", padding: marca ? "0 7px" : "0 8px", borderRadius: "10px",
+      background: "transparent", ...estiloE4(marca, REPOSO_B),
     }}>
-      {tachado && <Marca marca={TACHADA} />}
-      {acertado && <Marca marca={CORRECTA} />}
       <span aria-hidden="true" data-signo style={{ fontFamily: SORA, fontSize: "14px", fontWeight: 700, color: COLOR.apagado, marginRight: "3px" }}>$</span>
       <input
         data-campo-cifra={id}
@@ -220,26 +239,29 @@ function Estante({ cuentas, onSacar }) {
 /*
  * E4 en la mesa (hoja de fusiones de Mai, §3): al confirmar con error, la mesa del estudiante se queda
  * como la armó, y lo correcto aparece junto, sin reemplazarla:
- *   · cuenta que sobra o que está en la columna equivocada: su tarjeta queda ✕, con el nombre y el
+ *   · cuenta que sobra o que está en la columna equivocada: su tarjeta queda marcada, con el nombre y el
  *     valor tachados;
- *   · valor equivocado: el valor queda ✕ tachado dentro del campo y, debajo, en la misma tarjeta,
- *     «✓ $180.000» con borde 2 nodo y relleno navy;
- *   · cuenta que faltaba: al final de su columna, una tarjeta ✓ con el valor correcto.
+ *   · valor equivocado: el valor queda tachado dentro del campo y, debajo, en la misma tarjeta,
+ *     el valor correcto (desde el lote 6d, «Iba aquí: $180.000»);
+ *   · cuenta que faltaba: al final de su columna, una tarjeta con el valor correcto («Iba aquí»).
  * Los totales y la diferencia se quedan como los dejó el estudiante: son su asiento. El diario recibe
  * el asiento correcto. Sin coral: el coral sigue solo en la devolución.
  */
-const BORDE_TARJETA = "1px solid rgba(248,249,250,0.14)";
-const TARJETA = { padding: "7px 6px", borderRadius: "11px", background: "rgba(10,20,34,0.45)" };
+const BORDE_TARJETA = HUNDIDO_B.border;
+const TARJETA = { padding: "7px 6px", borderRadius: "11px", background: HUNDIDO_B.background };
+/* Lo que se revela (lote 6d): sin ícono, 2 px #F8F9FA, 0,7 s después del error. */
+const REVELA = "fae-b5h-revela";
 const NOMBRE_MESA = { margin: "0 0 5px", fontFamily: SORA, fontWeight: 700, fontSize: "12px", lineHeight: 1.25, color: COLOR.blanco, textAlign: "center" };
 
-function ValorCorrecto({ cuenta, valor, oculto }) {
+/* La cifra que iba: «Iba aquí: $180.000», sobre la pieza donde iba, 0,7 s después del error. */
+function ValorCorrecto({ cuenta, valor }) {
   return (
-    <p data-valor-correcto={cuenta} style={{
-      display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", margin: "5px 0 0", padding: "6px 6px", borderRadius: "10px",
-      ...CIFRA, fontSize: "14px", fontWeight: 700, color: COLOR.blanco, ...estiloE4(CORRECTA),
+    <p data-valor-correcto={cuenta} data-pastilla={REVELADA} className={REVELA} style={{
+      display: "flex", flexWrap: "wrap", alignItems: "baseline", justifyContent: "center", gap: "0 4px", margin: "5px 0 0", padding: "5px 6px", borderRadius: "10px",
+      border: ACIERTO_B, color: COLOR.blanco, textAlign: "center",
     }}>
-      <Marca marca={CORRECTA} oculto={oculto} />
-      <span>{pesos(valor)}</span>
+      <span data-palabra style={{ fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px", whiteSpace: "nowrap" }}>{`${PALABRA_B.ibaAqui}:`}</span>
+      <span style={{ ...CIFRA, fontSize: "14px", fontWeight: 700, whiteSpace: "nowrap" }}>{pesos(valor)}</span>
     </p>
   );
 }
@@ -268,16 +290,17 @@ function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante
           ...TARJETA, ...estiloE4(error === "cuenta" ? TACHADA : null, BORDE_TARJETA),
           animation: "fae-b5k-entra 200ms ease-out both",
         }}>
-          <p data-nombre-mesa style={{ ...NOMBRE_MESA, ...(error === "cuenta" ? { ...TACHADO, display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" } : null) }}>
-            {error === "cuenta" && <Marca marca={TACHADA} />}
+          <p data-nombre-mesa style={{ ...NOMBRE_MESA, ...(error === "cuenta" ? TACHADO : null) }}>
             <span>{m.cuenta}</span>
           </p>
+          {error === "cuenta" && <p style={{ margin: "0 0 5px", display: "flex", justifyContent: "center" }}><Pastilla marca={TACHADA} envuelve /></p>}
           <Campo id={m.cuenta} valor={m.texto} onCambio={(v) => onCifra(m.cuenta, v)} bloqueado={!activa}
             etiqueta={`Valor de ${m.cuenta}`} tachado={error !== null} />
-          {error === "valor" && <ValorCorrecto cuenta={m.cuenta} valor={esperado.find((x) => x.cuenta === m.cuenta).valor} oculto={OCULTO_E4.valorCorrecto} />}
+          {error === "valor" && <p style={{ margin: "5px 0 0", display: "flex", justifyContent: "center" }}><Pastilla marca={TACHADA} envuelve /></p>}
+          {error === "valor" && <ValorCorrecto cuenta={m.cuenta} valor={esperado.find((x) => x.cuenta === m.cuenta).valor} />}
           {activa && (
             <button type="button" data-devolver={m.cuenta} onClick={() => onDevolver(m.cuenta)} style={{
-              display: "block", width: "100%", minHeight: "32px", marginTop: "3px", background: "none", border: "none", cursor: "pointer",
+              display: "block", width: "100%", minHeight: "44px", marginTop: "3px", background: "none", border: "none", cursor: "pointer",
               color: COLOR.apagado, fontFamily: SORA, fontSize: "12px",
             }}>
               devolver al estante
@@ -286,11 +309,11 @@ function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante
         </div>
         );
       })}
-      {/* La cuenta que faltaba: al final de su columna, ✓ con el valor correcto. */}
+      {/* La cuenta que faltaba: al final de su columna, «Iba aquí» con el valor correcto, 0,7 s después. */}
       {faltan.filter((e) => e.lado === lado).map((e) => (
-        <div key={`falta-${e.cuenta}`} data-faltaba={e.cuenta} data-marca={CORRECTA} style={{ ...TARJETA, ...estiloE4(CORRECTA) }}>
-          <p style={{ ...NOMBRE_MESA, display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
-            <Marca marca={CORRECTA} oculto={OCULTO_E4.faltaba} />
+        <div key={`falta-${e.cuenta}`} data-faltaba={e.cuenta} data-marca={REVELADA} className={REVELA} style={{ ...TARJETA, border: ACIERTO_B }}>
+          <p style={{ margin: "0 0 5px", display: "flex", justifyContent: "center" }}><Pastilla marca={REVELADA} envuelve /></p>
+          <p style={NOMBRE_MESA}>
             <span>{e.cuenta}</span>
           </p>
           <p style={{ margin: 0, ...CIFRA, fontSize: "14px", fontWeight: 700, color: COLOR.blanco, textAlign: "center" }}>{pesos(e.valor)}</p>
@@ -335,17 +358,17 @@ function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante
   );
 }
 
+/* La devolución (lote 6d): el bloque de mensaje del modelo T4; el veredicto es `resultado.ok`, nunca el texto. */
 function Retro({ resultado }) {
   return (
-    <div data-retro aria-live="polite" aria-atomic="true">
-      {resultado && (
-        <div data-panel={resultado.ok ? "acierto" : "error"} data-error={resultado.error ?? "ninguno"} style={resultado.ok ? undefined : {
-          marginTop: "12px", padding: "11px 13px", borderRadius: "11px", background: "rgba(231,111,81,0.13)", borderLeft: `3px solid ${CORAL}`,
-        }}>
-          <span style={SOLO_LECTOR}>{resultado.ok ? "Correcto." : "Incorrecto: "}</span>
-          {resultado.texto && <p data-texto-retro style={{ margin: 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: COLOR.blanco }}>{resultado.texto}</p>}
-        </div>
-      )}
+    <div data-retro>
+      <RegionViva>
+        {resultado && (
+          <div data-panel={resultado.ok ? "acierto" : "error"} data-error={resultado.error ?? "ninguno"}>
+            <Mensaje ok={resultado.ok} texto={resultado.texto || null} />
+          </div>
+        )}
+      </RegionViva>
     </div>
   );
 }
@@ -353,8 +376,9 @@ function Retro({ resultado }) {
 const vacio = () => ({ mesa: [], resultado: null, texto: "" });
 
 /*
- * Una pregunta de cifra escrita: lo que lleva encima (si lo lleva), el campo y, si falló, ✓ la cifra
- * correcta. Lote 6c (E4 en todo Hacer): si acertó, su propia cifra queda ✓; las tres preguntas llevan ✓ y ✕.
+ * Una pregunta de cifra escrita: lo que lleva encima (si lo lleva), el campo y, si falló, la cifra
+ * correcta. Lote 6c (E4 en todo Hacer): si acertó, su propia cifra queda marcada; las tres preguntas
+ * llevan marca de acierto y de error (lote 6d: «Correcto», «No va aquí» e «Iba aquí: {valor}»).
  */
 function Pregunta({ parte, texto, onTexto, resultado, Bloque, reducido, etiqueta }) {
   const fallo = Boolean(resultado) && !resultado.ok;
@@ -364,7 +388,8 @@ function Pregunta({ parte, texto, onTexto, resultado, Bloque, reducido, etiqueta
       <div data-pregunta={parte.id} style={{ marginTop: "12px" }}>
         <Campo id={parte.id} valor={texto} onCambio={onTexto} bloqueado={Boolean(resultado)} etiqueta={etiqueta}
           tachado={fallo} acertado={Boolean(resultado?.ok)} formatear={formatearRespuesta} />
-        {fallo && <ValorCorrecto cuenta={parte.id} valor={resultado.correcta} oculto={OCULTO_E4.valorCorrecto} />}
+        {resultado && <p style={{ margin: "5px 0 0", display: "flex", justifyContent: "center" }}><Pastilla marca={fallo ? TACHADA : CORRECTA} /></p>}
+        {fallo && <ValorCorrecto cuenta={parte.id} valor={resultado.correcta} />}
       </div>
     </>
   );
@@ -419,7 +444,8 @@ export default function CierreConMesa({
     const mesaEjemplo = e.asiento.map((m) => ({ cuenta: m.cuenta, lado: m.lado, texto: formatearCifra(String(m.valor)) }));
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-        <style>{CSS}</style>
+        <style>{CSS + CSS_B5H}</style>
+        <div className={CLASE_B5H}>
         <div className="fae-b5k" data-ejemplo-resuelto {...config.atributos}>
           {encabezado(textos.ejemplo ?? "Ejemplo resuelto")}
           <Mesa mesa={mesaEjemplo} activa={false} resultado={null} enEstante={[]} onSacar={() => {}} onCifra={() => {}} onDevolver={() => {}} />
@@ -438,6 +464,7 @@ export default function CierreConMesa({
           <Responder onClick={() => setEnEjemplo(false)}>{textos.empezar ?? "Empezar"}</Responder>
         </div>
         {encima && <div data-diario-al-final style={{ marginTop: "14px" }}>{encima}</div>}
+        </div>
       </Marco>
     );
   }
@@ -494,7 +521,8 @@ export default function CierreConMesa({
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS}</style>
+      <style>{CSS + CSS_B5H}</style>
+      <div className={CLASE_B5H}>
       <div className="fae-b5k" {...config.atributos}>
         {!modoDemo && encabezado(`${textos.etiqueta ?? "Asiento"} ${t.i + 1} de ${cuantas}`)}
         {Visual && !modoDemo && <Visual paso={t.i} comprobada={comprobada} reducido={reducido} />}
@@ -521,7 +549,7 @@ export default function CierreConMesa({
           <Retro resultado={s.resultado} />
           {!comprobada && (
             <>
-              <BotonConfirmar deshabilitado={!listo} onClick={confirmar}>{esPregunta ? textos.comprobar : TEXTO_CONFIRMAR}</BotonConfirmar>
+              <BotonConfirmar deshabilitado={!listo} onClick={confirmar}>{esPregunta ? textos.comprobar ?? COMPROBAR_B : COMPROBAR_B}</BotonConfirmar>
               {!modoDemo && !esPregunta && (
                 <p data-un-intento style={{ margin: "9px 0 0", fontSize: "12px", lineHeight: 1.45, color: COLOR.apagado, textAlign: "center" }}>{AVISO_UN_INTENTO}</p>
               )}
@@ -541,7 +569,7 @@ export default function CierreConMesa({
 
       {comprobada && !modoDemo && (
         <div data-boton-avanzar>
-          <Responder onClick={avanzar}>{t.i + 1 === cuantas ? "Ver mi resumen" : textos.siguiente ?? "Siguiente asiento"}</Responder>
+          <Responder onClick={avanzar}>{t.i + 1 === cuantas ? VER_MI_RESUMEN : siguienteDe(textos.etiqueta ?? "Asiento")}</Responder>
         </div>
       )}
 
@@ -549,6 +577,7 @@ export default function CierreConMesa({
       {encima && <div data-diario-al-final style={{ marginTop: "14px" }}>{encima}</div>}
 
       {!modoDemo && <p style={SOLO_LECTOR}>{config.alt}</p>}
+      </div>
     </Marco>
   );
 }

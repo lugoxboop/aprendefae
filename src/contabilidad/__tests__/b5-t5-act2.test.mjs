@@ -299,7 +299,9 @@ test("★★★ E4: tras el error, la mesa del estudiante se queda como la armó
   assert.equal(caja.querySelector("[data-confirmar-parte]"), null, "un solo intento");
   assert.ok([...caja.querySelectorAll("input")].every((i) => i.readOnly));
   assert.equal(caja.querySelector("[data-visto-parte]"), null, "con error no hay marca");
-  assert.ok(caja.querySelector("[data-retro]").textContent.startsWith("Incorrecto: "));
+  /* Lote 6d: el bloque de error del estándar único; «Incorrecto.» lo dice el lector. */
+  assert.ok(caja.querySelector("[data-retro]").textContent.startsWith("Incorrecto. "));
+  assert.equal(caja.querySelector('[data-retro] [role="status"]').dataset.retro, "mal");
   desmontar();
 });
 
@@ -312,10 +314,10 @@ test("★★★ al acertar: la marca junto al rótulo, «Correcto.» para el lec
   desmontar();
 });
 
-test("★★ «Confirmar asiento» solo con alguna cuenta en la mesa y todas con valor", async () => {
+test("★★ «Comprobar» (lote 6d; antes «Confirmar asiento») solo con alguna cuenta en la mesa y todas con valor", async () => {
   const { caja, desmontar } = await montar({ items: [parte(1)] });
   const boton = () => caja.querySelector("[data-confirmar-parte]");
-  assert.equal(boton().textContent, "Confirmar asiento");
+  assert.equal(boton().textContent, "Comprobar");
   assert.equal(boton().disabled, true);
   await armar(caja, [al("Caja", "debe", 120000)], false);
   await tocar(caja.querySelector('[data-sacar="Ingresos por intereses:haber"]'));

@@ -11,7 +11,7 @@ import { COLOR } from "../../../../data/contabilidadTema3.js";
  *   · el objetivo, una oración del kit (Inter 13/1,45, secundario; 20
  *     palabras como mucho);
  *   · debajo, una fila de 44: a la izquierda el contador («Ficha N de 9»;
- *     Sora 12/600, en mayúsculas, secundario) y a la derecha «¿Cómo se
+ *     Sora 12/600, secundario; desde el lote 6d sin mayúsculas) y a la derecha «¿Cómo se
  *     juega?» como enlace (Sora 12/600, subrayado, 44 de alto);
  *   · plegados bajo «¿Cómo se juega?», la consigna, los pasos, lo que la
  *     actividad fija como recordatorio (`notas`) y, si la tiene, la regla
@@ -37,8 +37,9 @@ export default function EncabezadoCompacto({ objetivo, contador, consigna, pasos
       <p data-objetivo style={{ margin: 0, fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: SECUNDARIO }}>{objetivo}</p>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", minHeight: "44px" }}>
         <p data-contador style={{
-          margin: 0, fontFamily: SORA, fontSize: "12px", fontWeight: 600, lineHeight: 1.3, letterSpacing: "0.06em",
-          textTransform: "uppercase", color: SECUNDARIO, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap",
+          /* Lote 6d (§4.3): «Ficha 1 de 8», como se escribe; sin mayúsculas ni espaciado. */
+          margin: 0, fontFamily: SORA, fontSize: "12px", fontWeight: 600, lineHeight: 1.3,
+          color: SECUNDARIO, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap",
         }}>
           {contador}
         </p>

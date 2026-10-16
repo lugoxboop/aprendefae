@@ -60,10 +60,12 @@ const montar = async (props = {}) => {
 const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
 const clave = (o) => String(o.valor ?? o.texto);
 const opcion = (caja, o) => caja.querySelector(`[data-opcion="${clave(o)}"]`)?.closest("button");
-const siguiente = (caja) => tocar([...caja.querySelectorAll("button")].find((b) => /^(Siguiente|Ver resultado)$/.test(b.textContent.trim())));
+/* Lote 6d (§4.3): el avance sigue al contador, «Siguiente casilla», y al final «Ver mi resumen». */
+const siguiente = (caja) => tocar([...caja.querySelectorAll("button")].find((b) => /^(Siguiente casilla|Ver mi resumen)$/.test(b.textContent.trim())));
+/* Lote 6d: el bloque de mensaje del estándar único; se lee su texto visible, sin el «Incorrecto.» del lector. */
 const devolucion = (caja) => {
-  const p = caja.querySelector('[role="status"]');
-  return p ? [...p.childNodes].filter((n) => !(n.classList?.contains("fae-jg-oculto"))).map((n) => n.textContent).join("") : null;
+  const p = caja.querySelector('[role="status"] [data-devolucion]');
+  return p ? [...p.childNodes].filter((n) => !(n.dataset && "lector" in n.dataset)).map((n) => n.textContent).join("") : null;
 };
 const NBSP = " ";
 const pegado = (t) => t.replace(/(\d) %/g, `$1${NBSP}%`);
@@ -376,10 +378,10 @@ test("★★★ cada error se ve literal y la correcta queda marcada", async () 
     for (let j = 0; j < k; j++) { await tocar(opcion(caja, correcta(CASILLAS[j]))); await siguiente(caja); }
     assert.equal(caja.querySelector("[data-hecho]").textContent, pegado(c.enunciado));
     await tocar(opcion(caja, mala));
-    assert.equal(devolucion(caja), `❌${pegado(D.ERRORES_T6_ACT6[mala.tipo])}`, `casilla ${k + 1}`);
-    /* Lote 6c: en la 1 a la 3, el cajón correcto queda ✓ y el tocado por error ✕ (E4); en las demás, la opción revelada. */
+    assert.equal(devolucion(caja), pegado(D.ERRORES_T6_ACT6[mala.tipo]), `casilla ${k + 1}`);
+    /* Lote 6c/6d: en la 1 a la 3, el cajón correcto se revela («Iba aquí») y el tocado por error queda «No va aquí»; en las demás, la opción revelada. */
     if (k < 3) {
-      assert.equal(opcion(caja, correcta(c)).dataset.marcaE4, "correcta");
+      assert.equal(opcion(caja, correcta(c)).dataset.marcaE4, "revelada");
       assert.equal(opcion(caja, mala).dataset.marcaE4, "tachada");
     } else assert.equal(opcion(caja, correcta(c)).dataset.estado, "revelada");
     desmontar();
@@ -430,10 +432,17 @@ test("★★★ lote 6c · en las casillas 1 a 3 sale la lista de rangos: se toc
     const bueno = D.GRUPOS_T6_ACT6.find((g) => g.nombre === correcta(c).texto).id;
     const malo = D.GRUPOS_T6_ACT6.find((g) => g.nombre === mala.texto).id;
     const boton = (id) => caja.querySelector(`[data-eje] button[data-cajon="${id}"]`);
+    /* Lote 6d: el tocado por error, 2 px coral y «No va aquí»; el correcto no tocado, «Iba aquí». La pastilla va en la franja de encima del eje; la palabra, en el nombre del cajón. */
     assert.equal(boton(malo).dataset.marcaE4, "tachada");
-    assert.ok(boton(malo).querySelector('[data-icono="tache"]'));
-    assert.equal(boton(bueno).dataset.marcaE4, "correcta");
-    assert.ok(boton(bueno).querySelector('[data-icono="visto"]'));
+    assert.match(boton(malo).getAttribute("aria-label"), /\. No va aquí$/);
+    assert.equal(boton(malo).style.boxShadow, "inset 0 0 0 2px #E76F51");
+    const franja = (id) => caja.querySelector(`[data-franja-pastillas] [data-pastilla-cajon="${id}"] [data-pastilla]`);
+    assert.equal(franja(malo).textContent, "No va aquí");
+    assert.ok(franja(malo).querySelector('[data-icono="tache"]'));
+    assert.equal(boton(bueno).dataset.marcaE4, "revelada");
+    assert.match(boton(bueno).getAttribute("aria-label"), /\. Iba aquí$/);
+    assert.equal(franja(bueno).textContent, "Iba aquí");
+    assert.equal(franja(bueno).querySelector("svg"), null, "«Iba aquí» va sin ícono");
     assert.equal(caja.querySelector(`[data-deuda="${c.id}"]`).dataset.enCajon, bueno, "la deuda cae en el correcto");
     assert.ok([...caja.querySelectorAll("[data-eje] button[data-cajon]")].every((b) => b.disabled), "un solo intento");
     await siguiente(caja);

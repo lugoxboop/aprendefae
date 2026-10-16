@@ -14,7 +14,8 @@ import { BANCOS } from "./contabilidadT5Act2.js";
  *
  * El patrón de «¿Por Cuál Arteria Entra?» (b5/EligeUnaOpcion.jsx): un hecho a
  * la vez, cuatro cuentas fijas, un intento, la devolución de acierto del
- * hecho o la del tipo de error. El ✅ y el ❌ los pone contabilidad/t6Act4.js.
+ * hecho o la del tipo de error, sin emoji (lote 6d): el veredicto es el estado
+ * de la elección, no el texto (contabilidad/t6Act4.js).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 

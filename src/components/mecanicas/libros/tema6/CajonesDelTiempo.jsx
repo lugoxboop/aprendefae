@@ -5,9 +5,10 @@ import {
 } from "../../../../data/contabilidadT6Act6.js";
 import { pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
 import { pesos } from "../../../../data/contabilidad.js";
-import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES } from "./MaquinaPegada.jsx";
+import { SORA, INTER, TEXTO, SECUNDARIO, NODO, BORDES } from "./MaquinaPegada.jsx";
 import { Entra, KEYFRAMES_ENTRA } from "./CuentaQueSeLlena.jsx";
-import { Marca, CORRECTA, TACHADA } from "../b5/MarcasE4.jsx";
+import { CORRECTA, TACHADA, REVELADA } from "../b5/MarcasE4.jsx";
+import { Pastilla, PALABRA_B, TEXTO_B, CORAL_B, ACIERTO_B } from "../b5/Devolucion.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -36,8 +37,16 @@ import { Marca, CORRECTA, TACHADA } from "../b5/MarcasE4.jsx";
  * donde cae la deuda. El eje pasa a 44 de alto y cada cajón es un botón con
  * el nombre de su grupo («Grupo 1: vigentes o hasta 3 meses»…). «6 meses» se
  * responde tocando a un lado o al otro de la marca de 6. E4: el tocado por
- * error queda ✕ y el correcto ✓ (borde 2 nodo, relleno navy); la deuda cae
+ * error queda marcado y el correcto también (ver lote 6d, abajo); la deuda cae
  * en el correcto.
+ *
+ * LOTE 6d (estándar único de Hacer): el cajón tocado por error, 2 px coral y
+ * «No va aquí»; el correcto, 2 px #F8F9FA y «Correcto» si se tocó, o «Iba
+ * aquí» (0,7 s después) si no. Los cajones miden 57 a 72 px a 320 y la
+ * pastilla no cabe dentro: va en la franja de encima del eje, donde esperaba
+ * la deuda (ya cayó), alineada con su cajón; si hay dos y no caben en sus
+ * sitios, se acercan sin montarse. La palabra entra en el nombre accesible
+ * del cajón. Sin relleno navy: lo activo es solo el borde de 2 #F8F9FA.
  *
  * Lo que entra es siempre el valor correcto. En blanco y negro: los cajones
  * se leen por sus marcas y su orden; la porción es relleno y el resto
@@ -117,9 +126,11 @@ function Eje({ respondidas, abierta, reducido, eleccion = null }) {
   const elegidoK = eleccion?.elegida ? GRUPOS_T6_ACT6.findIndex((g) => g.nombre === eleccion.elegida.texto) : -1;
   const marcaDe = (k) => {
     if (!eleccion?.elegida) return null;
-    if (k === cajonDe(casilla)) return CORRECTA;
+    if (k === cajonDe(casilla)) return k === elegidoK ? CORRECTA : REVELADA;
     return k === elegidoK ? TACHADA : null;
   };
+  const palabraDe = { [CORRECTA]: PALABRA_B.correcto, [TACHADA]: PALABRA_B.noVaAqui, [REVELADA]: PALABRA_B.ibaAqui };
+  const marcados = GRUPOS_T6_ACT6.map((g, k) => k).filter((k) => marcaDe(k));
   return (
     <div data-eje {...(abierta !== null ? { "data-renglon-activo": "" } : {})} data-escalonado={escalonado ? "si" : "no"} style={{ position: "relative", height: `${TOPE_BARRA + ALTO_BARRA + 4 + LINEA_MARCA * (escalonado ? 2 : 1)}px`, margin: "4px 0 12px" }}>
       {/* La barra, partida en cuatro cajones. */}
@@ -134,7 +145,7 @@ function Eje({ respondidas, abierta, reducido, eleccion = null }) {
           return (
             <Etiqueta key={g.id} data-cajon={g.id} data-con-deuda={tiene ? "si" : "no"} {...(k === ULTIMO ? { "data-abierto": "" } : {})}
               {...(eleccion ? {
-                type: "button", "aria-label": `Grupo ${k + 1}: ${minuscula(g.nombre)}`, "data-marca-e4": marca ?? "",
+                type: "button", "aria-label": `Grupo ${k + 1}: ${minuscula(g.nombre)}${marca ? `. ${palabraDe[marca]}` : ""}`, "data-marca-e4": marca ?? "",
                 disabled: !eleccion.elegir, onClick: () => eleccion.elegir?.(opcion),
               } : {})}
               style={{
@@ -145,19 +156,19 @@ function Eje({ respondidas, abierta, reducido, eleccion = null }) {
                 ? { borderRight: "none", backgroundImage: `${DESVANECE}, ${DESVANECE}`, backgroundSize: "100% 1px", backgroundPosition: "top, bottom", backgroundRepeat: "no-repeat" }
                 : { borderTop: `1px solid ${BORDES}`, borderBottom: `1px solid ${BORDES}` }),
               borderRadius: k === 0 ? "6px 0 0 6px" : 0,
-              backgroundColor: recien ? NAVY : tiene ? TENUE : "transparent", boxShadow: recien ? `inset 0 0 0 2px ${NODO}` : "none",
+              /* Lote 6d: sin relleno navy; el activo y el correcto, 2 px #F8F9FA; el tocado por error, 2 px coral. */
+              backgroundColor: !recien && tiene ? TENUE : "transparent",
+              boxShadow: marca === TACHADA ? `inset 0 0 0 2px ${CORAL_B}` : recien || marca ? `inset 0 0 0 2px ${TEXTO_B}` : "none",
             }}>
               {/* La clave de la opción, como en las casillas de siempre (la sonda y el guion la buscan así). */}
               {eleccion && <span data-opcion={g.nombre} aria-hidden="true" />}
-              {marca && (
-                <span data-marca-cajon={marca} style={{ position: "absolute", top: "3px", left: "3px", display: "flex" }}>
-                  <Marca marca={marca} />
-                </span>
-              )}
+              {marca && <span data-marca-cajon={marca} hidden />}
             </Etiqueta>
           );
         })}
       </div>
+      {/* Lote 6d: las pastillas, en la franja de encima del eje, alineadas con su cajón (la palabra ya está en el nombre del cajón). */}
+      {marcados.length > 0 && <FranjaDePastillas marcados={marcados} marcaDe={marcaDe} />}
       {/* Las marcas, bajo los bordes interiores. */}
       {/* Medidos siempre en la primera línea: el escalón del medio va por transform, que no mueve su caja de medida. */}
       {MARCAS.map((m, k) => (
@@ -179,7 +190,7 @@ function Eje({ respondidas, abierta, reducido, eleccion = null }) {
             top: enCajon ? `${TOPE_BARRA + (ALTO_BARRA - ALTO_PASTILLA) / 2}px` : 0,
             /* Esperando, siempre al inicio del eje, encima de él; en su cajón, centrada en él. */
             left: `${enCajon ? centroDe(k) : 0}%`, transform: enCajon ? "translateX(-50%)" : "none",
-            border: enCajon ? "none" : `2px solid ${NODO}`, background: enCajon ? "transparent" : NAVY,
+            border: enCajon ? "none" : ACIERTO_B, background: "transparent",
             ...PEQUENO, fontWeight: 600, whiteSpace: "nowrap", color: anterior ? SECUNDARIO : TEXTO,
             transition: reducido ? "none" : "top 320ms ease-out, left 320ms ease-out",
             /* Lote 6c: los cajones son botones; la deuda colocada no se come el toque del cajón que la lleva. */
@@ -193,11 +204,34 @@ function Eje({ respondidas, abierta, reducido, eleccion = null }) {
   );
 }
 
+/*
+ * La franja de pastillas (lote 6d): una fila del ancho del eje. La de la izquierda arranca en el borde
+ * izquierdo de su cajón y la de la derecha termina en el borde derecho del suyo; con una sola, se alinea
+ * por el lado que tiene sitio. Los huecos de los extremos se encogen antes de que dos se monten.
+ */
+function FranjaDePastillas({ marcados, marcaDe }) {
+  const hueco = (pct) => <span aria-hidden="true" style={{ flex: `0 1 ${pct}%`, minWidth: 0 }} />;
+  const relleno = <span aria-hidden="true" style={{ flex: "1 1 0", minWidth: "6px" }} />;
+  const pastilla = (k) => <span key={k} data-pastilla-cajon={GRUPOS_T6_ACT6[k].id} style={{ flex: "none", display: "flex" }}><Pastilla marca={marcaDe(k)} /></span>;
+  const [a, b] = marcados;
+  const alaIzquierda = (k) => k <= 1;
+  return (
+    <div data-franja-pastillas aria-hidden="true" style={{ position: "absolute", top: 0, left: 0, right: 0, height: `${ALTO_PASTILLA}px`, display: "flex", alignItems: "center", pointerEvents: "none" }}>
+      {b === undefined
+        ? (alaIzquierda(a)
+          ? <>{hueco(BORDES_EJE[a])}{pastilla(a)}{relleno}</>
+          : <>{relleno}{pastilla(a)}{hueco(100 - BORDES_EJE[a + 1])}</>)
+        : <>{hueco(BORDES_EJE[a])}{pastilla(a)}{relleno}{pastilla(b)}{hueco(100 - BORDES_EJE[b + 1])}</>}
+    </div>
+  );
+}
+
 /* ═══════════ LA TABLA, CON SUS BARRAS (parte 2) ═══════════ */
 
+/* Lote 6d: el renglón activo, 2 px #F8F9FA y sin relleno navy. */
 const resalte = (activo) => ({
   margin: "0 -6px", padding: "4px 6px", borderRadius: "8px",
-  border: `2px solid ${activo ? NODO : "transparent"}`, background: activo ? NAVY : "transparent",
+  border: `2px solid ${activo ? TEXTO_B : "transparent"}`, background: "transparent",
 });
 
 /* Una barra de largo fijo, con la porción rellena al final y su porcentaje del largo. */
@@ -279,7 +313,8 @@ export default function CajonesDelTiempo({ respondidas, abierta, reducido, anunc
     <div data-cajones-del-tiempo style={{ margin: "0 0 12px" }}>
       <style>{KEYFRAMES_ENTRA}</style>
       <p data-nota-regla style={{ margin: "0 0 10px", fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: "rgba(248,249,250,0.75)" }}>{T6_ACT6.nota}</p>
-      <div data-regla="" style={{ padding: "8px 10px 10px", borderRadius: "12px", border: `1px solid ${BORDE}`, background: "rgba(248,249,250,0.05)" }}>
+      {/* Lote 6d: la tabla va directo sobre el Panel, sin tarjeta propia. */}
+      <div data-regla="" style={{ padding: 0 }}>
         <div {...(parte2 ? { "data-datos-parte": "" } : {})}>
           {GRUPOS_T6_ACT6.map((g, k) => (
             <FilaGrupo key={g.id} g={g} k={k} parte2={parte2} valor={parte2 ? valorDe(g) : null} activo={parte2 && activoDe(g)} reducido={reducido} />

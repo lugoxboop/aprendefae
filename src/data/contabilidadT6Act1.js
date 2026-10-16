@@ -8,8 +8,9 @@
  * en orquestador/conocimiento/paquetes/b5-t6-act1.md. No hay guía de diseño
  * propia: es el mismo diseño de b5-t5-a1 (decisión de Sakuta).
  *
- * Como en T1-6, el ✅ y el ❌ van al inicio de cada devolución y Retro los
- * separa; lo que sigue al emoji es literal de Futaba. La pista del primer
+ * Lote 6d (estándar único de Hacer): las devoluciones van sin los emojis de acierto y de
+ * error que llevaban al inicio (solo se quitó el emoji); el veredicto lo da la
+ * evaluación (`ok`), no el texto. El resto es literal de Futaba. La pista del primer
  * fallo va sin emoji (como en la escalera de ayuda, tema6/escaleraB5.js).
  *
  * El segundo fallo sigue la REGLA ÚNICA de la célula (b5SegundoFallo.js): el
@@ -78,59 +79,59 @@ export const FICHAS_T6_ACT1 = [
     /* Lote 6a (Futaba): cada préstamo con otra forma; solo este dice «prestada». */
     texto: "Un socio le pide plata prestada a la empresa, y ella se la da.",
     pista: "¿El socio compró algo a crédito, o recibió plata prestada? Piensa qué deudas recoge la cuenta de clientes.",
-    acierto: "✅ Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Cuentas por cobrar a socios y accionistas.",
+    acierto: "Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Cuentas por cobrar a socios y accionistas.",
   },
   {
     id: "trabajador", cuenta: OTRA, lado: null,
     texto: "Un trabajador necesita plata y la empresa se la entrega; él la pagará por cuotas.",
     pista: "¿Aquí hubo una venta a crédito? Piensa qué deudas recoge Cuentas por cobrar – clientes.",
-    acierto: "✅ Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Cuentas por cobrar a trabajadores.",
+    acierto: "Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Cuentas por cobrar a trabajadores.",
   },
   {
     id: "particular", cuenta: OTRA, lado: null,
     texto: "Alguien que no es cliente, socio ni trabajador recibe plata de la empresa. Tiene que devolverla.",
     pista: "Fíjate por qué esta persona le debe a la empresa. ¿La deuda vino de una venta a crédito?",
-    acierto: "✅ Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Préstamos a particulares.",
+    acierto: "Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Préstamos a particulares.",
   },
   {
     /* Corrección obligatoria de Shoko: quien se guíe por la palabra «cliente» la falla. Lote 6a: la versión de Shoko, sin «no compra nada». */
     id: "prestamo-cliente", cuenta: OTRA, lado: null,
     texto: "Un cliente le pide plata a la empresa, y ella se la entrega para que la devuelva.",
     pista: "Que sea cliente no decide la cuenta. Mira por qué le debe: ¿compró a crédito o le prestaron?",
-    acierto: "✅ Sí. Es un cliente, pero esto es un préstamo, no una venta a crédito. Por eso no va en Cuentas por cobrar – clientes, sino en otra cuenta por cobrar.",
+    acierto: "Sí. Es un cliente, pero esto es un préstamo, no una venta a crédito. Por eso no va en Cuentas por cobrar – clientes, sino en otra cuenta por cobrar.",
   },
   {
     id: "venta-mercancia", cuenta: CLIENTES, lado: DEBITA,
     /* Entrega 4 de Futaba (calidad): los cinco hechos de Clientes, con otras palabras. */
     texto: "Un cliente se lleva un pedido de mercancía a crédito, para pagarlo a fin de mes.",
     pista: "Después de esto, ¿lo que debe el cliente sube o baja? No te guíes por la palabra “crédito”.",
-    acierto: "✅ Sí. Es una venta a crédito: el cliente queda debiendo, así que se debita.",
+    acierto: "Sí. Es una venta a crédito: el cliente queda debiendo, así que se debita.",
   },
   {
     id: "venta-servicio", cuenta: CLIENTES, lado: DEBITA,
     texto: "La empresa le presta un servicio a crédito a un cliente.",
     pista: "Un servicio vendido sin cobrarlo también deja una deuda. ¿Esa deuda sube o baja?",
-    acierto: "✅ Sí. Un servicio vendido a crédito también hace subir la deuda: se debita.",
+    acierto: "Sí. Un servicio vendido a crédito también hace subir la deuda: se debita.",
   },
   {
     id: "pago", cuenta: CLIENTES, lado: ACREDITA,
     /* E5 (Futaba): «abona» pasa a «paga», porque el abono no se enseña hasta T6 A4 y esta va antes (Shoko). */
     texto: "Un cliente paga una parte de lo que debe.",
     pista: "Después de pagar esa parte, ¿el cliente debe más o menos que antes?",
-    /* Norma de diseño nueva (sin emojis como íconos): este acierto ya va sin ✅. Los demás se quedan hasta el lote de corrección. */
+    /* Norma de diseño nueva (sin emojis como íconos): desde el lote 6d, todos los aciertos van sin emoji. */
     acierto: "Sí. Baja: se acredita. Lo que pagó ya no lo debe.",
   },
   {
     id: "devolucion", cuenta: CLIENTES, lado: ACREDITA,
     texto: "Un cliente que todavía debe una compra regresa parte de la mercancía.",
     pista: "Lo que el cliente regresa, ¿lo sigue teniendo que pagar? Piensa si su deuda sube o baja.",
-    acierto: "✅ Sí. Baja: se acredita. Lo que regresó ya no lo tiene que pagar.",
+    acierto: "Sí. Baja: se acredita. Lo que regresó ya no lo tiene que pagar.",
   },
   {
     id: "descuento", cuenta: CLIENTES, lado: ACREDITA,
     texto: "La empresa le rebaja a un cliente una parte de lo que le debe.",
     pista: "Con la rebaja, ¿el cliente debe más o menos que antes?",
-    acierto: "✅ Sí. Baja: se acredita. Ahora el cliente le debe menos.",
+    acierto: "Sí. Baja: se acredita. Ahora el cliente le debe menos.",
   },
 ];
 

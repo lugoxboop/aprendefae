@@ -1,7 +1,8 @@
 import { FAE } from "../../../../theme.js";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { ESCENA_T6_A3, MOMENTOS_T6_A3, CUENTA_T_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
-import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES } from "./MaquinaPegada.jsx";
+import { SORA, INTER, TEXTO, SECUNDARIO, BORDES } from "./MaquinaPegada.jsx";
+import { HUNDIDO_B, TEXTO_B } from "../b5/Devolucion.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -21,7 +22,8 @@ import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES } from "./MaquinaPeg
  *
  * R10: mientras se arma un asiento no hay huecos. El renglón nuevo entra al
  * confirmar (siempre el del asiento correcto, se acierte o no: la cuenta es
- * el registro, no la nota) y queda encendido (borde 2 nodo, relleno navy)
+ * el registro, no la nota) y queda encendido (borde 2 #F8F9FA, sin relleno:
+ * lote 6d)
  * hasta el paso siguiente. El saldo ocupa las dos columnas mientras se
  * pregunta y aparece solo después de cada respuesta.
  *
@@ -42,10 +44,10 @@ const MONTO = { margin: 0, fontFamily: SORA, fontSize: "13px", fontWeight: 600, 
 const MOMENTO = { margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: 1.35, color: SECUNDARIO };
 const SALDO = { margin: 0, fontFamily: SORA, fontSize: "13px", fontWeight: 600, lineHeight: 1.35, color: TEXTO };
 
-/* El resalte de la serie, sin moverse: borde de 2 transparente que se vuelve nodo, y margen −6. */
+/* El resalte de la serie, sin moverse: borde de 2 transparente que se vuelve #F8F9FA (lote 6d: sin relleno navy), y margen −6. */
 const resalte = (activo) => ({
   margin: "0 -6px", padding: "2px 6px", borderRadius: "8px",
-  border: `2px solid ${activo ? NODO : "transparent"}`, background: activo ? NAVY : "transparent",
+  border: `2px solid ${activo ? TEXTO_B : "transparent"}`, background: "transparent",
 });
 const marcaActivo = (activo) => (activo ? { "data-renglon-activo": "" } : {});
 
@@ -100,7 +102,7 @@ function Columna({ lado, movimientos, reducido }) {
 export function BloqueEstado({ comprobada, reducido }) {
   const activo = !comprobada;
   return (
-    <div data-bloque-estado style={{ border: `1px solid ${BORDES}`, borderRadius: "10px", padding: "6px 8px 8px", display: "flex", flexDirection: "column", gap: "6px", margin: "10px 0 0" }}>
+    <div data-bloque-estado style={{ ...HUNDIDO_B, borderRadius: "10px", padding: "6px 8px 8px", display: "flex", flexDirection: "column", gap: "6px", margin: "10px 0 0" }}>
       <p style={{ margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: 1.35, color: SECUNDARIO }}>{E.estado}</p>
       {[[E.clientes, E.saldoClientes], [E.provision, E.menos]].map(([nombre, valor]) => (
         <div key={nombre} style={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: "8px", alignItems: "baseline", ...NOMBRE, color: TEXTO, ...resalte(false) }}>
@@ -125,7 +127,8 @@ export default function CuentaQueSeLlena({ paso, comprobada, reducido, cierre = 
       <style>{KEYFRAMES_ENTRA}</style>
 
       {/* La cuenta T de la provisión (capa 3 de T6 · A3). */}
-      <div data-cuenta-t style={{ border: `1px solid ${BORDES}`, borderRadius: "12px", padding: "10px 12px 12px" }}>
+      {/* Lote 6d: la cuenta T va en el hundido de Cuentas. */}
+      <div data-cuenta-t style={{ ...HUNDIDO_B, borderRadius: "12px", padding: "10px 12px 12px" }}>
         <p style={{ margin: 0, textAlign: "center", fontFamily: SORA, fontSize: "13px", fontWeight: 600, lineHeight: 1.3, color: TEXTO }}>{CUENTA_T_T6_A3.nombre}</p>
         <div style={{ marginTop: "6px", borderTop: LINEA_T, display: "grid", gridTemplateColumns: "1fr 1fr" }}>
           <Columna lado="debe" movimientos={c.debe} reducido={reducido} />
