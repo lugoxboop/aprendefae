@@ -335,6 +335,12 @@ function CapaUnoPaginada({ nombres, capa, capa2, rotuloCapa2 }) {
               className="fae-cc-carta"
               style={{ gridArea: "1 / 1", minWidth: 0, visibility: visible ? "visible" : "hidden", opacity: visible ? 1 : 0 }}
             >
+              {/* Lote 7 (B, aprobado por Sakuta): con `figuraAntesDelNombre`, la figura va antes del nombre. Sin él, como siempre. */}
+              {Figura && n.figuraAntesDelNombre && (
+                <div data-figura data-figura-antes style={{ marginBottom: "8px", maxHeight: `${ALTO_FIGURA}px`, overflow: "hidden" }}>
+                  <Figura />
+                </div>
+              )}
               <h4
                 ref={(el) => { encabezados.current[k] = el; }}
                 tabIndex={-1}
@@ -346,7 +352,7 @@ function CapaUnoPaginada({ nombres, capa, capa2, rotuloCapa2 }) {
               >
                 {n.termino}
               </h4>
-              {Figura && (
+              {Figura && !n.figuraAntesDelNombre && (
                 <div data-figura style={{ marginTop: "10px", maxHeight: `${ALTO_FIGURA}px`, overflow: "hidden" }}>
                   <Figura />
                 </div>
@@ -456,9 +462,11 @@ function CapaUnoPaginada({ nombres, capa, capa2, rotuloCapa2 }) {
  */
 export default function CuatroCapas({
   pieza, Escena, Exploracion, rotulo = "SALA DE MÁQUINAS · APRENDER",
-  Capa2 = null, Capa4 = null,
+  Capa2 = null, Capa4 = null, FiguraFinal = null,
 }) {
   const [paso, setPaso] = useState(0);
+  /* Lote 7 (B): la leyenda de la figura final, la frase que la Capa4 da por buena (con `FiguraFinal`). */
+  const [leyenda, setLeyenda] = useState(null);
   const [verRespuesta, setVerRespuesta] = useState(false);
   /* Un término por pantalla desde dos términos; `capa1EnLista` lo apaga (ver arriba). */
   const paginada = pieza.nombres.length > 1 && !pieza.capa1EnLista;
@@ -514,7 +522,9 @@ export default function CuatroCapas({
       </Capa>
 
       <Capa numero={4} nombre="En una frase">
-        {Capa4 ? <Capa4 /> : (<>
+        {/* Lote 7 (B): con `FiguraFinal`, el modelo en su estado final encima de la pregunta, con la frase buena como leyenda. Sin ella, como siempre. */}
+        {FiguraFinal && <div data-figura-final style={{ margin: "0 0 14px" }}><FiguraFinal leyenda={leyenda} /></div>}
+        {Capa4 ? (FiguraFinal ? <Capa4 ponerLeyenda={setLeyenda} /> : <Capa4 />) : (<>
         <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "15px", fontWeight: 700, lineHeight: 1.45, color: FAE.text }}>{pieza.pregunta}</p>
         {!verRespuesta ? (
           <button type="button" onClick={() => setVerRespuesta(true)} style={{ ...boton(true), marginTop: "12px" }}>

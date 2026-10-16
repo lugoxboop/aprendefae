@@ -19,6 +19,7 @@ import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import { PIEZA_LO_QUE_LE_DEBEN } from "../data/contabilidadT6Pieza1.js";
 import { PIEZA_NO_VA_A_PAGAR } from "../data/contabilidadT6Pieza2.js";
 import { PIEZA_LA_PROVISION } from "../data/contabilidadT6Pieza3.js";
+import { conFigurasT6A3 } from "./mecanicas/libros/tema6/escenasTema6.jsx";
 import { PIEZA_SI_PAGA } from "../data/contabilidadT6Pieza4.js";
 import { PIEZA_COMO_SE_CALCULA } from "../data/contabilidadT6Pieza5.js";
 import { conPorcentajePegado } from "../contabilidad/t6Pieza5.js";
@@ -54,7 +55,7 @@ export const TEMA = "cuentas-por-cobrar";
  * La nota de «cartera» del término 2 de la pieza 1 (`notaDebajo`) la pinta CuatroCapas, siempre a la vista.
  * La pieza 5, el «%» pegado a su número y el pie de cada término (tema6/PiesDeTermino.jsx).
  */
-export const PIEZAS = [{ numero: 1, pieza: PIEZA_LO_QUE_LE_DEBEN }, { numero: 2, pieza: PIEZA_NO_VA_A_PAGAR }, { numero: 3, pieza: PIEZA_LA_PROVISION }, { numero: 4, pieza: PIEZA_SI_PAGA }, { numero: 5, pieza: conPiesDeTermino(conPorcentajePegado(PIEZA_COMO_SE_CALCULA)) }];
+export const PIEZAS = [{ numero: 1, pieza: PIEZA_LO_QUE_LE_DEBEN }, { numero: 2, pieza: PIEZA_NO_VA_A_PAGAR }, { numero: 3, pieza: conFigurasT6A3(PIEZA_LA_PROVISION) }, { numero: 4, pieza: PIEZA_SI_PAGA }, { numero: 5, pieza: conPiesDeTermino(conPorcentajePegado(PIEZA_COMO_SE_CALCULA)) }];
 const PUBLICADAS = PIEZAS.length;
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
@@ -136,13 +137,13 @@ export default function ContabilidadTema6View({ modo = null, nodoInicial = null,
           {esAprender ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
               {PIEZAS.map(({ pieza }, k) => {
-                const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA6[pieza.id];
+                const { Capa2, Exploracion, Capa4, FiguraFinal } = ESCENAS_TEMA6[pieza.id];
                 return (
                   <div key={pieza.id}>
                     <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
                       PIEZA {k + 1} DE {PUBLICADAS}
                     </p>
-                    <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} rotulo={rotulo} />
+                    <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} FiguraFinal={FiguraFinal} rotulo={rotulo} />
                   </div>
                 );
               })}
