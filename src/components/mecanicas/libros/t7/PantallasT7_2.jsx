@@ -307,7 +307,7 @@ function Cuerpo({ p, kardexDe }) {
 
 /* ═══════════ ELECCIÓN ═══════════ */
 
-function Eleccion({ pantalla, onSeguir, kardexDe }) {
+export function Eleccion({ pantalla, onSeguir, kardexDe }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
   const [confirmada, setConfirmada] = useState(null);

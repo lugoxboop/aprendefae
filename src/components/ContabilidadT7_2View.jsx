@@ -31,7 +31,8 @@ import LaVentaEnDosAsientos from "./mecanicas/libros/t7/LaVentaEnDosAsientos.jsx
 import { PIEZA_LA_VENTA_EN_DOS_ASIENTOS } from "../data/contabilidadT7_2_a2.js";
 import PantallasT7_2 from "./mecanicas/libros/t7/PantallasT7_2.jsx";
 import { PIEZA_EL_KARDEX } from "../data/contabilidadT7_2_a3.js";
-import { PIEZA_SAN_CALIXTO } from "../data/contabilidadT7_2_a4.js";
+import LasCapasQueLaVentaCorta from "./mecanicas/libros/t7/LasCapasQueLaVentaCorta.jsx";
+import { PIEZA_LAS_CAPAS } from "../data/contabilidadT7_2_a4_capas.js";
 import { PIEZA_FLETES } from "../data/contabilidadT7_2_a5.js";
 import { PIEZA_DEVOLUCIONES } from "../data/contabilidadT7_2_a6.js";
 
@@ -56,7 +57,7 @@ export const PIEZAS_T7_2 = [
   { numero: PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE.numero, pieza: PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE, Pieza: LaCuentaQueSiSeMueve },
   { numero: PIEZA_LA_VENTA_EN_DOS_ASIENTOS.numero, pieza: PIEZA_LA_VENTA_EN_DOS_ASIENTOS, Pieza: LaVentaEnDosAsientos },
   { numero: PIEZA_EL_KARDEX.numero, pieza: PIEZA_EL_KARDEX, Pieza: PantallasT7_2 },
-  { numero: PIEZA_SAN_CALIXTO.numero, pieza: PIEZA_SAN_CALIXTO, Pieza: PantallasT7_2 },
+  { numero: PIEZA_LAS_CAPAS.numero, pieza: PIEZA_LAS_CAPAS, Pieza: LasCapasQueLaVentaCorta },
   { numero: PIEZA_FLETES.numero, pieza: PIEZA_FLETES, Pieza: PantallasT7_2 },
   { numero: PIEZA_DEVOLUCIONES.numero, pieza: PIEZA_DEVOLUCIONES, Pieza: PantallasT7_2 },
 ].sort((a, b) => a.numero - b.numero);
