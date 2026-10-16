@@ -5,8 +5,8 @@ import { barajar } from "../utils/barajar.js";
  * ═══════════════════════════════════════════════════════════════════════════
  * REPASO DEL CAPÍTULO 5 · r5-1 «Repaso cruzado» v2 (Célula E).
  *
- * El bloque C, ejercicios 3, 5, 6, 8, 9 y 10, pp. 264-266. Seis pantallas que
- * saltan de tema a propósito. En la v2 cada decisión mueve algo que significa
+ * El bloque C, ejercicios 1, 3, 5, 6, 8, 9 y 10, pp. 263-266. Siete pantallas
+ * que saltan de tema a propósito (v2.3: C.1 entra primera). En la v2 cada decisión mueve algo que significa
  * algo (barra B3 de orquestador/conocimiento/enganche.md): un flujo de pagos,
  * un mayor, unas latas, un contador, unos lotes.
  *
@@ -31,10 +31,12 @@ import { barajar } from "../utils/barajar.js";
 export const R5_1 = {
   id: "r5-1",
   nombre: "Repaso cruzado",
-  /* Kamogawa: medio, 25 FP, evaluativa. FP = 25 × % de aciertos. */
+  /* Kamogawa: medio, 25 FP, evaluativa. v2.3: el rendimiento son los puntos ganados / 25 (3/3/4/4/4/4/3). */
   dificultad: "medio",
   fpBase: 25,
   modalidad: "evaluativa",
+  /* v2.3: cambia una palabra. Texto interno del paquete (r5-1 no tiene entrada que lo pinte). */
+  objetivo: "Son siete preguntas del capítulo 5. Saltan de tema a propósito. Comprueba lo que sabes.",
 };
 
 /* Los rótulos fijos de interfaz del paquete. */
@@ -47,7 +49,15 @@ export const INTERFAZ_R5_1 = {
   marcaPista: "PISTA",
   marcaPortada: "FIN DEL CAPÍTULO 5",
   portada: "Repasa los tres temas antes de seguir.",
-  /* Pantalla 1. */
+  /* C.1 · la raya del año (v2.3, decisión 7). */
+  hoyRaya: "hoy",
+  unAno: "1 año",
+  corriente: "Corriente",
+  noCorriente: "No es corriente",
+  alVenderse: "al venderse",
+  /* El texto alternativo de la figura (v2.3, decisión 6). «ninguno» cuando una zona queda vacía: decisión de Ippo. */
+  altRaya: (si, no) => `Corriente: ${si.join(", ") || "ninguno"}. No es corriente: ${no.join(", ") || "ninguno"}.`,
+  /* Pantalla de los flujos (C.3). */
   hoy: "HOY",
   vencimiento: "VENCIMIENTO",
   pagas: "Pagas",
@@ -107,12 +117,14 @@ export const UNIDADES_POR_CAJA = 10;
 /* ═══════════ LOS TRES SUBTEMAS (etiqueta del panel docente y silueta) ═══════════ */
 
 export const SUBTEMAS = {
+  /* v2.3: C.1 no es de inversiones, cartera ni inventarios. Su silueta es la raya del año en miniatura. */
+  corrientes: { id: "corrientes", nombre: "Activos corrientes", escena: "raya" },
   inversiones: { id: "inversiones", nombre: "Inversiones", escena: "titulo-valor" },
   cartera: { id: "cartera", nombre: "Cartera", escena: "facturas" },
   inventarios: { id: "inventarios", nombre: "Inventarios", escena: "bodega" },
 };
 /* El orden de las filas del bloque «POR TEMA». */
-export const ORDEN_SUBTEMAS = ["inversiones", "cartera", "inventarios"];
+export const ORDEN_SUBTEMAS = ["corrientes", "inversiones", "cartera", "inventarios"];
 
 /* ═══════════ LAS CUENTAS (nombres publicados, los mismos del mayor) ═══════════ */
 
@@ -126,6 +138,23 @@ export const CMV = "Costo de mercancía vendida";
 const asiento = (debe, haber) => ({ debe, haber });
 
 /* ═══════════ LOS DATOS DE LA CÉLULA (decisión 8: no son del libro) ═══════════ */
+
+/*
+ * C.1 (v2.3): los cuatro grupos de activos. Cada activo: el renglón de la
+ * opción (con su plazo), el nombre en la figura (sin plazo, E8) y cuándo se
+ * vuelve plata, en meses (30 días = 1 mes). `meses: null` es el inventario
+ * (sin fecha: «al venderse»); `fijo` es el vehículo (no se vende).
+ */
+const UN_ANO = 12;
+const activo = (texto, figura, meses, extra = {}) => ({ texto, figura, meses, ...extra });
+const CAJA_C1 = activo("Caja", "Caja", 0);
+const BANCOS_C1 = activo("Bancos", "Bancos", 0);
+const INVENTARIO_C1 = activo("Inventario de mercancías", "Inventario de mercancías", null);
+const cartera = (plazo, meses) => activo(`Cuentas por cobrar – clientes, a ${plazo}`, "Cuentas por cobrar – clientes", meses);
+const inversion = (plazo, meses) => activo(`Inversión a ${plazo}`, "Inversión", meses);
+const VEHICULO_C1 = activo("Vehículo de reparto", "Vehículo de reparto", null, { fijo: true });
+/* Corriente: se vuelve plata antes de un año. El inventario, sí (al venderse); el fijo, no. */
+export const esCorriente = (a) => !a.fijo && (a.meses === null || a.meses < UN_ANO);
 
 /*
  * Pantalla 1: lo que reproduce cada opción, en px de la figura. `periodos`
@@ -211,6 +240,21 @@ const MAYOR_C10 = [
  * `forma` dice qué mecánica pinta la pantalla.
  */
 export const PANTALLAS_R5_1 = [
+  {
+    id: "c1",
+    ejercicio: "C.1",
+    pagina: "p. 263",
+    subtema: "corrientes",
+    forma: "raya",
+    enunciado: "Un grupo tiene solo activos corrientes. Elige cuál y mira cuándo se vuelve plata cada uno.",
+    opciones: [
+      { id: "c1-a", correcta: true, activos: [CAJA_C1, cartera("10 meses", 10), INVENTARIO_C1, inversion("seis meses", 6)], retro: "Exacto. Son de clases distintas, y hasta la cartera a 10 meses entra: los cuatro se vuelven plata (efectivo) antes de un año." },
+      { id: "c1-b", activos: [BANCOS_C1, cartera("18 meses", 18), INVENTARIO_C1, inversion("tres meses", 3)], retro: "Ser cartera no la hace corriente: lo que manda es cuándo se cobra. Esta tarda 18 meses, más de un año." },
+      { id: "c1-c", activos: [CAJA_C1, cartera("60 días", 2), INVENTARIO_C1, VEHICULO_C1], retro: "El vehículo se usa todos los días, pero no se vende para volverse plata: sirve por años. Es un activo fijo." },
+      { id: "c1-d", activos: [BANCOS_C1, cartera("30 días", 1), INVENTARIO_C1, inversion("15 meses", 15)], retro: "No toda inversión es corriente. Solo la que se vuelve plata antes de un año, y esta tarda 15 meses." },
+    ],
+    pista: "La prueba es la raya del año. Que sea cartera o inversión no decide nada.",
+  },
   {
     id: "c3",
     ejercicio: "C.3",
@@ -315,6 +359,10 @@ export const PANTALLAS_R5_1 = [
 /* ═══════════ LA LÓGICA, SIN REACT ═══════════ */
 
 export const TOTAL_R5_1 = PANTALLAS_R5_1.length;
+
+/* v2.3: lo que vale cada pantalla, en el orden nuevo (C.1, C.3, C.5, C.6, C.8, C.9, C.10). Suman 25. */
+export const PUNTOS_R5_1 = { c1: 3, c3: 3, c5: 4, c6: 4, c8: 4, c9: 4, c10: 3 };
+export const TOTAL_PUNTOS_R5_1 = Object.values(PUNTOS_R5_1).reduce((a, b) => a + b, 0);
 
 /* Pesos con dos decimales y coma: 21,04 → «$21,04». */
 export function pesosConCentavos(valor) {
@@ -444,6 +492,7 @@ export function cuentaDeC9(pantalla) {
 
 /* El texto de una opción, como lo lee quien no ve la pantalla. */
 export function textoDeOpcion(pantalla, opcion) {
+  if (opcion.activos) return opcion.activos.map((a) => a.texto).join(", ");
   if (opcion.asiento) return renglonesDeAsiento(opcion.asiento).join(". ");
   if (opcion.celdas) return pantalla.columnas.map((c, k) => `${c}: ${opcion.celdas[k]}`).join(" · ");
   if (opcion.valor !== undefined) return pesos(opcion.valor);
@@ -486,8 +535,14 @@ export function evaluarR5_1(pantalla, opcionId) {
   return { ok: Boolean(elegida?.correcta), elegida: elegida?.id ?? null, correcta: clave.id, texto: elegida?.retro ?? null };
 }
 
-/* Evaluativa: aciertos / 6 × 100; el motor escala los 25 FP. */
-export const puntuarR5_1 = (aciertos, total = TOTAL_R5_1) => (total ? (aciertos / total) * 100 : 0);
+/*
+ * Evaluativa (v2.3): el rendimiento son los puntos ganados / 25, nunca
+ * aciertos / 7. Siempre un múltiplo de 4 %: Math.round(rendimiento × 100) de
+ * otorgarFP es exacto. El motor escala los 25 FP.
+ */
+export const puntosDeR5_1 = (resultados) => Object.entries(PUNTOS_R5_1).reduce((s, [id, v]) => s + (resultados[id] ? v : 0), 0);
+/* Primero × 100 y luego ÷ 25: 3 / 25 × 100 daría 12,000000000000002. */
+export const puntuarR5_1 = (puntos) => (puntos * 100) / TOTAL_PUNTOS_R5_1;
 
 /* Las filas del bloque «POR TEMA»: un punto por pregunta, en orden. */
 export function porTema(resultados) {
@@ -501,4 +556,40 @@ export function porTema(resultados) {
 export function unidadDeR5_1(id) {
   const p = PANTALLAS_R5_1.find((x) => x.id === String(id));
   return p ? `${SUBTEMAS[p.subtema].nombre} · ${p.enunciado}` : null;
+}
+
+/*
+ * ═══════════ C.1 · DÓNDE CAE CADA ACTIVO (figura de Itagaki, orientación de RayaDelAno, §2) ═══════════
+ *
+ * Alturas en px desde «hoy»; la raya del año está en 144 (12 px por mes).
+ *   · el punto, a la altura de su plazo;
+ *   · el nombre, a su altura, salvo que choque: dos nombres vecinos van al
+ *     menos a 22 px de centro a centro;
+ *   · el inventario no tiene punto (no tiene fecha): su nombre va en el centro
+ *     del hueco libre más grande de la zona; ningún nombre baja de 128;
+ *   · lo que no es corriente va abajo, en el orden de la opción.
+ */
+export const RAYA_C1 = { porMes: 12, raya: 144, separacion: 22, tope: 128 };
+export function colocarC1(opcion) {
+  const R = RAYA_C1;
+  const conFecha = opcion.activos.filter((a) => esCorriente(a) && a.meses !== null)
+    .map((a) => ({ activo: a, punto: a.meses * R.porMes }))
+    .sort((x, y) => x.punto - y.punto);
+  let anterior = -Infinity;
+  for (const x of conFecha) {
+    x.nombre = Math.min(R.tope, Math.max(x.punto, anterior + R.separacion));
+    anterior = x.nombre;
+  }
+  const inv = opcion.activos.find((a) => esCorriente(a) && a.meses === null) ?? null;
+  let inventario = null;
+  if (inv) {
+    const bordes = [...conFecha.map((x) => x.nombre), R.raya];
+    let mejor = null;
+    for (let k = 0; k < bordes.length - 1; k++) {
+      const hueco = bordes[k + 1] - bordes[k];
+      if (!mejor || hueco > mejor.hueco) mejor = { hueco, centro: (bordes[k] + bordes[k + 1]) / 2 };
+    }
+    inventario = { activo: inv, nombre: Math.min(R.tope, mejor ? mejor.centro : R.raya / 2) };
+  }
+  return { arriba: conFecha, inventario, abajo: opcion.activos.filter((a) => !esCorriente(a)) };
 }

@@ -81,9 +81,28 @@ function Bodega() {
   );
 }
 
-export const SILUETAS = { "titulo-valor": TituloValor, facturas: Facturas, bodega: Bodega };
-export const ANCHO_SILUETA = { "titulo-valor": 168, facturas: 150, bodega: 200 };
-export const ALTO_SILUETA = { "titulo-valor": 44, facturas: 44, bodega: 48 };
+/*
+ * Activos corrientes (C.1, v2.3) · la raya del año en miniatura (Itagaki,
+ * figura en la orientación de RayaDelAno §4): raya horizontal en y = 28 de
+ * x = 24 a 160, eje en x = 30 de y = 4 a 28, dos puntos rellenos sobre el eje
+ * (y = 9 y 20) y uno de contorno debajo de la raya (x = 70, y = 38).
+ */
+function Raya() {
+  const punto = (x, y, relleno) => caja({ left: `${x - 5}px`, top: `${y - 5}px`, width: "10px", height: "10px", borderRadius: "50%", ...(relleno ? { background: C.hecho } : { border: TRAZO }) });
+  return (
+    <span data-silueta="raya" style={{ position: "relative", display: "block", width: "160px", height: "44px" }}>
+      {caja({ left: "24px", top: "27px", width: "136px", height: "2px", background: C.hecho })}
+      {caja({ left: "29px", top: "4px", width: "2px", height: "24px", background: C.hecho })}
+      {punto(30, 9, true)}
+      {punto(30, 20, true)}
+      {punto(70, 38, false)}
+    </span>
+  );
+}
+
+export const SILUETAS = { raya: Raya, "titulo-valor": TituloValor, facturas: Facturas, bodega: Bodega };
+export const ANCHO_SILUETA = { raya: 160, "titulo-valor": 168, facturas: 150, bodega: 200 };
+export const ALTO_SILUETA = { raya: 44, "titulo-valor": 44, facturas: 44, bodega: 48 };
 
 /* ═══════════ LA CABECERA: «PREGUNTA n DE 6» Y LA SILUETA DEL TEMA AL 50 % ═══════════ */
 
