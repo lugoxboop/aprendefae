@@ -110,7 +110,12 @@ export function evaluarP5(elegida) {
   const p = pantalla("p5");
   const o = p.opciones.find((x) => x.id === elegida);
   if (o?.correcta) return { ok: true, textos: [p.acierto], elegida };
-  return { ok: false, textos: [o?.retro ?? p.generica], elegida, correcta: p.opciones.find((x) => x.correcta).id };
+  /*
+   * Cada opción equivocada trae su devolución; la genérica del paquete va
+   * después, como segundo párrafo (decisión mía: si no, nunca saldría en
+   * pantalla, y E1 la pide).
+   */
+  return { ok: false, textos: o?.retro ? [o.retro, p.generica] : [p.generica], elegida, correcta: p.opciones.find((x) => x.correcta).id };
 }
 
 export const EVALUAR = { p1: evaluarP1, p2: evaluarP2, p3: evaluarP3, p4: evaluarP4, p5: evaluarP5 };
