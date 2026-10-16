@@ -133,7 +133,22 @@ const CSS_CUENTA = `
 .fae-gsi-icono { display: none; }
 /* Normal aquí, para que la regla que lo esconde viva también en la hoja. */
 .fae-cuenta-avatar { display: inline-flex; }
-.fae-atajo-pastilla { display: inline-flex; }
+.fae-atajo-pastilla { display: inline-flex; position: relative; }
+/*
+ * El blanco de toque, sin tocar el dibujo: 44 px de alto y de ancho como
+ * mínimo, centrados sobre la pastilla de 40. Si la pastilla ya es más grande,
+ * el max() no la encoge. (Sin comillas invertidas aquí dentro: esto va en una
+ * plantilla de CSS y una comilla invertida la cierra.)
+ */
+.fae-atajo-pastilla::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
 .fae-atajo-menu { display: none; }
 @media (max-width: ${ANCHO_ATAJO - 1}px) {
   .fae-atajo-pastilla { display: none; }
@@ -391,7 +406,10 @@ function OpcionMenu({ onClick, punto = false, children }) {
       style={{
         width: "100%", display: "flex", alignItems: "center", gap: "8px",
         textAlign: "left", fontFamily: "Inter, sans-serif", fontSize: "13.5px",
-        minHeight: "40px", padding: "9px 10px", borderRadius: "9px", cursor: "pointer",
+        /* 44 px, el mínimo que un dedo acierta (kit.md). Estaba en 40. Ocupa el
+           ancho entero del menú, así que crecer solo hace el menú 4 px más alto
+           por opción y no mueve nada de lado. */
+        minHeight: "44px", padding: "9px 10px", borderRadius: "9px", cursor: "pointer",
         background: "transparent", border: "none", color: "rgba(248,249,250,0.8)",
       }}
     >
@@ -520,11 +538,17 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
             /*
              * Fuera del flujo, a la izquierda de la cuenta: su llegada no mueve
              * la pastilla de la cuenta ni un píxel, ni para el docente ni para
-             * nadie. La caja pulsable mide 40 de alto —el mínimo para el dedo—,
-             * centrada en la fila; la pastilla que se ve lleva el relleno y la
-             * letra de la de la cuenta, así que mide lo mismo que ella: dos
-             * pastillas de distinta altura en la misma fila se leen como un
-             * error.
+             * nadie. La pastilla que se ve lleva el relleno y la letra de la de
+             * la cuenta, así que mide lo mismo que ella: dos pastillas de
+             * distinta altura en la misma fila se leen como un error.
+             *
+             * SON 40 DE DIBUJO Y 44 DE TOQUE. Este comentario decía que 40 era
+             * «el mínimo para el dedo», y el mínimo es 44 (kit.md). Subir la
+             * caja a 44 rompería lo de arriba —dejaría de medir lo que la
+             * pastilla de la cuenta—, así que el toque lo da un ::after de
+             * max(100%, 44px) centrado, en la hoja de abajo: el dibujo no se
+             * mueve y el dedo acierta. Es la misma solución que el logo y la X
+             * del diálogo.
              */
             position: "absolute",
             right: "calc(100% + 8px)",

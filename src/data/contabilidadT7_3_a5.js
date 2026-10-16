@@ -67,14 +67,21 @@ const PORTADA = {
   pie: "Basado en el libro, pp. 254-255",
 };
 
+/*
+ * Aciertos C7: P1 sale de t7-3-tres-aciertos-c7.md (Near), que Mello pasa sin
+ * correcciones (auditoria-mello-enganche-v6-y-t7-3-aciertos.md, §2.3). Las
+ * dos condiciones del libro van a la vista: la de la ley arriba («al menos…
+ * a más tardar…») y la del permanente en el acierto («solo»). Sin plegado.
+ * La «Opcional» de Mello (devolver «Baja el costo…») NO se aplica.
+ */
 const SOBRANTE = {
   id: "sobrante",
   /* Pista de Mello (mello-pistas-distractores-v1.md): gana sobre la del recorte. */
   pista: "El sobrante no es todo lo que hay en la bodega. ¿Qué parte de lo contado es?",
   tipo: "eleccion",
-  parrafos: ["Una empresa usa el sistema permanente. El 31 de diciembre mira lo que hay en la bodega."],
+  parrafos: ["La ley pide un inventario físico al menos una vez al año, a más tardar el 31 de diciembre."],
   figuras: [barrasDeConteo(R.ejemplo, C.libros, C.conteoSobra)],
-  pregunta: "El conteo da más: hay un sobrante. ¿De cuánto es?",
+  pregunta: "El conteo da más. ¿Cuánto sobra?",
   /* «error · $465.000 o $495.000»: el mismo texto para las dos. */
   opciones: [
     { id: "sobrante", texto: "$30.000", correcta: true },
@@ -82,14 +89,7 @@ const SOBRANTE = {
     { id: "conteo", texto: "$495.000", devolucion: "El sobrante es solo lo que el conteo da de más." },
   ],
   acierto: {
-    texto: "Así es: $495.000 − $465.000 = $30.000. Baja el costo de la mercancía vendida.",
-    /*
-     * REGLA DE L: «estos ajustes solo se presentan en el sistema permanente»
-     * limita la regla. No se pliega: va a la vista hasta que L decida (Mello
-     * además la puso en el resumen).
-     */
-    porque: "El libro dice que, por normas de contabilidad y por ley, las empresas deben hacer un inventario físico al menos una vez al año, a más tardar el 31 de diciembre. Y dice que estos ajustes solo se presentan en el sistema permanente.",
-    porqueALaVista: true,
+    texto: "Así es: $495.000 − $465.000 = $30.000. Estos ajustes solo se dan en el sistema permanente.",
     asientos: [{ fecha: null, lineas: [{ cuenta: INV, lado: DEBE, monto: C.sobrante }, { cuenta: CMV, lado: HABER, monto: C.sobrante }] }],
     pie: "Basado en el libro, pp. 254-255",
   },

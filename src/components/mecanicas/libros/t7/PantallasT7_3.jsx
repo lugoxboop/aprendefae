@@ -161,13 +161,23 @@ function Boton({ nombre, texto, onClick, inactivo = false }) {
   );
 }
 
-function Mensaje({ ok, textos, porque = null, porqueALaVista = false, refFoco }) {
+/*
+ * Con `enteros` (los recortes: `pieza.textosEnteros`), los textos del mensaje
+ * se ven enteros, como los de la pantalla: el plegado automático no corta lo
+ * que Near ya midió. Aciertos C7: el acierto de «no-operacional» trae tres
+ * frases y su condición, y nada de él se pliega. El «¿Por qué?» escrito
+ * aparte (`porque`) sigue igual.
+ */
+function Mensaje({ ok, textos, porque = null, porqueALaVista = false, enteros = false, refFoco }) {
   return (
     <div ref={refFoco} tabIndex={-1} role="status" className={`t73p-msg ${ok ? "t73p-msg-ok" : "t73p-msg-error"}`} data-mensaje={ok ? "acierto" : "error"}>
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t73p-msg-cuerpo">
         <span className="t73p-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t, i) => <p key={t} data-texto><Plegable texto={t} porque={i === 0 && !porqueALaVista ? porque : null} /></p>)}
+        {textos.map((t, i) => {
+          const suPorque = i === 0 && !porqueALaVista ? porque : null;
+          return <p key={t} data-texto>{enteros && !suPorque ? t : <Plegable texto={t} porque={suPorque} />}</p>;
+        })}
         {porque && porqueALaVista && <p data-texto data-porque-a-la-vista><Plegable texto={porque} /></p>}
       </div>
     </div>
@@ -339,13 +349,13 @@ function Eleccion({ pantalla, onSeguir, enteros = false }) {
       {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }} />}
       {estado === "error" && (
         <>
-          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} refFoco={ref} />
+          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} enteros={enteros} refFoco={ref} />
           <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((x) => barajarDistinto(pantalla.opciones, x, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
         </>
       )}
       {estado === "acierto" && (
         <>
-          <Mensaje ok textos={[a.texto]} porque={a.porque ?? null} porqueALaVista={Boolean(a.porqueALaVista)} refFoco={ref} />
+          <Mensaje ok textos={[a.texto]} porque={a.porque ?? null} porqueALaVista={Boolean(a.porqueALaVista)} enteros={enteros} refFoco={ref} />
           <Figuras lista={a.figuras} nuevo />
           <Textos lista={a.parrafos} nueva enteros={enteros} />
           <Asientos lista={a.asientos} nuevo />

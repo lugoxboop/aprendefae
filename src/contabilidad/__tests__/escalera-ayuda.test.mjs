@@ -244,8 +244,10 @@ const CAMBIOS = new Map(RECORTES_MD.flatMap((md) => [...md.matchAll(/^\| (?:Pist
  * auditoría de pistas (mello-pistas-distractores-v1.md). Cada una se comprueba
  * contra la auditoría, y se aplica solo cuando el recorte de su pieza está.
  */
-const MELLO_MD = ["mello-recortes-v1.md", "mello-pistas-distractores-v1.md"].map((f) => readFileSync(new URL(f, PAQUETES), "utf8")).join("\n");
+const MELLO_MD = ["mello-recortes-v1.md", "mello-pistas-distractores-v1.md", "auditoria-mello-a4-v5-y-a3-recomendacion.md"].map((f) => readFileSync(new URL(f, PAQUETES), "utf8")).join("\n");
 const CORRECCIONES_MELLO = [
+  /* Mello, A3-1 (auditoria-mello-a4-v5-y-a3-recomendacion.md): la pregunta pasa a precios que bajan. */
+  ["t7-1-a3-tres-formas", "Mira la tabla anterior: ¿con qué método lo que queda vale menos? Ese costo no desaparece.", "Si los precios bajan, ¿qué método deja en lo que queda los precios más bajos? Los $950.000 no cambian."],
   ["t7-3-descuento-en-dos-libros", "Santa Martha es quien recibe el descuento. Recuerda de qué lado lo anota quien lo recibe.", "Para quien vende, la cuenta fue al debe. Santa Martha está del otro lado del negocio."],
   ["t7-1-a1-la-cuenta-que-no-se-mueve", "Busca la cuenta que recoge lo comprado en el periodo.", "En el periódico, ¿qué cuenta junta en el periodo la mercancía que se trae para vender?"],
   ["t7-1-a1-la-cuenta-que-no-se-mueve", "El conteo dice cuánto vale lo que quedó en la bodega. Piensa en qué cuenta estuvo quieta todo el periodo.", "El conteo dice cuánto vale lo que quedó en la bodega. ¿Qué cuenta debería mostrar ese valor?"],
@@ -408,6 +410,9 @@ function adelantos() {
 
 /* Lo publicado que hoy lo viola (medido el 15 de octubre de 2026): deuda conocida, en revisión. Se quita de aquí al corregirse. */
 const DEUDA = [
+  /* A3-1 de Mello: la correcta pasa a «PEPS», y `lado-a-lado` nombra el método (no la respuesta para precios que bajan). En revisión. */
+  "t7-1-a3-tres-formas · la-recomendacion ← lado-a-lado.pregunta",
+  "t7-1-a3-tres-formas · la-recomendacion ← lado-a-lado.pista",
   "t7-1-a1-la-cuenta-que-no-se-mueve · pregunta-conteo ← pregunta-compra.texto",
   "t7-3-descuento-comercial · dos-clases ← portada.objetivo",
   /* Del recorte de T7-3 (texto de Near, 15 de octubre de 2026): en revisión con Near. */

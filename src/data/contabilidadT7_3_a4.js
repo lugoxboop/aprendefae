@@ -85,26 +85,25 @@ const CIERRE = {
   pie: "Basado en el libro, p. 254",
 };
 
+/*
+ * Aciertos C7: P3 sale de t7-3-tres-aciertos-c7.md (Near) con N-1 de Mello
+ * (auditoria-mello-enganche-v6-y-t7-3-aciertos.md, §2.2): el acierto lleva la
+ * condición del saldo («con saldo en el haber») y la del permanente, a la
+ * vista y sin plegado; sin «Así es.». La pista y los errores no cambian.
+ */
 const NO_OPERACIONAL = {
   id: "no-operacional",
   pista: "San Calixto dio el descuento. ¿Eso para él es un gasto o un ingreso?",
   tipo: "eleccion",
-  parrafos: ["No operacional quiere decir que no es de la operación."],
-  pregunta: "En San Calixto, la cuenta terminó con saldo en el debe. ¿Cómo va al estado de resultados?",
+  parrafos: ["No operacional: ajeno a la operación."],
+  pregunta: "San Calixto quedó con saldo en el debe. ¿Cómo va al estado de resultados?",
   opciones: [
-    { id: "gasto", texto: "Como gasto no operacional", correcta: true },
-    { id: "ingreso", texto: "Como ingreso no operacional", devolucion: "Saldo en el debe es un gasto para San Calixto: dio el descuento." },
-    { id: "costo", texto: "Como costo de la mercancía vendida", devolucion: "No es costo de la mercancía: el libro lo deja fuera de la operación." },
+    { id: "gasto", texto: "Gasto no operacional", correcta: true },
+    { id: "ingreso", texto: "Ingreso no operacional", devolucion: "Saldo en el debe es un gasto para San Calixto: dio el descuento." },
+    { id: "costo", texto: "Costo de mercancía vendida", devolucion: "No es costo de la mercancía: el libro lo deja fuera de la operación." },
   ],
   acierto: {
-    texto: "Así es. En Santa Martha, con saldo en el haber, va como ingreso no operacional.",
-    /*
-     * REGLA DE L: este plegado limita lo que dice al sistema permanente
-     * («Si las dos usaran el permanente…»). No se pliega: va a la vista
-     * hasta que L decida.
-     */
-    porque: "Si las dos usaran el permanente, San Calixto haría además el asiento del costo de lo vendido. Y Santa Martha anotaría la compra en Inventario de mercancías, no en Compras.",
-    porqueALaVista: true,
+    texto: "En Santa Martha, con saldo en el haber, es ingreso no operacional. Con el permanente, San Calixto anota también el costo. Santa Martha usa Inventario de mercancías, no Compras.",
     pie: "Basado en el libro, pp. 253-254",
   },
   error: { pie: "Basado en el libro, p. 253" },

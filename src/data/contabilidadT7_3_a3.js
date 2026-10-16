@@ -77,7 +77,16 @@ const PAGO = {
  * resumen, con el pago del día 10.
  */
 const PLAZOS_RECORTE = { tipo: "plazos", venta: null, condiciones: CONDICIONES_LIBRO, titulo: "5 % · 15/10 · 5/20 · n/30", rotDia: (d) => `día ${d}` };
-const PLAZOS_PREGUNTA = { ...PLAZOS_RECORTE, ocultarLleva: true, alAcertar: { ocultarLleva: false } };
+/*
+ * Aciertos C7 (t7-3-tres-aciertos-c7.md, de Near): en `condiciones`, el rótulo
+ * pasa a «5 % comercial · 15/10 · 5/20 · n/30» (la definición del 5 % sale del
+ * plegado) y los días, a «10 · 20 · 30 días». El resumen conserva su línea:
+ * el paquete solo toca `condiciones`.
+ */
+const PLAZOS_PREGUNTA = {
+  ...PLAZOS_RECORTE, titulo: "5 % comercial · 15/10 · 5/20 · n/30", rotDia: (d) => (d === 30 ? `${d} días` : String(d)),
+  ocultarLleva: true, alAcertar: { ocultarLleva: false },
+};
 const PLAZOS_PAGO = { ...PLAZOS_RECORTE, pago: { dia: 10, fecha: "4 jun" } };
 
 const PORTADA = {
@@ -88,27 +97,28 @@ const PORTADA = {
   pie: "Basado en el libro, pp. 251-253",
 };
 
+/*
+ * Aciertos C7: P1 sale de t7-3-tres-aciertos-c7.md (Near) con C-1 de Mello
+ * (auditoria-mello-enganche-v6-y-t7-3-aciertos.md, §2.1): el distractor «5 %»
+ * pasa a «30 %», que no choca con el 5 % comercial, con su retro y la nueva
+ * de «15 %». La condición de 5/20 va a la vista en el acierto: sin plegado.
+ * La pista no cambia (no está en el paquete). La «Observación» de Mello
+ * sobre `cual-le-toca` NO se aplica.
+ */
 const CONDICIONES = {
   id: "condiciones",
   pista: "Lee la condición que tiene el plazo de treinta días. ¿Trae algún porcentaje?",
   tipo: "eleccion",
-  parrafos: ["San Calixto le vende a Santa Martha con estas condiciones:"],
+  parrafos: ["Condiciones de San Calixto:"],
   figuras: [PLAZOS_PREGUNTA],
-  pregunta: "15/10 es un 15 % si paga a los diez días. ¿Qué descuento recibe si paga a los treinta?",
-  /* «error · 15 % o 5 %»: el mismo texto para las dos. */
+  pregunta: "15/10 es un 15 % si paga a los diez días. ¿Y si paga a los treinta?",
   opciones: [
-    { id: "quince", texto: "15 %", devolucion: "A los treinta días ya no hay descuento." },
-    { id: "cinco", texto: "5 %", devolucion: "A los treinta días ya no hay descuento." },
+    { id: "quince", texto: "15 %", devolucion: "A los treinta días ya pasó el plazo del 15 %." },
+    { id: "treinta", texto: "30 %", devolucion: "En n/30, el 30 son los días. No trae ningún porcentaje." },
     { id: "ninguno", texto: "Ninguno", correcta: true },
   ],
   acierto: {
-    texto: "Así es: a los treinta días paga el total.",
-    /*
-     * REGLA DE L: este plegado define 5/20 con una condición («si paga a los
-     * veinte días»). No se pliega: va a la vista hasta que L decida.
-     */
-    porque: "El 5 % es un descuento comercial: se resta del precio de lista, en la factura. 5/20 es un 5 % si paga a los veinte días, y n/30 es pagar el total a los treinta.",
-    porqueALaVista: true,
+    texto: "Así es: n/30 es pagar el total. 5/20 es un 5 % si paga a los veinte días.",
     pie: "Basado en el libro, p. 252",
   },
   error: { pie: "Basado en el libro, p. 252" },
