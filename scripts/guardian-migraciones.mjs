@@ -280,26 +280,55 @@ export function revisar(archivos, catalogoCliente, retiradasPrevias = new Set())
       }
     }
 
-    for (const fila of filasDeCatalogo(sql)) {
-      const esperada = catalogoCliente.get(fila.activity_id);
-      if (!esperada && retiradas.has(fila.activity_id)) continue; /* se retira: no hay nada que comparar */
-      if (!esperada) {
+  }
+
+  /*
+   * LA FILA QUE SE COMPARA ES LA ÚLTIMA, NO CADA UNA.
+   *
+   * Esto comparaba cada archivo por separado contra subjects.js, y eso deja en
+   * rojo una propuesta correcta. El caso, de la Célula D: la 0203 dio de alta
+   * «t4-el-arqueo-de-rosa» en medio con 25 FP, y su 0209 la sube a difícil con
+   * 50 dentro del MISMO PR, junto al código que la declara así. El guardián
+   * leía la 0203, veía medio contra difícil y 25 contra 50, y reprochaba dos
+   * veces una migración que la siguiente corrige tres archivos más abajo.
+   *
+   * La base no funciona así: las migraciones corren en orden y lo que queda es
+   * el ÚLTIMO estado de cada id. Así que eso es lo que se compara, y es también
+   * lo que ya hacía catalogo.test.mjs —dos comprobaciones del mismo contrato
+   * que no se ponían de acuerdo—.
+   *
+   * Se ordena por número de migración y no por el orden en que llegan los
+   * archivos: `git diff --name-only` no promete orden numérico, y con dos
+   * escrituras del mismo id el orden ES la respuesta.
+   *
+   * Lo que NO se afloja: un id que la aplicación no declara sigue reprochado
+   * —en el archivo donde quedó su última fila—, salvo que la propuesta lo
+   * retire. Se gana un falso rojo menos, no una comprobación menos.
+   */
+  const porNumero = [...archivos].sort((a, b) => (numeroDe(a.nombre) ?? 0) - (numeroDe(b.nombre) ?? 0));
+  const ultimaFila = new Map();
+  for (const { nombre, sql } of porNumero) {
+    for (const fila of filasDeCatalogo(sql)) ultimaFila.set(fila.activity_id, { nombre, fila });
+  }
+
+  for (const { nombre, fila } of ultimaFila.values()) {
+    /* Se retira: ni se le exige declaración ni se le comparan los números. */
+    if (retiradas.has(fila.activity_id)) continue;
+    const esperada = catalogoCliente.get(fila.activity_id);
+    if (!esperada) {
+      reproches.push(
+        `${nombre}: inserta «${fila.activity_id}», que la aplicación no declara en subjects.js. ` +
+        `Una fila sin actividad no hace daño, pero casi siempre significa un id mal escrito.`
+      );
+      continue;
+    }
+    for (const campo of ["subject_id", "topic_id", "modalidad", "dificultad", "fp_base"]) {
+      if (String(fila[campo]) !== String(esperada[campo])) {
         reproches.push(
-          `${nombre}: inserta «${fila.activity_id}», que la aplicación no declara en subjects.js. ` +
-          `Una fila sin actividad no hace daño, pero casi siempre significa un id mal escrito.`
+          `${nombre}: «${fila.activity_id}» queda en ${campo}=${fila[campo]} y la aplicación declara ${esperada[campo]}. ` +
+          `Es la última fila del id en esta propuesta, así que es lo que queda en la base. ` +
+          `Si entra así, un estudiante cobra lo que no es.`
         );
-        continue;
-      }
-      /* Una actividad que se retira puede estar declarada todavía y con otros
-         números: tampoco se compara, porque va a dejar de ofrecerse. */
-      if (retiradas.has(fila.activity_id)) continue;
-      for (const campo of ["subject_id", "topic_id", "modalidad", "dificultad", "fp_base"]) {
-        if (String(fila[campo]) !== String(esperada[campo])) {
-          reproches.push(
-            `${nombre}: «${fila.activity_id}» dice ${campo}=${fila[campo]} y la aplicación declara ${esperada[campo]}. ` +
-            `Si entra así, un estudiante cobra lo que no es.`
-          );
-        }
       }
     }
   }

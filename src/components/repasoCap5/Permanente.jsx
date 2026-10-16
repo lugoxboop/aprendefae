@@ -58,7 +58,7 @@ const ACTIVIDAD_PERMANENTE = {
  * tres huecos de 6. 319 px de caja a 375 (60 · 64 · 76 · 101) y 264 a 320.
  * Medido en Chromium (v1.3, decisión 7): «ENTRADA» mide 59,9 px con el
  * espaciado de las marcas y 52,6 con 0,02 em, que no caben en 52; y
- * «10.000,00» (la pantalla 3 con 10.000) mide 71,1, que no cabe en 62. A 320
+ * «10.000,00» (la pantalla 3 de v1.3, con 10.000) medía 71,1, que no cabía en 62. A 320
  * las columnas pasan a 53 · 41 · 72 · 80 (la cantidad más ancha, «8.200», mide
  * 40,1; el total, «17.467.426» en 600, 80): suman 264 igual. Nada se trunca.
  */

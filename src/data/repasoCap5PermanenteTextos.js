@@ -186,9 +186,9 @@ export const PANTALLAS = [
     botones: E.p3.botones,
     devoluciones: {
       valor: {
-        [E.p3.botones[1]]: "Ese es el precio que cobraste. Si vuelven a ese valor, la bodega vale más de lo que te costó.",
-        [E.p3.botones[2]]: "Ese es el precio de lista. El kárdex no lleva precios de venta, solo costos.",
-        [E.p3.botones[3]]: "Ese es el costo de factura de un lote. Estas unidades salieron al promedio del día 10, y vuelven a ese mismo valor.",
+        [E.p3.botones[1]]: "Ese promedio es de antes de la devolución del 8. Las 200 salieron el día 10, al promedio de ese día, y vuelven a ese mismo valor.",
+        [E.p3.botones[2]]: "Ese es el costo de factura de un lote. Estas unidades salieron al promedio del día 10, y vuelven a ese mismo valor.",
+        [E.p3.botones[3]]: "Ese es el precio que cobraste. Si vuelven a ese valor, la bodega vale más de lo que te costó.",
       },
     },
     ingreso: [d(DEVOLUCIONES, INGRESO_P3), h(CLIENTES, INGRESO_P3)],
@@ -238,7 +238,7 @@ export const PANTALLAS = [
     pregunta: "¿Por qué la venta del 10 cuesta distinto en cada sistema?",
     opciones: [
       { id: "a", texto: "El periódico promedia todo el mes, con el lote del 25.", correcta: true },
-      { id: "b", texto: "Es redondeo: el permanente redondea el costo de cada venta.", retro: "El redondeo mueve pesos, no $77.500. La diferencia está en qué compras entran en cada promedio." },
+      { id: "b", texto: "Es por el redondeo que el permanente hace en cada venta del mes.", retro: "El redondeo mueve pesos, no $77.500. La diferencia está en qué compras entran en cada promedio." },
       { id: "c", texto: "El periódico no resta la devolución que le hiciste al proveedor.", retro: "El periódico sí la resta: el disponible es el mismo en los dos. La diferencia está en cuándo se calcula el promedio." },
       { id: "d", texto: "En el permanente, la devolución del 15 sube el costo de la venta.", retro: "La devolución vuelve al mismo costo con que salió. No cambia el promedio ni el costo de la venta del 10." },
     ],

@@ -9,7 +9,7 @@
  * la v6 del Patrón de enganche C midió su prototipo: el deslizador un paso
  * adelante, a saltos y hacia atrás; cada error, la escalera y el acierto de
  * las cuatro preguntas; el selector de método; la mezcla del promedio; la
- * pantalla del cierre de hoy con sus dos errores y su acierto. En cada
+ * pantalla del cierre (C1) con su retro y su acierto. En cada
  * estado comprueba:
  *
  *   · que la página no tenga barra horizontal
@@ -162,10 +162,12 @@ for (const { ancho, reducido } of VUELTAS) {
   await clic('.ea4-op[data-op="sube"]'); await estado("p5-acierto"); await mover(6); await estado("p5-16feb-sigue"); await mover(0); await estado("p5-1feb"); await mover(9); await seguir();
   await estado("p6"); await clic('.ea4-selector [data-metodo="ueps"]'); await estado("p6-ueps"); await clic('.ea4-selector [data-metodo="promedio"]'); await estado("p6-promedio");
   await clic('.ea4-op[data-op="ueps"]'); await estado("p6-error1"); await clic('.ea4-op[data-op="promedio"]'); await estado("p6-error2"); await clic('.ea4-op[data-op="peps"]'); await estado("p6-acierto"); await seguir();
-  /* La pantalla del cierre de hoy: dos errores y el acierto. */
+  /* La pantalla del cierre (C1): la retro de las dos que no sobran (la de ventas) y el acierto, con la lista del permanente. */
   await estado("p7");
-  for (const mala of ["ingresos", "gastos"]) { await clic(`[data-opcion="${mala}"]`); await clic('[data-boton="confirmar"]'); await estado(`p7-error-${mala}`); await clic('[data-boton="probar-otra"]'); }
-  await clic('[data-opcion="inicial-y-final"]'); await clic('[data-boton="confirmar"]'); await estado("p7-acierto"); await clic('[data-boton="seguir"]');
+  for (const f of ["ventas", "gastos", "inicial"]) await clic(`[data-fila="${f}"]`);
+  await clic('[data-boton="comprobar"]'); await estado("p7-error-ventas-y-gastos");
+  for (const f of ["ventas", "gastos", "final", "compras"]) await clic(`[data-fila="${f}"]`);
+  await clic('[data-boton="comprobar"]'); await estado("p7-acierto"); await clic('[data-boton="seguir"]');
   await estado("p8"); await clic('.ea4-selector [data-metodo="ueps"]'); await mover(3); await estado("p8-ueps-6feb");
   await ctx.close();
 }

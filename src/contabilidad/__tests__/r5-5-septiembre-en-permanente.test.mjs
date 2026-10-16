@@ -65,7 +65,7 @@ const p = (id) => T.pantalla(id);
 const RP = T.ROTULOS_PERMANENTE;
 const { CMV, CAJA, COMPRAS, CLIENTES, DEVOLUCIONES, INGRESOS, INVENTARIO } = T;
 /* El orden de la rejilla de la pantalla 3, fijo en las pruebas (en la partida se baraja). */
-const ORDEN = [9000, 2219.28, 2185, 10000];
+const ORDEN = [9000, 2219.28, 2185, 2215.83];
 
 const montados = new Set();
 const montar = async (el) => {
@@ -210,7 +210,7 @@ test("★★★ el kárdex sale de las reglas de t7_2Kardex.js y cada cifra del 
     [u(e.p4.promedioViejo), "$2.219,28"], [u(e.p4.loteNuevo), "$2.125,00"], [u(e.p4.sinPesar), "$2.172,14"], [cifraK(e.p4.todoElSaldo), "$17.467.426"],
     [cifraK(e.p4.conPromedioViejo), "$13.537.608"], [cifraK(e.p4.loCobrado[0]), "$56.120.000"], [cifraK(e.p4.loCobrado[1]), "$61.000.000"],
     [cifraK(P.VENDIDO_PERIODICO), "$25.788.363"], [u(P.FRANJA_DEL_10.periodico), "$2.167,09"], [u(P.FRANJA_DEL_10.permanente), "$2.219,28"],
-    [cifraK(P.habriaSido(9000)), "2.354.820"], [cifraK(P.habriaSido(10000)), "2.554.820"], [cifraK(P.habriaSido(2185)), "991.820"],
+    [cifraK(P.habriaSido(9000)), "2.354.820"], [cifraK(P.habriaSido(2215.83)), "997.986"], [cifraK(P.habriaSido(2185)), "991.820"],
   ];
   assert.equal(cifras.length, 32);
   for (const [calculada, escrita] of cifras) {
@@ -267,7 +267,7 @@ test("★★★ pantalla 3: valor → asiento; cada botón con su texto y los as
   const x = p("p3");
   const bien = conId(x.asiento.correctos[0]);
   assert.equal(J.evaluarP3({ unitario: 2219.28, renglones: bien }).ok, true);
-  for (const v of [9000, 10000, 2185]) assert.deepEqual(J.evaluarP3({ unitario: v, renglones: bien }).textos, [x.devoluciones.valor[v]], String(v));
+  for (const v of [9000, 2215.83, 2185]) assert.deepEqual(J.evaluarP3({ unitario: v, renglones: bien }).textos, [x.devoluciones.valor[v]], String(v));
   const t = 443856;
   const asiento = (rs) => J.evaluarP3({ unitario: 2219.28, renglones: conId(rs) }).textos;
   assert.deepEqual(asiento([hb(INVENTARIO, t), d(CMV, t)]), [x.asiento.cruzado[INVENTARIO]]);
@@ -458,7 +458,7 @@ test("★★★ E8 · al revisar se destapan los valores correctos y la celda ta
 /* ═══════════ LA PANTALLA 3: EL VALOR Y LO QUE HABRÍA SIDO ═══════════ */
 
 test("★★★ pantalla 3: con un valor equivocado, la fila se corrige, «Era esta» en 2.219,28, el contorno y la línea con la cifra", async () => {
-  for (const v of [9000, 10000, 2185]) {
+  for (const v of [9000, 2215.83, 2185]) {
     const { caja, desmontar } = await abrir("p3");
     assert.deepEqual([...caja.querySelectorAll("[data-eleccion]")].map((b) => b.dataset.eleccion), ORDEN.map(String));
     await tocar($(caja, `[data-eleccion="${v}"]`));
@@ -508,7 +508,7 @@ const CAMINOS = {
     { promedio: 2215.83, costo: 13870500 },
   ],
   p3: [
-    {}, { unitario: 9000 }, { unitario: 10000 }, { unitario: 2185 },
+    {}, { unitario: 9000 }, { unitario: 2215.83 }, { unitario: 2185 },
     { renglones: [hb(INVENTARIO, 443856), d(CMV, 443856)] }, { renglones: [d(INVENTARIO, 443856), hb(DEVOLUCIONES, 443856)] },
     { renglones: [d(INVENTARIO, 443856), hb(CLIENTES, 443856)] }, { renglones: [d(INVENTARIO, 1), hb(CMV, 1)] },
   ],
@@ -603,7 +603,7 @@ test("★★★ se juega entera: cinco pantallas, una calificación cada una, el
     assert.equal($(caja, "[data-enunciado]").textContent, p(id).enunciado);
     if (id === "p2") await tocar($(caja, "[data-ver-pista]"));
     /* La 3 y la 5, con error. */
-    await JUGAR[id](caja, id === "p3" ? { unitario: 10000 } : id === "p5" ? { opcion: "d" } : {});
+    await JUGAR[id](caja, id === "p3" ? { unitario: 2215.83 } : id === "p5" ? { opcion: "d" } : {});
     await tocar($(caja, "[data-siguiente]"));
   }
   assert.ok($(caja, "[data-cierre] [data-kardex-cerrado]"));
@@ -612,7 +612,7 @@ test("★★★ se juega entera: cinco pantallas, una calificación cada una, el
   assert.deepEqual(fin.detalle.map((x) => [x.item, x.ok, x.intentos, x.orden, x.pista]), [
     ["p1", true, 1, 1, false], ["p2", true, 1, 2, true], ["p3", false, 1, 3, false], ["p4", true, 1, 4, false], ["p5", false, 1, 5, false],
   ]);
-  assert.equal(fin.detalle[2].respuesta.startsWith("10000 · "), true);
+  assert.equal(fin.detalle[2].respuesta.startsWith("2215.83 · "), true);
   assert.equal(fin.detalle[4].respuesta, "d");
   for (const x of fin.detalle) assert.ok(x.respuesta === null || x.respuesta.length <= J.LARGO_RESPUESTA);
 });
@@ -635,15 +635,8 @@ test("★★ B4 · los estados de r5-5 son los de comun.jsx: neutro con palabra 
   assert.equal($(caja, "[data-campo-bloque=unitario] [data-veredicto]").textContent, "Correcto");
 });
 
-/*
- * La opción b de la pantalla 5 (texto de Miyata, literal) da 59,8. El texto no
- * es mío: va reportado a Kamogawa, y queda fuera de la lista, uno solo y con su
- * nombre, mientras no llegue el texto nuevo. La prueba «todo» de abajo se pone
- * verde sola cuando llegue.
- */
-const PENDIENTE_INFLESZ = "Es redondeo: el permanente redondea el costo de cada venta.";
-
-test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 56 medidos; 1 pendiente con nombre)", () => {
+/* v1.4: la opción b se reescribió (88,4): la prueba vuelve a cubrir todo, sin excepción. */
+test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 56 medidos)", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of textosDelEstudiante()) {
@@ -651,12 +644,53 @@ test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda:
     assert.deepEqual(r.desconocidas, [], `letra que la herramienta no sabe contar: ${t}`);
     if (!r.aplica) continue;
     medidos++;
-    if (r.valor < UMBRAL) bajos.push(t);
+    if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
   assert.equal(medidos, 56, "no midió los textos que dice medir");
-  assert.deepEqual(bajos, [PENDIENTE_INFLESZ], "solo la opción b, reportada, puede quedar bajo 65");
+  assert.deepEqual(bajos, []);
 });
 
-test("la opción b de la pantalla 5 pasa 65 con inflesz.js", { todo: "da 59,8: texto de Miyata, reportado a Kamogawa para que lo reescriba" }, () => {
-  assert.ok(inflesz(PENDIENTE_INFLESZ).valor >= UMBRAL);
+/* ═══════════ E12 · LA CLAVE NO SE DELATA POR SU FORMA ═══════════ */
+
+/*
+ * v1.4 (Kamogawa, «dos fugas»): en cada pantalla de opciones o botones, la
+ * clave no puede ser la única con una forma distinta: centavos distintos de
+ * ,00, una unidad ($, %, u, días, meses, años) o un largo fuera de ±15 % del
+ * promedio. Se mira lo que el estudiante lee en el botón o la opción.
+ */
+const FORMAS = {
+  centavos: (t) => /,\d\d\b/.test(t) && !/,00\b/.test(t),
+  unidad: (t) => /\$|%|\bu\b|\bdías?\b|\bmeses?\b|\baños?\b/.test(t),
+};
+const delata = (textos, k) => {
+  const fuera = [];
+  for (const [nombre, f] of Object.entries(FORMAS)) {
+    const v = textos.map(f);
+    if (v.filter((x) => x === v[k]).length === 1) fuera.push(nombre);
+  }
+  const media = textos.reduce((a, t) => a + t.length, 0) / textos.length;
+  const largo = textos.map((t) => Math.abs(t.length - media) > 0.15 * media);
+  if (largo[k] && largo.filter(Boolean).length === 1) fuera.push("largo");
+  return fuera;
+};
+const PANTALLAS_CON_ELECCION = () => [
+  { id: "p1", textos: [RP.aLaCompra, RP.alGasto], clave: 0 },
+  { id: "p3", textos: p("p3").botones.map(P.unitarioEnLibro), clave: p("p3").botones.indexOf(p("p3").clave.unitario) },
+  { id: "p5", textos: p("p5").opciones.map((o) => o.texto), clave: p("p5").opciones.findIndex((o) => o.correcta) },
+];
+
+test("★★★ E12 · en cada pantalla de opciones o botones, la clave no es la única con otra forma (centavos, unidad o largo ±15 %) (guarda: 3 pantallas)", () => {
+  const pantallas = PANTALLAS_CON_ELECCION();
+  assert.equal(pantallas.length, 3);
+  for (const x of pantallas) {
+    assert.ok(x.clave >= 0, x.id);
+    assert.deepEqual(delata(x.textos, x.clave), [], `${x.id}: la clave se delata por ${delata(x.textos, x.clave).join(", ")} · ${x.textos.join(" | ")}`);
+  }
+  /* La regla atrapa lo que había: con 10.000, la clave era la única con centavos. */
+  assert.deepEqual(delata(["2.219,28", "9.000,00", "10.000,00", "2.185,00"], 0), ["centavos"]);
+  const veinte = "x".repeat(20);
+  assert.deepEqual(delata([veinte, veinte, veinte, veinte, "x".repeat(30)], 4), ["largo"]);
+  /* Los cuatro botones de la 3, en el orden de Kamogawa, y 2.215,83 sale del kárdex. */
+  assert.deepEqual(p("p3").botones.map(P.unitarioEnLibro), ["2.219,28", "2.215,83", "2.185,00", "9.000,00"]);
+  assert.equal(p("p3").botones[1], Math.round(P.fila("c2").saldo[1] * 100) / 100);
 });
