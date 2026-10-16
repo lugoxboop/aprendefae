@@ -743,8 +743,8 @@ export const SUBJECTS = {
           { id: "t7-1-a6-devoluciones-en-periodico", nombre: "Devoluciones en periódico", clasificacion: { tipo: APRENDER } },
           /* H6, después de A6 por dependencias (regla 9): registra una devolución en el libro del comprador y en el del vendedor, con el IVA y la retención proporcionales que enseña A6 (la sostiene A6). Antes de A7. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0096. */
           { id: "t7-1-devolucion-dos-libros", nombre: "La devolución en dos libros", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          /* A7, después de AP1 por dependencias (regla 9): el conteo físico frente a los registros; última de Aprender según el plan. Cero FP. */
-          { id: "t7-1-a7-control-interno", nombre: "Control interno de los inventarios", clasificacion: { tipo: APRENDER } },
+          /* A7, después de AP1 por dependencias (regla 9): el conteo físico frente a los registros; última de Aprender según el plan. Cero FP. Desde el Patrón de enganche C v6 se llama «El viaje de una caja» (mismo id). */
+          { id: "t7-1-a7-control-interno", nombre: "El viaje de una caja", clasificacion: { tipo: APRENDER } },
           /* H7, después de A7 por dependencias (regla 9): relaciona cada riesgo de la bodega con el control que el libro propone, los de A7 (la sostiene A7). Última de T7-1. Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0097. */
           { id: "t7-1-que-control-falta", nombre: "¿Qué control falta?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
         ],

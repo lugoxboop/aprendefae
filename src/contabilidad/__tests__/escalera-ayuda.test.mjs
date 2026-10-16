@@ -51,6 +51,26 @@ const PIEZAS = [];
 for (const f of readdirSync(DATOS).filter((x) => /^contabilidadT7_.*\.js$|^contabilidadT5_n\d+\.js$/.test(x))) {
   for (const v of Object.values(await import(new URL(f, DATOS).href))) if (v && Array.isArray(v.pantallas) && v.id) PIEZAS.push(v);
 }
+/*
+ * Las piezas renovadas por el Patrón de enganche C (v6 de Watari) conservan el
+ * id de la vieja: de las dos, queda la que publica la vista del tema. Y sus
+ * preguntas del lote 2 que la pieza nueva ya no tiene salen de la lista, una
+ * por una (las demás, como el cierre de T7-2 A4, se siguen comprobando).
+ */
+{
+  const { PIEZAS_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
+  const { PIEZAS_T7_2 } = await import("../../components/ContabilidadT7_2View.jsx");
+  const { PIEZAS_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
+  const publicadas = new Set([...PIEZAS_T7_1, ...PIEZAS_T7_2, ...PIEZAS_T7_3].map((x) => x.pieza));
+  for (const id of new Set(PIEZAS.map((p) => p.id))) {
+    const mismas = PIEZAS.filter((p) => p.id === id);
+    if (mismas.length > 1) for (const p of mismas) if (!publicadas.has(p)) PIEZAS.splice(PIEZAS.indexOf(p), 1);
+  }
+}
+const REEMPLAZADAS_POR_EL_ENGANCHE = {
+  "t7-1-a7-control-interno": ["al-recibir", "controles-de-seguridad"],
+  "t7-2-a4-san-calixto": ["peps", "ueps", "promedio", "que-cambia"],
+};
 const PREGUNTAS = PIEZAS.flatMap((p) => p.pantallas.map((s, k) => ({ pieza: p, pantalla: s, k }))).filter((x) => Array.isArray(x.pantalla.opciones) && x.pantalla.opciones.some((o) => o.correcta));
 const norm = (s) => String(s).toLowerCase().replace(/[«»"“”]/g, "").replace(/[.:;]\s*$/, "").trim();
 
@@ -308,6 +328,8 @@ const lineaPorNombre = (s, nombre) => s.lineas?.find((l) => l.id === nombre || S
 function pistasEsperadas() {
   const esperadas = [];
   for (const f of filasDeNear()) {
+    /* Una pregunta que la pieza renovada ya no tiene: solo si la pieza de verdad ya no la trae. */
+    if (REEMPLAZADAS_POR_EL_ENGANCHE[f.pieza]?.includes(f.pantalla) && !PIEZAS.find((p) => p.id === f.pieza)?.pantallas.some((s) => s.id === f.pantalla && s.pista)) continue;
     /* De una pieza recortada, las preguntas las da su sección; las líneas, el lote 2 con sus cambios. */
     if (RECORTADAS[f.pieza]) {
       if (!f.linea) continue;
