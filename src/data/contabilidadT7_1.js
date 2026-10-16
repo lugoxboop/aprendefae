@@ -2,31 +2,32 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-1 · PIEZA 1 DE APRENDER — «La cuenta que no se mueve».
  *
- * Fuente: el paquete de Near en su versión 5, con PASA de Mello (Célula C).
- * Los metadatos que no cambiaron desde la v3 (cifras, erratas, términos) salen
- * de la v3. Pieza de Aprender: cero FP, no entra al catálogo del servidor.
+ * Fuente: el recorte del lote 1 de Near (Célula C), en
+ * orquestador/conocimiento/paquetes/lote1-recortes-t71-v1.md, con las
+ * correcciones obligatorias de Mello (mello-recortes-v1.md). Cuatro
+ * pantallas: portada, dos preguntas y resumen. Pieza de Aprender: cero FP, no
+ * entra al catálogo del servidor.
  *
- * Aquí solo hay datos. Los textos van letra por letra como en la v5; una
- * prueba compara cada uno contra el paquete aprobado, que vive en
- * orquestador/conocimiento/paquetes/t7-1-pieza1-v5.md.
- *
- * Lo que la v5 marca como interno no se muestra: los subtítulos «(interno:
- * …)», las citas de página entre paréntesis, «[construcción]» y «cambia en
- * v4/v5». Lo que el estudiante ve de la fuente es el pie de cada pantalla y
- * estado.
+ * Aquí solo hay datos. Los textos van letra por letra como en el recorte; una
+ * prueba compara cada uno contra el paquete y la auditoría. Las cifras de
+ * INFLESZ y las tablas de medida del paquete no se muestran. Los pies de
+ * fuente no los trae el recorte: siguen los de la v5
+ * (t7-1-pieza1-v5.md).
  *
  * Nombres de cuenta: la regla 8 de la decisión de corte. «Compras» por la
  * errata C7-10 (el asiento de la p. 212 dice «Cuentas de mercancías»).
+ *
+ * La figura y su mecánica las rediseña Watari (la bodega con deslizador);
+ * mientras tanto la pieza usa los estados F4, F5 y F6 de «Dos columnas».
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 export const AP1_ID = "t7-1-a1-la-cuenta-que-no-se-mueve";
 
-/* Los cuatro botones de la pieza, textuales de la v5. */
+/* Los botones de la pieza, textuales de la v5. */
 export const BOTON = {
   empezar: "Empezar",
   seguir: "Seguir",
-  verElCaso: "Ver el caso",
   confirmar: "Confirmar",
   probarOtra: "Probar otra",
 };
@@ -35,24 +36,26 @@ export const BOTON = {
  * ═══════════ LA FIGURA · «DOS COLUMNAS DEL PERIODO» (Watari, v3) ═══════════
  *
  * Columnas: Inventario de mercancías y la cuenta que recibe la compra, que
- * empieza como «Otra cuenta» y desde el acierto de la pantalla 4 se llama
- * «Compras». Filas: inicio, durante el periodo y cierre. La pantalla 0 no
- * lleva figura; de la 1 a la 6, una en cada estado: doce.
+ * empieza como «Otra cuenta» y desde el acierto de la compra se llama
+ * «Compras». Filas: inicio, durante el periodo y cierre. La portada no
+ * lleva figura; las dos preguntas y el resumen, una en cada estado: nueve
+ * (F4c…F4a, F5c…F5a y F6). F1, F2 y F3 eran de las pantallas de lectura que
+ * el recorte quitó; quedan aquí, con su texto alternativo, para el rediseño.
  *
  * Cada estado dice qué se dibuja y qué se señala, con la tabla de Watari:
  *   col2     null | "otra" | "compras"
- *   filas    las filas que se ven (la pantalla 1 solo tiene «Inicio»)
+ *   filas    las filas que se ven (F1 solo tiene «Inicio»)
  *   factura  la factura del 16 de abril, encima de la figura, sin anotar
  *   compra   la tarjeta «16 de abril · DEBE · 5.000.000» en la segunda columna
  *   otras    «Las demás compras del periodo», sin cifra, debajo de la compra
  *   conteo   el cierre de Inventario ya en tarjeta: «Al día con el conteo físico»
  *   pendiente  dónde va «Conteo físico» mientras no está en tarjeta:
  *            "inventario", bajo esa columna; "fila", en la fila «Cierre» sin
- *            quedar bajo ninguna columna. Desde la pantalla 3 hasta el
- *            colocando de la 5 va en la fila: la figura no puede dibujar la
- *            respuesta mientras pregunta (corrección de Mello). En los dos
- *            errores de la 5 vuelve bajo Inventario, porque el mensaje ya lo
- *            explica.
+ *            quedar bajo ninguna columna. Desde la primera pregunta hasta
+ *            el colocando de la del conteo va en la fila: la figura no
+ *            puede dibujar la respuesta mientras pregunta (corrección de
+ *            Mello). En los dos errores del conteo vuelve bajo Inventario,
+ *            porque el mensaje ya lo explica.
  *   foco     lo que se señala (blanco y negrita; nada más cambia)
  *   aparece  lo que entra con el fundido de 120 ms, solo en su pantalla
  * ═══════════════════════════════════════════════════════════════════════════
@@ -77,7 +80,7 @@ export const FIGURA_TEXTOS = {
   monto: "5.000.000",
   demasCompras: "Las demás compras del periodo",
   /*
-   * Rótulo de la tarjeta de la factura (colocando y errores de la pantalla 4),
+   * Rótulo de la tarjeta de la factura (colocando y errores de la pregunta de la compra),
    * texto de interfaz de la v3.1 de Watari.
    * [REVISADO POR NEAR]: opcional de Mello, escrito por L; Near lo confirmó
    * tal cual.
@@ -123,92 +126,57 @@ export const FIGURA_ALT = {
 
 /* ═══════════ LAS PANTALLAS, EN ORDEN ═══════════ */
 
+/*
+ * El recorte del lote 1 de Near (lote1-recortes-t71-v1.md, sección
+ * «t7-1-a1-la-cuenta-que-no-se-mueve»), con las cuatro correcciones
+ * obligatorias de Mello (mello-recortes-v1.md, «A1»). Salen las pantallas
+ * «Lo que ya sabes», «El conteo al final» y «La consecuencia»: la pieza abre
+ * con La Reventa. Los pies de fuente no los trae el recorte: son los de la v5.
+ *
+ * Donde el recorte trae un «¿Por qué? (plegado)», va aparte en `porque`, junto
+ * al texto visible, y la pieza lo pinta con <Plegable texto porque />.
+ */
+
 const PORTADA = {
   id: "portada",
   tipo: "portada",
-  objetivo: "Al terminar, sabrás en qué cuenta se anota la compra de mercancía en el sistema periódico. Y sabrás por qué Inventario de mercancías no se mueve hasta el cierre.",
+  objetivo: "Vas a ver a qué cuenta va la compra de mercancía cuando nadie lleva el inventario día a día.",
   boton: BOTON.empezar,
   pie: "Basado en el libro, pp. 209 y 212",
   /* Sin figura: cualquier versión adelantaría una respuesta (Watari). */
   figura: null,
 };
 
-/* Pantalla 1 (interno: Lo que ya sabes). */
-const LO_QUE_YA_SABES = {
-  id: "lo-que-ya-sabes",
-  tipo: "lectura",
-  parrafos: [
-    "En el Tema 2 viste una regla: cuando un activo aumenta, se anota en el debe de su cuenta. Si la empresa compra un escritorio para la oficina, ese activo crece y se anota en el debe.",
-    "La mercancía que una tienda compra para volver a venderla también es un activo. Se llama inventario de mercancías.",
-  ],
-  boton: BOTON.seguir,
-  pie: "Basado en el libro, pp. 207 y 212",
-  figura: "F1",
-};
-
-/* Pantalla 2 (interno: El conteo al final). */
-const EL_CONTEO_AL_FINAL = {
-  id: "el-conteo-al-final",
-  tipo: "lectura",
-  parrafos: [
-    "Piensa en una ferretería. Vende tornillos todo el día y nadie anota cuántos quedan después de cada venta. Al final del periodo, alguien recorre los estantes y anota cuánto hay.",
-    "Así funciona el sistema de inventario periódico. La empresa no lleva un registro de su mercancía día a día. Al final del periodo hace un conteo físico.",
-    "El libro lo recomienda para farmacias, ferreterías y tiendas.",
-  ],
-  boton: BOTON.seguir,
-  pie: "Basado en el libro, pp. 209 y 210",
-  figura: "F2",
-};
-
-/* Pantalla 3 (interno: La consecuencia). */
-const LA_CONSECUENCIA = {
-  id: "la-consecuencia",
-  tipo: "lectura",
-  parrafos: [
-    "Cuando la empresa vende, solo anota cuánto cobró. Nadie anota cuánto costó la mercancía que salió. Por eso Inventario de mercancías no puede estar al día durante el periodo: no se mueve hasta el cierre.",
-    "Ojo: la compra sí va al debe, como en el Tema 2. Pero no va al debe de su cuenta de activo, Inventario de mercancías, sino al de otra cuenta. Por eso el libro dice que este registro se aparta de la norma para registrar los activos. ¿Cuál es esa otra cuenta? Míralo con un caso.",
-  ],
-  boton: BOTON.verElCaso,
-  pie: "Basado en el libro, pp. 209 y 212",
-  figura: "F3",
-};
-
 /*
- * Pantalla 4 · pregunta 1. «Compras» entra por pregunta: el estudiante la ve
+ * Pantalla 1 · pregunta 1. «Compras» entra por pregunta: el estudiante la ve
  * primero aquí, como opción, y el acierto la explica.
  */
 const PREGUNTA_COMPRA = {
   id: "pregunta-compra",
+  /* Pista de Mello (mello-pistas-distractores-v1.md): gana sobre la del recorte. */
   pista: "En el periódico, ¿qué cuenta junta en el periodo la mercancía que se trae para vender?",
   tipo: "pregunta",
-  enunciado: "El 16 de abril, La Reventa Ltda. le compra mercancía a un proveedor por $5.000.000, a crédito. La empresa usa el sistema de inventario periódico.",
-  /*
-   * Los cinco datos, de la tabla de la v3, con mayúscula inicial. La ficha no
-   * cambió desde la v3, que es su fuente; la v5 la escribió en línea y quedó en
-   * minúscula (decisión de L, corrección de Mello).
-   */
-  ficha: [
-    { dato: "Quién recibe", texto: "La Reventa Ltda. recibe la mercancía" },
-    { dato: "Quién entrega", texto: "Un proveedor" },
-    { dato: "Monto", texto: "$5.000.000 por la mercancía" },
-    { dato: "Tipo", texto: "A crédito" },
-    { dato: "Clase de hecho", texto: "Compra de mercancía para volver a venderla" },
+  /* El caso, un párrafo por texto del recorte. La primera frase, corregida por Mello (A1 · 2): el periódico no deja de mirar, deja de anotar. */
+  enunciado: [
+    "La Reventa usa el sistema periódico. No anota su mercancía a diario: la revisa al final.",
+    "El 16 de abril compra mercancía por $5.000.000, a crédito.",
   ],
-  pregunta: "¿En qué cuenta se anota en el debe el costo de la mercancía, $5.000.000?",
-  ayuda: "Toca una cuenta y confirma.",
+  pregunta: "¿A qué cuenta va al debe?",
   opciones: [
     {
       id: "inventario",
       texto: "Inventario de mercancías",
       correcta: false,
-      devolucion: "Así sería si la cuenta se pusiera al día con cada compra y cada venta. En el sistema periódico, el costo de cada venta no se anota, así que esa cuenta no se mueve hasta el cierre. La compra sí va al debe, pero de otra cuenta: Compras. Como no va al debe de su cuenta de activo, el libro dice que se aparta de la norma.",
+      /* Mello (A1 · 1): la del recorte decía que la regla del debe no vale en el periódico. */
+      devolucion: "Sí va al debe, pero no de esa cuenta: en el periódico se queda quieta hasta el cierre.",
+      porque: "Al vender, nadie anota lo que costó la mercancía que salió. Por eso Inventario de mercancías no puede estar al día, y se queda quieta hasta el cierre.",
     },
     { id: "compras", texto: "Compras", correcta: true },
     {
       id: "gastos",
       texto: "Gastos de administración y ventas",
       correcta: false,
-      devolucion: "Esta mercancía no es un gasto de la operación: se compró para volver a venderla. Esas compras se anotan en la cuenta Compras.",
+      devolucion: "Esta mercancía no es un gasto. Se compró para volver a venderla.",
     },
   ],
   pie: "Basado en el libro, p. 211",
@@ -216,64 +184,65 @@ const PREGUNTA_COMPRA = {
   figura: { colocando: "F4c", error: { inventario: "F4ei", gastos: "F4eg" }, acierto: "F4a" },
   error: { boton: BOTON.probarOtra, pie: "Basado en el libro, pp. 209, 210 y 212" },
   acierto: {
-    texto: "Así es. En el sistema periódico, la compra de mercancía se anota en el debe de Compras, por su costo: $5.000.000. Inventario de mercancías no se toca. Como la compra no va al debe de su cuenta de activo, el libro dice que este registro se aparta de la norma.",
+    texto: "Así es: va al debe de Compras. Inventario de mercancías no se toca.",
+    porque: "Como la compra no va al debe de su cuenta de activo, el libro dice que este registro se aparta de la norma. La otra parte del asiento la armas en «La factura completa».",
     /*
-     * La línea que aparece, en sus tres partes. Se lee «16 de abril · Compras
-     * · Debe $5.000.000». No se pinta aparte: es la tarjeta de la compra en la
+     * Lo que la figura muestra al acertar: «16 de abril · Compras · Debe ·
+     * $5.000.000». No se pinta aparte: es la tarjeta de la compra en la
      * figura, repartida (Watari), con la cuenta en el encabezado de la columna
      * y el monto sin «$».
      */
     linea: { fecha: "16 de abril", cuenta: "Compras", lado: "Debe", monto: "$5.000.000" },
-    nota: "La otra parte del asiento, lo que se le debe al proveedor, la armamos en «La factura completa».",
     boton: BOTON.seguir,
     pie: "Basado en el libro, pp. 210 y 212",
   },
 };
 
-/* Pantalla 5 · pregunta 2. La v5 no trae ficha ni ayuda en esta pantalla. */
+/* Pantalla 2 · pregunta 2. */
 const PREGUNTA_CONTEO = {
   id: "pregunta-conteo",
+  /* Pista de Mello (mello-pistas-distractores-v1.md): gana sobre la del recorte. */
   pista: "El conteo dice cuánto vale lo que quedó en la bodega. ¿Qué cuenta debería mostrar ese valor?",
   tipo: "pregunta",
-  enunciado: null,
-  ficha: null,
-  pregunta: "Llega el último día del periodo. La Reventa hace el conteo físico de la mercancía que quedó en su bodega. ¿Qué cuenta se pone al día con ese conteo?",
-  ayuda: null,
+  /* Mello (A1 · 4): vuelve «conteo físico», que usan A3, A4, H1 y el rótulo de la figura. */
+  enunciado: ["Llega el último día del periodo. La Reventa hace el conteo físico de lo que quedó en la bodega."],
+  pregunta: "¿Qué cuenta se pone al día con ese conteo?",
   opciones: [
     { id: "inventario", texto: "Inventario de mercancías", correcta: true },
     {
       id: "compras",
       texto: "Compras",
       correcta: false,
-      devolucion: "Compras recoge lo que se compró durante el periodo, no lo que quedó en la bodega. Lo que quedó se lleva a Inventario de mercancías, al cierre.",
+      devolucion: "Compras recoge lo que se compró en el periodo, no lo que quedó.",
     },
     {
       id: "ninguna",
       texto: "Ninguna: el conteo no se registra",
       correcta: false,
-      devolucion: "Sí se registra: es el único momento en que Inventario de mercancías se pone al día. Sin el conteo, la cuenta seguiría mostrando el valor del inicio del periodo.",
+      devolucion: "Sí se registra. Sin el conteo, la cuenta seguiría con el valor del inicio.",
     },
   ],
   pie: "Basado en el libro, p. 209",
   figura: { colocando: "F5c", error: { compras: "F5ec", ninguna: "F5en" }, acierto: "F5a" },
   error: { boton: BOTON.probarOtra, pie: "Basado en el libro, pp. 209, 210, 212 y 214" },
   acierto: {
-    texto: "Exacto. Al cierre, el conteo físico da el valor del inventario final, y con esa cifra se pone al día Inventario de mercancías. Esa es la cifra que aparece en el estado de situación financiera.",
+    /* Mello (A1 · 3): el del recorte daba 62,9 de INFLESZ. Lo del estado de situación financiera pasa al plegado, delante del de Near. */
+    texto: "Exacto: con el conteo, Inventario de mercancías se pone al día. Esa cifra es la que va al cierre.",
+    porque: "Esa cifra es la que aparece en el estado de situación financiera. Cómo se le pone precio a lo que quedó lo verás en «Tres formas de ponerle precio a lo que quedó».",
     linea: null,
-    nota: "Cómo se le pone precio a ese conteo lo verás en «Tres formas de ponerle precio a lo que quedó».",
     boton: BOTON.seguir,
     pie: "Libro, p. 209",
   },
 };
 
-/* Pantalla 6 · resumen. La v5 no le pone botón: es la última. */
+/* Pantalla 3 · resumen. Sin botón: es la última. */
 const RESUMEN = {
   id: "resumen",
   tipo: "resumen",
   parrafos: [
-    "En el sistema periódico, la mercancía no se anota día a día. Se revisa al final, con un conteo físico.",
-    "Mientras tanto, las compras van a Compras. Inventario de mercancías no se mueve.",
-    "Al cierre, el conteo pone al día Inventario de mercancías.",
+    "En el periódico, las compras van a Compras.",
+    "Inventario de mercancías se queda quieta durante el periodo.",
+    "Al cierre, el conteo la pone al día.",
   ],
   /* La figura va bajo las líneas del resumen, y la remisión debajo de la figura (Watari). */
   siguiente: "Siguiente: la factura completa de esta compra.",
@@ -288,5 +257,5 @@ export const PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE = {
   id: AP1_ID,
   numero: 1,
   titulo: "La cuenta que no se mueve",
-  pantallas: [PORTADA, LO_QUE_YA_SABES, EL_CONTEO_AL_FINAL, LA_CONSECUENCIA, PREGUNTA_COMPRA, PREGUNTA_CONTEO, RESUMEN],
+  pantallas: [PORTADA, PREGUNTA_COMPRA, PREGUNTA_CONTEO, RESUMEN],
 };

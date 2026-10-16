@@ -13,7 +13,7 @@ import { useAuth } from "../auth/AuthProvider.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
 import { CSS_JUEGO, Cierre } from "./mecanicas/corazon/juego.jsx";
-import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente } from "./repasoCap5/comun.jsx";
+import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente, Punto } from "./repasoCap5/comun.jsx";
 import { ToroNegro } from "./repasoCap5/ToroNegro.jsx";
 import { OpcionesTitulo } from "./repasoCap5/OpcionesTitulo.jsx";
 import { Flujos } from "./repasoCap5/Flujos.jsx";
@@ -261,18 +261,7 @@ function PorTema({ filas }) {
                   solo cuántas. Los puntos siguen aria-hidden: el lector oye el «n de m».
                 */}
                 <div aria-hidden="true" style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
-                  {f.puntos.map((p) => (
-                    <span
-                      key={p.id}
-                      data-punto={p.ok ? "acierto" : "error"}
-                      data-forma={p.ok ? "relleno" : "anillo"}
-                      style={{
-                        width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box",
-                        /* B4 de enganche.md: el acierto, relleno neutro; el teal es DEBE en Contabilidad. */
-                        ...(p.ok ? { background: C.hecho } : { background: "transparent", border: `2px solid ${C.coral}` }),
-                      }}
-                    />
-                  ))}
+                  {f.puntos.map((p) => <Punto key={p.id} ok={p.ok} />)}
                 </div>
               </div>
               <span data-n-de-m style={{ fontFamily: SORA, fontSize: "17px", fontWeight: 700, color: C.texto, whiteSpace: "nowrap" }}>

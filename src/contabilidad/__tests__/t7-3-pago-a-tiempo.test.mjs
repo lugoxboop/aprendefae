@@ -103,7 +103,8 @@ test("★★★ los textos son los de la v1, letra por letra", () => {
   assert.equal(D.H4.enunciado[1], citas(en[1])[0]);
   assert.ok(en[2].startsWith("- Línea de tarifas («…Las dos se calculan sobre lo facturado.») y la frase fija."));
   assert.ok(D.H4.enunciado[2].endsWith("Las dos se calculan sobre lo facturado."));
-  assert.ok(A3.PIEZA_EL_DESCUENTO_CONDICIONADO.pantallas.find((p) => p.id === "ejemplo").despues.includes(D.H4.enunciado[2]));
+  /* La línea de tarifas es la de A3 de T7-3 en su v1: el recorte del lote 1 quitó la pantalla `ejemplo` que la mostraba. */
+  assert.ok(leer("orquestador/conocimiento/paquetes/t7-3-a3-v1.md").includes(D.H4.enunciado[2]));
   assert.equal(D.H4.enunciado[3], H1.H1.enunciado[2]);
   assert.equal(D.H4.consigna, citas(en[3])[0]);
   const ficha = en[4].replace("- **Ficha:** ", "").match(/^(.+?)\. Sistema: (.+)\.$/);

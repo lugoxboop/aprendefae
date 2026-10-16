@@ -1,0 +1,15 @@
+ok   Aprender · cumple                      esperado PASA  salió PASA
+ok   Aprender · figura a 400 px             esperado ['B1']  salió ['B1']
+ok   Aprender · 45 palabras antes           esperado ['B1']  salió ['B1']
+ok   Aprender · 70 palabras más             esperado ['B2']  salió ['B2']
+ok   Aprender · la acción no cambia nada    esperado ['B3']  salió ['B3']
+ok   Aprender · acierto en teal             esperado ['B4']  salió ['B4']
+ok   Aprender · frase duplicada             esperado ['B5']  salió ['B5']
+ok   Hacer · cumple                         esperado PASA  salió PASA
+ok   Hacer · la figura no se mueve          esperado ['B3']  salió ['B3']
+ok   Hacer · la figura revela igual         esperado ['B3']  salió ['B3']
+ok   Hacer · fila del Haber en teal         esperado ['B4']  salió ['B4']
+ok   Sin medir nada                         esperado ['SONDA']  salió ['SONDA']
+
+12 de 12 casos como se esperaba
+rc=0
