@@ -24,16 +24,22 @@ export const PIEZA_NO_VA_A_PAGAR = {
   numero: 2,
   titulo: "Cuando un cliente no va a pagar",
   objetivo: "Vas a ver qué es una cuenta incobrable y dos formas de anotar esa pérdida.",
+  /*
+   * B2 · un término por pantalla (Futaba, 15-oct): siete pantallas. La
+   * desventaja de la anulación directa y los asientos del método de
+   * provisiones salen a pantallas propias, para que ninguna pase de 60
+   * palabras.
+   */
   nombres: [
     {
       termino: "Cuentas incobrables o de difícil cobro",
-      definicion: "Son deudas de clientes que probablemente no se van a cobrar. Nacen precisamente de las ventas a crédito. Pueden aparecer por quiebra del cliente, por su muerte o porque cambió de domicilio, entre otras razones. Cuando el cobro se vuelve imposible, esa deuda es una pérdida para el negocio.",
-      delLibro: "«Como todo negocio tiene sus riesgos, en este caso el riesgo es que algunos clientes no paguen las deudas.» (p. 198)",
+      definicion: "Nacen de las ventas a crédito. Cuando el cobro de una deuda se vuelve imposible, por quiebra, muerte o cambio de domicilio del cliente, entre otras razones, se clasifica como de difícil o dudoso cobro. Es una pérdida para el negocio.",
+      delLibro: "«…algunos clientes no paguen las deudas.» (p. 198)",
     },
     {
       termino: "Cómo se decide",
       definicion: "Para saber si una deuda es de difícil cobro, la empresa mira, entre otras cosas, el tiempo de vencimiento. También mira los antecedentes del cliente, su situación financiera y las garantías que le pidió.",
-      delLibro: "En la tabla del libro (p. 201), las columnas se llaman “Cuentas vigentes” y “Cuentas vencidas”. Una cuenta vigente todavía está dentro de su plazo de pago. Una vencida ya lo pasó.",
+      delLibro: "Una deuda vigente todavía está dentro de su plazo de pago. Una vencida ya lo pasó.",
       rotuloDelLibro: "Nota",
     },
     {
@@ -42,13 +48,21 @@ export const PIEZA_NO_VA_A_PAGAR = {
     },
     {
       termino: "Método de anulación directa",
-      definicion: "Cuando la deuda se da por perdida, se saca de Cuentas por cobrar – clientes y su valor va al gasto. Se debita Gasto provisiones – cuentas incobrables y se acredita Cuentas por cobrar – clientes. Ojo: el nombre de ese gasto dice “provisiones”, pero este método no crea ninguna provisión. Es muy sencillo, pero no deja información sobre las deudas castigadas. Y esa información sirve para decidir las ventas a crédito futuras.",
+      definicion: "Cuando la deuda se da por perdida, se saca de Cuentas por cobrar – clientes y su valor va al gasto. Se debita Gasto provisiones – cuentas incobrables y se acredita Cuentas por cobrar – clientes. Ojo: el nombre de ese gasto dice “provisiones”, pero este método no crea ninguna provisión.",
+    },
+    {
+      termino: "La desventaja de la anulación directa",
+      definicion: "La anulación directa es muy sencilla. Pero no guarda información de las deudas que se castigan. Y esa información sirve para decidir cómo vender a crédito.",
       delLibro: "«Este método es muy sencillo, pero presenta la desventaja de que no suministra información relacionada con la cartera castigada…» (p. 199)",
     },
     {
       termino: "Método de provisiones",
-      definicion: "Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. Se debita Gasto provisiones – cuentas incobrables y se acredita una cuenta llamada Provisión para deudas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.",
+      definicion: "Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya.",
       delLibro: "«…para determinar el probable porcentaje de cartera que no se recuperará.» (p. 200)",
+    },
+    {
+      termino: "Los asientos del método de provisiones",
+      definicion: "Al cierre, se debita Gasto provisiones – cuentas incobrables. Y se acredita una cuenta llamada Provisión para deudas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.",
     },
   ],
 };

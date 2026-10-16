@@ -544,6 +544,19 @@ Para las paradas de T6 A4 y T6 A5: comprobar que los rótulos «Primero se reviv
 
 La tabla de reemplazos de C7-5 está en paquetes/b5-lote-c2-c1-c7.md; en este paquete ya están aplicados.
 
+## B2 · Capa 1, un término por pantalla (Futaba, con las correcciones de Shoko, 15-oct) · manda sobre lo de arriba
+
+Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza. Kaede la aplicó letra por letra.
+
+(«El de hoy» = el texto que ya está en el repositorio para ese término, sin cambios. Las cifras entre paréntesis son la estimación INFLESZ de Futaba; NO van en pantalla. «Def.:», «Cita:», «Nota:», «Pie:» indican la parte del término: Def. = definición/texto; Cita = «Así lo dice el libro»; Nota = la nota; Pie = pie de fuente.)
+
+### T6 A4 · 5 pantallas
+1. **Cuenta recuperada** — El de hoy.
+2. **Revivir la deuda** — El de hoy, con su nota.
+3. **Después, el pago** — El de hoy.
+4. **Abono** — El de hoy.
+5. **Cuánto se revive** — Def.: Si paga todo, se revive toda la deuda. Si abona una parte y promete pagar el resto, también se revive toda. Si abona una parte y avisa que ya no puede pagar más, se revive solo lo que pagó. · Cita: «…si el cliente paga la totalidad de la deuda o no…» (p. 203)
+
 ## Enganche B1-B5 (Mai, 15-oct) y B5 de Futaba (final, con las correcciones de Shoko) · manda sobre lo de arriba
 
 Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entregas/futaba-b2-b5-final.md (sección «B5»). Los textos nuevos van para Shoko.

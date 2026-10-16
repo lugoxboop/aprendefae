@@ -491,6 +491,20 @@ Pregunta: «Si en marzo el castigo hubiera sido menor que la provisión, ¿qué 
 | Se registra solo lo que pide el análisis. | | No es esa. Lo que sobró sigue en la provisión. Por eso se descuenta del registro del año. |
 | Lo que sobró sale de la provisión y entra a Caja. | | No es esa. La provisión no es plata: no sale ni entra nada de Caja. |
 
+## B2 · Capa 1, un término por pantalla (Futaba, con las correcciones de Shoko, 15-oct) · manda sobre lo de arriba
+
+Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza. Kaede la aplicó letra por letra.
+
+(«El de hoy» = el texto que ya está en el repositorio para ese término, sin cambios. Las cifras entre paréntesis son la estimación INFLESZ de Futaba; NO van en pantalla. «Def.:», «Cita:», «Nota:», «Pie:» indican la parte del término: Def. = definición/texto; Cita = «Así lo dice el libro»; Nota = la nota; Pie = pie de fuente.)
+
+### T6 A3 · 6 pantallas
+1. **Provisión para deudas incobrables** — Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables.
+2. **Al revés de Clientes** — Ojo: la provisión sube cuando se acredita y baja cuando se debita. Es al revés de Cuentas por cobrar – clientes, porque se resta de ella.
+3. **Valor neto** — El de hoy, con su nota.
+4. **El gasto** — El de hoy.
+5. **Castigar contra la provisión** — Def.: Cuando una deuda se da por perdida, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto no se toca: ya se anotó al crear la provisión. · Cita: «Una vez establecida la provisión, el saldo de la cuenta se va reduciendo…» (p. 202)
+6. **Subestimada y sobrestimada** — El de hoy.
+
 ## Enganche B1-B5 (Mai, 15-oct) y B5 de Futaba (final, con las correcciones de Shoko) · manda sobre lo de arriba
 
 Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entregas/futaba-b2-b5-final.md (sección «B5»). Los textos nuevos van para Shoko.

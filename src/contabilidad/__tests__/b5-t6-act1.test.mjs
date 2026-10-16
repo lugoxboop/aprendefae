@@ -106,7 +106,7 @@ const GUIA_ACIERTOS = conEntrega4(filas(seccion("### 3.2", "### 3.3")), "### 6.2
 const GUIA_ERRORES = filas(seccion("### 3.3", "### 3.4"));
 const GUIA_SEGUNDO = conEntrega4(filas(seccion("### 3.4", "## 4 ")), "### 6.3", "Para Shoko, el cruce");
 
-const IDS = ["socio", "trabajador", "particular", "prestamo-cliente", "venta-mercancia", "venta-servicio", "cheque", "pago", "devolucion", "descuento"];
+const IDS = ["socio", "trabajador", "particular", "prestamo-cliente", "venta-mercancia", "venta-servicio", "pago", "devolucion", "descuento"];
 const RESPUESTA = { otra: "Otra", "clientes/debita": "Clientes → Se debita", "clientes/acredita": "Clientes → Se acredita" };
 const clave = (f) => (f.lado ? `${f.cuenta}/${f.lado}` : f.cuenta);
 
@@ -172,11 +172,9 @@ test("★★★ C5 manda sobre C en las dos ventas a crédito puestas en «Se ac
     assert.equal(devolucion(m.caja), `❌${GUIA_ERRORES.C5[1]}`, id);
     m.desmontar();
   }
-  /* El cheque también se debita, pero no es una venta a crédito: lleva C. */
-  const m = await montar(["cheque"]);
-  await marcar(m.caja, "clientes", "acredita");
-  assert.equal(devolucion(m.caja), `❌${GUIA_ERRORES.C[1]}`);
-  m.desmontar();
+  /* Lote 6b: el cheque devuelto, que se debitaba sin ser venta y llevaba C, salió del banco (C4). */
+  assert.ok(!D.FICHAS_T6_ACT1.some((f) => f.id === "cheque"));
+  assert.deepEqual(D.FICHAS_T6_ACT1.filter((f) => f.cuenta === "clientes" && f.lado === "debita").map((f) => f.id), c5);
 });
 
 test("★★★ regla única: tras el segundo fallo, TODA ficha muestra la columna de Futaba, y dice la respuesta", async () => {
@@ -225,14 +223,14 @@ test("★★★ el préstamo a un cliente: quien se guíe por la palabra «clien
 });
 
 test("★★★ tras un reintento acertado queda solo el ✅; el aviso, solo mientras se espera el reintento", async () => {
-  const { caja, desmontar } = await montar(["cheque"]);
+  const { caja, desmontar } = await montar(["pago"]);
   assert.equal(Boolean(caja.querySelector("[data-fallo]")), false);
-  await marcar(caja, "clientes", "acredita");
-  assert.equal(caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
   await marcar(caja, "clientes", "debita");
+  assert.equal(caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
+  await marcar(caja, "clientes", "acredita");
   assert.equal(Boolean(caja.querySelector("[data-fallo]")), false);
   assert.equal(caja.querySelectorAll('[role="status"]').length, 1);
-  assert.equal(devolucion(caja), `✅${GUIA_ACIERTOS.cheque[0]}`);
+  assert.equal(devolucion(caja), `✅${GUIA_ACIERTOS.pago[0]}`);
   assert.ok(!caja.textContent.includes(GUIA_ERRORES.C[1]), "la devolución del primer fallo ya no se ve");
   desmontar();
 });
@@ -270,17 +268,17 @@ test("★★★ los tres cajones son las opciones, con los nombres del lote 6a y
 
 /* ═══════════ SORTEO Y PUNTAJE ═══════════ */
 
-test("★★★ la tanda (R10): 9 fichas sin repetir, entre 2 y 4 por cajón con el tope del banco (4 · 3 · 3), y el reparto varía", () => {
+test("★★★ la tanda (R10): 8 fichas sin repetir, entre 2 y 4 por cajón con el tope del banco (4 · 2 · 3), y el reparto varía", () => {
   const repartos = new Set();
   for (let k = 0; k < 400; k++) {
     const tanda = L.sortearT6Act1(barajar);
-    assert.equal(tanda.length, 9);
-    assert.equal(new Set(tanda.map((f) => f.id)).size, 9);
+    assert.equal(tanda.length, 8);
+    assert.equal(new Set(tanda.map((f) => f.id)).size, 8);
     const cuantas = L.GRUPOS_T6_ACT1.map((g) => tanda.filter((f) => f.cuenta === g.cuenta && f.lado === g.lado).length);
     for (const n of cuantas) assert.ok(n >= 2 && n <= 4);
     repartos.add(cuantas.join("·"));
   }
-  assert.deepEqual([...repartos].sort(), ["3·3·3", "4·2·3", "4·3·2"], "con el banco 4 · 3 · 3, los tres repartos posibles");
+  assert.deepEqual([...repartos].sort(), ["3·2·3", "4·2·2"], "con el banco 4 · 2 · 3 (sin el cheque, lote 6b), los dos repartos posibles");
   assert.deepEqual(D.FICHAS_T6_ACT1.map((f) => f.id), IDS, "sortear no desordena el banco");
 });
 

@@ -560,6 +560,19 @@ Las devoluciones del segundo error y los pies son los de hoy.
 
 Pie de C7-6: «Fuente: Decreto 1625 de 2016, art. 1.2.1.18.21, y DIAN, Concepto 534 de 2026 · Libro, p. 201». (La condición de llevar contabilidad la verificó Shoko en el Concepto 534 de 2026 de la DIAN, párrafos 4 y 11.)
 
+## B2 · Capa 1, un término por pantalla (Futaba, con las correcciones de Shoko, 15-oct) · manda sobre lo de arriba
+
+Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza. Kaede la aplicó letra por letra.
+
+(«El de hoy» = el texto que ya está en el repositorio para ese término, sin cambios. Las cifras entre paréntesis son la estimación INFLESZ de Futaba; NO van en pantalla. «Def.:», «Cita:», «Nota:», «Pie:» indican la parte del término: Def. = definición/texto; Cita = «Así lo dice el libro»; Nota = la nota; Pie = pie de fuente.)
+
+### T6 A5 · 5 pantallas
+1. **Análisis de vencimiento** — La definición de hoy, sin la cita.
+2. **Un porcentaje por grupo** — Def.: La de hoy. · Cita: «…calcular la probable pérdida de cartera con base en el porcentaje de pérdida establecido por la empresa.» (p. 201)
+3. **La provisión** — El de hoy.
+4. **Una referencia colombiana** — En Colombia, la norma del impuesto de renta trae una provisión general con tres porcentajes. Es el 5 % para deudas con más de tres meses de vencidas, sin pasar de seis. Es el 10 % para más de seis meses, sin pasar de un año. Y es el 15 % para más de un año. · Pie: Decreto (el pie de hoy).
+5. **Para qué sirven esos porcentajes** — Son el máximo que una empresa obligada a llevar contabilidad puede restar como gasto al calcular su impuesto de renta. Solo valen si usa este método. No son una regla para todas las empresas: cada una fija los suyos. · Pie: el de la C7-6.
+
 ## Enganche B1-B5 (Mai, 15-oct) y B5 de Futaba (final, con las correcciones de Shoko) · manda sobre lo de arriba
 
 Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entregas/futaba-b2-b5-final.md (sección «B5»). Los textos nuevos van para Shoko.

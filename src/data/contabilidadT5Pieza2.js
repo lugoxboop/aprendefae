@@ -30,7 +30,8 @@ export const PIEZA_TRES_MOMENTOS = {
     },
     {
       termino: "El rendimiento",
-      definicion: "Cuando llega un interés o un dividendo, se anota como un ingreso. En esta materia, el interés va a Ingresos por intereses. En el ejemplo, el interés se paga a trimestre vencido. Es decir, se paga al terminar cada trimestre, cada tres meses.",
+      /* B2 (Futaba, 15-oct): dice a qué ingreso va cada rendimiento. */
+      definicion: "Cuando llega un interés o un dividendo, se anota como un ingreso: por dividendos si viene de acciones, y por interés si viene de otro título. En esta materia, el interés va a Ingresos por intereses. En el ejemplo, se paga a trimestre vencido: al terminar cada trimestre, cada tres meses.",
     },
     {
       termino: "La venta",

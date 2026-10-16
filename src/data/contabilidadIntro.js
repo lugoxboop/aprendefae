@@ -285,12 +285,20 @@ export const BOTON_REVER = "Ver el recorrido otra vez";
  * `pasos`, `pregunta` y `respuesta` no van: esta pieza trae su propia capa 2
  * y su propia capa 4, y `CuatroCapas` solo usa esos campos cuando no se las
  * pasan. La capa 1 sí sale de `nombres`, como en las demás piezas del sitio.
+ *
+ * `capa1EnLista`: desde que CuatroCapas pagina la capa 1 (un término por
+ * pantalla), esta pieza la conserva con todos los términos a la vez. La
+ * siembra manda contar los verbos de la cita del término 1, y esa cita tiene
+ * que estar en pantalla cuando se lee la siembra (la prueba de
+ * t1-recorrido-de-un-hecho lo vigila). Paginada, quedarían en pantallas
+ * distintas y la cita, además, plegada.
  */
 export const PIEZA_RECORRIDO = {
   id: ID,
   titulo: TITULO,
   objetivo: OBJETIVO,
   nombres: [...NOMBRES, { termino: ROTULO_SIEMBRA, definicion: SIEMBRA_DE_LOS_VERBOS }],
+  capa1EnLista: true,
 };
 
 /*
