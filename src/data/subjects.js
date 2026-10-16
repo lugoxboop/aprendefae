@@ -804,11 +804,12 @@ export const SUBJECTS = {
           { id: "t7-2-a4-san-calixto", nombre: "Las capas que la venta corta", clasificacion: { tipo: APRENDER } },
           /* H4, justo después de A4 (orden final de T7-2): las dos versiones de un mismo hecho, sin cifras. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0101. */
           { id: "t7-2-periodico-o-permanente", nombre: "¿Periódico o permanente?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          /* A5, después de A4 por el orden del mapa (regla 9: usa la venta en dos asientos de A2). H4 «¿Periódico o permanente?» entra entre A4 y A5. Cero FP. */
-          { id: "t7-2-a5-fletes", nombre: "Fletes en permanente", clasificacion: { tipo: APRENDER } },
-          /* A6, justo después de A5 (orden final de T7-2): usa la venta en dos asientos de A2. Después va H5 «Flete y devolución», que cubre A5 y A6. Cero FP. */
-          { id: "t7-2-a6-devoluciones", nombre: "Devoluciones en permanente", clasificacion: { tipo: APRENDER } },
-          /* H5, justo después de A6 (orden final de T7-2): cubre A5 y A6, con los cuatro hechos de Mangle. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0102. */
+          /*
+           * A5, después de A4 por el orden del mapa (regla 9: usa la venta en dos asientos de A2). H4 «¿Periódico o permanente?» entra entre A4 y A5. Cero FP.
+           * Con la fusión de la entrega 5 de Near se llama «Fletes y devoluciones en permanente» y conserva su id: A6 («Devoluciones en permanente», t7-2-a6-devoluciones, Aprender sin FP) salió de la lista y lo suyo va dentro de A5. Sus archivos se quedan.
+           */
+          { id: "t7-2-a5-fletes", nombre: "Fletes y devoluciones en permanente", clasificacion: { tipo: APRENDER } },
+          /* H5, justo después de A5 (orden final de T7-2; antes iba después de A6, que entró en A5): cubre los fletes y las devoluciones, con los cuatro hechos de Mangle. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0102. */
           { id: "t7-2-flete-y-devolucion", nombre: "Flete y devolución", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
         ],
       },
@@ -844,14 +845,15 @@ export const SUBJECTS = {
           { id: "t7-3-provision-inventarios", nombre: "La provisión para inventarios", clasificacion: { tipo: APRENDER } },
           /* H5, justo después de A6 (orden final de T7-3; la sostienen A5 y A6): el conteo de Olmo y la provisión de Pino. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0107. */
           { id: "t7-3-ajuste-por-conteo", nombre: "Ajuste por conteo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          /* A7, después de A6 por el orden del mapa (depende de A1, por los descuentos). H5 entra entre A6 y A7. La NIC 2 del libro, pp. 256-258, con su frase fija a la vista. Cero FP. */
-          { id: "t7-3-nic2-costo", nombre: "La NIC 2 del libro: el costo", clasificacion: { tipo: APRENDER } },
+          /*
+           * A7, después de A6 por el orden del mapa (depende de A1, por los descuentos). H5 entra entre A6 y A7. La NIC 2 del libro, pp. 256-260, con su frase fija a la vista. Cero FP.
+           * Con la fusión de la entrega 4 de Near se llama «La NIC 2 del libro» y conserva su id: A8 («fórmulas y revelación», t7-3-nic2-formulas, Aprender sin FP) salió de la lista y lo suyo va dentro de A7. Sus archivos se quedan.
+           */
+          { id: "t7-3-nic2-costo", nombre: "La NIC 2 del libro", clasificacion: { tipo: APRENDER } },
           /* H6, justo después de A7 (orden final de T7-3; la sostiene A7): qué entra en el costo de adquisición según la NIC 2 del libro, p. 258. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0108. */
           { id: "t7-3-que-entra-al-costo", nombre: "¿Entra al costo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
-          /* H7, justo después de H6 (orden final de T7-3; la sostiene A7): costo o valor neto realizable, el menor, con la regla del libro, pp. 257-258. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0109. */
+          /* H7, justo después de H6 (orden final de T7-3; la sostiene A7): costo o valor neto realizable, el menor, con la regla del libro, pp. 257-258. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0109. Desde la fusión de la entrega 4 (A8 entró en A7), es la última de T7-3. */
           { id: "t7-3-costo-o-vnr", nombre: "¿Costo o valor neto realizable?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          /* A8, la última de T7-3, después de A7 (orden del mapa: H6 y H7 entran entre A7 y A8; ningún Hacer depende de ella). La NIC 2 del libro, pp. 259-260: fórmulas y revelación, con su frase fija a la vista. Cero FP. */
-          { id: "t7-3-nic2-formulas", nombre: "La NIC 2 del libro: fórmulas y revelación", clasificacion: { tipo: APRENDER } },
         ],
       },
       /*

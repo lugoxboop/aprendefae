@@ -37,7 +37,6 @@ import { PIEZA_EL_DESCUENTO_EN_DOS_LIBROS } from "../data/contabilidadT7_3_a4.js
 import { PIEZA_SOBRANTES_Y_FALTANTES } from "../data/contabilidadT7_3_a5.js";
 import { PIEZA_LA_PROVISION } from "../data/contabilidadT7_3_a6.js";
 import { PIEZA_NIC2_COSTO } from "../data/contabilidadT7_3_a7.js";
-import { PIEZA_NIC2_FORMULAS } from "../data/contabilidadT7_3_a8.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -56,7 +55,12 @@ import { PIEZA_NIC2_FORMULAS } from "../data/contabilidadT7_3_a8.js";
 const MATERIA = "contabilidad";
 export const TEMA_T7_3 = "inventarios-descuentos-nic2";
 
-/* En el orden del número de pieza. El rótulo «Pieza n de N» cuenta las publicadas. */
+/*
+ * En el orden del número de pieza. El rótulo «Pieza n de N» cuenta las
+ * publicadas. A8 «fórmulas y revelación» (t7-3-nic2-formulas) salió con la
+ * fusión de la entrega 4 de Near: lo suyo va dentro de A7, «La NIC 2 del
+ * libro». Sus archivos se quedan.
+ */
 export const PIEZAS_T7_3 = [
   { numero: PIEZA_EL_DESCUENTO_COMERCIAL.numero, pieza: PIEZA_EL_DESCUENTO_COMERCIAL, Pieza: PantallasT7_3 },
   { numero: PIEZA_DESCUENTOS_EN_CADENA.numero, pieza: PIEZA_DESCUENTOS_EN_CADENA, Pieza: PantallasT7_3 },
@@ -65,7 +69,6 @@ export const PIEZAS_T7_3 = [
   { numero: PIEZA_SOBRANTES_Y_FALTANTES.numero, pieza: PIEZA_SOBRANTES_Y_FALTANTES, Pieza: PantallasT7_3 },
   { numero: PIEZA_LA_PROVISION.numero, pieza: PIEZA_LA_PROVISION, Pieza: PantallasT7_3 },
   { numero: PIEZA_NIC2_COSTO.numero, pieza: PIEZA_NIC2_COSTO, Pieza: PantallasT7_3 },
-  { numero: PIEZA_NIC2_FORMULAS.numero, pieza: PIEZA_NIC2_FORMULAS, Pieza: PantallasT7_3 },
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */

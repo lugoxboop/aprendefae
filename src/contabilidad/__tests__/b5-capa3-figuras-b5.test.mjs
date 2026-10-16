@@ -83,18 +83,22 @@ const ENTRA = {
   "T5 · A2": { "venta-a": [["venta-a", "Costó $650 cada unoVenta A"]], "venta-b": [["venta-b", "Costó $1.150 cada unoVenta B"]] },
   "T6 · A1": Object.fromEntries(T6A1.HECHOS_T6.map((x) => [x.id, [[x.id, x.corto]]])),
   "T6 · A2": {
-    "anulacion-directa": [["anulacion-directa-cierre", "Nada"], ["anulacion-directa-castigo", "Gasto"]],
-    provisiones: [["provisiones-cierre", "Gasto"], ["provisiones-castigo", "Provisión"]],
+    "anulacion-directa": [["anulacion-directa-cierre", "—"], ["anulacion-directa-castigo", "Gasto"]],
+    provisiones: [["provisiones-cierre", "Gasto"], ["provisiones-castigo", "—"]],
   },
 };
 const INICIAL = { "T5 · A2": [["venta-a-compra", "Costó $650 cada unoVenta A", false], ["venta-b-compra", "Costó $1.150 cada unoVenta B", false]] };
 
 test("★★★ §2b: los textos nuevos de la figura, literales (para Shoko)", () => {
   assert.deepEqual(T5A1.FIGURA_CAPA_3, { temporal: "Temporal", noTemporal: "No temporal" });
-  assert.deepEqual(T6A1.HECHOS_T6.map((x) => x.corto), ["Venta a crédito", "Pago", "Cheque devuelto", "Devolución", "Descuento", "Venta de contado"]);
+  assert.equal(T6A1.FIGURA_CAPA_3_T6.sinMovimiento, "Sin movimiento:");
+  assert.deepEqual(T6A1.HECHOS_T6.map((x) => x.corto), ["Servicio a crédito", "Pago", "Cheque devuelto", "Devolución", "Descuento", "venta de contado"]);
   assert.equal(T6A1.FIGURA_CAPA_3_T6.sinMovimiento, "Sin movimiento:");
   assert.equal(T6A1.FIGURA_CAPA_3_T6.cuenta, "Cuentas por cobrar – clientes");
-  assert.deepEqual(T6A2.FIGURA_CAPA_3_T6_A2.filas, { "anulacion-directa": { cierre: "Nada", castigo: "Gasto" }, provisiones: { cierre: "Gasto", castigo: "Provisión" } });
+  /* Auditoría de Shoko: la rejilla solo dice dónde aparece el gasto; «Provisión» delataba la capa 4. */
+  assert.equal(T6A2.FIGURA_CAPA_3_T6_A2.titulo, "¿Cuándo aparece el gasto?");
+  assert.deepEqual(T6A2.FIGURA_CAPA_3_T6_A2.filas, { "anulacion-directa": { cierre: "—", castigo: "Gasto" }, provisiones: { cierre: "Gasto", castigo: "—" } });
+  assert.ok(!JSON.stringify(T6A2.FIGURA_CAPA_3_T6_A2).includes("Provisión"));
   assert.deepEqual(T6A2.FIGURA_CAPA_3_T6_A2.columnas.map((c) => c.texto), ["Al cerrar el periodo", "Al castigar"]);
   /* T5 · A2 (decisión del 15-oct): solo las cifras de las cajas que se responden, ninguna del ejemplo del libro, y el pie del escenario simulado. */
   const F = T5A2.FIGURA_CAPA_3_T5_A2;
@@ -179,25 +183,27 @@ test("★★★ T6 · A1 · §2b: sube al DEBE, baja al HABER y «No cambia» de
   const figura = caja.querySelector('[data-figura="t6-a1"]');
   assert.equal(figura.firstElementChild.textContent, "Cuentas por cobrar – clientes");
   const col = (lado) => [...figura.querySelectorAll(`[data-columna="${lado}"] [data-entrada]`)].map((e) => e.textContent);
-  assert.deepEqual(col("debe"), ["Venta a crédito", "Cheque devuelto"]);
+  assert.deepEqual(col("debe"), ["Servicio a crédito", "Cheque devuelto"]);
   assert.deepEqual(col("haber"), ["Pago", "Devolución", "Descuento"]);
   assert.deepEqual([...figura.querySelectorAll("[data-columna] > p:first-child")].map((x) => x.textContent), ["DEBE", "HABER"]);
-  assert.equal(figura.querySelector("[data-sin-movimiento]").textContent, "Sin movimiento:Venta de contado");
+  assert.equal(figura.querySelector("[data-sin-movimiento]").textContent, "Sin movimiento:venta de contado", "«venta», en minúscula tras los dos puntos");
   desmontar();
 });
 
-test("★★★ T6 · A2 · §2b: la rejilla «Anulación directa» y «Provisiones» × «Al cerrar el periodo» y «Al castigar»", async () => {
+test("★★★ T6 · A2 · §2b: la rejilla «¿Cuándo aparece el gasto?», «Anulación directa» y «Provisiones» × «Al cerrar el periodo» y «Al castigar»", async () => {
   const p = FIGURAS[3];
   const { caja, desmontar } = await montar(h(p.Componente));
+  assert.equal(caja.querySelector('[data-figura="t6-a2"] [data-titulo-figura]').textContent, "¿Cuándo aparece el gasto?");
   const t = caja.querySelector('[data-figura="t6-a2"] table');
   assert.deepEqual([...t.querySelectorAll('th[scope="col"]')].map((x) => x.textContent), ["Al cerrar el periodo", "Al castigar"]);
   assert.deepEqual([...t.querySelectorAll('th[scope="row"]')].map((x) => x.textContent), ["Anulación directa", "Provisiones"]);
   const fila = (id) => [...t.querySelectorAll(`[data-fila="${id}"] td`)].map((x) => x.textContent);
   assert.deepEqual([fila("anulacion-directa"), fila("provisiones")], [["", ""], ["", ""]]);
   await decidir(tocar, zonaDe(caja, "provisiones"), "cierre");
-  assert.deepEqual([fila("anulacion-directa"), fila("provisiones")], [["", ""], ["Gasto", "Provisión"]]);
+  assert.deepEqual([fila("anulacion-directa"), fila("provisiones")], [["", ""], ["Gasto", "—"]]);
   await decidir(tocar, zonaDe(caja, "anulacion-directa"), "dia-castigo");
-  assert.deepEqual([fila("anulacion-directa"), fila("provisiones")], [["Nada", "Gasto"], ["Gasto", "Provisión"]]);
+  assert.deepEqual([fila("anulacion-directa"), fila("provisiones")], [["—", "Gasto"], ["Gasto", "—"]]);
+  assert.ok(!caja.querySelector('[data-figura="t6-a2"]').textContent.includes("Provisión"), "la rejilla no delata la capa 4");
   desmontar();
 });
 

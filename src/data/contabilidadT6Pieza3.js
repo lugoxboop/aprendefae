@@ -260,6 +260,6 @@ export const PARADA_T6_A3 = {
   pista: "Recuerda en qué momento del ejemplo se anotó el gasto de la provisión.",
   pie: "Basado en el libro, p. 202",
   resaltados: ["provision2", "clientes2"],
-  /* La predicción escrita en la escena (Mai, enganche §2a; textos nuevos, para Shoko): «Sí, por la parte…» también dice que el gasto vuelve en marzo. */
-  etiquetas: { si: "Otra vez en marzo", "si-parte": "Otra vez en marzo", no: "Solo en diciembre" },
+  /* La predicción escrita en la escena (Mai, enganche §2a); la de «Sí, por la parte…», de la auditoría de Shoko. */
+  etiquetas: { si: "Otra vez en marzo", "si-parte": "En marzo, solo lo que faltó", no: "Solo en diciembre" },
 };

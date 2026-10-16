@@ -141,15 +141,18 @@ export const METODOS_T6_A2 = [
 /*
  * La figura de la capa 3 (Mai, enganche B1-B5 §2b; textos nuevos, para
  * Shoko): una rejilla, los dos métodos por los dos momentos. Al decidirse un
- * método se llena su fila, siempre con lo correcto: anulación directa,
- * «Nada» al cerrar y «Gasto» al castigar; provisiones, «Gasto» al cerrar y
- * «Provisión» al castigar.
+ * método se llena su fila, siempre con lo correcto. Con la auditoría de
+ * Shoko, la rejilla lleva título y solo dice dónde aparece el gasto:
+ * anulación directa, «—» al cerrar y «Gasto» al castigar; provisiones,
+ * «Gasto» al cerrar y «—» al castigar. «Provisión» ya no sale: delataba la
+ * respuesta de la capa 4.
  */
 export const FIGURA_CAPA_3_T6_A2 = {
+  titulo: "¿Cuándo aparece el gasto?",
   columnas: [{ id: "cierre", texto: "Al cerrar el periodo" }, { id: "castigo", texto: "Al castigar" }],
   filas: {
-    "anulacion-directa": { cierre: "Nada", castigo: "Gasto" },
-    provisiones: { cierre: "Gasto", castigo: "Provisión" },
+    "anulacion-directa": { cierre: "—", castigo: "Gasto" },
+    provisiones: { cierre: "Gasto", castigo: "—" },
   },
 };
 export const FINAL_CAPA_3_T6_A2 = {

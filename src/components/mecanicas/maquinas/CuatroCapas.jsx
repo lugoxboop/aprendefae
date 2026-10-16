@@ -80,16 +80,28 @@ function CapaUnoEnLista({ nombres }) {
             Las piezas que no traen `delLibro` no pintan nada de esto.
           */}
           {n.delLibro && <CajaDelLibro n={n} />}
+          {n.notaDebajo && <CajaDelLibro n={notaDe(n)} atributos={{ "data-nota": "" }} />}
         </div>
       ))}
     </dl>
   );
 }
 
+/*
+ * Lo que trae un término bajo la definición:
+ *   · la CITA del libro: `delLibro` sin `rotuloDelLibro` (rótulo «Así lo dice
+ *     el libro»);
+ *   · una NOTA: `delLibro` con `rotuloDelLibro` (p. ej. «Nota»), o
+ *     `notaDebajo` ({ rotulo, texto }) cuando el término trae cita y nota.
+ */
+const esNota = (n) => Boolean(n.delLibro && n.rotuloDelLibro);
+const citaDe = (n) => (n.delLibro && !n.rotuloDelLibro ? n : null);
+const notaDe = (n) => (esNota(n) ? n : n.notaDebajo ? { delLibro: n.notaDebajo.texto, rotuloDelLibro: n.notaDebajo.rotulo } : null);
+
 /* La caja de la cita (o de la nota, con `rotuloDelLibro`), igual en las dos capas 1. */
-function CajaDelLibro({ n, estilo }) {
+function CajaDelLibro({ n, estilo, atributos = {} }) {
   return (
-    <div data-del-libro style={{
+    <div data-del-libro {...atributos} style={{
       margin: "7px 0 0", padding: "9px 11px", borderRadius: "10px",
       background: "rgba(10,20,34,0.4)", borderLeft: "3px solid rgba(248,249,250,0.2)", ...estilo,
     }}>
@@ -120,15 +132,18 @@ function CajaDelLibro({ n, estilo }) {
  *      a su propio renglón: a 320 no caben junto al contador;
  *   2. la carta del término: su nombre (encabezado con tabindex="-1": recibe
  *      el foco al cambiar), la `figura` si la trae, la definición (con su pie,
- *      si la pieza lo compuso dentro) y «Más sobre este término», que pliega
- *      la caja de la cita o de la nota;
+ *      si la pieza lo compuso dentro), la NOTA si la trae, siempre a la
+ *      vista bajo la definición (como antes de la paginada), y, solo si el
+ *      término trae cita del libro, «Ver lo que dice el libro», que pliega la
+ *      caja de la cita (auditoría de Shoko, 15-oct: plegar la nota escondía
+ *      lo que el término necesita para entenderse);
  *   3. «Anterior» y «Siguiente», en el bloque pegado abajo, como la capa 2.
  *      En el último término, «Siguiente» pasa a «Continuar»: baja a la capa 2
  *      y le pone el foco a su rótulo.
  *
  * Los botones no se mueven entre términos: todas las cartas se apilan en la
  * misma celda de una rejilla, así que la celda mide lo que la más alta (con
- * «Más» cerrado). Solo se ve la actual; las otras quedan ocultas a la vista,
+ * la cita cerrada y la nota a la vista). Solo se ve la actual; las otras quedan ocultas a la vista,
  * al lector y al foco (visibility, aria-hidden e inert), y su texto no se lee.
  *
  * El bloque pegado va «fijo por script» (el modo B de MaquinaPegada.jsx):
@@ -310,6 +325,8 @@ function CapaUnoPaginada({ nombres, capa, capa2, rotuloCapa2 }) {
         {nombres.map((n, k) => {
           const visible = k === actual;
           const Figura = n.figura;
+          const cita = citaDe(n);
+          const nota = notaDe(n);
           return (
             <div
               key={`${k}-${n.termino}`}
@@ -337,8 +354,10 @@ function CapaUnoPaginada({ nombres, capa, capa2, rotuloCapa2 }) {
               <div data-definicion style={{ marginTop: "8px", fontSize: "14px", lineHeight: 1.55, color: "rgba(248,249,250,0.8)" }}>
                 {n.definicion}
               </div>
-              {/* La cita y la nota, plegadas: con ellas, un término pasaba de 100 palabras (B2 pide 60). */}
-              {n.delLibro && (
+              {/* La nota, siempre a la vista bajo la definición. */}
+              {nota && <CajaDelLibro n={nota} atributos={{ "data-nota": "" }} />}
+              {/* Solo la cita del libro se pliega: con ella, un término pasaba de 100 palabras (B2 pide 60). */}
+              {cita && (
                 <>
                   <button
                     type="button"
@@ -353,7 +372,7 @@ function CapaUnoPaginada({ nombres, capa, capa2, rotuloCapa2 }) {
                       cursor: "pointer",
                     }}
                   >
-                    <span>Más sobre este término</span>
+                    <span>Ver lo que dice el libro</span>
                     <ChevronDown
                       aria-hidden="true"
                       size={18}
@@ -363,7 +382,7 @@ function CapaUnoPaginada({ nombres, capa, capa2, rotuloCapa2 }) {
                   </button>
                   {visible && (
                     <div id={`${id}-mas`} data-mas-contenido hidden={!abierto}>
-                      <CajaDelLibro n={n} estilo={{ margin: 0 }} />
+                      <CajaDelLibro n={cita} estilo={{ margin: 0 }} />
                     </div>
                   )}
                 </>

@@ -23,7 +23,6 @@ import { PIEZA_SI_PAGA } from "../data/contabilidadT6Pieza4.js";
 import { PIEZA_COMO_SE_CALCULA } from "../data/contabilidadT6Pieza5.js";
 import { conPorcentajePegado } from "../contabilidad/t6Pieza5.js";
 import { ESCENAS_TEMA6 } from "./mecanicas/libros/tema6/escenasTema6.jsx";
-import { conNotasDebajo } from "./mecanicas/libros/b5/NotaDebajo.jsx";
 import { conPiesDeTermino } from "./mecanicas/libros/tema6/PiesDeTermino.jsx";
 import ClientesOOtra from "./mecanicas/libros/tema6/ClientesOOtra.jsx";
 import { T6_ACT1 } from "../data/contabilidadT6Act1.js";
@@ -52,10 +51,10 @@ const MATERIA = "contabilidad";
 export const TEMA = "cuentas-por-cobrar";
 
 /*
- * La pieza 1 lleva la nota de «cartera» bajo la cita del término 2 (b5/NotaDebajo.jsx).
+ * La nota de «cartera» del término 2 de la pieza 1 (`notaDebajo`) la pinta CuatroCapas, siempre a la vista.
  * La pieza 5, el «%» pegado a su número y el pie de cada término (tema6/PiesDeTermino.jsx).
  */
-export const PIEZAS = [{ numero: 1, pieza: conNotasDebajo(PIEZA_LO_QUE_LE_DEBEN) }, { numero: 2, pieza: PIEZA_NO_VA_A_PAGAR }, { numero: 3, pieza: PIEZA_LA_PROVISION }, { numero: 4, pieza: PIEZA_SI_PAGA }, { numero: 5, pieza: conPiesDeTermino(conPorcentajePegado(PIEZA_COMO_SE_CALCULA)) }];
+export const PIEZAS = [{ numero: 1, pieza: PIEZA_LO_QUE_LE_DEBEN }, { numero: 2, pieza: PIEZA_NO_VA_A_PAGAR }, { numero: 3, pieza: PIEZA_LA_PROVISION }, { numero: 4, pieza: PIEZA_SI_PAGA }, { numero: 5, pieza: conPiesDeTermino(conPorcentajePegado(PIEZA_COMO_SE_CALCULA)) }];
 const PUBLICADAS = PIEZAS.length;
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */

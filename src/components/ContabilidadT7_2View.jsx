@@ -34,7 +34,6 @@ import { PIEZA_EL_KARDEX } from "../data/contabilidadT7_2_a3.js";
 import LasCapasQueLaVentaCorta from "./mecanicas/libros/t7/LasCapasQueLaVentaCorta.jsx";
 import { PIEZA_LAS_CAPAS } from "../data/contabilidadT7_2_a4_capas.js";
 import { PIEZA_FLETES } from "../data/contabilidadT7_2_a5.js";
-import { PIEZA_DEVOLUCIONES } from "../data/contabilidadT7_2_a6.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -52,14 +51,18 @@ import { PIEZA_DEVOLUCIONES } from "../data/contabilidadT7_2_a6.js";
 const MATERIA = "contabilidad";
 export const TEMA_T7_2 = "inventarios-permanente";
 
-/* En el orden del número de pieza. El rótulo «Pieza n de N» cuenta las publicadas. */
+/*
+ * En el orden del número de pieza. El rótulo «Pieza n de N» cuenta las
+ * publicadas. A6 «Devoluciones en permanente» (t7-2-a6-devoluciones) salió
+ * con la fusión de la entrega 5 de Near: lo suyo va dentro de A5, «Fletes y
+ * devoluciones en permanente». Sus archivos se quedan.
+ */
 export const PIEZAS_T7_2 = [
   { numero: PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE.numero, pieza: PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE, Pieza: LaCuentaQueSiSeMueve },
   { numero: PIEZA_LA_VENTA_EN_DOS_ASIENTOS.numero, pieza: PIEZA_LA_VENTA_EN_DOS_ASIENTOS, Pieza: LaVentaEnDosAsientos },
   { numero: PIEZA_EL_KARDEX.numero, pieza: PIEZA_EL_KARDEX, Pieza: PantallasT7_2 },
   { numero: PIEZA_LAS_CAPAS.numero, pieza: PIEZA_LAS_CAPAS, Pieza: LasCapasQueLaVentaCorta },
   { numero: PIEZA_FLETES.numero, pieza: PIEZA_FLETES, Pieza: PantallasT7_2 },
-  { numero: PIEZA_DEVOLUCIONES.numero, pieza: PIEZA_DEVOLUCIONES, Pieza: PantallasT7_2 },
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */

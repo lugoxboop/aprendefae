@@ -155,9 +155,9 @@ test("★★★ la medida: sin figura, el ancla de B1 es la primera interacción
   }
 });
 
-test("★★★ el recorrido llega a todo: cada pantalla de las 22 piezas de Aprender y la apertura de los 22 Hacer", () => {
-  /* 22 piezas de Aprender menos N2 de T5, que entró en N3 (entrega 5), más N6 de T5. */
-  assert.equal(APRENDER_CANON.length, 22, APRENDER_CANON.map((p) => p.pieza.id).join(", "));
+test("★★★ el recorrido llega a todo: cada pantalla de las 20 piezas de Aprender y la apertura de los 22 Hacer", () => {
+  /* 22 piezas, menos A6 de T7-2, que entró en A5 (entrega 5), y A8 de T7-3, que entró en A7 (entrega 4). */
+  assert.equal(APRENDER_CANON.length, 20, APRENDER_CANON.map((p) => p.pieza.id).join(", "));
   assert.equal(HACER_CANON.length, 22, HACER_CANON.map((j) => j.id).join(", "));
   const pantallas = APRENDER_CANON.reduce((s, p) => s + p.pieza.pantallas.length, 0);
   assert.equal(new Set(APRENDER.map((f) => `${f.pieza}·${f.pantalla}`)).size, pantallas);

@@ -138,17 +138,38 @@ export const CSS_T73P = `
 .t73p-lista { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 15px; line-height: 1.45; }
 /* La hoja global del sitio quita el estilo de lista: aquí vuelven las viñetas. */
 .t73p-lista li { overflow-wrap: anywhere; list-style: disc; }
+/* La fusión de la NIC 2: columnas, fichas y lo que se abre (provisional para Watari). */
+.t73p-cols { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.t73p-col { border: 1px solid ${P.borde}; border-radius: 10px; padding: 10px 12px; min-width: 0; display: grid; align-content: start; gap: 4px; }
+.t73p-col-t { margin: 0; font: 600 13px/1.3 "Sora", "Inter", sans-serif; }
+.t73p-col-x { margin: 0; font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
+.t73p-fichas { margin: 0; display: grid; gap: 8px; border: 1px solid ${P.borde}; border-radius: 10px; padding: 10px 12px; min-width: 0; }
+.t73p-medida { margin: 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 10px; font-size: 14px; line-height: 1.35; }
+.t73p-medida span { overflow-wrap: anywhere; min-width: 0; }
+.t73p-medida strong { font-weight: 700; }
+.t73p-fichas-l { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.t73p-fichas-l li { list-style: none; border: 1px solid ${P.borde}; border-radius: 999px; padding: 4px 10px; font-size: 13px; line-height: 1.3; overflow-wrap: anywhere; }
+.t73p-desp { display: grid; gap: 8px; }
+.t73p-desp-b { appearance: none; min-height: 44px; width: 100%; text-align: left; padding: 10px 14px; border: 1px solid ${P.borde}; border-radius: 8px; background: transparent; color: ${P.texto}; font: 600 15px/1.35 "Inter", sans-serif; cursor: pointer; }
+.t73p-desp-b[aria-expanded="true"] { border-color: ${P.texto}; }
+.t73p-desp-b:focus-visible { outline: 2px solid ${P.texto}; outline-offset: 2px; }
+.t73p-desp-c { display: grid; gap: 8px; }
 .t73p-nueva { animation: t73p-aparece .12s ease-out; }
 @keyframes t73p-aparece { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .t73p *, .t73p *::before, .t73p *::after { transition: none !important; animation: none !important; } }
 `;
 
-/* El pie: la fuente y, en la pantalla que da las tarifas, la frase de las tarifas debajo. */
-function Pie({ texto, tarifas = false }) {
+/*
+ * El pie: la fuente y, en la pantalla que da las tarifas, la frase de las
+ * tarifas debajo. Con `marca` (la fusión de la NIC 2, `pieMarca`), la marca
+ * de un ejemplo construido, «Ejemplo que no es del libro», también debajo.
+ */
+function Pie({ texto, tarifas = false, marca = null }) {
   return (
     <>
       <p className="t73p-pie" data-pie>{texto}</p>
       {tarifas && <p className="t73p-pie" data-pie data-pie-tarifas>{FRASE_TARIFAS}</p>}
+      {marca && <p className="t73p-pie" data-pie data-pie-marca>{marca}</p>}
     </>
   );
 }
@@ -280,14 +301,69 @@ function CuentaT({ t }) {
     </div>
   );
 }
+/*
+ * LA FUSIÓN DE LA NIC 2 (entrega 4 de Near): dos figuras más, en lectura.
+ * PROVISIONALES PARA WATARI: todavía no entrega su forma; van sobrias, con
+ * los tokens y el borde de los renglones, sin teal ni ámbar.
+ *   · columnas   «Se suma» y «Se resta», una al lado de la otra
+ *   · fichas     la medida («Costo o valor neto realizable» → «El menor de
+ *                los dos») y las tres fórmulas como fichas
+ */
+function Columnas({ columnas, nuevo = false }) {
+  return (
+    <figure className={`t73p-cols${nuevo ? " t73p-nueva" : ""}`} data-figura data-columnas>
+      {columnas.map((c) => (
+        <div key={c.titulo} className="t73p-col" data-columna={c.titulo}>
+          <p className="t73p-col-t">{c.titulo}</p>
+          <p className="t73p-col-x">{c.texto}</p>
+        </div>
+      ))}
+    </figure>
+  );
+}
+
+function Fichas({ medida, fichas, nuevo = false }) {
+  return (
+    <figure className={`t73p-fichas${nuevo ? " t73p-nueva" : ""}`} data-figura data-fichas>
+      <p className="t73p-medida" data-medida><span>{medida.rot}</span><strong>{medida.valor}</strong></p>
+      <ul className="t73p-fichas-l">{fichas.map((t) => <li key={t} data-ficha-nic2>{t}</li>)}</ul>
+    </figure>
+  );
+}
+
 /* Las figuras del Patrón T7-3: { tipo: "renglones", titulo, filas, nota } o { tipo: "plazos", venta, condiciones, pago }. */
 /* Con `acerto`, cada figura toma lo que trae para el acierto (`alAcertar`). */
 const Figuras = ({ lista, nuevo = false, acerto = false }) => (lista ?? []).map((f0, k) => {
   const f = acerto && f0.alAcertar ? { ...f0, ...f0.alAcertar } : f0;
   if (f.tipo === "plazos") return <Plazos key={k} {...f} nuevo={nuevo || (acerto && Boolean(f0.alAcertar))} />;
   if (f.tipo === "barras") return <Barras key={k} titulo={f.titulo} barras={f.barras} escala={f.escala ?? null} nuevo={nuevo} />;
+  if (f.tipo === "columnas") return <Columnas key={k} columnas={f.columnas} nuevo={nuevo} />;
+  if (f.tipo === "fichas") return <Fichas key={k} medida={f.medida} fichas={f.fichas} nuevo={nuevo} />;
   return <Renglones key={k} titulo={f.titulo} filas={f.filas} nota={f.nota ?? null} nuevo={nuevo} />;
 });
+
+/*
+ * Lo que se abre al tocar su botón (la fusión de la NIC 2: «Ver lo que la
+ * norma pide informar», en el resumen). No es un botón de interfaz: lleva
+ * `aria-expanded` y su contenido solo se pinta abierto.
+ */
+function Desplegable({ d }) {
+  const [abierto, setAbierto] = useState(false);
+  const id = "t73p-desplegable";
+  return (
+    <div className="t73p-desp" data-desplegable>
+      <button type="button" className="t73p-desp-b" aria-expanded={abierto} aria-controls={abierto ? id : undefined} onClick={() => setAbierto((x) => !x)}>
+        <span data-texto data-desplegable-boton>{d.boton}</span>
+      </button>
+      {abierto && (
+        <div id={id} className="t73p-desp-c t73p-nueva" data-desplegado>
+          <Textos lista={d.parrafos} enteros />
+          {d.lista && <ul className="t73p-lista" data-lista>{d.lista.map((t) => <li key={t} data-texto>{t}</li>)}</ul>}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const Asientos = ({ lista, nuevo = false, revelar = false }) => (lista ?? []).map((a, k) => <Asiento key={k} asiento={a} nuevo={nuevo} revelar={revelar} />);
 
@@ -375,7 +451,7 @@ function Eleccion({ pantalla, onSeguir, enteros = false }) {
           {onSeguir && <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />}
         </>
       )}
-      <Pie texto={pie} tarifas={pantalla.pieTarifas} />
+      <Pie texto={pie} tarifas={pantalla.pieTarifas} marca={pantalla.pieMarca} />
     </div>
   );
 }
@@ -401,9 +477,10 @@ export default function PantallasT7_3({ pieza, rotulo }) {
         ) : (
           <div className="t73p">
             <Cuerpo p={p} enteros={Boolean(pieza.textosEnteros)} />
+            {p.desplegable && <Desplegable d={p.desplegable} />}
             {p.siguiente && <p className="t73p-nota" data-texto data-siguiente>{p.siguiente}</p>}
             {p.boton && !ultima && <Boton nombre={p.tipo === "portada" ? "empezar" : "seguir"} texto={p.boton} onClick={seguir} />}
-            <Pie texto={p.pie} tarifas={p.pieTarifas} />
+            <Pie texto={p.pie} tarifas={p.pieTarifas} marca={p.pieMarca} />
           </div>
         )}
       </div>

@@ -142,7 +142,7 @@ test("★★★ la definición del libro va debajo de la idea simple, nunca arri
     try {
       /*
        * La capa 1 va paginada (un término por pantalla, CuatroCapas): se va al
-       * término con su punto, se abre «Más sobre este término», y se mira la
+       * término con su punto, se abre «Ver lo que dice el libro», y se mira la
        * carta que está a la vista.
        */
       const capa1 = caja.querySelector('[data-capa="1"]');
