@@ -108,14 +108,22 @@ test("★★★ la guardia se pone roja si las dos definiciones dejan de coincid
   assert.equal(laDefinicion({ termino: "Nota débito", definicion: NOTA_DEBITO_T6.texto }), NOTA_DEBITO_T6.texto);
 });
 
-test("★★ la glosa provisional ya no existe: el término 4 de T6 · Aprender 1 lleva la nota con la definición del Tema 4", async () => {
+test("★★ la glosa provisional ya no existe: el término 4 de T6 · Aprender 1 es «Nota débito», con la definición del Tema 4 (B2)", async () => {
   const D = await import("../../data/contabilidadT6Pieza1.js");
   assert.equal(D.GLOSA_NOTA_DEBITO, undefined, "la glosa provisional b5-t6-glosa-nota-debito volvió");
+  /* B2 (un término por pantalla): la nota debajo de «Cuándo sube…» pasa a término propio, justo antes. */
   const t4 = D.PIEZA_LO_QUE_LE_DEBEN.nombres[3];
-  assert.equal(t4.termino, "Cuándo sube lo que deben los clientes");
+  assert.equal(t4.termino, "Nota débito");
   assert.equal(t4.glosa, undefined);
-  assert.equal(t4.delLibro, D.NOTA_DEBITO_T6.texto);
-  assert.equal(t4.rotuloDelLibro, "Nota");
+  assert.equal(t4.definicion, D.NOTA_DEBITO_T6.texto);
+  /* El detector de esta guardia lo reconoce como una definición de «nota débito», con el mismo texto. */
+  assert.equal(defineNotaDebito(t4), true);
+  assert.equal(laDefinicion(t4), D.NOTA_DEBITO_T6.texto);
+  const t5 = D.PIEZA_LO_QUE_LE_DEBEN.nombres[4];
+  assert.equal(t5.termino, "Cuándo sube lo que deben los clientes");
+  assert.equal(t5.delLibro, undefined, "la nota volvió debajo de «Cuándo sube…»: la definición quedaría dos veces");
+  /* Y es la única definición de «nota débito» en la pieza. */
+  assert.equal(D.PIEZA_LO_QUE_LE_DEBEN.nombres.filter(defineNotaDebito).length, 1);
   /* Lo que la nota tiene que decir para seguir sirviendo a T6: que resta y el cheque devuelto. */
   assert.match(D.NOTA_DEBITO_T6.texto, /le resta un valor a la cuenta/);
   assert.match(D.NOTA_DEBITO_T6.texto, /devuelve el cheque con el que un cliente/);

@@ -83,10 +83,11 @@ test("★★★ todo texto de los datos es literal del paquete guardado (paquete
   assert.deepEqual(textos.filter((t) => !FUENTE.includes(t)), []);
 });
 
-test("★★★ manda Futaba: los cuatro términos con su pie (el del término 1, el de Sakuta), la cita del 1 y la nota del 4", () => {
-  assert.deepEqual(N.map((x) => x.termino), ["Análisis de vencimiento", "Un porcentaje por grupo", "La provisión", "Una referencia colombiana"]);
+test("★★★ manda Futaba, y encima B2: cinco términos con su pie (el del término 1, el de Sakuta), la cita en el 2 y la nota del 4 como término 5", () => {
+  assert.deepEqual(N.map((x) => x.termino), ["Análisis de vencimiento", "Un porcentaje por grupo", "La provisión", "Una referencia colombiana", "Para qué sirven esos porcentajes"]);
   const fila = (x) => FUTABA.split("\n").find((l) => l.split("\t")[1] === x.termino)?.split("\t");
-  N.forEach((x, k) => {
+  /* Los cuatro primeros siguen siendo los de Futaba («el de hoy» en B2), con su pie. */
+  N.slice(0, 4).forEach((x, k) => {
     const f = fila(x);
     assert.ok(f, `término «${x.termino}» en la tabla de Futaba`);
     assert.equal(f[2], x.definicion, `texto del término ${k + 1}`);
@@ -95,16 +96,26 @@ test("★★★ manda Futaba: los cuatro términos con su pie (el del término 1
   });
   assert.equal(fila(N[0])[3], "Basado en el libro, p. 200", "la guarda: Futaba decía p. 200");
   assert.match(FUENTE, /El pie del término 1 es «Basado en el libro, pp\. 200-201»/);
-  /* La cita del 1, con su página; la nota del 4, con su rótulo y su pie de dos fuentes. */
-  assert.ok(FUTABA.includes(`1 · Así lo dice el libro\t—\t${N[0].delLibro.replace(/ \(p\. 201\)$/, "")}\t(p. 201)`));
-  assert.equal(N[0].rotuloDelLibro, undefined);
-  /* La nota del 4 y su pie, corregidos por C7-6 del lote C2 · C1 · C7 (la de antes sigue guardada en la tabla de Futaba). */
+  /* B2 (un término por pantalla, 15-oct), guardada al final del paquete. */
+  const B2 = FUENTE.slice(FUENTE.indexOf("## B2 ·"));
+  assert.ok(B2.includes("1. **Análisis de vencimiento** — La definición de hoy, sin la cita."));
+  assert.equal(N[0].delLibro, undefined, "el término 1 va sin la cita");
+  /* La cita pasa al 2, recortada, con su página; el rótulo es el del componente. */
+  assert.ok(B2.includes(`**Un porcentaje por grupo** — Def.: La de hoy. · Cita: ${N[1].delLibro}`));
+  assert.match(N[1].delLibro, /^«….*» \(p\. 201\)$/);
+  assert.ok(FUTABA.includes(`1 · Así lo dice el libro\t—\t«Lo primero que se deba hacer para realizar el ajuste por cuentas incobrables a diciembre 31 es ${N[1].delLibro.slice(2)}`.replace(/ \(p\. 201\)$/, "")), "la cita recortada es la del libro");
+  assert.equal(N[1].rotuloDelLibro, undefined);
+  /* El 4 queda sin nota y con el pie del Decreto. */
+  assert.ok(B2.includes(`**Una referencia colombiana** — ${N[3].definicion} · Pie: Decreto (el pie de hoy).`));
+  assert.equal(N[3].pie, D.PIE_DECRETO);
+  assert.deepEqual([N[2].delLibro, N[3].delLibro, N[4].delLibro], [undefined, undefined, undefined]);
+  assert.deepEqual(N.map((x) => x.pieDelLibro), [undefined, undefined, undefined, undefined, undefined]);
+  /* La nota del 4 (C7-6 del lote C2 · C1 · C7) es ahora el término 5, con la frase partida y el pie de la C7-6. */
   assert.ok(FUTABA.includes(`4 · Nota ✎\t—\t`), "la guarda: la nota del 4 en la tabla de Futaba");
-  assert.ok(FUENTE.includes(`| C7-6 | T6 A5 · nota del término 4 | ${N[3].delLibro} | Corregida |`), "la nota del 4, literal de C7-6");
-  assert.ok(FUENTE.includes(`Pie de C7-6: «${N[3].pieDelLibro}».`), "su pie, literal de C7-6");
-  assert.equal(N[3].pieDelLibro, D.PIE_DECRETO_DIAN_Y_LIBRO);
-  assert.equal(N[3].rotuloDelLibro, "Nota");
-  assert.deepEqual([N[1].delLibro, N[2].delLibro], [undefined, undefined]);
+  assert.ok(B2.includes(`**Para qué sirven esos porcentajes** — ${N[4].definicion} · Pie: el de la C7-6.`));
+  assert.ok(FUENTE.includes(`| C7-6 | T6 A5 · nota del término 4 | Esos porcentajes son${N[4].definicion.slice("Son".length)} | Corregida |`), "el término 5 es la C7-6 con la frase partida");
+  assert.ok(FUENTE.includes(`Pie de C7-6: «${N[4].pie}».`), "su pie, literal de C7-6");
+  assert.equal(N[4].pie, D.PIE_DECRETO_DIAN_Y_LIBRO);
 });
 
 test("★★★ el cambio de cifras es la tabla de Futaba (sección (5)), y la devolución correcta de la capa 4 es la que ella dicta", () => {
@@ -186,13 +197,13 @@ test("★★★ cada pie es de uno, y solo uno, de los cuatro tipos (y uno mezcl
   for (const x of items) assert.equal(tipoDe(x.pie).length, 1, `${x.donde}: «${x.pie}»`);
 });
 
-test("★★★ ningún pie con «Libro» va en un texto con una cifra del ejemplo; «· Libro, p. 201» solo en la nota del término 4", () => {
+test("★★★ ningún pie con «Libro» va en un texto con una cifra del ejemplo; «· Libro, p. 201» solo en el término 5 (la nota del 4 de antes)", () => {
   const malos = conPie().filter((x) => /Libro/.test(x.pie) && tieneCifraDelEjemplo(x.texto)).map((x) => x.donde);
   assert.deepEqual(malos, []);
   const dosFuentes = conPie().filter((x) => / · Libro, p\. 201$/.test(x.pie)).map((x) => x.donde);
-  assert.deepEqual(dosFuentes, ["nota de «Una referencia colombiana»"]);
-  assert.equal(N[3].pieDelLibro, D.PIE_DECRETO_DIAN_Y_LIBRO);
-  assert.ok(!tieneCifraDelEjemplo(N[3].delLibro), "la nota de dos fuentes no trae cifras del ejemplo");
+  assert.deepEqual(dosFuentes, ["término «Para qué sirven esos porcentajes»"]);
+  assert.equal(N[4].pie, D.PIE_DECRETO_DIAN_Y_LIBRO);
+  assert.ok(!tieneCifraDelEjemplo(N[4].definicion), "el texto de dos fuentes no trae cifras del ejemplo");
   /* Control: la regla atrapa un pie «Libro» puesto en un texto con cifra. */
   assert.ok(/Libro/.test(D.PIE_DECRETO_DIAN_Y_LIBRO) && tieneCifraDelEjemplo(D.PASOS_T6_A5[4].texto));
 });

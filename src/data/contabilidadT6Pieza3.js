@@ -17,10 +17,19 @@ export const PIEZA_LA_PROVISION = {
   numero: 3,
   titulo: "La provisión, de un año al siguiente",
   objetivo: "Vas a ver cómo se crea la provisión, cómo se castiga una deuda contra ella y cómo se ajusta al año siguiente.",
+  /*
+   * B2 · un término por pantalla (Futaba, 15-oct): seis pantallas. El
+   * «Ojo» de la provisión (sube al acreditarse) sale a su propia pantalla,
+   * «Al revés de Clientes».
+   */
   nombres: [
     {
       termino: "Provisión para deudas incobrables",
-      definicion: "Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables. Ojo: la provisión sube cuando se acredita y baja cuando se debita. Es al revés de Cuentas por cobrar – clientes, porque se resta de ella.",
+      definicion: "Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables.",
+    },
+    {
+      termino: "Al revés de Clientes",
+      definicion: "Ojo: la provisión sube cuando se acredita y baja cuando se debita. Es al revés de Cuentas por cobrar – clientes, porque se resta de ella.",
     },
     {
       termino: "Valor neto",
@@ -34,8 +43,8 @@ export const PIEZA_LA_PROVISION = {
     },
     {
       termino: "Castigar contra la provisión",
-      definicion: "Cuando una deuda se da por perdida, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto no se toca, porque ya se anotó al crear la provisión.",
-      delLibro: "«Una vez establecida la provisión, el saldo de la cuenta se va reduciendo en la medida en que se vayan castigando cuentas que se consideren incobrables.» (p. 202)",
+      definicion: "Cuando una deuda se da por perdida, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto no se toca: ya se anotó al crear la provisión.",
+      delLibro: "«Una vez establecida la provisión, el saldo de la cuenta se va reduciendo…» (p. 202)",
     },
     {
       termino: "Subestimada y sobrestimada",
