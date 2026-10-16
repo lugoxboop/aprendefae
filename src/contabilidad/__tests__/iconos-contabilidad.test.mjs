@@ -115,10 +115,12 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
      r5-3 entra a subjects.js con el #196 y su ícono está pedido al coordinador.
      r5-4 (dos libros que cuadran) y r5-5 (el saldo que sube por escalones) ya
      tienen el suyo, del 16 de octubre. */
-  /* Vacío a propósito: desde el 16 de octubre toda actividad de Hacer de
-     Contabilidad que no sea el desafío tiene su dibujo. Si entra una nueva sin
-     ícono, se nombra aquí con la fecha en que se pidió, y se saca al dibujarla. */
-  const SIN_ICONO_TODAVIA = new Set([]);
+  /* Desde el 16 de octubre toda actividad de Hacer de Contabilidad que no sea
+     el desafío tiene su dibujo. Si entra una nueva sin ícono, se nombra aquí
+     con la fecha en que se pidió, y se saca al dibujarla.
+     T4 · H3, H4, H7 y H8 del rediseño de los Hacer (Célula D, #308, 15 oct):
+     ids nuevos, ícono pedido al coordinador. */
+  const SIN_ICONO_TODAVIA = new Set(["t4-se-mueve-la-caja-menor", "t4-el-arqueo-de-rosa", "t4-concilia-la-cuenta", "t4-se-asienta-o-no"]);
   const esperadas = [...hacer].filter((id) => !conDesafio.has(id) && !SIN_ICONO_TODAVIA.has(id));
   assert.equal(esperadas.length, 58);
   assert.deepEqual(Object.keys(ICONO_POR_ACTIVIDAD).sort(), esperadas.sort(), "falta o sobra un ícono");
