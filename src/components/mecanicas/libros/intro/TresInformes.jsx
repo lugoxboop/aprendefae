@@ -84,7 +84,7 @@ export default function TresInformes({
               }}
             >
               <p style={{
-                margin: "0 0 6px", fontFamily: SORA, fontSize: "11.5px", fontWeight: 700, color: FAE.text,
+                margin: "0 0 6px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, color: FAE.text,
               }}>
                 {inf.nombre}
                 <span style={{ marginLeft: "6px", fontSize: "10px", fontWeight: 500, color: "rgba(248,249,250,0.5)" }}>
@@ -104,7 +104,7 @@ export default function TresInformes({
                         display: "flex", alignItems: "center", gap: "6px",
                         padding: "4px 6px", borderRadius: "7px",
                         background: encendida ? "rgba(184,196,212,0.14)" : "transparent",
-                        fontSize: "10.5px", lineHeight: 1.3,
+                        fontSize: "12px", lineHeight: 1.3,
                         color: encendida ? FAE.text : "rgba(248,249,250,0.62)",
                         transition: reducido ? "none" : "background 260ms ease, color 260ms ease",
                       }}

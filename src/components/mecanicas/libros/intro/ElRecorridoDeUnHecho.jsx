@@ -76,7 +76,7 @@ function Estacion({ e, contenido, refCaja, repeticion }) {
         </span>
         <span style={{ flex: 1, minWidth: 0 }}>
           <span style={{
-            display: "block", fontFamily: SORA, fontSize: "11.5px", fontWeight: 700,
+            display: "block", fontFamily: SORA, fontSize: "12px", fontWeight: 700,
             lineHeight: 1.25, color: FAE.text,
           }}>
             {e.nombre}
