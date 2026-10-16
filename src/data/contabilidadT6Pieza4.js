@@ -38,8 +38,9 @@ export const PIEZA_SI_PAGA = {
     },
     {
       termino: "Cuánto se revive",
-      definicion: "Depende de lo que haga el cliente. Si paga todo, se revive toda la deuda. Si abona una parte y promete pagar el resto, también se revive toda. Si abona una parte y avisa que ya no puede pagar más, se revive solo lo que pagó.",
-      delLibro: "«…teniendo presente si el cliente paga la totalidad de la deuda o no, ya que se pueden presentar las siguientes situaciones.» (p. 203)",
+      /* B2 (Futaba, 15-oct): sin la frase de entrada y con la cita recortada. */
+      definicion: "Si paga todo, se revive toda la deuda. Si abona una parte y promete pagar el resto, también se revive toda. Si abona una parte y avisa que ya no puede pagar más, se revive solo lo que pagó.",
+      delLibro: "«…si el cliente paga la totalidad de la deuda o no…» (p. 203)",
     },
   ],
 };

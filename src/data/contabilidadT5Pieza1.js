@@ -29,44 +29,59 @@ export const PIEZA_DEL_EFECTIVO = {
   numero: 1,
   titulo: "Del efectivo de sobra al activo financiero",
   objetivo: "Vas a ver cuándo una inversión de la empresa es temporal y de dónde sale lo que rinde.",
+  /*
+   * B2 · un término por pantalla (entrega final de Futaba con las correcciones
+   * de Shoko, 15-oct): nueve pantallas, cada una de 60 palabras o menos. La
+   * primera condición se une a «Activo financiero temporal» y la segunda va
+   * sola; «Título valor» sale (decisión de Sakuta); «Renta fija» se parte en
+   * sus dos tipos. La nota de “renta variable” y “renta fija” pasa a «Renta
+   * fija», donde ya se nombraron los dos.
+   */
   nombres: [
     {
       termino: "Activo financiero",
-      definicion: "Es una colocación de dinero. La empresa deja de tener ese efectivo y, a cambio, tiene algo que espera que le rinda más adelante. Ese rendimiento puede venir de un interés. Puede venir de un dividendo, que es lo que una empresa reparte entre quienes tienen sus acciones. O puede venir de venderlo por más de lo que costó.",
-      delLibro: "«Representan colocaciones de dinero sobre las cuales una empresa espera obtener algún rendimiento a futuro…» (p. 191)",
+      definicion: "Es una colocación de dinero: la empresa espera que le rinda más adelante. Puede rendir un interés, un dividendo (lo que una empresa reparte entre quienes tienen sus acciones) o una venta por más de lo que costó.",
+      delLibro: "«…colocaciones de dinero sobre las cuales una empresa espera obtener algún rendimiento a futuro…» (p. 191)",
     },
     {
       termino: "Activo financiero temporal",
-      definicion: "Se compra con efectivo que la empresa no necesita de inmediato, en vez de dejarlo quieto. Para ser temporal, tiene que cumplir dos condiciones. La primera es poder venderse rápido y con facilidad. El libro dice “negociables o realizables”. La segunda es estar destinado a volverse efectivo cuando se necesite, en un año o en un ciclo de operaciones, el que sea más largo. El ciclo de operaciones es lo que tarda el negocio en comprar, vender y cobrar.",
-      /* En un solo párrafo, con «1.» y «2.» dentro del texto (guía §3). */
-      delLibro: "«1. Negociables o realizables rápidamente. 2. Destinados a convertirse en efectivo cuando se necesite, en el término de un año o de un ciclo de operaciones (el que sea más largo).» (p. 192)",
+      definicion: "Se compra con efectivo que la empresa no necesita de inmediato, en vez de dejarlo quieto. Para ser temporal cumple dos condiciones a la vez. La primera: poder venderse rápido y con facilidad.",
+      delLibro: "«1. Negociables o realizables rápidamente.» (p. 192)",
     },
     {
-      termino: "Título valor",
-      /* C7-1 de Futaba (lote C2 · C1 · C7, PASA de Shoko). */
-      definicion: "Es un documento. Los títulos valores negociables sirven para captar recursos y moverlos entre quienes invierten. En el libro, los valores son clases de títulos valores. Por ejemplo, los de renta variable o los negociables.",
+      termino: "La segunda condición",
+      /* Sin cita, como pidió Shoko. */
+      definicion: "Es la segunda: estar destinado a volverse efectivo cuando se necesite, en un año o en un ciclo de operaciones, el que sea más largo. El ciclo de operaciones es lo que tarda el negocio en comprar, vender y cobrar.",
     },
     {
       termino: "Tres grupos",
-      /* Lista abierta: va en prosa, con «suelen» visible (nota de Futaba). */
-      definicion: "Los activos temporales suelen ser de tres grupos. El primero son los documentos a corto plazo. Ahí están los certificados de depósito, los bonos de tesorería y los documentos negociables. El segundo son los valores negociables de deuda. Ahí están los bonos del Gobierno y de compañías. El tercero son los valores negociables de capital. Ahí están las acciones preferentes y comunes.",
+      /* Lista abierta: va en prosa, con «suelen» visible. El texto de Futaba (INFLESZ 61), por decisión de Sakuta. */
+      definicion: "Los activos temporales suelen ser de tres grupos. Uno son los documentos a corto plazo: certificados de depósito, bonos de tesorería y documentos negociables. Otro son los valores negociables de deuda: bonos del Gobierno y de compañías. Y otro son los de capital: acciones preferentes y comunes.",
     },
     {
       termino: "Acciones, en este tema",
-      definicion: "Aquí, la empresa compra con su efectivo acciones que emitió otra empresa. Para quien las compra, son un activo.",
-      delLibro: "Son el mismo tipo de documento que ya viste en el patrimonio, mirado desde el otro lado. Para la empresa que las emite, es decir, la que las crea y las vende para conseguir recursos, son patrimonio. Para la que las compra, son un activo.",
+      definicion: "Aquí, la empresa compra acciones que otra empresa emitió.",
+      delLibro: "Ya las viste en el patrimonio, desde el otro lado. Para la empresa que las emite, es decir, la que las crea y las vende para conseguir recursos, son patrimonio. Para la que las compra, son un activo.",
       rotuloDelLibro: "Nota",
     },
     {
       termino: "Renta variable",
-      definicion: "Su rendimiento depende de cómo le vaya a la empresa que emitió el título. Un ejemplo son las acciones. Sus dividendos dependen de la situación económica de esa empresa. También dependen de su liquidez, que es su capacidad de tener efectivo para pagar.",
+      definicion: "Su rendimiento depende de cómo le vaya a la empresa que emitió el título. Así pasa con las acciones. Sus dividendos dependen de la situación económica de esa empresa. Y de su liquidez, es decir, de su capacidad de tener efectivo para pagar.",
+    },
+    {
+      termino: "Renta fija",
+      definicion: "Da una renta constante, que se pacta en el momento de invertir. Es de dos tipos: con interés o con descuento.",
       delLibro: "Aquí, “renta variable” y “renta fija” son nombres de tipos de título, no de cuentas. Cuando la renta le llega a la empresa, sí se anota como un ingreso.",
       rotuloDelLibro: "Nota",
     },
     {
-      termino: "Renta fija",
+      termino: "Renta fija con interés",
       /* Lista abierta: «entre otros» visible, sin viñetas ni recorte. */
-      definicion: "Da una renta constante, que se pacta en el momento de invertir. Es de dos tipos. Con interés: paga un interés fijo durante un periodo determinado. Por ejemplo, los certificados de depósito a término (CDT), los bonos y las cédulas hipotecarias, entre otros. Con descuento: su renta es la diferencia entre el valor de compra y el valor de redención. El valor de redención es lo que paga quien emitió el título cuando este vence. Por ejemplo, los títulos de participación, los certificados de reembolso tributario (CERT) y los títulos canjeables, entre otros.",
+      definicion: "Paga un interés fijo durante un periodo determinado. Por ejemplo, el CDT, los bonos y las cédulas hipotecarias, entre otros. El CDT es un certificado de depósito a término.",
+    },
+    {
+      termino: "Renta fija con descuento",
+      definicion: "Su renta es la diferencia entre el valor de compra y el valor de redención. El valor de redención es lo que paga quien emitió el título cuando este vence. Por ejemplo, los títulos de participación, el CERT (certificado de reembolso tributario) y los títulos canjeables, entre otros.",
     },
   ],
 };
