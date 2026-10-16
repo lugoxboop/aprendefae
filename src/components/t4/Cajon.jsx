@@ -35,7 +35,7 @@ const BOCA = 40;
 export const CSS_CAJON = `
 .t4cv { position: relative; margin: 0; display: grid; min-width: 0; color: ${C.texto}; font-family: "Inter", sans-serif; }
 .t4cv * { box-sizing: border-box; }
-.t4cv-origen { position: relative; display: grid; gap: 2px; border: 1px solid ${C.neutro}; border-radius: 8px; padding: 8px 12px; }
+.t4cv-origen { position: relative; display: grid; gap: 2px; border: 1px solid ${C.reposo}; border-radius: 8px; padding: 8px 12px; }
 .t4cv-rot { font: 500 12px/1.3 "Inter", sans-serif; letter-spacing: .04em; color: ${C.texto2}; }
 .t4cv-hecho { font-size: 15px; line-height: 22px; overflow-wrap: anywhere; }
 .t4cv-origen[data-tarjeta] .t4cv-hecho { min-height: 66px; }

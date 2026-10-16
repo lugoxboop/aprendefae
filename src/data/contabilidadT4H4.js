@@ -102,8 +102,8 @@ export const RENGLONES_ASIENTO_H4 = {
 export const BOTON_H4 = { siguientePaso: "Siguiente paso", siguienteRonda: "Siguiente ronda", verResumen: "Ver mi resumen", otraVez: "Otra vez" };
 export const SOBRE_H4 = { gastos: "Soportes de gastos", caja: "En la caja" };
 export const REGLA_H4 = {
-  fondo: "fondo", suman: "suman", sumanFuera: "suman, fuera de la regla", tuDiferencia: "tu diferencia", era: "era",
-  tuCheque: "caja + tu cheque", chequeCorrecto: "con el cheque correcto", falta: "falta", sobra: "sobra", escala: "cada marca: 2.000",
+  fondo: "fondo", suman: "suman", sumanFuera: "suman, fuera de la regla", tuDiferencia: "tu diferencia", era: "Iba aquí:",
+  tuCheque: "caja + tu cheque", falta: "falta", sobra: "sobra", escala: "cada marca: 2.000",
 };
 export const ASIENTO_H4 = { debe: "DEBE", haber: "HABER", gastos: "Gastos generales", bancos: "Bancos" };
 export const resumenH4 = (bien) => `${bien} de 14 respuestas al primer intento.`;
@@ -155,8 +155,8 @@ function ronda(id, titulo, encargado, fondo, gastos, caja, politica) {
     P.push({ id: DIFERENCIA, correcta: dif, opciones: [dif, fondo - gastos, suma],
       acierto: mas ? `${pesos(suma)} menos ${pesos(fondo)} da ${pesos(dif)}.` : `${pesos(fondo)} menos ${pesos(suma)} da ${pesos(dif)}.`,
       errores: {
-        [fondo - gastos]: `Eso es lo que debería quedar en la caja: el fondo menos los gastos. La diferencia compara la suma con el fondo: ${pesos(dif)}.`,
-        [suma]: `Esa es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: ${pesos(dif)}.`,
+        [fondo - gastos]: `Eso es lo que debería quedar en la caja: fondo menos gastos. La diferencia compara la suma con el fondo: ${pesos(dif)}.`,
+        [suma]: `Es la suma de gastos y caja. La diferencia es cuánto se aleja esa suma del fondo: ${pesos(dif)}.`,
       } });
     if (mas) {
       r.pagina = "Basado en el libro, pp. 183 y 185. Cifras construidas";

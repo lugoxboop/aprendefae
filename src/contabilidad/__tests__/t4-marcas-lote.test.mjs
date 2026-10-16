@@ -43,7 +43,12 @@ export function defectos(raiz, { aprender }) {
   const d = [];
   /* 1 · ningún glifo de texto */
   const recorrer = (n) => {
-    if (n.nodeType === 3) { if (/[✓✗✔✘]/u.test(n.textContent)) d.push(`glifo de texto «${norm(n.textContent).slice(0, 40)}»`); return; }
+    if (n.nodeType === 3) {
+      if (/[✓✗✔✘]/u.test(n.textContent)) d.push(`glifo de texto «${norm(n.textContent).slice(0, 40)}»`);
+      /* §2: la revelación dice «Iba aquí», no «era» ni «con el cheque correcto» (FALLA de Shibukawa en 35348c3, H4). */
+      if (/^\s*era(?![\p{L}])/iu.test(n.textContent) || /^\s*con el cheque correcto/iu.test(n.textContent)) d.push(`rótulo de revelación «${norm(n.textContent).slice(0, 40)}»`);
+      return;
+    }
     if (n.nodeType === 1 && n.matches("style, script")) return;
     for (const c of n.childNodes) recorrer(c);
   };
@@ -62,6 +67,12 @@ export function defectos(raiz, { aprender }) {
     const ic = msg.dataset.mensaje === "acierto" ? "check" : "x";
     if (!msg.querySelector(`:scope > svg[data-icono="${ic}"]`)) d.push(`mensaje de ${msg.dataset.mensaje} sin su ícono de lucide`);
     if (msg.dataset.mensaje === "error" && w.getComputedStyle(msg).backgroundColor !== "rgba(184, 196, 212, 0.12)") d.push(`mensaje de error con fondo ${w.getComputedStyle(msg).backgroundColor}`);
+  }
+  /* 3b · la tarjeta, en reposo, con el borde del §4.1: 1 px rgba(248,249,250,.35), igual en los cinco Hacer */
+  for (const t of raiz.querySelectorAll(".t4cv-origen[data-tarjeta], .t4h3-op, .t4h4-t, .t4h7-t, .t4h8-t")) {
+    const c = w.getComputedStyle(t);
+    const borde = `${c.borderTopWidth} ${c.borderTopStyle} ${c.borderTopColor}`;
+    if (borde !== "1px solid rgba(248, 249, 250, 0.35)") d.push(`tarjeta ${t.className.split(" ")[0]} con borde ${borde}`);
   }
   /* 4 · los botones */
   const fondo = (b) => w.getComputedStyle(b).backgroundColor;
