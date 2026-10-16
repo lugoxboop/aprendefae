@@ -174,7 +174,7 @@ function CuentaT({
     );
   };
 
-  const borde = estado === "correcta" ? FAE.teal : estado === "incorrecta" ? FAE.coral : "rgba(248,249,250,0.12)";
+  const borde = estado === "correcta" ? FAE.text : estado === "incorrecta" ? FAE.coral : "rgba(248,249,250,0.12)";
   return (
     <div
       ref={refT}
