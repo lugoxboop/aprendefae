@@ -37,7 +37,7 @@ import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDe
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const P = { fondo: "#0E1B2E", texto: "#F8F9FA", texto2: "#A8B6C8", borde: "#B8C4D4", debe: "#2A9D8F", haber: "#E9C46A", error: "#E76F51" };
+const P = { fondo: "#0E1B2E", texto: "#F8F9FA", texto2: "#A8B6C8", borde: "#B8C4D4", debe: "#2A9D8F", haber: "#E9C46A", error: "#E76F51" }; /* lado */
 
 export const CSS_T7B2 = `
 .t7b2 { display: grid; gap: 12px; min-width: 0; color: ${P.texto}; font-family: "Inter", sans-serif; font-size: 15px; line-height: 1.4; }

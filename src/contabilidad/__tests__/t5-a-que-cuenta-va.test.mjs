@@ -118,7 +118,10 @@ test("★★★ la casilla del hecho 1: pregunta, correcta, pista, cifras recono
   assert.deepEqual(de("Acierto: ").map(cita), [x.acierto]);
   assert.deepEqual(de("Si escribe ").map((l) => [l.match(/Si escribe \$([\d.]+):/)[1], cita(l)]), x.distractores.map((d) => [pesos(d.valor).slice(1), d.retro]));
   const [resp] = de("Respuesta (2.º error): ");
-  assert.deepEqual(citas(resp), [A.TEXTOS_ARMA.respuesta(x.correcta), x.porque]);
+  /* El paquete de Near dice «La respuesta es $…»; el lote de dialecto C (R3, Watari, con el visto bueno de Mello) lo dice «Iba aquí: $…». */
+  const enDialecto = (t) => t.replace(/^La respuesta es (\$[\d.]+\.)$/, "Iba aquí: $1");
+  assert.match(citas(resp)[0], /^La respuesta es \$[\d.]+\.$/, "el paquete sigue como llegó");
+  assert.deepEqual(citas(resp).map(enDialecto), [A.TEXTOS_ARMA.respuesta(x.correcta), x.porque]);
   /* Y nada más en la casilla: pista, dos cifras, respuesta y acierto. */
   assert.equal(sub.length, 5);
 });
@@ -192,14 +195,14 @@ test("★★★ la escalera de la casilla: la cifra reconocida o la pista; luego
   assert.deepEqual(L.evaluarN7(x, C.precio, 1), { ok: false, cerrado: false, textos: ["Ese es solo el precio. Faltan los gastos del proceso de la compra."], ...base });
   assert.deepEqual(L.evaluarN7(x, C.gastos, 1).textos, ["Esos son solo los gastos. Se suman al precio."]);
   assert.deepEqual(L.evaluarN7(x, 7, 1), { ok: false, cerrado: false, textos: [x.pista], ...base });
-  assert.deepEqual(L.evaluarN7(x, C.precio, 2), { ok: false, cerrado: true, textos: ["La respuesta es $2.184.000.", "Los gastos del proceso de la compra van al costo: $2.150.000 + $34.000."], ...base });
+  assert.deepEqual(L.evaluarN7(x, C.precio, 2), { ok: false, cerrado: true, textos: ["Iba aquí: $2.184.000.", "Los gastos del proceso de la compra van al costo: $2.150.000 + $34.000."], ...base });
   assert.deepEqual(L.evaluarN7(x, C.costo, 2).ok, true);
 });
 
 test("★★ `porque` es opcional: sin él, la escalera da el acierto sin su «Así es.», como antes", () => {
   const sin = { correcta: 10, acierto: "Así es: 5 + 5 = 10.", pista: "p", distractores: [] };
-  assert.deepEqual(A.evaluarCifraConEscalera(sin, 7, 2).textos, ["La respuesta es $10.", "5 + 5 = 10."]);
-  assert.deepEqual(A.evaluarCifraConEscalera({ ...sin, porque: "Porque sí." }, 7, 2).textos, ["La respuesta es $10.", "Porque sí."]);
+  assert.deepEqual(A.evaluarCifraConEscalera(sin, 7, 2).textos, ["Iba aquí: $10.", "5 + 5 = 10."]);
+  assert.deepEqual(A.evaluarCifraConEscalera({ ...sin, porque: "Porque sí." }, 7, 2).textos, ["Iba aquí: $10.", "Porque sí."]);
 });
 
 /* ═══════════ 4 · LA MECÁNICA, MONTADA ═══════════ */
@@ -315,7 +318,7 @@ test("★★★ la tanda entera: escalera, libro que crece, cuenta de Inversione
     await armar("intereses", "Inversiones – títulos", "Haber");
     await comprobar();
     assert.deepEqual(x2.lineas.map((l) => estado(l.id)), ["bien", "respuesta"]);
-    assert.deepEqual(textos('[data-linea-cuenta="intereses"] [data-era]'), ["Era: Ingresos por intereses, al haber."]);
+    assert.deepEqual(textos('[data-linea-cuenta="intereses"] [data-era]'), ["Iba aquí: Ingresos por intereses, al haber."]);
     assert.deepEqual(textos('[data-linea-cuenta="intereses"] [data-texto-retro]'), [x2.lineas[1].retro]);
     assert.ok(document.activeElement === q('[data-linea-cuenta="intereses"] [data-panel]'));
     assert.deepEqual(libro(), ["la-compra", "el-cdt"]);

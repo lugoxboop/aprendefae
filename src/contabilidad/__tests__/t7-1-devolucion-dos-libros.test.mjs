@@ -194,7 +194,7 @@ async function jugar(m, falla) {
       assert.equal(boton(m.caja, "Comprobar"), undefined);
       const textos = [...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent);
       assert.deepEqual(textos, L.evaluarH6(it, v).textos);
-      assert.deepEqual(textos, ok ? [it.acierto] : [it.distractores[0].retro, `La respuesta es ${pesos(it.correcta)}.`]);
+      assert.deepEqual(textos, ok ? [it.acierto] : [it.distractores[0].retro, `Iba aquí: ${pesos(it.correcta)}.`]);
       detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
     } else {
       /* LOTE 3 · «Arma la línea»: cada línea elige su cuenta del banco (la correcta y dos distractores) y su lado. */
@@ -213,7 +213,7 @@ async function jugar(m, falla) {
         const ok = !falla(L.idLineaH6(it, l));
         for (const b of m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] button`)) assert.equal(b.disabled, true);
         assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), ok ? [] : [l.distractores[0].retro]);
-        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Era: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Iba aquí: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
         detalle.push({ item: L.idLineaH6(it, l), ok, intentos: 1, respuesta: ok ? null : `${l.distractores[0].cuenta}|${l.lado}`, orden: detalle.length + 1 });
       }
       assert.ok(m.caja.querySelector("[data-asiento-completo]").textContent.includes(`${pesos(986_000)}${pesos(986_000)}`));
@@ -315,8 +315,8 @@ test("★★★ lote 3: el ítem 3 va con casilla; los dos libros, con banco de 
   const p = L.prepararH6((xs) => [...xs].reverse());
   for (const it of p.filter((x) => x.tipo === "asiento")) for (const l of it.lineas) assert.deepEqual([...l.banco].sort(), [l.cuenta, ...l.distractores.map((d) => d.cuenta)].sort());
   /* La casilla: un distractor de Near da su texto y la respuesta; otra cifra, la respuesta y el porqué del acierto, sin «Así es:». */
-  assert.deepEqual(L.evaluarH6(item("baja-deuda"), 986_000), { ok: false, correcta: 956_250, textos: ["Falta restar la retención de $29.750.", "La respuesta es $956.250."], textoCorrecta: pesos(956_250) });
-  assert.deepEqual(L.evaluarH6(item("baja-deuda"), 1), { ok: false, correcta: 956_250, textos: ["La respuesta es $956.250.", "$850.000 + $136.000 − $29.750 = $956.250."], textoCorrecta: pesos(956_250) });
+  assert.deepEqual(L.evaluarH6(item("baja-deuda"), 986_000), { ok: false, correcta: 956_250, textos: ["Falta restar la retención de $29.750.", "Iba aquí: $956.250."], textoCorrecta: pesos(956_250) });
+  assert.deepEqual(L.evaluarH6(item("baja-deuda"), 1), { ok: false, correcta: 956_250, textos: ["Iba aquí: $956.250.", "$850.000 + $136.000 − $29.750 = $956.250."], textoCorrecta: pesos(956_250) });
 });
 
 test("★★★ lote 3: cada distractor de cuenta es el de Near, letra por letra y en el orden de su tabla", () => {

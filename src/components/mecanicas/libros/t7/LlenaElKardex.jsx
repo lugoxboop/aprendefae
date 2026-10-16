@@ -149,7 +149,7 @@ export default function LlenaElKardex({ Marco, rotulo, titulo, acento, onComplet
             <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
           </div>
         )}
-        <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es ${r.textoCorrecta}. ` : null} />
+        <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. Iba aquí: ${r.textoCorrecta}. ` : null} />
         {r && item.tipo === "metodo" && (
           <ul className="t72h3-totales" data-totales>
             {METODOS_H3.map((m) => (

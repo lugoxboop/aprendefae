@@ -193,7 +193,7 @@ async function jugar(m, falla) {
       assert.equal(m.caja.querySelector(`[data-campo-cifra="${it.id}"]`).readOnly, true, "un solo intento");
       assert.equal(boton(m.caja, "Comprobar"), undefined);
       assert.deepEqual([...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent), L.evaluarH5(it, v).textos);
-      assert.deepEqual(L.evaluarH5(it, v).textos, ok ? [it.acierto] : [it.distractores[0].retro, `La respuesta es ${pesos(it.correcta)}.`]);
+      assert.deepEqual(L.evaluarH5(it, v).textos, ok ? [it.acierto] : [it.distractores[0].retro, `Iba aquí: ${pesos(it.correcta)}.`]);
       detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
     } else if (it.tipo === "eleccion") {
       const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
@@ -220,7 +220,7 @@ async function jugar(m, falla) {
         const ok = !mal;
         for (const b of m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] button`)) assert.equal(b.disabled, true);
         assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), ok ? [] : [mal === "cuenta" ? l.distractores[0].retro : l.retro]);
-        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Era: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Iba aquí: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
         const respuesta = mal === "cuenta" ? `${l.distractores[0].cuenta}|${l.lado}` : `${l.cuenta}|${otro(l.lado)}`;
         detalle.push({ item: L.idLineaH5(it, l), ok, intentos: 1, respuesta: ok ? null : respuesta, orden: detalle.length + 1 });
       }
@@ -368,8 +368,8 @@ test("★★★ lote 3: los ítems 2 y 5 van con casilla; el 1, el 4 y el 7 se q
   for (const k of [2, 5, 7]) for (const l of p[k].lineas) assert.deepEqual([...l.banco].sort(), [l.cuenta, ...l.distractores.map((d) => d.cuenta)].sort());
   for (const k of [1, 4]) assert.equal(p[k], D.ITEMS_H5[k]);
   /* Una cifra de un distractor: su retroalimentación; otra cualquiera: la respuesta y el porqué del acierto, sin «Así es». */
-  assert.deepEqual(L.evaluarH5(item("el-sobrante"), 1_260_000), { ok: false, correcta: 36_000, textos: ["Sumaste los dos valores. El sobrante es la diferencia: $648.000 − $612.000.", "La respuesta es $36.000."], textoCorrecta: "$36.000" });
-  assert.deepEqual(L.evaluarH5(item("el-faltante"), 1).textos, ["La respuesta es $44.000.", "$738.000 − $694.000 = $44.000. El conteo da menos que los libros."]);
+  assert.deepEqual(L.evaluarH5(item("el-sobrante"), 1_260_000), { ok: false, correcta: 36_000, textos: ["Sumaste los dos valores. El sobrante es la diferencia: $648.000 − $612.000.", "Iba aquí: $36.000."], textoCorrecta: "$36.000" });
+  assert.deepEqual(L.evaluarH5(item("el-faltante"), 1).textos, ["Iba aquí: $44.000.", "$738.000 − $694.000 = $44.000. El conteo da menos que los libros."]);
   assert.equal(L.evaluarH5(item("el-faltante"), 44_000).ok, true);
 });
 

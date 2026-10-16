@@ -799,7 +799,20 @@ test("★★★ movimiento reducido: las cajas salen y llegan sin animación, el
 const reglas = (css) => [...css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}/g)].map((m) => `${m[1].trim()} { ${m[2].replace(/\s+/g, " ").trim()} }`);
 
 test("★★★ la hoja es la de la v6 regla por regla (prefijo t7a1-; la cuenta, t7a1-cuenta), con la letra a 12 px, el fondo del panel y las reglas propias del botón de la cuenta", () => {
-  const v6 = reglas(A1CSS.replace(/\.ea1-t(?![\w-])/g, ".t7a1-cuenta").replace(/ea1/g, "t7a1").replace(/10\.5px/g, "12px"));
+  /* Lote de dialecto C (Watari, con Mello): R6 saca la caja del café y R7 da al pulgar 44 × 44 (el disco visible sigue de 26). Cada regla de la v6, por su reemplazo exacto. */
+  const LOTE_C = {
+    '.t7a1-caja { position: relative; width: 26px; height: 22px; border-radius: 4px; background: #8A6F4E; box-shadow: inset 0 -3px 0 rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.12); transition: transform .3s ease-in, opacity .3s ease-in; display: grid; place-items: center; font: 700 12px/1 "Sora", sans-serif; color: var(--texto); }':
+      '.t7a1-caja { position: relative; width: 26px; height: 22px; border-radius: 4px; background: #B8C4D4; border: 1px solid #F8F9FA; transition: transform .3s ease-in, opacity .3s ease-in; display: grid; place-items: center; font: 700 12px/1 "Sora", sans-serif; color: #1D3557; }',
+    '.t7a1-caja::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 3px; width: 4px; margin-left: -2px; background: rgba(0,0,0,.18); }':
+      '.t7a1-caja::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 3px; width: 4px; margin-left: -2px; background: rgba(29,53,87,.25); }',
+    '.t7a1-rango::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -8px; border-radius: 50%; background: var(--texto); border: 3px solid var(--fondo); box-shadow: 0 0 0 2px var(--neutro); }':
+      '.t7a1-rango::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 44px; margin-top: -19px; border: 0; border-radius: 50%; background: radial-gradient(circle at center, #F8F9FA 0 8px, #1F2D3D 8px 11px, #B8C4D4 11px 13px, transparent 13.5px); }',
+    '.t7a1-rango::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--texto); border: 3px solid var(--fondo); box-shadow: 0 0 0 2px var(--neutro); }':
+      '.t7a1-rango::-moz-range-thumb { width: 44px; height: 44px; border: 0; border-radius: 50%; background: radial-gradient(circle at center, #F8F9FA 0 8px, #1F2D3D 8px 11px, #B8C4D4 11px 13px, transparent 13.5px); }',
+  };
+  const v6Crudo = reglas(A1CSS.replace(/\.ea1-t(?![\w-])/g, ".t7a1-cuenta").replace(/ea1/g, "t7a1").replace(/10\.5px/g, "12px"));
+  assert.deepEqual(Object.keys(LOTE_C).filter((r) => !v6Crudo.includes(r)), [], "las reglas de la v6 que el lote reemplaza");
+  const v6 = v6Crudo.map((r) => LOTE_C[r] ?? r);
   const casa = reglas(A1.CSS_AP1);
   assert.deepEqual(v6.filter((r) => !casa.includes(r)), [], "reglas de la v6 que faltan");
   assert.deepEqual(casa.filter((r) => !v6.includes(r)), [

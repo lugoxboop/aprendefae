@@ -330,6 +330,8 @@ async function par() {
     async salirDelCierre() { await clic(m.caja.querySelector('[data-boton="seguir"]')); k += 1; en6(".ea4-seguir"); },
     comparar(etiqueta) {
       const de6 = retrato(r6);
+      /* Lote de dialecto C (R7): el pulgar pasa de 22 a 44 px y las marcas del día se centran en él: calc(22px + (100% - 44px) * f) en vez de la v6 (11px, 22px). */
+      de6.marcas = de6.marcas.map((m) => { const x = /^calc\(11px \+ ([\d.]+) \* \(100% - 22px\)\)$/.exec(m); assert.ok(x, `marca de la v6 inesperada: ${m}`); return `calc(22px + ${x[1]} * (100% - 44px))`; });
       const nos = retrato(nuestra());
       if (nuevo) de6.msg = { ...de6.msg, texto: nuevo.texto, tipo: nuevo.tipo };
       assert.deepEqual(nos, de6, etiqueta);

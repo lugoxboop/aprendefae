@@ -158,7 +158,7 @@ async function jugar(m, falla) {
     assert.equal(opcion(m.caja, s).dataset.estado, ok ? "correcta" : "incorrecta");
     if (!ok) {
       assert.equal(opcion(m.caja, it.sistema).dataset.estado, "revelada");
-      assert.ok(m.caja.querySelector("[data-retro]").textContent.startsWith(`Incorrecto. La respuesta es la ${D.VERSIONES[it.orden.indexOf(it.sistema)]}.`));
+      assert.ok(m.caja.querySelector("[data-retro]").textContent.startsWith(`Incorrecto. Iba aquí: la ${D.VERSIONES[it.orden.indexOf(it.sistema)]}.`));
     }
     detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : s, orden: detalle.length + 1 });
     await tocar(boton(m.caja, k === 4 ? D.BOTON_H4.verResumen : D.BOTON_H4.siguiente));

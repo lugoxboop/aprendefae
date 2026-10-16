@@ -233,7 +233,7 @@ test("★★★ la escalera de una casilla: el error reconocido o la pista; lueg
   assert.deepEqual(L.evaluarN5(x, C.recibe1, 1), { ok: true, cerrado: true, textos: [x.acierto], correcta: C.recibe1, textoCorrecta: "$2.970.000" });
   assert.deepEqual(L.evaluarN5(x, C.lasNovecientas, 1).textos, [x.distractores[0].retro]);
   assert.deepEqual(L.evaluarN5(x, 123, 1), { ok: false, cerrado: false, textos: [x.pista], correcta: C.recibe1, textoCorrecta: "$2.970.000" });
-  assert.deepEqual(L.evaluarN5(x, C.lasQueQuedan, 2), { ok: false, cerrado: true, textos: ["La respuesta es $2.970.000.", "550 × $5.400 = $2.970.000."], correcta: C.recibe1, textoCorrecta: "$2.970.000" });
+  assert.deepEqual(L.evaluarN5(x, C.lasQueQuedan, 2), { ok: false, cerrado: true, textos: ["Iba aquí: $2.970.000.", "550 × $5.400 = $2.970.000."], correcta: C.recibe1, textoCorrecta: "$2.970.000" });
 });
 
 test("★★★ Ganó o Perdió: se califica con la casilla; cada combinación de errores tiene su texto; la opcional (105.000) no está", () => {
@@ -244,7 +244,7 @@ test("★★★ Ganó o Perdió: se califica con la casilla; cada combinación d
   assert.deepEqual(e3("gano", C.recibe1).textos, ["Eso es lo que recibió, no lo que ganó o perdió."]);
   assert.deepEqual(e3("perdio", C.recibe1).textos, ["Eso es lo que recibió, no lo que ganó o perdió."]);
   assert.deepEqual(e3("gano", 1).textos, [i3.pista]);
-  assert.deepEqual(e3("perdio", C.ganancia, 2).textos, ["La respuesta es $165.000.", "$2.970.000 − $2.805.000 = $165.000. Ganó."]);
+  assert.deepEqual(e3("perdio", C.ganancia, 2).textos, ["Iba aquí: $165.000.", "$2.970.000 − $2.805.000 = $165.000. Ganó."]);
   const i7 = it("gano-o-perdio-2");
   const e7 = (resultado, valor) => L.evaluarN5(i7, { resultado, valor }, 1);
   assert.equal(e7("perdio", C.perdida).ok, true);
@@ -259,7 +259,7 @@ test("★★★ Ganó o Perdió: se califica con la casilla; cada combinación d
 
 test("★★ la escalera es general: sin pista ni error reconocido, un solo intento como antes", () => {
   const sinPista = { correcta: 10, acierto: "Así es: 5 + 5 = 10.", distractores: [] };
-  assert.deepEqual(A.evaluarCifraConEscalera(sinPista, 7, 1), { ok: false, cerrado: true, textos: ["La respuesta es $10.", "5 + 5 = 10."], correcta: 10, textoCorrecta: "$10" });
+  assert.deepEqual(A.evaluarCifraConEscalera(sinPista, 7, 1), { ok: false, cerrado: true, textos: ["Iba aquí: $10.", "5 + 5 = 10."], correcta: 10, textoCorrecta: "$10" });
   assert.equal(A.lineaConPista({ pista: "p" }, 1), true);
   assert.equal(A.lineaConPista({ pista: "p" }, 2), false);
   assert.equal(A.lineaConPista({}, 1), false);
@@ -355,11 +355,12 @@ test("★★★ la tanda entera: escalera, figura que crece, N5-1, foco, primer 
     assert.ok(!filas().includes("resultado-1"));
     await escribir(m.caja, "gano-o-perdio-1", "1");
     await comprobar();
-    assert.deepEqual(retro(), ["La respuesta es $165.000.", "$2.970.000 − $2.805.000 = $165.000. Ganó."]);
+    assert.deepEqual(retro(), ["Iba aquí: $165.000.", "$2.970.000 − $2.805.000 = $165.000. Ganó."]);
     assert.ok(enMensaje());
-    /* Cerrado: la buena con ✓, la elegida mal con ✗; nada de teal ni ámbar. */
+    /* Cerrado: la buena con ✓, la elegida mal con la X de lucide (lote de dialecto C, sin emoji ✗); nada de teal ni ámbar. */
     assert.ok(q('[data-resultado="gano"]').textContent.startsWith("✓"));
-    assert.ok(q('[data-resultado="perdio"]').textContent.startsWith("✗"));
+    assert.ok(q('[data-resultado="perdio"]').firstElementChild.matches("[data-marca-mal]") && q('[data-resultado="perdio"] [data-marca-mal] svg'));
+    assert.ok(!/[✗✘]/.test(q('[data-resultado="perdio"]').textContent));
     assert.equal(q('[data-resultado="gano"]').disabled, true);
     assert.deepEqual(filas(), ["compra", "venta-1", "costo-1", "resultado-1"]);
     await siguiente();
@@ -399,7 +400,7 @@ test("★★★ la tanda entera: escalera, figura que crece, N5-1, foco, primer 
     await armar("ganancia", "Gastos financieros – pérdida en venta de títulos", "Haber");
     await comprobar();
     assert.deepEqual(x1.lineas.map((l) => estado(l.id)), ["bien", "bien", "respuesta"]);
-    assert.deepEqual(textos('[data-linea-cuenta="ganancia"] [data-era]'), ["Era: Ingresos financieros – ganancia en venta de títulos, al haber."]);
+    assert.deepEqual(textos('[data-linea-cuenta="ganancia"] [data-era]'), ["Iba aquí: Ingresos financieros – ganancia en venta de títulos, al haber."]);
     assert.deepEqual(textos('[data-linea-cuenta="ganancia"] [data-texto-retro]'), [x1.lineas[2].retro]);
     assert.deepEqual(textos('[data-linea-cuenta="caja"] [data-texto-retro]'), []);
     assert.ok(document.activeElement === q('[data-linea-cuenta="ganancia"] [data-panel]'), "el foco");

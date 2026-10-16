@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { pesos } from "../../../../data/contabilidad.js";
-import { Opcion, Opciones } from "../../corazon/juego.jsx";
+import { Opciones } from "../../corazon/juego.jsx";
+/* Lote de dialecto C (R1): la pastilla, el contorno y el bloque de mensaje del estándar, de la Célula B sin cambios (L-3: visto bueno de Erwin). */
+import {
+  ACIERTO_B, ACIERTO_MENSAJE, CORAL_B, CORRECTA, CSS_B5H, ERROR_B, IconoCheck, IconoX, LECTOR_INCORRECTO, NEUTRO_B, Pastilla, REPOSO_B,
+  REVELADA, TACHADA, TEXTO_B, claseDe,
+} from "../b5/Devolucion.jsx";
 import { AsientoEnLineas, ElegirLado, Responder } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Plegable } from "./plegable.jsx";
@@ -16,7 +21,7 @@ import { Plegable } from "./plegable.jsx";
  * cambiar mientras no se comprueba, y «Comprobar» califica todas las líneas
  * UNA vez. Después, el asiento completo con sus sumas.
  *
- * Todo lo que se toca es de las piezas compartidas (Opcion, Opciones,
+ * Todo lo que se toca es de las piezas compartidas (Opciones,
  * ElegirLado, AsientoEnLineas, Responder), sin cambiarlas. Coral solo para el
  * error. Este archivo es el mismo en los PR de H4, H5, H6 y H7: si dos entran,
  * git ve el mismo contenido y no choca.
@@ -31,7 +36,7 @@ export const CSS_T7_HACER = `
 @keyframes fae-t7h-fundido { from { opacity: 0; } to { opacity: 1; } }
 .fae-t7h-entra { animation: fae-t7h-fundido 150ms ease-out both; }
 @media (prefers-reduced-motion: reduce) { .fae-t7h-entra { animation: none !important; } }
-`;
+${CSS_B5H}`;
 
 export const BOTONES_T7 = { siguiente: "Siguiente ítem", verResumen: "Ver mi resumen", comprobar: "Comprobar" };
 export const LADOS_T7 = { debe: "Debe", haber: "Haber" };
@@ -68,7 +73,7 @@ export function TarjetaPregunta({ id, encabezado = null, pregunta, pie, tarjetaR
       background: "rgba(184,196,212,0.12)", borderLeft: "3px solid #B8C4D4",
     }}>
       {encabezado && (
-        <p data-encabezado-item style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", color: FAE.ambar }}>
+        <p data-encabezado-item style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", color: "#A8B6C8" }}>
           {encabezado.toUpperCase()}
         </p>
       )}
@@ -78,18 +83,27 @@ export function TarjetaPregunta({ id, encabezado = null, pregunta, pie, tarjetaR
   );
 }
 
-/* La devolución: región viva; acierto en gris azulado, error en coral. */
+/*
+ * La devolución: región viva con el bloque del estándar (lote de dialecto C,
+ * R1): fondo rgba(184,196,212,.12) en los dos casos y raya de 3 px, neutra o
+ * coral. Acierto: Check y «Correcto.»; error: X y, solo para el lector,
+ * «Incorrecto.» (o el `lectorError` de la pieza, que ya empieza así).
+ */
 export function Devolucion({ r, lectorError = null }) {
   return (
     <div data-retro aria-live="polite" aria-atomic="true">
       {r && (
         <div className="fae-t7h-entra" data-panel={r.ok ? "acierto" : "error"} style={{
+          display: "grid", gridTemplateColumns: "16px minmax(0, 1fr)", gap: "0 8px", alignItems: "start",
           marginTop: "12px", padding: "11px 13px", borderRadius: "11px",
-          background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
-          borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
+          background: "rgba(184,196,212,0.12)", borderLeft: `3px solid ${r.ok ? NEUTRO_B : CORAL_B}`,
         }}>
-          {!r.ok && lectorError && <span style={SOLO_LECTOR}>{lectorError}</span>}
-          {r.textos.map((x, k) => <p key={k} data-texto-retro style={{ ...TEXTO, margin: k ? "6px 0 0" : 0 }}><Plegable texto={x} /></p>)}
+          <span data-icono-retro style={{ display: "flex", height: "22px", alignItems: "center" }}>{r.ok ? <IconoCheck /> : <IconoX />}</span>
+          <div style={{ minWidth: 0 }}>
+            {r.ok && <b data-palabra style={{ ...TEXTO, display: "block", fontWeight: 700 }}>{ACIERTO_MENSAJE}</b>}
+            {!r.ok && <span style={SOLO_LECTOR}>{lectorError ?? `${LECTOR_INCORRECTO} `}</span>}
+            {r.textos.map((x, k) => <p key={k} data-texto-retro style={{ ...TEXTO, margin: k ? "6px 0 0" : 0 }}><Plegable texto={x} /></p>)}
+          </div>
         </div>
       )}
     </div>
@@ -97,9 +111,35 @@ export function Devolucion({ r, lectorError = null }) {
 }
 
 /*
+ * La opción del estándar (lote de dialecto C, R1), con la firma de Opcion de
+ * corazon/juego.jsx, que pinta el acierto en teal y no se toca. Reposo
+ * REPOSO_B; correcta ACIERTO_B y pastilla Check «Correcto»; incorrecta
+ * ERROR_B y pastilla X «No va aquí»; revelada ACIERTO_B (a los 0,7 s) y
+ * «Iba aquí». La palabra queda en el nombre accesible del botón.
+ */
+const MARCA_DE = { correcta: CORRECTA, incorrecta: TACHADA, revelada: REVELADA };
+export function OpcionC({ children, onClick, estado = null, deshabilitada = false, ancho = false }) {
+  const marca = MARCA_DE[estado] ?? null;
+  const borde = estado === "correcta" ? ACIERTO_B : estado === "incorrecta" ? ERROR_B : estado === "elegida" ? `1px solid ${TEXTO_B}` : REPOSO_B;
+  return (
+    <button type="button" onClick={onClick} disabled={deshabilitada} data-estado={estado ?? "libre"} className={claseDe(marca)}
+      style={{
+        display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px",
+        width: ancho ? "100%" : undefined, minHeight: "44px", boxSizing: "border-box",
+        textAlign: "left", padding: "12px 14px", borderRadius: "14px", border: borde,
+        background: "rgba(248,249,250,0.055)", color: FAE.text, fontFamily: INTER, fontSize: "14px", lineHeight: 1.45,
+        opacity: deshabilitada && !estado ? 0.62 : 1, cursor: deshabilitada ? "default" : "pointer",
+      }}>
+      <span style={{ minWidth: 0, maxWidth: "100%", overflowWrap: "break-word" }}>{children}</span>
+      {marca && <Pastilla marca={marca} />}
+    </button>
+  );
+}
+
+/*
  * Una elección de un solo toque. `opciones`: [{ valor, texto }]. Al elegir,
  * todas se bloquean; la elegida queda en acierto o en error y, si falló, la
- * buena se enseña («era esta»).
+ * buena se enseña («Iba aquí»).
  */
 export function Eleccion({ opciones, r, elegida, onElegir, etiqueta }) {
   const estadoDe = (v) => {
@@ -113,7 +153,7 @@ export function Eleccion({ opciones, r, elegida, onElegir, etiqueta }) {
       <Opciones columnas="minmax(0, 1fr)">
         {opciones.map((o) => (
           <span key={String(o.valor)} data-opcion={o.valor} style={{ display: "contents" }}>
-            <Opcion ancho deshabilitada={Boolean(r)} estado={estadoDe(o.valor)} onClick={() => onElegir(o.valor)}>{o.texto}</Opcion>
+            <OpcionC ancho deshabilitada={Boolean(r)} estado={estadoDe(o.valor)} onClick={() => onElegir(o.valor)}>{o.texto}</OpcionC>
           </span>
         ))}
       </Opciones>
@@ -131,7 +171,7 @@ export function Eleccion({ opciones, r, elegida, onElegir, etiqueta }) {
  * sus sumas, en su orden. Sin `asiento` (líneas sueltas, como las dos de
  * Inventario de mercancías en el cierre de H4) no se pintan sumas.
  */
-export function LineasConComprobar({ lineas, asiento = null, onComprobar, comprobado, acento = FAE.ambar }) {
+export function LineasConComprobar({ lineas, asiento = null, onComprobar, comprobado, acento = "#A8B6C8" }) {
   const [elegidos, setElegidos] = useState({});
   const todas = lineas.every((l) => elegidos[l.id]);
   const comprobar = () => {

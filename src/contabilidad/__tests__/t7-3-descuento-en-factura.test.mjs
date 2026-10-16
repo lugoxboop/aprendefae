@@ -184,7 +184,7 @@ async function jugar(m, falla) {
       assert.equal(m.caja.querySelector(`[data-campo-cifra="${it.id}"]`).readOnly, true, "un solo intento");
       assert.equal(boton(m.caja, "Comprobar"), undefined);
       assert.deepEqual([...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent), L.evaluarH1(it, v).textos);
-      if (!ok) assert.deepEqual(L.evaluarH1(it, v).textos, [it.distractores[0].retro, `La respuesta es ${pesos(it.correcta)}.`]);
+      if (!ok) assert.deepEqual(L.evaluarH1(it, v).textos, [it.distractores[0].retro, `Iba aquí: ${pesos(it.correcta)}.`]);
       assert.equal(m.caja.querySelectorAll("figure[data-renglones]").length, 1, `figuras al responder el ítem ${k + 1}`);
       detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
     } else if (it.tipo === "eleccion") {
@@ -213,7 +213,7 @@ async function jugar(m, falla) {
         const ok = !falla(L.idLineaH1(it, l));
         for (const b of m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] button`)) assert.equal(b.disabled, true);
         assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), ok ? [] : [l.distractores[0].retro]);
-        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Era: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Iba aquí: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
         detalle.push({ item: L.idLineaH1(it, l), ok, intentos: 1, respuesta: ok ? null : `${l.distractores[0].cuenta}|${l.lado}`, orden: detalle.length + 1 });
       }
       const suma = pesos(C.sumas);
@@ -340,7 +340,7 @@ test("★★★ lote 3: los cálculos van con casilla; el asiento, con banco de 
   const p = L.prepararH1((xs) => [...xs].reverse());
   for (const l of p[3].lineas) assert.deepEqual([...l.banco].sort(), [l.cuenta, ...l.distractores.map((d) => d.cuenta)].sort());
   /* Una cifra que no es de ningún distractor: la respuesta y el porqué del acierto, sin «Así es.». */
-  assert.deepEqual(L.evaluarH1(item("iva"), 1), { ok: false, correcta: C.iva, textos: [`La respuesta es ${pesos(C.iva)}.`, "Se calcula sobre el valor a facturar: $1.804.000 × 16 % = $288.640."], textoCorrecta: pesos(C.iva) });
+  assert.deepEqual(L.evaluarH1(item("iva"), 1), { ok: false, correcta: C.iva, textos: [`Iba aquí: ${pesos(C.iva)}.`, "Se calcula sobre el valor a facturar: $1.804.000 × 16 % = $288.640."], textoCorrecta: pesos(C.iva) });
 });
 
 test("★★★ lote 3: «Tienes un solo intento» sale de la consigna en pantalla y queda el distintivo junto al contador", async () => {

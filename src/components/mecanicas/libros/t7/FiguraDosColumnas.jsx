@@ -35,7 +35,7 @@ const P = {
   texto: "#F8F9FA",
   texto2: "#A8B6C8",
   borde: "#B8C4D4",
-  debe: "#2A9D8F",
+  debe: "#2A9D8F", /* lado */
 };
 
 export const CSS_FIGURA = `

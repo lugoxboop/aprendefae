@@ -121,7 +121,7 @@ export default function PeriodicoOPermanente({ Marco, rotulo, titulo, acento, on
         </div>
         <TarjetaPregunta id={item.id} pregunta={item.pregunta} pie={H4.pie} tarjetaRef={tarjeta} />
         <Eleccion key={item.id} opciones={opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
-        <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es la ${r.textoCorrecta}. ` : null} />
+        <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. Iba aquí: la ${r.textoCorrecta}. ` : null} />
       </div>
       {r && (
         <div ref={zonaBoton}>

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { X } from "lucide-react";
 import { FAE } from "../../../../theme.js";
 import { pesos } from "../../../../data/contabilidad.js";
 import { formatearCifra, leerCifra } from "../../../../contabilidad/elCierreCompleto.js";
@@ -48,7 +49,7 @@ import { Plegable } from "./plegable.jsx";
  *                       la cifra escrita sigue ahí y se puede corregir
  *   LineasConCuenta     `escalera`: cada línea lleva la cuenta de sus errores;
  *                       al primero sale su pista y la línea se vacía para
- *                       volver a armarla; al segundo, «Era: …» y su porqué, y
+ *                       volver a armarla; al segundo, «Iba aquí: …» y su porqué, y
  *                       se cierra. Las que quedan bien se cierran con ✓ en
  *                       neutro. Un solo «Comprobar» para las abiertas.
  *                       onComprobar(resultados, { terminado }), con el número
@@ -94,13 +95,32 @@ export function ContadorConIntento({ children }) {
 
 /* ═══════════ LA CASILLA DE CIFRA ═══════════ */
 
-export function CasillaCifra({ id, onComprobar, comprobado, etiqueta, extra = null, extraListo = true }) {
+/*
+ * Lote de dialecto C (R3): al fallar sin reintento, «Iba aquí: {valor}» sobre
+ * la casilla, 0,7 s después (como la pastilla de b5/Devolucion.jsx, sin
+ * importarla: la palabra es la del estándar, PALABRA_B.ibaAqui). La pieza
+ * pasa `iba` (el valor ya escrito, p. ej. «$36.000») solo cuando el ítem cerró
+ * en error; con movimiento reducido aparece sin espera.
+ */
+const CSS_IBA = `
+@keyframes t7c-iba { from { opacity: 0; } to { opacity: 1; } }
+.t7c-iba { opacity: 0; animation: t7c-iba 0.2s ease-out 0.7s forwards; }
+@media (prefers-reduced-motion: reduce) { .t7c-iba { opacity: 1; animation: none; } }
+`;
+
+export function CasillaCifra({ id, onComprobar, comprobado, etiqueta, extra = null, extraListo = true, iba = null }) {
   const [texto, setTexto] = useState("");
   const valor = leerCifra(texto);
   const listo = valor !== null && extraListo;
   return (
     <div data-casilla-cifra={id}>
       {extra}
+      {iba && (
+        <>
+          <style>{CSS_IBA}</style>
+          <p data-iba-aqui className="t7c-iba" style={{ margin: "0 0 6px", fontFamily: "Inter, sans-serif", fontSize: "14px", fontWeight: 600, color: "#F8F9FA" }}>{`Iba aquí: ${iba}`}</p>
+        </>
+      )}
       <label style={{ display: "flex", alignItems: "center", height: "48px", boxSizing: "border-box", padding: "0 12px", borderRadius: "12px",
         background: "rgba(14,27,46,0.7)", border: "1px solid rgba(248,249,250,0.22)", marginBottom: "10px" }}>
         <span aria-hidden="true" style={{ fontFamily: "Sora, sans-serif", fontSize: "16px", fontWeight: 700, color: "#A8B6C8", marginRight: "4px" }}>$</span>
@@ -124,9 +144,9 @@ export function CasillaCifra({ id, onComprobar, comprobado, etiqueta, extra = nu
 
 /* ═══════════ «ARMA LA LÍNEA» ═══════════ */
 
-/* `neutra` (escalera): la buena se marca con ✓ y borde claro, no con teal, que es el debe; la mala, con ✗ y coral. */
+/* `neutra` (escalera): la buena se marca con ✓ y borde claro, no con teal, que es el debe; la mala, con la X de lucide y coral. */
 function Ficha({ texto, elegida, correcta, error, deshabilitado, onElegir, neutra = false }) {
-  const borde = correcta ? (neutra ? "#F8F9FA" : FAE.teal) : error ? FAE.coral : elegida ? "#F8F9FA" : "rgba(248,249,250,0.22)";
+  const borde = correcta ? "#F8F9FA" : error ? FAE.coral : elegida ? "#F8F9FA" : "rgba(248,249,250,0.22)";
   return (
     <button type="button" data-ficha-cuenta={texto} aria-pressed={elegida} disabled={deshabilitado} onClick={onElegir}
       style={{
@@ -135,8 +155,8 @@ function Ficha({ texto, elegida, correcta, error, deshabilitado, onElegir, neutr
         color: FAE.text, fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: 1.3, cursor: deshabilitado ? "default" : "pointer", overflowWrap: "anywhere",
       }}>
       {neutra && correcta && <span data-marca-ficha="bien" aria-hidden="true" style={{ fontWeight: 700, marginRight: "6px" }}>✓</span>}
-      {neutra && error && <span data-marca-ficha="mal" aria-hidden="true" style={{ fontWeight: 700, marginRight: "6px", color: FAE.coral }}>✗</span>}
-      {neutra && correcta && <span style={SOLO_LECTOR}>Correcta: </span>}
+      {neutra && error && <span data-marca-ficha="mal" aria-hidden="true" style={{ display: "inline-flex", verticalAlign: "-3px", marginRight: "6px", color: FAE.coral }}><X size={16} strokeWidth={2.5} /></span>}
+      {neutra && correcta && <span style={SOLO_LECTOR}>Iba aquí: </span>}
       {neutra && error && <span style={SOLO_LECTOR}>Tu respuesta, incorrecta: </span>}
       {texto}
     </button>
@@ -153,7 +173,7 @@ export function LineasConCuenta({ escalera = false, ...props }) {
   return escalera ? <LineasConCuentaEscalera {...props} /> : <LineasUnIntento {...props} />;
 }
 
-function LineasUnIntento({ lineas, asiento = null, onComprobar, comprobado, acento = FAE.ambar }) {
+function LineasUnIntento({ lineas, asiento = null, onComprobar, comprobado, acento = "#A8B6C8" }) {
   const [cuentas, setCuentas] = useState({});
   const [lados, setLados] = useState({});
   const todas = lineas.every((l) => cuentas[l.id] && lados[l.id]);
@@ -216,12 +236,12 @@ function LineasUnIntento({ lineas, asiento = null, onComprobar, comprobado, acen
  * Cada línea: { id, cuenta, valor, lado, banco, pista, retro }. Un solo
  * «Comprobar» califica las líneas abiertas. Una línea bien se cierra (✓ en
  * neutro). Mal por primera vez: sale su pista (que no nombra cuenta ni lado)
- * y la línea se vacía para volver a armarla. Mal por segunda vez: «Era: …» y
+ * y la línea se vacía para volver a armarla. Mal por segunda vez: «Iba aquí: …» y
  * su porqué, y se cierra con la buena marcada. El mensaje de una línea habla
  * solo de esa línea: no se dice cuál de las otras está bien o mal mientras
  * sigan abiertas, más allá de su propio veredicto.
  */
-function LineasConCuentaEscalera({ lineas, asiento = null, onComprobar, comprobado, acento = FAE.ambar }) {
+function LineasConCuentaEscalera({ lineas, asiento = null, onComprobar, comprobado, acento = "#A8B6C8" }) {
   const [cuentas, setCuentas] = useState({});
   const [lados, setLados] = useState({});
   const [fallos, setFallos] = useState({});

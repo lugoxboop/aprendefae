@@ -229,7 +229,7 @@ test("★★★ la tanda entera: la escalera caso a caso, el plano que se llena,
       if (plan === "dos") {
         assert.deepEqual(retro(m.caja), [c.porQueNo[mal2], c.porque], `${c.id}: segundo error`);
         assert.equal(opcion(m.caja, c.correcta).dataset.estado, "revelada");
-        assert.ok(opcion(m.caja, c.correcta).textContent.includes("era esta"));
+        assert.ok(opcion(m.caja, c.correcta).textContent.includes("Iba aquí"));
       } else {
         assert.deepEqual(retro(m.caja), [D.CORRECTO_H7, c.porque], `${c.id}: acierto`);
         assert.equal(opcion(m.caja, c.correcta).dataset.estado, "correcta");

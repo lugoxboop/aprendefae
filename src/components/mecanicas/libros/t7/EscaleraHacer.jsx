@@ -19,7 +19,7 @@ import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
  *   · opciones fijas; al primer error, la elegida queda marcada (coral, con
  *     aspa) y bloqueada, sale la pista y se puede volver a intentar
  *   · al segundo error, la respuesta con su porqué: la buena se enseña
- *     («era esta») y el caso se cierra
+ *     («Iba aquí») y el caso se cierra
  *   · con el acierto, la elegida queda con ✓ y borde claro, en neutro: ni
  *     teal ni ámbar, que son el debe y el haber
  *   · SOLO SUMA EL PRIMER INTENTO: el porcentaje y el `detalle` del panel
@@ -91,7 +91,7 @@ function OpcionEscalera({ texto, glosa, estado, deshabilitada, onClick }) {
       <span style={{ minWidth: 0, flex: 1, overflowWrap: "break-word" }}>
         <span data-texto-opcion style={{ display: "block" }}>{texto}</span>
         {glosa && <span data-glosa style={{ display: "block", marginTop: "2px", fontSize: "12.5px", lineHeight: 1.4, color: "rgba(248,249,250,0.66)" }}>{glosa}</span>}
-        {estado === "revelada" && <span data-era style={{ display: "block", marginTop: "2px", fontSize: "12px", color: "rgba(248,249,250,0.72)" }}>era esta</span>}
+        {estado === "revelada" && <span data-era style={{ display: "block", marginTop: "2px", fontSize: "12px", color: "rgba(248,249,250,0.72)" }}>Iba aquí</span>}
       </span>
     </button>
   );

@@ -49,7 +49,7 @@ import { PIEZA_EL_VIAJE, ESTACIONES, INTERFAZ } from "../../../../data/contabili
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const P = { fondo: "#0E1B2E", texto: "#F8F9FA", texto2: "#A8B6C8", neutro: "#B8C4D4", borde: "rgba(248,249,250,0.16)", coral: "#E76F51", carton: "#8A6F4E" };
+const P = { fondo: "#0E1B2E", texto: "#F8F9FA", texto2: "#A8B6C8", neutro: "#B8C4D4", borde: "rgba(248,249,250,0.16)", coral: "#E76F51", cajaRelleno: "#B8C4D4", cajaBorde: "#F8F9FA", cinta: "rgba(29,53,87,.25)" }; /* R6 del lote de dialecto C: la caja deja el café */
 
 const EN_LINEA = ESTACIONES.filter((e) => e.linea);
 
@@ -208,7 +208,7 @@ export const CSS_A7_VIAJE = `
 /* La ficha del pedido: lo que trae la caja en este caso. */
 .t7vc-ficha { margin: 0; justify-self: start; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid ${P.neutro}; border-radius: 999px; font: 600 13px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; }
 .t7vc-ficha[hidden] { display: none; }
-.t7vc-cajita { width: 16px; height: 13px; border-radius: 3px; background: ${P.carton}; box-shadow: inset 0 -2px 0 rgba(0,0,0,.25); flex: none; }
+.t7vc-cajita { width: 16px; height: 13px; border-radius: 3px; background: ${P.cajaRelleno}; border: 1px solid ${P.cajaBorde}; box-sizing: border-box; flex: none; }
 /* La ruta: una línea vertical con las tres estaciones por las que pasa la mercancía. La caja viaja por la columna de la izquierda.
  * Contabilidad y Conteos cuelgan de la línea con un trazo punteado: no son paradas de la caja. */
 .t7vc-ruta { position: relative; display: grid; gap: 8px; padding: 36px 0 36px; transition: opacity .2s; }
@@ -252,8 +252,8 @@ export const CSS_A7_VIAJE = `
 .t7vc-cada { justify-self: start; margin-top: 3px; padding: 1px 8px; border: 1px solid ${P.neutro}; border-radius: 999px; font: 600 12px/1.4 "Inter", sans-serif; font-style: normal; color: ${P.texto}; }
 /* La caja: cartón, el único color nuevo; no significa nada contable. */
 .t7vc-caja { position: absolute; z-index: 2; left: 8px; top: 0; width: 28px; height: 28px; pointer-events: none; will-change: transform; }
-.t7vc-caja i { display: block; width: 100%; height: 100%; border-radius: 5px; background: ${P.carton}; box-shadow: inset 0 -4px 0 rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.14), 0 2px 6px rgba(0,0,0,.35); position: relative; }
-.t7vc-caja i::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 4px; width: 5px; margin-left: -2.5px; background: rgba(0,0,0,.18); }
+.t7vc-caja i { display: block; width: 100%; height: 100%; box-sizing: border-box; border-radius: 5px; background: ${P.cajaRelleno}; border: 1px solid ${P.cajaBorde}; box-shadow: 0 2px 6px rgba(0,0,0,.35); position: relative; }
+.t7vc-caja i::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 4px; width: 5px; margin-left: -2.5px; background: ${P.cinta}; }
 .t7vc-caja[data-rebota] i { animation: t7vc-rebota .4s ease-out; }
 @keyframes t7vc-rebota { 0%, 100% { transform: none; } 25% { transform: translateX(-4px); } 60% { transform: translateX(4px); } }
 .t7vc-acc:empty { display: none; }

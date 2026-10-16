@@ -192,7 +192,7 @@ test("★★★ la tanda entera: seis unidades, un intento cada una, y el porcen
         if (ok) bien += 1;
         assert.equal(m.caja.querySelector(`[data-campo-cifra="${x.id}"]`).readOnly, true, "un solo intento");
         assert.equal(boton(m.caja, "Comprobar"), undefined);
-        assert.deepEqual(html("[data-retro] [data-texto-retro]"), ok ? [x.acierto] : [x.distractores[0].retro, `La respuesta es ${pesos(x.correcta)}.`]);
+        assert.deepEqual(html("[data-retro] [data-texto-retro]"), ok ? [x.acierto] : [x.distractores[0].retro, `Iba aquí: ${pesos(x.correcta)}.`]);
       } else {
         /* LOTE 3 · «Arma la línea»: la línea de Caja elige su segundo distractor (Mello: «Ingresos financieros – ganancia en venta de títulos»); la otra, la buena. */
         const lado = { debe: "Debe", haber: "Haber" };
@@ -211,7 +211,7 @@ test("★★★ la tanda entera: seis unidades, un intento cada una, y el porcen
           const ok = elegida(l) === l.cuenta;
           if (ok) bien += 1;
           assert.deepEqual(html(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`), ok ? [] : [l.distractores[1].retro]);
-          assert.deepEqual(html(`[data-linea-cuenta="${l.id}"] [data-era]`), ok ? [] : [`Era: ${l.cuenta}, al ${l.lado}.`]);
+          assert.deepEqual(html(`[data-linea-cuenta="${l.id}"] [data-era]`), ok ? [] : [`Iba aquí: ${l.cuenta}, al ${l.lado}.`]);
         }
         assert.ok(m.caja.querySelector("[data-asiento-completo]").textContent.includes("432.000"), "las sumas del asiento");
       }
@@ -292,8 +292,8 @@ test("★★★ lote 3: los ítems 2 y 5 van con casilla; el 1 y el 4 se quedan 
   for (const l of p[2].lineas) assert.deepEqual([...l.banco].sort(), [l.cuenta, ...l.distractores.map((d) => d.cuenta)].sort());
   for (const k of [1, 4]) assert.equal(p[k], D.ITEMS_N4[k]);
   /* Una cifra de un distractor: su retroalimentación; otra cualquiera: la respuesta y el porqué del acierto, sin «Así es». */
-  assert.deepEqual(L.evaluarN4(it("segundo-trimestre"), 204_000), { ok: false, correcta: 228_000, textos: ["Ese interés sale de los títulos que vendió. El interés va sobre los que le quedan: $5.700.000.", "La respuesta es $228.000."], textoCorrecta: "$228.000" });
-  assert.deepEqual(L.evaluarN4(it("primer-trimestre"), 1).textos, ["La respuesta es $432.000.", "$10.800.000 × 0,16 × 3/12 = $432.000."]);
+  assert.deepEqual(L.evaluarN4(it("segundo-trimestre"), 204_000), { ok: false, correcta: 228_000, textos: ["Ese interés sale de los títulos que vendió. El interés va sobre los que le quedan: $5.700.000.", "Iba aquí: $228.000."], textoCorrecta: "$228.000" });
+  assert.deepEqual(L.evaluarN4(it("primer-trimestre"), 1).textos, ["Iba aquí: $432.000.", "$10.800.000 × 0,16 × 3/12 = $432.000."]);
   assert.equal(L.evaluarN4(it("primer-trimestre"), 432_000).ok, true);
 });
 

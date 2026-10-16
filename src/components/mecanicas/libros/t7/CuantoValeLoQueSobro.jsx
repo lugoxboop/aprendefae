@@ -3,7 +3,8 @@ import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { H3, FICHA_H3, BOTON_H3, resumenH3 } from "../../../../data/contabilidadT7_1_h3.js";
 import { prepararH3, evaluarH3, textoDeOpcionH3, puntuarH3, TOTAL_H3 } from "../../../../contabilidad/t7H3.js";
-import { Opcion, Opciones, Pulsos, Cierre } from "../../corazon/juego.jsx";
+import { Opciones, Pulsos, Cierre } from "../../corazon/juego.jsx";
+import { OpcionC as Opcion, CSS_T7_HACER } from "./hacerT7.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
@@ -115,7 +116,7 @@ export default function CuantoValeLoQueSobro({ Marco, rotulo, titulo, acento, on
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS}</style>
+      <style>{CSS + CSS_T7_HACER}</style>
       <div data-h3>
         <Encabezado consigna={sinUnSoloIntento(H3.consigna)} onComoSeJuega={onComoSeJuega} />
         <p data-entrada style={{ ...TEXTO, fontSize: "14px", lineHeight: "21px", margin: "0 0 8px" }}>{H3.entrada}</p>
@@ -132,7 +133,7 @@ export default function CuantoValeLoQueSobro({ Marco, rotulo, titulo, acento, on
           background: "rgba(184,196,212,0.12)", borderLeft: "3px solid #B8C4D4",
         }}>
           {item.encabezado && (
-            <p data-encabezado-metodo style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", color: FAE.ambar }}>
+            <p data-encabezado-metodo style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", color: "#A8B6C8" }}>
               {item.encabezado.toUpperCase()}
             </p>
           )}
@@ -157,7 +158,7 @@ export default function CuantoValeLoQueSobro({ Marco, rotulo, titulo, acento, on
               background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
               borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
             }}>
-              {!r.ok && <span style={SOLO_LECTOR}>{`Incorrecto. La respuesta es ${textoDeOpcionH3(item, r.correcta)}. `}</span>}
+              {!r.ok && <span style={SOLO_LECTOR}>{`Incorrecto. Iba aquí: ${textoDeOpcionH3(item, r.correcta)}. `}</span>}
               <p data-texto-retro style={TEXTO}><Plegable texto={r.texto} /></p>
             </div>
           )}

@@ -91,7 +91,7 @@ export default function CostoOValorNeto({ Marco, rotulo, titulo, acento, onCompl
         <FigurasHacer figuras={FIGURAS_H7} respondidos={t.i + (listo ? 1 : 0)} listo={listo} />
         <TarjetaPregunta id={item.id} encabezado={caso.encabezado} pregunta={item.pregunta} pie={H7.pie} tarjetaRef={tarjeta} />
         <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
-        <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es ${r.textoCorrecta}. ` : null} />
+        <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. Iba aquí: ${r.textoCorrecta}. ` : null} />
       </div>
       {listo && (
         <div ref={zonaBoton}>
