@@ -771,8 +771,8 @@ export const SUBJECTS = {
           { id: "t7-2-a3-el-kardex", nombre: "El kárdex", clasificacion: { tipo: APRENDER } },
           /* H3, justo después de A3 (orden final de T7-2): los tres kárdex de Laurel, casilla por casilla. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0100. */
           { id: "t7-2-llena-el-kardex", nombre: "Llena el kárdex", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          /* A4, después de A3 (regla 9): F-1 del libro en el permanente, con la decisión de Mello casilla por casilla. H3 «Llena el kárdex» entra entre A3 y A4. Cero FP. */
-          { id: "t7-2-a4-san-calixto", nombre: "San Calixto en permanente", clasificacion: { tipo: APRENDER } },
+          /* A4, después de A3 (regla 9): F-1 del libro en el permanente, como capas de costo que la venta corta (Patrón de enganche C, v6; reemplaza a «San Calixto en permanente» con el mismo id). H3 «Llena el kárdex» entra entre A3 y A4. Cero FP. */
+          { id: "t7-2-a4-san-calixto", nombre: "Las capas que la venta corta", clasificacion: { tipo: APRENDER } },
           /* H4, justo después de A4 (orden final de T7-2): las dos versiones de un mismo hecho, sin cifras. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0101. */
           { id: "t7-2-periodico-o-permanente", nombre: "¿Periódico o permanente?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* A5, después de A4 por el orden del mapa (regla 9: usa la venta en dos asientos de A2). H4 «¿Periódico o permanente?» entra entre A4 y A5. Cero FP. */
