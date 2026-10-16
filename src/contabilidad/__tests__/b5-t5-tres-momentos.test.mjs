@@ -158,11 +158,15 @@ test("★★★ ningún componente de la pieza escribe texto que lea el estudian
   }
 });
 
-/* Desde N2 de la Célula C (decisión de corte de T5, punto 6), la pieza va tercera: N2 entra antes que ella y no trae escenas. */
-test("★★ la pieza va tercera en el tema, después de N2: APRENDER, la vista y sus tres capas", () => {
+/*
+ * N2 de la Célula C («Cómo se cuidan las inversiones») iba antes que la pieza
+ * y salió de la lista con la fusión de la entrega 5 de Near (lo suyo va dentro
+ * de N3): la pieza vuelve a ser la segunda de Aprender.
+ */
+test("★★ la pieza va segunda en el tema, sin N2: APRENDER, la vista y sus tres capas", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "activos-financieros");
-  assert.deepEqual(actividadesDeTipo(tema, APRENDER).map((a) => a.id), ["b5-t5-a1-del-efectivo-de-sobra", "t5-a1-cuidar-las-inversiones", D.PIEZA_TRES_MOMENTOS.id]);
-  assert.deepEqual(PIEZAS.map((p) => p.pieza.id), ["b5-t5-a1-del-efectivo-de-sobra", "t5-a1-cuidar-las-inversiones", D.PIEZA_TRES_MOMENTOS.id]);
+  assert.deepEqual(actividadesDeTipo(tema, APRENDER).map((a) => a.id), ["b5-t5-a1-del-efectivo-de-sobra", D.PIEZA_TRES_MOMENTOS.id]);
+  assert.deepEqual(PIEZAS.map((p) => p.pieza.id), ["b5-t5-a1-del-efectivo-de-sobra", D.PIEZA_TRES_MOMENTOS.id]);
   assert.deepEqual(Object.keys(ESCENAS_TEMA5), ["b5-t5-a1-del-efectivo-de-sobra", D.PIEZA_TRES_MOMENTOS.id]);
   const { Capa2, Exploracion } = ESCENAS_TEMA5[D.PIEZA_TRES_MOMENTOS.id];
   assert.equal(Capa2, TresMomentos);
