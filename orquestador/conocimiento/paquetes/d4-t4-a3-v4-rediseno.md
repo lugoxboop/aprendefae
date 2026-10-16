@@ -8,6 +8,7 @@
 - Medido con la sonda (Katsumi): peor pantalla 59 de 60 palabras; antes de la figura, 32 de 40 como mucho; la figura entre 84 y 183 px a 320.
 - **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
 - **Objetivo (D2, 16 oct 2026):** una línea fija bajo el título, solo en la P0 (hallazgo de Shibukawa; Yujiro; texto de Katsumi). Con ella, la figura de la P0 queda a 110 px a 320: Yujiro la acepta porque B1 (280) se cumple, y la parada de medición de la P0 pasa a ser ≤ 280. Para que la P0 no pase de 60 palabras, el texto que aparece con la acción pasa a «En un arqueo, soportes más efectivo deben dar el fondo.» (Katsumi).
+- **D9 (16 oct 2026; Hanayama):** en la P0, con «Contar la caja», la solapa del sobre se abre hacia arriba (rotateX, 220 ms, cubic-bezier(.3,.9,.4,1)), con su alto reservado desde el principio; con movimiento reducido, no se anima.
 
 ## Objetivo de la pieza
 

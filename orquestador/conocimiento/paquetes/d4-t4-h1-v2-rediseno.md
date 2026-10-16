@@ -1,6 +1,7 @@
 **T4 · H1 «¿Entra o sale de Caja?» · versión 2: el rediseño de enganche (un solo negocio).**
 - **Este archivo es la versión vigente de H1.** Sustituye los hechos, las devoluciones, el cierre y «Así se juega» de `d4-t4-h1-v1.md` y de la parte de H1 de `d4-t4-asi-se-juega-v1.md`. La v1 queda como historia.
 - **Objetivo (D2, 16 oct 2026):** se ve antes de empezar, en el Encabezado compartido (su prop `objetivo`), sobre la consigna: «Decidir, ante cada hecho, si Caja va al debe, va al haber o no se mueve.»
+- **D9 (16 oct 2026; Hanayama):** los hechos ya respondidos se apilan detrás de la tarjeta como un fajo: hasta 7 cantos de 1 px #B8C4D4, 2 px más arriba cada uno, que crece con cada «Siguiente hecho». Su alto se reserva desde el primer hecho.
 - Por qué: H1 publicado fallaba la barra de enganche B1-B5 (`orquestador/conocimiento/enganche.md`): la interacción a 357 px con 73 palabras antes, una lista de radios, el acierto «Haber de Caja» en teal y la consigna dos veces en «Así se juega».
 - Diseño: Hanayama, «el cajón como tablero» (`celula-d/hanayama-h1-rediseno.md`, con su §9). Textos: Katsumi (`celula-d/katsumi-texto-rediseno.md`). Aprobados por Yujiro en su corte de calidad del 15 oct 2026 (`celula-d/corte-calidad.md`).
 - **Un solo negocio:** un taller de bicicletas con 400.000 en la caja. Cifras construidas. Con los hechos barajados el saldo nunca da negativo (el peor orden deja 50.000) y siempre termina en 600.000.
