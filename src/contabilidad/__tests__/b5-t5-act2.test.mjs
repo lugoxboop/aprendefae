@@ -164,6 +164,50 @@ test("★★★ el estante: las seis cuentas del paquete, en orden y SIN montos"
   desmontar();
 });
 
+/*
+ * Lote 3 · A (hoja de Mai): una fila del estante baja («abajo») solo si su nombre, al lado de los
+ * botones, pasa de 3 renglones, y sus botones siguen en la misma columna. JSDOM no mide: aquí se
+ * le da a cada fila 258 px y a los botones 75 y 87, y la copia del nombre ocupa 5 renglones si es
+ * de las dos cuentas largas del cierre y 2 si no. La medida de verdad, en Chromium, la hace
+ * scripts/b5/medir-b5-lote-mesas-a6.mjs.
+ */
+test("★★★ el estante en vivo: baja la fila cuyo nombre pasa de 3 renglones al lado de los botones; nada más cambia", async () => {
+  const LARGAS = [D.ESTANTE_T5_ACT2[4], D.ESTANTE_T5_ACT2[5]];
+  const original = w.Element.prototype.getBoundingClientRect;
+  w.Element.prototype.getBoundingClientRect = function () {
+    const caja = (width, height = 0) => ({ width, height, top: 0, left: 0, right: width, bottom: height, x: 0, y: 0 });
+    if (this.matches("[data-en-estante]")) return caja(258);
+    if (this.matches("[data-sacar]")) return caja(this.dataset.sacar.endsWith(":debe") ? 75 : 87, 44);
+    if (this.style.visibility === "hidden" && this.getAttribute("aria-hidden") === "true") {
+      const renglones = LARGAS.includes(this.textContent) ? 5 : 2;
+      return caja(parseFloat(this.style.width), renglones * parseFloat(this.style.lineHeight));
+    }
+    return original.call(this);
+  };
+  try {
+    const { caja, desmontar } = await montar();
+    const filas = [...caja.querySelectorAll("[data-en-estante]")];
+    assert.deepEqual(filas.filter((f) => f.dataset.forma === "abajo").map((f) => f.dataset.enEstante), LARGAS, "bajan solo las dos cuentas largas");
+    for (const f of filas) {
+      const abajo = f.dataset.forma === "abajo";
+      /* El orden en el DOM no cambia: nombre, «AL DEBE», «AL HABER». */
+      assert.deepEqual([...f.children].map((e) => (e.dataset.sacar ? e.dataset.sacar.split(":")[1] : "nombre")), ["nombre", "debe", "haber"]);
+      const [nombre, debe, haber] = f.children;
+      /* Los botones, en la misma columna en todas las filas; en una fila «abajo», en el renglón de debajo. */
+      assert.deepEqual([debe.style.gridColumn, haber.style.gridColumn], ["2", "3"], `«${f.dataset.enEstante}»: los botones en su columna`);
+      assert.equal(debe.style.gridRow, abajo ? "2" : "1");
+      assert.equal(nombre.style.gridColumn, abajo ? "1 / -1" : "1");
+      assert.equal(f.style.rowGap, "4px", "4 px entre el nombre y sus botones");
+      assert.equal(debe.style.minHeight, "44px");
+    }
+    /* La copia que mide no queda en la página. */
+    assert.equal(caja.querySelectorAll('[data-estante] [aria-hidden="true"]').length, 0);
+    desmontar();
+  } finally {
+    w.Element.prototype.getBoundingClientRect = original;
+  }
+});
+
 /* ═══════════ LA PRIORIDAD DE ERRORES: D > C > A > B ═══════════ */
 
 const al = (cuenta, lado, valor) => ({ cuenta, lado, valor });

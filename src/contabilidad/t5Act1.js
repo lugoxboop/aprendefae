@@ -1,6 +1,7 @@
 import { segundoFalloDe } from "./b5SegundoFallo.js";
+import { repartirTanda } from "./b5Reparto.js";
 import {
-  T5_ACT1, FICHAS_T5_ACT1, ERROR_T5_ACT1, VARIABLE, FIJA, INTERES, DESCUENTO, NOMBRE, PESO_RENTA, PESO_TIPO,
+  T5_ACT1, FICHAS_T5_ACT1, ERROR_T5_ACT1, FIJA, NOMBRE, CAJONES_T5_ACT1,
 } from "../data/contabilidadT5Act1.js";
 
 /*
@@ -11,33 +12,24 @@ import {
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* Los tres grupos de la tanda (guía §4). */
-export const GRUPOS_T5_ACT1 = [
-  { renta: VARIABLE, tipo: null },
-  { renta: FIJA, tipo: INTERES },
-  { renta: FIJA, tipo: DESCUENTO },
-];
+/* Los tres grupos de la tanda: uno por cajón. */
+export const GRUPOS_T5_ACT1 = CAJONES_T5_ACT1.map(({ renta, tipo }) => ({ renta, tipo }));
 const delGrupo = (g) => FICHAS_T5_ACT1.filter((f) => f.renta === g.renta && f.tipo === g.tipo);
 
 /*
- * Nueve fichas: tres por grupo, mezcladas, con como mucho una ficha de nombre
- * por grupo. «Con interés» y «Con descuento» solo tienen dos fichas que no son
- * de nombre, así que llevan siempre exactamente una de nombre; en renta
- * variable puede haber una o ninguna.
+ * Nueve fichas, entre 2 y 4 por cajón (R10, hoja de fusiones de Mai: con tres por cajón, la cuenta del
+ * estante delataba la última). El banco da 4 · 5 · 5. Dentro de cada cajón manda la regla de la guía
+ * (§4): como mucho una ficha de nombre. Solo cuando el cajón lleva más fichas de las que hay sin nombre
+ * más una (4 en «con interés» o «con descuento», que tienen dos sin nombre) entra una segunda de nombre.
  */
-export function sortearT5Act1(barajar, porGrupo = T5_ACT1.porPartida / GRUPOS_T5_ACT1.length) {
-  const elegidas = [];
-  for (const g of GRUPOS_T5_ACT1) {
-    const fichas = delGrupo(g);
-    const nombre = barajar(fichas.filter((f) => f.clase === NOMBRE)).slice(0, 1);
-    const resto = fichas.filter((f) => f.clase !== NOMBRE);
-    /* Primero se decide la de nombre (si va), después el resto sin nombres. */
-    const candidatas = barajar([...nombre, ...resto]);
-    const grupo = candidatas.slice(0, porGrupo);
-    if (grupo.length < porGrupo) throw new Error(`no hay fichas suficientes para «${g.renta}${g.tipo ? `/${g.tipo}` : ""}»`);
-    elegidas.push(...grupo);
-  }
-  return barajar(elegidas);
+export function sortearT5Act1(barajar, total = T5_ACT1.porPartida) {
+  const elegir = (banco, n) => {
+    const nombres = barajar(banco.filter((f) => f.clase === NOMBRE));
+    const resto = banco.filter((f) => f.clase !== NOMBRE);
+    const primero = barajar([...nombres.slice(0, 1), ...resto]).slice(0, n);
+    return [...primero, ...nombres.slice(1, 1 + n - primero.length)];
+  };
+  return repartirTanda(GRUPOS_T5_ACT1.map(delGrupo), total, barajar, elegir);
 }
 
 /**
@@ -69,15 +61,8 @@ export function evaluarT5Act1(ficha, marcado, intento = 1) {
   return { ok, texto: ERROR_T5_ACT1.C, patron: "C", rentaOk, tipoOk: false };
 }
 
-/*
- * La renta pesa 60 y el tipo 40. Las de renta variable no tienen tipo que
- * acertar: valen entero al acertar la renta (guía, resumen).
- */
-export function valorDeItemT5Act1(ficha, r) {
-  if (!r.rentaOk) return 0;
-  if (ficha.renta === VARIABLE) return 1;
-  return PESO_RENTA + (r.tipoOk ? PESO_TIPO : 0);
-}
+/* Cada ficha vale entera al acertar (lote 6a: ya no hay dos niveles que pesar). En el segundo intento, la mitad (el componente). */
+export const valorDeItemT5Act1 = (ficha, r) => (r.ok ? 1 : 0);
 
 /* Para el panel docente: el ítem es la ficha, y se lee por su texto. */
 export const fichaDeItemT5Act1 = (id) => FICHAS_T5_ACT1.find((f) => f.id === id)?.texto ?? null;

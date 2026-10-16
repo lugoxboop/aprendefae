@@ -81,8 +81,14 @@ const cajon = (caja, clave) => caja.querySelector(`[data-cajon="${clave}"]`);
 const cuantas = (caja) => Object.fromEntries([...caja.querySelectorAll("[data-cajon]")].map((c) => [c.dataset.cajon, Number(c.querySelector("[data-numero]").textContent)]));
 const encendido = (el) => el.style.border.startsWith("2px");
 
-test("★★★ la forma del árbol: el cajón suelto y, bajo la tapa, los dos del segundo nivel, con los nombres de las pestañas (las tres actividades)", async () => {
-  for (const config of [CONFIG_T5_ACT1, CONFIG_T6_ACT1, CONFIG_T6_ACT7]) {
+test("★★★ la forma del árbol: el cajón suelto y, bajo la tapa, los dos del segundo nivel, con los nombres de las pestañas (b5-t6-a7)", async () => {
+  /* Lote 6a: b5-t5-a1 y b5-t6-a1 pasaron a las fichas a un nivel (FichasUnNivel.jsx): sus tres cajones son las opciones. */
+  for (const config of [CONFIG_T5_ACT1, CONFIG_T6_ACT1]) {
+    const claves = config.cajones.map((k) => k.clave);
+    assert.equal(claves.length, 3);
+    for (const f of config.sortear((xs) => xs)) assert.ok(claves.includes(config.destino(f)), `${f.id}: sin cajón`);
+  }
+  for (const config of [CONFIG_T6_ACT7]) {
     const suelta = config.nivel1.find((x) => x.id !== config.abre);
     const grupo = config.nivel1.find((x) => x.id === config.abre);
     const claves = [suelta.id, ...config.nivel2.map((o) => E.claveDe(grupo.id, o.id))];

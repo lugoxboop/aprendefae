@@ -808,7 +808,7 @@ export const SUBJECTS = {
        */
       {
         id: "inventarios-descuentos-nic2",
-        title: "Inventarios III: descuentos, inventario físico y NIC 2",
+        title: "Inventarios III: descuentos, conteo y NIC 2",
         actividades: [
           /* A1: abre el tema, con su propio repaso (regla 3). Ejemplo H-1, pp. 248-249. Cero FP. */
           { id: "t7-3-descuento-comercial", nombre: "El descuento comercial", clasificacion: { tipo: APRENDER } },
@@ -855,6 +855,10 @@ export const SUBJECTS = {
           { id: "r5-1", nombre: "Repaso cruzado", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* r5-2: el 3 del bloque D, pp. 268-269, provisión, castigo y recuperación. Difícil · 50 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0251. */
           { id: "r5-2", nombre: "El Toro Negro", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* r5-3: el 4 del bloque D, pp. 269-271, sin el 2, 5, 7 y 28 de marzo. Experto · 90 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0252. */
+          { id: "r5-3", nombre: "Marzo en Comercializadora Mate", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          /* r5-4: el 6 del bloque D, pp. 273-274, en diez asientos (sin los fletes del 25 y del 28). Experto · 90 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0253. */
+          { id: "r5-4", nombre: "Septiembre en Barranquilla", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],
       },
     ],

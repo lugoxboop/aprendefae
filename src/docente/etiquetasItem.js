@@ -94,6 +94,8 @@ import { preguntaDeItemH4 as preguntaDeItemT4H4 } from "../data/contabilidadT4H4
 import { partidaDeItemH7 as partidaDeItemT4H7 } from "../data/contabilidadT4H7.js";
 import { itemDeH8 as itemDeT4H8 } from "../data/contabilidadT4H8.js";
 import { unidadDeR5_2 } from "../data/repasoCap5ToroNegroJuego.js";
+import { unidadDeR5_3 } from "../data/repasoCap5MateJuego.js";
+import { unidadDeR5_4 } from "../data/repasoCap5BarranquillaJuego.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -800,6 +802,10 @@ Object.assign(REGLAS, {
   "r5-1": (id) => unidadDeR5_1(id),
   /* r5-2. Cada ítem, por su etapa (31 DIC, MARZO, MAYO) y su enunciado. */
   "r5-2": (id) => unidadDeR5_2(id),
+  /* r5-3. Cada asiento, por su fecha y su operación. */
+  "r5-3": (id) => unidadDeR5_3(id),
+  /* r5-4. Cada asiento, por su fecha y su nombre corto. */
+  "r5-4": (id) => unidadDeR5_4(id),
 });
 
 /*

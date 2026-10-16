@@ -138,15 +138,19 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
               <ChevronLeft size={20} color={FAE.text} />
             </button>
             {/*
-              El título puede encogerse o romper en dos líneas, pero no
-              desaparecer (herramientas.md). La hoja compartida del header
-              compacto (AccountControl.jsx) le pone `nowrap` y elipsis al h1
-              de toda `.fae-cabecera-titulo`; aquí, en línea, se le deja
-              encoger (`minWidth: 0`) y romper. No se toca la hoja compartida.
+              El título rompe en dos renglones antes que perder palabras, y eso
+              ya NO se arregla aquí: lo hace la hoja compartida de
+              AccountControl.jsx para toda `.fae-cabecera-titulo > h1`. Esta
+              vista tenía el rodeo en línea —y otras seis el mismo— porque la
+              hoja ponía `nowrap`. Ya no lo pone.
+
+              Los estilos en línea que quedan son tipografía, y solo eso: si
+              alguno volviera a tocar cómo cede el título, estaría peleándose
+              con lo compartido, y ganaría el de aquí, que es justo lo que no
+              se quiere.
             */}
             <h1 data-titulo-tema style={{
               fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2,
-              minWidth: 0, flexShrink: 1, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "break-word",
             }}>
               {tema.title}
             </h1>

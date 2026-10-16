@@ -5,7 +5,7 @@ import { useState } from "react";
  * EL «¿POR QUÉ?» PLEGADO (Célula C · T7 y T5) — lote 1 de la revisión.
  *
  * En aciertos, errores y bloques de texto, lo que pase de 2 frases se pliega
- * detrás de «¿Por qué?» y se abre al tocar. La pantalla queda limpia por
+ * detrás de «¿Por qué?» y se abre al tocar (salvo una condición: ver CONDICION). La pantalla queda limpia por
  * defecto. Se aplica solo, sin tocar los textos: el texto entero sigue en el
  * DOM —el resto, en un <span hidden>— y «¿Por qué?» es un botón cuyo rótulo
  * va en aria-label y se pinta con ::after, así que el textContent del
@@ -23,18 +23,30 @@ export const FRASES_VISIBLES = 2;
 
 const FIN_DE_FRASE = /[.!?…][»)]?(?=\s+[A-ZÁÉÍÓÚÑ¿¡«])/g;
 
+/*
+ * REGLA DE L (con la auditoría de Mello a los recortes): una condición que
+ * limita una definición o una regla no se pliega, porque detrás de «¿Por
+ * qué?» solo la vería quien acierta y lo abre. Una frase con «solo»,
+ * «directamente», «cuando» o «si» se queda a la vista: lo visible llega hasta
+ * la última frase que la trae, y se pliega solo lo que va después. El orden
+ * del texto no cambia.
+ */
+const CONDICION = /(?<!\p{L})(solo|sólo|directamente|cuando|si)(?!\p{L})/iu;
+
 /** [lo visible, lo plegado]. Lo plegado empieza con el espacio que lo separa; juntos dan el texto original. */
 export function partirEnFrases(texto, visibles = FRASES_VISIBLES) {
   const t = String(texto ?? "");
-  let n = 0;
-  for (const m of t.matchAll(FIN_DE_FRASE)) {
-    n += 1;
-    if (n === visibles) {
-      const corte = m.index + m[0].length;
-      return t.slice(corte).trim() ? [t.slice(0, corte), t.slice(corte)] : [t, ""];
-    }
+  const cortes = [...t.matchAll(FIN_DE_FRASE)].map((m) => m.index + m[0].length);
+  if (cortes.length < visibles) return [t, ""];
+  let corte = cortes[visibles - 1];
+  /* Cada frase de lo que se plegaría, con su final; si trae una condición, lo visible llega hasta ella. */
+  const finales = [...cortes.slice(visibles), t.length];
+  let desde = corte;
+  for (const fin of finales) {
+    if (CONDICION.test(t.slice(desde, fin))) corte = fin;
+    desde = fin;
   }
-  return [t, ""];
+  return t.slice(corte).trim() ? [t.slice(0, corte), t.slice(corte)] : [t, ""];
 }
 
 const CSS = `
@@ -60,10 +72,14 @@ function asegurarCss() {
   document.head.appendChild(el);
 }
 
-/** El texto, con lo que pasa de 2 frases plegado detrás de «¿Por qué?». */
-export function Plegable({ texto }) {
+/**
+ * El texto, con lo que pasa de 2 frases plegado detrás de «¿Por qué?». Si el
+ * texto trae su plegado escrito aparte (`porque`, de los recortes de Near y
+ * Mello), se usa ese: lo visible es `texto` y lo plegado, `porque`.
+ */
+export function Plegable({ texto, porque = null }) {
   const [abierto, setAbierto] = useState(false);
-  const [visible, resto] = partirEnFrases(texto);
+  const [visible, resto] = porque ? [texto, ` ${porque}`] : partirEnFrases(texto);
   if (!resto) return texto;
   asegurarCss();
   return (

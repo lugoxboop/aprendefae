@@ -193,12 +193,30 @@ test("★★★ el índice: con Aprender y Hacer, la tarjeta lleva las dos insig
   } finally { m.desmontar(); }
 });
 
-test("★★★ el título del tema puede encogerse y romper en dos líneas, pero no cortarse: sus estilos en línea ganan a la elipsis del header compacto", () => {
+test("★★★ el título del tema rompe en dos renglones antes que perder palabras, y lo resuelve la hoja compartida, no esta vista", () => {
   /*
-   * La hoja compartida (AccountControl.jsx) le pone al h1 de .fae-cabecera-
-   * titulo `white-space: nowrap`, `overflow: hidden` y elipsis por debajo de
-   * ANCHO_ESTRECHO. Los estilos en línea del h1 de T4 la vencen. La medida de
-   * verdad, a 320 y 375 px en Chromium, la hace scripts/t4/medir-titulo.mjs.
+   * ESTA PRUEBA CAMBIÓ DE OBJETO, Y VALE LA PENA DECIR POR QUÉ.
+   *
+   * Comprobaba que los estilos EN LÍNEA del h1 de T4 vencieran al `nowrap` de
+   * la hoja compartida, y que la hoja compartida siguiera poniendo ese
+   * `nowrap`. Las dos cosas describían un rodeo: la hoja cortaba el título y
+   * cada vista se defendía por su cuenta. Siete vistas llegaron al mismo
+   * rodeo —T4, T5, T6 y las tres de T7, más el repaso del capítulo 5—.
+   *
+   * La hoja ya no corta: recorta a dos renglones para toda
+   * `.fae-cabecera-titulo > h1` —cuatro renglones, medidos—. Así que los
+   * rodeos se fueron, y con ellos las
+   * dos afirmaciones que los vigilaban. Afirmar que el rodeo sigue puesto
+   * habría dejado esta prueba en rojo pidiendo que se devolviera un defecto.
+   *
+   * Lo que NO cambió es lo que la prueba defiende: el título no pierde
+   * palabras. Eso ahora se comprueba donde vive —en la hoja— y en el sentido
+   * correcto: que recorte por renglones y que NO haya vuelto el `nowrap`.
+   * Si alguien lo devuelve, aquí se entera.
+   *
+   * La medida de verdad, a 320 y 375 px en Chromium, la hace
+   * scripts/t4/medir-titulo.mjs. Una regla de CSS leída de un archivo dice
+   * qué se pidió, no qué se ve.
    */
   const m = montar(h(ContabilidadT4View, { modo: null, onBack: () => {} }));
   try {
@@ -206,11 +224,25 @@ test("★★★ el título del tema puede encogerse y romper en dos líneas, per
     assert.ok(h1, "no está el h1 del tema");
     assert.equal(h1.textContent, TEMA.title);
     assert.ok(h1.closest(".fae-cabecera-titulo"), "el h1 ya no está en la fila del header compacto: esta prueba sobra o hay que moverla");
+    /*
+     * Y SIN ESTILOS EN LÍNEA QUE PELEEN CON LA HOJA. Son los que ganan, así
+     * que uno de estos puesto aquí anula el recorte compartido sin que nadie
+     * lo note: `overflow: visible` bastaba para que el tope de dos renglones
+     * dejara de topar. La tipografía sí se queda.
+     */
     const st = h1.style;
-    assert.deepEqual([parseFloat(st.minWidth), st.flexShrink, st.whiteSpace, st.overflow, st.textOverflow], [0, "1", "normal", "visible", "clip"]);
+    for (const prop of ["white-space", "overflow", "text-overflow", "min-width", "flex-shrink", "overflow-wrap", "-webkit-line-clamp"]) {
+      assert.equal(st.getPropertyValue(prop), "", `el h1 vuelve a traer ${prop} en línea, y eso vence a la hoja compartida`);
+    }
   } finally { m.desmontar(); }
+
   const hoja = leer("src/components/auth/AccountControl.jsx");
-  assert.match(hoja, /\.fae-cabecera-titulo > h1 \{[^}]*white-space: nowrap;/, "la hoja compartida ya no corta el título: revisar si esta excepción sigue haciendo falta");
+  const regla = hoja.match(/\.fae-cabecera-titulo > h1 \{([^}]*)\}/)?.[1];
+  assert.ok(regla, "la hoja compartida ya no tiene regla para el título del header compacto");
+  assert.match(regla, /-webkit-line-clamp:\s*4;/, "cambió el tope de renglones del título: hay que volver a medir a 320 px");
+  assert.match(regla, /white-space:\s*normal;/, "el título dejó de poder romper de renglón");
+  assert.doesNotMatch(regla, /nowrap/, "volvió el nowrap: el título perderá palabras otra vez");
+  assert.doesNotMatch(regla, /text-overflow:\s*ellipsis;/, "volvió la elipsis: el título perderá palabras otra vez");
 });
 
 test("★★★ la vista montada: cabecera con el título; Aprender con A0 a A5 como «PIEZA 1 DE 6»…«PIEZA 6 DE 6»; Hacer con el camino y su nodo H1", () => {
