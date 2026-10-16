@@ -227,8 +227,8 @@ test("★★★ el rótulo fijo se ve en pantalla en cada una de las ocho casill
       if (k >= 6) assert.ok(datos.lastElementChild.hasAttribute("data-total"), "el total, al final");
       assert.deepEqual([...datos.querySelectorAll("[data-monto]")].map((td) => td.textContent), ["$620.000", "$560.000", "$160.000", "$60.000"]);
     }
-    /* Las opciones, en una columna (Mai: en fila de tres no caben las cifras de 7 dígitos a 320). */
-    assert.equal(caja.querySelector("[data-opcion]").closest("[style*='grid-template-columns']").style.gridTemplateColumns, "minmax(0, 1fr)");
+    /* Las opciones, en una columna (Mai: en fila de tres no caben las cifras de 7 dígitos a 320). Lote 6c: en la 1 a la 3, son los cajones del eje. */
+    if (k >= 3) assert.equal(caja.querySelector("[data-opcion]").closest("[style*='grid-template-columns']").style.gridTemplateColumns, "minmax(0, 1fr)");
     await tocar(opcion(caja, correcta(CASILLAS[k])));
     await siguiente(caja);
   }
@@ -377,7 +377,11 @@ test("★★★ cada error se ve literal y la correcta queda marcada", async () 
     assert.equal(caja.querySelector("[data-hecho]").textContent, pegado(c.enunciado));
     await tocar(opcion(caja, mala));
     assert.equal(devolucion(caja), `❌${pegado(D.ERRORES_T6_ACT6[mala.tipo])}`, `casilla ${k + 1}`);
-    assert.equal(opcion(caja, correcta(c)).dataset.estado, "revelada");
+    /* Lote 6c: en la 1 a la 3, el cajón correcto queda ✓ y el tocado por error ✕ (E4); en las demás, la opción revelada. */
+    if (k < 3) {
+      assert.equal(opcion(caja, correcta(c)).dataset.marcaE4, "correcta");
+      assert.equal(opcion(caja, mala).dataset.marcaE4, "tachada");
+    } else assert.equal(opcion(caja, correcta(c)).dataset.estado, "revelada");
     desmontar();
   }
 });
@@ -406,4 +410,35 @@ test("★★ identificadores y dificultad de Sakuta", () => {
   assert.deepEqual([D.T6_ACT6.id, D.T6_ACT6.dificultad, D.T6_ACT6.fpBase], ["b5-t6-a6", "dificil", 50]);
   assert.match(GUIA, /difícil · 50 FP/);
   assert.deepEqual(CASILLAS.map((c) => c.id), ["u1", "u2", "u3", "p4", "p5", "p6", "p7", "p8"]);
+});
+
+/* ═══════════ LOTE 6c · LOS CAJONES DEL EJE SON LAS OPCIONES (casillas 1 a 3) ═══════════ */
+
+test("★★★ lote 6c · en las casillas 1 a 3 sale la lista de rangos: se toca el cajón del eje (44 de alto, un botón por grupo con su nombre); E4: ✕ el tocado por error, ✓ el correcto, y la deuda cae en el correcto", async () => {
+  const { caja, desmontar } = await montar();
+  const NOMBRES = ["Grupo 1: vigentes o hasta 3 meses", "Grupo 2: más de 3 hasta 6 meses", "Grupo 3: más de 6 meses hasta 1 año", "Grupo 4: más de 1 año"];
+  for (let k = 0; k < 3; k++) {
+    const c = CASILLAS[k];
+    const eje = caja.querySelector("[data-eje]");
+    const cajones = [...eje.querySelectorAll("button[data-cajon]")];
+    assert.deepEqual(cajones.map((b) => b.getAttribute("aria-label")), NOMBRES, `casilla ${k + 1}: los cuatro cajones, botones con el nombre de su grupo`);
+    assert.equal(cajones[0].parentElement.style.height, "44px", "el eje, 44 de alto");
+    /* Sin la lista de cuatro rangos: ninguna opción fuera del eje. */
+    assert.equal([...caja.querySelectorAll("[data-opcion]")].filter((o) => !eje.contains(o)).length, 0, `casilla ${k + 1}: sin lista de rangos`);
+    const mala = c.opciones.find((o) => o.tipo);
+    await tocar(opcion(caja, mala));
+    const bueno = D.GRUPOS_T6_ACT6.find((g) => g.nombre === correcta(c).texto).id;
+    const malo = D.GRUPOS_T6_ACT6.find((g) => g.nombre === mala.texto).id;
+    const boton = (id) => caja.querySelector(`[data-eje] button[data-cajon="${id}"]`);
+    assert.equal(boton(malo).dataset.marcaE4, "tachada");
+    assert.ok(boton(malo).querySelector('[data-icono="tache"]'));
+    assert.equal(boton(bueno).dataset.marcaE4, "correcta");
+    assert.ok(boton(bueno).querySelector('[data-icono="visto"]'));
+    assert.equal(caja.querySelector(`[data-deuda="${c.id}"]`).dataset.enCajon, bueno, "la deuda cae en el correcto");
+    assert.ok([...caja.querySelectorAll("[data-eje] button[data-cajon]")].every((b) => b.disabled), "un solo intento");
+    await siguiente(caja);
+  }
+  /* En la 4, la lista de opciones vuelve (son cifras). */
+  assert.ok(caja.querySelector("[style*='grid-template-columns'] [data-opcion]"));
+  desmontar();
 });

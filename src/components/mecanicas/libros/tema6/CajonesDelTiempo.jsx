@@ -7,6 +7,7 @@ import { pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
 import { pesos } from "../../../../data/contabilidad.js";
 import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES } from "./MaquinaPegada.jsx";
 import { Entra, KEYFRAMES_ENTRA } from "./CuentaQueSeLlena.jsx";
+import { Marca, CORRECTA, TACHADA } from "../b5/MarcasE4.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -29,6 +30,14 @@ import { Entra, KEYFRAMES_ENTRA } from "./CuentaQueSeLlena.jsx";
  *     del grupo, que entra al responder. En la casilla 7 aparece la fila
  *     del total con su barra y su porción (la provisión) y, debajo, «El
  *     valor neto» y «La provisión» (lote 3: antes de la 7, ni la fila).
+ *
+ * LOTE 6c (hoja «Enganche B1-B5» de Mai): en las casillas 1 a 3, los cajones
+ * del eje SON las opciones. Sale la lista de cuatro rangos; se toca el cajón
+ * donde cae la deuda. El eje pasa a 44 de alto y cada cajón es un botón con
+ * el nombre de su grupo («Grupo 1: vigentes o hasta 3 meses»…). «6 meses» se
+ * responde tocando a un lado o al otro de la marca de 6. E4: el tocado por
+ * error queda ✕ y el correcto ✓ (borde 2 nodo, relleno navy); la deuda cae
+ * en el correcto.
  *
  * Lo que entra es siempre el valor correcto. En blanco y negro: los cajones
  * se leen por sus marcas y su orden; la porción es relleno y el resto
@@ -71,7 +80,7 @@ const TOPE_BARRA = ALTO_PASTILLA + 10;
 const ULTIMO = GRUPOS_T6_ACT6.length - 1;
 /* El borde que se desvanece, arriba y abajo del último cajón: queda abierto. */
 const DESVANECE = `linear-gradient(to right, ${BORDES}, transparent)`;
-const ALTO_BARRA = 30;
+const ALTO_BARRA = 44;
 
 /*
  * Entre dos rótulos del eje, 8 px como mínimo (Sakuta). Si no caben (a 320,
@@ -100,9 +109,17 @@ function useEscalonado() {
   return { marcas, escalonado };
 }
 
-function Eje({ respondidas, abierta, reducido }) {
+function Eje({ respondidas, abierta, reducido, eleccion = null }) {
   const { marcas, escalonado } = useEscalonado();
   const actual = abierta ?? respondidas - 1;
+  /* Lote 6c: con `eleccion`, los cajones son las opciones de la casilla abierta. */
+  const casilla = UBICAR.casillas[actual];
+  const elegidoK = eleccion?.elegida ? GRUPOS_T6_ACT6.findIndex((g) => g.nombre === eleccion.elegida.texto) : -1;
+  const marcaDe = (k) => {
+    if (!eleccion?.elegida) return null;
+    if (k === cajonDe(casilla)) return CORRECTA;
+    return k === elegidoK ? TACHADA : null;
+  };
   return (
     <div data-eje {...(abierta !== null ? { "data-renglon-activo": "" } : {})} data-escalonado={escalonado ? "si" : "no"} style={{ position: "relative", height: `${TOPE_BARRA + ALTO_BARRA + 4 + LINEA_MARCA * (escalonado ? 2 : 1)}px`, margin: "4px 0 12px" }}>
       {/* La barra, partida en cuatro cajones. */}
@@ -111,15 +128,33 @@ function Eje({ respondidas, abierta, reducido }) {
           const tiene = UBICAR.casillas.some((c, i) => i < respondidas && cajonDe(c) === k);
           /* El cajón de la deuda recién respondida se ilumina; los que ya tienen una deuda quedan con fondo tenue. */
           const recien = abierta === null && cajonDe(UBICAR.casillas[actual]) === k;
+          const marca = marcaDe(k);
+          const Etiqueta = eleccion ? "button" : "div";
+          const opcion = eleccion ? casilla.opciones.find((o) => o.texto === g.nombre) : null;
           return (
-            <div key={g.id} data-cajon={g.id} data-con-deuda={tiene ? "si" : "no"} {...(k === ULTIMO ? { "data-abierto": "" } : {})} style={{
+            <Etiqueta key={g.id} data-cajon={g.id} data-con-deuda={tiene ? "si" : "no"} {...(k === ULTIMO ? { "data-abierto": "" } : {})}
+              {...(eleccion ? {
+                type: "button", "aria-label": `Grupo ${k + 1}: ${minuscula(g.nombre)}`, "data-marca-e4": marca ?? "",
+                disabled: !eleccion.elegir, onClick: () => eleccion.elegir?.(opcion),
+              } : {})}
+              style={{
+              position: "relative", padding: 0, margin: 0, font: "inherit", color: "inherit", cursor: eleccion?.elegir ? "pointer" : "default",
+              borderTop: "none", borderRight: "none", borderBottom: "none",
               width: `${ANCHOS[k]}%`, boxSizing: "border-box", borderLeft: `1px solid ${BORDES}`,
               ...(k === ULTIMO
                 ? { borderRight: "none", backgroundImage: `${DESVANECE}, ${DESVANECE}`, backgroundSize: "100% 1px", backgroundPosition: "top, bottom", backgroundRepeat: "no-repeat" }
                 : { borderTop: `1px solid ${BORDES}`, borderBottom: `1px solid ${BORDES}` }),
               borderRadius: k === 0 ? "6px 0 0 6px" : 0,
               backgroundColor: recien ? NAVY : tiene ? TENUE : "transparent", boxShadow: recien ? `inset 0 0 0 2px ${NODO}` : "none",
-            }} />
+            }}>
+              {/* La clave de la opción, como en las casillas de siempre (la sonda y el guion la buscan así). */}
+              {eleccion && <span data-opcion={g.nombre} aria-hidden="true" />}
+              {marca && (
+                <span data-marca-cajon={marca} style={{ position: "absolute", top: "3px", left: "3px", display: "flex" }}>
+                  <Marca marca={marca} />
+                </span>
+              )}
+            </Etiqueta>
           );
         })}
       </div>
@@ -147,6 +182,8 @@ function Eje({ respondidas, abierta, reducido }) {
             border: enCajon ? "none" : `2px solid ${NODO}`, background: enCajon ? "transparent" : NAVY,
             ...PEQUENO, fontWeight: 600, whiteSpace: "nowrap", color: anterior ? SECUNDARIO : TEXTO,
             transition: reducido ? "none" : "top 320ms ease-out, left 320ms ease-out",
+            /* Lote 6c: los cajones son botones; la deuda colocada no se come el toque del cajón que la lleva. */
+            pointerEvents: "none",
           }}>
             {deudaDe(c)}
           </span>
@@ -227,7 +264,7 @@ function Total({ respondidas, abierta, reducido }) {
   );
 }
 
-export default function CajonesDelTiempo({ respondidas, abierta, reducido, anuncio, modoDemo = false }) {
+export default function CajonesDelTiempo({ respondidas, abierta, reducido, anuncio, modoDemo = false, eleccion = null }) {
   /* En «Así se juega» no hay partida: solo la nota, la regla y su pie. */
   const enCurso = abierta ?? Math.max(0, respondidas - 1);
   const parte2 = !modoDemo && enCurso >= N1;
@@ -260,7 +297,7 @@ export default function CajonesDelTiempo({ respondidas, abierta, reducido, anunc
           <p data-pie-porcentaje="" style={{ ...LINEA_PIE, fontWeight: 400, color: SECUNDARIO }}>{PIES_T6_ACT6.regla}</p>
         </div>
       </div>
-      {!modoDemo && !parte2 && <Eje respondidas={respondidas} abierta={abierta} reducido={reducido} />}
+      {!modoDemo && !parte2 && <Eje respondidas={respondidas} abierta={abierta} reducido={reducido} eleccion={eleccion} />}
       <p data-anuncio aria-live="polite" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" }}>{anuncio}</p>
     </div>
   );
