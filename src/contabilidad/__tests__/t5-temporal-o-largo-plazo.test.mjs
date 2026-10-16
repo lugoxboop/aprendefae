@@ -13,7 +13,7 @@ import { sinUnSoloIntento } from "../armaLaLinea.js";
  *   · un solo intento por ítem; los bloques 1 y 2 en el orden de la tanda,
  *     el bloque 3 barajado; nueve unidades; el porcentaje es aciertos / 9
  *   · evaluativa, fácil, 10 FP, en el cliente y en la migración 0110; en T5
- *     entre b5-t5-a1 y N2; la vista lo abre y registra con el motor; el panel
+ *     entre b5-t5-a1 y N3 (N2 salió); la vista lo abre y registra con el motor; el panel
  *     docente lee cada ítem
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -183,12 +183,14 @@ test("★★ solo el bloque 3 se baraja", () => {
 
 /* ═══════════ 3 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
 
-test("★★★ en T5 entre b5-t5-a1 y N2 (decisión de corte, punto 6): evaluativa, fácil, 10 FP", () => {
+/* N2 iba después de N1 y salió de la lista con la fusión de la entrega 5 de Near: ahora sigue N3, que la lleva adentro. */
+test("★★★ en T5 entre b5-t5-a1 y N3 (decisión de corte, punto 6; N2 salió): evaluativa, fácil, 10 FP", () => {
   assert.deepEqual(clasificacionDe("contabilidad", TEMA_T5, D.N1_ID), { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 });
   assert.equal(TEMA.actividades.find((a) => a.id === D.N1_ID).nombre, D.N1.nombre);
   const ids = TEMA.actividades.map((x) => x.id);
   assert.equal(ids.indexOf(D.N1_ID), ids.indexOf("b5-t5-a1") + 1);
-  assert.equal(ids.indexOf("t5-a1-cuidar-las-inversiones"), ids.indexOf(D.N1_ID) + 1);
+  assert.ok(!ids.includes("t5-a1-cuidar-las-inversiones"));
+  assert.equal(ids.indexOf("t5-revision-que-falta"), ids.indexOf(D.N1_ID) + 1);
 });
 
 test("★★★ la vista abre lo que el catálogo ofrece y registra con el motor compartido", () => {

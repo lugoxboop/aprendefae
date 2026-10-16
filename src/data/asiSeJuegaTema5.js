@@ -1,5 +1,5 @@
 import { T5_ACT2, REGLAS_T5_ACT2, COMPRA_T5_ACT2, ALT_TUTORIAL_T5_ACT2 } from "./contabilidadT5Act2.js";
-import { T5_ACT1, REGLAS_T5_ACT1, FICHAS_T5_ACT1, RENTAS, TIPOS_FIJA, FIJA, INTERES, BOTON_T5_ACT1 } from "./contabilidadT5Act1.js";
+import { T5_ACT1, REGLAS_T5_ACT1, FICHAS_T5_ACT1, CAJONES_T5_ACT1, FIJA, INTERES } from "./contabilidadT5Act1.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -39,25 +39,19 @@ const ASI_CIERRE_SANTA_PACHA = {
   cuadros: { gesto: 4 },
 };
 
-/* b5-t5-a1: la ficha del CDT, renta fija con interés. */
+/* b5-t5-a1: la ficha del CDT, renta fija con interés. Lote 6a: la mano toca su cajón, que la coloca. */
 export const DEMO_T5_ACT1 = FICHAS_T5_ACT1.find((f) => f.id === "cdt");
-const rotulo = (lista, id) => lista.find((x) => x.id === id).rotulo;
+const CAJON_DEMO_T5 = CAJONES_T5_ACT1.find((k) => k.renta === FIJA && k.tipo === INTERES);
 const ASI_QUE_RENTA_DA = {
   actividadId: T5_ACT1.id,
   titulo: T5_ACT1.nombre,
   consigna: T5_ACT1.consigna,
   pasos: REGLAS_T5_ACT1,
-  alt: `la ficha «${DEMO_T5_ACT1.texto}» va en «${rotulo(RENTAS, FIJA)}» y, dentro, en «${rotulo(TIPOS_FIJA, INTERES)}».`,
+  /* PARA SHOKO: la misma frase de antes con un solo destino (antes «va en «Renta fija» y, dentro, en «Con interés»»). */
+  alt: `la ficha «${DEMO_T5_ACT1.texto}» va en «${CAJON_DEMO_T5.rotulo}».`,
   demo: { items: [DEMO_T5_ACT1] },
-  guion: {
-    duracion: 7500,
-    toques: [
-      { ms: 2000, en: `[data-nivel1="${FIJA}"]` },
-      { ms: 3500, en: `[data-nivel2="${INTERES}"]` },
-      { ms: 5000, texto: BOTON_T5_ACT1.colocar },
-    ],
-  },
-  cuadros: { gesto: 2 },
+  guion: { duracion: 7500, toques: [{ ms: 2500, en: `[data-cajon="${FIJA}/${INTERES}"]` }] },
+  cuadros: { gesto: 1 },
 };
 
 export const ASI_SE_JUEGA_TEMA5 = {

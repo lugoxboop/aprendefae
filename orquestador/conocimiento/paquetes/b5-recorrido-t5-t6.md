@@ -712,7 +712,7 @@ Opciones (en el orden del archivo; el juego las baraja una vez al cargar):
    - *Nota:* Reversar un asiento es hacerlo al revés. Lo que se había acreditado ahora se debita. Y lo que se había debitado ahora se acredita.
 3. **Después, el pago.** Después de revivir la deuda, se anota el pago como cualquier cobro: se debita Caja y se acredita Cuentas por cobrar – clientes.
 4. **Abono.** Es un pago de solo una parte de la deuda.
-5. **Cuánto se revive.** Depende de lo que haga el cliente. Si paga todo, se revive toda la deuda. Si abona una parte y promete pagar el resto, también se revive toda. Si abona una parte y avisa que no pagará más, se revive solo lo que pagó.
+5. **Cuánto se revive.** Depende de lo que haga el cliente. Si paga todo, se revive toda la deuda. Si abona una parte y promete pagar el resto, también se revive toda. Si abona una parte y avisa que ya no puede pagar más, se revive solo lo que pagó.
    - *Así lo dice el libro:* «…teniendo presente si el cliente paga la totalidad de la deuda o no, ya que se pueden presentar las siguientes situaciones.» (p. 203)
 
 #### Capa 2 · Mírelo funcionar
@@ -761,7 +761,7 @@ Pasos:
   - *Se revive:* $180.000
   - *A Caja entran:* $100.000
   - *Pie:* Basado en el libro, p. 205
-- **c · Abona $100.000 y avisa que no pagará más**
+- **c · Abona $100.000 y avisa que ya no puede pagar más**
   - *Al tocarla:* Se revive solo lo que pagó: $100.000. A Caja entran $100.000. Los otros $80.000 siguen castigados.
   - *Se revive:* $100.000
   - *A Caja entran:* $100.000
@@ -773,14 +773,14 @@ Pasos:
 
 #### Capa 4 · En una frase
 
-- **Pregunta:** Pablo Moncayo abona $100.000 y avisa que no pagará más. ¿Por cuánto se revive su deuda?
+- **Pregunta:** Pablo Moncayo abona $100.000 y avisa que ya no puede pagar más. ¿Por cuánto se revive su deuda?
 
 Opciones (en el orden del archivo; el juego las baraja una vez al cargar):
 
 - ✔︎ Por $100.000, solo la parte que sí pagó.
-  - *Devolución:* Correcto. Como no pagará más, se revive solo lo que pagó. Los otros $80.000 siguen castigados.
+  - *Devolución:* Correcto. Como ya no puede pagar más, se revive solo lo que pagó. Los otros $80.000 siguen castigados.
 - ✘ Por $180.000, toda la deuda castigada.
-  - *Devolución:* No es esa. Toda la deuda se revive cuando el cliente paga todo o promete pagar el resto. Aquí avisó que no pagará más.
+  - *Devolución:* No es esa. Toda la deuda se revive cuando el cliente paga todo o promete pagar el resto. Aquí avisó que ya no puede pagar más.
 - ✘ Por $80.000, lo que le falta pagar.
   - *Devolución:* No es esa. Esos $80.000 no se van a pagar, así que siguen castigados. Se revive lo que sí pagó.
 - ✘ Por nada: el pago va directo a un ingreso.
@@ -1122,7 +1122,7 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
 **Asiento 5 · Registra cómo se revive la deuda del caso c.**
 
 - **Fecha en el diario:** Caso c
-- **Hecho:** Caso c. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y avisa que no pagará más.
+- **Hecho:** Caso c. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y avisa que ya no puede pagar más.
 - **Asiento correcto:**
   - Debe · Cuentas por cobrar – clientes · $100.000
   - Haber · Provisión para deudas incobrables · $100.000
@@ -1130,7 +1130,7 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
   - *D:* Sobra una cuenta. Revivir la deuda solo mueve Cuentas por cobrar – clientes y la provisión. El gasto no se toca, la plata todavía no entra y no hay ningún ingreso.
   - *C:* Están al revés. Revivir es reversar el castigo: Cuentas por cobrar – clientes vuelve a subir y va al Debe. La provisión va al Haber.
   - *A:* Falta una cuenta. Revivir la deuda mueve dos: Cuentas por cobrar – clientes y la provisión.
-  - *B · C14 (alguna cuenta con $180.000):* Revisa el valor. En el caso c, Pablo Moncayo avisa que no pagará más. Por eso se revive solo lo que pagó.
+  - *B · C14 (alguna cuenta con $180.000):* Revisa el valor. En el caso c, Pablo Moncayo avisa que ya no puede pagar más. Por eso se revive solo lo que pagó.
   - *B:* Revisa el valor. Mira cuánto pagó Pablo Moncayo.
 
 - **Resumen:** Bien a la primera: {bien} de {total}

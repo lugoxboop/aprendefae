@@ -128,9 +128,10 @@ const rotulos = () => {
   return [...momentos.map((m) => m.fecha), ...Object.values(resto), D.TABLERO_T6_A4.revive, D.TABLERO_T6_A4.entran,
     ...D.CASOS_T6_A4.flatMap((c) => [c.letra, c.revive, c.entran])];
 };
+/* El caso a ya no tiene caja (lote C1-11): sin nombre ni texto que revelar. */
 const esFragmento = (r) => {
   const fuentes = [...D.PASOS_T6_A4, D.CIERRE_T6_A4].map((p) => p.texto)
-    .concat(D.CASOS_T6_A4.flatMap((c) => [c.nombre, c.revela])).map((t) => t.toLowerCase());
+    .concat(D.CASOS_T6_A4.flatMap((c) => [c.nombre, c.revela]).filter(Boolean)).map((t) => t.toLowerCase());
   return fuentes.some((t) => t.includes(r.toLowerCase()));
 };
 
@@ -139,6 +140,9 @@ test("★★★ cada rótulo de la escena y del tablero es fragmento literal de 
   const r = rotulos();
   assert.ok(r.length >= 20, `solo ${r.length} rótulos`);
   assert.deepEqual(r.filter((x) => !esFragmento(x)), []);
+  /* El rótulo de la fila del caso a no sale de un paso: es literal del lote C1-11. */
+  assert.equal(D.TABLERO_T6_A4.ejemplo, "Ejemplo");
+  assert.ok(FUENTE.includes("- Caso a: su fila del tablero ya viene llena, con el rótulo «Ejemplo». Ya no se pregunta."));
 });
 
 test("★★★ ningún componente de la pieza escribe texto que lea el estudiante", () => {
@@ -303,20 +307,27 @@ test("★★ «Reproducir»: 3 000 + 450 ms por palabra; la tabla de Mai §3.4 y
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: el tablero es una tabla; cada caso llena su fila al decidirse, con el valor correcto aunque se falle, en cualquier orden; la cifra revivida, destacada; el final, con los tres", async () => {
+test("★★★ capa 3: el tablero es una tabla; el caso a viene lleno, con el rótulo «Ejemplo» (C1-11); b y c llenan su fila al cerrarse su pregunta, con el valor correcto aunque se falle dos veces, en cualquier orden; la cifra revivida, destacada; el final, con b y c", async () => {
   const { caja, desmontar } = await montar(h(TresCasos));
   assert.equal(caja.querySelector("p").textContent, D.CONSIGNA_CAPA_3_T6_A4);
   const t = caja.querySelector("[data-tablero] table");
   assert.deepEqual([...t.querySelectorAll('th[scope="col"]')].map((x) => x.textContent), ["Se revive", "A Caja entran"]);
-  assert.deepEqual([...t.querySelectorAll('th[scope="row"]')].map((x) => x.textContent), ["a", "b", "c"]);
+  assert.deepEqual([...t.querySelectorAll('th[scope="row"]')].map((x) => x.textContent), ["aEjemplo", "b", "c"]);
+  const rotulo = t.querySelector('[data-fila="a"] [data-rotulo-ejemplo]');
+  assert.equal(rotulo.textContent, "Ejemplo");
+  assert.equal(rotulo.style.fontSize, "12px", "letra mínima");
   const fila = (id) => [...t.querySelectorAll(`[data-fila="${id}"] td div`)].map((d) => d.textContent);
-  for (const c of D.CASOS_T6_A4) assert.deepEqual(fila(c.id), ["", ""], "al principio, vacías");
-  assert.ok([...t.querySelectorAll("td div")].every((d) => d.style.border.startsWith("1px solid rgba(184, 196, 212, 0.5)")), "vacías con borde atenuado");
-  assert.deepEqual([...caja.querySelectorAll("[data-hecho]")].map((n) => n.dataset.hecho), ["a", "b", "c"], "las tres cajas desde el principio");
+  assert.deepEqual(fila("a"), ["$180.000", "$180.000"], "el ejemplo, lleno desde el principio");
+  for (const id of ["b", "c"]) assert.deepEqual(fila(id), ["", ""], "al principio, vacías");
+  assert.ok([...t.querySelectorAll('[data-fila="b"] td div, [data-fila="c"] td div')].every((d) => d.style.border.startsWith("1px solid rgba(184, 196, 212, 0.5)")), "vacías con borde atenuado");
+  assert.deepEqual([...caja.querySelectorAll("[data-hecho]")].map((n) => n.dataset.hecho), ["b", "c"], "el caso a ya no se pregunta: solo b y c, desde el principio");
   const lectura = (n) => [...n.querySelectorAll("p:not([data-pie])")].map((p) => p.textContent).join("");
-  for (const [k, c] of [D.CASOS_T6_A4[2], D.CASOS_T6_A4[0], D.CASOS_T6_A4[1]].entries()) {
-    /* Con error a propósito: la fila se llena igual, con el valor correcto (hoja 6, indispensable 5). */
-    const mala = D.OPCIONES_CAPA_3_T6_A4.find((o) => o.id !== c.correcta).id;
+  for (const [k, c] of [D.CASOS_T6_A4[2], D.CASOS_T6_A4[1]].entries()) {
+    /* Con dos errores a propósito: la fila se llena igual, con el valor correcto (hoja 6, indispensable 5). */
+    const [mala1, mala] = D.OPCIONES_CAPA_3_T6_A4.filter((o) => o.id !== c.correcta).map((o) => o.id);
+    await decidir(tocar, caja.querySelector(`[data-hecho="${c.id}"]`), mala1);
+    assert.equal(lectura(caja.querySelector(`[data-revela="${c.id}"]`)), c.pista, "al primer error, solo la pista");
+    assert.deepEqual(fila(c.id), ["", ""], "al primer error, la fila sigue vacía");
     await decidir(tocar, caja.querySelector(`[data-hecho="${c.id}"]`), mala);
     assert.equal(lectura(caja.querySelector(`[data-revela="${c.id}"]`)), (typeof c.falla === "string" ? c.falla : c.falla[mala]) + c.revela);
     assert.equal(caja.querySelector(`[data-revela="${c.id}"] [data-pie]`).textContent, c.pie);
@@ -325,7 +336,7 @@ test("★★★ capa 3: el tablero es una tabla; cada caso llena su fila al deci
     assert.deepEqual([rev.style.fontSize, rev.style.fontWeight, rev.style.border, rev.style.background], ["15px", "700", `2px solid ${rgb(FAE.node)}`, rgb(FAE.navy)], "la revivida, destacada");
     assert.deepEqual([ent.style.fontSize, ent.style.border, ent.style.background], ["13px", `1px solid ${rgb(COLOR.neutro)}`, "transparent"]);
     for (const d of [rev, ent]) assert.equal(d.style.whiteSpace, "nowrap");
-    assert.equal(lectura(caja.querySelector("[data-final]")), k < 2 ? "" : D.FINAL_CAPA_3_T6_A4.texto);
+    assert.equal(lectura(caja.querySelector("[data-final]")), k < 1 ? "" : D.FINAL_CAPA_3_T6_A4.texto);
   }
   assert.deepEqual(fila("b")[1], fila("c")[1], "b y c meten la misma plata");
   assert.notDeepEqual(fila("b")[0], fila("c")[0], "y reviven distinto");

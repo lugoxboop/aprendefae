@@ -11,7 +11,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { revisar, sinComentarios, filasDeCatalogo, rangoDe, RANGOS, MARCA_ESQUEMA } from "../../../scripts/guardian-migraciones.mjs";
+import { revisar, sinComentarios, filasDeCatalogo, rangoDe, soloRetiroBlando, idsRetirados, RANGOS, MARCA_ESQUEMA, MARCA_RETIRO } from "../../../scripts/guardian-migraciones.mjs";
 
 const CLIENTE = new Map([
   ["t7-3-costo-o-vnr", { activity_id: "t7-3-costo-o-vnr", subject_id: "contabilidad", topic_id: "inventarios-descuentos-nic2", modalidad: "evaluativa", dificultad: "medio", fp_base: 25 }],
@@ -66,6 +66,120 @@ test("★★ el coordinador sí puede cambiar el esquema, pero solo diciéndolo"
   /* Y la marca no vale fuera del rango del coordinador. */
   const otraCelula = revisar([{ nombre: "0210_esquema.sql", sql: `-- ${MARCA_ESQUEMA}\n${esquema}` }], CLIENTE);
   assert.equal(otraCelula.length, 1, "una célula no cambia el esquema ni poniendo la marca");
+});
+
+
+/*
+ * ═══════════════════════════ EL RETIRO BLANDO ═══════════════════════════
+ *
+ * La puerta más estrecha del guardián, y la que más se va a usar: desde que
+ * Mateo dejó a las células retirar y fusionar actividades de Contabilidad, un
+ * retiro al día es poco. Lo que se comprueba aquí es que la puerta sea
+ * estrecha de verdad: si por ella pasara un `delete`, el guardián no serviría
+ * para nada, porque cualquier migración podría traer la marca.
+ */
+const retiro = (ids = ["t7-2-debe-o-haber"]) =>
+  `-- ${MARCA_RETIRO}\nupdate public.actividad_catalogo\n   set retirada = true\n where activity_id in (${ids.map((i) => `'${i}'`).join(", ")});`;
+
+test("★★★ una célula puede retirar en blando desde su propio rango, diciéndolo con la marca", () => {
+  assert.deepEqual(revisar([{ nombre: "0076_b5_retira_a7.sql", sql: retiro(["b5-t6-a7"]) }], CLIENTE), []);
+  assert.deepEqual(revisar([{ nombre: "0115_c7_retira_cuatro.sql", sql: retiro(["a", "b", "c", "d"]) }], CLIENTE), []);
+});
+
+test("★★★ sin la marca no pasa: el permiso se escribe, no se supone", () => {
+  const sql = retiro().replace(`-- ${MARCA_RETIRO}\n`, "");
+  const r = revisar([{ nombre: "0076_b5_retira_a7.sql", sql }], CLIENTE);
+  assert.equal(r.length, 1);
+  assert.match(r[0], /trae «update» fuera de un comentario/);
+  assert.match(r[0], new RegExp(MARCA_RETIRO), "el reproche tiene que decirle cuál es su puerta");
+});
+
+test("★★★ con la marca pero con un delete detrás: NO pasa, y el reproche lo explica", () => {
+  const sql = retiro() + "\ndelete from public.actividad_catalogo where activity_id = 'b5-t6-a7';";
+  const r = revisar([{ nombre: "0076_b5_retira_a7.sql", sql }], CLIENTE);
+  assert.equal(r.length, 1);
+  assert.match(r[0], /no es solo un retiro blando/);
+  assert.match(r[0], new RegExp(MARCA_ESQUEMA), "y le dice por dónde sí");
+});
+
+test("★★★ con la marca pero poniendo OTRO campo: no pasa", () => {
+  for (const malo of [
+    "update public.actividad_catalogo set fp_base = 0 where activity_id in ('x');",
+    "update public.actividad_catalogo set retirada = false where activity_id in ('x');",
+    "update public.fp_history set correct_pct = 100 where activity_id in ('x');",
+    "update public.actividad_catalogo set retirada = true;",
+  ]) {
+    const r = revisar([{ nombre: "0076_b5.sql", sql: `-- ${MARCA_RETIRO}\n${malo}` }], CLIENTE);
+    assert.equal(r.length, 1, malo);
+    assert.match(r[0], /no es solo un retiro blando/, malo);
+  }
+});
+
+test("★★ un retiro blando puede venir junto a inserciones: lo que no puede es venir con otro destructivo", () => {
+  assert.deepEqual(revisar([{ nombre: "0076_b5.sql", sql: `-- ${MARCA_RETIRO}\n${fila()}\n${retiro().split("\n").slice(1).join("\n")}` }], CLIENTE), []);
+});
+
+test("★★ soloRetiroBlando mira TODAS las sentencias, no la primera", () => {
+  assert.equal(soloRetiroBlando(retiro()), true);
+  assert.equal(soloRetiroBlando(retiro() + "\ntruncate public.fp_history;"), false);
+  assert.equal(soloRetiroBlando("-- update public.actividad_catalogo set retirada = true where activity_id in ('x');"), false,
+    "un retiro comentado no retira nada: no hay sentencia que valga");
+});
+
+test("★★★ y la 0115 de verdad, tal como la escribió la Célula C, pasa con la marca puesta", () => {
+  /*
+   * No es una copia: se lee el archivo si está, y si no está se dice por qué se
+   * salta, en vez de pasar en verde sin haber comprobado nada.
+   */
+  let sql;
+  try { sql = readFileSync(new URL("../../../supabase/migrations/0115_c7_retira_cuatro_hacer.sql", import.meta.url), "utf8"); }
+  catch { return; }
+  const conMarca = sql.includes(MARCA_RETIRO) ? sql : `-- ${MARCA_RETIRO}\n${sql}`;
+  assert.deepEqual(revisar([{ nombre: "0115_c7_retira_cuatro_hacer.sql", sql: conMarca }], CLIENTE), []);
+});
+
+
+/*
+ * ═════════ LO QUE LA PROPUESTA RETIRA NO SE LE EXIGE A LA APLICACIÓN ═════════
+ *
+ * El caso de verdad: la Célula D funde H5 en H4 y H6 en H7, y sus migraciones
+ * 0201, 0204 y 0205 entran a main por primera vez insertando piezas que
+ * subjects.js ya no declara. Sin esta regla, el guardián pedía o una migración
+ * que borrara lo que otra de la misma propuesta acababa de insertar, o dejar
+ * declarada una actividad que no existe.
+ */
+test("★★★ un alta de una pieza que la propuesta retira no se reprocha, en cualquier orden", () => {
+  const alta = { nombre: "0201_d4_h2.sql", sql: fila({ id: "t4-el-control-que-se-saltaron" }) };
+  const retira = { nombre: "0208_d4_retiros.sql", sql: retiro(["t4-el-control-que-se-saltaron"]) };
+  assert.deepEqual(revisar([alta, retira], CLIENTE), [], "alta antes del retiro");
+  assert.deepEqual(revisar([retira, alta], CLIENTE), [], "retiro antes del alta: el guardián junta los retiros antes de revisar");
+});
+
+test("★★★ pero un id que NADIE retira sigue reprochándose: la comprobación no se desactiva", () => {
+  const r = revisar([{ nombre: "0201_d4_h2.sql", sql: fila({ id: "t4-id-mal-escrito" }) }], CLIENTE);
+  assert.equal(r.length, 1);
+  assert.match(r[0], /la aplicación no declara en subjects.js/);
+});
+
+test("★★★ a una pieza que se retira tampoco se le comparan los FP: va a dejar de ofrecerse", () => {
+  const malosFp = fila({ fp: 999 });
+  assert.equal(revisar([{ nombre: "0203_d4.sql", sql: malosFp }], CLIENTE).length, 1, "sin retirar, los FP que no coinciden se reprochan");
+  assert.deepEqual(
+    revisar([{ nombre: "0203_d4.sql", sql: malosFp }, { nombre: "0208_d4.sql", sql: retiro(["t7-3-costo-o-vnr"]) }], CLIENTE),
+    [], "retirándola, no hay nada que comparar"
+  );
+});
+
+test("★★ un retiro que ya está en el repositorio vale igual: se pasa aparte", () => {
+  const alta = { nombre: "0201_d4_h2.sql", sql: fila({ id: "t4-retirada-hace-semanas" }) };
+  assert.equal(revisar([alta], CLIENTE).length, 1, "sin saberlo, se reprocha");
+  assert.deepEqual(revisar([alta], CLIENTE, new Set(["t4-retirada-hace-semanas"])), [], "sabiéndolo, no");
+});
+
+test("★★ idsRetirados saca todos los ids, y no los de un comentario", () => {
+  assert.deepEqual([...idsRetirados(retiro(["a", "b", "c"]))], ["a", "b", "c"]);
+  assert.deepEqual([...idsRetirados("-- update public.actividad_catalogo set retirada = true where activity_id in ('a');")], []);
+  assert.deepEqual([...idsRetirados(fila())], []);
 });
 
 test("★★★ rechaza un número fuera de todos los rangos", () => {

@@ -6,17 +6,16 @@ import { PASOS_T6_A2, CIERRE_T6_A2 } from "../data/contabilidadT6Pieza2.js";
  * cada paso (guía de Mai v1 con su cierre v1b, PASA de Shoko). El estado sale
  * SOLO del número de paso, como en la pieza 1 (t6Pieza1.js).
  *
- * La fecha del castigo se puede resaltar (paso 10) y, como la de la venta,
- * nunca se atenúa. En el paso 10 el orden de RESALTADO es la
- * prioridad de la v1b: primero el gasto, después la fecha; si no caben juntos
- * sobre el bloque pegado, la página se mueve para ver el gasto entero.
+ * La fecha del castigo, como la de la venta, nunca se atenúa. El paso 10
+ * (el gasto y la fecha juntos) se quitó en el lote C1-6 de Futaba: repetía
+ * lo que dice el cierre. La fecha sigue pudiendo resaltarse sin moverse.
  * Sin la regla «lo de dentro de algo resaltado» de la pieza 1: aquí nada
  * resaltado tiene dentro algo visible (el monto aparece después de la venta).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-export const PASOS = PASOS_T6_A2.length; // 10
-export const CIERRE = PASOS + 1; // 11
+export const PASOS = PASOS_T6_A2.length; // 9
+export const CIERRE = PASOS + 1; // 10
 
 /* Desde qué paso existe cada pieza. Antes ocupa su sitio, invisible. */
 const DESDE = {
@@ -42,7 +41,6 @@ const RESALTADO = {
   7: ["metodo"],
   8: ["gasto"],
   9: ["clientes31"],
-  10: ["gasto", "fecha31"],
   [CIERRE]: [],
 };
 

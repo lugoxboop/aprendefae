@@ -2,35 +2,30 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { conCorreccionesDeMello } from "./correccionesMello.mjs";
+import { seccion, compararDatos, recorrer, prepararDom, citas, CONDICION } from "./t7-3-recorte.mjs";
+import { NO_OPERACIONAL as C7, CORRECCIONES_T73, MELLO_T73, NEAR_T73, aplicarAlRecorte, palabrasAlAcertar } from "./correccionesMelloAciertos.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T7-3 · A4 «El descuento en los dos libros» (Célula C) · Aprender.
+ * T7-3 · A4 «El descuento en los dos libros» (Célula C) · Aprender · RECORTE.
  *
- *   · cada texto visible de la v1 está en los datos, letra por letra, y
- *     nada más
- *   · los asientos de Santa Martha y los del cierre, y las cuentas T, son
- *     los de la v1, con sus erratas resueltas (C7-9, C7-17, C7-27, C7-30) y
- *     las cifras de A3, que es el mismo ejemplo; cada asiento cuadra
- *   · cada pantalla y cada estado muestran sus textos y su pie
- *   · fuera del catálogo de FP; en T7-3, justo después de A3
+ *   · cada pantalla, texto, opción, pista, error, acierto y «¿Por qué?» es
+ *     el del recorte de Near (lote1-recortes-t73-v1.md), letra por letra,
+ *     con los cambios al lote 2 y al anexo de su tabla (`cierre`)
+ *   · Mello (mello-recortes-v1.md): la pista de P1
+ *   · que el descuento es un ingreso para quien compra ya no se lee antes de
+ *     preguntar su lado: va al «¿Por qué?»
+ *   · la cuenta T de San Calixto en el cierre; las dos cuentas T lado a lado
+ *     en el resumen
+ *   · ACIERTOS C7: P3 `no-operacional` sale de t7-3-tres-aciertos-c7.md
+ *     (Near) con N-1 de Mello (auditoria-mello-enganche-v6-y-t7-3-aciertos.md,
+ *     §2): el acierto lleva la condición del saldo y la del permanente, a la
+ *     vista y sin «¿Por qué?» (C7), y sin «Así es.»; 59 palabras (B2)
+ *   · las cifras son las de A3; fuera del catálogo de FP
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
-const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
-for (const [k, v] of Object.entries({
-  window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
-  HTMLElement: w.HTMLElement, Element: w.Element, Node: w.Node, SVGElement: w.SVGElement,
-  Event: w.Event, MouseEvent: w.MouseEvent, KeyboardEvent: w.KeyboardEvent,
-  getComputedStyle: w.getComputedStyle.bind(w), matchMedia: w.matchMedia,
-})) {
-  Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
-}
-globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-
+const w = prepararDom(JSDOM, VirtualConsole);
 const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act;
@@ -38,7 +33,6 @@ const h = React.createElement;
 
 const A = await import("../../data/contabilidadT7_3_a4.js");
 const A3 = await import("../../data/contabilidadT7_3_a3.js");
-const A1 = await import("../../data/contabilidadT7_3.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: PantallasT7_3, cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
 const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
@@ -46,119 +40,82 @@ const { PIEZAS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
-const V1 = leer("orquestador/conocimiento/paquetes/t7-3-a4-v1.md");
+const RECORTE = leer("orquestador/conocimiento/paquetes/lote1-recortes-t73-v1.md");
+const MELLO = leer("orquestador/conocimiento/paquetes/mello-recortes-v1.md");
 const P = A.PIEZA_EL_DESCUENTO_EN_DOS_LIBROS;
+const S = seccion(RECORTE, P.id);
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
-const citas = (t) => [...t.matchAll(/«([^»]+)»/g)].map((m) => m[1]);
+const s = (id) => S.pantallas.find((x) => x.id === id);
+const DCC = "Descuento comercial condicionado";
 
-/*
- * El lote 2 de Near: la pista de cada pregunta (primer error) y el anexo (la
- * tercera opción, con su devolución, y el cambio en el texto de una opción
- * correcta). Un texto nuevo de los datos sale de aquí o del paquete de la pieza.
- */
-const PISTAS_L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-pistas-v1.md"));
-const ANEXO_L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-anexo-v1.md"));
-const sinComillas = (t) => t.trim().replace(/ \|$/, "").replace(/^«/, "").replace(/»$/, "");
-const idEnCelda = (celda) => celda.match(/`([^`]+)`/)[1];
-/* id de pantalla → pista. */
-const L2_PISTAS = new Map((PISTAS_L2.split("\n### ").find((s) => s.startsWith(`${P.id} ·`)) ?? "").split("\n")
-  .filter((l) => /^\| P\d/.test(l)).map((l) => l.split(" | ")).map((c) => [idEnCelda(c[0]), sinComillas(c[2])]));
-/* id de pantalla → la tercera opción del anexo: { texto, devolucion }. */
-const L2_TERCERAS = new Map(ANEXO_L2.split("\n").filter((l) => l.startsWith(`| ${P.id} | `)).map((l) => l.split(" | "))
-  .map((c) => [idEnCelda(c[1]), { texto: c[3].replace(/\*\*/g, ""), devolucion: sinComillas(c[4]) }]));
-/* «Un cambio en el texto de una opción correcta»: [campo, viejo, nuevo]. */
-const L2_CAMBIOS = ANEXO_L2.slice(ANEXO_L2.indexOf("## Un cambio")).split("\n").filter((l) => l.startsWith(`| ${P.id} · `))
-  .map((l) => l.split(" | ").map((x, i) => (i ? sinComillas(x) : x.replace(/^\| /, ""))));
+/* Mello, entrega 3: la pista de P1 pedía recordar algo que nunca se enseñó. Gana sobre el recorte. */
+const MELLO_A4 = MELLO.slice(MELLO.indexOf("**«El descuento en los dos libros»"), MELLO.indexOf("**«Sobrantes y faltantes»"));
+const PISTA_MELLO = citas(MELLO_A4.split("\n").find((l) => l.includes("Reemplazo:")))[0];
+assert.equal(s("el-pago").pista, "Santa Martha es quien recibe el descuento. Recuerda de qué lado lo anota quien lo recibe.");
+assert.ok(MELLO_A4.includes("«Recuerda de qué lado lo anota quien lo recibe»"));
+s("el-pago").pista = PISTA_MELLO;
+/* Aciertos C7: P3, con la tabla final de Near y N-1 de Mello encima. */
+aplicarAlRecorte(s("no-operacional"), C7);
 
-/*
- * La escalera de ayuda (escaleraAyuda.js): el n-ésimo error de una pregunta.
- * Con pista, el 1.º muestra la pista; el 2.º y siguientes, la respuesta y el
- * acierto sin «Así es». Sin pista, la devolución de la opción, como antes.
- */
-const errorEsperado = (p, o, n) => {
-  const correcta = p.opciones.find((x) => x.correcta).texto.replace(/\.$/, "");
-  const esperado = !p.pista ? [o.devolucion] : n === 1 ? [p.pista] : [`La respuesta es «${correcta}».`, p.acierto.texto.replace(/^Así es[.:]\s*/, "")];
-  assert.deepEqual(textosDelError(p, o, n), esperado);
-  return esperado;
-};
-const FILAS = V1.slice(V1.indexOf("## Pantallas"), V1.indexOf("## Decisiones")).split("\n").filter((l) => /^\| \d/.test(l)).map((l) => l.split(" | ").map((c) => c.replace(/^\| /, "")));
-const fila = (pref) => FILAS.find((f) => f[0].startsWith(pref) || f[1].startsWith(pref))[1];
+/* La tabla de cambios del recorte: [campo, viejo, nuevo]. */
+const CAMBIOS = RECORTE.split("\n").filter((l) => /^\| (Pista|Anexo) · `descuento-en-dos-libros`/.test(l)).map((l) => [l.split(" | ")[0], ...citas(l)]);
 
-function textosDeDatos() {
-  const t = [];
-  for (const p of P.pantallas) {
-    for (const k of ["objetivo", "pregunta", "siguiente", "pista"]) if (p[k]) t.push(p[k]);
-    t.push(...(p.parrafos ?? []), ...(p.despues ?? []), ...(p.tras ?? []));
-    for (const o of p.opciones ?? []) if (o.devolucion) t.push(o.devolucion);
-    if (p.acierto) t.push(p.acierto.texto, ...(p.acierto.parrafos ?? []), ...(p.acierto.despues ?? []));
-  }
-  return t;
-}
-const lineas = (t) => [...t.matchAll(/(?:^|· |\/ )([^·/]+?) ([\d.]+) (D|H)/g)].map((m) => [m[1].trim(), Number(m[2].replace(/\./g, "")), m[3] === "D" ? A1.DEBE : A1.HABER]);
-const deAsiento = (as) => as.lineas.map((l) => [l.cuenta, l.monto, l.lado]);
+/* ═══════════ 1 · DATOS ═══════════ */
 
-/* ═══════════ 1 · TEXTOS ═══════════ */
-
-test("★★★ cada texto visible de la v1 está en los datos, letra por letra, y nada más", () => {
-  const esperados = [];
-  for (const [n, texto] of FILAS) {
-    if (/Asiento|Cuentas T/.test(n)) continue;
-    for (const c of citas(texto)) esperados.push(c);
-  }
-  /* El lote 2: cada pregunta con su pista, la de Near, y ninguna más; y las devoluciones de las terceras opciones del anexo. */
-  assert.deepEqual(new Map(P.pantallas.filter((p) => p.pista).map((p) => [p.id, p.pista])), L2_PISTAS);
-  assert.deepEqual([...L2_PISTAS.keys()].sort(), ["cierre", "el-pago"]);
-  esperados.push(...L2_PISTAS.values(), ...[...L2_TERCERAS.values()].map((t) => t.devolucion));
-  assert.deepEqual([...textosDeDatos()].sort(), [...esperados].sort());
-  /* C7-26: no se dice «comparador». */
-  assert.ok(!JSON.stringify(P).includes("comparador"));
+test("★★★ pantallas, textos, opciones, pista, errores, acierto y ¿Por qué?: los del recorte con Mello, letra por letra", () => {
+  assert.deepEqual(S.pantallas.map((x) => x.id), ["portada", "el-pago", "cierre", "no-operacional", "resumen"]);
+  compararDatos(P, S);
+  assert.equal(pantalla("el-pago").pista, "Para quien vende, la cuenta fue al debe. Santa Martha está del otro lado del negocio.");
+  assert.equal(pantalla("portada").objetivo, S.pantallas[0].lineas[0]);
+  for (const id of ["quien-compra", "repaso", "permanente"]) assert.equal(pantalla(id), undefined, id);
 });
 
-test("★★★ las opciones, los asientos y las cuentas T son los de la v1, con sus erratas resueltas", () => {
-  /* Debe y Haber, de la v1, y al final la tercera opción del anexo del lote 2, con su devolución. */
-  assert.deepEqual([...L2_TERCERAS.keys()], ["el-pago", "cierre"]);
-  assert.deepEqual(L2_CAMBIOS, []);
-  for (const id of ["el-pago", "cierre"]) {
-    const p = pantalla(id);
-    assert.deepEqual(p.opciones.map((o) => o.texto), ["Debe", "Haber", L2_TERCERAS.get(id).texto]);
-    assert.equal(p.opciones.at(-1).devolucion, L2_TERCERAS.get(id).devolucion);
-    assert.equal(p.opciones.at(-1).correcta, undefined);
-    assert.equal(p.opciones.find((o) => o.correcta).texto, "Haber");
-    assert.equal(p.opciones.find((o) => !o.correcta).devolucion, citas(FILAS.find((f) => f[1].startsWith("Error (Debe)") && FILAS.indexOf(f) > FILAS.findIndex((g) => g[1].includes(p.pregunta)))[1])[0]);
-  }
-  /* 25 de mayo (C7-27: Compras; regla 8: Retención en la fuente por pagar) y 4 de junio (C7-9, C7-17, C7-30). */
-  const v1Compra = fila("2 · Asiento 25 de mayo");
-  const v1Pago = fila("3 · Asiento 4 de junio");
-  assert.deepEqual(deAsiento(pantalla("repaso").asientos[0]), lineas(v1Compra.split(". Sumas")[0]));
-  assert.deepEqual(deAsiento(pantalla("el-pago").acierto.asientos[0]), lineas(v1Pago.split(". Sumas")[0]));
-  for (const [as, v1, pie] of [[pantalla("repaso").asientos[0], v1Compra, pantalla("repaso").pie], [pantalla("el-pago").acierto.asientos[0], v1Pago, pantalla("el-pago").acierto.pie]]) {
-    const s = as.lineas.filter((l) => l.lado === A1.DEBE).reduce((x, l) => x + l.monto, 0);
-    assert.equal(s, as.lineas.filter((l) => l.lado === A1.HABER).reduce((x, l) => x + l.monto, 0));
-    assert.match(v1, new RegExp(`Sumas: ${cifra(s)} = ${cifra(s)}\\. Pie: «${pie}»`));
-  }
-  /* El cierre del 30 de junio, en los dos libros. */
-  const v1Cierre = fila("4 · Asientos 30 de junio");
-  const [, sc, sm] = v1Cierre.match(/San Calixto: (.+?)\. Santa Martha: (.+?)\. Pie: «(.+)»/);
-  const [cSC, cSM] = pantalla("cierre").acierto.asientos;
-  assert.deepEqual([cSC.titular, cSM.titular], ["San Calixto", "Santa Martha"]);
-  assert.deepEqual([deAsiento(cSC), deAsiento(cSM)], [lineas(sc), lineas(sm)]);
-  assert.ok(v1Cierre.endsWith(`Pie: «${pantalla("cierre").acierto.pie}».`));
-  /* Las cuentas T: cada lado con su monto y su fecha. */
-  const v1T = fila("4 · Cuentas T");
-  const t = pantalla("cierre").cuentasT;
-  const deT = (x, lado) => x[lado].map((m) => `${lado} ${cifra(m.monto)} (${m.fecha})`);
-  const leidas = [...v1T.matchAll(/(San Calixto|Santa Martha): (.+?)\.(?= Santa| Pie)/g)].map((m) => [m[1], m[2].split(" · ").sort()]);
-  assert.deepEqual(t.map((x) => [x.titular, [...deT(x, "debe"), ...deT(x, "haber")].sort()]), leidas);
-  assert.ok(v1T.endsWith(`Pie: «${pantalla("cierre").pie}».`));
-  /* Ninguna errata a la vista: ni «Compra de mercancías», ni «5.98.500», ni «condicional», ni «Caja / Bancos», ni «Retefuente». */
-  const datos = JSON.stringify(P);
-  for (const x of ["Compra de mercancías", "5.98.500", "condicional", "Caja / Bancos", "Retefuente"]) assert.ok(!datos.includes(x), x);
+test("★★★ los cambios del recorte al lote 2 y al anexo: la pista de `cierre` y la tercera opción", () => {
+  assert.equal(CAMBIOS.length, 2);
+  const [pista, anexo] = CAMBIOS;
+  assert.match(pista[0], /Pista · `descuento-en-dos-libros` · `cierre`/);
+  assert.equal(pantalla("cierre").pista, pista[2]);
+  assert.match(anexo[0], /Anexo · `descuento-en-dos-libros` · `cierre`/);
+  assert.equal(pantalla("cierre").opciones.find((o) => o.id === "no-se-cierra").devolucion, anexo[2]);
+  const todo = JSON.stringify(P);
+  assert.ok(!todo.includes(pista[1]) && !todo.includes(anexo[1]));
+});
+
+test("★★★ que el descuento es un ingreso para quien compra no se lee antes de preguntar el lado: va al ¿Por qué?", () => {
+  const antes = [pantalla("portada").objetivo, ...pantalla("el-pago").parrafos, pantalla("el-pago").pregunta];
+  for (const t of antes) assert.doesNotMatch(t, /ingreso/);
+  assert.match(pantalla("el-pago").acierto.porque, /^Para quien compra, el descuento es un ingreso/);
+});
+
+test("★★★ C7 · P3 sin plegado: las dos condiciones (el saldo y el permanente) van en el acierto, a la vista", () => {
+  const p = pantalla("no-operacional");
+  assert.equal(p.acierto.porque, undefined);
+  assert.equal(p.acierto.porqueALaVista, undefined);
+  assert.match(p.acierto.texto, /^En Santa Martha, con saldo en el haber, es ingreso no operacional\./);
+  assert.match(p.acierto.texto, /Con el permanente, San Calixto anota también el costo\./);
+  assert.deepEqual(P.pantallas.filter((x) => x.acierto?.porqueALaVista).map((x) => x.id), []);
+});
+
+test("★★★ N-1 de Mello: el acierto nuevo, sin «Así es.»; lo demás de P3, de la tabla final de Near; B2: 59", () => {
+  assert.ok(NEAR_T73.includes(CORRECCIONES_T73[1][0]));
+  for (const f of CORRECCIONES_T73[1][1]) assert.ok(MELLO_T73.includes(f));
+  const p = pantalla("no-operacional");
+  assert.equal(p.acierto.texto, C7.Acierto.textos[0]);
+  assert.doesNotMatch(p.acierto.texto, /Así es/);
+  assert.deepEqual(p.parrafos, C7["Definición"].textos);
+  assert.equal(p.pregunta, C7.Pregunta.textos[0]);
+  assert.deepEqual(p.opciones.map((o) => [o.id, o.texto, o.correcta ?? false]), [["gasto", "Gasto no operacional", true], ["ingreso", "Ingreso no operacional", false], ["costo", "Costo de mercancía vendida", false]]);
+  assert.deepEqual(p.opciones.map((o) => o.texto), C7.Opciones.textos);
+  assert.equal(palabrasAlAcertar(C7), 59);
 });
 
 test("★★★ las cifras son las de A3: el mismo ejemplo", () => {
   const C = A3.H3_LIBRO;
-  const montos = new Set(P.pantallas.flatMap((p) => [...(p.asientos ?? []), ...(p.acierto?.asientos ?? [])]).flatMap((a) => a.lineas.map((l) => l.monto)));
-  assert.deepEqual([...montos].sort((a, b) => a - b), [C.retencion, C.condicionado, C.iva, C.pago, C.factura, C.cliente].sort((a, b) => a - b));
+  const l = pantalla("el-pago").acierto.asientos[0].lineas;
+  assert.deepEqual(l.map((x) => [x.cuenta, x.lado, x.monto]), [["Cuentas por pagar – proveedores", "debe", C.cliente], [DCC, "haber", C.condicionado], ["Caja o Bancos", "haber", C.pago]]);
+  assert.equal(C.cliente, C.condicionado + C.pago);
+  const ts = [...pantalla("cierre").cuentasT, ...pantalla("resumen").cuentasTLado.cuentas];
+  for (const t of ts) assert.deepEqual([...t.debe, ...t.haber].map((m) => m.monto), [C.condicionado]);
 });
 
 /* ═══════════ 2 · MONTADA ═══════════ */
@@ -174,71 +131,51 @@ const tocar = async (el) => {
   assert.ok(el, "no está el elemento que se quería tocar");
   await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 };
-const boton = (caja, n) => caja.querySelector(`[data-boton="${n}"]`);
-const textos = (caja) => [...caja.querySelectorAll("[data-pieza] [data-texto]")].map((x) => x.textContent);
-const pie = (caja) => caja.querySelector("[data-pie]").textContent;
+/* Una cuenta T: [titular, cuenta, lo del debe, lo del haber]. */
+const cuentaT = (t) => [t.querySelector(".t73p-titular").textContent, t.querySelector(".t73p-t-cuenta").textContent,
+  [...t.querySelectorAll('[data-lado-t="debe"] [data-mov-t]')].map((x) => x.textContent), [...t.querySelectorAll('[data-lado-t="haber"] [data-mov-t]')].map((x) => x.textContent)];
+const SALDO = cifra(A3.H3_LIBRO.condicionado);
 
-async function pregunta(c, p) {
-  assert.deepEqual(textos(c).slice(-1), [p.pregunta]);
-  /* Las dos malas: la 1.ª da la pista; la 2.ª, la respuesta con su porqué (escalera de ayuda). */
-  let n = 0;
-  for (const mala of p.opciones.filter((o) => !o.correcta)) {
-    await tocar(c.querySelector(`[data-opcion="${mala.id}"]`));
-    await tocar(boton(c, "confirmar"));
-    const esperado = errorEsperado(p, mala, ++n);
-    assert.deepEqual(textos(c).slice(-esperado.length), esperado);
-    assert.equal(pie(c), p.error.pie);
-    await tocar(boton(c, "probar-otra"));
-  }
-  assert.equal(n, 2);
-  await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`));
-  await tocar(boton(c, "confirmar"));
-  assert.equal(pie(c), p.acierto.pie);
-}
-
-test("★★★ se recorre entera: cada pantalla y cada estado con sus textos y su pie", async () => {
+test("★★★ se recorre entera: cada pantalla y cada estado, contra el recorte", async () => {
   const m = await montar();
   try {
-    const c = m.caja;
-    assert.deepEqual(textos(c), [pantalla("portada").objetivo]);
-    await tocar(boton(c, "empezar"));
-    assert.deepEqual(textos(c), pantalla("quien-compra").parrafos);
-    await tocar(boton(c, "seguir"));
-    assert.deepEqual(textos(c), pantalla("repaso").parrafos);
-    assert.equal(c.querySelector("[data-asiento]").dataset.asiento, "25 de mayo");
-    await tocar(boton(c, "seguir"));
-    const pg = pantalla("el-pago");
-    assert.deepEqual(textos(c), [pg.pregunta]);
-    assert.equal(c.querySelector("[data-asiento]") === null, true);
-    await pregunta(c, pg);
-    assert.deepEqual(textos(c).slice(-3), [pg.acierto.texto, ...pg.acierto.despues]);
-    assert.equal(c.querySelector("[data-asiento]").dataset.asiento, "4 de junio");
-    await tocar(boton(c, "seguir"));
-    /* El cierre: las dos cuentas T antes de la pregunta; los dos asientos con su empresa, con el acierto. */
-    const ci = pantalla("cierre");
-    assert.deepEqual(textos(c), [...ci.parrafos, ci.pregunta]);
-    assert.deepEqual([...c.querySelectorAll("[data-cuenta-t]")].map((x) => x.dataset.cuentaT), ["San Calixto", "Santa Martha"]);
-    const sc = c.querySelector('[data-cuenta-t="San Calixto"]');
-    assert.deepEqual([...sc.querySelectorAll('[data-lado-t="debe"] [data-mov-t]')].map((x) => x.textContent), ["jun-04598.500"]);
-    assert.deepEqual([...sc.querySelectorAll('[data-lado-t="haber"] [data-mov-t]')].map((x) => x.textContent), ["jun-30598.500"]);
-    await pregunta(c, ci);
-    assert.deepEqual([...c.querySelectorAll("[data-asiento] [data-titular]")].map((x) => x.textContent), ["San Calixto", "Santa Martha"]);
-    assert.deepEqual(textos(c).slice(-2), [ci.acierto.texto, ...ci.acierto.despues]);
-    await tocar(boton(c, "seguir"));
-    assert.deepEqual(textos(c), pantalla("no-operacional").parrafos);
-    await tocar(boton(c, "seguir"));
-    assert.deepEqual(textos(c), pantalla("permanente").parrafos);
-    assert.equal(pie(c), pantalla("permanente").pie);
-    await tocar(boton(c, "seguir"));
-    const r = pantalla("resumen");
-    assert.deepEqual(textos(c), [...r.parrafos, r.siguiente]);
-    assert.equal(c.querySelector("[data-boton]") === null, true);
+    await recorrer({
+      caja: m.caja, P, S, tocar, w, textosDelError,
+      async alLlegar(k, c) {
+        const id = S.pantallas[k].id;
+        const ts = [...c.querySelectorAll("[data-cuenta-t]")];
+        if (id === "cierre") {
+          /* La cuenta T de San Calixto, con el saldo en el debe, antes del texto. */
+          assert.deepEqual(ts.map(cuentaT), [["San Calixto", DCC, [SALDO], []]]);
+          const tras = [...c.querySelectorAll("[data-texto]")].find((x) => x.textContent.startsWith("Al final del periodo"));
+          assert.ok(ts[0].compareDocumentPosition(tras) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+        } else if (id === "resumen") {
+          /* Las dos, una al lado de la otra, con su rótulo arriba. */
+          const fig = c.querySelector("figure[data-cuentas-t-lado]");
+          assert.equal(fig.querySelector("figcaption").textContent, "San Calixto: debe · Santa Martha: haber");
+          assert.equal(fig.querySelector(".t73p-ts-lado-par").children.length, 2);
+          assert.deepEqual(ts.map(cuentaT), [["San Calixto", DCC, [SALDO], []], ["Santa Martha", DCC, [], [SALDO]]]);
+        } else assert.equal(ts.length, 0);
+      },
+      async alFallar(k, c) {
+        if (S.pantallas[k].id === "el-pago") assert.equal(c.querySelector("[data-asiento]"), null);
+        /* C7: el acierto de P3 (tres frases) no se pliega tampoco cuando lo da el 2.º error. */
+        if (S.pantallas[k].id === "no-operacional") assert.equal(c.querySelector("[data-mensaje] [data-por-que], [data-mensaje] [data-plegado]"), null);
+      },
+      async alAcertar(k, c) {
+        if (S.pantallas[k].id === "no-operacional") assert.equal(c.querySelector("[data-mensaje] [data-por-que], [data-mensaje] [data-plegado], [data-porque-a-la-vista]"), null);
+        if (S.pantallas[k].id !== "el-pago") return;
+        const as = c.querySelector("[data-asiento]");
+        assert.equal(as.dataset.asiento, "sin-fecha");
+        assert.deepEqual([...as.querySelectorAll("[data-linea]")].map((x) => [x.dataset.linea, x.dataset.lado]), [["Cuentas por pagar – proveedores", "debe"], [DCC, "haber"], ["Caja o Bancos", "haber"]]);
+      },
+    });
   } finally {
     m.desmontar();
   }
 });
 
-/* ═══════════ 3 · CATÁLOGO ═══════════ */
+/* ═══════════ 3 · CATÁLOGO Y TEMA ═══════════ */
 
 test("★★★ fuera del catálogo de FP; en T7-3, justo después de A3", () => {
   assert.equal(A.A4_ID, "t7-3-descuento-en-dos-libros");
@@ -254,32 +191,4 @@ test("★★★ fuera del catálogo de FP; en T7-3, justo después de A3", () =>
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A4_ID)), []);
   assert.doesNotMatch(leer("src/data/contabilidadT7_3_a4.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);
-});
-
-/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
-
-test("★★★ Patrón T7-3: la franja de A3, con el pago del 4 de junio, en la pantalla 1 y en ninguna otra", async () => {
-  const m = await montar();
-  try {
-    const c = m.caja;
-    const visto = [];
-    for (let k = 0; k < 12; k++) {
-      const id = c.querySelector("[data-pantalla]").dataset.pantalla;
-      const fr = [...c.querySelectorAll("[data-plazos]")];
-      visto.push([id, fr.map((f) => f.querySelector("[data-pago]")?.textContent ?? "sin pago")]);
-      const p = pantalla(id);
-      if (p.opciones) {
-        await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`)); await tocar(boton(c, "confirmar"));
-        assert.equal(c.querySelectorAll("[data-plazos]").length, 0, `${id}: sin franja tras el acierto`);
-        await tocar(boton(c, "seguir"));
-      } else {
-        const b = boton(c, "seguir") ?? boton(c, "empezar");
-        if (!b) break;
-        await tocar(b);
-      }
-    }
-    assert.deepEqual(visto.filter(([, f]) => f.length), [["quien-compra", ["Pago · 4 jun"]]]);
-  } finally {
-    m.desmontar();
-  }
 });

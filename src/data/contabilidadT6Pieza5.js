@@ -27,6 +27,12 @@ export const PIE_PORCENTAJE = "Fuente del porcentaje: Decreto 1625 de 2016";
 /* 4 · la norma. Con «· Libro, p. 201» solo en la nota del término 4, donde hablan las dos fuentes. */
 export const PIE_DECRETO = "Fuente: Decreto 1625 de 2016, art. 1.2.1.18.21";
 export const PIE_DECRETO_Y_LIBRO = `${PIE_DECRETO} · Libro, p. 201`;
+/*
+ * C7-6 de Futaba (lote C2 · C1 · C7): la nota del término 4 dice ahora la
+ * condición de llevar contabilidad, que Shoko verificó en el Concepto 534 de
+ * 2026 de la DIAN (párrafos 4 y 11). Su pie nombra también ese concepto.
+ */
+export const PIE_DECRETO_DIAN_Y_LIBRO = `${PIE_DECRETO}, y DIAN, Concepto 534 de 2026 · Libro, p. 201`;
 
 /* El rótulo fijo en pantalla durante las capas 2 y 3. */
 export const ROTULO_SIMULADO_T6_A5 = "Escenario simulado · no es la tabla del libro";
@@ -65,9 +71,9 @@ export const PIEZA_COMO_SE_CALCULA = {
       termino: "Una referencia colombiana",
       definicion: "En Colombia, la norma del impuesto de renta trae una provisión general con tres porcentajes. Es el 5 % para deudas con más de tres meses de vencidas, sin pasar de seis. Es el 10 % para más de seis meses, sin pasar de un año. Y es el 15 % para más de un año.",
       pie: PIE_DECRETO,
-      delLibro: "Esos porcentajes son el máximo que la empresa puede restar como gasto al calcular su impuesto de renta. No son una regla para todas las empresas: cada una fija los suyos.",
+      delLibro: "Esos porcentajes son el máximo que una empresa obligada a llevar contabilidad puede restar como gasto al calcular su impuesto de renta. Solo valen si usa este método. No son una regla para todas las empresas: cada una fija los suyos.",
       rotuloDelLibro: "Nota",
-      pieDelLibro: PIE_DECRETO_Y_LIBRO,
+      pieDelLibro: PIE_DECRETO_DIAN_Y_LIBRO,
     },
   ],
 };
@@ -151,55 +157,70 @@ export const CIERRE_T6_A5 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · los cuatro grupos ═══════════ */
 
-/* Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja es de Mai (hoja 6), para Shoko. */
-export const CONSIGNA_CAPA_3_T6_A5 = "Toca cada grupo y decide qué porcentaje le toca. Después, mira cuánto se provisiona.";
+/*
+ * Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja es de Mai
+ * (hoja 6). Lote C2 · C1 · C7 (C1-14 y C2): las cajas ya no son los grupos
+ * (su nombre y su monto delataban la respuesta) sino cuatro deudas sueltas,
+ * una por grupo (`deuda`); al cerrarse cada una se llena la fila de su
+ * grupo en el tablero. Las devoluciones del segundo error y los pies, los de
+ * antes. Cada deuda lleva su pista.
+ */
+export const CONSIGNA_CAPA_3_T6_A5 = "Toca cada deuda y decide qué porcentaje le toca. Después, mira cuánto da su grupo.";
 export const PREGUNTA_CAPA_3_T6_A5 = "¿Qué porcentaje le toca?";
 const NADA = { id: "nada", texto: "Nada" };
 const P5 = { id: "5", texto: "5 %" };
 const P10 = { id: "10", texto: "10 %" };
 const P15 = { id: "15", texto: "15 %" };
 
-/* Cerrada, cada caja muestra su nombre y su monto (el rótulo de Futaba, «nombre · monto»). */
+/* `nombre` y `monto`: la fila del grupo en el tablero. `deuda`: el nombre de su caja. */
 export const GRUPOS_T6_A5 = [
   {
     id: "g1",
     nombre: "Vigentes o hasta 3 meses",
     monto: "$460.000",
-    revela: "En este ejemplo, por las deudas vigentes o con hasta tres meses de vencidas no se provisiona nada: $0.",
+    deuda: "Una deuda con 1 mes de vencida",
+    revela: "Un mes no pasa de tres: va con las vigentes y las de hasta tres meses. En este ejemplo, ese grupo no se provisiona.",
     pie: PIE_SIMULADO,
     opciones: [NADA, P5, P10],
     correcta: "nada",
     falla: "En este ejemplo, las vigentes y las de hasta tres meses no llevan provisión.",
+    pista: "Busca el grupo cuyo rango incluye un mes y mira qué decidió el ejemplo para él.",
   },
   {
     id: "g2",
     nombre: "Más de 3 hasta 6 meses",
     monto: "$340.000",
-    revela: "Al 5 %, los $340.000 dan $17.000.",
+    deuda: "Una deuda con 5 meses de vencida",
+    revela: "Cinco meses pasan de tres y no de seis: le toca el 5 %. Su grupo da $17.000.",
     pie: PIE_PORCENTAJE,
     opciones: [NADA, P5, P10],
     correcta: "5",
     falla: "Más de tres meses, sin pasar de seis: es el 5 %.",
+    pista: "Cinco meses pasan de tres. ¿Pasan también de seis?",
   },
   {
     id: "g3",
     nombre: "Más de 6 meses hasta 1 año",
     monto: "$360.000",
-    revela: "Al 10 %, los $360.000 dan $36.000.",
+    deuda: "Una deuda con 10 meses de vencida",
+    revela: "Diez meses pasan de seis y no de un año: le toca el 10 %. Su grupo da $36.000.",
     pie: PIE_PORCENTAJE,
     opciones: [P5, P10, P15],
     correcta: "10",
     falla: "Más de seis meses, sin pasar de un año: es el 10 %.",
+    pista: "Diez meses pasan de seis. ¿Pasan también de un año?",
   },
   {
     id: "g4",
     nombre: "Más de 1 año",
     monto: "$140.000",
-    revela: "Al 15 %, los $140.000 dan $21.000.",
+    deuda: "Una deuda con 20 meses de vencida",
+    revela: "Veinte meses pasan de un año: le toca el 15 %. Su grupo da $21.000.",
     pie: PIE_PORCENTAJE,
     opciones: [P5, P10, P15],
     correcta: "15",
     falla: "Más de un año: es el 15 %, el más alto.",
+    pista: "Un año tiene doce meses. Compara.",
   },
 ];
 /* El tablero (Mai §6.1): la cabecera de su columna, la celda de cada grupo y la fila de la suma. */
@@ -261,6 +282,7 @@ export const PARADA_T6_A5 = {
   opciones: [{ id: "bien", texto: "$17.000" }, { id: "diez", texto: "$1.700" }, { id: "cien", texto: "$170.000" }],
   correcta: "bien",
   falla: "Revisa los ceros: el 5 % de $340.000 es $17.000.",
+  pista: "El 5 % es la mitad del 10 %. Primero saca el 10 % de $340.000.",
   pie: PIE_PORCENTAJE,
   resaltados: ["g2"],
 };

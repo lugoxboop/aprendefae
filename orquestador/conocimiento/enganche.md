@@ -134,6 +134,33 @@ con su causa y la regla que la evita.
   dejaban de ser creíbles (Takamura). *Regla:* la figura muestra los
   insumos y las consecuencias; el resultado que se evalúa solo aparece
   después de responder.
+- **E9 · Un distractor que la pantalla misma desmiente no es distractor.** En
+  el contenido de r5-5, la opción «el periódico no suma los fletes» la negaba
+  el dato declarado de la entrada («promedia todo el mes, con fletes»), y «el
+  permanente se equivoca» se descartaba por su tono; quedaban dos opciones
+  de cuatro (Takamura). *Regla:* cada distractor nace de un error real del
+  estudiante y se lee contra todo lo que la pantalla ya dice; ninguna opción
+  se descarta sin saber contabilidad.
+- **E10 · Cuando un error lleva a la cifra correcta, el acierto lo explica.**
+  En r5-5 el flete cuesta justo el 5 % que se descontó: quien ignora ambos
+  llega a $2.300, la clave. No se puede cambiar el dato del libro (Takamura).
+  *Regla:* si un camino equivocado probable da la clave, el acierto dice por
+  qué la cifra coincide, para que quien acertó por casualidad se lleve la
+  razón correcta; y las devoluciones de los errores vecinos nombran ese
+  camino («precio de lista más flete»), no uno improbable.
+- **E11 · Una barra que no muestra la diferencia dice lo contrario.** En el
+  diseño de r5-5, la pantalla «¿Por qué no da lo mismo?» comparaba el costo
+  del mes en dos barras: 25.788.363 contra 25.865.885, un 0,3 % que en
+  264 px mide menos de 1 px. Las barras se veían iguales justo donde se
+  pregunta por qué no lo son (Takamura). *Regla:* antes de dibujar una
+  comparación, se calcula cuántos píxeles mide la diferencia; si son menos
+  de 4, va en cifras, no en barras.
+- **E12 · Una opción que se acierta buscando una palabra.** En C.1 de r5-1,
+  la clave y la trampa solo cambiaban «60 días» por «tres años», y las dos
+  malas eran las únicas con «años»: se acertaba sin la regla del año
+  (Takamura). *Regla:* antes de entregar opciones, se leen buscando una
+  palabra o una forma que delate la clave sin saber la materia; los plazos,
+  unidades y largos van parejos entre opciones.
 
 ## Lo que encontró la Célula C en su autodiagnóstico (15 de octubre)
 

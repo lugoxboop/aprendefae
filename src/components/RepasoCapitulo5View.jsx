@@ -13,7 +13,7 @@ import { useAuth } from "../auth/AuthProvider.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
 import { CSS_JUEGO, Cierre } from "./mecanicas/corazon/juego.jsx";
-import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente } from "./repasoCap5/comun.jsx";
+import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente, Punto } from "./repasoCap5/comun.jsx";
 import { ToroNegro } from "./repasoCap5/ToroNegro.jsx";
 import { OpcionesTitulo } from "./repasoCap5/OpcionesTitulo.jsx";
 import { Flujos } from "./repasoCap5/Flujos.jsx";
@@ -24,6 +24,8 @@ import { Lotes } from "./repasoCap5/Lotes.jsx";
 import { R5_2 } from "../data/repasoCap5ToroNegroTextos.js";
 import { Mate } from "./repasoCap5/Mate.jsx";
 import { R5_3 } from "../data/repasoCap5MateTextos.js";
+import { Barranquilla } from "./repasoCap5/Barranquilla.jsx";
+import { R5_4 } from "../data/repasoCap5BarranquillaTextos.js";
 import {
   R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, ORDEN_SUBTEMAS,
   prepararR5_1, puntuarR5_1, porTema, textoDeOpcion, renglonesDeAsiento, mayorTrasAsiento,
@@ -261,18 +263,7 @@ function PorTema({ filas }) {
                   solo cuántas. Los puntos siguen aria-hidden: el lector oye el «n de m».
                 */}
                 <div aria-hidden="true" style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
-                  {f.puntos.map((p) => (
-                    <span
-                      key={p.id}
-                      data-punto={p.ok ? "acierto" : "error"}
-                      data-forma={p.ok ? "relleno" : "anillo"}
-                      style={{
-                        width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box",
-                        /* B4 de enganche.md: el acierto, relleno neutro; el teal es DEBE en Contabilidad. */
-                        ...(p.ok ? { background: C.hecho } : { background: "transparent", border: `2px solid ${C.coral}` }),
-                      }}
-                    />
-                  ))}
+                  {f.puntos.map((p) => <Punto key={p.id} ok={p.ok} />)}
                 </div>
               </div>
               <span data-n-de-m style={{ fontFamily: SORA, fontSize: "17px", fontWeight: 700, color: C.texto, whiteSpace: "nowrap" }}>
@@ -379,6 +370,7 @@ export const JUEGOS_REPASO_CAP5 = [
   { id: R5_1.id, Mecanica: RepasoCruzado, titulo: R5_1.nombre },
   { id: R5_2.id, Mecanica: ToroNegro, titulo: R5_2.nombre },
   { id: R5_3.id, Mecanica: Mate, titulo: R5_3.nombre },
+  { id: R5_4.id, Mecanica: Barranquilla, titulo: R5_4.nombre },
 ];
 
 /*
@@ -473,7 +465,7 @@ export default function RepasoCapitulo5View({ nodoInicial = null, onBack }) {
               * del capít…» y se perdía justo el número. Aquí puede encoger y
               * partir en dos renglones; el estilo en línea gana a la clase.
               */}
-            <h1 data-titulo-tema style={{ fontFamily: SORA, fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, flexShrink: 1, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "anywhere" }}>
+            <h1 data-titulo-tema style={{ fontFamily: SORA, fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2 }}>
               {/* «capítulo 5» no se separa: si parte, parte antes. */}
               {tema.title.replace(/ (\S+)$/, "\u00a0$1")}
             </h1>

@@ -107,8 +107,58 @@ Cortado, un estudiante en un teléfono estrecho no sabe dónde está.
 
 **La regla: un título puede encogerse o romper en dos líneas, pero no
 desaparecer.** En una fila flex, el elemento que lleva texto necesita
-`minWidth: 0` para poder encogerse, y hay que dejarle romper. Cada célula lo
-arregla en la vista de su tema; no es un componente compartido.
+`minWidth: 0` para poder encogerse, y hay que dejarle romper.
+
+**Y ya está arreglado en un solo sitio: `src/components/auth/AccountControl.jsx`**,
+en la regla de `.fae-cabecera-titulo > h1`, que deja romper de renglón y
+recorta con `-webkit-line-clamp` para todas las vistas de tema.
+
+**El tope son cuatro renglones, y el número salió de medir, no de elegirlo.**
+A 320 px al título le quedan 164 px —el resto son el botón de volver y la
+reserva de la pastilla—. Medido sobre el paquete construido, con los diez
+temas de Contabilidad: ocho entran en uno o dos renglones, y «Inventarios III:
+descuentos, inventario físico y NIC 2» pide cuatro a 320 px, tres a 360 y dos
+a 375. Con el tope en dos, ese título perdía sus últimas palabras **sin poner
+puntos suspensivos**: el recorte por renglones no avisa, y el estudiante no
+sabe que falta algo. El tope recorta pero no reserva, así que los otros nueve
+siguen ocupando lo que ocupaban.
+
+**Si entra un título más largo, hay que volver a medir.** Esto no se deduce del
+CSS ni del número de caracteres.
+
+Esto decía «cada célula lo arregla en la vista de su tema», y eso fue verdad
+dos días. El resultado: **siete vistas con el mismo arreglo en línea** —T4, T5,
+T6, las tres de T7 y el repaso del capítulo 5—, **tres pruebas de tres células
+distintas** vigilando que los rodeos siguieran puestos, y las vistas que nadie
+había tocado cortando igual. Siete copias de un arreglo son siete sitios donde
+se puede olvidar la octava.
+
+**La lección, que vale para cualquier defecto y no solo para este: cuando la
+misma corrección aparece en la tercera vista, el defecto no está en las
+vistas.** La tercera copia es la señal; a la séptima ya hay que desmontar
+pruebas.
+
+Dos consecuencias para quien venga:
+
+- **No pongas en línea nada que decida cómo cede el título.** Los estilos en
+  línea ganan a la hoja, así que un `overflow: "visible"` suelto anula el
+  recorte compartido sin que se note en ninguna pantalla hasta que un título
+  largo empuje la pantalla entera. `titulo-tema-320.test.mjs` lo vigila en las
+  cuatro vistas de C y `t4-andamio.test.mjs` en la de D. La tipografía sí es de
+  la vista.
+- **Una prueba que exige el rodeo caduca con el rodeo.** Las tres que había
+  —`titulo-tema-320.test.mjs` (C), `t4-andamio.test.mjs` (D) y
+  `r5-1-repaso-cruzado.test.mjs` (E)— afirmaban «la hoja compartida sigue
+  truncando, por eso cada vista la anula», así que arreglar la hoja las ponía
+  en rojo **pidiendo que se devolviera el defecto**. Se reapuntaron: ahora
+  exigen el recorte en la hoja y la AUSENCIA de estilos en línea que lo venzan.
+  Lo que defienden es lo mismo; de lo que cuelgan, no.
+
+  Y la señal para reconocerlo: **si una prueba se pone roja al arreglar algo, y
+  su mensaje describe el arreglo, la prueba estaba vigilando el parche y no el
+  defecto.** Las tres lo decían en voz alta —«por eso cada vista la anula»,
+  «revisar si esta excepción sigue haciendo falta»—. Leer el mensaje antes de
+  tocar el código ahorra el paso de creer que se rompió algo.
 
 ## Verificación contra lo publicado
 
@@ -169,6 +219,134 @@ de cada despliegue** con la consulta de arriba.
 
 **La regla que queda:** una prueba verde sobre archivos no dice nada del estado
 de producción. Lo que no se le pregunta a la base, no se sabe.
+
+## Una medida no es un defecto: cinco de las que me llegaron hoy no lo eran
+
+Las cinco células montaron sondas automáticas y me pasaron sus hallazgos de lo
+compartido. Está bien que lo hagan: así se destapó el piso de 12 px y así se
+destapó el título cortado. Pero de los que me llegaron esta tarde, **cinco no
+eran defectos**, y cada uno falla de una manera distinta que vale la pena
+reconocer antes de arreglar nada.
+
+| lo que llegó | lo que era |
+|---|---|
+| «la etiqueta EJEMPLO sale partida en dos rectángulos» | **un rectángulo**, 135×26, medido en la página. Artefacto de la sonda |
+| «la celebración del cierre tapa el cajón 1,5 s» | el resumen **espera a propósito** a que acabe la celebración, y está escrito en el componente |
+| «Pausar y Ver de nuevo miden 40 px» | ya estaban a 44 cuando se midió. Medida caducada |
+| «Otra vez mide 39 px» | lo mismo, de otra célula |
+| «el botón sobresale 6 px del contenido» | margen negativo que alinea **ópticamente** el texto con la consigna |
+
+Y en la dirección contraria, para no quedarme con que el error es siempre del
+otro: de los cinco textos pequeños que me pasó una célula, **tres eran de código
+que ninguna ruta pinta** y **uno era la excepción de cejilla que este canon ya
+tiene escrita**. Yo los «arreglé» todos antes de comprobarlo, y lo deshice.
+
+**Tres preguntas antes de arreglar un hallazgo que te llegó medido:**
+
+1. **¿Sigue siendo verdad?** Una medida es de un momento. Si lo compartido se
+   tocó después, la lista caducó. Decir la hora a la que se midió cuesta una
+   línea y ahorra el arreglo de algo ya arreglado.
+2. **¿Lo explica el propio componente?** Las dos últimas de la tabla estaban
+   escritas en su sitio, una como «el resumen espera a que acabe la
+   celebración» y la otra como alineación óptica. El comentario de un
+   componente es parte del hallazgo, no un adorno.
+3. **¿Se ve?** Si la sonda dice que algo está roto y mirándolo no se nota, lo
+   más probable es que esté roto el que mide. **«Aunque a la vista no se nota»
+   en un informe es la señal**, y venía escrita en el informe que me llegó.
+
+**Lo que esto NO quiere decir.** Ninguna de las cinco era mala fe ni descuido:
+una sonda que avisa de más es infinitamente mejor que una que calla, y las
+mismas sondas encontraron los defectos de verdad del día. Lo que cambia es quién
+paga el filtro: **el que arregla, no el que mide.** Y cuando un hallazgo no era
+un defecto, se le dice al que lo midió POR QUÉ —con el número— para que su sonda
+deje de contarlo. Si no, lo vuelve a mandar mañana.
+
+## Un repertorio a medias se lee como verde: espera la línea `# fail`
+
+Hermano de los dos de abajo, y me pasó **dos veces el mismo día**.
+
+Lancé `npm test` en segundo plano y fui leyendo el archivo de salida mientras
+corría. Lo que vi:
+
+```
+ok: 735    not ok: 0        → «verde»
+ok: 1527   not ok: 3        → «solo los TODO conocidos»
+ok: 2032   not ok: 4
+# tests 2670 · # pass 2664 · # fail 0 · # todo 4   ← lo único que valía
+```
+
+Las tres primeras lecturas estaban hechas **a mitad de la corrida**, y las tres
+se leían como un resultado. La primera habría dado por buena una rama con 1.935
+pruebas sin ejecutar. Lo peor: `grep -c "not ok"` da 0 cuando todavía no ha
+llegado al archivo que falla, y 0 rojos parece la mejor noticia posible.
+
+**La regla: el repertorio no ha terminado hasta que imprime `# fail`.** Hasta
+esa línea no hay resultado, hay un archivo creciendo. Contar `ok` no sirve
+—2.670 no se sabe de antemano—, y «el proceso ya no está» tampoco: con dos
+corridas a la vez es fácil vigilar el pid de la otra.
+
+Esperar bien, y de paso no inventarse el total:
+
+```bash
+F=salida.txt
+for i in $(seq 1 30); do grep -qE "^# fail" $F && break; read -t 20 _ < /dev/zero; done
+grep -E "^# (tests|pass|fail|todo)" $F || echo "(aún sin resumen: NO es verde)"
+```
+
+El `|| echo` no es adorno: sin él, un `grep` que no encuentra nada imprime nada,
+y «nada» se lee como «sin fallos». Es el falso verde de abajo otra vez, con otro
+disfraz.
+
+## Una prueba que lee un archivo como texto no lo compila
+
+El 15 de octubre añadí un comentario dentro de la plantilla de CSS de
+`AccountControl.jsx` y usé comillas invertidas para citar una propiedad. Una
+comilla invertida **cierra la plantilla**: el archivo quedó roto. Corrí la
+prueba que vigila justo esa regla y salió **verde, 8 de 8**.
+
+Verde porque esa prueba hace `leer("src/components/auth/AccountControl.jsx")` y
+busca con una expresión regular. Para ella el archivo es texto, y un texto roto
+es un texto. Nadie lo importó, así que nadie lo compiló. Lo cazó `npm run build`
+diez minutos después:
+
+```
+ERROR: Expected ";" but found "overflow"
+```
+
+Dos reglas de aquí:
+
+- **Comprobar un archivo por su texto no dice que el archivo sea válido.** Tres
+  pruebas de tres células vigilan esa hoja compartida leyéndola como texto, y
+  ninguna la compila. Lo que valida la sintaxis es la compilación.
+- **Antes de empujar un cambio en una plantilla de CSS, compila.** El repertorio
+  en verde no basta, y es exactamente el caso en que menos lo parece: la prueba
+  del archivo que rompiste es la que te dice que está bien.
+
+Y la trampa de fondo, que ya estaba escrita en este canon dos horas antes de que
+yo volviera a caer: **nada de comillas invertidas dentro de una plantilla de
+CSS**, ni en el código ni en los comentarios. Escribir la regla no inmuniza
+contra ella; compilar, sí.
+
+**Caí una tercera vez, en el mismo archivo, media hora después de escribir esto.**
+Así que la regla dejó de ser una regla y pasó a ser una prueba:
+`src/__tests__/todo-compila.test.mjs` pasa todo `src/` por esbuild —sin ejecutar
+nada— y se pone roja con cualquier error de sintaxis. Tarda dos segundos y corre
+en cada `npm test`, que es lo que de verdad se corre.
+
+La prueba de la diferencia, con la hoja compartida roto a propósito:
+
+| qué se corrió | con el archivo roto |
+|---|---|
+| `titulo-tema-320.test.mjs`, que LEE esa hoja | `pass 6 · fail 0` |
+| `todo-compila.test.mjs` | `fail 1` |
+
+**Cuando uno cae tres veces en la misma trampa, la trampa no se arregla
+escribiéndola mejor.** Se arregla con algo que no dependa de acordarse.
+
+(Y escribiendo esa prueba caí en la hermana del mismo error: un comentario de
+CSS de ejemplo, con su cierre de bloque, dentro del comentario de cabecera.
+Cerró el comentario. El archivo de la prueba que comprueba que todo compila no
+compilaba.)
 
 ## El falso verde: un extractor que no extrae nada dice que todo está bien
 
