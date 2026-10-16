@@ -184,7 +184,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
                             onClick={() => tocarCasilla(id)} style={CASILLA_BTN(estado)}>
                             {v !== undefined ? pesos(v) : "—"}
                           </button>
-                          {r && !r.ok && <span data-era style={{ fontFamily: INTER, fontSize: "12px", color: FAE.teal, marginTop: "2px" }}>era {pesos(r.correcta)}</span>}
+                          {r && !r.ok && <span data-era style={{ fontFamily: INTER, fontSize: "12px", color: FAE.text, marginTop: "2px" }}>era {pesos(r.correcta)}</span>}
                         </span>
                       </div>
                     );

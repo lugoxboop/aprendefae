@@ -335,7 +335,7 @@ test("★★★ la red de la coma (v1.3, decisión 3): un unitario < 100 no se c
     await tocar($(caja, id === "p2" ? "[data-revisar-valores]" : "[data-revisar]"));
     assert.equal($(caja, "[data-aviso-coma]")?.textContent, T.AVISO_COMA, id);
     assert.equal($(caja, "[data-devolucion]").dataset.devolucion, "vacia", `${id}: no califica`);
-    assert.equal(Boolean($(caja, "[data-veredicto]")), false, `${id}: ningún campo toma estado`);
+    assert.equal(Boolean($(caja, "[data-campo-bloque] [data-veredicto]")), false, `${id}: ningún campo toma estado`);
     /* El aviso no revela la clave. */
     for (const c of ["2.300", "2.219,28", "2.130,17"]) assert.equal($(caja, "[data-aviso-coma]").textContent.includes(c), false);
     /* Al corregir se va. */
@@ -451,13 +451,13 @@ test("★★★ E8 · al revisar se destapan los valores correctos y la celda ta
   await tocar($(caja, "[data-revisar-valores]"));
   assert.equal(caja.querySelectorAll("[data-tapada]").length, 0);
   assert.deepEqual([...caja.querySelectorAll("[data-fila=v10] [data-renglon-k=mov] [data-celda]")].map((c) => c.textContent), ["6.000", "2.219,28", "13.315.680"]);
-  assert.deepEqual([...caja.querySelectorAll("[data-campo-bloque] [data-veredicto]")].map((x) => x.textContent), ["No es este valor", "No es este valor"]);
+  assert.deepEqual([...caja.querySelectorAll("[data-campo-bloque] [data-veredicto]")].map((x) => x.textContent), ["No va aquíIncorrecto.", "No va aquíIncorrecto."]);
   assert.equal($(caja, "[data-barra-cifra=unidades]").textContent, "250 u");
 });
 
 /* ═══════════ LA PANTALLA 3: EL VALOR Y LO QUE HABRÍA SIDO ═══════════ */
 
-test("★★★ pantalla 3: con un valor equivocado, la fila se corrige, «Era esta» en 2.219,28, el contorno y la línea con la cifra", async () => {
+test("★★★ pantalla 3: con un valor equivocado, la fila se corrige, «Iba aquí» en 2.219,28, el contorno y la línea con la cifra", async () => {
   for (const v of [9000, 2215.83, 2185]) {
     const { caja, desmontar } = await abrir("p3");
     assert.deepEqual([...caja.querySelectorAll("[data-eleccion]")].map((b) => b.dataset.eleccion), ORDEN.map(String));
@@ -568,9 +568,11 @@ test("★★★ E1 · cada texto del paquete y cada rótulo fijo salen en la pan
 
 test("★★ B5 · ninguna frase sale dos veces en la misma pantalla, contando la pista abierta (los nombres de cuenta no cuentan)", async () => {
   const cuentas = new Set(T.HOJA_PERMANENTE);
+  /* §4.2: la pastilla va en cada pieza calificada; su palabra se repite a propósito. */
+  const PASTILLAS = new Set(["No va aquí"]);
   const repetidas = (raiz) => {
     const hojas = [...raiz.querySelectorAll("p, span, button, h3, li, div, label")].filter((el) => !el.children.length).map((el) => el.textContent.trim())
-      .filter((t) => t.split(/\s+/).length >= 3 && !cuentas.has(t));
+      .filter((t) => t.split(/\s+/).length >= 3 && !cuentas.has(t) && !PASTILLAS.has(t));
     return hojas.filter((t, k) => hojas.indexOf(t) !== k);
   };
   let estados = 0;
@@ -619,7 +621,7 @@ test("★★★ se juega entera: cinco pantallas, una calificación cada una, el
 
 /* ═══════════ B4 E INFLESZ ═══════════ */
 
-test("★★ B4 · los estados de r5-5 son los de comun.jsx: neutro con palabra en el acierto, coral en el error, discontinuo en lo revelado", async () => {
+test("★★ B4 · los estados de r5-5 son los de comun.jsx: 2 px #F8F9FA con «Correcto», coral con «No va aquí», 2 px #F8F9FA con «Iba aquí»", async () => {
   const fuente = leer("src/components/repasoCap5/Permanente.jsx");
   assert.doesNotMatch(fuente, /teal|#2A9D8F/i);
   assert.match(fuente, /import \{[^}]*\bESTADOS\b[^}]*\} from "\.\/comun\.jsx"/);
@@ -628,7 +630,7 @@ test("★★ B4 · los estados de r5-5 son los de comun.jsx: neutro con palabra 
   await tocar($(caja, "[data-eleccion=gasto]"));
   assert.equal($(caja, "[data-eleccion=gasto]").style.border, borde(ESTADOS.mal.border));
   assert.equal($(caja, "[data-eleccion=compra]").style.border, borde(ESTADOS.revelada.border));
-  assert.deepEqual([...caja.querySelectorAll("[data-eleccion]")].map((b) => b.textContent), [`${RP.aLaCompra}Era esta`, `${RP.alGasto}Incorrecta`]);
+  assert.deepEqual([...caja.querySelectorAll("[data-eleccion]")].map((b) => b.textContent), [`${RP.aLaCompra}Iba aquí`, `${RP.alGasto}No va aquíIncorrecto.`]);
   await escribir($(caja, "[data-campo=unitario]"), "230000");
   await tocar($(caja, "[data-revisar]"));
   assert.equal($(caja, "[data-campo=unitario]").style.border, borde(ESTADOS.ok.border));

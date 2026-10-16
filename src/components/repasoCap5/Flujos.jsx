@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { C, INTER } from "./comun.jsx";
+import { C, INTER, HUNDIDO_OPACO } from "./comun.jsx";
 import { INTERFAZ_R5_1 } from "../../data/repasoCap5Cruzado.js";
 import { useReproduccion, enFase } from "./movimiento.js";
 
@@ -116,7 +116,7 @@ export function Flujos({ flujo, clave, onTerminar }) {
               return (
                 <span key={k} data-barra={`periodo-${k + 1}`} data-alto={alto} style={{ ...barra(k + 1, alto, 2, { display: "flex", flexDirection: "column-reverse", overflow: "hidden" }), ...crece(g.periodos[k], ms) }}>
                   {partes.map((a2, j) => (
-                    <span key={j} data-segmento={a2} style={{ display: "block", height: `${a2}px`, flexShrink: 0, boxSizing: "border-box", background: C.hecho, borderBottom: j ? `1px solid ${C.navy}` : "none" }} />
+                    <span key={j} data-segmento={a2} style={{ display: "block", height: `${a2}px`, flexShrink: 0, boxSizing: "border-box", background: C.hecho, borderBottom: j ? `1px solid ${HUNDIDO_OPACO}` : "none" }} />
                   ))}
                 </span>
               );

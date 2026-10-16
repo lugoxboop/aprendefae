@@ -1,4 +1,4 @@
-import { C, INTER, MARCA } from "./comun.jsx";
+import { C, INTER, MARCA, CONTADOR } from "./comun.jsx";
 import { INTERFAZ_R5_1 } from "../../data/repasoCap5Cruzado.js";
 
 /*
@@ -104,7 +104,7 @@ export const SILUETAS = { raya: Raya, "titulo-valor": TituloValor, facturas: Fac
 export const ANCHO_SILUETA = { raya: 160, "titulo-valor": 168, facturas: 150, bodega: 200 };
 export const ALTO_SILUETA = { raya: 44, "titulo-valor": 44, facturas: 44, bodega: 48 };
 
-/* ═══════════ LA CABECERA: «PREGUNTA n DE 6» Y LA SILUETA DEL TEMA AL 50 % ═══════════ */
+/* ═══════════ LA CABECERA: EL CONTADOR «Pregunta n de 7» Y LA SILUETA DEL TEMA AL 50 % ═══════════ */
 
 /*
  * v2 (§0): sale la banda de escena de 72 px de v1. Queda un renglón de 40 px
@@ -115,7 +115,8 @@ export function Cabecera({ actual, total, escena, progreso = INTERFAZ_R5_1.progr
   const Silueta = SILUETAS[escena];
   return (
     <div data-cabecera-r5 style={{ display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: "40px", gap: "12px" }}>
-      <p data-progreso style={{ ...MARCA, margin: 0 }}>{progreso(actual + 1, total)}</p>
+      {/* §4.3: el contador a 12 px #A8B6C8, sin mayúsculas. */}
+      <p data-progreso style={{ ...CONTADOR, margin: 0 }}>{progreso(actual + 1, total)}</p>
       <span aria-hidden="true" data-silueta-cabecera={escena} style={{ position: "relative", width: `${ANCHO_SILUETA[escena] / 2}px`, height: `${ALTO_SILUETA[escena] / 2}px`, flexShrink: 0 }}>
         <span style={{ position: "absolute", left: 0, top: 0, transform: "scale(0.5)", transformOrigin: "left top" }}><Silueta /></span>
       </span>
@@ -148,7 +149,7 @@ export function Pista({ texto, abierta, onAbrir, rotulos = INTERFAZ_R5_1 }) {
     );
   }
   return (
-    <div data-pista style={{ marginTop: "16px", padding: "10px 14px", borderRadius: "12px", background: C.navy, borderLeft: `3px solid ${C.hecho}` }}>
+    <div data-pista style={{ marginTop: "16px", padding: "10px 14px", borderRadius: "12px", background: "rgba(184,196,212,0.12)", borderLeft: `3px solid ${C.atenuado}` }}>
       <p style={{ ...MARCA, margin: "0 0 4px" }}>{rotulos.marcaPista}</p>
       <p style={{ margin: 0, fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.texto }}>{texto}</p>
     </div>

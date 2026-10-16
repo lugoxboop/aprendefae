@@ -81,7 +81,7 @@ function CuentaEnBlanco({
    * las dos columnas se muevan cuando aparece. El marco no es un lado del
    * asiento, así que aquí teal y coral sí valen.
    */
-  const borde = estado === "correcta" ? FAE.teal : estado === "incorrecta" ? FAE.coral : "rgba(248,249,250,0.18)";
+  const borde = estado === "correcta" ? FAE.text : estado === "incorrecta" ? FAE.coral : "rgba(248,249,250,0.18)";
   const veredicto = estado === "correcta" || estado === "incorrecta";
 
   return (
@@ -104,7 +104,7 @@ function CuentaEnBlanco({
         >
           <MarcaVeredicto
             bien={estado === "correcta"}
-            color={estado === "correcta" ? FAE.teal : FAE.coral}
+            color={estado === "correcta" ? FAE.text : FAE.coral}
             etiqueta={estado === "correcta" ? `${cuenta ?? `Cuenta ${indice + 1}`}, bien puesta` : `${cuenta ?? `Cuenta ${indice + 1}`}, mal puesta`}
           />
         </span>

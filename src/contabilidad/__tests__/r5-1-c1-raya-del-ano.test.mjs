@@ -192,7 +192,7 @@ test("★★★ error: lo de la elegida que no es corriente cae abajo; con la co
   }
 });
 
-test("★★★ B4: la figura no lleva coral, teal ni ámbar en ningún estado; los puntos llevan anillo #1D3557 (decisión 4)", async () => {
+test("★★★ B4: la figura no lleva coral, teal ni ámbar en ningún estado; los puntos llevan anillo del fondo hundido #14202F (decisión 4; el navy ya no es superficie, §6)", async () => {
   const PROHIBIDOS = ["231, 111, 81", "e76f51", "42, 157, 143", "2a9d8f", "233, 196, 106", "e9c46a"];
   for (const id of ["c1-a", "c1-b", "c1-c", "c1-d"]) {
     const { caja, desmontar } = await abrir();
@@ -203,7 +203,7 @@ test("★★★ B4: la figura no lleva coral, teal ni ámbar en ningún estado; 
       const f = caja.querySelector("[data-raya-c1]");
       const estilos = [f, ...f.querySelectorAll("*")].map((el) => `${el.getAttribute("style") ?? ""} ${el.getAttribute("stroke") ?? ""}`.toLowerCase()).join(" ");
       for (const c of PROHIBIDOS) assert.equal(estilos.includes(c), false, `${id} (vuelta ${vuelta}): ${c} en la figura`);
-      for (const p of f.querySelectorAll("[data-punto-raya=si]")) assert.match(p.style.boxShadow, /^0 0 0 2px (#1D3557|rgb\(29, 53, 87\))$/i);
+      for (const p of f.querySelectorAll("[data-punto-raya=si]")) assert.match(p.style.boxShadow, /^0 0 0 2px (#14202F|rgb\(20, 32, 47\))$/i);
     }
     desmontar();
   }
@@ -273,9 +273,9 @@ test("★★★ FP: el rendimiento son los puntos / 25, nunca aciertos / 7; 3, 6
   assert.equal(D.TOTAL_PUNTOS_R5_1, 25);
 });
 
-test("★★ la cabecera dice «PREGUNTA 1 DE 7» con la silueta de la raya (80 × 22), y POR TEMA abre con «Activos corrientes»", async () => {
+test("★★ la cabecera dice «Pregunta 1 de 7» con la silueta de la raya (80 × 22), y POR TEMA abre con «Activos corrientes»", async () => {
   const { caja } = await montar(h(RepasoCruzado, { pantallas: D.PANTALLAS_R5_1 }));
-  assert.equal(caja.querySelector("[data-progreso]").textContent, "PREGUNTA 1 DE 7");
+  assert.equal(caja.querySelector("[data-progreso]").textContent, "Pregunta 1 de 7");
   const s = caja.querySelector("[data-silueta-cabecera]");
   assert.equal(s.dataset.siluetaCabecera, "raya");
   assert.deepEqual([s.style.width, s.style.height], ["80px", "22px"]);
