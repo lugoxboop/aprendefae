@@ -1,15 +1,25 @@
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * LO COMÚN DEL REPASO DEL CAPÍTULO 5 (Célula E): las palabras que dicen si una
- * pieza calificada quedó bien (E3 de enganche.md). Vienen de r5-2 v2.1 y
- * Kamogawa las fija para r5-2, r5-3 y r5-4: cuenta «Correcta» / «No va aquí»;
- * valor «Correcto» / «No es este valor».
+ * LO COMÚN DEL REPASO DEL CAPÍTULO 5 (Célula E): las palabras del feedback,
+ * literales del estándar único de Hacer (PROMPT MAESTRO,
+ * orquestador/conocimiento/prompts/disenadores-de-celula-v1.md, §4.2 y §4.3).
+ * Mueren «Correcta», «Incorrecta», «Era esta», «Era este», «No es este
+ * valor» y «No es este lado»: el feedback dice siempre una de tres palabras.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-export const VEREDICTO = {
-  cuenta: { ok: "Correcta", mal: "No va aquí" },
-  valor: { ok: "Correcto", mal: "No es este valor" },
+export const FEEDBACK = {
+  ok: "Correcto",
+  mal: "No va aquí",
+  revelada: "Iba aquí",
+  /* Lo que dice el lector de pantalla en el error. */
+  lectorMal: "Incorrecto.",
+  comprobar: "Comprobar",
+  verMiResumen: "Ver mi resumen",
 };
+
+/* Las tres palabras, iguales para la cuenta, el valor y el lado. */
+const TRES = { ok: FEEDBACK.ok, mal: FEEDBACK.mal, revelada: FEEDBACK.revelada };
+export const VEREDICTO = { cuenta: TRES, valor: TRES, lado: TRES };
 
 /*
  * «El mes en dos cuentas» (paquete e5-mes-en-dos-cuentas): los rótulos fijos

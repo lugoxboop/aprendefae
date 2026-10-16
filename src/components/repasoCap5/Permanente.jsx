@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 /* Los estados de calificación, el punto y la palabra: de comun.jsx (B4, E3). */
-import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente, ESTADOS, Punto, MarcaPieza } from "./comun.jsx";
-import { VEREDICTO } from "../../data/repasoCap5Comun.js";
-import { INTERFAZ_R5_1 } from "../../data/repasoCap5Cruzado.js";
+import {
+  C, INTER, SORA, MARCA, CEJILLA, CIFRA, HUNDIDO, REPOSO, CSS_FOCO, Devolucion, BotonSiguiente, Responder, Comprobar,
+  ESTADOS, MarcaPieza, Pastilla, useTrasError,
+} from "./comun.jsx";
 import { cifra, leerCifra } from "./ToroNegro.jsx";
 import { OpcionR5 } from "./OpcionR5.jsx";
 import { Cabecera, Pista } from "./Cabecera.jsx";
@@ -40,7 +41,6 @@ import { puedeRevisarMate } from "../../data/repasoCap5MateJuego.js";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const LECTOR = { acierto: "Correcto: ", error: "Incorrecto: " };
 const DIVISORIA = "1px solid rgba(184,196,212,0.25)";
 const ESPERA_P1 = 900;
 const ESPERA_P3 = 1200;
@@ -65,8 +65,6 @@ const ACTIVIDAD_PERMANENTE = {
 const CSS_PERMANENTE = `
 .r55-k { display: grid; grid-template-columns: 60px 64px 76px 101px; column-gap: 6px; align-items: center; }
 @media (max-width: 359px) { .r55-k { grid-template-columns: 53px 41px 72px 80px; } }
-.r55-campo:focus { outline: none; border: 2px solid ${C.ambar} !important; }
-[data-r5-5] button:focus-visible { outline: 2px solid #F8F9FA; outline-offset: 2px; }
 @keyframes r55-destapa { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 .r55-destapa { animation: r55-destapa 200ms ease-out both; }
 @keyframes r55-entra { from { max-height: 0; opacity: 0; } to { max-height: 200px; opacity: 1; } }
@@ -77,9 +75,9 @@ const CSS_PERMANENTE = `
 .r55-despliega { animation: r55-despliega 300ms ease-out both; overflow: hidden; }
 .r55-campo-entra { animation: r55-despliega 240ms ease-out both; overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .r55-destapa, .r55-entra, .r55-franja, .r55-despliega, .r55-campo-entra { animation: none; } }
-`;
+` + CSS_FOCO;
 
-const NUMERO = { fontFamily: INTER, fontSize: "14px", lineHeight: "18px", fontVariantNumeric: "tabular-nums", color: C.texto, textAlign: "right", whiteSpace: "nowrap" };
+const NUMERO = { ...CIFRA, fontSize: "14px", lineHeight: "18px", color: C.texto, textAlign: "right", whiteSpace: "nowrap" };
 const MARCA_K = { ...MARCA, letterSpacing: "0.02em" };
 const fechaDe = (f) => `${f.dia} ${MES_CORTO}`;
 
@@ -163,7 +161,7 @@ function FilaK({ id, modo, tapar = {}, mov = null, saldo = null, destapa = false
 
 function Kardex({ children, cajaRef, onTocar }) {
   return (
-    <div ref={cajaRef} data-kardex onClick={onTocar} style={{ background: C.navy, borderRadius: "12px", padding: "12px" }}>
+    <div ref={cajaRef} data-kardex onClick={onTocar} style={{ ...HUNDIDO, borderRadius: "12px", padding: "12px" }}>
       <div className="r55-k" aria-hidden="true" style={{ minHeight: "24px" }}>
         <span />
         {[RP.cant, RP.cUnit, RP.total].map((m) => <span key={m} style={{ ...MARCA_K, textAlign: "right" }}>{m}</span>)}
@@ -231,7 +229,7 @@ function Barra({ pasos, clave, contorno = null, linea = null }) {
     <div data-barra={dato}>
       <div style={{ minHeight: "18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
         <span style={{ fontFamily: INTER, fontSize: "13px", color: C.atenuado }}>{et}</span>
-        <span data-barra-cifra={dato} style={{ fontFamily: INTER, fontSize: "14px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>{txt}</span>
+        <span data-barra-cifra={dato} style={{ ...CIFRA, fontSize: "14px", fontWeight: 600, color: C.texto }}>{txt}</span>
       </div>
       <div style={{ position: "relative", marginTop: "4px", height: "8px", borderRadius: "4px", background: C.fondo }}>
         <div data-relleno={dato} style={{ height: "100%", borderRadius: "4px", background: C.hecho, width: w, ...ancho }} />
@@ -240,7 +238,7 @@ function Barra({ pasos, clave, contorno = null, linea = null }) {
     </div>
   );
   return (
-    <div ref={caja} data-barra-inventario data-en-curso={enCurso ? "si" : "no"} onClick={saltar} style={{ background: C.navy, borderRadius: "12px", padding: "10px 12px" }}>
+    <div ref={caja} data-barra-inventario data-en-curso={enCurso ? "si" : "no"} onClick={saltar} style={{ ...HUNDIDO, borderRadius: "12px", padding: "10px 12px" }}>
       <p style={{ ...MARCA, margin: "0 0 6px" }}>{RP.inventario}</p>
       {renglon(RP.unidades, RP.unidadesCorto(cifraK(Math.round(q))), pct(ahora.q, ESCALA_Q), "unidades")}
       <div style={{ height: "6px" }} />
@@ -268,7 +266,8 @@ export const pintarUnitario = (n) => (n === null ? "" : unitarioEnLibro(n));
 
 function Campo({ etiqueta, tipo, valor, onValor, estado = null, bloqueado = false, aviso = false, nota = null, dato }) {
   const id = `r55-${dato}`;
-  const borde = estado ? ESTADOS[estado].border : `1.5px solid ${aviso ? C.coral : C.atenuado}`;
+  /* §4.1: reposo 1 px; el aviso de la coma no es un error (coral solo error): 2 px #F8F9FA. */
+  const borde = estado ? ESTADOS[estado].border : aviso ? ESTADOS.ok.border : REPOSO;
   return (
     <div data-campo-bloque={dato}>
       {/* Con un solo campo por fila (pantalla 4), la marca puede pasar sobre la mitad vacía de la derecha. */}
@@ -285,11 +284,11 @@ function Campo({ etiqueta, tipo, valor, onValor, estado = null, bloqueado = fals
         value={tipo === "unitario" ? pintarUnitario(valor) : (valor === null ? "" : cifra(valor))}
         onChange={(e) => onValor(tipo === "unitario" ? leerUnitario(e.target.value) : leerCifra(e.target.value, 9))}
         style={{
-          width: "100%", height: "48px", boxSizing: "border-box", borderRadius: "10px", padding: "0 8px", background: estado ? ESTADOS[estado].background : C.fondo,
-          border: borde, fontFamily: INTER, fontSize: "17px", fontWeight: 600, fontVariantNumeric: "tabular-nums", textAlign: "right", color: C.texto,
+          width: "100%", height: "48px", boxSizing: "border-box", borderRadius: "10px", padding: "0 8px", background: estado ? ESTADOS[estado].background : "transparent",
+          border: borde, ...CIFRA, fontSize: "17px", fontWeight: 600, textAlign: "right", color: C.texto,
         }}
       />
-      {estado && <span style={{ display: "flex", justifyContent: "flex-end", marginTop: "4px", minHeight: "16px" }}><MarcaPieza pieza="valor" estado={estado} textos={VEREDICTO.valor} /></span>}
+      {estado && <span style={{ display: "flex", justifyContent: "flex-end", marginTop: "4px", minHeight: "16px" }}><MarcaPieza pieza="valor" estado={estado} /></span>}
       {nota && !estado && <p data-coma-sola style={{ margin: "4px 0 0", minHeight: "16px", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: C.atenuado }}>{nota}</p>}
     </div>
   );
@@ -300,10 +299,9 @@ function AvisoComa() {
   return <p data-aviso-coma role="status" style={{ margin: "6px 0 0", fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: C.texto }}>{AVISO_COMA}</p>;
 }
 
-/* Un botón de elección: los estados de comun.jsx, con su palabra y su punto o anillo (v1.1 §2). */
-const PALABRA = { ok: INTERFAZ_R5_1.correcta, mal: INTERFAZ_R5_1.incorrecta, revelada: INTERFAZ_R5_1.eraEsta };
+/* Un botón de elección (§4.1 y §4.2): sin relleno; su estado con la pastilla común. */
 function Eleccion({ texto, estado = null, onClick, bloqueado, dato, alto = 52, cifraArriba = false }) {
-  const visto = estado ? ESTADOS[estado] : { border: "1.5px solid rgba(184,196,212,0.45)", background: C.fondo };
+  const visto = ESTADOS[estado] ?? ESTADOS.reposo;
   return (
     <button
       type="button"
@@ -318,34 +316,21 @@ function Eleccion({ texto, estado = null, onClick, bloqueado, dato, alto = 52, c
       }}
     >
       <span style={cifraArriba
-        ? { fontFamily: INTER, fontSize: "15px", lineHeight: "20px", fontWeight: 600, fontVariantNumeric: "tabular-nums" }
+        ? { ...CIFRA, fontSize: "15px", lineHeight: "20px", fontWeight: 600 }
         : { ...MARCA, color: C.texto, fontSize: "12px", letterSpacing: "0.04em" }}
       >
         {texto}
       </span>
-      <span style={{ minHeight: "16px", display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px" }}>
-        {estado && <><Punto ok={estado !== "mal"} />{PALABRA[estado]}</>}
+      <span style={{ minHeight: "16px", display: "inline-flex", alignItems: "center" }}>
+        {estado && <Pastilla estado={estado} />}
       </span>
     </button>
   );
 }
 
-function BotonRevisar({ activo, onClick, texto, dato = "revisar" }) {
-  return (
-    <button
-      type="button"
-      {...{ [`data-${dato}`]: true }}
-      disabled={!activo}
-      onClick={onClick}
-      style={{
-        marginTop: "16px", width: "100%", minHeight: "52px", borderRadius: "12px", border: "none",
-        background: activo ? C.ambar : C.navy, color: activo ? C.fondo : C.atenuado,
-        fontFamily: SORA, fontSize: "16px", fontWeight: 600, cursor: activo ? "pointer" : "default",
-      }}
-    >
-      {texto}
-    </button>
-  );
+/* §4.3: «Comprobar» (varios campos), el Responder común. */
+function BotonRevisar({ activo, onClick, dato = "revisar" }) {
+  return <Comprobar activo={activo} onClick={onClick} dato={dato} />;
 }
 
 const PAR = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" };
@@ -356,6 +341,7 @@ let siguienteId = 0;
 function AsientoDelCosto({ p, r, onRevisar }) {
   const [renglones, setRenglones] = useState([]);
   const [hoja, setHoja] = useState(null);
+  const revelar = useTrasError(Boolean(r?.asiento && !r.asiento.ok));
   const listo = ({ lado, cuenta, valor }) => {
     setRenglones((xs) => (hoja.inicial ? xs.map((x) => (x.id === hoja.inicial.id ? { ...x, cuenta, valor } : x)) : [...xs, { id: `p${siguienteId++}`, lado, cuenta, valor }]));
     setHoja(null);
@@ -375,12 +361,13 @@ function AsientoDelCosto({ p, r, onRevisar }) {
           onEditar={(x) => setHoja({ lado: x.lado, inicial: x })}
         />
       </div>
-      {asiento && !asiento.ok && (
+      {/* §4.2: «Iba aquí», 0,7 s después del error. */}
+      {revelar && (
         <div style={{ marginTop: "12px" }}>
-          <Armador datos={{ "data-armador": "era-este" }} soloLectura marca={RP.eraEste} renglones={asiento.correcto.map((c, k) => ({ ...c, id: `c${k}` }))} />
+          <Armador datos={{ "data-armador": "era-este" }} soloLectura revelada renglones={asiento.correcto.map((c, k) => ({ ...c, id: `c${k}` }))} />
         </div>
       )}
-      {!r && <BotonRevisar dato="revisar-asiento" activo={puedeRevisarMate(renglones)} onClick={() => onRevisar(renglones)} texto={RP.revisarAsiento} />}
+      {!r && <BotonRevisar dato="revisar-asiento" activo={puedeRevisarMate(renglones)} onClick={() => onRevisar(renglones)} />}
       {hoja && (
         <HojaRenglon
           lado={hoja.lado}
@@ -459,7 +446,7 @@ function Pantalla1({ r, onCalificar }) {
       <div style={{ marginTop: "16px" }}>
         <Barra clave={r ? "p1-revisada" : "p1"} pasos={r ? [estadoDe("c2"), estadoDe("d8")] : [estadoDe("inicial")]} />
       </div>
-      {!r && <BotonRevisar activo={Boolean(campo && unitario)} onClick={revisar} texto={RP.revisar} />}
+      {!r && <BotonRevisar activo={Boolean(campo && unitario)} onClick={revisar} />}
     </>
   );
 }
@@ -504,7 +491,7 @@ function Pantalla2({ r, onCalificar }) {
       <div style={{ marginTop: "16px" }}>
         <Barra clave={valores ? "p2-revisada" : "p2"} pasos={valores ? [estadoDe("v10")] : [estadoDe("d8")]} />
       </div>
-      {!valores && <BotonRevisar dato="revisar-valores" activo={Boolean(promedio && costo)} onClick={revisarValores} texto={RP.revisarValores} />}
+      {!valores && <BotonRevisar dato="revisar-valores" activo={Boolean(promedio && costo)} onClick={revisarValores} />}
       {valores && <AsientoDelCosto p={p} r={r} onRevisar={revisarAsiento} />}
     </>
   );
@@ -643,7 +630,7 @@ function Pantalla4({ r, onCalificar }) {
       <div style={{ marginTop: "16px" }}>
         <Barra clave={r ? "p4-revisada" : "p4"} pasos={r ? [estadoDe("v28")] : [estadoDe("c25")]} />
       </div>
-      {!r && <BotonRevisar activo={Boolean(promedio && costo)} onClick={revisar} texto={RP.revisar} />}
+      {!r && <BotonRevisar activo={Boolean(promedio && costo)} onClick={revisar} />}
     </>
   );
 }
@@ -653,7 +640,7 @@ function Pantalla4({ r, onCalificar }) {
 /* v1.3, decisión 4: dos renglones, sin barras (con barras, el 0,3 % medía menos de 1 px). */
 function CostoDelMes() {
   return (
-    <div data-costo-del-mes style={{ background: C.navy, borderRadius: "12px", padding: "10px 12px" }}>
+    <div data-costo-del-mes style={{ ...HUNDIDO, borderRadius: "12px", padding: "10px 12px" }}>
       <p style={{ ...MARCA, margin: "0 0 4px" }}>{RP.vendidoEnElMes}</p>
       {[[RP.periodico, VENDIDO_PERIODICO], [RP.permanente, VENDIDO_PERMANENTE]].map(([m, v]) => (
         <div key={m} style={{ minHeight: "28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -676,7 +663,7 @@ function FilaDelDiez({ abierta, onTocar }) {
         onClick={onTocar}
         style={{
           width: "100%", minHeight: "44px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", margin: "4px 0",
-          padding: "0 8px", borderRadius: "8px", border: `1.5px solid ${C.hecho}`, background: "transparent", cursor: "pointer", color: C.texto,
+          padding: "0 8px", borderRadius: "8px", border: REPOSO, background: "transparent", cursor: "pointer", color: C.texto,
         }}
       >
         <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -743,21 +730,15 @@ const MECANICAS = { p1: Pantalla1, p2: Pantalla2, p3: Pantalla3, p4: Pantalla4, 
 
 function Entrada({ onEmpezar }) {
   return (
-    <div data-r5-5 data-paso="entrada">
+    <div data-r5-5 data-r5 data-paso="entrada">
       <p data-objetivo style={{ margin: "0 0 16px", fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.atenuado }}>{R5_5.objetivo}</p>
-      <p style={{ ...MARCA, margin: 0 }}>{ENTRADA_PERMANENTE.marca}</p>
+      <p style={{ ...CEJILLA, margin: 0 }}>{ENTRADA_PERMANENTE.marca}</p>
       <h3 style={{ margin: "8px 0 0", fontFamily: SORA, fontSize: "24px", lineHeight: "32px", fontWeight: 600, color: C.texto }}>{ENTRADA_PERMANENTE.titulo}</h3>
       <p data-apertura style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{ENTRADA_PERMANENTE.apertura}</p>
       <p data-instruccion style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "14px", lineHeight: "20px", color: C.atenuado }}>{ENTRADA_PERMANENTE.instruccion}</p>
       <div style={{ marginTop: "16px" }}><TarjetasDeDatos /></div>
-      <button
-        type="button"
-        data-empezar
-        onClick={onEmpezar}
-        style={{ marginTop: "24px", width: "100%", minHeight: "52px", borderRadius: "12px", border: "none", background: C.ambar, color: C.fondo, fontFamily: SORA, fontSize: "16px", fontWeight: 600, cursor: "pointer" }}
-      >
-        {ENTRADA_PERMANENTE.empezar}
-      </button>
+      {/* §4.3: el botón principal es el Responder común, nunca ámbar. */}
+      <div style={{ marginTop: "10px" }}><Responder onClick={onEmpezar} datos={{ "data-empezar": true }}>{ENTRADA_PERMANENTE.empezar}</Responder></div>
     </div>
   );
 }
@@ -839,7 +820,7 @@ function Partida({ onCompletar, pasoInicial, ordenP3 }) {
 
   if (terminado) {
     return (
-      <div data-r5-5 data-cierre>
+      <div data-r5-5 data-r5 data-cierre>
         <style>{CSS_JUEGO + CSS_PERMANENTE}</style>
         <KardexCerrado />
         <Cierre pct={Math.round(puntuarR5_5(bien, TOTAL_R5_5))} onReiniciar={reiniciar} />
@@ -856,7 +837,7 @@ function Partida({ onCompletar, pasoInicial, ordenP3 }) {
   }
   const Mecanica = MECANICAS[p.id];
   return (
-    <div ref={raiz} data-r5-5 data-paso={p.id} style={{ paddingTop: "12px" }}>
+    <div ref={raiz} data-r5-5 data-r5 data-paso={p.id} style={{ paddingTop: "12px" }}>
       <style>{CSS_JUEGO + CSS_PERMANENTE}</style>
       <Cabecera actual={paso} total={TOTAL_R5_5} escena="bodega" progreso={RP.progreso} />
       <p data-enunciado style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "16px", lineHeight: "24px", fontWeight: 600, color: C.texto }}>{p.enunciado}</p>
@@ -864,8 +845,8 @@ function Partida({ onCompletar, pasoInicial, ordenP3 }) {
         <Mecanica key={`${p.id}-${intento}`} r={r} onCalificar={calificar} orden={ordenP3} />
       </div>
       {!r && <Pista key={p.id} texto={p.pista} abierta={pistaAbierta} onAbrir={() => setPistaAbierta(true)} />}
-      <Devolucion r={r && { ok: r.ok, textos: r.textos }} lector={LECTOR} />
-      {r && <BotonSiguiente onClick={siguiente} botonRef={boton} texto={RP.siguiente} />}
+      <Devolucion r={r && { ok: r.ok, textos: r.textos }} />
+      {r && <BotonSiguiente onClick={siguiente} botonRef={boton} sustantivo={RP.sustantivo} ultimo={paso + 1 === TOTAL_R5_5} />}
     </div>
   );
 }

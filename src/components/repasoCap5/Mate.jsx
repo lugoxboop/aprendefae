@@ -1,8 +1,10 @@
 import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 /* Los estados de calificación, el «ERA ESTE», los puntos y la palabra: de comun.jsx (B4, E3). */
-import { C, INTER, SORA, MARCA, SOLO_LECTOR, Devolucion, BotonSiguiente, ESTADOS, MARCA_ERA_ESTE, Punto, MarcaPieza } from "./comun.jsx";
-import { VEREDICTO } from "../../data/repasoCap5Comun.js";
+import {
+  C, INTER, SORA, MARCA, CEJILLA, CONTADOR, CIFRA, HUNDIDO, REPOSO, SOLO_LECTOR, LECTOR, CSS_FOCO, Devolucion, BotonSiguiente, Responder, Comprobar,
+  ESTADOS, Punto, MarcaPieza, Pastilla, useTrasError,
+} from "./comun.jsx";
 import { cifra, leerCifra } from "./ToroNegro.jsx";
 import { MesEnDosCuentas } from "./MesEnDosCuentas.jsx";
 import { movimientosDelMes } from "../../data/repasoCap5Mes.js";
@@ -30,7 +32,6 @@ import { evaluarMate, puedeRevisarMate, sumasDe, puntuarR5_3, MAXIMO_POR_LADO } 
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const LECTOR = { acierto: "Correcto: ", error: "Incorrecto: " };
 export const DIGITOS_DEL_CAMPO = 9;
 const DIVISORIA = "1px solid rgba(184,196,212,0.25)";
 /* El mes en dos cuentas (Caja e IVA por pagar): siempre la cifra del asiento correcto. */
@@ -53,9 +54,8 @@ const Actividad = createContext(ACTIVIDAD_MATE);
 const useActividad = () => useContext(Actividad);
 /* r5-5 usa el armador, su hoja y las tarjetas de la entrada con sus propios datos. */
 export const ConActividad = ({ actividad, children }) => <Actividad.Provider value={actividad}>{children}</Actividad.Provider>;
-const CSS_MATE = `
-.mate-campo:focus { outline: none; border: 2px solid ${C.ambar} !important; }
-`;
+/* §6: el foco es el anillo común (comun.jsx); nada en ámbar. */
+const CSS_MATE = CSS_FOCO;
 
 /* ═══════════ LA LÍNEA DE MARZO (§1) ═══════════ */
 
@@ -87,9 +87,9 @@ export function LineaDeMarzo({ actual = null, hechos = 0 }) {
           {`${marcaActual.dia} ${MES_CORTO}`}
         </span>
       )}
-      <span aria-hidden="true" style={{ position: "absolute", left: 0, right: 0, top: "21px", height: "2px", background: C.navy }} />
+      <span aria-hidden="true" style={{ position: "absolute", left: 0, right: 0, top: "21px", height: "2px", background: "rgba(248,249,250,0.35)" }} />
       {nodos.filter((n) => n.abajo).map((n) => (
-        <span key={`v-${n.k}`} aria-hidden="true" style={{ position: "absolute", left: `calc(${xDelDia(n.a.dia)} - 1px)`, top: "22px", width: "2px", height: "14px", background: C.navy }} />
+        <span key={`v-${n.k}`} aria-hidden="true" style={{ position: "absolute", left: `calc(${xDelDia(n.a.dia)} - 1px)`, top: "22px", width: "2px", height: "14px", background: "rgba(248,249,250,0.35)" }} />
       ))}
       {nodos.map((n) => (
         <span
@@ -100,7 +100,8 @@ export function LineaDeMarzo({ actual = null, hechos = 0 }) {
           style={{
             position: "absolute", left: `calc(${xDelDia(n.a.dia)} - ${NODO / 2}px)`, top: `${22 - NODO / 2 + (n.abajo ? 14 : 0)}px`,
             width: `${NODO}px`, height: `${NODO}px`, borderRadius: "50%", boxSizing: "border-box",
-            background: n.estado === "hecho" ? C.hecho : n.estado === "actual" ? C.ambar : C.fondo,
+            /* §4.3: el nodo actual deja el ámbar y pasa a #F8F9FA, con su forma. */
+            background: n.estado === "hecho" ? C.hecho : n.estado === "actual" ? C.texto : C.fondo,
             border: n.estado === "pendiente" ? `1.5px solid ${C.atenuado}` : "none",
           }}
         />
@@ -115,14 +116,14 @@ export function TarjetasDeDatos() {
   const { DATOS_DEL_LIBRO, DATOS_DECLARADOS } = useActividad();
   return (
     <>
-      <div data-datos-libro style={{ background: C.navy, borderRadius: "12px", padding: "16px" }}>
+      <div data-datos-libro style={{ ...HUNDIDO, borderRadius: "12px", padding: "16px" }}>
         {DATOS_DEL_LIBRO.map((g, k) => (
           <div key={g.marca} style={{ marginTop: k ? "12px" : 0 }}>
             <p style={{ ...MARCA, margin: "0 0 4px" }}>{g.marca}</p>
             {(g.renglones ?? []).map(([et, val]) => (
               <div key={et} data-dato-libro style={{ minHeight: "40px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
                 <span style={{ fontFamily: INTER, fontSize: "14px", color: C.atenuado }}>{et}</span>
-                <span style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, textAlign: "right" }}>{val}</span>
+                <span style={{ ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto, textAlign: "right" }}>{val}</span>
               </div>
             ))}
             {g.nota && <p style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "14px", lineHeight: "20px", color: C.texto }}>{g.nota}</p>}
@@ -131,7 +132,7 @@ export function TarjetasDeDatos() {
         ))}
       </div>
       {/* El trazo discontinuo marca lo que no viene del libro (decisión 2). */}
-      <div data-datos-declarados style={{ marginTop: "16px", borderRadius: "12px", padding: "16px", border: `1.5px dashed ${C.atenuado}`, background: C.navy }}>
+      <div data-datos-declarados style={{ marginTop: "16px", borderRadius: "12px", padding: "16px", border: `1.5px dashed ${C.atenuado}`, background: "transparent" }}>
         <p style={{ ...MARCA, margin: 0 }}>{DATOS_DECLARADOS.marca}</p>
         <p style={{ margin: "4px 0 0", fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: C.atenuado }}>{DATOS_DECLARADOS.linea}</p>
         {DATOS_DECLARADOS.datos.map((x, k) => (
@@ -157,7 +158,7 @@ function Hoja({ etiqueta, tope = "85vh", onCerrar, children, datos = {} }) {
         aria-label={etiqueta}
         {...datos}
         onClick={(e) => e.stopPropagation()}
-        style={{ width: "100%", maxWidth: "860px", maxHeight: tope, overflowY: "auto", background: C.navy, borderRadius: "16px 16px 0 0", boxSizing: "border-box", position: "relative" }}
+        style={{ width: "100%", maxWidth: "860px", maxHeight: tope, overflowY: "auto", background: C.panel, borderRadius: "16px 16px 0 0", boxSizing: "border-box", position: "relative" }}
       >
         {children}
       </div>
@@ -176,7 +177,7 @@ function HojaDatosDeMarzo({ onCerrar }) {
   useEffect(() => { cerrar.current?.focus(); }, []);
   return (
     <Hoja etiqueta={RM.datosDeMarzoMarca} onCerrar={onCerrar} datos={{ "data-hoja-datos": true }}>
-      <div style={{ position: "sticky", top: 0, background: C.navy, minHeight: "48px", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 8px 0 16px", zIndex: 1 }}>
+      <div style={{ position: "sticky", top: 0, background: C.panel, minHeight: "48px", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 8px 0 16px", zIndex: 1 }}>
         <span style={MARCA}>{RM.datosDeMarzoMarca}</span>
         <button ref={cerrar} type="button" data-cerrar onClick={onCerrar} style={botonTexto()}>{RM.cerrar}</button>
       </div>
@@ -190,10 +191,10 @@ function HojaDatosDeMarzo({ onCerrar }) {
 function Entrada({ onEmpezar }) {
   const { id, R5_3, ENTRADA_MATE, AVISO } = useActividad();
   return (
-    <div {...{ [`data-${id}`]: true }} data-paso="entrada">
+    <div {...{ [`data-${id}`]: true }} data-r5 data-paso="entrada">
       {/* E1: el objetivo aprobado de Miyata, como en r5-2: encima de la entrada, solo aquí. */}
       <p data-objetivo style={{ margin: "0 0 16px", fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.atenuado }}>{R5_3.objetivo}</p>
-      <p style={{ ...MARCA, margin: 0 }}>{ENTRADA_MATE.marca}</p>
+      <p style={{ ...CEJILLA, margin: 0 }}>{ENTRADA_MATE.marca}</p>
       <h3 style={{ margin: "8px 0 0", fontFamily: SORA, fontSize: "24px", lineHeight: "32px", fontWeight: 600, color: C.texto }}>{ENTRADA_MATE.titulo}</h3>
       <p data-apertura style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{ENTRADA_MATE.apertura}</p>
       <p data-instruccion style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "14px", lineHeight: "20px", color: C.atenuado }}>{ENTRADA_MATE.instruccion}</p>
@@ -203,14 +204,8 @@ function Entrada({ onEmpezar }) {
       )}
       <div style={{ marginTop: "16px" }}><LineaDeMarzo /></div>
       <div style={{ marginTop: "16px" }}><TarjetasDeDatos /></div>
-      <button
-        type="button"
-        data-empezar
-        onClick={onEmpezar}
-        style={{ marginTop: "24px", width: "100%", minHeight: "52px", borderRadius: "12px", border: "none", background: C.ambar, color: C.fondo, fontFamily: SORA, fontSize: "16px", fontWeight: 600, cursor: "pointer" }}
-      >
-        {ENTRADA_MATE.empezar}
-      </button>
+      {/* §4.3: el botón principal es el Responder teal, nunca ámbar. */}
+      <div style={{ marginTop: "10px" }}><Responder onClick={onEmpezar} datos={{ "data-empezar": true }}>{ENTRADA_MATE.empezar}</Responder></div>
     </div>
   );
 }
@@ -232,14 +227,14 @@ function Hecho({ a }) {
   const { RM } = useActividad();
   const conMarca = !hechoDiceSuFecha(a);
   return (
-    <div data-hecho style={{ background: C.navy, borderRadius: "12px", borderLeft: `3px solid ${C.hecho}`, padding: "12px" }}>
+    <div data-hecho style={{ ...HUNDIDO, borderRadius: "12px", padding: "12px" }}>
       {conMarca && <p data-marca-fecha-hecho style={{ ...MARCA, margin: 0 }}>{a.fecha}</p>}
       <p data-frase style={{ margin: conMarca ? "4px 0 0" : 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{a.hecho}</p>
       <div style={{ marginTop: "8px" }}>
         {a.renglones.map(([et, val]) => (
           <div key={et} data-renglon-hecho style={renglonDeDato}>
             <span style={{ fontFamily: INTER, fontSize: "14px", color: C.atenuado }}>{et}</span>
-            <span style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, textAlign: "right" }}>{val}</span>
+            <span style={{ ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto, textAlign: "right" }}>{val}</span>
           </div>
         ))}
         {/* Asientos 3 y 7: el flete va en el asiento siguiente, como nota y no como cifra. */}
@@ -260,7 +255,7 @@ function Hecho({ a }) {
               <div key={et} data-renglon-hecho style={renglonDeDato}>
                 <span style={{ fontFamily: INTER, fontSize: "14px", color: C.atenuado }}>{et}</span>
                 {/^[\d$]/.test(val)
-                  ? <span style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, textAlign: "right" }}>{val}</span>
+                  ? <span style={{ ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto, textAlign: "right" }}>{val}</span>
                   : <span style={{ fontFamily: INTER, fontSize: "14px", color: C.texto, textAlign: "right" }}>{val}</span>}
               </div>
             ))}
@@ -271,7 +266,7 @@ function Hecho({ a }) {
           <div data-otra-operacion style={{ borderTop: DIVISORIA, marginTop: "8px", paddingTop: "8px" }}>
             <div style={renglonDeDato}>
               <span style={{ fontFamily: INTER, fontSize: "14px", color: C.atenuado }}>{a.deOtraOperacion[0]}</span>
-              <span style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, textAlign: "right" }}>{a.deOtraOperacion[1]}</span>
+              <span style={{ ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto, textAlign: "right" }}>{a.deOtraOperacion[1]}</span>
             </div>
             <span style={{ ...MARCA, display: "block" }}>{RM.deOtraOperacion}</span>
           </div>
@@ -289,7 +284,7 @@ function BotonDatos({ onAbrir }) {
       data-boton-datos
       aria-haspopup="dialog"
       onClick={onAbrir}
-      style={{ width: "100%", minHeight: "60px", borderRadius: "12px", border: "none", background: C.navy, textAlign: "left", padding: "10px 16px", cursor: "pointer" }}
+      style={{ width: "100%", minHeight: "60px", borderRadius: "12px", border: REPOSO, background: "transparent", textAlign: "left", padding: "10px 16px", cursor: "pointer" }}
     >
       <span style={{ display: "block", fontFamily: INTER, fontSize: "15px", fontWeight: 600, color: C.texto }}>{RM.datosDeMarzo}</span>
       <span style={{ display: "block", fontFamily: INTER, fontSize: "13px", color: C.atenuado }}>{RM.tasasALaVista}</span>
@@ -301,7 +296,7 @@ function BotonDatos({ onAbrir }) {
 
 function Renglon({ r, estado = null, pieza = null, onTocar, soloLectura = false }) {
   const { RM } = useActividad();
-  const visto = estado ? ESTADOS[estado] : { border: `1px solid ${C.atenuado}`, background: C.fondo };
+  const visto = ESTADOS[estado] ?? ESTADOS.reposo;
   /*
    * Auditoría de Takamura (e5-mes-en-dos-cuentas, punto 4): dos marcas, una por
    * pieza. La de la cuenta, a la derecha de la línea del nombre; la del valor,
@@ -313,11 +308,11 @@ function Renglon({ r, estado = null, pieza = null, onTocar, soloLectura = false 
       <span style={SOLO_LECTOR}>{r.lado === "debe" ? RM.debe : RM.haber}: </span>
       <span style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "2px 8px" }}>
         <span style={{ fontFamily: INTER, fontSize: "14px", lineHeight: "20px", fontWeight: 600, color: C.texto }}>{r.cuenta}</span>
-        <span style={{ marginLeft: "auto" }}><MarcaPieza pieza="cuenta" estado={pieza?.cuenta} textos={VEREDICTO.cuenta} /></span>
+        <span style={{ marginLeft: "auto" }}><MarcaPieza pieza="cuenta" estado={pieza?.cuenta} /></span>
       </span>
       <span style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "2px 8px", marginTop: "4px" }}>
-        <MarcaPieza pieza="valor" estado={pieza?.valor} textos={VEREDICTO.valor} />
-        <span style={{ marginLeft: "auto", fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>{cifra(r.valor)}</span>
+        <MarcaPieza pieza="valor" estado={pieza?.valor} />
+        <span style={{ marginLeft: "auto", ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto }}>{cifra(r.valor)}</span>
       </span>
     </>
   );
@@ -364,7 +359,7 @@ function Sumas({ renglones, conCuadre = true }) {
         {[["debe", RM.sumaDebe, s.debe], ["haber", RM.sumaHaber, s.haber]].map(([l, m, val]) => (
           <div key={l} data-suma={l}>
             <span style={{ ...MARCA, display: "block" }}>{m}</span>
-            <span style={{ display: "block", fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>{cifra(val)}</span>
+            <span style={{ display: "block", ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto }}>{cifra(val)}</span>
           </div>
         ))}
       </div>
@@ -382,12 +377,18 @@ function Sumas({ renglones, conCuadre = true }) {
   );
 }
 
-export function Armador({ renglones, estados = null, piezas = null, onAnadir, onEditar, bloqueado = false, soloLectura = false, marca: marcaDada = null, datos = {} }) {
+/*
+ * El armador: la tabla de asiento va en el hundido (§4.1). `revelada` es el
+ * asiento que iba (§4.2): 2 px #F8F9FA y la pastilla «Iba aquí» arriba.
+ */
+export function Armador({ renglones, estados = null, piezas = null, onAnadir, onEditar, bloqueado = false, soloLectura = false, revelada = false, marca: marcaDada = null, datos = {} }) {
   const { RM } = useActividad();
   const marca = marcaDada ?? RM.tuAsiento;
   return (
-    <div {...datos} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? { border: ESTADOS.revelada.border } : {}) }}>
-      <p {...(soloLectura ? { "data-era-este": true } : {})} style={{ ...(soloLectura ? MARCA_ERA_ESTE : MARCA), margin: "0 0 8px" }}>{marca}</p>
+    <div {...datos} style={{ ...HUNDIDO, borderRadius: "12px", padding: "16px", ...(revelada ? { border: ESTADOS.revelada.border } : {}) }}>
+      {revelada
+        ? <p data-era-este style={{ margin: "0 0 8px" }}><Pastilla estado="revelada" /></p>
+        : <p style={{ ...MARCA, margin: "0 0 8px" }}>{marca}</p>}
       <Grupo lado="debe" renglones={renglones} estados={estados} piezas={piezas} onAnadir={onAnadir} onEditar={onEditar} bloqueado={bloqueado} soloLectura={soloLectura} />
       <Grupo lado="haber" renglones={renglones} estados={estados} piezas={piezas} onAnadir={onAnadir} onEditar={onEditar} bloqueado={bloqueado} soloLectura={soloLectura} />
       <Sumas renglones={renglones} conCuadre={!soloLectura} />
@@ -412,7 +413,7 @@ export function HojaRenglon({ lado, inicial = null, renglones, onListo, onQuitar
     const r = renglones.find((x) => x.cuenta === c && x.id !== inicial?.id);
     return r ? r.lado : null;
   };
-  const cabecera = { position: "sticky", top: 0, zIndex: 1, background: C.navy, minHeight: "48px", display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", padding: "0 8px" };
+  const cabecera = { position: "sticky", top: 0, zIndex: 1, background: C.panel, minHeight: "48px", display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", padding: "0 8px" };
   return (
     <Hoja etiqueta={paso === 1 ? RM.cuentaDel[lado] : RM.renglonDel[lado]} onCerrar={onCancelar} datos={{ "data-hoja-renglon": lado, "data-paso": paso }}>
       {paso === 1 ? (
@@ -446,7 +447,7 @@ export function HojaRenglon({ lado, inicial = null, renglones, onListo, onQuitar
             })}
           </ul>
           {/* Un degradado avisa que la lista sigue más abajo. */}
-          <div aria-hidden="true" style={{ position: "sticky", bottom: 0, height: "24px", marginTop: "-24px", background: `linear-gradient(transparent, ${C.navy})`, pointerEvents: "none" }} />
+          <div aria-hidden="true" style={{ position: "sticky", bottom: 0, height: "24px", marginTop: "-24px", background: `linear-gradient(transparent, ${C.panel})`, pointerEvents: "none" }} />
         </>
       ) : (
         <>
@@ -458,7 +459,7 @@ export function HojaRenglon({ lado, inicial = null, renglones, onListo, onQuitar
               data-listo
               disabled={!(Number(valor) > 0)}
               onClick={() => onListo({ lado, cuenta, valor })}
-              style={{ ...botonTexto(Number(valor) > 0 ? C.ambar : C.atenuado), justifySelf: "end", cursor: Number(valor) > 0 ? "pointer" : "default" }}
+              style={{ ...botonTexto(Number(valor) > 0 ? C.texto : C.apagado), justifySelf: "end", cursor: Number(valor) > 0 ? "pointer" : "default" }}
             >
               {RM.listo}
             </button>
@@ -490,7 +491,7 @@ export function HojaRenglon({ lado, inicial = null, renglones, onListo, onQuitar
               onKeyDown={(e) => { if (e.key === "Enter" && Number(valor) > 0) { e.preventDefault(); onListo({ lado, cuenta, valor }); } }}
               style={{
                 width: "100%", height: "48px", boxSizing: "border-box", borderRadius: "10px", padding: "0 12px", background: C.fondo,
-                border: `1.5px solid ${C.atenuado}`, fontFamily: INTER, fontSize: "17px", fontWeight: 600, fontVariantNumeric: "tabular-nums", textAlign: "right", color: C.texto,
+                border: `1.5px solid ${C.atenuado}`, ...CIFRA, fontSize: "17px", fontWeight: 600, textAlign: "right", color: C.texto,
               }}
             />
           </div>
@@ -508,6 +509,7 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
   const { id, RM, evaluarMate, MES_MATE, MOVIMIENTOS_MATE, LINEAS_MES } = useActividad();
   const [renglones, setRenglones] = useState([]);
   const [hoja, setHoja] = useState(null); // { lado, inicial }
+  const revelar = useTrasError(Boolean(r && !r.ok));
   const [datos, setDatos] = useState(false);
 
   const listo = ({ lado, cuenta, valor }) => {
@@ -519,8 +521,9 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
   const quitar = (rq) => { setRenglones((xs) => xs.filter((x) => x.id !== rq.id)); setHoja(null); };
 
   return (
-    <div {...{ [`data-${id}`]: true }} data-paso={a.id}>
-      <p data-progreso style={{ ...MARCA, margin: 0 }}>{RM.progreso(i + 1, total)}</p>
+    <div {...{ [`data-${id}`]: true }} data-r5 data-paso={a.id}>
+      {/* §4.3: el contador «Asiento n de N», a 12 px #A8B6C8. */}
+      <p data-progreso style={{ ...CONTADOR, margin: 0 }}>{RM.progreso(i + 1, total)}</p>
       <div style={{ marginTop: "8px" }}><LineaDeMarzo actual={i} hechos={i} /></div>
       <div style={{ marginTop: "16px" }}><Hecho a={a} /></div>
       <div style={{ marginTop: "12px" }}><BotonDatos onAbrir={() => setDatos(true)} /></div>
@@ -535,30 +538,18 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
           onEditar={(x) => setHoja({ lado: x.lado, inicial: x })}
         />
       </div>
-      {r && !r.ok && (
+      {/* §4.2: «Iba aquí», 0,7 s después del error (r5-3 y r5-4 no tienen reintento). */}
+      {revelar && (
         <div style={{ marginTop: "12px" }}>
-          <Armador datos={{ "data-armador": "era-este" }} soloLectura marca={RM.eraEste} renglones={r.correcto.map((c, k) => ({ ...c, id: `c${k}` }))} />
+          <Armador datos={{ "data-armador": "era-este" }} soloLectura revelada renglones={r.correcto.map((c, k) => ({ ...c, id: `c${k}` }))} />
         </div>
       )}
-      {!r && (
-        <button
-          type="button"
-          data-revisar
-          disabled={!puedeRevisarMate(renglones)}
-          onClick={() => onRespondida(evaluarMate(a, renglones), renglones)}
-          style={{
-            marginTop: "16px", width: "100%", minHeight: "52px", borderRadius: "12px", border: "none",
-            background: puedeRevisarMate(renglones) ? C.ambar : C.navy, color: puedeRevisarMate(renglones) ? C.fondo : C.atenuado,
-            fontFamily: SORA, fontSize: "16px", fontWeight: 600, cursor: puedeRevisarMate(renglones) ? "pointer" : "default",
-          }}
-        >
-          {RM.revisar}
-        </button>
-      )}
-      <Devolucion r={r && { ok: r.ok, textos: r.textos }} lector={LECTOR} />
+      {/* §4.3: «Comprobar», porque el asiento tiene varios renglones. */}
+      {!r && <Comprobar activo={puedeRevisarMate(renglones)} onClick={() => onRespondida(evaluarMate(a, renglones), renglones)} dato="revisar" />}
+      <Devolucion r={r && { ok: r.ok, textos: r.textos }} />
       {/* Después de la devolución, sin desplazamiento forzado (corrección 1 de Takamura). */}
       {r && <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={i} linea={LINEAS_MES[a.id] ?? null} />}
-      {r && <BotonSiguiente onClick={onSiguiente} botonRef={botonRef} texto={RM.siguiente} />}
+      {r && <BotonSiguiente onClick={onSiguiente} botonRef={botonRef} sustantivo={RM.sustantivo} ultimo={i + 1 === total} />}
       {hoja && <HojaRenglon lado={hoja.lado} inicial={hoja.inicial} renglones={renglones} onListo={listo} onQuitar={quitar} onCancelar={() => setHoja(null)} />}
       {datos && <HojaDatosDeMarzo onCerrar={() => setDatos(false)} />}
     </div>
@@ -571,7 +562,7 @@ function MarzoEnOcho({ resultados }) {
   const { ASIENTOS_MATE, RM, MES_CORTO } = useActividad();
   const bien = ASIENTOS_MATE.filter((a) => resultados[a.id]).length;
   return (
-    <div data-marzo-en-ocho style={{ background: C.navy, borderRadius: "12px", padding: "16px" }}>
+    <div data-marzo-en-ocho style={{ ...HUNDIDO, borderRadius: "12px", padding: "16px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
         <span style={MARCA}>{RM.marzoEnOcho}</span>
         <span data-n-de-m style={{ fontFamily: SORA, fontSize: "17px", fontWeight: 600, color: C.texto, whiteSpace: "nowrap" }}>{RM.nDeM(bien, ASIENTOS_MATE.length)}</span>
@@ -582,10 +573,10 @@ function MarzoEnOcho({ resultados }) {
           <div key={a.id} data-fila-asiento={a.id} style={{ minHeight: "44px", display: "flex", alignItems: "center", gap: "8px", borderTop: k ? DIVISORIA : "none" }}>
             <span style={{ ...MARCA, width: "44px", flexShrink: 0 }}>{`${a.dia} ${MES_CORTO}`}</span>
             <span style={{ flex: 1, minWidth: 0, fontFamily: INTER, fontSize: "14px", color: C.texto }}>{a.operacion}</span>
-            {/* Forma, color y palabra (decisión 7). */}
-            <span data-resultado={ok ? "acierto" : "error"} style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+            {/* §4.2: Check o X (la forma dice el resultado); el lector oye la palabra. */}
+            <span data-resultado={ok ? "acierto" : "error"} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
               <Punto ok={ok} />
-              <span style={{ fontFamily: INTER, fontSize: "13px", fontWeight: 600, color: C.texto }}>{ok ? RM.acierto : RM.error}</span>
+              <span style={SOLO_LECTOR}>{ok ? LECTOR.acierto : LECTOR.error}</span>
             </span>
           </div>
         );
@@ -650,7 +641,7 @@ function Partida({ onCompletar, pasoInicial }) {
 
   if (terminado) {
     return (
-      <div {...{ [`data-${id}`]: true }} data-cierre>
+      <div {...{ [`data-${id}`]: true }} data-r5 data-cierre>
         <style>{CSS_JUEGO + CSS_MATE}</style>
         <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={null} final={MES_MATE.final} />
         <div style={{ marginTop: "16px" }}><MarzoEnOcho resultados={resultados} /></div>

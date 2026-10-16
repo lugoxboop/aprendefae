@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { C, INTER, SORA } from "./comun.jsx";
+import { C, INTER, SORA, CIFRA, HUNDIDO } from "./comun.jsx";
 import { OpcionR5 } from "./OpcionR5.jsx";
 import { pesos } from "../../data/contabilidad.js";
 import { INTERFAZ_R5_1, UNIDADES_POR_CAJA, acumuladosDeC9, cuentaDeC9, pesosConCentavos } from "../../data/repasoCap5Cruzado.js";
@@ -42,7 +42,8 @@ function Rotulo({ id, rotulo, valor, previo, formato, refRotulo }) {
   return (
     <div ref={refRotulo} data-rotulo-lotes={id} data-valor={valor ?? "vacio"} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", minHeight: "40px", gap: "12px" }}>
       <span style={{ fontFamily: INTER, fontSize: "13px", color: C.atenuado }}>{rotulo}</span>
-      <span style={{ fontFamily: SORA, fontSize: "24px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: C.texto, whiteSpace: "nowrap" }}>
+      {/* §5.3: cifra de resultado (lo que suma el estante), en Sora como el contador de C.8. */}
+      <span data-resultado-cifra style={{ fontFamily: SORA, fontSize: "24px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: C.texto, whiteSpace: "nowrap" }}>
         {valor === null ? "—" : formato(Math.round(pintado))}
       </span>
     </div>
@@ -126,7 +127,7 @@ export function Lotes({ pantalla, onCalificar }) {
 
   return (
     <div data-pantalla-lotes>
-      <div ref={figura} data-figura="lotes" data-salida={salida} onClick={() => terminarAnimaciones(figura.current)} style={{ background: C.navy, borderRadius: "12px", padding: "12px" }}>
+      <div ref={figura} data-figura="lotes" data-salida={salida} onClick={() => terminarAnimaciones(figura.current)} style={{ ...HUNDIDO, borderRadius: "12px", padding: "12px" }}>
         {lotes.map((l, k) => {
           const vacio = orden.includes(k);
           return (
@@ -144,7 +145,7 @@ export function Lotes({ pantalla, onCalificar }) {
             >
               <span style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "8px" }}>
                 <span data-marca-lote style={{ fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px", color: C.atenuado }}>{l.marca}</span>
-                <span style={{ fontFamily: INTER, fontSize: "14px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, whiteSpace: "nowrap" }}>
+                <span style={{ ...CIFRA, fontSize: "14px", fontWeight: 600, color: C.texto, whiteSpace: "nowrap" }}>
                   {INTERFAZ_R5_1.unidadesACosto(l.unidades, l.costo)}
                 </span>
               </span>
@@ -183,12 +184,12 @@ export function Lotes({ pantalla, onCalificar }) {
           {pantalla.opciones.map((o) => (
             <div key={o.id} data-opcion={o.id} style={{ marginTop: "8px" }}>
               <OpcionR5 estado={estadoDe(o)} deshabilitada={Boolean(elegida)} etiqueta={pesos(o.valor)} onClick={() => elegir(o.id)}>
-                <span style={{ fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{pesos(o.valor)}</span>
+                <span style={{ ...CIFRA, fontWeight: 600 }}>{pesos(o.valor)}</span>
               </OpcionR5>
             </div>
           ))}
           {elegida && (
-            <p data-costo-unidad style={{ margin: "14px 0 0", fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>
+            <p data-costo-unidad style={{ margin: "14px 0 0", ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto }}>
               {`${INTERFAZ_R5_1.costoUnidad} · ${pesosConCentavos(c.promedio)}`}
             </p>
           )}

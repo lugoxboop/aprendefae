@@ -115,7 +115,9 @@ export const DATOS_DECLARADOS = {
 /* ═══════════ LOS RÓTULOS DE INTERFAZ DEL DISEÑO ═══════════ */
 
 export const ROTULOS_MATE = {
-  progreso: (n, total) => `ASIENTO ${n} DE ${total}`,
+  /* §4.3: «Asiento n de N»; el mismo sustantivo en el botón de avance. */
+  sustantivo: "Asiento",
+  progreso: (n, total) => `Asiento ${n} de ${total}`,
   datosDeMarzo: "Datos de marzo",
   tasasALaVista: "IVA 16 % · Retención 3,5 % y 1 %",
   datosDeMarzoMarca: "DATOS DE MARZO",
@@ -137,9 +139,9 @@ export const ROTULOS_MATE = {
   quitar: "Quitar renglón",
   valor: "VALOR",
   enEl: { debe: "EN EL DEBE", haber: "EN EL HABER" },
-  revisar: "Revisar asiento",
-  eraEste: "ERA ESTE",
-  siguiente: "Siguiente",
+  revisar: "Comprobar",
+  /* §4.2: la respuesta revelada. */
+  eraEste: "Iba aquí",
   marzoEnOcho: "MARZO EN OCHO ASIENTOS",
   nDeM: (n, m) => `${n} de ${m}`,
   acierto: "Acierto",

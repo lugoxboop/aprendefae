@@ -67,7 +67,9 @@ export const DATOS_DECLARADOS_PERMANENTE = {
 
 export const ROTULOS_PERMANENTE = {
   ...ROTULOS_MATE,
-  progreso: (n, m) => `PREGUNTA ${n} DE ${m}`,
+  /* §4.3: «Movimiento n de 5»; el mismo sustantivo en el botón de avance. */
+  sustantivo: "Movimiento",
+  progreso: (n, m) => `Movimiento ${n} de ${m}`,
   cant: "CANT.",
   cUnit: "C. UNIT.",
   total: "TOTAL",
@@ -92,9 +94,9 @@ export const ROTULOS_PERMANENTE = {
   yaRegistrado: "YA REGISTRADO",
   pendiente: "pendiente",
   /* Lo que el diseño nombra y el paquete no escribe (decisiones mías). */
-  revisar: "Revisar",
-  revisarValores: "Revisar valores",
-  revisarAsiento: "Revisar asiento",
+  revisar: "Comprobar",
+  revisarValores: "Comprobar",
+  revisarAsiento: "Comprobar",
   unidadesCorto: (n) => `${n} u`,
 };
 
