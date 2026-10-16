@@ -54,7 +54,7 @@ export const TIEMPOS = { sale: 320, rebota: 420, conteo: 140 };
 export const CSS_AP1 = `
 /* (1) T7-1 A1 renovada · tokens del producto. Teal y ámbar solo para Debe y Haber; coral solo para el error. */
 .t7a1 { --fondo: #0E1B2E; --texto: #F8F9FA; --texto2: #A8B6C8; --neutro: #B8C4D4; --borde: rgba(248,249,250,0.16);
-  --teal: #2A9D8F; --ambar: #E9C46A; --coral: #E76F51;
+  --teal: #2A9D8F; --ambar: #E9C46A; --coral: #E76F51; /* lado */
   display: grid; gap: 12px; color: var(--texto); font: 400 15px/1.5 "Inter", system-ui, sans-serif; background: var(--fondo);
   min-width: 0; }
 .t7a1 * { box-sizing: border-box; }
@@ -67,9 +67,10 @@ export const CSS_AP1 = `
 .t7a1-bodega { border: 1px solid var(--borde); border-radius: 12px; padding: 10px 12px 8px; }
 .t7a1-estante { min-height: 56px; display: flex; flex-wrap: wrap; align-content: flex-end; gap: 6px 5px; padding-bottom: 4px;
   background: repeating-linear-gradient(to top, transparent 0 22px, rgba(184,196,212,.35) 22px 24px, transparent 24px 30px); }
-.t7a1-caja { position: relative; width: 26px; height: 22px; border-radius: 4px; background: #8A6F4E; box-shadow: inset 0 -3px 0 rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.12);
-  transition: transform .3s ease-in, opacity .3s ease-in; display: grid; place-items: center; font: 700 12px/1 "Sora", sans-serif; color: var(--texto); }
-.t7a1-caja::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 3px; width: 4px; margin-left: -2px; background: rgba(0,0,0,.18); }
+/* R6 del lote de dialecto C: la caja en neutro, no en café; el número en navy (6,99:1). */
+.t7a1-caja { position: relative; width: 26px; height: 22px; border-radius: 4px; background: #B8C4D4; border: 1px solid #F8F9FA;
+  transition: transform .3s ease-in, opacity .3s ease-in; display: grid; place-items: center; font: 700 12px/1 "Sora", sans-serif; color: #1D3557; }
+.t7a1-caja::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 3px; width: 4px; margin-left: -2px; background: rgba(29,53,87,.25); }
 .t7a1-caja.sale { transform: translateX(42px); opacity: 0; }
 .t7a1-caja.llega { animation: t7a1-llega .32s ease-out both; }
 @keyframes t7a1-llega { from { transform: translateY(-26px); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -84,8 +85,9 @@ export const CSS_AP1 = `
 .t7a1-rango { -webkit-appearance: none; appearance: none; width: 100%; height: 44px; margin: 0; background: transparent; cursor: pointer; position: relative; z-index: 1; }
 .t7a1-rango::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: rgba(248,249,250,.14); }
 .t7a1-rango::-moz-range-track { height: 6px; border-radius: 3px; background: rgba(248,249,250,.14); }
-.t7a1-rango::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -8px; border-radius: 50%; background: var(--texto); border: 3px solid var(--fondo); box-shadow: 0 0 0 2px var(--neutro); }
-.t7a1-rango::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--texto); border: 3px solid var(--fondo); box-shadow: 0 0 0 2px var(--neutro); }
+/* R7 del lote de dialecto C: lo que se agarra mide 44 × 44; el disco visible sigue de 26 px. */
+.t7a1-rango::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 44px; margin-top: -19px; border: 0; border-radius: 50%; background: radial-gradient(circle at center, #F8F9FA 0 8px, #1F2D3D 8px 11px, #B8C4D4 11px 13px, transparent 13.5px); }
+.t7a1-rango::-moz-range-thumb { width: 44px; height: 44px; border: 0; border-radius: 50%; background: radial-gradient(circle at center, #F8F9FA 0 8px, #1F2D3D 8px 11px, #B8C4D4 11px 13px, transparent 13.5px); }
 .t7a1-rango:focus-visible { outline: 2px solid var(--texto); outline-offset: 2px; border-radius: 8px; }
 .t7a1-rango:disabled { cursor: default; opacity: .6; }
 .t7a1-marcas { position: absolute; left: 0; right: 0; bottom: 8px; height: 10px; pointer-events: none; }
@@ -343,7 +345,7 @@ function Mov({ dia, monto, nuevo }) {
 /* Las marcas de los días con hechos, en la regla del deslizador. */
 const MARCAS = [...EVENTOS.map((e) => e.dia), CIERRE].map((d) => {
   const f = (d - 1) / (CIERRE - 1);
-  return { d, left: `calc(${f * 100}% + ${11 - f * 22}px)` };
+  return { d, left: `calc(${f * 100}% + ${22 - f * 44}px)` }; /* calc(22px + (100% - 44px) * f): el centro del pulgar de 44 */
 });
 
 /* ═══════════ LA PIEZA ═══════════ */

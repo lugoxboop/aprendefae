@@ -3,7 +3,8 @@ import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { H1, OPCIONES_H1, BOTON_H1, resumenH1 } from "../../../../data/contabilidadT7_2_h1.js";
 import { sortearH1, evaluarH1, puntuarH1, nombreDeOpcionH1 } from "../../../../contabilidad/t7_2H1.js";
-import { Opcion, Opciones, Pulsos, Cierre } from "../../corazon/juego.jsx";
+import { Opciones, Pulsos, Cierre } from "../../corazon/juego.jsx";
+import { OpcionC as Opcion, CSS_T7_HACER } from "./hacerT7.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
@@ -93,7 +94,7 @@ export default function DebeOHaber({ Marco, rotulo, titulo, acento, onCompletar,
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS}</style>
+      <style>{CSS + CSS_T7_HACER}</style>
       <div data-t7-2-h1>
         <Encabezado consigna={sinUnSoloIntento(H1.consigna.join(" "))} onComoSeJuega={onComoSeJuega} />
         <div style={{ marginBottom: "12px" }}>
@@ -133,7 +134,7 @@ export default function DebeOHaber({ Marco, rotulo, titulo, acento, onCompletar,
               background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
               borderLeft: `3px solid ${r.ok ? "#B8C4D4" : FAE.coral}`,
             }}>
-              {!r.ok && <span style={SOLO_LECTOR}>{`Incorrecto. La respuesta es ${nombreDeOpcionH1(r.correcta)}. `}</span>}
+              {!r.ok && <span style={SOLO_LECTOR}>{`Incorrecto. Iba aquí: ${nombreDeOpcionH1(r.correcta)}. `}</span>}
               {r.textos.map((x) => (
                 <p key={x} data-texto-retro style={{ margin: "0 0 4px", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: FAE.text, fontWeight: x === r.textos[0] && r.ok ? 700 : 400 }}><Plegable texto={x} /></p>
               ))}

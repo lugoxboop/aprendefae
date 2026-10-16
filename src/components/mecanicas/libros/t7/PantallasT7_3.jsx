@@ -62,7 +62,7 @@ import { textosDelError, contarFallo } from "./escaleraAyuda.js";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const P = { fondo: "#0E1B2E", texto: "#F8F9FA", texto2: "#A8B6C8", borde: "#B8C4D4", debe: "#2A9D8F", haber: "#E9C46A", error: "#E76F51" };
+const P = { fondo: "#0E1B2E", texto: "#F8F9FA", texto2: "#A8B6C8", borde: "#B8C4D4", debe: "#2A9D8F", haber: "#E9C46A", error: "#E76F51" }; /* lado */
 
 /* Las cifras con el formato del libro: miles con punto. */
 export const cifra = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");

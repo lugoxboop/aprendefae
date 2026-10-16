@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { X } from "lucide-react";
 import { barajar } from "../../../../utils/barajar.js";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
@@ -155,18 +156,18 @@ export default function PreguntasConAsientoT5({ config, Marco, rotulo, titulo, a
         {item.tipo === "eleccion" && (
           <>
             <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
-            <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es ${r.textoCorrecta}. ` : null} />
+            <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. Iba aquí: ${r.textoCorrecta}. ` : null} />
           </>
         )}
         {item.tipo === "cifra" && !escalera && (
           <>
-            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} />
+            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} iba={r && !r.ok ? r.textoCorrecta : null} />
             <Devolucion r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
           </>
         )}
         {item.tipo === "cifra" && escalera && (
           <>
-            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(listo)} etiqueta={item.pregunta}
+            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(listo)} etiqueta={item.pregunta} iba={listo && r && !r.ok ? r.textoCorrecta : null}
               extra={item.resultado && resultados ? (
                 <ElegirResultado opciones={resultados} elegido={resultado} bueno={listo ? item.resultado : null}
                   deshabilitado={Boolean(listo)} onElegir={setResultado} etiqueta={item.pregunta} />
@@ -197,7 +198,7 @@ export default function PreguntasConAsientoT5({ config, Marco, rotulo, titulo, a
 /*
  * Dos opciones de un toque junto a la casilla (Ganó o Perdió), que se pueden
  * cambiar mientras el ítem sigue abierto. Cerrado, la buena lleva ✓ y la
- * elegida mal, ✗: el veredicto va con forma, en neutro.
+ * elegida mal, la X de lucide en coral: el veredicto va con forma.
  */
 function ElegirResultado({ opciones, elegido, bueno, deshabilitado, onElegir, etiqueta }) {
   return (
@@ -215,7 +216,7 @@ function ElegirResultado({ opciones, elegido, bueno, deshabilitado, onElegir, et
               fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600,
             }}>
             {bien && <span aria-hidden="true" style={{ marginRight: "6px" }}>✓</span>}
-            {mal && <span aria-hidden="true" style={{ marginRight: "6px", color: FAE.coral }}>✗</span>}
+            {mal && <span aria-hidden="true" data-marca-mal style={{ display: "inline-flex", verticalAlign: "-3px", marginRight: "6px", color: FAE.coral }}><X size={16} strokeWidth={2.5} /></span>}
             {bien && <span style={SOLO_LECTOR}>Correcta: </span>}
             {mal && <span style={SOLO_LECTOR}>Tu respuesta, incorrecta: </span>}
             {o.texto}

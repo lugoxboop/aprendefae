@@ -120,8 +120,9 @@ export const CSS_A4 = `
 .ea4-rango { -webkit-appearance: none; appearance: none; width: 100%; height: 44px; margin: 0; background: transparent; cursor: pointer; position: relative; z-index: 1; }
 .ea4-rango::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: rgba(248,249,250,.14); }
 .ea4-rango::-moz-range-track { height: 6px; border-radius: 3px; background: rgba(248,249,250,.14); }
-.ea4-rango::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -8px; border-radius: 50%; background: var(--texto); border: 3px solid var(--fondo); box-shadow: 0 0 0 2px var(--neutro); }
-.ea4-rango::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--texto); border: 3px solid var(--fondo); box-shadow: 0 0 0 2px var(--neutro); }
+/* R7 del lote de dialecto C: lo que se agarra mide 44 × 44; el disco visible sigue de 26 px. */
+.ea4-rango::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 44px; margin-top: -19px; border: 0; border-radius: 50%; background: radial-gradient(circle at center, #F8F9FA 0 8px, #1F2D3D 8px 11px, #B8C4D4 11px 13px, transparent 13.5px); }
+.ea4-rango::-moz-range-thumb { width: 44px; height: 44px; border: 0; border-radius: 50%; background: radial-gradient(circle at center, #F8F9FA 0 8px, #1F2D3D 8px 11px, #B8C4D4 11px 13px, transparent 13.5px); }
 .ea4-rango:focus-visible { outline: 2px solid var(--texto); outline-offset: 2px; border-radius: 8px; }
 .ea4-rango:disabled { cursor: default; opacity: .45; }
 .ea4-marcas { position: absolute; left: 0; right: 0; bottom: 8px; height: 10px; pointer-events: none; }
@@ -353,7 +354,7 @@ function PantallaCapas({ P, numero, total, enfocar, onSeguir }) {
             onChange={(e) => mover(Number(e.target.value))}
           />
           <div className="ea4-marcas" aria-hidden="true">
-            {Array.from({ length: ULTIMA + 1 }, (_, i) => <i key={i} style={{ left: `calc(11px + (100% - 22px) * ${i / ULTIMA})` }} />)}
+            {Array.from({ length: ULTIMA + 1 }, (_, i) => <i key={i} style={{ left: `calc(22px + (100% - 44px) * ${i / ULTIMA})` }} />)}
           </div>
         </div>
       </div>

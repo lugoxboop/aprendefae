@@ -190,7 +190,7 @@ async function jugar(m, falla) {
       assert.equal(m.caja.querySelector(`[data-campo-cifra="${it.id}"]`).readOnly, true, "un solo intento");
       assert.equal(boton(m.caja, "Comprobar"), undefined);
       assert.deepEqual([...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent), L.evaluarH2(it, v).textos);
-      if (!ok) assert.deepEqual(L.evaluarH2(it, v).textos, [it.distractores[0].retro, `La respuesta es ${pesos(it.correcta)}.`]);
+      if (!ok) assert.deepEqual(L.evaluarH2(it, v).textos, [it.distractores[0].retro, `Iba aquí: ${pesos(it.correcta)}.`]);
       detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
     } else if (it.tipo === "eleccion") {
       const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
@@ -216,7 +216,7 @@ async function jugar(m, falla) {
         const ok = !falla(L.idLineaH2(it, l));
         for (const b of m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] button`)) assert.equal(b.disabled, true);
         assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), ok ? [] : [l.distractores[0].retro]);
-        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Era: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Iba aquí: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
         detalle.push({ item: L.idLineaH2(it, l), ok, intentos: 1, respuesta: ok ? null : `${l.distractores[0].cuenta}|${l.lado}`, orden: detalle.length + 1 });
       }
       const suma = pesos(it.lineas.filter((l) => l.lado === DEBE).reduce((s, l) => s + l.valor, 0));
@@ -332,8 +332,8 @@ test("★★★ lote 3: el ítem 1 va con casilla; el 3 se queda en elección; c
   assert.equal(i1.correcta, 6_300_000);
   assert.ok(String(i1.correcta).length <= 7, "la casilla no pide más de 7 dígitos");
   /* Una cifra que no es de ningún distractor: la respuesta y el porqué del acierto, sin «Así es:». */
-  assert.deepEqual(L.evaluarH2(i1, 1), { ok: false, correcta: 6_300_000, textos: ["La respuesta es $6.300.000.", "$5.600.000 + $896.000 − $196.000 = $6.300.000."], textoCorrecta: "$6.300.000" });
-  assert.deepEqual(L.evaluarH2(i1, i1.distractores[1].valor).textos, [i1.distractores[1].retro, "La respuesta es $6.300.000."]);
+  assert.deepEqual(L.evaluarH2(i1, 1), { ok: false, correcta: 6_300_000, textos: ["Iba aquí: $6.300.000.", "$5.600.000 + $896.000 − $196.000 = $6.300.000."], textoCorrecta: "$6.300.000" });
+  assert.deepEqual(L.evaluarH2(i1, i1.distractores[1].valor).textos, [i1.distractores[1].retro, "Iba aquí: $6.300.000."]);
   assert.equal(L.unidadDeH2("debe-cliente"), i1.pregunta);
 });
 

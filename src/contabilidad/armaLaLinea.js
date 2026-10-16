@@ -17,15 +17,16 @@ import { pesos } from "../data/contabilidad.js";
  * Sin `pista` en los datos, la escalera se comporta como un solo intento.
  *
  * Textos de interfaz que son convención de la célula (no de Near): «Un
- * intento», «Elige la cuenta», «Era: …» y «La respuesta es $…».
+ * intento», «Elige la cuenta», «Iba aquí: …» y «Iba aquí: $…» (lote de dialecto C,
+ * R3: el estándar de b5/Devolucion.jsx, sin importarlo).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 export const TEXTOS_ARMA = {
   unIntento: "Un intento",
   eligeCuenta: "Elige la cuenta",
-  era: (cuenta, lado) => `Era: ${cuenta}, al ${lado.toLowerCase()}.`,
-  respuesta: (cifra) => `La respuesta es ${pesos(cifra)}.`,
+  era: (c, l) => `Iba aquí: ${c}, al ${l.toLowerCase()}.`,
+  respuesta: (c) => `Iba aquí: ${pesos(c)}.`,
   campo: "Tu respuesta, en pesos",
 };
 
@@ -72,7 +73,7 @@ export function evaluarCifra(item, valor) {
  *   · primer error   el texto del error reconocido, si la respuesta es uno
  *                    (la cifra de un distractor, o lo que la pieza reconozca),
  *                    o la PISTA del ítem; se puede volver a intentar
- *   · segundo error  la respuesta con su porqué: «La respuesta es $…» y el
+ *   · segundo error  la respuesta con su porqué: «Iba aquí: $…» y el
  *                    acierto sin su «Así es.»; el ítem se cierra
  *
  * `r` es { ok, reconocida }: la pieza decide si está bien y qué error

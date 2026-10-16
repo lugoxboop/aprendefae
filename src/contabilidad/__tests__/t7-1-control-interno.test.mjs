@@ -634,7 +634,11 @@ test("★★★ el foco: nada al montar; al texto al pasar de pantalla; al mensa
 test("★★ colores: coral solo para el error; sin teal ni ámbar; los tokens de la v6", () => {
   const css = C.CSS_A7_VIAJE;
   for (const c of [FAE.teal, FAE.ambar, "#2FA8A0", "#2A9D8F", "#E9C46A"]) assert.ok(!css.toUpperCase().includes(c.toUpperCase()), c);
-  for (const t of ["#0E1B2E", "#F8F9FA", "#B8C4D4", "#E76F51", "#A8B6C8", "#8A6F4E"]) { assert.ok(css.includes(t), t); assert.ok(A7CSS.includes(t), `${t} en la v6`); }
+  for (const t of ["#0E1B2E", "#F8F9FA", "#B8C4D4", "#E76F51", "#A8B6C8"]) { assert.ok(css.includes(t), t); assert.ok(A7CSS.includes(t), `${t} en la v6`); }
+  /* Lote de dialecto C (R6): la caja de la v6 era café (#8A6F4E); aquí es neutra con borde claro y cinta navy. */
+  assert.ok(A7CSS.includes("#8A6F4E") && !css.toUpperCase().includes("#8A6F4E"), "la caja ya no es café");
+  assert.match(css, /\.t7vc-caja i \{[^}]*background: #B8C4D4; border: 1px solid #F8F9FA;/);
+  assert.match(css, /\.t7vc-caja i::before \{[^}]*background: rgba\(29,53,87,\.25\);/);
   const conCoral = css.split("\n").filter((l) => l.includes("#E76F51") || l.includes("231,111,81"));
   assert.deepEqual(conCoral.map((l) => l.split("{")[0].trim()), [".t7vc-est.t7vc-mal", ".t7vc-msg.t7vc-msg-mal"]);
 });

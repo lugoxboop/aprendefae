@@ -307,7 +307,7 @@ test("★★★ la casilla califica igual que antes (evaluarH2); solo cambia el 
       const nuevo = L.devolucionH2(it, v);
       assert.equal(nuevo.ok, viejo.ok, `${it.id} · ${v}`);
       assert.equal(nuevo.correcta, viejo.correcta);
-      assert.deepEqual([nuevo.texto], viejo.textos.filter((x) => !x.startsWith("La respuesta es")), `${it.id} · ${v}`);
+      assert.deepEqual([nuevo.texto], viejo.textos.filter((x) => x !== `Iba aquí: ${pesos(it.correcta)}.`) /* TEXTOS_ARMA.respuesta, ya en el dialecto C */, `${it.id} · ${v}`);
     }
   }
 });

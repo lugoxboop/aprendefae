@@ -89,7 +89,7 @@ export default function CadenaDeDescuentos({ Marco, rotulo, titulo, acento, onCo
         </div>
         <TarjetaPregunta id={item.id} encabezado={item.encabezado ?? null} pregunta={item.pregunta} pie={H2.pie} tarjetaRef={tarjeta} />
         <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
-        <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es ${r.textoCorrecta}. ` : null} />
+        <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. Iba aquí: ${r.textoCorrecta}. ` : null} />
       </div>
       {listo && (
         <div ref={zonaBoton}>

@@ -187,7 +187,11 @@ async function jugar(m, falla) {
       assert.equal(m.caja.querySelector(`[data-campo-cifra="${it.id}"]`).readOnly, true, "un solo intento");
       assert.equal(boton(m.caja, "Comprobar"), undefined);
       assert.deepEqual([...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent), L.evaluarH4(it, v).textos);
-      assert.deepEqual(L.evaluarH4(it, v).textos, ok ? [it.acierto] : [it.distractores[0].retro, `La respuesta es ${pesos(it.correcta)}.`]);
+      assert.deepEqual(L.evaluarH4(it, v).textos, ok ? [it.acierto] : [it.distractores[0].retro, `Iba aquí: ${pesos(it.correcta)}.`]);
+      /* Lote de dialecto C (R3): al fallar, «Iba aquí: {valor}» sobre la casilla, con su aparición de 0,7 s; al acertar, nada. */
+      const iba = [...m.caja.querySelectorAll(`[data-casilla-cifra="${it.id}"] [data-iba-aqui]`)];
+      assert.deepEqual(iba.map((p) => p.textContent), ok ? [] : [`Iba aquí: ${pesos(it.correcta)}`]);
+      if (!ok) assert.equal(iba[0].className, "t7c-iba");
       detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
     } else if (it.tipo === "eleccion") {
       const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
@@ -213,7 +217,7 @@ async function jugar(m, falla) {
         const ok = !falla(L.idLineaH4(it, l));
         for (const b of m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] button`)) assert.equal(b.disabled, true);
         assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), ok ? [] : [l.distractores[0].retro]);
-        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Era: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Iba aquí: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
         detalle.push({ item: L.idLineaH4(it, l), ok, intentos: 1, respuesta: ok ? null : `${l.distractores[0].cuenta}|${l.lado}`, orden: detalle.length + 1 });
       }
       const suma = pesos(C.deuda);
@@ -366,8 +370,8 @@ test("★★★ lote 3: los ítems 1, 3 y 4 van con casilla; el 2 y el 7 se qued
   for (const k of [4, 5]) for (const l of p[k].lineas) assert.deepEqual([...l.banco].sort(), [l.cuenta, ...l.distractores.map((d) => d.cuenta)].sort());
   for (const k of [0, 2, 3]) assert.equal(p[k], D.ITEMS_H4[k]);
   /* Una cifra de un distractor: su retroalimentación; otra cualquiera: la respuesta y el porqué del acierto, sin «Así es.». */
-  assert.deepEqual(L.evaluarH4(item("el-pago"), C.deuda), { ok: false, correcta: C.pago, textos: [item("el-pago").distractores[0].retro, "La respuesta es $2.121.175."], textoCorrecta: "$2.121.175" });
-  assert.deepEqual(L.evaluarH4(item("el-descuento"), 1).textos, ["La respuesta es $78.200.", "El 4 % va sobre lo facturado por la mercancía, sin el IVA: $1.955.000 × 4 % = $78.200."]);
+  assert.deepEqual(L.evaluarH4(item("el-pago"), C.deuda), { ok: false, correcta: C.pago, textos: [item("el-pago").distractores[0].retro, "Iba aquí: $2.121.175."], textoCorrecta: "$2.121.175" });
+  assert.deepEqual(L.evaluarH4(item("el-descuento"), 1).textos, ["Iba aquí: $78.200.", "El 4 % va sobre lo facturado por la mercancía, sin el IVA: $1.955.000 × 4 % = $78.200."]);
   assert.equal(L.evaluarH4(item("lo-facturado"), C.factura).ok, true);
 });
 

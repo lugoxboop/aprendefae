@@ -35,7 +35,7 @@ import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDe
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const P = { fondo: "#0E1B2E", texto: "#F8F9FA", texto2: "#A8B6C8", borde: "#B8C4D4", debe: "#2A9D8F", haber: "#E9C46A", error: "#E76F51" };
+const P = { fondo: "#0E1B2E", texto: "#F8F9FA", texto2: "#A8B6C8", borde: "#B8C4D4", debe: "#2A9D8F", haber: "#E9C46A", error: "#E76F51" }; /* lado */
 
 /* Las cifras van sin «$» dentro del asiento, como en el patrón. */
 const cifra = (n) => n.toLocaleString("es-CO").replace(/,/g, ".");

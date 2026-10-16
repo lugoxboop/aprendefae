@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
-import { FAE } from "../../../../theme.js";
 import { H6, FICHA_H6, COMPRA_RESUELTA_H6, BOTON_H6, resumenH6 } from "../../../../data/contabilidadT7_1_h6.js";
 import { prepararH6, evaluarH6, idLineaH6, puntuarH6, TOTAL_H6 } from "../../../../contabilidad/t7H6.js";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
@@ -101,8 +100,8 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
         <Encabezado consigna={sinUnSoloIntento(H6.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H6.enunciado} />
         <div data-compra-resuelta style={{ display: "grid", gap: "8px", margin: "0 0 12px" }}>
-          <AsientoEnLineas lineas={COMPRA_RESUELTA_H6.comprador} rotulo="COMPRADOR" acento={FAE.ambar} />
-          <AsientoEnLineas lineas={COMPRA_RESUELTA_H6.vendedor} rotulo="VENDEDOR" acento={FAE.ambar} />
+          <AsientoEnLineas lineas={COMPRA_RESUELTA_H6.comprador} rotulo="COMPRADOR" acento="#A8B6C8" />
+          <AsientoEnLineas lineas={COMPRA_RESUELTA_H6.vendedor} rotulo="VENDEDOR" acento="#A8B6C8" />
         </div>
         <Ficha filas={FICHA_H6} />
         <FiguraAcumulada figura={FIGURA_T7_1_H6} cerrados={cerradosDe(t.i, Boolean(listo))} listo={Boolean(listo)} />
@@ -115,12 +114,12 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
         {item.tipo === "eleccion" && (
           <>
             <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
-            <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es ${r.textoCorrecta}. ` : null} />
+            <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. Iba aquí: ${r.textoCorrecta}. ` : null} />
           </>
         )}
         {item.tipo === "cifra" && (
           <>
-            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} />
+            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} iba={r && !r.ok ? r.textoCorrecta : null} />
             <Devolucion r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
           </>
         )}

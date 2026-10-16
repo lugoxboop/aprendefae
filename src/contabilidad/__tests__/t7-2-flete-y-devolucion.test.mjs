@@ -202,7 +202,7 @@ async function jugar(m, falla) {
       assert.equal(m.caja.querySelector(`[data-campo-cifra="${it.id}"]`).readOnly, true, "un solo intento");
       assert.equal(boton(m.caja, "Comprobar"), undefined);
       assert.deepEqual([...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent), L.evaluarH5(it, v).textos);
-      if (!ok) assert.deepEqual(L.evaluarH5(it, v).textos, [it.distractores[0].retro, `La respuesta es ${pesos(it.correcta)}.`]);
+      if (!ok) assert.deepEqual(L.evaluarH5(it, v).textos, [it.distractores[0].retro, `Iba aquí: ${pesos(it.correcta)}.`]);
       detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
     } else if (it.tipo === "eleccion") {
       const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
@@ -229,7 +229,7 @@ async function jugar(m, falla) {
         const ok = !falla(L.idLineaH5(it, l));
         for (const b of m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] button`)) assert.equal(b.disabled, true);
         assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), ok ? [] : [l.distractores[0].retro]);
-        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Era: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
+        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Iba aquí: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
         detalle.push({ item: L.idLineaH5(it, l), ok, intentos: 1, respuesta: ok ? null : `${l.distractores[0].cuenta}|${l.lado}`, orden: detalle.length + 1 });
       }
       const suma = pesos(C.costo);
@@ -349,9 +349,9 @@ test("★★★ lote 3: los ítems 2 y 5 van con casilla; el 1, el 3 y el 4 se q
   /* Las casillas no traen opciones; las elecciones de cuenta, sí. */
   assert.deepEqual(p.map((x) => Boolean(x.opciones)), [true, false, true, true, false, false]);
   /* Una cifra que no es de ningún distractor: la respuesta y el porqué del acierto, sin «Así es:». */
-  assert.deepEqual(L.evaluarH5(item("pago-a-la-transportadora"), 1), { ok: false, correcta: 376_200, textos: ["La respuesta es $376.200.", "$380.000 − $3.800 = $376.200."], textoCorrecta: "$376.200" });
-  assert.deepEqual(L.evaluarH5(item("baja-con-el-proveedor"), 1).textos, ["La respuesta es $922.500.", "$820.000 + $131.200 − $28.700 = $922.500."]);
-  assert.deepEqual(L.evaluarH5(item("baja-con-el-proveedor"), 979_900).textos, [item("baja-con-el-proveedor").distractores[1].retro, "La respuesta es $922.500."]);
+  assert.deepEqual(L.evaluarH5(item("pago-a-la-transportadora"), 1), { ok: false, correcta: 376_200, textos: ["Iba aquí: $376.200.", "$380.000 − $3.800 = $376.200."], textoCorrecta: "$376.200" });
+  assert.deepEqual(L.evaluarH5(item("baja-con-el-proveedor"), 1).textos, ["Iba aquí: $922.500.", "$820.000 + $131.200 − $28.700 = $922.500."]);
+  assert.deepEqual(L.evaluarH5(item("baja-con-el-proveedor"), 979_900).textos, [item("baja-con-el-proveedor").distractores[1].retro, "Iba aquí: $922.500."]);
   /* La elección de cuenta sigue diciendo su respuesta por su nombre. */
   assert.equal(L.evaluarH5(item("flete-del-comprador"), "Compras").textoCorrecta, "Inventario de mercancías (fletes)");
 });

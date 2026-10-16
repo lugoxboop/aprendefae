@@ -88,7 +88,7 @@ export default function CostoOGasto({ Marco, rotulo, titulo, acento, onCompletar
         </div>
         <TarjetaPregunta id={item.id} pregunta={item.pregunta} pie={H5.pie} tarjetaRef={tarjeta} />
         <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
-        <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. La respuesta es ${r.textoCorrecta}. ` : null} />
+        <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. Iba aquí: ${r.textoCorrecta}. ` : null} />
       </div>
       {r && (
         <div ref={zonaBoton}>

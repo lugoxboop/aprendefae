@@ -53,7 +53,7 @@ export const TIEMPOS = { sale: 360 };
 export const CSS_T7CS = `
 /* T7-2 A1 · la bodega y su cuenta, en paralelo (C2 de Watari). Teal y ámbar solo en DEBE y HABER. */
 .t7cs { --texto: #F8F9FA; --atenuado: #A8B6C8; --neutro: #B8C4D4;
-  --teal-texto: #3FA69A; --ambar: #E9C46A; --coral: #E76F51; --coral-texto: #EE8266;
+  --teal-texto: #3FA69A; --ambar: #E9C46A; --coral: #E76F51; --coral-texto: #EE8266; /* lado */
   --hundido: rgba(10,20,34,.45); --hundido-borde: rgba(248,249,250,.12);
   display: grid; gap: 12px; color: var(--texto); font: 400 15px/1.5 "Inter", system-ui, sans-serif; min-width: 0; outline: none; }
 .t7cs * { box-sizing: border-box; }

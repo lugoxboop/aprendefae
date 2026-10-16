@@ -53,11 +53,11 @@ const FICHA_BTN = (activa) => ({
   minHeight: "44px", padding: "8px 11px", borderRadius: "10px", cursor: "pointer",
   fontFamily: INTER, fontSize: "14px", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap",
   background: activa ? "rgba(233,196,106,0.16)" : "rgba(14,27,46,0.6)",
-  border: `1px solid ${activa ? FAE.ambar : "rgba(248,249,250,0.22)"}`, color: FAE.text,
+  border: `1px solid ${activa ? "#B8C4D4" : "rgba(248,249,250,0.22)"}`, color: FAE.text,
 });
 
 const CASILLA_BTN = (estado) => {
-  const borde = { ok: FAE.teal, mal: FAE.coral, llena: "rgba(248,249,250,0.45)" }[estado] ?? "rgba(248,249,250,0.22)";
+  const borde = { ok: "#F8F9FA", mal: FAE.coral, llena: "rgba(248,249,250,0.45)" }[estado] ?? "rgba(248,249,250,0.22)";
   return {
     minHeight: "44px", minWidth: "112px", padding: "8px 10px", borderRadius: "10px",
     fontFamily: INTER, fontSize: "14px", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap", textAlign: "right",
@@ -148,7 +148,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
         {parte === 1 && (
           <div data-parte-h4="tabla">
             <p data-recordatorio style={{
-              margin: "0 0 12px", padding: "9px 12px", borderRadius: "10px", border: `1px solid ${FAE.ambar}55`,
+              margin: "0 0 12px", padding: "9px 12px", borderRadius: "10px", border: "1px solid #B8C4D455",
               fontFamily: INTER, fontSize: "13.5px", lineHeight: "20px", color: FAE.text,
             }}>{H4.recordatorio}</p>
 
@@ -169,7 +169,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
             <div className="t7h4-metodos">
               {METODOS_H4.map((m) => (
                 <div key={m.id} data-metodo={m.id} style={{ padding: "10px 12px", borderRadius: "11px", border: "1px solid rgba(248,249,250,0.12)" }}>
-                  <p style={{ margin: "0 0 8px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.06em", color: FAE.ambar }}>{m.nombre}</p>
+                  <p style={{ margin: "0 0 8px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.06em", color: "#A8B6C8" }}>{m.nombre}</p>
                   {FILAS_H4.map((f) => {
                     const id = `${m.id}:${f.id}`;
                     const r = revision?.[id];
@@ -184,7 +184,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
                             onClick={() => tocarCasilla(id)} style={CASILLA_BTN(estado)}>
                             {v !== undefined ? pesos(v) : "—"}
                           </button>
-                          {r && !r.ok && <span data-era style={{ fontFamily: INTER, fontSize: "12px", color: FAE.text, marginTop: "2px" }}>era {pesos(r.correcta)}</span>}
+                          {r && !r.ok && <span data-era style={{ fontFamily: INTER, fontSize: "12px", color: FAE.text, marginTop: "2px" }}>{`Iba aquí: ${pesos(r.correcta)}`}</span>}
                         </span>
                       </div>
                     );
