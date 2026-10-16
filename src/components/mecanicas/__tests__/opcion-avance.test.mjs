@@ -43,22 +43,38 @@ function montar(elemento) {
 /* El coral, en las tres formas en que puede acabar en el DOM. */
 const CORAL = /#e76f51|rgb\(231,\s*111,\s*81\)|rgba\(231,\s*111,\s*81/i;
 const TEAL = /#2a9d8f|rgb\(42,\s*157,\s*143\)/i;
+/*
+ * El avance ya NO va en teal: va en `FAE.node` (#CBDCF2). Lo pidió la Célula D
+ * porque en Contabilidad el teal significa «correcto» y también el lado DEBE,
+ * así que un contador teal decía «bien» donde solo quiere decir «vas por aquí».
+ *
+ * Esta prueba exigía el teal, así que exigía el defecto. Se reapunta en vez de
+ * borrarse: lo que defiende —nodos hechos llenos, el actual con anillo y halo,
+ * los pendientes con contorno neutro, y la línea que los une— sigue igual.
+ * Lo único que cambia es el tono, y ahora exige además que el teal NO vuelva.
+ */
+const NODE = /#cbdcf2|rgb\(203,\s*220,\s*242\)/i;
 
 /* ─────────────────────────────── El avance ─────────────────────────────── */
 
-test("avance: nodos unidos por una línea; hechos llenos teal, el actual con anillo, el resto solo contorno", () => {
+test("avance: nodos unidos por una línea; hechos llenos en node, el actual con anillo, el resto solo contorno, y sin teal", () => {
   const m = montar(React.createElement(Pulsos, { total: 10, hechos: 3, etiqueta: "Ítem" }));
   try {
     const avance = m.caja.querySelector("[data-avance]");
     const nodos = [...avance.querySelectorAll("[data-nodo]")];
     assert.equal(nodos.length, 10);
     assert.deepEqual(nodos.map((n) => n.dataset.nodo), ["hecho", "hecho", "hecho", "actual", ...Array(6).fill("pendiente")]);
-    assert.match(nodos[0].style.background, TEAL, "hecho: relleno teal");
-    assert.doesNotMatch(nodos[3].style.background, TEAL, "actual: hueco");
-    assert.match(nodos[3].style.border, TEAL, "actual: anillo teal");
+    assert.match(nodos[0].style.background, NODE, "hecho: relleno node");
+    assert.doesNotMatch(nodos[3].style.background, NODE, "actual: hueco");
+    assert.match(nodos[3].style.border, NODE, "actual: anillo node");
     assert.ok(nodos[3].style.boxShadow.includes("3px"), "actual: el halo de énfasis");
-    assert.doesNotMatch(nodos[5].style.background, TEAL);
-    assert.doesNotMatch(nodos[5].style.border, TEAL, "pendiente: contorno neutro");
+    assert.doesNotMatch(nodos[5].style.background, NODE);
+    assert.doesNotMatch(nodos[5].style.border, NODE, "pendiente: contorno neutro");
+    /* Y el teal no vuelve a ninguno de los tres estados. */
+    for (const [cual, n] of [["hecho", nodos[0]], ["actual", nodos[3]], ["pendiente", nodos[5]]]) {
+      assert.doesNotMatch(n.style.background, TEAL, `${cual}: volvió el teal al relleno`);
+      assert.doesNotMatch(n.style.border, TEAL, `${cual}: volvió el teal al borde`);
+    }
     /* La línea que los une, y el tramo hecho hasta el actual. */
     const tramo = avance.querySelector("[data-tramo-hecho]");
     assert.ok(tramo, "hay tramo hecho");
