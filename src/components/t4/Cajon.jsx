@@ -36,6 +36,14 @@ export const CSS_CAJON = `
 .t4cv { position: relative; margin: 0; display: grid; min-width: 0; color: ${C.texto}; font-family: "Inter", sans-serif; }
 .t4cv * { box-sizing: border-box; }
 .t4cv-origen { position: relative; display: grid; gap: 2px; border: 1px solid ${C.reposo}; border-radius: 8px; padding: 8px 12px; }
+/*
+ * D9 (Hanayama), solo en H1: los hechos ya respondidos se apilan detrás de la
+ * tarjeta como un fajo, hasta 7 cantos de 1 px #B8C4D4, cada uno 2 px más
+ * arriba y más angosto. Sus 14 px se reservan desde el primer hecho: el fajo
+ * crece sin mover nada. Quieto: sin movimiento.
+ */
+.t4cv-fajo { position: relative; padding-top: 14px; }
+.t4cv-canto { position: absolute; height: 6px; border: 1px solid ${C.neutro}; border-bottom: none; border-radius: 8px 8px 0 0; pointer-events: none; }
 .t4cv-rot { font: 500 12px/1.3 "Inter", sans-serif; letter-spacing: .04em; color: ${C.texto2}; }
 .t4cv-hecho { font-size: 15px; line-height: 22px; overflow-wrap: anywhere; }
 .t4cv-origen[data-tarjeta] .t4cv-hecho { min-height: 66px; }
@@ -198,21 +206,31 @@ export function Cajon({
       </span>
     ) : null;
   };
+  /* El fajo de H1 (D9): `origen.fajo` cantos detrás de la tarjeta, como mucho 7. */
+  const fajo = origen?.fajo != null ? Math.min(origen.fajo, 7) : null;
+  const tarjetaOrigen = origen && (
+    <div className={`t4cv-origen t4r-nueva${vibra === "origen" ? " t4r-vibra" : ""}`} data-origen data-tarjeta={origen.tarjeta ? "" : undefined} key={origen.clave}>
+      {origen.rotulo && <span className="t4cv-rot">{origen.rotulo}</span>}
+      {origen.texto && <span className="t4cv-hecho" data-hecho tabIndex={origen.refHecho ? -1 : undefined} ref={origen.refHecho ?? undefined} style={{ outline: "none" }}>{origen.texto}</span>}
+      <span className="t4cv-lin">
+        {origen.accion && (
+          <button type="button" className={`t4r-btn2${origen.accion.hecha ? " t4cv-oculto" : ""}`} data-accion={origen.accion.id} onClick={origen.accion.onClick}>{origen.accion.texto}</button>
+        )}
+        {origen.monto != null && <span className={`t4cv-monto${origen.montoFoco ? " t4cv-foco" : ""}`} data-monto="origen">{origen.monto}</span>}
+      </span>
+    </div>
+  );
   const ultimo = bandeja?.ultimo ? <span className="t4r-nueva" key={bandeja.ultimo} data-linea="bandeja">{bandeja.ultimo}</span> : null;
   return (
     <figure className="t4cv" data-figura="cajon" aria-describedby={idAlt}>
-      {origen && (
-        <div className={`t4cv-origen t4r-nueva${vibra === "origen" ? " t4r-vibra" : ""}`} data-origen data-tarjeta={origen.tarjeta ? "" : undefined} key={origen.clave}>
-          {origen.rotulo && <span className="t4cv-rot">{origen.rotulo}</span>}
-          {origen.texto && <span className="t4cv-hecho" data-hecho tabIndex={origen.refHecho ? -1 : undefined} ref={origen.refHecho ?? undefined} style={{ outline: "none" }}>{origen.texto}</span>}
-          <span className="t4cv-lin">
-            {origen.accion && (
-              <button type="button" className={`t4r-btn2${origen.accion.hecha ? " t4cv-oculto" : ""}`} data-accion={origen.accion.id} onClick={origen.accion.onClick}>{origen.accion.texto}</button>
-            )}
-            {origen.monto != null && <span className={`t4cv-monto${origen.montoFoco ? " t4cv-foco" : ""}`} data-monto="origen">{origen.monto}</span>}
-          </span>
+      {origen && (fajo != null ? (
+        <div className="t4cv-fajo" data-fajo={fajo}>
+          {Array.from({ length: fajo }, (_, k) => (
+            <span key={k} className="t4cv-canto" aria-hidden="true" data-canto={k + 1} style={{ top: `${12 - 2 * k}px`, left: `${3 * (k + 1)}px`, right: `${3 * (k + 1)}px` }} />
+          ))}
+          {tarjetaOrigen}
         </div>
-      )}
+      ) : tarjetaOrigen)}
       <div className="t4cv-tubo" data-con-bandeja={bandeja ? "" : undefined} style={bandeja ? undefined : { height: sinAnotar ? "20px" : "16px" }} aria-hidden={bandeja || sinAnotar ? undefined : "true"}>
         <span className={`t4cv-v${v("entrada")}`} data-trazo="entrada" aria-hidden="true" style={{ left: "calc(25% - 1px)", top: 0, bottom: 0 }} />
         {sinAnotar && <span className="t4cv-sin" data-sin-anotar>{sinAnotar}</span>}

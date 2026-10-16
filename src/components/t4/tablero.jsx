@@ -84,6 +84,15 @@ export const CSS_TABLERO = `
 /* par */
 .t4pr { display: grid; grid-template-columns: minmax(0,1fr) 24px minmax(0,1fr); align-items: end; border: 1px solid ${C.neutro}; border-radius: 10px; padding: 8px 10px; }
 .t4pr > div { display: grid; gap: 2px; min-width: 0; }
+/*
+ * D9 (Hanayama), solo en H7: bajo el par, una barra de 4 px #B8C4D4 del
+ * tamaño de la diferencia entre los dos saldos; se encoge (scaleX) con cada
+ * saldo que se escribe y, en 0, se va y sale el «=». Su renglón se reserva
+ * siempre. Con movimiento reducido, sin transición.
+ */
+.t4pr-barra-f { grid-column: 1 / -1; height: 4px; margin-top: 6px; }
+.t4pr-barra { display: block; height: 4px; border-radius: 2px; background: ${C.neutro}; transform-origin: 50% 50%; transition: transform 220ms cubic-bezier(.3,.9,.4,1), opacity 220ms; }
+@media (prefers-reduced-motion: reduce) { .t4pr-barra { transition: none; } }
 .t4pr > div:last-child { justify-items: end; text-align: right; }
 .t4pr span.r { font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; white-space: nowrap; }
 .t4pr span.v { font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -248,7 +257,9 @@ function Verdadero({ rotulo, v, lector }) {
   );
 }
 
-export function Par({ izq, der, igual = false, pie = null, verdadero = null }) {
+export function Par({ izq, der, igual = false, pie = null, verdadero = null, barra = null }) {
+  /* D9 (solo H7): la barra de la diferencia, de 0 a 1 de la diferencia de partida. */
+  const fraccion = barra && barra.base > 0 ? Math.min(1, Math.abs((izq.v ?? 0) - (der.v ?? 0)) / barra.base) : 0;
   const a = useNumeroQueSube(izq.v ?? 0);
   const b = useNumeroQueSube(der.v ?? 0);
   return (
@@ -258,6 +269,11 @@ export function Par({ izq, der, igual = false, pie = null, verdadero = null }) {
       <div data-lado-par="der"><span className="r">{der.r}</span><span className={`v${der.foco ? " f" : ""}${der.eco ? " e" : ""}`} data-eco={der.eco ? "" : undefined}>{der.v != null ? cifra(der.eco ? der.v : b) : "—"}</span></div>
       {/* Cuando aparece el «=», el lector lo oye: la región está desde el principio, vacía, para que el cambio se anuncie. */}
       <span className="t4f-sr" aria-live="polite" data-lector-igual>{igual ? SON_IGUALES : ""}</span>
+      {barra && (
+        <span className="t4pr-barra-f" aria-hidden="true">
+          <span className="t4pr-barra" data-barra={igual ? "0" : fraccion.toFixed(3)} style={{ transform: `scaleX(${igual ? 0 : fraccion})`, opacity: igual || fraccion === 0 ? 0 : 1 }} />
+        </span>
+      )}
       {pie && <span className="t4pr-pie" data-pie-par>{pie}</span>}
       {verdadero && <Verdadero {...verdadero} />}
     </div>

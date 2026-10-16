@@ -39,7 +39,7 @@ export const H7_ID = "t4-concilia-la-cuenta";
 export const H7 = {
   id: H7_ID,
   nombre: "Concilia la cuenta",
-  objetivo: "Llevar cada partida de la conciliación al lado que todavía no la tiene, con su signo, y llegar a los dos saldos conciliados.",
+  objetivo: "Conciliar llevando cada partida al lado correcto.",
   consigna: "Manda cada partida a la libreta que todavía no la tiene, al Más o al Menos.",
 };
 

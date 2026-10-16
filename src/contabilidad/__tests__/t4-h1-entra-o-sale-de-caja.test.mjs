@@ -423,3 +423,31 @@ test("★★★ «Así se juega»: pasos, ejemplo y texto alternativo del paquet
   /* Ningún paso repite la consigna (B5). */
   for (const p of asi.pasos) assert.ok(!D.H1.consigna.includes(p.replace(/\.$/, "")), p);
 });
+
+test("★★★ D2: el objetivo de la pieza se ve antes de empezar, en el Encabezado compartido (por su prop), antes de la consigna", () => {
+  const m = montarJuego();
+  try {
+    const o = m.caja.querySelector("[data-encabezado] [data-objetivo]");
+    assert.equal(o?.textContent, D.H1.objetivo);
+    assert.ok(o.compareDocumentPosition(m.caja.querySelector("[data-encabezado] [data-consigna]")) & 4, "el objetivo no va antes de la consigna");
+  } finally { m.desmontar(); }
+});
+
+test("★★★ D9 · el fajo: los hechos ya respondidos se apilan detrás de la tarjeta, un canto por hecho y como mucho 7, con su alto reservado desde el primero", async () => {
+  const m = montarJuego({ items: D.ITEMS_H1 });
+  try {
+    for (const [i, it] of D.ITEMS_H1.entries()) {
+      const f = q(m, "[data-fajo]");
+      assert.ok(f, `${it.id}: sin fajo`);
+      assert.equal(Number(f.dataset.fajo), Math.min(i, 7), `${it.id}: el fajo no crece con cada hecho`);
+      assert.equal(f.querySelectorAll(".t4cv-canto").length, Math.min(i, 7));
+      assert.ok(f.querySelector("[data-origen]"), "la tarjeta no va delante del fajo");
+      for (const c of f.querySelectorAll(".t4cv-canto")) assert.equal(c.getAttribute("aria-hidden"), "true");
+      await tocar(destino(m, it.respuesta));
+      await tocar(siguiente(m));
+    }
+  } finally { m.desmontar(); }
+  const { CSS_CAJON } = await import("../../components/t4/Cajon.jsx");
+  assert.match(CSS_CAJON, /\.t4cv-fajo \{ position: relative; padding-top: 14px; \}/, "el alto del fajo no se reserva");
+  assert.match(CSS_CAJON, /\.t4cv-canto \{[^}]*border: 1px solid #B8C4D4/i);
+});

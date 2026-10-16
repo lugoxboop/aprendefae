@@ -34,6 +34,14 @@ import {
 
 export const CSS_A4 = `
 .t4lt { display: grid; gap: 0; border: 1px solid ${C.neutro}; border-radius: 10px; overflow: hidden; }
+/*
+ * D9 (Hanayama): en P1, la libreta del banco lleva una pestaña de carpeta,
+ * «Extracto», sobre su columna. Su renglón se reserva desde el principio y la
+ * pestaña aparece (fundido de opacidad) con «Llega el extracto».
+ */
+.t4lt-pest { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: -1px; position: relative; z-index: 1; }
+.t4lt-tab { grid-column: 2; justify-self: start; margin-left: 10px; padding: 2px 10px 1px; border: 1px solid ${C.neutro}; border-bottom-color: ${C.fondo}; border-radius: 6px 6px 0 0; background: ${C.fondo}; font: 500 12px/16px "Inter", sans-serif; color: ${C.texto2}; white-space: nowrap; }
+.t4lt-tab[data-oculta] { visibility: hidden; }
 .t4lt-f { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .t4lt-f > div, .t4lt-f > .t4lt-c { min-width: 0; padding: 6px 10px; }
 .t4lt-f > * + * { border-left: 1px solid ${C.neutro}; }
@@ -92,9 +100,15 @@ function Celda({ x, lado, luz = false, nueva = false }) {
     : <span className="t4lt-c" data-libreta={lado} data-no-sabe=""><span>{F.noSabe[0]}</span><span>{F.noSabe[1]}</span></span>;
 }
 
-function Libretas({ renglones, reserva = 0, luz = false }) {
+function Libretas({ renglones, reserva = 0, luz = false, pestana = null }) {
   const celda = (x, lado) => <Celda key={lado} x={x} lado={lado} luz={luz} nueva={Boolean(x)} />;
   return (
+    <>
+    {pestana && (
+      <div className="t4lt-pest">
+        <span className={`t4lt-tab${pestana.ver ? " t4r-nueva" : ""}`} data-pestana data-oculta={pestana.ver ? undefined : ""} aria-hidden={pestana.ver ? undefined : "true"}>{pestana.texto}</span>
+      </div>
+    )}
     <div className="t4lt" data-libretas>
       <div className="t4lt-f t4lt-cab">
         <div><span>{F.empresa}</span></div>
@@ -103,6 +117,7 @@ function Libretas({ renglones, reserva = 0, luz = false }) {
       {renglones.map((r) => <div key={r.id} className="t4lt-f t4lt-r" data-renglon={r.id}>{celda(r.emp, "empresa")}{celda(r.ban, "banco")}</div>)}
       {Array.from({ length: reserva }, (_, k) => <div key={`v${k}`} className="t4lt-f t4lt-r" aria-hidden="true" data-renglon-vacio=""><div /><div /></div>)}
     </div>
+    </>
   );
 }
 
@@ -131,7 +146,7 @@ function Extracto({ p }) {
   const r = llego ? RENGLONES_EXTRACTO : [];
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
-      <Libretas renglones={r} reserva={RENGLONES_EXTRACTO.length - r.length} luz />
+      <Libretas renglones={r} reserva={RENGLONES_EXTRACTO.length - r.length} luz pestana={{ texto: F.pestanaExtracto, ver: llego }} />
       <button type="button" className={`t4r-btn2${llego ? " t4r-oculto" : ""}`} data-accion="extracto" data-usado={llego ? "" : undefined} onClick={llego ? undefined : () => setLlego(true)}>{F.extracto}</button>
     </Fig>
   );
@@ -198,7 +213,10 @@ function Causas({ p, onAcierto }) {
     if (!c) return;
     if (lado === ladoDe(c)) { setMarca({ lado, m: "bien" }); setI(i + 1); } else { setMarca({ lado, m: "mal" }); setErrores((n) => n + 1); }
   };
+  /* D6: una nota del banco llevada a la libreta de la empresa tiene su mensaje (Katsumi); los demás errores, solo la marca. */
+  const textoError = marca?.m === "mal" && marca.lado === "empresa" && p.errorEmpresa?.causas.includes(c?.id) ? p.errorEmpresa.texto : null;
   return (
+    <>
     <Fig nombre={NOMBRE} alt={p.alt}>
       <div className="t4a4-c" data-tarjeta-causa={c?.id ?? "fin"} aria-live="polite">
         {c ? <><span>{c.tarjeta}</span><span>{F.contadorCausa(i + 1, total)}</span></> : <span>{p.fin}</span>}
@@ -219,8 +237,10 @@ function Causas({ p, onAcierto }) {
           );
         })}
       </div>
-      <LectorError error={marca?.m === "mal"} clave={errores} />
+      <LectorError error={marca?.m === "mal" && !textoError} clave={errores} />
     </Fig>
+    {textoError && <Mensaje key={`${c.id}-${errores}`} ok={false} texto={textoError} />}
+    </>
   );
 }
 

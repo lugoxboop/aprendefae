@@ -194,6 +194,7 @@ export default function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onComp
       izq={{ r: ROTULOS_H7.parBanco, v: izq, foco: Boolean(r2), eco: ecoB != null }}
       der={{ r: ROTULOS_H7.parLibros, v: der, foco: Boolean(r2), eco: ecoL != null }}
       igual={igual}
+      barra={{ base: Math.abs(s.extracto - s.libros) }}
       lector={lectorParH7(cifra(izq), cifra(der))}
     />
   );
@@ -207,7 +208,7 @@ export default function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onComp
       <div {...(modoDemo ? { "data-t4-h7-demo": "" } : { "data-t4-h7": "" })} data-fase={fase} data-serie={s.id}>
         {!modoDemo && (
           <>
-            <Encabezado consigna={H7.consigna} onComoSeJuega={onComoSeJuega} />
+            <Encabezado objetivo={H7.objetivo} consigna={H7.consigna} onComoSeJuega={onComoSeJuega} />
             <div style={{ marginBottom: "12px" }}>
               <Pulsos total={cuantas + 1} hechos={fase === 2 ? cuantas : t.i} enCurso={fase === 2 ? cuantas + 1 : t.i + 1} etiqueta="Paso" />
             </div>

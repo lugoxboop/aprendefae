@@ -42,6 +42,7 @@ function porLugar(p) {
   for (const t of p.despues ?? []) r.push(["Después de la figura", t]);
   for (const x of p.despuesConAccion ?? []) r.push(["Después de la figura, con la acción", x.texto]);
   if ("acierto" in p) r.push(["Acierto (tras «Correcto.»)", p.acierto]);
+  if (p.errorFila) r.push(["Error si «Deuda de un cliente» va del lado corriente (✗ y el texto; con varios errores, gana este)", p.errorFila.texto]);
   if (p.error) r.push(["Error (✗ y el texto)", p.error]);
   if (p.cierre) r.push(["Frase de cierre (desde que se llega)", p.cierre]);
   if (p.siguiente) r.push(["Siguiente", p.siguiente]);
@@ -275,7 +276,7 @@ test("★★★ P3: «Pasar el año» no se apaga (D7): con filas sin marcar avi
     assert.equal(m.caja.querySelector("[data-aviso]").textContent, "", "el aviso no se va al marcar la fila que faltaba");
     assert.equal(m.caja.querySelector("[data-accion=pasar]").getAttribute("aria-disabled"), null);
     const zona = m.caja.querySelector("[data-pieza]");
-    for (const x of [p.error, "Correcto.", "Incorrecto."]) {
+    for (const x of [p.error, p.errorFila.texto, "Correcto.", "Incorrecto."]) {
       assert.ok(!zona.textContent.includes(x), `«${x}» está en el DOM antes de pasar el año`);
       assert.ok(!zona.outerHTML.includes(x), `«${x}» está en el HTML antes de pasar el año`);
     }
@@ -313,7 +314,8 @@ test("★★★ P3 mal: la raya decide; ✗ y coral en la mal elegida, y la que 
     assert.doesNotMatch(`${visible(m.caja)} ${oido}`, /\bera\b/i, "nunca «era» en Aprender, ni a la vista ni para el lector");
     const msg = m.caja.querySelector("[data-mensaje]");
     assert.equal(msg.dataset.mensaje, "error");
-    assert.equal(visible(msg), p.error);
+    /* D6: la deuda fue del lado corriente, así que su error gana sobre el de la mercancía. */
+    assert.equal(visible(msg), p.errorFila.texto);
     assert.ok(msg.querySelector('[data-icono="x"]'), "el X de lucide en el mensaje");
     assert.equal(msg.querySelector(".t4f-sr").textContent.trim(), "Incorrecto.");
     assert.ok(CORAL.test(w.getComputedStyle(seg(m.caja, "deuda", "antes")).borderTopColor), "la mal elegida no va en coral");
@@ -397,4 +399,28 @@ test("★★★ fuera del catálogo de FP: Aprender en subjects.js, primera del 
   for (const f of ["src/data/contabilidadT4A0.js", "src/components/t4/AnoEnMarcha.jsx"]) {
     assert.doesNotMatch(leer(f), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/, f);
   }
+});
+
+test("★★★ D6 · P3: el error va por fila: la deuda del lado corriente tiene el suyo y gana; cualquier otro error, «¿Qué se volvió plata?»", async () => {
+  const p = pantalla("cual-cruza");
+  assert.deepEqual([p.errorFila.fila, p.errorFila.lado], ["deuda", "antes"]);
+  const casos = [
+    [{ mercancia: "antes", deuda: "antes", edificio: "despues" }, p.errorFila.texto],
+    [{ mercancia: "despues", deuda: "antes", edificio: "antes" }, p.errorFila.texto],
+    [{ mercancia: "despues", deuda: "despues", edificio: "despues" }, p.error],
+    [{ mercancia: "antes", deuda: "despues", edificio: "antes" }, p.error],
+  ];
+  movimientoReducido(true);
+  for (const [marcas, texto] of casos) {
+    const m = abrir(3);
+    try {
+      for (const [f, l] of Object.entries(marcas)) tocar(seg(m.caja, f, l));
+      tocar(m.caja.querySelector("[data-accion=pasar]"));
+      await esperar(0);
+      const msg = m.caja.querySelector("[data-mensaje]");
+      assert.equal(msg.dataset.mensaje, "error", JSON.stringify(marcas));
+      assert.equal(visible(msg), texto, JSON.stringify(marcas));
+    } finally { m.desmontar(); }
+  }
+  movimientoReducido(false);
 });

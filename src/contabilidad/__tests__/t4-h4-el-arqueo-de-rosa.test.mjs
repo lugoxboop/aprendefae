@@ -219,6 +219,9 @@ test("★★★ la regla dibuja lo que decide el estudiante: la suma, su diferen
     assert.equal(mitad(m, "ino-sobrante:haber").dataset.marca, "bien");
     const lineas = [...m.caja.querySelectorAll("[data-linea-asiento]")].map((x) => [...x.querySelectorAll("span")].map((y) => y.children.length ? null : y.textContent).filter(Boolean));
     assert.deepEqual(lineas, [["Gastos generales", "391.800"], ["Ingresos no operacionales", "– sobrante de caja menor", "4.300"], ["Bancos", "387.500"]]);
+    /* D9: el asiento lleva su franja de comprobante, con la empresa de la ronda. */
+    assert.equal(q(m, "[data-asiento] > [data-comprobante]")?.textContent, `Comprobante de egreso · ${r.empresa}`);
+    assert.equal(q(m, "[data-asiento]").firstElementChild, q(m, "[data-comprobante]"), "la franja no va arriba del asiento");
   } finally { m.desmontar(); }
 });
 
@@ -346,4 +349,24 @@ test("★★★ en la página del juego hay exactamente UN [data-t4-h4]: la part
     assert.equal(m.caja.querySelectorAll("[data-t4-h4]").length, 1);
     assert.equal(m.caja.querySelectorAll("[data-t4-h4-demo]").length, 1);
   } finally { m.desmontar(); }
+});
+
+test("★★★ D2: el objetivo de la pieza se ve antes de empezar, en el Encabezado compartido (por su prop), antes de la consigna", () => {
+  const m = montarJuego();
+  try {
+    const o = m.caja.querySelector("[data-encabezado] [data-objetivo]");
+    assert.equal(o?.textContent, D.H4.objetivo);
+    assert.ok(o.compareDocumentPosition(m.caja.querySelector("[data-encabezado] [data-consigna]")) & 4, "el objetivo no va antes de la consigna");
+  } finally { m.desmontar(); }
+});
+
+test("★★★ D9 · la franja «Comprobante de egreso · {empresa}» encabeza el asiento de la pregunta 4, con la empresa de cada ronda", () => {
+  assert.equal(D.comprobanteH4("Sus Servicios"), "Comprobante de egreso · Sus Servicios");
+  const empresas = D.RONDAS_H4.map((r) => r.empresa);
+  assert.ok(empresas.includes("Sus Servicios") && empresas.includes("Ferretería La Tuerca"), empresas.join(", "));
+  for (const r of D.RONDAS_H4) assert.ok(r.titulo.includes(r.empresa) && !r.empresa.includes("·") && !r.empresa.includes(","), r.titulo);
+  const src = readFileSync(new URL("../../components/t4/ElArqueo.jsx", import.meta.url), "utf8");
+  assert.match(src, /<p className="t4h4-comp" data-comprobante>\{comprobanteH4\(r\.empresa\)\}<\/p>/);
+  const regla = src.split("\n").find((l) => l.startsWith(".t4h4-comp {")) ?? "";
+  assert.match(regla, /font: 500 12px\/1\.3 "Inter", sans-serif; color: \$\{C\.texto2\}/, "la franja no va en #A8B6C8 a 12 px");
 });

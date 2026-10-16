@@ -117,6 +117,8 @@ export const PANTALLAS_A0 = [
     /* Acierto: «Correcto.» y nada más (Katsumi). Error: ✗ y el texto; no nombra la respuesta. */
     acierto: "",
     error: "¿Qué se volvió plata?",
+    /* D6 (Katsumi, lote del Kit): si la deuda va del lado corriente, su error propio; con varios errores, gana este. */
+    errorFila: { fila: "deuda", lado: "antes", texto: "Te deben, sí. ¿Pero cuándo pagan?" },
     pie: "Basado en el libro, p. 178",
   },
   {

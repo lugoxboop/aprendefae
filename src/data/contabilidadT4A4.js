@@ -92,6 +92,8 @@ export const FIGURA_A4 = {
   consignar: "Consignar",
   girar: "Girar un cheque",
   extracto: "Llega el extracto",
+  /* D9 (Hanayama; texto confirmado por Katsumi): la pestaña de carpeta de la libreta del banco, que aparece con «Llega el extracto» (P1). */
+  pestanaExtracto: "Extracto",
   sube: "Sube",
   baja: "Baja",
   mayor: "Bancos",
@@ -155,6 +157,8 @@ export const PANTALLAS_A4 = [
     id: "seis-causas", modo: "causas", pregunta: true,
     antes: ["Lleva cada causa a quien ya la anotó."],
     fin: "El banco sabe del cheque cuando lo cobran.",
+    /* D6 (Katsumi, lote del Kit): las dos notas del banco llevadas a la libreta de la empresa tienen su mensaje; los demás errores, solo la marca. */
+    errorEmpresa: { causas: ["nota-debito", "nota-credito"], texto: "La empresa la ve en el extracto." },
     alt: "Seis tarjetas, una a la vez. Cada causa se manda a la libreta de la empresa o a la del banco, y queda escrita en la que la tiene anotada.",
     pie: "Basado en el libro, p. 188",
   },

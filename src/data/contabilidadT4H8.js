@@ -36,7 +36,7 @@ export const H8_ID = "t4-se-asienta-o-no";
 export const H8 = {
   id: H8_ID,
   nombre: "¿Se asienta o no?",
-  objetivo: "Elegir qué partidas de la conciliación se asientan, armar los asientos y llegar al saldo del mayor.",
+  objetivo: "Asentar las notas del banco en el mayor.",
   consigna: "Decide qué partidas se asientan, arma cada asiento y saca el saldo del mayor.",
 };
 
