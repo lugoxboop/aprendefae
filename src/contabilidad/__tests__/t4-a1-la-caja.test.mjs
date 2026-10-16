@@ -40,6 +40,7 @@ const ERR = { [A.DEBE]: "Error si va al debe", [A.HABER]: "Error si va al haber"
 function porLugar(p) {
   const r = [];
   for (const t of p.antes ?? []) r.push(["Antes de la figura", t]);
+  for (const t of p.despues ?? []) r.push(["Después de la figura", t]);
   if (p.tarjeta) r.push(["Tarjeta del origen", p.tarjeta]);
   if ("acierto" in p) r.push(["Acierto (tras «Correcto.»)", p.acierto]);
   for (const [d, t] of Object.entries(p.errores ?? {})) r.push([ERR[d], t]);
@@ -50,7 +51,7 @@ function porLugar(p) {
     }
   }
   if (p.tipo === "controles") A.CONTROLES_A1.forEach((c, i) => r.push([`Control ${i + 1}`, c.texto]));
-  (p.resumen ?? []).forEach((t, i) => r.push([`Resumen ${i + 1}`, t]));
+  if (p.cierre) r.push(["Frase de cierre (en el hueco del control, con el séptimo distinto)", p.cierre]);
   if (p.siguiente) r.push(["Siguiente", p.siguiente]);
   r.push(["Pie", p.pie]);
   return r;
@@ -91,11 +92,12 @@ test("★★★ el paquete vigente es el del rediseño (v6) y lo dice, con la de
   assert.match(leer("src/data/contabilidadT4.js"), new RegExp(CANON.replace(/\./g, "\\.")));
 });
 
-test("★★★ las 7 pantallas, en el orden del paquete; título e id; todas con el cajón", async () => {
+test("★★★ las 6 pantallas, en el orden del paquete (lote B: sale el resumen en lista); título e id; todas con el cajón", async () => {
   assert.equal(P.id, "t4-a1-la-caja");
   assert.equal(P.titulo, "La caja");
   assert.deepEqual(P.pantallas.map((p) => p.id), CANON_P.map((p) => p.id));
-  assert.equal(P.pantallas.length, 7);
+  assert.equal(P.pantallas.length, 6);
+  assert.ok(!P.pantallas.some((p) => p.id === "resumen" || p.resumen), "queda una pantalla de resumen (capa 4)");
   for (const p of P.pantallas) assert.equal(p.figura, "cajon", p.id);
 });
 
@@ -138,7 +140,7 @@ test("★★★ los dos asientos de la p. 180 cuadran; la única cifra del libro
 
 /* ═══════════ 2 · LA PANTALLA Y EL CAJÓN ═══════════ */
 
-test("★★★ cada pantalla, en el orden de Hanayama: antes → cajón → resumen → siguiente → «Seguir» → pie (en las preguntas, tras el acierto)", async () => {
+test("★★★ cada pantalla, en el orden de Hanayama: antes → cajón → después → siguiente → «Seguir» → pie (en las preguntas, tras el acierto; en la última, tras el séptimo control)", async () => {
   const m = await abrir("dos-cuentas");
   try {
     for (const [k, p] of P.pantallas.entries()) {
@@ -148,12 +150,16 @@ test("★★★ cada pantalla, en el orden de Hanayama: antes → cajón → res
         assert.equal(zona.querySelector('[data-boton="seguir"]'), null, `${p.id}: «Seguir» antes del acierto`);
         await acertar(m, p);
       }
+      if (p.tipo === "controles") {
+        assert.ok(!zona.querySelector("[data-siguiente][data-visible]"), "«Siguiente» antes de la frase de cierre");
+        A.CONTROLES_A1.forEach((_, i) => tocar(zona.querySelector(`[data-control="${i + 1}"]`)));
+      }
       const orden = [...zona.querySelectorAll("[data-texto], [data-figura], [data-boton], [data-pie]")]
         .filter((e) => !e.parentElement.closest("[data-figura]"))
         .map((e) => (e.matches("[data-figura]") ? "FIGURA" : e.matches("[data-boton]") ? "SEGUIR" : e.matches("[data-pie]") ? "PIE" : e.textContent));
-      const esperado = [...(p.antes ?? []), "FIGURA", ...(p.resumen ?? []), ...(p.siguiente ? [p.siguiente] : []), ...(k < 6 ? ["SEGUIR"] : []), "PIE"];
+      const esperado = [...(p.antes ?? []), "FIGURA", ...(p.despues ?? []), ...(p.siguiente ? [p.siguiente] : []), ...(k < 5 ? ["SEGUIR"] : []), "PIE"];
       assert.deepEqual(orden, esperado, p.id);
-      if (k < 6) tocar(zona.querySelector('[data-boton="seguir"]'));
+      if (k < 5) tocar(zona.querySelector('[data-boton="seguir"]'));
     }
   } finally { m.desmontar(); }
 });
@@ -189,16 +195,30 @@ test("★★★ D7 · en las dos pantallas con pregunta, «Seguir» no aparece s
   } finally { k.desmontar(); }
 });
 
-test("★★★ P0 y P6: el cajón con sus rótulos (Caja, Debe, Haber, Bancos, Pago en efectivo), sin acción ni cifra", async () => {
-  for (const id of ["dos-cuentas", "resumen"]) {
-    const m = await abrir(id);
-    try {
-      const fig = q(m, "[data-figura=cajon]");
-      assert.equal(fig.querySelector("button"), null);
-      assert.equal(visible(fig), "CajaDebeHaberBancosPagoen efectivo");
-      assert.match(fig.querySelector("figcaption").textContent, /cajón de paso/);
-    } finally { m.desmontar(); }
-  }
+test("★★★ P0: el cajón con sus rótulos (Caja, Debe, Haber, Bancos, Pago en efectivo) y la glosa de cada cuenta bajo su nombre, sin acción ni cifra", async () => {
+  const m = await abrir("dos-cuentas");
+  try {
+    const zona = q(m, "[data-pieza] .t4r");
+    assert.ok(zona.firstElementChild.matches("[data-figura]"), "P0 no abre con el cajón (capa 1)");
+    const fig = q(m, "[data-figura=cajon]");
+    assert.equal(fig.querySelector("button"), null);
+    assert.equal(visible(fig), "Cajaa la mano, como tu billeteraDebeHaberBancosen el bancoPagoen efectivo");
+    assert.match(fig.querySelector("figcaption").textContent, /cajón de paso/);
+  } finally { m.desmontar(); }
+});
+
+test("★★★ P0, las glosas del cajón: las del paquete, letra por letra, bajo «Caja» y bajo «Bancos»; solo en P0", async () => {
+  const g = renglones(seccionDe(PAQ, "Glosas del cajón (P0)"));
+  assert.deepEqual(g.map((x) => [x.lugar, x.texto]), [["Bajo «Caja»", A.FIGURA_CAJON.glosaCaja.join(" ")], ["Bajo «Bancos»", A.FIGURA_CAJON.glosaBancos.join(" ")]]);
+  const m = await abrir("dos-cuentas");
+  try {
+    const caja = q(m, "[data-glosa-cuenta=caja]");
+    const bancos = q(m, "[data-glosa-cuenta=bancos]");
+    assert.equal(caja.textContent, g[0].texto);
+    assert.equal(bancos.textContent, g[1].texto);
+    assert.ok(caja.previousElementSibling.textContent.startsWith("Caja"), "la glosa no va bajo «Caja»");
+  } finally { m.desmontar(); }
+  for (const p of P.pantallas.slice(1)) assert.ok(!p.glosasCuenta, `${p.id} lleva glosas`);
 });
 
 test("★★★ P1 «Cobrar»: el tubo se enciende, 435.000 entra al Debe, «En la caja» va a 435.000 y sale el asiento 1", async () => {
@@ -288,12 +308,37 @@ test("★★★ P5 los controles: cada pestaña enciende lo que cuida y muestra 
     const esperado = [["cols"], ["bancos"], ["pago"], ["cols"], ["saldo"], ["cajon"], ["bancos"]];
     A.CONTROLES_A1.forEach((c, i) => {
       tocar(q(m, `[data-control="${i + 1}"]`));
+      if (i === A.CONTROLES_A1.length - 1) {
+        /* El séptimo distinto muestra la frase de cierre (prueba aparte); un segundo toque, el texto del control. */
+        assert.equal(q(m, "[data-cierre]").textContent, P.pantallas.at(-1).cierre);
+        tocar(q(m, `[data-control="${i + 1}"]`));
+      }
       assert.equal(q(m, "[data-texto-control]").textContent, c.texto, `control ${i + 1}`);
       assert.equal(q(m, `[data-control="${i + 1}"]`).getAttribute("aria-pressed"), "true");
       const l = luces(m);
       assert.deepEqual(l.map((x) => (x === "debe" || x === "haber" ? "cols" : x)).filter((x, j, xs) => xs.indexOf(x) === j), esperado[i], `control ${i + 1}`);
     });
     assert.ok(!luces(m).includes("pago"), "el control 7 enciende «Pago en efectivo»");
+  } finally { m.desmontar(); }
+});
+
+test("★★★ P5, la frase de cierre (capa 4): con el séptimo control distinto, el hueco del control la muestra, pegada al cajón; entonces sale «Siguiente»; tocar un número vuelve a su control", async () => {
+  const p = pantalla("controles");
+  const m = await abrir("controles");
+  try {
+    for (const i of [0, 0, 1, 2, 3, 4, 5]) {
+      tocar(q(m, `[data-control="${i + 1}"]`));
+      assert.equal(q(m, "[data-cierre]"), null, `la frase sale antes del séptimo distinto (control ${i + 1})`);
+    }
+    assert.ok(!q(m, "[data-siguiente][data-visible]"));
+    tocar(q(m, '[data-control="7"]'));
+    const frase = q(m, "[data-figura] [data-cierre]");
+    assert.equal(frase?.textContent, p.cierre);
+    assert.equal(q(m, "[data-texto-control]"), null);
+    assert.equal(q(m, "[data-siguiente][data-visible] [aria-live]").textContent, p.siguiente);
+    tocar(q(m, '[data-control="3"]'));
+    assert.equal(q(m, "[data-texto-control]").textContent, A.CONTROLES_A1[2].texto);
+    assert.ok(q(m, "[data-siguiente][data-visible]"), "«Siguiente» se va al volver a un control");
   } finally { m.desmontar(); }
 });
 

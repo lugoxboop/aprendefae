@@ -69,7 +69,8 @@ test("★★★ los rótulos de la figura son los del paquete; la regla conserva
   const F = A.FIGURA_A3;
   for (const [lugar, v] of [["Soportes", F.soportes], ["Caja", F.caja], ["Sin contar", F.sinContar], ["Contar", F.contar], ["Control (para el lector)", F.control],
     ["Línea de P1 · cuadra", F.zona.cuadra], ["Opción · falta", F.chips.falta], ["Opción · cuadra", F.chips.cuadra], ["Opción · sobra", F.chips.sobra],
-    ["Aguja", F.aguja], ["Asiento", F.asiento], ["Camino · cobra", F.caminos.cobra], ["Camino · asume", F.caminos.asume]]) {
+    ["Aguja", F.aguja], ["Asiento", F.asiento], ["Interruptor · cobra", F.caminos.cobra], ["Interruptor · asume", F.caminos.asume],
+    ["Rótulo del tramo · cobra", F.tramo.cobra], ["Rótulo del tramo · asume", F.tramo.asume], ["Para el lector, el destino", F.vanA("{cuenta}")]]) {
     assert.equal(v, textoDe(r, lugar), lugar);
   }
   assert.equal(`${F.zona.sobra} · cifra`, textoDe(r, "Línea de P1 · sobra"));
@@ -189,22 +190,48 @@ test("★★★ P4 y P7: la diferencia a una cuenta y un lado, con un toque; en 
   }
 });
 
-test("★★★ P6: el tramo de 6.700 a la izquierda de la marca del fondo; P8: cambiar de camino solo cambia la cuenta de los 6.700", async () => {
-  const m6 = await abrir(P, "dos-caminos");
+test("★★★ dos-caminos (lote B, §5.1 v2): va después de camino-1 y absorbe a camino-2; el interruptor cambia el destino de los mismos 6.700 en la regla y en el asiento, sin tocar el tramo ni la cifra; la frase de cierre sale con el primer cambio y se queda", async () => {
+  const ids = P.pantallas.map((p) => p.id);
+  assert.equal(ids.indexOf("dos-caminos"), ids.indexOf("camino-1") + 1, "dos-caminos no va justo después de camino-1 (delataría su respuesta)");
+  assert.ok(!ids.includes("camino-2"), "camino-2 sigue: sería la misma pantalla con otro texto");
+  assert.equal(ids.at(-1), "dos-caminos");
+  const m = await abrir(P, "dos-caminos");
   try {
-    const t = q(m6, '[data-tramo="dif"]');
-    assert.ok(Number(t.style.left.replace("%", "")) < 50);
-  } finally { m6.desmontar(); }
-  const m = await abrir(P, "camino-2");
-  try {
-    const foto = () => [...m.caja.querySelectorAll("[data-cuenta]")].map((f) => `${f.dataset.cuenta}:${total(m, `${f.dataset.cuenta}:debe`)}:${total(m, `${f.dataset.cuenta}:haber`)}`);
-    assert.deepEqual(foto(), ["gastos-generales:478.100:", "cxc-empleados:6.700:", "bancos::484.800"]);
+    const foto = () => ({
+      cuentas: [...m.caja.querySelectorAll("[data-cuenta]")].map((f) => `${f.dataset.cuenta}:${total(m, `${f.dataset.cuenta}:debe`)}:${total(m, `${f.dataset.cuenta}:haber`)}`),
+      tramo: q(m, '[data-tramo="dif"]').getAttribute("style"),
+      aguja: q(m, '[data-aguja="suman"]').getAttribute("style"),
+      rotulo: q(m, '[data-rot="destino"]').textContent,
+      lector: q(m, "[data-lector-destino]").textContent,
+    });
+    const a = foto();
+    assert.deepEqual(a.cuentas, ["cxc-empleados:6.700:"], "al llegar: se le cobra a Rosa (lo decidido en camino-1)");
+    assert.equal(a.rotulo, A.FIGURA_A3.tramo.cobra);
+    assert.equal(a.lector, "Los 6.700 van a Cuentas por cobrar – empleados, al debe.");
+    assert.ok(Number(q(m, '[data-tramo="dif"]').style.left.replace("%", "")) < 50, "el tramo no queda a la izquierda de la marca del fondo");
     assert.equal(q(m, "[data-accion=cobra]").getAttribute("aria-pressed"), "true");
+    assert.equal(q(m, "[data-cierre][data-visible]"), null, "la frase de cierre antes del cambio");
+    assert.equal(q(m, "[data-cierre] .t4r-fantasma").textContent, P.pantallas.at(-1).cierre, "la frase no reserva su alto");
     tocar(q(m, "[data-accion=asume]"));
     await esperar(0);
-    assert.deepEqual(foto(), ["gastos-generales:478.100:", "gno-faltante:6.700:", "bancos::484.800"]);
+    const b = foto();
+    assert.deepEqual(b.cuentas, ["gno-faltante:6.700:"]);
+    assert.equal(b.rotulo, A.FIGURA_A3.tramo.asume);
+    assert.equal(b.lector, "Los 6.700 van a Gastos no operacionales – faltante de caja menor, al debe.");
+    assert.deepEqual([b.tramo, b.aguja], [a.tramo, a.aguja], "el tramo o la aguja se movieron");
     assert.equal(q(m, "[data-accion=asume]").getAttribute("aria-pressed"), "true");
+    assert.ok(q(m, "[data-cierre][data-visible]"), "la frase de cierre no aparece con el cambio");
+    tocar(q(m, "[data-accion=cobra]"));
+    await esperar(0);
+    assert.deepEqual(foto().cuentas, ["cxc-empleados:6.700:"]);
+    assert.ok(q(m, "[data-cierre][data-visible]"), "la frase de cierre se va al volver");
   } finally { m.desmontar(); }
+});
+
+test("★★★ camino-1 dice que es representativo (lo que antes decía dos-caminos), sin nombrar la cuenta ni el lado", () => {
+  const t = P.pantallas.find((p) => p.id === "camino-1").antes[0];
+  assert.match(t, /representativo/);
+  assert.doesNotMatch(t, /Cuentas por cobrar|debe|haber/);
 });
 
 test("★★ las cuentas del asiento van completas, en renglones fijos (C5, D4-3); «sobrante» y «faltante» nunca a secas en las opciones", () => {

@@ -32,9 +32,9 @@ const { PAQ } = pruebasComunes({
   canon: "d4-t4-a5-v3-rediseno.md",
   datos: "src/data/contabilidadT4A5.js",
   piezas: ["src/data/contabilidadT4A5.js", "src/components/t4/A5SanCalixto.jsx", "src/components/t4/aprender.jsx", "src/components/t4/tablero.jsx"],
-  noNombra: { "que-se-asienta": ["No se asienta", "no se asienta"] },
+  noNombra: { "que-se-asienta": ["No se asienta", "no se asienta"], "dos-saldos": ["ninguno", "Ninguno"] },
   antesDe: "t4-a4-bancos-y-notas",
-  preguntas: ["lado-del-banco", "lado-de-la-empresa", "que-se-asienta"],
+  preguntas: ["dos-saldos", "lado-del-banco", "lado-de-la-empresa", "que-se-asienta", "los-asientos"],
 });
 
 const fmt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -71,7 +71,9 @@ test("★★★ las partidas, los asientos y los rótulos son los del paquete", 
   const r = renglones(seccionDe(PAQ, "Rótulos de la figura"));
   const F = A.FIGURA_A5;
   for (const [lugar, v] of [["Saldo del banco", F.banco], ["Saldo de la empresa", F.empresa], ["Más", F.mas], ["Menos", F.menos], ["Tarjeta final", F.fin],
-    ["Opción · sí", F.chips.si], ["Opción · no", F.chips.no], ["Asentar", F.asentar], ["Mayor", F.mayor], ["Saldo", F.saldo]]) {
+    ["Opción · sí", F.chips.si], ["Opción · no", F.chips.no], ["Asentar", F.asentar], ["Mayor", F.mayor], ["Saldo", F.saldo],
+    ["Al pie del par (P0)", F.difieren("1.937.500")], ["Opción · el banco", F.opcionesSaldo.banco], ["Opción · la empresa", F.opcionesSaldo.empresa], ["Opción · ninguno", F.opcionesSaldo.ninguno],
+    ["Tercer lugar del par", `${F.verdadero} ?`], ["Tercer lugar del par, para el lector", F.verdaderoLector], ["Contador de las notas", F.contadorNota("n", 5)]]) {
     assert.equal(v, textoDe(r, lugar), lugar);
   }
   assert.equal(P.pantallas.at(-1).siguiente, undefined, "A5 es la última pieza de Aprender del tema: sin «Siguiente»");
@@ -80,17 +82,44 @@ test("★★★ las partidas, los asientos y los rótulos son los del paquete", 
 
 /* ═══════════ LA FIGURA, PANTALLA POR PANTALLA ═══════════ */
 
-test("★★★ P0: el par con los dos saldos, distintos y sin «=»; P6: iguales, con el «=»", async () => {
+test("★★★ P0 dos-saldos (lote B, §2.1 y §5.3): abre con el par, con «difieren en 1.937.500» al pie y sin «=»; el caso debajo; la pregunta del saldo verdadero, con reintento; con el acierto, el par abre «saldo verdadero: ?»", async () => {
+  const p = P.pantallas[0];
   const m = await abrir(P, "dos-saldos");
   try {
     assert.deepEqual(par(m), ["2.435.600", "4.373.100"]);
     assert.equal(igual(m), false);
+    assert.equal(q(m, "[data-pie-par]").textContent, "difieren en 1.937.500");
+    assert.equal(q(m, "[data-verdadero]"), null, "el tercer lugar antes del acierto");
+    assert.equal(q(m, "[data-caso]").textContent, p.caso);
+    assert.equal(q(m, "[data-rotulo-pregunta]").textContent, p.rotuloPregunta);
+    for (const o of ["banco", "empresa"]) {
+      tocar(q(m, `[data-opcion="${o}"]`));
+      await esperar(0);
+      assert.equal(q(m, "[data-devolucion]").textContent, `Incorrecto. ${p.errores[o]}`);
+      assert.equal(q(m, "[data-verdadero]"), null, `${o}: el tercer lugar en el error`);
+    }
+    tocar(q(m, '[data-opcion="ninguno"]'));
+    await esperar(0);
+    assert.equal(q(m, "[data-verdadero]").dataset.verdadero, "?");
+    assert.equal(visible(q(m, "[data-verdadero]")), "saldo verdadero: ?");
+    assert.equal(q(m, "[data-verdadero] .t4f-sr").textContent, A.FIGURA_A5.verdaderoLector);
   } finally { m.desmontar(); }
-  const r = await abrir(P, "resumen");
+});
+
+test("★★★ P1 y P2 llevan el tercer lugar del par: «?» hasta el «=»; con el «=» de la empresa, 4.612.600", async () => {
+  const b = await abrir(P, "lado-del-banco");
   try {
-    assert.deepEqual(par(r), ["4.612.600", "4.612.600"]);
-    assert.equal(igual(r), true);
-  } finally { r.desmontar(); }
+    assert.equal(q(b, "[data-verdadero]").dataset.verdadero, "?");
+    await jugar(b, P, "lado-del-banco");
+    assert.equal(q(b, "[data-verdadero]").dataset.verdadero, "?", "el banco solo no da el saldo verdadero");
+  } finally { b.desmontar(); }
+  const e = await abrir(P, "lado-de-la-empresa");
+  try {
+    assert.equal(q(e, "[data-verdadero]").dataset.verdadero, "?");
+    await jugar(e, P, "lado-de-la-empresa");
+    assert.equal(igual(e), true);
+    assert.equal(q(e, "[data-verdadero]").dataset.verdadero, "4612600");
+  } finally { e.desmontar(); }
 });
 
 test("★★★ P1 y P2: cada partida a su sección; el saldo cambia con cada acierto; el error marca «✗ No va aquí», no escribe nada y avisa al lector; el «=» solo con la quinta de la empresa", async () => {
@@ -139,23 +168,42 @@ test("★★★ P3: el cheque de Lorena Guerra no se asienta; «Se asienta» da 
   } finally { m.desmontar(); }
 });
 
-test("★★★ P4: cinco botones; cada uno muestra su asiento (la cifra al debe de una cuenta y al haber de la otra) y la línea de su nota", async () => {
+test("★★★ P4 los-asientos (lote B, §5.5): una nota a la vez; se decide de qué lado va Bancos con un toque; el error marca «No va aquí» y no escribe; el acierto escribe el monto en Bancos y en la contrapartida, y a los 1,4 s llega la siguiente; la contrapartida no se toca", async () => {
+  const p = P.pantallas.find((x) => x.id === "los-asientos");
   const m = await abrir(P, "los-asientos");
   try {
     for (const [i, a] of A.ASIENTOS_A5.entries()) {
-      tocar(q(m, `[data-control="${i + 1}"]`));
+      const lado = a.debe === "bancos" ? "debe" : "haber";
+      const otro = lado === "debe" ? "haber" : "debe";
+      const contra = a.debe === "bancos" ? a.haber : a.debe;
+      assert.equal(visible(q(m, "[data-tarjeta-nota]")), `${a.linea}Nota ${i + 1} de 5${fmt(a.monto)}`);
+      assert.deepEqual([...m.caja.querySelectorAll("[data-cuenta]")].map((c) => c.dataset.cuenta), ["bancos", contra]);
+      assert.ok(m.caja.querySelectorAll(`[data-cuenta="${contra}"] button`).length === 2 && [...m.caja.querySelectorAll(`[data-cuenta="${contra}"] button`)].every((b) => b.disabled), "la contrapartida se puede tocar");
+      tocar(q(m, `[data-destino="bancos:${otro}"]`));
       await esperar(0);
-      assert.equal(q(m, "[data-nota-asiento]").textContent, a.linea);
-      assert.equal(q(m, `[data-destino="${a.debe}:debe"]`).textContent.trim(), fmt(a.monto));
-      assert.equal(q(m, `[data-destino="${a.haber}:haber"]`).textContent.trim(), fmt(a.monto));
-      assert.deepEqual([...m.caja.querySelectorAll("[data-cuenta]")].map((c) => c.dataset.cuenta), [a.debe, a.haber]);
+      assert.equal(q(m, `[data-destino="bancos:${otro}"]`).dataset.marca, "mal");
+      assert.equal(q(m, "[data-devolucion]").textContent, `Incorrecto. ${p.error}`);
+      assert.equal(q(m, `[data-destino="${contra}:${lado}"]`).textContent.trim(), "", "el error escribió en la contrapartida");
+      tocar(q(m, `[data-destino="bancos:${lado}"]`));
+      await esperar(0);
+      assert.equal(q(m, `[data-destino="bancos:${lado}"]`).dataset.marca, "bien");
+      assert.match(q(m, `[data-destino="bancos:${lado}"]`).textContent, new RegExp(fmt(a.monto).replace(/\./g, "\\.")));
+      assert.match(q(m, `[data-destino="${contra}:${otro}"]`).textContent, new RegExp(fmt(a.monto).replace(/\./g, "\\.")));
+      assert.equal(q(m, "[data-mensaje]"), null);
+      if (i < A.ASIENTOS_A5.length - 1) {
+        assert.equal(seguir(m), null);
+        await esperar(A.ESPERA_NOTA_MS + 100);
+      }
     }
+    assert.ok(seguir(m), "tras la quinta nota no aparece «Seguir»");
   } finally { m.desmontar(); }
 });
 
 test("★★★ P5: «Asentar las cinco notas»: 645.000 y 342.000 al debe, 43.500, 236.000 y 468.000 al haber, y el saldo llega a 4.612.600 (con movimiento reducido, de una vez)", async () => {
   const m = await abrir(P, "el-mayor");
   try {
+    assert.equal(q(m, "[data-par-final]"), null, "el par igualado antes de asentar");
+    assert.ok(!q(m, "[data-cierre][data-visible]"), "la frase de cierre antes de asentar");
     assert.equal(q(m, "[data-saldo-mayor]").style.visibility, "hidden");
     tocar(q(m, "[data-accion=asentar]"));
     await esperar(0);
@@ -163,6 +211,12 @@ test("★★★ P5: «Asentar las cinco notas»: 645.000 y 342.000 al debe, 43.5
     assert.deepEqual(col("debe"), ["Saldo4.373.100", "645.000", "342.000"]);
     assert.deepEqual(col("haber"), ["43.500", "236.000", "468.000"]);
     assert.equal(q(m, "[data-saldo-mayor]").dataset.saldoMayor, "4.612.600");
+    /* Lote B, capa 4: bajo el mayor, el par igualado con «=», y la frase de cierre. */
+    const final = q(m, "[data-par-final]");
+    assert.ok(final, "no aparece el par igualado");
+    assert.deepEqual([...final.querySelectorAll("[data-lado-par]")].map((x) => x.lastElementChild.textContent), ["4.612.600", "4.612.600"]);
+    assert.equal(final.querySelector(".t4pr-igual").style.visibility, "visible");
+    assert.equal(visible(q(m, "[data-cierre][data-visible] > [aria-live]")), P.pantallas.at(-1).cierre);
   } finally { m.desmontar(); }
 });
 

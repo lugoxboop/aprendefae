@@ -32,9 +32,9 @@ const { PAQ } = pruebasComunes({
   canon: "d4-t4-a4-v4-rediseno.md",
   datos: "src/data/contabilidadT4A4.js",
   piezas: ["src/data/contabilidadT4A4.js", "src/components/t4/A4BancosYNotas.jsx", "src/components/t4/aprender.jsx", "src/components/t4/tablero.jsx"],
-  noNombra: { "quien-lo-tiene": ["empresa", "Empresa"] },
+  noNombra: { "la-conciliacion": ["Nota débito", "nota débito"] },
   antesDe: "t4-a3-el-arqueo",
-  preguntas: ["sube-o-baja", "quien-lo-tiene"],
+  preguntas: ["sube-o-baja", "seis-causas", "la-conciliacion"],
 });
 
 const renglonesLibreta = (m) => [...m.caja.querySelectorAll("[data-renglon]")].map((r) => [...r.children].map((c) => visible(c)));
@@ -55,11 +55,12 @@ test("★★★ los siete movimientos (pp. 186-187): tarjeta, lado y nombre en e
 });
 
 test("★★★ las seis causas (p. 188): libreta, rótulo en renglones fijos y efecto, los del paquete", () => {
-  const s = seccionDe(PAQ, "Las seis causas (P4)");
+  const s = seccionDe(PAQ, "Las seis causas (P3)");
   const r = renglones(s);
   const d = datos(s);
   A.CAUSAS_A4.forEach((c, i) => {
     const x = c.emp ?? c.ban;
+    assert.equal(c.tarjeta, textoDe(r, `Causa ${i + 1} · tarjeta`), `causa ${i + 1}`);
     assert.equal(c.emp ? "La empresa" : "El banco", d[`Causa ${i + 1} · libreta`]);
     assert.ok(!(c.emp && c.ban), `causa ${i + 1} en las dos libretas`);
     assert.equal(x.t.join(" / "), textoDe(r, `Causa ${i + 1} · rótulo`));
@@ -70,16 +71,17 @@ test("★★★ las seis causas (p. 188): libreta, rótulo en renglones fijos y 
 test("★★★ los rótulos de la figura son los del paquete; los términos son exactamente «Nota débito» y «Nota crédito», con «del banco» solo fuera de la libreta del banco", () => {
   const r = renglones(seccionDe(PAQ, "Rótulos de la figura"));
   const F = A.FIGURA_A4;
-  for (const [lugar, v] of [["Libreta de la empresa", F.empresa], ["Libreta del banco", F.banco], ["Subtítulo de la empresa (P5)", F.subEmpresa], ["Subtítulo del banco (P5)", F.subBanco],
+  for (const [lugar, v] of [["Libreta de la empresa", F.empresa], ["Libreta del banco", F.banco],
     ["Donde una libreta no lo tiene", F.noSabe.join(" / ")], ["Consignar", F.consignar], ["Girar", F.girar], ["Extracto", F.extracto], ["Sube", F.sube], ["Baja", F.baja], ["Mayor", F.mayor],
-    ["Opción · empresa", F.chips.empresa], ["Opción · banco", F.chips.banco], ["Opción · los dos", F.chips["los-dos"]]]) {
+    ["Contador de las causas", F.contadorCausa("n", 6)], ["Con el acierto de la conciliación", `Nota débito · ${F.porAnotar}`],
+    ["Para el lector, cada libreta", [0, 1, "{n}"].map((n, i) => F.anotadas("La empresa", n).replace(/^La empresa: /, i ? "" : "La empresa: ")).join(" / ")],
+    ["Para el lector, el renglón del cheque (P4)", F.renglonLector["cheque-sin-cobrar"]], ["Para el lector, el renglón de la nota (P4)", F.renglonLector["nota-debito"]]]) {
     assert.equal(v, textoDe(r, lugar), lugar);
   }
   assert.equal(A.RENGLONES_EXTRACTO.map((x) => [x.ban.t.join(" "), x.ban.e].join(" · ")).join(" | "), [textoDe(r, "Renglón del extracto 1"), textoDe(r, "Renglón del extracto 2")].join(" | "));
-  assert.equal([A.RENGLON_CHEQUE_30.emp.t.join(" "), A.RENGLON_CHEQUE_30.emp.e].join(" · "), textoDe(r, "Renglón del cheque del 30 (P3)"));
   const [e, b] = A.RENGLONES_CONCILIACION;
-  assert.equal(`${e.emp.t.join(" / ")} · ${e.emp.e}`, textoDe(r, "Renglón de la empresa (P5)"));
-  assert.equal(`${b.ban.t.join(" ")} · ${b.ban.e}`, textoDe(r, "Renglón del banco (P5)"));
+  assert.equal(`${e.emp.t.join(" / ")} · ${e.emp.e}`, textoDe(r, "Renglón de la empresa (P4)"));
+  assert.equal(`${b.ban.t.join(" ")} · ${b.ban.e}`, textoDe(r, "Renglón del banco (P4)"));
   for (const x of [...A.RENGLONES_EXTRACTO, ...A.CAUSAS_A4].map((c) => c.ban).filter(Boolean)) assert.ok(!x.t.join(" ").includes("del banco"), "«del banco» dentro de la libreta del banco");
   assert.deepEqual(A.MOVIMIENTOS_A4.filter((m) => /Nota/.test(m.mayor[0])).map((m) => m.mayor), [["Nota débito", "del banco"], ["Nota crédito", "del banco"]]);
   assert.deepEqual([A.CONSIGNACION, A.CHEQUE_PROVEEDOR], [876_000, 398_200]);
@@ -87,17 +89,21 @@ test("★★★ los rótulos de la figura son los del paquete; los términos son
 
 /* ═══════════ LA FIGURA, PANTALLA POR PANTALLA ═══════════ */
 
-test("★★★ P0: «Consignar» sube Bancos por el debe (876.000); «Girar un cheque» la baja por el haber (398.200)", async () => {
+test("★★★ P0: «Consignar» sube Bancos por el debe (876.000); «Girar un cheque» la baja por el haber (398.200); cada definición aparece con su botón (capa 1)", async () => {
   const m = await abrir(P, "sube-y-baja");
   try {
     const t = (l) => q(m, `[data-destino="bancos:${l}"]`).textContent.trim();
+    const vista = (k) => q(m, `[data-con-accion="${k}"]`).hasAttribute("data-visible");
     assert.deepEqual([t("debe"), t("haber")], ["", ""]);
+    assert.deepEqual([vista("consignar"), vista("girar")], [false, false]);
     tocar(q(m, "[data-accion=consignar]"));
     await esperar(0);
     assert.equal(t("debe"), "876.000");
+    assert.deepEqual([vista("consignar"), vista("girar")], [true, false], "la definición de Bancos no sale con «Consignar», o sale también la de girar");
     tocar(q(m, "[data-accion=girar]"));
     await esperar(0);
     assert.equal(t("haber"), "398.200");
+    assert.deepEqual([vista("consignar"), vista("girar")], [true, true]);
   } finally { m.desmontar(); }
 });
 
@@ -152,44 +158,74 @@ test("★★★ P2: el mayor reserva cinco renglones y la tarjeta su alto (80 px
   assert.match(css, /^\.t4a4-c \{.*min-height: 80px/m);
 });
 
-test("★★★ P3: el renglón del cheque no existe antes del acierto (PH8-2); con el acierto, «Cheque girado · resta» en la empresa y el banco «todavía no lo sabe»", async () => {
-  const m = await abrir(P, "quien-lo-tiene");
-  try {
-    assert.equal(q(m, "[data-renglon]"), null);
-    assert.ok(!q(m, "[data-pieza]").outerHTML.includes("Cheque girado"));
-    for (const o of ["banco", "los-dos"]) {
-      tocar(q(m, `[data-opcion="${o}"]`));
-      await esperar(0);
-      assert.equal(q(m, "[data-renglon]"), null, `${o}: el renglón en el error`);
-      assert.equal(visible(q(m, "[data-linea-marcas]")), "No va aquí");
-    }
-    tocar(q(m, '[data-opcion="empresa"]'));
-    await esperar(0);
-    assert.deepEqual(renglonesLibreta(m), [["Cheque giradoresta", "todavía nolo sabe"]]);
-  } finally { m.desmontar(); }
-});
-
-test("★★★ P4: seis botones, una causa a la vez, en la libreta que la tiene; la otra «todavía no lo sabe»", async () => {
+test("★★★ P3 seis-causas (lote B, §5.4): cada tarjeta a la libreta que la tiene; con el acierto su rótulo se escribe allí; con el error, «No va aquí» en la libreta tocada, nada se escribe y «Incorrecto.» para el lector; absorbe a «quien-lo-tiene»", async () => {
+  assert.ok(!P.pantallas.some((p) => p.id === "quien-lo-tiene"), "quien-lo-tiene sigue: sería la misma pantalla con otro texto");
+  assert.equal(P.pantallas.length, 5);
+  assert.equal(A.CAUSAS_A4[0].tarjeta, "Cheque girado el 30, que nadie ha cobrado", "la tarjeta 1 no es el cheque del 30 (el caso de quien-lo-tiene)");
   const m = await abrir(P, "seis-causas");
+  const escritas = (lado) => [...m.caja.querySelectorAll(`[data-destino="${lado}"] [data-causa-escrita]`)].map((x) => x.dataset.causaEscrita);
   try {
-    assert.equal(m.caja.querySelectorAll("[data-control]").length, 6);
     for (const [i, c] of A.CAUSAS_A4.entries()) {
-      tocar(q(m, `[data-control="${i + 1}"]`));
+      const lado = c.emp ? "empresa" : "banco";
+      const otro = lado === "empresa" ? "banco" : "empresa";
+      assert.equal(visible(q(m, "[data-tarjeta-causa]")), `${c.tarjeta}Causa ${i + 1} de 6`);
+      const antes = [escritas("empresa"), escritas("banco")];
+      tocar(q(m, `[data-destino="${otro}"]`));
       await esperar(0);
-      const x = c.emp ?? c.ban;
-      const tinta = `${x.t.join("")}${x.e}`;
-      assert.deepEqual(renglonesLibreta(m), [c.emp ? [tinta, "todavía nolo sabe"] : ["todavía nolo sabe", tinta]], `causa ${i + 1}`);
-      assert.equal(q(m, `[data-control="${i + 1}"]`).getAttribute("aria-pressed"), "true");
+      assert.equal(q(m, `[data-destino="${otro}"]`).dataset.marca, "mal");
+      assert.match(visible(q(m, `[data-destino="${otro}"]`)), /No va aquí$/);
+      assert.match(q(m, `[data-destino="${otro}"]`).getAttribute("aria-label"), /: no va aquí$/);
+      assert.equal(q(m, "[data-lector-error]").textContent, "Incorrecto.");
+      assert.deepEqual([escritas("empresa"), escritas("banco")], antes, `${c.id}: el error escribió algo`);
+      assert.equal(q(m, "[data-mensaje]"), null, "seis-causas no lleva mensaje a la vista");
+      assert.equal(R.seguir(m), null);
+      tocar(q(m, `[data-destino="${lado}"]`));
+      await esperar(0);
+      assert.equal(escritas(lado).at(-1), c.id);
+      assert.equal(q(m, `[data-destino="${lado}"]`).dataset.marca, "bien");
+      assert.equal(q(m, `[data-destino="${otro}"]`).dataset.marca, undefined, "la marca del error se queda en la otra");
     }
+    assert.equal(visible(q(m, "[data-tarjeta-causa]")), P.pantallas[3].fin);
+    assert.deepEqual(escritas("empresa"), ["cheque-sin-cobrar", "consignacion-sin-abonar", "error-empresa"]);
+    assert.deepEqual(escritas("banco"), ["nota-debito", "nota-credito", "error-banco"]);
+    assert.match(q(m, '[data-destino="empresa"]').getAttribute("aria-label"), /^La empresa: 3 causas anotadas/);
+    assert.ok(R.seguir(m), "tras las seis no aparece «Seguir»");
   } finally { m.desmontar(); }
+  assert.equal(A.FIGURA_A4.anotadas("El banco", 0), "El banco: ninguna causa anotada");
+  assert.equal(A.FIGURA_A4.anotadas("El banco", 1), "El banco: 1 causa anotada");
 });
 
-test("★★ P5 lleva los subtítulos («libro auxiliar», «extracto del mes»); las demás libretas, no", async () => {
-  const m = await abrir(P, "la-conciliacion");
+test("★★★ P3: las libretas reservan cinco renglones y la tarjeta su alto: nada se mueve al escribirse las causas", () => {
+  const lineas = (k) => A.CAUSAS_A4.filter((c) => c[k]).reduce((n, c) => n + c[k].t.length, 0);
+  assert.ok(Math.max(lineas("emp"), lineas("ban")) <= 5);
+  const css = R.leer("src/components/t4/A4BancosYNotas.jsx");
+  assert.match(css, /^\.t4a4-lib \{.*grid-template-rows: auto 100px 20px/m);
+});
+
+test("★★★ P4 la-conciliacion (lote B, §5.2): los dos renglones son destinos; el cheque da «No va aquí» y su mensaje, con reintento; la nota débito da «Correcto», la empresa pasa a «Nota débito · por anotar» y, sin mensaje, la frase de cierre y «Siguiente»", async () => {
+  const p = P.pantallas.at(-1);
+  assert.equal(p.id, "la-conciliacion");
+  const m = await abrir(P, p.id);
   try {
-    assert.match(visible(q(m, "[data-libretas]")), /La empresalibro auxiliar.*El bancoextracto del mes/);
-    assert.deepEqual(renglonesLibreta(m), [["Chequesin cobrarresta", "todavía nolo sabe"], ["todavía nolo sabe", "Nota débitoresta"]]);
+    assert.equal(visible(q(m, "[data-rotulo-pregunta]")), p.rotuloPregunta);
+    assert.doesNotMatch(visible(q(m, "[data-libretas]")), /libro auxiliar|extracto del mes/, "los subtítulos salieron (§5.2)");
+    assert.deepEqual(renglonesLibreta(m).map((r) => r[0]), ["Chequesin cobrarrestatodavía nolo sabe", "todavía nolo sabeNota débitoresta"]);
+    assert.equal(q(m, '[data-destino="cheque-sin-cobrar"]').getAttribute("aria-label"), A.FIGURA_A4.renglonLector["cheque-sin-cobrar"]);
+    assert.ok(!q(m, "[data-cierre][data-visible]"), "la frase de cierre antes del acierto");
+    tocar(q(m, '[data-destino="cheque-sin-cobrar"]'));
+    await esperar(0);
+    assert.equal(q(m, "[data-mensaje]").dataset.mensaje, "error");
+    assert.equal(q(m, "[data-devolucion]").textContent, `Incorrecto. ${p.errores["cheque-sin-cobrar"]}`);
+    assert.match(visible(q(m, '[data-renglon="cheque-sin-cobrar"]')), /No va aquí$/);
+    assert.match(q(m, '[data-destino="cheque-sin-cobrar"]').getAttribute("aria-label"), /: no va aquí$/);
+    assert.ok(!q(m, "[data-pieza]").textContent.includes(A.FIGURA_A4.porAnotar), "«por anotar» en el error");
+    assert.ok(!q(m, "[data-cierre][data-visible]"));
+    tocar(q(m, '[data-destino="nota-debito"]'));
+    await esperar(0);
+    assert.equal(q(m, "[data-mensaje]"), null, "el acierto no lleva mensaje: la frase es la explicación");
+    assert.match(visible(q(m, '[data-renglon="nota-debito"]')), /Nota débitopor anotarNota débitorestaCorrecto$/);
+    assert.equal(visible(q(m, "[data-cierre][data-visible] > [aria-live]")), p.cierre);
+    assert.equal(visible(q(m, "[data-siguiente][data-visible] > [aria-live]")), p.siguiente);
+    assert.equal(R.seguir(m), null, "la última pantalla no lleva «Seguir»");
   } finally { m.desmontar(); }
-  const r = await abrir(P, "resumen");
-  try { assert.doesNotMatch(visible(q(r, "[data-libretas]")), /libro auxiliar|extracto del mes/); } finally { r.desmontar(); }
 });

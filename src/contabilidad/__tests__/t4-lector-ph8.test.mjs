@@ -278,7 +278,11 @@ for (const { s, raiz: R, C, tandas } of HACER) {
  */
 const VIEJOS = [
   { pieza: "t4-a3-el-arqueo", pantalla: "el-sobrante", alt: "El sobre con 478.100 en soportes y 24.000 en la caja. Con el acierto, la aguja de la suma queda a la derecha de la marca del fondo." },
-  { pieza: "t4-a4-bancos-y-notas", pantalla: "quien-lo-tiene", alt: "Las dos libretas de la misma cuenta, con un renglón libre. Con el acierto, el cheque aparece en la de la empresa, que resta, y el banco todavía no lo sabe." },
+  /*
+   * Lote B: el de A4 (quien-lo-tiene) salió con su pantalla. Su pregunta
+   * (¿quién anotó el cheque sin cobrar?) es ahora la causa 1 del juego de
+   * «seis-causas»; se prueba allí, más abajo.
+   */
 ];
 for (const v of VIEJOS) {
   test(`★★★ el detector da en rojo el texto alternativo viejo de ${v.pieza} · ${v.pantalla}, y en verde el de ahora`, async () => {
@@ -302,22 +306,60 @@ test("★★ la prueba miró pantallas de Aprender de verdad", () => {
   assert.ok(miradosAprender >= 10, `solo ${miradosAprender} momentos de Aprender`);
 });
 
+/*
+ * Lo que enseñaba el texto viejo de A4 · quien-lo-tiene (Katsumi: «el cheque
+ * aparece en la de la empresa» daba la respuesta), donde vive ahora: la causa
+ * 1 de «seis-causas» es ese cheque, y antes de mandarlo, lo que solo oye el
+ * lector no habla del cheque (lo dice la tarjeta, que se ve y se oye) y no
+ * elige libreta: nombra las dos o ninguna. El juego no lleva
+ * veredicto en el plan (no abre panel), así que el bucle de arriba no lo mira.
+ */
+test("★★★ A4 · seis-causas, la causa 1 (el cheque sin cobrar, lo de «quien-lo-tiene»): al llegar, lo que solo oye el lector no elige libreta", async () => {
+  const P = piezas.find((x) => x.id === "t4-a4-bancos-y-notas");
+  const m = await abrir(P, "seis-causas");
+  try {
+    const raiz = m.caja.querySelector("[data-pieza]");
+    assert.equal(raiz.querySelector("[data-tarjeta-causa]").dataset.tarjetaCausa, "cheque-sin-cobrar");
+    const viejo = "Las dos libretas de la misma cuenta, con un renglón libre. Con el acierto, el cheque aparece en la de la empresa, que resta, y el banco todavía no lo sabe.";
+    const habla = (t) => /cheque/i.test(t) || /\bempresa\b/i.test(t) !== /\bbanco\b/i.test(t);
+    assert.ok(habla(viejo), "la regla no caza el texto viejo");
+    const oye = loQueSoloOye(raiz);
+    assert.ok(oye.some((t) => t === P.pantallas.find((x) => x.id === "seis-causas").alt), "no se miró el texto alternativo");
+    for (const t of oye) assert.ok(!habla(t), `«${t}»: antes de responder habla del cheque o nombra una sola libreta`);
+  } finally { m.desmontar(); }
+});
+
 /* ═══════════ LOS TRES ARREGLOS DE LECTOR (Katsumi; obligatorios por Yujiro) ═══════════ */
 
 const pieza = (id) => piezas.find((x) => x.id === id);
 const { SON_IGUALES } = await import("../../components/t4/tablero.jsx");
 
-test("★★★ A4 · seis-causas: al tocar 1 a 6, lo que cambia en las libretas está en una región viva, y se oye", async () => {
+/*
+ * Lote B: «seis-causas» es ahora el juego de llevar cada causa a su libreta
+ * (las pestañas 1 a 6 salieron). Lo que cambia con cada toque se oye: la
+ * causa siguiente en la región viva de la tarjeta, cuántas causas anotó cada
+ * libreta y su marca en el nombre de la libreta, y el error en la región del
+ * error.
+ */
+test("★★★ A4 · seis-causas: con cada toque, lo que cambia se oye (la causa siguiente en región viva; en cada libreta, cuántas anotó y su marca; el error)", async () => {
   const P = pieza("t4-a4-bancos-y-notas");
+  const { CAUSAS_A4, FIGURA_A4: F } = await import("../../data/contabilidadT4A4.js");
   const m = await abrir(P, "seis-causas");
   try {
-    const viva = m.caja.querySelector('[data-pieza] [aria-live="polite"][data-lector-causa]');
-    assert.ok(viva, "no hay región viva alrededor de las libretas");
-    assert.ok(viva.querySelector("[data-libretas]"), "la región viva no tiene las libretas dentro");
-    const antes = norm(viva.textContent);
-    tocar(m.caja.querySelector("[data-pieza] [data-control='1']"));
+    const raiz = m.caja.querySelector("[data-pieza]");
+    const viva = raiz.querySelector('[aria-live="polite"][data-tarjeta-causa]');
+    assert.ok(viva, "la tarjeta de la causa no es una región viva");
+    assert.equal(norm(viva.textContent), norm(CAUSAS_A4[0].tarjeta + F.contadorCausa(1, 6)));
+    const lib = (l) => raiz.querySelector(`[data-destino=${l}]`).getAttribute("aria-label");
+    assert.equal(lib("empresa"), F.anotadas(F.empresa, 0));
+    tocar(raiz.querySelector("[data-destino=banco]"));
     await esperar(0);
-    assert.notEqual(norm(viva.textContent), antes, "tocar 1 no cambia nada dentro de la región viva");
+    assert.ok(raiz.querySelector('[aria-live="assertive"][data-lector-error]')?.textContent, "el error no se oye");
+    assert.equal(lib("banco"), `${F.anotadas(F.banco, 0)}: ${F.estadoLector.mal}`);
+    tocar(raiz.querySelector("[data-destino=empresa]"));
+    await esperar(0);
+    assert.equal(lib("empresa"), `${F.anotadas(F.empresa, 1)}: ${F.estadoLector.bien}`);
+    assert.equal(norm(viva.textContent), norm(CAUSAS_A4[1].tarjeta + F.contadorCausa(2, 6)), "la causa siguiente no llega a la región viva");
   } finally { m.desmontar(); }
 });
 
