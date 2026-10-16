@@ -103,7 +103,7 @@ Decisiones 1 y 2 de Katsumi (`katsumi-texto-rediseno.md` y `katsumi-texto-a2-a5.
 - Palabra del acierto (va antes del texto): «Correcto.»
 - Palabra del error: ninguna visible. El error es ✗ y el texto.
 - Solo para el lector de pantalla, delante del texto del error: «Incorrecto.»
-- Marca de la opción o la mitad bien elegida: «✓ Bien»
-- Marca de la opción o la mitad mal elegida: «✗ Mal»
+- Marca de la opción o la mitad bien elegida: «✓ Correcto»
+- Marca de la opción o la mitad mal elegida: «✗ No va aquí»
 - Marca de la sección mal elegida (A5): «✗ No va aquí»
 - «Seguir» no aparece hasta el acierto en toda pantalla con pregunta, ni hasta el último acierto en los juegos de mandar a un lado. No hay «Intentar de nuevo»: tras el error, las opciones y el tablero siguen activos.

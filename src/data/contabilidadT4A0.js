@@ -51,12 +51,11 @@ export const FIGURA_ANO = {
 };
 
 /*
- * La pastilla con palabra de la casilla elegida (canon E3: en blanco y negro se
- * sabe cuál falló). Katsumi, «Pendientes del #260»: la casilla de después de la
- * raya mide 73,4 px a 320, y «✓ Bien» (56 px) y «✗ Mal» (52 px) caben; las de
- * MARCA («✓ Correcto», «✗ No va aquí») no. Nunca «era»: nombraría la respuesta.
+ * La casilla elegida lleva la pastilla con palabra de MARCA (contabilidadT4.js):
+ * «✓ Correcto» o «✗ No va aquí» (prompt maestro §4.2; Katsumi, lote del 16
+ * oct: las palabras cortas de antes salen). Nunca «era»: nombraría la
+ * respuesta.
  */
-export const MARCA_CASILLA = { bien: ["✓", "Bien"], mal: ["✗", "Mal"] };
 
 /*
  * Las filas. `mes`: cuándo se vuelve plata (null = nunca, cruza la raya).
@@ -64,14 +63,14 @@ export const MARCA_CASILLA = { bien: ["✓", "Bien"], mal: ["✗", "Mal"] };
  * Rótulos literales del paquete, partidos en renglones fijos (Hanayama §3.1).
  */
 export const FILAS_A0 = {
-  mercancia: { id: "mercancia", texto: ["Mercancía"], glosa: ["se vende y se cobra", "este mes"], mes: 1 },
-  edificioOficina: { id: "edificio", texto: ["Edificio de", "la oficina"], glosa: ["se usa por años"], mes: null },
+  mercancia: { id: "mercancia", texto: ["Mercancía"], glosa: ["se cobra este mes"], mes: 1 },
+  edificioOficina: { id: "edificio", texto: ["Edificio de", "la oficina"], glosa: ["dura años"], mes: null },
   caja: { id: "caja", texto: ["Efectivo en caja"], glosa: [], mes: 0 },
   bancos: { id: "bancos", texto: ["Depósitos", "en bancos"], glosa: [], mes: 0 },
   inversiones: { id: "inversiones", texto: ["Inversiones", "a corto plazo"], glosa: ["menos de un año"], mes: 7 },
   cartera: { id: "cartera", texto: ["Cartera"], glosa: ["lo que deben los clientes"], mes: 2 },
   inventarios: { id: "inventarios", texto: ["Inventarios"], glosa: ["mercancía para vender"], mes: 4 },
-  deuda: { id: "deuda", texto: ["Deuda de", "un cliente"], glosa: ["vence en tres años"], mes: null },
+  deuda: { id: "deuda", texto: ["Deuda de", "un cliente"], glosa: ["a tres años"], mes: null },
   unEdificio: { id: "un-edificio", texto: ["Un edificio"], glosa: [], mes: null },
   terreno: { id: "terreno", texto: ["Un terreno"], glosa: [], mes: null },
   maquina: { id: "maquina", texto: ["Una máquina"], glosa: [], mes: null },

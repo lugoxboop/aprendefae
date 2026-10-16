@@ -162,7 +162,7 @@ function serieH8(s) {
       { cifra: s.libros - nd, texto: "Ese saldo tiene las notas débito, pero no las crédito. Al mayor le falta lo que el banco abonó." },
       { cifra: s.libros + nc - nd - cheques + consignacion, texto: "Ese saldo mete partidas que la empresa ya tenía. Al mayor solo entran las notas del banco." },
     ],
-    otroEtapa3: "El saldo del mayor es el de los libros, más lo que el banco sumó y menos lo que el banco restó. Revisa los cinco asientos.",
+    otroEtapa3: "Tu saldo se saltó un asiento o lo sumó del lado que no era. Repasa el debe y el haber del mayor.",
   };
 }
 export const SERIE_H8_1 = serieH8(SERIE_1);
@@ -172,9 +172,10 @@ export const SERIES_H8 = [SERIE_H8_1, SERIE_H8_2];
 /* ═══════════ INTERFAZ ═══════════ */
 
 export const ETAPAS_H8 = ["ETAPA 1 DE 3 · ¿SE ASIENTA?", "ETAPA 2 DE 3 · LOS ASIENTOS", "ETAPA 3 DE 3 · EL MAYOR"];
+/* El contador dice «Paso n de 15» (un solo caso: §4.3 del prompt maestro): los cuatro avances son «Siguiente paso». El rótulo «ETAPA n DE 3» sigue orientando. */
 export const BOTON_H8 = {
-  siguientePartida: "Siguiente partida", aLosAsientos: "Ir a los asientos", comprobar: "Comprobar", siguienteAsiento: "Siguiente asiento",
-  alMayor: "Ir al mayor", comprobarSaldo: "Comprobar el saldo", verResumen: "Ver mi resumen", otraVez: "Otra vez",
+  siguientePartida: "Siguiente paso", aLosAsientos: "Siguiente paso", comprobar: "Comprobar", siguienteAsiento: "Siguiente paso",
+  alMayor: "Siguiente paso", comprobarSaldo: "Comprobar", verResumen: "Ver mi resumen", otraVez: "Otra vez",
 };
 export const AVISOS_H8 = { lados: "Pon una cuenta al debe y la otra al haber.", saldo: "Escribe el saldo antes de comprobar." };
 export const ROTULOS_H8 = { saldoInicial: "Saldo", saldoPie: "Saldo", campo: "Saldo de Bancos en el mayor", parLibros: "los libros", parMayor: "el mayor", parBanco: "el banco" };

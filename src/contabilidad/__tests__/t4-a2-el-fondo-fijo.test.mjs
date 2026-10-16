@@ -109,7 +109,7 @@ test("★★★ P2: los ocho gastos de mayo, uno por toque, con su rubro y su ci
   } finally { m.desmontar(); }
 });
 
-test("★★★ P3: la cifra elegida va a los billetes y «Suman» da cifra + 478.100; con una equivocada, «Suman (no es el fondo)» y «✗ Mal» en la opción; reintento; con 21.900, 500.000 y «✓ Bien»", async () => {
+test("★★★ P3: la cifra elegida va a los billetes y «Suman» da cifra + 478.100; con una equivocada, «Suman (no es el fondo)» y «✗ No va aquí» en la opción; reintento; con 21.900, 500.000 y «✓ Correcto»", async () => {
   const m = await abrir(P, "cuanto-queda");
   try {
     assert.deepEqual(sobre(m), { fondo: "500.000", billetes: "?", soportes: "478.100", suman: "?" });
@@ -119,14 +119,14 @@ test("★★★ P3: la cifra elegida va a los billetes y «Suman» da cifra + 47
       const fila = q(m, '[data-fila-sobre="suman"]');
       assert.equal(fila.firstElementChild.textContent, A.FIGURA_A2.sumanMal);
       assert.equal(fila.dataset.valor, String(suma));
-      assert.equal(visible(q(m, `[data-opcion="${v}"]`)), `${String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}✗Mal`);
+      assert.equal(visible(q(m, `[data-opcion="${v}"]`)), `${String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}✗No va aquí`);
       assert.equal(q(m, '[data-opcion="21900"] .t4r-marca'), null, "la correcta se marca en el error");
     }
     tocar(q(m, '[data-opcion="21900"]'));
     await esperar(0);
     assert.equal(q(m, '[data-fila-sobre="suman"]').firstElementChild.textContent, A.FIGURA_A2.suman);
     assert.equal(q(m, '[data-fila-sobre="suman"]').dataset.valor, String(A.FONDO));
-    assert.equal(visible(q(m, '[data-opcion="21900"]')), "21.900✓Bien");
+    assert.equal(visible(q(m, '[data-opcion="21900"]')), "21.900✓Correcto");
     assert.ok([...m.caja.querySelectorAll("[data-opcion]")].every((b) => b.disabled), "las opciones siguen activas tras el acierto");
   } finally { m.desmontar(); }
 });
@@ -141,7 +141,7 @@ test("★★★ P4: el cheque del reembolso repone: los billetes vuelven a 500.0
   } finally { m.desmontar(); }
 });
 
-test("★★★ P5: Caja menor dice 500.000 antes y después; en el error no se escribe nada y solo se marca la mitad que falla, con «✗ Mal», y su texto; el acierto escribe Gastos generales y Bancos (978.100)", async () => {
+test("★★★ P5: Caja menor dice 500.000 antes y después; en el error no se escribe nada y solo se marca la mitad que falla, con «✗ No va aquí», y su texto; el acierto escribe Gastos generales y Bancos (978.100)", async () => {
   const errores = P.pantallas.find((p) => p.id === "y-caja-menor").errores;
   const casos = [
     [["caja-menor:debe", "bancos:haber"], "debeCajaMenor", ["caja-menor:debe"]],
@@ -162,22 +162,22 @@ test("★★★ P5: Caja menor dice 500.000 antes y después; en el error no se 
       assert.equal(q(m, "[data-mensaje]").dataset.mensaje, "error", clave);
       assert.equal(q(m, "[data-devolucion]").textContent, `Incorrecto. ${errores[clave]}`, clave);
       assert.deepEqual([...m.caja.querySelectorAll("[data-destino][data-marca]")].map((b) => b.dataset.destino).sort(), [...marcadas].sort(), clave);
-      for (const k of marcadas) assert.match(visible(q(m, `[data-destino="${k}"]`)), /✗Mal$/, k);
+      for (const k of marcadas) assert.match(visible(q(m, `[data-destino="${k}"]`)), /✗No va aquí$/, k);
       for (const k of mitades) {
-        if (marcadas.includes(k)) assert.equal(total(m, k), `${antes[k]}✗Mal`, `${clave} · ${k}`);
+        if (marcadas.includes(k)) assert.equal(total(m, k), `${antes[k]}✗Novaaquí`, `${clave} · ${k}`);
         else if (toques.includes(k)) {
           assert.equal(q(m, `[data-destino="${k}"]`).dataset.puesta, "", `${clave} · ${k}: lo bien elegido no queda puesto`);
           assert.equal(total(m, k), "478.100", `${clave} · ${k}`);
         } else assert.equal(total(m, k), antes[k], `${clave} · ${k}: el error escribió algo en el libro`);
       }
-      assert.equal(total(m, "caja-menor:debe").replace(/✗Mal$/, ""), "500.000");
+      assert.equal(total(m, "caja-menor:debe").replace(/✗Novaaquí$/, ""), "500.000");
     } finally { m.desmontar(); }
   }
   const m = await abrir(P, "y-caja-menor");
   try {
     await jugar(m, P, "y-caja-menor");
     assert.equal(q(m, "[data-mensaje]").dataset.mensaje, "acierto");
-    assert.deepEqual([total(m, "caja-menor:debe"), total(m, "gastos-generales:debe"), total(m, "bancos:haber")], ["500.000", "478.100✓Bien", "978.100✓Bien"]);
+    assert.deepEqual([total(m, "caja-menor:debe"), total(m, "gastos-generales:debe"), total(m, "bancos:haber")], ["500.000", "478.100✓Correcto", "978.100✓Correcto"]);
     assert.equal(q(m, "[data-boton=comprobar]"), null, "«Comprobar» sigue tras el acierto");
   } finally { m.desmontar(); }
 });
@@ -199,13 +199,13 @@ test("★★★ P6: subir y bajar de a 100.000, entre 400.000 y 600.000; subir m
   } finally { m.desmontar(); }
 });
 
-test("★★ el lector oye la marca: la mitad mal elegida dice «Mal» en su nombre, y la opción también", async () => {
+test("★★ el lector oye la marca: la mitad mal elegida dice «No va aquí» en su nombre, y la opción también", async () => {
   const m = await abrir(P, "y-caja-menor");
   try {
     tocar(q(m, '[data-destino="caja-menor:debe"]'));
     tocar(q(m, '[data-destino="bancos:haber"]'));
     tocar(q(m, "[data-boton=comprobar]"));
-    assert.equal(q(m, '[data-destino="caja-menor:debe"]').getAttribute("aria-label"), "Caja menor al debe: 500.000: Mal");
+    assert.equal(q(m, '[data-destino="caja-menor:debe"]').getAttribute("aria-label"), "Caja menor al debe: 500.000: No va aquí");
     assert.equal(q(m, '[data-destino="bancos:haber"]').getAttribute("aria-label"), "Bancos al haber: 478.100");
   } finally { m.desmontar(); }
   assert.equal(seguir, R.seguir);

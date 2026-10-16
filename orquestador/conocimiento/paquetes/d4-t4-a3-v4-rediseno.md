@@ -30,7 +30,7 @@
 **P3 · el-cheque**
 - Antes de la figura: «¿Por cuánto sale el reembolso?» (<10)
 - Acierto (tras «Correcto.»): «Los $2.100 de más ya están en la caja.» (<10)
-- Error · 478100 (✗ y el texto): «Eso sería si cuadrara. Aquí la caja tiene plata de más.» (82,4)
+- Error · 478100 (✗ y el texto): «Así sería si cuadrara. Aquí sobra plata en la caja.» (77,2)
 - Error · 480200 (✗ y el texto): «Eso le suma la diferencia: el fondo quedaría pasado.» (<10)
 - Texto alternativo: «La aguja de caja más cheque cae donde dice el cheque que eliges. Solo el cheque correcto la deja en la marca del fondo.» (88,4)
 - Pie: «Basado en el libro, p. 185»
@@ -47,7 +47,7 @@
 **P5 · el-faltante**
 - Antes de la figura: «Con $15.200 en caja, ¿por cuánto sale?» (<10)
 - Acierto (tras «Correcto.»): «Repone lo gastado y los $6.700 que faltan.» (<10)
-- Error · 471400 (✗ y el texto): «Falta plata: el cheque la repone, no la resta.» (<10)
+- Error · 471400 (✗ y el texto): «Restaste lo que falta; el cheque lo repone.» (<10)
 - Error · 478100 (✗ y el texto): «Con eso, el fondo se queda corto.» (<10)
 - Texto alternativo: «Con 15.200 en la caja, la suma queda a la izquierda del fondo. Solo el cheque correcto deja la aguja de caja más cheque en la marca.» (89,5)
 - Pie: «Basado en el libro, pp. 185-186»
@@ -106,7 +106,7 @@ Decisiones 1 y 2 de Katsumi (`katsumi-texto-rediseno.md` y `katsumi-texto-a2-a5.
 - Palabra del acierto (va antes del texto): «Correcto.»
 - Palabra del error: ninguna visible. El error es ✗ y el texto.
 - Solo para el lector de pantalla, delante del texto del error: «Incorrecto.»
-- Marca de la opción o la mitad bien elegida: «✓ Bien»
-- Marca de la opción o la mitad mal elegida: «✗ Mal»
+- Marca de la opción o la mitad bien elegida: «✓ Correcto»
+- Marca de la opción o la mitad mal elegida: «✗ No va aquí»
 - Marca de la sección mal elegida (A5): «✗ No va aquí»
 - «Seguir» no aparece hasta el acierto en toda pantalla con pregunta, ni hasta el último acierto en los juegos de mandar a un lado. No hay «Intentar de nuevo»: tras el error, las opciones y el tablero siguen activos.

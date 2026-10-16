@@ -38,7 +38,7 @@ H7-9 (cheque devuelto) ocupaba 5 renglones; ahora ocupa los de la tabla.
 
 **Rótulos:** el par «el banco» y «los libros»; las libretas «El banco · extracto» y «Los libros · de la empresa», con «Más» y «Menos»; los campos «Saldo conciliado del banco» y «Saldo conciliado de los libros». Todos aprobados; sin cambios.
 
-**Marcas:** en las secciones, «✓ Correcto», «✗ No va aquí» e «Iba aquí» (las de H1). En los **campos de cifra**, «✓ Correcto» y «✗ Cifra errada».
+**Marcas:** en las secciones, «✓ Correcto», «✗ No va aquí» e «Iba aquí» (las de H1). En los **campos de cifra**, las mismas, «✓ Correcto» y «✗ No va aquí», y bajo cada campo errado, a los 0,7 s, «Iba aquí: {valor}» con el saldo conciliado ($1.240.000): la fase 2 no tiene reintento (prompt maestro §4.2; lote de Katsumi, 16 oct).
 
 ### Devoluciones de la fase 1 (por tipo de partida)
 
@@ -65,34 +65,34 @@ Pie: «Basado en el libro, p. 190. Cifras construidas». Los errores son los del
 
 ### Fase 2, los saldos
 
-Pie: «Formato y signos del libro, p. 190. Cifras construidas». Botón «Comprobar los saldos»; aviso «Escribe los dos saldos antes de comprobar.» (no gasta el intento). Lector del par: «El banco: {x}. Los libros: {y}.», y «Son iguales.» solo si lo son.
+Pie: «Formato y signos del libro, p. 190. Cifras construidas». Botón «Comprobar»; aviso «Escribe los dos saldos antes de comprobar.» (no gasta el intento). Lector del par: «El banco: {x}. Los libros: {y}.», y «Son iguales.» solo si lo son.
 
 | Serie | Lo que escribe | Texto | Conteo |
 |---|---|---|---|
 | 1 | Los dos, 2.551.700 | Correcto. Los dos saldos dan lo mismo. Nadie se equivocó: a cada lado le faltaba anotar algo. | 17 pal. · INFLESZ 83,9 |
-| 1 | Los dos iguales, pero otra cifra | Los dos lados coinciden entre sí, pero la cuenta no es la del ejercicio. Revisa las sumas. | 17 pal. · INFLESZ 92,1 |
-| 1 | Banco = 1.197.100 | Ese saldo resta lo que va a entrar y suma lo que va a salir. Revisa los dos tipos de partida del banco. | 23 pal. · INFLESZ 100,5 |
+| 1 | Los dos iguales, pero otra cifra | Los dos lados coinciden entre sí, pero la cuenta no es la del ejercicio. Repasa las sumas. | 17 pal. · INFLESZ 92,1 |
+| 1 | Banco = 1.197.100 | Ese saldo resta lo que va a entrar y suma lo que va a salir. Mira cada partida del banco. | 20 pal. · INFLESZ 100,3 |
 | 1 | Banco = 3.139.400 | A ese saldo le faltan los cheques que nadie ha cobrado. Esa plata ya está comprometida. | 16 pal. · INFLESZ 82 |
 | 1 | Banco = 1.286.700 | A ese saldo le falta la consignación del 30. Esa plata ya es de la empresa. | 16 pal. · INFLESZ 89,8 |
-| 1 | Libros = 2.417.900 | Ese saldo resta lo que el banco abonó y suma lo que el banco cobró. Revisa qué hace cada nota. | 20 pal. · INFLESZ 90,9 |
+| 1 | Libros = 2.417.900 | Ese saldo resta lo que el banco abonó y suma lo que el banco cobró. Mira qué hace cada nota. | 20 pal. · INFLESZ 94,0 |
 | 1 | Libros = 3.074.000 | A ese saldo le faltan las notas débito del banco: la plata que el banco ya cobró. | 17 pal. · INFLESZ 90,9 |
 | 1 | Libros = 1.962.500 | A ese saldo le faltan las notas crédito del banco: la plata que el banco ya abonó. | 17 pal. · INFLESZ 87,2 |
-| 1 | Cualquier otra | Los dos saldos tienen que dar lo mismo. Mira en las libretas qué suma y qué resta en cada lado. | 20 pal. · INFLESZ 103,4 |
+| 1 | Cualquier otra | Tu cuenta se saltó una partida o la sumó cuando restaba. Repasa el Más y el Menos de cada libreta. | 20 pal. · INFLESZ 87,8 |
 | 2 | Los dos, 3.377.500 | Correcto. Los dos saldos dan lo mismo. Nadie se equivocó: a cada lado le faltaba anotar algo. | 17 pal. · INFLESZ 83,9 |
-| 2 | Los dos iguales, pero otra cifra | Los dos lados coinciden entre sí, pero la cuenta no es la del ejercicio. Revisa las sumas. | 17 pal. · INFLESZ 92,1 |
-| 2 | Banco = 3.056.100 | Ese saldo resta lo que va a entrar y suma lo que va a salir. Revisa los dos tipos de partida del banco. | 23 pal. · INFLESZ 100,5 |
+| 2 | Los dos iguales, pero otra cifra | Los dos lados coinciden entre sí, pero la cuenta no es la del ejercicio. Repasa las sumas. | 17 pal. · INFLESZ 92,1 |
+| 2 | Banco = 3.056.100 | Ese saldo resta lo que va a entrar y suma lo que va a salir. Mira cada partida del banco. | 20 pal. · INFLESZ 100,3 |
 | 2 | Banco = 4.164.300 | A ese saldo le faltan los cheques que nadie ha cobrado. Esa plata ya está comprometida. | 16 pal. · INFLESZ 82 |
 | 2 | Banco = 2.430.000 | A ese saldo le falta la consignación del 31. Esa plata ya es de la empresa. | 16 pal. · INFLESZ 89,8 |
-| 2 | Libros = 2.804.300 | Ese saldo resta lo que el banco abonó y suma lo que el banco cobró. Revisa qué hace cada nota. | 20 pal. · INFLESZ 90,9 |
+| 2 | Libros = 2.804.300 | Ese saldo resta lo que el banco abonó y suma lo que el banco cobró. Mira qué hace cada nota. | 20 pal. · INFLESZ 94,0 |
 | 2 | Libros = 3.889.000 | A ese saldo le faltan las notas débito del banco: la plata que el banco ya cobró. | 17 pal. · INFLESZ 90,9 |
 | 2 | Libros = 2.579.400 | A ese saldo le faltan las notas crédito del banco: la plata que el banco ya abonó. | 17 pal. · INFLESZ 87,2 |
-| 2 | Cualquier otra | Los dos saldos tienen que dar lo mismo. Mira en las libretas qué suma y qué resta en cada lado. | 20 pal. · INFLESZ 103,4 |
+| 2 | Cualquier otra | Tu cuenta se saltó una partida o la sumó cuando restaba. Repasa el Más y el Menos de cada libreta. | 20 pal. · INFLESZ 87,8 |
 
 «Mira en la tabla… y vuelve a hacer la cuenta» pasa a «Mira en las libretas qué suma y qué resta en cada lado»: ya no hay tabla, y con un intento no se vuelve a hacer.
 
 ### Botones, cierre
 
-- «Siguiente partida», «Ir a los saldos», «Comprobar los saldos», «Ver mi resumen», «Otra vez» (aprobados).
+- «Siguiente paso» (entre partidas y hacia los saldos: el contador dice «Paso n de 10»), «Comprobar», «Ver mi resumen», «Otra vez» (prompt maestro §4.3; lote de Katsumi, 16 oct).
 - **Resumen:** «N de 9 partidas al primer toque.»
 - **Cierre, serie 1** (23 pal. · INFLESZ 81,6): El saldo del banco y el de los libros dan $2.551.700. Ese es el saldo verdadero de la cuenta de Comercializadora Los Cerezos.
 - **Cierre, serie 2** (23 pal. · INFLESZ 87): El saldo del banco y el de los libros dan $3.377.500. Ese es el saldo verdadero de la cuenta de Distribuidora El Mirador.

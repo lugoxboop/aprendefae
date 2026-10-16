@@ -45,7 +45,7 @@ import {
   H7, ROTULOS_H7, BOTON_H7, PIE_FASE2_H7, CIERRE_PIE_H7, FALTAN_SALDOS, ALT_FIGURA_H7,
   resumenH7, lectorParH7, sortearH7, evaluarPartidaH7, evaluarSaldosH7, puntuarH7,
 } from "../../data/contabilidadT4H7.js";
-import { ESPERA_ERROR_MS, ESPERA_SALDOS_MS, MARCA_CIFRA_BIEN, MARCA_CIFRA_MAL, cifra, leerCifra } from "../../data/contabilidadT4Hacer.js";
+import { ESPERA_ERROR_MS, ESPERA_SALDOS_MS, MARCA_CIFRA_BIEN, MARCA_CIFRA_MAL, cifra, pesos, leerCifra } from "../../data/contabilidadT4Hacer.js";
 import { C, CSS_T4R, Mensaje, Marca, SeguirHacer } from "./comun.jsx";
 import { Campo, CSS_TABLERO } from "./tablero.jsx";
 import { ParConLector, CSS_HACER } from "./hacerComun.jsx";
@@ -97,13 +97,14 @@ export default function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onComp
   const [r2, setR2] = useState(null); /* fase 2: { ok, bien, texto, banco, libros, aplicado } */
   const [bien, setBien] = useState(0);
   const reloj = useRef(0);
+  const relojIba = useRef(0);
   const zonaBoton = useRef(null);
   const tarjeta = useRef(null);
   const enfocar = useRef(false);
   const p = partidas[t.i];
   const cuantas = partidas.length;
 
-  useEffect(() => () => clearTimeout(reloj.current), []);
+  useEffect(() => () => { clearTimeout(reloj.current); clearTimeout(relojIba.current); }, []);
   useEffect(() => {
     if (t.terminado && !modoDemo) {
       const sb = r2 ? Number(r2.bien.banco) + Number(r2.bien.libros) : 0;
@@ -137,12 +138,16 @@ export default function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onComp
     const v = evaluarSaldosH7(s, b, l);
     t.anotar("saldo-banco", v.bien.banco, String(b));
     t.anotar("saldo-libros", v.bien.libros, String(l));
-    setR2({ ...v, banco: b, libros: l, aplicado: v.ok });
-    if (!v.ok) reloj.current = setTimeout(() => setR2((x) => (x ? { ...x, aplicado: true } : x)), ESPERA_SALDOS_MS);
+    setR2({ ...v, banco: b, libros: l, aplicado: v.ok, iba: false });
+    if (!v.ok) {
+      /* A los 0,7 s, «Iba aquí: {valor}» bajo cada campo errado; a los 1,2 s, el par pasa a los saldos verdaderos. */
+      relojIba.current = setTimeout(() => setR2((x) => (x ? { ...x, iba: true } : x)), ESPERA_ERROR_MS);
+      reloj.current = setTimeout(() => setR2((x) => (x ? { ...x, aplicado: true } : x)), ESPERA_SALDOS_MS);
+    }
   };
-  const terminar = () => { clearTimeout(reloj.current); t.setTerminado(true); };
+  const terminar = () => { clearTimeout(reloj.current); clearTimeout(relojIba.current); t.setTerminado(true); };
   const reiniciar = () => {
-    clearTimeout(reloj.current); t.reiniciar();
+    clearTimeout(reloj.current); clearTimeout(relojIba.current); t.reiniciar();
     setR(null); setPuestas([]); setFase(1); setSaldos({ banco: "", libros: "" }); setAviso(false); setR2(null); setBien(0);
   };
 
@@ -188,6 +193,7 @@ export default function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onComp
   );
   const msg = fase === 1 ? (r ? { ok: r.ok, texto: r.texto, pagina: p.pagina } : null) : (r2 ? { ok: r2.ok, texto: r2.texto, pagina: PIE_FASE2_H7 } : null);
   const marcaCampo = (lado) => (r2 ? (r2.bien[lado] ? MARCA_CIFRA_BIEN : MARCA_CIFRA_MAL) : null);
+  const ibaCampo = (lado) => (r2?.iba && !r2.bien[lado] ? pesos(lado === "banco" ? s.conciliadoBanco : s.conciliadoLibros) : null);
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
@@ -215,8 +221,8 @@ export default function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onComp
           </div>
           {fase === 2 && (
             <div className="t4h7-saldos" data-saldos>
-              <Campo id="banco" rotulo={ROTULOS_H7.campoBanco} valor={saldos.banco} bloqueado={Boolean(r2)} marca={marcaCampo("banco")} onCambio={(v) => setSaldos((x) => ({ ...x, banco: v }))} />
-              <Campo id="libros" rotulo={ROTULOS_H7.campoLibros} valor={saldos.libros} bloqueado={Boolean(r2)} marca={marcaCampo("libros")} onCambio={(v) => setSaldos((x) => ({ ...x, libros: v }))} />
+              <Campo id="banco" rotulo={ROTULOS_H7.campoBanco} valor={saldos.banco} bloqueado={Boolean(r2)} marca={marcaCampo("banco")} iba={ibaCampo("banco")} onCambio={(v) => setSaldos((x) => ({ ...x, banco: v }))} />
+              <Campo id="libros" rotulo={ROTULOS_H7.campoLibros} valor={saldos.libros} bloqueado={Boolean(r2)} marca={marcaCampo("libros")} iba={ibaCampo("libros")} onCambio={(v) => setSaldos((x) => ({ ...x, libros: v }))} />
             </div>
           )}
           {fase === 2 && par}

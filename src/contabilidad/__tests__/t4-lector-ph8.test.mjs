@@ -42,7 +42,6 @@ const { h, montar, tocar, esperar, movimientoReducido } = await import("./t4-dom
 const { PIEZAS_T4, SeMueveLaCajaMenor, ElArqueo, ConciliaLaCuenta, SeAsientaONo, EntraOSaleDeCaja } = await import("../../components/ContabilidadT4View.jsx");
 const { PLANES, abrir } = await import("./t4-aprender-rd.mjs");
 const { MARCA } = await import("../../data/contabilidadT4.js");
-const { MARCA_CASILLA } = await import("../../data/contabilidadT4A0.js");
 const { cifra } = await import("../../components/t4/comun.jsx");
 const H1 = await import("../../data/contabilidadT4H1.js");
 const H3 = await import("../../data/contabilidadT4H3.js");
@@ -96,8 +95,8 @@ const patron = (f) => (esCifra(f)
   : new RegExp(`(?<![\\p{L}\\p{N}])${escapar(f)}(?![\\p{L}\\p{N}])`, "iu"));
 const dice = (texto, f) => patron(f).test(texto);
 
-/* Las palabras de las marcas, que el nombre de un control lleva al final tras responder («: Mal»). */
-const PALABRAS_MARCA = [...new Set([...Object.values(MARCA), ...Object.values(MARCA_CASILLA)].map((x) => x[1]).filter(Boolean))];
+/* Las palabras de las marcas, que el nombre de un control lleva al final tras responder («: No va aquí»). */
+const PALABRAS_MARCA = [...new Set(Object.values(MARCA).map((x) => x[1]).filter(Boolean))];
 const SIN_MARCA = new RegExp(`(: (${PALABRAS_MARCA.map(escapar).join("|")}))+$`, "u");
 /* El nombre con el que se reconoce un control: su aria-label sin la marca ni la cifra que muestra, o su texto. */
 function frasesDe(el) {

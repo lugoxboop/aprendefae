@@ -42,7 +42,7 @@ import { Encabezado } from "../mecanicas/libros/tema1/encabezado.jsx";
 import {
   H4, CUADRA, FALTA, ARQUEO, DIFERENCIA, CHEQUE, CUENTA, ZONAS_H4, CUENTAS_H4, RENGLONES_ASIENTO_H4,
   BOTON_H4, SOBRE_H4, REGLA_H4, ASIENTO_H4, CIERRE_H4, ALT_FIGURA_H4,
-  rotuloPreguntaH4, resumenH4, sortearH4, evaluarH4, evaluarCuentaH4, puntuarH4, itemH4,
+  rotuloPasoH4, resumenH4, sortearH4, evaluarH4, evaluarCuentaH4, puntuarH4, itemH4,
 } from "../../data/contabilidadT4H4.js";
 import { ESPERA_ERROR_MS, cifra } from "../../data/contabilidadT4Hacer.js";
 import { C, CSS_T4R, Mensaje, SeguirHacer } from "./comun.jsx";
@@ -60,7 +60,7 @@ export const CSS_H4 = `
 .t4h4-f > span:last-child { font: 500 15px/1.4 "Inter", sans-serif; font-variant-numeric: tabular-nums; color: ${C.texto}; }
 .t4h4-q { display: grid; gap: 8px; }
 .t4h4-q > p { margin: 0; font: 600 15px/1.4 "Sora", "Inter", sans-serif; }
-.t4h4-q > span { font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .08em; color: ${C.texto2}; }
+.t4h4-q > span { font: 500 12px/1.2 "Inter", sans-serif; color: ${C.texto2}; }
 .t4h4-ops { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .t4h4-op { position: relative; min-height: 44px; border-radius: 8px; border: 1px solid ${C.neutro}; background: transparent; color: ${C.texto}; font: 600 14px "Inter", sans-serif; font-variant-numeric: tabular-nums; cursor: pointer; white-space: nowrap; padding: 0 4px; }
 .t4h4-op:disabled { cursor: default; }
@@ -206,7 +206,7 @@ export default function ElArqueo({ Marco, rotulo, titulo, acento, onCompletar, i
     if (!msg.ok && aplicado) marcas4[`${p.correcta.cuenta}:${p.correcta.lado}`] = "era";
   }
   const ultima = k === r.preguntas.length - 1;
-  const textoSeguir = !ultima ? BOTON_H4.siguientePregunta : t.i + 1 < rondas.length ? BOTON_H4.siguienteRonda : BOTON_H4.verResumen;
+  const textoSeguir = !ultima ? BOTON_H4.siguientePaso : t.i + 1 < rondas.length ? BOTON_H4.siguienteRonda : BOTON_H4.verResumen;
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
@@ -231,7 +231,7 @@ export default function ElArqueo({ Marco, rotulo, titulo, acento, onCompletar, i
           </div>
           <Regla r={r} suman={verSuman ? r.suma : null} tramos={tramos} aguja2={agujas} etiquetas={etiquetas} />
           <div className="t4h4-q" data-tarjeta-pregunta={p.id}>
-            <span>{rotuloPreguntaH4(k + 1)}</span>
+            <span data-paso>{rotuloPasoH4(k + 1, r.preguntas.length)}</span>
             <p>{p.pregunta}</p>
             {p.id === ARQUEO && <Opciones opciones={p.opciones} elegida={eleg} correcta={p.correcta} aplicado={aplicado} onElegir={elegir} rotulo={(o) => ZONAS_H4.find((z) => z[0] === o)[1]} etiqueta={p.pregunta} />}
             {(p.id === DIFERENCIA || p.id === CHEQUE) && <Opciones opciones={p.opciones} elegida={eleg} correcta={p.correcta} aplicado={aplicado} onElegir={elegir} rotulo={(o) => cifra(o)} etiqueta={p.pregunta} />}

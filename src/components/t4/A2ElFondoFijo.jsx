@@ -22,8 +22,7 @@ import { useEffect, useState } from "react";
 import { C, Mensaje, cifra } from "./comun.jsx";
 import { Tablero } from "./tablero.jsx";
 import { Fig, Sobre, Cheque, Rotulo, Chips } from "./aprender.jsx";
-import { MARCA_CASILLA } from "../../data/contabilidadT4A0.js";
-import { DEBE, HABER } from "../../data/contabilidadT4.js";
+import { DEBE, HABER, MARCA } from "../../data/contabilidadT4.js";
 import {
   FONDO, GASTOS_MAYO, GASTADO, QUEDA, PAGOS_P0, PASO_FONDO, FONDO_MIN, FONDO_MAX, OPCIONES_QUEDA,
   CAJA_MENOR as CM, BANCOS as B, CAJA as CJ, GASTOS_GENERALES as GG, CUENTAS_A2, REEMBOLSO_A2, errorReembolsoA2, FIGURA_A2 as F,
@@ -165,7 +164,7 @@ function YCajaMenor({ p, onAcierto }) {
       <Fig nombre={NOMBRE} alt={p.alt}>
         <Rotulo>{F.libro}</Rotulo>
         <Tablero cuentas={[CM, B, CJ, GG].map((c) => CUENTAS_A2[c])} totales={totales} puestas={ok ? {} : puestas} monto={cifra(GASTADO)}
-          onElegir={elegir} activo={!ok} marcas={marcas} recien={ok ? [`${GG}:${DEBE}`, `${B}:${HABER}`] : []} etiqueta={F.tablero} palabras={MARCA_CASILLA} />
+          onElegir={elegir} activo={!ok} marcas={marcas} recien={ok ? [`${GG}:${DEBE}`, `${B}:${HABER}`] : []} etiqueta={F.tablero} palabras={MARCA} />
         {!ok && <button type="button" className="t4r-btn2" data-boton="comprobar" aria-disabled={!listo ? "true" : undefined} onClick={listo ? () => setR({ ...puestas }) : undefined}>{F.comprobar}</button>}
       </Fig>
       {r && <Mensaje key={`${r[DEBE]}-${r[HABER]}-${ok}`} ok={ok} texto={ok ? p.acierto : p.errores[errorReembolsoA2(r)]} />}

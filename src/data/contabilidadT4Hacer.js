@@ -6,9 +6,10 @@
  * 15 oct 2026). Copias en el canon: orquestador/conocimiento/paquetes/
  * d4-t4-h3-v2-rediseno.md, -h4-, -h7- y -h8-.
  *
- *   · las marcas de un campo de cifra (H7 fase 2 y H8 etapa 3): «No va aquí»
- *     no sirve para una cifra escrita (corte de Yujiro). Son «✓ Correcto»
- *     (`bien`) y «✗ Cifra errada» (`cifra-mal`), en MARCA de contabilidadT4.js
+ *   · las marcas de un campo de cifra (H7 fase 2 y H8 etapa 3): las mismas
+ *     de todo T4, «✓ Correcto» (`bien`) y «✗ No va aquí» (`mal`), en MARCA de
+ *     contabilidadT4.js, y debajo del campo errado «Iba aquí: {valor}» a los
+ *     0,7 s (prompt maestro §4.2; Katsumi, lote del 16 oct)
  *   · ESPERA_ERROR_MS: en el error, lo que iba se escribe a los 0,7 s
  *     (Hanayama, H3/H4/H7/H8 rediseño §1), como en H1
  *   · ESPERA_SALDOS_MS: en la fase 2 de H7, el par se queda 1,2 s con lo
@@ -20,7 +21,7 @@
  */
 
 export const MARCA_CIFRA_BIEN = "bien";
-export const MARCA_CIFRA_MAL = "cifra-mal";
+export const MARCA_CIFRA_MAL = "mal";
 
 export const ESPERA_ERROR_MS = 700;
 export const ESPERA_SALDOS_MS = 1200;

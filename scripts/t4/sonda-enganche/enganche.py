@@ -139,7 +139,7 @@ def aprender(b, sigla):
     return regs, errs
 
 # ───────────────────────────── Hacer ─────────────────────────────
-SIGUIENTE = ("Siguiente hecho", "Siguiente caso", "Siguiente operación", "Siguiente pregunta", "Siguiente ronda",
+SIGUIENTE = ("Siguiente hecho", "Siguiente caso", "Siguiente operación", "Siguiente pregunta", "Siguiente ronda", "Siguiente paso",
              "Siguiente partida", "Siguiente asiento", "Ir a los saldos", "Ir a los asientos", "Ir al mayor")
 norm = lambda s: re.sub(r"\s+", " ", s or "").strip()
 exacto = lambda s: re.compile(r"^\s*" + r"\s+".join(re.escape(p) for p in norm(s).split(" ")) + r"\s*$")

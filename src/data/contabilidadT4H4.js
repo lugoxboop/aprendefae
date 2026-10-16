@@ -68,7 +68,8 @@ export const PREGUNTAS_H4 = {
   [CHEQUE]: "¿Por cuánto sale el reembolso?",
   [CUENTA]: "¿A qué cuenta va la diferencia?",
 };
-export const rotuloPreguntaH4 = (n) => `PREGUNTA ${n}`;
+/* El paso dentro de la ronda (prompt maestro §4.3: «Paso» es para los pasos de un solo caso). N = 2 si cuadra, 4 si no. */
+export const rotuloPasoH4 = (n, total) => `Paso ${n} de ${total}`;
 /* Las zonas de la pregunta 1, siempre en el orden de la regla. */
 export const ZONAS_H4 = [[FALTA, "Falta"], [CUADRA, "Cuadra"], [SOBRA, "Sobra"]];
 
@@ -97,7 +98,8 @@ export const RENGLONES_ASIENTO_H4 = {
 };
 
 /* Interfaz (Katsumi). */
-export const BOTON_H4 = { comprobar: "Comprobar", siguientePregunta: "Siguiente pregunta", siguienteRonda: "Siguiente ronda", verResumen: "Ver mi resumen", otraVez: "Otra vez" };
+/* Dentro de la ronda, «Siguiente paso» (sigue al rótulo «Paso n de N»); entre rondas, «Siguiente ronda» (sigue al contador «Ronda n de 4»). */
+export const BOTON_H4 = { comprobar: "Comprobar", siguientePaso: "Siguiente paso", siguienteRonda: "Siguiente ronda", verResumen: "Ver mi resumen", otraVez: "Otra vez" };
 export const SOBRE_H4 = { gastos: "Soportes de gastos", caja: "En la caja" };
 export const REGLA_H4 = {
   fondo: "fondo", suman: "suman", sumanFuera: "suman, fuera de la regla", tuDiferencia: "tu diferencia", era: "era",
@@ -167,10 +169,10 @@ function ronda(id, titulo, encargado, fondo, gastos, caja, politica) {
       P.push({ id: CUENTA, correcta: { cuenta: INO, lado: HABER },
         acierto: "El sobrante de caja menor es un ingreso no operacional, y un ingreso va al haber. El asiento lleva los gastos al debe y el cheque a Bancos.",
         errores: {
-          [CM]: "Caja menor no se mueve en el reembolso, ni siquiera con un sobrante de caja menor. La plata de más es un ingreso.",
+          [CM]: "Pensaste que la plata de más vuelve al fondo, pero Caja menor no se mueve en el reembolso. Es un ingreso.",
           [CXC]: "Nadie le debe nada a la empresa: aquí no falta plata, sobra. El sobrante de caja menor es un ingreso.",
           [GNO]: "Esa cuenta es para cuando falta plata. Aquí sobra, y el sobrante de caja menor es un ingreso.",
-          lado: "La cuenta es esa, pero un ingreso va al haber. Al debe van los gastos.",
+          lado: "La cuenta es esa, pero la pusiste con los gastos. Un ingreso va al haber.",
         } });
     } else {
       r.pagina = "Basado en el libro, pp. 183, 185 y 186. Cifras construidas";
@@ -181,9 +183,9 @@ function ronda(id, titulo, encargado, fondo, gastos, caja, politica) {
           [gastos - dif]: `Falta plata, así que el cheque sale por más de lo gastado, no por menos: ${pesos(cheque)}.`,
         } });
       const comun = {
-        [CM]: "Caja menor no se mueve en el reembolso, ni siquiera con un faltante de caja menor. Mira el asiento de la p. 186.",
+        [CM]: "Pensaste que lo que falta se descuenta del fondo, pero Caja menor no se mueve en el reembolso. Mira la p. 186.",
         [INO]: `Esa cuenta es para cuando sobra plata. Aquí falta: la suma da ${pesos(suma)}, menos que el fondo.`,
-        lado: "La cuenta es esa, pero va al debe, junto a los gastos. Al haber solo va Bancos, por el cheque.",
+        lado: "La cuenta es esa, pero la pusiste con el cheque, al haber. Va al debe, junto a los gastos.",
       };
       if (politica === COBRA) {
         P.push({ id: CUENTA, correcta: { cuenta: CXC, lado: DEBE },

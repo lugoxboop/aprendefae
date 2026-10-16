@@ -28,7 +28,7 @@ Cuatro rondas por intento, una de cada tipo, sorteadas de a dos: Cuadra: H4-1 o 
 
 **Sobre:** «Soportes de gastos» y «En la caja» (sin cambios).
 
-**Preguntas** (encima, «PREGUNTA n»):
+**Preguntas** (encima, «Paso n de N», con N = 2 si cuadra y 4 si no; prompt maestro §4.3):
 
 | | Texto | Renglones 320 |
 |---|---|---|
@@ -83,10 +83,10 @@ Un intento por pregunta; la pregunta siguiente se juega con la verdad ya dibujad
 | 3 · 391.800 | Ese es el total de los gastos. Con un sobrante de caja menor, el cheque sale por menos: $387.500. | 19 pal. · INFLESZ 95,7 |
 | 3 · 396.100 | Eso suma la diferencia en vez de restarla. La plata de más ya está en la caja: el cheque es de $387.500. | 22 pal. · INFLESZ 96,7 |
 | 4 · la cuenta, en su lado (acierto) | Correcto. El sobrante de caja menor es un ingreso no operacional, y un ingreso va al haber. El asiento lleva los gastos al debe y el cheque a Bancos. | 29 pal. · INFLESZ 87,6 |
-| 4 · Caja menor | Caja menor no se mueve en el reembolso, ni siquiera con un sobrante de caja menor. La plata de más es un ingreso. | 23 pal. · INFLESZ 92,4 |
+| 4 · Caja menor | Pensaste que la plata de más vuelve al fondo, pero Caja menor no se mueve en el reembolso. Es un ingreso. | 21 pal. · INFLESZ 92,5 |
 | 4 · Cuentas por cobrar – empleados | Nadie le debe nada a la empresa: aquí no falta plata, sobra. El sobrante de caja menor es un ingreso. | 20 pal. · INFLESZ 84,7 |
 | 4 · Gastos no operacionales – faltante de caja menor | Esa cuenta es para cuando falta plata. Aquí sobra, y el sobrante de caja menor es un ingreso. | 18 pal. · INFLESZ 83,6 |
-| 4 · la cuenta buena en el lado contrario | La cuenta es esa, pero un ingreso va al haber. Al debe van los gastos. | 15 pal. · INFLESZ 103,8 |
+| 4 · la cuenta buena en el lado contrario | La cuenta es esa, pero la pusiste con los gastos. Un ingreso va al haber. | 15 pal. · INFLESZ 99,7 |
 
 **H4-4 · Rosa · Sus Servicios, septiembre** — sobra · suma 501.500 · diferencia 1.500 · cheque 454.800 · cuenta: Ingresos no operacionales – sobrante de caja menor, al haber
 
@@ -102,10 +102,10 @@ Un intento por pregunta; la pregunta siguiente se juega con la verdad ya dibujad
 | 3 · 456.300 | Ese es el total de los gastos. Con un sobrante de caja menor, el cheque sale por menos: $454.800. | 19 pal. · INFLESZ 95,7 |
 | 3 · 457.800 | Eso suma la diferencia en vez de restarla. La plata de más ya está en la caja: el cheque es de $454.800. | 22 pal. · INFLESZ 96,7 |
 | 4 · la cuenta, en su lado (acierto) | Correcto. El sobrante de caja menor es un ingreso no operacional, y un ingreso va al haber. El asiento lleva los gastos al debe y el cheque a Bancos. | 29 pal. · INFLESZ 87,6 |
-| 4 · Caja menor | Caja menor no se mueve en el reembolso, ni siquiera con un sobrante de caja menor. La plata de más es un ingreso. | 23 pal. · INFLESZ 92,4 |
+| 4 · Caja menor | Pensaste que la plata de más vuelve al fondo, pero Caja menor no se mueve en el reembolso. Es un ingreso. | 21 pal. · INFLESZ 92,5 |
 | 4 · Cuentas por cobrar – empleados | Nadie le debe nada a la empresa: aquí no falta plata, sobra. El sobrante de caja menor es un ingreso. | 20 pal. · INFLESZ 84,7 |
 | 4 · Gastos no operacionales – faltante de caja menor | Esa cuenta es para cuando falta plata. Aquí sobra, y el sobrante de caja menor es un ingreso. | 18 pal. · INFLESZ 83,6 |
-| 4 · la cuenta buena en el lado contrario | La cuenta es esa, pero un ingreso va al haber. Al debe van los gastos. | 15 pal. · INFLESZ 103,8 |
+| 4 · la cuenta buena en el lado contrario | La cuenta es esa, pero la pusiste con los gastos. Un ingreso va al haber. | 15 pal. · INFLESZ 99,7 |
 
 **H5-1 · Julián · Ferretería La Tuerca** — falta · suma 394.500 · diferencia 5.500 · cheque 358.300 · cuenta: Cuentas por cobrar – empleados, al debe
 
@@ -121,10 +121,10 @@ Un intento por pregunta; la pregunta siguiente se juega con la verdad ya dibujad
 | 3 · 352.800 | El cheque no es solo lo gastado. También repone los $5.500 que faltan: $358.300. | 14 pal. · INFLESZ 84,1 |
 | 3 · 347.300 | Falta plata, así que el cheque sale por más de lo gastado, no por menos: $358.300. | 16 pal. · INFLESZ 89,6 |
 | 4 · la cuenta, en su lado (acierto) | Correcto. Se la cobran a Julián, así que le queda debiendo $5.500 a la empresa: Cuentas por cobrar – empleados, al debe. | 21 pal. · INFLESZ 80,6 |
-| 4 · Caja menor | Caja menor no se mueve en el reembolso, ni siquiera con un faltante de caja menor. Mira el asiento de la p. 186. | 23 pal. · INFLESZ 90,8 / 87 |
+| 4 · Caja menor | Pensaste que lo que falta se descuenta del fondo, pero Caja menor no se mueve en el reembolso. Mira la p. 186. | 22 pal. · INFLESZ 91,9 |
 | 4 · Ingresos no operacionales – sobrante de caja menor | Esa cuenta es para cuando sobra plata. Aquí falta: la suma da $394.500, menos que el fondo. | 17 pal. · INFLESZ 84,7 |
 | 4 · Gastos no operacionales – faltante de caja menor | Esa sería si la empresa asumiera la pérdida. Aquí se la cobran a Julián: le queda debiendo $5.500. | 18 pal. · INFLESZ 69,8 |
-| 4 · la cuenta buena en el lado contrario | La cuenta es esa, pero va al debe, junto a los gastos. Al haber solo va Bancos, por el cheque. | 20 pal. · INFLESZ 103,4 |
+| 4 · la cuenta buena en el lado contrario | La cuenta es esa, pero la pusiste con el cheque, al haber. Va al debe, junto a los gastos. | 19 pal. · INFLESZ 102,2 |
 
 **H5-3 · Camilo · Panadería El Trigal** — falta · suma 246.200 · diferencia 3.800 · cheque 201.100 · cuenta: Cuentas por cobrar – empleados, al debe
 
@@ -140,10 +140,10 @@ Un intento por pregunta; la pregunta siguiente se juega con la verdad ya dibujad
 | 3 · 197.300 | El cheque no es solo lo gastado. También repone los $3.800 que faltan: $201.100. | 14 pal. · INFLESZ 84,1 |
 | 3 · 193.500 | Falta plata, así que el cheque sale por más de lo gastado, no por menos: $201.100. | 16 pal. · INFLESZ 89,6 |
 | 4 · la cuenta, en su lado (acierto) | Correcto. Se la cobran a Camilo, así que le queda debiendo $3.800 a la empresa: Cuentas por cobrar – empleados, al debe. | 21 pal. · INFLESZ 77,7 |
-| 4 · Caja menor | Caja menor no se mueve en el reembolso, ni siquiera con un faltante de caja menor. Mira el asiento de la p. 186. | 23 pal. · INFLESZ 90,8 / 87 |
+| 4 · Caja menor | Pensaste que lo que falta se descuenta del fondo, pero Caja menor no se mueve en el reembolso. Mira la p. 186. | 22 pal. · INFLESZ 91,9 |
 | 4 · Ingresos no operacionales – sobrante de caja menor | Esa cuenta es para cuando sobra plata. Aquí falta: la suma da $246.200, menos que el fondo. | 17 pal. · INFLESZ 84,7 |
 | 4 · Gastos no operacionales – faltante de caja menor | Esa sería si la empresa asumiera la pérdida. Aquí se la cobran a Camilo: le queda debiendo $3.800. | 18 pal. · INFLESZ 66,3 |
-| 4 · la cuenta buena en el lado contrario | La cuenta es esa, pero va al debe, junto a los gastos. Al haber solo va Bancos, por el cheque. | 20 pal. · INFLESZ 103,4 |
+| 4 · la cuenta buena en el lado contrario | La cuenta es esa, pero la pusiste con el cheque, al haber. Va al debe, junto a los gastos. | 19 pal. · INFLESZ 102,2 |
 
 **H5-2 · Marta · Agencia Rumbo** — falta · suma 595.800 · diferencia 4.200 · cheque 522.650 · cuenta: Gastos no operacionales – faltante de caja menor, al debe
 
@@ -159,10 +159,10 @@ Un intento por pregunta; la pregunta siguiente se juega con la verdad ya dibujad
 | 3 · 518.450 | El cheque no es solo lo gastado. También repone los $4.200 que faltan: $522.650. | 14 pal. · INFLESZ 84,1 |
 | 3 · 514.250 | Falta plata, así que el cheque sale por más de lo gastado, no por menos: $522.650. | 16 pal. · INFLESZ 89,6 |
 | 4 · la cuenta, en su lado (acierto) | Correcto. La empresa asume la pérdida, y una pérdida es un gasto. Los $4.200 van al debe, en la cuenta del faltante de caja menor. | 25 pal. · INFLESZ 86,4 |
-| 4 · Caja menor | Caja menor no se mueve en el reembolso, ni siquiera con un faltante de caja menor. Mira el asiento de la p. 186. | 23 pal. · INFLESZ 90,8 / 87 |
+| 4 · Caja menor | Pensaste que lo que falta se descuenta del fondo, pero Caja menor no se mueve en el reembolso. Mira la p. 186. | 22 pal. · INFLESZ 91,9 |
 | 4 · Ingresos no operacionales – sobrante de caja menor | Esa cuenta es para cuando sobra plata. Aquí falta: la suma da $595.800, menos que el fondo. | 17 pal. · INFLESZ 84,7 |
 | 4 · Cuentas por cobrar – empleados | Esa sería si se la cobraran a Marta. Aquí la empresa asume la pérdida, y una pérdida es un gasto. | 20 pal. · INFLESZ 78,5 |
-| 4 · la cuenta buena en el lado contrario | La cuenta es esa, pero va al debe, junto a los gastos. Al haber solo va Bancos, por el cheque. | 20 pal. · INFLESZ 103,4 |
+| 4 · la cuenta buena en el lado contrario | La cuenta es esa, pero la pusiste con el cheque, al haber. Va al debe, junto a los gastos. | 19 pal. · INFLESZ 102,2 |
 
 **H5-4 · Diana · Taller Rueda Libre** — falta · suma 491.000 · diferencia 9.000 · cheque 440.600 · cuenta: Gastos no operacionales – faltante de caja menor, al debe
 
@@ -178,16 +178,16 @@ Un intento por pregunta; la pregunta siguiente se juega con la verdad ya dibujad
 | 3 · 431.600 | El cheque no es solo lo gastado. También repone los $9.000 que faltan: $440.600. | 14 pal. · INFLESZ 84,1 |
 | 3 · 422.600 | Falta plata, así que el cheque sale por más de lo gastado, no por menos: $440.600. | 16 pal. · INFLESZ 89,6 |
 | 4 · la cuenta, en su lado (acierto) | Correcto. La empresa asume la pérdida, y una pérdida es un gasto. Los $9.000 van al debe, en la cuenta del faltante de caja menor. | 25 pal. · INFLESZ 86,4 |
-| 4 · Caja menor | Caja menor no se mueve en el reembolso, ni siquiera con un faltante de caja menor. Mira el asiento de la p. 186. | 23 pal. · INFLESZ 90,8 / 87 |
+| 4 · Caja menor | Pensaste que lo que falta se descuenta del fondo, pero Caja menor no se mueve en el reembolso. Mira la p. 186. | 22 pal. · INFLESZ 91,9 |
 | 4 · Ingresos no operacionales – sobrante de caja menor | Esa cuenta es para cuando sobra plata. Aquí falta: la suma da $491.000, menos que el fondo. | 17 pal. · INFLESZ 84,7 |
 | 4 · Cuentas por cobrar – empleados | Esa sería si se la cobraran a Diana. Aquí la empresa asume la pérdida, y una pérdida es un gasto. | 20 pal. · INFLESZ 78,5 |
-| 4 · la cuenta buena en el lado contrario | La cuenta es esa, pero va al debe, junto a los gastos. Al haber solo va Bancos, por el cheque. | 20 pal. · INFLESZ 103,4 |
+| 4 · la cuenta buena en el lado contrario | La cuenta es esa, pero la pusiste con el cheque, al haber. Va al debe, junto a los gastos. | 19 pal. · INFLESZ 102,2 |
 
 En la pregunta 4, el mensaje de cada cuenta equivocada sale igual en el debe y en el haber; la cuenta buena en el lado contrario tiene el suyo («lado»).
 
 ### Botones, cierre
 
-- Botones: «Comprobar» (pregunta 4), «Siguiente pregunta», «Siguiente ronda», «Ver mi resumen», «Otra vez».
+- Botones: «Comprobar» (pregunta 4), «Siguiente paso» (dentro de la ronda), «Siguiente ronda», «Ver mi resumen», «Otra vez».
 - **Resumen:** «N de 14 respuestas al primer intento.» (2 + 4 + 4 + 4 preguntas).
 - **Cierre** (38 pal. · INFLESZ 82,7): Si el arqueo cuadra, el cheque repone lo gastado. Si sobra plata, sale por menos, y la diferencia es un ingreso. Si falta, sale por más, y la diferencia la paga el encargado o la asume la empresa.
 - **Pie del cierre:** «Basado en el libro, pp. 182-186. Cifras construidas»

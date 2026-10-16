@@ -93,6 +93,7 @@ test("★★★ ficha, consigna, rótulos de etapa, bandejas, cuentas, mayor, bo
   assert.ok(PAQ.includes(`**Mayor:** «${D.SERIE_H8_1.tituloMayor}» (serie 2: «${D.SERIE_H8_2.tituloMayor}»)`));
   assert.ok(PAQ.includes(`**Campo:** «${D.ROTULOS_H8.campo}»`));
   for (const b of Object.values(D.BOTON_H8)) assert.ok(PAQ.includes(`«${b}»`), b);
+  assert.deepEqual([...new Set(Object.values(D.BOTON_H8))].sort(), ["Comprobar", "Otra vez", "Siguiente paso", "Ver mi resumen"]);
   for (const a of Object.values(D.AVISOS_H8)) assert.ok(PAQ.includes(`«${a}»`), a);
   for (const p of Object.values(D.PIE_H8)) assert.ok(PAQ.includes(p), p);
   assert.ok(PAQ.includes(`«${D.resumenH8("N")}»`));
@@ -168,7 +169,7 @@ test("★★★ cada asiento: las 29 combinaciones equivocadas caen en una regla
 
 /* ═══════════ 3 · LA PARTIDA ═══════════ */
 
-test("★★★ PH8-1: ni el saldo conciliado ni el extracto están en el DOM en ninguna etapa, ni tras un error de la etapa 3; solo con su acierto", async () => {
+test("★★★ PH8-1: ni el saldo conciliado ni el extracto están en el DOM en ninguna etapa antes de responder la 3; tras su error, a los 0,7 s, «Iba aquí: {valor}» bajo el campo (§4.2, decisión de Yujiro)", async () => {
   for (const s of D.SERIES_H8) {
     const m = montarJuego({ items: { serie: s, partidas: s.partidas } });
     const prohibido = () => {
@@ -184,7 +185,12 @@ test("★★★ PH8-1: ni el saldo conciliado ni el extracto están en el DOM en
       prohibido();
       assert.equal(visible(q(m, "[data-devolucion]")), s.erroresEtapa3[0].texto);
       assert.equal(q(m, "[data-saldo-mayor]").dataset.saldoMayor, cifra(s.erroresEtapa3[0].cifra));
-      assert.match(q(m, "[data-saldo-mayor]").textContent, /✗Cifra errada/);
+      assert.match(q(m, "[data-saldo-mayor]").textContent, /✗No va aquí/);
+      assert.equal(q(m, '[data-iba="mayor"]'), null, "«Iba aquí» antes de los 0,7 s");
+      await esperar(ESPERA_ERROR_MS + 50);
+      assert.equal(q(m, '[data-iba="mayor"]').textContent, `Iba aquí: $${cifra(s.saldoMayor)}`);
+      /* El texto del error sigue sin decir el saldo: lo dice solo la revelación. */
+      assert.ok(!visible(q(m, "[data-devolucion]")).includes(cifra(s.saldoMayor)));
     } finally { m.desmontar(); }
   }
 });
@@ -284,7 +290,7 @@ test("★★★ etapa 2: una sola ficha y «Comprobar» da el aviso y NO gasta e
   } finally { m3.desmontar(); }
 });
 
-test("★★★ etapa 3: cada cifra de error sale con su mensaje y «✗ Cifra errada»; el acierto pone el par «el mayor = el banco»", async () => {
+test("★★★ etapa 3: cada cifra de error sale con su mensaje y «✗ No va aquí»; el acierto pone el par «el mayor = el banco»", async () => {
   for (const s of D.SERIES_H8) {
     for (const [v, texto] of [...s.erroresEtapa3.map((e) => [e.cifra, e.texto]), [1_234_567, s.otroEtapa3], [s.saldoMayor, `Correcto. ${s.aciertoEtapa3}`]]) {
       const m = montarJuego({ items: { serie: s, partidas: s.partidas } });
@@ -294,7 +300,7 @@ test("★★★ etapa 3: cada cifra de error sale con su mensaje y «✗ Cifra e
         await tocar(comprobar(m));
         assert.equal(visible(q(m, "[data-devolucion]")), texto, `${s.id} ${v}`);
         const ok = v === s.saldoMayor;
-        assert.match(q(m, "[data-saldo-mayor]").textContent, ok ? /✓Correcto/ : /✗Cifra errada/);
+        assert.match(q(m, "[data-saldo-mayor]").textContent, ok ? /✓Correcto/ : /✗No va aquí/);
         assert.equal(q(m, ".t4pr-igual").style.visibility, ok ? "visible" : "hidden");
         assert.equal(q(m, "[data-lector-par]").getAttribute("aria-label"), ok ? D.lectorParH8.acierto(cifra(s.saldoMayor), cifra(s.saldoMayor)) : D.lectorParH8.antes(cifra(s.libros)));
       } finally { m.desmontar(); }

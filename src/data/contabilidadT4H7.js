@@ -58,7 +58,8 @@ export const ROTULOS_H7 = {
   banco: "El banco", bancoSub: "extracto", libros: "Los libros", librosSub: "de la empresa", mas: "Más", menos: "Menos",
   parBanco: "el banco", parLibros: "los libros", campoBanco: "Saldo conciliado del banco", campoLibros: "Saldo conciliado de los libros",
 };
-export const BOTON_H7 = { siguiente: "Siguiente partida", aLosSaldos: "Ir a los saldos", comprobar: "Comprobar los saldos", verResumen: "Ver mi resumen", otraVez: "Otra vez" };
+/* El contador dice «Paso n de 10» (un solo caso: §4.3 del prompt maestro), así que el botón de avance es «Siguiente paso», también hacia los saldos. */
+export const BOTON_H7 = { siguiente: "Siguiente paso", aLosSaldos: "Siguiente paso", comprobar: "Comprobar", verResumen: "Ver mi resumen", otraVez: "Otra vez" };
 export const PIE_FASE1_H7 = "Basado en el libro, p. 190. Cifras construidas";
 export const PIE_FASE2_H7 = "Formato y signos del libro, p. 190. Cifras construidas";
 export const resumenH7 = (bien) => `${bien} de 9 partidas al primer toque.`;
@@ -134,12 +135,12 @@ function serie({ id, razonSocial, fecha, extracto, libros, partidas: P }) {
   return {
     id, razonSocial, fecha, extracto, libros, partidas: P, totales, conciliadoBanco, conciliadoLibros,
     erroresBanco: [
-      { cifra: extracto - totales.consignacion + totales.cheques, texto: "Ese saldo resta lo que va a entrar y suma lo que va a salir. Revisa los dos tipos de partida del banco." },
+      { cifra: extracto - totales.consignacion + totales.cheques, texto: "Ese saldo resta lo que va a entrar y suma lo que va a salir. Mira cada partida del banco." },
       { cifra: extracto + totales.consignacion, texto: "A ese saldo le faltan los cheques que nadie ha cobrado. Esa plata ya está comprometida." },
       { cifra: extracto - totales.cheques, texto: `A ese saldo le falta la consignación del ${dia}. Esa plata ya es de la empresa.` },
     ],
     erroresLibros: [
-      { cifra: libros - totales.nc + totales.nd, texto: "Ese saldo resta lo que el banco abonó y suma lo que el banco cobró. Revisa qué hace cada nota." },
+      { cifra: libros - totales.nc + totales.nd, texto: "Ese saldo resta lo que el banco abonó y suma lo que el banco cobró. Mira qué hace cada nota." },
       { cifra: libros + totales.nc, texto: "A ese saldo le faltan las notas débito del banco: la plata que el banco ya cobró." },
       { cifra: libros - totales.nd, texto: "A ese saldo le faltan las notas crédito del banco: la plata que el banco ya abonó." },
     ],
@@ -164,8 +165,8 @@ export const SERIES_H7 = [SERIE_1, SERIE_2];
 /* Los mensajes de la fase 2 que no nombran cifras. */
 export const SALDOS_H7 = {
   acierto: "Los dos saldos dan lo mismo. Nadie se equivocó: a cada lado le faltaba anotar algo.",
-  igualesOtraCifra: "Los dos lados coinciden entre sí, pero la cuenta no es la del ejercicio. Revisa las sumas.",
-  otro: "Los dos saldos tienen que dar lo mismo. Mira en las libretas qué suma y qué resta en cada lado.",
+  igualesOtraCifra: "Los dos lados coinciden entre sí, pero la cuenta no es la del ejercicio. Repasa las sumas.",
+  otro: "Tu cuenta se saltó una partida o la sumó cuando restaba. Repasa el Más y el Menos de cada libreta.",
 };
 export const CIERRE_PIE_H7 = "Formato y signos del libro, p. 190. Cifras construidas";
 

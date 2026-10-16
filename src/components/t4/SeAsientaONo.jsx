@@ -40,7 +40,7 @@ import {
   H8, BANDEJAS_H8, CUENTAS_H8, BANCOS, ETAPAS_H8, BOTON_H8, AVISOS_H8, ROTULOS_H8, PIE_H8, CIERRE_H8, ALT_FIGURA_H8, TOTAL_H8,
   lectorParH8, resumenH8, sortearH8, notasEnOrden, evaluarEtapa1H8, evaluarEtapa2H8, evaluarEtapa3H8, puntuarH8,
 } from "../../data/contabilidadT4H8.js";
-import { ESPERA_ERROR_MS, MARCA_CIFRA_BIEN, MARCA_CIFRA_MAL, cifra, leerCifra } from "../../data/contabilidadT4Hacer.js";
+import { ESPERA_ERROR_MS, MARCA_CIFRA_BIEN, MARCA_CIFRA_MAL, cifra, pesos, leerCifra } from "../../data/contabilidadT4Hacer.js";
 import { C, CSS_T4R, Mensaje, Marca, SeguirHacer } from "./comun.jsx";
 import { Tablero, Mayor, Campo, CSS_TABLERO } from "./tablero.jsx";
 import { ParConLector, CSS_HACER } from "./hacerComun.jsx";
@@ -145,7 +145,9 @@ export default function SeAsientaONo({ Marco, rotulo, titulo, acento, onCompleta
     const e = evaluarEtapa3H8(s, v);
     t.anotar("saldo-mayor", e.ok, String(v));
     if (e.ok) setBien((n) => n + 1);
-    setR({ ...e, v, aplicado: true });
+    setR({ ...e, v, aplicado: true, iba: false });
+    /* Sin reintento: a los 0,7 s, «Iba aquí: {valor}» bajo el campo (prompt maestro §4.2; decisión de Yujiro, 16 oct). */
+    if (!e.ok) reloj.current = setTimeout(() => setR((x) => (x ? { ...x, iba: true } : x)), ESPERA_ERROR_MS);
   };
 
   const avanzar = () => {
@@ -235,7 +237,7 @@ export default function SeAsientaONo({ Marco, rotulo, titulo, acento, onCompleta
             <Tablero cuentas={CUENTAS_H8} totales={totales} puestas={r && !r.ok ? r.a : puestas} monto={cifra(p.monto)} onElegir={elegir2}
               activo={!r} marcas={marcas2} ancho={70} recien={r?.aplicado ? [`${p.debe}:debe`, `${p.haber}:haber`] : []} etiqueta={ETAPAS_H8[1]} />
           )}
-          {etapa === 3 && <Campo id="mayor" rotulo={ROTULOS_H8.campo} valor={saldo} bloqueado={Boolean(r)} onCambio={(v) => { setSaldo(v); setAviso(null); }} />}
+          {etapa === 3 && <Campo id="mayor" rotulo={ROTULOS_H8.campo} valor={saldo} bloqueado={Boolean(r)} iba={r?.iba ? pesos(s.saldoMayor) : null} onCambio={(v) => { setSaldo(v); setAviso(null); }} />}
           {etapa >= 2 && (
             <Mayor titulo={s.tituloMayor} debe={mayorDebe} haber={mayorHaber} reserva={3} rotuloSaldo={ROTULOS_H8.saldoPie}
               saldo={etapa === 3 && r ? cifra(r.v) : null} marcaSaldo={etapa === 3 && r ? (r.ok ? MARCA_CIFRA_BIEN : MARCA_CIFRA_MAL) : null} />

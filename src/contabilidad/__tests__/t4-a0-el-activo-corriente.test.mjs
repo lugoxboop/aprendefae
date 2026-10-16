@@ -267,10 +267,10 @@ test("★★★ P3 mal: la raya decide; ✗ y coral en la mal elegida, y la que 
     assert.deepEqual([ver("deuda", "antes"), ver("deuda", "despues")], ["mal", null]);
     assert.equal(m.caja.querySelector('[data-veredicto="era"], [data-marca="era"]'), null, "en Aprender no se marca la que era");
     assert.deepEqual([ver("edificio", "despues"), ver("edificio", "antes")], ["bien", null]);
-    /* La pastilla con palabra (Katsumi: «✓ Bien» y «✗ Mal» caben en la casilla; nunca «era»), y el lector oye la palabra. */
-    assert.equal(visible(seg(m.caja, "deuda", "antes")), "✗Mal");
-    assert.equal(visible(seg(m.caja, "edificio", "despues")), "✓Bien");
-    assert.equal(seg(m.caja, "mercancia", "despues").getAttribute("aria-label"), "Mercancía: no es corriente, después de la raya: Mal");
+    /* La pastilla con palabra, la de MARCA («✓ Correcto», «✗ No va aquí»: prompt maestro §4.2; nunca «era»), y el lector oye la palabra. */
+    assert.equal(visible(seg(m.caja, "deuda", "antes")), "✗No va aquí");
+    assert.equal(visible(seg(m.caja, "edificio", "despues")), "✓Correcto");
+    assert.equal(seg(m.caja, "mercancia", "despues").getAttribute("aria-label"), "Mercancía: no es corriente, después de la raya: No va aquí");
     assert.equal(seg(m.caja, "mercancia", "antes").getAttribute("aria-label"), "Mercancía: corriente, antes de la raya");
     const oido = [...m.caja.querySelectorAll("[aria-label]")].map((x) => x.getAttribute("aria-label")).join(" ");
     assert.doesNotMatch(`${visible(m.caja)} ${oido}`, /\bera\b/i, "nunca «era» en Aprender, ni a la vista ni para el lector");
@@ -340,7 +340,7 @@ test("★★★ los rótulos de la figura van en renglones fijos que no se parte
   /* Los renglones fijos de Hanayama §3.1 (que caben en el 70 % lo mide la sonda en Chromium, no jsdom). */
   const F = Z.FILAS_A0;
   assert.deepEqual([F.edificioOficina.texto, F.bancos.texto, F.inversiones.texto, F.deuda.texto, F.arriendo.texto, F.mercancia.glosa],
-    [["Edificio de", "la oficina"], ["Depósitos", "en bancos"], ["Inversiones", "a corto plazo"], ["Deuda de", "un cliente"], ["Arriendo pagado", "por adelantado"], ["se vende y se cobra", "este mes"]]);
+    [["Edificio de", "la oficina"], ["Depósitos", "en bancos"], ["Inversiones", "a corto plazo"], ["Deuda de", "un cliente"], ["Arriendo pagado", "por adelantado"], ["se cobra este mes"]]);
 });
 
 /* ═══════════ 4 · APRENDER NO DA FP ═══════════ */

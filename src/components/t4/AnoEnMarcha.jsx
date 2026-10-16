@@ -24,7 +24,8 @@
  */
 import { useEffect, useId, useRef, useState } from "react";
 import { useMovimientoReducido } from "../mecanicas/libros/verbos.jsx";
-import { RAYA_A0 as RAYA, FIGURA_ANO, MARCA_CASILLA, estadoFilaA0, ladoCorrectoA0, juegoBienA0 } from "../../data/contabilidadT4A0.js";
+import { RAYA_A0 as RAYA, FIGURA_ANO, estadoFilaA0, ladoCorrectoA0, juegoBienA0 } from "../../data/contabilidadT4A0.js";
+import { MARCA } from "../../data/contabilidadT4.js";
 import { C, Mensaje, Marca } from "./comun.jsx";
 
 const MS_POR_MES = 220;
@@ -150,12 +151,12 @@ function Fila({ f, m, juego = null }) {
               data-seg={lado}
               data-veredicto={ver ?? undefined}
               aria-pressed={elegido}
-              aria-label={`${f.texto.join(" ")}: ${FIGURA_ANO.casilla[lado]}${ver ? `: ${MARCA_CASILLA[ver][1]}` : ""}`}
+              aria-label={`${f.texto.join(" ")}: ${FIGURA_ANO.casilla[lado]}${ver ? `: ${MARCA[ver][1]}` : ""}`}
               disabled={juego.fin}
               onClick={() => juego.elegir(lado)}
               style={lado === "antes" ? { left: 0, width: `calc(${RAYA}% - 4px)` } : { left: `calc(${RAYA}% + 4px)`, right: 0 }}
             >
-              {ver && <span className="t4an-ver"><Marca marca={ver} palabras={MARCA_CASILLA[ver]} /></span>}
+              {ver && <span className="t4an-ver"><Marca marca={ver} palabras={MARCA[ver]} /></span>}
             </button>
           );
         }) : <span className="t4an-base" aria-hidden="true" />}

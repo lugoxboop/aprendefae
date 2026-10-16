@@ -40,11 +40,11 @@
 **P5 · y-caja-menor**
 - Antes de la figura: «Los gastos de oficina van a Gastos generales. ¿Qué mueve el reembolso?» (76,2)
 - Acierto (tras «Correcto.»): «Caja menor no se mueve: el fondo sigue en $500.000.» (90,9)
-- Error · debeCajaMenor (✗ y el texto): «Si Caja menor fuera al debe, el fondo subiría con cada cheque.» (80,6)
-- Error · haberCajaMenor (✗ y el texto): «Si Caja menor fuera al haber, el fondo bajaría con cada gasto.» (80,6)
-- Error · debeOtra (✗ y el texto): «A Caja no le entra plata. Piensa en qué se fue lo gastado.» (109,3)
+- Error · debeCajaMenor (✗ y el texto): «Con Caja menor al debe, el fondo subiría con cada cheque.» (82,6)
+- Error · haberCajaMenor (✗ y el texto): «Con Caja menor al haber, el fondo bajaría con cada gasto.» (82,6)
+- Error · debeOtra (✗ y el texto): «No le entra plata a Caja: ¿en qué se gastó?» (109,6)
 - Error · haberOtra (✗ y el texto): «Fíjate de dónde sale la plata de un cheque.» (<10)
-- Error · ambas (✗ y el texto): «Piensa en qué se fue la plata y de dónde sale el cheque.» (107,6)
+- Error · ambas (✗ y el texto): «¿En qué se gastó? ¿Quién paga el cheque?» (<10)
 - Texto alternativo: «El libro con cuatro cuentas, cada una con debe y haber. El cheque del reembolso, de 478.100, se pone en un debe y en un haber.» (93,2)
 - Pie: «Basado en el libro, pp. 182 y 184»
 
@@ -99,7 +99,7 @@ Decisiones 1 y 2 de Katsumi (`katsumi-texto-rediseno.md` y `katsumi-texto-a2-a5.
 - Palabra del acierto (va antes del texto): «Correcto.»
 - Palabra del error: ninguna visible. El error es ✗ y el texto.
 - Solo para el lector de pantalla, delante del texto del error: «Incorrecto.»
-- Marca de la opción o la mitad bien elegida: «✓ Bien»
-- Marca de la opción o la mitad mal elegida: «✗ Mal»
+- Marca de la opción o la mitad bien elegida: «✓ Correcto»
+- Marca de la opción o la mitad mal elegida: «✗ No va aquí»
 - Marca de la sección mal elegida (A5): «✗ No va aquí»
 - «Seguir» no aparece hasta el acierto en toda pantalla con pregunta, ni hasta el último acierto en los juegos de mandar a un lado. No hay «Intentar de nuevo»: tras el error, las opciones y el tablero siguen activos.

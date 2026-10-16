@@ -12,8 +12,8 @@
  *   · Rotulo: los rótulos de sección («LO QUE DICE EL LIBRO»)
  *   · Chips: opciones de Aprender. Se puede volver a elegir (reintento) y, en
  *     el error, solo se marca la elegida: nada delata la correcta. La marca
- *     lleva palabra («✓ Bien», «✗ Mal»: canon E3, en blanco y negro se sabe
- *     cuál falló); son las de las casillas angostas de A0 (Katsumi)
+ *     lleva palabra («✓ Correcto», «✗ No va aquí», las de MARCA: canon E3, en
+ *     blanco y negro se sabe cuál falló; prompt maestro §4.2)
  *   · LectorError: «Incorrecto.» solo para el lector, en una región viva, en
  *     los juegos de mandar a un lado (A4 P2, A5 P1 y P2), que no llevan
  *     mensaje de error a la vista (Katsumi, decisión 3)
@@ -23,8 +23,7 @@
 import { useEffect, useId, useState } from "react";
 import { useNumeroQueSube } from "../mecanicas/libros/verbos.jsx";
 import { C, cifra, Marca } from "./comun.jsx";
-import { LECTOR_ERROR } from "../../data/contabilidadT4.js";
-import { MARCA_CASILLA } from "../../data/contabilidadT4A0.js";
+import { LECTOR_ERROR, MARCA } from "../../data/contabilidadT4.js";
 
 export const CSS_APRENDER = `
 .t4sb-rot { margin: 2px 0 0; font: 500 12px/1.3 "Inter", sans-serif; letter-spacing: .04em; color: ${C.texto2}; }
@@ -110,10 +109,10 @@ export function Chips({ opciones, elegida, correcta, onElegir, rotulo = (o) => c
         const r = rotulo(o);
         return (
           <button key={o} type="button" className="t4op" data-opcion={o} data-marca={m ?? undefined} aria-pressed={o === elegida}
-            aria-label={m ? `${r}: ${MARCA_CASILLA[m][1]}` : undefined}
+            aria-label={m ? `${r}: ${MARCA[m][1]}` : undefined}
             disabled={elegida === correcta} onClick={() => onElegir(o)}>
             <span>{r}</span>
-            {m && <Marca marca={m} palabras={MARCA_CASILLA[m]} />}
+            {m && <Marca marca={m} palabras={MARCA[m]} />}
           </button>
         );
       })}

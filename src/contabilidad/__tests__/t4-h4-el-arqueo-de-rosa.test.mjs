@@ -80,7 +80,8 @@ test("★★★ ficha: el mismo id, el nombre nuevo, la consigna, las preguntas,
   assert.ok(PAQ.includes(`«${D.resumenH4("N")}»`));
   assert.ok(PAQ.includes(`(38 pal. · INFLESZ 82,7): ${D.CIERRE_H4.texto}`));
   assert.ok(PAQ.includes(`«${D.CIERRE_H4.pie}»`));
-  assert.equal(D.rotuloPreguntaH4(2), "PREGUNTA 2");
+  assert.equal(D.rotuloPasoH4(2, 4), "Paso 2 de 4");
+  assert.ok(PAQ.includes("«Paso n de N», con N = 2 si cuadra y 4 si no"));
 });
 
 test("★★★ las ocho rondas: título, tarjeta, sobre, y cada acierto y cada error de cada pregunta, letra por letra", () => {
@@ -243,7 +244,8 @@ test("★★★ «Ronda n de 4» coincide con el pulso activo; al terminar, el c
         await responder(m, p, n === 0 ? (p.id === D.CUENTA ? null : p.opciones.find((o) => o !== p.correcta)) : p.correcta);
         n += 1;
         const ultima = j === r.preguntas.length - 1;
-        assert.equal(siguiente(m).textContent, !ultima ? D.BOTON_H4.siguientePregunta : k < 3 ? D.BOTON_H4.siguienteRonda : D.BOTON_H4.verResumen);
+        assert.equal(q(m, "[data-paso]").textContent, `Paso ${j + 1} de ${r.preguntas.length}`);
+        assert.equal(siguiente(m).textContent, !ultima ? D.BOTON_H4.siguientePaso : k < 3 ? D.BOTON_H4.siguienteRonda : D.BOTON_H4.verResumen);
         await tocar(siguiente(m));
       }
     }

@@ -140,7 +140,7 @@ export const PANTALLAS_A3 = [
     antes: ["¿Por cuánto sale el reembolso?"],
     acierto: "Los $2.100 de más ya están en la caja.",
     errores: {
-      [GASTADO]: "Eso sería si cuadrara. Aquí la caja tiene plata de más.",
+      [GASTADO]: "Así sería si cuadrara. Aquí sobra plata en la caja.",
       [CHEQUE_CON_DIFERENCIA]: "Eso le suma la diferencia: el fondo quedaría pasado.",
     },
     alt: "La aguja de caja más cheque cae donde dice el cheque que eliges. Solo el cheque correcto la deja en la marca del fondo.",
@@ -167,7 +167,7 @@ export const PANTALLAS_A3 = [
     acierto: "Repone lo gastado y los $6.700 que faltan.",
     errores: {
       [GASTADO]: "Con eso, el fondo se queda corto.",
-      [CHEQUE_SIN_FALTANTE]: "Falta plata: el cheque la repone, no la resta.",
+      [CHEQUE_SIN_FALTANTE]: "Restaste lo que falta; el cheque lo repone.",
     },
     alt: "Con 15.200 en la caja, la suma queda a la izquierda del fondo. Solo el cheque correcto deja la aguja de caja más cheque en la marca.",
     pie: "Basado en el libro, pp. 185-186",

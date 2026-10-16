@@ -23,7 +23,7 @@ Renglones a 320 y a 375: 2 (capturas; la figura queda a 181 px).
 
 **Lector del par** (texto pendiente, ya puesto): antes del acierto «Los libros: {y}.»; con el acierto «El banco: {x}. El mayor: {y}. Son iguales.».
 
-**Marcas:** bandejas y mitades como en H7 («✓ Correcto», «✗ No va aquí», «Iba aquí»); el saldo al pie del mayor, «✓ Correcto» o «✗ Cifra errada».
+**Marcas:** bandejas y mitades como en H7 («✓ Correcto», «✗ No va aquí», «Iba aquí»); el saldo al pie del mayor, «✓ Correcto» o «✗ No va aquí», y con el error, a los 0,7 s, «Iba aquí: {valor}» bajo el campo, con el saldo del mayor ($1.240.000): la etapa 3 no tiene reintento (prompt maestro §4.2; decisión de Yujiro, 16 oct).
 
 ### Etapa 1 · ¿Se asienta? (por tipo; pie: «Basado en el libro, p. 190. Cifras construidas»)
 
@@ -121,16 +121,16 @@ Orden de las reglas (paquete): Caja; sin Bancos; Bancos al lado contrario; la cu
 | 1 | 3.074.000 | Ese saldo tiene las notas crédito, pero no las débito. Al mayor le falta lo que el banco descontó. | 19 pal. · INFLESZ 89,1 |
 | 1 | 1.962.500 | Ese saldo tiene las notas débito, pero no las crédito. Al mayor le falta lo que el banco abonó. | 19 pal. · INFLESZ 89,1 |
 | 1 | 3.229.000 | Ese saldo mete partidas que la empresa ya tenía. Al mayor solo entran las notas del banco. | 17 pal. · INFLESZ 84,7 |
-| 1 | Cualquier otra | El saldo del mayor es el de los libros, más lo que el banco sumó y menos lo que el banco restó. Revisa los cinco asientos. | 26 pal. · INFLESZ 100,4 |
+| 1 | Cualquier otra | Tu saldo se saltó un asiento o lo sumó del lado que no era. Repasa el debe y el haber del mayor. | 22 pal. · INFLESZ 99,6 |
 | 2 | 3.377.500 | Correcto. Y fíjate: el extracto decía $3.216.800. Si le sumas la consignación pendiente y le restas los cheques sin cobrar, también da $3.377.500. Es el saldo conciliado: los libros ya dicen la verdad. | 33 pal. · INFLESZ 81,5 |
 | 2 | 3.889.000 | Ese saldo tiene las notas crédito, pero no las débito. Al mayor le falta lo que el banco descontó. | 19 pal. · INFLESZ 89,1 |
 | 2 | 2.579.400 | Ese saldo tiene las notas débito, pero no las crédito. Al mayor le falta lo que el banco abonó. | 19 pal. · INFLESZ 89,1 |
 | 2 | 3.538.200 | Ese saldo mete partidas que la empresa ya tenía. Al mayor solo entran las notas del banco. | 17 pal. · INFLESZ 84,7 |
-| 2 | Cualquier otra | El saldo del mayor es el de los libros, más lo que el banco sumó y menos lo que el banco restó. Revisa los cinco asientos. | 26 pal. · INFLESZ 100,4 |
+| 2 | Cualquier otra | Tu saldo se saltó un asiento o lo sumó del lado que no era. Repasa el debe y el haber del mayor. | 22 pal. · INFLESZ 99,6 |
 
 ### Botones, avisos, cierre
 
-- «Siguiente partida», «Ir a los asientos», «Comprobar», «Siguiente asiento», «Ir al mayor», «Comprobar el saldo», «Ver mi resumen», «Otra vez» (aprobados). Avisos: «Pon una cuenta al debe y la otra al haber.» y «Escribe el saldo antes de comprobar.»; no gastan el intento.
+- «Siguiente paso» (los cuatro avances: el contador dice «Paso n de 15»), «Comprobar» (etapas 2 y 3), «Ver mi resumen», «Otra vez» (prompt maestro §4.3; lote de Katsumi, 16 oct). Avisos: «Pon una cuenta al debe y la otra al haber.» y «Escribe el saldo antes de comprobar.»; no gastan el intento.
 - **Resumen:** «N de 15 al primer intento.»
 - **Cierre** (25 pal. · INFLESZ 89,7): La empresa no corrige lo que el banco no sabe: eso lo arregla el tiempo. Corrige lo que ella no sabía: las notas del banco.
 - **Pie del cierre:** «Basado en el libro, pp. 190-191. Cifras construidas»

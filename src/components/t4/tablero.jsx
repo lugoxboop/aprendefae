@@ -20,13 +20,14 @@
  * y borde coral, y no se escribe nada. Nada vuela; todo con fundido de 120 ms.
  *
  * `palabras` (opcional, lo usan A2 y A3): la marca de una mitad lleva palabra,
- * la pastilla común debajo del total («✓ Bien», «✗ Mal»: canon E3, en blanco y
- * negro se sabe cuál falló), y el lector la oye en el nombre de la mitad. Sin
+ * la pastilla común debajo del total («✓ Correcto», «✗ No va aquí», las de
+ * MARCA: canon E3, en blanco y negro se sabe cuál falló), y el lector la oye en el nombre de la mitad. Sin
  * `palabras`, el glifo de siempre en la esquina (los Hacer, sin cambios).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { useNumeroQueSube } from "../mecanicas/libros/verbos.jsx";
 import { C, cifra, Marca } from "./comun.jsx";
+import { MARCA } from "../../data/contabilidadT4.js";
 
 export const CSS_TABLERO = `
 .t4tb { display: grid; gap: 4px; min-width: 0; }
@@ -69,7 +70,8 @@ export const CSS_TABLERO = `
 .t4cp label { font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; }
 .t4cp input { min-height: 44px; width: 100%; border-radius: 8px; border: 1px solid ${C.neutro}; background: transparent; color: ${C.texto}; font: 500 16px "Inter", sans-serif; font-variant-numeric: tabular-nums; padding: 0 10px; }
 .t4cp[data-marca="bien"] input { border: 2px solid ${C.texto}; }
-.t4cp[data-marca="mal"] input, .t4cp[data-marca="cifra-mal"] input { border: 2px solid ${C.error}; }
+.t4cp-iba { display: block; margin-top: 4px; font: 600 13px/1.4 "Inter", sans-serif; color: ${C.texto}; }
+.t4cp[data-marca="mal"] input { border: 2px solid ${C.error}; }
 `;
 
 function Total({ v, foco }) {
@@ -178,13 +180,19 @@ export function Par({ izq, der, igual = false }) {
   );
 }
 
-export function Campo({ id, rotulo, valor, onCambio, marca = null, bloqueado = false }) {
+/*
+ * `iba`: la cifra que iba, ya con su formato ($1.240.000). Se pasa solo tras
+ * el error y a los 0,7 s, en las piezas sin reintento (H7 fase 2 y H8 etapa
+ * 3): debajo del campo se lee «Iba aquí: {valor}» (prompt maestro §4.2).
+ */
+export function Campo({ id, rotulo, valor, onCambio, marca = null, bloqueado = false, iba = null }) {
   return (
     <div className="t4cp" data-campo={id} data-marca={marca ?? undefined}>
       <label htmlFor={`t4cp-${id}`}>{rotulo}</label>
       <input id={`t4cp-${id}`} inputMode="numeric" autoComplete="off" value={valor} disabled={bloqueado}
         onChange={(e) => onCambio(e.target.value.replace(/[^\d]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, "."))} />
       {marca && <Marca marca={marca} />}
+      {iba != null && <span className="t4cp-iba t4r-nueva" data-iba={id}>{`${MARCA.era[1]}: ${iba}`}</span>}
     </div>
   );
 }

@@ -123,7 +123,7 @@ test("★★★ P1: el control mueve la plata de la caja; la aguja corre, se dib
   } finally { m.desmontar(); }
 });
 
-test("★★★ P2: la aguja aparece solo con el acierto (antes delataría la respuesta); en el error, «✗ Mal» en la elegida y la regla quieta", async () => {
+test("★★★ P2: la aguja aparece solo con el acierto (antes delataría la respuesta); en el error, «✗ No va aquí» en la elegida y la regla quieta", async () => {
   const m = await abrir(P, "el-sobrante");
   try {
     assert.equal(aguja(m, "suman"), null);
@@ -131,7 +131,7 @@ test("★★★ P2: la aguja aparece solo con el acierto (antes delataría la re
       tocar(q(m, `[data-opcion="${o}"]`));
       await esperar(0);
       assert.equal(aguja(m, "suman"), null, `${o}: la aguja en el error`);
-      assert.match(visible(q(m, `[data-opcion="${o}"]`)), /✗Mal$/);
+      assert.match(visible(q(m, `[data-opcion="${o}"]`)), /✗No va aquí$/);
     }
     tocar(q(m, '[data-opcion="sobra"]'));
     await esperar(0);
@@ -161,7 +161,7 @@ test("★★★ P3 y P5: la aguja «caja + tu cheque» cae donde dice el cheque 
   }
 });
 
-test("★★★ P4 y P7: la diferencia a una cuenta y un lado; en el error no se escribe nada, «✗ Mal» en lo elegido y el texto de esa cuenta (o del lado); el acierto la escribe", async () => {
+test("★★★ P4 y P7: la diferencia a una cuenta y un lado; en el error no se escribe nada, «✗ No va aquí» en lo elegido y el texto de esa cuenta (o del lado); el acierto la escribe", async () => {
   for (const [id, malas, lado, va] of [
     ["el-asiento", ["gastos-generales:debe", "bancos:haber"], "ino-sobrante:debe", "ino-sobrante:haber"],
     ["camino-1", ["gno-faltante:debe", "ino-sobrante:haber"], "cxc-empleados:haber", "cxc-empleados:debe"],
@@ -176,13 +176,13 @@ test("★★★ P4 y P7: la diferencia a una cuenta y un lado; en el error no se
         await esperar(0);
         const [cuenta] = k.split(":");
         assert.equal(q(m, "[data-devolucion]").textContent, `Incorrecto. ${p.errores[cuenta] ?? p.errores.lado}`, `${id} · ${k}`);
-        for (const [x, v] of Object.entries(antes)) assert.equal(total(m, x), x === k ? `${v}✗Mal` : v, `${id} · ${k} · ${x}`);
+        for (const [x, v] of Object.entries(antes)) assert.equal(total(m, x), x === k ? `${v}✗Novaaquí` : v, `${id} · ${k} · ${x}`);
       } finally { m.desmontar(); }
     }
     const m = await abrir(P, id);
     try {
       await jugar(m, P, id);
-      assert.equal(total(m, va), `${String(p.monto).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}✓Bien`);
+      assert.equal(total(m, va), `${String(p.monto).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}✓Correcto`);
     } finally { m.desmontar(); }
   }
 });

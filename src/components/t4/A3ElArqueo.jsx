@@ -24,8 +24,7 @@ import { C, Mensaje, cifra } from "./comun.jsx";
 import { Tablero } from "./tablero.jsx";
 import { Regla } from "./Regla.jsx";
 import { Fig, Sobre, Rotulo, Chips } from "./aprender.jsx";
-import { MARCA_CASILLA } from "../../data/contabilidadT4A0.js";
-import { DEBE, HABER } from "../../data/contabilidadT4.js";
+import { DEBE, HABER, MARCA } from "../../data/contabilidadT4.js";
 import { FONDO, GASTADO } from "../../data/contabilidadT4A2.js";
 import {
   CONTROL_A3, ZONAS_A3, EFECTIVO_FALTANTE, FALTANTE, CHEQUE_FALTANTE,
@@ -132,7 +131,7 @@ function Ficha({ p, onAcierto }) {
       <Fig nombre={NOMBRE} alt={p.alt} gap={6}>
         <Rotulo>{F.asiento}</Rotulo>
         <Tablero cuentas={p.cuentas.map((c) => CUENTAS_A3[c])} totales={totales} puestas={r && !ok ? { [r.lado]: r.id } : puestas} monto={cifra(p.monto)}
-          onElegir={elegir} activo={!ok} marcas={marcas} recien={ok ? [k(p.va)] : []} etiqueta={F.tablero} ancho={70} palabras={MARCA_CASILLA} />
+          onElegir={elegir} activo={!ok} marcas={marcas} recien={ok ? [k(p.va)] : []} etiqueta={F.tablero} ancho={70} palabras={MARCA} />
         {!ok && <button type="button" className="t4r-btn2" data-boton="comprobar" aria-disabled={!puesta ? "true" : undefined} onClick={puesta ? () => setR({ ...puesta }) : undefined}>{F.comprobar}</button>}
       </Fig>
       {r && <Mensaje key={`${k(r)}-${ok}`} ok={ok} texto={ok ? p.acierto : (p.errores[r.id] ?? p.errores.lado)} />}

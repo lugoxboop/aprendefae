@@ -124,16 +124,16 @@ test("★★★ P1 y P2: cada partida a su sección; el saldo cambia con cada ac
   }
 });
 
-test("★★★ P3: el cheque de Lorena Guerra no se asienta; «Se asienta» da ✗ Mal y su texto, y se reintenta", async () => {
+test("★★★ P3: el cheque de Lorena Guerra no se asienta; «Se asienta» da «✗ No va aquí» y su texto, y se reintenta", async () => {
   const m = await abrir(P, "que-se-asienta");
   try {
     assert.equal(visible(q(m, "[data-tarjeta-partida]")), "Cheque a Lorena Guerra, sin cobrar156.000");
     tocar(q(m, '[data-opcion="si"]'));
     await esperar(0);
-    assert.equal(visible(q(m, '[data-opcion="si"]')), "Se asienta✗Mal");
+    assert.equal(visible(q(m, '[data-opcion="si"]')), "Se asienta✗No va aquí");
     tocar(q(m, '[data-opcion="no"]'));
     await esperar(0);
-    assert.equal(visible(q(m, '[data-opcion="no"]')), "No se asienta✓Bien");
+    assert.equal(visible(q(m, '[data-opcion="no"]')), "No se asienta✓Correcto");
   } finally { m.desmontar(); }
 });
 

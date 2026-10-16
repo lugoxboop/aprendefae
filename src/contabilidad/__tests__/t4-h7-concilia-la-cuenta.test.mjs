@@ -19,7 +19,8 @@ import { readdirSync, readFileSync } from "node:fs";
  *   · PH8-2: mientras se pregunta, nada de la respuesta en el DOM; los
  *     saldos conciliados no están hasta comprobar
  *   · el par cuenta hasta lo escrito y el «=» sale solo con los dos saldos
- *     verdaderos; las marcas de cifra son «✓ Correcto» y «✗ Cifra errada»
+ *     verdaderos; las marcas de cifra son «✓ Correcto» y «✗ No va aquí», y
+ *     bajo el campo errado, a los 0,7 s, «Iba aquí: {valor}» (§4.2)
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -89,7 +90,8 @@ test("★★★ ficha, consigna, rótulos, botones, avisos, pies, resumen y lect
   assert.ok(PAQ.includes("Lector del par: «El banco: {x}. Los libros: {y}.», y «Son iguales.» solo si lo son"));
   assert.equal(D.lectorParH7("1", "2"), "El banco: 1. Los libros: 2.");
   assert.equal(D.lectorParH7("2", "2"), "El banco: 2. Los libros: 2. Son iguales.");
-  assert.ok(PAQ.includes("«✓ Correcto» y «✗ Cifra errada»"));
+  assert.ok(PAQ.includes("las mismas, «✓ Correcto» y «✗ No va aquí», y bajo cada campo errado, a los 0,7 s, «Iba aquí: {valor}»"));
+  assert.deepEqual(Object.values(D.BOTON_H7).filter((b) => b !== D.BOTON_H7.otraVez), ["Siguiente paso", "Siguiente paso", "Comprobar", "Ver mi resumen"]);
 });
 
 test("★★★ las nueve partidas de cada serie: id, tipo, sección, monto y texto (sin el monto ni «todavía no lo ha anotado»)", () => {
@@ -257,7 +259,15 @@ test("★★★ gesto mínimo, fase 2: cada cifra de error de cada serie se escr
         assert.equal(q(m, "[data-pagina]").textContent, D.PIE_FASE2_H7);
         for (const [campo, v, bien] of [["banco", b, s.conciliadoBanco], ["libros", l, s.conciliadoLibros]]) {
           const marca = q(m, `[data-campo="${campo}"] .t4r-marca`).textContent;
-          assert.equal(marca, v === bien ? "✓Correcto" : "✗Cifra errada", `${campo}: la marca de cifra`);
+          assert.equal(marca, v === bien ? "✓Correcto" : "✗No va aquí", `${campo}: la marca de cifra`);
+          /* «Iba aquí» todavía no: llega a los 0,7 s. */
+          assert.equal(q(m, `[data-iba="${campo}"]`), null, `${campo}: «Iba aquí» antes de tiempo`);
+        }
+        await esperar(ESPERA_ERROR_MS + 50);
+        for (const [campo, v, bien] of [["banco", b, s.conciliadoBanco], ["libros", l, s.conciliadoLibros]]) {
+          const iba = q(m, `[data-iba="${campo}"]`);
+          if (v === bien) assert.equal(iba, null, `${campo}: «Iba aquí» en un campo bien escrito`);
+          else assert.equal(iba?.textContent, `Iba aquí: $${cifra(bien)}`, `${campo}: «Iba aquí: {valor}» bajo el campo errado`);
         }
       } finally { m.desmontar(); }
     }
