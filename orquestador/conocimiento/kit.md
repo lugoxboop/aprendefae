@@ -551,22 +551,36 @@ ahora se recorren también los juegos de B, no porque haya empeorado.
 
 Lo que importa de esa medida no es el 182 sino el reparto: **94 tienen forma
 de cejilla** —rótulo cuyo contenido se explica solo debajo, que es la
-excepción de esta misma nota— y **88 no**. Y esos 88 se reducen a **unos 20
-textos distintos que se repiten de pantalla en pantalla**, todos en T1, T2 y
-T3 Aprender:
+excepción de esta misma nota— y **88 no**.
+
+> **Corrección del 16 de octubre, escrita por quien se equivocó.** Lo que
+> decía aquí antes —«los 88 se reducen a unos 20 textos distintos, el peor a
+> 10 px»— estaba mal, y mal de una manera que ya tiene nombre en esta casa:
+> leí la salida de la sonda con `tail -140` sobre 142 renglones y conté los
+> 20 que había en el trozo que vi. Los que faltaban eran **los más pequeños**.
+> El peor no es de 10 px: es un subtítulo de **8 px**. Una medida recortada
+> no es una medida, y de una lista truncada salen conclusiones truncadas.
+
+Los 88, con la salida entera delante:
 
 | qué es | tamaño | dónde |
 |---|---|---|
-| «Toma una ficha y suéltala…», la instrucción del gesto | **10 px** | T2, Explora una cuenta |
-| las líneas del estado de flujo («Actividades de operación», «Utilidad neta») | 10,5 px | T1, escenas |
+| el subtítulo del estado de situación financiera | **8 px** | T1, la figura del estado |
+| «Activos», «Pasivos y Patrimonio», el título del estado | 8,5 px | T1, la misma figura |
+| los nombres de cuenta y las cifras de esa figura | 9 y 9,5 px | T1, la misma figura |
+| «Toma una ficha y suéltala…», la instrucción del gesto | 10 px | T2, Explora una cuenta |
+| las líneas del estado de flujo | 10,5 px | T1, escenas |
 | los nombres de cuenta apilados | 11 px | T2, Seis cuentas abiertas |
-| «Activo, Pasivo, Patrimonio» / «Ingresos, Gastos, Costos» | 11 px | T1, escenas |
 | «Cierre» sobre el calendario | 11 px | T3, Dos líneas |
 | los contadores «Paso 1 de 4», «Segmento 1 de 5» | 11,5 px | T2, Mesa de dos casos |
 
-Ninguno desborda y ninguna pantalla trae scroll horizontal: subirlos es
-cambiar el tamaño, no rehacer la maqueta. El de 10 px es el que más duele:
-es la instrucción que dice qué hacer, no un rótulo.
+De esos, **siete sitios subieron a 12 px** (#376): los de 10 a 11,5. Quedan
+84, y casi todos son **una sola figura**: el estado de situación financiera
+en miniatura de T1 Aprender. Ahí no sobra tamaño —el dibujo está escalado
+para caber—, así que subir la letra es rehacer la figura, no cambiar un
+número. Es contenido publicado: lo decide Mateo por Miku y Xeno, no yo.
+
+Ninguno desborda y ninguna pantalla trae scroll horizontal, antes ni después.
 
 Dos cosas que la sonda no midió y hay que decir: `b5-t6-a2`, `b5-t6-a3` y
 `b5-t6-a5` no se pudieron jugar (se agotó el tiempo al tocar), así que de
