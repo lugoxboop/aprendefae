@@ -71,7 +71,9 @@ for (const f of readdirSync(DATOS).filter((x) => /^contabilidadT7_.*\.js$|^conta
 const REEMPLAZADAS_POR_EL_ENGANCHE = {
   "t7-1-a1-la-cuenta-que-no-se-mueve": ["pregunta-compra", "pregunta-conteo"],
   "t7-1-a7-control-interno": ["al-recibir", "controles-de-seguridad"],
-  "t7-2-a4-san-calixto": ["peps", "ueps", "promedio", "que-cambia"],
+  "t7-2-a4-san-calixto": ["peps", "ueps", "promedio", "que-cambia", "el-cierre"],
+  /* C1: la pantalla del viaje (barrido de Near, con Mello) ya no es una pregunta de opción del lote 2. */
+  "t7-1-a5-importados-y-fletes": ["fob-cif-cyf"],
 };
 const PREGUNTAS = PIEZAS.flatMap((p) => p.pantallas.map((s, k) => ({ pieza: p, pantalla: s, k }))).filter((x) => Array.isArray(x.pantalla.opciones) && x.pantalla.opciones.some((o) => o.correcta));
 const norm = (s) => String(s).toLowerCase().replace(/[«»"“”]/g, "").replace(/[.:;]\s*$/, "").trim();

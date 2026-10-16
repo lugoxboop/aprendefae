@@ -12,8 +12,9 @@
  * califican.
  *
  * Diseño: la «Figura de A5» de Watari (patrón tabular v3.2), extracto en
- * paquetes/t7-1-a5-figura-watari.md. No hay casillas: las cinco preguntas son
- * de opción. Lo que se dibuja:
+ * paquetes/t7-1-a5-figura-watari.md. No hay casillas: cuatro preguntas son
+ * de opción, y P3 (rehecha por C1, abajo) es una figura que se toca. Lo que
+ * se dibuja:
  *   · con el acierto de P4 y P5, la tarjeta con los dos asientos del 18 de
  *     marzo, en lectura (antes daría la respuesta)
  *   · en P6, el «Lado a lado» de Santa Martha y La Popa, con la fila «Quién
@@ -160,37 +161,77 @@ const IMPORTADOS = {
   pieRespuesta: "Basado en el libro, pp. 208, 214 y 228",
 };
 
-/* P3 · FOB, CIF y C&F. */
+/*
+ * P3 · FOB, CIF y C&F → «El viaje de la compra», REHECHA POR C1 (Near,
+ * barrido-c1-fob-cif-cyf.md, sección 1), con las correcciones obligatorias
+ * de Mello (auditoria-mello-el-cierre-y-fob-cif-cyf.md, sección 2):
+ *   · F-1 · cuatro tramos; sobre «En el mar», dos fichas, «Flete» y
+ *     «Seguro». Se tocan cinco fichas; en FOB las del comprador son Flete,
+ *     Seguro y Transporte a la bodega
+ *   · F-2 · el paso C&F es una pregunta de tres opciones sobre quién paga el
+ *     seguro, con los textos de Mello
+ *   · F-3 · en el paso 2, los tres tramos de tierra quedan atenuados y sin
+ *     marca; solo «En el mar» lleva marcas
+ * Los cuatro párrafos con las definiciones salen: las condiciones llegan con
+ * los aciertos (C1). La figura sigue en pantalla en los dos pasos (C8).
+ *
+ * Los mensajes van dentro de cada paso, no en `pista` de la pantalla: la
+ * pregunta de opción del lote 2 («¿Hasta dónde corre el vendedor…?») ya no
+ * existe.
+ */
+const VENDEDOR = "vendedor";
+const COMPRADOR = "comprador";
 const CONDICIONES = {
   id: "fob-cif-cyf",
-  pista: "Vuelve a la definición de FOB. El vendedor corre con los gastos hasta un punto del viaje. ¿Cuál?",
-  tipo: "eleccion",
-  parrafos: [
-    "Cuando se compra al exterior, el libro nombra tres condiciones que se negocian. Cada una dice hasta dónde paga el vendedor.",
-    "FOB quiere decir «libre a bordo». El vendedor corre con todos los gastos hasta que la mercancía está a bordo del buque.",
-    "CIF quiere decir «costo, seguro y flete». El vendedor corre con todos los gastos hasta el punto que indique el contrato.",
-    "C&F quiere decir «costo y flete». El costo y el flete van por cuenta del vendedor, y el seguro, por cuenta del comprador.",
-  ],
-  pregunta: "Una compra al exterior se pacta FOB. ¿Hasta dónde corre el vendedor con los gastos?",
-  opciones: [
-    { id: "fob", texto: "Hasta que la mercancía está a bordo del buque.", correcta: true },
+  tipo: "viaje",
+  /* El nombre de la pantalla rehecha (Near), para la figura. */
+  nombre: "El viaje de la compra",
+  /* De la bodega del vendedor a la del comprador. En tierra, el tramo es su propia ficha; sobre «En el mar», dos fichas. */
+  tramos: [
+    { id: "puerto", rotulo: "Transporte al puerto", tierra: true, fichas: [{ id: "puerto", texto: "Transporte al puerto", fob: VENDEDOR }] },
+    { id: "subir", rotulo: "Subir al buque", tierra: true, fichas: [{ id: "subir", texto: "Subir al buque", fob: VENDEDOR }] },
     {
-      id: "cif",
-      texto: "Hasta el punto que indique el contrato.",
-      correcta: false,
-      devolucion: "Esa es la condición CIF. Con FOB, el vendedor paga hasta que la mercancía está a bordo del buque.",
+      id: "mar",
+      rotulo: "En el mar",
+      tierra: false,
+      fichas: [
+        { id: "flete", texto: "Flete", fob: COMPRADOR, cyf: VENDEDOR },
+        { id: "seguro", texto: "Seguro", fob: COMPRADOR, cyf: COMPRADOR },
+      ],
+    },
+    { id: "bodega", rotulo: "Transporte a la bodega", tierra: true, fichas: [{ id: "bodega", texto: "Transporte a la bodega", fob: COMPRADOR }] },
+  ],
+  /* La leyenda que aparece al resolver: quién paga cada ficha. */
+  leyenda: { [VENDEDOR]: "Vendedor", [COMPRADOR]: "Comprador" },
+  pasos: [
+    {
+      id: "fob",
+      /* Se tocan varias fichas y luego «Comprobar»: las que paga el comprador. */
+      texto: "FOB quiere decir «libre a bordo». Una compra al exterior se pacta FOB. Toca los tramos que paga el comprador.",
+      boton: "Comprobar",
+      /* 1.er error, si le faltó alguno. */
+      pista: "Piensa en qué punto del viaje la mercancía queda «a bordo». ¿Quién paga desde ahí?",
+      /* 1.er error, si tocó una ficha de antes de «a bordo». */
+      retro: { puerto: "Ese tramo va antes de que la mercancía esté a bordo: lo paga el vendedor.", subir: "Ese tramo va antes de que la mercancía esté a bordo: lo paga el vendedor." },
+      respuesta: "El vendedor paga hasta que la mercancía está a bordo. Desde ahí paga el comprador.",
+      acierto: "Así es: con FOB, el vendedor paga hasta que la mercancía está a bordo. El resto va al costo del comprador.",
     },
     {
       id: "cyf",
-      texto: "Paga el costo y el flete, y el seguro lo paga el comprador.",
-      correcta: false,
-      devolucion: "Esa es la condición C&F. Con FOB, el vendedor paga hasta que la mercancía está a bordo del buque.",
+      /* F-2 de Mello: una pregunta de tres opciones; la figura no se toca. */
+      texto: "Ahora es C&F: «costo y flete». ¿Quién paga el seguro en el mar?",
+      opciones: [
+        { id: "vendedor", texto: "El vendedor", correcta: false },
+        { id: "comprador", texto: "El comprador", correcta: true },
+        { id: "medias", texto: "Los dos, a medias", correcta: false, devolucion: "El libro no reparte el seguro entre los dos. Lee qué gastos nombra «costo y flete»." },
+      ],
+      pista: "Lee qué gastos nombra «costo y flete». ¿Aparece el seguro?",
+      respuesta: "El seguro no está en «costo y flete»: lo sigue pagando el comprador.",
+      acierto: "Así es: el seguro sigue siendo del comprador. Con CIF, el vendedor paga todo hasta el punto que fije el contrato.",
     },
   ],
-  acierto: { textos: ["Así es. FOB quiere decir «libre a bordo»: el vendedor paga hasta que la mercancía sube al buque."] },
-  /* La v1: «Libro, p. 228» en colocando; «Basado en el libro, p. 228» en errores y acierto. */
-  pie: "Libro, p. 228",
-  pieRespuesta: "Basado en el libro, p. 228",
+  /* Near y Mello: «Basado en el libro, p. 228», sin cambio. Uno solo, en todos los estados. */
+  pie: "Basado en el libro, p. 228",
 };
 
 /* P4 · El flete lo asume el comprador (D-1). Enunciado y ficha con los cambios obligatorios de la v2. */

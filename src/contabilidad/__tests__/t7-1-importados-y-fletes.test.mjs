@@ -22,6 +22,11 @@ import { conCorreccionesDeMello } from "./correccionesMello.mjs";
  *     el flete» se señala solo con el acierto; nombres accesibles marcados
  *     como pendientes de revisión
  *   · fuera del catálogo de FP, sin la renta del 33 % ni cifras de medición
+ *   · P3 `fob-cif-cyf` → «El viaje de la compra», rehecha por C1 (Near,
+ *     barrido-c1-fob-cif-cyf.md, sección 1, con F-1, F-2 y F-3 de Mello por
+ *     correccionesMelloC1.mjs): sus textos, letra por letra contra el paquete
+ *     corregido, en los dos sentidos; la escalera de cada paso; la figura que
+ *     crece (marcas y leyenda) y se queda; el foco; B1 y B2
  *
  * El ancho a 375 y 320 lo mide scripts/t7/medir-t7-1-a5.mjs en Chromium.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -50,6 +55,8 @@ const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { default: Importados, CSS_A5 } = await import("../../components/mecanicas/libros/t7/ImportadosYFletes.jsx");
 const { PIEZAS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
 const { textosDelError, anunciarRespuesta, sinAsiEs } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
+const { comprobarFOB, confirmarCyF, marcaDe } = await import("../../components/mecanicas/libros/t7/ImportadosYFletes.jsx");
+const C1 = await import("./correccionesMelloC1.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(`orquestador/conocimiento/paquetes/${f}`, RAIZ), "utf8");
@@ -59,7 +66,10 @@ const WATARI = leer("t7-1-a5-figura-watari.md");
 /* Lote 2 de la revisión de calidad (Near): las pistas del primer error y el anexo de la tercera opción. */
 const LOTE2_PISTAS = conCorreccionesDeMello(leer("lote2-pistas-v1.md"));
 const LOTE2_ANEXO = conCorreccionesDeMello(leer("lote2-anexo-v1.md"));
-const CONTENIDO = V1.slice(V1.indexOf("## Contenido"), V1.indexOf("## Erratas que toca"));
+const CONTENIDO_V1 = V1.slice(V1.indexOf("## Contenido"), V1.indexOf("## Erratas que toca"));
+/* P3 de la v1 salió entera con C1 (barrido-c1-fob-cif-cyf.md): la pantalla nueva se compara aparte, contra el paquete corregido. */
+const P3_V1 = CONTENIDO_V1.slice(CONTENIDO_V1.indexOf("**P3 · colocando"), CONTENIDO_V1.indexOf("**P4 · colocando"));
+const CONTENIDO = CONTENIDO_V1.replace(P3_V1, "");
 const P = A.PIEZA_IMPORTADOS_Y_FLETES;
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 const seccion = (marca, siguiente) => CONTENIDO.slice(CONTENIDO.indexOf(marca), siguiente ? CONTENIDO.indexOf(siguiente) : undefined);
@@ -89,7 +99,7 @@ const responder = async (caja, id) => {
 /* Sin las fichas ni las tablas: esas se comparan como tablas, más abajo. */
 function textosVisibles() {
   const t = [P.titulo];
-  for (const p of P.pantallas) {
+  for (const p of P.pantallas.filter((x) => x.tipo !== "viaje")) {
     for (const k of ["objetivo", "entrada", "enunciado", "aviso", "pregunta", "siguiente", "boton", "pie", "pieRespuesta"]) if (p[k]) t.push(p[k]);
     t.push(...(p.parrafos ?? []), ...(p.lista ?? []));
     if (p.pista) t.push(p.pista);
@@ -166,6 +176,10 @@ test("★★★ lote 2 · pistas: cada pregunta lleva la suya, letra por letra l
     const c = l.slice(1, -1).split("|").map((x) => x.trim());
     return [c[0].match(/`([^`]+)`/)[1], c[2].match(/^«(.+)»$/)[1]];
   }));
+  /* La pregunta de P3 (`fob-cif-cyf`) ya no existe: C1 la rehízo en dos pasos con sus propias pistas (se comprueban abajo). */
+  assert.ok(deNear["fob-cif-cyf"], "el lote 2 ya no trae la pista de P3");
+  delete deNear["fob-cif-cyf"];
+  assert.equal(pantalla("fob-cif-cyf").pista, undefined);
   assert.deepEqual(Object.fromEntries(P.pantallas.filter((p) => p.tipo === "eleccion").map((p) => [p.id, p.pista])), deNear);
   /* Esta pieza no tiene preguntas de dos opciones: el anexo no la toca. */
   assert.ok(!LOTE2_ANEXO.includes(`| ${A.A5_ID} |`));
@@ -199,14 +213,15 @@ test("★★ los botones son los de la convención de AP1, AP2 y A6, y el resume
 test("★★ los pies son los de la v1: el de colocando y, donde cambia, el de los errores y el acierto", () => {
   const pies = (id) => [pantalla(id).pie, pantalla(id).pieRespuesta];
   assert.deepEqual(pies("importados"), ["Basado en el libro, p. 208", "Basado en el libro, pp. 208, 214 y 228"]);
-  assert.deepEqual(pies("fob-cif-cyf"), ["Libro, p. 228", "Basado en el libro, p. 228"]);
+  /* P3, rehecha por C1: un solo pie, el de Near y Mello, en todos los estados. */
+  assert.deepEqual(pies("fob-cif-cyf"), [C1.PIE_FOB, undefined]);
   assert.deepEqual(pies("flete-del-comprador"), ["Basado en el libro, pp. 210, 212 y 228", "Basado en el libro, pp. 228-229"]);
   assert.deepEqual(pies("flete-del-vendedor"), ["Basado en el libro, p. 229", "Basado en el libro, p. 229"]);
   assert.deepEqual(pies("lado-a-lado"), ["Basado en el libro, pp. 228-229", "Basado en el libro, pp. 228-229"]);
   for (const [id, marca, sig] of [["importados", "**P2 · errores", "**P3"], ["flete-del-comprador", "**P4 · errores", "**P5"], ["flete-del-vendedor", "**P5 · errores", "**P6"]]) {
     assert.ok(seccion(marca, sig).includes(`Pie: «${pantalla(id).pieRespuesta}»`), id);
   }
-  assert.ok(seccion("**P3", "**P4").includes(`«Libro, p. 228» en colocando; «Basado en el libro, p. 228» en errores y acierto`));
+  assert.ok(P3_V1.includes(`«Libro, p. 228» en colocando; «Basado en el libro, p. 228» en errores y acierto`));
 });
 
 /* ═══════════ 2 · TABLAS Y CIFRAS ═══════════ */
@@ -287,6 +302,16 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos, con
   try {
     for (const p of P.pantallas) {
       assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, p.id);
+      if (p.tipo === "viaje") {
+        /* P3 (C1) se recorre estado por estado más abajo; aquí, el camino del acierto, para seguir. */
+        for (const id of ["flete", "seguro", "bodega"]) await tocar(m.caja.querySelector(`[data-ficha="${id}"]`));
+        await tocar(boton(m.caja, "comprobar"));
+        await tocar(boton(m.caja, "seguir-paso"));
+        await responder(m.caja, "comprador");
+        vistos.push(p.id);
+        await tocar(boton(m.caja, "seguir"));
+        continue;
+      }
       if (p.tipo !== "eleccion") {
         const esperado = [p.objetivo, ...(p.parrafos ?? []), p.siguiente, p.boton, p.pie].filter(Boolean);
         assert.deepEqual(enPantalla(m.caja).textos, esperado, p.id);
@@ -318,8 +343,8 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos, con
       vistos.push(`${p.id}:acierto`);
       await tocar(boton(m.caja, "seguir"));
     }
-    /* Portada, P1 y resumen + 5 preguntas de 4 estados (los 23 de Watari), y en cada pregunta el 2.º peldaño de la escalera. */
-    assert.equal(vistos.length, 3 + 5 * 5);
+    /* Portada, P1 y resumen + 4 preguntas de 4 estados, y en cada pregunta el 2.º peldaño de la escalera; y P3 (C1). */
+    assert.equal(vistos.length, 3 + 4 * 5 + 1);
   } finally {
     m.desmontar();
   }
@@ -503,5 +528,284 @@ test("★★★ fuera del catálogo de FP; id t7-; va en T7-1 después de AP2 y 
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A5_ID)), []);
   for (const f of ["src/components/mecanicas/libros/t7/ImportadosYFletes.jsx", "src/data/contabilidadT7_1_a5.js"]) {
     assert.doesNotMatch(readFileSync(new URL(f, RAIZ), "utf8"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/, f);
+  }
+});
+
+/* ═══════════ 5 · P3 «EL VIAJE DE LA COMPRA» (C1: Near, con F-1, F-2 y F-3 de Mello) ═══════════ */
+
+const V = pantalla("fob-cif-cyf");
+const [FOB, CYF] = V.pasos;
+const FICHAS = V.tramos.flatMap((t) => t.fichas);
+const contar = (t) => String(t).split(/\s+/).filter((x) => /[\p{L}\p{N}]/u.test(x)).length;
+/* Todos los textos de un objeto, en profundidad (sin ids ni claves de estado). */
+const NO_TEXTO = new Set(["id", "tipo", "fob", "cyf", "tierra", "correcta"]);
+const cadenas = (v, k = null, out = []) => {
+  if (k && NO_TEXTO.has(k)) return out;
+  if (typeof v === "string") out.push(v);
+  else if (Array.isArray(v)) v.forEach((x) => cadenas(x, null, out));
+  else if (v && typeof v === "object") for (const [kk, x] of Object.entries(v)) cadenas(x, kk, out);
+  return out;
+};
+
+test("★★★ C1 · P3: cada texto es, letra por letra, el del paquete de Near con F-1 y F-2 de Mello; y al revés, ninguno sobra", () => {
+  assert.equal(V.tipo, "viaje");
+  assert.equal(V.nombre, C1.NOMBRE_FOB);
+  assert.equal(V.pie, C1.PIE_FOB);
+  /* F-1: cuatro tramos y, sobre «En el mar», «Flete» y «Seguro». */
+  assert.deepEqual(V.tramos.map((t) => t.rotulo), C1.TRAMOS);
+  const mar = V.tramos.find((t) => !t.tierra);
+  assert.equal(mar.rotulo, C1.TRAMOS[2]);
+  assert.deepEqual(mar.fichas.map((f) => f.texto), C1.FICHAS_MAR);
+  for (const t of V.tramos.filter((x) => x.tierra)) assert.deepEqual(t.fichas.map((f) => f.texto), [t.rotulo], `${t.id}: en tierra, el tramo es su ficha`);
+  assert.equal(FICHAS.length, 5, "se tocan cinco fichas");
+  assert.deepEqual(Object.values(V.leyenda), C1.LEYENDA);
+  /* Paso 1 · FOB, la tabla de Near; las del comprador, con F-1. */
+  assert.equal(FOB.texto, C1.PASO1.texto);
+  assert.deepEqual(FICHAS.filter((f) => f.fob === "comprador").map((f) => f.texto), C1.PASO1.correctos);
+  assert.equal(FOB.pista, C1.PASO1.pista);
+  assert.deepEqual(Object.keys(FOB.retro).map((id) => FICHAS.find((f) => f.id === id).texto), C1.PASO1.retroDe);
+  for (const t of Object.values(FOB.retro)) assert.equal(t, C1.PASO1.retro);
+  assert.equal(FOB.respuesta, C1.PASO1.respuesta);
+  assert.equal(FOB.acierto, C1.PASO1.acierto);
+  assert.equal(FOB.boton, "Comprobar");
+  /* Paso 2 · C&F, la tabla de Mello (F-2). */
+  assert.equal(CYF.texto, C1.PASO2.texto);
+  assert.deepEqual(CYF.opciones.map((o) => o.texto), C1.PASO2.opciones);
+  assert.deepEqual(CYF.opciones.filter((o) => o.correcta).map((o) => o.texto), [C1.PASO2.correcta]);
+  assert.deepEqual(CYF.opciones.filter((o) => o.devolucion).map((o) => [o.texto, o.devolucion]), [[C1.PASO2.retroDe, C1.PASO2.retro]]);
+  assert.equal(CYF.pista, C1.PASO2.pista);
+  assert.equal(CYF.respuesta, C1.PASO2.respuesta);
+  assert.equal(CYF.acierto, C1.PASO2.acierto);
+  /* La figura del acierto de C&F (F-2): Flete pasa al vendedor; Seguro se queda en el comprador. */
+  assert.deepEqual(Object.fromEntries(mar.fichas.map((f) => [f.texto, V.leyenda[f.cyf]])), C1.CYF);
+  /* Al revés: nada en la pantalla que no venga del paquete corregido (o de la interfaz: «Comprobar»). */
+  const esperados = new Set([C1.NOMBRE_FOB, C1.PIE_FOB, ...C1.TRAMOS, ...C1.FICHAS_MAR, ...C1.LEYENDA, ...Object.values(C1.PASO1).flat(), ...Object.values(C1.PASO2).flat(), "Comprobar"]);
+  assert.deepEqual(cadenas(V).filter((t) => !esperados.has(t)), []);
+  /* Y nada del paso 2 de Near, que F-2 cambió entero (salvo lo que Mello repite). */
+  const deMello = new Set(Object.values(C1.PASO2).flat());
+  assert.deepEqual(cadenas(V).filter((t) => C1.PASO2_NEAR.includes(t) && !deMello.has(t)), []);
+});
+
+test("★★★ C1 · P3: los textos de la v1 que daban la respuesta ya no están (las cuatro definiciones, la pregunta, sus opciones y errores)", () => {
+  /* El pie de la respuesta se queda (Near y Mello: «sin cambio»). */
+  const viejos = citasVisibles(P3_V1).filter((t) => t !== C1.PIE_FOB);
+  assert.ok(viejos.length >= 10, `solo ${viejos.length}`);
+  const ahora = new Set([...textosVisibles(), ...cadenas(V)]);
+  assert.deepEqual(viejos.filter((t) => ahora.has(t)), []);
+  /* C1: lo que se responde no está escrito antes en la pantalla: el texto del paso 1 no nombra las fichas del comprador, ni el del paso 2 al comprador. */
+  for (const f of ["Flete", "Seguro", "Transporte a la bodega"]) assert.ok(!FOB.texto.toLowerCase().includes(f.toLowerCase()), f);
+  assert.ok(!CYF.texto.includes("comprador"));
+  /* Las pistas y retros orientan sin dar la respuesta. */
+  for (const t of [FOB.pista, FOB.retro.puerto]) for (const f of ["Flete", "Seguro", "bodega"]) assert.ok(!t.includes(f), `${t} ↔ ${f}`);
+  for (const t of [CYF.pista, CYF.opciones.find((o) => o.devolucion).devolucion]) assert.ok(!t.includes("comprador"), t);
+});
+
+/* Todas las selecciones posibles de las cinco fichas. */
+const SUBCONJUNTOS = Array.from({ length: 31 }, (_, n) => FICHAS.filter((_, i) => n + 1 & (1 << i)).map((f) => f.id));
+
+test("★★★ C1 · P3, paso 1: «Comprobar» con cada selección posible (31) y la escalera: retro, pista, respuesta", () => {
+  const delComprador = ["flete", "seguro", "bodega"];
+  for (const m of SUBCONJUNTOS) {
+    const exacta = m.length === 3 && delComprador.every((x) => m.includes(x));
+    const antes = m.filter((x) => !delComprador.includes(x));
+    const r1 = comprobarFOB(V, m, 0);
+    const r2 = comprobarFOB(V, m, 1);
+    if (exacta) {
+      assert.deepEqual([r1.peldano, r1.resuelto, r1.texto], ["acierto", true, FOB.acierto], m.join());
+      assert.equal(r2.peldano, "acierto", m.join());
+      continue;
+    }
+    /* 1.er error: si tocó una de antes de «a bordo», su retro; si solo le faltó alguna, la pista. Se puede volver a intentar. */
+    assert.equal(r1.resuelto, false, m.join());
+    if (antes.length) assert.deepEqual([r1.peldano, r1.texto, r1.malas], ["retro", C1.PASO1.retro, antes], m.join());
+    else assert.deepEqual([r1.peldano, r1.texto, r1.malas], ["pista", FOB.pista, []], m.join());
+    /* 2.º error: la respuesta, y el paso queda resuelto. */
+    assert.deepEqual([r2.peldano, r2.resuelto, r2.texto], ["respuesta", true, FOB.respuesta], m.join());
+  }
+});
+
+test("★★★ C1 · P3, paso 2: cada opción en el 1.er y el 2.º intento", () => {
+  assert.deepEqual(confirmarCyF(V, "comprador", 0), { resuelto: true, peldano: "acierto", texto: CYF.acierto });
+  assert.deepEqual(confirmarCyF(V, "comprador", 1), { resuelto: true, peldano: "acierto", texto: CYF.acierto });
+  assert.deepEqual(confirmarCyF(V, "medias", 0), { resuelto: false, peldano: "retro", texto: C1.PASO2.retro });
+  assert.deepEqual(confirmarCyF(V, "vendedor", 0), { resuelto: false, peldano: "pista", texto: CYF.pista });
+  for (const id of ["medias", "vendedor"]) assert.deepEqual(confirmarCyF(V, id, 1), { resuelto: true, peldano: "respuesta", texto: CYF.respuesta });
+});
+
+test("★★★ C1 · P3, F-3: en el paso 2 la tierra va sin marca; «En el mar» lleva la de FOB y, al resolver, la de C&F", () => {
+  const s = (paso, r1, r2) => ({ paso, p1: { resuelto: r1 }, p2: { resuelto: r2 } });
+  for (const t of V.tramos) {
+    for (const f of t.fichas) {
+      assert.equal(marcaDe(V, t, f, s(0, false, false)), null, `${f.id}: sin marca antes de resolver`);
+      assert.equal(marcaDe(V, t, f, s(0, true, false)), f.fob, `${f.id}: FOB resuelto`);
+      assert.equal(marcaDe(V, t, f, s(1, true, false)), t.tierra ? null : f.fob, `${f.id}: paso 2`);
+      assert.equal(marcaDe(V, t, f, s(1, true, true)), t.tierra ? null : f.cyf, `${f.id}: C&F resuelto`);
+    }
+  }
+});
+
+/* Lo que se ve de P3: textos, fichas, marcas, leyenda y opciones. */
+function vistaViaje(caja) {
+  const r = caja.querySelector("[data-viaje]");
+  const fig = r.querySelector("[data-figura]");
+  return {
+    estado: r.dataset.estado,
+    paso: r.dataset.paso,
+    consigna: r.querySelector("[data-consigna]").textContent,
+    tramos: [...fig.querySelectorAll("[data-tramo]")].map((t) => [t.dataset.tramo, t.dataset.atenuado === "si"]),
+    rotulos: [...fig.querySelectorAll("[data-rotulo]")].map((x) => x.textContent),
+    fichas: [...fig.querySelectorAll("[data-ficha]")].map((f) => ({
+      id: f.dataset.ficha, boton: f.tagName === "BUTTON", pulsada: f.getAttribute("aria-pressed"), mal: f.classList.contains("t7a5-mal"),
+      paga: f.querySelector("[data-paga]")?.dataset.paga ?? null, texto: f.querySelector("span:not(.t7a5-sr):not([aria-hidden])")?.textContent ?? f.textContent,
+    })),
+    leyenda: fig.querySelector("[data-leyenda]")?.textContent ?? null,
+    opciones: [...r.querySelectorAll("[data-opcion]")].map((o) => o.textContent).sort(),
+    mensaje: r.querySelector("[data-mensaje]") ? [r.querySelector("[data-mensaje]").dataset.mensaje, ...[...r.querySelectorAll("[data-mensaje] [data-palabra], [data-mensaje] [data-texto]")].map((p) => p.textContent)] : null,
+    botones: [...r.querySelectorAll("[data-boton]")].map((b) => [b.dataset.boton, b.textContent, b.getAttribute("aria-disabled") === "true"]),
+    pie: r.querySelector("[data-pie]").textContent,
+  };
+}
+
+test("★★★ C1 · P3 montada: el recorrido estado por estado (pista, retro, 2.º error con la figura que crece, paso 2 con la tierra atenuada, acierto) y el foco", async () => {
+  const m = await montar(h(Importados, { pieza: conPieza("fob-cif-cyf", "flete-del-comprador"), rotulo: "R" }));
+  const v = () => vistaViaje(m.caja);
+  const ficha = (id) => m.caja.querySelector(`[data-ficha="${id}"]`);
+  const activo = () => w.document.activeElement;
+  const sinMarcas = (x) => x.fichas.every((f) => f.paga === null);
+  try {
+    /* Al llegar: el texto de FOB, la línea con sus cuatro tramos y cinco fichas que se tocan; «Comprobar» inactivo, sin leyenda ni mensaje. */
+    let x = v();
+    assert.deepEqual([x.estado, x.paso, x.consigna], ["colocando", "fob", FOB.texto]);
+    assert.deepEqual(x.tramos, V.tramos.map((t) => [t.id, false]));
+    assert.deepEqual(x.rotulos, [C1.TRAMOS[2]]);
+    assert.deepEqual(x.fichas.map((f) => [f.id, f.boton, f.pulsada]), FICHAS.map((f) => [f.id, true, "false"]));
+    assert.ok(sinMarcas(x));
+    assert.deepEqual([x.leyenda, x.mensaje, x.opciones], [null, null, []]);
+    assert.deepEqual(x.botones, [["comprobar", "Comprobar", true]]);
+    assert.equal(x.pie, C1.PIE_FOB);
+    /* 1.er error, le faltó alguna: la pista, y se puede volver a intentar (las marcas se quedan). */
+    await tocar(ficha("flete"));
+    assert.equal(v().fichas.find((f) => f.id === "flete").pulsada, "true");
+    await tocar(boton(m.caja, "comprobar"));
+    x = v();
+    assert.deepEqual(x.mensaje, ["error", A.INTERFAZ.incorrecto, FOB.pista]);
+    assert.ok(activo() === m.caja.querySelector("[data-mensaje]"), "al responder, el foco va al mensaje");
+    assert.ok(sinMarcas(x) && x.leyenda === null, "el 1.er error no da la respuesta");
+    assert.deepEqual(x.fichas.filter((f) => f.mal), []);
+    assert.deepEqual(x.botones, [["comprobar", "Comprobar", false]]);
+    /* Segundo intento, todavía mal (le sigue faltando y toca una de antes de «a bordo»). */
+    await tocar(ficha("subir"));
+    await tocar(boton(m.caja, "comprobar"));
+    x = v();
+    /* 2.º error: la respuesta; cada ficha queda marcada con quién la paga (FOB) y aparece la leyenda. */
+    assert.deepEqual(x.mensaje, ["error", A.INTERFAZ.incorrecto, FOB.respuesta]);
+    assert.deepEqual([x.estado, x.leyenda], ["respuesta", C1.LEYENDA.join("")]);
+    assert.deepEqual(x.fichas.map((f) => [f.id, f.boton, f.paga]), FICHAS.map((f) => [f.id, false, f.fob]));
+    assert.deepEqual(x.botones, [["seguir-paso", A.BOTON.seguir, false]]);
+    /* Paso 2: el texto cambia; la tierra, atenuada y sin marca; «En el mar», con las marcas de FOB; tres opciones debajo. */
+    await tocar(boton(m.caja, "seguir-paso"));
+    x = v();
+    assert.ok(activo() === m.caja.querySelector("[data-consigna]"), "al pasar al paso 2, el foco va a su texto");
+    assert.deepEqual([x.estado, x.paso, x.consigna, x.mensaje], ["colocando", "cyf", CYF.texto, null]);
+    assert.deepEqual(x.tramos, V.tramos.map((t) => [t.id, t.tierra]));
+    assert.deepEqual(x.fichas.map((f) => [f.id, f.paga]), FICHAS.map((f) => [f.id, ["flete", "seguro"].includes(f.id) ? f.fob : null]));
+    assert.equal(x.leyenda, C1.LEYENDA.join(""), "la figura se queda (C8)");
+    assert.deepEqual(x.opciones, [...C1.PASO2.opciones].sort());
+    assert.deepEqual(x.botones, [["confirmar", A.BOTON.confirmar, true]]);
+    /* 1.er error, «Los dos, a medias»: su retro, y «Probar otra». */
+    await responder(m.caja, "medias");
+    x = v();
+    assert.deepEqual(x.mensaje, ["error", A.INTERFAZ.incorrecto, C1.PASO2.retro]);
+    assert.ok(activo() === m.caja.querySelector("[data-mensaje]"));
+    assert.deepEqual(x.fichas.map((f) => f.paga), FICHAS.map((f) => (["flete", "seguro"].includes(f.id) ? f.fob : null)), "el error no mueve la figura");
+    assert.deepEqual(x.botones, [["probar-otra", A.BOTON.probarOtra, false]]);
+    await tocar(boton(m.caja, "probar-otra"));
+    assert.equal(v().mensaje, null);
+    /* 2.º error: la respuesta; «Flete» pasa al vendedor y «Seguro» se queda en el comprador; la tierra sigue sin marca. */
+    await responder(m.caja, "vendedor");
+    x = v();
+    assert.deepEqual(x.mensaje, ["error", A.INTERFAZ.incorrecto, CYF.respuesta]);
+    assert.deepEqual(x.fichas.map((f) => [f.id, f.paga]), FICHAS.map((f) => [f.id, f.cyf ?? null]));
+    assert.deepEqual(x.botones, [["seguir", A.BOTON.seguir, false]]);
+    await tocar(boton(m.caja, "seguir"));
+    assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, "flete-del-comprador");
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★★ C1 · P3 montada: el camino del acierto (retro de antes de «a bordo», luego el acierto; C&F al primer intento)", async () => {
+  const m = await montar(h(Importados, { pieza: conPieza("fob-cif-cyf"), rotulo: "R" }));
+  const v = () => vistaViaje(m.caja);
+  const ficha = (id) => m.caja.querySelector(`[data-ficha="${id}"]`);
+  try {
+    /* Toca «Transporte al puerto» y las tres buenas: retro de antes de «a bordo», con ✕ en coral solo en esa ficha. */
+    for (const id of ["puerto", "flete", "seguro", "bodega"]) await tocar(ficha(id));
+    await tocar(boton(m.caja, "comprobar"));
+    let x = v();
+    assert.deepEqual(x.mensaje, ["error", A.INTERFAZ.incorrecto, C1.PASO1.retro]);
+    assert.deepEqual(x.fichas.filter((f) => f.mal).map((f) => f.id), ["puerto"]);
+    /* Al quitarla, la marca de error se va; y entonces acierta. */
+    await tocar(ficha("puerto"));
+    assert.deepEqual(v().fichas.filter((f) => f.mal), []);
+    await tocar(boton(m.caja, "comprobar"));
+    x = v();
+    assert.deepEqual(x.mensaje, ["acierto", A.INTERFAZ.correcto, FOB.acierto]);
+    assert.deepEqual(x.fichas.map((f) => f.paga), FICHAS.map((f) => f.fob));
+    assert.equal(x.leyenda, C1.LEYENDA.join(""));
+    await tocar(boton(m.caja, "seguir-paso"));
+    await responder(m.caja, "comprador");
+    x = v();
+    assert.deepEqual([x.estado, x.mensaje], ["acierto", ["acierto", A.INTERFAZ.correcto, CYF.acierto]]);
+    assert.deepEqual(x.fichas.map((f) => f.paga), FICHAS.map((f) => f.cyf ?? null));
+    assert.deepEqual(x.tramos.filter(([, a]) => a).map(([id]) => id), ["puerto", "subir", "bodega"]);
+    assert.deepEqual(x.botones, [["seguir", A.BOTON.seguir, false]]);
+    /* La condición de CIF queda a la vista con el acierto, sin plegar (C7). */
+    assert.equal(m.caja.querySelector("[data-mensaje] [data-texto]").textContent, CYF.acierto);
+    assert.equal(m.caja.querySelector("[data-mensaje] [hidden]"), null);
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★★ C1 · P3: B1 ≤ 40 antes de tocar y B2 ≤ 60 en cada estado, contado como Near y Mello (texto, rótulos, leyenda, opciones y mensaje)", () => {
+  const rotulos = contar([...V.tramos.map((t) => t.rotulo), ...C1.FICHAS_MAR].join(" "));
+  assert.equal(rotulos, 15, "F-1: los rótulos bajan a 15");
+  const leyenda = contar(C1.LEYENDA.join(" "));
+  const ops = contar(CYF.opciones.map((o) => o.texto).join(" "));
+  const t1 = contar(FOB.texto);
+  const t2 = contar(CYF.texto);
+  assert.ok(t1 + rotulos <= 40, `B1 paso 1: ${t1 + rotulos}`);
+  const momentos = {
+    "paso 1, primer error": t1 + rotulos + Math.max(contar(FOB.pista), contar(C1.PASO1.retro)),
+    "paso 1, segundo error": t1 + rotulos + leyenda + contar(FOB.respuesta),
+    "paso 1, acierto": t1 + rotulos + leyenda + contar(FOB.acierto),
+    "paso 2, antes de tocar": t2 + rotulos + leyenda + ops,
+    "paso 2, primer error": t2 + rotulos + leyenda + ops + Math.max(contar(CYF.pista), contar(C1.PASO2.retro)),
+    "paso 2, segundo error": t2 + rotulos + leyenda + ops + contar(CYF.respuesta),
+    "paso 2, acierto": t2 + rotulos + leyenda + ops + contar(CYF.acierto),
+  };
+  for (const [k, n] of Object.entries(momentos)) assert.ok(n <= 60, `${k}: ${n}`);
+  /* El total de Mello con el acierto a la vista: 13 + 15 + 2 + 8 + 21 = 59. */
+  assert.equal(momentos["paso 2, acierto"], 59);
+  assert.ok(C1.AUDITORIA.includes("**Total con el acierto a la vista:** 13 + 15 + 2 + 8 + 21 = **59**."));
+});
+
+test("★★ C1 · P3: botones reales de 44 px, la figura con nombre, sin teal ni ámbar en las marcas; marcas para el lector", async () => {
+  assert.match(CSS_A5, /\.t7a5-ficha-v \{[^}]*min-height: 44px;/);
+  const reglas = CSS_A5.slice(CSS_A5.indexOf("/* P3 · el viaje de la compra (C1)"), CSS_A5.indexOf("@media (prefers-reduced-motion"));
+  assert.doesNotMatch(reglas, /2A9D8F|E9C46A/i);
+  const m = await montar(h(Importados, { pieza: conPieza("fob-cif-cyf"), rotulo: "R" }));
+  try {
+    const fig = m.caja.querySelector("[data-figura]");
+    assert.equal(fig.getAttribute("role"), "group");
+    assert.equal(fig.getAttribute("aria-label"), C1.NOMBRE_FOB);
+    for (const b of m.caja.querySelectorAll("button")) assert.equal(b.getAttribute("type"), "button");
+    for (const id of ["flete", "seguro", "bodega"]) await tocar(m.caja.querySelector(`[data-ficha="${id}"]`));
+    await tocar(boton(m.caja, "comprobar"));
+    /* Cada marca dice, para el lector, quién paga (la palabra de la leyenda). */
+    assert.deepEqual([...fig.querySelectorAll("[data-ficha] .t7a5-sr")].map((s) => s.textContent), FICHAS.map((f) => V.leyenda[f.fob]));
+  } finally {
+    m.desmontar();
   }
 });
