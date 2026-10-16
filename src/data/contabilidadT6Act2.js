@@ -159,7 +159,8 @@ export const PREGUNTAS_T6_ACT2 = [
 export const PASOS_T6_ACT2 = [PREGUNTAS_T6_ACT2[0], PARTES_T6_ACT2[0], PREGUNTAS_T6_ACT2[1], PARTES_T6_ACT2[1], PREGUNTAS_T6_ACT2[2]];
 
 /* Los textos de la mecánica de cinco pasos (PARA SHOKO). */
-export const PASOS_TEXTOS_T6_ACT2 = { etiqueta: "Paso", siguiente: "Siguiente", comprobar: "Comprobar", campo: "Tu respuesta" };
+/* Lote 6c, estándar de Hacer: «Siguiente paso» (el mismo sustantivo del contador) y «Responder» (un solo campo; «Comprobar» es para varios). */
+export const PASOS_TEXTOS_T6_ACT2 = { etiqueta: "Paso", siguiente: "Siguiente paso", comprobar: "Responder", campo: "Tu respuesta" };
 
 /* ═══════════ EL TUTORIAL: LA PROVISIÓN DE 2007, YA RESUELTA (p. 202) ═══════════ */
 

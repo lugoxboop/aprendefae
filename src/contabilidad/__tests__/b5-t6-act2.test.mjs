@@ -203,7 +203,7 @@ test("★★★ los cinco pasos en su orden, cada uno con su texto; «Siguiente�
     if (p.tipo === "pregunta") {
       assert.equal(caja.querySelector("[data-hecho]").textContent, p.enunciado);
       assert.equal(caja.querySelector("[data-instruccion]"), null);
-      assert.equal(caja.querySelector("[data-confirmar-parte]").textContent, "Comprobar");
+      assert.equal(caja.querySelector("[data-confirmar-parte]").textContent, "Responder", "un solo campo: «Responder» (estándar de Hacer)");
       assert.equal(caja.querySelector("[data-un-intento]"), null, "el aviso de los totales es de los asientos");
       /* Bien las tres: con «$», con puntos y sin nada. */
       await responder(caja, ["$2.506.200", "31.200", "153400"][PREGUNTAS.indexOf(p)]);
@@ -214,10 +214,15 @@ test("★★★ los cinco pasos en su orden, cada uno con su texto; «Siguiente�
     }
     if (k !== 3) {
       assert.equal(caja.querySelector("[data-panel]").dataset.panel, "acierto", p.id);
-      assert.equal(textoRetro(caja), null, "acierto sin texto");
+      if (p.tipo === "pregunta") {
+        /* Estándar de Hacer: el acierto dice «Correcto» en su bloque. */
+        assert.equal(caja.querySelector("[data-mensaje-hacer]").textContent, "Correcto");
+      } else {
+        assert.equal(textoRetro(caja), null, "acierto sin texto");
+      }
       assert.ok(caja.querySelector("[data-visto-parte]"));
     }
-    assert.equal(caja.querySelector("[data-boton-avanzar] button").textContent, k === 4 ? "Ver mi resumen" : "Siguiente");
+    assert.equal(caja.querySelector("[data-boton-avanzar] button").textContent, k === 4 ? "Ver mi resumen" : "Siguiente paso");
     await avanzar(caja);
   }
   assert.equal(caja.querySelector("[data-resumen-cierre]").textContent, "Bien a la primera: 4 de 5");
@@ -247,39 +252,53 @@ test("★★★ las preguntas: la correcta con o sin «$» y puntos; cada T con 
   assert.equal(L.formatearRespuesta("$2506200"), "2.506.200");
 });
 
-test("★★★ lote 6c · E4 en todo Hacer: una pregunta acertada deja su cifra ✓ (borde 2 nodo, relleno navy), sin tachado ni otra cifra debajo", async () => {
+const esperaRevelada = () => act(async () => { await new Promise((r) => setTimeout(r, 760)); });
+const CORAL_RGB = /231, 111, 81|#E76F51/i;
+const BLANCO_2 = /^2px solid (rgb\(248, 249, 250\)|#F8F9FA)$/i;
+
+test("★★★ lote 6c · estándar de Hacer: una pregunta acertada deja su campo con 2 px blanco y la pastilla «Correcto» (Check), sin tachado ni «Iba aquí»", async () => {
   for (const [k, texto] of [[0, "$2.506.200"], [2, "31.200"], [4, "153400"]]) {
     const p = PASOS[k];
     const { caja, desmontar } = await montar({ items: [p] });
+    const campo = () => caja.querySelector(`[data-caja-campo="${p.id}"]`);
+    assert.equal(campo().style.border, "1px solid rgba(248, 249, 250, 0.35)", "en reposo, 1 px");
     await responder(caja, texto);
-    const campo = caja.querySelector(`[data-caja-campo="${p.id}"]`);
-    assert.equal(campo.dataset.marca, "correcta", p.id);
-    assert.ok(campo.querySelector('[data-icono="visto"]'));
-    assert.equal(campo.querySelector('[data-icono="tache"]'), null);
-    assert.match(campo.style.border, /^2px solid/);
-    assert.notEqual(campo.querySelector("input").style.textDecoration, "line-through");
-    assert.equal(caja.querySelector(`[data-valor-correcto="${p.id}"]`), null, "acertó: no hay otra cifra debajo");
+    assert.match(campo().style.border, BLANCO_2, p.id);
+    assert.equal(caja.querySelector("[data-pastilla]").dataset.pastilla, "correcto");
+    assert.equal(caja.querySelector("[data-pastilla]").textContent, "Correcto");
+    assert.ok(caja.querySelector('[data-pastilla] [data-icono="check"]'));
+    assert.notEqual(campo().querySelector("input").style.textDecoration, "line-through");
+    await esperaRevelada();
+    assert.equal(caja.querySelector('[data-pastilla="iba"]'), null, "acertó: no hay «Iba aquí»");
+    assert.ok(!/[✅❌]/u.test(caja.textContent));
     desmontar();
   }
 });
 
-test("★★★ una pregunta mal: un intento, el panel con su texto, y E4: su cifra ✕ tachada y debajo ✓ la correcta; sin coral en el campo", async () => {
+test("★★★ una pregunta mal: un intento, el mensaje con su texto («Incorrecto.» para el lector), el campo con 2 px coral, la cifra tachada y «No va aquí»; 0,7 s después, «Iba aquí: {valor}»", async () => {
   for (const [k, texto, error] of [[0, "2.655.000", "T1"], [2, "-31200", "general"], [4, "184600", "T9"]]) {
     const p = PASOS[k];
     const { caja, desmontar } = await montar({ items: [p] });
     await responder(caja, texto);
-    assert.equal(caja.querySelector("[data-panel]").dataset.error, error, p.id);
-    assert.equal(textoRetro(caja), error === "general" ? p.general : p.errores.find((e) => e.clave === error).texto);
+    const mensaje = caja.querySelector("[data-mensaje-hacer]");
+    assert.equal(mensaje.dataset.error, error, p.id);
+    assert.equal(mensaje.style.borderLeft, "3px solid rgb(231, 111, 81)");
+    const esperado = error === "general" ? p.general : p.errores.find((e) => e.clave === error).texto;
+    assert.equal(textoRetro(caja), `Incorrecto. ${esperado}`, "el lector oye «Incorrecto.» antes del texto");
+    assert.ok(mensaje.querySelector('[data-icono="x"]'));
     const campo = caja.querySelector(`[data-caja-campo="${p.id}"]`);
-    assert.equal(campo.dataset.marca, "tachada");
-    assert.ok(campo.querySelector('[data-icono="tache"]'));
+    assert.match(campo.style.border, CORAL_RGB);
+    assert.equal(campo.querySelector("input").style.textDecoration, "line-through");
     assert.equal(campo.querySelector("input").value, L.formatearRespuesta(texto));
     assert.ok(campo.querySelector("input").readOnly, "un solo intento");
-    const correcta = caja.querySelector(`[data-valor-correcto="${p.id}"]`);
-    assert.ok(correcta.querySelector('[data-icono="visto"]'));
-    assert.ok(correcta.textContent.includes(["$2.506.200", "$31.200", "$153.400"][k / 2]));
+    assert.equal(caja.querySelector('[data-pastilla="error"]').textContent, "No va aquí");
+    assert.ok(caja.querySelector('[data-pastilla="error"] [data-icono="x"]'));
+    assert.equal(caja.querySelector('[data-pastilla="iba"]'), null, "la revelada todavía no");
+    await esperaRevelada();
+    const iba = caja.querySelector('[data-pastilla="iba"]');
+    assert.equal(iba.textContent, `Iba aquí: ${["$2.506.200", "$31.200", "$153.400"][k / 2]}`);
+    assert.equal(iba.querySelector("svg"), null, "«Iba aquí», sin ícono");
     assert.equal(caja.querySelector("[data-confirmar-parte]"), null, "no se vuelve a comprobar");
-    assert.doesNotMatch(campo.getAttribute("style"), /231, 111, 81|#E76F51/i, "sin coral en el campo");
     desmontar();
   }
 });

@@ -346,3 +346,7 @@ Texto alternativo: «Actividad de registro. Hay dos hechos de la provisión de E
 Dificultad: difícil, 50 FP (sugerencia de Futaba y Shoko; lo decide KAEDE con la regla nueva). Fila del servidor: la 0078.
 
 PARA SHOKO (textos nuevos de la mecánica, sin revisar): el contador «Paso N de 5»; los rótulos «Pregunta 1», «Pregunta 2» y «Pregunta 3»; el botón «Siguiente» (en los asientos y en las preguntas, en lugar de «Siguiente asiento»); el botón «Comprobar» de las preguntas (el publicado de T3); el nombre del campo para el lector de pantalla, «Tu respuesta»; y la cuarta línea de «¿Cómo se juega?»: «Entre los asientos, escribe la cifra que se pide. También tienes un solo intento.»
+
+## (6) Lote 6c · el estándar de Hacer en las preguntas (orden de Mateo por Miku, 15-oct)
+
+El botón de las preguntas dice «Responder» (un solo campo; «Comprobar» queda para varios) y el de avance, «Siguiente paso», con el mismo sustantivo del contador; el último, «Ver mi resumen». La devolución usa las palabras del estándar: «Correcto», «No va aquí» e «Iba aquí: {valor}», y para el lector, «Incorrecto.».

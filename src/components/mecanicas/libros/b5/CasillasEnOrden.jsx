@@ -3,10 +3,12 @@ import { barajar } from "../../../../utils/barajar.js";
 import { porcentaje } from "../../../../data/politicaFiscal.js";
 import { pesos } from "../../../../data/contabilidad.js";
 import { FAE } from "../../../../theme.js";
-import { Opciones, Retro, Cierre, Enunciado } from "../../corazon/juego.jsx";
+import { Opciones, Cierre, Enunciado } from "../../corazon/juego.jsx";
 /* E4 (hoja de fusiones de Mai): la opción de la célula, con el contrato de la compartida y sus marcas ✓ y ✕. */
 import { OpcionE4 as Opcion } from "./MarcasE4.jsx";
-import { Avanzar, TEXTO_CIERRE } from "../../bloques/marcos.jsx";
+import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
+import { Responder } from "../piezas.jsx";
+import { MensajeHacer } from "./EstandarHacer.jsx";
 import EncabezadoCompacto from "./EncabezadoCompacto.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { RotuloSimulado, PieDeFuente } from "../tema6/FuentesT6A5.jsx";
@@ -153,7 +155,8 @@ export default function CasillasEnOrden({
     );
   }
 
-  const retro = elegida && elegida.tipo ? `❌ ${config.errores[elegida.tipo]}` : null;
+  /* Estándar de Hacer (lote 6c): el mensaje sin emoji; el error con su texto, el acierto con «Correcto». */
+  const retro = elegida && elegida.tipo ? config.errores[elegida.tipo] : null;
   /* El registro: cada casilla ya respondida, con su valor correcto y si se acertó. */
   const resueltas = casillas.slice(0, n + (elegida ? 1 : 0));
   /* El visual propio se ve en el juego; en «Así se juega», solo si lo pide (`enDemo`: a6 muestra su regla). */
@@ -222,13 +225,14 @@ export default function CasillasEnOrden({
         ))}
       </Opciones>}
       </div>
-      <Retro texto={retro} />
+      {elegida && <MensajeHacer ok={!elegida.tipo} texto={retro} />}
       {ejemplo?.resolucion && elegida && (
         <p data-resolucion style={{ margin: "12px 0 0", padding: "11px 13px", borderRadius: "12px", background: "rgba(184,196,212,0.13)", fontSize: "15px", lineHeight: "22px", color: FAE.text }}>
           {ejemplo.resolucion}
         </p>
       )}
-      {elegida && !modoDemo && <Avanzar onClick={avanzar}>{n + 1 === total ? "Ver resultado" : "Siguiente"}</Avanzar>}
+      {/* Estándar de Hacer: «Siguiente {sustantivo}» y, en la última, «Ver mi resumen»; el botón Responder, a todo el ancho. */}
+      {elegida && !modoDemo && <div data-boton-avanzar><Responder onClick={avanzar}>{n + 1 === total ? "Ver mi resumen" : `Siguiente ${config.etiqueta.toLowerCase()}`}</Responder></div>}
       {!modoDemo && <p style={SOLO_LECTOR}>{config.alt}</p>}
     </Marco>
   );

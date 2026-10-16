@@ -7,7 +7,9 @@ import { pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
 import { pesos } from "../../../../data/contabilidad.js";
 import { SORA, INTER, TEXTO, SECUNDARIO, NODO, NAVY, BORDES } from "./MaquinaPegada.jsx";
 import { Entra, KEYFRAMES_ENTRA } from "./CuentaQueSeLlena.jsx";
-import { Marca, CORRECTA, TACHADA } from "../b5/MarcasE4.jsx";
+import { Pastilla, useRevelada, BLANCO, CORAL, CONTORNO } from "../b5/EstandarHacer.jsx";
+
+const REPOSO = CONTORNO.reposo.replace(/^1px solid /, "");
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -35,9 +37,12 @@ import { Marca, CORRECTA, TACHADA } from "../b5/MarcasE4.jsx";
  * del eje SON las opciones. Sale la lista de cuatro rangos; se toca el cajón
  * donde cae la deuda. El eje pasa a 44 de alto y cada cajón es un botón con
  * el nombre de su grupo («Grupo 1: vigentes o hasta 3 meses»…). «6 meses» se
- * responde tocando a un lado o al otro de la marca de 6. E4: el tocado por
- * error queda ✕ y el correcto ✓ (borde 2 nodo, relleno navy); la deuda cae
- * en el correcto.
+ * responde tocando a un lado o al otro de la marca de 6. Con el estándar de
+ * Hacer (b5/EstandarHacer.jsx): en reposo, contorno de 1 px; el elegido
+ * correcto queda con 2 px blanco y la pastilla «Correcto»; el elegido por
+ * error, 2 px coral y «No va aquí»; 0,7 s después se revela el correcto (2 px
+ * blanco, «Iba aquí») y la deuda cae en él. Las pastillas van en una fila
+ * reservada bajo el eje.
  *
  * Lo que entra es siempre el valor correcto. En blanco y negro: los cajones
  * se leen por sus marcas y su orden; la porción es relleno y el resto
@@ -109,51 +114,94 @@ function useEscalonado() {
   return { marcas, escalonado };
 }
 
+/*
+ * Las pastillas del estándar, en su fila bajo el eje: cada una bajo su cajón y, si chocan (dos cajones
+ * vecinos, o la del primero contra el borde), se apartan lo justo. Se mide en vivo: sus anchos dependen
+ * de la fuente.
+ */
+const ALTO_FILA_PASTILLAS = 26;
+const HUECO_PASTILLAS = 4;
+function FilaPastillas({ pastillas, top }) {
+  const caja = useRef(null);
+  useLayoutEffect(() => {
+    const el = caja.current;
+    if (!el) return;
+    const W = el.getBoundingClientRect().width;
+    const ps = [...el.querySelectorAll("[data-pastilla-cajon]")];
+    const xs = ps.map((p) => ({ p, w: p.getBoundingClientRect().width, c: (Number(p.dataset.centro) / 100) * W }));
+    xs.sort((a, b) => a.c - b.c);
+    /* Ida: centrada bajo su cajón, sin pisar a la anterior ni salir por la izquierda. */
+    xs.forEach((x, i) => { x.left = Math.max(x.c - x.w / 2, 0, i ? xs[i - 1].left + xs[i - 1].w + HUECO_PASTILLAS : 0); });
+    /* Vuelta: sin salir por la derecha ni pisar a la siguiente. */
+    for (let i = xs.length - 1; i >= 0; i--) {
+      const tope = i === xs.length - 1 ? W : xs[i + 1].left - HUECO_PASTILLAS;
+      xs[i].left = Math.min(xs[i].left, tope - xs[i].w);
+    }
+    for (const x of xs) x.p.style.left = `${Math.max(0, x.left)}px`;
+  });
+  return (
+    <div ref={caja} data-fila-pastillas style={{ position: "absolute", left: 0, right: 0, top: `${top}px`, height: `${ALTO_FILA_PASTILLAS}px` }}>
+      {pastillas.map((x) => (
+        <span key={x.k} data-pastilla-cajon={x.tipo} data-centro={centroDe(x.k)} style={{ position: "absolute", top: "2px", left: 0 }}>
+          <Pastilla tipo={x.tipo} />
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function Eje({ respondidas, abierta, reducido, eleccion = null }) {
   const { marcas, escalonado } = useEscalonado();
   const actual = abierta ?? respondidas - 1;
   /* Lote 6c: con `eleccion`, los cajones son las opciones de la casilla abierta. */
   const casilla = UBICAR.casillas[actual];
   const elegidoK = eleccion?.elegida ? GRUPOS_T6_ACT6.findIndex((g) => g.nombre === eleccion.elegida.texto) : -1;
-  const marcaDe = (k) => {
+  const correctoK = cajonDe(casilla);
+  const fallo = Boolean(eleccion?.elegida) && elegidoK !== correctoK;
+  /* Estándar de Hacer: el correcto se revela 0,7 s después del error (aquí no hay reintento). */
+  const revelada = useRevelada(fallo);
+  /* El estado de cada cajón tras responder: «correcto» (el elegido, si acertó), «error» (el elegido, si no) o «revelado». */
+  const estadoDe = (k) => {
     if (!eleccion?.elegida) return null;
-    if (k === cajonDe(casilla)) return CORRECTA;
-    return k === elegidoK ? TACHADA : null;
+    if (k === elegidoK) return fallo ? "error" : "correcto";
+    return k === correctoK && revelada ? "revelado" : null;
   };
+  const pastillas = GRUPOS_T6_ACT6.map((g, k) => ({ k, tipo: { correcto: "correcto", error: "error", revelado: "iba" }[estadoDe(k)] })).filter((x) => x.tipo);
+  /* La deuda de la casilla cae en su cajón al acertar, o con la revelada si falló. */
+  const enCajonDe = (i) => i < respondidas && !(i === actual && fallo && !revelada);
+  const conFila = Boolean(eleccion);
+  const altoMarcas = TOPE_BARRA + ALTO_BARRA + 4 + LINEA_MARCA * (escalonado ? 2 : 1);
   return (
-    <div data-eje {...(abierta !== null ? { "data-renglon-activo": "" } : {})} data-escalonado={escalonado ? "si" : "no"} style={{ position: "relative", height: `${TOPE_BARRA + ALTO_BARRA + 4 + LINEA_MARCA * (escalonado ? 2 : 1)}px`, margin: "4px 0 12px" }}>
+    <div data-eje {...(abierta !== null ? { "data-renglon-activo": "" } : {})} data-escalonado={escalonado ? "si" : "no"} style={{ position: "relative", height: `${altoMarcas + (conFila ? ALTO_FILA_PASTILLAS : 0)}px`, margin: "4px 0 12px" }}>
       {/* La barra, partida en cuatro cajones. */}
       <div style={{ position: "absolute", top: `${TOPE_BARRA}px`, left: 0, right: 0, height: `${ALTO_BARRA}px`, display: "flex" }}>
         {GRUPOS_T6_ACT6.map((g, k) => {
-          const tiene = UBICAR.casillas.some((c, i) => i < respondidas && cajonDe(c) === k);
-          /* El cajón de la deuda recién respondida se ilumina; los que ya tienen una deuda quedan con fondo tenue. */
-          const recien = abierta === null && cajonDe(UBICAR.casillas[actual]) === k;
-          const marca = marcaDe(k);
+          const tiene = UBICAR.casillas.some((c, i) => enCajonDe(i) && cajonDe(c) === k);
+          /* Sin elección (fuera de la partida): el cajón de la deuda recién respondida se ilumina como siempre. */
+          const recien = !eleccion && abierta === null && cajonDe(UBICAR.casillas[actual]) === k;
+          const estado = estadoDe(k);
           const Etiqueta = eleccion ? "button" : "div";
           const opcion = eleccion ? casilla.opciones.find((o) => o.texto === g.nombre) : null;
+          /* El contorno del estándar: 2 px blanco si es el correcto o el revelado; 2 px coral si es el error. */
+          const anillo = estado === "error" ? `inset 0 0 0 2px ${CORAL}` : estado ? `inset 0 0 0 2px ${BLANCO}` : recien ? `inset 0 0 0 2px ${NODO}` : "none";
           return (
             <Etiqueta key={g.id} data-cajon={g.id} data-con-deuda={tiene ? "si" : "no"} {...(k === ULTIMO ? { "data-abierto": "" } : {})}
               {...(eleccion ? {
-                type: "button", "aria-label": `Grupo ${k + 1}: ${minuscula(g.nombre)}`, "data-marca-e4": marca ?? "",
+                type: "button", "aria-label": `Grupo ${k + 1}: ${minuscula(g.nombre)}`, "data-estado-destino": estado ?? "",
                 disabled: !eleccion.elegir, onClick: () => eleccion.elegir?.(opcion),
               } : {})}
               style={{
               position: "relative", padding: 0, margin: 0, font: "inherit", color: "inherit", cursor: eleccion?.elegir ? "pointer" : "default",
               borderTop: "none", borderRight: "none", borderBottom: "none",
-              width: `${ANCHOS[k]}%`, boxSizing: "border-box", borderLeft: `1px solid ${BORDES}`,
+              width: `${ANCHOS[k]}%`, boxSizing: "border-box", borderLeft: `1px solid ${eleccion ? REPOSO : BORDES}`,
               ...(k === ULTIMO
                 ? { borderRight: "none", backgroundImage: `${DESVANECE}, ${DESVANECE}`, backgroundSize: "100% 1px", backgroundPosition: "top, bottom", backgroundRepeat: "no-repeat" }
-                : { borderTop: `1px solid ${BORDES}`, borderBottom: `1px solid ${BORDES}` }),
+                : { borderTop: `1px solid ${eleccion ? REPOSO : BORDES}`, borderBottom: `1px solid ${eleccion ? REPOSO : BORDES}` }),
               borderRadius: k === 0 ? "6px 0 0 6px" : 0,
-              backgroundColor: recien ? NAVY : tiene ? TENUE : "transparent", boxShadow: recien ? `inset 0 0 0 2px ${NODO}` : "none",
+              backgroundColor: recien ? NAVY : tiene ? TENUE : "transparent", boxShadow: anillo,
             }}>
               {/* La clave de la opción, como en las casillas de siempre (la sonda y el guion la buscan así). */}
               {eleccion && <span data-opcion={g.nombre} aria-hidden="true" />}
-              {marca && (
-                <span data-marca-cajon={marca} style={{ position: "absolute", top: "3px", left: "3px", display: "flex" }}>
-                  <Marca marca={marca} />
-                </span>
-              )}
             </Etiqueta>
           );
         })}
@@ -167,10 +215,12 @@ function Eje({ respondidas, abierta, reducido, eleccion = null }) {
           ...PEQUENO, color: SECUNDARIO, whiteSpace: "nowrap",
         }}>{m.texto}</span>
       ))}
+      {/* Las pastillas del estándar, en su fila reservada bajo las marcas (no salta nada cuando llegan). */}
+      {conFila && <FilaPastillas pastillas={pastillas} top={altoMarcas} />}
       {/* Las deudas: las ya ubicadas, en su cajón; la de la casilla, como pastilla sobre su mes, y al responder, cae. */}
       {UBICAR.casillas.map((c, i) => {
         if (i > actual) return null;
-        const enCajon = i < respondidas;
+        const enCajon = enCajonDe(i);
         const k = cajonDe(c);
         const anterior = enCajon && i !== actual;
         return (
