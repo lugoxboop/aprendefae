@@ -164,7 +164,7 @@ export function CampoCifra({ valor, onCambio, onEnviar, deshabilitado = false, e
    * final del campo. Aquí el color SÍ puede ser teal y coral (una cifra no es
    * un lado del asiento), y la forma es lo que sobrevive sin color.
    */
-  const borde = estado === "correcta" ? FAE.teal : estado === "incorrecta" ? FAE.coral : "rgba(248,249,250,0.22)";
+  const borde = estado === "correcta" ? FAE.text : estado === "incorrecta" ? FAE.coral : "rgba(248,249,250,0.22)";
 
   return (
     <form
@@ -207,7 +207,7 @@ export function CampoCifra({ valor, onCambio, onEnviar, deshabilitado = false, e
       />
       {estado === "correcta" && (
         <span style={{ display: "flex", alignItems: "center" }}>
-          <MarcaVeredicto bien color={FAE.teal} etiqueta="Cifra correcta" />
+          <MarcaVeredicto bien color={FAE.text} etiqueta="Cifra correcta" />
         </span>
       )}
       {estado === "incorrecta" && (
