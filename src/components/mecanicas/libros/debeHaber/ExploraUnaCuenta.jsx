@@ -169,7 +169,8 @@ export default function ExploraUnaCuenta() {
       <MarcadorDeSaldo lado={c.lado} cifra={c.saldo} />
 
       <p style={{
-        margin: "12px 0 8px", fontFamily: "Sora, sans-serif", fontSize: "10px",
+        /* 12 px: es la instrucción del gesto, no un rótulo (kit.md, piso de la letra). */
+        margin: "12px 0 8px", fontFamily: "Sora, sans-serif", fontSize: "12px",
         fontWeight: 700, letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)",
       }}>
         {tocado ? "SUELTA MÁS FICHAS DONDE QUIERAS" : E.invitacion.toUpperCase()}
