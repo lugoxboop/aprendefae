@@ -18,8 +18,8 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *     asiento con sus dos lados en cápsula; las cuentas sin partir; la
  *     reserva de alto; las duraciones de la v2b
  *   · la capa 3: las dos ventas iguales, con sus cifras; el final, con las dos
- *   · la capa 4: UnaFrase con una sola correcta («el costo de los 1.875
- *     vendidos») y sus devoluciones
+ *   · la capa 4: UnaFrase con una sola correcta («lo que costaron los 260
+ *     títulos», C1-3 del lote C2 · C1 · C7) y sus devoluciones
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -119,7 +119,8 @@ test("★★★ manda Futaba: término 2, capa 3 («costaron»), pregunta y corr
   assert.match(n[0].delLibro, /^«.*» \(p\. 193\)$/);
   assert.deepEqual(n.slice(1).map((x) => x.delLibro), [undefined, undefined, undefined], "solo el término 1 lleva cita");
   assert.ok(D.VENTAS_T5_A2.every((v) => v.revela.includes("de lo que costaron:")));
-  assert.equal(D.PREGUNTA_FINAL_T5_A2, "En la venta de agosto, ¿por cuánto se acredita Inversiones – títulos?");
+  /* C1-3 del lote C2 · C1 · C7: la capa 4 es un caso nuevo, de escenario simulado. */
+  assert.equal(D.PREGUNTA_FINAL_T5_A2, "Una empresa vende 260 títulos. Cada uno le costó $850. Le pagan $273.000. ¿Por cuánto se acredita la inversión?");
   /* La tabla de la capa 2 de Futaba, por número de paso (los pasos 7 y 17 dicen lo mismo con distinta página). */
   const filas = new Map();
   for (const l of FUTABA.split("\n")) {
@@ -137,13 +138,24 @@ const rotulos = () => {
   const { hechos, debita, acredita, ...resto } = D.ESCENA_T5_A2;
   return [...hechos.flatMap((x) => [x.fecha, x.tipo, x.plegado]), ...Object.values(resto).flat()];
 };
+/*
+ * El resultado plegado de las dos ventas («Ganancia de $225.000», «Pérdida de
+ * $31.250») salió de lo que revelaba la capa 3 de antes. El lote C1-2 cambió
+ * esa capa a un escenario simulado; el rótulo de la escena no cambió, así
+ * que sigue anclado al texto aprobado de entonces, guardado en el paquete.
+ */
+const CAPA_3_ANTES = [
+  "Recibió más de lo que costaron: ganancia de $225.000. Inversiones – títulos se acredita por el costo, no por lo recibido.",
+  "Recibió menos de lo que costaron: pérdida de $31.250. Inversiones – títulos también se acredita por el costo.",
+];
 const esFragmento = (r) => {
-  const fuentes = [...D.PASOS_T5_A2.map((p) => p.texto), ...D.VENTAS_T5_A2.flatMap((v) => [v.nombre, v.revela])].map((t) => t.toLowerCase());
+  const fuentes = [...D.PASOS_T5_A2.map((p) => p.texto), ...D.VENTAS_T5_A2.flatMap((v) => [v.nombre, v.revela]), ...CAPA_3_ANTES].map((t) => t.toLowerCase());
   return fuentes.some((t) => t.includes(r.toLowerCase()));
 };
 
 test("★★★ cada rótulo de la escena es fragmento literal de un paso o de la capa 3 (y un rótulo inventado no lo es)", () => {
   assert.equal(esFragmento("Vende mercancía a crédito"), false, "control: un rótulo inventado no pasa");
+  for (const t of CAPA_3_ANTES) assert.ok(FUTABA.includes(t), "la capa 3 de antes sigue guardada en el paquete");
   const r = rotulos();
   assert.ok(r.length >= 35, `solo ${r.length} rótulos`);
   assert.deepEqual(r.filter((x) => !esFragmento(x)), []);
@@ -158,11 +170,15 @@ test("★★★ ningún componente de la pieza escribe texto que lea el estudian
   }
 });
 
-/* Desde N2 de la Célula C (decisión de corte de T5, punto 6), la pieza va tercera: N2 entra antes que ella y no trae escenas. N6 entra después (posición 9), sin escenas. */
-test("★★ la pieza va tercera en el tema, después de N2: APRENDER, la vista y sus tres capas", () => {
+/*
+ * N2 de la Célula C («Cómo se cuidan las inversiones») iba antes que la pieza
+ * y salió de la lista con la fusión de la entrega 5 de Near (lo suyo va dentro
+ * de N3): la pieza vuelve a ser la segunda de Aprender. N6 entra después (posición 9), sin escenas.
+ */
+test("★★ la pieza va segunda en el tema, sin N2: APRENDER, la vista y sus tres capas", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "activos-financieros");
-  assert.deepEqual(actividadesDeTipo(tema, APRENDER).map((a) => a.id), ["b5-t5-a1-del-efectivo-de-sobra", "t5-a1-cuidar-las-inversiones", D.PIEZA_TRES_MOMENTOS.id, "t5-a2-lo-que-el-ejemplo-no-trae"]);
-  assert.deepEqual(PIEZAS.map((p) => p.pieza.id), ["b5-t5-a1-del-efectivo-de-sobra", "t5-a1-cuidar-las-inversiones", D.PIEZA_TRES_MOMENTOS.id, "t5-a2-lo-que-el-ejemplo-no-trae"]);
+  assert.deepEqual(actividadesDeTipo(tema, APRENDER).map((a) => a.id), ["b5-t5-a1-del-efectivo-de-sobra", D.PIEZA_TRES_MOMENTOS.id, "t5-a2-lo-que-el-ejemplo-no-trae"]);
+  assert.deepEqual(PIEZAS.map((p) => p.pieza.id), ["b5-t5-a1-del-efectivo-de-sobra", D.PIEZA_TRES_MOMENTOS.id, "t5-a2-lo-que-el-ejemplo-no-trae"]);
   assert.deepEqual(Object.keys(ESCENAS_TEMA5), ["b5-t5-a1-del-efectivo-de-sobra", D.PIEZA_TRES_MOMENTOS.id]);
   const { Capa2, Exploracion } = ESCENAS_TEMA5[D.PIEZA_TRES_MOMENTOS.id];
   assert.equal(Capa2, TresMomentos);
@@ -355,11 +371,13 @@ test("★★ «Reproducir»: 3 000 + 450 ms por palabra; la tabla de la v2b y su
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: las dos ventas se ven iguales, con lo recibido y lo que costaron; cada una revela lo suyo con su pie; el final, con las dos decididas", async () => {
+test("★★★ capa 3: las dos ventas se ven iguales, con lo que costó y a cuánto se vende (C1-2); cada una revela lo suyo con su pie; el final, con las dos decididas", async () => {
   const { caja, desmontar } = await montar(h(DosVentas));
   assert.equal(caja.querySelector("p").textContent, D.CONSIGNA_CAPA_3_T5_A2);
   const cajas = [...caja.querySelectorAll("[data-hecho]")];
-  assert.deepEqual(cajas.map((c) => c.querySelector("button span span").textContent), ["Venta del 1 de agosto", "Venta del 1 de noviembre"]);
+  assert.deepEqual(cajas.map((c) => c.querySelector("button span span").textContent), ["Venta A", "Venta B"]);
+  assert.deepEqual(D.VENTAS_T5_A2.map((v) => v.cifras), [["Costó $650 cada uno", "Se vende a $690"], ["Costó $1.150 cada uno", "Se vende a $1.060"]]);
+  assert.deepEqual(D.VENTAS_T5_A2.map((v) => v.pie), ["Escenario simulado", "Escenario simulado"]);
   assert.deepEqual(cajas.map((c) => [...c.querySelectorAll("[data-cifras] span")].map((s) => s.textContent)), D.VENTAS_T5_A2.map((v) => v.cifras));
   assert.equal(cajas[0].getAttribute("style"), cajas[1].getAttribute("style"), "las dos cajas iguales");
   assert.equal(cajas[0].querySelector("button").getAttribute("style"), cajas[1].querySelector("button").getAttribute("style"));
@@ -378,11 +396,12 @@ test("★★★ capa 3: las dos ventas se ven iguales, con lo recibido y lo que 
 
 /* ═══════════ CAPA 4 ═══════════ */
 
-test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola correcta («el costo de los 1.875 vendidos») y la devolución de cada una", async () => {
-  assert.deepEqual(D.OPCIONES_FINAL_T5_A2.filter((o) => o.correcta).map((o) => o.texto), ["Por $1.500.000, el costo de los 1.875 vendidos."]);
+test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola correcta («lo que costaron los 260 títulos», C1-3) y la devolución de cada una; su pie debajo", async () => {
+  assert.deepEqual(D.OPCIONES_FINAL_T5_A2.filter((o) => o.correcta).map((o) => o.texto), ["Por $221.000, lo que costaron los 260 títulos."]);
   const { Capa4 } = ESCENAS_TEMA5[D.PIEZA_TRES_MOMENTOS.id];
   const { caja, desmontar } = await montar(h(Capa4));
   assert.ok(caja.textContent.startsWith(D.PREGUNTA_FINAL_T5_A2));
+  assert.equal([...caja.querySelectorAll("[data-pie]")].at(-1).textContent, "Escenario simulado");
   for (const o of D.OPCIONES_FINAL_T5_A2) {
     assert.equal(caja.querySelector(`[data-opcion="${o.id}"]`).textContent, o.texto);
     await tocar(caja.querySelector(`[data-opcion="${o.id}"]`));

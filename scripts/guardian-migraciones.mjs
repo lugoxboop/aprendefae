@@ -108,6 +108,25 @@ const RETIRO_BLANDO = /^\s*update\s+(?:public\.)?actividad_catalogo\s+set\s+reti
  * lo sea para que no cuente: así una migración no puede colar un `delete`
  * detrás de un retiro legítimo.
  */
+/*
+ * Los ids que un SQL retira en blando. Sirve para no exigirle a la aplicación
+ * que declare una actividad que la propuesta está retirando: ese es justo el
+ * caso de una pieza que se funde en otra o que sale de la lista.
+ */
+export function idsRetirados(sql) {
+  const limpio = sinComentarios(sql);
+  const ids = new Set();
+  const re = /update\s+(?:public\.)?actividad_catalogo\s+set\s+retirada\s*=\s*true\s+where\s+activity_id\s+in\s*\(([^)]*)\)/gi;
+  let m;
+  while ((m = re.exec(limpio)) !== null) {
+    for (const trozo of m[1].split(",")) {
+      const id = trozo.trim().replace(/^'|'$/g, "").trim();
+      if (id) ids.add(id);
+    }
+  }
+  return ids;
+}
+
 export function soloRetiroBlando(sql) {
   const sentencias = sinComentarios(sql).split(";").map((t) => t.trim()).filter((t) => t.length > 0);
   return sentencias.length > 0 && sentencias.every((t) => RETIRO_BLANDO.test(t) || !DESTRUCTIVOS.test(t));
@@ -198,8 +217,31 @@ export function catalogoDelCliente(SUBJECTS) {
  * cliente, y devuelve la lista de reproches. Pura a propósito, para que la
  * prueba pueda darle casos inventados sin tocar el disco.
  */
-export function revisar(archivos, catalogoCliente) {
+export function revisar(archivos, catalogoCliente, retiradasPrevias = new Set()) {
   const reproches = [];
+
+  /*
+   * LO QUE LA PROPUESTA RETIRA NO SE LE EXIGE A LA APLICACIÓN.
+   *
+   * La comprobación 3 compara cada fila insertada con `subjects.js`, y está
+   * para cazar un id mal escrito. Pero hay un caso legítimo en que el id no
+   * está declarado y no hay ningún error: la actividad SE RETIRA. Pasó en el
+   * mismo día en dos células —D funde H5 en H4 y H6 en H7, y sus migraciones
+   * 0201, 0204 y 0205 entran a main por primera vez insertando piezas que la
+   * aplicación ya no declara—.
+   *
+   * Sin esto, la salida era: «escribe una migración que borre lo que otra
+   * migración de la misma propuesta acaba de insertar», o peor, «deja la
+   * actividad declarada aunque no exista». Las dos son rodeos.
+   *
+   * Se juntan los retiros de TODA la propuesta antes de revisar archivo por
+   * archivo, porque el retiro suele ir en una migración POSTERIOR a la que
+   * inserta, y revisando en orden el guardián se quejaría de algo que tres
+   * archivos más abajo queda resuelto. Y se suman los retiros que ya están en
+   * el repositorio, que el programa le pasa.
+   */
+  const retiradas = new Set(retiradasPrevias);
+  for (const { sql } of archivos) for (const id of idsRetirados(sql)) retiradas.add(id);
   for (const { nombre, sql } of archivos) {
     const numero = numeroDe(nombre);
     if (numero === null) {
@@ -240,6 +282,7 @@ export function revisar(archivos, catalogoCliente) {
 
     for (const fila of filasDeCatalogo(sql)) {
       const esperada = catalogoCliente.get(fila.activity_id);
+      if (!esperada && retiradas.has(fila.activity_id)) continue; /* se retira: no hay nada que comparar */
       if (!esperada) {
         reproches.push(
           `${nombre}: inserta «${fila.activity_id}», que la aplicación no declara en subjects.js. ` +
@@ -247,6 +290,9 @@ export function revisar(archivos, catalogoCliente) {
         );
         continue;
       }
+      /* Una actividad que se retira puede estar declarada todavía y con otros
+         números: tampoco se compara, porque va a dejar de ofrecerse. */
+      if (retiradas.has(fila.activity_id)) continue;
       for (const campo of ["subject_id", "topic_id", "modalidad", "dificultad", "fp_base"]) {
         if (String(fila[campo]) !== String(esperada[campo])) {
           reproches.push(
@@ -277,6 +323,11 @@ export function leerMigraciones() {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const { SUBJECTS } = await import("../src/data/subjects.js");
   const base = process.argv[2];
+  /* Los retiros que YA están en el repositorio: una pieza retirada hace tres
+     semanas sigue retirada hoy, y su migración de alta no tiene que volver a
+     justificarse. */
+  const retiradasPrevias = new Set();
+  for (const { sql } of leerMigraciones()) for (const id of idsRetirados(sql)) retiradasPrevias.add(id);
   let archivos;
 
   if (base) {
@@ -302,7 +353,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
   }
 
-  const reproches = revisar(archivos, catalogoDelCliente(SUBJECTS));
+  const reproches = revisar(archivos, catalogoDelCliente(SUBJECTS), retiradasPrevias);
   if (reproches.length) {
     console.error(`\nEl guardián rechaza ${reproches.length} cosa(s):\n`);
     for (const r of reproches) console.error("  · " + r);

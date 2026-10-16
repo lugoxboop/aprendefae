@@ -242,7 +242,7 @@ test("★★★ cada tipo de pie tiene su forma: libro llano, escenario en caja 
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: el tablero es una tabla; cada caja llena su celda al decidir, en cualquier orden y con el valor correcto aunque se falle; con las cuatro, «La provisión» y el final", async () => {
+test("★★★ capa 3: el tablero es una tabla; cada deuda llena la celda de su grupo al cerrarse su pregunta (tras la pista, al segundo error), en cualquier orden y con el valor correcto aunque se falle; con las cuatro, «La provisión» y el final", async () => {
   const { caja, desmontar } = await montar(h(CuatroGrupos));
   assert.equal(caja.querySelector("[data-capa3-t6-a5] > p").textContent, D.CONSIGNA_CAPA_3_T6_A5);
   const tabla = caja.querySelector("[data-tablero] table");
@@ -250,14 +250,20 @@ test("★★★ capa 3: el tablero es una tabla; cada caja llena su celda al dec
   assert.deepEqual([...tabla.querySelectorAll("tbody th")].map((th) => th.textContent), D.GRUPOS_T6_A5.map((g) => g.nombre));
   const celdas = () => [...tabla.querySelectorAll("tbody [data-celda]")].map((c) => c.textContent);
   assert.deepEqual(celdas(), ["", "", "", ""]);
-  /* Las cajas cerradas: «nombre · monto», como el rótulo de Futaba. */
-  assert.deepEqual([...caja.querySelectorAll("[data-hecho] button[aria-expanded]")].map((b) => b.textContent), D.GRUPOS_T6_A5.map((g) => `${g.nombre} · ${g.monto}`));
+  /* Las cajas cerradas (C1-14): la deuda suelta, sin el nombre ni el monto del grupo, que delataban la respuesta. */
+  assert.deepEqual([...caja.querySelectorAll("[data-hecho] button[aria-expanded]")].map((b) => b.textContent), [
+    "Una deuda con 1 mes de vencida", "Una deuda con 5 meses de vencida", "Una deuda con 10 meses de vencida", "Una deuda con 20 meses de vencida",
+  ]);
   for (const [k, id] of [[2, "g3"], [0, "g1"], [3, "g4"]]) {
     const g = D.GRUPOS_T6_A5[k];
     await tocar(caja.querySelector(`[data-hecho="${id}"] button[aria-expanded]`));
     assert.equal(celdas()[k], "", "abierta sin decidir: la celda espera");
-    /* Con error a propósito: la celda se llena igual, con el valor correcto (hoja 6, indispensable 5). */
-    await decidir(tocar, caja.querySelector(`[data-hecho="${id}"]`), g.opciones.find((o) => o.id !== g.correcta).id);
+    /* Con dos errores a propósito: la celda se llena igual, con el valor correcto (hoja 6, indispensable 5). */
+    const [mala1, mala2] = g.opciones.filter((o) => o.id !== g.correcta).map((o) => o.id);
+    await decidir(tocar, caja.querySelector(`[data-hecho="${id}"]`), mala1);
+    assert.equal(caja.querySelector(`[data-revela="${id}"] [data-pista]`).textContent, pegado(g.pista), "al primer error, la pista");
+    assert.equal(celdas()[k], "", "al primer error, la celda espera");
+    await decidir(tocar, caja.querySelector(`[data-hecho="${id}"]`), mala2);
     assert.equal(celdas()[k], D.TABLERO_T6_A5.celdas[k]);
     const revela = caja.querySelector(`[data-revela="${id}"]`);
     assert.equal(revela.querySelector("[data-devolucion]").textContent, pegado(g.falla));
@@ -295,9 +301,9 @@ test("★★★ el «%» nunca se separa de su número: capas 1, 2, 3 y 4", asyn
     await siguiente(c2.caja);
   }
   c2.desmontar();
-  /* Capa 3, con las cuatro decididas con error: opciones, devoluciones y textos. */
+  /* Capa 3, con las cuatro cerradas con dos errores: opciones, devoluciones y textos. */
   const c3 = await montar(h(CuatroGrupos));
-  for (const g of D.GRUPOS_T6_A5) await decidir(tocar, c3.caja.querySelector(`[data-hecho="${g.id}"]`), g.opciones.find((o) => o.id !== g.correcta).id);
+  for (const g of D.GRUPOS_T6_A5) for (const o of g.opciones.filter((x) => x.id !== g.correcta)) await decidir(tocar, c3.caja.querySelector(`[data-hecho="${g.id}"]`), o.id);
   assert.equal(c3.caja.querySelectorAll("[data-devolucion]").length, 4);
   assert.ok(c3.caja.textContent.includes(`5${NBSP}%`) && sinPartir(c3.caja.textContent));
   c3.desmontar();
@@ -328,20 +334,30 @@ test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola corr
 
 /* ═══════════ TEXTOS ═══════════ */
 
+/*
+ * La celda «$0» del grupo 1 salió de lo que revelaba su caja antes del lote
+ * C1-14 («…no se provisiona nada: $0.»). La caja ahora dice que ese grupo no
+ * se provisiona; la celda no cambió, así que sigue anclada al texto aprobado
+ * de entonces, guardado en el paquete.
+ */
+const CAPA_3_ANTES = ["En este ejemplo, por las deudas vigentes o con hasta tres meses de vencidas no se provisiona nada: $0."];
 const FUENTES_FRAGMENTO = () => [...D.PASOS_T6_A5, D.CIERRE_T6_A5].map((p) => p.texto)
-  .concat(D.GRUPOS_T6_A5.flatMap((g) => [g.nombre, g.monto, g.revela]), [D.FINAL_CAPA_3_T6_A5.texto, D.ROTULO_SIMULADO_T6_A5])
+  .concat(D.GRUPOS_T6_A5.flatMap((g) => [g.nombre, g.monto, g.revela]), [D.FINAL_CAPA_3_T6_A5.texto, D.ROTULO_SIMULADO_T6_A5], CAPA_3_ANTES)
   .map((t) => t.toLowerCase());
 const esFragmento = (r) => FUENTES_FRAGMENTO().some((t) => t.includes(r.toLowerCase()));
 
 test("★★★ cada rótulo de la escena y del tablero es fragmento literal de un paso, de la capa 3 o del rótulo fijo (y uno inventado no lo es)", () => {
   assert.equal(esFragmento("Al 0 %"), false, "control: el «0 %» que no está escrito no pasa");
+  const paquete = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-aprender5.md", import.meta.url), "utf8");
+  for (const t of CAPA_3_ANTES) assert.ok(paquete.includes(t), "la capa 3 de antes sigue guardada en el paquete");
   const { grupos, debita, acredita, ...resto } = D.ESCENA_T6_A5;
   const rotulos = [...Object.values(resto), ...grupos.flatMap((g) => [g.suma, g.porcentaje, g.resultado]).filter(Boolean),
     D.TABLERO_T6_A5.total, D.TABLERO_T6_A5.suma, ...D.TABLERO_T6_A5.celdas];
   assert.ok(rotulos.length >= 20, `solo ${rotulos.length} rótulos`);
   assert.deepEqual(rotulos.filter((x) => !esFragmento(x)), []);
-  /* «Se provisiona» es la cabecera de Mai: sale de la consigna («se provisiona por él»). */
-  assert.ok(D.CONSIGNA_CAPA_3_T6_A5.toLowerCase().includes(D.TABLERO_T6_A5.cabecera.toLowerCase()));
+  /* «Se provisiona» es la cabecera de Mai: salía de la consigna de antes; la de C1-14 ya no la dice, pero sigue siendo fragmento de un paso y de una caja. */
+  assert.ok(esFragmento(D.TABLERO_T6_A5.cabecera));
+  assert.ok(D.GRUPOS_T6_A5[0].revela.toLowerCase().includes(D.TABLERO_T6_A5.cabecera.toLowerCase()));
 });
 
 test("★★★ ningún componente de la pieza escribe texto que lea el estudiante", () => {
@@ -450,7 +466,7 @@ test("★★★ condición 1 resuelta: cada término de la capa 1 muestra su pie
   const nota = terminos[3].querySelector("[data-del-libro]");
   assert.equal(nota.firstElementChild.textContent, "Nota");
   const pieNota = nota.querySelector("[data-pie-nota]");
-  assert.equal(pieNota.textContent, D.PIE_DECRETO_Y_LIBRO);
+  assert.equal(pieNota.textContent, D.PIE_DECRETO_DIAN_Y_LIBRO, "con el concepto de la DIAN (C7-6)");
   assert.equal(pieNota.querySelector("[data-tipo-pie]").dataset.tipoPie, "norma-y-libro");
   /* La cita del término 1 no lleva pie: su página va dentro de la cita. */
   const cita = terminos[0].querySelector("[data-del-libro]");

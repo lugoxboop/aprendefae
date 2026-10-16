@@ -23,14 +23,14 @@ import QueRentaDa from "./mecanicas/libros/tema5/QueRentaDa.jsx";
 import { T5_ACT1 } from "../data/contabilidadT5Act1.js";
 import CierreConDiario from "./mecanicas/libros/tema5/LibroDiario.jsx";
 import { T5_ACT2 } from "../data/contabilidadT5Act2.js";
-import ControlInterno from "./mecanicas/libros/t7/ControlInterno.jsx";
-import { PIEZA_CUIDAR_LAS_INVERSIONES } from "../data/contabilidadT5_n2.js";
 import TemporalOLargoPlazo from "./mecanicas/libros/t5/TemporalOLargoPlazo.jsx";
 import { N1 } from "../data/contabilidadT5_n1.js";
 import RevisionQueFalta from "./mecanicas/libros/t5/RevisionQueFalta.jsx";
 import { N3 } from "../data/contabilidadT5_n3.js";
 import ElInteresDelPeriodo from "./mecanicas/libros/t5/ElInteresDelPeriodo.jsx";
 import { N4 } from "../data/contabilidadT5_n4.js";
+import GanoOPerdio from "./mecanicas/libros/t5/GanoOPerdio.jsx";
+import { N5 } from "../data/contabilidadT5_n5.js";
 import LoQueElEjemploNoTrae from "./mecanicas/libros/t5/LoQueElEjemploNoTrae.jsx";
 import { PIEZA_LO_QUE_EL_EJEMPLO_NO_TRAE } from "../data/contabilidadT5_n6.js";
 
@@ -51,15 +51,16 @@ const MATERIA = "contabilidad";
 export const TEMA = "activos-financieros";
 
 /*
- * En el orden del tema (decisión de corte de T5, punto 6). Las de la Célula C
- * traen `Pieza`, su propio componente; las de B se pintan con CuatroCapas y
- * sus escenas, como siempre.
+ * En el orden del tema (decisión de corte de T5, punto 6). Una pieza que
+ * traiga `Pieza`, su propio componente, se pinta con él; las de B se pintan
+ * con CuatroCapas y sus escenas, como siempre. N2 de la Célula C («Cómo se
+ * cuidan las inversiones») salió con la fusión de la entrega 5: lo suyo va
+ * dentro de N3. Sus archivos se quedan.
  */
 export const PIEZAS = [
   { numero: 1, pieza: PIEZA_DEL_EFECTIVO },
-  { numero: 2, pieza: PIEZA_CUIDAR_LAS_INVERSIONES, Pieza: ControlInterno },
-  { numero: 3, pieza: PIEZA_TRES_MOMENTOS },
-  { numero: 4, pieza: PIEZA_LO_QUE_EL_EJEMPLO_NO_TRAE, Pieza: LoQueElEjemploNoTrae },
+  { numero: 2, pieza: PIEZA_TRES_MOMENTOS },
+  { numero: 3, pieza: PIEZA_LO_QUE_EL_EJEMPLO_NO_TRAE, Pieza: LoQueElEjemploNoTrae },
 ];
 const PUBLICADAS = PIEZAS.length;
 
@@ -70,6 +71,7 @@ export const JUEGOS = [
   { id: N1.id, Mecanica: TemporalOLargoPlazo, titulo: N1.nombre },
   { id: N3.id, Mecanica: RevisionQueFalta, titulo: N3.nombre },
   { id: N4.id, Mecanica: ElInteresDelPeriodo, titulo: N4.nombre },
+  { id: N5.id, Mecanica: GanoOPerdio, titulo: N5.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */

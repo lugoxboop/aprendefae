@@ -665,15 +665,18 @@ export const SUBJECTS = {
           { id: "b5-t5-a1", nombre: "¿Qué renta da este título?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /* N1 de la Célula C, después de b5-t5-a1 (decisión de corte de T5, punto 6; la sostiene b5-t5-a1-del-efectivo-de-sobra). Temporal o a largo plazo, el grupo y la intención, pp. 191-192. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0110. */
           { id: "t5-temporal-o-largo-plazo", nombre: "¿Temporal o a largo plazo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
-          /* N2 de la Célula C, después de b5-t5-a1 (decisión de corte de T5, punto 6: N1 entra entre b5-t5-a1 y N2, y N3 justo después de N2). Las cuatro acciones de control de la p. 193; sostiene a N3. Cero FP. */
-          { id: "t5-a1-cuidar-las-inversiones", nombre: "Cómo se cuidan las inversiones", clasificacion: { tipo: APRENDER } },
-          /* N3 de la Célula C, justo después de N2, que la sostiene (decisión de corte de T5, punto 6). Qué acción de control de la p. 193 hace falta. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0111. */
+          /*
+           * N3 de la Célula C, justo después de N1 (decisión de corte de T5, punto 6). Qué acción de control de la p. 193 hace falta. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0111.
+           * N2 («Cómo se cuidan las inversiones», t5-a1-cuidar-las-inversiones, Aprender sin FP) salió de la lista con la fusión de la entrega 5 de Near: lo suyo va dentro de N3 (las glosas y el ejemplo resuelto). Sus archivos se quedan.
+           */
           { id: "t5-revision-que-falta", nombre: "¿Qué revisión falta?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "b5-t5-a2-los-tres-momentos-de-una-inversion", nombre: "Los tres momentos de una inversión", clasificacion: { tipo: APRENDER } },
           /* El cierre del tema. Difícil · 50 FP (decisión de Sakuta). Su fila del servidor es la migración 0072. */
           /* N4 de la Célula C, después de los tres momentos de B, que la sostienen (decisión de corte de T5, punto 6). El interés de un trimestre con cifras construidas, como en la p. 194, y el asiento del cobro. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0112. */
           { id: "t5-el-interes-del-periodo", nombre: "El interés del periodo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          /* N6 de la Célula C, posición 9 de la decisión de corte de T5 (punto 6): después de N4 y de N5 (que llega en su PR), antes de N7, que la sostiene, y del cierre de Santa Pacha. Los gastos de la compra al costo y el dividendo a Ingresos por dividendos, p. 193, con un ejemplo construido. Cero FP. */
+          /* N5 de la Célula C, justo después de N4; la sostienen los tres momentos de B (decisión de corte de T5, punto 6). Dos ventas de acciones, una con ganancia y otra con pérdida, por el costo, con cifras construidas. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0113. */
+          { id: "t5-gano-o-perdio", nombre: "¿Ganó o perdió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* N6 de la Célula C, posición 9 de la decisión de corte de T5 (punto 6): después de N4 y de N5, antes de N7, que la sostiene, y del cierre de Santa Pacha. Los gastos de la compra al costo y el dividendo a Ingresos por dividendos, p. 193, con un ejemplo construido. Cero FP. */
           { id: "t5-a2-lo-que-el-ejemplo-no-trae", nombre: "Lo que el ejemplo no trae", clasificacion: { tipo: APRENDER } },
           { id: "b5-t5-a2", nombre: "El cierre completo de Santa Pacha", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],

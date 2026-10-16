@@ -422,8 +422,9 @@ test("★★★ fuera del catálogo de FP; en T5 en la posición de la decisión
   assert.equal(a.nombre, P.titulo);
   /*
    * Punto 6 de la decisión de corte: la posición 9, después de N4 (7) y N5 (8)
-   * y antes de N7 (10) y del cierre de Santa Pacha (11). N5 y N7 llegan en sus
-   * PR: el orden de lo publicado es el de la tabla sin ellas.
+   * y antes de N7 (10) y del cierre de Santa Pacha (11). N7 llega en su PR, y N2
+   * (posición 4) entró en N3 con la entrega 5: el orden de lo publicado es el
+   * de la tabla sin ellas.
    */
   const corte = readFileSync(new URL("orquestador/conocimiento/mapas/t5-activos-financieros.md", RAIZ), "utf8");
   const tabla = [...corte.slice(corte.indexOf("6. **Orden final")).matchAll(/^ {3}\| (\d+) \| `([^`]+)`/gm)].map((m) => [Number(m[1]), m[2]]);
@@ -432,8 +433,8 @@ test("★★★ fuera del catálogo de FP; en T5 en la posición de la decisión
   const ids = tema().actividades.map((x) => x.id);
   assert.deepEqual(ids, tabla.map(([, id]) => id).filter((id) => ids.includes(id)), "el orden del tema no es el de la decisión de corte");
   assert.deepEqual(ids, [
-    "b5-t5-a1-del-efectivo-de-sobra", "b5-t5-a1", "t5-temporal-o-largo-plazo", "t5-a1-cuidar-las-inversiones", "t5-revision-que-falta",
-    "b5-t5-a2-los-tres-momentos-de-una-inversion", "t5-el-interes-del-periodo", N.N6_ID, "b5-t5-a2",
+    "b5-t5-a1-del-efectivo-de-sobra", "b5-t5-a1", "t5-temporal-o-largo-plazo", "t5-revision-que-falta",
+    "b5-t5-a2-los-tres-momentos-de-una-inversion", "t5-el-interes-del-periodo", "t5-gano-o-perdio", N.N6_ID, "b5-t5-a2",
   ]);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(N.N6_ID)), []);
@@ -457,13 +458,13 @@ test("★★★ en pantalla no sale nada interno (construcción, hueco, nombres 
   for (const interno of ["CONSTRUCCIÓN", "HUECO", "Near", "Mello", "Watari", "INFLESZ", "C5-", "C7", "E8", "PENDIENTE"]) assert.ok(!todo.includes(interno), interno);
 });
 
-test("★★ la vista pinta N6 con su componente, la cuarta pieza de Aprender del tema, en el orden del catálogo", async () => {
+test("★★ la vista pinta N6 con su componente, la tercera pieza de Aprender del tema (N2 entró en N3), en el orden del catálogo", async () => {
   const { default: Vista } = await import("../../components/ContabilidadTema5View.jsx");
   assert.equal(typeof Vista, "function");
   const entrada = PIEZAS.find((x) => x.pieza.id === N.N6_ID);
   assert.equal(entrada.Pieza, LoQueElEjemploNoTrae);
   assert.equal(entrada.pieza, P);
   assert.deepEqual(PIEZAS.map((x) => x.pieza.id), tema().actividades.filter((x) => x.clasificacion.tipo === APRENDER).map((x) => x.id));
-  assert.equal(PIEZAS.indexOf(entrada) + 1, 4);
-  assert.equal(PIEZAS.length, 4);
+  assert.equal(PIEZAS.indexOf(entrada) + 1, 3);
+  assert.equal(PIEZAS.length, 3);
 });
