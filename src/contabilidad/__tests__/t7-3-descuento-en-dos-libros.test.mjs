@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { seccion, compararDatos, recorrer, prepararDom, citas, CONDICION } from "./t7-3-recorte.mjs";
+import { NO_OPERACIONAL as C7, CORRECCIONES_T73, MELLO_T73, NEAR_T73, aplicarAlRecorte, palabrasAlAcertar } from "./correccionesMelloAciertos.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -16,7 +17,10 @@ import { seccion, compararDatos, recorrer, prepararDom, citas, CONDICION } from 
  *     preguntar su lado: va al «¿Por qué?»
  *   · la cuenta T de San Calixto en el cierre; las dos cuentas T lado a lado
  *     en el resumen
- *   · el «¿Por qué?» de P3 trae una condición: va a la vista (regla de L)
+ *   · ACIERTOS C7: P3 `no-operacional` sale de t7-3-tres-aciertos-c7.md
+ *     (Near) con N-1 de Mello (auditoria-mello-enganche-v6-y-t7-3-aciertos.md,
+ *     §2): el acierto lleva la condición del saldo y la del permanente, a la
+ *     vista y sin «¿Por qué?» (C7), y sin «Así es.»; 59 palabras (B2)
  *   · las cifras son las de A3; fuera del catálogo de FP
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -50,6 +54,8 @@ const PISTA_MELLO = citas(MELLO_A4.split("\n").find((l) => l.includes("Reemplazo
 assert.equal(s("el-pago").pista, "Santa Martha es quien recibe el descuento. Recuerda de qué lado lo anota quien lo recibe.");
 assert.ok(MELLO_A4.includes("«Recuerda de qué lado lo anota quien lo recibe»"));
 s("el-pago").pista = PISTA_MELLO;
+/* Aciertos C7: P3, con la tabla final de Near y N-1 de Mello encima. */
+aplicarAlRecorte(s("no-operacional"), C7);
 
 /* La tabla de cambios del recorte: [campo, viejo, nuevo]. */
 const CAMBIOS = RECORTE.split("\n").filter((l) => /^\| (Pista|Anexo) · `descuento-en-dos-libros`/.test(l)).map((l) => [l.split(" | ")[0], ...citas(l)]);
@@ -81,9 +87,26 @@ test("★★★ que el descuento es un ingreso para quien compra no se lee antes
   assert.match(pantalla("el-pago").acierto.porque, /^Para quien compra, el descuento es un ingreso/);
 });
 
-test("★★★ regla de L: el «¿Por qué?» de P3 («Si las dos usaran el permanente…») va a la vista, y es el único", () => {
-  assert.match(s("no-operacional").porque, CONDICION);
-  assert.deepEqual(P.pantallas.filter((p) => p.acierto?.porqueALaVista).map((p) => p.id), ["no-operacional"]);
+test("★★★ C7 · P3 sin plegado: las dos condiciones (el saldo y el permanente) van en el acierto, a la vista", () => {
+  const p = pantalla("no-operacional");
+  assert.equal(p.acierto.porque, undefined);
+  assert.equal(p.acierto.porqueALaVista, undefined);
+  assert.match(p.acierto.texto, /^En Santa Martha, con saldo en el haber, es ingreso no operacional\./);
+  assert.match(p.acierto.texto, /Con el permanente, San Calixto anota también el costo\./);
+  assert.deepEqual(P.pantallas.filter((x) => x.acierto?.porqueALaVista).map((x) => x.id), []);
+});
+
+test("★★★ N-1 de Mello: el acierto nuevo, sin «Así es.»; lo demás de P3, de la tabla final de Near; B2: 59", () => {
+  assert.ok(NEAR_T73.includes(CORRECCIONES_T73[1][0]));
+  for (const f of CORRECCIONES_T73[1][1]) assert.ok(MELLO_T73.includes(f));
+  const p = pantalla("no-operacional");
+  assert.equal(p.acierto.texto, C7.Acierto.textos[0]);
+  assert.doesNotMatch(p.acierto.texto, /Así es/);
+  assert.deepEqual(p.parrafos, C7["Definición"].textos);
+  assert.equal(p.pregunta, C7.Pregunta.textos[0]);
+  assert.deepEqual(p.opciones.map((o) => [o.id, o.texto, o.correcta ?? false]), [["gasto", "Gasto no operacional", true], ["ingreso", "Ingreso no operacional", false], ["costo", "Costo de mercancía vendida", false]]);
+  assert.deepEqual(p.opciones.map((o) => o.texto), C7.Opciones.textos);
+  assert.equal(palabrasAlAcertar(C7), 59);
 });
 
 test("★★★ las cifras son las de A3: el mismo ejemplo", () => {
@@ -136,8 +159,11 @@ test("★★★ se recorre entera: cada pantalla y cada estado, contra el recort
       },
       async alFallar(k, c) {
         if (S.pantallas[k].id === "el-pago") assert.equal(c.querySelector("[data-asiento]"), null);
+        /* C7: el acierto de P3 (tres frases) no se pliega tampoco cuando lo da el 2.º error. */
+        if (S.pantallas[k].id === "no-operacional") assert.equal(c.querySelector("[data-mensaje] [data-por-que], [data-mensaje] [data-plegado]"), null);
       },
       async alAcertar(k, c) {
+        if (S.pantallas[k].id === "no-operacional") assert.equal(c.querySelector("[data-mensaje] [data-por-que], [data-mensaje] [data-plegado], [data-porque-a-la-vista]"), null);
         if (S.pantallas[k].id !== "el-pago") return;
         const as = c.querySelector("[data-asiento]");
         assert.equal(as.dataset.asiento, "sin-fecha");
