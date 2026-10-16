@@ -31,7 +31,6 @@ const DATOS = new URL("../../data/", import.meta.url);
    otra pantalla con el mismo id, y no depende del archivo que la exporte. */
 const PENDIENTES = new Set([
   "dos-cuentas-propias · «Para saber cuánto se devolvió en el periodo.»",
-  "la-compra · «Inventario de mercancías»",
 ]);
 
 const norm = (t) => String(t).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\u00f1 ]/g, " ");

@@ -3,22 +3,27 @@
  * T7-2 · A1 DE APRENDER — «La cuenta que sí se mueve» (pp. 207-209, 212, 214
  * y 233-236).
  *
- * Fuente: la v1 de Near, con PASA de Mello. Copia en
- * orquestador/conocimiento/paquetes/t7-2-a1-v1.md; una prueba compara cada
- * texto de aquí contra ella, letra por letra.
+ * Fuente: EL RECORTE DEL LOTE 1 de Near (entrega 2,
+ * orquestador/conocimiento/paquetes/lote1-entrega2-v1.md, sección
+ * «t7-2-a1-la-cuenta-que-si-se-mueve»), con el cambio de la entrega 6 a la
+ * línea 3 del resumen («contracción del inventario» pasa también al
+ * resumen). Una prueba compara cada texto de aquí contra el paquete, letra
+ * por letra, en los dos sentidos (correccionesMelloRecortesT72.mjs). Mello no
+ * corrige esta pieza en su auditoría de la entrega 6.
  *
- * Pieza de Aprender: cero FP, no entra al catálogo. Siete pantallas, sin
- * figura y sin ninguna cifra (regla 3: T7-2 se entiende sola y no muestra
- * nada del periódico con números).
+ * Cinco pantallas, tres con acción: abre con la lista del libro en un
+ * almacén; la diferencia con el periódico se pregunta («¿cuándo se anota el
+ * costo de lo vendido?»). Sin ninguna cifra (regla 3).
  *
- * Lo que la v1 no trae y se toma de la convención de T7-1 (AP1, AP4, A7): los
- * botones «Empezar», «Seguir», «Confirmar» y «Probar otra», y las palabras
- * «Correcto.», «Incorrecto.», «Debe» y «Haber» de la interfaz.
+ * EL «¿POR QUÉ?» de cada acierto va escrito aparte (`acierto.porque`). El de
+ * `el-permanente` trae «cuando» («avisan cuando queda poca mercancía»): por
+ * la regla de L no se pliega, va a la vista (`porqueALaVista`).
  *
- * Construcción de Near, marcada en la v1 (se dice aquí, no en pantalla): la
- * glosa de «costo de la mercancía vendida» (P2), «lectores en las cajas»
- * (P2), «para su propio consumo» (P3) y la lectura de cada línea como
- * entrada o salida (P3).
+ * Pieza de Aprender: cero FP, no entra al catálogo. Los textos del recorte se
+ * ven enteros (`textosEnteros`): Near ya los midió.
+ *
+ * Lo que el recorte no trae y se conserva de lo publicado: los pies de cada
+ * pantalla, los botones y las palabras de la interfaz.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -31,80 +36,76 @@ export const INTERFAZ = { correcto: "Correcto.", incorrecto: "Incorrecto.", debe
 export const DEBE = "debe";
 export const HABER = "haber";
 
+/*
+ * [ESCRITO POR CLAUDE, NO POR LA FICHA] PENDIENTE_DE_REVISION: los rótulos
+ * de la cuenta T del resumen. El paquete solo dice «Inventario de mercancías
+ * como cuenta T: entradas al debe, salidas al haber».
+ */
+export const PENDIENTE_DE_REVISION = { entradas: "Entradas", salidas: "Salidas" };
+
 const PIE_LISTA = "Basado en el libro, pp. 207-208";
 
-/* P3 · los dos mensajes de error: uno por cada lado bueno. */
-const ENTRA = "Entra mercancía a la bodega, así que el activo aumenta. Un activo que aumenta va al debe.";
-const SALE = "Sale mercancía de la bodega, así que el activo disminuye. Un activo que disminuye va al haber.";
+/* P1 · los dos mensajes de error: uno por cada lado bueno. */
+const ENTRA = "Entra mercancía: el activo aumenta y va al debe.";
+const SALE = "Sale mercancía: el activo baja y va al haber.";
 
 const PORTADA = {
   id: "portada",
   tipo: "portada",
-  objetivo: "Al terminar, sabrás cuándo Inventario de mercancías va al debe y cuándo al haber. Y sabrás qué cambia en el sistema permanente.",
+  objetivo: "Vas a ver qué cambia cuando la empresa anota su mercancía cada vez que entra o sale.",
   boton: BOTON.empezar,
   pie: "Basado en el libro, pp. 207-209 y 233-234",
 };
 
-/* P1 · el repaso del periódico, sin cifras y sin depender de T7-1. */
-const REPASO = {
-  id: "repaso-del-periodico",
-  tipo: "lectura",
-  parrafos: [
-    "Primero, un repaso. En el sistema periódico, la empresa no anota su mercancía día a día. Las compras van a una cuenta llamada Compras, e Inventario de mercancías no se mueve hasta el cierre.",
-    "Al vender, solo se anota cuánto se cobró. El costo de lo vendido se halla al cierre, con un conteo físico de la bodega.",
-  ],
-  boton: BOTON.seguir,
-  pie: "Basado en el libro, pp. 209, 212 y 214",
-};
-
-/* P2 · el permanente. La última línea es la refutación de la idea que trae el estudiante. */
-const PERMANENTE = {
-  id: "el-permanente",
-  tipo: "lectura",
-  parrafos: [
-    "En el sistema permanente es distinto. La empresa anota todos los días su mercancía y el costo de lo que vende.",
-    "El costo de la mercancía vendida es lo que costaron las unidades que salieron con las ventas. En el permanente se anota cada vez que hay una venta.",
-    "El libro dice que grandes almacenes de cadena usan este sistema. Lo llevan con computadores y con lectores en las cajas.",
-    "Los registros también avisan cuando queda poca mercancía. Así se sabe que hay que comprar más.",
-    "Si la empresa prepara estados financieros cada mes, los registros ya muestran el inventario final. No hace falta un conteo cada mes.",
-    "Por eso, en el permanente, la cuenta Inventario de mercancías sí se mueve. Sube cuando entra mercancía y baja cuando sale.",
-  ],
-  boton: BOTON.seguir,
-  pie: "Basado en el libro, pp. 233-234 y 236",
-};
-
-/* P3 · la lista del libro (regla 5b). Las líneas se barajan al entrar. */
+/* P1 · la lista del libro, en un almacén (regla 5b). Las líneas se barajan al entrar; la pista es una para las cinco. */
 const LISTA = {
   id: "la-lista-del-libro",
-  pista: "Pregúntate si la mercancía entra a la bodega o sale de ella. Inventario de mercancías es un activo.",
+  pista: "¿La mercancía entra a la bodega o sale de ella?",
   tipo: "lados",
-  consigna: "El libro da la lista de cuándo esta cuenta va al debe y cuándo va al haber. Toca Debe o Haber en cada línea.",
+  parrafos: ["Un almacén usa el sistema permanente. Anota la mercancía cada vez que entra o sale."],
+  consigna: "¿A qué lado va Inventario de mercancías en cada caso?",
   lineas: [
-    { id: "compra", texto: "El costo de la mercancía que la empresa compra.", lado: DEBE, devolucion: ENTRA },
-    { id: "devuelven-clientes", texto: "El costo de la mercancía que le devuelven los clientes.", lado: DEBE, devolucion: ENTRA },
-    { id: "vende", texto: "El costo de la mercancía que la empresa vende.", lado: HABER, devolucion: SALE },
-    { id: "devuelve-proveedores", texto: "El costo de la mercancía que la empresa le devuelve a sus proveedores.", lado: HABER, devolucion: SALE },
-    { id: "consumo", texto: "El valor de la mercancía que la empresa usa para su propio consumo.", lado: HABER, devolucion: SALE },
+    { id: "compra", texto: "Compra mercancía.", lado: DEBE, devolucion: ENTRA },
+    { id: "devuelven-clientes", texto: "Un cliente le devuelve mercancía.", lado: DEBE, devolucion: ENTRA },
+    { id: "vende", texto: "Vende mercancía.", lado: HABER, devolucion: SALE },
+    { id: "devuelve-proveedores", texto: "Le devuelve mercancía al proveedor.", lado: HABER, devolucion: SALE },
+    { id: "consumo", texto: "Usa mercancía para su propio consumo.", lado: HABER, devolucion: SALE },
   ],
   pie: PIE_LISTA,
   error: { pie: PIE_LISTA },
-  acierto: { texto: "Así es. Lo que entra a la bodega va al debe, y lo que sale va al haber.", pie: PIE_LISTA },
+  acierto: {
+    texto: "Así es: lo que entra va al debe, y lo que sale, al haber.",
+    porque: "La lista del libro trae dos líneas más, del periódico: al cierre, el inventario final va al debe y el inicial al haber. Los sobrantes y los faltantes los verás en «Inventarios III».",
+    pie: PIE_LISTA,
+  },
 };
 
-/* P4 · lo que falta de la lista: el cierre periódico, como repaso, y los sobrantes y faltantes, solo nombrados. */
-const LO_QUE_FALTA = {
-  id: "lo-que-falta-de-la-lista",
-  tipo: "lectura",
-  parrafos: [
-    "La lista del libro trae dos líneas más del sistema periódico, que se usan al cierre.",
-    "Al cierre, el inventario final se anota en el debe, y el inventario inicial se anota en el haber.",
-    "Trae también los sobrantes y los faltantes que aparecen al hacer un conteo. Esos los verás en «Inventarios III».",
+/* P2 · el permanente, como pregunta. */
+const PIE_PERMANENTE = "Basado en el libro, pp. 233-234 y 236";
+const PERMANENTE = {
+  id: "el-permanente",
+  pista: "Piensa en qué cambia si la empresa anota su mercancía cada vez que sale.",
+  tipo: "eleccion",
+  parrafos: ["El costo de la mercancía vendida es lo que costaron las unidades que salieron con las ventas."],
+  pregunta: "En el permanente, ¿cuándo se anota?",
+  opciones: [
+    { id: "cada-venta", texto: "En cada venta", correcta: true },
+    { id: "al-cierre", texto: "Al cierre, con el conteo", correcta: false, devolucion: "Así es en el periódico. El permanente lo anota antes." },
+    { id: "nunca", texto: "Nunca: solo se anota el precio", correcta: false, devolucion: "Sí se anota: el permanente lleva el costo de cada venta." },
   ],
-  boton: BOTON.seguir,
-  pie: PIE_LISTA,
+  pie: PIE_PERMANENTE,
+  error: { pie: PIE_PERMANENTE },
+  acierto: {
+    texto: "Así es: por eso Inventario de mercancías está al día todo el tiempo.",
+    /* Regla de L: trae «cuando»; va a la vista. */
+    porque: "Según el libro, lo usan los almacenes de cadena, con computadores y lectores en las cajas. Los registros avisan cuando queda poca mercancía. Y dan el inventario final sin hacer un conteo cada mes.",
+    porqueALaVista: true,
+    pie: PIE_PERMANENTE,
+  },
 };
 
-/* P5 · el conteo en el permanente. Fuera, «obsolescencia»: no está enseñada. */
+/* P3 · el conteo en el permanente. */
+const PIE_CONTEO = "Basado en el libro, pp. 233-234";
 const CONTEO = {
   id: "el-conteo-en-el-permanente",
   pista: "En el permanente, el saldo ya está al día después de cada venta. ¿Qué le queda por hacer al conteo?",
@@ -113,34 +114,28 @@ const CONTEO = {
   pregunta: "En el permanente, ¿para qué sirve el conteo físico?",
   opciones: [
     { id: "verificar", texto: "Para verificar que los registros estén bien.", correcta: true },
-    {
-      id: "hallar",
-      texto: "Para hallar el costo de lo vendido, como en el periódico.",
-      correcta: false,
-      devolucion: "En el permanente, el costo de lo vendido ya se anota en cada venta. El conteo no lo halla: lo verifica.",
-    },
-    {
-      id: "no-hace-falta",
-      texto: "No hace falta: el sistema ya lo sabe todo.",
-      correcta: false,
-      devolucion: "El libro dice que el permanente no elimina la necesidad de hacer un conteo físico, al menos una vez al año.",
-    },
+    { id: "hallar", texto: "Para hallar el costo de lo vendido, como en el periódico.", correcta: false, devolucion: "En el permanente, el costo de lo vendido ya se anota en cada venta. El conteo no lo halla." },
+    { id: "no-hace-falta", texto: "No hace falta: el sistema ya lo sabe todo.", correcta: false, devolucion: "El libro dice que el permanente no quita el conteo físico: se hace al menos una vez al año." },
   ],
-  pie: "Basado en el libro, pp. 233-234",
-  error: { pie: "Basado en el libro, pp. 233-234" },
+  pie: PIE_CONTEO,
+  error: { pie: PIE_CONTEO },
   acierto: {
-    texto: "Así es. El conteo verifica los registros. Las diferencias que encuentra, por robo, daños o pérdidas, se llaman contracción del inventario.",
-    pie: "Basado en el libro, pp. 233-234",
+    texto: "Así es: el conteo verifica los registros.",
+    porque: "El conteo puede hallar diferencias por robo, daños o pérdidas. El libro las llama contracción del inventario.",
+    pie: PIE_CONTEO,
   },
 };
 
+/* P4 · el resumen abre con la cuenta T (provisional para Watari): entradas al debe, salidas al haber. */
 const RESUMEN = {
   id: "resumen",
   tipo: "resumen",
+  cuentaT: { cuenta: "Inventario de mercancías", debe: PENDIENTE_DE_REVISION.entradas, haber: PENDIENTE_DE_REVISION.salidas },
   lista: [
-    "En el permanente, Inventario de mercancías se mueve todo el tiempo. Sube con lo que entra y baja con lo que sale.",
+    "En el permanente, Inventario de mercancías sube con lo que entra y baja con lo que sale.",
     "El costo de lo vendido se anota en cada venta, no al cierre.",
-    "El conteo físico, al menos una vez al año, verifica que los registros estén bien.",
+    /* La línea 3, con el cambio de la entrega 6. */
+    "El conteo físico verifica los registros al menos una vez al año. Sus diferencias se llaman contracción del inventario.",
   ],
   siguiente: "Siguiente: «La venta en dos asientos».",
   pie: "Basado en el libro, pp. 207-208 y 233-236",
@@ -150,5 +145,6 @@ export const PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE = {
   id: A1_ID,
   numero: 1,
   titulo: "La cuenta que sí se mueve",
-  pantallas: [PORTADA, REPASO, PERMANENTE, LISTA, LO_QUE_FALTA, CONTEO, RESUMEN],
+  textosEnteros: true,
+  pantallas: [PORTADA, LISTA, PERMANENTE, CONTEO, RESUMEN],
 };

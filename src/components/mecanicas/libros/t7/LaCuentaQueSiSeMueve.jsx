@@ -10,17 +10,25 @@ import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDe
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-2 · A1 «La cuenta que sí se mueve».
  *
- * Siete pantallas, una a la vez, sin figura y sin cifras. Cuatro tipos:
+ * EL RECORTE DEL LOTE 1 (entrega 2 de Near, con la línea 3 del resumen de
+ * la entrega 6): cinco pantallas, una a la vez, sin cifras. Cuatro tipos:
  *
- *   · portada / lectura   textos, botón y pie
- *   · lados      P3: las cinco líneas de la lista del libro, barajadas al
+ *   · portada    el objetivo, botón y pie
+ *   · lados      P1: el almacén y la pregunta, y las cinco líneas de la lista del libro, barajadas al
  *                entrar, cada una con «Debe» | «Haber». «Confirmar» se activa
  *                con todas puestas y marca con la X cada línea en el lado
  *                equivocado, con su explicación debajo; «Probar otra» deja
  *                las buenas y devuelve solo esas. Es la forma de AP4 de T7-1,
  *                sin montos: aquí el lado elegido se lee en el botón
- *   · eleccion   P5: pregunta con opciones barajadas en cada intento, como A7
- *   · resumen    la lista numerada, la línea «Siguiente» y el pie
+ *   · eleccion   P2 y P3: pregunta con opciones barajadas en cada intento, como A7
+ *   · resumen    la cuenta T de Inventario de mercancías (entradas al debe,
+ *                salidas al haber; PROVISIONAL PARA WATARI, sobria, con los
+ *                colores de debe y haber del patrón), la lista numerada, la
+ *                línea «Siguiente» y el pie
+ *
+ * El acierto trae su «¿Por qué?» escrito aparte (`acierto.porque`), plegado;
+ * si trae una condición (`porqueALaVista`, regla de L), va a la vista,
+ * debajo. Los textos del recorte se ven enteros (`pieza.textosEnteros`).
  *
  * Cada pantalla lleva su pie en todos sus estados. NO CALIFICA y no da FP: es
  * Aprender. Clases con el prefijo `t7b1-`.
@@ -56,6 +64,15 @@ export const CSS_T7B1 = `
 .t7b1-msg-palabra { font: 600 14px/1.35 "Inter", sans-serif; }
 .t7b1-msg-error .t7b1-msg-palabra { color: ${P.error}; }
 .t7b1-msg p { margin: 0; font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+/* El resumen: la cuenta T (provisional para Watari) */
+.t7b1-t { margin: 0; display: grid; gap: 6px; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; min-width: 0; }
+.t7b1-t-cuenta { margin: 0; text-align: center; font: 600 14px/1.3 "Sora", "Inter", sans-serif; overflow-wrap: anywhere; padding-bottom: 6px; border-bottom: 2px solid ${P.borde}; }
+.t7b1-t-lados { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.t7b1-t-lado { display: grid; gap: 4px; padding: 6px 8px; min-width: 0; }
+.t7b1-t-lado + .t7b1-t-lado { border-left: 2px solid ${P.borde}; }
+.t7b1-t-rot { font: 600 12px/1.2 "Inter", sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+.t7b1-t-rot-debe { color: ${P.debe}; } .t7b1-t-rot-haber { color: ${P.haber}; }
+.t7b1-t-que { font-size: 15px; line-height: 1.35; overflow-wrap: anywhere; }
 /* P3: cada línea de la lista, con sus dos lados */
 .t7b1-lineas { display: grid; gap: 10px; }
 .t7b1-la { display: grid; gap: 8px; min-width: 0; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; }
@@ -86,21 +103,46 @@ function Boton({ nombre, texto, onClick, inactivo = false }) {
   );
 }
 
-function Mensaje({ ok, textos, refFoco }) {
+/*
+ * Con `porque` (el «¿Por qué?» escrito aparte del recorte), lo plegado del
+ * primer texto es ese; con `porqueALaVista` (trae una condición: regla de L)
+ * va a la vista, debajo. Con `enteros`, los textos no pasan por el plegado
+ * automático: Near ya los midió.
+ */
+function Mensaje({ ok, textos, porque = null, porqueALaVista = false, enteros = false, refFoco }) {
   return (
     <div ref={refFoco} tabIndex={-1} role="status" className={`t7b1-msg ${ok ? "t7b1-msg-ok" : "t7b1-msg-error"}`} data-mensaje={ok ? "acierto" : "error"}>
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7b1-msg-cuerpo">
         <span className="t7b1-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
+        {textos.map((t, i) => {
+          const suPorque = i === 0 && !porqueALaVista ? porque : null;
+          return <p key={t} data-texto>{enteros && !suPorque ? t : <Plegable texto={t} porque={suPorque} />}</p>;
+        })}
+        {porque && porqueALaVista && <p data-texto data-porque-a-la-vista>{enteros ? porque : <Plegable texto={porque} />}</p>}
       </div>
     </div>
   );
 }
 
+const Textos = ({ lista, enteros = false }) => (lista ?? []).map((t) => <p key={t} className="t7b1-p" data-texto>{enteros ? t : <Plegable texto={t} />}</p>);
+
+/* La cuenta T del resumen: el nombre de la cuenta y lo que va a cada lado (provisional para Watari). */
+function CuentaT({ t }) {
+  return (
+    <figure className="t7b1-t" data-figura data-cuenta-t>
+      <figcaption className="t7b1-t-cuenta" data-texto-figura>{t.cuenta}</figcaption>
+      <div className="t7b1-t-lados">
+        <div className="t7b1-t-lado" data-lado-t={DEBE}><span className="t7b1-t-rot t7b1-t-rot-debe">{INTERFAZ.debe}</span><span className="t7b1-t-que">{t.debe}</span></div>
+        <div className="t7b1-t-lado" data-lado-t={HABER}><span className="t7b1-t-rot t7b1-t-rot-haber">{INTERFAZ.haber}</span><span className="t7b1-t-que">{t.haber}</span></div>
+      </div>
+    </figure>
+  );
+}
+
 /* ═══════════ ELECCIÓN (P5) ═══════════ */
 
-function Eleccion({ pantalla, onSeguir }) {
+function Eleccion({ pantalla, onSeguir, enteros = false }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
   const [confirmada, setConfirmada] = useState(null);
@@ -114,7 +156,7 @@ function Eleccion({ pantalla, onSeguir }) {
 
   return (
     <div className="t7b1" data-eleccion={pantalla.id} data-estado={estado}>
-      {pantalla.parrafos.map((t) => <p key={t} className="t7b1-p" data-texto><Plegable texto={t} /></p>)}
+      <Textos lista={pantalla.parrafos} enteros={enteros} />
       <p className="t7b1-p t7b1-preg" data-texto data-pregunta>{pantalla.pregunta}</p>
       <div className="t7b1-ops" role="group" aria-label={pantalla.pregunta}>
         {orden.map((o) => {
@@ -129,13 +171,13 @@ function Eleccion({ pantalla, onSeguir }) {
       {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }} />}
       {estado === "error" && (
         <>
-          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} refFoco={ref} />
+          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} enteros={enteros} refFoco={ref} />
           <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((a) => barajarDistinto(pantalla.opciones, a, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
         </>
       )}
       {estado === "acierto" && (
         <>
-          <Mensaje ok textos={[pantalla.acierto.texto]} refFoco={ref} />
+          <Mensaje ok textos={[pantalla.acierto.texto]} porque={pantalla.acierto.porque ?? null} porqueALaVista={Boolean(pantalla.acierto.porqueALaVista)} enteros={enteros} refFoco={ref} />
           <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />
         </>
       )}
@@ -146,7 +188,7 @@ function Eleccion({ pantalla, onSeguir }) {
 
 /* ═══════════ LADOS: LA LISTA DEL LIBRO (P3) ═══════════ */
 
-function Lados({ pantalla, onSeguir }) {
+function Lados({ pantalla, onSeguir, enteros = false }) {
   const [orden] = useState(() => barajar(pantalla.lineas));
   const [puesto, setPuesto] = useState({});
   const [veredicto, setVeredicto] = useState(null);
@@ -175,7 +217,8 @@ function Lados({ pantalla, onSeguir }) {
 
   return (
     <div className="t7b1" data-lados={pantalla.id} data-estado={estado}>
-      <p className="t7b1-p" data-texto data-consigna>{pantalla.consigna}</p>
+      <Textos lista={pantalla.parrafos} enteros={enteros} />
+      <p className="t7b1-p t7b1-preg" data-texto data-consigna>{pantalla.consigna}</p>
       <div className="t7b1-lineas" role="group" aria-label={pantalla.consigna}>
         {orden.map((l) => {
           const lado = puesto[l.id];
@@ -203,7 +246,7 @@ function Lados({ pantalla, onSeguir }) {
             <div key={l.id} className={`t7b1-la${mala ? " t7b1-la-mala" : ""}`} data-fila={l.id}>
               <p className="t7b1-la-texto" data-texto data-linea-texto>{l.texto}</p>
               <span className="t7b1-g2">{boton(DEBE)}{boton(HABER)}</span>
-              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} refFoco={l.id === malas[0] ? ref : undefined} />}
+              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} enteros={enteros} refFoco={l.id === malas[0] ? ref : undefined} />}
             </div>
           );
         })}
@@ -212,7 +255,7 @@ function Lados({ pantalla, onSeguir }) {
       {estado === "error" && <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={probarOtra} />}
       {estado === "acierto" && (
         <>
-          <Mensaje ok textos={[pantalla.acierto.texto]} refFoco={ref} />
+          <Mensaje ok textos={[pantalla.acierto.texto]} porque={pantalla.acierto.porque ?? null} porqueALaVista={Boolean(pantalla.acierto.porqueALaVista)} enteros={enteros} refFoco={ref} />
           <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />
         </>
       )}
@@ -230,17 +273,19 @@ export default function LaCuentaQueSiSeMueve({ pieza = PIEZA_LA_CUENTA_QUE_SI_SE
   const primera = useRef(true);
   const seguir = () => setK((x) => Math.min(x + 1, pieza.pantallas.length - 1));
   useEffect(() => { if (primera.current) { primera.current = false; return; } marco.current?.focus(); }, [k]);
+  const enteros = Boolean(pieza.textosEnteros);
 
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <style>{CSS_T7B1}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
-        {p.tipo === "eleccion" && <Eleccion key={p.id} pantalla={p} onSeguir={seguir} />}
-        {p.tipo === "lados" && <Lados key={p.id} pantalla={p} onSeguir={seguir} />}
+        {p.tipo === "eleccion" && <Eleccion key={p.id} pantalla={p} onSeguir={seguir} enteros={enteros} />}
+        {p.tipo === "lados" && <Lados key={p.id} pantalla={p} onSeguir={seguir} enteros={enteros} />}
         {(p.tipo === "portada" || p.tipo === "lectura" || p.tipo === "resumen") && (
           <div className="t7b1">
             {p.objetivo && <p className="t7b1-p" data-texto data-objetivo>{p.objetivo}</p>}
-            {p.parrafos?.map((t) => <p key={t} className="t7b1-p" data-texto><Plegable texto={t} /></p>)}
+            {p.cuentaT && <CuentaT t={p.cuentaT} />}
+            <Textos lista={p.parrafos} enteros={enteros} />
             {p.lista && (
               <ol className="t7b1-lista" data-lista>
                 {p.lista.map((t) => <li key={t} data-texto>{t}</li>)}

@@ -161,6 +161,12 @@ export const CSS_T7BP = `
 .t7bp-ver-b[aria-expanded="true"] { border-color: ${P.texto}; }
 .t7bp-ver-b:focus-visible { outline: 2px solid ${P.texto}; outline-offset: 2px; }
 .t7bp-ver-c { display: grid; gap: 10px; }
+/* Los recortes de A3 (entrega 6 de Near): renglones de texto, el saldo en grupos y la fila construida (provisional para Watari) */
+.t7bp-fig-tit { margin: 0; padding-top: 8px; font: 600 13px/1.3 "Sora", "Inter", sans-serif; overflow-wrap: anywhere; }
+.t7bp-grupos { margin: 0; padding: 8px 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); gap: 8px; }
+.t7bp-grupos li { list-style: none; border: 1px solid ${P.borde}; border-radius: 8px; padding: 10px; font: 500 15px/1.3 "Inter", sans-serif; text-align: center; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.t7bp-er-construida { border-top-style: dashed; }
+.t7bp-er-construida .t7bp-er-rubro { font-style: italic; color: ${P.texto2}; }
 @keyframes t7bp-aparece { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .t7bp *, .t7bp *::before, .t7bp *::after { transition: none !important; animation: none !important; } }
 `;
@@ -181,18 +187,21 @@ function Boton({ nombre, texto, onClick, inactivo = false }) {
  * Con `porque` (la fusión de A5 y A6: el «¿Por qué?» escrito aparte por
  * Near), lo plegado del primer texto es ese. Con `enteros`
  * (`pieza.textosEnteros`, como en T7-3), los textos que Near ya midió se ven
- * enteros: el plegado automático no los corta.
+ * enteros: el plegado automático no los corta. Con `porqueALaVista` (los
+ * recortes de A3: el plegado de Near trae una condición, regla de L), el
+ * porqué no se pliega: va a la vista, debajo, como en T7-3.
  */
-function Mensaje({ ok, textos, porque = null, enteros = false, refFoco }) {
+function Mensaje({ ok, textos, porque = null, porqueALaVista = false, enteros = false, refFoco }) {
   return (
     <div ref={refFoco} tabIndex={-1} role="status" className={`t7bp-msg ${ok ? "t7bp-msg-ok" : "t7bp-msg-error"}`} data-mensaje={ok ? "acierto" : "error"}>
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7bp-msg-cuerpo">
         <span className="t7bp-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
         {textos.map((t, i) => {
-          const suPorque = i === 0 ? porque : null;
+          const suPorque = i === 0 && !porqueALaVista ? porque : null;
           return <p key={t} data-texto>{enteros && !suPorque ? t : <Plegable texto={t} porque={suPorque} />}</p>;
         })}
+        {porque && porqueALaVista && <p data-texto data-porque-a-la-vista>{enteros ? porque : <Plegable texto={porque} />}</p>}
       </div>
     </div>
   );
@@ -206,6 +215,10 @@ function Mensaje({ ok, textos, porque = null, enteros = false, refFoco }) {
  *   · renglones   cuenta y cifra, una por renglón (lo que entra al inventario)
  *   · cuenta      una multiplicación, en una línea («300 × $8.000 = …»)
  *   · fichas      el resumen: cada caso con su cuenta
+ * LOS RECORTES DE A3 (entrega 6 de Near), también provisionales para Watari,
+ * van en `figuras`, después de los textos:
+ *   · lineas      renglones de texto, uno por movimiento o dato
+ *   · grupos      un saldo en grupos: su título y una caja por grupo
  */
 function FiguraT72({ f, nuevo = false }) {
   const clase = `t7bp-fig${nuevo ? " t7bp-nueva" : ""}`;
@@ -222,6 +235,21 @@ function FiguraT72({ f, nuevo = false }) {
     );
   }
   if (f.tipo === "cuenta") return <figure className={clase} data-figura data-figura-t72="cuenta"><p className="t7bp-fig-cuenta">{f.texto}</p></figure>;
+  if (f.tipo === "lineas") {
+    return (
+      <figure className={clase} data-figura data-figura-t72="lineas">
+        {f.filas.map((t) => <div key={t} className="t7bp-fig-r" data-linea-figura>{t}</div>)}
+      </figure>
+    );
+  }
+  if (f.tipo === "grupos") {
+    return (
+      <figure className={clase} data-figura data-figura-t72="grupos">
+        <figcaption className="t7bp-fig-tit" data-grupos-titulo>{f.titulo}</figcaption>
+        <ul className="t7bp-grupos">{f.grupos.map((g) => <li key={g} data-grupo>{g}</li>)}</ul>
+      </figure>
+    );
+  }
   return (
     <figure className={clase} data-figura data-figura-t72="fichas">
       <ul className="t7bp-fichas">{f.fichas.map((t) => <li key={t} data-ficha-t72>{t}</li>)}</ul>
@@ -230,9 +258,9 @@ function FiguraT72({ f, nuevo = false }) {
 }
 
 /*
- * Lo que Near pliega como «Ver…» (los asientos completos de G-3 y G-4): un
- * botón con `aria-expanded`, que no es de interfaz, y los asientos debajo,
- * solo cuando está abierto.
+ * Lo que Near pliega como «Ver…» (los asientos completos de G-3 y G-4; en A3,
+ * el kárdex completo de un método): un botón con `aria-expanded`, que no es
+ * de interfaz, y lo que muestra debajo, solo cuando está abierto.
  */
 function Ver({ ver }) {
   const [abierto, setAbierto] = useState(false);
@@ -242,7 +270,7 @@ function Ver({ ver }) {
       <button type="button" className="t7bp-ver-b" aria-expanded={abierto} aria-controls={abierto ? id : undefined} onClick={() => setAbierto((x) => !x)}>
         <span data-texto data-ver-boton>{ver.texto}</span>
       </button>
-      {abierto && <div id={id} className="t7bp-ver-c t7bp-nueva" data-visto><Asientos lista={ver.asientos} /></div>}
+      {abierto && <div id={id} className="t7bp-ver-c t7bp-nueva" data-visto><Asientos lista={ver.asientos} />{ver.kardex && <Kardex kardex={ver.kardex} />}</div>}
     </div>
   );
 }
@@ -334,12 +362,12 @@ function CierrePorNombres({ lista }) {
 
 export function TresMetodos({ tabla }) {
   return (
-    <div className="t7bp-er" role="table" aria-label={tabla.nombre} data-metodos>
+    <div className="t7bp-er" role="table" aria-label={tabla.nombre} data-figura data-metodos>
       <div className="t7bp-er-head" role="row">
         {tabla.metodos.map((m) => <span key={m} role="columnheader">{m}</span>)}
       </div>
       {tabla.filas.map((f) => (
-        <div key={f.rubro} className="t7bp-er-r" role="row" data-rubro={f.rubro}>
+        <div key={f.rubro} className={`t7bp-er-r${f.construida ? " t7bp-er-construida" : ""}`} role="row" data-rubro={f.rubro} data-construida={f.construida ? "" : undefined}>
           <span className="t7bp-er-rubro" role="rowheader" data-texto>{f.rubro}</span>
           <span className="t7bp-er-v">
             {f.valores.map((v, i) => (
@@ -363,6 +391,7 @@ function Cuerpo({ p, kardexDe, enteros = false }) {
       {p.objetivo && <p className="t7bp-p" data-texto data-objetivo>{p.objetivo}</p>}
       {p.figura && <FiguraT72 f={p.figura} />}
       <Textos lista={p.parrafos} enteros={enteros} />
+      {(p.figuras ?? []).map((f, k) => <FiguraT72 key={k} f={f} />)}
       {p.enunciado && <p className="t7bp-enunciado" data-texto data-enunciado>{p.enunciado}</p>}
       {p.ficha && <Ficha ficha={p.ficha} />}
       {p.estructura && <Estructura lista={p.estructura} />}
@@ -416,7 +445,7 @@ export function Eleccion({ pantalla, onSeguir, kardexDe, enteros = false }) {
       )}
       {estado === "acierto" && (
         <>
-          <Mensaje ok textos={[a.texto]} porque={a.porque ?? null} enteros={enteros} refFoco={ref} />
+          <Mensaje ok textos={[a.texto]} porque={a.porque ?? null} porqueALaVista={Boolean(a.porqueALaVista)} enteros={enteros} refFoco={ref} />
           {a.figura && <FiguraT72 f={a.figura} nuevo />}
           {a.ver && <Ver ver={a.ver} />}
           <Asientos lista={a.asientos} nuevo />
