@@ -94,7 +94,16 @@ nota, así que no hace falta volver a interpretarla a mano en cada célula.
 sonda y vive en `temas.json`: una entrada por tema, y se corre con
 `enganche.py --tema=<sigla>`. Sin `--tema` sigue siendo t4, así que las órdenes
 que ya existían no se enteran. Lo único que pone cada célula es su clave de
-Hacer. Probado tras el cambio con T4 A0 y T4 H1: las dos siguen pasando.
+Hacer.
+
+**Antes de pedir una entrada en `temas.json`, mire si sus piezas ponen los
+atributos.** El 16 de octubre los puse a contar en todo `src/components`: el
+único tema que los lleva es T4 (`data-t4-h1`). Ninguna otra pieza pone
+`data-pieza="<id de la pieza>"` ni su `data-tN-hN`, y sin ellos la sonda no
+mide: da código 2 y lo dice. O sea que para medir un tema nuevo hacen falta
+tres cosas, en este orden: (1) los atributos en las piezas, que es trabajo de
+la célula; (2) una entrada en `temas.json`; (3) su clave de Hacer. Pedir la
+entrada sin lo primero solo gasta un turno para llegar al código 2. Probado tras el cambio con T4 A0 y T4 H1: las dos siguen pasando.
 
 Tiene las dos propiedades que hacen fiable a un medidor, y están comprobadas:
 **se comprueba sola** (12 de 12 casos sintéticos, cada uno con una sola rotura) y
