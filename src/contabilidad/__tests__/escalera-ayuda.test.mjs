@@ -68,6 +68,7 @@ for (const f of readdirSync(DATOS).filter((x) => /^contabilidadT7_.*\.js$|^conta
   }
 }
 const REEMPLAZADAS_POR_EL_ENGANCHE = {
+  "t7-1-a1-la-cuenta-que-no-se-mueve": ["pregunta-compra", "pregunta-conteo"],
   "t7-1-a7-control-interno": ["al-recibir", "controles-de-seguridad"],
   "t7-2-a4-san-calixto": ["peps", "ueps", "promedio", "que-cambia"],
 };
@@ -346,6 +347,7 @@ function pistasEsperadas() {
   }
   for (const [pieza, pantallas] of Object.entries(RECORTADAS)) {
     for (const p of pantallas) {
+      if (REEMPLAZADAS_POR_EL_ENGANCHE[pieza]?.includes(p.id) && !PIEZAS.find((x) => x.id === pieza)?.pantallas.some((s) => s.id === p.id && s.pista)) continue;
       if (p.pista) esperadas.push({ pieza, k: p.k, pantalla: p.id, linea: null, pista: vigente(p.pista) });
       for (const [nombre, pista] of Object.entries(p.lineas)) esperadas.push({ pieza, k: p.k, pantalla: p.id, linea: nombre, pista: vigente(pista), porNombre: true });
     }

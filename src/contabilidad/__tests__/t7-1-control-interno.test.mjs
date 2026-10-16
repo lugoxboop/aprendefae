@@ -661,7 +661,7 @@ test("★★★ catálogo: Aprender, sin FP, el mismo id y la misma posición; e
   }
 });
 
-test("★★★ vista: T7-1 pinta la pieza nueva en el lugar de A7; ControlInterno sigue solo para T5", () => {
+test("★★★ vista: T7-1 pinta la pieza nueva en el lugar de A7; ControlInterno ya no lo pinta ninguna vista (N2 de T5 salió con la entrega 5)", () => {
   const ids = PIEZAS_T7_1.map((x) => x.pieza.id);
   assert.equal(ids.at(-1), A.A7_ID);
   assert.equal(ids.indexOf(A.A7_ID), ids.indexOf("t7-1-a6-devoluciones-en-periodico") + 1);
@@ -669,7 +669,7 @@ test("★★★ vista: T7-1 pinta la pieza nueva en el lugar de A7; ControlInter
   assert.equal(e.Pieza, ElViaje);
   assert.equal(e.pieza, P);
   assert.ok(!PIEZAS_T7_1.some((x) => x.Pieza === ControlInterno));
-  assert.ok(PIEZAS_T5.some((x) => x.Pieza === ControlInterno));
+  assert.ok(!PIEZAS_T5.some((x) => x.Pieza === ControlInterno));
   assert.ok(!leer("src/components/ContabilidadT7_1View.jsx").includes("contabilidadT7_1_a7.js"));
 });
 
