@@ -92,6 +92,26 @@ a ojo: Gen hace un índice de qué secciones necesita cada ejercicio para
 resolverse, y Levi asigna cada uno a **un solo tema**, el de la última sección
 que necesita. Ninguna célula usa un ejercicio que no tenga asignado.
 
+## El prompt maestro de los diseñadores vive en el canon
+
+`orquestador/conocimiento/prompts/disenadores-de-celula-v1.md`
+
+Lo escribieron Senku, Xeno y Ukyo, y Miku lo repartió el 15 de octubre a los
+cinco diseñadores: Mai (B), Watari (C), Hanayama (D), Itagaki (E) y Xeno (A).
+Trae el kit completo y vigente, el estándar de Aprender en cuatro capas, el
+modelo único de Hacer, la barra de enganche y el reparto del top 10 de Ukyo por
+célula.
+
+**Está aquí, y no solo en los chats, por tres razones.** Un prompt pegado en un
+chat se va hacia arriba y se pierde; un archivo se relee, se cita por línea y se
+versiona. Cinco copias en cinco chats divergen en cuanto alguien corrige una; una
+en el canon se corrige una vez. Y la sexta célula, o el diseñador que entre
+mañana, lo encuentra sin que nadie se lo pase.
+
+Está **sin tocar una coma** —mismo archivo, 25.276 caracteres, SHA-256 que
+empieza por `556cebca`—. Si se corrige, entra una `-v2` y esta se queda: un
+diseñador que trabajó con la v1 tiene que poder leer lo que leyó.
+
 ## Reglas de convivencia entre células
 
 Medidas sobre el repositorio el 13 de octubre de 2026, no supuestas.
