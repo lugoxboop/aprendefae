@@ -82,6 +82,50 @@ Chrome dice que redimensionó la ventana y no lo hace: compruebe
 `window.innerWidth` antes de medir, o use marcos del ancho exacto dentro del
 propio sitio.
 
+## La sonda de enganche es la herramienta común de las cinco células
+
+`scripts/t4/sonda-enganche/` — la escribió Shibukawa, auditora de la Célula D, y
+entró en el #231. **Mide si una pieza engancha, no solo si cabe**, tarjeta por
+tarjeta, a 320 px, sobre el build servido. Juzga la barra B1-B5 de esta misma
+nota, así que no hace falta volver a interpretarla a mano en cada célula.
+
+Tiene las dos propiedades que hacen fiable a un medidor, y están comprobadas:
+**se comprueba sola** (12 de 12 casos sintéticos, cada uno con una sola rotura) y
+**puede fallar** —quitarle una regla o subirle un tope la pone roja—. Un medidor
+que nunca se ha visto rojo no mide nada; esta sí.
+
+### Qué es común y qué pone cada célula
+
+| Parte | ¿Sirve para cualquier tema? |
+|---|---|
+| `enganche_mide.js` — la medición en la página | **sí**, sin tocar nada |
+| la función `juzga` — el veredicto B1-B5 | **sí** |
+| `eng_fixture.py` — la autocomprobación | **sí** |
+| `base.py`, `fuentes.sh`, `vite-sonda.config.mjs` | **sí** |
+| `enganche.py` — el recorrido | **no**: necesita los nombres de las piezas, la ruta del tema y los botones de «seguir» |
+| `enganche_clave.mjs` — la respuesta correcta y la equivocada de cada tarjeta | **no**: se escribe contra los datos del tema |
+| `enganche_planes.json` — los gestos de Aprender con figura operable | **no**: es por pieza y pantalla |
+
+O sea: **lo que mide y lo que juzga es de todos; el recorrido es de cada quien.**
+Una célula que la quiera usar copia la carpeta a su carril (`scripts/<celula>/`) y
+escribe esas tres piezas. El README de la carpeta dice exactamente qué atributos
+`data-*` necesita encontrar; si una pieza nueva no los pone, la sonda **da código
+2 en vez de adivinar**, que es la única manera de que un medidor no mienta.
+
+### Lo que todavía NO está, dicho de frente
+
+**No está parametrizada.** Lo correcto sería un archivo de configuración por tema
+y un solo recorrido; hoy es copiar y adaptar. No lo extraje la misma noche en que
+la Célula D la está corriendo sobre su cadena: romperle el medidor a quien lo
+está usando cuesta más que la duplicación que ahorra. Queda como deuda del
+coordinador, no de la célula que la escribió.
+
+Y el límite que la propia sonda declara, que importa más que el detalle técnico:
+**B3 es un mínimo, no una garantía.** «La figura cambia» y «queda distinta si
+aciertas o fallas» no juzgan si el cambio SIGNIFICA algo. Una figura que solo
+marca «bien o mal» pasa B3 sin enseñar nada. Eso lo sigue juzgando una persona,
+y por eso la sonda no sustituye la revisión jugando: la ordena.
+
 ## Lo que encontró la Célula E en su autodiagnóstico (15 de octubre)
 
 Repaso del capítulo 5: r5-1 «Repaso cruzado» y r5-2 «El Toro Negro», jugadas
