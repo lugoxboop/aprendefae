@@ -287,5 +287,62 @@
    ]
   }
  ],
- "cruce_completo": "ban_t5: OCR del libro, lista libro de T7, registro 5c de T7 y X1-X4 (676 valores). Cero coincidencias."
+ "cruce_completo": "ban_t5: OCR del libro, lista libro de T7, registro 5c de T7 y X1-X4 (676 valores). Cero coincidencias.",
+ "nota_b5": "Célula B, lote C2 · C1 · C7 de Futaba (C1-2 y C1-3, PASA de Shoko): cifras construidas de las capas 3 y 4 de b5-t5-a2. Van en su propia lista para no mover la de N4 y N5.",
+ "construidas_b5": [
+  {
+   "pieza": "b5-t5-a2-los-tres-momentos-de-una-inversion",
+   "uso": "capa 3 · venta A · costo por título",
+   "cifra": 650,
+   "calculo": "650"
+  },
+  {
+   "pieza": "b5-t5-a2-los-tres-momentos-de-una-inversion",
+   "uso": "capa 3 · venta A · precio de venta",
+   "cifra": 690,
+   "calculo": "690"
+  },
+  {
+   "pieza": "b5-t5-a2-los-tres-momentos-de-una-inversion",
+   "uso": "capa 3 · venta B · precio de venta",
+   "cifra": 1060,
+   "calculo": "1060"
+  },
+  {
+   "pieza": "b5-t5-a2-los-tres-momentos-de-una-inversion",
+   "uso": "capa 3 · venta B · costo por título",
+   "cifra": 1150,
+   "calculo": "1150"
+  },
+  {
+   "pieza": "b5-t5-a2-los-tres-momentos-de-una-inversion",
+   "uso": "capa 4 · títulos vendidos",
+   "cifra": 260,
+   "calculo": "260"
+  },
+  {
+   "pieza": "b5-t5-a2-los-tres-momentos-de-una-inversion",
+   "uso": "capa 4 · costo por título",
+   "cifra": 850,
+   "calculo": "850"
+  },
+  {
+   "pieza": "b5-t5-a2-los-tres-momentos-de-una-inversion",
+   "uso": "capa 4 · costo de los vendidos (se acredita)",
+   "cifra": 221000,
+   "calculo": "260 * 850"
+  },
+  {
+   "pieza": "b5-t5-a2-los-tres-momentos-de-una-inversion",
+   "uso": "capa 4 · lo que le pagan",
+   "cifra": 273000,
+   "calculo": "273000"
+  },
+  {
+   "pieza": "b5-t5-a2-los-tres-momentos-de-una-inversion",
+   "uso": "capa 4 · ganancia",
+   "cifra": 52000,
+   "calculo": "273000 - 260 * 850"
+  }
+ ]
 }

@@ -127,12 +127,12 @@ export const PARTES_T6_ACT3 = [
     rotulo: "Asiento 5",
     instruccion: "Registra cómo se revive la deuda del caso c.",
     fecha: "Caso c",
-    hecho: "Caso c. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y avisa que no pagará más.",
+    hecho: "Caso c. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y avisa que ya no puede pagar más.",
     asiento: [d(CLIENTES, 100000), h(PROVISION, 100000)],
     errores: {
       ...REVIVIR,
       especificas: [
-        { valor: 180000, clave: "C14", texto: "Revisa el valor. En el caso c, Pablo Moncayo avisa que no pagará más. Por eso se revive solo lo que pagó." },
+        { valor: 180000, clave: "C14", texto: "Revisa el valor. En el caso c, Pablo Moncayo avisa que ya no puede pagar más. Por eso se revive solo lo que pagó." },
       ],
       B: "Revisa el valor. Mira cuánto pagó Pablo Moncayo.",
     },

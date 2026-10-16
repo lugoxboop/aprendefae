@@ -394,7 +394,17 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
           data-volver
           onClick={ctx.onVolver}
           style={{
-            width: "100%", padding: "13px 18px", borderRadius: "999px", cursor: "pointer", border: "none",
+            /*
+             * 44 px, y medían 43 y 41. Los dos cierran TODA actividad que use
+             * esta pantalla, así que el defecto se multiplicaba por el
+             * catálogo entero; lo reportaron dos células por separado —C a 39
+             * y E «menos de 44»— y las dos tenían razón: el botón que yo había
+             * arreglado a las 11:48 era el de `Cierre`, no estos.
+             *
+             * Ocupan el ancho entero de una rejilla con hueco, así que crecer
+             * uno o tres píxeles no mueve nada de lado.
+             */
+            width: "100%", minHeight: "44px", padding: "13px 18px", borderRadius: "999px", cursor: "pointer", border: "none",
             background: FAE.teal, color: "#06202A", fontFamily: SORA, fontSize: "14px", fontWeight: 700,
           }}
         >
@@ -407,7 +417,7 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
               data-repetir
               onClick={() => { ctx.limpiar?.(); onRepetir(); }}
               style={{
-                width: "100%", padding: "12px 18px", borderRadius: "999px", cursor: "pointer",
+                width: "100%", minHeight: "44px", padding: "12px 18px", borderRadius: "999px", cursor: "pointer",
                 background: "transparent", border: "1px solid rgba(248,249,250,0.32)", color: BLANCO,
                 fontFamily: SORA, fontSize: "14px", fontWeight: 600,
               }}

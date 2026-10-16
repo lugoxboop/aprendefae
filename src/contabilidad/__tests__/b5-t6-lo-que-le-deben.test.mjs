@@ -286,7 +286,24 @@ const TABLA_CAPA_3 = (() => {
   }
   const final = fuente.match(/Etiqueta del bloque final \(★\): «([^»]+)»/);
   assert.ok(final, "el paquete no tiene el pie del bloque final");
-  return { filas, final: final[1] };
+  /*
+   * Encima, la tabla C1-4 del lote C2 · C1 · C7 (al final del paquete): sus
+   * filas, en el orden de las cajas, mandan sobre el hecho, lo que se revela,
+   * la devolución del segundo error y el pie; «La de hoy» deja lo de antes.
+   */
+  const j = fuente.indexOf("### C1-4 · T6 A1 · capa 3");
+  assert.ok(j >= 0, "el paquete no tiene la tabla C1-4 del lote");
+  const lote = fuente.slice(j).split("\n").slice(3, 9).map((l) => l.slice(2, -2).split(" | "));
+  assert.equal(lote.length, 6);
+  const fallas = [];
+  lote.forEach(([, hecho, revela, falla, pie], k) => {
+    const hoy = (t) => t === "La de hoy";
+    if (!hoy(hecho)) filas[k][0] = hecho;
+    if (!hoy(revela)) filas[k][1] = revela;
+    if (!hoy(pie)) filas[k][2] = pie;
+    fallas.push(hoy(falla) ? null : falla);
+  });
+  return { filas, final: final[1], fallas };
 })();
 
 test("★★★ capa 3: cada caja abierta y el bloque final muestran su pie (★), literal del paquete, con el estilo de fuente", async () => {
@@ -300,7 +317,9 @@ test("★★★ capa 3: cada caja abierta y el bloque final muestran su pie (★
     await decidir(tocar, zona, x.correcta);
     assert.equal(lectura(caja.querySelector(`[data-revela="${x.id}"]`)), revela, `revela ${k + 1}`);
     assert.equal(zona.querySelector("[data-pie]").textContent, pie, `pie ${k + 1}`);
+    if (TABLA_CAPA_3.fallas[k]) assert.equal(x.falla, TABLA_CAPA_3.fallas[k], `al segundo error ${k + 1}`);
   }
+  assert.deepEqual(TABLA_CAPA_3.fallas.map(Boolean), [false, true, false, false, false, false], "C1-4 cambia solo la devolución del pago");
   const pies = [...caja.querySelectorAll("[data-pie]")];
   assert.equal(pies.length, 7, "seis cajas y el bloque final");
   assert.equal(caja.querySelector("[data-final] [data-pie]").textContent, TABLA_CAPA_3.final);
@@ -313,8 +332,8 @@ test("★★★ capa 3: cada caja abierta y el bloque final muestran su pie (★
 
 /* ═══════════ CAPA 4 ═══════════ */
 
-test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola correcta y su devolución corregida", async () => {
-  assert.deepEqual(D.OPCIONES_FINAL_T6.filter((o) => o.correcta).map((o) => o.texto), ["Baja, porque la deuda se paga; el ingreso ya estaba anotado."]);
+test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola correcta y su devolución (C1-5 del lote C2 · C1 · C7); su pie debajo", async () => {
+  assert.deepEqual(D.OPCIONES_FINAL_T6.filter((o) => o.correcta).map((o) => o.texto), ["Nada: la deuda subió con la venta y bajó con la devolución."]);
   const { Capa4 } = ESCENAS_TEMA6[D.PIEZA_LO_QUE_LE_DEBEN.id];
   const { caja, desmontar } = await montar(h(Capa4));
   assert.ok(caja.textContent.startsWith(D.PREGUNTA_FINAL_T6));
@@ -323,8 +342,9 @@ test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola corr
     assert.equal(caja.querySelector("[data-devolucion]").textContent, o.feedback);
     await tocar(caja.querySelector("[data-otra-vez]"));
   }
-  /* La versión que manda (Futaba, 14-oct), no la línea corregida anterior. */
-  assert.equal(D.OPCIONES_FINAL_T6[0].feedback, "Correcto. El 25 de enero, en los libros de Comercializadora Santa Pacha, Cuentas por cobrar – clientes baja: se acredita. No se anota ningún ingreso. Ese ya estaba desde el 10.");
+  /* C1-5: la pregunta ya no repite el ejemplo de la capa 2. */
+  assert.equal(D.OPCIONES_FINAL_T6[0].feedback, "Correcto. La venta a crédito hizo subir la deuda, y la devolución la hizo bajar por el mismo valor.");
+  assert.equal([...caja.querySelectorAll("[data-pie]")].at(-1).textContent, "Basado en el libro, p. 197");
   desmontar();
 });
 

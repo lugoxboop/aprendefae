@@ -92,6 +92,7 @@ import { hechoDeItemH1 as hechoDeItemT4H1 } from "../data/contabilidadT4H1.js";
 import { unidadDeN5 as unidadDeT5N5 } from "../contabilidad/t5N5.js";
 import { unidadDeR5_2 } from "../data/repasoCap5ToroNegroJuego.js";
 import { unidadDeR5_3 } from "../data/repasoCap5MateJuego.js";
+import { unidadDeR5_4 } from "../data/repasoCap5BarranquillaJuego.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -794,6 +795,8 @@ Object.assign(REGLAS, {
   "r5-2": (id) => unidadDeR5_2(id),
   /* r5-3. Cada asiento, por su fecha y su operación. */
   "r5-3": (id) => unidadDeR5_3(id),
+  /* r5-4. Cada asiento, por su fecha y su nombre corto. */
+  "r5-4": (id) => unidadDeR5_4(id),
 });
 
 /*

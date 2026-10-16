@@ -451,7 +451,7 @@ test("★★★ INFLESZ: los 107 textos de 10 palabras o más pasan 65; los rót
 
 test("★★★ catálogo, registro de la vista, etiqueta y migración 0252 dicen lo mismo", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "repaso-capitulo-5");
-  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2", "r5-3"]);
+  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2", "r5-3", "r5-4"]);
   const a = actividadesDeTipo(tema, HACER).find((x) => x.id === "r5-3");
   assert.equal(a.nombre, T.R5_3.nombre);
   assert.deepEqual(a.clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 });
@@ -814,4 +814,25 @@ test("★★ B5 de enganche.md: ninguna frase sale dos veces en la misma pantall
     estados += 2;
   }
   assert.equal(estados, 33);
+});
+
+/* ═══════════ LA FECHA UNA SOLA VEZ EN LA TARJETA (Kamogawa) ═══════════ */
+
+test("★★ la tarjeta del hecho no repite la fecha: si el hecho empieza con ella, no lleva la marca «n DE MARZO»", async () => {
+  const { hechoDiceSuFecha, MesContable, ACTIVIDAD_MATE } = await import("../../components/repasoCap5/Mate.jsx");
+  for (const [k, a] of A.entries()) {
+    assert.ok(hechoDiceSuFecha(a), `${a.id}: el hecho de Miyata empieza con su fecha`);
+    const { caja, desmontar } = await montar(h(Mate, { pasoInicial: k }));
+    const tarjeta = caja.querySelector("[data-hecho]");
+    assert.equal(tarjeta.textContent.includes(a.fecha), false, `${a.id}: la marca de fecha sigue en la tarjeta`);
+    assert.equal(tarjeta.querySelector("[data-frase]").textContent, a.hecho, `${a.id}: el texto de Miyata no se toca`);
+    desmontar();
+  }
+  /* Un hecho que no empieza con su fecha la conserva. */
+  const sinFecha = { ...A[0], hecho: "Compra de contado con descuento comercial. Arma su asiento." };
+  assert.equal(hechoDiceSuFecha(sinFecha), false);
+  const actividad = { ...ACTIVIDAD_MATE, ASIENTOS_MATE: [sinFecha, ...A.slice(1)] };
+  const { caja, desmontar } = await montar(h(MesContable, { actividad, pasoInicial: 0 }));
+  assert.equal(caja.querySelector("[data-marca-fecha-hecho]")?.textContent, A[0].fecha);
+  desmontar();
 });

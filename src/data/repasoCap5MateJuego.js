@@ -42,13 +42,27 @@ export function sumasDe(renglones) {
   return { debe, haber, cuadran: debe === haber && debe > 0, diferencia: Math.abs(debe - haber) };
 }
 
-const rango = (cuenta) => ORDEN_DEL_CALCULO[cuenta] ?? 0;
+/*
+ * El evaluador es el mismo para r5-3 y r5-4: cada pieza le da sus textos
+ * comunes (cuenta no prevista, «Y hay más…») y su orden del cálculo.
+ */
+const MATE = { comunes: COMUNES_MATE, orden: ORDEN_DEL_CALCULO };
 const GRUPO = { cruzado: 0, sobra: 0, cuenta: 0, falta: 0, valor: 1 };
 
 /* Las cuentas que el asiento admite en alguna de sus variantes (el flete del 15: decisión 8). */
 const cuentasDelAsiento = (a) => new Set(a.correctos.flat().map((c) => c.cuenta));
 
-function contra(a, correcto, renglones) {
+/*
+ * La devolución de una cuenta que el asiento no usa. En r5-4 (decisión 2 de
+ * Kamogawa) puede diagnosticarse por valor: { [valor]: texto, otro: texto }.
+ */
+function textoDeCuentaMal(a, r, ctx) {
+  const cm = a.cuentaMal[r.cuenta];
+  if (cm && typeof cm === "object") return cm[r.valor] ?? cm.otro;
+  return cm ?? ctx.comunes.cuentaNoPrevista;
+}
+
+function contra(a, correcto, renglones, ctx) {
   const usados = new Set();
   const estados = Object.fromEntries(renglones.map((r) => [r.id, "mal"]));
   /* E3: la palabra de cada pieza del renglón (la cuenta y el valor). */
@@ -86,7 +100,7 @@ function contra(a, correcto, renglones) {
       /* Una cuenta del asiento repetida, o la otra variante del flete mezclada: sobra. */
       problemas.push({ clase: "sobra", cuenta: r.cuenta, lado: r.lado, texto: a.generica });
     } else {
-      problemas.push({ clase: "cuenta", cuenta: r.cuenta, lado: r.lado, texto: a.cuentaMal[r.cuenta] ?? COMUNES_MATE.cuentaNoPrevista });
+      problemas.push({ clase: "cuenta", cuenta: r.cuenta, lado: r.lado, texto: textoDeCuentaMal(a, r, ctx) });
     }
   }
   const ok = problemas.length === 0 && renglones.length === correcto.length;
@@ -94,23 +108,26 @@ function contra(a, correcto, renglones) {
 }
 
 /* Los textos de la devolución, con la regla de la decisión 4. */
-export function textosDe(problemas) {
+export function textosDe(problemas, ctx = MATE) {
+  const rango = (cuenta) => ctx.orden[cuenta] ?? 0;
   const ordenados = problemas
     .map((p, k) => ({ ...p, k }))
     .sort((x, y) => GRUPO[x.clase] - GRUPO[y.clase] || rango(x.cuenta) - rango(y.cuenta) || (x.lado === y.lado ? 0 : x.lado === "debe" ? -1 : 1) || x.k - y.k);
   const distintos = [...new Set(ordenados.map((p) => p.texto))];
   const textos = distintos.slice(0, 2);
-  if (distintos.length > 2) textos.push(COMUNES_MATE.hayMas);
+  if (distintos.length > 2) textos.push(ctx.comunes.hayMas);
   return textos;
 }
 
-export function evaluarMate(a, renglones) {
-  const intentos = a.correctos.map((correcto, variante) => ({ variante, ...contra(a, correcto, renglones) }));
+export function evaluarAsiento(a, renglones, ctx) {
+  const intentos = a.correctos.map((correcto, variante) => ({ variante, ...contra(a, correcto, renglones, ctx) }));
   /* La variante que acierta; si ninguna, la de menos problemas (a igualdad, la primera). */
   const elegida = intentos.find((x) => x.ok) ?? [...intentos].sort((x, y) => x.problemas.length - y.problemas.length || x.variante - y.variante)[0];
-  const textos = elegida.ok ? [a.acierto[elegida.variante]] : textosDe(elegida.problemas);
+  const textos = elegida.ok ? [a.acierto[elegida.variante]] : textosDe(elegida.problemas, ctx);
   return { ok: elegida.ok, variante: elegida.variante, estados: elegida.estados, piezas: elegida.piezas, problemas: elegida.problemas, textos, correcto: a.correctos[elegida.variante] };
 }
+
+export const evaluarMate = (a, renglones) => evaluarAsiento(a, renglones, MATE);
 
 export const puntuarR5_3 = (aciertos, total = TOTAL_R5_3) => (total ? (aciertos / total) * 100 : 0);
 
