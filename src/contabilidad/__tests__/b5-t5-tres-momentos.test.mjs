@@ -114,7 +114,14 @@ test("★★★ todo texto de los datos es literal del paquete guardado (paquete
 test("★★★ manda Futaba: término 2, capa 3 («costaron»), pregunta y correcta de la capa 4, y los 21 pasos con su etiqueta", () => {
   const n = D.PIEZA_TRES_MOMENTOS.nombres;
   assert.deepEqual(n.map((x) => x.termino), ["Tres momentos", "La compra", "El rendimiento", "La venta"]);
-  for (const x of n) assert.ok(FUTABA.includes(`\t${x.termino}\t${x.definicion}\t`), `término «${x.termino}» como en Futaba`);
+  /* B2 (un término por pantalla, 15-oct): «El rendimiento» cambia; los otros tres son «el de hoy». */
+  const B2 = FUENTE.slice(FUENTE.indexOf("## B2 ·"));
+  assert.ok(B2.includes(`**El rendimiento** — ${n[2].definicion}`), "«El rendimiento», literal de B2");
+  for (const x of [n[0], n[1], n[3]]) {
+    assert.ok(B2.includes(`**${x.termino}** — El de hoy.`), `«${x.termino}»: B2 dice «el de hoy»`);
+    assert.ok(FUTABA.includes(`\t${x.termino}\t${x.definicion}\t`), `término «${x.termino}» como en Futaba`);
+  }
+  assert.ok(n[2].definicion.includes("por dividendos si viene de acciones, y por interés si viene de otro título"));
   assert.ok(n[1].definicion.endsWith("El ejemplo del libro no trae gastos de compra, y la cuenta se llama Inversiones – títulos."));
   assert.match(n[0].delLibro, /^«.*» \(p\. 193\)$/);
   assert.deepEqual(n.slice(1).map((x) => x.delLibro), [undefined, undefined, undefined], "solo el término 1 lleva cita");

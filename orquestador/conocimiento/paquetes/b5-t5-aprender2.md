@@ -846,3 +846,15 @@ Al registro de cifras construidas (T5): $650, $690, $1.060, $1.150, 260, $850, $
 | # | Término | Texto final | Estado |
 |---|---|---|---|
 | C7-2 | T5 A2 · El rendimiento | (sin cambio) | PASA |
+
+## B2 · Capa 1, un término por pantalla (Futaba, con las correcciones de Shoko, 15-oct) · manda sobre lo de arriba
+
+Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza. Kaede la aplicó letra por letra.
+
+(«El de hoy» = el texto que ya está en el repositorio para ese término, sin cambios. Las cifras entre paréntesis son la estimación INFLESZ de Futaba; NO van en pantalla. «Def.:», «Cita:», «Nota:», «Pie:» indican la parte del término: Def. = definición/texto; Cita = «Así lo dice el libro»; Nota = la nota; Pie = pie de fuente.)
+
+### T5 A2 · 4 pantallas
+1. **Tres momentos** — El de hoy.
+2. **La compra** — El de hoy.
+3. **El rendimiento** — Cuando llega un interés o un dividendo, se anota como un ingreso: por dividendos si viene de acciones, y por interés si viene de otro título. En esta materia, el interés va a Ingresos por intereses. En el ejemplo, se paga a trimestre vencido: al terminar cada trimestre, cada tres meses.
+4. **La venta** — El de hoy.
