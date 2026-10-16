@@ -68,16 +68,14 @@ export const RENGLONES_EXTRACTO = [
   { id: "nota-debito", emp: null, ban: NOTA_DEBITO_LIBRETA },
   { id: "nota-credito", emp: null, ban: NOTA_CREDITO_LIBRETA },
 ];
-/* P3: con el acierto, el cheque del 30 en la libreta de la empresa (antes, el renglón no existe: PH8-2). */
-export const RENGLON_CHEQUE_30 = { id: "cheque-30", emp: { t: ["Cheque girado"], e: "resta" }, ban: null };
 /* P4: las seis causas (p. 188), una por botón, en la libreta que la tiene. */
 export const CAUSAS_A4 = [
-  { id: "cheque-sin-cobrar", emp: CHEQUE_SIN_COBRAR, ban: null },
-  { id: "consignacion-sin-abonar", emp: { t: ["Consignación", "sin abonar"], e: "suma" }, ban: null },
-  { id: "nota-debito", emp: null, ban: NOTA_DEBITO_LIBRETA },
-  { id: "nota-credito", emp: null, ban: NOTA_CREDITO_LIBRETA },
-  { id: "error-empresa", emp: { t: ["Error al anotar"], e: "de la empresa" }, ban: null },
-  { id: "error-banco", emp: null, ban: { t: ["Error al liquidar"], e: "del banco" } },
+  { id: "cheque-sin-cobrar", tarjeta: "Cheque girado el 30, que nadie ha cobrado", emp: CHEQUE_SIN_COBRAR, ban: null },
+  { id: "consignacion-sin-abonar", tarjeta: "Una consignación hecha el último día del mes", emp: { t: ["Consignación", "sin abonar"], e: "suma" }, ban: null },
+  { id: "nota-debito", tarjeta: "El banco cobra la chequera de la empresa", emp: null, ban: NOTA_DEBITO_LIBRETA },
+  { id: "nota-credito", tarjeta: "El banco abona intereses a la cuenta", emp: null, ban: NOTA_CREDITO_LIBRETA },
+  { id: "error-empresa", tarjeta: "La empresa anota mal un cheque", emp: { t: ["Error al anotar"], e: "de la empresa" }, ban: null },
+  { id: "error-banco", tarjeta: "El banco liquida mal unos intereses", emp: null, ban: { t: ["Error al liquidar"], e: "del banco" } },
 ];
 /* P5: lo que cada libreta tiene y la otra no. */
 export const RENGLONES_CONCILIACION = [
@@ -101,25 +99,39 @@ export const FIGURA_A4 = {
   mayor: "Bancos",
   contador: (n, total) => `${n} de ${total}`,
   chips: { empresa: "Empresa", banco: "Banco", "los-dos": "Los dos" },
-  /* El nombre del grupo de opciones de P3, para el lector (Katsumi). */
-  quien: "¿Quién lo tiene anotado?",
   /* Para el lector de pantalla (los del prototipo de Hanayama). */
   tablero: "Bancos",
-  causas: "Las seis causas",
+  /* Lote B, §5.4: el contador de las causas y lo que el lector oye de cada libreta (Hanayama; Katsumi, en número). */
+  contadorCausa: (n, total) => `Causa ${n} de ${total}`,
+  anotadas: (libreta, n) => `${libreta}: ${n === 0 ? "ninguna causa anotada" : n === 1 ? "1 causa anotada" : `${n} causas anotadas`}`,
+  /* Lote B, §5.2: la celda de la empresa con el acierto, y lo que el lector oye de cada renglón (Hanayama, aprobados por Katsumi). */
+  porAnotar: "por anotar",
+  renglonLector: {
+    "cheque-sin-cobrar": "Cheque sin cobrar: lo tiene la empresa; el banco todavía no lo sabe",
+    "nota-debito": "Nota débito: lo tiene el banco; la empresa todavía no lo sabe",
+  },
+  estadoLector: { bien: "correcto", mal: "no va aquí" },
 };
 
 /* ═══════════ LAS PANTALLAS ═══════════ */
 
 /*
  * `modo`: cuenta (P0), extracto (P1), mandar (P2: el juego de mandar a un
- * lado, sin mensaje de error a la vista: el ✗ en el botón y «Incorrecto.» solo
- * para el lector), quien (P3), causas (P4), conciliacion (P5) y quieta (P6).
- * `pregunta`: «Seguir» no aparece hasta el acierto; en P2, hasta el séptimo.
+ * lado, sin mensaje de error a la vista: «No va aquí» en el botón y
+ * «Incorrecto.» solo para el lector), causas (P3: el mismo juego, con las dos
+ * libretas como destinos) y conciliacion (P4, la última: un renglón de las
+ * libretas, con la frase de cierre en el acierto). Lote B: cinco pantallas.
+ * `pregunta`: «Seguir» no aparece hasta el acierto; en los juegos, hasta el último.
  */
 export const PANTALLAS_A4 = [
   {
     id: "sube-y-baja", modo: "cuenta",
-    antes: ["Bancos es la plata de la empresa en el banco. Girar un cheque es firmarlo para que el banco pague con esa plata. Prueba las dos."],
+    /* Lote B, capa 1: abre con la cuenta y los dos botones; cada definición aparece con su botón (Katsumi v2). */
+    rotuloAccion: "Prueba las dos",
+    despuesConAccion: [
+      { texto: "Bancos es la plata de la empresa en el banco.", con: "consignar" },
+      { texto: "Girar un cheque es firmarlo para que el banco pague con esa plata.", con: "girar" },
+    ],
     alt: "La cuenta Bancos. Consignar 876.000 la sube por el debe; girar un cheque de 398.200 la baja por el haber.",
     pie: "Basado en el libro, pp. 186-187",
   },
@@ -137,38 +149,27 @@ export const PANTALLAS_A4 = [
     pie: "Basado en el libro, pp. 186-187",
   },
   {
-    id: "quien-lo-tiene", modo: "quien", pregunta: true, opciones: ["empresa", "banco", "los-dos"], correcta: "empresa",
-    antes: ["El 30, la empresa gira un cheque que nadie ha cobrado. ¿Quién lo tiene anotado?"],
-    acierto: "El banco se entera cuando lo cobren.",
-    errores: {
-      banco: "¿Alguien lo ha cobrado ya?",
-      "los-dos": "¿Cuándo se entera el banco de un cheque?",
-    },
-    alt: "Las dos libretas de la misma cuenta, con un renglón libre. Con el acierto, el cheque aparece en la libreta que lo tiene anotado, y la otra dice que todavía no lo sabe.",
+    /*
+     * Lote B, §5.4: cada causa a la libreta que la tiene anotada. Absorbe a
+     * «quien-lo-tiene» (su caso es la tarjeta 1, su pregunta el «antes» y su
+     * explicación la tarjeta final). Sin mensaje de error a la vista, como P2:
+     * «No va aquí» en la libreta tocada y «Incorrecto.» para el lector.
+     */
+    id: "seis-causas", modo: "causas", pregunta: true,
+    antes: ["Lleva cada causa a quien ya la anotó."],
+    fin: "El banco sabe del cheque cuando lo cobran.",
+    alt: "Seis tarjetas, una a la vez. Cada causa se manda a la libreta de la empresa o a la del banco, y queda escrita en la que la tiene anotada.",
     pie: "Basado en el libro, p. 188",
   },
   {
-    id: "seis-causas", modo: "causas",
-    antes: ["El saldo del banco y el de la empresa casi nunca coinciden. El libro da seis causas: toca cada una."],
-    alt: "Seis botones. Cada uno muestra en qué libreta está anotada esa causa, y que la otra todavía no la sabe.",
-    pie: "Basado en el libro, p. 188",
-  },
-  {
-    id: "la-conciliacion", modo: "conciliacion",
-    antes: ["La conciliación compara los dos registros para saber qué le falta anotar a la empresa."],
-    alt: "El libro auxiliar de la empresa tiene un cheque sin cobrar, y el extracto del banco, una nota débito. Cada uno tiene renglones que al otro todavía le faltan.",
-    pie: "Basado en el libro, pp. 187-190",
-  },
-  {
-    id: "resumen", modo: "quieta",
-    resumen: [
-      "Bancos sube con consignaciones y baja con cheques girados.",
-      "Las notas del banco también la mueven: la débito resta y la crédito suma.",
-      "Cada libreta anota cosas que la otra todavía no sabe.",
-    ],
+    /* Lote B, §5.2: la última pantalla de A4. Se toca el renglón que le falta anotar a la empresa; con el acierto, sin mensaje, la frase de cierre. */
+    id: "la-conciliacion", modo: "conciliacion", pregunta: true, correcta: "nota-debito",
+    rotuloPregunta: "¿Qué le falta anotar a la empresa?",
+    errores: { "cheque-sin-cobrar": "El cheque ya está en sus libros: lo anotó al girarlo." },
+    cierre: "Cada libreta anota lo que la otra todavía no sabe. Conciliar es ver qué falta.",
     siguiente: "Siguiente: «San Calixto».",
-    alt: "Las dos libretas, vacías.",
-    pie: "Basado en el libro, pp. 186-188",
+    alt: "Las dos libretas, cada una con un renglón: un cheque sin cobrar en la de la empresa y una nota débito en la del banco. Se toca el renglón que le falta anotar a la empresa.",
+    pie: "Basado en el libro, pp. 187-190",
   },
 ];
 

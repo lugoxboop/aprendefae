@@ -213,9 +213,22 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
  * T4 · LAS PANTALLAS DE APRENDER (rediseño de enganche).
  *
  * Una pantalla a la vez, siempre en el mismo orden (Hanayama, rediseños de
- * A0 y A1): el texto de antes (corto: la figura queda en los primeros 280 px a
- * 320), la figura con lo que el estudiante hace en ella, el texto de después,
- * el resumen, «Siguiente…», «Seguir» y el pie. Es Aprender: no califica ni da FP.
+ * A0-A5 y lote B): el texto de antes (en las P0, ninguno: la pieza abre con el
+ * objeto, capa 1), la figura con lo que el estudiante hace en ella, el texto
+ * de después, la frase de cierre, «Siguiente…», «Seguir» y el pie. Es
+ * Aprender: no califica ni da FP. No hay pantalla de resumen en lista: la
+ * frase de cierre queda pegada al modelo en su estado final (capa 4).
+ *
+ * Lo que una pantalla puede traer, además de `antes` y `despues`:
+ *   · `despuesConAccion`: [{ texto, con }] textos que aparecen con la primera
+ *     acción del cuerpo (`onAccion(clave)`; `con` es la clave, o «accion»
+ *     para cualquiera). Reservan su alto desde el principio: nada se mueve
+ *   · `cierre`: la frase de cierre. Con `cierreAl: "llegar"` se ve desde el
+ *     principio; si no, aparece cuando el cuerpo llama a `onCierre()`. Con
+ *     `cierreEnCuerpo`, la pinta el cuerpo (A1, en el hueco del control)
+ *   · `siguiente`: va debajo de la frase y aparece con ella
+ *   · `rotuloAccion`: el rótulo de instrucción, que pinta el cuerpo sobre su
+ *     control, dentro de la figura
  *
  * EN UNA PANTALLA CON PREGUNTA (`pregunta: true`), «SEGUIR» NO APARECE HASTA
  * EL ACIERTO (regla D7 del canon; decisión de Yujiro, que manda sobre el §2.4
@@ -241,6 +254,60 @@ const CUERPOS = {
 const CSS_PANTALLAS = CSS_T4R + CSS_CAJON + CSS_ANO + CSS_A1 + CSS_TABLERO + CSS_REGLA + CSS_APRENDER + CSS_A2 + CSS_A3 + CSS_A4 + CSS_A5;
 
 const TextosR = ({ lista }) => (lista ?? []).map((t) => <p key={t} className="t4r-p" data-texto>{t}</p>);
+
+/*
+ * Un texto que aparece después (con la acción, o la frase de cierre): reserva
+ * su alto desde el principio con una copia invisible (visibility: hidden y
+ * aria-hidden), así que nada se mueve, y al aparecer entra con el fundido de
+ * 120 ms en una región viva. Con movimiento reducido, sin fundido (CSS_T4R).
+ */
+export function Reservado({ visible, children, clase = "t4r-p", ...datos }) {
+  return (
+    <div className="t4r-reserva" {...datos} data-visible={visible ? "" : undefined}>
+      <p className={`${clase} t4r-fantasma`} aria-hidden="true">{children}</p>
+      <p className={`${clase}${visible ? " t4r-nueva" : ""}`} aria-live="polite" data-texto={visible ? "" : undefined}>{visible ? children : null}</p>
+    </div>
+  );
+}
+
+/* Una pantalla: lo que se ve con la acción y la frase de cierre se olvidan al cambiar de pantalla (va con `key`). */
+function PantallaT4({ p, Cuerpo, onAcierto, seguirBoton }) {
+  const [hechas, setHechas] = useState(() => new Set());
+  const [cerrada, setCerrada] = useState(p.cierreAl === "llegar");
+  const refCierre = useRef(null);
+  const onAccion = (clave = "accion") => setHechas((h) => (h.has(clave) ? h : new Set([...h, clave])));
+  const onCierre = () => setCerrada(true);
+  /* E2: cuando aparece la frase de cierre (y «Siguiente»), la vista baja lo justo para que se vean enteras. */
+  useEffect(() => {
+    if (!cerrada || p.cierreAl === "llegar") return;
+    const el = refCierre.current;
+    const V = el?.ownerDocument?.defaultView;
+    const quieto = V?.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    el?.scrollIntoView?.({ block: "nearest", behavior: quieto ? "auto" : "smooth" });
+  }, [cerrada]); // eslint-disable-line react-hooks/exhaustive-deps
+  const conCierre = Boolean(p.cierre);
+  const verSiguiente = conCierre ? cerrada : true;
+  return (
+    <div className="t4r" key={p.id}>
+      <TextosR lista={p.antes} />
+      <Cuerpo p={p} onAcierto={onAcierto} onAccion={onAccion} onCierre={onCierre} cerrada={cerrada} />
+      <TextosR lista={p.despues} />
+      {(p.despuesConAccion ?? []).map((x) => (
+        <Reservado key={x.texto} visible={hechas.has(x.con ?? "accion") || (!x.con && hechas.size > 0)} data-con-accion={x.con ?? "accion"}>{x.texto}</Reservado>
+      ))}
+      {(conCierre || p.siguiente) && (
+        <div ref={refCierre} className="t4r-cierre" data-bloque-cierre>
+          {conCierre && !p.cierreEnCuerpo && <Reservado visible={cerrada} data-cierre>{p.cierre}</Reservado>}
+          {p.siguiente && (conCierre
+            ? <Reservado visible={verSiguiente} clase="t4r-sig" data-siguiente>{p.siguiente}</Reservado>
+            : <p className="t4r-sig" data-texto data-siguiente>{p.siguiente}</p>)}
+        </div>
+      )}
+      {seguirBoton}
+      {p.pie && <p className="t4r-pie" data-pie>{p.pie}</p>}
+    </div>
+  );
+}
 
 export function PantallasT4({ pieza, rotulo }) {
   const [k, setK] = useState(0);
@@ -285,15 +352,8 @@ export function PantallasT4({ pieza, rotulo }) {
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <style>{CSS_PANTALLAS}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
-        <div className="t4r" key={p.id}>
-          <TextosR lista={p.antes} />
-          <Cuerpo p={p} onAcierto={() => setAcertada(k)} />
-          <TextosR lista={p.despues} />
-          {p.resumen && <ol className="t4r-lista" data-lista>{p.resumen.map((t) => <li key={t} data-texto>{t}</li>)}</ol>}
-          {p.siguiente && <p className="t4r-sig" data-texto data-siguiente>{p.siguiente}</p>}
-          {!ultima && puedeSeguir && <SeguirAprender nueva onClick={seguir}>{pieza.boton ?? BOTON.seguir}</SeguirAprender>}
-          {p.pie && <p className="t4r-pie" data-pie>{p.pie}</p>}
-        </div>
+        <PantallaT4 key={p.id} p={p} Cuerpo={Cuerpo} onAcierto={() => setAcertada(k)}
+          seguirBoton={!ultima && puedeSeguir ? <SeguirAprender nueva onClick={seguir}>{pieza.boton ?? BOTON.seguir}</SeguirAprender> : null} />
       </div>
     </Panel>
   );

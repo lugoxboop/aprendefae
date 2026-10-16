@@ -52,6 +52,10 @@ export const CSS_CAJON = `
 .t4cv-borde > span { border-color: ${C.neutro}; border-style: solid; border-width: 0; }
 .t4cv-cajon[data-luz] .t4cv-borde > span { border-color: ${C.texto}; }
 .t4cv-nombre { margin: 0; text-align: center; font: 600 13px/1.3 "Sora", "Inter", sans-serif; }
+/* Lote B, capa 1 (A1 P0): la glosa de cada cuenta, bajo su nombre (Hanayama §2.1; Katsumi). */
+.t4cv-glosa-c { display: grid; margin: 0; font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; }
+.t4cv-glosa-c > span { white-space: nowrap; }
+.t4cv-nombre + .t4cv-glosa-c { justify-items: center; margin-top: -6px; }
 .t4cv-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; }
 .t4cv-col { position: relative; display: grid; gap: 4px; align-content: start; min-width: 0; padding: 6px 8px; border-radius: 8px; border: 1px solid transparent; background: transparent; color: inherit; text-align: left; font: inherit; }
 .t4cv-col-h { justify-items: end; text-align: right; }
@@ -145,6 +149,7 @@ function Columna({ lado, glosa, lineas, reserva, destinos, luz, vibra, palabras 
 export function Cajon({
   origen = null, glosas = {}, debe = [], haber = [], reserva = 1, saldo = null, vivo = [],
   bancos = {}, pago = {}, destinos = null, bandeja = null, luz = [], vibra = null, alt = FIGURA_CAJON.alt, children = null, palabras = false,
+  glosasCuenta = false,
 }) {
   const idAlt = useId();
   const visto = useNumeroQueSube(typeof saldo === "number" ? saldo : 0);
@@ -191,6 +196,7 @@ export function Cajon({
         <Borde arriba />
         <Borde />
         <p className="t4cv-nombre">{FIGURA_CAJON.cuenta}</p>
+        {glosasCuenta && <p className="t4cv-glosa-c" data-glosa-cuenta="caja">{FIGURA_CAJON.glosaCaja.map((t) => <span key={t}>{t}</span>)}</p>}
         <div className="t4cv-cols">
           <Columna lado={DEBE} glosa={glosas.debe ? FIGURA_CAJON.glosaDebe : null} lineas={debe} reserva={reserva} destinos={destinos} luz={luz.includes("cols")} vibra={vibra} palabras={palabras} />
           <Columna lado={HABER} glosa={glosas.haber ? FIGURA_CAJON.glosaHaber : null} lineas={haber} reserva={reserva} destinos={destinos} luz={luz.includes("cols")} vibra={vibra} palabras={palabras} />
@@ -211,6 +217,7 @@ export function Cajon({
       <div className="t4cv-dest">
         <div className="t4cv-caja2" data-caja2="bancos" data-luz={L("bancos")}>
           <span className="t4cv-caja2-n"><span>{FIGURA_CAJON.bancos}</span></span>
+          {glosasCuenta && <p className="t4cv-glosa-c" data-glosa-cuenta="bancos">{FIGURA_CAJON.glosaBancos.map((t) => <span key={t}>{t}</span>)}</p>}
           {bancos.accion && <button type="button" className={`t4r-btn2${bancos.accion.hecha ? " t4cv-oculto" : ""}`} data-accion={bancos.accion.id} onClick={bancos.accion.onClick}>{bancos.accion.texto}</button>}
           {bancos.monto && <span className="t4cv-monto t4cv-foco t4r-nueva" data-monto="bancos">{bancos.monto}</span>}
         </div>

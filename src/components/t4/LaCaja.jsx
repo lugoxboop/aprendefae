@@ -72,8 +72,8 @@ function useVibra() {
   return [vibra, sacudir];
 }
 
-function Mapa() {
-  return <Cajon />;
+function Mapa({ p }) {
+  return <Cajon glosasCuenta={Boolean(p.glosasCuenta)} />;
 }
 
 function Cobra({ p }) {
@@ -176,17 +176,30 @@ function Cheques({ onAcierto }) {
   );
 }
 
-function Controles() {
+function Controles({ p, onCierre }) {
   const [k, setK] = useState(null);
+  const [vistos, setVistos] = useState(() => new Set());
+  /* Lote B, capa 4: con el séptimo control distinto, el hueco muestra la frase de cierre; tocar un número vuelve a su control. */
+  const [frase, setFrase] = useState(false);
+  const tocar = (i) => {
+    const n = new Set([...vistos, i]);
+    const ultimo = n.size === CONTROLES_A1.length && vistos.size < CONTROLES_A1.length;
+    setVistos(n);
+    setK(i);
+    setFrase(Boolean(p.cierre) && ultimo);
+    if (ultimo) onCierre?.();
+  };
   const c = k != null ? CONTROLES_A1[k] : null;
   return (
     <Cajon saldo="—" luz={c?.luz ?? []} vivo={c?.vivo ?? []}>
       <div className="t4a1-tabs" role="group" aria-label={FIGURA_CAJON.controles}>
         {CONTROLES_A1.map((x, i) => (
-          <button key={x.texto} type="button" className="t4r-tab" data-control={i + 1} aria-pressed={k === i} onClick={() => setK(i)}>{i + 1}</button>
+          <button key={x.texto} type="button" className="t4r-tab" data-control={i + 1} aria-pressed={k === i} onClick={() => tocar(i)}>{i + 1}</button>
         ))}
       </div>
-      <p className="t4a1-ctl" data-texto-control aria-live="polite">{c ? c.texto : ""}</p>
+      {frase
+        ? <p className="t4a1-ctl t4r-nueva" data-cierre aria-live="polite">{p.cierre}</p>
+        : <p className="t4a1-ctl" data-texto-control aria-live="polite">{c ? c.texto : ""}</p>}
     </Cajon>
   );
 }
@@ -194,8 +207,8 @@ function Controles() {
 const CUERPOS = { mapa: Mapa, cobra: Cobra, consigna: Consigna, salidas: DosSalidas, cheques: Cheques, controles: Controles };
 
 /* El cuerpo de una pantalla de A1: el cajón y lo que sale debajo con la acción. */
-export function CuerpoA1({ p, onAcierto }) {
+export function CuerpoA1({ p, onAcierto, onCierre }) {
   const Cuerpo = CUERPOS[p.tipo];
-  return <Cuerpo p={p} onAcierto={onAcierto} />;
+  return <Cuerpo p={p} onAcierto={onAcierto} onCierre={onCierre} />;
 }
 

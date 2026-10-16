@@ -88,6 +88,8 @@ export const ASIENTOS_A5 = [
 
 /* El mayor de Bancos (P5): lo que entra al debe, lo que sale por el haber y el saldo. */
 export const SALDO_MAYOR = ASIENTOS_A5.reduce((s, a) => s + (a.debe === "bancos" ? a.monto : a.haber === "bancos" ? -a.monto : 0), LIBROS);
+/* P4 (lote B, §5.5): con el acierto, la nota siguiente llega a los 1,4 s, como los cheques de A1. No es animación: se mantiene con movimiento reducido. */
+export const ESPERA_NOTA_MS = 1400;
 /* P5: una nota cada 350 ms (Hanayama §3.4); con movimiento reducido, todas de una vez. */
 export const PASO_MAYOR_MS = 350;
 
@@ -109,23 +111,43 @@ export const FIGURA_A5 = {
   seccion: (rotulo, lado) => `${rotulo}, ${rotulo === "Más" ? "se suma al" : "se resta del"} saldo ${lado === "banco" ? "del banco" : "de la empresa"}`,
   asientos: "Los cinco asientos",
   tablero: "El asiento",
+  /* Lote B, §2.1 y §5.3 (Katsumi): la línea al pie del par, las tres opciones y el tercer lugar del par. */
+  difieren: (n) => `difieren en ${n}`,
+  opcionesSaldo: { banco: "el banco", empresa: "la empresa", ninguno: "ninguno todavía" },
+  verdadero: "saldo verdadero:",
+  verdaderoLector: "saldo verdadero: todavía no se sabe",
+  /* Lote B, §5.5: el contador de las notas (Hanayama). */
+  contadorNota: (n, total) => `Nota ${n} de ${total}`,
 };
 
 /* ═══════════ LAS PANTALLAS ═══════════ */
 
 /*
- * `modo`: par (P0 y P6: el par, para leer), lado (P1 y P2: el juego de mandar
- * a un lado, sin mensaje de error a la vista: «✗ No va aquí» en la sección y
- * «Incorrecto.» solo para el lector), asienta (P3), asientos (P4) y mayor (P5).
- * `pregunta`: «Seguir» no aparece hasta el acierto; en P1 y P2, hasta la
- * quinta partida. Sin «Siguiente»: es la última pieza de Aprender del tema.
+ * `modo`: saldo (P0, la pregunta del saldo verdadero), lado (P1 y P2: el juego
+ * de mandar a un lado, sin mensaje de error a la vista: «No va aquí» en la
+ * sección y «Incorrecto.» solo para el lector), asienta (P3), asientos (P4: el
+ * lado de Bancos en cada nota) y mayor (P5, la última, con la frase de cierre).
+ * Lote B: seis pantallas. `pregunta`: «Seguir» no aparece hasta el acierto; en
+ * los juegos, hasta el último. Sin «Siguiente»: es la última pieza del tema.
  */
 export const PANTALLAS_A5 = [
   {
-    id: "dos-saldos", modo: "par",
-    antes: ["La Compañía San Calixto Ltda. revisa su cuenta bancaria al 31 de marzo. El extracto y sus libros no coinciden: difieren en $1.937.500."],
-    despues: ["Para igualarlos, a cada lado se le ajusta lo que todavía no sabe."],
-    alt: "El saldo del banco, 2.435.600, y el de la empresa, 4.373.100. No son iguales.",
+    /*
+     * Lote B (§2.1 y §5.3): abre con el par, que lleva al pie «difieren en
+     * 1.937.500»; el caso va debajo, desde el principio, y luego la pregunta:
+     * ¿cuál es el saldo verdadero? Con el acierto, el par abre su tercer
+     * lugar, «saldo verdadero: ?», que se llena en P2 cuando sale el «=».
+     */
+    id: "dos-saldos", modo: "saldo", pregunta: true,
+    caso: "La Compañía San Calixto Ltda. revisa su cuenta al 31 de marzo.",
+    rotuloPregunta: "¿Cuál es el saldo verdadero?",
+    opciones: ["banco", "empresa", "ninguno"], correcta: "ninguno",
+    acierto: "A cada lado le falta anotar algo.",
+    errores: {
+      banco: "Al extracto le falta lo que la empresa ya anotó.",
+      empresa: "A los libros les faltan las notas del banco.",
+    },
+    alt: "El saldo del banco, 2.435.600, y el de la empresa, 4.373.100, difieren en 1.937.500. Debajo, tres opciones sobre cuál es el saldo verdadero.",
     pie: "Basado en el libro, p. 189",
   },
   {
@@ -149,26 +171,20 @@ export const PANTALLAS_A5 = [
     pie: "Basado en el libro, p. 190",
   },
   {
-    id: "los-asientos", modo: "asientos",
-    antes: ["Cada nota del banco lleva su asiento, del 31 de marzo. Toca cada número."],
-    alt: "Cinco botones. Cada uno muestra el asiento de una nota del banco: la cifra va al debe de una cuenta y al haber de la otra.",
+    /* Lote B, §5.5: en cada nota se decide de qué lado va Bancos (elegir las dos cuentas es de H8); el toque califica en el acto. */
+    id: "los-asientos", modo: "asientos", pregunta: true,
+    antes: ["Cada nota mueve Bancos. ¿Al debe o al haber?"],
+    error: "¿La plata entró a la cuenta o salió?",
+    alt: "Una nota del banco a la vez. Se pone Bancos al debe o al haber, y con el acierto el asiento se escribe con su otra cuenta.",
     pie: "Basado en el libro, p. 191",
   },
   {
     id: "el-mayor", modo: "mayor",
-    antes: ["Pasa las cinco notas al mayor de Bancos. ¿A qué saldo llega?"],
-    alt: "El mayor de Bancos empieza en 4.373.100. Al asentar las cinco notas, suben 645.000 y 342.000, bajan 43.500, 236.000 y 468.000, y el saldo llega a 4.612.600.",
+    antes: ["Pasa las notas al mayor."],
+    /* Lote B, capa 4: con las cinco asentadas, bajo el mayor el par igualado y la frase de cierre. Sin «Siguiente»: es la última pieza de Aprender del tema. */
+    cierre: "Los dos lados llegan al mismo saldo conciliado; solo se asientan las notas del banco.",
+    alt: "El mayor de Bancos empieza en 4.373.100. Al asentar las cinco notas, suben 645.000 y 342.000, bajan 43.500, 236.000 y 468.000, y el saldo llega a 4.612.600. Debajo, el banco y la empresa quedan iguales.",
     pie: "Basado en el libro, p. 191",
-  },
-  {
-    id: "resumen", modo: "par", igualado: true,
-    resumen: [
-      "Al extracto: más lo consignado sin abonar, menos los cheques sin cobrar.",
-      "A los libros: más las notas crédito, menos las notas débito.",
-      "Los dos dan el mismo saldo conciliado, y solo se asientan las notas del banco.",
-    ],
-    alt: "Los dos saldos, iguales: 4.612.600.",
-    pie: "Basado en el libro, pp. 189-191",
   },
 ];
 

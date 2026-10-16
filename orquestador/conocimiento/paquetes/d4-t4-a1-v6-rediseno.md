@@ -6,11 +6,12 @@
 - Única cifra del libro: 435.000 (p. 180). Los dos asientos de la p. 180 siguen como en la v5: el 1 sale al cobrar y el 2 solo con el acierto de la consignación.
 - INFLESZ **medido** con `src/herramientas/inflesz.js`. Todo texto de 10 o más palabras da 65 o más.
 - Medido con la sonda de enganche: peor pantalla 59 de 60 palabras; antes de la figura, 38 de 40 como mucho (P0); la figura entre 84 y 183 px a 320.
+- **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
 
 ## Contenido, pantalla por pantalla
 
 **P0 · dos-cuentas**
-- Antes de la figura: «En el Tema 2 la plata ya iba en dos cuentas. Caja es la que está a la mano, como en tu billetera. Bancos, la que está en el banco.» (101,3)
+- Después de la figura: «En el Tema 2 la plata ya iba en dos cuentas.» (99,6)
 - Pie: «Basado en el libro, p. 179, y en el Tema 2»
 
 **P1 · cobra**
@@ -42,7 +43,7 @@
 - Pie: «Basado en el libro, pp. 179, 180 y 187»
 
 **P5 · controles**
-- Antes de la figura: «El libro pide siete controles. Toca cada uno y mira qué cuida.» (86,6)
+- Antes de la figura: «Siete controles cuidan la caja: toca cada uno.» (<10)
 - Control 1: «Anotar cada día cuánto efectivo entró y cuánto salió.» (<10)
 - Control 2: «Llevar al banco, cada día, el efectivo que se recibió.» (78,5)
 - Control 3: «Poner un tope a los pagos que se hacen en efectivo.» (93,9)
@@ -50,15 +51,14 @@
 - Control 5: «Contar la caja seguido y sin avisar: eso es un arqueo.» (82,6)
 - Control 6: «Tener una póliza de manejo: un seguro contra el robo de quien maneja la plata.» (75,5)
 - Control 7: «Tener una caja menor, un fondo aparte para los pagos pequeños.» (71,2)
-- Pie: «Basado en el libro, pp. 179-180»
-
-**P6 · resumen**
-- Resumen 1: «Caja es la plata a la mano: billetes, monedas y cheques.» (88,2)
-- Resumen 2: «Entra por el debe y sale por el haber.» (<10)
-- Resumen 3: «Un cheque propio sale del banco: no mueve Caja.» (<10)
-- Resumen 4: «Siete controles la cuidan.» (<10)
+- Frase de cierre (en el hueco del control, con el séptimo distinto): «Caja recibe por el debe y entrega por el haber. Un cheque propio no la mueve.» (97,6)
 - Siguiente: «Siguiente: «El fondo fijo».» (<10)
 - Pie: «Basado en el libro, pp. 179-180»
+
+## Glosas del cajón (P0)
+
+- Bajo «Caja»: «a la mano, como tu billetera»
+- Bajo «Bancos»: «en el banco»
 
 ## Interfaz común del rediseño (A0, A1 y H1)
 

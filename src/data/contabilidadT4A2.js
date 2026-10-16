@@ -128,7 +128,9 @@ export const FIGURA_A2 = {
 export const PANTALLAS_A2 = [
   {
     id: "el-fondo", modo: "pagar",
-    antes: ["La caja menor de Rosa es un fondo para gastos pequeños. Es fijo: al reponerlo, vuelve a la misma cifra. Paga y repón."],
+    /* Lote B, capa 1: abre con el sobre; el rótulo va sobre los dos botones y la definición aparece con el primer «Pagar un gasto» (Katsumi v2). */
+    rotuloAccion: "Paga y repón",
+    despuesConAccion: [{ texto: "La caja menor de Rosa es un fondo para gastos pequeños. Es fijo: al reponerlo, vuelve a la misma cifra." }],
     alt: "El sobre de la caja menor. Al pagar, bajan los billetes y suben los soportes de gastos, pero la suma sigue en 500.000. Al reponer, vuelven los billetes.",
     pie: "Basado en el libro, p. 181",
   },
@@ -177,20 +179,12 @@ export const PANTALLAS_A2 = [
   },
   {
     id: "subir-bajar", modo: "subir-bajar",
-    antes: ["Si el fondo no alcanza, se sube; si la plata se queda quieta, se baja."],
+    antes: ["Fondo corto: se sube. Plata quieta: se baja."],
+    /* Lote B, capa 4: la frase de cierre, debajo del libro, con el primer «Subir» o «Bajar». */
+    cierre: "Reponerlo no mueve Caja menor.",
+    siguiente: "Siguiente: «El arqueo».",
     alt: "El fondo sube o baja de a 100.000. Al subir, Caja menor va al debe y Bancos al haber. Al bajar, Caja va al debe y Caja menor al haber.",
     pie: "Basado en el libro, p. 182. Cifras construidas",
-  },
-  {
-    id: "resumen", modo: "quieta",
-    resumen: [
-      "Se abre con un cheque: Caja menor sube y Bancos baja.",
-      "El reembolso sube Gastos generales y baja Bancos.",
-      "Caja menor solo se mueve al abrir, subir, bajar o cerrar el fondo.",
-    ],
-    siguiente: "Siguiente: «El arqueo».",
-    alt: "El sobre de Rosa con 500.000 en billetes.",
-    pie: "Basado en el libro, pp. 181-184",
   },
 ];
 

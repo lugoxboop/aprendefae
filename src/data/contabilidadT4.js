@@ -74,6 +74,9 @@ export const FIGURA_CAJON = {
   /* abreviados por Hanayama de «cuando los dineros se consignan o cuando se hacen pagos en efectivo» (p. 180). */
   glosaHaber: ["se consigna", "o se paga"],
   bancos: "Bancos",
+  /* Lote B, capa 1 (A1 P0): las glosas de las dos cuentas, con las palabras de la definición de antes (Katsumi v2). */
+  glosaCaja: ["a la mano, como tu billetera"],
+  glosaBancos: ["en el banco"],
   pago: ["Pago", "en efectivo"],
   bandeja: "Caja no se mueve",
   enLaCaja: "En la caja",
@@ -146,7 +149,9 @@ export const ESPERA_CHEQUE_MS = 1400;
 export const PANTALLAS_A1 = [
   {
     id: "dos-cuentas", tipo: "mapa", figura: "cajon",
-    antes: ["En el Tema 2 la plata ya iba en dos cuentas. Caja es la que está a la mano, como en tu billetera. Bancos, la que está en el banco."],
+    /* Lote B, capa 1: abre con el cajón; las definiciones pasan a glosas de sus cuentas, y el puente al Tema 2 va debajo, desde el principio (P0 no tiene acción). */
+    glosasCuenta: true,
+    despues: ["En el Tema 2 la plata ya iba en dos cuentas."],
     pie: "Basado en el libro, p. 179, y en el Tema 2",
   },
   {
@@ -178,17 +183,10 @@ export const PANTALLAS_A1 = [
   },
   {
     id: "controles", tipo: "controles", figura: "cajon",
-    antes: ["El libro pide siete controles. Toca cada uno y mira qué cuida."],
-    pie: PIE_179_180,
-  },
-  {
-    id: "resumen", tipo: "mapa", figura: "cajon",
-    resumen: [
-      "Caja es la plata a la mano: billetes, monedas y cheques.",
-      "Entra por el debe y sale por el haber.",
-      "Un cheque propio sale del banco: no mueve Caja.",
-      "Siete controles la cuidan.",
-    ],
+    antes: ["Siete controles cuidan la caja: toca cada uno."],
+    /* Lote B, capa 4: con el séptimo control distinto, el hueco del control pasa a la frase; tocar un número vuelve a mostrar su control (Hanayama §2.2). */
+    cierre: "Caja recibe por el debe y entrega por el haber. Un cheque propio no la mueve.",
+    cierreEnCuerpo: true,
     siguiente: "Siguiente: «El fondo fijo».",
     pie: PIE_179_180,
   },

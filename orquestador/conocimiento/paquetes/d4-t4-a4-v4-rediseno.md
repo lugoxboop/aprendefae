@@ -7,11 +7,14 @@
 - Los términos son exactamente «Nota débito» y «Nota crédito». Dentro de la libreta «El banco» van a secas; en el mayor de P2, con «del banco» en su renglón. «abonar» se define en P1. Los cheques, siempre «sin cobrar».
 - Cifras del libro: 876.000 y 398.200 (p. 187). Los siete movimientos de P2, de las pp. 186-187 en su orden.
 - Medido con la sonda (Katsumi): peor pantalla 58 de 60 palabras; antes de la figura, 37 de 40 como mucho; la figura entre 84 y 183 px a 320.
+- **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
 
 ## Contenido, pantalla por pantalla
 
 **P0 · sube-y-baja**
-- Antes de la figura: «Bancos es la plata de la empresa en el banco. Girar un cheque es firmarlo para que el banco pague con esa plata. Prueba las dos.» (99,9)
+- Rótulo de la acción: «Prueba las dos»
+- Después de la figura, con la acción (consignar): «Bancos es la plata de la empresa en el banco.» (103,4)
+- Después de la figura, con la acción (girar): «Girar un cheque es firmarlo para que el banco pague con esa plata.» (88,4)
 - Texto alternativo: «La cuenta Bancos. Consignar 876.000 la sube por el debe; girar un cheque de 398.200 la baja por el haber.» (90,9)
 - Pie: «Basado en el libro, pp. 186-187»
 
@@ -26,31 +29,19 @@
 - Texto alternativo: «Siete movimientos que se mandan a Sube, el debe de Bancos, o a Baja, el haber. Con el acierto, su nombre entra al mayor.» (93,6)
 - Pie: «Basado en el libro, pp. 186-187»
 
-**P3 · quien-lo-tiene**
-- Antes de la figura: «El 30, la empresa gira un cheque que nadie ha cobrado. ¿Quién lo tiene anotado?» (83,0)
-- Acierto (tras «Correcto.»): «El banco se entera cuando lo cobren.» (<10)
-- Error · banco (✗ y el texto): «¿Alguien lo ha cobrado ya?» (<10)
-- Error · los-dos (✗ y el texto): «¿Cuándo se entera el banco de un cheque?» (<10)
-- Texto alternativo: «Las dos libretas de la misma cuenta, con un renglón libre. Con el acierto, el cheque aparece en la libreta que lo tiene anotado, y la otra dice que todavía no lo sabe.» (82,7)
+**P3 · seis-causas**
+- Antes de la figura: «Lleva cada causa a quien ya la anotó.» (<10)
+- Tarjeta final: «El banco sabe del cheque cuando lo cobran.» (<10)
+- Texto alternativo: «Seis tarjetas, una a la vez. Cada causa se manda a la libreta de la empresa o a la del banco, y queda escrita en la que la tiene anotada.» (92,2)
 - Pie: «Basado en el libro, p. 188»
 
-**P4 · seis-causas**
-- Antes de la figura: «El saldo del banco y el de la empresa casi nunca coinciden. El libro da seis causas: toca cada una.» (94,0)
-- Texto alternativo: «Seis botones. Cada uno muestra en qué libreta está anotada esa causa, y que la otra todavía no la sabe.» (78,5)
-- Pie: «Basado en el libro, p. 188»
-
-**P5 · la-conciliacion**
-- Antes de la figura: «La conciliación compara los dos registros para saber qué le falta anotar a la empresa.» (71,4)
-- Texto alternativo: «El libro auxiliar de la empresa tiene un cheque sin cobrar, y el extracto del banco, una nota débito. Cada uno tiene renglones que al otro todavía le faltan.» (76,3)
-- Pie: «Basado en el libro, pp. 187-190»
-
-**P6 · resumen**
-- Texto alternativo: «Las dos libretas, vacías.» (<10)
-- Resumen 1: «Bancos sube con consignaciones y baja con cheques girados.» (<10)
-- Resumen 2: «Las notas del banco también la mueven: la débito resta y la crédito suma.» (86,0)
-- Resumen 3: «Cada libreta anota cosas que la otra todavía no sabe.» (66,0)
+**P4 · la-conciliacion**
+- Rótulo de la pregunta: «¿Qué le falta anotar a la empresa?»
+- Error · cheque-sin-cobrar (✗ y el texto): «El cheque ya está en sus libros: lo anotó al girarlo.» (93,9)
+- Frase de cierre (con el acierto, sin mensaje): «Cada libreta anota lo que la otra todavía no sabe. Conciliar es ver qué falta.» (83,0)
+- Texto alternativo: «Las dos libretas, cada una con un renglón: un cheque sin cobrar en la de la empresa y una nota débito en la del banco. Se toca el renglón que le falta anotar a la empresa.» (90,2)
 - Siguiente: «Siguiente: «San Calixto».» (<10)
-- Pie: «Basado en el libro, pp. 186-188»
+- Pie: «Basado en el libro, pp. 187-190»
 
 ## Los siete movimientos (P2)
 
@@ -76,29 +67,38 @@
 - Movimiento 7 · va a: debe
 - Movimiento 7 · en el mayor: «Cheque anulado»
 
-## Las seis causas (P4)
+## Las seis causas (P3)
 
+- Causa 1 · tarjeta: «Cheque girado el 30, que nadie ha cobrado» (<10)
 - Causa 1 · libreta: La empresa
 - Causa 1 · rótulo: «Cheque / sin cobrar»
 - Causa 1 · efecto: «resta»
+- Causa 2 · tarjeta: «Una consignación hecha el último día del mes» (<10)
 - Causa 2 · libreta: La empresa
 - Causa 2 · rótulo: «Consignación / sin abonar»
 - Causa 2 · efecto: «suma»
+- Causa 3 · tarjeta: «El banco cobra la chequera de la empresa» (<10)
 - Causa 3 · libreta: El banco
 - Causa 3 · rótulo: «Nota débito»
 - Causa 3 · efecto: «resta»
+- Causa 4 · tarjeta: «El banco abona intereses a la cuenta» (<10)
 - Causa 4 · libreta: El banco
 - Causa 4 · rótulo: «Nota crédito»
 - Causa 4 · efecto: «suma»
+- Causa 5 · tarjeta: «La empresa anota mal un cheque» (<10)
 - Causa 5 · libreta: La empresa
 - Causa 5 · rótulo: «Error al anotar»
 - Causa 5 · efecto: «de la empresa»
+- Causa 6 · tarjeta: «El banco liquida mal unos intereses» (<10)
 - Causa 6 · libreta: El banco
 - Causa 6 · rótulo: «Error al liquidar»
 - Causa 6 · efecto: «del banco»
 
 ## Rótulos de la figura
 
+- Contador de las causas: «Causa n de 6»
+- Con el acierto de la conciliación: «Nota débito · por anotar»
+- Para el lector, cada libreta: «La empresa: ninguna causa anotada / 1 causa anotada / {n} causas anotadas»
 - Libreta de la empresa: «La empresa»
 - Libreta del banco: «El banco»
 - Subtítulo de la empresa (P5): «libro auxiliar»

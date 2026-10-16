@@ -13,45 +13,65 @@
  *     acierto, su nombre entra al mayor y llega el siguiente; con el error, ✗
  *     en el botón tocado, nada se escribe y «Incorrecto.» solo para el lector.
  *     Con los siete, «Sube» y «Baja» desaparecen (corte de Yujiro)
- *   · quien (P3, pregunta): con el acierto, el renglón del cheque aparece en la
- *     libreta de la empresa (antes no existe: PH8-2)
- *   · causas (P4): seis botones, una causa a la vez
- *   · conciliacion (P5) y quieta (P6): las libretas, para leer
+ *   · causas (P3, pregunta; lote B §5.4, absorbe a «quien-lo-tiene»): seis
+ *     tarjetas, cada una a la libreta que la tiene anotada; con el acierto, su
+ *     rótulo se escribe en esa libreta; con el error, «No va aquí» en ella
+ *   · conciliacion (P4, la última; lote B §5.2): se toca el renglón que le
+ *     falta anotar a la empresa; con el acierto, la frase de cierre
  * Las libretas: renglones alineados de 64 px; donde una no tiene lo que la
  * otra, «todavía no / lo sabe». Sus rótulos van completos, en renglones fijos.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { useEffect, useState } from "react";
-import { C, Mensaje, LineaMarcas } from "./comun.jsx";
+import { C, Mensaje, Marca, LineaMarcas } from "./comun.jsx";
 import { Tablero, Mayor } from "./tablero.jsx";
-import { Fig, Chips, LectorError } from "./aprender.jsx";
+import { Fig, LectorError } from "./aprender.jsx";
 import { DEBE, HABER, MARCA } from "../../data/contabilidadT4.js";
 import {
-  CONSIGNACION, CHEQUE_PROVEEDOR, MOVIMIENTOS_A4, RESERVA_MAYOR_A4, RENGLONES_EXTRACTO, RENGLON_CHEQUE_30, CAUSAS_A4,
+  CONSIGNACION, CHEQUE_PROVEEDOR, MOVIMIENTOS_A4, RESERVA_MAYOR_A4, RENGLONES_EXTRACTO, CAUSAS_A4,
   RENGLONES_CONCILIACION, FIGURA_A4 as F,
 } from "../../data/contabilidadT4A4.js";
 
 export const CSS_A4 = `
 .t4lt { display: grid; gap: 0; border: 1px solid ${C.neutro}; border-radius: 10px; overflow: hidden; }
 .t4lt-f { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.t4lt-f > div { min-width: 0; padding: 6px 10px; }
-.t4lt-f > div + div { border-left: 1px solid ${C.neutro}; }
+.t4lt-f > div, .t4lt-f > .t4lt-c { min-width: 0; padding: 6px 10px; }
+.t4lt-f > * + * { border-left: 1px solid ${C.neutro}; }
 .t4lt-cab > div { display: grid; border-bottom: 1px solid rgba(248,249,250,0.22); }
 .t4lt-cab > div > span:first-child { font: 600 13px/1.3 "Sora", "Inter", sans-serif; white-space: nowrap; }
 .t4lt-cab > div > span + span { font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; white-space: nowrap; }
-.t4lt-r > div { display: grid; align-content: center; min-height: 64px; border-bottom: 1px solid rgba(248,249,250,0.10); }
-.t4lt-r > div > span { white-space: nowrap; font-size: 13px; line-height: 1.35; }
-.t4lt-r > div[data-tinta] { box-shadow: inset 2px 0 0 ${C.neutro}; }
-.t4lt-r > div[data-tinta] > span:first-child { font-weight: 600; }
-.t4lt-r > div[data-tinta][data-luz] { box-shadow: inset 2px 0 0 ${C.texto}; }
-.t4lt-r > div:not([data-tinta]) > span { color: ${C.texto2}; font-size: 12px; }
-.t4lt-r > div[data-tinta] > span.e { font-size: 12px; color: ${C.texto2}; font-weight: 500; }
+.t4lt-r > div, .t4lt-r > .t4lt-c { display: grid; align-content: center; min-height: 64px; border-bottom: 1px solid rgba(248,249,250,0.10); }
+.t4lt-c > span { white-space: nowrap; font-size: 13px; line-height: 1.35; }
+.t4lt-c[data-tinta] { box-shadow: inset 2px 0 0 ${C.neutro}; }
+.t4lt-c[data-tinta] > span:first-child { font-weight: 600; }
+.t4lt-c[data-tinta][data-luz] { box-shadow: inset 2px 0 0 ${C.texto}; }
+.t4lt-c:not([data-tinta]) > span { color: ${C.texto2}; font-size: 12px; }
+.t4lt-c[data-tinta] > span.e { font-size: 12px; color: ${C.texto2}; font-weight: 500; }
+/* Lote B, §5.2: en la conciliación cada renglón es un destino (64 px), con su hueco de 20 px para la pastilla. */
+.t4lt-dest { display: grid; }
+.t4lt-boton { appearance: none; width: 100%; margin: 0; padding: 0; text-align: left; font: inherit; color: ${C.texto}; background: transparent; border: 1px solid ${C.reposo}; border-radius: 8px; cursor: pointer; }
+.t4lt-boton:disabled { cursor: default; }
+.t4lt-boton > .t4lt-c { border-bottom: none; }
+.t4lt-boton[data-marca="bien"] { border: 2px solid ${C.texto}; }
+.t4lt-boton[data-marca="mal"] { border: 2px solid ${C.error}; }
+.t4lt-boton:focus-visible, .t4a4-lib:focus-visible { outline: 2px solid ${C.texto}; outline-offset: 2px; }
+.t4lt-hueco { display: flex; min-height: 20px; margin: 2px 0 4px; padding: 0 6px; }
 .t4a4-c { display: grid; gap: 2px; align-content: center; border: 1px solid ${C.texto}; border-radius: 8px; padding: 8px 12px; min-height: 80px; }
 .t4a4-c > span { font-size: 15px; line-height: 22px; overflow-wrap: anywhere; }
 .t4a4-c > span + span { font-size: 12px; color: ${C.texto2}; line-height: 1.3; }
 .t4a4-lado[data-marca="mal"] { border: 2px solid ${C.error}; }
 .t4a4-lado { display: flex; align-items: center; justify-content: center; }
-.t4a4-causas { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+/* Lote B, §5.4: las dos libretas como destinos; cinco renglones reservados de 20 px y el hueco de la pastilla al pie. */
+.t4a4-libs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.t4a4-lib { appearance: none; display: grid; grid-template-rows: auto 100px 20px; gap: 4px; min-width: 0; padding: 8px 10px; text-align: left; font: inherit; color: ${C.texto}; background: transparent; border: 1px solid ${C.reposo}; border-radius: 10px; cursor: pointer; }
+.t4a4-lib:disabled { cursor: default; }
+.t4a4-lib[data-marca="bien"] { border: 2px solid ${C.texto}; padding: 7px 9px; }
+.t4a4-lib[data-marca="mal"] { border: 2px solid ${C.error}; padding: 7px 9px; }
+.t4a4-lib-n { font: 600 13px/1.3 "Sora", "Inter", sans-serif; white-space: nowrap; border-bottom: 1px solid rgba(248,249,250,0.22); padding-bottom: 4px; }
+.t4a4-lib-l { display: grid; align-content: start; }
+.t4a4-lib-l > span { display: grid; }
+.t4a4-lib-l > span > span { white-space: nowrap; font: 600 12px/20px "Inter", sans-serif; }
+.t4a4-lib-m { display: flex; min-height: 20px; }
 `;
 
 const NOMBRE = "libretas";
@@ -60,15 +80,20 @@ const NOMBRE = "libretas";
  * Las dos libretas. renglones: [{ id, emp: { t: [..], e } | null, ban: {...} | null }];
  * `reserva`: renglones vacíos (el alto no cambia); `sub`: los subtítulos (solo en P5).
  */
-function Libretas({ renglones, reserva = 0, sub = false, luz = false }) {
-  const celda = (x, lado) => (x
+/* Una celda de libreta: el renglón anotado, con su efecto, o «todavía no / lo sabe». */
+function Celda({ x, lado, luz = false, nueva = false }) {
+  return x
     ? (
-      <div data-tinta="" data-luz={luz ? "" : undefined} className="t4r-nueva" data-linea-libreta={x.t.join(" ")} data-libreta={lado}>
+      <span className={`t4lt-c${nueva ? " t4r-nueva" : ""}`} data-tinta="" data-luz={luz ? "" : undefined} data-linea-libreta={x.t.join(" ")} data-libreta={lado}>
         {x.t.map((t) => <span key={t}>{t}</span>)}
         <span className="e">{x.e}</span>
-      </div>
+      </span>
     )
-    : <div data-libreta={lado} data-no-sabe=""><span>{F.noSabe[0]}</span><span>{F.noSabe[1]}</span></div>);
+    : <span className="t4lt-c" data-libreta={lado} data-no-sabe=""><span>{F.noSabe[0]}</span><span>{F.noSabe[1]}</span></span>;
+}
+
+function Libretas({ renglones, reserva = 0, sub = false, luz = false }) {
+  const celda = (x, lado) => <Celda key={lado} x={x} lado={lado} luz={luz} nueva={Boolean(x)} />;
   return (
     <div className="t4lt" data-libretas>
       <div className="t4lt-f t4lt-cab">
@@ -82,13 +107,16 @@ function Libretas({ renglones, reserva = 0, sub = false, luz = false }) {
 }
 
 /* P0 · Bancos sube y baja: consignar y girar. */
-function Cuenta({ p }) {
+function Cuenta({ p, onAccion }) {
   const [h, setH] = useState({ consignar: false, girar: false });
+  /* Lote B, capa 1: cada definición aparece con su botón. */
+  const hacer = (k) => { setH((x) => ({ ...x, [k]: true })); onAccion?.(k); };
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
+      {p.rotuloAccion && <p className="t4r-rotacc" data-rotulo-accion>{p.rotuloAccion}</p>}
       <div className="t4r-par2">
-        <button type="button" className={`t4r-btn2${h.consignar ? " t4r-oculto" : ""}`} data-accion="consignar" data-usado={h.consignar ? "" : undefined} onClick={h.consignar ? undefined : () => setH({ ...h, consignar: true })}>{F.consignar}</button>
-        <button type="button" className={`t4r-btn2${h.girar ? " t4r-oculto" : ""}`} data-accion="girar" data-usado={h.girar ? "" : undefined} onClick={h.girar ? undefined : () => setH({ ...h, girar: true })}>{F.girar}</button>
+        <button type="button" className={`t4r-btn2${h.consignar ? " t4r-oculto" : ""}`} data-accion="consignar" data-usado={h.consignar ? "" : undefined} onClick={h.consignar ? undefined : () => hacer("consignar")}>{F.consignar}</button>
+        <button type="button" className={`t4r-btn2${h.girar ? " t4r-oculto" : ""}`} data-accion="girar" data-usado={h.girar ? "" : undefined} onClick={h.girar ? undefined : () => hacer("girar")}>{F.girar}</button>
       </div>
       <Tablero cuentas={[{ id: "bancos", renglones: [F.mayor] }]}
         totales={{ bancos: { [DEBE]: h.consignar ? CONSIGNACION : 0, [HABER]: h.girar ? CHEQUE_PROVEEDOR : 0 } }}
@@ -149,50 +177,98 @@ function Mandar({ p, onAcierto }) {
   );
 }
 
-/* P3 · ¿quién tiene anotado el cheque del 30? Con el acierto aparece su renglón. */
-function Quien({ p, onAcierto }) {
-  const [e, setE] = useState(null);
-  const ok = e === p.correcta;
-  useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
-  return (
-    <>
-      <Fig nombre={NOMBRE} alt={p.alt}>
-        <Libretas renglones={ok ? [RENGLON_CHEQUE_30] : []} reserva={ok ? 0 : 1} luz />
-        <Chips opciones={p.opciones} elegida={e} correcta={p.correcta} onElegir={setE} rotulo={(o) => F.chips[o]} etiqueta={F.quien} />
-      </Fig>
-      {e && <Mensaje key={e} ok={ok} texto={ok ? p.acierto : p.errores[e]} />}
-    </>
-  );
-}
-
-/* P4 · las seis causas, una a la vez. */
-function Causas({ p }) {
-  const [k, setK] = useState(null);
+/*
+ * P3 · las seis causas (lote B, §5.4): una tarjeta a la vez, a la libreta que
+ * la tiene anotada. Con el acierto, el rótulo de la causa se escribe en esa
+ * libreta (sin su efecto) y llega la siguiente; con el error, «No va aquí» en
+ * la libreta tocada, nada se escribe y «Incorrecto.» para el lector.
+ */
+const LIBRETAS_A4 = [["empresa", "emp", F.empresa], ["banco", "ban", F.banco]];
+function Causas({ p, onAcierto }) {
+  const [i, setI] = useState(0);
+  const [marca, setMarca] = useState(null);
+  const [errores, setErrores] = useState(0);
+  const total = CAUSAS_A4.length;
+  const c = CAUSAS_A4[i];
+  const fin = !c;
+  useEffect(() => { if (fin) onAcierto?.(); }, [fin]); // eslint-disable-line react-hooks/exhaustive-deps
+  const puestas = CAUSAS_A4.slice(0, i);
+  const ladoDe = (x) => (x.emp ? "empresa" : "banco");
+  const elegir = (lado) => {
+    if (!c) return;
+    if (lado === ladoDe(c)) { setMarca({ lado, m: "bien" }); setI(i + 1); } else { setMarca({ lado, m: "mal" }); setErrores((n) => n + 1); }
+  };
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
-      <div className="t4a4-causas" role="group" aria-label={F.causas}>
-        {CAUSAS_A4.map((c, i) => <button key={c.id} type="button" className="t4r-tab" data-control={i + 1} aria-pressed={k === i} onClick={() => setK(i)}>{i + 1}</button>)}
+      <div className="t4a4-c" data-tarjeta-causa={c?.id ?? "fin"} aria-live="polite">
+        {c ? <><span>{c.tarjeta}</span><span>{F.contadorCausa(i + 1, total)}</span></> : <span>{p.fin}</span>}
       </div>
-      {/* Al tocar 1 a 6 cambia el renglón de las libretas: la región viva hace que el lector lo oiga (Katsumi). */}
-      <div aria-live="polite" data-lector-causa>
-        <Libretas renglones={k != null ? [CAUSAS_A4[k]] : []} reserva={k != null ? 0 : 1} luz />
+      <div className="t4a4-libs">
+        {LIBRETAS_A4.map(([lado, k, nombre]) => {
+          const anotadas = puestas.filter((x) => ladoDe(x) === lado);
+          const m = marca?.lado === lado ? marca.m : null;
+          return (
+            <button key={lado} type="button" className="t4a4-lib" data-destino={lado} data-marca={m ?? undefined} disabled={fin} onClick={() => elegir(lado)}
+              aria-label={`${F.anotadas(nombre, anotadas.length)}${m ? `: ${F.estadoLector[m]}` : ""}`}>
+              <span className="t4a4-lib-n">{nombre}</span>
+              <span className="t4a4-lib-l">
+                {anotadas.map((x) => <span key={x.id} className="t4r-nueva" data-causa-escrita={x.id}>{x[k].t.map((t) => <span key={t}>{t}</span>)}</span>)}
+              </span>
+              <span className="t4a4-lib-m">{m && <Marca marca={m} />}</span>
+            </button>
+          );
+        })}
       </div>
+      <LectorError error={marca?.m === "mal"} clave={errores} />
     </Fig>
   );
 }
 
-function Conciliacion({ p }) {
-  return <Fig nombre={NOMBRE} alt={p.alt}><Libretas sub renglones={RENGLONES_CONCILIACION} /></Fig>;
+/*
+ * P4 · la conciliación (lote B, §5.2), la última de A4: los dos renglones de
+ * las libretas son destinos. Se toca lo que le falta anotar a la empresa. En
+ * el error, «No va aquí» en el renglón y su mensaje; reintento. Con el
+ * acierto, «Correcto» en el renglón, la empresa pasa a «Nota débito · por
+ * anotar» y, sin mensaje, aparece la frase de cierre.
+ */
+function Conciliacion({ p, onAcierto, onCierre }) {
+  const [e, setE] = useState(null);
+  const ok = e === p.correcta;
+  useEffect(() => { if (ok) { onAcierto?.(); onCierre?.(); } }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <>
+      <Fig nombre={NOMBRE} alt={p.alt}>
+        <p className="t4r-rotacc" data-rotulo-pregunta>{p.rotuloPregunta}</p>
+        <div className="t4lt" data-libretas>
+          <div className="t4lt-f t4lt-cab">
+            <div><span>{F.empresa}</span></div>
+            <div><span>{F.banco}</span></div>
+          </div>
+          {RENGLONES_CONCILIACION.map((r) => {
+            const m = e === r.id ? (ok ? "bien" : "mal") : null;
+            const emp = ok && r.id === p.correcta ? { t: r.ban.t, e: F.porAnotar } : r.emp;
+            return (
+              <div key={r.id} className="t4lt-dest" data-renglon={r.id}>
+                <button type="button" className="t4lt-f t4lt-r t4lt-boton" data-destino={r.id} data-marca={m ?? undefined} disabled={ok}
+                  aria-label={`${F.renglonLector[r.id]}${m ? `: ${F.estadoLector[m]}` : ""}`} onClick={() => setE(r.id)}>
+                  <Celda x={emp} lado="empresa" nueva={ok && r.id === p.correcta} />
+                  <Celda x={r.ban} lado="banco" />
+                </button>
+                <span className="t4lt-hueco" aria-hidden="true">{m && <Marca marca={m} />}</span>
+              </div>
+            );
+          })}
+        </div>
+      </Fig>
+      {e && !ok && <Mensaje key={e} ok={false} texto={p.errores[e]} />}
+    </>
+  );
 }
 
-function Quieta({ p }) {
-  return <Fig nombre={NOMBRE} alt={p.alt}><Libretas renglones={[]} /></Fig>;
-}
+const MODOS = { cuenta: Cuenta, extracto: Extracto, mandar: Mandar, causas: Causas, conciliacion: Conciliacion };
 
-const MODOS = { cuenta: Cuenta, extracto: Extracto, mandar: Mandar, quien: Quien, causas: Causas, conciliacion: Conciliacion, quieta: Quieta };
-
-export function CuerpoA4({ p, onAcierto }) {
-  const M = MODOS[p.modo];
-  return <M p={p} onAcierto={onAcierto} />;
+export function CuerpoA4(props) {
+  const M = MODOS[props.p.modo];
+  return <M {...props} />;
 }
 

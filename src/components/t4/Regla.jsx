@@ -71,7 +71,7 @@ export function Regla({ r, suman, tramos = [], aguja2 = [], etiquetas = [] }) {
       <span className="t4rg-rot" style={{ left: 0, top: 118 }}>falta</span>
       <span className="t4rg-rot" style={{ right: 0, top: 118 }}>sobra</span>
       <span className="t4rg-rot" style={{ left: "50%", top: 118, transform: "translateX(-50%)" }}>cada marca: 2.000</span>
-      {etiquetas.map((e) => <Rot key={e.id} x={xDe(e.desv)} top={e.fila === "A" ? 78 : 96} dato={e.id}>{fuera(e.desv) && e.desv < 0 ? "← " : ""}{e.mal && <span style={{ display: "inline-flex", verticalAlign: "-3px", marginRight: "4px" }}><IconoMal /></span>}{e.texto} <b>{cifra(e.valor)}</b>{fuera(e.desv) && e.desv > 0 ? " →" : ""}</Rot>)}
+      {etiquetas.map((e) => <Rot key={e.id} x={xDe(e.desv)} top={e.fila === "A" ? 78 : 96} dato={e.id}>{fuera(e.desv) && e.desv < 0 ? "← " : ""}{e.mal && <span style={{ display: "inline-flex", verticalAlign: "-3px", marginRight: "4px" }}><IconoMal /></span>}{e.texto}{e.valor != null ? <> <b>{cifra(e.valor)}</b></> : null}{fuera(e.desv) && e.desv > 0 ? " →" : ""}</Rot>)}
       {suman != null && (
         <>
           <span className="t4rg-aguja t4r-nueva" data-aguja="suman" style={{ left: `calc(${xs}% - 1px)`, top: lado ? "2px" : "34px", height: lado ? "56px" : "24px" }} />

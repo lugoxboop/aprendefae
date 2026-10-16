@@ -6,11 +6,12 @@
 - Diez pantallas (la pila tenía once). A3 usa la regla del fondo de H4 (sus rótulos: «fondo», «suman», «suman, fuera de la regla», «falta», «sobra», «cada marca: 2.000»). «Sobrante» y «faltante» nunca a secas (C5).
 - Cifras del libro (pp. 182-186): 500.000, 478.100, 21.900, 24.000, 2.100, 476.000, 15.200, 6.700 y 484.800, las calculadas se calculan. Distractores construidos: 480.200 y 471.400. El control de P1 (de 14.900 a 28.900) es supuesto de Hanayama.
 - Medido con la sonda (Katsumi): peor pantalla 59 de 60 palabras; antes de la figura, 32 de 40 como mucho; la figura entre 84 y 183 px a 320.
+- **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
 
 ## Contenido, pantalla por pantalla
 
 **P0 · contar**
-- Antes de la figura: «En un arqueo, los soportes más lo que hay en la caja tienen que dar el fondo.» (101,9)
+- Después de la figura, con la acción: «En un arqueo, los soportes más lo que hay en la caja tienen que dar el fondo.» (101,9)
 - Texto alternativo: «El sobre con 478.100 en soportes y la caja sin contar. Al contar, hay 21.900, y la aguja de la suma cae justo en la marca del fondo.» (92,7)
 - Pie: «Basado en el libro, pp. 182 y 184»
 
@@ -52,14 +53,8 @@
 - Texto alternativo: «Con 15.200 en la caja, la suma queda a la izquierda del fondo. Solo el cheque correcto deja la aguja de caja más cheque en la marca.» (89,5)
 - Pie: «Basado en el libro, pp. 185-186»
 
-**P6 · dos-caminos**
-- Antes de la figura: «Faltan $6.700. Si el faltante de caja menor es representativo, lo usual es cobrárselo a Rosa; si no, la empresa lo asume como gasto.» (72,8)
-- Después de la figura: «El libro no dice desde qué cifra: lo decide la empresa.» (88,2)
-- Texto alternativo: «La regla con el tramo de 6.700 que falta, a la izquierda de la marca del fondo.» (94,6)
-- Pie: «Basado en el libro, p. 183»
-
-**P7 · camino-1**
-- Antes de la figura: «Sus Servicios decide cobrarle los $6.700 a Rosa.» (<10)
+**P6 · camino-1**
+- Antes de la figura: «Es representativo: Sus Servicios le cobra los $6.700 a Rosa.» (66,0)
 - Acierto (tras «Correcto.»): «Rosa le queda debiendo $6.700 a la empresa.» (<10)
 - Error · gno-faltante (✗ y el texto): «Esa es para cuando la empresa asume la pérdida.» (<10)
 - Error · ino-sobrante (✗ y el texto): «Esa es para cuando sobra plata.» (<10)
@@ -67,18 +62,11 @@
 - Texto alternativo: «Los 6.700 que faltan se ponen en una de tres cuentas, al debe o al haber.» (97,4)
 - Pie: «Basado en el libro, p. 186»
 
-**P8 · camino-2**
-- Antes de la figura: «¿Y si la empresa asume la pérdida? Cambia de camino y mira qué cambia en el asiento.» (88,4)
-- Texto alternativo: «El asiento entero, con los dos caminos. Al cambiar de camino, solo cambia la cuenta de los 6.700.» (87,1)
-- Pie: «Basado en el libro, p. 186»
-
-**P9 · resumen**
-- Texto alternativo: «La regla del fondo, sin agujas.» (<10)
-- Resumen 1: «Soportes más caja deben dar el fondo.» (<10)
-- Resumen 2: «Si sobra plata, el reembolso es menor que lo gastado; si falta, mayor.» (83,6)
-- Resumen 3: «Lo que falta se cobra al encargado o lo asume la empresa.» (85,8)
+**P7 · dos-caminos**
+- Frase de cierre (con el primer cambio del interruptor): «Quién paga los $6.700 lo decide la empresa.» (<10)
+- Texto alternativo: «La regla con los 6.700 que faltan para el fondo. Un interruptor elige si se le cobra a Rosa o si la empresa lo asume, y el asiento cambia de cuenta: los 6.700 siempre van al debe.» (83,9)
 - Siguiente: «Siguiente: «Bancos y notas del banco».» (<10)
-- Pie: «Basado en el libro, pp. 182-186»
+- Pie: «Basado en el libro, p. 183»
 
 ## Rótulos de la figura
 
@@ -95,8 +83,11 @@
 - Opción · sobra: «Sobra»
 - Aguja: «caja + tu cheque»
 - Asiento: «EL ASIENTO DEL REEMBOLSO»
-- Camino · cobra: «Cobrarle a Rosa»
-- Camino · asume: «La empresa asume»
+- Interruptor · cobra: «Se le cobra a Rosa»
+- Interruptor · asume: «La empresa lo asume»
+- Rótulo del tramo · cobra: «por cobrar»
+- Rótulo del tramo · asume: «gasto»
+- Para el lector, el destino: «Los 6.700 van a {cuenta}, al debe.»
 
 ## Interfaz común del rediseño (A0-A5 y H1)
 

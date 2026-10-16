@@ -6,13 +6,17 @@
 - Siete pantallas (la pila tenía diez); un lado por pantalla. P1 y P2 no llevan mensaje de error a la vista: «✗ No va aquí» en la sección tocada y «Incorrecto.» solo para el lector. El «=» aparece solo cuando los dos saldos son iguales. Sin «Siguiente»: es la última pieza de Aprender del tema.
 - Cifras del libro (pp. 189-191): los dos saldos, las cinco partidas de cada lado y los cinco asientos. La diferencia (1.937.500), los saldos de cada paso y el conciliado (4.612.600) se calculan. Cheques sin número (E3).
 - Medido con la sonda (Katsumi): peor pantalla 58 de 60 palabras; antes de la figura, 31 de 40 como mucho; la figura entre 84 y 183 px a 320.
+- **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
 
 ## Contenido, pantalla por pantalla
 
 **P0 · dos-saldos**
-- Antes de la figura: «La Compañía San Calixto Ltda. revisa su cuenta bancaria al 31 de marzo. El extracto y sus libros no coinciden: difieren en $1.937.500.» (77,3)
-- Después de la figura: «Para igualarlos, a cada lado se le ajusta lo que todavía no sabe.» (74,0)
-- Texto alternativo: «El saldo del banco, 2.435.600, y el de la empresa, 4.373.100. No son iguales.» (93,0)
+- Caso (bajo el par, desde el principio): «La Compañía San Calixto Ltda. revisa su cuenta al 31 de marzo.» (81,4)
+- Rótulo de la pregunta: «¿Cuál es el saldo verdadero?»
+- Acierto (tras «Correcto.»): «A cada lado le falta anotar algo.» (<10)
+- Error · banco (✗ y el texto): «Al extracto le falta lo que la empresa ya anotó.» (90,9)
+- Error · empresa (✗ y el texto): «A los libros les faltan las notas del banco.» (<10)
+- Texto alternativo: «El saldo del banco, 2.435.600, y el de la empresa, 4.373.100, difieren en 1.937.500. Debajo, tres opciones sobre cuál es el saldo verdadero.» (76,2)
 - Pie: «Basado en el libro, p. 189»
 
 **P1 · lado-del-banco**
@@ -33,21 +37,16 @@
 - Pie: «Basado en el libro, p. 190»
 
 **P4 · los-asientos**
-- Antes de la figura: «Cada nota del banco lleva su asiento, del 31 de marzo. Toca cada número.» (79,7)
-- Texto alternativo: «Cinco botones. Cada uno muestra el asiento de una nota del banco: la cifra va al debe de una cuenta y al haber de la otra.» (90,8)
+- Antes de la figura: «Cada nota mueve Bancos. ¿Al debe o al haber?» (<10)
+- Error (✗ y el texto): «¿La plata entró a la cuenta o salió?» (<10)
+- Texto alternativo: «Una nota del banco a la vez. Se pone Bancos al debe o al haber, y con el acierto el asiento se escribe con su otra cuenta.» (96,4)
 - Pie: «Basado en el libro, p. 191»
 
 **P5 · el-mayor**
-- Antes de la figura: «Pasa las cinco notas al mayor de Bancos. ¿A qué saldo llega?» (102,2)
-- Texto alternativo: «El mayor de Bancos empieza en 4.373.100. Al asentar las cinco notas, suben 645.000 y 342.000, bajan 43.500, 236.000 y 468.000, y el saldo llega a 4.612.600.» (71,0)
+- Antes de la figura: «Pasa las notas al mayor.» (<10)
+- Frase de cierre (con las cinco asentadas, bajo el par igualado): «Los dos lados llegan al mismo saldo conciliado; solo se asientan las notas del banco.» (79,7)
+- Texto alternativo: «El mayor de Bancos empieza en 4.373.100. Al asentar las cinco notas, suben 645.000 y 342.000, bajan 43.500, 236.000 y 468.000, y el saldo llega a 4.612.600. Debajo, el banco y la empresa quedan iguales.» (72,3)
 - Pie: «Basado en el libro, p. 191»
-
-**P6 · resumen**
-- Texto alternativo: «Los dos saldos, iguales: 4.612.600.» (<10)
-- Resumen 1: «Al extracto: más lo consignado sin abonar, menos los cheques sin cobrar.» (80,6)
-- Resumen 2: «A los libros: más las notas crédito, menos las notas débito.» (88,2)
-- Resumen 3: «Los dos dan el mismo saldo conciliado, y solo se asientan las notas del banco.» (88,0)
-- Pie: «Basado en el libro, pp. 189-191»
 
 ## El lado del banco (P1)
 
@@ -85,6 +84,13 @@
 
 ## Rótulos de la figura
 
+- Al pie del par (P0): «difieren en 1.937.500»
+- Opción · el banco: «el banco»
+- Opción · la empresa: «la empresa»
+- Opción · ninguno: «ninguno todavía»
+- Tercer lugar del par: «saldo verdadero: ?»
+- Tercer lugar del par, para el lector: «saldo verdadero: todavía no se sabe»
+- Contador de las notas: «Nota n de 5»
 - Saldo del banco: «el banco»
 - Saldo de la empresa: «la empresa»
 - Más: «Más»

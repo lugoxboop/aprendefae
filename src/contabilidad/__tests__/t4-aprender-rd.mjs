@@ -22,7 +22,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 
-const { w, h, montar, tocar, esperar, conColor, TEAL_AMBAR, CORAL, movimientoReducido } = await import("./t4-dom.mjs");
+const { w, h, montar, tocar, esperar, conColor, TEAL_AMBAR, CORAL, movimientoReducido, visible } = await import("./t4-dom.mjs");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { PantallasT4, PIEZAS_T4, TEMA_T4 } = await import("../../components/ContabilidadT4View.jsx");
 const { inflesz } = await import("../../herramientas/inflesz.js");
@@ -35,17 +35,24 @@ export { leer, PAQUETES, RAIZ, pantallasDe, seccionDe, renglones, textoDe, infle
 /* Lo que la pantalla de los datos dice, por lugar del paquete (en el orden del paquete). */
 export function porLugar(p) {
   const r = [];
+  if (p.rotuloAccion) r.push(["Rótulo de la acción", p.rotuloAccion]);
   for (const t of p.antes ?? []) r.push(["Antes de la figura", t]);
+  if (p.caso) r.push(["Caso (bajo el par, desde el principio)", p.caso]);
+  if (p.rotuloPregunta) r.push(["Rótulo de la pregunta", p.rotuloPregunta]);
   for (const t of p.despues ?? []) r.push(["Después de la figura", t]);
+  for (const x of p.despuesConAccion ?? []) r.push([`Después de la figura, con la acción${x.con ? ` (${x.con})` : ""}`, x.texto]);
   if (p.fin) r.push(["Tarjeta final", p.fin]);
   if ("acierto" in p) r.push(["Acierto (tras «Correcto.»)", p.acierto]);
+  if (p.error) r.push(["Error (✗ y el texto)", p.error]);
   for (const [c, t] of Object.entries(p.errores ?? {})) r.push([`Error · ${c} (✗ y el texto)`, t]);
-  r.push(["Texto alternativo", p.alt]);
-  (p.resumen ?? []).forEach((t, i) => r.push([`Resumen ${i + 1}`, t]));
+  if (p.cierre) r.push(["Frase de cierre", p.cierre]);
+  if (p.alt) r.push(["Texto alternativo", p.alt]);
   if (p.siguiente) r.push(["Siguiente", p.siguiente]);
   r.push(["Pie", p.pie]);
   return r;
 }
+/* El lugar del paquete, sin la nota de cuándo aparece la frase de cierre («Frase de cierre (con el acierto…)»). */
+export const lugarCanon = (lugar) => (lugar.startsWith("Frase de cierre") ? "Frase de cierre" : lugar);
 
 export const q = (m, sel) => m.caja.querySelector(sel);
 export const seguir = (m) => q(m, '[data-boton="seguir"]');
@@ -60,8 +67,12 @@ export async function jugar(m, P, id, hasta = Infinity) {
     const el = q(m, `[data-pieza] ${paso.click}`);
     assert.ok(el, `${P.id} · ${id}: el plan toca ${paso.click} y no está`);
     tocar(el);
-    /* Con movimiento reducido nada se anima: basta con dejar correr los efectos (la sonda sí espera). */
-    await esperar(0);
+    /*
+     * Con movimiento reducido nada se anima: basta con dejar correr los
+     * efectos. Las esperas de un segundo o más no son animación (la nota
+     * siguiente de A5 llega a los 1,4 s): esas sí se esperan.
+     */
+    await esperar((paso.espera ?? 0) >= 1000 ? paso.espera : 0);
   }
 }
 
@@ -112,7 +123,7 @@ export function pruebasComunes({ P, canon, datos, piezas, noNombra = {}, antesDe
   for (const c of CANON_P) {
     test(`★★★ ${nombre} · ${c.id}: cada texto es el del paquete, letra por letra y en su lugar, ni uno más ni uno menos`, () => {
       const p = P.pantallas.find((x) => x.id === c.id);
-      assert.deepEqual(porLugar(p), c.textos.map((x) => [x.lugar, x.texto]));
+      assert.deepEqual(porLugar(p), c.textos.map((x) => [lugarCanon(x.lugar), x.texto]));
     });
   }
 
@@ -128,18 +139,19 @@ export function pruebasComunes({ P, canon, datos, piezas, noNombra = {}, antesDe
     }
   });
 
-  test(`★★★ ${nombre}: cada pantalla, en el orden de Hanayama: antes → figura → después → resumen → siguiente → «Seguir» → pie (en las preguntas, tras el acierto)`, async () => {
+  test(`★★★ ${nombre}: cada pantalla, en el orden de Hanayama: antes → figura → después → lo que sale con la acción → frase de cierre → siguiente → «Seguir» → pie (tras jugar su plan)`, async () => {
     const m = await abrir(P, P.pantallas[0].id);
     try {
       for (const [k, p] of P.pantallas.entries()) {
         const zona = q(m, "[data-pieza]");
         assert.equal(zona.dataset.pantalla, p.id);
-        if (p.pregunta) await jugar(m, P, p.id);
+        await jugar(m, P, p.id);
         const orden = [...zona.querySelectorAll("[data-texto], [data-figura], [data-boton], [data-pie]")]
           .filter((e) => !e.parentElement.closest("[data-figura]"))
           .map((e) => (e.matches("[data-figura]") ? "FIGURA" : e.matches("[data-boton]") ? `BOTON:${e.dataset.boton}` : e.matches("[data-pie]") ? "PIE" : e.textContent));
         const ultima = k === P.pantallas.length - 1;
-        const esperado = [...(p.antes ?? []), "FIGURA", ...(p.despues ?? []), ...(p.resumen ?? []), ...(p.siguiente ? [p.siguiente] : []), ...(ultima ? [] : ["BOTON:seguir"]), "PIE"];
+        const esperado = [...(p.antes ?? []), "FIGURA", ...(p.despues ?? []), ...(p.despuesConAccion ?? []).map((x) => x.texto),
+          ...(p.cierre && !p.cierreEnCuerpo ? [p.cierre] : []), ...(p.siguiente ? [p.siguiente] : []), ...(ultima ? [] : ["BOTON:seguir"]), "PIE"];
         assert.deepEqual(orden, esperado, p.id);
         assert.equal(zona.querySelector("[data-figura] figcaption").textContent, p.alt, `${p.id}: el texto alternativo`);
         if (!ultima) tocar(seguir(m));
@@ -163,6 +175,12 @@ export function pruebasComunes({ P, canon, datos, piezas, noNombra = {}, antesDe
           Object.assign(m, await abrir(P, p.id));
         }
         await jugar(m, P, p.id);
+        if (p === P.pantallas.at(-1)) {
+          /* La última no lleva «Seguir»: tras el acierto, la frase de cierre (capa 4). */
+          assert.equal(seguir(m), null, `${p.id}: «Seguir» en la última pantalla`);
+          assert.ok(q(m, "[data-cierre][data-visible]"), `${p.id}: tras el acierto no aparece la frase de cierre`);
+          continue;
+        }
         assert.ok(seguir(m), `${p.id}: tras el acierto no aparece «Seguir»`);
         tocar(seguir(m));
         assert.notEqual(pantallaDe(m), p.id, `${p.id}: «Seguir» no avanza`);
@@ -195,6 +213,48 @@ export function pruebasComunes({ P, canon, datos, piezas, noNombra = {}, antesDe
         }
       } finally { m.desmontar(); }
     }
+  });
+
+  test(`★★★ ${nombre} · capa 1: la pieza abre con el objeto: en la P0 no hay texto antes de la figura, y lo que se dice va como rótulo o aparece debajo`, async () => {
+    const p = P.pantallas[0];
+    assert.deepEqual(p.antes ?? [], [], `${p.id}: texto antes de la figura`);
+    const m = await abrir(P, p.id);
+    try {
+      const zona = q(m, "[data-pieza] .t4r");
+      assert.ok(zona.firstElementChild.matches("[data-figura]") || zona.firstElementChild.querySelector(":scope > [data-figura]"), `${p.id}: la figura no es lo primero`);
+      if (p.rotuloAccion) assert.equal(q(m, "[data-figura] [data-rotulo-accion]").textContent, p.rotuloAccion);
+      /* Lo que aparece con la acción está reservado (no se ve) hasta la acción. */
+      for (const x of p.despuesConAccion ?? []) {
+        const r = q(m, `[data-con-accion="${x.con ?? "accion"}"]`);
+        assert.ok(r && !r.hasAttribute("data-visible"), `${p.id}: «${x.texto}» se ve antes de la acción`);
+        assert.equal(r.querySelector(".t4r-fantasma").textContent, x.texto, `${p.id}: no reserva su alto`);
+      }
+      await jugar(m, P, p.id);
+      for (const x of p.despuesConAccion ?? []) assert.ok(q(m, `[data-con-accion="${x.con ?? "accion"}"][data-visible]`), `${p.id}: «${x.texto}» no aparece con la acción`);
+    } finally { m.desmontar(); }
+  });
+
+  test(`★★★ ${nombre} · capa 4: no termina en una pantalla de lista de resumen; la frase de cierre aparece junto al modelo en su estado final`, async () => {
+    assert.ok(P.pantallas.every((p) => !p.resumen && p.id !== "resumen"), "queda una pantalla de resumen");
+    const p = P.pantallas.at(-1);
+    assert.ok(p.cierre, `${p.id}: la última pantalla no tiene frase de cierre`);
+    const m = await abrir(P, p.id);
+    try {
+      assert.equal(q(m, "[data-lista]"), null, "una lista de resumen en el DOM");
+      if (p.cierreAl !== "llegar") assert.ok(!q(m, "[data-cierre][data-visible]") && !q(m, "[data-cierre].t4r-nueva"), `${p.id}: la frase de cierre se ve antes de que el modelo llegue a su estado final`);
+      await jugar(m, P, p.id);
+      const frase = q(m, "[data-cierre][data-visible] > [aria-live]") ?? q(m, "[data-figura] [data-cierre]");
+      assert.ok(frase, `${p.id}: no aparece la frase de cierre`);
+      assert.equal(visible(frase), p.cierre);
+      /* Pegada al modelo: entre la figura (o su devolución) y la frase no hay otro texto. */
+      const zona = q(m, "[data-pieza] .t4r");
+      const hijos = [...zona.children];
+      const iFig = hijos.findIndex((e) => e.matches("[data-figura]"));
+      const iFrase = hijos.findIndex((e) => e.contains(frase));
+      assert.ok(iFig >= 0 && iFrase >= iFig, `${p.id}: la frase no va debajo de la figura`);
+      assert.ok(iFrase === iFig || hijos.slice(iFig + 1, iFrase).every((e) => e.matches("[data-mensaje], [data-aviso], .t4r-aviso") || !e.textContent.trim()), `${p.id}: hay otro texto entre la figura y la frase`);
+      if (p.siguiente) assert.equal(visible(q(m, "[data-siguiente][data-visible] > [aria-live]") ?? q(m, "p[data-siguiente]")), p.siguiente);
+    } finally { m.desmontar(); }
   });
 
   test(`★★★ ${nombre}: ningún error con reintento nombra la respuesta (Katsumi, «Para Baki» 11)`, () => {

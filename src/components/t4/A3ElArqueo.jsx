@@ -15,8 +15,10 @@
  *     el cheque elegido; solo el correcto la deja en la marca
  *   · ficha (P4 y P7, pregunta): la diferencia a una cuenta y un lado, con
  *     «Comprobar». En el error no se escribe nada y solo se marca lo elegido
- *   · tramo (P6), caminos (P8: cambiar de camino solo cambia la cuenta de los
- *     6.700; no se califica) y quieta (P9)
+ *   · interruptor (la última, lote B §5.1 v2): dos posiciones, «Se le cobra
+ *     a Rosa» / «La empresa lo asume»; los mismos 6.700 cambian de destino en
+ *     la regla y en el asiento. No se califica; la frase de cierre aparece con
+ *     el primer cambio
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { useEffect, useState } from "react";
@@ -35,7 +37,7 @@ export const CSS_A3 = `
 .t4a3-zona { margin: 0; min-height: 22px; text-align: center; font: 600 14px/22px "Inter", sans-serif; white-space: nowrap; }
 .t4a3-control { display: block; width: 100%; height: 44px; margin: 0; accent-color: ${C.texto}; cursor: pointer; }
 .t4a3-camino { display: grid; gap: 6px; }
-.t4a3-camino > button { width: 100%; padding: 0 6px; }
+.t4a3-camino > button { width: 100%; padding: 0 6px; border-color: ${C.reposo}; }
 .t4a3-camino > button[aria-pressed="true"] { border-width: 2px; border-color: ${C.texto}; }
 `;
 
@@ -50,8 +52,10 @@ const SobreArqueo = ({ caja, luz = false }) => (
 );
 
 /* P0 · contar: la caja dice lo que tiene y la aguja de la suma cae en la marca del fondo. */
-function Contar({ p }) {
+function Contar({ p, onAccion }) {
   const [c, setC] = useState(false);
+  /* Lote B, capa 1: con «Contar la caja» aparece la definición del arqueo, debajo de la figura. */
+  useEffect(() => { if (c) onAccion?.(); }, [c]); // eslint-disable-line react-hooks/exhaustive-deps
   const caja = FONDO - GASTADO;
   return (
     <Fig nombre={NOMBRE} alt={p.alt} gap={6}>
@@ -137,38 +141,38 @@ function Ficha({ p, onAcierto }) {
 }
 
 /* P6 · el tramo de lo que falta, a la izquierda de la marca del fondo. */
-function Tramo({ p }) {
-  return (
-    <Fig nombre={NOMBRE} alt={p.alt} gap={6}>
-      <Regla r={R} suman={GASTADO + EFECTIVO_FALTANTE} tramos={[{ id: "dif", desv: -FALTANTE }]} />
-    </Fig>
-  );
-}
-
-/* P8 · dos caminos: cambiar de camino solo cambia la cuenta de los 6.700. No se califica. */
-function Caminos({ p }) {
+/*
+ * La última pantalla (lote B, §5.1 v2) · dos caminos: un interruptor de dos
+ * posiciones cambia el destino de los mismos 6.700, en la regla (el rótulo del
+ * tramo) y en el asiento (la cuenta). El tramo, la aguja y la cifra no se
+ * mueven. No se califica. La frase de cierre aparece con el primer cambio.
+ */
+function Interruptor({ p, onCierre }) {
   const [asume, setAsume] = useState(false);
+  const [cambio, setCambio] = useState(false);
+  useEffect(() => { if (cambio) onCierre?.(); }, [cambio]); // eslint-disable-line react-hooks/exhaustive-deps
+  const camino = asume ? "asume" : "cobra";
   const va = asume ? GNO : CXC;
+  const elegir = (v) => { if (v !== asume) setCambio(true); setAsume(v); };
   return (
     <Fig nombre={NOMBRE} alt={p.alt} gap={6}>
+      <Regla r={R} suman={GASTADO + EFECTIVO_FALTANTE} tramos={[{ id: "dif", desv: -FALTANTE }]}
+        etiquetas={[{ id: "destino", fila: "A", desv: -FALTANTE / 2, texto: F.tramo[camino] }]} />
       <div className="t4a3-camino">
         {[[false, "cobra"], [true, "asume"]].map(([v, id]) => (
-          <button key={id} type="button" className="t4r-btn2" data-accion={id} aria-pressed={asume === v} onClick={() => setAsume(v)}>{F.caminos[id]}</button>
+          <button key={id} type="button" className="t4r-btn2" data-accion={id} aria-pressed={asume === v} onClick={() => elegir(v)}>{F.caminos[id]}</button>
         ))}
       </div>
-      <Tablero cuentas={[GG, va, B].map((c) => CUENTAS_A3[c])} totales={{ [GG]: { [DEBE]: GASTADO }, [va]: { [DEBE]: FALTANTE }, [B]: { [HABER]: CHEQUE_FALTANTE } }}
+      <Tablero key={va} cuentas={[CUENTAS_A3[va]]} totales={{ [va]: { [DEBE]: FALTANTE } }}
         activo={false} conMarcas={false} recien={[`${va}:${DEBE}`]} etiqueta={F.tablero} />
+      <p className="t4f-sr" aria-live="polite" data-lector-destino>{F.vanA(CUENTAS_A3[va].renglones.join(" "))}</p>
     </Fig>
   );
 }
 
-function Quieta({ p }) {
-  return <Fig nombre={NOMBRE} alt={p.alt} gap={6}><Regla r={R} suman={null} /></Fig>;
-}
+const MODOS = { contar: Contar, mover: Mover, zona: Zona, cheque: ElCheque, ficha: Ficha, interruptor: Interruptor };
 
-const MODOS = { contar: Contar, mover: Mover, zona: Zona, cheque: ElCheque, ficha: Ficha, tramo: Tramo, caminos: Caminos, quieta: Quieta };
-
-export function CuerpoA3({ p, onAcierto }) {
-  const M = MODOS[p.modo];
-  return <M p={p} onAcierto={onAcierto} />;
+export function CuerpoA3(props) {
+  const M = MODOS[props.p.modo];
+  return <M {...props} />;
 }

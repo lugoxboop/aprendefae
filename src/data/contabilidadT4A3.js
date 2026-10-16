@@ -94,7 +94,10 @@ export const FIGURA_A3 = {
   chips: { falta: "Falta", cuadra: "Cuadra", sobra: "Sobra" },
   aguja: "caja + tu cheque",
   asiento: "EL ASIENTO DEL REEMBOLSO",
-  caminos: { cobra: "Cobrarle a Rosa", asume: "La empresa asume" },
+  /* Lote B (§5.1, v2): el interruptor de dos posiciones, con los textos de Yujiro; el rótulo del tramo y la frase para el lector, de Hanayama. */
+  caminos: { cobra: "Se le cobra a Rosa", asume: "La empresa lo asume" },
+  tramo: { cobra: "por cobrar", asume: "gasto" },
+  vanA: (cuenta) => `Los 6.700 van a ${cuenta}, al debe.`,
   /* Para el lector de pantalla: el nombre del tablero (el del prototipo) y de los grupos de opciones (las preguntas de Katsumi). */
   tablero: "El asiento del reembolso",
   opcionesZona: "¿Qué muestra el arqueo?",
@@ -113,7 +116,8 @@ export const FIGURA_A3 = {
 export const PANTALLAS_A3 = [
   {
     id: "contar", modo: "contar",
-    antes: ["En un arqueo, los soportes más lo que hay en la caja tienen que dar el fondo."],
+    /* Lote B, capa 1: abre con el sobre y la regla; la definición aparece con «Contar la caja» (Katsumi v2). */
+    despuesConAccion: [{ texto: "En un arqueo, los soportes más lo que hay en la caja tienen que dar el fondo." }],
     alt: "El sobre con 478.100 en soportes y la caja sin contar. Al contar, hay 21.900, y la aguja de la suma cae justo en la marca del fondo.",
     pie: "Basado en el libro, pp. 182 y 184",
   },
@@ -172,18 +176,11 @@ export const PANTALLAS_A3 = [
     pie: "Basado en el libro, pp. 185-186",
   },
   {
-    id: "dos-caminos", modo: "tramo",
-    antes: ["Faltan $6.700. Si el faltante de caja menor es representativo, lo usual es cobrárselo a Rosa; si no, la empresa lo asume como gasto."],
-    despues: ["El libro no dice desde qué cifra: lo decide la empresa."],
-    alt: "La regla con el tramo de 6.700 que falta, a la izquierda de la marca del fondo.",
-    pie: "Basado en el libro, p. 183",
-  },
-  {
     id: "camino-1", modo: "ficha", pregunta: true,
     cuentas: [CXC_EMPLEADOS, GASTOS_FALTANTE, INGRESOS_SOBRANTE], monto: FALTANTE,
     va: { id: CXC_EMPLEADOS, lado: DEBE },
     base: {},
-    antes: ["Sus Servicios decide cobrarle los $6.700 a Rosa."],
+    antes: ["Es representativo: Sus Servicios le cobra los $6.700 a Rosa."],
     acierto: "Rosa le queda debiendo $6.700 a la empresa.",
     errores: {
       [GASTOS_FALTANTE]: "Esa es para cuando la empresa asume la pérdida.",
@@ -194,21 +191,18 @@ export const PANTALLAS_A3 = [
     pie: "Basado en el libro, p. 186",
   },
   {
-    id: "camino-2", modo: "caminos",
-    antes: ["¿Y si la empresa asume la pérdida? Cambia de camino y mira qué cambia en el asiento."],
-    alt: "El asiento entero, con los dos caminos. Al cambiar de camino, solo cambia la cuenta de los 6.700.",
-    pie: "Basado en el libro, p. 186",
-  },
-  {
-    id: "resumen", modo: "quieta",
-    resumen: [
-      "Soportes más caja deben dar el fondo.",
-      "Si sobra plata, el reembolso es menor que lo gastado; si falta, mayor.",
-      "Lo que falta se cobra al encargado o lo asume la empresa.",
-    ],
+    /*
+     * Lote B, §5.1 v2 (Hanayama, con la corrección de Yujiro): va DESPUÉS de
+     * camino-1 y absorbe a camino-2. Un interruptor de dos posiciones cambia
+     * el destino de los mismos 6.700, en la regla y en el asiento; no hay
+     * umbral (el libro no da ninguno). Es la última pantalla de A3: la frase
+     * de cierre aparece con el primer cambio de posición.
+     */
+    id: "dos-caminos", modo: "interruptor",
+    cierre: "Quién paga los $6.700 lo decide la empresa.",
     siguiente: "Siguiente: «Bancos y notas del banco».",
-    alt: "La regla del fondo, sin agujas.",
-    pie: "Basado en el libro, pp. 182-186",
+    alt: "La regla con los 6.700 que faltan para el fondo. Un interruptor elige si se le cobra a Rosa o si la empresa lo asume, y el asiento cambia de cuenta: los 6.700 siempre van al debe.",
+    pie: "Basado en el libro, p. 183",
   },
 ];
 

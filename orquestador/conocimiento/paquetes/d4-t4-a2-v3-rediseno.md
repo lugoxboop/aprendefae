@@ -6,11 +6,13 @@
 - Ocho pantallas (la pila tenía once). Salen la portada y «Quién la maneja» (con la remisión a las retenciones); «aumentar» y «disminuir» se juntan en P6. La figura es el sobre de Rosa y, debajo, el libro: el tablero de H3, con el mismo significado.
 - Cifras del libro (pp. 181-184): 500.000 y los ocho gastos de mayo. 478.100 y 21.900 se calculan. El ±100.000 de P6 es supuesto (pie «Cifras construidas»).
 - Medido con la sonda (Katsumi): peor pantalla 59 de 60 palabras; antes de la figura, 32 de 40 como mucho; la figura entre 84 y 183 px a 320.
+- **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
 
 ## Contenido, pantalla por pantalla
 
 **P0 · el-fondo**
-- Antes de la figura: «La caja menor de Rosa es un fondo para gastos pequeños. Es fijo: al reponerlo, vuelve a la misma cifra. Paga y repón.» (90,8)
+- Rótulo de la acción: «Paga y repón»
+- Después de la figura, con la acción: «La caja menor de Rosa es un fondo para gastos pequeños. Es fijo: al reponerlo, vuelve a la misma cifra.» (87,8)
 - Texto alternativo: «El sobre de la caja menor. Al pagar, bajan los billetes y suben los soportes de gastos, pero la suma sigue en 500.000. Al reponer, vuelven los billetes.» (88,5)
 - Pie: «Basado en el libro, p. 181»
 
@@ -49,17 +51,11 @@
 - Pie: «Basado en el libro, pp. 182 y 184»
 
 **P6 · subir-bajar**
-- Antes de la figura: «Si el fondo no alcanza, se sube; si la plata se queda quieta, se baja.» (96,3)
+- Antes de la figura: «Fondo corto: se sube. Plata quieta: se baja.» (<10)
+- Frase de cierre (con el primer «Subir» o «Bajar»): «Reponerlo no mueve Caja menor.» (<10)
 - Texto alternativo: «El fondo sube o baja de a 100.000. Al subir, Caja menor va al debe y Bancos al haber. Al bajar, Caja va al debe y Caja menor al haber.» (99,2)
-- Pie: «Basado en el libro, p. 182. Cifras construidas»
-
-**P7 · resumen**
-- Texto alternativo: «El sobre de Rosa con 500.000 en billetes.» (<10)
-- Resumen 1: «Se abre con un cheque: Caja menor sube y Bancos baja.» (93,9)
-- Resumen 2: «El reembolso sube Gastos generales y baja Bancos.» (<10)
-- Resumen 3: «Caja menor solo se mueve al abrir, subir, bajar o cerrar el fondo.» (88,4)
 - Siguiente: «Siguiente: «El arqueo».» (<10)
-- Pie: «Basado en el libro, pp. 181-184»
+- Pie: «Basado en el libro, p. 182. Cifras construidas»
 
 ## Rótulos de la figura
 

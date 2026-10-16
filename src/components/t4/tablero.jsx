@@ -91,6 +91,9 @@ export const CSS_TABLERO = `
 /* El eco de lo que se escribe (H7 fase 2): en #A8B6C8 hasta comprobar (§4.4 del prompt maestro). */
 .t4pr span.v.e { color: ${C.texto2}; font-weight: 500; }
 .t4pr-igual { text-align: center; font: 600 17px/1.3 "Inter", sans-serif; }
+/* Lote B (A5): la línea al pie del par («difieren en…») y su tercer lugar («saldo verdadero: ?»). Opcionales: H7 y H8 no los usan. */
+.t4pr-pie { grid-column: 1 / -1; justify-self: center; margin-top: 6px; font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; white-space: nowrap; }
+.t4pr-ver { grid-column: 1 / -1; justify-self: center; margin-top: 6px; font: 600 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* campo */
 .t4cp { display: grid; gap: 4px; min-width: 0; }
 .t4cp label { font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; }
@@ -122,7 +125,8 @@ const nombreMitad = (c, lado, cifraVista, palabra) =>
  * marcas:  { "id:lado": "bien"|"mal"|"era" }
  * recien:  ["id:lado"] los totales que acaban de cambiar
  */
-export function Tablero({ cuentas, totales = {}, puestas = {}, monto, onElegir, activo, marcas = {}, recien = [], etiqueta = "Cuentas", conMarcas = true, apilado = true }) {
+/* `activas` (opcional, A5 los-asientos): solo esas cuentas son destinos; las demás se ven, sin tocar. */
+export function Tablero({ cuentas, totales = {}, puestas = {}, monto, onElegir, activo, marcas = {}, recien = [], etiqueta = "Cuentas", conMarcas = true, apilado = true, activas = null }) {
   const mitad = (c, lado) => {
     const k = `${c.id}:${lado}`;
     const puesta = puestas[lado] === c.id;
@@ -137,7 +141,7 @@ export function Tablero({ cuentas, totales = {}, puestas = {}, monto, onElegir, 
         data-puesta={puesta && !m ? "" : undefined}
         data-marca={m}
         data-sin-marcas={conMarcas && apilado ? undefined : ""}
-        disabled={!activo}
+        disabled={!activo || (activas != null && !activas.includes(c.id))}
         aria-pressed={puesta}
         aria-label={nombreMitad(c, lado, puesta && !m ? monto : (totales[c.id]?.[lado] ? cifra(totales[c.id][lado]) : null), m ? MARCA[m] : null)}
         onClick={() => onElegir?.(c.id, lado)}
@@ -218,7 +222,22 @@ export function Mayor({ titulo, debe, haber, reserva = 3, saldo = null, rotuloSa
 /* Lo que oye el lector cuando los dos saldos del par se igualan (Katsumi). */
 export const SON_IGUALES = "son iguales";
 
-export function Par({ izq, der, igual = false }) {
+/*
+ * `pie`: una línea al pie del par (A5 P0, «difieren en 1.937.500»).
+ * `verdadero`: el tercer lugar del par (A5, lote B §5.3): { rotulo, v, lector };
+ * con `v` null dice «?», y con una cifra la cuenta hasta su valor (420 ms).
+ */
+function Verdadero({ rotulo, v, lector }) {
+  const x = useNumeroQueSube(v ?? 0);
+  return (
+    <span className="t4pr-ver t4r-nueva" data-verdadero={v ?? "?"}>
+      <span aria-hidden="true">{rotulo} {v != null ? cifra(x) : "?"}</span>
+      <span className="t4f-sr">{v != null ? `${rotulo} ${cifra(v)}` : lector}</span>
+    </span>
+  );
+}
+
+export function Par({ izq, der, igual = false, pie = null, verdadero = null }) {
   const a = useNumeroQueSube(izq.v ?? 0);
   const b = useNumeroQueSube(der.v ?? 0);
   return (
@@ -228,6 +247,8 @@ export function Par({ izq, der, igual = false }) {
       <div data-lado-par="der"><span className="r">{der.r}</span><span className={`v${der.foco ? " f" : ""}${der.eco ? " e" : ""}`} data-eco={der.eco ? "" : undefined}>{der.v != null ? cifra(der.eco ? der.v : b) : "—"}</span></div>
       {/* Cuando aparece el «=», el lector lo oye: la región está desde el principio, vacía, para que el cambio se anuncie. */}
       <span className="t4f-sr" aria-live="polite" data-lector-igual>{igual ? SON_IGUALES : ""}</span>
+      {pie && <span className="t4pr-pie" data-pie-par>{pie}</span>}
+      {verdadero && <Verdadero {...verdadero} />}
     </div>
   );
 }

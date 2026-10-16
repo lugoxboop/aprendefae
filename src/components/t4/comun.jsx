@@ -75,6 +75,13 @@ export const CSS_T4R = `
 .t4r-marca[data-marca="mal"] { border-color: ${C.error}; }
 .t4r-marca > svg { flex: none; }
 .t4r-linea { display: grid; min-height: 0; }
+/* Lote B (Hanayama, §2.1 y §2.2): el texto que aparece después reserva su alto; el rótulo de instrucción va sobre su control. */
+.t4r-reserva { display: grid; }
+.t4r-reserva > * { grid-area: 1 / 1; }
+.t4r-fantasma { visibility: hidden; }
+.t4r-cierre { display: grid; gap: 12px; margin-top: -4px; }
+.t4r-cierre:empty { display: none; }
+.t4r-rotacc { margin: 0; font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; }
 .t4r-nueva { animation: t4r-aparece .12s cubic-bezier(.3,.9,.4,1); }
 @keyframes t4r-aparece { from { opacity: 0; } to { opacity: 1; } }
 @keyframes t4r-vibra { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }

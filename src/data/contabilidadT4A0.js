@@ -91,7 +91,9 @@ const F = FILAS_A0;
 export const PANTALLAS_A0 = [
   {
     id: "la-prueba", figura: "ano", modo: "pista",
-    antes: ["Un activo es corriente si se vuelve plata antes de un año. Arrastra el año."],
+    /* Lote B, capa 1 (Hanayama §2.1; Katsumi v2): la pieza abre con la figura; el rótulo va sobre la pista y la definición aparece con el primer arrastre. */
+    rotuloAccion: "Arrastra el año",
+    despuesConAccion: [{ texto: "Un activo es corriente si se vuelve plata antes de un año." }],
     filas: [F.mercancia, F.edificioOficina],
     pie: "Basado en el libro, pp. 177-178",
   },
@@ -132,21 +134,13 @@ export const PANTALLAS_A0 = [
   },
   {
     id: "por-que-importan", figura: "ano", modo: "quieta",
-    antes: ["Con los activos corrientes la empresa opera y paga sus deudas."],
+    antes: ["Con lo corriente se pagan deudas."],
     filas: [F.caja, F.edificioOficina],
-    despues: ["Un edificio puede respaldar un préstamo, pero las cuotas se pagan con plata."],
-    pie: "Basado en el libro, pp. 178-179",
-  },
-  {
-    id: "resumen", figura: "ano", modo: "quieta",
-    filas: [],
-    resumen: [
-      "Es corriente lo que se vuelve plata antes de un año. El efectivo ya lo es.",
-      "Con los corrientes, la empresa opera y paga sus deudas.",
-      "Los fijos ayudan a producir esa plata.",
-    ],
+    /* Lote B, capa 4: la frase de cierre, pegada a la figura quieta en el mes 12, desde que se llega (Katsumi, versión final). */
+    cierre: "Corriente: se vuelve plata o se consume antes de un año. Los fijos ayudan a producirla.",
+    cierreAl: "llegar",
     siguiente: "Siguiente: «La caja».",
-    pie: "Basado en el libro, pp. 177-179",
+    pie: "Basado en el libro, pp. 178-179",
   },
 ];
 

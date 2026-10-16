@@ -47,8 +47,10 @@ function Libro({ cuentas, totales, recien = [] }) {
 }
 
 /* P0 · pagar y reponer: los billetes bajan, los soportes suben, «Suman» se queda. */
-function Pagar({ p }) {
+function Pagar({ p, onAccion }) {
   const [n, setN] = useState(0);
+  /* Lote B, capa 1: con el primer pago aparece la definición, debajo de la figura. */
+  useEffect(() => { if (n > 0) onAccion?.(); }, [n > 0]); // eslint-disable-line react-hooks/exhaustive-deps
   const idRazon = useId();
   /* D7: los dos son de límite (vuelven a servir), así que se quedan; apagado, cada uno dice al lado por qué (Katsumi). */
   const razon = !n ? F.razonReponer : n >= PAGOS_P0 ? F.razonPagar : null;
@@ -60,6 +62,7 @@ function Pagar({ p }) {
         { id: "soportes", r: F.soportes, v: pagado, oculta: !pagado },
         { id: "suman", r: F.suman, v: FONDO, suma: true },
       ]} />
+      {p.rotuloAccion && <p className="t4r-rotacc" data-rotulo-accion>{p.rotuloAccion}</p>}
       <div className="t4r-par2">
         <button type="button" className="t4r-btn2" data-accion="pagar" aria-disabled={n >= PAGOS_P0 ? "true" : undefined} aria-describedby={n >= PAGOS_P0 ? idRazon : undefined} onClick={n < PAGOS_P0 ? () => setN(n + 1) : undefined}>{F.pagar}</button>
         <button type="button" className="t4r-btn2" data-accion="reponer" aria-disabled={!n ? "true" : undefined} aria-describedby={!n ? idRazon : undefined} onClick={n ? () => setN(0) : undefined}>{F.reponer}</button>
@@ -181,8 +184,11 @@ function YCajaMenor({ p, onAcierto }) {
 }
 
 /* P6 · subir y bajar el fondo, de a 100.000 (supuesto). Subir: Caja menor / Bancos. Bajar: Caja / Caja menor. */
-function SubirBajar({ p }) {
+function SubirBajar({ p, onCierre }) {
   const [f, setF] = useState(FONDO);
+  /* Lote B, capa 4: con el primer «Subir» o «Bajar», la frase de cierre debajo del libro. */
+  const movido = f !== FONDO;
+  useEffect(() => { if (movido) onCierre?.(); }, [movido]); // eslint-disable-line react-hooks/exhaustive-deps
   const idRazon = useId();
   /* D7: «Bajar» y «Subir» son de límite; apagado, cada uno dice al lado por qué (Katsumi). */
   const razon = f <= FONDO_MIN ? F.razonBajar : f >= FONDO_MAX ? F.razonSubir : null;
@@ -209,7 +215,7 @@ function Quieta({ p }) {
 
 const MODOS = { pagar: Pagar, apertura: Apertura, gastos: Gastos, cuanto: CuantoQueda, reembolso: Reembolso, asiento: YCajaMenor, "subir-bajar": SubirBajar, quieta: Quieta };
 
-export function CuerpoA2({ p, onAcierto }) {
-  const M = MODOS[p.modo];
-  return <M p={p} onAcierto={onAcierto} />;
+export function CuerpoA2(props) {
+  const M = MODOS[props.p.modo];
+  return <M {...props} />;
 }

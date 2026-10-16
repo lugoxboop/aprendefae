@@ -175,11 +175,13 @@ function Fila({ f, m, juego = null }) {
   );
 }
 
-export function FiguraAno({ filas, ano, quieta = false, boton = null, juego = null }) {
+export function FiguraAno({ filas, ano, quieta = false, boton = null, juego = null, rotulo = null }) {
   const idAlt = useId();
   const { m, setM } = ano;
   return (
     <figure className="t4an" data-figura="ano" data-mes={Math.round(m)} aria-describedby={idAlt}>
+      {/* Lote B, capa 1: el rótulo de instrucción, sobre la pista (Hanayama §2.1). */}
+      {rotulo && <p className="t4r-rotacc" data-rotulo-accion>{rotulo}</p>}
       <div className="t4an-cab" aria-hidden="true">
         <span className="t4an-zona" style={{ left: 0 }}>{FIGURA_ANO.zonaSi.map((t) => <span key={t}>{t}</span>)}</span>
         <span className="t4an-zona t4an-zona-no">{FIGURA_ANO.zonaNo.map((t) => <span key={t}>{t}</span>)}</span>
@@ -207,9 +209,12 @@ export function FiguraAno({ filas, ano, quieta = false, boton = null, juego = nu
 }
 
 /* El cuerpo de una pantalla de A0: la figura y, en el juego, la devolución. */
-export function CuerpoA0({ p, onAcierto }) {
+export function CuerpoA0({ p, onAcierto, onAccion }) {
   const quieta = p.modo === "quieta";
   const ano = useAno(quieta ? 12 : 0);
+  /* Lote B, capa 1: con el primer arrastre o «Pasar el año», aparece el texto de debajo. */
+  const movido = !quieta && ano.m > 0;
+  useEffect(() => { if (movido) onAccion?.(); }, [movido]); // eslint-disable-line react-hooks/exhaustive-deps
   const [elecciones, setElecciones] = useState({});
   const [fin, setFin] = useState(false);
   const juego = p.modo === "juego";
@@ -234,7 +239,7 @@ export function CuerpoA0({ p, onAcierto }) {
 
   return (
     <>
-      <FiguraAno filas={p.filas} ano={ano} quieta={quieta} boton={boton} juego={datosJuego} />
+      <FiguraAno filas={p.filas} ano={ano} quieta={quieta} boton={boton} juego={datosJuego} rotulo={p.rotuloAccion ?? null} />
       {juego && <p className="t4r-aviso" data-aviso aria-live="polite">{verAviso ? FIGURA_ANO.aviso : null}</p>}
       {juego && fin && <Mensaje ok={bien} texto={bien ? p.acierto : p.error} />}
     </>
