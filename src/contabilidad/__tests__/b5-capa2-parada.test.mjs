@@ -64,7 +64,7 @@ const E6 = await import("../t6Pieza5.js");
 const textoDeOpcion = (par) => Object.fromEntries(par.opciones.map((o) => [o.id, o.texto]));
 const PIEZAS = [
   { nombre: "T5 · A2", en: "cuenta2", dice: textoDeOpcion(D5.PARADA_T5_A2), Componente: await C("tema5/TresMomentos"), pasos: 14, parada: D5.PARADA_T5_A2, estado: E5.T5_A2_JUNTO.estadoPaso, duracion: E5.T5_A2_JUNTO.duracion },
-  { nombre: "T6 · A3", en: "gasto1", dice: { si: "Otra vez en marzo", "si-parte": "Otra vez en marzo", no: "Solo en diciembre" }, Componente: await C("tema6/LaProvision"), pasos: 15, parada: D3.PARADA_T6_A3, estado: E3.T6_A3_JUNTO.estadoPaso, duracion: E3.T6_A3_JUNTO.duracion },
+  { nombre: "T6 · A3", en: "gasto1", dice: { si: "Otra vez en marzo", "si-parte": "En marzo, solo lo que faltó", no: "Solo en diciembre" }, Componente: await C("tema6/LaProvision"), pasos: 15, parada: D3.PARADA_T6_A3, estado: E3.T6_A3_JUNTO.estadoPaso, duracion: E3.T6_A3_JUNTO.duracion },
   { nombre: "T6 · A4", en: "clientes2", dice: textoDeOpcion(D4.PARADA_T6_A4), Componente: await C("tema6/SiPaga"), pasos: 9, parada: D4.PARADA_T6_A4, estado: E4.T6_A4.estadoPaso, duracion: E4.T6_A4.duracion },
   { nombre: "T6 · A5", en: "res2", dice: textoDeOpcion(D6.PARADA_T6_A5), Componente: await C("tema6/LaTablaDelEjemplo"), pasos: 10, parada: D6.PARADA_T6_A5, estado: E6.T6_A5_JUNTO.estadoPaso, duracion: E6.T6_A5_JUNTO.duracion, pegar: pegarPorcentaje },
 ];

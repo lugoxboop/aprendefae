@@ -430,7 +430,7 @@ test("★★ las otras piezas de T6 no cambian: sin `lector`, el pie visible se 
 
 /*
  * La capa 1 va paginada (un término por pantalla): se recorre término por
- * término con los puntos, abriendo «Más sobre este término» donde lo hay, y
+ * término con los puntos, abriendo «Ver lo que dice el libro» donde lo hay, y
  * se mira la carta que está a la vista.
  */
 const recorrerCapa1 = async (caja, fn) => {

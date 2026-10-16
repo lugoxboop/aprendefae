@@ -25,7 +25,8 @@ import { METODOS_T6_A2, FIGURA_CAPA_3_T6_A2 } from "../../../../data/contabilida
  *   · T6 · A1: la cuenta T de lo que deben los clientes; cada hecho entra
  *     con su nombre corto en el DEBE (sube) o en el HABER (baja); el que no
  *     cambia va debajo, tras «Sin movimiento:».
- *   · T6 · A2: la rejilla de los dos métodos por los dos momentos.
+ *   · T6 · A2: la rejilla de los dos métodos por los dos momentos, con su
+ *     título: dónde aparece el gasto («—» donde no aparece).
  * Sin coral ni color de acierto: la figura no califica, registra. Ningún
  * texto vive aquí.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -149,6 +150,7 @@ export function FiguraT6A2({ decididas }) {
   const ultima = ultimaDe(decididas);
   return (
     <div data-figura="t6-a2" aria-live="polite" style={{ ...MARCO, padding: "8px 10px 10px" }}>
+      <p data-titulo-figura style={{ ...NOMBRE_CUENTA, marginBottom: "6px" }}>{F.titulo}</p>
       <table style={{ width: "calc(100% + 12px)", margin: "-6px", borderCollapse: "separate", borderSpacing: "6px", tableLayout: "fixed" }}>
         <colgroup><col style={{ width: "34%" }} /><col /><col /></colgroup>
         <thead>

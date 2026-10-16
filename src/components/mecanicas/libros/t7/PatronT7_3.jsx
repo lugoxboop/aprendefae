@@ -45,8 +45,9 @@ const OP_SR = { "−": "menos ", "×": "por ", "=": "igual a " };
 export function Renglones({ titulo, filas, nota = null, nuevo = false }) {
   return (
     <div className="t73pt">
-      <figure className={`rg${nuevo ? " rg-nuevo" : ""}`} role="table" aria-label={titulo} data-renglones={titulo}>
-        <figcaption className="rg-tit">{titulo}</figcaption>
+      <figure className={`rg${nuevo ? " rg-nuevo" : ""}`} role="table" aria-label={titulo ?? undefined} data-renglones={titulo ?? ""}>
+        {/* Sin título (la NIC 2 fusionada: su marca pasó al pie), no hay figcaption. */}
+        {titulo && <figcaption className="rg-tit">{titulo}</figcaption>}
         {filas.map((f, k) => (
           <div key={k} role="row" data-renglon
             className={`rg-f${f.res ? " rg-res" : ""}${f.fuerte ? " rg-fuerte" : ""}${f.nuevo ? " rg-nuevo" : ""}${f.apila ? " rg-apila" : ""}`}>

@@ -123,40 +123,42 @@ test("★★★ B2: el término 6 de Futaba, con su pie, sin el traslado a difí
   assert.ok(!/difícil cobro/.test(t6.definicion));
 });
 
-test("★★★ auditoría integral: la nota de «cartera» se ve en pantalla, debajo de la cita del término 2", async () => {
+test("★★★ auditoría integral: la nota de «cartera» se ve en pantalla en el término 2, siempre a la vista; la cita, plegada en «Ver lo que dice el libro» (auditoría de interfaz de Shoko)", async () => {
   const { default: CuatroCapas } = await import("../../components/mecanicas/maquinas/CuatroCapas.jsx");
   const { PIEZAS } = await import("../../components/ContabilidadTema6View.jsx");
   const pieza = PIEZAS[0].pieza;
   const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA6[pieza.id];
   const { caja, desmontar } = await montar(h(CuatroCapas, { pieza, Capa2, Exploracion, Capa4, rotulo: "R" }));
-  /* La capa 1 va paginada: se recorre término por término, abriendo «Más sobre este término» donde lo hay. */
+  /* La capa 1 va paginada: se recorre término por término, abriendo «Ver lo que dice el libro» donde lo hay. */
   const puntos = [...caja.querySelectorAll('[data-capa="1"] [data-punto]')];
   assert.equal(puntos.length, 6);
   const cartas = [];
   for (const p of puntos) {
     await tocar(p);
     const carta = caja.querySelector('[data-capa="1"] [data-termino][data-actual]');
+    const nota = carta.querySelector("[data-nota]");
+    cartas.push({ conNota: Boolean(nota && !nota.closest("[hidden]")), carta });
     const mas = carta.querySelector("[data-mas]");
     if (mas) await tocar(mas);
-    cartas.push({ conNota: Boolean(carta.querySelector("[data-mas-contenido] [data-nota-debajo]")), carta, texto: carta.textContent });
+    cartas[cartas.length - 1].texto = carta.textContent;
   }
-  /* Solo el término 2 la lleva, y dentro del bloque de la cita. */
+  /* Solo el término 2 la lleva, y se ve sin abrir nada. */
   assert.deepEqual(cartas.map((c) => c.conNota), [false, true, false, false, false, false]);
   await tocar(puntos[1]);
   const carta = caja.querySelector('[data-capa="1"] [data-termino][data-actual]');
-  await tocar(carta.querySelector("[data-mas]"));
+  const nota = carta.querySelector("[data-nota]");
+  assert.equal(nota.firstElementChild.textContent, "Nota");
+  assert.equal(nota.lastElementChild.textContent, D.NOTA_CLIENTES.texto);
+  assert.ok(carta.querySelector("[data-definicion]").compareDocumentPosition(nota) & w.Node.DOCUMENT_POSITION_FOLLOWING, "bajo la definición");
+  const mas = carta.querySelector("[data-mas]");
+  assert.equal(mas.textContent, "Ver lo que dice el libro");
+  if (mas.getAttribute("aria-expanded") !== "true") await tocar(mas);
   const bloque = carta.querySelector("[data-mas-contenido] [data-del-libro]");
-  assert.equal(bloque.closest("[hidden]"), null, "la nota quedó plegada después de abrir «Más»");
-  const cita = bloque.querySelector("[data-cita]");
-  const nota = bloque.querySelector("[data-nota-debajo]");
-  assert.equal(cita.textContent, D.PIEZA_LO_QUE_LE_DEBEN.nombres[1].delLibro);
-  assert.equal(nota.querySelector("[data-rotulo-nota]").textContent, "Nota");
-  assert.equal(nota.textContent, `Nota${D.NOTA_CLIENTES.texto}`);
-  /* La cita se lee primero; la nota, después. */
-  assert.ok(cita.compareDocumentPosition(nota) & w.Node.DOCUMENT_POSITION_FOLLOWING);
-  assert.equal(getComputedStyle(nota).display, "block");
+  assert.equal(bloque.closest("[hidden]"), null, "la cita se ve al abrir");
+  assert.equal(bloque.lastElementChild.textContent, D.PIEZA_LO_QUE_LE_DEBEN.nombres[1].delLibro);
   /* Clientes lleva los dos rótulos, distintos (B5). */
   assert.equal(bloque.firstElementChild.textContent, "Así lo dice el libro");
+  assert.equal(carta.querySelector("[data-mas-contenido] [data-nota]"), null, "la nota no va plegada con la cita");
   /* El término 6 nuevo, en pantalla cuando le toca. */
   assert.ok(cartas[5].texto.includes("Y baja cuando la deuda se da por perdida."));
   /* «Nota débito», con su definición del Tema 4, en el término 4. */
