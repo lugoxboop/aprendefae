@@ -307,6 +307,8 @@ test("★★ el texto alternativo y las reglas son los del lote 6a; el objetivo 
   assert.ok(D.ALT_T6_ACT1.includes("Otra cuenta por cobrar; Clientes, se debita; o Clientes, se acredita."), "la corrección de Shoko: punto y coma");
   assert.ok(caja.textContent.includes(D.ALT_T6_ACT1));
   assert.equal(caja.querySelector("[data-objetivo]").textContent, GUIA_INICIAL.objetivo[0]);
+  /* Lote 6b: la consigna va plegada bajo «¿Cómo se juega?» (encabezado compacto). */
+  await tocar(caja.querySelector("[data-como-se-juega]"));
   assert.equal(caja.querySelector("[data-consigna]").textContent, GUIA_INICIAL.consigna[0]);
   for (const linea of D.REGLAS_T6_ACT1) assert.ok(L6A.includes(`«${linea}»`), linea);
   assert.equal(D.T6_ACT1.id, "b5-t6-a1");

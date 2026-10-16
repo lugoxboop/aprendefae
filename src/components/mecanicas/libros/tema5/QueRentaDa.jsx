@@ -1,6 +1,6 @@
 import FichasUnNivel from "../b5/FichasUnNivel.jsx";
 import {
-  T5_ACT1, CAJONES_T5_ACT1, GRUPO_T5_ACT1, ALT_T5_ACT1, resumenT5Act1,
+  T5_ACT1, REGLAS_T5_ACT1, CAJONES_T5_ACT1, GRUPO_T5_ACT1, ALT_T5_ACT1, resumenT5Act1,
 } from "../../../../data/contabilidadT5Act1.js";
 import {
   sortearT5Act1, evaluarT5Act1, valorDeItemT5Act1, puntuarT5Act1,
@@ -23,6 +23,8 @@ const claveDe = (renta, tipo) => (tipo ? `${renta}/${tipo}` : renta);
 export const CONFIG_T5_ACT1 = {
   objetivo: T5_ACT1.objetivo,
   consigna: T5_ACT1.consigna,
+  /* Los pasos, plegados bajo «¿Cómo se juega?» (encabezado compacto, lote 6b). */
+  reglas: REGLAS_T5_ACT1,
   grupo: GRUPO_T5_ACT1,
   cajones: CAJONES_T5_ACT1.map((k) => ({ clave: claveDe(k.renta, k.tipo), rotulo: k.rotulo, marcado: { renta: k.renta, tipo: k.tipo } })),
   alt: ALT_T5_ACT1,
