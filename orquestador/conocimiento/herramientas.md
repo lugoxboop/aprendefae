@@ -286,6 +286,27 @@ yo volviera a caer: **nada de comillas invertidas dentro de una plantilla de
 CSS**, ni en el código ni en los comentarios. Escribir la regla no inmuniza
 contra ella; compilar, sí.
 
+**Caí una tercera vez, en el mismo archivo, media hora después de escribir esto.**
+Así que la regla dejó de ser una regla y pasó a ser una prueba:
+`src/__tests__/todo-compila.test.mjs` pasa todo `src/` por esbuild —sin ejecutar
+nada— y se pone roja con cualquier error de sintaxis. Tarda dos segundos y corre
+en cada `npm test`, que es lo que de verdad se corre.
+
+La prueba de la diferencia, con la hoja compartida roto a propósito:
+
+| qué se corrió | con el archivo roto |
+|---|---|
+| `titulo-tema-320.test.mjs`, que LEE esa hoja | `pass 6 · fail 0` |
+| `todo-compila.test.mjs` | `fail 1` |
+
+**Cuando uno cae tres veces en la misma trampa, la trampa no se arregla
+escribiéndola mejor.** Se arregla con algo que no dependa de acordarse.
+
+(Y escribiendo esa prueba caí en la hermana del mismo error: un comentario de
+CSS de ejemplo, con su cierre de bloque, dentro del comentario de cabecera.
+Cerró el comentario. El archivo de la prueba que comprueba que todo compila no
+compilaba.)
+
 ## El falso verde: un extractor que no extrae nada dice que todo está bien
 
 Hermano del resultado vacío, y más peligroso, porque sale **en verde**.
