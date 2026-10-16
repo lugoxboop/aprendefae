@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { NEUTRO } from "../../../../data/contabilidadIntro.js";
-import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
+import { Retro, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import EncabezadoCompacto from "./EncabezadoCompacto.jsx";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import { volarCopia, cuantasFichas, BIEN, SEGUNDO } from "./EstanteDeCajones.jsx";
 import { Marca, estiloE4, CORRECTA, TACHADA, APAGADA, TACHADO } from "./MarcasE4.jsx";
@@ -203,10 +203,9 @@ export default function FichasUnNivel({
       <style>{CSS}</style>
       {!modoDemo && (
         <>
-          <Encabezado objetivo={config.objetivo} consigna={config.consigna} onComoSeJuega={onComoSeJuega} />
-          <div data-contador style={{ marginBottom: "12px" }}>
-            <Pulsos total={cuantas} hechos={t.i + (fin ? 1 : 0)} enCurso={t.i + 1} etiqueta="Ficha" />
-          </div>
+          {/* Lote 6b (B1 de t5-a1): el encabezado compacto de Mai; la consigna y los pasos, plegados. */}
+          <EncabezadoCompacto objetivo={config.objetivo} consigna={config.consigna} pasos={config.reglas}
+            contador={`Ficha ${t.i + 1} de ${cuantas}`} />
         </>
       )}
 

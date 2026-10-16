@@ -24,8 +24,10 @@ import { useReducido, useTemporizadores, llevarArriba, asomarAbajo, volarDesde, 
  * Con reduced-motion: el estado final directo, sin recoger ni trasladar ni
  * desplazamiento suave.
  *
- * `figura(opcion, clave, onTerminar)` pinta la figura con la opción que toca
- * (null antes de responder); `contenido(opcion)` pinta el texto de cada fila.
+ * `figura(opcion, clave, onTerminar, { elegida })` pinta la figura con la
+ * opción que toca (null antes de responder); `contenido(opcion)` pinta el
+ * texto de cada fila. Con `sinFiguraAntes` (C.1, E8) la figura no existe
+ * hasta elegir: ni la línea, ni la raya, ni los activos.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -35,7 +37,7 @@ const PAUSA_MS = 600;
 const DESPLEGAR_MS = 200;
 const DESPLAZAR_MS = 300;
 
-export function OpcionesTitulo({ opciones, figura, contenido, etiqueta, onCalificar }) {
+export function OpcionesTitulo({ opciones, figura, contenido, etiqueta, onCalificar, sinFiguraAntes = false }) {
   const reducido = useReducido();
   const { despues } = useTemporizadores();
   const [elegida, setElegida] = useState(null);
@@ -159,7 +161,7 @@ export function OpcionesTitulo({ opciones, figura, contenido, etiqueta, onCalifi
   const mostradaOpcion = opciones.find((o) => o.id === mostrada) ?? null;
   const cajaDeFigura = (
     <div key="figura" ref={cajaFigura} data-caja-figura style={{ marginTop: resuelta ? "16px" : 0, background: C.navy, borderRadius: "12px", padding: "12px" }}>
-      {figura(resuelta ? mostradaOpcion : null, resuelta ? clave : null, alTerminar)}
+      {figura(resuelta ? mostradaOpcion : null, resuelta ? clave : null, alTerminar, { elegida: opciones.find((o) => o.id === elegida) ?? null })}
     </div>
   );
 
@@ -172,8 +174,8 @@ export function OpcionesTitulo({ opciones, figura, contenido, etiqueta, onCalifi
         </>
       ) : (
         <>
-          {cajaDeFigura}
-          <div style={{ marginTop: "8px" }}>{visibles.map(fila)}</div>
+          {!sinFiguraAntes && cajaDeFigura}
+          <div style={{ marginTop: sinFiguraAntes ? 0 : "8px" }}>{visibles.map(fila)}</div>
         </>
       )}
     </div>

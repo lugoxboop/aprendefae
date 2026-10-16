@@ -148,6 +148,7 @@ function contenido() {
       if (o.texto) t.push(o.texto);
       if (o.asiento) t.push(...D.renglonesDeAsiento(o.asiento));
       if (o.celdas) t.push(...o.celdas);
+      for (const a of o.activos ?? []) t.push(a.texto);
     }
     for (const d of p.datos ?? []) t.push(d.etiqueta);
     for (const f of p.fallas ?? []) t.push(f.retro);
@@ -179,12 +180,15 @@ const entero = (texto, t) => new RegExp(`(?:^|[|:·«(/] |\\*\\* |«)${escapar(t
 /* Los nombres del mayor los escribe el paquete con su saldo detrás: «Nombre (…». */
 const delMayor = new Set(P.flatMap((p) => (p.mayor ?? []).map((c) => c.nombre)));
 
-test("★★★ 2 · cada texto de los datos está, letra por letra, en el paquete v2 (guarda: 91 textos y 35 rótulos)", () => {
+test("★★★ 2 · cada texto de los datos está, letra por letra, en el paquete v2 (guarda: 113 textos y 35 rótulos)", () => {
   const textos = contenido();
-  assert.equal(textos.length, 91, "no recorrió los textos que dice recorrer");
+  assert.equal(textos.length, 113, "no recorrió los textos que dice recorrer");
   /* Los rótulos de los lotes los conserva v2 de v1.3 («la marca «Lote n · …» de v1.3»). */
   const lotes = pantalla("c9").lotes.map((l) => l.marca);
-  const fuera = textos.filter((t) => !lotes.includes(t) && !(delMayor.has(t) ? V2.includes(`${t} (`) : entero(V2, t) || entero(PAQUETE, t)));
+  /* C.1 (v2.3): los activos de cada opción, en su renglón del paquete «x) [**clave** · ]A · B · C · D». */
+  const deC1 = new Set(pantalla("c1").opciones.flatMap((o) => o.activos.map((a) => a.texto)));
+  for (const o of pantalla("c1").opciones) assert.ok(V2.includes(`${o.activos.map((a) => a.texto).join(" · ")}`), o.id);
+  const fuera = textos.filter((t) => !lotes.includes(t) && !deC1.has(t) && !(delMayor.has(t) ? V2.includes(`${t} (`) : entero(V2, t) || entero(PAQUETE, t)));
   assert.deepEqual(fuera, [], `no están en el paquete: ${fuera.join(" | ")}`);
   for (const l of pantalla("c9").lotes) assert.ok(PAQUETE_V1.includes(`| ${l.marca} | ${I.unidadesACosto(l.unidades, l.costo)} | ${l.unidades / D.UNIDADES_POR_CAJA} |`), l.marca);
   /* Las opciones de asiento, en el renglón del paquete: «Debita … / Acredita …». */
@@ -217,10 +221,10 @@ test("★★★ 2 · cada texto de los datos está, letra por letra, en el paque
 
 /* ═══════════ 3 · LAS CLAVES Y LAS CIFRAS, CALCULADAS AQUÍ ═══════════ */
 
-test("★★★ 3 · seis pantallas en el orden del libro; una sola clave en las de opciones; la 4 se califica por clasificación", () => {
-  assert.deepEqual(P.map((p) => p.ejercicio), ["C.3", "C.5", "C.6", "C.8", "C.9", "C.10"]);
-  assert.deepEqual(P.map((p) => p.forma), ["flujos", "asiento", "latas", "fichas", "lotes", "asiento"]);
-  assert.deepEqual(P.map((p) => p.subtema), ["inversiones", "cartera", "inventarios", "inventarios", "inventarios", "inventarios"]);
+test("★★★ 3 · siete pantallas en el orden del libro (v2.3: C.1 primera); una sola clave en las de opciones; la de C.8 se califica por clasificación", () => {
+  assert.deepEqual(P.map((p) => p.ejercicio), ["C.1", "C.3", "C.5", "C.6", "C.8", "C.9", "C.10"]);
+  assert.deepEqual(P.map((p) => p.forma), ["raya", "flujos", "asiento", "latas", "fichas", "lotes", "asiento"]);
+  assert.deepEqual(P.map((p) => p.subtema), ["corrientes", "inversiones", "cartera", "inventarios", "inventarios", "inventarios", "inventarios"]);
   let conOpciones = 0;
   for (const p of P.filter((x) => x.opciones)) {
     conOpciones++;
@@ -229,9 +233,9 @@ test("★★★ 3 · seis pantallas en el orden del libro; una sola clave en las
     assert.equal(new Set(p.opciones.map((o) => o.retro)).size, 4, `${p.id}: dos devoluciones iguales`);
     for (const o of p.opciones) assert.equal(D.evaluarR5_1(p, o.id).ok, Boolean(o.correcta));
   }
-  assert.equal(conOpciones, 5);
+  assert.equal(conOpciones, 6);
   assert.equal(pantalla("c8").opciones, undefined, "las cuatro cifras de opción de v1 desaparecen (decisión 5)");
-  assert.deepEqual(P.filter((p) => p.opciones).map((p) => clave(p).id), ["c3-c", "c5-c", "c6-c", "c9-d", "c10-c"]);
+  assert.deepEqual(P.filter((p) => p.opciones).map((p) => clave(p).id), ["c1-a", "c3-c", "c5-c", "c6-c", "c9-d", "c10-c"]);
 });
 
 test("★★★ 3 · pantallas 2 y 6: los saldos de las cuatro opciones, calculados a mano y comparados con el paquete", () => {
@@ -773,42 +777,45 @@ test("★★★ 9 · el toque que salta: en la figura la lleva al final; sobre u
 
 const { calcularFP } = await import("../../fp/motor.js");
 
-test("★★★ 10 · los FP de 0 a 6 aciertos salen de calcularFP y son los que da la regla del servidor (0017)", () => {
+test("★★★ 10 · v2.3: los FP de cada combinación de aciertos (puntos / 25) salen de calcularFP y son los del servidor (0017) (guarda: 128 combinaciones)", () => {
   const SQL = leer("supabase/migrations/0017_detalle_por_item.sql");
   assert.match(SQL, /v_rend := greatest\(0\.5, least\(1, coalesce\(p_correct_pct, 0\) \/ 100\.0\)\);/);
   assert.match(SQL, /v_fp := round\(v_base \* v_rend \* v_tiempo\);/);
-  /* La regla del servidor, escrita aquí aparte, en enteros: otorgarFP manda el % redondeado. */
+  /* La regla del servidor, escrita aquí aparte, en enteros. */
   const delServidor = (pct) => { const r = Math.max(50, Math.min(100, Math.round(pct))); return Math.floor((25 * r + 50) / 100); };
-  const fps = [];
-  for (let bien = 0; bien <= D.TOTAL_R5_1; bien++) {
-    const pct = D.puntuarR5_1(bien);
+  assert.deepEqual(P.map((p) => D.PUNTOS_R5_1[p.id]), [3, 3, 4, 4, 4, 4, 3]);
+  assert.equal(D.TOTAL_PUNTOS_R5_1, 25);
+  let combinaciones = 0;
+  for (let m = 0; m < 2 ** P.length; m++) {
+    const resultados = Object.fromEntries(P.map((p, k) => [p.id, Boolean(m & (1 << k))]));
+    const pct = D.puntuarR5_1(D.puntosDeR5_1(resultados));
+    assert.equal(Number.isInteger(pct) && pct % 4 === 0, true, `${m}: ${pct} % no es múltiplo de 4`);
     const { fp } = calcularFP({ dificultad: D.R5_1.dificultad, modalidad: D.R5_1.modalidad, aciertos: pct / 100, duracionMs: 60_000 });
-    assert.equal(fp, delServidor(pct), `${bien} de 6`);
-    fps.push(fp);
+    assert.equal(fp, delServidor(pct), String(m));
+    combinaciones++;
   }
-  assert.equal(fps.length, 7);
-  assert.deepEqual(fps, [13, 13, 13, 13, 17, 21, 25]);
+  assert.equal(combinaciones, 128);
   for (const f of ["src/components/RepasoCapitulo5View.jsx", "src/data/repasoCap5Cruzado.js"]) {
     assert.doesNotMatch(leer(f).replace(/^\s*(\/\*|\*|\/\/).*$/gm, ""), /fpBase\s*\*|\*\s*fpBase|Math\.round\([^)]*fp/i, f);
   }
 });
 
-test("★★★ 10 · 3 de 6 da 12,5 FP exactos y calcularFP los redondea a 13, como round() sobre numeric en el servidor", () => {
+test("★★★ 10 · 3 de 25 cae al piso del 50 %: 12,5 FP exactos que calcularFP redondea a 13, como round() sobre numeric en el servidor", () => {
   const SQL = leer("supabase/migrations/0017_detalle_por_item.sql");
   assert.match(SQL, /v_rend\s+numeric;/);
   assert.match(SQL, /v_tiempo\s+numeric;/);
   const pct = D.puntuarR5_1(3);
-  assert.equal(pct, 50);
-  assert.equal(D.R5_1.fpBase * (pct / 100), 12.5, "el caso tiene que ser una mitad exacta");
+  assert.equal(pct, 12);
   const { fp, desglose } = calcularFP({ dificultad: D.R5_1.dificultad, modalidad: D.R5_1.modalidad, aciertos: pct / 100, duracionMs: 60_000 });
   assert.equal(desglose.factorRendimiento, 0.5);
+  assert.equal(D.R5_1.fpBase * desglose.factorRendimiento, 12.5, "el caso tiene que ser una mitad exacta");
   assert.equal(desglose.factorTiempo, 1);
   assert.equal(fp, 13);
 });
 
 /* ═══════════ 12 · INFLESZ ═══════════ */
 
-test("★★★ 12 · todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 44 medidos)", () => {
+test("★★★ 12 · todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 50 medidos)", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of [...contenido(), ...ROTULOS]) {
@@ -818,7 +825,7 @@ test("★★★ 12 · todo texto de 10 palabras o más pasa 65 con inflesz.js (g
     medidos++;
     if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
-  assert.equal(medidos, 44, "no midió los textos que dice medir");
+  assert.equal(medidos, 50, "no midió los textos que dice medir");
   assert.deepEqual(bajos, [], "textos por debajo de 65");
   /* La devolución (a) de la pantalla 2 de v2.2: el paquete dice 87,2. */
   assert.equal(inflesz(pantalla("c5").opciones.find((o) => o.id === "c5-a").retro).valor, 87.2);
@@ -832,7 +839,7 @@ test("★★★ 12 · todo texto de 10 palabras o más pasa 65 con inflesz.js (g
  * opción o camino, con la pista abierta, y exige que cada texto del
  * estudiante y cada rótulo haya salido en el DOM en algún estado.
  */
-test("★★★ 1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 91 textos, 35 rótulos, 41 caminos)", async () => {
+test("★★★ 1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 113 textos, 35 rótulos, 49 caminos)", async () => {
   const visto = new Set();
   const mirar = (caja) => visto.add(caja.textContent);
   let caminos = 0;
@@ -856,8 +863,8 @@ test("★★★ 1 · cada texto del paquete sale en la pantalla en algún estado
     }
     for (const o of p.opciones) {
       await jugar(p, o.id, p.forma === "latas" ? (caja) => tocar(caja.querySelector('[data-lata="segunda-0"]')) : null);
-      /* Cada fila de las pantallas 1, 2 y 6 en la figura. */
-      if (p.forma === "flujos" || p.forma === "asiento") {
+      /* Cada fila de las pantallas con figura (C.1, C.3, C.5 y C.10) en la figura. */
+      if (p.forma === "flujos" || p.forma === "asiento" || p.forma === "raya") {
         caminos++;
         const { caja, desmontar } = await montar(h(RepasoCruzado, { pantallas: [p] }));
         await tocar(opcion(caja, o.id));
@@ -872,9 +879,9 @@ test("★★★ 1 · cada texto del paquete sale en la pantalla en algún estado
   mirar(caja);
   const todo = [...visto].join("\n");
   const textos = contenido();
-  assert.equal(textos.length, 91);
+  assert.equal(textos.length, 113);
   assert.equal(ROTULOS.length, 35);
-  assert.equal(caminos, 41, "no recorrió los caminos que dice recorrer");
+  assert.equal(caminos, 49, "no recorrió los caminos que dice recorrer");
   const faltan = [...textos, ...ROTULOS, I.porTema, I.marcaPista, I.siguiente].filter((t) => !todo.includes(t));
   assert.deepEqual(faltan, [], `no salen en pantalla: ${faltan.join(" | ")}`);
 });
@@ -882,7 +889,7 @@ test("★★★ 1 · cada texto del paquete sale en la pantalla en algún estado
 /* ═══════════ B5 · NINGÚN TEXTO DOS VECES EN LA MISMA PANTALLA ═══════════ */
 
 test("★★ B5 de enganche.md: ninguna frase sale dos veces en la misma pantalla (los nombres de cuenta o de dato no cuentan)", async () => {
-  const nombres = new Set([D.GASTO, D.PROVISION, D.CLIENTES, D.INVENTARIO, D.GYP, D.CMV, ...pantalla("c8").datos.map((d) => d.etiqueta)]);
+  const nombres = new Set([D.GASTO, D.PROVISION, D.CLIENTES, D.INVENTARIO, D.GYP, D.CMV, ...pantalla("c8").datos.map((d) => d.etiqueta), ...pantalla("c1").opciones.flatMap((o) => o.activos.map((a) => a.figura))]);
   const palabrasDeInterfaz = new Set([I.bien, I.era.suma, I.era.resta, I.era.fuera, I.suma, I.resta, I.noEntra]);
   let estados = 0;
   for (const p of P) {
@@ -898,7 +905,7 @@ test("★★ B5 de enganche.md: ninguna frase sale dos veces en la misma pantall
       desmontar();
     }
   }
-  assert.equal(estados, 22);
+  assert.equal(estados, 26);
 });
 
 /* ═══════════ LO DE v1 QUE SIGUE VALIENDO ═══════════ */
@@ -915,7 +922,7 @@ const corrida = (semilla, intentos = 40) => {
   return tandas;
 };
 
-test("★★★ el barajado, con semilla fija: reproducible, cambia el orden y conserva la clave; las fichas no se barajan (guarda: 3 × 40 × 5)", () => {
+test("★★★ el barajado, con semilla fija: reproducible, cambia el orden y conserva la clave; las fichas no se barajan (guarda: 3 × 40 × 6)", () => {
   let revisadas = 0;
   for (const semilla of SEMILLAS) {
     const tandas = corrida(semilla);
@@ -938,7 +945,7 @@ test("★★★ el barajado, con semilla fija: reproducible, cambia el orden y c
       assert.equal(sitios.size, 4, `${semilla} · ${p.id}: la clave solo pasó por ${[...sitios]}`);
     }
   }
-  assert.equal(revisadas, 600);
+  assert.equal(revisadas, 720);
 });
 
 test("★★ ningún renglón de opción de asiento llega a 10 palabras (guarda: 16 renglones)", () => {
@@ -971,11 +978,12 @@ test("★★★ catálogo, registro de la vista y migración dicen lo mismo; r5-
   assert.match(leer(`supabase/migrations/${migraciones[0]}`), /\('r5-1', 'contabilidad', 'repaso-capitulo-5', 'evaluativa', 'medio', 25, 1\)\s*on conflict \(activity_id\) do nothing;/);
 });
 
-test("★★ la regla de etiqueta nombra cada pantalla por su subtema y su enunciado nuevo, y ninguna se lee igual (guarda: 6)", () => {
+test("★★ la regla de etiqueta nombra cada pantalla por su subtema y su enunciado nuevo, y ninguna se lee igual (guarda: 7)", () => {
   assert.ok(hayReglaPara("r5-1"));
   const etiquetas = P.map((p) => etiquetaDeItem("r5-1", p.id, 500));
-  assert.equal(etiquetas.length, 6);
-  assert.equal(new Set(etiquetas).size, 6);
+  assert.equal(etiquetas.length, 7);
+  assert.equal(new Set(etiquetas).size, 7);
+  assert.equal(etiquetas[0], `Activos corrientes · ${pantalla("c1").enunciado}`);
   P.forEach((p, k) => assert.equal(etiquetas[k], `${D.SUBTEMAS[p.subtema].nombre} · ${p.enunciado}`));
   assert.equal(etiquetaDeItem("r5-1", "no-existe"), null);
 });
@@ -983,14 +991,14 @@ test("★★ la regla de etiqueta nombra cada pantalla por su subtema y su enunc
 test("★★★ se juega entera: cabecera con la silueta del tema, el detalle de cada pantalla (la 4 guarda la clasificación) y el cierre POR TEMA", async () => {
   const fin = [];
   const { caja } = await montar(h(RepasoCruzado, { pantallas: P, onCompletar: (...x) => fin.push(x) }));
-  const ESCENA = { inversiones: "titulo-valor", cartera: "facturas", inventarios: "bodega" };
+  const ESCENA = { corrientes: "raya", inversiones: "titulo-valor", cartera: "facturas", inventarios: "bodega" };
   const malC8 = { ...CLAVE_C8, ventas: "suma" };
-  const eleccion = { c3: "c3-a", c5: "c5-c", c6: "c6-c", c8: malC8, c9: "c9-b", c10: "c10-c" };
+  const eleccion = { c1: "c1-a", c3: "c3-a", c5: "c5-c", c6: "c6-c", c8: malC8, c9: "c9-b", c10: "c10-c" };
   let jugadas = 0;
   for (const [k, p] of P.entries()) {
     jugadas++;
     assert.equal(caja.querySelector("[data-pantalla]").dataset.pantalla, p.id);
-    assert.equal(caja.querySelector("[data-progreso]").textContent, `PREGUNTA ${k + 1} DE 6`);
+    assert.equal(caja.querySelector("[data-progreso]").textContent, `PREGUNTA ${k + 1} DE 7`);
     const silueta = caja.querySelector("[data-silueta-cabecera]");
     assert.equal(silueta.dataset.siluetaCabecera, ESCENA[p.subtema]);
     assert.equal(silueta.getAttribute("aria-hidden"), "true");
@@ -1004,15 +1012,16 @@ test("★★★ se juega entera: cabecera con la silueta del tema, el detalle de
     assert.equal(caja.querySelector("[data-devolucion]").getAttribute("aria-live"), "polite");
     await siguiente(caja);
   }
-  assert.equal(jugadas, 6);
+  assert.equal(jugadas, 7);
   assert.ok(caja.querySelector("[data-cierre]"));
   const filas = [...caja.querySelectorAll("[data-fila-tema]")].map((f) => [f.dataset.filaTema, [...f.querySelectorAll("[data-punto]")].map((x) => x.dataset.punto).join(","), f.querySelector("[data-n-de-m]").textContent]);
-  assert.deepEqual(filas, [["inversiones", "error", "0 de 1"], ["cartera", "acierto", "1 de 1"], ["inventarios", "acierto,error,error,acierto", "2 de 4"]]);
+  assert.deepEqual(filas, [["corrientes", "acierto", "1 de 1"], ["inversiones", "error", "0 de 1"], ["cartera", "acierto", "1 de 1"], ["inventarios", "acierto,error,error,acierto", "2 de 4"]]);
   assert.equal(fin.length, 1);
   const [pct, , detalle] = fin[0];
-  assert.equal(pct, (3 / 6) * 100);
+  /* v2.3: puntos / 25. Bien C.1 (3), C.5 (4), C.6 (4) y C.10 (3): 14 de 25. */
+  assert.equal(pct, 56);
   assert.deepEqual(detalle.map((d) => [d.item, d.ok, d.respuesta]), [
-    ["c3", false, "c3-a"], ["c5", true, null], ["c6", true, null],
+    ["c1", true, null], ["c3", false, "c3-a"], ["c5", true, null], ["c6", true, null],
     ["c8", false, "Ventas: Suma"],
     ["c9", false, "c9-b"], ["c10", true, null],
   ]);
@@ -1021,21 +1030,21 @@ test("★★★ se juega entera: cabecera con la silueta del tema, el detalle de
 test("★★★ en el final, acierto y error se distinguen por forma: relleno o anillo, no solo por color", async () => {
   const { caja } = await montar(h(RepasoCruzado, { pantallas: P }));
   for (const p of P) {
-    const id = p.id === "c3" ? clave(p).id : p.forma === "fichas" ? { ...CLAVE_C8, compras: "resta" } : p.opciones.find((o) => !o.correcta).id;
+    const id = p.id === "c1" ? clave(p).id : p.forma === "fichas" ? { ...CLAVE_C8, compras: "resta" } : p.opciones.find((o) => !o.correcta).id;
     await responder(caja, p, id);
     await siguiente(caja);
   }
   const puntos = [...caja.querySelectorAll("[data-punto]")];
-  assert.equal(puntos.length, 6);
+  assert.equal(puntos.length, 7);
   const forma = (el) => {
     const st = el.style;
     const relleno = st.background && st.background !== "transparent" && !st.border;
     const anillo = (st.background === "transparent" || st.background === "") && /solid/.test(st.border);
     return relleno ? "relleno" : anillo ? "anillo" : "otra";
   };
-  assert.deepEqual(puntos.map(forma), ["relleno", "anillo", "anillo", "anillo", "anillo", "anillo"]);
+  assert.deepEqual(puntos.map(forma), ["relleno", "anillo", "anillo", "anillo", "anillo", "anillo", "anillo"]);
   assert.ok(puntos.every((x) => x.closest("[aria-hidden='true']")));
-  assert.deepEqual([...caja.querySelectorAll("[data-n-de-m]")].map((x) => x.textContent), ["1 de 1", "0 de 1", "0 de 4"]);
+  assert.deepEqual([...caja.querySelectorAll("[data-n-de-m]")].map((x) => x.textContent), ["1 de 1", "0 de 1", "0 de 1", "0 de 4"]);
 });
 
 test("★★★ la pista se pide antes de responder, va debajo de la interacción, sale literal, se va al responder y no quita FP", async () => {
@@ -1055,7 +1064,7 @@ test("★★★ la pista se pide antes de responder, va debajo de la interacció
     assert.equal(Boolean(caja.querySelector("[data-pista]")), false, `${p.id}: al responder la pista se va`);
     await siguiente(caja);
   }
-  assert.equal(vistas, 6);
+  assert.equal(vistas, 7);
   assert.equal(fin[0][0], 100);
 });
 

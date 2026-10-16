@@ -17,10 +17,8 @@ import assert from "node:assert/strict";
  *
  * Si se pone roja, el texto se devuelve a Futaba: aquí no se recorta.
  *
- * PENDIENTE (15-oct): «Activo financiero» (T5 · A1) cuenta 61 con su cita y
- * su rótulo. Va aparte, como TODO, con el mismo límite: no se le sube el
- * máximo ni se recorta el texto. Cuando Futaba lo ajuste, sale de PENDIENTES
- * y la prueba de abajo lo vigila como a los demás.
+ * 15-oct: «Activo financiero» (T5 · A1) contaba 61. Futaba lo recortó a 58
+ * (sin tocar la cita de la p. 191) y salió de PENDIENTES.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -38,7 +36,7 @@ const PIEZAS = [
 ];
 
 /* Las pantallas que hoy pasan de 60, en espera de Futaba (ver arriba). */
-const PENDIENTES = ["T5 · A1 · Activo financiero"];
+const PENDIENTES = [];
 
 export const palabras = (t) => t.split(/\s+/).filter((p) => /[\p{L}\p{N}]/u.test(p)).length;
 
@@ -76,7 +74,7 @@ test("★★★ B2: ninguna pantalla de la capa 1 de la Célula B pasa de 60 pal
   assert.deepEqual(largas, []);
 });
 
-test("★★★ B2: «Activo financiero» (T5 · A1) tampoco pasa de 60 palabras", { todo: "cuenta 61 con su cita y su rótulo — pendiente de Futaba (no se recorta aquí)" }, async () => {
+test("★★★ B2: «Activo financiero» (T5 · A1) tampoco pasa de 60 palabras (recorte de Futaba: 58)", async () => {
   const p = (await import("../../data/contabilidadT5Pieza1.js")).PIEZA_DEL_EFECTIVO;
   const n = p.nombres.find((x) => x.termino === "Activo financiero");
   assert.ok(n, "la guarda: el término existe");
