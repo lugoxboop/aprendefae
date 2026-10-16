@@ -435,3 +435,25 @@ test("★★★ D2: el objetivo de la pieza se ve antes de empezar, en el Encabe
     assert.ok(o.compareDocumentPosition(m.caja.querySelector("[data-encabezado] [data-consigna]")) & 4, "el objetivo no va antes de la consigna");
   } finally { m.desmontar(); }
 });
+
+test("★★★ D9 · la barra de la diferencia bajo el par: entera con los saldos de partida, se encoge con cada saldo que se escribe y, con el «=», se va; A5 no la lleva", async () => {
+  const s = D.SERIES_H7[0];
+  const m = montarJuego({ items: { serie: s, partidas: s.partidas } });
+  const barra = () => q(m, "[data-par] [data-barra]");
+  try {
+    assert.equal(barra().dataset.barra, "1.000", "la barra no empieza entera");
+    await aLaFase2(m, s);
+    await escribir(m, "banco", s.conciliadoBanco);
+    const conUno = Number(barra().dataset.barra);
+    assert.ok(conUno < 1, `escribir el saldo del banco no encoge la barra (${conUno})`);
+    await escribir(m, "libros", s.conciliadoLibros);
+    assert.equal(barra().dataset.barra, "0.000", "con los dos saldos iguales la barra no llega a 0");
+    await tocar(comprobar(m));
+    await esperar(0);
+    assert.equal(barra().dataset.barra, "0");
+    assert.equal(barra().style.opacity, "0", "con el «=» la barra sigue a la vista");
+    assert.equal(q(m, ".t4pr-igual").style.visibility, "visible");
+  } finally { m.desmontar(); }
+  const a5 = readFileSync(new URL("../../components/t4/A5SanCalixto.jsx", import.meta.url), "utf8");
+  assert.doesNotMatch(a5, /barra=/, "A5 lleva la barra");
+});

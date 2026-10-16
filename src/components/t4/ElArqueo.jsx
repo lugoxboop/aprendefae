@@ -41,7 +41,7 @@ import { useTanda } from "../mecanicas/libros/piezas.jsx";
 import { Encabezado } from "../mecanicas/libros/tema1/encabezado.jsx";
 import {
   H4, CUADRA, FALTA, ARQUEO, DIFERENCIA, CHEQUE, CUENTA, ZONAS_H4, CUENTAS_H4, RENGLONES_ASIENTO_H4,
-  BOTON_H4, SOBRE_H4, REGLA_H4, ASIENTO_H4, CIERRE_H4, ALT_FIGURA_H4,
+  BOTON_H4, SOBRE_H4, REGLA_H4, ASIENTO_H4, CIERRE_H4, ALT_FIGURA_H4, comprobanteH4,
   rotuloPasoH4, resumenH4, sortearH4, evaluarH4, evaluarCuentaH4, puntuarH4, itemH4,
 } from "../../data/contabilidadT4H4.js";
 import { ESPERA_ERROR_MS, cifra } from "../../data/contabilidadT4Hacer.js";
@@ -68,6 +68,8 @@ export const CSS_H4 = `
 .t4h4-op[data-marca="bien"], .t4h4-op[data-marca="era"] { border: 2px solid ${C.texto}; }
 .t4h4-op[data-marca="mal"] { border: 2px solid ${C.error}; }
 .t4h4-as { display: grid; gap: 2px; background: ${C.hundido}; border: 1px solid ${C.hundidoBorde}; border-radius: 10px; padding: 8px 12px; font-size: 13px; }
+/* D9 (Hanayama): la franja de cabecera del comprobante de egreso, a todo el ancho del asiento. */
+.t4h4-comp { margin: -8px -12px 4px; padding: 4px 12px; border-bottom: 1px solid ${C.hundidoBorde}; font: 500 12px/1.3 "Inter", sans-serif; color: ${C.texto2}; overflow-wrap: anywhere; }
 .t4h4-as > div { display: grid; grid-template-columns: minmax(0,1fr) 70px 70px; gap: 4px; align-items: end; }
 .t4h4-as > div > span:nth-child(n+2) { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 `;
@@ -107,6 +109,8 @@ function AsientoReembolso({ r, cuenta }) {
   ];
   return (
     <div className="t4h4-as t4r-nueva" data-asiento>
+      {/* D9 (Hanayama): la franja de cabecera del comprobante, con la empresa de la ronda. */}
+      <p className="t4h4-comp" data-comprobante>{comprobanteH4(r.empresa)}</p>
       <div><span /><span style={{ color: C.debeTexto, fontWeight: 600 }}>{ASIENTO_H4.debe}</span><span style={{ color: C.haber, fontWeight: 600 }}>{ASIENTO_H4.haber}</span></div>
       {lineas.map((l) => (
         <div key={l.k} data-linea-asiento={l.k} style={{ borderTop: "1px solid rgba(248,249,250,0.22)", paddingTop: "2px" }}>

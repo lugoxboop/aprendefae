@@ -240,3 +240,26 @@ test("★★ las cuentas del asiento van completas, en renglones fijos (C5, D4-3
   assert.deepEqual(A.CUENTAS_A3["gno-faltante"].renglones.join(" "), "Gastos no operacionales – faltante de caja menor");
   assert.deepEqual(Object.values(A.FIGURA_A3.chips), ["Falta", "Cuadra", "Sobra"]);
 });
+
+test("★★★ D9 · P0: con «Contar la caja» la solapa del sobre se abre (rotateX, 220 ms; sin animar con movimiento reducido), con su alto reservado desde el principio; las demás pantallas, sin solapa", async () => {
+  const { CSS_APRENDER } = await import("../../components/t4/aprender.jsx");
+  assert.match(CSS_APRENDER, /\.t4sb-solapa \{[^}]*transition: transform 220ms cubic-bezier\(\.3,\.9,\.4,1\)/);
+  assert.match(CSS_APRENDER, /\.t4sb-solapa\[data-abierta\] \{ transform: rotateX\(180deg\); \}/);
+  assert.match(CSS_APRENDER, /prefers-reduced-motion: reduce\) \{ \.t4sb-solapa \{ transition: none; \} \}/);
+  const m = await abrir(P, "contar");
+  try {
+    const svg = q(m, "[data-sobre] svg[data-solapa]");
+    assert.equal(svg.dataset.solapa, "cerrada");
+    assert.equal(svg.getAttribute("height") ?? svg.style.height, "34px", "el alto de la solapa no se reserva");
+    assert.ok(!q(m, ".t4sb-solapa").hasAttribute("data-abierta"));
+    tocar(q(m, "[data-accion=contar]"));
+    await esperar(0);
+    assert.equal(q(m, "[data-sobre] svg[data-solapa]").dataset.solapa, "abierta");
+    assert.ok(q(m, ".t4sb-solapa").hasAttribute("data-abierta"));
+    assert.equal(q(m, "[data-sobre] svg").style.height, "34px", "el sobre cambió de alto al abrirse");
+  } finally { m.desmontar(); }
+  for (const id of P.pantallas.map((x) => x.id).filter((x) => x !== "contar")) {
+    const n = await abrir(P, id);
+    try { assert.equal(q(n, "svg[data-solapa]"), null, `${id} lleva solapa`); } finally { n.desmontar(); }
+  }
+});

@@ -194,6 +194,7 @@ export default function ConciliaLaCuenta({ Marco, rotulo, titulo, acento, onComp
       izq={{ r: ROTULOS_H7.parBanco, v: izq, foco: Boolean(r2), eco: ecoB != null }}
       der={{ r: ROTULOS_H7.parLibros, v: der, foco: Boolean(r2), eco: ecoL != null }}
       igual={igual}
+      barra={{ base: Math.abs(s.extracto - s.libros) }}
       lector={lectorParH7(cifra(izq), cifra(der))}
     />
   );

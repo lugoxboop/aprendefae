@@ -114,6 +114,7 @@
 - Consignar: «Consignar»
 - Girar: «Girar un cheque»
 - Extracto: «Llega el extracto»
+- Pestaña de la libreta del banco (P1, aparece con «Llega el extracto»; D9 de Hanayama): «Extracto»
 - Sube: «Sube»
 - Baja: «Baja»
 - Mayor: «Bancos»

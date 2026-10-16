@@ -44,8 +44,8 @@ export const CSS_A3 = `
 const NOMBRE = "sobre-y-regla";
 const R = { fondo: FONDO };
 
-const SobreArqueo = ({ caja, luz = false }) => (
-  <Sobre rotulo={F.sobre} filas={[
+const SobreArqueo = ({ caja, luz = false, solapa = null }) => (
+  <Sobre rotulo={F.sobre} solapa={solapa} filas={[
     { id: "soportes", r: F.soportes, v: GASTADO },
     { id: "caja", r: F.caja, v: caja ?? F.sinContar, luz },
   ]} />
@@ -59,7 +59,8 @@ function Contar({ p, onAccion }) {
   const caja = FONDO - GASTADO;
   return (
     <Fig nombre={NOMBRE} alt={p.alt} gap={6}>
-      <SobreArqueo caja={c ? caja : null} luz={c} />
+      {/* D9 (Hanayama): con «Contar la caja», la solapa del sobre se abre. */}
+      <SobreArqueo caja={c ? caja : null} luz={c} solapa={{ abierta: c }} />
       <Regla r={R} suman={c ? GASTADO + caja : null} />
       <button type="button" className={`t4r-btn2${c ? " t4r-oculto" : ""}`} data-accion="contar" data-usado={c ? "" : undefined} onClick={c ? undefined : () => setC(true)}>{F.contar}</button>
     </Fig>

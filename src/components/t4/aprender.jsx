@@ -34,6 +34,30 @@ export const CSS_APRENDER = `
 .t4sb-f > span:last-child { font: 500 15px/1.4 "Inter", sans-serif; font-variant-numeric: tabular-nums; color: ${C.texto}; }
 .t4sb-f.s { border-top: 1px solid rgba(248,249,250,0.22); padding-top: 2px; color: ${C.texto}; }
 .t4sb-f[data-luz] > span:first-child { color: ${C.texto}; font-weight: 600; }
+/*
+ * D9 (Hanayama), solo en A2: una llave vertical de 2 px a la derecha del
+ * sobre une «Billetes y monedas» con «Soportes de gastos» y apunta a «Suman».
+ * Se dibuja con los renglones (sin medir nada): cada tramo es del alto de su
+ * renglón y cubre el hueco de 2 px entre renglones. Quieta: sin movimiento.
+ */
+/*
+ * D9 (Hanayama), solo en A3 P0: con «Contar la caja», la solapa del sobre se
+ * abre hacia arriba (rotateX, 220 ms). Su alto (16 px) se reserva desde el
+ * principio, así el sobre no salta ni la solapa tapa el rótulo. Con
+ * movimiento reducido, no se anima: se dibuja abierta.
+ */
+.t4sb-solapa { transform-box: view-box; transform-origin: 50% 50%; transition: transform 220ms cubic-bezier(.3,.9,.4,1); }
+.t4sb-solapa[data-abierta] { transform: rotateX(180deg); }
+@media (prefers-reduced-motion: reduce) { .t4sb-solapa { transition: none; } }
+.t4sb[data-llave] { padding-right: 30px; }
+.t4sb[data-llave] .t4sb-f[data-tramo] { position: relative; }
+.t4sb[data-llave] .t4sb-f[data-tramo]::after { content: ""; position: absolute; right: -18px; width: 2px; background: ${C.neutro}; }
+.t4sb[data-llave] .t4sb-f[data-tramo]::before { content: ""; position: absolute; right: -18px; top: calc(50% - 1px); width: 8px; height: 2px; background: ${C.neutro}; }
+.t4sb[data-llave] .t4sb-f[data-tramo="ini"]::after { top: calc(50% - 1px); bottom: -2px; }
+.t4sb[data-llave] .t4sb-f[data-tramo="med"]::after { top: -2px; bottom: -2px; }
+.t4sb[data-llave] .t4sb-f[data-tramo="fin"]::after { top: -2px; height: calc(50% + 3px); }
+.t4sb[data-llave] .t4sb-f[data-tramo="fin"]::before { width: 14px; }
+.t4sb[data-llave] .t4sb-f[data-tramo="fin"] > span:last-child::after { content: ""; position: absolute; right: -6px; top: calc(50% - 4px); border: 4px solid transparent; border-right: 5px solid ${C.neutro}; border-left: none; }
 .t4ch { display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; border: 1px solid ${C.texto}; border-radius: 8px; padding: 6px 12px; background: transparent; color: ${C.texto}; text-align: left; font: inherit; min-height: 44px; cursor: pointer; }
 .t4ch:disabled { cursor: default; border-color: ${C.neutro}; }
 .t4ch > span:first-child { display: grid; }
@@ -74,16 +98,27 @@ function Cifra({ v }) { const x = useNumeroQueSube(v); return <>{cifra(x)}</>; }
 export const Rotulo = ({ children }) => <p className="t4sb-rot">{children}</p>;
 
 /* filas: [{ id, r: rótulo, v: número | texto, suma?, luz?, oculta? }] */
-export function Sobre({ rotulo, filas, luz = false }) {
+export function Sobre({ rotulo, filas, luz = false, llave = false, solapa = null }) {
+  /* La llave (D9, solo A2) va cuando se ven los billetes, los soportes y la suma. */
+  const ve = (id) => filas.some((f) => f.id === id && !f.oculta);
+  const conLlave = llave && ve("billetes") && ve("soportes") && ve("suman");
+  const tramo = { billetes: "ini", soportes: "med", suman: "fin" };
   return (
     <div style={{ display: "grid", gap: "2px" }} data-sobre>
       <Rotulo>{rotulo}</Rotulo>
-      <svg aria-hidden="true" viewBox="0 0 100 18" preserveAspectRatio="none" style={{ display: "block", width: "100%", height: "18px", margin: "2px 0 -2px" }}>
-        <path d="M0 18 L0 1 L100 1 L100 18 M0 1 L50 17 L100 1" fill="none" stroke={luz ? C.texto : C.neutro} strokeWidth="1" vectorEffect="non-scaling-stroke" />
-      </svg>
-      <div className="t4sb" data-luz={luz ? "" : undefined}>
+      {solapa ? (
+        <svg aria-hidden="true" viewBox="0 -16 100 34" preserveAspectRatio="none" style={{ display: "block", width: "100%", height: "34px", margin: "2px 0 -2px", overflow: "visible" }} data-solapa={solapa.abierta ? "abierta" : "cerrada"}>
+          <path d="M0 18 L0 1 L100 1 L100 18" fill="none" stroke={luz ? C.texto : C.neutro} strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <path className="t4sb-solapa" data-abierta={solapa.abierta ? "" : undefined} d="M0 1 L50 17 L100 1" fill="none" stroke={luz ? C.texto : C.neutro} strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        </svg>
+      ) : (
+        <svg aria-hidden="true" viewBox="0 0 100 18" preserveAspectRatio="none" style={{ display: "block", width: "100%", height: "18px", margin: "2px 0 -2px" }}>
+          <path d="M0 18 L0 1 L100 1 L100 18 M0 1 L50 17 L100 1" fill="none" stroke={luz ? C.texto : C.neutro} strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        </svg>
+      )}
+      <div className="t4sb" data-luz={luz ? "" : undefined} data-llave={conLlave ? "" : undefined}>
         {filas.map((f) => (
-          <div key={f.id} className={`t4sb-f${f.suma ? " s" : ""}`} data-fila-sobre={f.id} data-valor={typeof f.v === "number" && !f.oculta ? f.v : undefined} data-luz={f.luz ? "" : undefined} style={{ visibility: f.oculta ? "hidden" : "visible" }}>
+          <div key={f.id} className={`t4sb-f${f.suma ? " s" : ""}`} data-fila-sobre={f.id} data-tramo={conLlave ? tramo[f.id] : undefined} data-valor={typeof f.v === "number" && !f.oculta ? f.v : undefined} data-luz={f.luz ? "" : undefined} style={{ visibility: f.oculta ? "hidden" : "visible" }}>
             <span>{f.r}</span><span>{typeof f.v === "number" ? <Cifra v={f.v} /> : f.v}</span>
           </div>
         ))}

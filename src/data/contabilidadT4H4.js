@@ -106,6 +106,8 @@ export const REGLA_H4 = {
   tuCheque: "caja + tu cheque", falta: "falta", sobra: "sobra", escala: "cada marca: 2.000",
 };
 export const ASIENTO_H4 = { debe: "DEBE", haber: "HABER", gastos: "Gastos generales", bancos: "Bancos" };
+/* D9 (Hanayama; texto confirmado por Katsumi): la franja de cabecera del asiento de la pregunta 4, con la empresa de la ronda. */
+export const comprobanteH4 = (empresa) => `Comprobante de egreso · ${empresa}`;
 export const resumenH4 = (bien) => `${bien} de 14 respuestas al primer intento.`;
 export const ALT_FIGURA_H4 = "El sobre del arqueo, con los soportes y lo que hay en la caja, y una regla alrededor del fondo. En ella se dibujan la suma, la diferencia y lo que dejaría cada cheque.";
 export const CIERRE_H4 = {
@@ -132,6 +134,8 @@ function ronda(id, titulo, encargado, fondo, gastos, caja, politica) {
   const regla = politica === COBRA ? "Si falta plata, se la cobran." : "Si falta plata, la empresa la asume.";
   const r = {
     id, titulo, encargado, fondo, gastos, caja, suma, dif, tipo, cheque, politica,
+    /* La empresa de la ronda, la del título («Rosa · Sus Servicios, junio» → «Sus Servicios»). */
+    empresa: titulo.split(" · ")[1].split(",")[0],
     subtema: SUBTEMAS_H4[tipo === FALTA ? `${FALTA}:${politica}` : tipo],
     tarjeta: `Fondo de ${pesos(fondo)}. ${regla}`,
   };

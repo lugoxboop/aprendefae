@@ -110,7 +110,7 @@ export default function EntraOSaleDeCaja({ Marco, rotulo, titulo, acento, onComp
 
   const tablero = (
     <Cajon
-      origen={t.terminado ? null : { texto: item.texto, monto: cifra(item.monto), montoFoco: !recien, clave: item.id, tarjeta: true, refHecho: hecho }}
+      origen={t.terminado ? null : { texto: item.texto, monto: cifra(item.monto), montoFoco: !recien, clave: item.id, tarjeta: true, refHecho: hecho, fajo: t.i }}
       palabras
       debe={L.debe.map(linea)}
       haber={L.haber.map(linea)}

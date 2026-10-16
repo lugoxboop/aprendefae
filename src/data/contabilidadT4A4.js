@@ -92,6 +92,8 @@ export const FIGURA_A4 = {
   consignar: "Consignar",
   girar: "Girar un cheque",
   extracto: "Llega el extracto",
+  /* D9 (Hanayama; texto confirmado por Katsumi): la pestaña de carpeta de la libreta del banco, que aparece con «Llega el extracto» (P1). */
+  pestanaExtracto: "Extracto",
   sube: "Sube",
   baja: "Baja",
   mayor: "Bancos",

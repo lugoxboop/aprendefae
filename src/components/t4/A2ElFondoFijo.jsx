@@ -57,7 +57,7 @@ function Pagar({ p, onAccion }) {
   const pagado = sumaGastos(n);
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
-      <Sobre rotulo={F.sobre} filas={[
+      <Sobre llave rotulo={F.sobre} filas={[
         { id: "billetes", r: F.billetes, v: FONDO - pagado },
         { id: "soportes", r: F.soportes, v: pagado, oculta: !pagado },
         { id: "suman", r: F.suman, v: FONDO, suma: true },
@@ -78,7 +78,7 @@ function Apertura({ p }) {
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
       <Cheque monto={FONDO} renglones={F.cheque} hecho={abierto} onClick={() => setAbierto(true)} />
-      <Sobre rotulo={F.sobre} luz={abierto} filas={[
+      <Sobre llave rotulo={F.sobre} luz={abierto} filas={[
         { id: "billetes", r: F.billetes, v: abierto ? FONDO : 0 },
         { id: "suman", r: F.suman, v: abierto ? FONDO : 0, suma: true },
       ]} />
@@ -94,7 +94,7 @@ function Gastos({ p }) {
   const total = GASTOS_MAYO.length;
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
-      <Sobre rotulo={F.sobre} filas={[
+      <Sobre llave rotulo={F.sobre} filas={[
         { id: "billetes", r: F.billetes, v: F.sinContar },
         { id: "soportes", r: F.soportes, v: sumaGastos(n), luz: Boolean(n) },
       ]} />
@@ -112,7 +112,7 @@ function CuantoQueda({ p, onAcierto }) {
   return (
     <>
       <Fig nombre={NOMBRE} alt={p.alt}>
-        <Sobre rotulo={F.sobre} filas={[
+        <Sobre llave rotulo={F.sobre} filas={[
           { id: "fondo", r: F.fondo, v: FONDO },
           { id: "billetes", r: F.billetes, v: e ?? "?", luz: e != null },
           { id: "soportes", r: F.soportes, v: GASTADO },
@@ -131,7 +131,7 @@ function Reembolso({ p }) {
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
       <Cheque monto={GASTADO} renglones={F.cheque} hecho={hecho} onClick={() => setHecho(true)} />
-      <Sobre rotulo={F.sobre} filas={[
+      <Sobre llave rotulo={F.sobre} filas={[
         { id: "billetes", r: F.billetes, v: hecho ? FONDO : QUEDA, luz: hecho },
         { id: "soportes", r: F.soportes, v: GASTADO, oculta: hecho },
         { id: "suman", r: F.suman, v: FONDO, suma: true },
@@ -196,7 +196,7 @@ function SubirBajar({ p, onCierre }) {
   const baja = Math.max(0, FONDO - f);
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
-      <Sobre rotulo={F.sobre} filas={[{ id: "billetes", r: F.billetes, v: f, luz: f !== FONDO }]} />
+      <Sobre llave rotulo={F.sobre} filas={[{ id: "billetes", r: F.billetes, v: f, luz: f !== FONDO }]} />
       <div className="t4r-par2">
         <button type="button" className="t4r-btn2" data-accion="bajar" aria-disabled={f <= FONDO_MIN ? "true" : undefined} aria-describedby={f <= FONDO_MIN ? idRazon : undefined} onClick={f > FONDO_MIN ? () => setF(f - PASO_FONDO) : undefined}>{F.bajar}</button>
         <button type="button" className="t4r-btn2" data-accion="subir" aria-disabled={f >= FONDO_MAX ? "true" : undefined} aria-describedby={f >= FONDO_MAX ? idRazon : undefined} onClick={f < FONDO_MAX ? () => setF(f + PASO_FONDO) : undefined}>{F.subir}</button>
@@ -210,7 +210,7 @@ function SubirBajar({ p, onCierre }) {
 }
 
 function Quieta({ p }) {
-  return <Fig nombre={NOMBRE} alt={p.alt}><Sobre rotulo={F.sobre} filas={[{ id: "billetes", r: F.billetes, v: FONDO }]} /></Fig>;
+  return <Fig nombre={NOMBRE} alt={p.alt}><Sobre llave rotulo={F.sobre} filas={[{ id: "billetes", r: F.billetes, v: FONDO }]} /></Fig>;
 }
 
 const MODOS = { pagar: Pagar, apertura: Apertura, gastos: Gastos, cuanto: CuantoQueda, reembolso: Reembolso, asiento: YCajaMenor, "subir-bajar": SubirBajar, quieta: Quieta };

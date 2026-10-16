@@ -218,3 +218,17 @@ test("★★ el lector oye la marca: la mitad mal elegida dice «No va aquí» e
   } finally { m.desmontar(); }
   assert.equal(seguir, R.seguir);
 });
+
+test("★★★ D9 · la llave del sobre (solo A2): une «Billetes y monedas» con «Soportes de gastos» y apunta a «Suman» cuando se ven los tres; sin soportes a la vista, no va; A3 no la lleva", async () => {
+  const m = await abrir(P, "el-fondo");
+  try {
+    assert.equal(q(m, "[data-sobre] [data-llave]"), null, "la llave va sin soportes a la vista");
+    tocar(q(m, "[data-accion=pagar]"));
+    await esperar(0);
+    assert.ok(q(m, "[data-sobre] .t4sb[data-llave]"), "no hay llave con los tres renglones");
+    assert.deepEqual([...m.caja.querySelectorAll("[data-sobre] [data-tramo]")].map((x) => [x.dataset.filaSobre, x.dataset.tramo]), [["billetes", "ini"], ["soportes", "med"], ["suman", "fin"]]);
+  } finally { m.desmontar(); }
+  const A3 = (await import("../../data/contabilidadT4A3.js")).PIEZA_EL_ARQUEO;
+  const n = await abrir(A3, A3.pantallas[0].id);
+  try { assert.equal(n.caja.querySelector("[data-llave]"), null, "A3 lleva la llave"); } finally { n.desmontar(); }
+});

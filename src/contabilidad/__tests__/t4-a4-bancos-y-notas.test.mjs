@@ -72,7 +72,7 @@ test("★★★ los rótulos de la figura son los del paquete; los términos son
   const r = renglones(seccionDe(PAQ, "Rótulos de la figura"));
   const F = A.FIGURA_A4;
   for (const [lugar, v] of [["Libreta de la empresa", F.empresa], ["Libreta del banco", F.banco],
-    ["Donde una libreta no lo tiene", F.noSabe.join(" / ")], ["Consignar", F.consignar], ["Girar", F.girar], ["Extracto", F.extracto], ["Sube", F.sube], ["Baja", F.baja], ["Mayor", F.mayor],
+    ["Donde una libreta no lo tiene", F.noSabe.join(" / ")], ["Consignar", F.consignar], ["Girar", F.girar], ["Extracto", F.extracto], ["Pestaña de la libreta del banco (P1, aparece con «Llega el extracto»; D9 de Hanayama)", F.pestanaExtracto], ["Sube", F.sube], ["Baja", F.baja], ["Mayor", F.mayor],
     ["Contador de las causas", F.contadorCausa("n", 6)], ["Con el acierto de la conciliación", `Nota débito · ${F.porAnotar}`],
     ["Para el lector, cada libreta", [0, 1, "{n}"].map((n, i) => F.anotadas("La empresa", n).replace(/^La empresa: /, i ? "" : "La empresa: ")).join(" / ")],
     ["Para el lector, el renglón del cheque (P4)", F.renglonLector["cheque-sin-cobrar"]], ["Para el lector, el renglón de la nota (P4)", F.renglonLector["nota-debito"]]]) {
@@ -237,4 +237,23 @@ test("★★★ P4 la-conciliacion (lote B, §5.2): los dos renglones son destin
     assert.equal(visible(q(m, "[data-siguiente][data-visible] > [aria-live]")), p.siguiente);
     assert.equal(R.seguir(m), null, "la última pantalla no lleva «Seguir»");
   } finally { m.desmontar(); }
+});
+
+test("★★★ D9 · P1: la libreta del banco lleva la pestaña «Extracto», reservada desde el principio y visible con «Llega el extracto»; ninguna otra pantalla la lleva", async () => {
+  const m = await abrir(P, "las-notas");
+  try {
+    const t = q(m, "[data-pestana]");
+    assert.equal(t.textContent, A.FIGURA_A4.pestanaExtracto);
+    assert.ok(t.hasAttribute("data-oculta"), "la pestaña se ve antes del extracto");
+    assert.equal(t.getAttribute("aria-hidden"), "true");
+    tocar(q(m, "[data-accion=extracto]"));
+    await esperar(0);
+    assert.ok(!q(m, "[data-pestana]").hasAttribute("data-oculta"), "la pestaña no aparece con el extracto");
+    assert.equal(q(m, "[data-pestana]").getAttribute("aria-hidden"), null);
+    assert.ok(q(m, ".t4lt-pest").nextElementSibling.matches("[data-libretas]"), "la pestaña no va sobre las libretas");
+  } finally { m.desmontar(); }
+  for (const id of P.pantallas.map((p) => p.id).filter((x) => x !== "las-notas")) {
+    const n = await abrir(P, id);
+    try { assert.equal(q(n, "[data-pestana]"), null, `${id} lleva la pestaña`); } finally { n.desmontar(); }
+  }
 });
