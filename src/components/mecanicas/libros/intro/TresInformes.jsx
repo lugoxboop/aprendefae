@@ -87,7 +87,7 @@ export default function TresInformes({
                 margin: "0 0 6px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, color: FAE.text,
               }}>
                 {inf.nombre}
-                <span style={{ marginLeft: "6px", fontSize: "12px", fontWeight: 500, color: "rgba(248,249,250,0.5)" }}>
+                <span style={{ marginLeft: "6px", fontSize: "12px", fontWeight: 500, color: "#A8B6C8" }}>
                   {inf.corto}
                 </span>
               </p>

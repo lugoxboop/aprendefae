@@ -78,7 +78,7 @@ export default function ComoSeArticulan() {
     <div data-pieza4 data-paso={paso}>
       <style>{CSS_P4}</style>
 
-      <p style={{ margin: "0 0 9px", fontFamily: SORA, fontSize: "12px", fontWeight: 600, color: "rgba(248,249,250,0.55)" }}>
+      <p style={{ margin: "0 0 9px", fontFamily: SORA, fontSize: "12px", fontWeight: 600, color: "#A8B6C8" }}>
         {cerrado ? "Las cinco a la vez" : `Paso ${visible} de ${PASOS}`}
       </p>
 

@@ -89,7 +89,7 @@ function Escena({ escena, reducido }) {
       {/* A medias y ahí se queda: los documentos no llegan solos al registro. */}
       {escena.trazoAMedias && (
         <span data-trazo-a-medias style={{
-          marginTop: "2px", fontSize: "10px", color: "rgba(248,249,250,0.4)", textAlign: "center",
+          marginTop: "2px", fontSize: "10px", color: "#A8B6C8", textAlign: "center",
         }}>
           ↓ … el trazo hacia la estación 3 se queda a medias
         </span>

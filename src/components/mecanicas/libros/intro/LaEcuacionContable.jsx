@@ -79,7 +79,7 @@ export default function LaEcuacionContable() {
     <div data-pieza2 data-paso={paso}>
       <style>{CSS}</style>
 
-      <p style={{ margin: "0 0 9px", fontFamily: SORA, fontSize: "12px", fontWeight: 600, color: "rgba(248,249,250,0.55)" }}>
+      <p style={{ margin: "0 0 9px", fontFamily: SORA, fontSize: "12px", fontWeight: 600, color: "#A8B6C8" }}>
         {cerrado ? "La regla" : `Paso ${visible} de ${PASOS}`}
       </p>
 

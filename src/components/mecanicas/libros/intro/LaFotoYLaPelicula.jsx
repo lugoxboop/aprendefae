@@ -57,7 +57,7 @@ function Hueco({ cuando }) {
       background: "rgba(10,20,34,0.2)", border: "1px dashed rgba(248,249,250,0.2)",
       display: "flex", alignItems: "center",
     }}>
-      <span style={{ fontSize: "12px", color: "rgba(248,249,250,0.4)" }}>{cuando}</span>
+      <span style={{ fontSize: "12px", color: "#A8B6C8" }}>{cuando}</span>
     </div>
   );
 }
@@ -98,7 +98,7 @@ export default function LaFotoYLaPelicula() {
     <div data-pieza3 data-paso={paso}>
       <style>{CSS}</style>
 
-      <p style={{ margin: "0 0 9px", fontFamily: SORA, fontSize: "12px", fontWeight: 600, color: "rgba(248,249,250,0.55)" }}>
+      <p style={{ margin: "0 0 9px", fontFamily: SORA, fontSize: "12px", fontWeight: 600, color: "#A8B6C8" }}>
         {cerrado ? "Las dos fotos y el tramo" : `Paso ${visible} de ${PASOS}`}
       </p>
 
