@@ -80,14 +80,14 @@ const FIGURAS = [
 /* Lo que entra en la figura al cerrarse cada caja, con lo correcto (los textos de §2b). */
 const ENTRA = {
   "T5 · A1": { a: [["a", "Paquete A"]], b: [["b", "Paquete B"]] },
-  "T5 · A2": { "venta-a": [["venta-a", "$1.500.000 · 1 de agosto"]], "venta-b": [["venta-b", "$500.000 · 1 de noviembre"]] },
+  "T5 · A2": { "venta-a": [["venta-a", "$1.500.0001 de agosto"]], "venta-b": [["venta-b", "$500.0001 de noviembre"]] },
   "T6 · A1": Object.fromEntries(T6A1.HECHOS_T6.map((x) => [x.id, [[x.id, x.corto]]])),
   "T6 · A2": {
     "anulacion-directa": [["anulacion-directa-cierre", "Nada"], ["anulacion-directa-castigo", "Gasto"]],
     provisiones: [["provisiones-cierre", "Gasto"], ["provisiones-castigo", "Provisión"]],
   },
 };
-const INICIAL = { "T5 · A2": [["compra", "$2.000.000 · 1 de mayo", false]] };
+const INICIAL = { "T5 · A2": [["compra", "$2.000.0001 de mayo", false]] };
 
 test("★★★ §2b: los textos nuevos de la figura, literales (para Shoko)", () => {
   assert.deepEqual(T5A1.FIGURA_CAPA_3, { temporal: "Temporal", noTemporal: "No temporal" });
@@ -133,7 +133,7 @@ for (const p of FIGURAS) {
       const ultima = caja.querySelector(`[data-entrada="${nuevas[0]}"]`);
       assert.equal(ultima.style.border, `2px solid ${rgb(FAE.node)}`);
       assert.equal(ultima.style.background, rgb(FAE.navy));
-      assert.equal(ultima.style.padding, "3px 7px", "1 px menos de relleno: nada se mueve");
+      assert.equal(ultima.style.padding, "1px 4px", "1 px menos de relleno: nada se mueve");
       for (const e of caja.querySelectorAll("[data-entrada]")) assert.ok(Number.parseFloat(e.style.fontSize) >= 12, "letra mínima");
     }
     desmontar();

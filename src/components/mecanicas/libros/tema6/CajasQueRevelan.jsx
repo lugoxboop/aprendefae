@@ -293,7 +293,14 @@ export default function CajasQueRevelan({ consigna, contexto = null, cajas, fina
   };
 
   useEffect(() => {
-    if (todos) bloqueFinal.current?.scrollIntoView?.({ block: "nearest", behavior: reducido ? "auto" : "smooth" });
+    if (!todos) return;
+    /*
+     * Con figura pegada, el final se asoma sin tapar con la figura la opción
+     * de la última caja: primero se ve la devolución entera (§2b de Mai).
+     */
+    const ultima = orden.length ? contenedor.current?.querySelector(`[data-hecho="${orden[orden.length - 1]}"] [role='group']`) : null;
+    if (Figura && ultima) { asomarBajoLaFigura(figura.current, ultima, bloqueFinal.current, reducido); return; }
+    bloqueFinal.current?.scrollIntoView?.({ block: "nearest", behavior: reducido ? "auto" : "smooth" });
   }, [todos]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

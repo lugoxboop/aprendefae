@@ -40,17 +40,24 @@ const NOMBRE_CUENTA = { margin: 0, textAlign: "center", fontFamily: SORA, fontSi
 const ROTULO = { margin: "0 0 4px", textAlign: "center", fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: 1.3, letterSpacing: "0.1em" };
 const CABECERA = { margin: 0, fontFamily: INTER, fontSize: "12px", fontWeight: 400, lineHeight: 1.35, color: COLOR.apagado, textAlign: "center" };
 
-/* Una entrada de la figura: borde 1 neutro; la última, resaltada sin moverse. */
-function Entrada({ id, texto, ultima, centrada = false }) {
+/*
+ * Una entrada de la figura (Inter 12/600, la letra mínima: la figura es
+ * pequeña): borde 1 neutro; la última, resaltada sin moverse. `detalle` (la
+ * fecha de T5 · A2) va en su propio renglón, en color secundario, como el
+ * momento bajo el monto en la T de T6 · A3.
+ */
+const ALTO_ENTRADA = "22.2px"; // 12 × 1,35 + 2 × 2 de relleno + 2 × 1 de borde
+function Entrada({ id, texto, detalle = null, ultima, centrada = false }) {
   const d = ultima ? 1 : 0;
   return (
     <p data-entrada={id} data-ultima={ultima ? "si" : "no"} style={{
-      margin: 0, boxSizing: "border-box", borderRadius: "8px", padding: `${4 - d}px ${8 - d}px`,
+      margin: 0, boxSizing: "border-box", borderRadius: "6px", padding: `${2 - d}px ${5 - d}px`,
       border: ultima ? `2px solid ${FAE.node}` : `1px solid ${BORDES}`, background: ultima ? FAE.navy : "transparent",
-      fontFamily: INTER, fontSize: "13px", fontWeight: 600, lineHeight: 1.35, color: FAE.text,
+      fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: 1.35, color: FAE.text,
       fontVariantNumeric: "tabular-nums", textAlign: centrada ? "center" : "left",
     }}>
-      {texto}
+      <span style={{ display: "block" }}>{texto}</span>
+      {detalle && <span data-detalle style={{ display: "block", fontWeight: 400, color: COLOR.apagado }}>{detalle}</span>}
     </p>
   );
 }
@@ -58,9 +65,9 @@ function Entrada({ id, texto, ultima, centrada = false }) {
 /* Una cuenta T pequeña: el nombre, la línea de la T y sus dos columnas; `debajo`, lo que va bajo la T. */
 function CuentaPequena({ figura, entradas, ultima, debajo = null, atributos }) {
   const columna = (lado) => (
-    <div data-columna={lado} style={{ padding: "6px 6px 2px", borderLeft: lado === "haber" ? LINEA_T : "none", display: "flex", flexDirection: "column", gap: "4px" }}>
+    <div data-columna={lado} style={{ padding: "6px 4px 2px", borderLeft: lado === "haber" ? LINEA_T : "none", display: "flex", flexDirection: "column", gap: "4px" }}>
       <p style={{ ...ROTULO, color: TONO_ROTULO[lado] }}>{figura[lado]}</p>
-      {entradas.filter((e) => e.lado === lado).map((e) => <Entrada key={e.id} id={e.id} texto={e.texto} ultima={e.id === ultima} />)}
+      {entradas.filter((e) => e.lado === lado).map((e) => <Entrada key={e.id} id={e.id} texto={e.texto} detalle={e.detalle} ultima={e.id === ultima} />)}
     </div>
   );
   return (
@@ -90,7 +97,7 @@ export function FiguraT5A1({ decididas }) {
         <div key={c.id} data-cajon={c.id} style={{ ...MARCO, borderRadius: "10px", padding: "8px", display: "flex", flexDirection: "column", gap: "6px" }}>
           <p style={CABECERA}>{c.nombre}</p>
           {/* El sitio de un paquete, reservado: la figura no cambia de alto al llenarse. */}
-          <div style={{ minHeight: "27.55px", display: "flex", flexDirection: "column", gap: "4px" }}>
+          <div style={{ minHeight: ALTO_ENTRADA, display: "flex", flexDirection: "column", gap: "4px" }}>
             {decididas
               .map((id) => PAQUETES.find((p) => p.id === id))
               .filter((p) => p && (p.correcta === "si") === c.temporal)
@@ -103,12 +110,12 @@ export function FiguraT5A1({ decididas }) {
 }
 
 /* ═══════════ T5 · A2 · la T de las inversiones ═══════════ */
-const conFecha = ({ monto, fecha }) => `${monto} · ${fecha}`;
+/* «$2.000.000 · 1 de mayo» (§2b de Mai): el monto y, debajo, la fecha; a 320 no caben en un renglón de media T. */
 export function FiguraT5A2({ decididas }) {
   const F = FIGURA_CAPA_3_T5_A2;
   const entradas = [
-    { id: "compra", lado: "debe", texto: conFecha(F.compra) },
-    ...decididas.filter((id) => F.ventas[id]).map((id) => ({ id, lado: "haber", texto: conFecha(F.ventas[id]) })),
+    { id: "compra", lado: "debe", texto: F.compra.monto, detalle: F.compra.fecha },
+    ...decididas.filter((id) => F.ventas[id]).map((id) => ({ id, lado: "haber", texto: F.ventas[id].monto, detalle: F.ventas[id].fecha })),
   ];
   return <CuentaPequena figura={F} entradas={entradas} ultima={ultimaDe(decididas)} atributos={{ "data-figura": "t5-a2" }} />;
 }
@@ -154,7 +161,7 @@ export function FiguraT6A2({ decididas }) {
                   <td key={c.id} data-celda={c.id} style={{ padding: 0 }}>
                     {lleno
                       ? <Entrada id={`${m.id}-${c.id}`} texto={F.filas[m.id][c.id]} ultima={m.id === ultima} centrada />
-                      : <div aria-hidden="true" style={{ minHeight: "27.55px", boxSizing: "border-box", borderRadius: "8px", border: `1px solid ${ATENUADO}` }} />}
+                      : <div aria-hidden="true" style={{ minHeight: ALTO_ENTRADA, boxSizing: "border-box", borderRadius: "6px", border: `1px solid ${ATENUADO}` }} />}
                   </td>
                 ))}
               </tr>

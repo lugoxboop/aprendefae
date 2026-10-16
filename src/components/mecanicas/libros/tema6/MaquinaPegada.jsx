@@ -426,6 +426,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     <div ref={maquina} {...atributos} className={CLASE_T5} style={{ position: "relative" }}>
       <EstilosT5 />
       {escena(estado, refDe, reducido)}
+      {etiqueta && <style>{ESTILOS_ETIQUETA}</style>}
       {etiqueta && (
         <span data-etiqueta-parada={parada.etiquetaEn} data-marca={marcaEtiqueta ?? ""} aria-hidden="true" className={reducido ? undefined : "b5-etiqueta-aparece"} style={{
           position: "absolute", top: `${sitioEtiqueta?.top ?? 0}px`, left: `${sitioEtiqueta?.left ?? 0}px`,
@@ -434,7 +435,6 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
           display: "inline-flex", alignItems: "center", gap: "4px", boxSizing: "border-box", padding: "1px 6px", borderRadius: "6px",
           border: `1.5px dashed ${NODO}`, background: FONDO, color: TEXTO, fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: 1.35,
         }}>
-          <style>{ESTILOS_ETIQUETA}</style>
           {marcaEtiqueta === "correcta" && <IconoVisto />}
           {marcaEtiqueta === "tachada" && <IconoTache />}
           <span data-texto-etiqueta style={marcaEtiqueta === "tachada" ? TACHADO : undefined}>{textoEtiqueta}</span>
