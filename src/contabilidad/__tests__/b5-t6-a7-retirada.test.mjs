@@ -49,17 +49,14 @@ test("★★★ ni «Así se juega» ni el panel docente la conocen, y su códig
   ]) assert.ok(!existsSync(new URL(archivo, RAIZ)), `${archivo} sigue en el repositorio`);
 });
 
-test("★★★ la 0076: borra primero sus partidas a medias y después su fila, con su comprobación y la reversión escrita sin correr", () => {
+test("★★★ la 0076: retiro blando (#289) con la marca del guardián, sin borrar nada, con su comprobación y la reversión escrita sin correr", () => {
   const sentencias = MIGRACION.split("\n").filter((l) => !l.trim().startsWith("--")).join("\n");
-  const partidas = sentencias.search(/delete from public\.partida_en_curso\s+where activity_id in \('b5-t6-a7'\);/);
-  const fila = sentencias.search(/delete from public\.actividad_catalogo\s+where activity_id in \('b5-t6-a7'\);/);
-  assert.ok(partidas >= 0, "no borra las partidas a medias");
-  assert.ok(fila >= 0, "no borra la fila del catálogo (con la forma `in (...)`)");
-  assert.ok(partidas < fila, "las partidas, antes que la fila a la que apuntan");
-  /* Nada más que esos dos borrados y la comprobación. */
-  assert.equal((sentencias.match(/\bdelete\b/gi) ?? []).length, 2);
-  assert.doesNotMatch(sentencias, /\b(insert|update|alter|drop|truncate|grant|revoke)\b/i);
-  assert.match(sentencias, /select[\s\S]*count\(\*\)[\s\S]*actividad_catalogo[\s\S]*partida_en_curso/);
-  /* La reversión, comentada: la misma fila que metió la 0075. */
-  assert.match(MIGRACION, /^--\s+\('b5-t6-a7', 'contabilidad', 'cuentas-por-cobrar', 'evaluativa', 'facil', 10, 1\)$/m);
+  assert.match(MIGRACION, /^-- GUARDIAN: retiro blando de catalogo$/m, "falta la marca del guardián");
+  assert.match(sentencias, /update public\.actividad_catalogo\s+set retirada = true\s+where activity_id in \('b5-t6-a7'\);/);
+  /* Ni un borrado: fp_history apunta a la fila, que queda como lápida (Erwin, #281). */
+  assert.doesNotMatch(sentencias, /\b(delete|insert|alter|drop|truncate|grant|revoke)\b/i);
+  assert.equal((sentencias.match(/\bupdate\b/gi) ?? []).length, 1);
+  assert.match(sentencias, /select activity_id, retirada[\s\S]*actividad_catalogo[\s\S]*'b5-t6-a7'/);
+  /* La reversión, comentada. */
+  assert.match(MIGRACION, /^--\s+set retirada = false where activity_id in \('b5-t6-a7'\);$/m);
 });
