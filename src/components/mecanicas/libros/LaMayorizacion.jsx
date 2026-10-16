@@ -307,7 +307,8 @@ export default function LaMayorizacion({ Marco, rotulo, titulo, acento, onComple
               const elegida = cuenta === c;
               const revelado = Boolean(retro);
               let borde = "rgba(248,249,250,0.22)";
-              if (revelado && c === renglon.cuenta) borde = FAE.teal;
+              /* B4: la cuenta correcta va en neutro, no en teal. */
+              if (revelado && c === renglon.cuenta) borde = FAE.text;
               else if (revelado && elegida) borde = FAE.coral;
               else if (elegida) borde = acento;
               return (

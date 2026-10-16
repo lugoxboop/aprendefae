@@ -165,7 +165,8 @@ export default function ElErrorEscondido({ Marco, rotulo, titulo, acento, onComp
   };
 
   const bordeDe = (estado) => {
-    if (estado === "correcta") return FAE.teal;
+    /* B4: el acierto en Contabilidad va en neutro, nunca en teal (que es el DEBE). */
+    if (estado === "correcta") return FAE.text;
     if (estado === "incorrecta") return FAE.coral;
     if (estado === "revelada") return FAE.ambar;
     if (estado === "elegida") return FAE.text;
