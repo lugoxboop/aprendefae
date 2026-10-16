@@ -85,12 +85,23 @@ test("★★★ ningún componente de la pieza escribe texto que lea el estudian
   }
 });
 
-test("★★★ capa 1: los siete términos, en el orden del paquete", () => {
+/* B2 (un término por pantalla): la entrega final de Futaba, guardada al final del paquete. */
+const B2 = (() => {
+  const t = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t5-aprender1-textos.md", import.meta.url), "utf8");
+  return t.slice(t.indexOf("## B2 ·"));
+})();
+
+test("★★★ capa 1 (B2): los nueve términos, en el orden de Futaba, sin «Título valor», y cada texto literal de la entrega", () => {
   assert.deepEqual(D.PIEZA_DEL_EFECTIVO.nombres.map((n) => n.termino), [
-    "Activo financiero", "Activo financiero temporal", "Título valor", "Tres grupos",
-    "Acciones, en este tema", "Renta variable", "Renta fija",
+    "Activo financiero", "Activo financiero temporal", "La segunda condición", "Tres grupos",
+    "Acciones, en este tema", "Renta variable", "Renta fija", "Renta fija con interés", "Renta fija con descuento",
   ]);
   assert.equal(D.PIEZA_DEL_EFECTIVO.titulo, "Del efectivo de sobra al activo financiero");
+  assert.ok(B2.includes("~~Título valor~~ — SALE"), "la guarda: la entrega B2 no está en el paquete");
+  for (const n of D.PIEZA_DEL_EFECTIVO.nombres) {
+    assert.ok(B2.includes(`**${n.termino}**`), n.termino);
+    for (const texto of [n.definicion, n.delLibro].filter(Boolean)) assert.ok(B2.includes(texto), `${n.termino}: «${texto.slice(0, 40)}…» no es literal de B2`);
+  }
 });
 
 test("★★★ capa 1: las dos citas van entre «» con su página; las dos notas con el rótulo «Nota»", () => {
@@ -99,20 +110,24 @@ test("★★★ capa 1: las dos citas van entre «» con su página; las dos not
     assert.match(n[t].delLibro, new RegExp(`^«.*» \\(p\\. ${p}\\)$`), t);
     assert.equal(n[t].rotuloDelLibro, undefined, `${t}: usa el rótulo del componente, «Así lo dice el libro»`);
   }
-  for (const t of ["Acciones, en este tema", "Renta variable"]) assert.equal(n[t].rotuloDelLibro, "Nota", t);
-  /* La cita 2 va en un solo párrafo, con «1.» y «2.» dentro del texto. */
+  for (const t of ["Acciones, en este tema", "Renta fija"]) assert.equal(n[t].rotuloDelLibro, "Nota", t);
+  /* Las demás no traen ni cita ni nota. La segunda condición va sin cita, como pidió Shoko. */
+  for (const t of ["La segunda condición", "Tres grupos", "Renta variable", "Renta fija con interés", "Renta fija con descuento"]) assert.equal(n[t].delLibro, undefined, t);
+  /* La cita 2 va en un solo párrafo, y solo con la primera condición (la segunda tiene su pantalla). */
   assert.ok(!n["Activo financiero temporal"].delLibro.includes("\n"));
-  /* Comillas internas curvas, tal cual. */
-  assert.ok(n["Activo financiero temporal"].definicion.includes("“negociables o realizables”"));
-  /* Desde los textos finales, la definición 3 ya no lleva comillas internas. */
-  assert.ok(!n["Título valor"].definicion.includes("“"));
-  assert.ok(n["Renta variable"].delLibro.includes("“renta variable” y “renta fija”"));
+  assert.ok(!n["Activo financiero temporal"].delLibro.includes("2."));
+  assert.ok(n["Activo financiero temporal"].definicion.endsWith("La primera: poder venderse rápido y con facilidad."));
+  assert.ok(n["La segunda condición"].definicion.startsWith("Es la segunda:"));
+  /* Comillas internas curvas, tal cual: la nota de los nombres va ahora con «Renta fija», que es donde ya se nombraron los dos. */
+  assert.ok(n["Renta fija"].delLibro.includes("“renta variable” y “renta fija”"));
 });
 
 test("★★ capa 1: las listas abiertas siguen abiertas («suelen», «entre otros»), sin «…» propio", () => {
   const n = Object.fromEntries(D.PIEZA_DEL_EFECTIVO.nombres.map((x) => [x.termino, x]));
   assert.ok(n["Tres grupos"].definicion.includes("suelen"));
-  assert.equal(n["Renta fija"].definicion.match(/entre otros/g).length, 2);
+  /* «Renta fija» se partió en sus dos tipos: cada lista lleva su «entre otros». */
+  assert.equal(n["Renta fija con interés"].definicion.match(/entre otros/g).length, 1);
+  assert.equal(n["Renta fija con descuento"].definicion.match(/entre otros/g).length, 1);
   /* El único «…» es el de la cita del término 1, que es del libro. */
   const puntos = textosDeDatos().filter((t) => t.includes("…"));
   assert.deepEqual(puntos, [n["Activo financiero"].delLibro]);
@@ -258,14 +273,15 @@ test("★★ capa 3: A y B se ven idénticos antes y después de decidirlos (sin
 
 /* ═══════════ CAPA 4 ═══════════ */
 
-test("★★★ capa 4: UnaFrase con la pregunta y las cuatro opciones del paquete; una sola correcta", async () => {
+test("★★★ capa 4: UnaFrase con la pregunta y las cuatro opciones del paquete (C1-1 del lote C2 · C1 · C7); una sola correcta; su pie debajo", async () => {
   assert.equal(D.OPCIONES_FINAL_T5.length, 4);
   assert.deepEqual(D.OPCIONES_FINAL_T5.filter((o) => o.correcta).map((o) => o.texto),
-    ["Que se pueda vender fácil y vaya a volverse efectivo cuando haga falta."]);
+    ["No: no se volverán efectivo en un año."]);
   const { Capa4 } = ESCENAS_TEMA5[D.PIEZA_DEL_EFECTIVO.id];
   const { caja, desmontar } = await montar(h(Capa4));
   assert.ok(caja.querySelector("[data-una-frase]"));
   assert.ok(caja.textContent.startsWith(D.PREGUNTA_FINAL_T5));
+  assert.equal([...caja.querySelectorAll("[data-pie]")].at(-1).textContent, "Escenario simulado");
   for (const o of D.OPCIONES_FINAL_T5) {
     await tocar(caja.querySelector(`[data-opcion="${o.id}"]`));
     assert.equal(caja.querySelector("[data-devolucion]").textContent, o.feedback);

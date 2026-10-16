@@ -25,8 +25,8 @@ const TEMA = SUBJECTS.contabilidad.topics.find((t) => t.id === "cuentas-por-cobr
 
 test("★★★ b5-t6-a1 está en el bloque de T6: evaluativa, fácil, 10 FP", () => {
   assert.ok(TEMA, "no está el tema cuentas-por-cobrar");
-  /* El orden del camino es el de la calidad del 15-oct (Shoko, R9): de lo que se necesita saber primero a lo que lo usa. */
-  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a7", "b5-t6-a4", "b5-t6-a5", "b5-t6-a2", "b5-t6-a3", "b5-t6-a6"]);
+  /* El orden provisional del camino (Sakuta, lote 4, con b5-t6-a7 retirada): a1 → a4 → a5 → a2 → a6 → a3. */
+  assert.deepEqual(actividadesDeTipo(TEMA, HACER).map((a) => a.id), ["b5-t6-a1", "b5-t6-a4", "b5-t6-a5", "b5-t6-a2", "b5-t6-a6", "b5-t6-a3"]);
   const c = clasificacionDe("contabilidad", "cuentas-por-cobrar", "b5-t6-a1");
   assert.deepEqual({ modalidad: c.modalidad, dificultad: c.dificultad, fpBase: c.fpBase }, { modalidad: "evaluativa", dificultad: "facil", fpBase: 10 });
   assert.equal(actividadesDeTipo(TEMA, HACER)[0].nombre, "¿Clientes o otra cuenta por cobrar?");

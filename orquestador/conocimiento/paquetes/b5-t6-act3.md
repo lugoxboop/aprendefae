@@ -83,7 +83,7 @@ Parte	Rótulo	Instrucción	Enunciado literal	Asiento correcto	Pág.
 2	Asiento 2	Registra el pago del caso a.	Caso a. La deuda ya se revivió. Ahora entran a Caja los $180.000 que pagó Pablo Moncayo. (88)	Debe: Caja $180.000 · Haber: Cuentas por cobrar – clientes $180.000	204
 3	Asiento 3	Registra cómo se revive la deuda del caso b.	Caso b. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y promete pagar el resto. (74)	Debe: Cuentas por cobrar – clientes $180.000 · Haber: Provisión para deudas incobrables $180.000	205
 4	Asiento 4	Registra el abono del caso b.	Caso b. La deuda ya se revivió. Ahora entran a Caja los $100.000 del abono. (90)	Debe: Caja $100.000 · Haber: Cuentas por cobrar – clientes $100.000	205
-5	Asiento 5	Registra cómo se revive la deuda del caso c.	Caso c. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y avisa que no pagará más. (77)	Debe: Cuentas por cobrar – clientes $100.000 · Haber: Provisión para deudas incobrables $100.000	206
+5	Asiento 5	Registra cómo se revive la deuda del caso c.	Caso c. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y avisa que ya no puede pagar más. (77)	Debe: Cuentas por cobrar – clientes $100.000 · Haber: Provisión para deudas incobrables $100.000	206
 
 Las instrucciones tienen menos de 10 palabras y no dicen ningún monto.
 
@@ -113,7 +113,7 @@ Parte	Cuándo	Texto literal	Estim.
 3 · C14	Puso $100.000, solo el abono	Revisa el valor. En el caso b, Pablo Moncayo promete pagar el resto. Por eso se revive toda la deuda, no solo el abono.	87
 3	Otra cifra	Revisa el valor. Mira de cuánto era la deuda castigada.	77
 4	Puso $180.000	Revisa el valor. A Caja solo entra lo que abonó. El resto sigue en Cuentas por cobrar – clientes, como deuda pendiente.	87
-5 · C14	Puso $180.000, toda la deuda	Revisa el valor. En el caso c, Pablo Moncayo avisa que no pagará más. Por eso se revive solo lo que pagó.	92
+5 · C14	Puso $180.000, toda la deuda	Revisa el valor. En el caso c, Pablo Moncayo avisa que ya no puede pagar más. Por eso se revive solo lo que pagó.	92
 5	Otra cifra	Revisa el valor. Mira cuánto pagó Pablo Moncayo.	<10
 
 Fuentes de las devoluciones:

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
@@ -12,8 +12,9 @@ import { conCorreccionesDeMello } from "./correccionesMello.mjs";
  *     Near, y cada texto visible de N2 en la tanda está en los datos
  *   · las cuatro acciones van una por pantalla, en el orden de la p. 193
  *   · cada pantalla y cada estado muestran exactamente sus textos y su pie
- *   · fuera del catálogo de FP; en T5 entre b5-t5-a1 y los tres momentos
- *     (decisión de corte de T5, punto 6), y en la vista con su componente
+ *   · fuera del catálogo de FP; desde la fusión de la entrega 5 de Near, fuera
+ *     también de la lista de T5 y de su vista (lo suyo va dentro de N3), con
+ *     sus datos y su componente en su sitio
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -210,23 +211,26 @@ test("★★ los botones son los de A7 de T7-1, y el pie solo va donde la tanda 
   assert.ok(N2.includes(`- Pie: «${pantalla("resumen").pie}»`));
 });
 
-/* ═══════════ 3 · CATÁLOGO Y VISTA ═══════════ */
+/* ═══════════ 3 · CATÁLOGO Y VISTA: N2 SALIÓ, SUS ARCHIVOS SE QUEDAN ═══════════ */
 
-test("★★★ fuera del catálogo de FP; id t5-; en T5 después de b5-t5-a1 y antes de los tres momentos; en la vista con su componente", () => {
+/*
+ * La fusión de la entrega 5 de Near (lote1-entrega5-v1.md, «## 2. T5 · N3»):
+ * «N2 (`t5-a1-cuidar-las-inversiones`) sale de la lista». Lo suyo va dentro de
+ * N3 (las glosas y el ejemplo resuelto). Los datos y el componente se quedan:
+ * las pruebas de arriba siguen leyéndolos.
+ */
+test("★★★ N2 salió del catálogo y de la vista de T5; sus datos y su componente siguen; nunca tuvo FP ni migración", () => {
+  const E5 = readFileSync(new URL("orquestador/conocimiento/paquetes/lote1-entrega5-v1.md", RAIZ), "utf8");
+  assert.ok(E5.includes(`N2 (\`${N.N2_ID}\`) sale de la lista.`));
   assert.equal(N.N2_ID, "t5-a1-cuidar-las-inversiones");
   assert.equal(TEMA, "activos-financieros");
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA);
-  const a = tema.actividades.find((x) => x.id === N.N2_ID);
-  assert.deepEqual(a.clasificacion, { tipo: APRENDER });
-  assert.equal(a.nombre, P.titulo);
-  const ids = tema.actividades.map((x) => x.id);
-  /* Punto 6: b5-t5-a1 (2) · N1 (3) · N2 (4) · N3 (5) · los tres momentos (6). N1 y N3 llegan en sus PR. */
-  const sinNuevas = ids.filter((id) => !["t5-temporal-o-largo-plazo", "t5-revision-que-falta"].includes(id));
-  assert.equal(sinNuevas.indexOf(N.N2_ID), sinNuevas.indexOf("b5-t5-a1") + 1);
-  assert.equal(sinNuevas.indexOf("b5-t5-a2-los-tres-momentos-de-una-inversion"), sinNuevas.indexOf(N.N2_ID) + 1);
-  const entrada = PIEZAS.find((x) => x.pieza.id === N.N2_ID);
-  assert.equal(entrada.Pieza, ControlInterno);
+  assert.equal(tema.actividades.find((x) => x.id === N.N2_ID), undefined, "N2 sigue en el catálogo");
+  assert.equal(PIEZAS.find((x) => x.pieza.id === N.N2_ID), undefined, "N2 sigue en la vista");
   assert.deepEqual(PIEZAS.map((x) => x.pieza.id), tema.actividades.filter((x) => x.clasificacion.tipo === APRENDER).map((x) => x.id));
+  for (const f of ["src/data/contabilidadT5_n2.js", "src/components/mecanicas/libros/t7/ControlInterno.jsx"]) assert.ok(existsSync(new URL(f, RAIZ)), `${f}: se borró`);
+  assert.equal(P.id, N.N2_ID);
+  assert.equal(typeof ControlInterno, "function");
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(N.N2_ID)), []);
   assert.doesNotMatch(readFileSync(new URL("src/data/contabilidadT5_n2.js", RAIZ), "utf8"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);
@@ -234,10 +238,10 @@ test("★★★ fuera del catálogo de FP; id t5-; en T5 después de b5-t5-a1 y 
   for (const interno of ["CONSTRUCCIÓN", "construcción", "Near", "Mello", "HUECO", "INFLESZ", "C5-", "las activos"]) assert.ok(!texto.includes(interno), interno);
 });
 
-test("★★ la vista pinta N2 con su componente, entre las dos piezas de B, con «Pieza 2 de 3»", async () => {
+test("★★ la vista de T5 ya no importa N2: le quedan las dos piezas de B, sin componente propio, y N6 con el suyo", async () => {
   const { default: Vista } = await import("../../components/ContabilidadTema5View.jsx");
   const VISTA = readFileSync(new URL("src/components/ContabilidadTema5View.jsx", RAIZ), "utf8");
-  assert.match(VISTA, /if \(Pieza\) \{[\s\S]*<Pieza pieza=\{pieza\} rotulo=\{rotulo\} \/>/);
+  assert.doesNotMatch(VISTA, /contabilidadT5_n2|PIEZA_CUIDAR_LAS_INVERSIONES/);
   assert.equal(typeof Vista, "function");
-  assert.deepEqual(PIEZAS.map((x) => Boolean(x.Pieza)), [false, true, false]);
+  assert.deepEqual(PIEZAS.map((x) => Boolean(x.Pieza)), [false, false, true]);
 });

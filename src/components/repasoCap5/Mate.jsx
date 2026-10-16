@@ -51,6 +51,8 @@ export const ACTIVIDAD_MATE = {
 };
 const Actividad = createContext(ACTIVIDAD_MATE);
 const useActividad = () => useContext(Actividad);
+/* r5-5 usa el armador, su hoja y las tarjetas de la entrada con sus propios datos. */
+export const ConActividad = ({ actividad, children }) => <Actividad.Provider value={actividad}>{children}</Actividad.Provider>;
 const CSS_MATE = `
 .mate-campo:focus { outline: none; border: 2px solid ${C.ambar} !important; }
 `;
@@ -109,7 +111,7 @@ export function LineaDeMarzo({ actual = null, hechos = 0 }) {
 
 /* ═══════════ LAS TARJETAS DE DATOS (entrada y hoja «Datos de marzo») ═══════════ */
 
-function TarjetasDeDatos() {
+export function TarjetasDeDatos() {
   const { DATOS_DEL_LIBRO, DATOS_DECLARADOS } = useActividad();
   return (
     <>
@@ -217,12 +219,22 @@ function Entrada({ onEmpezar }) {
 
 const renglonDeDato = { minHeight: "32px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" };
 
+/*
+ * La marca de fecha solo va si el hecho no empieza ya con ella (Kamogawa: «25 MAR»
+ * en la línea, «25 DE MARZO» y «Marzo 25:» eran la misma fecha tres veces).
+ */
+export function hechoDiceSuFecha(a) {
+  const [, dia, mes] = /^(\d+) DE (\S+)$/.exec(a.fecha) ?? [];
+  return Boolean(dia) && a.hecho.toLowerCase().startsWith(`${mes.toLowerCase()} ${dia}:`);
+}
+
 function Hecho({ a }) {
   const { RM } = useActividad();
+  const conMarca = !hechoDiceSuFecha(a);
   return (
     <div data-hecho style={{ background: C.navy, borderRadius: "12px", borderLeft: `3px solid ${C.hecho}`, padding: "12px" }}>
-      <p style={{ ...MARCA, margin: 0 }}>{a.fecha}</p>
-      <p data-frase style={{ margin: "4px 0 0", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{a.hecho}</p>
+      {conMarca && <p data-marca-fecha-hecho style={{ ...MARCA, margin: 0 }}>{a.fecha}</p>}
+      <p data-frase style={{ margin: conMarca ? "4px 0 0" : 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{a.hecho}</p>
       <div style={{ marginTop: "8px" }}>
         {a.renglones.map(([et, val]) => (
           <div key={et} data-renglon-hecho style={renglonDeDato}>
@@ -370,7 +382,7 @@ function Sumas({ renglones, conCuadre = true }) {
   );
 }
 
-function Armador({ renglones, estados = null, piezas = null, onAnadir, onEditar, bloqueado = false, soloLectura = false, marca: marcaDada = null, datos = {} }) {
+export function Armador({ renglones, estados = null, piezas = null, onAnadir, onEditar, bloqueado = false, soloLectura = false, marca: marcaDada = null, datos = {} }) {
   const { RM } = useActividad();
   const marca = marcaDada ?? RM.tuAsiento;
   return (
@@ -384,7 +396,7 @@ function Armador({ renglones, estados = null, piezas = null, onAnadir, onEditar,
 }
 
 /* La hoja en dos pasos: la cuenta y el valor. `inicial` trae el renglón que se edita. */
-function HojaRenglon({ lado, inicial = null, renglones, onListo, onQuitar, onCancelar }) {
+export function HojaRenglon({ lado, inicial = null, renglones, onListo, onQuitar, onCancelar }) {
   const { RM, HOJA_MATE } = useActividad();
   const [paso, setPaso] = useState(inicial ? 2 : 1);
   const [cuenta, setCuenta] = useState(inicial?.cuenta ?? null);
