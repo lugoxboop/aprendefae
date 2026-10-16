@@ -392,14 +392,14 @@ test("★★★ fuera del catálogo de FP; en T7-3 después de A6 (con H5 en med
   for (const interno of ["CONSTRUCCIÓN", "Near", "Mello", "ESCRITO POR CLAUDE", "PENDIENTE_DE_REVISION", "INFLESZ"]) assert.ok(!visible.includes(interno), interno);
 });
 
-test("★★★ A8 salió del catálogo y de la vista; H6 va justo después de A7 y H7 después de H6, y ahora cierra el tema", () => {
+test("★★★ A8 salió del catálogo y de la vista; H6 salió con la 0115, así que H7 va justo después de A7 y cierra el tema", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_3);
   const ids = tema.actividades.map((x) => x.id);
   assert.ok(!ids.includes("t7-3-nic2-formulas"));
   assert.ok(!PIEZAS_T7_3.some((x) => x.pieza.id === "t7-3-nic2-formulas"));
   assert.ok(ENTREGA4.includes("A8 (`t7-3-nic2-formulas`) sale de la lista."));
-  assert.equal(ids.indexOf("t7-3-que-entra-al-costo"), ids.indexOf(A.A7_ID) + 1);
-  assert.equal(ids.indexOf("t7-3-costo-o-vnr"), ids.indexOf("t7-3-que-entra-al-costo") + 1);
+  assert.ok(!ids.includes("t7-3-que-entra-al-costo"), "H6 sigue en el camino");
+  assert.equal(ids.indexOf("t7-3-costo-o-vnr"), ids.indexOf(A.A7_ID) + 1);
   assert.equal(ids.at(-1), "t7-3-costo-o-vnr");
   assert.equal(tema.actividades.at(-1).clasificacion.tipo, HACER);
   /* Lo publicado de Aprender es lo del catálogo, en su orden. */

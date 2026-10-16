@@ -67,10 +67,8 @@ export const PIEZAS_T7_2 = [
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS_T7_2 = [
-  { id: H1.id, Mecanica: DebeOHaber, titulo: H1.nombre },
   { id: H2.id, Mecanica: ArmaLosDosAsientos, titulo: H2.nombre },
   { id: H3.id, Mecanica: LlenaElKardex, titulo: H3.nombre },
-  { id: H4.id, Mecanica: PeriodicoOPermanente, titulo: H4.nombre },
   { id: H5.id, Mecanica: FleteYDevolucion, titulo: H5.nombre },
 ];
 

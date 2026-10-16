@@ -343,7 +343,7 @@ test("★★ los pies: los de las v1 de A5 y A6; los dos que juntan páginas de 
 
 /* ═══════════ 4 · CATÁLOGO ═══════════ */
 
-test("★★★ fuera del catálogo de FP; en T7-2 después de H4 y justo antes de H5; A6 ya no está; sin nada que pague", () => {
+test("★★★ fuera del catálogo de FP; en T7-2 justo después de A4 (H4 salió con la 0115) y justo antes de H5; A6 ya no está; sin nada que pague", () => {
   assert.equal(A.A5_ID, "t7-2-a5-fletes");
   assert.equal(P.numero, 5);
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_2);
@@ -351,7 +351,8 @@ test("★★★ fuera del catálogo de FP; en T7-2 después de H4 y justo antes 
   assert.deepEqual(a.clasificacion, { tipo: APRENDER });
   assert.equal(a.nombre, P.titulo);
   const ids = tema.actividades.map((x) => x.id);
-  assert.equal(ids.indexOf(A.A5_ID), ids.indexOf("t7-2-periodico-o-permanente") + 1);
+  assert.ok(!ids.includes("t7-2-periodico-o-permanente"), "H4 sigue en el camino");
+  assert.equal(ids.indexOf(A.A5_ID), ids.indexOf("t7-2-a4-san-calixto") + 1);
   assert.equal(ids.indexOf("t7-2-flete-y-devolucion"), ids.indexOf(A.A5_ID) + 1);
   assert.ok(!ids.includes("t7-2-a6-devoluciones"));
   assert.ok(ENTREGA5.includes("`t7-2-a6-devoluciones` sale de la lista."));

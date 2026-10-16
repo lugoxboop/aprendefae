@@ -773,8 +773,7 @@ export const SUBJECTS = {
         actividades: [
           /* A1: abre el tema. La lista del libro de pp. 207-208 y el permanente de pp. 233-234. Cero FP. */
           { id: "t7-2-a1-la-cuenta-que-si-se-mueve", nombre: "La cuenta que sí se mueve", clasificacion: { tipo: APRENDER } },
-          /* H1, justo después de A1 (orden final de T7-2): se publica con A1 o después. Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0098. */
-          { id: "t7-2-debe-o-haber", nombre: "¿Debe o haber?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
+          /* H1 «¿Debe o haber?» (t7-2-debe-o-haber) iba aquí: retirada en la 0115 (retiro blando; su fila 0098, su pieza y su regla del panel se quedan). */
           /* A2, después de A1 (regla 9): usa «Inventario de mercancías sí se mueve» y la glosa del costo de lo vendido. H1 «¿Debe o haber?» entra entre las dos. Cero FP. */
           { id: "t7-2-a2-la-venta-en-dos-asientos", nombre: "La venta en dos asientos", clasificacion: { tipo: APRENDER } },
           /* H2, justo después de A2 (orden final de T7-2). L la llamó «Arma los dos asientos» para no repetir el nombre de A2. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0099. */
@@ -785,8 +784,7 @@ export const SUBJECTS = {
           { id: "t7-2-llena-el-kardex", nombre: "Llena el kárdex", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* A4, después de A3 (regla 9): F-1 del libro en el permanente, como capas de costo que la venta corta (Patrón de enganche C, v6; reemplaza a «San Calixto en permanente» con el mismo id). H3 «Llena el kárdex» entra entre A3 y A4. Cero FP. */
           { id: "t7-2-a4-san-calixto", nombre: "Las capas que la venta corta", clasificacion: { tipo: APRENDER } },
-          /* H4, justo después de A4 (orden final de T7-2): las dos versiones de un mismo hecho, sin cifras. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0101. */
-          { id: "t7-2-periodico-o-permanente", nombre: "¿Periódico o permanente?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* H4 «¿Periódico o permanente?» (t7-2-periodico-o-permanente) iba aquí: retirada en la 0115 (retiro blando; su fila 0101, su pieza y su regla del panel se quedan). */
           /*
            * A5, después de A4 por el orden del mapa (regla 9: usa la venta en dos asientos de A2). H4 «¿Periódico o permanente?» entra entre A4 y A5. Cero FP.
            * Con la fusión de la entrega 5 de Near se llama «Fletes y devoluciones en permanente» y conserva su id: A6 («Devoluciones en permanente», t7-2-a6-devoluciones, Aprender sin FP) salió de la lista y lo suyo va dentro de A5. Sus archivos se quedan.
@@ -818,8 +816,7 @@ export const SUBJECTS = {
           { id: "t7-3-descuento-condicionado", nombre: "El descuento condicionado", clasificacion: { tipo: APRENDER } },
           /* A4, justo después de A3 (orden final de T7-3): H-3 en el libro de quien compra, el cierre y el permanente, pp. 253-254. Cero FP. */
           { id: "t7-3-descuento-en-dos-libros", nombre: "El descuento en los dos libros", clasificacion: { tipo: APRENDER } },
-          /* H3, justo después de A4 (orden final de T7-3; la sostienen A1, A3 y A4): siete casos, sin cifras. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0105. */
-          { id: "t7-3-comercial-o-condicionado", nombre: "¿Comercial o condicionado?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* H3 «¿Comercial o condicionado?» (t7-3-comercial-o-condicionado) iba aquí: retirada en la 0115 (retiro blando; su fila 0105, su pieza y su regla del panel se quedan). */
           /* H4, después de H3 (orden final de T7-3; la sostienen A3 y A4): el pago a tiempo de Bambú, en los dos libros. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0106. */
           { id: "t7-3-pago-a-tiempo", nombre: "Pagó a tiempo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* A5, después de A4 por el orden del mapa (no depende de los descuentos). H3 y H4 entran entre A4 y A5. Ejemplos I-1 e I-2, pp. 254-255, y la lista de pp. 207-208 (regla 5b). Cero FP. */
@@ -833,8 +830,7 @@ export const SUBJECTS = {
            * Con la fusión de la entrega 4 de Near se llama «La NIC 2 del libro» y conserva su id: A8 («fórmulas y revelación», t7-3-nic2-formulas, Aprender sin FP) salió de la lista y lo suyo va dentro de A7. Sus archivos se quedan.
            */
           { id: "t7-3-nic2-costo", nombre: "La NIC 2 del libro", clasificacion: { tipo: APRENDER } },
-          /* H6, justo después de A7 (orden final de T7-3; la sostiene A7): qué entra en el costo de adquisición según la NIC 2 del libro, p. 258. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0108. */
-          { id: "t7-3-que-entra-al-costo", nombre: "¿Entra al costo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* H6 «¿Entra al costo?» (t7-3-que-entra-al-costo) iba aquí: retirada en la 0115 (retiro blando; su fila 0108, su pieza y su regla del panel se quedan). */
           /* H7, justo después de H6 (orden final de T7-3; la sostiene A7): costo o valor neto realizable, el menor, con la regla del libro, pp. 257-258. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0109. Desde la fusión de la entrega 4 (A8 entró en A7), es la última de T7-3. */
           { id: "t7-3-costo-o-vnr", nombre: "¿Costo o valor neto realizable?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
         ],

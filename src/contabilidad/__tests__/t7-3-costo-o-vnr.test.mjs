@@ -229,12 +229,12 @@ test("★★★ sin «items», la mecánica baraja", async () => {
 
 /* ═══════════ 3 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
 
-test("★★★ en T7-3, justo después de H6: evaluativa, media, 25 FP", () => {
+test("★★★ en T7-3, justo después de A7 (H6 se retiró en la 0115): evaluativa, media, 25 FP", () => {
   assert.deepEqual(clasificacionDe("contabilidad", TEMA_T7_3, D.H7_ID), { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
   assert.equal(TEMA.actividades.find((a) => a.id === D.H7_ID).nombre, D.H7.nombre);
   for (const a of TEMA.actividades.filter((x) => x.clasificacion.tipo !== HACER)) assert.deepEqual(a.clasificacion, { tipo: APRENDER }, a.id);
   const ids = TEMA.actividades.map((x) => x.id);
-  assert.equal(ids.indexOf(D.H7_ID), ids.indexOf("t7-3-que-entra-al-costo") + 1);
+  assert.equal(ids.indexOf(D.H7_ID), ids.indexOf("t7-3-nic2-costo") + 1);
 });
 
 test("★★★ la vista abre lo que el catálogo ofrece y registra con el motor compartido", () => {

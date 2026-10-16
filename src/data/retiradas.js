@@ -53,6 +53,11 @@ export const NOMBRE_DE_RETIRADA = {
   "b5-t6-a7": "¿Qué método y cuándo?",
   /* 0077 · Célula B: se fundió en b5-t6-a2 «La provisión de El Torito» (lote 6b, hoja de Mai). */
   "b5-t6-a5": "La cuenta de la provisión",
+  /* 0115 · Célula C: lo que preguntan ya lo piden otras de su mismo tema. */
+  "t7-2-debe-o-haber": "¿Debe o haber?",
+  "t7-2-periodico-o-permanente": "¿Periódico o permanente?",
+  "t7-3-comercial-o-condicionado": "¿Comercial o condicionado?",
+  "t7-3-que-entra-al-costo": "¿Entra al costo?",
 };
 
 /**
