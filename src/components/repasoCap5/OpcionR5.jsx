@@ -1,4 +1,4 @@
-import { C, INTER, MARCA } from "./comun.jsx";
+import { C, INTER, MARCA, ESTADOS } from "./comun.jsx";
 import { INTERFAZ_R5_1 } from "../../data/repasoCap5Cruzado.js";
 
 /*
@@ -19,10 +19,11 @@ import { INTERFAZ_R5_1 } from "../../data/repasoCap5Cruzado.js";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/* Los bordes son los estados comunes del repaso (comun.jsx); aquí solo la forma y la palabra. */
 export const ESTADOS_OPCION = {
-  correcta: { borde: `2px solid ${C.hecho}`, forma: "relleno", color: C.hecho, palabra: INTERFAZ_R5_1.correcta, pildora: { fondo: C.hecho, texto: C.fondo } },
-  incorrecta: { borde: `2px solid ${C.coral}`, forma: "anillo", color: C.coral, palabra: INTERFAZ_R5_1.incorrecta, pildora: { fondo: C.coral, texto: C.fondo } },
-  revelada: { borde: `1.5px dashed ${C.hecho}`, forma: "relleno", color: C.hecho, palabra: INTERFAZ_R5_1.eraEsta, pildora: { fondo: C.hecho, texto: C.fondo } },
+  correcta: { borde: ESTADOS.ok.border, forma: "relleno", color: C.hecho, palabra: INTERFAZ_R5_1.correcta, pildora: { fondo: C.hecho, texto: C.fondo } },
+  incorrecta: { borde: ESTADOS.mal.border, forma: "anillo", color: C.coral, palabra: INTERFAZ_R5_1.incorrecta, pildora: { fondo: C.coral, texto: C.fondo } },
+  revelada: { borde: ESTADOS.revelada.border, forma: "relleno", color: C.hecho, palabra: INTERFAZ_R5_1.eraEsta, pildora: { fondo: C.hecho, texto: C.fondo } },
 };
 
 const SIN_ESTADO = { borde: "1.5px solid rgba(184,196,212,0.45)" };

@@ -1,7 +1,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 import { pesos } from "../../data/contabilidad.js";
-import { C, INTER, SORA, MARCA, SOLO_LECTOR, Devolucion, BotonSiguiente } from "./comun.jsx";
+/* Los estados de calificación, el «ERA ESTE», los puntos y la palabra: de comun.jsx (B4). */
+import { C, INTER, SORA, MARCA, SOLO_LECTOR, Devolucion, BotonSiguiente, ESTADOS, MARCA_ERA_ESTE, Punto, Veredicto } from "./comun.jsx";
 import { R5_2, ETAPAS, PREGUNTAS_R5_2, CORTES_R5_2, ROTULOS_R5_2 as RT, GRUPOS_A0, ROTULOS_A0 as RA } from "../../data/repasoCap5ToroNegroTextos.js";
 import {
   prepararR5_2, evaluarAsiento, evaluarSaldo, evaluarCalculo, puedeRevisarAsiento, puedeRevisarSaldo, puedeRevisarCalculo,
@@ -30,17 +31,6 @@ import {
 export const cifra = (n) => pesos(Math.abs(n)).replace("$", "");
 const LECTOR = { acierto: "Correcto: ", error: "Incorrecto: " };
 
-const ESTADO_PIEZA = {
-  /*
-   * v2.1 · B4 de enganche.md: en Contabilidad el teal es DEBE (lo es en el
-   * libro de esta misma pantalla). El acierto va en neutro y lo dice la
-   * palabra de debajo («Correcta», «Correcto»), no el color.
-   */
-  ok: { border: `2px solid ${C.hecho}`, background: "rgba(203,220,242,0.10)" },
-  mal: { border: `2px solid ${C.coral}`, background: "rgba(231,111,81,0.13)" },
-  /* «ERA ESTE»: borde neutro discontinuo, sin celebrarlo y sin teal (B4). */
-  revelada: { border: `1.5px dashed ${C.hecho}`, background: C.fondo },
-};
 
 const CSS_R5_2 = `
 @keyframes r52-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -232,7 +222,7 @@ function CampoValor({
   maximo = 8, alto = "48px", placeholder, enterKeyHint, onEnter, inputRef, etiqueta,
 }) {
   const base = { border: `1.5px solid ${C.atenuado}`, background: C.fondo };
-  const visto = estado && estado !== "vacia" ? ESTADO_PIEZA[estado] : base;
+  const visto = estado && estado !== "vacia" ? ESTADOS[estado] : base;
   return (
     <input
       id={id}
@@ -258,20 +248,6 @@ function CampoValor({
   );
 }
 
-/*
- * v2.1 · LA PALABRA DEBAJO DE CADA PIEZA. Después de revisar, el borde teal o
- * coral iba solo: en blanco y negro no se sabía qué renglón estaba mal. Ahora
- * cada pieza lleva su palabra, como las filas de a0 («Correcta», «Era …»).
- */
-function Veredicto({ estado, textos }) {
-  if (estado !== "ok" && estado !== "mal") return null;
-  return (
-    <span data-veredicto={estado} style={{ display: "block", marginTop: "4px", textAlign: "right", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", fontWeight: 600, color: C.texto }}>
-      {textos[estado]}
-    </span>
-  );
-}
-
 /* ═══════════ EL ARMADOR DE ASIENTOS ═══════════ */
 
 function Hueco({ lado, cuenta, activo, estado, onTocar, huecoRef, soloLectura = false }) {
@@ -287,9 +263,9 @@ function Hueco({ lado, cuenta, activo, estado, onTocar, huecoRef, soloLectura = 
   );
   const estilo = {
     display: "flex", alignItems: "center", width: "100%", minHeight: "56px", boxSizing: "border-box", textAlign: "left",
-    borderRadius: "10px", padding: "12px", background: C.fondo, ...(borde ? { border: borde } : ESTADO_PIEZA[estado]),
+    borderRadius: "10px", padding: "12px", background: C.fondo, ...(borde ? { border: borde } : ESTADOS[estado]),
   };
-  if (soloLectura) return <div data-hueco={lado} data-lleno={lleno} style={{ ...estilo, ...ESTADO_PIEZA.revelada }}>{contenido}</div>;
+  if (soloLectura) return <div data-hueco={lado} data-lleno={lleno} style={{ ...estilo, ...ESTADOS.revelada }}>{contenido}</div>;
   return (
     <button
       ref={huecoRef}
@@ -310,8 +286,8 @@ function Hueco({ lado, cuenta, activo, estado, onTocar, huecoRef, soloLectura = 
 
 function TarjetaAsiento({ debe, haber, valor, activo, estados = null, onTocar, onValor, refs, soloLectura = false, marca = null, idCampo }) {
   return (
-    <div data-tarjeta-asiento={soloLectura ? "era-este" : "armador"} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? ESTADO_PIEZA.revelada : {}), ...(soloLectura ? { background: C.navy } : {}) }}>
-      {marca && <p data-era-este style={{ ...MARCA, color: C.texto, margin: "0 0 10px" }}>{marca}</p>}
+    <div data-tarjeta-asiento={soloLectura ? "era-este" : "armador"} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? ESTADOS.revelada : {}), ...(soloLectura ? { background: C.navy } : {}) }}>
+      {marca && <p data-era-este style={{ ...MARCA_ERA_ESTE, margin: "0 0 10px" }}>{marca}</p>}
       <p style={{ ...MARCA, margin: "0 0 4px" }}>{RT.debe}</p>
       <Hueco lado="debe" cuenta={debe} activo={activo === "debe"} estado={estados?.debe} onTocar={() => onTocar?.("debe")} huecoRef={refs?.debe} soloLectura={soloLectura} />
       <Veredicto estado={estados?.debe} textos={RT.veredicto.cuenta} />
@@ -452,7 +428,7 @@ function BotonLado({ lado, elegido, estado, onClick, soloLectura }) {
    * salvo el color de un borde.
    */
   const relleno = elegido || estado === "revelada";
-  const borde = estado ? ESTADO_PIEZA[estado].border : relleno ? `1.5px solid ${C.hecho}` : `1.5px solid ${C.atenuado}`;
+  const borde = estado ? ESTADOS[estado].border : relleno ? `1.5px solid ${C.hecho}` : `1.5px solid ${C.atenuado}`;
   const visto = { background: relleno ? C.hecho : C.fondo, border: borde };
   return (
     <button
@@ -474,8 +450,8 @@ function BotonLado({ lado, elegido, estado, onClick, soloLectura }) {
 
 function TarjetaSaldo({ valor, lado, onValor, onLado, estados = null, soloLectura = false, marca = null, idCampo }) {
   return (
-    <div data-tarjeta-saldo={soloLectura ? "era-este" : "respuesta"} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? { border: ESTADO_PIEZA.revelada.border } : {}) }}>
-      {marca && <p data-era-este style={{ ...MARCA, color: C.texto, margin: "0 0 10px" }}>{marca}</p>}
+    <div data-tarjeta-saldo={soloLectura ? "era-este" : "respuesta"} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? { border: ESTADOS.revelada.border } : {}) }}>
+      {marca && <p data-era-este style={{ ...MARCA_ERA_ESTE, margin: "0 0 10px" }}>{marca}</p>}
       <label htmlFor={idCampo} style={{ ...MARCA, display: "block", margin: "0 0 4px" }}>{RT.valor}</label>
       <CampoValor id={idCampo} valor={valor} onCambiar={onValor} estado={soloLectura ? "revelada" : estados?.valor} soloLectura={soloLectura} />
       <Veredicto estado={soloLectura ? null : estados?.valor} textos={RT.veredicto.valor} />
@@ -680,14 +656,7 @@ function CasoEnTresTiempos({ filas }) {
                 <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                   <span aria-hidden="true" style={{ display: "flex", gap: "6px" }}>
                     {/* Forma además de color (decisión 9 del delta): relleno si acertó, anillo si falló. */}
-                    {f.puntos.map((x) => (
-                      <span
-                        key={x.id}
-                        data-punto={x.ok ? "acierto" : "error"}
-                        data-forma={x.ok ? "relleno" : "anillo"}
-                        style={{ width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box", ...(x.ok ? { background: C.hecho } : { background: "transparent", border: `2px solid ${C.coral}` }) }}
-                      />
-                    ))}
+                    {f.puntos.map((x) => <Punto key={x.id} ok={x.ok} />)}
                   </span>
                   <span data-n-de-m style={{ fontFamily: SORA, fontSize: "15px", fontWeight: 600, color: C.texto, whiteSpace: "nowrap" }}>{RT.nDeM(f.bien, f.total)}</span>
                 </span>
