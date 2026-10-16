@@ -31,9 +31,12 @@ import { Marca, estiloE4, CORRECTA, TACHADA, APAGADA, TACHADO } from "./MarcasE4
  *     el cajón queda ✓;
  *   · primer fallo: la ficha va al cajón tocado y rebota (340 + 340 ms; el
  *     coral de 420 ms en la ficha). Ese cajón queda ✕ y tachado, y no se
- *     puede volver a tocar en esta ficha;
+ *     puede volver a tocar en esta ficha. La devolución es la PISTA de la
+ *     ficha (E5 de Futaba: cada ficha la suya, la escalera de ayuda de
+ *     tema6/escaleraB5.js), por Retro como las demás;
  *   · segundo fallo: el tocado queda ✕ y la ficha va a su cajón correcto, que
- *     queda ✓; su lámina llega punteada (hoja 3, Shoko).
+ *     queda ✓; su lámina llega punteada (hoja 3, Shoko). La devolución dice
+ *     la respuesta (la regla única, b5SegundoFallo.js).
  * «Siguiente ficha» borra las marcas; la pila y el número se quedan. Las
  * marcas son las de E4 (MarcasE4.jsx); al calificar, lo demás queda a 0,5.
  *

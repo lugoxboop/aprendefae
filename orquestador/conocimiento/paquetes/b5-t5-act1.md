@@ -337,3 +337,27 @@ Manda sobre las secciones 2, 3 y 4 en lo que toca la interfaz. Los textos de las
 ### 11.3 La tanda (R10)
 
 Nueve fichas, entre 2 y 4 por cajón, al azar. El banco da 4 · 5 · 5. Como mucho una ficha de nombre por cajón, salvo cuando un cajón de renta fija lleva 4: solo tiene dos sin nombre, así que entra una segunda de nombre.
+
+
+## 12 · E5: el primer fallo propio de cada ficha (Futaba, fila 11 de Shoko)
+
+Manda sobre 3.7, 3.8 y 11.1 en el primer fallo. Al primer fallo, con cualquier cajón, se lee la PISTA de la ficha: 20 palabras como mucho, no nombra el cajón y va sin emoji, por Retro (role=status), como la escalera de ayuda de la célula (`tema6/escaleraB5.js`). Al segundo fallo, la respuesta, como antes (la regla única). Las devoluciones A, B y C (§3.7) y los niveles 1 y 2 de las fichas de nombre (§3.8) dejan de usarse y salen de los datos; quedan arriba como registro. Las fichas se emparejaron por su texto en main.
+
+### 12.1 Pistas
+
+| Id | Pista del primer fallo |
+|---|---|
+| acciones | «Piensa de qué depende lo que recibe quien tiene acciones. ¿Se pactó el día que las compró?» |
+| def-emisora | «Fíjate de qué depende el rendimiento, según la ficha. ¿Se puede saber desde el día de la compra?» |
+| def-dividendos | «La ficha habla de dividendos. Recuerda qué título los reparte y de qué dependen.» |
+| caso-resultados | «Si lo que recibe depende de los resultados de la empresa, ¿se pudo pactar al invertir?» |
+| cdt | «Recuerda qué le paga un CDT a quien lo tiene, y si eso se pacta al invertir.» |
+| bonos | «En la lista del libro, los bonos van junto al CDT. Recuerda cómo rinde un CDT.» |
+| cedulas | «En la lista del libro, las cédulas hipotecarias van junto al CDT y los bonos.» |
+| def-interes | «Lee de dónde sale la renta: ¿de un interés o de una diferencia? ¿Y se pacta al invertir?» |
+| caso-pactado | «Si desde la compra se sabe lo que pagará, ¿depende de la empresa? ¿Y lo que paga es un interés?» |
+| participacion | «Piensa cómo gana quien tiene estos títulos: ¿le pagan un interés, o gana una diferencia cuando vencen?» |
+| cert | «Piensa cómo rinde el CERT: ¿cobra un interés, o gana la diferencia entre lo que pagó y lo que recibe?» |
+| canjeables | «En la lista del libro, los títulos canjeables van junto a los de participación y el CERT.» |
+| def-descuento | «La ficha dice de dónde sale la renta. ¿Es un interés, o la diferencia entre dos valores?» |
+| caso-redencion | «Fíjate en qué gana: ¿un interés que le pagan, o la diferencia entre lo que pagó y lo que recibe?» |

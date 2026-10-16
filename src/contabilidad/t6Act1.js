@@ -1,7 +1,7 @@
 import { segundoFalloDe } from "./b5SegundoFallo.js";
 import { repartirTanda } from "./b5Reparto.js";
 import {
-  T6_ACT1, FICHAS_T6_ACT1, ERROR_T6_ACT1, CLIENTES, ACREDITA, CAJONES_T6_ACT1,
+  T6_ACT1, FICHAS_T6_ACT1, CLIENTES, CAJONES_T6_ACT1,
 } from "../data/contabilidadT6Act1.js";
 
 /*
@@ -24,8 +24,10 @@ export function sortearT6Act1(barajar, total = T6_ACT1.porPartida) {
 
 /**
  * `marcado` es { cuenta, lado }. El lado va a null con «Otra cuenta por
- * cobrar». `intento` es 1 o 2. En el segundo fallo manda la regla única de la
- * célula: el acierto de la ficha, con «No es esa.» delante, en TODAS las fichas.
+ * cobrar». `intento` es 1 o 2. Al primer fallo, la PISTA de la ficha (la
+ * escalera de ayuda de la célula, tema6/escaleraB5.js): la misma con cualquier
+ * cajón, sin emoji. En el segundo fallo manda la regla única de la célula: el
+ * acierto de la ficha, con «No es esa.» delante, en TODAS las fichas.
  */
 export function evaluarT6Act1(ficha, marcado, intento = 1) {
   const cuentaOk = marcado.cuenta === ficha.cuenta;
@@ -38,14 +40,7 @@ export function evaluarT6Act1(ficha, marcado, intento = 1) {
   /* Regla única del segundo fallo (b5SegundoFallo.js). */
   if (intento === 2) return { ok, texto: segundoFalloDe(ficha.acierto), patron: "segundo", cuentaOk, ladoOk };
 
-  if (!cuentaOk) {
-    /* A: era de Clientes y la puso en otra. B: era un préstamo y la puso en Clientes. */
-    const patron = ficha.cuenta === CLIENTES ? "A" : "B";
-    return { ok, texto: ERROR_T6_ACT1[patron], patron, cuentaOk, ladoOk: false };
-  }
-  /* C5 antes que C: una venta a crédito puesta en «Se acredita». */
-  const patron = ficha.c5 && marcado.lado === ACREDITA ? "C5" : "C";
-  return { ok, texto: ERROR_T6_ACT1[patron], patron, cuentaOk, ladoOk: false };
+  return { ok, texto: ficha.pista, patron: "pista", cuentaOk, ladoOk };
 }
 
 /* Cada ficha vale entera al acertar (lote 6a). En el segundo intento, la mitad (el componente). */
