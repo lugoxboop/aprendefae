@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { seccion, compararDatos, recorrer, prepararDom, CONDICION } from "./t7-3-recorte.mjs";
+import { CONDICIONES as C7, CORRECCIONES_T73, MELLO_T73, NEAR_T73, aplicarAlRecorte, palabrasAlAcertar } from "./correccionesMelloAciertos.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -14,7 +15,12 @@ import { seccion, compararDatos, recorrer, prepararDom, CONDICION } from "./t7-3
  *     y, llegadas por L: las pistas de P2 y P4, y los pies del acierto y del
  *     error de P4
  *   · la línea de plazos: lo que lleva cada plazo, solo con el acierto de P1
- *   · el «¿Por qué?» de P1 trae una condición: va a la vista (regla de L)
+ *   · ACIERTOS C7: P1 `condiciones` sale de t7-3-tres-aciertos-c7.md (Near)
+ *     con C-1 de Mello (auditoria-mello-enganche-v6-y-t7-3-aciertos.md, §2):
+ *     «5 %» pasa a «30 %», con su retro y la nueva de «15 %»; la condición
+ *     de 5/20 va en el acierto, a la vista: sin «¿Por qué?» (C7); 60
+ *     palabras al acertar (B2). El rótulo de la línea, «5 % comercial …», y
+ *     los días, «10 · 20 · 30 días»; el resumen conserva su línea
  *   · la frase de las tarifas, en el pie de P3
  *   · las cifras de H-3 se recalculan; regla 3; fuera del catálogo de FP
  * ═══════════════════════════════════════════════════════════════════════════
@@ -63,6 +69,8 @@ for (const [id, [viejo, nuevo]] of Object.entries(PISTAS_MELLO)) {
   s(id).pista = nuevo;
 }
 const PIES_SOBRE_QUE = "Basado en el libro, pp. 252-253";
+/* Aciertos C7: P1, con la tabla final de Near y C-1 de Mello encima. */
+aplicarAlRecorte(s("condiciones"), C7);
 
 /* ═══════════ 1 · DATOS ═══════════ */
 
@@ -76,9 +84,45 @@ test("★★★ pantallas, textos, opciones, pista, errores, acierto y ¿Por qu�
   assert.equal(pantalla("ejemplo"), undefined);
 });
 
-test("★★★ regla de L: el «¿Por qué?» de P1 define 5/20 con una condición: va a la vista, y es el único", () => {
-  assert.match(s("condiciones").porque, CONDICION);
-  assert.deepEqual(P.pantallas.filter((p) => p.acierto?.porqueALaVista).map((p) => p.id), ["condiciones"]);
+test("★★★ C7 · P1 sin plegado: la condición de 5/20 va en el acierto, a la vista; ninguna pantalla trae «¿Por qué?» a la vista aparte", () => {
+  const p = pantalla("condiciones");
+  assert.equal(p.acierto.porque, undefined);
+  assert.equal(p.acierto.porqueALaVista, undefined);
+  assert.match(p.acierto.texto, /5\/20 es un 5 % si paga a los veinte días/);
+  assert.match(p.acierto.texto, CONDICION);
+  assert.deepEqual(P.pantallas.filter((x) => x.acierto?.porqueALaVista).map((x) => x.id), []);
+});
+
+test("★★★ C-1 de Mello: «30 %» en lugar de «5 %», con su retro; la nueva retro de «15 %»; la correcta, «Ninguno»", () => {
+  /* La fila de Near que se corrige, y las de Mello, letra por letra en la auditoría (el ayudante ya falla si no). */
+  assert.ok(NEAR_T73.includes(CORRECCIONES_T73[0][0]));
+  for (const f of CORRECCIONES_T73[0][1]) assert.ok(MELLO_T73.includes(f));
+  const p = pantalla("condiciones");
+  assert.deepEqual(p.opciones.map((o) => [o.id, o.texto, o.correcta ?? false]), [["quince", "15 %", false], ["treinta", "30 %", false], ["ninguno", "Ninguno", true]]);
+  assert.equal(p.opciones.find((o) => o.id === "treinta").devolucion, C7["Si elige 30 %"].textos[0]);
+  assert.equal(p.opciones.find((o) => o.id === "quince").devolucion, C7["Si elige 15 %"].textos[0]);
+  assert.equal(C7.Opciones.correcta, "Ninguno");
+  /* Ninguna retro dice ya que a los treinta días no hay descuento: queda el comercial. */
+  assert.doesNotMatch(JSON.stringify(p), /ya no hay descuento/);
+  assert.ok(!p.opciones.some((o) => o.texto === "5 %"));
+});
+
+test("★★★ C7 · P1 dice lo de la tabla final, letra por letra; la figura con su rótulo y sus días; B2: 60 al acertar", () => {
+  const p = pantalla("condiciones");
+  assert.deepEqual(p.parrafos, C7.Texto.textos);
+  assert.equal(p.pregunta, C7.Pregunta.textos[0]);
+  assert.equal(p.acierto.texto, C7.Acierto.textos[0]);
+  const f = p.figuras[0];
+  assert.equal(f.titulo, C7["Rótulo de la figura"].textos[0]);
+  assert.equal([10, 20, 30].map(f.rotDia).join(" · "), C7["Rótulo de los días"].textos[0]);
+  assert.deepEqual(f.condiciones.filter((c) => c.dia).map((c) => c.lleva), C7["Figura del acierto"].textos);
+  assert.equal(palabrasAlAcertar(C7), 60);
+  /* El resumen conserva su línea: el paquete solo toca `condiciones`. */
+  const r = pantalla("resumen").figuras[0];
+  assert.equal(r.titulo, "5 % · 15/10 · 5/20 · n/30");
+  assert.deepEqual([10, 20, 30].map(r.rotDia), ["día 10", "día 20", "día 30"]);
+  /* La «Observación» de Mello sobre `cual-le-toca` NO se aplica. */
+  assert.deepEqual(pantalla("cual-le-toca").tras, ["Con el IVA, Santa Martha debe $4.488.750. Paga el 4 de junio, diez días después de la venta."]);
 });
 
 test("★★★ las cifras de H-3 se recalculan; el pago cuadra", () => {
@@ -135,6 +179,8 @@ const plazos = (c) => {
   };
 };
 const LINEA = { titulo: "5 % · 15/10 · 5/20 · n/30", dias: ["día 10", "día 20", "día 30"], venta: false };
+/* Aciertos C7: la línea de P1. */
+const LINEA_P1 = { titulo: "5 % comercial · 15/10 · 5/20 · n/30", dias: ["10", "20", "30 días"], venta: false };
 
 test("★★★ se recorre entera: cada pantalla y cada estado, contra el recorte", async () => {
   const m = await montar();
@@ -143,7 +189,7 @@ test("★★★ se recorre entera: cada pantalla y cada estado, contra el recort
       caja: m.caja, P, S, tocar, w, textosDelError, tarifas: ["cual-le-toca"], frase: FRASE_TARIFAS,
       async alLlegar(k, c) {
         const id = S.pantallas[k].id;
-        if (id === "condiciones") assert.deepEqual(plazos(c), { ...LINEA, lleva: [], pago: null });
+        if (id === "condiciones") assert.deepEqual(plazos(c), { ...LINEA_P1, lleva: [], pago: null });
         if (id === "resumen") assert.deepEqual(plazos(c), { ...LINEA, lleva: ["15 %", "5 %", "sin descuento"], pago: "Pago · 4 jun" });
         if (!["condiciones", "resumen"].includes(id)) assert.equal(plazos(c), null);
         if (id === "cual-le-toca") {
@@ -165,7 +211,9 @@ test("★★★ se recorre entera: cada pantalla y cada estado, contra el recort
         if (id === "condiciones") {
           /* La misma línea, ahora con lo que lleva cada plazo, con el fundido. */
           assert.equal(c.querySelectorAll("[data-plazos]").length, 1);
-          assert.deepEqual(plazos(c), { ...LINEA, lleva: ["15 %", "5 %", "sin descuento"], pago: null });
+          assert.deepEqual(plazos(c), { ...LINEA_P1, lleva: ["15 %", "5 %", "sin descuento"], pago: null });
+          /* C7: nada plegado en el acierto. */
+          assert.equal(c.querySelector("[data-mensaje] [data-por-que], [data-mensaje] [data-plegado], [data-porque-a-la-vista]"), null);
           assert.ok([...c.querySelectorAll("[data-lleva]")].every((x) => x.classList.contains("rg-nuevo")));
         }
         if (id === "sobre-que") {

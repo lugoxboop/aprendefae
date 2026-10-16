@@ -133,7 +133,22 @@ const CSS_CUENTA = `
 .fae-gsi-icono { display: none; }
 /* Normal aquí, para que la regla que lo esconde viva también en la hoja. */
 .fae-cuenta-avatar { display: inline-flex; }
-.fae-atajo-pastilla { display: inline-flex; }
+.fae-atajo-pastilla { display: inline-flex; position: relative; }
+/*
+ * El blanco de toque, sin tocar el dibujo: 44 px de alto y de ancho como
+ * mínimo, centrados sobre la pastilla de 40. Si la pastilla ya es más grande,
+ * el max() no la encoge. (Sin comillas invertidas aquí dentro: esto va en una
+ * plantilla de CSS y una comilla invertida la cierra.)
+ */
+.fae-atajo-pastilla::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
 .fae-atajo-menu { display: none; }
 @media (max-width: ${ANCHO_ATAJO - 1}px) {
   .fae-atajo-pastilla { display: none; }
@@ -177,12 +192,75 @@ const CSS_CUENTA = `
    * se puede pulsar.
    */
   .fae-cabecera-titulo > * { flex-shrink: 0; }
+  /*
+   * DOS RENGLONES ANTES QUE PUNTOS SUSPENSIVOS.
+   *
+   * Esto truncaba a una línea, y a 320 px «Las cuentas, el debe y el haber»
+   * se leía «Las cuentas, el debe…» e «Ingresos, gastos y ajustes» quedaba a
+   * medias. El orden de Xeno de arriba —qué cede primero— sigue intacto: el
+   * título sigue siendo lo ÚLTIMO que cede. Lo que cambia es cómo cede: en
+   * vez de perder palabras, usa un segundo renglón.
+   *
+   * Tres células llegaron a esto por su cuenta y lo resolvieron cada una con
+   * estilos propios en su vista (T4, T6, T7). Tres rodeos para el mismo
+   * defecto: puesto aquí, los tres sobran, y las vistas que nadie ha tocado
+   * —«las cuentas» e «ingresos, gastos y ajustes»— dejan de cortar sin que
+   * nadie más tenga que enterarse.
+   *
+   * EL TOPE ES CUATRO, Y ESTUVO EN DOS HASTA QUE SE MIDIÓ.
+   *
+   * Tiene que haber tope: sin ninguno, un título larguísimo empujaría la
+   * pantalla hacia abajo y la cabecera dejaría de ser una cabecera. Pero el
+   * número no se deduce, se mide. Medido a 320 px sobre el paquete construido,
+   * con el hueco real que le queda al título —164 px de los 320, porque el
+   * resto son el botón de volver y la reserva de la pastilla—, y con los diez
+   * títulos que existen hoy en Contabilidad:
+   *
+   *   · ocho entran en uno o dos renglones;
+   *   · «Inventarios III: descuentos, inventario físico y NIC 2» pide CUATRO
+   *     a 320 px, tres a 360 y dos a 375.
+   *
+   * Con el tope en dos, ese título se leía cortado. Y el recorte no avisa: no
+   * pone puntos suspensivos, simplemente se queda sin las últimas palabras.
+   * Un estudiante en un teléfono de 320 px leía «…inventario» y no sabía que
+   * faltaba «físico y NIC 2».
+   *
+   * Cuatro renglones los usa solo quien los necesita: el tope recorta, no
+   * reserva, así que los otros nueve títulos siguen ocupando lo que ocupaban.
+   * El coste es una cabecera de 82 px en UNA vista de diez, a UN ancho, contra
+   * perder palabras en la principal señal de orientación de la pantalla. La
+   * regla de la casa ya eligió: romper renglón sí, desaparecer no.
+   *
+   * SE PUEDE HACER MEJOR, y no toca a esta hoja: medido, ese título en su
+   * propio renglón a ancho completo entra en dos (41 px). Eso mueve el orden
+   * de cesión de la cabecera, que es de Xeno; queda dicho y no bloquea esto.
+   *
+   * SI ENTRA UN TÍTULO MÁS LARGO, hay que volver a medir. Esto no se deduce
+   * del CSS: scripts/t7/medir-titulo-320.mjs y la sonda de títulos.
+   */
   .fae-cabecera-titulo > h1 {
     flex-shrink: 1;
     min-width: 0;
+    white-space: normal;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    /*
+     * Lo único que los siete rodeos en línea tenían y esta regla no:
+     * overflow-wrap. Sin él, una palabra más ancha que la cabecera —un título
+     * sin espacios donde partir— se sale por el lado en vez de partirse, y el
+     * recorte de dos renglones no la alcanza. Con "anywhere" parte donde haga
+     * falta, que es mejor que salirse.
+     *
+     * Las siete vistas lo tenían porque cada una tropezó con lo mismo. Sube
+     * aquí para que la octava no tenga que tropezar.
+     *
+     * (Sin comillas invertidas en este comentario: está DENTRO de la plantilla
+     * de CSS, y una comilla invertida la cierra. El repertorio no lo nota —lee
+     * este archivo como texto— y solo lo caza la compilación.)
+     */
+    overflow-wrap: anywhere;
   }
 
   .fae-gsi-ancho { display: none; }
@@ -328,7 +406,10 @@ function OpcionMenu({ onClick, punto = false, children }) {
       style={{
         width: "100%", display: "flex", alignItems: "center", gap: "8px",
         textAlign: "left", fontFamily: "Inter, sans-serif", fontSize: "13.5px",
-        minHeight: "40px", padding: "9px 10px", borderRadius: "9px", cursor: "pointer",
+        /* 44 px, el mínimo que un dedo acierta (kit.md). Estaba en 40. Ocupa el
+           ancho entero del menú, así que crecer solo hace el menú 4 px más alto
+           por opción y no mueve nada de lado. */
+        minHeight: "44px", padding: "9px 10px", borderRadius: "9px", cursor: "pointer",
         background: "transparent", border: "none", color: "rgba(248,249,250,0.8)",
       }}
     >
@@ -457,11 +538,17 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
             /*
              * Fuera del flujo, a la izquierda de la cuenta: su llegada no mueve
              * la pastilla de la cuenta ni un píxel, ni para el docente ni para
-             * nadie. La caja pulsable mide 40 de alto —el mínimo para el dedo—,
-             * centrada en la fila; la pastilla que se ve lleva el relleno y la
-             * letra de la de la cuenta, así que mide lo mismo que ella: dos
-             * pastillas de distinta altura en la misma fila se leen como un
-             * error.
+             * nadie. La pastilla que se ve lleva el relleno y la letra de la de
+             * la cuenta, así que mide lo mismo que ella: dos pastillas de
+             * distinta altura en la misma fila se leen como un error.
+             *
+             * SON 40 DE DIBUJO Y 44 DE TOQUE. Este comentario decía que 40 era
+             * «el mínimo para el dedo», y el mínimo es 44 (kit.md). Subir la
+             * caja a 44 rompería lo de arriba —dejaría de medir lo que la
+             * pastilla de la cuenta—, así que el toque lo da un ::after de
+             * max(100%, 44px) centrado, en la hoja de abajo: el dibujo no se
+             * mueve y el dedo acierta. Es la misma solución que el logo y la X
+             * del diálogo.
              */
             position: "absolute",
             right: "calc(100% + 8px)",
