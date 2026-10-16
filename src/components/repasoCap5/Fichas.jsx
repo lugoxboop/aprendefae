@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { C, INTER, SORA } from "./comun.jsx";
+import { C, INTER, SORA, ESTADOS, PUNTOS } from "./comun.jsx";
 import { pesos } from "../../data/contabilidad.js";
 import { INTERFAZ_R5_1, CMV, BOTONES_C8, contadorDeC8, evaluarC8, respuestaDeC8 } from "../../data/repasoCap5Cruzado.js";
 import { useCifra } from "./movimiento.js";
@@ -37,8 +37,9 @@ function estiloBoton(elegido, calif) {
     fontFamily: INTER, fontSize: "14px", fontWeight: 600, cursor: calif ? "default" : "pointer",
   };
   if (!elegido) return { ...base, background: "transparent", border: `1.5px solid ${C.atenuado}`, color: C.texto };
-  if (calif === "mal") return { ...base, background: "transparent", border: `2px solid ${C.coral}`, color: C.texto };
-  if (calif === "bien") return { ...base, background: C.hecho, border: `2px solid ${C.hecho}`, color: C.fondo };
+  /* Los bordes de la calificación, los comunes del repaso (comun.jsx); el elegido bien conserva su relleno (§e). */
+  if (calif === "mal") return { ...base, background: "transparent", border: ESTADOS.mal.border, color: C.texto };
+  if (calif === "bien") return { ...base, background: C.hecho, border: ESTADOS.ok.border, color: C.fondo };
   return { ...base, background: C.hecho, border: `1.5px solid ${C.hecho}`, color: C.fondo };
 }
 
@@ -87,7 +88,8 @@ function Ficha({ dato, elegido, calif, onElegir, botonesRef }) {
                 <span
                   aria-hidden="true"
                   data-forma-ficha={calif === "bien" ? "punto" : "anillo"}
-                  style={{ width: "8px", height: "8px", borderRadius: "50%", boxSizing: "border-box", flexShrink: 0, ...(calif === "bien" ? { background: C.fondo } : { border: `2px solid ${C.coral}` }) }}
+                  /* §e: el anillo es el del error común (PUNTOS); el punto, oscuro sobre el relleno claro. */
+                  style={{ width: "8px", height: "8px", borderRadius: "50%", boxSizing: "border-box", flexShrink: 0, ...(calif === "bien" ? { background: C.fondo } : PUNTOS.error) }}
                 />
               )}
               {NOMBRE[b.id]}

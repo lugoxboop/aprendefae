@@ -71,6 +71,48 @@ const DIR = join(RAIZ, "supabase", "migrations");
    esquema a propósito. Se escribe entera, en una línea de comentario. */
 export const MARCA_ESQUEMA = "GUARDIAN: cambio de esquema a proposito";
 
+/*
+ * La marca que una célula escribe cuando su migración retira actividades.
+ *
+ * POR QUÉ EXISTE. El guardián rechaza `update` en el rango de una célula, y con
+ * razón: un update suelto puede reescribir cualquier cosa. Pero hay UN update
+ * que no puede hacer daño y que las células necesitan a diario desde que Mateo
+ * les dejó retirar y fusionar actividades de Contabilidad: el retiro blando,
+ * `set retirada = true`. No borra filas, no toca tablas de estudiantes
+ * —fp_history queda igual—, es idempotente y se deshace con un `false`.
+ *
+ * Sin esta puerta, dos células se quedaron paradas el mismo día (#281 de B y
+ * #269 de C) esperando que el coordinador les escribiera una línea de SQL en su
+ * rango. Y la alternativa que me pedían —prestarles la marca de esquema— habría
+ * abierto la puerta de verdad: con ella pasa cualquier `delete` o `alter`.
+ *
+ * LO QUE ESTA PUERTA NO ABRE. Solo pasa el update que coincide EXACTAMENTE con
+ * RETIRO_BLANDO: la tabla del catálogo, el único campo `retirada`, a `true`, con
+ * `where activity_id in (...)`. Un update que ponga otro campo, que toque otra
+ * tabla, o un `delete`, `alter`, `drop`, `truncate`, `grant` o `revoke` siguen
+ * siendo del coordinador. Y el archivo tiene que decirlo con la marca, para que
+ * un retiro se pueda encontrar con un grep y nadie lo haga sin querer.
+ */
+export const MARCA_RETIRO = "GUARDIAN: retiro blando de catalogo";
+
+/*
+ * La forma del retiro blando, copiada de la 0015 y de la 0115, que es la forma
+ * que ya lee catalogo.test.mjs para saber qué está retirado. Un solo campo, un
+ * solo valor, y la lista de ids.
+ */
+const RETIRO_BLANDO = /^\s*update\s+(?:public\.)?actividad_catalogo\s+set\s+retirada\s*=\s*true\s+where\s+activity_id\s+in\s*\([^)]*\)\s*$/i;
+
+/*
+ * ¿Todo lo que hace este SQL es retirar actividades? Se parte por `;` y se
+ * exige que CADA sentencia con contenido sea un retiro blando. Basta una que no
+ * lo sea para que no cuente: así una migración no puede colar un `delete`
+ * detrás de un retiro legítimo.
+ */
+export function soloRetiroBlando(sql) {
+  const sentencias = sinComentarios(sql).split(";").map((t) => t.trim()).filter((t) => t.length > 0);
+  return sentencias.length > 0 && sentencias.every((t) => RETIRO_BLANDO.test(t) || !DESTRUCTIVOS.test(t));
+}
+
 /* Los rangos, copiados del mapa de choques de nocturno.md. Si cambian allí,
    cambian aquí: son la misma decisión escrita dos veces, y la prueba
    guardian-migraciones.test.mjs comprueba que no se separen. */
@@ -173,12 +215,26 @@ export function revisar(archivos, catalogoCliente) {
     const limpio = sinUpsert(sinComentarios(sql));
     const destructivo = DESTRUCTIVOS.exec(limpio);
     if (destructivo) {
-      const permitido = rango.duenio === "coordinador" && sql.includes(MARCA_ESQUEMA);
-      if (!permitido) {
-        reproches.push(
-          `${nombre}: trae «${destructivo[0]}» fuera de un comentario, y es del rango de ${rango.duenio}. ` +
-          `Una migración de célula solo añade filas. Si de verdad tiene que cambiar el esquema, la escribe el coordinador en su rango y lo dice con la marca «${MARCA_ESQUEMA}».`
-        );
+      const deEsquema = rango.duenio === "coordinador" && sql.includes(MARCA_ESQUEMA);
+      /* El retiro blando lo puede hacer cualquier rango, y solo él. */
+      const deRetiro = sql.includes(MARCA_RETIRO) && soloRetiroBlando(sql);
+      if (!deEsquema && !deRetiro) {
+        /* Si trae la marca de retiro pero no tiene la forma, el reproche lo dice:
+           lo contrario manda a la célula a buscar un permiso que ya tiene. */
+        if (sql.includes(MARCA_RETIRO)) {
+          reproches.push(
+            `${nombre}: trae la marca «${MARCA_RETIRO}» pero no es solo un retiro blando. ` +
+            `El retiro blando es «update public.actividad_catalogo set retirada = true where activity_id in (...)», ` +
+            `una sentencia por retiro y nada más destructivo en el archivo. Trae «${destructivo[0]}». ` +
+            `Si de verdad hace falta, va en el rango del coordinador con la marca «${MARCA_ESQUEMA}».`
+          );
+        } else {
+          reproches.push(
+            `${nombre}: trae «${destructivo[0]}» fuera de un comentario, y es del rango de ${rango.duenio}. ` +
+            `Una migración de célula solo añade filas, o retira con «${MARCA_RETIRO}». ` +
+            `Si de verdad tiene que cambiar el esquema, la escribe el coordinador en su rango y lo dice con la marca «${MARCA_ESQUEMA}».`
+          );
+        }
       }
     }
 

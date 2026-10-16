@@ -57,30 +57,30 @@ const montar = async (el) => {
 const tocar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
 const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent.trim() === texto) ?? null;
 
-test("★★★ las dos tienen «Así se juega» con su consigna y sus tres reglas aprobadas", () => {
+test("★★★ las dos tienen «Así se juega» con su consigna y sus dos reglas del lote 6a", () => {
   for (const k of CASOS) {
     const asi = ASI_SE_JUEGA[k.id];
     assert.ok(asi, `${k.id}: sin «Así se juega»`);
     assert.equal(asi.titulo, k.D.nombre);
     assert.equal(asi.consigna, k.D.consigna);
     assert.deepEqual(asi.pasos, k.reglas);
-    assert.equal(asi.pasos.length, 3);
-    assert.ok(asi.pasos[2].includes("tienes un intento más"), `${k.id}: falta el reintento`);
+    assert.equal(asi.pasos.length, 2);
+    assert.ok(asi.pasos[1].includes("tienes un intento más"), `${k.id}: falta el reintento`);
     assert.doesNotMatch(asi.alt, /^Ejemplo/);
   }
 });
 
-test("★★★ la demo es una ficha del banco, sin texto nuevo, y abre los dos niveles", () => {
+test("★★★ la demo es una ficha del banco, sin texto nuevo, de un cajón con dos opciones hermanas", () => {
   for (const k of CASOS) {
     const [ficha] = ASI_SE_JUEGA[k.id].demo.items;
     assert.ok(k.banco.includes(ficha), `${k.id}: la ficha de la demo no es del banco`);
     const abre = k.id === "b5-t5-a1" ? A51.FIJA : A61.CLIENTES;
-    assert.equal(ficha.renta ?? ficha.cuenta, abre, `${k.id}: la ficha no abre el segundo nivel`);
+    assert.equal(ficha.renta ?? ficha.cuenta, abre, `${k.id}: la ficha no es de la familia de dos cajones`);
     assert.ok(ASI_SE_JUEGA[k.id].alt.includes(`«${ficha.texto}»`));
   }
 });
 
-test("★★★ el guion elige los dos niveles y coloca la ficha: se lee su acierto", async () => {
+test("★★★ el guion toca el cajón de la ficha, que la coloca: queda ✓ y se lee su acierto", async () => {
   for (const k of CASOS) {
     const asi = ASI_SE_JUEGA[k.id];
     const { caja, desmontar } = await montar(h(k.Mecanica, { Marco, items: asi.demo.items, modoDemo: true }));
@@ -91,13 +91,14 @@ test("★★★ el guion elige los dos niveles y coloca la ficha: se lee su acie
       assert.ok(el, `${k.id}: el guion toca «${t.en ?? t.texto}» y no está`);
       await tocar(el);
     }
-    assert.ok(caja.querySelector('[data-panel-segundo]'), `${k.id}: el segundo nivel no se abrió`);
+    assert.equal(asi.guion.toques.length, 1, `${k.id}: un solo toque`);
+    assert.equal(caja.querySelector(asi.guion.toques[0].en).dataset.marca, "correcta", `${k.id}: el cajón no quedó ✓`);
     assert.ok(caja.querySelector('[role="status"]').textContent.endsWith(asi.demo.items[0].acierto.slice(2)), `${k.id}: no se lee el acierto`);
     desmontar();
   }
 });
 
-test("★★★ en pantalla: la primera vez sale «Así se juega» con las tres reglas; luego, «¿Cómo se juega?» lo reabre", async () => {
+test("★★★ en pantalla: la primera vez sale «Así se juega» con sus reglas; luego, «¿Cómo se juega?» lo reabre", async () => {
   for (const k of CASOS) {
     localStorage.clear();
     const juego = { id: k.id, Mecanica: k.Mecanica, titulo: k.D.nombre };

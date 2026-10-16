@@ -8,7 +8,8 @@
  * paradas de la capa 2 de los Aprender. La equivocada se comete con el mismo gesto que la buena:
  *   · mesa (b5-t5-a2, b5-t6-a2, a3): las mismas cuentas en sus lados, con el primer valor mal;
  *   · casillas y elección (b5-t6-a4, a5, a6): otra opción de la misma tarjeta;
- *   · clasificar en dos niveles (b5-t5-a1, b5-t6-a1, a7): el otro primer nivel, dos veces.
+ *   · clasificar en dos niveles (b5-t6-a7): el otro primer nivel, dos veces;
+ *   · las fichas a un nivel (b5-t5-a1, b5-t6-a1, lote 6a): los otros dos cajones, uno tras otro.
  * Las fichas de clasificar salen de sortear: se juntan todas las que puede dar (cada id, su destino).
  */
 const C = async (p, k) => (await import(new URL(`../../../src/components/mecanicas/libros/${p}`, import.meta.url)))[k];
@@ -46,6 +47,14 @@ for (const [id, p, k] of [["b5-t5-a1", "tema5/QueRentaDa.jsx", "CONFIG_T5_ACT1"]
   const cfg = await C(p, k);
   const fichas = new Map();
   for (let i = 0; i < 400; i++) for (const f of cfg.sortear(barajar)) fichas.set(f.id, f);
+  if (cfg.cajones) {
+    /* Lote 6a: las fichas a un nivel. Bien, su cajón; mal, los otros dos en orden (el primer fallo deja el tocado ✕). */
+    clave.hacer[id] = { mecanica: "cajones", tarjetas: Object.fromEntries([...fichas.values()].map((f) => {
+      const bien = cfg.destino(f);
+      return [f.id, { bien: [bien], mal: cfg.cajones.map((x) => x.clave).filter((x) => x !== bien) }];
+    })) };
+    continue;
+  }
   clave.hacer[id] = { mecanica: "clasifica", tarjetas: Object.fromEntries([...fichas.values()].map((f) => {
     const d = cfg.destino(f);
     const otro = cfg.nivel1.find((n) => n.id !== d.n1);

@@ -14,8 +14,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · la C5 manda sobre la C en las dos ventas a crédito
  *   · la regla única del segundo fallo, contra la columna literal de Futaba
  *   · el préstamo a un cliente: quien se guíe por la palabra «cliente» falla
- *   · el rótulo del botón en cada estado, y que el botón y las pestañas quepan
- *     en una línea a 320
+ *   · lote 6a: los tres cajones son las opciones, con E4; la tanda, R10
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -61,22 +60,16 @@ const montar = async (ids, onCompletar = () => {}) => {
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
 const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
-const pestana = (caja, id) => caja.querySelector(`[data-nivel1="${id}"]`);
-const opcion = (caja, id) => caja.querySelector(`[data-nivel2="${id}"]`);
-const botonColocar = (caja) => caja.querySelector("[data-boton-colocar] button");
 const botonAvanzar = (caja) => caja.querySelector("[data-boton-avanzar] button");
-const rotuloBoton = (caja) => (botonColocar(caja) ?? botonAvanzar(caja) ?? [...caja.querySelectorAll("button")].at(-1)).textContent;
 /* Lo que se lee en la devolución, sin el texto oculto para lectores. */
 const devolucion = (caja) => {
   const p = caja.querySelector('[role="status"]');
   if (!p) return null;
   return [...p.childNodes].filter((n) => !(n.classList?.contains("fae-jg-oculto"))).map((n) => n.textContent).join("");
 };
-const marcar = async (caja, cuenta, lado = null) => {
-  if (pestana(caja, cuenta).dataset.elegido !== "si") await tocar(pestana(caja, cuenta));
-  if (lado) await tocar(opcion(caja, lado));
-  await tocar(botonColocar(caja));
-};
+/* Lote 6a: tocar el cajón coloca la ficha (las fichas a un nivel). */
+const cajon = (caja, cuenta, lado = null) => caja.querySelector(`[data-cajon="${lado ? `${cuenta}/${lado}` : cuenta}"]`);
+const marcar = async (caja, cuenta, lado = null) => tocar(cajon(caja, cuenta, lado));
 
 /* ═══════════ EL PAQUETE GUARDADO, LEÍDO POR SECCIÓN ═══════════ */
 
@@ -101,13 +94,14 @@ const filas = (texto) => {
 const GUIA_INICIAL = filas(seccion("### 2.1", "### 2.2"));
 const GUIA_COLOCANDO = filas(seccion("### 2.2", "### 2.3"));
 const GUIA_CIERRE = filas(seccion("### 2.3", "## 3 "));
-/* La entrega 4 de Futaba (sección 6) manda sobre 3.1, 3.2 y 3.4, ficha por ficha. */
+/* La entrega 4 de Futaba (sección 6) manda sobre 3.1, 3.2 y 3.4, ficha por ficha; los préstamos del lote 6a (§7.2), sobre las fichas. */
 const conEntrega4 = (base, desde, hasta) => {
   const nuevas = filas(seccion(desde, hasta));
   for (const [id, celdas] of Object.entries(nuevas)) if (base[id]) base[id] = [celdas[0], ...base[id].slice(1)];
   return base;
 };
-const GUIA_FICHAS = conEntrega4(filas(seccion("### 3.1", "### 3.2")), "### 6.1", "### 6.2");
+const GUIA_FICHAS = conEntrega4(conEntrega4(filas(seccion("### 3.1", "### 3.2")), "### 6.1", "### 6.2"), "### 7.2", "### 7.3");
+const L6A = seccion("## 7 · Lote 6a", null);
 const GUIA_ACIERTOS = conEntrega4(filas(seccion("### 3.2", "### 3.3")), "### 6.2", "### 6.3");
 const GUIA_ERRORES = filas(seccion("### 3.3", "### 3.4"));
 const GUIA_SEGUNDO = conEntrega4(filas(seccion("### 3.4", "## 4 ")), "### 6.3", "Para Shoko, el cruce");
@@ -212,14 +206,15 @@ test("★★★ el préstamo a un cliente: quien se guíe por la palabra «clien
   /* La estrategia de la palabra clave: si el hecho dice «cliente», Clientes. */
   const porPalabra = (f) => (/cliente/i.test(f.texto) ? "clientes" : "otra");
   const engañan = D.FICHAS_T6_ACT1.filter((f) => porPalabra(f) !== f.cuenta).map((f) => f.id);
-  assert.deepEqual(engañan, ["prestamo-cliente"], "la palabra «cliente» tiene que fallar justo en el préstamo a un cliente");
+  /* Lote 6a: «particular» («Alguien que no es cliente…», Futaba, PASA de Shoko) también nombra la palabra, y también es un préstamo. */
+  assert.deepEqual(engañan, ["particular", "prestamo-cliente"], "la palabra «cliente» tiene que fallar en los préstamos que la nombran");
   /* Y «presta» tampoco sirve de pista: aparece en las dos cuentas. */
   const conPresta = D.FICHAS_T6_ACT1.filter((f) => /presta/.test(f.texto));
   assert.ok(conPresta.some((f) => f.cuenta === "clientes") && conPresta.some((f) => f.cuenta === "otra"));
 
   for (const lado of ["debita", "acredita"]) {
     const m = await montar(["prestamo-cliente"]);
-    assert.ok(m.caja.querySelector('[data-ficha="prestamo-cliente"]').textContent.includes("clientes"));
+    assert.match(m.caja.querySelector('[data-ficha="prestamo-cliente"]').textContent, /cliente/i);
     await marcar(m.caja, "clientes", lado);
     assert.equal(devolucion(m.caja), `❌${GUIA_ERRORES.B[1]}`, `prestamo-cliente con «${lado}»`);
     assert.equal(m.caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
@@ -251,137 +246,69 @@ test("★★ el emoji va al inicio en los datos y la devolución sale por Retro 
   desmontar();
 });
 
-/* ═══════════ EL BOTÓN Y LAS PESTAÑAS: QUE QUEPAN ═══════════ */
+/* ═══════════ LOTE 6a: LOS TRES CAJONES SON LAS OPCIONES (hoja de fusiones de Mai) ═══════════ */
 
-/*
- * Ancho de cada glifo de Sora, peso 700, a 14 px (la letra de Responder),
- * medido en Chromium 141 con Sora real de Google Fonts el 2026-10-14 (canvas
- * measureText, fuente cargada). Es la tabla de b5-t5-a1 más «b», «m», «p» y
- * «ó». Un glifo que no está aquí hace fallar la prueba: un rótulo nuevo
- * obliga a volver a medir.
- *
- * Pintados enteros en el mismo navegador: «Elige una cuenta» 117,92 ·
- * «Elige cómo se anota» 143,81 · «Colocar la ficha» 111,73 · a 12,5 px,
- * «Otra cuenta por cobrar» 146,64 y «Clientes» 54,22. La suma de glifos,
- * escalada a 12,5 / 14 para las pestañas, queda a menos de 1 px.
- */
-const GLIFOS_SORA_700_14 = {
-  " ": 2.94, C: 11.2, E: 8.32, O: 12.1, S: 9.34, V: 10.36, a: 8.32, b: 9.84, c: 8.55, d: 9.84, e: 8.74, f: 5.35, g: 9.6,
-  h: 9.13, i: 4.68, j: 4.75, l: 4.41, m: 13.76, n: 9.13, o: 9.53, p: 9.84, q: 9.84, r: 5.89, s: 7.78, t: 6.08, u: 9.03,
-  "é": 8.74, "ó": 9.53,
-};
-const ancho = (texto, px = 14) => [...texto].reduce((s, g) => {
-  if (!(g in GLIFOS_SORA_700_14)) throw new Error(`glifo sin medir: «${g}» en «${texto}»`);
-  return s + GLIFOS_SORA_700_14[g];
-}, 0) * (px / 14);
-/* A 320: 258 de ancho útil del Panel menos 18 + 18 de relleno de Responder. */
-const UTIL_RESPONDER_320 = 258 - 36;
-/* La pestaña: 258 menos 11 + 11 de relleno y 2 + 2 del borde elegido. */
-const UTIL_PESTANA_320 = 258 - 22 - 4;
-
-test("★★★ el rótulo del botón en cada estado es el del paquete, y cada uno cabe en una línea a 320", async () => {
-  const vistos = [];
+test("★★★ los tres cajones son las opciones, con los nombres del lote 6a y su grupo; sin pestañas ni botón; E4 al fallar y al acertar", async () => {
   const { caja, desmontar } = await montar(["pago", "socio"]);
-  vistos.push(rotuloBoton(caja));
-  assert.equal(rotuloBoton(caja), GUIA_COLOCANDO["boton-nada"][0]);
-  await tocar(pestana(caja, "clientes"));
-  vistos.push(rotuloBoton(caja));
-  assert.equal(rotuloBoton(caja), GUIA_COLOCANDO["boton-falta"][0]);
-  await tocar(opcion(caja, "acredita"));
-  vistos.push(rotuloBoton(caja));
-  assert.equal(rotuloBoton(caja), GUIA_COLOCANDO["boton-colocar"][0]);
-  await tocar(pestana(caja, "otra"));
-  assert.equal(rotuloBoton(caja), "Colocar la ficha", "«Otra cuenta por cobrar» va directo a colocar");
-  await tocar(pestana(caja, "clientes"));
-  await tocar(opcion(caja, "acredita"));
-  await tocar(botonColocar(caja));
-  vistos.push(rotuloBoton(caja));
-  assert.equal(rotuloBoton(caja), "Siguiente ficha");
-  await tocar(botonAvanzar(caja));
-  await marcar(caja, "otra");
-  vistos.push(rotuloBoton(caja));
-  assert.equal(rotuloBoton(caja), "Ver el resultado");
-  await tocar(botonAvanzar(caja));
-  vistos.push(rotuloBoton(caja));
-  assert.equal(rotuloBoton(caja), "Otra tanda");
-  desmontar();
-
-  for (const t of vistos) {
-    const a = ancho(t);
-    assert.ok(a <= UTIL_RESPONDER_320, `«${t}» mide ${a.toFixed(2)} px y no cabe en ${UTIL_RESPONDER_320} a 320`);
-  }
-  assert.ok(Math.abs(ancho("Elige cómo se anota") - 143.81) < 1, "la tabla de glifos mide de verdad");
-});
-
-test("★★★ pestañas: los rótulos del paquete, en una línea a 320; «Otra» no abre panel; «Clientes» abre «Se debita» y «Se acredita»", async () => {
-  const { caja, desmontar } = await montar(["pago"]);
-  const rotulos = [...caja.querySelectorAll("[data-rotulo-nivel1]")].map((n) => n.textContent);
-  assert.deepEqual(rotulos, ["Otra cuenta por cobrar", "Clientes"], "la que abre panel va abajo (guía v2 de Mai, §2.2)");
-  assert.deepEqual([...rotulos].sort(), GUIA_COLOCANDO.nivel1[0].split(" · ").map((x) => x.replace(/^«|»$/g, "")).sort());
-  for (const n of caja.querySelectorAll("[data-rotulo-nivel1]")) assert.equal(n.style.whiteSpace, "nowrap");
-  for (const t of rotulos) {
-    const a = ancho(t, 12.5);
-    assert.ok(a <= UTIL_PESTANA_320, `«${t}» mide ${a.toFixed(2)} px y no cabe en ${UTIL_PESTANA_320} a 320`);
-  }
-  assert.ok(Math.abs(ancho("Otra cuenta por cobrar", 12.5) - 146.64) < 1, "la escala a 12,5 px mide de verdad");
-
-  const clientes = pestana(caja, "clientes");
-  assert.equal(clientes.getAttribute("aria-expanded"), "false");
-  await tocar(clientes);
-  const panel = caja.querySelector("[data-panel-segundo]");
-  assert.equal(clientes.getAttribute("aria-controls"), panel.id);
-  assert.deepEqual([...panel.querySelectorAll("button")].map((b) => b.textContent),
-    GUIA_COLOCANDO.nivel2[0].split(" · ").map((x) => x.replace(/^«|»$/g, "")));
-  await tocar(opcion(caja, "debita"));
-  await tocar(pestana(caja, "otra"));
-  assert.equal(Boolean(caja.querySelector("[data-panel-segundo]")), false, "con «Otra cuenta por cobrar» no hay panel");
-  assert.equal(pestana(caja, "otra").hasAttribute("aria-expanded"), false);
-  await tocar(pestana(caja, "clientes"));
-  assert.equal(Boolean(caja.querySelector('[data-nivel2][aria-pressed="true"]')), false, "el panel se abre sin nada elegido");
+  const estante = caja.querySelector("[data-estante]");
+  assert.equal(estante.getAttribute("aria-label"), "Cuenta por cobrar");
+  assert.ok(L6A.includes("«Cuenta por cobrar»"));
+  const nombres = [...estante.querySelectorAll("button[data-cajon] [data-nombre-cajon]")].map((n) => n.textContent);
+  assert.deepEqual(nombres, ["Otra cuenta por cobrar", "Clientes, se debita", "Clientes, se acredita"]);
+  for (const n of nombres) assert.ok(L6A.includes(`«${n}»`), n);
+  assert.equal(caja.querySelectorAll("[data-nivel1], [data-nivel2], [data-boton-colocar]").length, 0);
+  await marcar(caja, "clientes", "debita");
+  assert.equal(cajon(caja, "clientes", "debita").dataset.marca, "tachada");
+  assert.equal(cajon(caja, "clientes", "debita").disabled, true);
+  await marcar(caja, "clientes", "acredita");
+  assert.equal(cajon(caja, "clientes", "acredita").dataset.marca, "correcta");
+  assert.equal(cajon(caja, "clientes", "debita").dataset.marca, "tachada", "lo elegido se queda junto a lo correcto");
+  assert.equal(cajon(caja, "otra").dataset.marca, "apagada");
+  assert.equal(botonAvanzar(caja).textContent, "Siguiente ficha");
   desmontar();
 });
 
 /* ═══════════ SORTEO Y PUNTAJE ═══════════ */
 
-test("★★★ la tanda es el banco entero (10), sin repetir, y barajado", () => {
-  const ordenes = new Set();
-  for (let k = 0; k < 200; k++) {
+test("★★★ la tanda (R10): 9 fichas sin repetir, entre 2 y 4 por cajón con el tope del banco (4 · 3 · 3), y el reparto varía", () => {
+  const repartos = new Set();
+  for (let k = 0; k < 400; k++) {
     const tanda = L.sortearT6Act1(barajar);
-    assert.equal(tanda.length, 10);
-    assert.deepEqual(tanda.map((f) => f.id).sort(), [...IDS].sort());
-    ordenes.add(tanda.map((f) => f.id).join());
+    assert.equal(tanda.length, 9);
+    assert.equal(new Set(tanda.map((f) => f.id)).size, 9);
+    const cuantas = L.GRUPOS_T6_ACT1.map((g) => tanda.filter((f) => f.cuenta === g.cuenta && f.lado === g.lado).length);
+    for (const n of cuantas) assert.ok(n >= 2 && n <= 4);
+    repartos.add(cuantas.join("·"));
   }
-  assert.ok(ordenes.size > 50, `en 200 tandas solo salieron ${ordenes.size} órdenes: no se baraja`);
+  assert.deepEqual([...repartos].sort(), ["3·3·3", "4·2·3", "4·3·2"], "con el banco 4 · 3 · 3, los tres repartos posibles");
   assert.deepEqual(D.FICHAS_T6_ACT1.map((f) => f.id), IDS, "sortear no desordena el banco");
 });
 
-test("★★★ puntaje como T1-6: 60 % cuenta y 40 % lado; otra entera; el segundo intento vale la mitad; el resumen literal", async () => {
+test("★★★ puntaje: cada ficha vale entera; el segundo intento, la mitad; el resumen es el de Futaba", async () => {
   const cli = ficha("pago");
   const otra = ficha("socio");
   assert.equal(L.valorDeItemT6Act1(cli, L.evaluarT6Act1(cli, { cuenta: "clientes", lado: "acredita" })), 1);
-  assert.equal(L.valorDeItemT6Act1(cli, L.evaluarT6Act1(cli, { cuenta: "clientes", lado: "debita" })), 0.6);
-  assert.equal(L.valorDeItemT6Act1(cli, L.evaluarT6Act1(cli, { cuenta: "otra", lado: null })), 0);
+  assert.equal(L.valorDeItemT6Act1(cli, L.evaluarT6Act1(cli, { cuenta: "clientes", lado: "debita" })), 0);
   assert.equal(L.valorDeItemT6Act1(otra, L.evaluarT6Act1(otra, { cuenta: "otra", lado: null })), 1);
-  assert.equal(L.valorDeItemT6Act1(otra, L.evaluarT6Act1(otra, { cuenta: "clientes", lado: "debita" })), 0);
-  /* Montado: fallar el lado y acertar en el reintento deja la ficha en 50 (1 / 2). */
   let pct = null;
   const { caja, desmontar } = await montar(["pago"], (p) => { pct = p; });
   await marcar(caja, "clientes", "debita");
   await marcar(caja, "clientes", "acredita");
   await tocar(botonAvanzar(caja));
   assert.equal(pct, 50);
-  const esperado = GUIA_CIERRE.resumen[0].replace("{bien}", "0").replace("{cuantas}", "1").replace("{X}", "100.00");
-  assert.equal(caja.querySelector("[data-resumen]").textContent, esperado);
+  assert.equal(caja.querySelector("[data-resumen]").textContent, "0 de 1 fichas bien al primer intento.");
+  assert.ok(L6A.includes("«{bien} de {cuantas} fichas bien al primer intento.»"));
   desmontar();
 });
 
-test("★★ el texto alternativo, el objetivo, la consigna y las reglas son los del paquete", async () => {
+test("★★ el texto alternativo y las reglas son los del lote 6a; el objetivo y la consigna, los del paquete", async () => {
   const { caja, desmontar } = await montar(["pago"]);
-  assert.equal(D.ALT_T6_ACT1, GUIA_CIERRE.alt[0]);
-  assert.ok(caja.textContent.includes(GUIA_CIERRE.alt[0]));
+  assert.ok(L6A.includes(`«${D.ALT_T6_ACT1}»`));
+  assert.ok(D.ALT_T6_ACT1.includes("Otra cuenta por cobrar; Clientes, se debita; o Clientes, se acredita."), "la corrección de Shoko: punto y coma");
+  assert.ok(caja.textContent.includes(D.ALT_T6_ACT1));
   assert.equal(caja.querySelector("[data-objetivo]").textContent, GUIA_INICIAL.objetivo[0]);
   assert.equal(caja.querySelector("[data-consigna]").textContent, GUIA_INICIAL.consigna[0]);
-  assert.deepEqual(D.REGLAS_T6_ACT1, [GUIA_INICIAL.regla1[0], GUIA_INICIAL.regla2[0], GUIA_INICIAL.regla3[0]]);
+  for (const linea of D.REGLAS_T6_ACT1) assert.ok(L6A.includes(`«${linea}»`), linea);
   assert.equal(D.T6_ACT1.id, "b5-t6-a1");
   desmontar();
 });
