@@ -262,3 +262,8 @@ Textos nuevos (para Shoko): «Nada», «Gasto» y «Provisión».
 - Capa 3: quien acierta ve el texto que se revela; quien falla dos veces ve la devolución de su opción y la figura, pero NO ese texto.
 - **Cajas ya respondidas:** muestran solo la opción elegida con su marca (cumple E4). Vale para la capa 3 de las siete piezas.
 - Nombre accesible del grupo de opciones: T6 A2 «¿Cuándo aparece el gasto?»
+
+## Auditoría de interfaz de Shoko (15-oct, aprobada y literal) · manda sobre lo de arriba
+
+- T6 A2 · rejilla de la capa 3: título «¿Cuándo aparece el gasto?». Anulación directa: Al cerrar el periodo «—», Al castigar «Gasto». Provisiones: Al cerrar el periodo «Gasto», Al castigar «—». «Provisión» ya no aparece en la rejilla: delataba la respuesta de la capa 4.
+- Capa 1: solo se pliega la cita del libro, con el control «Ver lo que dice el libro» (solo si el término trae cita). Las notas se ven siempre, bajo la definición.

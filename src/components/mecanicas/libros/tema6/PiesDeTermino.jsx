@@ -6,8 +6,8 @@ import { PieDeFuente } from "./FuentesT6A5.jsx";
  * LOS PIES DE LA CAPA 1 (Célula B) — T6 · A5, condición 1 de Shoko, camino
  * aprobado por Sakuta.
  *
- * CuatroCapas no pinta pies por término y es compartido: no se toca. Como la
- * nota de «cartera» (b5/NotaDebajo.jsx), este archivo compone contenido
+ * CuatroCapas no pinta pies por término y es compartido: no se toca. Este
+ * archivo compone contenido
  * nuestro dentro de lo que CuatroCapas ya pinta (la réplica de Mai, §8 n.º 7):
  *   · el `pie` de un término va en su propia línea, bajo la definición;
  *   · el `pieDelLibro` de una nota va dentro de su caja, bajo el texto.
