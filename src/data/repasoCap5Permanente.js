@@ -129,7 +129,12 @@ export const EQUIVOCADAS = {
     loCobrado: [INGRESO_P2, D.venta10.unidades * D.venta10.lista], // 54.000.000 · 60.000.000
   },
   p3: {
-    botones: [cuD15, D.venta10.precio, D.venta10.lista, D.devolucion8.costo], // 2.219,28 · 9.000 · 10.000 · 2.185
+    /*
+     * v1.4 (Kamogawa, «dos fugas»): la clave era la única con centavos
+     * distintos de ,00 (E12). Sale 10.000; entra el promedio del 2, antes de
+     * la devolución del 8, sacado del kárdex.
+     */
+    botones: [cuD15, r2(saldoC2[1]), D.devolucion8.costo, D.venta10.precio], // 2.219,28 · 2.215,83 · 2.185,00 · 9.000,00
   },
   p4: {
     promedioViejo: r2(saldoD15[1]), // 2.219,28
@@ -143,7 +148,7 @@ export const EQUIVOCADAS = {
 
 /*
  * «Lo que habría sido» (pantalla 3): el valor del inventario si las 200
- * vuelven al valor elegido (v1.3: 2.354.820 / 2.554.820 / 991.820).
+ * vuelven al valor elegido (v1.4: 2.354.820 / 997.986 / 991.820).
  */
 export const habriaSido = (unitario) => Math.round(fila("v10").saldo[2] + D.devolucion15.unidades * unitario);
 

@@ -7,7 +7,7 @@
  * Como medir-r5-4.mjs (Chromium de verdad con la hoja de estilos del sitio,
  * banco scripts/e5/harness-r5), con lo que pide Kamogawa (decisión 6): juega
  * las cinco pantallas con acierto y con cada error de un toque (pantalla 1:
- * «AL GASTO»; pantalla 3: 9.000, 10.000 y 2.185; pantalla 5: b, c y d), en
+ * «AL GASTO»; pantalla 3: 9.000, 2.215,83 y 2.185; pantalla 5: b, c y d), en
  * cuatro partidas, a 320 × 568 y 375 × 667 con window.innerWidth comprobado.
  * En cada estado:
  *
@@ -48,7 +48,7 @@ const { CLAVES } = await import("../../src/data/repasoCap5Permanente.js");
 const PARTIDAS = [
   { nombre: "bien", p1: "compra", p3: CLAVES.p3.unitario, p5: "a" },
   { nombre: "error-1", p1: "gasto", p3: 9000, p5: "b" },
-  { nombre: "error-2", p1: "compra", p3: 10000, p5: "c" },
+  { nombre: "error-2", p1: "compra", p3: 2215.83, p5: "c" },
   { nombre: "error-3", p1: "compra", p3: 2185, p5: "d" },
 ];
 

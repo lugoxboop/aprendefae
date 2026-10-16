@@ -9,6 +9,8 @@ import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, TEXTO, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
 import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
+import FiguraAcumulada from "./FiguraAcumulada.jsx";
+import { FIGURA_T7_2_H5, cerradosDe } from "../../../../contabilidad/figuraAcumulada.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -31,6 +33,9 @@ import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
  * casilla de cifra; el 1, el 3 y el 4 se quedan en elección. En el ítem 6,
  * cada línea elige su cuenta del banco (la correcta y dos distractores de
  * Near) y su lado.
+ *
+ * LOTE 5 (L): arriba del ítem, la figura acumulada (FiguraAcumulada.jsx): lo
+ * de cada hecho se suma al cerrar su ítem, y el asiento del hecho 4 al final.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -93,6 +98,7 @@ export default function FleteYDevolucion({ Marco, rotulo, titulo, acento, onComp
       <div data-t7-2-h5>
         <Encabezado consigna={sinUnSoloIntento(H5.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H5.enunciado} />
+        <FiguraAcumulada figura={FIGURA_T7_2_H5} cerrados={cerradosDe(t.i, Boolean(listo))} listo={Boolean(listo)} />
         <div style={{ marginBottom: "12px" }}>
           <ContadorConIntento>
             <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
