@@ -5,7 +5,9 @@ import SeisHechos from "./SeisHechos.jsx";
 import { PIEZA_NO_VA_A_PAGAR, PREGUNTA_FINAL_T6_A2, OPCIONES_FINAL_T6_A2 } from "../../../../data/contabilidadT6Pieza2.js";
 import DosDias from "./DosDias.jsx";
 import DosMetodos from "./DosMetodos.jsx";
-import { PIEZA_LA_PROVISION, PREGUNTA_FINAL_T6_A3, OPCIONES_FINAL_T6_A3, PIE_FINAL_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
+import { PIEZA_LA_PROVISION, PREGUNTA_FINAL_T6_A3, OPCIONES_FINAL_T6_A3, PIE_FINAL_T6_A3, TANQUE_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
+import { useEffect, useMemo } from "react";
+import TanqueProvision from "./TanqueProvision.jsx";
 import LaProvision from "./LaProvision.jsx";
 import TanqueMomentos from "./TanqueMomentos.jsx";
 import { PIEZA_SI_PAGA, PREGUNTA_FINAL_T6_A4, OPCIONES_FINAL_T6_A4, PIE_FINAL_T6_A4 } from "../../../../data/contabilidadT6Pieza4.js";
@@ -47,14 +49,25 @@ function EnUnaFraseT6A2() {
   return <UnaFrase pregunta={PREGUNTA_FINAL_T6_A2} opciones={OPCIONES_FINAL_T6_A2} Escena={SinEscena} evaluar={evaluarA2} />;
 }
 
+/* La frase buena viaja como «escena»: así la leyenda del tanque final la pone un efecto, no el render (lote 7). */
 const evaluarA3 = (id) => {
   const o = OPCIONES_FINAL_T6_A3.find((x) => x.id === id);
-  return { correcta: Boolean(o?.correcta), feedback: o?.feedback ?? "", escena: null };
+  return { correcta: Boolean(o?.correcta), feedback: o?.feedback ?? "", escena: o?.correcta ? o.texto : null };
 };
-export function EnUnaFraseT6A3() {
+function LeyendaA3({ escena, ponerLeyenda }) {
+  useEffect(() => {
+    if (!ponerLeyenda || !escena) return undefined;
+    ponerLeyenda(escena);
+    return () => ponerLeyenda(null);
+  }, [escena, ponerLeyenda]);
+  return null;
+}
+export function EnUnaFraseT6A3({ ponerLeyenda = null }) {
+  /* Un tipo estable: si cambiara en cada render, la leyenda se quitaría y se pondría sin fin. */
+  const Escena = useMemo(() => function EscenaA3({ escena }) { return <LeyendaA3 escena={escena} ponerLeyenda={ponerLeyenda} />; }, [ponerLeyenda]);
   return (
     <>
-      <UnaFrase pregunta={PREGUNTA_FINAL_T6_A3} opciones={OPCIONES_FINAL_T6_A3} Escena={SinEscena} evaluar={evaluarA3} />
+      <UnaFrase pregunta={PREGUNTA_FINAL_T6_A3} opciones={OPCIONES_FINAL_T6_A3} Escena={Escena} evaluar={evaluarA3} />
       <PieCapa4 texto={PIE_FINAL_T6_A3} />
     </>
   );
@@ -84,10 +97,43 @@ export function EnUnaFraseT6A5() {
   return <UnaFrase pregunta={pegarPorcentaje(PREGUNTA_FINAL_T6_A5)} opciones={OPCIONES_A5} Escena={SinEscena} evaluar={evaluarA5} />;
 }
 
+/*
+ * LOTE 7 · LA FIGURA DEL TANQUE EN LAS CAPAS 1 Y 4 DE T6 · A3 (P2 de Mai, decisión (b) de Sakuta).
+ * Tanque mínimo (84 × 100, sin gestos). Capa 1: antes del nombre, en tres
+ * términos: la provisión creada, el castigo que rompe el cero y la corrección
+ * que vuelve a la línea del análisis. Capa 4: el tanque final; la frase buena
+ * queda debajo como su leyenda (Inter 13/1,5).
+ */
+const TanqueMini = ({ nivel, analisis = null, segmentos = null }) => (
+  <div style={{ display: "flex", justifyContent: "center" }}>
+    <TanqueProvision nivel={nivel} textos={TANQUE_T6_A3} alto={100} analisis={analisis} segmentos={segmentos} reducido />
+  </div>
+);
+/* Por la posición del término en PIEZA_LA_PROVISION.nombres: 0 la provisión, 4 castigar, 5 subestimada. */
+const FIGURAS_CAPA1_T6_A3 = {
+  0: () => <TanqueMini nivel={148800} />,
+  4: () => <TanqueMini nivel={-31200} />,
+  5: () => <TanqueMini nivel={153400} analisis="solo" />,
+};
+export function conFigurasT6A3(pieza) {
+  return {
+    ...pieza,
+    nombres: pieza.nombres.map((n, k) => (FIGURAS_CAPA1_T6_A3[k] ? { ...n, figura: FIGURAS_CAPA1_T6_A3[k], figuraAntesDelNombre: true } : n)),
+  };
+}
+export function TanqueFinalT6A3({ leyenda }) {
+  return (
+    <div data-tanque-final>
+      <TanqueMini nivel={153400} analisis="solo" />
+      {leyenda && <p data-leyenda style={{ margin: "8px 0 0", textAlign: "center", fontFamily: "Inter, sans-serif", fontSize: "13px", lineHeight: 1.5, color: "#F8F9FA" }}>{leyenda}</p>}
+    </div>
+  );
+}
+
 export const ESCENAS_TEMA6 = {
   [PIEZA_LO_QUE_LE_DEBEN.id]: { Capa2: DosMomentos, Exploracion: SeisHechos, Capa4: EnUnaFraseT6 },
   [PIEZA_NO_VA_A_PAGAR.id]: { Capa2: DosDias, Exploracion: DosMetodos, Capa4: EnUnaFraseT6A2 },
-  [PIEZA_LA_PROVISION.id]: { Capa2: LaProvision, Exploracion: TanqueMomentos, Capa4: EnUnaFraseT6A3 },
+  [PIEZA_LA_PROVISION.id]: { Capa2: LaProvision, Exploracion: TanqueMomentos, Capa4: EnUnaFraseT6A3, FiguraFinal: TanqueFinalT6A3 },
   [PIEZA_SI_PAGA.id]: { Capa2: SiPaga, Exploracion: TresCasos, Capa4: EnUnaFraseT6A4 },
   [PIEZA_COMO_SE_CALCULA.id]: { Capa2: LaTablaDelEjemplo, Exploracion: CuatroGrupos, Capa4: EnUnaFraseT6A5 },
 };
