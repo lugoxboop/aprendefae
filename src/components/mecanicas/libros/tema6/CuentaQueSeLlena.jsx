@@ -13,7 +13,7 @@ import { HUNDIDO_B, TEXTO_B } from "../b5/Devolucion.jsx";
  * (P1 → Asiento 1 → P2 → Asiento 2 → P3). Dos piezas que el estudiante ya
  * conoce de T6 · A3, con su estilo y sus palabras publicadas (ESCENA_T6_A3 y
  * MOMENTOS_T6_A3):
- *   · la cuenta T «Provisión para deudas incobrables» (la de la capa 3), que
+ *   · la cuenta T «Provisión para cuentas incobrables» (la de la capa 3), que
  *     arranca con el tutorial: $148.800 en el HABER. Va encima del paso y no
  *     se mueve en pantalla;
  *   · el bloque «En el estado de situación financiera» (borde 1, radio 10,

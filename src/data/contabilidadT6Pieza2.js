@@ -62,7 +62,7 @@ export const PIEZA_NO_VA_A_PAGAR = {
     },
     {
       termino: "Los asientos del método de provisiones",
-      definicion: "Al cierre, se debita Gasto provisiones – cuentas incobrables. Y se acredita una cuenta llamada Provisión para deudas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.",
+      definicion: "Al cierre, se debita Gasto provisiones – cuentas incobrables. Y se acredita una cuenta llamada Provisión para cuentas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.",
     },
   ],
 };

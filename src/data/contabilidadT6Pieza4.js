@@ -24,7 +24,7 @@ export const PIEZA_SI_PAGA = {
     },
     {
       termino: "Revivir la deuda",
-      definicion: "Es volver a poner la deuda en Cuentas por cobrar – clientes. Se hace reversando el asiento del castigo. Se debita Cuentas por cobrar – clientes y se acredita Provisión para deudas incobrables.",
+      definicion: "Es volver a poner la deuda en Cuentas por cobrar – clientes. Se hace reversando el asiento del castigo. Se debita Cuentas por cobrar – clientes y se acredita Provisión para cuentas incobrables.",
       delLibro: "Reversar un asiento es hacerlo al revés. Lo que se había acreditado ahora se debita. Y lo que se había debitado ahora se acredita.",
       rotuloDelLibro: "Nota",
     },
@@ -56,7 +56,7 @@ export const ESCENA_T6_A4 = {
   vuelve: "Pablo Moncayo vuelve y paga toda la factura",
   primero: "Primero se revive la deuda",
   despues: "Después se anota el pago",
-  provision: "Provisión para deudas incobrables",
+  provision: "Provisión para cuentas incobrables",
   clientes: "Cuentas por cobrar – clientes",
   caja: "Caja",
   debita: "se debita",
@@ -66,11 +66,11 @@ export const ESCENA_T6_A4 = {
 /* Los 9 pasos y el cierre, cada uno con su pie de fuente (Futaba). */
 export const PASOS_T6_A4 = [
   { texto: "En marzo del año siguiente, la empresa castiga la deuda de Pablo Moncayo.", pie: "Libro, p. 204" },
-  { texto: "Se debita Provisión para deudas incobrables por $180.000.", pie: "Basado en el libro, p. 204" },
+  { texto: "Se debita Provisión para cuentas incobrables por $180.000.", pie: "Basado en el libro, p. 204" },
   { texto: "Y se acredita Cuentas por cobrar – clientes, a nombre de Pablo Moncayo.", pie: "Basado en el libro, p. 204" },
   { texto: "Un tiempo después, Pablo Moncayo vuelve y paga toda la factura.", pie: "Libro, p. 204" },
   { texto: "Primero se revive la deuda: se debita Cuentas por cobrar – clientes por $180.000.", pie: "Basado en el libro, p. 204" },
-  { texto: "Y se acredita Provisión para deudas incobrables, por el mismo valor.", pie: "Basado en el libro, p. 204" },
+  { texto: "Y se acredita Provisión para cuentas incobrables, por el mismo valor.", pie: "Basado en el libro, p. 204" },
   { texto: "Después se anota el pago: se debita Caja por $180.000.", pie: "Libro, p. 204" },
   { texto: "Y se acredita Cuentas por cobrar – clientes, por el mismo valor.", pie: "Libro, p. 204" },
   { texto: "No se anota ningún ingreso: la deuda volvió y se pagó.", pie: "Basado en el libro, p. 204" },

@@ -520,7 +520,7 @@ Opciones (en el orden del archivo; el juego las baraja una vez al cargar):
 3. **Castigar una deuda.** Castigar una deuda es darla de baja porque ya no se espera cobrarla. El libro dice “castigar la cuenta”.
 4. **Método de anulación directa.** Cuando la deuda se da por perdida, se saca de Cuentas por cobrar – clientes y su valor va al gasto. Se debita Gasto provisiones – cuentas incobrables y se acredita Cuentas por cobrar – clientes. Ojo: el nombre de ese gasto dice “provisiones”, pero este método no crea ninguna provisión. Es muy sencillo, pero no deja información sobre las deudas castigadas. Y esa información sirve para decidir las ventas a crédito futuras.
    - *Así lo dice el libro:* «Este método es muy sencillo, pero presenta la desventaja de que no suministra información relacionada con la cartera castigada…» (p. 199)
-5. **Método de provisiones.** Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. Se debita Gasto provisiones – cuentas incobrables y se acredita una cuenta llamada Provisión para deudas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.
+5. **Método de provisiones.** Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. Se debita Gasto provisiones – cuentas incobrables y se acredita una cuenta llamada Provisión para cuentas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.
    - *Así lo dice el libro:* «…para determinar el probable porcentaje de cartera que no se recuperará.» (p. 200)
 
 #### Capa 2 · Mírelo funcionar
@@ -564,7 +564,7 @@ Pasos:
   - *Al tocarla:* Con este método no se anota nada por adelantado. Cada deuda se castiga cuando se da por perdida: se debita Gasto provisiones – cuentas incobrables y se acredita Cuentas por cobrar – clientes. El gasto aparece el día del castigo.
   - *Pie:* Basado en el libro, p. 199
 - **Provisiones**
-  - *Al tocarla:* Al cerrar el periodo se estima qué parte no se recuperará. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables. Al castigar la deuda, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto ya se había anotado.
+  - *Al tocarla:* Al cerrar el periodo se estima qué parte no se recuperará. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para cuentas incobrables. Al castigar la deuda, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto ya se había anotado.
   - *Pie:* Basado en el libro, p. 200
 
 **Al abrir todas:**
@@ -594,7 +594,7 @@ Opciones (en el orden del archivo; el juego las baraja una vez al cargar):
 
 #### Capa 1 · Primero, los nombres
 
-1. **Provisión para deudas incobrables.** Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables. Ojo: la provisión sube cuando se acredita y baja cuando se debita. Es al revés de Cuentas por cobrar – clientes, porque se resta de ella.
+1. **Provisión para cuentas incobrables.** Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para cuentas incobrables. Ojo: la provisión sube cuando se acredita y baja cuando se debita. Es al revés de Cuentas por cobrar – clientes, porque se resta de ella.
 2. **Valor neto.** La provisión se resta de Cuentas por cobrar – clientes en el estado de situación financiera. Lo que queda es el valor neto. Así la empresa ve cuánto espera recuperar de verdad.
    - *Nota:* La provisión no mueve Caja ni Bancos. No es plata aparte: es un valor que se resta de lo que deben los clientes.
 3. **El gasto.** El gasto de la provisión baja la utilidad del año en que se crea. Se ve en el estado de resultados.
@@ -631,7 +631,7 @@ Rótulos de la escena:
 - `ajuste` $184.600
 - `queda` La provisión queda con $153.400
 - `gasto` Gasto provisiones – cuentas incobrables
-- `provision` Provisión para deudas incobrables
+- `provision` Provisión para cuentas incobrables
 - `clientes` Cuentas por cobrar – clientes
 - `debita` se debita
 - `acredita` se acredita
@@ -641,12 +641,12 @@ Pasos:
 1. El 31 de diciembre de 2007, El Torito Currambero revisa lo que le deben sus clientes: $2.655.000. *[Basado en el libro, p. 200]*
 2. Calcula que una parte no la va a recuperar: $148.800. *[Basado en el libro, p. 202]*
 3. Se debita Gasto provisiones – cuentas incobrables por $148.800. *[Libro, p. 202]*
-4. Y se acredita Provisión para deudas incobrables, por el mismo valor. *[Libro, p. 202]*
+4. Y se acredita Provisión para cuentas incobrables, por el mismo valor. *[Libro, p. 202]*
 5. Ese gasto baja la utilidad del año. *[Libro, p. 202]*
 6. En el estado de situación financiera, la provisión se resta de Cuentas por cobrar – clientes. *[Libro, p. 202]*
 7. Cálculo: $2.655.000 − $148.800 = $2.506.200, el valor neto. *[Libro, p. 202]*
 8. En marzo del año siguiente, la empresa da por perdida la deuda de Pablo Moncayo. *[Basado en el libro, p. 202]*
-9. Se debita Provisión para deudas incobrables por $180.000. *[Libro, p. 202]*
+9. Se debita Provisión para cuentas incobrables por $180.000. *[Libro, p. 202]*
 10. Y se acredita Cuentas por cobrar – clientes, a nombre de Pablo Moncayo. *[Basado en el libro, p. 202]*
 11. No se anota ningún gasto: ese ya se anotó en diciembre. *[Basado en el libro, p. 202]*
 12. La provisión era de $148.800, y lo castigado fue $180.000. *[Libro, p. 202]*
@@ -655,7 +655,7 @@ Pasos:
 15. Esta vez pide una provisión de $153.400. *[Libro, p. 203]*
 16. A esa cifra se le suman los $31.200 que faltaron. *[Libro, p. 203]*
 17. Se debita Gasto provisiones – cuentas incobrables por $184.600. *[Basado en el libro, p. 203]*
-18. Y se acredita Provisión para deudas incobrables, por el mismo valor. *[Libro, p. 203]*
+18. Y se acredita Provisión para cuentas incobrables, por el mismo valor. *[Libro, p. 203]*
 19. Al final, la provisión queda con $153.400: justo lo que pidió el análisis. *[Libro, p. 203]*
 
 **Cierre:** La provisión se crea al cierre, se usa al castigar y se corrige al año siguiente. *[Basado en el libro, pp. 200-203]*
@@ -663,7 +663,7 @@ Pasos:
 #### Capa 3 · Ahora pruebe usted
 
 - **Consigna:** Toca cada momento y mira cómo cambia el saldo de la provisión.
-- **Tablero:** Provisión para deudas incobrables · DEBE · HABER
+- **Tablero:** Provisión para cuentas incobrables · DEBE · HABER
 - **31 de diciembre de 2007**
   - *Al tocarla:* Sube $148.800, porque se crea la provisión. El saldo queda en $148.800.
   - *En la T, columna HABER:* $148.800
@@ -708,7 +708,7 @@ Opciones (en el orden del archivo; el juego las baraja una vez al cargar):
 #### Capa 1 · Primero, los nombres
 
 1. **Cuenta recuperada.** Es una deuda que la empresa ya había castigado y que el cliente vuelve a pagar, toda o en parte.
-2. **Revivir la deuda.** Es volver a poner la deuda en Cuentas por cobrar – clientes. Se hace reversando el asiento del castigo. Se debita Cuentas por cobrar – clientes y se acredita Provisión para deudas incobrables.
+2. **Revivir la deuda.** Es volver a poner la deuda en Cuentas por cobrar – clientes. Se hace reversando el asiento del castigo. Se debita Cuentas por cobrar – clientes y se acredita Provisión para cuentas incobrables.
    - *Nota:* Reversar un asiento es hacerlo al revés. Lo que se había acreditado ahora se debita. Y lo que se había debitado ahora se acredita.
 3. **Después, el pago.** Después de revivir la deuda, se anota el pago como cualquier cobro: se debita Caja y se acredita Cuentas por cobrar – clientes.
 4. **Abono.** Es un pago de solo una parte de la deuda.
@@ -727,7 +727,7 @@ Rótulos de la escena:
 - `vuelve` Pablo Moncayo vuelve y paga toda la factura
 - `primero` Primero se revive la deuda
 - `despues` Después se anota el pago
-- `provision` Provisión para deudas incobrables
+- `provision` Provisión para cuentas incobrables
 - `clientes` Cuentas por cobrar – clientes
 - `caja` Caja
 - `debita` se debita
@@ -736,11 +736,11 @@ Rótulos de la escena:
 Pasos:
 
 1. En marzo del año siguiente, la empresa castiga la deuda de Pablo Moncayo. *[Libro, p. 204]*
-2. Se debita Provisión para deudas incobrables por $180.000. *[Basado en el libro, p. 204]*
+2. Se debita Provisión para cuentas incobrables por $180.000. *[Basado en el libro, p. 204]*
 3. Y se acredita Cuentas por cobrar – clientes, a nombre de Pablo Moncayo. *[Basado en el libro, p. 204]*
 4. Un tiempo después, Pablo Moncayo vuelve y paga toda la factura. *[Libro, p. 204]*
 5. Primero se revive la deuda: se debita Cuentas por cobrar – clientes por $180.000. *[Basado en el libro, p. 204]*
-6. Y se acredita Provisión para deudas incobrables, por el mismo valor. *[Basado en el libro, p. 204]*
+6. Y se acredita Provisión para cuentas incobrables, por el mismo valor. *[Basado en el libro, p. 204]*
 7. Después se anota el pago: se debita Caja por $180.000. *[Libro, p. 204]*
 8. Y se acredita Cuentas por cobrar – clientes, por el mismo valor. *[Libro, p. 204]*
 9. No se anota ningún ingreso: la deuda volvió y se pagó. *[Basado en el libro, p. 204]*
@@ -799,7 +799,7 @@ Opciones (en el orden del archivo; el juego las baraja una vez al cargar):
    - *Pie de fuente (bajo la definición):* Basado en el libro, pp. 200-201
 2. **Un porcentaje por grupo.** A cada grupo se le aplica el porcentaje que la empresa espera perder. Los porcentajes los fija la propia empresa.
    - *Pie de fuente (bajo la definición):* Basado en el libro, p. 201
-3. **La provisión.** Se suman los cálculos de todos los grupos. Ese total es la provisión. Se anota como ya viste: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables.
+3. **La provisión.** Se suman los cálculos de todos los grupos. Ese total es la provisión. Se anota como ya viste: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para cuentas incobrables.
    - *Pie de fuente (bajo la definición):* Basado en el libro, pp. 200-202
 4. **Una referencia colombiana.** En Colombia, la norma del impuesto de renta trae una provisión general con tres porcentajes. Es el 5 % para deudas con más de tres meses de vencidas, sin pasar de seis. Es el 10 % para más de seis meses, sin pasar de un año. Y es el 15 % para más de un año.
    - *Nota:* Esos porcentajes son el máximo que la empresa puede restar como gasto al calcular su impuesto de renta. No son una regla para todas las empresas: cada una fija los suyos.
@@ -827,7 +827,7 @@ Rótulos de la escena:
 - `grupos[4].resultado` son $21.000
 - `suma` $74.000
 - `gasto` Gasto provisiones – cuentas incobrables
-- `provision` Provisión para deudas incobrables
+- `provision` Provisión para cuentas incobrables
 - `neto` El valor neto
 - `valorNeto` $1.226.000
 - `debita` se debita
@@ -844,7 +844,7 @@ Pasos:
 7. Las que llevan más de un año suman $140.000. Al 15 %, son $21.000. *[Fuente del porcentaje: Decreto 1625 de 2016]*
 8. Cálculo: $17.000 + $36.000 + $21.000 = $74.000. *[Escenario simulado]*
 9. Se debita Gasto provisiones – cuentas incobrables por $74.000. *[Basado en el libro, p. 202]*
-10. Y se acredita Provisión para deudas incobrables, por el mismo valor. *[Basado en el libro, p. 202]*
+10. Y se acredita Provisión para cuentas incobrables, por el mismo valor. *[Basado en el libro, p. 202]*
 11. Cálculo: $1.300.000 − $74.000 = $1.226.000, el valor neto. *[Basado en el libro, p. 202]*
 
 **Cierre:** Cada grupo con su porcentaje, y la suma de todos es la provisión. *[Basado en el libro, pp. 200-201]*
@@ -982,30 +982,30 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
 - **Hecho del ejemplo:** 31 de diciembre de 2007. El Torito Currambero calcula que $148.800 de lo que le deben sus clientes no se va a recuperar. Crea la provisión.
 - **La mano arma el asiento:**
   - Debe · Gasto provisiones – cuentas incobrables · $148.800
-  - Haber · Provisión para deudas incobrables · $148.800
+  - Haber · Provisión para cuentas incobrables · $148.800
 - **Explicación al confirmar:**
   - Gasto provisiones – cuentas incobrables sube: va al Debe.
-  - Provisión para deudas incobrables sube: va al Haber.
+  - Provisión para cuentas incobrables sube: va al Haber.
   - Las dos por $148.800.
   - El Debe y el Haber suman igual: el asiento cuadra.
-- **Para lector de pantalla:** Ejemplo: El 31 de diciembre de 2007, El Torito Currambero crea una provisión de $148.800. El asiento tiene Gasto provisiones – cuentas incobrables en el Debe y Provisión para deudas incobrables en el Haber, las dos por $148.800. Los dos totales dan $148.800.
+- **Para lector de pantalla:** Ejemplo: El 31 de diciembre de 2007, El Torito Currambero crea una provisión de $148.800. El asiento tiene Gasto provisiones – cuentas incobrables en el Debe y Provisión para cuentas incobrables en el Haber, las dos por $148.800. Los dos totales dan $148.800.
 
 #### La partida
 
 - **Objetivo:** Registrar la provisión de El Torito: cuando se crea, cuando se castiga una deuda y cuando se ajusta.
 - **Consigna:** Lee el hecho. Arma el asiento con las cuentas del estante.
-- **Estante:** Gasto provisiones – cuentas incobrables · Provisión para deudas incobrables · Cuentas por cobrar – clientes · Caja
+- **Estante:** Gasto provisiones – cuentas incobrables · Provisión para cuentas incobrables · Cuentas por cobrar – clientes · Caja
 - **Libro diario:** LIBRO DIARIO · 1 asiento · 2 asientos · Ver · Ocultar · DEBE · HABER
 - **Ya anotado en el diario al empezar:** 31 de diciembre de 2007
   - Debe · Gasto provisiones – cuentas incobrables · $148.800
-  - Haber · Provisión para deudas incobrables · $148.800
+  - Haber · Provisión para cuentas incobrables · $148.800
 
 **Asiento 1 · Registra el castigo de marzo.**
 
 - **Fecha en el diario:** Marzo del año siguiente
 - **Hecho:** Marzo del año siguiente. El Torito da por perdida la deuda de Pablo Moncayo, que es de $180.000. Ya tiene una provisión de $148.800.
 - **Asiento correcto:**
-  - Debe · Provisión para deudas incobrables · $180.000
+  - Debe · Provisión para cuentas incobrables · $180.000
   - Haber · Cuentas por cobrar – clientes · $180.000
 - **Devoluciones de error** (prioridad D > C > A > B):
   - *D:* Sobra una cuenta. Este castigo solo mueve la provisión y Cuentas por cobrar – clientes. Todo el castigo va contra la provisión, aunque sea mayor que ella. Y aquí no entra plata.
@@ -1020,7 +1020,7 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
 - **Hecho:** 31 de diciembre del año siguiente. El análisis pide una provisión de $153.400. En marzo, la provisión se quedó corta en $31.200.
 - **Asiento correcto:**
   - Debe · Gasto provisiones – cuentas incobrables · $184.600
-  - Haber · Provisión para deudas incobrables · $184.600
+  - Haber · Provisión para cuentas incobrables · $184.600
 - **Devoluciones de error** (prioridad D > C > A > B):
   - *D:* Sobra una cuenta. Este hecho solo mueve el gasto y la provisión, como en diciembre de 2007.
   - *C:* Están al revés. Como en diciembre de 2007, el gasto va al Debe y la provisión, que sube, va al Haber.
@@ -1045,23 +1045,23 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
   3. Confirma cuando los dos totales den igual: tienes un solo intento.
 - **Hecho del ejemplo:** Marzo del año siguiente. El Torito Currambero castiga la deuda de Pablo Moncayo, que es de $180.000. Usa la provisión.
 - **La mano arma el asiento:**
-  - Debe · Provisión para deudas incobrables · $180.000
+  - Debe · Provisión para cuentas incobrables · $180.000
   - Haber · Cuentas por cobrar – clientes · $180.000
 - **Explicación al confirmar:**
   - La provisión baja: va al Debe.
   - Cuentas por cobrar – clientes baja: va al Haber.
   - Las dos por $180.000.
   - Los casos a, b y c son tres finales distintos de este castigo.
-- **Para lector de pantalla:** Ejemplo: En marzo del año siguiente, El Torito Currambero castiga la deuda de Pablo Moncayo. El asiento tiene Provisión para deudas incobrables en el Debe y Cuentas por cobrar – clientes en el Haber, las dos por $180.000. Los dos totales dan $180.000.
+- **Para lector de pantalla:** Ejemplo: En marzo del año siguiente, El Torito Currambero castiga la deuda de Pablo Moncayo. El asiento tiene Provisión para cuentas incobrables en el Debe y Cuentas por cobrar – clientes en el Haber, las dos por $180.000. Los dos totales dan $180.000.
 
 #### La partida
 
 - **Objetivo:** Registrar el pago de una deuda que ya se había castigado, en los tres casos del libro.
 - **Consigna:** Lee el hecho. Arma el asiento con las cuentas del estante.
-- **Estante:** Caja · Cuentas por cobrar – clientes · Provisión para deudas incobrables · Gasto provisiones – cuentas incobrables · Ingresos por ventas
+- **Estante:** Caja · Cuentas por cobrar – clientes · Provisión para cuentas incobrables · Gasto provisiones – cuentas incobrables · Ingresos por ventas
 - **Libro diario:** LIBRO DIARIO · 1 asiento · 2 asientos · Ver · Ocultar · DEBE · HABER
 - **Ya anotado en el diario al empezar:** Marzo del año siguiente
-  - Debe · Provisión para deudas incobrables · $180.000
+  - Debe · Provisión para cuentas incobrables · $180.000
   - Haber · Cuentas por cobrar – clientes · $180.000
 - *El diario agrupa los asientos seguidos de la misma fecha bajo una sola etiqueta.*
 
@@ -1071,7 +1071,7 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
 - **Hecho:** Caso a. Un tiempo después del castigo, Pablo Moncayo vuelve y paga toda la factura: $180.000.
 - **Asiento correcto:**
   - Debe · Cuentas por cobrar – clientes · $180.000
-  - Haber · Provisión para deudas incobrables · $180.000
+  - Haber · Provisión para cuentas incobrables · $180.000
 - **Devoluciones de error** (prioridad D > C > A > B):
   - *D:* Sobra una cuenta. Revivir la deuda solo mueve Cuentas por cobrar – clientes y la provisión. El gasto no se toca, la plata todavía no entra y no hay ningún ingreso.
   - *C:* Están al revés. Revivir es reversar el castigo: Cuentas por cobrar – clientes vuelve a subir y va al Debe. La provisión va al Haber.
@@ -1097,7 +1097,7 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
 - **Hecho:** Caso b. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y promete pagar el resto.
 - **Asiento correcto:**
   - Debe · Cuentas por cobrar – clientes · $180.000
-  - Haber · Provisión para deudas incobrables · $180.000
+  - Haber · Provisión para cuentas incobrables · $180.000
 - **Devoluciones de error** (prioridad D > C > A > B):
   - *D:* Sobra una cuenta. Revivir la deuda solo mueve Cuentas por cobrar – clientes y la provisión. El gasto no se toca, la plata todavía no entra y no hay ningún ingreso.
   - *C:* Están al revés. Revivir es reversar el castigo: Cuentas por cobrar – clientes vuelve a subir y va al Debe. La provisión va al Haber.
@@ -1125,7 +1125,7 @@ Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula e
 - **Hecho:** Caso c. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y avisa que ya no puede pagar más.
 - **Asiento correcto:**
   - Debe · Cuentas por cobrar – clientes · $100.000
-  - Haber · Provisión para deudas incobrables · $100.000
+  - Haber · Provisión para cuentas incobrables · $100.000
 - **Devoluciones de error** (prioridad D > C > A > B):
   - *D:* Sobra una cuenta. Revivir la deuda solo mueve Cuentas por cobrar – clientes y la provisión. El gasto no se toca, la plata todavía no entra y no hay ningún ingreso.
   - *C:* Están al revés. Revivir es reversar el castigo: Cuentas por cobrar – clientes vuelve a subir y va al Debe. La provisión va al Haber.
@@ -1169,7 +1169,7 @@ Cada nombre de cuenta que aparece, en qué piezas y cuántas veces (nombre exact
 | Ingresos por ventas | T6 · Aprender 1 (2) · T6 · Aprender 2 (3) · b5-t6-a3 (2) | 7 |
 | Inversiones – títulos | T5 · Aprender 2 (9) · b5-t5-a2 (18) | 27 |
 | Préstamos a particulares *(solo en prosa)* | b5-t6-a1 (2) | 2 |
-| Provisión para deudas incobrables | T6 · Aprender 2 (2) · T6 · Aprender 3 (8) · T6 · Aprender 4 (4) · T6 · Aprender 5 (3) · b5-t6-a2 (8) · b5-t6-a3 (8) | 33 |
+| Provisión para cuentas incobrables | T6 · Aprender 2 (2) · T6 · Aprender 3 (8) · T6 · Aprender 4 (4) · T6 · Aprender 5 (3) · b5-t6-a2 (8) · b5-t6-a3 (8) | 33 |
 
 ### Formas cortas y variantes
 

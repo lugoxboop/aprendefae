@@ -49,7 +49,7 @@ export const RESUMEN_T6_ACT2 = RESUMEN_T5_ACT2;
 /* ═══════════ EL ESTANTE: SOLO NOMBRES, LOS DE EL TORITO (PP. 202-206) ═══════════ */
 
 export const GASTO = "Gasto provisiones – cuentas incobrables";
-export const PROVISION = "Provisión para deudas incobrables";
+export const PROVISION = "Provisión para cuentas incobrables";
 export const CLIENTES = "Cuentas por cobrar – clientes";
 export const CAJA = "Caja";
 
@@ -176,12 +176,12 @@ export const PROVISION_2007_T6_ACT2 = {
   /* La explicación en cuatro líneas, al terminar el ejemplo. La segunda enseña que la provisión sube por el Haber. */
   resolucion: [
     "Gasto provisiones – cuentas incobrables sube: va al Debe.",
-    "Provisión para deudas incobrables sube: va al Haber.",
+    "Provisión para cuentas incobrables sube: va al Haber.",
     "Las dos por $148.800.",
     "El Debe y el Haber suman igual: el asiento cuadra.",
   ],
 };
-export const ALT_TUTORIAL_T6_ACT2 = "Ejemplo resuelto. El 31 de diciembre de 2007, El Torito Currambero crea una provisión de $148.800. El asiento tiene Gasto provisiones – cuentas incobrables en el Debe y Provisión para deudas incobrables en el Haber, las dos por $148.800. Los dos totales dan $148.800.";
+export const ALT_TUTORIAL_T6_ACT2 = "Ejemplo resuelto. El 31 de diciembre de 2007, El Torito Currambero crea una provisión de $148.800. El asiento tiene Gasto provisiones – cuentas incobrables en el Debe y Provisión para cuentas incobrables en el Haber, las dos por $148.800. Los dos totales dan $148.800.";
 
 /* ═══════════ TEXTO ALTERNATIVO ═══════════ */
 

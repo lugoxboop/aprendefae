@@ -28,7 +28,7 @@ const castigo = A2.PARTES_T6_ACT2[0];
 test("★★★ una sobra y una falta: «No va {X}: en su lugar va {Y}.», y sigue la RAZÓN de la cuenta que puso (entrega 1; el caso de Sakuta en b5-t6-a2)", () => {
   const r = evaluarParte(castigo, [d(A2.GASTO, 180000), hb(A2.CLIENTES, 180000)]);
   assert.equal(r.error, "D");
-  assert.equal(r.texto, "No va Gasto provisiones – cuentas incobrables: en su lugar va Provisión para deudas incobrables. El gasto se anotó en diciembre, al crear la provisión. Lo que le faltó se suma a la provisión del año siguiente.");
+  assert.equal(r.texto, "No va Gasto provisiones – cuentas incobrables: en su lugar va Provisión para cuentas incobrables. El gasto se anotó en diciembre, al crear la provisión. Lo que le faltó se suma a la provisión del año siguiente.");
 });
 
 test("★★★ solo sobran: «Sobra {X}.» con una, «Sobran {X} y {Y}.» con dos, y la razón de cada una, en el orden en que las puso", () => {
@@ -81,7 +81,7 @@ test("★★★ dos de más y dos de menos (b5-t5-a2, asientos de tres cuentas):
 
 test("★★ distinto número de más y de menos: «Sobra X.» y luego «Falta Y.»/«Faltan Y y Z.»", () => {
   const t = textoD(castigo, [d(A2.GASTO, 0), d(A2.CAJA, 0)]);
-  assert.ok(t.startsWith("Sobran Gasto provisiones – cuentas incobrables y Caja. Faltan Provisión para deudas incobrables y Cuentas por cobrar – clientes. ") === false, "dos y dos van como cambio, no como sobra/falta");
+  assert.ok(t.startsWith("Sobran Gasto provisiones – cuentas incobrables y Caja. Faltan Provisión para cuentas incobrables y Cuentas por cobrar – clientes. ") === false, "dos y dos van como cambio, no como sobra/falta");
   const u = textoD(castigo, [d(A2.GASTO, 0), d(A2.CAJA, 0), hb(A2.CLIENTES, 0)]);
-  assert.ok(u.startsWith("Sobran Gasto provisiones – cuentas incobrables y Caja. Falta Provisión para deudas incobrables. "), u);
+  assert.ok(u.startsWith("Sobran Gasto provisiones – cuentas incobrables y Caja. Falta Provisión para cuentas incobrables. "), u);
 });

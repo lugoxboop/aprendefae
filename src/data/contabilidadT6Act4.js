@@ -119,12 +119,12 @@ export const HECHOS_T6_ACT4 = [
   {
     id: "qd-06", respuesta: A_PROVISION, errores: CONTRA_PROVISION,
     texto: "En marzo, El Torito castiga la deuda de Pablo Moncayo. Ya tiene una provisión.",
-    acierto: "Provisión para deudas incobrables. El gasto ya se anotó en diciembre; al castigar, la provisión baja.",
+    acierto: "Provisión para cuentas incobrables. El gasto ya se anotó en diciembre; al castigar, la provisión baja.",
   },
   {
     id: "qd-07", respuesta: A_PROVISION, errores: CONTRA_PROVISION,
     texto: "Con el método de provisiones, una empresa da por perdida la deuda de un cliente.",
-    acierto: "Provisión para deudas incobrables. Si hay provisión, el castigo va contra ella.",
+    acierto: "Provisión para cuentas incobrables. Si hay provisión, el castigo va contra ella.",
   },
   {
     id: "qd-08", respuesta: A_GASTO, errores: AJUSTE,
@@ -180,4 +180,4 @@ export const SE_ACREDITA_T6_ACT4 = {
   "b5-t6-a4-tutorial": PROVISION,
 };
 
-export const ALT_T6_ACT4 = "Actividad de elección. Aparece un hecho. Elige cuál de las cuatro cuentas se debita: Cuentas por cobrar – clientes, Caja, Gasto provisiones – cuentas incobrables o Provisión para deudas incobrables. Tienes un intento por hecho, y después se lee la explicación.";
+export const ALT_T6_ACT4 = "Actividad de elección. Aparece un hecho. Elige cuál de las cuatro cuentas se debita: Cuentas por cobrar – clientes, Caja, Gasto provisiones – cuentas incobrables o Provisión para cuentas incobrables. Tienes un intento por hecho, y después se lee la explicación.";
