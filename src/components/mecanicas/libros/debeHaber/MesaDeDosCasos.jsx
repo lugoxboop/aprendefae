@@ -99,7 +99,7 @@ function PanelDeCaso({ panel, tiempo }) {
       {/* La cuenta que recibe el débito: grande y arriba. */}
       <p style={{
         margin: "0 0 5px", fontFamily: "Sora, sans-serif", fontWeight: 700,
-        fontSize: "11.5px", lineHeight: 1.2, color: FAE.text, textAlign: "center",
+        fontSize: "12px", lineHeight: 1.2, color: FAE.text, textAlign: "center",
       }}>
         {d.cuenta}
       </p>
@@ -260,7 +260,7 @@ function Contraejemplo() {
           <div key={x.cuenta} style={{ ...PANEL, flex: "1 1 0", minWidth: 0, padding: "9px 7px" }}>
             <p style={{
               margin: "0 0 5px", fontFamily: "Sora, sans-serif", fontWeight: 700,
-              fontSize: "11.5px", lineHeight: 1.2, color: FAE.text, textAlign: "center",
+              fontSize: "12px", lineHeight: 1.2, color: FAE.text, textAlign: "center",
             }}>
               {x.cuenta}
             </p>

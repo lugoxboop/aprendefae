@@ -176,7 +176,7 @@ function Cajon({ titulo, pie, cuentas, vacio, acento, atenuado = false }) {
       }}
     >
       <p style={{ ...ROTULO, color: acento, marginBottom: "4px" }}>{titulo.toUpperCase()}</p>
-      <p style={{ margin: "0 0 8px", fontSize: "11px", color: "rgba(248,249,250,0.45)", lineHeight: 1.3 }}>{pie}</p>
+      <p style={{ margin: "0 0 8px", fontSize: "12px", color: "rgba(248,249,250,0.45)", lineHeight: 1.3 }}>{pie}</p>
       {vacio
         ? <p data-vaciado style={{ margin: 0, fontSize: "12px", color: "rgba(248,249,250,0.3)" }}>— en blanco —</p>
         : cuentas.map((c) => (
@@ -326,7 +326,8 @@ export function EscenaPartidaDoble({ resaltar }) {
   const pila = (familias, lado) => (
     <span style={{ display: "block", lineHeight: 1.4 }}>
       {familias.map((f) => (
-        <span key={f} className="fae-cae" style={{ display: "block", fontSize: "10.5px", color: COLOR_LADO[lado] }}>
+        /* 12 px: son las líneas del estado, que el estudiante lee. */
+        <span key={f} className="fae-cae" style={{ display: "block", fontSize: "12px", color: COLOR_LADO[lado] }}>
           {f}
         </span>
       ))}
