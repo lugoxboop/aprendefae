@@ -19,7 +19,7 @@ import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import { PIEZA_LO_QUE_LE_DEBEN } from "../data/contabilidadT6Pieza1.js";
 import { PIEZA_NO_VA_A_PAGAR } from "../data/contabilidadT6Pieza2.js";
 import { PIEZA_LA_PROVISION } from "../data/contabilidadT6Pieza3.js";
-import { conFigurasT6A3 } from "./mecanicas/libros/tema6/escenasTema6.jsx";
+import { conFigurasCapa1 } from "./mecanicas/libros/tema6/FigurasCapa1.jsx";
 import { PIEZA_SI_PAGA } from "../data/contabilidadT6Pieza4.js";
 import { PIEZA_COMO_SE_CALCULA } from "../data/contabilidadT6Pieza5.js";
 import { conPorcentajePegado } from "../contabilidad/t6Pieza5.js";
@@ -55,7 +55,8 @@ export const TEMA = "cuentas-por-cobrar";
  * La nota de «cartera» del término 2 de la pieza 1 (`notaDebajo`) la pinta CuatroCapas, siempre a la vista.
  * La pieza 5, el «%» pegado a su número y el pie de cada término (tema6/PiesDeTermino.jsx).
  */
-export const PIEZAS = [{ numero: 1, pieza: PIEZA_LO_QUE_LE_DEBEN }, { numero: 2, pieza: PIEZA_NO_VA_A_PAGAR }, { numero: 3, pieza: conFigurasT6A3(PIEZA_LA_PROVISION) }, { numero: 4, pieza: PIEZA_SI_PAGA }, { numero: 5, pieza: conPiesDeTermino(conPorcentajePegado(PIEZA_COMO_SE_CALCULA)) }];
+/* Lote 10: cada término de la capa 1 con su figura, antes del nombre (FigurasCapa1.jsx). */
+export const PIEZAS = [{ numero: 1, pieza: conFigurasCapa1(PIEZA_LO_QUE_LE_DEBEN) }, { numero: 2, pieza: conFigurasCapa1(PIEZA_NO_VA_A_PAGAR) }, { numero: 3, pieza: conFigurasCapa1(PIEZA_LA_PROVISION) }, { numero: 4, pieza: conFigurasCapa1(PIEZA_SI_PAGA) }, { numero: 5, pieza: conFigurasCapa1(conPiesDeTermino(conPorcentajePegado(PIEZA_COMO_SE_CALCULA))) }];
 const PUBLICADAS = PIEZAS.length;
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */

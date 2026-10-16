@@ -215,6 +215,9 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota, 
             style={{
               fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 600,
               padding: "10px 18px", borderRadius: "999px", border: "none",
+              /* 44 px: medido a 320 daba 76×40. Es el «Entrar» del ranking, no el
+                 de Google —por eso sobrevivió al arreglo de aquel—. */
+              minHeight: "44px",
               cursor: "pointer", backgroundColor: FAE.teal, color: FAE.bg,
             }}
           >
