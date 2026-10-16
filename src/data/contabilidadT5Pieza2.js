@@ -156,23 +156,21 @@ export const VENTAS_T5_A2 = [
   },
 ];
 /*
- * La figura de la capa 3 (Mai, enganche B1-B5 §2b): la cuenta T de
- * Inversiones – títulos del ejemplo del libro, con la compra del 1 de mayo en
- * el DEBE. Al decidirse cada venta entra en el HABER lo que costaron los
- * títulos vendidos ese día (las cifras y las fechas son las de la capa 2):
- * la venta A, la del 1 de agosto (ganancia); la B, la del 1 de noviembre
- * (pérdida). «DEBE» y «HABER», las palabras publicadas de la T (T6 · A3).
+ * La figura de la capa 3 (Mai, enganche B1-B5 §2b; decisión del 15-oct: solo
+ * con el escenario simulado de las cajas, sin cifras nuevas): la cuenta T de
+ * Inversiones – títulos. En el DEBE, la compra de cada venta por lo que costó
+ * (la cifra de su caja, con su nombre debajo). Al cerrarse la caja, la venta
+ * la saca por ese mismo costo en el HABER: la inversión sale por lo que costó.
+ * La ganancia o la pérdida es la diferencia que ya dice el texto de la caja.
+ * Sin fechas: las cajas no las traen. Debajo, el pie del escenario simulado.
+ * «DEBE» y «HABER», las palabras publicadas de la T (T6 · A3).
  */
-const HECHO = (i) => ESCENA_T5_A2.hechos[i].fecha;
 export const FIGURA_CAPA_3_T5_A2 = {
   cuenta: ESCENA_T5_A2.inversiones,
   debe: "DEBE",
   haber: "HABER",
-  compra: { monto: ESCENA_T5_A2.compra, fecha: HECHO(0) },
-  ventas: {
-    "venta-a": { monto: ESCENA_T5_A2.costado1, fecha: HECHO(2) },
-    "venta-b": { monto: ESCENA_T5_A2.costado2, fecha: HECHO(4) },
-  },
+  ventas: VENTAS_T5_A2.map((v) => ({ id: v.id, nombre: v.nombre, costo: v.cifras[0] })),
+  pie: PIE_SIMULADO_T5_A2,
 };
 /* El texto final no cambia y sigue con su pie de las pp. 194-195. */
 export const FINAL_CAPA_3_T5_A2 = {

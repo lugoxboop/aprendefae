@@ -80,14 +80,14 @@ const FIGURAS = [
 /* Lo que entra en la figura al cerrarse cada caja, con lo correcto (los textos de §2b). */
 const ENTRA = {
   "T5 · A1": { a: [["a", "Paquete A"]], b: [["b", "Paquete B"]] },
-  "T5 · A2": { "venta-a": [["venta-a", "$1.500.0001 de agosto"]], "venta-b": [["venta-b", "$500.0001 de noviembre"]] },
+  "T5 · A2": { "venta-a": [["venta-a", "Costó $650 cada unoVenta A"]], "venta-b": [["venta-b", "Costó $1.150 cada unoVenta B"]] },
   "T6 · A1": Object.fromEntries(T6A1.HECHOS_T6.map((x) => [x.id, [[x.id, x.corto]]])),
   "T6 · A2": {
     "anulacion-directa": [["anulacion-directa-cierre", "Nada"], ["anulacion-directa-castigo", "Gasto"]],
     provisiones: [["provisiones-cierre", "Gasto"], ["provisiones-castigo", "Provisión"]],
   },
 };
-const INICIAL = { "T5 · A2": [["compra", "$2.000.0001 de mayo", false]] };
+const INICIAL = { "T5 · A2": [["venta-a-compra", "Costó $650 cada unoVenta A", false], ["venta-b-compra", "Costó $1.150 cada unoVenta B", false]] };
 
 test("★★★ §2b: los textos nuevos de la figura, literales (para Shoko)", () => {
   assert.deepEqual(T5A1.FIGURA_CAPA_3, { temporal: "Temporal", noTemporal: "No temporal" });
@@ -96,10 +96,12 @@ test("★★★ §2b: los textos nuevos de la figura, literales (para Shoko)", (
   assert.equal(T6A1.FIGURA_CAPA_3_T6.cuenta, "Cuentas por cobrar – clientes");
   assert.deepEqual(T6A2.FIGURA_CAPA_3_T6_A2.filas, { "anulacion-directa": { cierre: "Nada", castigo: "Gasto" }, provisiones: { cierre: "Gasto", castigo: "Provisión" } });
   assert.deepEqual(T6A2.FIGURA_CAPA_3_T6_A2.columnas.map((c) => c.texto), ["Al cerrar el periodo", "Al castigar"]);
-  /* Las cifras de T5 · A2 salen de la capa 2: ninguna se inventa. */
+  /* T5 · A2 (decisión del 15-oct): solo las cifras de las cajas que se responden, ninguna del ejemplo del libro, y el pie del escenario simulado. */
   const F = T5A2.FIGURA_CAPA_3_T5_A2;
-  assert.equal(F.cuenta, T5A2.ESCENA_T5_A2.inversiones);
-  assert.deepEqual([F.compra.monto, F.ventas["venta-a"].monto, F.ventas["venta-b"].monto], [T5A2.ESCENA_T5_A2.compra, T5A2.ESCENA_T5_A2.costado1, T5A2.ESCENA_T5_A2.costado2]);
+  assert.equal(F.cuenta, "Inversiones – títulos");
+  assert.deepEqual(F.ventas, T5A2.VENTAS_T5_A2.map((v) => ({ id: v.id, nombre: v.nombre, costo: v.cifras[0] })));
+  assert.deepEqual(F.ventas.map((v) => v.costo), ["Costó $650 cada uno", "Costó $1.150 cada uno"]);
+  assert.equal(F.pie, "Escenario simulado");
 });
 
 for (const p of FIGURAS) {
@@ -149,6 +151,24 @@ test("★★★ T5 · A1 · §2b: cada paquete entra en su cajón (A en «Tempor
   assert.equal(cajon("no-temporal").firstElementChild.textContent, "No temporal");
   assert.deepEqual([...cajon("temporal").querySelectorAll("[data-entrada]")].map((e) => e.textContent), ["Paquete A"]);
   assert.deepEqual([...cajon("no-temporal").querySelectorAll("[data-entrada]")].map((e) => e.textContent), ["Paquete B"]);
+  desmontar();
+});
+
+test("★★★ T5 · A2 · §2b: cada compra en el DEBE por lo que costó; al cerrarse su caja, la venta la saca por el mismo costo en el HABER; sin cifras del ejemplo del libro y con el pie «Escenario simulado»", async () => {
+  const p = FIGURAS[1];
+  const { caja, desmontar } = await montar(h(p.Componente));
+  const figura = caja.querySelector('[data-figura="t5-a2"]');
+  const col = (lado) => [...figura.querySelectorAll(`[data-columna="${lado}"] [data-entrada]`)].map((e) => e.textContent);
+  assert.equal(figura.firstElementChild.textContent, "Inversiones – títulos");
+  assert.deepEqual(col("debe"), ["Costó $650 cada unoVenta A", "Costó $1.150 cada unoVenta B"]);
+  assert.deepEqual(col("haber"), []);
+  assert.equal(figura.querySelector("[data-pie]").textContent, "Escenario simulado");
+  assert.ok(!/2\.000\.000|1\.500\.000|500\.000|agosto|noviembre|mayo/.test(figura.textContent), "nada del ejemplo del libro");
+  await decidir(tocar, zonaDe(caja, "venta-b"), "perdida");
+  assert.deepEqual(col("haber"), ["Costó $1.150 cada unoVenta B"], "sale por lo que costó");
+  await decidir(tocar, zonaDe(caja, "venta-a"), "ganancia");
+  assert.deepEqual(col("haber"), ["Costó $1.150 cada unoVenta B", "Costó $650 cada unoVenta A"]);
+  assert.deepEqual(col("debe"), ["Costó $650 cada unoVenta A", "Costó $1.150 cada unoVenta B"], "el DEBE no cambia");
   desmontar();
 });
 

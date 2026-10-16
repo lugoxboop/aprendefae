@@ -19,8 +19,9 @@ import { METODOS_T6_A2, FIGURA_CAPA_3_T6_A2 } from "../../../../data/contabilida
  * relleno: no se mueve nada) hasta la decisión siguiente.
  *   · T5 · A1: dos cajones, «Temporal» y «No temporal»; cada paquete entra
  *     en el suyo.
- *   · T5 · A2: la cuenta T de las inversiones, con la compra en el
- *     DEBE; cada venta mete en el HABER lo que costaron sus títulos.
+ *   · T5 · A2: la cuenta T de las inversiones, con la compra de cada venta
+ *     del escenario simulado en el DEBE, por lo que costó; al cerrarse la
+ *     caja, la venta la saca por ese costo en el HABER.
  *   · T6 · A1: la cuenta T de lo que deben los clientes; cada hecho entra
  *     con su nombre corto en el DEBE (sube) o en el HABER (baja); el que no
  *     cambia va debajo, tras «Sin movimiento:».
@@ -110,14 +111,19 @@ export function FiguraT5A1({ decididas }) {
 }
 
 /* ═══════════ T5 · A2 · la T de las inversiones ═══════════ */
-/* «$2.000.000 · 1 de mayo» (§2b de Mai): el monto y, debajo, la fecha; a 320 no caben en un renglón de media T. */
+/*
+ * Solo con el escenario de las cajas (decisión del 15-oct): en el DEBE, cada
+ * compra por lo que costó; al cerrarse su caja, la venta la saca por ese
+ * mismo costo en el HABER. Debajo, el pie «Escenario simulado».
+ */
 export function FiguraT5A2({ decididas }) {
   const F = FIGURA_CAPA_3_T5_A2;
   const entradas = [
-    { id: "compra", lado: "debe", texto: F.compra.monto, detalle: F.compra.fecha },
-    ...decididas.filter((id) => F.ventas[id]).map((id) => ({ id, lado: "haber", texto: F.ventas[id].monto, detalle: F.ventas[id].fecha })),
+    ...F.ventas.map((v) => ({ id: `${v.id}-compra`, lado: "debe", texto: v.costo, detalle: v.nombre })),
+    ...decididas.map((id) => F.ventas.find((v) => v.id === id)).filter(Boolean).map((v) => ({ id: v.id, lado: "haber", texto: v.costo, detalle: v.nombre })),
   ];
-  return <CuentaPequena figura={F} entradas={entradas} ultima={ultimaDe(decididas)} atributos={{ "data-figura": "t5-a2" }} />;
+  const pie = <p data-pie style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: COLOR.apagado }}>{F.pie}</p>;
+  return <CuentaPequena figura={F} entradas={entradas} ultima={ultimaDe(decididas)} debajo={pie} atributos={{ "data-figura": "t5-a2" }} />;
 }
 
 /* ═══════════ T6 · A1 · la T de los clientes ═══════════ */
