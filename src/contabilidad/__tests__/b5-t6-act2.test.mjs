@@ -345,7 +345,7 @@ test("★★★ la prioridad D > C > A > B con su texto en el panel, las B espec
   }
 });
 
-test("★★★ el libro diario: está desde el principio, plegado, y no se abre solo; empieza con la provisión de 2007 y suma lo correcto de cada asiento, no las preguntas", async () => {
+test("★★★ el libro diario: está desde el principio, plegado; nada dos veces (lote 6c): se abre con cada asiento confirmado y se pliega al empezar el paso siguiente; empieza con la provisión de 2007 y suma lo correcto de cada asiento, no las preguntas", async () => {
   const { caja, desmontar } = await montar();
   const alternar = () => caja.querySelector("[data-diario-alternar]");
   const fechas = () => [...caja.querySelectorAll("[data-fecha-diario]")].map((n) => n.textContent);
@@ -356,15 +356,17 @@ test("★★★ el libro diario: está desde el principio, plegado, y no se abre
   await responder(caja, "2506200");
   await avanzar(caja);
   assert.equal(caja.querySelector("[data-diario-cuenta]").textContent, "1 asiento", "una pregunta no es un asiento");
+  assert.equal(alternar().getAttribute("aria-expanded"), "false", "mientras se arma, plegado");
   await armar(caja, [d(GASTO, 180000), hb(CLIENTES, 180000)]); // falla (D): el diario suma lo correcto
-  assert.equal(alternar().getAttribute("aria-expanded"), "false", "no se abre solo");
-  await tocar(alternar());
+  assert.equal(alternar().getAttribute("aria-expanded"), "true", "se abre con el asiento nuevo");
   assert.equal(caja.querySelector("[data-diario-cabecera]").textContent, "LIBRO DIARIO");
   assert.deepEqual(lineas(), [`debe:${GASTO}`, `haber:${PROVISION}`, `debe:${PROVISION}`, `haber:${CLIENTES}`]);
   /* Las mismas fechas que los renglones de la T. */
   assert.deepEqual(fechas(), ["31 de diciembre de 2007", "Marzo del año siguiente"]);
   await avanzar(caja);
+  assert.equal(alternar().getAttribute("aria-expanded"), "false", "se pliega al empezar el paso siguiente");
   await responder(caja, "31200");
+  assert.equal(alternar().getAttribute("aria-expanded"), "false", "una pregunta no lo abre");
   await avanzar(caja);
   await armar(caja, PARTES[1].asiento);
   assert.deepEqual(fechas(), ["31 de diciembre de 2007", "Marzo del año siguiente", "31 de diciembre del año siguiente"]);

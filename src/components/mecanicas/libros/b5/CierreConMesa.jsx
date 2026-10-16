@@ -367,7 +367,7 @@ function Pregunta({ parte, texto, onTexto, resultado, Bloque, reducido, etiqueta
 
 export default function CierreConMesa({
   config, Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
-  encima = null, onParteComprobada = null, onReiniciar = null,
+  encima = null, onParteComprobada = null, onReiniciar = null, onAvanzar = null,
 }) {
   const t = useTanda(() => items ?? config.partes);
   const reducido = useReducido();
@@ -463,6 +463,8 @@ export default function CierreConMesa({
   };
   const avanzar = () => {
     setS(vacio());
+    /* Nada dos veces (lote 6c): al empezar el siguiente, el diario se pliega; en el resumen se queda como está. */
+    if (t.i + 1 < cuantas) onAvanzar?.();
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
