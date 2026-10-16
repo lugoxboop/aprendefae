@@ -37,8 +37,6 @@ import LaCuentaDeLaProvision from "./mecanicas/libros/tema6/LaCuentaDeLaProvisio
 import { T6_ACT5 } from "../data/contabilidadT6Act5.js";
 import ProvisionPorEdades from "./mecanicas/libros/tema6/ProvisionPorEdades.jsx";
 import { T6_ACT6 } from "../data/contabilidadT6Act6.js";
-import QueMetodoYCuando from "./mecanicas/libros/tema6/QueMetodoYCuando.jsx";
-import { T6_ACT7 } from "../data/contabilidadT6Act7.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -68,11 +66,10 @@ export const JUEGOS = [
   /* La mesa de asientos con el diario encima; en «Así se juega», la mesa sola. */
   { id: T6_ACT2.id, Mecanica: ProvisionDeElTorito, titulo: T6_ACT2.nombre },
   { id: T6_ACT3.id, Mecanica: DeudaQueVuelve, titulo: T6_ACT3.nombre },
-  /* Los cuatro Hacer nuevos: la elección de «¿Por Cuál Arteria Entra?», las casillas en orden y la clasificación de dos niveles, en su copia de la célula. */
+  /* Los Hacer nuevos: la elección de «¿Por Cuál Arteria Entra?» y las casillas en orden, en su copia de la célula (b5-t6-a7 se retiró en el lote 4). */
   { id: T6_ACT4.id, Mecanica: QueSeDebita, titulo: T6_ACT4.nombre },
   { id: T6_ACT5.id, Mecanica: LaCuentaDeLaProvision, titulo: T6_ACT5.nombre },
   { id: T6_ACT6.id, Mecanica: ProvisionPorEdades, titulo: T6_ACT6.nombre },
-  { id: T6_ACT7.id, Mecanica: QueMetodoYCuando, titulo: T6_ACT7.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */
@@ -132,7 +129,7 @@ export default function ContabilidadTema6View({ modo = null, nodoInicial = null,
               * compacto lo trunca con «…»; aquí se le deja romper: a 320 se leía
               * «Cuentas por co…». El estilo en línea gana a la clase.
               */}
-            <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "break-word" }}>
+            <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2 }}>
               {tema.title}
             </h1>
           </div>

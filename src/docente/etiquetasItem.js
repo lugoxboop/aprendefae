@@ -61,7 +61,6 @@ import { parteDeItem as parteDeItemMesa } from "../contabilidad/cierreConMesa.js
 import { PARTES_T6_ACT2 } from "../data/contabilidadT6Act2.js";
 import { PARTES_T6_ACT3 } from "../data/contabilidadT6Act3.js";
 import { hechoDeItemT6Act4 } from "../contabilidad/t6Act4.js";
-import { fichaDeItemT6Act7 } from "../contabilidad/t6Act7.js";
 import { CASILLAS_T6_ACT5 } from "../data/contabilidadT6Act5.js";
 import { PARTES_T6_ACT6 } from "../data/contabilidadT6Act6.js";
 import { hechoDePar as hechoDeAct3T3 } from "../contabilidad/mismoHecho.js";
@@ -89,8 +88,10 @@ import { unidadDeN1 as unidadDeT5N1 } from "../contabilidad/t5N1.js";
 import { unidadDeN3 as unidadDeT5N3 } from "../contabilidad/t5N3.js";
 import { unidadDeN4 as unidadDeT5N4 } from "../contabilidad/t5N4.js";
 import { hechoDeItemH1 as hechoDeItemT4H1 } from "../data/contabilidadT4H1.js";
+import { unidadDeN5 as unidadDeT5N5 } from "../contabilidad/t5N5.js";
 import { unidadDeR5_2 } from "../data/repasoCap5ToroNegroJuego.js";
 import { unidadDeR5_3 } from "../data/repasoCap5MateJuego.js";
+import { unidadDeR5_4 } from "../data/repasoCap5BarranquillaJuego.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
@@ -613,11 +614,12 @@ Object.assign(REGLAS, {
   "t5-revision-que-falta": (id) => unidadDeT5N3(id),
   /* T5 · N4 (Célula C). Una elección, por su pregunta; una línea, por su cuenta y su valor. */
   "t5-el-interes-del-periodo": (id) => unidadDeT5N4(id),
-  /* Tema 6 · acts. 4 a 7: el hecho, la casilla (por su enunciado) o la ficha. */
+  /* Tema 6 · acts. 4 a 6: el hecho o la casilla (por su enunciado). b5-t6-a7 se retiró en el lote 4. */
   "b5-t6-a4": (id) => hechoDeItemT6Act4(id),
   "b5-t6-a5": (id) => CASILLAS_T6_ACT5.find((c) => c.id === id)?.enunciado ?? null,
   "b5-t6-a6": (id) => PARTES_T6_ACT6.flatMap((p) => p.casillas).find((c) => c.id === id)?.enunciado ?? null,
-  "b5-t6-a7": (id) => fichaDeItemT6Act7(id),
+  /* T5 · N5 (Célula C). Una elección, por su pregunta; una línea, por su cuenta y su valor. */
+  "t5-gano-o-perdio": (id) => unidadDeT5N5(id),
 
   "cu-arma-el-asiento": (id) => textoDeItemA6(id),
 
@@ -791,6 +793,8 @@ Object.assign(REGLAS, {
   "r5-2": (id) => unidadDeR5_2(id),
   /* r5-3. Cada asiento, por su fecha y su operación. */
   "r5-3": (id) => unidadDeR5_3(id),
+  /* r5-4. Cada asiento, por su fecha y su nombre corto. */
+  "r5-4": (id) => unidadDeR5_4(id),
 });
 
 /*

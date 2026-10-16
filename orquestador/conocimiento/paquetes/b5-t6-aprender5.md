@@ -528,3 +528,34 @@ Al registro de cifras construidas: $1.700 y $170.000. No están en el capítulo,
 De 11 pasos a 10 (9 + 10, como pide Futaba). La predicción va entre el 4 y el 5.
 
 El contador de la parada dice «Antes del paso N» (nuevo, para Shoko).
+
+## Lote C2 · C1 · C7 (Futaba, PASA de Shoko, 15-oct) · manda sobre lo de arriba
+
+Líneas copiadas tal cual de paquetes/b5-lote-c2-c1-c7.md (la entrega entera). Al primer error sale la pista; al segundo, la devolución que ya existe y después el texto que se revela.
+
+| Pieza | Caja o parada | Pista |
+|---|---|---|
+| T6 A5 | 1 mes de vencida | Busca el grupo cuyo rango incluye un mes y mira qué decidió el ejemplo para él. |
+| T6 A5 | 5 meses de vencida | Cinco meses pasan de tres. ¿Pasan también de seis? |
+| T6 A5 | 10 meses de vencida | Diez meses pasan de seis. ¿Pasan también de un año? |
+| T6 A5 | 20 meses de vencida | Un año tiene doce meses. Compara. |
+| T6 A5 | Parada | El 5 % es la mitad del 10 %. Primero saca el 10 % de $340.000. |
+
+Para las paradas de T6 A4 y T6 A5: comprobar que los rótulos «Primero se revive la deuda» y «son $17.000» no aparecen antes de su paso.
+
+### C1-14 · T6 A5 · capa 3
+Consigna: «Toca cada deuda y decide qué porcentaje le toca. Después, mira cuánto da su grupo.»
+Tablero: al abrir cada caja se llena la fila de su grupo.
+| Caja | Opciones | ✓ | Revela |
+|---|---|---|---|
+| Una deuda con 1 mes de vencida | Nada · 5 % · 10 % | Nada | Un mes no pasa de tres: va con las vigentes y las de hasta tres meses. En este ejemplo, ese grupo no se provisiona. |
+| Una deuda con 5 meses de vencida | Nada · 5 % · 10 % | 5 % | Cinco meses pasan de tres y no de seis: le toca el 5 %. Su grupo da $17.000. |
+| Una deuda con 10 meses de vencida | 5 % · 10 % · 15 % | 10 % | Diez meses pasan de seis y no de un año: le toca el 10 %. Su grupo da $36.000. |
+| Una deuda con 20 meses de vencida | 5 % · 10 % · 15 % | 15 % | Veinte meses pasan de un año: le toca el 15 %. Su grupo da $21.000. |
+Las devoluciones del segundo error y los pies son los de hoy.
+
+| # | Término | Texto final | Estado |
+|---|---|---|---|
+| C7-6 | T6 A5 · nota del término 4 | Esos porcentajes son el máximo que una empresa obligada a llevar contabilidad puede restar como gasto al calcular su impuesto de renta. Solo valen si usa este método. No son una regla para todas las empresas: cada una fija los suyos. | Corregida |
+
+Pie de C7-6: «Fuente: Decreto 1625 de 2016, art. 1.2.1.18.21, y DIAN, Concepto 534 de 2026 · Libro, p. 201». (La condición de llevar contabilidad la verificó Shoko en el Concepto 534 de 2026 de la DIAN, párrafos 4 y 11.)

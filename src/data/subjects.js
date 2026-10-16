@@ -665,14 +665,17 @@ export const SUBJECTS = {
           { id: "b5-t5-a1", nombre: "¿Qué renta da este título?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /* N1 de la Célula C, después de b5-t5-a1 (decisión de corte de T5, punto 6; la sostiene b5-t5-a1-del-efectivo-de-sobra). Temporal o a largo plazo, el grupo y la intención, pp. 191-192. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0110. */
           { id: "t5-temporal-o-largo-plazo", nombre: "¿Temporal o a largo plazo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
-          /* N2 de la Célula C, después de b5-t5-a1 (decisión de corte de T5, punto 6: N1 entra entre b5-t5-a1 y N2, y N3 justo después de N2). Las cuatro acciones de control de la p. 193; sostiene a N3. Cero FP. */
-          { id: "t5-a1-cuidar-las-inversiones", nombre: "Cómo se cuidan las inversiones", clasificacion: { tipo: APRENDER } },
-          /* N3 de la Célula C, justo después de N2, que la sostiene (decisión de corte de T5, punto 6). Qué acción de control de la p. 193 hace falta. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0111. */
+          /*
+           * N3 de la Célula C, justo después de N1 (decisión de corte de T5, punto 6). Qué acción de control de la p. 193 hace falta. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0111.
+           * N2 («Cómo se cuidan las inversiones», t5-a1-cuidar-las-inversiones, Aprender sin FP) salió de la lista con la fusión de la entrega 5 de Near: lo suyo va dentro de N3 (las glosas y el ejemplo resuelto). Sus archivos se quedan.
+           */
           { id: "t5-revision-que-falta", nombre: "¿Qué revisión falta?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "b5-t5-a2-los-tres-momentos-de-una-inversion", nombre: "Los tres momentos de una inversión", clasificacion: { tipo: APRENDER } },
           /* El cierre del tema. Difícil · 50 FP (decisión de Sakuta). Su fila del servidor es la migración 0072. */
           /* N4 de la Célula C, después de los tres momentos de B, que la sostienen (decisión de corte de T5, punto 6). El interés de un trimestre con cifras construidas, como en la p. 194, y el asiento del cobro. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0112. */
           { id: "t5-el-interes-del-periodo", nombre: "El interés del periodo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* N5 de la Célula C, justo después de N4; la sostienen los tres momentos de B (decisión de corte de T5, punto 6). Dos ventas de acciones, una con ganancia y otra con pérdida, por el costo, con cifras construidas. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0113. */
+          { id: "t5-gano-o-perdio", nombre: "¿Ganó o perdió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "b5-t5-a2", nombre: "El cierre completo de Santa Pacha", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
@@ -692,14 +695,17 @@ export const SUBJECTS = {
           { id: "b5-t6-a1-lo-que-otros-le-deben", nombre: "Lo que otros le deben a la empresa", clasificacion: { tipo: APRENDER } },
           /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (Futaba). Su fila del servidor es la migración 0071. */
           { id: "b5-t6-a1", nombre: "¿Clientes o otra cuenta por cobrar?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
-          /* Orden del camino por lo que cada actividad necesita saber (Shoko, calidad 15-oct; R9): a7 distingue los dos métodos y es la base de a2; la dificultad ya no sube y baja. */
-          { id: "b5-t6-a7", nombre: "¿Qué método y cuándo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /*
+           * Orden del camino (Sakuta, lote 4): a1 → a4 → a5 → a2 → a6 → a3. Es provisional: a5 se fusionará en a2
+           * en otro lote y el orden final será a1 → a4 → a2 → a6 → a3. b5-t6-a7 «¿Qué método y cuándo?» se retiró
+           * (Shoko, C6: sus decisiones ya están en a4 y en la capa 3 de T6 A2); su fila del servidor la borra la 0076.
+           */
           { id: "b5-t6-a4", nombre: "¿Qué se debita?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "b5-t6-a5", nombre: "La cuenta de la provisión", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* Actividades 2 y 3 de Hacer (mesa de asientos). Media · 25 y difícil · 50 FP (Sakuta). Sus filas del servidor son la migración 0074. */
           { id: "b5-t6-a2", nombre: "La provisión de El Torito", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "b5-t6-a3", nombre: "Cuando la deuda castigada vuelve", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "b5-t6-a6", nombre: "Provisión por edades", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "b5-t6-a3", nombre: "Cuando la deuda castigada vuelve", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "b5-t6-a2-cuando-un-cliente-no-va-a-pagar", nombre: "Cuando un cliente no va a pagar", clasificacion: { tipo: APRENDER } },
           { id: "b5-t6-a3-la-provision-de-un-ano-al-siguiente", nombre: "La provisión, de un año al siguiente", clasificacion: { tipo: APRENDER } },
           { id: "b5-t6-a4-cuando-el-cliente-castigado-si-paga", nombre: "Cuando el cliente castigado sí paga", clasificacion: { tipo: APRENDER } },
@@ -791,7 +797,7 @@ export const SUBJECTS = {
        */
       {
         id: "inventarios-descuentos-nic2",
-        title: "Inventarios III: descuentos, inventario físico y NIC 2",
+        title: "Inventarios III: descuentos, conteo y NIC 2",
         actividades: [
           /* A1: abre el tema, con su propio repaso (regla 3). Ejemplo H-1, pp. 248-249. Cero FP. */
           { id: "t7-3-descuento-comercial", nombre: "El descuento comercial", clasificacion: { tipo: APRENDER } },
@@ -840,6 +846,8 @@ export const SUBJECTS = {
           { id: "r5-2", nombre: "El Toro Negro", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* r5-3: el 4 del bloque D, pp. 269-271, sin el 2, 5, 7 y 28 de marzo. Experto · 90 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0252. */
           { id: "r5-3", nombre: "Marzo en Comercializadora Mate", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          /* r5-4: el 6 del bloque D, pp. 273-274, en diez asientos (sin los fletes del 25 y del 28). Experto · 90 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0253. */
+          { id: "r5-4", nombre: "Septiembre en Barranquilla", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],
       },
     ],
