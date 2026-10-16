@@ -426,55 +426,70 @@ test("★★ las otras piezas de T6 no cambian: sin `lector`, el pie visible se 
   desmontar();
 });
 
-test("★★★ condición 1 (Shoko): el Decreto nunca queda rotulado «Así lo dice el libro» en la capa 1; la nota del término 4 va rotulada «Nota»", async () => {
+/*
+ * La capa 1 va paginada (un término por pantalla): se recorre término por
+ * término con los puntos, abriendo «Más sobre este término» donde lo hay, y
+ * se mira la carta que está a la vista.
+ */
+const recorrerCapa1 = async (caja, fn) => {
+  const puntos = [...caja.querySelectorAll('[data-capa="1"] [data-punto]')];
+  for (let k = 0; k < puntos.length; k++) {
+    await tocar(puntos[k]);
+    const carta = caja.querySelector('[data-capa="1"] [data-termino][data-actual]');
+    const mas = carta.querySelector("[data-mas]");
+    if (mas && mas.getAttribute("aria-expanded") !== "true") await tocar(mas);
+    await fn(carta, k);
+  }
+  return puntos.length;
+};
+
+test("★★★ condición 1 (Shoko): el Decreto nunca queda rotulado «Así lo dice el libro» en la capa 1; la única caja es la cita del término 2 (B2)", async () => {
   const pieza = PIEZAS.find((p) => p.pieza.id === D.PIEZA_COMO_SE_CALCULA.id).pieza;
   const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA6[pieza.id];
   const { caja, desmontar } = await montar(h(CuatroCapas, { pieza, Capa2, Exploracion, Capa4, rotulo: "R" }));
-  const bloques = [...caja.querySelectorAll('[data-capa="1"] [data-del-libro]')];
-  assert.equal(bloques.length, 2, "la cita del término 1 y la nota del término 4");
-  const rotulos = bloques.map((b) => b.firstElementChild.textContent);
-  assert.deepEqual(rotulos, ["Así lo dice el libro", "Nota"]);
+  const bloques = [];
+  const total = await recorrerCapa1(caja, (carta, k) => { for (const b of carta.querySelectorAll("[data-del-libro]")) bloques.push([k, b]); });
+  assert.equal(total, 5);
+  /* B2: la cita pasa al término 2; la nota del término 4 es ahora el término 5 (sin caja). */
+  assert.deepEqual(bloques.map(([k, b]) => [k, b.firstElementChild.textContent]), [[1, "Así lo dice el libro"]]);
   /* La cita del libro es del libro; lo de la norma no entra en un bloque «Así lo dice el libro». */
-  for (const b of bloques) {
+  for (const [, b] of bloques) {
     if (b.firstElementChild.textContent === "Así lo dice el libro") assert.doesNotMatch(b.textContent, /Decreto|norma|renta/i);
   }
-  assert.doesNotMatch(bloques[0].textContent, /Decreto/);
+  assert.doesNotMatch(bloques[0][1].textContent, /Decreto/);
   desmontar();
 });
 
-test("★★★ condición 1 resuelta: cada término de la capa 1 muestra su pie bajo la definición, y la nota del 4 el suyo dentro de su caja, cada uno en su forma", async () => {
+test("★★★ condición 1 resuelta: cada término de la capa 1 muestra su pie bajo la definición, cada uno en su forma", async () => {
   const pieza = PIEZAS.find((p) => p.pieza.id === D.PIEZA_COMO_SE_CALCULA.id).pieza;
   const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA6[pieza.id];
   const { caja, desmontar } = await montar(h(CuatroCapas, { pieza, Capa2, Exploracion, Capa4, rotulo: "R" }));
-  const terminos = [...caja.querySelectorAll('[data-capa="1"] dl > div')];
-  assert.equal(terminos.length, 4);
   const N = D.PIEZA_COMO_SE_CALCULA.nombres;
-  /* Mai §3: términos 1 a 3, libro llano; término 4, la norma en su caja recta; la nota, el mixto. */
-  const TIPOS = ["libro", "libro", "libro", "norma"];
-  terminos.forEach((t, k) => {
-    const dd = t.querySelector("dd");
-    const pie = dd.querySelector("[data-pie-termino]");
+  /* Mai §3: términos 1 a 3, libro llano; término 4, la norma en su caja recta; término 5 (la nota de antes), el mixto. */
+  const TIPOS = ["libro", "libro", "libro", "norma", "norma-y-libro"];
+  const conDecreto = [];
+  const total = await recorrerCapa1(caja, (carta, k) => {
+    const def = carta.querySelector("[data-definicion]");
+    const pie = def.querySelector("[data-pie-termino]");
     assert.ok(pie, `término ${k + 1} sin pie`);
     assert.equal(pie.textContent, N[k].pie, `pie del término ${k + 1}`);
     assert.equal(pie.querySelector("[data-tipo-pie]").dataset.tipoPie, TIPOS[k], `forma del pie del término ${k + 1}`);
     assert.equal(pie.style.display, "block", "en su propia línea");
     /* Bajo la definición, no antes. */
-    assert.ok(dd.querySelector("[data-texto-con-pie]").compareDocumentPosition(pie) & w.Node.DOCUMENT_POSITION_FOLLOWING);
-    assert.equal(dd.querySelector("[data-texto-con-pie]").textContent, pegado(N[k].definicion));
+    assert.ok(def.querySelector("[data-texto-con-pie]").compareDocumentPosition(pie) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+    assert.equal(def.querySelector("[data-texto-con-pie]").textContent, pegado(N[k].definicion));
+    /* El pie de la definición sigue a la vista: no se pliega con «Más». */
+    assert.equal(pie.closest("[hidden]"), null);
+    for (const n of carta.querySelectorAll("[data-tipo-pie]")) if (n.textContent.includes("Decreto")) conDecreto.push([k, n]);
+    /* Ningún término lleva ya pie de nota. */
+    assert.equal(carta.querySelector("[data-pie-nota]"), null);
   });
-  /* La nota del término 4: su pie mixto dentro de la caja «Nota», bajo el texto. */
-  const nota = terminos[3].querySelector("[data-del-libro]");
-  assert.equal(nota.firstElementChild.textContent, "Nota");
-  const pieNota = nota.querySelector("[data-pie-nota]");
-  assert.equal(pieNota.textContent, D.PIE_DECRETO_DIAN_Y_LIBRO, "con el concepto de la DIAN (C7-6)");
-  assert.equal(pieNota.querySelector("[data-tipo-pie]").dataset.tipoPie, "norma-y-libro");
-  /* La cita del término 1 no lleva pie: su página va dentro de la cita. */
-  const cita = terminos[0].querySelector("[data-del-libro]");
-  assert.equal(cita.firstElementChild.textContent, "Así lo dice el libro");
-  assert.equal(cita.querySelector("[data-pie-nota]"), null);
-  /* Y el Decreto solo aparece en el término 4 y en su nota, nunca bajo «Así lo dice el libro». */
-  const conDecreto = [...caja.querySelectorAll('[data-capa="1"] [data-tipo-pie]')].filter((n) => n.textContent.includes("Decreto"));
-  assert.equal(conDecreto.length, 2);
-  for (const n of conDecreto) assert.notEqual(n.closest("[data-del-libro]")?.firstElementChild.textContent, "Así lo dice el libro");
+  assert.equal(total, 5);
+  /* El término 5 lleva el pie de la C7-6, con el concepto de la DIAN. */
+  assert.equal(N[4].pie, D.PIE_DECRETO_DIAN_Y_LIBRO);
+  /* La cita del término 2 no lleva pie: su página va dentro de la cita. */
+  /* Y el Decreto solo aparece en los términos 4 y 5, nunca bajo «Así lo dice el libro». */
+  assert.deepEqual(conDecreto.map(([k]) => k), [3, 4]);
+  for (const [, n] of conDecreto) assert.notEqual(n.closest("[data-del-libro]")?.firstElementChild.textContent, "Así lo dice el libro");
   desmontar();
 });

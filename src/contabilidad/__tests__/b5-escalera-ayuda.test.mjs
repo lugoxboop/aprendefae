@@ -419,13 +419,21 @@ test("★★★ C1 · paradas de T6 A4 y T6 A5: «Primero se revive la deuda» y
 
 /* ═══════════ C7 · EL RESUMEN QUE BORRA EL LÍMITE ═══════════ */
 
-test("★★★ C7-1 y C7-6: el término «Título valor» y la nota del término 4 con su pie, literales", () => {
+test("★★★ C7-1 y C7-6: «Título valor» salió con B2; la C7-6 es ahora el término 5 de T6 · A5, con la frase partida y su pie", () => {
   const t = filas(seccion("## C7"));
   const fila = (n) => t.find((f) => f[0] === n);
-  assert.equal(T5A1.PIEZA_DEL_EFECTIVO.nombres.find((x) => x.termino === "Título valor").definicion, fila("C7-1")[2]);
-  const nota = T6A5.PIEZA_COMO_SE_CALCULA.nombres[3];
-  assert.equal(nota.delLibro, fila("C7-6")[2]);
-  assert.equal(nota.pieDelLibro, entre(ENTREGA, "Pie de C7-6: "));
+  /* B2 (decisión de Sakuta, 15-oct): «Título valor» sale de T5 · A1. La C7-1 queda en la entrega, pero ya no en pantalla. */
+  assert.ok(fila("C7-1")[2].startsWith("Es un documento."));
+  assert.equal(T5A1.PIEZA_DEL_EFECTIVO.nombres.find((x) => x.termino === "Título valor"), undefined);
+  assert.ok(T5A1.PIEZA_DEL_EFECTIVO.nombres.every((x) => x.definicion !== fila("C7-1")[2]));
+  /* B2: la nota del término 4 pasa a pantalla propia; la frase partida solo cambia la entrada («Esos porcentajes son» → «Son»). */
+  const t4 = T6A5.PIEZA_COMO_SE_CALCULA.nombres[3];
+  assert.equal(t4.delLibro, undefined, "la nota volvió al término 4");
+  const t5 = T6A5.PIEZA_COMO_SE_CALCULA.nombres[4];
+  assert.equal(t5.termino, "Para qué sirven esos porcentajes");
+  assert.ok(t5.definicion.startsWith("Son el máximo"));
+  assert.equal(fila("C7-6")[2], `Esos porcentajes son${t5.definicion.slice("Son".length)}`);
+  assert.equal(t5.pie, entre(ENTREGA, "Pie de C7-6: "));
   /* Los que PASAN no cambian: C7-2, C7-3 y C7-4. */
   for (const n of ["C7-2", "C7-3", "C7-4"]) assert.deepEqual([fila(n)[2], fila(n)[3]], ["(sin cambio)", "PASA"]);
 });
