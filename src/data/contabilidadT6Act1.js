@@ -23,18 +23,22 @@ export const T6_ACT1 = {
   nombre: "¿Clientes o otra cuenta por cobrar?",
   dificultad: "facil",
   fpBase: 10,
+  /* R10 (hoja de fusiones de Mai): nueve fichas, entre 2 y 4 por cajón. El banco tiene 4 · 3 · 3. */
+  porPartida: 9,
   objetivo: "Decidir si un hecho va en Clientes o en otra cuenta por cobrar, y si se debita o se acredita.",
   consigna: "Lee el hecho. Elige la cuenta y, si es Clientes, cómo se anota.",
 };
 
-/* Las tres líneas de «¿Cómo se juega?». La tercera es la de b5-t5-a1. */
+/*
+ * Las dos líneas de «¿Cómo se juega?» (lote 6a: las fichas a un nivel). La primera es de Futaba; la
+ * segunda, la misma de b5-t5-a1, adaptada a la hoja de Mai (sin botón). PARA SHOKO.
+ */
 export const REGLAS_T6_ACT1 = [
-  "Elige si el hecho va en Clientes o en otra cuenta por cobrar.",
-  "Si va en Clientes, elige también si se debita o se acredita.",
-  "Pulsa el botón para colocar la ficha; si fallas, tienes un intento más.",
+  "Lee el hecho y elige dónde va: en otra cuenta por cobrar, o en Clientes, y si se debita o se acredita.",
+  "Toca el cajón donde va la ficha; si fallas, tienes un intento más.",
 ];
 
-/* ═══════════ LOS DOS NIVELES ═══════════ */
+/* ═══════════ LAS TRES OPCIONES: LOS TRES CAJONES DEL ESTANTE (hoja de fusiones de Mai) ═══════════ */
 
 export const OTRA = "otra";
 export const CLIENTES = "clientes";
@@ -42,25 +46,16 @@ export const DEBITA = "debita";
 export const ACREDITA = "acredita";
 
 /*
- * «Otra cuenta por cobrar» arriba y «Clientes» abajo: la regla §2.2 de la
- * guía v2 de Mai para b5-t5-a1 (la pestaña que abre el panel va al final y no
- * empuja a ninguna otra). Decisión de Kaede, anotada en el PR.
+ * Cada cajón es una respuesta entera: la cuenta y, si es Clientes, el lado. Los nombres, los de la hoja de
+ * Mai y del texto alternativo de Futaba. El grupo se lee «Cuenta por cobrar» (PARA SHOKO: la hoja pide
+ * la etiqueta del grupo de pestañas de hoy, que no tenía nombre).
  */
-export const CUENTAS = [
-  { id: OTRA, rotulo: "Otra cuenta por cobrar" },
-  { id: CLIENTES, rotulo: "Clientes" },
+export const CAJONES_T6_ACT1 = [
+  { cuenta: OTRA, lado: null, rotulo: "Otra cuenta por cobrar" },
+  { cuenta: CLIENTES, lado: DEBITA, rotulo: "Clientes, se debita" },
+  { cuenta: CLIENTES, lado: ACREDITA, rotulo: "Clientes, se acredita" },
 ];
-export const LADOS = [
-  { id: DEBITA, rotulo: "Se debita" },
-  { id: ACREDITA, rotulo: "Se acredita" },
-];
-
-/* Los rótulos del botón (Futaba, estado 2). */
-export const BOTON_T6_ACT1 = {
-  nada: "Elige una cuenta",
-  falta: "Elige cómo se anota",
-  colocar: "Colocar la ficha",
-};
+export const GRUPO_T6_ACT1 = "Cuenta por cobrar";
 
 /* ═══════════ EL BANCO: 10 FICHAS ═══════════ */
 
@@ -72,23 +67,24 @@ export const BOTON_T6_ACT1 = {
 export const FICHAS_T6_ACT1 = [
   {
     id: "socio", cuenta: OTRA, lado: null,
-    texto: "La empresa le presta plata a uno de sus socios.",
+    /* Lote 6a (Futaba): cada préstamo con otra forma; solo este dice «prestada». */
+    texto: "Un socio le pide plata prestada a la empresa, y ella se la da.",
     acierto: "✅ Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Cuentas por cobrar a socios y accionistas.",
   },
   {
     id: "trabajador", cuenta: OTRA, lado: null,
-    texto: "La empresa le presta plata a uno de sus trabajadores.",
+    texto: "Un trabajador necesita plata y la empresa se la entrega; él la pagará por cuotas.",
     acierto: "✅ Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Cuentas por cobrar a trabajadores.",
   },
   {
     id: "particular", cuenta: OTRA, lado: null,
-    texto: "La empresa le presta plata a un particular.",
+    texto: "Alguien que no es cliente, socio ni trabajador recibe plata de la empresa. Tiene que devolverla.",
     acierto: "✅ Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Préstamos a particulares.",
   },
   {
-    /* Corrección obligatoria de Shoko: quien se guíe por la palabra «cliente» la falla. */
+    /* Corrección obligatoria de Shoko: quien se guíe por la palabra «cliente» la falla. Lote 6a: la versión de Shoko, sin «no compra nada». */
     id: "prestamo-cliente", cuenta: OTRA, lado: null,
-    texto: "La empresa le presta plata a uno de sus clientes.",
+    texto: "Un cliente le pide plata a la empresa, y ella se la entrega para que la devuelva.",
     acierto: "✅ Sí. Es un cliente, pero esto es un préstamo, no una venta a crédito. Por eso no va en Cuentas por cobrar – clientes, sino en otra cuenta por cobrar.",
   },
   {
@@ -137,13 +133,8 @@ export const ERROR_T6_ACT1 = {
   C5: "❌ Vas bien: es Clientes. Ojo con la palabra “crédito”: el nombre del negocio no dice en qué lado se anota. Pregúntate si lo que deben los clientes sube o baja.",
 };
 
-/* ═══════════ EL PUNTAJE: 60 % LA CUENTA, 40 % EL LADO (como T1-6) ═══════════ */
+/* El resumen (Futaba, lote 6a): ya no habla de pesos; cada ficha vale entera. */
+export const resumenT6Act1 = (bien, cuantas) => `${bien} de ${cuantas} fichas bien al primer intento.`;
 
-export const PESO_CUENTA = 0.6;
-export const PESO_LADO = 0.4;
-
-/* El resumen (Futaba, estado 5). {X} lo formatea el componente, como T1-6. */
-export const resumenT6Act1 = (bien, cuantas, x) =>
-  `${bien} de ${cuantas} completas al primer intento. Cada ficha valía ${x} %. Elegir la cuenta pesa 60 %. Elegir si se debita o se acredita pesa 40 %. En las de otra cuenta por cobrar, la primera elección vale toda la ficha.`;
-
-export const ALT_T6_ACT1 = "Actividad de clasificación. Aparece un hecho. Elige si va en Clientes o en otra cuenta por cobrar. Si eliges Clientes, elige también si se debita o se acredita. Luego pulsa Colocar la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.";
+/* La corrección de Shoko (las opciones con punto y coma), con la frase del botón adaptada a la hoja de Mai. PARA SHOKO. */
+export const ALT_T6_ACT1 = "Actividad de clasificación. Aparece un hecho. Elige entre tres opciones: Otra cuenta por cobrar; Clientes, se debita; o Clientes, se acredita. Toca el cajón donde va la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.";

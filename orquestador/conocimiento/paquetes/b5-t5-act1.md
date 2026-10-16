@@ -315,3 +315,25 @@ Se mide con getBoundingClientRect, con las fuentes cargadas, a 320 y a 375.
 - Letra de la devolución compartida. En la réplica usé Inter 13/1,55 [R].
 - Separaciones entre el contador, la ficha, las pestañas y el botón, y el relleno del panel. En la réplica usé 8, 12, 14 y 8 [R].
 - Formato del contador y redondeo de {X}.
+
+## 11 · Lote 6a: las fichas a un nivel (hoja de fusiones de Mai, textos de Futaba, PASA de Shoko)
+
+Manda sobre las secciones 2, 3 y 4 en lo que toca la interfaz. Los textos de las fichas y de sus devoluciones no cambian; solo cómo se reparten.
+
+### 11.1 Las tres opciones son los tres cajones
+
+- Cajones: «Renta variable» · «Fija con interés» · «Fija con descuento». Tocar un cajón coloca la ficha. No hay pestañas ni botón.
+- El grupo se lee «Tipo de renta» (hoja de Mai). PARA SHOKO.
+- Reparto de devoluciones (Futaba): elegir la otra opción de la misma familia da el «Vas bien…» (C, o el nivel 2 de las fichas de nombre); equivocarse de familia da la devolución de familia (A, B, o el nivel 1). El segundo fallo sigue la regla de la célula.
+
+### 11.2 Textos
+
+- «¿Cómo se juega?», línea 1 (Futaba): «Lee la ficha y elige qué renta da: variable, fija con interés o fija con descuento.»
+- «¿Cómo se juega?», línea 2. Futaba escribió «Pulsa el botón para colocar la ficha; si fallas, tienes un intento más.», pero la hoja de Mai no tiene botón. Va adaptada, PARA SHOKO: «Toca el cajón donde va la ficha; si fallas, tienes un intento más.»
+- Resumen (Futaba): «{bien} de {cuantas} fichas bien al primer intento.»
+- Texto alternativo. El de Futaba, con su frase del botón adaptada, PARA SHOKO: «Actividad de clasificación. Aparece una ficha con el nombre de un título o con una pista de cómo rinde. Elige entre tres opciones: Renta variable, Fija con interés o Fija con descuento. Toca el cajón donde va la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.»
+- Se retiran: PESO_RENTA, PESO_TIPO, TIPOS_FIJA, RENTAS y los rótulos del botón.
+
+### 11.3 La tanda (R10)
+
+Nueve fichas, entre 2 y 4 por cajón, al azar. El banco da 4 · 5 · 5. Como mucho una ficha de nombre por cajón, salvo cuando un cajón de renta fija lleva 4: solo tiene dos sin nombre, así que entra una segunda de nombre.

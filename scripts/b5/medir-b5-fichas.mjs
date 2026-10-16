@@ -7,6 +7,14 @@
  * En b5-t5-a1, b5-t6-a1 y b5-t6-a7, a 320×568 y 375×667, con y sin
  * movimiento reducido, juega la tanda entera y en cada ficha comprueba:
  *
+ * LOTE 6a (hoja de fusiones de Mai, §2): b5-t5-a1 y b5-t6-a1 son fichas a un
+ * nivel, y sus tres cajones son las opciones. En ellas mide lo que pide la
+ * hoja: el alto del estante (84), los renglones de cada nombre, y del
+ * contador al estante con la ficha más alta, con la devolución abierta y
+ * resuelta hasta «Siguiente ficha». Comprueba que el cajón ✕ no se puede
+ * volver a tocar y que ✓ y ✕ llevan su ícono. b5-t6-a7 sigue con el estante
+ * de dos niveles hasta que se retire.
+ *
  *   · sin barra horizontal; ningún nombre de cajón fuera de su cajón;
  *   · el alto del estante (la réplica de Mai: 96,78);
  *   · el juego, del contador al botón, con el panel abierto: cuánto mide y si
@@ -53,7 +61,68 @@ function medir() {
   return { problemas, estante: estante.height, juego: boton.bottom - pulsos.top, lineas: [...document.querySelectorAll("[data-cajon] > span:first-child, [data-tapa]")].map((s) => `${s.textContent} ${Math.round(s.getBoundingClientRect().height / 15)}`) };
 }
 
-for (const juego of ["#t5a1", "#t6a1", "#t6a7"]) {
+/* ═══════════ LOTE 6a: LAS FICHAS A UN NIVEL ═══════════ */
+
+const fondo = (sel) => `(() => { const e = [...document.querySelectorAll(${JSON.stringify(sel)})].at(-1); return e ? e.getBoundingClientRect().bottom : null; })()`;
+for (const juego of ["#t5a1", "#t6a1"]) {
+  for (const reducido of [false, true]) {
+    for (const [ancho, alto] of [[320, 568], [375, 667]]) {
+      const p = await navegador.newPage({ viewport: { width: ancho, height: alto }, reducedMotion: reducido ? "reduce" : "no-preference" });
+      await p.goto(`${BASE}${juego}`);
+      await p.waitForSelector("[data-estante]");
+      await p.evaluate(() => document.fonts.ready);
+      const tag = `${juego} · ${ancho}×${alto}${reducido ? " · reducido" : ""}`;
+      const m = { alEstante: 0, conDevolucion: 0, resuelta: 0, estante: 0, nombres: null };
+      for (let k = 0; ; k++) {
+        const base = await p.evaluate(() => {
+          const top = document.querySelector("[data-contador]").getBoundingClientRect().top;
+          const est = document.querySelector("[data-estante]").getBoundingClientRect();
+          return {
+            top, alEstante: est.bottom - top, estante: est.height, ancho: document.documentElement.scrollWidth - innerWidth,
+            nombres: [...document.querySelectorAll("[data-nombre-cajon]")].map((n) => `${n.textContent} ${Math.round(n.getBoundingClientRect().height / 15)}`),
+          };
+        });
+        m.alEstante = Math.max(m.alEstante, base.alEstante); m.estante = base.estante; m.nombres = base.nombres;
+        if (base.ancho > 0) fallos.push(`${tag} · ficha ${k + 1}: desplazamiento horizontal de ${base.ancho}`);
+        const antes = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll("[data-cajon]")].map((c) => [c.dataset.cajon, Number(c.dataset.cuantas)])));
+        /* Toca los cajones en orden hasta colocarla: el primer fallo deja la devolución abierta y el ✕. */
+        let vuelo = false;
+        for (let intento = 0; intento < 2; intento++) {
+          const libre = await p.$("[data-cajon]:not([disabled])");
+          if (!libre || await p.$("[data-boton-avanzar]")) break;
+          const clave = await libre.getAttribute("data-cajon");
+          await libre.click();
+          vuelo = vuelo || await p.evaluate(() => [...document.body.children].some((e) => e.style.position === "fixed" && e.getAttribute("aria-hidden") === "true"));
+          await p.waitForTimeout(reducido ? 50 : 760);
+          const tras = await p.evaluate((clave) => {
+            const c = document.querySelector(`[data-cajon="${clave}"]`);
+            return { marca: c.dataset.marca, deshabilitado: c.disabled, iconos: [...c.querySelectorAll("svg[data-icono]")].map((x) => x.dataset.icono) };
+          }, clave);
+          if (tras.marca === "tachada" && (!tras.deshabilitado || !tras.iconos.includes("tache"))) fallos.push(`${tag} · ficha ${k + 1}: el ✕ se puede volver a tocar o no lleva su ícono`);
+          if (tras.marca === "correcta" && !tras.iconos.includes("visto")) fallos.push(`${tag} · ficha ${k + 1}: el ✓ no lleva su ícono`);
+          m.conDevolucion = Math.max(m.conDevolucion, await p.evaluate(fondo('[role="status"]')) - base.top);
+        }
+        m.resuelta = Math.max(m.resuelta, await p.evaluate(fondo("[data-boton-avanzar] button")) - base.top);
+        const despues = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll("[data-cajon]")].map((c) => [c.dataset.cajon, Number(c.dataset.cuantas)])));
+        const sumo = Object.keys(despues).filter((c) => despues[c] !== antes[c]);
+        if (sumo.length !== 1 || despues[sumo[0]] !== antes[sumo[0]] + 1) fallos.push(`${tag} · ficha ${k + 1}: el estante no sumó una lámina (${JSON.stringify(despues)})`);
+        if (reducido && vuelo) fallos.push(`${tag} · ficha ${k + 1}: con movimiento reducido hubo vuelo`);
+        if (!reducido && !vuelo) fallos.push(`${tag} · ficha ${k + 1}: sin vuelo`);
+        const siguiente = await p.$("[data-boton-avanzar] button");
+        if (/resultado/.test(await siguiente.textContent())) break;
+        await siguiente.click();
+      }
+      if (Math.abs(m.estante - 84) > 0.5) fallos.push(`${tag}: el estante mide ${m.estante.toFixed(2)} y la hoja pide 84`);
+      if (ancho === 320 && !reducido && process.env.CAPTURAS) await p.locator("[data-estante]").screenshot({ path: `${process.env.CAPTURAS}/estante-un-nivel-${juego.slice(1)}.png` });
+      informe.push(`${tag}: estante ${m.estante.toFixed(2)} · del contador al estante, con la ficha más alta, ${m.alEstante.toFixed(2)} · con la devolución ${m.conDevolucion.toFixed(2)} · resuelta, hasta «Siguiente ficha», ${m.resuelta.toFixed(2)} (${m.resuelta <= alto ? "cabe" : "NO cabe"} en ${alto})${!reducido ? ` · renglones: ${m.nombres.join(" · ")}` : ""}`);
+      await p.close();
+    }
+  }
+}
+
+/* ═══════════ b5-t6-a7: EL ESTANTE DE DOS NIVELES (hoja 3), hasta que se retire ═══════════ */
+
+for (const juego of ["#t6a7"]) {
   for (const reducido of [false, true]) {
     for (const [ancho, alto] of [[320, 568], [375, 667]]) {
       const p = await navegador.newPage({ viewport: { width: ancho, height: alto }, reducedMotion: reducido ? "reduce" : "no-preference" });
