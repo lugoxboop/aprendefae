@@ -61,7 +61,7 @@ export function Foto({ foto, atenuada = false, resaltada = false, conCifras = fa
           margin: "0 0 3px", display: "flex", flexWrap: "wrap", gap: "2px 6px",
           fontSize: "12px", lineHeight: 1.35,
         }}>
-          <span style={{ color: "rgba(248,249,250,0.5)" }}>{l.rotulo}</span>
+          <span style={{ color: "#A8B6C8" }}>{l.rotulo}</span>
           <span style={{ color: "rgba(248,249,250,0.85)" }}>{l.texto}</span>
           {/*
             Las cifras solo aparecen cuando la devolución que las pide está en

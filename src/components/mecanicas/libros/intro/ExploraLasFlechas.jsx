@@ -68,7 +68,7 @@ export default function ExploraLasFlechas() {
       ) : (
         <p data-vacio style={{
           margin: "11px 0 0", padding: "10px", textAlign: "center",
-          fontSize: "12px", color: "rgba(248,249,250,0.45)",
+          fontSize: "12px", color: "#A8B6C8",
         }}>
           Toca una flecha del costado.
         </p>

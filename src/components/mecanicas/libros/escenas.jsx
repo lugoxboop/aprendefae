@@ -31,7 +31,7 @@ import EnUnaFrase from "./debeHaber/EnUnaFrase.jsx";
 
 const ROTULO = {
   margin: "0 0 8px", fontFamily: "Sora, sans-serif", fontSize: "10px",
-  fontWeight: 700, letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)",
+  fontWeight: 700, letterSpacing: "0.14em", color: "#A8B6C8",
 };
 
 const CIFRA = {
@@ -176,9 +176,9 @@ function Cajon({ titulo, pie, cuentas, vacio, acento, atenuado = false }) {
       }}
     >
       <p style={{ ...ROTULO, color: acento, marginBottom: "4px" }}>{titulo.toUpperCase()}</p>
-      <p style={{ margin: "0 0 8px", fontSize: "12px", color: "rgba(248,249,250,0.45)", lineHeight: 1.3 }}>{pie}</p>
+      <p style={{ margin: "0 0 8px", fontSize: "12px", color: "#A8B6C8", lineHeight: 1.3 }}>{pie}</p>
       {vacio
-        ? <p data-vaciado style={{ margin: 0, fontSize: "12px", color: "rgba(248,249,250,0.3)" }}>— en blanco —</p>
+        ? <p data-vaciado style={{ margin: 0, fontSize: "12px", color: "#A8B6C8" }}>— en blanco —</p>
         : cuentas.map((c) => (
           <p key={c} className="fae-cae" style={{ margin: 0, padding: "2px 0", fontSize: "12px", color: FAE.text }}>{c}</p>
         ))}
@@ -237,7 +237,7 @@ export function EscenaFamilias({ resaltar }) {
         style={{
           margin: "12px 0 0", textAlign: "center", fontFamily: "Sora, sans-serif",
           fontSize: "12.5px", fontWeight: 700,
-          color: cerrado ? COLOR_LADO[HABER] : "rgba(248,249,250,0.45)",
+          color: cerrado ? COLOR_LADO[HABER] : "#A8B6C8",
         }}
       >
         {cerrado ? "31 de diciembre — se cierra el año" : "Durante el año"}
@@ -456,7 +456,7 @@ export function EscenaDiarioMayor({ resaltar }) {
         }}>
           <p style={ROTULO}>LIBRO DIARIO</p>
           {!conAsiento
-            ? <p style={{ margin: 0, fontSize: "12px", color: "rgba(248,249,250,0.3)" }}>— hoja en blanco —</p>
+            ? <p style={{ margin: 0, fontSize: "12px", color: "#A8B6C8" }}>— hoja en blanco —</p>
             : lineas.map((l, k) => (
               <div key={`${l.cuenta}-${l.lado}`} className="fae-cae" style={{
                 display: "flex", gap: "8px", alignItems: "baseline", padding: "2px 0",
@@ -474,7 +474,7 @@ export function EscenaDiarioMayor({ resaltar }) {
               </div>
             ))}
           {conAsiento && (
-            <p style={{ margin: "6px 0 0", fontSize: "10.5px", color: "rgba(248,249,250,0.4)" }}>
+            <p style={{ margin: "6px 0 0", fontSize: "10.5px", color: "#A8B6C8" }}>
               {mayorizado ? "✓ = mayorizado. El renglón se queda: nada se borra." : "La acreditada va corrida a la derecha."}
             </p>
           )}

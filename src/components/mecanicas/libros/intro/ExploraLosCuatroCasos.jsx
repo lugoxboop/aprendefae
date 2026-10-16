@@ -83,7 +83,7 @@ export default function ExploraLosCuatroCasos() {
       ) : (
         <p data-vacio style={{
           margin: "10px 0 0", padding: "11px 10px", textAlign: "center",
-          fontSize: "12px", color: "rgba(248,249,250,0.45)",
+          fontSize: "12px", color: "#A8B6C8",
         }}>
           Toca un caso y mira cómo se mueve la torre.
         </p>

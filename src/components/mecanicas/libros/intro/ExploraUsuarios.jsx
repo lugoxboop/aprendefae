@@ -93,7 +93,7 @@ export default function ExploraUsuarios() {
             : (
               <p data-vacio style={{
                 margin: 0, padding: "13px 10px", textAlign: "center", fontSize: "12px",
-                color: "rgba(248,249,250,0.45)",
+                color: "#A8B6C8",
               }}>
                 {VACIO_CAPA_3}
               </p>

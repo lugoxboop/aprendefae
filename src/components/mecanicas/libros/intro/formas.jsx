@@ -49,7 +49,7 @@ export function FormaFactura({ campos }) {
     <div data-forma="factura" style={{ ...CAJA }}>
       <p style={{
         margin: "0 0 7px", fontFamily: SORA, fontSize: "9px", fontWeight: 700,
-        letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)", textAlign: "center",
+        letterSpacing: "0.14em", color: "#A8B6C8", textAlign: "center",
         borderBottom: "1px solid rgba(248,249,250,0.14)", paddingBottom: "5px",
       }}>
         FACTURA DE COMPRA
@@ -58,10 +58,10 @@ export function FormaFactura({ campos }) {
         {campos.map((c) => (
           <div key={c.campo} data-campo={c.campo} data-del-libro={c.delLibro ? "si" : "no"}
             style={{ display: "flex", gap: "8px", alignItems: "baseline" }}>
-            <dt style={{ flex: "0 0 44%", fontSize: "10.5px", color: "rgba(248,249,250,0.55)" }}>{c.campo}</dt>
+            <dt style={{ flex: "0 0 44%", fontSize: "10.5px", color: "#A8B6C8" }}>{c.campo}</dt>
             <dd style={{
               margin: 0, flex: 1, minWidth: 0, ...CIFRA, fontSize: "11.5px",
-              color: c.valor === SIN_DATO ? "rgba(248,249,250,0.4)" : FAE.text,
+              color: c.valor === SIN_DATO ? "#A8B6C8" : FAE.text,
             }}>
               {typeof c.valor === "number" ? pesos(c.valor) : c.valor}
             </dd>
@@ -82,7 +82,7 @@ export function FormaRenglon({ renglon }) {
     <div data-forma="renglon" style={{ ...CAJA }}>
       <p style={{
         margin: "0 0 7px", fontFamily: SORA, fontSize: "9px", fontWeight: 700,
-        letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)", textAlign: "center",
+        letterSpacing: "0.14em", color: "#A8B6C8", textAlign: "center",
         borderBottom: "1px solid rgba(248,249,250,0.14)", paddingBottom: "5px",
       }}>
         LIBRO
@@ -225,7 +225,7 @@ export function FormaPregunta({ usuario, empresa }) {
     <div data-forma="pregunta" style={{ ...CAJA }}>
       <p style={{
         margin: "0 0 5px", fontFamily: SORA, fontSize: "9px", fontWeight: 700,
-        letterSpacing: "0.12em", color: "rgba(248,249,250,0.5)",
+        letterSpacing: "0.12em", color: "#A8B6C8",
       }}>
         EN LA MESA DE {usuario.nombre.toUpperCase()} · {empresa}
       </p>
