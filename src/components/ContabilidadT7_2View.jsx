@@ -25,12 +25,13 @@ import PeriodicoOPermanente from "./mecanicas/libros/t7/PeriodicoOPermanente.jsx
 import { H4 } from "../data/contabilidadT7_2_h4.js";
 import FleteYDevolucion from "./mecanicas/libros/t7/FleteYDevolucion.jsx";
 import { H5 } from "../data/contabilidadT7_2_h5.js";
-import LaCuentaQueSiSeMueve from "./mecanicas/libros/t7/LaCuentaQueSiSeMueve.jsx";
-import { PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE } from "../data/contabilidadT7_2.js";
+/* T7-2 A1, renovada con el Patrón de enganche C2 (mismo id, misma posición). El componente de antes, LaCuentaQueSiSeMueve.jsx, queda sin uso. */
+import LaCuentaQueSiSeMueveC2 from "./mecanicas/libros/t7/LaCuentaQueSiSeMueveC2.jsx";
+import { PIEZA_LA_CUENTA_C2 } from "../data/contabilidadT7_2_a1_c2.js";
 import LaVentaEnDosAsientos from "./mecanicas/libros/t7/LaVentaEnDosAsientos.jsx";
 import { PIEZA_LA_VENTA_EN_DOS_ASIENTOS } from "../data/contabilidadT7_2_a2.js";
 import PantallasT7_2 from "./mecanicas/libros/t7/PantallasT7_2.jsx";
-import { PIEZA_EL_KARDEX } from "../data/contabilidadT7_2_a3.js";
+import ElKardexQueCrece, { PIEZA_KARDEX_C2 } from "./mecanicas/libros/t7/ElKardexQueCrece.jsx";
 import LasCapasQueLaVentaCorta from "./mecanicas/libros/t7/LasCapasQueLaVentaCorta.jsx";
 import { PIEZA_LAS_CAPAS } from "../data/contabilidadT7_2_a4_capas.js";
 import { PIEZA_FLETES } from "../data/contabilidadT7_2_a5.js";
@@ -58,19 +59,18 @@ export const TEMA_T7_2 = "inventarios-permanente";
  * devoluciones en permanente». Sus archivos se quedan.
  */
 export const PIEZAS_T7_2 = [
-  { numero: PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE.numero, pieza: PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE, Pieza: LaCuentaQueSiSeMueve },
+  { numero: PIEZA_LA_CUENTA_C2.numero, pieza: PIEZA_LA_CUENTA_C2, Pieza: LaCuentaQueSiSeMueveC2 },
   { numero: PIEZA_LA_VENTA_EN_DOS_ASIENTOS.numero, pieza: PIEZA_LA_VENTA_EN_DOS_ASIENTOS, Pieza: LaVentaEnDosAsientos },
-  { numero: PIEZA_EL_KARDEX.numero, pieza: PIEZA_EL_KARDEX, Pieza: PantallasT7_2 },
+  /* A3: «El kárdex» renovada (Patrón de enganche C2, con K-1 a K-3 de Mello), con el mismo id y en la misma posición. */
+  { numero: PIEZA_KARDEX_C2.numero, pieza: PIEZA_KARDEX_C2, Pieza: ElKardexQueCrece },
   { numero: PIEZA_LAS_CAPAS.numero, pieza: PIEZA_LAS_CAPAS, Pieza: LasCapasQueLaVentaCorta },
   { numero: PIEZA_FLETES.numero, pieza: PIEZA_FLETES, Pieza: PantallasT7_2 },
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS_T7_2 = [
-  { id: H1.id, Mecanica: DebeOHaber, titulo: H1.nombre },
   { id: H2.id, Mecanica: ArmaLosDosAsientos, titulo: H2.nombre },
   { id: H3.id, Mecanica: LlenaElKardex, titulo: H3.nombre },
-  { id: H4.id, Mecanica: PeriodicoOPermanente, titulo: H4.nombre },
   { id: H5.id, Mecanica: FleteYDevolucion, titulo: H5.nombre },
 ];
 

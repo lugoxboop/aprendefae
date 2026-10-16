@@ -62,7 +62,7 @@ Capa 1 · Primero, los nombres
 3	Castigar una cuenta	Castigar una cuenta es darla de baja porque ya no se espera cobrarla.	79
 4	Método de anulación directa	Cuando la deuda se da por perdida, se saca de Cuentas por cobrar – clientes y su valor va al gasto. Se debita Gasto provisiones – cuentas incobrables y se acredita Cuentas por cobrar – clientes. Ojo: el nombre de ese gasto dice «provisiones», pero este método no crea ninguna provisión. Es muy sencillo, pero no deja información sobre las deudas castigadas. Y esa información sirve para decidir las ventas a crédito futuras.	70
 4 · Así lo dice el libro	—	«Este método es muy sencillo, pero presenta la desventaja de que no suministra información relacionada con la cartera castigada…» (p. 199)	cita
-5	Método de provisiones	Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. Se debita Gasto provisiones – cuentas incobrables y se acredita una cuenta llamada Provisión para deudas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.	73
+5	Método de provisiones	Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. Se debita Gasto provisiones – cuentas incobrables y se acredita una cuenta llamada Provisión para cuentas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.	73
 5 · Así lo dice el libro	—	«…para determinar el probable porcentaje de cartera que no se recuperará.» (p. 200)	cita
 Capa 2 · Mírelo funcionar · Dajema y Nancy Zea Cuesta
 #	Texto literal	Etiqueta que ve	Resalta	Estim.
@@ -83,7 +83,7 @@ Consigna: Toca cada método y mira cuándo se anota el gasto y qué se debita al
 
 Caja	Al tocarla (texto literal)	Etiqueta que ve	Estim.
 Anulación directa	Con este método no se anota nada por adelantado. Cada deuda se castiga cuando se da por perdida: se debita Gasto provisiones – cuentas incobrables y se acredita Cuentas por cobrar – clientes. El gasto aparece el día del castigo.	Basado en el libro, p. 199	66
-Provisiones	Al cerrar el periodo se estima qué parte no se recuperará. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables. Al castigar la deuda, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto ya se había anotado.	Basado en el libro, p. 200	65
+Provisiones	Al cerrar el periodo se estima qué parte no se recuperará. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para cuentas incobrables. Al castigar la deuda, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto ya se había anotado.	Basado en el libro, p. 200	65
 Cuando tocó las dos	En los dos métodos, al castigar, se acredita Cuentas por cobrar – clientes. Lo que cambia es qué se debita y cuándo aparece el gasto.	Basado en el libro, pp. 199-200	86
 Capa 4 · En una frase
 
@@ -120,7 +120,7 @@ Objetivo (3 / 2): «Vas a ver qué es una cuenta incobrable y dos formas de anot
 3	«Castigar una cuenta»	«Castigar una cuenta es darla de baja porque ya no se espera cobrarla.»	3 · 2
 4	«Método de anulación directa»	(sin cambio)	14 · 11
 4 · Así lo dice el libro	—	«Este método es muy sencillo, pero presenta la desventaja de que no suministra información relacionada con la cartera castigada…» (p. 199)	4 · 4
-5	«Método de provisiones»	«Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. Se debita Gasto provisiones – cuentas incobrables y se acredita una cuenta llamada Provisión para deudas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.»	13 · 10
+5	«Método de provisiones»	«Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. Se debita Gasto provisiones – cuentas incobrables y se acredita una cuenta llamada Provisión para cuentas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.»	13 · 10
 5 · Así lo dice el libro	—	«…para determinar el probable porcentaje de cartera que no se recuperará.» (p. 200)	3 · 2
 §4.1 · Escena
 Pieza	v1	v1b [M]
@@ -166,7 +166,7 @@ Ventana	Entorno	Modo	Pasos 1-9	Paso 10
 Elemento	Texto literal	Líneas · alto 320 / 375
 Consigna	«Toca cada método y mira cuándo se anota el gasto y qué se debita al castigar.»	3 / 2
 Caja 1	«Anulación directa» · revelación sin cambio · «Basado en el libro, p. 199»	cerrada 46 · abierta 263,3 / 219,92
-Caja 2	«Provisiones» · «Al cerrar el periodo se estima qué parte no se recuperará. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables. Al castigar la deuda, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto ya se había anotado.» · «Basado en el libro, p. 200»	cerrada 46 · revelación 10 / 8 · abierta 306,67 / 263,3
+Caja 2	«Provisiones» · «Al cerrar el periodo se estima qué parte no se recuperará. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para cuentas incobrables. Al castigar la deuda, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto ya se había anotado.» · «Basado en el libro, p. 200»	cerrada 46 · revelación 10 / 8 · abierta 306,67 / 263,3
 Final	«En los dos métodos, al castigar, se acredita Cuentas por cobrar – clientes. Lo que cambia es qué se debita y cuándo aparece el gasto.» · «Basado en el libro, pp. 199-200»	4 / 4 · 137,55
 Capa con todo abierto: 864,88 · 756,44.
 Las dos cajas se ven iguales.
@@ -246,7 +246,7 @@ Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza
 4. **Método de anulación directa** — Cuando la deuda se da por perdida, se saca de Cuentas por cobrar – clientes y su valor va al gasto. Se debita Gasto provisiones – cuentas incobrables y se acredita Cuentas por cobrar – clientes. Ojo: el nombre de ese gasto dice “provisiones”, pero este método no crea ninguna provisión.
 5. **La desventaja de la anulación directa** — Def.: La anulación directa es muy sencilla. Pero no guarda información de las deudas que se castigan. Y esa información sirve para decidir cómo vender a crédito. · Cita: «Este método es muy sencillo, pero presenta la desventaja de que no suministra información relacionada con la cartera castigada…» (p. 199)
 6. **Método de provisiones** — Def.: Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. · Cita: la de hoy, de la p. 200.
-7. **Los asientos del método de provisiones** — Al cierre, se debita Gasto provisiones – cuentas incobrables. Y se acredita una cuenta llamada Provisión para deudas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.
+7. **Los asientos del método de provisiones** — Al cierre, se debita Gasto provisiones – cuentas incobrables. Y se acredita una cuenta llamada Provisión para cuentas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.
 
 ## Enganche B1-B5 (Mai, 15-oct) y B5 de Futaba (final, con las correcciones de Shoko) · manda sobre lo de arriba
 

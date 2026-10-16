@@ -22,7 +22,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · INFLESZ con el número exacto de textos medidos
  *   · las dos puertas y la migración 0252
  *   · la partida se juega: la hoja en dos pasos, el tope de 3 por lado, las
- *     sumas, «Datos de marzo», ERA ESTE y el final con forma, color y palabra
+ *     sumas, «Datos de marzo», «Iba aquí» y el final con forma, color y palabra
  *   · lo de 320 px lo mide en Chromium scripts/e5/medir-r5-3.mjs
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -59,6 +59,8 @@ const { pesos } = await import("../../data/contabilidad.js");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
+const MAESTRO = readFileSync(new URL("orquestador/conocimiento/prompts/disenadores-de-celula-v1.md", RAIZ), "utf8");
+const apagado = (b) => b.getAttribute("aria-disabled") === "true";
 const PAQUETE = leer("orquestador/conocimiento/paquetes/e5-r5-3-v3.md");
 const PLANO = PAQUETE.replace(/\s+/g, " ");
 const A = T.ASIENTOS_MATE;
@@ -134,10 +136,13 @@ test("★★★ cada texto del estudiante está entero en el paquete (guarda: 12
   assert.notDeepEqual(T.HOJA_MATE, [...T.HOJA_MATE].sort(), "la hoja quedó ordenada por código");
   /* Los rótulos del diseño, entre comillas en el paquete. */
   const R = T.ROTULOS_MATE;
-  for (const r of [R.tuAsiento, R.anadir.debe, R.otro.debe, R.anadir.haber, R.sumaDebe, R.sumaHaber, R.cuadran, R.cancelar, R.cuentaDel.debe, R.cuentaDel.haber, R.renglonDel.debe, R.renglonDel.haber, R.listo, R.cambiarCuenta, R.quitar, R.valor, R.enEl.debe, R.enEl.haber, R.revisar, R.eraEste, R.marzoEnOcho, R.acierto, R.error, R.datosDeMarzoMarca, R.cerrar, R.fleteEnElSiguiente, R.deOtraOperacion, T.ENTRADA_MATE.marca, T.ENTRADA_MATE.empezar, T.DATOS_DECLARADOS.marca]) {
+  for (const r of [R.tuAsiento, R.anadir.debe, R.otro.debe, R.anadir.haber, R.sumaDebe, R.sumaHaber, R.cuadran, R.cancelar, R.cuentaDel.debe, R.cuentaDel.haber, R.renglonDel.debe, R.renglonDel.haber, R.listo, R.cambiarCuenta, R.quitar, R.valor, R.enEl.debe, R.enEl.haber, R.marzoEnOcho, R.acierto, R.error, R.datosDeMarzoMarca, R.cerrar, R.fleteEnElSiguiente, R.deOtraOperacion, T.ENTRADA_MATE.marca, T.ENTRADA_MATE.empezar, T.DATOS_DECLARADOS.marca]) {
     assert.ok(PAQUETE.includes(`«${r}»`), r);
   }
-  assert.ok(PAQUETE.includes(`«${R.diferencia("12.500")}»`) && PAQUETE.includes(`«${R.progreso(3, 8)}»`));
+  assert.ok(PAQUETE.includes(`«${R.diferencia("12.500")}»`));
+  /* Lote «r5 al estándar único»: «Comprobar», «Iba aquí» y el contador salen del PROMPT MAESTRO §4.2 y §4.3. */
+  for (const r of [R.revisar, R.eraEste]) assert.ok(MAESTRO.includes(`"${r}"`), r);
+  assert.deepEqual([R.revisar, R.eraEste, R.progreso(3, 8), R.sustantivo], ["Comprobar", "Iba aquí", "Asiento 3 de 8", "Asiento"]);
   assert.ok(PAQUETE.includes(`Línea 2: «${R.tasasALaVista}»`));
 });
 
@@ -478,11 +483,11 @@ test("★★★ el armador: hoja en dos pasos, «EN EL DEBE», editar y quitar, 
   const { caja } = await montar(h(Mate, {}));
   assert.equal(Boolean(caja.querySelector("[data-tarjeta]")), false);
   await tocar(caja.querySelector("[data-empezar]"));
-  assert.equal(caja.querySelector("[data-progreso]").textContent, "ASIENTO 1 DE 8");
+  assert.equal(caja.querySelector("[data-progreso]").textContent, "Asiento 1 de 8");
   /* Empieza vacío: sin huecos fijos. */
   assert.equal(caja.querySelectorAll("[data-renglon]").length, 0);
   assert.equal(caja.querySelector('[data-anadir="debe"]').textContent, "+ Añadir renglón al debe");
-  assert.ok(caja.querySelector("[data-revisar]").disabled);
+  assert.ok(apagado(caja.querySelector("[data-revisar]")));
   /* Paso 1: las doce cuentas, en el orden literal. */
   await tocar(caja.querySelector('[data-anadir="debe"]'));
   const hoja = document.querySelector("[data-hoja-renglon]");
@@ -524,7 +529,7 @@ test("★★★ el armador: hoja en dos pasos, «EN EL DEBE», editar y quitar, 
   assert.equal(caja.querySelector("[data-cuadre]").textContent, "Diferencia: 6");
   await anadir(caja, "haber", T.IVA, 6);
   assert.equal(caja.querySelector("[data-cuadre]").textContent, "Las sumas cuadran");
-  assert.equal(caja.querySelector("[data-revisar]").disabled, false);
+  assert.equal(apagado(caja.querySelector("[data-revisar]")), false);
   /* «Datos de marzo»: hoja de solo lectura con las dos tarjetas; no toca el armador. */
   await tocar(caja.querySelector("[data-boton-datos]"));
   const datos = document.querySelector("[data-hoja-datos]");
@@ -535,7 +540,7 @@ test("★★★ el armador: hoja en dos pasos, «EN EL DEBE», editar y quitar, 
   assert.equal(caja.querySelectorAll("[data-renglon]").length, 4);
 });
 
-test("★★★ se juega entera: hechos, ERA ESTE, la devolución, y el final con forma, color y palabra", async () => {
+test("★★★ se juega entera: hechos, «Iba aquí», la devolución, y el final con forma, color y palabra", async () => {
   const fin = [];
   const { caja } = await montar(h(Mate, { onCompletar: (...x) => fin.push(x) }));
   /* La entrada: la marca de dato declarado vive aquí y en la hoja, nunca en un renglón del hecho. */
@@ -547,7 +552,7 @@ test("★★★ se juega entera: hechos, ERA ESTE, la devolución, y el final co
 
   /* Acierta todos menos el 6 (proveedor sin restar la retención) y el 4 (mezclado). */
   for (const [k, a] of A.entries()) {
-    assert.equal(caja.querySelector("[data-progreso]").textContent, `ASIENTO ${k + 1} DE 8`);
+    assert.equal(caja.querySelector("[data-progreso]").textContent, `Asiento ${k + 1} de 8`);
     assert.deepEqual([...caja.querySelectorAll("[data-nodo]")].map((x) => x.dataset.estado), A.map((_, j) => (j < k ? "hecho" : j === k ? "actual" : "pendiente")));
     assert.equal(caja.querySelector("[data-marca-fecha]").textContent, `${a.dia} MAR`);
     assert.equal(caja.querySelector("[data-frase]").textContent, a.hecho);
@@ -569,7 +574,7 @@ test("★★★ se juega entera: hechos, ERA ESTE, la devolución, y el final co
       assert.equal(panel.dataset.devolucion, "error");
       assert.ok(panel.textContent.endsWith("Te faltó restar la retención. Al proveedor le debes $448.000 menos."));
       const era = caja.querySelector('[data-armador="era-este"]');
-      assert.ok(era.textContent.startsWith("ERA ESTE"));
+      assert.ok(era.textContent.startsWith("Iba aquí"));
       assert.ok(era.textContent.includes("14.400.000"));
       assert.ok([...era.querySelectorAll("[data-renglon]")].every((x) => x.dataset.estado === "revelada"));
       assert.deepEqual([...caja.querySelectorAll('[data-armador="tu-asiento"] [data-renglon]')].map((x) => x.dataset.estado), ["ok", "ok", "ok", "mal"]);
@@ -589,18 +594,18 @@ test("★★★ se juega entera: hechos, ERA ESTE, la devolución, y el final co
   assert.equal(caja.querySelector("[data-n-de-m]").textContent, "6 de 8");
   const filas = [...caja.querySelectorAll("[data-fila-asiento]")].map((f) => {
     const p = f.querySelector("[data-punto]");
-    const forma = p.style.background === "transparent" && /solid/.test(p.style.border) ? "anillo" : p.style.background && !p.style.border ? "relleno" : "otra";
-    return [f.textContent.replace(/Acierto|Error/, ""), forma, f.querySelector("[data-resultado]").textContent];
+    const forma = p.classList.contains("lucide-check") ? "check" : p.classList.contains("lucide-x") ? "x" : "otra";
+    return [f.textContent.replace(/Correcto\. |Incorrecto\. /, ""), forma, f.querySelector("[data-resultado]").textContent];
   });
   assert.deepEqual(filas, [
-    ["1 MARCompra de contado", "relleno", "Acierto"],
-    ["10 MARVenta a crédito", "relleno", "Acierto"],
-    ["15 MARCompra de contado", "relleno", "Acierto"],
-    ["15 MARFlete de la compra", "anillo", "Error"],
-    ["20 MARDevolución de venta", "relleno", "Acierto"],
-    ["25 MARCompra a crédito", "anillo", "Error"],
-    ["31 MARVenta de contado", "relleno", "Acierto"],
-    ["31 MARFlete de la venta", "relleno", "Acierto"],
+    ["1 MARCompra de contado", "check", "Correcto. "],
+    ["10 MARVenta a crédito", "check", "Correcto. "],
+    ["15 MARCompra de contado", "check", "Correcto. "],
+    ["15 MARFlete de la compra", "x", "Incorrecto. "],
+    ["20 MARDevolución de venta", "check", "Correcto. "],
+    ["25 MARCompra a crédito", "x", "Incorrecto. "],
+    ["31 MARVenta de contado", "check", "Correcto. "],
+    ["31 MARFlete de la venta", "check", "Correcto. "],
   ]);
   assert.ok([...caja.querySelectorAll("[data-punto]")].every((x) => x.getAttribute("aria-hidden") === "true"));
   assert.equal(fin.length, 1);
@@ -636,7 +641,7 @@ test("★★★ E3 · cada pieza del renglón dice con palabras si quedó bien: 
   assert.ok(todo.every((x) => ok.piezas[x.id].cuenta === "ok" && ok.piezas[x.id].valor === "ok"));
 });
 
-test("★★★ E3 · en la pantalla, cada renglón calificado lleva «Correcta» / «No va aquí» y «Correcto» / «No es este valor»", async () => {
+test("★★★ E3 · en la pantalla, cada renglón calificado lleva «Correcto» / «No va aquí» en la cuenta y en el valor (§4.2)", async () => {
   const { caja } = await montar(h(Mate, { pasoInicial: 0 }));
   const M = N.CIFRAS_MATE.a1;
   await anadir(caja, "debe", T.COMPRAS, M.compras);
@@ -646,7 +651,7 @@ test("★★★ E3 · en la pantalla, cada renglón calificado lleva «Correcta�
   await anadir(caja, "haber", T.INVENTARIO, 5);
   await tocar(caja.querySelector("[data-revisar]"));
   const tuAsiento = caja.querySelector('[data-armador="estudiante"]') ?? caja.querySelector("[data-armador]:not([data-armador='era-este'])");
-  const palabras = [...tuAsiento.querySelectorAll("[data-renglon]")].map((x) => [x.querySelector("span:not([style*='position'])")?.textContent ?? "", [...x.querySelectorAll("[data-veredicto]")].map((v) => v.textContent)]);
+  const palabras = [...tuAsiento.querySelectorAll("[data-renglon]")].map((x) => [x.querySelector("span:not([style*='position'])")?.textContent ?? "", [...x.querySelectorAll("[data-veredicto]")].map((v) => v.textContent.replace(/Incorrecto\.$/, ""))]);
   assert.deepEqual(palabras.map((p) => p[1]), [
     [VEREDICTO.cuenta.ok, VEREDICTO.valor.ok],
     [VEREDICTO.cuenta.ok, VEREDICTO.valor.mal],
@@ -654,21 +659,23 @@ test("★★★ E3 · en la pantalla, cada renglón calificado lleva «Correcta�
     [VEREDICTO.cuenta.ok, VEREDICTO.valor.ok],
     [VEREDICTO.cuenta.mal],
   ]);
-  assert.deepEqual([VEREDICTO.cuenta.ok, VEREDICTO.cuenta.mal, VEREDICTO.valor.ok, VEREDICTO.valor.mal], ["Correcta", "No va aquí", "Correcto", "No es este valor"]);
+  assert.deepEqual([VEREDICTO.cuenta.ok, VEREDICTO.cuenta.mal, VEREDICTO.valor.ok, VEREDICTO.valor.mal], ["Correcto", "No va aquí", "Correcto", "No va aquí"]);
+  /* El lector oye «Incorrecto.» en cada pieza mal. */
+  assert.equal([...tuAsiento.querySelectorAll('[data-veredicto="mal"]')].filter((v) => v.textContent.endsWith("Incorrecto.")).length, 3);
   /*
    * Auditoría de Takamura (e5-mes-en-dos-cuentas, punto 4): dos marcas, una por
    * pieza, cada una con su forma; la de la cuenta en la línea del nombre, a la
    * derecha; la del valor en la línea del valor, a la izquierda. Borde coral si
-   * alguna pieza está mal; #CBDCF2 si las dos están bien.
+   * alguna pieza está mal; 2 px #F8F9FA si las dos están bien (§4.1).
    */
   const renglones = [...tuAsiento.querySelectorAll("[data-renglon]")];
-  const marcas = renglones.map((x) => [...x.querySelectorAll("[data-marca-pieza]")].map((m) => `${m.dataset.marcaPieza}:${m.querySelector("[data-punto]").dataset.forma}`));
+  const marcas = renglones.map((x) => [...x.querySelectorAll("[data-marca-pieza]")].map((m) => `${m.dataset.marcaPieza}:${m.dataset.veredicto}:${m.querySelector("svg")?.getAttribute("class").match(/lucide-(check|x)\b/)[1]}`));
   assert.deepEqual(marcas, [
-    ["cuenta:relleno", "valor:relleno"],
-    ["cuenta:relleno", "valor:anillo"],
-    ["cuenta:anillo", "valor:relleno"],
-    ["cuenta:relleno", "valor:relleno"],
-    ["cuenta:anillo"],
+    ["cuenta:ok:check", "valor:ok:check"],
+    ["cuenta:ok:check", "valor:mal:x"],
+    ["cuenta:mal:x", "valor:ok:check"],
+    ["cuenta:ok:check", "valor:ok:check"],
+    ["cuenta:mal:x"],
   ]);
   for (const x of renglones) {
     const [linNombre, linValor] = [...x.children].filter((c) => !c.getAttribute("style")?.includes("position: absolute"));
@@ -678,13 +685,14 @@ test("★★★ E3 · en la pantalla, cada renglón calificado lleva «Correcta�
     if (valor) assert.equal(linValor.firstElementChild === valor, true, "la marca del valor va a la izquierda del valor");
   }
   assert.deepEqual(renglones.map((x) => x.style.border), [
-    "2px solid rgb(203, 220, 242)", "2px solid rgb(231, 111, 81)", "2px solid rgb(231, 111, 81)", "2px solid rgb(203, 220, 242)", "2px solid rgb(231, 111, 81)",
+    "2px solid rgb(248, 249, 250)", "2px solid rgb(231, 111, 81)", "2px solid rgb(231, 111, 81)", "2px solid rgb(248, 249, 250)", "2px solid rgb(231, 111, 81)",
   ]);
-  /* ERA ESTE no se califica: sin palabras, y su marca en blanco, no en teal. */
+  /* «Iba aquí» no se califica: su única pastilla es la de la cabecera, en blanco y sin ícono, no en teal. */
   const era = caja.querySelector('[data-armador="era-este"]');
-  assert.equal(era.querySelectorAll("[data-veredicto]").length, 0);
-  assert.equal(era.querySelector("[data-era-este]").textContent, "ERA ESTE");
-  assert.equal(era.querySelector("[data-era-este]").style.color, "rgb(248, 249, 250)");
+  assert.deepEqual([...era.querySelectorAll("[data-veredicto]")].map((v) => v.dataset.veredicto), ["revelada"]);
+  assert.equal(era.querySelector("[data-era-este]").textContent, "Iba aquí");
+  assert.equal(era.querySelector("[data-era-este] [data-veredicto]").style.color, "rgb(248, 249, 250)");
+  assert.equal(era.querySelectorAll("[data-era-este] svg").length, 0);
 });
 
 /* ═══════════ E1 · EL OBJETIVO SE PINTA ═══════════ */

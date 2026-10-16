@@ -14,8 +14,8 @@ Lo que ve el estudiante sale de aquí, letra por letra. Precedencia (Sakuta, tod
 
 **Rótulos de la escena** (guía §3.2 y §7), todos fragmentos literales de los pasos:
 
-- Momento 1 · «Marzo del año siguiente»: «Castiga la deuda de Pablo Moncayo» (paso 1); «Provisión para deudas incobrables» «$180.000» [se debita] (paso 2); «Cuentas por cobrar – clientes» · «A nombre de Pablo Moncayo» · «$180.000» [se acredita] (paso 3; el monto, del paso 2).
-- Momento 2 · «Un tiempo después»: «Pablo Moncayo vuelve y paga toda la factura» (paso 4); la etiqueta «Primero se revive la deuda» y «Cuentas por cobrar – clientes» «$180.000» [se debita] (paso 5); «Provisión para deudas incobrables» «$180.000» [se acredita] (paso 6); la etiqueta «Después se anota el pago» y «Caja» «$180.000» [se debita] (paso 7); «Cuentas por cobrar – clientes» «$180.000» [se acredita] (paso 8).
+- Momento 1 · «Marzo del año siguiente»: «Castiga la deuda de Pablo Moncayo» (paso 1); «Provisión para cuentas incobrables» «$180.000» [se debita] (paso 2); «Cuentas por cobrar – clientes» · «A nombre de Pablo Moncayo» · «$180.000» [se acredita] (paso 3; el monto, del paso 2).
+- Momento 2 · «Un tiempo después»: «Pablo Moncayo vuelve y paga toda la factura» (paso 4); la etiqueta «Primero se revive la deuda» y «Cuentas por cobrar – clientes» «$180.000» [se debita] (paso 5); «Provisión para cuentas incobrables» «$180.000» [se acredita] (paso 6); la etiqueta «Después se anota el pago» y «Caja» «$180.000» [se debita] (paso 7); «Cuentas por cobrar – clientes» «$180.000» [se acredita] (paso 8).
 - Las cápsulas: «se debita» y «se acredita».
 
 **El tablero de la capa 3** (guía §4): las cabeceras «Se revive» y «A Caja entran», las filas «a», «b» y «c» y sus cifras, fragmentos de las revelaciones y de los nombres de las cajas.
@@ -66,7 +66,7 @@ OBJETIVO: «Vas a ver cómo se anota el pago de una deuda que ya se había casti
 CAPA 1 · Primero, los nombres
 #	Término	Texto literal	Fuente	Estim.
 1	Cuenta recuperada	Es una deuda que la empresa ya había castigado y que el cliente vuelve a pagar, toda o en parte.	p. 203	81
-2	Revivir la deuda	Es volver a poner la deuda en Cuentas por cobrar – clientes. Se hace reversando el asiento del castigo. Se debita Cuentas por cobrar – clientes y se acredita Provisión para deudas incobrables.	pp. 203-204	76
+2	Revivir la deuda	Es volver a poner la deuda en Cuentas por cobrar – clientes. Se hace reversando el asiento del castigo. Se debita Cuentas por cobrar – clientes y se acredita Provisión para cuentas incobrables.	pp. 203-204	76
 2 · Nota	—	Reversar un asiento es hacerlo al revés. Lo que se había acreditado ahora se debita. Y lo que se había debitado ahora se acredita.	CONSTRUCCIÓN: el libro usa «reversar» (p. 203) sin definirlo. La glosa sale de comparar los asientos de las pp. 202 y 204.	66
 3	Después, el pago	Después de revivir la deuda, se anota el pago como cualquier cobro: se debita Caja y se acredita Cuentas por cobrar – clientes.	p. 204	69
 4	Abono	Es un pago de solo una parte de la deuda.	p. 205. CONSTRUCCIÓN.	103
@@ -75,11 +75,11 @@ CAPA 1 · Primero, los nombres
 CAPA 2 · Mírelo funcionar · El Torito y Pablo Moncayo, caso a (p. 204)
 #	Texto literal	Etiqueta que ve	Resalta	Estim.
 1	En marzo del año siguiente, la empresa castiga la deuda de Pablo Moncayo.	Libro, p. 204	La deuda de Moncayo	74
-2	Se debita Provisión para deudas incobrables por $180.000.	Basado en el libro, p. 204	Provisión para deudas incobrables	<10
+2	Se debita Provisión para cuentas incobrables por $180.000.	Basado en el libro, p. 204	Provisión para cuentas incobrables	<10
 3	Y se acredita Cuentas por cobrar – clientes, a nombre de Pablo Moncayo.	Basado en el libro, p. 204	Cuentas por cobrar – clientes	81
 4	Un tiempo después, Pablo Moncayo vuelve y paga toda la factura.	Libro, p. 204	El pago	77
 5	Primero se revive la deuda: se debita Cuentas por cobrar – clientes por $180.000.	Basado en el libro, p. 204	Cuentas por cobrar – clientes	74
-6	Y se acredita Provisión para deudas incobrables, por el mismo valor.	Basado en el libro, p. 204	Provisión para deudas incobrables	66
+6	Y se acredita Provisión para cuentas incobrables, por el mismo valor.	Basado en el libro, p. 204	Provisión para cuentas incobrables	66
 7	Después se anota el pago: se debita Caja por $180.000.	Libro, p. 204	Caja	79
 8	Y se acredita Cuentas por cobrar – clientes, por el mismo valor.	Libro, p. 204	Cuentas por cobrar – clientes	88
 9	No se anota ningún ingreso: la deuda volvió y se pagó.	Basado en el libro, p. 204	Ningún ingreso, quieto	88
@@ -119,7 +119,7 @@ Lectura cruzada:
 Las cajas y las opciones coinciden con los términos 2, 3 y 5 y con los pasos 5 a 9.
 «Entra» solo aparece con plata.
 No aparecen «cartera» ni «nota débito».
-«Provisión para deudas incobrables» es el único nombre de la provisión en toda la pieza.
+«Provisión para cuentas incobrables» es el único nombre de la provisión en toda la pieza.
 No encontré contradicciones.
 Inventario por estados
 Estado	Lo que ve el estudiante
@@ -197,7 +197,7 @@ Objetivo (4 · 3 líneas): «Vas a ver cómo se anota el pago de una deuda que y
 
 #	Término (1 · 1 línea)	Texto literal	Líneas 320 · 375 [M]
 1	«Cuenta recuperada»	«Es una deuda que la empresa ya había castigado y que el cliente vuelve a pagar, toda o en parte.»	3 · 3
-2	«Revivir la deuda»	«Es volver a poner la deuda en Cuentas por cobrar – clientes. Se hace reversando el asiento del castigo. Se debita Cuentas por cobrar – clientes y se acredita Provisión para deudas incobrables.»	7 · 6
+2	«Revivir la deuda»	«Es volver a poner la deuda en Cuentas por cobrar – clientes. Se hace reversando el asiento del castigo. Se debita Cuentas por cobrar – clientes y se acredita Provisión para cuentas incobrables.»	7 · 6
 2 · Nota	—	«Reversar un asiento es hacerlo al revés. Lo que se había acreditado ahora se debita. Y lo que se había debitado ahora se acredita.»	4 · 3
 3	«Después, el pago»	«Después de revivir la deuda, se anota el pago como cualquier cobro: se debita Caja y se acredita Cuentas por cobrar – clientes.»	5 · 4
 4	«Abono»	«Es un pago de solo una parte de la deuda.»	2 · 2
@@ -227,12 +227,12 @@ La cabecera solo lleva la fecha. T6 A3 llevaba además «Se crea / Se usa / Se c
 3.2 Piezas [D], con lo medido [M]
 Paso	Pieza	Texto (fragmento literal)	Alto 320 · 375
 1	hecho	«Castiga la deuda de Pablo Moncayo»	47,78 · 30,89
-2	anotación	«Provisión para deudas incobrables» «$180.000» [se debita]	67,69 · 51,44
+2	anotación	«Provisión para cuentas incobrables» «$180.000» [se debita]	67,69 · 51,44
 3	anotación	«Cuentas por cobrar – clientes» / «A nombre de Pablo Moncayo» / «$180.000» [se acredita]	69,63 · 69,63
 4	hecho	«Pablo Moncayo vuelve y paga toda la factura»	47,78 · 47,78
 5	etiqueta	«Primero se revive la deuda»	16,19
 5	anotación	«Cuentas por cobrar – clientes» «$180.000» [se debita]	51,44 · 51,44
-6	anotación	«Provisión para deudas incobrables» «$180.000» [se acredita]	67,69 · 51,44
+6	anotación	«Provisión para cuentas incobrables» «$180.000» [se acredita]	67,69 · 51,44
 7	etiqueta	«Después se anota el pago»	16,19
 7	anotación	«Caja» «$180.000» [se debita]	51,44
 8	anotación	«Cuentas por cobrar – clientes» «$180.000» [se acredita]	51,44
@@ -270,11 +270,11 @@ Líneas del texto a 258 / 313 [M]. Todos los pies ocupan 1 línea [M].
 
 Paso	Momento	Resaltado («Resalta» de Futaba)	Texto literal	Líneas	Pie
 1	1	la deuda de Moncayo (el hecho)	«En marzo del año siguiente, la empresa castiga la deuda de Pablo Moncayo.»	3 / 2	Libro, p. 204
-2	1	Provisión para deudas incobrables	«Se debita Provisión para deudas incobrables por $180.000.»	2 / 2	Basado en el libro, p. 204
+2	1	Provisión para cuentas incobrables	«Se debita Provisión para cuentas incobrables por $180.000.»	2 / 2	Basado en el libro, p. 204
 3	1	Cuentas por cobrar – clientes	«Y se acredita Cuentas por cobrar – clientes, a nombre de Pablo Moncayo.»	2 / 2	Basado en el libro, p. 204
 4	2	el pago (el hecho)	«Un tiempo después, Pablo Moncayo vuelve y paga toda la factura.»	2 / 2	Libro, p. 204
 5	2	Cuentas por cobrar – clientes [se debita]	«Primero se revive la deuda: se debita Cuentas por cobrar – clientes por $180.000.»	3 / 2	Basado en el libro, p. 204
-6	2	Provisión para deudas incobrables [se acredita]	«Y se acredita Provisión para deudas incobrables, por el mismo valor.»	2 / 2	Basado en el libro, p. 204
+6	2	Provisión para cuentas incobrables [se acredita]	«Y se acredita Provisión para cuentas incobrables, por el mismo valor.»	2 / 2	Basado en el libro, p. 204
 7	2	Caja	«Después se anota el pago: se debita Caja por $180.000.»	2 / 2	Libro, p. 204
 8	2	Cuentas por cobrar – clientes [se acredita]	«Y se acredita Cuentas por cobrar – clientes, por el mismo valor.»	2 / 2	Libro, p. 204
 9	2	las dos líneas de Cuentas por cobrar – clientes: la del paso 5 y la del paso 8	«No se anota ningún ingreso: la deuda volvió y se pagó.»	2 / 2	Basado en el libro, p. 204
@@ -433,7 +433,7 @@ Todos son fragmentos literales, con mayúscula inicial donde abren la línea. Co
 
 Rótulo	Sale de
 «Marzo del año siguiente» · «Castiga la deuda de Pablo Moncayo»	paso 1
-«Provisión para deudas incobrables» · «$180.000» · «se debita»	paso 2
+«Provisión para cuentas incobrables» · «$180.000» · «se debita»	paso 2
 «Cuentas por cobrar – clientes» · «A nombre de Pablo Moncayo» · «se acredita»	paso 3 (el monto, del paso 2)
 «Un tiempo después» · «Pablo Moncayo vuelve y paga toda la factura»	paso 4
 «Primero se revive la deuda»	paso 5

@@ -24,8 +24,8 @@ export const PIEZA_LA_PROVISION = {
    */
   nombres: [
     {
-      termino: "Provisión para deudas incobrables",
-      definicion: "Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables.",
+      termino: "Provisión para cuentas incobrables",
+      definicion: "Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para cuentas incobrables.",
     },
     {
       termino: "Al revés de Clientes",
@@ -85,7 +85,7 @@ export const ESCENA_T6_A3 = {
   ajuste: "$184.600",
   queda: "La provisión queda con $153.400",
   gasto: "Gasto provisiones – cuentas incobrables",
-  provision: "Provisión para deudas incobrables",
+  provision: "Provisión para cuentas incobrables",
   clientes: "Cuentas por cobrar – clientes",
   debita: "se debita",
   acredita: "se acredita",
@@ -96,12 +96,12 @@ export const PASOS_T6_A3 = [
   { texto: "El 31 de diciembre de 2007, El Torito Currambero revisa lo que le deben sus clientes: $2.655.000.", pie: "Basado en el libro, p. 200" },
   { texto: "Calcula que una parte no la va a recuperar: $148.800.", pie: "Basado en el libro, p. 202" },
   { texto: "Se debita Gasto provisiones – cuentas incobrables por $148.800.", pie: "Libro, p. 202" },
-  { texto: "Y se acredita Provisión para deudas incobrables, por el mismo valor.", pie: "Libro, p. 202" },
+  { texto: "Y se acredita Provisión para cuentas incobrables, por el mismo valor.", pie: "Libro, p. 202" },
   { texto: "Ese gasto baja la utilidad del año.", pie: "Libro, p. 202" },
   { texto: "En el estado de situación financiera, la provisión se resta de Cuentas por cobrar – clientes.", pie: "Libro, p. 202" },
   { texto: "Cálculo: $2.655.000 − $148.800 = $2.506.200, el valor neto.", pie: "Libro, p. 202" },
   { texto: "En marzo del año siguiente, la empresa da por perdida la deuda de Pablo Moncayo.", pie: "Basado en el libro, p. 202" },
-  { texto: "Se debita Provisión para deudas incobrables por $180.000.", pie: "Libro, p. 202" },
+  { texto: "Se debita Provisión para cuentas incobrables por $180.000.", pie: "Libro, p. 202" },
   { texto: "Y se acredita Cuentas por cobrar – clientes, a nombre de Pablo Moncayo.", pie: "Basado en el libro, p. 202" },
   { texto: "No se anota ningún gasto: ese ya se anotó en diciembre.", pie: "Basado en el libro, p. 202" },
   { texto: "La provisión era de $148.800, y lo castigado fue $180.000.", pie: "Libro, p. 202" },
@@ -110,7 +110,7 @@ export const PASOS_T6_A3 = [
   { texto: "Esta vez pide una provisión de $153.400.", pie: "Libro, p. 203" },
   { texto: "A esa cifra se le suman los $31.200 que faltaron.", pie: "Libro, p. 203" },
   { texto: "Se debita Gasto provisiones – cuentas incobrables por $184.600.", pie: "Basado en el libro, p. 203" },
-  { texto: "Y se acredita Provisión para deudas incobrables, por el mismo valor.", pie: "Libro, p. 203" },
+  { texto: "Y se acredita Provisión para cuentas incobrables, por el mismo valor.", pie: "Libro, p. 203" },
   { texto: "Al final, la provisión queda con $153.400: justo lo que pidió el análisis.", pie: "Libro, p. 203" },
 ];
 export const CIERRE_T6_A3 = {
@@ -187,7 +187,7 @@ export const MOMENTOS_T6_A3 = [
   },
 ];
 /* La T: su nombre y las palabras publicadas de sus columnas (ElCierreCompleto). */
-export const CUENTA_T_T6_A3 = { nombre: "Provisión para deudas incobrables", debe: "DEBE", haber: "HABER" };
+export const CUENTA_T_T6_A3 = { nombre: "Provisión para cuentas incobrables", debe: "DEBE", haber: "HABER" };
 export const FINAL_CAPA_3_T6_A3 = {
   texto: "El saldo final es igual a lo que pidió el análisis. Por eso se sumaron los $31.200: para cubrir lo que faltó.",
   pie: "Basado en el libro, p. 203",
@@ -262,4 +262,37 @@ export const PARADA_T6_A3 = {
   resaltados: ["provision2", "clientes2"],
   /* La predicción escrita en la escena (Mai, enganche §2a); la de «Sí, por la parte…», de la auditoría de Shoko. */
   etiquetas: { si: "Otra vez en marzo", "si-parte": "En marzo, solo lo que faltó", no: "Solo en diciembre" },
+};
+
+/* ═══════════ LOTE 7 · EL TANQUE (P2 de Mai, 16-oct, con las decisiones de Sakuta) ═══════════ */
+
+/*
+ * Los rótulos del modelo, las pistas de los gestos y los nombres accesibles
+ * (§10 de Mai: suyos, nuevos, PARA SHOKO). Las cifras y las fechas son las de
+ * los pasos de Futaba. «Queda en» y «Le faltan» van delante de su cifra; el
+ * nombre del tanque, delante de «: {saldo}».
+ */
+export const TANQUE_T6_A3 = {
+  saldo: "Saldo",
+  quedaEn: "Queda en",
+  leFaltan: "Le faltan",
+  leFaltanLector: "le faltan",
+  analisis: "Análisis",
+  noLaVa: "No la va a recuperar",
+  valorNeto: "Valor neto",
+  provisionMenos: "Provisión −",
+  cero: "0",
+  pesosCero: "$0",
+  sueltaAqui: "Suéltalo aquí",
+  tocaBarra: "Toca la barra para restar",
+  subeNivel: "Sube el nivel hasta la línea",
+  nombreTanque: "Saldo de la provisión",
+  nombreBarra: "Restar la provisión de Cuentas por cobrar – clientes",
+  nombreAsa: "Nivel de la provisión",
+  pablo: "Pablo Moncayo",
+  /* La capa 3 sobre el tanque (§3.3): el contador «Momento n de 3» y el botón de avance. */
+  momento: "Momento",
+  siguienteMomento: "Siguiente momento",
+  faltante: "$31.200",
+  pide: "$153.400",
 };

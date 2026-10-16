@@ -2,7 +2,10 @@ import { useEffect, useId, useRef, useState } from "react";
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 import { pesos } from "../../data/contabilidad.js";
 /* Los estados de calificación, el «ERA ESTE», los puntos y la palabra: de comun.jsx (B4). */
-import { C, INTER, SORA, MARCA, SOLO_LECTOR, Devolucion, BotonSiguiente, ESTADOS, MARCA_ERA_ESTE, Punto, Veredicto } from "./comun.jsx";
+import {
+  C, INTER, SORA, MARCA, CONTADOR, CIFRA, HUNDIDO, HUNDIDO_OPACO, REPOSO, ELEGIDO, SOLO_LECTOR, CSS_FOCO, Devolucion, BotonSiguiente, Comprobar,
+  ESTADOS, Punto, Veredicto, Pastilla, useTrasError,
+} from "./comun.jsx";
 import { R5_2, ETAPAS, PREGUNTAS_R5_2, CORTES_R5_2, ROTULOS_R5_2 as RT, GRUPOS_A0, ROTULOS_A0 as RA } from "../../data/repasoCap5ToroNegroTextos.js";
 import {
   prepararR5_2, evaluarAsiento, evaluarSaldo, evaluarCalculo, puedeRevisarAsiento, puedeRevisarSaldo, puedeRevisarCalculo,
@@ -29,19 +32,17 @@ import {
 
 /* Las cifras del libro y del campo van sin «$», con puntos de miles. */
 export const cifra = (n) => pesos(Math.abs(n)).replace("$", "");
-const LECTOR = { acierto: "Correcto: ", error: "Incorrecto: " };
 
 
 const CSS_R5_2 = `
 @keyframes r52-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .r52-entra { animation: r52-entra 320ms ease-out both; }
 .r52-barra { transition: width 160ms linear; }
-.r52-campo:focus { outline: none; border: 2px solid ${C.ambar} !important; }
 @media (prefers-reduced-motion: reduce) {
   .r52-entra { animation: none; }
   .r52-barra { transition: none; }
 }
-`;
+` + CSS_FOCO;
 
 const reducirMovimiento = () => {
   try { return Boolean(globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches); } catch { return false; }
@@ -52,7 +53,7 @@ const reducirMovimiento = () => {
 function LineaDeTiempo({ estados }) {
   return (
     <div data-linea-tiempo style={{ position: "relative", minHeight: "44px" }}>
-      <span aria-hidden="true" style={{ position: "absolute", left: "6px", right: "6px", top: "5px", height: "2px", background: C.navy }} />
+      <span aria-hidden="true" style={{ position: "absolute", left: "6px", right: "6px", top: "5px", height: "2px", background: "rgba(248,249,250,0.35)" }} />
       <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", justifyContent: "space-between", position: "relative" }}>
         {ETAPAS.map((e, k) => {
           const est = estados[k];
@@ -63,7 +64,8 @@ function LineaDeTiempo({ estados }) {
                 aria-hidden="true"
                 style={{
                   width: "12px", height: "12px", borderRadius: "50%", boxSizing: "border-box",
-                  background: est === "hecho" ? C.hecho : est === "actual" ? C.ambar : C.fondo,
+                  /* §4.3: el nodo actual deja el ámbar y pasa a #F8F9FA, con su forma. */
+                  background: est === "hecho" ? C.hecho : est === "actual" ? C.texto : C.fondo,
                   border: est === "pendiente" ? `1.5px solid ${C.atenuado}` : "none",
                 }}
               />
@@ -85,7 +87,7 @@ const estadosDeTiempo = (etapa, cerrada = false) => {
 
 function TarjetaHecho({ marca, texto }) {
   return (
-    <div data-hecho style={{ background: C.navy, borderRadius: "12px", borderLeft: `3px solid ${C.hecho}`, padding: "14px 16px" }}>
+    <div data-hecho style={{ ...HUNDIDO, borderRadius: "12px", padding: "14px 16px" }}>
       <p style={{ ...MARCA, margin: 0 }}>{marca}</p>
       <p style={{ margin: "6px 0 0", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{texto}</p>
     </div>
@@ -98,7 +100,7 @@ function Movimiento({ m, nuevo }) {
   return (
     <div data-movimiento={m.id} className={nuevo ? "r52-entra" : undefined} style={{ minHeight: "40px", padding: "2px 0" }}>
       <span style={{ display: "block", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: C.atenuado }}>{m.concepto}</span>
-      <span style={{ display: "block", textAlign: "right", fontFamily: INTER, fontSize: "15px", fontWeight: 600, lineHeight: "20px", fontVariantNumeric: "tabular-nums", color: C.texto }}>{cifra(m.valor)}</span>
+      <span style={{ display: "block", textAlign: "right", ...CIFRA, fontSize: "15px", fontWeight: 600, lineHeight: "20px", color: C.texto }}>{cifra(m.valor)}</span>
     </div>
   );
 }
@@ -109,7 +111,7 @@ function RenglonSaldo({ saldo, lado }) {
   return (
     <div data-saldo={lado} style={{ minHeight: "48px", borderLeft: `3px solid ${credito ? C.ambar : C.teal}`, paddingLeft: "8px", boxSizing: "border-box", display: "flex", flexDirection: "column", justifyContent: "center" }}>
       <span style={MARCA}>{credito ? RT.saldoCredito : RT.saldoDebito}</span>
-      <span style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, textAlign: "right" }}>{cifra(saldo)}</span>
+      <span style={{ ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto, textAlign: "right" }}>{cifra(saldo)}</span>
     </div>
   );
 }
@@ -146,7 +148,7 @@ export function Medidor({ saldo, fantasma = null, mini = false }) {
       <span style={{ position: "absolute", left: "calc(50% - 1px)", top: mini ? "4px" : "0", width: "2px", height: "16px", background: C.texto }} />
       {!mini && (
         <>
-          <span style={{ position: "absolute", left: "50%", top: "20px", transform: "translateX(-50%)", fontFamily: INTER, fontSize: "11px", color: C.texto }}>0</span>
+          <span style={{ position: "absolute", left: "50%", top: "20px", transform: "translateX(-50%)", ...CIFRA, fontSize: "12px", color: C.texto }}>0</span>
           <span style={{ ...MARCA, position: "absolute", left: 0, top: "22px" }}>{RT.debito}</span>
           <span style={{ ...MARCA, position: "absolute", right: 0, top: "22px" }}>{RT.credito}</span>
         </>
@@ -165,7 +167,7 @@ export function LibroProvision({ movimientos, saldo = saldoDe(movimientos), fant
   const col = (l) => movimientos.filter((m) => m.lado === l);
   const vacio = movimientos.length === 0;
   return (
-    <div data-libro style={{ background: C.navy, borderRadius: "12px", padding: "16px" }}>
+    <div data-libro style={{ ...HUNDIDO, borderRadius: "12px", padding: "16px" }}>
       <p style={{ margin: "0 0 8px", fontFamily: INTER, fontSize: "15px", fontWeight: 600, lineHeight: "22px", color: C.texto }}>{RT.tituloLibro}</p>
       <div style={{ position: "relative" }}>
         <span aria-hidden="true" style={{ position: "absolute", left: "calc(50% - 1px)", top: 0, bottom: 0, width: "2px", background: C.atenuado }} />
@@ -178,7 +180,7 @@ export function LibroProvision({ movimientos, saldo = saldoDe(movimientos), fant
           ))}
         </div>
         {vacio ? (
-          <p data-sin-movimientos style={{ margin: 0, minHeight: "40px", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: INTER, fontSize: "13px", color: C.atenuado, background: C.navy, position: "relative" }}>
+          <p data-sin-movimientos style={{ margin: 0, minHeight: "40px", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: INTER, fontSize: "13px", color: C.atenuado, background: HUNDIDO_OPACO, position: "relative" }}>
             {RT.sinMovimientos}
           </p>
         ) : (
@@ -192,7 +194,7 @@ export function LibroProvision({ movimientos, saldo = saldoDe(movimientos), fant
         )}
         <div style={{ borderTop: `1px solid ${C.atenuado}` }}>
           {lado === "cero" ? (
-            <div data-saldo="cero" style={{ minHeight: "48px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", background: C.navy }}>
+            <div data-saldo="cero" style={{ minHeight: "48px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", background: HUNDIDO_OPACO }}>
               <span style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, color: C.texto }}>0</span>
               <span style={MARCA}>{RT.sinSaldo}</span>
             </div>
@@ -219,10 +221,9 @@ export const leerCifra = (texto, maximo = 8) => {
 
 function CampoValor({
   id, valor, onCambiar, estado = null, soloLectura = false,
-  maximo = 8, alto = "48px", placeholder, enterKeyHint, onEnter, inputRef, etiqueta,
+  maximo = 8, alto = "48px", tamano = "17px", placeholder, enterKeyHint, onEnter, inputRef, etiqueta,
 }) {
-  const base = { border: `1.5px solid ${C.atenuado}`, background: C.fondo };
-  const visto = estado && estado !== "vacia" ? ESTADOS[estado] : base;
+  const visto = estado && estado !== "vacia" ? ESTADOS[estado] : ESTADOS.reposo;
   return (
     <input
       id={id}
@@ -241,7 +242,7 @@ function CampoValor({
       onKeyDown={onEnter ? (e) => { if (e.key === "Enter") { e.preventDefault(); onEnter(); } } : undefined}
       style={{
         width: "100%", height: alto, boxSizing: "border-box", borderRadius: "10px", padding: "0 12px",
-        fontFamily: INTER, fontSize: "17px", fontWeight: 600, fontVariantNumeric: "tabular-nums", textAlign: "right", color: C.texto,
+        ...CIFRA, fontSize: tamano, fontWeight: 600, textAlign: "right", color: C.texto,
         ...visto,
       }}
     />
@@ -252,7 +253,8 @@ function CampoValor({
 
 function Hueco({ lado, cuenta, activo, estado, onTocar, huecoRef, soloLectura = false }) {
   const lleno = Boolean(cuenta);
-  const borde = estado ? null : activo ? `2px solid ${C.ambar}` : lleno ? `1px solid ${C.atenuado}` : `1.5px dashed ${C.atenuado}`;
+  /* §4.1: el hueco activo, 2 px #F8F9FA (nunca ámbar); lleno, el reposo; vacío, discontinuo (es un hueco por llenar). */
+  const borde = estado ? null : activo ? ELEGIDO : lleno ? REPOSO : `1.5px dashed ${C.atenuado}`;
   const contenido = (
     <>
       <span style={SOLO_LECTOR}>{lado === "debe" ? RT.debe : RT.haber}: </span>
@@ -263,7 +265,7 @@ function Hueco({ lado, cuenta, activo, estado, onTocar, huecoRef, soloLectura = 
   );
   const estilo = {
     display: "flex", alignItems: "center", width: "100%", minHeight: "56px", boxSizing: "border-box", textAlign: "left",
-    borderRadius: "10px", padding: "12px", background: C.fondo, ...(borde ? { border: borde } : ESTADOS[estado]),
+    borderRadius: "10px", padding: "12px", background: "transparent", ...(borde ? { border: borde } : ESTADOS[estado]),
   };
   if (soloLectura) return <div data-hueco={lado} data-lleno={lleno} style={{ ...estilo, ...ESTADOS.revelada }}>{contenido}</div>;
   return (
@@ -286,20 +288,20 @@ function Hueco({ lado, cuenta, activo, estado, onTocar, huecoRef, soloLectura = 
 
 function TarjetaAsiento({ debe, haber, valor, activo, estados = null, onTocar, onValor, refs, soloLectura = false, marca = null, idCampo }) {
   return (
-    <div data-tarjeta-asiento={soloLectura ? "era-este" : "armador"} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? ESTADOS.revelada : {}), ...(soloLectura ? { background: C.navy } : {}) }}>
-      {marca && <p data-era-este style={{ ...MARCA_ERA_ESTE, margin: "0 0 10px" }}>{marca}</p>}
+    <div data-tarjeta-asiento={soloLectura ? "era-este" : "armador"} style={{ ...HUNDIDO, borderRadius: "12px", padding: "16px", ...(soloLectura ? { border: ESTADOS.revelada.border } : {}) }}>
+      {marca && <p data-era-este style={{ margin: "0 0 10px" }}><Pastilla estado="revelada" /></p>}
       <p style={{ ...MARCA, margin: "0 0 4px" }}>{RT.debe}</p>
       <Hueco lado="debe" cuenta={debe} activo={activo === "debe"} estado={estados?.debe} onTocar={() => onTocar?.("debe")} huecoRef={refs?.debe} soloLectura={soloLectura} />
-      <Veredicto estado={estados?.debe} textos={RT.veredicto.cuenta} />
+      <Veredicto estado={estados?.debe} />
       <div style={{ marginTop: "12px", paddingLeft: "16px" }}>
         <p style={{ ...MARCA, margin: "0 0 4px" }}>{RT.haber}</p>
         <Hueco lado="haber" cuenta={haber} activo={activo === "haber"} estado={estados?.haber} onTocar={() => onTocar?.("haber")} huecoRef={refs?.haber} soloLectura={soloLectura} />
-        <Veredicto estado={estados?.haber} textos={RT.veredicto.cuenta} />
+        <Veredicto estado={estados?.haber} />
       </div>
       <div aria-hidden="true" style={{ height: "1px", background: "rgba(184,196,212,0.25)", margin: "16px 0" }} />
       <label htmlFor={idCampo} style={{ ...MARCA, display: "block", margin: "0 0 4px" }}>{RT.valor}</label>
       <CampoValor id={idCampo} valor={valor} onCambiar={onValor} estado={soloLectura ? "revelada" : estados?.valor} soloLectura={soloLectura} />
-      <Veredicto estado={soloLectura ? null : estados?.valor} textos={RT.veredicto.valor} />
+      <Veredicto estado={soloLectura ? null : estados?.valor} />
     </div>
   );
 }
@@ -323,7 +325,7 @@ function HojaDeCuentas({ lado, hoja, puestas, onElegir, onCerrar }) {
         aria-labelledby={titulo}
         data-hoja={lado}
         onClick={(e) => e.stopPropagation()}
-        style={{ width: "100%", maxWidth: "860px", maxHeight: "70vh", overflowY: "auto", background: C.navy, borderRadius: "16px 16px 0 0", boxSizing: "border-box" }}
+        style={{ width: "100%", maxWidth: "860px", maxHeight: "70vh", overflowY: "auto", background: C.panel, borderRadius: "16px 16px 0 0", boxSizing: "border-box" }}
       >
         <div style={{ minHeight: "48px", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 8px 0 16px" }}>
           <span id={titulo} style={MARCA}>{RT.cuentaDel[lado]}</span>
@@ -359,22 +361,9 @@ function HojaDeCuentas({ lado, hoja, puestas, onElegir, onCerrar }) {
   );
 }
 
-function BotonRevisar({ activo, onClick, texto }) {
-  return (
-    <button
-      type="button"
-      data-revisar
-      disabled={!activo}
-      onClick={onClick}
-      style={{
-        marginTop: "16px", width: "100%", minHeight: "52px", borderRadius: "12px", border: "none",
-        background: activo ? C.ambar : C.navy, color: activo ? C.fondo : C.atenuado,
-        fontFamily: SORA, fontSize: "16px", fontWeight: 600, cursor: activo ? "pointer" : "default",
-      }}
-    >
-      {texto}
-    </button>
-  );
+/* §4.3: «Comprobar» (varios campos), el Responder común. */
+function BotonRevisar({ activo, onClick }) {
+  return <Comprobar activo={activo} onClick={onClick} dato="revisar" />;
 }
 
 /* Una pantalla de asiento (preguntas 1, 2, 3, 5 y 6). */
@@ -404,15 +393,17 @@ function PreguntaAsiento({ p, hoja, onRespondida, r, respuestas = {} }) {
   const tocar = (lado) => { setActivo(lado); setAbierta(lado); };
 
   const estados = r ? { debe: r.piezas.debe ? "ok" : "mal", haber: r.piezas.haber ? "ok" : "mal", valor: r.piezas.valor ? "ok" : "mal" } : null;
+  /* §4.2: «Iba aquí» llega 0,7 s después del error (r5-2 no tiene reintento). */
+  const revelar = useTrasError(Boolean(r && !r.ok));
   return (
     <>
       <TarjetaAsiento debe={debe} haber={haber} valor={valor} activo={r ? null : activo} estados={estados} onTocar={tocar} onValor={setValor} refs={refs} idCampo={idCampo} />
-      {r && !r.ok && (
+      {r && !r.ok && revelar && (
         <div style={{ marginTop: "12px" }}>
           <TarjetaAsiento soloLectura marca={RT.eraEste} debe={p.correcto.debe} haber={p.correcto.haber} valor={correctoDe(p, respuestas).valor} idCampo={`${idCampo}-era`} />
         </div>
       )}
-      {!r && <BotonRevisar activo={puedeRevisarAsiento({ debe, haber, valor })} texto={RT.revisarAsiento} onClick={() => onRespondida(evaluarAsiento(p, { debe, haber, valor }, respuestas), `${debe} | ${haber} | ${valor}`, { debe, haber, valor })} />}
+      {!r && <BotonRevisar activo={puedeRevisarAsiento({ debe, haber, valor })} onClick={() => onRespondida(evaluarAsiento(p, { debe, haber, valor }, respuestas), `${debe} | ${haber} | ${valor}`, { debe, haber, valor })} />}
       {abierta && <HojaDeCuentas lado={abierta} hoja={hoja} puestas={{ debe, haber }} onElegir={elegir} onCerrar={cerrar} />}
     </>
   );
@@ -427,9 +418,8 @@ function BotonLado({ lado, elegido, estado, onClick, soloLectura }) {
    * Antes, al revisar, el relleno se perdía y los dos lados quedaban iguales
    * salvo el color de un borde.
    */
-  const relleno = elegido || estado === "revelada";
-  const borde = estado ? ESTADOS[estado].border : relleno ? `1.5px solid ${C.hecho}` : `1.5px solid ${C.atenuado}`;
-  const visto = { background: relleno ? C.hecho : C.fondo, border: borde };
+  /* §4.1: sin relleno; elegido o revelado, 2 px #F8F9FA; error, coral; reposo, 1 px. */
+  const visto = estado ? ESTADOS[estado] : elegido ? { border: ELEGIDO, background: "transparent" } : ESTADOS.reposo;
   return (
     <button
       type="button"
@@ -440,7 +430,7 @@ function BotonLado({ lado, elegido, estado, onClick, soloLectura }) {
       onClick={onClick}
       style={{
         flex: 1, minWidth: 0, minHeight: "48px", borderRadius: "10px", cursor: soloLectura || estado ? "default" : "pointer",
-        fontFamily: INTER, fontSize: "15px", fontWeight: 600, color: relleno ? C.fondo : C.texto, ...visto,
+        fontFamily: INTER, fontSize: "15px", fontWeight: 600, color: C.texto, ...visto,
       }}
     >
       {lado === "debito" ? RT.debito : RT.credito}
@@ -450,11 +440,11 @@ function BotonLado({ lado, elegido, estado, onClick, soloLectura }) {
 
 function TarjetaSaldo({ valor, lado, onValor, onLado, estados = null, soloLectura = false, marca = null, idCampo }) {
   return (
-    <div data-tarjeta-saldo={soloLectura ? "era-este" : "respuesta"} style={{ background: C.navy, borderRadius: "12px", padding: "16px", ...(soloLectura ? { border: ESTADOS.revelada.border } : {}) }}>
-      {marca && <p data-era-este style={{ ...MARCA_ERA_ESTE, margin: "0 0 10px" }}>{marca}</p>}
+    <div data-tarjeta-saldo={soloLectura ? "era-este" : "respuesta"} style={{ ...HUNDIDO, borderRadius: "12px", padding: "16px", ...(soloLectura ? { border: ESTADOS.revelada.border } : {}) }}>
+      {marca && <p data-era-este style={{ margin: "0 0 10px" }}><Pastilla estado="revelada" /></p>}
       <label htmlFor={idCampo} style={{ ...MARCA, display: "block", margin: "0 0 4px" }}>{RT.valor}</label>
       <CampoValor id={idCampo} valor={valor} onCambiar={onValor} estado={soloLectura ? "revelada" : estados?.valor} soloLectura={soloLectura} />
-      <Veredicto estado={soloLectura ? null : estados?.valor} textos={RT.veredicto.valor} />
+      <Veredicto estado={soloLectura ? null : estados?.valor} />
       <p style={{ ...MARCA, margin: "12px 0 4px" }}>{RT.ladoDelSaldo}</p>
       <div role="group" aria-label={RT.ladoDelSaldo} style={{ display: "flex", gap: "8px" }}>
         {["debito", "credito"].map((l) => (
@@ -469,7 +459,7 @@ function TarjetaSaldo({ valor, lado, onValor, onLado, estados = null, soloLectur
         ))}
       </div>
       {/* Con 0 no se pide lado: si no eligió ninguno, no hay lado que calificar. */}
-      <Veredicto estado={soloLectura || !lado ? null : estados?.lado} textos={RT.veredicto.lado} />
+      <Veredicto estado={soloLectura || !lado ? null : estados?.lado} />
     </div>
   );
 }
@@ -479,28 +469,34 @@ function PreguntaSaldo({ p, onRespondida, r, respuestas = {} }) {
   const [lado, setLado] = useState(null);
   const idCampo = useId();
   const estados = r ? { valor: r.piezas.valor ? "ok" : "mal", lado: r.piezas.lado ? "ok" : "mal" } : null;
+  const revelar = useTrasError(Boolean(r && !r.ok));
   return (
     <>
       <TarjetaSaldo valor={valor} lado={lado} onValor={setValor} onLado={setLado} estados={estados} idCampo={idCampo} />
-      {r && !r.ok && (
+      {r && !r.ok && revelar && (
         <div style={{ marginTop: "12px" }}>
           <TarjetaSaldo soloLectura marca={RT.eraEste} valor={correctoDe(p, respuestas).valor} lado={p.correcto.lado} idCampo={`${idCampo}-era`} />
         </div>
       )}
-      {!r && <BotonRevisar activo={puedeRevisarSaldo({ valor, lado })} texto={RT.revisarSaldo} onClick={() => onRespondida(evaluarSaldo(p, { valor, lado }, respuestas), `${valor} | ${lado ?? "sin lado"}`, { valor, lado })} />}
+      {!r && <BotonRevisar activo={puedeRevisarSaldo({ valor, lado })} onClick={() => onRespondida(evaluarSaldo(p, { valor, lado }, respuestas), `${valor} | ${lado ?? "sin lado"}`, { valor, lado })} />}
     </>
   );
 }
 
 /* ═══════════ (a0) CALCULA LA PROVISIÓN ═══════════ */
 
-/* Debajo del campo, después de revisar: «Correcta» o «Era …», la palabra siempre con el color. */
+/*
+ * Debajo del campo, después de comprobar (§4.2): «Correcto», o «No va aquí»
+ * y, 0,7 s después, «Iba aquí: {valor}» (casilla con cifra; sin reintento).
+ */
 function Bajo({ estado, era }) {
+  /* «mal» y «vacia» son error: los dos revelan. */
+  const revela = useTrasError(Boolean(estado) && estado !== "ok");
   if (!estado) return null;
-  const calificado = estado !== "vacia";
   return (
-    <span data-bajo={estado} style={{ display: "block", marginTop: "4px", textAlign: "right", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", fontWeight: 600, color: calificado ? C.texto : C.atenuado }}>
-      {estado === "ok" ? RA.correcta : RA.era(cifra(era))}
+    <span data-bajo={estado} style={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-end", gap: "4px 10px", marginTop: "4px" }}>
+      <Pastilla estado={estado === "ok" ? "ok" : "mal"} />
+      {estado !== "ok" && revela && <Pastilla estado="revelada" valor={cifra(era)} />}
     </span>
   );
 }
@@ -515,7 +511,7 @@ function PreguntaCalculo({ p, onRespondida, r, respuestas = {} }) {
   const DIVISORIA = "1px solid rgba(184,196,212,0.25)";
   return (
     <>
-      <div data-tarjeta-calculo style={{ background: C.navy, borderRadius: "12px", padding: "16px" }}>
+      <div data-tarjeta-calculo style={{ ...HUNDIDO, borderRadius: "12px", padding: "16px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", minHeight: "24px", marginBottom: "8px", gap: "8px" }}>
           <span style={MARCA}>{RA.grupoYSaldo}</span>
           <span style={MARCA}>{RA.tuProvision}</span>
@@ -526,7 +522,7 @@ function PreguntaCalculo({ p, onRespondida, r, respuestas = {} }) {
             <div key={g.id} data-fila-grupo={g.id} style={{ display: "flex", alignItems: "center", gap: "8px", minHeight: "72px", padding: "6px 0", boxSizing: "border-box", borderTop: k ? DIVISORIA : "none" }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <span data-grupo style={{ display: "block", fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: C.texto }}>{g.grupo}</span>
-                <span data-saldo-grupo style={{ display: "block", fontFamily: INTER, fontSize: "15px", lineHeight: "20px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>
+                <span data-saldo-grupo style={{ display: "block", ...CIFRA, fontSize: "15px", lineHeight: "20px", fontWeight: 600, color: C.texto }}>
                   {cifra(g.saldo)}{" "}
                   <span data-porcentaje style={{ whiteSpace: "nowrap", fontWeight: 600, color: C.atenuado }}>{RA.porcentaje(g.porcentaje)}</span>
                 </span>
@@ -561,6 +557,8 @@ function PreguntaCalculo({ p, onRespondida, r, respuestas = {} }) {
               onCambiar={setTotal}
               estado={r ? (r.ok ? "ok" : "mal") : null}
               maximo={9}
+              /* Nueve dígitos en mono no caben a 17 px en los 136 del paquete: 15 px, provisional (medida para Itagaki en el PR). */
+              tamano="15px"
               placeholder={RA.marcador}
               enterKeyHint="done"
             />
@@ -572,7 +570,6 @@ function PreguntaCalculo({ p, onRespondida, r, respuestas = {} }) {
       {!r && (
         <BotonRevisar
           activo={puedeRevisarCalculo({ total })}
-          texto={RA.revisar}
           onClick={() => onRespondida(
             evaluarCalculo(p, { filas, total }, respuestas),
             `${total} | ${GRUPOS_A0.map((g) => filas[g.id] ?? "-").join(" ")}`,
@@ -593,7 +590,7 @@ function PreguntaCalculo({ p, onRespondida, r, respuestas = {} }) {
  * entre renglones. Con prefers-reduced-motion, el estado final de una vez.
  * El fantasma es la barra con que empezó la etapa.
  */
-function Corte({ etapa, onSiguiente }) {
+function Corte({ etapa, onSiguiente, ultimo = false }) {
   const antes = libroAntesDe(etapa);
   const nuevos = MOVIMIENTOS[etapa];
   const saldoInicial = saldoDe(antes);
@@ -635,7 +632,7 @@ function Corte({ etapa, onSiguiente }) {
       {CORTES_R5_2[etapa].parrafos.map((t, k) => (
         <p key={k} data-texto-corte style={{ margin: k ? "12px 0 0" : "16px 0 0", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{t}</p>
       ))}
-      <div style={{ marginTop: "24px" }}><BotonSiguiente texto={RT.siguiente} onClick={onSiguiente} /></div>
+      <div style={{ marginTop: "24px" }}><BotonSiguiente sustantivo={RT.sustantivo} onClick={onSiguiente} ultimo={ultimo} /></div>
     </div>
   );
 }
@@ -650,12 +647,12 @@ function CasoEnTresTiempos({ filas }) {
         {filas.map((f) => {
           const lado = naturaleza(f.saldo);
           return (
-            <div key={f.id} data-fila-etapa={f.id} style={{ minHeight: "76px", background: C.navy, borderRadius: "12px", padding: "12px 16px", boxSizing: "border-box" }}>
+            <div key={f.id} data-fila-etapa={f.id} style={{ minHeight: "76px", ...HUNDIDO, borderRadius: "12px", padding: "12px 16px", boxSizing: "border-box" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", minHeight: "20px" }}>
                 <span style={MARCA}>{f.marca}</span>
                 <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                   <span aria-hidden="true" style={{ display: "flex", gap: "6px" }}>
-                    {/* Forma además de color (decisión 9 del delta): relleno si acertó, anillo si falló. */}
+                    {/* Forma además de color: Check si acertó, X si falló (§4.2). */}
                     {f.puntos.map((x) => <Punto key={x.id} ok={x.ok} />)}
                   </span>
                   <span data-n-de-m style={{ fontFamily: SORA, fontSize: "15px", fontWeight: 600, color: C.texto, whiteSpace: "nowrap" }}>{RT.nDeM(f.bien, f.total)}</span>
@@ -665,7 +662,7 @@ function CasoEnTresTiempos({ filas }) {
               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px", minHeight: "24px" }}>
                 <span data-rotulo-saldo style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: "140px", flexShrink: 0, whiteSpace: "nowrap" }}>
                   <span aria-hidden="true" style={{ width: "3px", alignSelf: "stretch", background: lado === "credito" ? C.ambar : C.teal }} />
-                  <span style={{ fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto }}>{cifra(f.saldo)}</span>
+                  <span style={{ ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto }}>{cifra(f.saldo)}</span>
                   <span style={MARCA}>{lado === "credito" ? RT.credito : RT.debito}</span>
                 </span>
                 <span style={{ flex: 1, minWidth: 0 }}><Medidor saldo={f.saldo} mini /></span>
@@ -730,7 +727,7 @@ export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_
 
   if (terminado) {
     return (
-      <div data-r5-2 data-cierre>
+      <div data-r5-2 data-r5 data-cierre>
         <style>{CSS_JUEGO + CSS_R5_2}</style>
         <CasoEnTresTiempos filas={porEtapa(resultados, preguntas)} />
         <Cierre pct={Math.round(puntuarR5_2(bien, total))} onReiniciar={reiniciar} />
@@ -741,19 +738,19 @@ export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_
   const ahora = pasos[paso];
   if (ahora.tipo === "entrada") {
     return (
-      <div data-r5-2 data-paso="entrada" ref={raiz}>
+      <div data-r5-2 data-r5 data-paso="entrada" ref={raiz}>
         <style>{CSS_JUEGO + CSS_R5_2}</style>
         <p data-objetivo style={{ margin: "0 0 16px", fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.atenuado }}>{R5_2.objetivo}</p>
         <p data-entrada style={{ margin: 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{R5_2.entrada}</p>
-        <div style={{ marginTop: "24px" }}><BotonSiguiente texto={RT.siguiente} onClick={avanzar} /></div>
+        <div style={{ marginTop: "24px" }}><BotonSiguiente sustantivo={RT.sustantivo} onClick={avanzar} /></div>
       </div>
     );
   }
   if (ahora.tipo === "corte") {
     return (
-      <div data-r5-2 data-paso={`corte-${ahora.etapa}`} ref={raiz}>
+      <div data-r5-2 data-r5 data-paso={`corte-${ahora.etapa}`} ref={raiz}>
         <style>{CSS_JUEGO + CSS_R5_2}</style>
-        <Corte key={ahora.etapa} etapa={ahora.etapa} onSiguiente={avanzar} />
+        <Corte key={ahora.etapa} etapa={ahora.etapa} onSiguiente={avanzar} ultimo={paso + 1 === pasos.length} />
       </div>
     );
   }
@@ -762,17 +759,18 @@ export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_
   const etapa = ETAPAS.find((e) => e.id === p.etapa);
   const Pregunta = PREGUNTA_POR_TIPO[p.tipo];
   return (
-    <div data-r5-2 data-paso={p.id} ref={raiz}>
+    <div data-r5-2 data-r5 data-paso={p.id} ref={raiz}>
       <style>{CSS_JUEGO + CSS_R5_2}</style>
-      <p data-progreso style={{ ...MARCA, margin: 0 }}>{RT.progreso(ahora.i + 1, total)}</p>
+      {/* §4.3: «Paso n de N», a 12 px #A8B6C8. */}
+      <p data-progreso style={{ ...CONTADOR, margin: 0 }}>{RT.progreso(ahora.i + 1, total)}</p>
       <div style={{ marginTop: "8px" }}><LineaDeTiempo estados={estadosDeTiempo(p.etapa)} /></div>
       <div style={{ marginTop: "16px" }}><TarjetaHecho marca={etapa.marca} texto={resolver(p.hecho, respuestas)} /></div>
       {/* El libro como estaba al empezar la etapa (la regla del libro). */}
       {!p.sinLibro && <div style={{ marginTop: "16px" }}><LibroProvision movimientos={libroAntesDe(p.etapa)} /></div>}
       <p data-enunciado tabIndex={-1} style={{ margin: "16px 0", fontFamily: INTER, fontSize: "17px", lineHeight: "26px", fontWeight: 600, color: C.texto, outline: "none" }}>{p.enunciado}</p>
       <Pregunta key={p.id} p={p} hoja={tanda.hoja} r={r} respuestas={respuestas} onRespondida={responder(p)} />
-      <Devolucion r={r} lector={LECTOR} />
-      {r && <BotonSiguiente onClick={avanzar} botonRef={boton} texto={RT.siguiente} />}
+      <Devolucion r={r} />
+      {r && <BotonSiguiente onClick={avanzar} botonRef={boton} sustantivo={RT.sustantivo} ultimo={paso + 1 === pasos.length} />}
     </div>
   );
 }

@@ -48,19 +48,19 @@ Navegación	«Siguiente asiento» · «Ver mi resumen»
 Resumen	El compartido: «Bien a la primera: {bien} de 2» y «Otra vez»
 El estante (solo nombres)
 
-Gasto provisiones – cuentas incobrables · Provisión para deudas incobrables · Cuentas por cobrar – clientes · Caja
+Gasto provisiones – cuentas incobrables · Provisión para cuentas incobrables · Cuentas por cobrar – clientes · Caja
 
 Las cuatro cuentas salen de El Torito, en las pp. 202-206. Ninguna es inventada.
 Caja nunca va en las respuestas. Está ahí para la C11: creer que la provisión es plata.
 Tutorial · la provisión del 31 de diciembre de 2007 (p. 202)
 Enunciado: «31 de diciembre de 2007. El Torito Currambero calcula que $148.800 de lo que le deben sus clientes no se va a recuperar. Crea la provisión.» (81)
-Asiento: Debe: Gasto provisiones – cuentas incobrables $148.800 · Haber: Provisión para deudas incobrables $148.800
+Asiento: Debe: Gasto provisiones – cuentas incobrables $148.800 · Haber: Provisión para cuentas incobrables $148.800
 Explicación, cuatro líneas de menos de 10 palabras:
 «Gasto provisiones – cuentas incobrables sube: va al Debe.»
-«Provisión para deudas incobrables sube: va al Haber.»
+«Provisión para cuentas incobrables sube: va al Haber.»
 «Las dos por $148.800.»
 «El Debe y el Haber suman igual: el asiento cuadra.»
-Texto alternativo: «Ejemplo resuelto. El 31 de diciembre de 2007, El Torito Currambero crea una provisión de $148.800. El asiento tiene Gasto provisiones – cuentas incobrables en el Debe y Provisión para deudas incobrables en el Haber, las dos por $148.800. Los dos totales dan $148.800.» (66)
+Texto alternativo: «Ejemplo resuelto. El 31 de diciembre de 2007, El Torito Currambero crea una provisión de $148.800. El asiento tiene Gasto provisiones – cuentas incobrables en el Debe y Provisión para cuentas incobrables en el Haber, las dos por $148.800. Los dos totales dan $148.800.» (66)
 
 La segunda línea de la explicación enseña que la provisión sube por el Haber. Es la corrección de Shoko en T6 A3.
 
@@ -70,7 +70,7 @@ Rótulo: Asiento 1 · Instrucción: «Registra el castigo de marzo.» · Fuente:
 
 Enunciado: «Marzo del año siguiente. El Torito da por perdida la deuda de Pablo Moncayo, que es de $180.000. Ya tiene una provisión de $148.800.» (85)
 
-Asiento: Debe: Provisión para deudas incobrables $180.000 · Haber: Cuentas por cobrar – clientes $180.000
+Asiento: Debe: Provisión para cuentas incobrables $180.000 · Haber: Cuentas por cobrar – clientes $180.000
 
 Tipo	Cuándo	Devolución literal	Fuente	Estim.
 D	Puso Gasto provisiones (C8) o Caja (C11)	Sobra una cuenta. Este castigo solo mueve la provisión y Cuentas por cobrar – clientes. El gasto ya se anotó en diciembre, y aquí no entra plata.	p. 202	83
@@ -84,7 +84,7 @@ Rótulo: Asiento 2 · Instrucción: «Registra la provisión del año siguiente.
 
 Enunciado: «31 de diciembre del año siguiente. El análisis pide una provisión de $153.400. En marzo, la provisión se quedó corta en $31.200.» (72)
 
-Asiento: Debe: Gasto provisiones – cuentas incobrables $184.600 · Haber: Provisión para deudas incobrables $184.600
+Asiento: Debe: Gasto provisiones – cuentas incobrables $184.600 · Haber: Provisión para cuentas incobrables $184.600
 
 Tipo	Cuándo	Devolución literal	Fuente	Estim.
 D	Puso Cuentas por cobrar – clientes o Caja	Sobra una cuenta. Este hecho solo mueve el gasto y la provisión, como en diciembre de 2007.	pp. 202-203	81
@@ -104,9 +104,9 @@ Libro diario
 Textos de la cabecera: «LIBRO DIARIO» · «1 asiento» / «{N} asientos» · «Ver» / «Ocultar» · «DEBE» / «HABER». Son los mismos del cierre de T5.
 
 #	Fecha	Debe	Haber	Fuente
-0	31 de diciembre de 2007	Gasto provisiones – cuentas incobrables $148.800	Provisión para deudas incobrables $148.800	p. 202
-1	Marzo del año siguiente	Provisión para deudas incobrables $180.000	Cuentas por cobrar – clientes $180.000	p. 202
-2	31 de diciembre del año siguiente	Gasto provisiones – cuentas incobrables $184.600	Provisión para deudas incobrables $184.600	p. 203
+0	31 de diciembre de 2007	Gasto provisiones – cuentas incobrables $148.800	Provisión para cuentas incobrables $148.800	p. 202
+1	Marzo del año siguiente	Provisión para cuentas incobrables $180.000	Cuentas por cobrar – clientes $180.000	p. 202
+2	31 de diciembre del año siguiente	Gasto provisiones – cuentas incobrables $184.600	Provisión para cuentas incobrables $184.600	p. 203
 
 Notas internas:
 
@@ -191,7 +191,7 @@ Las cuatro cuentas, en el orden de Futaba. A 320 el nombre tiene 109,67 de ancho
 
 Cuenta	Líneas 320 · 375	Fila 320 · 375	Va en
 «Gasto provisiones – cuentas incobrables»	3 · 2	46,88 · 40	a2 y a3
-«Provisión para deudas incobrables»	3 · 2	46,88 · 40	a2 y a3
+«Provisión para cuentas incobrables»	3 · 2	46,88 · 40	a2 y a3
 «Cuentas por cobrar – clientes»	2 · 2	40 · 40	a2 y a3
 «Caja»	1 · 1	40 · 40	a2 y a3
 Orden en a2: Gasto · Provisión · Clientes · Caja. En a3: Caja · Clientes · Provisión · Gasto.
@@ -211,7 +211,7 @@ Con 8 dígitos pasa lo mismo que en el cierre de T5: el texto se desplaza dentro
 Es el mismo bloque del cierre de T5: «EJEMPLO RESUELTO» [R], el enunciado, el asiento con «DEBE» / «HABER» y la explicación numerada. Solo va en la pantalla del asiento 1.
 
 	b5-t6-a2	b5-t6-a3
-Asiento	Debe «Gasto provisiones – cuentas incobrables» $148.800 · Haber «Provisión para deudas incobrables» $148.800	Debe «Provisión para deudas incobrables» $180.000 · Haber «Cuentas por cobrar – clientes» $180.000
+Asiento	Debe «Gasto provisiones – cuentas incobrables» $148.800 · Haber «Provisión para cuentas incobrables» $148.800	Debe «Provisión para cuentas incobrables» $180.000 · Haber «Cuentas por cobrar – clientes» $180.000
 Enunciado, líneas 320 · 375	5 · 4	4 · 4
 Explicación, líneas por renglón (320 · 375)	2 · 2 / 2 · 2 / 1 · 1 / 2 · 2	1 · 1 / 2 · 2 / 1 · 1 / 2 · 2
 Nombres de cuenta en el asiento	1 línea cada uno	1 línea cada uno

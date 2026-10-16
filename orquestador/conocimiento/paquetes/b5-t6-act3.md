@@ -9,7 +9,7 @@ Lo que ve el estudiante sale de aquí, letra por letra. Precedencia (Sakuta, tod
 
 ## (0) Correcciones y decisiones que mandan sobre el texto pegado
 
-- **Estante** (F2): Caja · Cuentas por cobrar – clientes · Provisión para deudas incobrables · Gasto provisiones – cuentas incobrables · Ingresos por ventas. Ingresos por ventas no entra en ningún asiento correcto (C13).
+- **Estante** (F2): Caja · Cuentas por cobrar – clientes · Provisión para cuentas incobrables · Gasto provisiones – cuentas incobrables · Ingresos por ventas. Ingresos por ventas no entra en ningún asiento correcto (C13).
 - **D de las partes 1, 3 y 5** (F2): «Sobra una cuenta. Revivir la deuda solo mueve Cuentas por cobrar – clientes y la provisión. El gasto no se toca, la plata todavía no entra y no hay ningún ingreso.»
 - **D de las partes 2 y 4** (F2): «Sobra una cuenta. El pago solo mueve Caja y Cuentas por cobrar – clientes. La provisión ya se movió al revivir la deuda, y no hay ningún ingreso.»
 - **B de la parte 4** (F2): la general es «Revisa el valor. A Caja entra lo que abonó Pablo Moncayo.»; la específica de $180.000 no cambia. Conviven, como en las partes 3 y 5.
@@ -54,7 +54,7 @@ Erratas corregidas como en T6 A4:
 8: «Montoya» pasa a ser Moncayo.
 9: «$100.00» pasa a ser $100.000.
 10: «180.00» pasa a ser 180.000.
-11: la provisión se llama siempre Provisión para deudas incobrables.
+11: la provisión se llama siempre Provisión para cuentas incobrables.
 Campos
 Campo	Contenido
 Identificador	b5-t6-a3 · tutorial: b5-t6-a3-tutorial · partes: b5-t6-a3-p1 a p5
@@ -66,24 +66,24 @@ Contador	«Asiento 1 de 5»
 Navegación y resumen	«Siguiente asiento» · «Ver mi resumen» · «Bien a la primera: {bien} de 5» · «Otra vez»
 Estante (solo nombres)
 
-Caja · Cuentas por cobrar – clientes · Provisión para deudas incobrables · Gasto provisiones – cuentas incobrables
+Caja · Cuentas por cobrar – clientes · Provisión para cuentas incobrables · Gasto provisiones – cuentas incobrables
 
 Tutorial · el castigo de marzo (p. 204)
 Enunciado: «Marzo del año siguiente. El Torito Currambero castiga la deuda de Pablo Moncayo, que es de $180.000. Usa la provisión.» (76)
-Asiento: Debe: Provisión para deudas incobrables $180.000 · Haber: Cuentas por cobrar – clientes $180.000
+Asiento: Debe: Provisión para cuentas incobrables $180.000 · Haber: Cuentas por cobrar – clientes $180.000
 Explicación:
 «La provisión baja: va al Debe.»
 «Cuentas por cobrar – clientes baja: va al Haber.»
 «Las dos por $180.000.»
 «Los casos a, b y c son tres finales distintos de este castigo.» (93)
-Texto alternativo: «Ejemplo resuelto. En marzo del año siguiente, El Torito Currambero castiga la deuda de Pablo Moncayo. El asiento tiene Provisión para deudas incobrables en el Debe y Cuentas por cobrar – clientes en el Haber, las dos por $180.000. Los dos totales dan $180.000.» (76)
+Texto alternativo: «Ejemplo resuelto. En marzo del año siguiente, El Torito Currambero castiga la deuda de Pablo Moncayo. El asiento tiene Provisión para cuentas incobrables en el Debe y Cuentas por cobrar – clientes en el Haber, las dos por $180.000. Los dos totales dan $180.000.» (76)
 Las cinco partes
 Parte	Rótulo	Instrucción	Enunciado literal	Asiento correcto	Pág.
-1	Asiento 1	Registra cómo se revive la deuda del caso a.	Caso a. Un tiempo después del castigo, Pablo Moncayo vuelve y paga toda la factura: $180.000. (78)	Debe: Cuentas por cobrar – clientes $180.000 · Haber: Provisión para deudas incobrables $180.000	204
+1	Asiento 1	Registra cómo se revive la deuda del caso a.	Caso a. Un tiempo después del castigo, Pablo Moncayo vuelve y paga toda la factura: $180.000. (78)	Debe: Cuentas por cobrar – clientes $180.000 · Haber: Provisión para cuentas incobrables $180.000	204
 2	Asiento 2	Registra el pago del caso a.	Caso a. La deuda ya se revivió. Ahora entran a Caja los $180.000 que pagó Pablo Moncayo. (88)	Debe: Caja $180.000 · Haber: Cuentas por cobrar – clientes $180.000	204
-3	Asiento 3	Registra cómo se revive la deuda del caso b.	Caso b. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y promete pagar el resto. (74)	Debe: Cuentas por cobrar – clientes $180.000 · Haber: Provisión para deudas incobrables $180.000	205
+3	Asiento 3	Registra cómo se revive la deuda del caso b.	Caso b. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y promete pagar el resto. (74)	Debe: Cuentas por cobrar – clientes $180.000 · Haber: Provisión para cuentas incobrables $180.000	205
 4	Asiento 4	Registra el abono del caso b.	Caso b. La deuda ya se revivió. Ahora entran a Caja los $100.000 del abono. (90)	Debe: Caja $100.000 · Haber: Cuentas por cobrar – clientes $100.000	205
-5	Asiento 5	Registra cómo se revive la deuda del caso c.	Caso c. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y avisa que ya no puede pagar más. (77)	Debe: Cuentas por cobrar – clientes $100.000 · Haber: Provisión para deudas incobrables $100.000	206
+5	Asiento 5	Registra cómo se revive la deuda del caso c.	Caso c. Un tiempo después del castigo, Pablo Moncayo abona $100.000 y avisa que ya no puede pagar más. (77)	Debe: Cuentas por cobrar – clientes $100.000 · Haber: Provisión para cuentas incobrables $100.000	206
 
 Las instrucciones tienen menos de 10 palabras y no dicen ningún monto.
 
@@ -127,12 +127,12 @@ Libro diario
 Cabecera: «LIBRO DIARIO» · «{N} asientos» · «Ver» / «Ocultar» · «DEBE» / «HABER»
 
 #	En la columna de fecha	Debe	Haber	Pág.
-0	Marzo del año siguiente	Provisión para deudas incobrables $180.000	Cuentas por cobrar – clientes $180.000	204
-1	Caso a	Cuentas por cobrar – clientes $180.000	Provisión para deudas incobrables $180.000	204
+0	Marzo del año siguiente	Provisión para cuentas incobrables $180.000	Cuentas por cobrar – clientes $180.000	204
+1	Caso a	Cuentas por cobrar – clientes $180.000	Provisión para cuentas incobrables $180.000	204
 2	Caso a	Caja $180.000	Cuentas por cobrar – clientes $180.000	204
-3	Caso b	Cuentas por cobrar – clientes $180.000	Provisión para deudas incobrables $180.000	205
+3	Caso b	Cuentas por cobrar – clientes $180.000	Provisión para cuentas incobrables $180.000	205
 4	Caso b	Caja $100.000	Cuentas por cobrar – clientes $100.000	205
-5	Caso c	Cuentas por cobrar – clientes $100.000	Provisión para deudas incobrables $100.000	206
+5	Caso c	Cuentas por cobrar – clientes $100.000	Provisión para cuentas incobrables $100.000	206
 Variante 1 (el diario crece): la fila 0, y después cada parte bajo su caso.
 Variante 2 (fijo): solo la fila 0.
 Texto alternativo de la actividad
@@ -174,7 +174,7 @@ En el diario, la etiqueta de caso va en la columna de fecha.
 b5-t6-a3 · líneas que cambian
 #	Dónde	Texto o cambio	Estim.
 1	Parte 4 · B general («otra cifra», por ejemplo los $80.000)	Revisa el valor. A Caja entra lo que abonó Pablo Moncayo.	82
-2	Estante	Caja · Cuentas por cobrar – clientes · Provisión para deudas incobrables · Gasto provisiones – cuentas incobrables · Ingresos por ventas	—
+2	Estante	Caja · Cuentas por cobrar – clientes · Provisión para cuentas incobrables · Gasto provisiones – cuentas incobrables · Ingresos por ventas	—
 2	D · partes 1, 3 y 5 (revivir)	Sobra una cuenta. Revivir la deuda solo mueve Cuentas por cobrar – clientes y la provisión. El gasto no se toca, la plata todavía no entra y no hay ningún ingreso.	87
 2	D · partes 2 y 4 (pago)	Sobra una cuenta. El pago solo mueve Caja y Cuentas por cobrar – clientes. La provisión ya se movió al revivir la deuda, y no hay ningún ingreso.	92
 La B de la parte 4 para los $180.000 sigue igual. Ahora conviven las dos: la específica y la general.
@@ -206,7 +206,7 @@ Las cuatro cuentas, en el orden de Futaba. A 320 el nombre tiene 109,67 de ancho
 
 Cuenta	Líneas 320 · 375	Fila 320 · 375	Va en
 «Gasto provisiones – cuentas incobrables»	3 · 2	46,88 · 40	a2 y a3
-«Provisión para deudas incobrables»	3 · 2	46,88 · 40	a2 y a3
+«Provisión para cuentas incobrables»	3 · 2	46,88 · 40	a2 y a3
 «Cuentas por cobrar – clientes»	2 · 2	40 · 40	a2 y a3
 «Caja»	1 · 1	40 · 40	a2 y a3
 Orden en a2: Gasto · Provisión · Clientes · Caja. En a3: Caja · Clientes · Provisión · Gasto.
@@ -226,7 +226,7 @@ Con 8 dígitos pasa lo mismo que en el cierre de T5: el texto se desplaza dentro
 Es el mismo bloque del cierre de T5: «EJEMPLO RESUELTO» [R], el enunciado, el asiento con «DEBE» / «HABER» y la explicación numerada. Solo va en la pantalla del asiento 1.
 
 	b5-t6-a2	b5-t6-a3
-Asiento	Debe «Gasto provisiones – cuentas incobrables» $148.800 · Haber «Provisión para deudas incobrables» $148.800	Debe «Provisión para deudas incobrables» $180.000 · Haber «Cuentas por cobrar – clientes» $180.000
+Asiento	Debe «Gasto provisiones – cuentas incobrables» $148.800 · Haber «Provisión para cuentas incobrables» $148.800	Debe «Provisión para cuentas incobrables» $180.000 · Haber «Cuentas por cobrar – clientes» $180.000
 Enunciado, líneas 320 · 375	5 · 4	4 · 4
 Explicación, líneas por renglón (320 · 375)	2 · 2 / 2 · 2 / 1 · 1 / 2 · 2	1 · 1 / 2 · 2 / 1 · 1 / 2 · 2
 Nombres de cuenta en el asiento	1 línea cada uno	1 línea cada uno
@@ -327,7 +327,7 @@ Medida [M]: Chromium 141.0.7390.37 headless, 320×900 y 375×900, con y sin movi
 Cuenta	Líneas 320 · 375	Fila 320 · 375
 «Caja»	1 · 1	40 · 40
 «Cuentas por cobrar – clientes»	2 · 2	40 · 40
-«Provisión para deudas incobrables»	3 · 2	46,88 · 40
+«Provisión para cuentas incobrables»	3 · 2	46,88 · 40
 «Gasto provisiones – cuentas incobrables»	3 · 2	46,88 · 40
 «Ingresos por ventas» (nueva, al final)	2 · 1	40 · 40
 Del rótulo «EL ESTANTE DE CUENTAS» a la mesa: 225,39 · 211,64 → 271,39 · 257,64 (+46: una fila y su separación).
@@ -397,6 +397,6 @@ Parte	Cuenta	Razón
 1, 3 y 5 (revivir)	Caja	Revivir la deuda es reversar el castigo, y el castigo no movió plata. El pago se anota en otro asiento.
 1, 3 y 5	Gasto provisiones – cuentas incobrables	El castigo no tocó el gasto: fue contra la provisión. Por eso, al revivir la deuda, el gasto tampoco se toca.
 1, 3 y 5	Ingresos por ventas	Revivir la deuda no es una venta nueva: la factura es la de antes.
-2 y 4 (pago)	Provisión para deudas incobrables	La provisión ya se movió en el asiento anterior, al revivir la deuda.
+2 y 4 (pago)	Provisión para cuentas incobrables	La provisión ya se movió en el asiento anterior, al revivir la deuda.
 2 y 4	Gasto provisiones – cuentas incobrables	Cobrar no es un gasto: lo que debía el cliente se vuelve plata.
 2 y 4	Ingresos por ventas	Cobrar no es vender: se cobra la factura que ya existía.

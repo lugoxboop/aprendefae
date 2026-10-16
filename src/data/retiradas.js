@@ -60,6 +60,11 @@ export const NOMBRE_DE_RETIRADA = {
   "t4-el-control-que-se-saltaron": "El control que se saltaron",
   "t4-al-empleado-o-al-gasto": "¿Al empleado o al gasto?",
   "t4-quien-se-entero-primero": "¿Quién se enteró primero?",
+  /* 0115 · Célula C: lo que preguntan ya lo piden otras de su mismo tema. */
+  "t7-2-debe-o-haber": "¿Debe o haber?",
+  "t7-2-periodico-o-permanente": "¿Periódico o permanente?",
+  "t7-3-comercial-o-condicionado": "¿Comercial o condicionado?",
+  "t7-3-que-entra-al-costo": "¿Entra al costo?",
 };
 
 /**

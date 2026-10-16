@@ -242,10 +242,10 @@ test("★★★ en el momento abierto, cada pieza se ve desde su paso; antes ocu
 });
 
 const ASIENTOS = {
-  provision1: ["Provisión para deudas incobrables", null, "$180.000", "debe"],
+  provision1: ["Provisión para cuentas incobrables", null, "$180.000", "debe"],
   clientes1: ["Cuentas por cobrar – clientes", "A nombre de Pablo Moncayo", "$180.000", "haber"],
   clientes2: ["Cuentas por cobrar – clientes", null, "$180.000", "debe"],
-  provision2: ["Provisión para deudas incobrables", null, "$180.000", "haber"],
+  provision2: ["Provisión para cuentas incobrables", null, "$180.000", "haber"],
   caja: ["Caja", null, "$180.000", "debe"],
   clientes3: ["Cuentas por cobrar – clientes", null, "$180.000", "haber"],
 };

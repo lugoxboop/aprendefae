@@ -171,14 +171,14 @@ test("★★ los hechos se barajan en cada intento; las opciones, nunca", () => 
 
 /* ═══════════ 3 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
 
-test("★★★ en T7-2, justo después de A1: exploratoria, fácil, 10 FP; las de Aprender siguen sin FP", () => {
-  /* H1 es el primer Hacer de T7-2; los demás van detrás, en el orden del mapa. */
-  assert.equal(actividadesDeTipo(TEMA, HACER)[0].id, D.H1_ID);
-  assert.deepEqual(clasificacionDe("contabilidad", TEMA_T7_2, D.H1_ID), { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 });
-  assert.equal(actividadesDeTipo(TEMA, HACER)[0].nombre, D.H1.nombre);
+test("★★★ retirada por la 0115: ya no está en el camino de T7-2 ni la ofrece la vista; su pieza, sus datos y la 0098 se quedan", () => {
+  /* Retiro blando: sale de subjects.js y de la vista, pero no se borra nada. */
+  assert.equal(TEMA.actividades.find((a) => a.id === D.H1_ID), undefined, "sigue en el camino");
+  assert.ok(!JUEGOS_T7_2.some((j) => j.id === D.H1_ID), "la vista todavía la ofrece");
+  assert.equal(typeof DebeOHaber, "function", "la pieza se borró");
   for (const a of TEMA.actividades.filter((x) => x.clasificacion.tipo !== HACER)) assert.deepEqual(a.clasificacion, { tipo: APRENDER }, a.id);
-  const ids = TEMA.actividades.map((x) => x.id);
-  assert.equal(ids.indexOf(D.H1_ID), ids.indexOf("t7-2-a1-la-cuenta-que-si-se-mueve") + 1);
+  const retiro = leer("supabase/migrations/0115_c7_retira_cuatro_hacer.sql");
+  assert.match(retiro, new RegExp(`update public\\.actividad_catalogo\\s+set retirada = true\\s+where activity_id in \\([^)]*'${D.H1_ID}'`));
 });
 
 test("★★★ la vista abre desde el camino exactamente lo que el catálogo ofrece, y registra con el motor compartido", () => {
@@ -201,7 +201,7 @@ test("★★★ la 0098: del rango de la célula, un insert aditivo y repetible,
   assert.match(sentencias, /select activity_id[\s\S]*where activity_id = 't7-2-debe-o-haber';/);
   const dir = new URL("supabase/migrations/", RAIZ);
   const conElId = readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(D.H1_ID));
-  assert.deepEqual(conElId, ["0098_t7_2_debe_o_haber.sql"]);
+  assert.deepEqual(conElId, ["0098_t7_2_debe_o_haber.sql", "0115_c7_retira_cuatro_hacer.sql"]);
   /* El número que L asignó: ninguna otra migración usa la 0098. */
   assert.deepEqual(readdirSync(dir).filter((f) => f.startsWith("0098")), ["0098_t7_2_debe_o_haber.sql"]);
 });

@@ -511,7 +511,7 @@ test("★★★ se juega entera: diez asientos, el final con «SEPTIEMBRE EN 10 
   const { caja } = await montar(h(Barranquilla, { onCompletar: (...x) => fin.push(x) }));
   await tocar(caja.querySelector("[data-empezar]"));
   for (const [k, a] of A.entries()) {
-    assert.equal(caja.querySelector("[data-progreso]").textContent, `ASIENTO ${k + 1} DE 10`);
+    assert.equal(caja.querySelector("[data-progreso]").textContent, `Asiento ${k + 1} de 10`);
     /* Falla el pago del 17: Caja sin descuento. */
     const renglones = a.id === "a7" ? [R("debe", T.PROVEEDORES, B.CIFRAS_BARRANQUILLA.a7.saldo), R("haber", T.CAJA, B.CIFRAS_BARRANQUILLA.a7.saldo)] : bien(a);
     for (const r of renglones) await anadir(caja, r.lado, r.cuenta, r.valor);

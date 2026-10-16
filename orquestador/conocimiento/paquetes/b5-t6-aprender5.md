@@ -50,7 +50,7 @@ Capa 1 · Primero, los nombres
 1 ✎	Análisis de vencimiento	Al cierre, la empresa agrupa lo que le deben sus clientes. Separa las deudas vigentes de las vencidas, y a estas según cuánto tiempo llevan vencidas.	Basado en el libro, p. 200	81
 1 · Así lo dice el libro	—	«Lo primero que se deba hacer para realizar el ajuste por cuentas incobrables a diciembre 31 es calcular la probable pérdida de cartera con base en el porcentaje de pérdida establecido por la empresa.»	(p. 201)	cita
 2	Un porcentaje por grupo	A cada grupo se le aplica el porcentaje que la empresa espera perder. Los porcentajes los fija la propia empresa.	Basado en el libro, p. 201	75
-3	La provisión	Se suman los cálculos de todos los grupos. Ese total es la provisión. Se anota como ya viste: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables.	Basado en el libro, pp. 200-202	68
+3	La provisión	Se suman los cálculos de todos los grupos. Ese total es la provisión. Se anota como ya viste: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para cuentas incobrables.	Basado en el libro, pp. 200-202	68
 4	Una referencia colombiana	En Colombia, la norma del impuesto de renta trae una provisión general con tres porcentajes. Es el 5 % para deudas con más de tres meses de vencidas, sin pasar de seis. Es el 10 % para más de seis meses, sin pasar de un año. Y es el 15 % para más de un año.	Fuente: Decreto 1625 de 2016, art. 1.2.1.18.21	93
 4 · Nota ✎	—	Esos porcentajes son el máximo que la empresa puede restar como gasto al calcular su impuesto de renta. No son una regla para todas las empresas: cada una fija los suyos.	Fuente: Decreto 1625 de 2016, art. 1.2.1.18.21 · Libro, p. 201	75
 Capa 2 · Mírelo funcionar
@@ -64,7 +64,7 @@ Capa 2 · Mírelo funcionar
 7	Las que llevan más de un año suman $100.000. Al 15 %, son $15.000.	Fuente del porcentaje: Decreto 1625 de 2016	Grupo 4	95
 8	Cálculo: $10.000 + $30.000 + $15.000 = $55.000.	Escenario simulado	La suma	<10
 9	Se debita Gasto provisiones – cuentas incobrables por $55.000.	Basado en el libro, p. 202	Gasto provisiones – cuentas incobrables	<10
-10	Y se acredita Provisión para deudas incobrables, por el mismo valor.	Basado en el libro, p. 202	Provisión para deudas incobrables	66
+10	Y se acredita Provisión para cuentas incobrables, por el mismo valor.	Basado en el libro, p. 202	Provisión para cuentas incobrables	66
 11	Cálculo: $1.000.000 − $55.000 = $945.000, el valor neto.	Basado en el libro, p. 202	El valor neto	<10
 Cierre	Cada grupo con su porcentaje, y la suma de todos es la provisión.	Basado en el libro, pp. 200-201	—	88
 
@@ -239,7 +239,7 @@ Es un solo momento («31 de diciembre»), con cinco piezas de arriba abajo:
 hecho «Lo que le deben sus clientes» / «$1.000.000»;
 la tabla del ejemplo: el rótulo fijo, cuatro grupos y la suma;
 anotación «Gasto provisiones – cuentas incobrables» «$55.000» [se debita];
-anotación «Provisión para deudas incobrables» «$55.000» [se acredita];
+anotación «Provisión para cuentas incobrables» «$55.000» [se acredita];
 hecho «El valor neto» / «$945.000».
 
 La escena reserva todo desde el principio: lo que aún no apareció ocupa su sitio, invisible. La escena mide lo mismo en los 12 estados y nada salta.
@@ -279,7 +279,7 @@ Paso · resaltado («Resalta» de Futaba) · lo que aparece · pie (los textos y
 7 · grupo 4 · «$100.000» · «son $15.000» · (3 · 2 / 1)
 8 · la suma · «$55.000» · «Escenario simulado» (2 · 1 / 1)
 9 · Gasto provisiones – cuentas incobrables · la anotación [se debita] · «Basado en el libro, p. 202» (1)
-10 · Provisión para deudas incobrables · la anotación [se acredita] · «Basado en el libro, p. 202» (1)
+10 · Provisión para cuentas incobrables · la anotación [se acredita] · «Basado en el libro, p. 202» (1)
 11 · el valor neto · el hecho «El valor neto» / «$945.000» · «Basado en el libro, p. 202» (1)
 Cierre · nada · — · (Sora 14/600) · «Basado en el libro, pp. 200-201» (1)
 
@@ -377,7 +377,7 @@ Rótulo	Sale de
 «$400.000» · «no se provisiona nada»	paso 4
 «$200.000» · «son $10.000» / «$300.000» · «son $30.000» / «$100.000» · «son $15.000»	pasos 5, 6 y 7
 «$55.000»	paso 8
-«Gasto provisiones – cuentas incobrables» · «Provisión para deudas incobrables» · «se debita» · «se acredita»	pasos 9 y 10
+«Gasto provisiones – cuentas incobrables» · «Provisión para cuentas incobrables» · «se debita» · «se acredita»	pasos 9 y 10
 «El valor neto» · «$945.000»	paso 11
 11 · Comprobación de textos
 

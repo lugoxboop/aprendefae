@@ -157,7 +157,7 @@ export const CASTIGO_T6_ACT3 = {
     "Los casos a, b y c son tres finales distintos de este castigo.",
   ],
 };
-export const ALT_TUTORIAL_T6_ACT3 = "Ejemplo resuelto. En marzo del año siguiente, El Torito Currambero castiga la deuda de Pablo Moncayo. El asiento tiene Provisión para deudas incobrables en el Debe y Cuentas por cobrar – clientes en el Haber, las dos por $180.000. Los dos totales dan $180.000.";
+export const ALT_TUTORIAL_T6_ACT3 = "Ejemplo resuelto. En marzo del año siguiente, El Torito Currambero castiga la deuda de Pablo Moncayo. El asiento tiene Provisión para cuentas incobrables en el Debe y Cuentas por cobrar – clientes en el Haber, las dos por $180.000. Los dos totales dan $180.000.";
 
 /* ═══════════ TEXTO ALTERNATIVO ═══════════ */
 

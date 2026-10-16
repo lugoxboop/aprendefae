@@ -35,6 +35,15 @@ const h = React.createElement;
 
 const { default: MesaDelAsiento } = await import("../../components/mecanicas/libros/MesaDelAsiento.jsx");
 
+/*
+ * EL ACIERTO YA NO VA EN TEAL (B4, barrida del 16-oct). En Contabilidad el teal
+ * significa el lado DEBE, así que no puede significar además «correcto»: el
+ * acierto va en el NEUTRO del kit (#F8F9FA), que es la regla de Xeno. Lo que
+ * esta prueba defiende no cambia —que el borde conserve un tono ADEMÁS de la
+ * marca, para que el color no sea la única señal—, y ahora exige también que el
+ * teal no vuelva.
+ */
+const NEUTRO_ACIERTO = "rgb(248, 249, 250)";
 const TEAL = "rgb(42, 157, 143)";
 const CORAL = "rgb(231, 111, 81)";
 
@@ -111,7 +120,8 @@ test("★ la marca no mueve nada: va fuera del flujo y no agrega texto a la cuen
 test("★ el marco conserva su tono (teal / coral) además de la marca", async () => {
   const t = await montar(["correcta", "incorrecta"]);
   try {
-    assert.ok(t.marcos[0].style.border.includes(TEAL), "bien puesta: marco teal");
+    assert.ok(t.marcos[0].style.border.includes(NEUTRO_ACIERTO), "bien puesta: marco neutro");
+    assert.ok(!t.marcos[0].style.border.includes(TEAL), "volvió el teal al acierto (B4)");
     assert.ok(t.marcos[1].style.border.includes(CORAL), "mal puesta: marco coral");
   } finally { t.desmontar(); }
 });

@@ -229,7 +229,7 @@ test("★★★ la escena: los rótulos literales (paso 4, «por $312.500»), la
   assert.equal(caja.querySelector('[data-elemento="clientes31"] [data-lado]').dataset.lado, "haber");
   assert.equal(caja.querySelector('[data-elemento="gasto"] [data-lado]').dataset.lado, "debe");
   const html = caja.querySelector("[data-escena]").outerHTML;
-  assert.doesNotMatch(caja.querySelector("[data-escena]").textContent, /Provisión para deudas incobrables/, "sin provisión dibujada");
+  assert.doesNotMatch(caja.querySelector("[data-escena]").textContent, /Provisión para cuentas incobrables/, "sin provisión dibujada");
   assert.ok(!/E76F51|231,\s*111,\s*81/i.test(html), "sin coral");
   /* Todo rótulo de la escena es fragmento de un paso. */
   const pasos = D.PASOS_T6_A2.map((p) => p.texto.toLowerCase()).join(" ");

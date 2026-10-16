@@ -92,7 +92,8 @@ const CAPA3 = {
     cajas: conDecide(T5A2.VENTAS_T5_A2, { opciones: T5A2.OPCIONES_CAPA_3_T5_A2, pista: T5A2.PISTA_CAPA_3_T5_A2 }) },
   "T6 A1": { Componente: await C("tema6/SeisHechos"), cajas: conDecide(T6A1.HECHOS_T6, { opciones: T6A1.OPCIONES_CAPA_3_T6 }) },
   "T6 A2": { Componente: await C("tema6/DosMetodos"), cajas: conDecide(T6A2.METODOS_T6_A2, { opciones: T6A2.OPCIONES_CAPA_3_T6_A2 }) },
-  "T6 A3": { Componente: await C("tema6/CuentaT"), cajas: T6A3.MOMENTOS_T6_A3 },
+  /* Lote 7: la capa 3 de T6 A3 es el tanque; sus datos siguen aquí, su pantalla en b5-t6-tanque-capa3.test.mjs. */
+  "T6 A3": { Componente: null, cajas: T6A3.MOMENTOS_T6_A3 },
   "T6 A4": { Componente: await C("tema6/TresCasos"), cajas: conDecide(T6A4.CASOS_T6_A4.filter((c) => !c.ejemplo), { opciones: T6A4.OPCIONES_CAPA_3_T6_A4 }) },
   "T6 A5": { Componente: await C("tema6/CuatroGrupos"), cajas: T6A5.GRUPOS_T6_A5, pegar: pegarPorcentaje },
 };
@@ -131,7 +132,9 @@ const montar = async (el) => {
   await act(async () => { r.render(el); });
   return { caja, desmontar: () => { act(() => r.unmount()); caja.remove(); } };
 };
-const tocar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
+/* Lote 7: en la capa 2 del tanque, «Siguiente» espera su gesto; se hace antes de tocarlo. */
+const { hacerGesto } = await import("./b5-gestos.mjs");
+const tocar = async (el) => { await hacerGesto(el, act, w); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
 const zonaDe = (caja, id) => caja.querySelector(`[data-hecho="${id}"]`);
 const revelado = (zona) => [...zona.querySelectorAll("[data-revela] p:not([data-pie])")].map((p) => llano(p.textContent));
 const btn = (caja, cual) => caja.querySelector(`[data-${cual}]`);
@@ -184,7 +187,7 @@ test("★★★ C2: las terceras opciones, literales, con su devolución al segu
   }
 });
 
-for (const [pieza, p] of Object.entries(CAPA3)) {
+for (const [pieza, p] of Object.entries(CAPA3).filter(([, x]) => x.Componente)) {
   test(`★★★ C2 · ${pieza} · capa 3: al primer error, la pista literal y nada más; al segundo, la devolución sin el texto (B5 de Futaba)`, async () => {
     const { caja, desmontar } = await montar(h(p.Componente));
     /* En orden: así T6 A3, que abre cada momento al cerrarse el anterior, también se recorre. */

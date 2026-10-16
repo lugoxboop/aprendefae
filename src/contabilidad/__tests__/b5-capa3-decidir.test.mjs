@@ -71,8 +71,7 @@ const PIEZAS = [
     cajas: T6A1.HECHOS_T6.map((x) => ({ ...x, pregunta: T6A1.PREGUNTA_CAPA_3_T6, opciones: T6A1.OPCIONES_CAPA_3_T6 })), final: T6A1.FINAL_CAPA_3_T6.texto },
   { nombre: "T6 · A2", Componente: await C("tema6/DosMetodos"), consigna: T6A2.CONSIGNA_CAPA_3_T6_A2, forma: "columna",
     cajas: T6A2.METODOS_T6_A2.map((m) => ({ ...m, pregunta: T6A2.PREGUNTA_CAPA_3_T6_A2, opciones: T6A2.OPCIONES_CAPA_3_T6_A2 })), final: T6A2.FINAL_CAPA_3_T6_A2.texto },
-  { nombre: "T6 · A3", Componente: await C("tema6/CuentaT"), consigna: T6A3.CONSIGNA_CAPA_3_T6_A3, forma: "columna", enOrden: true,
-    cajas: T6A3.MOMENTOS_T6_A3, final: T6A3.FINAL_CAPA_3_T6_A3.texto },
+  /* T6 · A3 (lote 7): la capa 3 es el tanque, con sus opciones dentro del modelo; sus pruebas, en b5-t6-tanque-capa3.test.mjs. */
   { nombre: "T6 · A4", Componente: await C("tema6/TresCasos"), consigna: T6A4.CONSIGNA_CAPA_3_T6_A4, forma: "fila",
     /* El caso a es el ejemplo (lote C1-11): no se pregunta. */
     cajas: T6A4.CASOS_T6_A4.filter((c) => !c.ejemplo).map((c) => ({ ...c, pregunta: T6A4.PREGUNTA_CAPA_3_T6_A4, opciones: T6A4.OPCIONES_CAPA_3_T6_A4 })), final: T6A4.FINAL_CAPA_3_T6_A4.texto },
@@ -256,19 +255,7 @@ for (const p of PIEZAS) {
   });
 }
 
-test("★★★ T6 · A3: cada momento aparece cuando se CIERRA el anterior, no cuando se abre ni con la pista", async () => {
-  const p = PIEZAS.find((x) => x.enOrden);
-  const { caja, desmontar } = await montar(h(p.Componente));
-  for (const [k, x] of p.cajas.entries()) {
-    assert.equal(caja.querySelectorAll("[data-hecho]").length, k + 1, `antes del momento ${k + 1}`);
-    await tocar(zonaDe(caja, x.id).querySelector("button[aria-expanded]"));
-    assert.equal(caja.querySelectorAll("[data-hecho]").length, k + 1, "abierto sin decidir: el siguiente no aparece");
-    await tocar(zonaDe(caja, x.id).querySelector(`[data-opcion="${x.opciones.find((o) => o.id !== x.correcta).id}"]`));
-    assert.equal(caja.querySelectorAll("[data-hecho]").length, k + 1, "con la pista: el siguiente no aparece");
-    await tocar(zonaDe(caja, x.id).querySelector(`[data-opcion="${x.correcta}"]`));
-  }
-  desmontar();
-});
+
 
 test("★★ movimiento: con reducido, sin transición ni animación; sin reducido, el chevrón gira en 200 ms, las apagadas en 200 ms y lo que aparece en 240 ms", async () => {
   const p = PIEZAS[2];
@@ -332,7 +319,7 @@ test("★★★ fila o columna en vivo (Sakuta, 15-oct): si en la fila una opci�
   }
 });
 
-test("★★ las piezas en columna (T5 · A1, T6 · A2, T6 · A3) no se miden: siguen en columna", async () => {
+test("★★ las piezas en columna (T5 · A1, T6 · A2) no se miden: siguen en columna", async () => {
   for (const p of PIEZAS.filter((x) => x.forma === "columna")) {
     const { caja, desmontar } = await montar(h(p.Componente));
     await tocar(zonaDe(caja, p.cajas[0].id).querySelector("button[aria-expanded]"));

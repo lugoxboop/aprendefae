@@ -405,7 +405,7 @@ test("★★★ «Así se juega»: el ejemplo de 2007, solo la mesa (sin diario 
   assert.equal(caja.querySelector("[data-hecho]").textContent, D.PROVISION_2007_T6_ACT2.hecho);
   await armar(caja, D.PROVISION_2007_T6_ACT2.asiento);
   assert.deepEqual([...caja.querySelectorAll("[data-resolucion] p")].map((p) => p.textContent), D.PROVISION_2007_T6_ACT2.resolucion);
-  assert.equal(D.PROVISION_2007_T6_ACT2.resolucion[1], "Provisión para deudas incobrables sube: va al Haber.", "la provisión sube por el Haber (Shoko)");
+  assert.equal(D.PROVISION_2007_T6_ACT2.resolucion[1], "Provisión para cuentas incobrables sube: va al Haber.", "la provisión sube por el Haber (Shoko)");
   desmontar();
 });
 
