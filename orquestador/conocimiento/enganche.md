@@ -96,6 +96,19 @@ sonda y vive en `temas.json`: una entrada por tema, y se corre con
 que ya existían no se enteran. Lo único que pone cada célula es su clave de
 Hacer.
 
+**T1 Aprender no se puede medir todavía, y no es por los atributos.** Fui a
+ponérselos y me encontré con otra cosa: `IntroContabilidadView` pinta las
+diecinueve piezas **apiladas en un solo scroll**, con 40 px entre ellas. No
+hay pantallas ni botón de avanzar. La sonda mide pieza + pantalla + gesto, y
+ahí no existe la pantalla: ponerle `data-pieza` al envoltorio sería medio
+contrato, y medio contrato da código 2 igual que ninguno.
+
+Así que la pregunta no es de atributos sino de forma, y no la decido yo: o
+T1 Aprender pasa a tener pantallas como T4, o la sonda aprende a medir un
+recorrido de scroll. Lo primero es rediseño; lo segundo, herramienta. Queda
+escrito aquí para que nadie vuelva a gastar el turno buscando los atributos
+que faltan.
+
 **Antes de pedir una entrada en `temas.json`, mire si sus piezas ponen los
 atributos.** El 16 de octubre los puse a contar en todo `src/components`: el
 único tema que los lleva es T4 (`data-t4-h1`). Ninguna otra pieza pone
