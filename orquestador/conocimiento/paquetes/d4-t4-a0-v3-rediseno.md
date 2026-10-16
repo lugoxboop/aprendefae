@@ -24,7 +24,7 @@
 **P3 · cual-cruza**
 - Antes de la figura: «Marca cada fila.» (<10)
 - Acierto (tras «Correcto.»): «» (<10)
-- Error (✗ y el texto): «Mira qué se volvió plata.» (<10)
+- Error (✗ y el texto): «¿Qué se volvió plata?» (<10)
 - Pie: «Basado en el libro, p. 178»
 
 **P4 · los-fijos**

@@ -242,8 +242,13 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
  * Una pantalla a la vez, siempre en el mismo orden (Hanayama, rediseños de
  * A0 y A1): el texto de antes (corto: la figura queda en los primeros 280 px a
  * 320), la figura con lo que el estudiante hace en ella, el texto de después,
- * el resumen, «Siguiente…», «Seguir» y el pie. «Seguir» está siempre activo:
- * es Aprender, no califica ni da FP, y la figura ya muestra la verdad.
+ * el resumen, «Siguiente…», «Seguir» y el pie. Es Aprender: no califica ni da FP.
+ *
+ * EN UNA PANTALLA CON PREGUNTA (`pregunta: true`), «SEGUIR» NO APARECE HASTA
+ * EL ACIERTO (regla D7 del canon; decisión de Yujiro, que manda sobre el §2.4
+ * de Hanayama). Las opciones siguen activas tras el error: reintentar es
+ * volver a tocar. El cuerpo avisa del acierto con `onAcierto`, y una vez
+ * acertada la pantalla, «Seguir» se queda.
  *
  * Lo propio de cada pieza es su cuerpo: CuerpoA0 («El año en marcha») y
  * CuerpoA1 (el cajón operable), en src/components/t4/. Clases `t4r-`.
@@ -271,6 +276,35 @@ function PantallasR({ pieza, rotulo }) {
   const seguir = () => setK((x) => Math.min(x + 1, pieza.pantallas.length - 1));
   useEffect(() => { if (primera.current) { primera.current = false; return; } marco.current?.focus(); }, [k]);
   const Cuerpo = CUERPOS[pieza.id];
+  /* La pantalla en la que ya se acertó (se olvida al cambiar de pantalla, porque cambia `k`). */
+  const [acertada, setAcertada] = useState(-1);
+  const puedeSeguir = !p.pregunta || acertada === k;
+  /*
+   * E2 (Shibukawa): al dar el veredicto, la vista baja lo justo para que la
+   * devolución (`[data-mensaje]`, la de cualquier cuerpo, A0-A5) quede entera
+   * en la ventana; a 320×568 caía debajo del borde. Sin animación si el
+   * movimiento está reducido. Lo mide en el navegador scripts/t4/guardia-enganche.mjs.
+   */
+  useEffect(() => {
+    const raiz = marco.current;
+    const V = raiz?.ownerDocument?.defaultView;
+    if (!V?.MutationObserver) return undefined;
+    const mostrar = (el) => {
+      const quieto = V.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+      el.scrollIntoView?.({ block: "nearest", behavior: quieto ? "auto" : "smooth" });
+    };
+    const obs = new V.MutationObserver((cambios) => {
+      for (const c of cambios) {
+        for (const n of c.addedNodes) {
+          if (n.nodeType !== 1) continue;
+          const m = n.matches("[data-mensaje]") ? n : n.querySelector("[data-mensaje]");
+          if (m) { mostrar(m); return; }
+        }
+      }
+    });
+    obs.observe(raiz, { childList: true, subtree: true });
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
@@ -278,11 +312,11 @@ function PantallasR({ pieza, rotulo }) {
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
         <div className="t4r" key={p.id}>
           <TextosR lista={p.antes} />
-          <Cuerpo p={p} />
+          <Cuerpo p={p} onAcierto={() => setAcertada(k)} />
           <TextosR lista={p.despues} />
           {p.resumen && <ol className="t4r-lista" data-lista>{p.resumen.map((t) => <li key={t} data-texto>{t}</li>)}</ol>}
           {p.siguiente && <p className="t4r-sig" data-texto data-siguiente>{p.siguiente}</p>}
-          {!ultima && <button type="button" className="t4r-btn" data-boton="seguir" onClick={seguir}>{pieza.boton ?? BOTON.seguir}</button>}
+          {!ultima && puedeSeguir && <button type="button" className="t4r-btn t4r-nueva" data-boton="seguir" onClick={seguir}>{pieza.boton ?? BOTON.seguir}</button>}
           {p.pie && <p className="t4r-pie" data-pie>{p.pie}</p>}
         </div>
       </div>

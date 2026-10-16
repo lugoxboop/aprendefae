@@ -150,6 +150,10 @@ const tocar = (el) => act(() => { el.dispatchEvent(new w.MouseEvent("click", { b
  * «Pasar el año» hace lo mismo con un toque.
  */
 const esperar = (ms) => act(async () => { await new Promise((r) => setTimeout(r, ms)); });
+/* E2: a qué se le pidió `scrollIntoView` (el diseño lo mide Chromium; aquí, que se pida, y a la devolución). */
+const LLEVADOS = [];
+const scrollOriginal = w.Element.prototype.scrollIntoView;
+w.Element.prototype.scrollIntoView = function (o) { LLEVADOS.push({ el: this, o }); };
 async function recorrerPieza(pieza) {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
@@ -175,11 +179,14 @@ async function recorrerPieza(pieza) {
         }
         await esperar(paso.espera ?? 0);
         if (!paso.mide) continue;
+        let e2 = null;
         if (paso.veredicto) {
           const ms = zona.querySelectorAll("[data-mensaje]");
-          assert.equal(ms[ms.length - 1]?.dataset.mensaje, paso.veredicto, `${pieza.id} · ${p.id} · ${paso.mide}: el veredicto no es el del plan`);
+          const m = ms[ms.length - 1];
+          assert.equal(m?.dataset.mensaje, paso.veredicto, `${pieza.id} · ${p.id} · ${paso.mide}: el veredicto no es el del plan`);
+          e2 = { llevado: LLEVADOS.filter((x) => x.el === m).at(-1)?.o ?? null };
         }
-        vistas.push({ pantalla: `P${k} ${p.id}`, estado: paso.mide, zona, foto: foto(zona) });
+        vistas.push({ pantalla: `P${k} ${p.id}`, estado: paso.mide, zona, foto: foto(zona), e2 });
       }
       const b = caja.querySelector('[data-boton="seguir"], [data-boton="empezar"]');
       if (b && k < pieza.pantallas.length - 1) tocar(b);
@@ -202,6 +209,23 @@ function foto(zona) {
 
 const APRENDER = [];
 for (const { pieza } of PIEZAS_T4) APRENDER.push({ pieza, vistas: await recorrerPieza(pieza) });
+w.Element.prototype.scrollIntoView = scrollOriginal;
+
+/*
+ * E2 (Shibukawa): con cada veredicto, la vista lleva la devolución a la
+ * ventana, con `block: "nearest"` (baja lo justo, no la centra). Que quede
+ * ENTERA a 320×568 y 375×667 lo mide scripts/t4/guardia-enganche.mjs.
+ */
+for (const { pieza, vistas } of APRENDER) {
+  const conVeredicto = vistas.filter((v) => v.e2);
+  if (!conVeredicto.length) continue;
+  test(`★★★ E2 · ${pieza.id}: cada devolución se lleva a la ventana al dar el veredicto (${conVeredicto.length})`, () => {
+    for (const v of conVeredicto) {
+      assert.ok(v.e2.llevado, `${v.pantalla} · ${v.estado}: la devolución no se llevó a la ventana`);
+      assert.equal(v.e2.llevado.block, "nearest", `${v.pantalla} · ${v.estado}`);
+    }
+  });
+}
 
 /* Repetidos: el mismo texto (de cuatro palabras o más) dos veces en la misma vista. */
 const repetidos = (textos) => {

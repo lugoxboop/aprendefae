@@ -81,9 +81,10 @@ export function Mensaje({ ok, texto, pagina = null, refFoco = null }) {
 }
 
 /* La pastilla con palabra de un destino. Es dibujo: va oculta al lector (el destino dice su estado en su aria-label). */
-export function Marca({ marca }) {
+export function Marca({ marca, palabras = null }) {
   if (!marca) return null;
-  const [g, t] = MARCA[marca];
+  /* `palabras`: [glifo, palabra] propias de una pieza (A0 P3 tiene casillas angostas); si no, las de MARCA. */
+  const [g, t] = palabras ?? MARCA[marca];
   return (
     <span className="t4r-marca t4r-nueva" data-marca={marca} aria-hidden="true">
       {g && <span>{g}</span>}

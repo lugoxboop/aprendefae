@@ -860,6 +860,8 @@ export const SUBJECTS = {
           { id: "r5-1", nombre: "Repaso cruzado", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* r5-2: el 3 del bloque D, pp. 268-269, provisión, castigo y recuperación. Difícil · 50 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0251. */
           { id: "r5-2", nombre: "El Toro Negro", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* r5-3: el 4 del bloque D, pp. 269-271, sin el 2, 5, 7 y 28 de marzo. Experto · 90 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0252. */
+          { id: "r5-3", nombre: "Marzo en Comercializadora Mate", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],
       },
     ],

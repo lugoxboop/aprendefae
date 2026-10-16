@@ -44,11 +44,19 @@ export const FIGURA_ANO = {
   volver: "Volver a hoy",
   otraVez: "Otra vez",
   pista: "El año",
-  /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El texto alternativo de la figura y de las casillas del juego (Hanayama). */
-  alt: "Una pista de hoy a la raya de un año. Cada activo se enciende cuando se vuelve plata; lo que no, cruza la raya.",
+  /* El texto alternativo de la figura y el nombre de cada casilla del juego para el lector (Katsumi, «Pendientes del #260»). */
+  alt: "Una pista de hoy a un año. Cuando pasa el año, cada activo se marca al volverse plata o al consumirse; el que no, cruza la raya hacia «No es corriente».",
   casilla: { antes: "corriente, antes de la raya", despues: "no es corriente, después de la raya" },
   valorPista: (m) => `${m} de 12 meses`,
 };
+
+/*
+ * La pastilla con palabra de la casilla elegida (canon E3: en blanco y negro se
+ * sabe cuál falló). Katsumi, «Pendientes del #260»: la casilla de después de la
+ * raya mide 73,4 px a 320, y «✓ Bien» (56 px) y «✗ Mal» (52 px) caben; las de
+ * MARCA («✓ Correcto», «✗ No va aquí») no. Nunca «era»: nombraría la respuesta.
+ */
+export const MARCA_CASILLA = { bien: ["✓", "Bien"], mal: ["✗", "Mal"] };
 
 /*
  * Las filas. `mes`: cuándo se vuelve plata (null = nunca, cruza la raya).
@@ -74,7 +82,8 @@ const F = FILAS_A0;
 
 /*
  * Las ocho pantallas (Hanayama §2, textos de Katsumi). `figura: "ano"` en
- * todas. `modo`: "pista" (se arrastra o se pasa el año), "juego" (P3: se
+ * todas. `pregunta`: la pantalla pregunta, y «Seguir» no aparece hasta el
+ * acierto (regla D7 del canon, decisión de Yujiro sobre el §2.4 de Hanayama). `modo`: "pista" (se arrastra o se pasa el año), "juego" (P3: se
  * marca cada fila y la raya decide) o "quieta" (la figura en el mes 12, sin
  * acción).
  */
@@ -99,12 +108,12 @@ export const PANTALLAS_A0 = [
     pie: "Basado en el libro, p. 178",
   },
   {
-    id: "cual-cruza", figura: "ano", modo: "juego",
+    id: "cual-cruza", figura: "ano", modo: "juego", pregunta: true,
     antes: ["Marca cada fila."],
     filas: [F.mercancia, F.deuda, F.edificioOficina],
     /* Acierto: «Correcto.» y nada más (Katsumi). Error: ✗ y el texto; no nombra la respuesta. */
     acierto: "",
-    error: "Mira qué se volvió plata.",
+    error: "¿Qué se volvió plata?",
     pie: "Basado en el libro, p. 178",
   },
   {

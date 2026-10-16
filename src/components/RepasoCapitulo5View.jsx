@@ -22,6 +22,8 @@ import { Latas } from "./repasoCap5/Latas.jsx";
 import { Fichas } from "./repasoCap5/Fichas.jsx";
 import { Lotes } from "./repasoCap5/Lotes.jsx";
 import { R5_2 } from "../data/repasoCap5ToroNegroTextos.js";
+import { Mate } from "./repasoCap5/Mate.jsx";
+import { R5_3 } from "../data/repasoCap5MateTextos.js";
 import {
   R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, ORDEN_SUBTEMAS,
   prepararR5_1, puntuarR5_1, porTema, textoDeOpcion, renglonesDeAsiento, mayorTrasAsiento,
@@ -376,6 +378,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
 export const JUEGOS_REPASO_CAP5 = [
   { id: R5_1.id, Mecanica: RepasoCruzado, titulo: R5_1.nombre },
   { id: R5_2.id, Mecanica: ToroNegro, titulo: R5_2.nombre },
+  { id: R5_3.id, Mecanica: Mate, titulo: R5_3.nombre },
 ];
 
 /*

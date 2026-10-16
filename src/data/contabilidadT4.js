@@ -26,7 +26,7 @@
 
 export const A1_ID = "t4-a1-la-caja";
 
-/* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] Textos de interfaz que el paquete no trae (los de T7-3). */
+/* El botón de avance de A0 y A1 (Katsumi, «Pendientes del #260»). No hay «Intentar de nuevo»: tras un error, las opciones siguen activas. */
 /*
  * «empezar», «confirmar», «probarOtra», «correcto» e «incorrecto» son del
  * armazón de antes, que siguen usando A2-A5 de la pila hasta su rediseño.
@@ -49,8 +49,8 @@ export const LECTOR_ERROR = "Incorrecto.";
 export const MARCA = { bien: ["✓", "Correcto"], mal: ["✗", "No va aquí"], era: ["", "Iba aquí"], "cifra-mal": ["✗", "Cifra errada"] };
 /* «✗ Cifra errada»: la marca de un campo de cifra mal escrito (H7 y H8; Katsumi, katsumi-texto-hacer.md). «No va aquí» no sirve para una cifra. */
 
-/* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] El nombre de cada asiento para el lector de pantalla: el libro no les pone fecha. */
-export const NOMBRE_ASIENTO = { cobro: "Asiento del cobro", consignacion: "Asiento de la consignación" };
+/* El nombre de cada asiento para el lector de pantalla: el libro no les pone fecha (Katsumi, «Pendientes del #260»). */
+export const NOMBRE_ASIENTO = { cobro: "Asiento del cobro de contado", consignacion: "Asiento de la consignación" };
 
 /* Los tres destinos del cajón. «no-se-mueve» es el id de la bandeja (el mismo que H1 guardó siempre). */
 export const DEBE = "debe";
@@ -79,7 +79,7 @@ export const FIGURA_CAJON = {
   enLaCaja: "En la caja",
   rotuloOrigen: "Sus Servicios Ltda.",
   acciones: { cobrar: "Cobrar", consignar: "Consignar", pagar: "Pagar", otraVez: "Otra vez" },
-  /* [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN] Para el lector de pantalla (Hanayama). */
+  /* Para el lector de pantalla (Hanayama; aprobado por Katsumi, «Pendientes del #260»). */
   destino: { [DEBE]: "Al debe de Caja", [HABER]: "Al haber de Caja", [NO_SE_MUEVE]: "Caja no se mueve" },
   alt: "La cuenta Caja como un cajón de paso: la plata entra por el Debe y sale por el Haber hacia Bancos o hacia un pago en efectivo.",
   controles: "Los siete controles",
@@ -130,7 +130,7 @@ export const CHEQUES_A1 = [
   {
     id: "propio", tarjeta: "Sus Servicios paga con un cheque propio", correcta: NO_SE_MUEVE,
     acierto: "Esa plata sale del banco.",
-    errores: { [DEBE]: "Aquí la empresa paga, no recibe.", [HABER]: "¿De dónde sale la plata de ese cheque?" },
+    errores: { [DEBE]: "Aquí la empresa paga, no recibe.", [HABER]: "¿De dónde sale esa plata?" },
   },
 ];
 /* Lo que se ve en la columna y en la bandeja cuando cada cheque llega a su sitio. */
@@ -140,7 +140,8 @@ export const ESPERA_CHEQUE_MS = 1400;
 
 /*
  * Las siete pantallas (Hanayama §2, textos de Katsumi). `tipo` dice qué hace
- * el cajón en cada una.
+ * el cajón en cada una. `pregunta`: «Seguir» no aparece hasta el acierto (en
+ * los cheques, hasta el acierto del segundo): regla D7 del canon.
  */
 export const PANTALLAS_A1 = [
   {
@@ -155,7 +156,7 @@ export const PANTALLAS_A1 = [
     pie: PIE_180,
   },
   {
-    id: "consigna", tipo: "consigna", figura: "cajon",
+    id: "consigna", tipo: "consigna", figura: "cajon", pregunta: true,
     antes: ["Ese día, la plata va al banco. ¿Qué le pasa a Caja?"],
     tarjeta: "Consigna en su cuenta corriente",
     correcta: HABER,
@@ -171,7 +172,7 @@ export const PANTALLAS_A1 = [
     pie: PIE_180,
   },
   {
-    id: "cheques", tipo: "cheques", figura: "cajon",
+    id: "cheques", tipo: "cheques", figura: "cajon", pregunta: true,
     antes: ["Para el libro, la caja también guarda cheques. Manda cada uno a su sitio."],
     pie: "Basado en el libro, pp. 179, 180 y 187",
   },
