@@ -277,6 +277,10 @@ function recortadas() {
 }
 const RECORTADAS = recortadas();
 for (const [pieza, viejo, nuevo] of CORRECCIONES_MELLO) if (RECORTADAS[pieza]) CAMBIOS.set(viejo, nuevo);
+/* La pista de `cual-le-toca` rehecha por Near (t7-3-condicionado-cual-le-toca.md, tabla «Cambios frente a lo publicado»). */
+const PISTA_CUAL_LE_TOCA = readFileSync(new URL("t7-3-condicionado-cual-le-toca.md", PAQUETES), "utf8").match(/^\| Pista \| «(.+?)» \| «(.+?)» \|$/m);
+assert.ok(PISTA_CUAL_LE_TOCA, "no está la fila «Pista» de t7-3-condicionado-cual-le-toca.md");
+CAMBIOS.set(PISTA_CUAL_LE_TOCA[1], PISTA_CUAL_LE_TOCA[2]);
 /*
  * La entrega 6 de Near (lote1-entrega6-v1.md) cambia la pregunta del 23 % de
  * «descuentos-en-cadena»: «No: le rebaja menos» pasa a «Menor que 23 %» (la

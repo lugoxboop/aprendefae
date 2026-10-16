@@ -192,7 +192,9 @@ export async function recorrer({ caja: c, P, S, tocar, w, textosDelError, tarifa
       const msj = c.querySelector("[data-mensaje]");
       assert.equal(msj.dataset.mensaje, "error");
       assert.equal(w.document.activeElement, msj, `${s.id}: el foco va al mensaje`);
-      const esperado = n === 1 ? [s.pista] : [`La respuesta es «${p.opciones.find((y) => y.correcta).texto.replace(/\.$/, "")}».`, sinAsiEs(s.acierto.texto)];
+      /* Con `segundoPropio` (la pantalla trae `errorPropio`), desde el 2.º error se ve el error propio de la opción tocada. */
+      const propio = s.segundoPropio ? s.errores.find((e) => opcionesDeClave(e.clave, p.opciones).includes(o))?.texto : null;
+      const esperado = n === 1 ? [s.pista] : propio ? [propio] : [`La respuesta es «${p.opciones.find((y) => y.correcta).texto.replace(/\.$/, "")}».`, sinAsiEs(s.acierto.texto)];
       assert.deepEqual([...msj.querySelectorAll("[data-texto]")].map((x) => x.textContent), esperado, `${s.id}: error ${n}`);
       assert.deepEqual(textosDelError(p, o, n), esperado);
       assert.deepEqual(pies(), pieEsperado(p.error.pie), `${s.id}: el pie del error`);
