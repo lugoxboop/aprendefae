@@ -89,20 +89,29 @@ export function LibroDiario({ asientos, abierto, onAlternar, textos, agrupar = f
  * sitio hasta que se confirma el primer asiento; entonces aparece ABIERTO, ya
  * con ese asiento escrito. Después se abre y se cierra como siempre.
  *
- * `quieto` (b5-t6-a2, lote 6b): está desde el principio, plegado, y no se
- * abre solo. Así no empuja la cuenta T que va debajo cuando llega el primer
- * asiento.
+ * `quieto` (b5-t6-a2, lote 6b): está desde el principio, plegado.
+ *
+ * NADA DOS VECES (lote 6c, hoja de Mai, B5): el estante solo se ve mientras
+ * se arma el asiento. Al confirmar, el estante se pliega y el diario se abre
+ * con el asiento nuevo; al empezar el siguiente (`plegar`, que la mesa llama
+ * con «Siguiente»), vuelve el estante y el diario se pliega solo, con su
+ * cuenta a la vista. Desde el 6c el diario va al final de la tarjeta, así que
+ * abrirse ya no empuja nada de lo que se juega.
  */
 export function useDiario(inicial, quieto = false) {
   const [asientos, setAsientos] = useState(() => [inicial]);
   const [abierto, setAbierto] = useState(false);
   const [visible, setVisible] = useState(quieto);
+  /* Lote 6c · nada dos veces: cada asiento confirmado abre el diario con él dentro. */
   const sumar = useCallback((parte) => {
     setAsientos((xs) => (xs.some((x) => x.id === parte.id) ? xs : [...xs, parte]));
-    setVisible((v) => { if (!v && !quieto) setAbierto(true); return true; });
-  }, [quieto]);
+    setVisible(true);
+    setAbierto(true);
+  }, []);
+  /* Y al empezar el siguiente, se pliega solo, con su cuenta a la vista: el estante vuelve y no se ven dos veces las mismas cuentas. */
+  const plegar = useCallback(() => setAbierto(false), []);
   const reiniciar = useCallback(() => { setAsientos([inicial]); setVisible(quieto); setAbierto(false); }, [inicial, quieto]);
-  return { asientos, abierto, visible, alternar: () => setAbierto((x) => !x), sumar, reiniciar };
+  return { asientos, abierto, visible, alternar: () => setAbierto((x) => !x), sumar, plegar, reiniciar };
 }
 
 /* La mesa con el diario encima: `inicial` es el asiento del ejemplo; cada parte comprobada suma la suya. */
@@ -113,6 +122,7 @@ export function MesaConDiario({ Juego, inicial, textos, agrupar = false, quieto 
       {...props}
       encima={d.visible ? <LibroDiario asientos={d.asientos} abierto={d.abierto} onAlternar={d.alternar} textos={textos} agrupar={agrupar} /> : null}
       onParteComprobada={d.sumar}
+      onAvanzar={d.plegar}
       onReiniciar={d.reiniciar}
     />
   );
