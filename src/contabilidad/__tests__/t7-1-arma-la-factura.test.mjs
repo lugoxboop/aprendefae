@@ -3,35 +3,33 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { conCorreccionesDeMello } from "./correccionesMello.mjs";
+import { enunciadoConFa2, PERIODICO_MELLO, LIBERA_VENTA_MELLO, LIMITE_PALABRAS_FA2, AUDITORIA } from "./correccionesMelloC2Factura.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T7-1 · H2 «Arma la factura» (Célula C) · Hacer.
+ * T7-1 · H2 «Arma la factura» (Célula C) · Hacer · «la factura que se arma».
  *
- *   · cada texto y cada cifra es, letra por letra, el de Near; donde la
- *     corrección 1 cambia un texto (error de $112.000 del ítem 1), manda la
- *     nueva y la vieja ya no aparece
- *   · las cifras se calculan con las tarifas del enunciado y dan las de Near;
- *     las sumas del asiento cuadran
- *   · doce unidades, un solo intento por unidad (patrón v3.2): la casilla
- *     se califica una vez y se bloquea; el asiento, una vez al comprobar; el
- *     detalle anota un intento
- *   · sin arrastre: lo que se responde en un ítem no cambia los siguientes
- *   · los ítems en el orden de la tabla; las líneas y su banco, barajados
- *   · el asiento completo, con sus sumas, solo después de «Comprobar»
- *   · LOTE 3 («Arma la línea», paquete lote3-distractores-v1.md de Near): los
- *     cuatro cálculos van con casilla de cifra; cada línea elige su cuenta de
- *     un banco (la correcta y los dos distractores de Near) y su lado
- *   · evaluativa, medio, 25 FP, en el cliente y en la migración 0092 (aditiva,
- *     repetible, del rango de la Célula C); justo después de AP2; la vista lo
- *     abre desde el camino y registra con el motor compartido; el panel
- *     docente lee cada unidad
+ * Contra tres fuentes, sin copiar textos a mano:
+ *   · NEAR (t7-1-h2-v1.md, su corrección 1 y el lote 3): cada texto y cada
+ *     cifra de los datos, letra por letra
+ *   · la C2 DE WATARI (patron-enganche-c2-v1.html, sección «factura» y su
+ *     código): los mismos ítems que los datos, los rótulos [W] y la forma
+ *   · MELLO (auditoria-mello-patron-c2.md §3, por correccionesMelloC2Factura):
+ *     Fa-1 (el IVA y la retención de la venta, «—» hasta responder el ítem 5)
+ *     y Fa-2 (en el ítem 1, a la vista solo la frase del periódico y las
+ *     tarifas; ≤ 60 palabras antes de la primera decisión); condición 4 (la
+ *     casilla es el mismo nodo de la primera tecla a «Comprobar»)
+ *
+ * La evaluación es la de antes: seis ítems, doce unidades, un intento por
+ * unidad, sin arrastre; detalle, etiquetas del panel, catálogo, vista y
+ * migración, iguales.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+let movimientoReducido = false;
+w.matchMedia = (q) => ({ matches: /reduce/.test(q) ? movimientoReducido : false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
 w.requestAnimationFrame = (f) => setTimeout(f, 0);
 for (const [k, v] of Object.entries({
   window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
@@ -52,9 +50,11 @@ const D = await import("../../data/contabilidadT7_1_h2.js");
 const L = await import("../t7H2.js");
 const { DEBE, HABER, pesos } = await import("../../data/contabilidad.js");
 const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await import("../../data/subjects.js");
-const { default: ArmaLaFactura } = await import("../../components/mecanicas/libros/t7/ArmaLaFactura.jsx");
+const F = await import("../../components/mecanicas/libros/t7/ArmaLaFactura.jsx");
+const ArmaLaFactura = F.default;
 const { JUEGOS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
+const B5 = await import("../../components/mecanicas/libros/b5/Devolucion.jsx");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -62,7 +62,29 @@ const V1 = leer("orquestador/conocimiento/paquetes/t7-1-h2-v1.md");
 const CAMBIOS = leer("orquestador/conocimiento/paquetes/t7-1-h2-cambios.md");
 const VISTA = leer("src/components/ContabilidadT7_1View.jsx");
 const MIGRACION = leer("supabase/migrations/0092_t7_1_arma_la_factura.sql");
+const FUENTE = leer("src/components/mecanicas/libros/t7/ArmaLaFactura.jsx");
 const TEMA = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_1);
+
+/* La C2 de Watari: la sección «factura» del HTML y su código de referencia, ejecutado aparte. */
+const C2 = leer("orquestador/conocimiento/paquetes/patron-enganche-c2-v1.html");
+const INICIO_C2 = C2.indexOf('<section class="sec" id="factura">');
+const SECCION_C2 = C2.slice(INICIO_C2, C2.indexOf("</section>", INICIO_C2));
+const CODIGO_C2 = (() => {
+  const ini = C2.indexOf("(function () {", C2.indexOf("/* Patrón de enganche C2 · T7-1 H2 «Arma la factura», renovada"));
+  const marca = "  window.C2Factura.ITEMS = ITEMS;\n})();";
+  const fin = C2.indexOf(marca, ini);
+  assert.ok(ini > 0 && fin > ini, "no encuentro el código de la factura en la C2");
+  const cuerpo = C2.slice(ini, fin) + "  window.C2Factura.ITEMS = ITEMS;\n  window.__c2 = { ENUNCIADO, CAMPOS, FACTURAS, RENGLON, ITEMS };\n})();";
+  const ventana = {};
+  new Function("window", cuerpo)(ventana);
+  return ventana.__c2;
+})();
+
+/* Near: el enunciado (los párrafos de la sección «Enunciado» de la v1, sin la consigna). */
+const ENUNCIADO_NEAR = (() => {
+  const s = V1.slice(V1.indexOf("## Enunciado"));
+  return s.slice(0, s.indexOf("\n## ", 5)).split("\n").filter((l) => l.startsWith("- «")).map((l) => /^- «(.+?)»/.exec(l)[1]).slice(1);
+})();
 
 /* Sin barajar: las líneas y su banco de cuentas en el orden de los datos. */
 const EN_ORDEN = L.prepararH2((xs) => [...xs]);
@@ -81,25 +103,37 @@ const tocar = async (el) => {
   await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 };
 const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent === texto);
-const lado = (caja, lineaId, ladoId) =>
-  [...caja.querySelectorAll(`[data-linea-cuenta="${lineaId}"] button`)].find((b) => b.textContent === D.LADOS_H2[ladoId]);
-const ficha = (caja, lineaId, cuenta) => [...caja.querySelectorAll(`[data-linea-cuenta="${lineaId}"] [data-ficha-cuenta]`)].find((b) => b.dataset.fichaCuenta === cuenta);
-const siguiente = (caja) => [...caja.querySelectorAll("button")].find((b) => Object.values(D.BOTON_H2).includes(b.textContent));
-const retro = (caja) => [...caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent);
-const otro = (l) => (l === DEBE ? HABER : DEBE);
-const cifra = (s) => Number(s.replace(/[$.]/g, ""));
-const miles = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-const item = (id) => D.ITEMS_H2.find((x) => x.id === id);
-/* Escribe en la casilla de cifra como lo haría el teclado: el valor con su punto de miles. */
-const escribir = async (caja, id, valor) => {
-  const i = caja.querySelector(`[data-campo-cifra="${id}"]`);
-  assert.ok(i, `no está la casilla de ${id}`);
-  await act(async () => {
-    Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype, "value").set.call(i, String(valor));
-    i.dispatchEvent(new w.Event("input", { bubbles: true }));
-  });
-  assert.equal(i.value, miles(valor));
+const avance = (caja) => [...caja.querySelectorAll("[data-responder] button")].find((b) => Object.values(D.BOTON_H2).includes(b.textContent));
+const casilla = (caja) => caja.querySelector("[data-casilla]");
+const contador = (caja) => caja.querySelector("[data-avance]").textContent;
+const cifraEn = (caja, fac, rn) => {
+  const r = caja.querySelector(`[data-renglon="${fac}-${rn}"]`);
+  return r.querySelector("input") ? "casilla" : r.querySelector("[data-cifra]").textContent;
 };
+const tramo = (caja, fac, t) => Number(caja.querySelector(`[data-barra="${fac}"] [data-tramo="${t}"]`).style.getPropertyValue("--l"));
+const pastillas = (el) => [...el.querySelectorAll("[data-pastilla]")].map((p) => `${p.dataset.pastilla}:${p.textContent}`);
+const palabras = (s) => s.trim().split(/\s+/).filter(Boolean).length;
+const otro = (l) => (l === DEBE ? HABER : DEBE);
+const item = (id) => D.ITEMS_H2.find((x) => x.id === id);
+/* Mismo nodo. assert.equal con nodos de JSDOM arma un diff de todo el documento y se queda sin memoria: aquí se dice cuál es cuál. */
+const nombreDe = (n) => (n ? `<${n.tagName?.toLowerCase()}${n.dataset && Object.keys(n.dataset).length ? " " + Object.keys(n.dataset).map((k) => `data-${k}`).join(" ") : ""}>` : String(n));
+const mismo = (a, b, msg = "no es el mismo nodo") => assert.ok(a === b, `${msg}: ${nombreDe(a)} en vez de ${nombreDe(b)}`);
+const miles = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+/* Teclea en la casilla una tecla a la vez, como el teclado del teléfono: cada tecla agrega un dígito al valor que ya tiene. */
+async function teclear(caja, texto) {
+  const c = casilla(caja);
+  assert.ok(c, "no hay casilla");
+  await act(async () => { c.focus(); });
+  for (const tecla of String(texto)) {
+    const ahora = casilla(caja);
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype, "value").set.call(ahora, ahora.value + tecla);
+      ahora.dispatchEvent(new w.Event("input", { bubbles: true }));
+    });
+  }
+  return c;
+}
 
 /* ═══════════ 1 · TEXTOS Y CIFRAS CONTRA NEAR ═══════════ */
 
@@ -109,7 +143,8 @@ test("★★★ nombre, id, etiqueta, consigna, enunciado y pie son los de la v1
   assert.ok(V1.includes(`**T7-1 · H2 «${D.H2.nombre}»`));
   assert.ok(V1.includes(`| Etiqueta del panel docente | «${D.H2.etiqueta}» |`));
   assert.ok(V1.includes(`- «${D.H2.consigna}»`), "consigna");
-  for (const p of D.H2.enunciado) assert.ok(V1.includes(`- «${p}»`), p);
+  assert.equal(ENUNCIADO_NEAR.length, 4);
+  assert.deepEqual(D.H2.enunciado, ENUNCIADO_NEAR, "el enunciado son los cuatro párrafos de Near, en su orden");
   assert.ok(V1.includes(`**Pie de todos los ítems:** «${D.H2.pie}»`));
 });
 
@@ -119,12 +154,12 @@ test("★★ las fichas de los cinco datos son la tabla de la v1", () => {
   }
 });
 
-/* La tabla de ítems de la v1, fila por fila. */
 function filasV1() {
   const lineas = V1.slice(V1.indexOf("## Ítems")).split("\n").filter((l) => /^\| \d \|/.test(l));
   return lineas.map((l) => l.slice(1, -1).split(" | ").map((c) => c.trim()));
 }
 const citas = (celda) => [...celda.matchAll(/«([^»]+)»/g)].map((m) => m[1]);
+const cifra = (s) => Number(s.replace(/[$.]/g, ""));
 
 test("★★★ cada ítem es el de la v1, con la corrección 1 aplicada: manda la más nueva", () => {
   const filas = filasV1();
@@ -166,7 +201,6 @@ test("★★★ las cifras salen de las tarifas del enunciado, dan las de Near y
     [C.compra, C.ivaCompra, C.retencionCompra, C.debeProveedor, C.venta, C.ivaVenta, C.retencionVenta, C.debeCliente],
     [3_200_000, 512_000, 112_000, 3_600_000, 4_800_000, 768_000, 168_000, 5_400_000],
   );
-  /* El registro 5c de la v1 trae las mismas ocho. */
   assert.ok(V1.includes("H2 (3.200.000 · 512.000 · 112.000 · 3.600.000 · 4.800.000 · 768.000 · 168.000 · 5.400.000)"));
   const it = Object.fromEntries(D.ITEMS_H2.map((x) => [x.id, x]));
   assert.equal(it["iva-compra"].correcta, C.ivaCompra);
@@ -178,11 +212,82 @@ test("★★★ las cifras salen de las tarifas del enunciado, dan las de Near y
     assert.equal(suma(DEBE), suma(HABER), `${a.id}: no cuadra`);
     assert.equal(suma(DEBE), a.sumas, `${a.id}: sumas`);
   }
-  /* Ningún distractor es la buena de su ítem. */
   for (const x of D.ITEMS_H2.filter((y) => y.tipo === "cifra")) assert.ok(!x.distractores.some((d) => d.valor === x.correcta), x.id);
 });
 
-/* ═══════════ 2 · PUNTAJE Y UNIDADES ═══════════ */
+/* ═══════════ 2 · LA C2 DE WATARI Y LAS CORRECCIONES DE MELLO ═══════════ */
+
+test("★★★ la C2 trae los mismos ítems, enunciado, fichas y renglones que los datos: la forma cambia, el contenido no", () => {
+  const c = CODIGO_C2;
+  assert.deepEqual(c.ENUNCIADO, D.H2.enunciado);
+  assert.deepEqual(c.CAMPOS, D.FICHAS_H2.campos);
+  const de = { compra: { iva: "ivaCompra", ret: "retencionCompra", total: "debeProveedor" }, venta: { iva: "ivaVenta", ret: "retencionVenta", total: "debeCliente" } };
+  for (const f of ["compra", "venta"]) {
+    assert.deepEqual(c.FACTURAS[f].valores, D.FICHAS_H2[f].valores, f);
+    assert.equal(c.FACTURAS[f].fecha, D.FACTURA_H2.fechas[f], `${f}: fecha`);
+    assert.equal(`Factura de ${c.FACTURAS[f].titulo.toLowerCase()}`, D.FACTURA_H2.titulos[f], `${f}: título`);
+    assert.equal(c.FACTURAS[f].mercancia, D.CIFRAS_H2[f]);
+    for (const r of ["iva", "ret", "total"]) assert.equal(c.FACTURAS[f][r], D.CIFRAS_H2[de[f][r]], `${f}·${r}`);
+  }
+  assert.deepEqual(c.ITEMS.map((x) => x.id), D.ITEMS_H2.map((x) => x.id));
+  for (const [k, x] of c.ITEMS.entries()) {
+    const it = D.ITEMS_H2[k];
+    assert.equal(x.tipo, it.tipo);
+    assert.equal(x.pregunta, it.pregunta);
+    assert.equal(x.factura, D.DONDE_H2[it.id].factura, `${it.id}: factura`);
+    if (x.tipo === "cifra") {
+      assert.equal(x.correcta, it.correcta);
+      assert.equal(x.acierto, it.acierto);
+      assert.deepEqual(x.distractores, it.distractores);
+      assert.equal(x.renglon, D.DONDE_H2[it.id].renglon, `${it.id}: renglón`);
+    } else {
+      assert.equal(x.sumas, it.sumas);
+      assert.deepEqual(x.lineas.map(({ renglon, ...l }) => l), it.lineas, `${it.id}: líneas`);
+      assert.deepEqual(Object.fromEntries(x.lineas.map((l) => [l.id, l.renglon])), D.DONDE_H2[it.id].lineas, `${it.id}: renglón de cada línea`);
+    }
+  }
+});
+
+test("★★★ los rótulos [W] son los de la C2, letra por letra (y siguen pendientes de Near)", () => {
+  assert.deepEqual(CODIGO_C2.RENGLON, D.FACTURA_H2.renglones);
+  const ini = SECCION_C2.indexOf('<ul class="limpia pide">');
+  const rotulos = citas(SECCION_C2.slice(ini, SECCION_C2.indexOf("</ul>", ini)));
+  const R = D.FACTURA_H2;
+  assert.deepEqual(rotulos, [
+    R.renglones.mercancia, R.renglones.iva, R.renglones.ret, R.renglones.total.compra, R.renglones.total.venta,
+    R.titulos.compra, R.titulos.venta, R.asientos.compra, R.asientos.venta, R.sumas, R.verEnunciado, R.ocultarEnunciado,
+    R.lineasAlPrimerToque("n"),
+  ]);
+  assert.ok(D.H2.enunciado[0].startsWith(`El ${R.fechas.compra},`));
+  assert.ok(D.H2.enunciado[1].startsWith(`El ${R.fechas.venta},`));
+});
+
+test("★★★ Fa-2 de Mello: el enunciado de Near se reparte como pide la auditoría, y la frase del periódico es la de Mello", () => {
+  const fa2 = enunciadoConFa2(ENUNCIADO_NEAR);
+  assert.deepEqual(D.ENUNCIADO_H2.visible, fa2.visible);
+  assert.deepEqual(D.ENUNCIADO_H2.plegadoItem1, fa2.plegado);
+  assert.deepEqual(D.ENUNCIADO_H2.plegado, ENUNCIADO_NEAR, "desde el ítem 2, el de Near entero");
+  assert.equal(D.PERIODICO_H2, PERIODICO_MELLO);
+  assert.ok(!V1.includes(D.PERIODICO_H2), "la frase con sujeto no es de Near: es de Mello (Near debe confirmarla)");
+  assert.ok(AUDITORIA.includes(`«${D.PERIODICO_H2}»`));
+});
+
+test("★★★ Fa-1 de Mello: el IVA y la retención de la venta, «—» hasta que se responde el ítem 5", () => {
+  assert.equal(L.LIBERA_VENTA_H2, LIBERA_VENTA_MELLO);
+  assert.equal(LIBERA_VENTA_MELLO, "debe-cliente");
+  const previos = ["iva-compra", "retencion-compra", "debe-proveedor", "asiento-compra"];
+  const antes = { resuelto: (id) => previos.includes(id), actual: "debe-cliente", escrito: 5_568_000 };
+  assert.equal(L.renglonH2("venta", "iva", antes).v, null);
+  assert.equal(L.renglonH2("venta", "ret", antes).v, null);
+  assert.deepEqual(L.renglonH2("venta", "total", antes), { v: 5_568_000, item: item("debe-cliente"), activo: true });
+  assert.equal(L.renglonH2("venta", "mercancia", antes).v, 4_800_000);
+  const despues = { ...antes, resuelto: (id) => previos.includes(id) || id === "debe-cliente" };
+  assert.equal(L.renglonH2("venta", "iva", despues).v, 768_000);
+  assert.equal(L.renglonH2("venta", "ret", despues).v, 168_000);
+  assert.equal(L.renglonH2("venta", "total", despues).v, 5_400_000);
+});
+
+/* ═══════════ 3 · PUNTAJE, UNIDADES Y LA MISMA EVALUACIÓN ═══════════ */
 
 test("★★★ doce unidades, doce aciertos posibles: cuatro cálculos y ocho líneas", () => {
   const u = L.unidadesH2();
@@ -195,87 +300,143 @@ test("★★★ doce unidades, doce aciertos posibles: cuatro cálculos y ocho l
   assert.equal(L.puntuarH2(0), 0);
 });
 
-/* ═══════════ 3 · LA MECÁNICA, MONTADA ═══════════ */
-
-test("★★★ un solo intento por cálculo: la casilla se califica una vez, se bloquea y «Comprobar» se va", async () => {
-  const m = await montar();
-  try {
-    const it = D.ITEMS_H2[0];
-    const mala = it.distractores[1].valor;
-    assert.equal(boton(m.caja, "Comprobar").disabled, true, "«Comprobar» sin cifra");
-    await escribir(m.caja, it.id, mala);
-    await tocar(boton(m.caja, "Comprobar"));
-    const campo = m.caja.querySelector(`[data-campo-cifra="${it.id}"]`);
-    assert.equal(campo.readOnly, true, "la casilla sigue abierta");
-    assert.equal(boton(m.caja, "Comprobar"), undefined, "«Comprobar» sigue ahí");
-    /* La retroalimentación de ese distractor de Near y la respuesta. */
-    assert.deepEqual(retro(m.caja), [it.distractores[1].retro, `La respuesta es ${pesos(it.correcta)}.`]);
-    assert.equal(m.caja.querySelector("[data-panel]").dataset.panel, "error");
-    /* Escribir otra vez no cambia nada. */
-    const antes = retro(m.caja);
-    await act(async () => {
-      Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype, "value").set.call(campo, String(it.correcta));
-      campo.dispatchEvent(new w.Event("input", { bubbles: true }));
-    });
-    assert.equal(campo.value, miles(mala));
-    assert.deepEqual(retro(m.caja), antes, "un segundo intento cambió la devolución");
-  } finally {
-    m.desmontar();
+test("★★★ la casilla califica igual que antes (evaluarH2); solo cambia el texto: sin «La respuesta es», la cifra va en «Iba aquí»", () => {
+  for (const it of D.ITEMS_H2.filter((x) => x.tipo === "cifra")) {
+    for (const v of [it.correcta, ...it.distractores.map((d) => d.valor), 1, it.correcta + 1000]) {
+      const viejo = L.evaluarH2(it, v);
+      const nuevo = L.devolucionH2(it, v);
+      assert.equal(nuevo.ok, viejo.ok, `${it.id} · ${v}`);
+      assert.equal(nuevo.correcta, viejo.correcta);
+      assert.deepEqual([nuevo.texto], viejo.textos.filter((x) => !x.startsWith("La respuesta es")), `${it.id} · ${v}`);
+    }
   }
 });
 
-/* Responde toda la tanda con un plan: para cada unidad, acierto o error. */
+/* ═══════════ 4 · LA PIEZA, MONTADA, ÍTEM POR ÍTEM ═══════════ */
+
+/* Lo que cada renglón debe mostrar ANTES de responder el ítem k (0-based), sin arrastre y con Fa-1. */
+function esperadoAntes(k) {
+  const resuelto = (id) => D.ITEMS_H2.findIndex((x) => x.id === id) < k;
+  const out = {};
+  for (const f of ["compra", "venta"]) for (const rn of ["mercancia", "iva", "ret", "total"]) {
+    const it = D.ITEMS_H2.find((x) => x.tipo === "cifra" && D.DONDE_H2[x.id].factura === f && D.DONDE_H2[x.id].renglon === rn);
+    let v;
+    if (rn === "mercancia") v = pesos(D.CIFRAS_H2[f]);
+    else if (!it) v = resuelto("debe-cliente") ? pesos(D.CIFRAS_H2[rn === "iva" ? "ivaVenta" : "retencionVenta"]) : "—";
+    else if (resuelto(it.id)) v = pesos(it.correcta);
+    else if (it.id === D.ITEMS_H2[k].id) v = "casilla";
+    else v = "—";
+    out[`${f}-${rn}`] = v;
+  }
+  return out;
+}
+const vistos = (caja) => Object.fromEntries(["compra", "venta"].flatMap((f) => ["mercancia", "iva", "ret", "total"].map((rn) => [`${f}-${rn}`, cifraEn(caja, f, rn)])));
+
 async function jugar(m, falla) {
   const detalle = [];
   for (const [k, it] of EN_ORDEN.entries()) {
-    assert.equal(m.caja.querySelector("[data-pregunta]").textContent, it.pregunta, `orden: el ítem ${k + 1}`);
-    assert.equal(m.caja.querySelector("[data-pie]").textContent, D.H2.pie);
-    assert.equal(siguiente(m.caja) === undefined, true, `${it.id}: «Siguiente» antes de responder`);
+    const { caja } = m;
+    const donde = D.DONDE_H2[it.id];
+    assert.equal(contador(caja), `Ítem ${k + 1} de 6`);
+    assert.equal(caja.querySelector("[data-pregunta]").textContent, it.pregunta, `orden: el ítem ${k + 1}`);
+    assert.equal(caja.querySelector("[data-pie]").textContent, D.H2.pie);
+    assert.equal(caja.querySelectorAll(".fae-c2f-factura.activa").length, 1);
+    assert.equal(caja.querySelector(".fae-c2f-factura.activa").dataset.factura, donde.factura, `${it.id}: factura activa`);
+    assert.deepEqual(vistos(caja), esperadoAntes(k), `${it.id}: la factura antes de responder`);
+    assert.equal(avance(caja), undefined, `${it.id}: avance antes de responder`);
+    assert.equal(boton(caja, "Comprobar").disabled, true, `${it.id}: «Comprobar» sin respuesta`);
+    assert.equal(caja.querySelector("[data-region-mensaje]").textContent, "", "mensaje antes de responder");
     if (it.tipo === "cifra") {
-      /* LOTE 3: casilla de cifra; si falla, escribe el primer distractor de Near y sale su retroalimentación. */
+      assert.equal(caja.querySelector("[data-asiento]"), null);
+      const c = casilla(caja);
+      assert.equal(c.closest("[data-renglon]").dataset.renglon, `${donde.factura}-${donde.renglon}`, `${it.id}: la casilla vive en su renglón`);
+      assert.equal(c.getAttribute("aria-label"), `${it.pregunta} Tu respuesta, en pesos`);
+      assert.equal(c.getAttribute("inputmode"), "numeric");
       const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
-      assert.equal(boton(m.caja, "Comprobar").disabled, true, "«Comprobar» sin cifra");
-      await escribir(m.caja, it.id, v);
-      await tocar(boton(m.caja, "Comprobar"));
+      await teclear(caja, v);
+      mismo(casilla(caja), c, "la casilla se remontó");
+      assert.equal(c.value, miles(v));
+      assert.equal(boton(caja, "Comprobar").disabled, false);
+      await tocar(boton(caja, "Comprobar"));
       const ok = v === it.correcta;
-      assert.equal(m.caja.querySelector(`[data-campo-cifra="${it.id}"]`).readOnly, true, "un solo intento");
-      assert.deepEqual(retro(m.caja), ok ? [it.acierto] : [it.distractores[0].retro, `La respuesta es ${pesos(it.correcta)}.`], it.id);
-      assert.deepEqual(retro(m.caja), L.evaluarH2(it, v).textos, it.id);
-      assert.equal(m.caja.querySelector("[data-panel]").dataset.panel, ok ? "acierto" : "error");
+      /* Un intento: la casilla se va y queda la cifra buena (sin arrastre), con su marca. */
+      mismo(casilla(caja), null, `${it.id}: la casilla sigue abierta`);
+      assert.equal(boton(caja, "Comprobar"), undefined);
+      const ren = caja.querySelector(`[data-renglon="${donde.factura}-${donde.renglon}"]`);
+      assert.equal(ren.querySelector("[data-cifra]").textContent, pesos(it.correcta));
+      assert.ok(ren.classList.contains(ok ? "ok" : "mal"));
+      assert.deepEqual(pastillas(ren), ok ? ["correcta:Correcto"] : ["tachada:No va aquí", `revelada:Iba aquí: ${pesos(it.correcta)}`]);
+      if (!ok) assert.ok(ren.querySelector('[data-pastilla="revelada"]').classList.contains("fae-b5h-revela"), "«Iba aquí» a los 0,7 s");
+      const msg = caja.querySelector("[data-mensaje]");
+      assert.equal(msg.dataset.mensaje, ok ? "acierto" : "error");
+      const texto = ok ? it.acierto : it.distractores[0].retro;
+      assert.equal(msg.querySelector("[data-texto-retro]").textContent, texto);
+      assert.equal(msg.textContent, ok ? `Correcto${texto}` : `Incorrecto. Iba aquí: ${pesos(it.correcta)}. ${texto}`);
+      mismo(document.activeElement, msg, `${it.id}: el foco va al mensaje`);
       detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
-    } else {
-      /* LOTE 3 · «Arma la línea»: cada línea elige su cuenta del banco (la correcta y dos distractores) y su lado. */
-      for (const l of it.lineas) {
-        assert.equal(boton(m.caja, "Comprobar").disabled, true, `${it.id}: «Comprobar» antes de tener todas las líneas`);
-        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-ficha-cuenta]`)].map((b) => b.dataset.fichaCuenta), [l.cuenta, ...l.distractores.map((d) => d.cuenta)]);
-        assert.equal(m.caja.querySelector(`[data-linea-cuenta="${l.id}"] [data-valor]`).textContent, pesos(l.valor), "el monto viene dado");
-        await tocar(ficha(m.caja, l.id, falla(L.idDeLinea(it, l)) ? l.distractores[0].cuenta : l.cuenta));
-        /* Se puede cambiar de lado antes de comprobar: se pone mal y luego como toca. */
-        await tocar(lado(m.caja, l.id, otro(l.lado)));
-        await tocar(lado(m.caja, l.id, l.lado));
+      if (it.id === "debe-cliente") {
+        assert.equal(cifraEn(caja, "venta", "iva"), "$768.000");
+        assert.equal(cifraEn(caja, "venta", "ret"), "$168.000");
       }
-      assert.equal(m.caja.querySelector("[data-asiento-completo]"), null, `${it.id}: las sumas antes de comprobar`);
-      await tocar(boton(m.caja, "Comprobar"));
+    } else {
+      mismo(casilla(caja), null);
+      const A = caja.querySelector(`[data-asiento="${it.id}"]`);
+      assert.equal(A.querySelector("[data-titulo-asiento]").textContent, D.FACTURA_H2.asientos[donde.factura]);
+      assert.deepEqual([...A.querySelectorAll("[data-linea]")].map((x) => x.dataset.linea), it.orden, "las líneas en su orden");
+      for (const l of it.lineas) {
+        const el = A.querySelector(`[data-linea="${l.id}"]`);
+        assert.equal(el.querySelector("[data-l-valor]").textContent, pesos(l.valor), "el monto viene dado");
+        assert.deepEqual([...el.querySelectorAll("[data-cuenta]")].map((b) => b.dataset.cuenta), l.banco);
+        assert.deepEqual([...el.querySelectorAll("[data-lado]")].map((b) => b.textContent), ["Debe", "Haber"]);
+        assert.equal(boton(caja, "Comprobar").disabled, true, `${it.id}: «Comprobar» antes de tener todas las líneas`);
+        const cuenta = falla(L.idDeLinea(it, l)) ? l.distractores[0].cuenta : l.cuenta;
+        await tocar(el.querySelector(`[data-cuenta="${cuenta}"]`));
+        /* Antes de comprobar se puede cambiar el lado. */
+        await tocar(el.querySelector(`[data-lado="${otro(l.lado)}"]`));
+        await tocar(el.querySelector(`[data-lado="${l.lado}"]`));
+        assert.equal(el.querySelector(`[data-cuenta="${cuenta}"]`).getAttribute("aria-pressed"), "true");
+        assert.equal(el.querySelector(`[data-lado="${l.lado}"]`).getAttribute("aria-pressed"), "true");
+        assert.equal(el.querySelector(`[data-lado="${otro(l.lado)}"]`).getAttribute("aria-pressed"), "false");
+      }
+      assert.equal(A.querySelector("[data-sumas]"), null, `${it.id}: las sumas antes de comprobar`);
+      await tocar(boton(caja, "Comprobar"));
+      let n = 0;
       for (const l of it.lineas) {
         const id = L.idDeLinea(it, l);
         const ok = !falla(id);
-        for (const b of m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] button`)) assert.equal(b.disabled, true);
-        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), ok ? [] : [l.distractores[0].retro], `${id}: su retroalimentación va bajo su línea`);
-        assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-era]`)].map((p) => p.textContent), ok ? [] : [`Era: ${l.cuenta}, al ${l.lado === DEBE ? "debe" : "haber"}.`]);
+        if (ok) n += 1;
+        const el = A.querySelector(`[data-linea="${l.id}"]`);
+        for (const b of el.querySelectorAll("button[data-cuenta], button[data-lado]")) assert.equal(b.getAttribute("aria-disabled"), "true");
+        assert.deepEqual(pastillas(el.querySelector(".fae-c2f-lcab")), [ok ? "correcta:Correcto" : "tachada:No va aquí"]);
+        assert.deepEqual([...el.querySelectorAll("[data-l-retro]")].map((p) => p.textContent), ok ? [] : [l.distractores[0].retro], `${id}: su retroalimentación va bajo su línea`);
+        /* «Iba aquí» en la cuenta buena; el lado estaba bien. */
+        assert.deepEqual([...el.querySelectorAll('[data-pastilla="revelada"]')].map((p) => p.closest("button").dataset.cuenta), ok ? [] : [l.cuenta]);
+        if (!ok) assert.ok(el.querySelector(`[data-cuenta="${l.distractores[0].cuenta}"]`).classList.contains("mal"));
         detalle.push({ item: id, ok, intentos: 1, respuesta: ok ? null : `${l.distractores[0].cuenta}|${l.lado}`, orden: detalle.length + 1 });
       }
-      assert.equal(boton(m.caja, "Comprobar"), undefined, "«Comprobar» sigue ahí");
-      const completo = m.caja.querySelector("[data-asiento-completo]");
-      assert.ok(completo, `${it.id}: después de comprobar, el asiento completo`);
-      assert.ok(completo.textContent.includes(`${pesos(it.sumas)}${pesos(it.sumas)}`), `${it.id}: las sumas`);
+      /* Un intento: tocar otra cuenta después no cambia nada. */
+      const l0 = it.lineas[0];
+      await tocar(A.querySelector(`[data-linea="${l0.id}"] [data-cuenta="${l0.distractores[1].cuenta}"]`));
+      assert.equal(A.querySelector(`[data-linea="${l0.id}"] [data-cuenta="${l0.distractores[1].cuenta}"]`).getAttribute("aria-pressed"), "false");
+      assert.equal(boton(caja, "Comprobar"), undefined);
+      assert.equal(A.querySelector("[data-sumas]").textContent, `Sumas iguales${pesos(it.sumas)}${pesos(it.sumas)}`);
+      const msg = caja.querySelector("[data-mensaje]");
+      assert.equal(msg.textContent, n === 4 ? `Correcto${n} de 4 líneas al primer toque.` : `${n} de 4 líneas al primer toque.`);
+      assert.equal(msg.dataset.mensaje, n === 4 ? "acierto" : "error");
+      mismo(document.activeElement, msg, `${it.id}: el foco va al mensaje`);
     }
-    assert.equal(siguiente(m.caja).textContent, k === EN_ORDEN.length - 1 ? D.BOTON_H2.verResumen : D.BOTON_H2.siguiente);
-    await tocar(siguiente(m.caja));
+    assert.equal(contador(caja), `Ítem ${k + 1} de 6`);
+    assert.equal(avance(caja).textContent, k === EN_ORDEN.length - 1 ? "Ver mi resumen" : "Siguiente ítem");
+    await tocar(avance(caja));
+    if (k < EN_ORDEN.length - 1) {
+      const sig = EN_ORDEN[k + 1];
+      mismo(document.activeElement, sig.tipo === "cifra" ? casilla(caja) : caja.querySelector("[data-pregunta]"), `${sig.id}: el foco al pasar`);
+    }
   }
   return detalle;
 }
 
-test("★★★ la tanda entera: doce unidades, un intento cada una, y el porcentaje es aciertos / 12", async () => {
+test("★★★ la tanda entera, ítem por ítem: factura, casilla, marcas, mensaje, foco; el porcentaje es aciertos / 12 y el detalle, el del primer intento", async () => {
   const m = await montar();
   try {
     const fallos = new Set(["retencion-compra", "asiento-compra:retencion", "asiento-venta:anticipo", "asiento-venta:ingresos"]);
@@ -293,7 +454,7 @@ test("★★★ la tanda entera: doce unidades, un intento cada una, y el porcen
   }
 });
 
-test("★★★ sin arrastre: fallarlo todo no cambia la respuesta ni el acierto de ningún ítem", async () => {
+test("★★★ sin arrastre y un solo intento: todo mal da 0, todo bien da 100, con los mismos ítems", async () => {
   const todoMal = await montar();
   const todoBien = await montar();
   try {
@@ -302,12 +463,242 @@ test("★★★ sin arrastre: fallarlo todo no cambia la respuesta ni el acierto
     assert.equal(todoMal.completados[0][0], 0);
     assert.equal(todoBien.completados[0][0], 100);
     assert.deepEqual(mal.map((d) => d.item), bien.map((d) => d.item));
-    /* Lo que se evalúa en cada ítem no lee nada de los anteriores. */
-    for (const it of D.ITEMS_H2.filter((x) => x.tipo === "cifra")) assert.deepEqual(L.evaluarH2(it, it.correcta), { ok: true, correcta: it.correcta, textos: [it.acierto], textoCorrecta: pesos(it.correcta) });
   } finally {
     todoMal.desmontar();
     todoBien.desmontar();
   }
+});
+
+test("★★★ condición 4 de Mello: la casilla es el MISMO nodo de la primera tecla a «Comprobar» y no pierde el foco", async () => {
+  const m = await montar();
+  try {
+    const c = casilla(m.caja);
+    await act(async () => { c.focus(); });
+    for (const tecla of "3824000") {
+      await act(async () => {
+        Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype, "value").set.call(c, c.value + tecla);
+        c.dispatchEvent(new w.Event("input", { bubbles: true }));
+      });
+      assert.equal(c.isConnected, true, `tras «${tecla}», la casilla salió del documento`);
+      mismo(casilla(m.caja), c, `tras «${tecla}», otra casilla`);
+      mismo(document.activeElement, c, `tras «${tecla}», la casilla perdió el foco`);
+    }
+    assert.equal(c.value, "3.824.000");
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype, "value").set.call(c, "");
+      c.dispatchEvent(new w.Event("input", { bubbles: true }));
+    });
+    mismo(casilla(m.caja), c);
+    mismo(document.activeElement, c);
+    assert.equal(boton(m.caja, "Comprobar").disabled, true, "casilla vacía, «Comprobar» apagado");
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★★ la barra cambia al teclear: crece con el IVA de la compra y se recorta con la retención", async () => {
+  const m = await montar();
+  try {
+    assert.equal(tramo(m.caja, "compra", "mercancia"), F.anchoDeBarra(3_200_000));
+    assert.equal(tramo(m.caja, "compra", "iva"), 0, "sin cifra, la barra del IVA no existe");
+    let escrito = "";
+    for (const tecla of "512000") {
+      await teclear(m.caja, tecla);
+      escrito += tecla;
+      assert.equal(tramo(m.caja, "compra", "iva"), F.anchoDeBarra(Number(escrito)), `con «${escrito}»`);
+    }
+    assert.ok(tramo(m.caja, "compra", "iva") > 0.09);
+    assert.equal(tramo(m.caja, "venta", "iva"), 0, "la venta no se mueve");
+    await tocar(boton(m.caja, "Comprobar"));
+    await tocar(avance(m.caja));
+    await teclear(m.caja, "112000");
+    assert.equal(tramo(m.caja, "compra", "ret"), F.anchoDeBarra(112_000));
+    const ret = m.caja.querySelector('[data-barra="compra"] [data-tramo="ret"]');
+    assert.equal(Number(ret.style.getPropertyValue("--a")), F.anchoDeBarra(3_200_000 + 512_000 - 112_000));
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★★ Fa-1, reproducido en la pieza: en el ítem 5, el IVA y la retención de la venta se ven «—» hasta responder", async () => {
+  const m = await montar();
+  try {
+    for (const it of EN_ORDEN.slice(0, 4)) {
+      assert.equal(cifraEn(m.caja, "venta", "iva"), "—", `${it.id}: IVA de la venta`);
+      assert.equal(cifraEn(m.caja, "venta", "ret"), "—", `${it.id}: retención de la venta`);
+      if (it.tipo === "cifra") await teclear(m.caja, it.correcta);
+      else for (const l of it.lineas) { await tocar(m.caja.querySelector(`[data-linea="${l.id}"] [data-cuenta="${l.cuenta}"]`)); await tocar(m.caja.querySelector(`[data-linea="${l.id}"] [data-lado="${l.lado}"]`)); }
+      await tocar(boton(m.caja, "Comprobar"));
+      await tocar(avance(m.caja));
+    }
+    assert.equal(m.caja.querySelector("[data-pregunta]").textContent, item("debe-cliente").pregunta);
+    assert.equal(cifraEn(m.caja, "venta", "iva"), "—");
+    assert.equal(cifraEn(m.caja, "venta", "ret"), "—");
+    assert.equal(tramo(m.caja, "venta", "iva"), 0);
+    assert.equal(tramo(m.caja, "venta", "ret"), 0);
+    await teclear(m.caja, 5_568_000);
+    assert.equal(cifraEn(m.caja, "venta", "iva"), "—", "escribir el total no revela el IVA");
+    assert.equal(cifraEn(m.caja, "venta", "ret"), "—");
+    await tocar(boton(m.caja, "Comprobar"));
+    assert.equal(cifraEn(m.caja, "venta", "iva"), "$768.000");
+    assert.equal(cifraEn(m.caja, "venta", "ret"), "$168.000");
+    assert.equal(m.caja.querySelector("[data-texto-retro]").textContent, item("debe-cliente").distractores[1].retro);
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★★ Fa-2, reproducido en la pieza: en el ítem 1, a la vista la frase del periódico y las tarifas; ≤ 60 palabras antes de la primera decisión", async () => {
+  const m = await montar();
+  try {
+    const visible = m.caja.querySelector("[data-enunciado-visible]");
+    assert.deepEqual([...visible.querySelectorAll("p")].map((p) => p.textContent), D.ENUNCIADO_H2.visible);
+    const ver = m.caja.querySelector("[data-ver-enunciado]");
+    const plegado = m.caja.querySelector("[data-enunciado]");
+    assert.equal(ver.textContent, "Ver el enunciado");
+    assert.equal(ver.getAttribute("aria-expanded"), "false");
+    assert.equal(ver.getAttribute("aria-controls"), plegado.id);
+    assert.equal(plegado.hidden, true);
+    assert.deepEqual([...plegado.querySelectorAll("p")].map((p) => p.textContent), D.ENUNCIADO_H2.plegadoItem1);
+    /* Lo que se lee antes de decidir: consigna, lo visible del enunciado y la pregunta. */
+    const antes = palabras(m.caja.querySelector("[data-consigna]").textContent) + palabras(visible.textContent) + palabras(m.caja.querySelector("[data-pregunta]").textContent);
+    assert.ok(antes <= LIMITE_PALABRAS_FA2, `${antes} palabras antes de la primera decisión`);
+    /* Con el enunciado entero a la vista (la C2 sin Fa-2), no cabría. */
+    assert.ok(palabras(D.H2.enunciado.join(" ")) + palabras(item("iva-compra").pregunta) > LIMITE_PALABRAS_FA2);
+    for (const p of D.ENUNCIADO_H2.plegadoItem1) assert.ok(!visible.textContent.includes(p));
+    /* En el orden de la página, lo visible va antes de la casilla. */
+    assert.ok(visible.compareDocumentPosition(casilla(m.caja)) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+    await tocar(ver);
+    assert.equal(ver.textContent, "Ocultar el enunciado");
+    assert.equal(ver.getAttribute("aria-expanded"), "true");
+    assert.equal(plegado.hidden, false);
+    await tocar(ver);
+    assert.equal(plegado.hidden, true);
+    assert.equal(ver.textContent, "Ver el enunciado");
+    /* Desde el ítem 2: nada a la vista; el de Near entero, plegado. */
+    await teclear(m.caja, 512_000);
+    await tocar(boton(m.caja, "Comprobar"));
+    await tocar(avance(m.caja));
+    assert.equal(m.caja.querySelector("[data-enunciado-visible]"), null);
+    assert.equal(m.caja.querySelector("[data-enunciado]").hidden, true);
+    assert.deepEqual([...m.caja.querySelectorAll("[data-enunciado] p")].map((p) => p.textContent), D.H2.enunciado);
+    assert.equal(m.caja.querySelector("[data-ver-enunciado]").textContent, "Ver el enunciado");
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★ las facturas: título, fecha y los cinco datos de Near en su cabecera; los rótulos [W] en sus renglones", async () => {
+  const m = await montar();
+  try {
+    for (const f of ["compra", "venta"]) {
+      const fa = m.caja.querySelector(`[data-factura="${f}"]`);
+      assert.equal(fa.querySelector("[data-titulo-factura]").textContent, D.FACTURA_H2.titulos[f]);
+      assert.equal(fa.querySelector("[data-fecha]").textContent, D.FACTURA_H2.fechas[f]);
+      assert.equal(fa.getAttribute("aria-label"), `${D.FACTURA_H2.titulos[f]}, ${D.FACTURA_H2.fechas[f]}`);
+      assert.deepEqual([...fa.querySelectorAll("dt")].map((x) => x.textContent), D.FICHAS_H2.campos);
+      assert.deepEqual([...fa.querySelectorAll("dd")].map((x) => x.textContent), D.FICHAS_H2[f].valores);
+      assert.deepEqual([...fa.querySelectorAll("[data-rotulo]")].map((x) => x.textContent),
+        [D.FACTURA_H2.renglones.mercancia, D.FACTURA_H2.renglones.iva, D.FACTURA_H2.renglones.ret, D.FACTURA_H2.renglones.total[f]]);
+    }
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★ el asiento: cuenta buena y lado malo, sale el texto del lado e «Iba aquí» en el lado; cuenta mala, el de su distractor", async () => {
+  const m = await montar();
+  try {
+    for (const it of EN_ORDEN.slice(0, 3)) {
+      await teclear(m.caja, it.correcta);
+      await tocar(boton(m.caja, "Comprobar"));
+      await tocar(avance(m.caja));
+    }
+    const it = EN_ORDEN[3];
+    const [l1, l2, ...resto] = it.lineas;
+    const en = (l, sel) => m.caja.querySelector(`[data-linea="${l.id}"] ${sel}`);
+    await tocar(en(l1, `[data-cuenta="${l1.cuenta}"]`));
+    await tocar(en(l1, `[data-lado="${otro(l1.lado)}"]`));
+    await tocar(en(l2, `[data-cuenta="${l2.distractores[1].cuenta}"]`));
+    await tocar(en(l2, `[data-lado="${l2.lado}"]`));
+    for (const l of resto) { await tocar(en(l, `[data-cuenta="${l.cuenta}"]`)); await tocar(en(l, `[data-lado="${l.lado}"]`)); }
+    await tocar(boton(m.caja, "Comprobar"));
+    const bajo = (l) => [...m.caja.querySelectorAll(`[data-linea="${l.id}"] [data-l-retro]`)].map((p) => p.textContent);
+    assert.deepEqual(bajo(l1), [l1.retro], "cuenta buena, lado malo: el texto del lado");
+    assert.deepEqual(bajo(l2), [l2.distractores[1].retro], "cuenta mala: el texto de ese distractor");
+    for (const l of resto) assert.deepEqual(bajo(l), []);
+    assert.ok(!en(l1, `[data-cuenta="${l1.cuenta}"]`).classList.contains("mal"));
+    assert.ok(en(l1, `[data-lado="${otro(l1.lado)}"]`).classList.contains("mal"));
+    const iba = (l) => [...m.caja.querySelectorAll(`[data-linea="${l.id}"] [data-pastilla="revelada"]`)].map((p) => p.closest("button").dataset.cuenta ?? p.closest("button").dataset.lado);
+    assert.deepEqual(iba(l1), [l1.cuenta, l1.lado]);
+    assert.deepEqual(iba(l2), [l2.cuenta], "el lado estaba bien: sin «Iba aquí» en el lado");
+    for (const p of m.caja.querySelectorAll('[data-pastilla="revelada"]')) {
+      assert.equal(p.textContent, "Iba aquí");
+      assert.ok(p.classList.contains("fae-b5h-revela"));
+    }
+    assert.equal(m.caja.querySelector("[data-mensaje]").textContent, "2 de 4 líneas al primer toque.");
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★ «Mira esto»: al entrar a un asiento, los cuatro renglones viajan a sus líneas (400 ms, 90 ms entre uno y otro); con movimiento reducido, no", async () => {
+  const llamadas = [];
+  const original = w.HTMLElement.prototype.animate;
+  w.HTMLElement.prototype.animate = function (marcos, op) {
+    llamadas.push({ texto: this.textContent, vuelo: this.dataset.vuelo, op, enLaPagina: this.isConnected });
+    return { finished: new Promise(() => {}) };
+  };
+  try {
+    for (const reducido of [false, true]) {
+      movimientoReducido = reducido;
+      llamadas.length = 0;
+      const m = await montar();
+      for (const it of EN_ORDEN.slice(0, 3)) {
+        await teclear(m.caja, it.correcta);
+        await tocar(boton(m.caja, "Comprobar"));
+        await tocar(avance(m.caja));
+      }
+      const it = EN_ORDEN[3];
+      if (reducido) {
+        assert.deepEqual(llamadas, [], "con movimiento reducido, nada viaja");
+        assert.equal(m.caja.querySelectorAll("[data-vuelo]").length, 0);
+      } else {
+        assert.deepEqual(llamadas.map((x) => x.vuelo), it.orden);
+        assert.deepEqual(llamadas.map((x) => x.texto), it.orden.map((id) => pesos(it.lineas.find((l) => l.id === id).valor)));
+        assert.deepEqual(llamadas.map((x) => [x.op.duration, x.op.delay]), [[400, 0], [400, 90], [400, 180], [400, 270]]);
+        assert.ok(llamadas.every((x) => x.enLaPagina));
+        for (const l of it.lineas) assert.equal(m.caja.querySelector(`[data-renglon="compra-${D.DONDE_H2[it.id].lineas[l.id]}"] [data-cifra]`).textContent, pesos(l.valor), l.id);
+      }
+      m.desmontar();
+    }
+  } finally {
+    movimientoReducido = false;
+    if (original) w.HTMLElement.prototype.animate = original; else delete w.HTMLElement.prototype.animate;
+  }
+});
+
+test("★★ dialecto de Hacer: «Ítem n de 6», «Un intento», «Iba aquí» a los 0,7 s, sin «La respuesta es», sin emoji, teal y ámbar solo en los lados", async () => {
+  assert.equal(B5.RETRASO_REVELA_MS, 700);
+  assert.match(B5.CSS_B5H, /\.fae-b5h-revela \{ animation: fae-b5h-aparece 150ms [^}]* 700ms both; \}/);
+  const m = await montar();
+  try {
+    assert.equal(m.caja.querySelector("[data-contador-intento] [data-un-intento]").textContent, "Un intento");
+    assert.ok(!m.caja.textContent.includes("Tienes un solo intento"));
+    assert.ok(m.caja.textContent.includes("Arma las dos facturas de La Ceiba y sus asientos."));
+    await jugar(m, () => true);
+  } finally {
+    m.desmontar();
+  }
+  const sinComentarios = FUENTE.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`])\/\/.*$/gm, "$1");
+  assert.doesNotMatch(sinComentarios, /La respuesta es|Era: |\bCorrecta\b|\bRevisa\b/);
+  assert.doesNotMatch(FUENTE, /[✅❌✔✘✗✓]/u);
+  for (const linea of FUENTE.split("\n").filter((l) => /FAE\.teal|FAE\.ambar|#2A9D8F|#3FA69A|#E9C46A/i.test(l.replace(/\/\*[\s\S]*?\*\//g, "")))) {
+    assert.match(linea, /\/\* lado \*\//, `teal o ámbar fuera de un lado: ${linea.trim()}`);
+  }
+  assert.match(F.CSS_C2F, /\.fae-c2f-lado\.debe \{ color: #3FA69A; \}/);
+  assert.match(F.CSS_C2F, /\.fae-c2f-lado\.haber \{ color: #E9C46A; \}/);
+  assert.match(F.CSS_C2F, /prefers-reduced-motion: reduce/);
 });
 
 test("★★ los ítems en el orden de la tabla; las líneas y su banco de cuentas, barajados en cada intento", () => {
@@ -329,25 +720,10 @@ test("★★ los ítems en el orden de la tabla; las líneas y su banco de cuent
   }
   assert.ok(lineas.size > 1, "las líneas no se barajan");
   assert.ok(bancos.size > 1, "los bancos no se barajan");
-  assert.match(leer("src/components/mecanicas/libros/t7/ArmaLaFactura.jsx"), /useTanda\(\(\) => items \?\? prepararH2\(barajar\)\)/);
+  assert.match(FUENTE, /useTanda\(\(\) => items \?\? prepararH2\(barajar\)\)/);
 });
 
-test("★★ el enunciado y las fichas se ven en todo el juego, y el error va en coral solo cuando hay error", async () => {
-  const m = await montar();
-  try {
-    for (const p of D.H2.enunciado) assert.ok(m.caja.querySelector("[data-enunciado]").textContent.includes(p));
-    assert.equal(m.caja.querySelectorAll("[data-ficha]").length, 2);
-    assert.ok(!/E76F51|231,\s*111,\s*81/i.test(m.caja.innerHTML), "coral antes de responder");
-    await escribir(m.caja, D.ITEMS_H2[0].id, D.ITEMS_H2[0].correcta);
-    await tocar(boton(m.caja, "Comprobar"));
-    assert.equal(m.caja.querySelector("[data-panel]").dataset.panel, "acierto");
-    assert.ok(!/231,\s*111,\s*81/i.test(m.caja.querySelector("[data-retro]").innerHTML), "coral en un acierto");
-  } finally {
-    m.desmontar();
-  }
-});
-
-/* ═══════════ 4 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
+/* ═══════════ 5 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
 
 test("★★★ en T7-1, justo después de AP2: evaluativa, medio, 25 FP; las piezas de Aprender siguen sin FP", () => {
   assert.ok(actividadesDeTipo(TEMA, HACER).some((a) => a.id === D.H2_ID));
@@ -355,7 +731,6 @@ test("★★★ en T7-1, justo después de AP2: evaluativa, medio, 25 FP; las pi
   assert.deepEqual(c, { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
   assert.equal(TEMA.actividades.find((a) => a.id === D.H2_ID).nombre, D.H2.nombre);
   for (const a of TEMA.actividades.filter((x) => x.clasificacion.tipo !== HACER)) assert.deepEqual(a.clasificacion, { tipo: APRENDER }, a.id);
-  /* Orden de L (regla 9): justo después de AP2; si H1 ya está, H1 va antes de H2. */
   const ids = TEMA.actividades.map((x) => x.id);
   const antes = ids.includes("t7-1-que-cuenta-se-mueve") ? "t7-1-que-cuenta-se-mueve" : "t7-1-a2-la-factura-completa";
   assert.equal(ids.indexOf(D.H2_ID), ids.indexOf(antes) + 1);
@@ -385,7 +760,6 @@ test("★★★ la 0092: del rango de la célula, un insert aditivo y repetible,
 });
 
 test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqueta, leída de los datos (recortada a 70, como todas)", async () => {
-  /* Los ids que de verdad llegan al panel: los del detalle de una partida entera. */
   const m = await montar();
   try {
     await jugar(m, () => false);
@@ -399,19 +773,17 @@ test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqu
   } finally {
     m.desmontar();
   }
-  /* Un cálculo se lee por su pregunta; una línea, por su cuenta y su valor, tal como están en los datos. */
   for (const it of D.ITEMS_H2) {
     if (it.tipo === "cifra") assert.equal(L.unidadDeH2(it.id), it.pregunta);
     else for (const l of it.lineas) assert.equal(L.unidadDeH2(L.idDeLinea(it, l)), `${l.cuenta} ${pesos(l.valor)}`);
   }
-  /* La regla vive en el bloque de T7 del archivo, y lee los datos: no copia ninguna pregunta. */
   const fuente = leer("src/docente/etiquetasItem.js");
   const bloque = fuente.slice(fuente.indexOf("CONTABILIDAD · T7 «INVENTARIOS»"));
   assert.match(bloque.slice(0, bloque.indexOf("});")), /"t7-1-arma-la-factura": \(id\) => unidadDeH2\(id\),/);
   for (const it of D.ITEMS_H2) assert.ok(!fuente.includes(it.pregunta), `${it.id}: la pregunta está copiada en etiquetasItem.js`);
 });
 
-/* ═══════════ LOTE 3 · «ARMA LA LÍNEA» Y LA CASILLA ═══════════ */
+/* ═══════════ 6 · LOTE 3: LOS DISTRACTORES DE NEAR ═══════════ */
 
 const NEAR = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote3-distractores-v1.md"));
 
@@ -423,10 +795,8 @@ test("★★★ lote 3: los cuatro cálculos van con casilla; los asientos, con 
     assert.ok(!l.distractores.some((d) => d.cuenta === l.cuenta), l.id);
     assert.equal(new Set(l.distractores.map((d) => d.cuenta)).size, 2, l.id);
   }
-  /* Una cifra que no es de ningún distractor: la respuesta y el porqué del acierto, sin «Así es:». */
-  assert.deepEqual(L.evaluarH2(item("iva-compra"), 1), { ok: false, correcta: 512_000, textos: ["La respuesta es $512.000.", "El 16 % de $3.200.000 es $512.000."], textoCorrecta: pesos(512_000) });
-  /* Un distractor de Near: su retroalimentación y la respuesta. */
-  assert.deepEqual(L.evaluarH2(item("debe-cliente"), 5_568_000).textos, ["Falta restar la retención de $168.000. El IVA es $768.000 y la retención, $168.000.", "La respuesta es $5.400.000."]);
+  assert.deepEqual(L.devolucionH2(item("iva-compra"), 1), { ok: false, correcta: 512_000, texto: "El 16 % de $3.200.000 es $512.000." });
+  assert.equal(L.devolucionH2(item("debe-cliente"), 5_568_000).texto, "Falta restar la retención de $168.000. El IVA es $768.000 y la retención, $168.000.");
 });
 
 test("★★★ lote 3: cada distractor de cuenta es el de Near, letra por letra y en el orden de su tabla", () => {
@@ -435,43 +805,5 @@ test("★★★ lote 3: cada distractor de cuenta es el de Near, letra por letra
     const deNear = filas.filter((m) => m[1].split(" ")[0] === it.id && m[2] === l.cuenta && m[3] === (l.lado === DEBE ? "D" : "H") && m[4] === pesos(l.valor)).map((m) => ({ cuenta: m[5], retro: m[6] }));
     assert.equal(deNear.length, 2, `${it.id} · ${l.id}: sus dos filas en el paquete`);
     assert.deepEqual(l.distractores, deNear, `${it.id} · ${l.id}`);
-  }
-});
-
-test("★★★ lote 3: cuenta buena y lado malo, sale el texto del lado; cuenta mala, el de su distractor", async () => {
-  const m = await montar();
-  try {
-    for (const it of EN_ORDEN.slice(0, 3)) {
-      await escribir(m.caja, it.id, it.correcta);
-      await tocar(boton(m.caja, "Comprobar"));
-      await tocar(siguiente(m.caja));
-    }
-    const it = EN_ORDEN[3];
-    const [l1, l2, ...resto] = it.lineas;
-    await tocar(ficha(m.caja, l1.id, l1.cuenta));
-    await tocar(lado(m.caja, l1.id, otro(l1.lado)));
-    await tocar(ficha(m.caja, l2.id, l2.distractores[1].cuenta));
-    await tocar(lado(m.caja, l2.id, l2.lado));
-    for (const l of resto) { await tocar(ficha(m.caja, l.id, l.cuenta)); await tocar(lado(m.caja, l.id, l.lado)); }
-    await tocar(boton(m.caja, "Comprobar"));
-    const bajo = (l) => [...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent);
-    const dato = (l) => D.ITEMS_H2.find((x) => x.id === it.id).lineas.find((x) => x.id === l.id);
-    assert.deepEqual(bajo(l1), [dato(l1).retro], "cuenta buena, lado malo: el texto del lado");
-    assert.deepEqual(bajo(l2), [dato(l2).distractores[1].retro], "cuenta mala: el texto de ese distractor");
-    for (const l of resto) assert.deepEqual(bajo(l), []);
-  } finally {
-    m.desmontar();
-  }
-});
-
-test("★★★ lote 3: «Tienes un solo intento» sale de la consigna en pantalla y queda el distintivo junto al contador", async () => {
-  assert.ok(D.H2.consigna.endsWith("Tienes un solo intento por pregunta."), "los datos siguen siendo los de Near");
-  const m = await montar();
-  try {
-    assert.ok(!m.caja.textContent.includes("Tienes un solo intento"));
-    assert.ok(m.caja.textContent.includes("Arma las dos facturas de La Ceiba y sus asientos."));
-    assert.equal(m.caja.querySelector("[data-contador-intento] [data-un-intento]").textContent, "Un intento");
-  } finally {
-    m.desmontar();
   }
 });

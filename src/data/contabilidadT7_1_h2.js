@@ -151,3 +151,52 @@ export const ITEMS_H2 = [
 
 /* El resumen del cierre, con la frase de H1: cuántos de los doce al primer toque. */
 export const resumenH2 = (bien, total) => `${bien} de ${total} al primer toque.`;
+
+/*
+ * ═══════════ LA FACTURA QUE SE ARMA (Patrón de enganche C2, Watari, 16-oct) ═══════════
+ *
+ * Fuente: orquestador/conocimiento/paquetes/patron-enganche-c2-v1.html,
+ * sección «factura», con las correcciones obligatorias de Mello
+ * (auditoria-mello-patron-c2.md §3: Fa-1 y Fa-2). La evaluación no cambia:
+ * los mismos seis ítems, las doce unidades, un intento por unidad.
+ *
+ * Dónde vive cada cálculo en la factura y a qué renglón corresponde cada
+ * línea de los asientos (los renglones que «viajan» al asiento).
+ */
+export const DONDE_H2 = {
+  "iva-compra": { factura: "compra", renglon: "iva" },
+  "retencion-compra": { factura: "compra", renglon: "ret" },
+  "debe-proveedor": { factura: "compra", renglon: "total" },
+  "debe-cliente": { factura: "venta", renglon: "total" },
+  "asiento-compra": { factura: "compra", lineas: { compras: "mercancia", iva: "iva", retencion: "ret", proveedores: "total" } },
+  "asiento-venta": { factura: "venta", lineas: { clientes: "total", anticipo: "ret", iva: "iva", ingresos: "mercancia" } },
+};
+
+/*
+ * [W] Rótulos de Watari que la C2 pide a Near (§4 de la pieza). Near todavía
+ * no los confirma: PENDIENTES DE NEAR. Las fechas son las del enunciado.
+ */
+export const FACTURA_H2 = {
+  renglones: { mercancia: "Mercancía", iva: "IVA (16 %)", ret: "Retención (3,5 %)", total: { compra: "Queda debiendo al proveedor", venta: "El cliente queda debiendo" } },
+  titulos: { compra: "Factura de compra", venta: "Factura de venta" },
+  fechas: { compra: "3 de mayo", venta: "10 de mayo" },
+  asientos: { compra: "Asiento de la compra", venta: "Asiento de la venta" },
+  sumas: "Sumas iguales",
+  verEnunciado: "Ver el enunciado",
+  ocultarEnunciado: "Ocultar el enunciado",
+  lineasAlPrimerToque: (n) => `${n} de 4 líneas al primer toque.`,
+};
+
+/*
+ * Fa-2 de Mello: en el ítem 1 quedan a la vista solo la frase del periódico
+ * (la de Near, con sujeto: «La Ceiba usa…», literal de la auditoría; Near
+ * todavía debe confirmarla: PENDIENTE DE NEAR) y el párrafo de las tarifas.
+ * Los párrafos 1, 2 y 4 van en «Ver el enunciado» desde el ítem 1. Desde el
+ * ítem 2, como en la C2, el enunciado de Near entero va plegado.
+ */
+export const PERIODICO_H2 = "La Ceiba usa el sistema de inventario periódico.";
+export const ENUNCIADO_H2 = {
+  visible: [PERIODICO_H2, H2.enunciado[2]],
+  plegadoItem1: [H2.enunciado[0], H2.enunciado[1], H2.enunciado[3]],
+  plegado: H2.enunciado,
+};
