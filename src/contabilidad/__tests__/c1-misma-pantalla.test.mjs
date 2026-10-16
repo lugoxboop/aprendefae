@@ -32,7 +32,6 @@ const DATOS = new URL("../../data/", import.meta.url);
 const PENDIENTES = new Set([
   "fob-cif-cyf · «Hasta que la mercancía está a bordo del buque.»",
   "dos-cuentas-propias · «Para saber cuánto se devolvió en el periodo.»",
-  "la-compra · «Inventario de mercancías»",
   "el-cierre · «Los de quitar el inventario inicial y colocar el final.»",
 ]);
 

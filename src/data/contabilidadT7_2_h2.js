@@ -66,7 +66,8 @@ export const H2 = {
 export const FICHA_H2 = [
   ["Quién recibe", "Un cliente"],
   ["Quién entrega", "El Arrayán"],
-  ["Monto", "$5.600.000 la venta, $3.780.000 el costo"],
+  /* Entrega 6 de Near (con el visto bueno de Mello): la ficha no dice cuál cifra es cuál. */
+  ["Monto", "$5.600.000 y $3.780.000"],
   ["Tipo", "A crédito"],
   ["Clase de hecho", "Venta de mercancía"],
 ];
@@ -118,7 +119,7 @@ export const ITEMS_H2 = [
     id: "asiento-del-costo", tipo: "asiento", subtema: "Asiento del costo",
     pregunta: "Ubica cada línea del segundo asiento: Debe o Haber.",
     lineas: [
-      { id: "costo", cuenta: "Costo de mercancía vendida", valor: C.costo, lado: DEBE, retro: "El costo de la mercancía vendida tiene saldo deudor: va al debe.", distractores: [{ cuenta: "Compras", retro: "Compras es la cuenta del periódico. El Arrayán usa el permanente, y ahí no se usa." }, { cuenta: "Ingresos por ventas", retro: "El precio de la venta ya se anotó en el primer asiento. Este segundo asiento va por lo que costó." }] },
+      { id: "costo", cuenta: "Costo de mercancía vendida", valor: C.costo, lado: DEBE, retro: "Cada venta aumenta lo que costó lo vendido. Un costo que aumenta va al debe.", distractores: [{ cuenta: "Compras", retro: "Compras es la cuenta del periódico. El Arrayán usa el permanente, y ahí no se usa." }, { cuenta: "Ingresos por ventas", retro: "El precio de la venta ya se anotó en el primer asiento. Este segundo asiento va por lo que costó." }] },
       { id: "inventario", cuenta: "Inventario de mercancías", valor: C.costo, lado: HABER, retro: "Sale mercancía de la bodega, así que el activo disminuye: va al haber.", distractores: [{ cuenta: "Compras", retro: "Compras es la cuenta del periódico. El Arrayán usa el permanente, y ahí no se usa." }, { cuenta: "Cuentas por cobrar – clientes", retro: "Lo que debe el cliente ya se anotó en el primer asiento, por el precio. Este asiento va por el costo." }] },
     ],
   },

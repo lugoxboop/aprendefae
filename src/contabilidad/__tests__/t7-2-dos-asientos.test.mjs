@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { conCorreccionesDeMello } from "./correccionesMello.mjs";
+import { PARCHES, parchado } from "./correccionesMelloRecortesT72.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -44,6 +45,7 @@ const act = React.act;
 const h = React.createElement;
 
 const D = await import("../../data/contabilidadT7_2_h2.js");
+const { FRASE_TARIFAS } = await import("../../data/contabilidadT7_3.js");
 const L = await import("../t7_2H2.js");
 const { DEBE, HABER, pesos } = await import("../../data/contabilidad.js");
 const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await import("../../data/subjects.js");
@@ -136,10 +138,14 @@ test("★★★ los textos son los de la v1, letra por letra; el nombre, el que 
   assert.ok(V1.includes(`«${D.H2.consigna}»`));
   assert.ok(V1.includes(`«${D.H2.enunciado[0]}»`));
   assert.ok(V1.includes(`Tarifas: «${D.H2.enunciado[1]}» Después, la frase de tarifas literal.`));
-  assert.ok(leer("src/data/contabilidadT7_2_a2.js").includes(`"${D.H2.enunciado[2]}"`), "la frase de tarifas no es la de A2");
+  /* La frase de tarifas literal: la de la célula (A2 la dejó con su recorte: ya no da tarifas). */
+  assert.equal(D.H2.enunciado[2], FRASE_TARIFAS, "la frase de tarifas no es la de la célula");
   assert.ok(V1.includes("Ficha: recibe un cliente · entrega El Arrayán · $5.600.000 la venta, $3.780.000 el costo · a crédito · venta de mercancía."));
   const ficha = Object.fromEntries(D.FICHA_H2);
-  assert.deepEqual([ficha["Quién recibe"], ficha["Quién entrega"], ficha.Monto, ficha.Tipo, ficha["Clase de hecho"]], ["Un cliente", "El Arrayán", "$5.600.000 la venta, $3.780.000 el costo", "A crédito", "Venta de mercancía"]);
+  /* El Monto, con el parche de la entrega 6 de Near (Mello lo da por bueno): la ficha no dice cuál cifra es cuál. */
+  assert.equal(PARCHES.h2Monto.viejo, "$5.600.000 la venta, $3.780.000 el costo");
+  assert.deepEqual([ficha["Quién recibe"], ficha["Quién entrega"], ficha.Monto, ficha.Tipo, ficha["Clase de hecho"]], ["Un cliente", "El Arrayán", parchado(PARCHES.h2Monto.viejo), "A crédito", "Venta de mercancía"]);
+  assert.equal(ficha.Monto, "$5.600.000 y $3.780.000");
   assert.ok(V1.includes(`Pie de todos los ítems: «${D.H2.pie}».`));
   assert.ok(V1.includes(`Subtemas\t${D.SUBTEMAS_H2.join(" · ")}`));
   assert.deepEqual(D.ITEMS_H2.map((it) => it.subtema), D.SUBTEMAS_H2);
@@ -160,7 +166,8 @@ test("★★★ los textos son los de la v1, letra por letra; el nombre, el que 
     } else {
       const lineasV1 = [...pregunta.matchAll(/(?:: |· )([^:·$]+?) \$([\d.]+) → (Debe|Haber)/g)].map((m) => [m[1], Number(m[2].replace(/\./g, "")), m[3] === "Debe" ? DEBE : HABER]);
       assert.deepEqual(it.lineas.map((l) => [l.cuenta, l.valor, l.lado]), lineasV1, it.id);
-      assert.deepEqual(it.lineas.map((l) => l.retro), citas(distractores), `${it.id}: un texto por línea`);
+      /* La del costo, con el parche de la entrega 6 (ya no es circular). */
+      assert.deepEqual(it.lineas.map((l) => l.retro), citas(distractores).map(parchado), `${it.id}: un texto por línea`);
     }
   }
   assert.ok(fs[1][4].includes(`sumas de ${miles(D.CIFRAS_H2.sumas)} = ${miles(D.CIFRAS_H2.sumas)}`));

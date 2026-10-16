@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { conCorreccionesDeMello } from "./correccionesMello.mjs";
+import { PARCHES, parchado } from "./correccionesMelloRecortesT72.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -44,6 +45,7 @@ const act = React.act;
 const h = React.createElement;
 
 const D = await import("../../data/contabilidadT7_2_h5.js");
+const { FRASE_TARIFAS } = await import("../../data/contabilidadT7_3.js");
 const L = await import("../t7_2H5.js");
 const { DEBE, HABER, pesos } = await import("../../data/contabilidad.js");
 const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await import("../../data/subjects.js");
@@ -97,7 +99,8 @@ const CORRECCIONES = Object.fromEntries(V1.split("\n").filter((l) => l.startsWit
   const [campo, , nuevo] = l.split("\t");
   return [campo.replace("H5 · ", ""), citas(nuevo)[0]];
 }));
-const corregido = (campo, v1) => CORRECCIONES[campo] ?? v1;
+/* Y encima, los parches de la entrega 6 de Near (Mello los da por buenos): la consigna y «gasto de venta». */
+const corregido = (campo, v1) => parchado(CORRECCIONES[campo] ?? v1);
 
 test("★★★ los textos son los de la v1, letra por letra, con la tabla de correcciones aplicada", () => {
   assert.equal(Object.keys(CORRECCIONES).length, 13);
@@ -111,8 +114,11 @@ test("★★★ los textos son los de la v1, letra por letra, con la tabla de co
   const enunciado = V1.slice(V1.indexOf("Enunciado y tarifas\n")).split("\n");
   assert.equal(D.H5.enunciado[0], corregido("enunciado", citas(enunciado[1])[0]));
   assert.equal(D.H5.enunciado[1], citas(enunciado[2])[0]);
-  assert.equal(enunciado[3], `Después va la frase de tarifas literal y «${D.H5.consigna}»`);
-  assert.ok(leer("src/data/contabilidadT7_2_a2.js").includes(`"${D.H5.enunciado[2]}"`), "la frase de tarifas no es la de A2");
+  assert.equal(enunciado[3], `Después va la frase de tarifas literal y «${PARCHES.h5Consigna.viejo}»`);
+  assert.equal(D.H5.consigna, parchado(PARCHES.h5Consigna.viejo));
+  assert.equal(D.H5.consigna, "Para cada hecho, elige la cuenta o calcula lo que se pide. Tienes un solo intento por pregunta.");
+  /* La frase de tarifas literal: la de la célula (A2 la dejó con su recorte: ya no da tarifas). */
+  assert.equal(D.H5.enunciado[2], FRASE_TARIFAS, "la frase de tarifas no es la de la célula");
   /* Los cuatro hechos. */
   const hechos = V1.split("\n").filter((l) => /^Hecho \d: «/.test(l)).map((l) => citas(l)[0]);
   assert.equal(hechos.length, 4);
@@ -137,8 +143,11 @@ test("★★★ los textos son los de la v1, letra por letra, con la tabla de co
   assert.deepEqual(i6.lineas.map((l) => [`${l.cuenta} ${pesos(l.valor)}`, l.lado === DEBE ? "Debe" : "Haber", l.retro]), lineas.map(([a, b, c]) => [a, b, citas(c)[0]]));
   /* Las trece correcciones están todas, y ya no queda Ceiba ni «lo paga quien». */
   const todo = JSON.stringify(D);
-  for (const [campo, nuevo] of Object.entries(CORRECCIONES)) assert.ok(todo.includes(JSON.stringify(nuevo).slice(1, -1)), campo);
+  for (const [campo, nuevo] of Object.entries(CORRECCIONES)) assert.ok(todo.includes(JSON.stringify(parchado(nuevo)).slice(1, -1)), campo);
   assert.ok(!todo.includes("Ceiba") && !/lo paga quien|paga el flete/.test(todo));
+  /* «Gasto de venta», un solo nombre (entrega 6): ya no queda «gasto de ventas». */
+  assert.doesNotMatch(todo, /gasto de ventas/i);
+  for (const k of ["h5Acierto", "h5Inventario", "h5Costo"]) assert.ok(todo.includes(JSON.stringify(PARCHES[k].nuevo).slice(1, -1)), k);
 });
 
 /* ═══════════ 3 · LA MECÁNICA, MONTADA ═══════════ */

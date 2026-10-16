@@ -78,7 +78,8 @@ export const CASOS_H5 = [
     encabezado: "Caso 3",
     textos: [
       "Pino es otra empresa. Estima que va a perder $460.000 de su inventario, y hace una provisión por ese valor.",
-      "Al cierre, Pino tiene una pérdida real de $185.000 por un faltante.",
+      /* Entrega 6 de Near (arreglo mínimo de Mello): el faltante ya no se califica de dos formas. */
+      "Al cierre, Pino tiene una pérdida real de $185.000.",
     ],
     ficha: [["Quién", "Pino"], ["Provisión estimada", "$460.000"], ["Pérdida real", "$185.000"], ["Fecha", "31 de diciembre"], ["Sistema", SISTEMA_PINO]],
   },
