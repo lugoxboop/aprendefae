@@ -15,7 +15,7 @@ import CajasQueRevelan from "./CajasQueRevelan.jsx";
 /* Hoja 6: abierta, cada caja pregunta qué pasa con lo que deben los clientes (en fila) antes de revelar. */
 const CAJAS = HECHOS_T6.map((h) => ({
   id: h.id, titulo: h.hecho, revela: h.revela, pie: h.pie,
-  decide: { pregunta: PREGUNTA_CAPA_3_T6, opciones: OPCIONES_CAPA_3_T6, correcta: h.correcta, falla: h.falla },
+  decide: { pregunta: PREGUNTA_CAPA_3_T6, opciones: OPCIONES_CAPA_3_T6, correcta: h.correcta, falla: h.falla, pista: h.pista },
 }));
 
 export default function SeisHechos() {

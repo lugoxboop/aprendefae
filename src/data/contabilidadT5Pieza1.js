@@ -43,7 +43,8 @@ export const PIEZA_DEL_EFECTIVO = {
     },
     {
       termino: "Título valor",
-      definicion: "Es un documento que sirve para captar recursos y moverlos entre quienes invierten. En el libro, los valores son clases de títulos valores. Por ejemplo, los valores de renta variable o los valores negociables.",
+      /* C7-1 de Futaba (lote C2 · C1 · C7, PASA de Shoko). */
+      definicion: "Es un documento. Los títulos valores negociables sirven para captar recursos y moverlos entre quienes invierten. En el libro, los valores son clases de títulos valores. Por ejemplo, los de renta variable o los negociables.",
     },
     {
       termino: "Tres grupos",
@@ -130,6 +131,7 @@ export const PAQUETES = [
     revela: "Se venden fácil. Y su historia de inversiones respalda que se volverán efectivo cuando haga falta. Cumple las dos condiciones.",
     correcta: "si",
     falla: "Sí se vende fácil: se negocia públicamente. Y ya vendió inversiones así cuando le faltó efectivo.",
+    pista: "Revisa las dos condiciones, una por una, con lo que dice la descripción del paquete.",
   },
   {
     id: "b",
@@ -142,6 +144,7 @@ export const PAQUETES = [
       si: "Si no se negocia públicamente, puede que no tenga mercado. Falla la primera condición: venderse fácil.",
       "no-intencion": "El paquete no dice nada de la intención. Lo que falla es que no se negocia públicamente.",
     },
+    pista: "Piensa quién le compraría estas acciones a la empresa si las quisiera vender mañana.",
   },
 ];
 /* Solo aparece con los dos paquetes abiertos, en cualquier orden. Su pie va debajo. */
@@ -154,31 +157,37 @@ export const FINAL_CAPA_3 = [
 
 /* ═══════════ CAPA 4 · «EN UNA FRASE» (UnaFrase, sin cambios) ═══════════ */
 
-/* En el orden en que las escribió Futaba; UnaFrase las baraja una vez al cargar. */
-export const PREGUNTA_FINAL_T5 = "¿Qué decide si un activo financiero es temporal?";
+/*
+ * C1-1 de Futaba (lote C2 · C1 · C7, PASA de Shoko): la pregunta de antes
+ * tenía la respuesta en la pantalla anterior; esta es un caso nuevo, con su
+ * pie «Escenario simulado» (lo pinta la escena de la pieza, bajo UnaFrase).
+ * En el orden en que las escribió Futaba; UnaFrase las baraja una vez al cargar.
+ */
+export const PREGUNTA_FINAL_T5 = "Una empresa compra bonos que se venden fácil, pero piensa guardarlos cinco años. Su ciclo de operaciones dura menos de un año. ¿Son un activo financiero temporal?";
 export const OPCIONES_FINAL_T5 = [
   {
-    id: "b5-dos-condiciones",
-    texto: "Que se pueda vender fácil y vaya a volverse efectivo cuando haga falta.",
+    id: "b5-no-un-ano",
+    texto: "No: no se volverán efectivo en un año.",
     correcta: true,
-    feedback: "Correcto. Los dos paquetes eran acciones, y uno no cumplió la primera condición: el tipo de documento no decide solo.",
+    feedback: "Correcto. Cumplen la primera condición, pero no la segunda: no están destinados a volverse efectivo en un año o en un ciclo de operaciones.",
   },
   {
-    id: "b5-corto-plazo",
-    texto: "Que sea un documento a corto plazo, como un bono de tesorería.",
+    id: "b5-se-vende-facil",
+    texto: "Sí: se venden fácil, y con eso basta.",
     correcta: false,
-    feedback: "No es esa. Los bonos de tesorería suelen estar entre los temporales, pero el tipo de documento no decide solo: también tiene que cumplir las dos condiciones.",
+    feedback: "No es esa. Venderse fácil es solo la primera condición. También tienen que estar destinados a volverse efectivo pronto.",
   },
   {
-    id: "b5-interes-fijo",
-    texto: "Que le pague a la empresa un interés fijo durante cierto tiempo.",
+    id: "b5-bonos-temporales",
+    texto: "Sí: los bonos suelen estar entre los temporales.",
     correcta: false,
-    feedback: "No es esa. Eso describe la renta fija con interés. Si es temporal y qué tipo de renta da son dos preguntas distintas.",
+    feedback: "No es esa. El tipo de documento no decide solo: también tienen que cumplir las dos condiciones.",
   },
   {
-    id: "b5-intencion",
-    texto: "Que la empresa diga que lo va a volver efectivo cuando lo necesite.",
+    id: "b5-bonos-nunca",
+    texto: "No: los bonos nunca son activos temporales.",
     correcta: false,
-    feedback: "No basta con decirlo. La intención cuenta, pero se apoya en evidencias, como la historia de inversiones de la empresa.",
+    feedback: "No es esa. Los bonos sí pueden ser temporales, si cumplen las dos condiciones. Aquí falla la segunda.",
   },
 ];
+export const PIE_FINAL_T5 = "Escenario simulado";

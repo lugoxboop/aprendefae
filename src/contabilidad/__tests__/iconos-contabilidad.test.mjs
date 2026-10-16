@@ -101,12 +101,12 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
   const conDesafio = new Set(SUBJECTS.contabilidad.topics.flatMap((t) => (t.actividades ?? []).filter((x) => x.clasificacion?.desafio).map((x) => x.id)));
   /* Actividades nuevas que todavía esperan su dibujo de Xeno: el camino las pinta sin ícono. */
   /* T4 · H1 (Célula D): los íconos los reserva el coordinador; se pidió, no se eligió.
-   * T5 · N1 (Célula C): igual, pedido al coordinador. */
+   * T5 · N1, N3, N4 y N5 (Célula C): igual, pedido al coordinador. */
   /* T6 · Hacer 4 a 7 (Célula B) y T4 · H1 (Célula D): los íconos los reserva el coordinador; se pidió, no se eligió. */
   /* Repaso del capítulo 5: r5-2 ya tiene el suyo (el ciclo de la deuda).
      r5-3 entra a subjects.js con el #196 y su ícono está pedido al coordinador; r5-4, igual.
      b5-t6-a5 y b5-t6-a7 se retiraron (lotes 4 y 6b): ya no están en el catálogo. */
-  const SIN_ICONO_TODAVIA = new Set(["t5-temporal-o-largo-plazo", "t5-revision-que-falta", "t5-el-interes-del-periodo", "t4-entra-o-sale-de-caja", "b5-t6-a4", "b5-t6-a6", "r5-3", "r5-4"]);
+  const SIN_ICONO_TODAVIA = new Set(["t5-temporal-o-largo-plazo", "t5-revision-que-falta", "t5-el-interes-del-periodo", "t4-entra-o-sale-de-caja", "b5-t6-a4", "b5-t6-a6", "r5-3", "t5-gano-o-perdio", "r5-4"]);
   const esperadas = [...hacer].filter((id) => !conDesafio.has(id) && !SIN_ICONO_TODAVIA.has(id));
   assert.equal(esperadas.length, 47);
   assert.deepEqual(Object.keys(ICONO_POR_ACTIVIDAD).sort(), esperadas.sort(), "falta o sobra un ícono");
