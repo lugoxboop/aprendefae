@@ -518,3 +518,8 @@ Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entreg
 - Capa 3 (las 7): la pregunta de la caja solo se ve mientras falta decidir; al decidir sale y quedan las opciones marcadas (✓/✕), la devolución y el texto. La pregunta es el nombre accesible del grupo de opciones (aria-labelledby); cuando sale de la pantalla pasa a una copia oculta.
 - Capa 3: quien acierta ve el texto que se revela; quien falla dos veces ve la devolución de su opción y la figura, pero NO ese texto.
 - **Cajas ya respondidas:** muestran solo la opción elegida con su marca (cumple E4). Vale para la capa 3 de las siete piezas.
+
+## Auditoría de interfaz de Shoko (15-oct, aprobada y literal) · manda sobre lo de arriba
+
+- T6 A3 · parada: la tercera opción («Sí, por la parte que la provisión no cubre») lleva la etiqueta «En marzo, solo lo que faltó».
+- Capa 1: solo se pliega la cita del libro, con el control «Ver lo que dice el libro» (solo si el término trae cita). Las notas se ven siempre, bajo la definición.

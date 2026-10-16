@@ -8,7 +8,8 @@
  *   · solo la carta actual se ve; las demás no llegan al lector ni al foco;
  *   · el foco pasa al nombre del término al cambiar;
  *   · en el último, «Continuar» lleva a la capa 2 y le pone el foco al rótulo;
- *   · la cita y la nota van plegadas en «Más sobre este término»;
+ *   · solo la cita del libro se pliega, en «Ver lo que dice el libro»; las
+ *     notas se ven siempre, bajo la definición (auditoría de Shoko, 15-oct);
  *   · la figura, si la hay, va entre el nombre y la definición;
  *   · el cambio es de opacidad en 200 ms, y al instante con movimiento reducido.
  * CuatroCapas es compartido (9 vistas): esto vigila que la paginada no
@@ -214,18 +215,20 @@ test("★★ con movimiento reducido, «Continuar» baja directo y el cambio de 
   } finally { desmontar(); w.matchMedia = antes; }
 });
 
-test("★★★ la cita y la nota van plegadas en «Más sobre este término»; sin ellas, no hay «Más»", () => {
+test("★★★ solo la cita se pliega, en «Ver lo que dice el libro»; la nota se ve siempre bajo la definición; sin cita, no hay control", () => {
   const { caja, desmontar } = montar(pieza(NOMBRES));
   try {
     /* Término 1: sin cita ni nota, sin control. */
     assert.equal(visible(caja).querySelector("[data-mas]"), null);
+    assert.equal(visible(caja).querySelector("[data-del-libro]"), null);
     click(siguiente(caja));
     const mas = visible(caja).querySelector("[data-mas]");
-    assert.equal(mas.textContent, "Más sobre este término");
+    assert.equal(mas.textContent, "Ver lo que dice el libro");
+    assert.ok(!capa1(caja).textContent.includes("Más sobre este término"), "el rótulo de antes ya no está");
     assert.equal(mas.getAttribute("aria-expanded"), "false");
     const contenido = visible(caja).querySelector("[data-mas-contenido]");
     assert.equal(mas.getAttribute("aria-controls"), contenido.id);
-    assert.ok(contenido.hidden, "la cita se ve sin abrir «Más»");
+    assert.ok(contenido.hidden, "la cita se ve sin abrir el control");
     /* La definición sigue a la vista, ANTES del control. */
     const def = visible(caja).querySelector("[data-definicion]");
     assert.equal(def.textContent, NOMBRES[1].definicion);
@@ -238,17 +241,35 @@ test("★★★ la cita y la nota van plegadas en «Más sobre este término»; 
     assert.equal(caja1.firstElementChild.textContent, "Así lo dice el libro");
     assert.equal(caja1.lastElementChild.textContent, CITA);
 
-    /* Al cambiar de término, «Más» vuelve cerrado; la nota lleva su rótulo. */
+    /* Término 3: una nota, sin cita. Se ve siempre, bajo la definición, y no hay control. */
     click(siguiente(caja));
-    const mas3 = visible(caja).querySelector("[data-mas]");
-    assert.equal(mas3.getAttribute("aria-expanded"), "false");
-    assert.ok(visible(caja).querySelector("[data-mas-contenido]").hidden);
-    click(mas3);
-    const nota = visible(caja).querySelector("[data-mas-contenido] [data-del-libro]");
+    assert.equal(visible(caja).querySelector("[data-mas]"), null, "una nota no se pliega");
+    assert.equal(visible(caja).querySelector("[data-mas-contenido]"), null);
+    const nota = visible(caja).querySelector("[data-nota]");
+    assert.ok(nota && !nota.closest("[hidden]"), "la nota, a la vista");
     assert.equal(nota.firstElementChild.textContent, "Nota");
     assert.equal(nota.lastElementChild.textContent, "Una nota nuestra.");
+    assert.ok(visible(caja).querySelector("[data-definicion]").compareDocumentPosition(nota) & w.Node.DOCUMENT_POSITION_FOLLOWING, "bajo la definición");
     /* Las cartas ocultas no traen el contenido plegado: no se lee ni se enfoca. */
-    assert.equal(capa1(caja).querySelectorAll("[data-mas-contenido]").length, 1);
+    assert.ok(capa1(caja).querySelectorAll("[data-mas-contenido]").length <= 1);
+  } finally { desmontar(); }
+});
+
+test("★★★ un término con cita y nota (`notaDebajo`): la nota a la vista bajo la definición; solo la cita, plegada", () => {
+  const conLasDos = { termino: "Cuarto", definicion: "La definición del cuarto.", delLibro: CITA, notaDebajo: { rotulo: "Nota", texto: "La nota del cuarto." } };
+  const { caja, desmontar } = montar(pieza([NOMBRES[0], conLasDos]));
+  try {
+    click(siguiente(caja));
+    const carta = visible(caja);
+    const nota = carta.querySelector("[data-nota]");
+    const mas = carta.querySelector("[data-mas]");
+    assert.ok(nota && !nota.closest("[hidden]"));
+    assert.deepEqual([nota.firstElementChild.textContent, nota.lastElementChild.textContent], ["Nota", "La nota del cuarto."]);
+    assert.ok(nota.compareDocumentPosition(mas) & w.Node.DOCUMENT_POSITION_FOLLOWING, "la nota antes del control");
+    assert.equal(mas.textContent, "Ver lo que dice el libro");
+    assert.ok(carta.querySelector("[data-mas-contenido]").hidden);
+    assert.equal(carta.querySelector("[data-mas-contenido] [data-del-libro]").lastElementChild.textContent, CITA);
+    assert.equal(carta.querySelector("[data-mas-contenido] [data-nota]"), null, "la nota no va en el pliegue");
   } finally { desmontar(); }
 });
 

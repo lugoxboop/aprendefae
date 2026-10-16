@@ -198,3 +198,8 @@ Textos nuevos (para Shoko): los nombres cortos de T6 A1: «Venta a crédito», �
 - **Cajas ya respondidas:** muestran solo la opción elegida con su marca (cumple E4). Vale para la capa 3 de las siete piezas.
 - Nombre accesible del grupo de opciones: T6 A1 «¿Qué pasa con lo que deben los clientes?»
 - T6 A1 · capa 3 · caja de la venta a crédito, devolución al segundo error (texto aprobado, 15-oct; reemplaza la de arriba): «Aunque diga “crédito”, el cliente queda debiendo el arreglo: sube.»
+
+## Auditoría de interfaz de Shoko (15-oct, aprobada y literal) · manda sobre lo de arriba
+
+- T6 A1 · figura de la capa 3: «Venta a crédito» pasa a «Servicio a crédito». «Sin movimiento: Venta de contado» pasa a «Sin movimiento: venta de contado», con v minúscula.
+- Capa 1: solo se pliega la cita del libro, con el control «Ver lo que dice el libro» (solo si el término trae cita). Las notas se ven siempre, bajo la definición.
