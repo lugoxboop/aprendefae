@@ -207,3 +207,7 @@ La de prestamo-cliente es la corrección de Shoko. Los aciertos no cambian.
 ### 7.4 La tanda (R10)
 
 Nueve fichas, antes las diez del banco. Entre 2 y 4 por cajón. El banco da 4 · 3 · 3, así que el reparto se sortea con ese tope: 4 · 3 · 2, 4 · 2 · 3 o 3 · 3 · 3.
+
+## 8 · Lote 6b: sale la ficha del cheque devuelto (C4)
+
+Orden de Sakuta: el cheque devuelto se practica cinco veces en B; la ficha «cheque» sale de b5-t6-a1 y se queda donde enseña algo nuevo. Su enunciado y su acierto quedan arriba como registro, sin uso. El banco queda en 4 · 2 · 3 (nueve fichas). Decisión de KAEDE: la tanda pasa de 9 a 8 fichas (porPartida 8), porque con nueve sería siempre el banco entero con el mismo reparto y el estante delataría la última (R10). Los repartos posibles son 4 · 2 · 2 y 3 · 2 · 3. El contador queda «Ficha N de 8».
