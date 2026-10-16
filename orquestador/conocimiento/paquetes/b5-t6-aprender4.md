@@ -53,7 +53,7 @@ Los $80.000 de los casos b y c son 180.000 − 100.000. El libro no imprime esa 
 
 Confusiones
 C13: creer que la recuperación es un ingreso. Los asientos de las pp. 204-206 no tocan ninguna cuenta de ingreso.
-C14: revivir toda la deuda cuando el cliente avisa que no pagará más. Es la diferencia entre los casos b y c (pp. 205-206).
+C14: revivir toda la deuda cuando el cliente avisa que ya no puede pagar más. Es la diferencia entre los casos b y c (pp. 205-206).
 
 No hay estudio detrás de ninguna de las dos.
 
@@ -70,7 +70,7 @@ CAPA 1 · Primero, los nombres
 2 · Nota	—	Reversar un asiento es hacerlo al revés. Lo que se había acreditado ahora se debita. Y lo que se había debitado ahora se acredita.	CONSTRUCCIÓN: el libro usa «reversar» (p. 203) sin definirlo. La glosa sale de comparar los asientos de las pp. 202 y 204.	66
 3	Después, el pago	Después de revivir la deuda, se anota el pago como cualquier cobro: se debita Caja y se acredita Cuentas por cobrar – clientes.	p. 204	69
 4	Abono	Es un pago de solo una parte de la deuda.	p. 205. CONSTRUCCIÓN.	103
-5	Cuánto se revive	Depende de lo que haga el cliente. Si paga todo, se revive toda la deuda. Si abona una parte y promete pagar el resto, también se revive toda. Si abona una parte y avisa que no pagará más, se revive solo lo que pagó.	pp. 204-206	85
+5	Cuánto se revive	Depende de lo que haga el cliente. Si paga todo, se revive toda la deuda. Si abona una parte y promete pagar el resto, también se revive toda. Si abona una parte y avisa que ya no puede pagar más, se revive solo lo que pagó.	pp. 204-206	85
 5 · Así lo dice el libro	—	«…teniendo presente si el cliente paga la totalidad de la deuda o no, ya que se pueden presentar las siguientes situaciones.»	p. 203	cita
 CAPA 2 · Mírelo funcionar · El Torito y Pablo Moncayo, caso a (p. 204)
 #	Texto literal	Etiqueta que ve	Resalta	Estim.
@@ -98,17 +98,17 @@ Consigna: «Toca cada caso y mira cuánto se revive y cuánta plata entra a Caja
 Caja cerrada	Al tocarla (literal)	Etiqueta que ve	Estim.
 a · Paga toda la factura	Se revive toda la deuda: $180.000. A Caja entran $180.000.	Libro, p. 204	77
 b · Abona $100.000 y promete pagar el resto	Se revive toda la deuda: $180.000. A Caja entran $100.000. Los otros $80.000 quedan en Cuentas por cobrar – clientes, como deuda pendiente.	Basado en el libro, p. 205	78
-c · Abona $100.000 y avisa que no pagará más	Se revive solo lo que pagó: $100.000. A Caja entran $100.000. Los otros $80.000 siguen castigados.	Basado en el libro, p. 206	73
+c · Abona $100.000 y avisa que ya no puede pagar más	Se revive solo lo que pagó: $100.000. A Caja entran $100.000. Los otros $80.000 siguen castigados.	Basado en el libro, p. 206	73
 
 Cuando ya tocó las tres: «En los casos b y c entra la misma plata. Lo que cambia es cuánto se revive, y eso depende de si el cliente va a pagar el resto.» · Basado en el libro, pp. 205-206 · 100. Previene la C14.
 
 CAPA 4 · En una frase
 
-Pregunta: «Pablo Moncayo abona $100.000 y avisa que no pagará más. ¿Por cuánto se revive su deuda?» (78)
+Pregunta: «Pablo Moncayo abona $100.000 y avisa que ya no puede pagar más. ¿Por cuánto se revive su deuda?» (78)
 
 Opción	¿Correcta?	Devolución literal	Fuente	Estim.
-Por $100.000, solo la parte que sí pagó.	✓	Correcto. Como no pagará más, se revive solo lo que pagó. Los otros $80.000 siguen castigados.	p. 206	<10 / 77
-Por $180.000, toda la deuda castigada.	✗ (C14)	No es esa. Toda la deuda se revive cuando el cliente paga todo o promete pagar el resto. Aquí avisó que no pagará más.	pp. 204-206	<10 / 87
+Por $100.000, solo la parte que sí pagó.	✓	Correcto. Como ya no puede pagar más, se revive solo lo que pagó. Los otros $80.000 siguen castigados.	p. 206	<10 / 77
+Por $180.000, toda la deuda castigada.	✗ (C14)	No es esa. Toda la deuda se revive cuando el cliente paga todo o promete pagar el resto. Aquí avisó que ya no puede pagar más.	pp. 204-206	<10 / 87
 Por $80.000, lo que le falta pagar.	✗	No es esa. Esos $80.000 no se van a pagar, así que siguen castigados. Se revive lo que sí pagó.	p. 206	<10 / 97
 Por nada: el pago va directo a un ingreso.	✗ (C13)	No es esa. En el libro no hay ningún ingreso: primero se revive la deuda y después se anota el pago.	pp. 204-206	<10 / 93
 
@@ -201,7 +201,7 @@ Objetivo (4 · 3 líneas): «Vas a ver cómo se anota el pago de una deuda que y
 2 · Nota	—	«Reversar un asiento es hacerlo al revés. Lo que se había acreditado ahora se debita. Y lo que se había debitado ahora se acredita.»	4 · 3
 3	«Después, el pago»	«Después de revivir la deuda, se anota el pago como cualquier cobro: se debita Caja y se acredita Cuentas por cobrar – clientes.»	5 · 4
 4	«Abono»	«Es un pago de solo una parte de la deuda.»	2 · 2
-5	«Cuánto se revive»	«Depende de lo que haga el cliente. Si paga todo, se revive toda la deuda. Si abona una parte y promete pagar el resto, también se revive toda. Si abona una parte y avisa que no pagará más, se revive solo lo que pagó.»	7 · 6
+5	«Cuánto se revive»	«Depende de lo que haga el cliente. Si paga todo, se revive toda la deuda. Si abona una parte y promete pagar el resto, también se revive toda. Si abona una parte y avisa que ya no puede pagar más, se revive solo lo que pagó.»	7 · 6
 5 · Así lo dice el libro	—	«…teniendo presente si el cliente paga la totalidad de la deuda o no, ya que se pueden presentar las siguientes situaciones.» (p. 203)	4 · 3
 La cita trae «…»; se copia tal cual.
 Las marcas de auditoría (CONSTRUCCIÓN) no se pintan.
@@ -365,7 +365,7 @@ Tablero con las celdas vacías: 162,19 / 162,19.
 Tres cajas cerradas:
 «a · Paga toda la factura»: 46 / 46;
 «b · Abona $100.000 y promete pagar el resto»: 63,78 / 63,78, con el nombre en 2 líneas;
-«c · Abona $100.000 y avisa que no pagará más»: 63,78 / 63,78, con el nombre en 2 líneas.
+«c · Abona $100.000 y avisa que ya no puede pagar más»: 63,78 / 63,78, con el nombre en 2 líneas.
 Capa: 475,42 / 475,42.
 
 ABRIÓ «a»
@@ -403,7 +403,7 @@ Textos del tablero: todos son fragmentos literales de las revelaciones y de los 
 
 5 · Capa 4 · «En una frase» · UnaFrase, sin cambios
 
-Pregunta (3 / 3 · 60,89): «Pablo Moncayo abona $100.000 y avisa que no pagará más. ¿Por cuánto se revive su deuda?»
+Pregunta (3 / 3 · 60,89): «Pablo Moncayo abona $100.000 y avisa que ya no puede pagar más. ¿Por cuánto se revive su deuda?»
 
 Opción	¿Correcta?	Ancho natural	320 (sin elegir → elegida)	375	Devolución 320 / 375
 «Por $100.000, solo la parte que sí pagó.»	sí	234,64	2 · 58,25 → 60,25	1 · 40,13 → 42,13	3 · 82,42 / 3 · 82,42
@@ -474,7 +474,7 @@ Caso b, correcta $180.000.
 Si elige $100.000: «Como promete pagar el resto, la deuda vuelve completa.»
 Si elige $80.000: «$80.000 es lo que queda pendiente. Como lo va a pagar, la deuda vuelve completa.» (91)
 Caso c, correcta $100.000.
-Si elige $180.000: «Como no pagará más, solo vuelve lo que abonó.»
+Si elige $180.000: «Como ya no puede pagar más, solo vuelve lo que abonó.»
 Si elige $80.000: «$80.000 es lo que no va a pagar: eso sigue castigado.» (88)
 
 T6 A4 · capa 4 nueva ★ (UnaFrase; la pregunta es de Shoko). Vuelve a ella para auditoría.
@@ -483,7 +483,7 @@ Pregunta: «En el caso b, ¿dónde quedan los $80.000 que faltan?» (97)
 
 Id	Opción	✓	Devolución	Est.
 b5-t6-a4-pendiente	En Cuentas por cobrar – clientes, como deuda pendiente.	✓	Correcto. Como promete pagar el resto, se revivió toda la deuda. Lo que todavía no paga sigue como deuda pendiente en Cuentas por cobrar – clientes.	79
-b5-t6-a4-castigados	Siguen castigados, como en el caso c: no se reviven.		No es esa. Eso pasa en el caso c, cuando avisa que no pagará más. En el caso b promete pagar, así que la deuda volvió completa.	94
+b5-t6-a4-castigados	Siguen castigados, como en el caso c: no se reviven.		No es esa. Eso pasa en el caso c, cuando avisa que ya no puede pagar más. En el caso b promete pagar, así que la deuda volvió completa.	94
 b5-t6-a4-provision	En la provisión, hasta que el cliente los pague.		No es esa. La provisión no guarda deudas: lo que el cliente todavía debe está en Cuentas por cobrar – clientes.	91
 b5-t6-a4-caja	En Caja, porque el cliente ya prometió pagarlos.		No es esa. A Caja solo entra lo que paga. Una promesa no es plata.	102
 Largo de las opciones: 54, 52, 48 y 48 caracteres.
@@ -513,3 +513,33 @@ Si falla: «Primero se reversa el castigo, para que la deuda vuelva. Después se
 T6 A4 no se fusiona (regla 3: cualquiera de las tres sube el texto reservado y el último paso deja de caber a 320). 9 pasos, como hoy. La predicción va entre el 4 («vuelve y paga») y el 5.
 
 El contador de la parada dice «Antes del paso N» (nuevo, para Shoko).
+
+## Lote C2 · C1 · C7 (Futaba, PASA de Shoko, 15-oct) · manda sobre lo de arriba
+
+Líneas copiadas tal cual de paquetes/b5-lote-c2-c1-c7.md (la entrega entera). Al primer error sale la pista; al segundo, la devolución que ya existe y después el texto que se revela.
+
+| Pieza | Caja o parada | Pista |
+|---|---|---|
+| T6 A4 | Caso b | Fíjate en lo que promete el cliente sobre el resto de la deuda. |
+| T6 A4 | Caso c | Fíjate en lo que avisa el cliente sobre el resto de la deuda. |
+| T6 A4 | Parada | La deuda ya salió de Cuentas por cobrar – clientes. ¿Se puede cobrar algo que no está? |
+
+El caso a de T6 A4 ya no lleva pista, porque queda como ejemplo (C1-11).
+
+| Pieza | Pregunta | Opción nueva | Devolución al segundo error |
+|---|---|---|---|
+| T6 A4 | Parada | Un ingreso por la deuda recuperada | No hay ningún ingreso: primero se revive la deuda y después se anota el pago. |
+
+Para las paradas de T6 A4 y T6 A5: comprobar que los rótulos «Primero se revive la deuda» y «son $17.000» no aparecen antes de su paso.
+
+### C1-11 y C1-12 · T6 A4 · capa 3 (con C7-5 aplicado)
+- Caso a: su fila del tablero ya viene llena, con el rótulo «Ejemplo». Ya no se pregunta.
+- Consigna: «El caso a ya lo viste. Toca los casos b y c, y decide cuánto se revive. Después, mira cuánta plata entra a Caja.»
+- Caso b: texto que se revela: «Se revive toda la deuda: $180.000. A Caja entran $100.000.» Si elige $80.000: «Como va a pagar el resto, la deuda vuelve completa, no solo lo que falta.»
+- Caso c: nombre de la caja: «c · Abona $100.000 y avisa que ya no puede pagar más». Si elige $180.000: «Como ya no puede pagar más, solo vuelve lo que abonó.»
+
+| # | Término | Texto final | Estado |
+|---|---|---|---|
+| C7-5 | «no pagará más» → «ya no puede pagar más» | Ver tabla abajo | Se aplica |
+
+La tabla de reemplazos de C7-5 está en paquetes/b5-lote-c2-c1-c7.md; en este paquete ya están aplicados.

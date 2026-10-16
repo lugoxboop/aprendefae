@@ -148,13 +148,18 @@ export const OPCIONES_CAPA_3_T6 = [{ id: "sube", texto: "Sube" }, { id: "baja", 
  * «Libro» si lo que dice la caja está en la página; «Basado» si agrega una
  * condición o una conclusión. Siete pies: uno por caja y el del bloque final.
  */
+/*
+ * Lote C2 · C1 · C7 de Futaba (PASA de Shoko): C1-4 cambia cinco hechos (la
+ * respuesta ya estaba en la capa 2 o en el término) y, en dos cajas, lo que
+ * se revela, la devolución o el pie; C2 le da a cada caja su pista.
+ */
 export const HECHOS_T6 = [
-  { id: "venta-credito", hecho: "La empresa le vende a crédito a un cliente.", revela: "Sube: se debita. El cliente queda debiendo lo que compró.", pie: "Libro, p. 197", correcta: "sube", falla: "Aunque diga “crédito”, el cliente queda debiendo lo que compró: sube." },
-  { id: "pago", hecho: "Un cliente paga lo que debía.", revela: "Baja: se acredita. La deuda se cancela.", pie: "Libro, p. 197", correcta: "baja", falla: "Al pagar, el cliente deja de deber lo que pagó: baja." },
-  { id: "cheque-devuelto", hecho: "El banco devuelve el cheque con el que un cliente había pagado.", revela: "Sube: se debita, con una nota débito. Ese pago no llegó a la empresa, así que la deuda vuelve.", pie: "Basado en el libro, pp. 191 y 197", correcta: "sube", falla: "El cheque no se cobró, así que el pago no cuenta: la deuda sube otra vez." },
-  { id: "devolucion", hecho: "Un cliente devuelve mercancía que compró a crédito y aún no paga.", revela: "Baja: se acredita. Es una devolución de ventas.", pie: "Basado en el libro, p. 197", correcta: "baja", falla: "Lo que devuelve ya no lo tiene que pagar: baja." },
-  { id: "descuento", hecho: "La empresa le otorga a un cliente un descuento sobre lo que todavía le debe.", revela: "Baja: se acredita.", pie: "Basado en el libro, p. 197", correcta: "baja", falla: "El descuento rebaja lo que el cliente debe: baja." },
-  { id: "contado", hecho: "La empresa le vende de contado a un cliente.", revela: "No cambia. El cliente pagó en el momento y no queda debiendo nada.", pie: "Basado en el libro, p. 197", correcta: "no-cambia", falla: "Pagó en el momento, así que no queda debiendo nada: no cambia." },
+  { id: "venta-credito", hecho: "Un taller le arregla el carro a un cliente a crédito: le da 30 días para pagar.", revela: "Sube: se debita. El cliente queda debiendo el arreglo.", pie: "Basado en el libro, p. 197", correcta: "sube", falla: "Aunque diga “crédito”, el cliente queda debiendo lo que compró: sube.", pista: "Después de esto, ¿el cliente ya pagó o quedó debiendo algo?" },
+  { id: "pago", hecho: "Un cliente paga la mitad de lo que debe.", revela: "Baja: se acredita, pero solo por lo que pagó. El resto lo sigue debiendo.", pie: "Libro, p. 197", correcta: "baja", falla: "Lo que pagó ya no lo debe; el resto lo sigue debiendo.", pista: "Piensa en cuánto debe el cliente justo después de pagar esa parte." },
+  { id: "cheque-devuelto", hecho: "El cheque con el que un cliente pagó su factura rebota: el banco no lo paga.", revela: "Sube: se debita, con una nota débito. Ese pago no llegó a la empresa, así que la deuda vuelve.", pie: "Basado en el libro, pp. 191 y 197", correcta: "sube", falla: "El cheque no se cobró, así que el pago no cuenta: la deuda sube otra vez.", pista: "Si el banco no le pagó el cheque, ¿el cliente sí canceló su deuda?" },
+  { id: "devolucion", hecho: "Llegan de vuelta unas cajas de un pedido que el cliente aún no paga.", revela: "Baja: se acredita. Es una devolución de ventas.", pie: "Basado en el libro, p. 197", correcta: "baja", falla: "Lo que devuelve ya no lo tiene que pagar: baja.", pista: "¿Tiene que pagar el cliente lo que ya regresó?" },
+  { id: "descuento", hecho: "Un cliente recibe un descuento sobre la factura que todavía no ha pagado.", revela: "Baja: se acredita.", pie: "Basado en el libro, p. 197", correcta: "baja", falla: "El descuento rebaja lo que el cliente debe: baja.", pista: "Un descuento sobre una deuda, ¿qué le hace a lo que el cliente tiene que pagar?" },
+  { id: "contado", hecho: "La empresa le vende de contado a un cliente.", revela: "No cambia. El cliente pagó en el momento y no queda debiendo nada.", pie: "Basado en el libro, p. 197", correcta: "no-cambia", falla: "Pagó en el momento, así que no queda debiendo nada: no cambia.", pista: "Si paga en el mismo momento, ¿queda alguna deuda por anotar?" },
 ];
 export const FINAL_CAPA_3_T6 = {
   texto: "Fíjate: “venta a crédito” lleva la palabra crédito, pero a la cuenta del cliente se le hace un débito. El nombre del negocio no dice en qué lado se anota.",
@@ -163,31 +168,36 @@ export const FINAL_CAPA_3_T6 = {
 
 /* ═══════════ CAPA 4 · «EN UNA FRASE» (UnaFrase, sin cambios) ═══════════ */
 
-export const PREGUNTA_FINAL_T6 = "¿Qué le pasa a Cuentas por cobrar – clientes el día que el cliente paga?";
-/* En el orden de Futaba; UnaFrase las baraja una vez al cargar. */
+/*
+ * C1-5 de Futaba (lote C2 · C1 · C7, PASA de Shoko): un caso nuevo, con su
+ * pie (lo pinta la escena de la pieza, bajo UnaFrase).
+ * En el orden de Futaba; UnaFrase las baraja una vez al cargar.
+ */
+export const PREGUNTA_FINAL_T6 = "Un cliente compra a crédito y, antes de pagar, devuelve toda la mercancía. ¿Cuánto debe al final?";
 export const OPCIONES_FINAL_T6 = [
   {
-    id: "b5-t6-baja",
-    texto: "Baja, porque la deuda se paga; el ingreso ya estaba anotado.",
+    id: "b5-t6-nada",
+    texto: "Nada: la deuda subió con la venta y bajó con la devolución.",
     correcta: true,
-    feedback: "Correcto. El 25 de enero, en los libros de Comercializadora Santa Pacha, Cuentas por cobrar – clientes baja: se acredita. No se anota ningún ingreso. Ese ya estaba desde el 10.",
+    feedback: "Correcto. La venta a crédito hizo subir la deuda, y la devolución la hizo bajar por el mismo valor.",
   },
   {
-    id: "b5-t6-sube",
-    texto: "Sube, porque ese día a la empresa le entra plata del cliente.",
+    id: "b5-t6-lo-mismo",
+    texto: "Lo mismo que compró: la devolución no cambia la deuda.",
     correcta: false,
-    feedback: "No es esa. La plata entra a Caja, y Caja sí sube. Lo que deben los clientes baja, porque la deuda se pagó.",
+    feedback: "No es esa. Lo que devuelve antes de pagar ya no lo tiene que pagar: la deuda baja.",
   },
   {
-    id: "b5-t6-no-cambia",
-    texto: "No cambia, porque el pago del cliente solo se anota en Caja.",
+    id: "b5-t6-el-doble",
+    texto: "El doble: la devolución también se debita.",
     correcta: false,
-    feedback: "No es esa. En el ejemplo, el pago movió dos cuentas: Caja subió y Cuentas por cobrar – clientes bajó, por el mismo valor.",
+    feedback: "No es esa. La devolución hace bajar lo que debe el cliente, así que se acredita.",
   },
   {
-    id: "b5-t6-baja-con-ingreso",
-    texto: "Baja, y ese mismo día se anota también el ingreso por la venta.",
+    id: "b5-t6-nada-con-ingreso",
+    texto: "Nada, pero se anota un ingreso por la devolución.",
     correcta: false,
-    feedback: "No es esa. El ingreso se anotó el día de la venta, el 10 de enero. El día del pago no hay un ingreso nuevo: solo entra la plata y baja la deuda.",
+    feedback: "No es esa. La deuda sí queda en nada, pero una devolución no es un ingreso: es una devolución de ventas.",
   },
 ];
+export const PIE_FINAL_T6 = "Basado en el libro, p. 197";
