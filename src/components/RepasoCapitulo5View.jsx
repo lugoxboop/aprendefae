@@ -462,7 +462,7 @@ export default function RepasoCapitulo5View({ nodoInicial = null, onBack }) {
               * del capít…» y se perdía justo el número. Aquí puede encoger y
               * partir en dos renglones; el estilo en línea gana a la clase.
               */}
-            <h1 data-titulo-tema style={{ fontFamily: SORA, fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, flexShrink: 1, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "anywhere" }}>
+            <h1 data-titulo-tema style={{ fontFamily: SORA, fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2 }}>
               {/* «capítulo 5» no se separa: si parte, parte antes. */}
               {tema.title.replace(/ (\S+)$/, "\u00a0$1")}
             </h1>
