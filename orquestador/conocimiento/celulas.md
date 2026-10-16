@@ -96,6 +96,7 @@ que necesita. Ninguna célula usa un ejercicio que no tenga asignado.
 
 `orquestador/conocimiento/prompts/disenadores-de-celula-v1.md`
 `orquestador/conocimiento/prompts/pedagogicos-v1.md` (agentes de contenido)
+`orquestador/conocimiento/prompts/auditores-v1.md` (auditores de calidad)
 
 Lo escribieron Senku, Xeno y Ukyo, y Miku lo repartió el 15 de octubre a los
 cinco diseñadores: Mai (B), Watari (C), Hanayama (D), Itagaki (E) y Xeno (A).
