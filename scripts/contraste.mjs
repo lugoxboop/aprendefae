@@ -106,12 +106,40 @@ const MEDIR = `(() => {
   return { malos, sinMedir };
 })()`;
 
+/*
+ * El botón de avanzar no se llama igual en todas las piezas: «Siguiente» en
+ * las de T1 a T3, «Seguir» en las de T4. Con uno solo, la sonda medía la
+ * primera pantalla de T4 y se iba: un cero que parecía un aprobado.
+ */
+const AVANCE = 'button:visible:has-text("Siguiente"), button:visible:has-text("Seguir")';
+
 const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium" });
 const p = await b.newPage({ viewport: { width: ANCHO, height: 1400 } });
 await p.goto(RAIZ, { waitUntil: "networkidle" });
-for (const paso of ["Contabilidad", TEMA, "El material que explica"]) {
+for (const paso of ["Contabilidad", TEMA]) {
   await p.locator(`button:visible:has-text("${paso}")`).first().click({ timeout: 9000 });
   await p.waitForTimeout(650);
+}
+/*
+ * La puerta de Aprender no se llama igual en todas las tarjetas: unas dicen
+ * «El material que explica» y otras «Aprender N actividades». La sonda
+ * prueba las dos antes de rendirse; con una sola se quedaba fuera de T4 y
+ * devolvía un cero que parecía un aprobado.
+ */
+const entro = await (async () => {
+  for (const rotulo of ["El material que explica", "Aprender"]) {
+    const puerta = p.locator(`button:visible:has-text("${rotulo}")`);
+    if ((await puerta.count()) === 0) continue;
+    await puerta.first().click({ timeout: 9000 }).catch(() => {});
+    await p.waitForTimeout(700);
+    if ((await p.locator(AVANCE).count()) > 0) return rotulo;
+  }
+  return null;
+})();
+if (!entro) {
+  console.log(`NO MEDIDO: no encontré la puerta de Aprender en «${TEMA}».`);
+  await b.close();
+  process.exit(2);
 }
 
 const vistos = new Map();
@@ -125,7 +153,7 @@ for (let i = 0; i < 30; i++) {
     if (!vistos.has(clave)) vistos.set(clave, m);
   }
   for (const t of tanda.sinMedir) sinMedir.add(t);
-  const sig = p.locator('button:visible:has-text("Siguiente")');
+  const sig = p.locator(AVANCE);
   if ((await sig.count()) === 0) break;
   await sig.first().click({ timeout: 5000 }).catch(() => {});
   await p.waitForTimeout(340);
