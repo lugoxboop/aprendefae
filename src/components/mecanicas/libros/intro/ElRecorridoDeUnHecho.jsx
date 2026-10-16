@@ -161,7 +161,7 @@ export default function ElRecorridoDeUnHecho() {
       <style>{CSS}</style>
 
       <p style={{
-        margin: "0 0 9px", fontFamily: SORA, fontSize: "11px", fontWeight: 600,
+        margin: "0 0 9px", fontFamily: SORA, fontSize: "12px", fontWeight: 600,
         color: "rgba(248,249,250,0.55)",
       }}>
         {cerrado ? "El ciclo cerrado" : `Paso ${paso} de ${PASOS}`}

@@ -127,7 +127,7 @@ export function Banda({ llenado = 0, atenuada = false, resaltada = false, reduci
         position: "relative", height: "100%", padding: "8px 11px", boxSizing: "border-box",
         display: "flex", flexDirection: "column", justifyContent: "center", gap: "2px",
       }}>
-        <span style={{ fontFamily: SORA, fontSize: "11px", fontWeight: 700, lineHeight: 1.3, color: FAE.text }}>
+        <span style={{ fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: 1.3, color: FAE.text }}>
           {ROTULO_BANDA}
         </span>
         <span data-rango style={{ fontSize: "12px", color: "rgba(248,249,250,0.6)" }}>{RANGO_BANDA}</span>
