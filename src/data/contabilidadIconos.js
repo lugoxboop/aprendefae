@@ -57,16 +57,26 @@ export const ICONO_POR_ACTIVIDAD = {
   "t7-2-llena-el-kardex": I.LlenaElKardex,
   "t7-2-periodico-o-permanente": I.PeriodicoOPermanente,
   "t7-2-flete-y-devolucion": I.FleteYDevolucion,
-  /* Tema 5 · Inversiones */
+  /* Tema 4 · Efectivo, caja menor y bancos */
+  "t4-entra-o-sale-de-caja": I.EntraOSaleDeCajaIcono,
+  /* Tema 5 · Inversiones. Los cinco del medio van en el orden del camino. */
   "b5-t5-a1": I.QueRentaDaEsteTitulo,
+  "t5-temporal-o-largo-plazo": I.TemporalOLargoPlazo,
+  "t5-revision-que-falta": I.QueRevisionFalta,
+  "t5-el-interes-del-periodo": I.ElInteresDelPeriodo,
+  "t5-gano-o-perdio": I.GanoOPerdio,
+  "t5-a-que-cuenta-va": I.AQueCuentaVa,
   "b5-t5-a2": I.ElCierreCompletoDeSantaPacha,
   /* Tema 6 · Cuentas por cobrar */
   "b5-t6-a1": I.ClientesOOtraCuentaPorCobrar,
+  "b5-t6-a4": I.QueSeDebita,
   "b5-t6-a2": I.LaProvisionDeElTorito,
+  "b5-t6-a6": I.ProvisionPorEdades,
   "b5-t6-a3": I.CuandoLaDeudaCastigadaVuelve,
   /* Repaso del capítulo 5 */
   "r5-1": I.RepasoCruzado,
   "r5-2": I.ElToroNegro,
+  "r5-3": I.MarzoEnComercializadoraMate,
   "r5-4": I.SeptiembreEnBarranquilla,
   "r5-5": I.SeptiembreEnPermanente,
 };
