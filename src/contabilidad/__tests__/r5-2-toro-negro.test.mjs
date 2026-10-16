@@ -414,7 +414,7 @@ test("★★★ los FP de 0 a 7 aciertos salen de calcularFP y son los que paga 
 
 test("★★★ catálogo, registro de la vista, etiqueta y migración 0251 dicen lo mismo", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "repaso-capitulo-5");
-  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2", "r5-3"]);
+  assert.deepEqual(tema.actividades.map((a) => a.id), ["r5-1", "r5-2", "r5-3", "r5-4"]);
   const a = actividadesDeTipo(tema, HACER).find((x) => x.id === "r5-2");
   assert.equal(a.nombre, T.R5_2.nombre);
   assert.deepEqual(a.clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 });
