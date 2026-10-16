@@ -7,6 +7,7 @@ import {
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
 import { Caja, LECTURA, PIE, useFormaQueCabe } from "./CajasQueRevelan.jsx";
+import { escalera, elegir } from "./escaleraB5.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -23,6 +24,11 @@ import { Caja, LECTURA, PIE, useFormaQueCabe } from "./CajasQueRevelan.jsx";
  * celda va vacía con borde atenuado. Con las tres filas llenas, b y c
  * muestran la misma plata y distinto monto revivido, una debajo de la otra.
  * Sin puntaje ni color de acierto o de error. Ningún texto vive aquí.
+ *
+ * Lote C1-11 de Futaba: el caso a es el de la capa 2, así que ya no se
+ * pregunta. No tiene caja: su fila viene llena desde el principio, con el
+ * rótulo «Ejemplo» bajo su letra. Solo b y c se deciden, con la escalera de
+ * ayuda (escaleraB5.js): cada fila se llena al cerrarse su pregunta.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -31,6 +37,10 @@ const INTER = "Inter, sans-serif";
 const BORDES = COLOR.neutro;
 const ATENUADO = "rgba(184,196,212,.50)";
 const NOMBRE_CAJA = { ...LECTURA, fontFamily: SORA, fontWeight: 600, lineHeight: 1.35 };
+const ROTULO_EJEMPLO = { display: "block", marginTop: "2px", fontFamily: INTER, fontSize: "12px", fontWeight: 400, lineHeight: 1.35, color: COLOR.apagado };
+/* El caso a es el ejemplo; los demás se preguntan. */
+const PREGUNTADOS = CASOS_T6_A4.filter((c) => !c.ejemplo);
+const decideDe = (c) => ({ pregunta: PREGUNTA_CAPA_3_T6_A4, opciones: OPCIONES_CAPA_3_T6_A4, correcta: c.correcta, falla: c.falla, pista: c.pista });
 const CABECERA = { padding: 0, fontFamily: INTER, fontSize: "12px", fontWeight: 400, lineHeight: 1.35, color: COLOR.apagado, textAlign: "center" };
 
 function Celda({ cifra, destacada }) {
@@ -57,8 +67,8 @@ export default function TresCasos() {
   /* En fila, salvo que alguna opción se parta donde se pinta (Sakuta, 15-oct). */
   const [forma, seParte, vuelta] = useFormaQueCabe("fila");
   const bloqueFinal = useRef(null);
-  const decidido = (c) => elecciones[c.id] !== undefined;
-  const todos = CASOS_T6_A4.every(decidido);
+  const decidido = (c) => c.ejemplo || escalera(decideDe(c), elecciones[c.id]).resuelta;
+  const todos = PREGUNTADOS.every(decidido);
 
   useEffect(() => {
     if (todos) bloqueFinal.current?.scrollIntoView?.({ block: "nearest", behavior: reducido ? "auto" : "smooth" });
@@ -72,7 +82,7 @@ export default function TresCasos() {
       {/* El tablero: una tabla, para que se lea con sus cabeceras de fila y de columna. */}
       <div data-tablero aria-live="polite" style={{ marginTop: "12px", border: `1px solid ${BORDES}`, borderRadius: "12px", padding: "8px 10px 10px" }}>
         <table style={{ width: "calc(100% + 12px)", margin: "-6px", borderCollapse: "separate", borderSpacing: "6px", tableLayout: "fixed" }}>
-          <colgroup><col style={{ width: "20px" }} /><col /><col /></colgroup>
+          <colgroup><col style={{ width: "56px" }} /><col /><col /></colgroup>
           <thead>
             <tr>
               <td />
@@ -85,7 +95,10 @@ export default function TresCasos() {
               const lleno = decidido(c);
               return (
                 <tr key={c.id} data-fila={c.id}>
-                  <th scope="row" style={{ padding: 0, fontFamily: SORA, fontSize: "13px", fontWeight: 600, lineHeight: 1.3, color: FAE.text, textAlign: "left" }}>{c.letra}</th>
+                  <th scope="row" style={{ padding: 0, fontFamily: SORA, fontSize: "13px", fontWeight: 600, lineHeight: 1.3, color: FAE.text, textAlign: "left" }}>
+                    {c.letra}
+                    {c.ejemplo && <span data-rotulo-ejemplo style={ROTULO_EJEMPLO}>{TABLERO_T6_A4.ejemplo}</span>}
+                  </th>
                   <Celda cifra={lleno ? c.revive : null} destacada />
                   <Celda cifra={lleno ? c.entran : null} />
                 </tr>
@@ -96,11 +109,11 @@ export default function TresCasos() {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
-        {CASOS_T6_A4.map((c) => (
+        {PREGUNTADOS.map((c) => (
           <Caja key={c.id} estiloTitulo={NOMBRE_CAJA} forma={forma} onSeParte={seParte} vuelta={vuelta}
-            caja={{ id: c.id, titulo: c.nombre, revela: c.revela, pie: c.pie, decide: { pregunta: PREGUNTA_CAPA_3_T6_A4, opciones: OPCIONES_CAPA_3_T6_A4, correcta: c.correcta, falla: c.falla } }}
+            caja={{ id: c.id, titulo: c.nombre, revela: c.revela, pie: c.pie, decide: decideDe(c) }}
             abierto={abiertos.has(c.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(c.id))}
-            elegida={elecciones[c.id] ?? null} onElegir={(o) => setElecciones((e) => ({ ...e, [c.id]: o }))} />
+            intentos={elecciones[c.id]} onElegir={(o) => setElecciones((e) => ({ ...e, [c.id]: elegir(decideDe(c), e[c.id] ?? [], o) }))} />
         ))}
       </div>
 

@@ -119,31 +119,42 @@ export const CIERRE_T5_A2 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · las dos ventas ═══════════ */
 
-/* Consigna y decisión: entrega 2 de Futaba; la pregunta de la caja, para Shoko (ver el paquete). */
-export const CONSIGNA_CAPA_3_T5_A2 = "Toca cada venta y decide si dejó ganancia o pérdida. Después, mira por cuánto se acredita la inversión.";
+/*
+ * C1-2 de Futaba (lote C2 · C1 · C7, PASA de Shoko): las ventas de la capa 2
+ * tenían la respuesta en la pantalla anterior; ahora son dos ventas de un
+ * escenario simulado (Venta A y Venta B), con su pie. La tercera opción y la
+ * pista son de la escalera de ayuda (C2): al primer error, la pista; al
+ * segundo, la devolución de la caja y después el texto.
+ */
+export const CONSIGNA_CAPA_3_T5_A2 = "Toca cada venta y decide si dejó ganancia o pérdida. Después, mira cómo se acredita la inversión.";
 export const PREGUNTA_CAPA_3_T5_A2 = "¿Dejó ganancia o pérdida?";
-export const OPCIONES_CAPA_3_T5_A2 = [{ id: "ganancia", texto: "Ganancia" }, { id: "perdida", texto: "Pérdida" }];
-export const FALLA_CAPA_3_T5_A2 = "Compara las dos cifras de la caja: lo que recibió y lo que costaron.";
+export const OPCIONES_CAPA_3_T5_A2 = [{ id: "ganancia", texto: "Ganancia" }, { id: "perdida", texto: "Pérdida" }, { id: "ni-una", texto: "Ni ganancia ni pérdida" }];
+/* Una pista para las dos ventas (C2). */
+export const PISTA_CAPA_3_T5_A2 = "Compara lo que recibió con lo que le costaron los títulos que vendió.";
+export const PIE_SIMULADO_T5_A2 = "Escenario simulado";
 
-/* Cerradas, cada una muestra su nombre y dos cifras: lo recibido y lo que costaron. */
+/* Cerradas, cada una muestra su nombre y dos cifras: lo que costó cada título y a cuánto se vende. */
 export const VENTAS_T5_A2 = [
   {
-    id: "venta-agosto",
-    nombre: "Venta del 1 de agosto",
-    cifras: ["Recibió $1.725.000", "Costaron $1.500.000"],
-    revela: "Recibió más de lo que costaron: ganancia de $225.000. Inversiones – títulos se acredita por el costo, no por lo recibido.",
-    pie: "Libro, pp. 194-195",
+    id: "venta-a",
+    nombre: "Venta A",
+    cifras: ["Costó $650 cada uno", "Se vende a $690"],
+    revela: "Recibió más de lo que costaron: es ganancia. Inversiones – títulos se acredita por el costo, no por lo recibido.",
+    pie: PIE_SIMULADO_T5_A2,
     correcta: "ganancia",
+    falla: "Los vende a $690 y le costaron $650: recibe más de lo que pagó, así que es ganancia.",
   },
   {
-    id: "venta-noviembre",
-    nombre: "Venta del 1 de noviembre",
-    cifras: ["Recibió $468.750", "Costaron $500.000"],
-    revela: "Recibió menos de lo que costaron: pérdida de $31.250. Inversiones – títulos también se acredita por el costo.",
-    pie: "Libro, p. 195",
+    id: "venta-b",
+    nombre: "Venta B",
+    cifras: ["Costó $1.150 cada uno", "Se vende a $1.060"],
+    revela: "Recibió menos de lo que costaron: es pérdida. Inversiones – títulos también se acredita por el costo.",
+    pie: PIE_SIMULADO_T5_A2,
     correcta: "perdida",
+    falla: "Los vende a $1.060 y le costaron $1.150: recibe menos de lo que pagó, así que es pérdida.",
   },
 ];
+/* El texto final no cambia y sigue con su pie de las pp. 194-195. */
 export const FINAL_CAPA_3_T5_A2 = {
   texto: "En las dos ventas, la inversión se acredita por lo que costó. Lo que cambia es la diferencia: una vez es ganancia y otra vez es pérdida.",
   pie: "Basado en el libro, pp. 194-195",
@@ -151,34 +162,46 @@ export const FINAL_CAPA_3_T5_A2 = {
 
 /* ═══════════ CAPA 4 · «EN UNA FRASE» (UnaFrase, sin cambios) ═══════════ */
 
-export const PREGUNTA_FINAL_T5_A2 = "En la venta de agosto, ¿por cuánto se acredita Inversiones – títulos?";
-/* En el orden de Futaba; UnaFrase las baraja una vez al cargar. */
+/*
+ * C1-3 de Futaba (lote C2 · C1 · C7, PASA de Shoko): un caso nuevo, con su
+ * pie «Escenario simulado» (lo pinta la escena de la pieza, bajo UnaFrase).
+ * En el orden de Futaba; UnaFrase las baraja una vez al cargar.
+ */
+export const PREGUNTA_FINAL_T5_A2 = "Una empresa vende 260 títulos. Cada uno le costó $850. Le pagan $273.000. ¿Por cuánto se acredita la inversión?";
 export const OPCIONES_FINAL_T5_A2 = [
   {
     id: "b5-t5-a2-costo",
-    texto: "Por $1.500.000, el costo de los 1.875 vendidos.",
+    texto: "Por $221.000, lo que costaron los 260 títulos.",
     correcta: true,
-    feedback: "Correcto. En el ejemplo, el libro acredita Inversiones – títulos por el costo: 1.875 títulos a $800. Lo que se recibió de más es la ganancia.",
+    feedback: "Correcto. Inversiones – títulos se acredita por lo que costaron los títulos vendidos: 260 × $850 = $221.000. Lo que recibió de más es la ganancia.",
   },
   {
     id: "b5-t5-a2-recibido",
-    texto: "Por $1.725.000, lo que se recibió por la venta.",
+    texto: "Por $273.000, lo que recibió por la venta.",
     correcta: false,
-    feedback: "No es esa. Los $1.725.000 entran a Caja. La inversión se acredita por lo que costó, y la diferencia va a la ganancia.",
+    feedback: "No es esa. Los $273.000 entran a Caja. La inversión se acredita por lo que costó, y la diferencia es la ganancia.",
   },
   {
     id: "b5-t5-a2-ganancia",
-    texto: "Por $225.000, la ganancia que dejó la venta.",
+    texto: "Por $52.000, la ganancia que dejó la venta.",
     correcta: false,
-    feedback: "No es esa. Los $225.000 son la ganancia y van a su propia cuenta. La inversión se acredita por lo que costaron esos títulos.",
+    feedback: "No es esa. Los $52.000 son la ganancia y van a su propia cuenta. La inversión se acredita por lo que costaron los títulos.",
   },
   {
-    id: "b5-t5-a2-toda",
-    texto: "Por $2.000.000, lo que costó toda la inversión.",
+    id: "b5-t5-a2-uno",
+    texto: "Por $850, lo que costó cada título.",
     correcta: false,
-    feedback: "No es esa. Ese día solo se vendió el 75 %. Se acredita lo que costaron esos 1.875 títulos, no toda la inversión.",
+    feedback: "No es esa. Ese es el costo de un solo título. Vendió 260: multiplica.",
   },
 ];
+export const PIE_FINAL_T5_A2 = "Escenario simulado";
+
+/*
+ * Las cifras construidas de las capas 3 y 4 (C1-2 y C1-3), también en el
+ * registro de T5 (orquestador/conocimiento/registro-cifras-construidas-t5.json,
+ * «construidas_b5»). Ninguna es de Santa Pacha ni del banco.
+ */
+export const CIFRAS_CONSTRUIDAS_T5_A2 = [260, 650, 690, 850, 1060, 1150, 52000, 221000, 273000];
 
 /* ═══════════ CAPA 2 LARGA: LOS PASOS QUE SE JUNTAN Y LA PARADA (hoja 7 de Mai, entrega 3 de Futaba) ═══════════ */
 
@@ -201,6 +224,7 @@ export const PARADA_T5_A2 = {
   pregunta: "Ya solo quedan 625 títulos. ¿Sobre qué valor se calcula el interés de noviembre?",
   opciones: [{ id: "dos-millones", texto: "$2.000.000" }, { id: "costo", texto: "$1.500.000" }, { id: "quedan", texto: "$500.000" }],
   correcta: "quedan",
+  pista: "El interés lo pagan los títulos que la empresa todavía tiene, no los que ya vendió.",
   falla: {
     "dos-millones": "Ya no hay 2.500 títulos: quedan 625. Son 625 × $800 = $500.000.",
     costo: "Eso costaron los títulos que vendió. El interés se paga sobre los que quedan: 625 × $800 = $500.000.",

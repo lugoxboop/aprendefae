@@ -373,7 +373,7 @@ test("★★ «Reproducir»: 3 000 + 450 ms por palabra; la tabla de Mai §4.4 y
 
 /* ═══════════ CAPA 3 ═══════════ */
 
-test("★★★ capa 3: la T se llena en orden al decidir, con el valor correcto aunque se falle; el saldo en contra bajo DEBE en recuadro, el normal bajo HABER bajo un filete; el final, con los tres", async () => {
+test("★★★ capa 3: la T se llena en orden al cerrarse cada pregunta (escalera de ayuda: tras la pista, al segundo error), con el valor correcto aunque se falle; el saldo en contra bajo DEBE en recuadro, el normal bajo HABER bajo un filete; el final, con los tres", async () => {
   const { caja, desmontar } = await montar(h(CuentaT));
   const t = caja.querySelector("[data-cuenta-t]");
   assert.equal(caja.querySelector("p").textContent, D.CONSIGNA_CAPA_3_T6_A3);
@@ -391,8 +391,12 @@ test("★★★ capa 3: la T se llena en orden al decidir, con el valor correcto
     { debe: ["$180.000Marzo del año siguiente"], haber: ["$148.80031 de diciembre de 2007", "$184.60031 de diciembre del año siguiente"], saldo: ["normal", "El saldo queda en $153.400"] },
   ];
   for (const [k, m] of D.MOMENTOS_T6_A3.entries()) {
-    /* Con error a propósito: la T se llena igual, con el valor correcto (hoja 6, indispensable 5). */
-    const mala = m.opciones.find((o) => o.id !== m.correcta).id;
+    /* Con dos errores a propósito: la T se llena igual, con el valor correcto (hoja 6, indispensable 5). */
+    const [mala1, mala] = m.opciones.filter((o) => o.id !== m.correcta).map((o) => o.id);
+    const antes = [columna("debe"), columna("haber")];
+    await decidir(tocar, caja.querySelector(`[data-hecho="${m.id}"]`), mala1);
+    assert.equal(lectura(caja.querySelector(`[data-revela="${m.id}"]`)), m.pista, "al primer error, solo la pista");
+    assert.deepEqual([columna("debe"), columna("haber")], antes, "al primer error, la T no se mueve");
     await decidir(tocar, caja.querySelector(`[data-hecho="${m.id}"]`), mala);
     assert.equal(lectura(caja.querySelector(`[data-revela="${m.id}"]`)), (typeof m.falla === "string" ? m.falla : m.falla[mala]) + m.revela);
     assert.equal(caja.querySelector(`[data-revela="${m.id}"] [data-pie]`).textContent, m.pie);
@@ -415,11 +419,12 @@ test("★★★ capa 3: la T se llena en orden al decidir, con el valor correcto
 
 /* ═══════════ CAPA 4 ═══════════ */
 
-test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola correcta y la devolución de cada una", async () => {
-  assert.deepEqual(D.OPCIONES_FINAL_T6_A3.filter((o) => o.correcta).map((o) => o.texto), ["Porque el gasto se anotó en diciembre, al crear la provisión."]);
+test("★★★ capa 4: UnaFrase con la pregunta, cuatro opciones, una sola correcta y la devolución de cada una (C1-9 del lote C2 · C1 · C7); su pie debajo", async () => {
+  assert.deepEqual(D.OPCIONES_FINAL_T6_A3.filter((o) => o.correcta).map((o) => o.texto), ["Lo que sobró se resta de lo que pide el análisis."]);
   const { Capa4 } = ESCENAS_TEMA6[D.PIEZA_LA_PROVISION.id];
   const { caja, desmontar } = await montar(h(Capa4));
   assert.ok(caja.textContent.startsWith(D.PREGUNTA_FINAL_T6_A3));
+  assert.equal([...caja.querySelectorAll("[data-pie]")].at(-1).textContent, "Basado en el libro, p. 203");
   for (const o of D.OPCIONES_FINAL_T6_A3) {
     assert.equal(caja.querySelector(`[data-opcion="${o.id}"]`).textContent, o.texto);
     await tocar(caja.querySelector(`[data-opcion="${o.id}"]`));

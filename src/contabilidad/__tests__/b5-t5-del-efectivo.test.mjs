@@ -258,14 +258,15 @@ test("★★ capa 3: A y B se ven idénticos antes y después de decidirlos (sin
 
 /* ═══════════ CAPA 4 ═══════════ */
 
-test("★★★ capa 4: UnaFrase con la pregunta y las cuatro opciones del paquete; una sola correcta", async () => {
+test("★★★ capa 4: UnaFrase con la pregunta y las cuatro opciones del paquete (C1-1 del lote C2 · C1 · C7); una sola correcta; su pie debajo", async () => {
   assert.equal(D.OPCIONES_FINAL_T5.length, 4);
   assert.deepEqual(D.OPCIONES_FINAL_T5.filter((o) => o.correcta).map((o) => o.texto),
-    ["Que se pueda vender fácil y vaya a volverse efectivo cuando haga falta."]);
+    ["No: no se volverán efectivo en un año."]);
   const { Capa4 } = ESCENAS_TEMA5[D.PIEZA_DEL_EFECTIVO.id];
   const { caja, desmontar } = await montar(h(Capa4));
   assert.ok(caja.querySelector("[data-una-frase]"));
   assert.ok(caja.textContent.startsWith(D.PREGUNTA_FINAL_T5));
+  assert.equal([...caja.querySelectorAll("[data-pie]")].at(-1).textContent, "Escenario simulado");
   for (const o of D.OPCIONES_FINAL_T5) {
     await tocar(caja.querySelector(`[data-opcion="${o.id}"]`));
     assert.equal(caja.querySelector("[data-devolucion]").textContent, o.feedback);

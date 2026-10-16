@@ -1,6 +1,6 @@
 # Sonda de enganche · B1-B5 · Célula B
 
-Es la sonda de Shibukawa (Célula D, 15 oct 2026), copiada de `scripts/t4/sonda-enganche/` y adaptada a las **16 piezas de la Célula B**. La de D no se toca. Mide si una pieza **engancha**, no solo si **cabe**: la barra B1-B5 del autodiagnóstico de calidad de Mateo, tarjeta por tarjeta, **sin barra de desplazamiento, como un teléfono**, a 320 y a 375 px.
+Es la sonda de Shibukawa (Célula D, 15 oct 2026), copiada de `scripts/t4/sonda-enganche/` y adaptada a las **piezas de la Célula B** (16 cuando se midió; 15 desde que b5-t6-a7 se retiró en el lote 4). La de D no se toca. Mide si una pieza **engancha**, no solo si **cabe**: la barra B1-B5 del autodiagnóstico de calidad de Mateo, tarjeta por tarjeta, **sin barra de desplazamiento, como un teléfono**, a 320 y a 375 px.
 
 Lo que cambia frente a la de D es **el recorrido y la clave**. La medición (`enganche_mide.js`) y el juicio (`juzga`) son los mismos, con tres añadidos de B:
 - la lista de figuras (`FIG`), porque B no usa `<figure>`;
@@ -16,7 +16,7 @@ El informe de la primera corrida está en `orquestador/conocimiento/revisiones/b
 | `T5A1`, `T5A3` | Aprender de T5: pieza 1 («del efectivo») y pieza 3 («tres momentos»). La pieza 2 es de la Célula C | `/#/activos-financieros` |
 | `T6A1` … `T6A5` | Las 5 piezas de Aprender de T6 | `/#/cuentas-por-cobrar` |
 | `b5-t5-a1`, `b5-t5-a2` | Hacer de T5 | `/#/activos-financieros/hacer` |
-| `b5-t6-a1` … `b5-t6-a7` | Hacer de T6 | `/#/cuentas-por-cobrar/hacer` |
+| `b5-t6-a1` … `b5-t6-a6` | Hacer de T6 (b5-t6-a7 se retiró en el lote 4; su medida queda en el informe) | `/#/cuentas-por-cobrar/hacer` |
 
 ## Archivos
 
@@ -49,7 +49,7 @@ Un acierto que el juego no da por bueno (`[data-devolucion]` en la capa 2 o 3, o
 | Mesa del diario | `b5-t5-a2`, `b5-t6-a2`, `b5-t6-a3` | `[data-sacar="cuenta:lado"]`, la cifra en `input[data-campo-cifra]` y `[data-confirmar-parte]`. La mala lleva la primera cifra con 1.000 de más | `[data-panel]` |
 | Elección | `b5-t6-a4` | el botón con `[data-opcion]` | `data-estado` de la Opción |
 | Casillas | `b5-t6-a5`, `b5-t6-a6` | el botón con `[data-opcion]` | `data-estado` de la Opción |
-| Estante de dos niveles | `b5-t5-a1`, `b5-t6-a1`, `b5-t6-a7` | `[data-nivel1]`, `[data-nivel2]` y el botón de `[data-boton-colocar]`. La mala va al otro primer nivel, dos veces (el juego da un segundo intento) | el Retro (`role="status"`, «Correcto:» o «Incorrecto:») |
+| Estante de dos niveles | `b5-t5-a1`, `b5-t6-a1` | `[data-nivel1]`, `[data-nivel2]` y el botón de `[data-boton-colocar]`. La mala va al otro primer nivel, dos veces (el juego da un segundo intento) | el Retro (`role="status"`, «Correcto:» o «Incorrecto:») |
 
 ## Qué mide cada regla
 
