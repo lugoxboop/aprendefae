@@ -1,15 +1,15 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { DEBE, HABER, COLOR_LADO, pesos } from "../../../../data/contabilidad.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { ROTULO_ESTANTE, COLECTOR, TEXTO_CONFIRMAR, TEXTO_DIFERENCIA, AVISO_UN_INTENTO } from "../../../../data/contabilidadAsientoCompuesto.js";
 import { totalesDe, puntuar } from "../../../../contabilidad/cierreConMesa.js";
 import { formatearCifra, leerCifra } from "../../../../contabilidad/elCierreCompleto.js";
-import { Pulsos, Cierre } from "../../corazon/juego.jsx";
+import { Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import EncabezadoCompacto from "./EncabezadoCompacto.jsx";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { Marca, estiloE4, CORRECTA, TACHADA, TACHADO, OCULTO_E4 } from "./MarcasE4.jsx";
 import { useReducido } from "../tema3/DosLineas.jsx";
@@ -46,6 +46,20 @@ import { evaluarPregunta, formatearRespuesta, leerRespuesta } from "../../../../
  * el paso, que no se mueve: en a2, la cuenta T) y `bloques` (lo que una
  * pregunta lleva encima de su campo). Las partes de asiento siguen igual, y
  * solo ellas llegan al diario.
+ *
+ * ENGANCHE B1-B5 (lote 6c, hoja de Mai, parte Hacer):
+ *   · el encabezado compacto de la célula (EncabezadoCompacto.jsx): el
+ *     objetivo y, en una fila de 44, el contador y «¿Cómo se juega?», que
+ *     despliega la consigna, los pasos (`config.reglas`) y la regla fija;
+ *     la regla sigue también junto al botón que la usa;
+ *   · el ejemplo resuelto (`config.ejemplo`) es su propio paso, antes del
+ *     primero: primero la figura (el asiento), después el enunciado y la
+ *     explicación, y abajo «Empezar». No cuenta en el contador;
+ *   · el libro diario (`encima`, el nombre de siempre) baja al final de la
+ *     tarjeta, debajo de «Siguiente»;
+ *   · la instrucción de cada asiento sale de la pantalla y la lee el lector
+ *     de pantalla (aria-describedby); el rótulo del estante lleva 8 arriba y
+ *     6 abajo.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -228,7 +242,7 @@ function ValorCorrecto({ cuenta, valor, oculto }) {
   );
 }
 
-function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante }) {
+function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante, entre = null }) {
   const conValor = mesa.map((m) => ({ ...m, valor: leerCifra(m.texto) }));
   const t = totalesDe(conValor);
   const cierra = t.debe > 0 && t.debe === t.haber;
@@ -305,9 +319,11 @@ function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante
           ? `El conector está cerrado: ${pesos(t.debe)} al debe contra ${pesos(t.haber)} al haber.`
           : `El conector está abierto. Debe ${pesos(t.debe)}, haber ${pesos(t.haber)}.`}
       </p>
+      {/* Lote 6c (B1): el hecho del asiento va entre la mesa y el estante; la mesa, que es la figura, arriba. */}
+      {entre && <div data-entre-mesa-y-estante style={{ margin: "12px 0 0" }}>{entre}</div>}
       {activa && (
         <>
-          <p style={{ margin: "14px 0 8px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, letterSpacing: "0.16em", color: COLOR.apagado }}>
+          <p data-rotulo-estante style={{ margin: "8px 0 6px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, letterSpacing: "0.16em", color: COLOR.apagado }}>
             {ROTULO_ESTANTE}
           </p>
           <Estante cuentas={enEstante} onSacar={onSacar} />
@@ -356,6 +372,9 @@ export default function CierreConMesa({
   const t = useTanda(() => items ?? config.partes);
   const reducido = useReducido();
   const textos = config.textos ?? {};
+  /* El ejemplo resuelto, su propio paso antes del primero (lote 6c): solo en la partida entera, no en «Así se juega» ni con `items`. */
+  const [enEjemplo, setEnEjemplo] = useState(() => Boolean(config.ejemplo) && !modoDemo && !items);
+  const idInstruccion = useId();
   const [s, setS] = useState(vacio);
   const [todos, setTodos] = useState([]);
   const tarjeta = useRef(null);
@@ -369,17 +388,51 @@ export default function CierreConMesa({
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (primeraVez.current) { primeraVez.current = false; return; }
-    if (!modoDemo) tarjeta.current?.focus({ preventScroll: false });
-  }, [t.i]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!modoDemo && !enEjemplo) tarjeta.current?.focus({ preventScroll: false });
+  }, [t.i, enEjemplo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (t.terminado) {
     const bien = todos.filter((x) => x.ok).length;
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-        {encima}
         <Cierre pct={Math.round(pct)} onReiniciar={() => { t.reiniciar(); setS(vacio()); setTodos([]); onReiniciar?.(); }} textoReiniciar="Otra vez">
           <p data-resumen-cierre style={TEXTO_CIERRE}>{config.resumen(bien, cuantas)}</p>
         </Cierre>
+        {encima}
+      </Marco>
+    );
+  }
+
+  const encabezado = (contador) => (
+    <EncabezadoCompacto objetivo={config.actividad.objetivo} consigna={config.actividad.consigna}
+      pasos={config.reglas ?? []} regla={AVISO_UN_INTENTO} contador={contador} />
+  );
+
+  /* El ejemplo resuelto: la figura (el asiento ya hecho), el enunciado y la explicación, y «Empezar». */
+  if (enEjemplo) {
+    const e = config.ejemplo;
+    const mesaEjemplo = e.asiento.map((m) => ({ cuenta: m.cuenta, lado: m.lado, texto: formatearCifra(String(m.valor)) }));
+    return (
+      <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+        <style>{CSS}</style>
+        <div className="fae-b5k" data-ejemplo-resuelto {...config.atributos}>
+          {encabezado(textos.ejemplo ?? "Ejemplo resuelto")}
+          <Mesa mesa={mesaEjemplo} activa={false} resultado={null} enEstante={[]} onSacar={() => {}} onCifra={() => {}} onDevolver={() => {}} />
+          <div data-tarjeta-parte={e.id} style={{ marginTop: "14px", padding: "11px 13px", borderRadius: "11px", background: "rgba(184,196,212,0.12)", borderLeft: `3px solid ${COLOR.neutro}` }}>
+            <p data-hecho style={{ margin: 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: COLOR.blanco }}>{e.hecho}</p>
+          </div>
+          {e.resolucion && (
+            <div data-resolucion style={{ margin: "12px 0 0" }}>
+              {e.resolucion.map((linea) => (
+                <p key={linea} style={{ margin: 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: COLOR.blanco }}>{linea}</p>
+              ))}
+            </div>
+          )}
+        </div>
+        <div data-boton-empezar>
+          <Responder onClick={() => setEnEjemplo(false)}>{textos.empezar ?? "Empezar"}</Responder>
+        </div>
+        {encima && <div data-diario-al-final style={{ marginTop: "14px" }}>{encima}</div>}
       </Marco>
     );
   }
@@ -413,50 +466,50 @@ export default function CierreConMesa({
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
+  const hechoCard = (
+    <div key={parte.id} data-tarjeta-parte={parte.id} style={{ padding: "11px 13px", borderRadius: "11px", background: "rgba(184,196,212,0.12)", borderLeft: `3px solid ${COLOR.neutro}` }}>
+      <p ref={tarjeta} tabIndex={-1} data-hecho style={{ margin: 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: COLOR.blanco }}>{esPregunta ? parte.enunciado : parte.hecho}</p>
+    </div>
+  );
+  const rotuloParte = (parte.rotulo || s.resultado?.ok) ? (
+    <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", margin: "0 0 8px" }}>
+      {s.resultado?.ok && <Visto />}
+      {parte.rotulo && (
+        <div>
+          <p data-rotulo-parte style={{ margin: 0, fontFamily: SORA, fontSize: "14px", fontWeight: 700, color: COLOR.blanco }}>{parte.rotulo}</p>
+          {/* La instrucción sale de la pantalla (lote 6c): la lee el lector, por aria-describedby de la parte. */}
+          {parte.instruccion && <p id={idInstruccion} data-instruccion style={SOLO_LECTOR}>{parte.instruccion}</p>}
+        </div>
+      )}
+    </div>
+  ) : null;
   const listo = esPregunta ? leerRespuesta(s.texto) !== null : s.mesa.length > 0 && s.mesa.every((m) => leerCifra(m.texto) !== null);
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
       <div className="fae-b5k" {...config.atributos}>
-        {!modoDemo && <Encabezado objetivo={config.actividad.objetivo} consigna={config.actividad.consigna} onComoSeJuega={onComoSeJuega} />}
-        {encima}
-        {!modoDemo && (
-          <div style={{ marginBottom: "12px" }}>
-            <Pulsos total={cuantas} hechos={t.i + (comprobada ? 1 : 0)} enCurso={t.i + 1} etiqueta={textos.etiqueta ?? "Asiento"} />
-          </div>
-        )}
+        {!modoDemo && encabezado(`${textos.etiqueta ?? "Asiento"} ${t.i + 1} de ${cuantas}`)}
         {Visual && !modoDemo && <Visual paso={t.i} comprobada={comprobada} reducido={reducido} />}
 
-        <div key={parte.id} data-tarjeta-parte={parte.id} style={{ padding: "11px 13px", borderRadius: "11px", background: "rgba(184,196,212,0.12)", borderLeft: `3px solid ${COLOR.neutro}` }}>
-          <p ref={tarjeta} tabIndex={-1} data-hecho style={{ margin: 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: COLOR.blanco }}>{esPregunta ? parte.enunciado : parte.hecho}</p>
-        </div>
+        {esPregunta && hechoCard}
 
         <section key={`${parte.id}-parte`} data-parte={parte.id} data-estado-parte={comprobada ? "comprobada" : "activa"}
+          aria-describedby={parte.instruccion ? idInstruccion : undefined}
           style={{
             /*
              * Sin borde y sin relleno lateral (hoja de Mai, calidad 1): un borde nunca toca el texto, y con
              * relleno «1.725.000» no cabe a 320. Lo que agrupaba el borde lo agrupan 16 px de aire.
              */
-            margin: "16px 0 0", padding: 0,
+            margin: esPregunta ? "16px 0 0" : 0, padding: 0,
           }}>
-          {(parte.rotulo || s.resultado?.ok) && (
-            <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", margin: "0 0 8px" }}>
-              {s.resultado?.ok && <Visto />}
-              {parte.rotulo && (
-                <div>
-                  <p data-rotulo-parte style={{ margin: 0, fontFamily: SORA, fontSize: "14px", fontWeight: 700, color: COLOR.blanco }}>{parte.rotulo}</p>
-                  {parte.instruccion && <p data-instruccion style={{ margin: "2px 0 0", fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: COLOR.apagado }}>{parte.instruccion}</p>}
-                </div>
-              )}
-            </div>
-          )}
+          {esPregunta && rotuloParte}
           {esPregunta ? (
             <Pregunta parte={parte} texto={s.texto} onTexto={(texto) => setS((x) => ({ ...x, texto }))} resultado={s.resultado}
               Bloque={config.bloques?.[parte.bloque] ?? null} reducido={reducido} etiqueta={textos.campo} />
           ) : (
             <Mesa mesa={s.mesa} activa={!comprobada} resultado={s.resultado} enEstante={enEstante}
-              onSacar={sacar} onCifra={cifra} onDevolver={devolver} />
+              onSacar={sacar} onCifra={cifra} onDevolver={devolver} entre={<>{rotuloParte}{hechoCard}</>} />
           )}
           <Retro resultado={s.resultado} />
           {!comprobada && (
@@ -484,6 +537,9 @@ export default function CierreConMesa({
           <Responder onClick={avanzar}>{t.i + 1 === cuantas ? "Ver mi resumen" : textos.siguiente ?? "Siguiente asiento"}</Responder>
         </div>
       )}
+
+      {/* El libro diario, al final de la tarjeta, debajo de «Siguiente» (lote 6c). */}
+      {encima && <div data-diario-al-final style={{ marginTop: "14px" }}>{encima}</div>}
 
       {!modoDemo && <p style={SOLO_LECTOR}>{config.alt}</p>}
     </Marco>
