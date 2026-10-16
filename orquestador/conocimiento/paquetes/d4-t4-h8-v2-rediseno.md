@@ -1,5 +1,6 @@
 **T4 · H8 «¿Se asienta o no?» · versión 2: el rediseño de enganche.**
 - **Este archivo es la versión vigente de H8.** Sustituye `d4-t4-h8-v1.md`, la parte de H8 de `d4-t4-h7-h8-serie2.md` y la de `d4-t4-asi-se-juega-v1.md`. Mismo `activity_id` (`t4-se-asienta-o-no`, migración 0207, que ya corrió en producción y no cambia) y mismos ítems (`s1-1`…, `asiento-s1-5`…, `saldo-mayor`). Con las cifras nuevas de la serie 1 (las de `d4-t4-h7-v2-rediseno.md`), el mayor solo llega a 2.551.700 con todas las decisiones buenas.
+- **Lote B (16 oct 2026), Katsumi:** en los aciertos H7-7 y H7-8 el «:» pasa a punto («La chequera es un gasto. …», «Los intereses de sobregiro son un gasto. …»); sin «Correcto.» suben de 63,8 y 63,1 a 70,8 y 70,6.
 - Por qué: la pieza publicada en la pila fallaba la barra de enganche B1-B5 (`orquestador/conocimiento/enganche.md`; diagnóstico de Shibukawa, `celula-d/shibukawa-diagnostico-enganche.md`).
 - Diseño: Hanayama (`celula-d/hanayama-h8-rediseno.md`). Textos: Katsumi (`celula-d/katsumi-texto-hacer.md`, 15 oct 2026), copiados aquí tal cual. Aprobados por Yujiro en su corte de calidad (`celula-d/corte-calidad.md`, «Hacer que quedan» y «Texto de los Hacer»).
 - El código lee estos textos de `src/data/contabilidadT4H8.js`; una prueba (`src/contabilidad/__tests__/t4-h8-*.test.mjs`) compara cada uno contra este archivo, letra por letra.
@@ -57,12 +58,12 @@ Orden de las reglas (paquete): sin Bancos; Bancos al lado contrario; la cuenta; 
 | | Usó Gasto interés | Esos intereses los ganó la empresa, no los pagó. Un interés ganado es un ingreso. | 15 pal. · INFLESZ 78,9 |
 | | Usó Gastos financieros – chequera | Esta plata la ganó la empresa por su inversión: no es un gasto. Piensa en qué tipo de cuenta registra lo que se gana. | 24 pal. · INFLESZ 96,2 |
 | | Lados al revés | Las cuentas están bien, pero al revés. Bancos sube, así que va al debe. El ingreso va al haber. | 19 pal. · INFLESZ 102,1 |
-| H7-7 | Acierto (Gastos financieros – chequera / Bancos) | Correcto. La chequera es un gasto: Gastos financieros – chequera se debita y Bancos se acredita. | 15 pal. · INFLESZ 66,4 |
+| H7-7 | Acierto (Gastos financieros – chequera / Bancos) | Correcto. La chequera es un gasto. Gastos financieros – chequera se debita y Bancos se acredita. | 15 pal. · INFLESZ 68,9 |
 | | Usó Gasto interés | Una chequera no es un interés: es lo que cobra el banco por los cheques. Tiene su propia cuenta de gasto. | 21 pal. · INFLESZ 98,4 |
 | | Usó Cuentas por cobrar – clientes | Ningún cliente tiene que ver aquí: el banco cobró por un servicio suyo. Es un gasto de la empresa. | 19 pal. · INFLESZ 92,4 |
 | | Usó Ingresos por intereses | La chequera la cobró el banco: la empresa no ganó nada. Piensa en qué tipo de cuenta registra lo que se paga. | 22 pal. · INFLESZ 93,9 |
 | | Lados al revés | Las cuentas están bien, pero al revés. El gasto va al debe. Bancos baja, así que va al haber. | 19 pal. · INFLESZ 105,4 |
-| H7-8 | Acierto (Gasto interés / Bancos) | Correcto. Los intereses de sobregiro son un gasto: Gasto interés se debita y Bancos se acredita. | 16 pal. · INFLESZ 66,4 |
+| H7-8 | Acierto (Gasto interés / Bancos) | Correcto. Los intereses de sobregiro son un gasto. Gasto interés se debita y Bancos se acredita. | 16 pal. · INFLESZ 69,1 |
 | | Usó Ingresos por intereses | Estos intereses los cobró el banco, no los ganó la empresa. Un interés que se paga es un gasto. | 19 pal. · INFLESZ 92,4 |
 | | Usó Gastos financieros – chequera | Esa cuenta es la del cobro de la chequera. Esto es un interés, y tiene su propia cuenta. | 18 pal. · INFLESZ 97,5 |
 | | Usó Cuentas por cobrar – clientes | El banco cobró intereses por el sobregiro: ningún cliente quedó debiendo nada. Piensa en qué tipo de cuenta registra lo que se paga. | 23 pal. · INFLESZ 78,9 |
@@ -87,12 +88,12 @@ Orden de las reglas (paquete): sin Bancos; Bancos al lado contrario; la cuenta; 
 | | Usó Gasto interés | Esos intereses los ganó la empresa, no los pagó. Un interés ganado es un ingreso. | 15 pal. · INFLESZ 78,9 |
 | | Usó Gastos financieros – chequera | Esta plata la ganó la empresa por su inversión: no es un gasto. Piensa en qué tipo de cuenta registra lo que se gana. | 24 pal. · INFLESZ 96,2 |
 | | Lados al revés | Las cuentas están bien, pero al revés. Bancos sube, así que va al debe. El ingreso va al haber. | 19 pal. · INFLESZ 102,1 |
-| H7-7 | Acierto (Gastos financieros – chequera / Bancos) | Correcto. La chequera es un gasto: Gastos financieros – chequera se debita y Bancos se acredita. | 15 pal. · INFLESZ 66,4 |
+| H7-7 | Acierto (Gastos financieros – chequera / Bancos) | Correcto. La chequera es un gasto. Gastos financieros – chequera se debita y Bancos se acredita. | 15 pal. · INFLESZ 68,9 |
 | | Usó Gasto interés | Una chequera no es un interés: es lo que cobra el banco por los cheques. Tiene su propia cuenta de gasto. | 21 pal. · INFLESZ 98,4 |
 | | Usó Cuentas por cobrar – clientes | Ningún cliente tiene que ver aquí: el banco cobró por un servicio suyo. Es un gasto de la empresa. | 19 pal. · INFLESZ 92,4 |
 | | Usó Ingresos por intereses | La chequera la cobró el banco: la empresa no ganó nada. Piensa en qué tipo de cuenta registra lo que se paga. | 22 pal. · INFLESZ 93,9 |
 | | Lados al revés | Las cuentas están bien, pero al revés. El gasto va al debe. Bancos baja, así que va al haber. | 19 pal. · INFLESZ 105,4 |
-| H7-8 | Acierto (Gasto interés / Bancos) | Correcto. Los intereses de sobregiro son un gasto: Gasto interés se debita y Bancos se acredita. | 16 pal. · INFLESZ 66,4 |
+| H7-8 | Acierto (Gasto interés / Bancos) | Correcto. Los intereses de sobregiro son un gasto. Gasto interés se debita y Bancos se acredita. | 16 pal. · INFLESZ 69,1 |
 | | Usó Ingresos por intereses | Estos intereses los cobró el banco, no los ganó la empresa. Un interés que se paga es un gasto. | 19 pal. · INFLESZ 92,4 |
 | | Usó Gastos financieros – chequera | Esa cuenta es la del cobro de la chequera. Esto es un interés, y tiene su propia cuenta. | 18 pal. · INFLESZ 97,5 |
 | | Usó Cuentas por cobrar – clientes | El banco cobró intereses por el sobregiro: ningún cliente quedó debiendo nada. Piensa en qué tipo de cuenta registra lo que se paga. | 23 pal. · INFLESZ 78,9 |
