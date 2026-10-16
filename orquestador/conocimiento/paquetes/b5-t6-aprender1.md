@@ -132,3 +132,53 @@ contado	No cambia	Pagó en el momento, así que no queda debiendo nada: no cambi
 ## (6) Mai · hoja 6: la pregunta de la caja (la revisa Shoko)
 
 «¿Qué pasa con lo que deben los clientes?»
+
+## Lote C2 · C1 · C7 (Futaba, PASA de Shoko, 15-oct) · manda sobre lo de arriba
+
+Líneas copiadas tal cual de paquetes/b5-lote-c2-c1-c7.md (la entrega entera). Al primer error sale la pista; al segundo, la devolución que ya existe y después el texto que se revela.
+
+| Pieza | Caja o parada | Pista |
+|---|---|---|
+| T6 A1 | Taller (servicio a crédito) | Después de esto, ¿el cliente ya pagó o quedó debiendo algo? |
+| T6 A1 | Paga la mitad | Piensa en cuánto debe el cliente justo después de pagar esa parte. |
+| T6 A1 | Cheque | Si el banco no le pagó el cheque, ¿el cliente sí canceló su deuda? |
+| T6 A1 | Devolución | ¿Tiene que pagar el cliente lo que ya regresó? |
+| T6 A1 | Descuento | Un descuento sobre una deuda, ¿qué le hace a lo que el cliente tiene que pagar? |
+| T6 A1 | Contado | Si paga en el mismo momento, ¿queda alguna deuda por anotar? |
+
+### C1-4 · T6 A1 · capa 3
+| Caja | Hecho | Revela | Al segundo error | Pie |
+|---|---|---|---|---|
+| Venta (sigue con c5) | Un taller le arregla el carro a un cliente a crédito: le da 30 días para pagar. | Sube: se debita. El cliente queda debiendo el arreglo. | La de hoy | Basado en el libro, p. 197 |
+| Pago | Un cliente paga la mitad de lo que debe. | Baja: se acredita, pero solo por lo que pagó. El resto lo sigue debiendo. | Lo que pagó ya no lo debe; el resto lo sigue debiendo. | Libro, p. 197 |
+| Cheque | El cheque con el que un cliente pagó su factura rebota: el banco no lo paga. | La de hoy | La de hoy | La de hoy |
+| Devolución | Llegan de vuelta unas cajas de un pedido que el cliente aún no paga. | La de hoy | La de hoy | La de hoy |
+| Descuento | Un cliente recibe un descuento sobre la factura que todavía no ha pagado. | La de hoy | La de hoy | La de hoy |
+| Contado | La de hoy | La de hoy | La de hoy | La de hoy |
+
+### C1-5 · T6 A1 · capa 4 (pie «Basado en el libro, p. 197»)
+Pregunta: «Un cliente compra a crédito y, antes de pagar, devuelve toda la mercancía. ¿Cuánto debe al final?»
+| Opción | ✓ | Devolución |
+|---|---|---|
+| Nada: la deuda subió con la venta y bajó con la devolución. | ✓ | Correcto. La venta a crédito hizo subir la deuda, y la devolución la hizo bajar por el mismo valor. |
+| Lo mismo que compró: la devolución no cambia la deuda. | | No es esa. Lo que devuelve antes de pagar ya no lo tiene que pagar: la deuda baja. |
+| El doble: la devolución también se debita. | | No es esa. La devolución hace bajar lo que debe el cliente, así que se acredita. |
+| Nada, pero se anota un ingreso por la devolución. | | No es esa. La deuda sí queda en nada, pero una devolución no es un ingreso: es una devolución de ventas. |
+
+| # | Término | Texto final | Estado |
+|---|---|---|---|
+| C7-4 | T6 A1 · Cuentas por cobrar | (sin cambio) | PASA |
+
+## B2 · Capa 1, un término por pantalla (Futaba, con las correcciones de Shoko, 15-oct) · manda sobre lo de arriba
+
+Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza. Kaede la aplicó letra por letra.
+
+(«El de hoy» = el texto que ya está en el repositorio para ese término, sin cambios. Las cifras entre paréntesis son la estimación INFLESZ de Futaba; NO van en pantalla. «Def.:», «Cita:», «Nota:», «Pie:» indican la parte del término: Def. = definición/texto; Cita = «Así lo dice el libro»; Nota = la nota; Pie = pie de fuente.)
+
+### T6 A1 · 6 pantallas («Nota débito» va antes de «Cuándo sube»)
+1. **Cuentas por cobrar** — Def.: Es todo lo que otras personas o empresas le deben a la empresa. Se considera un activo, porque es un derecho de cobro. Incluye las deudas comerciales, que vienen del negocio, y las no comerciales. · Cita: «…se contabilizan los valores que terceras personas le adeudan a la empresa.» (p. 195)
+2. **Clientes** — Def.: Es lo que deben los clientes por bienes y servicios que la empresa les vendió a crédito y que todavía no han pagado. · Cita: «…quizás el concepto más importante dentro de lo que se clasifica como cuentas por cobrar.» (p. 196) · Nota: El libro también la llama cartera. Aquí se llama “Cuentas por cobrar – clientes”.
+3. **Otras cuentas por cobrar** — El de hoy.
+4. **Nota débito** — La definición del Tema 4, letra por letra. (Kaede: la prueba de la glosa ahora mira este término.)
+5. **Cuándo sube lo que deben los clientes** — El de hoy, sin la nota debajo.
+6. **Cuándo baja lo que deben los clientes** — Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. Baja cuando devuelve mercancía comprada a crédito que aún no pagaba: es una devolución de ventas. Baja con un descuento sobre lo que aún debe. Y baja cuando la deuda se da por perdida.

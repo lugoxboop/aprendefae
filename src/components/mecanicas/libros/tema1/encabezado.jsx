@@ -43,8 +43,20 @@ const SORA = "Sora, sans-serif";
  * Debajo de la consigna, y solo en las actividades que ya tienen su «Así se
  * juega». Va en el mismo gris secundario de la consigna —es una ayuda, no una
  * acción de la partida— y el icono es el círculo #B8C4D4 con el «?» navy del
- * resto del tema. El área de toque mide al menos 40 × 40 aunque el texto se
- * vea pequeño.
+ * resto del tema.
+ *
+ * EL BLANCO DE TOQUE SON 44, Y ESTE COMENTARIO DECÍA 40. Lo midió la Célula D
+ * en T4: 40 × 40, que era la regla de antes de que kit.md fijara 44. No se
+ * arregla subiendo el minHeight —este botón va en el flujo, con un margen
+ * inferior negativo que aprieta el espacio, así que crecer 4 px empujaría el
+ * contenido de todas las actividades que lo traen—, sino con el ::after de
+ * global.css que da 44 sin mover el dibujo. La caja dibujada sigue en 40.
+ *
+ * EL MARGEN IZQUIERDO NEGATIVO NO ES UN DEFECTO, aunque se mida como que el
+ * botón sobresale 6 px del texto de la consigna. Es lo que alinea
+ * ÓPTICAMENTE la palabra con la consigna, compensando el relleno del propio
+ * botón: sin él, el texto del botón se vería 6 px metido hacia dentro. No
+ * desborda la pantalla; lo que se come es relleno del contenedor.
  */
 export function BotonComoSeJuega({ onClick }) {
   return (

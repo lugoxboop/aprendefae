@@ -81,8 +81,8 @@ const PROPIOS = [
   [/function (Veredicto|MarcaPieza|Punto)\b/, "tiene su propia palabra o su propio punto"],
 ];
 
-test("★★★ ningún archivo de repasoCap5/ vuelve a definir sus estados: los importa de comun.jsx (guarda: 12 archivos)", () => {
-  assert.equal(ARCHIVOS.length, 12, `los archivos cambiaron: ${ARCHIVOS.join(", ")}`);
+test("★★★ ningún archivo de repasoCap5/ vuelve a definir sus estados: los importa de comun.jsx (guarda: 14 archivos)", () => {
+  assert.equal(ARCHIVOS.length, 14, `los archivos cambiaron: ${ARCHIVOS.join(", ")}`);
   const malos = [];
   for (const f of ARCHIVOS) {
     const fuente = leer(CARPETA + f);

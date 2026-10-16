@@ -208,3 +208,42 @@ Provisiones, correcta «Al cerrar el periodo». Si falla: «Con provisiones, el 
 La hoja 6 de Mai propone «¿Qué se debita al castigar la deuda?», pero no responde a las opciones de Futaba. Mientras Shoko decide, la pregunta sale de la consigna nueva («decide cuándo aparece el gasto»):
 
 ¿Cuándo aparece el gasto?
+
+## Lote C2 · C1 · C7 (Futaba, PASA de Shoko, 15-oct) · manda sobre lo de arriba
+
+Líneas copiadas tal cual de paquetes/b5-lote-c2-c1-c7.md (la entrega entera). Al primer error sale la pista; al segundo, la devolución que ya existe y después el texto que se revela.
+
+| Pieza | Caja o parada | Pista |
+|---|---|---|
+| T6 A2 | Anulación directa | Pregúntate si este método anota algo antes de que una deuda se dé por perdida. |
+| T6 A2 | Provisiones | Este método estima la pérdida antes de saber qué deuda se va a perder. |
+
+| Pieza | Pregunta | Opción nueva | Devolución al segundo error |
+|---|---|---|---|
+| T6 A2 | Anulación directa | Cuando se vende a crédito | No: con este método no se anota nada antes. El gasto llega cuando la deuda se pierde. |
+| T6 A2 | Provisiones | Cuando se vende a crédito | No: al vender todavía no se sabe qué parte se va a perder. Eso se estima al cierre. |
+
+### C1-6 y C1-7 · T6 A2
+- Capa 2: se elimina el paso 10. (Mai ajusta la escena: si la escena del paso 10 no aporta nada nuevo, basta con quitarlo.)
+- Cierre de la capa 2: «Con la anulación directa, la deuda se borra sin dejar información aparte.»
+- Consigna de la capa 3: «Toca cada método y decide cuándo aparece el gasto. Después, mira la razón.»
+- Texto que revela la caja de provisiones: «Al cerrar el periodo se estima qué parte no se recuperará, y ese valor se anota como gasto desde ya. El gasto aparece antes de saber qué deuda se pierde.»
+
+| # | Término | Texto final | Estado |
+|---|---|---|---|
+| C7-3 | T6 A2 · Cuentas incobrables | (sin cambio) | PASA |
+
+## B2 · Capa 1, un término por pantalla (Futaba, con las correcciones de Shoko, 15-oct) · manda sobre lo de arriba
+
+Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza. Kaede la aplicó letra por letra.
+
+(«El de hoy» = el texto que ya está en el repositorio para ese término, sin cambios. Las cifras entre paréntesis son la estimación INFLESZ de Futaba; NO van en pantalla. «Def.:», «Cita:», «Nota:», «Pie:» indican la parte del término: Def. = definición/texto; Cita = «Así lo dice el libro»; Nota = la nota; Pie = pie de fuente.)
+
+### T6 A2 · 7 pantallas
+1. **Cuentas incobrables o de difícil cobro** — Def.: Nacen de las ventas a crédito. Cuando el cobro de una deuda se vuelve imposible, por quiebra, muerte o cambio de domicilio del cliente, entre otras razones, se clasifica como de difícil o dudoso cobro. Es una pérdida para el negocio. · Cita: «…algunos clientes no paguen las deudas.» (p. 198)
+2. **Cómo se decide** — Def.: La de hoy. · Nota: Una deuda vigente todavía está dentro de su plazo de pago. Una vencida ya lo pasó.
+3. **Castigar una deuda** — El de hoy.
+4. **Método de anulación directa** — Cuando la deuda se da por perdida, se saca de Cuentas por cobrar – clientes y su valor va al gasto. Se debita Gasto provisiones – cuentas incobrables y se acredita Cuentas por cobrar – clientes. Ojo: el nombre de ese gasto dice “provisiones”, pero este método no crea ninguna provisión.
+5. **La desventaja de la anulación directa** — Def.: La anulación directa es muy sencilla. Pero no guarda información de las deudas que se castigan. Y esa información sirve para decidir cómo vender a crédito. · Cita: «Este método es muy sencillo, pero presenta la desventaja de que no suministra información relacionada con la cartera castigada…» (p. 199)
+6. **Método de provisiones** — Def.: Al cerrar el periodo, la empresa estima qué parte de lo que le deben los clientes no va a recuperar. Ese valor se anota como gasto desde ya. · Cita: la de hoy, de la p. 200.
+7. **Los asientos del método de provisiones** — Al cierre, se debita Gasto provisiones – cuentas incobrables. Y se acredita una cuenta llamada Provisión para deudas incobrables. Después, cuando una deuda se castiga, se debita esa provisión y no el gasto. La provisión se explica más en la próxima pieza.

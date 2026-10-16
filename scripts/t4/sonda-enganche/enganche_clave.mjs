@@ -20,8 +20,11 @@ const carga = async (p) => {
 const clave = {};
 
 const h1 = await carga("H1");
+// H1 rediseñado (el cajón como tablero, con saldo inicial): el gesto es tocar un destino del cajón (data-destino);
+// el de antes era una opción de radio (data-opcion). La clave sale del build que se mide.
+const gestoH1 = h1 && h1.SALDO_INICIAL_H1 != null ? "destino" : "opcion";
 if (h1) clave.H1 = { tarjeta: "[data-hecho]", items: Object.fromEntries(h1.ITEMS_H1.map((it) => [n(it.texto), {
-  bien: { opcion: it.respuesta }, mal: { opcion: h1.DESTINOS_H1.map((d) => d.id ?? d).find((d) => d !== it.respuesta) } }])) };
+  bien: { [gestoH1]: it.respuesta }, mal: { [gestoH1]: h1.DESTINOS_H1.map((d) => d.id ?? d).find((d) => d !== it.respuesta) } }])) };
 
 const h2 = await carga("H2");
 if (h2) clave.H2 = { tarjeta: "[data-caso]", items: Object.fromEntries(h2.CASOS_H2.map((c) => [n(c.caso), {

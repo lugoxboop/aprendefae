@@ -9,8 +9,9 @@ import { readFileSync, readdirSync } from "node:fs";
  * El registro es de Near, en
  * orquestador/conocimiento/registro-cifras-construidas-t5.json, con las tres
  * etiquetas de uso de N4 que corrigió Mello (decisión de L, en
- * paquetes/t5-veredicto-mello-tandas-1-y-2.md); las cifras no cambian. Esta
- * prueba lo lee y, para cada fila:
+ * paquetes/t5-veredicto-mello-tandas-1-y-2.md); las cifras no cambian. Desde
+ * la v2 de N5 trae 40 filas: N4, N5 v2, N6 y N7 (estas dos, todavía sin
+ * pieza en el catálogo). Esta prueba lo lee y, para cada fila:
  *
  *   · evalúa su «calculo» (enteros, solo + − × / y paréntesis) y lo compara
  *     con su «cifra»
@@ -20,6 +21,9 @@ import { readFileSync, readdirSync } from "node:fs";
  *   · comprueba que la cifra no es del libro: ni de Santa Pacha (dueña
  *     b5-t5-a2), ni de C.4 ni de D.1 e del banco
  *   · comprueba que N4 y N5 no comparten cifras
+ *
+ * La cifra del libro que N5 usa solo para reconocer un error (4.860.000) no
+ * es construida y no va en el registro; la trata la prueba de N5.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -30,7 +34,9 @@ const VEREDICTO = leer("orquestador/conocimiento/paquetes/t5-veredicto-mello-tan
 const { SUBJECTS } = await import("../../data/subjects.js");
 const TEMA = SUBJECTS.contabilidad.topics.find((t) => t.id === "activos-financieros");
 const FILAS = REGISTRO.construidas;
-const PIEZAS = ["t5-el-interes-del-periodo", "t5-gano-o-perdio"];
+/* En el orden del archivo: N4, N5, N6 y N7. */
+const PIEZAS = ["t5-el-interes-del-periodo", "t5-gano-o-perdio", "t5-a2-lo-que-el-ejemplo-no-trae", "t5-a-que-cuenta-va"];
+const FILAS_POR_PIEZA = [13, 14, 5, 8];
 
 function evaluar(calculo) {
   if (!/^[\d\s+\-*/()]+$/.test(calculo)) throw new Error(`cálculo con algo que no es aritmética: ${calculo}`);
@@ -52,11 +58,13 @@ const archivosDe = (id) => ARCHIVOS.filter((f) => readFileSync(new URL(f, DATOS)
 
 /* ═══════════ 1 · EL ARCHIVO ═══════════ */
 
-test("★★★ el registro: tema T5, 28 filas de N4 y N5, y las tres listas del libro con dueño", () => {
+test("★★★ el registro: tema T5, 40 filas de N4, N5, N6 y N7, cada pieza junta y en su orden, y las tres listas del libro con dueño", () => {
   assert.equal(REGISTRO.tema, "activos-financieros");
-  assert.equal(FILAS.length, 28);
-  assert.deepEqual([...new Set(FILAS.map((f) => f.pieza))], PIEZAS);
-  assert.deepEqual(FILAS.map((f) => f.pieza).filter((p) => p === PIEZAS[0]).length, 13);
+  assert.equal(FILAS.length, 40);
+  /* Cada pieza en un solo bloque, en el orden del archivo. */
+  const bloques = FILAS.map((f) => f.pieza).filter((p, k, xs) => k === 0 || xs[k - 1] !== p);
+  assert.deepEqual(bloques, PIEZAS);
+  assert.deepEqual(PIEZAS.map((id) => FILAS.filter((f) => f.pieza === id).length), FILAS_POR_PIEZA);
   for (const f of FILAS) assert.ok(Number.isInteger(f.cifra) && typeof f.uso === "string" && f.uso !== "", JSON.stringify(f));
   assert.deepEqual(REGISTRO.libro_con_dueno.map((x) => x.fuente), ["Santa Pacha, pp. 194-195 (b5-t5-a2)", "Banco C.4, p. 264", "Banco D.1 e, p. 267"]);
 });
@@ -87,8 +95,8 @@ test("★★★ cada «calculo» da su «cifra»", () => {
 
 test("★★★ cada cifra de una pieza publicada está en sus datos, como valor numérico", async () => {
   const publicadas = PIEZAS.filter((id) => TEMA.actividades.some((a) => a.id === id));
-  /* N4 entra con este registro; N5 entra después, y desde entonces se comprueba igual. */
-  assert.ok(publicadas.includes("t5-el-interes-del-periodo"));
+  /* N4, N5 y N6 están en el tema; N7, todavía no: sus filas se comprueban cuando entre. */
+  assert.deepEqual(publicadas, PIEZAS.slice(0, 3));
   const faltan = [];
   for (const id of publicadas) {
     const archivos = archivosDe(id);
@@ -107,6 +115,6 @@ test("★★★ ninguna cifra construida es del libro (Santa Pacha, C.4, D.1 e) 
   for (const v of [2_000_000, 1_725_000, 375_000, 343_750, 520_000, 31_200, 31_460, 831_000]) assert.ok(libro.has(v), String(v));
   assert.deepEqual(FILAS.filter((f) => libro.has(f.cifra)).map((f) => `${f.pieza}: ${f.cifra}`), []);
   const de = (id) => new Set(FILAS.filter((f) => f.pieza === id).map((f) => f.cifra));
-  const [n4, n5] = PIEZAS.map(de);
+  const [n4, n5] = PIEZAS.slice(0, 2).map(de);
   assert.deepEqual([...n4].filter((v) => n5.has(v)), []);
 });

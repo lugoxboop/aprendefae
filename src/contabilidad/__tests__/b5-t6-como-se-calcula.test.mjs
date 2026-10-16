@@ -65,7 +65,8 @@ const conPie = () => [
   ...N.filter((n) => n.pieDelLibro).map((n) => ({ donde: `nota de «${n.termino}»`, texto: n.delLibro, pie: n.pieDelLibro })),
   ...D.PASOS_T6_A5.map((p, k) => ({ donde: `paso ${k + 1}`, ...p })),
   { donde: "cierre", ...D.CIERRE_T6_A5 },
-  ...D.GRUPOS_T6_A5.map((g) => ({ donde: `caja ${g.id}`, texto: `${g.nombre} ${g.monto} ${g.revela}`, pie: g.pie })),
+  /* Lote C1-14: la caja ya no dice el grupo ni su monto, sino la deuda suelta. */
+  ...D.GRUPOS_T6_A5.map((g) => ({ donde: `caja ${g.id}`, texto: `${g.deuda} ${g.revela}`, pie: g.pie })),
   { donde: "final de la capa 3", ...D.FINAL_CAPA_3_T6_A5 },
 ];
 /* Las cifras en pesos de un texto: «$1.000.000» → 1000000. */
@@ -82,10 +83,11 @@ test("★★★ todo texto de los datos es literal del paquete guardado (paquete
   assert.deepEqual(textos.filter((t) => !FUENTE.includes(t)), []);
 });
 
-test("★★★ manda Futaba: los cuatro términos con su pie (el del término 1, el de Sakuta), la cita del 1 y la nota del 4", () => {
-  assert.deepEqual(N.map((x) => x.termino), ["Análisis de vencimiento", "Un porcentaje por grupo", "La provisión", "Una referencia colombiana"]);
+test("★★★ manda Futaba, y encima B2: cinco términos con su pie (el del término 1, el de Sakuta), la cita en el 2 y la nota del 4 como término 5", () => {
+  assert.deepEqual(N.map((x) => x.termino), ["Análisis de vencimiento", "Un porcentaje por grupo", "La provisión", "Una referencia colombiana", "Para qué sirven esos porcentajes"]);
   const fila = (x) => FUTABA.split("\n").find((l) => l.split("\t")[1] === x.termino)?.split("\t");
-  N.forEach((x, k) => {
+  /* Los cuatro primeros siguen siendo los de Futaba («el de hoy» en B2), con su pie. */
+  N.slice(0, 4).forEach((x, k) => {
     const f = fila(x);
     assert.ok(f, `término «${x.termino}» en la tabla de Futaba`);
     assert.equal(f[2], x.definicion, `texto del término ${k + 1}`);
@@ -94,12 +96,26 @@ test("★★★ manda Futaba: los cuatro términos con su pie (el del término 1
   });
   assert.equal(fila(N[0])[3], "Basado en el libro, p. 200", "la guarda: Futaba decía p. 200");
   assert.match(FUENTE, /El pie del término 1 es «Basado en el libro, pp\. 200-201»/);
-  /* La cita del 1, con su página; la nota del 4, con su rótulo y su pie de dos fuentes. */
-  assert.ok(FUTABA.includes(`1 · Así lo dice el libro\t—\t${N[0].delLibro.replace(/ \(p\. 201\)$/, "")}\t(p. 201)`));
-  assert.equal(N[0].rotuloDelLibro, undefined);
-  assert.ok(FUTABA.includes(`4 · Nota ✎\t—\t${N[3].delLibro}\t${N[3].pieDelLibro}\t`));
-  assert.equal(N[3].rotuloDelLibro, "Nota");
-  assert.deepEqual([N[1].delLibro, N[2].delLibro], [undefined, undefined]);
+  /* B2 (un término por pantalla, 15-oct), guardada al final del paquete. */
+  const B2 = FUENTE.slice(FUENTE.indexOf("## B2 ·"));
+  assert.ok(B2.includes("1. **Análisis de vencimiento** — La definición de hoy, sin la cita."));
+  assert.equal(N[0].delLibro, undefined, "el término 1 va sin la cita");
+  /* La cita pasa al 2, recortada, con su página; el rótulo es el del componente. */
+  assert.ok(B2.includes(`**Un porcentaje por grupo** — Def.: La de hoy. · Cita: ${N[1].delLibro}`));
+  assert.match(N[1].delLibro, /^«….*» \(p\. 201\)$/);
+  assert.ok(FUTABA.includes(`1 · Así lo dice el libro\t—\t«Lo primero que se deba hacer para realizar el ajuste por cuentas incobrables a diciembre 31 es ${N[1].delLibro.slice(2)}`.replace(/ \(p\. 201\)$/, "")), "la cita recortada es la del libro");
+  assert.equal(N[1].rotuloDelLibro, undefined);
+  /* El 4 queda sin nota y con el pie del Decreto. */
+  assert.ok(B2.includes(`**Una referencia colombiana** — ${N[3].definicion} · Pie: Decreto (el pie de hoy).`));
+  assert.equal(N[3].pie, D.PIE_DECRETO);
+  assert.deepEqual([N[2].delLibro, N[3].delLibro, N[4].delLibro], [undefined, undefined, undefined]);
+  assert.deepEqual(N.map((x) => x.pieDelLibro), [undefined, undefined, undefined, undefined, undefined]);
+  /* La nota del 4 (C7-6 del lote C2 · C1 · C7) es ahora el término 5, con la frase partida y el pie de la C7-6. */
+  assert.ok(FUTABA.includes(`4 · Nota ✎\t—\t`), "la guarda: la nota del 4 en la tabla de Futaba");
+  assert.ok(B2.includes(`**Para qué sirven esos porcentajes** — ${N[4].definicion} · Pie: el de la C7-6.`));
+  assert.ok(FUENTE.includes(`| C7-6 | T6 A5 · nota del término 4 | Esos porcentajes son${N[4].definicion.slice("Son".length)} | Corregida |`), "el término 5 es la C7-6 con la frase partida");
+  assert.ok(FUENTE.includes(`Pie de C7-6: «${N[4].pie}».`), "su pie, literal de C7-6");
+  assert.equal(N[4].pie, D.PIE_DECRETO_DIAN_Y_LIBRO);
 });
 
 test("★★★ el cambio de cifras es la tabla de Futaba (sección (5)), y la devolución correcta de la capa 4 es la que ella dicta", () => {
@@ -124,10 +140,22 @@ test("★★★ manda Futaba: los 11 pasos y el cierre, cada uno con su pie", ()
   assert.ok(FUTABA_NUEVA.includes(`Cierre\t${D.CIERRE_T6_A5.texto}\t${D.CIERRE_T6_A5.pie}\t`), "el cierre y su pie");
 });
 
-test("★★★ manda Futaba: las cuatro cajas (nombre · monto), lo que revelan, el final y la capa 4", () => {
-  for (const g of D.GRUPOS_T6_A5) assert.ok(FUTABA_NUEVA.includes(`${g.nombre} · ${g.monto}\t✎ ${g.revela}\t${g.pie}\t`) || FUTABA_NUEVA.includes(`${g.nombre} · ${g.monto}\t${g.revela}\t${g.pie}\t`), g.id);
+test("★★★ manda Futaba: las cuatro cajas (la deuda suelta de C1-14, con su grupo y su pie de antes), lo que revelan, el final y la capa 4", () => {
+  /* El grupo de cada caja (la fila del tablero) y su pie siguen siendo los de Futaba. */
+  for (const g of D.GRUPOS_T6_A5) {
+    const fila = FUTABA_NUEVA.split("\n").find((l) => l.startsWith(`${g.nombre} · ${g.monto}\t`));
+    assert.ok(fila, `${g.id}: su grupo en la tabla de Futaba`);
+    assert.equal(fila.split("\t")[2], g.pie, `${g.id}: el pie de antes`);
+  }
+  /* Lo nuevo, literal de la tabla C1-14: la deuda, sus opciones, la correcta y lo que revela. */
+  const C1_14 = FUENTE.slice(FUENTE.indexOf("### C1-14 · T6 A5 · capa 3"));
+  for (const g of D.GRUPOS_T6_A5) {
+    const opciones = g.opciones.map((o) => o.texto).join(" · ");
+    const correcta = g.opciones.find((o) => o.id === g.correcta).texto;
+    assert.ok(C1_14.includes(`| ${g.deuda} | ${opciones} | ${correcta} | ${g.revela} |`), g.id);
+  }
   assert.ok(FUTABA_NUEVA.includes(`Cuando tocó las cuatro\t${D.FINAL_CAPA_3_T6_A5.texto}\t${D.FINAL_CAPA_3_T6_A5.pie}\t`));
-  assert.ok(ENTREGA_2.includes(`Consigna: «${D.CONSIGNA_CAPA_3_T6_A5}» (71)`), "la consigna de la entrega 2");
+  assert.ok(C1_14.includes(`Consigna: «${D.CONSIGNA_CAPA_3_T6_A5}»`), "la consigna de C1-14");
   assert.ok(FUTABA_NUEVA.includes(`Pregunta: ${D.PREGUNTA_FINAL_T6_A5} (70)`));
   for (const o of D.OPCIONES_FINAL_T6_A5) {
     const marca = o.correcta ? "✓" : "✗";
@@ -156,7 +184,8 @@ const TIPOS = [
   { nombre: "libro", es: (p) => /^Basado en el libro, (p\. \d+|pp\. \d+-\d+)$/.test(p) },
   { nombre: "simulado", es: (p) => p === "Escenario simulado" },
   { nombre: "porcentaje", es: (p) => p === "Fuente del porcentaje: Decreto 1625 de 2016" },
-  { nombre: "decreto", es: (p) => p === "Fuente: Decreto 1625 de 2016, art. 1.2.1.18.21" || p === "Fuente: Decreto 1625 de 2016, art. 1.2.1.18.21 · Libro, p. 201" },
+  /* El de la nota del término 4 nombra también el concepto de la DIAN (C7-6). */
+  { nombre: "decreto", es: (p) => p === "Fuente: Decreto 1625 de 2016, art. 1.2.1.18.21" || p === "Fuente: Decreto 1625 de 2016, art. 1.2.1.18.21, y DIAN, Concepto 534 de 2026 · Libro, p. 201" },
 ];
 const tipoDe = (p) => TIPOS.filter((t) => t.es(p)).map((t) => t.nombre);
 
@@ -168,19 +197,21 @@ test("★★★ cada pie es de uno, y solo uno, de los cuatro tipos (y uno mezcl
   for (const x of items) assert.equal(tipoDe(x.pie).length, 1, `${x.donde}: «${x.pie}»`);
 });
 
-test("★★★ ningún pie con «Libro» va en un texto con una cifra del ejemplo; «· Libro, p. 201» solo en la nota del término 4", () => {
+test("★★★ ningún pie con «Libro» va en un texto con una cifra del ejemplo; «· Libro, p. 201» solo en el término 5 (la nota del 4 de antes)", () => {
   const malos = conPie().filter((x) => /Libro/.test(x.pie) && tieneCifraDelEjemplo(x.texto)).map((x) => x.donde);
   assert.deepEqual(malos, []);
-  const dosFuentes = conPie().filter((x) => x.pie === D.PIE_DECRETO_Y_LIBRO).map((x) => x.donde);
-  assert.deepEqual(dosFuentes, ["nota de «Una referencia colombiana»"]);
-  assert.ok(!tieneCifraDelEjemplo(N[3].delLibro), "la nota de dos fuentes no trae cifras del ejemplo");
+  const dosFuentes = conPie().filter((x) => / · Libro, p\. 201$/.test(x.pie)).map((x) => x.donde);
+  assert.deepEqual(dosFuentes, ["término «Para qué sirven esos porcentajes»"]);
+  assert.equal(N[4].pie, D.PIE_DECRETO_DIAN_Y_LIBRO);
+  assert.ok(!tieneCifraDelEjemplo(N[4].definicion), "el texto de dos fuentes no trae cifras del ejemplo");
   /* Control: la regla atrapa un pie «Libro» puesto en un texto con cifra. */
-  assert.ok(/Libro/.test(D.PIE_DECRETO_Y_LIBRO) && tieneCifraDelEjemplo(D.PASOS_T6_A5[4].texto));
+  assert.ok(/Libro/.test(D.PIE_DECRETO_DIAN_Y_LIBRO) && tieneCifraDelEjemplo(D.PASOS_T6_A5[4].texto));
 });
 
-test("★★★ un porcentaje aplicado en el ejemplo («Al N %») lleva el pie del porcentaje, y ese pie solo va ahí", () => {
+test("★★★ un porcentaje aplicado en el ejemplo («Al N %» o, en las cajas de C1-14, «le toca el N %») lleva el pie del porcentaje, y ese pie solo va ahí", () => {
+  assert.equal(/\bAl \d+ %|\ble toca el \d+ %/.test("Más de un año: es el 15 %, el más alto."), false, "control: decir el porcentaje sin aplicarlo no cuenta");
   for (const x of conPie()) {
-    const aplica = /\bAl \d+ %/.test(x.texto);
+    const aplica = /\bAl \d+ %|\ble toca el \d+ %/.test(x.texto);
     assert.equal(x.pie === D.PIE_PORCENTAJE, aplica, `${x.donde}: «${x.pie}»`);
   }
 });
@@ -298,13 +329,18 @@ test("★★★ cada cifra de los textos sale del escenario (ni una suelta), y c
   assert.deepEqual(cifras(P[7]), [...E.grupos.filter((g) => g.porcentaje).map(provisionDe), E.provision], "paso 8: la suma");
   assert.deepEqual(cifras(P[8]), [E.provision], "paso 9: el gasto");
   assert.deepEqual(cifras(P[10]), [E.total, E.provision, E.neto], "paso 11: el neto");
-  /* La capa 3: cada caja con su monto y lo que da; el final, la suma. */
+  /* La capa 3: cada caja con el monto de su grupo y lo que da (C1-14: el grupo 1 dice que no se provisiona); el final, la suma. */
   D.GRUPOS_T6_A5.forEach((c, k) => {
     const g = E.grupos[k];
     assert.equal(c.id, g.id);
     assert.equal(c.monto, pesos(g.monto));
-    assert.equal(cifras(c.revela).at(-1), provisionDe(g), `${c.id}: lo que da`);
-    if (g.porcentaje) assert.deepEqual(porcentajes(c.revela), [g.porcentaje]);
+    if (g.porcentaje) {
+      assert.equal(cifras(c.revela).at(-1), provisionDe(g), `${c.id}: lo que da su grupo`);
+      assert.deepEqual(porcentajes(c.revela), [g.porcentaje]);
+    } else {
+      assert.deepEqual(cifras(c.revela), [], `${c.id}: sin cifras`);
+      assert.match(c.revela, /no se provisiona\.$/);
+    }
   });
   assert.deepEqual(cifras(D.FINAL_CAPA_3_T6_A5.texto), [E.provision]);
 });

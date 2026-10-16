@@ -62,7 +62,7 @@ function textoDeCuentaMal(a, r, ctx) {
   return cm ?? ctx.comunes.cuentaNoPrevista;
 }
 
-function contra(a, correcto, renglones, ctx) {
+export function contra(a, correcto, renglones, ctx) {
   const usados = new Set();
   const estados = Object.fromEntries(renglones.map((r) => [r.id, "mal"]));
   /* E3: la palabra de cada pieza del renglón (la cuenta y el valor). */

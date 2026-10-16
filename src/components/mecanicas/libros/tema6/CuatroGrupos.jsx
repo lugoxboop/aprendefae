@@ -8,6 +8,7 @@ import { pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
 import { Caja, LECTURA, PIE, useFormaQueCabe } from "./CajasQueRevelan.jsx";
+import { escalera, elegir } from "./escaleraB5.js";
 import { RotuloSimulado, PieDeFuente } from "./FuentesT6A5.jsx";
 
 /*
@@ -24,6 +25,11 @@ import { RotuloSimulado, PieDeFuente } from "./FuentesT6A5.jsx";
  * navy. Con las cuatro abiertas, la fila de la suma bajo un filete, y el
  * bloque final. Cada caja y el bloque final llevan su pie en su forma. Sin
  * puntaje ni color de acierto o de error. Ningún texto vive aquí.
+ *
+ * Lote C1-14 de Futaba: las cajas ya no son los grupos (su nombre y su monto
+ * delataban el grupo) sino cuatro deudas sueltas, una por grupo (`deuda`).
+ * El tablero sigue con los grupos: al cerrarse la pregunta de una deuda
+ * (acierto o segundo error, escaleraB5.js), se llena la fila de su grupo.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -50,6 +56,12 @@ function Celda({ cifra }) {
   );
 }
 
+/* La pregunta de cada deuda, con el «%» pegado a su número (Mai §7). */
+const DECIDE = Object.fromEntries(GRUPOS_T6_A5.map((g) => [g.id, {
+  pregunta: PREGUNTA_CAPA_3_T6_A5, correcta: g.correcta, falla: pegarPorcentaje(g.falla), pista: pegarPorcentaje(g.pista),
+  opciones: g.opciones.map((o) => ({ ...o, texto: pegarPorcentaje(o.texto) })),
+}]));
+
 export default function CuatroGrupos() {
   const reducido = useReducido();
   const [abiertos, setAbiertos] = useState(() => new Set());
@@ -57,7 +69,7 @@ export default function CuatroGrupos() {
   /* En fila, salvo que alguna opción se parta donde se pinta (Sakuta, 15-oct). */
   const [forma, seParte, vuelta] = useFormaQueCabe("fila");
   const bloqueFinal = useRef(null);
-  const decidido = (g) => elecciones[g.id] !== undefined;
+  const decidido = (g) => escalera(DECIDE[g.id], elecciones[g.id]).resuelta;
   const todos = GRUPOS_T6_A5.every(decidido);
 
   useEffect(() => {
@@ -113,14 +125,10 @@ export default function CuatroGrupos() {
         {GRUPOS_T6_A5.map((g) => (
           <Caja key={g.id}
             caja={{
-              id: g.id, titulo: `${g.nombre} · ${g.monto}`, revela: pegarPorcentaje(g.revela), pie: <PieDeFuente texto={g.pie} />,
-              decide: {
-                pregunta: PREGUNTA_CAPA_3_T6_A5, correcta: g.correcta, falla: pegarPorcentaje(g.falla),
-                opciones: g.opciones.map((o) => ({ ...o, texto: pegarPorcentaje(o.texto) })),
-              },
+              id: g.id, titulo: g.deuda, revela: pegarPorcentaje(g.revela), pie: <PieDeFuente texto={g.pie} />, decide: DECIDE[g.id],
             }}
             estiloTitulo={NOMBRE_CAJA} forma={forma} onSeParte={seParte} vuelta={vuelta} abierto={abiertos.has(g.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(g.id))}
-            elegida={elecciones[g.id] ?? null} onElegir={(o) => setElecciones((e) => ({ ...e, [g.id]: o }))} />
+            intentos={elecciones[g.id]} onElegir={(o) => setElecciones((e) => ({ ...e, [g.id]: elegir(DECIDE[g.id], e[g.id] ?? [], o) }))} />
         ))}
       </div>
 
