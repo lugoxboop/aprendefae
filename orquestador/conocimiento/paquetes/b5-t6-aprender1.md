@@ -168,3 +168,17 @@ Pregunta: «Un cliente compra a crédito y, antes de pagar, devuelve toda la mer
 | # | Término | Texto final | Estado |
 |---|---|---|---|
 | C7-4 | T6 A1 · Cuentas por cobrar | (sin cambio) | PASA |
+
+## B2 · Capa 1, un término por pantalla (Futaba, con las correcciones de Shoko, 15-oct) · manda sobre lo de arriba
+
+Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza. Kaede la aplicó letra por letra.
+
+(«El de hoy» = el texto que ya está en el repositorio para ese término, sin cambios. Las cifras entre paréntesis son la estimación INFLESZ de Futaba; NO van en pantalla. «Def.:», «Cita:», «Nota:», «Pie:» indican la parte del término: Def. = definición/texto; Cita = «Así lo dice el libro»; Nota = la nota; Pie = pie de fuente.)
+
+### T6 A1 · 6 pantallas («Nota débito» va antes de «Cuándo sube»)
+1. **Cuentas por cobrar** — Def.: Es todo lo que otras personas o empresas le deben a la empresa. Se considera un activo, porque es un derecho de cobro. Incluye las deudas comerciales, que vienen del negocio, y las no comerciales. · Cita: «…se contabilizan los valores que terceras personas le adeudan a la empresa.» (p. 195)
+2. **Clientes** — Def.: Es lo que deben los clientes por bienes y servicios que la empresa les vendió a crédito y que todavía no han pagado. · Cita: «…quizás el concepto más importante dentro de lo que se clasifica como cuentas por cobrar.» (p. 196) · Nota: El libro también la llama cartera. Aquí se llama “Cuentas por cobrar – clientes”.
+3. **Otras cuentas por cobrar** — El de hoy.
+4. **Nota débito** — La definición del Tema 4, letra por letra. (Kaede: la prueba de la glosa ahora mira este término.)
+5. **Cuándo sube lo que deben los clientes** — El de hoy, sin la nota debajo.
+6. **Cuándo baja lo que deben los clientes** — Cuando lo que deben los clientes baja, se acredita. Baja cuando el cliente paga. Baja cuando devuelve mercancía comprada a crédito que aún no pagaba: es una devolución de ventas. Baja con un descuento sobre lo que aún debe. Y baja cuando la deuda se da por perdida.
