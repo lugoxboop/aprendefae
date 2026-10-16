@@ -18,6 +18,7 @@ import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import { PIEZA_DEL_EFECTIVO } from "../data/contabilidadT5Pieza1.js";
 import { PIEZA_TRES_MOMENTOS } from "../data/contabilidadT5Pieza2.js";
+import { conFigurasCapa1 } from "./mecanicas/libros/tema6/FigurasCapa1.jsx";
 import { ESCENAS_TEMA5 } from "./mecanicas/libros/tema5/escenasTema5.jsx";
 import QueRentaDa from "./mecanicas/libros/tema5/QueRentaDa.jsx";
 import { T5_ACT1 } from "../data/contabilidadT5Act1.js";
@@ -60,8 +61,9 @@ export const TEMA = "activos-financieros";
  * dentro de N3. Sus archivos se quedan.
  */
 export const PIEZAS = [
-  { numero: 1, pieza: PIEZA_DEL_EFECTIVO },
-  { numero: 2, pieza: PIEZA_TRES_MOMENTOS },
+  /* Lote 10: cada término de la capa 1 con su figura, antes del nombre (FigurasCapa1.jsx). */
+  { numero: 1, pieza: conFigurasCapa1(PIEZA_DEL_EFECTIVO) },
+  { numero: 2, pieza: conFigurasCapa1(PIEZA_TRES_MOMENTOS) },
   { numero: 3, pieza: PIEZA_LO_QUE_EL_EJEMPLO_NO_TRAE, Pieza: LoQueElEjemploNoTrae },
 ];
 const PUBLICADAS = PIEZAS.length;

@@ -32,7 +32,8 @@ const h = React.createElement;
  * Y su uso en T6 · A3: el tanque mínimo en tres términos y en la capa 4, con la frase buena como leyenda.
  */
 const { default: CuatroCapas } = await import("../../components/mecanicas/maquinas/CuatroCapas.jsx");
-const { ESCENAS_TEMA6, conFigurasT6A3 } = await import("../../components/mecanicas/libros/tema6/escenasTema6.jsx");
+const { ESCENAS_TEMA6 } = await import("../../components/mecanicas/libros/tema6/escenasTema6.jsx");
+const { conFigurasCapa1 } = await import("../../components/mecanicas/libros/tema6/FigurasCapa1.jsx");
 const D = await import("../../data/contabilidadT6Pieza3.js");
 
 const montar = async (el) => {
@@ -74,9 +75,9 @@ test("★★★ con `figuraAntesDelNombre`, la figura va antes del nombre", asyn
   desmontar();
 });
 
-test("★★★ T6 · A3, capa 1: el tanque mínimo antes del nombre en la provisión, el castigo y la subestimada", () => {
-  const n = conFigurasT6A3(D.PIEZA_LA_PROVISION).nombres;
-  assert.deepEqual(n.map((x) => Boolean(x.figuraAntesDelNombre)), [true, false, false, false, true, true]);
+test("★★★ T6 · A3, capa 1: cada término lleva su figura antes del nombre (lote 10)", () => {
+  const n = conFigurasCapa1(D.PIEZA_LA_PROVISION).nombres;
+  assert.deepEqual(n.map((x) => Boolean(x.figuraAntesDelNombre)), [true, true, true, true, true, true]);
   assert.deepEqual(n.map((x) => x.termino), D.PIEZA_LA_PROVISION.nombres.map((x) => x.termino), "los textos no cambian");
 });
 

@@ -109,18 +109,7 @@ const TanqueMini = ({ nivel, analisis = null, segmentos = null }) => (
     <TanqueProvision nivel={nivel} textos={TANQUE_T6_A3} alto={100} analisis={analisis} segmentos={segmentos} reducido />
   </div>
 );
-/* Por la posición del término en PIEZA_LA_PROVISION.nombres: 0 la provisión, 4 castigar, 5 subestimada. */
-const FIGURAS_CAPA1_T6_A3 = {
-  0: () => <TanqueMini nivel={148800} />,
-  4: () => <TanqueMini nivel={-31200} />,
-  5: () => <TanqueMini nivel={153400} analisis="solo" />,
-};
-export function conFigurasT6A3(pieza) {
-  return {
-    ...pieza,
-    nombres: pieza.nombres.map((n, k) => (FIGURAS_CAPA1_T6_A3[k] ? { ...n, figura: FIGURAS_CAPA1_T6_A3[k], figuraAntesDelNombre: true } : n)),
-  };
-}
+/* La capa 1 de las piezas de B lleva sus figuras desde el lote 10 (FigurasCapa1.jsx). */
 export function TanqueFinalT6A3({ leyenda }) {
   return (
     <div data-tanque-final>

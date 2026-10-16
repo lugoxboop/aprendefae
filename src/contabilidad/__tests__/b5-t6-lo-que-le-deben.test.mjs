@@ -140,7 +140,8 @@ test("★★★ auditoría integral: la nota de «cartera» se ve en pantalla en
     cartas.push({ conNota: Boolean(nota && !nota.closest("[hidden]")), carta });
     const mas = carta.querySelector("[data-mas]");
     if (mas) await tocar(mas);
-    cartas[cartas.length - 1].texto = carta.textContent;
+    /* Lote 10: la figura va antes del nombre; el texto de la carta se lee desde el nombre. */
+    cartas[cartas.length - 1].texto = carta.textContent.slice((carta.querySelector("[data-figura-antes]")?.textContent ?? "").length);
   }
   /* Solo el término 2 la lleva, y se ve sin abrir nada. */
   assert.deepEqual(cartas.map((c) => c.conNota), [false, true, false, false, false, false]);
