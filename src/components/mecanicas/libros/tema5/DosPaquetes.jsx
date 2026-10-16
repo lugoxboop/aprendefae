@@ -16,7 +16,7 @@ import CajasQueRevelan, { LECTURA } from "../tema6/CajasQueRevelan.jsx";
 
 const CAJAS = PAQUETES.map((p) => ({
   id: p.id, titulo: p.nombre, cifras: [p.descripcion], revela: p.revela, pie: p.pie,
-  decide: { pregunta: PREGUNTA_CAPA_3, opciones: OPCIONES_CAPA_3, correcta: p.correcta, falla: p.falla },
+  decide: { pregunta: PREGUNTA_CAPA_3, opciones: OPCIONES_CAPA_3, correcta: p.correcta, falla: p.falla, pista: p.pista },
 }));
 const NOMBRE = { ...LECTURA, fontFamily: "Sora, sans-serif", fontWeight: 600, lineHeight: 1.35 };
 

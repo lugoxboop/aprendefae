@@ -220,6 +220,47 @@ de cada despliegue** con la consulta de arriba.
 **La regla que queda:** una prueba verde sobre archivos no dice nada del estado
 de producción. Lo que no se le pregunta a la base, no se sabe.
 
+## Una medida no es un defecto: cinco de las que me llegaron hoy no lo eran
+
+Las cinco células montaron sondas automáticas y me pasaron sus hallazgos de lo
+compartido. Está bien que lo hagan: así se destapó el piso de 12 px y así se
+destapó el título cortado. Pero de los que me llegaron esta tarde, **cinco no
+eran defectos**, y cada uno falla de una manera distinta que vale la pena
+reconocer antes de arreglar nada.
+
+| lo que llegó | lo que era |
+|---|---|
+| «la etiqueta EJEMPLO sale partida en dos rectángulos» | **un rectángulo**, 135×26, medido en la página. Artefacto de la sonda |
+| «la celebración del cierre tapa el cajón 1,5 s» | el resumen **espera a propósito** a que acabe la celebración, y está escrito en el componente |
+| «Pausar y Ver de nuevo miden 40 px» | ya estaban a 44 cuando se midió. Medida caducada |
+| «Otra vez mide 39 px» | lo mismo, de otra célula |
+| «el botón sobresale 6 px del contenido» | margen negativo que alinea **ópticamente** el texto con la consigna |
+
+Y en la dirección contraria, para no quedarme con que el error es siempre del
+otro: de los cinco textos pequeños que me pasó una célula, **tres eran de código
+que ninguna ruta pinta** y **uno era la excepción de cejilla que este canon ya
+tiene escrita**. Yo los «arreglé» todos antes de comprobarlo, y lo deshice.
+
+**Tres preguntas antes de arreglar un hallazgo que te llegó medido:**
+
+1. **¿Sigue siendo verdad?** Una medida es de un momento. Si lo compartido se
+   tocó después, la lista caducó. Decir la hora a la que se midió cuesta una
+   línea y ahorra el arreglo de algo ya arreglado.
+2. **¿Lo explica el propio componente?** Las dos últimas de la tabla estaban
+   escritas en su sitio, una como «el resumen espera a que acabe la
+   celebración» y la otra como alineación óptica. El comentario de un
+   componente es parte del hallazgo, no un adorno.
+3. **¿Se ve?** Si la sonda dice que algo está roto y mirándolo no se nota, lo
+   más probable es que esté roto el que mide. **«Aunque a la vista no se nota»
+   en un informe es la señal**, y venía escrita en el informe que me llegó.
+
+**Lo que esto NO quiere decir.** Ninguna de las cinco era mala fe ni descuido:
+una sonda que avisa de más es infinitamente mejor que una que calla, y las
+mismas sondas encontraron los defectos de verdad del día. Lo que cambia es quién
+paga el filtro: **el que arregla, no el que mide.** Y cuando un hallazgo no era
+un defecto, se le dice al que lo midió POR QUÉ —con el número— para que su sonda
+deje de contarlo. Si no, lo vuelve a mandar mañana.
+
 ## Un repertorio a medias se lee como verde: espera la línea `# fail`
 
 Hermano de los dos de abajo, y me pasó **dos veces el mismo día**.
@@ -285,6 +326,27 @@ Y la trampa de fondo, que ya estaba escrita en este canon dos horas antes de que
 yo volviera a caer: **nada de comillas invertidas dentro de una plantilla de
 CSS**, ni en el código ni en los comentarios. Escribir la regla no inmuniza
 contra ella; compilar, sí.
+
+**Caí una tercera vez, en el mismo archivo, media hora después de escribir esto.**
+Así que la regla dejó de ser una regla y pasó a ser una prueba:
+`src/__tests__/todo-compila.test.mjs` pasa todo `src/` por esbuild —sin ejecutar
+nada— y se pone roja con cualquier error de sintaxis. Tarda dos segundos y corre
+en cada `npm test`, que es lo que de verdad se corre.
+
+La prueba de la diferencia, con la hoja compartida roto a propósito:
+
+| qué se corrió | con el archivo roto |
+|---|---|
+| `titulo-tema-320.test.mjs`, que LEE esa hoja | `pass 6 · fail 0` |
+| `todo-compila.test.mjs` | `fail 1` |
+
+**Cuando uno cae tres veces en la misma trampa, la trampa no se arregla
+escribiéndola mejor.** Se arregla con algo que no dependa de acordarse.
+
+(Y escribiendo esa prueba caí en la hermana del mismo error: un comentario de
+CSS de ejemplo, con su cierre de bloque, dentro del comentario de cabecera.
+Cerró el comentario. El archivo de la prueba que comprueba que todo compila no
+compilaba.)
 
 ## El falso verde: un extractor que no extrae nada dice que todo está bien
 

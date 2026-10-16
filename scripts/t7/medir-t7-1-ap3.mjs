@@ -96,7 +96,7 @@ function medir(sel) {
   };
 }
 
-const correctas = { peps: "compradas", ueps: "inicio", "promedio-ponderado": "ponderado", "lado-a-lado": "reciente", "la-recomendacion": "ueps", "la-refutacion": "orden-de-costos" };
+const correctas = { peps: "compradas", ueps: "inicio", "promedio-ponderado": "ponderado", "lado-a-lado": "reciente", "la-recomendacion": "peps", "la-refutacion": "orden-de-costos" };
 
 for (const ancho of ANCHOS) {
   const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, deviceScaleFactor: 2 });

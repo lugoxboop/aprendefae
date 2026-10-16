@@ -204,11 +204,11 @@ bien:
 
 | Pieza | Ejercicios | Temas que la sostienen | Mecánica (decisión de Kamogawa) | Dificultad · FP |
 |---|---|---|---|---|
-| `r5-1` | C.3, C.5, C.6, C.8, C.9, C.10 | T5, T6, T7-1 | Repaso cruzado: seis preguntas que saltan de tema; el estudiante sabe de qué le hablan por la escena, no por un rótulo. Opciones en orden aleatorio en cada intento | Medio · 25 |
+| `r5-1` | C.1 (construida, en diseño), C.3, C.5, C.6, C.8, C.9, C.10 | T4, T5, T6, T7-1 | Repaso cruzado: siete preguntas que saltan de tema; el estudiante sabe de qué le hablan por la escena, no por un rótulo. Opciones en orden aleatorio en cada intento. C.1 entra primera; FP 3/3/4/4/4/4/3 | Medio · 25 |
 | `r5-2` | D.3 completo | T6 | Siete ítems: calcula la provisión por grupos (a0); el ajuste (a); los dos castigos y el saldo de la provisión (b); revive y cobra a la Cía. Roja (c) | Difícil · 50 |
 | `r5-3` | D.4: las seis transacciones de «r5-3 · decisiones» (ocho asientos) | T7-1, T7-3 | Diario de la Comercializadora Mate, un asiento por pantalla, con el armador de r5-2 | Experto · 90 |
 | `r5-4` | D.6, solo el sistema periódico | T7-1, T7-3 | Diario de Comercializadora Barranquilla, con datos declarados (ver «r5-4 · decisiones») | Experto · 90 |
-| `r5-5` | D.6, el kárdex del sistema permanente | T7-2 | Pendiente de diagnóstico propio: la diferencia de costo entre los dos sistemas necesita una pantalla que la explique | — |
+| `r5-5` | D.6, el kárdex del sistema permanente | T7-2 | «Septiembre en permanente»: cinco pantallas sobre un kárdex que crece fila a fila (flete a la compra, venta con su asiento de costo, devolución del cliente al costo, lote del 25 y venta del 28, por qué el periódico da distinto). Paquete `e5-r5-5-v1` (contenido v1.3, Takamura PASA); en construcción | Difícil · 50 |
 
 Lo demás espera. Al entrar cada pieza ajena, se reabre su fila aquí.
 
