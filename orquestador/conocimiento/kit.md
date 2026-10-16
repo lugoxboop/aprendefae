@@ -647,3 +647,36 @@ blanco de toque: crecer puede romper. «HABER» a 12 px ocupa 47,5 de los 50 px
 que la columna tenía fijos —cabe—, y el contador de avance tenía 169 px de
 sobra en su fila. Las dos cosas se midieron en la página servida antes de
 tocar nada.
+
+## Dónde enchufan los identificadores de tema
+
+Encargo de Mateo del 16 de octubre: cada tema del inicio de una materia va a
+tener su propio identificador visual, porque hoy las nueve tarjetas de
+Contabilidad repiten el mismo dibujo y las mismas dos píldoras y lo único que
+las distingue es un título largo.
+
+El reparto es de Miku: **Xeno define el sistema una vez** —tamaño, estilo,
+paleta del canon, movimiento que respete `reduce-motion` y cómo bajar el ruido
+de las píldoras— y lo deja aquí; **el diseñador de cada célula dibuja los de
+SUS temas** dentro de ese sistema; **la integración es una sola** y ya está
+puesta:
+
+| Qué | Dónde |
+|---|---|
+| el componente por el que entran todos | `src/components/shared/IdentificadorDeTema.jsx` |
+| el registro, clave `materia/tema` | `src/data/identificadoresDeTema.js` |
+
+Una célula **solo añade su entrada al registro**. No toca la tarjeta ni la
+vista del índice: eso es de quien mantiene lo compartido, y tocarlo desde dos
+células a la vez es el choque que esta separación evita.
+
+Lo que el sitio compartido ya garantiza, para que nadie tenga que acordarse:
+un tema sin identificador no rompe nada —cae en el ícono de la materia, que es
+lo que se ve hoy—, el dibujo es decorativo porque el nombre accesible ya lo da
+el `aria-label` de la tarjeta, y el movimiento reducido se apaga en un solo
+sitio para todas a la vez.
+
+**El registro está vacío a propósito** hasta que exista el sistema de Xeno. La
+toma de corriente está puesta; la lámpara no se cuelga antes de saber de qué
+tamaño es.
+
