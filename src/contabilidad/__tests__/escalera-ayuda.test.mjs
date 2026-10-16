@@ -47,6 +47,7 @@ const DATOS = new URL("src/data/", RAIZ);
 const T7 = new URL("src/components/mecanicas/libros/t7/", RAIZ);
 
 /* Las piezas de Aprender de la célula: todo módulo de datos de T7 o de T5 de la célula que exporta un objeto con `pantallas`. */
+const { PAQUETE_N6, conCorreccionesN6 } = await import("./correccionesMelloN6.mjs");
 const PIEZAS = [];
 for (const f of readdirSync(DATOS).filter((x) => /^contabilidadT7_.*\.js$|^contabilidadT5_n\d+\.js$/.test(x))) {
   for (const v of Object.values(await import(new URL(f, DATOS).href))) if (v && Array.isArray(v.pantallas) && v.id) PIEZAS.push(v);
@@ -348,9 +349,10 @@ test("★★★ las pistas de Near están en los datos, letra por letra, en su p
     const dato = !f.linea || f.linea === "las 5 líneas" ? s.pista : f.porNombre ? lineaPorNombre(s, f.linea)?.pista : s.lineas.find((l) => l.id === f.linea)?.pista;
     assert.equal(dato, f.pista, `${f.pieza} · ${f.pantalla}${f.linea ? ` · ${f.linea}` : ""}`);
   }
-  /* Y al revés: en los datos no hay pistas que Near no escribió. */
+  /* Y al revés: en los datos no hay pistas que Near no escribió. Las de N6 de T5 vienen de su propio paquete, con Mello encima. */
+  const N6 = conCorreccionesN6(PAQUETE_N6);
   const enDatos = [...PREGUNTAS.map((x) => x.pantalla.pista), ...LINEAS.map((x) => x.linea.pista).filter(Boolean)];
-  for (const p of enDatos) assert.ok(esperadas.some((f) => f.pista === p), `pista sin fila en los paquetes: «${p}»`);
+  for (const p of enDatos) assert.ok(esperadas.some((f) => f.pista === p) || N6.includes(`*pista (1.er error):* «${p}»`), `pista sin fila en los paquetes: «${p}»`);
 });
 
 test("★★★ anexo: las 10 preguntas que tenían dos opciones tienen tres, con la tercera de Near letra por letra (o la de los recortes)", () => {
