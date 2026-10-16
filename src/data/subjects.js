@@ -791,7 +791,7 @@ export const SUBJECTS = {
        */
       {
         id: "inventarios-descuentos-nic2",
-        title: "Inventarios III: descuentos, inventario físico y NIC 2",
+        title: "Inventarios III: descuentos, conteo y NIC 2",
         actividades: [
           /* A1: abre el tema, con su propio repaso (regla 3). Ejemplo H-1, pp. 248-249. Cero FP. */
           { id: "t7-3-descuento-comercial", nombre: "El descuento comercial", clasificacion: { tipo: APRENDER } },
