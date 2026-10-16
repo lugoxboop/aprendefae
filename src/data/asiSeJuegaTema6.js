@@ -104,6 +104,8 @@ const GRUPO_TUTORIAL = GRUPOS_T6_ACT6.find((g) => g.id === "g3").nombre;
 export const EJEMPLO_T6_ACT6 = {
   id: "b5-t6-a6-tutorial",
   enunciado: T6_ACT6.partida.slice(0, T6_ACT6.partida.indexOf(":")),
+  /* La deuda que espera sobre el eje (como «2 meses» en la partida). PARA SHOKO. */
+  deuda: "9 meses",
   opciones: GRUPOS_T6_ACT6.map((g) => ({ texto: g.nombre, tipo: g.nombre === GRUPO_TUTORIAL ? null : "G0" })),
   resolucion: pegarPorcentaje(T6_ACT6.partida),
 };

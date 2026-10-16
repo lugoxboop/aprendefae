@@ -24,7 +24,7 @@ import { textosDelError } from "../../components/mecanicas/libros/t7/escaleraAyu
  */
 
 const DATOS = new URL("../../data/", import.meta.url);
-const PENDIENTES = new Set(["peps · ¿De qué grupo son las 5?", "ueps · ¿De qué grupo son las 5?"]);
+const PENDIENTES = new Set([]);
 const palabras = (t) => String(t ?? "").split(/\s+/).filter(Boolean).length;
 
 async function sinPorque() {

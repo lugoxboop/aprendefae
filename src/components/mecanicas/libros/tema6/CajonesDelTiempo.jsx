@@ -79,7 +79,8 @@ const BORDES_EJE = ANCHOS.reduce((xs, a) => [...xs, xs[xs.length - 1] + a], [0])
 /* Las marcas, con las palabras de los nombres de los grupos: «3 meses», «6 meses», «1 año». */
 const MARCAS = GRUPOS_T6_ACT6.slice(0, 3).map((g, k) => ({ en: BORDES_EJE[k + 1], texto: g.nombre.match(/(\d+ (meses|año))$/)[1] }));
 const centroDe = (k) => BORDES_EJE[k] + ANCHOS[k] / 2;
-const deudaDe = (c) => c.enunciado.match(/(\d+) meses/)[0];
+/* La deuda de la casilla; el ejemplo de «Así se juega» la trae escrita (su enunciado dice «nueve meses»). */
+const deudaDe = (c) => c.deuda ?? c.enunciado.match(/(\d+) meses/)[0];
 /* El cajón correcto de una deuda: el del grupo de su opción correcta. */
 const cajonDe = (c) => GRUPOS_T6_ACT6.findIndex((g) => g.nombre === correcta(c).texto);
 
@@ -118,11 +119,11 @@ function useEscalonado() {
   return { marcas, escalonado };
 }
 
-function Eje({ respondidas, abierta, reducido, eleccion = null }) {
+function Eje({ respondidas, abierta, reducido, eleccion = null, casillas = UBICAR.casillas }) {
   const { marcas, escalonado } = useEscalonado();
   const actual = abierta ?? respondidas - 1;
   /* Lote 6c: con `eleccion`, los cajones son las opciones de la casilla abierta. */
-  const casilla = UBICAR.casillas[actual];
+  const casilla = casillas[actual];
   const elegidoK = eleccion?.elegida ? GRUPOS_T6_ACT6.findIndex((g) => g.nombre === eleccion.elegida.texto) : -1;
   const marcaDe = (k) => {
     if (!eleccion?.elegida) return null;
@@ -136,9 +137,9 @@ function Eje({ respondidas, abierta, reducido, eleccion = null }) {
       {/* La barra, partida en cuatro cajones. */}
       <div style={{ position: "absolute", top: `${TOPE_BARRA}px`, left: 0, right: 0, height: `${ALTO_BARRA}px`, display: "flex" }}>
         {GRUPOS_T6_ACT6.map((g, k) => {
-          const tiene = UBICAR.casillas.some((c, i) => i < respondidas && cajonDe(c) === k);
+          const tiene = casillas.some((c, i) => i < respondidas && cajonDe(c) === k);
           /* El cajón de la deuda recién respondida se ilumina; los que ya tienen una deuda quedan con fondo tenue. */
-          const recien = abierta === null && cajonDe(UBICAR.casillas[actual]) === k;
+          const recien = abierta === null && cajonDe(casillas[actual]) === k;
           const marca = marcaDe(k);
           const Etiqueta = eleccion ? "button" : "div";
           const opcion = eleccion ? casilla.opciones.find((o) => o.texto === g.nombre) : null;
@@ -179,7 +180,7 @@ function Eje({ respondidas, abierta, reducido, eleccion = null }) {
         }}>{m.texto}</span>
       ))}
       {/* Las deudas: las ya ubicadas, en su cajón; la de la casilla, como pastilla sobre su mes, y al responder, cae. */}
-      {UBICAR.casillas.map((c, i) => {
+      {casillas.map((c, i) => {
         if (i > actual) return null;
         const enCajon = i < respondidas;
         const k = cajonDe(c);
@@ -298,7 +299,7 @@ function Total({ respondidas, abierta, reducido }) {
   );
 }
 
-export default function CajonesDelTiempo({ respondidas, abierta, reducido, anuncio, modoDemo = false, eleccion = null }) {
+export default function CajonesDelTiempo({ respondidas, abierta, reducido, anuncio, modoDemo = false, eleccion = null, casillaDemo = null }) {
   /* En «Así se juega» no hay partida: solo la nota, la regla y su pie. */
   const enCurso = abierta ?? Math.max(0, respondidas - 1);
   const parte2 = !modoDemo && enCurso >= N1;
@@ -333,6 +334,8 @@ export default function CajonesDelTiempo({ respondidas, abierta, reducido, anunc
         </div>
       </div>
       {!modoDemo && !parte2 && <Eje respondidas={respondidas} abierta={abierta} reducido={reducido} eleccion={eleccion} />}
+      {/* «Así se juega» enseña el mismo gesto que la partida: la deuda del ejemplo se ubica tocando su cajón. */}
+      {modoDemo && casillaDemo && <Eje respondidas={respondidas} abierta={abierta} reducido={reducido} eleccion={eleccion} casillas={[casillaDemo]} />}
       <p data-anuncio aria-live="polite" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" }}>{anuncio}</p>
     </div>
   );

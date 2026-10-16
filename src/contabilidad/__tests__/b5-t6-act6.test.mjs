@@ -451,3 +451,19 @@ test("★★★ lote 6c · en las casillas 1 a 3 sale la lista de rangos: se toc
   assert.ok(caja.querySelector("[style*='grid-template-columns'] [data-opcion]"));
   desmontar();
 });
+
+test("★★★ «Así se juega» enseña el mismo gesto que la partida: la deuda de 9 meses espera sobre el eje y se ubica tocando su cajón; sin lista de rangos", async () => {
+  const { EJEMPLO_T6_ACT6 } = await import("../../data/asiSeJuegaTema6.js");
+  const { caja, desmontar } = await montar({ modoDemo: true, items: [EJEMPLO_T6_ACT6] });
+  const eje = caja.querySelector("[data-eje]");
+  assert.ok(eje, "el eje está en el ejemplo");
+  assert.equal(eje.querySelectorAll("button[data-cajon]").length, 4, "los cuatro cajones son botones");
+  assert.equal([...caja.querySelectorAll("[data-opcion]")].filter((o) => !eje.contains(o)).length, 0, "sin lista de rangos");
+  assert.equal(caja.querySelector("[data-deuda]").textContent, "9 meses", "la deuda del ejemplo espera sobre el eje");
+  const g3 = D.GRUPOS_T6_ACT6.find((g) => g.id === "g3");
+  await tocar(caja.querySelector(`[data-opcion="${g3.nombre}"]`).closest("button"));
+  assert.equal(caja.querySelector("[data-deuda]").dataset.enCajon, "g3", "cae en su cajón");
+  assert.equal(caja.querySelector('[data-eje] button[data-cajon="g3"]').dataset.marcaE4, "correcta");
+  assert.ok(caja.querySelector("[data-resolucion]"), "y la resolución del ejemplo");
+  desmontar();
+});
