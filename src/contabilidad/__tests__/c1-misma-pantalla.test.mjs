@@ -30,9 +30,7 @@ const DATOS = new URL("../../data/", import.meta.url);
 /* Cada pendiente es «id de la pantalla · respuesta correcta»: así no la confunde
    otra pantalla con el mismo id, y no depende del archivo que la exporte. */
 const PENDIENTES = new Set([
-  "fob-cif-cyf · «Hasta que la mercancía está a bordo del buque.»",
   "dos-cuentas-propias · «Para saber cuánto se devolvió en el periodo.»",
-  "el-cierre · «Los de quitar el inventario inicial y colocar el final.»",
 ]);
 
 const norm = (t) => String(t).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\u00f1 ]/g, " ");

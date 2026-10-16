@@ -385,19 +385,25 @@ test("★★★ el diario (hallazgo 9 de Shoko): no ocupa sitio hasta confirmar 
   desmontar();
 });
 
-test("★★★ el diario crece con el asiento CORRECTO de cada parte comprobada; se abre solo una vez, con el primero, y después conserva su estado", async () => {
+test("★★★ el diario crece con el asiento CORRECTO de cada parte comprobada; nada dos veces (lote 6c): se abre con cada asiento confirmado y se pliega solo al empezar el siguiente", async () => {
   const { caja, desmontar } = await montar();
+  const abierto = () => caja.querySelector("[data-diario-alternar]").getAttribute("aria-expanded");
   for (let n = 1; n <= 4; n++) {
+    /* Mientras se arma, el estante a la vista y el diario plegado (desde la 2: antes no ocupa sitio). */
+    if (n > 1) {
+      assert.equal(abierto(), "false", `${n}: plegado mientras se arma`);
+      assert.ok(caja.querySelector("[data-estante]"), `${n}: el estante, a la vista`);
+      assert.equal(caja.querySelector("[data-diario-cuenta]").textContent, `${n} asientos`, "plegado, con su cuenta a la vista");
+    }
     /* Mal la 2 y la 4: el diario igual anota lo correcto. */
     await armar(caja, n % 2 ? parte(n).asiento : [parte(n).asiento[0]]);
     assert.equal(caja.querySelector("[data-diario-cuenta]").textContent, `${n + 1} asientos`);
-    if (n === 1) assert.equal(caja.querySelector("[data-diario-alternar]").getAttribute("aria-expanded"), "true", "se abre solo con el primero");
-    /* Se cierra en la 2: ya no se vuelve a abrir solo. */
-    if (n === 2) await tocar(caja.querySelector("[data-diario-alternar]"));
+    assert.equal(abierto(), "true", `${n}: se abre con el asiento nuevo`);
+    assert.equal(caja.querySelector("[data-estante]"), null, `${n}: el estante, plegado`);
     await avanzar(caja);
-    if (n >= 2) assert.equal(caja.querySelector("[data-diario-alternar]").getAttribute("aria-expanded"), "false", "conserva su estado al cambiar de asiento");
   }
-  await tocar(caja.querySelector("[data-diario-alternar]"));
+  /* En el resumen se queda abierto, con el último asiento. */
+  assert.equal(abierto(), "true");
   /* En el resumen, los cinco asientos, literales del paquete; el Haber con sangría. */
   assert.deepEqual(filasVistas(caja), G_ASIENTOS.map(filaEsperada));
   for (const m of caja.querySelectorAll("[data-movimiento]")) {

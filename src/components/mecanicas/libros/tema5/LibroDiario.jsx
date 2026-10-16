@@ -26,7 +26,7 @@ export default function CierreConDiario(props) {
   return <ConDiario {...props} />;
 }
 
-/* El diario aparece abierto al confirmar el primer asiento (hallazgo 9 de Shoko): useDiario. */
+/* El diario aparece abierto al confirmar el primer asiento (hallazgo 9 de Shoko) y, desde el lote 6c, se abre con cada asiento y se pliega al empezar el siguiente: useDiario. */
 function ConDiario(props) {
   const d = useDiario(COMPRA_T5_ACT2);
   return (
@@ -34,6 +34,7 @@ function ConDiario(props) {
       {...props}
       encima={d.visible ? <LibroDiario asientos={d.asientos} abierto={d.abierto} onAlternar={d.alternar} /> : null}
       onParteComprobada={d.sumar}
+      onAvanzar={d.plegar}
       onReiniciar={d.reiniciar}
     />
   );

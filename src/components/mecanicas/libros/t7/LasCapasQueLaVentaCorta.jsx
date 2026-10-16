@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Panel } from "../../salaDeControl/marco.jsx";
-import { Eleccion, CSS_T7BP } from "./PantallasT7_2.jsx";
-import { KARDEX_A4 } from "../../../../data/contabilidadT7_2_a4.js";
 import {
   PIEZA_LAS_CAPAS, ESTADOS_CAPAS, MOVS_CAPAS, ESCALA_CAPAS, NOMBRE_METODO, SELECTOR_METODO, EJES, INTERFAZ_A4, SIGUE_HASTA_EL_28,
 } from "../../../../data/contabilidadT7_2_a4_capas.js";
@@ -37,8 +35,17 @@ import { METODOS_CAPAS, movTxt, salePartes, numCapa } from "../../../../contabil
  *     febrero.» mientras no se haya visto el 28; después queda vacío. En las
  *     pantallas 6 y 8 (la 7 de la v6) queda vacío
  *
- * La pantalla 7 es la del cierre de hoy, tal cual (decisión de la v6): la
- * pinta la `Eleccion` de PantallasT7_2.jsx, con su escalera.
+ * La pantalla 7 es la del cierre (decisión de la v6), rehecha por C1 (Near,
+ * t7-2-a4-el-cierre-c1.md, con PASA de Mello): `ElCierreQueSobra`, abajo. La
+ * lista de los cinco cierres del periódico se toca (selección múltiple) y
+ * «Comprobar» la califica. Escalera (C2): 1.er error, la retro de la fila
+ * que no sobra o, si solo faltó marcar, la pista, y se puede volver a
+ * intentar; 2.º error, la respuesta con su porqué. Al acertar o en el 2.º
+ * error salen las tres filas que sobran y entra «Cerrar Costo de mercancía
+ * vendida» con la marca «nuevo»; la lista del permanente se queda (C8).
+ * [PROVISIONAL PARA WATARI] La figura es una versión sobria con las clases
+ * `ea4-`: filas de 44 px con casilla, coral y ✕ solo en la fila que no
+ * sobra tras el error, y la marca «nuevo» en borde neutro.
  *
  * Lo que la v6 no resuelve dentro del producto y se decide aquí:
  *   · [ESCRITO POR CLAUDE, NO POR LA FICHA] «Siguiente pieza», en la última
@@ -143,6 +150,24 @@ export const CSS_A4 = `
 .ea4-seguir { width: 100%; background: var(--neutro); color: #1D3557; border: 0; text-align: center; }
 .ea4-seguir:disabled { background: transparent; color: var(--texto2); border: 2px solid rgba(184,196,212,.35); cursor: default; }
 .ea4 button:focus-visible { outline: 2px solid var(--texto); outline-offset: 2px; }
+/* T7-2 A4 · el cierre (C1). [PROVISIONAL PARA WATARI] Filas que se tocan, con casilla; sin montos. */
+.ea4-c-lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.ea4-c-lista li { list-style: none; min-width: 0; }
+.ea4-c-fila { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 8px 10px;
+  border: 1px solid var(--borde); border-radius: 10px; background: transparent; color: var(--texto); font: 400 14px/1.35 "Inter", sans-serif; text-align: left; overflow-wrap: anywhere; }
+button.ea4-c-fila { cursor: pointer; }
+.ea4-c-caja { width: 18px; height: 18px; border: 2px solid var(--neutro); border-radius: 4px; display: grid; place-items: center; font: 700 12px/1 "Inter", sans-serif; color: #1D3557; }
+.ea4-c-fila[aria-pressed="true"] { border: 2px solid var(--neutro); padding: 7px 9px; }
+.ea4-c-fila[aria-pressed="true"] .ea4-c-caja { background: var(--neutro); }
+.ea4-c-fila.mal { border: 2px solid var(--coral); padding: 7px 9px; }
+.ea4-c-x { font: 700 13px/1 "Inter", sans-serif; color: var(--coral); }
+.ea4-c-x:empty { display: none; }
+.ea4-c-fila.quieta { grid-template-columns: minmax(0, 1fr) auto; }
+.ea4-c-nuevo { justify-self: end; padding: 2px 8px; border: 1px solid var(--neutro); border-radius: 999px; font: 600 12px/1.3 "Inter", sans-serif; color: var(--texto); white-space: nowrap; }
+.ea4-c-entra { animation: ea4-llega .4s ease-out both; }
+.ea4-comprobar { width: 100%; min-height: 44px; border-radius: 12px; font: 600 15px/1.2 "Inter", sans-serif; cursor: pointer; padding: 8px 10px; background: transparent; color: var(--texto); border: 2px solid var(--neutro); }
+.ea4-comprobar[aria-disabled="true"] { color: var(--texto2); border-color: rgba(184,196,212,.35); cursor: default; }
+.ea4-pie { margin: 0; font-size: 12px; line-height: 1.4; color: var(--texto2); overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) { .ea4 *, .ea4 *::before, .ea4 *::after { animation: none !important; transition: none !important; } }
 `;
 
@@ -360,6 +385,103 @@ function PantallaCapas({ P, numero, total, enfocar, onSeguir }) {
   );
 }
 
+/* ═══════════ EL CIERRE (C1): LOS CIERRES DEL PERIÓDICO QUE LE SOBRAN AL PERMANENTE ═══════════ */
+
+/*
+ * Lo que dice «Comprobar» con estas marcas y estos errores previos (pura, para
+ * la prueba): { resuelta, peldano: "acierto" | "retro" | "pista" | "respuesta", texto, malas }.
+ * 1.er error: la retro de la primera fila marcada que no sobra (en el orden de
+ * la lista); si no marcó ninguna así (solo le faltó marcar), la pista. 2.º: la
+ * respuesta, y la pantalla queda resuelta como con el acierto.
+ */
+export function comprobarCierre(P, marcadas, errores) {
+  const sobran = P.filas.filter((f) => f.sobra).map((f) => f.id);
+  const exacta = sobran.length === marcadas.length && sobran.every((id) => marcadas.includes(id));
+  if (exacta) return { resuelta: true, peldano: "acierto", texto: P.mensajes.acierto, malas: [] };
+  const malas = P.filas.filter((f) => !f.sobra && marcadas.includes(f.id)).map((f) => f.id);
+  if (errores + 1 >= 2) return { resuelta: true, peldano: "respuesta", texto: P.mensajes.respuesta, malas: [] };
+  if (malas.length) return { resuelta: false, peldano: "retro", texto: P.filas.find((f) => f.id === malas[0]).retro, malas };
+  return { resuelta: false, peldano: "pista", texto: P.mensajes.pista, malas: [] };
+}
+
+/* La lista del permanente: las filas que no sobran, con la que entra en su sitio. */
+export const listaDelPermanente = (P) => P.filas.filter((f) => !f.sobra).flatMap((f) => (f.id === P.entra.despuesDe ? [f, P.entra] : [f]));
+
+function ElCierreQueSobra({ P, numero, total, enfocar, onSeguir }) {
+  const [s, setS] = useState({ marcadas: [], errores: 0, resuelta: false, peldano: null, texto: "", malas: [], respondio: 0 });
+  const txt = useRef(null);
+  const msg = useRef(null);
+  const idEnc = `ea4-c-${P.id}`;
+  useEffect(() => { if (enfocar) txt.current?.focus({ preventScroll: true }); }, [enfocar]);
+  /* Al responder, el foco va al mensaje. */
+  useEffect(() => { if (s.respondio) msg.current?.focus({ preventScroll: true }); }, [s.respondio]);
+
+  const tocar = (id) => setS((x) => (x.resuelta ? x : {
+    ...x,
+    marcadas: x.marcadas.includes(id) ? x.marcadas.filter((m) => m !== id) : [...x.marcadas, id],
+    /* La marca de error se va de la fila que se vuelve a tocar. */
+    malas: x.malas.filter((m) => m !== id),
+  }));
+  const comprobar = () => setS((x) => {
+    if (x.resuelta || !x.marcadas.length) return x;
+    const r = comprobarCierre(P, x.marcadas, x.errores);
+    return { ...x, ...r, errores: r.peldano === "acierto" ? x.errores : x.errores + 1, respondio: x.respondio + 1 };
+  });
+
+  const tipoMsg = { acierto: "bien", respuesta: "pista", retro: "mal", pista: "mal" }[s.peldano] ?? "";
+  const filas = s.resuelta ? listaDelPermanente(P) : P.filas;
+  return (
+    <div className="ea4" data-cierre-c1={P.id} data-estado={s.resuelta ? "resuelta" : s.peldano ? "error" : "colocando"}>
+      <p className="ea4-marca" aria-hidden="true">{`Pantalla ${numero} de ${total}`}</p>
+      <p className="ea4-txt" tabIndex={-1} ref={txt} data-texto>{P.texto}</p>
+      <div className="ea4-fig" data-figura>
+        <p className="ea4-metodo" id={idEnc} data-encabezado>{P.encabezado}</p>
+        <ul className="ea4-c-lista" aria-labelledby={idEnc} data-lista={s.resuelta ? "permanente" : "periodico"}>
+          {filas.map((f) => {
+            if (s.resuelta) {
+              const nueva = f.id === P.entra.id;
+              return (
+                <li key={f.id} className={nueva ? "ea4-c-entra" : undefined}>
+                  <span className="ea4-c-fila quieta" data-fila={f.id} data-nueva={nueva ? "si" : undefined}>
+                    <span>{f.texto}</span>
+                    {nueva && <span className="ea4-c-nuevo" data-marca-nuevo>{P.entra.marca}</span>}
+                  </span>
+                </li>
+              );
+            }
+            const marcada = s.marcadas.includes(f.id);
+            const mal = s.malas.includes(f.id);
+            return (
+              <li key={f.id}>
+                <button type="button" className={`ea4-c-fila${mal ? " mal" : ""}`} data-fila={f.id} aria-pressed={marcada} onClick={() => tocar(f.id)}>
+                  <span className="ea4-c-caja" aria-hidden="true">{marcada ? "✓" : ""}</span>
+                  <span>{f.texto}</span>
+                  <span className="ea4-c-x" aria-hidden="true">{mal ? "✕" : ""}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      {!s.resuelta && (
+        <button type="button" className="ea4-comprobar" data-boton="comprobar" aria-disabled={s.marcadas.length ? undefined : "true"} onClick={comprobar}>
+          {P.boton}
+        </button>
+      )}
+      <p className={`ea4-msg${tipoMsg ? ` ${tipoMsg}` : ""}`} role="status" tabIndex={-1} ref={msg} data-mensaje={s.peldano ? (s.peldano === "acierto" ? "acierto" : "error") : undefined} data-peldano={s.peldano ?? undefined}>
+        {s.peldano === "acierto" && <span aria-hidden="true">{"✓ "}</span>}
+        {s.texto}
+      </p>
+      <div className="ea4-nav">
+        <button type="button" className="ea4-seguir" data-boton="seguir" disabled={!s.resuelta} onClick={s.resuelta ? onSeguir : undefined}>
+          {INTERFAZ_A4.seguir}
+        </button>
+      </div>
+      <p className="ea4-pie" data-pie>{P.pie}</p>
+    </div>
+  );
+}
+
 /* ═══════════ LA PIEZA ═══════════ */
 
 export default function LasCapasQueLaVentaCorta({ pieza = PIEZA_LAS_CAPAS, rotulo }) {
@@ -374,19 +496,13 @@ export default function LasCapasQueLaVentaCorta({ pieza = PIEZA_LAS_CAPAS, rotul
     const sig = marco.current?.closest("section")?.parentElement?.nextElementSibling?.querySelector("[data-pieza]");
     if (sig) { sig.scrollIntoView?.({ behavior: reducido() ? "auto" : "smooth", block: "start" }); sig.focus?.({ preventScroll: true }); }
   };
-  /* La pantalla del cierre no tiene texto propio arriba: el foco va al marco. */
-  useEffect(() => { if (movido && p.tipo === "eleccion") marco.current?.focus({ preventScroll: true }); }, [k, movido, p.tipo]);
 
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <style>{CSS_A4}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
-        {p.tipo === "eleccion" ? (
-          <div className="ea4">
-            <style>{CSS_T7BP}</style>
-            <p className="ea4-marca" aria-hidden="true">{`Pantalla ${k + 1} de ${pieza.pantallas.length}`}</p>
-            <Eleccion key={p.id} pantalla={p} onSeguir={seguir} kardexDe={(c) => KARDEX_A4[c]} />
-          </div>
+        {p.tipo === "cierre-que-sobra" ? (
+          <ElCierreQueSobra key={p.id} P={p} numero={k + 1} total={pieza.pantallas.length} enfocar={movido} onSeguir={seguir} />
         ) : (
           <PantallaCapas key={p.id} P={p} numero={k + 1} total={pieza.pantallas.length} enfocar={movido} onSeguir={seguir} />
         )}

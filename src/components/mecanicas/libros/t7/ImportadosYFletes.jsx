@@ -28,6 +28,27 @@ import { textosDelError, contarFallo } from "./escaleraAyuda.js";
  *                de lado. La fila «Quién asume el flete» se señala solo con
  *                el acierto
  *
+ * P3 «El viaje de la compra» (`fob-cif-cyf`, tipo «viaje»), rehecha por C1
+ * (Near, barrido-c1-fob-cif-cyf.md, con F-1, F-2 y F-3 de Mello): `Viaje`,
+ * abajo. Una línea de cuatro tramos, de arriba (la bodega del vendedor) a
+ * abajo (la del comprador); sobre «En el mar», dos fichas, «Flete» y
+ * «Seguro». Dos pasos en la misma pantalla, con la figura siempre a la vista
+ * (C8):
+ *   · paso 1 · FOB   se tocan las fichas que paga el comprador (selección
+ *                    múltiple) y «Comprobar». 1.er error: la retro si tocó
+ *                    una de antes de «a bordo»; si solo le faltó alguna, la
+ *                    pista; se puede volver a intentar. 2.º error: la
+ *                    respuesta. Al acertar o en el 2.º error, cada ficha
+ *                    queda marcada con quién la paga, con su leyenda
+ *   · paso 2 · C&F   tres opciones de texto debajo («¿Quién paga el
+ *                    seguro?»), «Confirmar», y la misma escalera. Los tramos
+ *                    de tierra quedan atenuados y sin marca (F-3); al
+ *                    resolver, «Flete» pasa a «Vendedor» y «Seguro» se queda
+ * [PROVISIONAL PARA WATARI] La figura es una versión sobria con las clases
+ * `t7a5-`: la marca de quién paga es una barra bajo la ficha, lisa para el
+ * vendedor y rayada para el comprador, en neutro, con la leyenda debajo y el
+ * nombre para el lector de pantalla.
+ *
  * Cada pantalla lleva su pie de fuente en todos sus estados: el de colocando
  * y, donde la v1 lo cambia, el de los errores y el acierto. NO CALIFICA y no
  * da FP: es Aprender. Clases con el prefijo `t7a5-`, para no tocar nada del
@@ -92,6 +113,34 @@ export const CSS_A5 = `
 .t7a5-nueva { animation: t7a5-aparece .12s ease-out; }
 @keyframes t7a5-aparece { from { opacity: 0; } to { opacity: 1; } }
 .t7a5-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* P3 · el viaje de la compra (C1). [PROVISIONAL PARA WATARI] */
+.t7a5-viaje { margin: 0; display: grid; gap: 10px; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; min-width: 0; }
+.t7a5-tramos { margin: 0; padding: 0 0 0 14px; list-style: none; display: grid; gap: 8px; border-left: 2px solid ${P.borde}; }
+.t7a5-tramos > li { list-style: none; display: grid; gap: 6px; min-width: 0; transition: opacity .2s; }
+.t7a5-tramos > li.t7a5-atenuado { opacity: .45; }
+.t7a5-mar-rot { font: 500 12px/1.3 "Inter", sans-serif; letter-spacing: .04em; color: ${P.texto2}; }
+.t7a5-mar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.t7a5-ficha-v { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 44px; width: 100%; padding: 8px 10px 12px;
+  border: 1px solid ${P.borde}; border-radius: 10px; background: transparent; color: ${P.texto}; font: 400 14px/1.35 "Inter", sans-serif; text-align: left; overflow-wrap: anywhere; min-width: 0; }
+button.t7a5-ficha-v { cursor: pointer; }
+button.t7a5-ficha-v:focus-visible { outline: 2px solid ${P.texto}; outline-offset: 2px; }
+.t7a5-caja { width: 18px; height: 18px; border: 2px solid ${P.borde}; border-radius: 4px; display: grid; place-items: center; font: 700 12px/1 "Inter", sans-serif; color: ${P.fondo}; }
+.t7a5-caja:empty { background: transparent; }
+.t7a5-ficha-v[aria-pressed="true"] { border: 2px solid ${P.borde}; padding: 7px 9px 11px; }
+.t7a5-ficha-v[aria-pressed="true"] .t7a5-caja { background: ${P.borde}; }
+.t7a5-ficha-v.t7a5-mal { border: 2px solid ${P.error}; padding: 7px 9px 11px; }
+.t7a5-x { font: 700 13px/1 "Inter", sans-serif; color: ${P.error}; }
+.t7a5-x:empty { display: none; }
+.t7a5-ficha-v.t7a5-quieta { grid-template-columns: minmax(0, 1fr); }
+/* La marca de quién paga: lisa, el vendedor; rayada, el comprador. Neutro: no son debe ni haber. */
+.t7a5-paga { position: absolute; left: 10px; right: 10px; bottom: 4px; height: 5px; border-radius: 3px; }
+.t7a5-paga-vendedor { background: ${P.borde}; }
+.t7a5-paga-comprador { background: repeating-linear-gradient(135deg, ${P.borde} 0 3px, transparent 3px 6px); border: 1px solid ${P.borde}; }
+.t7a5-leyenda { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; line-height: 1.3; color: ${P.texto}; }
+.t7a5-leyenda > span { display: inline-flex; align-items: center; gap: 6px; }
+.t7a5-leyenda i { display: inline-block; width: 22px; height: 6px; border-radius: 3px; }
+.t7a5-leyenda i.t7a5-paga-comprador { height: 6px; }
+.t7a5-nueva-marca { animation: t7a5-aparece .12s ease-out; }
 @media (prefers-reduced-motion: reduce) { .t7a5 *, .t7a5 *::before, .t7a5 *::after { transition: none !important; animation: none !important; } }
 `;
 
@@ -266,6 +315,146 @@ function Eleccion({ pantalla, onSeguir }) {
   );
 }
 
+/* ═══════════ P3 · EL VIAJE DE LA COMPRA (C1) ═══════════ */
+
+const fichasDe = (pantalla) => pantalla.tramos.flatMap((t) => t.fichas);
+
+/*
+ * Lo que dice «Comprobar» en el paso 1 (pura, para la prueba): las fichas
+ * marcadas frente a las que paga el comprador con FOB. 1.er error: la retro
+ * de la primera ficha tocada que no es del comprador; si solo le faltó
+ * alguna, la pista. 2.º error: la respuesta, y el paso queda resuelto.
+ */
+export function comprobarFOB(pantalla, marcadas, errores) {
+  const paso = pantalla.pasos[0];
+  const delComprador = fichasDe(pantalla).filter((f) => f.fob === "comprador").map((f) => f.id);
+  const exacta = delComprador.length === marcadas.length && delComprador.every((id) => marcadas.includes(id));
+  if (exacta) return { resuelto: true, peldano: "acierto", texto: paso.acierto, malas: [] };
+  if (errores + 1 >= 2) return { resuelto: true, peldano: "respuesta", texto: paso.respuesta, malas: [] };
+  const malas = fichasDe(pantalla).filter((f) => f.fob !== "comprador" && marcadas.includes(f.id)).map((f) => f.id);
+  if (malas.length) return { resuelto: false, peldano: "retro", texto: paso.retro[malas[0]], malas };
+  return { resuelto: false, peldano: "pista", texto: paso.pista, malas: [] };
+}
+
+/* Paso 2 (C&F): 1.er error, la devolución de la opción si la trae, si no la pista; 2.º, la respuesta. */
+export function confirmarCyF(pantalla, id, errores) {
+  const paso = pantalla.pasos[1];
+  const o = paso.opciones.find((x) => x.id === id);
+  if (o.correcta) return { resuelto: true, peldano: "acierto", texto: paso.acierto };
+  if (errores + 1 >= 2) return { resuelto: true, peldano: "respuesta", texto: paso.respuesta };
+  return { resuelto: false, peldano: o.devolucion ? "retro" : "pista", texto: o.devolucion ?? paso.pista };
+}
+
+/* Quién paga cada ficha en la figura, o null si va sin marca (F-3: en el paso 2, la tierra no lleva). */
+export function marcaDe(pantalla, tramo, ficha, s) {
+  if (s.paso === 0) return s.p1.resuelto ? ficha.fob : null;
+  if (tramo.tierra) return null;
+  return s.p2.resuelto ? ficha.cyf : ficha.fob;
+}
+
+const VIAJE_INICIAL = { paso: 0, p1: { marcadas: [], errores: 0, resuelto: false, peldano: null, texto: "", malas: [] }, p2: { elegida: null, confirmada: null, errores: 0, resuelto: false, peldano: null, texto: "" }, respondio: 0, cambio: 0 };
+
+function Viaje({ pantalla, onSeguir }) {
+  const [s, setS] = useState(VIAJE_INICIAL);
+  const [orden, setOrden] = useState(() => barajar(pantalla.pasos[1].opciones));
+  const ref = useRef(null);
+  const txt = useRef(null);
+  useEffect(() => { if (s.respondio) ref.current?.focus(); }, [s.respondio]);
+  /* Al pasar al paso 2, el foco va a su texto. */
+  useEffect(() => { if (s.cambio) txt.current?.focus(); }, [s.cambio]);
+  const paso = pantalla.pasos[s.paso];
+  const p = s.paso === 0 ? s.p1 : s.p2;
+
+  const tocar = (id) => setS((x) => (x.paso !== 0 || x.p1.resuelto ? x : {
+    ...x,
+    p1: { ...x.p1, marcadas: x.p1.marcadas.includes(id) ? x.p1.marcadas.filter((m) => m !== id) : [...x.p1.marcadas, id], malas: x.p1.malas.filter((m) => m !== id) },
+  }));
+  const comprobar = () => setS((x) => {
+    if (x.p1.resuelto || !x.p1.marcadas.length) return x;
+    const r = comprobarFOB(pantalla, x.p1.marcadas, x.p1.errores);
+    return { ...x, p1: { ...x.p1, ...r, errores: r.peldano === "acierto" ? x.p1.errores : x.p1.errores + 1 }, respondio: x.respondio + 1 };
+  });
+  const elegir = (id) => setS((x) => (x.p2.confirmada || x.p2.resuelto ? x : { ...x, p2: { ...x.p2, elegida: id } }));
+  const confirmar = () => setS((x) => {
+    if (!x.p2.elegida || x.p2.confirmada) return x;
+    const r = confirmarCyF(pantalla, x.p2.elegida, x.p2.errores);
+    return { ...x, p2: { ...x.p2, ...r, confirmada: x.p2.elegida, errores: r.peldano === "acierto" ? x.p2.errores : x.p2.errores + 1 }, respondio: x.respondio + 1 };
+  });
+  const probarOtra = () => {
+    setOrden((a) => barajarDistinto(pantalla.pasos[1].opciones, a, (o) => o.id));
+    setS((x) => ({ ...x, p2: { ...x.p2, elegida: null, confirmada: null, peldano: null, texto: "" } }));
+  };
+  const alPaso2 = () => setS((x) => ({ ...x, paso: 1, cambio: x.cambio + 1 }));
+
+  const estado = p.resuelto ? (p.peldano === "acierto" ? "acierto" : "respuesta") : p.peldano ? "error" : "colocando";
+  const leyenda = s.paso === 1 || s.p1.resuelto;
+  const ficha = (t, f) => {
+    const quien = marcaDe(pantalla, t, f, s);
+    const marca = quien && (
+      <>
+        <i className={`t7a5-paga t7a5-paga-${quien} t7a5-nueva-marca`} aria-hidden="true" data-paga={quien} />
+        <span className="t7a5-sr">{pantalla.leyenda[quien]}</span>
+      </>
+    );
+    if (s.paso === 0 && !s.p1.resuelto) {
+      const marcada = s.p1.marcadas.includes(f.id);
+      const mal = s.p1.malas.includes(f.id);
+      return (
+        <button key={f.id} type="button" className={`t7a5-ficha-v${mal ? " t7a5-mal" : ""}`} data-ficha={f.id} aria-pressed={marcada} onClick={() => tocar(f.id)}>
+          <span className="t7a5-caja" aria-hidden="true">{marcada ? "✓" : ""}</span>
+          <span>{f.texto}</span>
+          <span className="t7a5-x" aria-hidden="true">{mal ? "✕" : ""}</span>
+        </button>
+      );
+    }
+    return <span key={f.id} className="t7a5-ficha-v t7a5-quieta" data-ficha={f.id} data-paga={quien ?? undefined}><span>{f.texto}</span>{marca}</span>;
+  };
+
+  return (
+    <div className="t7a5" data-viaje={pantalla.id} data-paso={paso.id} data-estado={estado}>
+      <p className="t7a5-p" tabIndex={-1} ref={txt} style={{ outline: "none" }} data-texto data-consigna>{paso.texto}</p>
+      <div className="t7a5-viaje" role="group" aria-label={pantalla.nombre} data-figura>
+        <ol className="t7a5-tramos">
+          {pantalla.tramos.map((t) => (
+            <li key={t.id} className={s.paso === 1 && t.tierra ? "t7a5-atenuado" : undefined} data-tramo={t.id} data-atenuado={s.paso === 1 && t.tierra ? "si" : undefined}>
+              {t.tierra ? ficha(t, t.fichas[0]) : (
+                <>
+                  <span className="t7a5-mar-rot" data-rotulo>{t.rotulo}</span>
+                  <div className="t7a5-mar">{t.fichas.map((f) => ficha(t, f))}</div>
+                </>
+              )}
+            </li>
+          ))}
+        </ol>
+        {leyenda && (
+          <p className="t7a5-leyenda" data-leyenda>
+            {["vendedor", "comprador"].map((q) => <span key={q}><i className={`t7a5-paga-${q}`} aria-hidden="true" />{pantalla.leyenda[q]}</span>)}
+          </p>
+        )}
+      </div>
+      {s.paso === 1 && (
+        <div className="t7a5-ops" role="group" aria-label={paso.texto}>
+          {orden.map((o) => {
+            const esta = o.id === (s.p2.confirmada ?? s.p2.elegida);
+            return (
+              <button key={o.id} type="button" className={`t7a5-op${estado === "error" && esta ? " t7a5-op-error" : ""}`} data-opcion={o.id} aria-pressed={esta} disabled={Boolean(s.p2.confirmada)} onClick={() => elegir(o.id)}>
+                {o.texto}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      {s.paso === 0 && !s.p1.resuelto && <Boton nombre="comprobar" texto={paso.boton} inactivo={!s.p1.marcadas.length} onClick={comprobar} />}
+      {s.paso === 1 && !s.p2.confirmada && !s.p2.resuelto && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!s.p2.elegida} onClick={confirmar} />}
+      {p.peldano && <Mensaje ok={p.peldano === "acierto"} textos={[p.texto]} refFoco={ref} />}
+      {s.paso === 1 && estado === "error" && <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={probarOtra} />}
+      {s.paso === 0 && s.p1.resuelto && <Boton nombre="seguir-paso" texto={BOTON.seguir} onClick={alPaso2} />}
+      {s.paso === 1 && s.p2.resuelto && <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />}
+      <Pie texto={pantalla.pie} />
+    </div>
+  );
+}
+
 /* ═══════════ LA PIEZA ═══════════ */
 
 export default function ImportadosYFletes({ pieza = PIEZA_IMPORTADOS_Y_FLETES, rotulo }) {
@@ -282,6 +471,8 @@ export default function ImportadosYFletes({ pieza = PIEZA_IMPORTADOS_Y_FLETES, r
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
         {p.tipo === "eleccion" ? (
           <Eleccion key={p.id} pantalla={p} onSeguir={seguir} />
+        ) : p.tipo === "viaje" ? (
+          <Viaje key={p.id} pantalla={p} onSeguir={seguir} />
         ) : (
           <div className="t7a5">
             {p.objetivo && <p className="t7a5-p" data-texto data-objetivo>{p.objetivo}</p>}
