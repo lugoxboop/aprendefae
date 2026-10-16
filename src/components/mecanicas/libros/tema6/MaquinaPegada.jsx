@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
@@ -58,6 +58,14 @@ import { IconoVisto, IconoTache, TACHADO } from "../b5/MarcasE4.jsx";
  * con E4 (✓, o ✕ y tachada) y desaparece en el siguiente; con «Anterior», la
  * parada la muestra otra vez, ya calificada. Va oculta al lector: la escena
  * ya lo está, y lo elegido y su resultado se oyen en la parada.
+ *
+ * LOS GESTOS (lote 7, el tanque de T6 · A3, P2 de Mai §3.5): si el estado del
+ * paso trae `gesto` (el que falta hacer) y `pasoGesto` (la clave con que se
+ * guarda), «Siguiente» queda desactivado (aria-disabled, con aria-describedby
+ * al texto del paso) hasta hacerlo; «Reproducir» se pausa al llegar. La
+ * escena recibe `hacer()` en su cuarto argumento. Lo hecho se guarda por
+ * paso: al volver con «Anterior» y regresar, el paso ya está hecho. El estado
+ * se pide con `estadoPaso(paso, hechos)`; las piezas sin gestos no lo usan.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -258,8 +266,13 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
   /* Modo B: null mientras el bloque va en su sitio; { top, left, width, alto } cuando va fijo. */
   const [fijo, setFijo] = useState(null);
   const refDe = (id) => (n) => { piezas.current[id] = n; };
+  /* Los gestos hechos, por su clave (lote 7). */
+  const [hechos, setHechos] = useState(() => new Set());
+  const idTexto = useId();
 
-  const estado = enParada ? estadoParada(estadoPaso, parada.antes, parada.resaltados) : estadoPaso(paso);
+  const estado = enParada ? estadoParada(estadoPaso, parada.antes, parada.resaltados, hechos) : estadoPaso(paso, hechos);
+  const gestoPendiente = !enParada && Boolean(estado.gesto);
+  const hacer = () => { if (estado.pasoGesto != null) setHechos((h) => (h.has(estado.pasoGesto) ? h : new Set(h).add(estado.pasoGesto))); };
   useSiluetasMudas(maquina);
 
   /*
@@ -317,6 +330,8 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
   useEffect(() => {
     if (!reproduciendo) return undefined;
     if (paso >= CIERRE) { setReproduciendo(false); return undefined; }
+    /* Un gesto sin hacer: se pausa al llegar (lote 7). */
+    if (gestoPendiente) { setReproduciendo(false); return undefined; }
     if (enParada) {
       /* Sin elegir, no sigue; ya elegida, sigue desde el paso que viene. */
       if (!escalon.resuelta) { setReproduciendo(false); return undefined; }
@@ -325,7 +340,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     }
     const t = setTimeout(() => { if (avanzar()) setReproduciendo(false); }, duracion(paso));
     return () => clearTimeout(t);
-  }, [reproduciendo, paso, enParada]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [reproduciendo, paso, enParada, gestoPendiente]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!reproduciendo) return undefined;
     const alOcultar = () => { if (document.visibilityState === "hidden") setReproduciendo(false); };
@@ -370,7 +385,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     if (objetivo.bottom > abajo) delta = objetivo.bottom - abajo;
     if (objetivo.top - delta < arriba) delta = objetivo.top - arriba;
     if (Math.abs(delta) > 0.5) window.scrollBy({ top: delta, behavior: reducido ? "auto" : "smooth" });
-  }, [paso, enParada]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [paso, enParada, hechos]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const ir = (nuevo) => {
     setReproduciendo(false);
@@ -425,7 +440,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
   return (
     <div ref={maquina} {...atributos} className={CLASE_T5} style={{ position: "relative" }}>
       <EstilosT5 />
-      {escena(estado, refDe, reducido)}
+      {escena(estado, refDe, reducido, { hacer })}
       {etiqueta && <style>{ESTILOS_ETIQUETA}</style>}
       {etiqueta && (
         <span data-etiqueta-parada={parada.etiquetaEn} data-marca={marcaEtiqueta ?? ""} aria-hidden="true" className={reducido ? undefined : "b5-etiqueta-aparece"} style={{
@@ -468,7 +483,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
               ...textosParada(parada).map((t) => <p key={t} style={{ gridArea: "1 / 1", ...DEVOLUCION_PARADA }}>{pintar(t)}</p>),
             ]}
           </div>
-          <div ref={texto} data-texto-paso tabIndex={-1} aria-live="polite" style={{ gridArea: "1 / 1", outline: "none" }}>
+          <div ref={texto} id={idTexto} data-texto-paso tabIndex={-1} aria-live="polite" style={{ gridArea: "1 / 1", outline: "none" }}>
             {enParada ? (
               falla
                 ? <p data-devolucion className={aparece} style={DEVOLUCION_PARADA}>{pintar(falla)}</p>
@@ -516,8 +531,12 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
             type="button"
             data-siguiente
             disabled={ultimo || sinCerrar}
-            onClick={() => ir(paso + 1)}
-            style={{ ...botonBase, ...(ultimo || sinCerrar ? DESACTIVADO : { background: COLOR.neutro, border: `2px solid ${COLOR.neutro}`, color: COLOR.navy }) }}
+            /* Con un gesto sin hacer, sigue enfocable y dice por qué (el texto del paso). */
+            aria-disabled={gestoPendiente || undefined}
+            aria-describedby={gestoPendiente ? idTexto : undefined}
+            data-gesto-pendiente={gestoPendiente ? estado.gesto : undefined}
+            onClick={() => { if (!gestoPendiente) ir(paso + 1); }}
+            style={{ ...botonBase, ...(ultimo || sinCerrar || gestoPendiente ? DESACTIVADO : { background: COLOR.neutro, border: `2px solid ${COLOR.neutro}`, color: COLOR.navy }) }}
           >
             Siguiente
           </button>

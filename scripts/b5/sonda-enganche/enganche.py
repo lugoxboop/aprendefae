@@ -118,7 +118,16 @@ def aprender(b, sigla, ancho, clave):
             m0["figuraCambiaConLaAccion"] = m1["figuraCambiaConLaAccion"] = bool(m0["figHTML"]) and m0["figHTML"] != m1["figHTML"]
         else:
             if paso in vistos: break
-            med(2, f"capa 2 · {paso}", "lectura")
+            m0 = med(2, f"capa 2 · {paso}", "lectura")
+            # Lote 7 (el tanque de T6 · A3): un paso con gesto se hace por la vía sin arrastre (toque o Enter)
+            g = pg.locator(f"{cap(2)} [data-siguiente]").first.get_attribute("data-gesto-pendiente")
+            if g:
+                if g in ("gasto", "pablo"): pg.locator(f'{cap(2)} [data-ficha][data-activa="si"]').first.click()
+                elif g == "barra": pg.locator(f"{cap(2)} button[data-barra]").first.click()
+                elif g == "asa": pg.locator(f"{cap(2)} [data-asa]").first.press("Enter")
+                pg.wait_for_timeout(1100)
+                m1 = med(2, f"capa 2 · {paso} (gesto)", "acierto"); m1["veredicto"] = "acierto"
+                m0["figuraCambiaConLaAccion"] = m1["figuraCambiaConLaAccion"] = bool(m0["figHTML"]) and m0["figHTML"] != m1["figHTML"]
         vistos.add(paso)
         sig = pg.locator(f"{cap(2)} [data-siguiente]")
         if sig.count() == 0 or sig.first.is_disabled() or sig.first.get_attribute("aria-disabled") == "true": break

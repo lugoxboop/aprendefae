@@ -263,3 +263,33 @@ export const PARADA_T6_A3 = {
   /* La predicción escrita en la escena (Mai, enganche §2a); la de «Sí, por la parte…», de la auditoría de Shoko. */
   etiquetas: { si: "Otra vez en marzo", "si-parte": "En marzo, solo lo que faltó", no: "Solo en diciembre" },
 };
+
+/* ═══════════ LOTE 7 · EL TANQUE (P2 de Mai, 16-oct, con las decisiones de Sakuta) ═══════════ */
+
+/*
+ * Los rótulos del modelo, las pistas de los gestos y los nombres accesibles
+ * (§10 de Mai: suyos, nuevos, PARA SHOKO). Las cifras y las fechas son las de
+ * los pasos de Futaba. «Queda en» y «Le faltan» van delante de su cifra; el
+ * nombre del tanque, delante de «: {saldo}».
+ */
+export const TANQUE_T6_A3 = {
+  saldo: "Saldo",
+  quedaEn: "Queda en",
+  leFaltan: "Le faltan",
+  leFaltanLector: "le faltan",
+  analisis: "Análisis",
+  noLaVa: "No la va a recuperar",
+  valorNeto: "Valor neto",
+  provisionMenos: "Provisión −",
+  cero: "0",
+  pesosCero: "$0",
+  sueltaAqui: "Suéltalo aquí",
+  tocaBarra: "Toca la barra para restar",
+  subeNivel: "Sube el nivel hasta la línea",
+  nombreTanque: "Saldo de la provisión",
+  nombreBarra: "Restar la provisión de Cuentas por cobrar – clientes",
+  nombreAsa: "Nivel de la provisión",
+  pablo: "Pablo Moncayo",
+  faltante: "$31.200",
+  pide: "$153.400",
+};
