@@ -165,7 +165,7 @@ export const PANTALLAS_A4 = [
     errores: { "cheque-sin-cobrar": "El cheque ya está en sus libros: lo anotó al girarlo." },
     cierre: "Cada libreta anota lo que la otra todavía no sabe. Conciliar es ver qué falta.",
     siguiente: "Siguiente: «San Calixto».",
-    alt: "Las dos libretas, cada una con un renglón: un cheque sin cobrar en la de la empresa y una nota débito en la del banco. Se toca el renglón que le falta anotar a la empresa.",
+    alt: "Las dos libretas, cada una con un renglón: un cheque sin cobrar en la de la empresa y una nota débito en la del banco. Se toca el renglón que la empresa todavía no sabe.",
     pie: "Basado en el libro, pp. 187-190",
   },
 ];
