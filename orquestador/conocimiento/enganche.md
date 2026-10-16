@@ -89,6 +89,13 @@ entró en el #231. **Mide si una pieza engancha, no solo si cabe**, tarjeta por
 tarjeta, a 320 px, sobre el build servido. Juzga la barra B1-B5 de esta misma
 nota, así que no hace falta volver a interpretarla a mano en cada célula.
 
+**Desde el 16 de octubre sirve para cualquier tema sin copiarla.** El recorrido
+—ruta, nombres de las piezas y prefijo de los atributos— salió de dentro de la
+sonda y vive en `temas.json`: una entrada por tema, y se corre con
+`enganche.py --tema=<sigla>`. Sin `--tema` sigue siendo t4, así que las órdenes
+que ya existían no se enteran. Lo único que pone cada célula es su clave de
+Hacer. Probado tras el cambio con T4 A0 y T4 H1: las dos siguen pasando.
+
 Tiene las dos propiedades que hacen fiable a un medidor, y están comprobadas:
 **se comprueba sola** (12 de 12 casos sintéticos, cada uno con una sola rotura) y
 **puede fallar** —quitarle una regla o subirle un tope la pone roja—. Un medidor

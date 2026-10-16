@@ -1,0 +1,33 @@
+{
+  "_comentario": [
+    "Cada tema pone aquí lo suyo. La medición (enganche_mide.js), el juicio (juzga)",
+    "y el fixture no cambian: eso es lo común de las cinco células.",
+    "  ruta     · la del tema en la aplicación, sin «/hacer»",
+    "  prefijo  · el atributo de las piezas de Hacer: «t4» → [data-t4-h1]",
+    "  aprender · sigla → data-pieza de cada Aprender",
+    "  hacer    · sigla → el nombre con el que la pieza aparece en el camino",
+    "Para añadir un tema: una entrada aquí y su propia clave (--clave=)."
+  ],
+  "t4": {
+    "ruta": "/#/efectivo-caja-menor-bancos",
+    "prefijo": "t4",
+    "aprender": {
+      "A0": "t4-a0-el-activo-corriente",
+      "A1": "t4-a1-la-caja",
+      "A2": "t4-a2-el-fondo-fijo",
+      "A3": "t4-a3-el-arqueo",
+      "A4": "t4-a4-bancos-y-notas",
+      "A5": "t4-a5-san-calixto"
+    },
+    "hacer": {
+      "H1": "¿Entra o sale de Caja?",
+      "H2": "El control que se saltaron",
+      "H3": "¿Se mueve la caja menor?",
+      "H4": "El arqueo de Rosa",
+      "H5": "¿Al empleado o al gasto?",
+      "H6": "¿Quién se enteró primero?",
+      "H7": "Concilia la cuenta",
+      "H8": "¿Se asienta o no?"
+    }
+  }
+}
