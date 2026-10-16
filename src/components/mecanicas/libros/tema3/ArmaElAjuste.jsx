@@ -122,7 +122,7 @@ function CuentaT({
     );
   };
 
-  const borde = estado === "correcta" ? FAE.teal : estado === "incorrecta" ? CORAL : "rgba(248,249,250,0.14)";
+  const borde = estado === "correcta" ? FAE.text : estado === "incorrecta" ? CORAL : "rgba(248,249,250,0.14)";
   return (
     <div ref={refT} data-cuenta-t={indice} data-cuenta={fila.cuenta ?? undefined} data-estado-t={estado ?? undefined} style={{
       flex: "1 1 0", minWidth: 0, padding: "9px 7px", borderRadius: "13px",

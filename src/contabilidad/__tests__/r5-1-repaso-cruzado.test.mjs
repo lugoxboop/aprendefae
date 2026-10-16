@@ -12,7 +12,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *    2. cada texto de los datos está, literal, en el paquete
  *    3. las claves y las cifras, CALCULADAS aquí desde los datos
  *    4. pantalla 3: la lata nueva antes de tiempo no vende; la tabla, tras la cuarta
- *    5. pantalla 4: contador, «Revisar», regla de prioridad, palabras, relleno, teclado
+ *    5. pantalla 4: contador, «Comprobar», regla de prioridad, palabras, relleno, teclado
  *    6. pantallas 1, 2 y 6: la figura reproduce la elegida y, si falló, la correcta
  *    7. B4: ningún estado de calificación en teal ni ámbar
  *    8. teclado: latas, fichas y lotes alcanzables y accionables
@@ -65,6 +65,9 @@ const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
 const PAQUETE = leer("orquestador/conocimiento/paquetes/e5-r5-1-v2.md");
 const PAQUETE_V1 = leer("orquestador/conocimiento/paquetes/e5-r5-1-v1.md");
+/* El lote «r5 al estándar único»: las palabras del feedback, el contador y los botones salen del PROMPT MAESTRO §4. */
+const MAESTRO = leer("orquestador/conocimiento/prompts/disenadores-de-celula-v1.md");
+const apagado = (b) => b.getAttribute("aria-disabled") === "true";
 const P = D.PANTALLAS_R5_1;
 const I = D.INTERFAZ_R5_1;
 const pantalla = (id) => P.find((x) => x.id === id);
@@ -165,8 +168,7 @@ const ROTULOS = [
   I.hoy, I.vencimiento, I.pagas, I.recibes, I.tuGanancia, I.leyendaMayor, I.debe, I.haber, I.sinSaldo,
   I.marcaCompra("PRIMERA COMPRA", 10), I.marcaCompra("SEGUNDA COMPRA", 14), I.vendidas, I.costoVendido, I.enBodega,
   D.CMV, I.estanteComun, I.salenQuedan(pantalla("c9").vendidas, c9.quedan), I.enLaFigura,
-  I.correcta, I.incorrecta, I.eraEsta, I.bien, I.era.resta, I.era.suma, I.era.fuera, I.suma, I.resta, I.noEntra,
-  I.revisar, I.verPista, I.hayMas, I.conUeps, I.costoTotal, I.unidades, I.costoUnidad,
+  I.suma, I.resta, I.noEntra, I.verPista, I.hayMas, I.conUeps, I.costoTotal, I.unidades, I.costoUnidad,
 ];
 
 /* ═══════════ 2 · CADA TEXTO, LITERAL, EN EL PAQUETE ═══════════ */
@@ -180,7 +182,7 @@ const entero = (texto, t) => new RegExp(`(?:^|[|:·«(/] |\\*\\* |«)${escapar(t
 /* Los nombres del mayor los escribe el paquete con su saldo detrás: «Nombre (…». */
 const delMayor = new Set(P.flatMap((p) => (p.mayor ?? []).map((c) => c.nombre)));
 
-test("★★★ 2 · cada texto de los datos está, letra por letra, en el paquete v2 (guarda: 113 textos y 35 rótulos)", () => {
+test("★★★ 2 · cada texto de los datos está, letra por letra, en el paquete v2 (guarda: 113 textos y 27 rótulos) y las palabras del feedback, en el PROMPT MAESTRO", () => {
   const textos = contenido();
   assert.equal(textos.length, 113, "no recorrió los textos que dice recorrer");
   /* Los rótulos de los lotes los conserva v2 de v1.3 («la marca «Lote n · …» de v1.3»). */
@@ -199,13 +201,18 @@ test("★★★ 2 · cada texto de los datos está, letra por letra, en el paque
   for (const o of pantalla("c6").opciones) assert.ok(V2.includes(`| ${o.celdas.join(" · ")} |`), o.id);
   /* Los rótulos fijos, en su sección. */
   const seccion = plano(PAQUETE.slice(PAQUETE.indexOf("### Rótulos fijos de interfaz"), PAQUETE.indexOf("## Contenido (Miyata)")));
-  assert.equal(ROTULOS.length, 35);
+  assert.equal(ROTULOS.length, 27);
   const sinRotulo = ROTULOS.filter((t) => !t.split(" · ").every((parte) => seccion.includes(parte)));
   assert.deepEqual(sinRotulo, [], `rótulos que no están: ${sinRotulo.join(" | ")}`);
   /* Lo que v2 conserva de v1.3, en la tabla de v1.3. */
   const v13 = PAQUETE_V1.slice(PAQUETE_V1.indexOf("## v1.3 · textos nuevos"));
   for (const t of [I.marcaPista, I.marcaPortada, I.portada, I.verPista]) assert.ok(v13.includes(`| ${t} |`), t);
-  for (const t of ["PREGUNTA n DE 6", "«Siguiente»", "«POR TEMA»"]) assert.ok(PAQUETE_V1.includes(t), t);
+  assert.ok(PAQUETE_V1.includes("«POR TEMA»"));
+  /* §4.2 y §4.3 del PROMPT MAESTRO: el feedback, «Comprobar», el contador y el botón de avance. */
+  for (const t of [I.correcta, I.incorrecta, I.eraEsta, I.revisar]) assert.ok(MAESTRO.includes(`"${t}"`), t);
+  assert.deepEqual([I.correcta, I.incorrecta, I.eraEsta], ["Correcto", "No va aquí", "Iba aquí"]);
+  assert.ok(MAESTRO.includes('"{Sustantivo} n de N"') && MAESTRO.includes("Pregunta"));
+  assert.equal(I.progreso(3, 7), "Pregunta 3 de 7");
   /* Los datos de la célula (decisión 8), como los escribe el paquete. */
   for (const t of ["Cuentas por cobrar – clientes $10.000.000", "Provisión $500.000", "castigo $300.000", "($10 y $14)", "inventario de $800.000"]) assert.ok(V2.includes(t), t);
   assert.equal(pantalla("c5").mayor[0].saldo, 10000000);
@@ -417,7 +424,7 @@ test("★★★ 4 · la lata nueva antes de tiempo no vende, saca el mensaje y n
 const fichaDe = (caja, id) => caja.querySelector(`[data-ficha="${id}"]`);
 const contador = (caja) => Number(caja.querySelector("[data-valor-contador]").dataset.valorContador);
 
-test("★★★ 5 · el contador cambia en cada decisión y «Revisar» solo se activa con las seis puestas", async () => {
+test("★★★ 5 · el contador cambia en cada decisión y «Comprobar» solo se activa con las seis puestas", async () => {
   const p = pantalla("c8");
   const { caja } = await montar(h(RepasoCruzado, { pantallas: [p] }));
   assert.equal(contador(caja), 0);
@@ -430,12 +437,12 @@ test("★★★ 5 · el contador cambia en cada decisión y «Revisar» solo se 
   ];
   let k = 0;
   for (const [f, b, esperado] of pasos) {
-    assert.equal(revisar.disabled, k < 7 ? true : revisar.disabled);
+    assert.equal(apagado(revisar), k < 7 ? true : apagado(revisar));
     await tocar(fichaDe(caja, f).querySelector(`[data-boton="${b}"]`));
     k++;
     assert.equal(contador(caja), esperado, `${f} → ${b}`);
     const puestas = new Set(pasos.slice(0, k).map((x) => x[0])).size;
-    assert.equal(revisar.disabled, puestas < 6, `con ${puestas} puestas`);
+    assert.equal(apagado(revisar), puestas < 6, `con ${puestas} puestas`);
   }
   assert.equal(caja.querySelector("[data-valor-contador]").textContent, "$3.400");
   /* Con «No entra», la cifra de la ficha pasa a gris. */
@@ -444,7 +451,7 @@ test("★★★ 5 · el contador cambia en cada decisión y «Revisar» solo se 
   await tocar(revisar);
   assert.equal(caja.querySelector("[data-devolucion]").dataset.devolucion, "acierto");
   assert.equal(caja.querySelector("[data-devolucion]").textContent.endsWith(p.acierto), true);
-  assert.deepEqual([...caja.querySelectorAll("[data-palabra-ficha]")].map((x) => x.textContent), Array(6).fill("Bien"));
+  assert.deepEqual([...caja.querySelectorAll("[data-palabra-ficha]")].map((x) => x.textContent), Array(6).fill("Correcto"));
 });
 
 /* Una clasificación con solo la falla `n` (y lo demás bien). */
@@ -481,23 +488,27 @@ test("★★★ 5 · la regla de prioridad entera: siete fallas, cada una sola y
   }
   /* Dos fichas mal con la misma falla también es «hay más». */
   assert.deepEqual(D.evaluarC8(p, { ...CLAVE_C8, compras: "fuera", "inventario-final": "fuera" }).textos, [p.fallas[6].retro, I.hayMas]);
-  /* Lo mismo en la pantalla: la devolución, la palabra de cada ficha mal puesta y el botón sin relleno. */
+  /* Lo mismo en la pantalla: la devolución, la pastilla de cada ficha y el estado de sus botones. */
   const { caja } = await montar(h(RepasoCruzado, { pantallas: [p] }));
   await responder(caja, p, { ...CLAVE_C8, ventas: "suma", "inventario-final": "fuera", "devoluciones-compras": "suma" });
-  const parrafos = [...caja.querySelectorAll("[data-parrafo-devolucion]")].map((x) => x.textContent.replace("Incorrecto: ", ""));
+  const parrafos = [...caja.querySelectorAll("[data-parrafo-devolucion]")].map((x) => x.textContent.replace("Incorrecto. ", ""));
   assert.deepEqual(parrafos, [p.fallas[0].retro, I.hayMas]);
   const palabra = (f) => fichaDe(caja, f).querySelector("[data-palabra-ficha]").textContent;
-  assert.deepEqual(["ventas", "inventario-final", "devoluciones-compras", "compras"].map(palabra), ["Era: no entra", "Era Resta", "Era Resta", "Bien"]);
-  await responderOtra(p, { ...CLAVE_C8, "inventario-inicial": "resta" }, (c) => assert.equal(c.querySelector('[data-ficha="inventario-inicial"] [data-palabra-ficha]').textContent, "Era Suma"));
-  /* El botón mal elegido PIERDE el relleno: transparente, con borde coral y un anillo. */
-  const mal = fichaDe(caja, "ventas").querySelector('[data-boton="suma"]');
-  assert.equal(mal.style.background, "transparent");
-  assert.match(mal.style.border, /2px solid/);
-  assert.equal(mal.querySelector("[data-forma-ficha]").dataset.formaFicha, "anillo");
-  /* El bien elegido conserva su relleno, con un punto. */
-  const bien = fichaDe(caja, "compras").querySelector('[data-boton="suma"]');
-  assert.notEqual(bien.style.background, "transparent");
-  assert.equal(bien.querySelector("[data-forma-ficha]").dataset.formaFicha, "punto");
+  /* §4.2: la pastilla dice «No va aquí» (el lector, «Incorrecto.») o «Correcto». */
+  assert.deepEqual(["ventas", "inventario-final", "devoluciones-compras", "compras"].map(palabra), ["No va aquíIncorrecto.", "No va aquíIncorrecto.", "No va aquíIncorrecto.", "Correcto"]);
+  /* El elegido mal: 2 px coral; el bien: 2 px #F8F9FA; ninguno con relleno sólido. */
+  const estadoDe = (f, b) => fichaDe(caja, f).querySelector(`[data-boton="${b}"]`);
+  const mal = estadoDe("ventas", "suma");
+  assert.equal(mal.dataset.estadoFicha, "mal");
+  assert.match(mal.style.border, /2px solid (rgb\(231, 111, 81\)|#E76F51)/i);
+  const bien = estadoDe("compras", "suma");
+  assert.equal(bien.dataset.estadoFicha, "ok");
+  assert.match(bien.style.border, /2px solid (rgb\(248, 249, 250\)|#F8F9FA)/i);
+  assert.equal(bien.style.background, "transparent");
+  /* «Iba aquí» en el que iba (con reduced-motion, sin la espera de 0,7 s), y nunca en el de una ficha bien. */
+  const iba = (f) => [...fichaDe(caja, f).querySelectorAll("[data-boton]")].filter((b) => b.dataset.estadoFicha === "revelada").map((b) => b.dataset.boton);
+  assert.deepEqual(["ventas", "inventario-final", "devoluciones-compras", "compras"].map(iba), [["fuera"], ["resta"], ["resta"], []]);
+  assert.equal(estadoDe("ventas", "fuera").querySelector('[data-veredicto="revelada"]').textContent, "Iba aquí");
   /* Después de revisar, nada se cambia. */
   await tocar(fichaDe(caja, "ventas").querySelector('[data-boton="fuera"]'));
   assert.equal(fichaDe(caja, "ventas").querySelector('[data-boton="suma"]').getAttribute("aria-checked"), "true");
@@ -640,8 +651,11 @@ const AMBAR = /E9C46A|233,\s*196,\s*106|\bambar\b/i;
 test("★★★ 7 · B4 de enganche.md: ningún estado de calificación en teal ni en ámbar (fuente y pantalla)", async () => {
   /* La fuente: los estados de la opción propia y los de la ficha. */
   const opcionFuente = leer("src/components/repasoCap5/OpcionR5.jsx");
-  const estados = opcionFuente.slice(opcionFuente.indexOf("export const ESTADOS_OPCION"), opcionFuente.indexOf("const SIN_ESTADO"));
-  assert.ok(/correcta:/.test(estados) && /revelada:/.test(estados) && /incorrecta:/.test(estados));
+  /* Los estados son los de comun.jsx (§4.1), que la opción y la ficha heredan. */
+  assert.match(opcionFuente, /ESTADOS\[PIEZA\[estado\]\]/);
+  const comunFuente = leer("src/components/repasoCap5/comun.jsx");
+  const estados = comunFuente.slice(comunFuente.indexOf("export const ESTADOS"), comunFuente.indexOf("};", comunFuente.indexOf("export const ESTADOS")));
+  assert.ok(/ok:/.test(estados) && /revelada:/.test(estados) && /mal:/.test(estados));
   for (const linea of estados.split("\n")) assert.ok(!TEAL.test(linea) && !AMBAR.test(linea), linea.trim());
   const fichasFuente = leer("src/components/repasoCap5/Fichas.jsx");
   const estilo = fichasFuente.slice(fichasFuente.indexOf("function estiloBoton"), fichasFuente.indexOf("function Ficha("));
@@ -839,7 +853,7 @@ test("★★★ 12 · todo texto de 10 palabras o más pasa 65 con inflesz.js (g
  * opción o camino, con la pista abierta, y exige que cada texto del
  * estudiante y cada rótulo haya salido en el DOM en algún estado.
  */
-test("★★★ 1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 113 textos, 35 rótulos, 49 caminos)", async () => {
+test("★★★ 1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 113 textos, 27 rótulos, 49 caminos)", async () => {
   const visto = new Set();
   const mirar = (caja) => visto.add(caja.textContent);
   let caminos = 0;
@@ -875,14 +889,15 @@ test("★★★ 1 · cada texto del paquete sale en la pantalla en algún estado
   }
   /* El final. */
   const { caja } = await montar(h(RepasoCruzado, { pantallas: P }));
-  for (const p of P) { await responder(caja, p, bienDe(p)); await siguiente(caja); }
+  /* El botón de avance, «Siguiente pregunta», sale entre pantalla y pantalla. */
+  for (const p of P) { await responder(caja, p, bienDe(p)); mirar(caja); await siguiente(caja); }
   mirar(caja);
   const todo = [...visto].join("\n");
   const textos = contenido();
   assert.equal(textos.length, 113);
-  assert.equal(ROTULOS.length, 35);
+  assert.equal(ROTULOS.length, 27);
   assert.equal(caminos, 49, "no recorrió los caminos que dice recorrer");
-  const faltan = [...textos, ...ROTULOS, I.porTema, I.marcaPista, I.siguiente].filter((t) => !todo.includes(t));
+  const faltan = [...textos, ...ROTULOS, I.porTema, I.marcaPista, "Siguiente pregunta", "Ver mi resumen"].filter((t) => !todo.includes(t));
   assert.deepEqual(faltan, [], `no salen en pantalla: ${faltan.join(" | ")}`);
 });
 
@@ -890,7 +905,7 @@ test("★★★ 1 · cada texto del paquete sale en la pantalla en algún estado
 
 test("★★ B5 de enganche.md: ninguna frase sale dos veces en la misma pantalla (los nombres de cuenta o de dato no cuentan)", async () => {
   const nombres = new Set([D.GASTO, D.PROVISION, D.CLIENTES, D.INVENTARIO, D.GYP, D.CMV, ...pantalla("c8").datos.map((d) => d.etiqueta), ...pantalla("c1").opciones.flatMap((o) => o.activos.map((a) => a.figura))]);
-  const palabrasDeInterfaz = new Set([I.bien, I.era.suma, I.era.resta, I.era.fuera, I.suma, I.resta, I.noEntra]);
+  const palabrasDeInterfaz = new Set([I.suma, I.resta, I.noEntra]);
   let estados = 0;
   for (const p of P) {
     for (const eleccion of p.forma === "fichas" ? [CLAVE_C8, { ...CLAVE_C8, ventas: "suma" }] : p.opciones.map((o) => o.id)) {
@@ -998,7 +1013,7 @@ test("★★★ se juega entera: cabecera con la silueta del tema, el detalle de
   for (const [k, p] of P.entries()) {
     jugadas++;
     assert.equal(caja.querySelector("[data-pantalla]").dataset.pantalla, p.id);
-    assert.equal(caja.querySelector("[data-progreso]").textContent, `PREGUNTA ${k + 1} DE 7`);
+    assert.equal(caja.querySelector("[data-progreso]").textContent, `Pregunta ${k + 1} de 7`);
     const silueta = caja.querySelector("[data-silueta-cabecera]");
     assert.equal(silueta.dataset.siluetaCabecera, ESCENA[p.subtema]);
     assert.equal(silueta.getAttribute("aria-hidden"), "true");
@@ -1027,7 +1042,7 @@ test("★★★ se juega entera: cabecera con la silueta del tema, el detalle de
   ]);
 });
 
-test("★★★ en el final, acierto y error se distinguen por forma: relleno o anillo, no solo por color", async () => {
+test("★★★ en el final, acierto y error se distinguen por forma: Check o X de lucide, no solo por color", async () => {
   const { caja } = await montar(h(RepasoCruzado, { pantallas: P }));
   for (const p of P) {
     const id = p.id === "c1" ? clave(p).id : p.forma === "fichas" ? { ...CLAVE_C8, compras: "resta" } : p.opciones.find((o) => !o.correcta).id;
@@ -1036,13 +1051,8 @@ test("★★★ en el final, acierto y error se distinguen por forma: relleno o 
   }
   const puntos = [...caja.querySelectorAll("[data-punto]")];
   assert.equal(puntos.length, 7);
-  const forma = (el) => {
-    const st = el.style;
-    const relleno = st.background && st.background !== "transparent" && !st.border;
-    const anillo = (st.background === "transparent" || st.background === "") && /solid/.test(st.border);
-    return relleno ? "relleno" : anillo ? "anillo" : "otra";
-  };
-  assert.deepEqual(puntos.map(forma), ["relleno", "anillo", "anillo", "anillo", "anillo", "anillo", "anillo"]);
+  const forma = (el) => (el.tagName.toLowerCase() !== "svg" ? "otra" : el.classList.contains("lucide-check") ? "check" : el.classList.contains("lucide-x") ? "x" : "otra");
+  assert.deepEqual(puntos.map(forma), ["check", "x", "x", "x", "x", "x", "x"]);
   assert.ok(puntos.every((x) => x.closest("[aria-hidden='true']")));
   assert.deepEqual([...caja.querySelectorAll("[data-n-de-m]")].map((x) => x.textContent), ["1 de 1", "0 de 1", "0 de 1", "0 de 4"]);
 });

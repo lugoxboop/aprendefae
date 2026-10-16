@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { C, INTER, SORA } from "./comun.jsx";
+import { C, INTER, CIFRA, HUNDIDO_OPACO } from "./comun.jsx";
 import { cifra } from "./ToroNegro.jsx";
 import { INTERFAZ_R5_1 } from "../../data/repasoCap5Cruzado.js";
 import { useReproduccion, enFase } from "./movimiento.js";
@@ -77,8 +77,8 @@ function Fila({ lado, children, alto = 28, dato }) {
   );
 }
 
-const ANTES = { fontFamily: INTER, fontSize: "14px", fontVariantNumeric: "tabular-nums", color: C.atenuado, whiteSpace: "nowrap" };
-const NUEVO = { fontFamily: INTER, fontSize: "15px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: C.texto, whiteSpace: "nowrap" };
+const ANTES = { ...CIFRA, fontSize: "14px", color: C.atenuado, whiteSpace: "nowrap" };
+const NUEVO = { ...CIFRA, fontSize: "15px", fontWeight: 600, color: C.texto, whiteSpace: "nowrap" };
 
 function Cuenta({ c, fase, g }) {
   const tocada = Boolean(c.entra);
@@ -105,7 +105,7 @@ function Cuenta({ c, fase, g }) {
         <Fila lado={c.naturaleza} dato="antes"><span data-saldo-antes={c.saldo} style={ANTES}>{cifra(c.saldo)}</span></Fila>
       ) : (
         <div data-fila="antes" data-sin-saldo style={{ minHeight: "28px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ ...ANTES, background: C.navy, padding: "0 6px", position: "relative" }}>{INTERFAZ_R5_1.sinSaldo}</span>
+          <span style={{ ...ANTES, background: HUNDIDO_OPACO, padding: "0 6px", position: "relative" }}>{INTERFAZ_R5_1.sinSaldo}</span>
         </div>
       )}
       {tocada && (
@@ -114,7 +114,7 @@ function Cuenta({ c, fase, g }) {
           <div style={{ position: "relative" }}>
             <span aria-hidden="true" data-raya style={{ position: "absolute", left: 0, right: 0, top: 0, height: "1px", background: C.atenuado, transformOrigin: "left", ...raya }} />
             <Fila lado={c.saldoNuevo.lado} dato="saldo-nuevo">
-              <span data-saldo-nuevo={c.saldoNuevo.valor} data-saldo-lado={c.saldoNuevo.lado} style={{ ...NUEVO, fontFamily: SORA }}>
+              <span data-saldo-nuevo={c.saldoNuevo.valor} data-saldo-lado={c.saldoNuevo.lado} style={NUEVO}>
                 <SaldoQueCuenta
                   fase={fase}
                   desde={firmado(c.naturaleza, c.saldo)}

@@ -13,7 +13,7 @@ import { useAuth } from "../auth/AuthProvider.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
 import { CSS_JUEGO, Cierre } from "./mecanicas/corazon/juego.jsx";
-import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente, Punto } from "./repasoCap5/comun.jsx";
+import { C, INTER, SORA, MARCA, CEJILLA, HUNDIDO, Devolucion, BotonSiguiente, Punto } from "./repasoCap5/comun.jsx";
 import { ToroNegro } from "./repasoCap5/ToroNegro.jsx";
 import { OpcionesTitulo } from "./repasoCap5/OpcionesTitulo.jsx";
 import { Flujos } from "./repasoCap5/Flujos.jsx";
@@ -142,7 +142,7 @@ function PorTema({ filas }) {
           const Silueta = SILUETAS[f.escena];
           const ancho = ANCHO_SILUETA[f.escena] * 0.45;
           return (
-            <div key={f.id} data-fila-tema={f.id} style={{ minHeight: "72px", background: C.navy, borderRadius: "12px", display: "flex", alignItems: "center", gap: "12px", padding: "0 16px", boxSizing: "border-box" }}>
+            <div key={f.id} data-fila-tema={f.id} style={{ minHeight: "72px", ...HUNDIDO, borderRadius: "12px", display: "flex", alignItems: "center", gap: "12px", padding: "0 16px", boxSizing: "border-box" }}>
               {/* La silueta del tema al 45 %. */}
               <span aria-hidden="true" style={{ width: `${ancho}px`, height: "22px", flexShrink: 0, position: "relative" }}>
                 <span style={{ position: "absolute", left: 0, top: 0, transform: "scale(0.45)", transformOrigin: "left top" }}><Silueta /></span>
@@ -150,10 +150,10 @@ function PorTema({ filas }) {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ margin: 0, fontFamily: INTER, fontSize: "15px", fontWeight: 600, color: C.texto }}>{f.nombre}</p>
                 {/*
-                  El total va en palabras: el «n de m» de la derecha. Cada punto lleva
-                  forma además de color: relleno si acertó, anillo (solo borde) si
-                  falló. Así quien no distingue teal de coral sabe CUÁLES acertó, no
-                  solo cuántas. Los puntos siguen aria-hidden: el lector oye el «n de m».
+                  El total va en palabras: el «n de m» de la derecha. Cada pregunta
+                  lleva su forma (§4.2): Check si acertó, X si falló. Así se sabe
+                  CUÁLES acertó, no solo cuántas, sin depender del color. Van
+                  aria-hidden: el lector oye el «n de m».
                 */}
                 <div aria-hidden="true" style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
                   {f.puntos.map((p) => <Punto key={p.id} ok={p.ok} />)}
@@ -233,7 +233,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
 
   if (terminado) {
     return (
-      <div data-r5-1 data-cierre>
+      <div data-r5-1 data-r5 data-cierre>
         <style>{CSS_JUEGO}</style>
         <PorTema filas={porTema(resultados)} />
         <Cierre pct={Math.round(puntuarR5_1(puntosDeR5_1(resultados)))} onReiniciar={reiniciar} />
@@ -242,7 +242,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
   }
 
   return (
-    <div ref={tarjeta} data-r5-1 data-pantalla={pantalla.id} data-forma={pantalla.forma} style={{ paddingTop: "12px" }}>
+    <div ref={tarjeta} data-r5-1 data-r5 data-pantalla={pantalla.id} data-forma={pantalla.forma} style={{ paddingTop: "12px" }}>
       <style>{CSS_R5_1}</style>
       <Cabecera actual={i} total={total} escena={SUBTEMAS[pantalla.subtema].escena} />
       <p ref={enunciado} tabIndex={-1} data-enunciado style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "16px", lineHeight: "24px", fontWeight: 600, color: C.texto, outline: "none" }}>
@@ -253,7 +253,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
       </div>
       {!r && <Pista key={pantalla.id} texto={pantalla.pista} abierta={pistaAbierta} onAbrir={() => setPistaAbierta(true)} />}
       <Devolucion r={r} lector={LECTOR_R5_1} />
-      {r && <BotonSiguiente onClick={siguiente} botonRef={boton} texto={INTERFAZ_R5_1.siguiente} />}
+      {r && <BotonSiguiente onClick={siguiente} botonRef={boton} sustantivo={INTERFAZ_R5_1.sustantivo} ultimo={i + 1 === total} />}
     </div>
   );
 }
@@ -284,8 +284,8 @@ export function PortadaRepaso() {
    */
   const temas = ORDEN_SUBTEMAS.filter((id) => id !== "corrientes").map((id) => SUBTEMAS[id]);
   return (
-    <section data-portada-repaso aria-labelledby="r5-portada-titulo" style={{ background: C.navy, borderRadius: "16px", padding: "18px 16px 16px", margin: "4px 0 20px" }}>
-      <p style={{ ...MARCA, margin: 0 }}>{INTERFAZ_R5_1.marcaPortada}</p>
+    <section data-portada-repaso aria-labelledby="r5-portada-titulo" style={{ ...HUNDIDO, borderRadius: "16px", padding: "18px 16px 16px", margin: "4px 0 20px" }}>
+      <p style={{ ...CEJILLA, margin: 0 }}>{INTERFAZ_R5_1.marcaPortada}</p>
       <p id="r5-portada-titulo" style={{ margin: "6px 0 0", fontFamily: SORA, fontSize: "17px", fontWeight: 700, lineHeight: 1.3, color: C.texto }}>
         {INTERFAZ_R5_1.portada}
       </p>

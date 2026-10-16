@@ -1,5 +1,6 @@
 import { pesos } from "./contabilidad.js";
 import { barajar } from "../utils/barajar.js";
+import { FEEDBACK } from "./repasoCap5Comun.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -39,10 +40,11 @@ export const R5_1 = {
   objetivo: "Son siete preguntas del capítulo 5. Saltan de tema a propósito. Comprueba lo que sabes.",
 };
 
-/* Los rótulos fijos de interfaz del paquete. */
+/* Los rótulos fijos de interfaz del paquete, al estándar único de Hacer (PROMPT MAESTRO §4). */
 export const INTERFAZ_R5_1 = {
-  progreso: (n, total) => `PREGUNTA ${n} DE ${total}`,
-  siguiente: "Siguiente",
+  /* §4.3: «{Sustantivo} n de N»; el mismo sustantivo en el botón de avance. */
+  sustantivo: "Pregunta",
+  progreso: (n, total) => `Pregunta ${n} de ${total}`,
   porTema: "POR TEMA",
   nDeM: (n, m) => `${n} de ${m}`,
   verPista: "Ver pista",
@@ -81,9 +83,7 @@ export const INTERFAZ_R5_1 = {
   suma: "Suma",
   resta: "Resta",
   noEntra: "No entra",
-  revisar: "Revisar",
-  bien: "Bien",
-  era: { suma: "Era Suma", resta: "Era Resta", fuera: "Era: no entra" },
+  revisar: FEEDBACK.comprobar,
   hayMas: "Y hay más fichas por revisar.",
   grupo: (etiqueta, valor) => `${etiqueta}, ${valor}`,
   /* Pantalla 5. */
@@ -95,9 +95,10 @@ export const INTERFAZ_R5_1 = {
   costoUnidad: "Costo de cada unidad",
   /* Estados de calificación (§e) y el patrón «la opción se vuelve título». */
   enLaFigura: "EN LA FIGURA",
-  correcta: "Correcta",
-  incorrecta: "Incorrecta",
-  eraEsta: "Era esta",
+  /* §4.2: las tres palabras del feedback. */
+  correcta: FEEDBACK.ok,
+  incorrecta: FEEDBACK.mal,
+  eraEsta: FEEDBACK.revelada,
 };
 
 /*
@@ -107,8 +108,9 @@ export const INTERFAZ_R5_1 = {
  * [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN]
  */
 export const PENDIENTE_DE_REVISION_R5_1 = {
-  lectorAcierto: "Correcto: ",
-  lectorError: "Incorrecto: ",
+  /* §4.2: el lector dice «Incorrecto.». */
+  lectorAcierto: "Correcto. ",
+  lectorError: "Incorrecto. ",
 };
 
 /* 1 caja = 10 u (Itagaki, pantalla 5). */
