@@ -155,7 +155,7 @@ function Quien({ p, onAcierto }) {
     <>
       <Fig nombre={NOMBRE} alt={p.alt}>
         <Libretas renglones={ok ? [RENGLON_CHEQUE_30] : []} reserva={ok ? 0 : 1} luz />
-        <Chips opciones={p.opciones} elegida={e} correcta={p.correcta} onElegir={setE} rotulo={(o) => F.chips[o]} />
+        <Chips opciones={p.opciones} elegida={e} correcta={p.correcta} onElegir={setE} rotulo={(o) => F.chips[o]} etiqueta={F.quien} />
       </Fig>
       {e && <Mensaje key={e} ok={ok} texto={ok ? p.acierto : p.errores[e]} />}
     </>
@@ -170,7 +170,10 @@ function Causas({ p }) {
       <div className="t4a4-causas" role="group" aria-label={F.causas}>
         {CAUSAS_A4.map((c, i) => <button key={c.id} type="button" className="t4r-tab" data-control={i + 1} aria-pressed={k === i} onClick={() => setK(i)}>{i + 1}</button>)}
       </div>
-      <Libretas renglones={k != null ? [CAUSAS_A4[k]] : []} reserva={k != null ? 0 : 1} luz />
+      {/* Al tocar 1 a 6 cambia el renglón de las libretas: la región viva hace que el lector lo oiga (Katsumi). */}
+      <div aria-live="polite" data-lector-causa>
+        <Libretas renglones={k != null ? [CAUSAS_A4[k]] : []} reserva={k != null ? 0 : 1} luz />
+      </div>
     </Fig>
   );
 }

@@ -100,11 +100,13 @@ export const FIGURA_A5 = {
   menos: "Menos",
   fin: "Las cinco están puestas.",
   chips: { si: "Se asienta", no: "No se asienta" },
+  /* El nombre del grupo de opciones de P3, para el lector (Katsumi). */
+  asienta: "¿Se asienta este cheque?",
   asentar: "Asentar las cinco notas",
   mayor: "Bancos · 31 de marzo",
   saldo: "Saldo",
   /* Para el lector de pantalla (los del prototipo de Hanayama): el nombre de cada sección y de los botones. */
-  seccion: (rotulo, lado) => `${rotulo} en el saldo ${lado === "banco" ? "del banco" : "de la empresa"}`,
+  seccion: (rotulo, lado) => `${rotulo}, ${rotulo === "Más" ? "se suma al" : "se resta del"} saldo ${lado === "banco" ? "del banco" : "de la empresa"}`,
   asientos: "Los cinco asientos",
   tablero: "El asiento",
 };

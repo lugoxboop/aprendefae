@@ -24,7 +24,7 @@
 - Acierto (tras «Correcto.»): «Se pasa por $2.100: un sobrante de caja menor.» (<10)
 - Error · falta (✗ y el texto): «Haz la suma: ¿pasa del fondo o se queda corta?» (103,4)
 - Error · cuadra (✗ y el texto): «Para cuadrar, tendría que dar justo $500.000. Suma los dos.» (89,7)
-- Texto alternativo: «El sobre con 478.100 en soportes y 24.000 en la caja. Con el acierto, la aguja de la suma queda a la derecha de la marca del fondo.» (90,5)
+- Texto alternativo: «El sobre con 478.100 en soportes y 24.000 en la caja. Con el acierto, aparece en la regla la aguja de la suma.» (87,0)
 - Pie: «Basado en el libro, p. 185»
 
 **P3 · el-cheque**

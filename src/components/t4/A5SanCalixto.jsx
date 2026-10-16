@@ -108,7 +108,7 @@ function Asienta({ p, onAcierto }) {
     <>
       <Fig nombre={NOMBRE} alt={p.alt}>
         <div className="t4a5-t" data-tarjeta-partida={CHEQUE_P3.id}><span>{CHEQUE_P3.texto}</span><span>{cifra(CHEQUE_P3.monto)}</span></div>
-        <Chips opciones={p.opciones} elegida={e} correcta={p.correcta} onElegir={setE} rotulo={(o) => F.chips[o]} />
+        <Chips opciones={p.opciones} elegida={e} correcta={p.correcta} onElegir={setE} rotulo={(o) => F.chips[o]} etiqueta={F.asienta} />
       </Fig>
       {e && <Mensaje key={e} ok={ok} texto={ok ? p.acierto : p.errores[e]} />}
     </>

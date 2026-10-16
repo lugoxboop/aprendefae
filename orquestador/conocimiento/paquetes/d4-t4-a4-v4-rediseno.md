@@ -31,7 +31,7 @@
 - Acierto (tras «Correcto.»): «El banco se entera cuando lo cobren.» (<10)
 - Error · banco (✗ y el texto): «¿Alguien lo ha cobrado ya?» (<10)
 - Error · los-dos (✗ y el texto): «¿Cuándo se entera el banco de un cheque?» (<10)
-- Texto alternativo: «Las dos libretas de la misma cuenta, con un renglón libre. Con el acierto, el cheque aparece en la de la empresa, que resta, y el banco todavía no lo sabe.» (88,8)
+- Texto alternativo: «Las dos libretas de la misma cuenta, con un renglón libre. Con el acierto, el cheque aparece en la libreta que lo tiene anotado, y la otra dice que todavía no lo sabe.» (82,7)
 - Pie: «Basado en el libro, p. 188»
 
 **P4 · seis-causas**

@@ -79,6 +79,15 @@ function Total({ v, foco }) {
 }
 
 /*
+ * El nombre accesible de una mitad: la cuenta y el lado, la cifra que se ve
+ * en ella (el total, o el monto puesto sin comprobar) y, si la hay, la palabra
+ * de la marca. El nombre tapa el contenido del botón, así que si no dijera la
+ * cifra, el lector no la oiría (Katsumi): «Caja menor al debe: 500.000».
+ */
+const nombreMitad = (c, lado, cifraVista, palabra) =>
+  `${c.renglones.join(" ")} al ${lado}${cifraVista != null && cifraVista !== "" ? `: ${cifraVista}` : ""}${palabra ? `: ${palabra}` : ""}`;
+
+/*
  * cuentas: [{ id, renglones: [...] }]
  * totales: { [id]: { debe, haber } }
  * puestas: { debe: id|null, haber: id|null }  (lo que el estudiante eligió y todavía no comprobó)
@@ -107,7 +116,7 @@ export function Tablero({ cuentas, totales = {}, puestas = {}, monto, onElegir, 
                 data-con-palabra={palabras && m ? "" : undefined}
                 disabled={!activo}
                 aria-pressed={puesta}
-                aria-label={`${c.renglones.join(" ")} al ${lado}${palabras && m && palabras[m] ? `: ${palabras[m][1]}` : ""}`}
+                aria-label={nombreMitad(c, lado, puesta && !m ? monto : (totales[c.id]?.[lado] ? cifra(totales[c.id][lado]) : null), palabras && m && palabras[m] ? palabras[m][1] : null)}
                 onClick={() => onElegir?.(c.id, lado)}
               >
                 {puesta && !m ? <span className="t4r-nueva">{monto}</span>
@@ -152,14 +161,19 @@ export function Mayor({ titulo, debe, haber, reserva = 3, saldo = null, rotuloSa
   );
 }
 
+/* Lo que oye el lector cuando los dos saldos del par se igualan (Katsumi). */
+export const SON_IGUALES = "son iguales";
+
 export function Par({ izq, der, igual = false }) {
   const a = useNumeroQueSube(izq.v ?? 0);
   const b = useNumeroQueSube(der.v ?? 0);
   return (
-    <div className="t4pr" data-par aria-label={`${izq.r} ${cifra(izq.v ?? 0)}; ${der.r} ${der.v != null ? cifra(der.v) : ""}`}>
+    <div className="t4pr" data-par aria-label={`${izq.r} ${cifra(izq.v ?? 0)}; ${der.r} ${der.v != null ? cifra(der.v) : ""}${igual ? `; ${SON_IGUALES}` : ""}`}>
       <div data-lado-par="izq"><span className="r">{izq.r}</span><span className={`v${izq.foco ? " f" : ""}`}>{izq.v != null ? cifra(a) : "—"}</span></div>
       <span className="t4pr-igual" aria-hidden="true" style={{ visibility: igual ? "visible" : "hidden" }}>=</span>
       <div data-lado-par="der"><span className="r">{der.r}</span><span className={`v${der.foco ? " f" : ""}`}>{der.v != null ? cifra(b) : "—"}</span></div>
+      {/* Cuando aparece el «=», el lector lo oye: la región está desde el principio, vacía, para que el cambio se anuncie. */}
+      <span className="t4f-sr" aria-live="polite" data-lector-igual>{igual ? SON_IGUALES : ""}</span>
     </div>
   );
 }

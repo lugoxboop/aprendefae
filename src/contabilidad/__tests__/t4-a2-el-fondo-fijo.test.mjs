@@ -205,8 +205,8 @@ test("★★ el lector oye la marca: la mitad mal elegida dice «Mal» en su nom
     tocar(q(m, '[data-destino="caja-menor:debe"]'));
     tocar(q(m, '[data-destino="bancos:haber"]'));
     tocar(q(m, "[data-boton=comprobar]"));
-    assert.equal(q(m, '[data-destino="caja-menor:debe"]').getAttribute("aria-label"), "Caja menor al debe: Mal");
-    assert.equal(q(m, '[data-destino="bancos:haber"]').getAttribute("aria-label"), "Bancos al haber");
+    assert.equal(q(m, '[data-destino="caja-menor:debe"]').getAttribute("aria-label"), "Caja menor al debe: 500.000: Mal");
+    assert.equal(q(m, '[data-destino="bancos:haber"]').getAttribute("aria-label"), "Bancos al haber: 478.100");
   } finally { m.desmontar(); }
   assert.equal(seguir, R.seguir);
 });

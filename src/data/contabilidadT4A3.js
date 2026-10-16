@@ -97,7 +97,7 @@ export const FIGURA_A3 = {
   caminos: { cobra: "Cobrarle a Rosa", asume: "La empresa asume" },
   comprobar: "Comprobar",
   /* Para el lector de pantalla: el nombre del tablero (el del prototipo) y de los grupos de opciones (las preguntas de Katsumi). */
-  tablero: "El asiento",
+  tablero: "El asiento del reembolso",
   opcionesZona: "¿Qué muestra el arqueo?",
   opcionesCheque: "¿Por cuánto sale el reembolso?",
 };
@@ -132,7 +132,7 @@ export const PANTALLAS_A3 = [
       falta: "Haz la suma: ¿pasa del fondo o se queda corta?",
       cuadra: "Para cuadrar, tendría que dar justo $500.000. Suma los dos.",
     },
-    alt: "El sobre con 478.100 en soportes y 24.000 en la caja. Con el acierto, la aguja de la suma queda a la derecha de la marca del fondo.",
+    alt: "El sobre con 478.100 en soportes y 24.000 en la caja. Con el acierto, aparece en la regla la aguja de la suma.",
     pie: "Basado en el libro, p. 185",
   },
   {

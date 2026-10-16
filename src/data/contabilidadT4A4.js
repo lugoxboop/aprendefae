@@ -101,6 +101,8 @@ export const FIGURA_A4 = {
   mayor: "Bancos",
   contador: (n, total) => `${n} de ${total}`,
   chips: { empresa: "Empresa", banco: "Banco", "los-dos": "Los dos" },
+  /* El nombre del grupo de opciones de P3, para el lector (Katsumi). */
+  quien: "¿Quién lo tiene anotado?",
   /* Para el lector de pantalla (los del prototipo de Hanayama). */
   tablero: "Bancos",
   causas: "Las seis causas",
@@ -142,7 +144,7 @@ export const PANTALLAS_A4 = [
       banco: "¿Alguien lo ha cobrado ya?",
       "los-dos": "¿Cuándo se entera el banco de un cheque?",
     },
-    alt: "Las dos libretas de la misma cuenta, con un renglón libre. Con el acierto, el cheque aparece en la de la empresa, que resta, y el banco todavía no lo sabe.",
+    alt: "Las dos libretas de la misma cuenta, con un renglón libre. Con el acierto, el cheque aparece en la libreta que lo tiene anotado, y la otra dice que todavía no lo sabe.",
     pie: "Basado en el libro, p. 188",
   },
   {
