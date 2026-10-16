@@ -50,6 +50,7 @@ const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await 
 const { default: FleteYDevolucion } = await import("../../components/mecanicas/libros/t7/FleteYDevolucion.jsx");
 const { JUEGOS_T7_2, TEMA_T7_2 } = await import("../../components/ContabilidadT7_2View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
+const { firma, textoFigura } = await import("./figuraAcumuladaPrueba.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -372,6 +373,43 @@ test("★★★ lote 3: si la cuenta es la buena y falla el lado, sale la retroa
     }
     await tocar(boton(m.caja, "Comprobar"));
     for (const l of it.lineas) assert.deepEqual([...m.caja.querySelectorAll(`[data-linea-cuenta="${l.id}"] [data-texto-retro]`)].map((p) => p.textContent), l.id === "costo" ? [item("devolucion-de-ventas").lineas.find((x) => x.id === l.id).retro] : []);
+  } finally {
+    m.desmontar();
+  }
+});
+
+/* ═══════════ LOTE 5 · LA FIGURA ACUMULADA ═══════════ */
+
+test("★★★ lote 5: lo de cada hecho se suma al cerrar su ítem, con las cuentas de los datos; el asiento del hecho 4 al final", async () => {
+  const c = (id) => item(id).correcta;
+  const r = [
+    `[Hecho 1] ${c("flete-del-comprador")}`,
+    `[Hecho 1] ${c("flete-del-comprador")} 376.200`,
+    `[Hecho 1] ${c("flete-del-comprador")} 376.200 [Hecho 2] ${c("flete-del-vendedor")}`,
+    `[Hecho 1] ${c("flete-del-comprador")} 376.200 [Hecho 2] ${c("flete-del-vendedor")} [Hecho 3] ${c("devolucion-de-compras")}`,
+    `[Hecho 1] ${c("flete-del-comprador")} 376.200 [Hecho 2] ${c("flete-del-vendedor")} [Hecho 3] ${c("devolucion-de-compras")} 922.500`,
+  ];
+  const despues = [[r[0]], [r[1]], [r[2]], [r[3]], [r[4]], [r[4], "asiento Hecho 4: 2 líneas"]];
+  const m = await montar();
+  try {
+    for (const [k, it] of EN_ORDEN.entries()) {
+      assert.deepEqual(firma(m.caja), k ? despues[k - 1] : [], `antes del ítem ${k + 1}`);
+      const falla = k % 2 === 1;
+      if (it.tipo === "eleccion") {
+        await tocar(opcion(m.caja, falla ? it.distractores[0].valor : it.correcta));
+      } else if (it.tipo === "cifra") {
+        assert.ok(!textoFigura(m.caja).includes(miles(it.correcta)), "E8");
+        await escribir(m.caja, it.id, falla ? it.distractores[0].valor : it.correcta);
+        await tocar(boton(m.caja, "Comprobar"));
+      } else {
+        for (const l of it.lineas) { await tocar(ficha(m.caja, l.id, l.cuenta)); await tocar(lado(m.caja, l.id, falla ? otro(l.lado) : l.lado)); }
+        assert.deepEqual(firma(m.caja), despues[k - 1], "el asiento no está antes de comprobar");
+        await tocar(boton(m.caja, "Comprobar"));
+      }
+      assert.deepEqual(firma(m.caja), despues[k], `al cerrar el ítem ${k + 1}`);
+      await tocar(boton(m.caja, k === EN_ORDEN.length - 1 ? D.BOTON_H5.verResumen : D.BOTON_H5.siguiente));
+    }
+    assert.equal(m.caja.querySelector("[data-figura-acumulada]"), null);
   } finally {
     m.desmontar();
   }

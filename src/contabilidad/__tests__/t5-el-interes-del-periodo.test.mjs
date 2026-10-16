@@ -52,6 +52,7 @@ const { SUBJECTS, HACER, actividadesDeTipo, clasificacionDe } = await import("..
 const { default: ElInteresDelPeriodo } = await import("../../components/mecanicas/libros/t5/ElInteresDelPeriodo.jsx");
 const { JUEGOS, TEMA: TEMA_T5 } = await import("../../components/ContabilidadTema5View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
+const { firma, textoFigura } = await import("./figuraAcumuladaPrueba.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -317,6 +318,45 @@ test("★★★ lote 3: la mesa de T5 decide por el ítem; un asiento sin banco 
     assert.equal(m.caja.querySelectorAll("[data-ficha-cuenta]").length, 0);
     assert.equal(m.caja.querySelectorAll("[data-linea-cuenta]").length, 0);
     for (const l of sinBanco[2].lineas) assert.ok(m.caja.querySelector(`[data-linea="${l.id}"]`), l.id);
+  } finally {
+    m.desmontar();
+  }
+});
+
+/* ═══════════ LOTE 5 · LA FIGURA ACUMULADA ═══════════ */
+
+test("★★★ lote 5: la cuenta de intereses crece trimestre a trimestre, cada parte al cerrar su ítem, y se queda", async () => {
+  const despues = [
+    ["Cada 3 meses"],
+    ["Cada 3 meses 432.000"],
+    ["Cada 3 meses 432.000", "asiento : 2 líneas"],
+    ["Cada 3 meses 432.000", "asiento : 2 líneas", "5.700.000"],
+    ["Cada 3 meses 432.000", "asiento : 2 líneas", "5.700.000 228.000"],
+  ];
+  const m = await montar();
+  try {
+    for (const [k, x] of EN_ORDEN.entries()) {
+      assert.deepEqual(firma(m.caja), k ? despues[k - 1] : [], `antes del ítem ${k + 1}`);
+      const falla = k % 2 === 1;
+      if (x.tipo === "eleccion") {
+        await tocar(opcion(m.caja, falla ? x.distractores[0].valor : x.correcta));
+      } else if (x.tipo === "cifra") {
+        assert.ok(!textoFigura(m.caja).includes(pesos(x.correcta).slice(1)), "E8");
+        await escribir(m.caja, x.id, falla ? x.distractores[0].valor : x.correcta);
+        await tocar(boton(m.caja, "Comprobar"));
+      } else {
+        for (const l of x.lineas) {
+          const linea = m.caja.querySelector(`[data-linea-cuenta="${l.id}"]`);
+          await tocar([...linea.querySelectorAll("[data-ficha-cuenta]")].find((b) => b.dataset.fichaCuenta === l.cuenta));
+          await tocar([...linea.querySelectorAll("button")].find((b) => b.textContent === (l.lado === "debe" ? "Debe" : "Haber")));
+        }
+        assert.deepEqual(firma(m.caja), despues[k - 1], "el asiento no está antes de comprobar");
+        await tocar(boton(m.caja, "Comprobar"));
+      }
+      assert.deepEqual(firma(m.caja), despues[k], `al cerrar el ítem ${k + 1}`);
+      await tocar(boton(m.caja, k === EN_ORDEN.length - 1 ? D.BOTON_N4.verResumen : D.BOTON_N4.siguiente));
+    }
+    assert.equal(m.caja.querySelector("[data-figura-acumulada]"), null);
   } finally {
     m.desmontar();
   }

@@ -10,6 +10,8 @@ import { Encabezado } from "../tema1/encabezado.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
 import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
+import FiguraAcumulada from "./FiguraAcumulada.jsx";
+import { FIGURA_T7_1_H6, cerradosDe } from "../../../../contabilidad/figuraAcumulada.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -32,6 +34,10 @@ import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
  * pide esa cuenta); la forma y las piezas son las de H1-H5 (hacerT7.jsx) y
  * las de «Arma la línea» (armaLaLinea.jsx), con T7-3 H1 de molde.
  * Al terminar: onCompletar(pct, ms, detalle).
+ *
+ * LOTE 5 (L): arriba del ítem, la figura acumulada (FiguraAcumulada.jsx): la
+ * cuenta de la devolución se arma con los ítems 1 a 3, y cada libro suma su
+ * asiento al comprobarlo.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -99,6 +105,7 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
           <AsientoEnLineas lineas={COMPRA_RESUELTA_H6.vendedor} rotulo="VENDEDOR" acento={FAE.ambar} />
         </div>
         <Ficha filas={FICHA_H6} />
+        <FiguraAcumulada figura={FIGURA_T7_1_H6} cerrados={cerradosDe(t.i, Boolean(listo))} listo={Boolean(listo)} />
         <div style={{ marginBottom: "12px" }}>
           <ContadorConIntento>
             <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />

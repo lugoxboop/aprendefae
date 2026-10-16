@@ -51,6 +51,7 @@ const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await 
 const { default: PagoATiempo } = await import("../../components/mecanicas/libros/t7/PagoATiempo.jsx");
 const { JUEGOS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
+const { firma, textoFigura } = await import("./figuraAcumuladaPrueba.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -296,25 +297,23 @@ test("★★★ el panel docente: todo item_id tiene etiqueta, leída de los dat
 
 /* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
 
-test("★★★ Patrón T7-3: cada figura después de su ítem, y el asiento de Totumo arriba del de Bambú", async () => {
+test("★★★ Patrón T7-3 y lote 5: la factura, el descuento y el pago crecen en UNA sola cuenta; el asiento de Totumo arriba del de Bambú", async () => {
   assert.equal(C.lista - C.comercial, C.factura);
   assert.equal((C.factura * 4) / 100, C.condicionado);
   assert.equal(C.deuda - C.condicionado, C.pago);
-  const vistas = (caja) => [...caja.querySelectorAll("[data-figuras] > div > figure")].map((f) => (f.matches("[data-plazos]")
-    ? `plazos ${f.querySelector("[data-pago]")?.textContent ?? "sin pago"}`
-    : `${f.querySelector("figcaption").textContent}: ${[...f.querySelectorAll(".rg-v")].map((x) => x.textContent).join(" ")}`));
-  const F = "Factura de Totumo: 2.125.000 170.000 1.955.000";
-  const Z = "plazos Pago · 23 oct";
-  const DC = "El descuento condicionado: 1.955.000 4 % 78.200";
-  const PG = "El pago del 23 de octubre: 2.199.375 78.200 2.121.175";
-  /* Lo que se ve en la pantalla de cada ítem, antes y después de responder (las muestras de Watari:
-     la factura hasta el ítem 2, la franja hasta el 3; ninguna se va en el momento de responder). */
-  const antes = [[], [F], [Z], [DC], [DC, PG], [DC, PG], [DC, PG]];
-  const despues = [[F], [F, Z], [Z, DC], [DC, PG], [DC, PG], [DC, PG], [DC, PG]];
+  /* Lote 5 de L: los renglones van de la factura al descuento y al pago, en una sola cuenta que se queda
+     (cada parte con el título de Watari como subtítulo). La franja de plazos sigue como la dejó Watari: del ítem 2 al 3. */
+  const F = "[Factura de Totumo] 2.125.000 170.000 1.955.000";
+  const DC = "[El descuento condicionado] 1.955.000 4 % 78.200";
+  const PG = "[El pago del 23 de octubre] 2.199.375 78.200 2.121.175";
+  const Z = "plazos";
+  const antes = [[], [F], [F, Z], [`${F} ${DC}`], [`${F} ${DC} ${PG}`], [`${F} ${DC} ${PG}`], [`${F} ${DC} ${PG}`]];
+  const despues = [[F], [F, Z], [`${F} ${DC}`, Z], [`${F} ${DC} ${PG}`], [`${F} ${DC} ${PG}`], [`${F} ${DC} ${PG}`], [`${F} ${DC} ${PG}`]];
   const m = await montar();
   try {
     for (const [k, it] of EN_ORDEN.entries()) {
-      assert.deepEqual(vistas(m.caja), antes[k], `antes del ítem ${k + 1}`);
+      assert.deepEqual(firma(m.caja), antes[k], `antes del ítem ${k + 1}`);
+      assert.ok(m.caja.querySelectorAll("[data-figura-acumulada] figure[data-renglones]").length <= 1, "una sola cuenta");
       /* El asiento de arriba, solo en el ítem 6, y ya resuelto. */
       const arriba = m.caja.querySelector("[data-asiento-arriba]");
       assert.equal(Boolean(arriba), it.id === "libro-de-bambu", `asiento arriba en el ítem ${k + 1}`);
@@ -332,11 +331,12 @@ test("★★★ Patrón T7-3: cada figura después de su ítem, y el asiento de 
         for (const l of it.lineas) { await tocar(ficha(m.caja, l.id, l.cuenta)); await tocar(lado(m.caja, l.id, l.lado)); }
         await tocar(boton(m.caja, "Comprobar"));
       }
-      assert.deepEqual(vistas(m.caja), despues[k], `al responder el ítem ${k + 1}`);
+      assert.deepEqual(firma(m.caja), despues[k], `al responder el ítem ${k + 1}`);
       /* El pago del 23 de octubre: a los 20 días del 3 de octubre, en la franja de 30. */
       if (k === 1) assert.equal(m.caja.querySelector("[data-plazos] .pz-mark").style.left, `${(20 / 30) * 100}%`);
       await tocar(boton(m.caja, k === EN_ORDEN.length - 1 ? D.BOTON_H4.verResumen : D.BOTON_H4.siguiente));
     }
+    assert.equal(m.caja.querySelector("[data-figura-acumulada]"), null, "hasta el cierre");
   } finally {
     m.desmontar();
   }
@@ -377,3 +377,5 @@ test("★★★ lote 3: los distractores de cuenta de los dos asientos son los d
   const datos = D.ITEMS_H4.filter((x) => x.tipo === "asiento").flatMap((it) => it.lineas.flatMap((l) => l.distractores.map((d) => [it.id, l.cuenta, l.lado, l.valor, d.cuenta, d.retro])));
   assert.deepEqual(datos, fs);
 });
+
+
