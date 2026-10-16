@@ -256,6 +256,44 @@ de cada despliegue** con la consulta de arriba.
 **La regla que queda:** una prueba verde sobre archivos no dice nada del estado
 de producción. Lo que no se le pregunta a la base, no se sabe.
 
+## Una guardia que compara se queda muda cuando el otro lado cambia de forma
+
+El pariente más fino del falso verde, y el más difícil de ver, porque la prueba
+está BIEN ESCRITA.
+
+El caso, del 15 de octubre. T6 (Célula B) explica «nota débito» con la
+definición del Tema 4, por el acuerdo C4, y tiene una guardia para que las dos
+no se separen: `b5-t6-glosa-nota-debito.test.mjs`. Está bien hecha —recorre todo
+`src/data`, comprueba que el recorrido miró de verdad (más de 40 módulos, más de
+1.000 objetos) y trae control positivo y control negativo—.
+
+Reconoce una definición así: un objeto que **nombra** el término en una clave de
+término (`termino`, `nombre`, `titulo`, `concepto`, `palabra`, `rotulo`) **y**
+trae el texto en una clave de definición (`definicion`, `delLibro`, `texto`,
+`glosa`…).
+
+Entonces la Célula D rediseñó A4, y su definición pasó a vivir en una frase de
+prosa dentro de `antes: [ … ]`, en un objeto cuyo `id` es `las-notas`. No nombra
+el término en una clave de término ni usa una clave de definición. **La guardia
+pasa en verde con dos explicaciones distintas en pie.**
+
+No está rota. Está midiendo una forma de escribir que cambió debajo.
+
+**La regla: una comprobación que compara A con B se queda muda el día que B deja
+de tener la forma que ella reconoce.** Y se queda muda EN VERDE, que es lo peor.
+
+Cómo no caer:
+
+- **Una guardia de coincidencia necesita también una guardia de existencia.** Si
+  la prueba dice «todas las definiciones de X coinciden», tiene que afirmar
+  además **cuántas** espera encontrar —al menos una fuera de casa— o se vuelve
+  verdadera por vacío. Es el mismo remedio que el `assert.ok(archivos.length > 40)`
+  que esa misma prueba ya tiene para el recorrido: lo aplicó al continente y no
+  al contenido.
+- **El dueño del acuerdo se enteró por una persona, no por la prueba.** Lo vio
+  Yujiro leyendo su propio rediseño. Una guardia que depende de que alguien se
+  acuerde no es una guardia.
+
 ## Una medida no es un defecto: cinco de las que me llegaron hoy no lo eran
 
 Las cinco células montaron sondas automáticas y me pasaron sus hallazgos de lo
