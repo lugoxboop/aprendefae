@@ -1,25 +1,28 @@
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T4 · A4 DE APRENDER — «Bancos y notas del banco» (Célula D).
+ * T4 · A4 DE APRENDER — «Bancos y notas del banco» (Célula D). REDISEÑO DE
+ * ENGANCHE.
  *
- * Fuente: el paquete vigente de Katsumi, orquestador/conocimiento/paquetes/
- * d4-t4-a4-v1.md, que ya trae la parte de A4 de la v2 (d4-t4-a3-a4-v2 y
- * d4-t4-h3-h5-a4-v2) y de la v3 (d4-t4-a4-h8-v3); los tres se quedan como
- * registro. Es el mismo blob que en main y en la punta de
- * feat/conta-d4-mapa-fuente. Una prueba compara cada texto de aquí contra él.
+ * Diseño: Hanayama, «Bancos y las dos libretas, que se llenan» (celula-d/
+ * hanayama-a4-rediseno.md), aprobado por Yujiro en su corte de calidad del
+ * 15 oct 2026, con su ajuste: en P2, con los siete puestos, «Sube» y «Baja»
+ * desaparecen (no quedan grises y muertos). Textos: Katsumi (celula-d/
+ * katsumi-texto-a2-a5.md), aprobados tal cual. Copia en el canon: orquestador/
+ * conocimiento/paquetes/d4-t4-a4-v4-rediseno.md. Una prueba compara cada
+ * texto de aquí contra ella.
  *
- * ESTA PIEZA DEFINE «NOTA DÉBITO» Y «NOTA CRÉDITO» DEL BANCO. En los DATOS el
- * término se llama exactamente «Nota débito» y «Nota crédito» (decisión
- * A4-P de Yujiro), en TERMINOS_A4: así la guardia de la Célula B
- * (b5-t6-glosa-nota-debito.test.mjs) ve nuestra definición y se pone roja,
- * que es la señal acordada para que B retire su glosa. En pantalla, el texto
- * es el del paquete («Con una nota débito, el banco…»).
+ * Siete pantallas (la pila tenía diez); en cinco el estudiante mueve la
+ * figura: consigna y gira, hace llegar el extracto, manda siete movimientos a
+ * «Sube» o «Baja», decide quién tiene anotado el cheque y recorre las seis
+ * causas. Dos piezas, cada una con su significado: la cuenta Bancos (el
+ * tablero de una cuenta y, en P2, el mayor) y las dos libretas («La empresa»
+ * y «El banco»), con «todavía no / lo sabe» donde una no lo tiene.
  *
- * Cifras: las dos de la p. 187, 876.000 y 398.200, en dos asientos sin fecha
- * (el libro pone «xxxx»). Ninguna de San Calixto: esas son de A5.
- *
- * La figura es «Las dos libretas» de Hanayama (v1 con la v1.1 encima): dos
- * registros de la misma cuenta, alineados por renglón.
+ * Cifras del libro: 876.000 y 398.200 (p. 187). Los siete movimientos de P2
+ * salen de las pp. 186-187, en su orden. Los términos de las notas son
+ * exactamente «Nota débito» y «Nota crédito» (A4-P); en el mayor de P2, fuera
+ * de la libreta «El banco», llevan «del banco» en un renglón aparte. La
+ * definición está en el «antes» de P1 (con «abonar»: «le suma»).
  *
  * Aprender: sin FP, sin catálogo y sin llamar al motor.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -28,287 +31,149 @@ import { BOTON, DEBE, HABER } from "./contabilidadT4.js";
 
 export const A4_ID = "t4-a4-bancos-y-notas";
 
-/* Las dos cifras de la p. 187. */
+/* ═══════════ LAS CIFRAS ═══════════ */
+
+/* p. 187: la consignación y el cheque al proveedor. */
 export const CONSIGNACION = 876_000;
 export const CHEQUE_PROVEEDOR = 398_200;
 
-/*
- * ═══════════ LOS DOS TÉRMINOS QUE ESTA PIEZA DEFINE ═══════════
- *
- * El nombre en `termino` es EXACTAMENTE «Nota débito» / «Nota crédito», sin
- * «del banco» (A4-P). La definición es la línea de P2 del paquete, la misma
- * que se ve en pantalla.
- */
-export const NOTA_DEBITO = {
-  termino: "Nota débito",
-  definicion: "Con una nota débito, el banco le resta un valor a la cuenta de la empresa. Por ejemplo, cuando le cobra una chequera, o cuando le devuelve el cheque con el que un cliente le había pagado.",
-};
-export const NOTA_CREDITO = {
-  termino: "Nota crédito",
-  definicion: "Con una nota crédito, el banco le suma un valor a la cuenta de la empresa. Por ejemplo, cuando le abona intereses, o cuando un cliente le paga directo en el banco.",
-};
-export const TERMINOS_A4 = [NOTA_DEBITO, NOTA_CREDITO];
-
-/* ═══════════ TEXTOS DE INTERFAZ QUE EL PAQUETE NO TRAE ═══════════ */
-
-/* El nombre de cada asiento para el lector de pantalla. Revisado por Katsumi (d4-t4-a4-v1.md, «Textos de interfaz de la figura»). */
-export const NOMBRE_ASIENTO_A4 = { consignacion: "Asiento de la consignación", cheque: "Asiento del cheque al proveedor" };
-
-/* ═══════════ LA FIGURA: «LAS DOS LIBRETAS» (Hanayama v1 + v1.1) ═══════════ */
+/* ═══════════ P2 · LOS SIETE MOVIMIENTOS (pp. 186-187) ═══════════ */
 
 /*
- * Del libro o de Katsumi: «libro auxiliar», «extracto», «Nota débito», «Nota
- * crédito», «Consignación», «Cheque girado». Lo demás está marcado.
- * Dentro de la libreta «El banco», las notas van a secas (decisión de Yujiro
- * sobre la pregunta de Shibukawa).
+ * `texto`: la tarjeta (dos renglones como mucho a 320). `va`: el debe (sube)
+ * o el haber (baja) de Bancos. `mayor`: el nombre en el mayor, en renglones
+ * fijos (Katsumi, decisiones 4 y 5).
  */
-export const FIGURA_LIBRETAS = {
-  /* Revisados por Katsumi (ídem). */
-  empresa: { nombre: "La empresa", registro: "libro auxiliar" },
-  banco: { nombre: "El banco", registro: "extracto del mes" },
-  suma: "suma",
-  resta: "resta",
-  noLoSabe: ["todavía no", "lo sabe"],
-  saldo: "su saldo",
-  /* Los hechos. «Cheque girado» va en dos renglones fijos: en uno no cabe a 320 (Hanayama v1 §2). */
-  hechos: {
-    cheque: { nombre: ["Cheque", "girado"], efecto: "resta", quien: "empresa" },
-    consignacion: { nombre: ["Consignación"], efecto: "suma", quien: "empresa" },
-    "nota-debito": { nombre: [NOTA_DEBITO.termino], efecto: "resta", quien: "banco" },
-    "nota-credito": { nombre: [NOTA_CREDITO.termino], efecto: "suma", quien: "banco" },
-  },
-  /* La tarjeta del hecho de P7, del enunciado de la pregunta. Revisada por Katsumi. */
-  tarjetaP7: { cuando: "El 30 del mes", renglones: ["La empresa gira un cheque", "nadie lo ha cobrado"] },
-};
+export const MOVIMIENTOS_A4 = [
+  { id: "consignacion", texto: "Lo que la empresa consigna", va: DEBE, mayor: ["Consignación"] },
+  { id: "nota-debito", texto: "Una nota débito del banco", va: HABER, mayor: ["Nota débito", "del banco"] },
+  { id: "nota-credito", texto: "Una nota crédito del banco", va: DEBE, mayor: ["Nota crédito", "del banco"] },
+  { id: "cheque-girado", texto: "Un cheque que gira la empresa", va: HABER, mayor: ["Cheque girado"] },
+  { id: "cliente-consigna", texto: "Un cliente consigna directo en la cuenta", va: DEBE, mayor: ["Cliente consigna"] },
+  { id: "prestamo", texto: "La cuota de un préstamo del banco", va: HABER, mayor: ["Préstamo"] },
+  { id: "cheque-anulado", texto: "Un cheque anotado que después se anula", va: DEBE, mayor: ["Cheque anulado"] },
+];
+/* El mayor reserva cinco renglones: no crece con el último (Katsumi, decisión 4). */
+export const RESERVA_MAYOR_A4 = 5;
 
-/*
- * El texto alternativo, uno por estado (Hanayama v1 §5, `notas` de la v1.1).
- * La fuente es d4-t4-a4-v1.md, «Textos de interfaz de la figura»: Katsumi
- * aprobó los míos tal cual, menos dos que cambió y que van aquí:
- *   · `p7-colocando`: el mío terminaba en «Los dos registros, todavía sin ese
- *     renglón.», una pista falsa para el lector de pantalla contra la
- *     respuesta «Solo la empresa»
- *   · `comparar`: «renglones que al otro todavía le faltan» (un renglón no se
- *     sabe)
- */
-export const ALT_LIBRETAS = {
-  notas: "Dos registros de la misma cuenta, el de la empresa y el del banco. En el del banco, una nota débito resta y una nota crédito suma. En el de la empresa, esos renglones todavía no están.",
-  "dos-libros": "Dos registros de la misma cuenta: el libro auxiliar de la empresa y el extracto del banco.",
-  "p7-colocando": "La empresa gira un cheque el 30 del mes y nadie lo ha cobrado. La figura muestra los dos registros de la misma cuenta.",
-  "p7-acierto": "El cheque está en el libro de la empresa, que resta. En el extracto del banco todavía no está.",
-  comparar: "En el libro de la empresa: el cheque girado y la consignación. En el extracto del banco: la nota débito y la nota crédito. Cada uno tiene renglones que al otro todavía le faltan.",
-};
+/* ═══════════ LAS LIBRETAS ═══════════ */
 
-/*
- * Cada estado: los renglones (hechos) en orden; los señalados; si el
- * subtítulo de la cabecera se ve (v1.1, FA4-1: no en `notas`); si hay pie
- * «su saldo» visible, oculto con su sitio, o nada; la tarjeta de P7; y los
- * renglones que guardan su sitio sin decir nada (P7 mientras pregunta: PH8-2).
- */
-export const ESTADOS_LIBRETAS = {
-  notas: { renglones: ["nota-debito", "nota-credito"], foco: ["nota-debito", "nota-credito"], subtitulo: false, saldo: "oculto" },
-  "dos-libros": { renglones: [], foco: [], subtitulo: true, saldo: "visible" },
-  "p7-colocando": { renglones: [], huecos: 1, foco: [], subtitulo: true, saldo: "visible", tarjeta: true },
-  "p7-acierto": { renglones: ["cheque"], foco: ["cheque"], subtitulo: true, saldo: "visible", tarjeta: true },
-  comparar: { renglones: ["cheque", "consignacion", "nota-debito", "nota-credito"], foco: [], subtitulo: true, saldo: "visible" },
-};
+/* Un renglón de libreta: `t`, el rótulo en renglones fijos; `e`, su efecto. */
+const NOTA_DEBITO_LIBRETA = { t: ["Nota débito"], e: "resta" };
+const NOTA_CREDITO_LIBRETA = { t: ["Nota crédito"], e: "suma" };
+const CHEQUE_SIN_COBRAR = { t: ["Cheque", "sin cobrar"], e: "resta" };
 
-/* ═══════════ LOS ASIENTOS (p. 187, sin fecha: el libro pone «xxxx») ═══════════ */
+/* P1: lo que trae el extracto. La empresa todavía no lo sabe. */
+export const RENGLONES_EXTRACTO = [
+  { id: "nota-debito", emp: null, ban: NOTA_DEBITO_LIBRETA },
+  { id: "nota-credito", emp: null, ban: NOTA_CREDITO_LIBRETA },
+];
+/* P3: con el acierto, el cheque del 30 en la libreta de la empresa (antes, el renglón no existe: PH8-2). */
+export const RENGLON_CHEQUE_30 = { id: "cheque-30", emp: { t: ["Cheque girado"], e: "resta" }, ban: null };
+/* P4: las seis causas (p. 188), una por botón, en la libreta que la tiene. */
+export const CAUSAS_A4 = [
+  { id: "cheque-sin-cobrar", emp: CHEQUE_SIN_COBRAR, ban: null },
+  { id: "consignacion-sin-abonar", emp: { t: ["Consignación", "sin abonar"], e: "suma" }, ban: null },
+  { id: "nota-debito", emp: null, ban: NOTA_DEBITO_LIBRETA },
+  { id: "nota-credito", emp: null, ban: NOTA_CREDITO_LIBRETA },
+  { id: "error-empresa", emp: { t: ["Error al anotar"], e: "de la empresa" }, ban: null },
+  { id: "error-banco", emp: null, ban: { t: ["Error al liquidar"], e: "del banco" } },
+];
+/* P5: lo que cada libreta tiene y la otra no. */
+export const RENGLONES_CONCILIACION = [
+  { id: "cheque-sin-cobrar", emp: CHEQUE_SIN_COBRAR, ban: null },
+  { id: "nota-debito", emp: null, ban: NOTA_DEBITO_LIBRETA },
+];
 
-export const ASIENTO_CONSIGNACION = {
-  nombre: NOMBRE_ASIENTO_A4.consignacion,
-  lineas: [
-    { cuenta: "Bancos", lado: DEBE, monto: CONSIGNACION },
-    { cuenta: "Caja", lado: HABER, monto: CONSIGNACION },
-  ],
-};
-export const ASIENTO_CHEQUE = {
-  nombre: NOMBRE_ASIENTO_A4.cheque,
-  lineas: [
-    { cuenta: "Cuentas por pagar – proveedores", lado: DEBE, monto: CHEQUE_PROVEEDOR },
-    { cuenta: "Bancos", lado: HABER, monto: CHEQUE_PROVEEDOR },
-  ],
+/* ═══════════ LA FIGURA ═══════════ */
+
+export const FIGURA_A4 = {
+  empresa: "La empresa",
+  banco: "El banco",
+  subEmpresa: "libro auxiliar",
+  subBanco: "extracto del mes",
+  noSabe: ["todavía no", "lo sabe"],
+  consignar: "Consignar",
+  girar: "Girar un cheque",
+  extracto: "Llega el extracto",
+  sube: "Sube",
+  baja: "Baja",
+  mayor: "Bancos",
+  contador: (n, total) => `${n} de ${total}`,
+  chips: { empresa: "Empresa", banco: "Banco", "los-dos": "Los dos" },
+  /* Para el lector de pantalla (los del prototipo de Hanayama). */
+  tablero: "Bancos",
+  causas: "Las seis causas",
 };
 
 /* ═══════════ LAS PANTALLAS ═══════════ */
 
-const PIE_186 = "Basado en el libro, p. 186";
-const PIE_187 = "Basado en el libro, p. 187";
-const PIE_186_188 = "Basado en el libro, pp. 186-188";
-
-/* P0 */
-const PORTADA = {
-  id: "portada",
-  tipo: "portada",
-  objetivo: "Al terminar, sabrás qué sube y qué baja la cuenta Bancos, qué son las notas del banco y por qué el saldo del banco y el de la empresa casi nunca coinciden.",
-  boton: BOTON.empezar,
-  pie: PIE_186_188,
-};
-
-/* P1 · Qué es Bancos: repaso del Tema 2 y de A1. */
-const QUE_ES_BANCOS = {
-  id: "que-es-bancos",
-  tipo: "lectura",
-  parrafos: [
-    "En «La caja» viste la plata que la empresa tiene a la mano. Bancos es la otra parte: la plata que tiene depositada en el banco.",
-    "Es un activo, como Caja. Sube con lo que aumenta lo depositado y baja con lo que lo disminuye.",
-  ],
-  boton: BOTON.seguir,
-  pie: PIE_186,
-};
-
 /*
- * P2 · Las notas del banco. Aquí se definen los dos términos: sus líneas
- * son las definiciones de TERMINOS_A4. «Abonar» se glosa en su primera
- * aparición (v2, A4-b), y se avisa de la otra nota crédito de T7.
+ * `modo`: cuenta (P0), extracto (P1), mandar (P2: el juego de mandar a un
+ * lado, sin mensaje de error a la vista: el ✗ en el botón y «Incorrecto.» solo
+ * para el lector), quien (P3), causas (P4), conciliacion (P5) y quieta (P6).
+ * `pregunta`: «Seguir» no aparece hasta el acierto; en P2, hasta el séptimo.
  */
-const LAS_NOTAS = {
-  id: "las-notas",
-  tipo: "lectura",
-  parrafos: [
-    "A veces es el banco el que mueve la cuenta de la empresa, sin que la empresa haga un cheque ni consigne. Lo avisa con una nota.",
-    NOTA_DEBITO.definicion,
-    NOTA_CREDITO.definicion,
-    "Aquí, abonar quiere decir que el banco le suma plata a la cuenta. No es el abono a una deuda que viste en el Tema 2.",
-    "Ojo con el nombre. En «Inventarios I» verás otra nota crédito, la que un vendedor le da a su cliente. Esta es la del banco.",
-  ],
-  figura: { tipo: "libretas", estado: "notas" },
-  boton: BOTON.seguir,
-  pie: "Basado en el libro, pp. 186-189",
-};
-
-/* P3 · Lo que sube Bancos. La glosa del cheque anulado es de Katsumi. */
-const LO_QUE_SUBE = {
-  id: "lo-que-sube",
-  tipo: "lectura",
-  parrafos: ["Bancos se debita, es decir, sube, con:"],
-  listaNumerada: [
-    "Lo que la empresa consigna en su cuenta.",
-    "Las notas crédito del banco.",
-    "Lo que un cliente consigna directo en la cuenta de la empresa.",
-    "Un cheque que la empresa hizo y anotó, y que después anuló.",
-  ],
-  boton: BOTON.seguir,
-  pie: PIE_186,
-};
-
-/*
- * P4 · Lo que baja Bancos, con su pregunta. «Girar» se define en su primera
- * aparición, debajo del renglón 1 de la lista (v2, A2-2). v2: los errores no
- * revelan.
- */
-const LO_QUE_BAJA = {
-  id: "lo-que-baja",
-  tipo: "eleccion",
-  parrafos: ["Bancos se acredita, es decir, baja, con:"],
-  listaNumerada: [
-    "Los cheques que gira la empresa.",
-    "Las notas débito del banco.",
-    "Lo que la empresa le paga al banco por un préstamo.",
-  ],
-  /* La glosa de «girar», debajo del renglón 1. */
-  glosaDeLista: { renglon: 0, texto: "Girar un cheque es firmarlo para que el banco le pague a alguien con la plata de la cuenta de la empresa." },
-  pregunta: "El banco le cobra a la empresa el costo de una chequera y se lo descuenta de la cuenta. ¿Qué le pasa a Bancos?",
-  opciones: [
-    { id: "se-acredita", texto: "Se acredita: baja.", correcta: true },
-    { id: "se-debita", texto: "Se debita: sube.", devolucion: "Fíjate en quién le da plata a quién. El banco le quitó plata a la empresa, no se la dio." },
-    { id: "no-se-mueve", texto: "No se mueve: la empresa no giró ningún cheque.", devolucion: "La cuenta se mueve aunque la empresa no haga nada: el banco ya le descontó la chequera." },
-  ],
-  acierto: { texto: "Así es. El banco le restó un valor a la cuenta con una nota débito, y una nota débito del banco acredita Bancos.", pie: PIE_187 },
-  error: { pie: PIE_187 },
-  pie: PIE_187,
-};
-
-/* P5 · El ejemplo de Sus Servicios: los dos asientos de la p. 187. */
-const EL_EJEMPLO = {
-  id: "el-ejemplo",
-  tipo: "lectura",
-  parrafos: [
-    "Un día, Sus Servicios Ltda. consigna $876.000 en su cuenta corriente. Ese mismo día gira un cheque de $398.200 para pagarle a un proveedor.",
-    "La consignación sube Bancos, y la plata sale de Caja. Mira el asiento de la p. 187.",
-    "El cheque baja Bancos, y la deuda con el proveedor también baja.",
-  ],
-  asientos: [ASIENTO_CONSIGNACION, ASIENTO_CHEQUE],
-  tras: ["Las dos operaciones las conoces desde el Tema 2. Aquí solo se ven juntas, desde la cuenta Bancos."],
-  boton: BOTON.seguir,
-  pie: PIE_187,
-};
-
-/* P6 · Dos libros de la misma cuenta. La cuenta de ahorros es una analogía de Katsumi. */
-const DOS_LIBROS = {
-  id: "dos-libros",
-  tipo: "lectura",
-  parrafos: [
-    "La empresa anota en un libro auxiliar de bancos todo lo que pasa en su cuenta: cheques, consignaciones y notas del banco.",
-    "El banco lleva su propio registro de esa misma cuenta. Cada mes le manda a la empresa un extracto: los movimientos del mes y el saldo del último día.",
-    "Es como tu cuenta de ahorros: tú llevas tus cuentas, y el banco te manda las suyas.",
-  ],
-  figura: { tipo: "libretas", estado: "dos-libros" },
-  boton: BOTON.seguir,
-  pie: "Basado en el libro, pp. 187-188",
-};
-
-/*
- * P7 · Por qué no coinciden. v3: la lista de las seis causas, agrupadas por
- * quién se enteró primero (organización de Katsumi), va SOLO con el acierto,
- * como cierre: antes de la pregunta la respondía. Hanayama: el renglón del
- * cheque guarda su sitio mientras se pregunta y en el error.
- */
-const POR_QUE_NO_COINCIDEN = {
-  id: "por-que-no-coinciden",
-  tipo: "eleccion",
-  parrafos: ["El libro dice que el saldo del extracto casi nunca coincide con el de la empresa, y da seis causas. Antes de verlas, piensa en una."],
-  figura: { tipo: "libretas", estados: { colocando: "p7-colocando", error: "p7-colocando", acierto: "p7-acierto" } },
-  pregunta: "El 30 del mes, la empresa gira un cheque a un proveedor. El proveedor todavía no lo ha cobrado. ¿Quién tiene anotado ese cheque?",
-  opciones: [
-    { id: "la-empresa", texto: "Solo la empresa.", correcta: true },
-    { id: "el-banco", texto: "Solo el banco.", devolucion: "Piensa en cómo se entera el banco de un cheque. ¿Alguien lo ha cobrado ya?" },
-    { id: "los-dos", texto: "Los dos.", devolucion: "Piensa en cuándo se entera cada uno. La empresa se entera al girar el cheque. ¿Y el banco?" },
-  ],
-  acierto: { texto: "Así es. La empresa lo anotó al girarlo, pero el banco solo se entera cuando el proveedor lo cobre. Por eso los saldos no coinciden.", pie: "Basado en el libro, p. 188" },
-  error: { pie: "Basado en el libro, p. 188" },
-  trasAcertar: {
-    textos: ["Estas son las seis causas del libro, según quién se enteró primero:"],
-    grupos: [
-      { titulo: "Lo que la empresa ya anotó y el banco todavía no:", causas: ["Un cheque que la empresa giró y que nadie ha cobrado.", "Una consignación que la empresa anotó y que el banco todavía no suma a la cuenta."] },
-      { titulo: "Lo que el banco ya anotó y la empresa todavía no:", causas: ["Una nota débito del banco.", "Una nota crédito del banco."] },
-      { titulo: "Y los errores:", causas: ["Un error de la empresa al anotar.", "Un error del banco al liquidar."] },
-    ],
+export const PANTALLAS_A4 = [
+  {
+    id: "sube-y-baja", modo: "cuenta",
+    antes: ["Bancos es la plata de la empresa en el banco. Girar un cheque es firmarlo para que el banco pague con esa plata. Prueba las dos."],
+    alt: "La cuenta Bancos. Consignar 876.000 la sube por el debe; girar un cheque de 398.200 la baja por el haber.",
+    pie: "Basado en el libro, pp. 186-187",
   },
-  pie: "Basado en el libro, p. 188",
-};
+  {
+    id: "las-notas", modo: "extracto",
+    antes: ["Con una nota débito, el banco le resta a la cuenta; con una nota crédito, le abona: le suma."],
+    alt: "Las dos libretas, la de la empresa y la del banco. Al llegar el extracto, el banco tiene una nota débito que resta y una nota crédito que suma, y la empresa todavía no las sabe.",
+    pie: "Basado en el libro, pp. 187-188",
+  },
+  {
+    id: "sube-o-baja", modo: "mandar", pregunta: true,
+    antes: ["¿Sube o baja Bancos con cada uno?"],
+    fin: "Ya están los siete.",
+    alt: "Siete movimientos que se mandan a Sube, el debe de Bancos, o a Baja, el haber. Con el acierto, su nombre entra al mayor.",
+    pie: "Basado en el libro, pp. 186-187",
+  },
+  {
+    id: "quien-lo-tiene", modo: "quien", pregunta: true, opciones: ["empresa", "banco", "los-dos"], correcta: "empresa",
+    antes: ["El 30, la empresa gira un cheque que nadie ha cobrado. ¿Quién lo tiene anotado?"],
+    acierto: "El banco se entera cuando lo cobren.",
+    errores: {
+      banco: "¿Alguien lo ha cobrado ya?",
+      "los-dos": "¿Cuándo se entera el banco de un cheque?",
+    },
+    alt: "Las dos libretas de la misma cuenta, con un renglón libre. Con el acierto, el cheque aparece en la de la empresa, que resta, y el banco todavía no lo sabe.",
+    pie: "Basado en el libro, p. 188",
+  },
+  {
+    id: "seis-causas", modo: "causas",
+    antes: ["El saldo del banco y el de la empresa casi nunca coinciden. El libro da seis causas: toca cada una."],
+    alt: "Seis botones. Cada uno muestra en qué libreta está anotada esa causa, y que la otra todavía no la sabe.",
+    pie: "Basado en el libro, p. 188",
+  },
+  {
+    id: "la-conciliacion", modo: "conciliacion",
+    antes: ["La conciliación compara los dos registros para saber qué le falta anotar a la empresa."],
+    alt: "El libro auxiliar de la empresa tiene un cheque sin cobrar, y el extracto del banco, una nota débito. Cada uno tiene renglones que al otro todavía le faltan.",
+    pie: "Basado en el libro, pp. 187-190",
+  },
+  {
+    id: "resumen", modo: "quieta",
+    resumen: [
+      "Bancos sube con consignaciones y baja con cheques girados.",
+      "Las notas del banco también la mueven: la débito resta y la crédito suma.",
+      "Cada libreta anota cosas que la otra todavía no sabe.",
+    ],
+    siguiente: "Siguiente: «San Calixto».",
+    alt: "Las dos libretas, vacías.",
+    pie: "Basado en el libro, pp. 186-188",
+  },
+];
 
-/* P8 · La conciliación. La segunda línea adelanta la p. 190 sin cifras. */
-const LA_CONCILIACION = {
-  id: "la-conciliacion",
-  tipo: "lectura",
-  parrafos: [
-    "La conciliación bancaria es comparar los dos registros, uno por uno, para saber por qué no dan lo mismo.",
-    "Para el libro, lo importante no es que los saldos den igual. Es saber qué le falta anotar a la empresa para que su cuenta quede bien.",
-    "En «San Calixto» harás una conciliación completa, con todas sus cifras.",
-  ],
-  figura: { tipo: "libretas", estado: "comparar" },
-  boton: BOTON.seguir,
-  pie: "Basado en el libro, pp. 187-188 y 190",
-};
-
-/* P9 · Resumen. Es la última pantalla: no lleva botón. */
-const RESUMEN = {
-  id: "resumen",
-  tipo: "resumen",
-  listaNumerada: [
-    "Bancos es la plata depositada. Sube con consignaciones y notas crédito del banco, y baja con cheques girados y notas débito del banco.",
-    "Con una nota débito, el banco le resta un valor a la cuenta. Con una nota crédito, se lo suma.",
-    "El saldo del banco y el de la empresa casi nunca coinciden: cada uno anota cosas que el otro todavía no sabe.",
-  ],
-  siguiente: "Siguiente: «San Calixto».",
-  pie: PIE_186_188,
-};
-
-/* `numero` es el de la pieza en el corte de T4: A0 = 0 … A3 = 3, A4 = 4. */
 export const PIEZA_BANCOS_Y_NOTAS = {
   id: A4_ID,
   numero: 4,
   titulo: "Bancos y notas del banco",
-  pantallas: [PORTADA, QUE_ES_BANCOS, LAS_NOTAS, LO_QUE_SUBE, LO_QUE_BAJA, EL_EJEMPLO, DOS_LIBROS, POR_QUE_NO_COINCIDEN, LA_CONCILIACION, RESUMEN],
+  boton: BOTON.seguir,
+  pantallas: PANTALLAS_A4,
 };
