@@ -13,6 +13,7 @@ import EncabezadoCompacto from "./EncabezadoCompacto.jsx";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { Marca, estiloE4, CORRECTA, TACHADA, TACHADO, OCULTO_E4 } from "./MarcasE4.jsx";
 import { useReducido } from "../tema3/DosLineas.jsx";
+import { Pastilla, MensajeHacer, CONTORNO, useRevelada } from "./EstandarHacer.jsx";
 import { evaluarPregunta, formatearRespuesta, leerRespuesta } from "../../../../contabilidad/t6Act2.js";
 
 /*
@@ -86,15 +87,17 @@ function Visto() {
 
 /* Un campo de cifra: «$», punto de miles, sin decimales, hasta 8 dígitos. */
 /* `tachado` (E4): el valor que escribió el estudiante y no era, con ✕ y tachado; su borde de siempre, sin coral. */
-/* `acertado` (E4, lote 6c): la cifra de una pregunta acertada, con ✓, borde 2 nodo y relleno navy. */
-function Campo({ id, valor, onCambio, bloqueado, etiqueta, tachado = false, acertado = false, formatear = formatearCifra }) {
+/*
+ * `contorno` (estándar de Hacer, lote 6c): las preguntas de a2 pasan su contorno del estándar y no llevan
+ * el ✕ de E4 dentro del campo (lo dice su pastilla). Las mesas siguen con el suyo hasta el lote 6d.
+ */
+function Campo({ id, valor, onCambio, bloqueado, etiqueta, tachado = false, formatear = formatearCifra, contorno = null }) {
   return (
-    <div data-caja-campo={id} data-marca={tachado ? TACHADA : acertado ? CORRECTA : ""} style={{
+    <div data-caja-campo={id} data-marca={tachado ? TACHADA : ""} style={{
       display: "flex", alignItems: "center", gap: "3px", height: "44px", boxSizing: "border-box", padding: "0 8px", borderRadius: "10px",
-      background: "rgba(14,27,46,0.7)", border: "1px solid rgba(248,249,250,0.22)", ...(acertado ? estiloE4(CORRECTA) : null),
+      background: "rgba(14,27,46,0.7)", border: contorno ?? "1px solid rgba(248,249,250,0.22)",
     }}>
-      {tachado && <Marca marca={TACHADA} />}
-      {acertado && <Marca marca={CORRECTA} />}
+      {tachado && !contorno && <Marca marca={TACHADA} />}
       <span aria-hidden="true" data-signo style={{ fontFamily: SORA, fontSize: "14px", fontWeight: 700, color: COLOR.apagado, marginRight: "3px" }}>$</span>
       <input
         data-campo-cifra={id}
@@ -353,18 +356,26 @@ function Retro({ resultado }) {
 const vacio = () => ({ mesa: [], resultado: null, texto: "" });
 
 /*
- * Una pregunta de cifra escrita: lo que lleva encima (si lo lleva), el campo y, si falló, ✓ la cifra
- * correcta. Lote 6c (E4 en todo Hacer): si acertó, su propia cifra queda ✓; las tres preguntas llevan ✓ y ✕.
+ * Una pregunta de cifra escrita, con el estándar de Hacer (lote 6c): lo que lleva encima (si lo lleva), el
+ * campo con su contorno (1 px en reposo; 2 px blanco si acertó; 2 px coral si no, con la cifra tachada) y su
+ * pastilla («Correcto» o «No va aquí»); si falló, 0,7 s después, «Iba aquí: {valor}». No hay reintento.
  */
 function Pregunta({ parte, texto, onTexto, resultado, Bloque, reducido, etiqueta }) {
   const fallo = Boolean(resultado) && !resultado.ok;
+  const revelada = useRevelada(fallo);
+  const estado = !resultado ? "reposo" : resultado.ok ? "correcto" : "error";
   return (
     <>
       {Bloque && <Bloque comprobada={Boolean(resultado)} reducido={reducido} />}
-      <div data-pregunta={parte.id} style={{ marginTop: "12px" }}>
+      <div data-pregunta={parte.id} data-estado-destino={resultado ? estado : ""} style={{ marginTop: "12px" }}>
         <Campo id={parte.id} valor={texto} onCambio={onTexto} bloqueado={Boolean(resultado)} etiqueta={etiqueta}
-          tachado={fallo} acertado={Boolean(resultado?.ok)} formatear={formatearRespuesta} />
-        {fallo && <ValorCorrecto cuenta={parte.id} valor={resultado.correcta} oculto={OCULTO_E4.valorCorrecto} />}
+          tachado={fallo} formatear={formatearRespuesta} contorno={CONTORNO[estado]} />
+        {resultado && (
+          <div data-pastillas-pregunta style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "6px" }}>
+            <Pastilla tipo={estado} />
+            {fallo && revelada && <Pastilla tipo="iba" valor={pesos(resultado.correcta)} />}
+          </div>
+        )}
       </div>
     </>
   );
@@ -518,7 +529,9 @@ export default function CierreConMesa({
             <Mesa mesa={s.mesa} activa={!comprobada} resultado={s.resultado} enEstante={enEstante}
               onSacar={sacar} onCifra={cifra} onDevolver={devolver} entre={<>{rotuloParte}{hechoCard}</>} />
           )}
-          <Retro resultado={s.resultado} />
+          {esPregunta
+            ? s.resultado && <MensajeHacer ok={s.resultado.ok} texto={s.resultado.texto} clave={s.resultado.error} />
+            : <Retro resultado={s.resultado} />}
           {!comprobada && (
             <>
               <BotonConfirmar deshabilitado={!listo} onClick={confirmar}>{esPregunta ? textos.comprobar : TEXTO_CONFIRMAR}</BotonConfirmar>

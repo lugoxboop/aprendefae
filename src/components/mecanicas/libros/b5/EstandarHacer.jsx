@@ -66,9 +66,10 @@ export function Pastilla({ tipo, valor = null, estilo = null }) {
 }
 
 /* El bloque de mensaje. Acierto: Check, «Correcto» y el texto. Error: X y el texto; «Incorrecto.» solo para el lector. */
-export function MensajeHacer({ ok, texto = null }) {
+/* `clave`: el tipo de error (o null), para el registro y las pruebas. */
+export function MensajeHacer({ ok, texto = null, clave = null }) {
   return (
-    <div data-mensaje-hacer={ok ? "acierto" : "error"} data-panel={ok ? "acierto" : "error"} role="status" style={{
+    <div data-mensaje-hacer={ok ? "acierto" : "error"} data-panel={ok ? "acierto" : "error"} data-error={clave ?? "ninguno"} role="status" style={{
       display: "grid", gridTemplateColumns: "16px minmax(0, 1fr)", gap: "4px 8px", alignItems: "start", marginTop: "12px",
       padding: "11px 13px", borderRadius: "11px", background: "rgba(184,196,212,0.12)",
       borderLeft: `3px solid ${ok ? NEUTRO : CORAL}`,
