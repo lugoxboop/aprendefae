@@ -47,6 +47,7 @@ const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await 
 const { default: CuantoValeLoQueSobro } = await import("../../components/mecanicas/libros/t7/CuantoValeLoQueSobro.jsx");
 const { JUEGOS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
+const { firma, textoFigura } = await import("./figuraAcumuladaPrueba.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -302,4 +303,37 @@ test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqu
   const bloque = fuente.slice(fuente.indexOf("CONTABILIDAD · T7 «INVENTARIOS»"));
   assert.match(bloque.slice(0, bloque.indexOf("});")), /"t7-1-cuanto-vale-lo-que-sobro": \(id\) => unidadDeH3\(id\),/);
   for (const it of D.ITEMS_H3) assert.ok(!fuente.includes(it.pregunta), `${it.id}: la pregunta está copiada en etiquetasItem.js`);
+});
+
+/* ═══════════ LOTE 5 · LA FIGURA ACUMULADA ═══════════ */
+
+test("★★★ lote 5: la tabla de los tres métodos se llena con cada respuesta (acierto o error), nunca antes, y se queda", async () => {
+  const despues = [
+    ["154.000"],
+    ["154.000 128.000"],
+    ["154.000 128.000 14.750"],
+    ["154.000 128.000 14.750 10 cajas 147.500"],
+    /* El ítem 5 (el más alto) pone en negrita la fila de PEPS. */
+    ["154.000* 128.000 14.750 10 cajas 147.500"],
+  ];
+  const m = await montar();
+  try {
+    for (const [k, it] of EN_ORDEN.entries()) {
+      assert.deepEqual(firma(m.caja), k ? despues[k - 1] : [], `antes del ítem ${k + 1}`);
+      /* E8: la respuesta del ítem no está en la figura antes de responderlo. */
+      if (typeof it.correcta === "number") assert.ok(!textoFigura(m.caja).includes(pesos(it.correcta).slice(1)), `ítem ${k + 1}`);
+      const v = k % 2 ? it.opciones.find((o) => o !== it.correcta) : it.correcta;
+      await tocar(opcion(m.caja, v));
+      assert.deepEqual(firma(m.caja), despues[k], `al responder el ítem ${k + 1}`);
+      /* La figura va arriba del ítem. */
+      assert.ok(m.caja.querySelector("[data-figura-acumulada]").compareDocumentPosition(m.caja.querySelector("[data-pregunta]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+      await tocar(siguiente(m.caja));
+    }
+    /* Hasta el cierre: en el resumen ya no está. */
+    assert.equal(m.caja.querySelector("[data-figura-acumulada]"), null);
+  } finally {
+    m.desmontar();
+  }
+  /* Los rótulos son los encabezados de cada método y el dato de la ficha. */
+  assert.deepEqual(D.ITEMS_H3.map((x) => x.encabezado).filter(Boolean), ["Método PEPS", "Método UEPS (no válido bajo NIIF)", "Método del costo promedio ponderado"]);
 });

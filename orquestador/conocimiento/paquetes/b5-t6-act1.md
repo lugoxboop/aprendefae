@@ -174,3 +174,81 @@ Mandan sobre 3.1, 3.2 y 3.4. «Sin cambio»: el acierto de 3.2 se queda. El segu
 | devolucion | «No es esa. Baja: se acredita. Lo que regresó ya no lo tiene que pagar.» |
 
 Para Shoko, el cruce con a4: ninguno de los cinco hechos repite las palabras de qd-03 ni de qd-04. El cheque de a1 lo cuenta el banco; el de a4, el cliente.
+
+## 7 · Lote 6a: las fichas a un nivel (hoja de fusiones de Mai, textos de Futaba, correcciones de Shoko)
+
+Manda sobre lo anterior en lo que toca la interfaz y en las cuatro fichas de préstamo.
+
+### 7.1 Las tres opciones son los tres cajones
+
+- Cajones: «Otra cuenta por cobrar» · «Clientes, se debita» · «Clientes, se acredita». Tocar un cajón coloca la ficha. No hay pestañas ni botón.
+- El grupo se lee «Cuenta por cobrar». PARA SHOKO: la hoja pide la etiqueta del grupo de pestañas de hoy, que no tenía nombre.
+- Reparto de devoluciones (Futaba): las de préstamo puestas en Clientes dan B; las de Clientes puestas en «Otra» dan A; el lado equivocado da C, y C5 en las dos ventas a crédito puestas en «se acredita».
+
+### 7.2 Los préstamos, cada uno con otra forma
+
+| id | Hecho |
+|---|---|
+| socio | «Un socio le pide plata prestada a la empresa, y ella se la da.» |
+| trabajador | «Un trabajador necesita plata y la empresa se la entrega; él la pagará por cuotas.» |
+| particular | «Alguien que no es cliente, socio ni trabajador recibe plata de la empresa. Tiene que devolverla.» |
+| prestamo-cliente | «Un cliente le pide plata a la empresa, y ella se la entrega para que la devuelva.» |
+
+La de prestamo-cliente es la corrección de Shoko. Los aciertos no cambian.
+
+### 7.3 Textos
+
+- «¿Cómo se juega?», línea 1 (Futaba): «Lee el hecho y elige dónde va: en otra cuenta por cobrar, o en Clientes, y si se debita o se acredita.»
+- «¿Cómo se juega?», línea 2. Adaptada a la hoja de Mai (sin botón), PARA SHOKO: «Toca el cajón donde va la ficha; si fallas, tienes un intento más.»
+- Resumen (Futaba): «{bien} de {cuantas} fichas bien al primer intento.»
+- Texto alternativo. La corrección de Shoko, con su frase del botón adaptada, PARA SHOKO: «Actividad de clasificación. Aparece un hecho. Elige entre tres opciones: Otra cuenta por cobrar; Clientes, se debita; o Clientes, se acredita. Toca el cajón donde va la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.»
+- Se retiran: PESO_CUENTA, PESO_LADO, LADOS, CUENTAS y los rótulos del botón.
+
+### 7.4 La tanda (R10)
+
+Nueve fichas, antes las diez del banco. Entre 2 y 4 por cajón. El banco da 4 · 3 · 3, así que el reparto se sortea con ese tope: 4 · 3 · 2, 4 · 2 · 3 o 3 · 3 · 3.
+
+## 8 · Lote 6b: sale la ficha del cheque devuelto (C4)
+
+Orden de Sakuta: el cheque devuelto se practica cinco veces en B; la ficha «cheque» sale de b5-t6-a1 y se queda donde enseña algo nuevo. Su enunciado y su acierto quedan arriba como registro, sin uso. El banco queda en 4 · 2 · 3 (nueve fichas). Decisión de KAEDE: la tanda pasa de 9 a 8 fichas (porPartida 8), porque con nueve sería siempre el banco entero con el mismo reparto y el estante delataría la última (R10). Los repartos posibles son 4 · 2 · 2 y 3 · 2 · 3. El contador queda «Ficha N de 8».
+
+
+## 9 · E5: el primer fallo propio de cada ficha (Futaba, fila 11 de Shoko)
+
+Manda sobre 3.3, 7.1 y lo anterior en el primer fallo. Al primer fallo, con cualquier cajón, se lee la PISTA de la ficha: 20 palabras como mucho, no nombra el cajón y va sin emoji, por Retro (role=status), como la escalera de ayuda de la célula (`tema6/escaleraB5.js`). Al segundo fallo, la respuesta, como antes (la regla única). Las devoluciones A, B, C y C5 (§3.3) dejan de usarse y salen de los datos; quedan arriba como registro. Las fichas se emparejaron por su texto en main.
+
+### 9.1 Pistas
+
+| Id | Pista del primer fallo |
+|---|---|
+| socio | «¿El socio compró algo a crédito, o recibió plata prestada? Piensa qué deudas recoge la cuenta de clientes.» |
+| trabajador | «¿Aquí hubo una venta a crédito? Piensa qué deudas recoge Cuentas por cobrar – clientes.» |
+| particular | «Fíjate por qué esta persona le debe a la empresa. ¿La deuda vino de una venta a crédito?» |
+| prestamo-cliente | «Que sea cliente no decide la cuenta. Mira por qué le debe: ¿compró a crédito o le prestaron?» |
+| venta-mercancia | «Después de esto, ¿lo que debe el cliente sube o baja? No te guíes por la palabra “crédito”.» |
+| venta-servicio | «Un servicio vendido sin cobrarlo también deja una deuda. ¿Esa deuda sube o baja?» |
+| pago | «Después de pagar esa parte, ¿el cliente debe más o menos que antes?» |
+| devolucion | «Lo que el cliente regresa, ¿lo sigue teniendo que pagar? Piensa si su deuda sube o baja.» |
+| descuento | «Con la rebaja, ¿el cliente debe más o menos que antes?» |
+
+### 9.2 Ficha
+
+Cambio extra: Shoko marcó que «abono» no se enseña hasta T6 A4, y b5-t6-a1 va antes. Antes decía «Un cliente abona una parte de lo que debe.» (§6.1).
+
+| Id | Ficha |
+|---|---|
+| pago | «Un cliente paga una parte de lo que debe.» |
+
+### 9.3 Acierto
+
+Norma de diseño nueva (sin emojis como íconos): este acierto va SIN el ✅ delante, tal como está en la tabla. Los aciertos de las demás fichas conservan el ✅ hasta el lote de corrección que viene después.
+
+| Id | ✅ Acierto |
+|---|---|
+| pago | «Sí. Baja: se acredita. Lo que pagó ya no lo debe.» |
+
+### 9.4 Tras el segundo fallo
+
+| Id | Texto |
+|---|---|
+| pago | «No es esa. Baja: se acredita. Lo que pagó ya no lo debe.» |

@@ -133,7 +133,22 @@ const CSS_CUENTA = `
 .fae-gsi-icono { display: none; }
 /* Normal aquí, para que la regla que lo esconde viva también en la hoja. */
 .fae-cuenta-avatar { display: inline-flex; }
-.fae-atajo-pastilla { display: inline-flex; }
+.fae-atajo-pastilla { display: inline-flex; position: relative; }
+/*
+ * El blanco de toque, sin tocar el dibujo: 44 px de alto y de ancho como
+ * mínimo, centrados sobre la pastilla de 40. Si la pastilla ya es más grande,
+ * el max() no la encoge. (Sin comillas invertidas aquí dentro: esto va en una
+ * plantilla de CSS y una comilla invertida la cierra.)
+ */
+.fae-atajo-pastilla::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
 .fae-atajo-menu { display: none; }
 @media (max-width: ${ANCHO_ATAJO - 1}px) {
   .fae-atajo-pastilla { display: none; }
@@ -177,12 +192,80 @@ const CSS_CUENTA = `
    * se puede pulsar.
    */
   .fae-cabecera-titulo > * { flex-shrink: 0; }
+  /*
+   * DOS RENGLONES ANTES QUE PUNTOS SUSPENSIVOS.
+   *
+   * Esto truncaba a una línea, y a 320 px «Las cuentas, el debe y el haber»
+   * se leía «Las cuentas, el debe…» e «Ingresos, gastos y ajustes» quedaba a
+   * medias. El orden de Xeno de arriba —qué cede primero— sigue intacto: el
+   * título sigue siendo lo ÚLTIMO que cede. Lo que cambia es cómo cede: en
+   * vez de perder palabras, usa un segundo renglón.
+   *
+   * Tres células llegaron a esto por su cuenta y lo resolvieron cada una con
+   * estilos propios en su vista (T4, T6, T7). Tres rodeos para el mismo
+   * defecto: puesto aquí, los tres sobran, y las vistas que nadie ha tocado
+   * —«las cuentas» e «ingresos, gastos y ajustes»— dejan de cortar sin que
+   * nadie más tenga que enterarse.
+   *
+   * EL TOPE ES CUATRO, Y ESTUVO EN DOS HASTA QUE SE MIDIÓ.
+   *
+   * Tiene que haber tope: sin ninguno, un título larguísimo empujaría la
+   * pantalla hacia abajo y la cabecera dejaría de ser una cabecera. Pero el
+   * número no se deduce, se mide. Medido a 320 px sobre el paquete construido,
+   * con el hueco real que le queda al título —164 px de los 320, porque el
+   * resto son el botón de volver y la reserva de la pastilla—:
+   *
+   *   · «Inventarios III: descuentos, inventario físico y NIC 2» pedía CUATRO
+   *     renglones a 320 px (82 px de cabecera). Con el tope en dos se leía
+   *     cortado, y el recorte no avisa: no pone puntos suspensivos, se queda
+   *     sin las últimas palabras.
+   *   · Hoy (#259 lo acortó a «…descuentos, conteo y NIC 2») pide TRES a 320 y
+   *     a 360 —61 px— y DOS a 375. De los diez títulos de Contabilidad, nueve
+   *     caben en uno o dos renglones: la fila mide 38–44 px, que es lo que
+   *     mide el botón de volver.
+   *
+   * El tope recorta, no reserva: los títulos cortos siguen ocupando lo que
+   * ocupaban. La regla de la casa ya eligió: romper renglón sí, desaparecer no.
+   *
+   * ═══════════ DECIDIDO: SE QUEDA EN UNA FILA (Xeno, 15 oct.) ═══════════
+   *
+   * Se midió la alternativa —[volver][pastilla] arriba y el título debajo, a
+   * ancho completo— y pierde. Ese título en su propio renglón cabe en dos
+   * (41 px), pero la fila de arriba cuesta 44 px SIEMPRE: 85 px para el peor
+   * título contra 61 de hoy, y 44 + 20 = 64 para uno de un renglón contra 44.
+   * Es decir: gasta más en los nueve títulos que hoy caben, para ahorrar dos
+   * renglones en el único que ya no necesita cuatro. La cabecera de una fila
+   * es la que menos pantalla le quita al ejercicio.
+   *
+   * Si un título pasa de tres renglones a 320 px, la salida no es esta hoja:
+   * es un título más corto (un nombre de tema es una etiqueta, no una frase).
+   *
+   * SI ENTRA UN TÍTULO MÁS LARGO, hay que volver a medir. Esto no se deduce
+   * del CSS: scripts/t7/medir-titulo-320.mjs y la sonda de títulos.
+   */
   .fae-cabecera-titulo > h1 {
     flex-shrink: 1;
     min-width: 0;
+    white-space: normal;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    /*
+     * Lo único que los siete rodeos en línea tenían y esta regla no:
+     * overflow-wrap. Sin él, una palabra más ancha que la cabecera —un título
+     * sin espacios donde partir— se sale por el lado en vez de partirse, y el
+     * recorte de dos renglones no la alcanza. Con "anywhere" parte donde haga
+     * falta, que es mejor que salirse.
+     *
+     * Las siete vistas lo tenían porque cada una tropezó con lo mismo. Sube
+     * aquí para que la octava no tenga que tropezar.
+     *
+     * (Sin comillas invertidas en este comentario: está DENTRO de la plantilla
+     * de CSS, y una comilla invertida la cierra. El repertorio no lo nota —lee
+     * este archivo como texto— y solo lo caza la compilación.)
+     */
+    overflow-wrap: anywhere;
   }
 
   .fae-gsi-ancho { display: none; }
@@ -328,7 +411,10 @@ function OpcionMenu({ onClick, punto = false, children }) {
       style={{
         width: "100%", display: "flex", alignItems: "center", gap: "8px",
         textAlign: "left", fontFamily: "Inter, sans-serif", fontSize: "13.5px",
-        minHeight: "40px", padding: "9px 10px", borderRadius: "9px", cursor: "pointer",
+        /* 44 px, el mínimo que un dedo acierta (kit.md). Estaba en 40. Ocupa el
+           ancho entero del menú, así que crecer solo hace el menú 4 px más alto
+           por opción y no mueve nada de lado. */
+        minHeight: "44px", padding: "9px 10px", borderRadius: "9px", cursor: "pointer",
         background: "transparent", border: "none", color: "rgba(248,249,250,0.8)",
       }}
     >
@@ -355,6 +441,31 @@ const POSICION_LECTOR = {
   position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px",
   overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0,
 };
+
+/*
+ * ═══════════ SE QUEDA FIJA, Y NUNCA TRANSPARENTE (Xeno, 15 oct.) ═══════════
+ *
+ * La Célula C reportó que, sin sesión, «Entrar» tapa el texto al bajar. Lo que
+ * se vio al medirlo en la página no era que el control esté fijo, sino que
+ * estaba HUECO: la pastilla de la cuenta pintaba un 6 % de blanco y el botón de
+ * «Entrar» —el que sale cuando la librería de Google no carga: red del salón,
+ * bloqueador— no pintaba nada. El texto que pasaba por debajo se leía a través
+ * del control, y las dos cosas se estorbaban: «suma de todos» pisado por
+ * «Entrar».
+ *
+ * Fijo se queda, y es deliberado: dentro de una actividad los FP en vivo
+ * importan más que la identidad (ver «LA PASTILLA COMPACTA» arriba), y un
+ * contador que se va con el scroll deja de ser lo que se mira al acertar. Lo
+ * que no puede pasar es que el contenido se lea a través de él. Un control que
+ * flota sobre el texto tiene que TAPARLO, no mezclarse con él: tapar un
+ * trozo de línea mientras pasa es lo que hace cualquier botón fijo; leer dos
+ * textos encimados no lo hace ninguno.
+ *
+ * Por eso toda pieza flotante de este archivo lleva el mismo fondo casi
+ * opaco —el del menú que abre, #16233A— y conserva su borde y su desenfoque.
+ * El botón de Google de verdad (filled_black) ya es opaco: no se toca.
+ */
+export const FONDO_FLOTANTE = "rgba(22,35,58,0.97)";
 
 const ENVOLTORIO = {
   position: "fixed",
@@ -383,7 +494,7 @@ export default function AccountControl({ conTitulo = false }) {
     return (
       <div style={ENVOLTORIO}>
         <EstiloCuenta />
-        <GoogleSignInButton size="medium" adaptable />
+        <GoogleSignInButton size="medium" adaptable fondo={FONDO_FLOTANTE} />
       </div>
     );
   }
@@ -457,11 +568,17 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
             /*
              * Fuera del flujo, a la izquierda de la cuenta: su llegada no mueve
              * la pastilla de la cuenta ni un píxel, ni para el docente ni para
-             * nadie. La caja pulsable mide 40 de alto —el mínimo para el dedo—,
-             * centrada en la fila; la pastilla que se ve lleva el relleno y la
-             * letra de la de la cuenta, así que mide lo mismo que ella: dos
-             * pastillas de distinta altura en la misma fila se leen como un
-             * error.
+             * nadie. La pastilla que se ve lleva el relleno y la letra de la de
+             * la cuenta, así que mide lo mismo que ella: dos pastillas de
+             * distinta altura en la misma fila se leen como un error.
+             *
+             * SON 40 DE DIBUJO Y 44 DE TOQUE. Este comentario decía que 40 era
+             * «el mínimo para el dedo», y el mínimo es 44 (kit.md). Subir la
+             * caja a 44 rompería lo de arriba —dejaría de medir lo que la
+             * pastilla de la cuenta—, así que el toque lo da un ::after de
+             * max(100%, 44px) centrado, en la hoja de abajo: el dibujo no se
+             * mueve y el dedo acierta. Es la misma solución que el logo y la X
+             * del diálogo.
              */
             position: "absolute",
             right: "calc(100% + 8px)",
@@ -488,8 +605,9 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
               fontSize: "13px",
               fontWeight: 600,
               color: FAE.text,
-              /* El teal del bloque del perfil, a la intensidad de la pastilla de la cuenta. */
-              background: "rgba(42,157,143,0.14)",
+              /* El teal del bloque del perfil, a la intensidad de la pastilla de la cuenta, sobre fondo sólido. */
+              backgroundColor: FONDO_FLOTANTE,
+              backgroundImage: "linear-gradient(rgba(42,157,143,0.14), rgba(42,157,143,0.14))",
               border: `1px solid ${FAE.teal}99`,
               backdropFilter: "blur(8px)",
               WebkitBackdropFilter: "blur(8px)",
@@ -522,7 +640,7 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
           padding: "8px 14px",
           borderRadius: "999px",
           cursor: "pointer",
-          background: "rgba(248,249,250,0.06)",
+          background: FONDO_FLOTANTE,
           border: "1px solid rgba(248,249,250,0.16)",
           color: FAE.text,
           backdropFilter: "blur(8px)",

@@ -1,6 +1,7 @@
 import { FAE } from "../../../theme.js";
 import { DEBE, HABER, COLOR_LADO } from "../../../data/contabilidad.js";
 import { Ficha } from "./verbos.jsx";
+import { MarcaVeredicto } from "./marcaVeredicto.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -72,17 +73,42 @@ function CuentaEnBlanco({
   indice, cuenta, lado, esperando, tomada, estado, deshabilitado,
   onNombrar, gestosDeZona, onTocarZona,
 }) {
+  /*
+   * El marco de la cuenta se corrige con el borde, y el borde teal o coral,
+   * solo, no dice nada en blanco y negro (miden lo mismo: 1,07:1). Por eso la
+   * corrección lleva además su marca —✓ o ✗— posada en la esquina del marco.
+   * Va en la esquina, fuera del flujo, para que ni el nombre de la cuenta ni
+   * las dos columnas se muevan cuando aparece. El marco no es un lado del
+   * asiento, así que aquí teal y coral sí valen.
+   */
   const borde = estado === "correcta" ? FAE.teal : estado === "incorrecta" ? FAE.coral : "rgba(248,249,250,0.18)";
+  const veredicto = estado === "correcta" || estado === "incorrecta";
 
   return (
     <div
       data-t={indice}
       style={{
+        position: "relative",
         flex: 1, minWidth: 0, padding: "9px 8px", borderRadius: "13px",
         background: "rgba(10,20,34,0.45)", border: `1px solid ${borde}`,
         transition: "border-color 200ms ease",
       }}
     >
+      {veredicto && (
+        <span
+          data-marca-cuenta={indice}
+          style={{
+            position: "absolute", top: "-9px", right: "-5px", zIndex: 1,
+            display: "flex", borderRadius: "50%", background: FAE.bg,
+          }}
+        >
+          <MarcaVeredicto
+            bien={estado === "correcta"}
+            color={estado === "correcta" ? FAE.teal : FAE.coral}
+            etiqueta={estado === "correcta" ? `${cuenta ?? `Cuenta ${indice + 1}`}, bien puesta` : `${cuenta ?? `Cuenta ${indice + 1}`}, mal puesta`}
+          />
+        </span>
+      )}
       {/* El nombre: hueco mientras no se haya soltado ninguno. */}
       <button
         type="button"
@@ -138,7 +164,14 @@ function CuentaEnBlanco({
                 {cual === DEBE ? "DEBE" : "HABER"}
               </span>
               <span style={{ flex: 1 }} />
-              {puesta && <Ficha valor={0} lado={cual} texto="✓" alto={20} />}
+              {/*
+                * «Puesta aquí», no «bien puesta»: el marcador es un punto y no una
+                * palomita. Con ✓ la ficha decía «correcto» ANTES de corregir, y
+                * después de corregir convivía con la ✗ del marco en una cuenta
+                * mal puesta: dos veredictos contrarios en la misma cuenta. El
+                * único ✓ / ✗ de la mesa es el del marco, el que corrige.
+                */}
+              {puesta && <Ficha valor={0} lado={cual} texto="●" etiqueta="Puesta aquí" alto={20} />}
             </button>
           );
         })}

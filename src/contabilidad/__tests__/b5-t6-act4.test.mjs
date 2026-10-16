@@ -57,9 +57,10 @@ const montar = async (items, props = {}) => {
 };
 const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
 const opcion = (caja, id) => caja.querySelector(`[data-opcion="${id}"]`).closest("button");
+/* Lote 6d: el bloque de mensaje del estándar único; se lee su texto visible, sin el «Incorrecto.» del lector. */
 const devolucion = (caja) => {
-  const p = caja.querySelector('[role="status"]');
-  return p ? [...p.childNodes].filter((n) => !(n.classList?.contains("fae-jg-oculto"))).map((n) => n.textContent).join("") : null;
+  const p = caja.querySelector('[role="status"] [data-devolucion]');
+  return p ? [...p.childNodes].filter((n) => !(n.dataset && "lector" in n.dataset)).map((n) => n.textContent).join("") : null;
 };
 
 /* ═══════════ EL PAQUETE ═══════════ */
@@ -159,11 +160,19 @@ test("★★★ ninguna cifra: la actividad no lleva montos", () => {
 
 /* ═══════════ LO QUE SE VE ═══════════ */
 
-test("★★★ en pantalla: la consigna, la nota fija, la regla y las cuatro cuentas, en su orden y sin barajar", async () => {
+test("★★★ en pantalla: el objetivo; plegadas bajo «¿Cómo se juega?», la consigna, los pasos, la nota y la regla; el asiento mínimo antes del hecho; y las cuatro cuentas, en su orden y sin barajar", async () => {
   const { caja, desmontar } = await montar([hecho("qd-01")]);
-  assert.ok(caja.textContent.includes(D.T6_ACT4.consigna));
-  assert.equal(caja.querySelector("[data-nota-fija]").textContent, D.T6_ACT4.nota);
-  assert.equal(caja.querySelector("[data-regla]").textContent, D.T6_ACT4.regla);
+  /* Lote 6c (encabezado compacto y B1): lo fijo se pliega y la figura sube. */
+  assert.equal(caja.querySelector("[data-objetivo]").textContent, D.T6_ACT4.objetivo);
+  assert.ok(D.T6_ACT4.objetivo.split(/\s+/).length <= 20);
+  assert.equal(caja.querySelector("[data-contador]").textContent, "Hecho 1 de 1");
+  assert.equal(caja.querySelector("[data-consigna]"), null);
+  assert.equal(caja.querySelector("[data-regla]"), null);
+  await tocar(caja.querySelector("[data-como-se-juega]"));
+  assert.equal(caja.querySelector("[data-consigna]").textContent, D.T6_ACT4.consigna);
+  assert.deepEqual([...caja.querySelectorAll("[data-pasos] li")].map((li) => li.textContent), D.REGLAS_T6_ACT4);
+  assert.deepEqual([...caja.querySelectorAll("[data-nota-plegada]")].map((n) => n.textContent), [D.T6_ACT4.nota, D.T6_ACT4.regla]);
+  assert.ok(caja.querySelector("[data-asiento-minimo]").compareDocumentPosition(caja.querySelector("[data-hecho]")) & 4, "el asiento mínimo, antes del hecho");
   assert.deepEqual([...caja.querySelectorAll("[data-opcion]")].map((n) => n.textContent), D.OPCIONES_T6_ACT4.map((o) => o.nombre));
   assert.equal(caja.querySelector("[data-hecho]").textContent, hecho("qd-01").texto);
   desmontar();
@@ -175,12 +184,23 @@ test("★★★ cada acierto y cada error se ven literales; al fallar, la correc
       const { caja, desmontar } = await montar([x]);
       await tocar(opcion(caja, o.id));
       if (o.id === x.respuesta) {
-        assert.equal(devolucion(caja), `✅${x.acierto}`, `${x.id}`);
+        assert.equal(devolucion(caja), `Correcto. ${x.acierto}`, `${x.id}`);
         assert.equal(opcion(caja, o.id).dataset.estado, "correcta");
       } else {
-        assert.equal(devolucion(caja), `❌${D.ERRORES_T6_ACT4[x.errores[o.id]]}`, `${x.id} con ${o.id}`);
+        assert.equal(devolucion(caja), D.ERRORES_T6_ACT4[x.errores[o.id]], `${x.id} con ${o.id}`);
         assert.equal(opcion(caja, o.id).dataset.estado, "incorrecta");
         assert.equal(opcion(caja, x.respuesta).dataset.estado, "revelada");
+        /* E4 · lote 6d: la elegida «No va aquí» (X, 2 px coral) y tachada, junto a la correcta revelada «Iba aquí» (sin ícono); las demás, a 0,5. */
+        const icono = (el) => [...el.querySelectorAll("svg[data-icono]")].map((y) => y.dataset.icono);
+        assert.equal(opcion(caja, o.id).dataset.marca, "tachada");
+        assert.deepEqual(icono(opcion(caja, o.id)), ["tache"]);
+        assert.equal(opcion(caja, o.id).querySelector("[data-pastilla]").textContent, "No va aquí");
+        assert.equal(opcion(caja, o.id).style.border, "2px solid rgb(231, 111, 81)");
+        assert.equal(opcion(caja, x.respuesta).dataset.marca, "revelada");
+        assert.deepEqual(icono(opcion(caja, x.respuesta)), []);
+        assert.equal(opcion(caja, x.respuesta).querySelector("[data-pastilla]").textContent, "Iba aquí");
+        assert.ok(opcion(caja, x.respuesta).classList.contains("fae-b5h-revelado"), "el borde de 2 px #F8F9FA, 0,7 s después");
+        for (const y of D.OPCIONES_T6_ACT4) if (y.id !== o.id && y.id !== x.respuesta) assert.equal(opcion(caja, y.id).style.opacity, "0.5");
         /* Un solo intento: tocar la correcta ya no cambia nada. */
         await tocar(opcion(caja, x.respuesta));
         assert.equal(opcion(caja, x.respuesta).dataset.estado, "revelada");
@@ -209,7 +229,7 @@ test("★★ el modo demo: sin encabezado ni nota, con la regla y el ejemplo; nu
   assert.equal(m.caja.querySelector("[data-nota-fija]"), null);
   assert.ok(m.caja.querySelector("[data-regla]"));
   await tocar(opcion(m.caja, D.A_GASTO));
-  assert.equal(devolucion(m.caja), `✅${D.EJEMPLO_T6_ACT4.acierto}`);
+  assert.equal(devolucion(m.caja), `Correcto. ${D.EJEMPLO_T6_ACT4.acierto}`);
   assert.equal(llamado, false);
   m.desmontar();
 });

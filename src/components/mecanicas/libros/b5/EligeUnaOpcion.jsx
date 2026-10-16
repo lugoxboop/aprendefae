@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { porcentaje } from "../../../../data/politicaFiscal.js";
-import { Opcion, Opciones, Retro, Pulsos, Cierre, Enunciado } from "../../corazon/juego.jsx";
-import { Avanzar, TEXTO_CIERRE } from "../../bloques/marcos.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { Opciones, Cierre, Enunciado } from "../../corazon/juego.jsx";
+/* E4 (hoja de fusiones de Mai): la opción de la célula, con el contrato de la compartida y sus pastillas (lote 6d). */
+import { OpcionE4 as Opcion } from "./MarcasE4.jsx";
+import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
+import { Responder } from "../piezas.jsx";
+import { Mensaje, RegionViva, botonDeAvance, CSS_B5H, CLASE_B5H } from "./Devolucion.jsx";
+import EncabezadoCompacto from "./EncabezadoCompacto.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { useReducido } from "../tema3/DosLineas.jsx";
 
@@ -32,18 +36,23 @@ import { useReducido } from "../tema3/DosLineas.jsx";
  * nada, no hay encabezado y nunca se llama a `onCompletar`.
  *
  * config: { consigna, nota?, regla, opciones: [{ id, nombre }], banco,
- *           retro(hecho, elegida), cierre, alt, etiqueta, visual? }
+ *           retro(hecho, elegida), veredicto?(hecho, elegida), cierre, alt, etiqueta, visual? }
  * `visual` es un componente que va entre el hecho y las opciones y recibe
  * { hecho, elegida, reducido } (b5-t6-a4: el asiento mínimo).
+ *
+ * LOTE 6d (estándar único de Hacer): la elegida queda «Correcto» o «No va
+ * aquí» y la correcta no elegida, «Iba aquí» (un solo intento: se revela). El
+ * veredicto del bloque de mensaje es el estado (elegida === respuesta), no el
+ * texto. Un toque elige y califica: no hay «Comprobar». El avance es el
+ * Responder compartido, «Siguiente {sustantivo del contador}» y, al final,
+ * «Ver mi resumen». La regla de la demo va directo sobre el Panel.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 const ESTILO_REGLA = {
-  margin: "0 0 12px", padding: "10px 13px", borderRadius: "12px",
+  margin: "0 0 12px", padding: 0,
   fontSize: "13.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.86)",
-  background: "rgba(248,249,250,0.05)", border: "1px solid rgba(248,249,250,0.14)",
 };
-const ESTILO_NOTA = { margin: "-6px 0 12px", fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.7)" };
 
 export default function EligeUnaOpcion({
   config, Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
@@ -102,23 +111,24 @@ export default function EligeUnaOpcion({
   }
 
   const retro = elegida ? config.retro(hecho, elegida) : null;
+  /* El veredicto es un estado de la evaluación («correcta» o «error»), nunca el texto de la devolución. */
+  const ok = elegida ? (config.veredicto?.(hecho, elegida) ?? (elegida === hecho.respuesta ? "correcta" : "error")) === "correcta" : false;
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      {!modoDemo && <Encabezado consigna={config.consigna} onComoSeJuega={onComoSeJuega} />}
-      {!modoDemo && config.nota && <p data-nota-fija style={ESTILO_NOTA}>{config.nota}</p>}
-      <p data-regla style={ESTILO_REGLA}>{config.regla}</p>
-      {!modoDemo && (
-        <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={hechos.length} hechos={i + (elegida ? 1 : 0)} enCurso={i + 1} etiqueta={config.etiqueta} />
-        </div>
-      )}
+      <style>{CSS_B5H}</style>
+      <div className={CLASE_B5H}>
+      {/* Lote 6c: el encabezado compacto de la célula; la consigna y los pasos, plegados bajo «¿Cómo se juega?». */}
+      {/* En la partida, la nota y la regla van plegadas con los pasos (B1: la figura en los primeros 280 px). */}
+      {!modoDemo && <EncabezadoCompacto objetivo={config.objetivo} consigna={config.consigna} pasos={config.reglas ?? []}
+        notas={[config.nota, config.regla].filter(Boolean)} contador={`${config.etiqueta} ${i + 1} de ${hechos.length}`} />}
+      {modoDemo && <p data-regla style={ESTILO_REGLA}>{config.regla}</p>}
+      {/* Un visual propio, la figura (b5-t6-a4: el asiento mínimo, hoja 4 de Mai). Lote 6c: va antes del hecho. */}
+      {config.visual && <config.visual hecho={hecho} elegida={elegida} reducido={reducido} />}
       <div data-hecho={hecho.id}>
         <Enunciado acento={acento}>{hecho.texto}</Enunciado>
       </div>
       {/* Una columna, siempre a la vista y en el orden de Futaba (hoja de Mai). */}
-      {/* Un visual propio entre el hecho y las opciones (b5-t6-a4: el asiento mínimo, hoja 4 de Mai). */}
-      {config.visual && <config.visual hecho={hecho} elegida={elegida} reducido={reducido} />}
       <Opciones columnas="minmax(0, 1fr)">
         {config.opciones.map((o) => (
           <Opcion
@@ -132,9 +142,10 @@ export default function EligeUnaOpcion({
           </Opcion>
         ))}
       </Opciones>
-      <Retro texto={retro} />
-      {elegida && !modoDemo && <Avanzar onClick={avanzar}>{i + 1 === hechos.length ? "Ver resultado" : "Siguiente"}</Avanzar>}
+      <RegionViva>{elegida && <Mensaje ok={ok} texto={retro} />}</RegionViva>
+      {elegida && !modoDemo && <div data-boton-avanzar><Responder onClick={avanzar}>{botonDeAvance(config.etiqueta, i + 1 === hechos.length)}</Responder></div>}
       {!modoDemo && <p style={SOLO_LECTOR}>{config.alt}</p>}
+      </div>
     </Marco>
   );
 }

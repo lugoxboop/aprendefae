@@ -1,7 +1,7 @@
 import CasillasEnOrden from "../b5/CasillasEnOrden.jsx";
 import CajonesDelTiempo, { anuncioDe } from "./CajonesDelTiempo.jsx";
 import {
-  T6_ACT6, PARTES_T6_ACT6, ERRORES_T6_ACT6, ALT_T6_ACT6,
+  T6_ACT6, REGLAS_T6_ACT6, PARTES_T6_ACT6, ERRORES_T6_ACT6, ALT_T6_ACT6,
 } from "../../../../data/contabilidadT6Act6.js";
 import { pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
 
@@ -29,14 +29,17 @@ const conPorcentaje = (casillas) => casillas.map((c) => ({ ...c, enunciado: pega
  * registro: el eje de los cajones en la parte 1 y las barras en la parte 2.
  */
 export const CONFIG_T6_ACT6 = {
+  objetivo: T6_ACT6.objetivo,
   consigna: T6_ACT6.consigna,
+  reglas: REGLAS_T6_ACT6,
   partida: pegarPorcentaje(T6_ACT6.partida),
   partes: PARTES_T6_ACT6.map((p) => ({ ...p, casillas: conPorcentaje(p.casillas) })),
   errores: Object.fromEntries(Object.entries(ERRORES_T6_ACT6).map(([k, t]) => [k, pegarPorcentaje(t)])),
   cierre: T6_ACT6.cierre,
   alt: ALT_T6_ACT6,
   etiqueta: "Casilla",
-  visual: { Componente: CajonesDelTiempo, anuncio: anuncioDe, enDemo: true },
+  /* Lote 6c: en las casillas de ubicar (1 a 3), los cajones del eje son las opciones. */
+  visual: { Componente: CajonesDelTiempo, anuncio: anuncioDe, enDemo: true, opciones: (c) => c.parte === PARTES_T6_ACT6[0].id },
 };
 
 export default function ProvisionPorEdades(props) {

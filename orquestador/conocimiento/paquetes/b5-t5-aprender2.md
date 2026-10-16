@@ -807,3 +807,74 @@ Si elige $1.500.000 ★: «Eso costaron los títulos que vendió. El interés se
 De 21 pasos a 14: las fusiones de Futaba menos 4 + 5 (regla 1: en el estado del paso 5, la tasa del paso 4 ya no se ve). Los pasos 3 y 4 (los actuales 4 y 5) conservan su pie de hoy: «Libro, p. 194» los dos. La predicción va entre el 10 y el 11, la misma posición que Futaba llamó «entre 9 y 10».
 
 El contador de la parada dice «Antes del paso N» (nuevo, para Shoko).
+
+## Lote C2 · C1 · C7 (Futaba, PASA de Shoko, 15-oct) · manda sobre lo de arriba
+
+Líneas copiadas tal cual de paquetes/b5-lote-c2-c1-c7.md (la entrega entera). Al primer error sale la pista; al segundo, la devolución que ya existe y después el texto que se revela.
+
+| Pieza | Caja o parada | Pista |
+|---|---|---|
+| T5 A2 | Ventas A y B | Compara lo que recibió con lo que le costaron los títulos que vendió. |
+| T5 A2 | Parada | El interés lo pagan los títulos que la empresa todavía tiene, no los que ya vendió. |
+
+| Pieza | Pregunta | Opción nueva | Devolución al segundo error |
+|---|---|---|---|
+| T5 A2 | Ventas A y B | Ni ganancia ni pérdida | La de cada caja (C1-2) |
+
+### C1-2 · T5 A2 · capa 3 (pie de las cajas «Escenario simulado»)
+Consigna: «Toca cada venta y decide si dejó ganancia o pérdida. Después, mira cómo se acredita la inversión.»
+Opciones: Ganancia · Pérdida · Ni ganancia ni pérdida.
+- Venta A, «Costó $650 cada uno · Se vende a $690». Correcta: Ganancia.
+  - Revela: «Recibió más de lo que costaron: es ganancia. Inversiones – títulos se acredita por el costo, no por lo recibido.»
+  - Al segundo error: «Los vende a $690 y le costaron $650: recibe más de lo que pagó, así que es ganancia.»
+- Venta B, «Costó $1.150 cada uno · Se vende a $1.060». Correcta: Pérdida.
+  - Revela: «Recibió menos de lo que costaron: es pérdida. Inversiones – títulos también se acredita por el costo.»
+  - Al segundo error: «Los vende a $1.060 y le costaron $1.150: recibe menos de lo que pagó, así que es pérdida.»
+- El texto final no cambia y sigue con su pie de las pp. 194-195.
+
+### C1-3 · T5 A2 · capa 4 (pie «Escenario simulado»)
+Pregunta: «Una empresa vende 260 títulos. Cada uno le costó $850. Le pagan $273.000. ¿Por cuánto se acredita la inversión?»
+| Opción | ✓ | Devolución |
+|---|---|---|
+| Por $221.000, lo que costaron los 260 títulos. | ✓ | Correcto. Inversiones – títulos se acredita por lo que costaron los títulos vendidos: 260 × $850 = $221.000. Lo que recibió de más es la ganancia. |
+| Por $273.000, lo que recibió por la venta. | | No es esa. Los $273.000 entran a Caja. La inversión se acredita por lo que costó, y la diferencia es la ganancia. |
+| Por $52.000, la ganancia que dejó la venta. | | No es esa. Los $52.000 son la ganancia y van a su propia cuenta. La inversión se acredita por lo que costaron los títulos. |
+| Por $850, lo que costó cada título. | | No es esa. Ese es el costo de un solo título. Vendió 260: multiplica. |
+
+Al registro de cifras construidas (T5): $650, $690, $1.060, $1.150, 260, $850, $221.000, $273.000 y $52.000.
+
+| # | Término | Texto final | Estado |
+|---|---|---|---|
+| C7-2 | T5 A2 · El rendimiento | (sin cambio) | PASA |
+
+## B2 · Capa 1, un término por pantalla (Futaba, con las correcciones de Shoko, 15-oct) · manda sobre lo de arriba
+
+Entrega final de Futaba (futaba-b2-b5-final.md), pegada tal cual para esta pieza. Kaede la aplicó letra por letra.
+
+(«El de hoy» = el texto que ya está en el repositorio para ese término, sin cambios. Las cifras entre paréntesis son la estimación INFLESZ de Futaba; NO van en pantalla. «Def.:», «Cita:», «Nota:», «Pie:» indican la parte del término: Def. = definición/texto; Cita = «Así lo dice el libro»; Nota = la nota; Pie = pie de fuente.)
+
+### T5 A2 · 4 pantallas
+1. **Tres momentos** — El de hoy.
+2. **La compra** — El de hoy.
+3. **El rendimiento** — Cuando llega un interés o un dividendo, se anota como un ingreso: por dividendos si viene de acciones, y por interés si viene de otro título. En esta materia, el interés va a Ingresos por intereses. En el ejemplo, se paga a trimestre vencido: al terminar cada trimestre, cada tres meses.
+4. **La venta** — El de hoy.
+
+## Enganche B1-B5 (Mai, 15-oct) y B5 de Futaba (final, con las correcciones de Shoko) · manda sobre lo de arriba
+
+Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entregas/futaba-b2-b5-final.md (sección «B5»). Los textos nuevos van para Shoko.
+
+| Pieza | Dónde va la etiqueta | Qué dice |
+|---|---|---|
+| T5 A2 | en la silueta del cálculo de noviembre | la opción elegida: «$2.000.000» o «$500.000» |
+
+| Pieza | Figura | Al decidir |
+|---|---|---|
+| T5 A2 | la cuenta T «Inversiones – títulos», con «$2.000.000 · 1 de mayo» en el DEBE | entra en el HABER «$1.500.000 · 1 de agosto» o «$500.000 · 1 de noviembre» |
+
+Las columnas de la T llevan las palabras publicadas «DEBE» y «HABER».
+
+- Capa 3 (las 7): la pregunta de la caja solo se ve mientras falta decidir; al decidir sale y quedan las opciones marcadas (✓/✕), la devolución y el texto. La pregunta es el nombre accesible del grupo de opciones (aria-labelledby); cuando sale de la pantalla pasa a una copia oculta.
+- Capa 3: quien acierta ve el texto que se revela; quien falla dos veces ve la devolución de su opción y la figura, pero NO ese texto.
+- **Cajas ya respondidas:** muestran solo la opción elegida con su marca (cumple E4). Vale para la capa 3 de las siete piezas.
+- Nombre accesible del grupo de opciones: T5 A2 «¿Dejó ganancia o pérdida?»
+- Decisión del 15-oct (manda sobre la fila de la figura de T5 A2 de arriba): la figura no muestra cifras distintas de las cajas que se responden. La T «Inversiones – títulos» se arma solo con el escenario simulado de las cajas: en el DEBE, la compra de cada venta por lo que costó («Costó $650 cada uno», «Costó $1.150 cada uno», con el nombre de su caja); al cerrarse la caja, la venta la saca por ese mismo costo en el HABER. La ganancia o la pérdida es la diferencia que ya dice el texto de la caja. Sin fechas (las cajas no las traen). Debajo, el pie «Escenario simulado».

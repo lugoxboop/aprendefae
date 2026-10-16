@@ -2,31 +2,39 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-2 · A2 DE APRENDER — «La venta en dos asientos» (pp. 209-214 y 234-237).
  *
- * Fuente: la v1 de Near con su corrección (PASA de Mello). Copias en
- * orquestador/conocimiento/paquetes/t7-2-a2-v1.md y t7-2-a2-correccion.md;
- * una prueba compara cada texto de aquí contra ellas, letra por letra.
+ * Fuente: EL RECORTE DEL LOTE 1 de Near (entrega 6,
+ * orquestador/conocimiento/paquetes/lote1-entrega6-v1.md, sección
+ * «t7-2-a2-la-venta-en-dos-asientos») con la corrección obligatoria de Mello
+ * encima (mello-entregas-4-5-6-v1.md, «Entrega 6 · T7-2»): la pista de
+ * `la-compra` es la suya, «La mercancía que se compra es un activo…». Una
+ * prueba compara cada texto de aquí contra el paquete corregido, letra por
+ * letra, en los dos sentidos (correccionesMelloRecortesT72.mjs).
  *
- * Lo que cambia la corrección: el repaso de IVA y retención pasa a P1 (antes
- * de la pregunta, y en el acierto, junto a las líneas sin monto). P2 se queda
- * solo con el lado de la venta.
+ * Seis pantallas, tres con acción. Lo que cambia frente a lo publicado:
+ *   · `la-compra` ya no dice antes de preguntar que la compra va al debe de
+ *     Inventario de mercancías (delataba la respuesta)
+ *   · `la-venta` sale: el primer asiento de la venta se ve en
+ *     `el-segundo-asiento`, detrás de «Ver el primer asiento»
+ *   · la devolución del costo ya no es circular («tiene saldo deudor: va al
+ *     debe»)
  *
- * Pieza de Aprender: cero FP, no entra al catálogo. Siete pantallas. Dos
- * ejemplos resueltos del libro: E-1 (la compra) y E-2 (la venta).
+ * Ejemplos del libro: E-1 (la compra) y E-2 (la venta). Lista de control
+ * (regla 3 y X1): de E-1 solo se ve su dato, Inventario de mercancías
+ * $5.000.000; las otras tres líneas van con su cuenta y sin monto. Las cifras
+ * de X1 —800.000 · 175.000 · 5.625.000 · 5.800.000— no se muestran. De E-2
+ * se ve todo, sin las sumas. C7-14: el asiento de E-1 va con fecha del 16 de
+ * abril.
  *
- * Lista de control (regla 3 y X1): de E-1 solo se ve su dato, Inventario de
- * mercancías $5.000.000; las otras tres líneas van con su cuenta y sin monto
- * (●). Las cifras de X1 —800.000 · 175.000 · 5.625.000 · 5.800.000— no se
- * muestran, y una prueba lo vigila. De E-2 se ve todo, sin las sumas.
+ * La línea `inventario` de `el-segundo-asiento` conserva su pista del lote 2
+ * («Sale mercancía de la bodega…»): el recorte solo trae la de `costo`, y la
+ * regla de los recortes es que el lote 2 vale para lo que el recorte no
+ * cambia (como en la fusión de A5 y A6).
  *
- * Erratas: C7-14 (el asiento de E-1 va con fecha del 16 de abril). Nombres de
- * cuenta de la regla 8.
+ * El primer asiento de la venta da el IVA y la retención en pesos, no sus
+ * tarifas: la frase de las tarifas ya no va en esta pieza.
  *
- * Lo que la v1 no trae y se toma de la convención de T7-1 (AP2, A5, A6):
- *   · los botones «Empezar», «Seguir», «Confirmar» y «Probar otra», y
- *     «Correcto.», «Incorrecto.», «Debe» y «Haber»
- *   · los rótulos de la ficha («Quién recibe», «Quién entrega», «Monto»,
- *     «Tipo», «Clase de hecho»), con el primer dato en mayúscula
- *   · el pie de los errores de P1, que la v1 no da: el mismo de su pantalla
+ * Lo que el recorte no trae y se conserva de lo publicado: los pies, los
+ * botones y las palabras de la interfaz. Pieza de Aprender: cero FP.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -63,120 +71,82 @@ const POR_COBRAR = 9000000;
 const PORTADA = {
   id: "portada",
   tipo: "portada",
-  objetivo: "Al terminar, sabrás registrar una compra y una venta en el sistema permanente, con el asiento del costo.",
+  objetivo: "Vas a registrar una compra y una venta en el sistema permanente.",
   boton: BOTON.empezar,
   pie: "Basado en el libro, pp. 234-237",
 };
 
-/* P1 · la compra (E-1, p. 234). El repaso de IVA y retención viene de la corrección. */
+/* El asiento de la compra (E-1, p. 234), en el acierto de P1: solo su dato lleva monto. */
+const ASIENTO_COMPRA = {
+  fecha: "16 de abril",
+  lineas: [
+    { cuenta: "Inventario de mercancías", lado: DEBE, monto: COMPRA },
+    { cuenta: "IVA por pagar", lado: DEBE, monto: null },
+    { cuenta: "Retención en la fuente por pagar", lado: HABER, monto: null },
+    { cuenta: "Cuentas por pagar – proveedores", lado: HABER, monto: null },
+  ],
+};
+
+/* Los dos asientos de la venta (E-2, pp. 236-237), sin sumas. */
+const ASIENTO_VENTA = {
+  fecha: "20 de abril",
+  lineas: [
+    { cuenta: "Cuentas por cobrar – clientes", lado: DEBE, monto: POR_COBRAR },
+    { cuenta: "Anticipo fiscal", lado: DEBE, monto: RETENCION },
+    { cuenta: "IVA por pagar", lado: HABER, monto: IVA },
+    { cuenta: "Ingresos por ventas", lado: HABER, monto: VENTA },
+  ],
+};
+const ASIENTO_COSTO = {
+  fecha: "20 de abril",
+  lineas: [
+    { cuenta: "Costo de mercancía vendida", lado: DEBE, monto: COMPRA },
+    { cuenta: "Inventario de mercancías", lado: HABER, monto: COMPRA },
+  ],
+};
+
+/* P1 · la compra (E-1, p. 234). La pista es la de Mello. */
 const LA_COMPRA = {
   id: "la-compra",
   pista: "La mercancía que se compra es un activo. En el permanente se anota apenas entra.",
   tipo: "eleccion",
-  parrafos: [
-    "En el permanente, la compra de mercancía va al debe de Inventario de mercancías, por su costo. Así se cumple la regla de los activos: un activo que aumenta va al debe de su cuenta.",
-  ],
-  enunciado: "El 16 de abril, La Reventa Ltda. le compra mercancía a crédito a un proveedor, por $5.000.000, más el IVA. Usa el sistema de inventario permanente.",
-  ficha: [
-    { dato: "Quién recibe", texto: "La Reventa Ltda." },
-    { dato: "Quién entrega", texto: "Un proveedor" },
-    { dato: "Monto", texto: "$5.000.000" },
-    { dato: "Tipo", texto: "A crédito" },
-    { dato: "Clase de hecho", texto: "Compra de mercancía para venderla" },
-  ],
-  repaso: "Un repaso corto. El IVA es el impuesto a las ventas: quien vende se lo cobra a quien compra. La retención es una parte del pago que quien compra le descuenta a quien vende.",
-  pregunta: "¿En qué cuenta va al debe el costo de la mercancía, $5.000.000?",
+  parrafos: ["Ahora La Reventa usa el sistema permanente.", "El 16 de abril compra mercancía por $5.000.000, a crédito."],
+  pregunta: "¿A qué cuenta va al debe?",
   opciones: [
     { id: "inventario", texto: "Inventario de mercancías", correcta: true },
-    {
-      id: "compras",
-      texto: "Compras",
-      correcta: false,
-      devolucion: "Compras es la cuenta del sistema periódico. En el permanente no existe: la compra va directo a Inventario de mercancías.",
-    },
-    {
-      id: "costo",
-      texto: "Costo de mercancía vendida",
-      correcta: false,
-      devolucion: "Costo de mercancía vendida se usa al vender, no al comprar.",
-    },
+    { id: "compras", texto: "Compras", correcta: false, devolucion: "Compras es la cuenta del periódico. En el permanente no se usa." },
+    { id: "costo", texto: "Costo de mercancía vendida", correcta: false, devolucion: "Esa cuenta se usa al vender, no al comprar." },
   ],
   pie: "Basado en el libro, p. 234",
   error: { pie: "Basado en el libro, p. 234" },
   acierto: {
-    texto: "Así es. En el permanente, la compra va al debe de Inventario de mercancías. Esa cuenta sube cuando entra mercancía.",
-    asiento: {
-      fecha: "16 de abril",
-      lineas: [
-        { cuenta: "Inventario de mercancías", lado: DEBE, monto: COMPRA },
-        { cuenta: "IVA por pagar", lado: DEBE, monto: null },
-        { cuenta: "Retención en la fuente por pagar", lado: HABER, monto: null },
-        { cuenta: "Cuentas por pagar – proveedores", lado: HABER, monto: null },
-      ],
-    },
-    despues: [
-      "Las otras líneas son las mismas del periódico: el IVA, la retención y lo que se le debe al proveedor.",
-      "En la compra, el IVA va al debe de IVA por pagar. La retención va al haber de Retención en la fuente por pagar, porque se le debe a la Dirección de Impuestos.",
-    ],
+    texto: "Así es: un activo que aumenta va al debe de su cuenta.",
+    porque: "Las otras líneas son las mismas del periódico: el IVA va al debe de IVA por pagar, y la retención al haber de Retención en la fuente por pagar.",
+    asiento: ASIENTO_COMPRA,
     pie: "Basado en el libro, pp. 234-235",
   },
 };
 
-/* P2 · la venta (E-2, pp. 236-237): el primer asiento, resuelto, sin sumas. */
-const LA_VENTA = {
-  id: "la-venta",
-  tipo: "lectura",
-  enunciado: "El 20 de abril, La Reventa Ltda. le vende a un cliente, a crédito, la mercancía que compró el 16 de abril. Se la vende por $8.000.000, más el IVA. Usa el sistema de inventario permanente.",
-  ficha: [
-    { dato: "Quién recibe", texto: "Un cliente" },
-    { dato: "Quién entrega", texto: "La Reventa Ltda." },
-    { dato: "Monto", texto: "$8.000.000 por la venta; la mercancía costó $5.000.000" },
-    { dato: "Tipo", texto: "A crédito" },
-    { dato: "Clase de hecho", texto: "Venta de mercancía" },
-  ],
-  parrafos: [
-    "En este ejercicio, el IVA es del 16 % y la retención del 3,5 %, sobre el valor de la mercancía.",
-    "Las tarifas de este ejercicio son datos del libro. No las tomes como las tarifas de hoy.",
-    "En la venta, quien cobra el IVA se lo debe al Estado: va al haber de IVA por pagar.",
-    "La retención es una parte del pago que el cliente le descuenta al vendedor. Para el vendedor es un impuesto pagado por adelantado: va al debe de Anticipo fiscal.",
-    "En el permanente, la venta lleva dos asientos. El primero es igual al del periódico: registra lo que se cobra.",
-  ],
-  calculos: [
-    "$8.000.000 × 16 % = $1.280.000",
-    "$8.000.000 × 3,5 % = $280.000",
-    "$8.000.000 + $1.280.000 − $280.000 = $9.000.000",
-  ],
-  asiento: {
-    fecha: "20 de abril",
-    lineas: [
-      { cuenta: "Cuentas por cobrar – clientes", lado: DEBE, monto: POR_COBRAR },
-      { cuenta: "Anticipo fiscal", lado: DEBE, monto: RETENCION },
-      { cuenta: "IVA por pagar", lado: HABER, monto: IVA },
-      { cuenta: "Ingresos por ventas", lado: HABER, monto: VENTA },
-    ],
-  },
-  boton: BOTON.seguir,
-  pie: "Basado en el libro, pp. 210, 212 y 235-237",
-};
-
-/* P3 · el segundo asiento: el costo de lo que salió. Las dos líneas se barajan al entrar. */
+/* P2 · el segundo asiento: el costo de lo que salió. Las dos líneas se barajan al entrar; el primero, detrás de «Ver el primer asiento». */
+const PIE_SEGUNDO = "Basado en el libro, pp. 236-237";
 const EL_SEGUNDO = {
   id: "el-segundo-asiento",
   tipo: "lados",
-  consigna: "El segundo asiento registra el costo de lo que salió. Toca Debe o Haber en cada línea.",
+  parrafos: ["El 20 de abril vende esa mercancía por $8.000.000. El primer asiento registra lo que cobra; el segundo, lo que costó."],
+  consigna: "Toca Debe o Haber en el segundo.",
   lineas: [
-    { id: "costo", cuenta: "Costo de mercancía vendida", monto: COMPRA, lado: DEBE, pista: "Es lo que costó lo vendido, y ese costo aumenta. ¿De qué lado aumenta un costo?", devolucion: "El costo de la mercancía vendida tiene saldo deudor: va al debe." },
+    { id: "costo", cuenta: "Costo de mercancía vendida", monto: COMPRA, lado: DEBE, pista: "Es lo que costó lo vendido, y ese costo aumenta. ¿De qué lado aumenta un costo?", devolucion: "Cada venta aumenta lo que costó lo vendido. Un costo que aumenta va al debe." },
+    /* La pista, la del lote 2 (el recorte no la cambia). */
     { id: "inventario", cuenta: "Inventario de mercancías", monto: COMPRA, lado: HABER, pista: "Sale mercancía de la bodega. ¿De qué lado baja un activo?", devolucion: "Sale mercancía de la bodega, así que el activo disminuye: va al haber." },
   ],
-  pie: "Basado en el libro, pp. 236-237",
-  error: { pie: "Basado en el libro, pp. 236-237" },
-  acierto: {
-    texto: "Así es. Al vender, Inventario de mercancías baja por el costo de lo que salió. Por eso su saldo queda al día.",
-    pie: "Basado en el libro, pp. 236-237",
-  },
+  ver: { texto: "Ver el primer asiento", asiento: ASIENTO_VENTA },
+  pie: PIE_SEGUNDO,
+  error: { pie: PIE_SEGUNDO },
+  acierto: { texto: "Así es: Inventario de mercancías baja por el costo de lo que salió.", pie: PIE_SEGUNDO },
 };
 
-/* P4 · por qué dos asientos. */
+/* P3 · por qué dos asientos. */
+const PIE_POR_QUE = "Basado en el libro, pp. 209 y 233-236";
 const POR_QUE = {
   id: "por-que-dos-asientos",
   pista: "Piensa en cuándo se anota lo que costó lo vendido en cada sistema: ¿en cada venta o al cierre?",
@@ -184,49 +154,37 @@ const POR_QUE = {
   parrafos: [],
   pregunta: "¿Por qué en el permanente hay un segundo asiento, y en el periódico no?",
   opciones: [
-    { id: "cada-venta", texto: "Porque en el permanente el costo se anota en cada venta.", correcta: true },
-    {
-      id: "mas-iva",
-      texto: "Porque en el permanente la venta lleva más IVA.",
-      correcta: false,
-      devolucion: "El IVA es el mismo en los dos sistemas. Lo que cambia es cuándo se anota el costo.",
-    },
-    {
-      id: "no-hay-costo",
-      texto: "Porque en el periódico no hay costo de lo vendido.",
-      correcta: false,
-      devolucion: "Sí lo hay, pero en el periódico se halla al cierre, con el conteo. En el permanente se anota en cada venta.",
-    },
+    { id: "cada-venta", texto: "El costo se anota en cada venta.", correcta: true },
+    { id: "mas-iva", texto: "La venta lleva más IVA.", correcta: false, devolucion: "El IVA es el mismo en los dos sistemas. Lo que cambia es cuándo se anota el costo." },
+    { id: "no-hay-costo", texto: "En el periódico no hay costo de lo vendido.", correcta: false, devolucion: "Sí lo hay, pero en el periódico se halla al cierre, con el conteo." },
   ],
-  pie: "Basado en el libro, pp. 209 y 233-236",
-  error: { pie: "Basado en el libro, pp. 209 y 233-236" },
-  acierto: {
-    texto: "Exacto. En el permanente, cada venta lleva su costo. Así la cuenta del inventario está siempre al día.",
-    pie: "Basado en el libro, pp. 209 y 233-236",
-  },
+  pie: PIE_POR_QUE,
+  error: { pie: PIE_POR_QUE },
+  acierto: { texto: "Exacto: cada venta lleva su costo, y el inventario está siempre al día.", pie: PIE_POR_QUE },
 };
 
-/* P5 · la cuenta del costo en el estado de resultados: la estructura hasta la utilidad bruta, sin cifras. */
+/* P4 · la cuenta del costo en el estado de resultados: la estructura en tres filas, sin cifras. */
 const EL_ESTADO = {
   id: "en-el-estado-de-resultados",
   tipo: "lectura",
-  parrafos: [
-    "La cuenta Costo de mercancía vendida va al estado de resultados. Al final del periodo se cierra contra Ganancias y pérdidas.",
-    "En el periódico, el costo se calcula al cierre: inventario inicial, más compras, menos inventario final. En el permanente ya está en su cuenta, y pasa directo al estado de resultados.",
-  ],
+  parrafos: ["En el permanente, el costo ya está en su cuenta y pasa directo al estado de resultados."],
   estructura: ["Ingresos por ventas", "Menos: Costo de mercancía vendida", "Utilidad bruta en ventas"],
   cierre: "La utilidad bruta en ventas es lo que queda de las ventas cuando se les resta el costo de la mercancía vendida.",
   boton: BOTON.seguir,
   pie: "Basado en el libro, pp. 214 y 236-237",
 };
 
+/* P5 · el resumen abre con los dos asientos de la venta, uno debajo del otro, cada uno con su rótulo. */
 const RESUMEN = {
   id: "resumen",
   tipo: "resumen",
+  asientos: [
+    { ...ASIENTO_VENTA, rotulo: "Asiento 1: lo que se cobra" },
+    { ...ASIENTO_COSTO, rotulo: "Asiento 2: lo que costó" },
+  ],
   lista: [
-    "En el permanente, la compra de mercancía va al debe de Inventario de mercancías.",
-    "La venta lleva dos asientos: uno por lo que se cobra y otro por el costo de lo que salió.",
-    "El costo pasa directo al estado de resultados. No hay que calcularlo al cierre.",
+    "En el permanente, la compra va al debe de Inventario de mercancías.",
+    "La venta lleva dos asientos, y el costo pasa directo al estado de resultados.",
   ],
   siguiente: "Siguiente: «El kárdex».",
   pie: "Basado en el libro, pp. 234-237",
@@ -236,5 +194,6 @@ export const PIEZA_LA_VENTA_EN_DOS_ASIENTOS = {
   id: A2_ID,
   numero: 2,
   titulo: "La venta en dos asientos",
-  pantallas: [PORTADA, LA_COMPRA, LA_VENTA, EL_SEGUNDO, POR_QUE, EL_ESTADO, RESUMEN],
+  textosEnteros: true,
+  pantallas: [PORTADA, LA_COMPRA, EL_SEGUNDO, POR_QUE, EL_ESTADO, RESUMEN],
 };

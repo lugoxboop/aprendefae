@@ -665,14 +665,21 @@ export const SUBJECTS = {
           { id: "b5-t5-a1", nombre: "¿Qué renta da este título?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /* N1 de la Célula C, después de b5-t5-a1 (decisión de corte de T5, punto 6; la sostiene b5-t5-a1-del-efectivo-de-sobra). Temporal o a largo plazo, el grupo y la intención, pp. 191-192. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0110. */
           { id: "t5-temporal-o-largo-plazo", nombre: "¿Temporal o a largo plazo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
-          /* N2 de la Célula C, después de b5-t5-a1 (decisión de corte de T5, punto 6: N1 entra entre b5-t5-a1 y N2, y N3 justo después de N2). Las cuatro acciones de control de la p. 193; sostiene a N3. Cero FP. */
-          { id: "t5-a1-cuidar-las-inversiones", nombre: "Cómo se cuidan las inversiones", clasificacion: { tipo: APRENDER } },
-          /* N3 de la Célula C, justo después de N2, que la sostiene (decisión de corte de T5, punto 6). Qué acción de control de la p. 193 hace falta. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0111. */
+          /*
+           * N3 de la Célula C, justo después de N1 (decisión de corte de T5, punto 6). Qué acción de control de la p. 193 hace falta. Fácil · 10 FP, evaluativa. Su fila del servidor es la migración 0111.
+           * N2 («Cómo se cuidan las inversiones», t5-a1-cuidar-las-inversiones, Aprender sin FP) salió de la lista con la fusión de la entrega 5 de Near: lo suyo va dentro de N3 (las glosas y el ejemplo resuelto). Sus archivos se quedan.
+           */
           { id: "t5-revision-que-falta", nombre: "¿Qué revisión falta?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "b5-t5-a2-los-tres-momentos-de-una-inversion", nombre: "Los tres momentos de una inversión", clasificacion: { tipo: APRENDER } },
           /* El cierre del tema. Difícil · 50 FP (decisión de Sakuta). Su fila del servidor es la migración 0072. */
           /* N4 de la Célula C, después de los tres momentos de B, que la sostienen (decisión de corte de T5, punto 6). El interés de un trimestre con cifras construidas, como en la p. 194, y el asiento del cobro. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0112. */
           { id: "t5-el-interes-del-periodo", nombre: "El interés del periodo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* N5 de la Célula C, justo después de N4; la sostienen los tres momentos de B (decisión de corte de T5, punto 6). Dos ventas de acciones, una con ganancia y otra con pérdida, por el costo, con cifras construidas. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0113. */
+          { id: "t5-gano-o-perdio", nombre: "¿Ganó o perdió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          /* N6 de la Célula C, posición 9 de la decisión de corte de T5 (punto 6): después de N4 y de N5, antes de N7, que la sostiene, y del cierre de Santa Pacha. Los gastos de la compra al costo y el dividendo a Ingresos por dividendos, p. 193, con un ejemplo construido. Cero FP. */
+          { id: "t5-a2-lo-que-el-ejemplo-no-trae", nombre: "Lo que el ejemplo no trae", clasificacion: { tipo: APRENDER } },
+          /* N7 de la Célula C, posición 10 de la decisión de corte de T5 (punto 6): después de N6, que la sostiene, y antes del cierre de Santa Pacha. La cuenta y el lado de la compra con gastos, el interés y el dividendo, p. 193, con cifras construidas. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0114. */
+          { id: "t5-a-que-cuenta-va", nombre: "¿A qué cuenta va?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "b5-t5-a2", nombre: "El cierre completo de Santa Pacha", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
@@ -692,14 +699,19 @@ export const SUBJECTS = {
           { id: "b5-t6-a1-lo-que-otros-le-deben", nombre: "Lo que otros le deben a la empresa", clasificacion: { tipo: APRENDER } },
           /* Actividad 1 de Hacer, después de la pieza 1. Fácil · 10 FP (Futaba). Su fila del servidor es la migración 0071. */
           { id: "b5-t6-a1", nombre: "¿Clientes o otra cuenta por cobrar?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
-          /* Orden del camino por lo que cada actividad necesita saber (Shoko, calidad 15-oct; R9): a7 distingue los dos métodos y es la base de a2; la dificultad ya no sube y baja. */
-          { id: "b5-t6-a7", nombre: "¿Qué método y cuándo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /*
+           * Orden del camino (Sakuta, lote 6b): a1 → a4 → a2 → a6 → a3. b5-t6-a7 «¿Qué método y cuándo?» se retiró
+           * (Shoko, C6: sus decisiones ya están en a4 y en la capa 3 de T6 A2; lápida en la 0076), y b5-t6-a5 «La
+           * cuenta de la provisión» se fundió en a2 (hoja de Mai; lápida en la 0077).
+           */
           { id: "b5-t6-a4", nombre: "¿Qué se debita?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "b5-t6-a5", nombre: "La cuenta de la provisión", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          /* Actividades 2 y 3 de Hacer (mesa de asientos). Media · 25 y difícil · 50 FP (Sakuta). Sus filas del servidor son la migración 0074. */
-          { id: "b5-t6-a2", nombre: "La provisión de El Torito", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "b5-t6-a3", nombre: "Cuando la deuda castigada vuelve", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /*
+           * Actividades 2 y 3 de Hacer (mesa de asientos), filas de la 0074. a2 lleva dentro a a5 desde el lote 6b:
+           * difícil · 50 FP (los 25 + 25 de las dos; fila en la 0078). a3, difícil · 50 (Sakuta).
+           */
+          { id: "b5-t6-a2", nombre: "La provisión de El Torito", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "b5-t6-a6", nombre: "Provisión por edades", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "b5-t6-a3", nombre: "Cuando la deuda castigada vuelve", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "b5-t6-a2-cuando-un-cliente-no-va-a-pagar", nombre: "Cuando un cliente no va a pagar", clasificacion: { tipo: APRENDER } },
           { id: "b5-t6-a3-la-provision-de-un-ano-al-siguiente", nombre: "La provisión, de un año al siguiente", clasificacion: { tipo: APRENDER } },
           { id: "b5-t6-a4-cuando-el-cliente-castigado-si-paga", nombre: "Cuando el cliente castigado sí paga", clasificacion: { tipo: APRENDER } },
@@ -743,8 +755,8 @@ export const SUBJECTS = {
           { id: "t7-1-a6-devoluciones-en-periodico", nombre: "Devoluciones en periódico", clasificacion: { tipo: APRENDER } },
           /* H6, después de A6 por dependencias (regla 9): registra una devolución en el libro del comprador y en el del vendedor, con el IVA y la retención proporcionales que enseña A6 (la sostiene A6). Antes de A7. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0096. */
           { id: "t7-1-devolucion-dos-libros", nombre: "La devolución en dos libros", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          /* A7, después de AP1 por dependencias (regla 9): el conteo físico frente a los registros; última de Aprender según el plan. Cero FP. */
-          { id: "t7-1-a7-control-interno", nombre: "Control interno de los inventarios", clasificacion: { tipo: APRENDER } },
+          /* A7, después de AP1 por dependencias (regla 9): el conteo físico frente a los registros; última de Aprender según el plan. Cero FP. Desde el Patrón de enganche C v6 se llama «El viaje de una caja» (mismo id). */
+          { id: "t7-1-a7-control-interno", nombre: "El viaje de una caja", clasificacion: { tipo: APRENDER } },
           /* H7, después de A7 por dependencias (regla 9): relaciona cada riesgo de la bodega con el control que el libro propone, los de A7 (la sostiene A7). Última de T7-1. Fácil · 10 FP, exploratoria. Su fila del servidor es la migración 0097. */
           { id: "t7-1-que-control-falta", nombre: "¿Qué control falta?", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
         ],
@@ -770,14 +782,15 @@ export const SUBJECTS = {
           { id: "t7-2-a3-el-kardex", nombre: "El kárdex", clasificacion: { tipo: APRENDER } },
           /* H3, justo después de A3 (orden final de T7-2): los tres kárdex de Laurel, casilla por casilla. Difícil · 50 FP, evaluativa. Su fila del servidor es la migración 0100. */
           { id: "t7-2-llena-el-kardex", nombre: "Llena el kárdex", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          /* A4, después de A3 (regla 9): F-1 del libro en el permanente, con la decisión de Mello casilla por casilla. H3 «Llena el kárdex» entra entre A3 y A4. Cero FP. */
-          { id: "t7-2-a4-san-calixto", nombre: "San Calixto en permanente", clasificacion: { tipo: APRENDER } },
+          /* A4, después de A3 (regla 9): F-1 del libro en el permanente, como capas de costo que la venta corta (Patrón de enganche C, v6; reemplaza a «San Calixto en permanente» con el mismo id). H3 «Llena el kárdex» entra entre A3 y A4. Cero FP. */
+          { id: "t7-2-a4-san-calixto", nombre: "Las capas que la venta corta", clasificacion: { tipo: APRENDER } },
           /* H4 «¿Periódico o permanente?» (t7-2-periodico-o-permanente) iba aquí: retirada en la 0115 (retiro blando; su fila 0101, su pieza y su regla del panel se quedan). */
-          /* A5, después de A4 por el orden del mapa (regla 9: usa la venta en dos asientos de A2). H4 «¿Periódico o permanente?» entra entre A4 y A5. Cero FP. */
-          { id: "t7-2-a5-fletes", nombre: "Fletes en permanente", clasificacion: { tipo: APRENDER } },
-          /* A6, justo después de A5 (orden final de T7-2): usa la venta en dos asientos de A2. Después va H5 «Flete y devolución», que cubre A5 y A6. Cero FP. */
-          { id: "t7-2-a6-devoluciones", nombre: "Devoluciones en permanente", clasificacion: { tipo: APRENDER } },
-          /* H5, justo después de A6 (orden final de T7-2): cubre A5 y A6, con los cuatro hechos de Mangle. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0102. */
+          /*
+           * A5, después de A4 por el orden del mapa (regla 9: usa la venta en dos asientos de A2). H4 «¿Periódico o permanente?» entra entre A4 y A5. Cero FP.
+           * Con la fusión de la entrega 5 de Near se llama «Fletes y devoluciones en permanente» y conserva su id: A6 («Devoluciones en permanente», t7-2-a6-devoluciones, Aprender sin FP) salió de la lista y lo suyo va dentro de A5. Sus archivos se quedan.
+           */
+          { id: "t7-2-a5-fletes", nombre: "Fletes y devoluciones en permanente", clasificacion: { tipo: APRENDER } },
+          /* H5, justo después de A5 (orden final de T7-2; antes iba después de A6, que entró en A5): cubre los fletes y las devoluciones, con los cuatro hechos de Mangle. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0102. */
           { id: "t7-2-flete-y-devolucion", nombre: "Flete y devolución", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
         ],
       },
@@ -789,7 +802,7 @@ export const SUBJECTS = {
        */
       {
         id: "inventarios-descuentos-nic2",
-        title: "Inventarios III: descuentos, inventario físico y NIC 2",
+        title: "Inventarios III: descuentos, conteo y NIC 2",
         actividades: [
           /* A1: abre el tema, con su propio repaso (regla 3). Ejemplo H-1, pp. 248-249. Cero FP. */
           { id: "t7-3-descuento-comercial", nombre: "El descuento comercial", clasificacion: { tipo: APRENDER } },
@@ -812,13 +825,14 @@ export const SUBJECTS = {
           { id: "t7-3-provision-inventarios", nombre: "La provisión para inventarios", clasificacion: { tipo: APRENDER } },
           /* H5, justo después de A6 (orden final de T7-3; la sostienen A5 y A6): el conteo de Olmo y la provisión de Pino. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0107. */
           { id: "t7-3-ajuste-por-conteo", nombre: "Ajuste por conteo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          /* A7, después de A6 por el orden del mapa (depende de A1, por los descuentos). H5 entra entre A6 y A7. La NIC 2 del libro, pp. 256-258, con su frase fija a la vista. Cero FP. */
-          { id: "t7-3-nic2-costo", nombre: "La NIC 2 del libro: el costo", clasificacion: { tipo: APRENDER } },
+          /*
+           * A7, después de A6 por el orden del mapa (depende de A1, por los descuentos). H5 entra entre A6 y A7. La NIC 2 del libro, pp. 256-260, con su frase fija a la vista. Cero FP.
+           * Con la fusión de la entrega 4 de Near se llama «La NIC 2 del libro» y conserva su id: A8 («fórmulas y revelación», t7-3-nic2-formulas, Aprender sin FP) salió de la lista y lo suyo va dentro de A7. Sus archivos se quedan.
+           */
+          { id: "t7-3-nic2-costo", nombre: "La NIC 2 del libro", clasificacion: { tipo: APRENDER } },
           /* H6 «¿Entra al costo?» (t7-3-que-entra-al-costo) iba aquí: retirada en la 0115 (retiro blando; su fila 0108, su pieza y su regla del panel se quedan). */
-          /* H7, justo después de H6 (orden final de T7-3; la sostiene A7): costo o valor neto realizable, el menor, con la regla del libro, pp. 257-258. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0109. */
+          /* H7, justo después de H6 (orden final de T7-3; la sostiene A7): costo o valor neto realizable, el menor, con la regla del libro, pp. 257-258. Medio · 25 FP, evaluativa. Su fila del servidor es la migración 0109. Desde la fusión de la entrega 4 (A8 entró en A7), es la última de T7-3. */
           { id: "t7-3-costo-o-vnr", nombre: "¿Costo o valor neto realizable?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          /* A8, la última de T7-3, después de A7 (orden del mapa: H6 y H7 entran entre A7 y A8; ningún Hacer depende de ella). La NIC 2 del libro, pp. 259-260: fórmulas y revelación, con su frase fija a la vista. Cero FP. */
-          { id: "t7-3-nic2-formulas", nombre: "La NIC 2 del libro: fórmulas y revelación", clasificacion: { tipo: APRENDER } },
         ],
       },
       /*
@@ -834,6 +848,12 @@ export const SUBJECTS = {
           { id: "r5-1", nombre: "Repaso cruzado", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* r5-2: el 3 del bloque D, pp. 268-269, provisión, castigo y recuperación. Difícil · 50 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0251. */
           { id: "r5-2", nombre: "El Toro Negro", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          /* r5-3: el 4 del bloque D, pp. 269-271, sin el 2, 5, 7 y 28 de marzo. Experto · 90 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0252. */
+          { id: "r5-3", nombre: "Marzo en Comercializadora Mate", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          /* r5-4: el 6 del bloque D, pp. 273-274, en diez asientos (sin los fletes del 25 y del 28). Experto · 90 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0253. */
+          { id: "r5-4", nombre: "Septiembre en Barranquilla", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          /* r5-5: el mismo septiembre en permanente, con su kárdex (paquete e5-r5-5-v1). Difícil · 50 FP, evaluativa (Kamogawa). Su fila del servidor es la migración 0254. */
+          { id: "r5-5", nombre: "Septiembre en permanente", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
     ],

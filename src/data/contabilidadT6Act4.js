@@ -14,7 +14,8 @@ import { BANCOS } from "./contabilidadT5Act2.js";
  *
  * El patrón de «¿Por Cuál Arteria Entra?» (b5/EligeUnaOpcion.jsx): un hecho a
  * la vez, cuatro cuentas fijas, un intento, la devolución de acierto del
- * hecho o la del tipo de error. El ✅ y el ❌ los pone contabilidad/t6Act4.js.
+ * hecho o la del tipo de error, sin emoji (lote 6d): el veredicto es el estado
+ * de la elección, no el texto (contabilidad/t6Act4.js).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -24,6 +25,8 @@ export const T6_ACT4 = {
   /* Decisión de Sakuta: media, 25 FP. */
   dificultad: "medio",
   fpBase: 25,
+  /* Lote 6c (encabezado compacto, objetivo del kit en una oración). PARA SHOKO: texto nuevo. */
+  objetivo: "Decidir qué cuenta se debita en cada hecho de las cuentas por cobrar y de su provisión.",
   consigna: "Lee el hecho y elige qué cuenta se debita.",
   nota: "Cada hecho se anota en los libros de la empresa que vende, cobra o castiga.",
   regla: "Se debita una cuenta de activo cuando sube, el gasto cuando se anota y la provisión cuando baja.",

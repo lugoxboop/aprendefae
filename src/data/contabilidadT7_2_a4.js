@@ -237,31 +237,48 @@ const QUE_CAMBIA = {
   acierto: { texto: "Exacto. Cada venta sacó lo último que había ese día. Por eso quedan unidades de dos fechas.", pie: PIE_CAMBIA },
 };
 
-/* P6 · el cierre, solo con los nombres de cuenta: los montos son de X2 o dependen del 33 %. */
+/*
+ * P6 · el cierre, REHECHO POR C1 (Near, t7-2-a4-el-cierre-c1.md; Mello lo pasa
+ * en auditoria-mello-el-cierre-y-fob-cif-cyf.md, sección 1). El párrafo que
+ * daba la respuesta sale: arriba va la lista de los cinco cierres del
+ * periódico (p. 225), el estudiante toca los que le sobran a San Calixto en
+ * el permanente y pulsa «Comprobar». Solución: el inventario inicial, el
+ * final y Compras. Al acertar, o en el 2.º error, los tres salen y entra
+ * «Cerrar Costo de mercancía vendida» con la marca «nuevo»; la lista del
+ * permanente (p. 243) se queda a la vista (C8). Sin montos (X2).
+ *
+ * Escalera (C2): en el 1.er error, si marcó una fila que no sobra, la retro
+ * de esa fila (si marcó las dos, la de la primera en la lista); si solo le
+ * faltó marcar, la pista. En el 2.º, la respuesta con su porqué. Los
+ * mensajes van en `mensajes`, no en `pista`: la pregunta de opción del lote 2
+ * («¿Qué asientos del cierre no hacen falta…?») ya no existe.
+ *
+ * La pinta LasCapasQueLaVentaCorta.jsx (pantalla 7 de «Las capas que la
+ * venta corta»), no PantallasT7_2.jsx.
+ */
 const PIE_CIERRE = "Basado en el libro, pp. 225 y 243";
-const MISMO_EN_LOS_DOS = "Ese sí se hace en los dos sistemas.";
 const EL_CIERRE = {
   id: "el-cierre",
-  pista: "Piensa qué cuenta ya está al día cuando llega el cierre en el permanente.",
-  tipo: "eleccion",
-  parrafos: [
-    "En el permanente, el cierre tiene dos asientos menos. No hay que quitar el inventario inicial ni colocar el final: la cuenta ya está al día.",
-    "En su lugar, la cuenta Costo de mercancía vendida se cierra contra Ganancias y pérdidas.",
+  tipo: "cierre-que-sobra",
+  texto: "Así cierra el periódico. San Calixto usa el permanente: toca los asientos que le sobran.",
+  encabezado: "Cierre contra Ganancias y pérdidas",
+  /* Los cinco cierres del periódico, en el orden de Near (T7-1 A4). `sobra`: no va en el permanente. */
+  filas: [
+    { id: "inicial", texto: "Quitar el inventario inicial", sobra: true },
+    { id: "final", texto: "Colocar el inventario final", sobra: true },
+    { id: "ventas", texto: "Cerrar Ingresos por ventas", sobra: false, retro: "Ingresos por ventas existe en los dos sistemas, y al cierre se cierra igual en los dos." },
+    { id: "compras", texto: "Cerrar Compras", sobra: true },
+    { id: "gastos", texto: "Cerrar Gastos de administración y ventas", sobra: false, retro: "Los gastos no dependen del sistema de inventario: se cierran igual en el periódico y en el permanente." },
   ],
-  cierre: [
-    "Ingresos por ventas → Ganancias y pérdidas",
-    "Ganancias y pérdidas → Costo de mercancía vendida",
-    "Ganancias y pérdidas → Gastos de administración y ventas",
-  ],
-  pregunta: "¿Qué asientos del cierre no hacen falta en el permanente?",
-  opciones: [
-    { id: "inicial-y-final", texto: "Los de quitar el inventario inicial y colocar el final.", correcta: true },
-    { id: "ingresos", texto: "El de cerrar Ingresos por ventas.", correcta: false, devolucion: MISMO_EN_LOS_DOS },
-    { id: "gastos", texto: "El de cerrar los gastos.", correcta: false, devolucion: MISMO_EN_LOS_DOS },
-  ],
+  /* La fila que entra al resolver, en el lugar de la de Compras: la lista del permanente queda ventas · costo · gastos. */
+  entra: { id: "cmv", texto: "Cerrar Costo de mercancía vendida", marca: "nuevo", despuesDe: "ventas" },
+  boton: "Comprobar",
+  mensajes: {
+    pista: "Piensa qué cuenta ya está al día cuando llega el cierre, y a qué cuenta fueron las compras.",
+    respuesta: "Sobran los del inventario y el de Compras. Inventario de mercancías ya está al día y recibió las compras.",
+    acierto: "Así es: Inventario de mercancías ya está al día y recibió las compras. En su lugar entra un cierre nuevo.",
+  },
   pie: PIE_CIERRE,
-  error: { pie: PIE_CIERRE },
-  acierto: { texto: "Así es. En el permanente, Inventario de mercancías ya está al día cuando llega el cierre.", pie: PIE_CIERRE },
 };
 
 const RESUMEN = {
@@ -270,7 +287,8 @@ const RESUMEN = {
   lista: [
     "Con PEPS, el permanente deja el mismo inventario final que el periódico.",
     "Con UEPS y con el promedio cambia, porque importan las fechas de las ventas.",
-    "El cierre del permanente no lleva los asientos del inventario inicial y final.",
+    /* La línea de Near que Mello acepta (auditoría, sección 1): la de antes omitía Compras. */
+    "El cierre del permanente no lleva los asientos del inventario ni el de Compras, y cierra Costo de mercancía vendida.",
   ],
   siguiente: "Siguiente: «Fletes en permanente».",
   pie: "Basado en el libro, pp. 222 y 238-243",

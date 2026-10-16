@@ -3,9 +3,13 @@ import { barajar } from "../../../../utils/barajar.js";
 import { porcentaje } from "../../../../data/politicaFiscal.js";
 import { pesos } from "../../../../data/contabilidad.js";
 import { FAE } from "../../../../theme.js";
-import { Opcion, Opciones, Retro, Pulsos, Cierre, Enunciado } from "../../corazon/juego.jsx";
-import { Avanzar, TEXTO_CIERRE } from "../../bloques/marcos.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { Opciones, Cierre, Enunciado } from "../../corazon/juego.jsx";
+/* E4 (hoja de fusiones de Mai): la opción de la célula, con el contrato de la compartida y sus pastillas (lote 6d). */
+import { OpcionE4 as Opcion } from "./MarcasE4.jsx";
+import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
+import { Responder } from "../piezas.jsx";
+import { Mensaje, RegionViva, IconoCheck, IconoX, botonDeAvance, CSS_B5H, CLASE_B5H, ACIERTO_MENSAJE, LECTOR_INCORRECTO } from "./Devolucion.jsx";
+import EncabezadoCompacto from "./EncabezadoCompacto.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { RotuloSimulado, PieDeFuente } from "../tema6/FuentesT6A5.jsx";
 import { useReducido } from "../tema3/DosLineas.jsx";
@@ -13,8 +17,8 @@ import { useReducido } from "../tema3/DosLineas.jsx";
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * CASILLAS EN ORDEN — el patrón de «La Escalera del Encaje», generalizado
- * dentro de la Célula B (b5-t6-a5 «La cuenta de la provisión» y b5-t6-a6
- * «Provisión por edades»).
+ * dentro de la Célula B (b5-t6-a6 «Provisión por edades»; lo usaba también
+ * b5-t6-a5, que en el lote 6b se fundió en a2).
  *
  * El original (EscaleraDelEncaje, en maquinas/fabricaDelDinero.jsx) vive en
  * Macroeconomía y está atado a su escalera; no se toca. Esta copia hace lo
@@ -32,8 +36,7 @@ import { useReducido } from "../tema3/DosLineas.jsx";
  *     resuelto;
  *   · un visual propio, si la actividad lo trae (`visual: { Componente,
  *     anuncio, enDemo? }`): va encima de la casilla y hace de registro
- *     (b5-t6-a5, la cuenta que se llena; b5-t6-a6, los cajones del tiempo,
- *     con su tabla, su rótulo y sus pies);
+ *     (b5-t6-a6, los cajones del tiempo, con su tabla, su rótulo y sus pies);
  *   · las opciones, en una columna; al pasar de casilla, la página se mueve
  *     para que se vean la casilla, el rótulo y el renglón encendido;
  *   · pct = aciertos / casillas × 100, y el texto de cierre.
@@ -49,15 +52,20 @@ import { useReducido } from "../tema3/DosLineas.jsx";
  * Una opción con tipo null es la correcta. En el registro, cada casilla se
  * nombra con la etiqueta del contador y su número («Casilla 3»): ningún texto
  * nuevo.
+ *
+ * LOTE 6d (estándar único de Hacer): la elegida queda «Correcto» o «No va
+ * aquí»; la correcta no elegida, «Iba aquí» (un intento: se revela). El
+ * bloque de mensaje toma el veredicto del estado de la opción (tipo null),
+ * no del texto; el registro marca con Check y X de lucide. Avance: el
+ * Responder compartido, «Siguiente casilla» y, al final, «Ver mi resumen».
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 const SECUNDARIO = "#A8B6C8";
-const BORDE = "rgba(248,249,250,0.14)";
+/* Lote 6d: la regla va directo sobre el Panel, sin tarjeta propia. */
 const ESTILO_REGLA = {
-  margin: "0 0 12px", padding: "10px 13px", borderRadius: "12px",
+  margin: "0 0 12px", padding: 0,
   fontSize: "13.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.86)",
-  background: "rgba(248,249,250,0.05)", border: `1px solid ${BORDE}`,
 };
 const PIE = { display: "block", margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px", color: SECUNDARIO };
 
@@ -152,15 +160,24 @@ export default function CasillasEnOrden({
     );
   }
 
-  const retro = elegida && elegida.tipo ? `❌ ${config.errores[elegida.tipo]}` : null;
+  /* El veredicto es el estado (tipo null = la correcta), no el texto. El acierto aún no trae texto de contenido: «Correcto.» solo. */
+  const okCasilla = Boolean(elegida) && elegida.tipo === null;
+  const retro = elegida && elegida.tipo ? config.errores[elegida.tipo] : null;
   /* El registro: cada casilla ya respondida, con su valor correcto y si se acertó. */
   const resueltas = casillas.slice(0, n + (elegida ? 1 : 0));
   /* El visual propio se ve en el juego; en «Así se juega», solo si lo pide (`enDemo`: a6 muestra su regla). */
   const conVisual = config.visual && (!modoDemo || config.visual.enDemo);
+  /* Lote 6c (b5-t6-a6, casillas 1 a 3): las opciones son el visual (los cajones del eje), y la lista sale. */
+  const opcionesEnVisual = Boolean(conVisual && !modoDemo && config.visual.opciones?.(actual));
+  const eleccion = opcionesEnVisual ? { elegida, elegir: elegida ? null : responder } : null;
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      {!modoDemo && <Encabezado consigna={config.consigna} onComoSeJuega={onComoSeJuega} />}
+      <style>{CSS_B5H}</style>
+      <div className={CLASE_B5H}>
+      {/* Lote 6c: el encabezado compacto de la célula; la consigna y los pasos, plegados bajo «¿Cómo se juega?». */}
+      {!modoDemo && <EncabezadoCompacto objetivo={config.objetivo} consigna={config.consigna} pasos={config.reglas ?? []}
+        contador={`${config.etiqueta} ${n + 1} de ${total}`} />}
       {config.rotuloSimulado && <div style={{ margin: "0 0 10px" }}><RotuloSimulado texto={config.rotuloSimulado} /></div>}
       {config.regla && <p data-regla style={ESTILO_REGLA}>{config.regla}</p>}
       {config.nota && (
@@ -169,21 +186,17 @@ export default function CasillasEnOrden({
           {config.nota.pie && <span style={PIE}><PieDeFuente texto={config.nota.pie} /></span>}
         </p>
       )}
+
+      {/* Con un visual propio (b5-t6-a6: los cajones del tiempo), el visual es el registro. */}
+      {conVisual && (
+        <config.visual.Componente respondidas={resueltas.length} abierta={elegida ? null : n} reducido={reducido} modoDemo={modoDemo} eleccion={eleccion}
+          anuncio={elegida && !modoDemo ? config.visual.anuncio(n) : ""} />
+      )}
+      {/* Lote 6c (B1): el punto de partida, debajo de la figura. */}
       {!modoDemo && config.partida && (
         <p data-partida style={{ margin: "0 0 12px", padding: "10px 13px", borderRadius: "12px", background: "rgba(184,196,212,0.13)", fontSize: "13.5px", lineHeight: 1.5, color: FAE.text }}>
           {config.partida}
         </p>
-      )}
-      {!modoDemo && (
-        <div style={{ marginBottom: "12px" }}>
-          <Pulsos total={total} hechos={n + (elegida ? 1 : 0)} enCurso={n + 1} etiqueta={config.etiqueta} />
-        </div>
-      )}
-
-      {/* Con un visual propio (b5-t6-a5: la cuenta que se llena), el visual es el registro. */}
-      {conVisual && (
-        <config.visual.Componente respondidas={resueltas.length} abierta={elegida ? null : n} reducido={reducido} modoDemo={modoDemo}
-          anuncio={elegida && !modoDemo ? config.visual.anuncio(n) : ""} />
       )}
       {resueltas.length > 0 && !(config.visual && !modoDemo) && (
         <ol data-registro style={{ margin: "0 0 12px", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -193,7 +206,9 @@ export default function CasillasEnOrden({
               <li key={c.id} data-resuelta={c.id} data-acierto={bien ? "si" : "no"} style={{ display: "flex", justifyContent: "space-between", gap: "10px", fontSize: "13px", lineHeight: 1.4, color: SECUNDARIO }}>
                 <span>{`${config.etiqueta} ${k + 1}`}</span>
                 <span style={{ color: FAE.text, whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
-                  {textoDe(c.opciones.find((o) => o.tipo === null))} {bien ? "✓" : "✗"}
+                  {textoDe(c.opciones.find((o) => o.tipo === null))}
+                  <span style={{ display: "inline-flex", verticalAlign: "-3px", marginLeft: "4px" }}>{bien ? <IconoCheck /> : <IconoX />}</span>
+                  <span style={SOLO_LECTOR}>{` ${bien ? ACIERTO_MENSAJE : LECTOR_INCORRECTO}`}</span>
                 </span>
               </li>
             );
@@ -206,7 +221,7 @@ export default function CasillasEnOrden({
         <Enunciado acento={acento}>{actual.enunciado}</Enunciado>
       </div>
       {/* En una columna (hoja de Mai): en fila de tres, a 320 quedan 61 px por opción y «$2.506.200» mide 83. */}
-      <Opciones columnas="minmax(0, 1fr)">
+      {!opcionesEnVisual && <Opciones columnas="minmax(0, 1fr)">
         {orden[n].map((op) => (
           <Opcion
             key={claveDe(op)}
@@ -218,16 +233,17 @@ export default function CasillasEnOrden({
             <span data-opcion={claveDe(op)}>{textoDe(op)}</span>
           </Opcion>
         ))}
-      </Opciones>
+      </Opciones>}
       </div>
-      <Retro texto={retro} />
+      <RegionViva>{elegida && <Mensaje ok={okCasilla} texto={retro} />}</RegionViva>
       {ejemplo?.resolucion && elegida && (
         <p data-resolucion style={{ margin: "12px 0 0", padding: "11px 13px", borderRadius: "12px", background: "rgba(184,196,212,0.13)", fontSize: "15px", lineHeight: "22px", color: FAE.text }}>
           {ejemplo.resolucion}
         </p>
       )}
-      {elegida && !modoDemo && <Avanzar onClick={avanzar}>{n + 1 === total ? "Ver resultado" : "Siguiente"}</Avanzar>}
+      {elegida && !modoDemo && <div data-boton-avanzar><Responder onClick={avanzar}>{botonDeAvance(config.etiqueta, n + 1 === total)}</Responder></div>}
       {!modoDemo && <p style={SOLO_LECTOR}>{config.alt}</p>}
+      </div>
     </Marco>
   );
 }

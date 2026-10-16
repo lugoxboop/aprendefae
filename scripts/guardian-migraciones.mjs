@@ -71,6 +71,67 @@ const DIR = join(RAIZ, "supabase", "migrations");
    esquema a propósito. Se escribe entera, en una línea de comentario. */
 export const MARCA_ESQUEMA = "GUARDIAN: cambio de esquema a proposito";
 
+/*
+ * La marca que una célula escribe cuando su migración retira actividades.
+ *
+ * POR QUÉ EXISTE. El guardián rechaza `update` en el rango de una célula, y con
+ * razón: un update suelto puede reescribir cualquier cosa. Pero hay UN update
+ * que no puede hacer daño y que las células necesitan a diario desde que Mateo
+ * les dejó retirar y fusionar actividades de Contabilidad: el retiro blando,
+ * `set retirada = true`. No borra filas, no toca tablas de estudiantes
+ * —fp_history queda igual—, es idempotente y se deshace con un `false`.
+ *
+ * Sin esta puerta, dos células se quedaron paradas el mismo día (#281 de B y
+ * #269 de C) esperando que el coordinador les escribiera una línea de SQL en su
+ * rango. Y la alternativa que me pedían —prestarles la marca de esquema— habría
+ * abierto la puerta de verdad: con ella pasa cualquier `delete` o `alter`.
+ *
+ * LO QUE ESTA PUERTA NO ABRE. Solo pasa el update que coincide EXACTAMENTE con
+ * RETIRO_BLANDO: la tabla del catálogo, el único campo `retirada`, a `true`, con
+ * `where activity_id in (...)`. Un update que ponga otro campo, que toque otra
+ * tabla, o un `delete`, `alter`, `drop`, `truncate`, `grant` o `revoke` siguen
+ * siendo del coordinador. Y el archivo tiene que decirlo con la marca, para que
+ * un retiro se pueda encontrar con un grep y nadie lo haga sin querer.
+ */
+export const MARCA_RETIRO = "GUARDIAN: retiro blando de catalogo";
+
+/*
+ * La forma del retiro blando, copiada de la 0015 y de la 0115, que es la forma
+ * que ya lee catalogo.test.mjs para saber qué está retirado. Un solo campo, un
+ * solo valor, y la lista de ids.
+ */
+const RETIRO_BLANDO = /^\s*update\s+(?:public\.)?actividad_catalogo\s+set\s+retirada\s*=\s*true\s+where\s+activity_id\s+in\s*\([^)]*\)\s*$/i;
+
+/*
+ * ¿Todo lo que hace este SQL es retirar actividades? Se parte por `;` y se
+ * exige que CADA sentencia con contenido sea un retiro blando. Basta una que no
+ * lo sea para que no cuente: así una migración no puede colar un `delete`
+ * detrás de un retiro legítimo.
+ */
+/*
+ * Los ids que un SQL retira en blando. Sirve para no exigirle a la aplicación
+ * que declare una actividad que la propuesta está retirando: ese es justo el
+ * caso de una pieza que se funde en otra o que sale de la lista.
+ */
+export function idsRetirados(sql) {
+  const limpio = sinComentarios(sql);
+  const ids = new Set();
+  const re = /update\s+(?:public\.)?actividad_catalogo\s+set\s+retirada\s*=\s*true\s+where\s+activity_id\s+in\s*\(([^)]*)\)/gi;
+  let m;
+  while ((m = re.exec(limpio)) !== null) {
+    for (const trozo of m[1].split(",")) {
+      const id = trozo.trim().replace(/^'|'$/g, "").trim();
+      if (id) ids.add(id);
+    }
+  }
+  return ids;
+}
+
+export function soloRetiroBlando(sql) {
+  const sentencias = sinComentarios(sql).split(";").map((t) => t.trim()).filter((t) => t.length > 0);
+  return sentencias.length > 0 && sentencias.every((t) => RETIRO_BLANDO.test(t) || !DESTRUCTIVOS.test(t));
+}
+
 /* Los rangos, copiados del mapa de choques de nocturno.md. Si cambian allí,
    cambian aquí: son la misma decisión escrita dos veces, y la prueba
    guardian-migraciones.test.mjs comprueba que no se separen. */
@@ -156,8 +217,31 @@ export function catalogoDelCliente(SUBJECTS) {
  * cliente, y devuelve la lista de reproches. Pura a propósito, para que la
  * prueba pueda darle casos inventados sin tocar el disco.
  */
-export function revisar(archivos, catalogoCliente) {
+export function revisar(archivos, catalogoCliente, retiradasPrevias = new Set()) {
   const reproches = [];
+
+  /*
+   * LO QUE LA PROPUESTA RETIRA NO SE LE EXIGE A LA APLICACIÓN.
+   *
+   * La comprobación 3 compara cada fila insertada con `subjects.js`, y está
+   * para cazar un id mal escrito. Pero hay un caso legítimo en que el id no
+   * está declarado y no hay ningún error: la actividad SE RETIRA. Pasó en el
+   * mismo día en dos células —D funde H5 en H4 y H6 en H7, y sus migraciones
+   * 0201, 0204 y 0205 entran a main por primera vez insertando piezas que la
+   * aplicación ya no declara—.
+   *
+   * Sin esto, la salida era: «escribe una migración que borre lo que otra
+   * migración de la misma propuesta acaba de insertar», o peor, «deja la
+   * actividad declarada aunque no exista». Las dos son rodeos.
+   *
+   * Se juntan los retiros de TODA la propuesta antes de revisar archivo por
+   * archivo, porque el retiro suele ir en una migración POSTERIOR a la que
+   * inserta, y revisando en orden el guardián se quejaría de algo que tres
+   * archivos más abajo queda resuelto. Y se suman los retiros que ya están en
+   * el repositorio, que el programa le pasa.
+   */
+  const retiradas = new Set(retiradasPrevias);
+  for (const { sql } of archivos) for (const id of idsRetirados(sql)) retiradas.add(id);
   for (const { nombre, sql } of archivos) {
     const numero = numeroDe(nombre);
     if (numero === null) {
@@ -173,31 +257,78 @@ export function revisar(archivos, catalogoCliente) {
     const limpio = sinUpsert(sinComentarios(sql));
     const destructivo = DESTRUCTIVOS.exec(limpio);
     if (destructivo) {
-      const permitido = rango.duenio === "coordinador" && sql.includes(MARCA_ESQUEMA);
-      if (!permitido) {
-        reproches.push(
-          `${nombre}: trae «${destructivo[0]}» fuera de un comentario, y es del rango de ${rango.duenio}. ` +
-          `Una migración de célula solo añade filas. Si de verdad tiene que cambiar el esquema, la escribe el coordinador en su rango y lo dice con la marca «${MARCA_ESQUEMA}».`
-        );
+      const deEsquema = rango.duenio === "coordinador" && sql.includes(MARCA_ESQUEMA);
+      /* El retiro blando lo puede hacer cualquier rango, y solo él. */
+      const deRetiro = sql.includes(MARCA_RETIRO) && soloRetiroBlando(sql);
+      if (!deEsquema && !deRetiro) {
+        /* Si trae la marca de retiro pero no tiene la forma, el reproche lo dice:
+           lo contrario manda a la célula a buscar un permiso que ya tiene. */
+        if (sql.includes(MARCA_RETIRO)) {
+          reproches.push(
+            `${nombre}: trae la marca «${MARCA_RETIRO}» pero no es solo un retiro blando. ` +
+            `El retiro blando es «update public.actividad_catalogo set retirada = true where activity_id in (...)», ` +
+            `una sentencia por retiro y nada más destructivo en el archivo. Trae «${destructivo[0]}». ` +
+            `Si de verdad hace falta, va en el rango del coordinador con la marca «${MARCA_ESQUEMA}».`
+          );
+        } else {
+          reproches.push(
+            `${nombre}: trae «${destructivo[0]}» fuera de un comentario, y es del rango de ${rango.duenio}. ` +
+            `Una migración de célula solo añade filas, o retira con «${MARCA_RETIRO}». ` +
+            `Si de verdad tiene que cambiar el esquema, la escribe el coordinador en su rango y lo dice con la marca «${MARCA_ESQUEMA}».`
+          );
+        }
       }
     }
 
-    for (const fila of filasDeCatalogo(sql)) {
-      const esperada = catalogoCliente.get(fila.activity_id);
-      if (!esperada) {
+  }
+
+  /*
+   * LA FILA QUE SE COMPARA ES LA ÚLTIMA, NO CADA UNA.
+   *
+   * Esto comparaba cada archivo por separado contra subjects.js, y eso deja en
+   * rojo una propuesta correcta. El caso, de la Célula D: la 0203 dio de alta
+   * «t4-el-arqueo-de-rosa» en medio con 25 FP, y su 0209 la sube a difícil con
+   * 50 dentro del MISMO PR, junto al código que la declara así. El guardián
+   * leía la 0203, veía medio contra difícil y 25 contra 50, y reprochaba dos
+   * veces una migración que la siguiente corrige tres archivos más abajo.
+   *
+   * La base no funciona así: las migraciones corren en orden y lo que queda es
+   * el ÚLTIMO estado de cada id. Así que eso es lo que se compara, y es también
+   * lo que ya hacía catalogo.test.mjs —dos comprobaciones del mismo contrato
+   * que no se ponían de acuerdo—.
+   *
+   * Se ordena por número de migración y no por el orden en que llegan los
+   * archivos: `git diff --name-only` no promete orden numérico, y con dos
+   * escrituras del mismo id el orden ES la respuesta.
+   *
+   * Lo que NO se afloja: un id que la aplicación no declara sigue reprochado
+   * —en el archivo donde quedó su última fila—, salvo que la propuesta lo
+   * retire. Se gana un falso rojo menos, no una comprobación menos.
+   */
+  const porNumero = [...archivos].sort((a, b) => (numeroDe(a.nombre) ?? 0) - (numeroDe(b.nombre) ?? 0));
+  const ultimaFila = new Map();
+  for (const { nombre, sql } of porNumero) {
+    for (const fila of filasDeCatalogo(sql)) ultimaFila.set(fila.activity_id, { nombre, fila });
+  }
+
+  for (const { nombre, fila } of ultimaFila.values()) {
+    /* Se retira: ni se le exige declaración ni se le comparan los números. */
+    if (retiradas.has(fila.activity_id)) continue;
+    const esperada = catalogoCliente.get(fila.activity_id);
+    if (!esperada) {
+      reproches.push(
+        `${nombre}: inserta «${fila.activity_id}», que la aplicación no declara en subjects.js. ` +
+        `Una fila sin actividad no hace daño, pero casi siempre significa un id mal escrito.`
+      );
+      continue;
+    }
+    for (const campo of ["subject_id", "topic_id", "modalidad", "dificultad", "fp_base"]) {
+      if (String(fila[campo]) !== String(esperada[campo])) {
         reproches.push(
-          `${nombre}: inserta «${fila.activity_id}», que la aplicación no declara en subjects.js. ` +
-          `Una fila sin actividad no hace daño, pero casi siempre significa un id mal escrito.`
+          `${nombre}: «${fila.activity_id}» queda en ${campo}=${fila[campo]} y la aplicación declara ${esperada[campo]}. ` +
+          `Es la última fila del id en esta propuesta, así que es lo que queda en la base. ` +
+          `Si entra así, un estudiante cobra lo que no es.`
         );
-        continue;
-      }
-      for (const campo of ["subject_id", "topic_id", "modalidad", "dificultad", "fp_base"]) {
-        if (String(fila[campo]) !== String(esperada[campo])) {
-          reproches.push(
-            `${nombre}: «${fila.activity_id}» dice ${campo}=${fila[campo]} y la aplicación declara ${esperada[campo]}. ` +
-            `Si entra así, un estudiante cobra lo que no es.`
-          );
-        }
       }
     }
   }
@@ -221,6 +352,11 @@ export function leerMigraciones() {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const { SUBJECTS } = await import("../src/data/subjects.js");
   const base = process.argv[2];
+  /* Los retiros que YA están en el repositorio: una pieza retirada hace tres
+     semanas sigue retirada hoy, y su migración de alta no tiene que volver a
+     justificarse. */
+  const retiradasPrevias = new Set();
+  for (const { sql } of leerMigraciones()) for (const id of idsRetirados(sql)) retiradasPrevias.add(id);
   let archivos;
 
   if (base) {
@@ -246,7 +382,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
   }
 
-  const reproches = revisar(archivos, catalogoDelCliente(SUBJECTS));
+  const reproches = revisar(archivos, catalogoDelCliente(SUBJECTS), retiradasPrevias);
   if (reproches.length) {
     console.error(`\nEl guardián rechaza ${reproches.length} cosa(s):\n`);
     for (const r of reproches) console.error("  · " + r);

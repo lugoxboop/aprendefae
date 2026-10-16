@@ -52,7 +52,15 @@ function cargarGsi() {
   });
 }
 
-export default function GoogleSignInButton({ size = "large", adaptable = false }) {
+/*
+ * `fondo`: el relleno del botón de texto de respaldo. Por defecto, ninguno: en
+ * un diálogo el botón se apoya en el panel que lo contiene. Pero el control de
+ * cuenta flota sobre el contenido (position: fixed), y un botón sin relleno
+ * deja leer a su través lo que pase por debajo: con `fondo` se pinta sólido y
+ * TAPA el texto en vez de mezclarse con él. El botón de Google en sí
+ * (filled_black) ya es opaco.
+ */
+export default function GoogleSignInButton({ size = "large", adaptable = false, fondo = "transparent" }) {
   const ancho = useRef(null);
   const icono = useRef(null);
   const [modo, setModo] = useState("cargando"); // cargando | gsi | fallback
@@ -137,7 +145,7 @@ export default function GoogleSignInButton({ size = "large", adaptable = false }
             fontSize: "14px",
             fontWeight: 600,
             color: FAE.text,
-            background: "transparent",
+            background: fondo,
             border: "1px solid rgba(248,249,250,0.28)",
             borderRadius: "999px",
             padding: "10px 18px",

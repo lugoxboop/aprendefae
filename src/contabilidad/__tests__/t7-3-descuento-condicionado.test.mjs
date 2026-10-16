@@ -2,163 +2,217 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { conCorreccionesDeMello } from "./correccionesMello.mjs";
+import { seccion, compararDatos, recorrer, prepararDom, CONDICION } from "./t7-3-recorte.mjs";
+import { CONDICIONES as C7, CORRECCIONES_T73, MELLO_T73, NEAR_T73, aplicarAlRecorte, palabrasAlAcertar } from "./correccionesMelloAciertos.mjs";
+import { CUAL_LE_TOCA as CLT, SOBRE_QUE_MELLO as SQ, FIGURA_ANTES, FILA_FIGURA_NEAR, TABLA_NEAR, NEAR_CLT, MELLO_OBLIGATORIA, MELLO_PARA_MISA, palabrasNear } from "./correccionesMelloCualLeToca.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T7-3 · A3 «El descuento condicionado» (Célula C) · Aprender.
+ * T7-3 · A3 «El descuento condicionado» (Célula C) · Aprender · RECORTE.
  *
- *   · cada texto visible de la v1 está en los datos, letra por letra, y
- *     nada más; la pantalla 5, con sus dos preguntas, va en dos pantallas en
- *     el mismo orden
- *   · las cifras de H-3 se recalculan desde la lista, el 5 %, el 15 % y las
- *     tarifas; los dos asientos cuadran; C7-6 (25 de mayo) y C7-30 (Caja o
- *     Bancos) resueltas
- *   · cada pantalla y cada estado muestran sus textos y su pie
- *   · regla 3: ninguna cifra de X1-X4
- *   · fuera del catálogo de FP; en T7-3, después de A2 (y de H2)
+ *   · cada pantalla, texto, opción, pista, error, acierto y «¿Por qué?» es
+ *     el del recorte de Near (lote1-recortes-t73-v1.md), letra por letra
+ *   · Mello (mello-recortes-v1.md): el acierto visible de P2 trae el gasto;
+ *     y, llegadas por L: las pistas de P2 y P4, y los pies del acierto y del
+ *     error de P4
+ *   · la línea de plazos: lo que lleva cada plazo, solo con el acierto de P1
+ *   · ACIERTOS C7: P1 `condiciones` sale de t7-3-tres-aciertos-c7.md (Near)
+ *     con C-1 de Mello (auditoria-mello-enganche-v6-y-t7-3-aciertos.md, §2):
+ *     «5 %» pasa a «30 %», con su retro y la nueva de «15 %»; la condición
+ *     de 5/20 va en el acierto, a la vista: sin «¿Por qué?» (C7); 60
+ *     palabras al acertar (B2). El rótulo de la línea, «5 % comercial …», y
+ *     los días, «10 · 20 · 30 días»; el resumen conserva su línea
+ *   · la frase de las tarifas, en el pie de P3
+ *   · `cual-le-toca` REHECHA (t7-3-condicionado-cual-le-toca.md, de Near,
+ *     con auditoria-mello-t7-3-cual-le-toca.md encima; el ayudante
+ *     correccionesMelloCualLeToca.mjs): el texto da solo las dos fechas, la
+ *     figura de antes es `PLAZOS_A3(false)` tal cual y la misma franja marca
+ *     el pago al acertar (`PLAZOS_A3(true)`); pista, y desde el 2.º error la
+ *     devolución propia de cada opción. La factura y la frase de los
+ *     $4.488.750 (con la retención) van a `sobre-que`, antes de la pregunta,
+ *     leídas de la auditoría; B2: si con el acierto pasara de 60, el asiento
+ *     iría al resumen (L)
+ *   · las cifras de H-3 se recalculan; regla 3; fuera del catálogo de FP
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
-const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
-for (const [k, v] of Object.entries({
-  window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
-  HTMLElement: w.HTMLElement, Element: w.Element, Node: w.Node, SVGElement: w.SVGElement,
-  Event: w.Event, MouseEvent: w.MouseEvent, KeyboardEvent: w.KeyboardEvent,
-  getComputedStyle: w.getComputedStyle.bind(w), matchMedia: w.matchMedia,
-})) {
-  Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
-}
-globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-
+const w = prepararDom(JSDOM, VirtualConsole);
 const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act;
 const h = React.createElement;
 
 const A = await import("../../data/contabilidadT7_3_a3.js");
-const A1 = await import("../../data/contabilidadT7_3.js");
+const { FRASE_TARIFAS } = await import("../../data/contabilidadT7_3.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
-const { default: PantallasT7_3, cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
+const { default: PantallasT7_3, cifra, textosDeErrorT73 } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
+const CE = await import("../canonEnganche.js");
 const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
 const { PIEZAS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
-const V1 = leer("orquestador/conocimiento/paquetes/t7-3-a3-v1.md");
+const RECORTE = leer("orquestador/conocimiento/paquetes/lote1-recortes-t73-v1.md");
+const MELLO = leer("orquestador/conocimiento/paquetes/mello-recortes-v1.md");
 const P = A.PIEZA_EL_DESCUENTO_CONDICIONADO;
+const S = seccion(RECORTE, P.id);
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
-const citas = (t) => [...t.matchAll(/«([^»]+)»/g)].map((m) => m[1]);
+const s = (id) => S.pantallas.find((x) => x.id === id);
 
+/* Mello, entrega 3: el acierto visible de P2. Gana sobre el recorte. */
+const ACIERTO_MELLO = "Así es: se registra cuando el cliente cumple. Para quien vende es un gasto: recibe menos de lo que facturó.";
+assert.ok(MELLO.includes(`«${ACIERTO_MELLO}»`));
+assert.equal(s("que-es").acierto.texto, "Así es: se registra cuando el cliente cumple.");
+s("que-es").acierto.texto = ACIERTO_MELLO;
 /*
- * El lote 2 de Near: la pista de cada pregunta (primer error) y el anexo (la
- * tercera opción, con su devolución, y el cambio en el texto de una opción
- * correcta). Un texto nuevo de los datos sale de aquí o del paquete de la pieza.
+ * Las pistas de P2 y P4 son las de la auditoría de pistas de Mello
+ * (mello-pistas-distractores-v1.md). Los pies del acierto y del error de P4
+ * llegaron por L con la entrega 6 (no están en un archivo del repositorio).
  */
-const PISTAS_L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-pistas-v1.md"));
-const ANEXO_L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-anexo-v1.md"));
-const sinComillas = (t) => t.trim().replace(/ \|$/, "").replace(/^«/, "").replace(/»$/, "");
-const idEnCelda = (celda) => celda.match(/`([^`]+)`/)[1];
-/* id de pantalla → pista. */
-const L2_PISTAS = new Map((PISTAS_L2.split("\n### ").find((s) => s.startsWith(`${P.id} ·`)) ?? "").split("\n")
-  .filter((l) => /^\| P\d/.test(l)).map((l) => l.split(" | ")).map((c) => [idEnCelda(c[0]), sinComillas(c[2])]));
-/* id de pantalla → la tercera opción del anexo: { texto, devolucion }. */
-const L2_TERCERAS = new Map(ANEXO_L2.split("\n").filter((l) => l.startsWith(`| ${P.id} | `)).map((l) => l.split(" | "))
-  .map((c) => [idEnCelda(c[1]), { texto: c[3].replace(/\*\*/g, ""), devolucion: sinComillas(c[4]) }]));
-/* «Un cambio en el texto de una opción correcta»: [campo, viejo, nuevo]. */
-const L2_CAMBIOS = ANEXO_L2.slice(ANEXO_L2.indexOf("## Un cambio")).split("\n").filter((l) => l.startsWith(`| ${P.id} · `))
-  .map((l) => l.split(" | ").map((x, i) => (i ? sinComillas(x) : x.replace(/^\| /, ""))));
-
-/*
- * La escalera de ayuda (escaleraAyuda.js): el n-ésimo error de una pregunta.
- * Con pista, el 1.º muestra la pista; el 2.º y siguientes, la respuesta y el
- * acierto sin «Así es». Sin pista, la devolución de la opción, como antes.
- */
-const errorEsperado = (p, o, n) => {
-  const correcta = p.opciones.find((x) => x.correcta).texto.replace(/\.$/, "");
-  const esperado = !p.pista ? [o.devolucion] : n === 1 ? [p.pista] : [`La respuesta es «${correcta}».`, p.acierto.texto.replace(/^Así es[.:]\s*/, "")];
-  assert.deepEqual(textosDelError(p, o, n), esperado);
-  return esperado;
+const MELLO_PISTAS = leer("orquestador/conocimiento/paquetes/mello-pistas-distractores-v1.md");
+const PISTAS_MELLO = {
+  "que-es": ["El comercial ya viene restado en la factura. ¿Cuál de los dos ocurre después de facturar?", "Un descuento se registra cuando se sabe cuánto es. ¿Cuándo se sabe cada uno?"],
+  "sobre-que": ["El descuento condicionado no toca el IVA. Y la rebaja comercial ya se restó antes.", "Piensa qué parte de lo que debe Santa Martha es de la mercancía y qué parte es de otra cosa."],
 };
-const FILAS = V1.slice(V1.indexOf("## Pantallas"), V1.indexOf("## Decisiones")).split("\n").filter((l) => /^\| \d/.test(l)).map((l) => l.split(" | ").map((c) => c.replace(/^\| /, "")));
-const fila = (pref) => FILAS.find((f) => f[1].startsWith(pref))[1];
-
-function textosDeDatos() {
-  const t = [];
-  for (const p of P.pantallas) {
-    for (const k of ["objetivo", "pregunta", "siguiente", "pista"]) if (p[k]) t.push(p[k]);
-    t.push(...(p.parrafos ?? []), ...(p.despues ?? []), ...(p.tras ?? []));
-    for (const o of p.opciones ?? []) if (o.devolucion) t.push(o.devolucion);
-    if (p.acierto) t.push(p.acierto.texto, ...(p.acierto.parrafos ?? []), ...(p.acierto.despues ?? []));
-  }
-  return t;
+for (const [id, [viejo, nuevo]] of Object.entries(PISTAS_MELLO)) {
+  assert.equal(s(id).pista, viejo);
+  assert.ok(MELLO_PISTAS.includes(`«${nuevo}»`), `no está en la auditoría de Mello: «${nuevo}»`);
+  s(id).pista = nuevo;
 }
-
-/* ═══════════ 1 · TEXTOS ═══════════ */
-
-test("★★★ cada texto visible de la v1 está en los datos, letra por letra, y nada más", () => {
-  const esperados = [];
-  for (const [, texto] of FILAS) {
-    if (texto.startsWith("Ficha") || /^Cuentas por cobrar|^Caja o Bancos/.test(texto)) continue;
-    /* Las citas de la columna Fuente no se ven; tampoco «xxxx». En la columna Texto, las opciones van sin comillas. */
-    for (const c of citas(texto)) esperados.push(c);
-  }
-  esperados.push(A1.FRASE_TARIFAS);
-  /* El lote 2: cada pregunta con su pista, la de Near, y ninguna más; y la devolución de la tercera opción del anexo. */
-  assert.deepEqual(new Map(P.pantallas.filter((p) => p.pista).map((p) => [p.id, p.pista])), L2_PISTAS);
-  assert.deepEqual([...L2_PISTAS.keys()].sort(), ["condiciones", "cual-le-toca", "que-es", "sobre-que"]);
-  esperados.push(...L2_PISTAS.values(), ...[...L2_TERCERAS.values()].map((t) => t.devolucion));
-  /* Los errores de la v1 que valen para dos opciones aparecen dos veces en los datos. */
-  const datos = textosDeDatos();
-  assert.deepEqual([...new Set(datos)].sort(), [...new Set(esperados)].sort());
-  assert.ok(fila("«En este ejercicio, el IVA").endsWith("Después, la frase de tarifas literal."));
-  const ej = pantalla("ejemplo").despues;
-  assert.equal(ej[ej.indexOf("En este ejercicio, el IVA es del 16 % y la retención del 3,5 %. Las dos se calculan sobre lo facturado.") + 1], A1.FRASE_TARIFAS);
+const PIES_SOBRE_QUE = "Basado en el libro, pp. 252-253";
+/* Aciertos C7: P1, con la tabla final de Near y C-1 de Mello encima. */
+aplicarAlRecorte(s("condiciones"), C7);
+/*
+ * `cual-le-toca` rehecha: Near con Mello (el ayudante). Las líneas al llegar:
+ * el texto, lo que pinta la franja (Mello) y la pregunta. El «¿Por qué?»
+ * plegado es el del recorte: el paquete no lo toca.
+ */
+Object.assign(s("cual-le-toca"), {
+  figura: "la franja de plazos, sin el pago (PLAZOS_A3(false))",
+  lineas: [CLT.texto, CLT.figura.join(" · "), CLT.pregunta],
+  opciones: CLT.opciones.map((o) => o.texto),
+  pista: CLT.pista,
+  errores: CLT.errores,
+  segundoPropio: true,
+  acierto: { texto: CLT.acierto, figura: CLT.figuraAcierto },
+});
+/* `sobre-que`, con la corrección de Mello: la factura (figura) y la frase, antes de la pregunta. */
+Object.assign(s("sobre-que"), {
+  figura: "la factura; en el acierto, el pago del 4 de junio y su asiento",
+  lineas: [SQ.frase, ...s("sobre-que").lineas],
 });
 
-test("★★★ las opciones, sus errores, la ficha y los dos asientos son los de la v1", () => {
-  const ops = (pref) => fila(pref).match(/Opciones: (.+)\.$/)[1].split(" · ");
-  /* «¿Cuál se registra?»: las dos de la v1 y, al final, la tercera del anexo del lote 2, con su devolución. */
-  assert.deepEqual([...L2_TERCERAS.keys()], ["que-es"]);
-  assert.deepEqual(L2_CAMBIOS, []);
-  assert.deepEqual(pantalla("que-es").opciones.map((o) => o.texto), [...ops("«¿Cuál de los dos descuentos"), L2_TERCERAS.get("que-es").texto]);
-  assert.equal(pantalla("que-es").opciones.at(-1).devolucion, L2_TERCERAS.get("que-es").devolucion);
-  assert.equal(pantalla("que-es").opciones.at(-1).correcta, undefined);
-  assert.deepEqual(pantalla("condiciones").opciones.map((o) => o.texto), ops("«Si el cliente paga a los treinta"));
-  assert.deepEqual(pantalla("cual-le-toca").opciones.map((o) => o.texto), ops("«El 4 de junio, Santa Martha paga"));
-  assert.deepEqual(pantalla("sobre-que").opciones.map((o) => o.texto), ops("«¿Sobre qué valor se calcula el 15 %?»"));
-  assert.deepEqual(["que-es", "condiciones", "cual-le-toca", "sobre-que"].map((id) => pantalla(id).opciones.find((o) => o.correcta).texto), ["El condicionado", "Ninguno", "15 %", "$3.990.000"]);
-  /* «Error (15 % o 5 %)»: el mismo texto para las dos. */
-  const e30 = citas(fila("Error (15 % o 5 %)"))[0];
-  assert.deepEqual(pantalla("condiciones").opciones.filter((o) => !o.correcta).map((o) => o.devolucion), [e30, e30]);
-  for (const o of pantalla("sobre-que").opciones.filter((x) => !x.correcta)) assert.equal(o.devolucion, citas(fila(`Error, ${o.texto}:`))[0]);
-  /* La ficha: los cinco datos y el sistema. */
-  const f = fila("Ficha de cinco datos");
-  const datos = f.match(/: (.+?)\. Sistema: (.+)\.$/);
-  const esperada = [...datos[1].split(" · ").map((t) => t.replace(/^(entrega|recibe) /, "")), datos[2]];
-  assert.deepEqual(pantalla("ejemplo").ficha.map((x) => x.texto.toLowerCase()), esperada.map((t) => t.toLowerCase()));
-  assert.deepEqual(pantalla("ejemplo").ficha.map((x) => x.dato), [...A1.PIEZA_EL_DESCUENTO_COMERCIAL.pantallas.find((p) => p.ficha).ficha.map((x) => x.dato), "Sistema"]);
-  /* Los dos asientos: líneas, lados, sumas y pie. */
-  const lineas = (t) => [...t.matchAll(/(?:^|· )([^·]+?) ([\d.]+) (D|H)/g)].map((m) => [m[1].trim(), Number(m[2].replace(/\./g, "")), m[3] === "D" ? A1.DEBE : A1.HABER]);
-  const v1Venta = FILAS.find((f) => f[0] === "4 · Asiento 25 de mayo")[1];
-  const v1Pago = FILAS.find((f) => f[0] === "5 · Asiento 4 de junio")[1];
-  const venta = pantalla("ejemplo").asientos[0];
-  const pago = pantalla("sobre-que").acierto.asientos[0];
-  assert.deepEqual(venta.lineas.map((l) => [l.cuenta, l.monto, l.lado]), lineas(v1Venta.split(". Sumas")[0]));
-  assert.deepEqual(pago.lineas.map((l) => [l.cuenta, l.monto, l.lado]), lineas(v1Pago.split(". Sumas")[0]));
-  assert.deepEqual([venta.fecha, pago.fecha], ["25 de mayo", "4 de junio"]);
-  for (const [as, v1, pie] of [[venta, v1Venta, pantalla("ejemplo").pie], [pago, v1Pago, pantalla("sobre-que").acierto.pie]]) {
-    const s = as.lineas.filter((l) => l.lado === A1.DEBE).reduce((x, l) => x + l.monto, 0);
-    assert.match(v1, new RegExp(`Sumas: ${cifra(s)} = ${cifra(s)}\\. Pie: «${pie}»`));
-  }
-  /* C7-30: «Caja» del libro, como «Caja o Bancos». C7-6: el 25 de mayo. */
-  assert.ok(!JSON.stringify(P).includes('"Caja"'));
-  assert.ok(pantalla("ejemplo").parrafos[0].startsWith("Mira el ejemplo del libro. El 25 de mayo,"));
+/* ═══════════ 1 · DATOS ═══════════ */
+
+test("★★★ pantallas, textos, opciones, pista, errores, acierto y ¿Por qué?: los del recorte con Mello, letra por letra", () => {
+  assert.deepEqual(S.pantallas.map((x) => x.id), ["portada", "condiciones", "que-es", "cual-le-toca", "sobre-que", "resumen"]);
+  compararDatos(P, S);
+  assert.equal(pantalla("portada").objetivo, S.pantallas[0].lineas[0]);
+  assert.deepEqual([pantalla("sobre-que").acierto.pie, pantalla("sobre-que").error.pie], [PIES_SOBRE_QUE, PIES_SOBRE_QUE]);
+  /* Las lecturas «un gasto» y «el ejemplo» se fueron. */
+  assert.equal(pantalla("un-gasto"), undefined);
+  assert.equal(pantalla("ejemplo"), undefined);
 });
 
-test("★★★ las cifras de H-3 se recalculan; los dos asientos cuadran", () => {
+test("★★★ C7 · P1 sin plegado: la condición de 5/20 va en el acierto, a la vista; ninguna pantalla trae «¿Por qué?» a la vista aparte", () => {
+  const p = pantalla("condiciones");
+  assert.equal(p.acierto.porque, undefined);
+  assert.equal(p.acierto.porqueALaVista, undefined);
+  assert.match(p.acierto.texto, /5\/20 es un 5 % si paga a los veinte días/);
+  assert.match(p.acierto.texto, CONDICION);
+  assert.deepEqual(P.pantallas.filter((x) => x.acierto?.porqueALaVista).map((x) => x.id), []);
+});
+
+test("★★★ C-1 de Mello: «30 %» en lugar de «5 %», con su retro; la nueva retro de «15 %»; la correcta, «Ninguno»", () => {
+  /* La fila de Near que se corrige, y las de Mello, letra por letra en la auditoría (el ayudante ya falla si no). */
+  assert.ok(NEAR_T73.includes(CORRECCIONES_T73[0][0]));
+  for (const f of CORRECCIONES_T73[0][1]) assert.ok(MELLO_T73.includes(f));
+  const p = pantalla("condiciones");
+  assert.deepEqual(p.opciones.map((o) => [o.id, o.texto, o.correcta ?? false]), [["quince", "15 %", false], ["treinta", "30 %", false], ["ninguno", "Ninguno", true]]);
+  assert.equal(p.opciones.find((o) => o.id === "treinta").devolucion, C7["Si elige 30 %"].textos[0]);
+  assert.equal(p.opciones.find((o) => o.id === "quince").devolucion, C7["Si elige 15 %"].textos[0]);
+  assert.equal(C7.Opciones.correcta, "Ninguno");
+  /* Ninguna retro dice ya que a los treinta días no hay descuento: queda el comercial. */
+  assert.doesNotMatch(JSON.stringify(p), /ya no hay descuento/);
+  assert.ok(!p.opciones.some((o) => o.texto === "5 %"));
+});
+
+test("★★★ C7 · P1 dice lo de la tabla final, letra por letra; la figura con su rótulo y sus días; B2: 60 al acertar", () => {
+  const p = pantalla("condiciones");
+  assert.deepEqual(p.parrafos, C7.Texto.textos);
+  assert.equal(p.pregunta, C7.Pregunta.textos[0]);
+  assert.equal(p.acierto.texto, C7.Acierto.textos[0]);
+  const f = p.figuras[0];
+  assert.equal(f.titulo, C7["Rótulo de la figura"].textos[0]);
+  assert.equal([10, 20, 30].map(f.rotDia).join(" · "), C7["Rótulo de los días"].textos[0]);
+  assert.deepEqual(f.condiciones.filter((c) => c.dia).map((c) => c.lleva), C7["Figura del acierto"].textos);
+  assert.equal(palabrasAlAcertar(C7), 60);
+  /* El resumen conserva su línea: el paquete solo toca `condiciones`. */
+  const r = pantalla("resumen").figuras[0];
+  assert.equal(r.titulo, "5 % · 15/10 · 5/20 · n/30");
+  assert.deepEqual([10, 20, 30].map(r.rotDia), ["día 10", "día 20", "día 30"]);
+  /* `cual-le-toca` ya no dice «diez días después de la venta»: la rehízo Near. */
+  assert.doesNotMatch(JSON.stringify(pantalla("cual-le-toca")), /después de la venta/);
+});
+
+test("★★★ `cual-le-toca` rehecha: texto aparte de la pregunta, pista, devolución propia de cada mala, acierto y pie, letra por letra (Near)", () => {
+  const p = pantalla("cual-le-toca");
+  assert.deepEqual(p.parrafos, [CLT.texto]);
+  assert.equal(p.pregunta, CLT.pregunta);
+  assert.equal(p.tras, undefined);
+  assert.equal(p.pista, CLT.pista);
+  assert.deepEqual(p.opciones.map((o) => [o.texto, o.correcta ?? false]), CLT.opciones.map((o) => [o.texto, o.correcta]));
+  assert.deepEqual(p.opciones.filter((o) => !o.correcta).map((o) => [o.texto, o.devolucion]), CLT.errores.map((e) => [e.clave, e.texto]));
+  assert.equal(p.errorPropio, true);
+  assert.equal(p.acierto.texto, CLT.acierto);
+  assert.deepEqual([p.pie, p.acierto.pie, p.error.pie], [CLT.pie, CLT.pie, CLT.pie]);
+  /* Y al revés: cada «…» de la tabla de Near está en los datos, salvo las dos figuras (la de antes la corrige Mello; la del acierto es la franja). */
+  const datos = JSON.stringify(p);
+  for (const [campo, f] of Object.entries(TABLA_NEAR).filter(([c]) => !/^Figura/.test(c))) {
+    for (const t of f.textos) assert.ok(datos.includes(JSON.stringify(t).slice(1, -1)), `${campo}: «${t}»`);
+  }
+  assert.deepEqual(Object.keys(TABLA_NEAR), ["Texto", "Figura", "Pregunta", "Opciones", "Pista (1.er error)", "2.º error · «5 %»", "2.º error · «Ninguno»", "Acierto", "Figura del acierto"]);
+  /* La pista no da el número de días; los errores y el acierto, sí. */
+  assert.doesNotMatch(p.pista, /diez|10 días/);
+  /* Near cuenta 55 al acertar y 59 con el error más largo. */
+  assert.equal(palabrasNear(["Texto", "Figura", "Pregunta", "Opciones", "Acierto", "Figura del acierto"]), 55);
+  assert.equal(palabrasNear(["Texto", "Figura", "Pregunta", "Opciones", "2.º error · «5 %»"]), 59);
+});
+
+test("★★★ Mello · la figura de antes de responder es PLAZOS_A3(false) tal cual; al acertar, la misma franja es PLAZOS_A3(true); sin renglones de la factura", () => {
+  assert.ok(NEAR_CLT.includes(FILA_FIGURA_NEAR));
+  assert.match(MELLO_PARA_MISA, /usar `PLAZOS_A3\(false\)` tal cual/);
+  const p = pantalla("cual-le-toca");
+  assert.equal(p.figuras.length, 1);
+  const { alAcertar, ...antes } = p.figuras[0];
+  assert.deepEqual(antes, A.PLAZOS_A3(false));
+  assert.deepEqual({ ...antes, ...alAcertar }, A.PLAZOS_A3(true));
+  assert.equal(p.acierto.figuras, undefined);
+  assert.ok(!p.figuras.some((f) => f.tipo === "renglones"));
+  /* Ni la factura ni lo que debe Santa Martha a la vista: la respuesta de `sobre-que` no se adelanta (C1). */
+  assert.doesNotMatch(JSON.stringify({ ...p, acierto: { ...p.acierto, porque: null } }), /3\.990\.000|4\.488\.750|3990000|4488750/);
+});
+
+test("★★★ Mello · corrección obligatoria: `sobre-que` trae, antes de la pregunta, la factura y la frase de los $4.488.750 con la retención (leídas de la auditoría)", () => {
+  assert.match(MELLO_OBLIGATORIA, /`sobre-que` se queda sin datos/);
+  const p = pantalla("sobre-que");
+  assert.equal(p.figuras.length, 1);
+  const f = p.figuras[0];
+  assert.equal(f.tipo, "renglones");
+  assert.deepEqual(f.filas.map((x) => x.v), [SQ.factura.lista, (SQ.factura.lista * SQ.factura.comercial) / 100, SQ.factura.factura]);
+  assert.deepEqual(f.filas.map((x) => x.op ?? ""), ["", "−", "="]);
+  assert.match(f.filas[1].rot, new RegExp(`comercial ${SQ.factura.comercial} %`));
+  assert.deepEqual(p.tras, [SQ.frase]);
+  assert.equal(p.parrafos, undefined);
+  /* La frase cuadra: 3.990.000 + 638.400 − 139.650. */
+  const C = A.H3_LIBRO;
+  assert.equal(C.factura + C.iva - C.retencion, Number(SQ.frase.match(/\$([\d.]+)/)[1].replace(/\./g, "")));
+  /* B2 (la sonda, más abajo): no pasa de 60 al acertar, así que el asiento se queda en `sobre-que` y el resumen no lo trae. */
+  assert.equal(p.acierto.asientos.length, 1);
+  assert.equal(pantalla("resumen").asientos, undefined);
+});
+
+test("★★★ las cifras de H-3 se recalculan; el pago cuadra", () => {
   const C = A.H3_LIBRO;
   const comercial = (4_200_000 * 5) / 100;
   const f = 4_200_000 - comercial;
@@ -167,15 +221,24 @@ test("★★★ las cifras de H-3 se recalculan; los dos asientos cuadran", () =
   const cond = (f * 15) / 100;
   assert.deepEqual([C.comercial, C.factura, C.iva, C.retencion, C.cliente, C.condicionado, C.pago], [comercial, f, iva, ret, f + iva - ret, cond, f + iva - ret - cond]);
   assert.equal(C.sumasVenta, C.cliente + C.retencion);
-  assert.equal(C.sumasVenta, C.iva + C.factura);
   /* El descuento condicionado no toca el IVA: se calcula sobre lo facturado por la mercancía. */
   assert.notEqual(C.condicionado, (C.cliente * 15) / 100);
+  const as = pantalla("sobre-que").acierto.asientos[0];
+  assert.deepEqual(as.lineas.map((l) => [l.cuenta, l.lado, l.monto]), [
+    ["Caja o Bancos", "debe", C.pago], ["Descuento comercial condicionado", "debe", C.condicionado], ["Cuentas por cobrar – clientes", "haber", C.cliente],
+  ]);
 });
 
 test("★★★ regla 3: ninguna cifra de X1-X4", () => {
   const prohibidas = [800_000, 175_000, 5_625_000, 5_800_000, 6_760_000, 17_460_000, 24_220_000, 1_518_000, 22_702_000, 1_200_000, 262_500, 8_437_500, 643_500, 8_700_000, 2_432_000, 532_000, 384_000, 84_000, 2_700_000, 2_784_000, 17_632_000];
   const numeros = new Set([...JSON.stringify(P).matchAll(/\d[\d.]*/g)].map((m) => Number(m[0].replace(/\./g, ""))));
   for (const x of prohibidas) assert.ok(!numeros.has(x), cifra(x));
+});
+
+test("★★★ la frase de las tarifas va en el pie de P3, la que da el IVA y la retención, y en ningún cuerpo", () => {
+  assert.deepEqual(P.pantallas.filter((p) => p.pieTarifas).map((p) => p.id), ["cual-le-toca"]);
+  assert.match(s("cual-le-toca").porque, /el IVA es de \$638\.400 y la retención, de \$139\.650/);
+  assert.ok(!JSON.stringify(P.pantallas.map(({ pie, ...p }) => p)).includes(FRASE_TARIFAS));
 });
 
 /* ═══════════ 2 · MONTADA ═══════════ */
@@ -191,81 +254,191 @@ const tocar = async (el) => {
   assert.ok(el, "no está el elemento que se quería tocar");
   await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 };
-const boton = (caja, n) => caja.querySelector(`[data-boton="${n}"]`);
-const textos = (caja) => [...caja.querySelectorAll("[data-pieza] [data-texto]")].map((x) => x.textContent);
-const pie = (caja) => caja.querySelector("[data-pie]").textContent;
+const filasDe = (fig) => [...fig.querySelectorAll("[data-renglon]")].map((r) => [r.querySelector(".rg-op").textContent, r.querySelector(".rg-rot").textContent.replace(/^(menos|por|igual a) /, ""), r.querySelector(".rg-v").textContent]);
+const plazos = (c) => {
+  const f = c.querySelector("[data-plazos]");
+  return f && {
+    titulo: f.querySelector("figcaption").textContent,
+    dias: [...f.querySelectorAll("[data-plazo] b")].map((b) => b.textContent),
+    lleva: [...f.querySelectorAll("[data-lleva]")].map((b) => b.textContent),
+    pago: f.querySelector("[data-pago]")?.textContent ?? null,
+    venta: f.querySelector(".pz-ini") !== null,
+  };
+};
+const LINEA = { titulo: "5 % · 15/10 · 5/20 · n/30", dias: ["día 10", "día 20", "día 30"], venta: false };
+/*
+ * La franja de `cual-le-toca` (PLAZOS_A3, sin rótulo de días): cada etiqueta
+ * de abajo, con un espacio entre su parte en negrita y lo que lleva
+ * («Venta 25 may», «10 días 15 %», «30 días: sin descuento»), y el pago.
+ */
+const franjaA3 = (c) => {
+  const f = c.querySelector("[data-plazos]");
+  const limpio = (t) => t.replace(/ /g, " ").replace(/\s+/g, " ").trim();
+  return f && {
+    etiquetas: [...f.querySelectorAll(".pz-abajo .pz-et")].map((x) => limpio([...x.childNodes].map((n) => n.textContent).join(" "))),
+    pago: f.querySelector("[data-pago]") ? limpio(f.querySelector("[data-pago]").textContent) : null,
+  };
+};
+/* Aciertos C7: la línea de P1. */
+const LINEA_P1 = { titulo: "5 % comercial · 15/10 · 5/20 · n/30", dias: ["10", "20", "30 días"], venta: false };
 
-/* Una pregunta: cada error, «Probar otra», y el acierto. */
-async function pregunta(c, p) {
-  assert.deepEqual(textos(c).slice(-1), [p.pregunta]);
-  assert.equal(pie(c), p.pie);
-  /* Los errores siguen la escalera de ayuda: con pista, el 1.º da la pista y los demás, la respuesta con su porqué. */
-  let n = 0;
-  for (const o of p.opciones.filter((x) => !x.correcta)) {
-    await tocar(c.querySelector(`[data-opcion="${o.id}"]`));
-    await tocar(boton(c, "confirmar"));
-    const esperado = errorEsperado(p, o, ++n);
-    assert.deepEqual(textos(c).slice(-esperado.length), esperado);
-    assert.equal(pie(c), p.error.pie);
-    assert.equal(c.querySelector("[data-asiento]:not([data-asiento='25 de mayo'])") === null, true);
-    await tocar(boton(c, "probar-otra"));
-  }
-  await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`));
-  await tocar(boton(c, "confirmar"));
-  assert.equal(pie(c), p.acierto.pie);
-}
-
-test("★★★ se recorre entera: cada pantalla y cada estado con sus textos y su pie", async () => {
+test("★★★ se recorre entera: cada pantalla y cada estado, contra el recorte", async () => {
   const m = await montar();
   try {
-    const c = m.caja;
-    assert.deepEqual(textos(c), [pantalla("portada").objetivo]);
-    await tocar(boton(c, "empezar"));
-    const qe = pantalla("que-es");
-    assert.deepEqual(textos(c), [...qe.parrafos, qe.pregunta]);
-    await pregunta(c, qe);
-    assert.deepEqual(textos(c).slice(-1), [qe.acierto.texto]);
-    await tocar(boton(c, "seguir"));
-    assert.deepEqual(textos(c), pantalla("un-gasto").parrafos);
-    await tocar(boton(c, "seguir"));
-    const co = pantalla("condiciones");
-    assert.deepEqual(textos(c), [...co.parrafos, co.pregunta]);
-    await pregunta(c, co);
-    await tocar(boton(c, "seguir"));
-    const ej = pantalla("ejemplo");
-    assert.deepEqual(textos(c), [...ej.parrafos, ...ej.ficha.map((f) => f.texto), ...ej.despues]);
-    const venta = c.querySelector("[data-asiento]");
-    assert.equal(venta.dataset.asiento, "25 de mayo");
-    assert.deepEqual([...venta.querySelectorAll("[data-suma]")].map((x) => x.textContent), [cifra(A.H3_LIBRO.sumasVenta), cifra(A.H3_LIBRO.sumasVenta)]);
-    assert.equal(pie(c), ej.pie);
-    await tocar(boton(c, "seguir"));
-    const cu = pantalla("cual-le-toca");
-    assert.deepEqual(textos(c), [cu.pregunta]);
-    await pregunta(c, cu);
-    await tocar(boton(c, "seguir"));
-    /* La segunda pregunta: el asiento del pago, solo con el acierto, después de sus dos textos. */
-    const sq = pantalla("sobre-que");
-    assert.deepEqual(textos(c), [sq.pregunta]);
-    await pregunta(c, sq);
-    assert.deepEqual(textos(c).slice(-4), [sq.acierto.texto, ...sq.acierto.parrafos, ...sq.acierto.despues]);
-    const pago = c.querySelector("[data-asiento]");
-    assert.equal(pago.dataset.asiento, "4 de junio");
-    assert.deepEqual([...pago.querySelectorAll("[data-suma]")].map((x) => x.textContent), [cifra(A.H3_LIBRO.cliente), cifra(A.H3_LIBRO.cliente)]);
-    const orden = [...c.querySelectorAll("[data-eleccion] > *")].map((x) => (x.matches("[data-asiento]") ? "asiento" : x.textContent));
-    const i = orden.indexOf("asiento");
-    assert.equal(orden[i - 1], sq.acierto.parrafos[1]);
-    assert.equal(orden[i + 1], sq.acierto.despues[0]);
-    await tocar(boton(c, "seguir"));
-    const r = pantalla("resumen");
-    assert.deepEqual(textos(c), [...r.parrafos, r.siguiente]);
-    assert.equal(pie(c), r.pie);
-    assert.equal(c.querySelector("[data-boton]") === null, true);
+    await recorrer({
+      caja: m.caja, P, S, tocar, w, textosDelError: textosDeErrorT73, tarifas: ["cual-le-toca"], frase: FRASE_TARIFAS,
+      async alLlegar(k, c) {
+        const id = S.pantallas[k].id;
+        if (id === "condiciones") assert.deepEqual(plazos(c), { ...LINEA_P1, lleva: [], pago: null });
+        if (id === "resumen") assert.deepEqual(plazos(c), { ...LINEA, lleva: ["15 %", "5 %", "sin descuento"], pago: "Pago · 4 jun" });
+        if (!["condiciones", "resumen", "cual-le-toca"].includes(id)) assert.equal(plazos(c), null);
+        if (id === "cual-le-toca") {
+          /* La franja tal cual PLAZOS_A3(false): la venta y lo que lleva cada plazo, sin el pago; y nada más. */
+          assert.deepEqual(franjaA3(c), { etiquetas: FIGURA_ANTES, pago: null });
+          assert.equal(c.querySelectorAll("figure, [data-figura]").length, 1);
+          assert.equal(c.querySelector("figure[data-renglones]"), null);
+          assert.doesNotMatch(c.textContent, /3\.990\.000|4\.488\.750/);
+          /* El texto, la figura y la pregunta, en ese orden. */
+          const [t, preg] = [c.querySelector("[data-texto]:not([data-pregunta])"), c.querySelector("[data-pregunta]")];
+          assert.equal(t.textContent, CLT.texto);
+          assert.ok(t.compareDocumentPosition(c.querySelector("[data-plazos]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+          assert.ok(c.querySelector("[data-plazos]").compareDocumentPosition(preg) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+        }
+        if (id === "sobre-que") {
+          /* Mello: la factura y la frase, antes de la pregunta; el pago y el asiento, todavía no. */
+          assert.equal(c.querySelectorAll("figure, [data-figura]").length, 1);
+          const fig = c.querySelector("figure[data-renglones]");
+          assert.equal(fig.querySelector("figcaption").textContent, "Factura de San Calixto");
+          assert.deepEqual(filasDe(fig), [["", "Precio de lista", cifra(SQ.factura.lista)], ["−", `Descuento comercial ${SQ.factura.comercial} %`, "210.000"], ["=", "Valor a facturar", cifra(SQ.factura.factura)]]);
+          const frase = [...c.querySelectorAll("[data-texto]")].find((x) => x.textContent === SQ.frase);
+          assert.ok(fig.compareDocumentPosition(frase) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+          assert.ok(frase.compareDocumentPosition(c.querySelector("[data-pregunta]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+          assert.equal(c.querySelector("[data-asiento]"), null);
+        }
+      },
+      async alFallar(k, c) {
+        const id = S.pantallas[k].id;
+        if (id === "condiciones") assert.deepEqual(plazos(c).lleva, [], "lo que lleva cada plazo daría la respuesta");
+        if (id === "sobre-que") {
+          assert.equal(c.querySelector("[data-asiento]"), null);
+          /* La factura no sale de la pregunta. */
+          assert.ok(c.querySelector("figure[data-renglones]"));
+        }
+        if (id === "cual-le-toca") assert.equal(franjaA3(c).pago, null, "el pago daría la respuesta");
+      },
+      async alAcertar(k, c) {
+        const id = S.pantallas[k].id;
+        if (id === "cual-le-toca") {
+          /* La misma franja crece: marca el pago del día 10, con el fundido; ninguna figura nueva. */
+          assert.equal(c.querySelectorAll("figure, [data-figura]").length, 1);
+          assert.deepEqual(franjaA3(c), { etiquetas: FIGURA_ANTES, pago: "Pago · 4 jun" });
+          assert.ok(c.querySelector("[data-pago]").classList.contains("rg-nuevo"));
+        }
+        if (id === "condiciones") {
+          /* La misma línea, ahora con lo que lleva cada plazo, con el fundido. */
+          assert.equal(c.querySelectorAll("[data-plazos]").length, 1);
+          assert.deepEqual(plazos(c), { ...LINEA_P1, lleva: ["15 %", "5 %", "sin descuento"], pago: null });
+          /* C7: nada plegado en el acierto. */
+          assert.equal(c.querySelector("[data-mensaje] [data-por-que], [data-mensaje] [data-plegado], [data-porque-a-la-vista]"), null);
+          assert.ok([...c.querySelectorAll("[data-lleva]")].every((x) => x.classList.contains("rg-nuevo")));
+        }
+        if (id === "sobre-que") {
+          /* La factura sigue arriba; el pago en renglones, su asiento y, debajo, por qué va al debe. */
+          const [factura, fig] = c.querySelectorAll("figure[data-renglones]");
+          assert.equal(factura.querySelector("figcaption").textContent, "Factura de San Calixto");
+          assert.equal(fig.querySelector("figcaption").textContent, "El pago del 4 de junio");
+          assert.deepEqual(filasDe(fig), [["", "Lo que debía", "4.488.750"], ["−", "Descuento condicionado", "598.500"], ["=", "Paga", "3.890.250"]]);
+          const as = c.querySelector("[data-asiento]");
+          assert.equal(as.dataset.asiento, "sin-fecha");
+          assert.equal(as.querySelector("[data-sumas]"), null);
+          const tras = [...c.querySelectorAll("[data-mensaje] ~ [data-texto]")].map((x) => x.textContent);
+          assert.deepEqual(tras, pantalla("sobre-que").acierto.despues);
+          assert.ok(as.compareDocumentPosition(c.querySelector("[data-mensaje] ~ [data-texto]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+        }
+      },
+    });
   } finally {
     m.desmontar();
   }
 });
 
-/* ═══════════ 3 · CATÁLOGO ═══════════ */
+/* Monta la pieza desde una pantalla y toca, en orden, lo que digan los selectores. */
+const desde = async (id, pasos) => {
+  const caja = document.createElement("div");
+  document.body.appendChild(caja);
+  const raiz = createRoot(caja);
+  const k = P.pantallas.findIndex((x) => x.id === id);
+  await act(async () => { raiz.render(h(PantallasT7_3, { pieza: { ...P, pantallas: P.pantallas.slice(k) }, rotulo: "R" })); });
+  for (const sel of pasos) await tocar(caja.querySelector(sel));
+  return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
+};
+const elegir = (id) => [`[data-opcion="${id}"]`, '[data-boton="confirmar"]'];
+const errorVisto = (c) => [...c.querySelectorAll('[data-mensaje="error"] [data-texto]')].map((x) => x.textContent);
+
+test("★★★ `cual-le-toca` · escalera: el 1.er error da la pista (sea cual sea la mala); desde el 2.º, la devolución propia de la que se tocó; el foco, al mensaje", async () => {
+  const p = pantalla("cual-le-toca");
+  const dev = (id) => p.opciones.find((o) => o.id === id).devolucion;
+  for (const [a, b] of [["cinco", "ninguno"], ["ninguno", "cinco"], ["cinco", "cinco"], ["ninguno", "ninguno"]]) {
+    const m = await desde("cual-le-toca", elegir(a));
+    try {
+      assert.deepEqual(errorVisto(m.caja), [CLT.pista], `${a}: 1.er error`);
+      assert.equal(w.document.activeElement, m.caja.querySelector("[data-mensaje]"));
+      await tocar(m.caja.querySelector('[data-boton="probar-otra"]'));
+      for (const sel of elegir(b)) await tocar(m.caja.querySelector(sel));
+      assert.deepEqual(errorVisto(m.caja), [dev(b)], `${a} → ${b}: 2.º error`);
+      assert.equal(w.document.activeElement, m.caja.querySelector("[data-mensaje]"));
+      /* La franja sigue sin el pago, también con el error. */
+      assert.equal(franjaA3(m.caja).pago, null);
+      /* Un 3.er error: otra vez la devolución propia. */
+      await tocar(m.caja.querySelector('[data-boton="probar-otra"]'));
+      for (const sel of elegir(a)) await tocar(m.caja.querySelector(sel));
+      assert.deepEqual(errorVisto(m.caja), [dev(a)], `${a} → ${b} → ${a}: 3.er error`);
+    } finally {
+      m.desmontar();
+    }
+  }
+  /* Los textos son los del paquete, y la variante vale solo donde la pantalla la pide: `sobre-que` sigue con la escalera común. */
+  assert.deepEqual(CLT.errores.map((e) => e.texto), [dev("cinco"), dev("ninguno")]);
+  const sq = pantalla("sobre-que");
+  assert.deepEqual(textosDeErrorT73(sq, sq.opciones[1], 2), textosDelError(sq, sq.opciones[1], 2));
+  assert.deepEqual(textosDeErrorT73(p, p.opciones[1], 1), [CLT.pista]);
+});
+
+/*
+ * B2 con la sonda (canonEnganche.js, la medida de canon-enganche.test.mjs):
+ * palabras de texto visibles, sin la figura ni lo plegado. Ninguna de las dos
+ * pantallas pasa de 60 en ningún estado: al llegar, con cada error (1.º y
+ * 2.º) y al acertar. Por eso el asiento del acierto de `sobre-que` se queda
+ * ahí (L: si pasara de 60, iría al resumen).
+ */
+test("★★★ B2 (sonda): `cual-le-toca` y `sobre-que` no pasan de 60 palabras de texto visibles en ningún estado, con el asiento en `sobre-que`", async () => {
+  const medidas = {};
+  for (const id of ["cual-le-toca", "sobre-que"]) {
+    const p = pantalla(id);
+    const malas = p.opciones.filter((o) => !o.correcta).map((o) => o.id);
+    const estados = { "al llegar": [], "al acertar": elegir(p.opciones.find((o) => o.correcta).id) };
+    for (const a of malas) {
+      estados[`1.er error ${a}`] = elegir(a);
+      for (const b of malas) estados[`2.º error ${a}→${b}`] = [...elegir(a), '[data-boton="probar-otra"]', ...elegir(b)];
+    }
+    for (const [estado, pasos] of Object.entries(estados)) {
+      const m = await desde(id, pasos);
+      try {
+        medidas[`${id} · ${estado}`] = CE.medirTarjeta(CE.tarjetaDe(m.caja), w).texto;
+      } finally {
+        m.desmontar();
+      }
+    }
+  }
+  assert.deepEqual(Object.entries(medidas).filter(([, n]) => n > CE.UMBRAL_B2_PALABRAS), []);
+  /* Medido el 16 de octubre de 2026: al acertar y el estado más largo. */
+  const mayor = (id) => Math.max(...Object.entries(medidas).filter(([k]) => k.startsWith(id)).map(([, n]) => n));
+  assert.deepEqual([medidas["cual-le-toca · al acertar"], mayor("cual-le-toca")], [45, 51]);
+  assert.deepEqual([medidas["sobre-que · al acertar"], mayor("sobre-que")], [38, 41]);
+  assert.ok(pantalla("sobre-que").acierto.asientos.length === 1);
+});
+
+/* ═══════════ 3 · CATÁLOGO Y TEMA ═══════════ */
 
 test("★★★ fuera del catálogo de FP; en T7-3, después de A2 (y de H2 si ya entró)", () => {
   assert.equal(A.A3_ID, "t7-3-descuento-condicionado");
@@ -281,61 +454,4 @@ test("★★★ fuera del catálogo de FP; en T7-3, después de A2 (y de H2 si y
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A3_ID)), []);
   assert.doesNotMatch(leer("src/data/contabilidadT7_3_a3.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);
-});
-
-/* ═══════════ PATRÓN T7-3 (Watari) ═══════════ */
-
-/* Lo que se ve de las figuras: [«plazos» con o sin pago | título de renglones, cifras]. */
-const figuras = (c) => [...c.querySelectorAll("[data-plazos], figure[data-renglones]")].map((f) => (f.matches("[data-plazos]")
-  ? ["plazos", f.querySelector("[data-pago]")?.textContent ?? "sin pago", [...f.querySelectorAll(".pz-et b")].map((b) => b.textContent).join(" ")]
-  : [f.querySelector("figcaption").textContent, [...f.querySelectorAll(".rg-v")].map((x) => x.textContent)]));
-
-test("★★★ Patrón T7-3: la franja y las cuentas, cada una cuando ya no da la respuesta", async () => {
-  const C = A.H3_LIBRO;
-  assert.equal(C.lista - C.comercial, C.factura);
-  assert.equal(C.factura * 0.15, C.condicionado);
-  assert.equal(C.cliente - C.condicionado, C.pago);
-  const m = await montar();
-  try {
-    const c = m.caja;
-    const visto = {};
-    const mirar = (estado) => { visto[`${c.querySelector("[data-pantalla]").dataset.pantalla}:${estado}`] = figuras(c); };
-    for (let k = 0; k < 12; k++) {
-      const id = c.querySelector("[data-pantalla]").dataset.pantalla;
-      const p = pantalla(id);
-      if (p.opciones) {
-        mirar("antes");
-        const mala = p.opciones.find((o) => !o.correcta);
-        await tocar(c.querySelector(`[data-opcion="${mala.id}"]`)); await tocar(boton(c, "confirmar"));
-        mirar("error");
-        await tocar(boton(c, "probar-otra"));
-        await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`)); await tocar(boton(c, "confirmar"));
-        mirar("acierto");
-        await tocar(boton(c, "seguir"));
-      } else {
-        mirar("lectura");
-        const b = boton(c, "seguir") ?? boton(c, "empezar");
-        if (!b) break;
-        await tocar(b);
-      }
-    }
-    const libres = ["plazos", "sin pago", "Venta 10 días 20 días 30 días:"];
-    const conPago = ["plazos", "Pago · 4 jun", "Venta 10 días 20 días 30 días:"];
-    assert.deepEqual(visto, {
-      "portada:lectura": [], "que-es:antes": [], "que-es:error": [], "que-es:acierto": [], "un-gasto:lectura": [],
-      /* «30 días: sin descuento» es la respuesta de esta pantalla: la franja llega con el acierto. */
-      "condiciones:antes": [], "condiciones:error": [], "condiciones:acierto": [libres],
-      "ejemplo:lectura": [libres, ["Factura de San Calixto", ["4.200.000", "210.000", "3.990.000"]]],
-      /* «10 días: 15 %» también: el pago llega con el acierto. */
-      "cual-le-toca:antes": [], "cual-le-toca:error": [], "cual-le-toca:acierto": [conPago],
-      "sobre-que:antes": [], "sobre-que:error": [],
-      "sobre-que:acierto": [["El descuento condicionado", ["3.990.000", "15 %", "598.500"]], ["El pago del 4 de junio", ["4.488.750", "598.500", "3.890.250"]]],
-      "resumen:lectura": [],
-    });
-    /* El pago, en el día 10 de 30. */
-    await act(async () => {});
-  } finally {
-    m.desmontar();
-  }
-  assert.deepEqual(A.PLAZOS_A3(true).pago, { dia: 10, fecha: "4 jun" });
 });

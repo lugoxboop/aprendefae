@@ -41,8 +41,8 @@ import ElCierreEnPeriodico from "./mecanicas/libros/t7/ElCierreEnPeriodico.jsx";
 import { PIEZA_EL_CIERRE } from "../data/contabilidadT7_1_ap4.js";
 import ImportadosYFletes from "./mecanicas/libros/t7/ImportadosYFletes.jsx";
 import { PIEZA_IMPORTADOS_Y_FLETES } from "../data/contabilidadT7_1_a5.js";
-import ControlInterno from "./mecanicas/libros/t7/ControlInterno.jsx";
-import { PIEZA_CONTROL_INTERNO } from "../data/contabilidadT7_1_a7.js";
+import ElViajeDeUnaCaja from "./mecanicas/libros/t7/ElViajeDeUnaCaja.jsx";
+import { PIEZA_EL_VIAJE } from "../data/contabilidadT7_1_a7_viaje.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -67,7 +67,8 @@ export const PIEZAS_T7_1 = [
   { numero: PIEZA_EL_CIERRE.numero, pieza: PIEZA_EL_CIERRE, Pieza: ElCierreEnPeriodico },
   { numero: PIEZA_IMPORTADOS_Y_FLETES.numero, pieza: PIEZA_IMPORTADOS_Y_FLETES, Pieza: ImportadosYFletes },
   { numero: PIEZA_DEVOLUCIONES.numero, pieza: PIEZA_DEVOLUCIONES, Pieza: DevolucionesEnPeriodico },
-  { numero: PIEZA_CONTROL_INTERNO.numero, pieza: PIEZA_CONTROL_INTERNO, Pieza: ControlInterno },
+  /* A7: «El viaje de una caja» (Patrón de enganche C v6) reemplaza a «Control interno de los inventarios», con el mismo id. */
+  { numero: PIEZA_EL_VIAJE.numero, pieza: PIEZA_EL_VIAJE, Pieza: ElViajeDeUnaCaja },
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
@@ -137,7 +138,7 @@ export default function ContabilidadT7_1View({ modo = null, nodoInicial = null, 
              * con «…». Encoge (minWidth: 0), pero no desaparece (herramientas.md,
              * «La regla que salió de la primera pasada»).
              */}
-            <h1 data-titulo-tema style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "break-word" }}>
+            <h1 data-titulo-tema style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2 }}>
               {tema.title}
             </h1>
           </div>

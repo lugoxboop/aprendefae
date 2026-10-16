@@ -3,18 +3,24 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { conCorreccionesDeMello } from "./correccionesMello.mjs";
+import { ENTREGA5, E5_MELLO, MELLO_E5_FLETES, entrega5ConMello, seccionFusion } from "./correccionesMelloFusiones.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T7-2 · A5 «Fletes en permanente» (Célula C).
+ * T7-2 · A5 «Fletes y devoluciones en permanente» (Célula C) · Aprender ·
+ * LA FUSIÓN DE A5 Y A6.
  *
- *   · cada texto de los datos está, letra por letra, en la v1 de Near, y
- *     cada texto visible de la v1 está en los datos
- *   · los dos asientos son las tablas de la v1, línea por línea, con ● donde
- *     el monto es de X3; ninguna cifra de X3, ninguna suma
- *   · P4: el asiento del costo, cada línea a su lado
- *   · cada pantalla y cada estado muestran exactamente sus textos y su pie
- *   · fuera del catálogo de FP; en T7-2 después de A4
+ *   · la pieza es la sección 1 de la entrega 5 de Near
+ *     (lote1-entrega5-v1.md) con las correcciones obligatorias de Mello
+ *     encima (P1, P2 y la línea del resumen), letra por letra y en los dos
+ *     sentidos
+ *   · lo que el paquete pliega como «Ver…» son los asientos de G-3 y G-4, tal
+ *     como estaban en A6; ninguna cifra de X3 ni de X4
+ *   · se recorre entera, estado por estado: al llegar, la pista, el 2.º
+ *     error, el acierto con su figura (que no se adelanta), el «¿Por qué?»
+ *     plegado, «Ver…» que se abre, el foco en el mensaje; en las líneas de
+ *     Debe o Haber, la escalera de líneas
+ *   · fuera del catálogo de FP; en T7-2 después de A4 y antes de H5; A6 salió
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -37,38 +43,139 @@ const act = React.act;
 const h = React.createElement;
 
 const A = await import("../../data/contabilidadT7_2_a5.js");
+const A6 = await import("../../data/contabilidadT7_2_a6.js");
 const { cifraK } = await import("../t7_2Kardex.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
-const { textosDelError, textosDeLinea, pistaDeLinea } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
+const { textosDelError, textosDeLinea, sinAsiEs } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
 const { default: PantallasT7_2, BOTON, INTERFAZ, PENDIENTE_DE_REVISION } = await import("../../components/mecanicas/libros/t7/PantallasT7_2.jsx");
 const { PIEZAS_T7_2, TEMA_T7_2 } = await import("../../components/ContabilidadT7_2View.jsx");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
-const V1 = leer("orquestador/conocimiento/paquetes/t7-2-a5-v1.md");
-const CONTENIDO = V1.slice(V1.indexOf("\nContenido\n"), V1.indexOf("\nErratas y nombres\n"));
 const P = A.PIEZA_FLETES;
-
-/*
- * El lote 2 de Near (pistas y anexo): sus textos valen como los del paquete,
- * pero solo los de esta pieza (su sección de pistas y sus filas del anexo).
- */
-const LOTE2 = (f) => conCorreccionesDeMello(readFileSync(new URL(`orquestador/conocimiento/paquetes/lote2-${f}-v1.md`, RAIZ), "utf8"));
-let l2;
-function L2() {
-  if (l2 !== undefined) return l2;
-  const pistas = LOTE2("pistas");
-  const i = pistas.indexOf(`\n### ${P.id} · `);
-  assert.ok(i >= 0, `${P.id} no tiene sección en el lote 2`);
-  const fin = pistas.slice(i + 1).search(/\n(### |\*\*Decisión)/);
-  const seccion = fin < 0 ? pistas.slice(i) : pistas.slice(i, i + 1 + fin);
-  l2 = [seccion, ...LOTE2("anexo").split("\n").filter((l) => l.startsWith(`| ${P.id} |`))].join("\n");
-  return l2;
-}
-/* Las pistas del lote 2 para esta pieza: la tercera columna de su tabla. */
-const pistasL2 = () => L2().split("\n").filter((l) => /^\| P\d/.test(l)).map((l) => l.split(" | ")[2].replace(/^«|»$/g, ""));
+const S = seccionFusion(entrega5ConMello(), "## 1. T7-2 · «");
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
-const minuscula = (t) => t[0].toLowerCase() + t.slice(1);
+const s = (id) => S.pantallas.find((x) => x.id === id);
+const A6P = (id) => A6.PIEZA_DEVOLUCIONES.pantallas.find((x) => x.id === id);
+
+/* Qué opción (o línea) nombra cada clave de error del paquete. */
+const CLAVES = {
+  "lo-asume-el-comprador": { "Compras (fletes)": ["compras"], "Gasto de venta": ["gasto"] },
+  "lo-asume-el-vendedor": { "Compras (fletes)": ["compras"], "Inventario (fletes)": ["inventario"] },
+  "libro-del-comprador": { "Devoluciones de compras": ["devoluciones"], Compras: ["compras"] },
+  "libro-del-vendedor": { inventario: ["inventario"], costo: ["costo"] },
+  "frente-al-periodico": { gastos: ["gastos"], "no se registran": ["no-se-registran"] },
+};
+
+/* ═══════════ 1 · LOS DATOS, CONTRA EL PAQUETE CON MELLO ═══════════ */
+
+test("★★★ las correcciones de Mello entran en el paquete y salen los textos viejos («paga $650.000», «un segundo asiento»)", () => {
+  const corregido = entrega5ConMello();
+  for (const [viejo, nuevo] of E5_MELLO) {
+    assert.equal(ENTREGA5.split(viejo).length - 1, 1, `el paquete trae una vez ${viejo}`);
+    assert.ok(!corregido.includes(viejo), viejo);
+    assert.ok(corregido.includes(nuevo), nuevo);
+    assert.ok(MELLO_E5_FLETES.includes(nuevo), nuevo);
+  }
+  assert.equal(E5_MELLO.length, 3);
+  const todo = JSON.stringify(P);
+  assert.ok(!todo.includes("paga $650.000"), "«paga $650.000» volvió");
+  assert.equal(pantalla("lo-asume-el-comprador").parrafos[0], E5_MELLO[0][1].slice(1, -1));
+  assert.equal(pantalla("lo-asume-el-vendedor").parrafos[0], E5_MELLO[1][1].slice(1, -1));
+  assert.equal(pantalla("resumen").parrafos[2], E5_MELLO[2][1].slice(1, -1));
+});
+
+test("★★★ pantallas, tipos, opciones, pista, errores, acierto y ¿Por qué?: los del paquete con Mello, letra por letra", () => {
+  assert.equal(P.titulo, S.titulo);
+  assert.equal(P.titulo, "Fletes y devoluciones en permanente");
+  assert.deepEqual(P.pantallas.map((p) => [p.id, p.tipo]), S.pantallas.map((x) => [x.id, x.tipo]));
+  assert.deepEqual(S.pantallas.map((x) => x.k), S.pantallas.map((_, k) => k));
+  /* `el-asiento-del-costo` salió (ya lo enseña A2), y también las lecturas `la-regla` y `que-es`. */
+  for (const id of ["el-asiento-del-costo", "la-regla", "que-es"]) assert.equal(pantalla(id), undefined, id);
+  for (const x of S.pantallas.filter((y) => y.tipo === "eleccion" || y.tipo === "lados")) {
+    const p = pantalla(x.id);
+    const items = p.opciones ?? p.lineas;
+    /* Las opciones, o las líneas con su monto («Inventario de mercancías $960.000»). */
+    assert.deepEqual(items.map((o) => o.texto ?? `${o.cuenta} $${cifraK(o.monto)}`), x.opciones, `${x.id}: opciones`);
+    assert.equal(p.pista, x.pista ?? undefined, `${x.id}: pista`);
+    const nombradas = new Set();
+    for (const e of x.errores) {
+      const ids = CLAVES[x.id][e.clave];
+      assert.ok(ids, `${x.id}: clave sin opción: ${e.clave}`);
+      for (const id of ids) {
+        const o = items.find((y) => y.id === id);
+        assert.ok(o && !o.correcta, `${x.id}: ${id}`);
+        assert.equal(o.devolucion, e.texto, `${x.id}: error · ${e.clave}`);
+        nombradas.add(id);
+      }
+    }
+    if (p.opciones) {
+      assert.deepEqual(p.opciones.filter((o) => !nombradas.has(o.id)).map((o) => o.id), p.opciones.filter((o) => o.correcta).map((o) => o.id), `${x.id}: la correcta`);
+      assert.equal(p.opciones.filter((o) => o.correcta).length, 1);
+    } else assert.deepEqual([...nombradas].sort(), p.lineas.map((l) => l.id).sort(), `${x.id}: cada línea con su error`);
+    assert.equal(p.acierto.texto, x.acierto.texto, `${x.id}: acierto`);
+    /* El «¿Por qué?» del paquete: lo plegado y, si lo trae, el «Ver…» de los asientos, en ese orden. */
+    assert.equal([p.acierto.porque, p.acierto.ver?.texto].filter(Boolean).join(" ") || null, x.porque, `${x.id}: ¿Por qué?`);
+  }
+});
+
+test("★★★ las pistas de las líneas de P4: la del costo es del paquete; la del inventario, la del lote 2 para esa misma línea en A6", () => {
+  const p = pantalla("libro-del-vendedor");
+  assert.deepEqual(s("libro-del-vendedor").pistasDeLinea, { costo: p.lineas.find((l) => l.id === "costo").pista });
+  const L2 = conCorreccionesDeMello(leer("orquestador/conocimiento/paquetes/lote2-pistas-v1.md"));
+  const fila = L2.split("\n").find((l) => l.startsWith("| P3 · `libro-del-vendedor` · inventario ² |"));
+  assert.ok(fila, "no está la fila del lote 2");
+  assert.equal(p.lineas.find((l) => l.id === "inventario").pista, fila.split(" | ")[2].replace(/^«|»$/g, ""));
+  assert.equal(p.lineas.find((l) => l.id === "inventario").pista, A6P("libro-del-vendedor").lineas.find((l) => l.id === "inventario").pista);
+  assert.deepEqual(p.lineas.map((l) => [l.id, l.lado, l.monto]), [["inventario", A.DEBE, 960_000], ["costo", A.HABER, 960_000]]);
+});
+
+/* Lo que se ve al llegar, en su orden: objetivo, figura (sus líneas), párrafos, pregunta o consigna. */
+const lineasDeFigura = (f) => (!f ? [] : f.tipo === "fichas" ? f.fichas : f.tipo === "cuenta" ? [f.texto] : f.filas.map((r) => `${r.rot} $${cifraK(r.v)}`));
+const lineasAlLlegar = (p) => [p.objetivo, ...lineasDeFigura(p.figura), ...(p.parrafos ?? []), p.pregunta, p.consigna].filter(Boolean);
+
+test("★★★ cada línea visible del paquete está en los datos, en su orden, y nada más; las figuras del acierto también", () => {
+  for (const x of S.pantallas) assert.deepEqual(lineasAlLlegar(pantalla(x.id)), x.lineas, x.id);
+  /* Las figuras del acierto, letra por letra (las cifras van sin «$» en los renglones, como en el kárdex). */
+  for (const x of S.pantallas.filter((y) => y.acierto)) {
+    const f = pantalla(x.id).acierto.figura;
+    assert.equal(lineasDeFigura(f).join(" ") || null, x.acierto.figura, `${x.id}: la figura del acierto`);
+  }
+  assert.deepEqual(S.pantallas.filter((x) => x.acierto?.figura).map((x) => x.id), ["lo-asume-el-comprador", "libro-del-comprador", "libro-del-vendedor"]);
+  /* La figura del resumen: las tres fichas del paquete. */
+  assert.match(s("resumen").figura, /^tres fichas: flete del comprador, flete del vendedor y devolución$/);
+  assert.equal(pantalla("resumen").figura.fichas.length, 3);
+});
+
+/* ═══════════ 2 · LOS ASIENTOS Y LAS CIFRAS ═══════════ */
+
+test("★★★ lo que se abre con «Ver…» son los asientos de G-3 y G-4, tal como estaban en A6", () => {
+  const g3 = pantalla("libro-del-comprador").acierto.ver;
+  assert.deepEqual(g3.asientos, A6P("libro-del-comprador").acierto.asientos);
+  const g4 = pantalla("libro-del-vendedor").acierto.ver;
+  /* El primer asiento de la devolución (Devoluciones de ventas) y el segundo, el que la pantalla pide colocar. */
+  assert.deepEqual(g4.asientos[0], A6P("libro-del-vendedor").asientos[1]);
+  assert.deepEqual(g4.asientos[1].lineas, A6P("libro-del-vendedor").lineas.map((l) => ({ cuenta: l.cuenta, lado: l.lado, monto: l.monto })));
+  assert.equal(g4.asientos[1].fecha, "22 de marzo");
+  /* Los datos: 300 unidades a $8.000 y a $3.200. */
+  const D = A.DATOS_DEVOLUCION;
+  assert.deepEqual([D.devueltas, D.precio, D.costo], [A6.DATOS_A6.devueltas, A6.DATOS_A6.precio, A6.DATOS_A6.costo]);
+});
+
+test("★★★ X3 y X4: ninguna cifra de las listas de control; solo los datos y sus productos", () => {
+  const todo = JSON.stringify(P);
+  for (const x of [...A.X3, ...A.X4]) {
+    assert.ok(!todo.includes(cifraK(x)), `${cifraK(x)} se ve`);
+    assert.ok(!new RegExp(`[^\\d]${x}[^\\d]`).test(todo), `${x} está en los datos`);
+  }
+  assert.deepEqual(A.X3, [1_200_000, 262_500, 8_437_500, 6_500, 643_500, 8_700_000]);
+  assert.deepEqual(A.X4, A6.X4);
+  const asientos = P.pantallas.flatMap((p) => [...(p.acierto?.ver?.asientos ?? []), ...(p.acierto?.asientos ?? [])]);
+  const montos = new Set([...asientos.flatMap((a) => a.lineas), ...P.pantallas.flatMap((p) => p.lineas ?? [])].map((l) => l.monto).filter((m) => m !== null));
+  assert.deepEqual([...montos].sort((a, b) => a - b), [960_000, 2_400_000]);
+});
+
+/* ═══════════ 3 · PANTALLAS Y ESTADOS ═══════════ */
 
 const montar = async (el) => {
   const caja = document.createElement("div");
@@ -84,132 +191,71 @@ const tocar = async (el) => {
 const boton = (caja, n) => caja.querySelector(`[data-boton="${n}"]`);
 const lado = (caja, linea, cual) => caja.querySelector(`[data-linea="${linea}"][data-lado="${cual}"]`);
 const otro = (l) => (l === A.DEBE ? A.HABER : A.DEBE);
-
-function textosVisibles() {
-  const t = [P.titulo];
-  for (const p of P.pantallas) {
-    for (const k of ["objetivo", "enunciado", "pregunta", "consigna", "boton", "pie", "siguiente"]) if (p[k]) t.push(p[k]);
-    t.push(...(p.parrafos ?? []), ...(p.lista ?? []), ...(p.despues ?? []));
-    if (p.error) t.push(p.error.pie);
-    for (const o of p.opciones ?? []) { t.push(o.texto); if (o.devolucion) t.push(o.devolucion); }
-    if (p.pista) t.push(p.pista);
-    for (const l of p.lineas ?? []) t.push(l.devolucion, ...(l.pista ? [l.pista] : []));
-    if (p.acierto) t.push(p.acierto.texto, p.acierto.pie);
-  }
-  return t;
-}
-const fichas = () => P.pantallas.flatMap((p) => p.ficha ?? []);
-
-function citas(md) {
-  const limpio = md.replace(/\*\[[^\]]*\]\*/g, "").replace(/»(\s*)\([^()]*\)/g, "»$1").replace(/^(\s*)«[^»]*»: /gm, "$1");
-  const out = [];
-  let nivel = 0;
-  let actual = "";
-  for (const c of limpio) {
-    if (c === "«") { if (nivel > 0) actual += c; nivel++; continue; }
-    if (c === "»") { nivel--; if (nivel > 0) actual += c; else { out.push(actual); actual = ""; } continue; }
-    if (nivel > 0) actual += c;
-  }
-  assert.equal(nivel, 0, "las comillas no cierran");
-  return out;
-}
-
-/* Las tablas de asiento de la v1, separadas por tabulaciones: [cuenta, debe, haber]. */
-function tablas() {
-  const out = [];
-  const ls = CONTENIDO.split("\n");
-  for (let i = 0; i < ls.length; i++) {
-    if (!/^18 de marzo\tDebe\tHaber$/.test(ls[i])) continue;
-    const filas = [];
-    for (let j = i + 1; j < ls.length && ls[j].includes("\t"); j++) filas.push(ls[j].split("\t").map((c) => c.trim()));
-    out.push(filas);
-  }
-  return out;
-}
+const filasDeAsiento = (el) => [...el.querySelectorAll("[data-linea]")].map((r) => [...r.querySelectorAll("[role=rowheader], [role=cell]")].map((c) => (c.querySelector("[data-oculto]") ? "●" : c.textContent)));
 const enTabla = (asiento) => asiento.lineas.map((l) => {
   const m = l.monto === null ? "●" : cifraK(l.monto);
   return [l.cuenta, l.lado === A.DEBE ? m : "", l.lado === A.HABER ? m : ""];
 });
 
-/* ═══════════ 1 · TEXTOS ═══════════ */
-
-test("★★★ cada texto de los datos está, letra por letra, en la v1", () => {
-  const faltan = textosVisibles().filter((t) => !V1.includes(t) && !L2().includes(t) && !Object.values(A.BOTON).includes(t));
-  assert.deepEqual(faltan, []);
-  /* La ficha lleva el primer dato en mayúscula (convención); los nombres propios ya la llevan en la v1. */
-  const enV1 = (t) => (V1.includes(t) ? t : minuscula(t));
-  assert.deepEqual(fichas().filter((f) => !V1.includes(enV1(f.texto))).map((f) => f.texto), [], "la ficha");
-  /* Las fichas de la v1, dato por dato y en su orden. */
-  for (const id of ["lo-asume-el-comprador", "lo-asume-el-vendedor"]) {
-    const textos = pantalla(id).ficha.map((f) => enV1(f.texto));
-    const linea = CONTENIDO.split("\n").find((l) => l.startsWith("Ficha: ") && textos.every((x) => l.includes(x)));
-    assert.ok(linea, `${id}: la ficha no es una de la v1`);
-    let desde = 0;
-    for (const x of textos) { const k = linea.indexOf(x, desde); assert.ok(k >= desde, `${id}: ${x} fuera de orden`); desde = k; }
-  }
-});
-
-test("★★★ cada texto visible de la v1 está en los datos", () => {
-  const datos = new Set([...textosVisibles(), ...fichas().map((f) => f.texto)]);
-  /* Cada pista del lote 2 para esta pieza está en los datos. */
-  assert.ok(pistasL2().length > 0, "no se leyó ninguna pista del lote 2");
-  assert.deepEqual(pistasL2().filter((x) => !datos.has(x)), [], "estas pistas del lote 2 no están en los datos");
-  const sobran = [...new Set(citas(CONTENIDO).filter((c) => !datos.has(c)))].sort();
-  assert.deepEqual(sobran, [
-    /* Las dos líneas de P4: cuenta y monto, en sus dos lugares. */
-    "Costo de mercancía vendida · $3.000.000", "Inventario de mercancías · $3.000.000",
-    /* Las citas del libro con que Near respalda P1 y P3: no se ven. (La del acierto de P3 va entre paréntesis.) */
-    "todos los gastos y cargos directos necesarios para tener las mercancías en condiciones de venta forman parte del costo del inventario",
-    "estima que el costo de la mercancía vendida es de $3.000.000",
-  ].sort());
-  const opciones = (id) => pantalla(id).opciones.map((o) => o.texto).sort();
-  assert.deepEqual(opciones("lo-asume-el-comprador"), ["Compras (fletes)", "Gasto de venta – fletes", "Inventario de mercancías (fletes)"]);
-  assert.deepEqual(opciones("lo-asume-el-vendedor"), opciones("lo-asume-el-comprador"));
-});
-
-/* ═══════════ 2 · LOS ASIENTOS Y LAS CIFRAS ═══════════ */
-
-test("★★★ los dos asientos son las tablas de la v1, línea por línea, con ● donde el monto es de X3", () => {
-  const [g1, g2] = tablas();
-  assert.deepEqual(enTabla(pantalla("lo-asume-el-comprador").acierto.asientos[0]), g1);
-  assert.deepEqual(enTabla(pantalla("el-asiento-del-costo").acierto.asientos[0]), g2);
-});
-
-test("★★★ P4: cada línea del asiento del costo va al lado que dice la v1, con su mensaje", () => {
-  const linea = CONTENIDO.split("\n").find((l) => l.startsWith("Líneas: «Costo de mercancía vendida"));
-  const v1 = [...linea.matchAll(/«([^»]+) · \$([\d.]+)» → (Debe|Haber)/g)].map((m) => [m[1], m[2], m[3] === "Debe" ? A.DEBE : A.HABER]);
-  const p = pantalla("el-asiento-del-costo");
-  assert.deepEqual(p.lineas.map((l) => [l.cuenta, cifraK(l.monto), l.lado]), v1);
-  const bloque = CONTENIDO.slice(CONTENIDO.indexOf(linea));
-  const errores = citas(bloque.slice(bloque.indexOf("Errores:"), bloque.indexOf("Acierto:")));
-  assert.deepEqual(p.lineas.map((l) => l.devolucion), errores);
-});
-
-test("★★★ X3: ninguna cifra de la lista de control, ninguna suma; solo los datos y el costo de G-2", () => {
-  const todo = JSON.stringify(P);
-  for (const x of A.X3) {
-    assert.ok(!todo.includes(cifraK(x)), `${cifraK(x)} se ve`);
-    assert.ok(!new RegExp(`[^\\d]${x}[^\\d]`).test(todo), `${x} está en los datos`);
-  }
-  const montos = new Set(P.pantallas.flatMap((p) => [...(p.acierto?.asientos ?? []).flatMap((a) => a.lineas), ...(p.lineas ?? [])]).map((l) => l.monto).filter((m) => m !== null));
-  assert.deepEqual([...montos].sort((a, b) => a - b), [650_000, 3_000_000, 7_500_000]);
-});
-
-/* ═══════════ 3 · PANTALLAS Y ESTADOS ═══════════ */
-
+/*
+ * Lo que se lee en la pieza: los textos (sin lo plegado), las figuras, el
+ * «Ver…», los botones y el pie, en el orden del documento. Las opciones
+ * aparte, ordenadas (van barajadas).
+ */
 function enPantalla(caja) {
   const out = [];
   const opciones = [];
-  for (const el of caja.querySelector("[data-pieza]").querySelectorAll("[data-texto], [data-opcion], [data-boton], [data-pie], [data-palabra]")) {
+  for (const el of caja.querySelector("[data-pieza]").querySelectorAll("[data-texto], [data-opcion], [data-boton], [data-pie], [data-palabra], [data-figura-t72]")) {
     if (el.matches("[data-opcion]")) { opciones.push(el.textContent); continue; }
-    out.push(el.textContent);
+    if (el.matches("[data-figura-t72]")) { out.push(`[figura] ${[...el.querySelectorAll("[data-renglon], p, li")].map((x) => (x.matches("[data-renglon]") ? [...x.children].map((y) => y.textContent).join(" ") : x.textContent)).join(" | ")}`); continue; }
+    const x = el.cloneNode(true);
+    for (const pl of x.querySelectorAll("[data-plegado]")) pl.remove();
+    out.push(x.textContent);
   }
   return { textos: out, opciones: opciones.sort() };
 }
-const cuerpo = (p) => [p.objetivo, ...(p.parrafos ?? []), p.enunciado, ...(p.ficha ?? []).map((f) => f.texto), ...(p.despues ?? [])].filter(Boolean);
-const filasDeAsiento = (caja) => [...caja.querySelectorAll("[data-asiento] [data-linea]")].map((r) => [...r.querySelectorAll("[role=rowheader], [role=cell]")].map((c) => (c.querySelector("[data-oculto]") ? "●" : c.textContent)));
+const figuraEnPantalla = (f) => `[figura] ${f.tipo === "renglones" ? f.filas.map((r) => `${r.rot} ${cifraK(r.v)}`).join(" | ") : f.tipo === "cuenta" ? f.texto : f.fichas.join(" | ")}`;
+const alLlegar = (p) => [p.objetivo, ...(p.figura ? [figuraEnPantalla(p.figura)] : []), ...(p.parrafos ?? []), p.pregunta, p.consigna].filter(Boolean);
+/* Lo que sale con el acierto: «Correcto.», el texto, la figura, el «Ver…». */
+const conAcierto = (a) => [INTERFAZ.correcto, a.texto, ...(a.figura ? [figuraEnPantalla(a.figura)] : []), ...(a.ver ? [a.ver.texto] : [])];
 
-test("★★★ cada pantalla y cada estado muestran exactamente sus textos y su pie; el asiento sale con el acierto", async () => {
+/* El «¿Por qué?» plegado del mensaje del acierto (si lo hay) y el «Ver…» que abre los asientos. */
+async function plegadoYVer(caja, p) {
+  const a = p.acierto;
+  const msj = caja.querySelector('[data-mensaje="acierto"]');
+  assert.equal(w.document.activeElement, msj, `${p.id}: el foco va al mensaje del acierto`);
+  if (a.porque) {
+    const pl = msj.querySelector("[data-plegado]");
+    assert.equal(pl.textContent, ` ${a.porque}`);
+    assert.equal(pl.hidden, true, `${p.id}: el ¿Por qué? va plegado`);
+    const por = msj.querySelector("[data-por-que]");
+    assert.equal(por.getAttribute("aria-expanded"), "false");
+    await tocar(por);
+    assert.equal(msj.querySelector("[data-plegado]").hidden, false);
+  } else assert.equal(msj.querySelector("[data-por-que]"), null, `${p.id}: un ¿Por qué? sin texto`);
+  if (a.ver) {
+    const b = caja.querySelector("[data-ver] button");
+    assert.equal(b.getAttribute("aria-expanded"), "false");
+    assert.equal(b.dataset.boton, undefined, "no es un botón de interfaz");
+    assert.equal(caja.querySelector("[data-visto]"), null, `${p.id}: los asientos se ven sin abrir`);
+    await tocar(b);
+    assert.equal(b.getAttribute("aria-expanded"), "true");
+    const abierto = caja.querySelector("[data-visto]");
+    assert.equal(b.getAttribute("aria-controls"), abierto.id);
+    const as = [...abierto.querySelectorAll("[data-asiento]")];
+    assert.deepEqual(as.map(filasDeAsiento), a.ver.asientos.map(enTabla));
+    /* El monto oculto es la casilla vacía discontinua: nunca un «●» suelto. */
+    for (const o of abierto.querySelectorAll("[data-oculto]")) {
+      assert.equal(o.textContent, PENDIENTE_DE_REVISION.montoOculto);
+      assert.ok(o.querySelector("i[aria-hidden=true]"));
+    }
+    assert.ok(!abierto.textContent.includes("●"));
+    await tocar(b);
+    assert.equal(caja.querySelector("[data-visto]"), null);
+  } else assert.equal(caja.querySelector("[data-ver]"), null);
+}
+
+test("★★★ cada pantalla y cada estado muestran exactamente sus textos, su figura y su pie; lo del acierto no se adelanta", async () => {
   const m = await montar(h(PantallasT7_2, { pieza: P, rotulo: "R" }));
   const vistos = [];
   try {
@@ -217,97 +263,79 @@ test("★★★ cada pantalla y cada estado muestran exactamente sus textos y su
       assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, p.id);
       if (p.tipo === "lados") {
         const lineas = [...m.caja.querySelectorAll("[data-fila]")].map((f) => p.lineas.find((l) => l.id === f.dataset.fila));
-        /* La escalera de ayuda de las líneas: el 1.er error da la pista; el 2.º, la respuesta y su porqué. */
-        for (const l of p.lineas) assert.ok(pistaDeLinea(p, l), `${p.id}: ${l.id} sin pista`);
         const filas = (malas = [], n = 0) => lineas.flatMap((l) => [l.cuenta, ...(malas.includes(l.id) ? [INTERFAZ.incorrecto, ...textosDeLinea(p, l, n)] : [])]);
-        assert.deepEqual(enPantalla(m.caja).textos, [p.consigna, ...filas(), BOTON.confirmar, p.pie], "lados colocando");
+        assert.deepEqual(enPantalla(m.caja).textos, [...alLlegar(p), ...filas(), BOTON.confirmar, p.pie], "lados colocando");
+        assert.equal(m.caja.querySelector("[data-figura]"), null, "la figura del acierto se adelanta");
         for (const l of p.lineas) await tocar(lado(m.caja, l.id, otro(l.lado)));
         await tocar(boton(m.caja, "confirmar"));
-        assert.deepEqual(enPantalla(m.caja).textos, [p.consigna, ...filas(lineas.map((l) => l.id), 1), BOTON.probarOtra, p.error.pie], "lados error 1: la pista");
+        assert.deepEqual(enPantalla(m.caja).textos, [...alLlegar(p), ...filas(lineas.map((l) => l.id), 1), BOTON.probarOtra, p.error.pie], "lados error 1: la pista");
+        for (const l of p.lineas) assert.deepEqual(textosDeLinea(p, l, 1), [l.pista]);
+        assert.equal(w.document.activeElement, m.caja.querySelector("[data-mensaje]"), "el foco va al primer mensaje");
+        assert.equal(m.caja.querySelector("[data-figura]"), null, "la figura del acierto, con el error");
         await tocar(boton(m.caja, "probar-otra"));
-        /* 2.º error: otra vez al revés; cada una dice la respuesta y su porqué, y se cierra. */
-        for (const id of p.lineas.map((l) => l.id)) await tocar(lado(m.caja, id, otro(p.lineas.find((l) => l.id === id).lado)));
+        for (const l of p.lineas) await tocar(lado(m.caja, l.id, otro(l.lado)));
         await tocar(boton(m.caja, "confirmar"));
-        assert.deepEqual(enPantalla(m.caja).textos, [p.consigna, ...filas(lineas.map((l) => l.id), 2), BOTON.probarOtra, p.error.pie], "lados error 2: la respuesta y su porqué");
-        for (const id of p.lineas.map((l) => l.id)) {
-          const l = p.lineas.find((x) => x.id === id);
-          assert.deepEqual(textosDeLinea(p, l, 2), [`La respuesta es «${l.lado === A.DEBE ? "Debe" : "Haber"}».`, l.devolucion], id);
-        }
-        vistos.push(`${p.id}:error2`);
+        assert.deepEqual(enPantalla(m.caja).textos, [...alLlegar(p), ...filas(lineas.map((l) => l.id), 2), BOTON.probarOtra, p.error.pie], "lados error 2: la respuesta y su porqué");
+        for (const l of p.lineas) assert.deepEqual(textosDeLinea(p, l, 2), [`La respuesta es «${l.lado === A.DEBE ? "Debe" : "Haber"}».`, l.devolucion]);
         await tocar(boton(m.caja, "probar-otra"));
-        /* Cerradas: quedan puestas en su lado y ya no se mueven, ni al otro lado ni quitándolas. */
-        for (const id of p.lineas.map((l) => l.id)) {
-          const l = p.lineas.find((x) => x.id === id);
-          assert.equal(lado(m.caja, id, l.lado).getAttribute("aria-pressed"), "true", `${id}: no quedó en su lado`);
-          await tocar(lado(m.caja, id, otro(l.lado)));
-          assert.equal(lado(m.caja, id, l.lado).getAttribute("aria-pressed"), "true", `${id}: se pasó al otro lado`);
-          await tocar(lado(m.caja, id, l.lado));
-          assert.equal(lado(m.caja, id, l.lado).getAttribute("aria-pressed"), "true", `${id}: se pudo quitar`);
+        /* Cerradas: quedan en su lado y no se mueven. */
+        for (const l of p.lineas) {
+          assert.equal(lado(m.caja, l.id, l.lado).getAttribute("aria-pressed"), "true", `${l.id}: no quedó en su lado`);
+          await tocar(lado(m.caja, l.id, otro(l.lado)));
+          assert.equal(lado(m.caja, l.id, l.lado).getAttribute("aria-pressed"), "true", `${l.id}: se movió`);
         }
-        assert.deepEqual(enPantalla(m.caja).textos, [p.consigna, ...filas(), BOTON.confirmar, p.pie], "lados con las líneas cerradas");
         await tocar(boton(m.caja, "confirmar"));
-        assert.deepEqual(enPantalla(m.caja).textos, [p.consigna, ...filas(), INTERFAZ.correcto, p.acierto.texto, BOTON.seguir, p.acierto.pie], "lados acierto");
-        assert.deepEqual(filasDeAsiento(m.caja), enTabla(p.acierto.asientos[0]));
-        vistos.push(`${p.id}:colocando`, `${p.id}:error`, `${p.id}:acierto`);
+        assert.deepEqual(enPantalla(m.caja).textos, [...alLlegar(p), ...filas(), ...conAcierto(p.acierto), BOTON.seguir, p.acierto.pie], "lados acierto");
+        await plegadoYVer(m.caja, p);
+        vistos.push(`${p.id}:colocando`, `${p.id}:error`, `${p.id}:error2`, `${p.id}:acierto`);
         await tocar(boton(m.caja, "seguir"));
         continue;
       }
       if (p.tipo !== "eleccion") {
-        assert.deepEqual(enPantalla(m.caja).textos, [...cuerpo(p), ...(p.lista ?? []), p.siguiente, p.boton, p.pie].filter(Boolean), p.id);
+        assert.deepEqual(enPantalla(m.caja).textos, [...alLlegar(p), p.boton, p.pie].filter(Boolean), p.id);
         vistos.push(p.id);
         if (p.boton) await tocar(m.caja.querySelector("[data-boton]"));
         continue;
       }
-      const cab = [...cuerpo(p), p.pregunta];
+      const cab = alLlegar(p);
       const ops = p.opciones.map((o) => o.texto).sort();
       assert.deepEqual(enPantalla(m.caja), { textos: [...cab, BOTON.confirmar, p.pie], opciones: ops }, `${p.id} colocando`);
-      assert.equal(m.caja.querySelector("[data-asiento]") === null, true, `${p.id}: el asiento antes del acierto`);
+      assert.equal(m.caja.querySelector("[data-figura], [data-ver], [data-asiento]"), null, `${p.id}: lo del acierto se adelanta`);
       vistos.push(`${p.id}:colocando`);
-      /* La escalera de ayuda: el 1.er error da la pista; el 2.º y los siguientes, la respuesta con su porqué. */
-      assert.ok(p.pista, `${p.id}: sin pista`);
+      /* La escalera de ayuda: el 1.er error da la pista; el 2.º, la respuesta con su porqué. */
       const malas = p.opciones.filter((x) => !x.correcta);
       for (const [i, o] of malas.entries()) {
         await tocar(m.caja.querySelector(`[data-opcion="${o.id}"]`));
         await tocar(boton(m.caja, "confirmar"));
-        assert.deepEqual(enPantalla(m.caja), { textos: [...cab, INTERFAZ.incorrecto, ...textosDelError(p, o, i + 1), BOTON.probarOtra, p.error.pie], opciones: ops }, `${p.id} error ${i + 1} (${o.id})`);
+        const esperado = i === 0 ? [p.pista] : [`La respuesta es «${p.opciones.find((x) => x.correcta).texto.replace(/\.$/, "")}».`, sinAsiEs(p.acierto.texto)];
+        assert.deepEqual(textosDelError(p, o, i + 1), esperado);
+        assert.deepEqual(enPantalla(m.caja), { textos: [...cab, INTERFAZ.incorrecto, ...esperado, BOTON.probarOtra, p.error.pie], opciones: ops }, `${p.id} error ${i + 1} (${o.id})`);
+        assert.equal(w.document.activeElement, m.caja.querySelector("[data-mensaje]"), `${p.id}: el foco va al mensaje`);
+        assert.equal(m.caja.querySelector("[data-figura], [data-ver]"), null, `${p.id}: lo del acierto, con el error`);
         vistos.push(`${p.id}:error:${o.id}`);
-        await tocar(boton(m.caja, "probar-otra"));
-      }
-      /* Si vuelve a una opción ya fallada, sigue la respuesta, no vuelve la pista. */
-      {
-        const o = malas[0];
-        const i = malas.length;
-        assert.equal(textosDelError(p, o, i + 1)[0], `La respuesta es «${p.opciones.find((x) => x.correcta).texto.replace(/\.$/, "")}».`);
-        await tocar(m.caja.querySelector(`[data-opcion="${o.id}"]`));
-        await tocar(boton(m.caja, "confirmar"));
-        assert.deepEqual(enPantalla(m.caja), { textos: [...cab, INTERFAZ.incorrecto, ...textosDelError(p, o, i + 1), BOTON.probarOtra, p.error.pie], opciones: ops }, `${p.id} error ${i + 1} (${o.id})`);
         await tocar(boton(m.caja, "probar-otra"));
       }
       await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((x) => x.correcta).id}"]`));
       await tocar(boton(m.caja, "confirmar"));
-      assert.deepEqual(enPantalla(m.caja), { textos: [...cab, INTERFAZ.correcto, p.acierto.texto, BOTON.seguir, p.acierto.pie], opciones: ops }, `${p.id} acierto`);
-      if (p.acierto.asientos) {
-        assert.deepEqual(filasDeAsiento(m.caja), enTabla(p.acierto.asientos[0]));
-        /* El monto oculto es la casilla vacía discontinua, como la del kárdex: nunca un «●» suelto. */
-        for (const o of m.caja.querySelectorAll("[data-oculto]")) {
-          assert.equal(o.textContent, PENDIENTE_DE_REVISION.montoOculto, "el monto oculto vuelve a pintarse «●»");
-          assert.ok(o.querySelector("i[aria-hidden=true]"), "el monto oculto no lleva su casilla vacía");
-        }
-        assert.equal(m.caja.querySelector("[data-asiento]").closest("[data-pieza]").textContent.includes("●"), false, "un «●» suelto en la pieza");
-      }
+      assert.deepEqual(enPantalla(m.caja), { textos: [...cab, ...conAcierto(p.acierto), BOTON.seguir, p.acierto.pie], opciones: ops }, `${p.id} acierto`);
+      await plegadoYVer(m.caja, p);
       vistos.push(`${p.id}:acierto`);
       await tocar(boton(m.caja, "seguir"));
     }
-    assert.equal(vistos.length, 3 + 3 * 4 + 3 + 1 /* el 2.º error de las líneas */);
+    assert.equal(vistos.length, 2 + 4 * 4 + 4);
     assert.equal(m.caja.querySelector("[data-boton]") === null, true, "el resumen no lleva botón");
   } finally {
     m.desmontar();
   }
 });
 
-test("★★ los pies son los de la v1; el de los errores, el de su pantalla", () => {
+test("★★ los pies: los de las v1 de A5 y A6; los dos que juntan páginas de las dos, con las suyas", () => {
+  const V1 = leer("orquestador/conocimiento/paquetes/t7-2-a5-v1.md") + leer("orquestador/conocimiento/paquetes/t7-2-a6-v1.md");
+  /* Compuestos al fusionar: la portada y el resumen (las de A5 y A6 juntas) y `frente-al-periodico` (las de sus dos pantallas). */
+  const COMPUESTOS = { portada: "Basado en el libro, pp. 245-248", resumen: "Basado en el libro, pp. 245-248", "frente-al-periodico": "Basado en el libro, pp. 228, 230 y 245-246" };
   for (const p of P.pantallas) {
-    assert.ok(V1.includes(`Pie: «${p.pie}»`), p.id);
+    if (COMPUESTOS[p.id]) assert.equal(p.pie, COMPUESTOS[p.id], p.id);
+    else assert.ok(V1.includes(`Pie: «${p.pie}»`), p.id);
     if (p.error) assert.equal(p.error.pie, p.pie, p.id);
     if (p.acierto) assert.equal(p.acierto.pie, p.pie, p.id);
   }
@@ -315,17 +343,27 @@ test("★★ los pies son los de la v1; el de los errores, el de su pantalla", (
 
 /* ═══════════ 4 · CATÁLOGO ═══════════ */
 
-test("★★★ fuera del catálogo de FP; en T7-2 después de A4; sin nada que pague", () => {
+test("★★★ fuera del catálogo de FP; en T7-2 justo después de A4 (H4 salió con la 0115) y justo antes de H5; A6 ya no está; sin nada que pague", () => {
   assert.equal(A.A5_ID, "t7-2-a5-fletes");
   assert.equal(P.numero, 5);
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_2);
   const a = tema.actividades.find((x) => x.id === A.A5_ID);
   assert.deepEqual(a.clasificacion, { tipo: APRENDER });
   assert.equal(a.nombre, P.titulo);
-  const ids = tema.actividades.filter((x) => x.clasificacion.tipo === APRENDER).map((x) => x.id);
+  const ids = tema.actividades.map((x) => x.id);
+  assert.ok(!ids.includes("t7-2-periodico-o-permanente"), "H4 sigue en el camino");
   assert.equal(ids.indexOf(A.A5_ID), ids.indexOf("t7-2-a4-san-calixto") + 1);
-  const piezas = PIEZAS_T7_2.map((x) => x.pieza.id);
-  assert.equal(piezas.indexOf(A.A5_ID), piezas.indexOf("t7-2-a4-san-calixto") + 1);
+  assert.equal(ids.indexOf("t7-2-flete-y-devolucion"), ids.indexOf(A.A5_ID) + 1);
+  assert.ok(!ids.includes("t7-2-a6-devoluciones"));
+  assert.ok(ENTREGA5.includes("`t7-2-a6-devoluciones` sale de la lista."));
+  const aprender = tema.actividades.filter((x) => x.clasificacion.tipo === APRENDER).map((x) => x.id);
+  assert.equal(aprender.indexOf(A.A5_ID), aprender.indexOf("t7-2-a4-san-calixto") + 1);
+  assert.equal(aprender.at(-1), A.A5_ID);
+  assert.deepEqual(PIEZAS_T7_2.map((x) => x.pieza.id), aprender);
+  assert.equal(PIEZAS_T7_2.find((x) => x.pieza.id === A.A5_ID).Pieza, PantallasT7_2);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A5_ID)), []);
+  assert.doesNotMatch(leer("src/data/contabilidadT7_2_a5.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);
+  const visible = JSON.stringify(P);
+  for (const interno of ["CONSTRUCCIÓN", "Near", "Mello", "ESCRITO POR CLAUDE", "INFLESZ"]) assert.ok(!visible.includes(interno), interno);
 });

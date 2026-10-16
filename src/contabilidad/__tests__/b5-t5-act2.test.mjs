@@ -21,6 +21,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+const { comprobarMesaE4 } = await import("./b5-mesa-e4.mjs");
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
 w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
@@ -53,13 +54,16 @@ const { FAE } = await import("../../theme.js");
 const PARTES = D.PARTES_T5_ACT2;
 const parte = (n) => PARTES[n - 1];
 
-const montar = async ({ Juego = CierreConDiario, items = undefined, onCompletar = () => {}, modoDemo = false } = {}) => {
+const montar = async ({ Juego = CierreConDiario, items = undefined, onCompletar = () => {}, modoDemo = false, empezar = true } = {}) => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
   await act(async () => {
     raiz.render(h(Juego, { Marco: MarcoLibros, rotulo: "PRUEBA", titulo: "Prueba", acento: FAE.ambar, onCompletar, items, modoDemo }));
   });
+  /* Lote 6c: el ejemplo resuelto es su propio paso; la partida empieza con «Empezar». */
+  const empieza = caja.querySelector("[data-boton-empezar] button");
+  if (empezar && empieza) await act(async () => { empieza.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
 const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
@@ -115,7 +119,16 @@ const errorDe = (n, tipo) => {
 const G_DIARIO = porClave(seccion("## 4 · El libro diario", "Asientos del diario"));
 const G_ASIENTOS = filas(seccion("Asientos del diario", "## 5 "));
 const G_TUTORIAL = porClave(seccion("## 5 · Tutorial", "## 6 "));
-const G_CIFRAS = new Set(filas(seccion("## 6 · Cifras", null)).map((f) => f[0]));
+const G_CIFRAS = new Set(filas(seccion("## 6 · Cifras", "## (1)")).map((f) => f[0]));
+/* Lote 6a · E3: en las ventas (partes 2 y 4), la B general nombra las cuentas con el valor errado. */
+const G_E3 = Object.fromEntries(filas(seccion("## (2) Lote 6a · E3", null)).filter((f) => f[0] !== "Cuenta").map((f) => [f[0], f[1]]));
+const bE3 = (n, cuentas) => {
+  if (n !== 2 && n !== 4) return errorDe(n, "B");
+  const orden = parte(n).asiento.map((e) => e.cuenta).filter((c) => cuentas.includes(c));
+  const cabeza = orden.length > 1 ? `Revisa los valores de ${orden.slice(0, -1).join(", ")} ${/^h?i/i.test(orden.at(-1)) ? "e" : "y"} ${orden.at(-1)}.` : `Revisa el valor de ${orden[0]}.`;
+  assert.ok(G_E3[orden[0]], `el paquete no tiene la segunda frase de ${orden[0]}`);
+  return `${cabeza} ${G_E3[orden[0]]}`;
+};
 
 test("guarda: el paquete se leyó entero, y una fila inventada no aparece", () => {
   assert.equal(G_ESTANTE.length, 6);
@@ -131,7 +144,11 @@ test("guarda: el paquete se leyó entero, y una fila inventada no aparece", () =
 test("★★★ encabezado, contador «Asiento», reglas y texto alternativo: los del paquete", async () => {
   const { caja, desmontar } = await montar();
   assert.equal(caja.querySelector("[data-objetivo]").textContent, G_INICIAL.objetivo[0]);
+  /* Lote 6c: la consigna, los pasos y la regla fija van plegados bajo «¿Cómo se juega?». */
+  assert.equal(caja.querySelector("[data-consigna]"), null, "plegada no ocupa nada");
+  await tocar(caja.querySelector("[data-como-se-juega]"));
   assert.equal(caja.querySelector("[data-consigna]").textContent, G_INICIAL.consigna[0]);
+  assert.deepEqual([...caja.querySelectorAll("[data-encabezado] [data-pasos] li")].map((li) => li.textContent), D.REGLAS_T5_ACT2);
   assert.deepEqual(D.REGLAS_T5_ACT2, [G_INICIAL.regla1[0], G_INICIAL.regla2[0], G_INICIAL.regla3[0]]);
   assert.ok(caja.textContent.includes(G_INICIAL.alt[0]));
   assert.ok(caja.textContent.includes("Asiento 1 de 4"), "el contador dice «Asiento»");
@@ -164,6 +181,50 @@ test("★★★ el estante: las seis cuentas del paquete, en orden y SIN montos"
   desmontar();
 });
 
+/*
+ * Lote 3 · A (hoja de Mai): una fila del estante baja («abajo») solo si su nombre, al lado de los
+ * botones, pasa de 3 renglones, y sus botones siguen en la misma columna. JSDOM no mide: aquí se
+ * le da a cada fila 258 px y a los botones 75 y 87, y la copia del nombre ocupa 5 renglones si es
+ * de las dos cuentas largas del cierre y 2 si no. La medida de verdad, en Chromium, la hace
+ * scripts/b5/medir-b5-lote-mesas-a6.mjs.
+ */
+test("★★★ el estante en vivo: baja la fila cuyo nombre pasa de 3 renglones al lado de los botones; nada más cambia", async () => {
+  const LARGAS = [D.ESTANTE_T5_ACT2[4], D.ESTANTE_T5_ACT2[5]];
+  const original = w.Element.prototype.getBoundingClientRect;
+  w.Element.prototype.getBoundingClientRect = function () {
+    const caja = (width, height = 0) => ({ width, height, top: 0, left: 0, right: width, bottom: height, x: 0, y: 0 });
+    if (this.matches("[data-en-estante]")) return caja(258);
+    if (this.matches("[data-sacar]")) return caja(this.dataset.sacar.endsWith(":debe") ? 75 : 87, 44);
+    if (this.style.visibility === "hidden" && this.getAttribute("aria-hidden") === "true") {
+      const renglones = LARGAS.includes(this.textContent) ? 5 : 2;
+      return caja(parseFloat(this.style.width), renglones * parseFloat(this.style.lineHeight));
+    }
+    return original.call(this);
+  };
+  try {
+    const { caja, desmontar } = await montar();
+    const filas = [...caja.querySelectorAll("[data-en-estante]")];
+    assert.deepEqual(filas.filter((f) => f.dataset.forma === "abajo").map((f) => f.dataset.enEstante), LARGAS, "bajan solo las dos cuentas largas");
+    for (const f of filas) {
+      const abajo = f.dataset.forma === "abajo";
+      /* El orden en el DOM no cambia: nombre, «AL DEBE», «AL HABER». */
+      assert.deepEqual([...f.children].map((e) => (e.dataset.sacar ? e.dataset.sacar.split(":")[1] : "nombre")), ["nombre", "debe", "haber"]);
+      const [nombre, debe, haber] = f.children;
+      /* Los botones, en la misma columna en todas las filas; en una fila «abajo», en el renglón de debajo. */
+      assert.deepEqual([debe.style.gridColumn, haber.style.gridColumn], ["2", "3"], `«${f.dataset.enEstante}»: los botones en su columna`);
+      assert.equal(debe.style.gridRow, abajo ? "2" : "1");
+      assert.equal(nombre.style.gridColumn, abajo ? "1 / -1" : "1");
+      assert.equal(f.style.rowGap, "4px", "4 px entre el nombre y sus botones");
+      assert.equal(debe.style.minHeight, "44px");
+    }
+    /* La copia que mide no queda en la página. */
+    assert.equal(caja.querySelectorAll('[data-estante] [aria-hidden="true"]').length, 0);
+    desmontar();
+  } finally {
+    w.Element.prototype.getBoundingClientRect = original;
+  }
+});
+
 /* ═══════════ LA PRIORIDAD DE ERRORES: D > C > A > B ═══════════ */
 
 const al = (cuenta, lado, valor) => ({ cuenta, lado, valor });
@@ -188,7 +249,8 @@ test("★★★ prioridad D > C > A > B en las cuatro partes, cada una con su te
       await armar(caja, puestas);
       assert.equal(caja.querySelector("[data-panel]").dataset.error, tipo, `parte ${n}: ${tipo}`);
       /* La D nombra la cuenta que sobra y sigue con el texto del paquete (Sakuta, calidad 1). */
-      const esperado = tipo === "D" ? textoD({ asiento: ok, errores: { D: errorDe(n, "D"), razones: parte(n).errores.razones } }, puestas) : errorDe(n, tipo);
+      const esperado = tipo === "D" ? textoD({ asiento: ok, errores: { D: errorDe(n, "D"), razones: parte(n).errores.razones } }, puestas)
+        : tipo === "B" ? bE3(n, [ok[0].cuenta]) : errorDe(n, tipo);
       assert.equal(textoRetro(caja), esperado, `parte ${n}: texto ${tipo}`);
       desmontar();
     }
@@ -211,26 +273,35 @@ test("★★★ C7, los dos caminos: cuadrar sin la ganancia → A (la explica);
     assert.equal(m.caja.querySelector("[data-panel]").dataset.error, "C7");
     assert.equal(textoRetro(m.caja), errorDe(n, "C7"), `parte ${n}: B · C7`);
     m.desmontar();
-    /* Inversiones – títulos bien y otro valor mal: la B «otro valor», no la C7. */
+    /* Inversiones – títulos bien y otro valor mal: la B que nombra la cuenta (E3), no la C7. */
     m = await montar({ items: [parte(n)] });
     await armar(m.caja, ok.map((e) => (e.cuenta === otra ? { ...e, valor: e.valor + 1000 } : e)));
-    assert.equal(textoRetro(m.caja), errorDe(n, "B"));
+    assert.equal(textoRetro(m.caja), bE3(n, [otra]));
+    m.desmontar();
+    /* Dos valores errados: los nombra los dos, en el orden del asiento, con «e» ante el sonido i (corrección de Shoko). */
+    m = await montar({ items: [parte(n)] });
+    await armar(m.caja, ok.map((e) => (e.cuenta === otra || e.cuenta === "Caja" ? { ...e, valor: e.valor + 1000 } : e)));
+    assert.equal(textoRetro(m.caja), bE3(n, ["Caja", otra]));
+    assert.match(textoRetro(m.caja), n === 2 ? /^Revisa los valores de Caja e Ingresos financieros/ : /^Revisa los valores de Caja y Gastos financieros/);
     m.desmontar();
   }
 });
 
 /* ═══════════ EL ASIENTO REVELADO Y EL ACIERTO ═══════════ */
 
-test("★★★ tras el error se revela el asiento correcto y ya no hay segundo intento", async () => {
+test("★★★ E4: tras el error, la mesa del estudiante se queda como la armó, con lo correcto junto, y ya no hay segundo intento", async () => {
   const { caja, desmontar } = await montar({ items: [parte(2)] });
-  await armar(caja, parte(2).asiento.map((e) => (e.cuenta === "Inversiones – títulos" ? { ...e, valor: 1725000 } : e)));
-  const esperado = parte(2).asiento.map((e) => ({ cuenta: e.cuenta, lado: e.lado, texto: e.valor.toLocaleString("es-CO").replace(/,/g, ".") }));
-  assert.deepEqual(mesaVista(caja).sort((a, b) => a.cuenta.localeCompare(b.cuenta)), esperado.sort((a, b) => a.cuenta.localeCompare(b.cuenta)));
-  assert.equal(caja.querySelector("[data-conector]").dataset.conector, "cerrado");
+  const puestas = parte(2).asiento.map((e) => (e.cuenta === "Inversiones – títulos" ? { ...e, valor: 1725000 } : e));
+  await armar(caja, puestas);
+  comprobarMesaE4(caja, parte(2), puestas, "parte 2, C7");
+  /* Los totales son los del estudiante: su asiento no cuadra, y el conector lo dice. */
+  assert.equal(caja.querySelector("[data-conector]").dataset.conector, "abierto");
   assert.equal(caja.querySelector("[data-confirmar-parte]"), null, "un solo intento");
   assert.ok([...caja.querySelectorAll("input")].every((i) => i.readOnly));
   assert.equal(caja.querySelector("[data-visto-parte]"), null, "con error no hay marca");
-  assert.ok(caja.querySelector("[data-retro]").textContent.startsWith("Incorrecto: "));
+  /* Lote 6d: el bloque de error del estándar único; «Incorrecto.» lo dice el lector. */
+  assert.ok(caja.querySelector("[data-retro]").textContent.startsWith("Incorrecto. "));
+  assert.equal(caja.querySelector('[data-retro] [role="status"]').dataset.retro, "mal");
   desmontar();
 });
 
@@ -243,10 +314,10 @@ test("★★★ al acertar: la marca junto al rótulo, «Correcto.» para el lec
   desmontar();
 });
 
-test("★★ «Confirmar asiento» solo con alguna cuenta en la mesa y todas con valor", async () => {
+test("★★ «Comprobar» (lote 6d; antes «Confirmar asiento») solo con alguna cuenta en la mesa y todas con valor", async () => {
   const { caja, desmontar } = await montar({ items: [parte(1)] });
   const boton = () => caja.querySelector("[data-confirmar-parte]");
-  assert.equal(boton().textContent, "Confirmar asiento");
+  assert.equal(boton().textContent, "Comprobar");
   assert.equal(boton().disabled, true);
   await armar(caja, [al("Caja", "debe", 120000)], false);
   await tocar(caja.querySelector('[data-sacar="Ingresos por intereses:haber"]'));
@@ -309,26 +380,32 @@ test("★★★ el diario (hallazgo 9 de Shoko): no ocupa sitio hasta confirmar 
   assert.equal(boton.getAttribute("aria-expanded"), "false");
   assert.equal(caja.querySelector("[data-diario-boton]").textContent, "Ver");
   assert.equal(caja.querySelectorAll("[data-asiento-diario]").length, 0, "cerrado no muestra asientos");
-  /* El diario va entre el encabezado y el contador. */
+  /* Lote 6c: el diario baja al final de la tarjeta, debajo de «Siguiente». */
   const diario = caja.querySelector("[data-libro-diario]");
-  assert.ok(caja.querySelector("[data-consigna]").compareDocumentPosition(diario) & w.Node.DOCUMENT_POSITION_FOLLOWING);
-  assert.ok(diario.compareDocumentPosition(caja.querySelector("[data-tarjeta-parte]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+  assert.ok(caja.querySelector("[data-boton-avanzar]").compareDocumentPosition(diario) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+  assert.ok(caja.querySelector("[data-tarjeta-parte]").compareDocumentPosition(diario) & w.Node.DOCUMENT_POSITION_FOLLOWING);
   desmontar();
 });
 
-test("★★★ el diario crece con el asiento CORRECTO de cada parte comprobada; se abre solo una vez, con el primero, y después conserva su estado", async () => {
+test("★★★ el diario crece con el asiento CORRECTO de cada parte comprobada; nada dos veces (lote 6c): se abre con cada asiento confirmado y se pliega solo al empezar el siguiente", async () => {
   const { caja, desmontar } = await montar();
+  const abierto = () => caja.querySelector("[data-diario-alternar]").getAttribute("aria-expanded");
   for (let n = 1; n <= 4; n++) {
+    /* Mientras se arma, el estante a la vista y el diario plegado (desde la 2: antes no ocupa sitio). */
+    if (n > 1) {
+      assert.equal(abierto(), "false", `${n}: plegado mientras se arma`);
+      assert.ok(caja.querySelector("[data-estante]"), `${n}: el estante, a la vista`);
+      assert.equal(caja.querySelector("[data-diario-cuenta]").textContent, `${n} asientos`, "plegado, con su cuenta a la vista");
+    }
     /* Mal la 2 y la 4: el diario igual anota lo correcto. */
     await armar(caja, n % 2 ? parte(n).asiento : [parte(n).asiento[0]]);
     assert.equal(caja.querySelector("[data-diario-cuenta]").textContent, `${n + 1} asientos`);
-    if (n === 1) assert.equal(caja.querySelector("[data-diario-alternar]").getAttribute("aria-expanded"), "true", "se abre solo con el primero");
-    /* Se cierra en la 2: ya no se vuelve a abrir solo. */
-    if (n === 2) await tocar(caja.querySelector("[data-diario-alternar]"));
+    assert.equal(abierto(), "true", `${n}: se abre con el asiento nuevo`);
+    assert.equal(caja.querySelector("[data-estante]"), null, `${n}: el estante, plegado`);
     await avanzar(caja);
-    if (n >= 2) assert.equal(caja.querySelector("[data-diario-alternar]").getAttribute("aria-expanded"), "false", "conserva su estado al cambiar de asiento");
   }
-  await tocar(caja.querySelector("[data-diario-alternar]"));
+  /* En el resumen se queda abierto, con el último asiento. */
+  assert.equal(abierto(), "true");
   /* En el resumen, los cinco asientos, literales del paquete; el Haber con sangría. */
   assert.deepEqual(filasVistas(caja), G_ASIENTOS.map(filaEsperada));
   for (const m of caja.querySelectorAll("[data-movimiento]")) {
@@ -413,7 +490,8 @@ test("★★★ «1.725.000», la cifra más larga de las respuestas, cabe en el
   const phs = px(seccion.style.paddingLeft);
   assert.equal(phs, 0, "la parte, sin relleno lateral");
   assert.equal(seccion.style.border, "", "y sin borde (calidad 1)");
-  assert.equal(seccion.style.marginTop, "16px", "16 px de aire con lo de encima");
+  /* Lote 6c (B1): la parte del asiento va justo bajo el encabezado, con la mesa arriba; el hecho, entre la mesa y el estante. */
+  assert.equal(seccion.style.marginTop, "0px");
   const util = UTIL_320 - 2 * phs;
   const columna = (util - px(mesa.style.gap)) / 2;
   const [pv, ph] = tarjeta.style.padding.split(" ").map(px);

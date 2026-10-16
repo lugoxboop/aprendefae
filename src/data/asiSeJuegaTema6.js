@@ -1,10 +1,8 @@
 import { T6_ACT2, REGLAS_T6_ACT2, PROVISION_2007_T6_ACT2, ALT_TUTORIAL_T6_ACT2, GASTO, PROVISION } from "./contabilidadT6Act2.js";
 import { T6_ACT3, REGLAS_T6_ACT3, CASTIGO_T6_ACT3, ALT_TUTORIAL_T6_ACT3, CLIENTES } from "./contabilidadT6Act3.js";
-import { T6_ACT1, REGLAS_T6_ACT1, FICHAS_T6_ACT1, CUENTAS, LADOS, CLIENTES as A_CLIENTES, ACREDITA, BOTON_T6_ACT1 } from "./contabilidadT6Act1.js";
+import { T6_ACT1, REGLAS_T6_ACT1, FICHAS_T6_ACT1, CAJONES_T6_ACT1, CLIENTES as A_CLIENTES, ACREDITA } from "./contabilidadT6Act1.js";
 import { T6_ACT4, REGLAS_T6_ACT4, EJEMPLO_T6_ACT4 } from "./contabilidadT6Act4.js";
-import { T6_ACT5, REGLAS_T6_ACT5, CASILLAS_T6_ACT5 } from "./contabilidadT6Act5.js";
 import { T6_ACT6, REGLAS_T6_ACT6, GRUPOS_T6_ACT6 } from "./contabilidadT6Act6.js";
-import { T6_ACT7, REGLAS_T6_ACT7, EJEMPLO_T6_ACT7, METODOS, MOMENTOS, PROVISIONES, CIERRE, BOTON_T6_ACT7 } from "./contabilidadT6Act7.js";
 import { pegarPorcentaje } from "../contabilidad/t6Pieza5.js";
 
 /*
@@ -61,39 +59,32 @@ const ASI_DEUDA_QUE_VUELVE = {
   cuadros: { gesto: 4 },
 };
 
-/* b5-t6-a1: la ficha del pago, Clientes que se acredita. */
+/* b5-t6-a1: la ficha del pago, Clientes que se acredita. Lote 6a: la mano toca su cajón, que la coloca. */
 export const DEMO_T6_ACT1 = FICHAS_T6_ACT1.find((f) => f.id === "pago");
-const rotulo = (lista, id) => lista.find((x) => x.id === id).rotulo;
+const CAJON_DEMO_T6 = CAJONES_T6_ACT1.find((k) => k.cuenta === A_CLIENTES && k.lado === ACREDITA);
 const ASI_CLIENTES_O_OTRA = {
   actividadId: T6_ACT1.id,
   titulo: T6_ACT1.nombre,
   consigna: T6_ACT1.consigna,
   pasos: REGLAS_T6_ACT1,
-  alt: `la ficha «${DEMO_T6_ACT1.texto}» va en «${rotulo(CUENTAS, A_CLIENTES)}» y, dentro, en «${rotulo(LADOS, ACREDITA)}».`,
+  /* PARA SHOKO: la misma frase de antes con un solo destino. */
+  alt: `la ficha «${DEMO_T6_ACT1.texto}» va en «${CAJON_DEMO_T6.rotulo}».`,
   demo: { items: [DEMO_T6_ACT1] },
-  guion: {
-    duracion: 7500,
-    toques: [
-      { ms: 2000, en: `[data-nivel1="${A_CLIENTES}"]` },
-      { ms: 3500, en: `[data-nivel2="${ACREDITA}"]` },
-      { ms: 5000, texto: BOTON_T6_ACT1.colocar },
-    ],
-  },
-  cuadros: { gesto: 2 },
+  guion: { duracion: 7500, toques: [{ ms: 2500, en: `[data-cajon="${A_CLIENTES}/${ACREDITA}"]` }] },
+  cuadros: { gesto: 1 },
 };
 
 /*
- * ═══════════ LOS CUATRO HACER NUEVOS (b5-t6-a4 a b5-t6-a7) ═══════════
+ * ═══════════ LOS HACER NUEVOS (b5-t6-a4 y b5-t6-a6) ═══════════
  *
  * Cada «Así se juega» lleva las tres reglas aprobadas y un ejemplo resuelto.
  * Los ejemplos se arman SOLO con textos que ya existen: el tutorial de Futaba,
  * los nombres de los grupos y las cifras de la propia historia. La hoja corta
  * de Mai puede cambiarlos.
  *   · a4: el hecho del tutorial, fuera del banco; la mano toca el gasto.
- *   · a5: el punto de partida de 2007; la mano toca el saldo de la provisión
- *     ($148.800), entre dos cifras de la misma historia.
  *   · a6: la deuda de nueve meses del tutorial; la mano toca su grupo.
- *   · a7: la ficha del tutorial, fuera del banco, como b5-t6-a1.
+ * (b5-t6-a7 se retiró en el lote 4, y con él su «Así se juega»; b5-t6-a5 se
+ * fundió en a2 en el lote 6b, y su «Así se juega» se fue con ella.)
  */
 const unToque = (en) => ({ duracion: 7500, toques: [{ ms: 2500, en }] });
 
@@ -105,26 +96,6 @@ const ASI_QUE_SE_DEBITA = {
   alt: `${EJEMPLO_T6_ACT4.texto} ${EJEMPLO_T6_ACT4.acierto}`,
   demo: { items: [EJEMPLO_T6_ACT4] },
   guion: unToque(`[data-opcion="${EJEMPLO_T6_ACT4.respuesta}"]`),
-  cuadros: { gesto: 1 },
-};
-
-/* a5: la casilla del tutorial; sus tres cifras son de la misma historia (pp. 200-202). */
-const cifrasDe = (t) => [...t.matchAll(/\$(\d{1,3}(?:\.\d{3})*)/g)].map((m) => Number(m[1].replace(/\./g, "")));
-const [DEBEN_2007, , SALDO_2007] = cifrasDe(T6_ACT5.partida);
-export const EJEMPLO_T6_ACT5 = {
-  id: "b5-t6-a5-tutorial",
-  enunciado: T6_ACT5.partida.slice(0, T6_ACT5.partida.indexOf(" Al crear")),
-  opciones: [{ valor: SALDO_2007, tipo: null }, { valor: DEBEN_2007, tipo: "T1" }, { valor: CASILLAS_T6_ACT5[0].opciones[0].valor, tipo: "T2" }],
-  resolucion: T6_ACT5.partida.slice(T6_ACT5.partida.indexOf("Al crear")),
-};
-const ASI_CUENTA_DE_LA_PROVISION = {
-  actividadId: T6_ACT5.id,
-  titulo: T6_ACT5.nombre,
-  consigna: T6_ACT5.consigna,
-  pasos: REGLAS_T6_ACT5,
-  alt: T6_ACT5.partida,
-  demo: { items: [EJEMPLO_T6_ACT5] },
-  guion: unToque(`[data-opcion="${SALDO_2007}"]`),
   cuadros: { gesto: 1 },
 };
 
@@ -147,32 +118,10 @@ const ASI_PROVISION_POR_EDADES = {
   cuadros: { gesto: 1 },
 };
 
-/* a7: como b5-t6-a1. */
-const rotuloA7 = (lista, id) => lista.find((x) => x.id === id).rotulo;
-const ASI_QUE_METODO = {
-  actividadId: T6_ACT7.id,
-  titulo: T6_ACT7.nombre,
-  consigna: T6_ACT7.consigna,
-  pasos: REGLAS_T6_ACT7,
-  alt: `la ficha «${EJEMPLO_T6_ACT7.texto}» va en «${rotuloA7(METODOS, PROVISIONES)}» y, dentro, en «${rotuloA7(MOMENTOS, CIERRE)}».`,
-  demo: { items: [EJEMPLO_T6_ACT7] },
-  guion: {
-    duracion: 7500,
-    toques: [
-      { ms: 2000, en: `[data-nivel1="${PROVISIONES}"]` },
-      { ms: 3500, en: `[data-nivel2="${CIERRE}"]` },
-      { ms: 5000, texto: BOTON_T6_ACT7.colocar },
-    ],
-  },
-  cuadros: { gesto: 2 },
-};
-
 export const ASI_SE_JUEGA_TEMA6 = {
   [ASI_PROVISION.actividadId]: ASI_PROVISION,
   [ASI_DEUDA_QUE_VUELVE.actividadId]: ASI_DEUDA_QUE_VUELVE,
   [ASI_CLIENTES_O_OTRA.actividadId]: ASI_CLIENTES_O_OTRA,
   [ASI_QUE_SE_DEBITA.actividadId]: ASI_QUE_SE_DEBITA,
-  [ASI_CUENTA_DE_LA_PROVISION.actividadId]: ASI_CUENTA_DE_LA_PROVISION,
   [ASI_PROVISION_POR_EDADES.actividadId]: ASI_PROVISION_POR_EDADES,
-  [ASI_QUE_METODO.actividadId]: ASI_QUE_METODO,
 };

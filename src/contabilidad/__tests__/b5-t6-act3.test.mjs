@@ -22,6 +22,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+const { comprobarMesaE4 } = await import("./b5-mesa-e4.mjs");
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
 w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
@@ -53,13 +54,16 @@ const { DEBE, HABER } = await import("../../data/contabilidad.js");
 const PARTES = D.PARTES_T6_ACT3;
 const { GASTO, PROVISION, CLIENTES, CAJA, INGRESOS } = D;
 
-const montar = async ({ items = undefined, onCompletar = () => {}, modoDemo = false } = {}) => {
+const montar = async ({ items = undefined, onCompletar = () => {}, modoDemo = false, empezar = true } = {}) => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
   await act(async () => {
     raiz.render(h(DeudaQueVuelve, { Marco: MarcoLibros, rotulo: "PRUEBA", titulo: "Prueba", acento: FAE.ambar, onCompletar, items, modoDemo }));
   });
+  /* Lote 6c: el ejemplo resuelto es su propio paso; la partida empieza con «Empezar». */
+  const empieza = caja.querySelector("[data-boton-empezar] button");
+  if (empezar && empieza) await act(async () => { empieza.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
 const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
@@ -146,7 +150,11 @@ test("★★★ ningún componente escribe texto de la actividad", () => {
 test("★★★ encabezado, contador «Asiento 1 de 5», texto alternativo y el estante de cinco cuentas, sin montos", async () => {
   const { caja, desmontar } = await montar();
   assert.equal(caja.querySelector("[data-objetivo]").textContent, D.T6_ACT3.objetivo);
+  /* Lote 6c: la consigna va plegada bajo «¿Cómo se juega?» (encabezado compacto). */
+  assert.equal(caja.querySelector("[data-consigna]"), null);
+  await tocar(caja.querySelector("[data-como-se-juega]"));
   assert.equal(caja.querySelector("[data-consigna]").textContent, D.T6_ACT3.consigna);
+  assert.deepEqual([...caja.querySelectorAll("[data-encabezado] [data-pasos] li")].map((li) => li.textContent), D.REGLAS_T6_ACT3);
   assert.ok(caja.textContent.includes("Asiento 1 de 5"));
   assert.ok(caja.textContent.includes(D.ALT_T6_ACT3));
   assert.deepEqual([...caja.querySelectorAll("[data-nombre-estante]")].map((n) => n.textContent), [CAJA, CLIENTES, PROVISION, GASTO, INGRESOS]);
@@ -192,7 +200,7 @@ const CASOS = [
   [4, "C", [hb(CLIENTES, 100000)], "al revés y falta la provisión: C manda sobre A"],
 ];
 
-test("★★★ la prioridad D > C > A > B con su texto en el panel, las B específicas (C14, $180.000 en la parte 4) y el asiento correcto revelado", async () => {
+test("★★★ la prioridad D > C > A > B con su texto en el panel, las B específicas (C14, $180.000 en la parte 4) y E4: la mesa del estudiante se queda, con lo correcto junto", async () => {
   for (const [k, tipo, puestas, nota] of CASOS) {
     const p = PARTES[k];
     const { caja, desmontar } = await montar({ items: [p] });
@@ -200,8 +208,7 @@ test("★★★ la prioridad D > C > A > B con su texto en el panel, las B espec
     assert.equal(caja.querySelector("[data-panel]").dataset.error, tipo, `${p.id}: ${nota}`);
     const esp = p.errores.especificas.find((e) => e.clave === tipo);
     assert.equal(textoRetro(caja), esp ? esp.texto : tipo === "D" ? M.textoD(p, puestas) : p.errores[tipo], `${p.id} ${tipo}: el texto`);
-    assert.deepEqual(mesaVista(caja).map((m) => `${m.lado}:${m.cuenta}:${m.texto}`).sort(),
-      p.asiento.map((m) => `${m.lado}:${m.cuenta}:${m.valor.toLocaleString("es-CO").replace(/,/g, ".")}`).sort(), `${p.id}: el asiento revelado`);
+    comprobarMesaE4(caja, p, puestas, `${p.id} ${tipo}`);
     desmontar();
   }
 });
@@ -248,4 +255,49 @@ test("★★ identificadores con b5-t6-a3, y el diario de b5-t6-a2 no se agrupa 
   assert.equal(caja.querySelectorAll("[data-fecha-diario]").length, 2, "sin agrupar, cada asiento lleva su etiqueta");
   act(() => raiz.unmount());
   caja.remove();
+});
+
+/* ═══════════ LOTE 6c · ENGANCHE B1-B5 (hoja de Mai, parte Hacer) ═══════════ */
+
+test("★★★ lote 6c · el ejemplo resuelto es su propio paso: primero el asiento, después el enunciado y la explicación, y «Empezar»; no cuenta en el contador", async () => {
+  const { caja, desmontar } = await montar({ empezar: false });
+  const e = D.CASTIGO_T6_ACT3;
+  const ej = caja.querySelector("[data-ejemplo-resuelto]");
+  assert.ok(ej, "sin el paso del ejemplo");
+  assert.equal(caja.querySelector("[data-contador]").textContent, "Ejemplo resuelto");
+  /* La figura primero: la mesa con el asiento ya hecho, sin estante. */
+  const mesa = ej.querySelector("[data-mesa]");
+  assert.deepEqual([...mesa.querySelectorAll("[data-en-mesa]")].map((n) => n.dataset.enMesa), e.asiento.map((m) => m.cuenta));
+  assert.equal(ej.querySelector("[data-estante]"), null);
+  assert.equal(ej.querySelector("[data-conector]").dataset.conector, "cerrado");
+  assert.ok(mesa.compareDocumentPosition(ej.querySelector("[data-hecho]")) & 4, "el asiento antes del enunciado");
+  assert.equal(ej.querySelector("[data-hecho]").textContent, e.hecho);
+  assert.deepEqual([...ej.querySelectorAll("[data-resolucion] p")].map((p) => p.textContent), e.resolucion);
+  const empezar = caja.querySelector("[data-boton-empezar] button");
+  assert.equal(empezar.textContent, "Empezar");
+  await tocar(empezar);
+  assert.equal(caja.querySelector("[data-ejemplo-resuelto]"), null);
+  assert.equal(caja.querySelector("[data-contador]").textContent, "Asiento 1 de 5");
+  desmontar();
+});
+
+test("★★★ lote 6c · en la tarjeta de asiento: la mesa arriba, el hecho entre la mesa y el estante, la instrucción solo para el lector (aria-describedby), el rótulo del estante con 8 y 6, y el diario al final, bajo «Siguiente»", async () => {
+  const { caja, desmontar } = await montar();
+  const p = PARTES[0];
+  const seccion = caja.querySelector(`[data-parte="${p.id}"]`);
+  const mesa = seccion.querySelector("[data-mesa]");
+  const hecho = seccion.querySelector("[data-hecho]");
+  const estante = seccion.querySelector("[data-estante]");
+  assert.ok(mesa.compareDocumentPosition(hecho) & 4, "la mesa antes del hecho");
+  assert.ok(hecho.compareDocumentPosition(estante) & 4, "el hecho antes del estante");
+  const instruccion = seccion.querySelector("[data-instruccion]");
+  assert.equal(instruccion.textContent, p.instruccion);
+  assert.equal(instruccion.style.position, "absolute", "fuera de la pantalla");
+  assert.equal(seccion.getAttribute("aria-describedby"), instruccion.id);
+  const rotulo = seccion.querySelector("[data-rotulo-estante]");
+  assert.deepEqual([rotulo.style.marginTop, rotulo.style.marginBottom], ["8px", "6px"]);
+  await armar(caja, p.asiento);
+  const diario = caja.querySelector("[data-libro-diario]");
+  assert.ok(caja.querySelector("[data-boton-avanzar]").compareDocumentPosition(diario) & 4, "el diario, bajo «Siguiente»");
+  desmontar();
 });

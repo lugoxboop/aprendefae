@@ -3,6 +3,10 @@ import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
+import { Marca, CORRECTA, TACHADA } from "../b5/MarcasE4.jsx";
+import { escalera, fallaDe, elegir, sePuedeElegir } from "./escaleraB5.js";
+import { SOLO_LECTOR } from "../verbos.jsx";
+import FiguraPegada, { asomarBajoLaFigura } from "./FiguraPegada.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -44,11 +48,22 @@ function Chevron({ abierto = false, reducido = true }) {
  * `falla` es la devolución si se elige otra (un texto para todas, o uno por
  * opción). Abierta, la caja pide la decisión: la pregunta (Sora 600 13/1,35)
  * y las opciones con la forma de las de UnaFrase, en el orden de Futaba (no
- * se barajan). Un intento, sin puntaje y sin botón: al elegir, la correcta
- * queda con el resalte de la serie (borde 2 nodo, relleno navy y 1 px menos
- * de relleno: nada se mueve), la elegida mala tachada y a opacidad entera, y
- * las demás al 0,5. Debajo, si falló, la devolución con la forma de la de
- * UnaFrase (sin coral) y, siempre, el texto de antes con su filete y su pie.
+ * se barajan). Sin puntaje y sin botón.
+ *
+ * LA ESCALERA DE AYUDA (lote C2, escaleraB5.js): con `pista`, dos intentos.
+ * Al primer error, la elegida queda tachada (y no se vuelve a tocar), las
+ * demás siguen activas y debajo sale la PISTA, con la forma de la
+ * devolución; ni la devolución ni el texto. Sin pista, un solo intento.
+ *
+ * NADA DOS VECES (B5 de Futaba y §3 de Mai, enganche B1-B5): la pregunta de
+ * la caja solo se ve mientras falta decidir. Al decidir (acierto o segundo
+ * error) sale de la pantalla y pasa a una copia oculta con el mismo id: sigue
+ * siendo el nombre del grupo de opciones (aria-labelledby). De las opciones
+ * queda solo la elegida, con su marca E4 (MarcasE4.jsx): ✓, borde 2 nodo,
+ * relleno navy y 1 px menos de relleno si acertó; ✕ y tachada si no. Debajo,
+ * quien acierta lee el texto que se revela, con su filete y su pie; quien se
+ * cierra con error lee la devolución de su opción y el pie, pero NO el texto
+ * (evita dos frases casi iguales; la figura ya muestra lo correcto).
  * `forma`: «fila» (separación 4, relleno 10/3, centrado) o «columna»
  * (separación 6, relleno 10/12, a la izquierda), una por pieza.
  */
@@ -62,9 +77,7 @@ const ESTILOS_DECIDE = `
 .b5-decide-aparece { animation: b5-decide-aparece 240ms ease-out both; }
 @media (prefers-reduced-motion: reduce) { .b5-decide-aparece { animation: none; } }
 `;
-export const fallaDe = (decide, elegida) => (elegida && elegida !== decide.correcta
-  ? (typeof decide.falla === "string" ? decide.falla : decide.falla[elegida])
-  : null);
+export { fallaDe };
 
 /*
  * La opción de decidir (hoja 6). No es la Opcion de corazon/juego.jsx, la de
@@ -72,22 +85,24 @@ export const fallaDe = (decide, elegida) => (elegida && elegida !== decide.corre
  * marcador y se desactiva con disabled; esta tiene la forma de las de
  * UnaFrase, sin coral (en la capa 3 no hay patrón de error), y queda con
  * aria-disabled para no perder el foco. La comparten la capa 3 y la parada
- * de la capa 2.
+ * de la capa 2. `estado` es el de la escalera (escaleraB5.js): una elegida
+ * mala queda tachada y sin poder tocarse desde el primer error.
  */
-export function OpcionDecidir({ opcion, forma, elegida, correcta, reducido, onElegir }) {
-  const decidida = elegida !== null;
+export function OpcionDecidir({ opcion, forma, estado, correcta, reducido, onElegir }) {
+  const decidida = estado.resuelta;
   const esCorrecta = decidida && opcion.id === correcta;
-  const tachada = decidida && opcion.id === elegida && !esCorrecta;
+  const tachada = estado.tachadas.includes(opcion.id);
+  const bloqueada = decidida || tachada;
   const fila = forma === "fila";
   const d = esCorrecta ? 1 : 0;
   return (
     <button
       type="button"
       data-opcion={opcion.id}
-      data-marca={!decidida ? "" : esCorrecta ? "correcta" : tachada ? "tachada" : "apagada"}
-      aria-pressed={opcion.id === elegida}
-      aria-disabled={decidida || undefined}
-      onClick={() => { if (!decidida) onElegir(opcion.id); }}
+      data-marca={esCorrecta ? "correcta" : tachada ? "tachada" : decidida ? "apagada" : ""}
+      aria-pressed={opcion.id === estado.ultima}
+      aria-disabled={bloqueada || undefined}
+      onClick={() => { if (!bloqueada) onElegir(opcion.id); }}
       style={{
         ...(fila ? { flex: "1 1 0", minWidth: 0, textAlign: "center" } : { width: "100%", textAlign: "left" }),
         minHeight: "44px", boxSizing: "border-box", borderRadius: "11px",
@@ -98,10 +113,16 @@ export function OpcionDecidir({ opcion, forma, elegida, correcta, reducido, onEl
         textDecoration: tachada ? "line-through" : "none", textDecorationThickness: tachada ? "1.5px" : undefined,
         opacity: decidida && !esCorrecta && !tachada ? 0.5 : 1,
         transition: reducido ? "none" : "opacity 200ms ease",
-        cursor: decidida ? "default" : "pointer",
+        cursor: bloqueada ? "default" : "pointer",
       }}
     >
-      <span data-texto-opcion>{opcion.texto}</span>
+      {/* E4 (hoja de fusiones de Mai): ya tachaba; se le suman los íconos ✓ y ✕, con su texto oculto. */}
+      {(esCorrecta || tachada) ? (
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", ...(fila ? { justifyContent: "center" } : null) }}>
+          <Marca marca={esCorrecta ? CORRECTA : TACHADA} />
+          <span data-texto-opcion>{opcion.texto}</span>
+        </span>
+      ) : <span data-texto-opcion>{opcion.texto}</span>}
     </button>
   );
 }
@@ -135,9 +156,9 @@ export function useFormaQueCabe(forma) {
   return [forma === "fila" && !partida ? "fila" : "columna", seParte, vuelta];
 }
 /* Una opción se parte si su texto ocupa más de un renglón. */
-const seParteAlguna = (grupo) => [...grupo.querySelectorAll("[data-texto-opcion]")].some((t) => t.getClientRects().length > 1);
+export const seParteAlguna = (grupo) => [...grupo.querySelectorAll("[data-texto-opcion]")].some((t) => t.getClientRects().length > 1);
 
-export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "columna", elegida = null, onElegir = () => {}, onSeParte = () => {}, vuelta = 0 }) {
+export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "columna", intentos = [], onElegir = () => {}, onSeParte = () => {}, vuelta = 0, figura = null }) {
   const id = useId();
   const reducido = useReducido();
   const decide = caja.decide;
@@ -146,17 +167,34 @@ export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "
   useLayoutEffect(() => {
     if (forma === "fila" && grupo.current && seParteAlguna(grupo.current)) onSeParte();
   }, [forma, abierto, vuelta]); // eslint-disable-line react-hooks/exhaustive-deps
-  const decidida = elegida !== null;
-  const muestraTexto = abierto && (!decide || decidida);
-  const falla = decide ? fallaDe(decide, elegida) : null;
+  const estado = decide ? escalera(decide, intentos) : null;
+  const decidida = Boolean(estado?.resuelta);
+  /* El texto que se revela: sin decisión, al abrir; con decisión, solo a quien acierta (B5 de Futaba). */
+  const muestraTexto = abierto && (!decide || (decidida && estado.acerto));
+  const falla = estado?.falla ?? null;
+  const pista = estado?.pista ?? null;
+  /* Decidida, de las opciones queda solo la elegida (E4). */
+  const visibles = decide ? (decidida ? decide.opciones.filter((o) => o.id === estado.ultima) : decide.opciones) : [];
   const aparece = reducido ? undefined : "b5-decide-aparece";
   const zonaDecide = useRef(null);
+  const zonaPista = useRef(null);
   const zonaDevolucion = useRef(null);
+  const zonaTexto = useRef(null);
   const primerRenglon = useRef(null);
 
-  /* Al abrir: la pregunta y todas las opciones. Al elegir: la devolución entera, o el primer renglón del texto. */
+  /*
+   * Al abrir: la pregunta y todas las opciones. Al primer error: la pista. Al
+   * cerrarse: la devolución entera, o el primer renglón del texto. Con figura
+   * pegada (§2b de Mai), desde la opción elegida hasta el final de lo que se
+   * lee debajo, sin quedar tapada por la figura.
+   */
   useEffect(() => { if (decide && abierto && !decidida) asomar(zonaDecide.current, reducido); }, [abierto]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (decidida) asomar(falla ? zonaDevolucion.current : primerRenglon.current, reducido); }, [decidida]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (pista) asomar(zonaPista.current, reducido); }, [pista]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!decidida) return;
+    if (figura) { asomarBajoLaFigura(figura.current, grupo.current, falla ? zonaDevolucion.current : zonaTexto.current, reducido); return; }
+    asomar(falla ? zonaDevolucion.current : primerRenglon.current, reducido);
+  }, [decidida]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const chevron = decide ? <Chevron abierto={abierto} reducido={reducido} /> : !abierto && <Chevron />;
   return (
@@ -194,20 +232,31 @@ export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "
       </button>
       {decide && abierto && (
         <div ref={zonaDecide} data-decide={caja.id} className={aparece} style={{ padding: "0 14px 12px" }}>
-          <p id={`${id}-pregunta`} data-pregunta style={PREGUNTA}>{decide.pregunta}</p>
+          {/* La pregunta, a la vista mientras falta decidir; después, solo para el lector (el mismo id: el grupo conserva su nombre). */}
+          {decidida
+            ? <span id={`${id}-pregunta`} data-pregunta-oculta style={SOLO_LECTOR}>{decide.pregunta}</span>
+            : <p id={`${id}-pregunta`} data-pregunta style={PREGUNTA}>{decide.pregunta}</p>}
           <div ref={grupo} role="group" aria-labelledby={`${id}-pregunta`} data-opciones={forma} style={{
-            display: "flex", flexDirection: forma === "fila" ? "row" : "column", gap: forma === "fila" ? "4px" : "6px", marginTop: "8px",
+            display: "flex", flexDirection: forma === "fila" ? "row" : "column", gap: forma === "fila" ? "4px" : "6px", marginTop: decidida ? 0 : "8px",
           }}>
-            {decide.opciones.map((o) => (
-              <OpcionDecidir key={o.id} opcion={o} forma={forma} elegida={elegida} correcta={decide.correcta} reducido={reducido} onElegir={onElegir} />
+            {visibles.map((o) => (
+              <OpcionDecidir key={o.id} opcion={o} forma={forma} estado={estado} correcta={decide.correcta} reducido={reducido}
+                onElegir={(id) => { if (sePuedeElegir(decide, intentos, id)) onElegir(id); }} />
             ))}
           </div>
         </div>
       )}
       <div id={id} data-revela={caja.id} aria-live="polite">
-        {falla && <p ref={zonaDevolucion} data-devolucion className={aparece} style={DEVOLUCION}>{falla}</p>}
+        {pista && <p ref={zonaPista} data-pista className={aparece} style={DEVOLUCION}>{pista}</p>}
+        {falla && (
+          <div ref={zonaDevolucion}>
+            <p data-devolucion className={aparece} style={DEVOLUCION}>{falla}</p>
+            {/* Sin el texto que se revela, la fuente se queda: el pie, bajo la devolución. */}
+            {caja.pie && <p data-pie className={aparece} style={{ ...PIE, margin: "-4px 14px 12px" }}>{caja.pie}</p>}
+          </div>
+        )}
         {muestraTexto && (
-          <div className={decide ? aparece : undefined} style={{ margin: "0 14px 12px", paddingTop: "10px", borderTop: `1px solid ${ATENUADO}`, position: "relative" }}>
+          <div ref={zonaTexto} className={decide ? aparece : undefined} style={{ margin: "0 14px 12px", paddingTop: "10px", borderTop: `1px solid ${ATENUADO}`, position: "relative" }}>
             {/* El primer renglón del texto (14 × 1,55): hasta ahí se desplaza al acertar. */}
             <span ref={primerRenglon} aria-hidden="true" style={{ position: "absolute", left: 0, top: 0, width: "1px", height: "31.7px", pointerEvents: "none" }} />
             <p style={LECTURA}>{caja.revela}</p>
@@ -219,29 +268,57 @@ export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "
   );
 }
 
-export default function CajasQueRevelan({ consigna, contexto = null, cajas, final, estiloTitulo = LECTURA, forma: pedida = "columna", atributos = {} }) {
+/*
+ * `Figura` (§2b de Mai, T5 · A1, T5 · A2, T6 · A1 y T6 · A2): una figura
+ * pequeña entre la consigna y las cajas, pegada arriba de la capa mientras se
+ * recorren las cajas (FiguraPegada.jsx). Recibe `decididas` (los ids de las
+ * cajas ya cerradas, en el orden en que se cerraron) y se llena siempre con
+ * lo correcto; lo último que entró va resaltado.
+ */
+export default function CajasQueRevelan({ consigna, contexto = null, cajas, final, estiloTitulo = LECTURA, forma: pedida = "columna", atributos = {}, Figura = null }) {
   const [forma, seParte, vuelta] = useFormaQueCabe(pedida);
   const reducido = useReducido();
   const [abiertos, setAbiertos] = useState(() => new Set());
   const [elecciones, setElecciones] = useState(() => ({}));
   const bloqueFinal = useRef(null);
-  /* El final, cuando se han decidido todas (o, sin decisión, abierto todas). */
-  const lista = (x) => (x.decide ? elecciones[x.id] !== undefined : abiertos.has(x.id));
+  const figura = useRef(null);
+  const contenedor = useRef(null);
+  /* El final, cuando se han cerrado todas (acierto o segundo error; sin decisión, abiertas). */
+  const lista = (x) => (x.decide ? escalera(x.decide, elecciones[x.id]).resuelta : abiertos.has(x.id));
   const todos = cajas.every(lista);
+  /* Las cajas cerradas, en el orden en que se cerraron (lo que la figura llena). */
+  const [orden, setOrden] = useState(() => []);
+  const elegirEn = (x, o) => {
+    const nuevos = elegir(x.decide, elecciones[x.id] ?? [], o);
+    setElecciones((e) => ({ ...e, [x.id]: nuevos }));
+    if (escalera(x.decide, nuevos).resuelta) setOrden((d) => (d.includes(x.id) ? d : [...d, x.id]));
+  };
 
   useEffect(() => {
-    if (todos) bloqueFinal.current?.scrollIntoView?.({ block: "nearest", behavior: reducido ? "auto" : "smooth" });
+    if (!todos) return;
+    /*
+     * Con figura pegada, el final se asoma sin tapar con la figura la opción
+     * de la última caja: primero se ve la devolución entera (§2b de Mai).
+     */
+    const ultima = orden.length ? contenedor.current?.querySelector(`[data-hecho="${orden[orden.length - 1]}"] [role='group']`) : null;
+    if (Figura && ultima) { asomarBajoLaFigura(figura.current, ultima, bloqueFinal.current, reducido); return; }
+    bloqueFinal.current?.scrollIntoView?.({ block: "nearest", behavior: reducido ? "auto" : "smooth" });
   }, [todos]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div {...atributos} className={CLASE_T5}>
+    <div ref={contenedor} {...atributos} className={CLASE_T5}>
       <EstilosT5 />
       <p style={{ ...LECTURA, fontFamily: SORA }}>{consigna}</p>
       {contexto && <p style={{ ...LECTURA, marginTop: "12px" }}>{contexto}</p>}
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
+      {Figura && (
+        <FiguraPegada ref={figura} contenedor={contenedor}>
+          <Figura decididas={orden} />
+        </FiguraPegada>
+      )}
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: Figura ? "4px" : "12px" }}>
         {cajas.map((x) => (
           <Caja key={x.id} caja={x} estiloTitulo={estiloTitulo} forma={forma} abierto={abiertos.has(x.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(x.id))}
-            elegida={elecciones[x.id] ?? null} onElegir={(o) => setElecciones((e) => ({ ...e, [x.id]: o }))} onSeParte={seParte} vuelta={vuelta} />
+            intentos={elecciones[x.id]} onElegir={(o) => elegirEn(x, o)} onSeParte={seParte} vuelta={vuelta} figura={Figura ? figura : null} />
         ))}
       </div>
       <div ref={bloqueFinal} data-final aria-live="polite">

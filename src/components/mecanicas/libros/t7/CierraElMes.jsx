@@ -15,6 +15,8 @@ import { CSS_T7_HACER, Ficha, LineasConComprobar, TEXTO, INTER, APAGADO } from "
 import { Plegable } from "./plegable.jsx";
 import { ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
+import FiguraAcumulada from "./FiguraAcumulada.jsx";
+import { FIGURA_T7_1_H4 } from "../../../../contabilidad/figuraAcumulada.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -35,6 +37,10 @@ import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
  * mercancías, con «Comprobar» (patrón v3.2).
  *
  * Al terminar: onCompletar(pct, ms, detalle) con las catorce unidades.
+ *
+ * LOTE 5 (L): el estado de resultados ya resuelto pasa a la figura acumulada
+ * (FiguraAcumulada.jsx) y se queda en la parte 2; las dos líneas del cierre
+ * se suman al comprobarlas.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -131,6 +137,8 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
         <Encabezado consigna={sinUnSoloIntento(H4.consigna.join(" "))} onComoSeJuega={onComoSeJuega} />
         <p data-entrada style={{ ...TEXTO, fontSize: "14px", lineHeight: "21px", margin: "0 0 8px" }}>{H4.entrada}</p>
         <Ficha filas={FICHA_H4} />
+        {/* La figura acumulada: en la parte 1 la tabla es el ítem mismo; se queda, ya resuelta, desde la parte 2. */}
+        <FiguraAcumulada figura={FIGURA_T7_1_H4} cerrados={parte === 1 ? 0 : 1 + (cierreHecho ? 1 : 0)} listo={parte === 2 && cierreHecho} />
         <div style={{ marginBottom: "12px" }}>
           <ContadorConIntento>
             <Pulsos total={2} hechos={(parte === 1 ? 0 : 1) + ((parte === 1 && revision) || (parte === 2 && cierreHecho) ? 1 : 0)} enCurso={parte} etiqueta="Parte" />

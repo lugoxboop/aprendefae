@@ -8,14 +8,20 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * T5 · HACER 1 — «¿Qué renta da este título?» (Célula B, b5-t5-a1).
  *
  * Vigila LO QUE SE VE, no solo lo que se calcula:
- *   · el rótulo del botón en cada estado, y que quepa en UNA línea a 320
- *   · las 14 fichas, sus devoluciones de acierto, las tres de error y las
- *     TRES columnas de las fichas de nombre, literales de la guía guardada
- *     (orquestador/conocimiento/paquetes/b5-t5-act1.md), ficha por ficha
- *   · el segundo fallo de una ficha de nombre de renta fija: la lista del libro
- *   · las correcciones de Shoko: en el reintento, la devolución del error de
- *     ESE intento; tras acertar el reintento, solo el ✅; el aviso, solo
- *     mientras se espera el reintento; la devolución por Retro (role=status)
+ *   · lote 6a (hoja de fusiones de Mai): los tres cajones son las opciones, con
+ *     las marcas de E4; la tanda reparte entre 2 y 4 por cajón (R10)
+ *   · las 14 fichas y sus devoluciones de acierto, literales de la guía
+ *     guardada (orquestador/conocimiento/paquetes/b5-t5-act1.md), ficha por ficha
+ *   · E5 (Futaba, fila 11 de Shoko): al primer fallo, con cualquier cajón, la
+ *     PISTA de la ficha, literal de la guía (§12.1); al segundo, la respuesta;
+ *     acertada al primer intento, la pista no se ve nunca
+ *   · las correcciones de Shoko: tras acertar el reintento, solo el acierto;
+ *     el aviso, solo mientras se espera el reintento; la devolución en una
+ *     región viva (role=status)
+ *   · lote 6d (estándar único de Hacer, el modelo T4): sin emoji; el bloque
+ *     de mensaje toma el veredicto del estado de la evaluación (Check y
+ *     «Correcto.», o X y «Incorrecto.» al lector); las pastillas «Correcto»,
+ *     «No va aquí» e «Iba aquí» en los cajones; «Ver mi resumen» al final
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -61,22 +67,18 @@ const montar = async (ids) => {
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
 const tocar = async (el) => { assert.ok(el, "no hay nada que tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
-const pestana = (caja, id) => caja.querySelector(`[data-nivel1="${id}"]`);
-const opcion = (caja, id) => caja.querySelector(`[data-nivel2="${id}"]`);
-const botonColocar = (caja) => caja.querySelector("[data-boton-colocar] button");
 const botonAvanzar = (caja) => caja.querySelector("[data-boton-avanzar] button");
-const rotuloBoton = (caja) => (botonColocar(caja) ?? botonAvanzar(caja) ?? [...caja.querySelectorAll("button")].at(-1)).textContent;
-/* Lo que se lee en la devolución, sin el texto oculto para lectores. */
+/* Lo que se lee en la devolución (lote 6d: el bloque de mensaje), sin el texto oculto para lectores. */
 const devolucion = (caja) => {
-  const p = caja.querySelector('[role="status"]');
+  const p = caja.querySelector('[role="status"] [data-devolucion]');
   if (!p) return null;
-  return [...p.childNodes].filter((n) => !(n.classList?.contains("fae-jg-oculto"))).map((n) => n.textContent).join("");
+  return [...p.childNodes].filter((n) => !(n.dataset && "lector" in n.dataset)).map((n) => n.textContent).join("");
 };
-const marcar = async (caja, renta, tipo = null) => {
-  if (pestana(caja, renta).dataset.elegido !== "si") await tocar(pestana(caja, renta));
-  if (tipo) await tocar(opcion(caja, tipo));
-  await tocar(botonColocar(caja));
-};
+const BLANCO = "rgb(248, 249, 250)";
+const CORAL = "rgb(231, 111, 81)";
+/* Lote 6a: tocar el cajón coloca la ficha (las fichas a un nivel). */
+const cajon = (caja, renta, tipo = null) => caja.querySelector(`[data-cajon="${tipo ? `${renta}/${tipo}` : renta}"]`);
+const marcar = async (caja, renta, tipo = null) => tocar(cajon(caja, renta, tipo));
 
 /* ═══════════ LA GUÍA GUARDADA, LEÍDA POR SECCIÓN ═══════════ */
 
@@ -99,12 +101,13 @@ const filas = (texto) => {
 };
 const GUIA_FICHAS = filas(seccion("### 3.6", "Devoluciones de acierto"));
 const GUIA_ACIERTOS = filas(seccion("Devoluciones de acierto", "### 3.7"));
-const GUIA_ERRORES = filas(seccion("### 3.7", "### 3.8"));
-const GUIA_NOMBRES = filas(seccion("### 3.8", "### 3.9"));
-const sinEmoji = (t) => t.replace(/^(✅|❌) /, "");
+/* E5: la pista del primer fallo de cada ficha (§12.1). Las devoluciones de error de 3.7 y 3.8 quedan como registro. */
+const GUIA_PISTAS = filas(seccion("### 12.1", null));
 
 const IDS = ["acciones", "def-emisora", "def-dividendos", "caso-resultados", "cdt", "bonos", "cedulas", "def-interes", "caso-pactado", "participacion", "cert", "canjeables", "def-descuento", "caso-redencion"];
-const NOMBRES_FIJA = ["cdt", "bonos", "cedulas", "participacion", "cert", "canjeables"];
+/* Los dos cajones que no son el de la ficha, en el orden del estante. */
+const OPCIONES = [["variable", null], ["fija", "interes"], ["fija", "descuento"]];
+const malos = (f) => OPCIONES.filter(([rr, tt]) => !(rr === f.renta && tt === f.tipo));
 
 /* ═══════════ LO QUE SE VE: LAS 14 FICHAS Y SUS DEVOLUCIONES ═══════════ */
 
@@ -121,220 +124,228 @@ test("★★★ las 14 fichas: el texto pintado es el de la guía, ficha por fic
   }
 });
 
-test("★★★ las 14 devoluciones de acierto se ven literales tras ✅, ficha por ficha", async () => {
+test("★★★ las 14 devoluciones de acierto se ven literales tras «Correcto.», ficha por ficha", async () => {
   for (const id of IDS) {
     const f = ficha(id);
     const { caja, desmontar } = await montar([id]);
     await marcar(caja, f.renta, f.tipo);
-    assert.equal(devolucion(caja), `✅${GUIA_ACIERTOS[id][0]}`, id);
+    assert.equal(devolucion(caja), `Correcto. ${GUIA_ACIERTOS[id][0]}`, id);
     desmontar();
   }
 });
 
-test("★★★ las tres devoluciones de error (A, B, C) se ven literales en las fichas de definición y caso", async () => {
-  /* A: renta fija puesta en variable. */
-  let m = await montar(["def-interes"]);
-  await marcar(m.caja, "variable");
-  assert.equal(devolucion(m.caja), `❌${GUIA_ERRORES.A[1]}`);
-  m.desmontar();
-  /* B: renta variable puesta en fija. */
-  m = await montar(["def-emisora"]);
-  await marcar(m.caja, "fija", "interes");
-  assert.equal(devolucion(m.caja), `❌${GUIA_ERRORES.B[1]}`);
-  m.desmontar();
-  /* C: renta fija bien, tipo mal. */
-  m = await montar(["caso-redencion"]);
-  await marcar(m.caja, "fija", "interes");
-  assert.equal(devolucion(m.caja), `❌${GUIA_ERRORES.C[1]}`);
-  m.desmontar();
+test("guarda: la guía trae una pista por ficha, y una fila inventada no aparece", () => {
+  assert.deepEqual(Object.keys(GUIA_PISTAS).filter((k) => k !== "Id" && !k.startsWith("|---")), IDS);
+  assert.equal(GUIA_PISTAS["no-existe"], undefined);
+});
+
+test("★★★ E5: al primer fallo, con CADA cajón equivocado, se ve la pista de la ficha, literal de la guía (§12.1), en el bloque de error", async () => {
+  for (const id of IDS) {
+    const f = ficha(id);
+    assert.equal(f.pista, GUIA_PISTAS[id][0], `${id}: la pista de los datos no es la de la guía`);
+    for (const malo of malos(f)) {
+      const m = await montar([id]);
+      await marcar(m.caja, ...malo);
+      assert.equal(devolucion(m.caja), GUIA_PISTAS[id][0], `${id} en ${malo.join("/")}`);
+      const p = m.caja.querySelector('[role="status"]');
+      assert.equal(m.caja.querySelectorAll('[role="status"]').length, 1, `${id}: una sola devolución`);
+      /* Lote 6d: el cajón tocado ya dice «No va aquí» en coral; el bloque es el de error del estándar único (X, raya coral, «Incorrecto.»). */
+      assert.equal(p.dataset.retro, "mal", `${id}: la pista va en el bloque de error`);
+      assert.equal(p.querySelector("[data-lector]").textContent.trim(), "Incorrecto.", `${id}: el lector dice «Incorrecto.»`);
+      assert.ok(parseFloat(p.querySelector("[data-devolucion]").style.fontSize) >= 12, `${id}: la pista, a 12 px como mínimo`);
+      assert.equal(m.caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
+      assert.equal(botonAvanzar(m.caja), null, `${id}: con la pista se espera el reintento`);
+      m.desmontar();
+    }
+  }
 });
 
 /* La regla única del segundo fallo, calculada a mano desde la guía: «No es esa.» + el acierto sin «Sí.». */
-const segundoDeGuia = (id) => `❌No es esa. ${GUIA_ACIERTOS[id][0].replace(/^Sí\. /, "")}`;
-
-test("★★★ fichas de nombre: nivel 1 y nivel 2 se ven literales, y el segundo fallo es su acierto con «No es esa.» delante", async () => {
-  for (const id of NOMBRES_FIJA) {
-    const [nivel1, nivel2] = GUIA_NOMBRES[id];
-    const f = ficha(id);
-    const otro = f.tipo === "interes" ? "descuento" : "interes";
-    let m = await montar([id]);
-    await marcar(m.caja, "variable");
-    assert.equal(devolucion(m.caja), `❌${nivel1}`, `${id}: nivel 1`);
-    await marcar(m.caja, "fija", otro);
-    assert.equal(devolucion(m.caja), segundoDeGuia(id), `${id}: segundo fallo`);
-    m.desmontar();
-    m = await montar([id]);
-    await marcar(m.caja, "fija", otro);
-    assert.equal(devolucion(m.caja), `❌${nivel2}`, `${id}: nivel 2`);
-    await tocar(pestana(m.caja, "variable"));
-    await tocar(botonColocar(m.caja));
-    assert.equal(devolucion(m.caja), segundoDeGuia(id), `${id}: segundo fallo tras nivel 2`);
-    m.desmontar();
-  }
-});
+const segundoDeGuia = (id) => `No es esa. ${GUIA_ACIERTOS[id][0].replace(/^Sí\. /, "")}`;
 
 test("★★★ regla única: tras el segundo fallo, TODA ficha muestra su acierto con «No es esa.», y ese texto dice la respuesta", async () => {
   for (const id of IDS) {
     const f = ficha(id);
-    /* Dos fallos seguidos, marcando siempre lo contrario de la renta correcta. */
-    const mal = f.renta === "variable" ? ["fija", "interes"] : ["variable", null];
-    const m = await montar([id]);
-    await marcar(m.caja, ...mal);
-    await marcar(m.caja, ...mal);
-    assert.equal(devolucion(m.caja), segundoDeGuia(id), id);
-    /* La respuesta está en el texto: el tipo de renta o la lista del libro. */
-    const t = devolucion(m.caja).toLowerCase();
-    const dice = f.renta === "variable" ? t.includes("renta variable") : (t.includes("interés") || t.includes("descuento"));
-    assert.ok(dice, `${id}: el segundo fallo no dice la respuesta: «${devolucion(m.caja)}»`);
-    m.desmontar();
+    /* Dos fallos seguidos, en los dos cajones que no son el suyo, en los dos órdenes (el tocado queda ✕ y no se puede volver a tocar). */
+    for (const [a, b] of [malos(f), [...malos(f)].reverse()]) {
+      const m = await montar([id]);
+      await marcar(m.caja, ...a);
+      assert.equal(devolucion(m.caja), GUIA_PISTAS[id][0], `${id}: primero, la pista`);
+      await marcar(m.caja, ...b);
+      assert.equal(devolucion(m.caja), segundoDeGuia(id), id);
+      assert.ok(!m.caja.textContent.includes(f.pista), `${id}: tras el segundo fallo, la pista ya no se ve`);
+      /* La respuesta está en el texto: el tipo de renta o la lista del libro. */
+      const t = devolucion(m.caja).toLowerCase();
+      const dice = f.renta === "variable" ? t.includes("renta variable") : (t.includes("interés") || t.includes("descuento"));
+      assert.ok(dice, `${id}: el segundo fallo no dice la respuesta: «${devolucion(m.caja)}»`);
+      assert.ok(botonAvanzar(m.caja), `${id}: tras el segundo fallo se avanza`);
+      m.desmontar();
+    }
   }
+});
+
+test("★★★ E5: una ficha acertada al primer intento nunca muestra su pista", async () => {
+  const { caja, desmontar } = await montar(IDS);
+  for (const id of IDS) {
+    const f = ficha(id);
+    await marcar(caja, f.renta, f.tipo);
+    assert.equal(devolucion(caja), `Correcto. ${GUIA_ACIERTOS[id][0]}`, id);
+    assert.ok(!caja.textContent.includes(f.pista), `${id}: la pista se ve tras acertar`);
+    await tocar(botonAvanzar(caja));
+  }
+  desmontar();
 });
 
 /* ═══════════ LAS CORRECCIONES DE SHOKO ═══════════ */
 
-test("★★★ el primer fallo da el error de ESE intento (A); el segundo, la regla única (no C)", async () => {
+test("★★★ el primer fallo da la pista; el segundo, la regla única (no la pista otra vez)", async () => {
   const { caja, desmontar } = await montar(["def-interes"]);
   await marcar(caja, "variable");
-  assert.equal(devolucion(caja), `❌${GUIA_ERRORES.A[1]}`);
+  assert.equal(devolucion(caja), GUIA_PISTAS["def-interes"][0]);
   await marcar(caja, "fija", "descuento");
-  assert.equal(devolucion(caja), segundoDeGuia("def-interes"), "el segundo fallo ya no da C: da la respuesta");
+  assert.equal(devolucion(caja), segundoDeGuia("def-interes"), "el segundo fallo ya no da la pista: da la respuesta");
   desmontar();
 });
 
-test("★★★ corrección 2: tras un reintento acertado queda solo el ✅; el aviso, solo mientras se espera el reintento", async () => {
+test("★★★ corrección 2: tras un reintento acertado queda solo el acierto; el aviso, solo mientras se espera el reintento", async () => {
   const { caja, desmontar } = await montar(["caso-pactado"]);
   assert.equal(Boolean(caja.querySelector("[data-fallo]")), false);
   await marcar(caja, "fija", "descuento");
   assert.equal(caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
-  assert.ok(devolucion(caja).startsWith("❌"));
+  assert.equal(devolucion(caja), GUIA_PISTAS["caso-pactado"][0]);
   await marcar(caja, "fija", "interes");
   assert.equal(Boolean(caja.querySelector("[data-fallo]")), false, "el aviso desaparece tras el reintento");
   assert.equal(caja.querySelectorAll('[role="status"]').length, 1);
-  assert.equal(devolucion(caja), `✅${GUIA_ACIERTOS["caso-pactado"][0]}`);
-  assert.ok(!caja.textContent.includes(sinEmoji(D.ERROR_T5_ACT1.C)), "la devolución del primer fallo ya no se ve");
+  assert.equal(devolucion(caja), `Correcto. ${GUIA_ACIERTOS["caso-pactado"][0]}`);
+  assert.ok(!caja.textContent.includes(ficha("caso-pactado").pista), "la pista del primer fallo ya no se ve");
   desmontar();
 });
 
-test("★★ correcciones 3 y 4: el emoji va al inicio en los datos y la devolución sale por Retro (role=status)", async () => {
+test("★★ correcciones 3 y 4 (lote 6d): los datos van sin emoji y el veredicto sale del estado; la devolución, en una región viva (role=status); la pista, de 20 palabras como mucho", async () => {
   for (const f of D.FICHAS_T5_ACT1) {
-    assert.ok(f.acierto.startsWith("✅ "), f.id);
-    for (const k of ["falloNivel1", "falloNivel2", "segundoFallo"]) if (f[k]) assert.ok(f[k].startsWith("❌ "), `${f.id}.${k}`);
+    assert.ok(f.acierto.startsWith("Sí. "), f.id);
+    assert.ok(!/[\u2705\u274C]/.test(f.acierto), `${f.id}: el acierto lleva emoji`);
+    assert.ok(!/^(✅|❌)/.test(f.pista), `${f.id}: la pista no lleva veredicto`);
+    assert.ok(f.pista.split(/\s+/).length <= 20, `${f.id}: la pista pasa de 20 palabras`);
+    /* Lo retirado con E5 no vuelve. */
+    for (const k of ["falloNivel1", "falloNivel2", "segundoFallo"]) assert.equal(f[k], undefined, `${f.id}.${k}`);
   }
-  for (const t of Object.values(D.ERROR_T5_ACT1)) assert.ok(t.startsWith("❌ "));
+  assert.equal(D.ERROR_T5_ACT1, undefined, "las devoluciones de error A, B y C salieron de los datos");
   const { caja, desmontar } = await montar(["bonos"]);
   await marcar(caja, "fija", "interes");
   const p = caja.querySelector('[role="status"]');
   assert.ok(p);
-  assert.equal(p.querySelector('[aria-hidden="true"]').textContent, "✅", "Retro separa el emoji");
+  assert.equal(p.dataset.retro, "ok");
+  const icono = p.querySelector("svg[data-icono]");
+  assert.equal(icono.dataset.icono, "visto", "el acierto, con el Check de lucide");
+  assert.equal(icono.getAttribute("aria-hidden"), "true");
+  assert.ok(p.closest('[aria-live="polite"]'), "la devolución va en una región viva");
   desmontar();
 });
 
-/* ═══════════ EL BOTÓN: EL RÓTULO DE CADA ESTADO, Y QUE QUEPA ═══════════ */
+/* ═══════════ LOTE 6a: LOS TRES CAJONES SON LAS OPCIONES (hoja de fusiones de Mai) ═══════════ */
 
-/*
- * Ancho de cada glifo de Sora, peso 700, a 14 px (la letra de Responder),
- * medido en Chromium 141 con Sora real de Google Fonts el 2026-10-14
- * (canvas measureText, fuente cargada). Sirve para comprobar sin navegador que
- * el rótulo cabe. Un glifo que no está aquí hace fallar la prueba: un rótulo
- * nuevo obliga a volver a medir.
- *
- * Los seis rótulos enteros, medidos en el mismo navegador como texto pintado
- * (con interletraje), dan 152,45 · 133 · 111,73 · 108,59 · 112,97 · 76,94: la
- * suma de glifos se queda a menos de 1 px de eso.
- */
-const GLIFOS_SORA_700_14 = {
-  " ": 2.94, C: 11.2, E: 8.32, O: 12.1, S: 9.34, V: 10.36, a: 8.32, c: 8.55, d: 9.84, e: 8.74, f: 5.35, g: 9.6,
-  h: 9.13, i: 4.68, j: 4.75, l: 4.41, n: 9.13, o: 9.53, p: 9.84, q: 9.84, r: 5.89, s: 7.78, t: 6.08, u: 9.03, "é": 8.74,
-};
-const anchoRotulo = (texto) => [...texto].reduce((s, g) => {
-  if (!(g in GLIFOS_SORA_700_14)) throw new Error(`glifo sin medir: «${g}» en «${texto}»`);
-  return s + GLIFOS_SORA_700_14[g];
-}, 0);
-/* A 320: 258 de ancho útil del Panel menos 18 + 18 de relleno de Responder. */
-const UTIL_RESPONDER_320 = 258 - 36;
+const L6A = seccion("## 11 · Lote 6a", null);
+const marcaDe = (el) => el.dataset.marca || null;
+const iconos = (el) => [...el.querySelectorAll("svg[data-icono]")].map((x) => x.dataset.icono);
+const tachado = (el) => el.querySelector("[data-nombre-cajon]").style.textDecoration === "line-through";
 
-test("★★★ el rótulo del botón en cada estado es el de la guía, y cada uno cabe en una línea a 320", async () => {
-  const vistos = [];
+test("★★★ los tres cajones son las opciones: sus nombres, su grupo, y van entre la ficha y la devolución; no hay pestañas ni botón", async () => {
   const { caja, desmontar } = await montar(["cdt", "acciones"]);
-  vistos.push(rotuloBoton(caja));
-  assert.equal(rotuloBoton(caja), "Elige un tipo de renta");
-  await tocar(pestana(caja, "fija"));
-  vistos.push(rotuloBoton(caja));
-  assert.equal(rotuloBoton(caja), "Elige qué renta fija");
-  await tocar(opcion(caja, "interes"));
-  vistos.push(rotuloBoton(caja));
-  assert.equal(rotuloBoton(caja), "Colocar la ficha");
-  await tocar(pestana(caja, "variable"));
-  assert.equal(rotuloBoton(caja), "Colocar la ficha", "«Renta variable» va directo a colocar");
-  await tocar(pestana(caja, "fija"));
-  await tocar(opcion(caja, "interes"));
-  await tocar(botonColocar(caja));
-  vistos.push(rotuloBoton(caja));
-  assert.equal(rotuloBoton(caja), "Siguiente ficha");
-  await tocar(botonAvanzar(caja));
-  await marcar(caja, "variable");
-  vistos.push(rotuloBoton(caja));
-  assert.equal(rotuloBoton(caja), "Ver el resultado");
-  await tocar(botonAvanzar(caja));
-  vistos.push(rotuloBoton(caja));
-  assert.equal(rotuloBoton(caja), "Otra tanda");
+  const estante = caja.querySelector("[data-estante]");
+  assert.equal(estante.getAttribute("role"), "group");
+  assert.equal(estante.getAttribute("aria-label"), "Tipo de renta");
+  assert.ok(L6A.includes("«Tipo de renta»"));
+  const cajones = [...estante.querySelectorAll("button[data-cajon]")];
+  assert.deepEqual(cajones.map((b) => b.querySelector("[data-nombre-cajon]").textContent), ["Renta variable", "Fija con interés", "Fija con descuento"]);
+  for (const n of ["Renta variable", "Fija con interés", "Fija con descuento"]) assert.ok(L6A.includes(`«${n}»`), n);
+  for (const b of cajones) assert.equal(b.style.minHeight, "84px");
+  assert.equal(estante.style.gridTemplateColumns, "repeat(3, minmax(0, 1fr))");
+  assert.equal(caja.querySelectorAll("[data-nivel1], [data-nivel2], [data-boton-colocar]").length, 0, "sin pestañas ni «Colocar la ficha»");
+  assert.ok(caja.querySelector("[data-ficha]").compareDocumentPosition(estante) & 4, "el estante, debajo de la ficha");
+  await marcar(caja, "fija", "interes");
+  assert.ok(estante.compareDocumentPosition(caja.querySelector('[role="status"]')) & 4, "la devolución, debajo del estante");
+  assert.equal(botonAvanzar(caja).textContent, "Siguiente ficha");
   desmontar();
-
-  for (const t of vistos) {
-    const ancho = anchoRotulo(t);
-    assert.ok(ancho <= UTIL_RESPONDER_320, `«${t}» mide ${ancho.toFixed(2)} px y no cabe en ${UTIL_RESPONDER_320} a 320`);
-  }
-  assert.ok(anchoRotulo("Elige un tipo de renta") > 150, "la tabla de glifos mide de verdad");
 });
 
-/* ═══════════ LAS PESTAÑAS ═══════════ */
+test("★★★ E4 · lote 6d: el acierto queda «Correcto» con Check y borde 2 px #F8F9FA, sin relleno ni teal; el resto, a 0,5", async () => {
+  const { caja, desmontar } = await montar(["cdt", "acciones"]);
+  await marcar(caja, "fija", "interes");
+  const bien = cajon(caja, "fija", "interes");
+  assert.equal(marcaDe(bien), "correcta");
+  assert.deepEqual(iconos(bien), ["visto"]);
+  assert.equal(bien.style.border, `2px solid ${BLANCO}`, "borde 2 px #F8F9FA");
+  assert.equal(bien.style.background, "transparent", "sin relleno");
+  assert.ok(!bien.outerHTML.includes("42, 157, 143") && !/2a9d8f/i.test(bien.outerHTML), "sin teal");
+  assert.equal(bien.querySelector("[data-pastilla]").textContent, "Correcto");
+  for (const otro of [cajon(caja, "variable"), cajon(caja, "fija", "descuento")]) {
+    assert.equal(marcaDe(otro), "apagada");
+    assert.equal(otro.style.opacity, "0.5");
+    assert.deepEqual(iconos(otro), []);
+    assert.equal(otro.disabled, true);
+  }
+  /* «Siguiente ficha» borra las marcas; la pila y el número se quedan. */
+  await tocar(botonAvanzar(caja));
+  assert.ok([...caja.querySelectorAll("[data-cajon]")].every((b) => !marcaDe(b) && !b.disabled));
+  assert.equal(cajon(caja, "fija", "interes").querySelector("[data-numero]").textContent, "1");
+  desmontar();
+});
 
-test("★★ pestañas: «Renta variable» no abre panel; cambiar de pestaña borra el segundo nivel; aria correcto", async () => {
+test("★★★ E4 · lote 6d: el primer fallo deja el cajón tocado «No va aquí» (X, 2 px coral) y tachado, y no se puede volver a tocar; el segundo deja los dos así y revela «Iba aquí» en el correcto", async () => {
   const { caja, desmontar } = await montar(["cdt"]);
-  assert.deepEqual([...caja.querySelectorAll("[data-rotulo-nivel1]")].map((n) => n.textContent), ["Renta variable", "Renta fija"]);
-  const fija = pestana(caja, "fija");
-  assert.equal(fija.getAttribute("aria-expanded"), "false");
-  await tocar(fija);
-  const panel = caja.querySelector("[data-panel-segundo]");
-  assert.equal(panel.getAttribute("role"), "group");
-  assert.equal(fija.getAttribute("aria-controls"), panel.id);
-  assert.equal(fija.getAttribute("aria-expanded"), "true");
-  assert.deepEqual([...panel.querySelectorAll("button")].map((b) => b.textContent), ["Con interés", "Con descuento"]);
-  await tocar(opcion(caja, "descuento"));
-  assert.equal(opcion(caja, "descuento").getAttribute("aria-pressed"), "true");
-  await tocar(pestana(caja, "variable"));
-  assert.equal(Boolean(caja.querySelector("[data-panel-segundo]")), false, "con «Renta variable» no hay panel");
-  assert.equal(pestana(caja, "variable").hasAttribute("aria-expanded"), false);
-  await tocar(pestana(caja, "fija"));
-  assert.equal(Boolean(caja.querySelector('[data-nivel2][aria-pressed="true"]')), false, "el panel se abre sin nada elegido");
+  await marcar(caja, "fija", "descuento");
+  const primero = cajon(caja, "fija", "descuento");
+  assert.equal(marcaDe(primero), "tachada");
+  assert.deepEqual(iconos(primero), ["tache"]);
+  assert.ok(tachado(primero));
+  assert.equal(primero.querySelector("[data-pastilla]").textContent, "No va aquí");
+  assert.equal(primero.style.border, `2px solid ${CORAL}`);
+  assert.equal(primero.disabled, true, "el ✕ no se puede volver a tocar en esta ficha");
+  assert.equal(primero.style.opacity, "1");
+  assert.equal(cajon(caja, "variable").disabled, false, "los otros siguen abiertos");
+  assert.equal(marcaDe(cajon(caja, "fija", "interes")), null, "lo correcto no se revela antes del segundo intento");
+  await marcar(caja, "variable");
+  assert.equal(marcaDe(cajon(caja, "variable")), "tachada");
+  assert.equal(marcaDe(primero), "tachada", "lo elegido no se reemplaza");
+  const correcto = cajon(caja, "fija", "interes");
+  assert.equal(marcaDe(correcto), "revelada", "sin reintento, la correcta se revela");
+  assert.equal(correcto.querySelector("[data-pastilla]").textContent, "Iba aquí");
+  assert.deepEqual(iconos(correcto), [], "«Iba aquí» va sin ícono");
+  assert.ok(correcto.classList.contains("fae-b5h-revelado"), "con el borde de 2 px #F8F9FA que llega 0,7 s después");
+  assert.ok(correcto.querySelector("[data-pastilla]").classList.contains("fae-b5h-revela"));
+  /* La lámina tras el segundo fallo llega punteada, al cajón correcto. */
+  assert.equal(cajon(caja, "fija", "interes").querySelector("[data-lamina]").dataset.lamina, "segundo");
+  assert.equal(cajon(caja, "variable").querySelector("[data-numero]").textContent, "0");
   desmontar();
 });
 
 /* ═══════════ SORTEO Y PUNTAJE ═══════════ */
 
-test("★★★ la tanda: 9 fichas, 3 por grupo, como mucho una de nombre por grupo (y exactamente una en interés y descuento)", () => {
-  for (let k = 0; k < 300; k++) {
+test("★★★ la tanda (R10): 9 fichas, entre 2 y 4 por cajón, y salen repartos distintos; como mucho una de nombre salvo con 4 en renta fija", () => {
+  const repartos = new Set();
+  for (let k = 0; k < 400; k++) {
     const tanda = L.sortearT5Act1(barajar);
     assert.equal(tanda.length, 9);
     assert.equal(new Set(tanda.map((f) => f.id)).size, 9);
-    for (const g of L.GRUPOS_T5_ACT1) {
-      const del = tanda.filter((f) => f.renta === g.renta && f.tipo === g.tipo);
-      assert.equal(del.length, 3);
+    const cuantas = L.GRUPOS_T5_ACT1.map((g) => tanda.filter((f) => f.renta === g.renta && f.tipo === g.tipo));
+    for (const [i, del] of cuantas.entries()) {
+      assert.ok(del.length >= 2 && del.length <= 4, `cajón ${i}: ${del.length}`);
       const nombres = del.filter((f) => f.clase === D.NOMBRE).length;
-      if (g.tipo) assert.equal(nombres, 1, `${g.tipo}: una de nombre`);
-      else assert.ok(nombres <= 1);
+      assert.ok(nombres <= (del.length === 4 && L.GRUPOS_T5_ACT1[i].tipo ? 2 : 1), `cajón ${i}: ${nombres} de nombre en ${del.length}`);
     }
+    repartos.add(cuantas.map((x) => x.length).join("·"));
   }
+  assert.ok(repartos.size >= 5, `el reparto no varía: ${[...repartos]}`);
+  assert.ok(![...repartos].every((x) => x === "3·3·3"));
 });
 
-test("★★★ puntaje como T1-6: 60 % renta y 40 % tipo; variable entera; el segundo intento vale la mitad", async () => {
+test("★★★ puntaje: cada ficha vale entera; el segundo intento, la mitad; el resumen es el de Futaba", async () => {
   const fija = ficha("cdt");
   const varia = ficha("acciones");
   assert.equal(L.valorDeItemT5Act1(fija, L.evaluarT5Act1(fija, { renta: "fija", tipo: "interes" })), 1);
-  assert.equal(L.valorDeItemT5Act1(fija, L.evaluarT5Act1(fija, { renta: "fija", tipo: "descuento" })), 0.6);
-  assert.equal(L.valorDeItemT5Act1(fija, L.evaluarT5Act1(fija, { renta: "variable", tipo: null })), 0);
+  assert.equal(L.valorDeItemT5Act1(fija, L.evaluarT5Act1(fija, { renta: "fija", tipo: "descuento" })), 0);
   assert.equal(L.valorDeItemT5Act1(varia, L.evaluarT5Act1(varia, { renta: "variable", tipo: null })), 1);
-  /* Montado: fallar y acertar en el reintento deja la ficha en 50. */
   let pct = null;
   const caja = document.createElement("div");
   document.body.appendChild(caja);
@@ -346,17 +357,45 @@ test("★★★ puntaje como T1-6: 60 % renta y 40 % tipo; variable entera; el s
   await marcar(caja, "fija", "interes");
   await tocar(botonAvanzar(caja));
   assert.equal(pct, 50);
-  assert.equal(caja.querySelector("[data-resumen]").textContent,
-    "0 de 1 completas al primer intento. Cada ficha valía 100.00 %. Elegir variable o fija pesa 60 %. Elegir con interés o con descuento pesa 40 %. En las de renta variable, la primera elección vale toda la ficha.");
+  assert.equal(caja.querySelector("[data-resumen]").textContent, "0 de 1 fichas bien al primer intento.");
+  assert.ok(L6A.includes("«{bien} de {cuantas} fichas bien al primer intento.»"));
   act(() => raiz.unmount());
   caja.remove();
 });
 
-test("★★ el texto alternativo y el objetivo y la consigna son los de la guía", async () => {
+test("★★ el texto alternativo y las dos reglas son los del lote 6a; el objetivo y la consigna, los de la guía", async () => {
   const { caja, desmontar } = await montar(["bonos"]);
-  assert.ok(GUIA.includes(`«${D.ALT_T5_ACT1}»`));
+  assert.ok(L6A.includes(`«${D.ALT_T5_ACT1}»`));
   assert.ok(caja.textContent.includes(D.ALT_T5_ACT1));
+  for (const linea of D.REGLAS_T5_ACT1) assert.ok(L6A.includes(`«${linea}»`), linea);
+  assert.equal(D.REGLAS_T5_ACT1.length, 2);
   assert.equal(caja.querySelector("[data-objetivo]").textContent, "Distinguir los tres tipos de título según el tipo de renta que dan.");
+  /* Lote 6b: la consigna va plegada bajo «¿Cómo se juega?» (encabezado compacto). */
+  await tocar(caja.querySelector("[data-como-se-juega]"));
   assert.equal(caja.querySelector("[data-consigna]").textContent, "Lee la ficha. Elige qué tipo de renta da.");
+  desmontar();
+});
+
+test("★★★ lote 6b · el encabezado compacto (B1): el objetivo, y en una fila el contador y «¿Cómo se juega?»; plegados, la consigna y los pasos", async () => {
+  const { caja, desmontar } = await montar(["bonos", "acciones"]);
+  const enc = caja.querySelector("[data-encabezado-compacto]");
+  assert.ok(enc, "sin encabezado compacto");
+  assert.ok(D.T5_ACT1.objetivo.split(/\s+/).length <= 20, "el objetivo, 20 palabras como mucho");
+  assert.equal(enc.querySelector("[data-contador]").textContent, "Ficha 1 de 2");
+  /* Lote 6d (§4.3): «Ficha 1 de 2», sin mayúsculas ni espaciado. */
+  assert.equal(enc.querySelector("[data-contador]").style.textTransform, "");
+  assert.equal(enc.querySelector("[data-contador]").style.letterSpacing, "");
+  const como = enc.querySelector("[data-como-se-juega]");
+  assert.equal(como.textContent, "¿Cómo se juega?");
+  assert.equal(como.style.minHeight, "44px");
+  assert.equal(como.style.textDecoration, "underline");
+  assert.equal(como.parentElement, enc.querySelector("[data-contador]").parentElement, "el contador y el enlace, en la misma fila");
+  assert.equal(como.parentElement.style.minHeight, "44px");
+  /* Plegado no ocupa nada; el foco no puede caer en algo escondido. */
+  assert.equal(enc.querySelector("[data-consigna]"), null);
+  await tocar(como);
+  assert.deepEqual([...enc.querySelectorAll("[data-pasos] li")].map((li) => li.textContent), D.REGLAS_T5_ACT1);
+  /* La ficha y el estante, después del encabezado. */
+  assert.ok(enc.compareDocumentPosition(caja.querySelector("[data-ficha]")) & 4);
   desmontar();
 });

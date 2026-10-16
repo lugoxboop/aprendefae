@@ -5,7 +5,7 @@ import { NEUTRO } from "../../../../data/contabilidadIntro.js";
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * EL ESTANTE DE CAJONES (hoja 3 de Mai, calidad) — de la Célula B, para las
- * tres de fichas: b5-t5-a1, b5-t6-a1 y b5-t6-a7 (ClasificaDosNiveles).
+ * de fichas: b5-t5-a1 y b5-t6-a1 (FichasUnNivel). El estante de dos niveles se fue con b5-t6-a7 (0076).
  *
  * Un cajón por respuesta final, con la forma del árbol de decisión: el cajón
  * suelto de la opción de primer nivel que no abre panel, y un grupo de dos
@@ -90,6 +90,32 @@ function Cajon({ clave, nombre, laminas = [], encendido: si, refDe, config }) {
 }
 
 /*
+ * El vuelo de la ficha (hoja 3): una copia de `origen` vuela a `destino` (340 ms) o, con rebote, va y
+ * vuelve (340 + 340 ms). Devuelve una promesa que se cumple al llegar (o al instante, con movimiento
+ * reducido o sin animaciones). Lo usan este estante y el de las fichas a un nivel (FichasUnNivel.jsx).
+ */
+export function volarCopia(origen, destino, { rebote = false, reducido = false } = {}) {
+  if (reducido || !origen || !destino || typeof origen.animate !== "function") return Promise.resolve();
+  const a = origen.getBoundingClientRect();
+  const b = destino.getBoundingClientRect();
+  const copia = origen.cloneNode(true);
+  copia.removeAttribute("data-ficha");
+  copia.setAttribute("aria-hidden", "true");
+  Object.assign(copia.style, {
+    position: "fixed", left: `${a.left}px`, top: `${a.top}px`, width: `${a.width}px`, height: `${a.height}px`,
+    margin: 0, boxSizing: "border-box", pointerEvents: "none", zIndex: 30, transformOrigin: "top left", overflow: "hidden",
+  });
+  document.body.appendChild(copia);
+  const escala = Math.min(b.width / a.width, b.height / a.height, 1) * 0.6;
+  const llega = `translate(${b.left + (b.width - a.width * escala) / 2 - a.left}px, ${b.top + (b.height - a.height * escala) / 2 - a.top}px) scale(${escala})`;
+  const pasos = rebote
+    ? [{ transform: "none", opacity: 1 }, { transform: llega, opacity: 0.9, offset: 0.5 }, { transform: "none", opacity: 0 }]
+    : [{ transform: "none", opacity: 1 }, { transform: llega, opacity: 0.9 }];
+  const vuelo = copia.animate(pasos, { duration: rebote ? 680 : 340, easing: "ease-out", fill: "forwards" });
+  return vuelo.finished.catch(() => {}).then(() => copia.remove());
+}
+
+/*
  * El estante. `cuentas` es { clave: [láminas] }; `n1` y `n2`, lo elegido. Por la ref
  * expone `volar(clave, { rebote })`: una copia de `origen` (la ficha) vuela
  * al cajón y, con rebote, vuelve. Devuelve una promesa que se cumple al
@@ -103,25 +129,7 @@ const EstanteDeCajones = forwardRef(function EstanteDeCajones({ config, cuentas,
 
   useImperativeHandle(ref, () => ({
     volar(clave, origen, { rebote = false } = {}) {
-      const destino = cajones.current[clave];
-      if (reducido || !origen || !destino || typeof origen.animate !== "function") return Promise.resolve();
-      const a = origen.getBoundingClientRect();
-      const b = destino.getBoundingClientRect();
-      const copia = origen.cloneNode(true);
-      copia.removeAttribute("data-ficha");
-      copia.setAttribute("aria-hidden", "true");
-      Object.assign(copia.style, {
-        position: "fixed", left: `${a.left}px`, top: `${a.top}px`, width: `${a.width}px`, height: `${a.height}px`,
-        margin: 0, boxSizing: "border-box", pointerEvents: "none", zIndex: 30, transformOrigin: "top left", overflow: "hidden",
-      });
-      document.body.appendChild(copia);
-      const escala = Math.min(b.width / a.width, b.height / a.height, 1) * 0.6;
-      const llega = `translate(${b.left + (b.width - a.width * escala) / 2 - a.left}px, ${b.top + (b.height - a.height * escala) / 2 - a.top}px) scale(${escala})`;
-      const pasos = rebote
-        ? [{ transform: "none", opacity: 1 }, { transform: llega, opacity: 0.9, offset: 0.5 }, { transform: "none", opacity: 0 }]
-        : [{ transform: "none", opacity: 1 }, { transform: llega, opacity: 0.9 }];
-      const vuelo = copia.animate(pasos, { duration: rebote ? 680 : 340, easing: "ease-out", fill: "forwards" });
-      return vuelo.finished.catch(() => {}).then(() => copia.remove());
+      return volarCopia(origen, cajones.current[clave], { rebote, reducido });
     },
   }), [reducido]);
 

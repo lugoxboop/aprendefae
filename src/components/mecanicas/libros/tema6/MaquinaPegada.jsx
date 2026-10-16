@@ -5,7 +5,9 @@ import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { estadoParada } from "../../../../contabilidad/fusionar.js";
-import { OpcionDecidir, fallaDe } from "./CajasQueRevelan.jsx";
+import { OpcionDecidir, useFormaQueCabe, seParteAlguna } from "./CajasQueRevelan.jsx";
+import { escalera, elegir, fallasDe } from "./escaleraB5.js";
+import { IconoVisto, IconoTache, TACHADO } from "../b5/MarcasE4.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -33,12 +35,29 @@ import { OpcionDecidir, fallaDe } from "./CajasQueRevelan.jsx";
  * `parada` (hoja 7 de Mai): la predicción entre dos pasos, dentro del mismo
  * bloque. No es un paso: el contador dice «Antes del paso N» (N = `antes`, el
  * paso que viene). En el hueco del texto, la pregunta; debajo, las opciones
- * en fila; «Siguiente» desactivado hasta elegir. Un intento, sin puntaje: las
- * opciones se marcan como en la capa 3 y, si falló, la devolución ocupa el
- * sitio de la pregunta. La escena es la del paso anterior, con el resalte en
+ * en fila; «Siguiente» desactivado hasta que se cierra. Sin puntaje, con la
+ * escalera de ayuda de la capa 3 (lote C2, escaleraB5.js): al primer error,
+ * la PISTA ocupa el sitio de la pregunta y la elegida queda tachada; al
+ * acertar o al segundo error, las opciones se marcan como en la capa 3 y,
+ * si se cerró con error, la devolución ocupa ese sitio. Sin pista, un solo
+ * intento. Las opciones van en fila; si una se parte donde se pinta (la
+ * tercera opción del lote C2 es una frase), pasan a columna, con la regla de
+ * la capa 3 (useFormaQueCabe). La escena es la del paso anterior, con el resalte en
  * lo que nombra la pregunta. El bloque crece una sola vez, al entrar, hacia
  * arriba («Siguiente» no se mueve). «Reproducir» se pausa al llegar. La
  * decisión se conserva al volver y con «Ver de nuevo».
+ *
+ * LA PREDICCIÓN EN LA ESCENA (§2a de Mai, enganche B1-B5): con
+ * `parada.etiquetaEn` (el id de una pieza de la escena), lo elegido se
+ * escribe en la escena como un borrador: una etiqueta de borde discontinuo
+ * (1,5 nodo, radio 6, Inter 12/600, fondo de la escena) montada sobre el
+ * borde de arriba de esa pieza, en position: absolute (no ocupa sitio: la
+ * escena reservada no cambia). Aparece solo después de elegir (R10), con
+ * opacidad en 240 ms (al instante con movimiento reducido). Dice la opción
+ * elegida, o su texto en `parada.etiquetas`. En el paso que viene se califica
+ * con E4 (✓, o ✕ y tachada) y desaparece en el siguiente; con «Anterior», la
+ * parada la muestra otra vez, ya calificada. Va oculta al lector: la escena
+ * ya lo está, y lo elegido y su resultado se oyen en la parada.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -72,7 +91,14 @@ const ESTILOS_PARADA = `
 .b5-parada-aparece { animation: b5-parada-aparece 240ms ease-out both; }
 @media (prefers-reduced-motion: reduce) { .b5-parada-aparece { animation: none; } }
 `;
-const fallas = (parada) => (typeof parada.falla === "string" ? [parada.falla] : Object.values(parada.falla));
+/* La etiqueta de la predicción (§2a): su propia entrada, porque vive fuera del bloque. */
+const ESTILOS_ETIQUETA = `
+@keyframes b5-etiqueta-aparece { from { opacity: 0; } to { opacity: 1; } }
+.b5-etiqueta-aparece { animation: b5-etiqueta-aparece 240ms ease-out both; }
+@media (prefers-reduced-motion: reduce) { .b5-etiqueta-aparece { animation: none; } }
+`;
+/* Lo que puede ocupar el sitio de la pregunta: cada devolución y la pista. */
+const textosParada = (parada) => [...fallasDe(parada), ...(parada.pista ? [parada.pista] : [])];
 
 export function transicion(reducido) {
   if (reducido) return "none";
@@ -210,7 +236,15 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
   const [paso, setPaso] = useState(1);
   /* La parada: si se está en ella (siempre después del paso `antes − 1`) y lo elegido, que se conserva. */
   const [enParada, setEnParada] = useState(false);
-  const [eleccion, setEleccion] = useState(null);
+  const [intentos, setIntentos] = useState([]);
+  const escalon = parada ? escalera(parada, intentos) : null;
+  /* La predicción ya se calificó: se pasó de la parada al paso que viene (§2a). */
+  const [calificada, setCalificada] = useState(false);
+  /* Dónde va la etiqueta, relativo a la máquina: el borde de arriba de su pieza. */
+  const [sitioEtiqueta, setSitioEtiqueta] = useState(null);
+  /* Fila o columna, medido donde se pinta (como la capa 3). */
+  const [formaParada, seParteParada, vueltaParada] = useFormaQueCabe("fila");
+  const grupoParada = useRef(null);
   const recalcular = useRef(null);
   const [reproduciendo, setReproduciendo] = useState(false);
   const maquina = useRef(null);
@@ -266,12 +300,15 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
   }, []);
 
   /* La parada cambia el alto del bloque: se vuelve a fijar (crece hacia arriba; «Siguiente» no se mueve). */
-  useLayoutEffect(() => { recalcular.current?.(); }, [enParada, eleccion]);
+  useLayoutEffect(() => { recalcular.current?.(); }, [enParada, intentos, formaParada]);
+  useLayoutEffect(() => {
+    if (formaParada === "fila" && grupoParada.current && seParteAlguna(grupoParada.current)) seParteParada();
+  }, [formaParada, enParada, vueltaParada]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* Un paso adelante, con la parada entre `antes − 1` y `antes`. Devuelve si quedó en la parada. */
   const avanzar = () => {
     if (parada && !enParada && paso === parada.antes - 1) { setEnParada(true); return true; }
-    if (enParada) { setEnParada(false); setPaso(parada.antes); return false; }
+    if (enParada) { setEnParada(false); setPaso(parada.antes); setCalificada(true); return false; }
     setPaso((p) => Math.min(CIERRE, p + 1));
     return false;
   };
@@ -282,7 +319,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     if (paso >= CIERRE) { setReproduciendo(false); return undefined; }
     if (enParada) {
       /* Sin elegir, no sigue; ya elegida, sigue desde el paso que viene. */
-      if (eleccion === null) { setReproduciendo(false); return undefined; }
+      if (!escalon.resuelta) { setReproduciendo(false); return undefined; }
       avanzar();
       return undefined;
     }
@@ -340,7 +377,7 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     const destino = Math.min(CIERRE, Math.max(1, nuevo));
     if (parada) {
       /* Desde la parada: «Siguiente» va al paso que viene; «Anterior», al de antes. Al foco no se le toca. */
-      if (enParada) { setEnParada(false); if (destino > paso) setPaso(parada.antes); return; }
+      if (enParada) { setEnParada(false); if (destino > paso) { setPaso(parada.antes); setCalificada(true); } return; }
       /* Hacia la parada, desde el paso de antes (adelante) o desde el que viene (atrás): vuelve ya decidida. */
       if (paso === parada.antes - 1 && destino === parada.antes) { setEnParada(true); return; }
       if (paso === parada.antes && destino === parada.antes - 1) { setEnParada(true); setPaso(destino); return; }
@@ -350,17 +387,59 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
     setPaso(destino);
   };
 
+  /*
+   * La etiqueta de la predicción (§2a): en la parada, desde que se elige; en
+   * el paso que viene, calificada; después, nada.
+   */
+  const etiqueta = parada?.etiquetaEn && escalon.ultima
+    ? (enParada ? { calificada: calificada && escalon.resuelta } : paso === parada.antes && escalon.resuelta ? { calificada: true } : null)
+    : null;
+  const conEtiqueta = Boolean(etiqueta);
+  useLayoutEffect(() => {
+    if (!conEtiqueta) { setSitioEtiqueta(null); return undefined; }
+    let vivo = true;
+    const medir = () => {
+      const t = piezas.current[parada.etiquetaEn]; const m = maquina.current;
+      if (!vivo || !t || !m) return;
+      const a = t.getBoundingClientRect(); const b = m.getBoundingClientRect();
+      const nuevo = { top: a.top - b.top, left: a.left - b.left + 8, ancho: Math.max(0, a.width - 16) };
+      setSitioEtiqueta((s) => (s && ["top", "left", "ancho"].every((k) => Math.abs(s[k] - nuevo[k]) < 0.5) ? s : nuevo));
+    };
+    medir();
+    document.fonts?.ready?.then(medir);
+    window.addEventListener("resize", medir);
+    return () => { vivo = false; window.removeEventListener("resize", medir); };
+  }, [conEtiqueta, paso, enParada]); // eslint-disable-line react-hooks/exhaustive-deps
+  const textoEtiqueta = etiqueta ? (parada.etiquetas?.[escalon.ultima] ?? pintar(parada.opciones.find((o) => o.id === escalon.ultima).texto)) : null;
+  const marcaEtiqueta = etiqueta?.calificada ? (escalon.acerto ? "correcta" : "tachada") : null;
+
   const primero = paso === 1 && !enParada;
   const ultimo = paso === CIERRE;
   const etiquetaReproducir = ultimo ? "Ver de nuevo" : reproduciendo ? "Pausa" : "Reproducir";
-  const falla = enParada ? fallaDe(parada, eleccion) : null; // la misma regla que la capa 3
+  const falla = enParada ? escalon.falla : null; // la misma regla que la capa 3
+  const pista = enParada ? escalon.pista : null;
+  const sinCerrar = enParada && !escalon.resuelta;
   const aparece = reducido ? undefined : "b5-parada-aparece";
   const actual = todos[paso - 1];
   const estiloTexto = (i) => (i === PASOS ? { fontFamily: SORA, fontWeight: 600 } : { fontFamily: INTER, fontWeight: 400 });
   return (
-    <div ref={maquina} {...atributos} className={CLASE_T5}>
+    <div ref={maquina} {...atributos} className={CLASE_T5} style={{ position: "relative" }}>
       <EstilosT5 />
       {escena(estado, refDe, reducido)}
+      {etiqueta && <style>{ESTILOS_ETIQUETA}</style>}
+      {etiqueta && (
+        <span data-etiqueta-parada={parada.etiquetaEn} data-marca={marcaEtiqueta ?? ""} aria-hidden="true" className={reducido ? undefined : "b5-etiqueta-aparece"} style={{
+          position: "absolute", top: `${sitioEtiqueta?.top ?? 0}px`, left: `${sitioEtiqueta?.left ?? 0}px`,
+          maxWidth: sitioEtiqueta ? `${sitioEtiqueta.ancho}px` : undefined, transform: "translateY(-50%)",
+          visibility: sitioEtiqueta ? "visible" : "hidden", zIndex: 3, pointerEvents: "none",
+          display: "inline-flex", alignItems: "center", gap: "4px", boxSizing: "border-box", padding: "1px 6px", borderRadius: "6px",
+          border: `1.5px dashed ${NODO}`, background: FONDO, color: TEXTO, fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: 1.35,
+        }}>
+          {marcaEtiqueta === "correcta" && <IconoVisto />}
+          {marcaEtiqueta === "tachada" && <IconoTache />}
+          <span data-texto-etiqueta style={marcaEtiqueta === "tachada" ? TACHADO : undefined}>{textoEtiqueta}</span>
+        </span>
+      )}
 
       {/*
         ═══ EL BLOQUE DE CONTROL, PEGADO (guía v2 §4.4, modo B) ═══
@@ -386,14 +465,16 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
             {/* En la parada (y solo en ella) se reserva también la pregunta y cada devolución: el bloque crece una vez, al entrar. */}
             {enParada && [
               <p key="pregunta" style={{ gridArea: "1 / 1", ...PREGUNTA_PARADA }}>{pintar(parada.pregunta)}</p>,
-              ...fallas(parada).map((t) => <p key={t} style={{ gridArea: "1 / 1", ...DEVOLUCION_PARADA }}>{pintar(t)}</p>),
+              ...textosParada(parada).map((t) => <p key={t} style={{ gridArea: "1 / 1", ...DEVOLUCION_PARADA }}>{pintar(t)}</p>),
             ]}
           </div>
           <div ref={texto} data-texto-paso tabIndex={-1} aria-live="polite" style={{ gridArea: "1 / 1", outline: "none" }}>
             {enParada ? (
               falla
                 ? <p data-devolucion className={aparece} style={DEVOLUCION_PARADA}>{pintar(falla)}</p>
-                : <p data-pregunta style={PREGUNTA_PARADA}>{pintar(parada.pregunta)}</p>
+                : pista
+                  ? <p data-pista className={aparece} style={DEVOLUCION_PARADA}>{pintar(pista)}</p>
+                  : <p data-pregunta style={PREGUNTA_PARADA}>{pintar(parada.pregunta)}</p>
             ) : (
               <p style={{ margin: 0, fontSize: "14px", lineHeight: 1.55, color: TEXTO, ...estiloTexto(paso - 1) }}>{pintar(actual.texto)}</p>
             )}
@@ -401,10 +482,13 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
           </div>
         </div>
         {enParada && (
-          <div data-parada={parada.antes} role="group" aria-label={parada.pregunta} style={{ display: "flex", gap: "4px", marginTop: "8px" }}>
+          <div ref={grupoParada} data-parada={parada.antes} data-opciones={formaParada} role="group" aria-label={parada.pregunta} style={{
+            display: "flex", flexDirection: formaParada === "fila" ? "row" : "column", gap: formaParada === "fila" ? "4px" : "6px", marginTop: "8px",
+          }}>
             <style>{ESTILOS_PARADA}</style>
             {parada.opciones.map((o) => (
-              <OpcionDecidir key={o.id} opcion={o} forma="fila" elegida={eleccion} correcta={parada.correcta} reducido={reducido} onElegir={setEleccion} />
+              <OpcionDecidir key={o.id} opcion={o} forma={formaParada} estado={escalon} correcta={parada.correcta} reducido={reducido}
+                onElegir={(id) => setIntentos((i) => elegir(parada, i, id))} />
             ))}
           </div>
         )}
@@ -431,9 +515,9 @@ export default function MaquinaPegada({ todos, estadoPaso, duracion, escena, atr
             ref={siguiente}
             type="button"
             data-siguiente
-            disabled={ultimo || (enParada && eleccion === null)}
+            disabled={ultimo || sinCerrar}
             onClick={() => ir(paso + 1)}
-            style={{ ...botonBase, ...(ultimo || (enParada && eleccion === null) ? DESACTIVADO : { background: COLOR.neutro, border: `2px solid ${COLOR.neutro}`, color: COLOR.navy }) }}
+            style={{ ...botonBase, ...(ultimo || sinCerrar ? DESACTIVADO : { background: COLOR.neutro, border: `2px solid ${COLOR.neutro}`, color: COLOR.navy }) }}
           >
             Siguiente
           </button>

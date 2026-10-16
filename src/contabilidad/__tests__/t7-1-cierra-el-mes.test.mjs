@@ -50,6 +50,7 @@ const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await 
 const { default: CierraElMes } = await import("../../components/mecanicas/libros/t7/CierraElMes.jsx");
 const { JUEGOS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
+const { firma, textoFigura } = await import("./figuraAcumuladaPrueba.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -297,4 +298,39 @@ test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqu
   const fuente = leer("src/docente/etiquetasItem.js");
   const bloque = fuente.slice(fuente.indexOf("CONTABILIDAD · T7 «INVENTARIOS»"));
   assert.match(bloque.slice(0, bloque.indexOf("});")), /"t7-1-cierra-el-mes": \(id\) => unidadDeH4\(id\),/);
+});
+
+/* ═══════════ LOTE 5 · LA FIGURA ACUMULADA ═══════════ */
+
+test("★★★ lote 5: el estado de resultados resuelto se queda en la parte 2, y el cierre se suma al comprobarlo", async () => {
+  const m = await montar();
+  try {
+    /* Parte 1: la tabla es el ítem mismo; la figura no está, ni al confirmar. */
+    assert.deepEqual(firma(m.caja), []);
+    await llenar(m);
+    await tocar(boton(m.caja, D.BOTON_H4.confirmar));
+    assert.deepEqual(firma(m.caja), []);
+    await tocar(boton(m.caja, D.BOTON_H4.siguiente));
+    /* Parte 2: la tabla resuelta, con las cifras buenas y la utilidad antes de impuestos, arriba. */
+    assert.deepEqual(firma(m.caja), ["tabla 5 filas"]);
+    const tabla = m.caja.querySelector("[data-tabla-figura]");
+    assert.deepEqual([...tabla.querySelectorAll("[role=columnheader]")].map((x) => x.textContent), D.METODOS_H4.map((x) => x.nombre));
+    assert.deepEqual([...tabla.querySelectorAll("[data-fila-tabla]")].map((f) => [...f.children].map((x) => x.textContent)), [
+      ...D.FILAS_H4.map((f) => [f.nombre, ...D.METODOS_H4.map((x) => miles(x.cifras[f.id]))]),
+      [D.UTILIDAD_ANTES_H4.nombre, ...D.METODOS_H4.map((x) => miles(x.cifras.operacional))],
+    ]);
+    assert.ok(m.caja.querySelector("[data-figura-acumulada]").compareDocumentPosition(m.caja.querySelector("[data-parte-h4='cierre']")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+    /* E8: las dos líneas del cierre no están antes de comprobarlas (con error en una). */
+    assert.ok(!m.caja.querySelector("[data-asiento-figura]"));
+    const [a, b] = D.PARTE2_H4.lineas;
+    await tocar(lado(m.caja, a.id, a.lado));
+    await tocar(lado(m.caja, b.id, a.lado));
+    assert.deepEqual(firma(m.caja), ["tabla 5 filas"]);
+    await tocar(boton(m.caja, "Comprobar"));
+    assert.deepEqual(firma(m.caja), ["tabla 5 filas", "asiento : 2 líneas"]);
+    await tocar(boton(m.caja, D.BOTON_H4.verResumen));
+    assert.equal(m.caja.querySelector("[data-figura-acumulada]"), null);
+  } finally {
+    m.desmontar();
+  }
 });

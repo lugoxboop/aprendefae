@@ -226,12 +226,12 @@ function piezaDeAprender(tema, pieza, k, total) {
 
   md(`#### Capa 1 · ${lit(NOMBRES_CAPAS[1])}`);
   md();
-  /* Los textos, de los datos: la vista puede traer la cita ya pintada con su nota (b5/NotaDebajo.jsx). */
+  /* Los textos, de los datos (la nota de un término con cita, `notaDebajo`, la pinta CuatroCapas aparte, siempre a la vista). */
   const datos = DATOS_PIEZAS.find((x) => x.id === pieza.id);
   datos.nombres.forEach((n, i) => {
     md(`${i + 1}. **${lit(n.termino)}.** ${lit(n.definicion)}`);
     if (n.delLibro) md(`   - *${lit(n.rotuloDelLibro ?? ROTULO_DEL_LIBRO)}:* ${lit(n.delLibro)}`);
-    if (n.notaDebajo) md(`   - *${lit(n.notaDebajo.rotulo)}* (debajo de la cita, en el mismo bloque): ${lit(n.notaDebajo.texto)}`);
+    if (n.notaDebajo) md(`   - *${lit(n.notaDebajo.rotulo)}* (a la vista, bajo la definición): ${lit(n.notaDebajo.texto)}`);
     /* La vista pinta el pie si le pasa la definición ya compuesta con él (tema6/PiesDeTermino.jsx). */
     const pintado = typeof pieza.nombres[i].definicion !== "string";
     if (n.pie && pintado) md(`   - *Pie de fuente (bajo la definición):* ${lit(n.pie)}`);
@@ -294,31 +294,21 @@ function piezaDeAprender(tema, pieza, k, total) {
 
 /* ═══════════ EL CAMINO DE HACER ═══════════ */
 
-/* La clasificación de dos niveles: cada marca equivocada pasa por el evaluador del juego. */
+/* Las fichas a un nivel (lote 6a): los tres cajones son las opciones; cada marca equivocada pasa por el evaluador del juego. */
 const CLASIFICACIONES = {
   [H51.T5_ACT1.id]: {
-    datos: H51.T5_ACT1, fichas: H51.FICHAS_T5_ACT1, botones: H51.BOTON_T5_ACT1, alt: H51.ALT_T5_ACT1,
-    nivel1: H51.RENTAS, nivel2: H51.TIPOS_FIJA, reglas: H51.REGLAS_T5_ACT1,
+    datos: H51.T5_ACT1, fichas: H51.FICHAS_T5_ACT1, alt: H51.ALT_T5_ACT1, grupo: H51.GRUPO_T5_ACT1, reglas: H51.REGLAS_T5_ACT1,
     resumen: H51.resumenT5Act1,
-    marcas: [
-      { rotulo: "Renta variable", m: { renta: H51.VARIABLE, tipo: null } },
-      { rotulo: "Renta fija · Con interés", m: { renta: H51.FIJA, tipo: H51.INTERES } },
-      { rotulo: "Renta fija · Con descuento", m: { renta: H51.FIJA, tipo: H51.DESCUENTO } },
-    ],
+    marcas: H51.CAJONES_T5_ACT1.map((k) => ({ rotulo: k.rotulo, m: { renta: k.renta, tipo: k.tipo }, clave: k.tipo ? `${k.renta}/${k.tipo}` : k.renta })),
     evaluar: evaluarT5Act1,
     porPartida: H51.T5_ACT1.porPartida,
   },
   [H61.T6_ACT1.id]: {
-    datos: H61.T6_ACT1, fichas: H61.FICHAS_T6_ACT1, botones: H61.BOTON_T6_ACT1, alt: H61.ALT_T6_ACT1,
-    nivel1: H61.CUENTAS, nivel2: H61.LADOS, reglas: H61.REGLAS_T6_ACT1,
+    datos: H61.T6_ACT1, fichas: H61.FICHAS_T6_ACT1, alt: H61.ALT_T6_ACT1, grupo: H61.GRUPO_T6_ACT1, reglas: H61.REGLAS_T6_ACT1,
     resumen: H61.resumenT6Act1,
-    marcas: [
-      { rotulo: "Otra cuenta por cobrar", m: { cuenta: H61.OTRA, lado: null } },
-      { rotulo: "Clientes · Se debita", m: { cuenta: H61.CLIENTES, lado: H61.DEBITA } },
-      { rotulo: "Clientes · Se acredita", m: { cuenta: H61.CLIENTES, lado: H61.ACREDITA } },
-    ],
+    marcas: H61.CAJONES_T6_ACT1.map((k) => ({ rotulo: k.rotulo, m: { cuenta: k.cuenta, lado: k.lado }, clave: k.lado ? `${k.cuenta}/${k.lado}` : k.cuenta })),
     evaluar: evaluarT6Act1,
-    porPartida: H61.FICHAS_T6_ACT1.length,
+    porPartida: H61.T6_ACT1.porPartida,
   },
 };
 
@@ -361,7 +351,7 @@ function asiSeJuega(id) {
       /* La clasificación: la ficha, lo que toca la mano y el acierto que queda. */
       item("Ficha del ejemplo", demo.texto);
       const c = CLASIFICACIONES[id];
-      const rotuloDe = (sel) => [...c.nivel1, ...c.nivel2].find((x) => x.id === sel.match(/"([^"]+)"/)[1]).rotulo;
+      const rotuloDe = (sel) => c.marcas.find((x) => x.clave === sel.match(/"([^"]+)"/)[1]).rotulo;
       md(`- **La mano toca:** ${asi.guion.toques.map((t) => t.texto ?? rotuloDe(t.en)).join(" → ")}`);
       item("Queda escrito", demo.acierto);
       continue;
@@ -382,9 +372,8 @@ function clasificacion(c) {
   md();
   item("Objetivo", c.datos.objetivo);
   item("Consigna", c.datos.consigna);
-  item("Primer nivel", c.nivel1.map((x) => lit(x.rotulo)).join(" · "));
-  item("Segundo nivel", c.nivel2.map((x) => lit(x.rotulo)).join(" · "));
-  item("Botón", [c.botones.nada, c.botones.falta, c.botones.colocar].map(lit).join(" → "));
+  item("Cajones (tocar uno coloca la ficha)", c.marcas.map((x) => lit(x.rotulo)).join(" · "));
+  item("Grupo (lector de pantalla)", c.grupo);
   md(`- **Fichas por partida:** ${c.porPartida} de ${c.fichas.length}`);
   md();
   md("Fichas, con lo que se lee al acertar y al fallar (las devoluciones las calcula el mismo evaluador del juego):");
@@ -402,7 +391,7 @@ function clasificacion(c) {
     md(`   - *Segundo fallo:* ${lit(segundoFalloDe(f.acierto))}`);
   });
   md();
-  item("Resumen", c.resumen("{bien}", "{cuantas}", "{x}"));
+  item("Resumen", c.resumen("{bien}", "{cuantas}"));
   item("Para lector de pantalla", c.alt);
   md();
 }

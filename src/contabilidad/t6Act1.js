@@ -1,6 +1,7 @@
 import { segundoFalloDe } from "./b5SegundoFallo.js";
+import { repartirTanda } from "./b5Reparto.js";
 import {
-  FICHAS_T6_ACT1, ERROR_T6_ACT1, OTRA, CLIENTES, ACREDITA, PESO_CUENTA, PESO_LADO,
+  T6_ACT1, FICHAS_T6_ACT1, CLIENTES, CAJONES_T6_ACT1,
 } from "../data/contabilidadT6Act1.js";
 
 /*
@@ -10,15 +11,23 @@ import {
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* La tanda es el banco entero, barajado (Futaba). */
-export function sortearT6Act1(barajar) {
-  return barajar([...FICHAS_T6_ACT1]);
+/*
+ * Nueve fichas, entre 2 y 4 por cajón (R10, hoja de fusiones de Mai). Antes era el banco entero (10:
+ * 4 · 3 · 3), y la cuenta del estante delataba la última. El banco da 4 · 3 · 3, así que el reparto se
+ * sortea con ese tope: 4 · 3 · 2, 4 · 2 · 3 o 3 · 3 · 3.
+ */
+export const GRUPOS_T6_ACT1 = CAJONES_T6_ACT1.map(({ cuenta, lado }) => ({ cuenta, lado }));
+const delGrupo = (g) => FICHAS_T6_ACT1.filter((f) => f.cuenta === g.cuenta && f.lado === g.lado);
+export function sortearT6Act1(barajar, total = T6_ACT1.porPartida) {
+  return repartirTanda(GRUPOS_T6_ACT1.map(delGrupo), total, barajar);
 }
 
 /**
  * `marcado` es { cuenta, lado }. El lado va a null con «Otra cuenta por
- * cobrar». `intento` es 1 o 2. En el segundo fallo manda la regla única de la
- * célula: el acierto de la ficha, con «No es esa.» delante, en TODAS las fichas.
+ * cobrar». `intento` es 1 o 2. Al primer fallo, la PISTA de la ficha (la
+ * escalera de ayuda de la célula, tema6/escaleraB5.js): la misma con cualquier
+ * cajón, sin emoji. En el segundo fallo manda la regla única de la célula: el
+ * acierto de la ficha, con «No es esa.» delante, en TODAS las fichas.
  */
 export function evaluarT6Act1(ficha, marcado, intento = 1) {
   const cuentaOk = marcado.cuenta === ficha.cuenta;
@@ -31,25 +40,11 @@ export function evaluarT6Act1(ficha, marcado, intento = 1) {
   /* Regla única del segundo fallo (b5SegundoFallo.js). */
   if (intento === 2) return { ok, texto: segundoFalloDe(ficha.acierto), patron: "segundo", cuentaOk, ladoOk };
 
-  if (!cuentaOk) {
-    /* A: era de Clientes y la puso en otra. B: era un préstamo y la puso en Clientes. */
-    const patron = ficha.cuenta === CLIENTES ? "A" : "B";
-    return { ok, texto: ERROR_T6_ACT1[patron], patron, cuentaOk, ladoOk: false };
-  }
-  /* C5 antes que C: una venta a crédito puesta en «Se acredita». */
-  const patron = ficha.c5 && marcado.lado === ACREDITA ? "C5" : "C";
-  return { ok, texto: ERROR_T6_ACT1[patron], patron, cuentaOk, ladoOk: false };
+  return { ok, texto: ficha.pista, patron: "pista", cuentaOk, ladoOk };
 }
 
-/*
- * La cuenta pesa 60 y el lado 40. Las de otra cuenta por cobrar no tienen
- * lado que acertar: valen entero al acertar la cuenta (Futaba, resumen).
- */
-export function valorDeItemT6Act1(ficha, r) {
-  if (!r.cuentaOk) return 0;
-  if (ficha.cuenta === OTRA) return 1;
-  return PESO_CUENTA + (r.ladoOk ? PESO_LADO : 0);
-}
+/* Cada ficha vale entera al acertar (lote 6a). En el segundo intento, la mitad (el componente). */
+export const valorDeItemT6Act1 = (ficha, r) => (r.ok ? 1 : 0);
 
 /* Para el panel docente: el ítem es la ficha, y se lee por su texto. */
 export const fichaDeItemT6Act1 = (id) => FICHAS_T6_ACT1.find((f) => f.id === id)?.texto ?? null;

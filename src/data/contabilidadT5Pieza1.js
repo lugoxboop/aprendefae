@@ -29,43 +29,59 @@ export const PIEZA_DEL_EFECTIVO = {
   numero: 1,
   titulo: "Del efectivo de sobra al activo financiero",
   objetivo: "Vas a ver cuándo una inversión de la empresa es temporal y de dónde sale lo que rinde.",
+  /*
+   * B2 · un término por pantalla (entrega final de Futaba con las correcciones
+   * de Shoko, 15-oct): nueve pantallas, cada una de 60 palabras o menos. La
+   * primera condición se une a «Activo financiero temporal» y la segunda va
+   * sola; «Título valor» sale (decisión de Sakuta); «Renta fija» se parte en
+   * sus dos tipos. La nota de “renta variable” y “renta fija” pasa a «Renta
+   * fija», donde ya se nombraron los dos.
+   */
   nombres: [
     {
       termino: "Activo financiero",
-      definicion: "Es una colocación de dinero. La empresa deja de tener ese efectivo y, a cambio, tiene algo que espera que le rinda más adelante. Ese rendimiento puede venir de un interés. Puede venir de un dividendo, que es lo que una empresa reparte entre quienes tienen sus acciones. O puede venir de venderlo por más de lo que costó.",
-      delLibro: "«Representan colocaciones de dinero sobre las cuales una empresa espera obtener algún rendimiento a futuro…» (p. 191)",
+      definicion: "Es una colocación de dinero que se espera que rinda más adelante. Puede rendir un interés, un dividendo (lo que una empresa reparte entre sus accionistas) o una venta por más de lo que costó.",
+      delLibro: "«…colocaciones de dinero sobre las cuales una empresa espera obtener algún rendimiento a futuro…» (p. 191)",
     },
     {
       termino: "Activo financiero temporal",
-      definicion: "Se compra con efectivo que la empresa no necesita de inmediato, en vez de dejarlo quieto. Para ser temporal, tiene que cumplir dos condiciones. La primera es poder venderse rápido y con facilidad. El libro dice “negociables o realizables”. La segunda es estar destinado a volverse efectivo cuando se necesite, en un año o en un ciclo de operaciones, el que sea más largo. El ciclo de operaciones es lo que tarda el negocio en comprar, vender y cobrar.",
-      /* En un solo párrafo, con «1.» y «2.» dentro del texto (guía §3). */
-      delLibro: "«1. Negociables o realizables rápidamente. 2. Destinados a convertirse en efectivo cuando se necesite, en el término de un año o de un ciclo de operaciones (el que sea más largo).» (p. 192)",
+      definicion: "Se compra con efectivo que la empresa no necesita de inmediato, en vez de dejarlo quieto. Para ser temporal cumple dos condiciones a la vez. La primera: poder venderse rápido y con facilidad.",
+      delLibro: "«1. Negociables o realizables rápidamente.» (p. 192)",
     },
     {
-      termino: "Título valor",
-      definicion: "Es un documento que sirve para captar recursos y moverlos entre quienes invierten. En el libro, los valores son clases de títulos valores. Por ejemplo, los valores de renta variable o los valores negociables.",
+      termino: "La segunda condición",
+      /* Sin cita, como pidió Shoko. */
+      definicion: "Es la segunda: estar destinado a volverse efectivo cuando se necesite, en un año o en un ciclo de operaciones, el que sea más largo. El ciclo de operaciones es lo que tarda el negocio en comprar, vender y cobrar.",
     },
     {
       termino: "Tres grupos",
-      /* Lista abierta: va en prosa, con «suelen» visible (nota de Futaba). */
-      definicion: "Los activos temporales suelen ser de tres grupos. El primero son los documentos a corto plazo. Ahí están los certificados de depósito, los bonos de tesorería y los documentos negociables. El segundo son los valores negociables de deuda. Ahí están los bonos del Gobierno y de compañías. El tercero son los valores negociables de capital. Ahí están las acciones preferentes y comunes.",
+      /* Lista abierta: va en prosa, con «suelen» visible. El texto de Futaba (INFLESZ 61), por decisión de Sakuta. */
+      definicion: "Los activos temporales suelen ser de tres grupos. Uno son los documentos a corto plazo: certificados de depósito, bonos de tesorería y documentos negociables. Otro son los valores negociables de deuda: bonos del Gobierno y de compañías. Y otro son los de capital: acciones preferentes y comunes.",
     },
     {
       termino: "Acciones, en este tema",
-      definicion: "Aquí, la empresa compra con su efectivo acciones que emitió otra empresa. Para quien las compra, son un activo.",
-      delLibro: "Son el mismo tipo de documento que ya viste en el patrimonio, mirado desde el otro lado. Para la empresa que las emite, es decir, la que las crea y las vende para conseguir recursos, son patrimonio. Para la que las compra, son un activo.",
+      definicion: "Aquí, la empresa compra acciones que otra empresa emitió.",
+      delLibro: "Ya las viste en el patrimonio, desde el otro lado. Para la empresa que las emite, es decir, la que las crea y las vende para conseguir recursos, son patrimonio. Para la que las compra, son un activo.",
       rotuloDelLibro: "Nota",
     },
     {
       termino: "Renta variable",
-      definicion: "Su rendimiento depende de cómo le vaya a la empresa que emitió el título. Un ejemplo son las acciones. Sus dividendos dependen de la situación económica de esa empresa. También dependen de su liquidez, que es su capacidad de tener efectivo para pagar.",
+      definicion: "Su rendimiento depende de cómo le vaya a la empresa que emitió el título. Así pasa con las acciones. Sus dividendos dependen de la situación económica de esa empresa. Y de su liquidez, es decir, de su capacidad de tener efectivo para pagar.",
+    },
+    {
+      termino: "Renta fija",
+      definicion: "Da una renta constante, que se pacta en el momento de invertir. Es de dos tipos: con interés o con descuento.",
       delLibro: "Aquí, “renta variable” y “renta fija” son nombres de tipos de título, no de cuentas. Cuando la renta le llega a la empresa, sí se anota como un ingreso.",
       rotuloDelLibro: "Nota",
     },
     {
-      termino: "Renta fija",
+      termino: "Renta fija con interés",
       /* Lista abierta: «entre otros» visible, sin viñetas ni recorte. */
-      definicion: "Da una renta constante, que se pacta en el momento de invertir. Es de dos tipos. Con interés: paga un interés fijo durante un periodo determinado. Por ejemplo, los certificados de depósito a término (CDT), los bonos y las cédulas hipotecarias, entre otros. Con descuento: su renta es la diferencia entre el valor de compra y el valor de redención. El valor de redención es lo que paga quien emitió el título cuando este vence. Por ejemplo, los títulos de participación, los certificados de reembolso tributario (CERT) y los títulos canjeables, entre otros.",
+      definicion: "Paga un interés fijo durante un periodo determinado. Por ejemplo, el CDT, los bonos y las cédulas hipotecarias, entre otros. El CDT es un certificado de depósito a término.",
+    },
+    {
+      termino: "Renta fija con descuento",
+      definicion: "Su renta es la diferencia entre el valor de compra y el valor de redención. El valor de redención es lo que paga quien emitió el título cuando este vence. Por ejemplo, los títulos de participación, el CERT (certificado de reembolso tributario) y los títulos canjeables, entre otros.",
     },
   ],
 };
@@ -130,6 +146,7 @@ export const PAQUETES = [
     revela: "Se venden fácil. Y su historia de inversiones respalda que se volverán efectivo cuando haga falta. Cumple las dos condiciones.",
     correcta: "si",
     falla: "Sí se vende fácil: se negocia públicamente. Y ya vendió inversiones así cuando le faltó efectivo.",
+    pista: "Revisa las dos condiciones, una por una, con lo que dice la descripción del paquete.",
   },
   {
     id: "b",
@@ -142,8 +159,15 @@ export const PAQUETES = [
       si: "Si no se negocia públicamente, puede que no tenga mercado. Falla la primera condición: venderse fácil.",
       "no-intencion": "El paquete no dice nada de la intención. Lo que falla es que no se negocia públicamente.",
     },
+    pista: "Piensa quién le compraría estas acciones a la empresa si las quisiera vender mañana.",
   },
 ];
+/*
+ * La figura de la capa 3 (Mai, enganche B1-B5 §2b; textos nuevos, para
+ * Shoko): dos cajones. Al decidirse un paquete, su nombre entra en el cajón
+ * correcto (el de su respuesta correcta: «si» es temporal), se acierte o no.
+ */
+export const FIGURA_CAPA_3 = { temporal: "Temporal", noTemporal: "No temporal" };
 /* Solo aparece con los dos paquetes abiertos, en cualquier orden. Su pie va debajo. */
 export const PIE_FINAL_CAPA_3 = "Basado en el libro, pp. 191-192";
 export const FINAL_CAPA_3 = [
@@ -154,31 +178,37 @@ export const FINAL_CAPA_3 = [
 
 /* ═══════════ CAPA 4 · «EN UNA FRASE» (UnaFrase, sin cambios) ═══════════ */
 
-/* En el orden en que las escribió Futaba; UnaFrase las baraja una vez al cargar. */
-export const PREGUNTA_FINAL_T5 = "¿Qué decide si un activo financiero es temporal?";
+/*
+ * C1-1 de Futaba (lote C2 · C1 · C7, PASA de Shoko): la pregunta de antes
+ * tenía la respuesta en la pantalla anterior; esta es un caso nuevo, con su
+ * pie «Escenario simulado» (lo pinta la escena de la pieza, bajo UnaFrase).
+ * En el orden en que las escribió Futaba; UnaFrase las baraja una vez al cargar.
+ */
+export const PREGUNTA_FINAL_T5 = "Una empresa compra bonos que se venden fácil, pero piensa guardarlos cinco años. Su ciclo de operaciones dura menos de un año. ¿Son un activo financiero temporal?";
 export const OPCIONES_FINAL_T5 = [
   {
-    id: "b5-dos-condiciones",
-    texto: "Que se pueda vender fácil y vaya a volverse efectivo cuando haga falta.",
+    id: "b5-no-un-ano",
+    texto: "No: no se volverán efectivo en un año.",
     correcta: true,
-    feedback: "Correcto. Los dos paquetes eran acciones, y uno no cumplió la primera condición: el tipo de documento no decide solo.",
+    feedback: "Correcto. Cumplen la primera condición, pero no la segunda: no están destinados a volverse efectivo en un año o en un ciclo de operaciones.",
   },
   {
-    id: "b5-corto-plazo",
-    texto: "Que sea un documento a corto plazo, como un bono de tesorería.",
+    id: "b5-se-vende-facil",
+    texto: "Sí: se venden fácil, y con eso basta.",
     correcta: false,
-    feedback: "No es esa. Los bonos de tesorería suelen estar entre los temporales, pero el tipo de documento no decide solo: también tiene que cumplir las dos condiciones.",
+    feedback: "No es esa. Venderse fácil es solo la primera condición. También tienen que estar destinados a volverse efectivo pronto.",
   },
   {
-    id: "b5-interes-fijo",
-    texto: "Que le pague a la empresa un interés fijo durante cierto tiempo.",
+    id: "b5-bonos-temporales",
+    texto: "Sí: los bonos suelen estar entre los temporales.",
     correcta: false,
-    feedback: "No es esa. Eso describe la renta fija con interés. Si es temporal y qué tipo de renta da son dos preguntas distintas.",
+    feedback: "No es esa. El tipo de documento no decide solo: también tienen que cumplir las dos condiciones.",
   },
   {
-    id: "b5-intencion",
-    texto: "Que la empresa diga que lo va a volver efectivo cuando lo necesite.",
+    id: "b5-bonos-nunca",
+    texto: "No: los bonos nunca son activos temporales.",
     correcta: false,
-    feedback: "No basta con decirlo. La intención cuenta, pero se apoya en evidencias, como la historia de inversiones de la empresa.",
+    feedback: "No es esa. Los bonos sí pueden ser temporales, si cumplen las dos condiciones. Aquí falla la segunda.",
   },
 ];
+export const PIE_FINAL_T5 = "Escenario simulado";

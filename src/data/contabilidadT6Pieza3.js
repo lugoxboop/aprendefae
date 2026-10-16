@@ -17,10 +17,19 @@ export const PIEZA_LA_PROVISION = {
   numero: 3,
   titulo: "La provisión, de un año al siguiente",
   objetivo: "Vas a ver cómo se crea la provisión, cómo se castiga una deuda contra ella y cómo se ajusta al año siguiente.",
+  /*
+   * B2 · un término por pantalla (Futaba, 15-oct): seis pantallas. El
+   * «Ojo» de la provisión (sube al acreditarse) sale a su propia pantalla,
+   * «Al revés de Clientes».
+   */
   nombres: [
     {
       termino: "Provisión para deudas incobrables",
-      definicion: "Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento. Se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables. Ojo: la provisión sube cuando se acredita y baja cuando se debita. Es al revés de Cuentas por cobrar – clientes, porque se resta de ella.",
+      definicion: "Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para deudas incobrables.",
+    },
+    {
+      termino: "Al revés de Clientes",
+      definicion: "Ojo: la provisión sube cuando se acredita y baja cuando se debita. Es al revés de Cuentas por cobrar – clientes, porque se resta de ella.",
     },
     {
       termino: "Valor neto",
@@ -34,8 +43,8 @@ export const PIEZA_LA_PROVISION = {
     },
     {
       termino: "Castigar contra la provisión",
-      definicion: "Cuando una deuda se da por perdida, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto no se toca, porque ya se anotó al crear la provisión.",
-      delLibro: "«Una vez establecida la provisión, el saldo de la cuenta se va reduciendo en la medida en que se vayan castigando cuentas que se consideren incobrables.» (p. 202)",
+      definicion: "Cuando una deuda se da por perdida, se debita la provisión y se acredita Cuentas por cobrar – clientes. El gasto no se toca: ya se anotó al crear la provisión.",
+      delLibro: "«Una vez establecida la provisión, el saldo de la cuenta se va reduciendo…» (p. 202)",
     },
     {
       termino: "Subestimada y sobrestimada",
@@ -111,17 +120,20 @@ export const CIERRE_T6_A3 = {
 
 /* ═══════════ CAPA 3 · «AHORA PRUEBE USTED» · la cuenta T en tres momentos ═══════════ */
 
-/* Consigna y las tres decisiones, una por momento: entrega 2 de Futaba. */
+/* Consigna y las tres decisiones, una por momento: entrega 2 de Futaba. Pistas, la tercera opción de 2007 y la pregunta nueva de diciembre: lote C2 · C1 · C7 (C2 y C1-8). */
 export const CONSIGNA_CAPA_3_T6_A3 = "Toca cada momento y decide qué le pasa a la provisión. Después, mira cómo queda la T.";
 
 /*
  * Los tres momentos, en orden (se abren en orden: guía v1 §5.1). Cada uno
  * deja en la T su movimiento (columna y monto) y el saldo que queda: normal
  * bajo HABER, o en contra bajo DEBE.
+ * B5 de Futaba: la caja se llama por lo que pasa (`caja`: «Se crea», «Se
+ * usa», «Se corrige»); la fecha (`nombre`) queda solo en las filas de la T.
  */
 export const MOMENTOS_T6_A3 = [
   {
     id: "diciembre-2007",
+    caja: "Se crea",
     nombre: "31 de diciembre de 2007",
     revela: "Sube $148.800, porque se crea la provisión. El saldo queda en $148.800.",
     pie: "Libro, pp. 202-203",
@@ -129,12 +141,17 @@ export const MOMENTOS_T6_A3 = [
     monto: "$148.800",
     saldo: { texto: "El saldo queda en $148.800", enContra: false },
     pregunta: "¿En qué columna de la T se anota la provisión que se crea?",
-    opciones: [{ id: "debe", texto: "Debe" }, { id: "haber", texto: "Haber" }],
+    opciones: [{ id: "debe", texto: "Debe" }, { id: "haber", texto: "Haber" }, { id: "ninguna", texto: "En ninguna: es solo un cálculo" }],
     correcta: "haber",
-    falla: "La provisión sube por el Haber.",
+    falla: {
+      debe: "La provisión sube por el Haber.",
+      ninguna: "Es un cálculo, pero se anota con un asiento: la provisión sube por el Haber.",
+    },
+    pista: "Mira el asiento que la crea: el gasto va al Debe. ¿Y la provisión?",
   },
   {
     id: "marzo",
+    caja: "Se usa",
     nombre: "Marzo del año siguiente",
     revela: "Baja $180.000, porque se castiga la deuda de Pablo Moncayo. Como solo tenía $148.800, le faltan $31.200.",
     pie: "Basado en el libro, pp. 202-203",
@@ -148,22 +165,25 @@ export const MOMENTOS_T6_A3 = [
       cero: "No queda en cero: el castigo es más grande que la provisión.",
       sigue: "El castigo se debita a la provisión, así que el saldo baja.",
     },
+    pista: "Compara lo que había en la provisión con lo que se castigó. ¿Cuál es mayor?",
   },
   {
     id: "diciembre-siguiente",
+    caja: "Se corrige",
     nombre: "31 de diciembre del año siguiente",
     revela: "Sube $184.600: los $153.400 del análisis más los $31.200 que faltaron. El saldo queda en $153.400.",
     pie: "Libro, p. 203",
     lado: "haber",
     monto: "$184.600",
     saldo: { texto: "El saldo queda en $153.400", enContra: false },
-    pregunta: "¿Por cuánto se registra la provisión?",
-    opciones: [{ id: "analisis", texto: "$153.400" }, { id: "suma", texto: "$184.600" }, { id: "faltante", texto: "$31.200" }],
-    correcta: "suma",
+    pregunta: "¿El registro es mayor, menor o igual a lo que pide el análisis?",
+    opciones: [{ id: "mayor", texto: "Mayor" }, { id: "igual", texto: "Igual" }, { id: "menor", texto: "Menor" }],
+    correcta: "mayor",
     falla: {
-      analisis: "$153.400 es el saldo que debe quedar. Para llegar ahí, también hay que cubrir lo que faltó en marzo.",
-      faltante: "Eso solo cubre lo que faltó. Falta lo que pide el análisis.",
+      igual: "$153.400 es el saldo que debe quedar. Para llegar ahí, también hay que cubrir lo que faltó en marzo.",
+      menor: "Lo que faltó en marzo se suma, no se resta.",
     },
+    pista: "Mira de qué saldo parte la T antes de este registro.",
   },
 ];
 /* La T: su nombre y las palabras publicadas de sus columnas (ElCierreCompleto). */
@@ -175,34 +195,39 @@ export const FINAL_CAPA_3_T6_A3 = {
 
 /* ═══════════ CAPA 4 · «EN UNA FRASE» (UnaFrase, sin cambios) ═══════════ */
 
-export const PREGUNTA_FINAL_T6_A3 = "En marzo, ¿por qué El Torito no anota un gasto al castigar la deuda de Pablo Moncayo?";
-/* En el orden de Futaba; UnaFrase las baraja una vez al cargar. */
+/*
+ * C1-9 de Futaba (lote C2 · C1 · C7, PASA de Shoko): el caso contrario al del
+ * ejemplo, con su pie (lo pinta la escena de la pieza, bajo UnaFrase).
+ * En el orden de Futaba; UnaFrase las baraja una vez al cargar.
+ */
+export const PREGUNTA_FINAL_T6_A3 = "Si en marzo el castigo hubiera sido menor que la provisión, ¿qué se haría en diciembre?";
 export const OPCIONES_FINAL_T6_A3 = [
   {
-    id: "b5-t6-a3-diciembre",
-    texto: "Porque el gasto se anotó en diciembre, al crear la provisión.",
+    id: "b5-t6-a3-resta",
+    texto: "Lo que sobró se resta de lo que pide el análisis.",
     correcta: true,
-    feedback: "Correcto. El gasto se anotó el 31 de diciembre, cuando se creó la provisión. En marzo se debita la provisión.",
+    feedback: "Correcto. Si la provisión quedó sobrestimada, se hace lo contrario que en el ejemplo: lo que sobró se resta de la provisión que pide el análisis.",
   },
   {
-    id: "b5-t6-a3-cobrar",
-    texto: "Porque la deuda de Pablo Moncayo todavía se puede cobrar.",
+    id: "b5-t6-a3-suma",
+    texto: "Lo que sobró se suma a lo que pide el análisis.",
     correcta: false,
-    feedback: "No es esa. La empresa la considera irrecuperable, y por eso la castiga.",
+    feedback: "No es esa. Lo que faltó se suma. Si sobró, se hace lo contrario: se resta.",
+  },
+  {
+    id: "b5-t6-a3-solo-analisis",
+    texto: "Se registra solo lo que pide el análisis.",
+    correcta: false,
+    feedback: "No es esa. Lo que sobró sigue en la provisión. Por eso se descuenta del registro del año.",
   },
   {
     id: "b5-t6-a3-caja",
-    texto: "Porque castigar una deuda solo mueve Caja y Cuentas por cobrar – clientes.",
+    texto: "Lo que sobró sale de la provisión y entra a Caja.",
     correcta: false,
-    feedback: "No es esa. Al castigar no entra plata. Se debita la provisión y se acredita Cuentas por cobrar – clientes.",
-  },
-  {
-    id: "b5-t6-a3-pierden",
-    texto: "Porque los $31.200 que faltaron se pierden sin anotarse.",
-    correcta: false,
-    feedback: "No es esa. Los $31.200 no se pierden: se suman a la provisión del año siguiente, que por eso es de $184.600.",
+    feedback: "No es esa. La provisión no es plata: no sale ni entra nada de Caja.",
   },
 ];
+export const PIE_FINAL_T6_A3 = "Basado en el libro, p. 203";
 
 /* ═══════════ CAPA 2 LARGA: LOS PASOS QUE SE JUNTAN Y LA PARADA (hoja 7 de Mai, entrega 3 de Futaba) ═══════════ */
 
@@ -226,9 +251,15 @@ export const FUSION_T6_A3 = {
 export const PARADA_T6_A3 = {
   antes: 10,
   pregunta: "Al castigar la deuda, ¿se anota otra vez el gasto?",
-  opciones: [{ id: "si", texto: "Sí" }, { id: "no", texto: "No" }],
+  opciones: [{ id: "si", texto: "Sí" }, { id: "no", texto: "No" }, { id: "si-parte", texto: "Sí, por la parte que la provisión no cubre" }],
   correcta: "no",
-  falla: "El gasto se anotó en diciembre. Ahora solo se usa la provisión.",
+  falla: {
+    si: "El gasto se anotó en diciembre. Ahora solo se usa la provisión.",
+    "si-parte": "No: el gasto ya se anotó al crear la provisión, aunque esta se quede corta.",
+  },
+  pista: "Recuerda en qué momento del ejemplo se anotó el gasto de la provisión.",
   pie: "Basado en el libro, p. 202",
   resaltados: ["provision2", "clientes2"],
+  /* La predicción escrita en la escena (Mai, enganche §2a); la de «Sí, por la parte…», de la auditoría de Shoko. */
+  etiquetas: { si: "Otra vez en marzo", "si-parte": "En marzo, solo lo que faltó", no: "Solo en diciembre" },
 };

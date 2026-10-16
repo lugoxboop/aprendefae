@@ -13,7 +13,7 @@ import { useAuth } from "../auth/AuthProvider.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
 import { CSS_JUEGO, Cierre } from "./mecanicas/corazon/juego.jsx";
-import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente } from "./repasoCap5/comun.jsx";
+import { C, INTER, SORA, MARCA, Devolucion, BotonSiguiente, Punto } from "./repasoCap5/comun.jsx";
 import { ToroNegro } from "./repasoCap5/ToroNegro.jsx";
 import { OpcionesTitulo } from "./repasoCap5/OpcionesTitulo.jsx";
 import { Flujos } from "./repasoCap5/Flujos.jsx";
@@ -22,9 +22,17 @@ import { Latas } from "./repasoCap5/Latas.jsx";
 import { Fichas } from "./repasoCap5/Fichas.jsx";
 import { Lotes } from "./repasoCap5/Lotes.jsx";
 import { R5_2 } from "../data/repasoCap5ToroNegroTextos.js";
+import { Mate } from "./repasoCap5/Mate.jsx";
+import { R5_3 } from "../data/repasoCap5MateTextos.js";
+import { Barranquilla } from "./repasoCap5/Barranquilla.jsx";
+import { Cabecera, Pista, SILUETAS, ANCHO_SILUETA } from "./repasoCap5/Cabecera.jsx";
+import { RayaC1 } from "./repasoCap5/RayaC1.jsx";
+import { R5_4 } from "../data/repasoCap5BarranquillaTextos.js";
+import { Permanente } from "./repasoCap5/Permanente.jsx";
+import { R5_5 } from "../data/repasoCap5PermanenteTextos.js";
 import {
   R5_1, INTERFAZ_R5_1, PENDIENTE_DE_REVISION_R5_1, SUBTEMAS, ORDEN_SUBTEMAS,
-  prepararR5_1, puntuarR5_1, porTema, textoDeOpcion, renglonesDeAsiento, mayorTrasAsiento,
+  prepararR5_1, puntuarR5_1, puntosDeR5_1, porTema, textoDeOpcion, renglonesDeAsiento, mayorTrasAsiento,
 } from "../data/repasoCap5Cruzado.js";
 
 /*
@@ -59,134 +67,6 @@ export const CSS_R5_1 = `
 [data-r5-1] button:focus-visible, [data-r5-1] [tabindex]:focus-visible { outline: 2px solid #F8F9FA; outline-offset: 2px; }
 `;
 
-/* ═══════════ LAS TRES SILUETAS (HTML/CSS a px reales, trazo de 2) ═══════════ */
-
-const TRAZO = `2px solid ${C.hecho}`;
-const caja = (estilo) => <span aria-hidden="true" style={{ position: "absolute", boxSizing: "border-box", ...estilo }} />;
-
-/* Inversiones · el título valor. */
-function TituloValor() {
-  return (
-    <span data-silueta="titulo-valor" style={{ position: "relative", display: "block", width: "168px", height: "44px", boxSizing: "border-box", border: TRAZO, borderRadius: "4px" }}>
-      {/* La línea punteada del talón, en x = 44: puntos de 2, huecos de 4. */}
-      {caja({ left: "42px", top: 0, width: "2px", height: "100%", backgroundImage: `repeating-linear-gradient(to bottom, ${C.hecho} 0 2px, transparent 2px 6px)` })}
-      {[0, 1, 2].map((k) => caja({ left: "16px", top: `${7 + k * 10}px`, width: "6px", height: "6px", borderRadius: "50%", background: C.hecho }))}
-      {caja({ left: "56px", top: "12px", width: "64px", height: "4px", background: C.hecho })}
-      {caja({ left: "56px", top: "24px", width: "44px", height: "4px", background: C.hecho })}
-      {caja({ right: "10px", top: "10px", width: "20px", height: "20px", borderRadius: "50%", border: TRAZO })}
-    </span>
-  );
-}
-
-/* El borde discontinuo de la cuarta factura: guiones de 4, huecos de 3. */
-const discontinuo = (lado) => {
-  const dir = lado === "top" || lado === "bottom" ? "to right" : "to bottom";
-  return `repeating-linear-gradient(${dir}, ${C.hecho} 0 4px, transparent 4px 7px)`;
-};
-
-/* Cartera · las facturas. */
-function Facturas() {
-  return (
-    <span data-silueta="facturas" style={{ display: "flex", gap: "10px" }}>
-      {[0, 1, 2, 3].map((k) => {
-        const ultima = k === 3;
-        const barras = ultima ? 0.5 : 1;
-        return (
-          <span
-            key={k}
-            style={{
-              position: "relative", display: "block", width: "30px", height: "44px", boxSizing: "border-box", borderRadius: "3px",
-              ...(ultima
-                ? {
-                  backgroundImage: [discontinuo("top"), discontinuo("bottom"), discontinuo("left"), discontinuo("right")].join(", "),
-                  backgroundSize: "100% 2px, 100% 2px, 2px 100%, 2px 100%",
-                  backgroundPosition: "top left, bottom left, top left, top right",
-                  backgroundRepeat: "no-repeat",
-                }
-                : { border: TRAZO }),
-            }}
-          >
-            {caja({ left: "4px", top: "6px", width: "18px", height: "4px", background: C.hecho, opacity: barras })}
-            {caja({ left: "4px", top: "14px", width: "12px", height: "4px", background: C.hecho, opacity: barras })}
-            {caja({ left: "4px", bottom: "6px", width: "18px", height: "4px", background: C.hecho, opacity: barras })}
-          </span>
-        );
-      })}
-    </span>
-  );
-}
-
-/* Inventarios · la bodega: repisas en y = 22 e y = 46, 7 cajas arriba y 5 abajo. */
-function Bodega() {
-  const fila = (n, abajo) => Array.from({ length: n }, (_, k) =>
-    caja({ left: `${8 + k * 18}px`, top: `${abajo - 14}px`, width: "14px", height: "14px", borderRadius: "2px", background: C.hecho }));
-  return (
-    <span data-silueta="bodega" style={{ position: "relative", display: "block", width: "200px", height: "48px" }}>
-      {caja({ left: 0, top: 0, width: "2px", height: "48px", background: C.hecho })}
-      {caja({ right: 0, top: 0, width: "2px", height: "48px", background: C.hecho })}
-      {caja({ left: 0, top: "22px", width: "200px", height: "2px", background: C.hecho })}
-      {caja({ left: 0, top: "46px", width: "200px", height: "2px", background: C.hecho })}
-      {fila(7, 22)}
-      {fila(5, 46)}
-    </span>
-  );
-}
-
-const SILUETAS = { "titulo-valor": TituloValor, facturas: Facturas, bodega: Bodega };
-const ANCHO_SILUETA = { "titulo-valor": 168, facturas: 150, bodega: 200 };
-const ALTO_SILUETA = { "titulo-valor": 44, facturas: 44, bodega: 48 };
-
-/* ═══════════ LA CABECERA: «PREGUNTA n DE 6» Y LA SILUETA DEL TEMA AL 50 % ═══════════ */
-
-/*
- * v2 (§0): sale la banda de escena de 72 px de v1. Queda un renglón de 40 px
- * con la marca a la izquierda y la silueta del tema a la mitad a la derecha
- * (título 84 × 22, facturas 75 × 22, bodega 100 × 24).
- */
-function Cabecera({ actual, total, escena }) {
-  const Silueta = SILUETAS[escena];
-  return (
-    <div data-cabecera-r5 style={{ display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: "40px", gap: "12px" }}>
-      <p data-progreso style={{ ...MARCA, margin: 0 }}>{INTERFAZ_R5_1.progreso(actual + 1, total)}</p>
-      <span aria-hidden="true" data-silueta-cabecera={escena} style={{ position: "relative", width: `${ANCHO_SILUETA[escena] / 2}px`, height: `${ALTO_SILUETA[escena] / 2}px`, flexShrink: 0 }}>
-        <span style={{ position: "absolute", left: 0, top: 0, transform: "scale(0.5)", transformOrigin: "left top" }}><Silueta /></span>
-      </span>
-    </div>
-  );
-}
-
-/*
- * v1.3 · LA PISTA, A PEDIDO. Se pide con un botón antes de responder, debajo
- * de la interacción (decisión 7 de v2: nunca encima de la figura); no quita
- * FP (la nota es «bien a la primera», y la pista no es un intento). Al
- * responder se va: la devolución ocupa su sitio.
- */
-function Pista({ texto, abierta, onAbrir }) {
-  if (!abierta) {
-    return (
-      <button
-        type="button"
-        data-ver-pista
-        aria-expanded="false"
-        onClick={onAbrir}
-        style={{
-          marginTop: "16px", minHeight: "44px", padding: "0 16px", borderRadius: "999px",
-          background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.22)",
-          color: C.texto, cursor: "pointer", fontFamily: INTER, fontSize: "14px", fontWeight: 600,
-        }}
-      >
-        {INTERFAZ_R5_1.verPista}
-      </button>
-    );
-  }
-  return (
-    <div data-pista style={{ marginTop: "16px", padding: "10px 14px", borderRadius: "12px", background: C.navy, borderLeft: `3px solid ${C.hecho}` }}>
-      <p style={{ ...MARCA, margin: "0 0 4px" }}>{INTERFAZ_R5_1.marcaPista}</p>
-      <p style={{ margin: 0, fontFamily: INTER, fontSize: "14px", lineHeight: 1.5, color: C.texto }}>{texto}</p>
-    </div>
-  );
-}
-
 /* Las opciones de asiento: «Debita …» / «Acredita …», cada renglón puede partir. */
 function RenglonesDeAsiento({ asiento }) {
   const [debita, acredita] = renglonesDeAsiento(asiento);
@@ -201,6 +81,23 @@ function RenglonesDeAsiento({ asiento }) {
 /* La mecánica de cada pantalla, según su forma. */
 function Mecanica({ pantalla, onCalificar }) {
   const p = pantalla;
+  /* C.1 (v2.3): un activo por renglón, sin «·»; la figura no existe antes de elegir (E8). */
+  if (p.forma === "raya") {
+    return (
+      <OpcionesTitulo
+        opciones={p.opciones}
+        sinFiguraAntes
+        etiqueta={(o) => textoDeOpcion(p, o)}
+        contenido={(o) => (
+          <span data-activos style={{ display: "block", fontSize: "14px", lineHeight: "20px" }}>
+            {o.activos.map((a) => <span key={a.texto} data-activo style={{ display: "block" }}>{a.texto}</span>)}
+          </span>
+        )}
+        figura={(o, clave, onTerminar, { elegida }) => <RayaC1 opcion={o} clave={clave} onTerminar={onTerminar} elegida={elegida} />}
+        onCalificar={onCalificar}
+      />
+    );
+  }
   if (p.forma === "flujos") {
     return (
       <OpcionesTitulo
@@ -259,18 +156,7 @@ function PorTema({ filas }) {
                   solo cuántas. Los puntos siguen aria-hidden: el lector oye el «n de m».
                 */}
                 <div aria-hidden="true" style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
-                  {f.puntos.map((p) => (
-                    <span
-                      key={p.id}
-                      data-punto={p.ok ? "acierto" : "error"}
-                      data-forma={p.ok ? "relleno" : "anillo"}
-                      style={{
-                        width: "10px", height: "10px", borderRadius: "50%", boxSizing: "border-box",
-                        /* B4 de enganche.md: el acierto, relleno neutro; el teal es DEBE en Contabilidad. */
-                        ...(p.ok ? { background: C.hecho } : { background: "transparent", border: `2px solid ${C.coral}` }),
-                      }}
-                    />
-                  ))}
+                  {f.puntos.map((p) => <Punto key={p.id} ok={p.ok} />)}
                 </div>
               </div>
               <span data-n-de-m style={{ fontFamily: SORA, fontSize: "17px", fontWeight: 700, color: C.texto, whiteSpace: "nowrap" }}>
@@ -287,7 +173,7 @@ function PorTema({ filas }) {
 /* ═══════════ r5-1 «REPASO CRUZADO» v2 ═══════════ */
 
 /*
- * Seis pantallas en el orden del libro, una calificación por pantalla («bien
+ * Siete pantallas en el orden del libro (v2.3: C.1 primera), una calificación por pantalla («bien
  * a la primera»). Arriba: relleno 12, la cabecera de 40 px, 8 px y el
  * enunciado (Inter 16/24, peso 600); 16 px y la mecánica. Abajo: «Ver pista»,
  * el panel de devolución y «Siguiente» (§0). Al terminar:
@@ -309,10 +195,10 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
 
   const pantalla = tanda[i];
   const total = tanda.length;
-  const bien = Object.values(resultados).filter(Boolean).length;
 
   useEffect(() => {
-    if (terminado) onCompletar?.(puntuarR5_1(bien, total), Date.now() - inicio.current, detalle.current);
+    /* v2.3: el rendimiento son los puntos ganados / 25, nunca aciertos / 7. */
+    if (terminado) onCompletar?.(puntuarR5_1(puntosDeR5_1(resultados)), Date.now() - inicio.current, detalle.current);
   }, [terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   /* E2 de enganche.md: el foco baja a «Siguiente» SIN mover la página; lo que cambia sigue a la vista. */
   useEffect(() => { if (r) boton.current?.focus({ preventScroll: true }); }, [r]);
@@ -350,7 +236,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
       <div data-r5-1 data-cierre>
         <style>{CSS_JUEGO}</style>
         <PorTema filas={porTema(resultados)} />
-        <Cierre pct={Math.round(puntuarR5_1(bien, total))} onReiniciar={reiniciar} />
+        <Cierre pct={Math.round(puntuarR5_1(puntosDeR5_1(resultados)))} onReiniciar={reiniciar} />
       </div>
     );
   }
@@ -376,6 +262,9 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
 export const JUEGOS_REPASO_CAP5 = [
   { id: R5_1.id, Mecanica: RepasoCruzado, titulo: R5_1.nombre },
   { id: R5_2.id, Mecanica: ToroNegro, titulo: R5_2.nombre },
+  { id: R5_3.id, Mecanica: Mate, titulo: R5_3.nombre },
+  { id: R5_4.id, Mecanica: Barranquilla, titulo: R5_4.nombre },
+  { id: R5_5.id, Mecanica: Permanente, titulo: R5_5.nombre },
 ];
 
 /*
@@ -388,7 +277,12 @@ export const JUEGOS_REPASO_CAP5 = [
  * volver a ver en las preguntas: el mismo dibujo es el mismo tema.
  */
 export function PortadaRepaso() {
-  const temas = ORDEN_SUBTEMAS.map((id) => SUBTEMAS[id]);
+  /*
+   * La portada dice «Repasa los tres temas antes de seguir.» (v1.3, literal):
+   * sigue con los tres del capítulo. C.1 (v2.3) es de activos corrientes y no
+   * entra aquí; reportado a Kamogawa por si la portada cambia.
+   */
+  const temas = ORDEN_SUBTEMAS.filter((id) => id !== "corrientes").map((id) => SUBTEMAS[id]);
   return (
     <section data-portada-repaso aria-labelledby="r5-portada-titulo" style={{ background: C.navy, borderRadius: "16px", padding: "18px 16px 16px", margin: "4px 0 20px" }}>
       <p style={{ ...MARCA, margin: 0 }}>{INTERFAZ_R5_1.marcaPortada}</p>
@@ -470,7 +364,7 @@ export default function RepasoCapitulo5View({ nodoInicial = null, onBack }) {
               * del capít…» y se perdía justo el número. Aquí puede encoger y
               * partir en dos renglones; el estilo en línea gana a la clase.
               */}
-            <h1 data-titulo-tema style={{ fontFamily: SORA, fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0, flexShrink: 1, whiteSpace: "normal", overflow: "visible", textOverflow: "clip", overflowWrap: "anywhere" }}>
+            <h1 data-titulo-tema style={{ fontFamily: SORA, fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2 }}>
               {/* «capítulo 5» no se separa: si parte, parte antes. */}
               {tema.title.replace(/ (\S+)$/, "\u00a0$1")}
             </h1>

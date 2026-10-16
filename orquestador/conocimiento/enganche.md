@@ -82,6 +82,50 @@ Chrome dice que redimensionó la ventana y no lo hace: compruebe
 `window.innerWidth` antes de medir, o use marcos del ancho exacto dentro del
 propio sitio.
 
+## La sonda de enganche es la herramienta común de las cinco células
+
+`scripts/t4/sonda-enganche/` — la escribió Shibukawa, auditora de la Célula D, y
+entró en el #231. **Mide si una pieza engancha, no solo si cabe**, tarjeta por
+tarjeta, a 320 px, sobre el build servido. Juzga la barra B1-B5 de esta misma
+nota, así que no hace falta volver a interpretarla a mano en cada célula.
+
+Tiene las dos propiedades que hacen fiable a un medidor, y están comprobadas:
+**se comprueba sola** (12 de 12 casos sintéticos, cada uno con una sola rotura) y
+**puede fallar** —quitarle una regla o subirle un tope la pone roja—. Un medidor
+que nunca se ha visto rojo no mide nada; esta sí.
+
+### Qué es común y qué pone cada célula
+
+| Parte | ¿Sirve para cualquier tema? |
+|---|---|
+| `enganche_mide.js` — la medición en la página | **sí**, sin tocar nada |
+| la función `juzga` — el veredicto B1-B5 | **sí** |
+| `eng_fixture.py` — la autocomprobación | **sí** |
+| `base.py`, `fuentes.sh`, `vite-sonda.config.mjs` | **sí** |
+| `enganche.py` — el recorrido | **no**: necesita los nombres de las piezas, la ruta del tema y los botones de «seguir» |
+| `enganche_clave.mjs` — la respuesta correcta y la equivocada de cada tarjeta | **no**: se escribe contra los datos del tema |
+| `enganche_planes.json` — los gestos de Aprender con figura operable | **no**: es por pieza y pantalla |
+
+O sea: **lo que mide y lo que juzga es de todos; el recorrido es de cada quien.**
+Una célula que la quiera usar copia la carpeta a su carril (`scripts/<celula>/`) y
+escribe esas tres piezas. El README de la carpeta dice exactamente qué atributos
+`data-*` necesita encontrar; si una pieza nueva no los pone, la sonda **da código
+2 en vez de adivinar**, que es la única manera de que un medidor no mienta.
+
+### Lo que todavía NO está, dicho de frente
+
+**No está parametrizada.** Lo correcto sería un archivo de configuración por tema
+y un solo recorrido; hoy es copiar y adaptar. No lo extraje la misma noche en que
+la Célula D la está corriendo sobre su cadena: romperle el medidor a quien lo
+está usando cuesta más que la duplicación que ahorra. Queda como deuda del
+coordinador, no de la célula que la escribió.
+
+Y el límite que la propia sonda declara, que importa más que el detalle técnico:
+**B3 es un mínimo, no una garantía.** «La figura cambia» y «queda distinta si
+aciertas o fallas» no juzgan si el cambio SIGNIFICA algo. Una figura que solo
+marca «bien o mal» pasa B3 sin enseñar nada. Eso lo sigue juzgando una persona,
+y por eso la sonda no sustituye la revisión jugando: la ordena.
+
 ## Lo que encontró la Célula E en su autodiagnóstico (15 de octubre)
 
 Repaso del capítulo 5: r5-1 «Repaso cruzado» y r5-2 «El Toro Negro», jugadas
@@ -134,6 +178,33 @@ con su causa y la regla que la evita.
   dejaban de ser creíbles (Takamura). *Regla:* la figura muestra los
   insumos y las consecuencias; el resultado que se evalúa solo aparece
   después de responder.
+- **E9 · Un distractor que la pantalla misma desmiente no es distractor.** En
+  el contenido de r5-5, la opción «el periódico no suma los fletes» la negaba
+  el dato declarado de la entrada («promedia todo el mes, con fletes»), y «el
+  permanente se equivoca» se descartaba por su tono; quedaban dos opciones
+  de cuatro (Takamura). *Regla:* cada distractor nace de un error real del
+  estudiante y se lee contra todo lo que la pantalla ya dice; ninguna opción
+  se descarta sin saber contabilidad.
+- **E10 · Cuando un error lleva a la cifra correcta, el acierto lo explica.**
+  En r5-5 el flete cuesta justo el 5 % que se descontó: quien ignora ambos
+  llega a $2.300, la clave. No se puede cambiar el dato del libro (Takamura).
+  *Regla:* si un camino equivocado probable da la clave, el acierto dice por
+  qué la cifra coincide, para que quien acertó por casualidad se lleve la
+  razón correcta; y las devoluciones de los errores vecinos nombran ese
+  camino («precio de lista más flete»), no uno improbable.
+- **E11 · Una barra que no muestra la diferencia dice lo contrario.** En el
+  diseño de r5-5, la pantalla «¿Por qué no da lo mismo?» comparaba el costo
+  del mes en dos barras: 25.788.363 contra 25.865.885, un 0,3 % que en
+  264 px mide menos de 1 px. Las barras se veían iguales justo donde se
+  pregunta por qué no lo son (Takamura). *Regla:* antes de dibujar una
+  comparación, se calcula cuántos píxeles mide la diferencia; si son menos
+  de 4, va en cifras, no en barras.
+- **E12 · Una opción que se acierta buscando una palabra.** En C.1 de r5-1,
+  la clave y la trampa solo cambiaban «60 días» por «tres años», y las dos
+  malas eran las únicas con «años»: se acertaba sin la regla del año
+  (Takamura). *Regla:* antes de entregar opciones, se leen buscando una
+  palabra o una forma que delate la clave sin saber la materia; los plazos,
+  unidades y largos van parejos entre opciones.
 
 ## Lo que encontró la Célula C en su autodiagnóstico (15 de octubre)
 
@@ -184,3 +255,9 @@ T4 «Efectivo, caja menor y bancos». Se revisaron las 3 piezas publicadas (A0, 
   - *Regla:* un control que ya no hace nada desaparece. En una pantalla con reintento, después de un error no se avanza sin el acierto.
 - **D8 · El medidor cuenta lo que ve el estudiante, y se prueba roto.** La primera guardia contaba solo el párrafo y dejaba fuera la cabecera, la figura, los botones y el pie. La primera sonda medía la etapa de H5 con un asiento equivocado y daba PASA en el color.
   - *Regla:* una sonda o guardia cuenta todo el texto visible de la pantalla y juega el asiento correcto, que saca de los mismos datos que se miden. Además trae un fixture con un caso roto por regla, que tiene que salir FALLA. Si no pudo medir, sale con código propio (2), nunca con PASA.
+- **D9 · PH8-2 también vale para lo que oye el lector.** Dos textos alternativos de A3 y A4 decían la respuesta («a la derecha», «Empresa») antes de que el estudiante respondiera. En pantalla no se veía nada, pero el lector de pantalla la anunciaba.
+  - *Regla:* antes de responder, ni el texto alternativo, ni los `aria-label` que no nombran un control, ni el texto solo para lector pueden contener la respuesta de esa pantalla. Una prueba lo recorre con la misma clave de la sonda y sale roja con los textos viejos.
+- **D10 · E2 en Hacer: la pastilla y la devolución, juntas en la ventana.** Con la mesa apilada a 320×568, la pastilla de la mitad tocada y el pie de la devolución quedaban a más de 568 px entre sí en H3: no había desplazamiento que mostrara las dos.
+  - *Regla:* al calificar, lo que cambió (la pastilla en lo tocado) y la devolución caben juntos en la ventana del teléfono. La devolución va pegada a la figura que califica, antes de figuras secundarias, y la vista baja hasta ella con `scrollIntoView({block:'nearest'})`. La guardia de Chromium lo mide en 320×568 y 375×667.
+- **D11 · Un botón apagado dice por qué.** Seis botones de un solo uso quedaban en pantalla con `aria-disabled` después de usarse, y el lector los anunciaba como «atenuado».
+  - *Regla:* el botón de un solo uso desaparece al usarse (D7). El que se apaga por un límite y vuelve a servir lleva su razón visible al lado y en `aria-describedby`. Una prueba exige que ningún `aria-disabled` quede sin razón.

@@ -1,6 +1,6 @@
 import EligeUnaOpcion from "../b5/EligeUnaOpcion.jsx";
-import { T6_ACT4, OPCIONES_T6_ACT4, HECHOS_T6_ACT4, ALT_T6_ACT4 } from "../../../../data/contabilidadT6Act4.js";
-import { retroT6Act4 } from "../../../../contabilidad/t6Act4.js";
+import { T6_ACT4, REGLAS_T6_ACT4, OPCIONES_T6_ACT4, HECHOS_T6_ACT4, ALT_T6_ACT4 } from "../../../../data/contabilidadT6Act4.js";
+import { retroT6Act4, veredictoT6Act4 } from "../../../../contabilidad/t6Act4.js";
 import AsientoMinimo from "./AsientoMinimo.jsx";
 
 /*
@@ -17,12 +17,16 @@ import AsientoMinimo from "./AsientoMinimo.jsx";
  */
 
 export const CONFIG_T6_ACT4 = {
+  objetivo: T6_ACT4.objetivo,
   consigna: T6_ACT4.consigna,
+  reglas: REGLAS_T6_ACT4,
   nota: T6_ACT4.nota,
   regla: T6_ACT4.regla,
   opciones: OPCIONES_T6_ACT4,
   banco: HECHOS_T6_ACT4,
   retro: retroT6Act4,
+  /* Lote 6d: el veredicto como estado, aparte del texto. */
+  veredicto: veredictoT6Act4,
   cierre: T6_ACT4.cierre,
   alt: ALT_T6_ACT4,
   etiqueta: "Hecho",

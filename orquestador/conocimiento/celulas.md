@@ -92,6 +92,70 @@ a ojo: Gen hace un índice de qué secciones necesita cada ejercicio para
 resolverse, y Levi asigna cada uno a **un solo tema**, el de la última sección
 que necesita. Ninguna célula usa un ejercicio que no tenga asignado.
 
+## El prompt maestro de los diseñadores vive en el canon
+
+`orquestador/conocimiento/prompts/disenadores-de-celula-v1.md`
+
+Lo escribieron Senku, Xeno y Ukyo, y Miku lo repartió el 15 de octubre a los
+cinco diseñadores: Mai (B), Watari (C), Hanayama (D), Itagaki (E) y Xeno (A).
+Trae el kit completo y vigente, el estándar de Aprender en cuatro capas, el
+modelo único de Hacer, la barra de enganche y el reparto del top 10 de Ukyo por
+célula.
+
+**Está aquí, y no solo en los chats, por tres razones.** Un prompt pegado en un
+chat se va hacia arriba y se pierde; un archivo se relee, se cita por línea y se
+versiona. Cinco copias en cinco chats divergen en cuanto alguien corrige una; una
+en el canon se corrige una vez. Y la sexta célula, o el diseñador que entre
+mañana, lo encuentra sin que nadie se lo pase.
+
+Está **sin tocar una coma**, y el «sin tocar» lleva su comprobación, porque la
+primera versión de esta nota decía un número que no verificaba.
+
+El archivo que llegó traía finales de línea de Windows (CRLF) y git los normaliza
+a LF al guardarlo, así que el archivo del repositorio **no es byte por byte** el
+que llegó: son 25.145 bytes en vez de 25.276, y su SHA-256 empieza por
+`f7ceda14`, no por `556cebca`. Lo que sí es idéntico es el TEXTO: quitándole los
+retornos de carro al original, `cmp` no encuentra una sola diferencia. Esa es la
+comprobación, y es la que vale:
+
+```bash
+git show HEAD:orquestador/conocimiento/prompts/disenadores-de-celula-v1.md > /tmp/a
+tr -d '\r' < <el archivo que llegó> > /tmp/b
+cmp /tmp/a /tmp/b    # sin salida = idénticos
+```
+
+**La lección, que no es sobre este archivo:** un hash es una promesa
+comprobable, y por eso hay que comprobarlo DESPUÉS de guardar, no antes. Yo
+escribí el del archivo de entrada y lo di por bueno; git ya había avisado en una
+línea que iba a cambiar los finales de línea, y esa línea pasó de largo.
+
+Si se corrige el prompt, entra una `-v2` y esta se queda: un diseñador que
+trabajó con la v1 tiene que poder leer lo que leyó.
+
+## `git add -A` después de cambiar de rama mete en tu PR el trabajo de otro
+
+Me pasó el 15 de octubre y lo cuento porque con cinco células en un repositorio
+es de los errores que más fácil se repiten.
+
+Arreglé una cosa de la Célula E en `FondoMateria.jsx` —un `overflow: hidden` que
+rompía todos los `position: sticky` de la página—, la construí, la medí, y antes
+de confirmarla me fui a atender un bloqueo de la Célula D. El cambio se quedó en
+el árbol de trabajo. Cambié de rama, hice `git add -A` del otro asunto, y ese
+archivo **viajó dentro de un PR cuyo mensaje no lo menciona**.
+
+El cambio era bueno y estaba medido, así que nada se rompió. Lo que se perdió es
+el registro: quien mañana busque por qué cambió ese archivo no lo encuentra en el
+commit que lo trajo. Y si hubiera estado mal, habría entrado bajo un título que
+hablaba de otra cosa.
+
+**La regla: `git status` antes de confirmar, siempre, y `git add` por archivos
+cuando el árbol tiene más de un asunto.** Cambiar de rama NO deja atrás lo que no
+está confirmado: se lo lleva puesto.
+
+Y si ya se colaron: **se declara en el PR**, con lo que es y con su medida. No se
+revierte para reponerlo igual —eso añade dos commits y ningún dato—, pero
+tampoco se calla.
+
 ## Reglas de convivencia entre células
 
 Medidas sobre el repositorio el 13 de octubre de 2026, no supuestas.

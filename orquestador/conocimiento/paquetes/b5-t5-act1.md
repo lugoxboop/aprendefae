@@ -315,3 +315,49 @@ Se mide con getBoundingClientRect, con las fuentes cargadas, a 320 y a 375.
 - Letra de la devolución compartida. En la réplica usé Inter 13/1,55 [R].
 - Separaciones entre el contador, la ficha, las pestañas y el botón, y el relleno del panel. En la réplica usé 8, 12, 14 y 8 [R].
 - Formato del contador y redondeo de {X}.
+
+## 11 · Lote 6a: las fichas a un nivel (hoja de fusiones de Mai, textos de Futaba, PASA de Shoko)
+
+Manda sobre las secciones 2, 3 y 4 en lo que toca la interfaz. Los textos de las fichas y de sus devoluciones no cambian; solo cómo se reparten.
+
+### 11.1 Las tres opciones son los tres cajones
+
+- Cajones: «Renta variable» · «Fija con interés» · «Fija con descuento». Tocar un cajón coloca la ficha. No hay pestañas ni botón.
+- El grupo se lee «Tipo de renta» (hoja de Mai). PARA SHOKO.
+- Reparto de devoluciones (Futaba): elegir la otra opción de la misma familia da el «Vas bien…» (C, o el nivel 2 de las fichas de nombre); equivocarse de familia da la devolución de familia (A, B, o el nivel 1). El segundo fallo sigue la regla de la célula.
+
+### 11.2 Textos
+
+- «¿Cómo se juega?», línea 1 (Futaba): «Lee la ficha y elige qué renta da: variable, fija con interés o fija con descuento.»
+- «¿Cómo se juega?», línea 2. Futaba escribió «Pulsa el botón para colocar la ficha; si fallas, tienes un intento más.», pero la hoja de Mai no tiene botón. Va adaptada, PARA SHOKO: «Toca el cajón donde va la ficha; si fallas, tienes un intento más.»
+- Resumen (Futaba): «{bien} de {cuantas} fichas bien al primer intento.»
+- Texto alternativo. El de Futaba, con su frase del botón adaptada, PARA SHOKO: «Actividad de clasificación. Aparece una ficha con el nombre de un título o con una pista de cómo rinde. Elige entre tres opciones: Renta variable, Fija con interés o Fija con descuento. Toca el cajón donde va la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.»
+- Se retiran: PESO_RENTA, PESO_TIPO, TIPOS_FIJA, RENTAS y los rótulos del botón.
+
+### 11.3 La tanda (R10)
+
+Nueve fichas, entre 2 y 4 por cajón, al azar. El banco da 4 · 5 · 5. Como mucho una ficha de nombre por cajón, salvo cuando un cajón de renta fija lleva 4: solo tiene dos sin nombre, así que entra una segunda de nombre.
+
+
+## 12 · E5: el primer fallo propio de cada ficha (Futaba, fila 11 de Shoko)
+
+Manda sobre 3.7, 3.8 y 11.1 en el primer fallo. Al primer fallo, con cualquier cajón, se lee la PISTA de la ficha: 20 palabras como mucho, no nombra el cajón y va sin emoji, por Retro (role=status), como la escalera de ayuda de la célula (`tema6/escaleraB5.js`). Al segundo fallo, la respuesta, como antes (la regla única). Las devoluciones A, B y C (§3.7) y los niveles 1 y 2 de las fichas de nombre (§3.8) dejan de usarse y salen de los datos; quedan arriba como registro. Las fichas se emparejaron por su texto en main.
+
+### 12.1 Pistas
+
+| Id | Pista del primer fallo |
+|---|---|
+| acciones | «Piensa de qué depende lo que recibe quien tiene acciones. ¿Se pactó el día que las compró?» |
+| def-emisora | «Fíjate de qué depende el rendimiento, según la ficha. ¿Se puede saber desde el día de la compra?» |
+| def-dividendos | «La ficha habla de dividendos. Recuerda qué título los reparte y de qué dependen.» |
+| caso-resultados | «Si lo que recibe depende de los resultados de la empresa, ¿se pudo pactar al invertir?» |
+| cdt | «Recuerda qué le paga un CDT a quien lo tiene, y si eso se pacta al invertir.» |
+| bonos | «En la lista del libro, los bonos van junto al CDT. Recuerda cómo rinde un CDT.» |
+| cedulas | «En la lista del libro, las cédulas hipotecarias van junto al CDT y los bonos.» |
+| def-interes | «Lee de dónde sale la renta: ¿de un interés o de una diferencia? ¿Y se pacta al invertir?» |
+| caso-pactado | «Si desde la compra se sabe lo que pagará, ¿depende de la empresa? ¿Y lo que paga es un interés?» |
+| participacion | «Piensa cómo gana quien tiene estos títulos: ¿le pagan un interés, o gana una diferencia cuando vencen?» |
+| cert | «Piensa cómo rinde el CERT: ¿cobra un interés, o gana la diferencia entre lo que pagó y lo que recibe?» |
+| canjeables | «En la lista del libro, los títulos canjeables van junto a los de participación y el CERT.» |
+| def-descuento | «La ficha dice de dónde sale la renta. ¿Es un interés, o la diferencia entre dos valores?» |
+| caso-redencion | «Fíjate en qué gana: ¿un interés que le pagan, o la diferencia entre lo que pagó y lo que recibe?» |

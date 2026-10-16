@@ -238,6 +238,53 @@ sin ser un bloqueo. Si algo tuyo espera, sigues por la pieza siguiente.
 
 ---
 
+## Una pila fusionada al revés pierde los de en medio, y CI no se queja
+
+El 16 de octubre Xeno encontró que dos trabajos terminados, revisados y
+fusionados **no estaban en `main`**: las marcas ✓/✗ de `CampoCifra` (#253) y de
+`MesaDelAsiento` (#254), con sus pruebas.
+
+Qué pasó. Los tres PR estaban apilados: #251 → #253 → #254. Se fusionaron en
+orden inverso al de la pila:
+
+1. el #254 entró en la rama del #253;
+2. el #251 entró en `main`;
+3. el #253 entró en la rama del #251 — **que ya estaba fusionada**, así que su
+   contenido quedó en una rama muerta.
+
+Resultado: `main` se quedó con la marca de `ElegirLado` (#251) y sin las otras
+dos. Los tres PR dicen «fusionado» y ninguno miente: cada uno entró en la rama
+que tenía por base.
+
+**Y CI nunca iba a avisar.** No hay nada roto que fallar: el código simplemente
+no está. Las pruebas que lo vigilaban se fueron con él. Es el falso verde de
+`herramientas.md` en su forma más limpia: **lo que no existe no falla.**
+
+**La regla, y cuesta treinta segundos: después de fusionar una pila, se busca en
+`main` una cadena distintiva de CADA PR.**
+
+```bash
+git fetch -q origin && git checkout main && git pull -q
+for s in "Cifra correcta" "data-marca-cuenta" "data-marca-lado"; do
+  printf '%-22s ' "$s"; git grep -l "$s" -- src | head -1 || echo "NO ESTÁ"
+done
+```
+
+Que el PR esté cerrado con «Merged» **no es la comprobación**: la comprobación es
+que la cadena esté en `main`. Y conviene escribir esa cadena en el propio PR
+—«esto se busca en main como `data-marca-cuenta`»— para que cualquiera pueda
+hacerlo sin leer el diff.
+
+Dos cosas que ayudan a no llegar ahí:
+
+- **Una pila se fusiona de abajo hacia arriba**, y cada PR se reapunta a `main`
+  cuando su base entra. Si la base se fusionó y el PR sigue apuntando a ella, lo
+  que entre no llega a ninguna parte.
+- **Cuando una base se fusiona, GitHub reapunta solo los PR que colgaban de
+  ella si la rama se borra.** Aquí no se borran ramas (y está bien: son el
+  respaldo), así que el reapuntado **lo hace una persona**. Esa es la otra cara
+  de la regla de no borrar ramas, y no estaba escrita.
+
 ## La prueba de guardia: cómo se entrega un término de una célula a otra
 
 **Es de la Célula B, y es la mejor pieza de coordinación que ha producido este
@@ -332,6 +379,33 @@ mismo que se comprobaba a mano:
    `GRANT` o `REVOKE` fuera de un comentario se rechazan. Solo el rango del
    coordinador (0150-0199) puede cambiar el esquema, y tiene que decirlo con
    una marca explícita.
+
+   **Con una excepción, y es la que vas a usar: el retiro blando.** Desde que
+   Mateo dejó a las células retirar y fusionar actividades de Contabilidad,
+   cualquier célula puede escribir desde **su propio rango**:
+
+   ```sql
+   -- GUARDIAN: retiro blando de catalogo
+   update public.actividad_catalogo
+      set retirada = true
+    where activity_id in ('b5-t6-a7', 'b5-t6-a5');
+   ```
+
+   Esa línea de comentario es el permiso, y la forma tiene que ser exactamente
+   esa: la tabla del catálogo, el campo `retirada`, a `true`, con
+   `where activity_id in (...)`. Si el archivo trae además un `delete`, un
+   `alter` o un update que ponga otro campo, el guardián lo rechaza **aunque
+   lleve la marca**, y el reproche te lo dice con esas palabras. No borres la
+   fila: `fp_history` apunta a ella, el retiro blando es reversible con un
+   `false`, y el panel docente ya sabe enseñar el nombre de una actividad
+   retirada (`src/data/retiradas.js`).
+
+   **Por qué existe esta puerta.** El mismo día, dos células se quedaron
+   paradas pidiéndole al coordinador una línea de SQL: B con el #281 y C con
+   el #269. Una de las dos me propuso prestarle la marca de esquema a su
+   constructor, y eso habría abierto la puerta entera —con esa marca pasa
+   cualquier `delete`—. Una puerta estrecha y escrita vale más que una ancha y
+   prestada.
 2. **El número, dentro del rango de su célula.** Un número fuera de rango es
    un choque que se descubre con las dos migraciones ya escritas.
 3. **La fila dice lo mismo que `subjects.js`**: materia, tema, modalidad,

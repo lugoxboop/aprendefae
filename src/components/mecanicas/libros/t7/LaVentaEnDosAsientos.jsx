@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Check, X } from "lucide-react";
 import { barajar, barajarDistinto } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
@@ -10,19 +10,24 @@ import { textosDelError, contarFallo, textosDeLinea, lineaCerrada, sumarFallosDe
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-2 · A2 «La venta en dos asientos».
  *
- * Siete pantallas, una a la vez. Cuatro tipos:
+ * EL RECORTE DEL LOTE 1 (entrega 6 de Near, con la pista de Mello en P1):
+ * seis pantallas, una a la vez. Cuatro tipos:
  *
- *   · portada / lectura   textos y, según la pantalla, el enunciado y la
- *                ficha, los cálculos y el primer asiento de la venta (P2), o
- *                la estructura del estado de resultados (P5); botón y pie
- *   · eleccion   P1 y P4: pregunta con opciones barajadas en cada intento.
- *                En P1, antes de la pregunta, el enunciado de E-1, su ficha y
- *                el repaso de IVA y retención; con el acierto, el asiento de
- *                la compra: Inventario de mercancías con su monto y las otras
- *                tres líneas sin él (casilla vacía, X1), y las dos líneas que las explican
- *   · lados      P3: las dos líneas del asiento del costo, barajadas al
- *                entrar, cada una con «Debe» | «Haber», como P3 de A1
- *   · resumen    la lista numerada, la línea «Siguiente» y el pie
+ *   · portada / lectura   textos y, según la pantalla, la estructura del
+ *                estado de resultados (P4); botón y pie
+ *   · eleccion   P1 y P3: pregunta con opciones barajadas en cada intento.
+ *                En P1, con el acierto, el asiento de la compra: Inventario
+ *                de mercancías con su monto y las otras tres líneas sin él
+ *                (casilla vacía, X1); su «¿Por qué?» va plegado
+ *   · lados      P2: el texto de la venta, las dos líneas del asiento del
+ *                costo, barajadas al entrar, cada una con «Debe» | «Haber»,
+ *                y «Ver el primer asiento», que lo abre debajo (botón con
+ *                `aria-expanded`)
+ *   · resumen    los dos asientos de la venta, uno debajo del otro, con su
+ *                rótulo; la lista numerada, la línea «Siguiente» y el pie
+ *
+ * Los textos del recorte se ven enteros (`pieza.textosEnteros`): Near ya
+ * los midió; el «¿Por qué?» va escrito aparte (`acierto.porque`).
  *
  * Los asientos van en el modo lectura del patrón tabular de Watari: DEBE en
  * verde azulado y HABER en ámbar, montos a la derecha y sin «$», las cuentas
@@ -40,7 +45,6 @@ export const CSS_T7B2 = `
 .t7b2-p { margin: 0; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
 .t7b2-nota { margin: 0; font-size: 14px; line-height: 1.45; color: ${P.texto2}; overflow-wrap: anywhere; }
 .t7b2-preg { font: 600 15px/1.45 "Sora", "Inter", sans-serif; }
-.t7b2-enunciado { margin: 0; padding: 10px 12px; border-left: 3px solid ${P.borde}; background: rgba(184,196,212,0.08); border-radius: 0 8px 8px 0; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
 .t7b2-lista { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 15px; line-height: 1.45; }
 /* La hoja global del sitio quita el estilo de lista: aquí vuelven los números. */
 .t7b2-lista li { overflow-wrap: anywhere; list-style: decimal; }
@@ -49,9 +53,6 @@ export const CSS_T7B2 = `
 .t7b2-btn { appearance: none; min-height: 44px; width: 100%; border-radius: 8px; border: 1px solid ${P.texto}; background: ${P.texto}; color: ${P.fondo}; font: 600 15px "Inter", sans-serif; cursor: pointer; }
 .t7b2-btn[aria-disabled="true"] { background: transparent; color: ${P.texto2}; border-color: ${P.texto2}; cursor: default; }
 .t7b2-btn:focus-visible, .t7b2-op:focus-visible, .t7b2-lado:focus-visible { outline: 2px solid ${P.texto}; outline-offset: 2px; }
-.t7b2-ficha { margin: 0; display: grid; gap: 6px; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; }
-.t7b2-ficha dt { font: 500 12px/1.2 "Inter", sans-serif; color: ${P.texto2}; letter-spacing: .02em; }
-.t7b2-ficha dd { margin: 0 0 4px; font-size: 15px; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
 .t7b2-ops { display: grid; gap: 8px; }
 .t7b2-op { appearance: none; text-align: left; min-height: 44px; padding: 10px 14px; border: 1px solid ${P.borde}; border-radius: 12px; background: transparent; color: ${P.texto}; font: 400 15px/1.35 "Inter", sans-serif; cursor: pointer; overflow-wrap: anywhere; }
 .t7b2-op[aria-pressed="true"] { background: ${P.texto}; color: ${P.fondo}; border-color: ${P.texto}; }
@@ -65,9 +66,6 @@ export const CSS_T7B2 = `
 .t7b2-msg-palabra { font: 600 14px/1.35 "Inter", sans-serif; }
 .t7b2-msg-error .t7b2-msg-palabra { color: ${P.error}; }
 .t7b2-msg p { margin: 0; font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
-.t7b2-calcs { display: grid; gap: 4px; }
-.t7b2-calc-l { margin: 0; font: 400 14px/1.45 "Inter", sans-serif; font-variant-numeric: tabular-nums; color: ${P.texto2}; overflow-wrap: anywhere; }
-.t7b2-calc-l b { color: ${P.texto}; font-weight: 600; }
 /* asiento en lectura (modo RESUMEN del patrón, con borde de tarjeta) */
 .t7b2-as { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; border: 1px solid ${P.borde}; border-radius: 10px; padding: 12px; }
 .t7b2-g2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
@@ -78,6 +76,11 @@ export const CSS_T7B2 = `
 .t7b2-as-r > span:first-child { font-size: 14px; overflow-wrap: anywhere; min-width: 0; }
 .t7b2-as-r .t7b2-g2 > span { text-align: right; padding-inline: 9px; font: 500 15px/1.3 "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 0; }
 .t7b2-sangria { padding-left: 24px; }
+.t7b2-as-rot { margin: 0 0 6px; font: 600 13px/1.3 "Sora", "Inter", sans-serif; overflow-wrap: anywhere; }
+.t7b2-ver { display: grid; gap: 8px; }
+.t7b2-ver-b { appearance: none; min-height: 44px; width: 100%; text-align: left; padding: 10px 14px; border: 1px solid ${P.borde}; border-radius: 8px; background: transparent; color: ${P.texto}; font: 600 15px/1.35 "Inter", sans-serif; cursor: pointer; }
+.t7b2-ver-b[aria-expanded="true"] { border-color: ${P.texto}; }
+.t7b2-ver-b:focus-visible { outline: 2px solid ${P.texto}; outline-offset: 2px; }
 /* el monto que no se muestra (X1): la casilla discontinua vacía del patrón, la misma del kárdex (KardexT7_2.jsx, .t7kx-sin) */
 .t7b2-oculto { display: flex; align-items: center; height: 100%; }
 .t7b2-oculto i { display: block; width: 100%; height: 18px; border: 1px dashed ${P.borde}; border-radius: 4px; }
@@ -120,39 +123,34 @@ function Boton({ nombre, texto, onClick, inactivo = false }) {
   );
 }
 
-function Mensaje({ ok, textos, refFoco }) {
+/* Con `porque` (el «¿Por qué?» del recorte), lo plegado del primer texto es ese; con `enteros`, los textos no pasan por el plegado automático. */
+function Mensaje({ ok, textos, porque = null, enteros = false, refFoco }) {
   return (
     <div ref={refFoco} tabIndex={-1} role="status" className={`t7b2-msg ${ok ? "t7b2-msg-ok" : "t7b2-msg-error"}`} data-mensaje={ok ? "acierto" : "error"}>
       {ok ? <Check size={16} color={P.texto} aria-hidden="true" /> : <X size={16} color={P.error} aria-hidden="true" />}
       <div className="t7b2-msg-cuerpo">
         <span className="t7b2-msg-palabra" data-palabra>{ok ? INTERFAZ.correcto : INTERFAZ.incorrecto}</span>
-        {textos.map((t) => <p key={t} data-texto><Plegable texto={t} /></p>)}
+        {textos.map((t, i) => {
+          const suPorque = i === 0 ? porque : null;
+          return <p key={t} data-texto>{enteros && !suPorque ? t : <Plegable texto={t} porque={suPorque} />}</p>;
+        })}
       </div>
     </div>
   );
 }
 
-function Ficha({ ficha }) {
-  return (
-    <dl className="t7b2-ficha" data-ficha>
-      {ficha.map((f) => (
-        <div key={f.dato} data-dato>
-          <dt>{f.dato}</dt>
-          <dd data-texto data-ficha-texto>{f.texto}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
+const Textos = ({ lista, clase = "t7b2-p", enteros = false }) => (lista ?? []).map((t) => <p key={t} className={clase} data-texto>{enteros ? t : <Plegable texto={t} />}</p>);
 
-/* El resultado de cada cálculo, en blanco: lo que va después del último «= ». */
-function Calculos({ lista }) {
+/* «Ver el primer asiento» (P2): un botón con `aria-expanded` y el asiento debajo, solo cuando está abierto. */
+function Ver({ ver }) {
+  const [abierto, setAbierto] = useState(false);
+  const id = useId();
   return (
-    <div className="t7b2-calcs" data-calculos>
-      {lista.map((c) => {
-        const i = c.lastIndexOf("= ");
-        return <p key={c} className="t7b2-calc-l" data-texto data-calculo>{c.slice(0, i + 2)}<b>{c.slice(i + 2)}</b></p>;
-      })}
+    <div className="t7b2-ver" data-ver>
+      <button type="button" className="t7b2-ver-b" aria-expanded={abierto} aria-controls={abierto ? id : undefined} onClick={() => setAbierto((x) => !x)}>
+        <span data-texto data-ver-boton>{ver.texto}</span>
+      </button>
+      {abierto && <div id={id} data-visto><Asiento asiento={ver.asiento} nuevo /></div>}
     </div>
   );
 }
@@ -173,7 +171,8 @@ export function Asiento({ asiento, nuevo = false }) {
     return cifra(l.monto);
   };
   return (
-    <div className={`t7b2-as${nuevo ? " t7b2-nueva" : ""}`} role="table" aria-label={PENDIENTE_DE_REVISION.nombreAsiento(asiento.fecha)} data-asiento={asiento.fecha} data-revision="pendiente">
+    <div className={`t7b2-as${nuevo ? " t7b2-nueva" : ""}`} role="table" aria-label={asiento.rotulo ?? PENDIENTE_DE_REVISION.nombreAsiento(asiento.fecha)} data-figura data-asiento={asiento.fecha} data-revision="pendiente">
+      {asiento.rotulo && <p className="t7b2-as-rot" data-rotulo-asiento>{asiento.rotulo}</p>}
       <div className="t7b2-as-h" role="row">
         <span role="columnheader" data-fecha>{asiento.fecha}</span>
         <span className="t7b2-g2">
@@ -196,7 +195,7 @@ export function Asiento({ asiento, nuevo = false }) {
 
 /* ═══════════ ELECCIÓN (P1 y P4) ═══════════ */
 
-function Eleccion({ pantalla, onSeguir }) {
+function Eleccion({ pantalla, onSeguir, enteros = false }) {
   const [orden, setOrden] = useState(() => barajar(pantalla.opciones));
   const [elegida, setElegida] = useState(null);
   const [confirmada, setConfirmada] = useState(null);
@@ -210,10 +209,7 @@ function Eleccion({ pantalla, onSeguir }) {
 
   return (
     <div className="t7b2" data-eleccion={pantalla.id} data-estado={estado}>
-      {pantalla.parrafos.map((t) => <p key={t} className="t7b2-p" data-texto><Plegable texto={t} /></p>)}
-      {pantalla.enunciado && <p className="t7b2-enunciado" data-texto data-enunciado>{pantalla.enunciado}</p>}
-      {pantalla.ficha && <Ficha ficha={pantalla.ficha} />}
-      {pantalla.repaso && <p className="t7b2-p" data-texto data-repaso>{pantalla.repaso}</p>}
+      <Textos lista={pantalla.parrafos} enteros={enteros} />
       <p className="t7b2-p t7b2-preg" data-texto data-pregunta>{pantalla.pregunta}</p>
       <div className="t7b2-ops" role="group" aria-label={pantalla.pregunta}>
         {orden.map((o) => {
@@ -228,15 +224,14 @@ function Eleccion({ pantalla, onSeguir }) {
       {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!elegida} onClick={() => { contarFallo(pantalla, elegida, setFallos); setConfirmada(elegida); }} />}
       {estado === "error" && (
         <>
-          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} refFoco={ref} />
+          <Mensaje ok={false} textos={textosDelError(pantalla, opcion, fallos)} enteros={enteros} refFoco={ref} />
           <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={() => { setOrden((a) => barajarDistinto(pantalla.opciones, a, (o) => o.id)); setElegida(null); setConfirmada(null); }} />
         </>
       )}
       {estado === "acierto" && (
         <>
-          <Mensaje ok textos={[pantalla.acierto.texto]} refFoco={ref} />
+          <Mensaje ok textos={[pantalla.acierto.texto]} porque={pantalla.acierto.porque ?? null} enteros={enteros} refFoco={ref} />
           {pantalla.acierto.asiento && <Asiento asiento={pantalla.acierto.asiento} nuevo />}
-          {(pantalla.acierto.despues ?? []).map((t) => <p key={t} className="t7b2-p t7b2-nueva" data-texto><Plegable texto={t} /></p>)}
           <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />
         </>
       )}
@@ -247,7 +242,7 @@ function Eleccion({ pantalla, onSeguir }) {
 
 /* ═══════════ LADOS: EL ASIENTO DEL COSTO (P3) ═══════════ */
 
-function Lados({ pantalla, onSeguir }) {
+function Lados({ pantalla, onSeguir, enteros = false }) {
   const [orden] = useState(() => barajar(pantalla.lineas));
   const [puesto, setPuesto] = useState({});
   const [veredicto, setVeredicto] = useState(null);
@@ -276,7 +271,8 @@ function Lados({ pantalla, onSeguir }) {
 
   return (
     <div className="t7b2" data-lados={pantalla.id} data-estado={estado}>
-      <p className="t7b2-p" data-texto data-consigna>{pantalla.consigna}</p>
+      <Textos lista={pantalla.parrafos} enteros={enteros} />
+      <p className="t7b2-p t7b2-preg" data-texto data-consigna>{pantalla.consigna}</p>
       <div className="t7b2-lineas" role="group" aria-label={pantalla.consigna}>
         {orden.map((l) => {
           const lado = puesto[l.id];
@@ -307,16 +303,17 @@ function Lados({ pantalla, onSeguir }) {
                 <span className="t7b2-monto" data-monto>{cifra(l.monto)}</span>
               </p>
               <span className="t7b2-g2">{boton(DEBE)}{boton(HABER)}</span>
-              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} refFoco={l.id === malas[0] ? ref : undefined} />}
+              {mala && estado === "error" && <Mensaje ok={false} textos={textosDeLinea(pantalla, l, fallosLinea[l.id] ?? 0)} enteros={enteros} refFoco={l.id === malas[0] ? ref : undefined} />}
             </div>
           );
         })}
       </div>
+      {pantalla.ver && <Ver ver={pantalla.ver} />}
       {estado === "colocando" && <Boton nombre="confirmar" texto={BOTON.confirmar} inactivo={!completo} onClick={confirmar} />}
       {estado === "error" && <Boton nombre="probar-otra" texto={BOTON.probarOtra} onClick={probarOtra} />}
       {estado === "acierto" && (
         <>
-          <Mensaje ok textos={[pantalla.acierto.texto]} refFoco={ref} />
+          <Mensaje ok textos={[pantalla.acierto.texto]} enteros={enteros} refFoco={ref} />
           <Boton nombre="seguir" texto={BOTON.seguir} onClick={onSeguir} />
         </>
       )}
@@ -334,23 +331,21 @@ export default function LaVentaEnDosAsientos({ pieza = PIEZA_LA_VENTA_EN_DOS_ASI
   const primera = useRef(true);
   const seguir = () => setK((x) => Math.min(x + 1, pieza.pantallas.length - 1));
   useEffect(() => { if (primera.current) { primera.current = false; return; } marco.current?.focus(); }, [k]);
+  const enteros = Boolean(pieza.textosEnteros);
 
   return (
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <style>{CSS_T7B2}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
-        {p.tipo === "eleccion" && <Eleccion key={p.id} pantalla={p} onSeguir={seguir} />}
-        {p.tipo === "lados" && <Lados key={p.id} pantalla={p} onSeguir={seguir} />}
+        {p.tipo === "eleccion" && <Eleccion key={p.id} pantalla={p} onSeguir={seguir} enteros={enteros} />}
+        {p.tipo === "lados" && <Lados key={p.id} pantalla={p} onSeguir={seguir} enteros={enteros} />}
         {(p.tipo === "portada" || p.tipo === "lectura" || p.tipo === "resumen") && (
           <div className="t7b2">
             {p.objetivo && <p className="t7b2-p" data-texto data-objetivo>{p.objetivo}</p>}
-            {p.enunciado && <p className="t7b2-enunciado" data-texto data-enunciado>{p.enunciado}</p>}
-            {p.ficha && <Ficha ficha={p.ficha} />}
-            {p.parrafos?.map((t) => <p key={t} className="t7b2-p" data-texto><Plegable texto={t} /></p>)}
-            {p.calculos && <Calculos lista={p.calculos} />}
-            {p.asiento && <Asiento asiento={p.asiento} />}
+            {(p.asientos ?? []).map((a) => <Asiento key={a.rotulo ?? a.fecha} asiento={a} />)}
+            <Textos lista={p.parrafos} enteros={enteros} />
             {p.estructura && (
-              <ul className="t7b2-er" data-estructura>
+              <ul className="t7b2-er" data-figura data-estructura>
                 {p.estructura.map((t) => <li key={t} data-texto>{t}</li>)}
               </ul>
             )}

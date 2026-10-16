@@ -1,20 +1,25 @@
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * ¿CABE CADA TEXTO DE T7-3 · A7 «LA NIC 2 DEL LIBRO: EL COSTO» A 375 Y 320?
+ * ¿CABE CADA TEXTO DE T7-3 · A7 «LA NIC 2 DEL LIBRO» (LA FUSIÓN CON A8) A 375
+ * Y 320?
  *
- *   node scripts/t7/medir-t7-3-a7.mjs [carpeta-de-capturas]
+ *   FUENTES_DIR=/tmp/claude-0/fuentes node scripts/t7/medir-t7-3-a7.mjs [carpeta-de-capturas]
  *
- * Como medir-t7-3-a1.mjs: Chromium de verdad, la vista de T7-3 montada tal
+ * Como medir-t7-3-a6.mjs: Chromium de verdad, la vista de T7-3 montada tal
  * cual con la hoja de estilos del sitio (banco scripts/t7/harness-t7-3). Juega
- * A7 entera —en cada pregunta falla con cada opción equivocada y después
- * acierta— y en cada uno de sus 12 estados comprueba:
+ * A7 entera —en cada pregunta falla con cada opción equivocada, acierta y
+ * abre el «¿Por qué?»; en el resumen abre lo que la norma pide informar— y en
+ * cada uno de sus estados comprueba:
  *
  *   · que la página no tenga barra horizontal
  *   · que ningún texto se salga de su caja (scrollWidth) ni del panel
  *   · que se hayan medido Inter y, donde hay pregunta, Sora: no la fuente
  *     de reserva
  *   · que cada opción y cada botón midan al menos 44 px de alto
- *   · que las cifras del asiento y de sus sumas quepan en su columna
+ *   · que la franja de la NIC 2 sea lo primero de la pieza, en cada estado
+ *   · que en cada renglón el rótulo no toque su cifra, y que las dos
+ *     columnas del acierto de `el-costo` y las fichas del resumen no se
+ *     salgan de su figura (figuras provisionales para Watari)
  *
  * Sale con código 1 si algo falla. Necesita Playwright (no es dependencia del
  * repo): el de la máquina, o el de PLAYWRIGHT_MODULE.
@@ -38,6 +43,23 @@ await servidor.listen();
 const URL_BANCO = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/t7/harness-t7-3/index.html`;
 const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const fallos = [];
+
+/*
+ * Google Fonts no siempre se alcanza desde la máquina que mide. Con
+ * FUENTES_DIR (una carpeta con fuentes.css y los .woff2 de Inter y Sora,
+ * bajados de Google), se sirven desde el disco: la letra medida es la real.
+ */
+async function servirFuentes(ctx) {
+  const dir = process.env.FUENTES_DIR;
+  if (!dir) return;
+  const { readFileSync } = await import("node:fs");
+  const css = readFileSync(resolve(dir, "fuentes.css"), "utf8");
+  await ctx.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => {
+    const u = route.request().url();
+    if (u.startsWith("https://fonts.googleapis.com/")) return route.fulfill({ status: 200, contentType: "text/css", body: css });
+    try { return route.fulfill({ status: 200, contentType: "font/woff2", body: readFileSync(resolve(dir, u.replace("https://fonts.gstatic.com/", "").replace(/\//g, "_"))) }); } catch { return route.abort(); }
+  });
+}
 const filas = [];
 
 function medir(sel) {
@@ -57,39 +79,30 @@ function medir(sel) {
     if (getComputedStyle(el).display !== "inline" && el.scrollWidth > el.clientWidth + 0.5) problemas.push(`${nombre}: mide ${el.scrollWidth} px en una caja de ${el.clientWidth}`);
     if (r.right > caja.right + 0.5 || r.left < caja.left - 0.5) problemas.push(`${nombre}: se sale del panel`);
   }
-  /* Patrón T7-3: las etiquetas de la franja de plazos no se tocan entre sí ni se salen de la franja. */
-  for (const f of document.querySelectorAll("[data-plazos]")) {
-    const caja = f.getBoundingClientRect();
-    const et = [...f.querySelectorAll(".pz-et, .pz-pago")].map((e) => [e.textContent, e.getBoundingClientRect()]);
-    for (const [t, r] of et) if (r.left < caja.left - 0.5 || r.right > caja.right + 0.5) problemas.push(`la etiqueta «${t}» se sale de la franja`);
-    for (let i = 0; i < et.length; i++) for (let j = i + 1; j < et.length; j++) {
-      const [ta, a] = et[i]; const [tb, b] = et[j];
-      if (a.left < b.right - 0.5 && b.left < a.right - 0.5 && a.top < b.bottom - 0.5 && b.top < a.bottom - 0.5) problemas.push(`las etiquetas de la franja «${ta}» y «${tb}» se tocan`);
-    }
+  if (document.documentElement.scrollWidth > window.innerWidth) problemas.push(`la página mide ${document.documentElement.scrollWidth} px en ${window.innerWidth}`);
+  for (const b of pieza.querySelectorAll("button")) {
+    /* El «¿Por qué?» va en línea con el texto: su área de toque de 44 px es su ::before (plegable.jsx). */
+    const h = Math.max(b.getBoundingClientRect().height, b.matches("[data-por-que]") ? parseFloat(getComputedStyle(b, "::before").height) || 0 : 0);
+    if (h < 44) problemas.push(`«${b.textContent.trim().slice(0, 30)}» mide ${h.toFixed(1)} px de alto`);
   }
-  /* Patrón T7-3: en cada renglón, el rótulo no toca su cifra (salvo la cifra que baja a su propia línea). */
-  for (const f of document.querySelectorAll("[data-renglon]")) {
+  /* La franja de la NIC 2: lo primero de la pieza, en cada estado. */
+  const franja = pieza.querySelector(".t73pt-nic2[data-aviso]");
+  if (!franja || pieza.firstElementChild !== franja) problemas.push("la frase de la NIC 2 no es lo primero de la pieza");
+  /* Patrón T7-3: en cada renglón, el rótulo no toca su cifra, y la cifra no se sale. */
+  for (const f of pieza.querySelectorAll("[data-renglon]")) {
     const rot = f.querySelector(".rg-rot").getBoundingClientRect();
     const v = f.querySelector(".rg-v").getBoundingClientRect();
     if (v.top < rot.bottom - 1 && rot.right > v.left - 4) problemas.push(`el renglón «${f.querySelector(".rg-rot").textContent}» toca su cifra`);
     if (v.right > f.getBoundingClientRect().right + 0.5) problemas.push(`la cifra «${f.querySelector(".rg-v").textContent}» se sale de su renglón`);
   }
-  /* Patrón T7-3: la franja de la NIC 2 es lo primero de la pieza. (Pegada arriba al bajar no se mide: el
-     contenedor de fondo de la app tiene overflow: hidden, que anula el sticky; cambiarlo es un compartido.) */
-  const franja = document.querySelector(".t73pt-nic2");
-  if (franja && franja.parentElement.firstElementChild !== franja) problemas.push("la frase de la NIC 2 no es lo primero de la pieza");
-  if (document.documentElement.scrollWidth > window.innerWidth) problemas.push(`la página mide ${document.documentElement.scrollWidth} px en ${window.innerWidth}`);
-  for (const b of pieza.querySelectorAll("button")) {
-    const h = b.getBoundingClientRect().height;
-    if (h < 44) problemas.push(`«${b.textContent.trim().slice(0, 30)}» mide ${h.toFixed(1)} px de alto`);
+  /* Las figuras de la fusión (provisionales): cada columna y cada ficha, dentro de su figura. */
+  for (const fig of pieza.querySelectorAll("[data-columnas], [data-fichas]")) {
+    const c = fig.getBoundingClientRect();
+    for (const x of fig.querySelectorAll("[data-columna], li, [data-medida] > *")) {
+      const r = x.getBoundingClientRect();
+      if (r.left < c.left - 0.5 || r.right > c.right + 0.5) problemas.push(`«${x.textContent.slice(0, 30)}» se sale de su figura`);
+    }
   }
-  /* Las cifras del asiento y de sus sumas: en una línea, dentro de su columna. */
-  for (const c of pieza.querySelectorAll("[data-asiento] [role=cell], [data-mov-t]")) {
-    if (c.scrollWidth > c.clientWidth + 0.5) problemas.push(`la cifra «${c.textContent}» mide ${c.scrollWidth} px en ${c.clientWidth}`);
-  }
-  /* La frase de la NIC 2, a la vista en cada estado; las viñetas, con su punto. */
-  if (!pieza.querySelector("[data-aviso]")) problemas.push("falta la frase de la NIC 2");
-  for (const li of pieza.querySelectorAll("[data-lista] li")) if (getComputedStyle(li).listStyleType !== "disc") problemas.push("una viñeta sin su punto");
   return {
     problemas,
     panel: Math.round(caja.width * 10) / 10,
@@ -99,10 +112,12 @@ function medir(sel) {
   };
 }
 
-const correctas = { "como-se-mide": "vnr", "el-costo": "descuento" };
+const correctas = { "que-es": "mercancia", "como-se-mide": "vnr", "el-costo": "descuento", formulas: "identificacion", "la-que-falta": "ueps", sistemas: "minoristas", gasto: "marzo" };
 
 for (const ancho of ANCHOS) {
-  const pg = await navegador.newPage({ viewport: { width: ancho, height: 900 }, deviceScaleFactor: 2 });
+  const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, deviceScaleFactor: 2 });
+  await servirFuentes(ctx);
+  const pg = await ctx.newPage();
   await pg.goto(URL_BANCO);
   await pg.waitForSelector(A1);
   let n = 0;
@@ -123,6 +138,13 @@ for (const ancho of ANCHOS) {
     const id = await pg.getAttribute(A1, "data-pantalla");
     if (await pg.$(en("[data-eleccion]"))) {
       await estado(`${id}-colocando`);
+      /* Recortes: una cuenta del asiento que abre su definición (A1, P3). Se mide abierta, una a la vez, y se cierra. */
+      const terminos = await pg.$$eval(en("[data-termino]"), (bs) => bs.map((b) => b.dataset.termino));
+      for (const t of terminos) {
+        await clic(`[data-termino="${t}"]`);
+        await estado(`${id}-termino-${t}`);
+      }
+      if (terminos.length) await clic(`[data-termino="${terminos.at(-1)}"]`);
       const malas = await pg.$$eval(en("[data-opcion]"), (bs, c) => bs.map((b) => b.dataset.opcion).filter((o) => o !== c).sort(), correctas[id]);
       for (const mala of malas) {
         await clic(`[data-opcion="${mala}"]`); await clic('[data-boton="confirmar"]');
@@ -131,10 +153,22 @@ for (const ancho of ANCHOS) {
       }
       await clic(`[data-opcion="${correctas[id]}"]`); await clic('[data-boton="confirmar"]');
       await estado(`${id}-acierto`);
+      /* El foco va al mensaje. */
+      if (!(await pg.evaluate(() => document.activeElement?.matches("[data-mensaje]")))) fallos.push(`${ancho} px · ${id} · el foco no va al mensaje`);
+      /* Recortes: el «¿Por qué?» del acierto, abierto. */
+      if (await pg.$(en("[data-mensaje] [data-por-que]"))) {
+        await clic("[data-mensaje] [data-por-que]");
+        await estado(`${id}-porque`);
+      }
       await clic('[data-boton="seguir"]');
       continue;
     }
     await estado(id);
+    /* El resumen: lo que la norma pide informar, abierto. */
+    if (await pg.$(en("[data-desplegable] button"))) {
+      await clic("[data-desplegable] button");
+      await estado(`${id}-informar`);
+    }
     const b = await pg.$(en("[data-boton]"));
     if (!b) break;
     await b.click();
@@ -149,7 +183,8 @@ console.log("ancho | estado | panel | alto pieza");
 for (const f of filas) console.log(`${f.ancho} | ${f.estado} | ${f.panel} | ${f.alto}`);
 const estados = new Set(filas.map((f) => f.estado)).size;
 console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos).`);
-if (estados !== 12) fallos.push(`se recorrieron ${estados} estados y son 12`);
+/* Portada, resumen y lo que se abre en él (3), y en cada una de las 7 preguntas: colocando, 2 errores, acierto y ¿Por qué? (35). */
+if (estados !== 38) fallos.push(`se recorrieron ${estados} estados y son 38`);
 if (fallos.length) {
   console.log(`\nFALLA: ${fallos.length} problema(s)`);
   for (const f of fallos) console.log(`  · ${f}`);

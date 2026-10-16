@@ -13,21 +13,36 @@ import { REGLAS_T5_ACT2, DIARIO_T5_ACT2, RESUMEN_T5_ACT2 } from "./contabilidadT
  * mismos»), así que se toman de allí.
  *
  * Todas las cifras son las de El Torito, pp. 202-203.
+ *
+ * LOTE 6b · LA FUSIÓN DE a5 EN a2 (hoja de Mai; textos de Futaba con las
+ * correcciones de Shoko, sección 5 del paquete). b5-t6-a5 «La cuenta de la
+ * provisión» se retiró (0077) y sus casillas viven aquí, como tres preguntas
+ * de cifra escrita entre los dos asientos: cinco pasos, P1 → Asiento 1 → P2 →
+ * Asiento 2 → P3. La cuenta T de la provisión acompaña los cinco.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 export const T6_ACT2 = {
   id: "b5-t6-a2",
   nombre: "La provisión de El Torito",
-  /* Decisión de Sakuta: media, 25 FP. */
-  dificultad: "medio",
-  fpBase: 25,
-  objetivo: "Registrar la provisión de El Torito: cuando se crea, cuando se castiga una deuda y cuando se ajusta.",
+  /*
+   * Lote 6b: difícil, 50 FP (lo sugirieron Futaba y Shoko; lo decide KAEDE con
+   * la regla nueva). Son los 25 + 25 de a2 y a5, que se funden: el tema no
+   * pierde FP. La fila del servidor la cambia la 0078.
+   */
+  dificultad: "dificil",
+  fpBase: 50,
+  objetivo: "Registrar la provisión de El Torito y seguir su saldo: cuando se crea, cuando se castiga una deuda y cuando se ajusta.",
   consigna: "Lee el hecho. Arma el asiento con las cuentas del estante.",
+  /* Debajo de la T, después de la pregunta 3 (era el cierre de a5). */
+  cierre: "La provisión sube al crearla, baja al castigar y se corrige al año siguiente. Por eso el saldo final es justo lo que pidió el análisis.",
 };
 
-/* «¿Cómo se juega?», el diario y el resumen: los del cierre de T5. */
-export const REGLAS_T6_ACT2 = REGLAS_T5_ACT2;
+/*
+ * «¿Cómo se juega?», el diario y el resumen: los del cierre de T5. Con la
+ * fusión, «¿Cómo se juega?» suma una línea para las preguntas (PARA SHOKO).
+ */
+export const REGLAS_T6_ACT2 = [...REGLAS_T5_ACT2, "Entre los asientos, escribe la cifra que se pide. También tienes un solo intento."];
 export const DIARIO_T6_ACT2 = DIARIO_T5_ACT2;
 export const RESUMEN_T6_ACT2 = RESUMEN_T5_ACT2;
 
@@ -86,6 +101,8 @@ export const PARTES_T6_ACT2 = [
       A: "Falta una cuenta. Este hecho mueve dos: el gasto y la provisión.",
       especificas: [
         { valor: 153400, clave: "C12", texto: "Revisa el valor. A lo que pide el análisis se le suma lo que faltó el año anterior: $153.400 + $31.200 = $184.600." },
+        /* Lote 6b: la T8 de a5, ahora como B específica del asiento (Futaba). */
+        { valor: 122200, clave: "T8", texto: "Lo que faltó se suma, no se resta. Se resta solo cuando la provisión se pasó." },
       ],
       B: "Revisa el valor. Suma lo que pide el análisis y lo que faltó en marzo.",
       razones: {
@@ -95,6 +112,55 @@ export const PARTES_T6_ACT2 = [
     },
   },
 ];
+
+/* ═══════════ LAS TRES PREGUNTAS (las casillas de a5, ahora de cifra escrita) ═══════════ */
+
+/*
+ * Se escribe la cifra; vale con o sin «$» y con o sin puntos. Un intento por
+ * pregunta: si falla, se ve el valor correcto. `errores` son las respuestas
+ * nombradas (las T de a5); cualquier otra, negativas incluidas, lleva la
+ * devolución `general`.
+ */
+const pregunta = (n, enunciado, correcta, errores, general, extra = {}) => ({
+  id: `b5-t6-a2-q${n}`, tipo: "pregunta", rotulo: `Pregunta ${n}`, enunciado, correcta, errores, general, ...extra,
+});
+
+export const PREGUNTAS_T6_ACT2 = [
+  pregunta(1,
+    "Los clientes le deben $2.655.000, y la provisión quedó en $148.800. En el estado de situación financiera, ¿cuál es el valor neto de Cuentas por cobrar – clientes?",
+    2506200,
+    [
+      { valor: 2655000, clave: "T1", texto: "Falta restar la provisión. El valor neto es lo que deben los clientes menos la provisión." },
+      { valor: 2803800, clave: "T2", texto: "La provisión no se suma: se resta de Cuentas por cobrar – clientes." },
+    ],
+    "Revisa la cuenta: a lo que deben los clientes se le resta la provisión.",
+    /* Con el bloque «En el estado de situación financiera», «El valor neto» vacío y encendido. */
+    { bloque: "estado" }),
+  pregunta(2,
+    "Después del castigo, ¿cuánto le falta a la provisión?",
+    31200,
+    [
+      { valor: 0, clave: "T5", texto: "La provisión era menor que lo castigado, así que no alcanzó. Resta $148.800 de $180.000." },
+      { valor: 328800, clave: "T6", texto: "El castigo baja la provisión: se resta, no se suma." },
+    ],
+    "Compara lo que había en la provisión con lo que se castigó: la diferencia es lo que falta."),
+  pregunta(3,
+    "¿Cuál es el saldo final de la provisión?",
+    153400,
+    [
+      /* La de Shoko: ya no deja la pista para restar 184.600 − 180.000. */
+      { valor: 184600, clave: "T9", texto: "Ese es el valor del ajuste, no el saldo. Antes del ajuste, a la provisión le faltaban $31.200." },
+      { valor: 333400, clave: "T10", texto: "Falta restar el castigo de marzo. Son $148.800 menos $180.000, más $184.600." },
+    ],
+    "Parte de lo que le faltaba a la provisión en marzo y súmale el registro de diciembre."),
+];
+
+/* Los cinco pasos, en el orden de la hoja de Mai. */
+export const PASOS_T6_ACT2 = [PREGUNTAS_T6_ACT2[0], PARTES_T6_ACT2[0], PREGUNTAS_T6_ACT2[1], PARTES_T6_ACT2[1], PREGUNTAS_T6_ACT2[2]];
+
+/* Los textos de la mecánica de cinco pasos (PARA SHOKO). */
+/* Lote 6d (§4.3): sin «siguiente»; el botón sigue al contador («Siguiente paso»: CierreConMesa). */
+export const PASOS_TEXTOS_T6_ACT2 = { etiqueta: "Paso", comprobar: "Comprobar", campo: "Tu respuesta" };
 
 /* ═══════════ EL TUTORIAL: LA PROVISIÓN DE 2007, YA RESUELTA (p. 202) ═══════════ */
 
@@ -119,4 +185,4 @@ export const ALT_TUTORIAL_T6_ACT2 = "Ejemplo resuelto. El 31 de diciembre de 200
 
 /* ═══════════ TEXTO ALTERNATIVO ═══════════ */
 
-export const ALT_T6_ACT2 = "Actividad de registro. Hay dos hechos de la provisión de El Torito Currambero. En cada uno, pon en la mesa las cuentas que mueve, ubícalas en el Debe o en el Haber y escribe cada valor. Abajo se ven los dos totales y la diferencia. Tienes un solo intento por asiento.";
+export const ALT_T6_ACT2 = "Actividad de registro. Hay dos hechos de la provisión de El Torito Currambero. Antes, entre y después de los asientos, respondes tres preguntas sobre su saldo. En cada asiento, pon en la mesa las cuentas que mueve, ubícalas en el Debe o en el Haber y escribe cada valor. La T de la provisión se llena con cada respuesta. Tienes un solo intento por asiento y por pregunta.";

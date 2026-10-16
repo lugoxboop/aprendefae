@@ -8,8 +8,10 @@
  * en orquestador/conocimiento/paquetes/b5-t6-act1.md. No hay guía de diseño
  * propia: es el mismo diseño de b5-t5-a1 (decisión de Sakuta).
  *
- * Como en T1-6, el ✅ y el ❌ van al inicio de cada devolución y Retro los
- * separa; lo que sigue al emoji es literal de Futaba.
+ * Lote 6d (estándar único de Hacer): las devoluciones van sin los emojis de acierto y de
+ * error que llevaban al inicio (solo se quitó el emoji); el veredicto lo da la
+ * evaluación (`ok`), no el texto. El resto es literal de Futaba. La pista del primer
+ * fallo va sin emoji (como en la escalera de ayuda, tema6/escaleraB5.js).
  *
  * El segundo fallo sigue la REGLA ÚNICA de la célula (b5SegundoFallo.js): el
  * acierto sin «Sí.» y con «No es esa.» delante. Por eso no hay columna de
@@ -23,18 +25,27 @@ export const T6_ACT1 = {
   nombre: "¿Clientes o otra cuenta por cobrar?",
   dificultad: "facil",
   fpBase: 10,
+  /*
+   * R10 (hoja de fusiones de Mai): entre 2 y 4 fichas por cajón. Lote 6b (C4): sale la ficha del cheque
+   * devuelto, que se practicaba cinco veces en B y se queda donde enseña algo nuevo; el banco queda en
+   * 4 · 2 · 3. Con nueve fichas la tanda sería siempre el banco entero, con el mismo reparto, y la cuenta
+   * del estante volvería a delatar la última: van ocho, con dos repartos posibles (4 · 2 · 2 y 3 · 2 · 3).
+   */
+  porPartida: 8,
   objetivo: "Decidir si un hecho va en Clientes o en otra cuenta por cobrar, y si se debita o se acredita.",
   consigna: "Lee el hecho. Elige la cuenta y, si es Clientes, cómo se anota.",
 };
 
-/* Las tres líneas de «¿Cómo se juega?». La tercera es la de b5-t5-a1. */
+/*
+ * Las dos líneas de «¿Cómo se juega?» (lote 6a: las fichas a un nivel). La primera es de Futaba; la
+ * segunda, la misma de b5-t5-a1, adaptada a la hoja de Mai (sin botón). PARA SHOKO.
+ */
 export const REGLAS_T6_ACT1 = [
-  "Elige si el hecho va en Clientes o en otra cuenta por cobrar.",
-  "Si va en Clientes, elige también si se debita o se acredita.",
-  "Pulsa el botón para colocar la ficha; si fallas, tienes un intento más.",
+  "Lee el hecho y elige dónde va: en otra cuenta por cobrar, o en Clientes, y si se debita o se acredita.",
+  "Toca el cajón donde va la ficha; si fallas, tienes un intento más.",
 ];
 
-/* ═══════════ LOS DOS NIVELES ═══════════ */
+/* ═══════════ LAS TRES OPCIONES: LOS TRES CAJONES DEL ESTANTE (hoja de fusiones de Mai) ═══════════ */
 
 export const OTRA = "otra";
 export const CLIENTES = "clientes";
@@ -42,108 +53,90 @@ export const DEBITA = "debita";
 export const ACREDITA = "acredita";
 
 /*
- * «Otra cuenta por cobrar» arriba y «Clientes» abajo: la regla §2.2 de la
- * guía v2 de Mai para b5-t5-a1 (la pestaña que abre el panel va al final y no
- * empuja a ninguna otra). Decisión de Kaede, anotada en el PR.
+ * Cada cajón es una respuesta entera: la cuenta y, si es Clientes, el lado. Los nombres, los de la hoja de
+ * Mai y del texto alternativo de Futaba. El grupo se lee «Cuenta por cobrar» (PARA SHOKO: la hoja pide
+ * la etiqueta del grupo de pestañas de hoy, que no tenía nombre).
  */
-export const CUENTAS = [
-  { id: OTRA, rotulo: "Otra cuenta por cobrar" },
-  { id: CLIENTES, rotulo: "Clientes" },
+export const CAJONES_T6_ACT1 = [
+  { cuenta: OTRA, lado: null, rotulo: "Otra cuenta por cobrar" },
+  { cuenta: CLIENTES, lado: DEBITA, rotulo: "Clientes, se debita" },
+  { cuenta: CLIENTES, lado: ACREDITA, rotulo: "Clientes, se acredita" },
 ];
-export const LADOS = [
-  { id: DEBITA, rotulo: "Se debita" },
-  { id: ACREDITA, rotulo: "Se acredita" },
-];
-
-/* Los rótulos del botón (Futaba, estado 2). */
-export const BOTON_T6_ACT1 = {
-  nada: "Elige una cuenta",
-  falta: "Elige cómo se anota",
-  colocar: "Colocar la ficha",
-};
+export const GRUPO_T6_ACT1 = "Cuenta por cobrar";
 
 /* ═══════════ EL BANCO: 10 FICHAS ═══════════ */
 
 /*
  * `cuenta` y `lado` son la respuesta (`lado` va a null en las de otra cuenta
- * por cobrar). `c5` marca las dos ventas a crédito: si eligen «Se acredita»,
- * la devolución es la C5 y no la C (Futaba: la C5 tiene prioridad).
+ * por cobrar). `pista` es lo que se lee al PRIMER fallo, sea cual sea el cajón
+ * tocado (Futaba, E5 de la fila 11 de Shoko): cada ficha la suya, sin nombrar
+ * el cajón. Reemplaza a las devoluciones de error A, B, C y C5, que quedan
+ * como registro en el paquete (§3.3). Al segundo fallo, la regla única.
  */
 export const FICHAS_T6_ACT1 = [
   {
     id: "socio", cuenta: OTRA, lado: null,
-    texto: "La empresa le presta plata a uno de sus socios.",
-    acierto: "✅ Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Cuentas por cobrar a socios y accionistas.",
+    /* Lote 6a (Futaba): cada préstamo con otra forma; solo este dice «prestada». */
+    texto: "Un socio le pide plata prestada a la empresa, y ella se la da.",
+    pista: "¿El socio compró algo a crédito, o recibió plata prestada? Piensa qué deudas recoge la cuenta de clientes.",
+    acierto: "Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Cuentas por cobrar a socios y accionistas.",
   },
   {
     id: "trabajador", cuenta: OTRA, lado: null,
-    texto: "La empresa le presta plata a uno de sus trabajadores.",
-    acierto: "✅ Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Cuentas por cobrar a trabajadores.",
+    texto: "Un trabajador necesita plata y la empresa se la entrega; él la pagará por cuotas.",
+    pista: "¿Aquí hubo una venta a crédito? Piensa qué deudas recoge Cuentas por cobrar – clientes.",
+    acierto: "Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Cuentas por cobrar a trabajadores.",
   },
   {
     id: "particular", cuenta: OTRA, lado: null,
-    texto: "La empresa le presta plata a un particular.",
-    acierto: "✅ Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Préstamos a particulares.",
+    texto: "Alguien que no es cliente, socio ni trabajador recibe plata de la empresa. Tiene que devolverla.",
+    pista: "Fíjate por qué esta persona le debe a la empresa. ¿La deuda vino de una venta a crédito?",
+    acierto: "Sí. Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Préstamos a particulares.",
   },
   {
-    /* Corrección obligatoria de Shoko: quien se guíe por la palabra «cliente» la falla. */
+    /* Corrección obligatoria de Shoko: quien se guíe por la palabra «cliente» la falla. Lote 6a: la versión de Shoko, sin «no compra nada». */
     id: "prestamo-cliente", cuenta: OTRA, lado: null,
-    texto: "La empresa le presta plata a uno de sus clientes.",
-    acierto: "✅ Sí. Es un cliente, pero esto es un préstamo, no una venta a crédito. Por eso no va en Cuentas por cobrar – clientes, sino en otra cuenta por cobrar.",
+    texto: "Un cliente le pide plata a la empresa, y ella se la entrega para que la devuelva.",
+    pista: "Que sea cliente no decide la cuenta. Mira por qué le debe: ¿compró a crédito o le prestaron?",
+    acierto: "Sí. Es un cliente, pero esto es un préstamo, no una venta a crédito. Por eso no va en Cuentas por cobrar – clientes, sino en otra cuenta por cobrar.",
   },
   {
-    id: "venta-mercancia", cuenta: CLIENTES, lado: DEBITA, c5: true,
+    id: "venta-mercancia", cuenta: CLIENTES, lado: DEBITA,
     /* Entrega 4 de Futaba (calidad): los cinco hechos de Clientes, con otras palabras. */
     texto: "Un cliente se lleva un pedido de mercancía a crédito, para pagarlo a fin de mes.",
-    acierto: "✅ Sí. Es una venta a crédito: el cliente queda debiendo, así que se debita.",
+    pista: "Después de esto, ¿lo que debe el cliente sube o baja? No te guíes por la palabra “crédito”.",
+    acierto: "Sí. Es una venta a crédito: el cliente queda debiendo, así que se debita.",
   },
   {
-    id: "venta-servicio", cuenta: CLIENTES, lado: DEBITA, c5: true,
+    id: "venta-servicio", cuenta: CLIENTES, lado: DEBITA,
     texto: "La empresa le presta un servicio a crédito a un cliente.",
-    acierto: "✅ Sí. Un servicio vendido a crédito también hace subir la deuda: se debita.",
-  },
-  {
-    id: "cheque", cuenta: CLIENTES, lado: DEBITA,
-    texto: "El banco no le paga a la empresa el cheque de un cliente: se lo devuelve.",
-    acierto: "✅ Sí. Sube: se debita. Como el cheque no se cobró, el cliente vuelve a deber.",
+    pista: "Un servicio vendido sin cobrarlo también deja una deuda. ¿Esa deuda sube o baja?",
+    acierto: "Sí. Un servicio vendido a crédito también hace subir la deuda: se debita.",
   },
   {
     id: "pago", cuenta: CLIENTES, lado: ACREDITA,
-    texto: "Un cliente abona una parte de lo que debe.",
-    acierto: "✅ Sí. Baja: se acredita. Lo que abonó ya no lo debe.",
+    /* E5 (Futaba): «abona» pasa a «paga», porque el abono no se enseña hasta T6 A4 y esta va antes (Shoko). */
+    texto: "Un cliente paga una parte de lo que debe.",
+    pista: "Después de pagar esa parte, ¿el cliente debe más o menos que antes?",
+    /* Norma de diseño nueva (sin emojis como íconos): desde el lote 6d, todos los aciertos van sin emoji. */
+    acierto: "Sí. Baja: se acredita. Lo que pagó ya no lo debe.",
   },
   {
     id: "devolucion", cuenta: CLIENTES, lado: ACREDITA,
     texto: "Un cliente que todavía debe una compra regresa parte de la mercancía.",
-    acierto: "✅ Sí. Baja: se acredita. Lo que regresó ya no lo tiene que pagar.",
+    pista: "Lo que el cliente regresa, ¿lo sigue teniendo que pagar? Piensa si su deuda sube o baja.",
+    acierto: "Sí. Baja: se acredita. Lo que regresó ya no lo tiene que pagar.",
   },
   {
     id: "descuento", cuenta: CLIENTES, lado: ACREDITA,
     texto: "La empresa le rebaja a un cliente una parte de lo que le debe.",
-    acierto: "✅ Sí. Baja: se acredita. Ahora el cliente le debe menos.",
+    pista: "Con la rebaja, ¿el cliente debe más o menos que antes?",
+    acierto: "Sí. Baja: se acredita. Ahora el cliente le debe menos.",
   },
 ];
 
-/* ═══════════ LAS DEVOLUCIONES DE ERROR ═══════════ */
+/* El resumen (Futaba, lote 6a): ya no habla de pesos; cada ficha vale entera. */
+export const resumenT6Act1 = (bien, cuantas) => `${bien} de ${cuantas} fichas bien al primer intento.`;
 
-export const ERROR_T6_ACT1 = {
-  /* A · un hecho de Clientes puesto en «Otra cuenta por cobrar». */
-  A: "❌ No es esa. En este hecho cambia lo que un cliente le debe a la empresa. Eso se anota en Cuentas por cobrar – clientes.",
-  /* B · un préstamo puesto en «Clientes». La versión recomendada por Shoko, con el nombre completo. */
-  B: "❌ No es esa. Es un préstamo, no una venta a crédito. Cuentas por cobrar – clientes solo recoge lo que deben los clientes por ventas a crédito. Este va en otra cuenta por cobrar.",
-  /* C · acertó «Clientes» y falló el lado. */
-  C: "❌ Vas bien: es Clientes. Ahora pregúntate si con este hecho lo que deben los clientes sube o baja. Si sube, se debita. Si baja, se acredita.",
-  /* C5 · una venta a crédito puesta en «Se acredita»: la palabra engaña. Comillas internas “ ” (auditoría integral). */
-  C5: "❌ Vas bien: es Clientes. Ojo con la palabra “crédito”: el nombre del negocio no dice en qué lado se anota. Pregúntate si lo que deben los clientes sube o baja.",
-};
-
-/* ═══════════ EL PUNTAJE: 60 % LA CUENTA, 40 % EL LADO (como T1-6) ═══════════ */
-
-export const PESO_CUENTA = 0.6;
-export const PESO_LADO = 0.4;
-
-/* El resumen (Futaba, estado 5). {X} lo formatea el componente, como T1-6. */
-export const resumenT6Act1 = (bien, cuantas, x) =>
-  `${bien} de ${cuantas} completas al primer intento. Cada ficha valía ${x} %. Elegir la cuenta pesa 60 %. Elegir si se debita o se acredita pesa 40 %. En las de otra cuenta por cobrar, la primera elección vale toda la ficha.`;
-
-export const ALT_T6_ACT1 = "Actividad de clasificación. Aparece un hecho. Elige si va en Clientes o en otra cuenta por cobrar. Si eliges Clientes, elige también si se debita o se acredita. Luego pulsa Colocar la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.";
+/* La corrección de Shoko (las opciones con punto y coma), con la frase del botón adaptada a la hoja de Mai. PARA SHOKO. */
+export const ALT_T6_ACT1 = "Actividad de clasificación. Aparece un hecho. Elige entre tres opciones: Otra cuenta por cobrar; Clientes, se debita; o Clientes, se acredita. Toca el cajón donde va la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.";
