@@ -117,7 +117,7 @@ export const PANTALLAS_A3 = [
   {
     id: "contar", modo: "contar",
     /* Lote B, capa 1: abre con el sobre y la regla; la definición aparece con «Contar la caja» (Katsumi v2). */
-    despuesConAccion: [{ texto: "En un arqueo, los soportes más lo que hay en la caja tienen que dar el fondo." }],
+    despuesConAccion: [{ texto: "En un arqueo, soportes más efectivo deben dar el fondo." }],
     alt: "El sobre con 478.100 en soportes y la caja sin contar. Al contar, hay 21.900, y la aguja de la suma cae justo en la marca del fondo.",
     pie: "Basado en el libro, pp. 182 y 184",
   },
@@ -210,6 +210,8 @@ export const PIEZA_EL_ARQUEO = {
   id: A3_ID,
   numero: 3,
   titulo: "El arqueo",
+  /* D2 (Shibukawa; Yujiro): el objetivo de la pieza, una línea fija bajo el título en la P0 (Katsumi). */
+  objetivo: "Hacer el arqueo de una caja menor.",
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A3,
 };

@@ -7,11 +7,16 @@
 - Cifras del libro (pp. 182-186): 500.000, 478.100, 21.900, 24.000, 2.100, 476.000, 15.200, 6.700 y 484.800, las calculadas se calculan. Distractores construidos: 480.200 y 471.400. El control de P1 (de 14.900 a 28.900) es supuesto de Hanayama.
 - Medido con la sonda (Katsumi): peor pantalla 59 de 60 palabras; antes de la figura, 32 de 40 como mucho; la figura entre 84 y 183 px a 320.
 - **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
+- **Objetivo (D2, 16 oct 2026):** una línea fija bajo el título, solo en la P0 (hallazgo de Shibukawa; Yujiro; texto de Katsumi). Con ella, la figura de la P0 queda a 110 px a 320: Yujiro la acepta porque B1 (280) se cumple, y la parada de medición de la P0 pasa a ser ≤ 280. Para que la P0 no pase de 60 palabras, el texto que aparece con la acción pasa a «En un arqueo, soportes más efectivo deben dar el fondo.» (Katsumi).
+
+## Objetivo de la pieza
+
+- Bajo el título, en la P0: «Hacer el arqueo de una caja menor.» (<10)
 
 ## Contenido, pantalla por pantalla
 
 **P0 · contar**
-- Después de la figura, con la acción: «En un arqueo, los soportes más lo que hay en la caja tienen que dar el fondo.» (101,9)
+- Después de la figura, con la acción: «En un arqueo, soportes más efectivo deben dar el fondo.» (78,5)
 - Texto alternativo: «El sobre con 478.100 en soportes y la caja sin contar. Al contar, hay 21.900, y la aguja de la suma cae justo en la marca del fondo.» (92,7)
 - Pie: «Basado en el libro, pp. 182 y 184»
 

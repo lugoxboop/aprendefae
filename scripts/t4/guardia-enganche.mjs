@@ -19,6 +19,10 @@
  * con la sonda de enganche). Una pantalla sin figura no cuenta para
  * B1: B3 (que haya figura y acción) es otra regla.
  *
+ * La P0 no tiene parada propia: con la línea de objetivo (D2) su figura queda
+ * entre 110 y 130 px a 320, y Yujiro dejó su parada en la de B1, ≤ 280 (16
+ * oct 2026; antes, en el lote B, era 84 ± 22).
+ *
  * Y los Hacer: el tope de la primera opción (la interacción) desde el tope de
  * su tarjeta, en la partida, con el «Así se juega» cerrado.
  *

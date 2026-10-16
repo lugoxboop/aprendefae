@@ -49,6 +49,8 @@ export const CSS_T4R = `
 .t4r { display: grid; gap: 12px; min-width: 0; color: ${C.texto}; font-family: "Inter", sans-serif; font-size: 15px; line-height: 1.45; }
 .t4r * { box-sizing: border-box; }
 .t4r-p { margin: 0; font-size: 15px; line-height: 1.45; overflow-wrap: anywhere; }
+/* D2: el objetivo de la pieza, bajo el título de la tarjeta, solo en la P0. */
+.t4r-objetivo { margin: -6px 0 12px; font: 500 14px/20px "Inter", sans-serif; color: ${C.texto2}; overflow-wrap: anywhere; }
 .t4r-pie { margin: 0; font-size: 12px; line-height: 1.4; color: ${C.texto2}; overflow-wrap: anywhere; }
 .t4r-sig { margin: 0; font-size: 14px; line-height: 1.4; color: ${C.texto2}; overflow-wrap: anywhere; }
 .t4r-lista { margin: 0; padding-left: 22px; display: grid; gap: 4px; }

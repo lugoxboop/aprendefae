@@ -7,11 +7,16 @@
 - Cifras del libro (pp. 189-191): los dos saldos, las cinco partidas de cada lado y los cinco asientos. La diferencia (1.937.500), los saldos de cada paso y el conciliado (4.612.600) se calculan. Cheques sin número (E3).
 - Medido con la sonda (Katsumi): peor pantalla 58 de 60 palabras; antes de la figura, 31 de 40 como mucho; la figura entre 84 y 183 px a 320.
 - **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
+- **Objetivo (D2, 16 oct 2026):** una línea fija bajo el título, solo en la P0 (hallazgo de Shibukawa; Yujiro; texto de Katsumi). Con ella, la figura de la P0 queda a 130 px a 320: Yujiro la acepta porque B1 (280) se cumple, y la parada de medición de la P0 pasa a ser ≤ 280. Para que la P0 no pase de 60 palabras, el caso pasa a «San Calixto, 31 de marzo.» (Katsumi).
+
+## Objetivo de la pieza
+
+- Bajo el título, en la P0: «Conciliar los saldos y asentar las notas.» (<10)
 
 ## Contenido, pantalla por pantalla
 
 **P0 · dos-saldos**
-- Caso (bajo el par, desde el principio): «La Compañía San Calixto Ltda. revisa su cuenta al 31 de marzo.» (81,4)
+- Caso (bajo el par, desde el principio): «San Calixto, 31 de marzo.» (<10)
 - Rótulo de la pregunta: «¿Cuál es el saldo verdadero?»
 - Acierto (tras «Correcto.»): «A cada lado le falta anotar algo.» (<10)
 - Error · banco (✗ y el texto): «Al extracto le falta lo que la empresa ya anotó.» (90,9)

@@ -70,6 +70,10 @@ function abrir(k = 0) {
 }
 const filas = (caja) => Object.fromEntries([...caja.querySelectorAll("[data-fila]")].map((f) => [f.dataset.fila, f.dataset.estado]));
 
+/* D2: el objetivo, bajo el título en la P0 (la prueba es la misma para A0-A5). */
+const { pruebaObjetivo } = await import("./t4-aprender-rd.mjs");
+pruebaObjetivo({ P, canon: CANON });
+
 /* ═══════════ 1 · EL TEXTO, CONTRA EL PAQUETE ═══════════ */
 
 test("★★★ el paquete vigente es el del rediseño (v3) y lo dice; los datos lo nombran", () => {

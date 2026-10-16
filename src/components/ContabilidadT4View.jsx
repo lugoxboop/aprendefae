@@ -352,6 +352,8 @@ export function PantallasT4({ pieza, rotulo }) {
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <style>{CSS_PANTALLAS}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
+        {/* D2: el objetivo de la pieza, fijo bajo el título, solo en la P0 (Shibukawa; Yujiro; texto de Katsumi). */}
+        {k === 0 && pieza.objetivo && <p className="t4r-objetivo" data-objetivo>{pieza.objetivo}</p>}
         <PantallaT4 key={p.id} p={p} Cuerpo={Cuerpo} onAcierto={() => setAcertada(k)}
           seguirBoton={!ultima && puedeSeguir ? <SeguirAprender nueva onClick={seguir}>{pieza.boton ?? BOTON.seguir}</SeguirAprender> : null} />
       </div>

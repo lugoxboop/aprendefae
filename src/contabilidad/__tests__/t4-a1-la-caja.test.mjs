@@ -85,6 +85,10 @@ const saldo = (m) => q(m, "[data-saldo]")?.dataset.saldo ?? null;
 const vivos = (m) => [...m.caja.querySelectorAll(".t4cv-vivo")].map((x) => x.dataset.trazo).sort();
 const luces = (m) => [...m.caja.querySelectorAll("[data-figura] [data-luz]")].map((x) => x.dataset.caja2 ?? (x.matches("[data-cajon]") ? "cajon" : x.matches("[data-saldo]") ? "saldo" : x.dataset.columna)).sort();
 
+/* D2: el objetivo, bajo el título en la P0 (la prueba es la misma para A0-A5). */
+const { pruebaObjetivo } = await import("./t4-aprender-rd.mjs");
+pruebaObjetivo({ P, canon: CANON });
+
 /* ═══════════ 1 · EL TEXTO, CONTRA EL PAQUETE ═══════════ */
 
 test("★★★ el paquete vigente es el del rediseño (v6) y lo dice, con la decisión del control 7; los datos lo nombran", async () => {

@@ -174,6 +174,8 @@ export const PIEZA_BANCOS_Y_NOTAS = {
   id: A4_ID,
   numero: 4,
   titulo: "Bancos y notas del banco",
+  /* D2 (Shibukawa; Yujiro): el objetivo de la pieza, una línea fija bajo el título en la P0 (Katsumi). */
+  objetivo: "Explicar por qué difieren banco y empresa.",
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A4,
 };

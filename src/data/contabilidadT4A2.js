@@ -130,7 +130,7 @@ export const PANTALLAS_A2 = [
     id: "el-fondo", modo: "pagar",
     /* Lote B, capa 1: abre con el sobre; el rótulo va sobre los dos botones y la definición aparece con el primer «Pagar un gasto» (Katsumi v2). */
     rotuloAccion: "Paga y repón",
-    despuesConAccion: [{ texto: "La caja menor de Rosa es un fondo para gastos pequeños. Es fijo: al reponerlo, vuelve a la misma cifra." }],
+    despuesConAccion: [{ texto: "Fondo fijo para gastos pequeños: al reponerlo, vuelve a su cifra." }],
     alt: "El sobre de la caja menor. Al pagar, bajan los billetes y suben los soportes de gastos, pero la suma sigue en 500.000. Al reponer, vuelven los billetes.",
     pie: "Basado en el libro, p. 181",
   },
@@ -192,6 +192,8 @@ export const PIEZA_EL_FONDO_FIJO = {
   id: A2_ID,
   numero: 2,
   titulo: "El fondo fijo",
+  /* D2 (Shibukawa; Yujiro): el objetivo de la pieza, una línea fija bajo el título en la P0 (Katsumi). */
+  objetivo: "Pagar, reponer y ajustar la caja menor.",
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A2,
 };

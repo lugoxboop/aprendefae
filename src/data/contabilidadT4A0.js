@@ -160,6 +160,8 @@ export const PIEZA_EL_ACTIVO_CORRIENTE = {
   id: A0_ID,
   numero: 0,
   titulo: "El activo corriente",
+  /* D2 (Shibukawa; Yujiro): el objetivo de la pieza, una línea fija bajo el título en la P0 (Katsumi). */
+  objetivo: "Separar activos corrientes de activos fijos.",
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A0,
 };

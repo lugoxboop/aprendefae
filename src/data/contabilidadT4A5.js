@@ -139,7 +139,7 @@ export const PANTALLAS_A5 = [
      * lugar, «saldo verdadero: ?», que se llena en P2 cuando sale el «=».
      */
     id: "dos-saldos", modo: "saldo", pregunta: true,
-    caso: "La Compañía San Calixto Ltda. revisa su cuenta al 31 de marzo.",
+    caso: "San Calixto, 31 de marzo.",
     rotuloPregunta: "¿Cuál es el saldo verdadero?",
     opciones: ["banco", "empresa", "ninguno"], correcta: "ninguno",
     acierto: "A cada lado le falta anotar algo.",
@@ -192,6 +192,8 @@ export const PIEZA_SAN_CALIXTO = {
   id: A5_ID,
   numero: 5,
   titulo: "San Calixto",
+  /* D2 (Shibukawa; Yujiro): el objetivo de la pieza, una línea fija bajo el título en la P0 (Katsumi). */
+  objetivo: "Conciliar los saldos y asentar las notas.",
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A5,
 };

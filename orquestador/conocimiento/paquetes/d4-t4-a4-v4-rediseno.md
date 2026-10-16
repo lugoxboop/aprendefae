@@ -9,6 +9,11 @@
 - Medido con la sonda (Katsumi): peor pantalla 58 de 60 palabras; antes de la figura, 37 de 40 como mucho; la figura entre 84 y 183 px a 320.
 - **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
 - **Lote B, A4 «la-conciliacion»:** el rótulo de la pregunta queda en «¿Qué ignora la empresa?» (decisión de Yujiro, 16 oct): con «¿Qué le falta anotar a la empresa?» el acierto medía 62 palabras, y «¿Qué le falta anotar?» tenía dos respuestas buenas (al banco le falta el cheque). El texto alternativo de la P4 cuadra con ese rótulo (Katsumi, 16 oct).
+- **Objetivo (D2, 16 oct 2026):** una línea fija bajo el título, solo en la P0 (hallazgo de Shibukawa; Yujiro; texto de Katsumi). Con ella, la figura de la P0 queda a 130 px a 320: Yujiro la acepta porque B1 (280) se cumple, y la parada de medición de la P0 pasa a ser ≤ 280.
+
+## Objetivo de la pieza
+
+- Bajo el título, en la P0: «Explicar por qué difieren banco y empresa.» (<10)
 
 ## Contenido, pantalla por pantalla
 

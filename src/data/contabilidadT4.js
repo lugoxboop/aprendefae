@@ -223,6 +223,8 @@ export const PIEZA_LA_CAJA = {
   id: A1_ID,
   numero: 1,
   titulo: "La caja",
+  /* D2 (Shibukawa; Yujiro): el objetivo de la pieza, una línea fija bajo el título en la P0 (Katsumi). */
+  objetivo: "Decidir qué mueve Caja y cómo cuidarla.",
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A1,
 };

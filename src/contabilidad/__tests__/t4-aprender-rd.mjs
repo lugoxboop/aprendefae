@@ -107,7 +107,35 @@ export async function abrir(P, id) {
  *   preguntas: los ids de las pantallas con pregunta (Katsumi, decisión 2):
  *             si una deja de serlo en los datos, D7 se pone en rojo
  */
+/*
+ * D2 (Shibukawa; Yujiro): el objetivo de la pieza, una línea fija bajo el
+ * título solo en la P0, con el texto del paquete. Va antes de la pantalla
+ * (fuera de su zona), así que la P0 sigue abriendo con la figura (capa 1).
+ */
+export function pruebaObjetivo({ P, canon }) {
+  const PAQ = leer(`${PAQUETES}${canon}`);
+  test(`★★★ ${P.titulo} · D2: el objetivo del paquete, una línea fija bajo el título en la P0 y en ninguna otra`, async () => {
+    const t = renglones(seccionDe(PAQ, "Objetivo de la pieza"));
+    assert.deepEqual(t.map((x) => [x.lugar, x.texto]), [["Bajo el título, en la P0", P.objetivo]]);
+    const m = await abrir(P, P.pantallas[0].id);
+    try {
+      const raiz = q(m, "[data-pieza]");
+      const o = raiz.querySelector("[data-objetivo]");
+      assert.equal(o?.textContent, P.objetivo);
+      assert.equal(raiz.firstElementChild, o, "el objetivo no es lo primero bajo el título");
+      assert.equal(o.closest(".t4r"), null, "el objetivo va dentro de la pantalla");
+      assert.equal(q(m, "[data-pieza] .t4r").firstElementChild.matches("[data-figura]") || Boolean(q(m, "[data-pieza] .t4r").firstElementChild.querySelector(":scope > [data-figura]")), true, "la P0 ya no abre con la figura");
+      if (P.pantallas[0].pregunta) await jugar(m, P, P.pantallas[0].id);
+      assert.equal(q(m, "[data-objetivo]")?.textContent, P.objetivo, "el objetivo se va al responder la P0");
+      tocar(seguir(m));
+      assert.equal(pantallaDe(m), P.pantallas[1].id);
+      assert.equal(q(m, "[data-objetivo]"), null, "el objetivo sigue después de la P0");
+    } finally { m.desmontar(); }
+  });
+}
+
 export function pruebasComunes({ P, canon, datos, piezas, noNombra = {}, antesDe, preguntas }) {
+  pruebaObjetivo({ P, canon });
   const PAQ = leer(`${PAQUETES}${canon}`);
   const CANON_P = pantallasDe(PAQ);
   const nombre = P.titulo;

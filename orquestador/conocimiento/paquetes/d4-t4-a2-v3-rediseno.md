@@ -7,12 +7,17 @@
 - Cifras del libro (pp. 181-184): 500.000 y los ocho gastos de mayo. 478.100 y 21.900 se calculan. El ±100.000 de P6 es supuesto (pie «Cifras construidas»).
 - Medido con la sonda (Katsumi): peor pantalla 59 de 60 palabras; antes de la figura, 32 de 40 como mucho; la figura entre 84 y 183 px a 320.
 - **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
+- **Objetivo (D2, 16 oct 2026):** una línea fija bajo el título, solo en la P0 (hallazgo de Shibukawa; Yujiro; texto de Katsumi). Con ella, la figura de la P0 queda a 110 px a 320: Yujiro la acepta porque B1 (280) se cumple, y la parada de medición de la P0 pasa a ser ≤ 280. Para que la P0 no pase de 60 palabras, el texto que aparece con la acción pasa a «Fondo fijo para gastos pequeños: al reponerlo, vuelve a su cifra.» (Katsumi).
+
+## Objetivo de la pieza
+
+- Bajo el título, en la P0: «Pagar, reponer y ajustar la caja menor.» (<10)
 
 ## Contenido, pantalla por pantalla
 
 **P0 · el-fondo**
 - Rótulo de la acción: «Paga y repón»
-- Después de la figura, con la acción: «La caja menor de Rosa es un fondo para gastos pequeños. Es fijo: al reponerlo, vuelve a la misma cifra.» (87,8)
+- Después de la figura, con la acción: «Fondo fijo para gastos pequeños: al reponerlo, vuelve a su cifra.» (71,2)
 - Texto alternativo: «El sobre de la caja menor. Al pagar, bajan los billetes y suben los soportes de gastos, pero la suma sigue en 500.000. Al reponer, vuelven los billetes.» (88,5)
 - Pie: «Basado en el libro, p. 181»
 
