@@ -100,6 +100,17 @@ export const CSS_TABLERO = `
 .t4cp input { min-height: 44px; width: 100%; border-radius: 8px; border: 1px solid ${C.reposo}; background: transparent; color: ${C.texto}; font: 500 16px "Inter", sans-serif; font-variant-numeric: tabular-nums; padding: 0 10px; }
 .t4cp[data-marca="bien"] input { border: 2px solid ${C.texto}; }
 .t4cp-marcas { display: flex; flex-wrap: wrap; gap: 6px; min-height: 20px; }
+/*
+ * «Iba aquí: {valor}» bajo el campo errado (H7 y H8, etapa de saldos). En una
+ * columna angosta (H7 a 320) no cabe en un renglón: parte en dos, «Iba aquí:»
+ * arriba y la cifra abajo, con la letra de siempre (12 px). Su hueco, a todo
+ * el ancho, se reserva con el alto de dos renglones (2 × 18 + 4 = 40 px) desde que sale el error,
+ * así nada salta cuando llega a los 0,7 s (Shibukawa; Yujiro).
+ */
+.t4cp-iba { flex: 0 0 100%; min-width: 0; display: flex; align-items: flex-start; }
+.t4cp-iba[data-reserva] { min-height: 40px; }
+.t4cp-iba .t4r-marca { width: auto; height: auto; min-height: 20px; max-width: 100%; flex-wrap: wrap; column-gap: 4px; white-space: normal; border-radius: 10px; padding: 1px 7px; }
+.t4cp-iba .t4r-marca > span { white-space: nowrap; }
 .t4cp[data-marca="mal"] input { border: 2px solid ${C.error}; }
 `;
 
@@ -268,7 +279,11 @@ export function Campo({ id, rotulo, valor, onCambio, marca = null, bloqueado = f
       {(marca || iba != null) && (
         <span className="t4cp-marcas">
           {marca && <Marca marca={marca} />}
-          {iba != null && <span data-iba={id}><Marca marca="era" valor={iba} /></span>}
+          {(marca === "mal" || iba != null) && (
+            <span className="t4cp-iba" data-iba={iba != null ? id : undefined} data-reserva={marca === "mal" ? "" : undefined}>
+              {iba != null && <span className="t4r-marca t4r-nueva" data-marca="era" aria-hidden="true"><span>{MARCA.era}:</span>{" "}<span>{iba}</span></span>}
+            </span>
+          )}
         </span>
       )}
     </div>
