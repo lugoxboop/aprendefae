@@ -138,6 +138,20 @@ export const METODOS_T6_A2 = [
     pista: "Este método estima la pérdida antes de saber qué deuda se va a perder.",
   },
 ];
+/*
+ * La figura de la capa 3 (Mai, enganche B1-B5 §2b; textos nuevos, para
+ * Shoko): una rejilla, los dos métodos por los dos momentos. Al decidirse un
+ * método se llena su fila, siempre con lo correcto: anulación directa,
+ * «Nada» al cerrar y «Gasto» al castigar; provisiones, «Gasto» al cerrar y
+ * «Provisión» al castigar.
+ */
+export const FIGURA_CAPA_3_T6_A2 = {
+  columnas: [{ id: "cierre", texto: "Al cerrar el periodo" }, { id: "castigo", texto: "Al castigar" }],
+  filas: {
+    "anulacion-directa": { cierre: "Nada", castigo: "Gasto" },
+    provisiones: { cierre: "Gasto", castigo: "Provisión" },
+  },
+};
 export const FINAL_CAPA_3_T6_A2 = {
   texto: "En los dos métodos, al castigar, se acredita Cuentas por cobrar – clientes. Lo que cambia es qué se debita y cuándo aparece el gasto.",
   pie: "Basado en el libro, pp. 199-200",

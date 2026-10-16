@@ -29,6 +29,10 @@ import { escalera, elegir } from "./escaleraB5.js";
  * pregunta. No tiene caja: su fila viene llena desde el principio, con el
  * rótulo «Ejemplo» bajo su letra. Solo b y c se deciden, con la escalera de
  * ayuda (escaleraB5.js): cada fila se llena al cerrarse su pregunta.
+ *
+ * B5 de Futaba: los textos que se revelan ya no llevan cifras (están en el
+ * tablero) y solo los lee quien acierta; quien falla dos veces lee la
+ * devolución de su opción (Caja). El del caso a va bajo su fila.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -103,6 +107,16 @@ export default function TresCasos() {
                   <Celda cifra={lleno ? c.entran : null} />
                 </tr>
               );
+            }).flatMap((fila, k) => {
+              /* El ejemplo no tiene caja: su texto (B5 de Futaba) va bajo su fila, a lo ancho de las dos celdas. */
+              const c = CASOS_T6_A4[k];
+              if (!c.ejemplo || !c.revela) return [fila];
+              return [fila, (
+                <tr key={`${c.id}-texto`} data-texto-ejemplo={c.id}>
+                  <td />
+                  <td colSpan={2} style={{ padding: 0, fontFamily: INTER, fontSize: "12px", lineHeight: 1.35, color: COLOR.apagado }}>{c.revela}</td>
+                </tr>
+              )];
             })}
           </tbody>
         </table>

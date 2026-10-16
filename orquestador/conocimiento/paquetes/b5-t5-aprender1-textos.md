@@ -116,3 +116,18 @@ DECISIONES DE SAKUTA (se pueden deshacer):
 8. **Renta fija** — Def.: Da una renta constante, que se pacta en el momento de invertir. Es de dos tipos: con interés o con descuento. · Nota: Aquí, “renta variable” y “renta fija” son nombres de tipos de título, no de cuentas. Cuando la renta le llega a la empresa, sí se anota como un ingreso.
 9. **Renta fija con interés** — Paga un interés fijo durante un periodo determinado. Por ejemplo, el CDT, los bonos y las cédulas hipotecarias, entre otros. El CDT es un certificado de depósito a término.
 10. **Renta fija con descuento** — Su renta es la diferencia entre el valor de compra y el valor de redención. El valor de redención es lo que paga quien emitió el título cuando este vence. Por ejemplo, los títulos de participación, el CERT (certificado de reembolso tributario) y los títulos canjeables, entre otros.
+
+## Enganche B1-B5 (Mai, 15-oct) y B5 de Futaba (final, con las correcciones de Shoko) · manda sobre lo de arriba
+
+Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entregas/futaba-b2-b5-final.md (sección «B5»). Los textos nuevos van para Shoko.
+
+| Pieza | Figura | Al decidir |
+|---|---|---|
+| T5 A1 | dos cajones, «Temporal» y «No temporal» | entra «Paquete A» o «Paquete B» en el suyo |
+
+Textos nuevos (para Shoko): «Temporal» y «No temporal».
+
+- Capa 3 (las 7): la pregunta de la caja solo se ve mientras falta decidir; al decidir sale y quedan las opciones marcadas (✓/✕), la devolución y el texto. La pregunta es el nombre accesible del grupo de opciones (aria-labelledby); cuando sale de la pantalla pasa a una copia oculta.
+- Capa 3: quien acierta ve el texto que se revela; quien falla dos veces ve la devolución de su opción y la figura, pero NO ese texto.
+- **Cajas ya respondidas:** muestran solo la opción elegida con su marca (cumple E4). Vale para la capa 3 de las siete piezas.
+- Nombre accesible del grupo de opciones: T5 A1 «¿Puede ser temporal?»

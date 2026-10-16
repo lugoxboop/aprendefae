@@ -155,6 +155,23 @@ export const VENTAS_T5_A2 = [
     falla: "Los vende a $1.060 y le costaron $1.150: recibe menos de lo que pagó, así que es pérdida.",
   },
 ];
+/*
+ * La figura de la capa 3 (Mai, enganche B1-B5 §2b; decisión del 15-oct: solo
+ * con el escenario simulado de las cajas, sin cifras nuevas): la cuenta T de
+ * Inversiones – títulos. En el DEBE, la compra de cada venta por lo que costó
+ * (la cifra de su caja, con su nombre debajo). Al cerrarse la caja, la venta
+ * la saca por ese mismo costo en el HABER: la inversión sale por lo que costó.
+ * La ganancia o la pérdida es la diferencia que ya dice el texto de la caja.
+ * Sin fechas: las cajas no las traen. Debajo, el pie del escenario simulado.
+ * «DEBE» y «HABER», las palabras publicadas de la T (T6 · A3).
+ */
+export const FIGURA_CAPA_3_T5_A2 = {
+  cuenta: ESCENA_T5_A2.inversiones,
+  debe: "DEBE",
+  haber: "HABER",
+  ventas: VENTAS_T5_A2.map((v) => ({ id: v.id, nombre: v.nombre, costo: v.cifras[0] })),
+  pie: PIE_SIMULADO_T5_A2,
+};
 /* El texto final no cambia y sigue con su pie de las pp. 194-195. */
 export const FINAL_CAPA_3_T5_A2 = {
   texto: "En las dos ventas, la inversión se acredita por lo que costó. Lo que cambia es la diferencia: una vez es ganancia y otra vez es pérdida.",
