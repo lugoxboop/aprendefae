@@ -3,24 +3,24 @@
  * LA REGLA ÚNICA DEL SEGUNDO FALLO (Célula B, decisión de Sakuta para
  * b5-t5-a1 y b5-t6-a1).
  *
- * Tras el segundo fallo, en TODA ficha aparece su acierto sin el «Sí.»
- * inicial y con «No es esa.» delante. Así quien falla dos veces siempre ve la
- * respuesta, sin texto nuevo: el acierto de cada ficha ya la dice.
+ * Tras el segundo fallo, en TODA ficha aparece su acierto. Así quien falla
+ * dos veces siempre ve la respuesta, sin texto nuevo: el acierto de cada
+ * ficha ya la dice.
  *
- * Lote 6d (estándar único de Hacer): los aciertos ya no llevan emoji delante
- * y el resultado tampoco. El veredicto NO sale de este texto: lo da la
- * evaluación (`ok: false`, patrón «segundo») y el componente lo pinta con su
- * estado. Si un acierto no empieza por «Sí. », la regla no sabe qué quitar:
- * falla en voz alta en vez de pintar un texto roto.
+ * Lote 6d-textos (Futaba): los aciertos ya no abren con «Sí.» y esta regla ya
+ * no quita ni pone nada: el acierto sale tal cual, debajo de la pastilla
+ * «Iba aquí». El veredicto NO sale de este texto: lo da la evaluación
+ * (`ok: false`, patrón «segundo») y el componente lo pinta con su estado.
+ * Si un acierto vuelve a abrir con «Sí. », la regla falla en voz alta en vez
+ * de pintar un veredicto que contradice la pastilla.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const INICIO = "Sí. ";
-export const INICIO_SEGUNDO_FALLO = "No es esa. ";
+const VEREDICTO_VIEJO = "Sí. ";
 
 export function segundoFalloDe(acierto) {
-  if (typeof acierto !== "string" || !acierto.startsWith(INICIO)) {
-    throw new Error(`el acierto no empieza por «${INICIO}»: «${String(acierto).slice(0, 40)}»`);
+  if (typeof acierto !== "string" || !acierto || acierto.startsWith(VEREDICTO_VIEJO)) {
+    throw new Error(`el acierto no sirve tal cual tras el segundo fallo: «${String(acierto).slice(0, 40)}»`);
   }
-  return `${INICIO_SEGUNDO_FALLO}${acierto.slice(INICIO.length)}`;
+  return acierto;
 }

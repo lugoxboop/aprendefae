@@ -90,6 +90,8 @@ const sinTexto = (n) => n.textContent.replace(/\s+/g, " ").trim();
 const FUENTE = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/b5-t6-act3.md", import.meta.url), "utf8");
 const FUTABA = FUENTE.slice(FUENTE.indexOf("## (1) Futaba"), FUENTE.indexOf("## (2) Futaba"));
 const CORREGIDAS = FUENTE.slice(FUENTE.indexOf("## (2) Futaba"), FUENTE.indexOf("## (3) Mai"));
+/* Lote 6d-textos (Futaba): las C, A y B de las mesas, pegadas en la sección (6). */
+const L6D = FUENTE.slice(FUENTE.indexOf("## (6) Lote 6d-textos"));
 const textosDeDatos = () => {
   const out = [];
   const recoger = (v, k) => {
@@ -115,13 +117,18 @@ test("★★★ mandan las líneas corregidas: las D con «no hay ningún ingres
   for (const p of PARTES) {
     assert.ok(CORREGIDAS.includes(`\t${p.errores.D}\t`), `${p.id}: la D corregida`);
     assert.match(p.errores.D, /no hay ningún ingreso\.$/);
-    for (const k of ["C", "A"]) assert.ok(FUTABA.includes(`\t${p.errores[k]}\t`), `${p.id} ${k}`);
+    /* Lote 6d-textos: la C y la A son las de la sección (6), según el tipo de asiento; la B, la de su asiento. */
+    const tipoAsiento = p.asiento.some((m) => m.cuenta === CAJA) ? "PAGO" : "REVIVIR";
+    for (const k of ["C", "A"]) assert.ok(L6D.includes(`| ${tipoAsiento} · ${k} | «${p.errores[k]}» |`), `${p.id} ${k}`);
+    assert.ok(L6D.includes(`| asiento ${PARTES.indexOf(p) + 1} · B | «${p.errores.B}» |`), `${p.id} B`);
+    for (const e of p.errores.especificas) assert.ok(L6D.includes(`| asiento ${PARTES.indexOf(p) + 1} · ${e.clave} (${e.valor.toLocaleString("es-CO").replace(/,/g, ".")}) | «${e.texto}» |`), `${p.id} ${e.clave}`);
     assert.ok(FUTABA.includes(`\t${p.hecho} (`), `${p.id}: el enunciado`);
     assert.ok(FUTABA.includes(`\t${p.instruccion}\t`), `${p.id}: la instrucción`);
     assert.ok(p.hecho.startsWith(`${p.fecha}.`), `${p.id}: empieza por su caso`);
   }
-  assert.equal(PARTES[3].errores.B, "Revisa el valor. A Caja entra lo que abonó Pablo Moncayo.");
-  assert.ok(CORREGIDAS.includes(`\t${PARTES[3].errores.B}\t`));
+  /* La B general de la parte 4: la corregida de la (2) la reescribió el lote 6d-textos. */
+  assert.ok(CORREGIDAS.includes("\tRevisa el valor. A Caja entra lo que abonó Pablo Moncayo.\t"), "guarda: la corregida sigue como registro");
+  assert.equal(PARTES[3].errores.B, "A Caja entra solo el abono de Pablo Moncayo, y ese valor no lo es. Míralo en el hecho.");
   assert.deepEqual(D.ESTANTE_T6_ACT3, [CAJA, CLIENTES, PROVISION, GASTO, INGRESOS]);
   assert.ok(!PARTES.some((p) => p.asiento.some((m) => m.cuenta === INGRESOS)), "Ingresos por ventas: solo distractor");
   assert.deepEqual([D.T6_ACT3.dificultad, D.T6_ACT3.fpBase], ["dificil", 50], "decisión de Sakuta");
@@ -184,12 +191,13 @@ test("★★★ cada parte en su pantalla; al acertar, solo la marca; el resumen
 const CASOS = [
   [0, "D", [d(CLIENTES, 180000), hb(PROVISION, 180000), hb(INGRESOS, 0)], "un ingreso (C13)"],
   [0, "D", [d(CLIENTES, 180000), hb(PROVISION, 180000), hb(GASTO, 0)], "la recuperación devuelve el gasto"],
-  [0, "C", [hb(CLIENTES, 180000), d(PROVISION, 180000)], "al revés"],
-  [0, "A", [d(CLIENTES, 180000)], "falta la provisión"],
+  /* Lote 6d-2: la C y la A abren con la cabeza que nombra las cuentas del estudiante (quinta columna, literal). */
+  [0, "C", [hb(CLIENTES, 180000), d(PROVISION, 180000)], "al revés", `Pusiste ${CLIENTES} y ${PROVISION} en el lado contrario.`],
+  [0, "A", [d(CLIENTES, 180000)], "falta la provisión", `Falta ${PROVISION}.`],
   [0, "B", [d(CLIENTES, 100000), hb(PROVISION, 100000)], "otro valor (la parte 1 no tiene B específica)"],
   [1, "D", [d(CAJA, 180000), hb(CLIENTES, 180000), hb(INGRESOS, 0)], "un ingreso (C13)"],
-  [1, "C", [hb(CAJA, 180000), d(CLIENTES, 180000)], "al revés"],
-  [1, "A", [d(CAJA, 180000)], "falta Clientes"],
+  [1, "C", [hb(CAJA, 180000), d(CLIENTES, 180000)], "al revés", `Pusiste ${CAJA} y ${CLIENTES} en el lado contrario.`],
+  [1, "A", [d(CAJA, 180000)], "falta Clientes", `Falta ${CLIENTES}.`],
   [1, "B", [d(CAJA, 100000), hb(CLIENTES, 100000)], "otro valor"],
   [2, "C14", [d(CLIENTES, 100000), hb(PROVISION, 100000)], "solo el abono"],
   [2, "B", [d(CLIENTES, 80000), hb(PROVISION, 80000)], "otra cifra"],
@@ -197,17 +205,18 @@ const CASOS = [
   [3, "B", [d(CAJA, 80000), hb(CLIENTES, 80000)], "los $80.000: la B general corregida"],
   [4, "C14", [d(CLIENTES, 180000), hb(PROVISION, 180000)], "toda la deuda"],
   [4, "B", [d(CLIENTES, 80000), hb(PROVISION, 80000)], "otra cifra"],
-  [4, "C", [hb(CLIENTES, 100000)], "al revés y falta la provisión: C manda sobre A"],
+  [4, "C", [hb(CLIENTES, 100000)], "al revés y falta la provisión: C manda sobre A", `Pusiste ${CLIENTES} en el Haber.`],
 ];
 
 test("★★★ la prioridad D > C > A > B con su texto en el panel, las B específicas (C14, $180.000 en la parte 4) y E4: la mesa del estudiante se queda, con lo correcto junto", async () => {
-  for (const [k, tipo, puestas, nota] of CASOS) {
+  for (const [k, tipo, puestas, nota, cabeza] of CASOS) {
     const p = PARTES[k];
     const { caja, desmontar } = await montar({ items: [p] });
     await armar(caja, puestas);
     assert.equal(caja.querySelector("[data-panel]").dataset.error, tipo, `${p.id}: ${nota}`);
     const esp = p.errores.especificas.find((e) => e.clave === tipo);
-    assert.equal(textoRetro(caja), esp ? esp.texto : tipo === "D" ? M.textoD(p, puestas) : p.errores[tipo], `${p.id} ${tipo}: el texto`);
+    assert.equal(Boolean(cabeza), tipo === "C" || tipo === "A", `${p.id} ${tipo}: la C y la A llevan cabeza`);
+    assert.equal(textoRetro(caja), esp ? esp.texto : tipo === "D" ? M.textoD(p, puestas) : cabeza ? `${cabeza} ${p.errores[tipo]}` : p.errores[tipo], `${p.id} ${tipo}: el texto`);
     comprobarMesaE4(caja, p, puestas, `${p.id} ${tipo}`);
     desmontar();
   }

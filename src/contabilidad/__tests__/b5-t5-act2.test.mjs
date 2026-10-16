@@ -110,7 +110,9 @@ const G_INICIAL = porClave(seccion("## 1 · Inicial", "## 2 "));
 const G_ESTANTE = filas(seccion("## 2 · El estante", "## 3 ")).map((f) => f[0]);
 const G_ROTULOS = porClave(seccion("### 3.1", "### 3.2"));
 const G_ENUNCIADOS = porClave(seccion("### 3.2", "### 3.3"));
-const G_ERRORES = filas(seccion("### 3.3", "## 4 "));
+/* Lote 6d-textos (Futaba): la sección (3) manda sobre la §3.3; por eso va primero y `find` la toma antes. */
+const G_6D = filas(seccion("## (3) Lote 6d-textos", "Segundas frases de la B"));
+const G_ERRORES = [...G_6D, ...filas(seccion("### 3.3", "## 4 "))];
 const errorDe = (n, tipo) => {
   const f = G_ERRORES.find(([p, t]) => p === `p${n}` && t === tipo);
   assert.ok(f, `el paquete no tiene el error ${tipo} de la parte ${n}`);
@@ -121,11 +123,26 @@ const G_ASIENTOS = filas(seccion("Asientos del diario", "## 5 "));
 const G_TUTORIAL = porClave(seccion("## 5 · Tutorial", "## 6 "));
 const G_CIFRAS = new Set(filas(seccion("## 6 · Cifras", "## (1)")).map((f) => f[0]));
 /* Lote 6a · E3: en las ventas (partes 2 y 4), la B general nombra las cuentas con el valor errado. */
-const G_E3 = Object.fromEntries(filas(seccion("## (2) Lote 6a · E3", null)).filter((f) => f[0] !== "Cuenta").map((f) => [f[0], f[1]]));
+const G_E3 = Object.fromEntries([
+  ...filas(seccion("## (2) Lote 6a · E3", "## (3) Lote 6d-textos")),
+  /* Lote 6d-textos: las segundas frases nuevas mandan sobre las de la (2). */
+  ...filas(seccion("Segundas frases de la B", null)),
+].filter((f) => f[0] !== "Cuenta").map((f) => [f[0], f[1]]));
+/* Lote 6d-2 (Futaba): la cabeza de la C y de la A nombra las cuentas del estudiante, en el orden del asiento. */
+const enLista = (xs) => (xs.length < 2 ? xs[0] : `${xs.slice(0, -1).join(", ")} ${/^h?i/i.test(xs.at(-1)) ? "e" : "y"} ${xs.at(-1)}`);
+const cabezaC = (n, puestas) => {
+  const reves = parte(n).asiento.filter((e) => puestas.some((p) => p.cuenta === e.cuenta && p.lado !== e.lado));
+  if (reves.length > 1) return `Pusiste ${enLista(reves.map((e) => e.cuenta))} en el lado contrario.`;
+  return `Pusiste ${reves[0].cuenta} en el ${puestas.find((p) => p.cuenta === reves[0].cuenta).lado === "debe" ? "Debe" : "Haber"}.`;
+};
+const cabezaA = (n, puestas) => {
+  const faltan = parte(n).asiento.map((e) => e.cuenta).filter((c) => !puestas.some((p) => p.cuenta === c));
+  return `${faltan.length > 1 ? "Faltan" : "Falta"} ${enLista(faltan)}.`;
+};
 const bE3 = (n, cuentas) => {
   if (n !== 2 && n !== 4) return errorDe(n, "B");
   const orden = parte(n).asiento.map((e) => e.cuenta).filter((c) => cuentas.includes(c));
-  const cabeza = orden.length > 1 ? `Revisa los valores de ${orden.slice(0, -1).join(", ")} ${/^h?i/i.test(orden.at(-1)) ? "e" : "y"} ${orden.at(-1)}.` : `Revisa el valor de ${orden[0]}.`;
+  const cabeza = orden.length > 1 ? `No cuadran los valores de ${orden.slice(0, -1).join(", ")} ${/^h?i/i.test(orden.at(-1)) ? "e" : "y"} ${orden.at(-1)}.` : `No cuadra el valor de ${orden[0]}.`;
   assert.ok(G_E3[orden[0]], `el paquete no tiene la segunda frase de ${orden[0]}`);
   return `${cabeza} ${G_E3[orden[0]]}`;
 };
@@ -133,7 +150,8 @@ const bE3 = (n, cuentas) => {
 test("guarda: el paquete se leyó entero, y una fila inventada no aparece", () => {
   assert.equal(G_ESTANTE.length, 6);
   for (let n = 1; n <= 4; n++) assert.ok(G_ROTULOS[`p${n}`] && G_ENUNCIADOS[`p${n}`], `parte ${n}`);
-  assert.equal(G_ERRORES.length, 18, "4 + 5 + 4 + 5 devoluciones");
+  assert.equal(G_ERRORES.length - G_6D.length, 18, "§3.3: 4 + 5 + 4 + 5 devoluciones");
+  assert.equal(G_6D.length, 15, "(3) lote 6d-textos: C, A y B de las cuatro partes, y las tres B específicas");
   assert.equal(G_ASIENTOS.length, 5);
   assert.ok(G_CIFRAS.size >= 18 && G_CIFRAS.has("1.725.000") && !G_CIFRAS.has("999"));
   assert.equal(G_ROTULOS.p9, undefined);
@@ -250,7 +268,8 @@ test("★★★ prioridad D > C > A > B en las cuatro partes, cada una con su te
       assert.equal(caja.querySelector("[data-panel]").dataset.error, tipo, `parte ${n}: ${tipo}`);
       /* La D nombra la cuenta que sobra y sigue con el texto del paquete (Sakuta, calidad 1). */
       const esperado = tipo === "D" ? textoD({ asiento: ok, errores: { D: errorDe(n, "D"), razones: parte(n).errores.razones } }, puestas)
-        : tipo === "B" ? bE3(n, [ok[0].cuenta]) : errorDe(n, tipo);
+        : tipo === "B" ? bE3(n, [ok[0].cuenta])
+        : tipo === "C" ? `${cabezaC(n, puestas)} ${errorDe(n, "C")}` : `${cabezaA(n, puestas)} ${errorDe(n, "A")}`;
       assert.equal(textoRetro(caja), esperado, `parte ${n}: texto ${tipo}`);
       desmontar();
     }
@@ -264,8 +283,8 @@ test("★★★ C7, los dos caminos: cuadrar sin la ganancia → A (la explica);
     /* Camino 1: Caja y Inversiones – títulos por lo recibido, cuadra, sin la ganancia/pérdida. */
     let m = await montar({ items: [parte(n)] });
     await armar(m.caja, [al("Caja", "debe", recibido), al(inv.cuenta, "haber", recibido)]);
-    assert.equal(textoRetro(m.caja), errorDe(n, "A"), `parte ${n}: cuadrar sin la ${n === 2 ? "ganancia" : "pérdida"} → A`);
-    assert.match(textoRetro(m.caja), /no por lo que se recibió/);
+    assert.equal(textoRetro(m.caja), `Falta ${otra}. ${errorDe(n, "A")}`, `parte ${n}: cuadrar sin la ${n === 2 ? "ganancia" : "pérdida"} → A, que la nombra`);
+    assert.match(textoRetro(m.caja), /por lo que costaron/);
     m.desmontar();
     /* Camino 2: pone la ganancia/pérdida, pero Inversiones – títulos por lo recibido. */
     m = await montar({ items: [parte(n)] });
@@ -282,7 +301,7 @@ test("★★★ C7, los dos caminos: cuadrar sin la ganancia → A (la explica);
     m = await montar({ items: [parte(n)] });
     await armar(m.caja, ok.map((e) => (e.cuenta === otra || e.cuenta === "Caja" ? { ...e, valor: e.valor + 1000 } : e)));
     assert.equal(textoRetro(m.caja), bE3(n, ["Caja", otra]));
-    assert.match(textoRetro(m.caja), n === 2 ? /^Revisa los valores de Caja e Ingresos financieros/ : /^Revisa los valores de Caja y Gastos financieros/);
+    assert.match(textoRetro(m.caja), n === 2 ? /^No cuadran los valores de Caja e Ingresos financieros/ : /^No cuadran los valores de Caja y Gastos financieros/);
     m.desmontar();
   }
 });
@@ -442,13 +461,18 @@ test("★★★ ninguna cifra del estante, del diario ni de los textos sale de l
     if (typeof v === "string") textos.push(v.replace(/asiento \d/g, "asiento"));
     else if (typeof v === "number") textos.push(String(v).replace(/\B(?=(\d{3})+(?!\d))/g, "."));
     else if (Array.isArray(v)) v.forEach(recoger);
-    /* El id y el rótulo («Asiento 2») numeran las partes: no son cifras del libro. */
-    else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) { if (k !== "id" && k !== "rotulo") recoger(x); }
+    /* El id y el rótulo («Asiento 2») numeran las partes: no son cifras del libro. El `valor` de una B
+       específica (lote 6d-textos) es la cifra errada que la dispara, no un texto: se vigila aparte, abajo. */
+    else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) { if (k !== "id" && k !== "rotulo" && !(k === "valor" && "clave" in v)) recoger(x); }
   };
   recoger([D.PARTES_T5_ACT2, D.COMPRA_T5_ACT2, D.ALT_TUTORIAL_T5_ACT2, D.ALT_T5_ACT2, D.T5_ACT2.objetivo]);
   const todas = textos.flatMap(cifrasDe);
   assert.ok(todas.length > 60, `se revisaron ${todas.length} cifras`);
   assert.deepEqual([...new Set(todas.filter((c) => !G_CIFRAS.has(c)))], []);
+  /* Las cifras que disparan las B específicas salen del hecho: el interés del año, el de un mes y el del trimestre sobre todo lo comprado. */
+  const anual = (2000000 * 24) / 100;
+  assert.deepEqual(parte(1).errores.especificas.map((e) => e.valor), [anual, anual / 12]);
+  assert.deepEqual(parte(3).errores.especificas.map((e) => e.valor), [anual / 4]);
   /* Las cifras de las cuentas cuadran: el libro no descuadra. */
   for (const p of [...PARTES, D.COMPRA_T5_ACT2]) {
     const t = L.totalesDe(p.asiento);

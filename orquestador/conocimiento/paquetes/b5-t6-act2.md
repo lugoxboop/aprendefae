@@ -346,3 +346,20 @@ Texto alternativo: «Actividad de registro. Hay dos hechos de la provisión de E
 Dificultad: difícil, 50 FP (sugerencia de Futaba y Shoko; lo decide KAEDE con la regla nueva). Fila del servidor: la 0078.
 
 PARA SHOKO (textos nuevos de la mecánica, sin revisar): el contador «Paso N de 5»; los rótulos «Pregunta 1», «Pregunta 2» y «Pregunta 3»; el botón «Siguiente» (en los asientos y en las preguntas, en lugar de «Siguiente asiento»); el botón «Comprobar» de las preguntas (el publicado de T3); el nombre del campo para el lector de pantalla, «Tu respuesta»; y la cuarta línea de «¿Cómo se juega?»: «Entre los asientos, escribe la cifra que se pide. También tienes un solo intento.»
+
+
+## (6) Lote 6d-textos · las devoluciones nombran el error probable (Futaba, 16-oct; pegado tal cual)
+
+Manda sobre la (1) y la (5) en lo que nombra. La C y la A de los datos son solo el porqué: la primera frase la arma la mesa con las cuentas que puso el estudiante, en el orden del asiento: «Pusiste {X} en el Debe.» / «Pusiste {X} en el Haber.», o «Pusiste {X} y {Y} en el lado contrario.»; «Falta {Y}.» / «Faltan {Y} y {Z}.». Las D no cambian.
+
+| Lugar | Texto literal |
+|---|---|
+| asiento 1 · C | «Con el castigo bajan las dos: la provisión y lo que debe Pablo Moncayo.» |
+| asiento 1 · A | «El castigo mueve la provisión y la deuda de Pablo Moncayo.» |
+| asiento 1 · C15 (148.800) | «Usaste lo que tenía la provisión, $148.800. El castigo es por toda la deuda de Pablo Moncayo, $180.000, aunque la provisión no alcance.» |
+| asiento 1 · B | «Ese valor no es lo que debía Pablo Moncayo, y el castigo va por toda su deuda. Míralo en el hecho.» |
+| asiento 2 · C | «Como en diciembre de 2007: el gasto sube, y la provisión también sube.» |
+| asiento 2 · A | «Al ajustar, se anota el gasto y sube la provisión.» |
+| asiento 2 · C12 (153.400) | «Pusiste solo lo que pide el análisis, pero en marzo la provisión quedó corta. El registro también cubre lo que faltó: $153.400 + $31.200 = $184.600.» |
+| asiento 2 · B | «Ese valor no es lo que pide el análisis más lo que faltó en marzo. Haz esa suma.» |
+| pregunta 1 · general | «Ese valor no sale de restar la provisión a lo que deben los clientes. Haz esa resta.» |

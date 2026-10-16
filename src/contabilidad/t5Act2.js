@@ -19,9 +19,13 @@ import { evaluarParte, totalesDe, puntuar, parteDeItem } from "./cierreConMesa.j
 export function evaluarParteT5Act2(parte, puestas) {
   /* La C7 en dos ramas (entrega 1): con lo recibido (el valor de Caja), la C7; con cualquier otro valor que no sea el costo, la C7-otro. */
   const recibido = parte.asiento.find((e) => e.cuenta === CAJA)?.valor;
-  const especificas = parte.errores.C7
-    ? [{ cuenta: INVERSIONES, valor: recibido, clave: "C7", texto: parte.errores.C7 }, { cuenta: INVERSIONES, clave: "C7-otro", texto: parte.errores.C7otro }]
-    : [];
+  /* Las B específicas de los datos (lote 6d-textos: los asientos 1 y 3) van primero; después, la C7. */
+  const especificas = [
+    ...(parte.errores.especificas ?? []),
+    ...(parte.errores.C7
+      ? [{ cuenta: INVERSIONES, valor: recibido, clave: "C7", texto: parte.errores.C7 }, { cuenta: INVERSIONES, clave: "C7-otro", texto: parte.errores.C7otro }]
+      : []),
+  ];
   return evaluarParte({ ...parte, errores: { ...parte.errores, especificas } }, puestas);
 }
 

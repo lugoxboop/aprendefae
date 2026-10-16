@@ -75,12 +75,12 @@ export const PARTES_T6_ACT2 = [
     asiento: [d(PROVISION, 180000), h(CLIENTES, 180000)],
     errores: {
       D: "Sobra una cuenta. Este castigo solo mueve la provisión y Cuentas por cobrar – clientes. Todo el castigo va contra la provisión, aunque sea mayor que ella. Y aquí no entra plata.",
-      C: "Están al revés. Con el castigo, la provisión baja: va al Debe. Cuentas por cobrar – clientes también baja: va al Haber.",
-      A: "Falta una cuenta. El castigo mueve dos: la provisión y Cuentas por cobrar – clientes.",
+      C: "Con el castigo bajan las dos: la provisión y lo que debe Pablo Moncayo.",
+      A: "El castigo mueve la provisión y la deuda de Pablo Moncayo.",
       especificas: [
-        { valor: 148800, clave: "C15", texto: "Revisa el valor. Se castiga toda la deuda, $180.000, aunque la provisión sea menor. Así lo hace el libro." },
+        { valor: 148800, clave: "C15", texto: "Usaste lo que tenía la provisión, $148.800. El castigo es por toda la deuda de Pablo Moncayo, $180.000, aunque la provisión no alcance." },
       ],
-      B: "Revisa el valor. Mira de cuánto es la deuda de Pablo Moncayo.",
+      B: "Ese valor no es lo que debía Pablo Moncayo, y el castigo va por toda su deuda. Míralo en el hecho.",
       /* Las razones por cuenta de la D (Futaba, entrega 1): detrás de «Sobra X.» o «No va X: en su lugar va Y.». */
       razones: {
         [GASTO]: "El gasto se anotó en diciembre, al crear la provisión. Lo que le faltó se suma a la provisión del año siguiente.",
@@ -97,14 +97,14 @@ export const PARTES_T6_ACT2 = [
     asiento: [d(GASTO, 184600), h(PROVISION, 184600)],
     errores: {
       D: "Sobra una cuenta. Este hecho solo mueve el gasto y la provisión, como en diciembre de 2007.",
-      C: "Están al revés. Como en diciembre de 2007, el gasto va al Debe y la provisión, que sube, va al Haber.",
-      A: "Falta una cuenta. Este hecho mueve dos: el gasto y la provisión.",
+      C: "Como en diciembre de 2007: el gasto sube, y la provisión también sube.",
+      A: "Al ajustar, se anota el gasto y sube la provisión.",
       especificas: [
-        { valor: 153400, clave: "C12", texto: "Revisa el valor. A lo que pide el análisis se le suma lo que faltó el año anterior: $153.400 + $31.200 = $184.600." },
+        { valor: 153400, clave: "C12", texto: "Pusiste solo lo que pide el análisis, pero en marzo la provisión quedó corta. El registro también cubre lo que faltó: $153.400 + $31.200 = $184.600." },
         /* Lote 6b: la T8 de a5, ahora como B específica del asiento (Futaba). */
         { valor: 122200, clave: "T8", texto: "Lo que faltó se suma, no se resta. Se resta solo cuando la provisión se pasó." },
       ],
-      B: "Revisa el valor. Suma lo que pide el análisis y lo que faltó en marzo.",
+      B: "Ese valor no es lo que pide el análisis más lo que faltó en marzo. Haz esa suma.",
       razones: {
         [CLIENTES]: "Crear la provisión del año no cambia lo que deben los clientes: nadie paga y no se castiga ninguna deuda.",
         [CAJA]: "La provisión es un cálculo: no entra ni sale plata.",
@@ -133,7 +133,7 @@ export const PREGUNTAS_T6_ACT2 = [
       { valor: 2655000, clave: "T1", texto: "Falta restar la provisión. El valor neto es lo que deben los clientes menos la provisión." },
       { valor: 2803800, clave: "T2", texto: "La provisión no se suma: se resta de Cuentas por cobrar – clientes." },
     ],
-    "Revisa la cuenta: a lo que deben los clientes se le resta la provisión.",
+    "Ese valor no sale de restar la provisión a lo que deben los clientes. Haz esa resta.",
     /* Con el bloque «En el estado de situación financiera», «El valor neto» vacío y encendido. */
     { bloque: "estado" }),
   pregunta(2,

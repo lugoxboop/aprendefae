@@ -453,10 +453,15 @@ test("★★★ C7-5: «no pagará más» pasa a «ya no puede pagar más» en l
   const t = filas(seccion("### C7-5"));
   assert.equal(t.length, 7);
   const fragmentos = (celda) => celda.replace(/^«|»$/g, "").split("…").map((x) => x.trim()).filter(Boolean);
+  /* Lote 6d-textos (Futaba): la B·C14 de la parte 5 se reescribió entera; manda su literal nuevo, que conserva «ya no puede pagar más». */
+  const reescritas = {
+    "contabilidadT6Act3.js · B·C14 de la parte 5": "Reviviste toda la deuda. Como Pablo Moncayo ya no puede pagar más, se revive solo lo que pagó.",
+  };
   for (const [archivo, donde, hoy, queda] of t) {
     if (!archivo.endsWith(".js")) continue;
     const fuente = leer(`src/data/${archivo}`);
-    for (const f of fragmentos(queda)) assert.ok(fuente.includes(f), `${archivo} · ${donde}: «${f}»`);
+    const nueva = reescritas[`${archivo} · ${donde}`];
+    for (const f of nueva ? [nueva] : fragmentos(queda)) assert.ok(fuente.includes(f), `${archivo} · ${donde}: «${f}»`);
     for (const f of fragmentos(hoy)) assert.ok(!fuente.includes(f), `${archivo} · ${donde}: ya no dice «${f}»`);
   }
   /* Los paquetes: solo la tabla de la entrega nombra la cadena vieja, y siempre junto a la nueva. */

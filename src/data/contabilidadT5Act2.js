@@ -61,17 +61,19 @@ const NO_SE_VENDE = (que) => `Aquí no se vende ningún título, así que no hay
 /*
  * E3 (lote 6a): en las dos ventas, la B general nombra la cuenta con el valor errado
  * (contabilidad/cierreConMesa.js) y sigue con su segunda frase (Futaba, PASA de Shoko). Antes era una
- * sola, «Revisa los valores. Compara lo que recibió con lo que costaron los títulos.». Si la errada es
+ * sola frase general, sin cuenta. Si la errada es
  * Inversiones – títulos, manda antes la C7.
  */
-const SEGUNDA_CAJA = "Caja recibe lo que le pagaron por la venta. Míralo en el hecho.";
+const SEGUNDA_CAJA = "A Caja entra lo que le pagaron por la venta, no lo que costaron los títulos.";
 
 /* ═══════════ LAS CUATRO PARTES: UN ASIENTO POR PANTALLA ═══════════ */
 
 /*
  * `asiento` es lo correcto, en el orden del diario. `errores` va por la
  * prioridad D > C > A > B; en las ventas, `C7` es la B que se muestra cuando
- * Inversiones – títulos lleva un valor que no es su costo.
+ * Inversiones – títulos lleva un valor que no es su costo. La C y la A de los
+ * datos son solo el porqué: la primera frase, con las cuentas del estudiante,
+ * la arma la mesa (lote 6d-2, contabilidad/cierreConMesa.js).
  */
 export const PARTES_T5_ACT2 = [
   {
@@ -83,9 +85,14 @@ export const PARTES_T5_ACT2 = [
     asiento: [d(CAJA, 120000), h(INTERESES, 120000)],
     errores: {
       D: "Este hecho solo mueve Caja e Ingresos por intereses. El interés es un ingreso: no cambia la inversión.",
-      C: "Están al revés. El interés entra a Caja, que sube: va al Debe. El ingreso va al Haber.",
-      A: "Falta una cuenta. El interés entra a Caja y, a la vez, es un ingreso.",
-      B: "Revisa el valor. El interés se calcula sobre $2.000.000, al 24 % al año, por un solo trimestre.",
+      C: "El interés entra a Caja, que sube. Y es un ingreso, que sube por el Haber.",
+      A: "El interés entra a Caja y, a la vez, es un ingreso.",
+      /* Las B específicas (lote 6d-textos, Futaba): solo con ese valor exacto. */
+      especificas: [
+        { valor: 480000, clave: "B-anual", texto: "Pusiste el interés de todo el año. Aquí llega solo el de un trimestre: tres de los doce meses." },
+        { valor: 40000, clave: "B-mes", texto: "Pusiste el interés de un solo mes. Aquí llega el de un trimestre: tres meses." },
+      ],
+      B: "Ese no es el interés de un trimestre sobre $2.000.000 al 24 % al año. Haz la cuenta por tres meses.",
       razones: {
         [BANCOS]: "En el ejemplo, el interés entra a Caja. Bancos solo se movió el día de la compra.",
         [INVERSIONES]: "Cobrar el interés no cambia la inversión: los títulos siguen siendo los mismos.",
@@ -103,16 +110,16 @@ export const PARTES_T5_ACT2 = [
     asiento: [d(CAJA, 1725000), h(INVERSIONES, 1500000), h(GANANCIA, 225000)],
     errores: {
       D: "Sobra una cuenta. Esta venta solo mueve Caja, Inversiones – títulos y la ganancia. No hay pérdida, porque vendió por más de lo que costaron. Y aquí no entran Bancos ni el interés.",
-      C: "Hay cuentas al revés. Caja sube y va al Debe. Inversiones – títulos baja y la ganancia es un ingreso: los dos van al Haber.",
-      A: "Falta una cuenta. Esta venta mueve tres: Caja, Inversiones – títulos y la ganancia. Inversiones – títulos se acredita por lo que costaron los títulos, no por lo que se recibió. Por eso queda una diferencia, y esa diferencia es la ganancia.",
+      C: "Caja sube porque recibe lo de la venta. Inversiones – títulos baja porque salen títulos, y la ganancia es un ingreso.",
+      A: "Inversiones – títulos baja por lo que costaron. Lo que recibió de más va a la ganancia.",
       C7: "Inversiones – títulos no se acredita por lo que se recibió. En el ejemplo del libro, se acredita por lo que costaron: 1.875 × $800 = $1.500.000. La diferencia, $225.000, es la ganancia.",
       /* La C7 en dos ramas (entrega 1): `C7` si lleva lo recibido; `C7otro` con cualquier otro valor que no sea el costo. */
       C7otro: "Inversiones – títulos baja por lo que costaron los títulos que vendió. Son 1.875 × $800 = $1.500.000. Lo demás que recibió es la ganancia.",
       /* La B general, con la cuenta nombrada (E3): queda `B` solo como respaldo si alguna cuenta no tuviera segunda frase. */
-      B: "Revisa los valores.",
+      B: "Algún valor no cuadra con el hecho: lo recibido, el costo o la diferencia.",
       segunda: {
         [CAJA]: SEGUNDA_CAJA,
-        [GANANCIA]: "La ganancia es la diferencia entre lo que recibió y lo que costaron los títulos.",
+        [GANANCIA]: "La ganancia no es todo lo recibido: es lo que sobra después de restar lo que costaron los títulos.",
       },
       razones: {
         [BANCOS]: "En el ejemplo, lo de la venta entra a Caja. Bancos solo se movió el día de la compra.",
@@ -130,9 +137,12 @@ export const PARTES_T5_ACT2 = [
     asiento: [d(CAJA, 30000), h(INTERESES, 30000)],
     errores: {
       D: "Este hecho solo mueve Caja e Ingresos por intereses. Es igual que en agosto.",
-      C: "Están al revés. Como en agosto, Caja va al Debe y el ingreso va al Haber.",
-      A: "Falta una cuenta. El interés entra a Caja y, a la vez, es un ingreso.",
-      B: "Revisa el valor. El interés se calcula sobre los títulos que quedan, al 24 % al año, por un solo trimestre.",
+      C: "Como en agosto: Caja recibe el interés, que es un ingreso.",
+      A: "El interés entra a Caja y, a la vez, es un ingreso.",
+      especificas: [
+        { valor: 120000, clave: "B-sin-vender", texto: "Calculaste sobre $2.000.000, pero ya vendió el 75 %. El interés de noviembre es sobre los $500.000 que quedan." },
+      ],
+      B: "Ese no es el interés de un trimestre sobre los $500.000 que quedan. Haz la cuenta por tres meses.",
       razones: {
         [BANCOS]: "Como en agosto, el interés llega a Caja.",
         [INVERSIONES]: "Cobrar el interés no cambia la inversión: siguen los mismos 625 títulos.",
@@ -150,14 +160,14 @@ export const PARTES_T5_ACT2 = [
     asiento: [d(CAJA, 468750), d(PERDIDA, 31250), h(INVERSIONES, 500000)],
     errores: {
       D: "Sobra una cuenta. Esta venta solo mueve Caja, Inversiones – títulos y la pérdida. No hay ganancia, porque vendió por menos de lo que costaron. Y aquí no entran Bancos ni el interés, que se anota aparte.",
-      C: "Hay cuentas al revés. La pérdida va al Debe, junto a Caja. Inversiones – títulos baja y va al Haber.",
-      A: "Falta una cuenta. Esta venta mueve tres: Caja, Inversiones – títulos y la pérdida. Inversiones – títulos se acredita por lo que costaron los títulos, no por lo que se recibió. Por eso queda una diferencia, y esa diferencia es la pérdida.",
+      C: "Caja sube con lo que recibe. La pérdida es un gasto, y la inversión baja porque salen títulos.",
+      A: "Inversiones – títulos se acredita por lo que costaron; lo que faltó para llegar a ese costo va a la pérdida.",
       C7: "Inversiones – títulos no se acredita por lo que se recibió. En el ejemplo del libro, se acredita por lo que costaron: 625 × $800 = $500.000. La diferencia, $31.250, es la pérdida.",
       C7otro: "Inversiones – títulos baja por lo que costaron los títulos que vendió. Son 625 × $800 = $500.000. Lo que le faltó para llegar a ese costo es la pérdida.",
-      B: "Revisa los valores.",
+      B: "Algún valor no cuadra con el hecho: lo recibido, el costo o la diferencia.",
       segunda: {
         [CAJA]: SEGUNDA_CAJA,
-        [PERDIDA]: "La pérdida es la diferencia entre lo que costaron los títulos y lo que recibió.",
+        [PERDIDA]: "La pérdida no es todo el costo: es lo que le faltó a lo recibido para llegar a él.",
       },
       razones: {
         [BANCOS]: "Como en agosto, lo de la venta entra a Caja.",

@@ -115,7 +115,20 @@ const IDS = ["socio", "trabajador", "particular", "prestamo-cliente", "venta-mer
 const RESPUESTA = { otra: "Otra", "clientes/debita": "Clientes → Se debita", "clientes/acredita": "Clientes → Se acredita" };
 const clave = (f) => (f.lado ? `${f.cuenta}/${f.lado}` : f.cuenta);
 /* Lote 6d (sin emojis como íconos): todos los aciertos van sin emoji; el bloque antepone «Correcto.» por el estado, no por el texto. */
-const aciertoVisto = (id) => `Correcto. ${GUIA_ACIERTOS[id][0]}`;
+/* Lote 6d-textos (Futaba; nota al final del paquete): el acierto pierde «Sí. » delante; el resto queda letra por letra. */
+const sinSi = (t) => {
+  assert.ok(t.startsWith("Sí. "), `la tabla del paquete abre con «Sí. »: «${t}»`);
+  assert.ok(GUIA.includes("pierden «Sí. » delante"), "el paquete guarda la regla del lote 6d-textos");
+  return t.slice("Sí. ".length);
+};
+const aciertoVisto = (id) => `Correcto. ${sinSi(GUIA_ACIERTOS[id][0])}`;
+/* El segundo fallo (lote 6d-textos): la columna de Futaba sin el «No es esa. » de delante, que es el acierto tal cual. */
+const segundoVisto = (id) => {
+  const t = GUIA_SEGUNDO[id][0];
+  assert.ok(t.startsWith("No es esa. "), `${id}: la columna del paquete abre con «No es esa. »`);
+  return t.slice("No es esa. ".length);
+};
+const AVISO_FALLO = "La ficha volvió. Lee la pista y pruébala en otro cajón.";
 /* Los dos cajones que no son el de la ficha, en el orden del estante. */
 const OPCIONES = [["otra", null], ["clientes", "debita"], ["clientes", "acredita"]];
 const malos = (f) => OPCIONES.filter(([cc, ll]) => !(cc === f.cuenta && ll === f.lado));
@@ -164,7 +177,7 @@ test("★★★ E5: al primer fallo, con CADA cajón equivocado, se ve la pista 
       assert.equal(p.dataset.retro, "mal", `${id}: la pista va en el bloque de error`);
       assert.equal(p.querySelector("[data-lector]").textContent.trim(), "Incorrecto.", `${id}: el lector dice «Incorrecto.»`);
       assert.ok(parseFloat(p.querySelector("[data-devolucion]").style.fontSize) >= 12, `${id}: la pista, a 12 px como mínimo`);
-      assert.equal(m.caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
+      assert.equal(m.caja.querySelector("[data-fallo]").textContent, AVISO_FALLO);
       assert.equal(botonAvanzar(m.caja), null, `${id}: con la pista se espera el reintento`);
       m.desmontar();
     }
@@ -189,12 +202,12 @@ test("★★★ E5: una ficha acertada al primer intento nunca muestra su pista"
 test("★★★ E5: «abona» pasa a «paga» en la ficha del pago y en su acierto; ningún texto de b5-t6-a1 nombra el abono", async () => {
   const f = ficha("pago");
   assert.equal(f.texto, "Un cliente paga una parte de lo que debe.");
-  assert.equal(f.acierto, "Sí. Baja: se acredita. Lo que pagó ya no lo debe.", "sin emoji: la norma de diseño nueva");
+  assert.equal(f.acierto, "Baja: se acredita. Lo que pagó ya no lo debe.", "sin emoji ni «Sí.»: lotes 6d y 6d-textos");
   const m = await montar(["pago"]);
   assert.equal(m.caja.querySelector('[data-ficha="pago"]').textContent, "Un cliente paga una parte de lo que debe.");
   await marcar(m.caja, "otra");
   await marcar(m.caja, "clientes", "debita");
-  assert.equal(devolucion(m.caja), "No es esa. Baja: se acredita. Lo que pagó ya no lo debe.");
+  assert.equal(devolucion(m.caja), "Baja: se acredita. Lo que pagó ya no lo debe.");
   m.desmontar();
   for (const x of D.FICHAS_T6_ACT1) for (const k of ["texto", "acierto", "pista"]) assert.ok(!/abon/i.test(x[k]), `${x.id}.${k}: «${x[k]}»`);
 });
@@ -213,7 +226,8 @@ test("★★★ regla única: tras el segundo fallo, TODA ficha muestra la colum
       assert.equal(devolucion(m.caja), GUIA_PISTAS[id][0], `${id}: primero, la pista`);
       await marcar(m.caja, "clientes", f.lado === "debita" ? "acredita" : "debita");
     }
-    assert.equal(devolucion(m.caja), GUIA_SEGUNDO[id][0], id);
+    assert.equal(devolucion(m.caja), segundoVisto(id), id);
+    assert.equal(segundoVisto(id), sinSi(GUIA_ACIERTOS[id][0]), `${id}: tras el segundo fallo, el acierto tal cual`);
     assert.ok(!m.caja.textContent.includes(f.pista), `${id}: tras el segundo fallo, la pista ya no se ve`);
     /* La respuesta está en el texto: la cuenta, y en Clientes el lado. */
     const t = devolucion(m.caja);
@@ -240,7 +254,7 @@ test("★★★ el préstamo a un cliente: quien se guíe por la palabra «clien
     assert.match(m.caja.querySelector('[data-ficha="prestamo-cliente"]').textContent, /cliente/i);
     await marcar(m.caja, "clientes", lado);
     assert.equal(devolucion(m.caja), GUIA_PISTAS["prestamo-cliente"][0], `prestamo-cliente con «${lado}»`);
-    assert.equal(m.caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
+    assert.equal(m.caja.querySelector("[data-fallo]").textContent, AVISO_FALLO);
     await marcar(m.caja, "otra");
     assert.equal(devolucion(m.caja), aciertoVisto("prestamo-cliente"));
     m.desmontar();
@@ -251,7 +265,7 @@ test("★★★ tras un reintento acertado queda solo el acierto; el aviso, solo
   const { caja, desmontar } = await montar(["pago"]);
   assert.equal(Boolean(caja.querySelector("[data-fallo]")), false);
   await marcar(caja, "clientes", "debita");
-  assert.equal(caja.querySelector("[data-fallo]").textContent, "La ficha no se colocó.");
+  assert.equal(caja.querySelector("[data-fallo]").textContent, AVISO_FALLO);
   await marcar(caja, "clientes", "acredita");
   assert.equal(Boolean(caja.querySelector("[data-fallo]")), false);
   assert.equal(caja.querySelectorAll('[role="status"]').length, 1);
@@ -262,7 +276,9 @@ test("★★★ tras un reintento acertado queda solo el acierto; el aviso, solo
 
 test("★★ lote 6d: los datos van sin emoji y el veredicto sale del estado; la devolución, en una región viva (role=status); la pista, de 20 palabras como mucho", async () => {
   for (const f of D.FICHAS_T6_ACT1) {
-    assert.ok(f.acierto.startsWith("Sí. "), f.id);
+    /* Lote 6d-textos: el acierto ya no abre con un veredicto. */
+    assert.ok(!/^Sí\b/.test(f.acierto), `${f.id}: el acierto abre con «Sí»`);
+    for (const k of ["acierto", "pista"]) assert.ok(!/Vas bien:|No es esa\./.test(f[k]), `${f.id}.${k}`);
     assert.ok(!/[\u2705\u274C]/.test(f.acierto), `${f.id}: el acierto lleva emoji`);
     assert.ok(!/^(✅|❌)/.test(f.pista), `${f.id}: la pista no lleva veredicto`);
     assert.ok(f.pista.split(/\s+/).length <= 20, `${f.id}: la pista pasa de 20 palabras`);

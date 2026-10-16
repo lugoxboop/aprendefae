@@ -27,7 +27,7 @@ export function sortearT6Act1(barajar, total = T6_ACT1.porPartida) {
  * cobrar». `intento` es 1 o 2. Al primer fallo, la PISTA de la ficha (la
  * escalera de ayuda de la célula, tema6/escaleraB5.js): la misma con cualquier
  * cajón, sin emoji. En el segundo fallo manda la regla única de la célula: el
- * acierto de la ficha, con «No es esa.» delante, en TODAS las fichas.
+ * acierto de la ficha, tal cual, en TODAS las fichas.
  */
 export function evaluarT6Act1(ficha, marcado, intento = 1) {
   const cuentaOk = marcado.cuenta === ficha.cuenta;

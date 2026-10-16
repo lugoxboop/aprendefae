@@ -370,6 +370,21 @@ test("★★ al pasar de casilla la página se mueve lo justo para ver la casill
   }
 });
 
+test("★★★ lote 6d-textos: cada casilla trae su acierto literal (sección 4 del paquete) y se ve debajo de «Correcto»", async () => {
+  assert.equal(CASILLAS.length, 8);
+  for (const c of CASILLAS) assert.equal(c.acierto, cambio(`Casilla ${c.id}`, "Acierto")?.[0], `casilla ${c.id}: el acierto del paquete`);
+  const { caja, desmontar } = await montar();
+  for (const c of CASILLAS) {
+    await tocar(opcion(caja, correcta(c)));
+    const status = caja.querySelector('[role="status"]');
+    assert.equal(status.dataset.retro, "ok", `casilla ${c.id}: el bloque de acierto`);
+    assert.equal(status.querySelector("[data-palabra]").textContent.trim(), "Correcto.", `casilla ${c.id}: la pastilla`);
+    assert.equal(devolucion(caja), `Correcto. ${c.acierto}`, `casilla ${c.id}: el acierto, literal, tras «Correcto.»`);
+    await siguiente(caja);
+  }
+  desmontar();
+});
+
 test("★★★ cada error se ve literal y la correcta queda marcada", async () => {
   for (let k = 0; k < CASILLAS.length; k++) {
     const c = CASILLAS[k];

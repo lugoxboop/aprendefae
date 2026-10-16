@@ -136,3 +136,19 @@ G0-u3-g2 · u3 · Más de 3 hasta 6 meses	Devolución	Ese grupo es para deudas d
 Objetivo nuevo, una oración del kit (PARA SHOKO, lo escribió KAEDE): «Calcular la provisión de una cartera según cuánto tiempo lleva vencida cada deuda.»
 
 En la partida, la consigna, los pasos y lo fijo de la actividad van plegados bajo «¿Cómo se juega?»; la figura sube a los primeros 280 px.
+
+
+## (4) Lote 6d-textos · Futaba (16-oct; pegado tal cual)
+
+Mandan sobre (1) y (2), por id y campo. El acierto de cada casilla sale debajo de la pastilla «Correcto».
+
+Id	Campo	Texto nuevo (literal)	Pie	Motivo
+P2 · un cero de más o de menos	Devolución	Ese valor tiene un cero de más o de menos. Repite la multiplicación.	—	Nombra el error probable; ya no empieza por «Revisa».
+Casilla u1	Acierto	Dos meses no pasan de tres: es del primer grupo, que en este ejemplo no se provisiona.	—	Campo nuevo `acierto`, debajo de «Correcto».
+Casilla u2	Acierto	Seis meses justos no pasan de seis: siguen en el grupo del 5 %.	—	—
+Casilla u3	Acierto	Catorce meses pasan de un año: es del grupo del 15 %.	—	—
+Casilla p4	Acierto	El 5 % de $560.000 es $28.000.	—	—
+Casilla p5	Acierto	El 10 % de $160.000 es $16.000.	—	—
+Casilla p6	Acierto	El 15 % de $60.000 es $9.000.	—	—
+Casilla p7	Acierto	Los tres grupos que llevan provisión suman $53.000.	—	—
+Casilla p8	Acierto	A $1.400.000 se le resta la provisión de $53.000: quedan $1.347.000.	—	—
