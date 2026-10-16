@@ -312,6 +312,23 @@ test("★★ botones: «Volver al camino» y «Repetir» con su nota; cada uno h
     const repetir = m.caja.querySelector("[data-repetir]");
     assert.equal(volver.textContent, "Volver al camino");
     assert.equal(repetir.textContent, "Repetir");
+    /*
+     * 44 PX DE ALTO LOS DOS, Y MEDÍAN 43 Y 41.
+     *
+     * Esta pantalla cierra toda actividad que la use, así que un blanco de
+     * toque corto aquí se multiplica por el catálogo entero. Lo reportaron
+     * dos células por separado —C midió 39 en «Otra vez» y E «menos de 44» en
+     * «Jugar otra vez»— y las dos tenían razón: el botón que se arregló a las
+     * 11:48 era el de `Cierre` (corazon/juego.jsx), no estos.
+     *
+     * Se comprueba el `minHeight` declarado y no el alto medido, porque en
+     * JSDOM nada tiene alto. El alto de verdad lo mide
+     * scripts/blanco-de-toque.mjs en la página. Lo que esta prueba impide es
+     * que alguien lo quite sin darse cuenta.
+     */
+    for (const [nombre, boton] of [["volver", volver], ["repetir", repetir]]) {
+      assert.equal(boton.style.minHeight, "44px", `${nombre}: el blanco de toque baja de 44 px (kit.md)`);
+    }
     const nota = m.caja.querySelector("[data-nota-repetir]");
     assert.equal(nota.textContent, "Repetir no suma puntos nuevos.");
     assert.match(nota.style.color, /#a8b6c8|rgb\(168,\s*182,\s*200\)/i);
