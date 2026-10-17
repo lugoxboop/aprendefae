@@ -684,6 +684,27 @@ tarjeta), que es lo que Xeno fijó. El que queda es la flecha inactiva de
 cambia la señal de cuál está activa, así que es decisión de diseño y está en
 manos de Xeno. **Un fallo nombrado vale más que uno arreglado mal.**
 
+### Medir, no calcular: dos veces en doce horas
+
+**Un contraste calculado vale lo que valga el fondo que supusiste, y el fondo
+casi nunca es el que crees.** Dos casos el 16 y el 17 de octubre, con el mismo
+corte:
+
+- Xeno fijó `#7A8798` para lo inactivo con 3,82:1 **[calculado] sobre
+  `#1F2D3D`**. Medido en la pantalla: **4,73:1** — el fondo real era más
+  oscuro, así que iba sobrado.
+- La Célula D eligió `#3FA69A` para el texto pequeño con 4,75:1 **[calculado]
+  sobre `#1F2D3D`**, descartando `#2A9D8F` porque daba 4,21. El cálculo era
+  correcto. Pero en la pantalla donde vive, el fondo es `#1D3557`, más claro:
+  ahí el mismo `#3FA69A` cae a **4,2:1**. Eligieron bien el color para la
+  tarjeta, y esa pantalla no usa la tarjeta.
+
+Los dos hicieron bien la cuenta. Lo que falló fue el supuesto, y un supuesto
+no avisa. **Antes de fijar un color en el canon, pásalo por
+`scripts/contraste.mjs`, que compone el fondo capa por capa.** Y si una
+decisión entra con `[calculado]`, que entre diciendo sobre qué fondo: así el
+siguiente sabe qué comprobar en vez de heredar la suposición.
+
 ### Las dos trampas de esta sonda, por si alguien escribe otra
 
 **Un control deshabilitado no pide contraste.** WCAG exime lo inactivo, y

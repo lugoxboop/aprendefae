@@ -16,8 +16,12 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *
  *   1 · TEXTOS   las estaciones y las pantallas de los datos son, campo por
  *       campo, las de a7.js (en los dos sentidos); los textos de la interfaz
- *       están en a7.js; la tabla de la v6 dice lo mismo; A7-2 de Mello está
- *   2 · LA PIEZA MONTADA CONTRA LA REFERENCIA  a7.js corre en el mismo DOM
+ *       están en a7.js; la tabla de la v6 dice lo mismo; A7-2 de Mello está.
+ *       Encima va el recorte B2 de Near (paquetes/a7-n1-recorte.md, leído
+ *       por recorteNearA7N1.mjs): la referencia es a7.js con sus tablas
+ *       aplicadas, y con la cuenta de Near ninguna pantalla pasa de 60
+ *   2 · LA PIEZA MONTADA CONTRA LA REFERENCIA  a7.js (con los datos del
+ *       recorte en lugar de los suyos, el código intacto) corre en el mismo DOM
  *       y las dos se juegan igual, toque por toque: el mismo texto, la misma
  *       ficha, el mismo mensaje y la misma marca en cada estación
  *   3 · EL VIAJE  la caja con cuadros a mano (requestAnimationFrame falso) y
@@ -84,6 +88,7 @@ const { PIEZAS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7
 const { PIEZAS: PIEZAS_T5 } = await import("../../components/ContabilidadTema5View.jsx");
 const { default: ControlInterno } = await import("../../components/mecanicas/libros/t7/ControlInterno.jsx");
 const { FAE } = await import("../../theme.js");
+const R = await import("./recorteNearA7N1.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -94,11 +99,19 @@ const PAQ = "orquestador/conocimiento/paquetes/";
 const HTML = leer(`${PAQ}patron-enganche-c-v6.html`);
 const A7JS = JSON.parse(HTML.match(/^const A7JS = (".*");$/m)[1]);
 const A7CSS = JSON.parse(HTML.match(/^const A7CSS = (".*");$/m)[1]);
-const REF = new Function(`${A7JS.slice(A7JS.indexOf("const ESTACIONES"), A7JS.indexOf("const CICLO"))}return { ESTACIONES, PANTALLAS };`)();
+const DATOS_V6 = A7JS.slice(A7JS.indexOf("const ESTACIONES"), A7JS.indexOf("const CICLO"));
+const REF_V6 = new Function(`${DATOS_V6}return { ESTACIONES, PANTALLAS };`)();
+/* La referencia: la de la v6 con el recorte de Near encima. */
+const RECORTE = R.leerRecorte();
+const REF = R.aplicarRecorteA7(REF_V6, RECORTE);
 const INI_P2 = HTML.indexOf('<section class="sec" id="p2">');
 const SECCION = HTML.slice(INI_P2, HTML.indexOf("</section>", INI_P2));
 /* El a7.js publicado corre aquí mismo, en el DOM de la prueba: es la referencia contra la que se juega la pieza. */
-w.eval(A7JS);
+/* Solo cambian las dos listas de datos; EN_LINEA y todo el código de a7.js quedan como están. */
+const LISTA_EST = A7JS.slice(A7JS.indexOf("const ESTACIONES"), A7JS.indexOf("const EN_LINEA"));
+const LISTA_PAN = A7JS.slice(A7JS.indexOf("const PANTALLAS"), A7JS.indexOf("const CICLO"));
+for (const l of [LISTA_EST, LISTA_PAN]) assert.equal(A7JS.split(l).length, 2, "los datos de a7.js no están una sola vez");
+w.eval(A7JS.replace(LISTA_EST, `const ESTACIONES = ${JSON.stringify(REF.ESTACIONES)};\n  `).replace(LISTA_PAN, `const PANTALLAS = ${JSON.stringify(REF.PANTALLAS)};\n\n  `));
 assert.equal(typeof w.EngancheA7, "function", "a7.js de la v6 no montó");
 
 const MELLO_V5 = leer(`${PAQ}auditoria-mello-n6-n7-v2-y-enganche-v5.md`);
@@ -115,7 +128,7 @@ const textosVisibles = () => [
 
 /* ═══════════ 1 · TEXTOS ═══════════ */
 
-test("★★★ las estaciones y las pantallas son, campo por campo y letra por letra, las de a7.js de la v6", () => {
+test("★★★ las estaciones y las pantallas son, campo por campo y letra por letra, las de a7.js de la v6 con el recorte de Near", () => {
   assert.deepStrictEqual(A.ESTACIONES, REF.ESTACIONES);
   assert.deepStrictEqual(A.PANTALLAS, REF.PANTALLAS);
   assert.equal(P.pantallas, A.PANTALLAS);
@@ -126,7 +139,48 @@ test("★★★ el título es el de la sección de la v6, y la tabla «Pantalla 
   assert.equal(SECCION.match(/<h2>([^<]+)<\/h2>/)[1], P.titulo);
   const filas = [...SECCION.matchAll(/<td class='mono'>(\d)<\/td><td>«([^»]+)»<br>/g)];
   assert.deepEqual(filas.map((m) => Number(m[1])), [1, 2, 3, 4, 5, 6]);
-  assert.deepEqual(filas.map((m) => m[2]), P.pantallas.map((p) => p.texto));
+  /* La tabla de la v6 dice los textos de a7.js; los de p1 a p5 los reemplaza el recorte y p0 queda. */
+  assert.deepEqual(filas.map((m) => m[2]), REF_V6.PANTALLAS.map((p) => p.texto));
+  assert.equal(P.pantallas[0].texto, filas[0][2]);
+  for (const k of [1, 2, 3, 4, 5]) assert.notEqual(P.pantallas[k].texto, filas[k][2], `p${k} sigue con el texto de la v6`);
+});
+
+test("★★★ recorte de Near: cada fila del paquete está en su campo, letra por letra, con la cuenta de Near", () => {
+  for (const [id, { control, marca }] of Object.entries(RECORTE.a7.estaciones)) {
+    const e = A.ESTACIONES.find((x) => x.id === id);
+    assert.equal(e.control, control, id);
+    if (marca) assert.equal(e.marca, marca, `${id}: la marca no cambia`);
+  }
+  for (const [id, control] of Object.entries(RECORTE.a7.iguales)) assert.equal(A.ESTACIONES.find((x) => x.id === id).control, control, `${id} queda igual`);
+  assert.equal(A.ESTACIONES.reduce((n, e) => n + R.palabras(e.control), 0) + A.ESTACIONES.reduce((n, e) => n + R.palabras(e.nombre) + (e.marca ? R.palabras(e.marca) : 0), 0), RECORTE.a7.palabrasEstaciones.ahora);
+  assert.deepEqual(A.ESTACIONES.map((e) => e.nombre), REF_V6.ESTACIONES.map((e) => e.nombre), "el nombre de cada estación no cambia");
+  for (const f of RECORTE.a7.campos) {
+    const p = pantalla(f.pantalla);
+    const [k, sub] = f.campo.split(".");
+    const dato = k === "texto" ? p.texto : sub ? p.caso.mal[sub] : p.caso[k];
+    assert.equal(dato, f.texto, `${f.pantalla} ${f.campo}`);
+    assert.equal(R.palabras(f.texto), f.palabras, `${f.pantalla} ${f.campo}: Near cuenta ${f.palabras}`);
+  }
+  /* Los «✓» del acierto, como los trae el paquete; la pista sin «✓». */
+  for (const id of ["p2", "p3", "p4"]) {
+    assert.ok(pantalla(id).caso.bien.startsWith("✓ "), id);
+    assert.ok(!pantalla(id).caso.pista.includes("✓"), id);
+  }
+  /* p4 sin el verbo «contar»; p2: los errores ya no dan la respuesta (C2). */
+  const c4 = pantalla("p4").caso;
+  for (const t of [pantalla("p4").texto, c4.ficha, c4.bien, c4.pista, ...Object.values(c4.mal)]) assert.doesNotMatch(t, /\bcont(ar|ado|ó|ar\w+)\b|\bcuenta\b/i, t);
+  for (const t of Object.values(pantalla("p2").caso.mal)) assert.doesNotMatch(t, /al recibir|se nota/, t);
+});
+
+test("★★★ B2 con la cuenta de Near: todo lo que se ve a la vez ≤ 60 en cada pantalla, y los totales son los del paquete", () => {
+  /* Control: el mismo contador da, sobre la v6, la cuenta de main que da Near. */
+  for (const [id, n] of Object.entries(RECORTE.a7.main)) assert.equal(R.b2A7(REF_V6.PANTALLAS.find((p) => p.id === id), REF_V6.ESTACIONES), n, `main ${id}`);
+  assert.equal(REF_V6.ESTACIONES.reduce((n, e) => n + R.palabras(e.nombre) + R.palabras(e.control) + (e.marca ? R.palabras(e.marca) : 0), 0), RECORTE.a7.palabrasEstaciones.antes);
+  for (const p of P.pantallas) {
+    const n = R.b2A7(p, A.ESTACIONES);
+    assert.equal(n, RECORTE.a7.totales[p.id], `${p.id}: Near cuenta ${RECORTE.a7.totales[p.id]}`);
+    assert.ok(n <= 60, `${p.id}: ${n} palabras`);
+  }
 });
 
 test("★★★ cada texto de la interfaz está, letra por letra, en a7.js", () => {
@@ -145,11 +199,19 @@ test("★★★ Mello: A7 lista en la v6; A7-2 (el caso 3 nuevo) está tal cual 
   assert.match(MELLO_V6, /\| A7 v6 \| \*\*Lista\.\*\* A7-1 y A7-2 están aplicadas, sin fallos nuevos\. \|/);
   const a72 = MELLO_V5.slice(MELLO_V5.indexOf("**A7-2"), MELLO_V5.indexOf("El acierto, la pista y los errores de Contabilidad y Salida"));
   const fila = (campo) => a72.split("\n").find((l) => l.startsWith(`| ${campo} |`)).match(/«([^»]+)»/)[1];
+  /* En la v6, A7-2 está tal cual; el recorte de Near reemplaza el texto, la ficha y el error de Bodega, y deja el de Recepción. */
+  const v6 = REF_V6.PANTALLAS.find((x) => x.id === "p4");
+  assert.ok(v6.texto.startsWith(`${fila("Caso 3")} `), v6.texto);
+  assert.equal(v6.caso.ficha, fila("Ficha"));
+  assert.equal(v6.caso.mal.recepcion, fila("Error en Recepción"));
+  assert.equal(v6.caso.mal.bodega, fila("Error en Bodega"));
   const p4 = pantalla("p4");
-  assert.ok(p4.texto.startsWith(`${fila("Caso 3")} `), p4.texto);
-  assert.equal(p4.caso.ficha, fila("Ficha"));
+  const delRecorte = (campo) => RECORTE.a7.campos.find((f) => f.pantalla === "p4" && f.campo === campo).texto;
+  assert.equal(p4.texto, delRecorte("texto"));
+  assert.equal(p4.caso.ficha, delRecorte("ficha"));
+  assert.equal(p4.caso.mal.bodega, delRecorte("mal.bodega"));
   assert.equal(p4.caso.mal.recepcion, fila("Error en Recepción"));
-  assert.equal(p4.caso.mal.bodega, fila("Error en Bodega"));
+  assert.equal(delRecorte("mal.recepcion"), fila("Error en Recepción"));
   /* A7-1: la condición que pide Mello está en la referencia y en el componente. */
   assert.ok(A7JS.includes("PANTALLAS[s.p].id !== 'p2'"));
   assert.equal(C.PANTALLA_SIN_HOJA, "p2");
@@ -316,7 +378,8 @@ test("★★★ cada pantalla y cada estado, contra los datos: escalera, sellos,
       /* 2.º error: «Es en …» y la estación correcta en borde neutro, sin ✓; la marca de error pasa a la nueva estación. */
       await toca(otras[1]);
       assert.deepEqual([v().msg, v().tipo], [p.caso.pista, ["pista"]]);
-      assert.ok(p.caso.pista.startsWith("Es en "));
+      /* La pista nombra la estación correcta. El recorte de Near la abre con «Es en …» en p3 y p4 y con «En …» en p2. */
+      assert.ok(p.caso.pista.startsWith(`${id === "p2" ? "En" : "Es en"} ${A.ESTACIONES.find((e) => e.id === p.caso.correcta).nombre}:`), p.caso.pista);
       assert.deepEqual([est(otras[0]).mal, est(otras[1]).mal, est(otras[1]).sello], [false, true, A.INTERFAZ.noEsAqui]);
       assert.deepEqual([est(p.caso.correcta).pista, est(p.caso.correcta).sello, est(p.caso.correcta).bien], [true, "", false]);
       /* 3.er error: sigue la pista. */

@@ -8,7 +8,10 @@ import { sinUnSoloIntento } from "../armaLaLinea.js";
  * ═══════════════════════════════════════════════════════════════════════════
  * T5 · N1 «¿Temporal o a largo plazo?» (Célula C) · Hacer.
  *
- *   · cada texto es, letra por letra, el de la tanda 1 v1.1 de Near
+ *   · cada texto es, letra por letra, el de la tanda 1 v1.1 de Near con el
+ *     recorte B2 de Near encima (paquetes/a7-n1-recorte.md, leído por
+ *     recorteNearA7N1.mjs): el enunciado, ritmo-del-negocio y la-intencion
+ *   · B2: con la cuenta de Near, el enunciado y cada ítem ≤ 60 palabras
  *   · sin cifras; la cautela del libro va entera en la opción
  *   · patrón C4 (motor t7/decisionC4.jsx, registro c4/t5N1_c4.js): al
  *     tocar, el caso cae en su cajón del balance; el veredicto, a los 380 ms;
@@ -52,6 +55,7 @@ const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.j
 const C4 = await import("../../components/mecanicas/libros/t7/decisionC4.jsx");
 const C4N1 = await import("../c4/t5N1_c4.js");
 const CANON = await import("../canonEnganche.js");
+const R = await import("./recorteNearA7N1.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -67,6 +71,10 @@ const filas = (desde, hasta) => {
   return s.split("\n").filter((l) => /^\| \d \|/.test(l)).map((l) => l.replace(/^\| | \|$/g, "").split(" | "));
 };
 const linea = (rotulo) => N1.split("\n").find((l) => l.startsWith(rotulo));
+const RECORTE = R.leerRecorte();
+const NUEVO = R.recorteN1(RECORTE);
+/* Lo que el recorte cambia; el resto de los textos sigue siendo el de la tanda. */
+const conRecorte = (id, campo, deLaTanda) => NUEVO[id]?.[campo] ?? deLaTanda;
 
 /* ═══════════ 1 · TEXTOS ═══════════ */
 
@@ -75,7 +83,10 @@ test("★★★ el enunciado, el pie y la pantalla del bloque 2 son los de la ta
   assert.ok(N1.includes(`id \`${D.N1_ID}\``));
   assert.ok(N1.includes("Migración **0110**"));
   const en = N1.slice(N1.indexOf("### Enunciado"), N1.indexOf("### Bloque 1")).split("\n").filter((l) => l.startsWith("- «"));
-  assert.deepEqual(D.N1.enunciado, en.map((l) => citas(l)[0]));
+  /* El recorte reemplaza las dos líneas de la tanda, una por una. */
+  assert.equal(en.length, 2);
+  assert.deepEqual(D.N1.enunciado, NUEVO.enunciado);
+  for (const [k, t] of en.map((l) => citas(l)[0]).entries()) assert.notEqual(D.N1.enunciado[k], t, "el enunciado sigue siendo el de la tanda");
   assert.ok(N1.includes(`**Pie de todos los ítems:** «${D.N1.pie}».`));
   assert.equal(D.ITEMS_N1[5].intro, citas(linea("- Pantalla: "))[0]);
 });
@@ -89,10 +100,10 @@ test("★★★ los nueve ítems son los de la tanda: caso, correcta, si falla, 
   assert.equal(b2.length, 3);
   for (const [k, [n, caso, correcta, error, acierto]] of [...b1, ...b2].entries()) {
     assert.equal(n, String(k < 5 ? k + 1 : k - 4));
-    assert.equal(it[k].pregunta, citas(caso)[0], it[k].id);
+    assert.equal(it[k].pregunta, conRecorte(it[k].id, "pregunta", citas(caso)[0]), it[k].id);
     assert.equal(it[k].correcta, correcta, it[k].id);
-    assert.equal(it[k].error, citas(error)[0], it[k].id);
-    assert.equal(it[k].acierto, citas(acierto)[0], it[k].id);
+    assert.equal(it[k].error, conRecorte(it[k].id, "error", citas(error)[0]), it[k].id);
+    assert.equal(it[k].acierto, conRecorte(it[k].id, "acierto", citas(acierto)[0]), it[k].id);
     assert.equal(it[k].bloque, k < 5 ? 1 : 2);
   }
   const ops1 = citas(N1.split("\n").find((l) => l.startsWith("Opciones en todos los casos: ")));
@@ -100,12 +111,55 @@ test("★★★ los nueve ítems son los de la tanda: caso, correcta, si falla, 
   assert.deepEqual(ops1, ["Temporal", "Puede ser más apropiado a largo plazo"]);
   const ops2 = citas(linea("- Opciones en los tres: "));
   for (const x of it.slice(5, 8)) assert.deepEqual(x.opciones, ops2);
+  /* El bloque 3 entero viene del recorte (la tanda lo traía; el recorte lo reemplaza campo por campo). */
   const b3 = it[8];
-  assert.equal(b3.pregunta, citas(linea("- Pregunta: "))[0]);
-  assert.deepEqual(b3.opciones, citas(linea("- Opciones: ")));
-  assert.match(linea("- Opciones: "), new RegExp(`«${b3.correcta.replace(/[.()]/g, "\\$&")}» \\([^)]*correcta\\)`));
-  assert.equal(b3.error, citas(linea("- Si falla: "))[0]);
-  assert.equal(b3.acierto, citas(linea("- Si acierta: "))[0]);
+  const r3 = NUEVO["la-intencion"];
+  assert.equal(b3.id, "la-intencion");
+  assert.equal(citas(linea("- Opciones: ")).length, 3);
+  assert.equal(b3.pregunta, r3.pregunta);
+  assert.deepEqual(b3.opciones, r3.opciones);
+  assert.equal(b3.correcta, r3.correcta);
+  assert.equal(b3.error, r3.error);
+  assert.equal(b3.acierto, r3.acierto);
+  for (const o of b3.opciones) assert.doesNotMatch(o, /\bcomo\b/, `«${o}»: el recorte dice que ninguna opción lleva «como»`);
+  assert.deepEqual(b3.opciones.map(R.palabras), [6, 7, 7]);
+});
+
+test("★★★ recorte de Near: cada fila del paquete está, letra por letra, y nada de la entrega pendiente se construyó", () => {
+  /* Cada fila del paquete, en su campo, y su cuenta de palabras es la de Near. */
+  const dondeVa = {
+    "enunciado[0]": D.N1.enunciado[0], "enunciado[1]": D.N1.enunciado[1],
+    "la-intencion · correcta": D.ITEMS_N1[8].correcta,
+  };
+  const opciones = D.ITEMS_N1[8].opciones.slice(1);
+  for (const f of RECORTE.n1.campos) {
+    assert.equal(R.palabras(f.texto), f.palabras, `${f.campo}: Near cuenta ${f.palabras}`);
+    if (f.campo in dondeVa) { assert.equal(dondeVa[f.campo], f.texto, f.campo); continue; }
+    if (f.campo === "la-intencion · opción") { assert.equal(opciones.shift(), f.texto); continue; }
+    const [id, campo] = f.campo.split(" · ");
+    assert.equal(D.ITEMS_N1.find((x) => x.id === id)[campo], f.texto, f.campo);
+  }
+  assert.deepEqual(opciones, []);
+  /* C7: las dos condiciones de una inversión temporal siguen enteras en el enunciado; la cautela, tal cual. */
+  assert.match(D.N1.enunciado[1], /se puede vender rápido/);
+  assert.match(D.N1.enunciado[1], /en un año o en un ciclo de operaciones, el que sea más largo/);
+  assert.match(D.N1.enunciado[0], /puede ser más apropiado/);
+  /* Lo que sigue pendiente de «N1: lo que pidió Mello» no se inventó. */
+  assert.ok(D.ITEMS_N1.some((x) => x.id === "bono-de-tesoreria"));
+  assert.ok(!D.ITEMS_N1.some((x) => x.id === "bonos-de-compania"));
+});
+
+test("★★★ B2 con la cuenta de Near: enunciado y cada ítem ≤ 60, y los totales son los del paquete", () => {
+  /* Control: el contador reproduce la cuenta de main que da Near (66, 71 y 71). */
+  const enMain = N1.slice(N1.indexOf("### Enunciado"), N1.indexOf("### Bloque 1")).split("\n").filter((l) => l.startsWith("- «")).map((l) => citas(l)[0]);
+  assert.equal(enMain.reduce((n, t) => n + R.palabras(t), 0), RECORTE.n1.antes.enunciado);
+  const total = { enunciado: D.N1.enunciado.reduce((n, t) => n + R.palabras(t), 0) };
+  for (const it of D.ITEMS_N1) total[it.id] = R.b2N1(it) + (it.intro ? R.palabras(it.intro) : 0);
+  for (const [k, n] of Object.entries(RECORTE.n1.totales)) assert.equal(total[k], n, `${k}: Near cuenta ${n}`);
+  for (const [k, n] of Object.entries(total)) {
+    assert.ok(n <= 60, `${k}: ${n} palabras`);
+    if (!(k in RECORTE.n1.totales)) assert.ok(n <= RECORTE.n1.demasHasta, `${k}: ${n} > ${RECORTE.n1.demasHasta}`);
+  }
 });
 
 test("★★★ sin cifras; la cautela del libro va entera, y nada interno sale en pantalla", () => {
