@@ -127,7 +127,6 @@ test("★★★ t6-a1 · ¿quién le debe a la empresa?: el deudor de cada ficha
   assert.equal(L1.deudorDeT6Act1(F("accionista")), "socios");
   assert.equal(L1.deudorDeT6Act1(F("trabajador")), "trabajadores");
   assert.equal(L1.deudorDeT6Act1(F("vecino")), "particulares");
-  assert.equal(L1.deudorDeT6Act1(F("anticipo")), "otro", "junto a «otros motivos»");
   assert.equal(L1.deudorDeT6Act1(F("prestamo-cliente")), "otro", "sin etiqueta de Futaba y sin cuenta: «otros motivos»");
   A1.DEUDOR_POR_FICHA["prestamo-cliente"] = "particulares";
   try { assert.equal(L1.deudorDeT6Act1(F("prestamo-cliente")), "particulares", "la etiqueta de Futaba manda"); } finally { delete A1.DEUDOR_POR_FICHA["prestamo-cliente"]; }
@@ -135,7 +134,7 @@ test("★★★ t6-a1 · ¿quién le debe a la empresa?: el deudor de cada ficha
 
 test("★★★ t6-a1 · la galería: antes de responder, solo lo anterior; al responder la decisión 1, el número entra resaltado bajo su deudor", async () => {
   const F = (id) => [...A1.FICHAS_T6_ACT1, ...A1.FICHAS_V2_T6_ACT1].find((f) => f.id === id);
-  const items = [F("venta-mercancia"), F("socio"), F("anticipo")];
+  const items = [F("venta-mercancia"), F("socio"), F("prestamo-cliente")];
   const ver = (props) => pagina(renderToStaticMarkup(h(QuienLeDebe, { items, reducido: true, ...props }))).firstChild;
   let el = ver({ indice: 1, hecha: false });
   assert.deepEqual([...el.querySelectorAll("[data-numero-ficha]")].map((n) => [n.closest("[data-deudor]").dataset.deudor, n.textContent, n.dataset.resaltado]), [["clientes", "1", "no"]]);
@@ -146,7 +145,7 @@ test("★★★ t6-a1 · la galería: antes de responder, solo lo anterior; al r
   assert.equal(el.querySelector('[data-deudor="socios"]').dataset.activo, "si", "el deudor, con contorno");
   assert.equal(el.getAttribute("aria-label"), "Ficha 2: la deben socios y accionistas");
   el = ver({ indice: 2, hecha: true });
-  assert.ok(el.querySelector('[data-deudor="otro"] [data-numero-ficha="3"]'), "la de anticipo, junto a «otros motivos»");
+  assert.ok(el.querySelector('[data-deudor="otro"] [data-numero-ficha="3"]'), "la de prestamo-cliente, junto a «otros motivos»");
   assert.equal(el.querySelector('[data-numero-ficha="2"]').dataset.resaltado, "no", "resaltado solo hasta la ficha siguiente");
   assert.deepEqual([...el.querySelectorAll("[data-grupo-deudores]")].map((g) => g.dataset.grupoDeudores), ["clientes", "otras"]);
   assert.equal(el.querySelectorAll("svg[aria-hidden='true']").length, 4, "los cuatro íconos, aria-hidden");

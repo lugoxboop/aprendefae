@@ -270,3 +270,22 @@ Aprobada por Sakuta. Responde a Shoko (D9, «la T y el estante se repiten»). Va
 - **La etiqueta de deudor** de cada ficha la da Futaba (`clientes`, `socios`, `trabajadores`, `particulares` u `otro`). Mientras no llega: las de Clientes, bajo «clientes»; las de otra cuenta, por su cuenta de «¿En cuál?» (lote 23), o junto a «otros motivos».
 - **Texto alternativo:** cambia con cada ficha, por ejemplo «Ficha 5: la debe un cliente; la empresa le vendió a crédito».
 - **Textos nuevos (PARA SHOKO):** «¿Quién le debe a la empresa?». Fragmentos de las definiciones de T6 A1: «clientes», «les vendió a crédito», «socios y accionistas», «trabajadores», «particulares» y «otros motivos».
+
+## Lote 25 · «¿En cuál?» — textos de Futaba (17-oct)
+
+Aplicados literal. Decisión de Sakuta: las fichas de casa matriz y anticipo **salen** de la segunda vuelta (no caben en las etiquetas de deudor); la vuelta queda con 6 fichas.
+
+Lista de la p. 196 (abierta, «entre otras»): Cuentas corrientes comerciales · Cuentas por cobrar a casa matriz · Cuentas por cobrar a vinculados económicos · Cuentas por cobrar a socios y accionistas · Anticipos y avances · Promesas de compraventa · Ingresos por cobrar · Retenciones sobre contratos · Anticipos de impuestos, contribuciones y saldos a favor · Cuentas por cobrar a trabajadores · Préstamos a particulares · Cuentas por cobrar varios.
+
+Opciones en pantalla: Cuentas por cobrar a socios y accionistas · Cuentas por cobrar a trabajadores · Préstamos a particulares · Cuentas por cobrar a casa matriz · Anticipos y avances.
+
+Ficha por ficha (cuenta correcta · pista del 1.er error · porqué del 2.º error). En lista, no en tabla: las filas de tabla al final del paquete las leen las pruebas de la §9.4.
+
+- **socio** · Cuentas por cobrar a socios y accionistas · Pista: «¿Quién le debe a la empresa? Busca la cuenta que lleva su nombre.» · Porqué: «El que debe es un socio, y el libro tiene una cuenta para ellos: Cuentas por cobrar a socios y accionistas.»
+- **trabajador** · Cuentas por cobrar a trabajadores · Pista: «¿Quién recibió la plata? Busca la cuenta que nombra a esa persona.» · Porqué: «El que debe es un trabajador de la empresa: va en Cuentas por cobrar a trabajadores.»
+- **particular** · Préstamos a particulares · Pista: «Esta persona no es socia ni trabajadora. ¿Qué cuenta recoge lo que se presta a cualquier otra persona?» · Porqué: «Es plata prestada a alguien sin otro vínculo con la empresa: va en Préstamos a particulares.»
+- **prestamo-cliente** · HUECO: el libro no dice en cuál va un préstamo a un cliente. Solo la decisión 1. · Pista: — · Porqué: —
+- **accionista (D8)** · Cuentas por cobrar a socios y accionistas · Pista: «Un accionista tiene acciones de la empresa. ¿Qué cuenta nombra a los accionistas?» · Porqué: «El que debe es un accionista: va en Cuentas por cobrar a socios y accionistas.»
+- **vecino (D8)** · Préstamos a particulares · Pista: (la de particular) · Porqué: (la de particular)
+
+(anticipo y matriz, de D8, salieron de la vuelta; sus textos quedan en el mensaje de Futaba.) Nota de Futaba: que un anticipo a un proveedor vaya en «Anticipos y avances» sale del nombre, no de una definición del libro; Shoko decide si basta o si también es hueco.

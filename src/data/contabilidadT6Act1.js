@@ -137,29 +137,19 @@ export const FICHAS_T6_ACT1 = [
 ];
 
 /*
- * ═══════════ D8 · LA SEGUNDA VUELTA: OCHO FICHAS NUEVAS, EN SU ORDEN (Futaba, lote 18) ═══════════
+ * ═══════════ D8 · LA SEGUNDA VUELTA: FICHAS NUEVAS, EN SU ORDEN (Futaba, lote 18) ═══════════
  *
- * La vuelta 1 son las 8 de hoy (con su sorteo). Fuente: p. 196 (anticipos y avances; casa matriz; socios y
- * accionistas; préstamos a particulares) y p. 197 (débitos y créditos de Clientes). Reparto 4 · 2 · 2.
+ * La vuelta 1 son las 8 de hoy (con su sorteo). Fuente: p. 196 (socios y accionistas; préstamos a
+ * particulares) y p. 197 (débitos y créditos de Clientes). Lote 25 (decisión de Sakuta, propuesta de
+ * Futaba): las de casa matriz y anticipo salen de la vuelta, porque no caben en las etiquetas de deudor de
+ * «¿Quién le debe a la empresa?»; la vuelta queda con 6 fichas, reparto 2 · 2 · 2.
  */
 export const FICHAS_V2_T6_ACT1 = [
-  {
-    id: "anticipo", cuenta: OTRA, lado: null,
-    texto: "La empresa le entrega plata a un proveedor como anticipo de una compra que aún no recibe.",
-    pista: "¿Esta deuda viene de una venta a crédito a un cliente? Mira quién recibió la plata y por qué.",
-    acierto: "Es un anticipo a un proveedor, no una venta a crédito. Va en otra cuenta por cobrar: Anticipos y avances.",
-  },
   {
     id: "hotel", cuenta: CLIENTES, lado: DEBITA,
     texto: "Un hotel hospeda a un cliente y le da 30 días para pagar la cuenta.",
     pista: "Después del hospedaje, ¿el cliente debe más o menos? No te guíes por quién presta el servicio.",
     acierto: "Es un servicio vendido a crédito: el cliente queda debiendo, así que se debita.",
-  },
-  {
-    id: "matriz", cuenta: OTRA, lado: null,
-    texto: "La casa matriz recibe plata de la empresa y se compromete a devolverla.",
-    pista: "¿Hubo una venta a crédito? Piensa qué deudas recoge Cuentas por cobrar – clientes.",
-    acierto: "Es una deuda de la casa matriz, no de un cliente. Va en otra cuenta por cobrar: Cuentas por cobrar a casa matriz.",
   },
   {
     id: "efectivo", cuenta: CLIENTES, lado: ACREDITA,
@@ -221,13 +211,14 @@ SEGUNDA_POR_FICHA_T6.danadas = SEGUNDA_POR_FICHA_T6.devolucion;
 export { SEGUNDA_POR_FICHA_T6 as DEVOLUCIONES_SEGUNDA_T6_ACT1 };
 
 /*
- * ═══════════ LOTE 23 · «¿EN CUÁL?» (Shoko; textos de Futaba pendientes) ═══════════
+ * ═══════════ LOTE 23 · «¿EN CUÁL?» (Shoko) · TEXTOS DE FUTABA (lote 25, 17-oct) ═══════════
  *
- * Las fichas de otra cuenta también llevan segunda decisión: en cuál de las cuentas de la p. 196 va. Las
- * opciones son los nombres de cuenta que ya dicen los aciertos publicados. `EN_CUAL_POR_FICHA` sale de
- * esos mismos aciertos; «prestamo-cliente» espera a Futaba (lo resuelve con el libro) y, mientras no
- * esté, esa ficha sigue con la decisión 1 sola. PROVISIONAL HASTA FUTABA, PARA SHOKO: la pista general;
- * el porqué del segundo error y el acierto son el acierto publicado de la ficha.
+ * Las fichas de otra cuenta llevan segunda decisión: en cuál de las cuentas de la p. 196 va. La lista del
+ * libro es abierta («entre otras») y no define ninguna, solo las nombra; en pantalla, las cinco que usan las
+ * fichas. «prestamo-cliente» es HUECO (el libro no dice en cuál va un préstamo a un cliente): se queda solo
+ * con la decisión 1. Pista al primer error y porqué al segundo, ficha por ficha; «vecino» toma las de
+ * «particular». Nota de Futaba: que un anticipo vaya en «Anticipos y avances» sale del nombre, no de una
+ * definición del libro (Shoko decide si basta).
  */
 export const EN_CUAL_T6_ACT1 = {
   pregunta: "¿En cuál?",
@@ -235,14 +226,33 @@ export const EN_CUAL_T6_ACT1 = {
     { id: "socios", texto: "Cuentas por cobrar a socios y accionistas" },
     { id: "trabajadores", texto: "Cuentas por cobrar a trabajadores" },
     { id: "particulares", texto: "Préstamos a particulares" },
-    { id: "anticipos", texto: "Anticipos y avances" },
     { id: "matriz", texto: "Cuentas por cobrar a casa matriz" },
+    { id: "anticipos", texto: "Anticipos y avances" },
   ],
-  pista: "Mira quién recibe la plata y por qué.",
+};
+const PARTICULAR = {
+  cuenta: "particulares",
+  pista: "Esta persona no es socia ni trabajadora. ¿Qué cuenta recoge lo que se presta a cualquier otra persona?",
+  porque: "Es plata prestada a alguien sin otro vínculo con la empresa: va en Préstamos a particulares.",
 };
 export const EN_CUAL_POR_FICHA = {
-  socio: "socios", trabajador: "trabajadores", particular: "particulares",
-  anticipo: "anticipos", matriz: "matriz", accionista: "socios", vecino: "particulares",
+  socio: {
+    cuenta: "socios",
+    pista: "¿Quién le debe a la empresa? Busca la cuenta que lleva su nombre.",
+    porque: "El que debe es un socio, y el libro tiene una cuenta para ellos: Cuentas por cobrar a socios y accionistas.",
+  },
+  trabajador: {
+    cuenta: "trabajadores",
+    pista: "¿Quién recibió la plata? Busca la cuenta que nombra a esa persona.",
+    porque: "El que debe es un trabajador de la empresa: va en Cuentas por cobrar a trabajadores.",
+  },
+  particular: PARTICULAR,
+  accionista: {
+    cuenta: "socios",
+    pista: "Un accionista tiene acciones de la empresa. ¿Qué cuenta nombra a los accionistas?",
+    porque: "El que debe es un accionista: va en Cuentas por cobrar a socios y accionistas.",
+  },
+  vecino: PARTICULAR,
 };
 
 /* El resumen (Futaba, lote 6a): ya no habla de pesos; cada ficha vale entera. */
