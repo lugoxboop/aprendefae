@@ -117,6 +117,33 @@ test("★★★ t6-a1: dos cajones; la de Clientes pasa a la T sin devolución y
   desmontar();
 });
 
+test("★★★ lote 22 (bug de #440): en t6-a1 el cajón correcto nunca queda con «No va aquí», ni tras fallar y acertar ni durante la decisión 2", async () => {
+  const f = T6F("venta-mercancia");
+  const marca = (caja, clave) => caja.querySelector(`[data-cajon="${clave}"]`).dataset.marca;
+  const sinNoVaAqui = (caja) => assert.doesNotMatch(caja.querySelector('[data-cajon="clientes"]').textContent, /No va aquí/);
+  /* Falla y después acierta la decisión 1. */
+  let { caja, desmontar } = await montar(ClientesOOtra, [f]);
+  await tocar(caja.querySelector('[data-cajon="otra"]'));
+  await tocar(caja.querySelector('[data-cajon="clientes"]'));
+  assert.ok(caja.querySelector("[data-pregunta-segunda]"), "sigue la decisión 2");
+  assert.equal(marca(caja, "clientes"), "correcta", "Clientes, el correcto, queda «Correcto»");
+  assert.equal(marca(caja, "otra"), "tachada", "el tocado por error, «No va aquí»");
+  sinNoVaAqui(caja);
+  await tocar(caja.querySelector('[data-lado-t="haber"]'));
+  assert.equal(marca(caja, "clientes"), "correcta", "tras el error de la decisión 2, igual");
+  sinNoVaAqui(caja);
+  await tocar(caja.querySelector('[data-lado-t="debe"]'));
+  assert.equal(marca(caja, "clientes"), "correcta", "y al terminar");
+  sinNoVaAqui(caja);
+  desmontar();
+  /* Acierta a la primera. */
+  ({ caja, desmontar } = await montar(ClientesOOtra, [f]));
+  await tocar(caja.querySelector('[data-cajon="clientes"]'));
+  assert.equal(marca(caja, "clientes"), "correcta");
+  sinNoVaAqui(caja);
+  desmontar();
+});
+
 test("★★★ t6-a1: la de otra cuenta lleva solo la decisión 1 (con su pista si va a Clientes)", async () => {
   const f = T6F("socio");
   const { caja, desmontar } = await montar(ClientesOOtra, [f]);
