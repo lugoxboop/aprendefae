@@ -214,7 +214,8 @@ export default function IngresoOCobro({
         {enSegunda && (
           <div data-segunda ref={zonaSegunda}>
             <p ref={pregunta} tabIndex={-1} data-pregunta-segunda style={{
-              margin: "0 0 8px", fontFamily: SORA, fontSize: "14px", fontWeight: 700, lineHeight: 1.3, color: FAE.text, outline: "none",
+              /* 6 px abajo, no 8: así la primera opción entra en B1 a 320 (Hanayama). */
+              margin: "0 0 6px", fontFamily: SORA, fontSize: "14px", fontWeight: 700, lineHeight: 1.3, color: FAE.text, outline: "none",
             }}>
               {SEGUNDA_ACT1_T3.pregunta}
             </p>

@@ -351,7 +351,14 @@ test("★★★ al acertar el día: la línea cede a la pregunta y tres filas; l
     }
     assert.equal(panel(m.caja), null, "la devolución no sale antes de la segunda decisión");
     assert.equal(avance(m.caja), undefined);
-    assert.equal(document.activeElement, m.caja.querySelector("[data-pregunta-segunda]"));
+    const encabezado = m.caja.querySelector("[data-encabezado-segunda]");
+    assert.equal(document.activeElement, encabezado);
+    assert.ok(encabezado.contains(m.caja.querySelector("[data-se-causa-dia]")), "«Se causa» y la pregunta, en el mismo bloque");
+    assert.equal(encabezado.style.flexWrap, "wrap");
+    assert.equal(m.caja.querySelector("[data-se-causa-dia]").style.fontWeight, "500");
+    assert.equal(m.caja.querySelector("[data-se-causa-dia]").style.fontSize, "12px");
+    assert.equal(m.caja.querySelector("[data-pregunta-segunda]").style.fontWeight, "600");
+    assert.equal(m.caja.querySelector("[data-pregunta-segunda]").style.fontSize, "15px");
   } finally { m.desmontar(); }
 });
 

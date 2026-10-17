@@ -272,13 +272,20 @@ export default function CuandoSeCausa({
         {/* La segunda decisión, en el lugar de la línea y con la forma de sus filas. */}
         {enSegunda && (
           <div data-segunda ref={zonaSegunda}>
-            <p data-se-causa-dia style={{ margin: "0 0 6px", fontFamily: INTER, fontSize: "13.5px", fontWeight: 700, color: COLOR.blanco }}>
-              {SE_CAUSA_DIA(item.marcas.find((m) => m.id === r.correcta).rotulo)}
-            </p>
-            <p ref={pregunta} tabIndex={-1} data-pregunta-segunda style={{
-              margin: "0 0 10px", fontFamily: INTER, fontSize: "15px", fontWeight: 700, lineHeight: "22px", color: COLOR.blanco, outline: "none",
+            {/*
+              * «Se causa: {día}» y la pregunta en UNA línea (Hanayama, por B1): el
+              * rótulo en Inter 500 12 #A8B6C8 y la pregunta en Sora 600 15. Si no
+              * caben, la pregunta baja a la segunda línea, en el mismo bloque.
+              */}
+            <p ref={pregunta} tabIndex={-1} data-encabezado-segunda style={{
+              margin: "0 0 10px", display: "flex", flexWrap: "wrap", alignItems: "baseline", columnGap: "8px", rowGap: "2px", outline: "none",
             }}>
-              {SEGUNDA_ACT2.pregunta}
+              <span data-se-causa-dia style={{ fontFamily: INTER, fontSize: "12px", fontWeight: 500, lineHeight: "18px", color: "#A8B6C8" }}>
+                {SE_CAUSA_DIA(item.marcas.find((m) => m.id === r.correcta).rotulo)}
+              </span>
+              <span data-pregunta-segunda style={{ fontFamily: SORA, fontSize: "15px", fontWeight: 600, lineHeight: "22px", color: COLOR.blanco }}>
+                {SEGUNDA_ACT2.pregunta}
+              </span>
             </p>
             <div role="group" aria-label={SEGUNDA_ACT2.pregunta} style={{ display: "flex", flexDirection: "column", rowGap: "8px" }}>
               {SEGUNDA_ACT2.opciones.map((o) => (
