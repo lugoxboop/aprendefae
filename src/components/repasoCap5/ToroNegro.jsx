@@ -1,15 +1,15 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 import { pesos } from "../../data/contabilidad.js";
 /* Los estados de calificación, el «ERA ESTE», los puntos y la palabra: de comun.jsx (B4). */
 import {
   C, INTER, SORA, MARCA, CONTADOR, CIFRA, HUNDIDO, HUNDIDO_OPACO, REPOSO, ELEGIDO, SOLO_LECTOR, CSS_FOCO, Devolucion, BotonSiguiente, Comprobar,
-  ESTADOS, Punto, Veredicto, Pastilla, useTrasError, Cita,
+  ESTADOS, Punto, Veredicto, Pastilla, useTrasError, useIntento, Cita,
 } from "./comun.jsx";
-import { R5_2, ETAPAS, PREGUNTAS_R5_2, CORTES_R5_2, ROTULOS_R5_2 as RT, GRUPOS_A0, ROTULOS_A0 as RA } from "../../data/repasoCap5ToroNegroTextos.js";
+import { R5_2, ETAPAS, PREGUNTAS_R5_2, CORTES_R5_2, ROTULOS_R5_2 as RT, GRUPOS_A0, ROTULOS_A0 as RA, versionR5_2 } from "../../data/repasoCap5ToroNegroTextos.js";
 import {
   prepararR5_2, evaluarAsiento, evaluarSaldo, evaluarCalculo, puedeRevisarAsiento, puedeRevisarSaldo, puedeRevisarCalculo,
-  MOVIMIENTOS, libroAntesDe, saldoDe, naturaleza, fraccionDeBarra, porEtapa, puntuarR5_2,
+  MOVIMIENTOS, movimientosDe, libroAntesDe, saldoDe, naturaleza, fraccionDeBarra, porEtapa, puntuarR5_2,
   PASOS_R5_2, resolver, correctoDe,
 } from "../../data/repasoCap5ToroNegroJuego.js";
 
@@ -590,9 +590,13 @@ function PreguntaCalculo({ p, onRespondida, r, respuestas = {} }) {
  * entre renglones. Con prefers-reduced-motion, el estado final de una vez.
  * El fantasma es la barra con que empezó la etapa.
  */
+/* D8: el libro y los cortes de la versión que se juega (A por defecto). */
+const VersionR5_2 = createContext({ movs: MOVIMIENTOS, cortes: CORTES_R5_2 });
+
 function Corte({ etapa, onSiguiente, ultimo = false }) {
-  const antes = libroAntesDe(etapa);
-  const nuevos = MOVIMIENTOS[etapa];
+  const { movs, cortes } = useContext(VersionR5_2);
+  const antes = libroAntesDe(etapa, movs);
+  const nuevos = movs[etapa];
   const saldoInicial = saldoDe(antes);
   const reducir = reducirMovimiento();
   const [vistos, setVistos] = useState(reducir ? nuevos.length : 0);
@@ -629,7 +633,7 @@ function Corte({ etapa, onSiguiente, ultimo = false }) {
       <LineaDeTiempo estados={estadosDeTiempo(etapa, true)} />
       <h3 ref={titulo} tabIndex={-1} style={{ margin: "16px 0", fontFamily: SORA, fontSize: "20px", lineHeight: "28px", fontWeight: 600, color: C.texto, outline: "none" }}>{RT.tituloCorte}</h3>
       <LibroProvision movimientos={movimientos} saldo={saldo} fantasma={terminado ? saldoInicial : null} nuevos={nuevos.map((m) => m.id)} />
-      {CORTES_R5_2[etapa].parrafos.map((t, k) => (
+      {cortes[etapa].parrafos.map((t, k) => (
         <p key={k} data-texto-corte style={{ margin: k ? "12px 0 0" : "16px 0 0", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>{t}</p>
       ))}
       <div style={{ marginTop: "24px" }}><BotonSiguiente sustantivo={RT.sustantivo} onClick={onSiguiente} ultimo={ultimo} /></div>
@@ -683,7 +687,14 @@ function CasoEnTresTiempos({ filas }) {
  */
 const PREGUNTA_POR_TIPO = { calculo: PreguntaCalculo, asiento: PreguntaAsiento, saldo: PreguntaSaldo };
 
-export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_R5_2, pasos = PASOS_R5_2 }) {
+export function ToroNegro({ onCompletar, preparar = null, preguntas: preguntasFijas = null, pasos = PASOS_R5_2, version: fija = null }) {
+  /* D8: los intentos pares juegan la versión B (otros castigos; la provisión queda en el haber). */
+  const { version, terminar } = useIntento("r5-2", fija);
+  const [jugada, setJugada] = useState(version);
+  const proxima = useRef(version);
+  const datos = versionR5_2(jugada);
+  const preguntas = preguntasFijas ?? datos.PREGUNTAS_R5_2;
+  const movs = movimientosDe(datos.VALORES);
   const [tanda, setTanda] = useState(() => preparar?.() ?? prepararR5_2());
   const [paso, setPaso] = useState(0);
   const [r, setR] = useState(null);
@@ -700,7 +711,9 @@ export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_
   const bien = Object.values(resultados).filter(Boolean).length;
 
   useEffect(() => {
-    if (terminado) onCompletar?.(puntuarR5_2(bien, total), Date.now() - inicio.current, detalle.current);
+    if (!terminado) return;
+    proxima.current = terminar();
+    onCompletar?.(puntuarR5_2(bien, total), Date.now() - inicio.current, detalle.current);
   }, [terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (r) boton.current?.focus(); }, [r]);
 
@@ -721,6 +734,7 @@ export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_
 
   const reiniciar = () => {
     setTanda(preparar?.() ?? prepararR5_2());
+    setJugada(proxima.current);
     setPaso(0); setR(null); setResultados({}); setRespuestas({}); setTerminado(false);
     detalle.current = []; inicio.current = Date.now();
   };
@@ -729,7 +743,7 @@ export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_
     return (
       <div data-r5-2 data-r5 data-cierre>
         <style>{CSS_JUEGO + CSS_R5_2}</style>
-        <CasoEnTresTiempos filas={porEtapa(resultados, preguntas)} />
+        <CasoEnTresTiempos filas={porEtapa(resultados, preguntas, movs)} />
         <Cierre pct={Math.round(puntuarR5_2(bien, total))} onReiniciar={reiniciar} />
       </div>
     );
@@ -750,7 +764,9 @@ export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_
     return (
       <div data-r5-2 data-r5 data-paso={`corte-${ahora.etapa}`} ref={raiz}>
         <style>{CSS_JUEGO + CSS_R5_2}</style>
-        <Corte key={ahora.etapa} etapa={ahora.etapa} onSiguiente={avanzar} ultimo={paso + 1 === pasos.length} />
+        <VersionR5_2.Provider value={{ movs, cortes: datos.CORTES_R5_2 }}>
+          <Corte key={ahora.etapa} etapa={ahora.etapa} onSiguiente={avanzar} ultimo={paso + 1 === pasos.length} />
+        </VersionR5_2.Provider>
       </div>
     );
   }
@@ -766,7 +782,7 @@ export function ToroNegro({ onCompletar, preparar = null, preguntas = PREGUNTAS_
       <div style={{ marginTop: "8px" }}><LineaDeTiempo estados={estadosDeTiempo(p.etapa)} /></div>
       <div style={{ marginTop: "16px" }}><TarjetaHecho marca={etapa.marca} texto={resolver(p.hecho, respuestas)} /></div>
       {/* El libro como estaba al empezar la etapa (la regla del libro). */}
-      {!p.sinLibro && <div style={{ marginTop: "16px" }}><LibroProvision movimientos={libroAntesDe(p.etapa)} /></div>}
+      {!p.sinLibro && <div style={{ marginTop: "16px" }}><LibroProvision movimientos={libroAntesDe(p.etapa, movs)} /></div>}
       <p data-enunciado tabIndex={-1} style={{ margin: "16px 0", fontFamily: INTER, fontSize: "17px", lineHeight: "26px", fontWeight: 600, color: C.texto, outline: "none" }}>{p.enunciado}</p>
       <Pregunta key={p.id} p={p} hoja={tanda.hoja} r={r} respuestas={respuestas} onRespondida={responder(p)} />
       <Devolucion r={r} />

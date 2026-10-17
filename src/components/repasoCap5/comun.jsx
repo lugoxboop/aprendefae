@@ -224,6 +224,32 @@ export function PuntoDelMes({ estado, clase }) {
   return <span data-punto-mes={estado} className={clase} style={{ ...base, ...forma }} />;
 }
 
+/*
+ * ═══════════ LA VERSIÓN B (D8) ═══════════
+ *
+ * Cada actividad cuenta en este navegador los intentos que terminó. El
+ * intento 1, 3, 5… juega la versión A (los datos del libro); el 2, 4, 6…, la
+ * B (otros datos, las cifras calculadas de ellos). Un intento cuenta al
+ * terminarse (`terminar`), no al abrirse: abrir y salir no cambia la versión.
+ * `fija` la impone (pruebas, vista docente).
+ */
+const claveDeIntentos = (id) => `fae:r5:intentos:${id}`;
+export function leerIntentos(id) {
+  try { return Number(globalThis.localStorage?.getItem(claveDeIntentos(id))) || 0; } catch { return 0; }
+}
+export const versionDelIntento = (n) => (n % 2 === 0 ? "B" : "A");
+export function useIntento(id, fija = null) {
+  const [hechos, setHechos] = useState(() => leerIntentos(id));
+  /* Termina el intento en curso; devuelve la versión del siguiente («Jugar otra vez»). */
+  const terminar = () => {
+    const n = leerIntentos(id) + 1;
+    try { globalThis.localStorage?.setItem(claveDeIntentos(id), String(n)); } catch { /* sin almacenamiento: siempre A */ }
+    setHechos(n);
+    return fija ?? versionDelIntento(n + 1);
+  };
+  return { intento: hechos + 1, version: fija ?? versionDelIntento(hechos + 1), terminar };
+}
+
 /* La cita del libro, al pie de la pantalla (lote de textos de Miyata): 12 px, atenuada. */
 export function Cita({ texto }) {
   if (!texto) return null;

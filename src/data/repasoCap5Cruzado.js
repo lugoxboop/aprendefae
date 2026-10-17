@@ -229,6 +229,48 @@ const LOTES_C9 = [
 ];
 const VENDIDAS_C9 = 225;
 
+/*
+ * ═══════════ VERSIÓN B (D8, Miyata) ═══════════
+ *
+ * En los intentos pares cambian los datos de la pantalla 4 (el 8 del bloque C)
+ * y de la 5 (el 9). Las cifras salen de los datos; los textos con cifra son
+ * plantillas que valen para A y para B.
+ */
+const DATOS_C8_B = [
+  { id: "ventas", etiqueta: "Ventas", valor: 12600, signo: null },
+  { id: "devoluciones-ventas", etiqueta: "Devoluciones de ventas", valor: 900, signo: null },
+  { id: "inventario-inicial", etiqueta: "Inventario inicial", valor: 700, signo: "+" },
+  { id: "compras", etiqueta: "Compras", valor: 5000, signo: "+" },
+  { id: "devoluciones-compras", etiqueta: "Devoluciones de compras", valor: 400, signo: "−" },
+  { id: "inventario-final", etiqueta: "Inventario final", valor: 1100, signo: "−" },
+];
+const LOTES_C9_B = [
+  { marca: "Lote 1 · Al inicio", unidades: 50, costo: 16 },
+  { marca: "Lote 2 · Primera compra", unidades: 120, costo: 17 },
+  { marca: "Lote 3 · Segunda compra", unidades: 70, costo: 24 },
+];
+const VENDIDAS_C9_B = 210;
+
+/* Las plantillas de C.9 (Miyata, versión B): una para A y para B. */
+export const PLANTILLAS_C9 = {
+  promedioSimple: (cifra) => `Usaste ${cifra}, el promedio simple de los tres precios. Pero no hubo igual cantidad a cada precio: el promedio pesa cada lote por sus unidades.`,
+  acierto: (quedan) => `Las ${quedan} que quedan valen el promedio, como todas las demás. Cada lote pesó según sus unidades.`,
+};
+
+/* Las cuatro opciones de C.9, calculadas: última compra, lote más viejo, promedio simple y la clave (ponderado). */
+function opcionesDeC9(lotes, vendidas) {
+  const unidades = lotes.reduce((t, l) => t + l.unidades, 0);
+  const quedan = unidades - vendidas;
+  const ponderado = lotes.reduce((t, l) => t + l.unidades * l.costo, 0) / unidades;
+  const simple = lotes.reduce((t, l) => t + l.costo, 0) / lotes.length;
+  return [
+    { id: "c9-a", valor: quedan * lotes[lotes.length - 1].costo, retro: "Usaste el precio de la última compra. Eso daría PEPS. Aquí los lotes ya se mezclaron: cada unidad vale el promedio." },
+    { id: "c9-b", valor: quedan * lotes[0].costo, retro: "Usaste el precio del lote más viejo. Tras mezclar los lotes, ninguna unidad conserva su precio de origen." },
+    { id: "c9-c", valor: Math.round(quedan * simple), retro: PLANTILLAS_C9.promedioSimple(pesos(simple)) },
+    { id: "c9-d", correcta: true, valor: Math.round(quedan * ponderado), retro: PLANTILLAS_C9.acierto(quedan) },
+  ];
+}
+
 /* Pantalla 6: el mayor del cierre. Lo que sale es todo el inventario inicial. */
 const MAYOR_C10 = [
   { nombre: INVENTARIO, naturaleza: "debe", saldo: 800000 },
@@ -338,12 +380,8 @@ export const PANTALLAS_R5_1 = [
     enunciado: "Vacía los tres lotes. Con promedio ponderado, ¿cuánto vale lo que queda?",
     lotes: LOTES_C9,
     vendidas: VENDIDAS_C9,
-    opciones: [
-      { id: "c9-a", valor: 625, retro: "Usaste el precio de la última compra. Eso daría PEPS. Aquí los lotes ya se mezclaron: cada unidad vale el promedio." },
-      { id: "c9-b", valor: 450, retro: "Usaste el precio del lote más viejo. Tras mezclar los lotes, ninguna unidad conserva su precio de origen." },
-      { id: "c9-c", valor: 525, retro: "Usaste $21, el promedio simple de los tres precios. Pero no hubo igual cantidad a cada precio: el promedio pesa cada lote por sus unidades." },
-      { id: "c9-d", correcta: true, valor: 526, retro: "Bien. Las 25 que quedan valen el promedio, como todas las demás. Cada lote pesó según sus unidades." },
-    ],
+    /* Versión B (D8): las cuatro cifras se calculan de los lotes (625 · 450 · 525 · 526 en A). */
+    opciones: opcionesDeC9(LOTES_C9, VENDIDAS_C9),
     pista: "Después de mezclar, ¿alguna unidad conserva el precio de su lote?",
   },
   {
@@ -365,6 +403,13 @@ export const PANTALLAS_R5_1 = [
     pista: "Para sacar un activo de los libros, ¿va al debe o al haber?",
   },
 ];
+
+/* La versión B: mismas pantallas; la 4 y la 5 con los datos B y la cita «Basado en el libro». */
+export const PANTALLAS_R5_1_B = PANTALLAS_R5_1.map((p) => {
+  if (p.id === "c8") return { ...p, version: "B", datos: DATOS_C8_B, cita: "Basado en el libro: el 8 del bloque C, pp. 263-266." };
+  if (p.id === "c9") return { ...p, version: "B", lotes: LOTES_C9_B, vendidas: VENDIDAS_C9_B, opciones: opcionesDeC9(LOTES_C9_B, VENDIDAS_C9_B), cita: "Basado en el libro: el 9 del bloque C, pp. 263-266." };
+  return p;
+});
 
 /* ═══════════ LA LÓGICA, SIN REACT ═══════════ */
 
@@ -536,8 +581,11 @@ function distinto(xs, antes, barajador) {
   return [...antes.slice(1), antes[0]];
 }
 
-export function prepararR5_1(anterior = null, barajador = barajar) {
-  return PANTALLAS_R5_1.map((p) => {
+/* Las pantallas de una versión: «A» (la del libro) o «B» (D8, los intentos pares). */
+export const pantallasDe = (version = "A") => (version === "B" ? PANTALLAS_R5_1_B : PANTALLAS_R5_1);
+
+export function prepararR5_1(anterior = null, barajador = barajar, version = "A") {
+  return pantallasDe(version).map((p) => {
     if (!p.opciones) return p;
     const antes = anterior?.find((x) => x.id === p.id)?.opciones ?? p.opciones;
     return { ...p, opciones: distinto(p.opciones, antes, barajador) };

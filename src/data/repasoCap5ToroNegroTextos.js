@@ -1,4 +1,5 @@
 import { VEREDICTO } from "./repasoCap5Comun.js";
+import { pesos as p } from "./contabilidad.js";
 import { CIFRAS, CASTIGOS_MARZO, RECUPERACION_MAYO, COLUMNAS, PORCENTAJES } from "./repasoCap5ToroNegro.js";
 
 /*
@@ -25,20 +26,36 @@ import { CIFRAS, CASTIGOS_MARZO, RECUPERACION_MAYO, COLUMNAS, PORCENTAJES } from
 
 const castigo = (compania) => CASTIGOS_MARZO.find((c) => c.compania === compania).valor;
 
-export const VALORES = {
-  cartera: CIFRAS.totalGeneral, // 38.230.000
-  provision: CIFRAS.provision, // 2.283.400
-  roja: castigo("roja"), // 950.000
-  negra: castigo("negra"), // 1.500.000
-  castigos: CIFRAS.castigos, // 2.450.000
-  recuperacion: RECUPERACION_MAYO.valor, // 950.000
-  /* Lo que queda en la provisión tras cada movimiento. */
-  trasRoja: CIFRAS.provision - castigo("roja"), // 1.333.400
-  trasNegra: CIFRAS.provision - castigo("negra"), // 783.400
-  sumando: CIFRAS.provision + CIFRAS.castigos, // 4.733.400
-  faltante: CIFRAS.castigoSobreProvision, // 166.600, saldo débito
-  mayo: RECUPERACION_MAYO.valor - CIFRAS.castigoSobreProvision, // 783.400, saldo crédito
+/*
+ * Las cifras de una versión, desde sus castigos (la provisión es la misma en
+ * A y en B). Versión B (D8, Miyata): la Cía. Roja $850.000 y la Negra
+ * $1.200.000; la provisión alcanza y queda en el haber.
+ */
+export function valoresDe({ roja, negra }) {
+  const provision = CIFRAS.provision; // 2.283.400
+  const castigos = roja + negra;
+  return {
+    cartera: CIFRAS.totalGeneral, // 38.230.000
+    provision,
+    roja, // A 950.000 · B 850.000
+    negra, // A 1.500.000 · B 1.200.000
+    castigos, // A 2.450.000 · B 2.050.000
+    recuperacion: roja, // la Cía. Roja paga en mayo
+    /* Lo que queda en la provisión tras cada movimiento. */
+    trasRoja: provision - roja, // A 1.333.400 · B 1.433.400
+    trasNegra: provision - negra, // A 783.400 · B 1.083.400
+    sumando: provision + castigos, // A 4.733.400 · B 4.333.400
+    /* El saldo de marzo con signo (haber +): A −166.600 (debe) · B 233.400 (haber). */
+    marzo: provision - castigos,
+    faltante: castigos - provision, // A 166.600
+    mayo: provision - castigos + roja, // A 783.400 · B 1.083.400, en el haber
+  };
+}
+export const DATOS_R5_2 = {
+  A: { roja: castigo("roja"), negra: castigo("negra") },
+  B: { roja: 850000, negra: 1200000 },
 };
+export const VALORES = valoresDe(DATOS_R5_2.A);
 
 /* ═══════════ LA FICHA ═══════════ */
 
@@ -195,200 +212,223 @@ export const ROTULOS_A0 = {
   era: (cifra) => `Iba aquí: ${cifra}`,
 };
 
-const ASIENTO_1 = {
-  id: "p1",
-  etapa: "dic",
-  /*
-   * Delta a0: «la provisión que calculaste», siempre con la cifra correcta,
-   * aunque (a0) haya salido mal (Miyata e Itagaki: el error de (a0) no se
-   * cobra dos veces). «No trae saldo de antes» es un DATO DECLARADO POR LA
-   * CÉLULA: el libro no lo dice (decisión 8).
-   */
-  hecho: "31 de diciembre. La provisión que calculaste es de $2.283.400. No trae saldo de antes.",
-  enunciado: "Arma el asiento del ajuste de la provisión.",
-  correcto: { debe: GASTO, haber: PROVISION, valor: VALORES.provision },
-  alReves: "Va al revés. El gasto va al debe. La provisión crece por el haber.",
-  debeMal: {
-    [PROVISION]: "La provisión crece, y crece por el haber. Al debe va el gasto del año.",
-    [CLIENTES]: "Nadie te debe más que antes. Lo nuevo es un gasto: eso va al debe.",
-    [CAJA]: "No entra dinero. Solo estimas una pérdida, y una pérdida es un gasto.",
-    [INGRESOS]: "Las ventas no se tocan. Lo que reconoces es un gasto por lo que quizá no cobres.",
-  },
-  haberMal: {
-    [CLIENTES]: "Aún no sale ninguna deuda. Solo estimas lo que podrías perder. Por eso el haber es la provisión, no la cartera.",
-    [CAJA]: "No sale dinero. La provisión es una estimación, no un pago.",
-    [INGRESOS]: "No es un ingreso. Es lo que podrías perder: va a la provisión.",
-    [GASTO]: "El gasto va en el debe. En el haber va la provisión que se crea.",
-  },
-  valorMal: [
-    { valor: VALORES.cartera, texto: "Esa es toda la cartera. La provisión es solo la parte que quizá no cobres: $2.283.400." },
-  ],
-  /* Decisión 7: ningún «análisis» en r5-2. */
-  valorGenerica: "Usa la provisión que calculaste: $2.283.400.",
-  acierto: "Reconoces el gasto del año y creas la provisión. La cartera no se toca: nadie ha dejado de pagar todavía.",
-};
-
-const ASIENTO_2 = {
-  id: "p2",
-  etapa: "marzo",
-  hecho: "Marzo del año siguiente. Se da por perdida una deuda de la Cía. Roja por $950.000. Lleva tanto tiempo vencida que la empresa ya no espera cobrarla.",
-  enunciado: "Arma el castigo de la deuda de la Cía. Roja.",
-  correcto: { debe: PROVISION, haber: CLIENTES, valor: VALORES.roja },
-  alReves: "Va al revés: así la cartera sube. Castigar es sacar la deuda. La cartera va al haber.",
-  debeMal: {
-    [GASTO]: "El gasto de esta deuda ya se registró en diciembre, al crear la provisión. Si lo pones otra vez, lo cuentas dos veces. Castiga contra la provisión.",
-    [CAJA]: "No entra dinero. Es justo lo contrario: una deuda que ya no se va a cobrar.",
-    [INGRESOS]: "La venta fue real y no se anula. Lo que se pierde es el cobro, y eso ya se estimó en la provisión.",
-    [CLIENTES]: "La deuda no sube: sale. La cartera va al haber.",
-  },
-  haberMal: {
-    [PROVISION]: "La provisión es la que se usa, y se usa por el debe. Al haber va la deuda que sale.",
-    [GASTO]: "El gasto no se toca aquí. Lo que sale es la deuda del cliente.",
-    [CAJA]: "No sale dinero. Lo que sale de los libros es la deuda.",
-    [INGRESOS]: "No hay ingreso que borrar. Lo que sale es lo que el cliente debía.",
-  },
-  valorMal: [
-    { valor: VALORES.castigos, texto: "Ese es el total de los dos castigos. Esta pantalla pide solo el de la Cía. Roja." },
-    { valor: VALORES.negra, texto: "Ese valor es de la Cía. Negra. La deuda perdida de la Cía. Roja es de $950.000." },
-  ],
-  valorGenerica: "Revisa el valor. Usa el de la deuda que se da por perdida.",
-  acierto: "La deuda sale de la cartera y la provisión cubre la pérdida. El gasto no se toca: ya se registró en diciembre.",
-};
-
-const ASIENTO_3 = {
-  id: "p3",
-  etapa: "marzo",
-  hecho: "También en marzo, se da por perdida una deuda de la Cía. Negra por $1.500.000. Tampoco se espera cobrarla.",
-  enunciado: "Arma el castigo de la deuda de la Cía. Negra.",
-  correcto: { debe: PROVISION, haber: CLIENTES, valor: VALORES.negra },
-  alReves: "Así la deuda vuelve en vez de salir. Para castigar, la cartera va al haber.",
-  debeMal: {
-    [GASTO]: "Esta pérdida ya se cargó al gasto en diciembre. Si la cargas de nuevo, cuentas el gasto dos veces. Usa la provisión.",
-    [CAJA]: "No llega dinero. Esta deuda se da por perdida.",
-    [INGRESOS]: "La venta no se borra. Lo que se pierde es el cobro, y para eso está la provisión.",
-    [CLIENTES]: "La cartera baja, no sube. Por eso va al haber.",
-  },
-  haberMal: {
-    [PROVISION]: "La provisión se gasta por el debe. Al haber va la deuda que sale.",
-    [GASTO]: "El gasto queda quieto. Lo que sale es la deuda de la Cía. Negra.",
-    [CAJA]: "No sale dinero. Solo sale la deuda de los libros.",
-    [INGRESOS]: "No hay venta que borrar. Sale lo que el cliente debía.",
-  },
-  valorMal: [
-    /* «Partir el castigo»: lo que quedaba en la provisión tras la Cía. Roja. */
-    { valor: VALORES.trasRoja, texto: "Pusiste solo lo que quedaba en la provisión. Pero el castigo va completo contra ella, aunque no alcance: $1.500.000. Pasó igual con Pablo Moncayo." },
-    { valor: VALORES.castigos, texto: "Ese es el total de los dos castigos. Aquí va solo el de la Cía. Negra." },
-    { valor: VALORES.roja, texto: "Ese valor es de la Cía. Roja. La deuda perdida de la Cía. Negra es de $1.500.000." },
-  ],
-  valorGenerica: "Revisa el valor. Es el de la deuda de la Cía. Negra.",
-  acierto: "El castigo va completo contra la provisión, aunque ya le quede poco.",
-};
-
-const HECHO_MAYO = "Mayo. La Cía. Roja paga con un cheque de $950.000. Con eso cancela la factura que se castigó en marzo.";
-
-const ASIENTO_5 = {
-  id: "p5",
-  etapa: "mayo",
-  hecho: HECHO_MAYO,
-  enunciado: "Primero, revive la deuda de la Cía. Roja.",
-  correcto: { debe: CLIENTES, haber: PROVISION, valor: VALORES.recuperacion },
-  alReves: "Ese es el castigo de marzo. Revivir es hacer lo contrario: la deuda vuelve a la cartera.",
-  debeMal: {
-    /* «Saltarse el revivir». */
-    [CAJA]: "Te saltaste un paso. Antes de cobrar, la deuda tiene que volver a la cartera. Si no, el pago no tiene qué cancelar.",
-    [GASTO]: "El gasto no se toca. Revivir es devolver la deuda a la cartera.",
-    [INGRESOS]: "Las ventas no se tocan. Revivir solo devuelve la deuda a los libros.",
-    [PROVISION]: "La provisión recibe la deuda que vuelve: va al haber. Al debe va la cartera.",
-  },
-  haberMal: {
-    /* «Revivir contra el gasto». */
-    [GASTO]: "En marzo, el castigo no tocó el gasto: salió de la provisión. Al revivir la deuda, vuelve a la provisión.",
-    /* «Registrar un ingreso». */
-    [INGRESOS]: "Aquí no se anota ningún ingreso. No es una venta nueva: la deuda solo vuelve.",
-    [CAJA]: "No sale dinero. La deuda solo vuelve a los libros.",
-    [CLIENTES]: "La cartera ya va en el debe. Al haber va la provisión, de donde salió el castigo.",
-  },
-  valorMal: [
-    { valor: VALORES.negra, texto: "Ese valor es de la Cía. Negra, que sigue sin pagar. La que vuelve es la de la Cía. Roja: $950.000." },
-    { valor: VALORES.castigos, texto: "Solo paga la Cía. Roja. Revive solo su deuda: $950.000." },
-  ],
-  valorGenerica: "Revisa el valor. Es el de la deuda que vuelve.",
-  acierto: "La deuda vuelve a la cartera y a la provisión. Es el castigo de marzo, pero al revés.",
-};
-
-const ASIENTO_6 = {
-  id: "p6",
-  etapa: "mayo",
-  /* La misma tarjeta de la pantalla 5. */
-  hecho: HECHO_MAYO,
-  enunciado: "Ahora, anota el pago de la Cía. Roja.",
-  correcto: { debe: CAJA, haber: CLIENTES, valor: VALORES.recuperacion },
-  alReves: "El dinero entra, así que Caja va al debe. La deuda se paga, así que la cartera va al haber.",
-  debeMal: {
-    [PROVISION]: "La provisión ya se movió al revivir la deuda. Aquí entra dinero: va Caja.",
-    [GASTO]: "El gasto no se toca. Lo que entra es el dinero del cheque.",
-    [INGRESOS]: "Las ventas no se tocan. Al debe va el dinero que llega.",
-    [CLIENTES]: "La deuda se paga, así que baja. La cartera va al haber.",
-  },
-  haberMal: {
-    /* «Registrar un ingreso». */
-    [INGRESOS]: "No se anota ingreso: la deuda volvió y se pagó.",
-    [PROVISION]: "La provisión ya recibió los $950.000. Ahora el cheque paga la deuda que revivió: va la cartera.",
-    [GASTO]: "El gasto queda quieto. El cheque paga una deuda, no un gasto.",
-    [CAJA]: "Caja va en el debe, porque el dinero entra. Al haber va la deuda que se paga.",
-  },
-  valorMal: [
-    { valor: VALORES.negra, texto: "La Cía. Negra no pagó. El cheque es de la Cía. Roja: $950.000." },
-    { valor: VALORES.castigos, texto: "Solo llega un cheque, el de la Cía. Roja. Anota $950.000." },
-  ],
-  valorGenerica: "Revisa el valor. Es el del cheque.",
-  acierto: "Primero la deuda vuelve a la cartera y a la provisión. Luego la Cía. Roja paga y la cartera baja. No hay ingreso: la deuda volvió y se pagó.",
-};
-
-/* ═══════════ LA PANTALLA DE SALDO (pregunta 4) ═══════════ */
-
 /*
- * Prioridad (Kamogawa, decisión 2): primero 166.600 con el lado crédito,
- * después los valores previstos, después la genérica. Se permite 0, y con 0
- * no se exige lado.
+ * Las preguntas y los cortes de una versión (D8). Las cifras salen de `V`;
+ * los textos con cifra son plantillas; donde la lógica cambia (el saldo de
+ * marzo queda en el haber en B), va el texto propio de la versión (Miyata).
  */
-const SALDO_4 = {
-  id: "p4",
-  etapa: "marzo",
-  tipo: "saldo",
-  hecho: "La provisión empezó con $2.283.400. En marzo se castigaron dos deudas: $950.000 de la Cía. Roja y $1.500.000 de la Cía. Negra.",
-  enunciado: "Escribe el saldo de la provisión. Luego elige si queda en el debe o en el haber.",
-  correcto: { valor: VALORES.faltante, lado: "debito" },
-  ladoMal: "La cifra está bien; el lado no. Salió más por el debe de lo que había en el haber. El saldo queda en el debe.",
-  valorMal: [
-    { valor: VALORES.trasRoja, texto: "Restaste solo la Cía. Roja. Falta el castigo de la Cía. Negra: $1.500.000." },
-    { valor: VALORES.trasNegra, texto: "Restaste solo la Cía. Negra. Falta el castigo de la Cía. Roja: $950.000. Ese número sí aparece más adelante, pero en marzo todavía no." },
-    { valor: VALORES.sumando, texto: "Sumaste. El castigo baja la provisión: se resta, no se suma." },
-    { valor: 0, texto: "La provisión no se queda en cero. Se castigó todo lo perdido, aunque pase de lo que había." },
-  ],
-  generica: "Parte de $2.283.400 y resta los dos castigos. Luego mira qué lado ganó.",
-  acierto: "Todo el castigo va contra la provisión. Como no alcanzó, queda en el debe por $166.600.",
-};
+export function construirR5_2(V, version = "A") {
+  const ASIENTO_1 = {
+    id: "p1",
+    etapa: "dic",
+    /*
+     * Delta a0: «la provisión que calculaste», siempre con la cifra correcta,
+     * aunque (a0) haya salido mal (Miyata e Itagaki: el error de (a0) no se
+     * cobra dos veces). «No trae saldo de antes» es un DATO DECLARADO POR LA
+     * CÉLULA: el libro no lo dice (decisión 8).
+     */
+    hecho: "31 de diciembre. La provisión que calculaste es de $2.283.400. No trae saldo de antes.",
+    enunciado: "Arma el asiento del ajuste de la provisión.",
+    correcto: { debe: GASTO, haber: PROVISION, valor: V.provision },
+    alReves: "Va al revés. El gasto va al debe. La provisión crece por el haber.",
+    debeMal: {
+      [PROVISION]: "La provisión crece, y crece por el haber. Al debe va el gasto del año.",
+      [CLIENTES]: "Nadie te debe más que antes. Lo nuevo es un gasto: eso va al debe.",
+      [CAJA]: "No entra dinero. Solo estimas una pérdida, y una pérdida es un gasto.",
+      [INGRESOS]: "Las ventas no se tocan. Lo que reconoces es un gasto por lo que quizá no cobres.",
+    },
+    haberMal: {
+      [CLIENTES]: "Aún no sale ninguna deuda. Solo estimas lo que podrías perder. Por eso el haber es la provisión, no la cartera.",
+      [CAJA]: "No sale dinero. La provisión es una estimación, no un pago.",
+      [INGRESOS]: "No es un ingreso. Es lo que podrías perder: va a la provisión.",
+      [GASTO]: "El gasto va en el debe. En el haber va la provisión que se crea.",
+    },
+    valorMal: [
+      { valor: V.cartera, texto: "Esa es toda la cartera. La provisión es solo la parte que quizá no cobres: $2.283.400." },
+    ],
+    /* Decisión 7: ningún «análisis» en r5-2. */
+    valorGenerica: "Usa la provisión que calculaste: $2.283.400.",
+    acierto: "Reconoces el gasto del año y creas la provisión. La cartera no se toca: nadie ha dejado de pagar todavía.",
+  };
 
-/* Las siete preguntas, en orden: (a0) y las seis de v2. */
-export const PREGUNTAS_R5_2 = [
-  CALCULO_A0,
-  { ...ASIENTO_1, tipo: "asiento" },
-  { ...ASIENTO_2, tipo: "asiento" },
-  { ...ASIENTO_3, tipo: "asiento" },
-  SALDO_4,
-  { ...ASIENTO_5, tipo: "asiento" },
-  { ...ASIENTO_6, tipo: "asiento" },
-];
+  const ASIENTO_2 = {
+    id: "p2",
+    etapa: "marzo",
+    hecho: `Marzo del año siguiente. Se da por perdida una deuda de la Cía. Roja por ${p(V.roja)}. Lleva tanto tiempo vencida que la empresa ya no espera cobrarla.`,
+    enunciado: "Arma el castigo de la deuda de la Cía. Roja.",
+    correcto: { debe: PROVISION, haber: CLIENTES, valor: V.roja },
+    alReves: "Va al revés: así la cartera sube. Castigar es sacar la deuda. La cartera va al haber.",
+    debeMal: {
+      [GASTO]: "El gasto de esta deuda ya se registró en diciembre, al crear la provisión. Si lo pones otra vez, lo cuentas dos veces. Castiga contra la provisión.",
+      [CAJA]: "No entra dinero. Es justo lo contrario: una deuda que ya no se va a cobrar.",
+      [INGRESOS]: "La venta fue real y no se anula. Lo que se pierde es el cobro, y eso ya se estimó en la provisión.",
+      [CLIENTES]: "La deuda no sube: sale. La cartera va al haber.",
+    },
+    haberMal: {
+      [PROVISION]: "La provisión es la que se usa, y se usa por el debe. Al haber va la deuda que sale.",
+      [GASTO]: "El gasto no se toca aquí. Lo que sale es la deuda del cliente.",
+      [CAJA]: "No sale dinero. Lo que sale de los libros es la deuda.",
+      [INGRESOS]: "No hay ingreso que borrar. Lo que sale es lo que el cliente debía.",
+    },
+    valorMal: [
+      { valor: V.castigos, texto: "Ese es el total de los dos castigos. Esta pantalla pide solo el de la Cía. Roja." },
+      { valor: V.negra, texto: `Ese valor es de la Cía. Negra. La deuda perdida de la Cía. Roja es de ${p(V.roja)}.` },
+    ],
+    valorGenerica: "Revisa el valor. Usa el de la deuda que se da por perdida.",
+    acierto: "La deuda sale de la cartera y la provisión cubre la pérdida. El gasto no se toca: ya se registró en diciembre.",
+  };
 
-/* ═══════════ LOS CORTES ═══════════ */
+  const ASIENTO_3 = {
+    id: "p3",
+    etapa: "marzo",
+    hecho: `También en marzo, se da por perdida una deuda de la Cía. Negra por ${p(V.negra)}. Tampoco se espera cobrarla.`,
+    enunciado: "Arma el castigo de la deuda de la Cía. Negra.",
+    correcto: { debe: PROVISION, haber: CLIENTES, valor: V.negra },
+    alReves: "Así la deuda vuelve en vez de salir. Para castigar, la cartera va al haber.",
+    debeMal: {
+      [GASTO]: "Esta pérdida ya se cargó al gasto en diciembre. Si la cargas de nuevo, cuentas el gasto dos veces. Usa la provisión.",
+      [CAJA]: "No llega dinero. Esta deuda se da por perdida.",
+      [INGRESOS]: "La venta no se borra. Lo que se pierde es el cobro, y para eso está la provisión.",
+      [CLIENTES]: "La cartera baja, no sube. Por eso va al haber.",
+    },
+    haberMal: {
+      [PROVISION]: "La provisión se gasta por el debe. Al haber va la deuda que sale.",
+      [GASTO]: "El gasto queda quieto. Lo que sale es la deuda de la Cía. Negra.",
+      [CAJA]: "No sale dinero. Solo sale la deuda de los libros.",
+      [INGRESOS]: "No hay venta que borrar. Sale lo que el cliente debía.",
+    },
+    valorMal: [
+      /* «Partir el castigo»: lo que quedaba en la provisión tras la Cía. Roja. Solo en A: en B la provisión alcanza. */
+      ...(version === "A" ? [{ valor: V.trasRoja, texto: `Pusiste solo lo que quedaba en la provisión. Pero el castigo va completo contra ella, aunque no alcance: ${p(V.negra)}. Pasó igual con Pablo Moncayo.` }] : []),
+      { valor: V.castigos, texto: "Ese es el total de los dos castigos. Aquí va solo el de la Cía. Negra." },
+      { valor: V.roja, texto: `Ese valor es de la Cía. Roja. La deuda perdida de la Cía. Negra es de ${p(V.negra)}.` },
+    ],
+    valorGenerica: "Revisa el valor. Es el de la deuda de la Cía. Negra.",
+    acierto: "El castigo va completo contra la provisión, aunque ya le quede poco.",
+  };
 
-export const CORTES_R5_2 = {
-  dic: { parrafos: [] },
-  marzo: {
-    parrafos: ["La provisión es lo que estimaste perder. En diciembre estimaste $2.283.400. En marzo se perdieron $2.450.000. La estimación se quedó corta por $166.600. Por eso la provisión queda en el debe: muestra un faltante. Ya lo viste con Pablo Moncayo. Tenía $148.800 y se castigaron $180.000. Si nada cambia, el próximo 31 de diciembre el ajuste suma lo que faltó."],
-  },
-  mayo: {
-    parrafos: ["La provisión venía en el debe con $166.600. Al revivir la deuda, recibió $950.000 en el haber. Ahora queda en el haber con $783.400. Ya no tiene faltante."],
-  },
-};
+  const HECHO_MAYO = `Mayo. La Cía. Roja paga con un cheque de ${p(V.recuperacion)}. Con eso cancela la factura que se castigó en marzo.`;
+
+  const ASIENTO_5 = {
+    id: "p5",
+    etapa: "mayo",
+    hecho: HECHO_MAYO,
+    enunciado: "Primero, revive la deuda de la Cía. Roja.",
+    correcto: { debe: CLIENTES, haber: PROVISION, valor: V.recuperacion },
+    alReves: "Ese es el castigo de marzo. Revivir es hacer lo contrario: la deuda vuelve a la cartera.",
+    debeMal: {
+      /* «Saltarse el revivir». */
+      [CAJA]: "Te saltaste un paso. Antes de cobrar, la deuda tiene que volver a la cartera. Si no, el pago no tiene qué cancelar.",
+      [GASTO]: "El gasto no se toca. Revivir es devolver la deuda a la cartera.",
+      [INGRESOS]: "Las ventas no se tocan. Revivir solo devuelve la deuda a los libros.",
+      [PROVISION]: "La provisión recibe la deuda que vuelve: va al haber. Al debe va la cartera.",
+    },
+    haberMal: {
+      /* «Revivir contra el gasto». */
+      [GASTO]: "En marzo, el castigo no tocó el gasto: salió de la provisión. Al revivir la deuda, vuelve a la provisión.",
+      /* «Registrar un ingreso». */
+      [INGRESOS]: "Aquí no se anota ningún ingreso. No es una venta nueva: la deuda solo vuelve.",
+      [CAJA]: "No sale dinero. La deuda solo vuelve a los libros.",
+      [CLIENTES]: "La cartera ya va en el debe. Al haber va la provisión, de donde salió el castigo.",
+    },
+    valorMal: [
+      { valor: V.negra, texto: `Ese valor es de la Cía. Negra, que sigue sin pagar. La que vuelve es la de la Cía. Roja: ${p(V.recuperacion)}.` },
+      { valor: V.castigos, texto: `Solo paga la Cía. Roja. Revive solo su deuda: ${p(V.recuperacion)}.` },
+    ],
+    valorGenerica: "Revisa el valor. Es el de la deuda que vuelve.",
+    acierto: "La deuda vuelve a la cartera y a la provisión. Es el castigo de marzo, pero al revés.",
+  };
+
+  const ASIENTO_6 = {
+    id: "p6",
+    etapa: "mayo",
+    /* La misma tarjeta de la pantalla 5. */
+    hecho: HECHO_MAYO,
+    enunciado: "Ahora, anota el pago de la Cía. Roja.",
+    correcto: { debe: CAJA, haber: CLIENTES, valor: V.recuperacion },
+    alReves: "El dinero entra, así que Caja va al debe. La deuda se paga, así que la cartera va al haber.",
+    debeMal: {
+      [PROVISION]: "La provisión ya se movió al revivir la deuda. Aquí entra dinero: va Caja.",
+      [GASTO]: "El gasto no se toca. Lo que entra es el dinero del cheque.",
+      [INGRESOS]: "Las ventas no se tocan. Al debe va el dinero que llega.",
+      [CLIENTES]: "La deuda se paga, así que baja. La cartera va al haber.",
+    },
+    haberMal: {
+      /* «Registrar un ingreso». */
+      [INGRESOS]: "No se anota ingreso: la deuda volvió y se pagó.",
+      [PROVISION]: `La provisión ya recibió los ${p(V.recuperacion)}. Ahora el cheque paga la deuda que revivió: va la cartera.`,
+      [GASTO]: "El gasto queda quieto. El cheque paga una deuda, no un gasto.",
+      [CAJA]: "Caja va en el debe, porque el dinero entra. Al haber va la deuda que se paga.",
+    },
+    valorMal: [
+      { valor: V.negra, texto: `La Cía. Negra no pagó. El cheque es de la Cía. Roja: ${p(V.recuperacion)}.` },
+      { valor: V.castigos, texto: `Solo llega un cheque, el de la Cía. Roja. Anota ${p(V.recuperacion)}.` },
+    ],
+    valorGenerica: "Revisa el valor. Es el del cheque.",
+    acierto: "Primero la deuda vuelve a la cartera y a la provisión. Luego la Cía. Roja paga y la cartera baja. No hay ingreso: la deuda volvió y se pagó.",
+  };
+
+  /* ═══════════ LA PANTALLA DE SALDO (pregunta 4) ═══════════ */
+
+  /*
+   * Prioridad (Kamogawa, decisión 2): primero 166.600 con el lado crédito,
+   * después los valores previstos, después la genérica. Se permite 0, y con 0
+   * no se exige lado.
+   */
+  const SALDO_4 = {
+    id: "p4",
+    etapa: "marzo",
+    tipo: "saldo",
+    hecho: `La provisión empezó con ${p(V.provision)}. En marzo se castigaron dos deudas: ${p(V.roja)} de la Cía. Roja y ${p(V.negra)} de la Cía. Negra.`,
+    enunciado: "Escribe el saldo de la provisión. Luego elige si queda en el debe o en el haber.",
+    correcto: { valor: Math.abs(V.marzo), lado: V.marzo < 0 ? "debito" : "credito" },
+    ladoMal: version === "A"
+      ? "La cifra está bien; el lado no. Salió más por el debe de lo que había en el haber. El saldo queda en el debe."
+      : "La cifra está bien; el lado no. Los castigos no gastaron toda la provisión. El saldo queda en el haber.",
+    valorMal: [
+      { valor: V.trasRoja, texto: `Restaste solo la Cía. Roja. Falta el castigo de la Cía. Negra: ${p(V.negra)}.` },
+      { valor: V.trasNegra, texto: `Restaste solo la Cía. Negra. Falta el castigo de la Cía. Roja: ${p(V.roja)}. Ese número sí aparece más adelante, pero en marzo todavía no.` },
+      { valor: V.sumando, texto: "Sumaste. El castigo baja la provisión: se resta, no se suma." },
+      { valor: 0, texto: version === "A" ? "La provisión no se queda en cero. Se castigó todo lo perdido, aunque pase de lo que había." : "La provisión no se queda en cero. Los castigos fueron menos de lo estimado: algo sobra." },
+    ],
+    generica: `Parte de ${p(V.provision)} y resta los dos castigos. Luego mira qué lado ganó.`,
+    acierto: version === "A"
+      ? `Todo el castigo va contra la provisión. Como no alcanzó, queda en el debe por ${p(-V.marzo)}.`
+      : `Los dos castigos salen de la provisión, y alcanzó. Queda en el haber por ${p(V.marzo)}.`,
+  };
+
+  /* Las siete preguntas, en orden: (a0) y las seis de v2. */
+  const PREGUNTAS = [
+    CALCULO_A0,
+    { ...ASIENTO_1, tipo: "asiento" },
+    { ...ASIENTO_2, tipo: "asiento" },
+    { ...ASIENTO_3, tipo: "asiento" },
+    SALDO_4,
+    { ...ASIENTO_5, tipo: "asiento" },
+    { ...ASIENTO_6, tipo: "asiento" },
+  ];
+
+  /* ═══════════ LOS CORTES ═══════════ */
+
+  const CORTES = {
+    dic: { parrafos: [] },
+    marzo: {
+      parrafos: [version === "A"
+        ? `La provisión es lo que estimaste perder. En diciembre estimaste ${p(V.provision)}. En marzo se perdieron ${p(V.castigos)}. La estimación se quedó corta por ${p(-V.marzo)}. Por eso la provisión queda en el debe: muestra un faltante. Ya lo viste con Pablo Moncayo. Tenía $148.800 y se castigaron $180.000. Si nada cambia, el próximo 31 de diciembre el ajuste suma lo que faltó.`
+        : `La provisión es lo que estimaste perder. En diciembre estimaste ${p(V.provision)}. En marzo se perdieron ${p(V.castigos)}. Sobraron ${p(V.marzo)}. Por eso la provisión queda en el haber: todavía cubre deudas que se podrían perder.`],
+    },
+    mayo: {
+      parrafos: [version === "A"
+        ? `La provisión venía en el debe con ${p(-V.marzo)}. Al revivir la deuda, recibió ${p(V.recuperacion)} en el haber. Ahora queda en el haber con ${p(V.mayo)}. Ya no tiene faltante.`
+        : `La provisión venía en el haber con ${p(V.marzo)}. Al revivir la deuda, recibió ${p(V.recuperacion)} más. Ahora queda en el haber con ${p(V.mayo)}.`],
+    },
+  };
+
+  return { version, VALORES: V, PREGUNTAS_R5_2: PREGUNTAS, CORTES_R5_2: CORTES };
+}
+
+const VERSION_A = construirR5_2(VALORES, "A");
+export const VERSION_B_R5_2 = construirR5_2(valoresDe(DATOS_R5_2.B), "B");
+export const versionR5_2 = (version = "A") => (version === "B" ? VERSION_B_R5_2 : VERSION_A);
+export const PREGUNTAS_R5_2 = VERSION_A.PREGUNTAS_R5_2;
+export const CORTES_R5_2 = VERSION_A.CORTES_R5_2;

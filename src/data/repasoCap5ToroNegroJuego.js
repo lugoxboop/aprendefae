@@ -137,7 +137,7 @@ export function evaluarSaldo(p, { valor, lado }, respuestas = {}) {
   if (ok) {
     camino = "acierto";
     textos = [p.acierto];
-  } else if (valor === c.valor && lado === "credito") {
+  } else if (valor === c.valor && lado && lado !== c.lado) {
     camino = "lado";
     textos = [p.ladoMal];
   } else {
@@ -154,26 +154,28 @@ export function evaluarSaldo(p, { valor, lado }, respuestas = {}) {
  * Solo los renglones que tocan la provisión, con el asiento correcto (nunca
  * el que armó el estudiante). El pago de mayo no entra.
  */
-export const MOVIMIENTOS = {
-  dic: [{ id: "ajuste", lado: "haber", concepto: CONCEPTOS.ajuste, valor: VALORES.provision }],
+export const movimientosDe = (V) => ({
+  dic: [{ id: "ajuste", lado: "haber", concepto: CONCEPTOS.ajuste, valor: V.provision }],
   marzo: [
-    { id: "castigo-roja", lado: "debe", concepto: CONCEPTOS.castigoRoja, valor: VALORES.roja },
-    { id: "castigo-negra", lado: "debe", concepto: CONCEPTOS.castigoNegra, valor: VALORES.negra },
+    { id: "castigo-roja", lado: "debe", concepto: CONCEPTOS.castigoRoja, valor: V.roja },
+    { id: "castigo-negra", lado: "debe", concepto: CONCEPTOS.castigoNegra, valor: V.negra },
   ],
-  mayo: [{ id: "revive", lado: "haber", concepto: CONCEPTOS.revive, valor: VALORES.recuperacion }],
-};
+  mayo: [{ id: "revive", lado: "haber", concepto: CONCEPTOS.revive, valor: V.recuperacion }],
+});
+/* La versión A (la del libro); la B sale de movimientosDe(VERSION_B_R5_2.VALORES). */
+export const MOVIMIENTOS = movimientosDe(VALORES);
 
 /* El saldo con signo: crédito positivo (la naturaleza de la provisión), débito negativo. */
 export const saldoDe = (movimientos) => movimientos.reduce((s, m) => s + (m.lado === "haber" ? m.valor : -m.valor), 0);
 export const naturaleza = (saldo) => (saldo > 0 ? "credito" : saldo < 0 ? "debito" : "cero");
 
 const ORDEN = ETAPAS.map((e) => e.id);
-const hasta = (n) => ORDEN.slice(0, n).flatMap((e) => MOVIMIENTOS[e]);
+const hasta = (n, movs) => ORDEN.slice(0, n).flatMap((e) => movs[e]);
 
 /* Como estaba el libro al empezar la etapa: lo que ven sus preguntas. */
-export const libroAntesDe = (etapa) => hasta(ORDEN.indexOf(etapa));
+export const libroAntesDe = (etapa, movs = MOVIMIENTOS) => hasta(ORDEN.indexOf(etapa), movs);
 /* Como queda al cerrar la etapa: lo que muestra su corte al terminar. */
-export const libroTras = (etapa) => hasta(ORDEN.indexOf(etapa) + 1);
+export const libroTras = (etapa, movs = MOVIMIENTOS) => hasta(ORDEN.indexOf(etapa) + 1, movs);
 
 /* Los renglones de la columna más larga (R de §4). */
 export const renglonesDe = (movimientos) => Math.max(1, ...["debe", "haber"].map((l) => movimientos.filter((m) => m.lado === l).length));
@@ -186,10 +188,10 @@ export const fraccionDeBarra = (saldo) => Math.abs(saldo) / ESCALA_MEDIDOR;
 
 export const puntuarR5_2 = (aciertos, total = TOTAL_R5_2) => (total ? (aciertos / total) * 100 : 0);
 
-export function porEtapa(resultados, preguntas = PREGUNTAS_R5_2) {
+export function porEtapa(resultados, preguntas = PREGUNTAS_R5_2, movs = MOVIMIENTOS) {
   return ETAPAS.map((e) => {
     const puntos = preguntas.filter((p) => p.etapa === e.id).map((p) => ({ id: p.id, ok: Boolean(resultados[p.id]) }));
-    const saldo = saldoDe(libroTras(e.id));
+    const saldo = saldoDe(libroTras(e.id, movs));
     return { ...e, puntos, bien: puntos.filter((x) => x.ok).length, total: puntos.length, saldo };
   });
 }
