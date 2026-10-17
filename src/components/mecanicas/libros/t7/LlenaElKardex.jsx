@@ -6,7 +6,7 @@ import { pesos } from "../../../../data/contabilidad.js";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
 import { CSS_T7_HACER, Parrafos, TarjetaPregunta, Eleccion, Devolucion, TEXTO } from "./hacerT7.jsx";
 import Kardex from "./KardexT7_2.jsx";
 import { ContadorConIntento } from "./armaLaLinea.jsx";
@@ -114,7 +114,7 @@ export default function LlenaElKardex({ Marco, rotulo, titulo, acento, onComplet
       <style>{CSS_T7_HACER}</style>
       <style>{CSS_H3}</style>
       <div data-t7-2-h3>
-        <Encabezado consigna={sinUnSoloIntento(H3.consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H3.objetivo} consigna={sinUnSoloIntento(H3.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H3.enunciado} />
         <ul className="t72h3-mov" data-movimientos>
           {H3.movimientos.map((m) => <li key={m}>{m}</li>)}

@@ -8,6 +8,7 @@ import {
   REVELADA, TACHADA, TEXTO_B, claseDe,
 } from "../b5/Devolucion.jsx";
 import { AsientoEnLineas, ElegirLado, Responder } from "../piezas.jsx";
+import { Encabezado } from "../tema1/encabezado.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Plegable } from "./plegable.jsx";
 
@@ -40,6 +41,16 @@ ${CSS_B5H}`;
 
 export const BOTONES_T7 = { siguiente: "Siguiente ítem", verResumen: "Ver mi resumen", comprobar: "Comprobar" };
 export const LADOS_T7 = { debe: "Debe", haber: "Haber" };
+
+/*
+ * El encabezado de los Hacer de T5 y T7 (lote O de Mello): el `objetivo` de
+ * los datos (una oración) arriba de la consigna, con el mismo marcado que H7
+ * (EscaleraHacer → Encabezado, `p[data-objetivo]`). Sin `objetivo`, la
+ * consigna va sola: aquí no se escribe ningún texto.
+ */
+export function EncabezadoHacer({ objetivo = null, consigna, onComoSeJuega = null }) {
+  return <Encabezado objetivo={objetivo || null} consigna={consigna} onComoSeJuega={onComoSeJuega} />;
+}
 
 /* Un dato por renglón: el rótulo arriba y el dato debajo, que a 320 px se lee entero. */
 export function Ficha({ filas }) {

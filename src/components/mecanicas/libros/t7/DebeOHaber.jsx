@@ -8,7 +8,7 @@ import { OpcionC as Opcion, CSS_T7_HACER } from "./hacerT7.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
 import { Plegable } from "./plegable.jsx";
 import { ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
@@ -96,7 +96,7 @@ export default function DebeOHaber({ Marco, rotulo, titulo, acento, onCompletar,
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS + CSS_T7_HACER}</style>
       <div data-t7-2-h1>
-        <Encabezado consigna={sinUnSoloIntento(H1.consigna.join(" "))} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H1.objetivo} consigna={sinUnSoloIntento(H1.consigna.join(" "))} onComoSeJuega={onComoSeJuega} />
         <div style={{ marginBottom: "12px" }}>
           <ContadorConIntento>
             <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Hecho" />
