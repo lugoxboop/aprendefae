@@ -9,6 +9,7 @@
 - **A1 P5 (16 oct 2026): los controles se parten en dos pantallas (decisión de Yujiro).** P5 «el-faltante» es una decisión sobre un escenario simulado (Andrés cobra 435.000 y al libro llegan 410.000; los 25.000 no son del libro, y el pie lo dice). P6 «controles» deja tocar los siete controles, que encienden lo que cuidan; las pestañas 1-7 y los siete textos de control salen. Diseño: Hanayama; textos: Katsumi. La frase de cierre del lote B se reemplaza. Siete pantallas (sale el resumen del lote B, entra «el-faltante»).
 - **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
 - **Objetivo (D2, 16 oct 2026):** una línea fija bajo el título, solo en la P0 (hallazgo de Shibukawa; Yujiro; texto de Katsumi). Con ella, la figura de la P0 queda a 130 px a 320: Yujiro la acepta porque B1 (280) se cumple, y la parada de medición de la P0 pasa a ser ≤ 280.
+- **D9 (lote nocturno, 16 oct 2026; Hanayama):** el cajón es un cajón: bajo su base, centrada, una manija de 24 × 4 px #B8C4D4; con cada cobro, consignación o pago se abre 4 px y vuelve (translateY, 220 ms de ida y 220 de vuelta). Con movimiento reducido no se mueve. Solo en A1 (H1 usa el mismo cajón sin ella).
 
 ## Objetivo de la pieza
 
@@ -62,6 +63,35 @@
 - Frase de cierre (con los siete encendidos, debajo del cajón): «Cada control tapa una fuga distinta.» (<10)
 - Siguiente: «Siguiente: «El fondo fijo».» (<10)
 - Pie: «Basado en el libro, pp. 179-180»
+
+## Caso B (D8), pantalla por pantalla
+
+D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): el mismo recorrido con otra empresa y otras cifras construidas; la decisión de cada pantalla no cambia. El sorteo elige el caso para toda la pieza; el primer recorrido usa siempre el caso 1. Aquí va solo lo que cambia; lo demás es el caso 1. Cifras del caso B (construidas): cobro 612.000; en «el-faltante», anotado 584.000 y sin anotar 28.000. Origen del cajón: «Taller Ríos Ltda.». Los pies llevan además « · Cifras construidas». Donde el pie largo hacía pasar la pantalla de 60 palabras (sonda), el pie del caso B queda «Cifras construidas, p. N» (Katsumi): «consigna», «cheques».
+
+**P0 · dos-cuentas**
+- Pie: «Basado en el libro, p. 179, y en el Tema 2 · Cifras construidas»
+
+**P1 · cobra**
+- Antes de la figura: «Taller Ríos arregla motos, y hoy los clientes le pagan de contado. Toca «Cobrar».» (88,6)
+- Pie: «Basado en el libro, p. 180 · Cifras construidas»
+
+**P2 · consigna**
+- Error si va al debe: «No entró plata nueva: son los mismos $612.000.» (<10)
+- Pie: «Cifras construidas, p. 180»
+
+**P3 · dos-salidas**
+- Pie: «Basado en el libro, p. 180 · Cifras construidas»
+
+**P4 · cheques**
+- Cheque «propio» · tarjeta: «Taller Ríos paga con un cheque propio» (<10)
+- Pie: «Cifras construidas, pp. 179, 180 y 187»
+
+**P5 · el-faltante**
+- Antes de la figura: «Lucía cobra y anota. ¿Qué control faltó?» (<10)
+- Pie: «Basado en el libro, pp. 179-180 · Escenario simulado · Cifras construidas»
+
+**P6 · controles**
+- Pie: «Basado en el libro, pp. 179-180 · Cifras construidas»
 
 ## El cajón en P5 y P6
 

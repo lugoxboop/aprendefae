@@ -85,6 +85,17 @@ export const CSS_TABLERO = `
 .t4pr { display: grid; grid-template-columns: minmax(0,1fr) 24px minmax(0,1fr); align-items: end; border: 1px solid ${C.neutro}; border-radius: 10px; padding: 8px 10px; }
 .t4pr > div { display: grid; gap: 2px; min-width: 0; }
 /*
+ * D9 (Hanayama), solo en A5 (la prop \`documentos\`; H7 y H8 no la pasan): el
+ * par son dos documentos. «el banco», una hoja de extracto con la esquina
+ * doblada (un triángulo de 8 px arriba a la derecha); «la empresa», un libro
+ * con lomo (borde izquierdo de 2 px y una segunda línea de 1 px 3 px adentro).
+ * Sin palabras nuevas.
+ */
+.t4pr[data-documentos] > [data-lado-par="izq"] { position: relative; border: 1px solid ${C.neutro}; border-radius: 4px; padding: 4px 14px 4px 8px; }
+.t4pr[data-documentos] > [data-lado-par="izq"]::after { content: ""; position: absolute; top: -1px; right: -1px; width: 8px; height: 8px; background: ${C.neutro}; clip-path: polygon(0 0, 100% 100%, 0 100%); }
+.t4pr[data-documentos] > [data-lado-par="der"] { position: relative; border-left: 2px solid ${C.neutro}; padding: 4px 4px 4px 10px; }
+.t4pr[data-documentos] > [data-lado-par="der"]::before { content: ""; position: absolute; left: 3px; top: 0; bottom: 0; width: 1px; background: ${C.neutro}; }
+/*
  * D9 (Hanayama), solo en H7: bajo el par, una barra de 4 px #B8C4D4 del
  * tamaño de la diferencia entre los dos saldos; se encoge (scaleX) con cada
  * saldo que se escribe y, en 0, se va y sale el «=». Su renglón se reserva
@@ -257,13 +268,13 @@ function Verdadero({ rotulo, v, lector }) {
   );
 }
 
-export function Par({ izq, der, igual = false, pie = null, verdadero = null, barra = null }) {
+export function Par({ izq, der, igual = false, pie = null, verdadero = null, barra = null, documentos = false }) {
   /* D9 (solo H7): la barra de la diferencia, de 0 a 1 de la diferencia de partida. */
   const fraccion = barra && barra.base > 0 ? Math.min(1, Math.abs((izq.v ?? 0) - (der.v ?? 0)) / barra.base) : 0;
   const a = useNumeroQueSube(izq.v ?? 0);
   const b = useNumeroQueSube(der.v ?? 0);
   return (
-    <div className="t4pr" data-par aria-label={`${izq.r} ${cifra(izq.v ?? 0)}; ${der.r} ${der.v != null ? cifra(der.v) : ""}${igual ? `; ${SON_IGUALES}` : ""}`}>
+    <div className="t4pr" data-par data-documentos={documentos ? "" : undefined} aria-label={`${izq.r} ${cifra(izq.v ?? 0)}; ${der.r} ${der.v != null ? cifra(der.v) : ""}${igual ? `; ${SON_IGUALES}` : ""}`}>
       <div data-lado-par="izq"><span className="r">{izq.r}</span><span className={`v${izq.foco ? " f" : ""}${izq.eco ? " e" : ""}`} data-eco={izq.eco ? "" : undefined}>{izq.v != null ? cifra(izq.eco ? izq.v : a) : "—"}</span></div>
       <span className="t4pr-igual" aria-hidden="true" style={{ visibility: igual ? "visible" : "hidden" }}>=</span>
       <div data-lado-par="der"><span className="r">{der.r}</span><span className={`v${der.foco ? " f" : ""}${der.eco ? " e" : ""}`} data-eco={der.eco ? "" : undefined}>{der.v != null ? cifra(der.eco ? der.v : b) : "—"}</span></div>

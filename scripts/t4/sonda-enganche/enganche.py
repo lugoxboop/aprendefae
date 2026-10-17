@@ -38,6 +38,11 @@ CLAVE = json.load(open(_cl[0])) if _cl else {}
 U = f"http://localhost:{PORT}"
 MIDE = open(D + "/enganche_mide.js").read()
 PLANES = json.load(open(D + "/enganche_planes.json")) if os.path.isfile(D + "/enganche_planes.json") else {}
+# D8 (T4): SONDA_CASO_T4=2 mide el caso B de las piezas de Aprender. Fuerza el caso en el navegador
+# (localStorage «aprendefae-t4-caso») y juega, donde los selectores cambian, el plan de enganche_planes_b.json.
+CASO_T4 = os.environ.get("SONDA_CASO_T4")
+if CASO_T4 == "2" and os.path.isfile(D + "/enganche_planes_b.json"):
+    for _pz, _ps in json.load(open(D + "/enganche_planes_b.json")).items(): PLANES.setdefault(_pz, {}).update(_ps)
 FIG = "figure, [data-par], [data-tabla-h7], [data-lado-h7]"  # el par y la tabla de H7/H8 cuentan como figura con significado
 
 def b64(o): return base64.urlsafe_b64encode(json.dumps(o).encode()).decode().rstrip("=")
@@ -71,6 +76,7 @@ def abrir(b, ruta, sem=7):
     pg.route("http://fake.supabase.test/**", sb)
     pg.add_init_script("(()=>{let s=%d; Math.random=()=>{s=(s*1103515245+12345)%%2147483648; return s/2147483648;};})();" % sem)
     pg.add_init_script(f"try{{localStorage.setItem('aprendefae-auth', {json.dumps(json.dumps(SES))});}}catch(e){{}}")
+    if CASO_T4 in ("1", "2"): pg.add_init_script(f"try{{localStorage.setItem('aprendefae-t4-caso', '{CASO_T4}');}}catch(e){{}}")
     pg.goto(U + ruta); pg.wait_for_load_state("networkidle", timeout=60000); pg.wait_for_timeout(800)
     return ctx, pg, errs
 

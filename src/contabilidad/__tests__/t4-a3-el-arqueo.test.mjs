@@ -263,3 +263,30 @@ test("★★★ D9 · P0: con «Contar la caja» la solapa del sobre se abre (ro
     try { assert.equal(q(n, "svg[data-solapa]"), null, `${id} lleva solapa`); } finally { n.desmontar(); }
   }
 });
+
+test("★★★ D8 · el caso B sobre las cifras de A2 B: los rótulos de Marta, y jugado: 75.700 al contar, 78.500 sobran 2.800 y el cheque es 521.500; 70.400 faltan 5.300 y sale por 529.600", async () => {
+  const { DATOS_A3 } = await import("../../data/contabilidadT4A3.js");
+  const { DATOS_A2 } = await import("../../data/contabilidadT4A2.js");
+  const { PantallasT4 } = await import("../../components/ContabilidadT4View.jsx");
+  const { montar, h, visible } = await import("./t4-dom.mjs");
+  const { seguir } = R;
+  const K = DATOS_A3[2];
+  const r = renglones(seccionDe(leer(`${R.PAQUETES}d4-t4-a3-v4-rediseno.md`), "Caso B (D8), pantalla por pantalla"));
+  assert.deepEqual([K.F.sobre, K.F.caminos.cobra, K.F.vanA("{cuenta}")], [textoDe(r, "Rótulo del sobre (caso B)"), textoDe(r, "Interruptor · cobra (caso B)"), textoDe(r, "Para el lector, el destino (caso B)")]);
+  assert.deepEqual([K.FONDO, K.GASTADO], [DATOS_A2[2].FONDO, DATOS_A2[2].GASTADO], "A3 B no va sobre las cifras de A2 B");
+  assert.deepEqual([K.SOBRANTE, K.CHEQUE_SOBRANTE, K.CHEQUE_CON_DIFERENCIA, K.FALTANTE, K.CHEQUE_FALTANTE, K.CHEQUE_SIN_FALTANTE], [2_800, 521_500, 527_100, 5_300, 529_600, 519_000]);
+  const m = montar(h(PantallasT4, { pieza: P, rotulo: "T4 · APRENDER", caso: 2 }));
+  try {
+    tocar(q(m, "[data-accion=contar]"));
+    assert.equal(q(m, '[data-fila-sobre="caja"]').dataset.valor, "75700");
+    tocar(seguir(m)); tocar(seguir(m));
+    assert.equal(q(m, "[data-pieza]").dataset.pantalla, "el-sobrante");
+    assert.equal(q(m, '[data-fila-sobre="caja"]').dataset.valor, "78500");
+    tocar(q(m, '[data-opcion="sobra"]'));
+    assert.equal(visible(q(m, "[data-mensaje] [data-devolucion]")), "Correcto. Se pasa por $2.800: un sobrante de caja menor.");
+    tocar(seguir(m));
+    assert.deepEqual([...m.caja.querySelectorAll("[data-opcion]")].map((x) => Number(x.dataset.opcion)), [524_300, 521_500, 527_100]);
+    tocar(q(m, '[data-opcion="521500"]'));
+    assert.equal(q(m, "[data-mensaje]").dataset.mensaje, "acierto");
+  } finally { m.desmontar(); }
+});

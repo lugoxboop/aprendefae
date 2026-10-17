@@ -52,6 +52,15 @@
 - Siguiente: «Siguiente: «La caja».» (<10)
 - Pie: «Basado en el libro, pp. 178-179»
 
+## Caso B (D8), pantalla por pantalla
+
+D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): cada pieza tiene un segundo caso con la misma decisión. El sorteo elige el caso para toda la pieza; el primer recorrido usa siempre el caso 1 y el sorteo aplica al repetirla. Aquí va solo lo que cambia en el caso B; lo demás es el caso 1. A0 no lleva cifras del libro: sus pies no cambian.
+
+**P3 · cual-cruza**
+- Fila 1 (se vuelve plata este mes): «Repuestos / se venden este mes»
+- Fila 2 (la deuda; su error es el de la deuda): «Pagaré de un cliente / a dos años»
+- Fila 3 (dura años): «Camión de la empresa / dura años»
+
 ## Interfaz común del rediseño (A0, A1 y H1)
 
 Decisiones 1 y 2 de Katsumi; corte de Yujiro, ajuste 2.
