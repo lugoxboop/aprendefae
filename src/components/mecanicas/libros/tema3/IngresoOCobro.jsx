@@ -2,15 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { NEUTRO, NAVY_DEL_CHIP, TEXTO_ATENUADO } from "../../../../data/contabilidadIntro.js";
-import { ACT1_T3, GRUPOS, ALT_ACT1_T3 } from "../../../../data/contabilidadTema3Act1.js";
+import { ACT1_T3, GRUPOS, ALT_ACT1_T3, SEGUNDA_ACT1_T3, MARCA_ACT1_T3 } from "../../../../data/contabilidadTema3Act1.js";
 import {
-  sortearAct1T3, evaluarAct1T3, puntuarAct1T3, pesoDeCadaHecho,
+  sortearAct1T3, evaluarAct1T3, puntuarAct1T3, pesoDeCadaHecho, tieneSegunda, evaluarSegundaAct1T3,
 } from "../../../../contabilidad/ingresoOCobro.js";
 import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { useSegunda, OpcionSegunda, BloqueError } from "./segundaDecision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -30,6 +31,14 @@ import { Encabezado } from "../tema1/encabezado.jsx";
  * El rótulo más largo, «Es ingreso, pero el dinero llega después», a 320 px
  * no cabe en una fila de tres. Apiladas, cada una tiene el ancho entero y el
  * rótulo se lee completo, sin cortes ni puntos suspensivos.
+ *
+ * ═══════════ LA SEGUNDA DECISIÓN (Hanayama; textos de Katsumi) ═══════════
+ *
+ * En los hechos del grupo 3, al acertar el grupo (a la primera o en el
+ * reintento), las pestañas ceden su lugar a «¿qué es esa plata?» y tres
+ * pestañas más, con la misma forma. Un toque califica. La retro del hecho y
+ * «Siguiente hecho» esperan a que se resuelva. El hecho cuenta solo si las
+ * dos decisiones son correctas (Yujiro); el detalle guarda las dos.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -46,6 +55,12 @@ const CSS = `
 
 const SORA = "Sora, sans-serif";
 
+/* La forma de una pestaña, para que la segunda decisión copie la de los grupos. */
+const FORMA_PESTANA = {
+  relleno: [9, 11], radio: "10px", altoMinimo: undefined,
+  letra: { fontFamily: SORA, fontSize: "12.5px", fontWeight: 700, lineHeight: 1.25 },
+};
+
 export default function IngresoOCobro({
   Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
 }) {
@@ -58,6 +73,10 @@ export default function IngresoOCobro({
   const [rebotando, setRebotando] = useState(false);
   const reloj = useRef(null);
   const zonaBoton = useRef(null);
+  const pregunta = useRef(null);
+  const segunda = useSegunda();
+  /* La respuesta del hecho, guardada hasta que se resuelva la segunda decisión. */
+  const pendiente = useRef(null);
 
   const h = t.items[t.i];
   const cuantas = t.items.length;
@@ -65,14 +84,20 @@ export default function IngresoOCobro({
   const esperandoReintento = Boolean(r && !r.ok && intento === 1);
   const puedeResponder = !r || esperandoReintento;
   const completo = Boolean(grupo);
+  /* La segunda decisión está en pantalla: el grupo ya se acertó y el hecho la lleva. */
+  const enSegunda = Boolean(r?.ok && tieneSegunda(h));
+  const resuelto = Boolean(r && !esperandoReintento && (!enSegunda || segunda.lista));
 
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
   useEffect(() => () => clearTimeout(reloj.current), []);
   useEffect(() => {
-    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
-  }, [r, esperandoReintento]);
+    if (resuelto && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
+  }, [resuelto]);
+  useEffect(() => {
+    if (enSegunda && !modoDemo) pregunta.current?.focus();
+  }, [enSegunda]);
 
   const enviar = () => {
     if (!completo || (r && !esperandoReintento)) return;
@@ -84,29 +109,50 @@ export default function IngresoOCobro({
       reloj.current = setTimeout(() => setRebotando(false), 420);
     }
 
+    const conSegunda = nuevo.ok && tieneSegunda(h);
     if (intento === 0) {
       t.anotar(h.id, nuevo.ok, nuevo.ok ? null : grupo);
+      if (tieneSegunda(h)) t.detalle.current[t.detalle.current.length - 1].respuestas = { grupo };
       if (!nuevo.ok) { setR({ ...nuevo, primero: true }); setIntento(1); return; }
-      setRespuestas((xs) => [...xs, { id: h.id, primeroOk: true }]);
+      const fila = { id: h.id, primeroOk: true };
+      if (conSegunda) pendiente.current = fila;
+      else setRespuestas((xs) => [...xs, fila]);
       setR({ ...nuevo, primero: true });
       return;
     }
-    setRespuestas((xs) => [...xs, { id: h.id, primeroOk: false, segundoOk: nuevo.ok }]);
+    const fila = { id: h.id, primeroOk: false, segundoOk: nuevo.ok };
+    if (conSegunda) pendiente.current = fila;
+    else setRespuestas((xs) => [...xs, fila]);
     setIntento(2);
     setR({ ...nuevo, primero: false });
   };
 
+  /* La segunda decisión: un toque califica. */
+  const elegirSegunda = (id) => {
+    const ev = evaluarSegundaAct1T3(h, id);
+    if (!segunda.elegir(id, ev.ok, ev.correcta, ev.error)) return;
+    const d = t.detalle.current.find((x) => x.item === h.id);
+    if (d) {
+      d.respuestas = { ...d.respuestas, segunda: id };
+      if (!ev.ok) { d.ok = false; d.respuesta = d.respuesta ?? id; }
+    }
+    const fila = { ...pendiente.current, segundaOk: ev.ok };
+    pendiente.current = null;
+    setRespuestas((xs) => [...xs, fila]);
+  };
+
   const avanzar = () => {
-    setR(null); setIntento(0); setGrupo(null); setRebotando(false);
+    setR(null); setIntento(0); setGrupo(null); setRebotando(false); segunda.reiniciar(); pendiente.current = null;
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
   const reiniciar = () => {
     t.reiniciar(); setR(null); setIntento(0); setRespuestas([]); setGrupo(null); setRebotando(false);
+    segunda.reiniciar(); pendiente.current = null;
   };
 
   if (t.terminado) {
-    const bien = respuestas.filter((x) => x.primeroOk).length;
+    const bien = respuestas.filter((x) => x.primeroOk && x.segundaOk !== false).length;
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
         <style>{CSS}</style>
@@ -154,8 +200,28 @@ export default function IngresoOCobro({
           </p>
         </div>
 
+        {/* La segunda decisión, en el lugar de los grupos y con su misma forma. */}
+        {enSegunda && (
+          <div data-segunda>
+            <p ref={pregunta} tabIndex={-1} data-pregunta-segunda style={{
+              margin: "0 0 8px", fontFamily: SORA, fontSize: "14px", fontWeight: 700, lineHeight: 1.3, color: FAE.text, outline: "none",
+            }}>
+              {SEGUNDA_ACT1_T3.pregunta}
+            </p>
+            <div role="group" aria-label={SEGUNDA_ACT1_T3.pregunta} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              {SEGUNDA_ACT1_T3.opciones.map((o) => (
+                <OpcionSegunda key={o.id} opcion={o} estado={segunda.estadoDe(o.id)} palabras={MARCA_ACT1_T3}
+                  onTocar={elegirSegunda} forma={FORMA_PESTANA} />
+              ))}
+            </div>
+            <div aria-live="polite" aria-atomic="true">
+              <BloqueError texto={segunda.s?.error} letra={{ fontSize: "13px", lineHeight: 1.55 }} />
+            </div>
+          </div>
+        )}
+
         {/* Los tres grupos, apilados y a todo el ancho. */}
-        <div data-grupos role="group" aria-label="Grupos" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        {!enSegunda && <div data-grupos role="group" aria-label="Grupos" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           {GRUPOS.map((g) => {
             const activa = grupo === g.id;
             const tenue = !puedeResponder && !activa;
@@ -193,7 +259,7 @@ export default function IngresoOCobro({
               </button>
             );
           })}
-        </div>
+        </div>}
 
         {esperandoReintento && (
           <p data-fallo style={{
@@ -206,14 +272,14 @@ export default function IngresoOCobro({
         )}
       </div>
 
-      {r && <Retro texto={r.texto} />}
+      {r && (!enSegunda || segunda.lista) && <Retro texto={enSegunda && !segunda.s.ok ? h.acierto : r.texto} />}
 
       {puedeResponder && (
         <Responder onClick={enviar} deshabilitado={!completo}>
           {completo ? "Colocar la ficha" : "Elige un grupo"}
         </Responder>
       )}
-      {r && !esperandoReintento && !modoDemo && (
+      {resuelto && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente hecho"}

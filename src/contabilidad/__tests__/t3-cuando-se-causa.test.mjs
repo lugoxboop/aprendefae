@@ -14,6 +14,9 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · el acierto de cada ítem es el suyo; en un error, primero el tipo
  *   · textos textuales; tutorial de la panadería; pies «Basado en el libro»
  *   · ni «nació», ni «nace», ni «se anota», ni «ganó»
+ *   · la segunda decisión («Ese día, ¿qué queda?»): textos de Katsumi, un
+ *     toque, pastillas, «Iba aquí» a los 0,7 s, la devolución después, el
+ *     ítem cuenta solo con las dos bien y el detalle guarda las dos
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -67,6 +70,10 @@ const tocar = async (el, mover = 0) => {
 const fila = (caja, id) => caja.querySelector(`[data-marca="${id}"]`);
 const panel = (caja) => caja.querySelector("[data-panel]");
 const textosRetro = (caja) => [...caja.querySelectorAll("[data-texto-retro]")].map((x) => x.textContent);
+const opcion = (caja, id) => caja.querySelector(`[data-opcion-segunda="${id}"]`);
+const avance = (caja) => [...caja.querySelectorAll("button")].find((b) => ["Siguiente ítem", "Ver mi resumen"].includes(b.textContent));
+const esperar = async (ms) => { await act(async () => { await new Promise((r) => setTimeout(r, ms)); }); };
+const correctaDe = (item) => item.marcas.find((x) => x.tipo === HECHO).id;
 
 /* ═══════════ CADA ÍTEM: LA CORRECTA Y EL TIPO DE CADA EQUIVOCADA ═══════════ */
 
@@ -134,17 +141,19 @@ test("★★ los pies dicen «Basado en el libro» en los seis, que llevan fecha
 
 /* ═══════════ MONTADA: EL TOQUE ═══════════ */
 
-test("★★★ acierto: la fila se rellena, dice «Se causa aquí» y sale el acierto del ítem", async () => {
-  const item = A2.ITEMS_ACT2[0];
+test("★★★ acierto sin segunda decisión (la panadería): la fila se rellena, dice «Se causa aquí» y sale el acierto", async () => {
+  const item = A2.EJEMPLO_PANADERIA;
+  assert.equal(L.tieneSegunda(item), false, "el tutorial sigue igual");
   const m = await montar({ items: [item] });
   try {
-    await tocar(fila(m.caja, "servicio"));
-    assert.equal(fila(m.caja, "servicio").getAttribute("data-estado"), "correcta");
-    assert.equal(fila(m.caja, "servicio").getAttribute("aria-label"), "Servicio prestado, 21, correcta");
-    assert.equal(fila(m.caja, "servicio").querySelector("[data-se-causa]").textContent, "Se causa aquí");
+    await tocar(fila(m.caja, "entrega"));
+    assert.equal(fila(m.caja, "entrega").getAttribute("data-estado"), "correcta");
+    assert.equal(fila(m.caja, "entrega").getAttribute("aria-label"), "Entrega del pan, 10, correcta");
+    assert.equal(fila(m.caja, "entrega").querySelector("[data-se-causa]").textContent, "Se causa aquí");
     assert.equal(panel(m.caja).getAttribute("data-panel"), "acierto");
     assert.deepEqual(textosRetro(m.caja), [item.acierto]);
-    for (const id of ["factura", "cierre", "cobro"]) assert.equal(fila(m.caja, id).getAttribute("data-estado"), "atenuada");
+    for (const id of ["pedido", "pago"]) assert.equal(fila(m.caja, id).getAttribute("data-estado"), "atenuada");
+    assert.equal(m.caja.querySelector("[data-segunda]"), null);
   } finally { m.desmontar(); }
 });
 
@@ -158,6 +167,7 @@ test("★★★ error: primero el texto del tipo de marca y después el acierto;
     assert.equal(fila(m.caja, "servicio").getAttribute("data-estado"), "correcta");
     assert.equal(panel(m.caja).getAttribute("data-panel"), "error");
     assert.deepEqual(textosRetro(m.caja), [A2.ERROR_POR_TIPO[FACTURA], item.acierto]);
+    assert.equal(m.caja.querySelector("[data-segunda]"), null, "al fallar el día no hay segunda decisión");
   } finally { m.desmontar(); }
 });
 
@@ -184,7 +194,11 @@ test("★★★ un arrastre de más de 10 px no cuenta; uno corto sí", async ()
     assert.equal(panel(m.caja), null, "un arrastre de 11 px contestó");
     assert.equal(fila(m.caja, "factura").getAttribute("data-estado"), "reposo");
     await tocar(fila(m.caja, "servicio"), 6);
-    assert.equal(panel(m.caja).getAttribute("data-panel"), "acierto");
+    assert.ok(m.caja.querySelector("[data-segunda]"), "un toque corto contestó");
+    await tocar(opcion(m.caja, "nada"), 11);
+    assert.equal(opcion(m.caja, "nada").getAttribute("data-estado"), "reposo", "un arrastre de 11 px contestó la segunda");
+    await tocar(opcion(m.caja, "por-cobrar"), 6);
+    assert.equal(opcion(m.caja, "por-cobrar").getAttribute("data-estado"), "bien");
   } finally { m.desmontar(); }
 });
 
@@ -224,7 +238,8 @@ test("★★ la tanda entera: seis ítems, «Siguiente ítem» y al final «Ver 
       const item = A2.ITEMS_ACT2[k];
       const correcta = item.marcas.find((x) => x.tipo === HECHO).id;
       await tocar(fila(m.caja, k < 3 ? correcta : item.marcas.find((x) => x.tipo !== HECHO).id));
-      const b = [...m.caja.querySelectorAll("button")].find((x) => ["Siguiente ítem", "Ver mi resumen"].includes(x.textContent));
+      if (k < 3) await tocar(opcion(m.caja, item.queda));
+      const b = avance(m.caja);
       assert.equal(b.textContent, k === 5 ? "Ver mi resumen" : "Siguiente ítem");
       await tocar(b);
     }
@@ -284,3 +299,118 @@ test("★★ T1-6 y lo compartido no se tocan: el componente no importa nada de 
   assert.doesNotMatch(fuente, /EnCualEstadoAparece|T1_6|contabilidadTema1/);
   assert.doesNotMatch(fuente, /#2a9d8f|#52c4b0|#e9c46a|FAE\.(teal|ambar)/i, "ni verde azulado ni ámbar");
 });
+
+/* ═══════════ LA SEGUNDA DECISIÓN: «ESE DÍA, ¿QUÉ QUEDA?» ═══════════ */
+
+test("★★★ la segunda decisión: los textos de Katsumi, textuales", () => {
+  assert.equal(A2.SEGUNDA_ACT2.pregunta, "Ese día, ¿qué queda?");
+  assert.deepEqual(A2.SEGUNDA_ACT2.opciones.map((o) => o.rotulo), ["Por cobrar", "Por pagar", "Nada todavía"]);
+  assert.deepEqual(A2.ERRORES_SEGUNDA_ACT2, {
+    "por-cobrar": { "por-pagar": "Prestó el servicio: a ella le deben.", nada: "Ya se causó, aunque la plata no se haya movido." },
+    "por-pagar": { "por-cobrar": "Usó la máquina: ella es la que debe.", nada: "Ya se causó, aunque la plata no se haya movido." },
+  });
+  assert.deepEqual(A2.MARCA_ACT2, { bien: "Correcto", mal: "No va aquí", era: "Iba aquí" });
+  assert.equal(A2.SE_CAUSA_DIA("Servicio prestado, 21"), "Se causa: Servicio prestado, 21");
+});
+
+test("★★★ «Por pagar» solo en la máquina de San Calixto (p. 140); en los otros cinco, «Por cobrar»", () => {
+  assert.deepEqual(A2.ITEMS_ACT2.map((x) => [x.id, x.queda]), [
+    ["t3a2-mps", "por-cobrar"], ["t3a2-maquina-san-calixto", "por-pagar"], ["t3a2-pago-30-dias", "por-cobrar"],
+    ["t3a2-maquina-san-miguel", "por-cobrar"], ["t3a2-jcc", "por-cobrar"], ["t3a2-pago-60-dias", "por-cobrar"],
+  ]);
+  for (const item of A2.ITEMS_ACT2) {
+    for (const o of A2.SEGUNDA_ACT2.opciones) {
+      const r = L.evaluarSegundaAct2(item, o.id);
+      assert.equal(r.ok, o.id === item.queda, `${item.id} · ${o.id}`);
+      assert.equal(r.error, r.ok ? null : A2.ERRORES_SEGUNDA_ACT2[item.queda][o.id]);
+      if (!r.ok) assert.ok(r.error, `${item.id} · ${o.id} sin texto de error`);
+    }
+  }
+});
+
+test("★★★ al acertar el día: la línea cede a la pregunta y tres filas; la ficha sigue arriba; ni devolución ni avance todavía", async () => {
+  const item = A2.ITEMS_ACT2[0];
+  const m = await montar({ items: [item] });
+  try {
+    await tocar(fila(m.caja, "servicio"));
+    assert.ok(m.caja.querySelector("[data-tarjeta-hecho]"));
+    assert.equal(m.caja.querySelector("[data-filas]"), null);
+    assert.equal(m.caja.querySelector("[data-leyenda]"), null);
+    assert.equal(m.caja.querySelector("[data-se-causa-dia]").textContent, "Se causa: Servicio prestado, 21");
+    assert.equal(m.caja.querySelector("[data-pregunta-segunda]").textContent, "Ese día, ¿qué queda?");
+    const ops = [...m.caja.querySelectorAll("[data-opcion-segunda]")];
+    assert.deepEqual(ops.map((o) => o.textContent), ["Por cobrar", "Por pagar", "Nada todavía"]);
+    for (const o of ops) {
+      assert.equal(o.style.minHeight, "56px");
+      assert.equal(o.style.width, "100%");
+      assert.equal(o.style.border, "1px solid rgba(248, 249, 250, 0.35)");
+      assert.equal(o.style.background, "transparent");
+      assert.equal(o.querySelector("[data-hueco-pastilla]").style.height, "20px");
+    }
+    assert.equal(panel(m.caja), null, "la devolución no sale antes de la segunda decisión");
+    assert.equal(avance(m.caja), undefined);
+    assert.equal(document.activeElement, m.caja.querySelector("[data-pregunta-segunda]"));
+  } finally { m.desmontar(); }
+});
+
+test("★★★ segunda bien: 2 px #F8F9FA y «Correcto» con Check; después la devolución; vale 1 y el detalle guarda las dos", async () => {
+  const item = A2.ITEMS_ACT2[1];
+  let fin = null;
+  const m = await montar({ items: [item], onCompletar: (...a) => { fin = a; } });
+  try {
+    await tocar(fila(m.caja, correctaDe(item)));
+    await tocar(opcion(m.caja, "por-pagar"));
+    const o = opcion(m.caja, "por-pagar");
+    assert.equal(o.getAttribute("data-estado"), "bien");
+    assert.equal(o.style.border, "2px solid rgb(248, 249, 250)");
+    assert.equal(o.style.padding, "13px");
+    assert.equal(o.querySelector("[data-pastilla]").textContent, "Correcto");
+    assert.ok(o.querySelector("[data-pastilla] svg"));
+    assert.equal(o.getAttribute("aria-label"), "Por pagar, correcto");
+    assert.equal(m.caja.querySelector("[data-error-segunda]"), null);
+    assert.equal(panel(m.caja).getAttribute("data-panel"), "acierto");
+    assert.deepEqual(textosRetro(m.caja), [item.acierto]);
+    await tocar(opcion(m.caja, "nada"));
+    assert.equal(opcion(m.caja, "nada").getAttribute("data-estado"), "apagada", "un toque califica: no hay otro");
+    await tocar(avance(m.caja));
+    assert.equal(fin[0], 100);
+    assert.deepEqual(fin[2].map(({ item: i, ok, respuesta, respuestas }) => ({ i, ok, respuesta, respuestas })), [
+      { i: item.id, ok: true, respuesta: null, respuestas: { dia: "uso", segunda: "por-pagar" } },
+    ]);
+  } finally { m.desmontar(); }
+});
+
+for (const [k, mal] of [[0, "nada"], [0, "por-pagar"], [1, "por-cobrar"], [1, "nada"]]) {
+  const item = A2.ITEMS_ACT2[k];
+  test(`★★★ segunda mal (${item.id} · ${mal}): coral y «No va aquí», el error en su bloque; a los 0,7 s «Iba aquí» y la devolución; vale 0`, async () => {
+    let fin = null;
+    const m = await montar({ items: [item], onCompletar: (...a) => { fin = a; } });
+    try {
+      await tocar(fila(m.caja, correctaDe(item)));
+      await tocar(opcion(m.caja, mal));
+      const o = opcion(m.caja, mal);
+      assert.equal(o.getAttribute("data-estado"), "mal");
+      assert.equal(o.style.border, "2px solid rgb(231, 111, 81)");
+      assert.equal(o.querySelector("[data-pastilla]").textContent, "No va aquí");
+      const bloque = m.caja.querySelector("[data-error-segunda]");
+      assert.equal(bloque.textContent, `Incorrecto: ${A2.ERRORES_SEGUNDA_ACT2[item.queda][mal]}`);
+      assert.equal(bloque.style.borderLeft, "3px solid rgb(231, 111, 81)");
+      assert.equal(bloque.style.background, "rgba(184, 196, 212, 0.12)");
+      assert.equal(opcion(m.caja, item.queda).getAttribute("data-estado"), "apagada", "«Iba aquí» espera 0,7 s");
+      assert.equal(panel(m.caja), null);
+      assert.equal(avance(m.caja), undefined);
+      await esperar(750);
+      const c = opcion(m.caja, item.queda);
+      assert.equal(c.getAttribute("data-estado"), "era");
+      assert.equal(c.style.border, "2px solid rgb(248, 249, 250)");
+      assert.equal(c.querySelector("[data-pastilla]").textContent, "Iba aquí");
+      assert.equal(panel(m.caja).getAttribute("data-panel"), "devolucion");
+      assert.deepEqual(textosRetro(m.caja), [item.acierto]);
+      await tocar(avance(m.caja));
+      assert.equal(fin[0], 0, "sin puntos parciales");
+      assert.equal(fin[2][0].ok, false);
+      assert.equal(fin[2][0].respuesta, mal);
+      assert.deepEqual(fin[2][0].respuestas, { dia: correctaDe(item), segunda: mal });
+    } finally { m.desmontar(); }
+  });
+}

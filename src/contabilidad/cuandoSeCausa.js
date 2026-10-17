@@ -1,4 +1,4 @@
-import { ITEMS_ACT2, ERROR_POR_TIPO, HECHO } from "../data/contabilidadTema3Act2.js";
+import { ITEMS_ACT2, ERROR_POR_TIPO, HECHO, ERRORES_SEGUNDA_ACT2 } from "../data/contabilidadTema3Act2.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -24,7 +24,21 @@ export function evaluarAct2(item, marcaId) {
   };
 }
 
-/* Un ítem bien al primer toque vale 1; no hay reintento. */
+/*
+ * La segunda decisión: en los ítems que llevan `queda`, después de acertar el
+ * día. Un toque, un intento.
+ */
+export const tieneSegunda = (item) => Boolean(item?.queda);
+
+export function evaluarSegundaAct2(item, elegida) {
+  const ok = elegida === item.queda;
+  return { ok, correcta: item.queda, error: ok ? null : ERRORES_SEGUNDA_ACT2[item.queda][elegida] };
+}
+
+/*
+ * Un ítem bien al primer toque vale 1; no hay reintento. Con segunda
+ * decisión, `ok` es el de las dos: cuenta solo si las dos son correctas (Yujiro).
+ */
 export function puntuarAct2(respuestas, cuantos) {
   if (!cuantos) return 0;
   return (respuestas.filter((r) => r.ok).length / cuantos) * 100;
