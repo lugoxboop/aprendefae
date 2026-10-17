@@ -1,9 +1,11 @@
 import {
-  ESCENA_T6_A5, GRUPOS_T6_A5, ROTULO_SIMULADO_T6_A5, PARADA_T6_A5,
+  ROTULO_SIMULADO_T6_A5, PARADA_T6_A5,
 } from "../../../../data/contabilidadT6Pieza5.js";
 import { T6_A5, T6_A5_JUNTO, pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
 import MaquinaPegada from "./MaquinaPegada.jsx";
-import { escenaDeMomentos } from "./Momentos.jsx";
+import { crearFichas } from "../../../../contabilidad/fichaQueEntra.js";
+import { FICHAS_T6_A5 } from "../../../../data/fichasQueEntran.js";
+import { crearEscenaFichas } from "./FichaQueEntra.jsx";
 import { PieDeFuente } from "./FuentesT6A5.jsx";
 
 /*
@@ -20,36 +22,13 @@ import { PieDeFuente } from "./FuentesT6A5.jsx";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const E = ESCENA_T6_A5;
 /* Los pasos juntados (hoja 7 de Mai: el 9 y el 10 de antes van en uno). */
 const TODOS = T6_A5_JUNTO.TODOS;
 
-export const MOMENTOS_ESCENA_T6_A5 = [
-  {
-    fecha: { id: "fecha0", texto: E.fecha },
-    tipo: null,
-    piezas: [
-      { id: "deben", tipo: "dosLineas", l1: E.deben, l2: E.total },
-      {
-        id: "tabla", tipo: "tabla",
-        rotulo: { id: "rotulo", texto: ROTULO_SIMULADO_T6_A5 },
-        filas: GRUPOS_T6_A5.map((g, k) => ({
-          id: g.id,
-          nombre: g.nombre,
-          suma: { id: `suma${k + 1}`, texto: E.grupos[k].suma },
-          porcentaje: E.grupos[k].porcentaje && { id: `pct${k + 1}`, texto: pegarPorcentaje(E.grupos[k].porcentaje) },
-          resultado: { id: `res${k + 1}`, texto: E.grupos[k].resultado },
-        })),
-        total: { id: "suma", texto: E.suma },
-      },
-      { id: "gasto", tipo: "anotacion", cuenta: E.gasto, movimiento: E.suma, lado: "debe" },
-      { id: "provision", tipo: "anotacion", cuenta: E.provision, movimiento: E.suma, lado: "haber" },
-      { id: "neto", tipo: "dosLineas", l1: E.neto, l2: E.valorNeto },
-    ],
-  },
-];
 
-const Escena = escenaDeMomentos({ momentos: MOMENTOS_ESCENA_T6_A5, estadoPaso: T6_A5.estadoPaso, reservas: T6_A5.reservas, textos: E });
+/* Lote 21 (P2 de Mai): el tablero de grupos; se toca la fila de cada grupo y entra su provisión. */
+const FICHAS = crearFichas(TODOS, FICHAS_T6_A5);
+const Escena = crearEscenaFichas(FICHAS_T6_A5);
 const pintarPie = (pie) => <PieDeFuente texto={pie} />;
 /*
  * Lo que oye el lector de pantalla tras el texto de cada paso (condición 3 de
@@ -62,11 +41,14 @@ const lector = (paso) => [
 ];
 
 /* La predicción se escribe sobre la silueta de la provisión del grupo 2 (§2a de Mai). */
-const PARADA = { ...PARADA_T6_A5, etiquetaEn: "res2" };
+/* Lote 21: en el tablero, la parada resalta el sitio de la provisión del grupo 2 y la etiqueta va sobre él. */
+export const PARADA_TABLA = { ...PARADA_T6_A5, etiquetaEn: "v2", resaltados: ["v2"] };
+export const estadoTabla = FICHAS.estado;
+const PARADA = PARADA_TABLA;
 
 export default function LaTablaDelEjemplo() {
   return (
-    <MaquinaPegada todos={TODOS} estadoPaso={T6_A5_JUNTO.estadoPaso} duracion={T6_A5_JUNTO.duracion} escena={Escena} parada={PARADA}
+    <MaquinaPegada todos={TODOS} estadoPaso={FICHAS.estado} duracion={T6_A5_JUNTO.duracion} escena={Escena} parada={PARADA}
       pintar={pegarPorcentaje} pintarPie={pintarPie} lector={lector} atributos={{ "data-capa2-t6-a5": true }} />
   );
 }

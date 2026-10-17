@@ -394,36 +394,30 @@ test("★★★ C1-14 · T6 A5 · capa 3: cuatro deudas sueltas, literales; cada
 
 test("★★★ C1 · paradas de T6 A4 y T6 A5: «Primero se revive la deuda» y «son $17.000» no aparecen antes de su paso (ni para el lector de pantalla)", async () => {
   assert.ok(ENTREGA.includes("comprobar que los rótulos «Primero se revive la deuda» y «son $17.000» no aparecen antes de su paso."));
+  /*
+   * Lote 21: la escena es la de la ficha que entra; esos rótulos ya no están en ella. Lo que la parada pregunta
+   * es lo que entra al sitio («revive» en T6 A4; «v2», la provisión del grupo 2, en T6 A5): vacío hasta su paso.
+   */
   const casos = [
-    { pieza: "T6 A4", elemento: "primero", rotulo: "Primero se revive la deuda", dato: T6A4.ESCENA_T6_A4.primero },
-    { pieza: "T6 A5", elemento: "res2", rotulo: "son $17.000", dato: T6A5.ESCENA_T6_A5.grupos[1].resultado },
+    { pieza: "T6 A4", sitio: "revive", rotulo: "Primero se revive la deuda", dato: T6A4.ESCENA_T6_A4.primero, entra: "$180.000" },
+    { pieza: "T6 A5", sitio: "v2", rotulo: "son $17.000", dato: T6A5.ESCENA_T6_A5.grupos[1].resultado, entra: "$17.000" },
   ];
   for (const k of casos) {
     assert.equal(k.dato, k.rotulo, `${k.pieza}: el rótulo de la escena`);
     const p = PARADAS[k.pieza];
     const { caja, desmontar } = await montar(h(p.Componente));
-    const nodo = () => caja.querySelector(`[data-escena-viva] [data-elemento="${k.elemento}"]`);
-    /* Lo que se lee: sin siluetas ni lo oculto al lector. */
-    const leido = () => {
-      const copia = caja.cloneNode(true);
-      for (const n of copia.querySelectorAll('[aria-hidden="true"], [style*="--b5-silueta"]')) n.remove();
-      return llano(copia.textContent);
-    };
+    const sitio = () => caja.querySelector(`[data-escena-viva] [data-sitio="${k.sitio}"]`);
+    const escena = () => llano(caja.querySelector("[data-escena-viva]").textContent);
     for (let n = 1; n <= p.parada.antes; n++) {
       if (n > 1) await tocar(btn(caja, "siguiente"));
-      /* Si su momento ya se dibuja, el rótulo está en silueta y callado; si no, ni existe. */
-      if (nodo()) {
-        assert.equal(nodo().getAttribute("aria-hidden"), "true", `${k.pieza}, ${contador(caja)}: oculto al lector`);
-        assert.ok(nodo().style.getPropertyValue("--b5-silueta"), `${k.pieza}, ${contador(caja)}: en silueta`);
-      }
-      assert.ok(!leido().includes(k.rotulo), `${k.pieza}, ${contador(caja)}: no se lee`);
+      assert.equal(sitio().dataset.vacio, "si", `${k.pieza}, ${contador(caja)}: el sitio, vacío`);
+      assert.ok(!escena().includes(k.rotulo), `${k.pieza}, ${contador(caja)}: no se lee`);
     }
     assert.equal(contador(caja), `Antes del paso ${p.parada.antes}`, "también en la parada");
-    assert.ok(nodo(), `${k.pieza}: en la parada, su sitio ya está (en silueta)`);
     await tocar(caja.querySelector(`[data-parada] [data-opcion="${p.parada.correcta}"]`));
     await tocar(btn(caja, "siguiente"));
-    assert.equal(nodo().hasAttribute("aria-hidden"), false, `${k.pieza}: llega en su paso`);
-    assert.ok(leido().includes(k.rotulo));
+    await tocar(caja.querySelector('[data-ficha-entra][data-activa="si"]'));
+    assert.ok(llano(sitio().textContent).includes(k.entra), `${k.pieza}: llega en su paso, con el gesto`);
     desmontar();
   }
 });

@@ -57,7 +57,12 @@ const montar = async (el) => {
   await act(async () => { raiz.render(el); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
-const tocar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
+/* Lote 21: si «Siguiente» espera la ficha que entra, se toca primero la ficha resaltada (b5-gestos.mjs). */
+const { hacerGesto } = await import("./b5-gestos.mjs");
+const tocar = async (el) => {
+  if (el?.matches?.("[data-siguiente]")) await hacerGesto(el, act, w);
+  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+};
 const dormir = async (ms) => { for (let t = 0; t < ms; t += 100) await act(async () => { await new Promise((r) => setTimeout(r, Math.min(100, ms - t))); }); };
 /* El color que pinta el navegador, comparable con los hex del tema. */
 const rgb = (hex) => `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(", ")})`;
@@ -182,7 +187,7 @@ test("★★★ capa 2: el texto, el pie y lo resaltado de cada uno de los 9 pas
     const esperado = p <= 9 ? D.PASOS_T6[p - 1] : D.CIERRE_T6;
     assert.equal(caja.querySelector("[data-texto-paso]").textContent, esperado.texto, `texto, paso ${p}`);
     assert.equal(caja.querySelector("[data-pie]").textContent, esperado.pie, `pie, paso ${p}`);
-    assert.deepEqual(res(), [...RESALTADOS[p]].sort(), `resaltados, paso ${p}`);
+    /* Lote 21: la escena es la de la ficha que entra (lo resaltado es lo que entra: b5-ficha-que-entra.test.mjs). */
     if (p <= 9) assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de 9`);
     if (p < 10) await tocar(caja.querySelector("[data-siguiente]"));
   }
@@ -195,34 +200,7 @@ test("★★★ capa 2: el pie del paso 1 es solo «Libro, p. 197» (la nota int
   for (const x of [...D.PASOS_T6, D.CIERRE_T6]) assert.ok(!x.pie.includes("·") && !/errata/i.test(x.pie), x.pie);
 });
 
-test("★★★ cápsulas: Debe en teal dice «se debita», Haber en ámbar dice «se acredita», y no se atenúan", async () => {
-  const { caja, desmontar } = await montar(h(DosMomentos));
-  for (let p = 1; p < 9; p++) await tocar(caja.querySelector("[data-siguiente]"));
-  /* Paso 9: casi todo está atenuado, menos lo resaltado; las cápsulas conservan su color. */
-  const lados = [...caja.querySelectorAll("[data-lado]")];
-  assert.deepEqual(lados.map((n) => `${n.closest("[data-elemento]").dataset.elemento}:${n.dataset.lado}:${n.textContent}`), [
-    "ingresos10:haber:se acredita", "clientes10:debe:se debita", "caja25:debe:se debita", "clientes25:haber:se acredita",
-  ]);
-  for (const n of lados) {
-    assert.equal(n.style.background, rgb(n.dataset.lado === "debe" ? FAE.teal : FAE.ambar), n.textContent);
-    assert.equal(n.style.color, rgb(FAE.bg));
-  }
-  assert.equal(caja.querySelector('[data-elemento="clientes10"]').style.color, "rgb(168, 182, 200)", "la anotación sí se atenúa");
-  desmontar();
-});
 
-test("★★★ paso 9 (guía v2): nada nuevo; el ingreso del 10 y el recuadro del 25 entero, este sin relleno navy y sin atenuar lo de dentro", async () => {
-  const { caja, desmontar } = await montar(h(DosMomentos));
-  const vistos = (p) => Object.entries(E.estadoPasoT6(p).elementos).filter(([, e]) => e.visible).map(([k]) => k).sort();
-  assert.deepEqual(vistos(9), vistos(8), "el paso 9 no hace aparecer nada");
-  for (let p = 1; p < 9; p++) await tocar(caja.querySelector("[data-siguiente]"));
-  const d25 = caja.querySelector('[data-elemento="dia25"]');
-  assert.equal(d25.style.borderWidth, "2px");
-  assert.equal(d25.style.background, "transparent");
-  for (const id of ["hecho25", "caja25", "clientes25"]) assert.equal(E.estadoPasoT6(9).elementos[id].atenuado, false, id);
-  assert.equal(caja.textContent.includes("Ningún ingreso nuevo"), false, "la anotación del 25 ya no existe");
-  desmontar();
-});
 
 test("★★ capa 2: «Anterior» devuelve el estado exacto de cada paso", async () => {
   const { caja, desmontar } = await montar(h(DosMomentos));
@@ -247,7 +225,8 @@ test("★★★ el bloque de control lleva el texto, el pie y los controles, y s
   for (const sel of ["[data-texto-paso]", "[data-pie]", "[data-anterior]", "[data-siguiente]", "[data-reproducir]", "[data-paso-de]"]) {
     assert.ok(b.querySelector(sel), `${sel} fuera del bloque`);
   }
-  assert.equal(host.querySelector("[data-escena]").getAttribute("aria-hidden"), "true");
+  /* Lote 21: la escena ya no es decorativa: lleva las fichas que se tocan, que son botones con nombre. */
+  assert.ok(host.querySelector("[data-escena] [data-ficha-entra]") || host.querySelector("[data-escena] [data-modelo]"));
   /* En su sitio, mientras cabe. */
   assert.equal(b.style.position, "relative");
   /* JSDOM no maqueta: se simula que el sitio del bloque queda 2 000 px abajo y la capa está en pantalla. */

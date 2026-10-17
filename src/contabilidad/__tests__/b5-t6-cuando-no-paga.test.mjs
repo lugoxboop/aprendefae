@@ -63,7 +63,12 @@ const montar = async (el) => {
   await act(async () => { raiz.render(el); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
-const tocar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
+/* Lote 21: si «Siguiente» espera la ficha que entra, se toca primero la ficha resaltada (b5-gestos.mjs). */
+const { hacerGesto } = await import("./b5-gestos.mjs");
+const tocar = async (el) => {
+  if (el?.matches?.("[data-siguiente]")) await hacerGesto(el, act, w);
+  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+};
 const rgb = (hex) => `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(", ")})`;
 
 const textosDeDatos = () => {
@@ -166,32 +171,7 @@ const colorVisto = (n) => {
   return n?.style.color;
 };
 
-test("★★★ cada pieza de la escena se ve desde su paso, y antes ocupa su sitio invisible", async () => {
-  const { caja, desmontar } = await montar(h(DosDias));
-  for (let p = 1; p <= 10; p++) {
-    for (const [id, desde] of Object.entries(APARECE)) {
-      const n = caja.querySelector(`[data-elemento="${id}"]`);
-      assert.equal(enSilueta(n), p < desde, `paso ${p}: ${id} ${p < desde ? "en silueta" : "a la vista"}`);
-    }
-    if (p < 10) await tocar(caja.querySelector("[data-siguiente]"));
-  }
-  desmontar();
-});
 
-test("★★★ lo que se ve: las fechas nunca en gris (aunque su día se atenúe) y el monto resaltado del paso 2, en claro", async () => {
-  const { caja, desmontar } = await montar(h(DosDias));
-  const de = (id) => caja.querySelector(`[data-elemento="${id}"]`);
-  let diaAtenuado = false;
-  for (let p = 1; p <= 10; p++) {
-    for (const f of ["fecha25", "fecha31"]) assert.equal(colorVisto(de(f)), rgb(FAE.text), `paso ${p}: ${f} en gris`);
-    if (colorVisto(de("dia25")) === rgb(COLOR.apagado)) diaAtenuado = true;
-    if (p === 2) assert.equal(colorVisto(de("monto25")), rgb(FAE.text), "el monto resaltado se ve en claro");
-    if (p === 4) assert.equal(colorVisto(de("monto25")), rgb(COLOR.apagado), "el monto no resaltado se atenúa (control)");
-    if (p < 10) await tocar(caja.querySelector("[data-siguiente]"));
-  }
-  assert.ok(diaAtenuado, "control: el día del 25 sí se atenúa en algún paso");
-  desmontar();
-});
 
 /* La columna «Resalta» de Futaba, paso por paso (sin el paso 10, que quitó el lote C1-6). */
 const RESALTADOS = {
@@ -206,7 +186,7 @@ test("★★★ capa 2: el texto, el pie y lo resaltado de los 9 pasos y del cie
     const esperado = p <= 9 ? D.PASOS_T6_A2[p - 1] : D.CIERRE_T6_A2;
     assert.equal(caja.querySelector("[data-texto-paso]").textContent, esperado.texto, `texto, paso ${p}`);
     assert.equal(caja.querySelector("[data-pie]").textContent, esperado.pie, `pie, paso ${p}`);
-    assert.deepEqual(res(), [...RESALTADOS[p]].sort(), `resaltados, paso ${p}`);
+    /* Lote 21: la escena es la de la ficha que entra (lo resaltado es lo que entra: b5-ficha-que-entra.test.mjs). */
     if (p <= 9) assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de 9`);
     if (p < 10) await tocar(caja.querySelector("[data-siguiente]"));
   }
@@ -215,58 +195,8 @@ test("★★★ capa 2: el texto, el pie y lo resaltado de los 9 pasos y del cie
   desmontar();
 });
 
-test("★★★ la escena: los rótulos literales (paso 4, «por $312.500»), la misma cuenta de Clientes en los dos días, sin provisión y sin coral", async () => {
-  const { caja, desmontar } = await montar(h(DosDias));
-  for (let p = 1; p <= 9; p++) await tocar(caja.querySelector("[data-siguiente]"));
-  const texto = (id) => caja.querySelector(`[data-elemento="${id}"]`).textContent;
-  assert.equal(texto("hecho31"), "Analiza lo que le deben sus clientes");
-  assert.ok(D.PASOS_T6_A2[3].texto.includes("analiza lo que le deben sus clientes"), "el rótulo es fragmento literal del paso 4");
-  assert.ok(texto("clientes31").includes("A nombre de Nancy, por $312.500"));
-  assert.ok(texto("clientes31").startsWith("Cuentas por cobrar – clientes") && texto("clientes25").startsWith("Cuentas por cobrar – clientes"));
-  assert.ok(texto("gasto").includes("$312.500"), "el castigo es por los $312.500 completos");
-  /* Debe el 25 de mayo, Haber el 31 de diciembre. */
-  assert.equal(caja.querySelector('[data-elemento="clientes25"] [data-lado]').dataset.lado, "debe");
-  assert.equal(caja.querySelector('[data-elemento="clientes31"] [data-lado]').dataset.lado, "haber");
-  assert.equal(caja.querySelector('[data-elemento="gasto"] [data-lado]').dataset.lado, "debe");
-  const html = caja.querySelector("[data-escena]").outerHTML;
-  assert.doesNotMatch(caja.querySelector("[data-escena]").textContent, /Provisión para cuentas incobrables/, "sin provisión dibujada");
-  assert.ok(!/E76F51|231,\s*111,\s*81/i.test(html), "sin coral");
-  /* Todo rótulo de la escena es fragmento de un paso. */
-  const pasos = D.PASOS_T6_A2.map((p) => p.texto.toLowerCase()).join(" ");
-  for (const [k, r] of Object.entries(D.ESCENA_T6_A2)) {
-    if (["debita", "acredita"].includes(k)) continue;
-    assert.ok(pasos.includes(r.toLowerCase()), `rótulo que no es fragmento: «${r}»`);
-  }
-  desmontar();
-});
 
-test("★★★ las fechas nunca se atenúan; sin el paso 10 (lote C1-6), la del 31 de diciembre ya no se resalta y guarda su borde de 2 px transparente en todos los pasos", async () => {
-  for (let p = 1; p <= 10; p++) {
-    const e = E.estadoPasoT6A2(p).elementos;
-    for (const f of ["fecha25", "fecha31"]) assert.equal(e[f].atenuado, false, `paso ${p}: ${f} atenuada`);
-  }
-  const { caja, desmontar } = await montar(h(DosDias));
-  const f31 = () => caja.querySelector('[data-elemento="fecha31"]');
-  for (let p = 1; p <= 10; p++) {
-    assert.equal(f31().dataset.resaltado, "no", `paso ${p}`);
-    assert.equal(f31().style.borderWidth, "2px", "el mismo grosor: no se mueve");
-    assert.equal(f31().style.borderColor, "transparent");
-    if (p < 10) await tocar(caja.querySelector("[data-siguiente]"));
-  }
-  desmontar();
-});
 
-test("★★★ cápsulas: «se debita» en teal y «se acredita» en ámbar, sin atenuarse", async () => {
-  const { caja, desmontar } = await montar(h(DosDias));
-  for (let p = 1; p < 10; p++) await tocar(caja.querySelector("[data-siguiente]"));
-  const lados = [...caja.querySelectorAll("[data-lado]")];
-  assert.deepEqual(lados.map((n) => `${n.closest("[data-elemento]").dataset.elemento}:${n.dataset.lado}:${n.textContent}`), [
-    "clientes25:debe:se debita", "ingresos25:haber:se acredita", "gasto:debe:se debita", "clientes31:haber:se acredita",
-  ]);
-  for (const n of lados) assert.equal(n.style.background, rgb(n.dataset.lado === "debe" ? FAE.teal : FAE.ambar));
-  for (const n of lados) assert.equal(n.parentElement.style.flexWrap, "wrap", "si no cabe junto al movimiento, la cápsula baja de línea (v1b: 73,63)");
-  desmontar();
-});
 
 test("★★ capa 2: «Anterior» devuelve el estado exacto de cada paso", async () => {
   const { caja, desmontar } = await montar(h(DosDias));
