@@ -2,7 +2,7 @@ import { useState } from "react";
 import { C, INTER, MARCA, CIFRA, HUNDIDO } from "./comun.jsx";
 import { useReducido, useCifra } from "./movimiento.js";
 import { pesos } from "../../data/contabilidad.js";
-import { BALANZA_A } from "../../data/repasoCap5Balanza.js";
+import { BALANZA_A, GRADOS_MAXIMOS } from "../../data/repasoCap5Balanza.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -59,7 +59,7 @@ function Pesas({ n, nueva, reducido }) {
  * `hechos`: asientos ya en la balanza; `antes`: los que había antes de este
  * (las cifras cuentan desde ahí). `textos`: los de Miyata (BALANZA_R5_3).
  */
-export function Balanza({ hechos, antes = hechos, textos, datos = BALANZA_A }) {
+export function Balanza({ hechos, antes = hechos, textos, datos = BALANZA_A, tuyo = null }) {
   /* D8: las cifras de la versión que se juega (balanzaDe de sus asientos). */
   const { balanzaTras, anguloDe, MOVIMIENTO_BALANZA, RETENCION_FINAL } = datos;
   const reducido = useReducido();
@@ -69,6 +69,9 @@ export function Balanza({ hechos, antes = hechos, textos, datos = BALANZA_A }) {
   const p = balanzaTras(antes);
   const ms = quieta ? 0 : 400;
   const theta = anguloDe(e.diferencia);
+  /* D4 de Takamura: si falló, el brazo de su asiento en contorno discontinuo (dentro de los ±12°). */
+  const tu = tuyo ? datos.conTuAsiento(hechos, tuyo) : null;
+  const thetaTu = tu ? Math.max(-GRADOS_MAXIMOS, Math.min(GRADOS_MAXIMOS, anguloDe(tu.diferencia))) : 0;
   const nDebe = MOVIMIENTO_BALANZA.slice(0, hechos).filter((m) => m.debe).length;
   const nHaber = MOVIMIENTO_BALANZA.slice(0, hechos).filter((m) => m.haber).length;
   const nuevaDebe = hechos > antes && MOVIMIENTO_BALANZA[hechos - 1]?.debe > 0;
@@ -83,6 +86,7 @@ export function Balanza({ hechos, antes = hechos, textos, datos = BALANZA_A }) {
       <div role="img" aria-label={nombre} aria-live="polite">
         {/* Fiel, brazo y platillos: 72 px. */}
         <div aria-hidden="true" style={{ position: "relative", height: "72px" }}>
+          {tu && <div data-brazo-tuyo data-angulo={thetaTu.toFixed(2)} style={{ position: "absolute", left: "50%", top: "11px", width: "var(--brazo)", height: "6px", marginLeft: "calc(var(--brazo) / -2)", boxSizing: "border-box", border: `1px dashed ${C.atenuado}`, borderRadius: "3px", transform: `rotate(${thetaTu}deg)` }} />}
           <div data-brazo style={{ position: "absolute", left: "50%", top: "12px", width: "var(--brazo)", height: "4px", marginLeft: "calc(var(--brazo) / -2)", background: C.texto, borderRadius: "2px", transform: `rotate(${theta}deg)`, transition: giro }}>
             {["debe", "haber"].map((lado) => (
               <div key={lado} data-platillo={lado} style={{ position: "absolute", top: "2px", [lado === "debe" ? "left" : "right"]: "calc(24px - var(--platillo) / 2)", width: "var(--platillo)", height: "40px", transformOrigin: "50% 0", transform: `rotate(${-theta}deg)`, transition: giro }}>
@@ -104,6 +108,7 @@ export function Balanza({ hechos, antes = hechos, textos, datos = BALANZA_A }) {
           <span style={{ fontFamily: INTER, fontSize: "13px", color: C.atenuado }}>{frase}</span>
           <span style={{ ...CIFRA, fontSize: "13px", fontWeight: 600, color: C.texto }}>{pesos(Math.abs(e.diferencia))}</span>
         </p>
+        {tu && <p data-linea-tu-asiento style={{ margin: "4px 0 0", textAlign: "center", fontFamily: INTER, fontSize: "14px", lineHeight: "20px", color: C.atenuado }}>{textos.asiQuedaba(pesos(Math.abs(tu.diferencia)).replace("$", ""))}</p>}
         {/* El sobre de la retención: 40 px. */}
         <div data-sobre style={{ marginTop: "8px", minHeight: "40px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", gap: "8px", alignItems: "baseline" }}>

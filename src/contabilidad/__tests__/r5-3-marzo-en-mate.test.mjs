@@ -876,6 +876,35 @@ test("★★★ P2 · la balanza no delata: nada antes de «Comprobar»; despué
   assert.equal(Boolean(caja.querySelector("[data-mes-en-dos-cuentas]")), false);
 });
 
+test("★★★ D4 de Takamura · si falló, la balanza muestra en contorno discontinuo dónde quedaba con su asiento, y «Así quedaba con tu asiento: N»", async () => {
+  /* El asiento 1 con el IVA equivocado (100.000 de más). */
+  const suyo = bien(asiento("a1")).map((c) => (c.cuenta === T.IVA ? { ...c, valor: c.valor + 100000 } : c));
+  const { caja } = await montar(h(Mate, { pasoInicial: 0 }));
+  for (const c of suyo) await anadir(caja, c.lado, c.cuenta, c.valor);
+  await tocar(caja.querySelector("[data-revisar]"));
+  assert.equal(caja.querySelector("[data-devolucion]").dataset.devolucion, "error");
+  const b = caja.querySelector("[data-balanza]");
+  const tu = BAL.BALANZA_A.conTuAsiento(1, suyo);
+  assert.equal(tu.debe, BAL.balanzaTras(1).debe + 100000);
+  const brazo = b.querySelector("[data-brazo-tuyo]");
+  assert.ok(brazo, "falta el brazo de su asiento");
+  assert.match(brazo.getAttribute("style"), /dashed/);
+  assert.equal(brazo.dataset.angulo, Math.max(-12, Math.min(12, BAL.anguloDe(tu.diferencia))).toFixed(2));
+  assert.notEqual(brazo.dataset.angulo, b.dataset.angulo, "su brazo no se distingue del correcto");
+  assert.equal(b.querySelector("[data-linea-tu-asiento]").textContent, `Así quedaba con tu asiento: ${pesos(Math.abs(tu.diferencia)).replace("$", "")}`);
+  /* Con el asiento bien, nada de eso. */
+  const otra = await montar(h(Mate, { pasoInicial: 0 }));
+  for (const c of bien(asiento("a1"))) await anadir(otra.caja, c.lado, c.cuenta, c.valor);
+  await tocar(otra.caja.querySelector("[data-revisar]"));
+  assert.equal(Boolean(otra.caja.querySelector("[data-brazo-tuyo], [data-linea-tu-asiento]")), false);
+});
+
+test("★ Kamogawa · «Plazo del proveedor» en el asiento 6", () => {
+  const a6 = asiento("a6");
+  assert.ok(a6.renglones.some(([k]) => k === "Plazo del proveedor"));
+  assert.ok(!JSON.stringify(A).includes("Condiciones (del proveedor)"));
+});
+
 test("★★★ P2 §10 · los textos de la balanza son los de Miyata, literales en el paquete y dentro de sus topes", () => {
   const B = T.BALANZA_R5_3;
   const seccion = PAQUETE.slice(PAQUETE.indexOf("## v4 · r5-3 rediseñada"));
