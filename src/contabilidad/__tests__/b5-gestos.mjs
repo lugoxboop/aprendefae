@@ -7,8 +7,13 @@
 export async function hacerGesto(siguiente, act, w) {
   const g = siguiente?.dataset?.gestoPendiente;
   if (!g) return false;
-  const raiz = siguiente.closest("[data-capa2-t6-a3]") ?? siguiente.ownerDocument;
+  const raiz = siguiente.closest("[data-capa2-t6-a3], [data-capa2-t5-a2]") ?? siguiente.ownerDocument;
   const click = (el) => act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+  const enter = (el) => act(async () => { el.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true })); });
+  /* Lote 11 (T5 · A2): la ficha de Bancos, la marca de la fecha y el riel de venta. */
+  if (g === "bancos") { await click(raiz.querySelector('[data-ficha][data-activa="si"]')); return true; }
+  if (g === "agosto" || g === "noviembre") { await enter(raiz.querySelector("[data-marca-fecha]")); return true; }
+  if (g === "vende75" || g === "vendeResto") { await enter(raiz.querySelector("[data-riel-venta]")); return true; }
   if (g === "gasto" || g === "pablo") await click(raiz.querySelector('[data-ficha][data-activa="si"]'));
   else if (g === "barra") await click(raiz.querySelector("button[data-barra]"));
   else if (g === "asa") await act(async () => { raiz.querySelector("[data-asa]").dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true })); });

@@ -75,3 +75,67 @@ export const duracionPasoT5A2 = (paso) => 3000 + 450 * pasoT5A2(paso).texto.trim
 
 /* La capa 2 que se ve: los 21 pasos de antes contados en 14 (hoja 7 de Mai). */
 export const T5_A2_JUNTO = fusionar({ ...FUSION_T5_A2, estadoPaso: estadoPasoT5A2, paso: pasoT5A2, cierreViejo: CIERRE });
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * LOTE 11 · LA CAPA 2 «LOS TÍTULOS DE SANTA PACHA» (P2 de Mai, 16-oct).
+ *
+ * Como el tanque de T6 · A3: el estado sale de los 21 pasos de antes y los
+ * cinco gestos van pegados al paso de antes que los nombra: el efectivo entra
+ * a Inversiones con el 3, la fecha pasa a agosto con el 5, se vende el 75 %
+ * con el 9, la fecha pasa a noviembre con el 15 y se vende el resto con el
+ * 19. Un gesto de un grupo pasado está hecho; el del grupo abierto, si está
+ * en `hechos`. Ninguna cifra nueva: las barras usan las de los pasos.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+export const GESTOS_TITULOS = { 3: "bancos", 5: "agosto", 9: "vende75", 15: "noviembre", 19: "vendeResto" };
+/* Las dos ventas, con su escala propia (la mayor de las dos cifras es el 100 %). */
+export const VENTAS_TITULOS = { agosto: { costaron: 1500000, recibio: 1725000 }, noviembre: { costaron: 500000, recibio: 468750 } };
+export const LOTES = 20;
+
+const RESALTA_TITULOS = {
+  1: ["bancos"], 2: ["bancos"], 3: ["inversiones"], 4: ["fechas"], 5: ["fechas"], 6: ["caja"], 7: ["caja"],
+  8: ["inversiones"], 9: ["inversiones"], 10: ["caja", "comparacion"], 11: ["caja", "comparacion"], 12: ["comparacion"], 13: ["comparacion"],
+  14: ["comparacion"], 15: ["fechas"], 16: ["caja"], 17: ["caja"], 18: ["comparacion"], 19: ["comparacion"], 20: ["caja", "inversiones"],
+  21: ["comparacion"], 22: [],
+};
+const RESALTA_GESTO_TITULOS = { 3: ["bancos", "inversiones"], 5: ["fechas", "caja"], 9: ["inversiones", "caja"], 15: ["fechas", "caja"], 19: ["inversiones", "caja"] };
+
+export function crearEstadoTitulos(grupos) {
+  const CIERRE_NUEVO = grupos.length + 1;
+  const grupoDe = (n) => (n >= CIERRE_NUEVO ? [22] : grupos[Math.max(1, n) - 1]);
+  function estado(n, hechos = new Set()) {
+    const grupo = grupoDe(n);
+    const viejo = grupo.at(-1);
+    const llego = (p) => viejo >= p;
+    const hecho = (p) => p < grupo[0] || (grupo.includes(p) && hechos.has(p));
+    const pendiente = (p) => grupo.includes(p) && !hechos.has(p);
+    const gesto = grupo.find((p) => GESTOS_TITULOS[p]) ?? null;
+    const llegaAhora = (p) => grupo.includes(p);
+    const filas = [
+      { id: "interesAgosto", tipo: "interes", desde: 7 },
+      { id: "ventaAgosto", tipo: "venta", desde: 10 },
+      { id: "interesNoviembre", tipo: "interes", desde: 17 },
+      { id: "ventaNoviembre", tipo: "venta", desde: 20 },
+    ].map((f) => ({ ...f, visible: llego(f.desde), nueva: llegaAhora(f.desde) }));
+    const comparacion = hecho(19)
+      ? { venta: "noviembre", costaron: true, recibio: true, diferencia: llego(21) }
+      : llego(10) ? { venta: "agosto", costaron: llego(12), recibio: true, diferencia: llego(14) } : null;
+    return {
+      paso: n,
+      viejo,
+      gesto: gesto && pendiente(gesto) ? GESTOS_TITULOS[gesto] : null,
+      pasoGesto: gesto,
+      resaltados: gesto && pendiente(gesto) ? RESALTA_GESTO_TITULOS[gesto] : RESALTA_TITULOS[viejo],
+      elementos: {},
+      bancos: !hecho(3),
+      lotes: hecho(3),
+      vendidos: hecho(19) ? LOTES : hecho(9) ? 15 : 0,
+      estadoInversiones: !hecho(3) ? null : hecho(19) ? "sin" : hecho(9) ? "quedan" : "compra",
+      hoy: hecho(15) ? 2 : hecho(5) ? 1 : 0,
+      filas,
+      comparacion,
+    };
+  }
+  return { estado, CIERRE: CIERRE_NUEVO };
+}

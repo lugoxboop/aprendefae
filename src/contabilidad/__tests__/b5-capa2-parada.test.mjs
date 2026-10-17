@@ -57,6 +57,7 @@ const D6 = await import("../../data/contabilidadT6Pieza5.js");
 const E5 = await import("../t5Pieza2.js");
 const E3 = await import("../t6Pieza3.js");
 const TANQUE = await import("../../components/mecanicas/libros/tema6/LaProvision.jsx");
+const TITULOS = await import("../../components/mecanicas/libros/tema5/TresMomentos.jsx");
 const E4 = await import("../t6Pieza4.js");
 const E6 = await import("../t6Pieza5.js");
 
@@ -64,7 +65,8 @@ const E6 = await import("../t6Pieza5.js");
 /* `en`: la pieza de la escena que lleva la etiqueta; `dice`: lo que escribe cada opción (§2a de Mai). */
 const textoDeOpcion = (par) => Object.fromEntries(par.opciones.map((o) => [o.id, o.texto]));
 const PIEZAS = [
-  { nombre: "T5 · A2", en: "cuenta2", dice: textoDeOpcion(D5.PARADA_T5_A2), Componente: await C("tema5/TresMomentos"), pasos: 14, parada: D5.PARADA_T5_A2, estado: E5.T5_A2_JUNTO.estadoPaso, duracion: E5.T5_A2_JUNTO.duracion },
+  /* Lote 11: la escena de los títulos; la parada resalta lo que queda en Inversiones y la etiqueta va sobre Caja. */
+  { nombre: "T5 · A2", en: "caja", dice: textoDeOpcion(D5.PARADA_T5_A2), Componente: await C("tema5/TresMomentos"), pasos: 14, parada: TITULOS.PARADA_TITULOS, estado: TITULOS.estadoTitulos, duracion: E5.T5_A2_JUNTO.duracion },
   /* Lote 7: la escena del tanque; la parada resalta el gasto y la fila del castigo, y la etiqueta va sobre la bandeja del gasto. */
   { nombre: "T6 · A3", en: "bandejaGasto", dice: { si: "Otra vez en marzo", "si-parte": "En marzo, solo lo que faltó", no: "Solo en diciembre" }, Componente: await C("tema6/LaProvision"), pasos: 15, parada: TANQUE.PARADA_TANQUE, estado: TANQUE.estadoTanque, duracion: E3.T6_A3_JUNTO.duracion },
   { nombre: "T6 · A4", en: "clientes2", dice: textoDeOpcion(D4.PARADA_T6_A4), Componente: await C("tema6/SiPaga"), pasos: 9, parada: D4.PARADA_T6_A4, estado: E4.T6_A4.estadoPaso, duracion: E4.T6_A4.duracion },
@@ -243,6 +245,8 @@ for (const p of PIEZAS) {
     try {
       const { caja, desmontar } = await montar(h(p.Componente));
       await hastaAntes(caja, p);
+      /* Lote 11: si el paso de antes de la parada lleva un gesto (T5 · A2: la fecha de noviembre), se hace antes de reproducir. */
+      await hacerGesto(btn(caja, "siguiente"), act, w);
       await tocar(btn(caja, "reproducir"));
       assert.equal(btn(caja, "reproducir").getAttribute("aria-pressed"), "true");
       await act(async () => { mock.timers.tick(p.duracion(p.parada.antes - 1)); });
