@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "../t7/hacerT7.jsx";
 import { CSS_T7_HACER, TarjetaPregunta, Eleccion, Devolucion, Parrafos } from "../t7/hacerT7.jsx";
 import { ContadorConIntento } from "../t7/armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
@@ -73,7 +73,7 @@ export default function UnToqueT5({ config, Marco, rotulo, titulo, acento, onCom
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER}</style>
       <div {...{ [`data-${marca}`]: true }}>
-        <Encabezado consigna={sinUnSoloIntento(consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={datos.objetivo} consigna={sinUnSoloIntento(consigna)} onComoSeJuega={onComoSeJuega} />
         {resto.length > 0 && <div style={{ marginBottom: "12px" }}><Parrafos textos={resto} /></div>}
         <div style={{ marginBottom: "12px" }}>
           <ContadorConIntento>

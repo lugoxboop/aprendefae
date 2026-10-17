@@ -5,7 +5,7 @@ import { prepararH4, evaluarH4, idLineaH4, puntuarH4, TOTAL_H4 } from "../../../
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { AsientoEnLineas, Responder, useTanda } from "../piezas.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
 import { CSS_T73_PATRON } from "./PatronT7_3.jsx";
 import FiguraAcumulada from "./FiguraAcumulada.jsx";
 import { FIGURA_T7_3_H4, cerradosDe } from "../../../../contabilidad/figuraAcumulada.js";
@@ -96,7 +96,7 @@ export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h4>
-        <Encabezado consigna={sinUnSoloIntento(H4.consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H4.objetivo} consigna={sinUnSoloIntento(H4.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H4.enunciado} />
         <Ficha filas={FICHA_H4} />
         <FiguraAcumulada figura={FIGURA_T7_3_H4} cerrados={cerradosDe(t.i, Boolean(listo))} listo={Boolean(listo)} />

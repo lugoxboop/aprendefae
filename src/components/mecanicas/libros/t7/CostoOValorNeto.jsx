@@ -5,7 +5,7 @@ import { prepararH7, evaluarH7, puntuarH7, TOTAL_H7 } from "../../../../contabil
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
 import { FranjaNIC2, FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 import { ContadorConIntento } from "./armaLaLinea.jsx";
@@ -78,7 +78,7 @@ export default function CostoOValorNeto({ Marco, rotulo, titulo, acento, onCompl
       <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h7 className="t73pt-pieza">
         <FranjaNIC2 texto={H7.aviso} />
-        <Encabezado consigna={sinUnSoloIntento(H7.consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H7.objetivo} consigna={sinUnSoloIntento(H7.consigna)} onComoSeJuega={onComoSeJuega} />
         <div style={{ marginBottom: "12px" }}>
           <ContadorConIntento>
             <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />

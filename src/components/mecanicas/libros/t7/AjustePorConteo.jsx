@@ -5,7 +5,7 @@ import { prepararH5, evaluarH5, idLineaH5, puntuarH5, TOTAL_H5 } from "../../../
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
 import { FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
 import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
@@ -90,7 +90,7 @@ export default function AjustePorConteo({ Marco, rotulo, titulo, acento, onCompl
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h5>
-        <Encabezado consigna={sinUnSoloIntento(H5.consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H5.objetivo} consigna={sinUnSoloIntento(H5.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H5.enunciado} />
         <div style={{ marginBottom: "12px" }}>
           <ContadorConIntento>

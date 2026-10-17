@@ -4,7 +4,7 @@ import { barajar } from "../../../../utils/barajar.js";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "../t7/hacerT7.jsx";
 import { CSS_T7_HACER, Parrafos, TarjetaPregunta, Eleccion, Devolucion, LineasConComprobar } from "../t7/hacerT7.jsx";
 import { CasillaCifra, LineasConCuenta, ContadorConIntento, DistintivoIntento } from "../t7/armaLaLinea.jsx";
 import { sinUnSoloIntento, TEXTOS_ARMA } from "../../../../contabilidad/armaLaLinea.js";
@@ -141,7 +141,7 @@ export default function PreguntasConAsientoT5({ config, Marco, rotulo, titulo, a
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER}</style>
       <div {...{ [`data-${marca}`]: true }}>
-        <Encabezado consigna={sinUnSoloIntento(consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={datos.objetivo} consigna={sinUnSoloIntento(consigna)} onComoSeJuega={onComoSeJuega} />
         {resto.length > 0 && <div style={{ marginBottom: "12px" }}><Parrafos textos={resto} /></div>}
         {Figura && <Figura items={t.items} i={t.i} listo={Boolean(listo)} />}
         <div style={{ marginBottom: "12px" }}>
