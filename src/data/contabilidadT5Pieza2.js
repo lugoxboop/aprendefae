@@ -250,3 +250,34 @@ export const PARADA_T5_A2 = {
   pie: "Libro, p. 195",
   resaltados: ["quedan"],
 };
+
+/* ═══════════ LOTE 11 · LA CAPA 2 «LOS TÍTULOS DE SANTA PACHA» (P2 de Mai, 16-oct) ═══════════ */
+
+/*
+ * Los rótulos del modelo (§10 de Mai: suyos, nuevos, PARA SHOKO), los nombres
+ * de cuenta publicados y las fechas y cifras de los pasos de Futaba.
+ */
+export const TITULOS_T5_A2 = {
+  inversiones: "Inversiones – títulos",
+  caja: "Caja",
+  bancos: "Bancos",
+  debe: "DEBE",
+  fechas: ["1 de mayo", "1 de agosto", "1 de noviembre"],
+  compra: "$2.000.000",
+  estados: { compra: "2.500 títulos · $2.000.000", quedan: "625 títulos", sin: "Sin títulos" },
+  vende75: "1.875 títulos, el 75 %",
+  llevalo: "Llévalo a Inversiones",
+  desliza: "Desliza para vender",
+  interes: "interés",
+  venta: "venta",
+  costaron: "Costaron",
+  recibio: "Recibió",
+  ganancia: "Ganancia",
+  perdida: "Pérdida",
+  filas: { interesAgosto: "$120.000", ventaAgosto: "$1.725.000", interesNoviembre: "$30.000", ventaNoviembre: "$468.750" },
+  agosto: { costaron: "$1.500.000", recibio: "$1.725.000", diferencia: "$225.000" },
+  noviembre: { costaron: "$500.000", recibio: "$468.750", diferencia: "$31.250" },
+  nombreFecha: "Fecha",
+  nombreRiel: "Títulos que se venden",
+  nombreBancos: "Bancos, $2.000.000",
+};
