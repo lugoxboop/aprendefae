@@ -50,6 +50,44 @@
 - Siguiente: «Siguiente: «San Calixto».» (<10)
 - Pie: «Basado en el libro, pp. 187-190»
 
+
+## Caso B (D8), pantalla por pantalla
+
+D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): otros movimientos y otras causas, con la misma decisión (mismos id, lados y libretas). A4 no lleva cifras nuevas (las de P0 son del libro), así que sus pies no cambian. El sorteo elige el caso para toda la pieza; el primer recorrido usa siempre el caso 1. Aquí va solo lo que cambia; «(completa)» marca una pantalla cuyos lugares cambian y va entera. En la conciliación del caso B la empresa ignora la nota crédito: el renglón del banco, como en el caso 1.
+
+- Movimiento 1 · tarjeta (caso B): «Un depósito de la empresa» (<10)
+- Movimiento 1 · en el mayor (caso B): «Depósito»
+- Movimiento 2 · tarjeta (caso B): «Una nota débito por comisiones» (<10)
+- Movimiento 2 · en el mayor (caso B): «Nota débito / del banco»
+- Movimiento 3 · tarjeta (caso B): «Una nota crédito por intereses» (<10)
+- Movimiento 3 · en el mayor (caso B): «Nota crédito / del banco»
+- Movimiento 4 · tarjeta (caso B): «Un cheque para pagarle al proveedor» (<10)
+- Movimiento 4 · en el mayor (caso B): «Cheque girado»
+- Movimiento 5 · tarjeta (caso B): «Una transferencia que llega de un cliente» (<10)
+- Movimiento 5 · en el mayor (caso B): «Transferencia»
+- Movimiento 6 · tarjeta (caso B): «Una transferencia que la empresa envía» (<10)
+- Movimiento 6 · en el mayor (caso B): «Envío»
+- Movimiento 7 · tarjeta (caso B): «Un cheque girado que después se anula» (<10)
+- Movimiento 7 · en el mayor (caso B): «Cheque anulado»
+- Causa 1 · tarjeta (caso B): «Cheque girado el 29, que nadie ha cobrado» (<10)
+- Causa 2 · tarjeta (caso B): «Un depósito hecho el último día del mes» (<10)
+- Causa 3 · tarjeta (caso B): «El banco cobra una comisión a la cuenta» (<10)
+- Causa 4 · tarjeta (caso B): «El banco abona rendimientos a la cuenta» (<10)
+- Causa 5 · tarjeta (caso B): «La empresa anota mal una consignación» (<10)
+- Causa 6 · tarjeta (caso B): «El banco suma mal un depósito» (<10)
+- Renglón de la empresa (P4, caso B): «Consignación / sin abonar · suma»
+- Renglón del banco (P4, caso B): «Nota crédito · suma»
+- Para el lector, el renglón «consignacion-sin-abonar» (P4, caso B): «Consignación sin abonar: la tiene la empresa; el banco todavía no la sabe»
+- Para el lector, el renglón «nota-credito» (P4, caso B): «Nota crédito: la tiene el banco; la empresa todavía no la sabe»
+
+**P4 · la-conciliacion** (completa)
+- Rótulo de la pregunta: «¿Qué ignora la empresa?»
+- Error · consignacion-sin-abonar (✗ y el texto): «La consignación ya está en sus libros: la anotó al hacerla.» (82,6)
+- Frase de cierre (con el acierto, sin mensaje): «Cada libreta anota lo que la otra todavía no sabe. Conciliar es ver qué falta.» (83,0)
+- Texto alternativo: «Las dos libretas, cada una con un renglón: una consignación sin abonar en la de la empresa y una nota crédito en la del banco. Se toca el renglón que la empresa todavía no sabe.» (80,8)
+- Siguiente: «Siguiente: «San Calixto».» (<10)
+- Pie: «Basado en el libro, pp. 187-190»
+
 ## Los siete movimientos (P2)
 
 - Movimiento 1 · tarjeta: «Lo que la empresa consigna» (<10)

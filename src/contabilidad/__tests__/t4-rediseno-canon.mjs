@@ -12,7 +12,8 @@
  * 10 palabras. Los pies, las páginas y la interfaz no llevan medida.
  *
  *   · pantallasDe(md)  las pantallas «**Pn · id**», cada una con sus textos
- *                      por lugar, en orden
+ *                      por lugar, en orden (con un título, las de otra
+ *                      sección: «Caso B (D8), pantalla por pantalla»)
  *   · hechosDe(md)     los hechos «### h1-tN · viene de h1-N» de H1
  *   · seccionDe(md, t) los renglones de una sección «## t»
  * ═══════════════════════════════════════════════════════════════════════════
@@ -31,12 +32,13 @@ export function datos(bloque) {
   return Object.fromEntries(bloque.split("\n").map((l) => l.match(/^- ([^:«]+): ([^«].*)$/)).filter(Boolean).map((m) => [m[1].trim(), m[2].trim()]));
 }
 
-export function pantallasDe(md) {
-  const ini = md.indexOf("## Contenido, pantalla por pantalla");
+export function pantallasDe(md, titulo = "Contenido, pantalla por pantalla") {
+  const ini = md.indexOf(`## ${titulo}`);
+  if (ini < 0) return [];
   const fin = md.indexOf("\n## ", ini + 5);
   return md.slice(ini, fin).split(/\n(?=\*\*P\d)/).slice(1).map((s) => {
-    const [, k, id] = s.match(/^\*\*P(\d+) · ([a-z0-9-]+)\*\*/);
-    return { k: Number(k), id, textos: renglones(s) };
+    const [, k, id, completa] = s.match(/^\*\*P(\d+) · ([a-z0-9-]+)\*\*( \(completa\))?/);
+    return { k: Number(k), id, textos: renglones(s), completa: Boolean(completa) };
   });
 }
 
@@ -56,3 +58,29 @@ export function hechosDe(md) {
 
 /* El texto de un lugar (exacto), o null. */
 export const textoDe = (textos, lugar) => textos.find((x) => x.lugar === lugar)?.texto ?? null;
+
+/*
+ * D8: lo que el caso B dice, pantalla por pantalla: lo del caso 1 con lo que
+ * la sección «Caso B (D8), pantalla por pantalla» cambia. Cada renglón B
+ * reemplaza al del mismo lugar (que tiene que existir); los renglones B con
+ * un lugar que el caso 1 no tiene («Fila 1…») quedan aparte, en `extra`.
+ */
+export function fusionB(canonA, canonB) {
+  return canonA.map((a) => {
+    const b = canonB.find((x) => x.id === a.id);
+    if (!b) return { ...a, extra: [] };
+    /* «(completa)»: la pantalla B va entera (sus lugares cambian, como los errores por cifra). */
+    if (b.completa) return { ...a, textos: b.textos, extra: [] };
+    /* «Frase de cierre (con el acierto…)»: el lugar sin la nota de cuándo aparece. */
+    const norm = (l) => (l.startsWith("Frase de cierre") ? "Frase de cierre" : l);
+    const lugares = new Set(a.textos.map((x) => norm(x.lugar)));
+    return {
+      ...a,
+      textos: a.textos.map((x) => {
+        const y = b.textos.find((z) => norm(z.lugar) === norm(x.lugar));
+        return y ? { ...y, lugar: x.lugar } : x;
+      }),
+      extra: b.textos.filter((y) => !lugares.has(norm(y.lugar))),
+    };
+  });
+}

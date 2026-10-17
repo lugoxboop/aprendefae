@@ -9,7 +9,7 @@ export default function Footer() {
       href="/privacidad"
       style={{
         fontSize: "12px",
-        color: "rgba(248,249,250,0.34)",
+        color: "#A8B6C8",
         textDecoration: "none",
         borderBottom: "1px solid rgba(248,249,250,0.14)",
         paddingBottom: "1px",

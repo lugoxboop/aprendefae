@@ -170,7 +170,7 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota, 
         <h3 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "16px", letterSpacing: "-0.02em", margin: 0, color: FAE.text }}>
           {titulo}
         </h3>
-        {nota && <span style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.45)" }}>{nota}</span>}
+        {nota && <span style={{ fontSize: "12.5px", color: "#A8B6C8" }}>{nota}</span>}
       </div>
 
       <div

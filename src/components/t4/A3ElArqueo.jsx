@@ -27,11 +27,11 @@ import { Tablero } from "./tablero.jsx";
 import { Regla } from "./Regla.jsx";
 import { Fig, Sobre, Rotulo, Chips } from "./aprender.jsx";
 import { DEBE, HABER, MARCA } from "../../data/contabilidadT4.js";
-import { FONDO, GASTADO } from "../../data/contabilidadT4A2.js";
 import {
-  CONTROL_A3, ZONAS_A3, EFECTIVO_FALTANTE, FALTANTE, CHEQUE_FALTANTE,
-  GASTOS_GENERALES as GG, BANCOS as B, CXC_EMPLEADOS as CXC, GASTOS_FALTANTE as GNO, CUENTAS_A3, FIGURA_A3 as F,
+  ZONAS_A3,
+  GASTOS_GENERALES as GG, BANCOS as B, CXC_EMPLEADOS as CXC, GASTOS_FALTANTE as GNO, CUENTAS_A3, DATOS_A3,
 } from "../../data/contabilidadT4A3.js";
+import { useDatosCaso } from "./caso.js";
 
 export const CSS_A3 = `
 .t4a3-zona { margin: 0; min-height: 22px; text-align: center; font: 600 14px/22px "Inter", sans-serif; white-space: nowrap; }
@@ -42,17 +42,22 @@ export const CSS_A3 = `
 `;
 
 const NOMBRE = "sobre-y-regla";
-const R = { fondo: FONDO };
+/* D8: las cifras y los rótulos del caso en curso (1 o el B, sobre las cifras de A2 del mismo caso). */
+const useCasoA3 = () => useDatosCaso(DATOS_A3);
 
-const SobreArqueo = ({ caja, luz = false, solapa = null }) => (
+function SobreArqueo({ caja, luz = false, solapa = null }) {
+  const { GASTADO, F } = useCasoA3();
+  return (
   <Sobre rotulo={F.sobre} solapa={solapa} filas={[
     { id: "soportes", r: F.soportes, v: GASTADO },
     { id: "caja", r: F.caja, v: caja ?? F.sinContar, luz },
   ]} />
-);
+  );
+}
 
 /* P0 · contar: la caja dice lo que tiene y la aguja de la suma cae en la marca del fondo. */
 function Contar({ p, onAccion }) {
+  const { FONDO, GASTADO, R, F } = useCasoA3();
   const [c, setC] = useState(false);
   /* Lote B, capa 1: con «Contar la caja» aparece la definición del arqueo, debajo de la figura. */
   useEffect(() => { if (c) onAccion?.(); }, [c]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -69,6 +74,7 @@ function Contar({ p, onAccion }) {
 
 /* P1 · mover la plata de la caja: la aguja cruza la marca y debajo se lee qué hay. */
 function Mover({ p }) {
+  const { FONDO, GASTADO, R, CONTROL_A3, F } = useCasoA3();
   const [caja, setCaja] = useState(CONTROL_A3.inicio);
   const d = GASTADO + caja - FONDO;
   const zona = d === 0 ? "cuadra" : d > 0 ? "sobra" : "falta";
@@ -85,6 +91,7 @@ function Mover({ p }) {
 
 /* P2 · ¿qué muestra el arqueo? La aguja aparece solo con el acierto. */
 function Zona({ p, onAcierto }) {
+  const { GASTADO, R, F } = useCasoA3();
   const [e, setE] = useState(null);
   const ok = e === p.correcta;
   useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -102,6 +109,7 @@ function Zona({ p, onAcierto }) {
 
 /* P3 y P5 · el cheque: la aguja «caja + tu cheque» cae donde dice el cheque elegido. */
 function ElCheque({ p, onAcierto }) {
+  const { FONDO, GASTADO, R, F } = useCasoA3();
   const [e, setE] = useState(null);
   const ok = e === p.correcta;
   useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -122,6 +130,7 @@ function ElCheque({ p, onAcierto }) {
 
 /* P4 y P7 · una ficha a su cuenta y su lado. Una sola ficha: el toque califica en el acto, sin «Comprobar» (prompt maestro §4.3; P2 de Hanayama, §5.2). */
 function Ficha({ p, onAcierto }) {
+  const { F } = useCasoA3();
   const [r, setR] = useState(null);
   const ok = Boolean(r) && r.id === p.va.id && r.lado === p.va.lado;
   useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -149,6 +158,7 @@ function Ficha({ p, onAcierto }) {
  * mueven. No se califica. La frase de cierre aparece con el primer cambio.
  */
 function Interruptor({ p, onCierre }) {
+  const { GASTADO, R, EFECTIVO_FALTANTE, FALTANTE, F } = useCasoA3();
   const [asume, setAsume] = useState(false);
   const [cambio, setCambio] = useState(false);
   useEffect(() => { if (cambio) onCierre?.(); }, [cambio]); // eslint-disable-line react-hooks/exhaustive-deps

@@ -30,8 +30,8 @@
  * Aprender: sin FP, sin catálogo y sin llamar al motor.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { BOTON, DEBE, HABER } from "./contabilidadT4.js";
-import { FONDO, GASTADO, QUEDA } from "./contabilidadT4A2.js";
+import { BOTON, DEBE, HABER, pieCasoB, pieCortoB } from "./contabilidadT4.js";
+import { FONDO, GASTADO, QUEDA, DATOS_A2 } from "./contabilidadT4A2.js";
 
 export const A3_ID = "t4-a3-el-arqueo";
 
@@ -206,6 +206,76 @@ export const PANTALLAS_A3 = [
   },
 ];
 
+/*
+ * D8 · el caso B (Katsumi, lote nocturno), sobre las cifras de A2 del caso B
+ * (fondo 600.000, gastado 524.300, quedan 75.700): con 78.500 en la caja
+ * sobran 2.800 y el cheque sale por 521.500; con 70.400 faltan 5.300 y sale
+ * por 529.600. Marta en vez de Rosa y Taller Ríos en vez de Sus Servicios.
+ * La misma decisión en cada pantalla; los pies, con « · Cifras construidas».
+ */
+export const EFECTIVO_SOBRANTE_B = 78_500;
+export const EFECTIVO_FALTANTE_B = 70_400;
+function cifrasA3(fondo, gastado, queda, efSobra, efFalta) {
+  const sobrante = gastado + efSobra - fondo;
+  const faltante = fondo - (gastado + efFalta);
+  return {
+    FONDO: fondo, GASTADO: gastado, R: { fondo },
+    SOBRANTE: sobrante, CHEQUE_SOBRANTE: gastado - sobrante, CHEQUE_CON_DIFERENCIA: gastado + sobrante,
+    EFECTIVO_SOBRANTE: efSobra, EFECTIVO_FALTANTE: efFalta,
+    FALTANTE: faltante, CHEQUE_FALTANTE: gastado + faltante, CHEQUE_SIN_FALTANTE: gastado - faltante,
+    CONTROL_A3: { min: queda - 7_000, max: queda + 7_000, paso: 100, inicio: queda },
+  };
+}
+const K2 = DATOS_A2[2];
+const C2 = cifrasA3(K2.FONDO, K2.GASTADO, K2.QUEDA, EFECTIVO_SOBRANTE_B, EFECTIVO_FALTANTE_B);
+/* Lo que la figura muestra en cada caso. */
+export const DATOS_A3 = {
+  1: { ...cifrasA3(FONDO, GASTADO, QUEDA, EFECTIVO_SOBRANTE, EFECTIVO_FALTANTE), F: FIGURA_A3 },
+  2: { ...C2, F: { ...FIGURA_A3, sobre: "LO QUE TIENE MARTA", caminos: { ...FIGURA_A3.caminos, cobra: "Se le cobra a Marta" }, vanA: (cuenta) => `Los 5.300 van a ${cuenta}, al debe.` } },
+};
+const TEXTOS_A3_B = {
+  contar: { alt: "El sobre con 524.300 en soportes y la caja sin contar. Al contar, hay 75.700, y la aguja de la suma cae justo en la marca del fondo." },
+  "el-sobrante": {
+    caja: EFECTIVO_SOBRANTE_B,
+    antes: ["En la caja hay $78.500. ¿Qué muestra el arqueo?"],
+    acierto: "Se pasa por $2.800: un sobrante de caja menor.",
+    errores: { falta: "Haz la suma: ¿pasa del fondo o se queda corta?", cuadra: "Para cuadrar, tendría que dar justo $600.000. Suma los dos." },
+    alt: "El sobre con 524.300 en soportes y 78.500 en la caja. Con el acierto, aparece en la regla la aguja de la suma.",
+  },
+  "el-cheque": {
+    caja: EFECTIVO_SOBRANTE_B, opciones: [C2.GASTADO, C2.CHEQUE_SOBRANTE, C2.CHEQUE_CON_DIFERENCIA], correcta: C2.CHEQUE_SOBRANTE,
+    acierto: "Los $2.800 de más ya están en la caja.",
+    errores: { [C2.GASTADO]: "Así sería si cuadrara. Aquí sobra plata en la caja.", [C2.CHEQUE_CON_DIFERENCIA]: "Eso le suma la diferencia: el fondo quedaría pasado." },
+  },
+  "el-asiento": {
+    monto: C2.SOBRANTE,
+    base: { [GASTOS_GENERALES]: { [DEBE]: C2.GASTADO }, [BANCOS]: { [HABER]: C2.CHEQUE_SOBRANTE } },
+    antes: ["¿A qué cuenta y a qué lado van los $2.800?"],
+    errores: { [GASTOS_GENERALES]: "Gastos generales ya tiene los $524.300 completos.", [BANCOS]: "Bancos ya tiene el cheque entero: $521.500.", lado: "Un ingreso no sube por ese lado." },
+    alt: "El asiento del reembolso, con Gastos generales al debe y Bancos al haber. Los 2.800 se ponen en una cuenta y un lado.",
+  },
+  "el-faltante": {
+    caja: EFECTIVO_FALTANTE_B, opciones: [C2.GASTADO, C2.CHEQUE_SIN_FALTANTE, C2.CHEQUE_FALTANTE], correcta: C2.CHEQUE_FALTANTE,
+    antes: ["Con $70.400 en caja, ¿por cuánto sale?"],
+    acierto: "Repone lo gastado y los $5.300 que faltan.",
+    errores: { [C2.GASTADO]: "Con eso, el fondo se queda corto.", [C2.CHEQUE_SIN_FALTANTE]: "Restaste lo que falta; el cheque lo repone." },
+    alt: "Con 70.400 en la caja, la suma queda a la izquierda del fondo. Solo el cheque correcto deja la aguja de caja más cheque en la marca.",
+  },
+  "camino-1": {
+    monto: C2.FALTANTE,
+    antes: ["Es representativo: Taller Ríos le cobra los $5.300 a Marta."],
+    acierto: "Marta le queda debiendo $5.300 a la empresa.",
+    alt: "Los 5.300 que faltan se ponen en una de tres cuentas, al debe o al haber.",
+  },
+  "dos-caminos": {
+    cierre: "Quién paga los $5.300 lo decide la empresa.",
+    alt: "La regla con los 5.300 que faltan para el fondo. Un interruptor elige si se le cobra a Marta o si la empresa lo asume, y el asiento cambia de cuenta: los 5.300 siempre van al debe.",
+  },
+};
+const PANTALLAS_A3_B = PANTALLAS_A3.map((p) => ({ ...p, ...(TEXTOS_A3_B[p.id] ?? {}), pie: pieCasoB(p.pie) }));
+/* D8: el pie corto del caso B donde el largo pasaba de 60 palabras (sonda; Katsumi). */
+for (const p of PANTALLAS_A3_B) if (["el-sobrante", "el-cheque", "el-asiento", "el-faltante", "camino-1"].includes(p.id)) p.pie = pieCortoB(p.pie);
+
 export const PIEZA_EL_ARQUEO = {
   id: A3_ID,
   numero: 3,
@@ -215,3 +285,4 @@ export const PIEZA_EL_ARQUEO = {
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A3,
 };
+PIEZA_EL_ARQUEO.casoB = { ...PIEZA_EL_ARQUEO, pantallas: PANTALLAS_A3_B };

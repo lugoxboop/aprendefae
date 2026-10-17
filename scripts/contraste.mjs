@@ -101,7 +101,7 @@ const MEDIR = `(() => {
     const grande = px >= 24 || (px >= 18.66 && peso >= 700);
     const piso = grande ? 3 : 4.5;
     const r = razon(color, fondo);
-    if (r < piso) malos.push({ r: Math.round(r * 100) / 100, piso, px, peso, texto: propio.slice(0, 34), etiqueta: el.tagName.toLowerCase(), color: s.color, fondo: "rgb(" + fondo.join(",") + ")" });
+    if (r < piso) malos.push({ r: Math.round(r * 100) / 100, piso, px, peso, texto: propio.slice(0, 34), etiqueta: el.tagName.toLowerCase(), color: s.color, fondo: "rgb(" + fondo.join(",") + ")", donde: (() => { for (let n = el; n; n = n.parentElement) { const a = [...n.attributes].find((x) => x.name.startsWith("data-")); if (a) return n.tagName.toLowerCase() + "[" + a.name + "=" + a.value.slice(0, 24) + "]"; } return "sin data-"; })() });
   }
   return { malos, sinMedir };
 })()`;
@@ -132,7 +132,8 @@ for (const paso of ["Contabilidad", TEMA]) {
  * es escribir «pasa» en vez de «pasan estas»: la mitad de cada tema son los
  * juegos, y de esos no había dato.
  */
-const HACER = process.argv.includes("--hacer");
+const HACER = process.argv.includes("--hacer") || process.argv.includes("--partidas");
+const PARTIDAS = process.argv.includes("--partidas");
 const entro = await (async () => {
   for (const rotulo of HACER ? ["Los juegos que dan FP", "Hacer"] : ["El material que explica", "Aprender"]) {
     const puerta = p.locator(`button:visible:has-text("${rotulo}")`);
@@ -160,6 +161,47 @@ if (!entro) {
 const vistos = new Map();
 const sinMedir = new Set();
 let pantallas = 0;
+/*
+ * En Hacer, el camino no es el juego. `--partidas` entra en cada actividad,
+ * juega unas cuantas pantallas tocando lo primero que haya y vuelve al
+ * camino. No pretende jugar bien: pretende PINTAR las pantallas para poder
+ * medirlas. Lo que no se pinta no se mide, y hasta hoy de las partidas no
+ * había ni un dato.
+ */
+if (HACER && PARTIDAS) {
+  const nodos = await p.locator("[data-nodo], .fae-ch-estrecho .fae-ch-rotulo").count();
+  for (let k = 0; k < Math.min(nodos, 12); k++) {
+    const punto = await p.evaluate((i) => {
+      const e = [...document.querySelectorAll("[data-nodo], .fae-ch-estrecho .fae-ch-rotulo")][i];
+      if (!e) return null;
+      const r = e.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) return null;
+      return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+    }, k);
+    if (!punto) continue;
+    await p.mouse.click(punto.x, punto.y);
+    await p.waitForTimeout(900);
+    for (let paso = 0; paso < 6; paso++) {
+      pantallas++;
+      const tanda = await p.evaluate(MEDIR);
+      for (const m of tanda.malos) { const clave = `${m.r}|${m.px}|${m.texto}`; if (!vistos.has(clave)) vistos.set(clave, m); }
+      for (const t of tanda.sinMedir) sinMedir.add(t);
+      /* Tocar lo primero que se pueda: una opción, una ficha, o el avance. */
+      const toque = await p.evaluate(() => {
+        const cand = [...document.querySelectorAll("[data-opcion], [data-caso], [data-destino], [data-casilla], button")]
+          .filter((e) => { const r = e.getBoundingClientRect(); return r.height > 10 && r.width > 10 && !/volver|pausar|cómo se juega/i.test(e.innerText || ""); });
+        if (!cand.length) return null;
+        const e = cand[0]; const r = e.getBoundingClientRect();
+        return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+      });
+      if (!toque) break;
+      await p.mouse.click(toque.x, toque.y);
+      await p.waitForTimeout(500);
+    }
+    await p.goBack().catch(() => {});
+    await p.waitForTimeout(700);
+  }
+}
 for (let i = 0; i < (HACER ? 1 : 30); i++) {
   pantallas++;
   const tanda = await p.evaluate(MEDIR);
@@ -177,7 +219,7 @@ await b.close();
 
 const malos = [...vistos.values()].sort((a, b2) => a.r - b2.r);
 for (const m of malos) {
-  console.log(`  ${String(m.r).padStart(5)}:1  (pide ${m.piso})  ${String(m.px).padStart(5)}px/${m.peso}  <${m.etiqueta}>  «${m.texto}»\n          texto ${m.color}  sobre ${m.fondo}`);
+  console.log(`  ${String(m.r).padStart(5)}:1  (pide ${m.piso})  ${String(m.px).padStart(5)}px/${m.peso}  <${m.etiqueta}>  «${m.texto}»\n          texto ${m.color}  sobre ${m.fondo}  ·  ${m.donde}`);
 }
 console.log(`\n${malos.length} texto(s) por debajo del contraste que pide su tamaño, en ${pantallas} pantalla(s) de «${TEMA}» a ${ANCHO} px.`);
 /*
