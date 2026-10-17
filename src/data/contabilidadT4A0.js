@@ -146,6 +146,23 @@ export const PANTALLAS_A0 = [
   },
 ];
 
+/*
+ * D8 · el caso B (Katsumi, lote nocturno): en «cual-cruza», otras tres filas
+ * con la misma decisión (una se vuelve plata este mes, una deuda a años, un
+ * activo que dura años); el error de la deuda va con el pagaré. A0 no lleva
+ * cifras del libro: los pies no cambian.
+ */
+export const FILAS_A0_B = {
+  repuestos: { id: "repuestos", texto: ["Repuestos"], glosa: ["se venden este mes"], mes: 1 },
+  pagare: { id: "pagare", texto: ["Pagaré de", "un cliente"], glosa: ["a dos años"], mes: null },
+  camion: { id: "camion", texto: ["Camión de", "la empresa"], glosa: ["dura años"], mes: null },
+};
+const PANTALLAS_A0_B = PANTALLAS_A0.map((p) => (p.id !== "cual-cruza" ? p : {
+  ...p,
+  filas: [FILAS_A0_B.repuestos, FILAS_A0_B.pagare, FILAS_A0_B.camion],
+  errorFila: { ...p.errorFila, fila: "pagare" },
+}));
+
 /* Qué es una fila en el mes m: «plata» o «consumio» desde su mes; «despues» si llegó a la raya sin volverse plata. */
 export function estadoFilaA0(fila, mes) {
   if (fila.mes != null && mes >= fila.mes) return fila.consume ? "consumio" : "plata";
@@ -167,3 +184,4 @@ export const PIEZA_EL_ACTIVO_CORRIENTE = {
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A0,
 };
+PIEZA_EL_ACTIVO_CORRIENTE.casoB = { ...PIEZA_EL_ACTIVO_CORRIENTE, pantallas: PANTALLAS_A0_B };

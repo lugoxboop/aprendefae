@@ -28,9 +28,13 @@ import { Tablero, Mayor } from "./tablero.jsx";
 import { Fig, LectorError } from "./aprender.jsx";
 import { DEBE, HABER, MARCA } from "../../data/contabilidadT4.js";
 import {
-  CONSIGNACION, CHEQUE_PROVEEDOR, MOVIMIENTOS_A4, RESERVA_MAYOR_A4, RENGLONES_EXTRACTO, CAUSAS_A4,
-  RENGLONES_CONCILIACION, FIGURA_A4 as F,
+  CONSIGNACION, CHEQUE_PROVEEDOR, RESERVA_MAYOR_A4, RENGLONES_EXTRACTO, DATOS_A4,
+  FIGURA_A4 as F,
 } from "../../data/contabilidadT4A4.js";
+import { useDatosCaso } from "./caso.js";
+
+/* D8: los movimientos, las causas y los renglones de la conciliación del caso en curso (1 o el B). */
+const useCasoA4 = () => useDatosCaso(DATOS_A4);
 
 export const CSS_A4 = `
 .t4lt { display: grid; gap: 0; border: 1px solid ${C.neutro}; border-radius: 10px; overflow: hidden; }
@@ -154,6 +158,7 @@ function Extracto({ p }) {
 
 /* P2 · ¿sube o baja? Los siete movimientos, uno a la vez. */
 function Mandar({ p, onAcierto }) {
+  const { MOVIMIENTOS_A4 } = useCasoA4();
   const [i, setI] = useState(0);
   const [mal, setMal] = useState(null);
   const [errores, setErrores] = useState(0);
@@ -200,6 +205,7 @@ function Mandar({ p, onAcierto }) {
  */
 const LIBRETAS_A4 = [["empresa", "emp", F.empresa], ["banco", "ban", F.banco]];
 function Causas({ p, onAcierto }) {
+  const { CAUSAS_A4 } = useCasoA4();
   const [i, setI] = useState(0);
   const [marca, setMarca] = useState(null);
   const [errores, setErrores] = useState(0);
@@ -252,6 +258,7 @@ function Causas({ p, onAcierto }) {
  * anotar» y, sin mensaje, aparece la frase de cierre.
  */
 function Conciliacion({ p, onAcierto, onCierre }) {
+  const { RENGLONES_CONCILIACION, renglonLector } = useCasoA4();
   const [e, setE] = useState(null);
   const ok = e === p.correcta;
   useEffect(() => { if (ok) { onAcierto?.(); onCierre?.(); } }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -270,7 +277,7 @@ function Conciliacion({ p, onAcierto, onCierre }) {
             return (
               <div key={r.id} className="t4lt-dest" data-renglon={r.id}>
                 <button type="button" className="t4lt-f t4lt-r t4lt-boton" data-destino={r.id} data-marca={m ?? undefined} disabled={ok}
-                  aria-label={`${F.renglonLector[r.id]}${m ? `: ${F.estadoLector[m]}` : ""}`} onClick={() => setE(r.id)}>
+                  aria-label={`${renglonLector[r.id]}${m ? `: ${F.estadoLector[m]}` : ""}`} onClick={() => setE(r.id)}>
                   <Celda x={emp} lado="empresa" nueva={ok && r.id === p.correcta} />
                   <Celda x={r.ban} lado="banco" />
                 </button>

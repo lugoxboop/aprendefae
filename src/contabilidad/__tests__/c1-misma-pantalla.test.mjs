@@ -117,7 +117,7 @@ test("★★ el medidor lee el texto, la consigna y las opciones del motor C3 (`
   const { PANTALLAS } = await import("../../data/contabilidadT7_1_a6_c3.js");
   const dos = PANTALLAS.find((p) => p.id === "dos-cuentas-propias");
   assert.equal(seDelata(dos), null, "como está, con la razón en el «¿Por qué?», no se delata");
-  const clave = "dos-cuentas-propias · «Para saber cuánto se devolvió en el periodo.»";
+  const clave = `dos-cuentas-propias · «${dos.opciones[0].t}»`;
   assert.equal(seDelata({ ...dos, texto: `${dos.texto} ${dos.porque}` }), clave, "en el texto");
   assert.equal(seDelata({ ...dos, consigna: dos.porque }), clave, "en la consigna");
   assert.equal(seDelata({ ...dos, texto: undefined, consigna: undefined, parrafos: [dos.porque] }), clave, "en los párrafos");
