@@ -1,4 +1,7 @@
-import { HECHOS_T6_ACT4, HECHOS_V2_T6_ACT4, ERRORES_T6_ACT4 } from "../data/contabilidadT6Act4.js";
+import {
+  HECHOS_T6_ACT4, HECHOS_V2_T6_ACT4, ERRORES_T6_ACT4, A_PROVISION, SE_ACREDITA_T6_ACT4, P_SUBE, P_BAJA, P_IGUAL, DEVOLUCIONES_SEGUNDA_T6_ACT4,
+} from "../data/contabilidadT6Act4.js";
+import { PROVISION } from "../data/contabilidadT6Act2.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -21,4 +24,18 @@ export function retroT6Act4(hecho, elegida) {
 export const veredictoT6Act4 = (hecho, elegida) => (elegida === hecho.respuesta ? "correcta" : "error");
 
 /* Para el panel docente: el ítem es el hecho, y se lee por su texto. */
-export const hechoDeItemT6Act4 = (id) => [...HECHOS_T6_ACT4, ...HECHOS_V2_T6_ACT4].find((h) => h.id === id)?.texto ?? null;
+export const hechoDeItemT6Act4 = (id) => [...HECHOS_T6_ACT4, ...HECHOS_V2_T6_ACT4].find((h) => h.id === String(id).replace(/\/2$/, ""))?.texto ?? null;
+
+/* ═══ D4 (lote 19): qué le pasa a la provisión, del asiento del banco ═══ */
+export function provisionDeT6Act4(hecho) {
+  if (SE_ACREDITA_T6_ACT4[hecho.id] === PROVISION) return P_SUBE;
+  if (hecho.respuesta === A_PROVISION) return P_BAJA;
+  return P_IGUAL;
+}
+
+/* Acierto: «Correcto.» sin más (el asiento ya se explicó en la decisión 1). Primer error: pista; segundo: porqué (C2). */
+export function evaluarSegundaT6Act4(hecho, elegida, intento) {
+  if (elegida === provisionDeT6Act4(hecho)) return { ok: true, texto: null };
+  const d = DEVOLUCIONES_SEGUNDA_T6_ACT4[hecho.id];
+  return { ok: false, texto: intento === 1 ? d.pista : d.porque };
+}

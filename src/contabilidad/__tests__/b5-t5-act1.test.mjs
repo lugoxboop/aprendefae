@@ -48,7 +48,14 @@ const { createRoot } = await import("react-dom/client");
 const act = React.act;
 const h = React.createElement;
 
-const { default: QueRentaDa } = await import("../../components/mecanicas/libros/tema5/QueRentaDa.jsx");
+/*
+ * Lote 19: estas pruebas son la decisión 1 (el cajón) y montan las fichas a un nivel con la configuración
+ * de siempre, sin `segunda`: así prueban también que el cambio de FichasUnNivel es compatible. La decisión 2
+ * de las fichas de descripción tiene su propia prueba (b5-segunda-decision.test.mjs).
+ */
+const { CONFIG_T5_ACT1 } = await import("../../components/mecanicas/libros/tema5/QueRentaDa.jsx");
+const { default: FichasUnNivel } = await import("../../components/mecanicas/libros/b5/FichasUnNivel.jsx");
+const QueRentaDa = (props) => h(FichasUnNivel, { config: CONFIG_T5_ACT1, ...props });
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const L = await import("../t5Act1.js");
 const D = await import("../../data/contabilidadT5Act1.js");

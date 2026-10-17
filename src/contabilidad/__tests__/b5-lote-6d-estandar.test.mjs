@@ -51,9 +51,16 @@ const h = React.createElement;
 
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const { FAE } = await import("../../theme.js");
-const { default: QueRentaDa } = await import("../../components/mecanicas/libros/tema5/QueRentaDa.jsx");
-const { default: ClientesOOtra } = await import("../../components/mecanicas/libros/tema6/ClientesOOtra.jsx");
-const { default: QueSeDebita, CONFIG_T6_ACT4 } = await import("../../components/mecanicas/libros/tema6/QueSeDebita.jsx");
+/* Lote 19: el estándar de la decisión del cajón, con la configuración de un nivel (sin la segunda decisión de D4, que tiene su prueba). */
+const { CONFIG_T5_ACT1 } = await import("../../components/mecanicas/libros/tema5/QueRentaDa.jsx");
+const { CONFIG_T6_ACT1 } = await import("../../components/mecanicas/libros/tema6/ClientesOOtra.jsx");
+const { default: FichasUnNivelBase } = await import("../../components/mecanicas/libros/b5/FichasUnNivel.jsx");
+const QueRentaDa = (props) => React.createElement(FichasUnNivelBase, { config: CONFIG_T5_ACT1, ...props });
+const ClientesOOtra = (props) => React.createElement(FichasUnNivelBase, { config: CONFIG_T6_ACT1, ...props });
+const { CONFIG_T6_ACT4 } = await import("../../components/mecanicas/libros/tema6/QueSeDebita.jsx");
+const { default: EligeUnaOpcionBase } = await import("../../components/mecanicas/libros/b5/EligeUnaOpcion.jsx");
+/* Lote 19: la decisión 1 de a4, con su configuración de siempre (la decisión 2 tiene su prueba). */
+const QueSeDebita = (props) => React.createElement(EligeUnaOpcionBase, { config: CONFIG_T6_ACT4, ...props });
 const { default: ProvisionPorEdades } = await import("../../components/mecanicas/libros/tema6/ProvisionPorEdades.jsx");
 const { default: CierreSantaPacha } = await import("../../components/mecanicas/libros/tema5/CierreSantaPacha.jsx");
 const { default: ProvisionDeElTorito } = await import("../../components/mecanicas/libros/tema6/ProvisionDeElTorito.jsx");
