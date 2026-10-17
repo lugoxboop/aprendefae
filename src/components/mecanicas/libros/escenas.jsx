@@ -5,6 +5,7 @@ import {
   LAVADO_DE_AUTOS,
 } from "../../../data/contabilidad.js";
 import { CAJA_DEL_CAPITULO } from "../../../data/contabilidadActividades.js";
+import { CAPA4_POR_PIEZA } from "./cuentas/decideCuentas.jsx";
 import { inclinacionDe } from "../../../contabilidad/balanza.js";
 import {
   CuentaDeValor, Balanza, Ficha, EstilosDeVerbos, useArrastre, FichaEnVuelo,
@@ -553,7 +554,11 @@ export function ExploraMayorizar() {
  * devolución, y eso no cabe en el paso a paso sin desfigurarlo para las otras.
  */
 export const ESCENAS = {
-  "cu-a1-anatomia-de-una-cuenta": { Escena: EscenaAnatomia, Exploracion: ExploraCuenta },
+  /*
+   * La capa 4 que decide entra pieza por pieza, no de golpe: la que no
+   * tiene entrada en CAPA4_POR_PIEZA conserva su capa 4 de siempre.
+   */
+  "cu-a1-anatomia-de-una-cuenta": { Escena: EscenaAnatomia, Exploracion: ExploraCuenta, Capa4: CAPA4_POR_PIEZA["cu-a1-anatomia-de-una-cuenta"] },
   "cu-a2-dos-familias": { Escena: EscenaFamilias, Exploracion: ExploraCierre },
   "cu-a5-debe-y-haber": { Capa2: MesaDeDosCasos, Exploracion: ExploraUnaCuenta, Capa4: EnUnaFrase },
   "cu-a3-partida-doble": { Escena: EscenaPartidaDoble, Exploracion: ExploraBalanza },
