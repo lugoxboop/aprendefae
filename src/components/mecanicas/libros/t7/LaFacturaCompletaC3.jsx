@@ -67,7 +67,7 @@ function Factura({ ctx }) {
   return (
     <section className="a2-factura c3-hundido" aria-label={F.nombreFactura} data-factura>
       <header className="a2-fcab"><span>{W.facturaCompra}</span><span>{FECHAS_A2.compra}</span></header>
-      {elige && <div className="a2-bases" role="group" aria-label={F.nombreBases}>{base("sin-iva")}{base("solo-iva")}{base("con-iva")}</div>}
+      {elige && <div className="a2-bases" role="group" aria-label={F.nombreBases}>{ctx.ordenar(P.opciones).map((o) => base(o.id))}</div>}
       <div className="a2-barra" aria-hidden="true">
         <i className="m" style={{ width: pct(N.mercancia) }} />
         <i className={`i${iva ? " on" : ""}`} style={{ left: pct(N.mercancia), width: pct(N.iva) }} />
@@ -169,11 +169,11 @@ export const CSS_A2 = `
 
 export const PIEZA_A2 = { ...PIEZA_A2_C3, figura };
 
-export default function LaFacturaCompletaC3({ pieza = PIEZA_A2, rotulo }) {
+export default function LaFacturaCompletaC3({ pieza = PIEZA_A2, rotulo, barajar }) {
   return (
     <>
       <style>{CSS_A2}</style>
-      <AprenderC3 pieza={pieza.figura ? pieza : { ...pieza, figura }} rotulo={rotulo} />
+      <AprenderC3 pieza={pieza.figura ? pieza : { ...pieza, figura }} rotulo={rotulo} barajar={barajar} />
     </>
   );
 }

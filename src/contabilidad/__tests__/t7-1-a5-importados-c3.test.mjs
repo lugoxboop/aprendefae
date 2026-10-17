@@ -3,6 +3,10 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 
+/* Lote V: las opciones salen barajadas; se comparan por id (pares [id, texto]), sin perder la pareja id ↔ texto. */
+const porId = (pares) => [...pares].sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+
+
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-1 A5 «Importados y fletes» · PATRÓN DE ENGANCHE C3 (Watari), sobre el
@@ -66,11 +70,11 @@ const PENDIENTES_NEAR = [];
 
 /* ═══════════ AYUDAS ═══════════ */
 
-async function montar(pieza = P) {
+async function montar(pieza = P, props = {}) {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
-  await act(async () => { raiz.render(h(A5, { pieza, rotulo: "R" })); });
+  await act(async () => { raiz.render(h(A5, { pieza, rotulo: "R", ...props })); });
   const q = (s) => caja.querySelector(s);
   const qa = (s) => [...caja.querySelectorAll(s)];
   const clic = async (el) => { assert.ok(el, "no está lo que se iba a tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
@@ -229,7 +233,7 @@ test("★★★ importados: las fichas en la figura; 1.er error (pista, rebota),
   const p = pantalla("importados");
   const m = await montar(desde("importados"));
   try {
-    assert.deepEqual(m.qa("[data-figura] [data-op]").map((b) => b.textContent), p.opciones.map((o) => o.texto));
+    assert.deepEqual(porId(m.qa("[data-figura] [data-op]").map((b) => [b.dataset.op, b.textContent])), porId(p.opciones.map((o) => [o.id, o.texto])));
     assert.equal(m.q('[data-capa="factura"]').textContent, `${F.facturaEnPesos} ${F.facturaTasa}`, "aquí ya va en pesos");
     assert.ok(!m.q("[data-pregunta]"), "la pregunta va en el texto");
     const [x, y] = malas(p);
@@ -320,7 +324,7 @@ test("★★★ condición 2 · de la pantalla 3 a la 5 A TRAVÉS del viaje dent
     assert.deepEqual(x.tramos, V.tramos.map((t) => [t.id, t.tierra]));
     assert.deepEqual(x.fichas.map((f) => [f.id, f.paga]), FICHAS.map((f) => [f.id, ["flete", "seguro"].includes(f.id) ? f.fob : null]));
     assert.equal(x.leyenda, C1.LEYENDA.join(""), "la figura se queda (C8)");
-    assert.deepEqual(x.opciones.map(([id]) => id), CYF.opciones.map((o) => o.id));
+    assert.deepEqual(x.opciones.map(([id]) => id).sort(), CYF.opciones.map((o) => o.id).sort(), "lote V: barajadas, se comparan por id");
     assert.equal(x.seguirDelMotor, "true", "ahora sí se ve «Seguir», bloqueado");
     await m.seguir();
     assert.equal(m.pantalla(), "fob-cif-cyf");
@@ -394,7 +398,7 @@ for (const id of ["flete-del-comprador", "flete-del-vendedor"]) {
       assert.deepEqual(m.qa(".a5-lugar.asume b").map((b) => b.textContent), [p.quien]);
       assert.ok(m.q(".a5-carril").classList.contains("anda"), "el camión entra");
       assert.equal(m.q("[data-cuentas-de]").textContent, F.cuentasDe[p.quien]);
-      assert.deepEqual(m.qa("[data-figura] [data-op]").map((b) => b.textContent), p.opciones.map((o) => o.texto));
+      assert.deepEqual(porId(m.qa("[data-figura] [data-op]").map((b) => [b.dataset.op, b.textContent])), porId(p.opciones.map((o) => [o.id, o.texto])));
       assert.ok(!m.q("[data-asiento]"), "el asiento no está antes del acierto");
       const [x, y] = malas(p);
       await m.op(x.id);
@@ -460,7 +464,7 @@ test("★★★ lado a lado: A5-1 (sin rótulo, «Empresa», «Santa Martha» y 
     assert.doesNotMatch(rotulos(), /asum/i);
     assert.ok(m.q("[data-consigna]").hidden, "M-1: la consigna se va");
     assert.equal(m.q("[data-pregunta]").textContent, p.pregunta);
-    assert.deepEqual(m.qa("[data-op]").map((b) => b.textContent), p.opciones.map((o) => o.texto));
+    assert.deepEqual(porId(m.qa("[data-op]").map((b) => [b.dataset.op, b.textContent])), porId(p.opciones.map((o) => [o.id, o.texto])));
     /* De vuelta a Santa Martha: la pregunta se queda. */
     await m.clic(m.q('[data-asume="comprador"]'));
     assert.ok(!m.q('[data-ficha="flete"]').classList.contains("der"));
@@ -586,6 +590,48 @@ test("★★★ la vista publica la pieza C3 con el mismo id, en el mismo lugar 
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(HOY.A5_ID)), []);
   for (const f of ["src/components/mecanicas/libros/t7/ImportadosYFletesC3.jsx", "src/data/contabilidadT7_1_a5_c3.js"]) {
     assert.doesNotMatch(readFileSync(new URL(f, RAIZ), "utf8"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/, f);
+  }
+});
+
+/* ═══════════ LOTE V · LAS OPCIONES, BARAJADAS ═══════════ */
+
+test("★★★ lote V: las opciones (fichas, cuentas, C&F del viaje y lado a lado) salen barajadas con la función compartida (azar fijado), el mismo conjunto, la correcta no siempre primero, y el orden no cambia al fallar", async () => {
+  const { barajadorDe } = await import("../../utils/barajar.js");
+  assert.match(readFileSync(new URL("src/components/mecanicas/libros/t7/aprenderC3.jsx", RAIZ), "utf8"), /import \{ barajar \} from "\.\.\/\.\.\/\.\.\/\.\.\/utils\/barajar\.js"/);
+  assert.match(readFileSync(new URL("src/components/mecanicas/libros/t7/ImportadosYFletesC3.jsx", RAIZ), "utf8"), /barajar=\{barajar\}/, "la pieza pasa `barajar` al motor");
+  const CYF_ = V.pasos.find((x) => x.id === "cyf");
+  const casos = [
+    ...["importados", "flete-del-comprador", "flete-del-vendedor"].map((id) => ({ id, sel: "[data-figura] [data-op]", opciones: pantalla(id).opciones, antes: async () => {} })),
+    { id: "lado-a-lado", sel: "[data-op]", opciones: pantalla("lado-a-lado").opciones, antes: (m) => m.clic(m.q('[data-asume="vendedor"]')) },
+    { id: V.id, sel: "[data-viaje] [data-op]", opciones: CYF_.opciones, antes: async (m) => {
+      for (const f of FICHAS.filter((x) => x.fob === "comprador")) await m.clic(m.q(`[data-ficha="${f.id}"]`));
+      await m.clic(m.q('[data-boton="comprobar"]'));
+      await m.clic(m.q('[data-boton="seguir-paso"]'));
+    } },
+  ];
+  for (const c of casos) {
+    const datos = c.opciones.map((o) => o.id);
+    const buena = c.opciones.find((o) => o.correcta).id;
+    const ordenes = [];
+    for (const semilla of ["a", "b", "c", "d", "e", "f"]) {
+      const m = await montar(desde(c.id), { barajar: barajadorDe(semilla) });
+      try {
+        await c.antes(m);
+        const enPantalla = () => m.qa(c.sel).map((b) => b.dataset.op);
+        const orden = enPantalla();
+        assert.deepEqual([...orden].sort(), [...datos].sort(), `${c.id}: el mismo conjunto`);
+        const mala = orden.find((x) => x !== buena);
+        await m.clic(m.q(`${c.sel}[data-op="${mala}"]`));
+        assert.ok(m.q(`${c.sel}[data-op="${mala}"]`).classList.contains("mal"), `${c.id}: era un error`);
+        assert.deepEqual(enPantalla(), orden, `${c.id}: al fallar no se rebaraja`);
+        ordenes.push(orden);
+      } finally {
+        m.desmontar();
+      }
+    }
+    assert.ok(ordenes.some((o) => o.join() !== datos.join()), `${c.id}: en algún caso, distinto del orden de los datos`);
+    assert.ok(ordenes.some((o) => o[0] !== buena), `${c.id}: la correcta no queda siempre primero`);
+    assert.ok(new Set(ordenes.map((o) => o.join())).size > 1, `${c.id}: el orden depende del azar`);
   }
 });
 
