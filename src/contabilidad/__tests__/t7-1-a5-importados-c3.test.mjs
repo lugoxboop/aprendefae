@@ -17,7 +17,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   3 · movimiento reducido, B2 ≤ 60 en cada pantalla y estado
  *   4 · catálogo y vista
  *
- * PENDIENTES_NEAR: lo que Near está reescribiendo (va con su texto de hoy).
+ * PENDIENTES_NEAR: lo que Near está reescribiendo (hoy, nada).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -58,21 +58,11 @@ const [FOB, CYF] = V.pasos;
 const FICHAS = V.tramos.flatMap((t) => t.fichas);
 
 /*
- * PENDIENTES DE NEAR: textos que Near está reescribiendo. Van con el texto de
- * hoy (c3-rotulos-near.md) y salen de aquí cuando llegue el nuevo (segundo
- * commit). La prueba de abajo se pone roja si el texto cambia sin sacarlo.
+ * PENDIENTES DE NEAR: textos que Near está reescribiendo (van con el texto de
+ * hoy y salen de aquí cuando llega el nuevo). Vacía: la consigna del lado a
+ * lado (N-4) llegó en c3-mello-near.md.
  */
-const PENDIENTES_NEAR = [
-  /* N-4 de Mello (regla 9): «Cambia quién asume el flete…» repite la respuesta. */
-  { pantalla: "lado-a-lado", campo: "consigna", hoy: "Cambia quién asume el flete y mira a qué columna se va." },
-];
-
-/*
- * B2 (canon): las pantallas que hoy pasan de 60, con su peor estado. Esta lista
- * solo encoge. El lado a lado baja con la consigna nueva de Near (N-4) solo si
- * se recorta el acierto o las opciones; los fletes, con el acierto de Near.
- */
-const PASAN_DE_60 = { "flete-del-comprador": 61, "flete-del-vendedor": 62, "lado-a-lado": 62 };
+const PENDIENTES_NEAR = [];
 
 /* ═══════════ AYUDAS ═══════════ */
 
@@ -108,11 +98,13 @@ const visible = (el) => {
   return out.replace(/\s+/g, " ").trim();
 };
 /*
- * B2 (enganche.md: «como mucho 60 palabras por pantalla… o lo dice la
- * figura»), con las funciones de canonEnganche.js: el texto fuera de la
- * figura, sin el título, los botones de avance ni el pie, y SIN la cejilla
- * «Pantalla n de N» del motor (aria-hidden), que ni Watari ni Mello cuentan
- * (con ella, Mello daría 60 y no 56 en el lado a lado).
+ * B2 · LA REGLA (decisión de L): se cuenta como lo cuentan Mello y Near, y
+ * como ya lo hace A6. Encabezado de c3-mello-near.md: «Conteo como lo hace
+ * Mello: texto, pregunta, opciones y mensaje, sin los rótulos de la figura y
+ * con M-1 aplicado (la consigna se oculta cuando sale la pregunta).»
+ * Con las funciones de canonEnganche.js: el texto fuera de la figura (sin el
+ * título, los botones de avance ni el pie) y SIN la cejilla «Pantalla n de N»
+ * del motor (aria-hidden). ≤ 60 en todas las pantallas y estados.
  * En el viaje, que vive en la figura, además la cuenta de C1 (Near y Mello):
  * texto, rótulos, leyenda, opciones y mensaje, sin «Correcto.» ni pastillas.
  * Aparte, para el informe: la del canon tal cual y con las opciones de la figura.
@@ -182,14 +174,17 @@ test("★★★ la figura: los rótulos [W] de Near y A5-1 de Mello, letra por l
   assert.equal(D.FLETE_A5.retencion + D.FLETE_A5.pago, D.FLETE_A5.flete);
 });
 
-test("★★★ PENDIENTES_NEAR: la consigna del lado a lado va con el texto de hoy de Near (N-4); si cambia, sale de la lista", () => {
+test("★★★ lado a lado con Near y Mello (c3-mello-near.md): la consigna de N-4 ya no dice «asume»; las opciones de N-2, del mismo largo; nada pendiente", () => {
+  assert.deepEqual(PENDIENTES_NEAR, []);
   assert.ok(N.N4);
-  for (const x of PENDIENTES_NEAR) {
-    assert.equal(pantalla(x.pantalla)[x.campo], x.hoy, `${x.pantalla}.${x.campo}`);
-    assert.equal(x.hoy, N.ROTULOS_NEAR.consigna, "es el texto de Near, letra por letra");
-  }
-  /* El motivo sigue en pie: repite «asume». Cuando Near lo reescriba, esto se pone rojo y la entrada sale. */
-  assert.match(PENDIENTES_NEAR[0].hoy, /asume/);
+  const p = pantalla("lado-a-lado");
+  assert.equal(p.consigna, N.LADO_A_LADO_NUEVO.consigna);
+  assert.doesNotMatch(p.consigna, /asum/i, "la consigna no repite la respuesta (regla 9)");
+  assert.notEqual(p.consigna, N.ROTULOS_NEAR.consigna, "ya no es la [W] de Near");
+  assert.deepEqual(p.opciones.map((o) => o.texto), [N.LADO_A_LADO_NUEVO.correcta, ...N.LADO_A_LADO_NUEVO.otras]);
+  /* N-2 (§3.4): entre opciones, una palabra de diferencia como mucho. */
+  const largos = p.opciones.map((o) => C.contarPalabras(o.texto));
+  assert.ok(Math.max(...largos) - Math.min(...largos) <= 1, `largos ${largos}`);
   /* La marca va en comentario, nunca en pantalla. */
   assert.ok(!JSON.stringify(P).includes("PENDIENTE"));
 });
@@ -555,18 +550,18 @@ async function estados(id) {
 
 test("★★★ B2 · ninguna pantalla pasa de 60 palabras visibles, en ningún estado (texto y figura, contados con canonEnganche.js)", async (t) => {
   const peor = {};
+  const fuera = [];
   for (const p of P.pantallas) {
     for (const [estado, n] of await estados(p.id)) {
-      t.diagnostic(`${p.id} · ${estado} · canon ${n.canon} · sin la cejilla ${n.b2}${n.c1 != null ? ` · C1 ${n.c1}` : ""} · con opciones de la figura ${n.conOpciones}`);
-      if (!(peor[p.id] >= n.canon)) peor[p.id] = n.canon;
-      if (n.c1 > C.UMBRAL_B2_PALABRAS) peor[`${p.id} (C1)`] = n.c1;
+      t.diagnostic(`${p.id} · ${estado} · B2 ${n.b2}${n.c1 != null ? ` · C1 ${n.c1}` : ""} · canon con cejilla ${n.canon} · con opciones de la figura ${n.conOpciones}`);
+      if (!(peor[p.id] >= n.b2)) peor[p.id] = n.b2;
+      if (n.b2 > C.UMBRAL_B2_PALABRAS) fuera.push(`${p.id} · ${estado}: ${n.b2}`);
+      if (n.c1 > C.UMBRAL_B2_PALABRAS) fuera.push(`${p.id} · ${estado} (C1): ${n.c1}`);
     }
   }
-  /* La regla es la del canon (con «Pantalla n de N», sin los rótulos de la figura). Lo que pasa de 60 está en PASAN_DE_60, exacto. */
-  const pasan = Object.fromEntries(Object.entries(peor).filter(([, n]) => n > C.UMBRAL_B2_PALABRAS));
-  assert.deepEqual(pasan, PASAN_DE_60);
+  assert.deepEqual(fuera, []);
   /* El peor estado de cada pantalla, medido (si un texto crece, esto avisa). */
-  assert.deepEqual(peor, { portada: 25, "la-regla-del-costo": 38, importados: 42, "fob-cif-cyf": 24, "flete-del-comprador": 61, "flete-del-vendedor": 62, "lado-a-lado": 62, resumen: 55 });
+  assert.deepEqual(peor, { portada: 21, "la-regla-del-costo": 34, importados: 38, "fob-cif-cyf": 20, "flete-del-comprador": 57, "flete-del-vendedor": 58, "lado-a-lado": 59, resumen: 51 });
   assert.equal(Object.keys(peor).length, 8);
 });
 

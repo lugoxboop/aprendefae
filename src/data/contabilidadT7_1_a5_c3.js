@@ -23,9 +23,8 @@ import { A5_ID, CIFRAS, PIEZA_IMPORTADOS_Y_FLETES as A5_DE_HOY } from "./contabi
  *
  * Las opciones llevan `texto` y `t` (el mismo texto): ver `opciones` abajo.
  *
- * PENDIENTE DE NEAR (N-4, regla 9): la consigna del lado a lado repite la
- * respuesta («Cambia quién asume el flete…»). Va el texto de hoy de Near
- * hasta que llegue el nuevo.
+ * El lado a lado lleva los textos de Near con Mello (c3-mello-near.md): la
+ * consigna de N-4 y las opciones de N-2.
  *
  * Pieza de Aprender: cero FP, no entra al catálogo.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -154,21 +153,21 @@ const FLETE_VENDEDOR = {
 
 /*
  * M-1: la consigna se ve hasta que sale la pregunta (al ver La Popa).
- * PENDIENTE DE NEAR (N-4, regla 9): la consigna repite la respuesta; Near la
- * está reescribiendo. Va la de hoy de Near (c3-rotulos-near.md).
+ * La consigna (N-4, la de Mello) y las dos opciones que no son la correcta
+ * (N-2): c3-mello-near.md, «## A5 · lado a lado».
  */
 const LADO_A_LADO = {
   id: "lado-a-lado",
   tipo: "eleccion",
   /* La pregunta sale después de tocar La Popa (M-1): así la recorre la barra de enganche. */
   pasosAntes: ['[data-asume="vendedor"]'],
-  consigna: "Cambia quién asume el flete y mira a qué columna se va.",
+  consigna: "Cambia de empresa y mira a dónde va el flete.",
   pregunta: "¿Qué decide si el flete es parte del costo o es un gasto?",
   pista: "Compara las dos columnas de la tabla: ¿qué dato cambia de una a otra?",
   opciones: opciones(
     { id: "quien-lo-asume", texto: "Quién lo asume: el comprador o el vendedor.", correcta: true },
-    { id: "valor", texto: "El valor del flete.", devolucion: "Los dos fletes valen lo mismo, $650.000, y aun así van a cuentas distintas. El valor no decide." },
-    { id: "contado-o-credito", texto: "Si el flete se paga de contado o a crédito.", devolucion: "Los dos fletes se pagaron el mismo día y de la misma forma, y aun así van a cuentas distintas." },
+    { id: "valor", texto: "Cuánto vale el flete en cada caso.", devolucion: "Los dos fletes valen lo mismo, $650.000, y aun así van a cuentas distintas. El valor no decide." },
+    { id: "contado-o-credito", texto: "Si se paga de contado o a crédito.", devolucion: "Los dos fletes se pagaron el mismo día y de la misma forma, y aun así van a cuentas distintas." },
   ),
   bien: "Exacto. Si lo asume el comprador, es parte del costo. Si lo asume el vendedor, es un gasto de venta.",
   pie: "Basado en el libro, pp. 228-229",

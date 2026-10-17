@@ -113,6 +113,28 @@ export const N4 = en(MELLO, "**N-4 · Las consignas [W] no pueden repetir la res
 /* Las opcionales de esta auditoría: no trae ninguna. */
 export const OPCIONALES = [...MELLO.matchAll(/^#+ .*[Oo]pcional.*$/gm)].map((m) => m[0]);
 
+/* ═══════════ NEAR CON MELLO · c3-mello-near.md, «## A5 · lado a lado» (N-2 y N-4) ═══════════ */
+
+const NM = leer("c3-mello-near.md");
+const INI_NM = NM.indexOf("## A5 · lado a lado (N-2 y N-4)");
+if (INI_NM < 0) throw new Error("no está «## A5 · lado a lado» en c3-mello-near.md");
+export const NEAR_MELLO_A5 = NM.slice(INI_NM, NM.indexOf("\n## ", INI_NM + 1));
+const filaNM = (campo) => NEAR_MELLO_A5.split("\n").filter((l) => l.startsWith(`| ${campo} | `)).map((l) => {
+  const c = citas(l.split(" | ")[1]);
+  if (c.length !== 1) throw new Error(`«${campo}»: se esperaba un texto`);
+  return c[0];
+});
+/** El lado a lado nuevo: la consigna de Mello y las tres opciones (la correcta primero, luego las otras en su orden). */
+export const LADO_A_LADO_NUEVO = {
+  consigna: filaNM("Consigna [W]")[0],
+  correcta: filaNM("Opción correcta")[0],
+  otras: filaNM("Opción"),
+};
+if (!LADO_A_LADO_NUEVO.consigna || !LADO_A_LADO_NUEVO.correcta || LADO_A_LADO_NUEVO.otras.length !== 2) throw new Error("c3-mello-near.md: una consigna, una correcta y dos opciones");
+en(NEAR_MELLO_A5, "- **La consigna** es la de Mello.", "c3-mello-near.md");
+/* La consigna es la que propuso Mello en N-4. */
+en(MELLO, `Va mejor algo como «${LADO_A_LADO_NUEVO.consigna}».`, "Mello");
+
 /* ═══════════ LA VERSIÓN CORREGIDA ═══════════ */
 
 /* Lo que Watari escribe en su código y Near (o Mello) cambia: cada viejo, una vez en el código. */
@@ -149,8 +171,8 @@ for (const k of ["factura", "facturaEnPesos", "facturaTasa"]) en(WATARI_A5, FIGU
 /**
  * Las pantallas de Watari corregidas, en la forma de los datos (sin funciones):
  *   · la de «FOB y C&F» de Watari es un marcador (`main: true`): va la de hoy
- *   · el lado a lado: M-1 separa la consigna de la pregunta, y la consigna es
- *     la de Near (PENDIENTE de N-4)
+ *   · el lado a lado: M-1 separa la consigna de la pregunta; la consigna y las
+ *     dos opciones que no son la correcta, de c3-mello-near.md (N-4 y N-2)
  *   · las opciones, con `texto` (Watari las llama `t`)
  */
 export function pantallasCorregidas() {
@@ -160,8 +182,13 @@ export function pantallasCorregidas() {
     if (p.id === "lado-a-lado") {
       if (!q.texto.startsWith(`${CONSIGNA_WATARI} `)) throw new Error("el texto del lado a lado ya no empieza con la consigna de M-1");
       q.pregunta = q.texto.slice(CONSIGNA_WATARI.length + 1);
-      q.consigna = ROTULOS_NEAR.consigna;
+      /* N-4: la consigna de Mello (c3-mello-near.md), no la [W] de Near, que repetía la respuesta. */
+      q.consigna = LADO_A_LADO_NUEVO.consigna;
       delete q.texto;
+      /* N-2: las opciones de c3-mello-near.md; la correcta no cambia. */
+      const [c, ...otras] = [q.opciones.find((o) => o.correcta), ...q.opciones.filter((o) => !o.correcta)];
+      if (c.texto !== LADO_A_LADO_NUEVO.correcta) throw new Error("la correcta de c3-mello-near.md no es la de Watari");
+      otras.forEach((o, i) => { o.texto = LADO_A_LADO_NUEVO.otras[i]; });
     }
     return q;
   });
