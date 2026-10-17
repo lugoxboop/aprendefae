@@ -90,6 +90,8 @@ export const CONSECUENCIA_C4 = {
   id: P.id,
   objeto: "La ficha NIC 2 de la tienda",
   modo: "aprender",
+  /* D8 (Mello, v4 §1): el motor baraja las opciones una vez al montar, con utils/barajar.js. */
+  barajar: true,
   items: itemsAprender(P.pantallas, PROPIOS_A7),
   consecuencia(item, eleccion) {
     if (item.id === "que-es") return queEs(item, eleccion);

@@ -8,7 +8,8 @@ import HojaRevisionN3, { EjemploN3 } from "./HojaRevisionN3.jsx";
  * T5 · N3 · ¿QUÉ REVISIÓN FALTA? (Célula C) · con N2 adentro, entrega D v2.
  *
  * Cinco casos en el orden fijo de Mello, con las cuatro acciones de la
- * p. 193 como opciones fijas, cada una con su glosa. Sobre el primer caso,
+ * p. 193 como opciones, cada una con su glosa, barajadas una vez por
+ * partida (D8). Sobre el primer caso,
  * el ejemplo resuelto del fondo fiduciario. La escalera (EscaleraHacer.jsx):
  * al primer error, la pista común y la línea del distractor, y otro intento;
  * al segundo, la respuesta con su porqué. Solo suma el primer intento.

@@ -153,14 +153,15 @@ test("★★ ids: los de antes para los casos que piden lo mismo; sin cifras sal
 
 /* ═══════════ 2 · LA MECÁNICA, MONTADA ═══════════ */
 
-const EN_ORDEN = L.prepararN3();
+/* D8: las acciones se barajan una vez por partida; aquí, al revés, para saber en qué orden van (que varíe, en barajado-por-intento-c.test.mjs). */
+const EN_ORDEN = L.prepararN3((xs) => [...xs].reverse());
 const Marco = ({ children }) => h("div", { "data-marco": true }, children);
 const montar = async (props = {}) => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
   const completados = [];
-  await act(async () => { raiz.render(h(RevisionQueFalta, { Marco, onCompletar: (...a) => completados.push(a), ...props })); });
+  await act(async () => { raiz.render(h(RevisionQueFalta, { Marco, items: EN_ORDEN, onCompletar: (...a) => completados.push(a), ...props })); });
   return { caja, completados, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
 const tocar = async (el) => {
@@ -195,8 +196,9 @@ test("★★★ la tanda entera: ejemplo, glosas, la escalera caso a caso, la ho
         assert.ok(ej.textContent.includes(D.EJEMPLO_N3.rotulo));
         assert.ok(ej.querySelector("button") === null, "el ejemplo no se toca");
       } else assert.ok(ej === null, "el ejemplo sigue después del primer caso");
-      /* Las cuatro acciones en su orden, cada una con su glosa. */
-      assert.deepEqual([...m.caja.querySelectorAll("[data-opcion]")].map((x) => x.dataset.opcion), D.ACCIONES_N3);
+      /* Las cuatro acciones en el orden sorteado para la partida, cada una con su glosa. */
+      assert.deepEqual([...m.caja.querySelectorAll("[data-opcion]")].map((x) => x.dataset.opcion), it.opciones.map((o) => o.valor));
+      assert.deepEqual(it.opciones.map((o) => o.valor), [...D.ACCIONES_N3].reverse());
       for (const a of D.ACCIONES_N3) {
         assert.equal(opcion(m.caja, a).querySelector("[data-texto-opcion]").textContent, a);
         assert.equal(opcion(m.caja, a).querySelector("[data-glosa]").textContent, D.GLOSAS_N3[a]);

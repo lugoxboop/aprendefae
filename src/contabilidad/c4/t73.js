@@ -8,7 +8,8 @@
  *
  *   itemsAprender(pantallas, propios?)  las pantallas de elección de una
  *       pieza de Aprender, una por ítem: texto (párrafos y lo que sigue a la
- *       figura), pregunta, opciones (barajadas con semilla fija: lote V),
+ *       figura), pregunta, opciones (en el orden de Near: las baraja el motor
+ *       al montar, con pieza.barajar; D8, Mello v4 §1),
  *       pista, acierto, «¿Por qué?» y pie. Los ids de `propios` van como
  *       ítem «propio» (sin figura de consecuencia: A7, las tres de A8).
  *   opcionesDeCifra(it)  la correcta y los distractores de un ítem de Hacer
@@ -23,26 +24,13 @@ export const pct = (x, d = 2) => `${x.toLocaleString("es-CO", { maximumFractionD
 /* «$4.200.000» → 4200000 */
 export const numDe = (t) => Number(String(t).replace(/[^\d,]/g, "").replace(",", "."));
 
-/* Lote V: el orden de las opciones se baraja con una semilla fija por ítem (estable entre visitas, distinto entre ítems). */
-const semilla = (s) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
-export function barajarFijo(a, id) {
-  let h = semilla(id);
-  const b = a.slice();
-  for (let i = b.length - 1; i > 0; i--) {
-    h = (h * 1103515245 + 12345) >>> 0;
-    const j = h % (i + 1);
-    [b[i], b[j]] = [b[j], b[i]];
-  }
-  return b;
-}
-
 export function itemsAprender(pantallas, propios = []) {
   return pantallas.filter((p) => p.tipo === "eleccion").map((p) => ({
     id: p.id,
     ...(propios.includes(p.id) ? { tipo: "propio" } : {}),
     texto: [...(p.parrafos ?? []), ...(p.tras ?? [])].join(" "),
     pregunta: p.pregunta,
-    opciones: barajarFijo(p.opciones.map((o) => ({ id: o.id, t: o.texto, correcta: Boolean(o.correcta), msg: o.devolucion ?? null })), p.id),
+    opciones: p.opciones.map((o) => ({ id: o.id, t: o.texto, correcta: Boolean(o.correcta), msg: o.devolucion ?? null })),
     pista: p.pista ?? null,
     bien: p.acierto?.texto ?? null,
     porque: p.acierto?.porque ?? null,
