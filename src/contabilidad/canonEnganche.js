@@ -105,7 +105,14 @@ export function estadosDePantalla(pantalla) {
     const c3 = opciones.every((o) => "t" in o);
     const toque = c3
       ? (o) => [...(pantalla.pasosAntes ?? []), `[data-op="${o.id}"], [data-elige="${o.id}"]`]
-      : (o) => [`[data-opcion="${o.id}"]`, '[data-boton="confirmar"]'];
+      /*
+       * Datos de Near (opciones con `texto`): «Confirmar» de PantallasT7_x o el
+       * motor C4 (t7/decisionC4.jsx), que decide al tocar [data-op] y no tiene
+       * «Confirmar». El segundo paso es «Confirmar» o, en el C4, la misma
+       * opción otra vez (el motor no la vuelve a contar mientras espera su
+       * veredicto).
+       */
+      : (o) => [`[data-opcion="${o.id}"], [data-op="${o.id}"]`, `[data-boton="confirmar"], [data-op="${o.id}"]`];
     estados.push({ estado: "al fallar", pasos: toque(mal) });
     estados.push({ estado: "al acertar", pasos: toque(bien) });
   }

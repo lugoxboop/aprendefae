@@ -15,9 +15,12 @@ const hacer = ["t7", "t5"].flatMap((d) =>
   .map((ruta) => ({ ruta, src: readFileSync(new URL(ruta, RAIZ), "utf8") }))
   .filter(({ src }) => src.includes("<Encabezado") && src.includes("<Pulsos"));
 
-/* 22 con el motor C4 (t7/decisionC4.jsx), que pinta Encabezado y Pulsos como un Hacer más. */
-test("★★★ los Hacer de la célula son los 22 de hoy", () => {
-  assert.equal(hacer.length, 22, hacer.map((h) => h.ruta).join(", "));
+/*
+ * 21 con el motor C4 (t7/decisionC4.jsx), que pinta Encabezado y Pulsos como un Hacer más.
+ * Eran 22: T7-3 H7 (CostoOValorNeto.jsx) ya no pinta Encabezado ni Pulsos; lo hace el motor C4.
+ */
+test("★★★ los Hacer de la célula son los 21 de hoy", () => {
+  assert.equal(hacer.length, 21, hacer.map((h) => h.ruta).join(", "));
 });
 
 test("★★★ todo Hacer pinta la consigna sin la frase del intento y el contador con su distintivo", () => {

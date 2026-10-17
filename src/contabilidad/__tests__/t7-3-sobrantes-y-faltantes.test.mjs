@@ -2,7 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { seccion, compararDatos, recorrer, prepararDom, citas, CONDICION } from "./t7-3-recorte.mjs";
+import { seccion, compararDatos, prepararDom, citas, CONDICION } from "./t7-3-recorte.mjs";
+import { recorrerC4, conReloj } from "./t7-3-c4.mjs";
 import { SOBRANTE as C7, MELLO_T73, NO_APLICADAS, aplicarAlRecorte, palabrasAlAcertar } from "./correccionesMelloAciertos.mjs";
 
 /*
@@ -33,8 +34,9 @@ const h = React.createElement;
 
 const A = await import("../../data/contabilidadT7_3_a5.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
-const { default: PantallasT7_3, cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
-const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
+const { cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
+const { default: AprenderT7_3C4 } = await import("../../components/mecanicas/libros/t7/AprenderT7_3C4.jsx");
+const { CONSECUENCIA_C4: C4 } = await import("../c4/t73a5_c4.js");
 const { PIEZAS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
 
 const RAIZ = new URL("../../../", import.meta.url);
@@ -110,18 +112,14 @@ test("★★★ las cifras de I-1 e I-2 se recalculan; ninguna de X1-X4 ni la qu
   for (const x of prohibidas) assert.ok(!numeros.has(x), cifra(x));
 });
 
-/* ═══════════ 2 · MONTADA ═══════════ */
+/* ═══════════ 2 · MONTADA: EL PATRÓN C4 (toda decisión se pinta) ═══════════ */
 
 const montar = async () => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
-  await act(async () => { raiz.render(h(PantallasT7_3, { pieza: P, rotulo: "R" })); });
+  await act(async () => { raiz.render(h(AprenderT7_3C4, { pieza: P, rotulo: "R" })); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
-};
-const tocar = async (el) => {
-  assert.ok(el, "no está el elemento que se quería tocar");
-  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 };
 /* Las barras de cada figura: [título, [rótulo, cifra, ancho]...]. */
 const barras = (c) => [...c.querySelectorAll("figure[data-barras]")].map((f) => [f.querySelector("figcaption").textContent,
@@ -132,13 +130,13 @@ const SOBRA = [["Saldo en libros", "465.000", ancho(C.libros, C.conteoSobra)], [
 /* Una sola escala en toda la pieza (la del conteo mayor): el saldo en libros mide lo mismo en cada pantalla. */
 const FALTA = [["Saldo en libros", "465.000", ancho(C.libros, C.conteoSobra)], ["Conteo físico", "430.000", ancho(C.conteoFalta, C.conteoSobra)]];
 
-test("★★★ se recorre entera: cada pantalla y cada estado, contra el recorte", async () => {
+test("★★★ se recorre entera en el patrón C4: cada pantalla y cada estado, contra el recorte; el ajuste tocado mueve los libros frente al conteo", conReloj(async () => {
   const m = await montar();
   try {
-    await recorrer({
-      caja: m.caja, P, S, tocar, w, textosDelError,
-      async alLlegar(k, c) {
-        const id = S.pantallas[k].id;
+    await recorrerC4({
+      c: m.caja, w, act, P, S, c4: C4,
+      async alLlegar(id) {
+        const c = m.caja;
         if (id === "sobrante") assert.deepEqual(barras(c), [["Ejemplo del libro · 31 de diciembre", ...SOBRA]]);
         if (id === "faltante") assert.deepEqual(barras(c), [["El mismo ejemplo, otro conteo", ...FALTA]]);
         if (id === "resumen") assert.deepEqual(barras(c), [["Conteo mayor: sobrante", ...SOBRA], ["Conteo menor: faltante", ...FALTA]]);
@@ -146,19 +144,33 @@ test("★★★ se recorre entera: cada pantalla y cada estado, contra el recort
         /* El conteo más corto se ve más corto. */
         if (id === "faltante") assert.ok(parseFloat(FALTA[1][2]) < parseFloat(FALTA[0][2]));
       },
-      async alFallar(k, c) {
+      async alElegir(id, o) {
+        const c = m.caja;
+        /* La barra de los libros ajustados, con lo que la opción haría, a la misma escala que las otras dos. */
+        const sobra = id === "sobrante";
+        const nuevo = sobra ? C.libros + Number(o.texto.replace(/\D/g, "")) : { debe: C.libros + C.faltante, haber: C.libros - C.faltante, "no-se-mueve": C.libros }[o.id];
+        const conteo = sobra ? C.conteoSobra : C.conteoFalta;
+        const max = Math.max(C.conteoSobra, nuevo);
+        const [, ...bs] = barras(c)[0];
+        assert.deepEqual(bs, [["Saldo en libros", "465.000", ancho(C.libros, max)], ["Conteo físico", cifra(conteo), ancho(conteo, max)], ["Libros, ajustados", cifra(nuevo), ancho(nuevo, max)]]);
+        assert.equal(nuevo === conteo, Boolean(o.correcta));
         assert.equal(c.querySelector("[data-asiento]"), null);
       },
-      async alAcertar(k, c) {
+      async alVeredicto(id, o, H) {
+        assert.ok(H.figura().querySelector('[data-barra="Libros, ajustados"].t73c4-mal'), `${id} · ${o.id}: la barra en coral`);
+      },
+      async alAcertar(id) {
+        const c = m.caja;
         const as = c.querySelector("[data-asiento]");
         assert.equal(as.dataset.asiento, "sin-fecha");
         assert.equal(as.querySelector("[data-sumas]"), null);
+        assert.ok(c.querySelector('[data-barra="Libros, ajustados"].t73c4-toca'));
       },
     });
   } finally {
     m.desmontar();
   }
-});
+}));
 
 /* ═══════════ 3 · CATÁLOGO Y TEMA ═══════════ */
 
@@ -173,6 +185,7 @@ test("★★★ fuera del catálogo de FP; en T7-3, después de A4 entre las de 
   assert.equal(ids.indexOf(A.A5_ID), ids.indexOf("t7-3-descuento-en-dos-libros") + 1);
   const piezas = PIEZAS_T7_3.map((x) => x.pieza.id);
   assert.equal(piezas.indexOf(A.A5_ID), piezas.indexOf("t7-3-descuento-en-dos-libros") + 1);
+  assert.equal(PIEZAS_T7_3.find((x) => x.pieza.id === A.A5_ID).Pieza, AprenderT7_3C4);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A5_ID)), []);
   assert.doesNotMatch(leer("src/data/contabilidadT7_3_a5.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);

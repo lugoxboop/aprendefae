@@ -1,4 +1,4 @@
-import { test } from "node:test";
+import { test, mock } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
@@ -26,7 +26,8 @@ import { JSDOM, VirtualConsole } from "jsdom";
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+let REDUCIDO = false;
+w.matchMedia = (q) => ({ matches: REDUCIDO && /prefers-reduced-motion: reduce/.test(q), addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
 w.requestAnimationFrame = (f) => setTimeout(f, 0);
 for (const [k, v] of Object.entries({
   window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
@@ -37,6 +38,8 @@ for (const [k, v] of Object.entries({
   Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
 }
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+/* C4: el veredicto llega ESPERA_C4 después de «Confirmar»; los temporizadores son los falsos de node:test. */
+mock.timers.enable({ apis: ["setTimeout"] });
 
 const React = await import("react");
 const { createRoot } = await import("react-dom/client");
@@ -51,6 +54,13 @@ const { default: CierraElMes } = await import("../../components/mecanicas/libros
 const { JUEGOS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
 const { firma, textoFigura } = await import("./figuraAcumuladaPrueba.mjs");
+const C4M = await import("../c4/t71h4_c4.js");
+const C4 = C4M.CONSECUENCIA_C4;
+const { ESPERA_C4 } = await import("../../components/mecanicas/libros/t7/decisionC4.jsx");
+const tick = async (ms) => { await act(async () => { mock.timers.tick(ms); }); };
+/* C4: lo que pinta cada casilla al confirmar (la línea bajo la casilla), y lo que dice la consecuencia pura. */
+const lineaCasilla = (caja, id) => caja.querySelector(`[data-c4-casilla="${id}"] [data-c4-linea]`)?.textContent ?? null;
+const c4De = (id, v) => { const e = C4.consecuencia(C4.items.find((i) => i.id === id), v); return e.falla ?? e.cuadra ?? null; };
 
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
@@ -204,10 +214,19 @@ test("★★★ la tanda entera: doce casillas calificadas una vez al confirmar,
       "promedio:final": D.DISTRACTORES_H4[2].valor,
     };
     await llenar(m, (id) => malas[id] ?? null);
+    /* C4-1: poner fichas no califica; nada de la consecuencia antes de «Confirmar». */
+    assert.equal(m.caja.querySelector("[data-c4-figura], [data-c4-casilla], [data-c4-linea]") === null, true, "la tabla califica antes de confirmar");
     await tocar(boton(m.caja, D.BOTON_H4.confirmar));
     /* Bloqueadas: un segundo toque no cambia nada. */
     for (const c of L.CASILLAS_H4) assert.equal(casilla(m.caja, c.id).disabled, true, c.id);
     assert.equal(boton(m.caja, D.BOTON_H4.confirmar) === undefined, true, "«Confirmar» sigue ahí");
+    /* C4: la consecuencia de las doce, en el acto; el veredicto, ESPERA_C4 después. */
+    for (const c of L.CASILLAS_H4) assert.equal(lineaCasilla(m.caja, c.id), c4De(c.id, malas[c.id] ?? c.valor), c.id);
+    assert.deepEqual([...m.caja.querySelectorAll("[data-c4-figura]")].map((f) => f.dataset.c4Metodo), D.METODOS_H4.map((x) => x.id));
+    assert.equal(m.caja.querySelectorAll("[data-retro-casilla], [data-era], [data-cierre-parte1]").length, 0, "el veredicto llegó con la consecuencia");
+    await tick(ESPERA_C4 - 1);
+    assert.equal(m.caja.querySelectorAll("[data-retro-casilla]").length, 0, "ni 1 ms antes");
+    await tick(1);
     /* Cada casilla mala: la línea del distractor primero, después la de su fila; la buena se enseña. */
     for (const [id, v] of Object.entries(malas)) {
       const textos = [...m.caja.querySelectorAll(`[data-retro-casilla="${id}"] [data-texto-retro]`)].map((p) => p.textContent);
@@ -280,6 +299,7 @@ test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqu
   try {
     await llenar(m);
     await tocar(boton(m.caja, D.BOTON_H4.confirmar));
+    await tick(ESPERA_C4);
     await tocar(boton(m.caja, D.BOTON_H4.siguiente));
     for (const l of D.PARTE2_H4.lineas) await tocar(lado(m.caja, l.id, l.lado));
     await tocar(boton(m.caja, "Comprobar"));
@@ -309,6 +329,7 @@ test("★★★ lote 5: el estado de resultados resuelto se queda en la parte 2,
     assert.deepEqual(firma(m.caja), []);
     await llenar(m);
     await tocar(boton(m.caja, D.BOTON_H4.confirmar));
+    await tick(ESPERA_C4);
     assert.deepEqual(firma(m.caja), []);
     await tocar(boton(m.caja, D.BOTON_H4.siguiente));
     /* Parte 2: la tabla resuelta, con las cifras buenas y la utilidad antes de impuestos, arriba. */
@@ -333,4 +354,54 @@ test("★★★ lote 5: el estado de resultados resuelto se queda en la parte 2,
   } finally {
     m.desmontar();
   }
+});
+
+/* ═══════════ C4 · EL ESTADO DE RESULTADOS EN CASCADA (Watari, t71-h4) ═══════════ */
+
+test("★★★ C4: cada casilla es un ítem con las quince fichas de main; ids, unidades y textos de Near", () => {
+  assert.equal(C4.id, D.H4_ID);
+  assert.deepEqual(C4.items.map((i) => i.id), L.unidadesH4(), "los ids del detalle, los de main");
+  assert.deepEqual([...C4M.BANCO_C4_H4].sort(), [...L.bancoH4((x) => x)].sort(), "las quince fichas del banco");
+  for (const c of L.CASILLAS_H4) {
+    const I = C4.items.find((i) => i.id === c.id);
+    assert.deepEqual(I.opciones.filter((o) => o.correcta).map((o) => o.v), [c.valor]);
+    for (const d of D.DISTRACTORES_H4) assert.equal(I.opciones.find((o) => o.v === d.valor).msg, d.retro);
+    assert.equal(I.porque, c.fila.retro);
+  }
+  assert.deepEqual(C4.items.filter((i) => i.tipo === "propio").map((i) => i.pregunta), D.PARTE2_H4.lineas.map((l) => l.cuenta));
+});
+
+test("★★★ C4: la cifra puesta recalcula su método en cascada; las frases de Watari para el promedio, tal cual", () => {
+  const de = (id, v) => C4.consecuencia(C4.items.find((i) => i.id === id), v);
+  const P = D.METODOS_H4[2].cifras;
+  /* f71.js, letra por letra: «Cada unidad queda a $958.», «Pero el promedio da $958.», «Quedan en bodega $1.437.000.». */
+  assert.equal(de("promedio:final", P.final).cuadra, "Cada unidad queda a $958.");
+  assert.equal(de("promedio:final", 1_432_500).falla, "Así cada una vale $955. Pero el promedio da $958.");
+  assert.equal(de("promedio:cmv", P.cmv).cuadra, "Quedan en bodega $1.437.000.");
+  assert.equal(de("promedio:cmv", 7_185_000).falla, "Así quedan $0 en la bodega. Y deben quedar $1.437.000.");
+  const e = de("peps:final", 1_545_000);
+  assert.deepEqual(e.cifras, { disponible: 7_185_000, final: 1_545_000, cmv: 5_640_000, ventas: 7_800_000, bruta: 2_160_000, operacional: 1_010_000 });
+  assert.equal(e.cuadra, "Cada unidad queda a $1.030.");
+  /* Ningún monto negativo: lo que saldría negativo queda en $?, y la frase no da cifras. */
+  const g = de("promedio:operacional", 7_185_000);
+  assert.equal(g.falla, C4M.TEXTOS_C4_H4.brutaPasa);
+  assert.equal(g.cifras.cmv, null);
+  for (const I of C4.items.filter((x) => x.tipo !== "propio")) {
+    for (const o of I.opciones) assert.doesNotMatch(JSON.stringify(C4.consecuencia(I, o.id)), /\$-|-\d|−\$/, `${I.id} · ${o.v}`);
+  }
+});
+
+test("★★ C4: con movimiento reducido, el veredicto llega con «Confirmar»", async () => {
+  REDUCIDO = true;
+  const m = await montar();
+  try {
+    await llenar(m);
+    await tocar(boton(m.caja, D.BOTON_H4.confirmar));
+    assert.equal(m.caja.querySelector("[data-cierre-parte1]").textContent, D.CIERRE_PARTE1_H4);
+  } finally { REDUCIDO = false; m.desmontar(); }
+});
+
+test("★★ la consigna sigue como en main, marcada PENDIENTE_DE_REVISION para Near", () => {
+  assert.equal(D.H4.consigna[0], "Cierra el mes con los tres métodos. Toca una cifra y después la casilla donde va. Sobran tres cifras.");
+  assert.match(leer("src/components/mecanicas/libros/t7/CierraElMes.jsx"), /LA CONSIGNA[\s\S]{0,200}PENDIENTE_DE_REVISION/);
 });

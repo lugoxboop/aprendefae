@@ -1,9 +1,10 @@
 import FichasUnNivel from "../b5/FichasUnNivel.jsx";
+import { useVuelta } from "../b5/ConVuelta.jsx";
 import {
   T5_ACT1, REGLAS_T5_ACT1, CAJONES_T5_ACT1, GRUPO_T5_ACT1, ALT_T5_ACT1, resumenT5Act1,
 } from "../../../../data/contabilidadT5Act1.js";
 import {
-  sortearT5Act1, evaluarT5Act1, valorDeItemT5Act1, puntuarT5Act1,
+  sortearT5Act1, evaluarT5Act1, valorDeItemT5Act1, puntuarT5Act1, mazoT5Act1,
 } from "../../../../contabilidad/t5Act1.js";
 
 /*
@@ -37,6 +38,11 @@ export const CONFIG_T5_ACT1 = {
   resumen: resumenT5Act1,
 };
 
+/* D8 (lote 18, Futaba): dos mazos fijos, sin fichas repetidas; la vuelta 1 y, desde la 2, se alternan. */
+const CONFIG_POR_VUELTA = [0, 1].map((k) => ({ ...CONFIG_T5_ACT1, sortear: () => mazoT5Act1(k) }));
+
 export default function QueRentaDa(props) {
-  return <FichasUnNivel config={CONFIG_T5_ACT1} {...props} />;
+  const { variante, alCompletar } = useVuelta(T5_ACT1.id, props.onCompletar);
+  if (props.modoDemo) return <FichasUnNivel config={CONFIG_T5_ACT1} {...props} />;
+  return <FichasUnNivel {...props} config={CONFIG_POR_VUELTA[variante ? 1 : 0]} onCompletar={alCompletar} />;
 }

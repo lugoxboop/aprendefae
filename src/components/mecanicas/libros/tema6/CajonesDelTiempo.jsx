@@ -63,14 +63,9 @@ const NOMBRE = { fontFamily: SORA, fontSize: "12.5px", fontWeight: 600, lineHeig
 const CIFRA = { fontFamily: SORA, fontSize: "12.5px", fontWeight: 600, lineHeight: 1.3, whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums", color: TEXTO };
 const PEQUENO = { fontFamily: INTER, fontSize: "12px", lineHeight: "16px" };
 
-const [UBICAR, CALCULAR] = PARTES_T6_ACT6;
-const N1 = UBICAR.casillas.length;
-const MONTOS = Object.fromEntries(CALCULAR.datos.filas.filter((f) => !f.total).map((f) => [f.nombre, f.valor]));
-const TOTAL = CALCULAR.datos.filas.find((f) => f.total);
 const correcta = (c) => c.opciones.find((o) => o.tipo === null);
-/* La casilla de la parte 2 que da la provisión de cada grupo (la 4, la 5 y la 6), y las del total (7 y 8). */
-const CASILLA_DE_GRUPO = { g2: "p4", g3: "p5", g4: "p6" };
-const [P7, P8] = ["p7", "p8"].map((id) => CALCULAR.casillas.find((c) => c.id === id));
+/* Tras los dos puntos, el nombre del grupo va en minúscula (Shoko). */
+const minuscula = (t) => t.charAt(0).toLowerCase() + t.slice(1);
 
 /* ═══════════ EL EJE DE LOS CAJONES (parte 1) ═══════════ */
 
@@ -119,7 +114,7 @@ function useEscalonado() {
   return { marcas, escalonado };
 }
 
-function Eje({ respondidas, abierta, reducido, eleccion = null, casillas = UBICAR.casillas }) {
+function Eje({ respondidas, abierta, reducido, eleccion = null, casillas }) {
   const { marcas, escalonado } = useEscalonado();
   const actual = abierta ?? respondidas - 1;
   /* Lote 6c: con `eleccion`, los cajones son las opciones de la casilla abierta. */
@@ -244,114 +239,133 @@ function Barra({ porcentaje, alto }) {
   );
 }
 
-function FilaGrupo({ g, k, parte2, valor, activo, reducido }) {
-  const pct = ESCENARIO_T6_ACT6.grupos.find((x) => x.id === g.id).porcentaje;
-  const enColumna = pct > 0;
-  return (
-    <div data-fila={g.id} {...(activo ? { "data-renglon-activo": "" } : {})} style={{ borderTop: k ? `1px solid ${BORDE}` : "none", ...(parte2 ? resalte(activo) : { padding: "4px 0" }) }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: "8px", alignItems: "baseline" }}>
-        <span style={NOMBRE}>{g.nombre}</span>
-        {parte2
-          ? <span data-monto="" style={CIFRA}>{MONTOS[g.nombre]}</span>
-          : enColumna && <span style={{ ...PEQUENO, fontWeight: 600, color: TEXTO, whiteSpace: "nowrap" }}>{pegarPorcentaje(g.porcentaje)}</span>}
-      </div>
-      {parte2 && (
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
-          {enColumna && <span style={{ ...PEQUENO, fontWeight: 600, color: TEXTO, whiteSpace: "nowrap" }}>{pegarPorcentaje(g.porcentaje)}</span>}
-          <Barra porcentaje={pct} alto={8} />
-          {enColumna && <span data-provision-grupo={g.id} style={{ ...CIFRA, minWidth: "62px", textAlign: "right" }}>{valor && <Entra reducido={reducido}>{valor}</Entra>}</span>}
-        </div>
-      )}
-      {!enColumna && (
-        <p style={{ margin: "2px 0 0", ...PEQUENO, textAlign: "right", color: SECUNDARIO }}>{g.porcentaje}</p>
-      )}
-    </div>
-  );
-}
+/*
+ * D8 (lote 18): la figura se arma con las partes y el escenario de la vuelta (el de hoy o la variante de
+ * Futaba). Todo lo que sale de los datos vive aquí dentro; el eje y sus piezas no dependen de ellos.
+ */
+export function crearCajones(partes, escenario) {
+  const [UBICAR, CALCULAR] = partes;
+  const N1 = UBICAR.casillas.length;
+  const MONTOS = Object.fromEntries(CALCULAR.datos.filas.filter((f) => !f.total).map((f) => [f.nombre, f.valor]));
+  const TOTAL = CALCULAR.datos.filas.find((f) => f.total);
+  /* La casilla de la parte 2 que da la provisión de cada grupo (la 4, la 5 y la 6), y las del total (7 y 8): por su lugar. */
+  const [C4, C5, C6, P7, P8] = CALCULAR.casillas;
+  const CASILLA_DE_GRUPO = { g2: C4.id, g3: C5.id, g4: C6.id };
+  const ESCENARIO_T6_ACT6 = escenario;
 
-function Total({ respondidas, abierta, reducido }) {
-  const i7 = N1 + CALCULAR.casillas.indexOf(P7);
-  const i8 = N1 + CALCULAR.casillas.indexOf(P8);
-  const activo = abierta === i7 || abierta === i8;
-  /* Entra entera en la casilla 7 (fila y barra), con la aparición de la serie; con movimiento reducido, al instante. */
-  return (
-    <div data-fila="total" data-total="" {...(activo ? { "data-renglon-activo": "" } : {})} style={{
-      borderTop: `1px solid ${BORDE_FUERTE}`, marginTop: "4px", ...resalte(activo), animation: reducido ? "none" : "b5-entra 240ms ease-out both",
-    }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: "8px", alignItems: "baseline" }}>
-        <span style={{ ...PEQUENO, color: SECUNDARIO }}>{TOTAL.nombre}</span>
-        <span style={CIFRA}>{TOTAL.valor}</span>
-      </div>
-      <div data-barra-total style={{ marginTop: "6px" }}>
-        <div style={{ display: "flex" }}><Barra porcentaje={(ESCENARIO_T6_ACT6.provision / ESCENARIO_T6_ACT6.total) * 100} alto={14} /></div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", marginTop: "4px" }}>
-          <div>
-            <p style={{ margin: 0, ...PEQUENO, color: SECUNDARIO }}>{ROTULOS_TOTAL_T6_ACT6.neto}</p>
-            <p data-valor-neto style={{ ...CIFRA, margin: 0, minHeight: "16px" }}>{respondidas > i8 && <Entra reducido={reducido}>{pesos(correcta(P8).valor)}</Entra>}</p>
+  function FilaGrupo({ g, k, parte2, valor, activo, reducido }) {
+    const pct = ESCENARIO_T6_ACT6.grupos.find((x) => x.id === g.id).porcentaje;
+    const enColumna = pct > 0;
+    return (
+      <div data-fila={g.id} {...(activo ? { "data-renglon-activo": "" } : {})} style={{ borderTop: k ? `1px solid ${BORDE}` : "none", ...(parte2 ? resalte(activo) : { padding: "4px 0" }) }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: "8px", alignItems: "baseline" }}>
+          <span style={NOMBRE}>{g.nombre}</span>
+          {parte2
+            ? <span data-monto="" style={CIFRA}>{MONTOS[g.nombre]}</span>
+            : enColumna && <span style={{ ...PEQUENO, fontWeight: 600, color: TEXTO, whiteSpace: "nowrap" }}>{pegarPorcentaje(g.porcentaje)}</span>}
+        </div>
+        {parte2 && (
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+            {enColumna && <span style={{ ...PEQUENO, fontWeight: 600, color: TEXTO, whiteSpace: "nowrap" }}>{pegarPorcentaje(g.porcentaje)}</span>}
+            <Barra porcentaje={pct} alto={8} />
+            {enColumna && <span data-provision-grupo={g.id} style={{ ...CIFRA, minWidth: "62px", textAlign: "right" }}>{valor && <Entra reducido={reducido}>{valor}</Entra>}</span>}
           </div>
-          <div style={{ textAlign: "right" }}>
-            <p style={{ margin: 0, ...PEQUENO, color: SECUNDARIO }}>{ROTULOS_TOTAL_T6_ACT6.provision}</p>
-            <p data-valor-provision style={{ ...CIFRA, margin: 0, minHeight: "16px" }}>{respondidas > i7 && <Entra reducido={reducido}>{pesos(correcta(P7).valor)}</Entra>}</p>
-          </div>
-        </div>
+        )}
+        {!enColumna && (
+          <p style={{ margin: "2px 0 0", ...PEQUENO, textAlign: "right", color: SECUNDARIO }}>{g.porcentaje}</p>
+        )}
       </div>
-    </div>
-  );
-}
-
-export default function CajonesDelTiempo({ respondidas, abierta, reducido, anuncio, modoDemo = false, eleccion = null, casillaDemo = null }) {
-  /* En «Así se juega» no hay partida: solo la nota, la regla y su pie. */
-  const enCurso = abierta ?? Math.max(0, respondidas - 1);
-  const parte2 = !modoDemo && enCurso >= N1;
-  const valorDe = (g) => {
-    const id = CASILLA_DE_GRUPO[g.id];
-    if (!id) return null; // el primer grupo no lleva provisión
-    const i = N1 + CALCULAR.casillas.findIndex((c) => c.id === id);
-    return respondidas > i ? pesos(correcta(CALCULAR.casillas[i - N1]).valor) : null;
-  };
-  const activoDe = (g) => abierta !== null && CALCULAR.casillas[abierta - N1]?.id === CASILLA_DE_GRUPO[g.id];
-  return (
-    <div data-cajones-del-tiempo style={{ margin: "0 0 12px" }}>
-      <style>{KEYFRAMES_ENTRA}</style>
-      <p data-nota-regla style={{ margin: "0 0 10px", fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: "rgba(248,249,250,0.75)" }}>{T6_ACT6.nota}</p>
-      {/* Lote 6d: la tabla va directo sobre el Panel, sin tarjeta propia. */}
-      <div data-regla="" style={{ padding: 0 }}>
-        <div {...(parte2 ? { "data-datos-parte": "" } : {})}>
-          {GRUPOS_T6_ACT6.map((g, k) => (
-            <FilaGrupo key={g.id} g={g} k={k} parte2={parte2} valor={parte2 ? valorDe(g) : null} activo={parte2 && activoDe(g)} reducido={reducido} />
-          ))}
-          {/*
-            * La fila del total («$1.400.000») y su barra no se dibujan antes de la casilla 7, la primera que
-            * las usa (hoja de Mai, lote 3 · B): las casillas 4 a 6 usan solo la fila de su grupo, y así la
-            * casilla 4 cabe a 320×568 con su rótulo y su fila.
-            */}
-          {parte2 && enCurso >= N1 + CALCULAR.casillas.indexOf(P7) && <Total respondidas={respondidas} abierta={abierta} reducido={reducido} />}
-        </div>
-        {/* El pie de la tabla (calidad 1): el rótulo y la fuente del porcentaje, dos líneas sin cajas. */}
-        <div data-pie-tabla="" style={{ margin: "6px 0 0", padding: "6px 0 0", borderTop: `1px solid ${BORDE_TENUE}` }}>
-          <p data-rotulo-simulado="" style={{ ...LINEA_PIE, fontWeight: 600, color: NODO }}>{T6_ACT6.rotulo}</p>
-          <p data-pie-porcentaje="" style={{ ...LINEA_PIE, fontWeight: 400, color: SECUNDARIO }}>{PIES_T6_ACT6.regla}</p>
-        </div>
-      </div>
-      {!modoDemo && !parte2 && <Eje respondidas={respondidas} abierta={abierta} reducido={reducido} eleccion={eleccion} />}
-      {/* «Así se juega» enseña el mismo gesto que la partida: la deuda del ejemplo se ubica tocando su cajón. */}
-      {modoDemo && casillaDemo && <Eje respondidas={respondidas} abierta={abierta} reducido={reducido} eleccion={eleccion} casillas={[casillaDemo]} />}
-      <p data-anuncio aria-live="polite" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" }}>{anuncio}</p>
-    </div>
-  );
-}
-
-/* Tras los dos puntos, el nombre del grupo va en minúscula (Shoko). */
-const minuscula = (t) => t.charAt(0).toLowerCase() + t.slice(1);
-
-/* Lo que se anuncia al responder la casilla k: lo que entra (siempre lo correcto). PARA SHOKO: frases armadas con palabras de la actividad. */
-export function anuncioDe(k) {
-  if (k < N1) {
-    const c = UBICAR.casillas[k];
-    return `${deudaDe(c)}: ${minuscula(correcta(c).texto)}`;
+    );
   }
-  const c = CALCULAR.casillas[k - N1];
-  const grupo = Object.entries(CASILLA_DE_GRUPO).find(([, id]) => id === c.id)?.[0];
-  if (grupo) return `${minuscula(GRUPOS_T6_ACT6.find((g) => g.id === grupo).nombre)}: ${pesos(correcta(c).valor)}`;
-  return `${c.id === P7.id ? ROTULOS_TOTAL_T6_ACT6.provision : ROTULOS_TOTAL_T6_ACT6.neto}: ${pesos(correcta(c).valor)}`;
+
+  function Total({ respondidas, abierta, reducido }) {
+    const i7 = N1 + CALCULAR.casillas.indexOf(P7);
+    const i8 = N1 + CALCULAR.casillas.indexOf(P8);
+    const activo = abierta === i7 || abierta === i8;
+    /* Entra entera en la casilla 7 (fila y barra), con la aparición de la serie; con movimiento reducido, al instante. */
+    return (
+      <div data-fila="total" data-total="" {...(activo ? { "data-renglon-activo": "" } : {})} style={{
+        borderTop: `1px solid ${BORDE_FUERTE}`, marginTop: "4px", ...resalte(activo), animation: reducido ? "none" : "b5-entra 240ms ease-out both",
+      }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: "8px", alignItems: "baseline" }}>
+          <span style={{ ...PEQUENO, color: SECUNDARIO }}>{TOTAL.nombre}</span>
+          <span style={CIFRA}>{TOTAL.valor}</span>
+        </div>
+        <div data-barra-total style={{ marginTop: "6px" }}>
+          <div style={{ display: "flex" }}><Barra porcentaje={(ESCENARIO_T6_ACT6.provision / ESCENARIO_T6_ACT6.total) * 100} alto={14} /></div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", marginTop: "4px" }}>
+            <div>
+              <p style={{ margin: 0, ...PEQUENO, color: SECUNDARIO }}>{ROTULOS_TOTAL_T6_ACT6.neto}</p>
+              <p data-valor-neto style={{ ...CIFRA, margin: 0, minHeight: "16px" }}>{respondidas > i8 && <Entra reducido={reducido}>{pesos(correcta(P8).valor)}</Entra>}</p>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <p style={{ margin: 0, ...PEQUENO, color: SECUNDARIO }}>{ROTULOS_TOTAL_T6_ACT6.provision}</p>
+              <p data-valor-provision style={{ ...CIFRA, margin: 0, minHeight: "16px" }}>{respondidas > i7 && <Entra reducido={reducido}>{pesos(correcta(P7).valor)}</Entra>}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function CajonesDelTiempo({ respondidas, abierta, reducido, anuncio, modoDemo = false, eleccion = null, casillaDemo = null }) {
+    /* En «Así se juega» no hay partida: solo la nota, la regla y su pie. */
+    const enCurso = abierta ?? Math.max(0, respondidas - 1);
+    const parte2 = !modoDemo && enCurso >= N1;
+    const valorDe = (g) => {
+      const id = CASILLA_DE_GRUPO[g.id];
+      if (!id) return null; // el primer grupo no lleva provisión
+      const i = N1 + CALCULAR.casillas.findIndex((c) => c.id === id);
+      return respondidas > i ? pesos(correcta(CALCULAR.casillas[i - N1]).valor) : null;
+    };
+    const activoDe = (g) => abierta !== null && CALCULAR.casillas[abierta - N1]?.id === CASILLA_DE_GRUPO[g.id];
+    return (
+      <div data-cajones-del-tiempo style={{ margin: "0 0 12px" }}>
+        <style>{KEYFRAMES_ENTRA}</style>
+        <p data-nota-regla style={{ margin: "0 0 10px", fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: "rgba(248,249,250,0.75)" }}>{T6_ACT6.nota}</p>
+        {/* Lote 6d: la tabla va directo sobre el Panel, sin tarjeta propia. */}
+        <div data-regla="" style={{ padding: 0 }}>
+          <div {...(parte2 ? { "data-datos-parte": "" } : {})}>
+            {GRUPOS_T6_ACT6.map((g, k) => (
+              <FilaGrupo key={g.id} g={g} k={k} parte2={parte2} valor={parte2 ? valorDe(g) : null} activo={parte2 && activoDe(g)} reducido={reducido} />
+            ))}
+            {/*
+              * La fila del total («$1.400.000») y su barra no se dibujan antes de la casilla 7, la primera que
+              * las usa (hoja de Mai, lote 3 · B): las casillas 4 a 6 usan solo la fila de su grupo, y así la
+              * casilla 4 cabe a 320×568 con su rótulo y su fila.
+              */}
+            {parte2 && enCurso >= N1 + CALCULAR.casillas.indexOf(P7) && <Total respondidas={respondidas} abierta={abierta} reducido={reducido} />}
+          </div>
+          {/* El pie de la tabla (calidad 1): el rótulo y la fuente del porcentaje, dos líneas sin cajas. */}
+          <div data-pie-tabla="" style={{ margin: "6px 0 0", padding: "6px 0 0", borderTop: `1px solid ${BORDE_TENUE}` }}>
+            <p data-rotulo-simulado="" style={{ ...LINEA_PIE, fontWeight: 600, color: NODO }}>{T6_ACT6.rotulo}</p>
+            <p data-pie-porcentaje="" style={{ ...LINEA_PIE, fontWeight: 400, color: SECUNDARIO }}>{PIES_T6_ACT6.regla}</p>
+          </div>
+        </div>
+        {!modoDemo && !parte2 && <Eje respondidas={respondidas} abierta={abierta} reducido={reducido} eleccion={eleccion} casillas={UBICAR.casillas} />}
+        {/* «Así se juega» enseña el mismo gesto que la partida: la deuda del ejemplo se ubica tocando su cajón. */}
+        {modoDemo && casillaDemo && <Eje respondidas={respondidas} abierta={abierta} reducido={reducido} eleccion={eleccion} casillas={[casillaDemo]} />}
+        <p data-anuncio aria-live="polite" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" }}>{anuncio}</p>
+      </div>
+    );
+  }
+
+
+  /* Lo que se anuncia al responder la casilla k: lo que entra (siempre lo correcto). PARA SHOKO: frases armadas con palabras de la actividad. */
+  function anuncioDe(k) {
+    if (k < N1) {
+      const c = UBICAR.casillas[k];
+      return `${deudaDe(c)}: ${minuscula(correcta(c).texto)}`;
+    }
+    const c = CALCULAR.casillas[k - N1];
+    const grupo = Object.entries(CASILLA_DE_GRUPO).find(([, id]) => id === c.id)?.[0];
+    if (grupo) return `${minuscula(GRUPOS_T6_ACT6.find((g) => g.id === grupo).nombre)}: ${pesos(correcta(c).valor)}`;
+    return `${c.id === P7.id ? ROTULOS_TOTAL_T6_ACT6.provision : ROTULOS_TOTAL_T6_ACT6.neto}: ${pesos(correcta(c).valor)}`;
+  }
+
+  return { CajonesDelTiempo, anuncioDe, casillasUbicar: UBICAR.casillas };
 }
+
+const HOY = crearCajones(PARTES_T6_ACT6, ESCENARIO_T6_ACT6);
+export default HOY.CajonesDelTiempo;
+export const anuncioDe = HOY.anuncioDe;

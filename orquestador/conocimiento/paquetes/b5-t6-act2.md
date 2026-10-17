@@ -363,3 +363,17 @@ Manda sobre la (1) y la (5) en lo que nombra. La C y la A de los datos son solo 
 | asiento 2 · C12 (153.400) | «Pusiste solo lo que pide el análisis, pero en marzo la provisión quedó corta. El registro también cubre lo que faltó: $153.400 + $31.200 = $184.600.» |
 | asiento 2 · B | «Ese valor no es lo que pide el análisis más lo que faltó en marzo. Haz esa suma.» |
 | pregunta 1 · general | «Ese valor no sale de restar la provisión a lo que deben los clientes. Haz esa resta.» |
+
+## (7) Lote 17 · P2 de Mai (16-oct-2026): pasos 1, 3 y 5, la cifra escrita mueve el modelo
+
+Aprobada por Sakuta tal cual (bloque A del lote 17). Resumen para código; el prototipo es `proto-a2-cifra-mueve.html`.
+
+- **Regla única:** el modelo dibuja la cifra del estudiante como borrador (borde discontinuo 1,5 px nodo #CBDCF2) y no dibuja nada contra lo que pueda alinearla hasta «Comprobar» (R10). Tras «Comprobar», el modelo muestra siempre la cifra correcta, se acierte o no. Sin paradas; el campo de cifra se queda.
+- **Paso 1 · valor neto:** el bloque «En el estado de situación financiera» con el eco en «El valor neto» y, debajo, la Barra del valor neto (la de la capa 1). Barra de 26 de alto, solo la cola del dominio, corte en zigzag 1,5 #B8C4D4: x(v) = (v − 2.255.000) / 600.000, en [0, 1]. Pista 1 px rgba(248,249,250,.35) hasta x(2.655.000) = 66,67 %. Borrador: borde discontinuo 1,5 nodo, relleno rgba(203,220,242,.10). Tras «Comprobar»: la provisión en ámbar rgba(233,196,106,.38) con bordes de 2 px ámbar de 41,87 % a 66,67 %, con su rótulo debajo; el relleno firme hasta 41,87 % en rgba(184,196,212,.35) con borde derecho de 2 px #F8F9FA.
+- **Pasos 3 y 5:** la T con el eco en la fila del saldo (que sigue ocupando las dos columnas) y una fila: TanqueProvision (84 × 120) a la izquierda y, a la derecha, la pregunta, el campo y «Comprobar». Dominio de −$40.000 a $200.000, cero a 100 de 120, 0,0005 px por peso. Paso 3 (faltante): alto = min(v · 0,0005, 20); $31.200 → 15,6 px; firme con el rayado teal y borde inferior de 2 px teal. Paso 5 (nivel): alto = min(v · 0,0005, 100); $153.400 → 76,7 px; firme rgba(233,196,106,.38) con borde superior de 2 px ámbar. Antes de «Comprobar», el tanque solo muestra el cero (sin línea de lo estimado ni nivel anterior).
+- **El eco:** recuadro discontinuo de 1,5 px nodo #CBDCF2, radio 6, cifra en monospace con tabular-nums. «{cifra}» en el paso 1; «Le faltan {cifra}» en el paso 3; «El saldo queda en {cifra}» en el paso 5. Sin dígitos, el hueco (72 × 12).
+- **Escribir no mueve nada de sitio** (panel igual al píxel, vacío y con cifra). Tras «Comprobar», el panel solo cambia abajo.
+- **Movimiento:** el borrador sigue cada tecla en 160 ms con cubic-bezier(.3,.9,.4,1); borrador → firme por opacidad en 240 ms. Solo transform y opacity; con movimiento reducido, al instante.
+- **Accesibilidad:** la Barra y el tanque llevan aria-hidden; el eco no se anuncia con cada tecla; la marca y la devolución, como hoy. La etiqueta oculta del campo: si main ya tiene una, se queda la de main.
+- **Textos:** ninguno nuevo a la vista; se reusan «Le faltan {cifra}», «El saldo queda en {cifra}», el rótulo de la provisión de la capa 1, las filas del estado de situación y las preguntas y devoluciones de main.
+- **Kaede (indispensable):** 1) escribir no mueve nada de sitio; 2) antes de «Comprobar», nada contra qué alinear; 3) tras «Comprobar», el modelo muestra lo correcto; 4) escalas como arriba (si cambian las cifras de main, la pista termina en el 66,67 % y el tope del tanque es 200.000).

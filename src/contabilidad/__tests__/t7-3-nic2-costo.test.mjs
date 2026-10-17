@@ -1,8 +1,9 @@
-import { test } from "node:test";
+import { test, mock } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { prepararDom, textoDeFiguras, lineaEnFiguras, enOrden, CONDICION } from "./t7-3-recorte.mjs";
+import { recorrerC4, conReloj } from "./t7-3-c4.mjs";
 import { ENTREGA4, MELLO_E4, E4_MELLO, OPCIONAL_E4, entrega4ConMello, seccionFusion, citasAnidadas } from "./correccionesMelloFusiones.mjs";
 
 /*
@@ -32,7 +33,8 @@ const h = React.createElement;
 
 const A = await import("../../data/contabilidadT7_3_a7.js");
 const { SUBJECTS, APRENDER, HACER } = await import("../../data/subjects.js");
-const { default: PantallasT7_3 } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
+const { default: AprenderT7_3C4 } = await import("../../components/mecanicas/libros/t7/AprenderT7_3C4.jsx");
+const { CONSECUENCIA_C4: C4, PROPIOS_A7 } = await import("../c4/t73a7_c4.js");
 const { textosDelError, sinAsiEs } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
 const { PIEZAS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
 
@@ -198,19 +200,16 @@ test("★★★ el ejemplo construido es el del registro de Near, y se mide por 
   for (const x of [500_000, 800_000, 175_000, 5_800_000, 1_200_000, 8_700_000, 2_432_000, 17_632_000]) assert.ok(!numeros.has(x), String(x));
 });
 
-/* ═══════════ 2 · MONTADA, PANTALLA POR PANTALLA Y ESTADO POR ESTADO ═══════════ */
+/* ═══════════ 2 · MONTADA, EN EL PATRÓN C4, PANTALLA POR PANTALLA Y ESTADO POR ESTADO ═══════════ */
 
 const montar = async () => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
-  await act(async () => { raiz.render(h(PantallasT7_3, { pieza: P, rotulo: "R" })); });
+  await act(async () => { raiz.render(h(AprenderT7_3C4, { pieza: P, rotulo: "R" })); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
-const tocar = async (el) => {
-  assert.ok(el, "no está el elemento que se quería tocar");
-  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
-};
+const sp = (t) => t.replace(/\u00a0/g, " ");
 
 /*
  * EL «¿POR QUÉ?» DE P3 Y P7 TRAE «solo», «si» y «directamente», y va
@@ -224,131 +223,108 @@ test("★★ los «¿Por qué?» plegados que traen una palabra de condición so
   assert.deepEqual(P.pantallas.filter((p) => p.acierto?.porque && CONDICION.test(p.acierto.porque)).map((p) => p.id), ["el-costo", "gasto"]);
 });
 
-test("★★★ se recorre entera: cada pantalla y cada estado, contra el paquete con Mello, con la franja de la NIC 2 en todas", async () => {
+test("★★★ se recorre entera en el patrón C4: cada pantalla y cada estado, contra el paquete con Mello, con la franja de la NIC 2 en todas; cada opción pinta la ficha", conReloj(async () => {
   const m = await montar();
   const c = m.caja;
-  const textos = () => [...c.querySelectorAll("[data-pieza] [data-texto]")].map((x) => x.textContent);
-  const boton = (n) => c.querySelector(`[data-boton="${n}"]`);
-  const pies = () => [...c.querySelectorAll("[data-pie]")].map((x) => x.textContent);
   const franja = () => {
-    const f = c.querySelector("[data-pieza]").firstElementChild;
+    const f = c.querySelector("[data-pieza-t73]").firstElementChild;
     assert.ok(f.matches("p.t73pt-nic2[data-aviso]"), "la franja no es lo primero de la pieza");
     assert.equal(f.textContent, A.FRASE_NIC2);
   };
-  const visitadas = [];
+  const figAcierto = () => c.querySelector("[data-columnas], figure[data-renglones='Se mide por el menor']");
   try {
-    for (const [k, x] of S.pantallas.entries()) {
-      const p = P.pantallas[k];
-      assert.equal(c.querySelector("[data-pantalla]").dataset.pantalla, x.id);
-      visitadas.push(x.id);
-      const pieDe = (t) => (p.pieMarca ? [t, p.pieMarca] : [t]);
-      /* Al llegar: las líneas de texto, en su orden y nada más; las de figura, en las figuras; nada plegado. */
-      franja();
-      const lineas = x.lineas.filter((l) => l !== A.FRASE_NIC2);
-      const deTexto = lineas.filter((l) => textos().includes(l));
-      assert.deepEqual(textos(), deTexto, `${x.id}: los textos al llegar`);
-      for (const l of lineas.filter((y) => !deTexto.includes(y))) assert.ok(lineaEnFiguras(l, textoDeFiguras(c)), `${x.id}: «${l}» no está en la figura`);
-      assert.equal(c.querySelector("[data-mensaje], [data-por-que], [data-plegado]"), null, `${x.id}: algo plegado o un mensaje al llegar`);
-      assert.deepEqual(pies(), pieDe(p.pie), `${x.id}: el pie`);
-      if (x.figura) assert.equal(Boolean(c.querySelector("figure, [data-figura]")), !/^en el acierto/.test(x.figura), `${x.id}: la figura`);
-      if (x.tipo !== "eleccion") {
-        const ultima = k === S.pantallas.length - 1;
-        assert.equal(boton(x.tipo === "portada" ? "empezar" : "seguir") === null, ultima, `${x.id}: el botón`);
-        if (!ultima) { await tocar(boton(x.tipo === "portada" ? "empezar" : "seguir")); continue; }
-        /* El resumen: lo que la norma pide informar, cerrado; se abre con su botón (aria-expanded) y se vuelve a cerrar. */
-        const b = c.querySelector("[data-desplegable] button");
-        assert.equal(b.getAttribute("aria-expanded"), "false");
-        assert.equal(b.dataset.boton, undefined, "no es un botón de interfaz");
-        assert.equal(c.querySelector("[data-desplegado]"), null);
-        await tocar(b);
-        assert.equal(b.getAttribute("aria-expanded"), "true");
-        const abierto = c.querySelector("[data-desplegado]");
-        assert.equal(b.getAttribute("aria-controls"), abierto.id);
-        assert.deepEqual([...abierto.querySelectorAll("[data-texto]")].map((y) => y.textContent), [...p.desplegable.parrafos, ...p.desplegable.lista]);
-        await tocar(b);
-        assert.equal(c.querySelector("[data-desplegado]"), null);
+    await recorrerC4({
+      c, w, act, P, S, c4: C4, lineasFuera: [A.FRASE_NIC2], figuraDelAcierto: false,
+      errorDe: (x, o) => x.errores.find((e) => CLAVES[x.id][e.clave].includes(o.id))?.texto,
+      async alLlegar(id) {
         franja();
-        continue;
-      }
-      /* Las opciones del paquete; «Confirmar» inactivo hasta elegir; la figura del acierto no se adelanta. */
-      assert.deepEqual([...c.querySelectorAll("[data-opcion]")].map((y) => y.textContent).sort(), [...x.opciones].sort());
-      assert.equal(boton("confirmar").getAttribute("aria-disabled"), "true");
-      const figAcierto = () => c.querySelector("[data-columnas], figure[data-renglones='Se mide por el menor']");
-      assert.equal(figAcierto(), null, `${x.id}: la figura del acierto se adelanta`);
-      /* La escalera: el 1.er error da la pista; el 2.º, la respuesta y el acierto sin «Así es». */
-      let n = 0;
-      for (const o of p.opciones.filter((y) => !y.correcta)) {
-        await tocar(c.querySelector(`[data-opcion="${o.id}"]`));
-        await tocar(boton("confirmar"));
-        n += 1;
-        const msj = c.querySelector("[data-mensaje]");
-        assert.equal(msj.dataset.mensaje, "error");
-        assert.equal(w.document.activeElement, msj, `${x.id}: el foco va al mensaje`);
-        const esperado = n === 1 ? [x.pista] : [`La respuesta es «${p.opciones.find((y) => y.correcta).texto}».`, sinAsiEs(x.acierto.texto)];
-        assert.deepEqual([...msj.querySelectorAll("[data-texto]")].map((y) => y.textContent), esperado, `${x.id}: error ${n}`);
-        assert.deepEqual(textosDelError(p, o, n), esperado);
-        assert.deepEqual(pies(), pieDe(p.error.pie), `${x.id}: el pie del error`);
-        assert.equal(figAcierto(), null, `${x.id}: la figura del acierto, con el error`);
+        if (id === "resumen") {
+          /* El resumen: lo que la norma pide informar, cerrado; se abre con su botón (aria-expanded) y se vuelve a cerrar. */
+          const b = c.querySelector("[data-desplegable] button");
+          assert.equal(b.getAttribute("aria-expanded"), "false");
+          assert.equal(b.dataset.boton, undefined, "no es un botón de interfaz");
+          assert.equal(c.querySelector("[data-desplegado]"), null);
+          await act(async () => { b.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+          assert.equal(b.getAttribute("aria-expanded"), "true");
+          const abierto = c.querySelector("[data-desplegado]");
+          assert.equal(b.getAttribute("aria-controls"), abierto.id);
+          assert.deepEqual([...abierto.querySelectorAll("[data-texto]")].map((y) => y.textContent), [...pantalla("resumen").desplegable.parrafos, ...pantalla("resumen").desplegable.lista]);
+          await act(async () => { b.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+          assert.equal(c.querySelector("[data-desplegado]"), null);
+        }
+        if (pantalla(id).tipo === "eleccion") assert.equal(figAcierto(), null, `${id}: la figura del acierto se adelanta`);
+        if (id === "que-es") assert.equal(c.querySelector('[data-zona="inventario"] [data-chip]'), null);
+        if (id === "como-se-mide") {
+          assert.deepEqual([...c.querySelectorAll(".t73c4-marca")].map((x) => x.textContent), ["VNR $550.000", "Costo $580.000"]);
+          assert.equal(c.querySelector("[data-valor]"), null);
+        }
+        if (id === "el-costo") assert.deepEqual([...c.querySelectorAll("[data-c4-objeto='costo'] .rg-op")].map((x) => x.textContent), ["+", "+", "+", "?"]);
+        if (id === "gasto") assert.equal(c.querySelector("[data-chip]"), null);
+        if (["formulas", "la-que-falta", "sistemas"].includes(id)) assert.equal(c.querySelector("[data-figura]"), null, `${id}: sin figura (ítem propio)`);
+      },
+      async alElegir(id, o) {
+        if (id === "que-es") assert.equal(c.querySelector('[data-zona="inventario"] [data-chip]').textContent, { mercancia: "La mercancía", computador: "El computador", local: "El local" }[o.id]);
+        if (id === "como-se-mide") {
+          const v = c.querySelector("[data-valor]");
+          assert.equal(v.textContent, o.texto);
+          /* Sobre la regla de $500.000 a $650.000. */
+          assert.equal(v.parentElement.style.left, `${(100 * (Number(o.texto.replace(/\D/g, "")) - 500000)) / 150000}%`);
+        }
+        if (id === "el-costo") {
+          const filas = [...c.querySelectorAll("[data-c4-objeto='costo'] [data-renglon]")].map((r) => [r.querySelector(".rg-op").textContent, sp(r.querySelector(".rg-rot").lastChild.textContent)]);
+          assert.deepEqual(filas.filter(([op]) => op === "−").map(([, t]) => t), [o.texto], "lo tocado resta");
+          assert.equal(filas.filter(([op]) => op === "+").length, 3);
+        }
+        if (id === "gasto") assert.equal(c.querySelector("[data-chip]").textContent, `Pasa a gasto: ${{ marzo: "Marzo · con la venta", "al-comprar": "Al comprar", nunca: "Nunca" }[o.id]}`);
         franja();
-        await tocar(boton("probar-otra"));
-        assert.equal(c.querySelector("[data-mensaje]"), null);
-      }
-      assert.equal(n, 2, `${x.id}: dos malas`);
-      await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`));
-      await tocar(boton("confirmar"));
-      const msj = c.querySelector("[data-mensaje]");
-      assert.equal(msj.dataset.mensaje, "acierto");
-      assert.equal(w.document.activeElement, msj);
-      assert.deepEqual(pies(), pieDe(p.acierto.pie), `${x.id}: el pie del acierto`);
-      franja();
-      /* El acierto, entero, y su «¿Por qué?» plegado detrás del botón, que se abre al tocarlo. */
-      const ps = [...msj.querySelectorAll("[data-texto]")];
-      assert.equal(ps.length, 1);
-      assert.equal(ps[0].textContent, `${x.acierto.texto} ${x.porque}`);
-      const plegado = ps[0].querySelector("[data-plegado]");
-      assert.equal(plegado.textContent, ` ${x.porque}`);
-      assert.equal(plegado.hidden, true, `${x.id}: el ¿Por qué? va plegado`);
-      const por = ps[0].querySelector("[data-por-que]");
-      assert.equal(por.getAttribute("aria-expanded"), "false");
-      await tocar(por);
-      assert.equal(ps[0].querySelector("[data-plegado]").hidden, false);
-      /* La figura del acierto, la que trae el paquete. */
-      if (x.id === "como-se-mide") {
-        const f = c.querySelector("figure[data-renglones='Se mide por el menor']");
-        assert.ok(f, "sin la figura del menor");
-        const filas = [...f.querySelectorAll("[data-renglon]")];
-        assert.ok(enOrden("Costo $580.000", filas[0].textContent));
-        assert.ok(enOrden("Valor neto realizable $550.000", filas[1].textContent.replace("El menor", "")));
-        assert.equal(filas[1].querySelector(".rg-etq").textContent, "El menor");
-        assert.ok(filas[1].classList.contains("rg-fuerte"));
-        /* Los renglones del ejemplo siguen ahí: la figura crece. */
-        assert.equal(c.querySelectorAll("figure[data-renglones]").length, 2);
-      } else if (x.id === "el-costo") {
-        const cols = [...c.querySelectorAll("[data-columnas] [data-columna]")];
-        assert.deepEqual(cols.map((y) => [y.querySelector(".t73p-col-t").textContent, y.querySelector(".t73p-col-x").textContent]), [["Se suma", "precio, transporte, aranceles, impuestos que no se recuperan y otros costos de adquirirla"], ["Se resta", "descuentos comerciales y rebajas"]]);
-        assert.ok(enOrden(x.acierto.figura.replace(/:/g, ""), textoDeFiguras(c)));
-      } else assert.equal(figAcierto(), null);
-      await tocar(boton("seguir"));
-    }
-    assert.deepEqual(visitadas, P.pantallas.map((p) => p.id));
+      },
+      async alVeredicto(id, o, H) {
+        franja();
+        assert.ok(H.figura().querySelector(".t73c4-mal"), `${id} · ${o.id}: sin la marca coral`);
+        assert.equal(figAcierto(), null, `${id}: la figura del acierto, con el error`);
+      },
+      async alAcertar(id) {
+        franja();
+        /* La figura del acierto, la que trae el paquete. */
+        if (id === "como-se-mide") {
+          const f = c.querySelector("figure[data-renglones='Se mide por el menor']");
+          assert.ok(f, "sin la figura del menor");
+          const filas = [...f.querySelectorAll("[data-renglon]")];
+          assert.ok(enOrden("Costo $580.000", filas[0].textContent));
+          assert.ok(enOrden("Valor neto realizable $550.000", filas[1].textContent.replace("El menor", "")));
+          assert.equal(filas[1].querySelector(".rg-etq").textContent, "El menor");
+          assert.ok(filas[1].classList.contains("rg-fuerte"));
+          /* Los renglones del ejemplo siguen ahí: la figura crece. */
+          assert.equal(c.querySelectorAll("figure[data-renglones]").length, 2);
+        } else if (id === "el-costo") {
+          const cols = [...c.querySelectorAll("[data-columnas] [data-columna]")];
+          assert.deepEqual(cols.map((y) => [y.querySelector(".t73p-col-t").textContent, y.querySelector(".t73p-col-x").textContent]), [["Se suma", "precio, transporte, aranceles, impuestos que no se recuperan y otros costos de adquirirla"], ["Se resta", "descuentos comerciales y rebajas"]]);
+          assert.ok(enOrden(s(id).acierto.figura.replace(/:/g, ""), textoDeFiguras(c)));
+        } else assert.equal(figAcierto(), null);
+      },
+    });
   } finally {
     m.desmontar();
   }
-});
+}));
 
-test("★★★ figuras: el ejemplo en renglones sin título, con la marca en el pie; las fichas del resumen", async () => {
+test("★★★ figuras: el ejemplo en renglones sin título, con la marca en el pie; las fichas del resumen", conReloj(async () => {
   const m = await montar();
   const c = m.caja;
+  const tocar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
   try {
     const ir = async (id) => {
-      for (let i = 0; i < 20 && c.querySelector("[data-pantalla]").dataset.pantalla !== id; i++) {
-        const p = pantalla(c.querySelector("[data-pantalla]").dataset.pantalla);
+      for (let i = 0; i < 20; i++) {
+        const aqui = c.querySelector("[data-item]")?.dataset.item ?? c.querySelector("[data-pantalla]").dataset.pantalla;
+        if (aqui === id) return;
+        const p = pantalla(aqui);
         if (p.opciones) {
-          await tocar(c.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`));
-          await tocar(c.querySelector('[data-boton="confirmar"]'));
-        }
-        await tocar(c.querySelector('[data-boton="seguir"], [data-boton="empezar"]'));
+          await tocar(c.querySelector(`[data-op="${p.opciones.find((o) => o.correcta).id}"]`));
+          await act(async () => { mock.timers.tick(380); });
+          await tocar(c.querySelector(".c4-seguir"));
+        } else await tocar(c.querySelector('[data-boton="seguir"], [data-boton="empezar"]'));
       }
+      assert.fail(`no se llegó a ${id}: ${c.querySelector("[data-item]")?.dataset.item} ${c.querySelector("[data-pantalla]")?.dataset.pantalla} ${c.querySelector(".c4-seguir")?.getAttribute("aria-disabled")} ${c.querySelector("[data-mensaje]")?.textContent}`);
     };
     await ir("como-se-mide");
     const f = c.querySelector("figure[data-renglones]");
@@ -366,7 +342,7 @@ test("★★★ figuras: el ejemplo en renglones sin título, con la marca en el
   } finally {
     m.desmontar();
   }
-});
+}));
 
 /* ═══════════ 3 · CATÁLOGO, VISTA Y LOS HACER QUE DEPENDEN DE ELLA ═══════════ */
 
@@ -383,7 +359,10 @@ test("★★★ fuera del catálogo de FP; en T7-3 después de A6 (con H5 en med
   assert.equal(aprender.indexOf(A.A7_ID), aprender.indexOf("t7-3-provision-inventarios") + 1);
   assert.equal(aprender.at(-1), A.A7_ID);
   assert.equal(PIEZAS_T7_3.at(-1).pieza, P);
-  assert.equal(PIEZAS_T7_3.find((x) => x.pieza.id === A.A7_ID).Pieza, PantallasT7_3);
+  assert.equal(PIEZAS_T7_3.find((x) => x.pieza.id === A.A7_ID).Pieza, AprenderT7_3C4);
+  /* Las tres pantallas que vinieron de A8 van como ítem «propio» del motor C4 (sin figura de Watari todavía). */
+  assert.deepEqual(PROPIOS_A7, ["formulas", "la-que-falta", "sistemas"]);
+  assert.deepEqual(C4.items.filter((i) => i.tipo === "propio").map((i) => i.id), PROPIOS_A7);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A7_ID)), []);
   assert.doesNotMatch(leer("src/data/contabilidadT7_3_a7.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);

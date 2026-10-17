@@ -4,7 +4,12 @@ import {
 import { evaluarParte } from "../../../../contabilidad/cierreConMesa.js";
 import CierreConMesa from "../b5/CierreConMesa.jsx";
 import { MesaConDiario } from "../b5/LibroDiario.jsx";
-import CuentaQueSeLlena, { BloqueEstado } from "./CuentaQueSeLlena.jsx";
+import CuentaQueSeLlena, { BloqueEstado, crearCuenta } from "./CuentaQueSeLlena.jsx";
+import { useVuelta } from "../b5/ConVuelta.jsx";
+import {
+  PASOS_V2_T6_ACT2, PROVISION_V2_T6_ACT2, T6_ACT2_V2, ALT_V2_T6_ACT2, BARRA_V2_T6_ACT2, MOMENTOS_V2_T6_ACT2, ESCENA_V2_T6_ACT2,
+} from "../../../../data/b5SegundaVuelta.js";
+import { TanqueCifra } from "./CifraQueMueve.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -44,14 +49,31 @@ export const CONFIG_T6_ACT2 = {
   textos: PASOS_TEXTOS_T6_ACT2,
   visual: CuentaDeA2,
   bloques: { estado: BloqueEstado },
+  /* Lote 17: en las preguntas 2 y 3, el tanque a la izquierda de la pregunta, el campo y «Comprobar». */
+  lados: { tanque: TanqueCifra },
   atributos: { "data-cierre-t6-a2": true },
 };
 
-export function MesaProvision(props) {
-  return <CierreConMesa config={CONFIG_T6_ACT2} {...props} />;
+/* D8 (lote 18, Futaba): la variante, Distribuidora La Ceiba y Hernán Ríos, con su T y su bloque del estado. */
+const CUENTA_V2 = crearCuenta({ momentos: MOMENTOS_V2_T6_ACT2, escena: ESCENA_V2_T6_ACT2, barra: BARRA_V2_T6_ACT2 });
+function CuentaDeA2V2(props) {
+  return <CUENTA_V2.CuentaQueSeLlena {...props} cierre={T6_ACT2.cierre} />;
+}
+export const CONFIG_V2_T6_ACT2 = {
+  ...CONFIG_T6_ACT2, actividad: T6_ACT2_V2, ejemplo: PROVISION_V2_T6_ACT2, partes: PASOS_V2_T6_ACT2, alt: ALT_V2_T6_ACT2,
+  visual: CuentaDeA2V2, bloques: { estado: CUENTA_V2.BloqueEstado },
+};
+
+/* La configuración llega como prop: al cambiar de vuelta, la mesa no se desmonta (su resumen sigue a la vista). */
+export function MesaProvision({ config = CONFIG_T6_ACT2, ...props }) {
+  return <CierreConMesa config={config} {...props} />;
 }
 
 export default function ProvisionDeElTorito(props) {
+  const { variante, alCompletar } = useVuelta(T6_ACT2.id, props.onCompletar);
   if (props.modoDemo) return <MesaProvision {...props} />;
-  return <MesaConDiario Juego={MesaProvision} inicial={PROVISION_2007_T6_ACT2} textos={DIARIO_T6_ACT2} quieto {...props} />;
+  return (
+    <MesaConDiario {...props} Juego={MesaProvision} config={variante ? CONFIG_V2_T6_ACT2 : CONFIG_T6_ACT2}
+      inicial={variante ? PROVISION_V2_T6_ACT2 : PROVISION_2007_T6_ACT2} textos={DIARIO_T6_ACT2} quieto onCompletar={alCompletar} />
+  );
 }
