@@ -84,7 +84,7 @@ export function marcasDe(cajones, tocados, correcta, fin) {
   }));
 }
 
-function Cajon({ cajon, laminas = [], marca, puede, onTocar, refDe }) {
+function Cajon({ cajon, laminas = [], marca, puede, onTocar, refDe, extra = null }) {
   const cuantas = laminas.length;
   return (
     <button ref={refDe(cajon.clave)} type="button" data-cajon={cajon.clave} data-cuantas={cuantas} data-marca={marca ?? ""}
@@ -100,6 +100,8 @@ function Cajon({ cajon, laminas = [], marca, puede, onTocar, refDe }) {
           {cajon.rotulo}
         </span>
         <Pastilla marca={marca} envuelve />
+        {/* C4 (prop opcional `c4`): lo que el cajón tocado muestra. Sin `c4`, nada. */}
+        {extra}
       </span>
       <span aria-hidden="true" style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
         {/* La pila: crece hacia arriba; caben cuatro a la vista. */}
@@ -119,6 +121,14 @@ function Cajon({ cajon, laminas = [], marca, puede, onTocar, refDe }) {
 
 export default function FichasUnNivel({
   config, Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+  /*
+   * C4 · «toda decisión se pinta» (Célula C, opcional; sin ella, todo como siempre):
+   * { consecuencia(ficha, clave) → estado, Cajon({ estado, cajon, anim }), Nota({ estado, vista }), espera, css }.
+   * Al tocar un cajón, su consecuencia se pinta en el acto (el cajón muestra `Cajon`); la evaluación de
+   * siempre (vuelo, marcas, pastilla, mensaje, puntaje y `detalle`) llega `espera` ms después, al
+   * instante con movimiento reducido. `Nota` (lo que implica el cajón) va bajo el estante con el veredicto.
+   */
+  c4 = null,
 }) {
   const t = useTanda(() => items ?? config.sortear(barajar));
   const [r, setR] = useState(null);
@@ -143,6 +153,10 @@ export default function FichasUnNivel({
   const cajones = useRef({});
   const refDe = (clave) => (el) => { cajones.current[clave] = el; };
   const reducido = useReducido();
+  const [pintadas, setPintadas] = useState({});
+  const [ultimaC4, setUltimaC4] = useState(null);
+  const [espera, setEspera] = useState(null);
+  const relojC4 = useRef(null);
 
   const c = t.items[t.i];
   const cuantas = t.items.length;
@@ -158,12 +172,24 @@ export default function FichasUnNivel({
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => () => clearTimeout(reloj.current), []);
+  useEffect(() => () => { clearTimeout(reloj.current); clearTimeout(relojC4.current); }, []);
   useEffect(() => {
     if (fin && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
   }, [fin]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  /* C4: la consecuencia primero; la evaluación de siempre (tocarYa), `c4.espera` después. Sin `c4`, tocarYa. */
   const tocar = (cajon) => {
+    if (!c4) { tocarYa(cajon); return; }
+    if (fin || tocados.includes(cajon.clave) || espera != null) return;
+    setPintadas((x) => ({ ...x, [cajon.clave]: c4.consecuencia(c, cajon.clave) }));
+    setUltimaC4(cajon.clave);
+    if (reducido) { tocarYa(cajon); return; }
+    setEspera(cajon.clave);
+    clearTimeout(relojC4.current);
+    relojC4.current = setTimeout(() => { setEspera(null); tocarYa(cajon); }, c4.espera);
+  };
+
+  const tocarYa = (cajon) => {
     if (fin || tocados.includes(cajon.clave)) return;
     const intento = tocados.length + 1;
     const nuevo = config.evaluar(c, cajon.marcado, intento);
@@ -238,12 +264,14 @@ export default function FichasUnNivel({
 
   const avanzar = () => {
     setR(null); setTocados([]); setRebotando(false); setEtapa(1); setElegidas([]);
+    if (c4) { setPintadas({}); setUltimaC4(null); }
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
   const reiniciar = () => {
     t.reiniciar(); setR(null); setTocados([]); setRespuestas([]); setCuentas({}); setAnuncio(""); setRebotando(false);
     setEtapa(1); setElegidas([]); setHistorial([]);
+    if (c4) { clearTimeout(relojC4.current); setPintadas({}); setUltimaC4(null); setEspera(null); }
   };
 
   if (t.terminado) {
@@ -267,7 +295,7 @@ export default function FichasUnNivel({
   const marcas = marcasDe(config.cajones, tocados, correcta, fin || (modo === "despues" && etapa === 2));
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS + CSS_B5H}</style>
+      <style>{CSS + CSS_B5H + (c4?.css ?? "")}</style>
       <div className={CLASE_B5H}>
       {!modoDemo && (
         <>
@@ -290,13 +318,15 @@ export default function FichasUnNivel({
       <div data-estante role="group" aria-label={config.grupo} style={{ display: "grid", gridTemplateColumns: `repeat(${config.cajones.length}, minmax(0, 1fr))`, columnGap: "6px" }}>
         {config.cajones.map((k) => (
           <Cajon key={k.clave} cajon={k} laminas={cuentas[k.clave]} marca={modo === "antes" ? null : marcas[k.clave]}
-            puede={!fin && !enDos && !tocados.includes(k.clave)} onTocar={tocar} refDe={refDe} />
+            puede={!fin && !enDos && !tocados.includes(k.clave) && espera == null} onTocar={tocar} refDe={refDe}
+            extra={c4 && pintadas[k.clave] ? <c4.Cajon estado={pintadas[k.clave]} cajon={k} anim={!reducido} /> : null} />
         ))}
       </div>
       {segunda && (enDos || segunda.persistente) && (
         <segunda.Vista ficha={c} activa={enDos && !fin2} elegidas={enDos ? elegidas : []} correcta={enDos ? segunda.correcta(c) : null}
           fin={enDos && fin2} onElegir={elegir} historial={historial} numero={t.i + 1} reducido={reducido} />
       )}
+      {c4 && ultimaC4 && !enDos && <c4.Nota estado={pintadas[ultimaC4]} vista={{ veredicto: espera == null && r != null, cerrado: fin }} />}
       <p data-anuncio-estante aria-live="polite" style={SOLO_LECTOR}>{anuncio}</p>
 
       {r && !fin && !enDos && (

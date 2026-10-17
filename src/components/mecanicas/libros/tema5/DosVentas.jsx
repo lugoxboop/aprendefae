@@ -22,6 +22,7 @@ const CAJAS = VENTAS_T5_A2.map((v) => ({
 }));
 const NOMBRE = { ...LECTURA, fontFamily: "Sora, sans-serif", fontWeight: 600, lineHeight: 1.35 };
 
-export default function DosVentas() {
-  return <CajasQueRevelan consigna={CONSIGNA_CAPA_3_T5_A2} cajas={CAJAS} final={FINAL_CAPA_3_T5_A2} estiloTitulo={NOMBRE} forma="fila" atributos={{ "data-capa3-t5-a2": true }} Figura={FiguraT5A2} />;
+/* `c4` (opcional, Célula C: tema5/capa3C4T5.jsx): el patrón C4 de la capa 3. Sin él, como siempre. */
+export default function DosVentas({ c4 = null }) {
+  return <CajasQueRevelan consigna={CONSIGNA_CAPA_3_T5_A2} cajas={CAJAS} final={FINAL_CAPA_3_T5_A2} estiloTitulo={NOMBRE} forma="fila" atributos={{ "data-capa3-t5-a2": true }} Figura={FiguraT5A2} c4={c4} />;
 }

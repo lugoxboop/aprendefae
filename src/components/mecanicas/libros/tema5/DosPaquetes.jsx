@@ -22,9 +22,10 @@ const CAJAS = PAQUETES.map((p) => ({
 }));
 const NOMBRE = { ...LECTURA, fontFamily: "Sora, sans-serif", fontWeight: 600, lineHeight: 1.35 };
 
-export default function DosPaquetes() {
+/* `c4` (opcional, Célula C: tema5/capa3C4T5.jsx): el patrón C4 de la capa 3. Sin él, como siempre. */
+export default function DosPaquetes({ c4 = null }) {
   return (
     <CajasQueRevelan consigna={CONSIGNA_CAPA_3} contexto={CONTEXTO_CAPA_3} cajas={CAJAS} final={{ texto: FINAL_CAPA_3, pie: PIE_FINAL_CAPA_3 }}
-      estiloTitulo={NOMBRE} forma="columna" atributos={{ "data-capa3-t5": true }} Figura={FiguraT5A1} />
+      estiloTitulo={NOMBRE} forma="columna" atributos={{ "data-capa3-t5": true }} Figura={FiguraT5A1} c4={c4} />
   );
 }

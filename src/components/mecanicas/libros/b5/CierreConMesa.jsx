@@ -398,8 +398,19 @@ function Pregunta({ parte, texto, onTexto, resultado, Bloque, reducido, etiqueta
 export default function CierreConMesa({
   config, Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
   encima = null, onParteComprobada = null, onReiniciar = null, onAvanzar = null,
+  /*
+   * D8 (Célula C, opcional; sin ella, el estante va en el orden de `config.estante`, como siempre):
+   * `mezclar(cuentas)` → las mismas cuentas en otro orden. Se baraja una vez al montar y otra con
+   * «Otra vez»: el orden no cambia dentro de una partida y cambia en la siguiente.
+   */
+  mezclar = null,
 }) {
   const t = useTanda(() => items ?? config.partes);
+  const [barajado, setBarajado] = useState(() => (mezclar ? { base: config.estante, orden: mezclar(config.estante) } : null));
+  /* Si la partida cambia de estante (otra vuelta con otras cuentas), se baraja ese. */
+  const ordenEstante = !mezclar ? config.estante
+    : barajado?.base === config.estante ? barajado.orden : mezclar(config.estante);
+  if (mezclar && barajado?.base !== config.estante) setBarajado({ base: config.estante, orden: ordenEstante });
   const reducido = useReducido();
   const textos = config.textos ?? {};
   /* El ejemplo resuelto, su propio paso antes del primero (lote 6c): solo en la partida entera, no en «Así se juega» ni con `items`. */
@@ -431,7 +442,10 @@ export default function CierreConMesa({
     const bien = todos.filter((x) => x.ok).length;
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-        <Cierre pct={Math.round(pct)} onReiniciar={() => { t.reiniciar(); setS(vacio()); setTodos([]); onReiniciar?.(); }} textoReiniciar="Otra vez">
+        <Cierre pct={Math.round(pct)} onReiniciar={() => {
+          t.reiniciar(); setS(vacio()); setTodos([]); onReiniciar?.();
+          if (mezclar) setBarajado({ base: config.estante, orden: mezclar(config.estante) });
+        }} textoReiniciar="Otra vez">
           <p data-resumen-cierre style={TEXTO_CIERRE}>{config.resumen(bien, cuantas)}</p>
         </Cierre>
         {encima}
@@ -481,7 +495,7 @@ export default function CierreConMesa({
   const Visual = config.visual ?? null;
   /* Lote 17 (a2): lo que va a la izquierda de una pregunta (el tanque), con la cifra que se escribe. */
   const Lado = esPregunta ? config.lados?.[parte.lado] ?? null : null;
-  const enEstante = config.estante.filter((c) => !s.mesa.some((m) => m.cuenta === c));
+  const enEstante = ordenEstante.filter((c) => !s.mesa.some((m) => m.cuenta === c));
   const sacar = (cuenta, lado) => setS((x) => (x.mesa.some((m) => m.cuenta === cuenta) ? x : { ...x, mesa: [...x.mesa, { cuenta, lado, texto: "" }] }));
   const cifra = (cuenta, texto) => setS((x) => ({ ...x, mesa: x.mesa.map((m) => (m.cuenta === cuenta ? { ...m, texto } : m)) }));
   const devolver = (cuenta) => setS((x) => ({ ...x, mesa: x.mesa.filter((m) => m.cuenta !== cuenta) }));

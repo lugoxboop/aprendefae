@@ -20,7 +20,10 @@ import { PIEZA_DEL_EFECTIVO } from "../data/contabilidadT5Pieza1.js";
 import { PIEZA_TRES_MOMENTOS } from "../data/contabilidadT5Pieza2.js";
 import { conFigurasCapa1 } from "./mecanicas/libros/tema6/FigurasCapa1.jsx";
 import { ESCENAS_TEMA5 } from "./mecanicas/libros/tema5/escenasTema5.jsx";
-import QueRentaDa from "./mecanicas/libros/tema5/QueRentaDa.jsx";
+/* C4 (Célula C, «toda decisión se pinta»): Act1 con la prop opcional `c4` de FichasUnNivel. */
+import QueRentaDaC4 from "./mecanicas/libros/tema5/QueRentaDaC4.jsx";
+/* C4 (Célula C): la capa 3 de P1 y P2 con la prop opcional `c4` de CajasQueRevelan. */
+import { EXPLORACION_C4_T5 } from "./mecanicas/libros/tema5/capa3C4T5.jsx";
 import { T5_ACT1 } from "../data/contabilidadT5Act1.js";
 import CierreConDiario from "./mecanicas/libros/tema5/LibroDiario.jsx";
 import { T5_ACT2 } from "../data/contabilidadT5Act2.js";
@@ -70,7 +73,7 @@ const PUBLICADAS = PIEZAS.length;
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS = [
-  { id: T5_ACT1.id, Mecanica: QueRentaDa, titulo: T5_ACT1.nombre },
+  { id: T5_ACT1.id, Mecanica: QueRentaDaC4, titulo: T5_ACT1.nombre },
   { id: T5_ACT2.id, Mecanica: CierreConDiario, titulo: T5_ACT2.nombre },
   { id: N1.id, Mecanica: TemporalOLargoPlazo, titulo: N1.nombre },
   { id: N3.id, Mecanica: RevisionQueFalta, titulo: N3.nombre },
@@ -163,7 +166,7 @@ export default function ContabilidadTema5View({ modo = null, nodoInicial = null,
                     <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
                       PIEZA {k + 1} DE {PUBLICADAS}
                     </p>
-                    <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} FiguraFinal={FiguraFinal} rotulo={rotulo} />
+                    <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={EXPLORACION_C4_T5[pieza.id] ?? Exploracion} Capa4={Capa4} FiguraFinal={FiguraFinal} rotulo={rotulo} />
                   </div>
                 );
               })}

@@ -61,7 +61,8 @@ const montar = async ({ Juego = CierreConDiario, items = undefined, onCompletar 
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
   await act(async () => {
-    raiz.render(h(Juego, { Marco: MarcoLibros, rotulo: "PRUEBA", titulo: "Prueba", acento: FAE.ambar, onCompletar, items, modoDemo }));
+    /* D8: la partida real baraja el estante; aquí, en el orden de los datos, para mirarlo (que varíe: t5-act2-d8.test.mjs). */
+    raiz.render(h(Juego, { Marco: MarcoLibros, rotulo: "PRUEBA", titulo: "Prueba", acento: FAE.ambar, onCompletar, items, modoDemo, mezclar: (xs) => [...xs] }));
   });
   /* Lote 6c: el ejemplo resuelto es su propio paso; la partida empieza con «Empezar». */
   const empieza = caja.querySelector("[data-boton-empezar] button");
