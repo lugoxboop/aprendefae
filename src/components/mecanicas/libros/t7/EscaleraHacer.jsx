@@ -8,6 +8,8 @@ import { SOLO_LECTOR } from "../verbos.jsx";
 import { CSS_T7_HACER, TarjetaPregunta, TEXTO, INTER } from "./hacerT7.jsx";
 import { Plegable } from "./plegable.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
+import { ESPERA_C4 } from "./decisionC4.jsx";
+import { reducidoAhora } from "./aprenderC3.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -34,8 +36,15 @@ import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
  *   preparar, evaluar(item, v, fallos), puntuar, total, resumen, marca,
  *   etiqueta (la del contador), glosas? ({ valor: glosa }),
  *   Figura? ({ items, i, resueltos }), figuraDebajo? (la figura va debajo
- *   del caso y no encima), Antes? ({ i }, lo que va sobre la tarjeta) }
+ *   del caso y no encima), Antes? ({ i }, lo que va sobre la tarjeta),
+ *   c4? (true: el patrón C4, «toda decisión se pinta») }
  * Al terminar: onCompletar(pct, ms, detalle).
+ *
+ * C4 (T5 N3; sin `config.c4`, todo como antes): al tocar, la opción queda
+ * «tocada» y la Figura recibe `c4 = { eleccion, veredicto, anim }` para
+ * pintar la consecuencia en el acto; el veredicto (el mismo de la escalera)
+ * llega ESPERA_C4 = 380 ms después, o en el mismo toque con movimiento
+ * reducido. Mientras tanto no se puede tocar otra.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -78,7 +87,7 @@ function Marca({ estado }) {
 }
 
 function OpcionEscalera({ texto, glosa, estado, deshabilitada, onClick }) {
-  const borde = { correcta: `2px solid ${CLARO}`, revelada: `2px dashed ${CLARO}`, incorrecta: `1px solid ${FAE.coral}` }[estado] ?? "1px solid rgba(248,249,250,0.14)";
+  const borde = { correcta: `2px solid ${CLARO}`, revelada: `2px dashed ${CLARO}`, incorrecta: `1px solid ${FAE.coral}`, tocada: "2px solid #B8C4D4" }[estado] ?? "1px solid rgba(248,249,250,0.14)";
   return (
     <button type="button" onClick={onClick} disabled={deshabilitada} data-estado={estado ?? "libre"} style={{
       display: "flex", alignItems: "center", gap: "12px", width: "100%", minHeight: "44px", boxSizing: "border-box",
@@ -119,7 +128,7 @@ function Mensaje({ r, panelRef }) {
 /* ═══════════ LA PIEZA ═══════════ */
 
 export default function EscaleraHacer({ config, Marco, rotulo, titulo, acento, onCompletar, items = null, onComoSeJuega = null }) {
-  const { datos, botones, preparar, evaluar, puntuar, total, resumen, marca, etiqueta, glosas = null, Figura = null, figuraDebajo = false, Antes = null } = config;
+  const { datos, botones, preparar, evaluar, puntuar, total, resumen, marca, etiqueta, glosas = null, Figura = null, figuraDebajo = false, Antes = null, c4 = false } = config;
   const t = useTanda(() => items ?? preparar());
   const [fallos, setFallos] = useState(0);
   const [descartadas, setDescartadas] = useState([]);
@@ -127,6 +136,9 @@ export default function EscaleraHacer({ config, Marco, rotulo, titulo, acento, o
   const [r, setR] = useState(null);
   const [bien, setBien] = useState(0);
   const [resueltos, setResueltos] = useState([]);
+  /* C4: la opción tocada, mientras llega el veredicto; `anim`, si el último paso fue un toque. */
+  const [tocada, setTocada] = useState(null);
+  const [anim, setAnim] = useState(false);
   const panel = useRef(null);
   const tarjeta = useRef(null);
 
@@ -140,8 +152,24 @@ export default function EscaleraHacer({ config, Marco, rotulo, titulo, acento, o
   /* El foco va al mensaje cada vez que se responde. */
   useEffect(() => { if (r) panel.current?.focus(); }, [r]);
 
+  /* C4 · el veredicto, ESPERA_C4 después de la consecuencia. */
+  useEffect(() => {
+    if (tocada == null) return undefined;
+    const id = setTimeout(() => { setTocada(null); responder(tocada); }, ESPERA_C4);
+    return () => clearTimeout(id);
+  }, [tocada]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const elegir = (v) => {
-    if (cerrado || descartadas.includes(v)) return;
+    if (cerrado || descartadas.includes(v) || tocada != null) return;
+    if (!c4) { responder(v); return; }
+    const reducido = reducidoAhora();
+    setAnim(!reducido);
+    setElegida(v);
+    if (reducido) responder(v);
+    else setTocada(v);
+  };
+
+  const responder = (v) => {
     const nuevo = evaluar(item, v, fallos);
     /* Solo suma el primer intento: el detalle y el puntaje se anotan con la primera respuesta. */
     if (fallos === 0) {
@@ -154,7 +182,7 @@ export default function EscaleraHacer({ config, Marco, rotulo, titulo, acento, o
     setR(nuevo);
   };
 
-  const limpiar = () => { setFallos(0); setDescartadas([]); setElegida(null); setR(null); };
+  const limpiar = () => { setFallos(0); setDescartadas([]); setElegida(null); setR(null); setTocada(null); setAnim(false); };
 
   const avanzar = () => {
     limpiar();
@@ -176,12 +204,16 @@ export default function EscaleraHacer({ config, Marco, rotulo, titulo, acento, o
   }
 
   const estadoDe = (v) => {
+    if (tocada != null && v === tocada) return "tocada";
     if (descartadas.includes(v)) return "incorrecta";
     if (!cerrado) return null;
     if (r.ok && v === elegida) return "correcta";
     if (!r.ok && v === r.correcta) return "revelada";
     return null;
   };
+
+  /* C4: lo que la figura pinta (la tocada o la última respondida) y si ya llegó el veredicto. */
+  const vistaC4 = c4 ? { eleccion: tocada ?? elegida, veredicto: tocada == null && r != null, anim } : undefined;
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
@@ -193,7 +225,7 @@ export default function EscaleraHacer({ config, Marco, rotulo, titulo, acento, o
             <Pulsos total={cuantos} hechos={t.i + (cerrado ? 1 : 0)} enCurso={t.i + 1} etiqueta={etiqueta} />
           </ContadorPrimerIntento>
         </div>
-        {Figura && !figuraDebajo && <div style={{ marginBottom: "12px" }}><Figura items={t.items} i={t.i} resueltos={resueltos} /></div>}
+        {Figura && !figuraDebajo && <div style={{ marginBottom: "12px" }}><Figura items={t.items} i={t.i} resueltos={resueltos} c4={vistaC4} /></div>}
         {Antes && <Antes i={t.i} />}
         <TarjetaPregunta id={item.id} pregunta={item.pregunta ?? item.texto} pie={item.pie ?? datos.pie ?? null} tarjetaRef={tarjeta} />
         <div role="group" aria-label={item.pregunta ?? item.texto} style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: "8px" }}>
@@ -202,7 +234,7 @@ export default function EscaleraHacer({ config, Marco, rotulo, titulo, acento, o
             return (
               <span key={o.valor} data-opcion={o.valor} style={{ display: "contents" }}>
                 <OpcionEscalera texto={o.texto} glosa={glosas?.[o.valor] ?? null} estado={estado}
-                  deshabilitada={cerrado || estado === "incorrecta"} onClick={() => elegir(o.valor)} />
+                  deshabilitada={cerrado || estado === "incorrecta" || (tocada != null && estado !== "tocada")} onClick={() => elegir(o.valor)} />
               </span>
             );
           })}
@@ -214,7 +246,7 @@ export default function EscaleraHacer({ config, Marco, rotulo, titulo, acento, o
           <Responder onClick={avanzar}>{t.i + 1 === cuantos ? botones.verResumen : botones.siguiente}</Responder>
         </div>
       )}
-      {Figura && figuraDebajo && <div style={{ marginTop: "16px" }}><Figura items={t.items} i={t.i} resueltos={resueltos} /></div>}
+      {Figura && figuraDebajo && <div style={{ marginTop: "16px" }}><Figura items={t.items} i={t.i} resueltos={resueltos} c4={vistaC4} /></div>}
     </Marco>
   );
 }

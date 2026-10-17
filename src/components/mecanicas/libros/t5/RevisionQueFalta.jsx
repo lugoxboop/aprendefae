@@ -14,6 +14,10 @@ import HojaRevisionN3, { EjemploN3 } from "./HojaRevisionN3.jsx";
  * al segundo, la respuesta con su porqué. Solo suma el primer intento.
  * Debajo, la hoja de revisión, que gana una fila con cada caso resuelto.
  *
+ * PATRÓN C4 (D4): al tocar, la revisión entra a la hoja en el renglón de
+ * «Este caso», que queda cubierto o sin cubrir; el veredicto, 380 ms después
+ * (EscaleraHacer con `c4`). La escalera y el puntaje, como en main.
+ *
  * Los textos, en data/contabilidadT5_n3.js; la lógica, en
  * contabilidad/t5N3.js.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -25,6 +29,8 @@ export const CONFIG_N3 = {
   botones: BOTON_N3, preparar: prepararN3, evaluar: evaluarN3,
   puntuar: puntuarN3, total: TOTAL_N3, resumen: resumenN3, marca: "t5-n3", etiqueta: "Pregunta",
   glosas: GLOSAS_N3, Figura: HojaRevisionN3, Antes: EjemploN3, figuraDebajo: true,
+  /* Patrón C4 (contabilidad/c4/t5N3_c4.js): la revisión tocada entra a la hoja antes del veredicto. */
+  c4: true,
 };
 
 export default function RevisionQueFalta(props) {
