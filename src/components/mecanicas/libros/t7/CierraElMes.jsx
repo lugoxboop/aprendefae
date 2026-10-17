@@ -17,6 +17,9 @@ import { ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 import FiguraAcumulada from "./FiguraAcumulada.jsx";
 import { FIGURA_T7_1_H4 } from "../../../../contabilidad/figuraAcumulada.js";
+import { CONSECUENCIA_C4 as C4 } from "../../../../contabilidad/c4/t71h4_c4.js";
+import { CSS_T71C4, CSS_T71_FUERA, FiguraCascada, LineaC4T71 } from "./c4T71.jsx";
+import { useVeredictoC4 } from "./FigurasC4T7_2.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -66,6 +69,22 @@ const CASILLA_BTN = (estado) => {
   };
 };
 
+/*
+ * C4 · «TODA DECISIÓN SE PINTA» (Watari, sección t71-h4; precedente de #424:
+ * la pieza no monta el motor). La tabla de main se queda. Poner una ficha no
+ * califica (como escribir una cifra, C4-1 de Mello). Al «Confirmar», cada
+ * casilla pinta su consecuencia en el acto (la línea bajo la casilla y, por
+ * método, el estado de resultados en cascada desde su inventario final), y el
+ * veredicto —«Iba aquí», las devoluciones de Near y el cierre de la parte 1—
+ * llega ESPERA_C4 después. La parte 2 (el cierre) sigue como en main.
+ *
+ * LA CONSIGNA («Toca una cifra y después la casilla donde va. Sobran tres
+ * cifras.») queda como está: PENDIENTE_DE_REVISION de Near, que la reescribe
+ * para el C4.
+ */
+export const PIEZA_C4 = { ...C4, Figura: ({ estado, item }) => <FiguraCascada estado={estado ?? C4.consecuencia(item, null)} /> };
+const itemC4 = (id) => C4.items.find((x) => x.id === id);
+
 export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar, banco = null, onComoSeJuega = null }) {
   const t = useTanda(() => banco ?? bancoH4(barajar));
   const [colocadas, setColocadas] = useState({});
@@ -74,6 +93,9 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
   const [parte, setParte] = useState(1);
   const [cierreHecho, setCierreHecho] = useState(false);
   const [bien, setBien] = useState(0);
+  /* C4: lo que quedó en la tabla al confirmar (la consecuencia) y el reloj del veredicto. */
+  const [puestas, setPuestas] = useState(null);
+  const veredicto = useVeredictoC4();
   const zonaBoton = useRef(null);
 
   useEffect(() => {
@@ -84,7 +106,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
   const llenas = CASILLAS_H4.every((c) => colocadas[c.id] !== undefined);
 
   const tocarCasilla = (id) => {
-    if (revision) return;
+    if (revision || puestas) return;
     if (seleccion !== null) {
       setColocadas((c) => ({ ...c, [id]: seleccion }));
       setSeleccion(null);
@@ -94,7 +116,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
   };
 
   const confirmar = () => {
-    if (revision || !llenas) return;
+    if (revision || puestas || !llenas) return;
     const r = {};
     let n = 0;
     for (const c of CASILLAS_H4) {
@@ -103,8 +125,12 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
       if (r[c.id].ok) n += 1;
     }
     setBien((b) => b + n);
-    setRevision(r);
-    requestAnimationFrame(() => zonaBoton.current?.querySelector("button")?.focus());
+    /* C4: la consecuencia de las doce, en el acto; el veredicto, ESPERA_C4 después. */
+    setPuestas({ ...colocadas });
+    veredicto.programar(() => {
+      setRevision(r);
+      requestAnimationFrame(() => zonaBoton.current?.querySelector("button")?.focus());
+    });
   };
 
   const comprobarCierre = (resultados) => {
@@ -115,6 +141,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
   };
 
   const reiniciar = () => {
+    veredicto.cancelar(); setPuestas(null);
     t.reiniciar(); setColocadas({}); setSeleccion(null); setRevision(null); setParte(1); setCierreHecho(false); setBien(0);
   };
 
@@ -132,7 +159,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T7_HACER + CSS}</style>
+      <style>{CSS_T7_HACER + CSS + CSS_T71C4 + CSS_T71_FUERA}</style>
       <div data-h4>
         <EncabezadoHacer objetivo={H4.objetivo} consigna={sinUnSoloIntento(H4.consigna.join(" "))} onComoSeJuega={onComoSeJuega} />
         <p data-entrada style={{ ...TEXTO, fontSize: "14px", lineHeight: "21px", margin: "0 0 8px" }}>{H4.entrada}</p>
@@ -152,7 +179,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
               fontFamily: INTER, fontSize: "13.5px", lineHeight: "20px", color: FAE.text,
             }}>{H4.recordatorio}</p>
 
-            {!revision && (
+            {!puestas && (
               <div data-banco style={{ margin: "0 0 14px" }}>
                 <p style={{ margin: "0 0 7px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: APAGADO }}>CIFRAS</p>
                 <div className="t7h4-banco" role="group" aria-label="Cifras para poner en la tabla">
@@ -176,10 +203,11 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
                     const v = colocadas[id];
                     const estado = r ? (r.ok ? "ok" : "mal") : v !== undefined ? "llena" : null;
                     return (
-                      <div key={f.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px", padding: "4px 0" }}>
+                      <div key={f.id}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px", padding: "4px 0" }}>
                         <span style={{ fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: APAGADO, minWidth: 0 }}>{f.nombre}</span>
                         <span style={{ display: "grid", justifyItems: "end", flexShrink: 0 }}>
-                          <button type="button" data-casilla={id} data-estado={estado ?? "vacia"} disabled={Boolean(revision)}
+                          <button type="button" data-casilla={id} data-estado={estado ?? "vacia"} disabled={Boolean(revision || puestas)}
                             aria-label={`${m.nombre}, ${f.nombre}: ${v !== undefined ? pesos(v) : "vacía"}`}
                             onClick={() => tocarCasilla(id)} style={CASILLA_BTN(estado)}>
                             {v !== undefined ? pesos(v) : "—"}
@@ -187,8 +215,15 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
                           {r && !r.ok && <span data-era style={{ fontFamily: INTER, fontSize: "12px", color: FAE.text, marginTop: "2px" }}>{`Iba aquí: ${pesos(r.correcta)}`}</span>}
                         </span>
                       </div>
+                      {/* C4: la consecuencia de la ficha puesta, en el acto del «Confirmar» (antes del veredicto). */}
+                      {puestas && <div data-c4-casilla={id} className="t71-fuera" style={{ margin: "2px 0 6px" }}><LineaC4T71 estado={C4.consecuencia(itemC4(id), puestas[id])} /></div>}
+                      </div>
                     );
                   })}
+                  {puestas && (() => {
+                    const e = C4.consecuencia(itemC4(`${m.id}:final`), puestas[`${m.id}:final`]);
+                    return <FiguraCascada estado={{ ...e, falla: null, cuadra: null, mal: Boolean(e.falla) }} />;
+                  })()}
                   {revision && (
                     <div data-antes-impuestos style={{ display: "flex", justifyContent: "space-between", gap: "8px", padding: "6px 0 0", marginTop: "4px", borderTop: "1px solid rgba(248,249,250,0.14)" }}>
                       <span style={{ fontFamily: INTER, fontSize: "13px", color: FAE.text }}>{UTILIDAD_ANTES_H4.nombre}</span>
@@ -199,7 +234,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
               ))}
             </div>
 
-            {!revision && <Responder onClick={confirmar} deshabilitado={!llenas}>{BOTON_H4.confirmar}</Responder>}
+            {!puestas && <Responder onClick={confirmar} deshabilitado={!llenas}>{BOTON_H4.confirmar}</Responder>}
 
             {revision && (
               <div className="fae-t7h-entra" style={{ marginTop: "12px", display: "grid", gap: "10px" }}>
