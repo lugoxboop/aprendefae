@@ -150,12 +150,20 @@ export default function TresInformes({
               style={{
                 display: "flex", alignItems: "center", justifyContent: "center",
                 width: "100%", height: `${100 / FLECHAS_P4.length}%`,
-                background: "transparent", border: "none", padding: 0,
+                background: "transparent", padding: 0,
                 cursor: boton ? "pointer" : "default",
-                color: activa ? NEUTRO : "rgba(184,196,212,0.35)",
+                /*
+                 * Lo inactivo se marca con FORMA, no con transparencia
+                 * (kit.md, 16 oct.). Antes llevaba el mismo 0,35 dos veces
+                 * —en el color y en opacity— y se multiplicaban: 2,32:1.
+                 * Ahora el apagado es un sólido y el encendido trae además
+                 * su contorno en cápsula, que sobrevive al blanco y negro.
+                 */
+                color: activa ? "#F8F9FA" : "#7A8798",
+                border: activa ? "2px solid #F8F9FA" : "2px solid transparent",
+                borderRadius: "999px",
                 fontFamily: SORA, fontSize: "15px", fontWeight: 700,
-                transition: reducido ? "none" : "color 260ms ease, opacity 260ms ease",
-                opacity: activa || activas.length === 0 ? 1 : 0.35,
+                transition: reducido ? "none" : "color 260ms ease, border-color 260ms ease",
               }}
             >
               <span aria-hidden="true">↑</span>
