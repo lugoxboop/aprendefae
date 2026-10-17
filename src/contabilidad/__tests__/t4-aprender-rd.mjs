@@ -27,7 +27,7 @@ const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { PantallasT4, PIEZAS_T4, TEMA_T4 } = await import("../../components/ContabilidadT4View.jsx");
 const { inflesz } = await import("../../herramientas/inflesz.js");
 const { leer, PAQUETES, RAIZ } = await import("./t4-paquete.mjs");
-const { pantallasDe, seccionDe, renglones, textoDe } = await import("./t4-rediseno-canon.mjs");
+const { pantallasDe, seccionDe, renglones, textoDe, fusionB } = await import("./t4-rediseno-canon.mjs");
 
 export const PLANES = JSON.parse(readFileSync(new URL("../../../scripts/t4/sonda-enganche/enganche_planes.json", import.meta.url), "utf8"));
 export { leer, PAQUETES, RAIZ, pantallasDe, seccionDe, renglones, textoDe, inflesz };
@@ -157,6 +157,34 @@ export function pruebasComunes({ P, canon, datos, piezas, noNombra = {}, antesDe
       assert.deepEqual(porLugar(p), c.textos.map((x) => [lugarCanon(x.lugar), x.texto]));
     });
   }
+
+  /* D8 · el caso B: lo del caso 1 con lo que cambia la sección del caso B; la misma decisión y las mismas preguntas. */
+  const SECCION_B = "Caso B (D8), pantalla por pantalla";
+  const CANON_PB = pantallasDe(PAQ, SECCION_B);
+  test(`★★★ ${nombre} · D8: el caso B, texto por texto, es el del paquete (lo del caso 1 con lo que cambia el B), con la misma decisión y las mismas preguntas`, () => {
+    const B = P.casoB;
+    assert.ok(B, "sin caso B");
+    assert.ok(CANON_PB.length, `el paquete no tiene la sección «${SECCION_B}»`);
+    for (const c of CANON_PB) assert.ok(P.pantallas.some((x) => x.id === c.id), `${c.id}: no es una pantalla`);
+    for (const [i, c] of fusionB(CANON_P, CANON_PB).entries()) {
+      const p = B.pantallas[i];
+      const a = P.pantallas[i];
+      assert.equal(p.id, c.id);
+      assert.deepEqual(c.extra, [], `${c.id}: un lugar del caso B que el caso 1 no tiene`);
+      assert.deepEqual(porLugar(p), c.textos.map((x) => [lugarCanon(x.lugar), x.texto]), `${c.id} · caso B`);
+      assert.deepEqual([p.modo, Boolean(p.pregunta), p.correcta === undefined, Object.keys(p.errores ?? {}).length], [a.modo, Boolean(a.pregunta), a.correcta === undefined, Object.keys(a.errores ?? {}).length], `${c.id}: la decisión cambia en el caso B`);
+      if (typeof a.correcta === "string") assert.equal(p.correcta, a.correcta, `${c.id}: la respuesta cambia en el caso B`);
+    }
+    for (const c of CANON_PB) {
+      for (const x of c.textos.filter((y) => y.medida)) {
+        const r = inflesz(x.texto);
+        if (r.aplica) {
+          assert.ok(r.valor >= 65, `B · ${c.id} · ${x.lugar}: ${r.valor}`);
+          assert.equal(x.medida, r.valor.toFixed(1).replace(".", ","), `B · ${c.id} · ${x.lugar}`);
+        } else assert.equal(x.medida, "<10", `B · ${c.id} · ${x.lugar}`);
+      }
+    }
+  });
 
   test(`★★ ${nombre}: INFLESZ con la herramienta oficial: todo texto de 10 palabras o más da 65 o más, y da lo que dice el paquete`, () => {
     for (const c of CANON_P) {

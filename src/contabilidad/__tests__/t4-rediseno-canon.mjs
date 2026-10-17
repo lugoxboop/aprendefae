@@ -37,8 +37,8 @@ export function pantallasDe(md, titulo = "Contenido, pantalla por pantalla") {
   if (ini < 0) return [];
   const fin = md.indexOf("\n## ", ini + 5);
   return md.slice(ini, fin).split(/\n(?=\*\*P\d)/).slice(1).map((s) => {
-    const [, k, id] = s.match(/^\*\*P(\d+) · ([a-z0-9-]+)\*\*/);
-    return { k: Number(k), id, textos: renglones(s) };
+    const [, k, id, completa] = s.match(/^\*\*P(\d+) · ([a-z0-9-]+)\*\*( \(completa\))?/);
+    return { k: Number(k), id, textos: renglones(s), completa: Boolean(completa) };
   });
 }
 
@@ -69,6 +69,8 @@ export function fusionB(canonA, canonB) {
   return canonA.map((a) => {
     const b = canonB.find((x) => x.id === a.id);
     if (!b) return { ...a, extra: [] };
+    /* «(completa)»: la pantalla B va entera (sus lugares cambian, como los errores por cifra). */
+    if (b.completa) return { ...a, textos: b.textos, extra: [] };
     const lugares = new Set(a.textos.map((x) => x.lugar));
     return {
       ...a,
