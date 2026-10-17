@@ -108,6 +108,19 @@ for (const ancho of ANCHOS) {
    * Se lleva a la vista como lo haría el estudiante y, mientras anima, se
    * muestrea cada 50 ms que esté entero en la ventana (E2).
    */
+  /* La balanza: está, cabe en el ancho y se ve entera al llevarla a la vista. */
+  const balanza = async (id) => {
+    await pg.waitForSelector("[data-balanza]", { state: "attached", timeout: 3000 });
+    const b = await pg.evaluate(() => {
+      const el = document.querySelector("[data-balanza]");
+      el.scrollIntoView({ block: "center" });
+      const r = el.getBoundingClientRect();
+      return { alto: Math.round(r.height), desborda: el.scrollWidth > el.clientWidth + 0.5, entera: r.top >= 0 && r.bottom <= window.innerHeight };
+    });
+    filas.push({ ancho, estado: `${id}-balanza`, alto: b.alto, actividad: null, nota: b.entera ? "entera a la vista" : "no cabe entera" });
+    if (b.desborda) fallos.push(`${ancho} px · ${id} · la balanza se desborda`);
+    if (!b.entera) fallos.push(`${ancho} px · ${id} · la balanza no cabe entera en la ventana (${b.alto} px)`);
+  };
   const mes = async (id) => {
     /* En el error, el panel llega con «Iba aquí» (0,7 s, §4.2): se espera a que esté. */
     await pg.waitForSelector("[data-mes-en-dos-cuentas]", { state: "attached", timeout: 3000 });
@@ -146,11 +159,7 @@ for (const ancho of ANCHOS) {
   /* Lote de textos (Miyata): r5-3 no tiene entrada; abre en el asiento 1. */
   for (const [k, a] of ASIENTOS_MATE.entries()) {
     await estado(`${a.id}-vacio`);
-    if (k === 0) {
-      await pg.click("[data-boton-datos]");
-      await hoja("[data-hoja-datos]", "hoja-datos", true);
-      await pg.click("[data-hoja-datos] [data-cerrar]");
-    }
+    /* P2 de Itagaki: ya no hay «Datos de marzo». */
     const renglones = a.correctos[0].map((c) => ({ ...c }));
     if (a.id === "a6") renglones[3] = { ...renglones[3], valor: 14848000 };
     for (const [j, c] of renglones.entries()) {
@@ -163,12 +172,28 @@ for (const ancho of ANCHOS) {
     await estado(`${a.id}-lleno`);
     await pg.click("[data-revisar]");
     /* El panel, antes de la captura de página entera: esa captura agranda la ventana y lo haría «entrar». */
-    await mes(a.id);
+    /* P2 de Itagaki: el panel salió de r5-3; la balanza recibe el asiento después del mensaje. */
+    await balanza(a.id);
     await estado(`${a.id}-revisado`);
     await pg.click("[data-siguiente]");
   }
   await pg.waitForSelector("[data-cierre]");
   await estado("final");
+  /*
+   * ⛔ (P2 §11) el acumulado más largo en mono 13 frente al platillo: el del
+   * HABER al final del mes («$22.950.000»). Si no cabe en el platillo, se avisa.
+   */
+  const m = await pg.evaluate(() => {
+    const b = document.querySelector("[data-resumen-balanza] [data-balanza]");
+    const ac = b.querySelector('[data-acumulado-balanza="haber"]');
+    const pl = b.querySelector('[data-platillo="haber"]');
+    const rango = document.createRange();
+    rango.selectNodeContents(ac);
+    return { texto: ac.textContent, ancho: Math.round(rango.getBoundingClientRect().width * 10) / 10, platillo: Math.round(pl.getBoundingClientRect().width), columna: Math.round(ac.parentElement.getBoundingClientRect().width), desborda: b.scrollWidth > b.clientWidth + 0.5 };
+  });
+  filas.push({ ancho, estado: "balanza-final", alto: m.platillo, actividad: null, nota: `«${m.texto}» mide ${m.ancho} px; platillo ${m.platillo}; columna ${m.columna}` });
+  if (m.ancho > m.platillo) fallos.push(`${ancho} px · ⛔ «${m.texto}» mide ${m.ancho} px y el platillo ${m.platillo}`);
+  if (m.desborda) fallos.push(`${ancho} px · la balanza se desborda`);
   await pg.close();
 }
 
@@ -177,7 +202,7 @@ await servidor.close();
 
 console.log("ancho | estado | contenido | alto | nota");
 for (const f of filas) console.log(`${f.ancho} | ${f.estado} | ${f.actividad ?? "—"} | ${f.alto} | ${f.nota ?? "—"}`);
-const estados = filas.filter((f) => !f.estado.startsWith("hoja") && !f.estado.endsWith("-mes")).length / ANCHOS.length;
+const estados = filas.filter((f) => !f.estado.startsWith("hoja") && !/-(mes|balanza)$|^balanza-final$/.test(f.estado)).length / ANCHOS.length;
 console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos, más las hojas).`);
 if (estados !== 25) fallos.push(`se recorrieron ${estados} estados y son 25`); // sin entrada (lote de textos)
 if (fallos.length) {
