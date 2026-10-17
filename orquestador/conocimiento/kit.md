@@ -730,7 +730,67 @@ lo que se ve hoy—, el dibujo es decorativo porque el nombre accesible ya lo da
 el `aria-label` de la tarjeta, y el movimiento reducido se apaga en un solo
 sitio para todas a la vez.
 
-**El registro está vacío a propósito** hasta que exista el sistema de Xeno. La
-toma de corriente está puesta; la lámpara no se cuelga antes de saber de qué
-tamaño es.
+**El registro está vacío** hasta que las células dibujen. La toma de corriente
+está puesta y el sistema que dice de qué tamaño es la lámpara ya existe: es la
+sección siguiente.
+
+## El sistema de los identificadores de tema (Xeno, 16 oct.)
+
+Lo que sigue es lo que el diseñador de cada célula necesita para dibujar sin
+preguntar. Las cifras llevan su origen: **[pantalla]** medido en la página,
+**[fuente]** leído en el código, **[calculado]** con la fórmula WCAG,
+**[propuesta]** decisión de diseño que nadie ha medido todavía.
+
+| Qué | Decisión | Origen |
+|---|---|---|
+| Tamaño | **64 × 64 px**, `viewBox="0 0 64 64"`, dibujo dentro de 56 × 56 (4 px de margen). El hueco de hoy es de 34 px | [fuente] `SubjectCard.jsx`: dos celdas de 15 px con 4 de espacio · [propuesta] el 64 |
+| Estilo | **Contorno**: trazo de **3 px**, extremos y esquinas redondeados, sin relleno sólido. Se permite **un solo** relleno tintado: el acento al 16 % de opacidad. Entre dos trazos, 4 px o más | [propuesta], en la línea de la regla de íconos del kit de marca (contorno redondeado, nunca relleno sólido) |
+| Qué dibuja | **Un objeto concreto del tema**, no una idea: la cuenta T, la línea de tiempo. Sin letras ni cifras dentro del dibujo | [propuesta] |
+| Trazo | `currentColor`. La tarjeta lo pone en **#CBDCF2** (node) en reposo y en **#F8F9FA** con hover, foco o pulsación | #CBDCF2 da ≈10:1 sobre #1F2D3D [calculado] |
+| Acento | **Un solo elemento** del dibujo —el que es el tema— usa `var(--fae-acento)`, que la tarjeta rellena con su propio acento (en Contabilidad, el ámbar #E9C46A, 8,37:1 sobre tarjeta) | ratio de la tabla de contraste del prompt maestro |
+| Prohibido | coral (es solo error), teal y ámbar juntos en un mismo dibujo (suenan a debe y haber), un quinto color, degradados, sombras, el candado, el Check, las flechas opuestas ⇄, trofeos, coronas, cofres, gemas, la red de tres nodos del logo, el libro abierto, el birrete y el búho | canon del kit de marca |
+| Prueba de entrega | los nueve de una materia en fila a **32 px y en gris**: no se pueden confundir dos. Y cada uno se mira a 320 y 375 px | [propuesta] |
+
+**Movimiento.** Ninguno al cargar y ninguno en bucle (ya hay 116 animaciones
+infinitas publicadas: no se suma una). Se mueve **un solo elemento** del
+dibujo, solo con **hover, foco o pulsación** de la tarjeta, una vez, en **400 ms**
+y con la curva `cubic-bezier(.3,.9,.4,1)`. Solo `transform`. Tope: **4 px** de
+desplazamiento, **10°** de giro o escala **1,08**; el que elija el diseñador,
+no dos. El dibujo marca la pieza con `data-mueve` y le pone `--mueve:
+translateY(-4px)` (o su giro o escala). Quien integra escribe **una sola vez**,
+en `IdentificadorDeTema.jsx`, la regla `transform: var(--mueve)` para la clase de
+la tarjeta (`fae-card`) con `:hover`, `:focus-within` y `:active`, y su versión
+de movimiento reducido (`transition: none` y `transform: none`). Así ninguna
+célula puede olvidarse de apagarlo.
+
+**El ruido de las píldoras APRENDER / HACER.** Hoy las nueve tarjetas llevan las
+dos, idénticas, y un dato que no cambia entre tarjetas no informa. Regla:
+- **Un tema con las dos mitades** (la tarjeta se parte): la cara cerrada **no**
+  lleva píldoras. Queda el identificador, el título y la flecha. La elección
+  Aprender / Hacer ya aparece, con sus cantidades, al abrir la tarjeta.
+- **Un tema con una sola mitad:** conserva su única píldora, como hoy. Ahí sí
+  informa.
+- **Alcance: solo Contabilidad.** `TopicIndexView.jsx` también lo usa
+  Macroeconomía, que tiene estudiantes reales y no se toca sin el visto bueno de
+  Mateo. El cambio entra como una opción de la vista que solo pasa
+  `ContabilidadTopicIndex.jsx`; las demás materias no la pasan y se ven igual.
+
+**Los estados del identificador:** en reposo (trazo #CBDCF2); hover, foco o
+pulsación (trazo #F8F9FA y su movimiento); tarjeta sin contenido (la tarjeta
+baja el conjunto a opacidad .5); movimiento reducido (igual, sin moverse);
+tema sin identificador (cae en el ícono de la materia, ya garantizado).
+Lo que NO verifiqué: el fondo real de la tarjeta del índice. La sonda
+`scripts/contraste.mjs` debe confirmar los 3:1 del trazo y del acento sobre él.
+
+### Marcar lo inactivo: con forma, no con transparencia (16 oct.)
+
+La flecha inactiva de `TresInformes.jsx` medía **2,32:1** porque llevaba el
+mismo 0,35 dos veces —en el color y en `opacity`— y se multiplicaban. La regla
+que queda para todo lo que se enciende y se apaga:
+- **Inactivo:** un color **sólido**, sin `opacity`. Para trazos y glifos es
+  **#7A8798** (3,82:1 sobre #1F2D3D [calculado]; el mínimo para lo que no es
+  texto es 3:1).
+- **Activo:** otro color **y otra forma**. Aquí, #F8F9FA y un contorno de 2 px
+  en cápsula, que sobrevive al blanco y negro.
+- **Nunca** transparencia en el color y en `opacity` a la vez.
 
