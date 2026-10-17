@@ -193,8 +193,17 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota, 
               style={{
                 fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600,
                 padding: "7px 15px", borderRadius: "999px", border: "none", cursor: "pointer",
+                /*
+                 * 44 px, y la medida que lo destapó: a 375 estos tres medían
+                 * 33 de alto. A 320 daban 52 y parecían bien, pero era porque
+                 * el rótulo se partía en dos líneas. Un control que pasa solo
+                 * cuando su texto se parte no pasa: pasa por accidente.
+                 */
+                minHeight: "44px",
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
                 backgroundColor: activo ? FAE.teal : "transparent",
-                color: activo ? FAE.bg : "rgba(248,249,250,0.6)",
+                /* Lo inactivo, en sólido y sin opacity (kit.md, 16 oct.). */
+                color: activo ? FAE.bg : "#A8B6C8",
                 transition: "background-color 160ms ease, color 160ms ease",
               }}
             >

@@ -113,9 +113,11 @@ export function textosDe(problemas, ctx = MATE) {
   const ordenados = problemas
     .map((p, k) => ({ ...p, k }))
     .sort((x, y) => GRUPO[x.clase] - GRUPO[y.clase] || rango(x.cuenta) - rango(y.cuenta) || (x.lado === y.lado ? 0 : x.lado === "debe" ? -1 : 1) || x.k - y.k);
-  const distintos = [...new Set(ordenados.map((p) => p.texto))];
+  const todos = [...new Set(ordenados.map((p) => p.texto))];
+  /* r5-4 (Takamura): con un texto específico, la genérica sobra; si se calla algo, lo dice «Y hay más…». */
+  const distintos = ctx.sinGenerica && todos.length > 1 ? todos.filter((t) => t !== ctx.generica) : todos;
   const textos = distintos.slice(0, 2);
-  if (distintos.length > 2) textos.push(ctx.comunes.hayMas);
+  if (todos.length > textos.length) textos.push(ctx.comunes.hayMas);
   return textos;
 }
 
@@ -123,7 +125,7 @@ export function evaluarAsiento(a, renglones, ctx) {
   const intentos = a.correctos.map((correcto, variante) => ({ variante, ...contra(a, correcto, renglones, ctx) }));
   /* La variante que acierta; si ninguna, la de menos problemas (a igualdad, la primera). */
   const elegida = intentos.find((x) => x.ok) ?? [...intentos].sort((x, y) => x.problemas.length - y.problemas.length || x.variante - y.variante)[0];
-  const textos = elegida.ok ? [a.acierto[elegida.variante]] : textosDe(elegida.problemas, ctx);
+  const textos = elegida.ok ? [a.acierto[elegida.variante]] : textosDe(elegida.problemas, { ...ctx, generica: a.generica });
   return { ok: elegida.ok, variante: elegida.variante, estados: elegida.estados, piezas: elegida.piezas, problemas: elegida.problemas, textos, correcto: a.correctos[elegida.variante] };
 }
 
