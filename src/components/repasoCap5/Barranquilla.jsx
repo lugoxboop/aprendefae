@@ -43,6 +43,8 @@ export const ACTIVIDAD_BARRANQUILLA = {
   LINEAS_MES: LINEAS_MES_BARRANQUILLA,
   /* P2 de Itagaki: el calendario es la figura del mes; el panel «el mes en dos cuentas» sale de r5-4. */
   CALENDARIO: true,
+  /* Takamura (#380): sin pantalla de entrada; las tarjetas viven en «Datos de septiembre». */
+  SIN_ENTRADA: true,
   TEXTOS_CALENDARIO: CALENDARIO_R5_4,
 };
 
