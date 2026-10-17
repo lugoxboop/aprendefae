@@ -812,3 +812,187 @@ export const ALT_T1_8 = {
   "t8-07": "El hecho son los informes guardados que los jefes no abrieron. Los cuatro primeros puntos quedan encendidos, se apaga «Los jefes deciden» y la flecha de vuelta no se enciende.",
   "t8-08": "El hecho es el informe que muestra una pérdida y nadie lo leyó. Los cuatro primeros puntos quedan encendidos, se apaga «Los jefes deciden» y la flecha de vuelta no se enciende.",
 };
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * D4 · LA SEGUNDA DECISIÓN DE LOS CUATRO HACER DEL TEMA 1.
+ *
+ * POR QUÉ EXISTE ESTO. Los cuatro cayeron en la auditoría por D4 con la misma
+ * falla: una sola pregunta repetida ítem tras ítem. «¿Adentro o afuera?» ocho
+ * veces es una decisión, no ocho. La lectura ESTRICTA del Kit (jefatura,
+ * 17-oct) lo dice sin rodeos: la misma pregunta sobre otro caso NO es una
+ * decisión distinta.
+ *
+ * QUÉ SE AÑADE. Una segunda decisión sobre el MISMO caso y de TIPO distinto:
+ * donde la primera clasifica, la segunda pregunta por la consecuencia; donde
+ * la primera ya calculaba (T1-5), la segunda es la que clasifica y va antes.
+ * Dos tipos, no dos repeticiones. Y cada opción deja la figura en un estado
+ * que se ve distinto: eso es D4 Avanzado, «decisiones distintas producen
+ * resultados visibles distintos», y se comprueba mirando.
+ *
+ * LA TRAMPA QUE YA COSTÓ UN FALLO. Las escenas tienen que diferenciarse
+ * PAREJA POR PAREJA, no solo de la correcta: dos opciones malas que dejan la
+ * misma figura —o la que ya había— son, para el estudiante, la misma opción.
+ * Hay una prueba que las compara una contra una.
+ *
+ * D6 AVANZADO. Cada opción mala trae su `msg` propio, atado a la confusión
+ * que delata ESA opción. Si un mensaje sirviera igual para la otra, está mal
+ * escrito. Nada de un «No va aquí» a secas: eso es D6 Básico y lo prohíbe
+ * dialecto-unico.test.mjs.
+ *
+ * NO SUMA FP, Y NO ES UN DESCUIDO. `fpBase`, `porPartida` y el peso de cada
+ * ítem se quedan exactamente como estaban: hay datos de estudiantes detrás y
+ * recalificar hacia atrás no se puede deshacer. La segunda decisión es
+ * formativa: mueve la figura, devuelve y enseña, y no toca el porcentaje. Si
+ * algún día se decide que puntúe, es una migración de puntaje, no un retoque.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/* ───────── T1-1 · la consecuencia de estar dentro o fuera ─────────
+ * Primera decisión: ¿pertenece a la empresa? (clasificación).
+ * Segunda: ¿hasta dónde del ciclo alcanza a ver? (consecuencia). No se puede
+ * ni formular antes de la primera: lo que se ve depende de dónde se esté. Y
+ * la figura es el MISMO anillo de la primera, que se vuelve a encender.
+ */
+export const SEGUNDA_T1_1 = {
+  pregunta: "Ya sabe desde dónde pregunta. ¿Hasta dónde del ciclo alcanza a ver?",
+  opciones: [
+    {
+      id: "todo",
+      texto: "El ciclo entero: ve lo que pasa adentro día a día",
+      /* Mal cuando el usuario es externo: confundir interés con acceso. */
+      msg: "Tener interés en la empresa no es tener entrada a ella. Esa persona la mira desde afuera, y de afuera el día a día no se ve: solo se ve lo que la contabilidad publica.",
+    },
+    {
+      id: "informe",
+      texto: "Solo el informe que sale al final",
+      /* Mal cuando el usuario es interno: creer que espera turno como los de afuera. */
+      msg: "Esperar el informe es lo que le toca a quien está afuera. Esa persona es parte de la empresa: no necesita que le publiquen nada para saber qué está pasando adentro.",
+    },
+    {
+      id: "nada",
+      texto: "Nada: la empresa no le enseña sus números a nadie",
+      /* Mal siempre: los números no son un secreto, son el producto del ciclo. */
+      msg: "Entonces el ciclo no serviría para nada. La contabilidad existe justamente para que alguien lea esos números: si no salieran de la empresa, las cinco estaciones terminarían en un cajón.",
+    },
+  ],
+  /* El por qué del acierto, uno por cada opción que puede ser la correcta. */
+  porque: {
+    todo: "Está adentro, y de adentro se ve el ciclo completo: desde que pasa algo hasta que se decide.",
+    informe: "Desde afuera solo se alcanza el informe. Por eso la contabilidad lo publica: es la única ventana que hay.",
+  },
+  /*
+   * Lo que el anillo enseña con cada elección. Ninguna coincide con el estado
+   * de apertura —la estación 5 encendida y las otras cuatro en reposo—, así
+   * que elegir cualquiera de las tres se ve.
+   */
+  escena: {
+    todo: { anillo: "todas" },
+    informe: { anillo: "solo-el-informe" },
+    nada: { anillo: "ninguna" },
+  },
+};
+
+/* ───────── T1-2 · la consecuencia de ser de esa clase ─────────
+ * Primera decisión: qué clase de empresa es (clasificación).
+ * Segunda: si quiere vender el doble, ¿qué tiene que pasar con el recuadro
+ * ENTRA? (consecuencia). La respuesta sale de la clase, no del enunciado: una
+ * comercial o una industrial necesita el doble de lo que recibe; una de
+ * servicios o una minera no tiene insumo que doblar. Y la figura son los dos
+ * recuadros de la primera decisión, no un dibujo nuevo.
+ */
+export const SEGUNDA_T1_2 = {
+  pregunta: "Esta empresa quiere vender el doble de lo que sale. ¿Qué tiene que pasar con el recuadro ENTRA?",
+  opciones: [
+    {
+      id: "doblar",
+      texto: "Tiene que entrar el doble: sin más de eso no hay más que vender",
+      /* Mal cuando no hay insumo: doblar algo que no existe. */
+      msg: "Mire el recuadro ENTRA: dice sin insumo físico. No hay ninguna cosa que doblar ahí, porque no entra ninguna cosa. Lo que esta empresa duplica es su trabajo, no su materia.",
+    },
+    {
+      id: "sin-insumo",
+      texto: "Nada: ahí no entra ninguna cosa que se pueda doblar",
+      /* Mal cuando sí hay insumo: ignorar lo que el recuadro dice. */
+      msg: "Pero ahí sí entra algo, y está escrito en el recuadro. Si la empresa quiere entregar el doble, primero tiene que recibir el doble de eso: no se saca más de donde no entra más.",
+    },
+    {
+      id: "no-importa",
+      texto: "El recuadro ENTRA no tiene que ver: lo que sale no viene de ahí",
+      /* Mal siempre: cortar el vínculo entre los dos recuadros. */
+      msg: "Si lo que sale no viniera de lo que entra, los dos recuadros serían dos empresas distintas. La flecha entre ellos es la actividad de la empresa, y es lo único que esta actividad pregunta.",
+    },
+  ],
+  porque: {
+    doblar: "Lo que sale viene de lo que entra. Para entregar el doble hay que recibir el doble: ahí está el límite del negocio.",
+    "sin-insumo": "No hay insumo que doblar, y eso no es una falta: es la marca de esta clase de empresa. Lo que duplicaría es su trabajo o su extracción.",
+  },
+  /*
+   * Los dos recuadros y la flecha que los une. Las tres escenas se separan
+   * pareja por pareja: «doblar» enciende los dos, «sin-insumo» apaga el de
+   * entrada y deja encendido el de salida, y «no-importa» además TACHA la
+   * flecha, que es exactamente lo que esa opción afirma.
+   */
+  escena: {
+    doblar: { entra: "marcado", sale: "marcado", trazo: "lleno" },
+    "sin-insumo": { entra: "atenuado", sale: "marcado", trazo: "vacio" },
+    "no-importa": { entra: "atenuado", sale: "marcado", trazo: "cortado" },
+  },
+};
+
+/* ───────── T1-4 · la consecuencia sobre la igualdad ─────────
+ * Primera decisión: qué le pasa a cada una de las tres partes (clasificación,
+ * tres marcas y un envío).
+ * Segunda: y entonces, ¿qué le pasó a la IGUALDAD? (consecuencia). No es la
+ * misma pregunta en otro formato: la primera mira las partes una por una, la
+ * segunda mira los dos lados juntos, y solo se puede responder después de
+ * haber mirado las partes. La figura son las mismas tres barras, repintadas
+ * con lo que cada opción AFIRMA: quien dice que la igualdad se rompió ve las
+ * barras rotas, y lo que ve contradice lo que acabó de ver.
+ */
+export const SEGUNDA_T1_4 = {
+  pregunta: "Lo que tiene = lo que debe + lo de los dueños. Después de este hecho, ¿qué le pasó a esa igualdad?",
+  opciones: [
+    { id: "sigue", texto: "Sigue dando igual: los dos lados se movieron para el mismo lado" },
+    {
+      id: "balancin",
+      texto: "Se rompió: un lado creció y el otro se achicó",
+      msg: "Eso sería un balancín, y la ecuación no es un balancín: los dos lados pueden subir juntos o bajar juntos. Mire las barras: ninguna fue en contra de la otra.",
+    },
+    {
+      id: "un-lado",
+      texto: "Se rompió: se movió un solo lado y el otro se quedó quieto",
+      msg: "Si se moviera un lado solo, los dos totales dejarían de dar lo mismo y la ecuación se habría roto de verdad. Siempre hay dos partes en juego, y una de ellas está al otro lado del signo igual.",
+    },
+  ],
+  /* El acierto se redacta con el sentido real del hecho: suben o bajan. */
+  porque: {
+    sube: "Los dos lados subieron a la vez, y por lo mismo. Por eso la igualdad aguanta: no hay nada que compensar.",
+    baja: "Los dos lados bajaron a la vez, y por lo mismo. La igualdad aguanta: lo que se fue de un lado se fue también del otro.",
+  },
+};
+
+/* ───────── T1-5 · la clasificación que va ANTES del cálculo ─────────
+ * Aquí el orden se invierte, y a propósito. La actividad ya pedía la
+ * consecuencia —los tres totales nuevos—, hecho tras hecho, y eso era toda la
+ * interacción. Lo que faltaba era la clasificación, así que va primero: de las
+ * tres partes, ¿cuál NO se mueve con este hecho? Decidirlo es lo que la
+ * actividad hacía por el estudiante desde el quinto hecho, cuando arrastraba
+ * sola la parte quieta. Ahora la arrastra la que él elija, y se ve.
+ *
+ * Los mensajes van por PARTE, no por hecho: cada parte delata una confusión
+ * propia —el activo es lo que entra y sale, el pasivo es la deuda, el
+ * patrimonio es lo de los dueños— y el texto la nombra. Lo que varía con el
+ * hecho es el sentido, y eso se rellena en [SENTIDO].
+ */
+export const SEGUNDA_T1_5 = {
+  pregunta: "Antes de escribir: de las tres partes, ¿cuál NO se mueve con este hecho?",
+  /* Una opción por parte; la correcta la dice el hecho. */
+  msg: {
+    [ACTIVO]: "Lo que tiene sí cambió con este hecho: [SENTIDO] algo de la empresa. La parte quieta es otra, y el hecho dice cuál.",
+    [PASIVO]: "Las deudas sí se movieron: con este hecho [SENTIDO] una. Lo que debe la empresa no quedó como estaba.",
+    [PATRIMONIO]: "Lo de los dueños sí se movió: con este hecho cambió lo que la empresa les reconoce a los socios. Esa no es la parte quieta.",
+  },
+  sentido: { [ACTIVO]: { sube: "entró", baja: "salió" }, [PASIVO]: { sube: "nació", baja: "se pagó" } },
+  porque: "Esa parte se queda igual que antes, así que su total se arrastra solo: lo que hay que escribir son las dos que de verdad se movieron.",
+};

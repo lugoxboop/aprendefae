@@ -4,10 +4,10 @@ import {
   T5_ACT1, REGLAS_T5_ACT1, CAJONES_T5_ACT1, GRUPO_T5_ACT1, ALT_T5_ACT1, resumenT5Act1,
 } from "../../../../data/contabilidadT5Act1.js";
 import {
-  sortearT5Act1, evaluarT5Act1, valorDeItemT5Act1, puntuarT5Act1, mazoT5Act1,
-  aplicaSegundaT5Act1, rentaDeT5Act1, evaluarSegundaT5Act1,
+  sortearT5Act1, evaluarT5Act1, valorDeItemT5Act1, puntuarT5Act1,
+  aplicaSegundaT5Act1, rentaDeT5Act1, evaluarSegundaT5Act1, mazoInvertidoT5Act1,
 } from "../../../../contabilidad/t5Act1.js";
-import TiraDeRenta from "./TiraDeRenta.jsx";
+import TiraDeRenta, { GraficoDeRenta } from "./TiraDeRenta.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -43,8 +43,13 @@ export const CONFIG_T5_ACT1 = {
 /* D4 (lote 19, P2 de Mai): las fichas de descripción se juegan con la pregunta de la renta y su tira. */
 export const SEGUNDA_DECISION_T5_ACT1 = { aplica: aplicaSegundaT5Act1, correcta: rentaDeT5Act1, evaluar: evaluarSegundaT5Act1, Vista: TiraDeRenta };
 
+/* Lote 23 (D4, Shoko): en la mitad de las fichas, la pregunta invertida; bajo la ficha, la tira de su renta. */
+const RENTA_DE_CAJON = Object.fromEntries(CONFIG_T5_ACT1.cajones.map((k) => [k.clave, rentaDeT5Act1({ tipo: k.marcado.tipo })]));
+const Grafico = (props) => <GraficoDeRenta {...props} rentaDe={(clave) => RENTA_DE_CAJON[clave]} />;
+export const CONFIG_D4_T5_ACT1 = { ...CONFIG_T5_ACT1, segunda: SEGUNDA_DECISION_T5_ACT1, bajoLaFicha: Grafico };
+
 /* D8 (lote 18, Futaba): dos mazos fijos, sin fichas repetidas; la vuelta 1 y, desde la 2, se alternan. */
-const CONFIG_POR_VUELTA = [0, 1].map((k) => ({ ...CONFIG_T5_ACT1, segunda: SEGUNDA_DECISION_T5_ACT1, sortear: () => mazoT5Act1(k) }));
+const CONFIG_POR_VUELTA = [0, 1].map((k) => ({ ...CONFIG_D4_T5_ACT1, sortear: () => mazoInvertidoT5Act1(k) }));
 
 export default function QueRentaDa(props) {
   const { variante, alCompletar } = useVuelta(T5_ACT1.id, props.onCompletar);

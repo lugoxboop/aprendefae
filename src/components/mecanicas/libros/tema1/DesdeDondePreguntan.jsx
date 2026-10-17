@@ -3,11 +3,13 @@ import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { ESTACIONES, NEUTRO, NAVY_DEL_CHIP, TEXTO_ATENUADO } from "../../../../data/contabilidadIntro.js";
 import {
-  T1_1, ZONA_DENTRO, ZONA_FUERA, ROTULO_ZONA, ROTULO_DEL_TRAZO, ALT_T1_1,
+  T1_1, ZONA_DENTRO, ZONA_FUERA, ROTULO_ZONA, ROTULO_DEL_TRAZO, ALT_T1_1, SEGUNDA_T1_1,
 } from "../../../../data/contabilidadTema1.js";
 import {
   sortearT1_1, evaluarT1_1, puntuar, pesoDeCadaItem, INTERNOS,
+  opcionesSegundaT1_1, correctaSegundaT1_1, porqueSegundaT1_1,
 } from "../../../../contabilidad/tema1.js";
+import SegundaDecisionT1 from "./segundaDecision.jsx";
 import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
@@ -64,14 +66,34 @@ const CSS = `
 
 const SORA = "Sora, sans-serif";
 
-/* El anillo de la pieza 1, compacto y con la estación 5 encendida. */
-function Anillo({ retorno, reducido, resaltado }) {
+/*
+ * El anillo de la pieza 1, compacto y con la estación 5 encendida.
+ *
+ * `escena` es la de la SEGUNDA decisión: hasta dónde del ciclo alcanza a ver
+ * quien pregunta. Mientras no haya elegido va en null y el anillo abre como
+ * siempre —la 5 encendida y las otras cuatro en reposo—, que es lo que
+ * comprueba t1-actividades. Las tres escenas se ven distintas entre sí Y
+ * distintas de la apertura: encender las cinco, encender solo el informe y
+ * apagar las otras, o apagarlas todas.
+ */
+function Anillo({ retorno, reducido, resaltado, escena = null }) {
+  const vista = escena?.anillo ?? null;
+  const LA_DEL_INFORME = 4;
+  const enciende = (n) => {
+    if (vista === "todas") return true;
+    if (vista === "solo-el-informe") return n === LA_DEL_INFORME;
+    if (vista === "ninguna") return false;
+    return n === ESTACIONES.length;
+  };
   return (
     <div data-anillo style={{ display: "flex", gap: "6px", alignItems: "stretch" }}>
       <FranjaDelCiclo retorno={retorno} reducido={reducido} />
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "4px" }}>
         {ESTACIONES.map((e) => {
-          const encendida = e.n === ESTACIONES.length;
+          const encendida = enciende(e.n);
+          /* Lo apagado por la segunda decisión se atenúa de verdad: así «solo
+             el informe» no se confunde con la apertura, donde nada está apagado. */
+          const apagada = vista !== null && vista !== "todas" && !encendida;
           /*
            * Los puntos 1 a 4 van atenuados, pero la opacidad va en el borde
            * y no en la fila entera: heredada, dejaba el número en 3,0:1 y el
@@ -83,8 +105,16 @@ function Anillo({ retorno, reducido, resaltado }) {
               key={e.n}
               data-estacion={e.n}
               data-encendida={encendida ? "si" : "no"}
+              data-apagada={apagada ? "si" : undefined}
               style={{
                 display: "flex", gap: "6px", alignItems: "center",
+                /*
+                 * Solo lo apagado por la segunda decisión lleva opacidad en la
+                 * fila. En reposo NO va ninguna: la atenuación de los puntos 1
+                 * a 4 vive en el borde y el texto va en #A8B6C8 sólido, y hay
+                 * una prueba que exige que la fila no traiga opacity.
+                 */
+                opacity: apagada ? 0.35 : undefined,
                 padding: "5px 7px", borderRadius: "9px",
                 background: resaltado ? "rgba(184,196,212,0.1)" : "transparent",
                 border: `${encendida ? 2 : 1}px solid ${tenue ? "rgba(248,249,250,0.063)" : NEUTRO}`,
@@ -130,6 +160,13 @@ export default function DesdeDondePreguntan({
   const [respuestas, setRespuestas] = useState([]);
   const [rebotando, setRebotando] = useState(null);
   const [colocadas, setColocadas] = useState([]);
+  /*
+   * La segunda decisión (D4): su escena para el anillo y si ya se tomó. No
+   * entra en `respuestas` ni en `t.detalle` — no puntúa — pero sí hace falta
+   * para avanzar: una decisión que se puede saltar no es una decisión.
+   */
+  const [escenaSegunda, setEscenaSegunda] = useState(null);
+  const [segundaHecha, setSegundaHecha] = useState(false);
   const reloj = useRef(null);
   const zonaBoton = useRef(null);
 
@@ -144,8 +181,8 @@ export default function DesdeDondePreguntan({
   }, [t.terminado]);
   useEffect(() => () => clearTimeout(reloj.current), []);
   useEffect(() => {
-    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
-  }, [r, esperandoReintento]);
+    if (r && !esperandoReintento && !modoDemo && segundaHecha) zonaBoton.current?.querySelector("button")?.focus();
+  }, [r, esperandoReintento, segundaHecha]);
 
   const responder = (zona) => {
     if (r && !esperandoReintento) return;
@@ -174,11 +211,13 @@ export default function DesdeDondePreguntan({
 
   const avanzar = () => {
     setR(null); setIntento(0); setRebotando(null);
+    setEscenaSegunda(null); setSegundaHecha(false);
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
   const reiniciar = () => {
     t.reiniciar(); setR(null); setIntento(0); setRespuestas([]); setColocadas([]); setRebotando(null);
+    setEscenaSegunda(null); setSegundaHecha(false);
   };
 
   if (t.terminado) {
@@ -284,6 +323,7 @@ export default function DesdeDondePreguntan({
         retorno={r?.enciendeTrazo ? "encendido" : "atenuado"}
         reducido={reducido}
         resaltado={r?.escena === "los-tres-internos"}
+        escena={escenaSegunda}
       />
       {r?.enciendeTrazo && (
         <p data-rotulo-trazo className="fae-t11-aparece" style={{
@@ -380,7 +420,30 @@ export default function DesdeDondePreguntan({
 
       {r && <Retro texto={r.texto} />}
 
+      {/*
+        ═══════ LA SEGUNDA DECISIÓN (D4) ═══════
+
+        La primera clasifica —¿pertenece a la empresa?—; esta pregunta la
+        CONSECUENCIA de esa clasificación: hasta dónde del ciclo alcanza a ver.
+        No se puede ni formular antes de la primera, y cada opción deja el
+        anillo de arriba en un estado que se ve distinto.
+
+        En la demo de «Así se juega» no sale: esa pantalla enseña el gesto de
+        la primera, y su guion está escrito y probado contra eso.
+      */}
       {r && !esperandoReintento && !modoDemo && (
+        <SegundaDecisionT1
+          pregunta={SEGUNDA_T1_1.pregunta}
+          opciones={opcionesSegundaT1_1(u)}
+          correcta={correctaSegundaT1_1(u)}
+          porque={porqueSegundaT1_1(u)}
+          escenaDe={(id) => SEGUNDA_T1_1.escena[id]}
+          onPintar={setEscenaSegunda}
+          onResuelta={() => setSegundaHecha(true)}
+        />
+      )}
+
+      {r && !esperandoReintento && !modoDemo && segundaHecha && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente pregunta"}

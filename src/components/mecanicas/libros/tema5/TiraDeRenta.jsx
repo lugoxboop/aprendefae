@@ -1,5 +1,5 @@
 import { FAE } from "../../../../theme.js";
-import { SEGUNDA_T5_ACT1, RENTA_INTERES, RENTA_DIFERENCIA } from "../../../../data/contabilidadT5Act1.js";
+import { SEGUNDA_T5_ACT1, RENTA_INTERES, RENTA_DIFERENCIA, INVERTIDA_T5_ACT1 } from "../../../../data/contabilidadT5Act1.js";
 import { PreguntaSegunda, OpcionesSegunda, fantasmaDe, FANTASMA, CURVA_B } from "../b5/SegundaDecision.jsx";
 
 /*
@@ -14,6 +14,12 @@ import { PreguntaSegunda, OpcionesSegunda, fantasmaDe, FANTASMA, CURVA_B } from 
  * barras desiguales, con huecos. Antes de elegir, la tira está vacía (R10);
  * al terminar, lo correcto y, si hubo error, el fantasma de lo elegido. Las
  * barras crecen con scaleY en 280 ms; con movimiento reducido, al instante.
+ *
+ * LOTE 23 (D4, Shoko): en el error se dibuja lo que eligió el estudiante,
+ * como fantasma, desde el primer error (antes, la tira quedaba vacía hasta el
+ * final). Y la pregunta invertida (`GraficoDeRenta`): en la mitad de las
+ * fichas se ve la tira de la renta y se elige el título, con los cajones; el
+ * cajón tocado por error dibuja su renta como fantasma sobre la tira.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -48,24 +54,51 @@ function Barras({ id, estilo, reducido, atributos }) {
 
 export default function TiraDeRenta({ ficha, activa, elegidas, correcta, fin, onElegir, reducido }) {
   const S = SEGUNDA_T5_ACT1;
-  const fantasma = fantasmaDe(elegidas, correcta, fin);
+  /* Lote 23: lo que eligió por error se dibuja ya en el primer error; lo correcto, solo al final (C2). */
+  const fantasma = fin ? fantasmaDe(elegidas, correcta, fin) : elegidas.filter((x) => x !== correcta).at(-1) ?? null;
   const nombre = (id) => S.opciones.find((o) => o.id === id)?.texto;
   return (
     <div data-segunda-decision="renta" data-ficha-segunda={ficha.id} style={{ marginTop: "4px" }}>
       <style>{"@keyframes b5-crece { from { transform: scaleY(0); } to { transform: none; } }"}</style>
       <PreguntaSegunda texto={S.pregunta} />
       <OpcionesSegunda opciones={S.opciones} elegidas={elegidas} correcta={correcta} fin={fin} activa={activa} onElegir={onElegir} Mini={Mini} />
-      {/* La tira de renta: vacía hasta el final; luego lo correcto y el fantasma de lo elegido. */}
-      <div data-tira-renta role="img" aria-label={fin ? nombre(correcta) : S.pregunta} style={{ marginTop: "10px" }}>
-        <div style={{ position: "relative", height: "56px", borderBottom: "1px solid #B8C4D4", display: "flex", gap: "6px" }}>
-          {PATRON[RENTA_INTERES].map((_, k) => <span key={k} style={{ flex: "1 1 0", borderBottom: "1px dashed rgba(248,249,250,0.18)" }} />)}
-          {fin && fantasma && <Barras id={fantasma} reducido={reducido} estilo={{ border: FANTASMA, background: "transparent" }} atributos={{ "data-fantasma": fantasma }} />}
-          {fin && <Barras id={correcta} reducido={reducido} estilo={SOLIDO} atributos={{ "data-correcta-tira": correcta }} />}
-        </div>
-        <div aria-hidden="true" style={{ display: "flex", justifyContent: "space-between", marginTop: "4px", fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px", color: "#A8B6C8" }}>
-          <span>{S.compra}</span><span>{S.redencion}</span>
-        </div>
+      {/* La tira de renta: vacía hasta el final; luego lo correcto. Lo elegido por error, como fantasma desde que se elige. */}
+      <Tira etiqueta={fin ? nombre(correcta) : S.pregunta} fantasma={fantasma} correcta={fin ? correcta : null} reducido={reducido} />
+    </div>
+  );
+}
+
+/* La tira, de «Compra» a «Redención»: lo correcto en sólido y lo elegido por error como fantasma. */
+function Tira({ etiqueta, fantasma, correcta, reducido, atributos = {} }) {
+  const S = SEGUNDA_T5_ACT1;
+  return (
+    <div data-tira-renta role="img" aria-label={etiqueta} {...atributos} style={{ marginTop: "10px" }}>
+      <div style={{ position: "relative", height: "56px", borderBottom: "1px solid #B8C4D4", display: "flex", gap: "6px" }}>
+        {PATRON[RENTA_INTERES].map((_, k) => <span key={k} style={{ flex: "1 1 0", borderBottom: "1px dashed rgba(248,249,250,0.18)" }} />)}
+        {correcta && <Barras id={correcta} reducido={reducido} estilo={SOLIDO} atributos={{ "data-correcta-tira": correcta }} />}
+        {fantasma && <Barras id={fantasma} reducido={reducido} estilo={{ border: FANTASMA, background: "transparent" }} atributos={{ "data-fantasma": fantasma }} />}
       </div>
+      <div aria-hidden="true" style={{ display: "flex", justifyContent: "space-between", marginTop: "4px", fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px", color: "#A8B6C8" }}>
+        <span>{S.compra}</span><span>{S.redencion}</span>
+      </div>
+    </div>
+  );
+}
+
+/*
+ * Lote 23 · la pregunta invertida: bajo la ficha («¿Qué título da esta renta?»), la tira de su renta, en
+ * sólido desde el principio (es lo que se pregunta). El cajón tocado por error dibuja su renta encima,
+ * como fantasma. `rentaDe` lleva de un cajón a su renta. Las demás fichas no dibujan nada aquí.
+ */
+export function GraficoDeRenta({ ficha, tocados, correcta, reducido, rentaDe }) {
+  if (!ficha.invertida) return null;
+  const renta = rentaDe(correcta);
+  const errado = tocados.filter((x) => x !== correcta).at(-1);
+  const fantasma = errado ? rentaDe(errado) : null;
+  return (
+    <div data-grafico-renta={renta} style={{ margin: "-4px 0 10px" }}>
+      <style>{"@keyframes b5-crece { from { transform: scaleY(0); } to { transform: none; } }"}</style>
+      <Tira etiqueta={INVERTIDA_T5_ACT1[renta].descripcion} correcta={renta} fantasma={fantasma} reducido={reducido} />
     </div>
   );
 }
