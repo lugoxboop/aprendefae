@@ -47,6 +47,7 @@ const act = React.act;
 const h = React.createElement;
 
 const N = await import("../../data/repasoCap5Mate.js");
+const BAL = await import("../../data/repasoCap5Balanza.js");
 const T = await import("../../data/repasoCap5MateTextos.js");
 const J = await import("../../data/repasoCap5MateJuego.js");
 const { Mate, DIGITOS_DEL_CAMPO } = await import("../../components/repasoCap5/Mate.jsx");
@@ -101,15 +102,15 @@ const anadir = async (caja, lado, cuenta, valor) => {
 /* ═══════════ LO QUE LEE EL ESTUDIANTE ═══════════ */
 
 function textosDelEstudiante() {
-  const t = [T.R5_3.objetivo, T.R5_3.cita, T.DATOS_DECLARADOS.linea, ...T.DATOS_DECLARADOS.datos, T.COMUNES_MATE.cuentaNoPrevista, T.COMUNES_MATE.hayMas];
-  for (const g of T.DATOS_DEL_LIBRO) { if (g.nota) t.push(g.nota); if (g.frases) t.push(...g.frases); }
+  /* P2 de Itagaki: salen la hoja «Datos de marzo» y sus tarjetas; sus datos van en los renglones de cada asiento (Miyata). */
+  const t = [T.R5_3.objetivo, T.R5_3.cita, T.COMUNES_MATE.cuentaNoPrevista, T.COMUNES_MATE.hayMas];
   for (const a of A) t.push(a.hecho, ...Object.values(a.cruzado), ...Object.values(a.falta), ...Object.values(a.cuentaMal), ...a.valorMal.map((x) => x.texto), a.generica, ...a.acierto);
   return [...new Set(t)];
 }
 
-test("★★★ cada texto del estudiante está entero en el paquete (guarda: 124 textos distintos)", () => {
+test("★★★ cada texto del estudiante está entero en el paquete (guarda: 115 textos distintos)", () => {
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 124);
+  assert.equal(textos.length, 115);
   const escapar = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   /* Entero: tras «: », un salto de línea o «», hasta el fin del renglón o la comilla. */
   const entero = (t) => new RegExp(`(?:: |\\n)${escapar(t)}(?:\\n|$)`).test(PAQUETE) || PLANO.includes(`«${t}»`) || PLANO.includes(`«${t}`);
@@ -436,7 +437,7 @@ test("★★★ 5 de 8 —la mitad que se partía— calcularFP da lo mismo que 
 
 /* ═══════════ INFLESZ ═══════════ */
 
-test("★★★ INFLESZ: los 106 textos de 10 palabras o más pasan 65; los rótulos no se miden", () => {
+test("★★★ INFLESZ: los 101 textos de 10 palabras o más pasan 65; los rótulos no se miden", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of textosDelEstudiante()) {
@@ -446,7 +447,7 @@ test("★★★ INFLESZ: los 106 textos de 10 palabras o más pasan 65; los rót
     medidos++;
     if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
-  assert.equal(medidos, 106);
+  assert.equal(medidos, 101);
   assert.deepEqual(bajos, []);
   const rotulos = Object.values(T.ROTULOS_MATE).flatMap((x) => (typeof x === "string" ? [x] : typeof x === "object" ? Object.values(x) : [x(3, 8)]));
   for (const r of rotulos) assert.equal(inflesz(r).aplica, false, r);
@@ -529,13 +530,8 @@ test("★★★ el armador: hoja en dos pasos, «EN EL DEBE», editar y quitar, 
   await anadir(caja, "haber", T.IVA, 6);
   assert.equal(caja.querySelector("[data-cuadre]").textContent, "Las sumas cuadran");
   assert.equal(apagado(caja.querySelector("[data-revisar]")), false);
-  /* «Datos de marzo»: hoja de solo lectura con las dos tarjetas; no toca el armador. */
-  await tocar(caja.querySelector("[data-boton-datos]"));
-  const datos = document.querySelector("[data-hoja-datos]");
-  assert.ok(datos.querySelector("[data-datos-libro]") && datos.querySelector("[data-datos-declarados]"));
-  assert.equal(datos.querySelectorAll("[data-dato-declarado]").length, 5);
-  assert.equal(datos.querySelectorAll("input").length, 0);
-  await tocar(datos.querySelector("[data-cerrar]"));
+  /* P2 de Itagaki: sale el botón «Datos de marzo»; cada asiento trae sus datos en sus renglones. */
+  assert.equal(Boolean(caja.querySelector("[data-boton-datos]")), false);
   assert.equal(caja.querySelectorAll("[data-renglon]").length, 4);
 });
 
@@ -588,23 +584,14 @@ test("★★★ se juega entera: hechos, «Iba aquí», la devolución, y el fin
   }
 
   assert.ok(caja.querySelector("[data-cierre]"));
-  assert.equal(caja.querySelector("[data-n-de-m]").textContent, "6 de 8");
-  const filas = [...caja.querySelectorAll("[data-fila-asiento]")].map((f) => {
-    const p = f.querySelector("[data-punto]");
-    const forma = p.classList.contains("lucide-check") ? "check" : p.classList.contains("lucide-x") ? "x" : "otra";
-    return [f.textContent.replace(/Correcto\. |Incorrecto\. /, ""), forma, f.querySelector("[data-resultado]").textContent];
-  });
-  assert.deepEqual(filas, [
-    ["1 MARCompra de contado", "check", "Correcto. "],
-    ["10 MARVenta a crédito", "check", "Correcto. "],
-    ["15 MARCompra de contado", "check", "Correcto. "],
-    ["15 MARFlete de la compra", "x", "Incorrecto. "],
-    ["20 MARDevolución de venta", "check", "Correcto. "],
-    ["25 MARCompra a crédito", "x", "Incorrecto. "],
-    ["31 MARVenta de contado", "check", "Correcto. "],
-    ["31 MARFlete de la venta", "check", "Correcto. "],
-  ]);
-  assert.ok([...caja.querySelectorAll("[data-punto]")].every((x) => x.getAttribute("aria-hidden") === "true"));
+  /* P2 de Itagaki: encima del resumen, la balanza final, la frase final y una fila de 8 puntos con una sola leyenda. */
+  const resumen = caja.querySelector("[data-resumen-balanza]");
+  assert.equal(resumen.querySelector("[data-balanza]").dataset.hechos, "8");
+  assert.equal(resumen.querySelector("[data-frase-final]").textContent, T.BALANZA_R5_3.final(pesos(BAL.balanzaTras(8).diferencia)));
+  assert.deepEqual([...resumen.querySelectorAll("[data-puntos-mes] [data-punto-mes]")].map((p) => p.dataset.puntoMes),
+    A.map((a) => (["a4", "a6"].includes(a.id) ? "error" : "acierto")));
+  assert.equal(resumen.querySelector("[data-leyenda-mes]").textContent, "CorrectoNo va aquí");
+  assert.equal(Boolean(caja.querySelector("[data-mes-en-dos-cuentas]")) || Boolean(caja.querySelector("[data-fila-asiento]")), false);
   assert.equal(fin.length, 1);
   const [pct, , detalle] = fin[0];
   assert.equal(pct, 75);
@@ -765,14 +752,10 @@ async function jugarCamino(k, renglones) {
   return pantalla;
 }
 
-test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 124 textos, 98 caminos)", async () => {
+test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 115 textos, 98 caminos)", async () => {
   vistas.length = 0;
-  /* La entrada y la hoja «Datos de marzo». */
-  const entrada = await montar(h(Mate, {}));
-  vistas.push(document.body.textContent);
-  entrada.desmontar();
-  const asiento1 = await montar(h(Mate, { pasoInicial: 0 }));
-  await tocar(asiento1.caja.querySelector("[data-boton-datos]"));
+  /* El asiento 1, con el objetivo encima (sin entrada ni «Datos de marzo»). */
+  const asiento1 = await montar(h(Mate, {}));
   vistas.push(document.body.textContent);
   asiento1.desmontar();
   /* Cada asiento, por los caminos que cubren sus textos. */
@@ -782,7 +765,7 @@ test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estad
   }
   const todo = vistas.join("\n");
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 124);
+  assert.equal(textos.length, 115);
   const faltan = textos.filter((t) => !todo.includes(t));
   assert.deepEqual(faltan, [], `no salen en pantalla: ${faltan.join(" | ")}`);
   assert.equal(caminos, 98, "no jugó los caminos que dice jugar");
@@ -808,8 +791,6 @@ test("★★ B5 de enganche.md: ninguna frase sale dos veces en la misma pantall
   for (const [k, a] of A.entries()) {
     const abierto = await montar(h(Mate, { pasoInicial: k }));
     assert.deepEqual(repetidas(document.body), [], `${a.id} antes`);
-    await tocar(abierto.caja.querySelector("[data-boton-datos]"));
-    assert.deepEqual(repetidas(document.body), [], `${a.id} con «Datos de marzo»`);
     abierto.desmontar();
     for (const c of [bien(a), bien(a).map((y) => ({ ...y, valor: 7 }))]) {
       const pantalla = await jugarCamino(k, c);
@@ -840,4 +821,59 @@ test("★★ la tarjeta del hecho no repite la fecha: si el hecho empieza con el
   const { caja, desmontar } = await montar(h(MesContable, { actividad, pasoInicial: 0 }));
   assert.equal(caja.querySelector("[data-marca-fecha-hecho]")?.textContent, A[0].fecha);
   desmontar();
+});
+
+/* ═══════════ P2 DE ITAGAKI · LA BALANZA DEL IVA ═══════════ */
+
+test("★★★ P2 · la balanza se calcula de los asientos: DEBE y HABER del IVA, la retención por pagar y θ = 12° × diferencia / máximo del mes", () => {
+  /* A mano, desde los correctos: el IVA de cada lado y la retención. */
+  const iva = (lado) => A.reduce((s, a) => s + a.correctos[0].filter((r) => r.cuenta === T.IVA && r.lado === lado).reduce((t, r) => t + r.valor, 0), 0);
+  const ret = A.reduce((s, a) => s + a.correctos[0].filter((r) => r.cuenta === T.RETENCION).reduce((t, r) => t + (r.lado === "haber" ? r.valor : -r.valor), 0), 0);
+  const fin = BAL.balanzaTras(A.length);
+  assert.deepEqual([fin.debe, fin.haber, fin.retencion], [iva("debe"), iva("haber"), ret]);
+  assert.deepEqual([fin.debe, fin.haber, fin.retencion], [10772800, 22950000, 1888450]);
+  assert.equal(BAL.DIFERENCIA_MAXIMA, 12177200);
+  assert.equal(BAL.anguloDe(BAL.DIFERENCIA_MAXIMA), 12);
+  assert.equal(BAL.anguloDe(-BAL.DIFERENCIA_MAXIMA), -12);
+  /* «Mira esto»: en la primera venta (asiento 2) el brazo cruza la horizontal hacia el IVA cobrado. */
+  assert.ok(BAL.anguloDe(BAL.balanzaTras(1).diferencia) < 0 && BAL.anguloDe(BAL.balanzaTras(2).diferencia) > 0);
+  /* Las dos variantes del asiento 4 dan el mismo IVA y la misma retención. */
+  const a4 = asiento("a4");
+  const de = (c) => [T.IVA, T.RETENCION].map((cuenta) => c.filter((r) => r.cuenta === cuenta).map((r) => `${r.lado}${r.valor}`).join());
+  assert.deepEqual(de(a4.correctos[0]), de(a4.correctos[1]));
+});
+
+test("★★★ P2 · la balanza no delata: nada antes de «Comprobar»; después, recibe el asiento (cifras, ángulo, sobre) y dice todo en su nombre", async () => {
+  const { caja } = await montar(h(Mate, { pasoInicial: 0 }));
+  assert.equal(Boolean(caja.querySelector("[data-balanza]")), false, "la balanza está antes de comprobar");
+  for (const c of bien(asiento("a1"))) await anadir(caja, c.lado, c.cuenta, c.valor);
+  await tocar(caja.querySelector("[data-revisar]"));
+  const b = caja.querySelector("[data-balanza]");
+  /* Va después del mensaje. */
+  assert.ok(caja.querySelector("[data-devolucion]").compareDocumentPosition(b) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+  assert.equal(b.dataset.hechos, "1");
+  const e = BAL.balanzaTras(1);
+  assert.equal(b.querySelector('[data-acumulado-balanza="debe"]').textContent, pesos(e.debe));
+  assert.equal(b.querySelector('[data-acumulado-balanza="haber"]').textContent, pesos(0));
+  assert.equal(b.querySelector('[data-acumulado-balanza="retencion"]').textContent, pesos(e.retencion));
+  assert.equal(b.dataset.angulo, BAL.anguloDe(e.diferencia).toFixed(2));
+  assert.equal(b.querySelector("[data-diferencia-balanza]").dataset.diferenciaBalanza, "a-favor");
+  assert.equal(b.querySelector("[data-sobre-lleno]").dataset.sobreLleno, (e.retencion / BAL.RETENCION_FINAL).toFixed(3));
+  /* DEBE en teal y HABER en ámbar, con su palabra; una pesa en el platillo del debe. */
+  assert.deepEqual([...b.querySelectorAll("[data-columna-balanza]")].map((x) => x.firstElementChild.textContent), ["DEBE", "HABER"]);
+  assert.equal(b.querySelectorAll('[data-platillo="debe"] [data-pesa]').length, 1);
+  assert.equal(b.querySelectorAll('[data-platillo="haber"] [data-pesa]').length, 0);
+  /* Su nombre accesible dice las cuatro cifras. */
+  const img = b.querySelector('[role="img"]');
+  const B = T.BALANZA_R5_3;
+  assert.equal(img.getAttribute("aria-label"), `${B.platilloDebe} ${pesos(e.debe)}; ${B.platilloHaber} ${pesos(0)}; ${B.aFavor} ${pesos(Math.abs(e.diferencia))}; ${B.sobre} ${pesos(e.retencion)}`);
+  assert.equal(img.getAttribute("aria-live"), "polite");
+  /* Sin «Datos de marzo» ni el panel del mes. */
+  assert.equal(Boolean(caja.querySelector("[data-mes-en-dos-cuentas]")), false);
+});
+
+test("★★★ ⛔ textos de prueba de la balanza: mientras Miyata no los mande, cada uno empieza con «[PRUEBA]»", () => {
+  const B = T.BALANZA_R5_3;
+  const todos = [B.platilloDebe, B.platilloHaber, B.aPagar, B.aFavor, B.sobre, B.final("$1"), B.alt];
+  assert.deepEqual(todos.filter((t) => !t.startsWith("[PRUEBA] ")), []);
 });

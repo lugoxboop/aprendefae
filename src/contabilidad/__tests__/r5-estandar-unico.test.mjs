@@ -244,7 +244,7 @@ test("★★★ 1 · ningún #1D3557 como fondo en repasoCap5/: ni en la fuente 
 
 const AMBAR = /E9C46A|233,\s*196,\s*106/i;
 
-test("★★★ 2 · ningún ámbar en un botón ni en :focus; el foco es el anillo de 2 px #F8F9FA separado 2 px (guarda: 45 estados, 216 botones)", async () => {
+test("★★★ 2 · ningún ámbar en un botón ni en :focus; el foco es el anillo de 2 px #F8F9FA separado 2 px (guarda: 45 estados, 205 botones)", async () => {
   /* Las reglas de foco de la fuente, una por una. */
   const reglas = [];
   for (const f of COMPONENTES) {
@@ -269,7 +269,7 @@ test("★★★ 2 · ningún ámbar en un botón ni en :focus; el foco es el ani
     }
   });
   assert.equal(n, ESTADOS_DEL_RECORRIDO);
-  assert.equal(botones, 216, "no revisó los botones que dice revisar");
+  assert.equal(botones, 205, "no revisó los botones que dice revisar");
   assert.deepEqual([...new Set(malos)], []);
 });
 
@@ -390,7 +390,7 @@ const CIFRA = /^[−+-]?\s?\$?\s?\d{1,3}(\.\d{3})+(,\d{1,2})?( u)?$|^[−+-]?\s?
 /* Sora solo para la cifra de resultado (§5.3): el contador en vivo de C.8, «n de m» y el % del cierre. */
 const RESULTADO = "[data-valor-contador], [data-n-de-m], [data-cierre] [data-pct], [data-resultado-cifra]";
 
-test("★★★ 5 · las cifras van en ui-monospace, SFMono-Regular, Menlo, Consolas con tabular-nums (guarda: 45 estados, 191 cifras)", async () => {
+test("★★★ 5 · las cifras van en ui-monospace, SFMono-Regular, Menlo, Consolas con tabular-nums (guarda: 45 estados, 188 cifras)", async () => {
   assert.equal(K.MONO, "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace");
   assert.deepEqual(K.CIFRA, { fontFamily: K.MONO, fontVariantNumeric: "tabular-nums" });
   const malas = [];
@@ -407,7 +407,7 @@ test("★★★ 5 · las cifras van en ui-monospace, SFMono-Regular, Menlo, Cons
     }
   });
   assert.equal(n, ESTADOS_DEL_RECORRIDO);
-  assert.equal(cifras, 191, "no miró las cifras que dice mirar");
+  assert.equal(cifras, 188, "no miró las cifras que dice mirar");
   assert.deepEqual([...new Set(malas)], []);
 });
 

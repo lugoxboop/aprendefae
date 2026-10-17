@@ -456,3 +456,17 @@ export const MES_MATE = {
     debe: (x) => `Marzo: ${pesos(x)} más de IVA pagado que cobrado.`,
   },
 };
+
+/*
+ * ⛔ TEXTOS DE PRUEBA de la balanza (P2 de Itagaki §10): los escribe Miyata.
+ * Hasta que lleguen, cada uno empieza con «[PRUEBA]» y una prueba lo exige.
+ */
+export const BALANZA_R5_3 = {
+  platilloDebe: "[PRUEBA] IVA pagado",
+  platilloHaber: "[PRUEBA] IVA cobrado",
+  aPagar: "[PRUEBA] A pagar",
+  aFavor: "[PRUEBA] A favor",
+  sobre: "[PRUEBA] Retención",
+  final: (cifra) => `[PRUEBA] Debes ${cifra} de IVA`,
+  alt: "[PRUEBA] Balanza del IVA de marzo",
+};
