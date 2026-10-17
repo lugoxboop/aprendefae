@@ -96,7 +96,16 @@ export function estadosDePantalla(pantalla) {
   const bien = opciones?.find((o) => o.correcta);
   const mal = opciones?.find((o) => !o.correcta);
   if (bien && mal) {
-    const toque = (o) => [`[data-opcion="${o.id}"]`, '[data-boton="confirmar"]'];
+    /*
+     * El motor C3 (t7/aprenderC3.jsx): opciones con `t`, sin «Confirmar»; la
+     * opción es [data-op] o, si va en la figura, [data-elige]. Si la pregunta
+     * sale después de tocar la figura (M-1), la pantalla dice qué tocar antes
+     * en `pasosAntes`.
+     */
+    const c3 = opciones.every((o) => "t" in o);
+    const toque = c3
+      ? (o) => [...(pantalla.pasosAntes ?? []), `[data-op="${o.id}"], [data-elige="${o.id}"]`]
+      : (o) => [`[data-opcion="${o.id}"]`, '[data-boton="confirmar"]'];
     estados.push({ estado: "al fallar", pasos: toque(mal) });
     estados.push({ estado: "al acertar", pasos: toque(bien) });
   }
