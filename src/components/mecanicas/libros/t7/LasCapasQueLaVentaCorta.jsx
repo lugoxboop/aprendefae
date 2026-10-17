@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Panel } from "../../salaDeControl/marco.jsx";
+import { barajar } from "../../../../utils/barajar.js";
 import {
   PIEZA_LAS_CAPAS, ESTADOS_CAPAS, MOVS_CAPAS, ESCALA_CAPAS, NOMBRE_METODO, SELECTOR_METODO, EJES, INTERFAZ_A4, SIGUE_HASTA_EL_28,
 } from "../../../../data/contabilidadT7_2_a4_capas.js";
@@ -247,8 +248,10 @@ const inicial = (P) => ({
   vista: vistaNueva(null, P.metodo, P.idx, false),
 });
 
-function PantallaCapas({ P, numero, total, enfocar, onSeguir }) {
+function PantallaCapas({ P, numero, total, enfocar, onSeguir, barajarOpciones }) {
   const [s, setS] = useState(() => inicial(P));
+  /* Lote V (Mello): las opciones, barajadas UNA vez al montar la pantalla (como los Hacer de T7 al armar la tanda); el orden no cambia al reintentar. `barajar` se inyecta en las pruebas. */
+  const [opciones] = useState(() => (P.opciones ? barajarOpciones(P.opciones) : null));
   const txt = useRef(null);
   const msg = useRef(null);
   const dormida = P.id === "portada";
@@ -361,7 +364,7 @@ function PantallaCapas({ P, numero, total, enfocar, onSeguir }) {
       <div className="ea4-acc">
         {P.opciones && (
           <div className="ea4-ops" role="group">
-            {P.opciones.map((o) => {
+            {opciones.map((o) => {
               const mal = !s.resuelto && s.intento === o.id;
               const pista = !s.resuelto && s.pista && o.id === P.elegir.correcta;
               const ok = s.resuelto && o.id === P.elegir.correcta;
@@ -485,7 +488,7 @@ function ElCierreQueSobra({ P, numero, total, enfocar, onSeguir }) {
 
 /* ═══════════ LA PIEZA ═══════════ */
 
-export default function LasCapasQueLaVentaCorta({ pieza = PIEZA_LAS_CAPAS, rotulo }) {
+export default function LasCapasQueLaVentaCorta({ pieza = PIEZA_LAS_CAPAS, rotulo, barajar: barajarOpciones = barajar }) {
   const [k, setK] = useState(0);
   const p = pieza.pantallas[k];
   const marco = useRef(null);
@@ -505,7 +508,7 @@ export default function LasCapasQueLaVentaCorta({ pieza = PIEZA_LAS_CAPAS, rotul
         {p.tipo === "cierre-que-sobra" ? (
           <ElCierreQueSobra key={p.id} P={p} numero={k + 1} total={pieza.pantallas.length} enfocar={movido} onSeguir={seguir} />
         ) : (
-          <PantallaCapas key={p.id} P={p} numero={k + 1} total={pieza.pantallas.length} enfocar={movido} onSeguir={seguir} />
+          <PantallaCapas key={p.id} P={p} numero={k + 1} total={pieza.pantallas.length} enfocar={movido} onSeguir={seguir} barajarOpciones={barajarOpciones} />
         )}
       </div>
     </Panel>
