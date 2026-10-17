@@ -48,6 +48,7 @@ const {
   INTERNOS, EXTERNOS, sortearT1_1, evaluarT1_1, sortearT1_2, evaluarT1_2,
   claveDelError, CLASES_IDS, puntuar, pesoDeCadaItem, sinObjeto,
   preguntaDeUsuario, empresaDeItem, PATRON_A, PATRON_B,
+  correctaSegundaT1_2,
 } = await import("../tema1.js");
 const {
   USUARIOS_T1_1, EMPRESAS, CLASES, ERROR_T1_2, ERROR_T1_1, SIN_INSUMO,
@@ -545,6 +546,12 @@ test("★ T1-2: se juegan seis y ninguna se repite", () => {
     const e = EMPRESAS.find((x) => x.id === id);
     vistas.push(id);
     tocar(caja.querySelector(`[data-clase="${e.clase}"]`));
+    /*
+     * La segunda decisión (D4) es obligatoria para avanzar: una decisión que
+     * se puede saltar no es una decisión. Así que la tanda se recorre
+     * contestando las dos, no solo la clase.
+     */
+    tocar(caja.querySelector(`[data-opcion-segunda="${correctaSegundaT1_2(e)}"]`));
     tocar(boton(caja, k + 1 === T1_2.porPartida ? "Ver el resultado" : "Siguiente empresa"));
   }
   assert.equal(new Set(vistas).size, T1_2.porPartida);

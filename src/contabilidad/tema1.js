@@ -9,6 +9,7 @@ import {
   ERROR_T1_7, BANCO_T1_7,
   T1_8, PUNTOS_T1_8, SITUACIONES_T1_8, ACIERTO_T1_8, ERROR_T1_8, PREDICCION_T1_8,
   CONTADOR_T1_8, CONTADOR_UNO_T1_8,
+  SEGUNDA_T1_1, SEGUNDA_T1_2, SEGUNDA_T1_4, SEGUNDA_T1_5,
 } from "../data/contabilidadTema1.js";
 import { ACTIVO, PASIVO, PATRIMONIO, tipoDeCuenta, pesos } from "../data/contabilidad.js";
 
@@ -623,3 +624,107 @@ export const flechaDeItem = (id) => {
   const b = lineaPorId(hasta);
   return a && b ? `${a.nombre} → ${b.nombre}` : null;
 };
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * D4 · LA SEGUNDA DECISIÓN DE LOS CUATRO HACER — la lógica.
+ *
+ * Qué es la correcta, qué dice el mensaje de cada mala y en qué estado deja la
+ * figura cada opción. Todo se DEDUCE del caso (del usuario, de la empresa, del
+ * asiento), nunca de una tabla paralela que pudiera desincronizarse del banco.
+ *
+ * Nada de aquí entra en `puntuar`: la segunda decisión no cambia el porcentaje
+ * de nadie. Está arriba, en el comentario de los datos, el porqué.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/* ───────── T1-1 ───────── */
+
+/** Lo que alcanza a ver depende de si pertenece a la empresa, y de nada más. */
+export const correctaSegundaT1_1 = (usuario) => (usuario.zona === ZONA_DENTRO ? "todo" : "informe");
+
+export function opcionesSegundaT1_1(usuario) {
+  const correcta = correctaSegundaT1_1(usuario);
+  return SEGUNDA_T1_1.opciones.map((o) => ({ ...o, msg: o.id === correcta ? null : o.msg }));
+}
+
+export const porqueSegundaT1_1 = (usuario) => SEGUNDA_T1_1.porque[correctaSegundaT1_1(usuario)];
+
+/* ───────── T1-2 ───────── */
+
+/**
+ * Si no entra ninguna cosa, no hay nada que doblar; si entra algo, hay que
+ * doblarlo. El criterio es el mismo `sinObjeto` que pinta el recuadro vacío,
+ * así que no puede decir una cosa el recuadro y otra la devolución.
+ */
+export const correctaSegundaT1_2 = (empresa) => (sinObjeto(empresa) ? "sin-insumo" : "doblar");
+
+export function opcionesSegundaT1_2(empresa) {
+  const correcta = correctaSegundaT1_2(empresa);
+  return SEGUNDA_T1_2.opciones.map((o) => ({ ...o, msg: o.id === correcta ? null : o.msg }));
+}
+
+export const porqueSegundaT1_2 = (empresa) => SEGUNDA_T1_2.porque[correctaSegundaT1_2(empresa)];
+
+/* ───────── T1-4 ───────── */
+
+/* La igualdad aguanta con cualquier hecho: eso es lo que la actividad enseña. */
+export const CORRECTA_SEGUNDA_T1_4 = "sigue";
+
+export const opcionesSegundaT1_4 = () => SEGUNDA_T1_4.opciones;
+
+export function porqueSegundaT1_4(transaccion) {
+  const e = efectoDe(transaccion);
+  return SEGUNDA_T1_4.porque[e[ACTIVO] === SUBE ? "sube" : "baja"];
+}
+
+/**
+ * Las tres barras repintadas con lo que cada opción AFIRMA. La correcta pinta
+ * lo que de verdad pasó y enciende las tres partes —los dos lados a la vez—;
+ * el balancín pone la otra parte en contra del activo; «un lado solo» la deja
+ * quieta. Los tres retratos se diferencian pareja por pareja: por los altos de
+ * las barras y por cuáles quedan resaltadas.
+ */
+export function escenaSegundaT1_4(transaccion, opcion) {
+  const real = efectoDe(transaccion);
+  const partes = PARTES.map((p) => p.id);
+  const seMueven = partes.filter((p) => real[p] !== IGUAL);
+  const otra = seMueven.find((p) => p !== ACTIVO);
+  const contrario = (x) => (x === SUBE ? BAJA : SUBE);
+
+  if (opcion === CORRECTA_SEGUNDA_T1_4) {
+    return { barras: { ...real, valores: undefined }, resaltar: partes };
+  }
+  if (opcion === "balancin") {
+    return {
+      barras: { ...real, valores: undefined, [otra]: contrario(real[otra]) },
+      resaltar: seMueven,
+    };
+  }
+  /* «un-lado»: el otro lado ni se entera. */
+  return { barras: { ...real, valores: undefined, [otra]: IGUAL }, resaltar: [ACTIVO] };
+}
+
+/* ───────── T1-5 ───────── */
+
+/** La parte quieta es la correcta, y ya la sabe deducir `parteQuieta`. */
+export const correctaSegundaT1_5 = (indice) => parteQuieta(indice);
+
+/**
+ * Una opción por parte. El mensaje de cada mala nombra la confusión de ESA
+ * parte —el activo es lo que entra y sale, el pasivo es la deuda, el
+ * patrimonio es lo de los dueños— y se rellena con el sentido real del hecho.
+ */
+export function opcionesSegundaT1_5(indice, hecho = null) {
+  const t = hecho ?? TRANSACCIONES_CAP2[indice];
+  const real = efectoDe(t);
+  const correcta = indice === null ? null : correctaSegundaT1_5(indice);
+  return PARTES.map((p) => {
+    if (p.id === correcta) return { id: p.id, texto: p.idea, msg: null };
+    const plantilla = SEGUNDA_T1_5.msg[p.id];
+    const sentido = SEGUNDA_T1_5.sentido[p.id]?.[real[p.id] === SUBE ? "sube" : "baja"];
+    return { id: p.id, texto: p.idea, msg: sentido ? plantilla.replace("[SENTIDO]", sentido) : plantilla };
+  });
+}
+
+export const escenaSegundaT1_5 = (parte) => ({ quieta: parte });

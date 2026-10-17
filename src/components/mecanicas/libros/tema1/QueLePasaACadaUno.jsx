@@ -3,11 +3,13 @@ import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { NEUTRO, NAVY_DEL_CHIP, TEXTO_ATENUADO } from "../../../../data/contabilidadIntro.js";
 import {
-  T1_4, PARTES, CONTROLES, SUBE, BAJA, IGUAL, ALT_T1_4,
+  T1_4, PARTES, CONTROLES, SUBE, BAJA, IGUAL, ALT_T1_4, SEGUNDA_T1_4,
 } from "../../../../data/contabilidadTema1.js";
 import {
   sortearT1_4, evaluarT1_4, puntuar,
+  opcionesSegundaT1_4, escenaSegundaT1_4, porqueSegundaT1_4, CORRECTA_SEGUNDA_T1_4,
 } from "../../../../contabilidad/tema1.js";
+import SegundaDecisionT1 from "./segundaDecision.jsx";
 import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
@@ -152,6 +154,9 @@ export default function QueLePasaACadaUno({
   const [intento, setIntento] = useState(0);
   const [respuestas, setRespuestas] = useState([]);
   const [rebotando, setRebotando] = useState(false);
+  /* La segunda decisión (D4): su escena para las tres barras. No puntúa. */
+  const [escenaSegunda, setEscenaSegunda] = useState(null);
+  const [segundaHecha, setSegundaHecha] = useState(false);
   const reloj = useRef(null);
   const zonaBoton = useRef(null);
 
@@ -167,8 +172,8 @@ export default function QueLePasaACadaUno({
   }, [t.terminado]);
   useEffect(() => () => clearTimeout(reloj.current), []);
   useEffect(() => {
-    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
-  }, [r, esperandoReintento]);
+    if (r && !esperandoReintento && !modoDemo && segundaHecha) zonaBoton.current?.querySelector("button")?.focus();
+  }, [r, esperandoReintento, segundaHecha]);
 
   const enviar = () => {
     if (!completo || (r && !esperandoReintento)) return;
@@ -194,11 +199,13 @@ export default function QueLePasaACadaUno({
 
   const avanzar = () => {
     setR(null); setIntento(0); setMarcado({}); setRebotando(false);
+    setEscenaSegunda(null); setSegundaHecha(false);
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
   const reiniciar = () => {
     t.reiniciar(); setR(null); setIntento(0); setRespuestas([]); setMarcado({}); setRebotando(false);
+    setEscenaSegunda(null); setSegundaHecha(false);
   };
 
   if (t.terminado) {
@@ -219,8 +226,15 @@ export default function QueLePasaACadaUno({
    * Solo se revela cuando la respuesta está cerrada. Con el reintento abierto,
    * enseñar el movimiento real sería darle la respuesta antes del segundo tiro.
    */
-  const revelado = r && !esperandoReintento ? r.real : null;
-  const resaltadas = r && !r.ok && !esperandoReintento ? (r.resaltar ?? []) : [];
+  /*
+   * Mientras no haya segunda decisión, las barras enseñan lo que de verdad
+   * pasó. Cuando la hay, manda ella: cada opción REPINTA las barras con lo que
+   * esa opción afirma, así que quien dice que la igualdad se rompió ve las
+   * barras rotas y lo que ve contradice lo que acabó de ver.
+   */
+  const esc = escenaSegunda;
+  const revelado = esc ? esc.barras : r && !esperandoReintento ? r.real : null;
+  const resaltadas = esc ? esc.resaltar : r && !r.ok && !esperandoReintento ? (r.resaltar ?? []) : [];
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
@@ -334,7 +348,26 @@ export default function QueLePasaACadaUno({
           {completo ? "Ver qué pasó" : "Marca las tres"}
         </Responder>
       )}
+      {/*
+        ═══════ LA SEGUNDA DECISIÓN (D4) ═══════
+
+        La primera mira las tres partes una por una —sube, baja, queda igual—;
+        esta mira los DOS LADOS juntos y pregunta qué le pasó a la igualdad.
+        No es la misma pregunta en otro formato: solo se puede responder
+        después de haber mirado las partes, y cada opción repinta las barras.
+      */}
       {r && !esperandoReintento && !modoDemo && (
+        <SegundaDecisionT1
+          pregunta={SEGUNDA_T1_4.pregunta}
+          opciones={opcionesSegundaT1_4()}
+          correcta={CORRECTA_SEGUNDA_T1_4}
+          porque={porqueSegundaT1_4(h)}
+          escenaDe={(id) => escenaSegundaT1_4(h, id)}
+          onPintar={setEscenaSegunda}
+          onResuelta={() => setSegundaHecha(true)}
+        />
+      )}
+      {r && !esperandoReintento && !modoDemo && segundaHecha && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente hecho"}

@@ -4,11 +4,13 @@ import { pesos, ACTIVO, PASIVO, PATRIMONIO } from "../../../../data/contabilidad
 import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
 import {
   T1_5, PARTES, TRANSACCIONES_CAP2, PIE_T1_5, HISTORIAL_T1_5,
-  ACIERTO_T1_5_FINAL, ALT_T1_5,
+  ACIERTO_T1_5_FINAL, ALT_T1_5, SEGUNDA_T1_5,
 } from "../../../../data/contabilidadTema1.js";
 import {
   totalesTras, parteQuieta, enModoCorto, evaluarT1_5, puntuar, pesoDeCadaItem, EN_CERO,
+  opcionesSegundaT1_5, correctaSegundaT1_5, escenaSegundaT1_5,
 } from "../../../../contabilidad/tema1.js";
+import SegundaDecisionT1 from "./segundaDecision.jsx";
 import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, CampoCifra, leerCifra } from "../piezas.jsx";
@@ -79,13 +81,50 @@ export default function LaEcuacionEnMovimiento({
   const detalle = useRef([]);
   const inicio = useRef(Date.now());
   const zonaBoton = useRef(null);
+  /*
+   * ═══════════ LA SEGUNDA DECISIÓN (D4), Y AQUÍ VA PRIMERO ═══════════
+   *
+   * Esta actividad ya pedía la consecuencia —los tres totales nuevos— hecho
+   * tras hecho, y eso era toda la interacción. Lo que faltaba era la
+   * CLASIFICACIÓN, así que va antes de escribir: de las tres partes, ¿cuál no
+   * se mueve con este hecho? Era lo que la actividad decidía sola desde el
+   * quinto hecho, cuando arrastraba la parte quieta; ahora lo decide el
+   * estudiante y se ve en qué casilla cae el arrastre.
+   *
+   * Y por eso el arrastre NO se dibuja antes de decidir: enseñarlo sería
+   * contestar la pregunta en los hechos del modo corto.
+   *
+   * No puntúa: `evaluarT1_5`, `respuestas` y `detalle` siguen contando solo
+   * los totales escritos, con el mismo peso por hecho que antes.
+   */
+  const [escenaSegunda, setEscenaSegunda] = useState(null);
 
   const h = ejemplo ? ejemplo.hecho : TRANSACCIONES_CAP2[i];
   const antes = ejemplo ? ejemplo.antes : totalesTras(i);
   const corto = ejemplo ? false : enModoCorto(i);
   const quieta = corto ? parteQuieta(i) : null;
-  /* En modo corto la parte quieta no se escribe: se arrastra. */
-  const seEscribe = (p) => !corto || p !== quieta;
+  /*
+   * La demo de «Así se juega» no lleva segunda decisión: su guion está escrito
+   * y probado contra las tres casillas y el botón «Anotar».
+   */
+  const conSegunda = !modoDemo && !ejemplo;
+  const correctaQuieta = conSegunda ? correctaSegundaT1_5(i) : null;
+  const quietaMarcada = escenaSegunda?.quieta ?? null;
+  /*
+   * Las casillas se abren cuando el arrastre quedó donde de verdad va. Si
+   * falló, la figura enseña su elección —el arrastre en la casilla
+   * equivocada— y vuelve a la correcta al salir «Iba aquí»: de ahí sale el
+   * permiso de escribir, sin un segundo aviso que lo diga.
+   */
+  const segundaLista = !conSegunda || quietaMarcada === correctaQuieta;
+
+  /*
+   * En modo corto la parte quieta no se escribe: se arrastra. Pero ANTES de
+   * decidir las tres casillas van iguales —las tres con su campo, cerrado—,
+   * porque si una trajera el arrastre puesto, la pregunta estaría contestada:
+   * la que no pide número es justo la que no se mueve.
+   */
+  const seEscribe = (p) => !segundaLista || !corto || p !== quieta;
 
   const pct = puntuar(respuestas, total);
   const esperandoReintento = Boolean(r && !r.ok && intento === 1);
@@ -131,12 +170,12 @@ export default function LaEcuacionEnMovimiento({
   };
 
   const avanzar = () => {
-    setR(null); setIntento(0); setTexto({});
+    setR(null); setIntento(0); setTexto({}); setEscenaSegunda(null);
     if (i + 1 < total) setI(i + 1);
     else setTerminado(true);
   };
   const reiniciar = () => {
-    setI(0); setTexto({}); setR(null); setIntento(0); setRespuestas([]); setTerminado(false);
+    setI(0); setTexto({}); setR(null); setIntento(0); setRespuestas([]); setTerminado(false); setEscenaSegunda(null);
     detalle.current = []; inicio.current = Date.now();
   };
 
@@ -186,7 +225,24 @@ export default function LaEcuacionEnMovimiento({
 
         <div style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
           {PARTES.map((p) => (
-            <div key={p.id} data-casilla={p.id} data-arrastrada={seEscribe(p.id) ? undefined : "si"}>
+            <div
+              key={p.id}
+              data-casilla={p.id}
+              data-arrastrada={seEscribe(p.id) ? undefined : "si"}
+              /*
+               * La marca de la segunda decisión: «si» en la parte que el
+               * estudiante señaló como quieta, «no» en las otras dos. Es lo
+               * que hace visible su elección —y, si falló, su error— en la
+               * misma figura donde después escribe.
+               */
+              data-marca-quieta={quietaMarcada ? (quietaMarcada === p.id ? "si" : "no") : undefined}
+              style={quietaMarcada ? {
+                padding: "6px", borderRadius: "13px",
+                border: quietaMarcada === p.id
+                  ? "1px dashed rgba(248,249,250,0.45)"
+                  : `2px solid ${NEUTRO}`,
+              } : undefined}
+            >
               <span style={{ display: "block", marginBottom: "4px" }}>
                 <IdeaConTermino
                   idea={p.idea}
@@ -200,7 +256,7 @@ export default function LaEcuacionEnMovimiento({
                   valor={texto[p.id] ?? ""}
                   onCambio={(v) => setTexto((t) => ({ ...t, [p.id]: v }))}
                   onEnviar={enviar}
-                  deshabilitado={!puedeResponder}
+                  deshabilitado={!puedeResponder || !segundaLista}
                   etiqueta={`${p.idea}, total nuevo`}
                   estado={r && !r.ok ? (marcada(p.id) ? "incorrecta" : null) : null}
                 />
@@ -231,6 +287,24 @@ export default function LaEcuacionEnMovimiento({
             </div>
           ))}
         </div>
+
+        {/*
+          ═══════ LA SEGUNDA DECISIÓN (D4), ANTES DE ESCRIBIR ═══════
+
+          Clasificar primero y calcular después: la pregunta es de otro tipo
+          que la de los totales, y cada opción deja el arrastre en una casilla
+          distinta de las tres de arriba.
+        */}
+        {conSegunda && puedeResponder && (
+          <SegundaDecisionT1
+            pregunta={SEGUNDA_T1_5.pregunta}
+            opciones={opcionesSegundaT1_5(i, h)}
+            correcta={correctaQuieta}
+            porque={SEGUNDA_T1_5.porque}
+            escenaDe={escenaSegundaT1_5}
+            onPintar={setEscenaSegunda}
+          />
+        )}
 
         {/* ═══════════ EL PIE, QUE COMPRUEBA MIENTRAS SE ESCRIBE ═══════════ */}
         <div data-pie data-cuadra={completo ? (cuadra ? "si" : "no") : "incompleto"} style={{
@@ -333,8 +407,8 @@ export default function LaEcuacionEnMovimiento({
       {r && r.texto && <Retro texto={r.texto} />}
 
       {puedeResponder && (
-        <Responder onClick={enviar} deshabilitado={!completo}>
-          {completo ? "Anotar" : "Escribe los totales"}
+        <Responder onClick={enviar} deshabilitado={!completo || !segundaLista}>
+          {!segundaLista ? "Primero: cuál no se mueve" : completo ? "Anotar" : "Escribe los totales"}
         </Responder>
       )}
       {r && !esperandoReintento && !modoDemo && (
