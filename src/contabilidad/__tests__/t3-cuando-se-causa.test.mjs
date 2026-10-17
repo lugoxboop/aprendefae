@@ -85,7 +85,7 @@ const TABLA = {
   "t3a2-pago-30-dias": { acuerdo: ACUERDO, servicio: HECHO, pago: DINERO },
   "t3a2-maquina-san-miguel": { pedido: ACUERDO, servicio: HECHO, cobro: DINERO },
   "t3a2-jcc": { cotizacion: ACUERDO, pedido: ACUERDO, servicio: HECHO, factura: FACTURA },
-  "t3a2-pago-60-dias": { cotizacion: ACUERDO, acuerdo: ACUERDO, servicio: HECHO, pago: DINERO },
+  "t3a2-lcdv": { cotizacion: ACUERDO, servicio: HECHO, cierre: CIERRE },
 };
 
 test("★★★ para cada ítem: la marca correcta y el tipo de error de cada marca equivocada", () => {
@@ -112,7 +112,7 @@ test("★★★ el acierto de cada ítem es el suyo (por contenido, no por núme
     "t3a2-pago-30-dias": "El ingreso se causó el día del servicio. Los 30 días solo corren para la plata.",
     "t3a2-maquina-san-miguel": "Cada día de servicio iba causando el ingreso. Los cinco días son suyos, aunque le paguen en febrero.",
     "t3a2-jcc": "El ingreso se causó el 8, cuando el trabajo quedó hecho. Cotizar y pedir son antes; facturar es después.",
-    "t3a2-pago-60-dias": "El ingreso se causó el día del servicio. Lo de antes era conversación y lo de después es solo la plata.",
+    "t3a2-lcdv": "El ingreso se causó el 20, con el servicio. La plata entró ese día: no queda nada pendiente.",
   });
   /* Cada acierto habla de su ítem. */
   assert.match(por["t3a2-mps"], /el 21/);
@@ -120,7 +120,8 @@ test("★★★ el acierto de cada ítem es el suyo (por contenido, no por núme
   assert.match(por["t3a2-jcc"], /el 8/);
   assert.match(A2.ITEMS_ACT2.find((x) => x.id === "t3a2-jcc").hecho, /JCC el 8/);
   assert.match(por["t3a2-pago-30-dias"], /30 días/);
-  assert.match(por["t3a2-pago-60-dias"], /antes era conversación/);
+  assert.match(por["t3a2-lcdv"], /el 20/);
+  assert.match(A2.ITEMS_ACT2.find((x) => x.id === "t3a2-lcdv").hecho, /LCDV el 20/);
   assert.match(por["t3a2-maquina-san-calixto"], /uso .* gasto/);
   assert.match(por["t3a2-maquina-san-miguel"], /servicio .* ingreso/);
 });
@@ -137,7 +138,7 @@ test("★★★ los textos de error, los de Levi y Gen, textuales", () => {
 test("★★ los pies dicen «Basado en el libro» en los seis, que llevan fechas o instancia propias", () => {
   assert.deepEqual(A2.ITEMS_ACT2.map(A2.pieDe), [
     "Basado en el libro, p. 121", "Basado en el libro, p. 140", "Basado en el libro, p. 120",
-    "Basado en el libro, p. 142", "Basado en el libro, p. 121", "Basado en el libro, p. 120",
+    "Basado en el libro, p. 142", "Basado en el libro, p. 121", "Basado en el libro, p. 121",
   ]);
 });
 
@@ -306,19 +307,20 @@ test("★★ T1-6 y lo compartido no se tocan: el componente no importa nada de 
 
 test("★★★ la segunda decisión: los textos de Katsumi, textuales", () => {
   assert.equal(A2.SEGUNDA_ACT2.pregunta, "Ese día, ¿qué queda?");
-  assert.deepEqual(A2.SEGUNDA_ACT2.opciones.map((o) => o.rotulo), ["Por cobrar", "Por pagar", "Nada todavía"]);
+  assert.deepEqual(A2.SEGUNDA_ACT2.opciones.map((o) => o.rotulo), ["Por cobrar", "Por pagar", "Nada pendiente"]);
   assert.deepEqual(A2.ERRORES_SEGUNDA_ACT2, {
-    "por-cobrar": { "por-pagar": "Prestó el servicio: a ella le deben.", nada: "Ya se causó, aunque la plata no se haya movido." },
-    "por-pagar": { "por-cobrar": "Usó la máquina: ella es la que debe.", nada: "Ya se causó, aunque la plata no se haya movido." },
+    "por-cobrar": { "por-pagar": "Prestó el servicio: a ella le deben.", nada: "La plata no se ha movido: algo quedó pendiente." },
+    "por-pagar": { "por-cobrar": "Usó la máquina: ella es la que debe.", nada: "La plata no se ha movido: algo quedó pendiente." },
+    nada: { "por-cobrar": "Le pagaron el mismo día: nadie debe nada.", "por-pagar": "Le pagaron el mismo día: nadie debe nada." },
   });
   assert.deepEqual(A2.MARCA_ACT2, { bien: "Correcto", mal: "No va aquí", era: "Iba aquí" });
   assert.equal(A2.SE_CAUSA_DIA("Servicio prestado, 21"), "Se causa: Servicio prestado, 21");
 });
 
-test("★★★ «Por pagar» solo en la máquina de San Calixto (p. 140); en los otros cinco, «Por cobrar»", () => {
+test("★★★ «Por pagar» solo en la máquina de San Calixto (p. 140), «Nada pendiente» solo en LCDV y «Por cobrar» en los otros cuatro", () => {
   assert.deepEqual(A2.ITEMS_ACT2.map((x) => [x.id, x.queda]), [
     ["t3a2-mps", "por-cobrar"], ["t3a2-maquina-san-calixto", "por-pagar"], ["t3a2-pago-30-dias", "por-cobrar"],
-    ["t3a2-maquina-san-miguel", "por-cobrar"], ["t3a2-jcc", "por-cobrar"], ["t3a2-pago-60-dias", "por-cobrar"],
+    ["t3a2-maquina-san-miguel", "por-cobrar"], ["t3a2-jcc", "por-cobrar"], ["t3a2-lcdv", "nada"],
   ]);
   for (const item of A2.ITEMS_ACT2) {
     for (const o of A2.SEGUNDA_ACT2.opciones) {
@@ -341,7 +343,7 @@ test("★★★ al acertar el día: la línea cede a la pregunta y tres filas; l
     assert.equal(m.caja.querySelector("[data-se-causa-dia]").textContent, "Se causa: Servicio prestado, 21");
     assert.equal(m.caja.querySelector("[data-pregunta-segunda]").textContent, "Ese día, ¿qué queda?");
     const ops = [...m.caja.querySelectorAll("[data-opcion-segunda]")];
-    assert.deepEqual(ops.map((o) => o.textContent), ["Por cobrar", "Por pagar", "Nada todavía"]);
+    assert.deepEqual(ops.map((o) => o.textContent), ["Por cobrar", "Por pagar", "Nada pendiente"]);
     for (const o of ops) {
       assert.equal(o.style.minHeight, "56px");
       assert.equal(o.style.width, "100%");
@@ -390,7 +392,7 @@ test("★★★ segunda bien: 2 px #F8F9FA y «Correcto» con Check; después la
   } finally { m.desmontar(); }
 });
 
-for (const [k, mal] of [[0, "nada"], [0, "por-pagar"], [1, "por-cobrar"], [1, "nada"]]) {
+for (const [k, mal] of [[0, "nada"], [0, "por-pagar"], [1, "por-cobrar"], [1, "nada"], [5, "por-cobrar"], [5, "por-pagar"]]) {
   const item = A2.ITEMS_ACT2[k];
   test(`★★★ segunda mal (${item.id} · ${mal}): coral y «No va aquí», el error en su bloque; a los 0,7 s «Iba aquí» y la devolución; vale 0`, async () => {
     let fin = null;
