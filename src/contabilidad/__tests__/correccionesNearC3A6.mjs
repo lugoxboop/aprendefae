@@ -74,3 +74,45 @@ export const ROTULOS_A6 = Object.fromEntries(Object.entries(MAPA).map(([k, [fila
 /* Las filas de Near que este ayudante lee: todas las de la tabla de A6. */
 export const FILAS_NEAR_A6 = FILAS.map((f) => f[0]);
 export const FILAS_LEIDAS = [...new Set(Object.values(MAPA).map((x) => x[0]))];
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * EL §5 DE MELLO, CERRADO POR NEAR (c3-mello-near.md): los textos nuevos de
+ * «## A6 · lado a lado» y «## A6 · dos cuentas propias», letra por letra de
+ * sus tablas. Falla si falta la sección, la fila o el «…».
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+const N5 = readFileSync(new URL(`${PAQ}c3-mello-near.md`, RAIZ), "utf8");
+
+function tablaN5(titulo) {
+  const ini = N5.indexOf(`\n${titulo}`);
+  assert.ok(ini >= 0, `no está «${titulo}» en c3-mello-near.md`);
+  const fin = N5.indexOf("\n## ", ini + 1);
+  const filas = N5.slice(ini, fin < 0 ? undefined : fin).split("\n")
+    .filter((l) => l.startsWith("| ") && !l.startsWith("| Campo") && !l.startsWith("| ---"))
+    .map((l) => l.slice(1, -1).split("|").map((c) => c.trim()));
+  return (campo) => filas.filter((f) => f[0] === campo).map((f) => {
+    const t = citas(f[1]);
+    assert.equal(t.length, 1, `«${campo}» de «${titulo}» no trae un texto entre «»`);
+    return t[0];
+  });
+}
+
+const LADO = tablaN5("## A6 · lado a lado (N-2)");
+const DOS = tablaN5("## A6 · dos cuentas propias (N-1 y N-2)");
+const uno = (f, campo) => { const t = f(campo); assert.equal(t.length, 1, campo); return t[0]; };
+
+export const NEAR_N5_A6 = {
+  ladoALado: { correcta: uno(LADO, "Opción correcta"), otras: LADO("Opción") },
+  dosCuentas: {
+    texto: uno(DOS, "Texto"),
+    pregunta: uno(DOS, "Pregunta"),
+    correcta: uno(DOS, "Opción correcta"),
+    otras: DOS("Opción"),
+    noCambia: uno(DOS, "Devolución («no cambia»)"),
+    noSeTocan: uno(DOS, "Devolución («no se tocan»)"),
+    bien: uno(DOS, "Acierto"),
+  },
+};
+assert.equal(NEAR_N5_A6.ladoALado.otras.length, 2);
+assert.equal(NEAR_N5_A6.dosCuentas.otras.length, 2);

@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { ROTULOS_A6, A6JS, A6CSS, FILAS_NEAR_A6, FILAS_LEIDAS } from "./correccionesNearC3A6.mjs";
+import { ROTULOS_A6, A6JS, A6CSS, FILAS_NEAR_A6, FILAS_LEIDAS, NEAR_N5_A6 } from "./correccionesNearC3A6.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -12,7 +12,8 @@ import { ROTULOS_A6, A6JS, A6CSS, FILAS_NEAR_A6, FILAS_LEIDAS } from "./correcci
  * (patron-enganche-c3-v1.html, CODIGO.a6): sus pantallas se ejecutan aquí y
  * se comparan enteras con las de los datos, en los dos sentidos, con encima
  * solo lo que dicen M-1 de Mello, los rótulos [W] de Near
- * (correccionesNearC3A6.mjs) y el texto de main en «dos-cuentas-propias».
+ * (correccionesNearC3A6.mjs) y los textos con que Near cerró el §5 de Mello
+ * (c3-mello-near.md: «dos-cuentas-propias» y las opciones del lado a lado).
  *
  *   · textos: Watari ↔ datos, campo por campo; los de main que Watari conserva,
  *     letra por letra contra contabilidadT7_1_a6.js; los de la figura, en su
@@ -68,7 +69,13 @@ const MELLO = leer(`${PAQ}auditoria-mello-patron-c3.md`);
 const FUENTE = leer("src/components/mecanicas/libros/t7/DevolucionesEnPeriodicoC3.jsx");
 const FUENTE_DATOS = leer("src/data/contabilidadT7_1_a6_c3.js");
 
-/* Las pantallas que Near está reescribiendo: B2 no se exige todavía en ellas (N-1 de Mello). Esta lista solo encoge. */
+/*
+ * Las pantallas que todavía pasan de 60 con los textos de Near: B2 no se exige
+ * en ellas. Esta lista solo encoge.
+ *   · dos-cuentas-propias: con los textos de c3-mello-near.md, 58 con el
+ *     acierto y 59 con el 2.º error, pero 65 con el 1.er error: la pista de
+ *     main (15 palabras), que Near deja igual, no entró en su conteo.
+ */
 const PENDIENTES_NEAR = new Set(["dos-cuentas-propias"]);
 
 const P = A.PIEZA_DEVOLUCIONES_C3;
@@ -81,19 +88,28 @@ const N = ROTULOS_A6;
 const deWatari = () => new Function("window", `${A6JS}\nreturn window.C3A6.PANTALLAS;`)({});
 const conFunciones = (x) => JSON.parse(JSON.stringify(x, (k, v) => (typeof v === "function" ? `fn:${String(v)}` : v)));
 
-/* Lo de Watari con lo que cambia encima: M-1, los rótulos de Near y el texto de main en «dos-cuentas-propias». */
+/* Lo de Watari con lo que cambia encima: M-1, los rótulos de Near y el §5 de Mello cerrado por Near. */
+const N5 = NEAR_N5_A6;
+const conOpciones = (p, correcta, otras) => p.opciones.forEach((o, i) => { o.t = i === 0 ? correcta : otras[i - 1]; });
 function esperadas() {
   const R = deWatari();
   const dos = R.find((x) => x.id === "dos-cuentas-propias");
   assert.ok(dos.texto.endsWith(` ${N.consignaP3.watari}`), "la consigna de P3 ya no cierra el texto de Watari");
-  dos.texto = dos.texto.slice(0, -(N.consignaP3.watari.length + 1));
+  dos.texto = N5.dosCuentas.texto;
   dos.consigna = N.consignaP3.near;
-  dos.opciones.find((o) => o.id === "no-cambia").devolucion = pMain("dos-cuentas-propias").opciones.find((o) => o.id === "no-cambia").devolucion;
+  dos.pregunta = N5.dosCuentas.pregunta;
+  dos.bien = N5.dosCuentas.bien;
+  assert.deepEqual(dos.opciones.map((o) => o.id), ["saber-cuanto", "no-cambia", "no-se-tocan"]);
+  conOpciones(dos, N5.dosCuentas.correcta, N5.dosCuentas.otras);
+  dos.opciones[1].devolucion = N5.dosCuentas.noCambia;
+  dos.opciones[2].devolucion = N5.dosCuentas.noSeTocan;
   const lado = R.find((x) => x.id === "lado-a-lado");
   assert.ok(lado.texto.startsWith(`${N.consignaP8.watari} `), "la consigna de P8 ya no abre el texto de Watari");
   lado.pregunta = lado.texto.slice(N.consignaP8.watari.length + 1);
   lado.consigna = N.consignaP8.near;
   delete lado.texto;
+  assert.deepEqual(lado.opciones.map((o) => o.id), ["al-reves", "en-el-debe", "ingresos"]);
+  conOpciones(lado, N5.ladoALado.correcta, N5.ladoALado.otras);
   /* Para el recorrido de canonEnganche.js: qué tocar antes de que salga la pregunta (lo mismo que abre `antes`). */
   dos.pasosAntes = ['[data-accion="modo"][data-v="aparte"]'];
   lado.pasosAntes = ['[data-accion="fecha"][data-v="j1"]'];
@@ -137,7 +153,7 @@ const texto = (el) => el?.textContent;
 
 /* ═══════════ 1 · TEXTOS ═══════════ */
 
-test("★★★ las pantallas son, campo por campo y letra por letra, las del a6.js de Watari con M-1, los rótulos de Near y main en «dos-cuentas-propias»", () => {
+test("★★★ las pantallas son, campo por campo y letra por letra, las del a6.js de Watari con M-1, los rótulos de Near y el §5 de Mello cerrado por Near", () => {
   assert.deepStrictEqual(conFunciones(A.PANTALLAS), conFunciones(esperadas()));
   assert.equal(P.pantallas, A.PANTALLAS);
   assert.deepEqual(P.pantallas.map((p) => p.id), ["portada", "que-es-una-devolucion", "dos-cuentas-propias", "el-caso", "cuanto-se-reversa", "libro-del-comprador", "libro-del-vendedor", "lado-a-lado", "resumen"]);
@@ -157,33 +173,48 @@ test("★★★ M-1: la consigna va aparte del texto y de la pregunta en las dos
   assert.match(MELLO, /La pieza separa `consigna` de `texto`, y el motor pinta la consigna mientras `!P\.antes\(s\)`\./);
 });
 
-test("★★★ «dos-cuentas-propias» con el texto de Near en main; C1: los párrafos 2.º a 4.º, en el «¿Por qué?»", () => {
+test("★★★ «dos-cuentas-propias» y el lado a lado con los textos de Near (c3-mello-near.md); C1: la razón del libro, de main, en el «¿Por qué?»", () => {
   const p = pantalla("dos-cuentas-propias");
   const m = pMain("dos-cuentas-propias");
-  assert.equal(p.texto, m.parrafos[0]);
+  const d = N5.dosCuentas;
+  assert.equal(p.texto, d.texto);
+  assert.equal(p.pregunta, d.pregunta);
+  assert.deepEqual(p.opciones.map((o) => [o.id, o.t, o.devolucion ?? null, Boolean(o.correcta)]), [
+    ["saber-cuanto", d.correcta, null, true], ["no-cambia", d.otras[0], d.noCambia, false], ["no-se-tocan", d.otras[1], d.noSeTocan, false]]);
+  assert.equal(p.bien, d.bien);
+  /* Lo que no cambia: la razón del libro (párrafos 2.º a 4.º de main), la pista y el pie. */
   assert.equal(p.porque, m.parrafos.slice(1).join(" "));
   assert.ok(p.porque.startsWith("El libro da la razón: "));
-  assert.equal(p.pregunta, m.pregunta);
   assert.equal(p.pista, m.pista);
-  assert.equal(p.bien, m.acierto.texto);
-  assert.deepEqual(p.opciones.map((o) => [o.id, o.t, o.devolucion ?? null, Boolean(o.correcta)]), m.opciones.map((o) => [o.id, o.texto, o.devolucion ?? null, o.correcta]));
   assert.equal(p.pie, m.pie);
-  /* Lo único que Watari cambió sin marcarlo: esta devolución. Va la de main. */
-  const deW = deWatari().find((x) => x.id === "dos-cuentas-propias").opciones.find((o) => o.id === "no-cambia").devolucion;
-  assert.notEqual(deW, p.opciones[1].devolucion);
+  /* N-2 de Mello: entre opciones, como mucho una palabra de diferencia. */
+  const pal = (t) => t.split(/\s+/).length;
+  for (const id of ["dos-cuentas-propias", "lado-a-lado"]) {
+    const n = pantalla(id).opciones.map((o) => pal(o.t));
+    assert.ok(Math.max(...n) - Math.min(...n) <= 1, `${id}: ${n}`);
+  }
+  const l = pantalla("lado-a-lado");
+  const ml = pMain("lado-a-lado");
+  assert.deepEqual(l.opciones.map((o) => o.t), [N5.ladoALado.correcta, ...N5.ladoALado.otras]);
+  assert.deepEqual(l.opciones.map((o) => o.devolucion ?? null), ml.opciones.map((o) => o.devolucion ?? null), "las devoluciones de main del lado a lado no cambian");
+  assert.equal(l.pista, ml.pista);
+  assert.equal(l.bien, ml.acierto.texto);
 });
 
 test("★★★ lo que Watari conserva de main va letra por letra: pistas, preguntas, opciones, devoluciones, aciertos, líneas, pies y resumen", () => {
+  /* Lo que Near reescribió para el §5 de Mello se mira en la prueba de arriba. */
+  const DE_NEAR = new Set(["dos-cuentas-propias"]);
   for (const p of P.pantallas) {
     const m = pMain(p.id);
     assert.ok(m, p.id);
     assert.equal(p.pie, m.pie, `${p.id}: pie`);
     if (m.pista) assert.equal(p.pista, m.pista, `${p.id}: pista`);
-    if (m.opciones) {
-      assert.deepEqual(p.opciones.map((o) => [o.id, o.t, o.devolucion ?? null, Boolean(o.correcta)]), m.opciones.map((o) => [o.id, o.texto, o.devolucion ?? null, o.correcta]), p.id);
+    if (m.opciones && !DE_NEAR.has(p.id)) {
+      const t = p.id !== "lado-a-lado";
+      assert.deepEqual(p.opciones.map((o) => [o.id, t ? o.t : null, o.devolucion ?? null, Boolean(o.correcta)]), m.opciones.map((o) => [o.id, t ? o.texto : null, o.devolucion ?? null, o.correcta]), p.id);
       assert.equal(p.pregunta ?? p.texto, m.pregunta, `${p.id}: pregunta`);
     }
-    if (m.acierto) assert.equal(p.bien, m.acierto.texto, `${p.id}: acierto`);
+    if (m.acierto && !DE_NEAR.has(p.id)) assert.equal(p.bien, m.acierto.texto, `${p.id}: acierto`);
     if (m.lineas) assert.deepEqual(p.lineas.map(({ id, cuenta, monto, lado, pista, devolucion }) => ({ id, cuenta, monto, lado, pista, devolucion })), m.lineas.map(({ id, cuenta, monto, lado, pista, devolucion }) => ({ id, cuenta, monto, lado, pista, devolucion })), p.id);
   }
   assert.equal(pantalla("portada").texto, pMain("portada").objetivo);

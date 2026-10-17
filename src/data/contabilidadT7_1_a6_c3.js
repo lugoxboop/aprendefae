@@ -20,13 +20,10 @@
  *     Dajema».
  *   · A6-1 de Mello: la barra del IVA va entera hasta el acierto (eso es de
  *     la figura: DevolucionesEnPeriodicoC3.jsx).
- *   · «dos-cuentas-propias» con el texto de Near en main: la devolución de
- *     «no-cambia» es la de main («resta de los ingresos»); el a6.js de Watari
- *     la cambió sin marcarla [R] ni [W].
- *
- * PENDIENTE DE NEAR (nunca en pantalla): Near está reescribiendo
- * «dos-cuentas-propias» (N-1 y N-2 de Mello: 78 palabras con M-1; opciones de
- * 8, 9 y 11 palabras). Va con el texto de hoy hasta que llegue el suyo.
+ *   · El §5 de Mello cerrado por Near (c3-mello-near.md): en
+ *     «dos-cuentas-propias», el texto, la pregunta, las opciones, sus
+ *     devoluciones y el acierto (N-1, N-2); en «lado-a-lado», las tres
+ *     opciones (N-2), con las devoluciones de main.
  *
  * `pasosAntes` (no es de Watari): lo que el recorrido de canonEnganche.js
  * toca antes de responder en las dos pantallas con `antes`.
@@ -148,15 +145,15 @@ export const PANTALLAS = [
   { id: "portada", tipo: "portada", texto: "Registrar una devolución en el libro del comprador y en el del vendedor.", boton: "Empezar", pie: "Basado en el libro, pp. 230-232" },
   { id: "que-es-una-devolucion", tipo: "lectura", texto: "A veces la mercancía llega en mal estado y el cliente devuelve toda o una parte. Si la venta fue a crédito, el vendedor le da una nota crédito: ahí dice cuánto le rebaja de lo que le debe, y por qué.",
     listo: (s) => s.fig.devuelta, pie: "Basado en el libro, p. 230" },
-  /* C1: «El libro da la razón…» y los dos párrafos siguientes de Near pasan al «¿Por qué?» del acierto. PENDIENTE DE NEAR (N-1, N-2). */
-  { id: "dos-cuentas-propias", tipo: "eleccion", texto: "Cada una tiene su propia cuenta. El vendedor usa Devoluciones de ventas. El comprador usa Devoluciones de compras.",
+  /* C1: «El libro da la razón…» y los dos párrafos siguientes de Near pasan al «¿Por qué?» del acierto. Texto, pregunta, opciones, devoluciones y acierto: los de Near para N-1 y N-2. */
+  { id: "dos-cuentas-propias", tipo: "eleccion", texto: "Para quien vende: Devoluciones de ventas. Para quien compra: Devoluciones de compras.",
     consigna: "Compara las dos formas de anotar la devolución.",
-    pregunta: "¿Por qué la devolución no se anota directo en Ingresos por ventas o en Compras?",
+    pregunta: "¿Por qué no restarla directo de Ingresos por ventas o de Compras?",
     pista: "Piensa qué dato perdería la gerencia si la devolución se restara directo de la venta.",
-    opciones: [{ id: "saber-cuanto", t: "Para saber cuánto se devolvió en el periodo.", correcta: true },
-      { id: "no-cambia", t: "Porque una devolución no cambia el estado de resultados.", devolucion: "Sí lo cambia: Devoluciones de ventas resta de los ingresos, y Devoluciones de compras resta de las compras." },
-      { id: "no-se-tocan", t: "Porque esas cuentas no se pueden tocar después de la venta.", devolucion: "El libro no da esa razón. Dice que se usan cuentas aparte para saber cuánto se devolvió." }],
-    antes: (s) => s.fig.vioAparte, pasosAntes: ['[data-accion="modo"][data-v="aparte"]'], bien: "Así es. Con cuentas aparte, la empresa ve cuánto se devolvió en el periodo.",
+    opciones: [{ id: "saber-cuanto", t: "Para ver cuánto se devolvió en el periodo.", correcta: true },
+      { id: "no-cambia", t: "Porque la devolución no cambia el resultado.", devolucion: "Sí lo cambia: Devoluciones de ventas se resta de Ingresos por ventas." },
+      { id: "no-se-tocan", t: "Porque esas cuentas ya no se pueden tocar.", devolucion: "El libro da otra razón: ver cuánto se devolvió." }],
+    antes: (s) => s.fig.vioAparte, pasosAntes: ['[data-accion="modo"][data-v="aparte"]'], bien: "Así es: aparte, la devolución queda a la vista.",
     porque: "El libro da la razón: los administradores quieren saber cuánto se devolvió en el periodo. Devoluciones de ventas resta de Ingresos por ventas en el estado de resultados. Devoluciones de compras resta de Compras, en el costo de la mercancía vendida. Las dos se cierran contra Ganancias y pérdidas al final del periodo.",
     pie: "Basado en el libro, p. 230" },
   { id: "el-caso", tipo: "lectura", texto: "El 1 de junio, Dajema compra mercancía a crédito a El Tajamar por $15.200.000, más el IVA. El 5 de junio le devuelve una parte, porque llegó en mal estado. El Tajamar se la rebaja de lo que Dajema le debe.",
@@ -175,9 +172,9 @@ export const PANTALLAS = [
     consigna: "Cambia de fecha y mira de qué lado queda cada línea.",
     pregunta: "¿Qué tienen en común los dos registros de la devolución?",
     pista: "Mira qué cuenta usó cada libro para la devolución, y si quedó del mismo lado que el registro original.",
-    opciones: [{ id: "al-reves", t: "Los dos hacen el registro al revés, con una cuenta de devoluciones.", correcta: true },
+    opciones: [{ id: "al-reves", t: "Cada uno hace su registro al revés.", correcta: true },
       { id: "en-el-debe", t: "Los dos anotan la devolución en el debe.", devolucion: "No. Devoluciones de compras va al haber, y Devoluciones de ventas, al debe. Cada una reversa su propio registro." },
-      { id: "ingresos", t: "Los dos usan Ingresos por ventas.", devolucion: "Solo el vendedor usaba Ingresos por ventas. Y en la devolución no la toca: usa Devoluciones de ventas." }],
+      { id: "ingresos", t: "Los dos usan la cuenta Ingresos por ventas.", devolucion: "Solo el vendedor usaba Ingresos por ventas. Y en la devolución no la toca: usa Devoluciones de ventas." }],
     antes: (s) => s.fig.vioJ1, pasosAntes: ['[data-accion="fecha"][data-v="j1"]'], bien: "Exacto. Cada empresa reversa su propio registro, pero en lugar de Compras o de Ingresos por ventas usa su cuenta de devoluciones.", pie: "Basado en el libro, pp. 230 y 232" },
   { id: "resumen", tipo: "resumen", boton: null, lista: ["Una devolución es el registro original al revés.", "En lugar de Compras o de Ingresos por ventas, se usa la cuenta de devoluciones de cada uno.", "El IVA y la retención se reversan solo en la parte de lo devuelto."],
     siguiente: "Siguiente: «Control interno de los inventarios».", pie: "Basado en el libro, pp. 230 y 232" },
