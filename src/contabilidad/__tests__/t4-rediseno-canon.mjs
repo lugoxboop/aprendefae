@@ -71,11 +71,16 @@ export function fusionB(canonA, canonB) {
     if (!b) return { ...a, extra: [] };
     /* «(completa)»: la pantalla B va entera (sus lugares cambian, como los errores por cifra). */
     if (b.completa) return { ...a, textos: b.textos, extra: [] };
-    const lugares = new Set(a.textos.map((x) => x.lugar));
+    /* «Frase de cierre (con el acierto…)»: el lugar sin la nota de cuándo aparece. */
+    const norm = (l) => (l.startsWith("Frase de cierre") ? "Frase de cierre" : l);
+    const lugares = new Set(a.textos.map((x) => norm(x.lugar)));
     return {
       ...a,
-      textos: a.textos.map((x) => b.textos.find((y) => y.lugar === x.lugar) ?? x),
-      extra: b.textos.filter((y) => !lugares.has(y.lugar)),
+      textos: a.textos.map((x) => {
+        const y = b.textos.find((z) => norm(z.lugar) === norm(x.lugar));
+        return y ? { ...y, lugar: x.lugar } : x;
+      }),
+      extra: b.textos.filter((y) => !lugares.has(norm(y.lugar))),
     };
   });
 }

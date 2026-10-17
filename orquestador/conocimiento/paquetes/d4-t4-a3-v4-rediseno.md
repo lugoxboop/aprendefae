@@ -74,6 +74,63 @@
 - Siguiente: «Siguiente: «Bancos y notas del banco».» (<10)
 - Pie: «Basado en el libro, p. 183»
 
+
+## Caso B (D8), pantalla por pantalla
+
+D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): sobre las cifras de A2 del caso B (fondo 600.000, gastado 524.300, quedan 75.700); el sorteo elige el caso para toda la pieza y A3 va con el mismo caso que A2. El primer recorrido usa siempre el caso 1. Aquí va solo lo que cambia; «(completa)» marca una pantalla cuyos lugares cambian (los errores van por cifra) y va entera. Cifras del caso B (construidas): con 78.500 en la caja sobran 2.800 y el reembolso sale por 521.500 (opciones 524.300 · 521.500 · 527.100); con 70.400 faltan 5.300 y sale por 529.600 (opciones 524.300 · 519.000 · 529.600). Los pies llevan además « · Cifras construidas».
+
+- Rótulo del sobre (caso B): «LO QUE TIENE MARTA»
+- Interruptor · cobra (caso B): «Se le cobra a Marta»
+- Para el lector, el destino (caso B): «Los 5.300 van a {cuenta}, al debe.»
+
+**P0 · contar**
+- Texto alternativo: «El sobre con 524.300 en soportes y la caja sin contar. Al contar, hay 75.700, y la aguja de la suma cae justo en la marca del fondo.» (92,7)
+- Pie: «Basado en el libro, pp. 182 y 184 · Cifras construidas»
+
+**P1 · cuando-no-cuadra**
+- Pie: «Basado en el libro, pp. 183-185 · Cifras construidas»
+
+**P2 · el-sobrante**
+- Antes de la figura: «En la caja hay $78.500. ¿Qué muestra el arqueo?» (<10)
+- Acierto (tras «Correcto.»): «Se pasa por $2.800: un sobrante de caja menor.» (<10)
+- Error · cuadra (✗ y el texto): «Para cuadrar, tendría que dar justo $600.000. Suma los dos.» (89,7)
+- Texto alternativo: «El sobre con 524.300 en soportes y 78.500 en la caja. Con el acierto, aparece en la regla la aguja de la suma.» (87,0)
+- Pie: «Basado en el libro, p. 185 · Cifras construidas»
+
+**P3 · el-cheque** (completa)
+- Antes de la figura: «¿Por cuánto sale el reembolso?» (<10)
+- Acierto (tras «Correcto.»): «Los $2.800 de más ya están en la caja.» (<10)
+- Error · 524300 (✗ y el texto): «Así sería si cuadrara. Aquí sobra plata en la caja.» (77,2)
+- Error · 527100 (✗ y el texto): «Eso le suma la diferencia: el fondo quedaría pasado.» (<10)
+- Texto alternativo: «La aguja de caja más cheque cae donde dice el cheque que eliges. Solo el cheque correcto la deja en la marca del fondo.» (88,4)
+- Pie: «Basado en el libro, p. 185 · Cifras construidas»
+
+**P4 · el-asiento**
+- Antes de la figura: «¿A qué cuenta y a qué lado van los $2.800?» (109,6)
+- Error · gastos-generales (✗ y el texto): «Gastos generales ya tiene los $524.300 completos.» (<10)
+- Error · bancos (✗ y el texto): «Bancos ya tiene el cheque entero: $521.500.» (<10)
+- Texto alternativo: «El asiento del reembolso, con Gastos generales al debe y Bancos al haber. Los 2.800 se ponen en una cuenta y un lado.» (84,3)
+- Pie: «Basado en el libro, pp. 183 y 185 · Cifras construidas»
+
+**P5 · el-faltante** (completa)
+- Antes de la figura: «Con $70.400 en caja, ¿por cuánto sale?» (<10)
+- Acierto (tras «Correcto.»): «Repone lo gastado y los $5.300 que faltan.» (<10)
+- Error · 519000 (✗ y el texto): «Restaste lo que falta; el cheque lo repone.» (<10)
+- Error · 524300 (✗ y el texto): «Con eso, el fondo se queda corto.» (<10)
+- Texto alternativo: «Con 70.400 en la caja, la suma queda a la izquierda del fondo. Solo el cheque correcto deja la aguja de caja más cheque en la marca.» (89,5)
+- Pie: «Basado en el libro, pp. 185-186 · Cifras construidas»
+
+**P6 · camino-1**
+- Antes de la figura: «Es representativo: Taller Ríos le cobra los $5.300 a Marta.» (66,0)
+- Acierto (tras «Correcto.»): «Marta le queda debiendo $5.300 a la empresa.» (<10)
+- Texto alternativo: «Los 5.300 que faltan se ponen en una de tres cuentas, al debe o al haber.» (97,4)
+- Pie: «Basado en el libro, p. 186 · Cifras construidas»
+
+**P7 · dos-caminos**
+- Frase de cierre: «Quién paga los $5.300 lo decide la empresa.» (<10)
+- Texto alternativo: «La regla con los 5.300 que faltan para el fondo. Un interruptor elige si se le cobra a Marta o si la empresa lo asume, y el asiento cambia de cuenta: los 5.300 siempre van al debe.» (83,9)
+- Pie: «Basado en el libro, p. 183 · Cifras construidas»
+
 ## Rótulos de la figura
 
 - Soportes: «Soportes de gastos»
