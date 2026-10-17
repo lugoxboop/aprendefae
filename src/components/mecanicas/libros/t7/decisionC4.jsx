@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
@@ -11,6 +11,7 @@ import {
 import { EncabezadoHacer, BOTONES_T7 } from "./hacerT7.jsx";
 import { INTERFAZ_C3, pesos, reducidoAhora } from "./aprenderC3.jsx";
 import { ContadorConIntento } from "./armaLaLinea.jsx";
+import { barajar } from "../../../../utils/barajar.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -235,7 +236,34 @@ export const CSS_C4 = `
 
 const llenar = (t, vars) => t.replace(/\{(\w+)\}/g, (_, k) => String(vars[k]));
 
-export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCompletar = null, onComoSeJuega = null }) {
+/*
+ * D8 (Mello, v4 §1): con `pieza.barajar`, las opciones de cada elección se
+ * barajan UNA vez al montar, con la misma `barajar` de los Hacer
+ * (utils/barajar.js): dentro de una partida el orden no cambia; la siguiente
+ * trae otro. `pieza.barajar` puede ser la función (las pruebas la inyectan).
+ * Un ítem con `fijas: true` queda como viene (el par «costo o gasto» de H5).
+ */
+export function barajarItemsC4(items, mezclar) {
+  return items.map((I) => (tipoDe(I) === "eleccion" && !I.fijas && I.opciones?.length > 1 ? { ...I, opciones: mezclar(I.opciones) } : I));
+}
+
+export default function DecisionC4({ pieza: dada, ...props }) {
+  const [orden] = useState(() => (dada.barajar
+    ? new Map(barajarItemsC4(dada.items, typeof dada.barajar === "function" ? dada.barajar : barajar).map((I) => [I.id, I.opciones.map((o) => o.id)]))
+    : null));
+  /* El orden sorteado se aplica a los ítems que lleguen (la vista los rehace, p. ej. con su pie). */
+  const pieza = useMemo(() => (orden ? {
+    ...dada,
+    items: dada.items.map((I) => {
+      const ids = orden.get(I.id);
+      const op = ids?.map((id) => I.opciones.find((o) => o.id === id));
+      return op && op.length === I.opciones.length && op.every(Boolean) ? { ...I, opciones: op } : I;
+    }),
+  } : dada), [dada, orden]);
+  return <PartidaC4 pieza={pieza} {...props} />;
+}
+
+function PartidaC4({ pieza, Marco = Panel, rotulo, acento, onCompletar = null, onComoSeJuega = null }) {
   const hacer = pieza.modo === "hacer";
   const T = { ...INTERFAZ_C4, ...(pieza.interfaz ?? {}) };
   const t = useTanda(() => pieza.items);

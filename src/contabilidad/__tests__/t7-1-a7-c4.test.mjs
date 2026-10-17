@@ -73,7 +73,8 @@ test("★★★ en pantalla: portada y «Por qué cuidarlo» de Near arriba; la 
     assert.equal(m.q("[data-cejilla]").textContent, "Pregunta 1 de 2");
     assert.deepEqual(m.qq("[data-texto] > .t71-bloque").map((x) => x.textContent), ITEMS[0].parrafos);
     assert.equal(m.q("[data-pregunta]").textContent, ITEMS[0].pregunta);
-    assert.deepEqual(m.qq(".c4-ops [data-op]").map((b) => b.textContent), ITEMS[0].opciones.map((o) => o.t));
+    /* D8: barajadas al montar (la prueba del orden, en barajado-por-intento-c.test.mjs); aquí, que son las de Near. */
+    assert.deepEqual(m.qq(".c4-ops [data-op]").map((b) => b.textContent).sort(), ITEMS[0].opciones.map((o) => o.t).sort());
     assert.equal(m.q("[data-pie]").textContent, ITEMS[0].pie);
     assert.match(m.q("[data-camino]").textContent, new RegExp(W_A7.recibir.titulo));
     assert.equal(m.q(".c4-seguir").getAttribute("aria-disabled"), "true");

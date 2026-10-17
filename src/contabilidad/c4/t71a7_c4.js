@@ -105,6 +105,8 @@ export const CONSECUENCIA_C4 = {
   id: "t71-a7",
   objeto: "El camino de la caja",
   modo: "aprender",
+  /* D8 (Mello, v4 §1): el motor baraja las opciones una vez al montar, con utils/barajar.js. */
+  barajar: true,
   items: ITEMS_A7,
   consecuencia(item, eleccion) {
     return item.id === "al-recibir" ? recibir(eleccion ?? null) : seguridad(eleccion ?? null);

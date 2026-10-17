@@ -1,5 +1,5 @@
 import { ITEMS_H5, COSTO_O_GASTO, CUENTAS_H5, CIFRAS_H5, TARIFAS_H5 } from "../../data/contabilidadT7_1_h5.js";
-import { pesosC4 as $, pctC4, opcionesDeNear, barajarFijo } from "./t71Comun.js";
+import { pesosC4 as $, pctC4, opcionesDeNear } from "./t71Comun.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -24,6 +24,8 @@ export const ITEMS_C4_H5 = ITEMS_H5.map((it) => {
   if (it.parte === 1) {
     return {
       id: it.id, subtema: it.subtema, parte: 1, texto: it.pregunta, pregunta: null,
+      /* El par «costo o gasto» va siempre en el mismo lado, como en main: no se baraja (fijas). */
+      fijas: true,
       opciones: COSTO_O_GASTO.map((o) => ({ id: o.valor, t: o.texto, correcta: o.valor === it.correcta, msg: it.error ?? it.porque })),
       bien: it.acierto ?? it.porque,
     };
@@ -31,7 +33,7 @@ export const ITEMS_C4_H5 = ITEMS_H5.map((it) => {
   if (typeof it.correcta === "string") {
     return {
       id: it.id, subtema: it.subtema, parte: 2, texto: null, pregunta: it.pregunta,
-      opciones: barajarFijo([{ id: it.correcta, t: textoCuenta(it.correcta), correcta: true }, ...it.distractores.map((d) => ({ id: d.valor, t: textoCuenta(d.valor), msg: d.retro }))], it.id),
+      opciones: [{ id: it.correcta, t: textoCuenta(it.correcta), correcta: true }, ...it.distractores.map((d) => ({ id: d.valor, t: textoCuenta(d.valor), msg: d.retro }))],
       bien: it.acierto,
     };
   }
@@ -116,6 +118,8 @@ export const CONSECUENCIA_C4 = {
   id: "t71-h5",
   objeto: "La etiqueta del costo de El Faro",
   modo: "hacer",
+  /* D8 (Mello, v4 §1): el motor baraja las opciones una vez al montar, con utils/barajar.js. */
+  barajar: true,
   items: ITEMS_C4_H5,
   consecuencia(item, e) {
     if (item.parte === 1 || item.id === "cuenta-flete") return etiqueta(item, e ?? null);

@@ -71,6 +71,8 @@ export const CONSECUENCIA_C4 = {
   id: P.id,
   objeto: "Los dos libros",
   modo: "aprender",
+  /* D8 (Mello, v4 §1): el motor baraja las opciones una vez al montar, con utils/barajar.js. */
+  barajar: true,
   items: itemsAprender(P.pantallas),
   /* En `no-operacional`, los renglones del estado de resultados son las opciones. */
   enFigura: (item) => item.id === "no-operacional",

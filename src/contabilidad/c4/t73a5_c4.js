@@ -29,6 +29,8 @@ export const CONSECUENCIA_C4 = {
   id: P.id,
   objeto: "Libros contra conteo",
   modo: "aprender",
+  /* D8 (Mello, v4 §1): el motor baraja las opciones una vez al montar, con utils/barajar.js. */
+  barajar: true,
   items: itemsAprender(P.pantallas),
   consecuencia(item, eleccion) {
     const sobra = item.id === "sobrante";

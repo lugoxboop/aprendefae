@@ -1,13 +1,15 @@
 import { ITEMS_N3, EJEMPLO_N3, PISTA_N3 } from "../data/contabilidadT5_n3.js";
 import { anunciarRespuesta, sinAsiEs } from "../components/mecanicas/libros/t7/escaleraAyuda.js";
+import { barajar } from "../utils/barajar.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * T5 · N3 «¿Qué revisión falta?» — la lógica, sin React (entrega D v2).
  *
- *   prepararN3()               los cinco casos en el orden fijo de Mello,
- *                              con las cuatro acciones del libro en su orden
- *                              (no se barajan)
+ *   prepararN3(mezclar?)       los cinco casos en el orden fijo de Mello,
+ *                              con las cuatro acciones del libro barajadas
+ *                              (D8, Mello v4 §1: una vez por partida, con
+ *                              utils/barajar.js; el reintento trae otro orden)
  *   evaluarN3(ítem, v, fallos) la escalera (C2): con acierto, el acierto;
  *                              al primer error, la pista común y la línea
  *                              del distractor, y otro intento; al segundo,
@@ -23,7 +25,7 @@ import { anunciarRespuesta, sinAsiEs } from "../components/mecanicas/libros/t7/e
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-export const prepararN3 = () => ITEMS_N3.map((it) => ({ ...it, opciones: it.opciones.map((v) => ({ valor: v, texto: v })) }));
+export const prepararN3 = (mezclar = barajar) => ITEMS_N3.map((it) => ({ ...it, opciones: mezclar(it.opciones.map((v) => ({ valor: v, texto: v }))) }));
 
 /** `fallos`: cuántas veces se ha fallado ya este caso antes de esta respuesta (0 o 1). */
 export function evaluarN3(item, valor, fallos = 0) {

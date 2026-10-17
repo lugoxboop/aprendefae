@@ -1,5 +1,5 @@
 import { ITEMS_H3, METODOS_H3, CAPAS_H3, CIFRAS_H3 } from "../../data/contabilidadT7_1_h3.js";
-import { pesosC4 as $, opcionesDeNear, barajarFijo } from "./t71Comun.js";
+import { pesosC4 as $, opcionesDeNear } from "./t71Comun.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -24,7 +24,7 @@ const nombreMetodo = (v) => METODOS_H3.find((m) => m.valor === v)?.texto ?? v;
 export const ITEMS_C4_H3 = ITEMS_H3.map((it) => (it.opcionesTexto
   ? {
     id: it.id, subtema: it.subtema, texto: it.encabezado, pregunta: it.pregunta,
-    opciones: barajarFijo([{ id: it.correcta, t: nombreMetodo(it.correcta), correcta: true }, ...it.distractores.map((d) => ({ id: d.valor, t: nombreMetodo(d.valor), msg: d.retro }))], it.id),
+    opciones: [{ id: it.correcta, t: nombreMetodo(it.correcta), correcta: true }, ...it.distractores.map((d) => ({ id: d.valor, t: nombreMetodo(d.valor), msg: d.retro }))],
     bien: it.acierto,
   }
   : { id: it.id, tipo: "cifra", subtema: it.subtema, texto: it.encabezado, pregunta: it.pregunta, opciones: opcionesDeNear(it), bien: it.acierto }));
@@ -104,6 +104,8 @@ export const CONSECUENCIA_C4 = {
   id: "t71-h3",
   objeto: "La bodega por capas",
   modo: "hacer",
+  /* D8 (Mello, v4 §1): el motor baraja las opciones una vez al montar, con utils/barajar.js. */
+  barajar: true,
   items: ITEMS_C4_H3,
   consecuencia(item, e) {
     if (item.id === "mas-alto") return barras(item, e);

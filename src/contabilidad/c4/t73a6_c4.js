@@ -36,6 +36,8 @@ export const CONSECUENCIA_C4 = {
   id: P.id,
   objeto: "Inventario, provisión y gasto",
   modo: "aprender",
+  /* D8 (Mello, v4 §1): el motor baraja las opciones una vez al montar, con utils/barajar.js. */
+  barajar: true,
   items: itemsAprender(P.pantallas),
   consecuencia(item, e) {
     const est = item.id === "estimar";
