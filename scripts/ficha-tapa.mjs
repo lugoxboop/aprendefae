@@ -27,6 +27,20 @@ const MIRA = `(() => {
   if (!env) return { sinFicha: true };
   const f = env.getBoundingClientRect();
   if (f.width < 2) return { sinFicha: true };
+  /*
+   * Cabe un dedo? El estorbo es un solo rectangulo, asi que las sobras del
+   * control son cuatro candidatos exactos: arriba, abajo, izquierda y derecha.
+   */
+  const cabeElDedo = (r) => {
+    const pideW = Math.min(44, r.width);
+    const pideH = Math.min(44, r.height);
+    return [
+      { w: r.width, h: Math.min(r.bottom, f.top) - r.top },
+      { w: r.width, h: r.bottom - Math.max(r.top, f.bottom) },
+      { w: Math.min(r.right, f.left) - r.left, h: r.height },
+      { w: r.right - Math.max(r.left, f.right), h: r.height },
+    ].some((c) => c.w >= pideW && c.h >= pideH);
+  };
   const tapados = [];
   for (const el of document.querySelectorAll("h1,h2,h3,p,span,button,a")) {
     if (env.contains(el) || el.contains(env)) continue;
@@ -65,21 +79,23 @@ const MIRA = `(() => {
      * Para lo que se LEE sigue valiendo el centro: un texto con la ficha
      * encima no se lee ahi, y no hay dedo que lo arregle.
      */
+    let decorativo = false;
     if (tocable) {
-      const pideW = Math.min(44, r.width);
-      const pideH = Math.min(44, r.height);
-      const sobras = [
-        { w: r.width, h: Math.min(r.bottom, f.top) - r.top },
-        { w: r.width, h: r.bottom - Math.max(r.top, f.bottom) },
-        { w: Math.min(r.right, f.left) - r.left, h: r.height },
-        { w: r.right - Math.max(r.left, f.right), h: r.height },
-      ];
-      if (sobras.some((c) => c.w >= pideW && c.h >= pideH)) continue;
+      if (cabeElDedo(r)) continue;
     } else {
       const quien = document.elementFromPoint(cx, cy);
       if (!(quien && (env.contains(quien) || quien === env))) continue;
+      /*
+       * Un glifo dentro de un boton que SI es alcanzable no es un hallazgo
+       * aparte: su alcance es el del boton. Pero tampoco se tira a la basura,
+       * porque taparlo es un problema de lectura — el estudiante ve un boton
+       * con la flecha escondida. Va contado aparte, fuera del numero de
+       * cabecera, para que ese numero no se infle con cosmetica.
+       */
+      const padre = el.closest("button, a");
+      if (padre && padre !== el && cabeElDedo(padre.getBoundingClientRect())) decorativo = true;
     }
-    tapados.push({ texto: txt.slice(0, 40), etiqueta: el.tagName.toLowerCase(), tocable });
+    tapados.push({ texto: txt.slice(0, 40), etiqueta: el.tagName.toLowerCase(), tocable, decorativo });
   }
   return { ficha: [Math.round(f.left), Math.round(f.top), Math.round(f.width), Math.round(f.height)], tapados };
 })()`;
@@ -120,6 +136,7 @@ for (const paso of ["Contabilidad", TEMA]) {
   await p.waitForTimeout(700);
 }
 const todos = [];
+const glifos = [];
 let sinFicha = 0, conFicha = 0;
 const APRENDER = process.argv.includes("--aprender");
 for (const rotulo of APRENDER ? ["El material que explica", "Aprender"] : ["Los juegos que dan FP", "Hacer"]) {
@@ -144,7 +161,7 @@ if (APRENDER) {
       const r = await p.evaluate(MIRA);
       if (r.sinFicha) { sinFicha++; continue; }
       conFicha++;
-      for (const t of r.tapados) todos.push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}»`);
+      for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}»`);
     }
     const sig = p.locator(AVANCE);
     if ((await sig.count()) === 0) break;
@@ -155,6 +172,7 @@ if (APRENDER) {
   const u = [...new Set(todos)];
   for (const t of u) console.log("  " + t);
   console.log(`\n${u.length} elemento(s) tapados por la ficha de FP en «${TEMA}» (Aprender) a ${ANCHO} px.`);
+  if (glifos.length) console.log(`Y ${new Set(glifos).size} glifo(s) dentro de controles que SÍ se alcanzan: tapan el dibujo, no el toque.`);
   console.log(`Pantallas CON ficha: ${conFicha} · SIN ficha: ${sinFicha}.`);
   process.exit(conFicha === 0 ? 2 : (u.length === 0 ? 0 : 1));
 }
@@ -176,7 +194,7 @@ for (let k = 0; k < Math.min(nodos, 10); k++) {
     const r = await p.evaluate(MIRA);
     if (r.sinFicha) { sinFicha++; continue; }
     conFicha++;
-    for (const t of r.tapados) todos.push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}»`);
+    for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}»`);
   }
   await p.goBack().catch(() => {});
   await p.waitForTimeout(600);
@@ -185,6 +203,7 @@ await b.close();
 const unicos = [...new Set(todos)];
 for (const t of unicos) console.log("  " + t);
 console.log(`\n${unicos.length} elemento(s) tapados por la ficha de FP en «${TEMA}» a ${ANCHO} px.`);
+if (glifos.length) console.log(`Y ${new Set(glifos).size} glifo(s) dentro de controles que SÍ se alcanzan: tapan el dibujo, no el toque.`);
 console.log(`Pantallas CON ficha: ${conFicha} · SIN ficha: ${sinFicha}.`);
 if (conFicha === 0) {
   console.log("NO MEDIDO: la ficha no se pintó en ninguna pantalla, así que este cero no vale.");
