@@ -9,8 +9,9 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · la consecuencia en la figura ANTES del veredicto; el veredicto a los
  *     380 ms (mock.timers); con movimiento reducido, en el mismo toque
  *   · Hacer: la mala a la vista (coral, ✕ y su falla), «Iba aquí» en la
- *     correcta, puntaje y detalle del primer intento; la cifra cambia la figura
- *     con cada número
+ *     correcta, puntaje y detalle del primer intento; la cifra escrita llega a
+ *     la figura solo como `borrador` (Mello C4-1): la consecuencia, al comprobar
+ *   · Hacer avanza con «Siguiente caso» y «Ver mi resumen» (Mello C4-7)
  *   · Aprender: escalera C2 (pista; devolución y correcta en blanco), nunca
  *     «Iba aquí»; «Seguir» con aria-disabled
  *   · foco al mensaje y al texto; botones de 44 px; letra de 12 px o más
@@ -49,7 +50,7 @@ const consecuencia = (item, e) => {
   if ((item.tipo ?? "eleccion") === "cifra") return e === 100 ? { caja: e } : { caja: e, falla: `FALLA-${e}` };
   return e === "a" ? { caja: e } : { caja: e, falla: `FALLA-${e}` };
 };
-const Figura = ({ estado }) => h("div", { className: "c4-mov", "data-caja": JSON.stringify(estado) });
+const Figura = ({ estado, vista }) => h("div", { className: "c4-mov", "data-caja": JSON.stringify(estado), "data-borrador": JSON.stringify(vista.borrador ?? null), "data-valor": JSON.stringify(vista.valor ?? null) });
 const pieza = (modo) => ({ id: `juguete-${modo}`, objeto: "Caja", modo, titulo: "Juguete", objetivo: "OBJETIVO", consigna: "CONSIGNA. Tienes un solo intento por pregunta.", items: ITEMS, consecuencia, Figura });
 const Marco = ({ children }) => h("section", null, children);
 
@@ -69,9 +70,11 @@ async function montar(modo, props = {}) {
   };
   const pasar = async (ms) => { await act(async () => { mock.timers.tick(ms); }); };
   const fig = () => JSON.parse(q("[data-caja]").dataset.caja).caja;
+  const borrador = () => JSON.parse(q("[data-caja]").dataset.borrador);
+  const valor = () => JSON.parse(q("[data-caja]").dataset.valor);
   const op = (id) => q(`[data-op="${id}"]`);
   const boton = (texto) => qq("button").find((b) => b.textContent.trim() === texto);
-  return { caja, q, qq, clic, escribir, pasar, fig, op, boton, desmontar: () => act(async () => raiz.unmount()) };
+  return { caja, q, qq, clic, escribir, pasar, fig, borrador, valor, op, boton, desmontar: () => act(async () => raiz.unmount()) };
 }
 
 const conReloj = (fn) => async () => {
@@ -119,7 +122,7 @@ test("Hacer · la consecuencia en el acto y el veredicto a los 380 ms; la mala q
   await m.desmontar();
 }));
 
-test("Hacer · la cifra cambia la figura con cada número; «Iba aquí: $100»; puntaje y detalle del primer intento", conReloj(async () => {
+test("Hacer · la cifra escrita llega solo como borrador; la consecuencia al comprobar; «Iba aquí: $100»; «Siguiente caso»; puntaje y detalle del primer intento", conReloj(async () => {
   const fin = [];
   const m = await montar("hacer", { onCompletar: (...a) => fin.push(a) });
   assert.equal(m.q("[data-cejilla]").textContent, "", "el subtema salió antes del veredicto");
@@ -127,21 +130,34 @@ test("Hacer · la cifra cambia la figura con cada número; «Iba aquí: $100»; 
   await m.pasar(380);
   assert.ok(m.op("a").classList.contains("bien"));
   assert.equal(m.qq('[data-pastilla="revelada"]').length, 0);
-  await m.clic(m.boton("Siguiente ítem"));
+  assert.match(m.caja.textContent, /Caso 1 de 2/);
+  assert.doesNotMatch(m.caja.textContent, /Ítem|ítem/);
+  assert.equal(m.boton("Siguiente ítem"), undefined);
+  const sig = m.q("[data-responder] button");
+  assert.equal(sig.textContent.trim(), "Siguiente caso");
+  assert.equal(sig.style.borderRadius, "999px", "el avance no es la pastilla de Responder");
+  await m.clic(m.boton("Siguiente caso"));
   assert.equal(document.activeElement, m.q("[data-texto]"));
   assert.equal(m.q("[data-item]").dataset.item, "k1");
   await m.escribir("9");
-  assert.equal(m.fig(), 9);
+  assert.deepEqual([m.borrador(), m.valor(), m.fig()], [9, null, null], "la cifra escrita no llegó solo como borrador");
+  await m.escribir("100");
+  assert.deepEqual([m.borrador(), m.valor(), m.fig()], [100, null, null], "la correcta escrita se calificó antes de comprobar");
   await m.escribir("90");
-  assert.equal(m.fig(), 90);
+  assert.deepEqual([m.borrador(), m.valor(), m.fig()], [90, null, null], "el distractor escrito se calificó antes de comprobar");
   assert.equal(m.q("[data-falla]"), null, "la falla de la cifra salió antes de comprobar");
   await m.clic(m.q('[data-accion="comprobar"]'));
+  // La consecuencia llega al comprobar; el veredicto, 380 ms después.
+  assert.deepEqual([m.valor(), m.fig()], [90, 90]);
   assert.equal(m.q("[data-mensaje]"), null);
-  await m.pasar(380);
+  await m.pasar(379);
+  assert.equal(m.q("[data-mensaje]"), null, "el veredicto de la cifra llegó antes de 380 ms");
+  await m.pasar(1);
   assert.equal(m.q('[data-escrito="tuya"] [data-pastilla]').dataset.pastilla, "tachada");
   assert.equal(m.q('[data-escrito="iba"] [data-pastilla]').textContent, "Iba aquí: $100");
   assert.equal(m.q("[data-falla]").textContent, "FALLA-90");
   assert.equal(m.q(".c4-casilla"), null);
+  assert.equal(m.q("[data-responder] button").style.borderRadius, "999px");
   await m.clic(m.boton("Ver mi resumen"));
   assert.equal(fin.length, 1);
   assert.equal(fin[0][0], 50);
@@ -168,6 +184,7 @@ test("Aprender · escalera C2: la pista, luego la devolución y la correcta en b
   assert.equal(m.q("[data-cejilla]").textContent, "Pregunta 1 de 2");
   const seguir = () => m.q(".c4-seguir");
   assert.equal(seguir().getAttribute("aria-disabled"), "true");
+  assert.equal(seguir().textContent, "Seguir", "en Aprender el avance queda como está");
   await m.clic(m.op("b"));
   assert.equal(m.fig(), "b");
   assert.equal(m.q("[data-mensaje]"), null);
@@ -195,11 +212,19 @@ test("Aprender · escalera C2: la pista, luego la devolución y la correcta en b
   await m.clic(seguir());
   assert.equal(document.activeElement, m.q("[data-texto]"));
   // La cifra en Aprender: dos errores y la correcta en blanco, sin «Iba aquí».
-  for (const x of ["90", "80"]) { await m.escribir(x); await m.clic(m.q('[data-accion="comprobar"]')); await m.pasar(380); }
+  for (const x of ["90", "80"]) {
+    await m.escribir(x);
+    assert.deepEqual([m.borrador(), m.valor(), m.fig()], [Number(x), null, null], "al reescribir, la consecuencia anterior siguió a la vista");
+    await m.clic(m.q('[data-accion="comprobar"]'));
+    assert.equal(m.fig(), Number(x));
+    await m.pasar(380);
+  }
   assert.equal(m.q('[data-escrito="pista"]').textContent, "$100");
   assert.equal(m.q('[data-escrito="iba"]'), null);
   assert.doesNotMatch(m.caja.textContent, /Iba aquí/);
   assert.ok(m.q(".c4-casilla"), "en Aprender la casilla sigue abierta");
+  assert.equal(m.q("[data-responder]"), null, "Aprender no usa el avance de Hacer");
+  assert.equal(m.q(".c4-seguir").textContent, "Siguiente pieza");
   await m.desmontar();
 }));
 

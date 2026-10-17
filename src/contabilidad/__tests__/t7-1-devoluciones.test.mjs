@@ -4,6 +4,10 @@ import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { ROTULOS_A6, A6JS, A6CSS, FILAS_NEAR_A6, FILAS_LEIDAS, NEAR_N5_A6 } from "./correccionesNearC3A6.mjs";
 
+/* Lote V: las opciones salen barajadas; se comparan por id (pares [id, texto]), sin perder la pareja id ↔ texto. */
+const porId = (pares) => [...pares].sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+
+
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * T7-1 · A6 «Devoluciones en periódico», en el motor C3 (Célula C).
@@ -118,11 +122,11 @@ function esperadas() {
 
 /* ═══════════ MONTAR ═══════════ */
 
-async function montar(pieza = P) {
+async function montar(pieza = P, props = {}) {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
-  await act(async () => { raiz.render(h(Devoluciones, { pieza, rotulo: "R" })); });
+  await act(async () => { raiz.render(h(Devoluciones, { pieza, rotulo: "R", ...props })); });
   const q = (s) => caja.querySelector(s);
   const qa = (s) => [...caja.querySelectorAll(s)];
   const clic = async (el) => { assert.ok(el, "no está lo que se iba a tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
@@ -339,7 +343,7 @@ test("★★★ P3: la miniatura no califica; la pregunta sale después de ver �
   assert.equal(fila("neto"), "Ventas, menos devoluciones$12.800.000");
   assert.equal(m.q("[data-consigna]").hidden, true, "M-1: la consigna se va cuando sale la pregunta");
   assert.equal(texto(m.q("[data-pregunta]")), p.pregunta);
-  assert.deepEqual(m.qa("[data-op]").map(texto), p.opciones.map((o) => o.t));
+  assert.deepEqual(porId(m.qa("[data-op]").map((b) => [b.dataset.op, texto(b)])), porId(p.opciones.map((o) => [o.id, o.t])));
   /* Volver a «Restar de las ventas» no esconde la pregunta. */
   await m.accion("modo", "directo");
   assert.equal(fila("ingresos"), "Ingresos por ventas$12.800.000");
@@ -409,7 +413,7 @@ test("★★★ P5 (A6-1 de Mello): la barra del IVA va entera hasta el acierto;
   };
   assert.equal(texto(m.q("[data-texto]")), p.texto);
   assert.equal(m.q("[data-pregunta]"), null, "las opciones van en la figura");
-  assert.deepEqual(m.qa("[data-elige]").map(texto), ["$384.000", "$2.432.000", "$0"]);
+  assert.deepEqual(porId(m.qa("[data-elige]").map((b) => [b.dataset.elige, texto(b)])), porId([["proporcional", "$384.000"], ["todo", "$2.432.000"], ["nada", "$0"]]));
   assert.ok(m.q('[data-barra="mercancia"] .dev.marcada'), "la mercancía sí muestra su tajada");
   entera("al llegar");
   bloqueado(m);
@@ -595,6 +599,43 @@ test("★★★ B2: ninguna pantalla pasa de 60 palabras visibles, salvo las que
 });
 
 /* ═══════════ 4 · CÓDIGO, CATÁLOGO Y VISTA ═══════════ */
+
+/* ═══════════ LOTE V · LAS OPCIONES, BARAJADAS ═══════════ */
+
+test("★★★ lote V: las opciones (las dos preguntas y los corchetes de P5) salen barajadas con la función compartida (azar fijado), el mismo conjunto, la correcta no siempre primero, y el orden no cambia al fallar", async () => {
+  const { barajadorDe } = await import("../../utils/barajar.js");
+  assert.match(leer("src/components/mecanicas/libros/t7/aprenderC3.jsx"), /import \{ barajar \} from "\.\.\/\.\.\/\.\.\/\.\.\/utils\/barajar\.js"/);
+  assert.match(FUENTE, /barajar=\{barajar\}/, "la pieza pasa `barajar` al motor");
+  const casos = [
+    { id: "dos-cuentas-propias", sel: ".c3-op[data-op]", leer: (b) => b.dataset.op, antes: (m) => m.accion("modo", "aparte") },
+    { id: "cuanto-se-reversa", sel: "[data-figura] [data-elige]", leer: (b) => b.dataset.elige, antes: async () => {} },
+    { id: "lado-a-lado", sel: ".c3-op[data-op]", leer: (b) => b.dataset.op, antes: (m) => m.accion("fecha", "j1") },
+  ];
+  for (const c of casos) {
+    const datos = pantalla(c.id).opciones.map((o) => o.id);
+    const buena = pantalla(c.id).opciones.find((o) => o.correcta).id;
+    const ordenes = [];
+    for (const semilla of ["a", "b", "c", "d", "e", "f"]) {
+      const m = await montar(desde(c.id), { barajar: barajadorDe(semilla) });
+      try {
+        await c.antes(m);
+        const enPantalla = () => m.qa(c.sel).map(c.leer);
+        const orden = enPantalla();
+        assert.deepEqual([...orden].sort(), [...datos].sort(), `${c.id}: el mismo conjunto`);
+        const mala = orden.find((x) => x !== buena);
+        await m.op(mala);
+        assert.ok(m.qa(c.sel).find((b) => c.leer(b) === mala).classList.contains("mal"), `${c.id}: era un error`);
+        assert.deepEqual(enPantalla(), orden, `${c.id}: al fallar no se rebaraja`);
+        ordenes.push(orden);
+      } finally {
+        m.desmontar();
+      }
+    }
+    assert.ok(ordenes.some((o) => o.join() !== datos.join()), `${c.id}: en algún caso, distinto del orden de los datos`);
+    assert.ok(ordenes.some((o) => o[0] !== buena), `${c.id}: la correcta no queda siempre primero`);
+    assert.ok(new Set(ordenes.map((o) => o.join())).size > 1, `${c.id}: el orden depende del azar`);
+  }
+});
 
 test("★★ el CSS: prefijo propio, subgrid con respaldo (@supports), sin teal ni ámbar, botones de 44 px", () => {
   const css = COMP.CSS_A6;
