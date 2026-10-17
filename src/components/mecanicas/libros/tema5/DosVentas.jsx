@@ -1,4 +1,5 @@
 import { CONSIGNA_CAPA_3_T5_A2, PREGUNTA_CAPA_3_T5_A2, OPCIONES_CAPA_3_T5_A2, PISTA_CAPA_3_T5_A2, VENTAS_T5_A2, FINAL_CAPA_3_T5_A2 } from "../../../../data/contabilidadT5Pieza2.js";
+import { useState } from "react";
 import CajasQueRevelan, { LECTURA } from "../tema6/CajasQueRevelan.jsx";
 import { FiguraT5A2 } from "../tema6/FigurasCapa3.jsx";
 
@@ -22,7 +23,15 @@ const CAJAS = VENTAS_T5_A2.map((v) => ({
 }));
 const NOMBRE = { ...LECTURA, fontFamily: "Sora, sans-serif", fontWeight: 600, lineHeight: 1.35 };
 
+/*
+ * D8 (Mello, Kit v4; opcional, Célula C): `mezclar(opciones)` baraja las opciones de cada caja una vez
+ * al montar (la barajar de #442: utils/barajar.js); dentro de un intento no cambian, el siguiente trae
+ * otro orden. Sin `mezclar`, el orden de los datos, como siempre.
+ */
+const conOrden = (cajas, mezclar) => (mezclar ? cajas.map((c) => ({ ...c, decide: { ...c.decide, opciones: mezclar(c.decide.opciones) } })) : cajas);
+
 /* `c4` (opcional, Célula C: tema5/capa3C4T5.jsx): el patrón C4 de la capa 3. Sin él, como siempre. */
-export default function DosVentas({ c4 = null }) {
-  return <CajasQueRevelan consigna={CONSIGNA_CAPA_3_T5_A2} cajas={CAJAS} final={FINAL_CAPA_3_T5_A2} estiloTitulo={NOMBRE} forma="fila" atributos={{ "data-capa3-t5-a2": true }} Figura={FiguraT5A2} c4={c4} />;
+export default function DosVentas({ c4 = null, mezclar = null }) {
+  const [cajas] = useState(() => conOrden(CAJAS, mezclar));
+  return <CajasQueRevelan consigna={CONSIGNA_CAPA_3_T5_A2} cajas={cajas} final={FINAL_CAPA_3_T5_A2} estiloTitulo={NOMBRE} forma="fila" atributos={{ "data-capa3-t5-a2": true }} Figura={FiguraT5A2} c4={c4} />;
 }
