@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -231,4 +232,22 @@ test("★★ P5 sin movimiento reducido: las notas entran una cada 350 ms", asyn
     assert.equal(m.caja.querySelector("[data-saldo-mayor]").dataset.saldoMayor, "4.612.600");
   } finally { m.desmontar(); movimientoReducido(antes); }
   assert.ok(jugar);
+});
+
+test("★★★ D9 · el par de A5 son dos documentos (el extracto con la esquina doblada, el libro con lomo), en todas sus pantallas y sin palabras nuevas; H7 y H8 no", async () => {
+  const { CSS_TABLERO } = await import("../../components/t4/tablero.jsx");
+  assert.match(CSS_TABLERO, /\[data-documentos\] > \[data-lado-par="izq"\]::after \{[^}]*width: 8px; height: 8px;[^}]*clip-path: polygon/);
+  assert.match(CSS_TABLERO, /\[data-documentos\] > \[data-lado-par="der"\] \{[^}]*border-left: 2px solid/);
+  assert.match(CSS_TABLERO, /\[data-documentos\] > \[data-lado-par="der"\]::before \{[^}]*left: 3px;[^}]*width: 1px;/);
+  for (const p of P.pantallas) {
+    const m = await abrir(P, p.id);
+    try {
+      for (const par of m.caja.querySelectorAll("[data-par]")) {
+        assert.ok(par.hasAttribute("data-documentos"), `${p.id}: el par no es de documentos`);
+      }
+    } finally { m.desmontar(); }
+  }
+  for (const f of ["ConciliaLaCuenta.jsx", "SeAsientaONo.jsx", "hacerComun.jsx"]) {
+    assert.doesNotMatch(readFileSync(new URL(`../../components/t4/${f}`, import.meta.url), "utf8"), /documentos/, `${f} lleva los documentos de A5`);
+  }
 });

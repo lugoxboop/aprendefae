@@ -8,6 +8,7 @@
 - Medido con la sonda (Katsumi): peor pantalla 58 de 60 palabras; antes de la figura, 31 de 40 como mucho; la figura entre 84 y 183 px a 320.
 - **Lote B (16 oct 2026), capas 1 y 4 del prompt maestro:** la pieza abre con el objeto (en la P0 no hay texto antes de la figura: el rótulo va sobre su control y el texto aparece debajo, con la primera acción) y termina con la frase de cierre pegada al modelo en su estado final; sale la pantalla de resumen en lista. Diseño: Hanayama (`celula-d/hanayama-p2-lote-b.md`); textos: Katsumi (`celula-d/katsumi-cierres-lote-b.md`, v2, §5 y §5.1); decisiones de Yujiro en `celula-d/corte-calidad.md`, «Lote B».
 - **Objetivo (D2, 16 oct 2026):** una línea fija bajo el título, solo en la P0 (hallazgo de Shibukawa; Yujiro; texto de Katsumi). Con ella, la figura de la P0 queda a 130 px a 320: Yujiro la acepta porque B1 (280) se cumple, y la parada de medición de la P0 pasa a ser ≤ 280. Para que la P0 no pase de 60 palabras, el caso pasa a «San Calixto, 31 de marzo.» (Katsumi).
+- **D9 (lote nocturno, 16 oct 2026; Hanayama):** el par son dos documentos: «el banco», una hoja de extracto con la esquina doblada (triángulo de 8 px #B8C4D4 arriba a la derecha); «la empresa», un libro con lomo (borde izquierdo de 2 px #B8C4D4 y otra línea de 1 px 3 px adentro). Sin palabras nuevas; H7 y H8 usan el par sin ellos.
 
 ## Objetivo de la pieza
 

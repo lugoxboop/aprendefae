@@ -67,7 +67,7 @@ function Saldo({ p, onAcierto }) {
   return (
     <>
       <Fig nombre={NOMBRE} alt={p.alt}>
-        <Par izq={{ r: F.banco, v: EXTRACTO }} der={{ r: F.empresa, v: LIBROS }} pie={F.difieren(cifra(DIFERENCIA_INICIAL))}
+        <Par documentos izq={{ r: F.banco, v: EXTRACTO }} der={{ r: F.empresa, v: LIBROS }} pie={F.difieren(cifra(DIFERENCIA_INICIAL))}
           verdadero={ok ? { rotulo: F.verdadero, v: null, lector: F.verdaderoLector } : null} />
         <p className="t4r-p" data-caso>{p.caso}</p>
         <p className="t4r-rotacc" data-rotulo-pregunta>{p.rotuloPregunta}</p>
@@ -111,7 +111,7 @@ function Lado({ p, onAcierto }) {
   const der = banco ? { r: F.empresa, v: LIBROS } : { r: F.empresa, v: saldo, foco: i > 0 };
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
-      <Par izq={izq} der={der} igual={izq.v === der.v}
+      <Par documentos izq={izq} der={der} igual={izq.v === der.v}
         verdadero={{ rotulo: F.verdadero, v: izq.v === der.v ? izq.v : null, lector: F.verdaderoLector }} />
       <div className="t4a5-t" data-tarjeta-partida={x?.id ?? "fin"} aria-live="polite">
         {x ? <><span>{x.texto}</span><span>{cifra(x.monto)}</span></> : <span>{F.fin}</span>}
@@ -203,7 +203,7 @@ function ElMayor({ p, onCierre }) {
       <Mayor titulo={F.mayor} debe={debe} haber={haber} reserva={3} saldo={n === total ? cifra(SALDO_MAYOR) : null} rotuloSaldo={F.saldo} />
       {/* El par igualado reserva su sitio (visibility), así que nada salta al aparecer. */}
       <div style={{ visibility: n === total ? "visible" : "hidden" }} aria-hidden={n === total ? undefined : "true"} data-par-final={n === total ? "" : undefined}>
-        <Par izq={{ r: F.banco, v: CONCILIADO }} der={{ r: F.empresa, v: CONCILIADO }} igual={n === total} />
+        <Par documentos izq={{ r: F.banco, v: CONCILIADO }} der={{ r: F.empresa, v: CONCILIADO }} igual={n === total} />
       </div>
     </Fig>
   );
