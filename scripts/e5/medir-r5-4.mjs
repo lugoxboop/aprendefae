@@ -136,6 +136,21 @@ for (const ancho of ANCHOS) {
     filas.push({ ancho, estado: `${id}-calendario`, alto: m.alto, actividad: null, nota: `encabezado ${m.encabezado}${m.objetivo ? `, objetivo ${m.objetivo}` : ""}, figura desde ${m.figura}, celda ${m.celda}` });
     if (m.encabezado > 96) fallos.push(`${ancho} px · ${id} · ⛔ el encabezado mide ${m.encabezado} px (tope 96)`);
     if (m.figura > 280) fallos.push(`${ancho} px · ${id} · la figura empieza en ${m.figura} px (tope 280)`);
+    /* Kamogawa: tocar el día también fija el borde; su blanco efectivo (los puntos donde el toque cae en ese día) no baja de 44. */
+    const dia = await pg.evaluate(() => {
+      const c = document.querySelector('[data-calendario] [data-dia="16"]');
+      c.scrollIntoView({ block: "center" });
+      const r = c.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const es = (x, y) => (document.elementsFromPoint(x, y) ?? []).some((e) => e === c);
+      let ancho = 0;
+      let alto = 0;
+      for (let d = -30; d <= 30; d++) { if (es(cx + d, cy)) ancho++; if (es(cx, cy + d)) alto++; }
+      return { ancho, alto };
+    });
+    filas.push({ ancho, estado: `${id}-dia`, alto: dia.alto, actividad: null, nota: `blanco de toque del día ${dia.ancho} × ${dia.alto} px` });
+    if (dia.ancho < 44 || dia.alto < 44) fallos.push(`${ancho} px · ${id} · el día tiene un blanco de toque de ${dia.ancho} × ${dia.alto} px (mínimo 44)`);
     if (!conPerilla) return;
     /* La perilla: se lleva a la vista y se barre su área con elementFromPoint, de 1 en 1 px. */
     await pg.evaluate(() => document.querySelector("[data-perilla]").scrollIntoView({ block: "center" }));
@@ -195,7 +210,7 @@ await servidor.close();
 
 console.log("ancho | estado | contenido | alto | nota");
 for (const f of filas) console.log(`${f.ancho} | ${f.estado} | ${f.actividad ?? "—"} | ${f.alto} | ${f.nota ?? "—"}`);
-const estados = filas.filter((f) => !f.estado.startsWith("hoja") && !/-(calendario|perilla)$/.test(f.estado)).length / ANCHOS.length;
+const estados = filas.filter((f) => !f.estado.startsWith("hoja") && !/-(calendario|perilla|dia)$/.test(f.estado)).length / ANCHOS.length;
 console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos, más las hojas).`);
 if (estados !== 33) fallos.push(`se recorrieron ${estados} estados y son 33`); // + las dos ventanas (P2), − la entrada (Takamura)
 if (fallos.length) {
